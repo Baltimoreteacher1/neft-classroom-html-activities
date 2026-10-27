@@ -2455,7 +2455,7 @@ window.addEventListener("afterprint", function () {
 });
 
 
-/* Helper: smooth scroll to element accounting for sticky rail and display:contents */
+/* Helper: smooth scroll to element accounting for sticky top bar and display:contents */
 function scrollStudioTo(el) {
   if (!el) return;
   var node = el;
@@ -2465,8 +2465,10 @@ function scrollStudioTo(el) {
   if (!node) node = el;
   var det = node.closest('details');
   if (det && !det.open) det.open = true;
+  var chrome = document.querySelector('.homework-tab-chrome');
+  var headerH = chrome ? chrome.offsetHeight : 90;
   var rect = node.getBoundingClientRect();
-  var targetY = window.pageYOffset + rect.top - 24;
+  var targetY = window.pageYOffset + rect.top - headerH - 12;
   window.scrollTo({
     top: Math.max(0, targetY),
     behavior: 'smooth'
@@ -2592,18 +2594,41 @@ var STUDIO_SUB_CONFIGS = {
   ]
 };
 
+function updateActiveSubRail(activeTabId) {
+  if (!activeTabId) {
+    var activeBtn = document.querySelector('.homework-tab-btn.is-active');
+    activeTabId = (activeBtn && activeBtn.dataset.tab) || document.body.dataset.activeTab || 'learn';
+  }
+  document.querySelectorAll('.hw-sub-rail').forEach(function (r) {
+    var isActive = r.id === ('hw_sub_' + activeTabId);
+    r.classList.toggle('is-active-rail', isActive);
+  });
+}
+
 function initStudioSubRail() {
+  var chrome = document.querySelector('.homework-tab-chrome');
+  var tabBar = document.querySelector('.homework-tab-bar');
+  if (!chrome || !tabBar) return;
+
+  var subBar = document.getElementById('hw_sub_bar');
+  if (!subBar) {
+    subBar = document.createElement('div');
+    subBar.id = 'hw_sub_bar';
+    subBar.className = 'hw-sub-bar-container';
+    chrome.appendChild(subBar);
+  }
+
   var tabBtns = document.querySelectorAll('.homework-tab-btn');
   if (!tabBtns.length) return;
 
   tabBtns.forEach(function (btn) {
     var tabId = btn.dataset.tab;
-    var rail = btn.nextElementSibling;
-    if (!rail || !rail.classList.contains('hw-sub-rail')) {
+    var rail = document.getElementById('hw_sub_' + tabId);
+    if (!rail) {
       rail = document.createElement('div');
       rail.className = 'hw-sub-rail';
       rail.id = 'hw_sub_' + tabId;
-      btn.parentNode.insertBefore(rail, btn.nextSibling);
+      subBar.appendChild(rail);
     }
 
     if (tabId === 'check') {
@@ -2714,6 +2739,8 @@ function initStudioSubRail() {
       });
     }
   });
+
+  updateActiveSubRail();
 }
 
 /* Install tab scrolling: clicking any tab button smoothly scrolls to the top of that panel */
@@ -2724,6 +2751,7 @@ function installStudioTabScroll() {
   document.querySelectorAll('.homework-tab-btn').forEach(function (btn) {
     btn.addEventListener('click', function () {
       var tabId = btn.dataset.tab;
+      updateActiveSubRail(tabId);
       window.requestAnimationFrame(function () {
         var panel = document.getElementById('hw_panel_' + tabId);
         if (panel) scrollStudioTo(panel);
@@ -2736,6 +2764,7 @@ function installStudioTabScroll() {
   if (typeof origSwitchHomeworkTab === 'function') {
     window.switchHomeworkTab = function (tabId, opts) {
       origSwitchHomeworkTab(tabId);
+      updateActiveSubRail(tabId);
       if (window.hwTabsBooted && (!opts || !opts.preventScroll)) {
         window.requestAnimationFrame(function () {
           var panel = document.getElementById('hw_panel_' + tabId);
@@ -2744,6 +2773,12 @@ function installStudioTabScroll() {
       }
     };
   }
+
+  // Observe active tab changes
+  var bodyObs = new MutationObserver(function () {
+    updateActiveSubRail();
+  });
+  bodyObs.observe(document.body, { attributes: true, attributeFilter: ['data-active-tab'] });
 }
 
 /* Install scroll-spy: update active sub-button as student scrolls through sections */
@@ -2790,10 +2825,12 @@ function installStudioScrollSpy() {
 
     if (!targets.length) return;
 
+    var chrome = document.querySelector('.homework-tab-chrome');
+    var headerH = chrome ? chrome.offsetHeight : 90;
     var currentBtn = targets[0].btn;
     for (var i = 0; i < targets.length; i++) {
       var top = targets[i].el.getBoundingClientRect().top;
-      if (top <= 140) {
+      if (top <= headerH + 60) {
         currentBtn = targets[i].btn;
       } else {
         break;

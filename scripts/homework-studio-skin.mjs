@@ -361,224 +361,223 @@ body { background: var(--st-paper) !important; color: var(--st-ink); }
 .visual-representation-math { background: var(--fp-note); }
 .visual-representation-words { background: var(--fp-wash); }
 
-/* ---- ACCESS Lab Vertical Rail Layout (Desktop >= 860px) ---- */
-@media (min-width: 860px) {
-  .container {
-    max-width: 1140px !important;
-    padding: 24px 20px 60px !important;
-  }
-  .homework-tabs-shell {
-    display: grid !important;
-    grid-template-columns: 248px minmax(0, 1fr) !important;
-    column-gap: 24px !important;
-    row-gap: 0 !important;
-    align-items: start !important;
-  }
-  .homework-tab-chrome {
-    position: sticky !important;
-    top: 20px !important;
-    z-index: 40 !important;
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 8px !important;
-    padding: 14px 12px !important;
-    background: var(--fp-page, #ffffff) !important;
-    border: 1px solid var(--fp-rule, #e2e8f0) !important;
-    border-radius: 16px !important;
-    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04), 0 8px 24px rgba(15, 23, 42, 0.04) !important;
-  }
-  .homework-tab-chrome::before {
-    content: "TONIGHT'S PATH";
-    display: block;
-    font-family: var(--font-display, -apple-system, sans-serif);
-    font-size: 11px;
-    font-weight: 800;
-    letter-spacing: 0.08em;
-    color: var(--fp-ink-soft, #64748b);
-    padding: 2px 8px 6px;
-    border-bottom: 1px solid var(--fp-rule, #e2e8f0);
-    margin-bottom: 4px;
-  }
-  body.lang-mode-es .homework-tab-chrome::before {
-    content: "RUTA DE HOY";
-  }
-  .hw-tab-meta-row {
-    order: 10;
-    margin-top: 8px;
-    padding-top: 8px;
-    border-top: 1px solid var(--fp-rule, #e2e8f0);
-  }
-  .homework-tab-bar {
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 6px !important;
-    padding: 0 !important;
-    background: transparent !important;
-  }
-  .homework-tab-btn {
-    display: flex !important;
-    flex-direction: row !important;
-    align-items: center !important;
-    justify-content: flex-start !important;
-    gap: 10px !important;
-    min-height: 46px !important;
-    padding: 8px 12px !important;
-    border: 1.5px solid transparent !important;
-    border-radius: 12px !important;
-    background: transparent !important;
-    text-align: left !important;
-    width: 100% !important;
-    box-sizing: border-box !important;
-    transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease !important;
-  }
-  .homework-tab-btn:hover {
-    background: var(--fp-wash, #f8fafc) !important;
-  }
-  .homework-tab-btn.is-active {
-    background: var(--fp-unit-tint, #e0f2fe) !important;
-    border-color: var(--fp-unit, #0284c7) !important;
-    color: var(--fp-unit-ink, #0369a1) !important;
-    box-shadow: 0 2px 6px rgba(2, 132, 199, 0.12) !important;
-  }
-  .homework-tab-btn .tab-step {
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    width: 24px !important;
-    height: 24px !important;
-    border-radius: 999px !important;
-    background: var(--fp-wash, #f1f5f9) !important;
-    color: var(--fp-ink, #1e293b) !important;
-    font-size: 11px !important;
-    font-weight: 800 !important;
-    flex-shrink: 0 !important;
-  }
-  .homework-tab-btn.is-active .tab-step {
-    background: var(--fp-unit-ink, #0369a1) !important;
-    color: #ffffff !important;
-  }
-  .homework-tab-btn.is-done .tab-step {
-    background: #16a34a !important;
-    color: #ffffff !important;
-  }
-  .homework-tab-btn.is-done .tab-step::after {
-    content: "✓";
-    font-size: 12px;
-  }
-  .homework-tab-btn .tab-icon {
-    display: inline-block !important;
-    font-size: 16px !important;
-    line-height: 1 !important;
-    flex-shrink: 0 !important;
-  }
-  .homework-tab-btn .tab-label {
-    flex: 1 !important;
-    min-width: 0 !important;
-    text-align: left !important;
-    font-size: 13.5px !important;
-    font-weight: 700 !important;
-    color: inherit !important;
-  }
-  .homework-tab-btn .tab-en,
-  .homework-tab-btn .tab-es {
-    display: block !important;
-    white-space: nowrap !important;
-    overflow: hidden !important;
-    text-overflow: ellipsis !important;
-  }
-  body.lang-mode-es .homework-tab-btn .tab-en { display: none !important; }
-  body:not(.lang-mode-es) .homework-tab-btn .tab-es { display: none !important; }
+/* ---- Tonight's Path Top Scrolling & Navigation Bar ---- */
+.container {
+  max-width: 1040px !important;
+  padding: 16px 20px 60px !important;
+}
+.homework-tabs-shell {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 16px !important;
+  width: 100% !important;
+}
+.homework-tab-chrome {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 100 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 6px !important;
+  padding: 10px 16px 10px !important;
+  background: var(--fp-page, #ffffff) !important;
+  border: 1px solid var(--fp-rule, #e2e8f0) !important;
+  border-radius: 0 0 16px 16px !important;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.08) !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+.homework-tab-chrome::before {
+  content: "TONIGHT'S PATH";
+  display: inline-block;
+  font-family: var(--font-display, -apple-system, sans-serif);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: var(--fp-ink-soft, #64748b);
+  padding: 0 4px 2px;
+}
+body.lang-mode-es .homework-tab-chrome::before {
+  content: "RUTA DE HOY";
+}
+.homework-tab-track {
+  width: 100%;
+  height: 3px;
+  background: var(--fp-rule, #e2e8f0);
+  border-radius: 2px;
+  overflow: hidden;
+  margin: 0 0 4px;
+}
+.homework-tab-track-fill {
+  display: block;
+  height: 100%;
+  width: 0%;
+  background: var(--fp-unit, #0284c7);
+  transition: width 0.25s ease;
+}
+.homework-tab-bar {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 8px !important;
+  padding: 2px 0 4px !important;
+  background: transparent !important;
+  overflow-x: auto !important;
+  scrollbar-width: none !important;
+  -webkit-overflow-scrolling: touch !important;
+}
+.homework-tab-bar::-webkit-scrollbar { display: none; }
 
-  .homework-tab-extra {
-    display: flex !important;
-    flex-direction: row !important;
-    align-items: center !important;
-    justify-content: flex-start !important;
-    gap: 10px !important;
-    min-height: 44px !important;
-    padding: 8px 12px !important;
-    margin-left: 0 !important;
-    margin-top: 6px !important;
-    border: 1.5px dashed var(--fp-rule, #cbd5e1) !important;
-    border-radius: 12px !important;
-    background: var(--fp-wash, #f8fafc) !important;
-    width: 100% !important;
-    box-sizing: border-box !important;
-  }
-  .homework-tab-extra::before {
-    display: none !important;
-  }
-  .homework-tab-extra .tab-extra-blurb {
-    display: none !important;
-  }
-  .homework-tab-extra .tab-label {
-    text-align: left !important;
-    font-size: 13px !important;
-    font-weight: 700 !important;
-  }
-  .homework-tab-track {
-    order: -1;
-    margin-bottom: 6px;
-  }
-  .homework-tab-panels {
-    min-width: 0 !important;
-  }
+.homework-tab-btn {
+  display: inline-flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  min-height: 44px !important;
+  padding: 6px 14px !important;
+  border: 1.5px solid var(--fp-rule, #cbd5e1) !important;
+  border-radius: 999px !important;
+  background: var(--fp-wash, #f8fafc) !important;
+  color: var(--fp-ink, #1e293b) !important;
+  text-align: center !important;
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
+  box-sizing: border-box !important;
+  transition: all 0.15s ease !important;
+}
+.homework-tab-btn:hover {
+  background: #ffffff !important;
+  border-color: var(--fp-unit, #0284c7) !important;
+}
+.homework-tab-btn.is-active {
+  background: var(--fp-unit-ink, #0369a1) !important;
+  border-color: var(--fp-unit-ink, #0369a1) !important;
+  color: #ffffff !important;
+  box-shadow: 0 2px 8px rgba(3, 105, 161, 0.25) !important;
+}
+.homework-tab-btn .tab-step {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 22px !important;
+  height: 22px !important;
+  border-radius: 999px !important;
+  background: rgba(15, 23, 42, 0.08) !important;
+  color: inherit !important;
+  font-size: 11px !important;
+  font-weight: 800 !important;
+  flex-shrink: 0 !important;
+}
+.homework-tab-btn.is-active .tab-step {
+  background: #ffffff !important;
+  color: var(--fp-unit-ink, #0369a1) !important;
+}
+.homework-tab-btn.is-done .tab-step {
+  background: #16a34a !important;
+  color: #ffffff !important;
+}
+.homework-tab-btn.is-done .tab-step::after {
+  content: "✓";
+  font-size: 11px;
+}
+.homework-tab-btn .tab-icon {
+  display: inline-block !important;
+  font-size: 15px !important;
+  line-height: 1 !important;
+  flex-shrink: 0 !important;
+}
+.homework-tab-btn .tab-label {
+  font-size: 13.5px !important;
+  font-weight: 700 !important;
+  color: inherit !important;
+}
+.homework-tab-btn .tab-en,
+.homework-tab-btn .tab-es {
+  display: inline-block !important;
+}
+body.lang-mode-es .homework-tab-btn .tab-en { display: none !important; }
+body:not(.lang-mode-es) .homework-tab-btn .tab-es { display: none !important; }
+
+.homework-tab-extra {
+  display: inline-flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 8px !important;
+  min-height: 44px !important;
+  padding: 6px 14px !important;
+  border: 1.5px dashed var(--fp-rule, #cbd5e1) !important;
+  border-radius: 999px !important;
+  background: var(--fp-wash, #f8fafc) !important;
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
+  box-sizing: border-box !important;
+}
+.homework-tab-extra::before, .homework-tab-extra .tab-extra-blurb { display: none !important; }
+.homework-tab-extra .tab-label { font-size: 13px !important; font-weight: 700 !important; }
+
+.hw-tab-meta-row {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  margin: 0 !important;
+  padding: 0 !important;
 }
 
-/* ---- Sub buttons in Rail (Desktop only) ---- */
-@media (min-width: 860px) {
-  .hw-sub-rail {
-    display: none;
-    flex-direction: column;
-    gap: 3px;
-    margin: 4px 0 8px 16px;
-    padding-left: 10px;
-    border-left: 2px solid var(--fp-rule, #e2e8f0);
-  }
-  .homework-tab-btn.is-active + .hw-sub-rail {
-    display: flex !important;
-  }
-  .hw-sub-btn {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 6px 10px;
-    border-radius: 8px;
-    border: 1px solid transparent;
-    background: transparent;
-    font-size: 13.5px;
-    font-weight: 600;
-    color: var(--fp-ink-soft, #475569);
-    cursor: pointer;
-    text-align: left;
-    transition: all 0.15s ease;
-    width: 100%;
-    box-sizing: border-box;
-  }
-  .hw-sub-btn:hover {
-    background: var(--fp-wash, #f1f5f9);
-    color: var(--fp-ink, #0f172a);
-  }
-  .hw-sub-btn.is-active {
-    background: var(--fp-unit-tint, #e0f2fe);
-    border-color: var(--fp-unit, #bae6fd);
-    color: var(--fp-unit-ink, #0369a1);
-    font-weight: 700;
-  }
-  .hw-sub-btn .sub-icon {
-    font-size: 14px;
-    flex-shrink: 0;
-  }
-  .hw-sub-btn .sub-text {
-    flex: 1;
-    font-size: 13.5px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  body.lang-mode-es .hw-sub-btn .lang-en { display: none !important; }
-  body:not(.lang-mode-es) .hw-sub-btn .lang-es { display: none !important; }
+/* ---- Horizontal Sub-Button Rails at the Top ---- */
+.hw-sub-bar-container {
+  width: 100%;
 }
+.hw-sub-rail {
+  display: none !important;
+}
+.hw-sub-rail.is-active-rail {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 6px !important;
+  padding: 6px 2px 2px !important;
+  margin-top: 4px !important;
+  border-top: 1px solid var(--fp-rule, #e2e8f0) !important;
+  overflow-x: auto !important;
+  scrollbar-width: none !important;
+  -webkit-overflow-scrolling: touch !important;
+}
+.hw-sub-rail::-webkit-scrollbar { display: none; }
+
+.hw-sub-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  padding: 5px 12px !important;
+  min-height: 32px !important;
+  border-radius: 999px !important;
+  border: 1px solid var(--fp-rule, #cbd5e1) !important;
+  background: var(--fp-wash, #f8fafc) !important;
+  font-size: 13.5px !important;
+  font-weight: 600 !important;
+  color: var(--fp-ink-soft, #475569) !important;
+  cursor: pointer !important;
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
+  transition: all 0.15s ease !important;
+}
+.hw-sub-btn:hover {
+  background: #ffffff !important;
+  border-color: var(--fp-unit, #0284c7) !important;
+  color: var(--fp-ink, #0f172a) !important;
+}
+.hw-sub-btn.is-active {
+  background: var(--fp-unit-tint, #e0f2fe) !important;
+  border-color: var(--fp-unit, #0284c7) !important;
+  color: var(--fp-unit-ink, #0369a1) !important;
+  font-weight: 700 !important;
+  box-shadow: 0 1px 4px rgba(2, 132, 199, 0.16) !important;
+}
+.hw-sub-btn .sub-icon { font-size: 13px !important; flex-shrink: 0 !important; }
+.hw-sub-btn .sub-text { font-size: 13.5px !important; white-space: nowrap !important; }
+body.lang-mode-es .hw-sub-btn .lang-en { display: none !important; }
+body:not(.lang-mode-es) .hw-sub-btn .lang-es { display: none !important; }
 
 @keyframes hwTargetPulse {
   0% { box-shadow: 0 0 0 0 rgba(2, 132, 199, 0.45); }
@@ -589,18 +588,10 @@ body { background: var(--st-paper) !important; color: var(--st-ink); }
   animation: hwTargetPulse 1.2s ease-out;
   border-radius: 14px;
 }
-
-@media (max-width: 859px) {
-  .hw-sub-rail, .hw-sub-btn {
-    display: none !important;
-  }
-}
-
-
 `;
 
 export const STUDIO_SKIN_JS = `
-/* Helper: smooth scroll to element accounting for sticky rail and display:contents */
+/* Helper: smooth scroll to element accounting for sticky top bar and display:contents */
 function scrollStudioTo(el) {
   if (!el) return;
   var node = el;
@@ -610,8 +601,10 @@ function scrollStudioTo(el) {
   if (!node) node = el;
   var det = node.closest('details');
   if (det && !det.open) det.open = true;
+  var chrome = document.querySelector('.homework-tab-chrome');
+  var headerH = chrome ? chrome.offsetHeight : 90;
   var rect = node.getBoundingClientRect();
-  var targetY = window.pageYOffset + rect.top - 24;
+  var targetY = window.pageYOffset + rect.top - headerH - 12;
   window.scrollTo({
     top: Math.max(0, targetY),
     behavior: 'smooth'
@@ -737,18 +730,41 @@ var STUDIO_SUB_CONFIGS = {
   ]
 };
 
+function updateActiveSubRail(activeTabId) {
+  if (!activeTabId) {
+    var activeBtn = document.querySelector('.homework-tab-btn.is-active');
+    activeTabId = (activeBtn && activeBtn.dataset.tab) || document.body.dataset.activeTab || 'learn';
+  }
+  document.querySelectorAll('.hw-sub-rail').forEach(function (r) {
+    var isActive = r.id === ('hw_sub_' + activeTabId);
+    r.classList.toggle('is-active-rail', isActive);
+  });
+}
+
 function initStudioSubRail() {
+  var chrome = document.querySelector('.homework-tab-chrome');
+  var tabBar = document.querySelector('.homework-tab-bar');
+  if (!chrome || !tabBar) return;
+
+  var subBar = document.getElementById('hw_sub_bar');
+  if (!subBar) {
+    subBar = document.createElement('div');
+    subBar.id = 'hw_sub_bar';
+    subBar.className = 'hw-sub-bar-container';
+    chrome.appendChild(subBar);
+  }
+
   var tabBtns = document.querySelectorAll('.homework-tab-btn');
   if (!tabBtns.length) return;
 
   tabBtns.forEach(function (btn) {
     var tabId = btn.dataset.tab;
-    var rail = btn.nextElementSibling;
-    if (!rail || !rail.classList.contains('hw-sub-rail')) {
+    var rail = document.getElementById('hw_sub_' + tabId);
+    if (!rail) {
       rail = document.createElement('div');
       rail.className = 'hw-sub-rail';
       rail.id = 'hw_sub_' + tabId;
-      btn.parentNode.insertBefore(rail, btn.nextSibling);
+      subBar.appendChild(rail);
     }
 
     if (tabId === 'check') {
@@ -859,6 +875,8 @@ function initStudioSubRail() {
       });
     }
   });
+
+  updateActiveSubRail();
 }
 
 /* Install tab scrolling: clicking any tab button smoothly scrolls to the top of that panel */
@@ -869,6 +887,7 @@ function installStudioTabScroll() {
   document.querySelectorAll('.homework-tab-btn').forEach(function (btn) {
     btn.addEventListener('click', function () {
       var tabId = btn.dataset.tab;
+      updateActiveSubRail(tabId);
       window.requestAnimationFrame(function () {
         var panel = document.getElementById('hw_panel_' + tabId);
         if (panel) scrollStudioTo(panel);
@@ -881,6 +900,7 @@ function installStudioTabScroll() {
   if (typeof origSwitchHomeworkTab === 'function') {
     window.switchHomeworkTab = function (tabId, opts) {
       origSwitchHomeworkTab(tabId);
+      updateActiveSubRail(tabId);
       if (window.hwTabsBooted && (!opts || !opts.preventScroll)) {
         window.requestAnimationFrame(function () {
           var panel = document.getElementById('hw_panel_' + tabId);
@@ -889,6 +909,12 @@ function installStudioTabScroll() {
       }
     };
   }
+
+  // Observe active tab changes
+  var bodyObs = new MutationObserver(function () {
+    updateActiveSubRail();
+  });
+  bodyObs.observe(document.body, { attributes: true, attributeFilter: ['data-active-tab'] });
 }
 
 /* Install scroll-spy: update active sub-button as student scrolls through sections */
@@ -935,10 +961,12 @@ function installStudioScrollSpy() {
 
     if (!targets.length) return;
 
+    var chrome = document.querySelector('.homework-tab-chrome');
+    var headerH = chrome ? chrome.offsetHeight : 90;
     var currentBtn = targets[0].btn;
     for (var i = 0; i < targets.length; i++) {
       var top = targets[i].el.getBoundingClientRect().top;
-      if (top <= 140) {
+      if (top <= headerH + 60) {
         currentBtn = targets[i].btn;
       } else {
         break;
