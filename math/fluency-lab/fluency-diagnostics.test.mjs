@@ -15,6 +15,15 @@ for (let seed = 0; seed < 20; seed += 1) {
   const item = generateProblem(gradeFourSingleDigitProduct, seededRandom(seed + 100), 0);
   assert.match(item.question, /^\d{3} × [2-9] = \?$/, `Grade 4 item matches three-digit × one-digit scope: ${item.question}`);
 }
+const gradeOneAddTen = ALL_SKILLS.find((skill) => skill.grade === 1 && skill.id === "add-10");
+assert.ok(gradeOneAddTen, "Grade 1 has the expected addition-with-sums-to-10 skill");
+assert.equal(gradeOneAddTen.title, "Addition facts: sums of 10 or less");
+assert.match(gradeOneAddTen.learn.rule, /sum is 10 or less/i);
+for (let seed = 0; seed < 50; seed += 1) {
+  const item = generateProblem(gradeOneAddTen, seededRandom(seed + 400), 0);
+  const [left, right] = item.question.match(/\d+/g).map(Number);
+  assert.ok(left + right <= 10, `Grade 1 addition sum stays within 10: ${item.question}`);
+}
 const graph = prerequisiteGraph();
 assert.equal(Object.keys(graph).length, CONFIG.skillCount);
 assert.ok(Object.values(graph).every((node) => Array.isArray(node.prerequisiteSkills) && Array.isArray(node.enrichmentSkills)));

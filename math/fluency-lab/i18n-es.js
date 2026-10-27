@@ -736,6 +736,8 @@ export const ES = {
   "Correct": "Correcto",
   "Multiply a three-digit number by a one-digit number": "Multiplicar un número de tres cifras por un número de una cifra",
   "Use place value to multiply a three-digit number by a one-digit number.": "Usa el valor posicional para multiplicar un número de tres cifras por uno de una cifra.",
+  "Addition facts: sums of 10 or less": "Sumas: resultados de 10 o menos",
+  "Add two numbers whose sum is 10 or less.": "Suma dos números cuyo resultado sea 10 o menos.",
   "Correct · with help": "Correcto · con ayuda",
   "Incorrect": "Incorrecto",
   "Add an answer": "Escribe una respuesta",

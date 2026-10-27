@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { chromium } from "playwright";
+import { chromium } from "@playwright/test";
 import { createServer } from "vite";
 import { REPO_ROOT } from "../../tools/lib/curriculum-source.mjs";
 
@@ -59,6 +59,10 @@ try {
   assert.match(multiplicationLesson, /three-digit number by a one-digit number/i);
   assert.match(multiplicationLesson, /\b\d{3} × [2-9] = \?/);
   assert.doesNotMatch(multiplicationLesson, /multiply by one digit/i);
+  await page.goto(`${base}/math/fluency-lab/?grade=1&skill=add-10`, { waitUntil: "networkidle" });
+  assert.equal(await page.locator("#workspace-title").innerText(), "Addition facts: sums of 10 or less");
+  assert.match(await page.locator("#learn-panel").innerText(), /sum is 10 or less/i);
+  assert.doesNotMatch(await page.locator("#learn-panel").innerText(), /addition facts within 10/i);
   assert.deepEqual(errors, [], `No browser runtime errors: ${errors.join("; ")}`);
   console.log("Math answer feedback browser check passed: clear incorrect status beside the question on desktop; visible and overflow-free on mobile.");
 } finally {

@@ -102,6 +102,8 @@ for (const key of [
   "That route does not return to the stated output. Check the inverse steps.",
   "Multiply a three-digit number by a one-digit number",
   "Use place value to multiply a three-digit number by a one-digit number.",
+  "Addition facts: sums of 10 or less",
+  "Add two numbers whose sum is 10 or less.",
 ])
   keys.add(key);
 for (const item of ITEMS) {
