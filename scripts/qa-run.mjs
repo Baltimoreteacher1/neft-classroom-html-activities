@@ -829,6 +829,22 @@ const COVERAGE = [
     /^(tools\/[^/]+\.test\.mjs$|tests\/[^/]+\.spec\.ts$|scripts\/(qa-run\.mjs|lib\/(qa-lock|run-group)\.mjs|codex\/codex-verify\.sh)$|tools\/(run-tests|validate-js-syntax)\.mjs|tools\/lib\/test-(scope|trace-preload|trace-commands)\.mjs|data\/test-reads\.json$|\.githooks\/)/,
     ["test", "validate:gate-coverage", "validate:js-syntax"],
   ],
+  // Living Math Canvas / Math Reality Lab / Forge / Cockpit engine (assets/ewl/**,
+  // 77 files). Every browser-free behaviour has a dedicated tools/ewl-*.test.mjs
+  // (13 files, all traced by test-scope.mjs, so `test` runs only those that read
+  // a changed file). Previously uncovered: 112 path hits in the last 300 commits
+  // on main, ~27% of commits escalated to the FULL gate for it. validate:lesson-boot
+  // renders the lesson pages in a real browser, which is the check that sees a
+  // broken engine load on a live page.
+  [
+    /^assets\/ewl\//,
+    ["test", "validate:lesson-boot", "validate:static", "validate:js-syntax", "check"],
+  ],
+  // Graphic novels (graphic-novels/**). Their only validator, graphic-novels/_engine/validate.cjs,
+  // is not wired into any gate, so the checks that see these files are `test` (their
+  // _engine tests are discovered by run-tests), static links and syntax. 39 of the last 300
+  // commits on main touched this folder and escalated to the FULL gate for no check that reads it.
+  [/^graphic-novels\//, ["test", "validate:static", "validate:js-syntax", "check"]],
   [/^docs\/|\.md$/, []],
 ];
 
