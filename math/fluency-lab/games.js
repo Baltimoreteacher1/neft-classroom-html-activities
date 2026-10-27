@@ -32,11 +32,20 @@ import { mathText, stepsBlock } from "./trail-pictures.js";
 import { languagePromptHtml } from "./language-bridge.js";
 import { playArrayArchitect, playFractionForge, playNumberQuest, SIGNATURE_GAME_ICONS } from "./signature-games.js";
 import { playPuzzleWorld, PUZZLE_WORLD_ICONS, PUZZLE_WORLDS } from "./puzzle-worlds.js";
+import { playFluencyRally, playMathWorldBuilder, playNumberPuzzleStudio } from "./publisher-games.js";
 import { CLASSIC_GAME_ICONS } from "./game-icons.js";
 
-const GAME_ICONS = { ...SIGNATURE_GAME_ICONS, ...PUZZLE_WORLD_ICONS };
+const PUBLISHER_GAME_ICONS = {
+  mathworldbuilder: '<svg viewBox="0 0 120 90" aria-hidden="true"><path d="M18 71h84M25 68V38h70v30M36 38V27h48v11M35 48h18v20H35zm32 0h18v20H67zM53 38v-9m14 9v-9" fill="none" stroke="currentColor" stroke-width="4" stroke-linejoin="round"/><path d="M20 25h10m-5-5v10m64-12h10m-5-5v10" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>',
+  numberpuzzlestudio: '<svg viewBox="0 0 120 90" aria-hidden="true"><rect x="20" y="14" width="34" height="28" rx="6" fill="none" stroke="currentColor" stroke-width="3"/><rect x="66" y="14" width="34" height="28" rx="6" fill="none" stroke="currentColor" stroke-width="3"/><rect x="43" y="52" width="34" height="25" rx="6" fill="none" stroke="currentColor" stroke-width="3"/><path d="M37 23v10m-5-5h10m41-5v10m-5-5h10m-23 29v10m-5-5h10" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>',
+  fluencyrally: '<svg viewBox="0 0 120 90" aria-hidden="true"><path d="M12 68h96M18 60c17 0 17-30 34-30s17 30 34 30 17-18 22-25" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"/><path d="M90 20v19m0-19h18l-6 7 6 6H90" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/><circle cx="52" cy="30" r="5" fill="currentColor"/><circle cx="86" cy="60" r="5" fill="currentColor"/></svg>',
+};
+const GAME_ICONS = { ...SIGNATURE_GAME_ICONS, ...PUZZLE_WORLD_ICONS, ...PUBLISHER_GAME_ICONS };
 
 export const GAMES = [
+  { id: "mathworldbuilder", name: "Math World Builder", icon: "", blurb: "Plan structures on a grid and balance floor area with building resources.", run: playMathWorldBuilder },
+  { id: "numberpuzzlestudio", name: "Number Puzzle Studio", icon: "", blurb: "Compose numbers, find valid pairs, and compare flexible strategies.", run: playNumberPuzzleStudio },
+  { id: "fluencyrally", name: "Fluency Rally", icon: "", blurb: "Choose a mathematical route and calculate each checkpoint at your pace.", run: playFluencyRally },
   {
     id: "numberquest",
     name: "Number Garden",

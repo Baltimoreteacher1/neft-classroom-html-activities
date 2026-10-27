@@ -82,8 +82,8 @@ await wait();
 assert.ok($(".gm-menu"), "The Game Room opens from ?view=games");
 assert.equal(
   $$("[data-game]").length,
-  13,
-  "Thirteen games, including model games, are offered to Grade 3",
+  16,
+  "Sixteen games, including the three publisher games, are offered to Grade 3",
 );
 assert.ok($("#bd-view svg"), "The buddy panel shows a buddy");
 assert.match(
@@ -91,6 +91,107 @@ assert.match(
   /This week: 0 of 3 days/,
   "The weekly goal starts at 0 of 3",
 );
+
+// ---- Math World Builder: make the target area while staying within the fence budget
+click('[data-game="mathworldbuilder"]');
+await wait();
+for (let round = 0; round < 5; round += 1) {
+  const prompt = $(".sig-head h2").textContent;
+  const target = Number(prompt.match(/with (\d+) floor tiles/)?.[1]);
+  const budget = Number(prompt.match(/no more than (\d+) fence units/)?.[1]);
+  let plan;
+  for (let rows = 1; rows <= 12 && !plan; rows += 1)
+    for (let columns = 1; columns <= 12; columns += 1)
+      if (rows * columns === target && (!budget || 2 * (rows + columns) <= budget)) {
+        plan = [rows, columns];
+        break;
+      }
+  assert.ok(plan, "The visible construction task has a valid floor plan");
+  for (const [selector, value] of [
+    ["[data-rows]", plan[0]],
+    ["[data-columns]", plan[1]],
+  ]) {
+    const input = $(selector);
+    input.value = String(value);
+    input.dispatchEvent(new win.Event("input", { bubbles: true }));
+  }
+  click("[data-check]");
+  assert.match(
+    $("[data-feedback]").textContent,
+    /Built/,
+    "A valid structure is accepted with its area and resources",
+  );
+  await wait();
+  click(".sig-actions button:last-child");
+  await wait();
+}
+assert.ok($(".gm-result"), "Math World Builder completes and reports its session");
+results.push(["mathworldbuilder", true]);
+await toMenu();
+
+// ---- Number Puzzle Studio: find a pair from visible tiles and advance through all puzzles
+click('[data-game="numberpuzzlestudio"]');
+await wait();
+for (let round = 0; round < 5; round += 1) {
+  const prompt = $(".sig-head h2").textContent;
+  const [, op, targetText] = prompt.match(/use (\+|×) to make (\d+)/);
+  const target = Number(targetText);
+  const tiles = $$("[data-choice]").map((button) => Number(button.textContent));
+  let pair;
+  for (let a = 0; a < tiles.length && !pair; a += 1)
+    for (let b = a + 1; b < tiles.length; b += 1)
+      if ((op === "+" ? tiles[a] + tiles[b] : tiles[a] * tiles[b]) === target) {
+        pair = [a, b];
+        break;
+      }
+  assert.ok(pair, "The visible number puzzle has a valid tile pair");
+  $(`[data-choice="${pair[0]}"]`).click();
+  $(`[data-choice="${pair[1]}"]`).click();
+  click("[data-check]");
+  assert.match(
+    $("[data-feedback]").textContent,
+    /makes/,
+    "A valid number pair receives mathematical feedback",
+  );
+  await wait();
+  click(".sig-actions button:last-child");
+  await wait();
+}
+assert.ok($(".gm-result"), "Number Puzzle Studio completes and reports its session");
+results.push(["numberpuzzlestudio", true]);
+await toMenu();
+
+// ---- Fluency Rally: select the route that matches the visible rule and calculate its checkpoint
+click('[data-game="fluencyrally"]');
+await wait();
+for (let round = 0; round < 5; round += 1) {
+  const prompt = $(".sig-head h2").textContent;
+  const [, factorText, nText, addText] =
+    prompt.match(/follows (\d+) × (\d+) \+ (\d+).*n = (\d+)/) || [];
+  const factor = Number(factorText);
+  const n = Number(nText);
+  const add = Number(addText);
+  const answer = factor * n + add;
+  const route = $$("[data-choice]").find((button) =>
+    button.textContent.includes(`${factor} × ${n} + ${add}`),
+  );
+  assert.ok(route, "The correct route appears among the choices");
+  route.click();
+  const field = $("[data-distance]");
+  field.value = String(answer);
+  click("[data-check]");
+  assert.match(
+    $("[data-feedback]").textContent,
+    /reaches checkpoint/,
+    "A correct route and calculation advance the rally",
+  );
+  await wait();
+  click(".sig-actions button:last-child");
+  await wait();
+}
+assert.ok($(".gm-result"), "Fluency Rally completes and reports its session");
+results.push(["fluencyrally", true]);
+await toMenu();
 
 // ---- Fact Match: brute-force the pairs
 click('[data-game="match"]');
@@ -437,7 +538,7 @@ for (const id of ["arrayarchitect", "fractionforge"]) {
 
 // ---- Everything above is remembered
 const rewards = JSON.parse(win.localStorage.getItem("ewl-fluency-rewards-v1"));
-assert.equal(rewards.plays, 11, "Eleven finished Grade 3 games are recorded");
+assert.equal(rewards.plays, 14, "All fourteen completed Grade 3 games are recorded");
 for (const game of [
   "arrayarchitect",
   "fractionforge",

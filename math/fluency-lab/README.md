@@ -8,6 +8,8 @@ The Game Room combines untimed fact games, model-first challenges, and four grad
 
 Teacher studio creates shareable assignments for selected skills, a problem count, and a support level. The same link generates new questions each visit. Five-day printable packets optionally include a separate teacher answer key. Family progress views, CSV reports, and JSON backups work locally.
 
+The three longer-form publisher games share the same evidence and reward records. **Math World Builder** sets a target floor area and, from Grade 3, a fence-material budget; changing row and column controls redraws the building grid and updates both calculations. **Number Puzzle Studio** presents a tile bank with multiple valid addition or multiplication pairs for each target, supports touch or keyboard selection, and explains the pair after checking. **Fluency Rally** presents an untimed route checkpoint: students choose the route matching a multi-operation expression, calculate its distance, and enter the result. All three provide hints, feedback, five challenge levels, saved completion rewards, and grade-appropriate teacher assignments.
+
 ## Progress rules
 
 - Profiles are local learner slots, not student accounts or a school roster.

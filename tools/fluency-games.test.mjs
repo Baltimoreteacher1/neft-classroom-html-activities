@@ -152,6 +152,11 @@ check(cleanPlay(null) === null, "cleanPlay(null) is null.");
 // Teacher side: assignments may name a game, and facts reports summarize without names.
 const gameOnly = validateAssignment({ version: 1, grade: 3, keys: [], game: "hunt", stop: "x6-7" });
 check(gameOnly?.game === "hunt" && gameOnly.stop === "x6-7", "A game-only assignment is valid.");
+for (const game of ["mathworldbuilder", "numberpuzzlestudio", "fluencyrally"])
+  check(
+    validateAssignment({ version: 1, grade: 0, keys: [], game })?.game === game,
+    `${game} can be assigned to Kindergarten.`,
+  );
 const modelGame = validateAssignment({
   version: 1,
   grade: 3,
@@ -188,6 +193,9 @@ check(
 check(
   cleanRewards({
     best: {
+      mathworldbuilder: 3,
+      numberpuzzlestudio: 2,
+      fluencyrally: 1,
       numberquest: 3,
       arrayarchitect: 2,
       fractionforge: 1,
@@ -197,6 +205,8 @@ check(
       ratiocity: 2,
     },
   }).best.fractionforge === 1 &&
+    cleanRewards({ best: { mathworldbuilder: 3, numberpuzzlestudio: 2, fluencyrally: 1 } }).best
+      .fluencyrally === 1 &&
     cleanRewards({
       best: { equationfactory: 3, fractionbridge: 2, balancestation: 1, ratiocity: 2 },
     }).best.ratiocity === 2,

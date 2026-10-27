@@ -68,13 +68,13 @@ export function parseBackup(value) {
   return makeBackup({ progress: value.progress, tutor: value.tutor, settings: value.settings || {}, grade: GRADES.some((grade) => grade.grade === value.grade) ? value.grade : 1 });
 }
 
-const GAME_IDS = ["numberquest", "arrayarchitect", "fractionforge", "equationfactory", "fractionbridge", "balancestation", "ratiocity", "match", "hunt", "sort", "mistake", "make", "family", "balance", "picture", "flip"];
-const MODEL_GAME_MIN_GRADE = { numberquest: 1, arrayarchitect: 3, fractionforge: 3, equationfactory: 6, fractionbridge: 4, balancestation: 6, ratiocity: 6 };
+const GAME_IDS = ["mathworldbuilder", "numberpuzzlestudio", "fluencyrally", "numberquest", "arrayarchitect", "fractionforge", "equationfactory", "fractionbridge", "balancestation", "ratiocity", "match", "hunt", "sort", "mistake", "make", "family", "balance", "picture", "flip"];
+const MODEL_GAME_MIN_GRADE = { mathworldbuilder: 0, numberpuzzlestudio: 0, fluencyrally: 0, numberquest: 1, arrayarchitect: 3, fractionforge: 3, equationfactory: 6, fractionbridge: 4, balancestation: 6, ratiocity: 6 };
 
 export function validateAssignment(value) {
   if (!value || value.version !== 1 || !GRADES.some((grade) => grade.grade === value.grade)) return null;
   const keys = [...new Set((Array.isArray(value.keys) ? value.keys : []).filter((key) => findSkill(key)?.grade === value.grade))].slice(0, 10);
-  const game = GAME_IDS.includes(value.game) && value.grade >= (MODEL_GAME_MIN_GRADE[value.game] || 1) ? value.game : null;
+  const game = GAME_IDS.includes(value.game) && value.grade >= (MODEL_GAME_MIN_GRADE[value.game] ?? 1) ? value.game : null;
   const stop = game && !MODEL_GAME_MIN_GRADE[game] && /^[\w:-]{1,40}$/.test(String(value.stop || "")) ? value.stop : null;
   if (!keys.length && !game) return null;
   const challenge = ["adaptive", "building", "grade-stretch"].includes(value.challenge) ? value.challenge : "adaptive";
