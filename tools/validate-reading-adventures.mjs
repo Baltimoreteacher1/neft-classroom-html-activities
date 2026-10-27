@@ -60,3 +60,75 @@ writeFileSync(
 console.log(
   `Reading Adventures inventory: ${stories.length} complete original stories; coverage ${JSON.stringify(coverage)}. Independent editorial review pending.`,
 );
+
+const strategySource = JSON.parse(
+  readFileSync("access-practice-lab/content/reading-room/strategy-lessons.json", "utf8"),
+);
+assert.equal(strategySource.schemaVersion, 1);
+assert.equal(strategySource.editorialStatus, "authored-pending-independent-editorial-review");
+assert.ok(
+  strategySource.lessons.length >= 24,
+  "strategy academy requires at least 24 original lessons",
+);
+const expectedStrands = strategySource.strands.map((strand) => strand.id);
+const strategyIds = new Set();
+const strategyCoverage = Object.fromEntries(
+  expectedStrands.map((strand) => [strand, { "3-5": 0, "6-8": 0 }]),
+);
+for (const lesson of strategySource.lessons) {
+  assert.match(lesson.id, /^[a-z0-9-]+$/);
+  assert.ok(!strategyIds.has(lesson.id), `duplicate strategy lesson ${lesson.id}`);
+  strategyIds.add(lesson.id);
+  assert.ok(expectedStrands.includes(lesson.strand), `${lesson.id}: invalid strategy strand`);
+  assert.ok(["3-5", "6-8"].includes(lesson.gradeCluster), `${lesson.id}: invalid grade cluster`);
+  assert.ok(lesson.title && lesson.skill && lesson.model?.text && lesson.model?.think);
+  for (const stage of ["guided", "independent"]) {
+    const task = lesson[stage];
+    assert.ok(
+      task?.text &&
+        task.question &&
+        task.explanation &&
+        (stage === "guided" ? task.revise : task.transfer),
+      `${lesson.id}: incomplete ${stage} task`,
+    );
+    assert.ok(
+      task.options?.length >= 3 &&
+        Number.isInteger(task.answer) &&
+        task.answer >= 0 &&
+        task.answer < task.options.length,
+      `${lesson.id}: invalid ${stage} answer key`,
+    );
+    if (stage === "guided")
+      assert.equal(
+        task.feedback?.length,
+        task.options.length,
+        `${lesson.id}: guided feedback must match options`,
+      );
+  }
+  strategyCoverage[lesson.strand][lesson.gradeCluster] += 1;
+}
+for (const [strand, clusters] of Object.entries(strategyCoverage)) {
+  assert.ok(
+    clusters["3-5"] > 0 && clusters["6-8"] > 0,
+    `${strand}: both supported clusters need lessons`,
+  );
+}
+const strategyReport = {
+  generatedBy: "tools/validate-reading-adventures.mjs",
+  contentVersion: strategySource.schemaVersion,
+  editorialStatus: strategySource.editorialStatus,
+  lessonCount: strategySource.lessons.length,
+  gradeClusters: {
+    "3-5": strategySource.lessons.filter((x) => x.gradeCluster === "3-5").length,
+    "6-8": strategySource.lessons.filter((x) => x.gradeCluster === "6-8").length,
+  },
+  strands: strategyCoverage,
+  independentTransferTasks: strategySource.lessons.length,
+};
+writeFileSync(
+  "access-practice-lab/content/reading-room/strategy-coverage.json",
+  `${JSON.stringify(strategyReport, null, 2)}\n`,
+);
+console.log(
+  `Reading Strategy Academy inventory: ${strategySource.lessons.length} original lessons; coverage ${JSON.stringify(strategyCoverage)}. Editorial review pending.`,
+);

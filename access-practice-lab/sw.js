@@ -11,7 +11,7 @@
  * The block between the build markers is written by tools/sync-access-shell.mjs; do not edit it by hand.
  */
 /* build:begin */
-const BUILD_HASH = "499f2658033c";
+const BUILD_HASH = "89db71727787";
 const PRECACHE_CORE = [
   "/access-practice-lab/library.css?v=159952795a3e",
   "/access-practice-lab/studio.css?v=28d71fd235dd",
@@ -28,13 +28,13 @@ const PRECACHE_CORE = [
   "/access-practice-lab/tests.css?v=0785ce20e036",
   "/access-practice-lab/progress.css?v=54cc2a654caf",
   "/access-practice-lab/studios.css?v=b8182f7508bd",
-  "/access-practice-lab/labs.css?v=75e634f7699d",
+  "/access-practice-lab/labs.css?v=acd96df68051",
   "/access-practice-lab/src/attempts.js?v=9ad8ee9e3283",
   "/access-practice-lab/src/audio-store.js?v=d05edac67707",
   "/access-practice-lab/src/components.js?v=01aec69832da",
   "/access-practice-lab/src/content/vocabulary-items.js?v=8504c5643bba",
   "/access-practice-lab/src/content/world-missions.js?v=6ac1466837b1",
-  "/access-practice-lab/src/content.js?v=d88cb23ba086",
+  "/access-practice-lab/src/content.js?v=3416e18cc0ca",
   "/access-practice-lab/src/evidence-ui.js?v=4f6a8ba06af2",
   "/access-practice-lab/src/glossary.js?v=2dcfe2d93541",
   "/access-practice-lab/src/grade.js?v=c88ead48711f",
@@ -54,7 +54,7 @@ const PRECACHE_CORE = [
   "/access-practice-lab/src/lang/rubrics.js?v=5656db97483b",
   "/access-practice-lab/src/lang/scaffolds.js?v=18c8ecbb21fa",
   "/access-practice-lab/src/lang/share.js?v=64f094dd2eb1",
-  "/access-practice-lab/src/lang/skill-graph.js?v=1917f4b842ba",
+  "/access-practice-lab/src/lang/skill-graph.js?v=8543c1067564",
   "/access-practice-lab/src/lang/studio.js?v=fe989ddb7881",
   "/access-practice-lab/src/lang/teacher.js?v=2a78245d948e",
   "/access-practice-lab/src/lang/text.js?v=391bde3f4bec",
@@ -64,7 +64,7 @@ const PRECACHE_CORE = [
   "/access-practice-lab/src/multilingual.js?v=d0b46fb38de3",
   "/access-practice-lab/src/nav.js?v=fd41a3d54842",
   "/access-practice-lab/src/practice-plan.js?v=e0ccb901e2cd",
-  "/access-practice-lab/src/reading-state.js?v=02d2a3b049f0",
+  "/access-practice-lab/src/reading-state.js?v=64118b5a2430",
   "/access-practice-lab/src/recorder.js?v=3621e4e1517d",
   "/access-practice-lab/src/shell.js?v=bcf342f90672",
   "/access-practice-lab/src/speech.js?v=0eb57c8581e0",
@@ -87,7 +87,7 @@ const PRECACHE_CORE = [
   "/access-practice-lab/src/views/library.js?v=c3e320ce8c33",
   "/access-practice-lab/src/views/missions.js?v=87bc31e4dd24",
   "/access-practice-lab/src/views/passport.js?v=af95807070a1",
-  "/access-practice-lab/src/views/reading-room.js?v=d58e657117b5",
+  "/access-practice-lab/src/views/reading-room.js?v=a05d434604aa",
   "/access-practice-lab/src/views/road.js?v=231096b5656c",
   "/access-practice-lab/src/views/room.js?v=92389ec522e5",
   "/access-practice-lab/src/views/speak.js?v=be2244f651ff",
@@ -126,6 +126,8 @@ const PRECACHE_MORE = [
   "/access-practice-lab/content/reading-room/adventure-coverage.json",
   "/access-practice-lab/content/reading-room/adventures.json",
   "/access-practice-lab/content/reading-room/lessons.json",
+  "/access-practice-lab/content/reading-room/strategy-coverage.json",
+  "/access-practice-lab/content/reading-room/strategy-lessons.json",
   "/access-practice-lab/content/road.json",
   "/access-practice-lab/content/shared.json",
   "/access-practice-lab/content/studio/exemplars-speaking.json",

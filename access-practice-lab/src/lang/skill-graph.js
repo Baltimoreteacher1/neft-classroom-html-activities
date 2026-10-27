@@ -14,6 +14,12 @@ const groups = {
     ["main-detail", "Distinguish main ideas from details"], ["sequence", "Interpret sequence"],
     ["cause-effect", "Interpret cause and effect"], ["compare-sources", "Compare sources"],
     ["vocabulary-context", "Determine vocabulary meaning from context"], ["explain-evidence", "Explain how evidence supports an idea"],
+    ["prediction", "Make and revise predictions"], ["question-generation", "Generate useful questions"],
+    ["literal-retrieval", "Locate explicit information"], ["inference-strategy", "Make evidence-based inferences"],
+    ["evidence-selection-strategy", "Select strong evidence"], ["vocabulary-clarification-strategy", "Clarify unfamiliar words"],
+    ["morphology", "Use meaningful word parts"], ["rereading-purpose", "Reread with a purpose"],
+    ["central-idea-strategy", "Identify a central idea"], ["summarization", "Summarize essential information"],
+    ["synthesis", "Synthesize ideas across a text"],
   ],
   Speaking: [
     ["task", "Complete the communication task"], ["clear-idea", "State a clear idea"],
@@ -42,6 +48,9 @@ function skillForQuestion(domain, skill) {
   const aliases = {
     "main-idea": "main-idea", "main-idea-and-details": "main-idea", detail: "supporting-details",
     "supporting-detail": "supporting-details", evidence: "evidence", inference: "explain-evidence",
+    "evidence-selection-strategy": "evidence-selection-strategy", "vocabulary-clarification-strategy": "vocabulary-clarification-strategy",
+    "central-idea-strategy": "central-idea-strategy", "inference-strategy": "inference-strategy",
+    "literal-retrieval": "literal-retrieval",
     vocabulary: "vocabulary-context", "academic-vocabulary": "vocabulary-context", sequence: "sequence",
     "cause-and-effect": "cause-effect", comparison: "comparisons", compare: "compare-sources",
     "following-directions": "directions", directions: "directions",

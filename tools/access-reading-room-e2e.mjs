@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { createReadStream, existsSync, readFileSync, statSync } from "node:fs";
 import http from "node:http";
 import { extname, join } from "node:path";
-import { evidenceFromLedger } from "../access-practice-lab/src/lang/skill-graph.js";
+import { evidenceFromLedger, skillIdFor } from "../access-practice-lab/src/lang/skill-graph.js";
 import { REPO_ROOT } from "./lib/access-lab-content.mjs";
 import { exitSkipped } from "./lib/skip-exit.mjs";
 
@@ -339,6 +339,98 @@ try {
     `http://localhost:${server.address().port}/access-practice-lab/reading-room/adventures`,
   );
   await page.getByText("Chapter 1 of 6 · saved").waitFor();
+  await page.goto(
+    `http://localhost:${server.address().port}/access-practice-lab/reading-room/strategies`,
+  );
+  await page.getByRole("heading", { name: "Reading Strategy Academy" }).waitFor();
+  assert.equal(await page.locator(".rr-strategy-card").count(), 26);
+  await page.getByLabel("Strategy strand").selectOption("predict-connect");
+  await page.waitForFunction(() => document.querySelectorAll(".rr-strategy-card").length === 6);
+  await page.goto(
+    `http://localhost:${server.address().port}/access-practice-lab/reading-room/strategy-predict-weather-station`,
+  );
+  await page.getByRole("heading", { name: "1. Watch: a reader thinks aloud" }).waitFor();
+  const explanation = page.locator('[data-strategy-explanation="guided"]');
+  const guidedCheck = page.locator('[data-strategy-check="guided"]');
+  await page.locator('[data-strategy-choice="guided"]').nth(1).check();
+  await explanation.fill("This is my thinking because the passage says so.");
+  await guidedCheck.click();
+  await page.getByRole("status").filter({ hasText: "Revisit the clue" }).waitFor();
+  await page.getByRole("button", { name: "Try this question again" }).click();
+  await page.locator('[data-strategy-choice="guided"]').first().check();
+  await page
+    .locator('[data-strategy-explanation="guided"]')
+    .fill("The wind is moving toward the pinwheel, so it may start to turn.");
+  await page.locator('[data-strategy-check="guided"]').click();
+  await page.getByRole("heading", { name: "3. Try independently: new passage" }).waitFor();
+  assert.equal(
+    await page.locator(".rr-strategy-stage").count(),
+    1,
+    "independent stage should fade the model and guided passage",
+  );
+  await page.locator('[data-strategy-choice="independent"]').first().check();
+  await page
+    .locator('[data-strategy-explanation="independent"]')
+    .fill("The guide points west because it is clear there.");
+  await page.locator('[data-strategy-check="independent"]').click();
+  await page.getByRole("heading", { name: "Independent transfer complete" }).waitFor();
+  await page.reload();
+  await page.getByRole("heading", { name: "Independent transfer complete" }).waitFor();
+  const strategyLedger = await page.evaluate(() =>
+    JSON.parse(localStorage.getItem("accessPracticeLab:v1:ledger") || "{}"),
+  );
+  assert.ok(
+    strategyLedger.entries?.some(
+      (entry) => entry.id === "reading-strategy:predict-weather-station:guided",
+    ),
+  );
+  assert.ok(
+    strategyLedger.entries?.some(
+      (entry) => entry.id === "reading-strategy:predict-weather-station:independent",
+    ),
+  );
+  const strategyEvidence = evidenceFromLedger(strategyLedger.entries).filter(
+    (item) => item.activityId === "reading-strategy:predict-weather-station:independent",
+  );
+  assert.equal(strategyEvidence[0]?.skillId, "reading.prediction");
+  assert.equal(strategyEvidence[0]?.independenceLevel, "independent");
+  assert.equal(
+    skillIdFor("Reading", "inference"),
+    "reading.explain-evidence",
+    "legacy inference tags keep their previous skill mapping",
+  );
+  assert.equal(
+    skillIdFor("Reading", "inference-strategy"),
+    "reading.inference-strategy",
+    "strategy-specific inference has its own graph skill",
+  );
+  if (AxeBuilder) {
+    const strategyAxe = await new AxeBuilder({ page }).include(".rr-shell").analyze();
+    assert.deepEqual(
+      strategyAxe.violations.map((violation) => `${violation.id}: ${violation.help}`),
+      [],
+      "Strategy Academy axe violations",
+    );
+  }
+  await page.setViewportSize({ width: 390, height: 844 });
+  assert.equal(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth > document.documentElement.clientWidth,
+    ),
+    false,
+    "390px Strategy Academy horizontal overflow",
+  );
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto(
+    `http://localhost:${server.address().port}/access-practice-lab/reading-room/teacher`,
+  );
+  await page
+    .getByRole("table", { name: "Reading Strategy Academy evidence · local counts" })
+    .getByText("Read the sky before the hike")
+    .waitFor();
+  console.log(
+    "PASS Reading Strategy Academy filtering, feedback/retry, independent transfer, local resume, LGE mapping, teacher evidence, axe, and 390px reflow",
+  );
   console.log(
     "PASS serialized adventure response, checkpoint feedback, chapter resume, and shared language-evidence ledger",
   );

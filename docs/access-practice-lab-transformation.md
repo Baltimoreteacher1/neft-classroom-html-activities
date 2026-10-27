@@ -58,6 +58,10 @@ The Reading Room now includes four original six-chapter adventures (two each for
 
 Implementation locations: `access-practice-lab/src/views/reading-room.js`, `src/reading-state.js`, original adventure JSON and coverage report, `scripts/homework-guided-notes.mjs`, generated homework pages and hashed shared asset. The serialized story validator, Reading Room browser journey and homework browser accessibility journey are in `tools/`.
 
+## Current local increment: Reading Strategy Academy
+
+Added 26 original strategy lessons across four strands and both supported grade clusters, with think-aloud models, guided response/explanation/retry, independent new-passage transfer, local resume, strategy evidence in the shared skill graph, and local teacher evidence. The addition extends the existing Reading Room state key and language ledger; no accounts or remote data services are introduced. `npm run validate:access-lab` and the focused Reading Room browser journey pass. Independent content review, full project build/ship, and live verification are still pending. Overall transformation and the remaining reading/mathematics feature requirements remain incomplete.
+
 ## Verification and release evidence
 
 - `npm run check` — PASS, with 27 existing lint warnings and no check errors.

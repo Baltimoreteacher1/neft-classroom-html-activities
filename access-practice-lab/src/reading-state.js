@@ -15,6 +15,7 @@ const fresh = () => ({
   lessons: {},
   conferences: {},
   adventures: {},
+  strategies: {},
 });
 
 export function loadReadingState() {
@@ -31,6 +32,7 @@ export function loadReadingState() {
     lessons: saved.lessons && typeof saved.lessons === "object" ? saved.lessons : {},
     conferences: saved.conferences && typeof saved.conferences === "object" ? saved.conferences : {},
     adventures: saved.adventures && typeof saved.adventures === "object" ? saved.adventures : {},
+    strategies: saved.strategies && typeof saved.strategies === "object" ? saved.strategies : {},
   };
 }
 

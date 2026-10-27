@@ -34,6 +34,7 @@ export const loadBlueprint = () => getJson("blueprints.json");
 export const loadAlignment = () => getJson("alignment-index.json");
 export const loadReadingRoomLessons = () => getJson("reading-room/lessons.json");
 export const loadReadingAdventures = () => getJson("reading-room/adventures.json");
+export const loadReadingStrategies = () => getJson("reading-room/strategy-lessons.json");
 export const loadWorlds = () => getJson("worlds.json");
 export const loadPatterns = () => getJson("detective/patterns.json");
 export const loadMission = (id) => getJson(`missions/${encodeURIComponent(id)}.json`);

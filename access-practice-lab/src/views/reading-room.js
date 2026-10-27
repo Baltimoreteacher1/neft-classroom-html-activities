@@ -1,7 +1,7 @@
 // Reading Room: a digital reading environment. The shelf lists authored lessons; a lesson pairs a calm reading
 // column (passage, optional word support, paragraph marks, saved place) with a separate response area.
 // Everything is saved on this device only; nothing here is a score or a proficiency level.
-import { findActivity, loadReadingAdventures, loadReadingRoomLessons } from "../content.js";
+import { findActivity, loadReadingAdventures, loadReadingRoomLessons, loadReadingStrategies } from "../content.js";
 import { ART, BASE, esc, icon, raw, toHtml } from "../util.js";
 import { canSpeak, speak, stop as stopSpeech } from "../speech.js";
 import { appendEntry, loadLedger, saveLedger } from "../lang/ledger.js";
@@ -153,6 +153,7 @@ function shelfHTML(ctx, lessons, state) {
   const lastProgress = last ? state.lessons[stateKey(last)] || {} : {};
   return `<section class="rr-shell d-reading"><header class="rr-hero"><div><p class="rr-eyebrow">${ic("reading")} ACCESS Practice Lab · Reading</p><h1>Reading Room</h1><p class="rr-lead">Read closely, collect evidence, and build the language to explain what a text means.</p><div class="rr-chips"><span>Original classroom practice</span><span>Saved on this device</span><span>WIDA-informed instruction · not an official assessment</span><span>Editorial review pending · teacher preview</span></div></div><div class="rr-hero-art" aria-hidden="true"><img src="${ART}/domain-reading.svg" alt="" width="480" height="360"></div></header>
     <section class="rr-adventure-entry"><div><p class="rr-eyebrow">Serialized Reading Adventures</p><h2>Follow a story. Gather clues. Explain what changed.</h2><p>Original six-chapter mysteries and investigations with saved chapter notes, evidence responses, and comprehension checks.</p></div><a class="btn btn-primary" href="${BASE}/reading-room/adventures">Explore the adventures</a></section>
+    <section class="rr-adventure-entry"><div><p class="rr-eyebrow">Reading Strategy Academy</p><h2>Learn a strategy, practice it, then transfer it.</h2><p>Short think-alouds and guided lessons help readers predict, investigate, clarify, summarize, and synthesize across new texts.</p></div><a class="btn btn-primary" href="${BASE}/reading-room/strategies">Explore strategy lessons</a></section>
     ${last ? `<section class="rr-continue"><span class="rr-continue-icon" aria-hidden="true">${ic("bookmark")}</span><div><p class="rr-eyebrow">Pick up where you left off</p><h2>${esc(last.title)}</h2><p>${lastProgress.phase ? "Your lesson progress is saved on this device." : "Your reading place is ready."}</p></div><a class="btn btn-primary btn-domain" href="${lessonUrl(last.id)}">Continue reading</a></section>` : ""}
     ${recentRows.length ? `<section class="rr-recent"><h2>Recently read</h2><ul>${recentRows.map((l) => `<li><a href="${lessonUrl(l.id)}">${esc(l.title)}</a></li>`).join("")}</ul></section>` : ""}
     <section class="rr-library" aria-labelledby="rr-library-title"><div class="rr-library-head"><div><p class="rr-eyebrow">The reading shelf</p><h2 id="rr-library-title">Choose a text</h2></div></div>
@@ -164,6 +165,61 @@ function shelfHTML(ctx, lessons, state) {
 }
 
 const adventureUrl = (id) => `${BASE}/reading-room/adventure-${encodeURIComponent(id)}`;
+
+const strategyUrl = (id) => `${BASE}/reading-room/strategy-${encodeURIComponent(id)}`;
+const STRATEGY_STRANDS = {
+  "predict-connect": "Predict and connect",
+  "question-investigate": "Question and investigate",
+  "clarify-explore": "Clarify and explore words",
+  "summarize-synthesize": "Summarize and synthesize",
+};
+const STRATEGY_SKILL_LABELS = {
+  prediction: "Make and revise predictions",
+  "question-generation": "Generate useful questions",
+  "literal-retrieval": "Locate explicit information",
+  "inference-strategy": "Make evidence-based inferences",
+  "evidence-selection-strategy": "Select strong evidence",
+  "vocabulary-clarification-strategy": "Clarify unfamiliar words",
+  morphology: "Use meaningful word parts",
+  "rereading-purpose": "Reread with a purpose",
+  "central-idea-strategy": "Identify a central idea",
+  summarization: "Summarize essential information",
+  synthesis: "Synthesize ideas across texts",
+  sequence: "Summarize in sequence",
+  "cause-effect": "Summarize cause and effect",
+};
+
+function strategiesHTML(data, state) {
+  const strand = new URLSearchParams(location.search).get("strand") || "";
+  const cluster = new URLSearchParams(location.search).get("cluster") || "";
+  const lessons = data.lessons.filter((lesson) => (!strand || lesson.strand === strand) && (!cluster || lesson.gradeCluster === cluster));
+  const cards = lessons.map((lesson) => {
+    const saved = state.strategies[lesson.id] || {};
+    const status = saved.independent?.checked ? "Independent transfer completed" : saved.guided?.checked ? "Guided practice saved" : "New lesson";
+    return `<article class="rr-strategy-card"><p class="rr-eyebrow">Grades ${esc(lesson.gradeCluster.replace("-", "–"))} · ${esc(STRATEGY_STRANDS[lesson.strand])}</p><h2><a href="${strategyUrl(lesson.id)}">${esc(lesson.title)}</a></h2><p><b>Strategy:</b> ${esc(STRATEGY_SKILL_LABELS[lesson.skill] || lesson.skill.replaceAll("-", " "))}</p><p class="rr-adventure-progress">${esc(status)}</p><a class="rr-link" href="${strategyUrl(lesson.id)}">${saved.independent?.checked ? "Practice again" : saved.guided?.checked ? "Continue lesson" : "Start lesson"} →</a></article>`;
+  }).join("");
+  return shell(`${backLink(`${BASE}/reading-room`, "Return to the Reading Room")}${pageHeader("Model · guided practice · independent transfer", "Reading Strategy Academy", "<p>Each lesson makes a reading move visible, gives you a chance to explain your thinking, and ends with a new passage to try independently. Results are practice evidence, not a reading level.</p>")}<div class="rr-strategy-filters"><label>Strategy strand<select data-strategy-strand><option value="">All strands</option>${Object.entries(STRATEGY_STRANDS).map(([id, title]) => `<option value="${id}" ${strand === id ? "selected" : ""}>${esc(title)}</option>`).join("")}</select></label><label>Grade cluster<select data-strategy-cluster><option value="">All clusters</option><option value="3-5" ${cluster === "3-5" ? "selected" : ""}>Grades 3–5</option><option value="6-8" ${cluster === "6-8" ? "selected" : ""}>Grades 6–8</option></select></label></div><p class="rr-count" aria-live="polite">${lessons.length} original strategy lessons</p><div class="rr-strategy-grid">${cards || `<p>No lessons match these filters.</p>`}</div>`);
+}
+
+function strategyLessonHTML(lesson, state) {
+  const saved = state.strategies[lesson.id] || {};
+  const renderQuestion = (stage, task) => {
+    const response = saved[stage] || {};
+    const checked = response.checked === true;
+    const selected = task.options.map((option, i) => `<label><input type="radio" name="strategy-${stage}" value="${i}" data-strategy-choice="${stage}" ${response.selected === i ? "checked" : ""}> ${esc(option)}</label>`).join("");
+    const feedback = checked ? `<p role="status" class="rr-adventure-feedback ${response.correct ? "is-correct" : "is-revisit"}">${response.correct ? "That response is supported. " : "Revisit the clue, then try again. "}${esc(response.correct ? task.explanation : task.feedback?.[response.selected] || task.explanation)}</p>` : "";
+    const retry = checked && !response.correct ? `<button class="btn small" type="button" data-strategy-retry="${stage}">Try this question again</button>` : "";
+    return `<fieldset class="rr-adventure-choice"><legend>${esc(task.question)}</legend>${selected}<label class="rr-strategy-explain">Explain your thinking<textarea rows="3" data-strategy-explanation="${stage}" placeholder="Name a clue and explain how it supports your idea.">${esc(response.explanation || "")}</textarea></label><button class="btn small" type="button" data-strategy-check="${stage}" ${response.selected == null || !response.explanation?.trim() || (checked && response.correct) ? "disabled" : ""}>${checked && response.correct ? "Checked" : "Check my thinking"}</button>${retry}${feedback}</fieldset>`;
+  };
+  const completed = saved.independent?.checked && saved.independent?.correct;
+  const independentReady = saved.guided?.checked && saved.guided?.correct;
+  const model = independentReady ? "" : `<section class="rr-strategy-stage"><h2>1. Watch: a reader thinks aloud</h2><blockquote><p>${esc(lesson.model.text)}</p><p><b>Think-aloud:</b> ${esc(lesson.model.think)}</p></blockquote></section>`;
+  const guided = independentReady ? "" : `<section class="rr-strategy-stage"><h2>2. Practice together</h2><p>${esc(lesson.guided.text)}</p>${renderQuestion("guided", lesson.guided)}</section>`;
+  const transfer = independentReady
+    ? `<section class="rr-strategy-stage"><h2>3. Try independently: new passage</h2><p>${esc(lesson.independent.text)}</p>${renderQuestion("independent", lesson.independent)}<p class="rr-help">This fresh passage is checked separately from guided practice. No hints are provided in this step.</p></section>`
+    : `<section class="rr-strategy-stage rr-strategy-locked"><h2>3. Independent transfer</h2><p>First complete guided practice. Then you will apply the strategy to a new passage.</p></section>`;
+  return shell(`${backLink(`${BASE}/reading-room/strategies`, "All strategy lessons")}<header class="rr-adventure-heading"><p class="rr-eyebrow">Grades ${esc(lesson.gradeCluster.replace("-", "–"))} · ${esc(STRATEGY_STRANDS[lesson.strand])}</p><h1>${esc(lesson.title)}</h1><p>Strategy focus: <b>${esc(STRATEGY_SKILL_LABELS[lesson.skill] || lesson.skill.replaceAll("-", " "))}</b></p><p>Work is saved on this device. Your answer text stays here; the learning record stores only whether the keyed response was correct.</p></header><ol class="rr-strategy-steps" aria-label="Lesson sequence"><li>Watch a reader think</li><li>Practice together</li><li>Try independently</li></ol>${model}${guided}${transfer}${completed ? `<section role="status" class="rr-adventure-feedback is-correct"><h2>Independent transfer complete</h2><p>You used the strategy on a new passage. Revisit the lesson any time to practice again.</p><a href="${BASE}/reading-room/strategies">Choose another strategy →</a></section>` : ""}<p class="rr-status" role="status">Progress saves automatically in this browser.</p>`);
+}
 
 function adventuresHTML(stories, state) {
   return shell(`${backLink(`${BASE}/reading-room`, "Return to the Reading Room")}${pageHeader("Original serialized stories · saved on this device", "Reading Adventures", "<p>Read one chapter at a time. Make predictions, check an idea against the text, and keep a short chapter recap. Work stays in this browser and is not an official assessment.</p>")}<div class="rr-adventure-grid">${stories.map((story) => {
@@ -314,7 +370,7 @@ function workshopHTML(lessons) {
   );
 }
 
-function teacherHTML(lessons, state, stories = []) {
+function teacherHTML(lessons, state, stories = [], strategies = []) {
   const rows = lessons.map((l) => {
     const p = state.lessons[stateKey(l)] || {};
     const checked = Object.values(p.answers || {}).filter((a) => a.checked);
@@ -354,8 +410,14 @@ function teacherHTML(lessons, state, stories = []) {
     const checks = Object.values(progress.responses || {}).filter((answer) => answer.checked);
     return `<tr><th scope="row"><a href="${adventureUrl(story.id)}">${esc(story.title)}</a></th><td>${checks.length} of ${story.chapters.length}</td><td>${checks.filter((answer) => answer.correct).length}</td><td>${checks.filter((answer) => !answer.correct).length}</td><td>${progress.completed ? "Completed" : progress.started ? "In progress" : "Not started"}</td></tr>`;
   }).join("");
+  const strategySummary = strategies.map((lesson) => {
+    const progress = state.strategies?.[lesson.id] || {};
+    if (!progress.guided?.checked && !progress.independent?.checked) return "";
+    const result = (row) => !row?.checked ? "Not checked" : row.correct ? "Correct" : "Revisit needed";
+    return `<tr><th scope="row">${esc(lesson.title)} · ${esc(lesson.gradeCluster)}</th><td>${esc(STRATEGY_STRANDS[lesson.strand])}</td><td>${result(progress.guided)}</td><td>${result(progress.independent)}</td></tr>`;
+  }).join("");
   return shell(
-    `${pageHeader("Teacher view · this device only", "Reading evidence", "<p>These counts come only from the reading data saved in this browser. They do not sync across devices and are not WIDA scores or proficiency estimates.</p>")}<p class="rr-count">${rows.filter((x) => x.p.completed).length} of ${lessons.length} authored lessons marked complete on this device.</p><p><a class="rr-link" href="${BASE}/reading-room/workshop?cluster=6-8">Open Weekly Reading Workshop →</a></p><section class="rr-group-needs"><h2>Small-group next steps</h2>${needs}</section><div class="rr-teacher-table"><table><caption>Saved reading evidence by lesson</caption><thead><tr><th scope="col">Lesson</th><th scope="col">Checked items</th><th scope="col">Independent checks</th><th scope="col">Items to revisit</th><th scope="col">Next step</th></tr></thead><tbody>${rows.map((r) => `<tr><th scope="row"><a href="${lessonUrl(r.l.id)}">${esc(r.l.title)}</a></th><td>${r.checked.length}</td><td>${r.independent}</td><td>${r.misses}</td><td>${next(r, r.checked.find((x) => x.correct === false)?.skill || "the checked skill")}</td></tr>`).join("")}</tbody></table></div><section class="rr-teacher-table"><table><caption>Reading Adventure checkpoint evidence · local counts, not mastery</caption><thead><tr><th scope="col">Adventure</th><th scope="col">Checked checkpoints</th><th scope="col">Correct keyed responses</th><th scope="col">Responses to revisit</th><th scope="col">Progress</th></tr></thead><tbody>${adventureSummary}</tbody></table><p class="rr-fine">Open explanations and recaps remain private student work in this browser; this view shows only checkpoint counts. Independent editorial review is pending.</p></section><div class="rr-actions-row"><button type="button" class="rr-reset" data-rr-print>${ic("print")} Print this report</button><button type="button" class="rr-reset" data-rr-export>${ic("download")} Download report CSV</button></div><p class="rr-fine">Interpretation rule: a correct supported response is not counted as an independent check. Counts are local descriptive evidence only; they do not establish mastery.</p>${backLink(`${BASE}/reading-room`, "Return to the Reading Room")}`,
+    `${pageHeader("Teacher view · this device only", "Reading evidence", "<p>These counts come only from the reading data saved in this browser. They do not sync across devices and are not WIDA scores or proficiency estimates.</p>")}<p class="rr-count">${rows.filter((x) => x.p.completed).length} of ${lessons.length} authored lessons marked complete on this device.</p><p><a class="rr-link" href="${BASE}/reading-room/workshop?cluster=6-8">Open Weekly Reading Workshop →</a></p><section class="rr-group-needs"><h2>Small-group next steps</h2>${needs}</section><div class="rr-teacher-table"><table><caption>Saved reading evidence by lesson</caption><thead><tr><th scope="col">Lesson</th><th scope="col">Checked items</th><th scope="col">Independent checks</th><th scope="col">Items to revisit</th><th scope="col">Next step</th></tr></thead><tbody>${rows.map((r) => `<tr><th scope="row"><a href="${lessonUrl(r.l.id)}">${esc(r.l.title)}</a></th><td>${r.checked.length}</td><td>${r.independent}</td><td>${r.misses}</td><td>${next(r, r.checked.find((x) => x.correct === false)?.skill || "the checked skill")}</td></tr>`).join("")}</tbody></table></div><section class="rr-teacher-table"><table><caption>Reading Adventure checkpoint evidence · local counts, not mastery</caption><thead><tr><th scope="col">Adventure</th><th scope="col">Checked checkpoints</th><th scope="col">Correct keyed responses</th><th scope="col">Responses to revisit</th><th scope="col">Progress</th></tr></thead><tbody>${adventureSummary}</tbody></table><p class="rr-fine">Open explanations and recaps remain private student work in this browser; this view shows only checkpoint counts. Independent editorial review is pending.</p></section><section class="rr-teacher-table"><table><caption>Reading Strategy Academy evidence · local counts</caption><thead><tr><th scope="col">Lesson</th><th scope="col">Strategy</th><th scope="col">Guided response</th><th scope="col">Independent transfer</th></tr></thead><tbody>${strategySummary || `<tr><td colspan="4">No strategy evidence is saved on this device.</td></tr>`}</tbody></table><p class="rr-fine">This view stores no student explanation text and does not establish mastery.</p></section><div class="rr-actions-row"><button type="button" class="rr-reset" data-rr-print>${ic("print")} Print this report</button><button type="button" class="rr-reset" data-rr-export>${ic("download")} Download report CSV</button></div><p class="rr-fine">Interpretation rule: a correct supported response is not counted as an independent check. Counts are local descriptive evidence only; they do not establish mastery.</p>${backLink(`${BASE}/reading-room`, "Return to the Reading Room")}`,
   );
 }
 
@@ -548,6 +610,15 @@ export async function render(ctx) {
     const { stories = [] } = await loadReadingAdventures();
     return { title: "Reading Adventures", html: raw(adventuresHTML(stories, state)) };
   }
+  if (id === "strategies") {
+    const data = await loadReadingStrategies();
+    return { title: "Reading Strategy Academy", html: raw(strategiesHTML(data, state)) };
+  }
+  if (id.startsWith("strategy-")) {
+    const data = await loadReadingStrategies();
+    const lesson = data.lessons.find((item) => item.id === id.slice("strategy-".length));
+    if (lesson) return { title: lesson.title, html: raw(strategyLessonHTML(lesson, state)) };
+  }
   if (id.startsWith("adventure-")) {
     const { stories = [] } = await loadReadingAdventures();
     const story = stories.find((item) => item.id === id.slice("adventure-".length));
@@ -570,7 +641,7 @@ export async function render(ctx) {
   if (id === "teacher")
     return {
       title: "Reading Progress · Local",
-      html: raw(teacherHTML(lessons, state, (await loadReadingAdventures()).stories || [])),
+      html: raw(teacherHTML(lessons, state, (await loadReadingAdventures()).stories || [], (await loadReadingStrategies()).lessons || [])),
     };
   if (id === "conference")
     return {
@@ -589,6 +660,17 @@ export async function render(ctx) {
 }
 export function onInput(e, ctx) {
   const el=e.target;
+  if (el.matches("[data-strategy-explanation]")) {
+    const current = loadReadingState();
+    const lessonId = ctx.route.id.slice("strategy-".length);
+    const saved = current.strategies[lessonId] || {};
+    const stage = el.dataset.strategyExplanation;
+    saved[stage] = { ...(saved[stage] || {}), explanation: el.value, updatedAt: new Date().toISOString() };
+    current.strategies[lessonId] = saved; saveReadingState(current);
+    const choice = document.querySelector(`[data-strategy-choice="${stage}"]:checked`);
+    const check = document.querySelector(`[data-strategy-check="${stage}"]`);
+    if (check) check.disabled = !choice || !el.value.trim();
+  }
   if (el.matches("[data-rr-search]")) { query=el.value; ctx.rerender(); }
   if (el.matches("[data-adv-response]")) {
     const s = loadReadingState();
@@ -607,6 +689,20 @@ export function onInput(e, ctx) {
 }
 export function onChange(e,ctx) {
   const el=e.target; if(el.matches("[data-rr-grade]")){grade=el.value;ctx.rerender();}
+  if (el.matches("[data-strategy-strand],[data-strategy-cluster]")) {
+    const params = new URLSearchParams(location.search);
+    params.set(el.matches("[data-strategy-strand]") ? "strand" : "cluster", el.value);
+    ctx.navigate(`${BASE}/reading-room/strategies?${params.toString()}`);
+  }
+  if (el.matches("[data-strategy-choice]")) {
+    const stage = el.dataset.strategyChoice;
+    const current = loadReadingState();
+    const lessonId = ctx.route.id.slice("strategy-".length);
+    const lesson = current.strategies[lessonId] || {};
+    lesson[stage] = { ...(lesson[stage] || {}), selected: Number(el.value), checked: false, updatedAt: new Date().toISOString() };
+    current.strategies[lessonId] = lesson; saveReadingState(current);
+    ctx.rerender();
+  }
   if (el.matches("input[name=adv-answer]")) {
     const s = loadReadingState();
     const storyId = ctx.route.id.slice("adventure-".length);
@@ -635,6 +731,30 @@ function saveConference(el){const s=loadReadingState(),id=el.dataset.lesson;s.co
 function saveField(el){const s=loadReadingState(),id=el.dataset.rrLesson||el.dataset.rrReflection,key=Object.keys(s.lessons).find(k=>k.startsWith(`${id}@`))||`${id}@1.0.0`,p=s.lessons[key]||{};if(el.dataset.rrNote){p.notes={...(p.notes||{}),[el.dataset.rrNote]:el.value};}else p.reflection=el.value;s.lessons[key]=p;saveReadingState(s);}
 function saveAnswer(id,patch){const s=loadReadingState(),key=Object.keys(s.lessons).find(k=>k.startsWith(`${location.pathname.split("/").pop()}@`)),p=s.lessons[key]||{},a=p.answers||{};a[id]={...(a[id]||{}),...patch};p.answers=a;s.lessons[key]=p;saveReadingState(s);}
 export function onClick(e,ctx){const b=e.target.closest("button");if(!b)return false;const s=loadReadingState(),id=ctx.route.id,key=Object.keys(s.lessons).find(k=>k.startsWith(`${id}@`)),p=s.lessons[key]||{answers:{}};
+  if (b.dataset.strategyRetry) {
+    const lessonId = id.slice("strategy-".length), saved = s.strategies[lessonId] || {};
+    saved[b.dataset.strategyRetry] = { ...(saved[b.dataset.strategyRetry] || {}), checked: false };
+    s.strategies[lessonId] = saved; saveReadingState(s); ctx.rerender(); return true;
+  }
+  if (b.dataset.strategyCheck) {
+    const stage = b.dataset.strategyCheck, lessonId = id.slice("strategy-".length);
+    loadReadingStrategies().then(({ lessons = [] }) => {
+      const lesson = lessons.find((row) => row.id === lessonId);
+      if (!lesson) return;
+      const current = loadReadingState(), saved = current.strategies[lessonId] || {}, response = saved[stage] || {};
+      if (response.selected == null || !response.explanation?.trim() || (response.checked && response.correct)) return;
+      const correct = response.selected === lesson[stage].answer;
+      saved[stage] = { ...response, checked: true, correct, checkedAt: new Date().toISOString() };
+      current.strategies[lessonId] = saved; saveReadingState(current); ctx.rerender();
+      const evidenceId = `reading-strategy:${lessonId}:${stage}`;
+      const ledger = loadLedger();
+      if (!ledger.entries.some((entry) => entry.id === evidenceId)) {
+        appendEntry(ledger, { id: evidenceId, src: "item", task: evidenceId, band: lesson.gradeCluster, domain: "Reading", stage: stage === "independent" ? "independent" : "guided", kind: "first", supports: stage === "guided" ? { model: true } : {}, m: { questions: [{ skill: lesson.skill, ok: correct, questionId: `${lessonId}-${stage}`, responseId: evidenceId }] } });
+        saveLedger(ledger);
+      }
+    });
+    return true;
+  }
   if (b.dataset.advNav != null) {
     const storyId = id.slice("adventure-".length), current = s.adventures[storyId] || { responses: {} };
     current.started = true; current.chapter = Math.max(0, Math.min(5, Number(b.dataset.advNav)));
