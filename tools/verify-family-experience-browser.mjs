@@ -230,6 +230,7 @@ async function sweepPhone(browser, lesson) {
     const sections = window
       .activeCoreProblems()
       .filter((s) => s.dataset.problemType === "multiple-choice");
+    if (!sections.length) return { noMultipleChoice: true };
     const idx = (s) => parseInt(s.id.replace("problem_", ""), 10);
     const wrong = sections[0].querySelector(
       "input[type='radio']:not([value='" +
@@ -278,6 +279,13 @@ async function sweepPhone(browser, lesson) {
       available: sections.length,
     };
   });
+  if (run.noMultipleChoice) {
+    fail(
+      where,
+      "Check stop has no multiple-choice problem, so the wrong-answer behavior cannot be tested",
+    );
+    return;
+  }
   if (run.afterWrong.banner) fail(where, "a wrong answer showed the goal banner");
   // The goal is four on Keep Going and two on Quick Practice (the default), so read it from the route in effect.
   const expectedText = `0 / ${run.afterWrong.goal}`;
