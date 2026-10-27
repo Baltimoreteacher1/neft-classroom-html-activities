@@ -111,6 +111,7 @@ const els = {
   progressBar: document.querySelector("#session-progress"),
   problemNumber: document.querySelector("#problem-number"),
   question: document.querySelector("#question"),
+  answerResultStatus: document.querySelector("#answer-result-status"),
   answerForm: document.querySelector("#answer-form"),
   answerInput: document.querySelector("#answer-input"),
   choiceAnswers: document.querySelector("#choice-answers"),
@@ -734,6 +735,11 @@ function nextProblem(restoredItem = null) {
   state.itemAttempts = 0;
   state.itemDone = false;
   state.firstAnswerCorrect = null;
+  if (els.answerResultStatus) {
+    els.answerResultStatus.hidden = true;
+    els.answerResultStatus.textContent = "";
+    delete els.answerResultStatus.dataset.type;
+  }
   state.problemStartedAt = performance.now();
   state.firstResponseMs = null;
   state.hintBeforeFirst = Boolean(queueEntry?.original);
@@ -6693,7 +6699,7 @@ function submitAnswer(value) {
       showFeedback("Answer revised", t("Your revised answer is a useful step. It does not count as an independent check. Try the new problem next."), "try");
       return;
     } else {
-      showFeedback("Keep trying!", "Almost! Review the steps above carefully and try one more time.", "try");
+      showFeedback("Keep trying!", "Almost! Review the steps above carefully and try one more time.", "try", "incorrect");
       els.answerInput.select();
       return;
     }
@@ -6733,7 +6739,7 @@ function submitAnswer(value) {
   }
   if (state.initialSupport && state.itemAttempts < 3) {
     const nextStep = revealGuidedStep() || guidedStepContent().at(-1);
-    showFeedback("Let's use the next step", `${feedbackFor(state.item.skill, state.item, value)} ${nextStep.copy}`, "try");
+    showFeedback("Let's use the next step", `${feedbackFor(state.item.skill, state.item, value)} ${nextStep.copy}`, "try", "incorrect");
     addInstructionalChoices();
     saveActiveSession();
     if (!state.item.choices) els.answerInput.select();
@@ -6744,9 +6750,9 @@ function submitAnswer(value) {
     const diagnostic = state.tutor.mistakes.find((entry) => entry.key === tutorSkillKey(state.item.skill) && entry.question === state.item.question && !entry.resolvedAt);
     if (diagnostic?.misconceptionCode) {
       const label = mistakeCategoryLabel(diagnostic.misconceptionCode);
-      if (label) showFeedback("Let’s check the idea", `${label}. ${nudge}`, "try");
-      else showFeedback("Try once more", nudge, "try");
-    } else showFeedback("Try once more", nudge, "try");
+      if (label) showFeedback("Let’s check the idea", `${label}. ${nudge}`, "try", "incorrect");
+      else showFeedback("Try once more", nudge, "try", "incorrect");
+    } else showFeedback("Try once more", nudge, "try", "incorrect");
     addInstructionalChoices();
     els.repair.hidden = false;
     saveActiveSession();
@@ -7009,10 +7015,27 @@ function renderTransferChallengeButton(item) {
   `;
 }
 
-function showFeedback(title, copy, type) {
+function showFeedback(title, copy, type, resultType = type) {
   els.feedback.hidden = false;
   els.feedback.dataset.type = type;
-  els.feedbackTitle.textContent = title;
+  const heading = resultType === "incorrect" && !/^incorrect\b/i.test(title)
+    ? `Incorrect — ${title}`
+    : resultType === "correct" && !/^correct\b/i.test(title)
+      ? `Correct — ${title}`
+      : title;
+  els.feedbackTitle.textContent = heading;
+  if (els.answerResultStatus) {
+    const assisted = resultType === "correct" && title === t("Good strategy work");
+    const result = resultType === "correct"
+      ? assisted ? `✓ ${t("Correct · with help")}` : `✓ ${t("Correct")}`
+      : resultType === "incorrect" ? `✕ ${t("Incorrect")}`
+      : title === "Enter an answer" ? t("Add an answer")
+      : title === t("Answer revised") ? t("Revised")
+      : t("Try again");
+    els.answerResultStatus.hidden = false;
+    els.answerResultStatus.dataset.type = resultType;
+    els.answerResultStatus.textContent = result;
+  }
   if (type !== "correct" && state.item) {
     els.feedbackCopy.innerHTML = renderStudentFriendlyExplanation(state.item, copy);
     lightStepPlayers(els.feedbackCopy);
