@@ -76,10 +76,17 @@ export const covers = (entry, path) =>
  * Reads in `trace` that `entry` does not account for. Empty means the manifest is
  * still sound for this test; anything else means scoping could under-select it.
  */
+/** The preload's reason when the running Node cannot trace module loads. */
+export const UNTRACEABLE_NODE = /module loads cannot be traced on this Node/;
+
 export function verifyReads(entry, trace, helpers) {
   if (entry.wide) return [];
   const actual = entryFromTrace(trace, helpers);
-  if (actual.wide) return [`now ${actual.wide}`];
+  // The preload declares module loads untraceable on a Node whose registerHooks breaks
+  // require(esm) (tools/lib/test-trace-preload.mjs). That says nothing about the test:
+  // there is nothing to compare, so it is not drift. Any OTHER reason a trace went wide
+  // (a shell command, a worker, an untracked file) still is.
+  if (actual.wide) return UNTRACEABLE_NODE.test(actual.wide) ? [] : [`now ${actual.wide}`];
   const missing = [];
   for (const p of trace.files) if (!covers(entry, p)) missing.push(p);
   for (const d of trace.dirs) if (!covers(entry, toDir(d))) missing.push(`${toDir(d)} (listed)`);

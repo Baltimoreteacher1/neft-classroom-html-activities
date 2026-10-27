@@ -1,0 +1,151 @@
+/* ============================================================================
+   Publisher v2 — the last layer of the core-lesson look.
+   ----------------------------------------------------------------------------
+   Loaded after every other engine stylesheet (see engine/core/app.js), so equal
+   specificity here wins by order. Scope is `body.editorial.skin-warm-deck`: the
+   core lessons and Apply Day pages. Small-group, catch-up, project and family
+   pages do not carry that class, so nothing here reaches them.
+
+   Everything is expressed in --ds-* tokens (engine/design/tokens.json, compiled
+   to ds-tokens.generated.css). Do not introduce a raw colour, size or radius in
+   this file; add it to the tokens first. docs/style-guide.md is the contract.
+
+   Each block names the measured defect it fixes (reports/style-audit.md).
+   ========================================================================== */
+
+/* ── 1. Retokenize the warm-deck skin onto the locked palette ───────────────
+   The skin is variable-driven, so re-pointing its variables moves every rule
+   that reads them. The canvas becomes the warm off-white; ink becomes the
+   palette text colour; the skin's teal pair becomes teal-ink (white on it is
+   4.97:1, where the old teal needed a per-rule contrast patch). */
+body.editorial.skin-warm-deck {
+  --fl-paper: var(--ds-surface);
+  --fl-paper-2: var(--ds-tint-navy-8);
+  --fl-page: var(--ds-surface-raised);
+  --fl-rule: var(--ds-tint-navy-16);
+  --fl-rule-strong: var(--ds-tint-navy-32);
+  --ink: var(--ds-text);
+  --muted: var(--ds-text-muted);
+  --wd-teal: var(--ds-accent-ink);
+  --wd-teal-deep: var(--ds-accent-ink);
+  --wd-orange: var(--ds-highlight-ink);
+  --wd-coral: var(--ds-highlight-ink);
+  --wd-blush: var(--ds-tint-teal-16);
+  --radius-sm: var(--ds-radius-sm);
+  --radius-md: var(--ds-radius-md);
+  --radius-lg: var(--ds-radius-lg);
+  --shadow-sm: var(--ds-elevation-raised);
+  --shadow-md: var(--ds-elevation-raised);
+  --shadow-lg: var(--ds-elevation-floating);
+  line-height: var(--ds-leading-body);
+}
+
+/* ── 2. Sidebar utility buttons (Read aloud, Draw) ──────────────────────────
+   Were `style="…font-size:11px; background:#ef4444…"` strings. Now a component
+   with a real pressed state: on = amber fill with navy text (7.85:1), never a
+   colour-only change. */
+.ds-util-bar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--ds-space-2);
+  padding: var(--ds-space-2) var(--ds-space-3);
+  margin-bottom: var(--ds-space-3);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.16);
+}
+.ds-util-btn {
+  flex: 1 1 96px;
+  min-height: 36px;
+  padding: 6px 10px;
+  font: inherit;
+  font-size: var(--ds-text-label);
+  font-weight: var(--ds-weight-semibold);
+  line-height: 1.2;
+  color: var(--ds-text-inverse);
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.32);
+  border-radius: var(--ds-radius-sm);
+  cursor: pointer;
+}
+.ds-util-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+.ds-util-btn[aria-pressed="true"] {
+  color: var(--ds-primary);
+  background: var(--ds-highlight);
+  border-color: var(--ds-highlight);
+}
+
+/* ── 3. One focus ring, everywhere ──────────────────────────────────────────
+   Navy on light surfaces, amber on the navy sidebar and dark chips. */
+body.editorial.skin-warm-deck :is(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: 3px solid var(--ds-focus);
+  outline-offset: 2px;
+}
+body.editorial.skin-warm-deck :is(.sidebar, .nt-next-phase-btn, .act-step-chip.active) :focus-visible {
+  outline-color: var(--ds-focus-on-dark);
+}
+
+/* ── 4. Floating controls must not sit on top of each other ─────────────────
+   Measured: on 78 of 84 lessons "Hide buttons" (#nt-focus-fab, bottom-left 14px)
+   covered "Learning supports" (.ls-launcher, bottom-left 12px) by 138×44px.
+   Stack them: the launcher keeps the corner, the focus pill sits above it. The
+   ids/qualifiers are there to beat the rule that focus-mode.js injects later. */
+body.editorial #nt-focus-fab.nt-focus-fab {
+  left: 12px;
+  bottom: 72px;
+  font-family: var(--ds-font-body);
+  font-size: var(--ds-text-caption);
+}
+/* The navy sidebar scrolls; its last entries must be able to clear the two fixed
+   pills in the bottom-left corner instead of hiding underneath them. */
+body.editorial.skin-warm-deck .sidebar {
+  padding-bottom: 136px;
+}
+
+/* ── 5. Targets of at least 44px ────────────────────────────────────────── */
+body.editorial.skin-warm-deck .reading-guide .act-step-chip {
+  min-height: var(--ds-target);
+}
+
+/* ── 6. A floor under text size ─────────────────────────────────────────────
+   Measured: 2,126 text elements at 10.2–11.2px across the fleet (labels,
+   counters, stars, badges). 13px is the smallest size in the type scale. */
+body.editorial.skin-warm-deck :is(
+    .sidebar-progress-label,
+    .sidebar-progress-label span,
+    .phase-stars .star,
+    .lesson-hero-badge,
+    .lesson-hero-badge span,
+    .prelesson-label,
+    .nsr-workbench-label,
+    .nt-utility-caret,
+    .sidebar-subtitle,
+    .student-period-display,
+    .xp-label
+  ) {
+  font-size: var(--ds-text-label);
+}
+
+/* ── 7. Icons ───────────────────────────────────────────────────────────────
+   One line-icon family (engine/core/icons.js). They draw in currentColor, so
+   they take the contrast of the text beside them. Not scoped to the skin: the
+   entry card, the floating pills and the tool menu use them before the skin
+   class exists. */
+.ds-icon {
+  display: inline-block;
+  width: 1.15em;
+  height: 1.15em;
+  vertical-align: -0.2em;
+  flex: none;
+}
+/* `body.editorial svg, body.editorial .figure-canvas …` paints every <svg> white
+   with a border and shadow (right for diagrams, wrong for an icon). It out-specifies
+   a bare class, so the icon opt-out matches it. */
+body.editorial svg.ds-icon,
+svg.ds-icon {
+  background: none;
+  box-shadow: none;
+  border: 0;
+  border-radius: 0;
+}

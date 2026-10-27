@@ -67,6 +67,7 @@ import {
   stackHtml,
   t,
 } from "./i18n.js";
+import { ico } from "./icons.js";
 import { attachImageZoom, isLightboxOpen, observeContentImageZoom } from "./image-zoom.js";
 import {
   analyzeEvidence,
@@ -4384,18 +4385,18 @@ function renderExplorePhase(el, state, ctx, config, opts = {}) {
 
 // ── Phase 4: Practice (adaptive) ──
 const TIER_LABELS = {
-  level1: { name: "🟢 Level 1 (Scaffolded)", badge: "badge-teal" },
-  core: { name: "🔵 Level 2 (On-Level)", badge: "badge-amber" },
-  level2: { name: "🟣 Level 3 (Challenge)", badge: "badge-navy" },
+  level1: { name: "Level 1 (Scaffolded)", badge: "badge-teal" },
+  core: { name: "Level 2 (On-Level)", badge: "badge-amber" },
+  level2: { name: "Level 3 (Challenge)", badge: "badge-navy" },
 };
 
 // Leveled coaching register per tier — the same voice contract the
 // small-group studio uses (supportive build / steady core / skeptic press).
 // Chrome only; the problems themselves are untouched.
 const TIER_VOICE = {
-  level1: "🟢 Step-by-step with hints — build your confidence one part at a time.",
-  core: "🔵 Standard grade-level practice — solve, check, and explain your steps.",
-  level2: "🟣 Stretch challenge & error analysis — test your deepest understanding.",
+  level1: "Step-by-step with hints — build your confidence one part at a time.",
+  core: "Standard grade-level practice — solve, check, and explain your steps.",
+  level2: "Stretch challenge & error analysis — test your deepest understanding.",
 };
 
 // Normalize a typed math answer for the "is this simple enough to mark wrong?"
@@ -5002,7 +5003,7 @@ function renderPracticePhase(el, state, ctx, config, opts = {}) {
   instructionCallout(
     el,
     "🎯",
-    "<strong>Pick your level:</strong> 🟢 guided help · 🔵 on-level · 🟣 challenge · ⚡ adjusts as you answer.",
+    "<strong>Pick your level:</strong> Level 1 has guided help · Level 2 is on-level · Level 3 is a challenge · Adaptive adjusts as you answer.",
   );
 
   // Optional interactive "practice lab(s)" (factor-tree-lab, power-builder,
@@ -6802,7 +6803,7 @@ export function renderActSteps(el, state, phaseIdx, steps) {
     // teaching moment in the act did.
     chip.dataset.stepKey = step.key;
     chip.setAttribute("role", "tab");
-    chip.innerHTML = `<span class="act-step-num">${i + 1}</span>${step.icon} ${esc(step.label)}`;
+    chip.innerHTML = `<span class="act-step-num">${i + 1}</span>${ico(step.icon)} ${esc(step.label)}`;
     chip.addEventListener("click", () => show(i, true));
     strip.append(chip);
     chips.push(chip);
@@ -6824,7 +6825,7 @@ export function renderActSteps(el, state, phaseIdx, steps) {
       next.className = "btn btn-primary";
       next.style.cssText =
         "padding:12px 26px; font-weight:800; border-radius:12px; background:#0f766e; color:#ffffff;";
-      next.innerHTML = `Next: ${steps[i + 1].icon} ${esc(steps[i + 1].label)} →`;
+      next.innerHTML = `Next: ${ico(steps[i + 1].icon)} ${esc(steps[i + 1].label)} →`;
       next.addEventListener("click", () => show(i + 1, true));
       row.append(next);
       host.append(row);

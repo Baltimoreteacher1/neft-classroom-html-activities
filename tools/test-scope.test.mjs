@@ -16,11 +16,13 @@ import {
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { skipExit } from "./lib/skip-exit.mjs";
 import {
   collapse,
   entryFromTrace,
   selectTests,
   serializeManifest,
+  UNTRACEABLE_NODE,
   verifyReads,
 } from "./lib/test-scope.mjs";
 
@@ -259,6 +261,18 @@ try {
   const recorded = run(["--record"]);
   assert.equal(recorded.status, 0, recorded.stdout + recorded.stderr);
   const m = JSON.parse(readFileSync(join(dir, "data/test-reads.json"), "utf8")).tests;
+  if (m["a.test.mjs"].wide && UNTRACEABLE_NODE.test(m["a.test.mjs"].wide)) {
+    // This Node cannot trace module loads (registerHooks breaks require(esm); see
+    // tools/lib/test-trace-preload.mjs), so every trace is wide by design and the
+    // precise-scoping half of this test has nothing to observe. That is a SKIP, not a
+    // pass: skipExit() exits 3 locally (named in the run summary) and 1 in CI.
+    process.exit(
+      skipExit(
+        `record/scope/verify integration cannot run on ${process.version}: ${m["a.test.mjs"].wide}`,
+        "the pure-logic checks above did pass; use a Node whose registerHooks can load require(esm)",
+      ),
+    );
+  }
   assert.ok(m["a.test.mjs"].files.includes("data/a.json"), "the tracer saw the fs read");
   assert.ok(!m["a.test.mjs"].files.includes("data/b.json"));
   assert.match(
@@ -323,5 +337,26 @@ if (indexBefore) {
   );
   assert.equal(after.size, indexBefore.size);
 }
+
+// A trace the tracer itself calls untraceable on this Node is not drift; every other
+// wide reason (here: a shell command) still is.
+assert.deepEqual(
+  verifyReads(
+    entry,
+    {
+      files: [],
+      dirs: [],
+      wide: "module loads cannot be traced on this Node (registerHooks breaks require(esm))",
+    },
+    helpers,
+  ),
+  [],
+  "an untraceable-Node trace is not reported as drift",
+);
+assert.equal(
+  verifyReads(entry, { files: [], dirs: [], wide: "runs a shell command" }, helpers).length,
+  1,
+  "any other wide reason is still drift",
+);
 
 console.log("test-scope: selection, drift detection and the record/scope/verify loop hold");

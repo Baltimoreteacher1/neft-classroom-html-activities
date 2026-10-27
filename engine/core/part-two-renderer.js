@@ -695,7 +695,7 @@ function renderGroups(host, state, _ctx, config) {
 const LEVELS = [
   {
     key: "level1",
-    icon: "🟢",
+    icon: "",
     name: "Level 1",
     tag: "Build it",
     accent: "#0f766e",
@@ -705,21 +705,21 @@ const LEVELS = [
   },
   {
     key: "level2",
-    icon: "🔵",
+    icon: "",
     name: "Level 2",
     tag: "Grade level",
-    accent: "#1d4ed8",
-    tint: "#eff6ff",
+    accent: "#17324d",
+    tint: "#eef3f8",
     modification:
       "Solve, then swap papers and check each other's work before moving on. Anyone who disagrees explains why before you fix it.",
   },
   {
     key: "level3",
-    icon: "🟣",
+    icon: "",
     name: "Level 3",
     tag: "Stretch",
-    accent: "#7e22ce",
-    tint: "#faf5ff",
+    accent: "#8a5a00",
+    tint: "#fff8e6",
     modification:
       "Write the reason beside every answer. For at least one problem, invent a wrong answer someone could give and explain what they did.",
   },

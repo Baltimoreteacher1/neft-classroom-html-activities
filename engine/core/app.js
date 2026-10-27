@@ -10,6 +10,7 @@ import { createLessonCourseNav } from "./curriculum-nav.js";
 import { mountExportToolbar } from "./export.js";
 import { completeLesson, reportExitTicketScore } from "./grade-emit.js";
 import { getPreferredLang, phaseName, setPreferredLang, stackHtml, t } from "./i18n.js";
+import { ico } from "./icons.js";
 import { enableKeyboardScrolling } from "./keyboard-scroll.js";
 import {
   getActStepNav,
@@ -63,6 +64,10 @@ import "@engine/styles/editorial.css";
 import "@engine/styles/present-mode.css";
 import "@engine/styles/theme-warm.css";
 import "@engine/styles/notebook-checkpoint.css";
+// Design tokens (generated from engine/design/tokens.json) and the publisher-v2 layer.
+// Both load LAST so they win by order over the skin layers above them.
+import "@engine/styles/ds-tokens.generated.css";
+import "@engine/styles/publisher-v2.css";
 
 export function createApp(config) {
   const root = document.getElementById("app");
@@ -1131,11 +1136,10 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
     // 1. Accessibility Controls
     const a11yBar = document.createElement("div");
     a11yBar.id = "lesson-a11y-bar";
-    a11yBar.style.cssText =
-      "display:flex; gap:8px; padding:8px 12px; margin-bottom:12px; flex-wrap:wrap; justify-content:center; border-bottom:1px solid rgba(255,255,255,0.1);";
+    a11yBar.className = "ds-util-bar";
     a11yBar.innerHTML = `
-      <button class="pub-btn" id="btn-lesson-read" type="button" style="padding:4px 8px; font-size:11px; flex:1; min-width:80px; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); color:#fff; border-radius:6px; cursor:pointer;">🔊 Read Aloud</button>
-      <button class="pub-btn" id="btn-lesson-draw" type="button" style="padding:4px 8px; font-size:11px; flex:1; min-width:80px; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); color:#fff; border-radius:6px; cursor:pointer;">✏️ Draw: OFF</button>
+      <button class="pub-btn ds-util-btn" id="btn-lesson-read" type="button" aria-pressed="false">${ico("🔊")} Read Aloud</button>
+      <button class="pub-btn ds-util-btn" id="btn-lesson-draw" type="button" aria-pressed="false">${ico("✏️")} Draw: OFF</button>
     `;
 
     // Insert into sidebar before student-info or progress
@@ -1152,12 +1156,12 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
     readBtn.addEventListener("click", () => {
       if (window.speechSynthesis && window.speechSynthesis.speaking) {
         window.speechSynthesis.cancel();
-        readBtn.textContent = "🔊 Read Aloud";
-        readBtn.style.background = "rgba(255,255,255,0.1)";
+        readBtn.innerHTML = `${ico("🔊")} Read Aloud`;
+        readBtn.setAttribute("aria-pressed", "false");
         return;
       }
-      readBtn.textContent = "⏹️ Stop";
-      readBtn.style.background = "#ef4444";
+      readBtn.innerHTML = `${ico("⏹️")} Stop`;
+      readBtn.setAttribute("aria-pressed", "true");
 
       const texts = [];
       document
@@ -1174,8 +1178,8 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
       const speechText = texts.slice(0, 8).join(". ");
       const utterance = new SpeechSynthesisUtterance(speechText);
       utterance.onend = () => {
-        readBtn.textContent = "🔊 Read Aloud";
-        readBtn.style.background = "rgba(255,255,255,0.1)";
+        readBtn.innerHTML = `${ico("🔊")} Read Aloud`;
+        readBtn.setAttribute("aria-pressed", "false");
       };
       window.speechSynthesis.speak(utterance);
     });
@@ -1391,8 +1395,8 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
       canvas.style.display = active ? "block" : "none";
       drawHud.style.display = active ? "flex" : "none";
       canvas.style.pointerEvents = active ? "auto" : "none";
-      drawBtn.textContent = active ? "✏️ Draw: ON" : "✏️ Draw: OFF";
-      drawBtn.style.background = active ? "#10b981" : "rgba(255,255,255,0.1)";
+      drawBtn.innerHTML = `${ico("✏️")} Draw: ${active ? "ON" : "OFF"}`;
+      drawBtn.setAttribute("aria-pressed", active ? "true" : "false");
       if (active) resizeCanvas();
     });
   })();
@@ -1637,12 +1641,12 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
                 if (href) {
                   return `
               <a class="phase-subcard-chip" href="${escHtml(href)}"${t.newWindow ? ' target="_blank" rel="noopener"' : ""}>
-                <span class="phase-subcard-icon">${t.icon}</span> <span>${escHtml(t.label)}</span>${t.newWindow ? ' <span aria-hidden="true">↗</span>' : ""}
+                <span class="phase-subcard-icon">${ico(t.icon)}</span> <span>${escHtml(t.label)}</span>${t.newWindow ? ' <span aria-hidden="true">↗</span>' : ""}
               </a>`;
                 }
                 return `
               <button type="button" class="phase-subcard-chip" ${t.extra ? `data-sub-extra="${t.extra}"` : t.level ? `data-sub-level="${t.level}"` : `data-sub-jump="${t.jump}"`}>
-                <span class="phase-subcard-icon">${t.icon}</span> <span>${escHtml(t.label)}</span>
+                <span class="phase-subcard-icon">${ico(t.icon)}</span> <span>${escHtml(t.label)}</span>
               </button>`;
               })
               .join("")}
@@ -1898,7 +1902,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
       el.innerHTML = `
         <div class="extra-head" style="display:flex; flex-wrap:wrap; gap:var(--sp-3, 12px); align-items:center; justify-content:space-between; margin-bottom:var(--sp-3, 12px);">
           <div>
-            <div class="section-title" style="font-size:1.6rem;">${meta.icon} ${escHtml(meta.title)}</div>
+            <div class="section-title" style="font-size:1.6rem;">${ico(meta.icon)} ${escHtml(meta.title)}</div>
             <div class="section-desc">${escHtml(meta.desc)}</div>
           </div>
           <div class="extra-actions" style="display:flex; gap:var(--sp-2, 8px); flex-wrap:wrap;">
@@ -2513,7 +2517,7 @@ function initMainApp(root, config, studentId, studentName, studentPeriod) {
       const nav = getActStepNav();
       const nextStep = nav ? nav.steps[nav.index + 1] : null;
       const nextName = nextStep
-        ? `${nextStep.icon} ${nextStep.label}`
+        ? `${ico(nextStep.icon)} ${nextStep.label}`
         : phaseConfigs[cur + 1]?.name || "Next";
       const hide = (!nextStep && cur >= total - 1) || onExtra;
       nextBtn.innerHTML = `Next: ${nextName} <span aria-hidden="true">→</span>`;
@@ -2705,7 +2709,7 @@ function preLessonNavHtml(config) {
   const items = tabs.map(
     (t) =>
       `<button class="phase-btn extra-btn" data-extra="${t.extra}">
-        <span class="phase-num" style="background:transparent; box-shadow:none; font-size:1.15rem;">${t.icon}</span>
+        <span class="phase-num" style="background:transparent; box-shadow:none; font-size:1.15rem;">${ico(t.icon)}</span>
         <span>${t.label}</span>
       </button>`,
   );
@@ -2835,7 +2839,7 @@ function updateSidebar(sidebar, state, phaseConfigs, config) {
         .map((t) => {
           const style =
             "margin-left:var(--sp-4, 18px); font-size:0.84rem; padding: 5px 12px; min-height: 32px;";
-          const inner = `<span class="phase-num" style="background:transparent; box-shadow:none; font-size:0.95rem;">${t.icon}</span>
+          const inner = `<span class="phase-num" style="background:transparent; box-shadow:none; font-size:0.95rem;">${ico(t.icon)}</span>
             <span>${escHtml(t.label)}</span>`;
           const href = subtabHref(t);
           if (href) {

@@ -120,6 +120,16 @@
       "file": "tools/access-teacher-insights.test.mjs",
       "targets": "tmpdir",
       "reason": "the station-card generator test writes its output only under mkdtempSync(join(tmpdir(), \"station-\")); no repo file is written"
+    },
+    {
+      "file": "tools/design-tokens.test.mjs",
+      "targets": "tmpdir",
+      "reason": "Every write goes into one mkdtempSync directory under os.tmpdir(): a mutated copy of tokens.json, the generated CSS and a copy of the style guide. The real script is pointed at them through the DS_TOKENS_SRC/OUT/GUIDE overrides, so the committed tokens, generated CSS and guide are never written."
+    },
+    {
+      "file": "tools/test-trace-preload-esm.test.mjs",
+      "targets": "tmpdir",
+      "reason": "Writes a throwaway CJS/ESM module graph, a driver script and the tracer output into one mkdtempSync directory under os.tmpdir(), runs the preload against it, then removes it. The only repo path touched is package.json, and only read."
     }
   ]
 }

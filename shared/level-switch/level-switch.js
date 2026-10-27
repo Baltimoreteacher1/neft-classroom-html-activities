@@ -32,15 +32,15 @@
     var LEVELS = [
       {
         key: "0",
-        emoji: "🟢",
+        emoji: "",
         label: "Extra Support",
         file: stem + "-level-0.html",
       },
-      { key: "1", emoji: "🔵", label: "Support", file: stem + "-level-1.html" },
-      { key: "core", emoji: "⭐", label: "Standard", file: stem + ".html" },
+      { key: "1", emoji: "", label: "Support", file: stem + "-level-1.html" },
+      { key: "core", emoji: "", label: "Standard", file: stem + ".html" },
       {
         key: "2",
-        emoji: "🟣",
+        emoji: "",
         label: "Challenge",
         file: stem + "-level-2.html",
       },
