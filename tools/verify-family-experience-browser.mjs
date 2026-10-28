@@ -429,6 +429,52 @@ async function sweepDesktop(browser, lesson) {
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - innerWidth);
     if (overflow > 1) fail(`${lesson} @1280 ${tab}`, `horizontal scroll by ${overflow}px`);
   }
+
+  // Case File: spans both columns of the stop and uses both sides of its own card.
+  await page.evaluate(() => window.switchHomeworkTab("learn"));
+  await page.waitForTimeout(100);
+  const cf = await page.evaluate(() => {
+    const card = document.getElementById("hw_case");
+    if (!card) return null;
+    const box = (el) => el.getBoundingClientRect();
+    const left = card.querySelector(".cf-left");
+    const right = card.querySelector(".cf-right");
+    const panel = document.getElementById("hw_panel_learn");
+    return {
+      span: box(card).width / box(panel).width,
+      sideBySide: box(right).left > box(left).left + 120,
+      rightText: right.textContent.trim().length,
+      leftText: left.textContent.trim().length,
+    };
+  });
+  if (!cf) fail(`${lesson} @1280`, "Learn stop has no Case File");
+  else {
+    if (cf.span < 0.85)
+      fail(`${lesson} @1280`, `Case File spans only ${Math.round(cf.span * 100)}% of the stop`);
+    if (!cf.sideBySide) fail(`${lesson} @1280`, "Case File columns are not side by side");
+    if (!cf.rightText || !cf.leftText) fail(`${lesson} @1280`, "Case File has an empty side");
+  }
+
+  // The sidebar offers the Case File and jumps to it.
+  const caseBtn = page.locator("#hw_sub_learn .hw-sub-btn", { hasText: /Case File/ });
+  if ((await caseBtn.count()) !== 1) fail(`${lesson} @1280`, "sidebar has no Case File button");
+
+  // Click-to-enlarge: a graphic opens in the lightbox; Escape closes it and focus returns.
+  const gfx = page
+    .locator("#hw_case svg.cf-tag, #hw_case svg.cf-line, #hw_panel_learn .concept-visual-wrap svg")
+    .first();
+  if (await gfx.count()) {
+    await gfx.scrollIntoViewIfNeeded();
+    await gfx.click();
+    const opened = await page.locator(".hw-lightbox-dialog[open]").count();
+    if (!opened) fail(`${lesson} @1280`, "clicking a graphic did not open the lightbox");
+    else {
+      await page.keyboard.press("Escape");
+      await page.waitForTimeout(50);
+      if (await page.locator(".hw-lightbox-dialog[open]").count())
+        fail(`${lesson} @1280`, "Escape did not close the lightbox");
+    }
+  }
   await context.close();
 }
 

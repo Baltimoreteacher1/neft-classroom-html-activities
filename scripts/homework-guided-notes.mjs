@@ -171,7 +171,7 @@ function keyIdeaEs(config) {
   return spanishKeyIdea(config);
 }
 
-function learningTonight(config) {
+export function learningTonight(config) {
   const vocab = config.vocabulary || [];
   const en =
     config.familyNotes?.learningTonight?.en ||
@@ -8312,7 +8312,13 @@ function workbenchSpec(config) {
   return id ? { id, ...WORKBENCH_TOOL_COPY[id] } : null;
 }
 
-export function renderLearnTab(config, visualLabHtml = "", workbenchHtml = "", mystery = null) {
+export function renderLearnTab(
+  config,
+  visualLabHtml = "",
+  workbenchHtml = "",
+  mystery = null,
+  caseFileHtml = "",
+) {
   const learning = renderLearningTonight(config).replace(/<section[^>]*>|<\/section>/g, "");
   let concept = renderConceptExplainer(config).replace(/<section[^>]*>|<\/section>/g, "");
   const keyEn = keyIdea(config);
@@ -8447,6 +8453,7 @@ ${renderWarmupHuddle(confusedGrownUpCard(config))}
       <p class="tab-help-row learn-extended-block">${helpButton("💡 Need more help? / ¿Más ayuda?", { titleEn: "The big idea", titleEs: "La idea principal", en: keyEn, es: keyEs })}</p>`;
   return `
     <div ${tabPanelAttrs("learn")}>
+      ${caseFileHtml}
       <nav class="learn-jump-row" aria-label="On this page / En esta página">
         <a href="#hw_dinner_talk"><span class="lang-en">60-Sec Talk</span><span class="lang-es" lang="es">Charla 60 s</span></a>
         <a href="#hw_learn_idea"><span class="lang-en">Big idea</span><span class="lang-es" lang="es">Idea principal</span></a>

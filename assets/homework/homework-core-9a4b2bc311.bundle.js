@@ -2699,10 +2699,13 @@ function glueTermPunctuation() {
 
 var STUDIO_SUB_CONFIGS = {
   learn: [
+    { id: 'case', icon: '🕵️', en: 'Case File', es: 'Expediente', sel: '#hw_case' },
     { id: 'talk', icon: '💬', en: '60-Sec Talk', es: 'Charla 60s', sel: '#hw_dinner_talk, .hw-dinner-talk, .dinner-talk-card' },
+    { id: 'mystery', icon: '🔍', en: 'Mystery', es: 'Misterio', sel: '#hw_mystery, .hw-mystery' },
     { id: 'idea', icon: '💡', en: 'Big Idea', es: 'Idea principal', sel: '#hw_learn_idea .family-big-idea-piece, #hw_learn_idea > .section-title, #hw_learn_idea, .big-idea, .key-idea-banner' },
     { id: 'try', icon: '👆', en: 'Interactive Model', es: 'Modelo interactivo', sel: '#hw_learn_try, .family-visual-lab, .interactive-visual-host' },
-    { id: 'quick', icon: '❓', en: 'Try Question', es: 'Pregunta rápida', sel: '#hw_learn_quick, .learn-quick-check' }
+    { id: 'quick', icon: '❓', en: 'Try Question', es: 'Pregunta rápida', sel: '#hw_learn_quick, .learn-quick-check' },
+    { id: 'huddle', icon: '🎭', en: 'Warm-up Huddle', es: 'Calentamiento', sel: '#hw_huddle, .hw-huddle' }
   ],
   words: [
     { id: 'cards', icon: '📚', en: 'Flashcards', es: 'Tarjetas', sel: '.vocab-container, .vocab-card-grid' },
@@ -3070,7 +3073,7 @@ function initHomeworkImageZoom() {
     var imgs = scope.querySelectorAll('.vocab-thumb, .problem-visual-img, .problem-visual-wrap img, .vq-img, .obj-popup-img, #display_family_photo, #work_photo_preview, #pb_captured_img, .concept-visual-wrap img');
     imgs.forEach(wireElement);
 
-    var svgs = scope.querySelectorAll('.concept-visual-wrap svg, svg.concept-svg, svg.hw-model-svg, svg.hw-mini-model-svg, .hw-colearn-svg-stage svg, .concept-fallback-visual svg');
+    var svgs = scope.querySelectorAll('.concept-visual-wrap svg, svg.concept-svg, svg.hw-model-svg, svg.hw-mini-model-svg, .hw-colearn-svg-stage svg, .concept-fallback-visual svg, svg.cf-tag, svg.cf-line');
     svgs.forEach(wireElement);
 
     var zoomBtns = scope.querySelectorAll('.concept-zoom-btn');
@@ -4804,6 +4807,73 @@ document.addEventListener('DOMContentLoaded', function () {
     .observe(document.body, { attributes: true, attributeFilter: ['data-homework-route'] });
 });
 window.addEventListener('load', function () { hwRestoreSolved(); hwRenderGoal(false); });
+
+
+(function () {
+  var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function bi(en, es) { return '<span class="lang-en">' + en + '</span><span class="lang-es" lang="es">' + es + '</span>'; }
+
+  /* Evidence cards: tap to read the plain definition. */
+  document.addEventListener('click', function (e) {
+    var card = e.target.closest('[data-cf-ev]');
+    if (!card) return;
+    var open = card.getAttribute('aria-expanded') !== 'true';
+    card.setAttribute('aria-expanded', open ? 'true' : 'false');
+    card.querySelector('.cf-ev-def').hidden = !open;
+  });
+
+  /* Hunch: say what a good guess is, never penalise the other pick. */
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest('[data-cf-pick]');
+    if (!b) return;
+    var box = b.closest('[data-cf-hunch]');
+    box.querySelectorAll('[data-cf-pick]').forEach(function (x) { x.classList.toggle('picked', x === b); });
+    box.querySelectorAll('[data-cf-say]').forEach(function (x) { x.hidden = x.getAttribute('data-cf-say') !== b.getAttribute('data-cf-pick'); });
+  });
+
+  /* Build-up lab: split the known part into equal 10% blocks, then add blocks to reach 100%. */
+  document.querySelectorAll('[data-cf-lab]').forEach(function (lab) {
+    var d = JSON.parse(lab.getAttribute('data-cf-lab'));
+    var svg = lab.querySelector('[data-cf-svg]'), msg = lab.querySelector('[data-cf-msg]');
+    var split = lab.querySelector('[data-cf-split]'), grow = lab.querySelector('[data-cf-grow]');
+    var sym = d.sym || '', known = d.blocks, state = { split: false, grown: 0 };
+    function money(n) { return sym + n; }
+    function draw() {
+      var bw = 68, x0 = 10, rowH = 112, shown = state.split ? known + state.grown : known, g = '';
+      for (var i = 0; i < 10; i++) {
+        var row = i < 5 ? 0 : 1, x = x0 + (i % 5) * bw, y = 22 + row * rowH, isKnown = i < known;
+        var cls = !state.split && isKnown ? 'q' : isKnown ? 'on' : i < shown ? 'new' : '';
+        g += '<rect class="cf-b ' + cls + '" x="' + x + '" y="' + y + '" width="' + (bw - 6) + '" height="44" rx="6"/>';
+        if (i < shown) {
+          var cx = x + (bw - 6) / 2;
+          g += '<text class="cf-t s" x="' + cx + '" y="' + (y - 6) + '">' + (i + 1) * 10 + '%</text>';
+          g += '<text class="cf-t" x="' + cx + '" y="' + (y + 28) + '">' + (state.split ? money(d.per) : isKnown ? '?' : '') + '</text>';
+          if (state.split) g += '<text class="cf-t s" x="' + cx + '" y="' + (y + 64) + '">' + money((i + 1) * d.per) + '</text>';
+        }
+      }
+      if (!state.split) g += '<text class="cf-t" x="' + (x0 + 214) + '" y="' + (22 + rowH + 28) + '">' + d.pct + '% = ' + money(d.part) + '</text>';
+      svg.innerHTML = g;
+    }
+    split.addEventListener('click', function () {
+      state.split = true; split.disabled = true; grow.disabled = false;
+      msg.innerHTML = bi('Each block is 10%. ' + money(d.part) + ' ÷ ' + known + ' = ' + money(d.per) + ', so 10% is ' + money(d.per) + '. Now add blocks.',
+        'Cada bloque es el 10%. ' + money(d.part) + ' ÷ ' + known + ' = ' + money(d.per) + ', así que el 10% es ' + money(d.per) + '. Ahora agreguen bloques.');
+      draw();
+    });
+    grow.addEventListener('click', function () {
+      state.grown = Math.min(d.steps, state.grown + 1);
+      var p = (known + state.grown) * 10, v = (known + state.grown) * d.per;
+      msg.innerHTML = bi(p + '% is ' + money(v) + '.', 'El ' + p + '% es ' + money(v) + '.');
+      if (state.grown === d.steps) {
+        grow.disabled = true;
+        msg.innerHTML = bi('100% is 10 blocks of ' + money(d.per) + '. The whole is ' + money(d.whole) + '. It is bigger than ' + money(d.part) + ', as a sale should make it.',
+          'El 100% son 10 bloques de ' + money(d.per) + '. El entero es ' + money(d.whole) + '. Es mayor que ' + money(d.part) + ', como debe ser en una oferta.');
+      }
+      draw();
+    });
+    draw();
+  });
+})();
 
 
 /* Math Dominoes: two players on one device, and the paper version. */

@@ -29,6 +29,7 @@ import {
   GUIDED_NOTES_CSS,
   HOMEWORK_TABS_JS,
   homeworkPageLabel,
+  learningTonight,
   renderCheckTab,
   renderDoneTab,
   renderHelpContent,
@@ -61,6 +62,7 @@ import {
 } from "./lib/family-workspace.mjs";
 import { BRIDGE_CSS } from "./lib/homework-bridge.mjs";
 import { CALM_CSS } from "./lib/homework-calm-css.mjs";
+import { CASE_FILE_CSS, CASE_FILE_JS, renderCaseFile } from "./lib/homework-case-file.mjs";
 import {
   renderCoLearningHud,
   renderPrintSocraticFooter,
@@ -1281,6 +1283,17 @@ function selectLessonInteractiveModel(config) {
   return null;
 }
 
+/** The lesson's own worked-example opening line, in both languages. Only a
+ *  core lesson's worked example opens with a situation: on a Part 2, practice
+ *  or review page the same field holds a numbered instruction or a test
+ *  prompt, which is not a scene. */
+function sceneOf(lessonId, config) {
+  if (!/^\d+-\d+$/.test(lessonId)) return null;
+  const iDo = config.launch?.conceptIntro?.iDo;
+  const en = iDo?.lines?.[0];
+  return en ? { en, es: iDo.linesEs?.[0] || en } : null;
+}
+
 function generateHtml(lessonId, config) {
   familyTipsShown = new Set();
   config.lessonId = config.lessonId || lessonId;
@@ -1430,12 +1443,20 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
   // used: the manipulatives inside Learn, the two orphan games inside the
   // Play arcade, and help + the online links behind a button that floats over
   // every stop.
+  const caseFileHtml = renderCaseFile({
+    lessonId,
+    title: { en: title, es: familyTitlesEs[lessonId] || title },
+    tonight: learningTonight(config),
+    scene: sceneOf(lessonId, config),
+    vocab,
+  });
   const tabPanels = [
     renderLearnTab(
       config,
       renderVisualMathLab(topic, config, lessonModel),
       renderWorkbenchTools(config),
       mystery,
+      caseFileHtml,
     ),
     renderWordsTab(vocab, resolveVocabImage, vocabImageAlt),
     renderCheckTab(
@@ -4136,6 +4157,7 @@ ${SCRATCHPAD_CSS}
 ${WORKSPACE_CSS}
 ${SESSION_FLOW_CSS}
 ${EXPERIENCE_CSS}
+${CASE_FILE_CSS}
 ${DOMINO_DUO_CSS}
 ${VOICE_CSS}
 ${familyStyleCss}
@@ -4306,6 +4328,7 @@ ${SCRATCHPAD_JS}
 ${WORKSPACE_JS}
 ${SESSION_FLOW_JS}
 ${EXPERIENCE_JS}
+${CASE_FILE_JS}
 ${DOMINO_DUO_JS}
 ${VISUAL_LABS_JS}
 ${MATH_INPUT_JS}

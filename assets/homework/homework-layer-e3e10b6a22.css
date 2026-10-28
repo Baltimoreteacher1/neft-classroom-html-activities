@@ -7837,16 +7837,27 @@ body { background: var(--st-paper) !important; color: var(--st-ink); }
   #hw_panel_learn .learn-big-idea-block > *,
   #hw_panel_learn .big-idea > *,
   #hw_panel_learn > .learn-extended-block { margin: 0 0 18px !important; }
+  #hw_panel_learn > .cf { grid-column: 1 / -1; grid-row: 1; }
+  /* The two columns need every card on screen at once: with one card at a time the
+     model card (column 1) is hidden while a text card shows, leaving an empty half. */
+  #hw_panel_learn > .learn-card[hidden] { display: block !important; }
+  #hw_panel_learn > .learn-pager { display: none !important; }
+  /* The model's card is the left column, as #hw_learn_try itself was before the cards wrapped it. */
+  #hw_panel_learn > .learn-card:has(> #hw_learn_try) {
+    grid-column: 1;
+    grid-row: 2 / span 12;
+    margin-bottom: 18px;
+  }
   #hw_panel_learn > #hw_learn_try {
     grid-column: 1;
-    grid-row: 1 / span 12;
+    grid-row: 2 / span 12;
     position: static;
     margin-bottom: 18px !important;
   }
   #hw_panel_learn .concept-visual-wrap { order: 8; }
   #hw_panel_learn > .tab-help-row,
-  #hw_panel_learn > .tab-flow-nav { grid-column: 1 / -1; grid-row: 13; }
-  #hw_panel_learn > .tab-flow-nav { grid-row: 14; }
+  #hw_panel_learn > .tab-flow-nav { grid-column: 1 / -1; grid-row: 14; }
+  #hw_panel_learn > .tab-flow-nav { grid-row: 15; }
   #hw_panel_learn > .learn-summary-block > div:first-child {
     flex-wrap: nowrap !important;
     margin-bottom: 12px !important;
@@ -9034,6 +9045,59 @@ body[data-hw-pathway="express"] .hw-mystery { display: flex !important; }
 .homework-tab-btn .tab-label { overflow-wrap: anywhere; line-height: 1.15; }
 .learn-pager-actions .btn, .hw-stop-nav .btn { white-space: nowrap; min-width: 112px; }
 @media (max-width: 640px) { .homework-tab-bar { gap: 2px; } .homework-tab-bar .homework-tab-btn { padding-left: 2px !important; padding-right: 2px !important; } }
+
+
+/* ── Case file card and side rail ───────────────────────────────────────── */
+.cf { --cf-navy:#12355b; --cf-amber:#f2c15b; --cf-paper:#fffaf0; --cf-teal:#0c6f6b;
+  margin: 0 0 20px; border-radius: 20px; background: var(--cf-navy); color: #fff; padding: 18px 16px 20px; box-shadow: 0 6px 20px rgb(18 53 91 / 25%); }
+.cf * { box-sizing: border-box; }
+.cf-kicker { font-size: 13px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: var(--cf-amber); }
+.cf h2 { margin: 6px 0 8px; font-size: 1.6rem; line-height: 1.15; color: #fff; border: 0; background: transparent; padding: 0; box-shadow: none; }
+.cf p { margin: 0 0 12px; color: #e8eef6; font-size: 1.05rem; line-height: 1.5; }
+.cf p b { color: var(--cf-amber); }
+.cf .obj-term { background: rgb(255 255 255 / 16%) !important; color: #fff !important; border-bottom-color: var(--cf-amber) !important; }
+.cf .cf-q .obj-term { background: rgb(15 118 110 / 8%) !important; color: #0b5f58 !important; border-bottom-color: #0f766e !important; }
+.cf-grid { display: grid; gap: 16px; }
+.cf-tag { display: block; width: 100%; max-width: 340px; margin: 6px 0 4px; }
+.cf-row { display: flex; gap: 10px; flex-wrap: wrap; }
+.cf-btn { min-height: 48px; padding: 0 18px; border-radius: 12px; border: 2px solid var(--cf-teal); background: var(--cf-teal); color: #fff; font: inherit; font-weight: 800; cursor: pointer; }
+.cf-btn.alt { background: #fff; color: var(--cf-navy); border-color: #c9d3df; }
+.cf-btn.picked { border-color: var(--cf-amber); box-shadow: 0 0 0 2px var(--cf-amber); }
+.cf-btn[disabled] { opacity: .5; cursor: default; }
+.cf-btn:focus-visible, .cf-ev-card:focus-visible { outline: 3px solid var(--cf-amber); outline-offset: 2px; }
+.cf-q { background: var(--cf-paper); color: #1d2733; border-radius: 16px; padding: 14px; }
+.cf-q p { color: #1d2733; margin-bottom: 10px; font-weight: 700; }
+.cf-fb { margin-top: 10px; padding: 10px 12px; border-radius: 12px; background: #e3f3e8; color: #14361f; font-weight: 600; }
+.cf-fb.no { background: #fff3e0; color: #4a2f00; }
+.cf-fb[hidden] { display: none; }
+.cf-ev { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; margin-top: 12px; }
+.cf-ev-hint { grid-column: 1 / -1; margin: 0 0 2px !important; font-size: .9rem !important; color: #c7d3e2 !important; }
+.cf-ev-card { text-align: left; border-radius: 12px; padding: 10px 12px; background: rgb(255 255 255 / 10%); border: 2px dashed rgb(255 255 255 / 35%); color: #fff; font: inherit; cursor: pointer; min-height: 64px; }
+.cf-ev-card[aria-expanded="true"] { background: var(--cf-paper); color: #1d2733; border: 2px solid var(--cf-amber); }
+.cf-ev-card b { display: block; font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: var(--cf-amber); }
+.cf-ev-card[aria-expanded="true"] b { color: #8a5a00; }
+.cf-ev-term { display: block; font-size: 1.05rem; font-weight: 800; margin-top: 2px; }
+.cf-ev-def { display: block; font-size: .95rem; margin-top: 6px; font-weight: 500; }
+.cf-ev-def[hidden] { display: none; }
+.cf-lab { margin-top: 14px; background: var(--cf-paper); color: #1d2733; border-radius: 16px; padding: 14px; }
+.cf-lab h3 { margin: 0 0 4px; font-size: 1.1rem; color: #12355b; }
+.cf-lab p { color: #1d2733 !important; font-weight: 500; font-size: 1rem; }
+.cf-line { display: block; width: 100%; height: auto; margin-bottom: 12px; cursor: zoom-in; }
+.cf-b { fill: #fff; stroke: #c9d3df; stroke-width: 2; }
+.cf-b.q, .cf-b.on { fill: #e8f1ed; stroke: #0c6f6b; }
+.cf-b.new { fill: #fff3e0; stroke: #b5532a; }
+.cf-t { font: 800 17px system-ui, sans-serif; fill: #1d2733; text-anchor: middle; }
+.cf-t.s { font-size: 14px; font-weight: 600; fill: #566274; }
+@media (min-width: 1000px) {
+  .cf { padding: 22px 24px 24px; }
+  .cf-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: 28px; align-items: start; }
+  .cf-lab { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); column-gap: 24px; align-items: center; }
+  .cf-lab h3, .cf-lab .cf-msg { grid-column: 2; }
+  .cf-lab .cf-line { grid-column: 1; grid-row: 1 / span 3; margin: 0; }
+  .cf-lab .cf-row { grid-column: 2; }
+}
+@media (prefers-reduced-motion: no-preference) { .cf-b { transition: fill .25s, stroke .25s; } }
+@media print { .cf { display: none !important; } }
 
 
 .dom-duo { margin: 0 0 12px; }

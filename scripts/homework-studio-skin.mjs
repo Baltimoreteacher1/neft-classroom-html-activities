@@ -120,16 +120,27 @@ body { background: var(--st-paper) !important; color: var(--st-ink); }
   #hw_panel_learn .learn-big-idea-block > *,
   #hw_panel_learn .big-idea > *,
   #hw_panel_learn > .learn-extended-block { margin: 0 0 18px !important; }
+  #hw_panel_learn > .cf { grid-column: 1 / -1; grid-row: 1; }
+  /* The two columns need every card on screen at once: with one card at a time the
+     model card (column 1) is hidden while a text card shows, leaving an empty half. */
+  #hw_panel_learn > .learn-card[hidden] { display: block !important; }
+  #hw_panel_learn > .learn-pager { display: none !important; }
+  /* The model's card is the left column, as #hw_learn_try itself was before the cards wrapped it. */
+  #hw_panel_learn > .learn-card:has(> #hw_learn_try) {
+    grid-column: 1;
+    grid-row: 2 / span 12;
+    margin-bottom: 18px;
+  }
   #hw_panel_learn > #hw_learn_try {
     grid-column: 1;
-    grid-row: 1 / span 12;
+    grid-row: 2 / span 12;
     position: static;
     margin-bottom: 18px !important;
   }
   #hw_panel_learn .concept-visual-wrap { order: 8; }
   #hw_panel_learn > .tab-help-row,
-  #hw_panel_learn > .tab-flow-nav { grid-column: 1 / -1; grid-row: 13; }
-  #hw_panel_learn > .tab-flow-nav { grid-row: 14; }
+  #hw_panel_learn > .tab-flow-nav { grid-column: 1 / -1; grid-row: 14; }
+  #hw_panel_learn > .tab-flow-nav { grid-row: 15; }
   #hw_panel_learn > .learn-summary-block > div:first-child {
     flex-wrap: nowrap !important;
     margin-bottom: 12px !important;
@@ -914,10 +925,13 @@ function glueTermPunctuation() {
 
 var STUDIO_SUB_CONFIGS = {
   learn: [
+    { id: 'case', icon: '🕵️', en: 'Case File', es: 'Expediente', sel: '#hw_case' },
     { id: 'talk', icon: '💬', en: '60-Sec Talk', es: 'Charla 60s', sel: '#hw_dinner_talk, .hw-dinner-talk, .dinner-talk-card' },
+    { id: 'mystery', icon: '🔍', en: 'Mystery', es: 'Misterio', sel: '#hw_mystery, .hw-mystery' },
     { id: 'idea', icon: '💡', en: 'Big Idea', es: 'Idea principal', sel: '#hw_learn_idea .family-big-idea-piece, #hw_learn_idea > .section-title, #hw_learn_idea, .big-idea, .key-idea-banner' },
     { id: 'try', icon: '👆', en: 'Interactive Model', es: 'Modelo interactivo', sel: '#hw_learn_try, .family-visual-lab, .interactive-visual-host' },
-    { id: 'quick', icon: '❓', en: 'Try Question', es: 'Pregunta rápida', sel: '#hw_learn_quick, .learn-quick-check' }
+    { id: 'quick', icon: '❓', en: 'Try Question', es: 'Pregunta rápida', sel: '#hw_learn_quick, .learn-quick-check' },
+    { id: 'huddle', icon: '🎭', en: 'Warm-up Huddle', es: 'Calentamiento', sel: '#hw_huddle, .hw-huddle' }
   ],
   words: [
     { id: 'cards', icon: '📚', en: 'Flashcards', es: 'Tarjetas', sel: '.vocab-container, .vocab-card-grid' },
@@ -1285,7 +1299,7 @@ function initHomeworkImageZoom() {
     var imgs = scope.querySelectorAll('.vocab-thumb, .problem-visual-img, .problem-visual-wrap img, .vq-img, .obj-popup-img, #display_family_photo, #work_photo_preview, #pb_captured_img, .concept-visual-wrap img');
     imgs.forEach(wireElement);
 
-    var svgs = scope.querySelectorAll('.concept-visual-wrap svg, svg.concept-svg, svg.hw-model-svg, svg.hw-mini-model-svg, .hw-colearn-svg-stage svg, .concept-fallback-visual svg');
+    var svgs = scope.querySelectorAll('.concept-visual-wrap svg, svg.concept-svg, svg.hw-model-svg, svg.hw-mini-model-svg, .hw-colearn-svg-stage svg, .concept-fallback-visual svg, svg.cf-tag, svg.cf-line');
     svgs.forEach(wireElement);
 
     var zoomBtns = scope.querySelectorAll('.concept-zoom-btn');
