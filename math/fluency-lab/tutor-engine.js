@@ -107,8 +107,12 @@ export function skillForItem(grade, item) {
   return null;
 }
 
+// Authored edges only. The generator-based fallback in prerequisites() is good enough to suggest a foundation to
+// visit, but not to infer that a learner who passed one skill has also mastered another.
+export const explicitPrerequisites = (skill) => (FOUNDATIONS[skillKey(skill)] || []).map(findSkill).filter(Boolean);
+
 export function prerequisites(skill) {
-  const explicit = (FOUNDATIONS[skillKey(skill)] || []).map(findSkill).filter(Boolean);
+  const explicit = explicitPrerequisites(skill);
   if (explicit.length) return explicit;
   // A mixed skill ("add and subtract") builds on an earlier skill that practised either operation.
   const earlier = ALL_SKILLS.filter((candidate) => candidate.grade < skill.grade && baseGenerator(candidate) === baseGenerator(skill) && opsOf(candidate.config).some((op) => opsOf(skill.config).includes(op)));
@@ -538,7 +542,12 @@ export function sanitizeTutor(value) {
   }));
   for (let grade = 0; grade <= 8; grade++) {
     const diagnostic = value.diagnostics?.[grade];
-    if (diagnostic?.results && typeof diagnostic.results === "object") clean.diagnostics[grade] = { at: Number(diagnostic.at) || 0, results: Object.fromEntries(Object.entries(diagnostic.results).filter(([key, result]) => findSkill(key)?.grade === grade && typeof result === "boolean")) };
+    if (diagnostic?.results && typeof diagnostic.results === "object") clean.diagnostics[grade] = {
+      at: Number(diagnostic.at) || 0,
+      results: Object.fromEntries(Object.entries(diagnostic.results).filter(([key, result]) => findSkill(key)?.grade === grade && typeof result === "boolean")),
+      // Foundation probes reach into earlier grades, so they are keyed by any skill at or below this grade.
+      foundations: Object.fromEntries(Object.entries(diagnostic.foundations || {}).filter(([key, result]) => findSkill(key)?.grade <= grade && typeof result === "boolean")),
+    };
   }
   clean.sessions = (Array.isArray(value.sessions) ? value.sessions : []).filter((session) => session && Number.isFinite(session.at) && Number.isFinite(session.answered)).slice(-60).map((session) => ({ at: session.at, answered: Math.max(0, session.answered), correct: Math.max(0, Number(session.correct) || 0), grade: Math.min(8, Math.max(0, Number(session.grade) || 0)), mode: String(session.mode || "practice").slice(0, 30) }));
   return clean;

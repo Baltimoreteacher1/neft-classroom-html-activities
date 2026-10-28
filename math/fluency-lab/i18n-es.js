@@ -3,6 +3,21 @@
 import { ES_LANGUAGE } from "./i18n-es-language.js";
 
 export const ES = {
+  "Thanks. A checkup only looks for what to practice next, so the solution is saved for later instead of shown now.": "Gracias. Una prueba solo busca qué practicar después, así que la solución se guarda para más tarde en lugar de mostrarse ahora.",
+  "Starting-point checkup": "Prueba de punto de partida",
+  "Your starting-point checkup": "Tu prueba de punto de partida",
+  "I’m not sure yet": "Todavía no estoy seguro",
+  "A short checkup that adjusts to your answers": "Una prueba corta que se adapta a tus respuestas",
+  "A miss gets a second look before it counts. Choose “I’m not sure yet” whenever you need to.": "Un error se revisa una segunda vez antes de contar. Elige “Todavía no estoy seguro” cuando lo necesites.",
+  "One miss is not enough to decide, so here is a fresh one. Choose “I’m not sure yet” whenever you need to.": "Un error no basta para decidir, así que aquí tienes un problema nuevo. Elige “Todavía no estoy seguro” cuando lo necesites.",
+  "A short look at an earlier idea this builds on. Choose “I’m not sure yet” whenever you need to.": "Un vistazo corto a una idea anterior en la que se apoya esto. Elige “Todavía no estoy seguro” cuando lo necesites.",
+  "and {n} more": "y {n} más",
+  "Solid today: {skills}.": "Firme hoy: {skills}.",
+  "Right on the second look: {skills}.": "Correcto en la segunda vuelta: {skills}.",
+  "Worth practicing: {skills}.": "Vale la pena practicar: {skills}.",
+  "Skipped for now: {skills}.": "Pendiente por ahora: {skills}.",
+  "Not asked, because your harder answers already showed the idea: {skills}.": "No se preguntó, porque tus respuestas más difíciles ya mostraron la idea: {skills}.",
+  "A short checkup suggests what to try next. It cannot prove mastery or determine a grade level.": "Una prueba corta sugiere qué probar después. No puede demostrar dominio ni determinar un nivel de grado.",
   "Family Math Tonight": "Matemáticas en familia esta noche",
   "Number Quest": "Misión en la recta numérica",
   "Array Architect": "Arquitecto de arreglos",
