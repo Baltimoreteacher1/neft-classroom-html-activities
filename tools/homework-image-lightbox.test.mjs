@@ -2,26 +2,20 @@ import assert from "node:assert/strict";
 import { readdirSync, readFileSync } from "node:fs";
 import test from "node:test";
 import { JSDOM } from "jsdom";
-import { STUDIO_SKIN_CSS, STUDIO_SKIN_JS } from "../scripts/homework-studio-skin.mjs";
+import { STUDIO_SKIN_JS } from "../scripts/homework-studio-skin.mjs";
 
 const ROOT = new URL("../", import.meta.url);
 const read = (p) => readFileSync(new URL(p, ROOT), "utf8");
 
-test("homework pages use access-practice-lab clean colors with no brown hero or paper overrides", () => {
-  // Crisp cool-blue paper background from access-practice-lab
-  assert.ok(STUDIO_SKIN_CSS.includes("#f5f8fc"), "carries #f5f8fc clean background");
-  // Deep navy ink
-  assert.ok(STUDIO_SKIN_CSS.includes("#14263d"), "carries #14263d deep ink");
-  // Vibrant royal blue brand
-  assert.ok(STUDIO_SKIN_CSS.includes("#2563eb"), "carries #2563eb primary brand");
-  // Lightbox CSS
-  assert.ok(STUDIO_SKIN_CSS.includes(".hw-lightbox-dialog"), "carries .hw-lightbox-dialog");
-  assert.ok(STUDIO_SKIN_CSS.includes(".is-zoomable"), "carries .is-zoomable");
-
-  // No brown unit overrides on .hw-hero or .btn-primary
-  assert.ok(
-    !STUDIO_SKIN_CSS.includes("background: var(--fp-unit-ink) !important"),
-    "hero is not overridden with brown --fp-unit-ink",
+test("the lightbox is styled by the one body sheet, from design tokens", () => {
+  const body = read("assets/design/family/body.css");
+  assert.ok(body.includes(".hw-lightbox-dialog"), "carries .hw-lightbox-dialog");
+  assert.ok(body.includes(".is-zoomable"), "carries .is-zoomable");
+  const rule = body.slice(body.indexOf(".hw-lightbox-dialog"));
+  assert.doesNotMatch(
+    rule.slice(0, 600),
+    /#[0-9a-f]{3,6}\b/i,
+    "the lightbox rule has no raw color",
   );
 });
 

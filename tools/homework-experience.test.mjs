@@ -269,7 +269,9 @@ test("every generated family page carries the experience layer and the one produ
       toast: html.includes('id="hw_toast"') && html.includes('id="hw_dialog"'),
       tonight: html.includes("data-hw-tonight-time"),
       pips: html.includes('class="hw-pips'),
-      langFirst: html.indexOf('class="hw-hero-controls"') < html.indexOf('class="hw-hero-kicker"'),
+      langFirst:
+        html.indexOf('class="hw-hero-controls"') <
+        html.indexOf('class="fm-eyebrow hw-hero-kicker"'),
       keepGoing: html.includes("Keep Going") && html.includes("Seguir practicando"),
     };
     for (const [name, ok] of Object.entries(checks)) if (!ok) missing.push(`${id}:${name}`);
@@ -470,7 +472,8 @@ test("V3.0 Family Learning Companion: 60-Second Dinner Talk, Adaptive Pathways, 
 
   for (const topic of ["ratios", "percent", "fractions", "equations", "number-line", "general"]) {
     const model = renderMiniConceptSvg(topic);
-    assert.match(model.svg, /style="background:white"/);
+    assert.match(model.svg, /class="hw-mini-model-svg[^"]*"/);
+    assert.doesNotMatch(model.svg, /style="background/);
     assert.ok(model.en.length > 15 && model.es.length > 15);
   }
 });

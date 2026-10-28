@@ -178,6 +178,11 @@ const EXCLUSIVE = new Set([
   "validate:palette",
   "validate:learning-labs-browser",
   "validate:family-experience-browser",
+  "validate:family-design-tokens",
+  "validate:family-visual",
+  "validate:family-body-tokens",
+  "validate:family-a11y",
+  "validate:family-performance",
   "validate:fluency-family-browser",
   "validate:fluency-family-session",
   "validate:studio-enhancements-browser",
@@ -855,9 +860,20 @@ const COVERAGE = [
       "validate:html-experiences-browser",
     ],
   ],
+  // The family homework body sheet and the gate that holds it to the design tokens
+  [
+    /^(assets\/design\/family\/(body|tokens|family)\.css$|tools\/(validate-family-body-tokens\.mjs|lib\/family-design-(browser|checks)\.mjs|lib\/family-tokens\.mjs)$|scripts\/lib\/homework-(design-links|chrome)\.mjs$|scripts\/lib\/homework-legacy-shell\.css$)/,
+    [
+      "validate:family-body-tokens",
+      "validate:family-v3",
+      "validate:family-no-leakage",
+      "test",
+      "check",
+    ],
+  ],
   // Families hub, bilingual weekly homework pages, and guided notes
   [
-    /^(assets\/workspace\/|scripts\/lib\/family-workspace\.mjs$|tools\/family-workspace\.test\.mjs$|docs\/specs\/problem-workspace\.md$|families\/|assets\/(homework\/|family-paper\.css$|family-landing\.js$|learning-supports\/ls-supports\.css$)|data\/(family-game-pairs-es|family-landing-units)\.json$|data\/(?:family|student)-word-problems\/|lessons\/[^/]+\/(?:family|word-problems)\/|scripts\/(homework-[a-z-]+|lib\/homework-[a-z-]+|generate-homework|generate-homework-html|generate-family-pages|generate-lesson-support-pages|generate-family-week-notes|verify-family-pages|validate-homework-guided-notes|audit-homework-alignment)\.mjs$|scripts\/lib\/(family-landing|family-content|family-paper-css|family-word-problems|family-word-problems-page|family-word-problems-client|student-word-problems|student-word-problems-client|word-problems-check|word-problems-engine)\.mjs$|scripts\/generate-word-problems\.mjs$|tools\/(validate-family-exit-ticket|validate-family-games|verify-family-experience-browser|homework-experience\.test|family-landing\.test|family-paper\.test|family-word-problems\.test|student-word-problems\.test)\.mjs$|scripts\/generate-practice-workbook-index\.mjs$)/,
+    /^(assets\/workspace\/|scripts\/lib\/family-workspace\.mjs$|tools\/family-workspace\.test\.mjs$|docs\/specs\/problem-workspace\.md$|families\/|assets\/(homework\/|family-paper\.css$|family-landing\.js$|learning-supports\/ls-supports\.css$)|data\/(family-game-pairs-es|family-landing-units)\.json$|data\/(?:family|student)-word-problems\/|lessons\/[^/]+\/(?:family|word-problems)\/|scripts\/(homework-[a-z-]+|lib\/homework-[a-z0-9-]+|generate-homework|generate-homework-html|generate-family-pages|generate-lesson-support-pages|generate-family-week-notes|verify-family-pages|validate-homework-guided-notes|audit-homework-alignment)\.mjs$|scripts\/lib\/(family-landing|family-content|family-paper-css|family-word-problems|family-word-problems-page|family-word-problems-client|student-word-problems|student-word-problems-client|word-problems-check|word-problems-engine)\.mjs$|scripts\/generate-word-problems\.mjs$|tools\/(validate-family-exit-ticket|validate-family-games|verify-family-experience-browser|homework-experience\.test|family-landing\.test|family-paper\.test|family-word-problems\.test|student-word-problems\.test)\.mjs$|scripts\/generate-practice-workbook-index\.mjs$|scripts\/lib\/homework-actions\.runtime\.js$|data\/family-performance-budget\.json$|tools\/(verify-family-a11y|validate-family-performance)\.mjs$|tools\/lib\/family-(a11y|performance)[a-z-]*\.mjs$|tools\/(homework-a11y-markup|family-a11y-gate)\.test\.mjs$|docs\/family-homework-v3\/a11y-manual-checks\.md$)/,
     [
       "verify:families",
       "validate:homework",
@@ -865,10 +881,20 @@ const COVERAGE = [
       "validate:family-exit-ticket",
       "validate:family-games",
       "validate:family-experience-browser",
+      "validate:family-design-tokens",
+      "validate:family-visual",
+      "validate:family-body-tokens",
+      "validate:family-a11y",
+      "validate:family-performance",
       "validate:static",
       "audit:links",
       "test",
     ],
+  ],
+  // Family Math Studio design system, hero and visual gate (assets/design/family, hero modules, baselines)
+  [
+    /^(assets\/design\/family\/|design\/family-system\/|docs\/design\/family-|docs\/family-homework-v3\/(visual-baseline|design-system)\/|tools\/(validate-family-design-tokens|verify-family-visual|verify-family-design-system-browser)\.mjs$|tools\/lib\/family-(design|visual|tokens)[\w-]*\.mjs$|scripts\/lib\/(homework-hero|family-icons)\.mjs$|tools\/homework-hero\.test\.mjs$)/,
+    ["validate:family-design-tokens", "validate:family-visual", "test"],
   ],
   // Readiness & ESOL Reveal Math study guides
   [

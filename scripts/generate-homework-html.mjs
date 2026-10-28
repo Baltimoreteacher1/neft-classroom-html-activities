@@ -22,11 +22,8 @@ import {
 import { ANSWER_MATCH_JS } from "./homework-answer-match.mjs";
 import { HOMEWORK_GAME_JS } from "./homework-games.mjs";
 import {
-  ARENA_CSS,
-  BIG_IDEA_CSS,
   displayLessonId,
   familyTitlesEs,
-  GUIDED_NOTES_CSS,
   HOMEWORK_TABS_JS,
   homeworkPageLabel,
   learningTonight,
@@ -48,34 +45,28 @@ import {
   renderWorkbenchTools,
   selectQuickCheckProblems,
 } from "./homework-guided-notes.mjs";
-import { MATH_INPUT_CSS, MATH_INPUT_JS, renderMathKeypad } from "./homework-math-input.mjs";
-import { STUDIO_SKIN_CSS, STUDIO_SKIN_JS } from "./homework-studio-skin.mjs";
-import { getUnitTheme, renderUnitThemeCss } from "./homework-themes.mjs";
-import { renderVisualMathLab, VISUAL_LABS_CSS, VISUAL_LABS_JS } from "./homework-visual-labs.mjs";
-import { EDITORIAL_FONT_IMPORT, EDITORIAL_OVERRIDES } from "./lib/editorial-print.mjs";
+import { MATH_INPUT_JS, renderMathKeypad } from "./homework-math-input.mjs";
+import { STUDIO_SKIN_JS } from "./homework-studio-skin.mjs";
+import { renderVisualMathLab, VISUAL_LABS_JS } from "./homework-visual-labs.mjs";
+import { renderIconSprite } from "./lib/family-icons.mjs";
 import { vocabKey, withPlainDefinitions } from "./lib/family-plain-definitions.mjs";
-import {
-  stampForUnit,
-  WORKSPACE_CSS,
-  WORKSPACE_JS,
-  workspaceHtml,
-} from "./lib/family-workspace.mjs";
-import { BRIDGE_CSS } from "./lib/homework-bridge.mjs";
-import { CALM_CSS } from "./lib/homework-calm-css.mjs";
-import { CASE_FILE_CSS, CASE_FILE_JS, renderCaseFile } from "./lib/homework-case-file.mjs";
-import { CENTER_CSS } from "./lib/homework-center-css.mjs";
-import { CONFUSED_GROWNUP_CSS, CONFUSED_GROWNUP_JS } from "./lib/homework-confused-grownup.mjs";
-import { DOMINO_DUO_CSS, DOMINO_DUO_JS } from "./lib/homework-domino-duo.mjs";
+import { stampForUnit, WORKSPACE_JS, workspaceHtml } from "./lib/family-workspace.mjs";
+import { A11Y_CSS, a11yMarkup } from "./lib/homework-a11y.mjs";
+import { act, actOn, EL, EV, HOMEWORK_ACTIONS_JS } from "./lib/homework-actions.mjs";
+import { CASE_FILE_JS, renderCaseFile } from "./lib/homework-case-file.mjs";
+import { CONFUSED_GROWNUP_JS } from "./lib/homework-confused-grownup.mjs";
+import { LEGACY_SHELL_CSS } from "./lib/homework-design-links.mjs";
+import { DOMINO_DUO_JS } from "./lib/homework-domino-duo.mjs";
 import {
   GOAL_TARGET,
   pickMystery,
   renderExperienceDialogs,
   renderGoalPips,
 } from "./lib/homework-experience.mjs";
-import { EXPERIENCE_CSS } from "./lib/homework-experience-css.mjs";
 import { EXPERIENCE_JS } from "./lib/homework-experience-js.mjs";
+import { HERO_JS, READER_BOOT_JS } from "./lib/homework-hero.mjs";
 import { applyPracticeReview, loadPracticeReview } from "./lib/homework-practice-review.mjs";
-import { PRINT_CSS, PRINT_JS } from "./lib/homework-print.mjs";
+import { PRINT_JS } from "./lib/homework-print.mjs";
 import {
   answerKeyLines,
   familyCoachLevels,
@@ -87,17 +78,17 @@ import {
   spanishChoiceFeedback,
   tableModel,
 } from "./lib/homework-problems.mjs";
-import { SCRATCHPAD_CSS, SCRATCHPAD_JS } from "./lib/homework-scratchpad.mjs";
-import { SESSION_FLOW_CSS, SESSION_FLOW_JS } from "./lib/homework-session-flow.mjs";
+import { SCRATCHPAD_JS } from "./lib/homework-scratchpad.mjs";
+import { SESSION_FLOW_JS } from "./lib/homework-session-flow.mjs";
 import {
+  DESIGN_HEAD_MARK,
   externalizeSharedCode,
   staleSharedFiles,
   writeSharedFiles,
 } from "./lib/homework-shared-assets.mjs";
-import { TOUCH_CSS } from "./lib/homework-touch.mjs";
-import { renderPrintFooter, renderProblemAsk, renderTopBar } from "./lib/homework-v3-learn.mjs";
-import { V3_LEARN_CSS, V3_LEARN_JS } from "./lib/homework-v3-learn-assets.mjs";
-import { VOICE_CSS, VOICE_JS } from "./lib/homework-voice.mjs";
+import { renderPrintFooter, renderProblemAsk } from "./lib/homework-v3-learn.mjs";
+import { V3_LEARN_JS } from "./lib/homework-v3-learn-assets.mjs";
+import { VOICE_JS } from "./lib/homework-voice.mjs";
 import { workedExampleFor } from "./lib/homework-worked-example.mjs";
 import { compareFamilyHomeworkIds, generatesFamilyHomework } from "./lib/lesson-scope.mjs";
 import { isGeneratedFresh, writeGenerated } from "./lib/preserve-injected.mjs";
@@ -673,7 +664,7 @@ function lessonConfigs() {
 // ---------------------------------------------------------------------------
 
 // Neutral drawing space: the authored question supplies the mathematical method.
-const SVG_GRID = `<svg viewBox="0 0 320 160" class="hw-visual-svg" role="img" aria-label="Blank grid to draw a model"><rect x="10" y="10" width="300" height="140" fill="#ffffff" stroke="#12355b" stroke-width="1.5"/>${Array.from({ length: 14 }, (_, i) => `<line x1="${10 + (i + 1) * 20}" y1="10" x2="${10 + (i + 1) * 20}" y2="150" stroke="#d6e2ee" stroke-width="1"/>`).join("")}${Array.from({ length: 6 }, (_, i) => `<line x1="10" y1="${10 + (i + 1) * 20}" x2="310" y2="${10 + (i + 1) * 20}" stroke="#d6e2ee" stroke-width="1"/>`).join("")}</svg>`;
+const SVG_GRID = `<svg viewBox="0 0 320 160" class="hw-visual-svg" role="img" aria-label="Blank grid to draw a model"><rect x="10" y="10" width="300" height="140" fill="var(--fm-raised)" stroke="var(--fm-primary)" stroke-width="1.5"/>${Array.from({ length: 14 }, (_, i) => `<line x1="${10 + (i + 1) * 20}" y1="10" x2="${10 + (i + 1) * 20}" y2="150" stroke="var(--fm-m-whole)" stroke-width="1"/>`).join("")}${Array.from({ length: 6 }, (_, i) => `<line x1="10" y1="${10 + (i + 1) * 20}" x2="310" y2="${10 + (i + 1) * 20}" stroke="var(--fm-m-whole)" stroke-width="1"/>`).join("")}</svg>`;
 
 // Visual model + "show your work" space. Persists (saveState) and prints with lines.
 function renderWorkspace(pIdx, g, topic, customVisual = null, unit = 0) {
@@ -713,7 +704,7 @@ function renderWorkspace(pIdx, g, topic, customVisual = null, unit = 0) {
   return workspaceHtml({
     key: `p${pIdx}`,
     notesId: `work_${pIdx}`,
-    notesAttr: 'oninput="saveState();"',
+    notesAttr: actOn("input", "saveState"),
     caption,
     tip: g.coach ? { en: g.coach, es: g.coachEs } : null,
     model: customVisual || "",
@@ -850,7 +841,7 @@ function renderProblem(it, pIdx, topic = "fallback", opts = {}) {
             .map(
               (cIdx) => `
             <label class="mc-option-label" id="label_q_${pIdx}_${cIdx}">
-              <input type="radio" name="q_${pIdx}" value="${cIdx}" onchange="saveState(); updateProgress();">
+              <input type="radio" name="q_${pIdx}" value="${cIdx}" ${actOn("change", "saveState updateProgress", [])}>
               <span class="custom-radio"></span>
               <span class="choice-text">${bi(choices[cIdx], choicesEs[cIdx])}</span>
             </label>
@@ -885,7 +876,7 @@ function renderProblem(it, pIdx, topic = "fallback", opts = {}) {
             <div class="matching-row" data-term="${esc(p.term)}" data-correct="${esc(p.match)}">
               <div class="matching-term">${bi(p.term, p.termEs)}</div>
               <div class="matching-select-container">
-                <select name="q_${pIdx}_pair_${pairIdx}" class="custom-select matching-select" aria-label="${esc(p.term)} / ${esc(p.termEs || p.term)}" onchange="saveState(); updateProgress();">
+                <select name="q_${pIdx}_pair_${pairIdx}" class="custom-select matching-select" aria-label="${esc(p.term)} / ${esc(p.termEs || p.term)}" ${actOn("change", "saveState updateProgress", [])}>
                   ${langOption("", "Choose a match", "Elige una pareja")}
                   ${sortedMatches.map((m) => langOption(m, m, pairs.find((p) => p.match === m)?.matchEs)).join("")}
                 </select>
@@ -897,7 +888,7 @@ function renderProblem(it, pIdx, topic = "fallback", opts = {}) {
             .join("")}
         </div>
         <div class="drag-controls" style="margin-top:10px;">
-          <button class="btn btn-sm btn-secondary" type="button" onclick="resetMatchingProblem(${pIdx})">${bi("Reset matching", "Reiniciar parejas")}</button>
+          <button class="btn btn-sm btn-secondary" type="button" ${act("resetMatchingProblem", pIdx)}>${bi("Reset matching", "Reiniciar parejas")}</button>
         </div>
       </div>
     `;
@@ -917,13 +908,13 @@ function renderProblem(it, pIdx, topic = "fallback", opts = {}) {
             ${shuffledSteps
               .map(
                 (step, stepIdx) => `
-              <div class="drag-order-row" draggable="true" id="order_${pIdx}_${stepIdx}" data-step-text="${esc(step)}" ondragstart="handleOrderDragStart(event)" ondragend="handleDragEnd(event)">
+              <div class="drag-order-row" draggable="true" id="order_${pIdx}_${stepIdx}" data-step-text="${esc(step)}" ${actOn("dragstart", "handleOrderDragStart", [EV])} ${actOn("dragend", "handleDragEnd", [EV])}>
                 <span class="drag-order-handle" aria-hidden="true">☰</span>
                 <span class="drag-order-num">${stepIdx + 1}</span>
                 <span class="drag-order-text">${bi(step, it.itemsEs?.[norm.steps.indexOf(step)])}</span>
                 <div class="drag-order-controls">
-                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(${pIdx}, this, -1)" aria-label="Move up">▲</button>
-                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" onclick="moveOrderRowByEl(${pIdx}, this, 1)" aria-label="Move down">▼</button>
+                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" ${act("moveOrderRowByEl", pIdx, EL, -1)} aria-label="Move up">▲</button>
+                  <button type="button" class="btn btn-sm btn-secondary order-move-btn" ${act("moveOrderRowByEl", pIdx, EL, 1)} aria-label="Move down">▼</button>
                 </div>
               </div>`,
               )
@@ -931,7 +922,7 @@ function renderProblem(it, pIdx, topic = "fallback", opts = {}) {
           </div>
         </div>
         <div class="drag-controls">
-          <button class="btn btn-sm btn-secondary" type="button" onclick="resetDragOrder(${pIdx}); saveState(); updateProgress();">${bi("Reset order", "Reiniciar orden")}</button>
+          <button class="btn btn-sm btn-secondary" type="button" ${act("resetDragOrder saveState updateProgress", pIdx)}>${bi("Reset order", "Reiniciar orden")}</button>
         </div>
       </div>
     `;
@@ -953,16 +944,16 @@ function renderProblem(it, pIdx, topic = "fallback", opts = {}) {
             ${categories
               .map(
                 (cat) => `
-              <div class="drag-column" data-category-id="${esc(cat.id)}" ondragover="allowDrop(event)" ondrop="handleDrop(event, ${pIdx}, '${escAttr(cat.id)}')">
+              <div class="drag-column" data-category-id="${esc(cat.id)}" ${actOn("dragover", "allowDrop", [EV])} ${actOn("drop", "handleDrop", [EV, pIdx, escAttr(cat.id)])}>
                 <div class="drag-column-header">${bi(cat.label, cat.labelEs)}</div>
-                <div class="drag-column-slots" id="slots_${pIdx}_${esc(cat.id)}" ondragover="allowDrop(event)" ondrop="handleDrop(event, ${pIdx}, '${escAttr(cat.id)}')"></div>
+                <div class="drag-column-slots" id="slots_${pIdx}_${esc(cat.id)}" ${actOn("dragover", "allowDrop", [EV])} ${actOn("drop", "handleDrop", [EV, pIdx, escAttr(cat.id)])}></div>
               </div>`,
               )
               .join("")}
           </div>
           <div class="drag-source-section">
             <div class="drag-source-header">${bi("Drag a card, tap a card then a column, or choose a group from its menu.", "Arrastra una tarjeta, toca una tarjeta y una columna, o elige un grupo en su menú.")}</div>
-            <div class="drag-source-pile" id="pile_${pIdx}" ondragover="allowDrop(event)" ondrop="handleDrop(event, ${pIdx}, '')">
+            <div class="drag-source-pile" id="pile_${pIdx}" ${actOn("dragover", "allowDrop", [EV])} ${actOn("drop", "handleDrop", [EV, pIdx, ""])}>
               ${items
                 .map(
                   (item, itemIdx) => `
@@ -971,11 +962,11 @@ function renderProblem(it, pIdx, topic = "fallback", opts = {}) {
                      id="card_${pIdx}_${itemIdx}"
                      data-item-index="${itemIdx}"
                      data-correct-category="${esc(item.category)}"
-                     ondragstart="handleDragStart(event)"
-                     ondragend="handleDragEnd(event)">
+                     ${actOn("dragstart", "handleDragStart", [EV])}
+                     ${actOn("dragend", "handleDragEnd", [EV])}>
                   <span class="drag-handle" aria-hidden="true">☰</span>
                   <span class="card-text">${bi(item.text, item.textEs)}</span>
-                  <select class="mobile-cat-select" aria-label="${esc(item.text)} / ${esc(item.textEs || item.text)}" onchange="mobileMoveCard(this, 'card_${pIdx}_${itemIdx}', ${pIdx}); saveState(); updateProgress();">
+                  <select class="mobile-cat-select" aria-label="${esc(item.text)} / ${esc(item.textEs || item.text)}" ${actOn("change", "mobileMoveCard saveState updateProgress", [EL, `card_${pIdx}_${itemIdx}`, pIdx])}>
                     ${langOption("", "Move to…", "Mover a…")}
                     ${categories.map((cat) => langOption(cat.id, cat.label, cat.labelEs)).join("")}
                     ${langOption("", "Unsorted pile", "Sin clasificar")}
@@ -987,7 +978,7 @@ function renderProblem(it, pIdx, topic = "fallback", opts = {}) {
           </div>
         </div>
         <div class="drag-controls">
-          <button class="btn btn-sm btn-secondary" type="button" onclick="resetDragSort(${pIdx}); saveState(); updateProgress();">${bi("Reset sorting", "Reiniciar clasificación")}</button>
+          <button class="btn btn-sm btn-secondary" type="button" ${act("resetDragSort saveState updateProgress", pIdx)}>${bi("Reset sorting", "Reiniciar clasificación")}</button>
         </div>
       </div>
     `;
@@ -1035,7 +1026,7 @@ function renderProblem(it, pIdx, topic = "fallback", opts = {}) {
                                    data-correct="${esc(cell.correctValue)}" data-self-review="${cell.selfReview ? "true" : "false"}" data-correct-es="${esc(tableEs(cell.correctValue, cell.valEs))}"
                                    aria-label="${esc(headers[cIdx])}, row ${rIdx + 1}: ${esc(row[0]?.val || "")} / ${esc(tableEs(headers[cIdx], headersEs[cIdx]))}, fila ${rIdx + 1}"
                                    placeholder="${cell.selfReview ? "Explain / Explica" : "Answer / Respuesta"}"
-                                   oninput="saveState(); updateProgress();">
+                                   ${actOn("input", "saveState updateProgress", [])}>
                             <span class="feedback-badge"></span>
                           </div>
                         </td>
@@ -1093,7 +1084,7 @@ function renderProblem(it, pIdx, topic = "fallback", opts = {}) {
         <div class="error-controls">
           <div class="error-select-row">
             <label for="error_step_select_${pIdx}">${bi("Which step has the error?", "¿Qué paso tiene el error?")}</label>
-            <select id="error_step_select_${pIdx}" class="custom-select error-step-select" data-correct="${errorStep + 1}" onchange="saveState(); updateProgress();">
+            <select id="error_step_select_${pIdx}" class="custom-select error-step-select" data-correct="${errorStep + 1}" ${actOn("change", "saveState updateProgress", [])}>
               ${langOption("", "Choose a step", "Elige un paso")}
               ${workedExample.map((_, sIdx) => `<option value="${sIdx + 1}">Step ${sIdx + 1}</option>`).join("")}
             </select>
@@ -1102,7 +1093,7 @@ function renderProblem(it, pIdx, topic = "fallback", opts = {}) {
 
           <div class="error-explain-row">
             <label for="error_explain_input_${pIdx}">${bi("Explain the error and write the correct calculation:", "Explica el error y escribe el cálculo correcto:")}</label>
-            <textarea id="error_explain_input_${pIdx}" class="custom-textarea error-explain-textarea" placeholder="Describe what went wrong and write the correct steps..." oninput="saveState(); updateProgress();"></textarea>
+            <textarea id="error_explain_input_${pIdx}" class="custom-textarea error-explain-textarea" placeholder="Describe what went wrong and write the correct steps..." ${actOn("input", "saveState updateProgress", [])}></textarea>
             <span class="feedback-badge"></span>
           </div>
 
@@ -1137,7 +1128,7 @@ function renderProblem(it, pIdx, topic = "fallback", opts = {}) {
             ? `
           <div class="sentence-frame-card">
             <span class="sentence-frame-tag">${bi("Sentence starter:", "Inicio de oración:")}</span>
-            <button type="button" class="sentence-frame-text" data-starter-en="${esc(sentenceFrame)}" data-starter-es="${esc(sentenceFrameEs)}" onclick="insertSentenceStarter(${pIdx}, pickLangText(this.dataset.starterEn, this.dataset.starterEs))">${bi(sentenceFrame, sentenceFrameEs)}</button>
+            <button type="button" class="sentence-frame-text" data-starter-en="${esc(sentenceFrame)}" data-starter-es="${esc(sentenceFrameEs)}" ${act("hwInsertSentenceStarter", pIdx)}>${bi(sentenceFrame, sentenceFrameEs)}</button>
             <span class="click-to-insert-hint">${bi("Tap to insert", "Toca para insertar")}</span>
           </div>
         `
@@ -1151,7 +1142,7 @@ function renderProblem(it, pIdx, topic = "fallback", opts = {}) {
                     data-keywords="${esc(JSON.stringify(keywords))}"
                     data-key-numbers="${esc(JSON.stringify(keyNumbers))}"
                     placeholder="Write your mathematical explanation here..."
-                    oninput="saveState(); updateProgress();"></textarea>
+                    ${actOn("input", "saveState updateProgress", [])}></textarea>
           <span class="feedback-badge"></span>
         </div>
 
@@ -1161,7 +1152,7 @@ function renderProblem(it, pIdx, topic = "fallback", opts = {}) {
           <div class="word-bank-container">
             <div class="word-bank-label">${bi("Vocabulary: tap to insert", "Vocabulario: toca para insertar")}</div>
             <div class="word-bank-chips">
-              ${keywords.map((kw, i) => `<button type="button" class="word-chip" data-word-en="${esc(kw)}" data-word-es="${esc(it.keywordsEs?.[i] || kw)}" onclick="insertWord(${pIdx}, pickLangText(this.dataset.wordEn, this.dataset.wordEs))">${bi(kw, it.keywordsEs?.[i])}</button>`).join("")}
+              ${keywords.map((kw, i) => `<button type="button" class="word-chip" data-word-en="${esc(kw)}" data-word-es="${esc(it.keywordsEs?.[i] || kw)}" ${act("hwInsertWord", pIdx)}>${bi(kw, it.keywordsEs?.[i])}</button>`).join("")}
             </div>
           </div>
         `
@@ -1184,14 +1175,14 @@ function renderProblem(it, pIdx, topic = "fallback", opts = {}) {
     <section class="problem-section card" id="problem_${pIdx}" data-problem-type="${type}" data-topic="${esc(it.topic || it.skill || it.standard || topic)}"${problemSubtype ? ` data-problem-subtype="${problemSubtype}"` : ""}>
       <div class="problem-header-row">
         <div class="problem-number-badge"><span class="lang-en">${esc(opts.badgeEn || "Quick Check")}</span><span class="lang-es" lang="es">${esc(opts.badgeEs || opts.badgeEn || "Quick Check")}</span> ${opts.num || pIdx + 1}</div>
-        <button type="button" class="btn-listen-prob" onclick="speakHomeworkText(document.querySelector('#problem_${pIdx} .problem-stem .lang-en')?.textContent || '', document.querySelector('#problem_${pIdx} .problem-stem .lang-es')?.textContent || '')" title="Listen to question / Escuchar pregunta" aria-label="Listen to question">🔊 <span class="lang-en">Listen</span><span class="lang-es" lang="es">Escuchar</span></button>
+        <button type="button" class="btn-listen-prob" ${act("hwSpeakProblem", pIdx)} title="Listen to question / Escuchar pregunta" aria-label="Listen to question">🔊 <span class="lang-en">Listen</span><span class="lang-es" lang="es">Escuchar</span></button>
         ${typeChip}
       </div>
       <div class="problem-hint-row">${renderProblemHintButton(it, SVG_GRID, coachLadder)}</div>
       ${content}
       ${scaffold}
       <div class="problem-check-row">
-        <button type="button" class="btn btn-primary btn-check-one" onclick="checkProblem(${pIdx})" aria-label="Check answer for problem ${pIdx + 1}">
+        <button type="button" class="btn btn-primary btn-check-one" ${act("checkProblem", pIdx)} aria-label="Check answer for problem ${pIdx + 1}">
           ✓ Check This Problem / Revisar
         </button>
         <div class="problem-check-result" id="problem_result_${pIdx}" role="status" aria-live="polite" aria-atomic="true"></div>
@@ -1201,11 +1192,11 @@ function renderProblem(it, pIdx, topic = "fallback", opts = {}) {
         <p class="hw-intelligence-frame" data-intelligence-frame hidden></p>
         <p data-intelligence-coach hidden></p>
         <div class="hw-intelligence-actions" data-intelligence-diagnostics hidden>
-          <button type="button" class="btn btn-sm btn-secondary" onclick="hwChooseHelp(${pIdx}, 'calculation-check')"><span class="lang-en">Check my calculation</span><span class="lang-es" lang="es">Revisar mi cálculo</span></button>
-          <button type="button" class="btn btn-sm btn-secondary" onclick="hwChooseHelp(${pIdx}, 'strategy-clarification')"><span class="lang-en">See a model</span><span class="lang-es" lang="es">Ver un modelo</span></button>
-          <button type="button" class="btn btn-sm btn-secondary" onclick="hwChooseHelp(${pIdx}, 'language-access')"><span class="lang-en">Read in Spanish</span><span class="lang-es" lang="es">Leer en español</span></button>
+          <button type="button" class="btn btn-sm btn-secondary" ${act("hwChooseHelp", pIdx, "calculation-check")}><span class="lang-en">Check my calculation</span><span class="lang-es" lang="es">Revisar mi cálculo</span></button>
+          <button type="button" class="btn btn-sm btn-secondary" ${act("hwChooseHelp", pIdx, "strategy-clarification")}><span class="lang-en">See a model</span><span class="lang-es" lang="es">Ver un modelo</span></button>
+          <button type="button" class="btn btn-sm btn-secondary" ${act("hwChooseHelp", pIdx, "language-access")}><span class="lang-en">Read in Spanish</span><span class="lang-es" lang="es">Leer en español</span></button>
         </div>
-        <button type="button" class="btn btn-sm btn-primary" data-intelligence-next onclick="hwGoToNextPractice(${pIdx})" hidden></button>
+        <button type="button" class="btn btn-sm btn-primary" data-intelligence-next ${act("hwGoToNextPractice", pIdx)} hidden><span class="lang-en">Next</span><span class="lang-es" lang="es">Siguiente</span></button>
       </aside>
       ${renderProblemAsk(it, pIdx, coachLevels)}
       ${renderAnswerKey(it, pIdx, solvedVisualSvg)}
@@ -1331,72 +1322,11 @@ function generateHtml(lessonId, config) {
   const lessonModel = selectLessonInteractiveModel(config);
 
   const unitNum = parseInt(config.unit || String(lessonId).split("-")[0] || 1, 10);
-  const theme = getUnitTheme(unitNum);
-  const unit4NoPurpleCss =
-    unitNum === 4
-      ? `
-body[data-family-style] .powerup-tag { color:var(--fp-unit-ink) !important; background:var(--fp-unit-tint) !important; }
-body[data-family-style] .powerup-choice-btn:hover:not(:disabled) { border-color:var(--fp-unit) !important; background:var(--fp-wash) !important; }
-body[data-family-style] .tile-6 { background:var(--fp-unit-ink) !important; }
-body[data-family-style] .frame-stars { border-color:var(--fp-unit) !important; }
-body[data-family-style] .frame-stars .pb-frame-header { background:var(--fp-unit-ink) !important; }
-`
-      : "";
-  const familyBigIdeaCss =
-    config.familyBigIdeaFormat === "simple-visual"
-      ? `
-.big-idea .family-big-idea-piece { padding:clamp(16px,3vw,24px); border:2px solid #8fcfc8; border-radius:var(--radius-md); background:#f1fbf9; }
-.big-idea .family-big-idea-copy { display:flex; align-items:flex-start; gap:12px; }
-.big-idea .family-big-idea-copy p { margin:0; font-size:20px; line-height:1.45; font-weight:700; }
-.big-idea .family-big-idea-copy p.lang-es { margin-left:auto; padding-left:12px; border-left:2px solid #8fcfc8; }
-.big-idea .family-big-idea-visual { margin:16px auto 0; max-width:620px; padding:14px; border:1px solid #c7e5df; border-radius:14px; background:#fff; text-align:center; }
-.big-idea .family-big-idea-visual p { margin:10px 0 0; font-size:16px; line-height:1.4; }
-.big-idea .family-visual-equation,.big-idea .family-estimate-values,.big-idea .family-discount-equation,.big-idea .family-whole-labels { display:flex; align-items:center; justify-content:center; flex-wrap:wrap; gap:12px; font-size:clamp(20px,4vw,30px); }
-.big-idea .family-visual-equation > strong,.big-idea .family-estimate-values > span,.big-idea .family-estimate-values > strong,.big-idea .family-discount-equation > span,.big-idea .family-discount-equation > strong,.big-idea .family-whole-labels > strong { padding:6px 10px; border-radius:10px; background:#eef7f5; }
-.big-idea .family-estimate-values > strong,.big-idea .family-whole-labels > strong:last-child { background:#d8f1ea; }
-.big-idea .family-percent-grid { display:grid; grid-template-columns:repeat(10,1fr); gap:3px; width:min(100%,220px); margin:12px auto 0; }
-.big-idea .family-percent-grid span { aspect-ratio:1; border:1px solid #b8c8c5; border-radius:2px; background:#fff; }
-.big-idea .family-percent-grid span.is-filled,.big-idea .family-whole-bar span.is-filled { background:#31a889; border-color:#247b65; }
-.big-idea .family-equivalent-forms { display:flex; align-items:center; justify-content:center; gap:10px; }
-.big-idea .family-form-card { min-width:110px; padding:10px; border-radius:12px; background:#eef7f5; }
-.big-idea .family-form-card span { display:block; font-size:14px; }
-.big-idea .family-form-card strong { display:block; margin-top:4px; font-size:clamp(22px,4vw,30px); }
-.big-idea .family-visual-equals { font-size:26px; font-weight:800; }
-.big-idea .family-discount-equation small { display:block; font-size:13px; font-weight:600; }
-.big-idea .family-discount-bar,.big-idea .family-whole-bar { display:grid; gap:4px; margin:14px auto 0; }
-.big-idea .family-discount-bar { grid-template-columns:repeat(4,1fr); max-width:460px; }
-.big-idea .family-discount-bar span,.big-idea .family-whole-bar span { height:26px; border:1px solid #9bbab3; border-radius:4px; background:#e6f3f0; }
-.big-idea .family-discount-bar span:first-child { background:#f6d78b; border-color:#d9ad4b; }
-.big-idea .family-discount-labels { display:flex; justify-content:space-between; gap:12px; max-width:460px; margin:8px auto 0; font-size:14px; font-weight:700; }
-.big-idea .family-whole-labels { justify-content:space-between; font-size:18px; }
-.big-idea .family-whole-bar { grid-template-columns:repeat(10,1fr); max-width:460px; }
-@media (max-width:620px) { .big-idea .family-big-idea-copy { display:block; } .big-idea .family-big-idea-copy p { font-size:18px; } .big-idea .family-big-idea-copy p.lang-es { margin:8px 0 0; padding:8px 0 0; border-left:0; border-top:1px solid #8fcfc8; } .big-idea .family-big-idea-copy .btn-read-aloud { margin-top:10px; } .big-idea .family-form-card { min-width:0; flex:1 1 70px; } .big-idea .family-equivalent-forms { gap:5px; } .big-idea .family-whole-labels { font-size:15px; } }
-body[data-family-style] [id^="hw_panel_"] p { font-size:19px!important; line-height:1.5!important; }
-body[data-family-style] [id^="hw_panel_"] li,body[data-family-style] [id^="hw_panel_"] label,body[data-family-style] .problem-stem,body[data-family-style] .choice-text { font-size:19px!important; line-height:1.45!important; }
-body[data-family-style] .visual-lab-heading>p,body[data-family-style] .visual-lab-lang-note,body[data-family-style] .visual-representation-card p,body[data-family-style] .visual-coach-q { font-size:19px!important; line-height:1.5!important; }
-body[data-family-style] .hw-hero-lead,body[data-family-style] .hw-experience-description,body[data-family-style] .hw-route-note,body[data-family-style] .hw-route-chooser>p,body[data-family-style] .hw-route-option { font-size:18px!important; line-height:1.45!important; }
-body[data-family-style] .homework-tab-btn { font-size:18px!important; }
-`
-      : "";
-  const themeCss = `${renderUnitThemeCss(theme)}\n${unit4NoPurpleCss}\n${familyBigIdeaCss}`;
   const familyStyle = ["arcade", "case-file", "unlock"].includes(
     config.familyNotes?.experience?.style,
   )
     ? config.familyNotes.experience.style
     : "standard";
-  const familyStyleCss =
-    familyStyle === "standard"
-      ? ""
-      : `
-.hw-experience-banner { display:flex; align-items:center; gap:12px; margin:14px 0 0; padding:12px 14px; color:#fff; background:rgba(255,255,255,.11); border:1px solid rgba(255,255,255,.45); border-radius:14px; }
-.hw-experience-icon { flex:0 0 auto; font-size:26px; line-height:1; }
-.hw-experience-copy { min-width:0; }
-.hw-experience-title { margin:0; font-weight:800; letter-spacing:.02em; }
-.hw-experience-description { margin:2px 0 0; color:#f2f6fb; font-size:14px; line-height:1.4; }
-.hw-experience-banner .lang-es { color:inherit; }
-@media (max-width:550px) { .hw-experience-banner { align-items:flex-start; padding:10px 12px; } .hw-experience-description { font-size:13px; } }
-`;
-
   const mystery = pickMystery(challenge, basic.length + warmup.length);
   const welcomeHtml = renderWelcomeBanner(config, lessonId);
   const quickCheckIntroHtml = renderQuickCheckIntro(coreSelected.length, moreSelected.length > 0);
@@ -1483,7 +1413,6 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
   );
   const helpModalHtml = renderHelpModal();
   const refrigeratorSheetHtml = renderRefrigeratorSheet(config, lessonId);
-  const coLearningHudHtml = renderTopBar();
   const printSocraticFooterHtml = renderPrintFooter(config, lessonId);
   const answerSheetHtml = renderAnswerSheet(
     [
@@ -1512,2663 +1441,11 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Family Math Studio — ${esc(homeworkPageLabel(lessonId))}: ${esc(title)}</title>
-<link href="/assets/fonts/outfit-hanken-grotesk-56e206.css" rel="stylesheet">
-<link href="/assets/fonts/fraunces-hanken-grotesk-e8a3b5.css" rel="stylesheet">
+<script>${READER_BOOT_JS}</script>
+${DESIGN_HEAD_MARK}
 <style>
-${EDITORIAL_FONT_IMPORT}
-:root {
-  --navy: #12355b;
-  --navy-light: #18466f;
-  --teal: #1fa6a2;
---teal-ink: #0c6f6b;
-  /* Text-safe partner for --coral, which is a fill colour only (3.0:1 on white). */
-  --coral-ink: #9c4326;
-  --teal-light: #dff2ee;
-  --amber: #f2c15b;
-  --amber-light: #fef7e0;
-  --cream: #f7f4ec;
-  --coral: #d9795d;
-  --coral-light: #fce6de;
-  --white: #ffffff;
-  --bg: var(--cream);
-  --card: #ffffff;
-  --ink: #21313f;
-  --muted: #5f6f80;
-  --line: #d7e2ed;
-
-  --success: #0f7c4a;
-  --success-bg: #e6f7ef;
-  --error: #b64e2f;
-  --error-bg: #fef0ec;
-  --hint: #875f00;
-  --hint-bg: #fef7e0;
-
-  --radius-sm: 8px;
-  --radius-md: 14px;
-  --radius-lg: 22px;
-
-  --font-display: "Outfit", system-ui, sans-serif;
-  --font-body: "Hanken Grotesk", Calibri, "Segoe UI", system-ui, sans-serif;
-
-  --shadow: 0 8px 30px rgba(18, 53, 91, 0.05);
-  --shadow-sm: 0 4px 12px rgba(18, 53, 91, 0.02);
-}
-
-/*hw-theme:begin*/
-${themeCss}
-/*hw-theme:end*/
-
-/* Save/Resume normally adds a shortcut to the site-wide workbench. Family
-   homework owns a stricter contract: only the lesson-matched manipulative may
-   appear, so the general all-tools shortcut stays out of this experience. */
-#nsr-workbench { display: none !important; }
-
-/* Enhancements: Share bar, Standard details, Time remaining, Kitchen table, Audio buttons */
-.hw-hero-share-bar {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin: 14px 0 6px 0;
-}
-.hw-share-btn {
-  font-size: 0.82rem;
-  padding: 5px 10px;
-  background: rgba(255, 255, 255, 0.15);
-  color: #ffffff;
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-  text-decoration: none;
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-}
-.hw-share-btn:hover {
-  background: rgba(255, 255, 255, 0.3);
-  color: #ffffff;
-  text-decoration: none;
-}
-.hw-standard-details {
-  margin: 6px 0 10px 0;
-  font-size: 0.85rem;
-}
-.hw-standard-summary {
-  cursor: pointer;
-  color: var(--amber-light);
-  font-weight: 600;
-}
-.hw-standard-desc {
-  margin: 4px 0 0 0;
-  font-size: 0.8rem;
-  color: var(--teal-light);
-}
-.hw-tab-meta-row {
-  display: flex;
-  justify-content: flex-end;
-  padding: 4px 12px 2px 12px;
-}
-.hw-time-remaining {
-  font-size: 0.8rem;
-  font-weight: 700;
-  color: var(--navy);
-  background: var(--amber-light);
-  padding: 2px 8px;
-  border-radius: 12px;
-  border: 1px solid var(--line);
-}
-.btn-listen-prob {
-  background: var(--teal-light);
-  border: 1px solid var(--teal);
-  color: var(--teal-ink);
-  font-size: 0.78rem;
-  font-weight: 700;
-  padding: 3px 8px;
-  border-radius: 12px;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  margin-left: 6px;
-}
-.btn-listen-prob:hover {
-  background: var(--teal);
-  color: #ffffff;
-}
-.kitchen-table-card {
-  margin: 20px 0;
-  padding: 18px 20px;
-  background: #fff;
-  border: 2px solid var(--teal);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-sm);
-}
-.kt-badge {
-  font-size: 0.72rem;
-  font-weight: 800;
-  letter-spacing: 0.5px;
-  color: var(--teal-ink);
-  margin-bottom: 6px;
-}
-.kt-title {
-  margin: 0 0 8px 0;
-  font-size: 1.15rem;
-  color: var(--navy);
-}
-.kt-materials {
-  font-size: 0.9rem;
-  color: var(--muted);
-  margin: 0 0 10px 0;
-}
-.kt-steps {
-  margin: 0 0 10px 0;
-  padding-left: 20px;
-  line-height: 1.6;
-}
-.kt-why {
-  margin: 8px 0 0 0;
-  font-size: 0.85rem;
-  font-style: italic;
-  color: var(--muted);
-}
-.cert-streak-box {
-  margin-top: 8px;
-  padding: 6px 12px;
-  background: var(--amber-light);
-  border-radius: 8px;
-  color: #78350f;
-  font-size: 0.9rem;
-}
-
-@media print {
-  body.print-problems-only [data-tab-panel]:not([data-tab-panel="check"]),
-  body.print-problems-only .hw-hero,
-  body.print-problems-only .homework-tab-chrome,
-  body.print-problems-only .hw-stuck-fab,
-  body.print-problems-only .workbench-drawer,
-  body.print-problems-only .more-practice,
-  body.print-problems-only .tab-flow-nav,
-  body.print-problems-only .problem-check-row {
-    display: none !important;
-  }
-  body.print-problems-only [data-tab-panel="check"] {
-    display: block !important;
-  }
-}
-
-* { box-sizing: border-box; }
-body {
-  margin: 0;
-  background: var(--bg);
-  color: var(--ink);
-  font-family: var(--font-body);
-  line-height: 1.5;
-  padding-bottom: calc(var(--hw-status-height, 104px) + var(--hw-tab-height, 72px) + 16px);
-}
-
-a { color: var(--navy); text-decoration: none; font-weight: 700; }
-a:hover { text-decoration: underline; }
-
-.container {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 24px 16px;
-}
-
-/* Header Styles */
-header.homework-header {
-  margin-bottom: 24px;
-  background: linear-gradient(135deg, var(--navy), var(--navy-light));
-  color: var(--white);
-  padding: 32px;
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow);
-  position: relative;
-  overflow: hidden;
-}
-
-header.homework-header::after {
-  content: "";
-  position: absolute;
-  top: -50px;
-  right: -50px;
-  width: 150px;
-  height: 150px;
-  background: radial-gradient(circle, rgba(31, 166, 162, 0.15) 0%, transparent 70%);
-  border-radius: 50%;
-}
-
-.back-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  color: var(--amber);
-  font-family: var(--font-display);
-  font-weight: 600;
-  font-size: 14px;
-  margin-bottom: 12px;
-}
-
-.back-link:hover {
-  color: var(--white);
-  text-decoration: none;
-}
-
-.header-meta {
-  font-family: var(--font-display);
-  font-size: 13px;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--teal-light);
-  font-weight: 800;
-  margin: 0 0 6px 0;
-}
-
-header.homework-header h1 {
-  font-family: var(--font-display);
-  font-size: 32px;
-  font-weight: 800;
-  margin: 0 0 16px 0;
-  line-height: 1.2;
-}
-
-.objectives-card {
-  background: rgba(255, 255, 255, 0.08);
-  border-radius: var(--radius-md);
-  padding: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.objective-row {
-  margin-bottom: 8px;
-  font-size: 14.5px;
-}
-.objective-row:last-child { margin-bottom: 0; }
-.objective-badge {
-  background: var(--amber);
-  color: var(--navy);
-  font-weight: 800;
-  font-size: 11px;
-  padding: 2px 8px;
-  border-radius: 99px;
-  text-transform: uppercase;
-  margin-right: 6px;
-  display: inline-block;
-}
-
-/* Cards & Generic Layout */
-.card {
-  background: var(--card);
-  border-radius: var(--radius-md);
-  padding: 24px;
-  margin-bottom: 20px;
-  border: 1px solid var(--line);
-  box-shadow: var(--shadow);
-}
-
-.section-title {
-  font-family: var(--font-display);
-  color: var(--navy);
-  font-size: 20px;
-  margin: 0 0 16px 0;
-}
-
-/* Family guide */
-.family-guide {
-  background: linear-gradient(180deg, #fffdf8 0%, var(--white) 100%);
-  border-color: #ead9b8;
-}
-
-.family-guide-header {
-  display: flex;
-  gap: 14px;
-  align-items: flex-start;
-  margin-bottom: 16px;
-}
-
-.family-guide-emoji {
-  font-size: 34px;
-  line-height: 1;
-  flex-shrink: 0;
-}
-
-.family-guide-title {
-  margin-bottom: 4px;
-}
-
-.family-guide-sub {
-  margin: 0;
-  color: var(--muted);
-  font-size: 14.5px;
-}
-
-.family-guide-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 14px;
-  margin-bottom: 14px;
-}
-
-.family-panel {
-  background: var(--cream);
-  border: 1px solid var(--line);
-  border-radius: var(--radius-sm);
-  padding: 14px 16px;
-}
-
-.family-panel-heading {
-  margin: 0 0 8px 0;
-  font-family: var(--font-display);
-  font-size: 14px;
-  color: var(--navy);
-}
-
-.family-tip-list {
-  margin: 0;
-  padding-left: 18px;
-  font-size: 14px;
-  color: var(--ink);
-}
-
-.family-tip-list li {
-  margin-bottom: 6px;
-}
-
-.family-try-text {
-  margin: 0;
-  font-size: 14.5px;
-  line-height: 1.45;
-  font-weight: 600;
-  color: var(--navy);
-}
-
-.family-print-note {
-  margin: 0;
-  font-size: 13px;
-  color: var(--muted);
-}
-
-.try-at-home {
-  background: linear-gradient(180deg, var(--teal-light) 0%, var(--white) 100%);
-  border-color: #b8ddd8;
-}
-
-.try-narrative {
-  margin: 0 0 12px 0;
-  font-size: 15px;
-  line-height: 1.5;
-  color: var(--navy);
-  font-weight: 600;
-}
-
-.try-challenge {
-  margin: 0;
-  padding: 12px 14px;
-  background: var(--amber-light);
-  border-radius: var(--radius-sm);
-  border-left: 3px solid var(--amber);
-  font-size: 14px;
-  color: var(--ink);
-}
-
-.family-problem-tip {
-  margin: -8px 0 14px 0;
-  padding: 10px 12px;
-  background: var(--amber-light);
-  border-left: 3px solid var(--amber);
-  border-radius: var(--radius-sm);
-  font-size: 13.5px;
-  color: var(--hint);
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-.family-problem-tip .lang-es {
-  color: var(--muted);
-  font-size: 13px;
-}
-
-/* A left rule rather than a third teal slab: the problem card already carries a
-   teal hint button and a teal step guide, and three identical fills flattened
-   the hierarchy into noise. */
-.family-hint-box {
-  margin-bottom: 14px;
-  padding: 2px 0 2px 14px;
-  background: none;
-  border-left: 3px solid var(--teal);
-  border-radius: 0;
-  font-size: 14px;
-  color: var(--navy);
-}
-
-.family-hint-box p {
-  margin: 0 0 6px 0;
-}
-
-.family-hint-box p:last-child {
-  margin-bottom: 0;
-}
-
-/* Vocabulary Flashcards */
-.vocab-family-note {
-  margin: 0 0 16px 0;
-  font-size: 14px;
-  color: var(--muted, #64748b);
-  line-height: 1.45;
-}
-
-
-.vocab-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 20px;
-  margin-bottom: 24px;
-  width: 100%;
-}
-
-@media (max-width: 640px) {
-  .vocab-container {
-    grid-template-columns: 1fr;
-    gap: 16px;
-  }
-}
-
-.vocab-card {
-  position: relative;
-  height: 410px;
-  perspective: 1200px;
-  cursor: pointer;
-  outline: none;
-  user-select: none;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.vocab-card:focus-visible {
-  outline: 3px solid var(--teal, #1fa6a2);
-  outline-offset: 4px;
-  border-radius: 20px;
-}
-
-.vocab-card-inner {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-  transform-style: preserve-3d;
-  -webkit-transform-style: preserve-3d;
-}
-
-.vocab-card.flipped .vocab-card-inner {
-  transform: rotateY(180deg);
-}
-
-.vocab-card-front,
-.vocab-card-back {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  -webkit-backface-visibility: hidden;
-  backface-visibility: hidden;
-  border-radius: 18px;
-  display: flex;
-  flex-direction: column;
-  box-sizing: border-box;
-}
-
-.vocab-card-front {
-  background: var(--white, #ffffff);
-  color: var(--navy, #12355b);
-  border: 1.5px solid #e2e8f0;
-  box-shadow: 0 4px 16px rgba(18, 53, 91, 0.06);
-  padding: 16px 18px;
-  justify-content: space-between;
-  transform: rotateY(0deg);
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-
-.vocab-card:hover .vocab-card-front {
-  border-color: #cbd5e1;
-  box-shadow: 0 8px 24px rgba(18, 53, 91, 0.1);
-}
-
-.vocab-card.is-known .vocab-card-front {
-  border-color: rgba(16, 185, 129, 0.45);
-}
-
-.vocab-card-top-bar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  margin-bottom: 6px;
-  position: relative;
-  z-index: 2;
-}
-
-.vocab-speak-btn,
-.vocab-master-toggle {
-  background: rgba(18, 53, 91, 0.05);
-  border: 1px solid rgba(18, 53, 91, 0.12);
-  border-radius: 999px;
-  padding: 5px 11px;
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--navy, #12355b);
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  cursor: pointer;
-  transition: all 0.15s ease;
-  line-height: 1;
-}
-
-.vocab-speak-btn:hover {
-  background: #e6fffa;
-  border-color: #1fa6a2;
-  color: #0d766e;
-  transform: scale(1.03);
-}
-
-.vocab-master-toggle:hover {
-  background: rgba(18, 53, 91, 0.09);
-  transform: scale(1.03);
-}
-
-.vocab-master-toggle.is-mastered {
-  color: #b45309;
-  background: #fef3c7;
-  border-color: #f59e0b;
-}
-
-.vocab-thumb-wrap {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin: 6px 0;
-}
-
-/* The pictures are 160x120 drawings with 9-11px labels inside them. At 76px those labels were about 5px tall, so the
-   picture could not be read. Shown at up to 260px the labels are 14-17px, which a child can read without zooming. */
-.vocab-thumb {
-  width: min(100%, 260px);
-  height: auto;
-  aspect-ratio: 4 / 3;
-  object-fit: contain;
-  border-radius: 12px;
-  background: var(--cream, #faf8f5);
-  border: 1px solid #e2e8f0;
-  padding: 0;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
-}
-
-.family-specific-model svg {
-  display: block;
-  width: 100%;
-  max-height: min(60vh, 380px);
-}
-
-.vocab-front-body {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  margin-bottom: 8px;
-  overflow-y: auto;
-  scrollbar-width: none;
-}
-
-.vocab-front-body .vocab-term {
-  margin: 0;
-  font-family: var(--font-display, "Outfit", sans-serif);
-  font-size: 18px;
-  font-weight: 800;
-  color: var(--navy, #12355b);
-  line-height: 1.25;
-}
-
-.vocab-front-body .vocab-es {
-  color: #64748b;
-  font-style: italic;
-  font-size: 13.5px;
-  margin: 3px 0 0 0;
-  line-height: 1.3;
-}
-
-.vocab-front-body .vocab-visual-hint {
-  font-size: 12px;
-  background: #f0fdfa;
-  color: #134e4a;
-  border-left: 3px solid #1fa6a2;
-  padding: 6px 10px;
-  border-radius: 6px;
-  margin-top: 8px;
-  text-align: left;
-  width: 100%;
-  box-sizing: border-box;
-  line-height: 1.4;
-}
-
-.flip-prompt {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  font-size: 11.5px;
-  font-weight: 700;
-  color: #0d9488;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  padding-top: 10px;
-  border-top: 1px dashed #e2e8f0;
-  margin-top: auto;
-  width: 100%;
-}
-
-.flip-prompt .flip-icon {
-  font-size: 14px;
-}
-
-/* Back Face */
-.vocab-card-back {
-  background: linear-gradient(155deg, #12355b 0%, #071a2c 100%);
-  color: #ffffff;
-  border: 1.5px solid rgba(255, 255, 255, 0.15);
-  box-shadow: 0 8px 24px rgba(7, 26, 44, 0.25);
-  padding: 16px 18px;
-  justify-content: space-between;
-  transform: rotateY(180deg);
-}
-
-.vocab-back-header {
-  text-align: center;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.14);
-  padding-bottom: 8px;
-  margin-bottom: 8px;
-}
-
-.vocab-back-badge {
-  display: inline-block;
-  font-size: 9.5px;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: #a5f3fc;
-  background: rgba(165, 243, 252, 0.12);
-  padding: 2px 8px;
-  border-radius: 999px;
-  margin-bottom: 4px;
-}
-
-.vocab-back-term {
-  margin: 0;
-  font-family: var(--font-display, "Outfit", sans-serif);
-  font-size: 17px;
-  font-weight: 800;
-  color: #ffffff;
-  line-height: 1.25;
-}
-
-.vocab-back-term-es {
-  color: #94a3b8;
-  font-style: italic;
-  font-size: 12.5px;
-  margin: 2px 0 0 0;
-}
-
-.vocab-back-content {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  text-align: left;
-  overflow-y: auto;
-  padding: 4px 0;
-  margin-bottom: 8px;
-  scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.25) transparent;
-}
-
-.vocab-back-content::-webkit-scrollbar {
-  width: 4px;
-}
-.vocab-back-content::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.25);
-  border-radius: 2px;
-}
-
-.vocab-def {
-  font-size: 14px;
-  font-weight: 500;
-  line-height: 1.45;
-  color: #ffffff;
-  margin: 0 0 8px 0;
-}
-
-.vocab-def-es {
-  font-size: 12.5px;
-  color: #fef08a;
-  line-height: 1.4;
-  margin: 0 0 8px 0;
-  font-style: italic;
-  display: flex;
-  align-items: flex-start;
-  gap: 6px;
-}
-
-.vocab-def-es .lang-tag {
-  display: inline-block;
-  background: rgba(254, 240, 138, 0.2);
-  color: #fef08a;
-  font-size: 10px;
-  font-weight: 800;
-  padding: 1px 5px;
-  border-radius: 4px;
-  font-style: normal;
-  flex-shrink: 0;
-  margin-top: 1px;
-}
-
-.vocab-back-visual {
-  font-size: 11.5px;
-  color: #e2e8f0;
-  background: rgba(255, 255, 255, 0.08);
-  border-left: 3px solid #1fa6a2;
-  padding: 6px 8px;
-  border-radius: 5px;
-  line-height: 1.35;
-  display: flex;
-  align-items: flex-start;
-  gap: 6px;
-  margin-top: 4px;
-}
-
-.vocab-card-back-actions {
-  display: flex;
-  gap: 10px;
-  justify-content: center;
-  align-items: center;
-  margin-bottom: 6px;
-  position: relative;
-  z-index: 2;
-}
-
-.vocab-btn-gotit,
-.vocab-btn-review {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  border-radius: 8px;
-  padding: 7px 12px;
-  font-size: 12px;
-  cursor: pointer;
-  line-height: 1.2;
-}
-
-.vocab-btn-gotit {
-  flex: 1 1 120px;
-  max-width: 145px;
-  background: #047857;
-  color: #ffffff;
-  border: none;
-  font-weight: 700;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  transition: background 0.15s ease, transform 0.1s ease;
-}
-
-.vocab-btn-gotit:hover {
-  background: #065f46;
-  transform: translateY(-1px);
-}
-
-.vocab-btn-review {
-  flex: 1 1 120px;
-  max-width: 145px;
-  background: rgba(255, 255, 255, 0.14);
-  color: #ffffff;
-  border: 1.5px solid rgba(255, 255, 255, 0.35);
-  font-weight: 600;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
-  transition: background 0.15s ease, transform 0.1s ease;
-}
-
-.vocab-btn-review:hover {
-  background: rgba(255, 255, 255, 0.22);
-  transform: translateY(-1px);
-}
-
-.flip-back-prompt {
-  text-align: center;
-  font-size: 11px;
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.7);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  padding-top: 4px;
-}
-
-/* Card language polish: prevent global bilingual borders inside cards */
-.vocab-card-front .lang-es,
-.vocab-card-back .lang-es {
-  border-left: none !important;
-  padding-left: 0 !important;
-}
-
-/* Ensure high contrast on card back in all language modes */
-.vocab-card-back .vocab-back-term,
-.vocab-card-back .vocab-back-term .lang-en,
-.vocab-card-back .vocab-back-term .lang-es {
-  color: #ffffff !important;
-}
-
-.vocab-card-back .vocab-back-term-es,
-.vocab-card-back .vocab-back-term-es .lang-es {
-  color: #94a3b8 !important;
-  margin: 2px 0 0 0;
-  font-style: italic;
-  font-size: 13px;
-}
-
-.vocab-card-back .vocab-def-es {
-  color: #fef08a !important;
-  margin: 0 0 8px 0;
-  font-style: italic;
-  font-size: 13px;
-  line-height: 1.45;
-}
-
-.vocab-card-back-actions .btn .lang-en + .lang-es::before {
-  content: " · ";
-  opacity: 0.8;
-}
-
-.vocab-card-back-actions .btn .lang-es {
-  color: inherit !important;
-}
-
-.flip-prompt .lang-en + .lang-es::before,
-.flip-back-prompt .lang-en + .lang-es::before {
-  content: " · ";
-  opacity: 0.7;
-}
-
-.flip-back-prompt .lang-es {
-  color: rgba(255, 255, 255, 0.7) !important;
-}
-
-.flip-prompt .lang-es {
-  color: #0d9488 !important;
-}
-
-/* Bilingual subtitle pairing: show subtitle in bilingual, title-only in mono-lingual */
-body.lang-mode-bilingual .vocab-term .lang-es,
-body.lang-mode-bilingual .vocab-back-term .lang-es {
-  display: none !important;
-}
-
-body.lang-mode-es .vocab-es,
-body.lang-mode-es .vocab-back-term-es {
-  display: none !important;
-}
-
-body.lang-mode-en .vocab-es,
-body.lang-mode-en .vocab-back-term-es {
-  display: none !important;
-}
-
-body.lang-mode-es .vocab-card:not(:has(.vocab-def-es)) .vocab-def {
-  display: block !important;
-}
-
-/* Practice Problem Cards */
-.problem-section {
-  position: relative;
-}
-
-.problem-check-row {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-top: 18px;
-  padding-top: 16px;
-  border-top: 2px solid var(--teal-light);
-}
-
-.btn-check-one {
-  align-self: flex-start;
-  min-height: 44px;
-  font-size: 14px;
-}
-
-/* Family answer key — one per problem, closed until a parent opens it. */
-.hw-answer-key {
-  margin-top: 12px;
-  border: 1.5px dashed var(--success);
-  border-radius: var(--radius-sm);
-  background: var(--success-bg);
-}
-.hw-answer-key > summary {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  min-height: 44px;
-  padding: 8px 12px;
-  cursor: pointer;
-  list-style: none;
-  font-weight: 700;
-  font-size: 14px;
-  color: var(--success);
-}
-.hw-answer-key > summary::-webkit-details-marker { display: none; }
-.hw-answer-key > summary::after {
-  content: "▸";
-  margin-left: auto;
-  transition: transform 0.15s ease;
-}
-.hw-answer-key[open] > summary::after { transform: rotate(90deg); }
-.hw-answer-key > summary:focus-visible {
-  outline: 3px solid var(--teal);
-  outline-offset: 2px;
-  border-radius: var(--radius-sm);
-}
-.hw-answer-key-body {
-  padding: 4px 14px 12px;
-  color: var(--ink);
-  font-size: 14px;
-  line-height: 1.5;
-}
-.hw-answer-key-label {
-  margin: 0 0 6px;
-  font-size: 12.5px;
-  font-weight: 700;
-  color: var(--success);
-}
-.hw-answer-sheet { display: none; }
-@media print {
-  body.print-answer-sheet > *:not(.hw-answer-sheet) { display: none !important; }
-  body.print-answer-sheet .hw-answer-sheet { display: block !important; font-size: 12pt; color: #000; }
-  body.print-answer-sheet .hw-answer-sheet h2 { font-size: 16pt; margin: 0 0 6pt; }
-  body.print-answer-sheet .hw-answer-sheet ol > li { margin: 0 0 8pt; break-inside: avoid; }
-  body.print-answer-sheet .hw-answer-sheet ul { margin: 2pt 0 0; padding-left: 16pt; }
-}
-
-.hw-answer-key-try {
-  margin: 0 0 8px;
-  font-size: 13px;
-  color: var(--muted);
-}
-
-.hw-answer-key-lines {
-  margin: 0;
-  padding-left: 20px;
-}
-.hw-answer-key-lines li {
-  margin: 2px 0;
-  font-weight: 600;
-}
-.hw-answer-key-note {
-  margin: 8px 0 0;
-  font-size: 13.5px;
-}
-@media print {
-  .hw-answer-key { display: none !important; }
-}
-
-.problem-check-result {
-  font-size: 14px;
-  font-weight: 600;
-  line-height: 1.45;
-  padding: 10px 12px;
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--line);
-  background: var(--cream);
-  color: var(--muted);
-  min-height: 0;
-}
-
-.problem-check-result:empty {
-  display: none;
-}
-
-.problem-check-result.is-correct {
-  background: var(--success-bg);
-  border-color: var(--success);
-  color: var(--success);
-}
-
-.problem-check-result.is-incorrect {
-  background: var(--error-bg);
-  border-color: var(--error);
-  color: var(--error);
-}
-
-.problem-check-result.is-reviewed {
-  background: #eef4fb;
-  border-color: #6b8db5;
-  color: #1e3a5f;
-}
-
-.problem-section.reviewed {
-  border-color: #6b8db5;
-}
-
-.problem-check-result.is-hint {
-  background: var(--hint-bg);
-  border-color: var(--amber);
-  color: var(--hint);
-}
-
-.hw-intelligence-card { margin-top:10px; padding:12px; border:1px solid var(--line); border-left:4px solid var(--teal); border-radius:var(--radius-sm); background:var(--cream); }
-.hw-intelligence-card p { margin:4px 0 8px; line-height:1.45; }
-.hw-intelligence-actions { display:flex; flex-wrap:wrap; gap:8px; }
-.hw-intelligence-card button { min-height:40px; }
-.hw-intelligence-frame { padding:8px 10px; border-radius:8px; background:#fff; }
-
-.problem-header-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom: 2px solid var(--teal-light);
-  padding-bottom: 12px;
-  margin-bottom: 18px;
-}
-
-.problem-number-badge {
-  font-family: var(--font-display);
-  font-weight: 800;
-  color: var(--navy);
-  font-size: 18px;
-}
-
-.problem-type-badge {
-  font-family: var(--font-display);
-  font-size: 12px;
-  font-weight: 800;
-  letter-spacing: 0.02em;
-  color: var(--teal-ink);
-  background: var(--teal-light);
-  padding: 4px 10px;
-  border-radius: 99px;
-}
-
-.problem-stem {
-  font-size: 16px;
-  font-weight: 700;
-  color: var(--navy);
-  margin: 0 0 18px 0;
-  line-height: 1.45;
-}
-
-/* ---- Family scaffolding: step guide, visual model, show-your-work ---- */
-.hw-step-guide {
-  margin: 14px 0;
-  border: 1.5px solid var(--teal);
-  border-radius: 12px;
-  background: var(--teal-light);
-  overflow: hidden;
-}
-.hw-step-guide > summary {
-  cursor: pointer;
-  list-style: none;
-  padding: 11px 16px;
-  font-family: "Outfit", sans-serif;
-  font-weight: 700;
-  font-size: 15px;
-  color: var(--navy);
-  background: rgba(31, 166, 162, 0.16);
-}
-.hw-step-guide > summary::-webkit-details-marker { display: none; }
-.hw-step-guide > summary::after { content: " ▾"; color: var(--teal); }
-.hw-step-guide[open] > summary::after { content: " ▴"; }
-.hw-steps {
-  margin: 0;
-  padding: 12px 18px 14px 34px;
-  display: grid;
-  gap: 9px;
-  font-size: 14.5px;
-  line-height: 1.5;
-  color: var(--navy);
-}
-.hw-steps li { padding-left: 4px; }
-.hw-steps strong { color: var(--navy); }
-
-.hw-workspace {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: 14px;
-  margin: 14px 0 4px;
-}
-@media (min-width: 640px) {
-  .hw-workspace { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; }
-}
-.hw-visual-caption, .hw-work-label {
-  display: block;
-  font-family: "Outfit", sans-serif;
-  font-weight: 700;
-  font-size: 13.5px;
-  color: var(--navy);
-  margin-bottom: 6px;
-}
-.hw-visual-frame {
-  border: 1.5px dashed #9bb6cf;
-  border-radius: 12px;
-  background: #fbfdff;
-  padding: 8px;
-  text-align: center;
-}
-.hw-visual-svg { width: 100%; height: auto; max-height: 180px; }
-.problem-visual-wrap { margin: 12px 0 16px; text-align: center; }
-.problem-visual-img { max-width: 100%; height: auto; border-radius: 8px; border: 1px solid #cbd5e1; display: block; margin: 0 auto; background: white; }
-.hw-percent-bar-svg { width: 100%; height: auto; max-width: 540px; display: block; margin: 0 auto; }
-.hw-answer-key-visual { margin: 12px 0; text-align: center; }
-.coach-step-visual { margin: 10px 0; text-align: center; }
-/* Interactive tap-to-graph widgets (number line, coordinate plane, grid) */
-.hw-visual-frame.hw-interactive { position: relative; }
-.hw-interactive .hw-visual-svg { touch-action: manipulation; -webkit-user-select: none; user-select: none; }
-.hw-interactive .ng-hit { cursor: pointer; fill: transparent; }
-.hw-interactive .ng-tick-lbl, .hw-interactive .ng-axis-lbl { font-family: "Outfit", sans-serif; font-size: 11px; font-weight: 700; fill: var(--navy); }
-.hw-interactive .ng-point { fill: var(--teal); stroke: var(--navy); stroke-width: 2; cursor: pointer; }
-.hw-interactive .ng-point.is-open { fill: #ffffff; }
-.hw-interactive .ng-ray { stroke: var(--teal); stroke-width: 5; stroke-linecap: round; }
-.hw-interactive .ng-plot { fill: var(--teal); stroke: var(--navy); stroke-width: 1.5; cursor: pointer; }
-.hw-interactive .ng-plot-lbl { font-family: "Outfit", sans-serif; font-size: 10px; font-weight: 700; fill: var(--navy); }
-.hw-interactive .ng-cell { fill: transparent; cursor: pointer; }
-.hw-interactive .ng-cell.is-on { fill: rgba(31,166,162,0.45); }
-.hw-graph-controls { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin-top: 8px; }
-.hw-graph-controls:empty { display: none; }
-.hw-graph-controls button {
-  font-family: var(--font-display); font-size: 12.5px; font-weight: 700;
-  background: #ffffff; color: var(--navy);
-  border: 1.5px solid var(--line); border-radius: 8px; padding: 6px 11px; min-height: 44px; cursor: pointer;
-}
-.hw-graph-controls button:hover { border-color: var(--teal); }
-.hw-graph-controls button[aria-pressed="true"] { background: var(--teal-ink); color: #ffffff; border-color: var(--teal-ink); }
-.hw-graph-reset {
-  position: absolute; top: 6px; right: 6px; z-index: 2;
-  font-family: var(--font-display); font-size: 12px; font-weight: 700;
-  background: #ffffff; color: var(--navy);
-  border: 1px solid var(--line); border-radius: 8px; padding: 3px 9px; cursor: pointer;
-}
-.hw-graph-reset:hover { border-color: var(--teal); }
-.hw-graph-readout {
-  margin-top: 8px; font-family: "Outfit", sans-serif; font-weight: 800;
-  font-size: 14px; color: var(--navy); min-height: 18px;
-}
-.hw-graph-readout:empty { display: none; }
-@media print { .hw-graph-reset, .hw-graph-controls { display: none; } }
-.hw-work-input {
-  width: 100%;
-  min-height: 96px;
-  resize: vertical;
-  line-height: 28px;
-  background-color: #fbfdff;
-  background-image: repeating-linear-gradient(#fbfdff 0, #fbfdff 27px, #d6e2ee 27px, #d6e2ee 28px);
-  font-family: inherit;
-}
-
-@media print {
-  .hw-step-guide { break-inside: avoid; border-color: #888; background: #fff; }
-  .hw-step-guide > summary { background: #f0f0f0; }
-  .hw-step-guide[open] > summary::after, .hw-step-guide > summary::after { content: ""; }
-  /* The routine is collapsed on screen (it repeats on every problem). On paper
-     there is nothing to click, so force the contents visible. */
-  .hw-step-guide > * { display: block !important; }
-  /* Flip cards print flat — otherwise only the English word reaches the paper
-     and every definition prints as a blank box. */
-  .vocab-card-inner { transform: none !important; }
-  .vocab-card-front, .vocab-card-back {
-    position: static !important;
-    transform: none !important;
-    -webkit-backface-visibility: visible !important;
-    backface-visibility: visible !important;
-  }
-  .hw-workspace { break-inside: avoid; }
-  .hw-work-input { min-height: 130px; border: 1px solid #888; }
-  .hw-visual-frame { border-color: #888; }
-}
-
-/* Custom styled inputs, checkboxes, and select dropdowns */
-.custom-input {
-  width: 100%;
-  font-family: inherit;
-  font-size: 14.5px;
-  padding: 10px 14px;
-  border: 2px solid var(--line);
-  border-radius: var(--radius-sm);
-  background: var(--white);
-  color: var(--ink);
-  outline: none;
-  transition: all 0.2s ease-in-out;
-}
-
-.custom-input:focus {
-  border-color: var(--teal);
-  box-shadow: 0 0 0 4px var(--teal-light);
-}
-
-.custom-textarea {
-  width: 100%;
-  height: 110px;
-  font-family: inherit;
-  font-size: 14.5px;
-  padding: 12px;
-  border: 2px solid var(--line);
-  border-radius: var(--radius-sm);
-  background: var(--white);
-  color: var(--ink);
-  outline: none;
-  resize: vertical;
-  transition: all 0.2s ease-in-out;
-}
-
-.custom-textarea:focus {
-  border-color: var(--teal);
-  box-shadow: 0 0 0 4px var(--teal-light);
-}
-
-.custom-select {
-  font-family: inherit;
-  font-size: 14px;
-  font-weight: 600;
-  padding: 8px 12px;
-  border: 2px solid var(--line);
-  border-radius: var(--radius-sm);
-  background: var(--white);
-  color: var(--ink);
-  outline: none;
-  cursor: pointer;
-  transition: all 0.2s ease-in-out;
-  min-width: 150px;
-}
-
-.custom-select:focus {
-  border-color: var(--teal);
-}
-
-/* Multiple Choice Custom Radios */
-.mc-options {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.mc-option-label {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  background: var(--white);
-  border: 2px solid var(--line);
-  border-radius: var(--radius-sm);
-  padding: 14px 18px;
-  cursor: pointer;
-  font-weight: 600;
-  font-size: 15px;
-  transition: all 0.2s;
-  position: relative;
-}
-
-.mc-option-label:hover {
-  background: var(--cream);
-  border-color: var(--teal);
-}
-
-.mc-option-label input[type="radio"] {
-  position: absolute;
-  opacity: 0;
-  cursor: pointer;
-}
-
-.custom-radio {
-  width: 20px;
-  height: 20px;
-  border: 2px solid var(--line);
-  border-radius: 50%;
-  display: inline-block;
-  position: relative;
-  flex-shrink: 0;
-  transition: all 0.15s;
-}
-
-.mc-option-label input[type="radio"]:checked ~ .custom-radio {
-  border-color: var(--teal);
-  background: var(--teal);
-}
-
-.mc-option-label input[type="radio"]:checked ~ .custom-radio::after {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 8px;
-  height: 8px;
-  background: var(--white);
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
-}
-
-.choice-text {
-  flex: 1;
-}
-
-/* Matching Rows */
-.matching-pairs {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.matching-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: var(--white);
-  border: 1px solid var(--line);
-  border-radius: var(--radius-sm);
-  padding: 12px 16px;
-  gap: 16px;
-}
-
-.matching-term {
-  font-weight: 700;
-  color: var(--navy);
-  flex: 1;
-}
-
-.matching-select-container {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-/* Phones: a long answer option sized the select past the card (9-4 scrolled
-   sideways). Stack the term over its picker and let the picker shrink. */
-@media (max-width: 640px) {
-  .matching-row { flex-direction: column; align-items: stretch; gap: 8px; }
-  .matching-select-container { min-width: 0; }
-  .matching-select { flex: 1 1 auto; min-width: 0; max-width: 100%; }
-}
-
-/* Drag Sort Layout */
-.drag-sort-workspace {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.drag-columns {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 16px;
-}
-
-.drag-column {
-  background: var(--cream);
-  border: 2px dashed var(--line);
-  border-radius: var(--radius-md);
-  padding: 14px;
-  min-height: 160px;
-  display: flex;
-  flex-direction: column;
-}
-
-.drag-column-header {
-  font-family: var(--font-display);
-  font-weight: 800;
-  text-align: center;
-  color: var(--navy);
-  margin-bottom: 12px;
-  font-size: 14px;
-  text-transform: uppercase;
-}
-
-.drag-column-slots {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  min-height: 100px;
-}
-
-/* Phones sort with the "Move to…" menu, so an empty column only needs room
-   for its heading and the first card; 160px of dashed space per column added
-   a screen of scrolling to every sort problem. */
-@media (max-width: 640px) {
-  .drag-column { min-height: 0; padding: 10px; }
-  .drag-column-header { margin-bottom: 6px; }
-  .drag-column-slots { min-height: 44px; }
-}
-
-.drag-source-section {
-  background: var(--white);
-  border: 1px solid var(--line);
-  border-radius: var(--radius-md);
-  padding: 16px;
-}
-
-.drag-source-header {
-  font-weight: 700;
-  font-size: 13.5px;
-  color: var(--muted);
-  margin-bottom: 12px;
-}
-
-.drag-source-pile {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  min-height: 60px;
-  align-items: center;
-  padding: 6px;
-  border-radius: var(--radius-sm);
-  background: var(--cream);
-}
-
-.drag-card {
-  background: var(--white);
-  border: 2px solid var(--line);
-  border-radius: var(--radius-sm);
-  padding: 10px 14px;
-  cursor: grab;
-  font-weight: 700;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  box-shadow: var(--shadow-sm);
-  transition: transform 0.15s, box-shadow 0.15s;
-  user-select: none;
-}
-
-.drag-card:active {
-  cursor: grabbing;
-  transform: scale(0.98);
-}
-
-.drag-card.dragging {
-  opacity: 0.55;
-}
-
-.drag-column.over,
-.drag-source-pile.over {
-  border-color: var(--teal);
-  background: var(--teal-light);
-}
-
-/* Drag order (sequencing) */
-.drag-order-workspace {
-  background: var(--cream);
-  border: 1px solid var(--line);
-  border-radius: var(--radius-md);
-  padding: 12px;
-}
-
-.drag-order-list {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.drag-order-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  background: var(--white);
-  border: 2px solid var(--line);
-  border-radius: var(--radius-sm);
-  padding: 10px 12px;
-  cursor: grab;
-  user-select: none;
-}
-
-.drag-order-row.dragging {
-  opacity: 0.55;
-}
-
-.drag-order-handle {
-  color: var(--muted);
-  font-size: 12px;
-}
-
-.drag-order-num {
-  flex: 0 0 auto;
-  width: 26px;
-  height: 26px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--teal);
-  color: var(--white);
-  border-radius: 50%;
-  font-family: var(--font-display);
-  font-weight: 800;
-  font-size: 12px;
-}
-
-.drag-order-text {
-  flex: 1;
-  font-weight: 600;
-  font-size: 14.5px;
-}
-
-.drag-order-controls {
-  display: flex;
-  gap: 4px;
-}
-
-.order-move-btn {
-  min-width: 0;
-  padding: 4px 10px;
-}
-
-.drag-order-row.is-correct {
-  border-color: var(--success);
-  background: var(--success-bg);
-}
-
-.drag-order-row.is-incorrect {
-  border-color: var(--error);
-  background: var(--error-bg);
-}
-
-.drag-handle {
-  color: var(--muted);
-  font-size: 12px;
-}
-
-.mobile-cat-select {
-  display: block;
-  font-family: inherit;
-  font-size: 16px;
-  min-height: 44px;
-  max-width: 100%;
-  padding: 6px 8px;
-  border-radius: 4px;
-  border: 1px solid var(--line);
-  outline: none;
-}
-
-@media (max-width: 600px) {
-  /* On a phone the card is: handle, the problem, and a "Move to" picker. The
-     picker sizes itself to its longest option ("Asking: How Many Groups
-     (Pieces)?" = 222px), and on a flex row that squeezed the problem text into
-     a 59px column reading one word per line — the question a family is meant to
-     sort became unreadable. Stack them: the problem gets the full width, the
-     picker gets its own line under it. */
-  .drag-card {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: flex-start;
-    width: 100%;
-  }
-  .drag-card .card-text {
-    flex: 1 1 100%;
-    min-width: 0;
-    font-weight: 600;
-  }
-  .drag-card .drag-handle { flex: 0 0 auto; }
-  .mobile-cat-select {
-    display: block;
-    flex: 1 1 100%;
-    max-width: 100%;
-    margin: 8px 0 0;
-    /* A picker a finger can hit. It was 11px text in a 2px-padded box. */
-    min-height: 40px;
-    font-size: 13px;
-    padding: 6px 8px;
-  }
-  /* A short card ("2⁵", "7 × 7") fits beside its picker. Stacking those made
-     each card 137px and a six-card sort ~900px of scrolling. Long statements
-     keep the stacked layout above. */
-  .drag-card.drag-card--short {
-    flex-wrap: nowrap;
-    align-items: center;
-    padding: 6px 10px;
-  }
-  .drag-card.drag-card--short .card-text { flex: 1 1 auto; min-width: 0; overflow-wrap: anywhere; }
-  .drag-card.drag-card--short .mobile-cat-select {
-    flex: 0 0 8.5em;
-    margin: 0;
-  }
-}
-
-/* Fill Table */
-.table-responsive {
-  width: 100%;
-  overflow-x: auto;
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--line);
-}
-
-.fill-table {
-  width: 100%;
-  border-collapse: collapse;
-  background: var(--white);
-  /* .table-responsive has carried overflow-x since it was written, and it never
-     fired: width:100% makes the table fit its container by definition, so five
-     columns on a 390px phone were squeezed until "Option" set one letter per
-     line down the cell and the comparison chart the lesson is built around was
-     unreadable. A min-width lets the table be its own size and hands the
-     overflow to the scroller that was already there. */
-  min-width: 560px;
-}
-
-.fill-table th, .fill-table td {
-  padding: 12px 16px;
-  border: 1px solid var(--line);
-  text-align: left;
-  font-size: 14.5px;
-  /* Column headings are short labels, not prose; wrapping between their words
-     is fine, breaking inside one is what produced the vertical alphabet. */
-  overflow-wrap: normal;
-  word-break: keep-all;
-}
-
-.fill-table th {
-  background: var(--navy);
-  color: var(--white);
-  font-family: var(--font-display);
-  font-weight: 600;
-}
-
-.fill-table tr:nth-child(even) td {
-  background: var(--cream);
-}
-
-.fill-cell-label {
-  display: none;
-}
-
-.hw-workspace-toggle {
-  margin-top: 12px;
-}
-.hw-workspace-toggle > summary {
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  min-height: 44px;
-  padding: 6px 14px;
-  border: 1.5px dashed var(--line);
-  border-radius: var(--radius-sm);
-  font-weight: 700;
-  font-size: 14px;
-  color: var(--navy);
-  list-style: none;
-}
-.hw-workspace-toggle > summary::-webkit-details-marker { display: none; }
-.hw-workspace-toggle[open] > summary { border-style: solid; margin-bottom: 8px; }
-
-/* Phones: the 560px table scrolled sideways inside a 275px box, so the column
-   a student fills in (Value, Answer) sat off-screen with nothing saying it was
-   there (audit 2026-10-04: 60 tables on 43 pages). Under 640px every row is a
-   card and every cell carries its own heading, so nothing needs scrolling. */
-@media (max-width: 640px) {
-  .table-responsive { overflow-x: visible; border: 0; }
-  .fill-table { min-width: 0; border: 0; background: transparent; }
-  .fill-table thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
-  .fill-table, .fill-table tbody, .fill-table tr, .fill-table td { display: block; width: 100%; box-sizing: border-box; }
-  .fill-table tr { margin: 0 0 10px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--white); overflow: hidden; }
-  .fill-table tr:nth-child(even) td { background: transparent; }
-  .fill-table th, .fill-table td { border: 0; border-bottom: 1px solid var(--line); padding: 8px 12px; word-break: normal; overflow-wrap: anywhere; }
-  .fill-table td:last-child { border-bottom: 0; }
-  .fill-cell-label { display: block; font-size: 11.5px; font-weight: 800; letter-spacing: 0.02em; text-transform: uppercase; color: var(--navy); margin-bottom: 3px; }
-  .table-input { max-width: none; width: 100%; }
-}
-
-.table-input-wrapper {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.table-input {
-  max-width: 180px;
-  padding: 6px 10px;
-}
-
-/* Error Analysis clipboard */
-.clipboard-box {
-  margin-top: 14px;
-  margin-bottom: 18px;
-  background: #f1f4f8;
-  border-radius: var(--radius-md);
-  border: 1.5px solid var(--line);
-  overflow: hidden;
-  box-shadow: var(--shadow-sm);
-}
-
-.clipboard-top {
-  height: 24px;
-  background: var(--navy-light);
-  position: relative;
-}
-
-.clipboard-top::after {
-  content: "";
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 100px;
-  height: 12px;
-  background: #e2e8f0;
-  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
-  border: 1px solid var(--line);
-  border-bottom: 0;
-}
-
-.clipboard-paper {
-  background: #fcfdfd;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  background-image: linear-gradient(#e5ecf4 1px, transparent 1px);
-  background-size: 100% 28px;
-  line-height: 28px;
-}
-
-.worked-step {
-  display: flex;
-  align-items: baseline;
-  gap: 12px;
-  padding: 2px 6px;
-  border-radius: 4px;
-  transition: background-color 0.2s;
-}
-
-.worked-step.highlighted {
-  background-color: var(--amber-light);
-}
-
-.step-badge {
-  background: var(--navy);
-  color: var(--white);
-  font-size: 10.5px;
-  font-family: var(--font-display);
-  font-weight: 800;
-  padding: 2px 8px;
-  border-radius: 4px;
-  line-height: 1;
-}
-
-.step-label {
-  font-weight: 700;
-  color: var(--navy);
-}
-
-.step-work {
-  font-family: monospace;
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--ink);
-}
-
-.error-controls {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  background: var(--cream);
-  padding: 16px;
-  border-radius: var(--radius-md);
-  margin-top: 16px;
-}
-
-.error-select-row, .error-explain-row {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.error-select-row label, .error-explain-row label {
-  font-weight: 700;
-  font-size: 13.5px;
-  color: var(--navy);
-}
-
-/* Open Response Starter Sentence Cards */
-.sentence-frame-card {
-  background: var(--amber-light);
-  border: 1px dashed var(--amber);
-  border-radius: var(--radius-sm);
-  padding: 12px 14px;
-  margin-bottom: 14px;
-  font-size: 14px;
-  line-height: 1.4;
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.sentence-frame-tag {
-  font-weight: 700;
-  color: var(--hint);
-}
-
-/* The starter is the most useful line in the card, so it reads at the
-   question's size: it was a small italic underlined button that was hard to
-   read on a phone. */
-.sentence-frame-text {
-  display: block;
-  width: 100%;
-  font: inherit;
-  font-size: 15.5px;
-  font-weight: 600;
-  line-height: 1.5;
-  text-align: left;
-  color: var(--ink, #1f2937);
-  background: var(--white);
-  border: 1.5px solid var(--amber);
-  border-radius: var(--radius-sm);
-  padding: 10px 12px;
-  cursor: pointer;
-}
-
-.sentence-frame-text:hover,
-.sentence-frame-text:focus-visible {
-  border-color: var(--navy);
-  outline: none;
-}
-
-.click-to-insert-hint {
-  font-size: 13px;
-  color: var(--muted);
-}
-
-.open-response-wrapper {
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
-}
-
-.word-bank-container {
-  margin-top: 12px;
-}
-
-.word-bank-label {
-  font-size: 12.5px;
-  font-weight: 700;
-  color: var(--muted);
-  margin-bottom: 6px;
-}
-
-.word-bank-chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-
-.word-chip {
-  background: var(--teal-light);
-  color: var(--teal-ink);
-  border: 1.5px solid var(--teal);
-  border-radius: var(--radius-sm);
-  padding: 11px 12px;
-  font-size: 13.5px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.15s;
-}
-
-.word-chip:hover {
-  background: var(--teal-ink);
-  color: var(--white);
-}
-
-/* Feedback Marks & Explanations */
-.feedback-badge {
-  font-size: 16px;
-  font-weight: 800;
-  margin-left: 6px;
-  width: 20px;
-  text-align: center;
-  display: inline-block;
-}
-
-.feedback-badge.success-check::after {
-  content: "✓";
-  color: var(--success);
-}
-
-.feedback-badge.error-cross::after {
-  content: "✕";
-  color: var(--error);
-}
-
-.problem-section.correct {
-  border-color: var(--success);
-  background-image: linear-gradient(rgba(15, 124, 74, 0.02), rgba(15, 124, 74, 0.02));
-}
-
-.problem-section.incorrect {
-  border-color: var(--error);
-  background-image: linear-gradient(rgba(182, 78, 47, 0.02), rgba(182, 78, 47, 0.02));
-}
-
-.explanation-box {
-  margin-top: 14px;
-  background: var(--success-bg);
-  border: 1px solid var(--success);
-  color: var(--success);
-  border-left: 4px solid var(--success);
-  padding: 10px 14px;
-  border-radius: var(--radius-sm);
-  font-size: 13.5px;
-}
-
-/* Inputs colored states */
-.custom-input.is-correct, .custom-select.is-correct, .custom-textarea.is-correct {
-  border-color: var(--success) !important;
-  background-color: var(--success-bg) !important;
-}
-
-.custom-input.is-incorrect, .custom-select.is-incorrect, .custom-textarea.is-incorrect {
-  border-color: var(--error) !important;
-  background-color: var(--error-bg) !important;
-}
-
-.mc-option-label.is-correct {
-  border-color: var(--success) !important;
-  background-color: var(--success-bg) !important;
-}
-
-.mc-option-label.is-incorrect {
-  border-color: var(--error) !important;
-  background-color: var(--error-bg) !important;
-}
-
-.drag-card.is-correct {
-  border-color: var(--success) !important;
-  background-color: var(--success-bg) !important;
-}
-
-.drag-card.is-incorrect {
-  border-color: var(--error) !important;
-  background-color: var(--error-bg) !important;
-}
-
-/* Reveal box references */
-.reveal-box {
-  background: var(--success-bg);
-  border: 1px dashed var(--success);
-  color: var(--success);
-  padding: 12px;
-  border-radius: var(--radius-sm);
-  font-size: 13.5px;
-  margin-top: 10px;
-}
-
-/* Sticky Bottom Bar */
-.bottom-status-bar {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-  border-top: 1.5px solid var(--line);
-  padding: 16px 24px;
-  z-index: 1000;
-  box-shadow: 0 -10px 30px rgba(18, 53, 91, 0.08);
-}
-
-.status-bar-wrapper {
-  /* Must track .container's max-width (set in the polish layer) or the sticky
-     bar's controls sit inset from every card above it. */
-  max-width: 840px;
-  padding: 0 18px;
-  margin: 0 auto;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 20px;
-  flex-wrap: wrap;
-}
-
-.sound-toggle-btn {
-  background: transparent;
-  border: none;
-  font-size: 20px;
-  cursor: pointer;
-  padding: 8px;
-  border-radius: var(--radius-sm);
-  transition: background-color 0.2s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.sound-toggle-btn:hover {
-  background-color: var(--teal-light);
-}
-
-.score-progress-container {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  flex: 1;
-  min-width: 150px;
-}
-
-.score-text {
-  font-family: var(--font-display);
-  font-weight: 800;
-  font-size: 14.5px;
-  color: var(--navy);
-  display: flex;
-  justify-content: space-between;
-}
-
-.score-text span {
-  font-weight: 600;
-  color: var(--muted);
-}
-
-.progress-bar-outer {
-  height: 10px;
-  background: var(--cream);
-  border-radius: 5px;
-  overflow: hidden;
-  border: 1px solid var(--line);
-}
-
-.progress-bar-inner {
-  height: 100%;
-  width: 0%;
-  background: linear-gradient(90deg, var(--teal), var(--navy));
-  border-radius: 5px;
-  transition: width 0.4s ease-in-out;
-}
-
-.action-buttons {
-  display: flex;
-  gap: 10px;
-}
-
-.btn {
-  font-family: var(--font-display);
-  font-weight: 800;
-  font-size: 14.5px;
-  padding: 10px 20px;
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-  border: none;
-  transition: all 0.2s ease-in-out;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.btn-primary {
-  background: var(--teal-ink);
-  color: var(--white);
-}
-
-.btn .lang-en,
-.btn .lang-es {
-  color: inherit;
-}
-
-.btn-primary:hover {
-  background: var(--navy);
-  transform: translateY(-1px);
-}
-
-.btn-secondary {
-  background: var(--white);
-  color: var(--navy);
-  border: 2px solid var(--line);
-}
-
-.btn-secondary:hover {
-  background: var(--cream);
-  border-color: var(--navy);
-}
-
-.btn-sm {
-  padding: 6px 12px;
-  font-size: 12.5px;
-}
-
-@media (max-width: 550px) {
-  .bottom-status-bar {
-    padding: 12px;
-  }
-  .status-bar-wrapper {
-    gap: 10px;
-  }
-  .action-buttons {
-    width: 100%;
-    justify-content: space-between;
-  }
-  .action-buttons button {
-    flex: 1;
-    min-height: 44px;
-    justify-content: center;
-  }
-}
-${GUIDED_NOTES_CSS}
-${VISUAL_LABS_CSS}
-
-/* ============================================================
-   Polish layer — premium, TpT-quality finish (loads last).
-   Refines shared content surfaces without changing structure.
-   ============================================================ */
-body { font-size: 18px; line-height: 1.65; }
-.container { max-width: 960px; padding: 28px 20px 44px; }
-
-/* On a laptop give the reading column more room — and keep the sticky bar's inner column locked to it. */
-@media (min-width: 1180px) {
-  .container, .status-bar-wrapper { max-width: 1080px; }
-}
-
-/* Section headings get a clear accent + stronger hierarchy */
-.section-title {
-  font-size: 22px;
-  font-weight: 800;
-  letter-spacing: -0.01em;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding-bottom: 10px;
-  border-bottom: 2px solid var(--line);
-}
-.section-title::before {
-  content: "";
-  width: 5px;
-  height: 22px;
-  border-radius: 999px;
-  background: linear-gradient(180deg, var(--teal), var(--navy));
-  flex: 0 0 auto;
-}
-
-/* Cards: softer, layered, consistent */
-.card {
-  border-radius: var(--radius-lg);
-  padding: 26px 28px;
-  border: 1px solid var(--line);
-  box-shadow: 0 1px 2px rgba(18,53,91,.05), 0 14px 34px -22px rgba(18,53,91,.5);
-}
-
-/* Guided "worked steps" become clean carded rows with a left accent */
-.worked-step {
-  align-items: flex-start;
-  gap: 14px;
-  padding: 12px 14px;
-  border-radius: 12px;
-  border: 1px solid var(--line);
-  background: #fbfdff;
-  margin-bottom: 10px;
-}
-.worked-step.highlighted {
-  background: var(--amber-light);
-  border-color: var(--amber);
-  box-shadow: 0 8px 22px -14px rgba(242,193,91,.9);
-}
-.step-badge {
-  font-size: 11.5px;
-  letter-spacing: .02em;
-  padding: 4px 9px;
-  border-radius: 999px;
-  align-self: center;
-}
-.step-label { font-size: 15px; }
-
-/* Bilingual text: Spanish is a primary language here, so it keeps full ink
-   contrast. The separation is carried structurally by a teal rule, never by
-   fading the text (that read as "English written twice, Spanish as a footnote"). */
-.lang-es { color: var(--ink); }
-.worked-step .lang-es, .lang-en + .lang-es {
-  display: block;
-  margin-top: 4px;
-  padding-left: 10px;
-  border-left: 2px solid var(--teal-light);
-}
-
-/* "Watch for this" / tip callouts: crisp, friendly */
-.watch-for-list, .watch-for {
-  background: var(--hint-bg);
-  border: 1px solid #f0d9a0;
-  border-left: 4px solid var(--amber);
-  border-radius: 12px;
-  padding: 14px 16px;
-}
-
-/* Vocab flip cards: a touch more depth + polish */
-.vocab-card-inner, .vocab-card-front, .vocab-card-back {
-  border-radius: var(--radius-md);
-}
-.vocab-card-front, .vocab-card-back {
-  box-shadow: 0 1px 2px rgba(18,53,91,.05), 0 16px 30px -20px rgba(18,53,91,.5);
-  border: 1px solid var(--line);
-}
-
-/* Family guide block: warmer, cleaner */
-.family-guide {
-  border-radius: var(--radius-lg);
-  border: 1px solid #ead9b8;
-  box-shadow: 0 1px 2px rgba(18,53,91,.04), 0 16px 36px -24px rgba(180,140,60,.6);
-}
-
-@media print {
-  .worked-step { break-inside: avoid; box-shadow: none; }
-  .card { box-shadow: none; }
-}
-
-/* ============================================================
-   FAMILY MISSION DESIGN SYSTEM — the last layer, and the one that
-   decides how the page FEELS. Everything above grew one wave at a
-   time: each addition brought its own badge colour, its own card
-   weight and its own heading size, so a family met a pile of parts
-   rather than one designed page. This layer states the shared rules
-   once — surface, rhythm, type scale, accent, motion — and the
-   sections inherit them.
-
-   It uses !important only where the "Apple-Grade Pill" block above
-   already does; specificity cannot win against a bare !important, and
-   splitting that block apart is a bigger, riskier edit than owning
-   the handful of properties this layer overrides.
-   ============================================================ */
-
-/* --- Paper: warm, with a whisper of the classroom's graph texture --- */
-body {
-  background-color: var(--cream);
-  background-image:
-    linear-gradient(rgba(18,53,91,.030) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(18,53,91,.030) 1px, transparent 1px);
-  background-size: 26px 26px;
-  background-attachment: fixed;
-}
-
-/* --- Control deck: the tab row and the progress rail are ONE object,
-       not two floating bars stacked on each other. --- */
-.homework-tab-chrome {
-  background: rgba(255,255,255,.96) !important;
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-  border: 1px solid var(--line);
-  border-radius: 22px;
-  box-shadow: 0 10px 30px -14px rgba(15,23,42,.22);
-  overflow: hidden;
-  margin-bottom: 26px !important;
-}
-.homework-tab-bar {
-  background: transparent !important;
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
-  border: 0 !important;
-  border-radius: 0 !important;
-  box-shadow: none !important;
-  padding: 9px 12px !important;
-}
-/* The five stops a family is asked to walk read as primary; the five
-   optional surfaces read as what they are. */
-.homework-tab-btn.is-bonus { opacity: .72; font-weight: 600 !important; }
-.homework-tab-btn.is-bonus:hover { opacity: 1; }
-.homework-tab-btn.is-bonus.is-active { opacity: 1; }
-.homework-tab-btn.is-core.is-active {
-  background: linear-gradient(135deg, #14406e, #0f2b50) !important;
-}
-.homework-tab-divider {
-  flex: 0 0 auto;
-  width: 1px;
-  align-self: stretch;
-  margin: 4px 6px;
-  background: var(--line);
-}
-.homework-tab-bonus-label {
-  flex: 0 0 auto;
-  font-family: var(--font-display);
-  font-size: 10.5px;
-  font-weight: 800;
-  letter-spacing: .1em;
-  text-transform: uppercase;
-  color: var(--muted);
-  padding-right: 2px;
-}
-.homework-tab-bonus-label .lang-es { color: var(--muted); }
-.homework-tab-bonus-label .lang-en + .lang-es { border-left: 0; padding-left: 0; margin-top: 0; }
-.hw-rail { background: linear-gradient(180deg, rgba(247,244,236,.5), rgba(255,255,255,0)); }
-
-/* --- Section headings: one confident scale, an accent dot instead of
-       five different coloured pills, Spanish as a full-ink partner line. --- */
-.section-title {
-  font-family: var(--font-display);
-  font-size: clamp(20px, 2.5vw, 25px);
-  font-weight: 800;
-  letter-spacing: -.02em;
-  line-height: 1.2;
-  color: var(--navy);
-  align-items: baseline;
-  gap: 12px;
-  padding-bottom: 12px;
-  margin-bottom: 18px;
-  border-bottom: 1px solid var(--line);
-}
-.section-title::before {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--amber);
-  box-shadow: 0 0 0 4px rgba(242,193,91,.22);
-  align-self: center;
-}
-
-/* --- Cards: one surface, one radius, one shadow. --- */
-.guided-section.card,
-.card-ish,
-.card {
-  border-radius: 20px !important;
-  border: 1px solid var(--line) !important;
-  box-shadow: 0 1px 2px rgba(18,53,91,.04), 0 18px 40px -30px rgba(18,53,91,.55) !important;
-}
-
-/* --- One badge shape. Waves added a teal pill, a coral pill, a purple
-       pill and an amber pill for the same job; the shape now carries the
-       meaning and colour is reserved for the accent. --- */
-.fam-act-badge,
-.fam-game-badge,
-.math-talk-badge,
-.spotlight-badge {
-  display: inline-flex !important;
-  align-items: center;
-  gap: 7px;
-  font-family: var(--font-display) !important;
-  font-size: 11.5px !important;
-  font-weight: 800 !important;
-  letter-spacing: .09em !important;
-  text-transform: uppercase;
-  color: var(--navy) !important;
-  background: linear-gradient(135deg, #fdf3dc, #f7f4ec) !important;
-  border: 1px solid rgba(242,193,91,.55) !important;
-  border-radius: 999px !important;
-  padding: 6px 14px !important;
-}
-
-/* --- Bilingual, two ways.
-   Spanish keeps FULL ink everywhere — the separation is structural, never a
-   fade (a faded Spanish read as "English written twice"). But the structure
-   has to fit the container: in prose the two languages stack with a teal rule,
-   while inside a chip, a tab or a rail label they must sit on ONE line with a
-   visible separator, or "5 stops" and "5 paradas" run together into nonsense. */
-.hw-hero-kicker .lang-es,
-.fam-act-meta .lang-es,
-.hw-quickplan-summary .lang-es {
-  display: inline !important;
-}
-.hw-hero-kicker .lang-en + .lang-es::before,
-.hw-quickplan-summary .lang-en + .lang-es::before {
-  content: "·";
-  margin: 0 7px;
-  opacity: .6;
-}
-/* The same rule, stated once for every control: inside a button or a summary,
-   the two languages share one line with a separator. Stacking them there
-   doubled the height of every chip and filter and read as one garbled string
-   ("All Todos", "Needs Review Por repasar"). Prose is unaffected — it keeps
-   the stacked treatment with the teal rule. */
-button .lang-en + .lang-es,
-summary .lang-en + .lang-es {
-  display: inline;
-  border-left: 0;
-  padding-left: 0;
-  margin-top: 0;
-}
-button .lang-en + .lang-es::before,
-summary .lang-en + .lang-es::before {
-  content: "·";
-  margin: 0 6px;
-  opacity: .6;
-}
-/* THE SEPARATOR SEPARATES NOTHING WHEN THERE IS ONLY ONE LANGUAGE.
-   .lang-en + .lang-es is an adjacent-sibling selector, and adjacency does not
-   care about display, so hiding the English span in Spanish mode left the
-   middot standing in front of Spanish text with nothing before it — a stray
-   orange dot ahead of every heading, chip and summary on the page ("· Qué
-   aprendemos hoy"). It is a separator, so it exists only in bilingual mode. */
-body.lang-mode-en .lang-en + .lang-es::before,
-body.lang-mode-es .lang-en + .lang-es::before {
-  content: none;
-}
-/* Two controls read better stacked and keep it: the rail's five stops (a map,
-   where the label sits under its dot) and the tab bar (which shows one
-   language at a time already). */
-.hw-rail-label .lang-en + .lang-es,
-.tab-label .lang-en + .lang-es { display: block; }
-.hw-rail-label .lang-en + .lang-es::before,
-.tab-label .lang-en + .lang-es::before { content: none; }
-
-/* On the dark hero, every Spanish line inherits the hero's light ink rather
-   than the global dark --ink, which was rendering it near-invisible. */
-.hw-hero .lang-es { color: inherit; }
-.hw-hero .lang-en + .lang-es { border-left-color: rgba(242,193,91,.5); }
-
-/* Section headings: English line, Spanish line beneath at full ink — a
-   partner line, not a second competing title on the same row. */
-.section-title { flex-wrap: wrap; row-gap: 2px; }
-.section-title .lang-es {
-  /* The heading is a flex row, so the partner line needs a full-width basis to
-     drop beneath the English rather than sit beside it as a second title. */
-  flex: 0 0 100%;
-  margin-top: 1px;
-  padding-left: 18px;
-  border-left: 0;
-  font-size: .66em;
-  font-weight: 600;
-  color: var(--teal-ink);
-  letter-spacing: 0;
-}
-
-/* The Listen button now renders INSIDE the heading (see renderLearnTab), so it
-   sits on the heading row instead of alone in a band of dead space. */
-.btn-listen-concept {
-  margin-left: auto;
-  align-self: center;
-  flex: 0 0 auto;
-  font-size: 12.5px;
-}
-/* The concept figure is the point of that section — frame it instead of
-   letting it drift in the middle of an empty card. */
-.concept-visual-wrap {
-  display: flex;
-  justify-content: center;
-  margin: 4px 0 20px;
-  padding: 22px 18px;
-  background: linear-gradient(180deg, #fbfdff, var(--cream));
-  border: 1px solid var(--line);
-  border-radius: 16px;
-}
-/* The figure is the point of that card — let it use the width it has instead
-   of sitting small in the middle of it. */
-.concept-visual-wrap > svg { width: 100%; max-width: 560px; height: auto; }
-
-/* --- Motion: one orchestrated reveal when a family lands on a stop.
-       Respects reduced-motion via the global rule already in this file. --- */
-@keyframes hwRise {
-  from { opacity: 0; transform: translateY(14px); }
-  to   { opacity: 1; transform: none; }
-}
-/* Gated on a class JS adds after boot. An entrance animation whose start
-   state is opacity:0 hides the page's content until it runs — if the script
-   never runs, a family gets a blank page, which is the one failure this site
-   spends a whole gate on. No class, no animation, everything visible. */
-body.hw-motion-ready [data-tab-panel]:not([hidden]) > * {
-  animation: hwRise .5s cubic-bezier(.22,.9,.3,1) both;
-}
-body.hw-motion-ready [data-tab-panel]:not([hidden]) > *:nth-child(1) { animation-delay: .02s; }
-body.hw-motion-ready [data-tab-panel]:not([hidden]) > *:nth-child(2) { animation-delay: .08s; }
-body.hw-motion-ready [data-tab-panel]:not([hidden]) > *:nth-child(3) { animation-delay: .14s; }
-body.hw-motion-ready [data-tab-panel]:not([hidden]) > *:nth-child(4) { animation-delay: .20s; }
-body.hw-motion-ready [data-tab-panel]:not([hidden]) > *:nth-child(n+5) { animation-delay: .26s; }
-body.hw-motion-ready .hw-hero { animation: hwRise .6s cubic-bezier(.22,.9,.3,1) both; }
-
-/* --- Interactive surfaces lift on hover, so a family can tell what is
-       tappable from what is text. --- */
-.fam-act-card, .fam-game-card, .vocab-card, .problem-card {
-  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
-}
-.fam-act-card:hover, .fam-game-card:hover {
-  transform: translateY(-2px);
-  border-color: var(--teal);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  body.hw-motion-ready [data-tab-panel]:not([hidden]) > *,
-  body.hw-motion-ready .hw-hero { animation: none !important; }
-}
-
-/* --- The floating launchers sit ABOVE the sticky status bar.
-   Save/Resume (#nsr-root) and the Math Workbench launcher (#mwb-launcher) are
-   shared, runtime-injected widgets pinned to the bottom-right of every page.
-   This page also has a fixed status bar there, so on a phone — where that bar
-   wraps to two rows — the Save/Resume pill landed on top of the progress
-   readout ("1 / 6 Completed"). They are lifted by the bar's own measured
-   height (--hw-status-height, set by syncHomeworkChromeHeights) rather than a
-   guessed constant, so the clearance stays right when the bar wraps.
-
-   The body prefix is deliberate: the shared stylesheet is linked AFTER this
-   block, so a bare id selector would lose the tie on source order. Scoped to
-   this page only — the widgets keep their position everywhere else. --- */
-body #nsr-root {
-  /* Clamped on purpose. --hw-status-height is measured by script and can be
-     read while the bar is mid-layout — it reported 381px for a bar that
-     renders 121px, which threw the launchers up into the tab deck. The clamp
-     keeps a wrong-high reading from moving them off the bottom of the page;
-     150px still clears the tallest real bar (two wrapped rows). */
-  bottom: calc(min(var(--hw-status-height, 104px), 150px) + 14px) !important;
-}
-/* THREE floating controls in one corner is two too many. The shared Math
-   Workbench launcher was the third, and on a 414px phone it overlapped the
-   Save/Resume pill, which was itself clipped by the screen edge. The workbench
-   is no longer a stranger to this page — it opens as a drawer on the Together
-   stop, where the manipulatives are actually used, and the Stuck? drawer links
-   to the full version — so the floating duplicate is hidden HERE only and
-   keeps its place on every other page. */
-body #mwb-launcher,
-body .mwb-launcher {
-  display: none !important;
-}
-
-/* --- Phone: the briefing has to fit the screen a family actually holds.
-   At 390px the hero ran 797px — a screen and a half of chrome before any
-   mathematics — because the stat chips wrapped to three rows, the language
-   control to two, and the kicker to two. Same content, tighter frame. --- */
-@media (max-width: 700px) {
-  .hw-hero-kicker { font-size: 10.5px; padding: 5px 11px 5px 6px; margin-bottom: 12px; gap: 6px; }
-  .hw-hero-kicker-icon { width: 20px; height: 20px; font-size: 11px; }
-  .hw-hero-lesson { margin-top: 10px; padding-top: 10px; line-height: 1.25; }
-  .hw-hero-lead { margin-top: 10px; font-size: 14px; }
-  .hw-hero-controls { margin-top: 4px; }
-  .hw-hero .lang-selector-card { gap: 8px; margin-top: 0; padding: 4px; }
-  /* The toggle names both languages itself; the caption above it cost a row. */
-  .hw-hero .lang-selector-title { display: none; }
-  /* One segmented control, English | Español: two equal halves in one track. */
-  .hw-hero .lang-selector-buttons {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    width: 100%;
-    gap: 4px;
-    padding: 4px;
-    border-radius: 99px;
-    background: rgba(255, 255, 255, 0.12);
-  }
-  .hw-hero .lang-toggle-btn {
-    width: auto;
-    min-width: 0;
-    justify-content: center;
-    min-height: 44px;
-    padding: 8px 6px;
-    font-size: 15px;
-    white-space: nowrap;
-    border-color: transparent;
-  }
-  .hw-hero .lang-toggle-btn:not(.active) { background: transparent; }
-  .hw-hero .hw-quickplan { margin-top: 14px; }
-  /* The opacity difference already says which tabs are optional; the divider
-     and its label cost a whole extra row at this width. */
-  .homework-tab-divider, .homework-tab-bonus-label { display: none; }
-}
-
-@media print {
-  body { background-image: none; }
-  .homework-tab-chrome, .hw-rail { display: none; }
-  .hw-hero { background: #fff !important; color: #000 !important; box-shadow: none; }
-  .hw-hero .welcome-title-en, .hw-hero-lesson-title { color: #000 !important; }
-}
-${EDITORIAL_OVERRIDES}
-${BIG_IDEA_CSS}
-${ARENA_CSS}
-${MATH_INPUT_CSS}
-/* ============================================================
-   GLOBAL HIGH-LEGIBILITY TYPOGRAPHY SCALE (All Homeworks)
-   Bigger text, comfortable reading rhythm across all family devices
-   ============================================================ */
-body {
-  font-size: 22px !important;
-  line-height: 1.65 !important;
-}
-.problem-stem {
-  font-size: 26px !important;
-  line-height: 1.55 !important;
-  font-weight: 700 !important;
-}
-.problem-number-badge {
-  font-size: 24px !important;
-}
-.mc-option-label, .choice-text {
-  font-size: 22px !important;
-  line-height: 1.5 !important;
-}
-.learning-big {
-  font-size: 26px !important;
-  line-height: 1.55 !important;
-}
-.bilingual-col, .worked-step, .welcome-lead, .watch-for-list, .watch-for, .hw-steps {
-  font-size: 21px !important;
-  line-height: 1.6 !important;
-}
-.hw-step-guide > summary {
-  font-size: 21px !important;
-}
-.step-label {
-  font-size: 21px !important;
-  line-height: 1.55 !important;
-}
-.custom-input, .custom-textarea {
-  font-size: 22px !important;
-}
-.btn-primary, .btn-secondary, .btn-check-one {
-  font-size: 21px !important;
-}
-.feedback-box, .explanation-box {
-  font-size: 21px !important;
-  line-height: 1.55 !important;
-}
-.math-talk-bubble {
-  font-size: 23px !important;
-  line-height: 1.55 !important;
-}
-.obj-popup-def {
-  font-size: 22px !important;
-  line-height: 1.6 !important;
-}
-${STUDIO_SKIN_CSS}
-${BRIDGE_CSS}
-${CONFUSED_GROWNUP_CSS}
-${SCRATCHPAD_CSS}
-${WORKSPACE_CSS}
-${SESSION_FLOW_CSS}
-${EXPERIENCE_CSS}
-${CASE_FILE_CSS}
-${V3_LEARN_CSS}
-${DOMINO_DUO_CSS}
-${VOICE_CSS}
-${familyStyleCss}
-${PRINT_CSS}
-${TOUCH_CSS}
-${CALM_CSS}
-${CENTER_CSS}
+${LEGACY_SHELL_CSS}
+${A11Y_CSS}
 </style>
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
@@ -4193,7 +1470,8 @@ ${CENTER_CSS}
   <!-- enthead-injected:end -->
 </head>
 <body${familyStyle === "standard" ? "" : ` data-family-style="${familyStyle}"`}>
-<a class="hw-skip" href="#hw_tab_panels" onclick="startHomework(); return false;"><span class="lang-en">Skip to tonight's math</span><span class="lang-es" lang="es">Ir a la matemática de hoy</span></a>
+${renderIconSprite()}
+<a class="hw-skip" href="#hw_tab_panels" ${actOn("click", "startHomework", [], { prevent: true })}><span class="lang-en">Skip to tonight's math</span><span class="lang-es" lang="es">Ir a la matemática de hoy</span></a>
 
 <script>
 /* Language mode, BEFORE first paint. restoreParentSignoff sets the same class
@@ -4266,7 +1544,6 @@ ${CENTER_CSS}
 <div class="container" role="main">
 
   ${welcomeHtml}
-  ${coLearningHudHtml}
 
   ${tabsHtml}
   ${refrigeratorSheetHtml}
@@ -4288,12 +1565,12 @@ ${renderMathKeypad()}
      the bar used to read "Progress / Progreso:" on an all-English page. -->
 <div class="bottom-status-bar" data-status-for="check">
   <div class="status-bar-wrapper">
-    <button class="sound-toggle-btn" id="sound_toggle" onclick="toggleSound()" title="Toggle Sound Effects" aria-label="Toggle sound effects">🔊</button>
+    <button class="sound-toggle-btn" id="sound_toggle" ${act("toggleSound")} title="Toggle Sound Effects" aria-label="Toggle sound effects">🔊</button>
 
     <div class="score-progress-container">
       <div class="score-text">
         <span class="hw-stack hw-goal-label"><span class="lang-en">Tonight's goal</span><span class="lang-es" lang="es">Meta de hoy</span></span>
-        <span id="progress_text">0 / ${Math.min(GOAL_TARGET, coreSelected.length)}</span>
+        <span id="progress_text" role="status">0 / ${Math.min(GOAL_TARGET, coreSelected.length)}</span>
         ${renderGoalPips("hw-pips-bar")}
         <span class="hw-bonus" data-hw-bonus hidden>+<span data-hw-bonus-count>0</span> <span class="lang-en">bonus</span><span class="lang-es" lang="es">extra</span></span>
       </div>
@@ -4303,8 +1580,8 @@ ${renderMathKeypad()}
     </div>
 
     <div class="action-buttons">
-      <button class="btn btn-secondary hw-stack" onclick="resetWorksheet()"><span class="lang-en">Reset</span><span class="lang-es" lang="es">Reiniciar</span></button>
-      <button class="btn btn-primary hw-stack" onclick="checkWorksheet()"><span class="lang-en">Check All</span><span class="lang-es" lang="es">Revisar todo</span></button>
+      <button class="btn btn-secondary hw-stack" ${act("resetWorksheet")}><span class="lang-en">Reset</span><span class="lang-es" lang="es">Reiniciar</span></button>
+      <button class="btn btn-primary hw-stack" ${act("checkWorksheet")}><span class="lang-en">Check All</span><span class="lang-es" lang="es">Revisar todo</span></button>
     </div>
   </div>
 </div>
@@ -4323,6 +1600,7 @@ window.__HW_VOCAB_SKIP__ = ${vocabGlossary ? jsonForScript(vocabGlossary.skip) :
 window.__HW_VOCAB_MATCH__ = ${vocabGlossary ? jsonForScript(vocabGlossary.match) : "null"};
 window.__HW_WORKED__ = ${jsonForScript(workedExampleFor(config, coreSelected))};
 /*hw-shared-js:begin*/
+${HOMEWORK_ACTIONS_JS}
 ${HOMEWORK_TABS_JS}
 ${PRINT_JS}
 ${STUDIO_SKIN_JS}
@@ -4335,6 +1613,7 @@ ${SESSION_FLOW_JS}
 ${EXPERIENCE_JS}
 ${CASE_FILE_JS}
 ${V3_LEARN_JS}
+${HERO_JS}
 ${DOMINO_DUO_JS}
 ${VISUAL_LABS_JS}
 ${MATH_INPUT_JS}
@@ -4435,7 +1714,7 @@ function escalateHint(section, idx, type) {
     const retry = document.createElement("div");
     retry.className = "exp-retry";
     retry.style.cssText = "display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px;";
-    retry.innerHTML = '<button type="button" class="btn btn-sm btn-secondary hw-reveal-btn" onclick="forceReveal(' + idx + ')">' +
+    retry.innerHTML = '<button type="button" class="btn btn-sm btn-secondary hw-reveal-btn" data-act="forceReveal" data-args="[' + idx + ']">' +
       '<span class="lang-en">Show me how</span><span class="lang-es" lang="es">Muéstrame cómo</span></button>';
     card.appendChild(retry);
   }
@@ -4540,7 +1819,7 @@ function triggerConfettiBurst(originX, originY, count = 50) {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
     const ctx = canvas.getContext("2d");
-    const colors = ["#1fa6a2", "#f2c15b", "#d9795d", "#12355b", "#10b981", "#8b5cf6"];
+    const colors = ["var(--fm-m-part)", "var(--fm-m-unknown)", "var(--fm-m-unknown)", "var(--fm-primary)", "var(--fm-success)", "var(--fm-m-whole)"];
     const particles = [];
     const startX = originX || window.innerWidth / 2;
     const startY = originY || window.innerHeight / 3;
@@ -4903,7 +2182,7 @@ function updateCelebrationTab() {
     } else if (total) {
       summary.className = "done-summary is-partial";
       summary.innerHTML = '<span class="lang-en">You checked ' + correctCount + ' of ' + total + ' problems. ' + left + ' left to finish.</span><span class="lang-es" lang="es">Revisaste ' + correctCount + ' de ' + total + ' problemas. Faltan ' + left + '.</span>' +
-        '<br><button type="button" class="btn btn-secondary" onclick="switchHomeworkTab(&#39;check&#39;)"><span class="lang-en">Back to the problems</span><span class="lang-es" lang="es">Volver a los problemas</span></button>';
+        '<br><button type="button" class="btn btn-secondary" data-act="switchHomeworkTab" data-args="[&quot;check&quot;]"><span class="lang-en">Back to the problems</span><span class="lang-es" lang="es">Volver a los problemas</span></button>';
     }
   }
   /* One chip per problem, so a family sees WHICH ones are open and can jump
@@ -4914,7 +2193,7 @@ function updateCelebrationTab() {
     list.innerHTML = problems
       .map((s, i) => {
         const done = s.classList.contains("correct") || s.classList.contains("reviewed");
-        return '<li><button type="button" class="done-problem-chip' + (done ? " is-done" : "") + '" onclick="jumpToHomeworkProblem(' + i + ')" aria-label="' + (document.documentElement.lang === "es" ? "Problema " + (i + 1) + (done ? ", revisado" : ", sin revisar") : "Problem " + (i + 1) + (done ? ", checked" : ", not checked yet")) + '"><span aria-hidden="true">' + (i + 1) + (done ? " ✓" : "") + '</span></button></li>';
+        return '<li><button type="button" class="done-problem-chip' + (done ? " is-done" : "") + '" data-act="jumpToHomeworkProblem" data-args="[' + i + ']" aria-label="' + (document.documentElement.lang === "es" ? "Problema " + (i + 1) + (done ? ", revisado" : ", sin revisar") : "Problem " + (i + 1) + (done ? ", checked" : ", not checked yet")) + '"><span aria-hidden="true">' + (i + 1) + (done ? " ✓" : "") + '</span></button></li>';
       })
       .join("");
   }
@@ -5815,7 +3094,7 @@ function openWorkbench(tool) {
 
 function workbenchActionButton(labelEn, labelEs) {
   if (!document.querySelector(".workbench-drawer")) return "";
-  return '<button type="button" class="btn btn-sm btn-outline-secondary" onclick="openWorkbench()">' +
+  return '<button type="button" class="btn btn-sm btn-outline-secondary" data-act="openWorkbench">' +
     '🧮 <span class="lang-en">' + labelEn + '</span><span class="lang-es" lang="es">' + labelEs + '</span></button>';
 }
 
@@ -5876,12 +3155,12 @@ function drawCoordGrid() {
   let content = "";
   for (let i = -5; i <= 5; i++) {
     const pos = i * 20;
-    content += '<line x1="' + pos + '" y1="-100" x2="' + pos + '" y2="100" stroke="#e2e8f0" stroke-width="1" />';
-    content += '<line x1="-100" y1="' + pos + '" x2="100" y2="' + pos + '" stroke="#e2e8f0" stroke-width="1" />';
+    content += '<line x1="' + pos + '" y1="-100" x2="' + pos + '" y2="100" stroke="var(--fm-m-whole)" stroke-width="1" />';
+    content += '<line x1="-100" y1="' + pos + '" x2="100" y2="' + pos + '" stroke="var(--fm-m-whole)" stroke-width="1" />';
   }
-  content += '<line x1="-105" y1="0" x2="105" y2="0" stroke="#1e293b" stroke-width="2" />';
-  content += '<line x1="0" y1="-105" x2="0" y2="105" stroke="#1e293b" stroke-width="2" />';
-  content += '<circle id="coord_plot_dot" cx="0" cy="0" r="5" fill="#e11d48" />';
+  content += '<line x1="-105" y1="0" x2="105" y2="0" stroke="var(--fm-primary)" stroke-width="2" />';
+  content += '<line x1="0" y1="-105" x2="0" y2="105" stroke="var(--fm-primary)" stroke-width="2" />';
+  content += '<circle id="coord_plot_dot" cx="0" cy="0" r="5" fill="var(--fm-m-unknown)" />';
   svg.innerHTML = content;
 }
 
@@ -6122,7 +3401,7 @@ function checkProblem(idx, options) {
                 'Pregunta a tu estudiante: <em>“¿Qué te pide hallar o comparar este problema?”</em> Luego intenta otra opción.'
               ) + '</div>';
             html += '<div class="exp-retry" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px;">' +
-              '<button type="button" class="btn btn-sm btn-secondary hw-reveal-btn" onclick="forceReveal(' + idx + ')">' +
+              '<button type="button" class="btn btn-sm btn-secondary hw-reveal-btn" data-act="forceReveal" data-args="[' + idx + ']">' +
               '<span class="lang-en">Show me how</span><span class="lang-es" lang="es">Muéstrame cómo</span></button>' +
               workbenchActionButton("Try with tonight's tool", "Probar con la herramienta de hoy") + '</div>';
             expDiv.innerHTML = html;
@@ -6144,7 +3423,7 @@ function checkProblem(idx, options) {
                 'Pregunta: <em>“¿Qué número va arriba y cuál va abajo?”</em> o usa las herramientas de matemáticas abajo.'
               ) + '</div>';
             html += '<div class="exp-retry" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px;">' +
-              '<button type="button" class="btn btn-sm btn-secondary hw-reveal-btn" onclick="forceReveal(' + idx + ')">' +
+              '<button type="button" class="btn btn-sm btn-secondary hw-reveal-btn" data-act="forceReveal" data-args="[' + idx + ']">' +
               '<span class="lang-en">Show me how</span><span class="lang-es" lang="es">Muéstrame cómo</span></button>' +
               workbenchActionButton("Open tonight's tool", "Abrir la herramienta de hoy") + '</div>';
             expDiv.innerHTML = html;
@@ -6660,9 +3939,11 @@ var NeftGraph = (function () {
     wrap.appendChild(input); container.appendChild(wrap);
     return input;
   }
-  function graphHit(node, label, action) {
+  // en and es are separate so the label is read in one language; setLanguageMode swaps it.
+  function graphHit(node, en, es, action) {
     node.setAttribute("role", "button"); node.setAttribute("tabindex", "0");
-    node.setAttribute("aria-label", label);
+    node.dataset.ariaEn = en; node.dataset.ariaEs = es;
+    node.setAttribute("aria-label", document.documentElement.lang === "es" ? es : en);
     node.addEventListener("click", action);
     node.addEventListener("keydown", function(e) {
       if (e.key === "Enter" || e.key === " ") { e.preventDefault(); action(); }
@@ -6678,21 +3959,21 @@ var NeftGraph = (function () {
     var svg = el("svg", { viewBox: "0 0 344 96", "class": "hw-visual-svg", role: "group", "aria-label": "Interactive number line" });
     var tickLayer = el("g"), rayLayer = el("g"), pointLayer = el("g");
     svg.appendChild(tickLayer);
-    svg.appendChild(el("line", { x1: 14, y1: y, x2: 330, y2: y, stroke: "#12355b", "stroke-width": 2 }));
-    svg.appendChild(el("polygon", { points: "330," + y + " 320," + (y - 5) + " 320," + (y + 5), fill: "#12355b" }));
-    svg.appendChild(el("polygon", { points: "14," + y + " 24," + (y - 5) + " 24," + (y + 5), fill: "#12355b" }));
+    svg.appendChild(el("line", { x1: 14, y1: y, x2: 330, y2: y, stroke: "var(--fm-primary)", "stroke-width": 2 }));
+    svg.appendChild(el("polygon", { points: "330," + y + " 320," + (y - 5) + " 320," + (y + 5), fill: "var(--fm-primary)" }));
+    svg.appendChild(el("polygon", { points: "14," + y + " 24," + (y - 5) + " 24," + (y + 5), fill: "var(--fm-primary)" }));
     function xFor(v) { return x0 + (v - MIN) * stepX; }
     function drawTicks() {
       tickLayer.replaceChildren();
       var tickStep = Math.max(1, Math.ceil(MAX / 5));
       for (var v = MIN; v <= MAX; v += tickStep) {
         var x = xFor(v);
-        tickLayer.appendChild(el("line", { x1:x, y1:y-6, x2:x, y2:y+6, stroke:"#12355b" }));
+        tickLayer.appendChild(el("line", { x1:x, y1:y-6, x2:x, y2:y+6, stroke:"var(--fm-primary)" }));
         var lbl = el("text", { x:x, y:y+22, "text-anchor":"middle", "class":"ng-tick-lbl" });
         lbl.textContent = String(v); tickLayer.appendChild(lbl);
         (function(val, cx) {
           var hit = el("rect", { x:cx-stepX*tickStep/2, y:6, width:stepX*tickStep, height:60, "class":"ng-hit" });
-          graphHit(hit, "Plot / Marcar " + val, function() { state.v=val; render(); });
+          graphHit(hit, "Plot " + val, "Marcar " + val, function() { state.v=val; render(); });
           tickLayer.appendChild(hit);
         })(v,x);
       }
@@ -6710,8 +3991,8 @@ var NeftGraph = (function () {
       if (Number.isFinite(value)) { state.v = value; render(); }
     });
     var bCircle = makeBtn("", function () { state.closed = !state.closed; render(); });
-    var bLeft = makeBtn(bi("◀ Shade left", "◀ Sombrear izq."), function () { state.dir = state.dir === "left" ? null : "left"; render(); });
-    var bRight = makeBtn(bi("Shade right ▶", "Sombrear der. ▶"), function () { state.dir = state.dir === "right" ? null : "right"; render(); });
+    var bLeft = makeBtn(bi('<span aria-hidden="true">◀</span> Shade left', '<span aria-hidden="true">◀</span> Sombrear izq.'), function () { state.dir = state.dir === "left" ? null : "left"; render(); });
+    var bRight = makeBtn(bi('Shade right <span aria-hidden="true">▶</span>', 'Sombrear der. <span aria-hidden="true">▶</span>'), function () { state.dir = state.dir === "right" ? null : "right"; render(); });
     controls.appendChild(bCircle); controls.appendChild(bLeft); controls.appendChild(bRight);
 
     function render() {
@@ -6757,11 +4038,11 @@ var NeftGraph = (function () {
     function sx(x) { return O + x * STEP; }
     function sy(yv) { return O - yv * STEP; }
     for (var i = MIN; i <= MAX; i++) {
-      svg.appendChild(el("line", { x1: sx(i), y1: sy(MAX), x2: sx(i), y2: sy(MIN), stroke: "#d6e2ee", "stroke-width": 1 }));
-      svg.appendChild(el("line", { x1: sx(MIN), y1: sy(i), x2: sx(MAX), y2: sy(i), stroke: "#d6e2ee", "stroke-width": 1 }));
+      svg.appendChild(el("line", { x1: sx(i), y1: sy(MAX), x2: sx(i), y2: sy(MIN), stroke: "var(--fm-m-whole)", "stroke-width": 1 }));
+      svg.appendChild(el("line", { x1: sx(MIN), y1: sy(i), x2: sx(MAX), y2: sy(i), stroke: "var(--fm-m-whole)", "stroke-width": 1 }));
     }
-    svg.appendChild(el("line", { x1: O, y1: sy(MAX) - 6, x2: O, y2: sy(MIN) + 6, stroke: "#12355b", "stroke-width": 2 }));
-    svg.appendChild(el("line", { x1: sx(MIN) - 6, y1: O, x2: sx(MAX) + 6, y2: O, stroke: "#12355b", "stroke-width": 2 }));
+    svg.appendChild(el("line", { x1: O, y1: sy(MAX) - 6, x2: O, y2: sy(MIN) + 6, stroke: "var(--fm-primary)", "stroke-width": 2 }));
+    svg.appendChild(el("line", { x1: sx(MIN) - 6, y1: O, x2: sx(MAX) + 6, y2: O, stroke: "var(--fm-primary)", "stroke-width": 2 }));
     var xlbl = el("text", { x: sx(MAX) + 2, y: O + 14, "class": "ng-axis-lbl" }); xlbl.textContent = "x"; svg.appendChild(xlbl);
     var ylbl = el("text", { x: O + 4, y: sy(MAX) + 2, "class": "ng-axis-lbl" }); ylbl.textContent = "y"; svg.appendChild(ylbl);
     var plotLayer = el("g"), hitLayer = el("g");
@@ -6787,7 +4068,7 @@ var NeftGraph = (function () {
       hitLayer.replaceChildren();
       var tickStep = Math.max(1, Math.ceil(MAX/5));
       for (var i=MIN; i<=MAX; i+=tickStep) {
-        var shade = i === 0 ? "#12355b" : "#d6e2ee";
+        var shade = i === 0 ? "var(--fm-primary)" : "var(--fm-m-whole-tint)";
         svg.insertBefore(el("line", {x1:sx(i),y1:sy(MAX),x2:sx(i),y2:sy(MIN),stroke:shade}), hitLayer);
         svg.insertBefore(el("line", {x1:sx(MIN),y1:sy(i),x2:sx(MAX),y2:sy(i),stroke:shade}), hitLayer);
         var label = el("text", {x:sx(i), y:O+14, "class":"ng-tick-lbl", "text-anchor":"middle"});
@@ -6799,7 +4080,7 @@ var NeftGraph = (function () {
         for (var j=MIN; j<=MAX; j+=tickStep) {
           (function(x,y) {
             var hit = el("circle", {cx:sx(x),cy:sy(y),r:8,"class":"ng-hit"});
-            graphHit(hit,"Plot / Marcar ("+x+", "+y+")",function(){toggle(x,y);});
+            graphHit(hit,"Plot ("+x+", "+y+")","Marcar ("+x+", "+y+")",function(){toggle(x,y);});
             hitLayer.appendChild(hit);
           })(i,j);
         }
@@ -6839,17 +4120,17 @@ var NeftGraph = (function () {
     var on = {}; for (var i = 0; i < state.cells.length; i++) on[state.cells[i]] = true;
     var oldSvg = frame.querySelector(".hw-visual-svg");
     var svg = el("svg", { viewBox: "0 0 " + W + " " + H, "class": "hw-visual-svg", role: "group", "aria-label": "Interactive grid" });
-    svg.appendChild(el("rect", { x: PAD, y: PAD, width: COLS * CELL, height: ROWS * CELL, fill: "#ffffff", stroke: "#12355b", "stroke-width": 1.5 }));
+    svg.appendChild(el("rect", { x: PAD, y: PAD, width: COLS * CELL, height: ROWS * CELL, fill: "var(--fm-raised)", stroke: "var(--fm-primary)", "stroke-width": 1.5 }));
     var cellLayer = el("g");
     svg.appendChild(cellLayer);
-    for (var c = 0; c <= COLS; c++) svg.appendChild(el("line", { x1: PAD + c * CELL, y1: PAD, x2: PAD + c * CELL, y2: PAD + ROWS * CELL, stroke: "#d6e2ee", "stroke-width": 1 }));
-    for (var r = 0; r <= ROWS; r++) svg.appendChild(el("line", { x1: PAD, y1: PAD + r * CELL, x2: PAD + COLS * CELL, y2: PAD + r * CELL, stroke: "#d6e2ee", "stroke-width": 1 }));
+    for (var c = 0; c <= COLS; c++) svg.appendChild(el("line", { x1: PAD + c * CELL, y1: PAD, x2: PAD + c * CELL, y2: PAD + ROWS * CELL, stroke: "var(--fm-m-whole)", "stroke-width": 1 }));
+    for (var r = 0; r <= ROWS; r++) svg.appendChild(el("line", { x1: PAD, y1: PAD + r * CELL, x2: PAD + COLS * CELL, y2: PAD + r * CELL, stroke: "var(--fm-m-whole)", "stroke-width": 1 }));
     for (var rr = 0; rr < ROWS; rr++) {
       for (var cc = 0; cc < COLS; cc++) {
         (function (row, col) {
           var key = row + "," + col;
           var rect = el("rect", { x: PAD + col * CELL, y: PAD + row * CELL, width: CELL, height: CELL, "class": "ng-cell" + (on[key] ? " is-on" : "") });
-          graphHit(rect, "Square / Cuadro " + (row+1) + ", " + (col+1), function () {
+          graphHit(rect, "Square " + (row+1) + ", " + (col+1), "Cuadro " + (row+1) + ", " + (col+1), function () {
             if (on[key]) { delete on[key]; rect.setAttribute("class", "ng-cell"); }
             else { on[key] = true; rect.setAttribute("class", "ng-cell is-on"); }
             commit();
@@ -7077,7 +4358,7 @@ function main() {
   const staleHomework = [];
   const sharedFiles = {};
   for (const { id, config } of lessons) {
-    const homeworkHtml = localizeBilingualLabels(generateHtml(id, config));
+    const homeworkHtml = a11yMarkup(localizeBilingualLabels(generateHtml(id, config)));
     const lessonPath = join(lessonsDir, id, "homework.html");
     const split = externalizeSharedCode(
       `${homeworkHtml.replace(/[ \t]+$/gm, "").trimEnd()}\n`,

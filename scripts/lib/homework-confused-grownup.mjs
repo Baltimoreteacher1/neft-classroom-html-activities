@@ -220,33 +220,6 @@ export function renderConfusedGrownUp(rounds) {
       </div>`;
 }
 
-export const CONFUSED_GROWNUP_CSS = `
-.cga-card { border: 2px solid var(--st-amber, #b45309); background: #fffaf0; }
-.cga-script { list-style: none; margin: 8px 0 12px; padding: 0; display: grid; gap: 8px; }
-.cga-script li { display: flex; gap: 10px; align-items: flex-start; font-size: 16px; line-height: 1.45; }
-.cga-step-num { flex: 0 0 auto; width: 28px; height: 28px; border-radius: 50%; background: var(--st-navy, #17324d); color: #fff; font-weight: 800; display: inline-flex; align-items: center; justify-content: center; }
-.cga-step-ask { display: block; margin-top: 4px; font-style: normal; font-weight: 700; color: var(--teal-ink, #0c6f6b); }
-.cga-round { margin-top: 12px; padding: 14px; border-radius: 14px; background: #fff; border: 1.5px solid #e6d3a8; }
-.cga-count { margin: 0 0 6px; font-size: 13px; font-weight: 800; letter-spacing: .03em; text-transform: uppercase; color: #92400e; }
-.cga-problem { margin: 0 0 10px; font-size: 18px; line-height: 1.45; }
-.cga-claim { margin: 0 0 12px; padding: 10px 12px; border-left: 5px solid #d97706; background: #fef3c7; border-radius: 8px; }
-.cga-claim-label { margin: 0; font-size: 13px; font-weight: 700; color: #7c2d12; }
-.cga-claim-text { margin: 4px 0 8px; font-size: 20px; font-weight: 800; line-height: 1.4; color: #1e293b; }
-.cga-task { margin: 0 0 8px; font-size: 17px; }
-.cga-choices { display: flex; flex-wrap: wrap; gap: 10px; }
-.cga-choice { min-height: 48px; min-width: 64px; padding: 10px 18px; font: inherit; font-size: 18px; font-weight: 700; border-radius: 12px; border: 2px solid #94a3b8; background: #fff; color: #1e293b; cursor: pointer; }
-.cga-choice:hover:not(:disabled) { border-color: var(--st-teal, #0f766e); background: #f0fdfa; }
-.cga-choice:focus-visible { outline: 3px solid var(--teal-ink, #0c6f6b); outline-offset: 2px; }
-.cga-choice.is-wrong { border-color: #b64e2f; background: #fef0ec; }
-.cga-choice.is-right { border-color: #0f7c4a; background: #e6f7ef; }
-.cga-feedback { min-height: 1.4em; margin: 10px 0 0; font-size: 16px; line-height: 1.5; color: #7c2d12; }
-.cga-win { margin-top: 10px; padding: 12px; border-radius: 10px; background: #e6f7ef; border: 1.5px solid #86d3ae; }
-.cga-win p { margin: 0 0 8px; font-size: 16px; line-height: 1.5; }
-.cga-win .btn { min-height: 44px; }
-@media (max-width: 480px) { .cga-choice { flex: 1 1 100%; } }
-@media print { .cga-card { display: none; } }
-`;
-
 /* Plain JS in a template literal: no backslashes, so nothing is dropped. */
 export const CONFUSED_GROWNUP_JS = `
 /* Play the Confused Grown-Up. The rounds are server-rendered; this only answers taps. */

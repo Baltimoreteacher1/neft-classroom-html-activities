@@ -70,8 +70,10 @@
     border-collapse: collapse;
   }
   /* !important (documented a11y): class display rules beat the UA [hidden] rule, which has hidden
-     content reappear. [hidden] must always win. */
-  [hidden] {
+     content reappear. [hidden] must always win. The one exception is the legacy Learn stop: from 900px
+     it deliberately shows every card at once (`#hw_panel_learn > .learn-card[hidden]` in the studio
+     skin) and its own !important rule must keep winning until the body restyle replaces the pager. */
+  [hidden]:not(.learn-card) {
     display: none !important;
   }
 }
@@ -417,6 +419,41 @@
   .fm-seg__opt input:disabled + span {
     color: var(--fm-text-muted);
     cursor: not-allowed;
+  }
+
+  /* Segmented control made of buttons (the page language picker): pressed = selected. */
+  .fm-seg > button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-inline-size: var(--fm-target);
+    min-block-size: var(--fm-target);
+    padding-inline: var(--fm-space-3);
+    border: 0;
+    border-radius: var(--fm-radius-sm);
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    font-weight: var(--fm-fw-semibold);
+    line-height: var(--fm-lh-ui);
+    text-align: center;
+    cursor: pointer;
+    transition: background-color var(--fm-dur-1) var(--fm-ease);
+  }
+  .fm-seg > button[aria-pressed="true"] {
+    background: var(--fm-primary);
+    color: var(--fm-on-primary);
+    font-weight: var(--fm-fw-bold);
+  }
+  .fm-seg > button:focus-visible {
+    outline: var(--fm-focus-width) solid var(--fm-focus);
+    outline-offset: var(--fm-focus-offset);
+    box-shadow: 0 0 0 var(--fm-focus-offset) var(--fm-focus-halo);
+  }
+  @media (hover: hover) {
+    .fm-seg > button[aria-pressed="false"]:hover {
+      background: var(--fm-raised);
+    }
   }
 
   /* ── Switch (role="switch" button): the word On/Off is always printed ────────── */
@@ -1803,13 +1840,15 @@
     border-radius: var(--fm-radius-pill);
     background: var(--fm-raised);
   }
-  .fm-route:has(input:checked) {
+  .fm-route:has(input:checked),
+  .fm-route[aria-pressed="true"] {
     border-color: var(--fm-primary);
     border-width: 4px;
     padding: calc(var(--fm-space-3) - 2px) calc(var(--fm-space-4) - 2px);
     padding-inline-end: calc(var(--fm-space-6) - 2px);
   }
-  .fm-route:has(input:checked)::after {
+  .fm-route:has(input:checked)::after,
+  .fm-route[aria-pressed="true"]::after {
     content: "\2713";
     display: grid;
     place-items: center;
@@ -1820,7 +1859,8 @@
     font-weight: var(--fm-fw-bold);
     line-height: 1;
   }
-  .fm-route:has(input:focus-visible) {
+  .fm-route:has(input:focus-visible),
+  button.fm-route:focus-visible {
     outline: var(--fm-focus-width) solid var(--fm-focus);
     outline-offset: var(--fm-focus-offset);
     box-shadow: 0 0 0 var(--fm-focus-offset) var(--fm-focus-halo);
@@ -1935,7 +1975,9 @@
   .fm-hook[data-variant="receipt"] {
     padding-block-end: var(--fm-space-6);
     border-block-end: 0;
-    mask: conic-gradient(from -45deg at bottom, transparent 90deg, black 0) bottom / 1rem 0.6rem repeat-x,
+    mask:
+      conic-gradient(from -45deg at bottom, transparent 90deg, black 0) bottom / 1rem 0.6rem
+        repeat-x,
       linear-gradient(black 0 0) top / 100% calc(100% - 0.6rem) no-repeat;
   }
 
@@ -2030,14 +2072,50 @@
     background: var(--unit-accent);
     animation: fm-fall calc(var(--fm-dur-3) * 4) var(--fm-ease-soft) both;
   }
-  .fm-confetti > i:nth-child(1) { inset-inline-start: 8%; rotate: 20deg; }
-  .fm-confetti > i:nth-child(2) { inset-inline-start: 22%; inset-block-start: 14%; border-radius: var(--fm-radius-pill); background: var(--fm-highlight); }
-  .fm-confetti > i:nth-child(3) { inset-inline-start: 36%; inset-block-start: 6%; rotate: 45deg; background: var(--fm-accent); }
-  .fm-confetti > i:nth-child(4) { inset-inline-start: 52%; inset-block-start: 12%; clip-path: polygon(50% 0, 100% 100%, 0 100%); background: var(--fm-highlight); }
-  .fm-confetti > i:nth-child(5) { inset-inline-start: 66%; inset-block-start: 5%; border-radius: var(--fm-radius-pill); }
-  .fm-confetti > i:nth-child(6) { inset-inline-start: 78%; inset-block-start: 15%; rotate: 30deg; background: var(--fm-accent); }
-  .fm-confetti > i:nth-child(7) { inset-inline-start: 90%; inset-block-start: 9%; clip-path: polygon(50% 0, 100% 100%, 0 100%); }
-  .fm-confetti > i:nth-child(8) { inset-inline-start: 45%; inset-block-start: 20%; rotate: 60deg; background: var(--fm-highlight); }
+  .fm-confetti > i:nth-child(1) {
+    inset-inline-start: 8%;
+    rotate: 20deg;
+  }
+  .fm-confetti > i:nth-child(2) {
+    inset-inline-start: 22%;
+    inset-block-start: 14%;
+    border-radius: var(--fm-radius-pill);
+    background: var(--fm-highlight);
+  }
+  .fm-confetti > i:nth-child(3) {
+    inset-inline-start: 36%;
+    inset-block-start: 6%;
+    rotate: 45deg;
+    background: var(--fm-accent);
+  }
+  .fm-confetti > i:nth-child(4) {
+    inset-inline-start: 52%;
+    inset-block-start: 12%;
+    clip-path: polygon(50% 0, 100% 100%, 0 100%);
+    background: var(--fm-highlight);
+  }
+  .fm-confetti > i:nth-child(5) {
+    inset-inline-start: 66%;
+    inset-block-start: 5%;
+    border-radius: var(--fm-radius-pill);
+  }
+  .fm-confetti > i:nth-child(6) {
+    inset-inline-start: 78%;
+    inset-block-start: 15%;
+    rotate: 30deg;
+    background: var(--fm-accent);
+  }
+  .fm-confetti > i:nth-child(7) {
+    inset-inline-start: 90%;
+    inset-block-start: 9%;
+    clip-path: polygon(50% 0, 100% 100%, 0 100%);
+  }
+  .fm-confetti > i:nth-child(8) {
+    inset-inline-start: 45%;
+    inset-block-start: 20%;
+    rotate: 60deg;
+    background: var(--fm-highlight);
+  }
   @keyframes fm-fall {
     from {
       transform: translateY(-3rem);
@@ -2270,7 +2348,9 @@
   }
   .fm-num {
     font-variant-numeric: lining-nums tabular-nums;
-    font-feature-settings: "tnum" 1, "lnum" 1;
+    font-feature-settings:
+      "tnum" 1,
+      "lnum" 1;
   }
   .fm-sr {
     position: absolute;
@@ -2390,6 +2470,7 @@
       border: 2px solid CanvasText;
     }
     .fm-btn--primary,
+    .fm-seg > button[aria-pressed="true"],
     .fm-seg__opt input:checked + span,
     .fm-chip[aria-pressed="true"] {
       background: Highlight;
@@ -2411,6 +2492,7 @@
     }
     .fm-choice:has(input:checked),
     .fm-route:has(input:checked),
+    .fm-route[aria-pressed="true"],
     .fm-tile[data-state="selected"] {
       border-color: Highlight;
     }
@@ -2466,6 +2548,326 @@
       border-color: black;
       min-block-size: 8in;
       align-content: center;
+    }
+  }
+}
+
+/* ──────────────── Homework page first screen: hero, top bar and the rows under it ────────────────
+   The generated pages keep their legacy hook classes (.hw-*) so the page scripts and tests find what
+   they always found; every look below comes from the tokens. */
+@layer patterns {
+  /* !important (documented): the generated page still loads unlayered legacy rules until the body
+     restyle removes them: `svg { height: auto }` (mobile-access.css) leaves an icon at the 150px
+     default, and the editorial sheet sets Fraunces with !important on every heading. A layered
+     !important declaration beats both, so the first screen keeps the system's icon size and faces. */
+  .fm-icon {
+    block-size: var(--fm-icon-size, 1.5rem) !important;
+  }
+  .fm-icon--sm {
+    --fm-icon-size: 1.125rem;
+  }
+  .fm-icon--lg {
+    --fm-icon-size: 2rem;
+  }
+  /* !important (documented): see above; the heading faces. */
+  .hw-hero .fm-hero__title,
+  .hw-hero .fm-card__title,
+  .fm-sheet .fm-card__title {
+    font-family: var(--fm-font-display) !important;
+  }
+  /* !important (documented): see above; the route question is text, not a display heading. */
+  .hw-hero .fm-hero__q {
+    font-family: var(--fm-font-text) !important;
+  }
+  /* !important (documented): legacy unlayered `.lang-es { color: var(--ink) }` and the
+     `.lang-en + .lang-es` left rule belong to the old body; inside the first screen the second
+     language inherits the surface's text color and carries no bar. */
+  .hw-hero .lang-en,
+  .hw-hero .lang-es {
+    color: inherit !important;
+  }
+  /* !important (documented): see above; the second language carries no bar and no indent here. */
+  .hw-hero .lang-en + .lang-es {
+    padding-inline-start: 0 !important;
+    border-inline-start: 0 !important;
+  }
+  /* !important (documented): legacy `button .lang-en + .lang-es { display: inline }` flattens the pair
+     inside route cards; with both languages showing, the second sits under the first everywhere here. */
+  .lang-mode-bilingual .hw-hero .lang-en + .lang-es {
+    display: block !important;
+  }
+  .lang-mode-bilingual .hw-hero .lang-es {
+    margin-block-start: 0 !important;
+    font-size: var(--fm-fs-sm);
+    font-weight: var(--fm-fw-semibold);
+  }
+  .hw-hero {
+    padding: var(--fm-space-2) var(--fm-space-3) var(--fm-space-4);
+    border-radius: var(--fm-radius-lg);
+    background: var(--fm-surface);
+    color: var(--fm-text);
+  }
+  .hw-hero .fm-topbar {
+    margin-block-end: var(--fm-space-3);
+  }
+  .hw-hero .lang-selector-card {
+    display: contents;
+  }
+  .hw-hero .fm-topbar__brand {
+    min-inline-size: var(--fm-target);
+    justify-content: center;
+  }
+  .hw-hero .fm-hero {
+    gap: var(--fm-space-3);
+    padding: var(--fm-space-3);
+  }
+  .hw-hero .fm-hero__art {
+    position: relative;
+    min-block-size: 5.5rem;
+    overflow: hidden;
+  }
+  .hw-hero .fm-hero__art > svg {
+    position: absolute;
+    inset: 0;
+    inline-size: 100%;
+    block-size: 100%;
+  }
+  .hw-hero .fm-hero__title {
+    font-size: var(--fm-fs-2xl);
+  }
+  .fm-hero__meta {
+    color: var(--fm-text-muted);
+    font-size: var(--fm-fs-sm);
+    font-weight: var(--fm-fw-semibold);
+  }
+  .hw-hook {
+    max-inline-size: 34rem;
+    padding: var(--fm-space-3) var(--fm-space-4);
+  }
+  .hw-hook.fm-hook[data-variant="price-tag"] {
+    padding-inline-end: var(--fm-space-6);
+  }
+  .hw-hook.fm-hook[data-variant="price-tag"]::after {
+    inset-inline-end: var(--fm-space-2);
+  }
+  .hw-hero .fm-seg > button {
+    padding-inline: var(--fm-space-2);
+    font-size: var(--fm-fs-sm);
+  }
+  .hw-hero .fm-route .hw-route-time {
+    white-space: nowrap;
+  }
+  .fm-hook__kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--fm-space-2);
+  }
+  .fm-hook__text {
+    font-size: var(--fm-fs-md);
+    font-weight: var(--fm-fw-semibold);
+    line-height: var(--fm-lh-ui);
+  }
+  .fm-hero__q {
+    font-family: var(--fm-font-text);
+    font-size: var(--fm-fs-md);
+    line-height: var(--fm-lh-ui);
+  }
+  .hw-hero .fm-routes {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--fm-space-2);
+  }
+  .hw-hero .fm-route {
+    min-block-size: 0;
+    padding-block: var(--fm-space-2);
+    text-align: start;
+    color: inherit;
+    font: inherit;
+  }
+  .hw-hero .fm-route__title {
+    font-size: var(--fm-fs-md);
+  }
+  .hw-hero .fm-route__desc {
+    font-size: var(--fm-fs-xs);
+    line-height: var(--fm-lh-ui);
+  }
+  .hw-hero .fm-route .fm-chip small {
+    font-size: inherit;
+  }
+  .fm-hero__promise {
+    color: var(--fm-text-muted);
+    font-size: var(--fm-fs-sm);
+  }
+  .fm-hero__resume:empty {
+    display: none;
+  }
+  .fm-hero__resume {
+    padding: var(--fm-space-2) var(--fm-space-3);
+    border-radius: var(--fm-radius-sm);
+    background: var(--fm-info-tint);
+    color: var(--fm-info-ink);
+    font-size: var(--fm-fs-sm);
+    font-weight: var(--fm-fw-semibold);
+  }
+  .fm-hero__more {
+    display: grid;
+    gap: var(--fm-space-3);
+    padding-block-start: var(--fm-space-4);
+  }
+  .fm-hero__more:empty {
+    display: none;
+  }
+  .hw-hero-bigidea {
+    max-inline-size: 46rem;
+    font-size: var(--fm-fs-md);
+  }
+  .hw-hero-lead {
+    max-inline-size: 46rem;
+    color: var(--fm-text-muted);
+  }
+  .hw-hero-bigidea-label {
+    display: block;
+    color: var(--unit-accent-ink);
+    font-size: var(--fm-fs-sm);
+    font-weight: var(--fm-fw-bold);
+  }
+  .hw-tonight {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .hw-tonight .fm-chip {
+    min-block-size: var(--fm-target-min);
+  }
+  /* Two-session lessons: where tonight sits, as a quiet inset row. */
+  .hw-session-banner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--fm-space-1) var(--fm-space-4);
+    padding: var(--fm-space-3);
+    border-radius: var(--fm-radius-md);
+    background: var(--fm-sunken);
+  }
+  .hw-session-steps {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--fm-space-2);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .hw-session-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--fm-space-2);
+    min-block-size: var(--fm-target);
+    padding-inline: var(--fm-space-4);
+    border: var(--fm-line-strong) solid var(--fm-border-strong);
+    border-radius: var(--fm-radius-pill);
+    background: var(--fm-raised);
+    color: var(--fm-text);
+    font-size: var(--fm-fs-sm);
+    font-weight: var(--fm-fw-bold);
+    text-decoration: none;
+  }
+  .hw-session-step.is-current .hw-session-chip {
+    border-color: var(--fm-primary);
+    background: var(--fm-primary);
+    color: var(--fm-on-primary);
+  }
+  .hw-session-arrow {
+    color: var(--fm-text-muted);
+  }
+  .hw-session-short {
+    display: none;
+  }
+  .hw-session-more > summary {
+    display: inline-flex;
+    align-items: center;
+    min-block-size: var(--fm-target);
+    color: var(--fm-info-ink);
+    font-weight: var(--fm-fw-bold);
+    cursor: pointer;
+  }
+  .hw-session-sentence {
+    margin: 0;
+    font-size: var(--fm-fs-sm);
+  }
+  .hw-hero-share-bar {
+    --fm-stack: var(--fm-space-2);
+  }
+  .hw-standard-summary {
+    min-block-size: var(--fm-target);
+    cursor: pointer;
+    font-weight: var(--fm-fw-bold);
+  }
+  .fm-sprite {
+    position: absolute;
+  }
+  /* The top bar keeps one row on a phone: the wordmark text steps aside before any control does. */
+  @container topbar (max-width: 30rem) {
+    .fm-topbar__brand-text {
+      display: none;
+    }
+  }
+  .fm-btn[data-persona-btn][aria-pressed="true"] {
+    --btn-bg: var(--fm-primary);
+    --btn-fg: var(--fm-on-primary);
+    --btn-edge: var(--fm-primary);
+  }
+  /* A phone: the route card keeps its name and time; the one-line description stays for screen readers
+     (and is read out again when the route is chosen) so the hero and Start fit one screen in both languages. */
+  @media (max-width: 29.99rem) {
+    .hw-hero .fm-route__desc {
+      position: absolute;
+      inline-size: 1px;
+      block-size: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
+    .hw-hero .fm-hero__art {
+      min-block-size: 4.5rem;
+    }
+    .hw-session-full {
+      display: none;
+    }
+    .hw-session-short {
+      display: inline;
+    }
+  }
+  @media (min-width: 64rem) {
+    .hw-hero .fm-hero {
+      padding: var(--fm-space-5);
+    }
+    .hw-hero .fm-hero__title {
+      font-size: var(--fm-fs-3xl);
+    }
+    .hw-hero .fm-hero__art {
+      min-block-size: 7rem;
+    }
+    /* Centered on desktop: the title block, hook, session banner, Big Idea and chips sit on the
+       page's center line, and the route question and promise above the Start button follow.
+       Route cards keep their own left-aligned reading. */
+    .hw-hero .fm-hero__copy,
+    .hw-hero .fm-hero__action > .fm-hero__q,
+    .hw-hero .fm-hero__action > .fm-hero__promise,
+    .hw-hero-bigidea,
+    .hw-hero-lead {
+      text-align: center;
+    }
+    .hw-hero .fm-eyebrow,
+    .hw-hero .hw-session-banner,
+    .hw-hero .hw-session-steps,
+    .hw-hero .hw-tonight,
+    .hw-hero .hw-experience-banner {
+      justify-content: center;
+    }
+    .hw-hero .fm-hook,
+    .hw-hero-bigidea,
+    .hw-hero-lead {
+      margin-inline: auto;
     }
   }
 }

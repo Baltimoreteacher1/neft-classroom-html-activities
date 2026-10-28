@@ -34,18 +34,6 @@ export function v3Of(config, lessonId) {
   return v3;
 }
 
-/** Compact top bar: the grown-up layer switch and the theme switch. Replaces the legacy dev-style bar. */
-export function renderTopBar() {
-  return `
-    <nav class="hw-topbar" id="hw_topbar" aria-label="${esc("Page options")}">
-      <div class="hw-persona-switcher" id="hw_persona_switcher" role="group" aria-label="${esc("Who is reading")}">
-        <button type="button" class="hw-persona-btn is-active" data-persona-btn="student" aria-pressed="true">${bi("Student view", "Vista del estudiante")}</button>
-        <button type="button" class="hw-persona-btn" data-persona-btn="copilot" aria-pressed="false">${bi("Grown-up tips", "Consejos para adultos")}</button>
-      </div>
-      <button type="button" id="hw_theme_toggle_btn" aria-pressed="false">${bi("Dark mode", "Modo oscuro")}</button>
-    </nav>`;
-}
-
 function renderModelStage(v3, lessonId) {
   if (v3.kind === "mindset") return "";
   const figure = renderModelFigure(v3.model, lessonId);

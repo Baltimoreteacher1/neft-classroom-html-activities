@@ -19,6 +19,8 @@
  *     is why the graded groups below hold what they hold.
  */
 
+import { act } from "./lib/homework-actions.mjs";
+
 /** Fields the keypad attaches to. */
 const GRADED_SELECTOR =
   'input.custom-input:not([type="hidden"]), input.table-input, input.ladder-input';
@@ -126,7 +128,7 @@ export function renderMathKeypad() {
   ).join("");
 
   return `
-<button type="button" class="mathpad-fab" id="mathpad_fab" hidden onclick="reopenMathKeypad()" aria-label="Show the math symbols keypad">
+<button type="button" class="mathpad-fab" id="mathpad_fab" hidden ${act("reopenMathKeypad")} aria-label="Show the math symbols keypad">
   <span class="mathpad-fab-glyph" aria-hidden="true">√x</span>
   <span class="mathpad-fab-text"><span class="lang-en">Math symbols</span><span class="lang-es" lang="es">Símbolos</span></span>
 </button>
@@ -146,210 +148,6 @@ export function renderMathKeypad() {
   ${panels}
 </div>`;
 }
-
-export const MATH_INPUT_CSS = `
-/* ============================================================
-   MATH KEYPAD — symbol entry for answer fields
-   ============================================================ */
-.mathpad {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 1200;
-  background: var(--white, #fff);
-  border-top: 2px solid var(--teal, #1fa6a2);
-  box-shadow: 0 -12px 34px rgba(18, 53, 91, 0.16);
-  padding: 8px 12px calc(10px + env(safe-area-inset-bottom, 0px));
-  font-family: var(--font-body, system-ui, sans-serif);
-}
-.mathpad[hidden] { display: none; }
-
-.mathpad-top {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 8px;
-}
-.mathpad-preview-wrap {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
-  padding: 6px 10px;
-  background: var(--teal-light, #dff2ee);
-  border-radius: var(--radius-sm, 8px);
-  overflow: hidden;
-}
-.mathpad-preview-tag {
-  flex: none;
-  font-family: var(--font-display, system-ui, sans-serif);
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: .04em;
-  text-transform: uppercase;
-  color: var(--teal-ink, #0c6f6b);
-}
-.mathpad-preview {
-  flex: 1;
-  min-width: 0;
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--navy, #12355b);
-  white-space: nowrap;
-  overflow-x: auto;
-  scrollbar-width: none;
-}
-.mathpad-preview::-webkit-scrollbar { display: none; }
-.mathpad-preview:empty::before {
-  content: "…";
-  color: var(--muted, #5f6f80);
-  font-weight: 600;
-}
-.mathpad-frac {
-  display: inline-flex;
-  flex-direction: column;
-  align-items: center;
-  vertical-align: middle;
-  line-height: 1.05;
-  font-size: .78em;
-  margin: 0 2px;
-}
-.mathpad-frac-den { border-top: 1.5px solid currentColor; padding-top: 1px; }
-
-.mathpad-top-actions { display: flex; gap: 6px; flex: none; }
-.mathpad-util {
-  min-width: 46px;
-  min-height: 42px;
-  border: 1.5px solid var(--line, #d7e2ed);
-  border-radius: var(--radius-sm, 8px);
-  background: var(--white, #fff);
-  color: var(--navy, #12355b);
-  font-size: 17px;
-  font-weight: 700;
-  cursor: pointer;
-}
-.mathpad-util:hover { background: var(--cream, #f7f4ec); }
-.mathpad-hide { border-color: var(--coral, #d9795d); color: var(--coral-ink, #9c4326); }
-
-.mathpad-tabs {
-  display: flex;
-  gap: 6px;
-  margin-bottom: 8px;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-}
-.mathpad-tab {
-  flex: none;
-  padding: 7px 12px;
-  min-height: 38px;
-  border: 1.5px solid var(--line, #d7e2ed);
-  border-radius: 999px;
-  background: var(--white, #fff);
-  color: var(--muted, #5f6f80);
-  font-family: var(--font-display, system-ui, sans-serif);
-  font-size: 13px;
-  font-weight: 700;
-  white-space: nowrap;
-  cursor: pointer;
-}
-.mathpad-tab.is-active {
-  background: var(--navy, #12355b);
-  border-color: var(--navy, #12355b);
-  color: var(--white, #fff);
-}
-
-.mathpad-keys {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(58px, 1fr));
-  gap: 6px;
-}
-.mathpad-keys[hidden] { display: none; }
-.mathpad-key {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 1px;
-  min-height: 46px;
-  padding: 4px 6px;
-  border: 1.5px solid var(--line, #d7e2ed);
-  border-radius: var(--radius-sm, 8px);
-  background: var(--white, #fff);
-  color: var(--navy, #12355b);
-  cursor: pointer;
-  transition: transform .08s ease, background .12s ease;
-}
-.mathpad-key:hover { background: var(--teal-light, #dff2ee); border-color: var(--teal, #1fa6a2); }
-.mathpad-key:active { transform: scale(.94); background: var(--teal, #1fa6a2); color: var(--white, #fff); }
-.mathpad-key-glyph { font-size: 19px; font-weight: 700; line-height: 1.1; }
-.mathpad-key-wide { grid-column: span 2; }
-.mathpad-key-hint {
-  font-size: 10px;
-  font-weight: 700;
-  color: var(--muted, #5f6f80);
-  line-height: 1.15;
-  text-align: center;
-}
-.mathpad-key-hint .lang-en + .lang-es::before { content: none; }
-
-/* Left edge, not right: the right edge already stacks the Save/Resume launcher
-   and the "Stuck?" button, and a third pill there covers one of them. */
-.mathpad-fab {
-  position: fixed;
-  left: 14px;
-  bottom: calc(min(var(--hw-status-height, 104px), 150px) + 14px + env(safe-area-inset-bottom, 0px));
-  z-index: 1200;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 16px;
-  min-height: 46px;
-  border: none;
-  border-radius: 999px;
-  background: var(--teal, #1fa6a2);
-  color: var(--white, #fff);
-  font-family: var(--font-display, system-ui, sans-serif);
-  font-size: 14px;
-  font-weight: 800;
-  box-shadow: 0 8px 22px rgba(18, 53, 91, 0.22);
-  cursor: pointer;
-}
-.mathpad-fab[hidden] { display: none; }
-.mathpad-fab-glyph { font-size: 17px; }
-
-/* The Check stop's sticky bar, the "Stuck?" button and the Save/Resume launcher
-   all own the bottom edge; the keypad is the one the caret is in, so they step
-   up over it rather than sitting on its preview strip and its ⌫ / ✕ keys.
-   The Save/Resume launcher styles itself from a stylesheet linked after this
-   one, so the lift is stated at higher specificity rather than later. */
-body.mathpad-open .bottom-status-bar { bottom: var(--mathpad-h, 0px); }
-body.mathpad-open .hw-stuck-fab {
-  bottom: calc(min(var(--hw-status-height, 104px), 150px) + 70px + var(--mathpad-h, 0px));
-}
-body.mathpad-open #nsr-root {
-  bottom: calc(min(var(--hw-status-height, 104px), 150px) + 14px + var(--mathpad-h, 0px)) !important;
-}
-/* The end of the page is NOT reserved here: syncHomeworkChromeHeights() writes
-   body.style.paddingBottom inline, which no stylesheet can outrank. The keypad
-   is declared to that function instead, as one more bottom-fixed control. */
-
-/* Which field a tapped symbol lands in, stated on the field itself — the page
-   is long enough that the keypad and the answer box are rarely both in view. */
-.mathpad-active-field {
-  outline: 3px solid var(--teal, #1fa6a2);
-  outline-offset: 1px;
-}
-
-@media (max-width: 480px) {
-  .mathpad-keys { grid-template-columns: repeat(auto-fit, minmax(48px, 1fr)); }
-  .mathpad-preview-tag { display: none; }
-}
-@media print {
-  .mathpad, .mathpad-fab { display: none !important; }
-}
-`;
 
 export const MATH_INPUT_JS = `
 /* ── Math keypad ─────────────────────────────────────────────────────────────

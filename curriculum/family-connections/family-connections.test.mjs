@@ -300,10 +300,11 @@ test("the hub's route words and times are the lesson page's", async () => {
   const generator = await readFile(new URL("../../scripts/homework-guided-notes.mjs", import.meta.url), "utf8");
   const { ROUTE_TIMES } = await import("../../scripts/lib/homework-experience.mjs");
   for (const [route, { minutes }] of Object.entries(ROUTES)) {
-    assert.ok(generator.includes(`data-route-mode="${route}"`), `the lesson page has a ${route} route`);
+    assert.ok(generator.includes(`route("${route}"`), `the lesson page has a ${route} route`);
     assert.equal(ROUTE_TIMES[route], minutes, `${route} time range`);
   }
-  assert.match(generator, /Family Math Studio/);
+  const hero = await readFile(new URL("../../scripts/lib/homework-hero.mjs", import.meta.url), "utf8");
+  assert.match(hero, /Family Math Studio/);
 });
 
 test("session labels are the lesson pages' own words, and the same lesson posted twice is Session 1 then Session 2", () => {

@@ -60,11 +60,15 @@ export function renderTapeDiagramSVG(parts = 4, labels = [], highlightIndex = 0)
       const x = cursorX;
       cursorX += segW;
       const isHi = idx === highlightIndex;
-      const fill = isHi ? "#1fa6a2" : idx % 2 === 0 ? "#e3f6f5" : "#f8fafc";
-      const textFill = isHi ? "#ffffff" : "#12355b";
+      const fill = isHi
+        ? "var(--fm-m-part)"
+        : idx % 2 === 0
+          ? "var(--fm-m-part-tint)"
+          : "var(--fm-raised)";
+      const textFill = isHi ? "var(--fm-text-inverse)" : "var(--fm-primary)";
       const lbl = partLabels[idx] !== undefined ? String(partLabels[idx]) : `Part ${idx + 1}`;
       return `<g class="hw-svg-tape-part"${isHi ? ' data-highlighted="true"' : ""}>
-    <rect x="${x.toFixed(1)}" y="${barY}" width="${segW.toFixed(1)}" height="${barH}" fill="${fill}" stroke="#12355b" stroke-width="2"/>
+    <rect x="${x.toFixed(1)}" y="${barY}" width="${segW.toFixed(1)}" height="${barH}" fill="${fill}" stroke="var(--fm-primary)" stroke-width="2"/>
     <text x="${(x + segW / 2).toFixed(1)}" y="${barY + 27}" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="14" font-weight="800" fill="${textFill}">${escSvg(fmtMinus(lbl))}</text>
   </g>`;
     })
@@ -73,12 +77,12 @@ export function renderTapeDiagramSVG(parts = 4, labels = [], highlightIndex = 0)
   const midX = startX + totalW / 2;
   return `<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" class="hw-model-svg hw-tape-diagram-svg" style="background:white; max-width:100%; height:auto; display:block; margin:0 auto; border-radius:10px; border:1px solid #cbd5e1;" role="img" aria-label="Tape diagram with ${count} parts, ${escSvg(totalLabel)}" xmlns="http://www.w3.org/2000/svg">
   <title>Tape Diagram (${count} parts)</title>
-  <path d="M ${startX} 36 L ${startX} 26 L ${midX} 26 L ${midX} 20 L ${midX} 26 L ${startX + totalW} 26 L ${startX + totalW} 36" fill="none" stroke="#0f766e" stroke-width="2" stroke-linecap="round"/>
-  <rect x="${midX - 88}" y="4" width="176" height="20" rx="5" fill="#0f766e"/>
-  <text x="${midX}" y="18" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="12" font-weight="800" fill="#ffffff">${escSvg(fmtMinus(totalLabel))}</text>
+  <path d="M ${startX} 36 L ${startX} 26 L ${midX} 26 L ${midX} 20 L ${midX} 26 L ${startX + totalW} 26 L ${startX + totalW} 36" fill="none" stroke="var(--fm-m-part)" stroke-width="2" stroke-linecap="round"/>
+  <rect x="${midX - 88}" y="4" width="176" height="20" rx="5" fill="var(--fm-m-part)"/>
+  <text x="${midX}" y="18" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="12" font-weight="800" fill="var(--fm-text-inverse)">${escSvg(fmtMinus(totalLabel))}</text>
   ${rects}
-  <rect x="${startX}" y="${barY}" width="${totalW}" height="${barH}" rx="4" fill="none" stroke="#12355b" stroke-width="2.5"/>
-  ${captionLabel ? `<text x="${midX}" y="116" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="13" font-weight="700" fill="#334155">${escSvg(fmtMinus(captionLabel))}</text>` : `<text x="${midX}" y="114" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="12.5" font-weight="700" fill="#475569">Each equal box represents 1 unit part</text>`}
+  <rect x="${startX}" y="${barY}" width="${totalW}" height="${barH}" rx="4" fill="none" stroke="var(--fm-primary)" stroke-width="2.5"/>
+  ${captionLabel ? `<text x="${midX}" y="116" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="13" font-weight="700" fill="var(--fm-m-whole)">${escSvg(fmtMinus(captionLabel))}</text>` : `<text x="${midX}" y="114" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="12.5" font-weight="700" fill="var(--fm-m-whole)">Each equal box represents 1 unit part</text>`}
 </svg>`;
 }
 
@@ -112,8 +116,8 @@ export function renderNumberLineSVG(min = -5, max = 5, step = 1, points = [], ar
     const rounded = Math.round(v * 1000) / 1000;
     const x = toX(rounded);
     const isZero = Math.abs(rounded) < 1e-6;
-    ticks.push(`<line x1="${x.toFixed(1)}" y1="${lineY - (isZero ? 10 : 7)}" x2="${x.toFixed(1)}" y2="${lineY + (isZero ? 10 : 7)}" stroke="${isZero ? "#0f766e" : "#12355b"}" stroke-width="${isZero ? "2.5" : "1.8"}"/>
-  <text x="${x.toFixed(1)}" y="${lineY + 26}" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="12.5" font-weight="${isZero ? "800" : "700"}" fill="${isZero ? "#0f766e" : "#1e293b"}">${escSvg(fmtMinus(rounded))}</text>`);
+    ticks.push(`<line x1="${x.toFixed(1)}" y1="${lineY - (isZero ? 10 : 7)}" x2="${x.toFixed(1)}" y2="${lineY + (isZero ? 10 : 7)}" stroke="${isZero ? "var(--fm-m-part)" : "var(--fm-primary)"}" stroke-width="${isZero ? "2.5" : "1.8"}"/>
+  <text x="${x.toFixed(1)}" y="${lineY + 26}" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="12.5" font-weight="${isZero ? "800" : "700"}" fill="${isZero ? "var(--fm-m-part)" : "var(--fm-primary)"}">${escSvg(fmtMinus(rounded))}</text>`);
   }
 
   const arrowNodes = (Array.isArray(arrows) ? arrows : [])
@@ -121,7 +125,7 @@ export function renderNumberLineSVG(min = -5, max = 5, step = 1, points = [], ar
       const x1 = toX(a.from ?? lo);
       const x2 = toX(a.to ?? hi);
       const mid = (x1 + x2) / 2;
-      const color = a.color || "#d97706";
+      const color = a.color || "var(--fm-m-unknown)";
       const dir = x2 >= x1 ? 1 : -1;
       return `<g class="hw-svg-nl-arrow">
     <path d="M ${x1.toFixed(1)} ${lineY - 12} Q ${mid.toFixed(1)} ${lineY - 44} ${x2.toFixed(1)} ${lineY - 14}" fill="none" stroke="${color}" stroke-width="2.5"/>
@@ -135,22 +139,22 @@ export function renderNumberLineSVG(min = -5, max = 5, step = 1, points = [], ar
     .map((pt) => {
       const obj = typeof pt === "object" && pt !== null ? pt : { value: Number(pt) };
       const x = toX(obj.value);
-      const color = obj.color || "#0f766e";
-      const fill = obj.open ? "#ffffff" : color;
+      const color = obj.color || "var(--fm-m-part)";
+      const fill = obj.open ? "var(--fm-raised)" : color;
       const lbl = obj.label !== undefined ? String(obj.label) : fmtMinus(obj.value);
       return `<g class="hw-svg-nl-point">
     <circle cx="${x.toFixed(1)}" cy="${lineY}" r="6.5" fill="${fill}" stroke="${color}" stroke-width="3"/>
     <rect x="${(x - 24).toFixed(1)}" y="${lineY - 34}" width="48" height="20" rx="5" fill="${color}"/>
-    <text x="${x.toFixed(1)}" y="${lineY - 20}" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="11.5" font-weight="800" fill="#ffffff">${escSvg(lbl)}</text>
+    <text x="${x.toFixed(1)}" y="${lineY - 20}" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="11.5" font-weight="800" fill="var(--fm-text-inverse)">${escSvg(lbl)}</text>
   </g>`;
     })
     .join("\n  ");
 
   return `<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" class="hw-model-svg hw-number-line-svg" style="background:white; max-width:100%; height:auto; display:block; margin:0 auto; border-radius:10px; border:1px solid #cbd5e1;" role="img" aria-label="Number line from ${fmtMinus(lo)} to ${fmtMinus(hi)}" xmlns="http://www.w3.org/2000/svg">
   <title>Number Line (${fmtMinus(lo)} to ${fmtMinus(hi)})</title>
-  <line x1="${padX - 14}" y1="${lineY}" x2="${W - padX + 14}" y2="${lineY}" stroke="#12355b" stroke-width="2.5"/>
-  <polygon points="${padX - 18},${lineY} ${padX - 8},${lineY - 5} ${padX - 8},${lineY + 5}" fill="#12355b"/>
-  <polygon points="${W - padX + 18},${lineY} ${W - padX + 8},${lineY - 5} ${W - padX + 8},${lineY + 5}" fill="#12355b"/>
+  <line x1="${padX - 14}" y1="${lineY}" x2="${W - padX + 14}" y2="${lineY}" stroke="var(--fm-primary)" stroke-width="2.5"/>
+  <polygon points="${padX - 18},${lineY} ${padX - 8},${lineY - 5} ${padX - 8},${lineY + 5}" fill="var(--fm-primary)"/>
+  <polygon points="${W - padX + 18},${lineY} ${W - padX + 8},${lineY - 5} ${W - padX + 8},${lineY + 5}" fill="var(--fm-primary)"/>
   ${ticks.join("\n  ")}
   ${arrowNodes}
   ${pointNodes}
@@ -199,15 +203,15 @@ export function renderDoubleNumberLineSVG(
       const botVal = Array.isArray(t) ? t[1] : t.bottom;
       const isMissing = missingSet.has(i);
       return `<g class="hw-svg-dnl-tick"${isMissing ? ' data-missing="true"' : ""}>
-    <line x1="${x.toFixed(1)}" y1="${topY - 8}" x2="${x.toFixed(1)}" y2="${botY + 8}" stroke="${isMissing ? "#d97706" : "#94a3b8"}" stroke-width="1.5" stroke-dasharray="3 2"/>
-    <line x1="${x.toFixed(1)}" y1="${topY - 7}" x2="${x.toFixed(1)}" y2="${topY + 7}" stroke="#12355b" stroke-width="2.2"/>
-    <line x1="${x.toFixed(1)}" y1="${botY - 7}" x2="${x.toFixed(1)}" y2="${botY + 7}" stroke="#0f766e" stroke-width="2.2"/>
-    <text x="${x.toFixed(1)}" y="${topY - 14}" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="13" font-weight="800" fill="#12355b">${escSvg(fmtMinus(topVal))}</text>
+    <line x1="${x.toFixed(1)}" y1="${topY - 8}" x2="${x.toFixed(1)}" y2="${botY + 8}" stroke="${isMissing ? "var(--fm-m-unknown-edge)" : "var(--fm-m-whole)"}" stroke-width="1.5" stroke-dasharray="3 2"/>
+    <line x1="${x.toFixed(1)}" y1="${topY - 7}" x2="${x.toFixed(1)}" y2="${topY + 7}" stroke="var(--fm-primary)" stroke-width="2.2"/>
+    <line x1="${x.toFixed(1)}" y1="${botY - 7}" x2="${x.toFixed(1)}" y2="${botY + 7}" stroke="var(--fm-m-part)" stroke-width="2.2"/>
+    <text x="${x.toFixed(1)}" y="${topY - 14}" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="13" font-weight="800" fill="var(--fm-primary)">${escSvg(fmtMinus(topVal))}</text>
     ${
       isMissing
-        ? `<rect x="${(x - 22).toFixed(1)}" y="${botY + 11}" width="44" height="22" rx="5" fill="#fef3c7" stroke="#d97706" stroke-width="1.8"/>
-    <text x="${x.toFixed(1)}" y="${botY + 26}" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="13" font-weight="900" fill="#b45309">?</text>`
-        : `<text x="${x.toFixed(1)}" y="${botY + 25}" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="13" font-weight="800" fill="#0f766e">${escSvg(fmtMinus(botVal))}</text>`
+        ? `<rect x="${(x - 22).toFixed(1)}" y="${botY + 11}" width="44" height="22" rx="5" fill="var(--fm-m-unknown-tint)" stroke="var(--fm-m-unknown-edge)" stroke-width="1.8"/>
+    <text x="${x.toFixed(1)}" y="${botY + 26}" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="13" font-weight="900" fill="var(--fm-m-unknown)">?</text>`
+        : `<text x="${x.toFixed(1)}" y="${botY + 25}" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="13" font-weight="800" fill="var(--fm-m-part)">${escSvg(fmtMinus(botVal))}</text>`
     }
   </g>`;
     })
@@ -215,12 +219,12 @@ export function renderDoubleNumberLineSVG(
 
   return `<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" class="hw-model-svg hw-double-number-line-svg" style="background:white; max-width:100%; height:auto; display:block; margin:0 auto; border-radius:10px; border:1px solid #cbd5e1;" role="img" aria-label="Double number line comparing ${escSvg(topLabel)} and ${escSvg(bottomLabel)}" xmlns="http://www.w3.org/2000/svg">
   <title>Double Number Line: ${escSvg(topLabel)} and ${escSvg(bottomLabel)}</title>
-  <text x="14" y="${topY + 5}" font-family="Outfit, system-ui, sans-serif" font-size="13" font-weight="800" fill="#12355b">${escSvg(topLabel)}</text>
-  <text x="14" y="${botY + 5}" font-family="Outfit, system-ui, sans-serif" font-size="13" font-weight="800" fill="#0f766e">${escSvg(bottomLabel)}</text>
-  <line x1="${startX}" y1="${topY}" x2="${endX + 14}" y2="${topY}" stroke="#12355b" stroke-width="2.5"/>
-  <polygon points="${endX + 18},${topY} ${endX + 9},${topY - 5} ${endX + 9},${topY + 5}" fill="#12355b"/>
-  <line x1="${startX}" y1="${botY}" x2="${endX + 14}" y2="${botY}" stroke="#0f766e" stroke-width="2.5"/>
-  <polygon points="${endX + 18},${botY} ${endX + 9},${botY - 5} ${endX + 9},${botY + 5}" fill="#0f766e"/>
+  <text x="14" y="${topY + 5}" font-family="Outfit, system-ui, sans-serif" font-size="13" font-weight="800" fill="var(--fm-primary)">${escSvg(topLabel)}</text>
+  <text x="14" y="${botY + 5}" font-family="Outfit, system-ui, sans-serif" font-size="13" font-weight="800" fill="var(--fm-m-part)">${escSvg(bottomLabel)}</text>
+  <line x1="${startX}" y1="${topY}" x2="${endX + 14}" y2="${topY}" stroke="var(--fm-primary)" stroke-width="2.5"/>
+  <polygon points="${endX + 18},${topY} ${endX + 9},${topY - 5} ${endX + 9},${topY + 5}" fill="var(--fm-primary)"/>
+  <line x1="${startX}" y1="${botY}" x2="${endX + 14}" y2="${botY}" stroke="var(--fm-m-part)" stroke-width="2.5"/>
+  <polygon points="${endX + 18},${botY} ${endX + 9},${botY - 5} ${endX + 9},${botY + 5}" fill="var(--fm-m-part)"/>
   ${tickSvg}
 </svg>`;
 }
@@ -258,8 +262,8 @@ export function renderCoordinatePlaneSVG(
     const [, yStart] = toPx(0, minVal);
     const [, yEnd] = toPx(0, maxCoord);
     gridLines.push(
-      `<line x1="${gx}" y1="${yEnd}" x2="${gx}" y2="${yStart}" stroke="#e2e8f0" stroke-width="1"/>`,
-      `<line x1="${xStart}" y1="${gy}" x2="${xEnd}" y2="${gy}" stroke="#e2e8f0" stroke-width="1"/>`,
+      `<line x1="${gx}" y1="${yEnd}" x2="${gx}" y2="${yStart}" stroke="var(--fm-m-whole)" stroke-width="1"/>`,
+      `<line x1="${xStart}" y1="${gy}" x2="${xEnd}" y2="${gy}" stroke="var(--fm-m-whole)" stroke-width="1"/>`,
     );
   }
 
@@ -272,7 +276,7 @@ export function renderCoordinatePlaneSVG(
     .map((s) => {
       const [x1, y1] = toPx(s.from?.[0] ?? 0, s.from?.[1] ?? 0);
       const [x2, y2] = toPx(s.to?.[0] ?? 0, s.to?.[1] ?? 0);
-      const col = s.color || "#d97706";
+      const col = s.color || "var(--fm-m-unknown)";
       return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${col}" stroke-width="2.5" stroke-dasharray="4 2"/>`;
     })
     .join("\n  ");
@@ -280,11 +284,11 @@ export function renderCoordinatePlaneSVG(
   const ptSvg = (Array.isArray(points) ? points : [])
     .map((p) => {
       const [px, py] = toPx(Number(p.x) || 0, Number(p.y) || 0);
-      const col = p.color || "#0f766e";
+      const col = p.color || "var(--fm-m-part)";
       const lbl = p.label || `(${fmtMinus(p.x)}, ${fmtMinus(p.y)})`;
       return `<g class="hw-svg-cp-point">
-    <circle cx="${px}" cy="${py}" r="5.5" fill="${col}" stroke="#ffffff" stroke-width="2"/>
-    <text x="${px + 8}" y="${py - 7}" font-family="Outfit, system-ui, sans-serif" font-size="12" font-weight="800" fill="#12355b">${escSvg(lbl)}</text>
+    <circle cx="${px}" cy="${py}" r="5.5" fill="${col}" stroke="var(--fm-border)" stroke-width="2"/>
+    <text x="${px + 8}" y="${py - 7}" font-family="Outfit, system-ui, sans-serif" font-size="12" font-weight="800" fill="var(--fm-primary)">${escSvg(lbl)}</text>
   </g>`;
     })
     .join("\n  ");
@@ -292,11 +296,11 @@ export function renderCoordinatePlaneSVG(
   return `<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" class="hw-model-svg hw-coordinate-plane-svg" style="background:white; max-width:100%; height:auto; display:block; margin:0 auto; border-radius:10px; border:1px solid #cbd5e1;" role="img" aria-label="Coordinate plane (${quadrants === 1 ? "Quadrant I" : "4 quadrants"})" xmlns="http://www.w3.org/2000/svg">
   <title>Coordinate Plane</title>
   ${gridLines.join("\n  ")}
-  <line x1="${axX1}" y1="${cy}" x2="${axX2 + 8}" y2="${cy}" stroke="#12355b" stroke-width="2"/>
-  <line x1="${cx}" y1="${axY1}" x2="${cx}" y2="${axY2 - 8}" stroke="#12355b" stroke-width="2"/>
-  <text x="${axX2 + 12}" y="${cy + 4}" font-family="Outfit, system-ui, sans-serif" font-size="12" font-weight="800" fill="#12355b">x</text>
-  <text x="${cx + 6}" y="${axY2 - 8}" font-family="Outfit, system-ui, sans-serif" font-size="12" font-weight="800" fill="#12355b">y</text>
-  <text x="${cx - 12}" y="${cy + 14}" font-family="Outfit, system-ui, sans-serif" font-size="11" font-weight="700" fill="#475569">0</text>
+  <line x1="${axX1}" y1="${cy}" x2="${axX2 + 8}" y2="${cy}" stroke="var(--fm-primary)" stroke-width="2"/>
+  <line x1="${cx}" y1="${axY1}" x2="${cx}" y2="${axY2 - 8}" stroke="var(--fm-primary)" stroke-width="2"/>
+  <text x="${axX2 + 12}" y="${cy + 4}" font-family="Outfit, system-ui, sans-serif" font-size="12" font-weight="800" fill="var(--fm-primary)">x</text>
+  <text x="${cx + 6}" y="${axY2 - 8}" font-family="Outfit, system-ui, sans-serif" font-size="12" font-weight="800" fill="var(--fm-primary)">y</text>
+  <text x="${cx - 12}" y="${cy + 14}" font-family="Outfit, system-ui, sans-serif" font-size="11" font-weight="700" fill="var(--fm-m-whole)">0</text>
   ${segSvg}
   ${ptSvg}
 </svg>`;
@@ -338,7 +342,7 @@ export function renderFractionBarOrGridSVG(rows = 1, cols = 4, shaded = 3, label
       const x = startX + c * cellW;
       const y = startY + r * cellH;
       cells.push(
-        `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${cellW.toFixed(1)}" height="${cellH.toFixed(1)}" fill="${isShaded ? "#1fa6a2" : "#f8fafc"}" stroke="#12355b" stroke-width="1.5"/>`,
+        `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${cellW.toFixed(1)}" height="${cellH.toFixed(1)}" fill="${isShaded ? "var(--fm-m-part)" : "var(--fm-raised)"}" stroke="var(--fm-primary)" stroke-width="1.5"/>`,
       );
       idx++;
     }
@@ -346,10 +350,10 @@ export function renderFractionBarOrGridSVG(rows = 1, cols = 4, shaded = 3, label
 
   return `<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" class="hw-model-svg hw-fraction-grid-svg" style="background:white; max-width:100%; height:auto; display:block; margin:0 auto; border-radius:10px; border:1px solid #cbd5e1;" role="img" aria-label="Fraction bar or grid: ${escSvg(titleText)}" xmlns="http://www.w3.org/2000/svg">
   <title>${escSvg(titleText)}</title>
-  <text x="${W / 2}" y="22" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="13" font-weight="800" fill="#12355b">${escSvg(titleText)}</text>
+  <text x="${W / 2}" y="22" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="13" font-weight="800" fill="var(--fm-primary)">${escSvg(titleText)}</text>
   ${cells.join("\n  ")}
-  <rect x="${startX.toFixed(1)}" y="${startY}" width="${gridW.toFixed(1)}" height="${gridH.toFixed(1)}" fill="none" stroke="#12355b" stroke-width="2.2"/>
-  <text x="${W / 2}" y="${startY + gridH + 24}" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="12.5" font-weight="700" fill="#0f766e">${escSvg(subText)}</text>
+  <rect x="${startX.toFixed(1)}" y="${startY}" width="${gridW.toFixed(1)}" height="${gridH.toFixed(1)}" fill="none" stroke="var(--fm-primary)" stroke-width="2.2"/>
+  <text x="${W / 2}" y="${startY + gridH + 24}" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="12.5" font-weight="700" fill="var(--fm-m-part)">${escSvg(subText)}</text>
 </svg>`;
 }
 
@@ -384,11 +388,11 @@ export function renderHangerBalanceSVG(
         const totalW = items.length * (boxW + 8) - 8;
         const bx = centerX - totalW / 2 + i * (boxW + 8);
         const by = beamY + 34;
-        const fill = isVar ? "#0f766e" : "#fef3c7";
-        const stroke = isVar ? "#12355b" : "#d97706";
-        const textCol = isVar ? "#ffffff" : "#92400e";
+        const fill = isVar ? "var(--fm-m-part)" : "var(--fm-m-unknown-tint)";
+        const stroke = isVar ? "var(--fm-primary)" : "var(--fm-m-unknown-edge)";
+        const textCol = isVar ? "var(--fm-raised)" : "var(--fm-m-unknown)";
         return `<g class="hw-svg-hanger-item" data-side="${isLeft ? "left" : "right"}">
-      <line x1="${(bx + boxW / 2).toFixed(1)}" y1="${beamY}" x2="${(bx + boxW / 2).toFixed(1)}" y2="${by}" stroke="#475569" stroke-width="1.8"/>
+      <line x1="${(bx + boxW / 2).toFixed(1)}" y1="${beamY}" x2="${(bx + boxW / 2).toFixed(1)}" y2="${by}" stroke="var(--fm-m-whole)" stroke-width="1.8"/>
       <rect x="${bx.toFixed(1)}" y="${by}" width="${boxW}" height="34" rx="${isVar ? 8 : 17}" fill="${fill}" stroke="${stroke}" stroke-width="2"/>
       <text x="${(bx + boxW / 2).toFixed(1)}" y="${by + 22}" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="14" font-weight="800" fill="${textCol}">${escSvg(fmtMinus(str))}</text>
     </g>`;
@@ -397,13 +401,13 @@ export function renderHangerBalanceSVG(
 
   return `<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" class="hw-model-svg hw-hanger-balance-svg" style="background:white; max-width:100%; height:auto; display:block; margin:0 auto; border-radius:10px; border:1px solid #cbd5e1;" role="img" aria-label="Hanger balance diagram: left side ${escSvg(leftArr.join(" "))} ${balanced ? "equals" : "compared to"} right side ${escSvg(rightArr.join(" "))}" xmlns="http://www.w3.org/2000/svg">
   <title>Hanger Balance (${balanced ? "Balanced =" : "Tilted"})</title>
-  <line x1="${cx}" y1="10" x2="${cx}" y2="28" stroke="#12355b" stroke-width="3"/>
-  <polygon points="${cx},26 ${cx - 18},48 ${cx + 18},48" fill="#e3f6f5" stroke="#12355b" stroke-width="2.2"/>
-  <line x1="${leftX}" y1="${leftY}" x2="${rightX}" y2="${rightY}" stroke="#12355b" stroke-width="4" stroke-linecap="round"/>
-  <circle cx="${cx}" cy="48" r="6" fill="#0f766e" stroke="#ffffff" stroke-width="2"/>
+  <line x1="${cx}" y1="10" x2="${cx}" y2="28" stroke="var(--fm-primary)" stroke-width="3"/>
+  <polygon points="${cx},26 ${cx - 18},48 ${cx + 18},48" fill="var(--fm-m-part-tint)" stroke="var(--fm-primary)" stroke-width="2.2"/>
+  <line x1="${leftX}" y1="${leftY}" x2="${rightX}" y2="${rightY}" stroke="var(--fm-primary)" stroke-width="4" stroke-linecap="round"/>
+  <circle cx="${cx}" cy="48" r="6" fill="var(--fm-m-part)" stroke="var(--fm-border)" stroke-width="2"/>
   ${renderPanItems(leftArr, leftX, leftY, true)}
   ${renderPanItems(rightArr, rightX, rightY, false)}
-  <text x="${cx}" y="138" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="13" font-weight="800" fill="#12355b">${balanced ? "Balanced: Left Side = Right Side (do the same operation to both sides)" : "Unbalanced inequality comparison"}</text>
+  <text x="${cx}" y="138" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="13" font-weight="800" fill="var(--fm-primary)">${balanced ? "Balanced: Left Side = Right Side (do the same operation to both sides)" : "Unbalanced inequality comparison"}</text>
 </svg>`;
 }
 

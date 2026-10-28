@@ -85,13 +85,11 @@ test("every family surface loads the tokens and the unit hue", () => {
   assert.match(guide, /--fp-paper:\s*#fffdf8/);
   const homework = readLesson("4-4", "homework.html");
   assert.match(homework, /<html lang="en" data-unit="4">/);
-  assert.match(homework, /homework-layer-[0-9a-f]+\.css/);
-  const layers = readdirSync(new URL("../assets/homework/", import.meta.url)).filter((f) =>
-    f.startsWith("homework-layer-"),
-  );
+  for (const sheet of ["tokens", "family", "body"])
+    assert.match(homework, new RegExp(`/assets/design/family/${sheet}\\.css\\?v=[0-9a-f]+`));
   assert.ok(
-    layers.some((f) => read(`assets/homework/${f}`).includes("--fp-unit-ink")),
-    "the homework layer carries the paper tokens",
+    read("assets/design/family/tokens.css").includes("--unit-4-accent"),
+    "the design tokens carry the per-unit hue",
   );
   for (const page of [
     "curriculum/family-connections/index.html",

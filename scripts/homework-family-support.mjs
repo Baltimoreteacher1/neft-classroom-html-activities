@@ -757,39 +757,39 @@ const escape = (value) =>
   );
 function graphic(kind, equation) {
   const text = (x, y, value) =>
-    `<text x="${x}" y="${y}" text-anchor="middle" fill="#12355b" font-size="20">${escape(value)}</text>`;
+    `<text x="${x}" y="${y}" text-anchor="middle" fill="var(--fm-primary)" font-size="20">${escape(value)}</text>`;
   const line = (x1, y1, x2, y2) =>
-    `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#12355b" stroke-width="3"/>`;
+    `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="var(--fm-primary)" stroke-width="3"/>`;
   if (kind === "data") {
     const shelf = (x, y, count, label) =>
-      `<rect x="${x}" y="${y}" width="120" height="12" rx="3" fill="#0f766e"/>${Array.from({ length: count }, (_, i) => `<rect x="${x + 7 + i * 10}" y="${y - 26}" width="7" height="25" fill="#bfe4de" stroke="#0f766e"/>`).join("")}${text(x + 60, y + 42, label)}`;
+      `<rect x="${x}" y="${y}" width="120" height="12" rx="3" fill="var(--fm-m-part)"/>${Array.from({ length: count }, (_, i) => `<rect x="${x + 7 + i * 10}" y="${y - 26}" width="7" height="25" fill="var(--fm-m-part-tint)" stroke="var(--fm-m-part)"/>`).join("")}${text(x + 60, y + 42, label)}`;
     return `${shelf(50, 88, 4, "4")}${shelf(250, 88, 4, "4")}${shelf(210, 190, 7, "7")}${shelf(390, 190, 10, "10")}${line(190, 20, 190, 240)}`;
   }
   if (kind === "triangle")
-    return `<rect x="180" y="25" width="240" height="160" fill="#eff6ff" stroke="#94a3b8"/><polygon points="180,185 420,185 180,25" fill="#bfe4de" stroke="#0f766e" stroke-width="3"/>${text(300, 218, "b = 6")}${text(148, 105, "h = 4")}`;
+    return `<rect x="180" y="25" width="240" height="160" fill="var(--fm-m-whole-tint)" stroke="var(--fm-m-whole)"/><polygon points="180,185 420,185 180,25" fill="var(--fm-m-part)" stroke="var(--fm-m-part)" stroke-width="3"/>${text(300, 218, "b = 6")}${text(148, 105, "h = 4")}`;
   if (kind === "trapezoid")
-    return `<polygon points="220,35 380,35 460,185 140,185" fill="#bfe4de" stroke="#0f766e" stroke-width="3"/>${line(220, 35, 220, 185)}${text(300, 25, "b₁ = 4")}${text(300, 218, "b₂ = 8")}${text(260, 115, "h = 3")}`;
+    return `<polygon points="220,35 380,35 460,185 140,185" fill="var(--fm-m-part-tint)" stroke="var(--fm-m-part)" stroke-width="3"/>${line(220, 35, 220, 185)}${text(300, 25, "b₁ = 4")}${text(300, 218, "b₂ = 8")}${text(260, 115, "h = 3")}`;
   if (kind === "pyramid")
-    return `<g fill="#bfe4de" stroke="#0f766e" stroke-width="2"><rect x="270" y="75" width="80" height="80"/><path d="M270 75 L310 15 L350 75 Z M350 75 L410 115 L350 155 Z M270 155 L310 215 L350 155 Z M270 75 L210 115 L270 155 Z"/></g>${line(310, 15, 310, 75)}${text(345, 48, "3")}${text(310, 122, "4 × 4")}`;
+    return `<g fill="var(--fm-m-part-tint)" stroke="var(--fm-m-part)" stroke-width="2"><rect x="270" y="75" width="80" height="80"/><path d="M270 75 L310 15 L350 75 Z M350 75 L410 115 L350 155 Z M270 155 L310 215 L350 155 Z M270 75 L210 115 L270 155 Z"/></g>${line(310, 15, 310, 75)}${text(345, 48, "3")}${text(310, 122, "4 × 4")}`;
   if (kind === "polygon")
-    return `<rect x="220" y="25" width="180" height="180" fill="#bfe4de" stroke="#0f766e" stroke-width="3"/>${line(220, 25, 400, 205)}${line(400, 25, 220, 205)}${line(310, 115, 310, 205)}${text(350, 166, "a = 3")}${text(310, 232, "s = 6; P = 24")}`;
+    return `<rect x="220" y="25" width="180" height="180" fill="var(--fm-m-part-tint)" stroke="var(--fm-m-part)" stroke-width="3"/>${line(220, 25, 400, 205)}${line(400, 25, 220, 205)}${line(310, 115, 310, 205)}${text(350, 166, "a = 3")}${text(310, 232, "s = 6; P = 24")}`;
   if (kind === "percent") {
     const percent = equation.startsWith("40%") ? 48 : 25;
     return (
       Array.from(
         { length: 100 },
         (_, i) =>
-          `<rect x="${210 + (i % 10) * 18}" y="${20 + Math.floor(i / 10) * 18}" width="18" height="18" fill="${i < percent ? "#0f766e" : "#fff"}" stroke="#64748b"/>`,
+          `<rect x="${210 + (i % 10) * 18}" y="${20 + Math.floor(i / 10) * 18}" width="18" height="18" fill="${i < percent ? "var(--fm-m-part)" : "var(--fm-raised)"}" stroke="var(--fm-border-strong)"/>`,
       ).join("") + text(300, 232, percent + " / 100")
     );
   }
   if (kind === "box")
-    return `${line(100, 150, 500, 150)}${line(100, 130, 100, 170)}${line(500, 130, 500, 170)}<rect x="180" y="110" width="240" height="80" fill="#bfe4de" stroke="#0f766e" stroke-width="3"/>${line(300, 110, 300, 190)}${[2, 4, 7, 10, 12].map((n, i) => text([100, 180, 300, 420, 500][i], 220, n)).join("")}`;
+    return `${line(100, 150, 500, 150)}${line(100, 130, 100, 170)}${line(500, 130, 500, 170)}<rect x="180" y="110" width="240" height="80" fill="var(--fm-m-part-tint)" stroke="var(--fm-m-part)" stroke-width="3"/>${line(300, 110, 300, 190)}${[2, 4, 7, 10, 12].map((n, i) => text([100, 180, 300, 420, 500][i], 220, n)).join("")}`;
   if (kind === "histogram")
     return [3, 2, 1]
       .map(
         (n, i) =>
-          `<rect x="${180 + i * 80}" y="${195 - n * 48}" width="80" height="${n * 48}" fill="#bfe4de" stroke="#0f766e" stroke-width="2"/>${text(220 + i * 80, 180 - n * 48, n)}${text(220 + i * 80, 225, ["0–2", "3–5", "6–8"][i])}`,
+          `<rect x="${180 + i * 80}" y="${195 - n * 48}" width="80" height="${n * 48}" fill="var(--fm-m-part-tint)" stroke="var(--fm-m-part)" stroke-width="2"/>${text(220 + i * 80, 180 - n * 48, n)}${text(220 + i * 80, 225, ["0–2", "3–5", "6–8"][i])}`,
       )
       .join("");
   if (kind === "rate")
@@ -814,7 +814,7 @@ function graphic(kind, equation) {
     return Array.from(
       { length: equation.startsWith("2 ÷") ? 8 : 6 },
       (_, i) =>
-        `<rect x="${60 + i * 60}" y="75" width="60" height="70" fill="${i < 3 ? "#0f766e" : "#e2e8f0"}" stroke="#12355b"/>${text(90 + i * 60, 180, kind === "fraction-scale" ? "4" : "¼")}`,
+        `<rect x="${60 + i * 60}" y="75" width="60" height="70" fill="${i < 3 ? "var(--fm-m-part)" : "var(--fm-m-whole-tint)"}" stroke="var(--fm-primary)"/>${text(90 + i * 60, 180, kind === "fraction-scale" ? "4" : "¼")}`,
     ).join("");
   const values =
     kind === "median"
@@ -851,12 +851,12 @@ export function exactConceptVisual(config) {
       .map((value) => {
         const count = counts.get(value) || 0;
         counts.set(value, count + 1);
-        return `<circle cx="${50 + value * 100}" cy="${135 - count * 22}" r="8" fill="#0f766e"/>`;
+        return `<circle cx="${50 + value * 100}" cy="${135 - count * 22}" r="8" fill="var(--fm-m-part)"/>`;
       })
       .join("");
     return specific(
       "dot-plot-shape",
-      `<h3><span class="lang-en">One dot for each student</span><span class="lang-es" lang="es">Un punto por estudiante</span></h3><svg viewBox="0 0 500 180" role="img" aria-label="Twelve students' book counts: two at zero, two at one, five at two, two at three, one at four"><path d="M30 150h440" stroke="#12355b" stroke-width="2"/>${dots}${[0, 1, 2, 3, 4].map((n) => `<text x="${50 + n * 100}" y="175" text-anchor="middle" font-size="18">${n}</text>`).join("")}</svg><p><span class="lang-en">Books finished: 0, 2, 1, 2, 3, 2, 4, 1, 2, 3, 0, 2. The tallest stack is at 2 books. Describe the shape on either side.</span><span class="lang-es" lang="es">Libros terminados: 0, 2, 1, 2, 3, 2, 4, 1, 2, 3, 0, 2. La pila más alta está en 2 libros. Describe la forma de ambos lados.</span></p>`,
+      `<h3><span class="lang-en">One dot for each student</span><span class="lang-es" lang="es">Un punto por estudiante</span></h3><svg viewBox="0 0 500 180" role="img" aria-label="Twelve students' book counts: two at zero, two at one, five at two, two at three, one at four"><path d="M30 150h440" stroke="var(--fm-primary)" stroke-width="2"/>${dots}${[0, 1, 2, 3, 4].map((n) => `<text x="${50 + n * 100}" y="175" text-anchor="middle" font-size="18">${n}</text>`).join("")}</svg><p><span class="lang-en">Books finished: 0, 2, 1, 2, 3, 2, 4, 1, 2, 3, 0, 2. The tallest stack is at 2 books. Describe the shape on either side.</span><span class="lang-es" lang="es">Libros terminados: 0, 2, 1, 2, 3, 2, 4, 1, 2, 3, 0, 2. La pila más alta está en 2 libros. Describe la forma de ambos lados.</span></p>`,
       "Each dot represents one student. The peak is at 2 books; the two sides are nearly symmetric.",
       "Cada punto representa un estudiante. El pico está en 2 libros; ambos lados son casi simétricos.",
     );
@@ -892,7 +892,7 @@ export function exactConceptVisual(config) {
   if (rawId === "6-8-part2")
     return specific(
       "expand-factor",
-      `<h3><span class="lang-en">Two ways to name the same area</span><span class="lang-es" lang="es">Dos formas de nombrar la misma área</span></h3><svg viewBox="0 0 300 140" role="img" aria-label="A rectangle of height four split into widths x and three"><rect x="40" y="20" width="150" height="90" fill="#99f6e4" stroke="#12355b"/><rect x="190" y="20" width="70" height="90" fill="#bae6fd" stroke="#12355b"/><g font-size="20" text-anchor="middle"><text x="115" y="75">4x</text><text x="225" y="75">12</text><text x="115" y="135">x</text><text x="225" y="135">3</text><text x="20" y="75">4</text></g></svg><p><span class="lang-en">Expand: multiply 4 by both widths.</span><span class="lang-es" lang="es">Desarrolla: multiplica 4 por ambas anchuras.</span> 4(x + 3) = 4x + 12</p><p><span class="lang-en">Factor: take the common factor 4 out of both terms.</span><span class="lang-es" lang="es">Factoriza: saca el factor común 4 de ambos términos.</span> 4x + 12 = 4(x + 3)</p>`,
+      `<h3><span class="lang-en">Two ways to name the same area</span><span class="lang-es" lang="es">Dos formas de nombrar la misma área</span></h3><svg viewBox="0 0 300 140" role="img" aria-label="A rectangle of height four split into widths x and three"><rect x="40" y="20" width="150" height="90" fill="var(--fm-success)" stroke="var(--fm-primary)"/><rect x="190" y="20" width="70" height="90" fill="var(--fm-m-whole)" stroke="var(--fm-primary)"/><g font-size="20" text-anchor="middle"><text x="115" y="75">4x</text><text x="225" y="75">12</text><text x="115" y="135">x</text><text x="225" y="135">3</text><text x="20" y="75">4</text></g></svg><p><span class="lang-en">Expand: multiply 4 by both widths.</span><span class="lang-es" lang="es">Desarrolla: multiplica 4 por ambas anchuras.</span> 4(x + 3) = 4x + 12</p><p><span class="lang-en">Factor: take the common factor 4 out of both terms.</span><span class="lang-es" lang="es">Factoriza: saca el factor común 4 de ambos términos.</span> 4x + 12 = 4(x + 3)</p>`,
       "Expanding and factoring work in opposite directions and keep the expression equivalent.",
       "Desarrollar y factorizar funcionan en sentidos opuestos y mantienen la expresión equivalente.",
     );

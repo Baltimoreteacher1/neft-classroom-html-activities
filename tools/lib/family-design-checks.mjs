@@ -101,7 +101,10 @@ export function physicalProps(css) {
 export function fontViolations(css) {
   const bad = [];
   for (const [prop, value] of declarations(css)) {
-    if (prop === "font-family" && !/^(var\(--fm-font-(display|text)\)|inherit)$/.test(value))
+    if (
+      prop === "font-family" &&
+      !/^(var\(--fm-font-(display|text)\)|inherit)( !important)?$/.test(value)
+    )
       bad.push(`font-family: ${value}`);
     if (
       prop === "font-size" &&

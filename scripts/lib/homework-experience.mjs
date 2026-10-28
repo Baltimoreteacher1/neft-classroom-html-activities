@@ -10,8 +10,10 @@
  *   - share the win, and bilingual in-page toasts/dialogs (no native alert/confirm)
  *
  * Everything here is written for English and Spanish only. Client behavior lives in
- * homework-experience-js.mjs, styles in homework-experience-css.mjs; this file is markup.
+ * homework-experience-js.mjs, styles in assets/design/family/body.css; this file is markup.
  */
+
+import { act } from "./homework-actions.mjs";
 
 export const GOAL_TARGET = 4;
 export const GOAL_QUICK = 2;
@@ -21,6 +23,8 @@ export const ROUTE_TIMES = { quick: "5–10", full: "20–30" };
 
 /** The route a first visit lands on. Keep in step with HOMEWORK_ROUTE_DEFAULT in homework-guided-notes.mjs. */
 export const DEFAULT_ROUTE = "quick";
+
+import { icon } from "./family-icons.mjs";
 
 const esc = (s) =>
   String(s ?? "")
@@ -77,7 +81,7 @@ export function renderMysteryChallenge(mystery) {
             <span class="lang-en">Locked. Finish <span data-hw-goal-count>${GOAL_TARGET}</span> problems and it opens.</span>
             <span class="lang-es" lang="es">Bloqueado. Termina <span data-hw-goal-count>${GOAL_TARGET}</span> problemas y se abre.</span>
           </p>
-          <button type="button" class="hw-mystery-open" id="hw_mystery_open" hidden onclick="hwOpenMystery()">
+          <button type="button" class="hw-mystery-open" id="hw_mystery_open" hidden ${act("hwOpenMystery")}>
             ${bi("Open the mystery challenge ➔", "Abrir el reto misterioso ➔")}
           </button>
         </div>
@@ -108,7 +112,7 @@ export function renderConfidence(phase) {
   const buttons = PLANT.map(
     (
       p,
-    ) => `<button type="button" class="hw-conf-btn" aria-pressed="false" data-conf-level="${p.level}" data-conf-phase="${phase}" onclick="hwSetConfidence('${phase}', ${p.level})">
+    ) => `<button type="button" class="hw-conf-btn" aria-pressed="false" data-conf-level="${p.level}" data-conf-phase="${phase}" ${act("hwSetConfidence", phase, p.level)}>
             <span class="hw-conf-icon" aria-hidden="true">${p.icon}</span>
             <span class="hw-conf-label hw-stack">${bi(p.en, p.es)}</span>
           </button>`,
@@ -169,7 +173,7 @@ export function renderFamilyNights() {
 export function renderShareWin() {
   return `
       <div class="hw-share">
-        <button type="button" class="btn btn-secondary hw-share-win" onclick="hwShareWin()">
+        <button type="button" class="btn btn-secondary hw-share-win" ${act("hwShareWin")}>
           🎉 ${bi("Share our win", "Compartir nuestro logro")}
         </button>
         <p class="hw-share-note">${bi(
@@ -182,10 +186,10 @@ export function renderShareWin() {
 /** The "tonight" strip: time, what you need, the goal. Times follow the chosen route. */
 export function renderTonightStrip() {
   return `
-        <ul class="hw-tonight hw-inline" aria-label="Tonight at a glance">
-          <li><span aria-hidden="true">⏱</span> <strong><span data-hw-tonight-time>${ROUTE_TIMES[DEFAULT_ROUTE]}</span> min</strong></li>
-          <li><span aria-hidden="true">✏️</span> ${bi("Pencil and paper", "Lápiz y papel")}</li>
-          <li><span aria-hidden="true">🎯</span> ${bi("Goal:", "Meta:")} <strong><span data-hw-goal-count>${GOAL_TARGET}</span> ${bi("problems", "problemas")}</strong></li>
+        <ul class="hw-tonight fm-cluster" aria-label="Tonight at a glance">
+          <li class="fm-chip"><strong><span data-hw-tonight-time>${ROUTE_TIMES[DEFAULT_ROUTE]}</span> min</strong></li>
+          <li class="fm-chip">${icon("pencil", "sm")} <span>${bi("Pencil and paper", "Lápiz y papel")}</span></li>
+          <li class="fm-chip">${icon("star", "sm")} <span>${bi("Goal:", "Meta:")} <strong><span data-hw-goal-count>${GOAL_TARGET}</span> ${bi("problems", "problemas")}</strong></span></li>
         </ul>`;
 }
 
@@ -217,12 +221,12 @@ export function renderMiniConceptSvg(topic = "general") {
   const t = String(topic || "general").toLowerCase();
   if (t.includes("ratio") || t.includes("rate")) {
     return {
-      svg: `<svg class="hw-mini-model-svg" viewBox="0 0 420 120" width="420" height="120" style="background:white" role="img" aria-label="Ratio table scaling batches equally" data-aria-en="Ratio table scaling batches equally" data-aria-es="Tabla de razones escalando partes por igual">
-        <rect x="8" y="8" width="404" height="104" rx="10" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5"/>
-        <text x="24" y="34" font-size="14" font-weight="800" fill="#12355b">1 batch: 2 cups flour : 3 cups water</text>
-        <rect x="24" y="44" width="48" height="24" rx="5" fill="#1fa6a2"/><rect x="78" y="44" width="48" height="24" rx="5" fill="#1fa6a2"/>
-        <rect x="142" y="44" width="48" height="24" rx="5" fill="#0284c7"/><rect x="196" y="44" width="48" height="24" rx="5" fill="#0284c7"/><rect x="250" y="44" width="48" height="24" rx="5" fill="#0284c7"/>
-        <text x="24" y="92" font-size="14" font-weight="800" fill="#0c6f6b">×2 both sides → 4 : 6 (same balance!)</text>
+      svg: `<svg class="hw-mini-model-svg u-bg-raised" viewBox="0 0 420 120" width="420" height="120" role="img" aria-label="Ratio table scaling batches equally" data-aria-en="Ratio table scaling batches equally" data-aria-es="Tabla de razones escalando partes por igual">
+        <rect x="8" y="8" width="404" height="104" rx="10" fill="var(--fm-raised)" stroke="var(--fm-m-whole)" stroke-width="1.5"/>
+        <text x="24" y="34" font-size="14" font-weight="800" fill="var(--fm-primary)">1 batch: 2 cups flour : 3 cups water</text>
+        <rect x="24" y="44" width="48" height="24" rx="5" fill="var(--fm-m-part)"/><rect x="78" y="44" width="48" height="24" rx="5" fill="var(--fm-m-part)"/>
+        <rect x="142" y="44" width="48" height="24" rx="5" fill="var(--fm-m-whole)"/><rect x="196" y="44" width="48" height="24" rx="5" fill="var(--fm-m-whole)"/><rect x="250" y="44" width="48" height="24" rx="5" fill="var(--fm-m-whole)"/>
+        <text x="24" y="92" font-size="14" font-weight="800" fill="var(--fm-m-part)">×2 both sides → 4 : 6 (same balance!)</text>
       </svg>`,
       en: "Scaling a ratio is like making a double batch of a recipe: multiply both parts by the same number so the balance stays the same.",
       es: "Escalar una razón es como hacer el doble de una receta: multiplica ambas partes por el mismo número para mantener el mismo equilibrio.",
@@ -230,15 +234,15 @@ export function renderMiniConceptSvg(topic = "general") {
   }
   if (t.includes("percent")) {
     return {
-      svg: `<svg class="hw-mini-model-svg" viewBox="0 0 420 120" width="420" height="120" style="background:white" role="img" aria-label="100 percent bar split into four 25 percent parts" data-aria-en="100 percent bar split into four 25 percent parts" data-aria-es="Barra del 100 por ciento dividida en cuatro partes de 25 por ciento">
-        <rect x="8" y="8" width="404" height="104" rx="10" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5"/>
-        <text x="24" y="32" font-size="14" font-weight="800" fill="#12355b">Whole = 100% (4 equal quarters of 25%)</text>
-        <rect x="24" y="44" width="90" height="30" rx="4" fill="#1fa6a2" stroke="#0c6f6b" stroke-width="1.5"/>
-        <rect x="118" y="44" width="90" height="30" rx="4" fill="#e2e8f0" stroke="#64748b" stroke-width="1.5"/>
-        <rect x="212" y="44" width="90" height="30" rx="4" fill="#e2e8f0" stroke="#64748b" stroke-width="1.5"/>
-        <rect x="306" y="44" width="90" height="30" rx="4" fill="#e2e8f0" stroke="#64748b" stroke-width="1.5"/>
-        <text x="52" y="64" font-size="14" font-weight="800" fill="#ffffff">25%</text>
-        <text x="24" y="98" font-size="14" font-weight="700" fill="#0c6f6b">Percent means "out of 100" — benchmark blocks make it easy to see.</text>
+      svg: `<svg class="hw-mini-model-svg u-bg-raised" viewBox="0 0 420 120" width="420" height="120" role="img" aria-label="100 percent bar split into four 25 percent parts" data-aria-en="100 percent bar split into four 25 percent parts" data-aria-es="Barra del 100 por ciento dividida en cuatro partes de 25 por ciento">
+        <rect x="8" y="8" width="404" height="104" rx="10" fill="var(--fm-raised)" stroke="var(--fm-m-whole)" stroke-width="1.5"/>
+        <text x="24" y="32" font-size="14" font-weight="800" fill="var(--fm-primary)">Whole = 100% (4 equal quarters of 25%)</text>
+        <rect x="24" y="44" width="90" height="30" rx="4" fill="var(--fm-m-part)" stroke="var(--fm-m-part)" stroke-width="1.5"/>
+        <rect x="118" y="44" width="90" height="30" rx="4" fill="var(--fm-m-whole-tint)" stroke="var(--fm-border-strong)" stroke-width="1.5"/>
+        <rect x="212" y="44" width="90" height="30" rx="4" fill="var(--fm-m-whole-tint)" stroke="var(--fm-border-strong)" stroke-width="1.5"/>
+        <rect x="306" y="44" width="90" height="30" rx="4" fill="var(--fm-m-whole-tint)" stroke="var(--fm-border-strong)" stroke-width="1.5"/>
+        <text x="52" y="64" font-size="14" font-weight="800" fill="var(--fm-text-inverse)">25%</text>
+        <text x="24" y="98" font-size="14" font-weight="700" fill="var(--fm-m-part)">Percent means "out of 100" — benchmark blocks make it easy to see.</text>
       </svg>`,
       en: "Percent means 'out of 100'. Breaking a whole bar into 10% or 25% blocks lets you find parts and totals mentally.",
       es: "Porcentaje significa «de cada 100». Dividir la barra total en bloques de 10% o 25% permite hallar partes y totales mentalmente.",
@@ -246,14 +250,14 @@ export function renderMiniConceptSvg(topic = "general") {
   }
   if (t.includes("fraction") || t.includes("decimal") || t.includes("division")) {
     return {
-      svg: `<svg class="hw-mini-model-svg" viewBox="0 0 420 120" width="420" height="120" style="background:white" role="img" aria-label="Fraction bar divided into equal parts" data-aria-en="Fraction bar divided into equal parts" data-aria-es="Barra de fracciones dividida en partes iguales">
-        <rect x="8" y="8" width="404" height="104" rx="10" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5"/>
-        <text x="24" y="32" font-size="14" font-weight="800" fill="#12355b">1 Whole = 4 Fourths (each part is 1/4 or 0.25)</text>
-        <rect x="24" y="44" width="90" height="30" fill="#1fa6a2" stroke="#0f172a" stroke-width="1.5"/>
-        <rect x="114" y="44" width="90" height="30" fill="#1fa6a2" stroke="#0f172a" stroke-width="1.5"/>
-        <rect x="204" y="44" width="90" height="30" fill="#1fa6a2" stroke="#0f172a" stroke-width="1.5"/>
-        <rect x="294" y="44" width="90" height="30" fill="#f1f5f9" stroke="#0f172a" stroke-width="1.5"/>
-        <text x="24" y="98" font-size="14" font-weight="700" fill="#0c6f6b">How many 1/4 pieces fit in 3/4? Exactly 3 pieces!</text>
+      svg: `<svg class="hw-mini-model-svg u-bg-raised" viewBox="0 0 420 120" width="420" height="120" role="img" aria-label="Fraction bar divided into equal parts" data-aria-en="Fraction bar divided into equal parts" data-aria-es="Barra de fracciones dividida en partes iguales">
+        <rect x="8" y="8" width="404" height="104" rx="10" fill="var(--fm-raised)" stroke="var(--fm-m-whole)" stroke-width="1.5"/>
+        <text x="24" y="32" font-size="14" font-weight="800" fill="var(--fm-primary)">1 Whole = 4 Fourths (each part is 1/4 or 0.25)</text>
+        <rect x="24" y="44" width="90" height="30" fill="var(--fm-m-part)" stroke="var(--fm-primary)" stroke-width="1.5"/>
+        <rect x="114" y="44" width="90" height="30" fill="var(--fm-m-part)" stroke="var(--fm-primary)" stroke-width="1.5"/>
+        <rect x="204" y="44" width="90" height="30" fill="var(--fm-m-part)" stroke="var(--fm-primary)" stroke-width="1.5"/>
+        <rect x="294" y="44" width="90" height="30" fill="var(--fm-m-whole-tint)" stroke="var(--fm-primary)" stroke-width="1.5"/>
+        <text x="24" y="98" font-size="14" font-weight="700" fill="var(--fm-m-part)">How many 1/4 pieces fit in 3/4? Exactly 3 pieces!</text>
       </svg>`,
       en: "Equal-sized pieces show why fraction and decimal operations work: count how many equal parts fit into the total.",
       es: "Las partes del mismo tamaño muestran por qué funcionan las fracciones y los decimales: cuenta cuántas partes iguales caben en el total.",
@@ -261,15 +265,15 @@ export function renderMiniConceptSvg(topic = "general") {
   }
   if (t.includes("equation") || t.includes("expression") || t.includes("inequal")) {
     return {
-      svg: `<svg class="hw-mini-model-svg" viewBox="0 0 420 120" width="420" height="120" style="background:white" role="img" aria-label="Balanced hanger model showing x plus 3 equals 7" data-aria-en="Balanced hanger model showing x plus 3 equals 7" data-aria-es="Modelo de balanza mostrando x más 3 igual a 7">
-        <rect x="8" y="8" width="404" height="104" rx="10" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5"/>
-        <line x1="80" y1="42" x2="340" y2="42" stroke="#12355b" stroke-width="4"/>
-        <polygon points="210,22 200,42 220,42" fill="#12355b"/>
-        <rect x="86" y="50" width="96" height="32" rx="6" fill="#1fa6a2"/>
-        <text x="112" y="71" font-size="15" font-weight="800" fill="#ffffff">x + 3</text>
-        <rect x="238" y="50" width="96" height="32" rx="6" fill="#0284c7"/>
-        <text x="278" y="71" font-size="15" font-weight="800" fill="#ffffff">7</text>
-        <text x="72" y="102" font-size="14" font-weight="700" fill="#0c6f6b">Keep the scale balanced: do the same move on both sides.</text>
+      svg: `<svg class="hw-mini-model-svg u-bg-raised" viewBox="0 0 420 120" width="420" height="120" role="img" aria-label="Balanced hanger model showing x plus 3 equals 7" data-aria-en="Balanced hanger model showing x plus 3 equals 7" data-aria-es="Modelo de balanza mostrando x más 3 igual a 7">
+        <rect x="8" y="8" width="404" height="104" rx="10" fill="var(--fm-raised)" stroke="var(--fm-m-whole)" stroke-width="1.5"/>
+        <line x1="80" y1="42" x2="340" y2="42" stroke="var(--fm-primary)" stroke-width="4"/>
+        <polygon points="210,22 200,42 220,42" fill="var(--fm-primary)"/>
+        <rect x="86" y="50" width="96" height="32" rx="6" fill="var(--fm-m-part)"/>
+        <text x="112" y="71" font-size="15" font-weight="800" fill="var(--fm-text-inverse)">x + 3</text>
+        <rect x="238" y="50" width="96" height="32" rx="6" fill="var(--fm-m-whole)"/>
+        <text x="278" y="71" font-size="15" font-weight="800" fill="var(--fm-text-inverse)">7</text>
+        <text x="72" y="102" font-size="14" font-weight="700" fill="var(--fm-m-part)">Keep the scale balanced: do the same move on both sides.</text>
       </svg>`,
       en: "An equation is like a balanced scale: whatever you add, subtract, multiply, or divide on one side, do the same to the other side.",
       es: "Una ecuación es como una balanza en equilibrio: lo que sumes, restes, multipliques o dividas en un lado, hazlo también en el otro.",
@@ -283,30 +287,30 @@ export function renderMiniConceptSvg(topic = "general") {
     t.includes("absolute")
   ) {
     return {
-      svg: `<svg class="hw-mini-model-svg" viewBox="0 0 420 120" width="420" height="120" style="background:white" role="img" aria-label="Number line from negative 4 to positive 4 centered at zero" data-aria-en="Number line from negative 4 to positive 4 centered at zero" data-aria-es="Recta numérica de menos 4 a más 4 centrada en cero">
-        <rect x="8" y="8" width="404" height="104" rx="10" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5"/>
-        <line x1="36" y1="60" x2="384" y2="60" stroke="#12355b" stroke-width="3"/>
-        <circle cx="210" cy="60" r="6" fill="#d97706"/>
-        <circle cx="110" cy="60" r="6" fill="#0284c7"/>
-        <circle cx="310" cy="60" r="6" fill="#1fa6a2"/>
-        <text x="98" y="44" font-size="14" font-weight="800" fill="#0284c7">-3</text>
-        <text x="205" y="44" font-size="14" font-weight="800" fill="#d97706">0</text>
-        <text x="300" y="44" font-size="14" font-weight="800" fill="#0c6f6b">+3</text>
-        <text x="56" y="98" font-size="14" font-weight="700" fill="#12355b">Distance from 0 is the same on both sides (|-3| = |+3| = 3).</text>
+      svg: `<svg class="hw-mini-model-svg u-bg-raised" viewBox="0 0 420 120" width="420" height="120" role="img" aria-label="Number line from negative 4 to positive 4 centered at zero" data-aria-en="Number line from negative 4 to positive 4 centered at zero" data-aria-es="Recta numérica de menos 4 a más 4 centrada en cero">
+        <rect x="8" y="8" width="404" height="104" rx="10" fill="var(--fm-raised)" stroke="var(--fm-m-whole)" stroke-width="1.5"/>
+        <line x1="36" y1="60" x2="384" y2="60" stroke="var(--fm-primary)" stroke-width="3"/>
+        <circle cx="210" cy="60" r="6" fill="var(--fm-m-unknown)"/>
+        <circle cx="110" cy="60" r="6" fill="var(--fm-m-whole)"/>
+        <circle cx="310" cy="60" r="6" fill="var(--fm-m-part)"/>
+        <text x="98" y="44" font-size="14" font-weight="800" fill="var(--fm-m-whole)">-3</text>
+        <text x="205" y="44" font-size="14" font-weight="800" fill="var(--fm-m-unknown)">0</text>
+        <text x="300" y="44" font-size="14" font-weight="800" fill="var(--fm-m-part)">+3</text>
+        <text x="56" y="98" font-size="14" font-weight="700" fill="var(--fm-primary)">Distance from 0 is the same on both sides (|-3| = |+3| = 3).</text>
       </svg>`,
       en: "Zero is the mirror point on a number line: numbers to the right grow greater, and opposite numbers share the same distance from 0.",
       es: "El cero es el punto espejo en la recta numérica: hacia la derecha los números son mayores y los opuestos están a igual distancia de 0.",
     };
   }
   return {
-    svg: `<svg class="hw-mini-model-svg" viewBox="0 0 420 120" width="420" height="120" style="background:white" role="img" aria-label="Part-part-whole visual bar model" data-aria-en="Part-part-whole visual bar model" data-aria-es="Modelo de barras de partes y total">
-      <rect x="8" y="8" width="404" height="104" rx="10" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5"/>
-      <text x="24" y="32" font-size="14" font-weight="800" fill="#12355b">Visual Bar Model · Modelo Visual de Barras</text>
-      <rect x="24" y="44" width="220" height="30" rx="5" fill="#1fa6a2"/>
-      <rect x="248" y="44" width="144" height="30" rx="5" fill="#0284c7"/>
-      <text x="96" y="64" font-size="14" font-weight="800" fill="#ffffff">Known Part</text>
-      <text x="285" y="64" font-size="14" font-weight="800" fill="#ffffff">Part 2</text>
-      <text x="24" y="98" font-size="14" font-weight="700" fill="#0c6f6b">Sketching the parts and the whole makes the math step clear.</text>
+    svg: `<svg class="hw-mini-model-svg u-bg-raised" viewBox="0 0 420 120" width="420" height="120" role="img" aria-label="Part-part-whole visual bar model" data-aria-en="Part-part-whole visual bar model" data-aria-es="Modelo de barras de partes y total">
+      <rect x="8" y="8" width="404" height="104" rx="10" fill="var(--fm-raised)" stroke="var(--fm-m-whole)" stroke-width="1.5"/>
+      <text x="24" y="32" font-size="14" font-weight="800" fill="var(--fm-primary)">Visual Bar Model · Modelo Visual de Barras</text>
+      <rect x="24" y="44" width="220" height="30" rx="5" fill="var(--fm-m-part)"/>
+      <rect x="248" y="44" width="144" height="30" rx="5" fill="var(--fm-m-whole)"/>
+      <text x="96" y="64" font-size="14" font-weight="800" fill="var(--fm-text-inverse)">Known Part</text>
+      <text x="285" y="64" font-size="14" font-weight="800" fill="var(--fm-text-inverse)">Part 2</text>
+      <text x="24" y="98" font-size="14" font-weight="700" fill="var(--fm-m-part)">Sketching the parts and the whole makes the math step clear.</text>
     </svg>`,
     en: "Drawing a quick picture or bar model shows how the parts connect to the whole before you calculate.",
     es: "Dibujar un esquema rápido o modelo de barras muestra cómo se conectan las partes con el total antes de calcular.",
@@ -377,17 +381,17 @@ export function renderStudentPathwayBar(topic = "general", bridge = null) {
           <h3 id="hw_pathway_title">${bi("Choose your depth for tonight (switch anytime, zero work lost)", "Elige tu nivel de profundidad para hoy (cambia cuando quieras sin perder tus respuestas)")}</h3>
         </div>
         <div class="hw-pathway-grid" role="group" aria-labelledby="hw_pathway_title">
-          <button type="button" class="hw-pathway-btn" data-pathway="express" aria-pressed="false" onclick="hwSetPathway('express')">
+          <button type="button" class="hw-pathway-btn" data-pathway="express" aria-pressed="false" ${act("hwSetPathway", "express")}>
             <span class="hw-pathway-icon" aria-hidden="true">⚡</span>
             <strong class="hw-stack">${bi("I've Got This", "¡Ya lo domino!")}</strong>
             <span class="hw-pathway-desc hw-stack">${bi("Express & Challenge: 2 quick checks → family puzzle", "Rápido y reto: 2 preguntas rápidas → acertijo familiar")}</span>
           </button>
-          <button type="button" class="hw-pathway-btn is-active" data-pathway="standard" aria-pressed="true" onclick="hwSetPathway('standard')">
+          <button type="button" class="hw-pathway-btn is-active" data-pathway="standard" aria-pressed="true" ${act("hwSetPathway", "standard")}>
             <span class="hw-pathway-icon" aria-hidden="true">🎯</span>
             <strong class="hw-stack">${bi("Just Right", "A mi medida")}</strong>
             <span class="hw-pathway-desc hw-stack">${bi("Standard Companion: Model → Practice with hints → Family Talk", "Estándar: Modelo → Práctica con pistas → Charla familiar")}</span>
           </button>
-          <button type="button" class="hw-pathway-btn" data-pathway="foundation" aria-pressed="false" onclick="hwSetPathway('foundation')">
+          <button type="button" class="hw-pathway-btn" data-pathway="foundation" aria-pressed="false" ${act("hwSetPathway", "foundation")}>
             <span class="hw-pathway-icon" aria-hidden="true">🧱</span>
             <strong class="hw-stack">${bi("Boost My Foundation", "Reforzar mi base")}</strong>
             <span class="hw-pathway-desc hw-stack">${bi("Visual Bridge: Open the prerequisite visual model first", "Puente visual: Abre primero el modelo visual paso a paso")}</span>
@@ -402,7 +406,7 @@ export function renderStudentPathwayBar(topic = "general", bridge = null) {
           <p class="hw-foundation-copy">${bi(bridgeNoteEn, bridgeNoteEs)}</p>
           <div class="hw-foundation-actions">
             <a class="btn btn-sm btn-secondary" href="#hw_learn_idea">${bi("1. Walk through the worked model ↓", "1. Ver el modelo resuelto paso a paso ↓")}</a>
-            <button type="button" class="btn btn-sm btn-primary" onclick="switchHomeworkTab('check')">${bi("2. Try Warm-Up Question 1 with hints ➔", "2. Probar la Pregunta 1 de calentamiento con pistas ➔")}</button>
+            <button type="button" class="btn btn-sm btn-primary" ${act("switchHomeworkTab", "check")}>${bi("2. Try Warm-Up Question 1 with hints ➔", "2. Probar la Pregunta 1 de calentamiento con pistas ➔")}</button>
           </div>
         </div>
       </section>`;

@@ -559,8 +559,14 @@ test("paper practice invokes a real print flow and makes no offline-download cla
 });
 
 test("welcome has one bilingual H1 and tools are initially collapsed", () => {
-  const dom = new JSDOM(renderWelcomeBanner(config("3-2"), "3-2"));
+  // The hero renders the lesson's own v3 hook, so the config carries its sidecar the way the generator builds it.
+  const notes = JSON.parse(readFileSync("data/family-homework-notes/3-2.json", "utf8"));
+  const dom = new JSDOM(renderWelcomeBanner({ ...config("3-2"), familyNotes: notes }, "3-2"));
   assert.equal(dom.window.document.querySelectorAll("h1").length, 1);
+  assert.equal(
+    dom.window.document.querySelector(".hw-hook").dataset.variant,
+    { map: "map-pin", scoreboard: "scoreboard" }[notes.v3.hook.style] ?? notes.v3.hook.style,
+  );
   assert.ok(dom.window.document.querySelector('h1 .lang-es[lang="es"]'));
   assert.equal(dom.window.document.querySelector(".hw-tools-menu").open, false);
   assert.ok(dom.window.document.getElementById("hw_start_button"));
@@ -601,18 +607,11 @@ test("Unit 4 family pages keep the tab route while rotating their visual experie
     "the three lesson styles no longer carry their own palettes; every lesson wears the family paper system",
   );
   assert.doesNotMatch(styles, /#7c3aed|#5b21b6|#ede9fe|#312e81|#4c3d7e|#7653b7|#f0eafd/);
-  assert.match(
-    styles,
-    /body\[data-family-style\] \.powerup-tag \{ color:var\(--fp-unit-ink\) !important; background:var\(--fp-unit-tint\) !important; \}/,
-  );
-  assert.match(
-    styles,
-    /body\[data-family-style\] \.tile-6 \{ background:var\(--fp-unit-ink\) !important; \}/,
-  );
-  assert.match(
-    styles,
-    /body\[data-family-style\] \.frame-stars \.pb-frame-header \{ background:var\(--fp-unit-ink\) !important; \}/,
-  );
+  // The unit palette is the design system's: no per-unit !important override sheet in the generator,
+  // and no violet anywhere in the body sheet (units draw --unit-accent from tokens.css).
+  assert.doesNotMatch(styles, /--fp-unit-ink\) !important/);
+  const body = readFileSync(new URL("../assets/design/family/body.css", import.meta.url), "utf8");
+  assert.doesNotMatch(body, /#7c3aed|#5b21b6|#ede9fe|#312e81|#4c3d7e|#7653b7|#f0eafd/);
 });
 
 test("exact skills replace broad standard matches, keep one visible mission, and preserve later sessions", () => {

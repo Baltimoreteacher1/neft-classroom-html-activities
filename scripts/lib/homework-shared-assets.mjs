@@ -13,13 +13,39 @@
 import { createHash } from "node:crypto";
 import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
+import { DESIGN_CSS_LINKS } from "./homework-design-links.mjs";
 
 export const SHARED_DIR = "assets/homework";
 const URL_DIR = `/${SHARED_DIR}`;
 
+const DESIGN_URL = new URL("../../assets/design/family/", import.meta.url);
+const FONT_URL = "/assets/design/family/fonts/";
+/** Fonts the hero paints with. Preloaded so the heading never shows in a fallback face. */
+export const HERO_FONTS = ["baloo2-var.woff2", "nunito-var.woff2"];
+/** The head marker the generator writes where the design system's links belong. */
+export const DESIGN_HEAD_MARK = "<!--fm-design-head-->";
+
+/**
+ * The design system as the page's head links: the hero fonts preloaded, then tokens.css, family.css
+ * and body.css straight from assets/design/family/ (versioned `?v=` by content hash, see
+ * homework-design-links.mjs), then the art kit's palette as one shared hashed file. art.css also
+ * declares its own unit hues; those are dropped because the unit identity comes from the tokens
+ * (AA-checked), and only the `--art-*` palette the scene and hook art read is kept.
+ */
+export function designSharedFiles() {
+  const art = readFileSync(new URL("art/art.css", DESIGN_URL), "utf8")
+    .split("\n")
+    .filter((line) => /--art-/.test(line) && !/^\[data-unit/.test(line))
+    .join("\n");
+  const files = { [`homework-art-${hash(art)}.css`]: `${art}\n` };
+  const preload = HERO_FONTS.map(
+    (f) => `<link rel="preload" href="${FONT_URL}${f}" as="font" type="font/woff2" crossorigin>`,
+  );
+  const artLink = Object.keys(files).map((n) => `<link rel="stylesheet" href="${URL_DIR}/${n}">`);
+  return { files, head: [...preload, DESIGN_CSS_LINKS, ...artLink].join("\n") };
+}
+
 export const MARK = {
-  cssThemeBegin: "/*hw-theme:begin*/",
-  cssThemeEnd: "/*hw-theme:end*/",
   jsShared: "/*hw-shared-js:begin*/",
 };
 
@@ -33,27 +59,23 @@ const hash = (text) => createHash("sha256").update(text).digest("hex").slice(0, 
  */
 export function externalizeSharedCode(html, sharedVocab) {
   const files = {};
+  const design = designSharedFiles();
+  Object.assign(files, design.files);
 
+  // The one inline sheet is the legacy shell (hero, top bar, print): identical on every page.
   const styleOpen = html.indexOf("<style>");
   const styleClose = html.indexOf("</style>", styleOpen);
-  const css = html.slice(styleOpen + "<style>".length, styleClose);
-  const tb = css.indexOf(MARK.cssThemeBegin);
-  const te = css.indexOf(MARK.cssThemeEnd);
-  if (styleOpen < 0 || tb < 0 || te < tb)
-    throw new Error("homework page: CSS theme markers missing");
-  const cssA = css.slice(0, tb).trim();
-  const theme = css.slice(tb + MARK.cssThemeBegin.length, te).trim();
-  const cssB = css.slice(te + MARK.cssThemeEnd.length).trim();
-  const nameA = `homework-base-${hash(cssA)}.css`;
-  const nameB = `homework-layer-${hash(cssB)}.css`;
-  files[nameA] = `${cssA}\n`;
-  files[nameB] = `${cssB}\n`;
-  const styleHtml = [
-    `<link rel="stylesheet" href="${URL_DIR}/${nameA}">`,
-    `<style>\n${theme}\n</style>`,
-    `<link rel="stylesheet" href="${URL_DIR}/${nameB}">`,
-  ].join("\n");
-  let out = html.slice(0, styleOpen) + styleHtml + html.slice(styleClose + "</style>".length);
+  if (styleOpen < 0 || styleClose < styleOpen)
+    throw new Error("homework page: legacy shell <style> missing");
+  const legacy = html.slice(styleOpen + "<style>".length, styleClose).trim();
+  const nameCss = `homework-legacy-${hash(legacy)}.css`;
+  files[nameCss] = `${legacy}\n`;
+  let out =
+    html.slice(0, styleOpen) +
+    `<link rel="stylesheet" href="${URL_DIR}/${nameCss}">` +
+    html.slice(styleClose + "</style>".length);
+  if (!out.includes(DESIGN_HEAD_MARK)) throw new Error("homework page: design head marker missing");
+  out = out.replace(DESIGN_HEAD_MARK, design.head);
 
   const js = out.indexOf(MARK.jsShared);
   if (js < 0) throw new Error("homework page: shared-JS marker missing");
@@ -92,7 +114,9 @@ export function writeSharedFiles(root, files, { prune = true } = {}) {
   if (!prune) return;
   for (const name of readdirSync(dir)) {
     if (
-      /^homework-(base|layer|core|vocab)-[0-9a-f]{10}\.(css|js|bundle\.js)$/.test(name) &&
+      /^homework-(base|layer|legacy|core|vocab|tokens|family|art)-[0-9a-f]{10}\.(css|js|bundle\.js)$/.test(
+        name,
+      ) &&
       !(name in files)
     ) {
       rmSync(join(dir, name));
@@ -117,7 +141,7 @@ export function staleSharedFiles(root, files) {
  */
 export function inlineSharedFromDisk(root, html) {
   return html.replace(
-    /<link rel="stylesheet" href="\/(assets\/homework\/[\w.-]+\.css)">|<script src="\/(assets\/homework\/[\w.-]+\.js)"><\/script>/g,
+    /<link rel="stylesheet" href="\/(assets\/(?:homework|design\/family)\/[\w.-]+\.css)(?:\?v=\w+)?">|<script src="\/(assets\/homework\/[\w.-]+\.js)"><\/script>/g,
     (_, css, js) => {
       const text = readFileSync(join(root, css || js), "utf8");
       return css ? `<style>\n${text}</style>` : `<script>\n${text}</script>`;

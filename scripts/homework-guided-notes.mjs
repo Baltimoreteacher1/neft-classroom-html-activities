@@ -40,7 +40,8 @@ import {
   translateLanguageObjective,
 } from "./homework-spanish.mjs";
 import { getUnitTheme } from "./homework-themes.mjs";
-import { bridgeOf, bridgeSpeech, renderBridgeCard } from "./lib/homework-bridge.mjs";
+import { act, actOn, EL, EV, VALUE } from "./lib/homework-actions.mjs";
+import { bridgeOf, renderBridgeCard } from "./lib/homework-bridge.mjs";
 import { confusedRoundsFor, renderConfusedGrownUp } from "./lib/homework-confused-grownup.mjs";
 import { renderDominoDuo } from "./lib/homework-domino-duo.mjs";
 import {
@@ -57,6 +58,12 @@ import {
   renderTeachBack,
   renderTonightStrip,
 } from "./lib/homework-experience.mjs";
+import {
+  renderExperienceBadge,
+  renderHero,
+  renderMoreSheet,
+  renderTopBar,
+} from "./lib/homework-hero.mjs";
 import { renderPrintHead } from "./lib/homework-print.mjs";
 import { choiceFeedbackSpanish } from "./lib/homework-problems.mjs";
 import { renderScratchpadHtml } from "./lib/homework-scratchpad.mjs";
@@ -67,7 +74,7 @@ import {
   SESSIONS,
   sessionOf,
 } from "./lib/homework-session-flow.mjs";
-import { renderLearnModules } from "./lib/homework-v3-learn.mjs";
+import { renderLearnModules, v3Of } from "./lib/homework-v3-learn.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const _root = join(__dirname, "..");
@@ -850,10 +857,10 @@ function stuckTips(config) {
    ------------------------------------------------------------------ */
 
 const CONCEPT_TONES = {
-  teal: { bg: "#e9f7f4", stroke: "#1fa6a2" },
-  amber: { bg: "#fdf5e3", stroke: "#dda63a" },
-  coral: { bg: "#fdeee9", stroke: "#d9795d" },
-  navy: { bg: "#eef3fa", stroke: "#12355b" },
+  teal: { bg: "var(--fm-success-tint)", stroke: "var(--fm-m-part)" },
+  amber: { bg: "var(--fm-m-unknown-tint)", stroke: "var(--fm-m-unknown-edge)" },
+  coral: { bg: "var(--fm-m-unknown-tint)", stroke: "var(--fm-m-unknown-edge)" },
+  navy: { bg: "var(--fm-m-whole-tint)", stroke: "var(--fm-primary)" },
 };
 
 /**
@@ -874,7 +881,7 @@ function conceptHeading(title) {
   if (!title) return "";
   const at = String(title).indexOf(" / ");
   const attrs =
-    'x="320" y="48" text-anchor="middle" font-size="27" font-weight="800" fill="#12355b"';
+    'x="320" y="48" text-anchor="middle" font-size="27" font-weight="800" fill="var(--fm-primary)"';
   if (at === -1) return `<text ${attrs}>${title}</text>`;
   const en = title.slice(0, at).trim();
   const es = title.slice(at + 3).trim();
@@ -895,7 +902,7 @@ function conceptFrame({ label, tone = "teal", height, title, body }) {
 
 /** A soft white card used to hold a worked line inside a visual. */
 function conceptCard(x, y, w, h, extra = "") {
-  return `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="14" fill="#ffffff" stroke="#cddbe8" stroke-width="2" ${extra}/>`;
+  return `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="14" fill="var(--fm-raised)" stroke="var(--fm-m-whole)" stroke-width="2" ${extra}/>`;
 }
 
 /**
@@ -914,50 +921,50 @@ function unitRatePack({ x, y, name, badgeFill, cost, count, noun, rate, best }) 
   const cx = x + 16;
   const w = 244;
   const money = (n) => `$${n.toFixed(2)}`;
-  const box = (by, bh, fill = "#f8fafc", stroke = "#cbd5e1") =>
+  const box = (by, bh, fill = "var(--fm-raised)", stroke = "var(--fm-m-whole)") =>
     `<rect x="${cx}" y="${by}" width="${w}" height="${bh}" rx="9" fill="${fill}" stroke="${stroke}" stroke-width="1.5"/>`;
   const step = (by, n, label) =>
-    `<text x="${cx + 10}" y="${by + 18}" font-size="12" font-weight="800" fill="#0f766e">STEP ${n} · ${label}</text>`;
+    `<text x="${cx + 10}" y="${by + 18}" font-size="12" font-weight="800" fill="var(--fm-m-part)">STEP ${n} · ${label}</text>`;
 
   const fracX = cx + 62;
   return `
         ${conceptCard(x, y, 276, 392)}
         <rect x="${cx}" y="${y + 14}" width="90" height="24" rx="6" fill="${badgeFill}"/>
-        <text x="${cx + 45}" y="${y + 31}" text-anchor="middle" font-size="14" font-weight="800" fill="#ffffff">${name}</text>
-        <text x="${cx}" y="${y + 62}" font-size="18" font-weight="800" fill="#12355b">${money(cost)} for ${count} ${noun}s</text>
+        <text x="${cx + 45}" y="${y + 31}" text-anchor="middle" font-size="14" font-weight="800" fill="var(--fm-text-inverse)">${name}</text>
+        <text x="${cx}" y="${y + 62}" font-size="18" font-weight="800" fill="var(--fm-primary)">${money(cost)} for ${count} ${noun}s</text>
 
         ${box(y + 76, 82)}
         ${step(y + 76, 1, "Rate as a fraction")}
-        <text x="${fracX}" y="${y + 114}" text-anchor="middle" font-size="16" font-weight="800" fill="#12355b">${money(cost)}</text>
-        <line x1="${cx + 18}" y1="${y + 122}" x2="${cx + 106}" y2="${y + 122}" stroke="#12355b" stroke-width="2.5"/>
-        <text x="${fracX}" y="${y + 144}" text-anchor="middle" font-size="16" font-weight="800" fill="#12355b">${count} ${noun}s</text>
-        <text x="${cx + 116}" y="${y + 114}" font-size="11" font-weight="700" fill="#5f6f80">← cost (top)</text>
-        <text x="${cx + 116}" y="${y + 144}" font-size="11" font-weight="700" fill="#5f6f80">← units (bottom)</text>
+        <text x="${fracX}" y="${y + 114}" text-anchor="middle" font-size="16" font-weight="800" fill="var(--fm-primary)">${money(cost)}</text>
+        <line x1="${cx + 18}" y1="${y + 122}" x2="${cx + 106}" y2="${y + 122}" stroke="var(--fm-primary)" stroke-width="2.5"/>
+        <text x="${fracX}" y="${y + 144}" text-anchor="middle" font-size="16" font-weight="800" fill="var(--fm-primary)">${count} ${noun}s</text>
+        <text x="${cx + 116}" y="${y + 114}" font-size="11" font-weight="700" fill="var(--fm-text-muted)">← cost (top)</text>
+        <text x="${cx + 116}" y="${y + 144}" font-size="11" font-weight="700" fill="var(--fm-text-muted)">← units (bottom)</text>
 
         ${box(y + 164, 82)}
         ${step(y + 164, 2, "Divide both by " + count)}
-        <text x="${fracX}" y="${y + 202}" text-anchor="middle" font-size="15" font-weight="800" fill="#0f766e">${money(cost)} ÷ ${count}</text>
-        <line x1="${cx + 18}" y1="${y + 210}" x2="${cx + 106}" y2="${y + 210}" stroke="#0f766e" stroke-width="2.5"/>
-        <text x="${fracX}" y="${y + 232}" text-anchor="middle" font-size="15" font-weight="800" fill="#0f766e">${count} ÷ ${count}</text>
-        <text x="${cx + 116}" y="${y + 218}" font-size="11" font-weight="700" fill="#0f766e">divide both</text>
+        <text x="${fracX}" y="${y + 202}" text-anchor="middle" font-size="15" font-weight="800" fill="var(--fm-m-part)">${money(cost)} ÷ ${count}</text>
+        <line x1="${cx + 18}" y1="${y + 210}" x2="${cx + 106}" y2="${y + 210}" stroke="var(--fm-m-part)" stroke-width="2.5"/>
+        <text x="${fracX}" y="${y + 232}" text-anchor="middle" font-size="15" font-weight="800" fill="var(--fm-m-part)">${count} ÷ ${count}</text>
+        <text x="${cx + 116}" y="${y + 218}" font-size="11" font-weight="700" fill="var(--fm-m-part)">divide both</text>
 
-        ${box(y + 252, 92, best ? "#dcfce7" : "#f1f5f9", best ? "#16a34a" : "#94a3b8")}
+        ${box(y + 252, 92, best ? "var(--fm-success-tint)" : "var(--fm-m-whole-tint)", best ? "var(--fm-success)" : "var(--fm-m-whole)")}
         ${step(y + 252, 3, "Unit rate: fraction over 1")}
-        <text x="${fracX}" y="${y + 290}" text-anchor="middle" font-size="17" font-weight="800" fill="${best ? "#15803d" : "#12355b"}">${money(rate)}</text>
-        <line x1="${cx + 18}" y1="${y + 298}" x2="${cx + 106}" y2="${y + 298}" stroke="${best ? "#15803d" : "#12355b"}" stroke-width="2.5"/>
-        <text x="${fracX}" y="${y + 318}" text-anchor="middle" font-size="16" font-weight="800" fill="${best ? "#15803d" : "#12355b"}">1 ${noun}</text>
-        <text x="${cx + 116}" y="${y + 306}" font-size="13" font-weight="800" fill="${best ? "#15803d" : "#12355b"}">= ${money(rate)}/${noun}</text>
+        <text x="${fracX}" y="${y + 290}" text-anchor="middle" font-size="17" font-weight="800" fill="${best ? "var(--fm-success-ink)" : "var(--fm-primary)"}">${money(rate)}</text>
+        <line x1="${cx + 18}" y1="${y + 298}" x2="${cx + 106}" y2="${y + 298}" stroke="${best ? "var(--fm-success)" : "var(--fm-primary)"}" stroke-width="2.5"/>
+        <text x="${fracX}" y="${y + 318}" text-anchor="middle" font-size="16" font-weight="800" fill="${best ? "var(--fm-success-ink)" : "var(--fm-primary)"}">1 ${noun}</text>
+        <text x="${cx + 116}" y="${y + 306}" font-size="13" font-weight="800" fill="${best ? "var(--fm-success-ink)" : "var(--fm-primary)"}">= ${money(rate)}/${noun}</text>
 
-        <rect x="${cx}" y="${y + 352}" width="${w}" height="26" rx="8" fill="${best ? "#dcfce7" : "#f1f5f9"}" stroke="${best ? "#16a34a" : "#94a3b8"}" stroke-width="1.5"/>
-        <text x="${cx + w / 2}" y="${y + 370}" text-anchor="middle" font-size="13" font-weight="800" fill="${best ? "#15803d" : "#64748b"}">${best ? "★ LOWER unit rate = BETTER BUY!" : "Higher cost for 1"}</text>`;
+        <rect x="${cx}" y="${y + 352}" width="${w}" height="26" rx="8" fill="${best ? "var(--fm-success-tint)" : "var(--fm-m-whole-tint)"}" stroke="${best ? "var(--fm-success)" : "var(--fm-m-whole)"}" stroke-width="1.5"/>
+        <text x="${cx + w / 2}" y="${y + 370}" text-anchor="middle" font-size="13" font-weight="800" fill="${best ? "var(--fm-success-ink)" : "var(--fm-text-muted)"}">${best ? "★ LOWER unit rate = BETTER BUY!" : "Higher cost for 1"}</text>`;
 }
 
 /** One numbered "do this" row inside a visual. */
-function conceptRow(y, n, text, color = "#12355b") {
+function conceptRow(y, n, text, color = "var(--fm-primary)") {
   return `${conceptCard(34, y, 572, 62)}
         <circle cx="70" cy="${y + 31}" r="21" fill="${color}"/>
-        <text x="70" y="${y + 39}" text-anchor="middle" font-size="24" font-weight="800" fill="#ffffff">${n}</text>
-        <text x="104" y="${y + 40}" font-size="27" font-weight="700" fill="#12355b">${text}</text>`;
+        <text x="70" y="${y + 39}" text-anchor="middle" font-size="24" font-weight="800" fill="var(--fm-text-inverse)">${n}</text>
+        <text x="104" y="${y + 40}" font-size="27" font-weight="700" fill="var(--fm-primary)">${text}</text>`;
 }
 
 function conceptVisual(config) {
@@ -974,20 +981,20 @@ function conceptVisual(config) {
         const isWhole = i < 4;
         const fill = isWhole
           ? i % 2 === 0
-            ? "#e0f2fe"
-            : "#ffffff"
+            ? "var(--fm-m-whole-tint)"
+            : "var(--fm-raised)"
           : i % 2 === 0
-            ? "#fef3c7"
-            : "#ffffff";
-        const stroke = isWhole ? "#0284c7" : "#d97706";
-        const textFill = isWhole ? "#0369a1" : "#b45309";
-        const numBg = isWhole ? "#0284c7" : "#d97706";
+            ? "var(--fm-m-unknown-tint)"
+            : "var(--fm-raised)";
+        const stroke = isWhole ? "var(--fm-m-whole)" : "var(--fm-m-unknown-edge)";
+        const textFill = isWhole ? "var(--fm-m-whole)" : "var(--fm-m-unknown)";
+        const numBg = isWhole ? "var(--fm-m-whole)" : "var(--fm-m-unknown)";
         return `
           <rect x="${cx}" y="120" width="82" height="38" rx="4" fill="${fill}" stroke="${stroke}" stroke-width="2"/>
           <text x="${cx + 41}" y="144" text-anchor="middle" font-size="15" font-weight="800" fill="${textFill}">¼ yd</text>
           <circle cx="${cx + 41}" cy="176" r="11" fill="${numBg}"/>
-          <text x="${cx + 41}" y="180" text-anchor="middle" font-size="12" font-weight="800" fill="#ffffff">${i + 1}</text>
-          <text x="${cx + 41}" y="196" text-anchor="middle" font-size="11" font-weight="700" fill="#5f6f80">Bow ${i + 1}</text>`;
+          <text x="${cx + 41}" y="180" text-anchor="middle" font-size="12" font-weight="800" fill="var(--fm-text-inverse)">${i + 1}</text>
+          <text x="${cx + 41}" y="196" text-anchor="middle" font-size="11" font-weight="700" fill="var(--fm-text-muted)">Bow ${i + 1}</text>`;
       })
       .join("");
 
@@ -1001,46 +1008,46 @@ function conceptVisual(config) {
         body: `
         <!-- Tape Diagram Card -->
         ${conceptCard(34, 66, 572, 166)}
-        <rect x="52" y="78" width="180" height="22" rx="6" fill="#0f766e"/>
-        <text x="142" y="94" text-anchor="middle" font-size="12" font-weight="800" fill="#ffffff">TAPE DIAGRAM (STRIP)</text>
-        <text x="250" y="94" font-size="15" font-weight="800" fill="#12355b">Total: 1 ½ yards of ribbon ÷ ¼ yd per bow</text>
+        <rect x="52" y="78" width="180" height="22" rx="6" fill="var(--fm-m-part)"/>
+        <text x="142" y="94" text-anchor="middle" font-size="12" font-weight="800" fill="var(--fm-text-inverse)">TAPE DIAGRAM (STRIP)</text>
+        <text x="250" y="94" font-size="15" font-weight="800" fill="var(--fm-primary)">Total: 1 ½ yards of ribbon ÷ ¼ yd per bow</text>
 
         <!-- Brackets above tape -->
-        <line x1="74" y1="112" x2="402" y2="112" stroke="#0284c7" stroke-width="2"/>
-        <text x="238" y="108" text-anchor="middle" font-size="13" font-weight="800" fill="#0284c7">1 Whole Yard (4 fourths)</text>
-        <line x1="402" y1="112" x2="566" y2="112" stroke="#d97706" stroke-width="2"/>
-        <text x="484" y="108" text-anchor="middle" font-size="13" font-weight="800" fill="#d97706">½ Yard (2 fourths)</text>
+        <line x1="74" y1="112" x2="402" y2="112" stroke="var(--fm-m-whole)" stroke-width="2"/>
+        <text x="238" y="108" text-anchor="middle" font-size="13" font-weight="800" fill="var(--fm-m-whole)">1 Whole Yard (4 fourths)</text>
+        <line x1="402" y1="112" x2="566" y2="112" stroke="var(--fm-m-unknown-edge)" stroke-width="2"/>
+        <text x="484" y="108" text-anchor="middle" font-size="13" font-weight="800" fill="var(--fm-m-unknown)">½ Yard (2 fourths)</text>
 
         <!-- Tape Cells -->
         ${tapeCells}
 
         <!-- Tape Summary -->
-        <text x="320" y="218" text-anchor="middle" font-size="14" font-weight="800" fill="#0f766e">4 fourths + 2 fourths = 6 fourths in all  ➔  6 Whole Bows</text>
+        <text x="320" y="218" text-anchor="middle" font-size="14" font-weight="800" fill="var(--fm-m-part)">4 fourths + 2 fourths = 6 fourths in all  ➔  6 Whole Bows</text>
 
         <!-- Check With Numbers Card -->
         ${conceptCard(34, 244, 278, 196)}
-        <rect x="48" y="256" width="168" height="22" rx="5" fill="#2563eb"/>
-        <text x="132" y="271" text-anchor="middle" font-size="11" font-weight="800" fill="#ffffff">CHECK WITH NUMBERS</text>
-        <text x="50" y="298" font-size="13" font-weight="700" fill="#64748b">1. Mixed to improper fraction:</text>
-        <text x="50" y="320" font-size="17" font-weight="800" fill="#12355b">1 ½  =  3/2</text>
-        <text x="50" y="348" font-size="13" font-weight="700" fill="#64748b">2. Keep · Change · Flip:</text>
-        <text x="50" y="370" font-size="17" font-weight="800" fill="#0f766e">3/2  ×  4/1  =  12/2</text>
-        <text x="50" y="398" font-size="13" font-weight="700" fill="#64748b">3. Divide to simplify:</text>
-        <text x="50" y="422" font-size="19" font-weight="800" fill="#2563eb">12/2  =  6 bows</text>
+        <rect x="48" y="256" width="168" height="22" rx="5" fill="var(--fm-m-whole)"/>
+        <text x="132" y="271" text-anchor="middle" font-size="11" font-weight="800" fill="var(--fm-text-inverse)">CHECK WITH NUMBERS</text>
+        <text x="50" y="298" font-size="13" font-weight="700" fill="var(--fm-text-muted)">1. Mixed to improper fraction:</text>
+        <text x="50" y="320" font-size="17" font-weight="800" fill="var(--fm-primary)">1 ½  =  3/2</text>
+        <text x="50" y="348" font-size="13" font-weight="700" fill="var(--fm-text-muted)">2. Keep · Change · Flip:</text>
+        <text x="50" y="370" font-size="17" font-weight="800" fill="var(--fm-m-part)">3/2  ×  4/1  =  12/2</text>
+        <text x="50" y="398" font-size="13" font-weight="700" fill="var(--fm-text-muted)">3. Divide to simplify:</text>
+        <text x="50" y="422" font-size="19" font-weight="800" fill="var(--fm-m-whole)">12/2  =  6 bows</text>
 
         <!-- Watch For on the Test Card -->
         ${conceptCard(328, 244, 278, 196)}
-        <rect x="342" y="256" width="176" height="22" rx="5" fill="#d97706"/>
-        <text x="430" y="271" text-anchor="middle" font-size="11" font-weight="800" fill="#ffffff">WATCH FOR ON THE TEST</text>
-        <circle cx="348" cy="298" r="4" fill="#0f766e"/>
-        <text x="360" y="302" font-size="12" font-weight="700" fill="#12355b">Turn mixed numbers to fractions 1st</text>
-        <circle cx="348" cy="324" r="4" fill="#2563eb"/>
-        <text x="360" y="328" font-size="12" font-weight="700" fill="#12355b">Flip ONLY the 2nd fraction (divisor)</text>
-        <circle cx="348" cy="350" r="4" fill="#d97706"/>
-        <text x="360" y="354" font-size="12" font-weight="800" fill="#b45309">What Leftovers Mean (Q4A &amp; 4B):</text>
-        <rect x="342" y="364" width="250" height="62" rx="8" fill="#fffbeb" stroke="#fde68a" stroke-width="1.5"/>
-        <text x="352" y="385" font-size="12" font-weight="700" fill="#12355b">3 ½ batches = 3 FULL batches.</text>
-        <text x="352" y="405" font-size="12" font-weight="700" fill="#92400e">The ½ is half a batch, not a cup!</text>`,
+        <rect x="342" y="256" width="176" height="22" rx="5" fill="var(--fm-m-unknown)"/>
+        <text x="430" y="271" text-anchor="middle" font-size="11" font-weight="800" fill="var(--fm-text-inverse)">WATCH FOR ON THE TEST</text>
+        <circle cx="348" cy="298" r="4" fill="var(--fm-m-part)"/>
+        <text x="360" y="302" font-size="12" font-weight="700" fill="var(--fm-primary)">Turn mixed numbers to fractions 1st</text>
+        <circle cx="348" cy="324" r="4" fill="var(--fm-m-whole)"/>
+        <text x="360" y="328" font-size="12" font-weight="700" fill="var(--fm-primary)">Flip ONLY the 2nd fraction (divisor)</text>
+        <circle cx="348" cy="350" r="4" fill="var(--fm-m-unknown)"/>
+        <text x="360" y="354" font-size="12" font-weight="800" fill="var(--fm-m-unknown)">What Leftovers Mean (Q4A &amp; 4B):</text>
+        <rect x="342" y="364" width="250" height="62" rx="8" fill="var(--fm-m-unknown-tint)" stroke="var(--fm-m-unknown-edge)" stroke-width="1.5"/>
+        <text x="352" y="385" font-size="12" font-weight="700" fill="var(--fm-primary)">3 ½ batches = 3 FULL batches.</text>
+        <text x="352" y="405" font-size="12" font-weight="700" fill="var(--fm-m-unknown)">The ½ is half a batch, not a cup!</text>`,
       }),
       capEn:
         "Dividing by a fraction asks how many small pieces fit inside the total amount. Convert mixed numbers first, then Keep, Change, Flip.",
@@ -1060,45 +1067,45 @@ function conceptVisual(config) {
         body: `
         <!-- Part to Part Card -->
         ${conceptCard(34, 68, 276, 172)}
-        <text x="172" y="96" text-anchor="middle" font-size="17" font-weight="800" fill="#0f766e">PART-TO-PART RATIO</text>
+        <text x="172" y="96" text-anchor="middle" font-size="17" font-weight="800" fill="var(--fm-m-part)">PART-TO-PART RATIO</text>
         <g transform="translate(56, 110)">
-          <rect x="0" y="0" width="24" height="32" rx="5" fill="#38bdf8" stroke="#0284c7" stroke-width="2"/>
-          <rect x="30" y="0" width="24" height="32" rx="5" fill="#38bdf8" stroke="#0284c7" stroke-width="2"/>
-          <rect x="60" y="0" width="24" height="32" rx="5" fill="#38bdf8" stroke="#0284c7" stroke-width="2"/>
-          <rect x="90" y="0" width="24" height="32" rx="5" fill="#38bdf8" stroke="#0284c7" stroke-width="2"/>
-          <text x="57" y="48" text-anchor="middle" font-size="13" font-weight="700" fill="#0284c7">4 Water</text>
+          <rect x="0" y="0" width="24" height="32" rx="5" fill="var(--fm-m-part)" stroke="var(--fm-m-whole)" stroke-width="2"/>
+          <rect x="30" y="0" width="24" height="32" rx="5" fill="var(--fm-m-part)" stroke="var(--fm-m-whole)" stroke-width="2"/>
+          <rect x="60" y="0" width="24" height="32" rx="5" fill="var(--fm-m-part)" stroke="var(--fm-m-whole)" stroke-width="2"/>
+          <rect x="90" y="0" width="24" height="32" rx="5" fill="var(--fm-m-part)" stroke="var(--fm-m-whole)" stroke-width="2"/>
+          <text x="57" y="48" text-anchor="middle" font-size="13" font-weight="700" fill="var(--fm-m-whole)">4 Water</text>
         </g>
         <g transform="translate(196, 110)">
-          <rect x="0" y="0" width="24" height="32" rx="5" fill="#fde047" stroke="#ca8a04" stroke-width="2"/>
-          <rect x="30" y="0" width="24" height="32" rx="5" fill="#fde047" stroke="#ca8a04" stroke-width="2"/>
-          <text x="27" y="48" text-anchor="middle" font-size="13" font-weight="700" fill="#ca8a04">2 Juice</text>
+          <rect x="0" y="0" width="24" height="32" rx="5" fill="var(--fm-m-unknown)" stroke="var(--fm-m-unknown-edge)" stroke-width="2"/>
+          <rect x="30" y="0" width="24" height="32" rx="5" fill="var(--fm-m-unknown)" stroke="var(--fm-m-unknown-edge)" stroke-width="2"/>
+          <text x="27" y="48" text-anchor="middle" font-size="13" font-weight="700" fill="var(--fm-m-unknown)">2 Juice</text>
         </g>
-        <text x="172" y="196" text-anchor="middle" font-size="28" font-weight="800" fill="#12355b">4 : 2  or  2 : 1</text>
-        <text x="172" y="222" text-anchor="middle" font-size="14" font-weight="700" fill="#5f6f80">Water to Lemon Juice</text>
+        <text x="172" y="196" text-anchor="middle" font-size="28" font-weight="800" fill="var(--fm-primary)">4 : 2  or  2 : 1</text>
+        <text x="172" y="222" text-anchor="middle" font-size="14" font-weight="700" fill="var(--fm-text-muted)">Water to Lemon Juice</text>
 
         <!-- Part to Whole Card -->
         ${conceptCard(330, 68, 276, 172)}
-        <text x="468" y="96" text-anchor="middle" font-size="17" font-weight="800" fill="#2563eb">PART-TO-WHOLE RATIO</text>
+        <text x="468" y="96" text-anchor="middle" font-size="17" font-weight="800" fill="var(--fm-m-whole)">PART-TO-WHOLE RATIO</text>
         <g transform="translate(362, 110)">
-          <rect x="0" y="0" width="24" height="32" rx="5" fill="#38bdf8" stroke="#0284c7" stroke-width="2"/>
-          <rect x="28" y="0" width="24" height="32" rx="5" fill="#38bdf8" stroke="#0284c7" stroke-width="2"/>
-          <rect x="56" y="0" width="24" height="32" rx="5" fill="#38bdf8" stroke="#0284c7" stroke-width="2"/>
-          <rect x="84" y="0" width="24" height="32" rx="5" fill="#38bdf8" stroke="#0284c7" stroke-width="2"/>
-          <rect x="120" y="0" width="24" height="32" rx="5" fill="#fde047" stroke="#ca8a04" stroke-width="2"/>
-          <rect x="148" y="0" width="24" height="32" rx="5" fill="#fde047" stroke="#ca8a04" stroke-width="2"/>
-          <text x="106" y="48" text-anchor="middle" font-size="13" font-weight="700" fill="#12355b">6 Total Cups in Mixture</text>
+          <rect x="0" y="0" width="24" height="32" rx="5" fill="var(--fm-m-part)" stroke="var(--fm-m-whole)" stroke-width="2"/>
+          <rect x="28" y="0" width="24" height="32" rx="5" fill="var(--fm-m-part)" stroke="var(--fm-m-whole)" stroke-width="2"/>
+          <rect x="56" y="0" width="24" height="32" rx="5" fill="var(--fm-m-part)" stroke="var(--fm-m-whole)" stroke-width="2"/>
+          <rect x="84" y="0" width="24" height="32" rx="5" fill="var(--fm-m-part)" stroke="var(--fm-m-whole)" stroke-width="2"/>
+          <rect x="120" y="0" width="24" height="32" rx="5" fill="var(--fm-m-unknown)" stroke="var(--fm-m-unknown-edge)" stroke-width="2"/>
+          <rect x="148" y="0" width="24" height="32" rx="5" fill="var(--fm-m-unknown)" stroke="var(--fm-m-unknown-edge)" stroke-width="2"/>
+          <text x="106" y="48" text-anchor="middle" font-size="13" font-weight="700" fill="var(--fm-primary)">6 Total Cups in Mixture</text>
         </g>
-        <text x="468" y="196" text-anchor="middle" font-size="28" font-weight="800" fill="#12355b">4 : 6  or  2 : 3</text>
-        <text x="468" y="222" text-anchor="middle" font-size="14" font-weight="700" fill="#5f6f80">Water to Total Mixture</text>
+        <text x="468" y="196" text-anchor="middle" font-size="28" font-weight="800" fill="var(--fm-primary)">4 : 6  or  2 : 3</text>
+        <text x="468" y="222" text-anchor="middle" font-size="14" font-weight="700" fill="var(--fm-text-muted)">Water to Total Mixture</text>
 
         <!-- Order Matters Callout -->
-        <rect x="34" y="254" width="572" height="136" rx="14" fill="#fffbeb" stroke="#f59e0b" stroke-width="2"/>
-        <rect x="52" y="268" width="168" height="26" rx="6" fill="#f59e0b"/>
-        <text x="136" y="286" text-anchor="middle" font-size="14" font-weight="800" fill="#ffffff">ORDER MATTERS!</text>
-        <text x="52" y="322" font-size="18" font-weight="800" fill="#12355b">Water to Juice = 4 : 2</text>
-        <text x="320" y="322" font-size="18" font-weight="800" fill="#b02a24">Juice to Water = 2 : 4</text>
-        <text x="52" y="354" font-size="15" font-weight="700" fill="#5f6f80">Always write numbers in the exact order the question names them!</text>
-        <text x="52" y="376" font-size="14" font-weight="700" fill="#0f766e">Three ways to write a ratio:  4 to 2   ·   4 : 2   ·   4/2</text>`,
+        <rect x="34" y="254" width="572" height="136" rx="14" fill="var(--fm-m-unknown-tint)" stroke="var(--fm-m-unknown-edge)" stroke-width="2"/>
+        <rect x="52" y="268" width="168" height="26" rx="6" fill="var(--fm-m-unknown)"/>
+        <text x="136" y="286" text-anchor="middle" font-size="14" font-weight="800" fill="var(--fm-text-inverse)">ORDER MATTERS!</text>
+        <text x="52" y="322" font-size="18" font-weight="800" fill="var(--fm-primary)">Water to Juice = 4 : 2</text>
+        <text x="320" y="322" font-size="18" font-weight="800" fill="var(--fm-m-unknown)">Juice to Water = 2 : 4</text>
+        <text x="52" y="354" font-size="15" font-weight="700" fill="var(--fm-text-muted)">Always write numbers in the exact order the question names them!</text>
+        <text x="52" y="376" font-size="14" font-weight="700" fill="var(--fm-m-part)">Three ways to write a ratio:  4 to 2   ·   4 : 2   ·   4/2</text>`,
       }),
       capEn:
         "A ratio compares two quantities. The order of numbers must match the order of words in the question.",
@@ -1121,7 +1128,7 @@ function conceptVisual(config) {
           x: 34,
           y: 68,
           name: "PACK A",
-          badgeFill: "#0f766e",
+          badgeFill: "var(--fm-m-part)",
           cost: 3.0,
           count: 5,
           noun: "pencil",
@@ -1132,7 +1139,7 @@ function conceptVisual(config) {
           x: 330,
           y: 68,
           name: "PACK B",
-          badgeFill: "#64748b",
+          badgeFill: "var(--fm-inverse)",
           cost: 5.2,
           count: 8,
           noun: "pencil",
@@ -1141,12 +1148,12 @@ function conceptVisual(config) {
         })}
 
         <!-- Formula Rule Card -->
-        <rect x="34" y="476" width="572" height="140" rx="14" fill="#f0fdfa" stroke="#0f766e" stroke-width="2"/>
-        <text x="320" y="506" text-anchor="middle" font-size="19" font-weight="800" fill="#0f766e">Unit Rate = Rate written as a fraction over 1</text>
-        <line x1="60" y1="520" x2="580" y2="520" stroke="#99f6e4" stroke-width="2"/>
-        <text x="320" y="546" text-anchor="middle" font-size="15" font-weight="700" fill="#12355b">1. Write rate as fraction: Cost on TOP, Units on BOTTOM.</text>
-        <text x="320" y="572" text-anchor="middle" font-size="15" font-weight="700" fill="#12355b">2. Divide BOTH parts by the bottom number.</text>
-        <text x="320" y="598" text-anchor="middle" font-size="15" font-weight="800" fill="#0f766e">3. Unit rate is in fraction form over 1: ($0.60 / 1 pencil = $0.60 per pencil).</text>`,
+        <rect x="34" y="476" width="572" height="140" rx="14" fill="var(--fm-success-tint)" stroke="var(--fm-m-part)" stroke-width="2"/>
+        <text x="320" y="506" text-anchor="middle" font-size="19" font-weight="800" fill="var(--fm-m-part)">Unit Rate = Rate written as a fraction over 1</text>
+        <line x1="60" y1="520" x2="580" y2="520" stroke="var(--fm-success)" stroke-width="2"/>
+        <text x="320" y="546" text-anchor="middle" font-size="15" font-weight="700" fill="var(--fm-primary)">1. Write rate as fraction: Cost on TOP, Units on BOTTOM.</text>
+        <text x="320" y="572" text-anchor="middle" font-size="15" font-weight="700" fill="var(--fm-primary)">2. Divide BOTH parts by the bottom number.</text>
+        <text x="320" y="598" text-anchor="middle" font-size="15" font-weight="800" fill="var(--fm-m-part)">3. Unit rate is in fraction form over 1: ($0.60 / 1 pencil = $0.60 per pencil).</text>`,
       }),
       capEn:
         "A unit rate is a ratio that compares a quantity to 1 unit. Write the rate as a fraction and divide both parts by the bottom number to get a fraction over 1.",
@@ -1167,67 +1174,67 @@ function conceptVisual(config) {
         <!-- Table on Left -->
         <g transform="translate(34, 68)">
           <!-- Headers -->
-          <rect x="0" y="0" width="100" height="42" rx="8" fill="#12355b"/>
-          <text x="50" y="27" text-anchor="middle" font-size="15" font-weight="800" fill="#ffffff">Batches</text>
-          <rect x="108" y="0" width="116" height="42" rx="8" fill="#0f766e"/>
-          <text x="166" y="27" text-anchor="middle" font-size="15" font-weight="800" fill="#ffffff">Mix (cups)</text>
-          <rect x="232" y="0" width="116" height="42" rx="8" fill="#0f766e"/>
-          <text x="290" y="27" text-anchor="middle" font-size="15" font-weight="800" fill="#ffffff">Milk (cups)</text>
+          <rect x="0" y="0" width="100" height="42" rx="8" fill="var(--fm-primary)"/>
+          <text x="50" y="27" text-anchor="middle" font-size="15" font-weight="800" fill="var(--fm-text-inverse)">Batches</text>
+          <rect x="108" y="0" width="116" height="42" rx="8" fill="var(--fm-m-part)"/>
+          <text x="166" y="27" text-anchor="middle" font-size="15" font-weight="800" fill="var(--fm-text-inverse)">Mix (cups)</text>
+          <rect x="232" y="0" width="116" height="42" rx="8" fill="var(--fm-m-part)"/>
+          <text x="290" y="27" text-anchor="middle" font-size="15" font-weight="800" fill="var(--fm-text-inverse)">Milk (cups)</text>
 
           <!-- Row 1 -->
-          <rect x="0" y="48" width="100" height="44" rx="8" fill="#ffffff" stroke="#cddbe8" stroke-width="2"/>
-          <text x="50" y="79" text-anchor="middle" font-size="22" font-weight="800" fill="#12355b">1</text>
-          <rect x="108" y="48" width="116" height="44" rx="8" fill="#ffffff" stroke="#cddbe8" stroke-width="2"/>
-          <text x="166" y="79" text-anchor="middle" font-size="22" font-weight="800" fill="#0f766e">2</text>
-          <rect x="232" y="48" width="116" height="44" rx="8" fill="#ffffff" stroke="#cddbe8" stroke-width="2"/>
-          <text x="290" y="79" text-anchor="middle" font-size="22" font-weight="800" fill="#0f766e">3</text>
+          <rect x="0" y="48" width="100" height="44" rx="8" fill="var(--fm-raised)" stroke="var(--fm-m-whole)" stroke-width="2"/>
+          <text x="50" y="79" text-anchor="middle" font-size="22" font-weight="800" fill="var(--fm-primary)">1</text>
+          <rect x="108" y="48" width="116" height="44" rx="8" fill="var(--fm-raised)" stroke="var(--fm-m-whole)" stroke-width="2"/>
+          <text x="166" y="79" text-anchor="middle" font-size="22" font-weight="800" fill="var(--fm-m-part)">2</text>
+          <rect x="232" y="48" width="116" height="44" rx="8" fill="var(--fm-raised)" stroke="var(--fm-m-whole)" stroke-width="2"/>
+          <text x="290" y="79" text-anchor="middle" font-size="22" font-weight="800" fill="var(--fm-m-part)">3</text>
 
           <!-- Row 2 -->
-          <rect x="0" y="98" width="100" height="44" rx="8" fill="#ffffff" stroke="#cddbe8" stroke-width="2"/>
-          <text x="50" y="129" text-anchor="middle" font-size="22" font-weight="800" fill="#12355b">2</text>
-          <rect x="108" y="98" width="116" height="44" rx="8" fill="#ffffff" stroke="#cddbe8" stroke-width="2"/>
-          <text x="166" y="129" text-anchor="middle" font-size="22" font-weight="800" fill="#0f766e">4</text>
-          <rect x="232" y="98" width="116" height="44" rx="8" fill="#ffffff" stroke="#cddbe8" stroke-width="2"/>
-          <text x="290" y="129" text-anchor="middle" font-size="22" font-weight="800" fill="#0f766e">6</text>
+          <rect x="0" y="98" width="100" height="44" rx="8" fill="var(--fm-raised)" stroke="var(--fm-m-whole)" stroke-width="2"/>
+          <text x="50" y="129" text-anchor="middle" font-size="22" font-weight="800" fill="var(--fm-primary)">2</text>
+          <rect x="108" y="98" width="116" height="44" rx="8" fill="var(--fm-raised)" stroke="var(--fm-m-whole)" stroke-width="2"/>
+          <text x="166" y="129" text-anchor="middle" font-size="22" font-weight="800" fill="var(--fm-m-part)">4</text>
+          <rect x="232" y="98" width="116" height="44" rx="8" fill="var(--fm-raised)" stroke="var(--fm-m-whole)" stroke-width="2"/>
+          <text x="290" y="129" text-anchor="middle" font-size="22" font-weight="800" fill="var(--fm-m-part)">6</text>
 
           <!-- Row 3 -->
-          <rect x="0" y="148" width="100" height="44" rx="8" fill="#ffffff" stroke="#cddbe8" stroke-width="2"/>
-          <text x="50" y="179" text-anchor="middle" font-size="22" font-weight="800" fill="#12355b">3</text>
-          <rect x="108" y="148" width="116" height="44" rx="8" fill="#ffffff" stroke="#cddbe8" stroke-width="2"/>
-          <text x="166" y="179" text-anchor="middle" font-size="22" font-weight="800" fill="#0f766e">6</text>
-          <rect x="232" y="148" width="116" height="44" rx="8" fill="#ffffff" stroke="#cddbe8" stroke-width="2"/>
-          <text x="290" y="179" text-anchor="middle" font-size="22" font-weight="800" fill="#0f766e">9</text>
+          <rect x="0" y="148" width="100" height="44" rx="8" fill="var(--fm-raised)" stroke="var(--fm-m-whole)" stroke-width="2"/>
+          <text x="50" y="179" text-anchor="middle" font-size="22" font-weight="800" fill="var(--fm-primary)">3</text>
+          <rect x="108" y="148" width="116" height="44" rx="8" fill="var(--fm-raised)" stroke="var(--fm-m-whole)" stroke-width="2"/>
+          <text x="166" y="179" text-anchor="middle" font-size="22" font-weight="800" fill="var(--fm-m-part)">6</text>
+          <rect x="232" y="148" width="116" height="44" rx="8" fill="var(--fm-raised)" stroke="var(--fm-m-whole)" stroke-width="2"/>
+          <text x="290" y="179" text-anchor="middle" font-size="22" font-weight="800" fill="var(--fm-m-part)">9</text>
 
           <!-- Row 4 -->
-          <rect x="0" y="198" width="100" height="44" rx="8" fill="#ffffff" stroke="#cddbe8" stroke-width="2"/>
-          <text x="50" y="229" text-anchor="middle" font-size="22" font-weight="800" fill="#12355b">4</text>
-          <rect x="108" y="198" width="116" height="44" rx="8" fill="#ffffff" stroke="#cddbe8" stroke-width="2"/>
-          <text x="166" y="229" text-anchor="middle" font-size="22" font-weight="800" fill="#0f766e">8</text>
-          <rect x="232" y="198" width="116" height="44" rx="8" fill="#ffffff" stroke="#cddbe8" stroke-width="2"/>
-          <text x="290" y="229" text-anchor="middle" font-size="22" font-weight="800" fill="#0f766e">12</text>
+          <rect x="0" y="198" width="100" height="44" rx="8" fill="var(--fm-raised)" stroke="var(--fm-m-whole)" stroke-width="2"/>
+          <text x="50" y="229" text-anchor="middle" font-size="22" font-weight="800" fill="var(--fm-primary)">4</text>
+          <rect x="108" y="198" width="116" height="44" rx="8" fill="var(--fm-raised)" stroke="var(--fm-m-whole)" stroke-width="2"/>
+          <text x="166" y="229" text-anchor="middle" font-size="22" font-weight="800" fill="var(--fm-m-part)">8</text>
+          <rect x="232" y="198" width="116" height="44" rx="8" fill="var(--fm-raised)" stroke="var(--fm-m-whole)" stroke-width="2"/>
+          <text x="290" y="229" text-anchor="middle" font-size="22" font-weight="800" fill="var(--fm-m-part)">12</text>
         </g>
 
         <!-- Right Side Rules -->
         <g transform="translate(394, 68)">
           <!-- Multiply Rule -->
-          <rect x="0" y="0" width="212" height="114" rx="12" fill="#ecfdf5" stroke="#10b981" stroke-width="2"/>
-          <text x="16" y="27" font-size="14" font-weight="800" fill="#047857">✔ USE THE SAME FACTOR: ×2</text>
-          <text x="16" y="54" font-size="15" font-weight="700" fill="#12355b">Mix:  2 × 2 = 4</text>
-          <text x="16" y="78" font-size="15" font-weight="700" fill="#12355b">Milk: 3 × 2 = 6</text>
-          <text x="16" y="101" font-size="13" font-weight="700" fill="#047857">Both quantities use ×2.</text>
+          <rect x="0" y="0" width="212" height="114" rx="12" fill="var(--fm-success-tint)" stroke="var(--fm-success)" stroke-width="2"/>
+          <text x="16" y="27" font-size="14" font-weight="800" fill="var(--fm-success-ink)">✔ USE THE SAME FACTOR: ×2</text>
+          <text x="16" y="54" font-size="15" font-weight="700" fill="var(--fm-primary)">Mix:  2 × 2 = 4</text>
+          <text x="16" y="78" font-size="15" font-weight="700" fill="var(--fm-primary)">Milk: 3 × 2 = 6</text>
+          <text x="16" y="101" font-size="13" font-weight="700" fill="var(--fm-success-ink)">Both quantities use ×2.</text>
 
           <!-- Add Contrast Bug -->
-          <rect x="0" y="128" width="212" height="114" rx="12" fill="#fef2f2" stroke="#ef4444" stroke-width="2"/>
-          <text x="16" y="156" font-size="14" font-weight="800" fill="#b91c1c">✗ NEVER ADD (+):</text>
-          <text x="16" y="184" font-size="14" font-weight="700" fill="#12355b">2 + 1 = 3   and   3 + 1 = 4</text>
-          <text x="16" y="208" font-size="15" font-weight="800" fill="#b91c1c">3 : 4 ≠ 2 : 3</text>
-          <text x="16" y="230" font-size="13" font-weight="700" fill="#b91c1c">Adding breaks the ratio!</text>
+          <rect x="0" y="128" width="212" height="114" rx="12" fill="var(--fm-m-unknown-tint)" stroke="var(--fm-m-unknown-edge)" stroke-width="2"/>
+          <text x="16" y="156" font-size="14" font-weight="800" fill="var(--fm-m-unknown)">✗ NEVER ADD (+):</text>
+          <text x="16" y="184" font-size="14" font-weight="700" fill="var(--fm-primary)">2 + 1 = 3   and   3 + 1 = 4</text>
+          <text x="16" y="208" font-size="15" font-weight="800" fill="var(--fm-m-unknown)">3 : 4 ≠ 2 : 3</text>
+          <text x="16" y="230" font-size="13" font-weight="700" fill="var(--fm-m-unknown)">Adding breaks the ratio!</text>
         </g>
 
         <!-- Bottom Summary Card -->
         ${conceptCard(34, 324, 572, 76)}
-        <text x="320" y="356" text-anchor="middle" font-size="22" font-weight="800" fill="#0f766e">Equivalent Ratios:  2 : 3  =  4 : 6  =  6 : 9  =  8 : 12</text>
-        <text x="320" y="384" text-anchor="middle" font-size="15" font-weight="700" fill="#5f6f80">Multiply or divide every quantity in the ratio table by the same scale factor.</text>`,
+        <text x="320" y="356" text-anchor="middle" font-size="22" font-weight="800" fill="var(--fm-m-part)">Equivalent Ratios:  2 : 3  =  4 : 6  =  6 : 9  =  8 : 12</text>
+        <text x="320" y="384" text-anchor="middle" font-size="15" font-weight="700" fill="var(--fm-text-muted)">Multiply or divide every quantity in the ratio table by the same scale factor.</text>`,
       }),
       capEn:
         "Multiply or divide BOTH columns by the exact same scale factor to find equivalent ratios in a ratio table.",
@@ -1249,57 +1256,57 @@ function conceptVisual(config) {
         title: "Graphing Equivalent Ratios / Gráfica de razones",
         body: `
         <!-- Coordinate Grid -->
-        <g stroke="#cbd5e1" stroke-width="1.5">
+        <g stroke="var(--fm-m-whole)" stroke-width="1.5">
           ${[0, 1, 2, 3, 4].map((i) => `<line x1="${ox + i * u}" y1="${oy - 4 * u}" x2="${ox + i * u}" y2="${oy}"/>`).join("")}
           ${[0, 1, 2, 3, 4].map((i) => `<line x1="${ox}" y1="${oy - i * u}" x2="${ox + 4 * u}" y2="${oy - i * u}"/>`).join("")}
         </g>
         <!-- Axes -->
-        <line x1="${ox}" y1="${oy}" x2="${ox + 4 * u + 18}" y2="${oy}" stroke="#12355b" stroke-width="3"/>
-        <line x1="${ox}" y1="${oy}" x2="${ox}" y2="${oy - 4 * u - 18}" stroke="#12355b" stroke-width="3"/>
+        <line x1="${ox}" y1="${oy}" x2="${ox + 4 * u + 18}" y2="${oy}" stroke="var(--fm-primary)" stroke-width="3"/>
+        <line x1="${ox}" y1="${oy}" x2="${ox}" y2="${oy - 4 * u - 18}" stroke="var(--fm-primary)" stroke-width="3"/>
         <!-- Arrowheads -->
-        <path d="M${ox + 4 * u + 18} ${oy - 5} L${ox + 4 * u + 28} ${oy} L${ox + 4 * u + 18} ${oy + 5} Z" fill="#12355b"/>
-        <path d="M${ox - 5} ${oy - 4 * u - 18} L${ox} ${oy - 4 * u - 28} L${ox + 5} ${oy - 4 * u - 18} Z" fill="#12355b"/>
+        <path d="M${ox + 4 * u + 18} ${oy - 5} L${ox + 4 * u + 28} ${oy} L${ox + 4 * u + 18} ${oy + 5} Z" fill="var(--fm-primary)"/>
+        <path d="M${ox - 5} ${oy - 4 * u - 18} L${ox} ${oy - 4 * u - 28} L${ox + 5} ${oy - 4 * u - 18} Z" fill="var(--fm-primary)"/>
         
         <!-- Axis Labels -->
-        <text x="${ox + 2 * u}" y="${oy + 38}" text-anchor="middle" font-size="14" font-weight="800" fill="#12355b">Batches (x-axis)</text>
-        <text x="${ox - 46}" y="${oy - 2 * u}" text-anchor="middle" font-size="14" font-weight="800" fill="#12355b" transform="rotate(-90 ${ox - 46} ${oy - 2 * u})">Milk Cups (y-axis)</text>
+        <text x="${ox + 2 * u}" y="${oy + 38}" text-anchor="middle" font-size="14" font-weight="800" fill="var(--fm-primary)">Batches (x-axis)</text>
+        <text x="${ox - 46}" y="${oy - 2 * u}" text-anchor="middle" font-size="14" font-weight="800" fill="var(--fm-primary)" transform="rotate(-90 ${ox - 46} ${oy - 2 * u})">Milk Cups (y-axis)</text>
 
         <!-- Ticks on x-axis -->
-        ${[0, 1, 2, 3, 4].map((i) => `<text x="${ox + i * u}" y="${oy + 18}" text-anchor="middle" font-size="13" font-weight="700" fill="#64748b">${i}</text>`).join("")}
+        ${[0, 1, 2, 3, 4].map((i) => `<text x="${ox + i * u}" y="${oy + 18}" text-anchor="middle" font-size="13" font-weight="700" fill="var(--fm-text-muted)">${i}</text>`).join("")}
         <!-- Ticks on y-axis (0, 3, 6, 9, 12 cups) -->
-        ${[0, 1, 2, 3, 4].map((i) => `<text x="${ox - 12}" y="${oy - i * u + 5}" text-anchor="end" font-size="13" font-weight="700" fill="#64748b">${i * 3}</text>`).join("")}
+        ${[0, 1, 2, 3, 4].map((i) => `<text x="${ox - 12}" y="${oy - i * u + 5}" text-anchor="end" font-size="13" font-weight="700" fill="var(--fm-text-muted)">${i * 3}</text>`).join("")}
 
         <!-- Straight Ray through Origin -->
-        <line x1="${ox}" y1="${oy}" x2="${ox + 3.8 * u}" y2="${oy - 3.8 * u}" stroke="#0f766e" stroke-width="4"/>
+        <line x1="${ox}" y1="${oy}" x2="${ox + 3.8 * u}" y2="${oy - 3.8 * u}" stroke="var(--fm-m-part)" stroke-width="4"/>
 
         <!-- Points Plotted -->
-        <circle cx="${ox}" cy="${oy}" r="6" fill="#12355b"/>
-        <text x="${ox + 10}" y="${oy - 10}" font-size="13" font-weight="800" fill="#12355b">(0, 0)</text>
-        <circle cx="${ox + u}" cy="${oy - u}" r="7" fill="#0f766e" stroke="#ffffff" stroke-width="2"/>
-        <text x="${ox + u + 10}" y="${oy - u - 6}" font-size="14" font-weight="800" fill="#0f766e">(1, 3)</text>
-        <circle cx="${ox + 2 * u}" cy="${oy - 2 * u}" r="7" fill="#0f766e" stroke="#ffffff" stroke-width="2"/>
-        <text x="${ox + 2 * u + 10}" y="${oy - 2 * u - 6}" font-size="14" font-weight="800" fill="#0f766e">(2, 6)</text>
-        <circle cx="${ox + 3 * u}" cy="${oy - 3 * u}" r="7" fill="#0f766e" stroke="#ffffff" stroke-width="2"/>
-        <text x="${ox + 3 * u + 10}" y="${oy - 3 * u - 6}" font-size="14" font-weight="800" fill="#0f766e">(3, 9)</text>
+        <circle cx="${ox}" cy="${oy}" r="6" fill="var(--fm-primary)"/>
+        <text x="${ox + 10}" y="${oy - 10}" font-size="13" font-weight="800" fill="var(--fm-primary)">(0, 0)</text>
+        <circle cx="${ox + u}" cy="${oy - u}" r="7" fill="var(--fm-m-part)" stroke="var(--fm-border)" stroke-width="2"/>
+        <text x="${ox + u + 10}" y="${oy - u - 6}" font-size="14" font-weight="800" fill="var(--fm-m-part)">(1, 3)</text>
+        <circle cx="${ox + 2 * u}" cy="${oy - 2 * u}" r="7" fill="var(--fm-m-part)" stroke="var(--fm-border)" stroke-width="2"/>
+        <text x="${ox + 2 * u + 10}" y="${oy - 2 * u - 6}" font-size="14" font-weight="800" fill="var(--fm-m-part)">(2, 6)</text>
+        <circle cx="${ox + 3 * u}" cy="${oy - 3 * u}" r="7" fill="var(--fm-m-part)" stroke="var(--fm-border)" stroke-width="2"/>
+        <text x="${ox + 3 * u + 10}" y="${oy - 3 * u - 6}" font-size="14" font-weight="800" fill="var(--fm-m-part)">(3, 9)</text>
 
         <!-- Right Side Explainer Cards -->
         <g transform="translate(324, 68)">
           <!-- Ordered Pairs Card -->
           ${conceptCard(0, 0, 282, 140)}
-          <text x="14" y="26" font-size="16" font-weight="800" fill="#12355b">Ordered Pairs from Ratio Table:</text>
-          <text x="14" y="54" font-size="15" font-weight="700" fill="#0f766e">1 batch : 3 cups  →  (1, 3)</text>
-          <text x="14" y="78" font-size="15" font-weight="700" fill="#0f766e">2 batches : 6 cups  →  (2, 6)</text>
-          <text x="14" y="102" font-size="15" font-weight="700" fill="#0f766e">3 batches : 9 cups  →  (3, 9)</text>
-          <text x="14" y="126" font-size="13" font-weight="700" fill="#5f6f80">(x = across on x-axis, y = up on y-axis)</text>
+          <text x="14" y="26" font-size="16" font-weight="800" fill="var(--fm-primary)">Ordered Pairs from Ratio Table:</text>
+          <text x="14" y="54" font-size="15" font-weight="700" fill="var(--fm-m-part)">1 batch : 3 cups  →  (1, 3)</text>
+          <text x="14" y="78" font-size="15" font-weight="700" fill="var(--fm-m-part)">2 batches : 6 cups  →  (2, 6)</text>
+          <text x="14" y="102" font-size="15" font-weight="700" fill="var(--fm-m-part)">3 batches : 9 cups  →  (3, 9)</text>
+          <text x="14" y="126" font-size="13" font-weight="700" fill="var(--fm-text-muted)">(x = across on x-axis, y = up on y-axis)</text>
 
           <!-- Key Rules Card -->
-          <rect x="0" y="152" width="282" height="172" rx="14" fill="#ecfdf5" stroke="#10b981" stroke-width="2"/>
-          <text x="14" y="178" font-size="16" font-weight="800" fill="#047857">✔ 2 BIG CLUES FOR RATIOS:</text>
-          <text x="14" y="206" font-size="15" font-weight="800" fill="#12355b">1. Starts at the Origin (0, 0)</text>
-          <text x="14" y="226" font-size="13" font-weight="600" fill="#5f6f80">0 batches need 0 cups of milk.</text>
-          <text x="14" y="254" font-size="15" font-weight="800" fill="#12355b">2. Forms a Straight Ray</text>
-          <text x="14" y="274" font-size="13" font-weight="600" fill="#5f6f80">Points line up in a straight path.</text>
-          <text x="14" y="304" font-size="14" font-weight="800" fill="#047857">If it curves, it is NOT equivalent!</text>
+          <rect x="0" y="152" width="282" height="172" rx="14" fill="var(--fm-success-tint)" stroke="var(--fm-success)" stroke-width="2"/>
+          <text x="14" y="178" font-size="16" font-weight="800" fill="var(--fm-success-ink)">✔ 2 BIG CLUES FOR RATIOS:</text>
+          <text x="14" y="206" font-size="15" font-weight="800" fill="var(--fm-primary)">1. Starts at the Origin (0, 0)</text>
+          <text x="14" y="226" font-size="13" font-weight="600" fill="var(--fm-text-muted)">0 batches need 0 cups of milk.</text>
+          <text x="14" y="254" font-size="15" font-weight="800" fill="var(--fm-primary)">2. Forms a Straight Ray</text>
+          <text x="14" y="274" font-size="13" font-weight="600" fill="var(--fm-text-muted)">Points line up in a straight path.</text>
+          <text x="14" y="304" font-size="14" font-weight="800" fill="var(--fm-success-ink)">If it curves, it is NOT equivalent!</text>
         </g>`,
       }),
       capEn:
@@ -1318,14 +1325,14 @@ function conceptVisual(config) {
         title: "Compare cocoa recipes / Comparar recetas de chocolate",
         body: `
         ${conceptCard(34, 70, 572, 96)}
-        <text x="54" y="102" font-size="18" font-weight="800" fill="#12355b">Chef Reyes: 3 cocoa for 5 milk</text>
-        <text x="54" y="134" font-size="18" font-weight="700" fill="#0f766e">Multiply both by 7 → 21 cocoa for 35 milk</text>
+        <text x="54" y="102" font-size="18" font-weight="800" fill="var(--fm-primary)">Chef Reyes: 3 cocoa for 5 milk</text>
+        <text x="54" y="134" font-size="18" font-weight="700" fill="var(--fm-m-part)">Multiply both by 7 → 21 cocoa for 35 milk</text>
         ${conceptCard(34, 180, 572, 96)}
-        <text x="54" y="212" font-size="18" font-weight="800" fill="#12355b">Chef Tran: 4 cocoa for 7 milk</text>
-        <text x="54" y="244" font-size="18" font-weight="700" fill="#6366f1">Multiply both by 5 → 20 cocoa for 35 milk</text>
-        <rect x="34" y="290" width="572" height="76" rx="14" fill="#fffbeb" stroke="#f59e0b" stroke-width="2"/>
-        <text x="320" y="320" text-anchor="middle" font-size="19" font-weight="800" fill="#12355b">Same milk: 35 ounces each</text>
-        <text x="320" y="348" text-anchor="middle" font-size="18" font-weight="800" fill="#b45309">21 &gt; 20, so Reyes has more cocoa.</text>`,
+        <text x="54" y="212" font-size="18" font-weight="800" fill="var(--fm-primary)">Chef Tran: 4 cocoa for 7 milk</text>
+        <text x="54" y="244" font-size="18" font-weight="700" fill="var(--fm-m-whole)">Multiply both by 5 → 20 cocoa for 35 milk</text>
+        <rect x="34" y="290" width="572" height="76" rx="14" fill="var(--fm-m-unknown-tint)" stroke="var(--fm-m-unknown-edge)" stroke-width="2"/>
+        <text x="320" y="320" text-anchor="middle" font-size="19" font-weight="800" fill="var(--fm-primary)">Same milk: 35 ounces each</text>
+        <text x="320" y="348" text-anchor="middle" font-size="18" font-weight="800" fill="var(--fm-m-unknown)">21 &gt; 20, so Reyes has more cocoa.</text>`,
       }),
       capEn:
         "Make the milk amounts equal before comparing the cocoa. Reyes has 21 tablespoons for 35 ounces; Tran has 20 for 35 ounces.",
@@ -1346,54 +1353,54 @@ function conceptVisual(config) {
         <!-- Ladder Top: 3 Unit Boxes -->
         <g transform="translate(44, 68)">
           <!-- Yards -->
-          <rect x="0" y="0" width="130" height="60" rx="10" fill="#12355b"/>
-          <text x="65" y="36" text-anchor="middle" font-size="20" font-weight="800" fill="#ffffff">Yards (yd)</text>
+          <rect x="0" y="0" width="130" height="60" rx="10" fill="var(--fm-primary)"/>
+          <text x="65" y="36" text-anchor="middle" font-size="20" font-weight="800" fill="var(--fm-text-inverse)">Yards (yd)</text>
           
           <!-- Arrow 1: × 3 -->
-          <path d="M142 22 L198 22" stroke="#0f766e" stroke-width="3"/>
-          <path d="M192 16 L202 22 L192 28 Z" fill="#0f766e"/>
-          <text x="170" y="16" text-anchor="middle" font-size="14" font-weight="800" fill="#0f766e">× 3</text>
+          <path d="M142 22 L198 22" stroke="var(--fm-m-part)" stroke-width="3"/>
+          <path d="M192 16 L202 22 L192 28 Z" fill="var(--fm-m-part)"/>
+          <text x="170" y="16" text-anchor="middle" font-size="14" font-weight="800" fill="var(--fm-m-part)">× 3</text>
           <!-- Reverse Arrow: ÷ 3 -->
-          <path d="M198 42 L142 42" stroke="#d9795d" stroke-width="2.5"/>
-          <path d="M148 36 L138 42 L148 48 Z" fill="#d9795d"/>
-          <text x="170" y="58" text-anchor="middle" font-size="13" font-weight="800" fill="#d9795d">÷ 3</text>
+          <path d="M198 42 L142 42" stroke="var(--fm-m-unknown-edge)" stroke-width="2.5"/>
+          <path d="M148 36 L138 42 L148 48 Z" fill="var(--fm-m-unknown)"/>
+          <text x="170" y="58" text-anchor="middle" font-size="13" font-weight="800" fill="var(--fm-m-unknown)">÷ 3</text>
 
           <!-- Feet -->
-          <rect x="210" y="0" width="130" height="60" rx="10" fill="#0f766e"/>
-          <text x="275" y="36" text-anchor="middle" font-size="20" font-weight="800" fill="#ffffff">Feet (ft)</text>
+          <rect x="210" y="0" width="130" height="60" rx="10" fill="var(--fm-m-part)"/>
+          <text x="275" y="36" text-anchor="middle" font-size="20" font-weight="800" fill="var(--fm-text-inverse)">Feet (ft)</text>
 
           <!-- Arrow 2: × 12 -->
-          <path d="M352 22 L408 22" stroke="#0f766e" stroke-width="3"/>
-          <path d="M402 16 L412 22 L402 28 Z" fill="#0f766e"/>
-          <text x="380" y="16" text-anchor="middle" font-size="14" font-weight="800" fill="#0f766e">× 12</text>
+          <path d="M352 22 L408 22" stroke="var(--fm-m-part)" stroke-width="3"/>
+          <path d="M402 16 L412 22 L402 28 Z" fill="var(--fm-m-part)"/>
+          <text x="380" y="16" text-anchor="middle" font-size="14" font-weight="800" fill="var(--fm-m-part)">× 12</text>
           <!-- Reverse Arrow: ÷ 12 -->
-          <path d="M408 42 L352 42" stroke="#d9795d" stroke-width="2.5"/>
-          <path d="M358 36 L348 42 L358 48 Z" fill="#d9795d"/>
-          <text x="380" y="58" text-anchor="middle" font-size="13" font-weight="800" fill="#d9795d">÷ 12</text>
+          <path d="M408 42 L352 42" stroke="var(--fm-m-unknown-edge)" stroke-width="2.5"/>
+          <path d="M358 36 L348 42 L358 48 Z" fill="var(--fm-m-unknown)"/>
+          <text x="380" y="58" text-anchor="middle" font-size="13" font-weight="800" fill="var(--fm-m-unknown)">÷ 12</text>
 
           <!-- Inches -->
-          <rect x="420" y="0" width="130" height="60" rx="10" fill="#d97706"/>
-          <text x="485" y="36" text-anchor="middle" font-size="20" font-weight="800" fill="#ffffff">Inches (in)</text>
+          <rect x="420" y="0" width="130" height="60" rx="10" fill="var(--fm-m-unknown)"/>
+          <text x="485" y="36" text-anchor="middle" font-size="20" font-weight="800" fill="var(--fm-text-inverse)">Inches (in)</text>
         </g>
 
         <!-- Worked Example Card -->
         ${conceptCard(34, 156, 572, 136)}
-        <text x="54" y="186" font-size="17" font-weight="800" fill="#12355b">Example: Convert 4 yards to inches</text>
-        <text x="54" y="216" font-size="16" font-weight="700" fill="#0f766e">Step 1: 4 yards × 3 = 12 feet  (ratio of feet to yards = 3:1)</text>
-        <text x="54" y="244" font-size="16" font-weight="700" fill="#0f766e">Step 2: 12 feet × 12 = 144 inches  (ratio of inches to feet = 12:1)</text>
-        <text x="54" y="274" font-size="20" font-weight="800" fill="#12355b">Result: <tspan fill="#0f766e">4 yards = 144 inches</tspan></text>
+        <text x="54" y="186" font-size="17" font-weight="800" fill="var(--fm-primary)">Example: Convert 4 yards to inches</text>
+        <text x="54" y="216" font-size="16" font-weight="700" fill="var(--fm-m-part)">Step 1: 4 yards × 3 = 12 feet  (ratio of feet to yards = 3:1)</text>
+        <text x="54" y="244" font-size="16" font-weight="700" fill="var(--fm-m-part)">Step 2: 12 feet × 12 = 144 inches  (ratio of inches to feet = 12:1)</text>
+        <text x="54" y="274" font-size="20" font-weight="800" fill="var(--fm-primary)">Result: <tspan fill="var(--fm-m-part)">4 yards = 144 inches</tspan></text>
 
         <!-- Rule Card -->
         <g transform="translate(34, 308)">
-          <rect x="0" y="0" width="276" height="92" rx="12" fill="#ecfdf5" stroke="#10b981" stroke-width="2"/>
-          <text x="138" y="34" text-anchor="middle" font-size="16" font-weight="800" fill="#047857">BIGGER → SMALLER</text>
-          <text x="138" y="64" text-anchor="middle" font-size="18" font-weight="800" fill="#12355b">MULTIPLY  (×)</text>
-          <text x="138" y="82" text-anchor="middle" font-size="12" font-weight="700" fill="#5f6f80">Yards to feet: multiply by 3</text>
+          <rect x="0" y="0" width="276" height="92" rx="12" fill="var(--fm-success-tint)" stroke="var(--fm-success)" stroke-width="2"/>
+          <text x="138" y="34" text-anchor="middle" font-size="16" font-weight="800" fill="var(--fm-success-ink)">BIGGER → SMALLER</text>
+          <text x="138" y="64" text-anchor="middle" font-size="18" font-weight="800" fill="var(--fm-primary)">MULTIPLY  (×)</text>
+          <text x="138" y="82" text-anchor="middle" font-size="12" font-weight="700" fill="var(--fm-text-muted)">Yards to feet: multiply by 3</text>
 
-          <rect x="296" y="0" width="276" height="92" rx="12" fill="#fff7ed" stroke="#f97316" stroke-width="2"/>
-          <text x="434" y="34" text-anchor="middle" font-size="16" font-weight="800" fill="#c2410c">SMALLER → BIGGER</text>
-          <text x="434" y="64" text-anchor="middle" font-size="18" font-weight="800" fill="#12355b">DIVIDE  (÷)</text>
-          <text x="434" y="82" text-anchor="middle" font-size="12" font-weight="700" fill="#5f6f80">Inches to feet: divide by 12</text>
+          <rect x="296" y="0" width="276" height="92" rx="12" fill="var(--fm-m-unknown-tint)" stroke="var(--fm-m-unknown-edge)" stroke-width="2"/>
+          <text x="434" y="34" text-anchor="middle" font-size="16" font-weight="800" fill="var(--fm-m-unknown)">SMALLER → BIGGER</text>
+          <text x="434" y="64" text-anchor="middle" font-size="18" font-weight="800" fill="var(--fm-primary)">DIVIDE  (÷)</text>
+          <text x="434" y="82" text-anchor="middle" font-size="12" font-weight="700" fill="var(--fm-text-muted)">Inches to feet: divide by 12</text>
         </g>`,
       }),
       capEn:
@@ -1414,41 +1421,41 @@ function conceptVisual(config) {
         body: `
         <!-- Distance Dual Bar -->
         ${conceptCard(34, 68, 572, 108)}
-        <rect x="50" y="80" width="160" height="24" rx="6" fill="#12355b"/>
-        <text x="130" y="97" text-anchor="middle" font-size="13" font-weight="800" fill="#ffffff">DISTANCE (mi ↔ km)</text>
-        <text x="226" y="97" font-size="16" font-weight="800" fill="#d97706">1 mile ≈ 1.61 kilometers</text>
+        <rect x="50" y="80" width="160" height="24" rx="6" fill="var(--fm-primary)"/>
+        <text x="130" y="97" text-anchor="middle" font-size="13" font-weight="800" fill="var(--fm-text-inverse)">DISTANCE (mi ↔ km)</text>
+        <text x="226" y="97" font-size="16" font-weight="800" fill="var(--fm-m-unknown)">1 mile ≈ 1.61 kilometers</text>
         <g transform="translate(50, 116)">
-          <rect x="0" y="0" width="180" height="36" rx="8" fill="#e0e7ff" stroke="#6366f1" stroke-width="1.5"/>
-          <text x="90" y="23" text-anchor="middle" font-size="15" font-weight="800" fill="#4338ca">5 miles</text>
-          <text x="200" y="23" font-size="20" font-weight="800" fill="#12355b">×</text>
-          <rect x="226" y="0" width="90" height="36" rx="8" fill="#fef3c7" stroke="#f59e0b" stroke-width="1.5"/>
-          <text x="271" y="23" text-anchor="middle" font-size="15" font-weight="800" fill="#b45309">1.61</text>
-          <text x="330" y="23" font-size="20" font-weight="800" fill="#12355b">≈</text>
-          <rect x="354" y="0" width="168" height="36" rx="8" fill="#dcfce7" stroke="#16a34a" stroke-width="1.5"/>
-          <text x="438" y="23" text-anchor="middle" font-size="16" font-weight="800" fill="#15803d">8.05 kilometers</text>
+          <rect x="0" y="0" width="180" height="36" rx="8" fill="var(--fm-m-whole-tint)" stroke="var(--fm-m-whole)" stroke-width="1.5"/>
+          <text x="90" y="23" text-anchor="middle" font-size="15" font-weight="800" fill="var(--fm-m-whole)">5 miles</text>
+          <text x="200" y="23" font-size="20" font-weight="800" fill="var(--fm-primary)">×</text>
+          <rect x="226" y="0" width="90" height="36" rx="8" fill="var(--fm-m-unknown-tint)" stroke="var(--fm-m-unknown-edge)" stroke-width="1.5"/>
+          <text x="271" y="23" text-anchor="middle" font-size="15" font-weight="800" fill="var(--fm-m-unknown)">1.61</text>
+          <text x="330" y="23" font-size="20" font-weight="800" fill="var(--fm-primary)">≈</text>
+          <rect x="354" y="0" width="168" height="36" rx="8" fill="var(--fm-success-tint)" stroke="var(--fm-success)" stroke-width="1.5"/>
+          <text x="438" y="23" text-anchor="middle" font-size="16" font-weight="800" fill="var(--fm-success-ink)">8.05 kilometers</text>
         </g>
 
         <!-- Weight Dual Bar -->
         ${conceptCard(34, 188, 572, 108)}
-        <rect x="50" y="200" width="160" height="24" rx="6" fill="#0f766e"/>
-        <text x="130" y="217" text-anchor="middle" font-size="13" font-weight="800" fill="#ffffff">WEIGHT (kg ↔ lb)</text>
-        <text x="226" y="217" font-size="16" font-weight="800" fill="#d97706">1 kilogram ≈ 2.20 pounds</text>
+        <rect x="50" y="200" width="160" height="24" rx="6" fill="var(--fm-m-part)"/>
+        <text x="130" y="217" text-anchor="middle" font-size="13" font-weight="800" fill="var(--fm-text-inverse)">WEIGHT (kg ↔ lb)</text>
+        <text x="226" y="217" font-size="16" font-weight="800" fill="var(--fm-m-unknown)">1 kilogram ≈ 2.20 pounds</text>
         <g transform="translate(50, 236)">
-          <rect x="0" y="0" width="180" height="36" rx="8" fill="#e0e7ff" stroke="#6366f1" stroke-width="1.5"/>
-          <text x="90" y="23" text-anchor="middle" font-size="15" font-weight="800" fill="#4338ca">10 kilograms</text>
-          <text x="200" y="23" font-size="20" font-weight="800" fill="#12355b">×</text>
-          <rect x="226" y="0" width="90" height="36" rx="8" fill="#fef3c7" stroke="#f59e0b" stroke-width="1.5"/>
-          <text x="271" y="23" text-anchor="middle" font-size="15" font-weight="800" fill="#b45309">2.20</text>
-          <text x="330" y="23" font-size="20" font-weight="800" fill="#12355b">≈</text>
-          <rect x="354" y="0" width="168" height="36" rx="8" fill="#dcfce7" stroke="#16a34a" stroke-width="1.5"/>
-          <text x="438" y="23" text-anchor="middle" font-size="16" font-weight="800" fill="#15803d">22.0 pounds</text>
+          <rect x="0" y="0" width="180" height="36" rx="8" fill="var(--fm-m-whole-tint)" stroke="var(--fm-m-whole)" stroke-width="1.5"/>
+          <text x="90" y="23" text-anchor="middle" font-size="15" font-weight="800" fill="var(--fm-m-whole)">10 kilograms</text>
+          <text x="200" y="23" font-size="20" font-weight="800" fill="var(--fm-primary)">×</text>
+          <rect x="226" y="0" width="90" height="36" rx="8" fill="var(--fm-m-unknown-tint)" stroke="var(--fm-m-unknown-edge)" stroke-width="1.5"/>
+          <text x="271" y="23" text-anchor="middle" font-size="15" font-weight="800" fill="var(--fm-m-unknown)">2.20</text>
+          <text x="330" y="23" font-size="20" font-weight="800" fill="var(--fm-primary)">≈</text>
+          <rect x="354" y="0" width="168" height="36" rx="8" fill="var(--fm-success-tint)" stroke="var(--fm-success)" stroke-width="1.5"/>
+          <text x="438" y="23" text-anchor="middle" font-size="16" font-weight="800" fill="var(--fm-success-ink)">22.0 pounds</text>
         </g>
 
         <!-- Bottom Callout -->
-        <rect x="34" y="308" width="572" height="92" rx="14" fill="#fffbeb" stroke="#f59e0b" stroke-width="2"/>
-        <text x="320" y="338" text-anchor="middle" font-size="17" font-weight="800" fill="#b45309">Notice the wavy ≈ symbol: Between systems, conversions are approximate!</text>
-        <text x="320" y="366" text-anchor="middle" font-size="15" font-weight="700" fill="#12355b">Set up an equivalent ratio with the conversion factor and multiply or divide.</text>
-        <text x="320" y="386" text-anchor="middle" font-size="14" font-weight="600" fill="#5f6f80">Ratio benchmarks: 1 mi ≈ 1.61 km   ·   1 kg ≈ 2.2 lb   ·   1 in ≈ 2.54 cm</text>`,
+        <rect x="34" y="308" width="572" height="92" rx="14" fill="var(--fm-m-unknown-tint)" stroke="var(--fm-m-unknown-edge)" stroke-width="2"/>
+        <text x="320" y="338" text-anchor="middle" font-size="17" font-weight="800" fill="var(--fm-m-unknown)">Notice the wavy ≈ symbol: Between systems, conversions are approximate!</text>
+        <text x="320" y="366" text-anchor="middle" font-size="15" font-weight="700" fill="var(--fm-primary)">Set up an equivalent ratio with the conversion factor and multiply or divide.</text>
+        <text x="320" y="386" text-anchor="middle" font-size="14" font-weight="600" fill="var(--fm-text-muted)">Ratio benchmarks: 1 mi ≈ 1.61 km   ·   1 kg ≈ 2.2 lb   ·   1 in ≈ 2.54 cm</text>`,
       }),
       capEn:
         "Conversions between measurement systems are approximate (≈). Set up an equivalent ratio with the conversion rate to solve.",
@@ -1468,40 +1475,40 @@ function conceptVisual(config) {
         body: `
         <!-- Problem Header Card -->
         ${conceptCard(34, 68, 572, 60)}
-        <text x="320" y="104" text-anchor="middle" font-size="18" font-weight="800" fill="#12355b">Problem: 6 movie tickets cost $72. How much do 9 tickets cost?</text>
+        <text x="320" y="104" text-anchor="middle" font-size="18" font-weight="800" fill="var(--fm-primary)">Problem: 6 movie tickets cost $72. How much do 9 tickets cost?</text>
 
         <!-- 2-Step Side-by-Side Cards -->
         <g transform="translate(34, 140)">
           <!-- Step 1 -->
-          <rect x="0" y="0" width="272" height="152" rx="14" fill="#ffffff" stroke="#0f766e" stroke-width="2"/>
-          <rect x="16" y="14" width="144" height="26" rx="6" fill="#0f766e"/>
-          <text x="88" y="32" text-anchor="middle" font-size="13" font-weight="800" fill="#ffffff">STEP 1: DIVIDE TO 1</text>
-          <text x="16" y="68" font-size="16" font-weight="700" fill="#5f6f80">Find the Unit Rate (Cost for 1):</text>
-          <text x="16" y="100" font-size="24" font-weight="800" fill="#12355b">$72 ÷ 6 tickets =</text>
-          <text x="16" y="132" font-size="26" font-weight="800" fill="#0f766e">$12 per ticket</text>
+          <rect x="0" y="0" width="272" height="152" rx="14" fill="var(--fm-raised)" stroke="var(--fm-m-part)" stroke-width="2"/>
+          <rect x="16" y="14" width="144" height="26" rx="6" fill="var(--fm-m-part)"/>
+          <text x="88" y="32" text-anchor="middle" font-size="13" font-weight="800" fill="var(--fm-text-inverse)">STEP 1: DIVIDE TO 1</text>
+          <text x="16" y="68" font-size="16" font-weight="700" fill="var(--fm-text-muted)">Find the Unit Rate (Cost for 1):</text>
+          <text x="16" y="100" font-size="24" font-weight="800" fill="var(--fm-primary)">$72 ÷ 6 tickets =</text>
+          <text x="16" y="132" font-size="26" font-weight="800" fill="var(--fm-m-part)">$12 per ticket</text>
 
           <!-- Step 2 -->
-          <rect x="300" y="0" width="272" height="152" rx="14" fill="#ffffff" stroke="#10b981" stroke-width="2"/>
-          <rect x="316" y="14" width="190" height="26" rx="6" fill="#10b981"/>
-          <text x="411" y="32" text-anchor="middle" font-size="13" font-weight="800" fill="#ffffff">STEP 2: MULTIPLY TO TARGET</text>
-          <text x="316" y="68" font-size="16" font-weight="700" fill="#5f6f80">Scale to the target amount:</text>
-          <text x="316" y="100" font-size="24" font-weight="800" fill="#12355b">$12 × 9 tickets =</text>
-          <text x="316" y="132" font-size="26" font-weight="800" fill="#15803d">$108 for 9 tickets</text>
+          <rect x="300" y="0" width="272" height="152" rx="14" fill="var(--fm-raised)" stroke="var(--fm-success)" stroke-width="2"/>
+          <rect x="316" y="14" width="190" height="26" rx="6" fill="var(--fm-success)"/>
+          <text x="411" y="32" text-anchor="middle" font-size="13" font-weight="800" fill="var(--fm-text-inverse)">STEP 2: MULTIPLY TO TARGET</text>
+          <text x="316" y="68" font-size="16" font-weight="700" fill="var(--fm-text-muted)">Scale to the target amount:</text>
+          <text x="316" y="100" font-size="24" font-weight="800" fill="var(--fm-primary)">$12 × 9 tickets =</text>
+          <text x="316" y="132" font-size="26" font-weight="800" fill="var(--fm-success-ink)">$108 for 9 tickets</text>
         </g>
 
         <!-- Visual Bridge Flow Banner -->
         <g transform="translate(34, 306)">
-          <rect x="0" y="0" width="572" height="96" rx="14" fill="#f0fdfa" stroke="#0f766e" stroke-width="2"/>
-          <text x="286" y="30" text-anchor="middle" font-size="15" font-weight="800" fill="#0f766e">THE 2-STEP RATIO BRIDGE FLOW</text>
-          <text x="64" y="68" text-anchor="middle" font-size="16" font-weight="800" fill="#12355b">6 Tickets ($72)</text>
-          <path d="M142 62 L200 62" stroke="#0f766e" stroke-width="3"/>
-          <path d="M194 56 L204 62 L194 68 Z" fill="#0f766e"/>
-          <text x="171" y="52" text-anchor="middle" font-size="13" font-weight="800" fill="#0f766e">÷ 6</text>
-          <text x="286" y="68" text-anchor="middle" font-size="16" font-weight="800" fill="#0f766e">1 Ticket ($12)</text>
-          <path d="M372 62 L430 62" stroke="#10b981" stroke-width="3"/>
-          <path d="M424 56 L434 62 L424 68 Z" fill="#10b981"/>
-          <text x="401" y="52" text-anchor="middle" font-size="13" font-weight="800" fill="#10b981">× 9</text>
-          <text x="504" y="68" text-anchor="middle" font-size="16" font-weight="800" fill="#15803d">9 Tickets ($108)</text>
+          <rect x="0" y="0" width="572" height="96" rx="14" fill="var(--fm-success-tint)" stroke="var(--fm-m-part)" stroke-width="2"/>
+          <text x="286" y="30" text-anchor="middle" font-size="15" font-weight="800" fill="var(--fm-m-part)">THE 2-STEP RATIO BRIDGE FLOW</text>
+          <text x="64" y="68" text-anchor="middle" font-size="16" font-weight="800" fill="var(--fm-primary)">6 Tickets ($72)</text>
+          <path d="M142 62 L200 62" stroke="var(--fm-m-part)" stroke-width="3"/>
+          <path d="M194 56 L204 62 L194 68 Z" fill="var(--fm-m-part)"/>
+          <text x="171" y="52" text-anchor="middle" font-size="13" font-weight="800" fill="var(--fm-m-part)">÷ 6</text>
+          <text x="286" y="68" text-anchor="middle" font-size="16" font-weight="800" fill="var(--fm-m-part)">1 Ticket ($12)</text>
+          <path d="M372 62 L430 62" stroke="var(--fm-success)" stroke-width="3"/>
+          <path d="M424 56 L434 62 L424 68 Z" fill="var(--fm-success)"/>
+          <text x="401" y="52" text-anchor="middle" font-size="13" font-weight="800" fill="var(--fm-success-ink)">× 9</text>
+          <text x="504" y="68" text-anchor="middle" font-size="16" font-weight="800" fill="var(--fm-success-ink)">9 Tickets ($108)</text>
         </g>`,
       }),
       capEn:
@@ -1522,55 +1529,55 @@ function conceptVisual(config) {
         body: `
         <!-- Top Tape Diagrams -->
         ${conceptCard(34, 68, 572, 136)}
-        <text x="50" y="94" font-size="15" font-weight="800" fill="#12355b">Ratio 2 : 5 (Base Ratio)</text>
+        <text x="50" y="94" font-size="15" font-weight="800" fill="var(--fm-primary)">Ratio 2 : 5 (Base Ratio)</text>
         <g transform="translate(50, 102)">
-          <rect x="0" y="0" width="46" height="24" rx="5" fill="#0d9488"/>
-          <rect x="50" y="0" width="46" height="24" rx="5" fill="#0d9488"/>
-          <rect x="108" y="0" width="46" height="24" rx="5" fill="#f59e0b"/>
-          <rect x="158" y="0" width="46" height="24" rx="5" fill="#f59e0b"/>
-          <rect x="208" y="0" width="46" height="24" rx="5" fill="#f59e0b"/>
-          <rect x="258" y="0" width="46" height="24" rx="5" fill="#f59e0b"/>
-          <rect x="308" y="0" width="46" height="24" rx="5" fill="#f59e0b"/>
-          <text x="380" y="18" font-size="16" font-weight="800" fill="#0f766e">2 parts to 5 parts</text>
+          <rect x="0" y="0" width="46" height="24" rx="5" fill="var(--fm-m-part)"/>
+          <rect x="50" y="0" width="46" height="24" rx="5" fill="var(--fm-m-part)"/>
+          <rect x="108" y="0" width="46" height="24" rx="5" fill="var(--fm-m-unknown)"/>
+          <rect x="158" y="0" width="46" height="24" rx="5" fill="var(--fm-m-unknown)"/>
+          <rect x="208" y="0" width="46" height="24" rx="5" fill="var(--fm-m-unknown)"/>
+          <rect x="258" y="0" width="46" height="24" rx="5" fill="var(--fm-m-unknown)"/>
+          <rect x="308" y="0" width="46" height="24" rx="5" fill="var(--fm-m-unknown)"/>
+          <text x="380" y="18" font-size="16" font-weight="800" fill="var(--fm-m-part)">2 parts to 5 parts</text>
         </g>
-        <text x="50" y="154" font-size="15" font-weight="800" fill="#12355b">Ratio 4 : 10 (Scaled up by 2)</text>
+        <text x="50" y="154" font-size="15" font-weight="800" fill="var(--fm-primary)">Ratio 4 : 10 (Scaled up by 2)</text>
         <g transform="translate(50, 162)">
-          <rect x="0" y="0" width="22" height="22" rx="4" fill="#0d9488"/>
-          <rect x="25" y="0" width="22" height="22" rx="4" fill="#0d9488"/>
-          <rect x="50" y="0" width="22" height="22" rx="4" fill="#0d9488"/>
-          <rect x="75" y="0" width="22" height="22" rx="4" fill="#0d9488"/>
-          <rect x="108" y="0" width="22" height="22" rx="4" fill="#f59e0b"/>
-          <rect x="133" y="0" width="22" height="22" rx="4" fill="#f59e0b"/>
-          <rect x="158" y="0" width="22" height="22" rx="4" fill="#f59e0b"/>
-          <rect x="183" y="0" width="22" height="22" rx="4" fill="#f59e0b"/>
-          <rect x="208" y="0" width="22" height="22" rx="4" fill="#f59e0b"/>
-          <rect x="233" y="0" width="22" height="22" rx="4" fill="#f59e0b"/>
-          <rect x="258" y="0" width="22" height="22" rx="4" fill="#f59e0b"/>
-          <rect x="283" y="0" width="22" height="22" rx="4" fill="#f59e0b"/>
-          <rect x="308" y="0" width="22" height="22" rx="4" fill="#f59e0b"/>
-          <rect x="333" y="0" width="22" height="22" rx="4" fill="#f59e0b"/>
-          <text x="380" y="17" font-size="16" font-weight="800" fill="#0f766e">4 parts to 10 parts (Equal!)</text>
+          <rect x="0" y="0" width="22" height="22" rx="4" fill="var(--fm-m-part)"/>
+          <rect x="25" y="0" width="22" height="22" rx="4" fill="var(--fm-m-part)"/>
+          <rect x="50" y="0" width="22" height="22" rx="4" fill="var(--fm-m-part)"/>
+          <rect x="75" y="0" width="22" height="22" rx="4" fill="var(--fm-m-part)"/>
+          <rect x="108" y="0" width="22" height="22" rx="4" fill="var(--fm-m-unknown)"/>
+          <rect x="133" y="0" width="22" height="22" rx="4" fill="var(--fm-m-unknown)"/>
+          <rect x="158" y="0" width="22" height="22" rx="4" fill="var(--fm-m-unknown)"/>
+          <rect x="183" y="0" width="22" height="22" rx="4" fill="var(--fm-m-unknown)"/>
+          <rect x="208" y="0" width="22" height="22" rx="4" fill="var(--fm-m-unknown)"/>
+          <rect x="233" y="0" width="22" height="22" rx="4" fill="var(--fm-m-unknown)"/>
+          <rect x="258" y="0" width="22" height="22" rx="4" fill="var(--fm-m-unknown)"/>
+          <rect x="283" y="0" width="22" height="22" rx="4" fill="var(--fm-m-unknown)"/>
+          <rect x="308" y="0" width="22" height="22" rx="4" fill="var(--fm-m-unknown)"/>
+          <rect x="333" y="0" width="22" height="22" rx="4" fill="var(--fm-m-unknown)"/>
+          <text x="380" y="17" font-size="16" font-weight="800" fill="var(--fm-m-part)">4 parts to 10 parts (Equal!)</text>
         </g>
 
         <!-- Bottom Strategy Cards -->
         <g transform="translate(34, 218)">
           <!-- Scale UP Card -->
-          <rect x="0" y="0" width="276" height="184" rx="14" fill="#ffffff" stroke="#10b981" stroke-width="2"/>
-          <rect x="16" y="14" width="170" height="26" rx="6" fill="#10b981"/>
-          <text x="101" y="32" text-anchor="middle" font-size="14" font-weight="800" fill="#ffffff">SCALE UP (MULTIPLY)</text>
-          <text x="16" y="68" font-size="16" font-weight="700" fill="#5f6f80">Multiply both terms by 3:</text>
-          <text x="16" y="104" font-size="28" font-weight="800" fill="#12355b">3 : 4  =  9 : 12</text>
-          <text x="16" y="136" font-size="15" font-weight="700" fill="#047857">3 × 3 = 9   and   4 × 3 = 12</text>
-          <text x="16" y="162" font-size="14" font-weight="600" fill="#5f6f80">Scale factor is 3.</text>
+          <rect x="0" y="0" width="276" height="184" rx="14" fill="var(--fm-raised)" stroke="var(--fm-success)" stroke-width="2"/>
+          <rect x="16" y="14" width="170" height="26" rx="6" fill="var(--fm-success)"/>
+          <text x="101" y="32" text-anchor="middle" font-size="14" font-weight="800" fill="var(--fm-text-inverse)">SCALE UP (MULTIPLY)</text>
+          <text x="16" y="68" font-size="16" font-weight="700" fill="var(--fm-text-muted)">Multiply both terms by 3:</text>
+          <text x="16" y="104" font-size="28" font-weight="800" fill="var(--fm-primary)">3 : 4  =  9 : 12</text>
+          <text x="16" y="136" font-size="15" font-weight="700" fill="var(--fm-success-ink)">3 × 3 = 9   and   4 × 3 = 12</text>
+          <text x="16" y="162" font-size="14" font-weight="600" fill="var(--fm-text-muted)">Scale factor is 3.</text>
 
           <!-- Scale DOWN Card -->
-          <rect x="296" y="0" width="276" height="184" rx="14" fill="#ffffff" stroke="#0284c7" stroke-width="2"/>
-          <rect x="312" y="14" width="180" height="26" rx="6" fill="#0284c7"/>
-          <text x="402" y="32" text-anchor="middle" font-size="14" font-weight="800" fill="#ffffff">SCALE DOWN (SIMPLIFY)</text>
-          <text x="312" y="68" font-size="16" font-weight="700" fill="#5f6f80">Divide both terms by GCF (4):</text>
-          <text x="312" y="104" font-size="28" font-weight="800" fill="#12355b">12 : 20  =  3 : 5</text>
-          <text x="312" y="136" font-size="15" font-weight="700" fill="#0284c7">12 ÷ 4 = 3   and   20 ÷ 4 = 5</text>
-          <text x="312" y="162" font-size="14" font-weight="600" fill="#5f6f80">3:5 is the simplest form ratio.</text>
+          <rect x="296" y="0" width="276" height="184" rx="14" fill="var(--fm-raised)" stroke="var(--fm-m-whole)" stroke-width="2"/>
+          <rect x="312" y="14" width="180" height="26" rx="6" fill="var(--fm-m-whole)"/>
+          <text x="402" y="32" text-anchor="middle" font-size="14" font-weight="800" fill="var(--fm-text-inverse)">SCALE DOWN (SIMPLIFY)</text>
+          <text x="312" y="68" font-size="16" font-weight="700" fill="var(--fm-text-muted)">Divide both terms by GCF (4):</text>
+          <text x="312" y="104" font-size="28" font-weight="800" fill="var(--fm-primary)">12 : 20  =  3 : 5</text>
+          <text x="312" y="136" font-size="15" font-weight="700" fill="var(--fm-m-whole)">12 ÷ 4 = 3   and   20 ÷ 4 = 5</text>
+          <text x="312" y="162" font-size="14" font-weight="600" fill="var(--fm-text-muted)">3:5 is the simplest form ratio.</text>
         </g>`,
       }),
       capEn:
@@ -1591,54 +1598,54 @@ function conceptVisual(config) {
         body: `
         <!-- Problem Card -->
         ${conceptCard(34, 68, 572, 54)}
-        <text x="320" y="102" text-anchor="middle" font-size="18" font-weight="800" fill="#12355b">Problem: Convert 180 inches into yards using conversion ratios</text>
+        <text x="320" y="102" text-anchor="middle" font-size="18" font-weight="800" fill="var(--fm-primary)">Problem: Convert 180 inches into yards using conversion ratios</text>
 
         <!-- Big Dimensional Analysis Display Card -->
         <g transform="translate(34, 134)">
-          <rect x="0" y="0" width="572" height="152" rx="14" fill="#ffffff" stroke="#0f766e" stroke-width="2"/>
+          <rect x="0" y="0" width="572" height="152" rx="14" fill="var(--fm-raised)" stroke="var(--fm-m-part)" stroke-width="2"/>
           
           <!-- Fraction 1: 180 in -->
-          <text x="36" y="80" font-size="28" font-weight="800" fill="#12355b">180</text>
-          <text x="92" y="80" font-size="26" font-weight="800" fill="#dc2626">in</text>
-          <line x1="88" y1="86" x2="118" y2="60" stroke="#dc2626" stroke-width="3.5"/>
+          <text x="36" y="80" font-size="28" font-weight="800" fill="var(--fm-primary)">180</text>
+          <text x="92" y="80" font-size="26" font-weight="800" fill="var(--fm-m-unknown)">in</text>
+          <line x1="88" y1="86" x2="118" y2="60" stroke="var(--fm-m-unknown-edge)" stroke-width="3.5"/>
 
-          <text x="134" y="80" font-size="28" font-weight="800" fill="#12355b">×</text>
+          <text x="134" y="80" font-size="28" font-weight="800" fill="var(--fm-primary)">×</text>
 
           <!-- Fraction 2: 1 ft / 12 in -->
           <g transform="translate(162, 28)">
-            <text x="24" y="32" text-anchor="middle" font-size="24" font-weight="800" fill="#12355b">1 <tspan fill="#2563eb">ft</tspan></text>
-            <line x1="22" y1="36" x2="48" y2="14" stroke="#2563eb" stroke-width="3.5"/>
-            <line x1="0" y1="52" x2="68" y2="52" stroke="#12355b" stroke-width="2.5"/>
-            <text x="34" y="82" text-anchor="middle" font-size="24" font-weight="800" fill="#12355b">12 <tspan fill="#dc2626">in</tspan></text>
-            <line x1="32" y1="88" x2="62" y2="64" stroke="#dc2626" stroke-width="3.5"/>
+            <text x="24" y="32" text-anchor="middle" font-size="24" font-weight="800" fill="var(--fm-primary)">1 <tspan fill="var(--fm-m-whole)">ft</tspan></text>
+            <line x1="22" y1="36" x2="48" y2="14" stroke="var(--fm-m-whole)" stroke-width="3.5"/>
+            <line x1="0" y1="52" x2="68" y2="52" stroke="var(--fm-primary)" stroke-width="2.5"/>
+            <text x="34" y="82" text-anchor="middle" font-size="24" font-weight="800" fill="var(--fm-primary)">12 <tspan fill="var(--fm-m-unknown)">in</tspan></text>
+            <line x1="32" y1="88" x2="62" y2="64" stroke="var(--fm-m-unknown-edge)" stroke-width="3.5"/>
           </g>
 
-          <text x="254" y="80" font-size="28" font-weight="800" fill="#12355b">×</text>
+          <text x="254" y="80" font-size="28" font-weight="800" fill="var(--fm-primary)">×</text>
 
           <!-- Fraction 3: 1 yd / 3 ft -->
           <g transform="translate(282, 28)">
-            <text x="24" y="32" text-anchor="middle" font-size="24" font-weight="800" fill="#15803d">1 yd</text>
-            <line x1="0" y1="52" x2="68" y2="52" stroke="#12355b" stroke-width="2.5"/>
-            <text x="34" y="82" text-anchor="middle" font-size="24" font-weight="800" fill="#12355b">3 <tspan fill="#2563eb">ft</tspan></text>
-            <line x1="32" y1="88" x2="58" y2="64" stroke="#2563eb" stroke-width="3.5"/>
+            <text x="24" y="32" text-anchor="middle" font-size="24" font-weight="800" fill="var(--fm-success-ink)">1 yd</text>
+            <line x1="0" y1="52" x2="68" y2="52" stroke="var(--fm-primary)" stroke-width="2.5"/>
+            <text x="34" y="82" text-anchor="middle" font-size="24" font-weight="800" fill="var(--fm-primary)">3 <tspan fill="var(--fm-m-whole)">ft</tspan></text>
+            <line x1="32" y1="88" x2="58" y2="64" stroke="var(--fm-m-whole)" stroke-width="3.5"/>
           </g>
 
-          <text x="374" y="80" font-size="28" font-weight="800" fill="#12355b">=</text>
+          <text x="374" y="80" font-size="28" font-weight="800" fill="var(--fm-primary)">=</text>
 
           <!-- Result: 5 yards -->
-          <rect x="410" y="44" width="144" height="64" rx="12" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
-          <text x="482" y="86" text-anchor="middle" font-size="26" font-weight="800" fill="#15803d">5 yards</text>
+          <rect x="410" y="44" width="144" height="64" rx="12" fill="var(--fm-success-tint)" stroke="var(--fm-success)" stroke-width="2"/>
+          <text x="482" y="86" text-anchor="middle" font-size="26" font-weight="800" fill="var(--fm-success-ink)">5 yards</text>
 
-          <text x="286" y="136" text-anchor="middle" font-size="14" font-weight="700" fill="#5f6f80">Diagonal cancellation leaves only the target unit: yards!</text>
+          <text x="286" y="136" text-anchor="middle" font-size="14" font-weight="700" fill="var(--fm-text-muted)">Diagonal cancellation leaves only the target unit: yards!</text>
         </g>
 
         <!-- Bottom Explanation Card -->
         <g transform="translate(34, 298)">
-          <rect x="0" y="0" width="572" height="104" rx="14" fill="#f0fdfa" stroke="#0f766e" stroke-width="2"/>
-          <text x="20" y="28" font-size="16" font-weight="800" fill="#0f766e">✔ DIAGONAL UNIT CANCELLATION RULE:</text>
-          <text x="20" y="56" font-size="15" font-weight="700" fill="#12355b">1. Place the unit you want to cancel in the opposite position (top vs bottom).</text>
-          <text x="20" y="78" font-size="15" font-weight="700" fill="#12355b">2. Calculate the math: (180 × 1 × 1) ÷ (12 × 3) = 180 ÷ 36 = 5 yards.</text>
-          <text x="20" y="98" font-size="14" font-weight="700" fill="#0f766e">Equivalent conversion ratios guarantee your final answer is accurate.</text>
+          <rect x="0" y="0" width="572" height="104" rx="14" fill="var(--fm-success-tint)" stroke="var(--fm-m-part)" stroke-width="2"/>
+          <text x="20" y="28" font-size="16" font-weight="800" fill="var(--fm-m-part)">✔ DIAGONAL UNIT CANCELLATION RULE:</text>
+          <text x="20" y="56" font-size="15" font-weight="700" fill="var(--fm-primary)">1. Place the unit you want to cancel in the opposite position (top vs bottom).</text>
+          <text x="20" y="78" font-size="15" font-weight="700" fill="var(--fm-primary)">2. Calculate the math: (180 × 1 × 1) ÷ (12 × 3) = 180 ÷ 36 = 5 yards.</text>
+          <text x="20" y="98" font-size="14" font-weight="700" fill="var(--fm-m-part)">Equivalent conversion ratios guarantee your final answer is accurate.</text>
         </g>`,
       }),
       capEn:
@@ -1661,31 +1668,31 @@ function conceptVisual(config) {
           body: `
           <!-- Reference Whole Card -->
           ${conceptCard(34, 68, 572, 104)}
-          <rect x="52" y="82" width="220" height="24" rx="6" fill="#10b981"/>
-          <text x="162" y="99" text-anchor="middle" font-size="13" font-weight="800" fill="#ffffff">REFERENCE WHOLE = 100%</text>
-          <rect x="52" y="118" width="180" height="38" rx="6" fill="#10b981" stroke="#059669" stroke-width="2"/>
-          <text x="142" y="142" text-anchor="middle" font-size="14" font-weight="800" fill="#ffffff">Kitten = 1 whole (100%)</text>
-          <text x="250" y="142" font-size="14" font-weight="700" fill="#12355b">← The base amount compared TO is always 100%</text>
+          <rect x="52" y="82" width="220" height="24" rx="6" fill="var(--fm-success)"/>
+          <text x="162" y="99" text-anchor="middle" font-size="13" font-weight="800" fill="var(--fm-text-inverse)">REFERENCE WHOLE = 100%</text>
+          <rect x="52" y="118" width="180" height="38" rx="6" fill="var(--fm-success)" stroke="var(--fm-success)" stroke-width="2"/>
+          <text x="142" y="142" text-anchor="middle" font-size="14" font-weight="800" fill="var(--fm-text-inverse)">Kitten = 1 whole (100%)</text>
+          <text x="250" y="142" font-size="14" font-weight="700" fill="var(--fm-primary)">← The base amount compared TO is always 100%</text>
 
           <!-- Puppy: 2.5 Times Whole Card -->
           ${conceptCard(34, 184, 572, 126)}
-          <rect x="52" y="196" width="230" height="24" rx="6" fill="#3b82f6"/>
-          <text x="167" y="213" text-anchor="middle" font-size="13" font-weight="800" fill="#ffffff">PUPPY = 2.5 TIMES KITTEN</text>
+          <rect x="52" y="196" width="230" height="24" rx="6" fill="var(--fm-m-whole)"/>
+          <text x="167" y="213" text-anchor="middle" font-size="13" font-weight="800" fill="var(--fm-text-inverse)">PUPPY = 2.5 TIMES KITTEN</text>
           <g transform="translate(52, 230)">
-            <rect x="0" y="0" width="180" height="38" rx="6" fill="#3b82f6" stroke="#2563eb" stroke-width="2"/>
-            <text x="90" y="24" text-anchor="middle" font-size="14" font-weight="800" fill="#ffffff">1st Whole (100%)</text>
-            <rect x="186" y="0" width="180" height="38" rx="6" fill="#3b82f6" stroke="#2563eb" stroke-width="2"/>
-            <text x="276" y="24" text-anchor="middle" font-size="14" font-weight="800" fill="#ffffff">2nd Whole (100%)</text>
-            <rect x="372" y="0" width="90" height="38" rx="6" fill="#93c5fd" stroke="#3b82f6" stroke-width="2"/>
-            <text x="417" y="24" text-anchor="middle" font-size="13" font-weight="800" fill="#1e3a8a">+50%</text>
+            <rect x="0" y="0" width="180" height="38" rx="6" fill="var(--fm-m-whole)" stroke="var(--fm-m-whole)" stroke-width="2"/>
+            <text x="90" y="24" text-anchor="middle" font-size="14" font-weight="800" fill="var(--fm-text-inverse)">1st Whole (100%)</text>
+            <rect x="186" y="0" width="180" height="38" rx="6" fill="var(--fm-m-whole)" stroke="var(--fm-m-whole)" stroke-width="2"/>
+            <text x="276" y="24" text-anchor="middle" font-size="14" font-weight="800" fill="var(--fm-text-inverse)">2nd Whole (100%)</text>
+            <rect x="372" y="0" width="90" height="38" rx="6" fill="var(--fm-m-whole)" stroke="var(--fm-m-whole)" stroke-width="2"/>
+            <text x="417" y="24" text-anchor="middle" font-size="13" font-weight="800" fill="var(--fm-m-whole)">+50%</text>
           </g>
-          <text x="52" y="296" font-size="15" font-weight="800" fill="#1e3a8a">100% + 100% + 50% = 250% of the kitten's weight</text>
+          <text x="52" y="296" font-size="15" font-weight="800" fill="var(--fm-m-whole)">100% + 100% + 50% = 250% of the kitten's weight</text>
 
           <!-- Key takeaway callout -->
-          <rect x="34" y="322" width="572" height="80" rx="14" fill="#fffbeb" stroke="#f59e0b" stroke-width="2"/>
-          <text x="54" y="348" font-size="14" font-weight="800" fill="#b45309">💡 MORE THAN ONE WHOLE:</text>
-          <text x="54" y="370" font-size="13.5" font-weight="700" fill="#12355b">Percents greater than 100% mean more than 1 whole: 2.5 × 100% = 250%.</text>
-          <text x="54" y="390" font-size="13.5" font-weight="700" fill="#12355b">Check: Is the puppy heavier than the kitten? Yes → percent must exceed 100%.</text>`,
+          <rect x="34" y="322" width="572" height="80" rx="14" fill="var(--fm-m-unknown-tint)" stroke="var(--fm-m-unknown-edge)" stroke-width="2"/>
+          <text x="54" y="348" font-size="14" font-weight="800" fill="var(--fm-m-unknown)">💡 MORE THAN ONE WHOLE:</text>
+          <text x="54" y="370" font-size="13.5" font-weight="700" fill="var(--fm-primary)">Percents greater than 100% mean more than 1 whole: 2.5 × 100% = 250%.</text>
+          <text x="54" y="390" font-size="13.5" font-weight="700" fill="var(--fm-primary)">Check: Is the puppy heavier than the kitten? Yes → percent must exceed 100%.</text>`,
         })}</div>`,
         capEn: "100% is one whole. A percent greater than 100% means more than one whole.",
         capEs: "100% es un entero. Un porcentaje mayor que 100% significa más de un entero.",
@@ -1696,8 +1703,8 @@ function conceptVisual(config) {
       const col = i % 10;
       const row = Math.floor(i / 10);
       const isShaded = i < 40;
-      const fill = isShaded ? "#0f766e" : "#f8fafc";
-      const stroke = isShaded ? "#0d5f58" : "#cbd5e1";
+      const fill = isShaded ? "var(--fm-m-part)" : "var(--fm-raised)";
+      const stroke = isShaded ? "var(--fm-m-part)" : "var(--fm-m-whole)";
       return `<rect x="${393 + col * 15}" y="${108 + row * 10}" width="14" height="9" rx="1" fill="${fill}" stroke="${stroke}" stroke-width="1"/>`;
     }).join("");
 
@@ -1711,64 +1718,64 @@ function conceptVisual(config) {
         body: `
         <!-- Scaling Ratio Card -->
         ${conceptCard(34, 68, 276, 206)}
-        <rect x="52" y="80" width="168" height="24" rx="6" fill="#0f766e"/>
-        <text x="136" y="97" text-anchor="middle" font-size="13" font-weight="800" fill="#ffffff">SCALE RATIO TO 100</text>
-        <text x="172" y="122" text-anchor="middle" font-size="15" font-weight="700" fill="#12355b">4 out of 10 students</text>
+        <rect x="52" y="80" width="168" height="24" rx="6" fill="var(--fm-m-part)"/>
+        <text x="136" y="97" text-anchor="middle" font-size="13" font-weight="800" fill="var(--fm-text-inverse)">SCALE RATIO TO 100</text>
+        <text x="172" y="122" text-anchor="middle" font-size="15" font-weight="700" fill="var(--fm-primary)">4 out of 10 students</text>
         <g transform="translate(102, 130)">
-          <text x="70" y="20" text-anchor="middle" font-size="16" font-weight="800" fill="#0f766e">4 × 10</text>
-          <line x1="20" y1="28" x2="120" y2="28" stroke="#0f766e" stroke-width="2.5"/>
-          <text x="70" y="48" text-anchor="middle" font-size="16" font-weight="800" fill="#0f766e">10 × 10</text>
+          <text x="70" y="20" text-anchor="middle" font-size="16" font-weight="800" fill="var(--fm-m-part)">4 × 10</text>
+          <line x1="20" y1="28" x2="120" y2="28" stroke="var(--fm-m-part)" stroke-width="2.5"/>
+          <text x="70" y="48" text-anchor="middle" font-size="16" font-weight="800" fill="var(--fm-m-part)">10 × 10</text>
         </g>
-        <text x="172" y="202" text-anchor="middle" font-size="20" font-weight="800" fill="#12355b">= 40 / 100</text>
-        <rect x="72" y="220" width="200" height="38" rx="8" fill="#0f766e"/>
-        <text x="172" y="245" text-anchor="middle" font-size="18" font-weight="800" fill="#ffffff">= 40% (per hundred)</text>
+        <text x="172" y="202" text-anchor="middle" font-size="20" font-weight="800" fill="var(--fm-primary)">= 40 / 100</text>
+        <rect x="72" y="220" width="200" height="38" rx="8" fill="var(--fm-m-part)"/>
+        <text x="172" y="245" text-anchor="middle" font-size="18" font-weight="800" fill="var(--fm-text-inverse)">= 40% (per hundred)</text>
 
         <!-- 100-Square Grid Card -->
         ${conceptCard(330, 68, 276, 206)}
-        <rect x="348" y="80" width="160" height="24" rx="6" fill="#0f766e"/>
-        <text x="428" y="97" text-anchor="middle" font-size="13" font-weight="800" fill="#ffffff">100-SQUARE GRID</text>
+        <rect x="348" y="80" width="160" height="24" rx="6" fill="var(--fm-m-part)"/>
+        <text x="428" y="97" text-anchor="middle" font-size="13" font-weight="800" fill="var(--fm-text-inverse)">100-SQUARE GRID</text>
         <g>${gridSquares}</g>
-        <text x="468" y="220" text-anchor="middle" font-size="13" font-weight="800" fill="#0f766e">40 shaded squares = 40%</text>
-        <text x="468" y="238" text-anchor="middle" font-size="12" font-weight="700" fill="#64748b">60 unshaded squares = 60%</text>
-        <text x="468" y="256" text-anchor="middle" font-size="12" font-weight="700" fill="#12355b">Total: 100 squares = 100%</text>
+        <text x="468" y="220" text-anchor="middle" font-size="13" font-weight="800" fill="var(--fm-m-part)">40 shaded squares = 40%</text>
+        <text x="468" y="238" text-anchor="middle" font-size="12" font-weight="700" fill="var(--fm-text-muted)">60 unshaded squares = 60%</text>
+        <text x="468" y="256" text-anchor="middle" font-size="12" font-weight="700" fill="var(--fm-primary)">Total: 100 squares = 100%</text>
 
         <!-- Percent Bar (Tape Diagram) Card -->
         ${conceptCard(34, 286, 572, 142)}
-        <rect x="52" y="298" width="220" height="24" rx="6" fill="#0f766e"/>
-        <text x="162" y="315" text-anchor="middle" font-size="12" font-weight="800" fill="#ffffff">PERCENT BAR (TAPE DIAGRAM)</text>
-        <text x="288" y="315" font-size="12" font-weight="700" fill="#12355b">4 equal parts: each is 25% (100% ÷ 4 = 25%)</text>
+        <rect x="52" y="298" width="220" height="24" rx="6" fill="var(--fm-m-part)"/>
+        <text x="162" y="315" text-anchor="middle" font-size="12" font-weight="800" fill="var(--fm-text-inverse)">PERCENT BAR (TAPE DIAGRAM)</text>
+        <text x="288" y="315" font-size="12" font-weight="700" fill="var(--fm-primary)">4 equal parts: each is 25% (100% ÷ 4 = 25%)</text>
         <g transform="translate(52, 332)">
-          <rect x="0" y="0" width="134" height="36" rx="2" fill="#1fa6a2" stroke="#12355b" stroke-width="2"/>
-          <text x="67" y="23" text-anchor="middle" font-family="Outfit, sans-serif" font-size="13" font-weight="800" fill="#ffffff">25%</text>
-          <rect x="134" y="0" width="134" height="36" rx="2" fill="#1fa6a2" stroke="#12355b" stroke-width="2"/>
-          <text x="201" y="23" text-anchor="middle" font-family="Outfit, sans-serif" font-size="13" font-weight="800" fill="#ffffff">25%</text>
-          <rect x="268" y="0" width="134" height="36" rx="2" fill="#1fa6a2" stroke="#12355b" stroke-width="2"/>
-          <text x="335" y="23" text-anchor="middle" font-family="Outfit, sans-serif" font-size="13" font-weight="800" fill="#ffffff">25%</text>
-          <rect x="402" y="0" width="134" height="36" rx="2" fill="#f8fafc" stroke="#12355b" stroke-width="2"/>
-          <text x="469" y="23" text-anchor="middle" font-family="Outfit, sans-serif" font-size="13" font-weight="800" fill="#64748b">25%</text>
-          <rect x="0" y="0" width="536" height="36" rx="4" fill="none" stroke="#12355b" stroke-width="2.5"/>
-          <line x1="0" y1="36" x2="0" y2="44" stroke="#12355b" stroke-width="2"/>
-          <text x="0" y="58" text-anchor="middle" font-size="11.5" font-weight="800" fill="#12355b">0%</text>
-          <line x1="134" y1="36" x2="134" y2="42" stroke="#0f766e" stroke-width="1.5"/>
-          <text x="134" y="55" text-anchor="middle" font-size="10.5" font-weight="700" fill="#0f766e">25%</text>
-          <line x1="268" y1="36" x2="268" y2="42" stroke="#0f766e" stroke-width="1.5"/>
-          <text x="268" y="55" text-anchor="middle" font-size="10.5" font-weight="700" fill="#0f766e">50%</text>
-          <line x1="402" y1="36" x2="402" y2="46" stroke="#0f766e" stroke-width="2.5"/>
-          <rect x="382" y="44" width="40" height="18" rx="4" fill="#0f766e"/>
-          <text x="402" y="57" text-anchor="middle" font-size="11" font-weight="900" fill="#ffffff">75%</text>
-          <line x1="536" y1="36" x2="536" y2="44" stroke="#12355b" stroke-width="2"/>
-          <text x="536" y="58" text-anchor="middle" font-size="11.5" font-weight="800" fill="#12355b">100%</text>
-          <text x="201" y="80" text-anchor="middle" font-size="12" font-weight="800" fill="#0f766e">3 shaded parts = 3 × 25% = 75% of the whole</text>
-          <text x="469" y="80" text-anchor="middle" font-size="11" font-weight="700" fill="#64748b">1 unshaded = 25%</text>
+          <rect x="0" y="0" width="134" height="36" rx="2" fill="var(--fm-m-part)" stroke="var(--fm-primary)" stroke-width="2"/>
+          <text x="67" y="23" text-anchor="middle" font-family="Outfit, sans-serif" font-size="13" font-weight="800" fill="var(--fm-text-inverse)">25%</text>
+          <rect x="134" y="0" width="134" height="36" rx="2" fill="var(--fm-m-part)" stroke="var(--fm-primary)" stroke-width="2"/>
+          <text x="201" y="23" text-anchor="middle" font-family="Outfit, sans-serif" font-size="13" font-weight="800" fill="var(--fm-text-inverse)">25%</text>
+          <rect x="268" y="0" width="134" height="36" rx="2" fill="var(--fm-m-part)" stroke="var(--fm-primary)" stroke-width="2"/>
+          <text x="335" y="23" text-anchor="middle" font-family="Outfit, sans-serif" font-size="13" font-weight="800" fill="var(--fm-text-inverse)">25%</text>
+          <rect x="402" y="0" width="134" height="36" rx="2" fill="var(--fm-raised)" stroke="var(--fm-primary)" stroke-width="2"/>
+          <text x="469" y="23" text-anchor="middle" font-family="Outfit, sans-serif" font-size="13" font-weight="800" fill="var(--fm-text-muted)">25%</text>
+          <rect x="0" y="0" width="536" height="36" rx="4" fill="none" stroke="var(--fm-primary)" stroke-width="2.5"/>
+          <line x1="0" y1="36" x2="0" y2="44" stroke="var(--fm-primary)" stroke-width="2"/>
+          <text x="0" y="58" text-anchor="middle" font-size="11.5" font-weight="800" fill="var(--fm-primary)">0%</text>
+          <line x1="134" y1="36" x2="134" y2="42" stroke="var(--fm-m-part)" stroke-width="1.5"/>
+          <text x="134" y="55" text-anchor="middle" font-size="10.5" font-weight="700" fill="var(--fm-m-part)">25%</text>
+          <line x1="268" y1="36" x2="268" y2="42" stroke="var(--fm-m-part)" stroke-width="1.5"/>
+          <text x="268" y="55" text-anchor="middle" font-size="10.5" font-weight="700" fill="var(--fm-m-part)">50%</text>
+          <line x1="402" y1="36" x2="402" y2="46" stroke="var(--fm-m-part)" stroke-width="2.5"/>
+          <rect x="382" y="44" width="40" height="18" rx="4" fill="var(--fm-m-part)"/>
+          <text x="402" y="57" text-anchor="middle" font-size="11" font-weight="900" fill="var(--fm-text-inverse)">75%</text>
+          <line x1="536" y1="36" x2="536" y2="44" stroke="var(--fm-primary)" stroke-width="2"/>
+          <text x="536" y="58" text-anchor="middle" font-size="11.5" font-weight="800" fill="var(--fm-primary)">100%</text>
+          <text x="201" y="80" text-anchor="middle" font-size="12" font-weight="800" fill="var(--fm-m-part)">3 shaded parts = 3 × 25% = 75% of the whole</text>
+          <text x="469" y="80" text-anchor="middle" font-size="11" font-weight="700" fill="var(--fm-text-muted)">1 unshaded = 25%</text>
         </g>
 
         <!-- Key Rule Callout -->
-        <rect x="34" y="440" width="572" height="136" rx="14" fill="#f0fdfa" stroke="#0f766e" stroke-width="2"/>
-        <text x="54" y="464" font-size="15" font-weight="800" fill="#0f766e">✔ KEY PERCENT RULE:</text>
-        <text x="54" y="487" font-size="14" font-weight="700" fill="#12355b">Percent literally means "per hundred". Scale any ratio until the bottom number is 100.</text>
-        <text x="54" y="507" font-size="14" font-weight="700" fill="#12355b">Use a 100-square grid, scaling factors, or a percent bar to model parts of a whole.</text>
-        <text x="54" y="527" font-size="14" font-weight="700" fill="#12355b">100% stands for 1 whole. Percents can also exceed 100% (e.g. 150% = 1.5 wholes).</text>
-        <text x="54" y="548" font-size="13" font-weight="700" fill="#0f766e">Equivalent models: 4/10 = 40/100 = 40%  ·  3/4 on a percent bar = 75/100 = 75%</text>`,
+        <rect x="34" y="440" width="572" height="136" rx="14" fill="var(--fm-success-tint)" stroke="var(--fm-m-part)" stroke-width="2"/>
+        <text x="54" y="464" font-size="15" font-weight="800" fill="var(--fm-m-part)">✔ KEY PERCENT RULE:</text>
+        <text x="54" y="487" font-size="14" font-weight="700" fill="var(--fm-primary)">Percent literally means "per hundred". Scale any ratio until the bottom number is 100.</text>
+        <text x="54" y="507" font-size="14" font-weight="700" fill="var(--fm-primary)">Use a 100-square grid, scaling factors, or a percent bar to model parts of a whole.</text>
+        <text x="54" y="527" font-size="14" font-weight="700" fill="var(--fm-primary)">100% stands for 1 whole. Percents can also exceed 100% (e.g. 150% = 1.5 wholes).</text>
+        <text x="54" y="548" font-size="13" font-weight="700" fill="var(--fm-m-part)">Equivalent models: 4/10 = 40/100 = 40%  ·  3/4 on a percent bar = 75/100 = 75%</text>`,
       })}</div>`,
       capEn:
         "Percent means per hundred. Use a 100-square grid, ratio scaling, or a percent bar to represent parts of 100%.",
@@ -1790,38 +1797,38 @@ function conceptVisual(config) {
           body: `
           <!-- Convert All to Percents Card -->
           ${conceptCard(34, 68, 572, 134)}
-          <rect x="52" y="82" width="260" height="24" rx="6" fill="#1e40af"/>
-          <text x="182" y="99" text-anchor="middle" font-size="13" font-weight="800" fill="#ffffff">CONVERT ALL VALUES TO PERCENTS</text>
+          <rect x="52" y="82" width="260" height="24" rx="6" fill="var(--fm-m-whole)"/>
+          <text x="182" y="99" text-anchor="middle" font-size="13" font-weight="800" fill="var(--fm-text-inverse)">CONVERT ALL VALUES TO PERCENTS</text>
           <g transform="translate(52, 118)">
             <!-- Item 1: Decimal -->
-            <rect x="0" y="0" width="168" height="68" rx="8" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/>
-            <text x="84" y="24" text-anchor="middle" font-size="16" font-weight="800" fill="#12355b">0.68</text>
-            <text x="84" y="44" text-anchor="middle" font-size="12" font-weight="700" fill="#5f6f80">68 hundredths</text>
-            <text x="84" y="60" text-anchor="middle" font-size="15" font-weight="800" fill="#0f766e">= 68%</text>
+            <rect x="0" y="0" width="168" height="68" rx="8" fill="var(--fm-raised)" stroke="var(--fm-m-whole)" stroke-width="1.5"/>
+            <text x="84" y="24" text-anchor="middle" font-size="16" font-weight="800" fill="var(--fm-primary)">0.68</text>
+            <text x="84" y="44" text-anchor="middle" font-size="12" font-weight="700" fill="var(--fm-text-muted)">68 hundredths</text>
+            <text x="84" y="60" text-anchor="middle" font-size="15" font-weight="800" fill="var(--fm-m-part)">= 68%</text>
 
             <!-- Item 2: Percent -->
-            <rect x="184" y="0" width="168" height="68" rx="8" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/>
-            <text x="268" y="24" text-anchor="middle" font-size="16" font-weight="800" fill="#12355b">71%</text>
-            <text x="268" y="44" text-anchor="middle" font-size="12" font-weight="700" fill="#5f6f80">already percent</text>
-            <text x="268" y="60" text-anchor="middle" font-size="15" font-weight="800" fill="#0f766e">= 71%</text>
+            <rect x="184" y="0" width="168" height="68" rx="8" fill="var(--fm-raised)" stroke="var(--fm-m-whole)" stroke-width="1.5"/>
+            <text x="268" y="24" text-anchor="middle" font-size="16" font-weight="800" fill="var(--fm-primary)">71%</text>
+            <text x="268" y="44" text-anchor="middle" font-size="12" font-weight="700" fill="var(--fm-text-muted)">already percent</text>
+            <text x="268" y="60" text-anchor="middle" font-size="15" font-weight="800" fill="var(--fm-m-part)">= 71%</text>
 
             <!-- Item 3: Fraction -->
-            <rect x="368" y="0" width="168" height="68" rx="8" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/>
-            <text x="452" y="24" text-anchor="middle" font-size="16" font-weight="800" fill="#12355b">3/4</text>
-            <text x="452" y="44" text-anchor="middle" font-size="12" font-weight="700" fill="#5f6f80">scale × 25/25 = 75/100</text>
-            <text x="452" y="60" text-anchor="middle" font-size="15" font-weight="800" fill="#0f766e">= 75%</text>
+            <rect x="368" y="0" width="168" height="68" rx="8" fill="var(--fm-raised)" stroke="var(--fm-m-whole)" stroke-width="1.5"/>
+            <text x="452" y="24" text-anchor="middle" font-size="16" font-weight="800" fill="var(--fm-primary)">3/4</text>
+            <text x="452" y="44" text-anchor="middle" font-size="12" font-weight="700" fill="var(--fm-text-muted)">scale × 25/25 = 75/100</text>
+            <text x="452" y="60" text-anchor="middle" font-size="15" font-weight="800" fill="var(--fm-m-part)">= 75%</text>
           </g>
 
           <!-- Compare Percents Scale -->
           ${conceptCard(34, 214, 572, 88)}
-          <rect x="52" y="226" width="200" height="24" rx="6" fill="#1e40af"/>
-          <text x="152" y="243" text-anchor="middle" font-size="13" font-weight="800" fill="#ffffff">ORDER THE PERCENTS</text>
-          <text x="320" y="284" text-anchor="middle" font-size="20" font-weight="800" fill="#0f766e">68%   &lt;   71%   &lt;   75%</text>
+          <rect x="52" y="226" width="200" height="24" rx="6" fill="var(--fm-m-whole)"/>
+          <text x="152" y="243" text-anchor="middle" font-size="13" font-weight="800" fill="var(--fm-text-inverse)">ORDER THE PERCENTS</text>
+          <text x="320" y="284" text-anchor="middle" font-size="20" font-weight="800" fill="var(--fm-m-part)">68%   &lt;   71%   &lt;   75%</text>
 
           <!-- Final Answer Card -->
-          <rect x="34" y="314" width="572" height="88" rx="14" fill="#eff6ff" stroke="#3b82f6" stroke-width="2"/>
-          <text x="54" y="338" font-size="14" font-weight="800" fill="#1d4ed8">✔ FINAL ORDER (IN ORIGINAL FORMS, LEAST TO GREATEST):</text>
-          <text x="320" y="376" text-anchor="middle" font-size="24" font-weight="800" fill="#12355b">0.68   &lt;   71%   &lt;   3/4</text>`,
+          <rect x="34" y="314" width="572" height="88" rx="14" fill="var(--fm-m-whole-tint)" stroke="var(--fm-m-whole)" stroke-width="2"/>
+          <text x="54" y="338" font-size="14" font-weight="800" fill="var(--fm-m-whole)">✔ FINAL ORDER (IN ORIGINAL FORMS, LEAST TO GREATEST):</text>
+          <text x="320" y="376" text-anchor="middle" font-size="24" font-weight="800" fill="var(--fm-primary)">0.68   &lt;   71%   &lt;   3/4</text>`,
         })}</div>`,
         capEn: "Convert every value to a percent first, order them, then write the original forms.",
         capEs:
@@ -1840,49 +1847,49 @@ function conceptVisual(config) {
         <!-- 4 Equivalence Cards -->
         <!-- Fraction Card -->
         ${conceptCard(34, 68, 134, 212)}
-        <rect x="46" y="80" width="110" height="24" rx="6" fill="#0f766e"/>
-        <text x="101" y="97" text-anchor="middle" font-size="12" font-weight="800" fill="#ffffff">FRACTION</text>
-        <text x="101" y="146" text-anchor="middle" font-size="34" font-weight="800" fill="#12355b">1/4</text>
+        <rect x="46" y="80" width="110" height="24" rx="6" fill="var(--fm-m-part)"/>
+        <text x="101" y="97" text-anchor="middle" font-size="12" font-weight="800" fill="var(--fm-text-inverse)">FRACTION</text>
+        <text x="101" y="146" text-anchor="middle" font-size="34" font-weight="800" fill="var(--fm-primary)">1/4</text>
         <g transform="translate(61, 168)">
-          <rect x="0" y="0" width="80" height="20" rx="3" fill="#f8fafc" stroke="#0f766e" stroke-width="1.5"/>
-          <rect x="0" y="0" width="20" height="20" rx="3" fill="#0f766e"/>
+          <rect x="0" y="0" width="80" height="20" rx="3" fill="var(--fm-raised)" stroke="var(--fm-m-part)" stroke-width="1.5"/>
+          <rect x="0" y="0" width="20" height="20" rx="3" fill="var(--fm-m-part)"/>
         </g>
-        <text x="101" y="210" text-anchor="middle" font-size="12" font-weight="700" fill="#5f6f80">1 part of 4</text>
-        <text x="101" y="260" text-anchor="middle" font-size="12" font-weight="800" fill="#0f766e">1 ÷ 4 = 0.25</text>
+        <text x="101" y="210" text-anchor="middle" font-size="12" font-weight="700" fill="var(--fm-text-muted)">1 part of 4</text>
+        <text x="101" y="260" text-anchor="middle" font-size="12" font-weight="800" fill="var(--fm-m-part)">1 ÷ 4 = 0.25</text>
 
         <!-- Hundredths Card -->
         ${conceptCard(180, 68, 134, 212)}
-        <rect x="192" y="80" width="110" height="24" rx="6" fill="#0f766e"/>
-        <text x="247" y="97" text-anchor="middle" font-size="12" font-weight="800" fill="#ffffff">OUT OF 100</text>
-        <text x="247" y="146" text-anchor="middle" font-size="28" font-weight="800" fill="#12355b">25/100</text>
-        <text x="247" y="180" text-anchor="middle" font-size="13" font-weight="700" fill="#0f766e">scale × 25</text>
-        <text x="247" y="210" text-anchor="middle" font-size="12" font-weight="700" fill="#5f6f80">25 hundredths</text>
-        <text x="247" y="260" text-anchor="middle" font-size="12" font-weight="800" fill="#0f766e">scale denominator</text>
+        <rect x="192" y="80" width="110" height="24" rx="6" fill="var(--fm-m-part)"/>
+        <text x="247" y="97" text-anchor="middle" font-size="12" font-weight="800" fill="var(--fm-text-inverse)">OUT OF 100</text>
+        <text x="247" y="146" text-anchor="middle" font-size="28" font-weight="800" fill="var(--fm-primary)">25/100</text>
+        <text x="247" y="180" text-anchor="middle" font-size="13" font-weight="700" fill="var(--fm-m-part)">scale × 25</text>
+        <text x="247" y="210" text-anchor="middle" font-size="12" font-weight="700" fill="var(--fm-text-muted)">25 hundredths</text>
+        <text x="247" y="260" text-anchor="middle" font-size="12" font-weight="800" fill="var(--fm-m-part)">scale denominator</text>
 
         <!-- Decimal Card -->
         ${conceptCard(326, 68, 134, 212)}
-        <rect x="338" y="80" width="110" height="24" rx="6" fill="#0f766e"/>
-        <text x="393" y="97" text-anchor="middle" font-size="12" font-weight="800" fill="#ffffff">DECIMAL</text>
-        <text x="393" y="146" text-anchor="middle" font-size="34" font-weight="800" fill="#12355b">0.25</text>
-        <text x="393" y="180" text-anchor="middle" font-size="13" font-weight="700" fill="#0f766e">2 tenths</text>
-        <text x="393" y="210" text-anchor="middle" font-size="12" font-weight="700" fill="#5f6f80">5 hundredths</text>
-        <text x="393" y="260" text-anchor="middle" font-size="12" font-weight="800" fill="#0f766e">0.25 × 100 = 25%</text>
+        <rect x="338" y="80" width="110" height="24" rx="6" fill="var(--fm-m-part)"/>
+        <text x="393" y="97" text-anchor="middle" font-size="12" font-weight="800" fill="var(--fm-text-inverse)">DECIMAL</text>
+        <text x="393" y="146" text-anchor="middle" font-size="34" font-weight="800" fill="var(--fm-primary)">0.25</text>
+        <text x="393" y="180" text-anchor="middle" font-size="13" font-weight="700" fill="var(--fm-m-part)">2 tenths</text>
+        <text x="393" y="210" text-anchor="middle" font-size="12" font-weight="700" fill="var(--fm-text-muted)">5 hundredths</text>
+        <text x="393" y="260" text-anchor="middle" font-size="12" font-weight="800" fill="var(--fm-m-part)">0.25 × 100 = 25%</text>
 
         <!-- Percent Card -->
         ${conceptCard(472, 68, 134, 212)}
-        <rect x="484" y="80" width="110" height="24" rx="6" fill="#0f766e"/>
-        <text x="539" y="97" text-anchor="middle" font-size="12" font-weight="800" fill="#ffffff">PERCENT</text>
-        <text x="539" y="146" text-anchor="middle" font-size="34" font-weight="800" fill="#12355b">25%</text>
-        <text x="539" y="180" text-anchor="middle" font-size="13" font-weight="700" fill="#0f766e">per hundred</text>
-        <text x="539" y="210" text-anchor="middle" font-size="12" font-weight="700" fill="#5f6f80">25 for each 100</text>
-        <text x="539" y="260" text-anchor="middle" font-size="12" font-weight="800" fill="#0f766e">same amount!</text>
+        <rect x="484" y="80" width="110" height="24" rx="6" fill="var(--fm-m-part)"/>
+        <text x="539" y="97" text-anchor="middle" font-size="12" font-weight="800" fill="var(--fm-text-inverse)">PERCENT</text>
+        <text x="539" y="146" text-anchor="middle" font-size="34" font-weight="800" fill="var(--fm-primary)">25%</text>
+        <text x="539" y="180" text-anchor="middle" font-size="13" font-weight="700" fill="var(--fm-m-part)">per hundred</text>
+        <text x="539" y="210" text-anchor="middle" font-size="12" font-weight="700" fill="var(--fm-text-muted)">25 for each 100</text>
+        <text x="539" y="260" text-anchor="middle" font-size="12" font-weight="800" fill="var(--fm-m-part)">same amount!</text>
 
         <!-- Conversion Pathways Callout -->
-        <rect x="34" y="294" width="572" height="108" rx="14" fill="#f0fdfa" stroke="#0f766e" stroke-width="2"/>
-        <text x="54" y="318" font-size="15" font-weight="800" fill="#0f766e">✔ HOW TO CONVERT BETWEEN FORMS:</text>
-        <text x="54" y="342" font-size="14" font-weight="700" fill="#12355b">1. Fraction to Decimal: Divide top ÷ bottom (1 ÷ 4 = 0.25, or 3 ÷ 4 = 0.75).</text>
-        <text x="54" y="364" font-size="14" font-weight="700" fill="#12355b">2. Decimal to Percent: Multiply by 100 (0.25 × 100 = 25%, or 0.75 × 100 = 75%).</text>
-        <text x="54" y="386" font-size="13.5" font-weight="700" fill="#0f766e">Equivalent ratio &amp; value: 1/4 = 25/100 = 0.25 = 25%</text>`,
+        <rect x="34" y="294" width="572" height="108" rx="14" fill="var(--fm-success-tint)" stroke="var(--fm-m-part)" stroke-width="2"/>
+        <text x="54" y="318" font-size="15" font-weight="800" fill="var(--fm-m-part)">✔ HOW TO CONVERT BETWEEN FORMS:</text>
+        <text x="54" y="342" font-size="14" font-weight="700" fill="var(--fm-primary)">1. Fraction to Decimal: Divide top ÷ bottom (1 ÷ 4 = 0.25, or 3 ÷ 4 = 0.75).</text>
+        <text x="54" y="364" font-size="14" font-weight="700" fill="var(--fm-primary)">2. Decimal to Percent: Multiply by 100 (0.25 × 100 = 25%, or 0.75 × 100 = 75%).</text>
+        <text x="54" y="386" font-size="13.5" font-weight="700" fill="var(--fm-m-part)">Equivalent ratio &amp; value: 1/4 = 25/100 = 0.25 = 25%</text>`,
       })}</div>`,
       capEn: "Fraction, decimal, and percent can all name the same part of one whole.",
       capEs: "La fracción, el decimal y el porcentaje pueden nombrar la misma parte de un entero.",
@@ -1902,34 +1909,34 @@ function conceptVisual(config) {
           body: `
           <!-- Card 1: Round to Friendly Numbers -->
           ${conceptCard(34, 68, 276, 218)}
-          <rect x="52" y="82" width="230" height="24" rx="6" fill="#b45309"/>
-          <text x="167" y="99" text-anchor="middle" font-size="13" font-weight="800" fill="#ffffff">ROUND BOTH NUMBERS</text>
-          <text x="172" y="128" text-anchor="middle" font-size="15" font-weight="800" fill="#12355b">18.5% of 412 cans</text>
-          <text x="172" y="152" text-anchor="middle" font-size="13" font-weight="700" fill="#b45309">18.5% rounds to 20%</text>
-          <text x="172" y="172" text-anchor="middle" font-size="13" font-weight="700" fill="#b45309">412 rounds to 400</text>
-          <rect x="52" y="190" width="240" height="82" rx="8" fill="#fef3c7" stroke="#f59e0b" stroke-width="1.5"/>
-          <text x="172" y="212" text-anchor="middle" font-size="13" font-weight="800" fill="#92400e">10% of 400 = 40</text>
-          <text x="172" y="234" text-anchor="middle" font-size="13" font-weight="800" fill="#92400e">20% of 400 = 40 × 2 = 80</text>
-          <text x="172" y="258" text-anchor="middle" font-size="14" font-weight="800" fill="#12355b">Estimate ≈ 80 cans</text>
+          <rect x="52" y="82" width="230" height="24" rx="6" fill="var(--fm-m-unknown)"/>
+          <text x="167" y="99" text-anchor="middle" font-size="13" font-weight="800" fill="var(--fm-text-inverse)">ROUND BOTH NUMBERS</text>
+          <text x="172" y="128" text-anchor="middle" font-size="15" font-weight="800" fill="var(--fm-primary)">18.5% of 412 cans</text>
+          <text x="172" y="152" text-anchor="middle" font-size="13" font-weight="700" fill="var(--fm-m-unknown)">18.5% rounds to 20%</text>
+          <text x="172" y="172" text-anchor="middle" font-size="13" font-weight="700" fill="var(--fm-m-unknown)">412 rounds to 400</text>
+          <rect x="52" y="190" width="240" height="82" rx="8" fill="var(--fm-m-unknown-tint)" stroke="var(--fm-m-unknown-edge)" stroke-width="1.5"/>
+          <text x="172" y="212" text-anchor="middle" font-size="13" font-weight="800" fill="var(--fm-m-unknown)">10% of 400 = 40</text>
+          <text x="172" y="234" text-anchor="middle" font-size="13" font-weight="800" fill="var(--fm-m-unknown)">20% of 400 = 40 × 2 = 80</text>
+          <text x="172" y="258" text-anchor="middle" font-size="14" font-weight="800" fill="var(--fm-primary)">Estimate ≈ 80 cans</text>
 
           <!-- Card 2: Direction Tracking -->
           ${conceptCard(330, 68, 276, 218)}
-          <rect x="348" y="82" width="220" height="24" rx="6" fill="#b45309"/>
-          <text x="458" y="99" text-anchor="middle" font-size="13" font-weight="800" fill="#ffffff">ROUNDING DIRECTION</text>
-          <text x="468" y="130" text-anchor="middle" font-size="14" font-weight="700" fill="#12355b">Percent rounded UP:</text>
-          <text x="468" y="150" text-anchor="middle" font-size="13" font-weight="800" fill="#16a34a">18.5% ↑ 20% (makes estimate larger)</text>
-          <text x="468" y="180" text-anchor="middle" font-size="14" font-weight="700" fill="#12355b">Total rounded DOWN:</text>
-          <text x="468" y="200" text-anchor="middle" font-size="13" font-weight="800" fill="#dc2626">412 ↓ 400 (makes estimate smaller)</text>
-          <rect x="348" y="222" width="240" height="50" rx="8" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/>
-          <text x="468" y="244" text-anchor="middle" font-size="12" font-weight="800" fill="#12355b">Net effect: close estimate</text>
-          <text x="468" y="260" text-anchor="middle" font-size="12" font-weight="700" fill="#b45309">runs slightly high</text>
+          <rect x="348" y="82" width="220" height="24" rx="6" fill="var(--fm-m-unknown)"/>
+          <text x="458" y="99" text-anchor="middle" font-size="13" font-weight="800" fill="var(--fm-text-inverse)">ROUNDING DIRECTION</text>
+          <text x="468" y="130" text-anchor="middle" font-size="14" font-weight="700" fill="var(--fm-primary)">Percent rounded UP:</text>
+          <text x="468" y="150" text-anchor="middle" font-size="13" font-weight="800" fill="var(--fm-success-ink)">18.5% ↑ 20% (makes estimate larger)</text>
+          <text x="468" y="180" text-anchor="middle" font-size="14" font-weight="700" fill="var(--fm-primary)">Total rounded DOWN:</text>
+          <text x="468" y="200" text-anchor="middle" font-size="13" font-weight="800" fill="var(--fm-m-unknown)">412 ↓ 400 (makes estimate smaller)</text>
+          <rect x="348" y="222" width="240" height="50" rx="8" fill="var(--fm-raised)" stroke="var(--fm-m-whole)" stroke-width="1.5"/>
+          <text x="468" y="244" text-anchor="middle" font-size="12" font-weight="800" fill="var(--fm-primary)">Net effect: close estimate</text>
+          <text x="468" y="260" text-anchor="middle" font-size="12" font-weight="700" fill="var(--fm-m-unknown)">runs slightly high</text>
 
           <!-- Bottom Summary -->
-          <rect x="34" y="300" width="572" height="102" rx="14" fill="#fffbeb" stroke="#f59e0b" stroke-width="2"/>
-          <text x="54" y="326" font-size="15" font-weight="800" fill="#b45309">✔ THE 10% WORKHORSE STRATEGY:</text>
-          <text x="54" y="350" font-size="14" font-weight="700" fill="#12355b">10% of any number is easy: move the decimal 1 place left (10% of 400 = 40).</text>
-          <text x="54" y="372" font-size="14" font-weight="700" fill="#12355b">Double it for 20% (40 × 2 = 80). Half it for 5% (40 ÷ 2 = 20).</text>
-          <text x="54" y="392" font-size="13" font-weight="700" fill="#b45309">Estimating is not guessing — it is smart mental arithmetic with friendly numbers.</text>`,
+          <rect x="34" y="300" width="572" height="102" rx="14" fill="var(--fm-m-unknown-tint)" stroke="var(--fm-m-unknown-edge)" stroke-width="2"/>
+          <text x="54" y="326" font-size="15" font-weight="800" fill="var(--fm-m-unknown)">✔ THE 10% WORKHORSE STRATEGY:</text>
+          <text x="54" y="350" font-size="14" font-weight="700" fill="var(--fm-primary)">10% of any number is easy: move the decimal 1 place left (10% of 400 = 40).</text>
+          <text x="54" y="372" font-size="14" font-weight="700" fill="var(--fm-primary)">Double it for 20% (40 × 2 = 80). Half it for 5% (40 ÷ 2 = 20).</text>
+          <text x="54" y="392" font-size="13" font-weight="700" fill="var(--fm-m-unknown)">Estimating is not guessing — it is smart mental arithmetic with friendly numbers.</text>`,
         })}</div>`,
         capEn:
           "Round to friendly benchmark percents and compatible numbers, then track if the estimate runs high or low.",
@@ -1948,56 +1955,56 @@ function conceptVisual(config) {
         body: `
         <!-- Benchmark Number Line Card -->
         ${conceptCard(34, 68, 572, 206)}
-        <rect x="52" y="80" width="240" height="24" rx="6" fill="#ea580c"/>
-        <text x="172" y="97" text-anchor="middle" font-size="13" font-weight="800" fill="#ffffff">BENCHMARK LINE FOR $60 WHOLE</text>
+        <rect x="52" y="80" width="240" height="24" rx="6" fill="var(--fm-m-unknown)"/>
+        <text x="172" y="97" text-anchor="middle" font-size="13" font-weight="800" fill="var(--fm-text-inverse)">BENCHMARK LINE FOR $60 WHOLE</text>
 
         <!-- The line -->
-        <line x1="64" y1="160" x2="576" y2="160" stroke="#12355b" stroke-width="4"/>
+        <line x1="64" y1="160" x2="576" y2="160" stroke="var(--fm-primary)" stroke-width="4"/>
 
         <!-- Ticks -->
         <!-- 0% -->
-        <line x1="64" y1="148" x2="64" y2="172" stroke="#12355b" stroke-width="3"/>
-        <text x="64" y="142" text-anchor="middle" font-size="13" font-weight="800" fill="#12355b">0%</text>
-        <text x="64" y="190" text-anchor="middle" font-size="14" font-weight="700" fill="#5f6f80">$0</text>
+        <line x1="64" y1="148" x2="64" y2="172" stroke="var(--fm-primary)" stroke-width="3"/>
+        <text x="64" y="142" text-anchor="middle" font-size="13" font-weight="800" fill="var(--fm-primary)">0%</text>
+        <text x="64" y="190" text-anchor="middle" font-size="14" font-weight="700" fill="var(--fm-text-muted)">$0</text>
 
         <!-- 10% -->
-        <line x1="115" y1="152" x2="115" y2="168" stroke="#12355b" stroke-width="2"/>
-        <text x="115" y="142" text-anchor="middle" font-size="12" font-weight="700" fill="#5f6f80">10%</text>
-        <text x="115" y="190" text-anchor="middle" font-size="13" font-weight="700" fill="#5f6f80">$6</text>
+        <line x1="115" y1="152" x2="115" y2="168" stroke="var(--fm-primary)" stroke-width="2"/>
+        <text x="115" y="142" text-anchor="middle" font-size="12" font-weight="700" fill="var(--fm-text-muted)">10%</text>
+        <text x="115" y="190" text-anchor="middle" font-size="13" font-weight="700" fill="var(--fm-text-muted)">$6</text>
 
         <!-- 25% -->
-        <line x1="192" y1="150" x2="192" y2="170" stroke="#12355b" stroke-width="2.5"/>
-        <text x="192" y="142" text-anchor="middle" font-size="13" font-weight="800" fill="#0f766e">25% (1/4)</text>
-        <text x="192" y="190" text-anchor="middle" font-size="14" font-weight="800" fill="#0f766e">$15</text>
+        <line x1="192" y1="150" x2="192" y2="170" stroke="var(--fm-primary)" stroke-width="2.5"/>
+        <text x="192" y="142" text-anchor="middle" font-size="13" font-weight="800" fill="var(--fm-m-part)">25% (1/4)</text>
+        <text x="192" y="190" text-anchor="middle" font-size="14" font-weight="800" fill="var(--fm-m-part)">$15</text>
 
         <!-- 50% -->
-        <line x1="320" y1="146" x2="320" y2="174" stroke="#ea580c" stroke-width="4"/>
-        <text x="320" y="140" text-anchor="middle" font-size="14" font-weight="800" fill="#ea580c">50% (half)</text>
-        <text x="320" y="190" text-anchor="middle" font-size="16" font-weight="800" fill="#ea580c">$30</text>
+        <line x1="320" y1="146" x2="320" y2="174" stroke="var(--fm-m-unknown-edge)" stroke-width="4"/>
+        <text x="320" y="140" text-anchor="middle" font-size="14" font-weight="800" fill="var(--fm-m-unknown)">50% (half)</text>
+        <text x="320" y="190" text-anchor="middle" font-size="16" font-weight="800" fill="var(--fm-m-unknown)">$30</text>
 
         <!-- 75% -->
-        <line x1="448" y1="150" x2="448" y2="170" stroke="#12355b" stroke-width="2.5"/>
-        <text x="448" y="142" text-anchor="middle" font-size="13" font-weight="800" fill="#0f766e">75% (3/4)</text>
-        <text x="448" y="190" text-anchor="middle" font-size="14" font-weight="800" fill="#0f766e">$45</text>
+        <line x1="448" y1="150" x2="448" y2="170" stroke="var(--fm-primary)" stroke-width="2.5"/>
+        <text x="448" y="142" text-anchor="middle" font-size="13" font-weight="800" fill="var(--fm-m-part)">75% (3/4)</text>
+        <text x="448" y="190" text-anchor="middle" font-size="14" font-weight="800" fill="var(--fm-m-part)">$45</text>
 
         <!-- 100% -->
-        <line x1="576" y1="148" x2="576" y2="172" stroke="#12355b" stroke-width="3"/>
-        <text x="576" y="142" text-anchor="middle" font-size="13" font-weight="800" fill="#12355b">100%</text>
-        <text x="576" y="190" text-anchor="middle" font-size="14" font-weight="700" fill="#5f6f80">$60</text>
+        <line x1="576" y1="148" x2="576" y2="172" stroke="var(--fm-primary)" stroke-width="3"/>
+        <text x="576" y="142" text-anchor="middle" font-size="13" font-weight="800" fill="var(--fm-primary)">100%</text>
+        <text x="576" y="190" text-anchor="middle" font-size="14" font-weight="700" fill="var(--fm-text-muted)">$60</text>
 
         <!-- Target pin at 48% (around x: 310) -->
-        <polygon points="310,154 304,142 316,142" fill="#ea580c"/>
-        <rect x="220" y="210" width="200" height="52" rx="8" fill="#ffedd5" stroke="#ea580c" stroke-width="2"/>
-        <text x="320" y="230" text-anchor="middle" font-size="13" font-weight="800" fill="#c2410c">48% of $61 ≈ 50% of $60</text>
-        <text x="320" y="250" text-anchor="middle" font-size="15" font-weight="800" fill="#12355b">Estimate ≈ $30</text>
+        <polygon points="310,154 304,142 316,142" fill="var(--fm-m-unknown)"/>
+        <rect x="220" y="210" width="200" height="52" rx="8" fill="var(--fm-m-unknown-tint)" stroke="var(--fm-m-unknown-edge)" stroke-width="2"/>
+        <text x="320" y="230" text-anchor="middle" font-size="13" font-weight="800" fill="var(--fm-m-unknown)">48% of $61 ≈ 50% of $60</text>
+        <text x="320" y="250" text-anchor="middle" font-size="15" font-weight="800" fill="var(--fm-primary)">Estimate ≈ $30</text>
 
         <!-- Toolkit Callout -->
-        <rect x="34" y="286" width="572" height="116" rx="14" fill="#fff7ed" stroke="#ea580c" stroke-width="2"/>
-        <text x="54" y="312" font-size="15" font-weight="800" fill="#ea580c">💡 BENCHMARK ESTIMATION TOOLKIT:</text>
-        <text x="54" y="336" font-size="14" font-weight="700" fill="#12355b">10%: Move decimal 1 place left ($60 → $6).</text>
-        <text x="54" y="358" font-size="14" font-weight="700" fill="#12355b">50%: Half of whole ($60 ÷ 2 = $30).   25%: Half of 50% ($30 ÷ 2 = $15).</text>
-        <text x="54" y="380" font-size="14" font-weight="700" fill="#12355b">48% of $61 is close to 50% of $60 = $30 (just under $30 because 48% &lt; 50%).</text>
-        <text x="54" y="396" font-size="13" font-weight="700" fill="#ea580c">Quick mental ratio estimate: no long division needed!</text>`,
+        <rect x="34" y="286" width="572" height="116" rx="14" fill="var(--fm-m-unknown-tint)" stroke="var(--fm-m-unknown-edge)" stroke-width="2"/>
+        <text x="54" y="312" font-size="15" font-weight="800" fill="var(--fm-m-unknown)">💡 BENCHMARK ESTIMATION TOOLKIT:</text>
+        <text x="54" y="336" font-size="14" font-weight="700" fill="var(--fm-primary)">10%: Move decimal 1 place left ($60 → $6).</text>
+        <text x="54" y="358" font-size="14" font-weight="700" fill="var(--fm-primary)">50%: Half of whole ($60 ÷ 2 = $30).   25%: Half of 50% ($30 ÷ 2 = $15).</text>
+        <text x="54" y="380" font-size="14" font-weight="700" fill="var(--fm-primary)">48% of $61 is close to 50% of $60 = $30 (just under $30 because 48% &lt; 50%).</text>
+        <text x="54" y="396" font-size="13" font-weight="700" fill="var(--fm-m-unknown)">Quick mental ratio estimate: no long division needed!</text>`,
       })}</div>`,
       capEn: "Use benchmark percents like 10%, 25%, and 50% to make quick mental estimates.",
       capEs:
@@ -2018,40 +2025,40 @@ function conceptVisual(config) {
           body: `
           <!-- Quiz 1 Card -->
           ${conceptCard(34, 68, 276, 218)}
-          <rect x="52" y="80" width="140" height="24" rx="6" fill="#1e40af"/>
-          <text class="concept-title-en" x="122" y="97" text-anchor="middle" font-size="13" font-weight="800" fill="#ffffff">QUIZ 1 (OUT OF 25)</text>
-          <text class="concept-title-es" lang="es" x="122" y="97" text-anchor="middle" font-size="13" font-weight="800" fill="#ffffff">PRUEBA 1 (DE 25)</text>
-          <text class="concept-title-en" x="172" y="130" text-anchor="middle" font-size="16" font-weight="800" fill="#12355b">21 out of 25 correct</text>
-          <text class="concept-title-es" lang="es" x="172" y="130" text-anchor="middle" font-size="16" font-weight="800" fill="#12355b">21 de 25 correctas</text>
-          <text class="concept-title-en" x="172" y="156" text-anchor="middle" font-size="15" font-weight="700" fill="#1e40af">Scale denominator to 100:</text>
-          <text class="concept-title-es" lang="es" x="172" y="156" text-anchor="middle" font-size="15" font-weight="700" fill="#1e40af">Escala el denominador a 100:</text>
-          <text x="172" y="180" text-anchor="middle" font-size="16" font-weight="800" fill="#1e40af">21 × 4 / 25 × 4 = 84 / 100</text>
-          <rect x="62" y="196" width="220" height="42" rx="8" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
-          <text class="concept-title-en" x="172" y="222" text-anchor="middle" font-size="20" font-weight="800" fill="#15803d">= 84% ★ HIGHER SCORE</text>
-          <text class="concept-title-es" lang="es" x="172" y="222" text-anchor="middle" font-size="20" font-weight="800" fill="#15803d">= 84% ★ MEJOR PUNTAJE</text>
+          <rect x="52" y="80" width="140" height="24" rx="6" fill="var(--fm-m-whole)"/>
+          <text class="concept-title-en" x="122" y="97" text-anchor="middle" font-size="13" font-weight="800" fill="var(--fm-text-inverse)">QUIZ 1 (OUT OF 25)</text>
+          <text class="concept-title-es" lang="es" x="122" y="97" text-anchor="middle" font-size="13" font-weight="800" fill="var(--fm-text-inverse)">PRUEBA 1 (DE 25)</text>
+          <text class="concept-title-en" x="172" y="130" text-anchor="middle" font-size="16" font-weight="800" fill="var(--fm-primary)">21 out of 25 correct</text>
+          <text class="concept-title-es" lang="es" x="172" y="130" text-anchor="middle" font-size="16" font-weight="800" fill="var(--fm-primary)">21 de 25 correctas</text>
+          <text class="concept-title-en" x="172" y="156" text-anchor="middle" font-size="15" font-weight="700" fill="var(--fm-m-whole)">Scale denominator to 100:</text>
+          <text class="concept-title-es" lang="es" x="172" y="156" text-anchor="middle" font-size="15" font-weight="700" fill="var(--fm-m-whole)">Escala el denominador a 100:</text>
+          <text x="172" y="180" text-anchor="middle" font-size="16" font-weight="800" fill="var(--fm-m-whole)">21 × 4 / 25 × 4 = 84 / 100</text>
+          <rect x="62" y="196" width="220" height="42" rx="8" fill="var(--fm-success-tint)" stroke="var(--fm-success)" stroke-width="2"/>
+          <text class="concept-title-en" x="172" y="222" text-anchor="middle" font-size="20" font-weight="800" fill="var(--fm-success-ink)">= 84% ★ HIGHER SCORE</text>
+          <text class="concept-title-es" lang="es" x="172" y="222" text-anchor="middle" font-size="20" font-weight="800" fill="var(--fm-success-ink)">= 84% ★ MEJOR PUNTAJE</text>
 
           <!-- Quiz 2 Card -->
           ${conceptCard(330, 68, 276, 218)}
-          <rect x="348" y="80" width="140" height="24" rx="6" fill="#1e40af"/>
-          <text class="concept-title-en" x="418" y="97" text-anchor="middle" font-size="13" font-weight="800" fill="#ffffff">QUIZ 2 (OUT OF 20)</text>
-          <text class="concept-title-es" lang="es" x="418" y="97" text-anchor="middle" font-size="13" font-weight="800" fill="#ffffff">PRUEBA 2 (DE 20)</text>
-          <text class="concept-title-en" x="468" y="130" text-anchor="middle" font-size="16" font-weight="800" fill="#12355b">16 out of 20 correct</text>
-          <text class="concept-title-es" lang="es" x="468" y="130" text-anchor="middle" font-size="16" font-weight="800" fill="#12355b">16 de 20 correctas</text>
-          <text class="concept-title-en" x="468" y="156" text-anchor="middle" font-size="15" font-weight="700" fill="#1e40af">Scale denominator to 100:</text>
-          <text class="concept-title-es" lang="es" x="468" y="156" text-anchor="middle" font-size="15" font-weight="700" fill="#1e40af">Escala el denominador a 100:</text>
-          <text x="468" y="180" text-anchor="middle" font-size="16" font-weight="800" fill="#1e40af">16 × 5 / 20 × 5 = 80 / 100</text>
-          <rect x="358" y="196" width="220" height="42" rx="8" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.5"/>
-          <text x="468" y="222" text-anchor="middle" font-size="20" font-weight="800" fill="#64748b">= 80%</text>
+          <rect x="348" y="80" width="140" height="24" rx="6" fill="var(--fm-m-whole)"/>
+          <text class="concept-title-en" x="418" y="97" text-anchor="middle" font-size="13" font-weight="800" fill="var(--fm-text-inverse)">QUIZ 2 (OUT OF 20)</text>
+          <text class="concept-title-es" lang="es" x="418" y="97" text-anchor="middle" font-size="13" font-weight="800" fill="var(--fm-text-inverse)">PRUEBA 2 (DE 20)</text>
+          <text class="concept-title-en" x="468" y="130" text-anchor="middle" font-size="16" font-weight="800" fill="var(--fm-primary)">16 out of 20 correct</text>
+          <text class="concept-title-es" lang="es" x="468" y="130" text-anchor="middle" font-size="16" font-weight="800" fill="var(--fm-primary)">16 de 20 correctas</text>
+          <text class="concept-title-en" x="468" y="156" text-anchor="middle" font-size="15" font-weight="700" fill="var(--fm-m-whole)">Scale denominator to 100:</text>
+          <text class="concept-title-es" lang="es" x="468" y="156" text-anchor="middle" font-size="15" font-weight="700" fill="var(--fm-m-whole)">Escala el denominador a 100:</text>
+          <text x="468" y="180" text-anchor="middle" font-size="16" font-weight="800" fill="var(--fm-m-whole)">16 × 5 / 20 × 5 = 80 / 100</text>
+          <rect x="358" y="196" width="220" height="42" rx="8" fill="var(--fm-m-whole-tint)" stroke="var(--fm-m-whole)" stroke-width="1.5"/>
+          <text x="468" y="222" text-anchor="middle" font-size="20" font-weight="800" fill="var(--fm-text-muted)">= 80%</text>
 
           <!-- Takeaway Callout -->
-          <rect x="34" y="300" width="572" height="104" rx="14" fill="#eff6ff" stroke="#3b82f6" stroke-width="2"/>
-          <text class="concept-title-en" x="54" y="326" font-size="15" font-weight="800" fill="#1d4ed8">✔ WHY PERCENTS MAKE COMPARISON FAIR:</text>
-          <text class="concept-title-es" lang="es" x="54" y="326" font-size="15" font-weight="800" fill="#1d4ed8">✔ POR QUÉ LOS PORCENTAJES HACEN LA COMPARACIÓN JUSTA:</text>
-          <text class="concept-title-en" x="54" y="350" font-size="14" font-weight="700" fill="#12355b">You can't compare 21 and 16 directly: the totals differ (25 vs 20).</text>
-          <text class="concept-title-es" lang="es" x="54" y="350" font-size="14" font-weight="700" fill="#12355b">No se comparan 21 y 16 directo: los totales son distintos (25 y 20).</text>
-          <text class="concept-title-en" x="54" y="372" font-size="14" font-weight="700" fill="#12355b">Percents put both scores on the same 100-point scale: 84% beats 80%.</text>
-          <text class="concept-title-es" lang="es" x="54" y="372" font-size="14" font-weight="700" fill="#12355b">Los porcentajes ponen ambos sobre 100: 84% supera a 80%.</text>
-          <text x="54" y="392" font-size="13" font-weight="700" fill="#1d4ed8">Equivalent ratio scaling: 21/25 = 84/100 and 16/20 = 80/100</text>`,
+          <rect x="34" y="300" width="572" height="104" rx="14" fill="var(--fm-m-whole-tint)" stroke="var(--fm-m-whole)" stroke-width="2"/>
+          <text class="concept-title-en" x="54" y="326" font-size="15" font-weight="800" fill="var(--fm-m-whole)">✔ WHY PERCENTS MAKE COMPARISON FAIR:</text>
+          <text class="concept-title-es" lang="es" x="54" y="326" font-size="15" font-weight="800" fill="var(--fm-m-whole)">✔ POR QUÉ LOS PORCENTAJES HACEN LA COMPARACIÓN JUSTA:</text>
+          <text class="concept-title-en" x="54" y="350" font-size="14" font-weight="700" fill="var(--fm-primary)">You can't compare 21 and 16 directly: the totals differ (25 vs 20).</text>
+          <text class="concept-title-es" lang="es" x="54" y="350" font-size="14" font-weight="700" fill="var(--fm-primary)">No se comparan 21 y 16 directo: los totales son distintos (25 y 20).</text>
+          <text class="concept-title-en" x="54" y="372" font-size="14" font-weight="700" fill="var(--fm-primary)">Percents put both scores on the same 100-point scale: 84% beats 80%.</text>
+          <text class="concept-title-es" lang="es" x="54" y="372" font-size="14" font-weight="700" fill="var(--fm-primary)">Los porcentajes ponen ambos sobre 100: 84% supera a 80%.</text>
+          <text x="54" y="392" font-size="13" font-weight="700" fill="var(--fm-m-whole)">Equivalent ratio scaling: 21/25 = 84/100 and 16/20 = 80/100</text>`,
         })}</div>`,
         capEn:
           "Scale both ratios to 100 so different totals can be compared on the same fair scale.",
@@ -2071,42 +2078,42 @@ function conceptVisual(config) {
         body: `
         <!-- Tape Diagram Card -->
         ${conceptCard(34, 68, 572, 136)}
-        <rect x="52" y="80" width="240" height="24" rx="6" fill="#0f766e"/>
-        <text class="concept-title-en" x="172" y="97" text-anchor="middle" font-size="13" font-weight="800" fill="#ffffff">TAPE DIAGRAM: $40 BACKPACK</text>
-        <text class="concept-title-es" lang="es" x="172" y="97" text-anchor="middle" font-size="13" font-weight="800" fill="#ffffff">DIAGRAMA: MOCHILA DE $40</text>
+        <rect x="52" y="80" width="240" height="24" rx="6" fill="var(--fm-m-part)"/>
+        <text class="concept-title-en" x="172" y="97" text-anchor="middle" font-size="13" font-weight="800" fill="var(--fm-text-inverse)">TAPE DIAGRAM: $40 BACKPACK</text>
+        <text class="concept-title-es" lang="es" x="172" y="97" text-anchor="middle" font-size="13" font-weight="800" fill="var(--fm-text-inverse)">DIAGRAMA: MOCHILA DE $40</text>
 
         <!-- 4 Blocks of $10 each -->
         <g transform="translate(52, 116)">
           <!-- Block 1: Discount -->
-          <rect x="0" y="0" width="130" height="42" rx="6" fill="#fee2e2" stroke="#ef4444" stroke-width="2"/>
-          <text x="65" y="26" text-anchor="middle" font-size="14" font-weight="800" fill="#b91c1c">25% OFF = $10</text>
+          <rect x="0" y="0" width="130" height="42" rx="6" fill="var(--fm-m-unknown-tint)" stroke="var(--fm-m-unknown-edge)" stroke-width="2"/>
+          <text x="65" y="26" text-anchor="middle" font-size="14" font-weight="800" fill="var(--fm-m-unknown)">25% OFF = $10</text>
 
           <!-- Blocks 2, 3, 4: Sale Price -->
-          <rect x="138" y="0" width="125" height="42" rx="6" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
-          <text x="200" y="26" text-anchor="middle" font-size="14" font-weight="800" fill="#15803d">$10 (25%)</text>
-          <rect x="271" y="0" width="125" height="42" rx="6" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
-          <text x="333" y="26" text-anchor="middle" font-size="14" font-weight="800" fill="#15803d">$10 (25%)</text>
-          <rect x="404" y="0" width="125" height="42" rx="6" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
-          <text x="466" y="26" text-anchor="middle" font-size="14" font-weight="800" fill="#15803d">$10 (25%)</text>
+          <rect x="138" y="0" width="125" height="42" rx="6" fill="var(--fm-success-tint)" stroke="var(--fm-success)" stroke-width="2"/>
+          <text x="200" y="26" text-anchor="middle" font-size="14" font-weight="800" fill="var(--fm-success-ink)">$10 (25%)</text>
+          <rect x="271" y="0" width="125" height="42" rx="6" fill="var(--fm-success-tint)" stroke="var(--fm-success)" stroke-width="2"/>
+          <text x="333" y="26" text-anchor="middle" font-size="14" font-weight="800" fill="var(--fm-success-ink)">$10 (25%)</text>
+          <rect x="404" y="0" width="125" height="42" rx="6" fill="var(--fm-success-tint)" stroke="var(--fm-success)" stroke-width="2"/>
+          <text x="466" y="26" text-anchor="middle" font-size="14" font-weight="800" fill="var(--fm-success-ink)">$10 (25%)</text>
         </g>
-        <text class="concept-title-en" x="117" y="180" text-anchor="middle" font-size="12" font-weight="800" fill="#b91c1c">Discount Part</text>
-        <text class="concept-title-es" lang="es" x="117" y="180" text-anchor="middle" font-size="12" font-weight="800" fill="#b91c1c">Parte de descuento</text>
-        <text class="concept-title-en" x="390" y="180" text-anchor="middle" font-size="12" font-weight="800" fill="#15803d">Sale Price Part = $30 (75%)</text>
-        <text class="concept-title-es" lang="es" x="390" y="180" text-anchor="middle" font-size="12" font-weight="800" fill="#15803d">Precio de oferta = $30 (75%)</text>
+        <text class="concept-title-en" x="117" y="180" text-anchor="middle" font-size="12" font-weight="800" fill="var(--fm-m-unknown)">Discount Part</text>
+        <text class="concept-title-es" lang="es" x="117" y="180" text-anchor="middle" font-size="12" font-weight="800" fill="var(--fm-m-unknown)">Parte de descuento</text>
+        <text class="concept-title-en" x="390" y="180" text-anchor="middle" font-size="12" font-weight="800" fill="var(--fm-success-ink)">Sale Price Part = $30 (75%)</text>
+        <text class="concept-title-es" lang="es" x="390" y="180" text-anchor="middle" font-size="12" font-weight="800" fill="var(--fm-success-ink)">Precio de oferta = $30 (75%)</text>
 
         <!-- Calculation Card -->
-        <rect x="34" y="216" width="572" height="188" rx="14" fill="#f0fdfa" stroke="#0f766e" stroke-width="2"/>
-        <text class="concept-title-en" x="54" y="242" font-size="15" font-weight="800" fill="#0f766e">✔ TWO-STEP DISCOUNT FORMULA:</text>
-        <text class="concept-title-es" lang="es" x="54" y="242" font-size="15" font-weight="800" fill="#0f766e">✔ FÓRMULA DE DESCUENTO EN DOS PASOS:</text>
+        <rect x="34" y="216" width="572" height="188" rx="14" fill="var(--fm-success-tint)" stroke="var(--fm-m-part)" stroke-width="2"/>
+        <text class="concept-title-en" x="54" y="242" font-size="15" font-weight="800" fill="var(--fm-m-part)">✔ TWO-STEP DISCOUNT FORMULA:</text>
+        <text class="concept-title-es" lang="es" x="54" y="242" font-size="15" font-weight="800" fill="var(--fm-m-part)">✔ FÓRMULA DE DESCUENTO EN DOS PASOS:</text>
         <g transform="translate(54, 258)">
-          <text class="concept-title-en" x="0" y="18" font-size="14" font-weight="700" fill="#12355b">Step 1: Find the discount (Part = Percent × Whole)</text>
-          <text class="concept-title-es" lang="es" x="0" y="18" font-size="14" font-weight="700" fill="#12355b">Paso 1: Halla el descuento (Parte = Porcentaje × Total)</text>
-          <text x="0" y="40" font-size="15" font-weight="800" fill="#0f766e">25% of $40 = 0.25 × 40 = $10 discount</text>
-          <text class="concept-title-en" x="0" y="68" font-size="14" font-weight="700" fill="#12355b">Step 2: Subtract discount from original price</text>
-          <text class="concept-title-es" lang="es" x="0" y="68" font-size="14" font-weight="700" fill="#12355b">Paso 2: Resta el descuento del precio original</text>
-          <text x="0" y="90" font-size="15" font-weight="800" fill="#0f766e">Sale Price = $40 − $10 = $30</text>
-          <text class="concept-title-en" x="0" y="118" font-size="13" font-weight="700" fill="#5f6f80">The word "of" means multiply: 25% OF $40 → 0.25 × 40 = $10</text>
-          <text class="concept-title-es" lang="es" x="0" y="118" font-size="13" font-weight="700" fill="#5f6f80">La palabra "de" significa multiplicar: 25% DE $40 → 0.25 × 40 = $10</text>
+          <text class="concept-title-en" x="0" y="18" font-size="14" font-weight="700" fill="var(--fm-primary)">Step 1: Find the discount (Part = Percent × Whole)</text>
+          <text class="concept-title-es" lang="es" x="0" y="18" font-size="14" font-weight="700" fill="var(--fm-primary)">Paso 1: Halla el descuento (Parte = Porcentaje × Total)</text>
+          <text x="0" y="40" font-size="15" font-weight="800" fill="var(--fm-m-part)">25% of $40 = 0.25 × 40 = $10 discount</text>
+          <text class="concept-title-en" x="0" y="68" font-size="14" font-weight="700" fill="var(--fm-primary)">Step 2: Subtract discount from original price</text>
+          <text class="concept-title-es" lang="es" x="0" y="68" font-size="14" font-weight="700" fill="var(--fm-primary)">Paso 2: Resta el descuento del precio original</text>
+          <text x="0" y="90" font-size="15" font-weight="800" fill="var(--fm-m-part)">Sale Price = $40 − $10 = $30</text>
+          <text class="concept-title-en" x="0" y="118" font-size="13" font-weight="700" fill="var(--fm-text-muted)">The word "of" means multiply: 25% OF $40 → 0.25 × 40 = $10</text>
+          <text class="concept-title-es" lang="es" x="0" y="118" font-size="13" font-weight="700" fill="var(--fm-text-muted)">La palabra "de" significa multiplicar: 25% DE $40 → 0.25 × 40 = $10</text>
         </g>`,
       })}</div>`,
       capEn:
@@ -2128,38 +2135,38 @@ function conceptVisual(config) {
           body: `
           <!-- Equation Solving Card -->
           ${conceptCard(34, 68, 572, 224)}
-          <rect x="52" y="80" width="280" height="24" rx="6" fill="#b45309"/>
-          <text class="concept-title-en" x="192" y="97" text-anchor="middle" font-size="13" font-weight="800" fill="#ffffff">EQUATION: PERCENT × WHOLE = PART</text>
-          <text class="concept-title-es" lang="es" x="192" y="97" text-anchor="middle" font-size="13" font-weight="800" fill="#ffffff">ECUACIÓN: PORCENTAJE × TOTAL = PARTE</text>
+          <rect x="52" y="80" width="280" height="24" rx="6" fill="var(--fm-m-unknown)"/>
+          <text class="concept-title-en" x="192" y="97" text-anchor="middle" font-size="13" font-weight="800" fill="var(--fm-text-inverse)">EQUATION: PERCENT × WHOLE = PART</text>
+          <text class="concept-title-es" lang="es" x="192" y="97" text-anchor="middle" font-size="13" font-weight="800" fill="var(--fm-text-inverse)">ECUACIÓN: PORCENTAJE × TOTAL = PARTE</text>
 
-          <text class="concept-title-en" x="54" y="132" font-size="15" font-weight="700" fill="#12355b">Problem: A $6 tip is 15% of the total restaurant bill (b).</text>
-          <text class="concept-title-es" lang="es" x="54" y="132" font-size="15" font-weight="700" fill="#12355b">Problema: Una propina de $6 es el 15% de la cuenta total (b).</text>
+          <text class="concept-title-en" x="54" y="132" font-size="15" font-weight="700" fill="var(--fm-primary)">Problem: A $6 tip is 15% of the total restaurant bill (b).</text>
+          <text class="concept-title-es" lang="es" x="54" y="132" font-size="15" font-weight="700" fill="var(--fm-primary)">Problema: Una propina de $6 es el 15% de la cuenta total (b).</text>
 
           <!-- Worked Steps -->
           <g transform="translate(54, 150)">
-            <text class="concept-title-en" x="0" y="20" font-size="15" font-weight="800" fill="#b45309">1. Write the equation:</text>
-            <text class="concept-title-es" lang="es" x="0" y="20" font-size="15" font-weight="800" fill="#b45309">1. Escribe la ecuación:</text>
-            <text x="260" y="20" font-size="17" font-weight="800" fill="#12355b">0.15 × b = 6</text>
+            <text class="concept-title-en" x="0" y="20" font-size="15" font-weight="800" fill="var(--fm-m-unknown)">1. Write the equation:</text>
+            <text class="concept-title-es" lang="es" x="0" y="20" font-size="15" font-weight="800" fill="var(--fm-m-unknown)">1. Escribe la ecuación:</text>
+            <text x="260" y="20" font-size="17" font-weight="800" fill="var(--fm-primary)">0.15 × b = 6</text>
 
-            <text class="concept-title-en" x="0" y="52" font-size="15" font-weight="800" fill="#b45309">2. Divide to undo multiplication:</text>
-            <text class="concept-title-es" lang="es" x="0" y="52" font-size="15" font-weight="800" fill="#b45309">2. Divide para despejar:</text>
-            <text x="260" y="52" font-size="17" font-weight="800" fill="#12355b">b = 6 ÷ 0.15</text>
+            <text class="concept-title-en" x="0" y="52" font-size="15" font-weight="800" fill="var(--fm-m-unknown)">2. Divide to undo multiplication:</text>
+            <text class="concept-title-es" lang="es" x="0" y="52" font-size="15" font-weight="800" fill="var(--fm-m-unknown)">2. Divide para despejar:</text>
+            <text x="260" y="52" font-size="17" font-weight="800" fill="var(--fm-primary)">b = 6 ÷ 0.15</text>
 
-            <text class="concept-title-en" x="0" y="84" font-size="15" font-weight="800" fill="#b45309">3. Calculate the missing whole:</text>
-            <text class="concept-title-es" lang="es" x="0" y="84" font-size="15" font-weight="800" fill="#b45309">3. Calcula el total que falta:</text>
-            <text x="260" y="84" font-size="18" font-weight="800" fill="#0f766e">b = $40 total bill</text>
+            <text class="concept-title-en" x="0" y="84" font-size="15" font-weight="800" fill="var(--fm-m-unknown)">3. Calculate the missing whole:</text>
+            <text class="concept-title-es" lang="es" x="0" y="84" font-size="15" font-weight="800" fill="var(--fm-m-unknown)">3. Calcula el total que falta:</text>
+            <text x="260" y="84" font-size="18" font-weight="800" fill="var(--fm-m-part)">b = $40 total bill</text>
           </g>
 
           <!-- Check & Reason Card -->
-          <rect x="34" y="304" width="572" height="98" rx="14" fill="#ecfdf5" stroke="#10b981" stroke-width="2"/>
-          <text class="concept-title-en" x="54" y="328" font-size="15" font-weight="800" fill="#047857">✔ CHECK YOUR WORK (INVERSE OPERATION):</text>
-          <text class="concept-title-es" lang="es" x="54" y="328" font-size="15" font-weight="800" fill="#047857">✔ COMPRUEBA TU TRABAJO (OPERACIÓN INVERSA):</text>
-          <text class="concept-title-en" x="54" y="352" font-size="14" font-weight="700" fill="#12355b">Multiply back: 15% of $40 = 0.15 × 40 = $6. ✓ Matches the tip!</text>
-          <text class="concept-title-es" lang="es" x="54" y="352" font-size="14" font-weight="700" fill="#12355b">Multiplica de regreso: 15% de $40 = 0.15 × 40 = $6. ✓ ¡Coincide!</text>
-          <text class="concept-title-en" x="54" y="374" font-size="13" font-weight="700" fill="#12355b">Sanity check: 15% is less than 100%, so the whole MUST exceed the part ($40 &gt; $6).</text>
-          <text class="concept-title-es" lang="es" x="54" y="374" font-size="13" font-weight="700" fill="#12355b">Sentido común: 15% es menor que 100%, así que el total DEBE superar la parte ($40 &gt; $6).</text>
-          <text class="concept-title-en" x="54" y="392" font-size="13" font-weight="700" fill="#047857">Multiplying by 0.15 would give $0.90 — an obvious red flag for a total bill!</text>
-          <text class="concept-title-es" lang="es" x="54" y="392" font-size="13" font-weight="700" fill="#047857">Multiplicar por 0.15 daría $0.90 — ¡una señal clara de que algo falló!</text>`,
+          <rect x="34" y="304" width="572" height="98" rx="14" fill="var(--fm-success-tint)" stroke="var(--fm-success)" stroke-width="2"/>
+          <text class="concept-title-en" x="54" y="328" font-size="15" font-weight="800" fill="var(--fm-success-ink)">✔ CHECK YOUR WORK (INVERSE OPERATION):</text>
+          <text class="concept-title-es" lang="es" x="54" y="328" font-size="15" font-weight="800" fill="var(--fm-success-ink)">✔ COMPRUEBA TU TRABAJO (OPERACIÓN INVERSA):</text>
+          <text class="concept-title-en" x="54" y="352" font-size="14" font-weight="700" fill="var(--fm-primary)">Multiply back: 15% of $40 = 0.15 × 40 = $6. ✓ Matches the tip!</text>
+          <text class="concept-title-es" lang="es" x="54" y="352" font-size="14" font-weight="700" fill="var(--fm-primary)">Multiplica de regreso: 15% de $40 = 0.15 × 40 = $6. ✓ ¡Coincide!</text>
+          <text class="concept-title-en" x="54" y="374" font-size="13" font-weight="700" fill="var(--fm-primary)">Sanity check: 15% is less than 100%, so the whole MUST exceed the part ($40 &gt; $6).</text>
+          <text class="concept-title-es" lang="es" x="54" y="374" font-size="13" font-weight="700" fill="var(--fm-primary)">Sentido común: 15% es menor que 100%, así que el total DEBE superar la parte ($40 &gt; $6).</text>
+          <text class="concept-title-en" x="54" y="392" font-size="13" font-weight="700" fill="var(--fm-success-ink)">Multiplying by 0.15 would give $0.90 — an obvious red flag for a total bill!</text>
+          <text class="concept-title-es" lang="es" x="54" y="392" font-size="13" font-weight="700" fill="var(--fm-success-ink)">Multiplicar por 0.15 daría $0.90 — ¡una señal clara de que algo falló!</text>`,
         })}</div>`,
         capEn:
           "Percent times whole equals part. Divide both sides by the decimal percent to isolate the whole.",
@@ -2179,40 +2186,40 @@ function conceptVisual(config) {
         body: `
         <!-- Tape Diagram Card -->
         ${conceptCard(34, 68, 572, 142)}
-        <rect x="52" y="80" width="280" height="24" rx="6" fill="#0f766e"/>
-        <text class="concept-title-en" x="192" y="97" text-anchor="middle" font-size="13" font-weight="800" fill="#ffffff">TAPE DIAGRAM: 4 EQUAL 25% BLOCKS</text>
-        <text class="concept-title-es" lang="es" x="192" y="97" text-anchor="middle" font-size="13" font-weight="800" fill="#ffffff">DIAGRAMA: 4 BLOQUES IGUALES DE 25%</text>
+        <rect x="52" y="80" width="280" height="24" rx="6" fill="var(--fm-m-part)"/>
+        <text class="concept-title-en" x="192" y="97" text-anchor="middle" font-size="13" font-weight="800" fill="var(--fm-text-inverse)">TAPE DIAGRAM: 4 EQUAL 25% BLOCKS</text>
+        <text class="concept-title-es" lang="es" x="192" y="97" text-anchor="middle" font-size="13" font-weight="800" fill="var(--fm-text-inverse)">DIAGRAMA: 4 BLOQUES IGUALES DE 25%</text>
 
         <!-- 4 Blocks of 6 beads -->
         <g transform="translate(52, 116)">
-          <rect x="0" y="0" width="130" height="42" rx="6" fill="#0f766e"/>
-          <text x="65" y="26" text-anchor="middle" font-size="14" font-weight="800" fill="#ffffff">PART: 6 (25%)</text>
+          <rect x="0" y="0" width="130" height="42" rx="6" fill="var(--fm-m-part)"/>
+          <text x="65" y="26" text-anchor="middle" font-size="14" font-weight="800" fill="var(--fm-text-inverse)">PART: 6 (25%)</text>
 
-          <rect x="138" y="0" width="125" height="42" rx="6" fill="#e0f2fe" stroke="#0284c7" stroke-width="2"/>
-          <text x="200" y="26" text-anchor="middle" font-size="14" font-weight="800" fill="#0369a1">6 (25%)</text>
+          <rect x="138" y="0" width="125" height="42" rx="6" fill="var(--fm-m-whole-tint)" stroke="var(--fm-m-whole)" stroke-width="2"/>
+          <text x="200" y="26" text-anchor="middle" font-size="14" font-weight="800" fill="var(--fm-m-whole)">6 (25%)</text>
 
-          <rect x="271" y="0" width="125" height="42" rx="6" fill="#e0f2fe" stroke="#0284c7" stroke-width="2"/>
-          <text x="333" y="26" text-anchor="middle" font-size="14" font-weight="800" fill="#0369a1">6 (25%)</text>
+          <rect x="271" y="0" width="125" height="42" rx="6" fill="var(--fm-m-whole-tint)" stroke="var(--fm-m-whole)" stroke-width="2"/>
+          <text x="333" y="26" text-anchor="middle" font-size="14" font-weight="800" fill="var(--fm-m-whole)">6 (25%)</text>
 
-          <rect x="404" y="0" width="125" height="42" rx="6" fill="#e0f2fe" stroke="#0284c7" stroke-width="2"/>
-          <text x="466" y="26" text-anchor="middle" font-size="14" font-weight="800" fill="#0369a1">6 (25%)</text>
+          <rect x="404" y="0" width="125" height="42" rx="6" fill="var(--fm-m-whole-tint)" stroke="var(--fm-m-whole)" stroke-width="2"/>
+          <text x="466" y="26" text-anchor="middle" font-size="14" font-weight="800" fill="var(--fm-m-whole)">6 (25%)</text>
         </g>
-        <text class="concept-title-en" x="320" y="184" text-anchor="middle" font-size="14" font-weight="800" fill="#0f766e">WHOLE BAG = 4 blocks × 6 beads = 24 beads (100%)</text>
-        <text class="concept-title-es" lang="es" x="320" y="184" text-anchor="middle" font-size="14" font-weight="800" fill="#0f766e">TOTAL = 4 bloques × 6 cuentas = 24 cuentas (100%)</text>
+        <text class="concept-title-en" x="320" y="184" text-anchor="middle" font-size="14" font-weight="800" fill="var(--fm-m-part)">WHOLE BAG = 4 blocks × 6 beads = 24 beads (100%)</text>
+        <text class="concept-title-es" lang="es" x="320" y="184" text-anchor="middle" font-size="14" font-weight="800" fill="var(--fm-m-part)">TOTAL = 4 bloques × 6 cuentas = 24 cuentas (100%)</text>
 
         <!-- Division Formula Card -->
-        <rect x="34" y="222" width="572" height="182" rx="14" fill="#f0fdfa" stroke="#0f766e" stroke-width="2"/>
-        <text class="concept-title-en" x="54" y="246" font-size="15" font-weight="800" fill="#0f766e">✔ DIVISION FINDS THE WHOLE:</text>
-        <text class="concept-title-es" lang="es" x="54" y="246" font-size="15" font-weight="800" fill="#0f766e">✔ LA DIVISIÓN HALLA EL TOTAL:</text>
+        <rect x="34" y="222" width="572" height="182" rx="14" fill="var(--fm-success-tint)" stroke="var(--fm-m-part)" stroke-width="2"/>
+        <text class="concept-title-en" x="54" y="246" font-size="15" font-weight="800" fill="var(--fm-m-part)">✔ DIVISION FINDS THE WHOLE:</text>
+        <text class="concept-title-es" lang="es" x="54" y="246" font-size="15" font-weight="800" fill="var(--fm-m-part)">✔ LA DIVISIÓN HALLA EL TOTAL:</text>
         <g transform="translate(54, 262)">
-          <text class="concept-title-en" x="0" y="18" font-size="15" font-weight="700" fill="#12355b">Formula: Whole = Part ÷ Percent (as decimal)</text>
-          <text class="concept-title-es" lang="es" x="0" y="18" font-size="15" font-weight="700" fill="#12355b">Fórmula: Entero = Parte ÷ Porcentaje (en decimal)</text>
-          <text x="0" y="44" font-size="17" font-weight="800" fill="#0f766e">Whole = 6 ÷ 0.25 = 24 beads</text>
-          <text class="concept-title-en" x="0" y="72" font-size="14" font-weight="700" fill="#12355b">Check: 25% of 24 = 0.25 × 24 = 6 beads ✓</text>
-          <text class="concept-title-es" lang="es" x="0" y="72" font-size="14" font-weight="700" fill="#12355b">Comprueba: 25% de 24 = 0.25 × 24 = 6 cuentas ✓</text>
-          <text x="0" y="98" font-size="13.5" font-weight="700" fill="#0f766e">whole / entero = 6 ÷ 0.25 = 24</text>
-          <text class="concept-title-en" x="0" y="120" font-size="13" font-weight="700" fill="#5f6f80">Dividing by a decimal smaller than 1 makes the answer LARGER than the part.</text>
-          <text class="concept-title-es" lang="es" x="0" y="120" font-size="13" font-weight="700" fill="#5f6f80">Dividir entre un decimal menor que 1 hace que la respuesta sea MAYOR que la parte.</text>
+          <text class="concept-title-en" x="0" y="18" font-size="15" font-weight="700" fill="var(--fm-primary)">Formula: Whole = Part ÷ Percent (as decimal)</text>
+          <text class="concept-title-es" lang="es" x="0" y="18" font-size="15" font-weight="700" fill="var(--fm-primary)">Fórmula: Entero = Parte ÷ Porcentaje (en decimal)</text>
+          <text x="0" y="44" font-size="17" font-weight="800" fill="var(--fm-m-part)">Whole = 6 ÷ 0.25 = 24 beads</text>
+          <text class="concept-title-en" x="0" y="72" font-size="14" font-weight="700" fill="var(--fm-primary)">Check: 25% of 24 = 0.25 × 24 = 6 beads ✓</text>
+          <text class="concept-title-es" lang="es" x="0" y="72" font-size="14" font-weight="700" fill="var(--fm-primary)">Comprueba: 25% de 24 = 0.25 × 24 = 6 cuentas ✓</text>
+          <text x="0" y="98" font-size="13.5" font-weight="700" fill="var(--fm-m-part)">whole / entero = 6 ÷ 0.25 = 24</text>
+          <text class="concept-title-en" x="0" y="120" font-size="13" font-weight="700" fill="var(--fm-text-muted)">Dividing by a decimal smaller than 1 makes the answer LARGER than the part.</text>
+          <text class="concept-title-es" lang="es" x="0" y="120" font-size="13" font-weight="700" fill="var(--fm-text-muted)">Dividir entre un decimal menor que 1 hace que la respuesta sea MAYOR que la parte.</text>
         </g>`,
       })}</div>`,
       capEn:
@@ -2233,7 +2240,7 @@ function conceptVisual(config) {
     const head = cols
       .map(
         (c, i) =>
-          `<rect x="${colX[i]}" y="70" width="150" height="50" rx="10" fill="#12355b"/><text x="${colX[i] + 75}" y="103" text-anchor="middle" font-size="22" font-weight="800" fill="#ffffff">${c}</text>`,
+          `<rect x="${colX[i]}" y="70" width="150" height="50" rx="10" fill="var(--fm-primary)"/><text x="${colX[i] + 75}" y="103" text-anchor="middle" font-size="22" font-weight="800" fill="var(--fm-text-inverse)">${c}</text>`,
       )
       .join("");
     const body = rows
@@ -2241,7 +2248,7 @@ function conceptVisual(config) {
         row
           .map((cell, c) => {
             const y = 128 + r * 56;
-            return `<rect x="${colX[c]}" y="${y}" width="150" height="50" rx="10" fill="#ffffff" stroke="#cddbe8" stroke-width="2"/><text x="${colX[c] + 75}" y="${y + 36}" text-anchor="middle" font-size="30" font-weight="800" fill="#12355b">${cell}</text>`;
+            return `<rect x="${colX[c]}" y="${y}" width="150" height="50" rx="10" fill="var(--fm-raised)" stroke="var(--fm-m-whole)" stroke-width="2"/><text x="${colX[c] + 75}" y="${y + 36}" text-anchor="middle" font-size="30" font-weight="800" fill="var(--fm-primary)">${cell}</text>`;
           })
           .join(""),
       )
@@ -2252,7 +2259,7 @@ function conceptVisual(config) {
     ]
       .map(
         (a) =>
-          `<text x="86" y="${a.y + 34}" text-anchor="end" font-size="26" font-weight="800" fill="#d9795d">${a.label}</text>`,
+          `<text x="86" y="${a.y + 34}" text-anchor="end" font-size="26" font-weight="800" fill="var(--fm-m-unknown)">${a.label}</text>`,
       )
       .join("");
     return {
@@ -2263,7 +2270,7 @@ function conceptVisual(config) {
         title: "Ratio Table / Tabla de razones",
         body: `${head}${body}${arrows}
         ${conceptCard(60, 306, 520, 62)}
-        <text x="320" y="347" text-anchor="middle" font-size="30" font-weight="800" fill="#0f766e">2 : 3  =  4 : 6  =  6 : 9</text>`,
+        <text x="320" y="347" text-anchor="middle" font-size="30" font-weight="800" fill="var(--fm-m-part)">2 : 3  =  4 : 6  =  6 : 9</text>`,
       }),
       capEn: "Multiply BOTH columns by the same number. The ratio stays the same.",
       capEs: "Multipliquen LAS DOS columnas por el mismo número. La razón no cambia.",
@@ -2278,17 +2285,17 @@ function conceptVisual(config) {
         height: 380,
         title: "Exponent / Exponente",
         body: `
-        <text x="96" y="168" font-size="84" font-weight="800" fill="#12355b">2</text>
-        <text x="150" y="118" font-size="46" font-weight="800" fill="#d9795d">3</text>
-        <text x="196" y="168" font-size="46" font-weight="700" fill="#12355b">=</text>
-        <text x="246" y="168" font-size="46" font-weight="800" fill="#12355b">2 × 2 × 2</text>
-        <text x="478" y="168" font-size="46" font-weight="800" fill="#0f766e">= 8</text>
-        <path d="M120 184 L120 212" stroke="#12355b" stroke-width="2.5" fill="none"/>
-        <text x="120" y="238" text-anchor="middle" font-size="21" font-weight="700" fill="#12355b">base</text>
-        <path d="M164 108 L176 86" stroke="#d9795d" stroke-width="2.5" fill="none"/>
-        <text x="186" y="80" font-size="21" font-weight="700" fill="#d9795d">exponent</text>
-        <rect x="46" y="272" width="548" height="72" rx="16" fill="#fdeae7" stroke="#d9534f" stroke-width="3"/>
-        <text x="320" y="318" text-anchor="middle" font-size="28" font-weight="800" fill="#b02a24">✗  2 + 2 + 2 = 6  is NOT 2³</text>`,
+        <text x="96" y="168" font-size="84" font-weight="800" fill="var(--fm-primary)">2</text>
+        <text x="150" y="118" font-size="46" font-weight="800" fill="var(--fm-m-unknown)">3</text>
+        <text x="196" y="168" font-size="46" font-weight="700" fill="var(--fm-primary)">=</text>
+        <text x="246" y="168" font-size="46" font-weight="800" fill="var(--fm-primary)">2 × 2 × 2</text>
+        <text x="478" y="168" font-size="46" font-weight="800" fill="var(--fm-m-part)">= 8</text>
+        <path d="M120 184 L120 212" stroke="var(--fm-primary)" stroke-width="2.5" fill="none"/>
+        <text x="120" y="238" text-anchor="middle" font-size="21" font-weight="700" fill="var(--fm-primary)">base</text>
+        <path d="M164 108 L176 86" stroke="var(--fm-m-unknown-edge)" stroke-width="2.5" fill="none"/>
+        <text x="186" y="80" font-size="21" font-weight="700" fill="var(--fm-m-unknown)">exponent</text>
+        <rect x="46" y="272" width="548" height="72" rx="16" fill="var(--fm-m-unknown-tint)" stroke="var(--fm-m-unknown-edge)" stroke-width="3"/>
+        <text x="320" y="318" text-anchor="middle" font-size="28" font-weight="800" fill="var(--fm-m-unknown)">✗  2 + 2 + 2 = 6  is NOT 2³</text>`,
       }),
       capEn:
         "The exponent tells you how many times to MULTIPLY the base — never how many times to add it.",
@@ -2305,14 +2312,14 @@ function conceptVisual(config) {
         title: "Equation / Ecuación",
         body: `
         ${conceptCard(120, 74, 400, 76)}
-        <text x="320" y="128" text-anchor="middle" font-size="48" font-weight="800" fill="#12355b">n + 8 = 20</text>
-        <path d="M320 156 L320 194" stroke="#1fa6a2" stroke-width="4"/>
-        <path d="M308 184 L320 200 L332 184" fill="#1fa6a2"/>
-        <text x="344" y="186" font-size="24" font-weight="800" fill="#0f766e">− 8 on both sides</text>
+        <text x="320" y="128" text-anchor="middle" font-size="48" font-weight="800" fill="var(--fm-primary)">n + 8 = 20</text>
+        <path d="M320 156 L320 194" stroke="var(--fm-m-part)" stroke-width="4"/>
+        <path d="M308 184 L320 200 L332 184" fill="var(--fm-m-part)"/>
+        <text x="344" y="186" font-size="24" font-weight="800" fill="var(--fm-m-part)">− 8 on both sides</text>
         ${conceptCard(120, 208, 400, 76)}
-        <text x="320" y="260" text-anchor="middle" font-size="38" font-weight="800" fill="#12355b">n + 8 − 8 = 20 − 8</text>
-        <rect x="204" y="300" width="232" height="70" rx="35" fill="#ffffff" stroke="#1fa6a2" stroke-width="4"/>
-        <text x="320" y="350" text-anchor="middle" font-size="42" font-weight="800" fill="#0f766e">n = 12</text>`,
+        <text x="320" y="260" text-anchor="middle" font-size="38" font-weight="800" fill="var(--fm-primary)">n + 8 − 8 = 20 − 8</text>
+        <rect x="204" y="300" width="232" height="70" rx="35" fill="var(--fm-raised)" stroke="var(--fm-m-part)" stroke-width="4"/>
+        <text x="320" y="350" text-anchor="middle" font-size="42" font-weight="800" fill="var(--fm-m-part)">n = 12</text>`,
       }),
       capEn:
         "Whatever you do to one side of the equal sign, do the exact same thing to the other side.",
@@ -2325,7 +2332,7 @@ function conceptVisual(config) {
     const ticks = [4, 5, 6, 7, 8, 9, 10]
       .map(
         (v) =>
-          `<line x1="${tick(v)}" y1="212" x2="${tick(v)}" y2="234" stroke="#12355b" stroke-width="3"/><text x="${tick(v)}" y="268" text-anchor="middle" font-size="24" font-weight="700" fill="#12355b">${v}</text>`,
+          `<line x1="${tick(v)}" y1="212" x2="${tick(v)}" y2="234" stroke="var(--fm-primary)" stroke-width="3"/><text x="${tick(v)}" y="268" text-anchor="middle" font-size="24" font-weight="700" fill="var(--fm-primary)">${v}</text>`,
       )
       .join("");
     return {
@@ -2336,14 +2343,14 @@ function conceptVisual(config) {
         height: 340,
         title: "Inequality / Desigualdad",
         body: `
-        <text x="320" y="128" text-anchor="middle" font-size="42" font-weight="800" fill="#12355b">x + 3 &gt; 10   →   x &gt; 7</text>
-        <rect x="${tick(7)}" y="209" width="${592 - tick(7)}" height="14" fill="#1fa6a2" opacity="0.45"/>
-        <line x1="46" y1="216" x2="586" y2="216" stroke="#12355b" stroke-width="4"/>
-        <path d="M578 202 L600 216 L578 230 Z" fill="#12355b"/>
+        <text x="320" y="128" text-anchor="middle" font-size="42" font-weight="800" fill="var(--fm-primary)">x + 3 &gt; 10   →   x &gt; 7</text>
+        <rect x="${tick(7)}" y="209" width="${592 - tick(7)}" height="14" fill="var(--fm-m-part)" opacity="0.45"/>
+        <line x1="46" y1="216" x2="586" y2="216" stroke="var(--fm-primary)" stroke-width="4"/>
+        <path d="M578 202 L600 216 L578 230 Z" fill="var(--fm-primary)"/>
         ${ticks}
-        <circle cx="${tick(7)}" cy="216" r="15" fill="#ffffff" stroke="#d9795d" stroke-width="5"/>
-        <text x="${tick(7)}" y="178" text-anchor="middle" font-size="22" font-weight="800" fill="#d9795d">open · 7 not included</text>
-        <text x="320" y="312" text-anchor="middle" font-size="25" font-weight="800" fill="#0f766e">Greater than → shade to the RIGHT →</text>`,
+        <circle cx="${tick(7)}" cy="216" r="15" fill="var(--fm-raised)" stroke="var(--fm-m-unknown-edge)" stroke-width="5"/>
+        <text x="${tick(7)}" y="178" text-anchor="middle" font-size="22" font-weight="800" fill="var(--fm-m-unknown)">open · 7 not included</text>
+        <text x="320" y="312" text-anchor="middle" font-size="25" font-weight="800" fill="var(--fm-m-part)">Greater than → shade to the RIGHT →</text>`,
       }),
       capEn: 'An open circle means "not equal to that number." Shade every number that works.',
       capEs:
@@ -2361,9 +2368,9 @@ function conceptVisual(config) {
       .map((r, i) => {
         const y = 68 + i * 108;
         return `${conceptCard(30, y, 580, 96)}
-        <text x="50" y="${y + 28}" font-size="21" font-weight="800" fill="#0f766e">${r[0]}</text>
-        <text x="50" y="${y + 63}" font-size="30" font-weight="800" fill="#12355b">${r[1]}</text>
-        <text x="590" y="${y + 88}" text-anchor="end" font-size="21" font-weight="700" fill="#5f6f80">${r[2]}</text>`;
+        <text x="50" y="${y + 28}" font-size="21" font-weight="800" fill="var(--fm-m-part)">${r[0]}</text>
+        <text x="50" y="${y + 63}" font-size="30" font-weight="800" fill="var(--fm-primary)">${r[1]}</text>
+        <text x="590" y="${y + 88}" text-anchor="end" font-size="21" font-weight="700" fill="var(--fm-text-muted)">${r[2]}</text>`;
       })
       .join("");
     return {
@@ -2381,15 +2388,15 @@ function conceptVisual(config) {
 
   if (topic === "expressions") {
     const legend = [
-      ["#2563eb", "3", "coefficient · coeficiente — how many x's"],
-      ["#0f766e", "x", "variable · variable — the unknown"],
-      ["#d97706", "5", "constant · constante — a plain number"],
+      ["var(--fm-m-whole)", "3", "coefficient · coeficiente — how many x's"],
+      ["var(--fm-m-part)", "x", "variable · variable — the unknown"],
+      ["var(--fm-m-unknown)", "5", "constant · constante — a plain number"],
     ]
       .map(([color, sym, label], i) => {
         const y = 216 + i * 50;
         return `<rect x="60" y="${y}" width="38" height="38" rx="10" fill="${color}"/>
-        <text x="79" y="${y + 28}" text-anchor="middle" font-size="24" font-weight="800" fill="#ffffff">${sym}</text>
-        <text x="112" y="${y + 27}" font-size="24" font-weight="700" fill="#12355b">${label}</text>`;
+        <text x="79" y="${y + 28}" text-anchor="middle" font-size="24" font-weight="800" fill="var(--fm-text-inverse)">${sym}</text>
+        <text x="112" y="${y + 27}" font-size="24" font-weight="700" fill="var(--fm-primary)">${label}</text>`;
       })
       .join("");
     return {
@@ -2400,9 +2407,9 @@ function conceptVisual(config) {
         title: "Expression / Expresión",
         body: `
         ${conceptCard(150, 78, 340, 106)}
-        <text x="320" y="154" text-anchor="middle" font-size="70" font-weight="800" fill="#12355b"><tspan fill="#2563eb">3</tspan><tspan fill="#0f766e">x</tspan> + <tspan fill="#d97706">5</tspan></text>
+        <text x="320" y="154" text-anchor="middle" font-size="70" font-weight="800" fill="var(--fm-primary)"><tspan fill="var(--fm-m-whole)">3</tspan><tspan fill="var(--fm-m-part)">x</tspan> + <tspan fill="var(--fm-m-unknown)">5</tspan></text>
         ${legend}
-        <text x="320" y="390" text-anchor="middle" font-size="24" font-weight="800" fill="#b02a24">No equal sign → it is an expression, not an equation</text>`,
+        <text x="320" y="390" text-anchor="middle" font-size="24" font-weight="800" fill="var(--fm-m-unknown)">No equal sign → it is an expression, not an equation</text>`,
       }),
       capEn:
         "An expression is a math phrase. It has no equal sign, so there is nothing to solve — you evaluate it.",
@@ -2420,14 +2427,14 @@ function conceptVisual(config) {
         height: 340,
         title: "Area / Área",
         body: `
-        <polygon points="70,232 250,232 312,110 132,110" fill="#ffffff" stroke="#1fa6a2" stroke-width="3"/>
-        <line x1="132" y1="110" x2="132" y2="232" stroke="#d9795d" stroke-width="4" stroke-dasharray="9 6"/>
-        <path d="M132 218 L146 218 L146 232" fill="none" stroke="#d9795d" stroke-width="3"/>
-        <text x="160" y="268" text-anchor="middle" font-size="24" font-weight="800" fill="#12355b">base = 9 in</text>
-        <text x="146" y="176" font-size="24" font-weight="800" fill="#d9795d">6 in</text>
-        <text x="340" y="130" font-size="27" font-weight="800" fill="#12355b">Area = base × height</text>
-        <text x="340" y="190" font-size="34" font-weight="800" fill="#12355b">= 9 × 6</text>
-        <text x="340" y="248" font-size="36" font-weight="800" fill="#0f766e">= 54 in²</text>`,
+        <polygon points="70,232 250,232 312,110 132,110" fill="var(--fm-raised)" stroke="var(--fm-m-part)" stroke-width="3"/>
+        <line x1="132" y1="110" x2="132" y2="232" stroke="var(--fm-m-unknown-edge)" stroke-width="4" stroke-dasharray="9 6"/>
+        <path d="M132 218 L146 218 L146 232" fill="none" stroke="var(--fm-m-unknown-edge)" stroke-width="3"/>
+        <text x="160" y="268" text-anchor="middle" font-size="24" font-weight="800" fill="var(--fm-primary)">base = 9 in</text>
+        <text x="146" y="176" font-size="24" font-weight="800" fill="var(--fm-m-unknown)">6 in</text>
+        <text x="340" y="130" font-size="27" font-weight="800" fill="var(--fm-primary)">Area = base × height</text>
+        <text x="340" y="190" font-size="34" font-weight="800" fill="var(--fm-primary)">= 9 × 6</text>
+        <text x="340" y="248" font-size="36" font-weight="800" fill="var(--fm-m-part)">= 54 in²</text>`,
       }),
       capEn:
         "Height is the straight-up distance, not the slanted side. Area is always in square units.",
@@ -2444,16 +2451,16 @@ function conceptVisual(config) {
         height: 330,
         title: "Volume / Volumen",
         body: `
-        <polygon points="70,240 230,240 288,186 128,186" fill="#bfe4de" stroke="#1fa6a2" stroke-width="3"/>
-        <polygon points="70,240 70,124 128,70 128,186" fill="#e6f6f3" stroke="#1fa6a2" stroke-width="3"/>
-        <polygon points="70,124 128,70 288,70 230,124" fill="#ffffff" stroke="#1fa6a2" stroke-width="3"/>
-        <polygon points="70,124 230,124 230,240 70,240" fill="#ffffff" stroke="#1fa6a2" stroke-width="3"/>
-        <text x="150" y="274" text-anchor="middle" font-size="23" font-weight="800" fill="#12355b">5 in</text>
-        <text x="56" y="190" text-anchor="end" font-size="23" font-weight="800" fill="#12355b">4 in</text>
-        <text x="300" y="102" font-size="23" font-weight="800" fill="#12355b">3 in</text>
-        <text x="350" y="150" font-size="27" font-weight="800" fill="#12355b">V = l × w × h</text>
-        <text x="350" y="206" font-size="32" font-weight="800" fill="#12355b">= 5 × 3 × 4</text>
-        <text x="350" y="262" font-size="34" font-weight="800" fill="#0f766e">= 60 in³</text>`,
+        <polygon points="70,240 230,240 288,186 128,186" fill="var(--fm-m-part-tint)" stroke="var(--fm-m-part)" stroke-width="3"/>
+        <polygon points="70,240 70,124 128,70 128,186" fill="var(--fm-success-tint)" stroke="var(--fm-m-part)" stroke-width="3"/>
+        <polygon points="70,124 128,70 288,70 230,124" fill="var(--fm-raised)" stroke="var(--fm-m-part)" stroke-width="3"/>
+        <polygon points="70,124 230,124 230,240 70,240" fill="var(--fm-raised)" stroke="var(--fm-m-part)" stroke-width="3"/>
+        <text x="150" y="274" text-anchor="middle" font-size="23" font-weight="800" fill="var(--fm-primary)">5 in</text>
+        <text x="56" y="190" text-anchor="end" font-size="23" font-weight="800" fill="var(--fm-primary)">4 in</text>
+        <text x="300" y="102" font-size="23" font-weight="800" fill="var(--fm-primary)">3 in</text>
+        <text x="350" y="150" font-size="27" font-weight="800" fill="var(--fm-primary)">V = l × w × h</text>
+        <text x="350" y="206" font-size="32" font-weight="800" fill="var(--fm-primary)">= 5 × 3 × 4</text>
+        <text x="350" y="262" font-size="34" font-weight="800" fill="var(--fm-m-part)">= 60 in³</text>`,
       }),
       capEn: "Volume fills the inside of a solid, so the answer is in cubic units.",
       capEs:
@@ -2472,7 +2479,7 @@ function conceptVisual(config) {
     ]
       .map(
         ([x, y, v]) =>
-          `<rect x="${x}" y="${y}" width="72" height="72" rx="6" fill="#ffffff" stroke="#1fa6a2" stroke-width="3"/><text x="${x + 36}" y="${y + 47}" text-anchor="middle" font-size="26" font-weight="800" fill="#12355b">${v}</text>`,
+          `<rect x="${x}" y="${y}" width="72" height="72" rx="6" fill="var(--fm-raised)" stroke="var(--fm-m-part)" stroke-width="3"/><text x="${x + 36}" y="${y + 47}" text-anchor="middle" font-size="26" font-weight="800" fill="var(--fm-primary)">${v}</text>`,
       )
       .join("");
     return {
@@ -2483,10 +2490,10 @@ function conceptVisual(config) {
         height: 360,
         title: "Net → Surface Area / Red → Área de superficie",
         body: `${faces}
-        <text x="440" y="150" font-size="24" font-weight="800" fill="#12355b">Add every face:</text>
-        <text x="440" y="196" font-size="17" font-weight="700" fill="#12355b">12+15+20+15+20+12</text>
-        <text x="440" y="252" font-size="34" font-weight="800" fill="#0f766e">= 94 in²</text>
-        <text x="320" y="336" text-anchor="middle" font-size="24" font-weight="800" fill="#12355b">A net is the box unfolded flat — 6 faces, 6 areas.</text>`,
+        <text x="440" y="150" font-size="24" font-weight="800" fill="var(--fm-primary)">Add every face:</text>
+        <text x="440" y="196" font-size="17" font-weight="700" fill="var(--fm-primary)">12+15+20+15+20+12</text>
+        <text x="440" y="252" font-size="34" font-weight="800" fill="var(--fm-m-part)">= 94 in²</text>
+        <text x="320" y="336" text-anchor="middle" font-size="24" font-weight="800" fill="var(--fm-primary)">A net is the box unfolded flat — 6 faces, 6 areas.</text>`,
       }),
       capEn: "Unfold the box, find the area of each face, then add them all together.",
       capEs: "Desdoblen la caja, hallen el área de cada cara y súmenlas todas.",
@@ -2506,14 +2513,14 @@ function conceptVisual(config) {
         Array.from(
           { length: n },
           (_, i) =>
-            `<circle cx="${dotX(v)}" cy="${196 - i * 34}" r="14" fill="#1fa6a2" stroke="#0f766e" stroke-width="2"/>`,
+            `<circle cx="${dotX(v)}" cy="${196 - i * 34}" r="14" fill="var(--fm-m-part)" stroke="var(--fm-m-part)" stroke-width="2"/>`,
         ).join(""),
       )
       .join("");
     const axis = [1, 2, 3, 4, 5, 6, 7, 8, 9]
       .map(
         (v) =>
-          `<line x1="${dotX(v)}" y1="216" x2="${dotX(v)}" y2="230" stroke="#12355b" stroke-width="3"/><text x="${dotX(v)}" y="260" text-anchor="middle" font-size="21" font-weight="700" fill="#12355b">${v}</text>`,
+          `<line x1="${dotX(v)}" y1="216" x2="${dotX(v)}" y2="230" stroke="var(--fm-primary)" stroke-width="3"/><text x="${dotX(v)}" y="260" text-anchor="middle" font-size="21" font-weight="700" fill="var(--fm-primary)">${v}</text>`,
       )
       .join("");
     const pills = [
@@ -2524,8 +2531,8 @@ function conceptVisual(config) {
       .map(([label, val], i) => {
         const y = 84 + i * 78;
         return `${conceptCard(414, y, 196, 62)}
-        <text x="432" y="${y + 27}" font-size="20" font-weight="800" fill="#0f766e">${label}</text>
-        <text x="432" y="${y + 54}" font-size="26" font-weight="800" fill="#12355b">= ${val}</text>`;
+        <text x="432" y="${y + 27}" font-size="20" font-weight="800" fill="var(--fm-m-part)">${label}</text>
+        <text x="432" y="${y + 54}" font-size="26" font-weight="800" fill="var(--fm-primary)">= ${val}</text>`;
       })
       .join("");
     return {
@@ -2534,8 +2541,8 @@ function conceptVisual(config) {
         tone: "teal",
         height: 330,
         title: "Data: 2, 3, 3, 4, 8",
-        body: `${dots}<line x1="40" y1="216" x2="394" y2="216" stroke="#12355b" stroke-width="4"/>${axis}${pills}
-        <text x="216" y="300" text-anchor="middle" font-size="22" font-weight="800" fill="#5f6f80">One dot = one value</text>`,
+        body: `${dots}<line x1="40" y1="216" x2="394" y2="216" stroke="var(--fm-primary)" stroke-width="4"/>${axis}${pills}
+        <text x="216" y="300" text-anchor="middle" font-size="22" font-weight="800" fill="var(--fm-text-muted)">One dot = one value</text>`,
       }),
       capEn:
         "Mean is the fair share, median is the middle value in order, mode is the one that repeats most.",
@@ -2551,12 +2558,12 @@ function conceptVisual(config) {
     const grid = Array.from({ length: 7 }, (_, i) => {
       const gx = ox + i * u;
       const gy = oy - i * u;
-      return `<line x1="${gx}" y1="${oy - 6 * u}" x2="${gx}" y2="${oy}" stroke="#cddbe8" stroke-width="1.5"/><line x1="${ox}" y1="${gy}" x2="${ox + 6 * u}" y2="${gy}" stroke="#cddbe8" stroke-width="1.5"/>`;
+      return `<line x1="${gx}" y1="${oy - 6 * u}" x2="${gx}" y2="${oy}" stroke="var(--fm-m-whole)" stroke-width="1.5"/><line x1="${ox}" y1="${gy}" x2="${ox + 6 * u}" y2="${gy}" stroke="var(--fm-m-whole)" stroke-width="1.5"/>`;
     }).join("");
     const nums = [1, 2, 3, 4, 5, 6]
       .map(
         (v) =>
-          `<text x="${ox + v * u}" y="${oy + 26}" text-anchor="middle" font-size="18" font-weight="700" fill="#5f6f80">${v}</text><text x="${ox - 12}" y="${oy - v * u + 7}" text-anchor="end" font-size="18" font-weight="700" fill="#5f6f80">${v}</text>`,
+          `<text x="${ox + v * u}" y="${oy + 26}" text-anchor="middle" font-size="18" font-weight="700" fill="var(--fm-text-muted)">${v}</text><text x="${ox - 12}" y="${oy - v * u + 7}" text-anchor="end" font-size="18" font-weight="700" fill="var(--fm-text-muted)">${v}</text>`,
       )
       .join("");
     return {
@@ -2566,17 +2573,17 @@ function conceptVisual(config) {
         height: 340,
         title: "Coordinate Plane / Plano de coordenadas",
         body: `${grid}
-        <line x1="${ox}" y1="${oy}" x2="${ox + 6 * u + 14}" y2="${oy}" stroke="#12355b" stroke-width="4"/>
-        <line x1="${ox}" y1="${oy}" x2="${ox}" y2="${oy - 6 * u - 14}" stroke="#12355b" stroke-width="4"/>
-        <line x1="${ox}" y1="${oy}" x2="${ox + 3 * u}" y2="${oy}" stroke="#d9795d" stroke-width="6"/>
-        <line x1="${ox + 3 * u}" y1="${oy}" x2="${ox + 3 * u}" y2="${oy - 4 * u}" stroke="#0f766e" stroke-width="6"/>
-        <circle cx="${ox + 3 * u}" cy="${oy - 4 * u}" r="13" fill="#d9795d" stroke="#12355b" stroke-width="3"/>
+        <line x1="${ox}" y1="${oy}" x2="${ox + 6 * u + 14}" y2="${oy}" stroke="var(--fm-primary)" stroke-width="4"/>
+        <line x1="${ox}" y1="${oy}" x2="${ox}" y2="${oy - 6 * u - 14}" stroke="var(--fm-primary)" stroke-width="4"/>
+        <line x1="${ox}" y1="${oy}" x2="${ox + 3 * u}" y2="${oy}" stroke="var(--fm-m-unknown-edge)" stroke-width="6"/>
+        <line x1="${ox + 3 * u}" y1="${oy}" x2="${ox + 3 * u}" y2="${oy - 4 * u}" stroke="var(--fm-m-part)" stroke-width="6"/>
+        <circle cx="${ox + 3 * u}" cy="${oy - 4 * u}" r="13" fill="var(--fm-m-unknown)" stroke="var(--fm-primary)" stroke-width="3"/>
         ${nums}
-        <text x="${ox + 3 * u + 22}" y="${oy - 4 * u - 12}" font-size="26" font-weight="800" fill="#12355b">(3, 4)</text>
-        <text x="376" y="132" font-size="26" font-weight="800" fill="#d9795d">1. Right 3  (x)</text>
-        <text x="376" y="182" font-size="26" font-weight="800" fill="#0f766e">2. Up 4  (y)</text>
-        <text x="376" y="240" font-size="24" font-weight="700" fill="#12355b">Always x first,</text>
-        <text x="376" y="272" font-size="24" font-weight="700" fill="#12355b">then y.</text>`,
+        <text x="${ox + 3 * u + 22}" y="${oy - 4 * u - 12}" font-size="26" font-weight="800" fill="var(--fm-primary)">(3, 4)</text>
+        <text x="376" y="132" font-size="26" font-weight="800" fill="var(--fm-m-unknown)">1. Right 3  (x)</text>
+        <text x="376" y="182" font-size="26" font-weight="800" fill="var(--fm-m-part)">2. Up 4  (y)</text>
+        <text x="376" y="240" font-size="24" font-weight="700" fill="var(--fm-primary)">Always x first,</text>
+        <text x="376" y="272" font-size="24" font-weight="700" fill="var(--fm-primary)">then y.</text>`,
       }),
       capEn: "Start at (0, 0). The first number moves across, the second number moves up or down.",
       capEs:
@@ -2589,7 +2596,7 @@ function conceptVisual(config) {
     const ticks = [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
       .map(
         (v) =>
-          `<line x1="${nx(v)}" y1="200" x2="${nx(v)}" y2="222" stroke="#12355b" stroke-width="3"/><text x="${nx(v)}" y="256" text-anchor="middle" font-size="22" font-weight="700" fill="#12355b">${v < 0 ? `−${Math.abs(v)}` : v}</text>`,
+          `<line x1="${nx(v)}" y1="200" x2="${nx(v)}" y2="222" stroke="var(--fm-primary)" stroke-width="3"/><text x="${nx(v)}" y="256" text-anchor="middle" font-size="22" font-weight="700" fill="var(--fm-primary)">${v < 0 ? `−${Math.abs(v)}` : v}</text>`,
       )
       .join("");
     return {
@@ -2600,16 +2607,16 @@ function conceptVisual(config) {
         height: 330,
         title: "Number Line / Recta numérica",
         body: `
-        <text x="320" y="112" text-anchor="middle" font-size="38" font-weight="800" fill="#12355b">|−3| = 3</text>
-        <rect x="${nx(-3)}" y="204" width="${nx(0) - nx(-3)}" height="14" fill="#f2c15b" opacity="0.75"/>
-        <line x1="40" y1="211" x2="600" y2="211" stroke="#12355b" stroke-width="4"/>
-        <path d="M32 197 L14 211 L32 225 Z" fill="#12355b"/>
-        <path d="M608 197 L626 211 L608 225 Z" fill="#12355b"/>
+        <text x="320" y="112" text-anchor="middle" font-size="38" font-weight="800" fill="var(--fm-primary)">|−3| = 3</text>
+        <rect x="${nx(-3)}" y="204" width="${nx(0) - nx(-3)}" height="14" fill="var(--fm-m-unknown)" opacity="0.75"/>
+        <line x1="40" y1="211" x2="600" y2="211" stroke="var(--fm-primary)" stroke-width="4"/>
+        <path d="M32 197 L14 211 L32 225 Z" fill="var(--fm-primary)"/>
+        <path d="M608 197 L626 211 L608 225 Z" fill="var(--fm-primary)"/>
         ${ticks}
-        <circle cx="${nx(-3)}" cy="211" r="13" fill="#d9795d" stroke="#12355b" stroke-width="3"/>
-        <circle cx="${nx(0)}" cy="211" r="13" fill="#0f766e" stroke="#12355b" stroke-width="3"/>
-        <text x="${(nx(-3) + nx(0)) / 2}" y="176" text-anchor="middle" font-size="24" font-weight="800" fill="#b45309">3 units from 0</text>
-        <text x="320" y="304" text-anchor="middle" font-size="24" font-weight="800" fill="#12355b">Left of 0 = negative   ·   Right of 0 = positive</text>`,
+        <circle cx="${nx(-3)}" cy="211" r="13" fill="var(--fm-m-unknown)" stroke="var(--fm-primary)" stroke-width="3"/>
+        <circle cx="${nx(0)}" cy="211" r="13" fill="var(--fm-m-part)" stroke="var(--fm-primary)" stroke-width="3"/>
+        <text x="${(nx(-3) + nx(0)) / 2}" y="176" text-anchor="middle" font-size="24" font-weight="800" fill="var(--fm-m-unknown)">3 units from 0</text>
+        <text x="320" y="304" text-anchor="middle" font-size="24" font-weight="800" fill="var(--fm-primary)">Left of 0 = negative   ·   Right of 0 = positive</text>`,
       }),
       capEn: "Absolute value is only the DISTANCE from zero, so it is never negative.",
       capEs: "El valor absoluto es solo la DISTANCIA desde cero, así que nunca es negativo.",
@@ -2624,10 +2631,10 @@ function conceptVisual(config) {
           .map((c) => {
             const cx = x0 + c * 42;
             const n = b * 4 + c + 1;
-            return `<rect x="${cx}" y="76" width="42" height="58" fill="${n % 2 ? "#ffffff" : "#d7f0ea"}" stroke="#1fa6a2" stroke-width="2.5"/><text x="${cx + 21}" y="113" text-anchor="middle" font-size="20" font-weight="800" fill="#0f766e">${n}</text>`;
+            return `<rect x="${cx}" y="76" width="42" height="58" fill="${n % 2 ? "var(--fm-raised)" : "var(--fm-success-tint)"}" stroke="var(--fm-m-part)" stroke-width="2.5"/><text x="${cx + 21}" y="113" text-anchor="middle" font-size="20" font-weight="800" fill="var(--fm-m-part)">${n}</text>`;
           })
           .join("");
-        return `${cells}<text x="${x0 + 84}" y="160" text-anchor="middle" font-size="21" font-weight="800" fill="#12355b">1 foot</text>`;
+        return `${cells}<text x="${x0 + 84}" y="160" text-anchor="middle" font-size="21" font-weight="800" fill="var(--fm-primary)">1 foot</text>`;
       })
       .join("");
     return {
@@ -2638,10 +2645,10 @@ function conceptVisual(config) {
         height: 420,
         title: "3 ÷ ¼  —  How many ¼ fit inside 3?",
         body: `${bars}
-        <text x="320" y="196" text-anchor="middle" font-size="30" font-weight="800" fill="#0f766e">12 pieces</text>
-        ${conceptRow(212, 1, "Whole over 1:  3  →  3/1", "#2563eb")}
-        ${conceptRow(280, 2, "Keep, Change, Flip:  3/1 × 4/1", "#0f766e")}
-        ${conceptRow(348, 3, "Multiply across:  12/1 = 12", "#d97706")}`,
+        <text x="320" y="196" text-anchor="middle" font-size="30" font-weight="800" fill="var(--fm-m-part)">12 pieces</text>
+        ${conceptRow(212, 1, "Whole over 1:  3  →  3/1", "var(--fm-m-whole)")}
+        ${conceptRow(280, 2, "Keep, Change, Flip:  3/1 × 4/1", "var(--fm-m-part)")}
+        ${conceptRow(348, 3, "Multiply across:  12/1 = 12", "var(--fm-m-unknown)")}`,
       }),
       capEn:
         "Dividing by a fraction asks how many of that small piece fit inside. For a positive amount, dividing by a fraction between 0 and 1 makes the result larger.",
@@ -2669,14 +2676,14 @@ function conceptVisual(config) {
           height: 380,
           title: "Dividing Decimals / Dividir decimales",
           body: `
-        <text x="320" y="112" text-anchor="middle" font-size="36" font-weight="800" fill="#12355b">14.4 ÷ 1.2   →   144 ÷ 12</text>
-        <text x="320" y="176" text-anchor="middle" font-size="24" font-weight="800" fill="#d9795d">Move BOTH decimal points 1 place</text>
+        <text x="320" y="112" text-anchor="middle" font-size="36" font-weight="800" fill="var(--fm-primary)">14.4 ÷ 1.2   →   144 ÷ 12</text>
+        <text x="320" y="176" text-anchor="middle" font-size="24" font-weight="800" fill="var(--fm-m-unknown)">Move BOTH decimal points 1 place</text>
         ${conceptCard(180, 236, 280, 122)}
-        <text x="252" y="326" text-anchor="end" font-size="44" font-weight="800" fill="#12355b">12</text>
-        <path d="M262 272 q-16 30 6 62" stroke="#12355b" stroke-width="4" fill="none"/>
-        <path d="M262 272 H 420" stroke="#12355b" stroke-width="4" fill="none"/>
-        <text x="278" y="326" font-size="44" font-weight="800" fill="#12355b">144</text>
-        <text x="414" y="262" text-anchor="end" font-size="44" font-weight="800" fill="#0f766e">12</text>`,
+        <text x="252" y="326" text-anchor="end" font-size="44" font-weight="800" fill="var(--fm-primary)">12</text>
+        <path d="M262 272 q-16 30 6 62" stroke="var(--fm-primary)" stroke-width="4" fill="none"/>
+        <path d="M262 272 H 420" stroke="var(--fm-primary)" stroke-width="4" fill="none"/>
+        <text x="278" y="326" font-size="44" font-weight="800" fill="var(--fm-primary)">144</text>
+        <text x="414" y="262" text-anchor="end" font-size="44" font-weight="800" fill="var(--fm-m-part)">12</text>`,
         }),
         capEn:
           "Move the decimal point the same number of places in BOTH numbers, then divide whole numbers.",
@@ -2694,10 +2701,10 @@ function conceptVisual(config) {
           title: "Multiplying Decimals / Multiplicar decimales",
           body: `
         ${conceptCard(120, 70, 400, 82)}
-        <text x="320" y="126" text-anchor="middle" font-size="44" font-weight="800" fill="#12355b">1.2 × 0.4 = 0.48</text>
-        ${conceptRow(168, 1, "Multiply like whole numbers:  12 × 4 = 48", "#2563eb")}
-        ${conceptRow(236, 2, "Count decimal places:  1 + 1 = 2", "#0f766e")}
-        ${conceptRow(288, 3, "Put 2 places back in:  48 → 0.48", "#d97706")}`,
+        <text x="320" y="126" text-anchor="middle" font-size="44" font-weight="800" fill="var(--fm-primary)">1.2 × 0.4 = 0.48</text>
+        ${conceptRow(168, 1, "Multiply like whole numbers:  12 × 4 = 48", "var(--fm-m-whole)")}
+        ${conceptRow(236, 2, "Count decimal places:  1 + 1 = 2", "var(--fm-m-part)")}
+        ${conceptRow(288, 3, "Put 2 places back in:  48 → 0.48", "var(--fm-m-unknown)")}`,
         }),
         capEn:
           "Count the decimal places in BOTH factors — that is how many places the answer needs.",
@@ -2713,15 +2720,15 @@ function conceptVisual(config) {
         title: "Adding & Subtracting Decimals",
         body: `
         ${conceptCard(150, 70, 340, 218)}
-        <line x1="352" y1="86" x2="352" y2="272" stroke="#d9795d" stroke-width="3" stroke-dasharray="8 6"/>
-        <text x="348" y="136" text-anchor="end" font-size="42" font-weight="800" fill="#12355b">12</text>
-        <text x="356" y="136" font-size="42" font-weight="800" fill="#12355b">.50</text>
-        <text x="348" y="196" text-anchor="end" font-size="42" font-weight="800" fill="#12355b">+   3</text>
-        <text x="356" y="196" font-size="42" font-weight="800" fill="#12355b">.75</text>
-        <line x1="196" y1="214" x2="452" y2="214" stroke="#12355b" stroke-width="4"/>
-        <text x="348" y="266" text-anchor="end" font-size="42" font-weight="800" fill="#0f766e">16</text>
-        <text x="356" y="266" font-size="42" font-weight="800" fill="#0f766e">.25</text>
-        <text x="320" y="330" text-anchor="middle" font-size="25" font-weight="800" fill="#d9795d">Line up the decimal points first — always.</text>`,
+        <line x1="352" y1="86" x2="352" y2="272" stroke="var(--fm-m-unknown-edge)" stroke-width="3" stroke-dasharray="8 6"/>
+        <text x="348" y="136" text-anchor="end" font-size="42" font-weight="800" fill="var(--fm-primary)">12</text>
+        <text x="356" y="136" font-size="42" font-weight="800" fill="var(--fm-primary)">.50</text>
+        <text x="348" y="196" text-anchor="end" font-size="42" font-weight="800" fill="var(--fm-primary)">+   3</text>
+        <text x="356" y="196" font-size="42" font-weight="800" fill="var(--fm-primary)">.75</text>
+        <line x1="196" y1="214" x2="452" y2="214" stroke="var(--fm-primary)" stroke-width="4"/>
+        <text x="348" y="266" text-anchor="end" font-size="42" font-weight="800" fill="var(--fm-m-part)">16</text>
+        <text x="356" y="266" font-size="42" font-weight="800" fill="var(--fm-m-part)">.25</text>
+        <text x="320" y="330" text-anchor="middle" font-size="25" font-weight="800" fill="var(--fm-m-unknown)">Line up the decimal points first — always.</text>`,
       }),
       capEn:
         "Stack the numbers so the decimal points sit in one straight line, then add or subtract as usual.",
@@ -2732,7 +2739,7 @@ function conceptVisual(config) {
 
   if (topic === "factors") {
     const prime = (x, y, v) =>
-      `<circle cx="${x}" cy="${y}" r="27" fill="#0f766e"/><text x="${x}" y="${y + 11}" text-anchor="middle" font-size="28" font-weight="800" fill="#ffffff">${v}</text>`;
+      `<circle cx="${x}" cy="${y}" r="27" fill="var(--fm-m-part)"/><text x="${x}" y="${y + 11}" text-anchor="middle" font-size="28" font-weight="800" fill="var(--fm-text-inverse)">${v}</text>`;
     return {
       svg: conceptFrame({
         label: "A factor tree breaking 24 into 4 and 6, then into the primes 2, 2, 2 and 3",
@@ -2740,17 +2747,17 @@ function conceptVisual(config) {
         height: 400,
         title: "Factor Tree / Árbol de factores",
         body: `
-        <text x="320" y="98" text-anchor="middle" font-size="46" font-weight="800" fill="#12355b">24</text>
-        <line x1="298" y1="112" x2="232" y2="158" stroke="#12355b" stroke-width="3"/>
-        <line x1="342" y1="112" x2="408" y2="158" stroke="#12355b" stroke-width="3"/>
-        <text x="222" y="192" text-anchor="middle" font-size="38" font-weight="800" fill="#12355b">4</text>
-        <text x="418" y="192" text-anchor="middle" font-size="38" font-weight="800" fill="#12355b">6</text>
-        <line x1="208" y1="206" x2="152" y2="248" stroke="#12355b" stroke-width="3"/>
-        <line x1="236" y1="206" x2="262" y2="248" stroke="#12355b" stroke-width="3"/>
-        <line x1="404" y1="206" x2="378" y2="248" stroke="#12355b" stroke-width="3"/>
-        <line x1="432" y1="206" x2="488" y2="248" stroke="#12355b" stroke-width="3"/>
+        <text x="320" y="98" text-anchor="middle" font-size="46" font-weight="800" fill="var(--fm-primary)">24</text>
+        <line x1="298" y1="112" x2="232" y2="158" stroke="var(--fm-primary)" stroke-width="3"/>
+        <line x1="342" y1="112" x2="408" y2="158" stroke="var(--fm-primary)" stroke-width="3"/>
+        <text x="222" y="192" text-anchor="middle" font-size="38" font-weight="800" fill="var(--fm-primary)">4</text>
+        <text x="418" y="192" text-anchor="middle" font-size="38" font-weight="800" fill="var(--fm-primary)">6</text>
+        <line x1="208" y1="206" x2="152" y2="248" stroke="var(--fm-primary)" stroke-width="3"/>
+        <line x1="236" y1="206" x2="262" y2="248" stroke="var(--fm-primary)" stroke-width="3"/>
+        <line x1="404" y1="206" x2="378" y2="248" stroke="var(--fm-primary)" stroke-width="3"/>
+        <line x1="432" y1="206" x2="488" y2="248" stroke="var(--fm-primary)" stroke-width="3"/>
         ${prime(140, 282, "2")}${prime(272, 282, "2")}${prime(368, 282, "2")}${prime(500, 282, "3")}
-        <text x="320" y="366" text-anchor="middle" font-size="32" font-weight="800" fill="#0f766e">24 = 2 × 2 × 2 × 3</text>`,
+        <text x="320" y="366" text-anchor="middle" font-size="32" font-weight="800" fill="var(--fm-m-part)">24 = 2 × 2 × 2 × 3</text>`,
       }),
       capEn:
         "Keep splitting until every branch ends on a prime number (circled). Those primes are the answer.",
@@ -2763,7 +2770,7 @@ function conceptVisual(config) {
     const pill = (y, n, label, work, bg, stroke, ink) =>
       `<rect x="336" y="${y}" width="272" height="64" rx="14" fill="${bg}" stroke="${stroke}" stroke-width="2.5"/>
         <text x="354" y="${y + 27}" font-size="22" font-weight="800" fill="${ink}">${n}. ${label}</text>
-        <text x="354" y="${y + 52}" font-size="21" font-weight="700" fill="#21313f">${work}</text>`;
+        <text x="354" y="${y + 52}" font-size="21" font-weight="700" fill="var(--fm-primary)">${work}</text>`;
     return {
       svg: conceptFrame({
         label: "Long division of 1,344 by 12 using divide, multiply, subtract and bring down",
@@ -2772,17 +2779,17 @@ function conceptVisual(config) {
         title: "Long Division:  D · M · S · B",
         body: `
         ${conceptCard(30, 82, 288, 152)}
-        <text x="118" y="182" text-anchor="end" font-size="42" font-weight="800" fill="#12355b">12</text>
-        <path d="M128 128 q-16 30 6 62" stroke="#12355b" stroke-width="4" fill="none"/>
-        <path d="M128 128 H 296" stroke="#12355b" stroke-width="4" fill="none"/>
-        <text x="144" y="182" font-size="42" font-weight="800" fill="#12355b">1,344</text>
-        <text x="290" y="118" text-anchor="end" font-size="42" font-weight="800" fill="#0f766e">112</text>
-        <text x="174" y="272" text-anchor="middle" font-size="24" font-weight="800" fill="#12355b">Repeat D-M-S-B until</text>
-        <text x="174" y="304" text-anchor="middle" font-size="24" font-weight="800" fill="#12355b">no digits are left.</text>
-        ${pill(76, 1, "Divide", "13 ÷ 12 = 1", "#eef3fa", "#2563eb", "#1d4ed8")}
-        ${pill(154, 2, "Multiply", "1 × 12 = 12", "#e9f7f4", "#1fa6a2", "#0f766e")}
-        ${pill(232, 3, "Subtract", "13 − 12 = 1", "#fdf5e3", "#dda63a", "#b45309")}
-        ${pill(310, 4, "Bring down", "bring down the 4", "#fdeee9", "#d9795d", "#b02a24")}`,
+        <text x="118" y="182" text-anchor="end" font-size="42" font-weight="800" fill="var(--fm-primary)">12</text>
+        <path d="M128 128 q-16 30 6 62" stroke="var(--fm-primary)" stroke-width="4" fill="none"/>
+        <path d="M128 128 H 296" stroke="var(--fm-primary)" stroke-width="4" fill="none"/>
+        <text x="144" y="182" font-size="42" font-weight="800" fill="var(--fm-primary)">1,344</text>
+        <text x="290" y="118" text-anchor="end" font-size="42" font-weight="800" fill="var(--fm-m-part)">112</text>
+        <text x="174" y="272" text-anchor="middle" font-size="24" font-weight="800" fill="var(--fm-primary)">Repeat D-M-S-B until</text>
+        <text x="174" y="304" text-anchor="middle" font-size="24" font-weight="800" fill="var(--fm-primary)">no digits are left.</text>
+        ${pill(76, 1, "Divide", "13 ÷ 12 = 1", "var(--fm-m-whole-tint)", "var(--fm-m-whole)", "var(--fm-m-whole)")}
+        ${pill(154, 2, "Multiply", "1 × 12 = 12", "var(--fm-success-tint)", "var(--fm-m-part)", "var(--fm-m-part)")}
+        ${pill(232, 3, "Subtract", "13 − 12 = 1", "var(--fm-m-unknown-tint)", "var(--fm-m-unknown)", "var(--fm-m-unknown)")}
+        ${pill(310, 4, "Bring down", "bring down the 4", "var(--fm-m-unknown-tint)", "var(--fm-m-unknown)", "var(--fm-m-unknown)")}`,
       }),
       capEn:
         "Four moves, in the same order, every single time: Divide, Multiply, Subtract, Bring down.",
@@ -2823,7 +2830,7 @@ function conceptVisual(config) {
    these buttons kept both languages and others did not. */
 function helpButton(label, payload) {
   const data = String(JSON.stringify(payload)).replace(/&/g, "&amp;").replace(/'/g, "&#39;");
-  return `<button type="button" class="help-pop-btn" data-help='${data}' onclick="openHelpModalFromBtn(this)">${splitBilingualLabel(label)}</button>`;
+  return `<button type="button" class="help-pop-btn" data-help='${data}' ${act("openHelpModalFromBtn", EL)}>${splitBilingualLabel(label)}</button>`;
 }
 
 /** "🔎 English text / Texto español" -> language-switched spans, icon kept. */
@@ -2868,7 +2875,7 @@ const UNIT_TITLES_ES = {
   9: "Relaciones entre dos variables",
   10: "Las matemáticas son...",
 };
-function revealUnitTitle(unit) {
+export function revealUnitTitle(unit) {
   const n = Number(unit);
   const hit = (REVEAL_TOC.units || []).find((u) => Number(u.unit ?? u.number) === n);
   return { en: hit?.title || "", es: UNIT_TITLES_ES[n] || hit?.title || "" };
@@ -2904,93 +2911,29 @@ export function renderWelcomeBanner(config, lessonId) {
       lessonTitle: { en: title, es: familyTitlesEs[lessonId] || title },
       pageLabel: { en: pageLabelEn, es: pageLabelEs },
     })}
-    <header class="hw-hero" aria-label="Family Math Night welcome">
-      <div class="hw-hero-glow" aria-hidden="true"></div>
-      <div class="hw-hero-body">
-        <div class="hw-hero-controls">
-          <div class="lang-selector-card">
-            <span class="lang-selector-title">Language / Idioma</span>
-            <div class="lang-selector-buttons" role="group" aria-label="Language Mode Selector" data-aria-en="Language Mode Selector" data-aria-es="Seleccionar idioma">
-              <button type="button" class="lang-toggle-btn active" data-lang-mode="en" onclick="setLanguageMode('en')" aria-pressed="true">English</button>
-              <button type="button" class="lang-toggle-btn" data-lang-mode="es" onclick="setLanguageMode('es')" aria-pressed="false">Español</button>
-              <button type="button" class="lang-toggle-btn" data-lang-mode="bilingual" onclick="setLanguageMode('bilingual')" aria-pressed="false">🇺🇸🇪🇸 Bilingual / Bilingüe</button>
-            </div>
-          </div>
-        </div>
-
-        <p class="hw-hero-kicker">
-          <span class="hw-hero-kicker-icon" aria-hidden="true">📘</span>
-          <span class="lang-en">Unit ${unit}${unitTitle.en ? ` · ${esc(unitTitle.en)}` : ""}</span>
-          <span class="lang-es" lang="es">Unidad ${unit}${unitTitle.es ? ` · ${esc(unitTitle.es)}` : ""}</span>
-        </p>
-
-        <div class="hw-hero-head">
-          <span class="hw-hero-emoji" aria-hidden="true">${esc(themeEmoji)}</span>
-          <div class="hw-hero-titles">
-            <h1><span class="welcome-title-en lang-en">Family Math Studio</span><span class="welcome-title-es lang-es" lang="es">Estudio familiar de matemáticas</span></h1>
-            <p class="hw-hero-subtitle"><span class="lang-en">Optional &amp; Ungraded Home Exploration</span><span class="lang-es" lang="es">Exploración opcional en casa, sin calificación</span></p>
-          </div>
-        </div>
-
-        <p class="hw-hero-lesson">
-          <span class="hw-hero-lesson-title"><span class="lang-en">${esc(title)}</span><span class="lang-es" lang="es">${esc(familyTitlesEs[lessonId] || title)}</span></span>
-          <span class="hw-hero-lesson-meta"><span class="lang-en">${esc(pageLabelEn)}</span><span class="lang-es" lang="es">${esc(pageLabelEs)}</span></span>
-        </p>
-
+    ${renderHero({
+      unit,
+      unitTitle,
+      title: { en: title, es: familyTitlesEs[lessonId] || title },
+      pageLabel: { en: pageLabelEn, es: pageLabelEs },
+      hook: v3Of(config, lessonId).hook,
+      topBar: renderTopBar({
+        readAloud: {
+          en: `${title}. ${v3Of(config, lessonId).hook.en}`,
+          es: `${familyTitlesEs[lessonId] || title}. ${v3Of(config, lessonId).hook.es}`,
+        },
+      }),
+      routes: renderQuickPlan(),
+      extras: `
         ${renderSessionBanner(lessonId, partner)}
-
         <p class="hw-hero-bigidea" aria-label="Big idea">
-          <span class="hw-hero-bigidea-label hw-inline"><span class="lang-en">Big idea</span><span class="lang-es" lang="es">Idea principal</span></span>
+          <span class="hw-hero-bigidea-label"><span class="lang-en">Big idea</span><span class="lang-es" lang="es">Idea principal</span></span>
           <span class="lang-en">${esc(completeSentence(bigIdea.en))}</span><span class="lang-es" lang="es">${esc(completeSentence(bigIdea.es))}</span>
         </p>
-
-        <p class="hw-hero-lead">
-          <span class="lang-en">Optional, ungraded practice. Work with someone or on your own; no adult signature is needed.</span>
-          <span class="lang-es" lang="es">Práctica opcional, sin calificación. Trabaja con alguien o a solas; no necesitas la firma de un adulto.</span>
-        </p>${
-          experience?.titleEn
-            ? `
-        <details class="hw-experience-banner">
-          <summary>
-            <span class="hw-experience-icon" aria-hidden="true">${esc(experience.icon || "✨")}</span>
-            <span class="hw-experience-title"><span class="lang-en">${esc(experience.titleEn)}</span><span class="lang-es" lang="es">${esc(experience.titleEs || experience.titleEn)}</span></span>
-          </summary>
-          <p class="hw-experience-description"><span class="lang-en">${esc(experience.descriptionEn || "")}</span><span class="lang-es" lang="es">${esc(experience.descriptionEs || experience.descriptionEn || "")}</span></p>
-        </details>`
-            : ""
-        }
-
         ${renderTonightStrip()}
-
-        ${renderQuickPlan()}
-
-        <details class="hw-tools-menu"><summary><span class="lang-en">More options: scratchpad, share, print &amp; standard</span><span class="lang-es" lang="es">Más opciones: pizarra, compartir, imprimir y estándar</span></summary>
-        <div class="hw-hero-share-bar">
-          <button type="button" class="btn btn-sm btn-outline-secondary hw-share-btn" onclick="toggleScratchpad()">✏️ <span class="lang-en">Scratchpad</span><span class="lang-es" lang="es">Pizarra</span></button>
-          <button type="button" class="btn btn-sm btn-outline-secondary hw-share-btn" onclick="copyHomeworkLink()">📋 <span class="lang-en">Copy Link</span><span class="lang-es" lang="es">Copiar enlace</span></button>
-          <a class="btn btn-sm btn-outline-secondary hw-share-btn" id="hw_text_link" href="#" target="_blank" rel="noopener">💬 <span class="lang-en">Text</span><span class="lang-es" lang="es">Mensaje</span></a>
-          <a class="btn btn-sm btn-outline-secondary hw-share-btn" id="hw_email_link" href="#" target="_blank" rel="noopener">✉️ <span class="lang-en">Email</span><span class="lang-es" lang="es">Correo</span></a>
-          <button type="button" class="btn btn-sm btn-outline-secondary hw-share-btn" onclick="printProblemsOnly()">🖨️ <span class="lang-en">Print Problems</span><span class="lang-es" lang="es">Imprimir preguntas</span></button>
-          <button type="button" class="btn btn-sm btn-outline-secondary hw-share-btn" onclick="printRefrigeratorSheet()">📄 <span class="lang-en">Print this plan’s problems</span><span class="lang-es" lang="es">Imprimir los problemas de este plan</span></button>
-          <button type="button" class="btn btn-sm btn-outline-secondary hw-share-btn" onclick="printAnswerSheet()">🔑 <span class="lang-en">Print answer sheet</span><span class="lang-es" lang="es">Imprimir respuestas</span></button>
-          <button type="button" class="btn btn-sm btn-outline-secondary hw-share-btn" id="hw_offline_btn" onclick="preparePaperPractice()">📄 <span class="lang-en">Prepare paper practice</span><span class="lang-es" lang="es">Preparar práctica en papel</span></button>
-        </div>
-        ${
-          standard
-            ? `
-        <details class="hw-standard-details">
-          <summary class="hw-standard-summary">📚 <span><span class="lang-en">Standard:</span><span class="lang-es" lang="es">Estándar:</span> <code>${esc(standard)}</code></span> ▾</summary>
-          <p class="hw-standard-desc"><span class="lang-en">This lesson builds proficiency in Grade 6 mathematical standard ${esc(standard)}.</span><span class="lang-es" lang="es">Esta lección desarrolla destrezas en el estándar matemático de 6.º grado ${esc(standard)}.</span></p>
-        </details>`
-            : ""
-        }
-
-        </details>
-
-
-
-      </div>
-    </header>`;
+        ${renderExperienceBadge(experience)}`,
+      sheet: renderMoreSheet({ standard }),
+    })}`;
 }
 
 /* The other night's page for a two-session lesson, or null when the lesson has one night.
@@ -3010,35 +2953,26 @@ function sessionPartner(lessonId) {
   return { href: `/lessons/${otherId}/homework.html`, learningTonight: notes.learningTonight };
 }
 
-/* The start panel lives inside the hero, before secondary controls. */
+/* The start panel: two route cards and one Start button, the hero's action column. */
 export function renderQuickPlan() {
-  const time = (mode) =>
-    `<span class="hw-route-time">${ROUTE_TIMES[mode]} <small>min</small></span>`;
+  const route = (mode, active, nameEn, nameEs, descEn, descEs) => `
+          <button type="button" class="hw-route-option fm-route${active ? " is-active" : ""}" data-route-mode="${mode}" aria-pressed="${active}" ${act("setHomeworkRoute", mode)}>
+            <span class="fm-route__title hw-route-copy"><strong><span class="lang-en">${nameEn}</span><span class="lang-es" lang="es">${nameEs}</span></strong></span>
+            <span class="fm-chip fm-chip--accent hw-route-time">${ROUTE_TIMES[mode]} <small>min</small></span>
+            <span class="fm-route__desc"><span class="lang-en">${descEn}</span><span class="lang-es" lang="es">${descEs}</span></span>
+          </button>`;
   return `
-      <section class="hw-route-chooser" aria-labelledby="hw_route_title">
-        <div class="hw-route-heading">
-          <span class="hw-route-icon" aria-hidden="true">🧭</span>
-          <div>
-            <h2 id="hw_route_title" class="hw-inline"><span class="lang-en">How much time do you have tonight?</span><span class="lang-es" lang="es">¿Cuánto tiempo tienen esta noche?</span></h2>
-          </div>
+      <section class="hw-route-chooser fm-hero__action" aria-labelledby="hw_route_title">
+        <h2 id="hw_route_title" class="fm-hero__q"><span class="lang-en">How much time do you have tonight?</span><span class="lang-es" lang="es">¿Cuánto tiempo tienen esta noche?</span></h2>
+        <div class="hw-route-options fm-routes" role="group" aria-label="How much time do you have tonight?" data-aria-en="How much time do you have tonight?" data-aria-es="¿Cuánto tiempo tienen esta noche?">${route("quick", true, "Quick Practice", "Práctica rápida", "One example and 2 problems.", "Un ejemplo y 2 problemas.")}${route("full", false, "Keep Going", "Seguir practicando", "Key words, every problem, a game and a home mission.", "Palabras clave, todos los problemas, un juego y una misión en casa.")}
         </div>
-        <div class="hw-route-options" role="group" aria-label="How much time do you have tonight?" data-aria-en="How much time do you have tonight?" data-aria-es="¿Cuánto tiempo tienen esta noche?">
-          <button type="button" class="hw-route-option is-active" data-route-mode="quick" aria-pressed="true" onclick="setHomeworkRoute('quick')">
-            ${time("quick")}
-            <span class="hw-route-copy"><strong><span class="lang-en">Quick Practice</span><span class="lang-es" lang="es">Práctica rápida</span></strong><small><span class="lang-en">One example and 2 problems.</span><span class="lang-es" lang="es">Un ejemplo y 2 problemas.</span></small></span>
-          </button>
-          <button type="button" class="hw-route-option" data-route-mode="full" aria-pressed="false" onclick="setHomeworkRoute('full')">
-            ${time("full")}
-            <span class="hw-route-copy"><strong><span class="lang-en">Keep Going</span><span class="lang-es" lang="es">Seguir practicando</span></strong><small><span class="lang-en">Key words, every problem, a game and a home mission.</span><span class="lang-es" lang="es">Palabras clave, todos los problemas, un juego y una misión en casa.</span></small></span>
-          </button>
-        </div>
-        <button type="button" id="hw_start_button" class="btn btn-primary" onclick="startHomework()"><span class="lang-en">Start tonight's math</span><span class="lang-es" lang="es">Empezar la matemática de hoy</span></button>
-        <p class="hw-route-promise hw-inline"><span class="lang-en">Optional. No grades. Your choice is saved here.</span><span class="lang-es" lang="es">Opcional. Sin calificaciones. Su elección se guarda aquí.</span></p>
-        <p class="hw-route-note" id="hw_route_note" aria-live="polite">
+        <button type="button" id="hw_start_button" class="fm-btn fm-btn--primary fm-btn--lg fm-btn--block" ${act("startHomework")}><span class="lang-en">Start tonight's math</span><span class="lang-es" lang="es">Empezar la matemática de hoy</span></button>
+        <p class="hw-route-promise fm-hero__promise"><span class="lang-en">Optional. No grades. Your choice is saved here.</span><span class="lang-es" lang="es">Opcional. Sin calificaciones. Su elección se guarda aquí.</span></p>
+        <p class="hw-route-note fm-sr" id="hw_route_note" aria-live="polite">
           <span class="lang-en">Quick Practice selected: one example and 2 problems. Stop whenever you need.</span>
           <span class="lang-es" lang="es">Práctica rápida seleccionada: un ejemplo y 2 problemas. Pueden parar cuando lo necesiten.</span>
         </p>
-        <p id="hw_resume_note" role="status" aria-live="polite"></p>
+        <p id="hw_resume_note" class="fm-hero__resume" role="status" aria-live="polite"></p>
       </section>`;
 }
 
@@ -3058,7 +2992,7 @@ export function renderLearningTonight(config) {
     <section class="guided-section card section-learn" aria-label="What we are learning tonight">
       <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:12px;">
         <h2 class="section-title" style="margin:0;">📖 <span class="lang-en">What we're learning tonight</span><span class="lang-es" lang="es">Qué aprendemos hoy</span></h2>
-        <button type="button" class="btn-read-aloud" onclick="speakHomeworkText(${escAttr(JSON.stringify(en))}, ${escAttr(JSON.stringify(es))})" title="Listen / Escuchar" aria-label="Listen to summary">🔊 <span class="lang-en">Listen</span><span class="lang-es" lang="es">Escuchar</span></button>
+        <button type="button" class="btn-read-aloud" ${act("speakHomeworkText", en, es)} title="Listen / Escuchar" aria-label="Listen to summary">🔊 <span class="lang-en">Listen</span><span class="lang-es" lang="es">Escuchar</span></button>
       </div>
       <div class="bilingual-grid">
         <div class="bilingual-col lang-en">
@@ -3094,14 +3028,7 @@ function renderParentQuickCard(config) {
         <ul>
           ${row("💬", "If they get stuck, ask:", "Si se atora, pregunten:", ask)}
           ${row("🚫", "Try not to say:", "Eviten decir:", avoid)}
-        </ul>${
-          bridge
-            ? renderBridgeCard(
-                bridge,
-                `speakHomeworkText(${escAttr(JSON.stringify(bridgeSpeech(bridge, "en")))}, ${escAttr(JSON.stringify(bridgeSpeech(bridge, "es")))})`,
-              )
-            : ""
-        }
+        </ul>${bridge ? renderBridgeCard(bridge) : ""}
       </div>`;
 }
 
@@ -3143,23 +3070,23 @@ function renderUnit4FamilyBigIdeaVisual(config) {
   if (model.type === "discount") {
     return `<div class="family-big-idea-visual family-discount-visual">
       <div class="family-discount-equation">
-        <strong>${esc(model.original)} <small style="display:block;font-size:12px;font-weight:600;">${bilingual("Original (100%)", "Original (100%)")}</small></strong>
+        <strong>${esc(model.original)} <small style="display:block;">${bilingual("Original (100%)", "Original (100%)")}</small></strong>
         <span aria-hidden="true">−</span>
-        <span>${esc(model.savings)} <small style="display:block;font-size:12px;font-weight:600;">${bilingual(`${model.percent} saved`, `${model.percent} de ahorro`)}</small></span>
+        <span>${esc(model.savings)} <small style="display:block;">${bilingual(`${model.percent} saved`, `${model.percent} de ahorro`)}</small></span>
         <span aria-hidden="true">=</span>
-        <strong style="background:#d8f1ea;">${esc(model.salePrice)} <small style="display:block;font-size:12px;font-weight:600;">${bilingual("Sale price to pay", "Precio de oferta")}</small></strong>
+        <strong class="u-tint-part">${esc(model.salePrice)} <small style="display:block;">${bilingual("Sale price to pay", "Precio de oferta")}</small></strong>
       </div>
       <div class="family-discount-bar" aria-hidden="true">
-        <span style="display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#92400e;">${esc(model.savings)}</span>
-        <span style="display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#1e3a8a;">${esc(model.savings)}</span>
-        <span style="display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#1e3a8a;">${esc(model.savings)}</span>
-        <span style="display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#1e3a8a;">${esc(model.savings)}</span>
+        <span class="u-ink-unknown" style="display:flex;align-items:center;justify-content:center;">${esc(model.savings)}</span>
+        <span class="u-ink-whole" style="display:flex;align-items:center;justify-content:center;">${esc(model.savings)}</span>
+        <span class="u-ink-whole" style="display:flex;align-items:center;justify-content:center;">${esc(model.savings)}</span>
+        <span class="u-ink-whole" style="display:flex;align-items:center;justify-content:center;">${esc(model.savings)}</span>
       </div>
       <div class="family-discount-labels">
         <span>${bilingual(`${model.percent} off = ${model.savings}`, `${model.percent} de descuento = ${model.savings}`)}</span>
         <span>${bilingual(`Sale price = ${model.salePrice}`, `Precio a pagar = ${model.salePrice}`)}</span>
       </div>
-      <p style="margin:12px 0 0;font-size:15px;line-height:1.45;text-align:center;">
+      <p style="margin:12px 0 0;text-align:center;">
         ${bilingual(
           `How it works: 25% of ${model.original} = 0.25 × ${model.original.replace("$", "")} = ${model.savings} off. Then subtract: ${model.original} − ${model.savings} = ${model.salePrice}.`,
           `Cómo funciona: 25% de ${model.original} = 0.25 × ${model.original.replace("$", "")} = ${model.savings} de descuento. Luego resta: ${model.original} − ${model.savings} = ${model.salePrice}.`,
@@ -3172,44 +3099,44 @@ function renderUnit4FamilyBigIdeaVisual(config) {
     return `<div class="family-big-idea-visual family-whole-visual">
       <div class="family-whole-labels">
         <strong>${esc(model.part)} = ${esc(model.percent)}</strong>
-        <strong style="color:#0f766e;">100% = ${esc(model.whole)}</strong>
+        <strong class="u-ink-part">100% = ${esc(model.whole)}</strong>
       </div>
       <div class="family-whole-bar" aria-hidden="true">
-        ${Array.from({ length: 10 }, (_, i) => `<span class="${i < model.tenths ? "is-filled" : ""}" style="display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:${i < model.tenths ? "#ffffff" : "#64748b"};">$7</span>`).join("")}
+        ${Array.from({ length: 10 }, (_, i) => `<span class="${i < model.tenths ? "is-filled" : ""}" style="display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:${i < model.tenths ? "var(--fm-raised)" : "var(--fm-inverse)"};">$7</span>`).join("")}
       </div>
       <div class="family-discount-labels" style="margin-top:6px;">
-        <span style="color:#0f766e;">${bilingual(`6 blocks = ${model.part} (${model.percent})`, `6 bloques = ${model.part} (${model.percent})`)}</span>
-        <span style="color:#0369a1;">${bilingual(`10 blocks = ${model.whole} (100%)`, `10 bloques = ${model.whole} (100%)`)}</span>
+        <span class="u-ink-part">${bilingual(`6 blocks = ${model.part} (${model.percent})`, `6 bloques = ${model.part} (${model.percent})`)}</span>
+        <span class="u-ink-whole">${bilingual(`10 blocks = ${model.whole} (100%)`, `10 bloques = ${model.whole} (100%)`)}</span>
       </div>
-      <div class="family-ratio-table-wrap" style="margin:12px auto 0;max-width:340px;overflow-x:auto;">
-        <table class="fill-table" style="width:100%;text-align:center;font-size:13px;border-collapse:collapse;margin:0 auto;background:#ffffff;border:1.5px solid #cbd5e1;border-radius:6px;overflow:hidden;">
+      <div class="family-ratio-table-wrap" style="margin:12px auto 0;max-width:340px;overflow-x:auto;" role="region" tabindex="0" aria-label="Ratio table" data-aria-en="Ratio table" data-aria-es="Tabla de razones">
+        <table class="fill-table u-bg-raised u-edge" style="width:100%;text-align:center;border-collapse:collapse;margin:0 auto;overflow:hidden;">
           <thead>
-            <tr style="background:#15487f;color:#ffffff;">
-              <th scope="col" style="padding:4px 8px;font-size:12px;"><span class="lang-en">Percent</span><span class="lang-es" lang="es">Porcentaje</span></th>
-              <th scope="col" style="padding:4px 8px;font-size:12px;"><span class="lang-en">Price</span><span class="lang-es" lang="es">Precio</span></th>
-              <th scope="col" style="padding:4px 8px;font-size:12px;"><span class="lang-en">Step</span><span class="lang-es" lang="es">Paso</span></th>
+            <tr class="u-head u-ink-inverse">
+              <th scope="col" style="padding:4px 8px;"><span class="lang-en">Percent</span><span class="lang-es" lang="es">Porcentaje</span></th>
+              <th scope="col" style="padding:4px 8px;"><span class="lang-en">Price</span><span class="lang-es" lang="es">Precio</span></th>
+              <th scope="col" style="padding:4px 8px;"><span class="lang-en">Step</span><span class="lang-es" lang="es">Paso</span></th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td style="padding:4px 8px;font-weight:700;color:#0f766e;">60%</td>
-              <td style="padding:4px 8px;font-weight:700;color:#0f766e;">$42</td>
-              <td style="padding:4px 8px;color:#64748b;font-size:11px;"><span class="lang-en">Known part</span><span class="lang-es" lang="es">Parte conocida</span></td>
+              <td class="u-ink-part" style="padding:4px 8px;">60%</td>
+              <td class="u-ink-part" style="padding:4px 8px;">$42</td>
+              <td class="u-ink-muted" style="padding:4px 8px;"><span class="lang-en">Known part</span><span class="lang-es" lang="es">Parte conocida</span></td>
             </tr>
-            <tr style="background:#f0fdfa;">
-              <td style="padding:4px 8px;font-weight:700;color:#0284c7;">10%</td>
-              <td style="padding:4px 8px;font-weight:700;color:#0284c7;">$7</td>
-              <td style="padding:4px 8px;color:#0284c7;font-size:11px;">÷ 6</td>
+            <tr class="u-tint-part">
+              <td class="u-ink-whole" style="padding:4px 8px;">10%</td>
+              <td class="u-ink-whole" style="padding:4px 8px;">$7</td>
+              <td class="u-ink-whole" style="padding:4px 8px;">÷ 6</td>
             </tr>
-            <tr style="background:#fef3c7;font-weight:800;border-top:1.5px solid #d97706;">
-              <td style="padding:4px 8px;color:#b45309;">100%</td>
-              <td style="padding:4px 8px;color:#b45309;">$70</td>
-              <td style="padding:4px 8px;color:#b45309;font-size:11px;">× 10</td>
+            <tr class="u-tint-unknown u-edge-top">
+              <td class="u-ink-unknown" style="padding:4px 8px;">100%</td>
+              <td class="u-ink-unknown" style="padding:4px 8px;">$70</td>
+              <td class="u-ink-unknown" style="padding:4px 8px;">× 10</td>
             </tr>
           </tbody>
         </table>
       </div>
-      <p style="margin:12px 0 0;font-size:15px;line-height:1.45;text-align:center;">
+      <p style="margin:12px 0 0;text-align:center;">
         ${bilingual(
           `How it works: In a simple ratio table, find 10% first: $42 ÷ 6 = $7. Then scale up to 100%: 10 × $7 = $70. Or divide the part by the percent as a decimal: $42 ÷ 0.60 = $70.`,
           `Cómo funciona: En una tabla de razones simple, halla primero el 10%: $42 ÷ 6 = $7. Luego escala al 100%: 10 × $7 = $70. O divide la parte entre el porcentaje en decimal: $42 ÷ 0.60 = $70.`,
@@ -3243,7 +3170,7 @@ export function renderConceptExplainer(config) {
           <div class="family-big-idea-copy">
             <p class="lang-en">${esc(completeSentence(keyEn))}</p>
             <p class="lang-es" lang="es">${esc(completeSentence(keyEs))}</p>
-            <button type="button" class="btn-read-aloud" onclick="speakHomeworkText(${escAttr(JSON.stringify(keyEn))}, ${escAttr(JSON.stringify(keyEs))})" title="Listen / Escuchar" aria-label="Listen to big idea" data-aria-en="Listen to big idea" data-aria-es="Escuchar la idea principal">🔊 <span class="lang-en">Listen</span><span class="lang-es" lang="es">Escuchar</span></button>
+            <button type="button" class="btn-read-aloud" ${act("speakHomeworkText", keyEn, keyEs)} title="Listen / Escuchar" aria-label="Listen to big idea" data-aria-en="Listen to big idea" data-aria-es="Escuchar la idea principal">🔊 <span class="lang-en">Listen</span><span class="lang-es" lang="es">Escuchar</span></button>
           </div>
           ${renderUnit4FamilyBigIdeaVisual(config)}
         </div>
@@ -3264,10 +3191,10 @@ export function renderConceptExplainer(config) {
             <p class="lang-en"><strong>In one sentence:</strong> ${esc(completeSentence(keyEn))}</p>
             <p class="lang-es" lang="es"><strong>En una frase:</strong> ${esc(completeSentence(keyEs))}</p>
           </div>
-          <button type="button" class="btn-read-aloud" onclick="speakHomeworkText(${escAttr(JSON.stringify(keyEn))}, ${escAttr(JSON.stringify(keyEs))})" title="Listen / Escuchar" aria-label="Listen to big idea" data-aria-en="Listen to big idea" data-aria-es="Escuchar la idea principal">🔊 <span class="lang-en">Listen</span><span class="lang-es" lang="es">Escuchar</span></button>
+          <button type="button" class="btn-read-aloud" ${act("speakHomeworkText", keyEn, keyEs)} title="Listen / Escuchar" aria-label="Listen to big idea" data-aria-en="Listen to big idea" data-aria-es="Escuchar la idea principal">🔊 <span class="lang-en">Listen</span><span class="lang-es" lang="es">Escuchar</span></button>
         </div>
       </div>
-      <figure class="concept-visual-wrap">${visual.svg}${caption}<button type="button" class="concept-zoom-btn" onclick="openConceptZoom(this)"><span class="lang-en">🔍 Tap to enlarge the picture</span><span class="lang-es" lang="es">🔍 Toca para ampliar la imagen</span></button></figure>
+      <figure class="concept-visual-wrap">${visual.svg}${caption}<button type="button" class="concept-zoom-btn" ${act("openConceptZoom", EL)}><span class="lang-en">🔍 Tap to enlarge the picture</span><span class="lang-es" lang="es">🔍 Toca para ampliar la imagen</span></button></figure>
       <ol class="guided-steps">
         ${steps
           .map((s, index) => {
@@ -3396,9 +3323,9 @@ export function renderCelebration(config = null, _lessonId = "") {
       <h3 id="homework_extras_title"><span class="lang-en">Want to do more?</span><span class="lang-es" lang="es">¿Quieren hacer más?</span></h3>
       <p><span class="lang-en">These extras are not required. Photos, recordings and reflections stay on this device. To send anything to Mr. Neft, use ClassDojo.</span><span class="lang-es" lang="es">Estos extras no son obligatorios. Las fotos, grabaciones y reflexiones quedan en este dispositivo. Para enviar algo al Sr. Neft, usa ClassDojo.</span></p>
       <div class="homework-extra-actions">
-        <button type="button" class="btn btn-secondary" onclick="switchHomeworkTab('check'); document.querySelector('.more-practice')?.setAttribute('open', '')"><span class="lang-en">➕ ${hasMorePractice ? "Try more practice problems" : "Review practice problems"}</span><span class="lang-es" lang="es">➕ ${hasMorePractice ? "Hacer más ejercicios" : "Repasar los ejercicios"}</span></button>
-        <button type="button" class="btn btn-secondary" onclick="switchHomeworkTab('photobooth')"><span class="lang-en">📸 Open the math work photobooth</span><span class="lang-es" lang="es">📸 Abrir la cabina de fotos</span></button>
-        <a class="btn btn-secondary" href="#parent_reflection_input" onclick="document.getElementById('homework_extras_more').open = true"><span class="lang-en">✍️ Write a reflection below</span><span class="lang-es" lang="es">✍️ Escribir una reflexión abajo</span></a>
+        <button type="button" class="btn btn-secondary" ${act("hwOpenMorePractice", "check")}><span class="lang-en">➕ ${hasMorePractice ? "Try more practice problems" : "Review practice problems"}</span><span class="lang-es" lang="es">➕ ${hasMorePractice ? "Hacer más ejercicios" : "Repasar los ejercicios"}</span></button>
+        <button type="button" class="btn btn-secondary" ${act("switchHomeworkTab", "photobooth")}><span class="lang-en">📸 Open the math work photobooth</span><span class="lang-es" lang="es">📸 Abrir la cabina de fotos</span></button>
+        <a class="btn btn-secondary" href="#parent_reflection_input" ${act("hwOpenDetails", "homework_extras_more")}><span class="lang-en">✍️ Write a reflection below</span><span class="lang-es" lang="es">✍️ Escribir una reflexión abajo</span></a>
       </div>
       <!-- The three choices above stay visible (2026-10-02, "visible practice
            options"); the long form, badges and extra activity they lead to
@@ -3414,7 +3341,7 @@ export function renderCelebration(config = null, _lessonId = "") {
         <div id="signoff_form_wrapper">
           <div class="signoff-field checkbox-field">
             <label class="checkbox-label">
-              <input type="checkbox" id="parent_reviewed_checkbox" onchange="toggleSignoffSubmitBtn()" />
+              <input type="checkbox" id="parent_reviewed_checkbox" ${actOn("change", "toggleSignoffSubmitBtn", [])} />
               <span class="lang-en">I practiced or discussed an idea from this homework.</span>
               <span class="lang-es" lang="es">Practiqué o comenté una idea de esta tarea.</span>
             </label>
@@ -3425,7 +3352,7 @@ export function renderCelebration(config = null, _lessonId = "") {
               <span class="lang-en">Student Name (optional):</span>
               <span class="lang-es" lang="es">Nombre del estudiante (opcional):</span>
             </label>
-            <input type="text" id="student_name_input" placeholder="e.g. Alex" oninput="updateCertStudentName(this.value)" />
+            <input type="text" id="student_name_input" placeholder="e.g. Alex" ${actOn("input", "updateCertStudentName", [VALUE])} />
           </div>
 
           <div class="signoff-field text-field">
@@ -3433,7 +3360,7 @@ export function renderCelebration(config = null, _lessonId = "") {
               <span class="lang-en">Practice Partner (optional):</span>
               <span class="lang-es" lang="es">Acompañante de práctica (opcional):</span>
             </label>
-            <input type="text" id="parent_name_input" placeholder="e.g. Maria Lopez" oninput="toggleSignoffSubmitBtn()" />
+            <input type="text" id="parent_name_input" placeholder="e.g. Maria Lopez" ${actOn("input", "toggleSignoffSubmitBtn", [])} />
           </div>
 
           <div class="signoff-field textarea-field">
@@ -3442,9 +3369,9 @@ export function renderCelebration(config = null, _lessonId = "") {
               <span class="lang-es" lang="es">Una idea que ahora entiendo mejor es... (opcional):</span>
             </label>
             <div class="hw-voice-chips" data-no-vocab data-no-listen role="group" aria-label="Quick-tap sentence starters">
-              <button type="button" class="hw-voice-chip" data-target-input="parent_reflection_input" data-chip-en="The visual model helped me see that" data-chip-es="El modelo visual me ayudó a ver que" onclick="hwInsertVoiceChip(this)"><span class="lang-en">+ “The visual model helped me see…”</span><span class="lang-es" lang="es">+ «El modelo visual me ayudó a ver…»</span></button>
-              <button type="button" class="hw-voice-chip" data-target-input="parent_reflection_input" data-chip-en="I noticed a pattern when I" data-chip-es="Noté un patrón cuando" onclick="hwInsertVoiceChip(this)"><span class="lang-en">+ “I noticed a pattern when I…”</span><span class="lang-es" lang="es">+ «Noté un patrón cuando…»</span></button>
-              <button type="button" class="hw-voice-chip" data-target-input="parent_reflection_input" data-chip-en="I can check my answer by" data-chip-es="Puedo comprobar mi respuesta al" onclick="hwInsertVoiceChip(this)"><span class="lang-en">+ “I can check my answer by…”</span><span class="lang-es" lang="es">+ «Puedo comprobar mi respuesta…»</span></button>
+              <button type="button" class="hw-voice-chip" data-target-input="parent_reflection_input" data-chip-en="The visual model helped me see that" data-chip-es="El modelo visual me ayudó a ver que" ${act("hwInsertVoiceChip", EL)}><span class="lang-en">+ “The visual model helped me see…”</span><span class="lang-es" lang="es">+ «El modelo visual me ayudó a ver…»</span></button>
+              <button type="button" class="hw-voice-chip" data-target-input="parent_reflection_input" data-chip-en="I noticed a pattern when I" data-chip-es="Noté un patrón cuando" ${act("hwInsertVoiceChip", EL)}><span class="lang-en">+ “I noticed a pattern when I…”</span><span class="lang-es" lang="es">+ «Noté un patrón cuando…»</span></button>
+              <button type="button" class="hw-voice-chip" data-target-input="parent_reflection_input" data-chip-en="I can check my answer by" data-chip-es="Puedo comprobar mi respuesta al" ${act("hwInsertVoiceChip", EL)}><span class="lang-en">+ “I can check my answer by…”</span><span class="lang-es" lang="es">+ «Puedo comprobar mi respuesta…»</span></button>
             </div>
             <textarea id="parent_reflection_input" rows="2" placeholder="One idea that makes sense to me now is... / Una idea que ahora entiendo mejor es..."></textarea>
           </div>
@@ -3455,25 +3382,25 @@ export function renderCelebration(config = null, _lessonId = "") {
               <span class="lang-es" lang="es">Una pregunta que quiero hacerle al Sr. Neft mañana en clase es... (opcional; guardado aquí):</span>
             </label>
             <div class="hw-voice-chips" data-no-vocab data-no-listen role="group" aria-label="Quick-tap question starters">
-              <button type="button" class="hw-voice-chip" data-target-input="parent_note_input" data-chip-en="Can we go over another example of" data-chip-es="¿Podemos repasar otro ejemplo de" onclick="hwInsertVoiceChip(this)"><span class="lang-en">+ “Can we go over an example of…”</span><span class="lang-es" lang="es">+ «¿Podemos repasar un ejemplo de…»</span></button>
-              <button type="button" class="hw-voice-chip" data-target-input="parent_note_input" data-chip-en="How do I know which step comes first when" data-chip-es="¿Cómo sé qué paso va primero cuando" onclick="hwInsertVoiceChip(this)"><span class="lang-en">+ “How do I know which step comes first…”</span><span class="lang-es" lang="es">+ «¿Cómo sé qué paso va primero…»</span></button>
+              <button type="button" class="hw-voice-chip" data-target-input="parent_note_input" data-chip-en="Can we go over another example of" data-chip-es="¿Podemos repasar otro ejemplo de" ${act("hwInsertVoiceChip", EL)}><span class="lang-en">+ “Can we go over an example of…”</span><span class="lang-es" lang="es">+ «¿Podemos repasar un ejemplo de…»</span></button>
+              <button type="button" class="hw-voice-chip" data-target-input="parent_note_input" data-chip-en="How do I know which step comes first when" data-chip-es="¿Cómo sé qué paso va primero cuando" ${act("hwInsertVoiceChip", EL)}><span class="lang-en">+ “How do I know which step comes first…”</span><span class="lang-es" lang="es">+ «¿Cómo sé qué paso va primero…»</span></button>
             </div>
             <textarea id="parent_note_input" rows="2" placeholder="A question I want to ask Mr. Neft tomorrow in class is... / Una pregunta para el Sr. Neft mañana..."></textarea>
           </div>
 
           <div class="signoff-field feeling-pulse-field" style="margin:12px 0;">
-            <label class="feeling-pulse-label" style="display:block;margin-bottom:6px;font-weight:700;font-size:13px;">
+            <label class="feeling-pulse-label" style="display:block;margin-bottom:6px;">
               <span class="lang-en">How did tonight's math feel?</span>
               <span class="lang-es" lang="es">¿Cómo se sintió la matemática de hoy?</span>
             </label>
             <div class="feeling-options" role="radiogroup" aria-label="Tonight feeling" style="display:flex;gap:8px;flex-wrap:wrap;">
-              <button type="button" class="btn-feeling is-selected" data-feeling="smooth" onclick="selectFeeling(this, 'smooth')" style="padding:6px 12px;border-radius:8px;border:1.5px solid #cbd5e1;background:#f8fafc;cursor:pointer;font-weight:700;font-size:12.5px;">
+              <button type="button" class="btn-feeling is-selected u-edge u-tint-sunken" data-feeling="smooth" ${act("selectFeeling", EL, "smooth")} style="padding:6px 12px;">
                 <span class="feeling-icon">🟢</span> <span class="lang-en">Smooth sailing</span><span class="lang-es" lang="es">¡Muy bien!</span>
               </button>
-              <button type="button" class="btn-feeling" data-feeling="discussion" onclick="selectFeeling(this, 'discussion')" style="padding:6px 12px;border-radius:8px;border:1.5px solid #cbd5e1;background:#f8fafc;cursor:pointer;font-weight:700;font-size:12.5px;">
+              <button type="button" class="btn-feeling u-edge u-tint-sunken" data-feeling="discussion" ${act("selectFeeling", EL, "discussion")} style="padding:6px 12px;">
                 <span class="feeling-icon">🟡</span> <span class="lang-en">Needed discussion</span><span class="lang-es" lang="es">Con algo de ayuda</span>
               </button>
-              <button type="button" class="btn-feeling" data-feeling="challenge" onclick="selectFeeling(this, 'challenge')" style="padding:6px 12px;border-radius:8px;border:1.5px solid #cbd5e1;background:#f8fafc;cursor:pointer;font-weight:700;font-size:12.5px;">
+              <button type="button" class="btn-feeling u-edge u-tint-sunken" data-feeling="challenge" ${act("selectFeeling", EL, "challenge")} style="padding:6px 12px;">
                 <span class="feeling-icon">🔴</span> <span class="lang-en">Tough battle</span><span class="lang-es" lang="es">Nos costó trabajo</span>
               </button>
             </div>
@@ -3481,35 +3408,35 @@ export function renderCelebration(config = null, _lessonId = "") {
           </div>
 
           <div class="signoff-field photo-upload-field" style="margin:12px 0;">
-            <label for="student_work_photo_input" style="display:block;margin-bottom:6px;font-weight:700;font-size:13px;">
+            <label for="student_work_photo_input" style="display:block;margin-bottom:6px;">
               <span class="lang-en">📸 Snap photo of student notebook or work (optional):</span>
               <span class="lang-es" lang="es">📸 Foto del cuaderno o trabajo (opcional):</span>
             </label>
-            <input type="file" id="student_work_photo_input" accept="image/*" capture="environment" onchange="previewWorkPhoto(this)" style="font-size:12px;" />
+            <input type="file" id="student_work_photo_input" accept="image/*" capture="environment" ${actOn("change", "previewWorkPhoto", [EL])} />
             <div id="work_photo_preview_wrap" class="work-photo-preview-wrap" hidden style="margin-top:6px;">
-              <img id="work_photo_preview" alt="Student work preview" style="max-height:120px;border-radius:8px;border:1px solid #cbd5e1;display:block;" />
-              <button type="button" class="btn btn-sm btn-link text-danger" onclick="clearWorkPhoto()" style="border:none;background:none;color:#dc2626;cursor:pointer;padding:4px 0;font-size:12px;"><span class="lang-en">✕ Remove</span><span class="lang-es" lang="es">✕ Quitar</span></button>
+              <img class="u-edge" id="work_photo_preview" alt="Student work preview" style="max-height:120px;display:block;" />
+              <button type="button" class="btn btn-sm btn-link text-danger u-ink-look" ${act("clearWorkPhoto")} style="padding:4px 0;"><span class="lang-en">✕ Remove</span><span class="lang-es" lang="es">✕ Quitar</span></button>
             </div>
           </div>
 
           <div class="signoff-field voice-memo-field" style="margin:12px 0;">
-            <label style="display:block;margin-bottom:6px;font-weight:700;font-size:13px;">
+            <label style="display:block;margin-bottom:6px;">
               <span class="lang-en">🎙️ 20-Second Math Strategy Voice Memo (optional):</span>
               <span class="lang-es" lang="es">🎙️ Nota de voz de 20 seg. explicando tu estrategia (opcional):</span>
             </label>
             <div class="voice-memo-controls" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
-              <button type="button" id="btn_record_voice" class="btn btn-sm btn-outline-danger" onclick="toggleVoiceRecording()" style="padding:6px 14px;border-radius:8px;font-weight:700;font-size:12.5px;cursor:pointer;background:#fef2f2;border:1.5px solid #f87171;color:#b91c1c;">
+              <button type="button" id="btn_record_voice" class="btn btn-sm btn-outline-danger u-tint-unknown u-edge" ${act("toggleVoiceRecording")} style="padding:6px 14px;">
                 <span id="record_voice_icon">🎙️</span> <span id="record_voice_label"><span class="lang-en">Record Strategy</span><span class="lang-es" lang="es">Grabar explicación</span></span>
               </button>
-              <span id="voice_timer" style="font-family:monospace;font-size:13px;font-weight:700;color:#dc2626;display:none;">0:00</span>
+              <span class="u-ink-look" id="voice_timer" style="display:none;">0:00</span>
               <div id="voice_player_wrap" style="display:none;align-items:center;gap:8px;">
                 <audio id="voice_audio_player" controls style="height:32px;max-width:220px;"></audio>
-                <button type="button" class="btn btn-sm text-danger" onclick="deleteVoiceRecording()" style="border:none;background:none;color:#dc2626;cursor:pointer;font-size:12px;"><span class="lang-en">✕ Delete</span><span class="lang-es" lang="es">✕ Borrar</span></button>
+                <button type="button" class="btn btn-sm text-danger u-ink-look" ${act("deleteVoiceRecording")}><span class="lang-en">✕ Delete</span><span class="lang-es" lang="es">✕ Borrar</span></button>
               </div>
             </div>
           </div>
 
-          <button type="button" id="submit_signoff_btn" class="signoff-submit-btn" onclick="saveParentSignoff()">
+          <button type="button" id="submit_signoff_btn" class="signoff-submit-btn" ${act("saveParentSignoff")}>
             <span class="lang-en">Save reflection on this device</span><span class="lang-es" lang="es">Guardar reflexión en este dispositivo</span>
           </button>
         </div>
@@ -3529,7 +3456,7 @@ export function renderCelebration(config = null, _lessonId = "") {
                 <p>🔥 <strong id="display_family_streak_text"><span class="lang-en">1-Night Streak</span><span class="lang-es" lang="es">Racha de 1 noche</span></strong></p>
               </div>
               <div id="display_family_feeling_box" class="cert-feeling-box" style="margin:6px 0;">
-                <span id="display_family_feeling_badge" class="badge-feeling" style="display:inline-block;padding:3px 8px;border-radius:6px;background:#f1f5f9;font-size:12px;font-weight:700;"></span>
+                <span id="display_family_feeling_badge" class="badge-feeling u-tint-sunken" style="display:inline-block;padding:3px 8px;"></span>
               </div>
               <div id="display_parent_note_box" class="cert-note-box" hidden>
                 <p class="cert-note-title"><strong><span class="lang-en">Question draft (not sent):</span><span class="lang-es" lang="es">Borrador de pregunta (no enviado):</span></strong></p>
@@ -3541,7 +3468,7 @@ export function renderCelebration(config = null, _lessonId = "") {
               </div>
               <div id="display_family_photo_box" class="cert-photo-box" hidden style="margin-top:8px;">
                 <p class="cert-note-title"><strong><span class="lang-en">Student Work Photo:</span><span class="lang-es" lang="es">Foto del trabajo:</span></strong></p>
-                <img id="display_family_photo" alt="Student notebook work" style="max-width:180px;border-radius:8px;border:1.5px solid #cbd5e1;box-shadow:0 2px 8px rgba(0,0,0,0.1);" />
+                <img class="u-edge" id="display_family_photo" alt="Student notebook work" style="max-width:180px;" />
               </div>
               <div id="display_family_voice_box" class="cert-voice-box" hidden style="margin-top:8px;">
                 <p class="cert-note-title"><strong><span class="lang-en">Student Voice Memo:</span><span class="lang-es" lang="es">Nota de voz del estudiante:</span></strong></p>
@@ -3550,13 +3477,13 @@ export function renderCelebration(config = null, _lessonId = "") {
             </div>
           </div>
           <div class="cert-actions">
-            <button type="button" class="btn btn-secondary print-cert-btn" onclick="window.print()">
+            <button type="button" class="btn btn-secondary print-cert-btn" ${act("hwPrint")}>
               <span class="lang-en">🖨️ Print Certificate</span><span class="lang-es" lang="es">🖨️ Imprimir certificado</span>
             </button>
-            <button type="button" class="btn btn-outline-secondary print-cert-btn" onclick="printRefrigeratorSheet()">
+            <button type="button" class="btn btn-outline-secondary print-cert-btn" ${act("printRefrigeratorSheet")}>
               <span class="lang-en">📄 1-Page Refrigerator Sheet</span><span class="lang-es" lang="es">📄 Hoja familiar (1 pág.)</span>
             </button>
-            <button type="button" class="edit-signoff-btn" onclick="editParentSignoff()">
+            <button type="button" class="edit-signoff-btn" ${act("editParentSignoff")}>
               <span class="lang-en">Edit reflection</span><span class="lang-es" lang="es">Editar reflexión</span>
             </button>
           </div>
@@ -3564,7 +3491,7 @@ export function renderCelebration(config = null, _lessonId = "") {
       </div>
 
       <div class="high-five-banner">
-        <button type="button" class="btn-high-five" onclick="triggerHighFive()">
+        <button type="button" class="btn-high-five" ${act("triggerHighFive")}>
           <span class="high-five-emoji" aria-hidden="true">✋</span>
           <div class="high-five-labels">
             <strong><span class="lang-en">Give a High Five!</span><span class="lang-es" lang="es">¡Dame esos cinco!</span></strong>
@@ -5269,8 +5196,8 @@ export function getFamilyActivities(topicOrConfig) {
 }
 
 /** One activity card: a friendly accordion with steps and a talk prompt. */
-function renderFamilyActivityCard(act, idx) {
-  const stepsHtml = act.steps
+function renderFamilyActivityCard(activity, idx) {
+  const stepsHtml = activity.steps
     .map(
       (s, i) => `
         <li class="fam-act-step">
@@ -5286,12 +5213,12 @@ function renderFamilyActivityCard(act, idx) {
   return `
     <details class="fam-act-card" data-family-activity="${idx}"${idx === 0 ? " open" : ""}>
       <summary class="fam-act-summary">
-        <span class="fam-act-icon" aria-hidden="true">${act.icon}</span>
+        <span class="fam-act-icon" aria-hidden="true">${activity.icon}</span>
         <span class="fam-act-titles">
-          <strong><span class="lang-en">${esc(act.titleEn)}</span><span class="lang-es" lang="es">${esc(act.titleEs)}</span></strong>
+          <strong><span class="lang-en">${esc(activity.titleEn)}</span><span class="lang-es" lang="es">${esc(activity.titleEs)}</span></strong>
           <small class="fam-act-meta">
-            <span class="fam-act-time">⏱️ ~${act.minutes} min</span>
-            <span class="fam-act-materials"><span class="lang-en">🧰 ${esc(act.materialsEn)}</span><span class="lang-es" lang="es">🧰 ${esc(act.materialsEs)}</span></span>
+            <span class="fam-act-time">⏱️ ~${activity.minutes} min</span>
+            <span class="fam-act-materials"><span class="lang-en">🧰 ${esc(activity.materialsEn)}</span><span class="lang-es" lang="es">🧰 ${esc(activity.materialsEs)}</span></span>
           </small>
         </span>
         <span class="fam-act-chevron" aria-hidden="true">▾</span>
@@ -5300,10 +5227,10 @@ function renderFamilyActivityCard(act, idx) {
         <ol class="fam-act-steps">${stepsHtml}</ol>
         <div class="fam-act-talk">
           <strong>💬 <span class="lang-en">Talk about it:</span><span class="lang-es" lang="es">Para conversar:</span></strong>
-          <span class="lang-en">${esc(act.talkEn)}</span>
-          <span class="lang-es" lang="es">${esc(act.talkEs)}</span>
+          <span class="lang-en">${esc(activity.talkEn)}</span>
+          <span class="lang-es" lang="es">${esc(activity.talkEs)}</span>
         </div>
-        <button type="button" class="fam-mission-complete" data-mission-complete="${idx}" aria-pressed="false" onclick="completeFamilyMission(${idx})">
+        <button type="button" class="fam-mission-complete" data-mission-complete="${idx}" aria-pressed="false" ${act("completeFamilyMission", idx)}>
           <span class="fam-mission-check" aria-hidden="true">✓</span>
           <span class="lang-en">We did this mission</span><span class="lang-es" lang="es">Completamos esta misión</span>
         </button>
@@ -5329,7 +5256,7 @@ export function renderFamilyActivityCorner(topic) {
         </div>
         ${
           acts.length > 1
-            ? `<button type="button" class="family-mission-picker" onclick="pickFamilyMission()">
+            ? `<button type="button" class="family-mission-picker" ${act("pickFamilyMission")}>
           🎲 <span class="lang-en">Pick an alternative</span><span class="lang-es" lang="es">Elegir una alternativa</span>
         </button>`
             : ""
@@ -7472,7 +7399,7 @@ export function renderFamilyGameBreak(key, extras = {}, topic = key) {
     .map(
       (g, i) => `
         <button type="button" class="fam-arcade-chip${i === 0 ? " is-active" : ""}" data-arcade-game="${g.id}"
-          onclick="showArcadeGame('${g.id}')" aria-pressed="${i === 0 ? "true" : "false"}">
+          ${act("showArcadeGame", g.id)} aria-pressed="${i === 0 ? "true" : "false"}">
           <span class="fam-arcade-chip-icon" aria-hidden="true">${g.icon}</span>
           <span class="lang-en">${g.en}</span><span class="lang-es" lang="es">${g.es}</span>
         </button>`,
@@ -7494,7 +7421,7 @@ export function renderFamilyGameBreak(key, extras = {}, topic = key) {
       <div class="fam-game-card" id="fam_domino_game" data-arcade-panel="domino">
         <div class="fam-game-card-head">
           <h3 class="fam-game-h3">🧩 <span class="lang-en">Math Dominoes: Build the Chain</span><span class="lang-es" lang="es">Dominó matemático: arma la cadena</span></h3>
-          <button type="button" class="btn btn-sm btn-secondary" onclick="resetDominoGame()">🔄 <span class="lang-en">New Chain</span><span class="lang-es" lang="es">Nueva cadena</span></button>
+          <button type="button" class="btn btn-sm btn-secondary" ${act("resetDominoGame")}>🔄 <span class="lang-en">New Chain</span><span class="lang-es" lang="es">Nueva cadena</span></button>
         </div>
         <p class="fam-game-sub">
           <span class="lang-en">Build a chain. The left side of each domino is the match for the problem on the end of the chain. Tap the domino that fits next.</span>
@@ -7511,7 +7438,7 @@ ${renderDominoDuo()}
       <div class="fam-game-card" id="fam_tf_game" data-arcade-panel="tf" hidden>
         <div class="fam-game-card-head">
           <h3 class="fam-game-h3">🎯 <span class="lang-en">True or False? Family Face-Off</span><span class="lang-es" lang="es">¿Verdadero o falso? Duelo Familiar</span></h3>
-          <button type="button" class="btn btn-sm btn-secondary" onclick="resetTfGame()">🔄 <span class="lang-en">Play Again</span><span class="lang-es" lang="es">Jugar otra vez</span></button>
+          <button type="button" class="btn btn-sm btn-secondary" ${act("resetTfGame")}>🔄 <span class="lang-en">Play Again</span><span class="lang-es" lang="es">Jugar otra vez</span></button>
         </div>
         <p class="fam-game-sub">
           <span class="lang-en">Take turns — student answers one, then a family member answers the next. Watch for the trick statements!</span>
@@ -7520,13 +7447,13 @@ ${renderDominoDuo()}
         <div class="fam-tf-turn" id="fam_tf_turn" aria-live="polite"></div>
         <p class="fam-tf-statement" id="fam_tf_statement"></p>
         <div class="fam-tf-buttons">
-          <button type="button" class="btn fam-tf-btn fam-tf-true" id="fam_tf_true_btn" onclick="answerTf(true)">✓ <span class="lang-en">TRUE</span><span class="lang-es" lang="es">VERDADERO</span></button>
-          <button type="button" class="btn fam-tf-btn fam-tf-false" id="fam_tf_false_btn" onclick="answerTf(false)">✗ <span class="lang-en">FALSE</span><span class="lang-es" lang="es">FALSO</span></button>
+          <button type="button" class="btn fam-tf-btn fam-tf-true" id="fam_tf_true_btn" ${act("answerTf", true)}>✓ <span class="lang-en">TRUE</span><span class="lang-es" lang="es">VERDADERO</span></button>
+          <button type="button" class="btn fam-tf-btn fam-tf-false" id="fam_tf_false_btn" ${act("answerTf", false)}>✗ <span class="lang-en">FALSE</span><span class="lang-es" lang="es">FALSO</span></button>
         </div>
         <div class="fam-tf-feedback" id="fam_tf_feedback" hidden aria-live="polite">
           <p class="fam-tf-verdict" id="fam_tf_verdict"></p>
           <p class="fam-tf-why" id="fam_tf_why"></p>
-          <button type="button" class="btn btn-primary btn-sm" id="fam_tf_next_btn" onclick="nextTf()">➔ <span class="lang-en">Next statement</span><span class="lang-es" lang="es">Siguiente</span></button>
+          <button type="button" class="btn btn-primary btn-sm" id="fam_tf_next_btn" ${act("nextTf")}>➔ <span class="lang-en">Next statement</span><span class="lang-es" lang="es">Siguiente</span></button>
         </div>
         <p class="fam-tf-score" id="fam_tf_score" aria-live="polite"></p>
         <div class="fam-tf-done" id="fam_tf_done" hidden></div>
@@ -7535,7 +7462,7 @@ ${renderDominoDuo()}
       <div class="fam-game-card" id="fam_sort_game" data-arcade-panel="sort" hidden>
         <div class="fam-game-card-head">
           <h3 class="fam-game-h3">🗂️ <span class="lang-en">Sort It!</span><span class="lang-es" lang="es">¡A clasificar!</span></h3>
-          <button type="button" class="btn btn-sm btn-secondary" onclick="resetSortGame()">🔄 <span class="lang-en">Play Again</span><span class="lang-es" lang="es">Jugar otra vez</span></button>
+          <button type="button" class="btn btn-sm btn-secondary" ${act("resetSortGame")}>🔄 <span class="lang-en">Play Again</span><span class="lang-es" lang="es">Jugar otra vez</span></button>
         </div>
         <p class="fam-game-sub">
           <span class="lang-en">Tap a card, then tap the bin it belongs in. Talk it through before you tap!</span>
@@ -7543,11 +7470,11 @@ ${renderDominoDuo()}
         </p>
         <div class="fam-sort-cards" id="fam_sort_cards" role="group" aria-label="Cards to sort"></div>
         <div class="fam-sort-bins">
-          <button type="button" class="fam-sort-bin" data-bin="0" onclick="dropSortCard(0)">
+          <button type="button" class="fam-sort-bin" data-bin="0" ${act("dropSortCard", 0)}>
             <span class="fam-sort-bin-label" id="fam_sort_bin0"></span>
             <span class="fam-sort-bin-count" id="fam_sort_bin0_count">0</span>
           </button>
-          <button type="button" class="fam-sort-bin" data-bin="1" onclick="dropSortCard(1)">
+          <button type="button" class="fam-sort-bin" data-bin="1" ${act("dropSortCard", 1)}>
             <span class="fam-sort-bin-label" id="fam_sort_bin1"></span>
             <span class="fam-sort-bin-count" id="fam_sort_bin1_count">0</span>
           </button>
@@ -7559,21 +7486,21 @@ ${renderDominoDuo()}
       <div class="fam-game-card" id="fam_wyr_game" data-arcade-panel="wyr" hidden>
         <div class="fam-game-card-head">
           <h3 class="fam-game-h3">🤔 <span class="lang-en">Would You Rather?</span><span class="lang-es" lang="es">¿Qué prefieres?</span></h3>
-          <button type="button" class="btn btn-sm btn-secondary" onclick="resetWyrGame()">🔄 <span class="lang-en">Start Over</span><span class="lang-es" lang="es">Empezar de nuevo</span></button>
+          <button type="button" class="btn btn-sm btn-secondary" ${act("resetWyrGame")}>🔄 <span class="lang-en">Start Over</span><span class="lang-es" lang="es">Empezar de nuevo</span></button>
         </div>
         <p class="fam-game-sub">
           <span class="lang-en">Everyone votes and says WHY. Then tap to see what the math says — sometimes it is a tie!</span>
           <span class="lang-es" lang="es">Todos votan y dicen POR QUÉ. Luego toquen para ver qué dicen las matemáticas: ¡a veces es empate!</span>
         </p>
         <div class="fam-wyr-options">
-          <button type="button" class="fam-wyr-option" id="fam_wyr_a" onclick="voteWyr(0)"></button>
+          <button type="button" class="fam-wyr-option" id="fam_wyr_a" ${act("voteWyr", 0)}></button>
           <span class="fam-wyr-or" aria-hidden="true">OR</span>
-          <button type="button" class="fam-wyr-option" id="fam_wyr_b" onclick="voteWyr(1)"></button>
+          <button type="button" class="fam-wyr-option" id="fam_wyr_b" ${act("voteWyr", 1)}></button>
         </div>
         <div class="fam-wyr-reveal" id="fam_wyr_reveal" hidden aria-live="polite">
           <p class="fam-wyr-reveal-title">🔎 <span class="lang-en">What the math says</span><span class="lang-es" lang="es">Lo que dicen las matemáticas</span></p>
           <p class="fam-wyr-why" id="fam_wyr_why"></p>
-          <button type="button" class="btn btn-primary btn-sm" id="fam_wyr_next" onclick="nextWyr()">➔ <span class="lang-en">Next round</span><span class="lang-es" lang="es">Siguiente ronda</span></button>
+          <button type="button" class="btn btn-primary btn-sm" id="fam_wyr_next" ${act("nextWyr")}>➔ <span class="lang-en">Next round</span><span class="lang-es" lang="es">Siguiente ronda</span></button>
         </div>
         <p class="fam-wyr-progress" id="fam_wyr_progress" aria-live="polite"></p>
       </div>
@@ -7583,7 +7510,7 @@ ${
       <div class="fam-game-card" id="fam_quiz_game" data-arcade-panel="quiz" hidden>
         <div class="fam-game-card-head">
           <h3 class="fam-game-h3">⚡ <span class="lang-en">Quick Quiz</span><span class="lang-es" lang="es">Reto rápido</span></h3>
-          <button type="button" class="btn btn-sm btn-secondary" onclick="initHomeworkGame()">🔄 <span class="lang-en">Play Again</span><span class="lang-es" lang="es">Jugar otra vez</span></button>
+          <button type="button" class="btn btn-sm btn-secondary" ${act("initHomeworkGame")}>🔄 <span class="lang-en">Play Again</span><span class="lang-es" lang="es">Jugar otra vez</span></button>
         </div>
         <p class="fam-game-sub">
           <span class="lang-en">Reinforce tonight's topic with a quick family game. You ask; your student decides!</span>
@@ -8052,7 +7979,7 @@ export function renderSkillPowerUp(config, topic = "expressions") {
             (c, i) => `
           <button type="button" class="powerup-choice-btn" data-choice-idx="${i}" data-is-correct="${i === correctIdx ? "true" : "false"}"
             data-hint-en="${escAttr(powerUp.hintEn)}" data-hint-es="${escAttr(powerUp.hintEs)}"
-            onclick="checkSkillPowerUp(this, ${i}, ${correctIdx})">
+            ${act("checkSkillPowerUp", EL, i, correctIdx)}>
             <span class="powerup-letter">${String.fromCharCode(65 + i)}</span>
             <span class="powerup-choice-text">
               <span class="lang-en">${esc(c.en)}</span>
@@ -8111,7 +8038,7 @@ export function renderVocabMatchChallenge(vocabList) {
           ${vocabList
             .map(
               (v, i) => `
-            <button type="button" class="vocab-match-chip chip-term" data-vocab-id="${i}" data-side="term" onclick="selectVocabMatchChip(this)">
+            <button type="button" class="vocab-match-chip chip-term" data-vocab-id="${i}" data-side="term" ${act("selectVocabMatchChip", EL)}>
               <span class="chip-label-en">${esc(v.term)}</span>
               ${v.termEs ? `<span class="chip-label-es" lang="es">${esc(v.termEs)}</span>` : ""}
             </button>`,
@@ -8122,7 +8049,7 @@ export function renderVocabMatchChallenge(vocabList) {
           ${shuffledDefs
             .map(
               (v) => `
-            <button type="button" class="vocab-match-chip chip-def" data-vocab-id="${v.origIdx}" data-side="def" onclick="selectVocabMatchChip(this)">
+            <button type="button" class="vocab-match-chip chip-def" data-vocab-id="${v.origIdx}" data-side="def" ${act("selectVocabMatchChip", EL)}>
               <span class="chip-label-en">${esc(v.definition)}</span>
               ${v.definitionEs ? `<span class="chip-label-es" lang="es">${esc(v.definitionEs)}</span>` : ""}
             </button>`,
@@ -8137,7 +8064,7 @@ export function renderVocabMatchChallenge(vocabList) {
             <strong><span class="lang-en">Vocab Master! All ${count} words matched!</span><span class="lang-es" lang="es">¡Maestro del Vocabulario! ¡Todas las palabras emparejadas!</span></strong>
             <p><span class="lang-en">Great job connecting the math vocabulary. Explore the flashcards below!</span><span class="lang-es" lang="es">Excelente conectando el vocabulario. ¡Exploren las tarjetas abajo!</span></p>
           </div>
-          <button type="button" class="btn btn-sm btn-secondary" onclick="resetVocabMatchGame()">
+          <button type="button" class="btn btn-sm btn-secondary" ${act("resetVocabMatchGame")}>
             <span class="lang-en">Play Again 🔄</span><span class="lang-es" lang="es">Jugar de nuevo 🔄</span>
           </button>
         </div>
@@ -8174,12 +8101,12 @@ export function renderVocabQuiz(vocabList, resolveVocabImage, vocabImageAlt) {
         </div>
         <div class="vq-choices" id="vocab_quiz_choices"></div>
         <p class="vq-feedback" id="vocab_quiz_feedback" role="status" aria-live="polite"></p>
-        <button type="button" class="btn btn-primary vq-next" id="vocab_quiz_next" onclick="nextVocabQuiz()" hidden><span class="lang-en">Next ➔</span><span class="lang-es" lang="es">Siguiente ➔</span></button>
+        <button type="button" class="btn btn-primary vq-next" id="vocab_quiz_next" ${act("nextVocabQuiz")} hidden><span class="lang-en">Next ➔</span><span class="lang-es" lang="es">Siguiente ➔</span></button>
       </div>
       <div class="vq-done" id="vocab_quiz_done" hidden>
         <p class="vq-done-title">🎉 <span class="lang-en">Quiz done!</span><span class="lang-es" lang="es">¡Prueba terminada!</span></p>
         <p class="vq-done-score"><span class="lang-en">First-try stars:</span><span class="lang-es" lang="es">Estrellas al primer intento:</span> <strong id="vocab_quiz_score"></strong></p>
-        <button type="button" class="btn btn-secondary" onclick="startVocabQuiz()"><span class="lang-en">Play again 🔄</span><span class="lang-es" lang="es">Jugar de nuevo 🔄</span></button>
+        <button type="button" class="btn btn-secondary" ${act("startVocabQuiz")}><span class="lang-en">Play again 🔄</span><span class="lang-es" lang="es">Jugar de nuevo 🔄</span></button>
       </div>
       <script type="application/json" id="vocab_quiz_data">${island}</script>
     </div>`;
@@ -8210,16 +8137,16 @@ export function renderWordsToKnow(vocabList, resolveVocabImage, vocabImageAlt) {
             const imgSrc = resolveVocabImage(term, v.image);
             const imgAlt = vocabImageAlt(term, definition);
             return `
-            <div class="vocab-card" id="vocab_card_${vIdx}" onclick="this.classList.toggle('flipped')" role="button" tabindex="0" aria-label="${escAttr(term)} flashcard. Tap to flip." onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.classList.toggle('flipped');}">
+            <div class="vocab-card" id="vocab_card_${vIdx}" ${act("hwFlipCard")}>
               <div class="vocab-card-inner">
                 <div class="vocab-card-front">
                   <div class="vocab-card-top-bar">
-                    <button type="button" class="vocab-speak-btn" onclick="event.stopPropagation(); speakMathWord(${escAttr(JSON.stringify(term))}, ${escAttr(JSON.stringify(termEs))})" title="Listen / Escuchar" aria-label="Pronounce ${esc(term)}">🔊 <span class="vocab-btn-label lang-en">Listen</span><span class="vocab-btn-label lang-es" lang="es">Escuchar</span></button>
+                    <button type="button" class="vocab-speak-btn" ${actOn("click", "speakMathWord", [term, termEs], { stop: true })} title="Listen / Escuchar" aria-label="Pronounce ${esc(term)}">🔊 <span class="vocab-btn-label lang-en">Listen</span><span class="vocab-btn-label lang-es" lang="es">Escuchar</span></button>
                   </div>
                   <div class="vocab-thumb-wrap">
                     <img class="vocab-thumb" src="${esc(imgSrc)}" alt="${esc(imgAlt)}" loading="lazy" width="260" height="195" />
                   </div>
-                  <div class="vocab-front-body">
+                  <div class="vocab-front-body" tabindex="0" role="group" aria-label="${esc(term)}">
                     <h3 class="vocab-term term-text">
                       <span class="lang-en">${esc(term)}</span>
                       <span class="lang-es" lang="es">${esc(termEs || term)}</span>
@@ -8227,13 +8154,13 @@ export function renderWordsToKnow(vocabList, resolveVocabImage, vocabImageAlt) {
                     ${termEs ? `<p class="vocab-es" lang="es">${esc(termEs)}</p>` : ""}
                     ${visual ? `<div class="vocab-visual-hint">💡 ${esc(visual)}</div>` : ""}
                   </div>
-                  <div class="flip-prompt" aria-hidden="true">
-                    <span class="flip-icon">↻</span>
-                    <span class="lang-en">Tap to see definition</span>
-                    <span class="lang-es" lang="es">Toca para ver definición</span>
-                  </div>
+                  <button type="button" class="flip-prompt" aria-expanded="false" ${actOn("click", "hwFlipCard", [], { stop: true })}>
+                    <span class="flip-icon" aria-hidden="true">↻</span>
+                    <span class="lang-en">Tap to see definition of ${esc(term)}</span>
+                    <span class="lang-es" lang="es">Toca para ver la definición de ${esc(termEs || term)}</span>
+                  </button>
                 </div>
-                <div class="vocab-card-back">
+                <div class="vocab-card-back" inert>
                   <div class="vocab-back-header">
                     <span class="vocab-back-badge"><span class="lang-en">DEFINITION</span><span class="lang-es" lang="es">DEFINICIÓN</span></span>
                     <h4 class="vocab-back-term">
@@ -8248,13 +8175,13 @@ export function renderWordsToKnow(vocabList, resolveVocabImage, vocabImageAlt) {
                     ${visual ? `<div class="vocab-back-visual"><span class="vocab-visual-icon">📌</span> <span>${esc(visual)}</span></div>` : ""}
                   </div>
                   <div class="vocab-card-back-actions">
-                    <button type="button" class="btn btn-sm vocab-btn-gotit" onclick="event.stopPropagation(); markVocabCardKnown(${vIdx}, true)"><span class="lang-en">Got it! 👍</span><span class="lang-es" lang="es">¡Lo sé! 👍</span></button>
-                    <button type="button" class="btn btn-sm vocab-btn-review" onclick="event.stopPropagation(); markVocabCardKnown(${vIdx}, false)"><span class="lang-en">Review 🔄</span><span class="lang-es" lang="es">Repasar 🔄</span></button>
+                    <button type="button" class="btn btn-sm vocab-btn-gotit" ${actOn("click", "markVocabCardKnown", [vIdx, true], { stop: true })}><span class="lang-en">Got it! 👍</span><span class="lang-es" lang="es">¡Lo sé! 👍</span></button>
+                    <button type="button" class="btn btn-sm vocab-btn-review" ${actOn("click", "markVocabCardKnown", [vIdx, false], { stop: true })}><span class="lang-en">Review 🔄</span><span class="lang-es" lang="es">Repasar 🔄</span></button>
                   </div>
-                  <div class="flip-back-prompt" aria-hidden="true">
-                    <span class="lang-en">Tap anywhere to flip back ↺</span>
-                    <span class="lang-es" lang="es">Toca para voltear ↺</span>
-                  </div>
+                  <button type="button" class="flip-back-prompt" ${actOn("click", "hwFlipCard", [], { stop: true })}>
+                    <span class="lang-en">Tap anywhere to flip back <span aria-hidden="true">↺</span></span>
+                    <span class="lang-es" lang="es">Toca para voltear <span aria-hidden="true">↺</span></span>
+                  </button>
                 </div>
               </div>
             </div>`;
@@ -8264,7 +8191,7 @@ export function renderWordsToKnow(vocabList, resolveVocabImage, vocabImageAlt) {
       ${quizHtml}
       ${matchHtml}
       <div class="tab-flow-nav">
-        <button type="button" class="btn btn-primary flow-next-btn" onclick="goNextHomeworkStop('words')">
+        <button type="button" class="btn btn-primary flow-next-btn" ${act("goNextHomeworkStop", "words")}>
           <span class="lang-en">Continue ➔</span>
           <span class="lang-es" lang="es">Continuar ➔</span>
         </button>
@@ -8342,7 +8269,7 @@ export function renderLearnTab(
   const mis = getTopicMisconception(topic, config);
 
   // Add Listen button to the Big Idea title
-  const listenBtn = ` <button type="button" class="btn-listen-concept" onclick="speakBigIdea(${escAttr(JSON.stringify(keyEn))}, ${escAttr(JSON.stringify(keyEs))})" title="Listen to Big Idea / Escuchar idea principal" aria-label="Listen to the big idea">🔊 <span class="lang-en">Listen</span><span class="lang-es" lang="es">Escuchar</span></button>`;
+  const listenBtn = ` <button type="button" class="btn-listen-concept" ${act("speakBigIdea", keyEn, keyEs)} title="Listen to Big Idea / Escuchar idea principal" aria-label="Listen to the big idea">🔊 <span class="lang-en">Listen</span><span class="lang-es" lang="es">Escuchar</span></button>`;
   // Inside the heading, not after it: as a sibling it landed in a band of dead
   // space under the title, and the Learn tab strips the <section> wrapper, so
   // there is no container left to position it against.
@@ -8418,7 +8345,7 @@ export function renderLearnTab(
             <p><span class="lang-en">${workbench.actionEn}</span><span class="lang-es" lang="es">${workbench.actionEs}</span></p>
           </div>
         </div>
-        <button type="button" class="btn btn-sm btn-outline-primary wb-launch-btn" onclick="openWorkbench('${workbench.id}')">
+        <button type="button" class="btn btn-sm btn-outline-primary wb-launch-btn" ${act("openWorkbench", workbench.id)}>
           <span class="lang-en">Open ${workbench.en} ➔</span>
           <span class="lang-es" lang="es">Abrir ${workbench.es} ➔</span>
         </button>
@@ -8467,7 +8394,7 @@ ${renderWarmupHuddle(confusedGrownUpCard(config))}
       ${learnCard("Big idea", "Idea principal", `<div class="learn-big-idea-block" id="hw_learn_idea">${concept}</div>`)}
       ${learnCard("Tools and quick question", "Herramientas y pregunta rápida", toolsHtml)}
       <div class="tab-flow-nav">
-        <button type="button" class="btn btn-primary flow-next-btn" onclick="goNextHomeworkStop('learn')">
+        <button type="button" class="btn btn-primary flow-next-btn" ${act("goNextHomeworkStop", "learn")}>
           <span class="lang-en">Continue ➔</span>
           <span class="lang-es" lang="es">Continuar ➔</span>
         </button>
@@ -8525,13 +8452,13 @@ export function renderCheckTab(
 
   const scratchpadToggle = `
     <div class="scratchpad-inline-toggle">
-      <button type="button" class="btn btn-sm btn-secondary scratchpad-toggle-btn" onclick="toggleScratchpad()">
+      <button type="button" class="btn btn-sm btn-secondary scratchpad-toggle-btn" ${act("toggleScratchpad")}>
         ✏️ <span class="lang-en">Open scratchpad</span><span class="lang-es" lang="es">Abrir pizarra</span>
       </button>
     </div>`;
 
   const goalReachedBanner = `
-    <div class="goal-reached-banner" id="goal_reached_banner" hidden>
+    <div class="goal-reached-banner" id="goal_reached_banner" role="status" hidden>
       <span class="goal-icon" aria-hidden="true">🌟</span>
       <div class="goal-text">
         <strong><span class="lang-en">That's tonight's goal — done!</span><span class="lang-es" lang="es">¡Esa es la meta de hoy: completa!</span></strong>
@@ -8544,10 +8471,10 @@ export function renderCheckTab(
       <div class="goal-actions">
         ${
           hasMystery
-            ? `<button type="button" class="btn btn-sm btn-secondary hw-banner-mystery" hidden onclick="hwOpenMystery()"><span class="lang-en">🔓 Open the mystery challenge</span><span class="lang-es" lang="es">🔓 Abrir el reto misterioso</span></button>`
+            ? `<button type="button" class="btn btn-sm btn-secondary hw-banner-mystery" hidden ${act("hwOpenMystery")}><span class="lang-en">🔓 Open the mystery challenge</span><span class="lang-es" lang="es">🔓 Abrir el reto misterioso</span></button>`
             : ""
         }
-        <button type="button" class="btn btn-sm btn-primary" onclick="switchHomeworkTab('done')">
+        <button type="button" class="btn btn-sm btn-primary" ${act("switchHomeworkTab", "done")}>
           <span class="lang-en">Teach it back, then claim your certificate ➔</span><span class="lang-es" lang="es">Enséñalo y reclama tu certificado ➔</span>
         </button>
       </div>
@@ -8636,7 +8563,7 @@ export function renderCheckTab(
 
   const flowNext = `
     <div class="tab-flow-nav">
-      <button type="button" class="btn btn-primary flow-next-btn" onclick="goNextHomeworkStop('check')">
+      <button type="button" class="btn btn-primary flow-next-btn" ${act("goNextHomeworkStop", "check")}>
         <span class="lang-en">Continue ➔</span>
         <span class="lang-es" lang="es">Continuar ➔</span>
       </button>
@@ -8686,7 +8613,7 @@ export function renderWorkbenchTools(config) {
           ${
             tool.id === "fractions"
               ? `
-          <button type="button" class="wb-tool-tab is-active" id="wb_tab_fractions" onclick="switchWorkbenchTool('fractions')">
+          <button type="button" class="wb-tool-tab is-active" id="wb_tab_fractions" ${act("switchWorkbenchTool", "fractions")}>
             <span class="tool-icon">📏</span>
             <span class="tool-name"><span class="lang-en">Fraction Strips</span><span class="lang-es" lang="es">Fracciones</span></span>
           </button>`
@@ -8695,7 +8622,7 @@ export function renderWorkbenchTools(config) {
           ${
             tool.id === "coords"
               ? `
-          <button type="button" class="wb-tool-tab is-active" id="wb_tab_coords" onclick="switchWorkbenchTool('coords')">
+          <button type="button" class="wb-tool-tab is-active" id="wb_tab_coords" ${act("switchWorkbenchTool", "coords")}>
             <span class="tool-icon">🧭</span>
             <span class="tool-name"><span class="lang-en">Coordinate Grid</span><span class="lang-es" lang="es">Coordenadas</span></span>
           </button>`
@@ -8704,7 +8631,7 @@ export function renderWorkbenchTools(config) {
           ${
             tool.id === "tapes"
               ? `
-          <button type="button" class="wb-tool-tab is-active" id="wb_tab_tapes" onclick="switchWorkbenchTool('tapes')">
+          <button type="button" class="wb-tool-tab is-active" id="wb_tab_tapes" ${act("switchWorkbenchTool", "tapes")}>
             <span class="tool-icon">📊</span>
             <span class="tool-name"><span class="lang-en">Ratio Tape</span><span class="lang-es" lang="es">Cintas de razón</span></span>
           </button>`
@@ -8713,7 +8640,7 @@ export function renderWorkbenchTools(config) {
           ${
             tool.id === "decimals"
               ? `
-          <button type="button" class="wb-tool-tab is-active" id="wb_tab_decimals" onclick="switchWorkbenchTool('decimals')">
+          <button type="button" class="wb-tool-tab is-active" id="wb_tab_decimals" ${act("switchWorkbenchTool", "decimals")}>
             <span class="tool-icon">🔢</span>
             <span class="tool-name"><span class="lang-en">Decimal Columns</span><span class="lang-es" lang="es">Columnas decimales</span></span>
           </button>`
@@ -8730,21 +8657,21 @@ export function renderWorkbenchTools(config) {
             <div class="tool-controls-row">
               <span class="tool-hint"><span class="lang-en">Tap fraction tiles to add bars and compare lengths:</span><span class="lang-es" lang="es">Toca fichas para añadir barras y comparar longitudes:</span></span>
               <div class="fraction-button-group">
-                <button type="button" class="btn btn-sm btn-outline-primary frac-add-btn" onclick="addFractionBar(1)">1</button>
-                <button type="button" class="btn btn-sm btn-outline-primary frac-add-btn" onclick="addFractionBar(2)">1/2</button>
-                <button type="button" class="btn btn-sm btn-outline-primary frac-add-btn" onclick="addFractionBar(3)">1/3</button>
-                <button type="button" class="btn btn-sm btn-outline-primary frac-add-btn" onclick="addFractionBar(4)">1/4</button>
-                <button type="button" class="btn btn-sm btn-outline-primary frac-add-btn" onclick="addFractionBar(6)">1/6</button>
-                <button type="button" class="btn btn-sm btn-outline-primary frac-add-btn" onclick="addFractionBar(8)">1/8</button>
-                <button type="button" class="btn btn-sm btn-outline-primary frac-add-btn" onclick="addFractionBar(12)">1/12</button>
-                <button type="button" class="btn btn-sm btn-secondary" onclick="clearFractionBars()">🗑️ <span class="lang-en">Clear</span><span class="lang-es" lang="es">Borrar</span></button>
+                <button type="button" class="btn btn-sm btn-outline-primary frac-add-btn" ${act("addFractionBar", 1)}>1</button>
+                <button type="button" class="btn btn-sm btn-outline-primary frac-add-btn" ${act("addFractionBar", 2)}>1/2</button>
+                <button type="button" class="btn btn-sm btn-outline-primary frac-add-btn" ${act("addFractionBar", 3)}>1/3</button>
+                <button type="button" class="btn btn-sm btn-outline-primary frac-add-btn" ${act("addFractionBar", 4)}>1/4</button>
+                <button type="button" class="btn btn-sm btn-outline-primary frac-add-btn" ${act("addFractionBar", 6)}>1/6</button>
+                <button type="button" class="btn btn-sm btn-outline-primary frac-add-btn" ${act("addFractionBar", 8)}>1/8</button>
+                <button type="button" class="btn btn-sm btn-outline-primary frac-add-btn" ${act("addFractionBar", 12)}>1/12</button>
+                <button type="button" class="btn btn-sm btn-secondary" ${act("clearFractionBars")}>🗑️ <span class="lang-en">Clear</span><span class="lang-es" lang="es">Borrar</span></button>
               </div>
             </div>
             <div class="tool-presets-row">
               <span class="tool-presets-label"><span class="lang-en">⚡ Compare:</span><span class="lang-es" lang="es">⚡ Comparar:</span></span>
-              <button type="button" class="wb-preset-btn" onclick="loadFractionComparison('half')"><span class="lang-en">1/2 = 2/4</span><span class="lang-es" lang="es">1/2 = 2/4</span></button>
-              <button type="button" class="wb-preset-btn" onclick="loadFractionComparison('third')"><span class="lang-en">1/3 = 2/6</span><span class="lang-es" lang="es">1/3 = 2/6</span></button>
-              <button type="button" class="wb-preset-btn" onclick="loadFractionComparison('threefourths')"><span class="lang-en">3/4 = 6/8</span><span class="lang-es" lang="es">3/4 = 6/8</span></button>
+              <button type="button" class="wb-preset-btn" ${act("loadFractionComparison", "half")}><span class="lang-en">1/2 = 2/4</span><span class="lang-es" lang="es">1/2 = 2/4</span></button>
+              <button type="button" class="wb-preset-btn" ${act("loadFractionComparison", "third")}><span class="lang-en">1/3 = 2/6</span><span class="lang-es" lang="es">1/3 = 2/6</span></button>
+              <button type="button" class="wb-preset-btn" ${act("loadFractionComparison", "threefourths")}><span class="lang-en">3/4 = 6/8</span><span class="lang-es" lang="es">3/4 = 6/8</span></button>
             </div>
             <div class="fraction-stage-canvas" id="fraction_stage_canvas">
               <div class="fraction-row ref-row"><div class="frac-tile tile-1"><span class="lang-en">1 Whole (1.0)</span><span class="lang-es" lang="es">1 Entero (1.0)</span></div></div>
@@ -8763,14 +8690,14 @@ export function renderWorkbenchTools(config) {
             </div>
             <div class="tool-presets-row">
               <span class="tool-presets-label"><span class="lang-en">⚡ Sample Points:</span><span class="lang-es" lang="es">⚡ Puntos muestra:</span></span>
-              <button type="button" class="wb-preset-btn" onclick="plotCoordPoint(3, 4)"><span class="lang-en">(3, 4) Quad I</span><span class="lang-es" lang="es">(3, 4) Cuad I</span></button>
-              <button type="button" class="wb-preset-btn" onclick="plotCoordPoint(-3, 2)"><span class="lang-en">(-3, 2) Quad II</span><span class="lang-es" lang="es">(-3, 2) Cuad II</span></button>
-              <button type="button" class="wb-preset-btn" onclick="plotCoordPoint(-4, -3)"><span class="lang-en">(-4, -3) Quad III</span><span class="lang-es" lang="es">(-4, -3) Cuad III</span></button>
-              <button type="button" class="wb-preset-btn" onclick="plotCoordPoint(4, -2)"><span class="lang-en">(4, -2) Quad IV</span><span class="lang-es" lang="es">(4, -2) Cuad IV</span></button>
-              <button type="button" class="wb-preset-btn" onclick="plotCoordPoint(0, 0)"><span class="lang-en">(0, 0) Origin</span><span class="lang-es" lang="es">(0, 0) Origen</span></button>
+              <button type="button" class="wb-preset-btn" ${act("plotCoordPoint", 3, 4)}><span class="lang-en">(3, 4) Quad I</span><span class="lang-es" lang="es">(3, 4) Cuad I</span></button>
+              <button type="button" class="wb-preset-btn" ${act("plotCoordPoint", -3, 2)}><span class="lang-en">(-3, 2) Quad II</span><span class="lang-es" lang="es">(-3, 2) Cuad II</span></button>
+              <button type="button" class="wb-preset-btn" ${act("plotCoordPoint", -4, -3)}><span class="lang-en">(-4, -3) Quad III</span><span class="lang-es" lang="es">(-4, -3) Cuad III</span></button>
+              <button type="button" class="wb-preset-btn" ${act("plotCoordPoint", 4, -2)}><span class="lang-en">(4, -2) Quad IV</span><span class="lang-es" lang="es">(4, -2) Cuad IV</span></button>
+              <button type="button" class="wb-preset-btn" ${act("plotCoordPoint", 0, 0)}><span class="lang-en">(0, 0) Origin</span><span class="lang-es" lang="es">(0, 0) Origen</span></button>
             </div>
             <div class="coord-canvas-wrap">
-              <svg class="interactive-coord-svg" id="interactive_coord_svg" viewBox="-120 -120 240 240" onclick="clickCoordGrid(event)" style="background:white; width:100%; max-height:280px;"></svg>
+              <svg class="interactive-coord-svg u-bg-raised" id="interactive_coord_svg" viewBox="-120 -120 240 240" ${act("clickCoordGrid", EV)} style="width:100%;max-height:280px;"></svg>
             </div>
           </div>`
               : ""
@@ -8782,24 +8709,24 @@ export function renderWorkbenchTools(config) {
               ? `<div class="wb-panel" id="wb_panel_tapes">
             <div class="tool-presets-row">
               <span class="tool-presets-label"><span class="lang-en">⚡ Quick Ratios:</span><span class="lang-es" lang="es">⚡ Razones rápidas:</span></span>
-              <button type="button" class="wb-preset-btn" onclick="loadRatioPreset(2, 3, 2)"><span class="lang-en">Paint (2 : 3 × 2)</span><span class="lang-es" lang="es">Pintura (2 : 3 × 2)</span></button>
-              <button type="button" class="wb-preset-btn" onclick="loadRatioPreset(1, 4, 3)"><span class="lang-en">Juice (1 : 4 × 3)</span><span class="lang-es" lang="es">Jugo (1 : 4 × 3)</span></button>
-              <button type="button" class="wb-preset-btn" onclick="loadRatioPreset(3, 5, 2)"><span class="lang-en">Recipe (3 : 5 × 2)</span><span class="lang-es" lang="es">Receta (3 : 5 × 2)</span></button>
+              <button type="button" class="wb-preset-btn" ${act("loadRatioPreset", 2, 3, 2)}><span class="lang-en">Paint (2 : 3 × 2)</span><span class="lang-es" lang="es">Pintura (2 : 3 × 2)</span></button>
+              <button type="button" class="wb-preset-btn" ${act("loadRatioPreset", 1, 4, 3)}><span class="lang-en">Juice (1 : 4 × 3)</span><span class="lang-es" lang="es">Jugo (1 : 4 × 3)</span></button>
+              <button type="button" class="wb-preset-btn" ${act("loadRatioPreset", 3, 5, 2)}><span class="lang-en">Recipe (3 : 5 × 2)</span><span class="lang-es" lang="es">Receta (3 : 5 × 2)</span></button>
             </div>
             <div class="tool-controls-row">
               <label class="tape-slider-label">
                 <span class="lang-en">Part A (Blue):</span><span class="lang-es" lang="es">Parte A (Azul):</span>
-                <input type="range" min="1" max="8" value="3" id="tape_slider_a" oninput="updateTapeDiagram()" />
+                <input type="range" min="1" max="8" value="3" id="tape_slider_a" ${actOn("input", "updateTapeDiagram", [])} />
                 <strong id="tape_val_a">3</strong>
               </label>
               <label class="tape-slider-label">
                 <span class="lang-en">Part B (Coral):</span><span class="lang-es" lang="es">Parte B (Coral):</span>
-                <input type="range" min="1" max="8" value="4" id="tape_slider_b" oninput="updateTapeDiagram()" />
+                <input type="range" min="1" max="8" value="4" id="tape_slider_b" ${actOn("input", "updateTapeDiagram", [])} />
                 <strong id="tape_val_b">4</strong>
               </label>
               <label class="tape-slider-label">
                 <span class="lang-en">Scaling Factor:</span><span class="lang-es" lang="es">Factor de escala:</span>
-                <input type="range" min="1" max="5" value="2" id="tape_slider_factor" oninput="updateTapeDiagram()" />
+                <input type="range" min="1" max="5" value="2" id="tape_slider_factor" ${actOn("input", "updateTapeDiagram", [])} />
                 <strong id="tape_val_factor">×2</strong>
               </label>
             </div>
@@ -8817,9 +8744,9 @@ export function renderWorkbenchTools(config) {
             </div>
             <div class="tool-presets-row">
               <span class="tool-presets-label"><span class="lang-en">⚡ Examples:</span><span class="lang-es" lang="es">⚡ Ejemplos:</span></span>
-              <button type="button" class="wb-preset-btn" onclick="loadDecimalPreset('25.40', '8.75')"><span class="lang-en">Add: 25.40 + 8.75</span><span class="lang-es" lang="es">Suma: 25.40 + 8.75</span></button>
-              <button type="button" class="wb-preset-btn" onclick="loadDecimalPreset('14.50', '3.25')"><span class="lang-en">Money: $14.50 + $3.25</span><span class="lang-es" lang="es">Dinero: $14.50 + $3.25</span></button>
-              <button type="button" class="wb-preset-btn" onclick="loadDecimalPreset('12.08', '12.80')"><span class="lang-en">Compare: 12.08 vs 12.80</span><span class="lang-es" lang="es">Comparar: 12.08 vs 12.80</span></button>
+              <button type="button" class="wb-preset-btn" ${act("loadDecimalPreset", "25.40", "8.75")}><span class="lang-en">Add: 25.40 + 8.75</span><span class="lang-es" lang="es">Suma: 25.40 + 8.75</span></button>
+              <button type="button" class="wb-preset-btn" ${act("loadDecimalPreset", "14.50", "3.25")}><span class="lang-en">Money: $14.50 + $3.25</span><span class="lang-es" lang="es">Dinero: $14.50 + $3.25</span></button>
+              <button type="button" class="wb-preset-btn" ${act("loadDecimalPreset", "12.08", "12.80")}><span class="lang-en">Compare: 12.08 vs 12.80</span><span class="lang-es" lang="es">Comparar: 12.08 vs 12.80</span></button>
             </div>
             <div class="decimal-place-grid">
               <table class="dec-grid-table">
@@ -8828,22 +8755,22 @@ export function renderWorkbenchTools(config) {
                 </thead>
                 <tbody>
                   <tr>
-                    <td><input type="text" maxlength="1" class="dg-cell" /></td>
-                    <td><input type="text" maxlength="1" class="dg-cell" value="2" /></td>
-                    <td><input type="text" maxlength="1" class="dg-cell" value="5" /></td>
+                    <td><input type="text" maxlength="1" class="dg-cell" aria-label="Hundreds" data-aria-en="Hundreds" data-aria-es="Centenas" /></td>
+                    <td><input type="text" maxlength="1" class="dg-cell" aria-label="Tens" data-aria-en="Tens" data-aria-es="Decenas" value="2" /></td>
+                    <td><input type="text" maxlength="1" class="dg-cell" aria-label="Ones" data-aria-en="Ones" data-aria-es="Unidades" value="5" /></td>
                     <td class="dec-pt">.</td>
-                    <td><input type="text" maxlength="1" class="dg-cell" value="4" /></td>
-                    <td><input type="text" maxlength="1" class="dg-cell" value="0" /></td>
-                    <td><input type="text" maxlength="1" class="dg-cell" /></td>
+                    <td><input type="text" maxlength="1" class="dg-cell" aria-label="Tenths" data-aria-en="Tenths" data-aria-es="Décimos" value="4" /></td>
+                    <td><input type="text" maxlength="1" class="dg-cell" aria-label="Hundredths" data-aria-en="Hundredths" data-aria-es="Centésimos" value="0" /></td>
+                    <td><input type="text" maxlength="1" class="dg-cell" aria-label="Thousandths" data-aria-en="Thousandths" data-aria-es="Milésimos" /></td>
                   </tr>
                   <tr class="op-row">
-                    <td><input type="text" maxlength="1" class="dg-cell" /></td>
-                    <td><input type="text" maxlength="1" class="dg-cell" /></td>
-                    <td><input type="text" maxlength="1" class="dg-cell" value="8" /></td>
+                    <td><input type="text" maxlength="1" class="dg-cell" aria-label="Hundreds" data-aria-en="Hundreds" data-aria-es="Centenas" /></td>
+                    <td><input type="text" maxlength="1" class="dg-cell" aria-label="Tens" data-aria-en="Tens" data-aria-es="Decenas" /></td>
+                    <td><input type="text" maxlength="1" class="dg-cell" aria-label="Ones" data-aria-en="Ones" data-aria-es="Unidades" value="8" /></td>
                     <td class="dec-pt">.</td>
-                    <td><input type="text" maxlength="1" class="dg-cell" value="7" /></td>
-                    <td><input type="text" maxlength="1" class="dg-cell" value="5" /></td>
-                    <td><input type="text" maxlength="1" class="dg-cell" /></td>
+                    <td><input type="text" maxlength="1" class="dg-cell" aria-label="Tenths" data-aria-en="Tenths" data-aria-es="Décimos" value="7" /></td>
+                    <td><input type="text" maxlength="1" class="dg-cell" aria-label="Hundredths" data-aria-en="Hundredths" data-aria-es="Centésimos" value="5" /></td>
+                    <td><input type="text" maxlength="1" class="dg-cell" aria-label="Thousandths" data-aria-en="Thousandths" data-aria-es="Milésimos" /></td>
                   </tr>
                 </tbody>
               </table>
@@ -8955,7 +8882,7 @@ export function renderPlayTabPanel(config, lessonId = "") {
       ${renderFamilyActivityCorner(config)}
       ${renderFamilyGameBreak(familyGameKey(config), { quizHtml, arcadeUrl }, detectVisualTopic(config))}
       <div class="tab-flow-nav">
-        <button type="button" class="btn btn-primary flow-next-btn" onclick="goNextHomeworkStop('play')">
+        <button type="button" class="btn btn-primary flow-next-btn" ${act("goNextHomeworkStop", "play")}>
           <span class="lang-en">Continue ➔</span>
           <span class="lang-es" lang="es">Continuar ➔</span>
         </button>
@@ -8987,7 +8914,7 @@ export function renderProblemHintButton(_problem, _visual = "", coach = {}) {
       labelEn: "Show — the first step",
       labelEs: "Muestra — el primer paso",
       help: `<p class="lang-en">${esc(show.en)}</p><p class="lang-es" lang="es">${esc(show.es)}</p>${visual}
-              <button type="button" class="coach-scratchpad-btn" onclick="toggleScratchpad()">✏️ <span class="lang-en">Try it on the scratchpad</span><span class="lang-es" lang="es">Pruébalo en la pizarra</span></button>`,
+              <button type="button" class="coach-scratchpad-btn" ${act("toggleScratchpad")}>✏️ <span class="lang-en">Try it on the scratchpad</span><span class="lang-es" lang="es">Pruébalo en la pizarra</span></button>`,
     },
     {
       labelEn: "Explain — the worked answer",
@@ -9006,7 +8933,7 @@ export function renderProblemHintButton(_problem, _visual = "", coach = {}) {
         .map(
           (step, index) => `
           <li class="coach-ladder-step${step.locked ? " coach-explain-step" : ""}">
-            <button type="button" aria-expanded="false" onclick="revealCoachStep(this)"${step.locked ? " data-coach-explain disabled" : ""}>
+            <button type="button" aria-expanded="false" ${act("revealCoachStep", EL)}${step.locked ? " data-coach-explain disabled" : ""}>
               <span class="coach-step-number">${index + 1}</span>
               <span class="lang-en">${esc(step.labelEn)}</span><span class="lang-es" lang="es">${esc(step.labelEs)}</span>
             </button>
@@ -9112,7 +9039,7 @@ export function renderPhotoboothTab(config = null, lessonId = "") {
               <span class="pb-idle-icon" aria-hidden="true">📸</span>
               <p><strong><span class="lang-en">Camera Ready!</span><span class="lang-es" lang="es">¡Cámara lista!</span></strong></p>
               <p class="pb-idle-sub"><span class="lang-en">Tap &ldquo;Start Camera&rdquo; to photograph tonight&rsquo;s work, or use &ldquo;Upload Work&rdquo; below. The photo stays on this device.</span><span class="lang-es" lang="es">Toca &ldquo;Iniciar Cámara&rdquo; para fotografiar el trabajo de hoy, o usa &ldquo;Subir Foto&rdquo;. La foto se queda en este dispositivo.</span></p>
-              <button type="button" class="btn btn-primary btn-lg" id="pb_start_btn" onclick="startPhotoboothCamera()">
+              <button type="button" class="btn btn-primary btn-lg" id="pb_start_btn" ${act("startPhotoboothCamera")}>
                 📷 <span class="lang-en">Start Camera</span><span class="lang-es" lang="es">Iniciar Cámara</span>
               </button>
             </div>
@@ -9126,30 +9053,30 @@ export function renderPhotoboothTab(config = null, lessonId = "") {
           <div class="pb-controls-bar">
             <!-- Live Mode Actions -->
             <div class="pb-actions-live" id="pb_actions_live">
-              <button type="button" class="btn btn-primary pb-btn-snap" id="pb_snap_btn" onclick="snapPhotoboothPicture()" disabled>
+              <button type="button" class="btn btn-primary pb-btn-snap" id="pb_snap_btn" ${act("snapPhotoboothPicture")} disabled>
                 📸 <span class="lang-en">Take Photo (3s Timer)</span><span class="lang-es" lang="es">Tomar Foto (3s)</span>
               </button>
-              <button type="button" class="btn btn-secondary pb-btn-flip" id="pb_flip_btn" onclick="flipPhotoboothCamera()">
+              <button type="button" class="btn btn-secondary pb-btn-flip" id="pb_flip_btn" ${act("flipPhotoboothCamera")}>
                 🔄 <span class="lang-en">Flip Camera</span><span class="lang-es" lang="es">Voltear Cámara</span>
               </button>
               <label class="btn btn-outline-secondary pb-btn-upload" title="Upload an existing photo of your notebook">
                 📁 <span class="lang-en">Upload Work</span><span class="lang-es" lang="es">Subir Foto</span>
-                <input type="file" id="pb_file_input" accept="image/*" capture="environment" onchange="uploadPhotoboothImage(this)" style="display:none;" />
+                <input type="file" id="pb_file_input" accept="image/*" capture="environment" ${actOn("change", "uploadPhotoboothImage", [EL])} style="display:none;" />
               </label>
             </div>
 
             <!-- Captured Mode Actions -->
             <div class="pb-actions-review" id="pb_actions_review" hidden>
-              <button type="button" class="btn btn-secondary" onclick="retakePhotobooth()">
+              <button type="button" class="btn btn-secondary" ${act("retakePhotobooth")}>
                 🔄 <span class="lang-en">Retake</span><span class="lang-es" lang="es">Repetir</span>
               </button>
               <a class="btn btn-success" id="pb_download_link" download="Math-Work-Photobooth.jpg">
                 📥 <span class="lang-en">Download Photo</span><span class="lang-es" lang="es">Descargar Foto</span>
               </a>
-              <button type="button" class="btn btn-primary" onclick="printPhotoboothPhoto()">
+              <button type="button" class="btn btn-primary" ${act("printPhotoboothPhoto")}>
                 🖨️ <span class="lang-en">Print Photo</span><span class="lang-es" lang="es">Imprimir Foto</span>
               </button>
-              <button type="button" class="btn btn-warning" id="pb_attach_btn" onclick="attachPhotoboothToSignoff()">
+              <button type="button" class="btn btn-warning" id="pb_attach_btn" ${act("attachPhotoboothToSignoff")}>
                 📎 <span class="lang-en">Add to optional reflection</span><span class="lang-es" lang="es">Añadir a la reflexión opcional</span>
               </button>
             </div>
@@ -9164,16 +9091,16 @@ export function renderPhotoboothTab(config = null, lessonId = "") {
           <div class="pb-custom-section">
             <label class="pb-custom-label"><strong><span class="lang-en">Select Frame:</span><span class="lang-es" lang="es">Elegir Marco:</span></strong></label>
             <div class="pb-frame-selector" role="radiogroup" aria-label="Photobooth Frame">
-              <button type="button" class="pb-frame-btn is-selected" role="radio" aria-checked="true" data-frame="champion" onclick="setPhotoboothFrame('champion', this)">
+              <button type="button" class="pb-frame-btn is-selected" role="radio" aria-checked="true" data-frame="champion" ${act("setPhotoboothFrame", "champion", EL)}>
                 🏆 <span class="lang-en">Champion</span><span class="lang-es" lang="es">Campeón</span>
               </button>
-              <button type="button" class="pb-frame-btn" role="radio" aria-checked="false" data-frame="notebook" onclick="setPhotoboothFrame('notebook', this)">
+              <button type="button" class="pb-frame-btn" role="radio" aria-checked="false" data-frame="notebook" ${act("setPhotoboothFrame", "notebook", EL)}>
                 📝 <span class="lang-en">Notebook</span><span class="lang-es" lang="es">Cuaderno</span>
               </button>
-              <button type="button" class="pb-frame-btn" role="radio" aria-checked="false" data-frame="stars" onclick="setPhotoboothFrame('stars', this)">
+              <button type="button" class="pb-frame-btn" role="radio" aria-checked="false" data-frame="stars" ${act("setPhotoboothFrame", "stars", EL)}>
                 ⭐ <span class="lang-en">Gold Star</span><span class="lang-es" lang="es">Estrellas</span>
               </button>
-              <button type="button" class="pb-frame-btn" role="radio" aria-checked="false" data-frame="polaroid" onclick="setPhotoboothFrame('polaroid', this)">
+              <button type="button" class="pb-frame-btn" role="radio" aria-checked="false" data-frame="polaroid" ${act("setPhotoboothFrame", "polaroid", EL)}>
                 🎞️ <span class="lang-en">Polaroid</span><span class="lang-es" lang="es">Polaroid</span>
               </button>
             </div>
@@ -9183,21 +9110,21 @@ export function renderPhotoboothTab(config = null, lessonId = "") {
           <div class="pb-custom-section">
             <label class="pb-custom-label"><strong><span class="lang-en">Add Stickers:</span><span class="lang-es" lang="es">Agregar Calcomanías:</span></strong></label>
             <div class="pb-stickers-picker">
-              <button type="button" class="pb-sticker-chip" data-sticker="🏆" aria-pressed="false" onclick="togglePhotoboothSticker('🏆')">🏆 <span class="lang-en">Trophy</span><span class="lang-es" lang="es">Trofeo</span></button>
-              <button type="button" class="pb-sticker-chip" data-sticker="💯" aria-pressed="false" onclick="togglePhotoboothSticker('💯')">💯 <span class="lang-en">100% Effort</span><span class="lang-es" lang="es">100%</span></button>
-              <button type="button" class="pb-sticker-chip" data-sticker="⭐" aria-pressed="false" onclick="togglePhotoboothSticker('⭐')">⭐ <span class="lang-en">Math Star</span><span class="lang-es" lang="es">Estrella</span></button>
-              <button type="button" class="pb-sticker-chip" data-sticker="🧮" aria-pressed="false" onclick="togglePhotoboothSticker('🧮')">🧮 <span class="lang-en">Top ÷ Bottom</span><span class="lang-es" lang="es">Arriba ÷ Abajo</span></button>
-              <button type="button" class="pb-sticker-chip" data-sticker="🧠" aria-pressed="false" onclick="togglePhotoboothSticker('🧠')">🧠 <span class="lang-en">Big Brain</span><span class="lang-es" lang="es">Cerebro</span></button>
-              <button type="button" class="pb-sticker-chip" data-sticker="✋" aria-pressed="false" onclick="togglePhotoboothSticker('✋')">✋ <span class="lang-en">High Five</span><span class="lang-es" lang="es">Chócalas</span></button>
-              <button type="button" class="pb-sticker-chip" data-sticker="📐" aria-pressed="false" onclick="togglePhotoboothSticker('📐')">📐 <span class="lang-en">Math Tools</span><span class="lang-es" lang="es">Herramientas</span></button>
-              <button type="button" class="pb-sticker-chip text-danger" onclick="clearPhotoboothStickers()">🗑️ <span class="lang-en">Clear</span><span class="lang-es" lang="es">Borrar</span></button>
+              <button type="button" class="pb-sticker-chip" data-sticker="🏆" aria-pressed="false" ${act("togglePhotoboothSticker", "🏆")}>🏆 <span class="lang-en">Trophy</span><span class="lang-es" lang="es">Trofeo</span></button>
+              <button type="button" class="pb-sticker-chip" data-sticker="💯" aria-pressed="false" ${act("togglePhotoboothSticker", "💯")}>💯 <span class="lang-en">100% Effort</span><span class="lang-es" lang="es">100%</span></button>
+              <button type="button" class="pb-sticker-chip" data-sticker="⭐" aria-pressed="false" ${act("togglePhotoboothSticker", "⭐")}>⭐ <span class="lang-en">Math Star</span><span class="lang-es" lang="es">Estrella</span></button>
+              <button type="button" class="pb-sticker-chip" data-sticker="🧮" aria-pressed="false" ${act("togglePhotoboothSticker", "🧮")}>🧮 <span class="lang-en">Top ÷ Bottom</span><span class="lang-es" lang="es">Arriba ÷ Abajo</span></button>
+              <button type="button" class="pb-sticker-chip" data-sticker="🧠" aria-pressed="false" ${act("togglePhotoboothSticker", "🧠")}>🧠 <span class="lang-en">Big Brain</span><span class="lang-es" lang="es">Cerebro</span></button>
+              <button type="button" class="pb-sticker-chip" data-sticker="✋" aria-pressed="false" ${act("togglePhotoboothSticker", "✋")}>✋ <span class="lang-en">High Five</span><span class="lang-es" lang="es">Chócalas</span></button>
+              <button type="button" class="pb-sticker-chip" data-sticker="📐" aria-pressed="false" ${act("togglePhotoboothSticker", "📐")}>📐 <span class="lang-en">Math Tools</span><span class="lang-es" lang="es">Herramientas</span></button>
+              <button type="button" class="pb-sticker-chip text-danger" ${act("clearPhotoboothStickers")}>🗑️ <span class="lang-en">Clear</span><span class="lang-es" lang="es">Borrar</span></button>
             </div>
           </div>
 
           <!-- Family Shout-Out Caption -->
           <div class="pb-custom-section">
             <label for="pb_caption_input" class="pb-custom-label"><strong><span class="lang-en">Add Message or Names:</span><span class="lang-es" lang="es">Mensaje o nombres:</span></strong></label>
-            <input type="text" id="pb_caption_input" class="form-control" placeholder="e.g. Alex &amp; Mom - We crushed unit rates!" oninput="updatePhotoboothCaption(this.value)" />
+            <input type="text" id="pb_caption_input" class="form-control" placeholder="e.g. Alex &amp; Mom - We crushed unit rates!" ${actOn("input", "updatePhotoboothCaption", [VALUE])} />
           </div>
 
           <!-- Helpful Tip -->
@@ -9231,7 +9158,7 @@ export function renderRefrigeratorSheet(config = {}, lessonId = "") {
 
   const origin = "https://eduwonderlab.com";
   const hwUrl = `${origin}/lessons/${lessonId}/homework.html`;
-  const qr = qrSvg(hwUrl, { size: 84, margin: 1, fg: "#0f172a" });
+  const qr = qrSvg(hwUrl, { size: 84, margin: 1, fg: "var(--fm-primary)" });
 
   return `
     <div class="refrigerator-sheet-print-container" aria-hidden="true">
@@ -9381,7 +9308,7 @@ export function renderHomeworkTabs(panelsHtml, helpDrawerHtml = "", unit = null)
               ${i === 0 ? 'aria-current="step"' : ""} aria-controls="hw_panel_${t.id}"
               aria-label="${esc(t.en)} — stop ${i + 1} of ${tabCount}"
               data-aria-en="${esc(t.en)} — stop ${i + 1} of ${tabCount}" data-aria-es="${esc(t.es)} — parada ${i + 1} de ${tabCount}"
-              data-tab="${t.id}" data-stop="${i + 1}" onclick="switchHomeworkTab('${t.id}')">
+              data-tab="${t.id}" data-stop="${i + 1}" ${act("switchHomeworkTab", t.id)}>
               <span class="tab-step" aria-hidden="true">${i + 1}</span>
               <span class="tab-icon" aria-hidden="true">${t.icon}</span>
               <span class="tab-label"><span class="tab-en">${t.en}</span><span class="tab-es" lang="es">${t.es}</span></span>
@@ -9391,7 +9318,7 @@ export function renderHomeworkTabs(panelsHtml, helpDrawerHtml = "", unit = null)
             <button type="button" id="hw_tab_${t.id}" class="homework-tab-extra"
               aria-controls="hw_panel_${t.id}"
               aria-label="${esc(t.ariaEn)}" title="${esc(t.ariaEn)}"
-              data-tab="${t.id}" onclick="switchHomeworkTab('${t.id}')">
+              data-tab="${t.id}" ${act("switchHomeworkTab", t.id)}>
               <span class="tab-icon" aria-hidden="true">${t.icon}</span>
               <span class="tab-label"><span class="tab-en">${t.en}</span><span class="tab-es" lang="es">${t.es}</span></span>
               <span class="tab-extra-blurb"><span class="lang-en">${esc(t.blurbEn)}</span><span class="lang-es" lang="es">${esc(t.blurbEs)}</span></span>
@@ -9413,11 +9340,11 @@ export function renderHomeworkTabs(panelsHtml, helpDrawerHtml = "", unit = null)
         ${panelsHtml}
       </div>
       <nav class="hw-stop-nav" aria-label="Stop navigation / Navegación de paradas">
-        <button type="button" class="btn btn-outline-primary hw-stop-back" id="hw_stop_back" onclick="hwStopStep(-1)">
+        <button type="button" class="btn btn-outline-primary hw-stop-back" id="hw_stop_back" ${act("hwStopStep", -1)}>
           <span class="lang-en">← Back</span><span class="lang-es" lang="es">← Atrás</span>
         </button>
         <span class="hw-stop-here" id="hw_stop_here" aria-live="polite"></span>
-        <button type="button" class="btn btn-primary hw-stop-next" id="hw_stop_next" onclick="hwStopStep(1)">
+        <button type="button" class="btn btn-primary hw-stop-next" id="hw_stop_next" ${act("hwStopStep", 1)}>
           <span class="lang-en">Next →</span><span class="lang-es" lang="es">Siguiente →</span>
         </button>
       </nav>
@@ -9434,18 +9361,18 @@ export function renderHomeworkTabs(panelsHtml, helpDrawerHtml = "", unit = null)
  */
 export function renderHelpDrawer(stuckHtml, moreHtml) {
   return `
-    <button type="button" class="hw-stuck-fab" id="hw_stuck_fab" onclick="toggleHelpDrawer()"
+    <button type="button" class="hw-stuck-fab" id="hw_stuck_fab" ${act("toggleHelpDrawer")}
       aria-expanded="false" aria-controls="hw_help_drawer">
       <span class="hw-stuck-fab-icon" aria-hidden="true">💬</span>
       <span class="hw-stuck-fab-label"><span class="lang-en">Stuck?</span><span class="lang-es" lang="es">¿Atorados?</span></span>
     </button>
     <div class="hw-help-drawer" id="hw_help_drawer" role="dialog" aria-modal="true"
       aria-label="If your student gets stuck" data-aria-en="If your student gets stuck" data-aria-es="Ayuda si te atoras" hidden>
-      <div class="hw-help-drawer-scrim" onclick="toggleHelpDrawer()"></div>
+      <div class="hw-help-drawer-scrim" ${act("toggleHelpDrawer")}></div>
       <div class="hw-help-drawer-sheet">
         <div class="hw-help-drawer-head">
           <strong><span class="lang-en">If your student gets stuck</span><span class="lang-es" lang="es">Si se atoran</span></strong>
-          <button type="button" class="hw-help-drawer-close" onclick="toggleHelpDrawer()" aria-label="Close help" data-aria-en="Close help" data-aria-es="Cerrar ayuda">✕</button>
+          <button type="button" class="hw-help-drawer-close" ${act("toggleHelpDrawer")} aria-label="Close help" data-aria-en="Close help" data-aria-es="Cerrar ayuda">✕</button>
         </div>
         <div class="hw-help-drawer-body">
           ${stuckHtml}
@@ -9457,9 +9384,9 @@ export function renderHelpDrawer(stuckHtml, moreHtml) {
 
 export function renderHelpModal() {
   return `
-    <div class="help-modal-overlay" id="help_modal_overlay" hidden onclick="closeHelpModal(event)">
-      <div class="help-modal" role="dialog" aria-modal="true" aria-labelledby="help_modal_title" onclick="event.stopPropagation()">
-        <button type="button" class="help-modal-close" onclick="closeHelpModal()" aria-label="Close help" data-aria-en="Close help" data-aria-es="Cerrar ayuda">✕</button>
+    <div class="help-modal-overlay" id="help_modal_overlay" hidden ${act("closeHelpModal", EV)}>
+      <div class="help-modal" role="dialog" aria-modal="true" aria-labelledby="help_modal_title" ${actOn("click", "hwNoop", [], { stop: true })}>
+        <button type="button" class="help-modal-close" ${act("closeHelpModal")} aria-label="Close help" data-aria-en="Close help" data-aria-es="Cerrar ayuda">✕</button>
         <h3 id="help_modal_title" class="help-modal-title"></h3>
         <div class="help-modal-visual" id="help_modal_visual" hidden></div>
         <p class="help-modal-body lang-en" id="help_modal_en"></p>
@@ -9554,6 +9481,7 @@ function dominoTileEl(tile, isButton) {
   var el = document.createElement(isButton ? 'button' : 'div');
   if (isButton) el.type = 'button'; else el.setAttribute('role', 'listitem');
   el.className = 'fam-dom-tile';
+  if (isButton) el.innerHTML = '<span class="hw-sr-only"><span class="lang-en">Domino tile: </span><span class="lang-es" lang="es">Ficha de dominó: </span></span>';
   var l = domHalfEl('fam-dom-half fam-dom-left', tile.left, tile.leftEs);
   var r = domHalfEl('fam-dom-half fam-dom-right', tile.right, tile.rightEs);
   el.appendChild(l);
@@ -10266,8 +10194,8 @@ function ensureLearnPager(panel) {
     '<div class="learn-pager-dots" aria-hidden="true"></div>' +
     '<p class="learn-pager-label" aria-live="polite"><span class="lang-en"></span><span class="lang-es" lang="es"></span></p>' +
     '<div class="learn-pager-actions">' +
-    '<button type="button" class="btn btn-outline-primary learn-pager-back" onclick="learnStep(-1)"><span class="lang-en">← Back</span><span class="lang-es" lang="es">← Atrás</span></button>' +
-    '<button type="button" class="btn btn-primary learn-pager-next" onclick="learnStep(1)"><span class="lang-en">Next →</span><span class="lang-es" lang="es">Siguiente →</span></button>' +
+    '<button type="button" class="btn btn-outline-primary learn-pager-back" data-act="learnStep" data-args="[-1]"><span class="lang-en">← Back</span><span class="lang-es" lang="es">← Atrás</span></button>' +
+    '<button type="button" class="btn btn-primary learn-pager-next" data-act="learnStep" data-args="[1]"><span class="lang-en">Next →</span><span class="lang-es" lang="es">Siguiente →</span></button>' +
     '</div>';
   panel.insertBefore(pager, panel.querySelector(':scope > .learn-card') || panel.firstChild);
   /* Swipe left for the next card, right for the previous one (one listener, on the panel). */
@@ -10508,6 +10436,8 @@ function setLanguageMode(mode) {
   if (saveLabel) saveLabel.textContent = mode === 'es' ? 'Guardar / Continuar' : 'Save / Resume';
   initHomeworkShareLinks();
   document.querySelectorAll('[data-aria-en]').forEach(function (el) { el.setAttribute('aria-label', mode === 'es' ? el.dataset.ariaEs : el.dataset.ariaEn); });
+  document.querySelectorAll('[data-title-en]').forEach(function (el) { el.setAttribute('title', mode === 'es' ? el.dataset.titleEs : el.dataset.titleEn); });
+  document.querySelectorAll('[data-placeholder-en]').forEach(function (el) { el.setAttribute('placeholder', mode === 'es' ? el.dataset.placeholderEs : el.dataset.placeholderEn); });
   document.querySelectorAll('.lang-toggle-btn').forEach(function(btn) {
     const active = btn.getAttribute('data-lang-mode') === mode;
     btn.classList.toggle('active', active);
@@ -10534,8 +10464,10 @@ function openConceptZoom(btn) {
     dlg = document.createElement('dialog');
     dlg.id = 'hw_concept_zoom';
     dlg.className = 'concept-zoom-dialog';
-    dlg.setAttribute('aria-label', 'Enlarged picture / Imagen ampliada');
-    dlg.innerHTML = '<button type="button" class="concept-zoom-close" aria-label="Close / Cerrar">✕ Close / Cerrar</button><div class="concept-zoom-body"></div>';
+    dlg.dataset.ariaEn = 'Enlarged picture';
+    dlg.dataset.ariaEs = 'Imagen ampliada';
+    dlg.setAttribute('aria-label', document.documentElement.lang === 'es' ? dlg.dataset.ariaEs : dlg.dataset.ariaEn);
+    dlg.innerHTML = '<button type="button" class="concept-zoom-close" data-aria-en="Close" data-aria-es="Cerrar" aria-label="' + (document.documentElement.lang === 'es' ? 'Cerrar' : 'Close') + '"><span aria-hidden="true">✕</span> <span class="lang-en">Close</span><span class="lang-es" lang="es">Cerrar</span></button><div class="concept-zoom-body"></div>';
     dlg.addEventListener('click', function (e) {
       if (e.target === dlg || e.target.closest('.concept-zoom-close')) dlg.close();
     });
@@ -11187,7 +11119,7 @@ function initHomeworkVocabPopups() {
     backdrop.style.display = 'none';
     backdrop.innerHTML =
       '<div class="obj-popup" role="dialog" aria-modal="true" aria-labelledby="hw-obj-term">' +
-      '<button type="button" class="obj-popup-close" aria-label="Close" onclick="window.__closeHwVocabPopup && window.__closeHwVocabPopup()">&times;</button>' +
+      '<button type="button" class="obj-popup-close" aria-label="Close" data-act="hwCloseVocabPopup">&times;</button>' +
       '<h3 id="hw-obj-term" class="obj-popup-term"></h3>' +
       '<p class="obj-popup-translation"><span class="obj-popup-tr-label">Español:</span> <span class="obj-popup-tr-es" lang="es"></span></p>' +
       '<p class="obj-popup-def"></p>' +
@@ -11768,10 +11700,10 @@ function renderPhotoboothComposite() {
     ctx.clearRect(0, 0, w, h);
     ctx.drawImage(img, 0, 0, w, h);
 
-    var frameColor = '#f59e0b';
-    if (pbState.frame === 'notebook') frameColor = '#0284c7';
-    else if (pbState.frame === 'stars') frameColor = '#8b5cf6';
-    else if (pbState.frame === 'polaroid') frameColor = '#ffffff';
+    var frameColor = 'var(--fm-m-unknown)';
+    if (pbState.frame === 'notebook') frameColor = 'var(--fm-m-whole)';
+    else if (pbState.frame === 'stars') frameColor = 'var(--fm-m-whole)';
+    else if (pbState.frame === 'polaroid') frameColor = 'var(--fm-raised)';
 
     var borderW = Math.max(12, Math.round(w * 0.025));
     ctx.lineWidth = borderW;
@@ -12035,4811 +11967,4 @@ document.addEventListener('visibilitychange', function() {
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initFamilyTalk);
   else initFamilyTalk();
 })();
-`;
-
-export const GUIDED_NOTES_CSS = `
-.parent-quick-card { margin-top: 14px; padding: 12px 14px; border-radius: var(--radius-sm); background: #f4f8fc; border: 1.5px solid #c9d8ea; }
-.parent-quick-title { margin: 0 0 6px; font-weight: 800; font-size: 13px; letter-spacing: .02em; text-transform: uppercase; color: var(--navy); }
-.parent-quick-card ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 6px; font-size: 14.5px; line-height: 1.45; }
-.done-summary:empty { display: none; }
-.done-summary { margin: 0 0 14px; padding: 12px 14px; border-radius: var(--radius-sm); font-weight: 600; line-height: 1.45; }
-.done-summary.is-complete { background: #e8f6ef; border: 1.5px solid #1f8a5b; color: #14532d; }
-.done-summary.is-partial { background: #fff7e6; border: 1.5px solid #f2c15b; color: #5b3a00; }
-.done-summary .btn { margin-top: 8px; }
-.homework-extras-more { margin-top: 12px; }
-.homework-extras-more > summary { cursor: pointer; min-height: 44px; display: flex; align-items: center; padding: 6px 12px; border: 1.5px dashed var(--line); border-radius: var(--radius-sm); font-weight: 700; color: var(--navy); }
-.homework-extras-more[open] > summary { border-style: solid; margin-bottom: 10px; }
-/* The Listen button shared a flex row with the sentence and was squeezed to
-   one letter per line ("L/i/s/t/e/n") on a 375px phone. */
-.key-idea-banner .btn-read-aloud { flex: 0 0 auto; white-space: nowrap; }
-/* Tap-to-define vocab glossary — parity with the lesson engine's .obj-term popups.
-   Math words in the notes/practice prose become dotted-underline buttons that open
-   a simple EN/ES definition + illustration, exactly like the lessons. */
-.obj-term {
-  display: inline; margin: -6px 0; padding: 6px 2px; border: 0; background: none;
-  touch-action: manipulation;
-  font: inherit; color: inherit; cursor: pointer;
-  text-decoration: underline; text-decoration-style: dotted;
-  text-decoration-thickness: 2px; text-underline-offset: 2px;
-  text-decoration-color: var(--teal, #1fa6a2);
-}
-.obj-term:hover, .obj-term:focus-visible {
-  text-decoration-style: solid; background: var(--teal-light, #dff2ee);
-  border-radius: 4px; outline: none;
-}
-@keyframes objFadeIn { from { opacity: 0; } to { opacity: 1; } }
-.obj-popup-backdrop {
-  position: fixed; inset: 0; z-index: 1200; display: flex;
-  align-items: center; justify-content: center; padding: 18px;
-  background: rgba(15, 23, 42, 0.55); animation: objFadeIn 0.15s ease;
-}
-.obj-popup-backdrop[hidden] { display: none; }
-.obj-popup {
-  position: relative; width: min(420px, 100%); max-height: 90vh;
-  overflow-y: auto; background: var(--white, #fff);
-  border-radius: var(--radius-lg, 22px);
-  box-shadow: 0 18px 50px rgba(15, 23, 42, 0.3);
-  padding: 26px 20px 20px; text-align: center; animation: objFadeIn 0.2s ease;
-}
-.obj-popup-close {
-  position: absolute; top: 8px; right: 10px; width: 44px; height: 44px;
-  border: 0; border-radius: 50%; background: var(--cream, #f7f4ec);
-  color: var(--navy, #12355b); font-size: 1.5rem; line-height: 1; cursor: pointer;
-}
-.obj-popup-close:hover { background: var(--teal-light, #dff2ee); }
-.obj-popup-term { margin: 0 0 14px; color: var(--teal-ink, #0c6f6b); text-transform: capitalize; }
-.obj-popup-translation {
-  display: flex; align-items: baseline; gap: 10px; margin: 0 0 14px;
-  padding: 10px 14px; background: var(--teal-light, #dff2ee); border-radius: var(--radius-md, 14px);
-}
-.obj-popup-translation[hidden] { display: none; }
-.obj-popup-tr-label { font-weight: 700; color: var(--teal-ink, #0c6f6b); }
-.obj-popup-tr-es { font-size: 1.1rem; font-weight: 600; color: var(--navy, #12355b); }
-.obj-popup-def { margin: 0; font-size: 1.05rem; line-height: 1.5; color: var(--navy, #12355b); }
-.obj-popup-def-es { margin: 10px 0 0; font-style: italic; color: var(--muted, #5f6f80); }
-.obj-popup-def-es[hidden] { display: none; }
-.obj-popup-formal { margin: 12px 0 0; font-size: 14px; color: var(--muted, #5f6f80); }
-.obj-popup-formal[hidden] { display: none; }
-.obj-popup-formal summary { min-height: 44px; display: flex; align-items: center; cursor: pointer; font-weight: 700; color: var(--navy, #12355b); }
-.obj-popup-formal p { margin: 6px 0 0; line-height: 1.5; }
-.obj-popup-visual { margin: 14px 0 0; }
-.obj-popup-visual[hidden] { display: none; }
-.obj-popup-img { display: block; width: 100%; max-width: 200px; height: auto; margin: 0 auto 10px; }
-.obj-popup-example { margin: 0; font-weight: 600; color: var(--navy, #12355b); }
-.obj-popup-example[hidden] { display: none; }
-body.obj-popup-open { overflow: hidden; }
-
-/* Family guided notes layout */
-.family-welcome {
-  background: linear-gradient(135deg, var(--navy), var(--navy-light));
-  color: var(--white);
-  border: none;
-  padding: 28px 24px;
-}
-.welcome-hero {
-  display: flex;
-  gap: 16px;
-  align-items: flex-start;
-  margin-bottom: 16px;
-}
-.welcome-emoji { font-size: 48px; line-height: 1; }
-.welcome-tag {
-  margin: 0 0 4px;
-  font-family: var(--font-display);
-  font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--teal-light);
-  font-weight: 800;
-}
-.welcome-title-en, .welcome-title-es {
-  margin: 0;
-  font-family: var(--font-display);
-  font-size: clamp(26px, 5vw, 34px);
-  font-weight: 800;
-  line-height: 1.15;
-}
-.welcome-title-es { color: var(--amber); font-size: clamp(22px, 4.5vw, 30px); margin-top: 2px; }
-.welcome-lesson { margin: 8px 0 0; font-size: 16px; color: var(--teal-light); font-weight: 600; }
-.welcome-lead { margin: 0 0 12px; font-size: 15px; line-height: 1.5; }
-.family-welcome .back-link { color: var(--amber); margin: 0; }
-.family-welcome .back-link:hover { color: var(--white); }
-
-.bilingual-block, .bilingual-grid { display: flex; flex-direction: column; gap: 10px; }
-.bilingual-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-}
-@media (max-width: 640px) {
-  .bilingual-grid { grid-template-columns: 1fr; }
-}
-.bilingual-col {
-  background: var(--cream);
-  border: 1px solid var(--line);
-  border-radius: var(--radius-sm);
-  padding: 14px 16px;
-}
-.lang-label {
-  display: inline-block;
-  font-family: var(--font-display);
-  font-size: 10px;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--teal-ink);
-  margin-bottom: 6px;
-}
-/* The "ENGLISH" / "ESPAÑOL" column header only means something when both
-   columns are on screen. In single-language mode it labelled the one column
-   there is, which reads as a form field rather than a paragraph. */
-body:not(.lang-mode-bilingual) .lang-label { display: none; }
-.lang-en { margin: 0 0 6px; }
-/* Spanish is a primary language for our families: keep it fully legible, not a faded subtitle. */
-.lang-es { margin: 0; color: var(--ink); font-style: normal; }
-.step-badge .lang-en, .step-badge .lang-es { color: inherit; }
-.lang-en + .lang-es, .worked-step .lang-es { padding-left: 10px; border-left: 3px solid var(--teal); }
-.welcome-lead .lang-es { color: rgba(255, 255, 255, 0.94); border-left: 3px solid var(--amber); padding-left: 10px; display: inline-block; margin-top: 6px; }
-.learning-big { font-size: 20px; font-weight: 700; color: var(--navy); margin: 0 0 8px; line-height: 1.5; }
-.learning-words { margin-top: 12px; }
-.learning-words-label {
-  display: block;
-  margin-bottom: 7px;
-  font-family: var(--font-display);
-  font-size: 12px;
-  font-weight: 800;
-  color: var(--navy);
-}
-.learning-word-chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 7px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-.learning-word-chips li {
-  padding: 5px 9px;
-  border: 1px solid #b8ddd8;
-  border-radius: 999px;
-  background: var(--teal-light);
-  color: var(--teal-ink);
-  font-size: 12px;
-  font-weight: 700;
-}
-
-.guided-section { scroll-margin-top: 16px; }
-.section-learn { border-left: 4px solid var(--teal); }
-.section-visual { border-left: 4px solid var(--amber); }
-.section-together { border-left: 4px solid #5b8def; }
-.section-vocab { border-left: 4px solid var(--coral); }
-.section-stuck { border-left: 4px solid #9b59b6; }
-.section-quick-intro { border-left: 4px solid var(--success); }
-.quick-check-time {
-  background: var(--amber-light);
-  border: 1px solid var(--amber);
-  border-radius: 10px;
-  padding: 10px 12px;
-  margin: 0 0 12px;
-  font-size: 15px;
-}
-.section-celebrate {
-  border-left: 4px solid var(--amber);
-  background: linear-gradient(180deg, var(--amber-light), var(--white));
-  text-align: center;
-}
-
-.concept-visual-wrap { margin: 12px 0 16px; overflow-x: auto; }
-.concept-svg { width: 100%; max-width: 420px; height: auto; display: block; margin: 0 auto; }
-.concept-fallback-visual { display: flex; flex-direction: column; gap: 8px; }
-.concept-fallback-step {
-  display: flex; align-items: center; gap: 10px;
-  padding: 10px 12px; border-radius: var(--radius-sm);
-  font-weight: 600; font-size: 14px;
-}
-.step-dot {
-  width: 28px; height: 28px; border-radius: 50%;
-  display: inline-flex; align-items: center; justify-content: center;
-  font-family: var(--font-display); font-weight: 800; color: var(--white);
-  flex-shrink: 0;
-}
-.step-color-1 .step-dot, .step-color-1.step-badge, .step-color-1.guided-step-num { background: #5b8def; }
-.step-color-2 .step-dot, .step-color-2.step-badge, .step-color-2.guided-step-num { background: var(--success); }
-.step-color-3 .step-dot, .step-color-3.step-badge, .step-color-3.guided-step-num { background: var(--amber); color: var(--navy); }
-.step-color-4 .step-dot, .step-color-4.step-badge, .step-color-4.guided-step-num { background: var(--coral); }
-
-.concept-quick-wrap {
-  margin: 0 0 16px;
-  padding: 12px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-md);
-  background: #fbfdff;
-}
-.concept-quick-title {
-  margin: 0 0 10px;
-  text-align: center;
-  font-family: var(--font-display);
-  font-size: 13px;
-  font-weight: 800;
-  color: var(--navy);
-}
-.concept-quick-path {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 8px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-.concept-quick-step {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 82px;
-  padding: 9px 6px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-sm);
-  background: var(--white);
-  color: var(--navy);
-  text-align: center;
-  font-family: var(--font-display);
-  font-size: 12px;
-  font-weight: 800;
-}
-.concept-quick-step:not(:last-child)::after {
-  content: "→";
-  position: absolute;
-  right: -9px;
-  z-index: 1;
-  color: var(--teal-ink);
-  font-size: 16px;
-}
-.concept-quick-icon { font-size: 24px; line-height: 1; margin-bottom: 5px; }
-.concept-quick-step .lang-es { color: var(--muted); font-size: 11px; }
-
-.key-idea-banner {
-  background: var(--teal-light);
-  border-radius: var(--radius-sm);
-  padding: 12px 14px;
-  margin-bottom: 16px;
-  border: 1px solid #b8ddd8;
-}
-.key-idea-banner p { margin: 0 0 6px; font-size: 14.5px; }
-.key-idea-banner p:last-child { margin-bottom: 0; }
-
-.guided-steps, .together-steps { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
-.guided-step, .together-step {
-  border: 1px solid var(--line);
-  border-radius: var(--radius-sm);
-  padding: 12px 14px;
-  background: var(--white);
-}
-.guided-step { padding: 16px; }
-.guided-step-head {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 10px;
-}
-.guided-step-head > div { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; }
-.guided-step-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 42px;
-  height: 42px;
-  flex: 0 0 42px;
-  border-radius: 12px;
-  background: var(--cream);
-  font-size: 22px;
-}
-.step-cue-label {
-  font-family: var(--font-display);
-  font-size: 15px;
-  font-weight: 800;
-  color: var(--navy);
-}
-.step-cue-label .lang-en, .step-cue-label .lang-es { display: inline; margin: 0; }
-.step-cue-label .lang-es::before { content: " / "; color: var(--muted); }
-.guided-step-head .step-badge { margin: 0; }
-.guided-step .step-lead { font-size: 16px; font-weight: 700; line-height: 1.45; }
-.step-detail {
-  margin-top: 10px;
-  border-top: 1px dashed var(--line);
-  padding-top: 9px;
-}
-.step-detail summary {
-  cursor: pointer;
-  color: var(--teal-ink);
-  font-family: var(--font-display);
-  font-size: 13px;
-  font-weight: 800;
-}
-.step-detail p { margin-top: 8px; color: var(--ink); font-weight: 400; }
-.step-badge {
-  display: inline-block;
-  font-family: var(--font-display);
-  font-size: 10px;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: var(--white);
-  padding: 3px 8px;
-  border-radius: 99px;
-  margin-bottom: 8px;
-}
-.guided-step p, .together-step p { margin: 0 0 6px; font-size: 14.5px; line-height: 1.45; }
-.step-hint {
-  margin: 8px 0 0 !important;
-  padding: 8px 10px;
-  background: var(--hint-bg);
-  border-radius: var(--radius-sm);
-  font-size: 13px !important;
-  color: var(--hint);
-}
-
-.watch-for-list { list-style: none; margin: 16px 0 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
-.watch-for-list li {
-  display: flex; gap: 10px; align-items: flex-start;
-  padding: 10px 12px; background: var(--cream); border-radius: var(--radius-sm);
-}
-.watch-icon { font-size: 20px; flex-shrink: 0; }
-
-@media (max-width: 560px) {
-  .concept-quick-path { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .concept-quick-step:nth-child(2)::after { display: none; }
-}
-
-@media print {
-  .concept-quick-path { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-  .step-detail > summary { display: none; }
-  .step-detail[open] > summary ~ *, .step-detail > * { display: block; }
-}
-
-.try-scenario { font-size: 15px; font-weight: 600; color: var(--navy); margin: 0 0 8px; }
-.try-together-note { font-size: 14px; margin: 0 0 14px; color: var(--muted); }
-
-.stuck-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 14px;
-  margin-bottom: 12px;
-}
-@media (max-width: 640px) { .stuck-grid { grid-template-columns: 1fr; } }
-.stuck-panel {
-  border-radius: var(--radius-sm);
-  padding: 14px 16px;
-  border: 1px solid var(--line);
-}
-.stuck-say { background: var(--success-bg); border-color: var(--success); }
-.stuck-dont { background: var(--error-bg); border-color: var(--error); }
-.stuck-heading { margin: 0 0 10px; font-family: var(--font-display); font-size: 14px; color: var(--navy); }
-.stuck-panel ul { margin: 0; padding-left: 16px; }
-.stuck-panel li { margin-bottom: 10px; font-size: 14px; }
-.stuck-panel li p { margin: 0 0 4px; }
-.stuck-footer { font-size: 14px; color: var(--muted); margin: 0; }
-
-.celebrate-text { font-size: 17px; font-weight: 700; color: var(--navy); margin: 0 0 8px; }
-.celebrate-sub { font-size: 14px; margin: 0; }
-
-.problems-container .problem-section { border-left: 4px solid var(--teal); }
-/* No ::after suffix here — badges already carry their own bilingual label
-   ("Warm-up / Calentamiento 1"), so appending " / Repaso" produced
-   "Warm-up / Calentamiento 1 / Repaso" on every problem. */
-
-/* Tabbed homework layout */
-.homework-tabs-shell {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-/* Sticky TOP chrome: tab bar + progress row */
-/* ONE TAB-BAR STYLESHEET.
-   There were two, ~1,200 lines apart, describing incompatible bars — the first
-   a wrapping grid of five-per-row cards, the second an "Apple-grade floating
-   pill" scroller that overrode ~20 properties with !important and left the
-   first one's non-important flex-basis and flex-wrap:wrap standing. What a phone rendered was neither: three ragged rows, 125px tall,
-   half the tabs in the muted grey the first sheet used for INACTIVE and the
-   second for nothing, so five real destinations read as disabled. */
-.homework-tab-chrome {
-  position: sticky;
-  top: 0;
-  z-index: 1001;
-  padding: 10px 0 0;
-  background: rgba(255, 255, 255, 0.97);
-  -webkit-backdrop-filter: blur(8px);
-  backdrop-filter: blur(8px);
-  border-bottom: 1px solid var(--line);
-}
-.homework-tab-progress {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  font-family: var(--font-display);
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--navy);
-}
-.homework-tab-panels { min-height: 200px; }
-.tab-panel-inner[hidden] { display: none !important; }
-.tab-panel-inner:not([hidden]) { display: block; }
-
-/* Six stops fit one row at every width this page is read at, so the bar is a
-   grid and never scrolls, wraps or hides a stop behind a fade. */
-.homework-tab-bar {
-  display: grid;
-  /* Six numbered stops, then the photobooth sized to its own content — it is
-     beside Done, not one more equal share of tonight's path. */
-  grid-template-columns: repeat(6, minmax(0, 1fr)) auto;
-  gap: 4px;
-  padding: 0 0 8px;
-}
-.homework-tab-extra {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 2px;
-  min-height: 62px;
-  padding: 7px 10px 6px;
-  margin-left: 6px;
-  border: 1.5px dashed var(--teal);
-  border-radius: var(--radius-sm);
-  background: var(--teal-light);
-  font-family: var(--font-display);
-  font-size: 12.5px;
-  font-weight: 700;
-  line-height: 1.15;
-  color: var(--teal-ink);
-  cursor: pointer;
-  transition: background-color .15s ease, border-color .15s ease, color .15s ease;
-}
-/* A rule between the path and the tool, so the camera does not read as stop 7. */
-.homework-tab-extra::before {
-  content: "";
-  position: absolute;
-  left: -6px;
-  top: 10px;
-  bottom: 10px;
-  border-left: 1px solid var(--line);
-}
-.homework-tab-extra:hover { background: var(--white); }
-.homework-tab-extra:focus-visible { outline: 3px solid var(--teal); outline-offset: 2px; }
-.homework-tab-extra.is-active {
-  background: var(--teal);
-  border-style: solid;
-  border-color: var(--teal);
-  color: var(--white);
-}
-.tab-extra-blurb {
-  display: block;
-  max-width: 132px;
-  font-size: 10px;
-  font-weight: 600;
-  line-height: 1.2;
-  text-align: center;
-  opacity: .85;
-}
-.tab-extra-blurb .lang-en + .lang-es::before { content: none; }
-.homework-tab-extra-note {
-  display: flex;
-  align-items: flex-start;
-  gap: 7px;
-  margin: 0 0 8px;
-  padding: 7px 10px;
-  border-left: 3px solid var(--teal);
-  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
-  background: var(--teal-light);
-  font-size: 12.5px;
-  line-height: 1.4;
-  color: var(--ink);
-}
-.homework-tab-extra-note strong { color: var(--teal-ink); }
-
-@media (max-width: 720px) {
-  /* The camera gets its own full-width row rather than a 40px sliver next to
-     six stops. Still beside Done — directly under it, and out of the numbers. */
-  .homework-tab-bar { grid-template-columns: repeat(6, minmax(0, 1fr)); }
-  .homework-tab-extra {
-    grid-column: 1 / -1;
-    flex-direction: row;
-    justify-content: center;
-    gap: 8px;
-    min-height: 46px;
-    margin-left: 0;
-    margin-top: 4px;
-  }
-  .homework-tab-extra::before { display: none; }
-  /* In the row layout the label is a shrinkable flex item, and at 390px it
-     shrank until "Photobooth" broke mid-word ("Photobo / oth"). */
-  .homework-tab-extra .tab-label { flex: none; white-space: nowrap; }
-  .tab-extra-blurb { max-width: none; text-align: left; }
-}
-.homework-tab-btn {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 2px;
-  min-height: 62px;
-  padding: 7px 2px 6px;
-  border: 1.5px solid transparent;
-  border-radius: var(--radius-sm);
-  background: transparent;
-  font-family: var(--font-display);
-  font-size: 12.5px;
-  font-weight: 700;
-  line-height: 1.15;
-  /* --ink, not --muted: an inactive stop is somewhere you have not been yet,
-     not somewhere you are barred from. The old grey read as disabled. */
-  color: var(--ink);
-  cursor: pointer;
-  transition: background-color .15s ease, border-color .15s ease, color .15s ease;
-}
-.homework-tab-btn:hover { background: var(--teal-light); border-color: var(--teal); }
-.homework-tab-btn:focus-visible { outline: 3px solid var(--teal); outline-offset: 2px; }
-.homework-tab-btn.is-active {
-  background: var(--teal-ink);
-  border-color: var(--teal-ink);
-  color: var(--white);
-  box-shadow: 0 2px 8px rgba(31, 166, 162, .30);
-}
-.tab-step {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 17px;
-  height: 17px;
-  border-radius: 999px;
-  background: var(--line);
-  color: var(--navy);
-  font-size: 10.5px;
-  font-weight: 800;
-}
-.homework-tab-btn.is-active .tab-step { background: rgba(255, 255, 255, .28); color: var(--white); }
-/* The tick replaces the step number once a stop has been opened, in place, so
-   "what have we done" costs no extra row. */
-.homework-tab-btn.is-done .tab-step { background: var(--teal); color: var(--white); font-size: 0; }
-.homework-tab-btn.is-done .tab-step::after { content: "✓"; font-size: 11px; }
-.tab-icon { font-size: 17px; line-height: 1; }
-.tab-label { display: block; text-align: center; }
-.tab-es { font-size: 11px; font-weight: 600; }
-.tab-done { display: none; }
-body.lang-mode-es .tab-en { display: none; }
-body:not(.lang-mode-es) .tab-es { display: none; }
-
-/* The hairline that used to be a whole second navigation. */
-.homework-tab-track {
-  height: 3px;
-  border-radius: 999px;
-  background: var(--line);
-  overflow: hidden;
-}
-.homework-tab-track-fill {
-  display: block;
-  height: 100%;
-  width: 0;
-  border-radius: 999px;
-  background: var(--teal);
-  transition: width .35s ease;
-}
-
-@media (max-width: 560px) {
-  .homework-tab-btn { min-height: 56px; padding: 6px 1px 5px; font-size: 11px; }
-  .tab-icon { font-size: 15px; }
-  /* A stop's name is one word, and a sixth of a phone is narrower than the
-     longest of them: "Together" broke mid-word and set "Togeth / er" under the
-     handshake. The name shrinks to fit its column rather than splitting — it
-     is the label the family taps, so it has to read as a word. */
-  .homework-tab-btn .tab-label { white-space: nowrap; }
-  .homework-tab-btn .tab-en, .homework-tab-btn .tab-es { font-size: 10px; }
-}
-@media (max-width: 400px) {
-  .homework-tab-btn .tab-en, .homework-tab-btn .tab-es { font-size: 9.5px; }
-}
-
-.help-pop-btn {
-  margin: 8px 0;
-  padding: 10px 14px;
-  min-height: 44px;
-  border: 1px dashed var(--teal);
-  border-radius: var(--radius-sm);
-  background: var(--teal-light);
-  color: var(--navy);
-  font-weight: 700;
-  font-size: 13px;
-  cursor: pointer;
-  width: 100%;
-  text-align: left;
-}
-.help-pop-btn:hover { background: #c8ebe8; }
-.tab-help-row { margin-top: 12px; }
-.help-topic-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px; }
-.card-ish { margin-top: 16px; padding: 16px; background: var(--cream); border-radius: var(--radius-sm); border: 1px solid var(--line); }
-
-.help-modal-overlay {
-  position: fixed; inset: 0; z-index: 10000;
-  background: rgba(18,53,91,0.55);
-  display: flex; align-items: center; justify-content: center;
-  padding: 16px;
-}
-.help-modal-overlay[hidden] { display: none !important; }
-.help-modal {
-  background: var(--white);
-  border-radius: var(--radius-md);
-  padding: 24px;
-  max-width: 420px;
-  width: 100%;
-  max-height: 85vh;
-  overflow-y: auto;
-  box-shadow: var(--shadow);
-  position: relative;
-}
-.help-modal-close {
-  position: absolute; top: 12px; right: 12px;
-  width: 36px; height: 36px; border: none; border-radius: 50%;
-  background: var(--cream); cursor: pointer; font-size: 18px;
-}
-.help-modal-title { margin: 0 32px 12px 0; font-family: var(--font-display); color: var(--navy); font-size: 18px; }
-.help-modal-body { margin: 0 0 10px; font-size: 15px; line-height: 1.5; }
-body.help-modal-open { overflow: hidden; }
-
-/* Visual aid + sentence frame inside help popups */
-.help-modal-visual {
-  margin: 0 0 14px; padding: 10px; border-radius: var(--radius-sm);
-  background: var(--cream); border: 1px solid var(--line); text-align: center;
-}
-.help-modal-visual[hidden] { display: none !important; }
-.help-modal-visual svg { max-width: 100%; height: auto; }
-.help-modal-frame {
-  display: flex; flex-direction: column; gap: 4px;
-  margin: 12px 0 0; padding: 12px 14px;
-  background: var(--teal-light); border-left: 4px solid var(--teal);
-  border-radius: var(--radius-sm); font-size: 14px; line-height: 1.5;
-}
-.help-modal-frame[hidden] { display: none !important; }
-.help-frame-tag { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .02em; color: var(--teal-ink); }
-.help-frame-es { color: var(--muted); }
-
-/* Guided "Try together" fill-in spaces + step actions */
-.together-fill { margin: 10px 0 6px; }
-.together-fill-label { display: block; font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 4px; }
-.together-fill-input {
-  width: 100%; min-height: 48px; padding: 10px 12px;
-  border: 2px dashed var(--teal); border-radius: var(--radius-sm);
-  background: #fffef8; font-size: 15px; line-height: 1.5; resize: vertical;
-}
-.together-fill-input:focus { outline: none; border-style: solid; border-color: var(--navy); }
-.together-step-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
-
-/* Compact "Try Together" steps: tighter padding, inline action buttons, single-row input. */
-.together-steps { gap: 8px; }
-.together-step--compact { padding: 9px 11px; }
-.together-step--compact .together-step-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
-.together-step--compact .step-badge { margin-bottom: 0; }
-.together-step--compact .together-step-actions { margin-top: 0; }
-.together-step--compact p { margin: 6px 0 0; font-size: 14px; }
-.together-step--compact .together-fill { margin: 7px 0 0; }
-.together-step--compact .together-fill-input { min-height: 40px; }
-
-/* Graduated practice ladder under the guided steps. */
-.together-ladder { margin-top: 16px; padding-top: 14px; border-top: 2px dashed var(--line); }
-.ladder-title { font-family: var(--font-display); font-size: 16px; margin: 0 0 4px; color: var(--navy); }
-.ladder-note { font-size: 13px; margin: 0 0 12px; }
-.ladder-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; counter-reset: ladder; }
-.ladder-item { border: 1px solid var(--line); border-left: 4px solid #5b8def; border-radius: var(--radius-sm); padding: 9px 11px; background: var(--white); }
-.ladder-head { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
-.ladder-stars { color: #f5a623; font-size: 13px; letter-spacing: 1px; }
-.ladder-tier { font-family: var(--font-display); font-size: 11.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.02em; color: var(--navy); }
-.ladder-q { margin: 0 0 8px; font-size: 14.5px; line-height: 1.4; }
-.ladder-choices { margin: 0 0 6px; display: flex; flex-direction: column; gap: 6px; }
-.ladder-choice { display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 6px 10px; border: 1.5px solid var(--line); border-radius: var(--radius-sm); background: var(--white); font-size: 14.5px; line-height: 1.35; cursor: pointer; }
-.ladder-choice input { position: absolute; opacity: 0; width: 1px; height: 1px; }
-.ladder-choice:focus-within { outline: 3px solid var(--navy); outline-offset: 2px; }
-.ladder-choice-letter { flex: 0 0 26px; height: 26px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-weight: 800; font-size: 13px; background: var(--hint-bg); color: var(--navy); }
-.ladder-choice.is-correct { border-color: #1f8a5b; background: #e8f6ef; }
-.ladder-choice.is-correct .ladder-choice-letter { background: #1f8a5b; color: #fff; }
-.ladder-choice.is-incorrect { border-color: #c2410c; background: #fff1ea; }
-.ladder-feedback { margin: 0; font-size: 13.5px; line-height: 1.4; }
-.ladder-feedback:empty { display: none; }
-.ladder-feedback.is-correct { color: #146c46; }
-.ladder-feedback.is-incorrect { color: #9a3412; }
-.ladder-input { width: 100%; box-sizing: border-box; font-family: inherit; resize: vertical; padding: 7px 10px; border: 1.5px dashed var(--line); border-radius: var(--radius-sm); font-size: 14px; }
-.ladder-input:focus { outline: none; border-style: solid; border-color: var(--navy); }
-/* Answer reveals are FAMILY-VISIBLE (2026-10-02): a parent checking the work
-   at the kitchen table is this page's audience, so every ladder item carries
-   a closed <details> they can open. They used to be display:none unless the
-   device was in teacher mode, which left families with no way to check. */
-.ladder-answer { display: block; margin-top: 7px; }
-.ladder-answer summary { cursor: pointer; font-size: 12.5px; font-weight: 700; color: var(--navy); }
-.ladder-answer-text { margin: 6px 0 0; padding: 8px 10px; background: var(--hint-bg); border-radius: var(--radius-sm); font-size: 13.5px; color: var(--ink); }
-
-/* "More practice" accordion in the Check tab */
-/* Tiered practice sections (warm-up first, then a harder challenge set) */
-.practice-tier { margin: 0 0 40px; }
-.practice-tier + .practice-tier { margin-top: 0; padding-top: 32px; border-top: 2px solid var(--line); }
-.practice-tier-head {
-  display: flex; align-items: center; gap: 12px; margin: 0 0 10px;
-  padding: 12px 16px; border-radius: var(--radius-md);
-}
-.practice-tier-basic .practice-tier-head { background: var(--amber-light, #fef7e0); }
-.practice-tier-basic .practice-tier-badge { background: var(--amber, #f2c15b); color: #3b2a00; }
-.practice-tier-warmup .practice-tier-head { background: var(--teal-light); }
-.practice-tier-challenge .practice-tier-head { background: var(--amber-light, #fdf3dd); }
-.practice-tier-badge {
-  flex: 0 0 auto; width: 34px; height: 34px; border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-family: var(--font-display); font-weight: 800; font-size: 18px; color: #fff;
-}
-.practice-tier-badge.tier-warmup { background: var(--teal-ink); }
-.practice-tier-badge.tier-challenge { background: var(--amber-strong, #d99a1c); }
-.practice-tier-titles { min-width: 0; }
-.practice-tier-title {
-  margin: 0; font-family: var(--font-display); font-weight: 800;
-  color: var(--navy); font-size: clamp(1.02rem, 2.4vw, 1.2rem);
-}
-.practice-tier-sub { margin: 2px 0 0; font-size: 13px; color: var(--muted, #5f6f80); }
-
-/* Math Workbench tab */
-.section-workbench .workbench-openrow { margin: 4px 0 12px; }
-.workbench-frame-wrap {
-  border: 2px solid var(--teal); border-radius: var(--radius-md); overflow: hidden;
-  background: var(--white);
-}
-.workbench-frame, .arcade-frame { display: block; width: 100%; height: 72vh; min-height: 480px; border: 0; }
-
-.more-practice {
-  margin-top: 20px; border: 2px solid var(--teal); border-radius: var(--radius-md);
-  background: var(--teal-light); overflow: hidden;
-}
-.more-practice > summary {
-  cursor: pointer; list-style: none; padding: 14px 18px;
-  font-family: var(--font-display); font-weight: 800; color: var(--navy); font-size: 16px;
-}
-.more-practice > summary::-webkit-details-marker { display: none; }
-.more-practice[open] > summary { border-bottom: 1px solid var(--line); background: var(--white); }
-.more-practice-note { padding: 12px 18px 0; font-size: 13px; }
-.more-practice-container { padding: 8px 14px 14px; }
-
-.external-resource-list { list-style: none; padding: 0; margin: 16px 0 0; display: flex; flex-direction: column; gap: 10px; }
-.ai-lab-cta {
-  display: flex; align-items: center; gap: 14px;
-  padding: 16px 18px; margin-bottom: 16px;
-  border: none; border-radius: var(--radius-md);
-  background: linear-gradient(135deg, var(--navy), var(--teal));
-  color: #fff; text-decoration: none;
-  box-shadow: var(--shadow-sm);
-}
-.ai-lab-cta:hover { filter: brightness(1.06); text-decoration: none; }
-.workbench-cta { background: linear-gradient(135deg, #5b8def, var(--teal)); }
-.ai-lab-emoji { font-size: 30px; line-height: 1; flex: 0 0 auto; }
-.ai-lab-text { flex: 1 1 auto; font-size: 14px; line-height: 1.45; }
-.ai-lab-text .lang-es { color: rgba(255,255,255,0.94); border-left-color: var(--amber); }
-.ai-lab-arrow { font-size: 22px; font-weight: 800; flex: 0 0 auto; }
-.external-resource-link {
-  display: flex; flex-direction: column; gap: 4px;
-  padding: 14px 16px; border: 1px solid var(--line); border-radius: var(--radius-sm);
-  background: var(--cream); text-decoration: none; color: inherit;
-}
-.external-resource-link:hover { border-color: var(--teal); background: var(--teal-light); text-decoration: none; }
-.ext-source { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .02em; color: var(--teal-ink); }
-.ext-title-en { font-weight: 700; color: var(--navy); }
-.ext-title-es { font-size: 13px; color: var(--muted); }
-.section-more { border-left: 4px solid #5b8def; }
-.section-play { border-left: 4px solid #e67e22; }
-
-.hw-game { padding: 8px 0; }
-.hw-game-title { margin: 0 0 8px; font-family: var(--font-display); color: var(--navy); }
-.hw-game-coach { font-size: 14px; margin-bottom: 12px; }
-.hw-game-score { font-weight: 700; color: var(--teal); margin-bottom: 8px; }
-.hw-game-question { font-size: 17px; font-weight: 700; color: var(--navy); margin: 12px 0; }
-.hw-game-choices { display: flex; flex-direction: column; gap: 8px; }
-.hw-game-choice-btn {
-  min-height: 48px; padding: 12px 16px; border: 2px solid var(--line);
-  border-radius: var(--radius-sm); background: var(--white);
-  font-size: 15px; font-weight: 600; cursor: pointer; text-align: left;
-}
-.hw-game-choice-btn.correct { border-color: var(--success); background: var(--success-bg); }
-.hw-game-choice-btn.incorrect { border-color: var(--error); background: var(--error-bg); }
-.hw-game-feedback { margin-top: 12px; font-weight: 700; min-height: 1.5em; }
-.hw-game-feedback.success { color: var(--success); }
-.hw-game-feedback.error { color: var(--error); }
-.hw-game-buckets { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
-@media (max-width: 640px) { .hw-game-buckets { grid-template-columns: 1fr; } }
-.hw-game-bucket { border: 2px dashed var(--line); border-radius: var(--radius-sm); padding: 10px; min-height: 80px; }
-.hw-game-bucket-label { font-size: 12px; font-weight: 700; margin-bottom: 8px; color: var(--navy); }
-.hw-game-pile { display: flex; flex-wrap: wrap; gap: 8px; padding: 12px; background: var(--cream); border-radius: var(--radius-sm); margin-bottom: 12px; }
-.hw-game-card {
-  padding: 10px 14px; background: var(--white); border: 1px solid var(--line);
-  border-radius: var(--radius-sm); cursor: grab; font-size: 13px; font-weight: 600;
-  min-height: 44px; display: flex; align-items: center;
-}
-.problem-hint-row { margin: 8px 0 12px; }
-
-/* Language mode overrides */
-body.lang-mode-en .lang-es,
-body.lang-mode-en .welcome-title-es,
-body.lang-mode-en .tab-es,
-body.lang-mode-en .vocab-es,
-body.lang-mode-en .vocab-def-es,
-body.lang-mode-en .ext-title-es,
-body.lang-mode-en [lang="es"],
-body.lang-mode-en .bilingual-col.lang-es {
-  display: none !important;
-}
-
-/* A label goes with its value. The glossary popup's translation row is
-   "Español:" + a <span lang="es"> holding the term, so the blanket [lang="es"]
-   rule above hid the term and left the chip reading "ESPAÑOL:" with nothing
-   after it on every vocabulary word in English mode. Hide the whole row. */
-body.lang-mode-en .obj-popup-translation {
-  display: none !important;
-}
-
-/* Same row, same reason, second way in: openPopup() sets .hidden on it for a
-   term that carries no Spanish at all, and the later .obj-popup-translation
-   rule declares display:inline-flex !important, which outranks a plain
-   [hidden]. Without this the empty chip comes back for those terms. */
-.obj-popup-translation[hidden] {
-  display: none !important;
-}
-
-body.lang-mode-es .lang-en,
-body.lang-mode-es .welcome-title-en,
-body.lang-mode-es .tab-en,
-body.lang-mode-es .vocab-def,
-body.lang-mode-es .ext-title-en,
-/* "Not Spanish" means neither the element nor an ancestor carries lang="es":
-   the Spanish column puts lang="es" on the column, not on its paragraph, so a
-   test on the paragraph alone hid the Spanish sentence too, and a family in
-   Español mode saw an empty "Qué aprendemos hoy" box. */
-body.lang-mode-es .learning-big:not(:is([lang="es"], [lang="es"] *)),
-body.lang-mode-es .learning-sub:not(:is([lang="es"], [lang="es"] *)),
-body.lang-mode-es .bilingual-col.lang-en {
-  display: none !important;
-}
-
-body.lang-mode-en .bilingual-grid,
-body.lang-mode-es .bilingual-grid {
-  grid-template-columns: 1fr !important;
-}
-
-/* Premium language selector card styles */
-.lang-selector-card {
-  margin-top: 18px;
-  background: rgba(255, 255, 255, 0.12);
-  border-radius: var(--radius-md);
-  padding: 12px 18px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-}
-.lang-selector-title {
-  font-family: var(--font-display);
-  font-size: 13.5px;
-  font-weight: 800;
-  color: var(--white);
-}
-.lang-selector-buttons {
-  display: flex;
-  gap: 8px;
-}
-.lang-toggle-btn {
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  color: var(--white);
-  /* 44px min height keeps these reachable as touch targets — families use phones. */
-  min-height: 44px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  padding: 6px 14px;
-  border-radius: 99px;
-  font-size: 12px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-}
-.lang-toggle-btn:hover {
-  background: rgba(255, 255, 255, 0.22);
-  border-color: var(--white);
-}
-.lang-toggle-btn.active {
-  background: var(--teal-ink);
-  border-color: var(--teal);
-  color: var(--white);
-  box-shadow: 0 4px 12px rgba(31, 166, 162, 0.35);
-}
-@media (max-width: 640px) {
-  .lang-selector-card {
-    flex-direction: column;
-    align-items: stretch;
-  }
-  .lang-selector-buttons {
-    flex-direction: column;
-  }
-  .lang-toggle-btn {
-    width: 100%;
-    text-align: center;
-  }
-}
-
-/* Parent Sign-off container styling */
-.parent-signoff-container {
-  margin-top: 24px;
-  padding: 24px;
-  background: var(--white);
-  border: 2px solid var(--line);
-  border-radius: var(--radius-lg);
-  box-shadow: 0 8px 30px rgba(18, 53, 91, 0.06);
-  text-align: left;
-}
-.signoff-title {
-  margin: 0 0 16px;
-  font-family: var(--font-display);
-  font-size: 17px;
-  color: var(--navy);
-  font-weight: 800;
-  border-bottom: 2px solid var(--teal-light);
-  padding-bottom: 8px;
-}
-.signoff-field {
-  margin-bottom: 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-.signoff-field label {
-  font-family: var(--font-display);
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--navy);
-}
-.checkbox-field {
-  flex-direction: row;
-  align-items: flex-start;
-  gap: 10px;
-}
-.checkbox-label {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  cursor: pointer;
-  font-size: 14.5px;
-  line-height: 1.4;
-  color: var(--ink);
-}
-.checkbox-label input[type="checkbox"] {
-  width: 18px;
-  height: 18px;
-  margin-top: 2px;
-  accent-color: var(--teal);
-  cursor: pointer;
-}
-.signoff-field input[type="text"],
-.signoff-field textarea {
-  width: 100%;
-  padding: 10px 12px;
-  border: 1.5px solid var(--line);
-  border-radius: var(--radius-sm);
-  font-family: inherit;
-  font-size: 14px;
-  background: var(--cream);
-  color: var(--ink);
-  transition: border-color 0.2s ease, background-color 0.2s ease;
-}
-.signoff-field input[type="text"]:focus,
-.signoff-field textarea:focus {
-  outline: none;
-  border-color: var(--teal);
-  background: var(--white);
-}
-.signoff-submit-btn {
-  width: 100%;
-  padding: 12px;
-  font-size: 15px;
-  font-weight: 800;
-  background: var(--teal-ink);
-  color: var(--white);
-  border: none;
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-.signoff-submit-btn:disabled {
-  background: var(--line);
-  color: var(--muted);
-  cursor: not-allowed;
-}
-.signoff-submit-btn:not(:disabled):hover {
-  background: var(--navy);
-  box-shadow: 0 4px 15px rgba(18, 53, 91, 0.15);
-}
-
-/* Certificate View */
-.certificate-badge {
-  display: flex;
-  gap: 16px;
-  align-items: center;
-  background: var(--teal-light);
-  border: 2px solid var(--teal);
-  border-radius: var(--radius-md);
-  padding: 20px;
-  margin-bottom: 16px;
-}
-.cert-check {
-  font-size: 40px;
-  line-height: 1;
-}
-.cert-info {
-  flex-grow: 1;
-}
-.cert-header {
-  margin: 0 0 4px;
-  font-family: var(--font-display);
-  font-size: 16px;
-  color: var(--teal-ink);
-  font-weight: 800;
-}
-.cert-detail {
-  font-size: 17px;
-  color: var(--navy);
-  margin: 0 0 2px;
-}
-.cert-date {
-  font-size: 12px;
-  color: var(--muted);
-  margin: 0;
-}
-.cert-note-box {
-  margin-top: 12px;
-  padding: 10px 12px;
-  background: var(--white);
-  border-left: 3px solid var(--coral);
-  border-radius: var(--radius-xs);
-  text-align: left;
-}
-.cert-note-title {
-  margin: 0 0 4px;
-  font-size: 12px;
-  color: var(--coral);
-}
-.cert-note-content {
-  margin: 0;
-  font-size: 13.5px;
-  font-style: italic;
-  color: var(--ink);
-}
-.cert-actions {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-.print-cert-btn {
-  background: var(--navy);
-  color: var(--white);
-  padding: 10px 18px;
-  border-radius: var(--radius-sm);
-  font-weight: 700;
-}
-.print-cert-btn:hover {
-  background: var(--teal-ink);
-}
-.edit-signoff-btn {
-  color: var(--muted);
-  font-size: 13px;
-  text-decoration: underline;
-  background: none;
-  border: none;
-  cursor: pointer;
-}
-.edit-signoff-btn:hover {
-  color: var(--coral);
-}
-
-/* Print Certificate specific layout */
-.print-only-certificate {
-  display: none;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    transition-duration: 0.01ms !important;
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-  }
-}
-@media print {
-  .homework-tab-chrome, .homework-tab-bar, .bottom-status-bar, .help-modal-overlay, .print-all-btn, .parent-signoff-container { display: none !important; }
-  .tab-panel-inner[hidden] { display: block !important; page-break-inside: avoid; }
-  /* Printing un-hides every panel, but the games are screen-only: an embedded
-     arcade iframe, a domino chain, a live quiz. On paper they were blank or
-     meaningless pages in the middle of the packet. The workbench is screen-only
-     for the same reason and now lives inside Together, so it is hidden by its
-     own class rather than by a panel id that no longer exists — "arcade" and
-     "workbench" were tabs, and their selectors outlived them here. */
-  [data-tab-panel="play"],
-  .workbench-drawer,
-  .hw-stuck-fab,
-  .hw-help-drawer { display: none !important; }
-  body { padding-bottom: 0; }
-  /* Browsers drop background colours when printing. Several distinctions on this
-     sheet are carried by fill alone — the EN/ES columns, the highlighted worked
-     step, and above all the green "say this" vs red "don't say this" coaching
-     panels, which print as two identical white boxes without this. */
-  .bilingual-col, .worked-step, .worked-step.highlighted,
-  .stuck-say, .stuck-dont, .watch-for-list, .watch-for,
-  .practice-tier-head, .key-idea-banner {
-    -webkit-print-color-adjust: exact;
-    print-color-adjust: exact;
-  }
-  
-  .print-only-certificate.is-signed {
-    display: block !important;
-    margin-top: 40px;
-    padding: 24px;
-    border: 4px double var(--navy) !important;
-    background: #ffffff !important;
-    color: #000000 !important;
-    text-align: center;
-    page-break-inside: avoid;
-  }
-  .print-cert-header h2 {
-    font-family: var(--font-display);
-    font-size: 15px;
-    letter-spacing: 0.1em;
-    color: var(--muted) !important;
-    margin: 0 0 6px;
-  }
-  .print-cert-header h3 {
-    font-family: var(--font-display);
-    font-size: 22px;
-    color: var(--navy) !important;
-    margin: 0 0 20px;
-  }
-  .print-cert-body p {
-    font-size: 15px;
-    color: var(--ink) !important;
-    margin-bottom: 30px;
-  }
-  .print-cert-signatures {
-    display: flex;
-    justify-content: space-around;
-    margin-bottom: 30px;
-  }
-  .print-sig-block {
-    width: 40%;
-    text-align: center;
-  }
-  .sig-line {
-    font-family: 'Outfit', sans-serif;
-    font-size: 18px;
-    font-weight: 700;
-    color: var(--navy) !important;
-    border-bottom: 1.5px solid var(--ink);
-    padding-bottom: 6px;
-    margin-bottom: 6px;
-    min-height: 28px;
-  }
-  .sig-label {
-    font-size: 11px;
-    color: var(--muted) !important;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-  }
-  .print-cert-note {
-    text-align: left;
-    background: #f9f9f9;
-    padding: 12px 16px;
-    border-left: 4px solid var(--coral);
-    border-radius: 4px;
-  }
-  .print-cert-note .note-heading {
-    font-size: 12px;
-    color: var(--coral) !important;
-    margin: 0 0 4px;
-  }
-  .print-cert-note .note-body {
-    font-size: 13.5px;
-    font-style: italic;
-    margin: 0;
-  }
-}
-
-/* Gamified Tab Bar & Flow Navigation */
-.tab-step-badge {
-  font-size: 10px;
-  font-weight: 800;
-  padding: 1px 5px;
-  border-radius: 99px;
-  background: rgba(18, 53, 91, 0.08);
-  color: var(--navy);
-  margin-bottom: 2px;
-}
-.homework-tab-btn.is-active .tab-step-badge {
-  background: rgba(255, 255, 255, 0.25);
-  color: var(--white);
-}
-.tab-badge-star {
-  font-size: 11px;
-  color: var(--amber);
-  min-height: 12px;
-  line-height: 1;
-}
-.tab-progress-wrap {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-.tab-progress-track {
-  width: 80px;
-  height: 6px;
-  background: var(--line);
-  border-radius: 99px;
-  overflow: hidden;
-}
-.tab-progress-fill {
-  height: 100%;
-  background: var(--teal);
-  border-radius: 99px;
-  transition: width 0.3s ease;
-}
-.tab-flow-nav {
-  margin-top: 24px;
-  display: flex;
-  justify-content: flex-end;
-}
-.flow-next-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 11px 20px;
-  font-size: 14px;
-  font-weight: 800;
-  border-radius: var(--radius-md);
-  background: var(--teal-ink);
-  color: var(--white);
-  box-shadow: 0 3px 12px rgba(12, 111, 107, 0.22);
-  cursor: pointer;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
-  border: none;
-}
-.flow-next-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 18px rgba(12, 111, 107, 0.35);
-}
-
-/* Vocab Match & Master Challenge */
-.vocab-game-shell {
-  background: linear-gradient(135deg, #f0fdf4 0%, #e0f2fe 100%);
-  border: 2px solid #38bdf8;
-  border-radius: var(--radius-md);
-  padding: 16px 18px;
-  margin-bottom: 20px;
-  box-shadow: 0 4px 16px rgba(56, 189, 248, 0.12);
-}
-.vocab-game-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 14px;
-  flex-wrap: wrap;
-}
-.vocab-game-title {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-.vocab-game-icon {
-  font-size: 24px;
-  line-height: 1;
-}
-.vocab-game-h3 {
-  margin: 0;
-  font-family: var(--font-display);
-  font-size: 17px;
-  font-weight: 800;
-  color: var(--navy);
-}
-.vocab-game-sub {
-  margin: 2px 0 0;
-  font-size: 13px;
-  color: var(--muted);
-}
-.vocab-game-counter {
-  font-family: var(--font-display);
-  font-size: 13.5px;
-  font-weight: 800;
-  background: var(--white);
-  padding: 4px 12px;
-  border-radius: 99px;
-  border: 1px solid var(--line);
-  color: var(--navy);
-}
-.vocab-quiz {
-  background: linear-gradient(135deg, #fff7ed 0%, #fef3c7 100%);
-  border: 2px solid #f59e0b;
-  border-radius: var(--radius-md);
-  padding: 16px 18px;
-  margin: 20px 0;
-}
-.vq-title { margin: 0 0 6px; font-family: var(--font-display); font-size: 20px; color: var(--navy); }
-.vq-stars { display: flex; gap: 6px; margin-bottom: 10px; font-size: 24px; line-height: 1; }
-.vq-star { color: #d6d3d1; }
-.vq-star.is-earned { color: #f59e0b; transform: scale(1.15); }
-.vq-ask { margin: 0 0 8px; font-weight: 800; font-size: 17px; color: var(--navy); }
-.vq-card { display: flex; align-items: center; gap: 14px; background: var(--white); border: 1px solid var(--line); border-radius: 14px; padding: 12px 14px; }
-.vq-img { width: min(46%, 220px); height: auto; aspect-ratio: 4 / 3; object-fit: contain; flex: none; }
-.vq-prompt { margin: 0; font-size: 18px; line-height: 1.45; color: var(--ink, #1e293b); }
-.vq-choices { display: grid; gap: 10px; margin: 12px 0 8px; }
-.vq-choice {
-  min-height: 56px; padding: 10px 16px; border: 2px solid #cbd5e1; border-radius: 14px;
-  background: var(--white); font: 800 19px/1.2 var(--font-display); color: var(--navy);
-  cursor: pointer; text-align: left;
-}
-.vq-choice:hover:not(:disabled) { border-color: #f59e0b; background: #fffbeb; }
-.vq-choice:focus-visible { outline: 3px solid #1fa6a2; outline-offset: 2px; }
-.vq-choice.is-right { border-color: #16a34a; background: #dcfce7; color: #14532d; }
-.vq-choice.is-wrong { border-color: #ef4444; background: #fee2e2; opacity: .75; }
-.vq-feedback { min-height: 24px; margin: 4px 0; font-weight: 700; font-size: 16px; color: var(--navy); }
-.vq-done { text-align: center; padding: 8px 0; }
-.vq-done-title { font: 800 22px/1.2 var(--font-display); margin: 0 0 6px; color: var(--navy); }
-.vq-done-score { font-size: 18px; margin: 0 0 12px; }
-@media (max-width: 640px) {
-  .vq-card { flex-direction: column; text-align: center; }
-  .vq-img { width: min(100%, 240px); }
-}
-.vocab-match-board {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-}
-@media (max-width: 640px) {
-  .vocab-match-board {
-    grid-template-columns: 1fr;
-  }
-}
-.vocab-match-col {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-.vocab-match-chip {
-  background: var(--white);
-  border: 2px solid var(--line);
-  border-radius: var(--radius-sm);
-  padding: 9px 12px;
-  font-family: var(--font-body);
-  font-size: 13px;
-  text-align: left;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: 0 2px 5px rgba(18, 53, 91, 0.04);
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-.vocab-match-chip:hover:not(:disabled) {
-  border-color: var(--teal);
-  transform: translateY(-1px);
-}
-.vocab-match-chip.is-selected {
-  border-color: var(--amber);
-  background: var(--amber-light);
-  box-shadow: 0 0 0 3px rgba(242, 193, 91, 0.4);
-}
-.vocab-match-chip.is-matched {
-  border-color: var(--success);
-  background: var(--success-bg);
-  color: var(--success);
-  opacity: 0.85;
-  cursor: default;
-}
-.vocab-match-chip.is-mismatch {
-  border-color: var(--error);
-  background: var(--error-bg);
-  animation: chipShake 0.4s ease;
-}
-@keyframes chipShake {
-  0%, 100% { transform: translateX(0); }
-  25%, 75% { transform: translateX(-4px); }
-  50% { transform: translateX(4px); }
-}
-.vocab-game-win {
-  margin-top: 14px;
-  background: var(--white);
-  border-radius: var(--radius-sm);
-  padding: 12px 16px;
-  border: 1.5px solid var(--success);
-}
-.win-banner {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-.win-emoji { font-size: 28px; }
-.win-text strong { color: var(--success); font-size: 14.5px; display: block; }
-.win-text p { margin: 2px 0 0; font-size: 12.5px; color: var(--muted); }
-
-/* Vocab Card Controls */
-.vocab-card-top-bar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  margin-bottom: 6px;
-  position: relative;
-  z-index: 2;
-}
-.vocab-speak-btn, .vocab-master-toggle {
-  background: rgba(18, 53, 91, 0.05);
-  border: 1px solid rgba(18, 53, 91, 0.12);
-  border-radius: 999px;
-  padding: 5px 11px;
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--navy, #12355b);
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  cursor: pointer;
-  transition: all 0.15s ease;
-  line-height: 1;
-}
-.vocab-speak-btn:hover {
-  background: #e6fffa;
-  border-color: #1fa6a2;
-  color: #0d766e;
-  transform: scale(1.03);
-}
-.vocab-master-toggle:hover {
-  background: rgba(18, 53, 91, 0.09);
-  transform: scale(1.03);
-}
-.vocab-master-toggle.is-mastered {
-  color: #b45309;
-  background: #fef3c7;
-  border-color: #f59e0b;
-}
-.vocab-card-back-actions {
-  margin-top: 8px;
-  display: flex;
-  gap: 10px;
-  justify-content: center;
-  position: relative;
-  z-index: 2;
-}
-
-/* Skill Power-Up Challenge */
-.section-powerup {
-  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-  border: 2px solid #cbd5e1;
-  margin-top: 20px;
-}
-.powerup-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 12px;
-  flex-wrap: wrap;
-}
-.powerup-tag {
-  display: inline-block;
-  font-family: var(--font-display);
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 0.04em;
-  color: #7c3aed;
-  background: #ede9fe;
-  padding: 3px 8px;
-  border-radius: 6px;
-  margin-bottom: 6px;
-}
-.powerup-question {
-  margin: 0;
-  font-family: var(--font-display);
-  font-size: 15.5px;
-  font-weight: 800;
-  color: var(--navy);
-  line-height: 1.35;
-}
-.powerup-badge-star {
-  font-family: var(--font-display);
-  font-size: 12px;
-  font-weight: 800;
-  background: var(--amber-light);
-  color: #b45309;
-  border: 1px solid var(--amber);
-  padding: 3px 10px;
-  border-radius: 99px;
-  white-space: nowrap;
-  transition: all 0.2s ease;
-}
-.powerup-badge-star.is-unlocked {
-  background: #ecfdf5;
-  color: #047857;
-  border-color: #10b981;
-}
-.powerup-choices-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-.powerup-choice-btn {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  background: var(--white);
-  border: 1.5px solid var(--line);
-  border-radius: var(--radius-sm);
-  padding: 9px 12px;
-  text-align: left;
-  cursor: pointer;
-  font-family: var(--font-body);
-  font-size: 13.5px;
-  transition: all 0.15s ease;
-}
-.powerup-choice-btn:hover:not(:disabled) {
-  border-color: #7c3aed;
-  background: #faf5ff;
-}
-.powerup-letter {
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  background: var(--bg);
-  color: var(--navy);
-  font-family: var(--font-display);
-  font-size: 12px;
-  font-weight: 800;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-.powerup-choice-btn.is-correct {
-  border-color: var(--success);
-  background: var(--success-bg);
-}
-.powerup-choice-btn.is-correct .powerup-letter {
-  background: var(--success);
-  color: var(--white);
-}
-.powerup-choice-btn.is-wrong {
-  border-color: var(--error);
-  background: var(--error-bg);
-  animation: chipShake 0.4s ease;
-}
-.powerup-feedback-box {
-  margin-top: 12px;
-  padding: 10px 14px;
-  border-radius: var(--radius-sm);
-  font-size: 13.5px;
-  line-height: 1.4;
-}
-.powerup-feedback-box.is-success {
-  background: var(--success-bg);
-  color: var(--success);
-  border: 1px solid var(--success);
-}
-.powerup-feedback-box.is-hint {
-  background: var(--hint-bg);
-  color: var(--hint);
-  border: 1px solid var(--amber);
-}
-
-/* Interactive Scratchpad */
-.interactive-scratchpad {
-  background: var(--white);
-  border: 2px solid var(--teal);
-  border-radius: var(--radius-md);
-  padding: 14px;
-  margin: 16px 0;
-  box-shadow: 0 4px 16px rgba(31, 166, 162, 0.15);
-}
-.scratchpad-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  margin-bottom: 8px;
-  flex-wrap: wrap;
-}
-.scratchpad-title {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-family: var(--font-display);
-  font-size: 14.5px;
-  color: var(--navy);
-}
-.scratchpad-tools {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-.color-palette {
-  display: flex;
-  gap: 6px;
-}
-.color-dot {
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  border: 2px solid transparent;
-  cursor: pointer;
-  transition: transform 0.15s ease;
-}
-.color-dot.is-active {
-  transform: scale(1.25);
-  border-color: #000;
-}
-.tool-btn.is-active {
-  background: var(--teal);
-  color: var(--white);
-}
-.scratchpad-close-btn {
-  background: none;
-  border: none;
-  font-size: 18px;
-  cursor: pointer;
-  color: var(--muted);
-  padding: 0 4px;
-}
-.scratchpad-canvas-wrap {
-  border: 1.5px solid var(--line);
-  border-radius: var(--radius-sm);
-  overflow: hidden;
-  background: #ffffff;
-}
-.scratchpad-hint {
-  margin: 6px 0 0;
-  font-size: 12px;
-  color: var(--muted);
-}
-.scratchpad-inline-toggle {
-  margin: 14px 0;
-}
-.scratchpad-toggle-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
-
-/* Live Streak & Goal Reached Banners */
-.live-streak-banner {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
-  border: 1.5px solid #fb923c;
-  border-radius: 99px;
-  padding: 6px 14px;
-  margin: 10px 0 14px;
-  font-family: var(--font-display);
-  font-size: 13px;
-  font-weight: 800;
-  color: #9a3412;
-  animation: bannerPop 0.3s ease;
-}
-@keyframes bannerPop {
-  from { transform: scale(0.92); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
-}
-.goal-reached-banner {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 14px;
-  background: linear-gradient(135deg, #fefce8 0%, #fef08a 100%);
-  border: 2px solid #eab308;
-  border-radius: var(--radius-md);
-  padding: 12px 16px;
-  margin: 12px 0 16px;
-  box-shadow: 0 4px 16px rgba(234, 179, 8, 0.18);
-  flex-wrap: wrap;
-}
-.goal-icon { font-size: 30px; }
-.goal-text strong { color: #854d0e; font-size: 15.5px; display: block; }
-.goal-text p { margin: 2px 0 0; font-size: 12.5px; color: #713f12; }
-
-/* Celebration & Achievements */
-.high-five-banner {
-  text-align: center;
-  margin: 18px 0;
-}
-.btn-high-five {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-  color: var(--white);
-  border: none;
-  border-radius: 99px;
-  padding: 10px 24px;
-  font-family: var(--font-display);
-  font-size: 15px;
-  font-weight: 800;
-  cursor: pointer;
-  box-shadow: 0 4px 14px rgba(217, 119, 6, 0.35);
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
-}
-.btn-high-five:hover {
-  transform: scale(1.04);
-  box-shadow: 0 6px 20px rgba(217, 119, 6, 0.45);
-}
-.high-five-emoji { font-size: 24px; }
-.high-five-labels { display: flex; flex-direction: column; text-align: left; }
-.high-five-labels strong { font-size: 15px; line-height: 1.1; }
-.high-five-labels small { font-size: 11px; opacity: 0.9; font-weight: 500; }
-.achievement-shelf {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 10px;
-  margin: 18px 0;
-}
-@media (max-width: 600px) {
-  .achievement-shelf { grid-template-columns: repeat(2, 1fr); }
-}
-.achievement-badge {
-  background: var(--bg);
-  border: 1.5px dashed var(--line);
-  border-radius: var(--radius-sm);
-  padding: 10px 6px;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  opacity: 0.55;
-  transition: all 0.3s ease;
-}
-.achievement-badge.is-unlocked {
-  opacity: 1;
-  border-style: solid;
-  border-color: var(--amber);
-  background: #fffbeb;
-  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.15);
-}
-.achieve-icon { font-size: 22px; line-height: 1; }
-.achieve-name { font-family: var(--font-display); font-size: 11px; font-weight: 800; color: var(--navy); }
-
-
-/* ==========================================================================
-   CLEAN, CALM, PARENT-FRIENDLY AESTHETIC SYSTEM
-   ========================================================================== */
-
-/* Tranquil, modern color scheme & typography */
-:root {
-  --navy: #0f172a;
-  --navy-light: #1e293b;
-  --teal: #0f766e;
-  --teal-ink: #0d5c75;
-  --teal-light: #f0fdfa;
-  --amber: #f59e0b;
-  --amber-light: #fffbeb;
-  --cream: #fbfbfa;
-  --bg: #f8fafc;
-  --card: #ffffff;
-  --ink: #0f172a;
-  --muted: #64748b;
-  --line: #e2e8f0;
-  --radius-sm: 10px;
-  --radius-md: 18px;
-  --radius-lg: 24px;
-  --shadow: 0 8px 30px -4px rgba(15, 23, 42, 0.04), 0 4px 10px -2px rgba(15, 23, 42, 0.02);
-  --shadow-sm: 0 2px 8px rgba(15, 23, 42, 0.03);
-}
-
-body {
-  background: var(--bg);
-  color: var(--ink);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  letter-spacing: -0.01em;
-}
-
-.container {
-  max-width: 820px;
-  margin: 0 auto;
-  padding: 24px 20px;
-}
-
-/* Elegant, welcoming header */
-header.homework-header,
-.family-welcome {
-  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%) !important;
-  border: none !important;
-  border-radius: var(--radius-lg) !important;
-  padding: 32px !important;
-  box-shadow: 0 10px 30px -5px rgba(15, 23, 42, 0.12) !important;
-  margin-bottom: 24px !important;
-}
-.welcome-tag {
-  color: #94a3b8 !important;
-  font-weight: 700 !important;
-  letter-spacing: 0.08em !important;
-}
-.welcome-title-en {
-  font-size: clamp(24px, 4.5vw, 32px) !important;
-  font-weight: 800 !important;
-  letter-spacing: -0.02em !important;
-  line-height: 1.2 !important;
-}
-.welcome-title-es {
-  color: #cbd5e1 !important;
-  font-weight: 600 !important;
-  font-size: clamp(18px, 3.5vw, 22px) !important;
-}
-.welcome-lesson {
-  color: #38bdf8 !important;
-  font-weight: 600 !important;
-  font-size: 14.5px !important;
-  margin-top: 6px !important;
-}
-
-/* Cards & Content Shells */
-.guided-section.card,
-.card-ish {
-  background: #ffffff !important;
-  border: 1px solid #e8edf2 !important;
-  border-radius: var(--radius-md) !important;
-  box-shadow: var(--shadow) !important;
-  padding: 28px 32px !important;
-  margin-bottom: 24px !important;
-}
-@media (max-width: 600px) {
-  .guided-section.card, .card-ish { padding: 20px !important; }
-}
-
-.section-title {
-  font-size: 20px !important;
-  font-weight: 800 !important;
-  color: #0f172a !important;
-  margin-top: 0 !important;
-  letter-spacing: -0.01em !important;
-}
-
-/* Big Idea & Listen Pill */
-.btn-listen-concept {
-  background: #f1f5f9 !important;
-  color: #0f172a !important;
-  border: 1px solid #e2e8f0 !important;
-  border-radius: 99px !important;
-  padding: 5px 14px !important;
-  font-size: 13px !important;
-  font-weight: 700 !important;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.03) !important;
-  transition: all 0.15s ease !important;
-}
-.btn-listen-concept:hover {
-  background: #0f172a !important;
-  color: #ffffff !important;
-  border-color: #0f172a !important;
-}
-
-/* Calmer Real-World & Misconception Styling */
-.real-world-spotlight {
-  background: #f0fdf4 !important;
-  border: 1px solid #dcfce7 !important;
-  border-radius: 12px !important;
-  padding: 14px 18px !important;
-  box-shadow: none !important;
-  margin: 12px 0 0 !important;
-}
-.spotlight-badge {
-  color: #15803d !important;
-  background: #dcfce7 !important;
-  font-size: 11px !important;
-  font-weight: 800 !important;
-}
-.spotlight-title {
-  color: #0f172a !important;
-  font-size: 15.5px !important;
-  font-weight: 700 !important;
-}
-.spotlight-text {
-  color: #334155 !important;
-  font-size: 13.5px !important;
-}
-.misconception-card {
-  background: #fffbeb !important;
-  border: 1px solid #fef3c7 !important;
-  border-left: 4px solid #f59e0b !important;
-  border-radius: 12px !important;
-  padding: 14px 18px !important;
-  margin: 0 !important;
-}
-.mis-trap { color: #92400e !important; }
-.parent-coach-tip {
-  border-top: 1px dashed #fde68a !important;
-  color: #78350f !important;
-}
-
-/* Math Talk Generator Calm Styling */
-.math-talk-hub {
-  background: #f8fafc !important;
-  border: 1px solid #e2e8f0 !important;
-  border-radius: var(--radius-md) !important;
-  padding: 20px 24px !important;
-  margin: 20px 0 !important;
-  box-shadow: var(--shadow-sm) !important;
-}
-.math-talk-badge {
-  color: #0f766e !important;
-  font-weight: 800 !important;
-  font-size: 11px !important;
-}
-.math-talk-q {
-  font-size: 17px !important;
-  font-weight: 700 !important;
-  color: #0f172a !important;
-}
-.math-talk-follow {
-  color: #64748b !important;
-}
-
-/* Flow Next Button */
-.flow-next-btn {
-  background: #0f172a !important;
-  border-color: #0f172a !important;
-  color: #ffffff !important;
-  border-radius: 99px !important;
-  padding: 10px 24px !important;
-  font-weight: 700 !important;
-  font-size: 14px !important;
-  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.15) !important;
-  transition: all 0.15s ease !important;
-}
-.flow-next-btn:hover {
-  background: #1e293b !important;
-  transform: translateY(-1px);
-}
-
-/* Clean Practice Problem Cards */
-.problem-card {
-  background: #ffffff !important;
-  border: 1px solid #e8edf2 !important;
-  border-radius: var(--radius-md) !important;
-  box-shadow: var(--shadow) !important;
-  padding: 24px 28px !important;
-  margin-bottom: 24px !important;
-}
-.problem-check-btn {
-  background: #0f172a !important;
-  border: none !important;
-  color: #ffffff !important;
-  border-radius: 99px !important;
-  padding: 8px 20px !important;
-  font-weight: 700 !important;
-  font-size: 13.5px !important;
-}
-.problem-check-btn:hover {
-  background: #1e293b !important;
-}
-
-/* The bottom bar belongs to the Check stop. Its comment already SAID "hidden on
-   non-practice tabs" and nothing hid it: it sat on all six stops, reporting
-   "Progress: 0 / 6" and offering "Check All" beside a vocabulary flashcard or a
-   domino game. body[data-active-tab] is stamped by switchHomeworkTab. */
-.bottom-status-bar {
-  background: rgba(255, 255, 255, 0.94) !important;
-  backdrop-filter: blur(16px) !important;
-  -webkit-backdrop-filter: blur(16px) !important;
-  border-top: 1px solid rgba(226, 232, 240, 0.9) !important;
-  box-shadow: 0 -4px 20px rgba(15, 23, 42, 0.05) !important;
-}
-body[data-active-tab]:not([data-active-tab="check"]) .bottom-status-bar {
-  display: none !important;
-}
-
-/* ==========================================================================
-   VOCABULARY UNDERLINE & POPUP DEFINITION SYSTEM — CLEAN & TACTILE
-   ========================================================================== */
-.obj-term {
-  display: inline !important;
-  margin: 0 !important;
-  padding: 1px 5px !important;
-  border: none !important;
-  background: rgba(15, 118, 110, 0.08) !important;
-  /* #0f766e measured 4.3:1 on the tinted talk prompt; this clears 4.5:1. */
-  color: #0b5f58 !important;
-  font-weight: 600 !important;
-  border-bottom: 2px dotted #0f766e !important;
-  border-radius: 4px !important;
-  cursor: pointer !important;
-  touch-action: manipulation !important;
-  text-decoration: none !important;
-  transition: all 0.15s ease !important;
-  vertical-align: baseline !important;
-}
-.obj-term:hover, .obj-term:focus-visible {
-  background: #0f766e !important;
-  color: #ffffff !important;
-  border-bottom-style: solid !important;
-  outline: none !important;
-  box-shadow: 0 2px 8px rgba(15, 118, 110, 0.25) !important;
-}
-.obj-term:active {
-  transform: scale(0.97) !important;
-}
-
-.obj-popup-backdrop {
-  position: fixed !important;
-  inset: 0 !important;
-  z-index: 1200 !important;
-  align-items: center !important;
-  justify-content: center !important;
-  padding: 20px !important;
-  background: rgba(15, 23, 42, 0.65) !important;
-  backdrop-filter: blur(8px) !important;
-  -webkit-backdrop-filter: blur(8px) !important;
-  animation: objFadeIn 0.2s ease !important;
-}
-.obj-popup-backdrop:not([hidden]) {
-  display: flex !important;
-}
-.obj-popup-backdrop[hidden] {
-  display: none !important;
-}
-.obj-popup {
-  position: relative !important;
-  width: min(460px, 100%) !important;
-  max-height: 90vh !important;
-  overflow-y: auto !important;
-  background: #ffffff !important;
-  border-radius: 20px !important;
-  box-shadow: 0 25px 60px -10px rgba(15, 23, 42, 0.3) !important;
-  padding: 32px 24px 24px !important;
-  text-align: center !important;
-  animation: objFadeIn 0.2s ease !important;
-  border: 1px solid rgba(226, 232, 240, 0.8) !important;
-}
-.obj-popup-close {
-  position: absolute !important;
-  top: 12px !important;
-  right: 12px !important;
-  width: 36px !important;
-  height: 36px !important;
-  border: none !important;
-  border-radius: 50% !important;
-  background: #f1f5f9 !important;
-  color: #475569 !important;
-  font-size: 18px !important;
-  line-height: 1 !important;
-  cursor: pointer !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  transition: all 0.15s ease !important;
-}
-.obj-popup-close:hover {
-  background: #e2e8f0 !important;
-  color: #0f172a !important;
-  transform: scale(1.05) !important;
-}
-.obj-popup-term {
-  margin: 0 0 10px !important;
-  font-size: 22px !important;
-  font-weight: 800 !important;
-  color: #0f172a !important;
-  text-transform: capitalize !important;
-  letter-spacing: -0.01em !important;
-}
-.obj-popup-translation {
-  display: inline-flex !important;
-  align-items: center !important;
-  gap: 8px !important;
-  margin: 0 auto 16px !important;
-  padding: 6px 14px !important;
-  background: #f0fdf4 !important;
-  border: 1px solid #bbf7d0 !important;
-  border-radius: 99px !important;
-}
-.obj-popup-tr-label {
-  font-size: 11px !important;
-  font-weight: 800 !important;
-  text-transform: uppercase !important;
-  letter-spacing: 0.04em !important;
-  color: #166534 !important;
-}
-.obj-popup-tr-es {
-  font-size: 13.5px !important;
-  font-weight: 700 !important;
-  color: #14532d !important;
-}
-.obj-popup-def {
-  margin: 0 0 10px !important;
-  font-size: 15px !important;
-  line-height: 1.6 !important;
-  color: #334155 !important;
-  text-align: left !important;
-}
-.obj-popup-def-es {
-  margin: 0 0 16px !important;
-  font-size: 13.5px !important;
-  line-height: 1.5 !important;
-  color: #64748b !important;
-  font-style: italic !important;
-  text-align: left !important;
-  padding-top: 8px !important;
-  border-top: 1px dashed #e2e8f0 !important;
-}
-.obj-popup-visual {
-  margin: 16px 0 0 !important;
-  padding: 14px !important;
-  background: #f8fafc !important;
-  border: 1px solid #e2e8f0 !important;
-  border-radius: 14px !important;
-}
-.obj-popup-img {
-  display: block !important;
-  max-width: 220px !important;
-  max-height: 160px !important;
-  width: auto !important;
-  height: auto !important;
-  margin: 0 auto 10px !important;
-  border-radius: 8px !important;
-}
-.obj-popup-example {
-  margin: 0 !important;
-  font-size: 12.5px !important;
-  font-weight: 600 !important;
-  color: #475569 !important;
-  line-height: 1.4 !important;
-}
-
-/* ============================================================
-   FAMILY MISSION SHELL — hero, progress rail, tab grouping.
-   One warm identity for the whole page. Replaced three stacked navs
-   (dark hero → "Tonight's Path" card → 10 equal tabs, ~700px before any
-   mathematics) with hero → tabs+rail. New class names only (hw-hero*,
-   hw-rail*, hw-quickplan*, fam-*): the generator's polish layer re-declares
-   shared selectors and loads later, so these never collide with it.
-   ============================================================ */
-.hw-hero {
-  position: relative;
-  overflow: hidden;
-  margin: 0 0 20px;
-  padding: 30px 32px 26px;
-  border-radius: 26px;
-  background:
-    radial-gradient(120% 140% at 88% -10%, rgba(31,166,162,.30) 0%, rgba(18,53,91,0) 58%),
-    linear-gradient(155deg, #143a63 0%, #10294a 62%, #0d2039 100%);
-  color: #f4f8fc;
-  box-shadow: 0 24px 60px -34px rgba(9,25,46,.9);
-  isolation: isolate;
-}
-/* Soft warm glow, second light source. Purely decorative. */
-.hw-hero-glow {
-  position: absolute;
-  inset: auto -12% -55% 46%;
-  height: 300px;
-  background: radial-gradient(closest-side, rgba(242,193,91,.30), transparent 70%);
-  filter: blur(6px);
-  pointer-events: none;
-  z-index: -1;
-}
-.hw-hero-body { position: relative; }
-.hw-hero-kicker {
-  display: inline-flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin: 0 0 16px;
-  padding: 6px 14px 6px 8px;
-  border-radius: 999px;
-  background: rgba(255,255,255,.10);
-  border: 1px solid rgba(255,255,255,.16);
-  font-family: var(--font-display);
-  font-size: 12px;
-  font-weight: 800;
-  letter-spacing: .09em;
-  text-transform: uppercase;
-  color: #d7e8f6;
-}
-.hw-hero-kicker-icon {
-  display: grid;
-  place-items: center;
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  background: rgba(255,255,255,.14);
-  font-size: 13px;
-}
-.hw-hero-kicker .lang-es { color: #bcd6ea; }
-.hw-hero-kicker .lang-en + .lang-es { border-left: 0; padding-left: 0; margin-top: 0; }
-.hw-hero-head { display: flex; align-items: center; gap: 18px; }
-.hw-hero-emoji {
-  flex: 0 0 auto;
-  display: grid;
-  place-items: center;
-  width: 66px;
-  height: 66px;
-  border-radius: 20px;
-  font-size: 34px;
-  background: rgba(255,255,255,.10);
-  border: 1px solid rgba(255,255,255,.18);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.22);
-}
-.hw-hero-titles { min-width: 0; }
-.hw-hero .welcome-title-en {
-  margin: 0;
-  font-family: var(--font-display);
-  font-size: clamp(30px, 4.4vw, 44px);
-  font-weight: 800;
-  letter-spacing: -.02em;
-  line-height: 1.02;
-  color: #fff;
-}
-.hw-hero .welcome-title-es {
-  margin: 4px 0 0;
-  font-family: var(--font-display);
-  font-size: clamp(17px, 2.2vw, 22px);
-  font-weight: 600;
-  letter-spacing: -.01em;
-  color: #f2c15b;
-}
-.hw-hero-lesson {
-  display: flex;
-  align-items: baseline;
-  flex-wrap: wrap;
-  gap: 6px 12px;
-  margin: 18px 0 0;
-  padding-top: 16px;
-  border-top: 1px solid rgba(255,255,255,.14);
-}
-.hw-hero-lesson-title {
-  font-family: var(--font-display);
-  font-size: 20px;
-  font-weight: 700;
-  color: #fff;
-}
-.hw-hero-lesson-meta { font-size: 13px; font-weight: 600; color: #9fc0da; letter-spacing: .02em; }
-.hw-hero-lead { margin: 12px 0 0; font-size: 15px; line-height: 1.6; color: #dce9f4; max-width: 62ch; }
-.hw-hero-lead .lang-es { color: #dce9f4; }
-.hw-hero-lead .lang-en + .lang-es {
-  border-left: 2px solid rgba(242,193,91,.55);
-  padding-left: 10px;
-  margin-top: 6px;
-}
-.hw-hero-controls { margin-top: 20px; }
-.hw-hero .lang-selector-card {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 10px 14px;
-  padding: 0;
-  background: none;
-  border: 0;
-}
-.hw-hero .lang-selector-title {
-  font-size: 11.5px;
-  font-weight: 800;
-  letter-spacing: .1em;
-  text-transform: uppercase;
-  color: #9fc0da;
-}
-.hw-hero .lang-selector-buttons {
-  display: inline-flex;
-  gap: 4px;
-  padding: 4px;
-  border-radius: 999px;
-  background: rgba(0,0,0,.26);
-  border: 1px solid rgba(255,255,255,.12);
-}
-.hw-hero .lang-toggle-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  min-height: 40px;
-  padding: 8px 16px;
-  border: 0;
-  border-radius: 999px;
-  background: transparent;
-  color: #cfe1f1;
-  font-family: var(--font-body);
-  font-size: 13.5px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: background .18s ease, color .18s ease;
-}
-.hw-hero .lang-toggle-btn:hover { background: rgba(255,255,255,.10); color: #fff; }
-.hw-hero .lang-toggle-btn.active {
-  background: #f2c15b;
-  color: #123055;
-  box-shadow: 0 6px 16px -8px rgba(242,193,91,.9);
-}
-.hw-hero .lang-toggle-btn:focus-visible { outline: 3px solid #f2c15b; outline-offset: 2px; }
-
-/* Route choice, inside the hero */
-.hw-hero .hw-quickplan {
-  margin-top: 18px;
-  border: 1px dashed rgba(242,193,91,.5);
-  border-radius: 16px;
-  background: rgba(242,193,91,.09);
-}
-.hw-quickplan-summary {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 13px 16px;
-  min-height: 44px;
-  cursor: pointer;
-  list-style: none;
-  font-size: 14.5px;
-  color: #f6e6c4;
-}
-.hw-quickplan-summary::-webkit-details-marker { display: none; }
-.hw-quickplan-summary .lang-en + .lang-es { border-left: 0; padding-left: 0; margin-top: 0; }
-.hw-quickplan-chevron { margin-left: auto; transition: transform .2s ease; color: #f2c15b; }
-.hw-quickplan[open] .hw-quickplan-chevron { transform: rotate(180deg); }
-.hw-quickplan-lead { margin: 0; padding: 0 18px 8px; font-size: 13.5px; color: #cfe1f1; }
-.hw-quickplan-steps { margin: 0; padding: 0 14px 4px; font-size: 14px; color: #e4eef7; list-style: none; }
-.hw-quickplan-steps li { margin-bottom: 8px; }
-.hw-quickplan-steps .lang-es, .hw-quickplan-note .lang-es { color: #e4eef7; }
-/* Each step is a full-width tap target: this is the control a family reaches
-   for one-handed, on a phone, while standing up. */
-.hw-quickplan-step {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  width: 100%;
-  min-height: 52px;
-  padding: 10px 14px;
-  text-align: left;
-  cursor: pointer;
-  border: 1px solid rgba(242,193,91,.42);
-  border-radius: 12px;
-  background: rgba(255,255,255,.05);
-  color: #e4eef7;
-  font: inherit;
-  font-size: 14px;
-}
-.hw-quickplan-step:hover { background: rgba(242,193,91,.16); border-color: rgba(242,193,91,.75); }
-.hw-quickplan-step:focus-visible { outline: 3px solid #f2c15b; outline-offset: 2px; }
-.hw-quickplan-min {
-  flex: none;
-  min-width: 52px;
-  padding: 4px 8px;
-  border-radius: 99px;
-  background: #f2c15b;
-  color: #12355b;
-  font-weight: 800;
-  font-size: 12.5px;
-  text-align: center;
-}
-.hw-quickplan-what { flex: 1 1 auto; }
-.hw-quickplan-go { flex: none; font-size: 12.5px; font-weight: 700; color: #f2c15b; }
-@media (max-width: 560px) {
-  /* The destination label wraps under the task rather than squeezing it. */
-  .hw-quickplan-step { flex-wrap: wrap; }
-  .hw-quickplan-go { width: 100%; padding-left: 64px; }
-}
-.hw-quickplan-note { margin: 0; padding: 8px 18px 15px; font-size: 13.5px; color: #cfe1f1; }
-
-/* Where the plan just sent you. Outline only — a background change on an
-   arbitrary target would fight whatever that element already paints. */
-.hw-quickplan-flash {
-  animation: hwQuickPlanFlash 2.6s ease-out 1;
-  border-radius: 12px;
-}
-@keyframes hwQuickPlanFlash {
-  0%, 55% { box-shadow: 0 0 0 3px #f2c15b, 0 0 0 9px rgba(242,193,91,.3); }
-  100% { box-shadow: 0 0 0 3px rgba(242,193,91,0), 0 0 0 9px rgba(242,193,91,0); }
-}
-@media (prefers-reduced-motion: reduce) {
-  .hw-quickplan-flash { animation: none; box-shadow: 0 0 0 3px #f2c15b; }
-}
-
-@media (max-width: 700px) {
-  .hw-hero { padding: 24px 20px 22px; border-radius: 20px; }
-  .hw-hero-emoji { width: 52px; height: 52px; font-size: 27px; border-radius: 16px; }
-  .hw-hero-head { gap: 13px; }
-  .hw-hero .lang-selector-buttons { width: 100%; }
-  .hw-hero .lang-toggle-btn { flex: 1; justify-content: center; padding: 8px 10px; }
-}
-
-/* ── "Stuck?" — help that floats over the stop you are on ───────────────── */
-.hw-stuck-fab {
-  position: fixed;
-  right: 14px;
-  /* Clear of the sticky status bar, whose real height the runtime measures into
-     --hw-status-height. The Save/Resume launcher parks above this one. */
-  bottom: calc(min(var(--hw-status-height, 104px), 150px) + 70px);
-  z-index: 1200;
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  min-height: 44px;
-  padding: 10px 16px;
-  border: 0;
-  border-radius: 999px;
-  background: var(--navy);
-  color: #fff;
-  font-family: var(--font-display);
-  font-size: 13.5px;
-  font-weight: 800;
-  box-shadow: 0 6px 20px rgba(18, 53, 91, .28);
-  cursor: pointer;
-}
-.hw-stuck-fab:hover { background: var(--navy-light); }
-.hw-stuck-fab:focus-visible { outline: 3px solid var(--amber); outline-offset: 2px; }
-.hw-stuck-fab-icon { font-size: 16px; line-height: 1; }
-/* The page-wide .lang-es rule sets dark ink, which made the Spanish label on
-   this navy button read at 1.15:1. */
-.hw-stuck-fab .lang-es { color: inherit; }
-
-.hw-help-drawer { position: fixed; inset: 0; z-index: 1300; }
-.hw-help-drawer[hidden] { display: none; }
-.hw-help-drawer-scrim { position: absolute; inset: 0; background: rgba(18, 53, 91, .42); }
-.hw-help-drawer-sheet {
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  max-height: 86vh;
-  display: flex;
-  flex-direction: column;
-  background: var(--cream);
-  border-radius: 20px 20px 0 0;
-  box-shadow: 0 -10px 40px rgba(18, 53, 91, .26);
-}
-.hw-help-drawer-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 16px 18px 12px;
-  border-bottom: 1px solid var(--line);
-  font-family: var(--font-display);
-  font-size: 16px;
-  color: var(--navy);
-}
-.hw-help-drawer-close {
-  min-width: 44px;
-  min-height: 44px;
-  border: 0;
-  border-radius: 999px;
-  background: transparent;
-  color: var(--muted);
-  font-size: 18px;
-  cursor: pointer;
-}
-.hw-help-drawer-close:focus-visible { outline: 3px solid var(--teal); outline-offset: 2px; }
-.hw-help-drawer-body { overflow-y: auto; padding: 14px 16px 28px; -webkit-overflow-scrolling: touch; }
-.hw-help-drawer-body .guided-section.card { margin-bottom: 16px !important; }
-body.hw-drawer-open { overflow: hidden; }
-@media (min-width: 760px) {
-  .hw-help-drawer-sheet {
-    top: 0;
-    left: auto;
-    width: min(460px, 92vw);
-    max-height: none;
-    border-radius: 20px 0 0 20px;
-  }
-}
-
-/* ── Math tools, as a drawer inside Together ─────────────────────────────── */
-.workbench-drawer {
-  margin-top: 18px;
-  border: 1.5px solid var(--teal);
-  border-radius: var(--radius-md);
-  background: var(--teal-light);
-  overflow: hidden;
-}
-.workbench-drawer-summary {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 14px 16px;
-  min-height: 44px;
-  cursor: pointer;
-  list-style: none;
-}
-.workbench-drawer-summary::-webkit-details-marker { display: none; }
-.workbench-drawer-summary:focus-visible { outline: 3px solid var(--teal); outline-offset: -3px; }
-.workbench-drawer-icon { font-size: 22px; line-height: 1; }
-.workbench-drawer-text { flex: 1; display: flex; flex-direction: column; gap: 2px; }
-.workbench-drawer-text strong { color: var(--navy); font-family: var(--font-display); font-size: 15px; }
-.workbench-drawer-text small { color: var(--muted); font-size: 12.5px; }
-.workbench-drawer-chevron { color: var(--teal-ink); transition: transform .2s ease; }
-.workbench-drawer[open] .workbench-drawer-chevron { transform: rotate(180deg); }
-.workbench-drawer-body { padding: 4px 16px 18px; background: #fff; }
-
-/* ── Workbench and Quick Launch Styling ── */
-.workbench-quick-launch {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 16px;
-  background: #f0fdf4;
-  border: 1.5px solid #86efac;
-  border-radius: var(--radius-md);
-  padding: 14px 18px;
-  margin: 18px 0;
-}
-.wb-launch-content { display: flex; align-items: center; gap: 14px; }
-.wb-launch-icon { font-size: 26px; line-height: 1; flex-shrink: 0; }
-.wb-launch-text strong { display: block; color: var(--navy); font-size: 14.5px; margin-bottom: 2px; }
-.wb-launch-text p { margin: 0; font-size: 13px; color: var(--ink); line-height: 1.4; }
-.wb-launch-btn { flex-shrink: 0; white-space: nowrap; font-weight: 700; }
-@media (max-width: 600px) {
-  .workbench-quick-launch { flex-direction: column; align-items: flex-start; }
-}
-
-.wb-tool-bar {
-  display: flex;
-  gap: 8px;
-  padding: 10px 0 14px;
-  border-bottom: 1.5px solid var(--line);
-  overflow-x: auto;
-}
-.wb-tool-tab {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 14px;
-  border-radius: 999px;
-  border: 1.5px solid var(--line);
-  background: #f8fafc;
-  color: var(--navy);
-  font-family: var(--font-display);
-  font-size: 13px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all .15s ease;
-  white-space: nowrap;
-}
-.wb-tool-tab:hover { background: #e2e8f0; }
-.wb-tool-tab.is-active {
-  background: var(--navy);
-  color: #fff;
-  border-color: var(--navy);
-}
-.tool-presets-row {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 6px;
-  margin: 8px 0 12px;
-  padding: 8px 12px;
-  background: #f1f5f9;
-  border-radius: 10px;
-  border: 1px solid #cbd5e1;
-}
-.tool-presets-label {
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: .06em;
-  text-transform: uppercase;
-  color: var(--navy);
-}
-.wb-preset-btn {
-  padding: 4px 10px;
-  border-radius: 999px;
-  border: 1px solid #94a3b8;
-  background: #fff;
-  color: var(--navy);
-  font-family: inherit;
-  font-size: 12px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all .15s ease;
-}
-.wb-preset-btn:hover {
-  background: var(--teal-light);
-  border-color: var(--teal);
-  color: var(--teal-ink);
-}
-
-.fraction-button-group {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  align-items: center;
-}
-.fraction-stage-canvas {
-  margin-top: 12px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  padding: 12px;
-  background: #f8fafc;
-  border-radius: 12px;
-  border: 1px solid #e2e8f0;
-}
-.fraction-row {
-  display: flex;
-  width: 100%;
-  height: 38px;
-  border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 1px 3px rgba(0,0,0,.08);
-}
-.frac-tile {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex: 1;
-  color: #fff;
-  font-family: var(--font-display);
-  font-weight: 800;
-  font-size: 13px;
-  border-right: 1px solid rgba(255,255,255,.4);
-  user-select: none;
-}
-.frac-tile:last-child { border-right: none; }
-.tile-1 { background: #1e293b; }
-.tile-2 { background: #0284c7; }
-.tile-3 { background: #059669; }
-.tile-4 { background: #d97706; }
-.tile-6 { background: #7c3aed; }
-.tile-8 { background: #dc2626; }
-.tile-12 { background: #db2777; }
-
-.tape-diagram-render {
-  margin-top: 14px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  padding: 14px;
-  background: #f8fafc;
-  border-radius: 12px;
-  border: 1px solid #e2e8f0;
-}
-.tape-bar-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-.tape-label {
-  min-width: 90px;
-  font-weight: 800;
-  font-size: 13px;
-  color: var(--navy);
-}
-.tape-blocks {
-  display: flex;
-  gap: 4px;
-  flex-wrap: wrap;
-}
-.tape-block {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 44px;
-  height: 38px;
-  border-radius: 8px;
-  color: #fff;
-  font-weight: 800;
-  font-size: 14px;
-  border: 2px solid rgba(0,0,0,.15);
-}
-.tape-block-a { background: #0b8f87; }
-.tape-block-b { background: #ff775f; }
-
-.dec-grid-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 10px;
-  background: #fff;
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 1px 3px rgba(0,0,0,.08);
-}
-.dec-grid-table th {
-  padding: 8px 6px;
-  background: var(--navy);
-  color: #fff;
-  font-size: 12px;
-  font-weight: 800;
-  text-align: center;
-}
-.dec-grid-table th small {
-  font-weight: 500;
-  opacity: .8;
-  display: block;
-}
-.dec-grid-table td {
-  padding: 6px;
-  border: 1px solid #e2e8f0;
-  text-align: center;
-}
-.dec-grid-table .dec-pt {
-  font-size: 24px;
-  font-weight: 900;
-  color: var(--navy);
-  width: 20px;
-  padding: 0 4px;
-}
-.dg-cell {
-  width: 38px;
-  height: 38px;
-  text-align: center;
-  font-size: 18px;
-  font-weight: 800;
-  border: 1.5px solid #cbd5e1;
-  border-radius: 6px;
-  color: var(--navy);
-}
-.dg-cell:focus {
-  outline: 3px solid var(--teal);
-  border-color: var(--teal);
-}
-
-/* ============================================================
-   Family Activity Corner — hands-on activity cards on the Together tab.
-   ============================================================ */
-.fam-act-corner {
-  margin-top: 22px;
-  padding: 20px 22px;
-  background: #fff;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-lg);
-  box-shadow: 0 1px 2px rgba(18,53,91,.05), 0 14px 34px -22px rgba(18,53,91,.5);
-}
-.fam-act-head { margin-bottom: 14px; }
-.fam-act-badge {
-  display: inline-block;
-  font-family: var(--font-display);
-  font-size: 12px;
-  font-weight: 800;
-  letter-spacing: .08em;
-  color: var(--coral-ink);
-  background: var(--coral-light);
-  border-radius: 999px;
-  padding: 5px 12px;
-}
-.fam-act-lead { margin: 10px 0 0; font-size: 14px; color: var(--ink); }
-.fam-act-card {
-  border: 1.5px solid var(--line);
-  border-radius: var(--radius-md);
-  background: #fbfdff;
-  margin-bottom: 10px;
-  overflow: hidden;
-}
-.fam-act-card[open] { border-color: var(--teal); }
-.fam-act-summary {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 14px;
-  min-height: 44px;
-  cursor: pointer;
-  list-style: none;
-}
-.fam-act-summary::-webkit-details-marker { display: none; }
-.fam-act-icon {
-  flex: 0 0 auto;
-  display: grid;
-  place-items: center;
-  width: 38px;
-  height: 38px;
-  border-radius: 12px;
-  background: var(--teal-light);
-  font-size: 19px;
-}
-.fam-act-titles { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
-.fam-act-titles strong { font-size: 15px; color: var(--ink); }
-.fam-act-titles strong .lang-es { font-weight: 600; }
-/* Compact header rows: suppress the global stacked-Spanish rule inside */
-.fam-act-summary .lang-en + .lang-es { border-left: 0; padding-left: 0; margin-top: 1px; }
-.fam-act-meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px 12px;
-  font-size: 12px;
-  color: var(--muted);
-  font-weight: 600;
-}
-.fam-act-chevron { margin-left: auto; color: var(--muted); transition: transform .2s ease; }
-.fam-act-card[open] .fam-act-chevron { transform: rotate(180deg); }
-.fam-act-body { padding: 2px 16px 14px; }
-.fam-act-steps {
-  list-style: none;
-  margin: 0 0 12px;
-  padding: 0;
-}
-.fam-act-step {
-  display: flex;
-  gap: 10px;
-  align-items: flex-start;
-  padding: 8px 0;
-  border-bottom: 1px dashed var(--line);
-}
-.fam-act-step:last-child { border-bottom: 0; }
-.fam-act-step p { margin: 0; font-size: 14px; }
-.fam-act-step-num {
-  flex: 0 0 auto;
-  display: grid;
-  place-items: center;
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  background: var(--navy);
-  color: #fff;
-  font-size: 12.5px;
-  font-weight: 800;
-  margin-top: 2px;
-}
-.fam-act-talk {
-  background: var(--teal-light);
-  border-left: 4px solid var(--teal);
-  border-radius: 10px;
-  padding: 10px 12px;
-  font-size: 14px;
-  color: var(--ink);
-}
-.fam-act-talk strong { display: block; margin-bottom: 4px; color: var(--teal-ink); }
-
-/* ============================================================
-   Family Game Break — Math Dominoes + True/False Face-Off.
-   ============================================================ */
-.fam-game-break {
-  margin-top: 22px;
-  padding: 20px 22px;
-  background: #fff;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-lg);
-  box-shadow: 0 1px 2px rgba(18,53,91,.05), 0 14px 34px -22px rgba(18,53,91,.5);
-}
-.fam-game-head { margin-bottom: 14px; }
-.fam-game-badge {
-  display: inline-block;
-  font-family: var(--font-display);
-  font-size: 12px;
-  font-weight: 800;
-  letter-spacing: .08em;
-  color: #6b21a8;
-  background: #f3e8ff;
-  border-radius: 999px;
-  padding: 5px 12px;
-}
-.fam-game-lead { margin: 10px 0 0; font-size: 14px; color: var(--ink); }
-.fam-game-card {
-  border: 1.5px solid var(--line);
-  border-radius: var(--radius-md);
-  background: #fbfdff;
-  padding: 14px 16px;
-  margin-bottom: 14px;
-}
-.fam-game-card:last-child { margin-bottom: 0; }
-.fam-game-card-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-.fam-game-h3 { margin: 0; font-size: 16.5px; color: var(--navy); }
-.fam-game-h3 .lang-es { font-weight: 600; }
-.fam-game-card .lang-en + .lang-es { border-left: 0; padding-left: 0; }
-.fam-game-sub { margin: 8px 0 12px; font-size: 13.5px; color: var(--muted); }
-
-/* Math Dominoes */
-.fam-dom-chain {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: stretch;
-  gap: 8px;
-  padding: 12px;
-  min-height: 84px;
-  background: var(--teal-light);
-  border: 2px dashed var(--teal);
-  border-radius: 14px;
-}
-.fam-dom-tray { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
-.fam-dom-tile {
-  display: inline-flex;
-  align-items: stretch;
-  padding: 0;
-  border: 2px solid var(--navy);
-  border-radius: 12px;
-  background: #fff;
-  overflow: hidden;
-  font: inherit;
-  text-align: center;
-}
-button.fam-dom-tile { cursor: pointer; transition: transform .15s ease, box-shadow .15s ease; }
-button.fam-dom-tile:hover { transform: translateY(-2px); box-shadow: 0 6px 14px rgba(18, 53, 91, .15); }
-button.fam-dom-tile:focus-visible { outline: 3px solid var(--teal); outline-offset: 2px; }
-.fam-dom-half {
-  display: grid;
-  place-items: center;
-  min-width: 84px;
-  max-width: 190px;
-  padding: 10px 12px;
-  font-size: 14px;
-  font-weight: 700;
-  line-height: 1.25;
-  color: var(--ink);
-  overflow-wrap: break-word;
-}
-.fam-dom-left { background: var(--amber-light); border-right: 2px solid var(--navy); }
-.fam-dom-right { background: #fff; }
-.fam-dom-tile.is-new { border-color: var(--success); animation: famDomDrop .35s ease-out; }
-.fam-dom-slot {
-  display: grid;
-  place-items: center;
-  min-width: 48px;
-  border: 2px dashed var(--navy-light);
-  border-radius: 12px;
-  color: var(--navy-light);
-  font: 800 22px var(--font-display);
-}
-.fam-dom-tile.is-wrong { animation: famDomShake .35s ease; border-color: var(--error); }
-@keyframes famDomDrop { from { transform: translateY(-10px); opacity: 0; } to { transform: none; opacity: 1; } }
-@keyframes famDomShake { 20%, 60% { transform: translateX(-5px); } 40%, 80% { transform: translateX(5px); } }
-@media (prefers-reduced-motion: reduce) { .fam-dom-tile.is-new, .fam-dom-tile.is-wrong { animation: none; } }
-.fam-dom-hint { margin: 10px 0 0; min-height: 1.2em; font-size: 14px; font-weight: 700; color: var(--coral-ink); }
-.fam-dom-status { margin: 10px 0 0; font-size: 13.5px; color: var(--muted); }
-.fam-dom-win {
-  margin: 10px 0 0;
-  padding: 10px 12px;
-  background: var(--success-bg);
-  border-left: 4px solid var(--success);
-  border-radius: 10px;
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--ink);
-}
-
-/* True/False Face-Off */
-.fam-tf-turn { font-size: 13px; font-weight: 800; color: var(--teal-ink); margin-bottom: 6px; }
-.fam-tf-statement {
-  margin: 0 0 12px;
-  padding: 12px 14px;
-  background: #fff;
-  border: 1.5px solid var(--line);
-  border-radius: 12px;
-  font-size: 15.5px;
-  font-weight: 600;
-  color: var(--ink);
-}
-.fam-tf-buttons { display: flex; gap: 10px; flex-wrap: wrap; }
-.fam-tf-btn {
-  flex: 1 1 140px;
-  min-height: 48px;
-  font-size: 15px;
-  font-weight: 800;
-  border-radius: 12px;
-  border: 2px solid transparent;
-  cursor: pointer;
-}
-.fam-tf-true { background: var(--success-bg); border-color: var(--success); color: var(--success); }
-.fam-tf-true:hover:not(:disabled) { background: var(--success); color: #fff; }
-.fam-tf-false { background: var(--error-bg); border-color: var(--error); color: var(--error); }
-.fam-tf-false:hover:not(:disabled) { background: var(--error); color: #fff; }
-.fam-tf-btn:disabled { opacity: .55; cursor: default; }
-.fam-tf-btn:focus-visible { outline: 3px solid var(--teal); outline-offset: 2px; }
-.fam-tf-feedback {
-  margin-top: 12px;
-  padding: 12px 14px;
-  background: var(--amber-light);
-  border: 1px solid #f0d9a0;
-  border-radius: 12px;
-}
-.fam-tf-verdict { margin: 0 0 6px; font-weight: 800; font-size: 14.5px; }
-.fam-tf-verdict.is-right { color: var(--success); }
-.fam-tf-verdict.is-wrong { color: var(--error); }
-.fam-tf-why { margin: 0 0 10px; font-size: 14px; color: var(--ink); }
-.fam-tf-score { margin: 10px 0 0; font-size: 13px; font-weight: 700; color: var(--muted); }
-.fam-tf-done {
-  margin-top: 12px;
-  padding: 12px 14px;
-  background: var(--teal-light);
-  border-left: 4px solid var(--teal);
-  border-radius: 10px;
-  font-size: 14.5px;
-  font-weight: 600;
-  color: var(--ink);
-}
-
-/* Arcade picker — four games, one open at a time */
-.fam-arcade-picker {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 14px;
-}
-.fam-arcade-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  min-height: 44px;
-  padding: 9px 15px;
-  border: 1.5px solid var(--line);
-  border-radius: 999px;
-  background: #fff;
-  font-family: var(--font-display);
-  font-size: 13.5px;
-  font-weight: 700;
-  color: var(--muted);
-  cursor: pointer;
-  transition: transform .16s ease, border-color .16s ease, color .16s ease, background .16s ease;
-}
-.fam-arcade-chip:hover { transform: translateY(-1px); border-color: var(--teal); color: var(--ink); }
-.fam-arcade-chip:focus-visible { outline: 3px solid var(--teal); outline-offset: 2px; }
-.fam-arcade-chip.is-active {
-  background: linear-gradient(135deg, #14406e, #0f2b50);
-  border-color: transparent;
-  color: #fff;
-  box-shadow: 0 8px 18px -10px rgba(15,43,80,.9);
-}
-.fam-arcade-chip-icon { font-size: 16px; }
-
-/* Sort It! */
-.fam-sort-cards {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 14px;
-  min-height: 48px;
-}
-.fam-sort-card {
-  padding: 11px 16px;
-  min-height: 44px;
-  border: 1.5px solid var(--line);
-  border-radius: 12px;
-  background: #fff;
-  font-family: var(--font-body);
-  font-size: 14.5px;
-  font-weight: 700;
-  color: var(--ink);
-  cursor: pointer;
-  transition: transform .15s ease, border-color .15s ease, box-shadow .15s ease;
-}
-.fam-sort-card:hover { transform: translateY(-2px); border-color: var(--teal); }
-.fam-sort-card:focus-visible { outline: 3px solid var(--teal); outline-offset: 2px; }
-.fam-sort-card.is-picked {
-  border-color: var(--amber);
-  background: var(--amber-light);
-  box-shadow: 0 0 0 4px rgba(242,193,91,.28);
-}
-.fam-sort-card.is-placed { display: none; }
-@keyframes famShake {
-  0%, 100% { transform: translateX(0); }
-  25% { transform: translateX(-5px); }
-  75% { transform: translateX(5px); }
-}
-.fam-sort-card.is-wrong {
-  animation: famShake .3s ease;
-  border-color: var(--error);
-  background: var(--error-bg);
-}
-.fam-sort-bins { display: flex; gap: 10px; }
-.fam-sort-bin {
-  flex: 1 1 0;
-  min-height: 78px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
-  padding: 14px 12px;
-  border: 2px dashed var(--teal);
-  border-radius: 14px;
-  background: var(--teal-light);
-  font-family: var(--font-body);
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--teal-ink);
-  cursor: pointer;
-  transition: background .15s ease, transform .15s ease;
-}
-.fam-sort-bin:hover { background: #cdeeea; transform: translateY(-2px); }
-.fam-sort-bin:focus-visible { outline: 3px solid var(--teal); outline-offset: 2px; }
-.fam-sort-bin-label { text-align: center; line-height: 1.25; }
-.fam-sort-bin-count {
-  display: grid;
-  place-items: center;
-  min-width: 26px;
-  height: 22px;
-  padding: 0 7px;
-  border-radius: 999px;
-  background: var(--teal);
-  color: #fff;
-  font-size: 12px;
-  font-weight: 800;
-}
-.fam-sort-feedback { margin: 12px 0 0; font-size: 14px; color: var(--ink); min-height: 20px; }
-.fam-sort-done {
-  margin-top: 12px;
-  padding: 12px 14px;
-  background: var(--success-bg);
-  border-left: 4px solid var(--success);
-  border-radius: 10px;
-  font-size: 14.5px;
-  font-weight: 700;
-  color: var(--ink);
-}
-
-/* Would You Rather? */
-.fam-wyr-options {
-  display: flex;
-  align-items: stretch;
-  gap: 10px;
-}
-.fam-wyr-option {
-  flex: 1 1 0;
-  min-height: 92px;
-  padding: 16px 14px;
-  border: 2px solid var(--line);
-  border-radius: 16px;
-  background: #fff;
-  font-family: var(--font-body);
-  font-size: 14.5px;
-  font-weight: 600;
-  line-height: 1.4;
-  color: var(--ink);
-  cursor: pointer;
-  transition: transform .16s ease, border-color .16s ease, box-shadow .16s ease;
-}
-.fam-wyr-option:hover { transform: translateY(-2px); border-color: var(--amber); }
-.fam-wyr-option:focus-visible { outline: 3px solid var(--teal); outline-offset: 2px; }
-.fam-wyr-option.is-chosen {
-  border-color: var(--amber);
-  background: var(--amber-light);
-  box-shadow: 0 0 0 4px rgba(242,193,91,.24);
-}
-.fam-wyr-or {
-  align-self: center;
-  font-family: var(--font-display);
-  font-size: 12px;
-  font-weight: 800;
-  letter-spacing: .08em;
-  color: var(--muted);
-}
-.fam-wyr-reveal {
-  margin-top: 14px;
-  padding: 13px 15px;
-  background: var(--teal-light);
-  border-left: 4px solid var(--teal);
-  border-radius: 12px;
-}
-.fam-wyr-reveal-title {
-  margin: 0 0 6px;
-  font-family: var(--font-display);
-  font-size: 13px;
-  font-weight: 800;
-  color: var(--teal-ink);
-}
-.fam-wyr-why { margin: 0 0 10px; font-size: 14.5px; color: var(--ink); }
-.fam-wyr-progress { margin: 12px 0 0; font-size: 12.5px; font-weight: 700; color: var(--muted); }
-
-@media (max-width: 560px) {
-  .fam-dom-tray { flex-direction: column; }
-  .fam-dom-chain .fam-dom-tile, .fam-dom-tray .fam-dom-tile { width: 100%; }
-  .fam-dom-half { min-width: 0; flex: 1 1 50%; max-width: none; }
-  .fam-wyr-options { flex-direction: column; }
-  .fam-wyr-or { align-self: flex-start; }
-  .fam-sort-bins { flex-direction: column; }
-}
-
-@media print {
-  .hw-quickplan { display: none; }
-  .fam-act-card { break-inside: avoid; }
-  /* The interactive games are screen-only; paper families have the Activity
-     Corner and the printable practice instead. */
-  .fam-game-break { display: none; }
-}
-
-/* Family Math Studio: clear choices, comfortable touch targets, no pressure. */
-.hw-route-chooser {
-  margin: 16px 0 0;
-  padding: 16px;
-  color: #102a43;
-  background: #f8fbff;
-  border: 1px solid #bfd7ee;
-  border-radius: 16px;
-}
-.hw-route-heading { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 12px; }
-.hw-route-icon { font-size: 25px; line-height: 1; }
-.hw-route-heading h2 { margin: 0 0 4px; font-size: 18px; color: #12355b; }
-.hw-route-heading p { margin: 0; color: #486581; font-size: 14px; line-height: 1.45; }
-.hw-route-options { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
-.hw-route-option {
-  display: flex; align-items: center; gap: 10px; min-height: 82px; padding: 10px 12px;
-  text-align: left; color: #243b53; background: #fff; border: 1.5px solid #b8c9d9;
-  border-radius: 12px; cursor: pointer; font: inherit;
-}
-.hw-route-option:hover { border-color: #138a86; background: #f0fdfa; }
-.hw-route-option:focus-visible, .hw-pair-link:focus-visible { outline: 3px solid #f2c15b; outline-offset: 2px; }
-.hw-route-option.is-active { color: #0f4f4d; background: #e7f7f3; border-color: #138a86; box-shadow: inset 0 0 0 1px #138a86; }
-.hw-route-time {
-  display: flex; flex-direction: column; justify-content: center; align-items: center; flex: 0 0 58px;
-  min-height: 58px; color: #fff; background: #12355b; border-radius: 14px;
-  font: 800 18px/1.1 var(--font-display); text-align: center;
-}
-.hw-route-option.is-active .hw-route-time { background: #0f766e; }
-.hw-route-time small { margin-top: 3px; font-size: 11px; font-weight: 700; }
-.hw-route-copy { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
-.hw-route-copy strong { font: 800 14px/1.2 var(--font-display); }
-.hw-route-copy small { color: #52677b; font-size: 12px; line-height: 1.4; }
-.hw-route-note { margin: 10px 2px; color: #334e68; font-size: 13.5px; line-height: 1.45; }
-.hw-route-chooser.route-just-changed { box-shadow: 0 0 0 4px rgba(31,166,162,.18); }
-.hw-route-option[hidden], .homework-tab-btn[hidden], .homework-tab-extra[hidden],
-.problem-section[hidden], .practice-tier[hidden], .more-practice[hidden] { display: none !important; }
-.hw-pair-note {
-  display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap;
-  margin: -4px 0 12px; padding: 10px 12px; color: #12355b; background: #fffdf5;
-  border: 1px solid #e5d8a7; border-radius: 12px;
-}
-.hw-pair-note p { margin: 0; font-size: 13.5px; line-height: 1.45; }
-.hw-pair-link { display: inline-flex; align-items: center; gap: 7px; min-height: 44px; padding: 7px 10px;
-  color: #075e59; background: #e7f7f3; border-radius: 9px; font-weight: 800; text-decoration: none; }
-.hw-pair-link:hover { background: #c9eee6; }
-@media (max-width: 760px) {
-  .hw-route-options { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .hw-route-option { min-height: 72px; }
-}
-@media (prefers-reduced-motion: reduce) { .hw-route-chooser.route-just-changed { box-shadow: none; } }
-@media print { .hw-route-chooser, .hw-pair-note { display: none !important; } }
-
-/* Family Conversation Card */
-.family-talk {
-  position: relative;
-  margin: 20px 0 8px;
-  padding: 16px 18px 14px;
-  background: #fffdf5;
-  border: 2px solid #b45309;
-  border-radius: 14px;
-  color: #3b2a12;
-}
-.family-talk-lang {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  display: flex;
-  gap: 4px;
-}
-.family-talk-lang button {
-  min-width: 44px;
-  min-height: 44px;
-  border: 2px solid #b45309;
-  border-radius: 10px;
-  background: #ffffff;
-  color: #7c2d12;
-  font: inherit;
-  font-weight: 800;
-  cursor: pointer;
-  transition: background-color 150ms ease, color 150ms ease;
-}
-.family-talk-lang button[aria-pressed="true"] {
-  background: #7c2d12;
-  color: #ffffff;
-}
-.family-talk-lang button:focus-visible {
-  outline: 3px solid #1d4ed8;
-  outline-offset: 2px;
-}
-/* The page hides every [lang="es"] in English mode; the card's own toggle must still be able to show it. */
-body.lang-mode-en .family-talk .family-talk-pane[lang="es"]:not([hidden]) { display: block !important; }
-body.lang-mode-en .family-talk .family-talk-lang button[lang="es"] { display: inline-block !important; }
-.family-talk-pane { padding-right: 104px; }
-.family-talk-pane h3 { margin: 0 0 8px; font-size: 1.15rem; }
-.family-talk-pane .ft-label {
-  margin: 10px 0 2px;
-  font-size: 0.85rem;
-  font-weight: 800;
-  color: #7c2d12;
-}
-.family-talk-pane p { margin: 2px 0; font-size: 1rem; line-height: 1.5; }
-.family-talk-pane .ft-question { font-size: 1.15rem; font-weight: 700; }
-.family-talk-pane .ft-frame { font-style: italic; }
-@media (max-width: 520px) {
-  .family-talk-pane { padding-right: 0; padding-top: 52px; }
-}
-@media (prefers-reduced-motion: reduce) {
-  .family-talk-lang button { transition: none; }
-}
-@media print {
-  .family-talk-lang { display: none; }
-  .family-talk-pane[hidden] { display: block; }
-  .family-talk-pane { padding-right: 0; }
-}
-`;
-
-export const BIG_IDEA_CSS = `
-/* ============================================================
-   BIG IDEA LAYER — loads last, after the polish layer.
-   The concept explainer is the one part of this page a parent
-   reads to understand the mathematics itself, often on a phone
-   and often in a second language. It is deliberately sized well
-   above the rest of the page: full-bleed picture, oversized
-   sentence, numbered steps that can be followed without reading
-   closely. Namespaced to \`.big-idea\` (renderLearnTab strips the
-   <section> wrapper) so nothing else on the page inherits the scale.
-   ============================================================ */
-.big-idea { margin-top: 4px; }
-
-/* The figure heading is language-switched, not bilingual (see conceptHeading).
-   Both <text> sit at the same y, so exactly one may ever be displayed: English
-   carries English AND bilingual mode; Spanish mode swaps them. */
-.concept-title-es { display: none; }
-body.lang-mode-es .concept-title-en { display: none; }
-body.lang-mode-es .concept-title-es { display: inline; }
-
-/* 1. One sentence, first, and big enough to read across a kitchen. */
-.big-idea .key-idea-banner {
-  padding: 20px 22px;
-  border: 2px solid #8fcfc8;
-  border-radius: var(--radius-md);
-  margin: 4px 0 20px;
-}
-.big-idea .key-idea-banner p {
-  margin: 0;
-  font-size: 22px;
-  line-height: 1.45;
-  font-weight: 600;
-}
-.big-idea .key-idea-banner .lang-en + .lang-es {
-  margin-top: 12px;
-  padding-left: 14px;
-  border-left: 4px solid var(--teal);
-}
-
-/* 2. The picture. It used to cap at 420px (560px once the design system
-   framed it) on a 1000px column — barely half the available width, with 11px
-   labels inside it. Keep the frame; let the drawing use the column. The frame
-   is display:flex in the design system, which makes the <svg> a flex item that
-   shrinks to its intrinsic width and puts the caption beside it; block stacking
-   is what this section needs. */
-.big-idea .concept-visual-wrap {
-  display: block;
-  margin: 0 0 22px;
-  padding: 20px 18px;
-  overflow: visible;
-}
-.big-idea .concept-visual-wrap > svg,
-.big-idea .concept-svg {
-  width: 100%;
-  max-width: 100%;
-  height: auto;
-  display: block;
-  border-radius: var(--radius-md);
-}
-.concept-visual-caption {
-  margin: 12px 2px 0;
-  font-size: 20px;
-  line-height: 1.45;
-  font-weight: 600;
-  color: var(--ink);
-  text-align: center;
-}
-.concept-visual-caption .lang-es {
-  display: block;
-  margin-top: 8px;
-  padding-left: 14px;
-  border-left: 4px solid var(--teal);
-  text-align: left;
-}
-.concept-visual-caption .lang-en { display: block; }
-.concept-zoom-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  width: auto;
-  min-height: 40px;
-  margin-top: 10px;
-  padding: 8px 18px;
-  border: 1.5px solid var(--st-brand, #2563eb);
-  border-radius: 999px;
-  background: var(--st-brand-soft, #e8f0fe);
-  color: var(--st-brand-ink, #1b4fc9);
-  font-size: 14px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: background 0.15s, border-color 0.15s;
-}
-.concept-zoom-btn:hover {
-  background: #dbeafe;
-  border-color: #1d4ed8;
-}
-.concept-zoom-dialog {
-  width: min(100vw - 16px, 960px);
-  max-height: 92vh;
-  padding: 10px;
-  border: 3px solid var(--teal);
-  border-radius: var(--radius-md);
-  background: #fff;
-}
-.concept-zoom-dialog::backdrop { background: rgba(15, 23, 42, .72); }
-.concept-zoom-close {
-  display: block;
-  min-height: 48px;
-  margin: 0 0 8px auto;
-  padding: 8px 18px;
-  border: 2px solid var(--teal);
-  border-radius: 999px;
-  background: #fff;
-  color: var(--teal-ink);
-  font: 800 16px/1.2 inherit;
-  cursor: pointer;
-}
-.concept-zoom-body { max-height: calc(92vh - 90px); overflow: auto; -webkit-overflow-scrolling: touch; }
-.concept-zoom-body svg { display: block; width: 780px; max-width: none; height: auto; }
-
-/* Fallback picture (a lesson with no topic drawing): the two ends of the
-   worked example, side by side, so the jump from setup to answer is visible
-   before a single sentence is read. */
-.big-idea .concept-fallback-visual {
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
-  align-items: stretch;
-  gap: 14px;
-}
-.big-idea .concept-fallback-step {
-  display: block;
-  padding: 20px 22px;
-  border-radius: var(--radius-md);
-  font-size: 21px;
-  line-height: 1.4;
-  font-weight: 600;
-  background: var(--white);
-  border: 2px solid var(--line);
-}
-.big-idea .concept-fallback-step.is-end {
-  background: var(--teal-light, #e9f7f4);
-  border-color: var(--teal);
-}
-.concept-fallback-label {
-  display: block;
-  margin-bottom: 8px;
-  font-family: var(--font-display);
-  font-size: 15px;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--teal-ink);
-}
-.concept-fallback-label .lang-es { display: inline; margin: 0; padding: 0; border: 0; }
-.concept-fallback-label .lang-es::before { content: " · "; }
-.concept-fallback-text { display: block; }
-.concept-fallback-text.lang-es {
-  margin-top: 10px;
-  padding-left: 12px;
-  border-left: 4px solid var(--teal);
-}
-.concept-fallback-arrow {
-  align-self: center;
-  font-size: 40px;
-  font-weight: 800;
-  color: var(--teal-ink);
-}
-@media (max-width: 620px) {
-  .big-idea .concept-fallback-visual { grid-template-columns: 1fr; }
-  .concept-fallback-arrow { transform: rotate(90deg); text-align: center; }
-}
-
-/* 3. The four-stop path. Bigger icons, a visible stop number, real tap size. */
-.big-idea .concept-quick-wrap { padding: 18px 16px; margin-bottom: 22px; }
-.big-idea .concept-quick-title { font-size: 18px; margin-bottom: 14px; }
-.big-idea .concept-quick-path { gap: 12px; }
-.big-idea .concept-quick-step {
-  min-height: 118px;
-  padding: 14px 8px;
-  border: 2px solid var(--line);
-  font-size: 16px;
-  line-height: 1.25;
-}
-.big-idea .concept-quick-icon { font-size: 38px; margin-bottom: 8px; }
-.concept-quick-num {
-  display: inline-block;
-  margin-bottom: 6px;
-  font-size: 13px;
-  font-weight: 800;
-  color: var(--teal-ink);
-  letter-spacing: 0.08em;
-}
-.big-idea .concept-quick-step .lang-es { font-size: 14px; color: var(--muted); }
-
-/* 4. Guided steps. A large numeral carries the order so a parent can follow
-   the sequence without reading a word of it first. Compact cards, colored
-   left border + numeral per step (matching the quick-path above) so the
-   sequence reads as a scannable trail rather than four tall blocks. */
-.big-idea .guided-steps { gap: 10px; }
-.big-idea .guided-step {
-  padding: 12px 16px;
-  border: 1px solid var(--line);
-  border-left: 5px solid var(--line);
-  border-radius: var(--radius-md);
-}
-.big-idea .guided-step.step-color-1 { border-left-color: #5b8def; }
-.big-idea .guided-step.step-color-2 { border-left-color: var(--success); }
-.big-idea .guided-step.step-color-3 { border-left-color: var(--amber); }
-.big-idea .guided-step.step-color-4 { border-left-color: var(--coral); }
-.big-idea .guided-step-head { gap: 10px; margin-bottom: 6px; align-items: center; }
-.guided-step-num {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 38px;
-  height: 38px;
-  flex: 0 0 38px;
-  border-radius: 50%;
-  font-family: var(--font-display);
-  font-size: 18px;
-  font-weight: 800;
-  color: var(--white);
-  background: var(--navy);
-}
-.big-idea .step-cue-label { font-size: 16px; }
-.big-idea .guided-step-icon {
-  display: inline;
-  width: auto;
-  height: auto;
-  flex: none;
-  background: none;
-  border-radius: 0;
-  font-size: 19px;
-  margin-right: 6px;
-}
-/* The big numeral already states the order, so the "Step 1 / Paso 1" pill is
-   pure repetition here — it only competed with the cue label for attention. */
-.big-idea .step-badge { display: none; }
-
-/* Bilingual text inside a CHIP or a SUMMARY must stay on one line. The global
-   \`.lang-en + .lang-es\` rule (a deliberate anti-fading treatment for prose)
-   turns both languages into stacked, teal-ruled blocks, which rendered these
-   as "Start" / "Empieza" on two lines with a stray vertical bar. Prose keeps
-   the stacked treatment; chips get an inline separator instead. */
-.big-idea .step-cue-label .lang-es,
-.big-idea .step-detail summary .lang-es {
-  display: inline;
-  margin: 0;
-  padding-left: 0;
-  border-left: 0;
-}
-.big-idea .step-detail summary .lang-es::before {
-  content: " · ";
-  color: var(--muted);
-}
-/* A path stop is a vertical column, so its two languages stack — but without
-   the teal rule, which reads as a stray bar inside a small centred card. */
-.big-idea .concept-quick-step .lang-es {
-  display: block;
-  margin: 2px 0 0;
-  padding-left: 0;
-  border-left: 0;
-}
-.big-idea .guided-step .step-lead {
-  font-size: 16px;
-  line-height: 1.4;
-  font-weight: 600;
-  margin: 0;
-}
-.big-idea .guided-step .step-lead.lang-es {
-  margin-top: 6px;
-  padding-left: 10px;
-  border-left: 3px solid var(--teal);
-}
-.big-idea .step-detail { margin-top: 6px; padding-top: 6px; }
-.big-idea .step-detail summary { font-size: 13px; }
-.big-idea .step-detail p { font-size: 14.5px; line-height: 1.45; }
-
-/* 5. Watch-for cues read at the same weight as the steps they support. */
-.big-idea .watch-for-list { padding: 18px 20px; margin-top: 20px; }
-.big-idea .watch-for-list li { gap: 14px; }
-.big-idea .watch-for-list p { font-size: 19px; line-height: 1.45; margin: 0; }
-.big-idea .watch-for-list .lang-en + .lang-es {
-  margin-top: 8px;
-  padding-left: 12px;
-  border-left: 4px solid var(--teal);
-}
-.big-idea .watch-icon { font-size: 26px; }
-
-/* Phones: the drawings are authored on a 640-unit canvas and scale down
-   cleanly, but the surrounding type needs a small step down so a step card
-   still fits a 375px viewport without a horizontal scroll. */
-@media (max-width: 620px) {
-  .big-idea .key-idea-banner p { font-size: 20px; }
-  .big-idea .guided-step { padding: 12px 14px; }
-  .big-idea .guided-step .step-lead { font-size: 16px; }
-  .big-idea .concept-visual-caption { font-size: 18px; }
-  .concept-zoom-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    min-height: 48px;
-    margin-top: 12px;
-    border: 2px solid var(--teal);
-    border-radius: 12px;
-    background: var(--teal-light);
-    color: var(--teal-ink);
-    font-size: 16px;
-    font-weight: 800;
-    cursor: pointer;
-  }
-  /* Give the drawing back the frame's side padding — on a 375px phone that is
-     the difference between a 301px and a 341px picture. */
-  .big-idea .concept-visual-wrap { padding: 14px 8px; }
-  .big-idea .concept-quick-path { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .big-idea .concept-quick-step:not(:last-child)::after { content: none; }
-  .guided-step-num { width: 34px; height: 34px; flex: 0 0 34px; font-size: 16px; }
-}
-
-@media print {
-  .big-idea .concept-svg { max-width: 620px; margin: 0 auto; }
-  .big-idea .guided-step, .big-idea .concept-visual-wrap { break-inside: avoid; }
-}
-`;
-
-export const ARENA_CSS = `
-/* ============================================================
-   ARENA LAYER — loads last, after the big-idea layer.
-
-   The page had the right structure (one hero, six stops, one big
-   picture) drawn at newsletter weight: thin type, quiet chips, flat
-   buttons, a status bar that looked like a footer. A family opens this
-   at 7pm on a phone, tired; it has to feel like an EVENT, not a memo.
-
-   Modelled on the vocabulary-lab treatment Joel asked for: stadium
-   lighting on the hero, one flat gold kicker instead of a pill, display
-   type a size class larger and tighter, the navigation lifted OUT of the
-   hero onto a white card that overlaps it, chunky pressable buttons with
-   a real bottom edge, and the progress bar re-cut as a scoreboard.
-
-   CSS only, on selectors that already exist — no markup moves, so every
-   pinned structure (tab ids, stop numbers, .big-idea, the injection
-   sentinels) is untouched. Site hues are kept; the reference's exact
-   palette would clash with the rest of the curriculum.
-   ============================================================ */
-
-/* ── Hero: stadium lighting ──────────────────────────────────────────── */
-.hw-hero {
-  padding: 34px 34px 46px;
-  border-radius: 24px;
-  background:
-    radial-gradient(circle at 18% -30%, rgba(36,93,132,.55) 0, transparent 42%),
-    radial-gradient(120% 140% at 88% -10%, rgba(31,166,162,.28) 0%, rgba(18,53,91,0) 58%),
-    linear-gradient(145deg, #071a2c 0%, #102f4f 58%, #0d2039 100%);
-  box-shadow: 0 26px 60px -32px rgba(7,26,44,.92);
-}
-/* The lit stands down each edge. Decorative, and the first thing that says
-   "this is a place", not "this is a document". */
-.hw-hero::before,
-.hw-hero::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  width: 118px;
-  height: 100%;
-  background: repeating-linear-gradient(90deg, transparent 0 22px, rgba(255,255,255,.055) 23px 25px);
-  opacity: .75;
-  pointer-events: none;
-  z-index: 0;
-}
-.hw-hero::before { left: 0; }
-.hw-hero::after { right: 0; }
-.hw-hero-body { z-index: 1; }
-
-/* The kicker was a translucent pill competing with the title for weight.
-   Flat gold caps read as a label and give the title the stage. */
-.hw-hero-kicker {
-  padding: 0;
-  gap: 7px;
-  margin-bottom: 10px;
-  background: none;
-  border: 0;
-  font-size: 12.5px;
-  font-weight: 900;
-  letter-spacing: .13em;
-  color: var(--amber, #f2c15b);
-}
-.hw-hero-kicker .lang-es { color: var(--amber, #f2c15b); opacity: .85; }
-.hw-hero-kicker-icon { background: rgba(242,193,91,.16); width: 22px; height: 22px; }
-
-/* The polish layer caps these with !important (\`.welcome-title-en\`, ~line 9204),
-   so a plain rule here loses on cascade order despite being more specific and
-   later. Matched, not removed: that cap still governs the OTHER pages that use
-   the welcome-title classes. */
-.hw-hero .welcome-title-en {
-  font-size: clamp(34px, 5.4vw, 56px) !important;
-  font-weight: 900 !important;
-  letter-spacing: -.035em !important;
-  line-height: 1.02 !important;
-}
-.hw-hero .welcome-title-es {
-  font-size: clamp(18px, 2.4vw, 24px) !important;
-  font-weight: 700 !important;
-}
-.hw-hero-emoji { width: 72px; height: 72px; font-size: 38px; border-radius: 22px; }
-.hw-hero-lesson-title { font-size: 21px; font-weight: 800; }
-.hw-hero-lead { font-size: 16px; }
-
-/* ── Navigation: lifted onto its own card, overlapping the hero ──────── */
-.homework-tab-chrome {
-  margin-top: -26px;
-  padding: 9px 9px 7px;
-  border-radius: 19px;
-  background: var(--white, #fff);
-  border: 1px solid var(--line, #d9e3ea);
-  box-shadow: 0 16px 38px rgba(7,26,44,.16);
-  position: relative;
-  z-index: 5;
-}
-.homework-tab-btn { border-radius: 13px; font-weight: 800; }
-/* Navy, not teal: the active stop should echo the hero it hangs off. */
-.homework-tab-btn.is-active,
-.homework-tab-btn.is-core.is-active {
-  background: #102f4f;
-  border-color: #102f4f;
-  color: #fff;
-  box-shadow: 0 6px 15px rgba(16,47,79,.28);
-}
-.homework-tab-btn:hover:not(.is-active) {
-  background: #eef4f8;
-  border-color: #cddbe8;
-}
-.homework-tab-track-fill { background: linear-gradient(90deg, var(--amber, #f2c15b), #ff8e43); }
-
-/* ── Buttons: a real bottom edge you can press ───────────────────────── */
-.btn,
-.flow-next-btn,
-.signoff-submit-btn {
-  border-radius: 12px;
-  font-weight: 900;
-  transition: transform .08s ease, box-shadow .08s ease;
-}
-.btn-primary, .flow-next-btn {
-  background: #102f4f;
-  border-color: #102f4f;
-  color: #fff;
-  box-shadow: 0 4px 0 #061a2c;
-}
-.btn-primary:hover, .flow-next-btn:hover { background: #16406b; border-color: #16406b; }
-.btn-primary:active, .flow-next-btn:active,
-.btn-secondary:active, .btn-outline-primary:active,
-.btn-outline-secondary:active, .btn-outline-success:active {
-  transform: translateY(2px);
-  box-shadow: 0 2px 0 #061a2c;
-}
-.btn-secondary { box-shadow: 0 4px 0 #c1ced7; }
-.btn-outline-primary, .btn-outline-secondary, .btn-outline-success { box-shadow: 0 3px 0 #d3dee6; }
-.btn:disabled { opacity: .45; transform: none; box-shadow: none; }
-/* A button that moves 2px on press must not also move on focus-visible, or
-   the outline chases it. */
-.btn:focus-visible { outline: 4px solid rgba(242,193,91,.85); outline-offset: 3px; }
-
-/* ── Cards: deeper corners, softer lift ─────────────────────────────── */
-.guide-card,
-.problem-section.card,
-.fam-game-card,
-.fam-act-card,
-.vocab-card-front,
-.vocab-card-back {
-  border-radius: 20px;
-  box-shadow: 0 9px 28px rgba(7,26,44,.08);
-}
-
-/* ── Status bar re-cut as a scoreboard ──────────────────────────────── */
-.bottom-status-bar {
-  background: #071a2c;
-  color: #fff;
-  border-top: 0;
-  box-shadow: inset 0 0 0 2px rgba(255,255,255,.06), 0 -10px 30px rgba(7,26,44,.28);
-}
-.bottom-status-bar strong,
-.bottom-status-bar .status-count {
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-weight: 900;
-  color: var(--amber, #f2c15b);
-}
-.bottom-status-bar .btn-primary { box-shadow: 0 4px 0 #04121f; }
-
-@media (max-width: 620px) {
-  .hw-hero { padding: 24px 20px 40px; border-radius: 20px; }
-  /* The stands would eat a third of a 375px hero. */
-  .hw-hero::before, .hw-hero::after { width: 46px; opacity: .5; }
-  /* No negative top margin: it pulled the stop tracker over the Key Vocabulary and Theme row above it. */
-  .homework-tab-chrome { margin-top: 8px; padding: 7px 7px 6px; border-radius: 16px; }
-}
-
-@media print {
-  .hw-hero::before, .hw-hero::after { content: none; }
-  .btn, .btn-primary { box-shadow: none !important; }
-  .bottom-status-bar { display: none !important; }
-}
-
-/* ── Upgrades: Read-aloud, Feeling pulse, Work photo, Refrigerator Sheet ──── */
-.btn-read-aloud {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  background: var(--teal-light, #dff2ee);
-  color: var(--teal-ink, #0c6f6b);
-  border: 1px solid rgba(31, 166, 162, 0.3);
-  border-radius: 999px;
-  padding: 3px 10px;
-  font-size: 11px;
-  font-weight: 700;
-  cursor: pointer;
-  vertical-align: middle;
-  transition: all 0.15s ease;
-}
-.btn-read-aloud:hover {
-  background: var(--teal, #1fa6a2);
-  color: #fff;
-}
-.btn-read-aloud.is-speaking {
-  background: var(--coral, #d9795d);
-  color: #fff;
-  animation: pulseSpeaking 1.5s infinite;
-}
-@keyframes pulseSpeaking {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.04); }
-  100% { transform: scale(1); }
-}
-
-.feeling-options .btn-feeling {
-  transition: all 0.15s ease;
-}
-.feeling-options .btn-feeling:hover {
-  border-color: #94a3b8;
-}
-.feeling-options .btn-feeling.is-selected {
-  border-color: #0284c7;
-  background: #e0f2fe;
-  color: #0369a1;
-  box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.2);
-}
-
-.work-photo-preview-wrap {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.refrigerator-sheet-print-container {
-  display: none;
-}
-
-@media print {
-  body.print-refrigerator-sheet * {
-    visibility: hidden !important;
-  }
-  body.print-refrigerator-sheet .refrigerator-sheet-print-container,
-  body.print-refrigerator-sheet .refrigerator-sheet-print-container * {
-    visibility: visible !important;
-  }
-  body.print-refrigerator-sheet .refrigerator-sheet-print-container {
-    display: block !important;
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    margin: 0;
-    padding: 0;
-    background: #ffffff !important;
-    color: #0f172a !important;
-  }
-  body.print-refrigerator-sheet .rf-sheet-page {
-    border: 2px dashed #0284c7;
-    border-radius: 12px;
-    padding: 16px 20px;
-    box-sizing: border-box;
-    page-break-inside: avoid;
-    break-inside: avoid;
-  }
-  body.print-refrigerator-sheet .rf-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 2px solid #e2e8f0;
-    padding-bottom: 10px;
-    margin-bottom: 12px;
-  }
-  body.print-refrigerator-sheet .rf-title-area h2 {
-    font-size: 18px;
-    margin: 0;
-    color: #0f172a;
-  }
-  body.print-refrigerator-sheet .rf-title-area p {
-    font-size: 13px;
-    margin: 2px 0 0;
-    color: #475569;
-  }
-  body.print-refrigerator-sheet .rf-qr-area {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-  }
-  body.print-refrigerator-sheet .rf-qr-box svg {
-    width: 68px;
-    height: 68px;
-  }
-  body.print-refrigerator-sheet .rf-qr-label {
-    font-size: 9px;
-    font-weight: 700;
-    color: #475569;
-    margin-top: 2px;
-  }
-  body.print-refrigerator-sheet .rf-big-idea-box {
-    background: #f0f9ff;
-    border: 1px solid #bae6fd;
-    border-radius: 8px;
-    padding: 8px 12px;
-    margin-bottom: 12px;
-  }
-  body.print-refrigerator-sheet .rf-section-badge {
-    font-size: 10px;
-    font-weight: 800;
-    letter-spacing: 0.05em;
-    color: #0369a1;
-    margin-bottom: 4px;
-  }
-  body.print-refrigerator-sheet .rf-big-idea-text {
-    font-size: 12px;
-    line-height: 1.4;
-    margin: 0;
-    color: #0c4a6e;
-  }
-  body.print-refrigerator-sheet .rf-table-talk-box,
-  body.print-refrigerator-sheet .rf-card-dinner {
-    background: #f0fdfa;
-    border: 1px solid #99f6e4;
-    border-radius: 8px;
-    padding: 8px 12px;
-    margin-bottom: 10px;
-  }
-  body.print-refrigerator-sheet .rf-talk-prompts,
-  body.print-refrigerator-sheet .rf-dinner-list {
-    margin: 4px 0 0;
-    padding-left: 18px;
-    font-size: 11px;
-    line-height: 1.35;
-    color: #0f172a;
-  }
-  body.print-refrigerator-sheet .rf-grid {
-    display: grid;
-    grid-template-columns: 1.15fr 0.85fr;
-    gap: 12px;
-    margin-bottom: 10px;
-  }
-  body.print-refrigerator-sheet .rf-card {
-    border: 1px solid #cbd5e1;
-    border-radius: 8px;
-    padding: 8px 10px;
-    margin-bottom: 8px;
-    background: #ffffff;
-  }
-  body.print-refrigerator-sheet .rf-card h3 {
-    margin: 0 0 4px;
-    font-size: 13px;
-    color: #12355b;
-  }
-  body.print-refrigerator-sheet .rf-visual-summary svg {
-    max-width: 100%;
-    height: auto;
-    max-height: 76px;
-    margin-top: 4px;
-  }
-  body.print-refrigerator-sheet .rf-workspace {
-    min-height: 54px;
-    border: 1px dashed #94a3b8;
-    border-radius: 6px;
-    padding: 4px 6px;
-    margin-top: 4px;
-    font-size: 10px;
-    color: #475569;
-  }
-  body.print-refrigerator-sheet .rf-slip {
-    border-top: 2px dashed #0f172a;
-    padding-top: 8px;
-    margin-top: 6px;
-    font-size: 11px;
-  }
-  body.print-refrigerator-sheet .rf-slip-head,
-  body.print-refrigerator-sheet .rf-slip-fields,
-  body.print-refrigerator-sheet .rf-slip-mood {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    gap: 8px;
-    margin-bottom: 6px;
-  }
-  body.print-refrigerator-sheet .rf-sketch-box {
-    min-height: 34px;
-    border: 1px dashed #64748b;
-    border-radius: 6px;
-    padding: 4px 8px;
-    margin: 4px 0 6px;
-    font-size: 10.5px;
-    color: #334155;
-  }
-  body.print-refrigerator-sheet .rf-practice-section {
-    margin-bottom: 12px;
-  }
-  body.print-refrigerator-sheet .rf-practice-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    margin-top: 6px;
-  }
-  body.print-refrigerator-sheet .rf-prob-card {
-    border: 1px solid #cbd5e1;
-    border-radius: 8px;
-    padding: 8px 10px;
-    background: #ffffff;
-  }
-  body.print-refrigerator-sheet .rf-prob-head {
-    font-size: 11px;
-    font-weight: 700;
-    color: #334155;
-    margin-bottom: 4px;
-  }
-  body.print-refrigerator-sheet .rf-prob-stem {
-    font-size: 11.5px;
-    line-height: 1.35;
-    margin: 0 0 6px;
-    color: #0f172a;
-  }
-  body.print-refrigerator-sheet .rf-work-box {
-    height: 70px;
-    border: 1px dashed #94a3b8;
-    border-radius: 6px;
-    background: #fafafa;
-    position: relative;
-  }
-  body.print-refrigerator-sheet .rf-work-box-label {
-    position: absolute;
-    top: 3px;
-    left: 6px;
-    font-size: 9px;
-    color: #94a3b8;
-  }
-  body.print-refrigerator-sheet .rf-signoff-strip {
-    border-top: 2px dashed #cbd5e1;
-    padding-top: 8px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 11px;
-  }
-  body.print-refrigerator-sheet .rf-sig-lines {
-    display: flex;
-    gap: 16px;
-  }
-  body.print-refrigerator-sheet .rf-sig-line {
-    border-bottom: 1px solid #0f172a;
-    width: 140px;
-    height: 16px;
-    display: inline-block;
-  }
-}
-
-/* ── Photobooth Studio with Math Work ─────────────────────────────────── */
-/* An author display: declaration beats the UA stylesheet's [hidden] rule, so
-   every layer in here that JS toggles with .hidden needs [hidden] to win
-   outright. Without this the countdown overlay and the review buttons render
-   on top of an idle viewfinder before a photo is ever taken. */
-.section-photobooth [hidden] { display: none !important; }
-.section-photobooth {
-  padding: 24px;
-  background: #ffffff;
-  border-radius: 16px;
-  border: 1px solid var(--line, #d7e2ed);
-  box-shadow: 0 4px 16px rgba(0,0,0,0.04);
-}
-.photobooth-header {
-  margin-bottom: 20px;
-}
-.photobooth-badge {
-  display: inline-block;
-  background: #fef3c7;
-  color: #92400e;
-  font-size: 11.5px;
-  font-weight: 800;
-  letter-spacing: 0.05em;
-  padding: 4px 12px;
-  border-radius: 999px;
-  margin-bottom: 8px;
-}
-.photobooth-sub {
-  font-size: 15px;
-  color: #475569;
-  line-height: 1.5;
-  margin-top: 6px;
-}
-.next-photobooth-banner {
-  margin: 24px 0;
-  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-  border: 2px solid #f59e0b;
-  border-radius: 14px;
-  padding: 16px;
-  text-align: center;
-}
-.btn-next-photobooth {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 14px;
-  width: 100%;
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 8px 12px;
-  text-align: left;
-}
-.pb-banner-icon {
-  font-size: 38px;
-}
-.pb-banner-labels strong {
-  display: block;
-  font-size: 18px;
-  color: #78350f;
-}
-.pb-banner-labels small {
-  display: block;
-  font-size: 13.5px;
-  color: #92400e;
-  margin-top: 2px;
-}
-.photobooth-container {
-  display: grid;
-  grid-template-columns: 1fr 340px;
-  gap: 24px;
-  align-items: start;
-}
-@media (max-width: 900px) {
-  .photobooth-container {
-    grid-template-columns: 1fr;
-  }
-}
-.pb-stage-wrap {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-.pb-viewfinder {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 4/3;
-  background: #0f172a;
-  border-radius: 16px;
-  overflow: hidden;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-/* .card-ish is a content card: white, padded, with a bottom margin, all of it
-   !important. On the viewfinder that painted a white gutter around the picture
-   and — because the frame overlay is inset:0 against the padding box — hung the
-   live frame 28px outside the video it is supposed to be framing. */
-.pb-viewfinder.card-ish {
-  background: #0f172a !important;
-  padding: 0 !important;
-  margin: 0 !important;
-}
-#pb_video {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-/* Mirrored for the selfie camera only. Mirroring the rear camera turns the
-   notebook page the family is photographing into backwards writing. */
-#pb_video.is-mirrored { transform: scaleX(-1); }
-#pb_captured_img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  background: transparent;
-}
-.pb-frame-overlay {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  box-sizing: border-box;
-}
-.frame-champion {
-  border: 14px solid #f59e0b;
-}
-.frame-champion .pb-frame-header {
-  background: #f59e0b;
-  color: #fff;
-  padding: 6px 14px;
-  display: flex;
-  justify-content: space-between;
-  font-weight: 800;
-  font-size: 14px;
-}
-.frame-champion .pb-frame-footer {
-  background: rgba(15, 23, 42, 0.85);
-  color: #fff;
-  padding: 8px 14px;
-  display: flex;
-  justify-content: space-between;
-  font-weight: 700;
-  font-size: 13px;
-}
-.frame-notebook {
-  border: 14px solid #0284c7;
-}
-.frame-notebook .pb-frame-header {
-  background: #0284c7;
-  color: #fff;
-  padding: 6px 14px;
-  display: flex;
-  justify-content: space-between;
-  font-weight: 800;
-  font-size: 14px;
-}
-.frame-notebook .pb-frame-footer {
-  background: rgba(15, 23, 42, 0.85);
-  color: #fff;
-  padding: 8px 14px;
-  display: flex;
-  justify-content: space-between;
-  font-weight: 700;
-  font-size: 13px;
-}
-.frame-stars {
-  border: 14px solid #8b5cf6;
-}
-.frame-stars .pb-frame-header {
-  background: #8b5cf6;
-  color: #fff;
-  padding: 6px 14px;
-  display: flex;
-  justify-content: space-between;
-  font-weight: 800;
-  font-size: 14px;
-}
-.frame-stars .pb-frame-footer {
-  background: rgba(15, 23, 42, 0.85);
-  color: #fff;
-  padding: 8px 14px;
-  display: flex;
-  justify-content: space-between;
-  font-weight: 700;
-  font-size: 13px;
-}
-.frame-polaroid {
-  border: 16px solid #ffffff;
-  border-bottom-width: 44px;
-}
-.frame-polaroid .pb-frame-header {
-  background: #ffffff;
-  color: #0f172a;
-  padding: 6px 14px;
-  display: flex;
-  justify-content: space-between;
-  font-weight: 800;
-  font-size: 14px;
-}
-.frame-polaroid .pb-frame-footer {
-  background: #ffffff;
-  color: #0f172a;
-  padding: 4px 14px;
-  display: flex;
-  justify-content: space-between;
-  font-weight: 700;
-  font-size: 13px;
-}
-.pb-stickers-layer {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  display: flex;
-  align-items: flex-end;
-  justify-content: flex-end;
-  padding: 48px 24px;
-  gap: 12px;
-}
-.pb-sticker-stamp {
-  font-size: 36px;
-  filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));
-}
-.pb-idle-placeholder {
-  position: absolute;
-  inset: 0;
-  background: #1e293b;
-  color: #ffffff;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 24px;
-  text-align: center;
-}
-.pb-idle-icon {
-  font-size: 54px;
-  margin-bottom: 12px;
-}
-.pb-idle-sub {
-  font-size: 13.5px;
-  color: #94a3b8;
-  max-width: 280px;
-  margin-bottom: 18px;
-}
-.pb-countdown-overlay {
-  position: absolute;
-  inset: 0;
-  background: rgba(0,0,0,0.4);
-  color: #ffffff;
-  font-size: 96px;
-  font-weight: 900;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 10;
-  animation: pbCountPulse 1s infinite;
-}
-@keyframes pbCountPulse {
-  0% { transform: scale(1.4); opacity: 0.7; }
-  100% { transform: scale(1); opacity: 1; }
-}
-.pb-flash-layer {
-  position: absolute;
-  inset: 0;
-  background: #ffffff;
-  z-index: 20;
-  opacity: 0;
-  pointer-events: none;
-}
-.pb-flash-layer.is-active {
-  animation: pbFlashAnim 0.4s ease-out;
-}
-@keyframes pbFlashAnim {
-  0% { opacity: 0.95; }
-  100% { opacity: 0; }
-}
-.pb-status {
-  margin: 0;
-  padding: 10px 14px;
-  border-radius: 10px;
-  border: 1px solid #bfdbfe;
-  background: #eff6ff;
-  color: #1e40af;
-  font-size: 14px;
-  line-height: 1.45;
-  font-weight: 600;
-}
-.pb-status.is-warn {
-  border-color: #fcd34d;
-  background: #fffbeb;
-  color: #92400e;
-}
-.pb-status.is-ok {
-  border-color: #a7f3d0;
-  background: #ecfdf5;
-  color: #065f46;
-}
-.pb-controls-bar {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-.pb-actions-live, .pb-actions-review {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  width: 100%;
-}
-.pb-btn-snap {
-  flex: 2;
-  font-size: 16px;
-  font-weight: 700;
-  padding: 10px 16px;
-  background: #0f7c4a;
-  border-color: #0f7c4a;
-}
-.pb-btn-flip, .pb-btn-upload {
-  flex: 1;
-  font-size: 14px;
-}
-.pb-btn-upload {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  margin: 0;
-}
-.pb-btn-snap, .pb-btn-flip {
-  justify-content: center;
-  text-align: center;
-}
-/* Phone layout. The booth is used one-handed, standing over a notebook, so at
-   this width the frame chrome gets out of the picture's way and every action
-   becomes a full-width tap target instead of a ragged wrapped row. */
-@media (max-width: 560px) {
-  .pb-frame-overlay { border-width: 8px !important; }
-  .frame-polaroid { border-bottom-width: 28px !important; }
-  .pb-frame-header,
-  .pb-frame-footer {
-    gap: 10px;
-    font-size: 11.5px;
-    padding: 5px 10px;
-  }
-  .pb-frame-lesson,
-  .pb-frame-date { flex-shrink: 0; }
-  .pb-stickers-layer { padding: 34px 14px; }
-  .pb-sticker-stamp { font-size: 28px; }
-  .pb-actions-live > *,
-  .pb-actions-review > * {
-    flex: 1 1 100%;
-    justify-content: center;
-    text-align: center;
-  }
-  .pb-countdown-overlay { font-size: 68px; }
-}
-.pb-customizer {
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  border-radius: 14px;
-  padding: 18px;
-}
-.pb-custom-title {
-  margin: 0 0 14px;
-  font-size: 16px;
-  font-weight: 800;
-  color: #0f172a;
-}
-.pb-custom-section {
-  margin-bottom: 16px;
-}
-.pb-custom-label {
-  display: block;
-  font-size: 13px;
-  color: #334155;
-  margin-bottom: 6px;
-}
-.pb-frame-selector {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-}
-.pb-frame-btn {
-  padding: 6px 10px;
-  font-size: 12.5px;
-  font-weight: 700;
-  border-radius: 8px;
-  border: 1.5px solid #cbd5e1;
-  background: #fff;
-  cursor: pointer;
-  transition: all 0.15s;
-}
-.pb-frame-btn.is-selected {
-  border-color: #0284c7;
-  background: #e0f2fe;
-  color: #0369a1;
-}
-.pb-stickers-picker {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-.pb-sticker-chip {
-  padding: 5px 8px;
-  font-size: 12px;
-  font-weight: 600;
-  border-radius: 6px;
-  border: 1px solid #cbd5e1;
-  background: #fff;
-  cursor: pointer;
-}
-.pb-sticker-chip.is-selected {
-  border-color: #0284c7;
-  background: #e0f2fe;
-  color: #0369a1;
-}
-.pb-tip-box {
-  display: flex;
-  gap: 10px;
-  background: #eff6ff;
-  border: 1px solid #bfdbfe;
-  border-radius: 10px;
-  padding: 10px 12px;
-  margin-top: 14px;
-}
-.pb-tip-icon {
-  font-size: 20px;
-  flex-shrink: 0;
-}
-.pb-tip-text {
-  font-size: 12.5px;
-  line-height: 1.45;
-  color: #1e40af;
-  margin: 0;
-}
-.pb-print-portal { display: none; }
-@media print {
-  /* Only the portaled sheet prints. It is a direct child of <body>, so its
-     siblings can simply be removed from the print layout. */
-  body.print-photobooth-only > * { display: none !important; }
-  body.print-photobooth-only .pb-print-portal { display: block !important; }
-  body.print-photobooth-only .pb-print-inner {
-    border: 3px solid #0f172a;
-    border-radius: 16px;
-    padding: 24px;
-    text-align: center;
-    background: #ffffff;
-    color: #0f172a;
-  }
-  body.print-photobooth-only .pb-print-title {
-    font-size: 22px;
-    margin: 0 0 6px;
-  }
-  body.print-photobooth-only .pb-print-meta {
-    font-size: 14px;
-    color: #475569;
-    margin: 0 0 16px;
-  }
-  body.print-photobooth-only .pb-print-img {
-    max-width: 80%;
-    max-height: 520px;
-    border-radius: 12px;
-    border: 1px solid #cbd5e1;
-  }
-  body.print-photobooth-only .pb-print-caption {
-    font-size: 16px;
-    font-weight: 700;
-    margin: 14px 0;
-  }
-  body.print-photobooth-only .pb-print-footer {
-    display: flex;
-    justify-content: space-between;
-    border-top: 1px solid #e2e8f0;
-    padding-top: 12px;
-    font-size: 12px;
-    color: #64748b;
-  }
-}
-
-/* ============================================================
-   Family Homework 2026 — route, coach ladder, and home mission.
-   One strong navigation decision, then quiet instructional support.
-   ============================================================ */
-html [hidden] { display: none !important; }
-.homework-tab-btn[hidden],
-.homework-tab-extra[hidden],
-.problem-section[hidden],
-.practice-tier[hidden],
-.more-practice[hidden] { display: none !important; }
-
-/* Graduated coaching: three short nudges, each stronger than the last. */
-.problem-coach-ladder {
-  width: 100%;
-  border: 1px solid #b9d6d3;
-  border-radius: 12px;
-  background: #f4fbfa;
-  overflow: hidden;
-}
-.problem-coach-ladder > summary {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  min-height: 44px;
-  padding: 9px 12px;
-  color: #0f5f5b;
-  cursor: pointer;
-  font-weight: 800;
-  list-style: none;
-}
-.problem-coach-ladder > summary::-webkit-details-marker { display: none; }
-.problem-coach-ladder > summary small { color: #557a78; font-size: 11px; font-weight: 600; }
-.coach-ladder-list { margin: 0; padding: 0 12px 12px; list-style: none; }
-.coach-ladder-step { border-top: 1px solid #d6e9e7; }
-.coach-ladder-step > button {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  width: 100%;
-  min-height: 42px;
-  padding: 7px 0;
-  text-align: left;
-  color: #244e4b;
-  background: transparent;
-  border: 0;
-  cursor: pointer;
-  font-weight: 750;
-}
-.coach-step-number {
-  display: grid;
-  place-items: center;
-  width: 25px;
-  height: 25px;
-  color: #fff;
-  background: #0f766e;
-  border-radius: 50%;
-  font-size: 12px;
-}
-.coach-step-help { padding: 0 0 11px 33px; color: #243b53; }
-.coach-step-help p { margin: 0; font-size: 14px; line-height: 1.5; }
-.coach-ladder-step.is-revealed > button { color: #0f766e; }
-.coach-scratchpad-btn {
-  margin-top: 8px;
-  padding: 7px 10px;
-  color: #12355b;
-  background: #fff;
-  border: 1px solid #9fb3c8;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: 700;
-}
-
-/* Hands-on activities become a shared mission with a visible finish. */
-.fam-act-head {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 12px;
-}
-.family-mission-picker,
-.fam-mission-complete {
-  min-height: 42px;
-  padding: 8px 12px;
-  color: #0f5f5b;
-  background: #fff;
-  border: 1.5px solid #138a86;
-  border-radius: 10px;
-  cursor: pointer;
-  font-weight: 800;
-}
-.family-mission-picker { flex: 0 0 auto; }
-.family-mission-status {
-  margin: -4px 0 12px;
-  padding: 8px 10px;
-  color: #486581;
-  background: #f6f9fc;
-  border-radius: 8px;
-  font-size: 12.5px;
-}
-.fam-mission-complete { margin-top: 12px; }
-.fam-mission-check { margin-right: 5px; }
-.fam-act-card.is-mission-picked { box-shadow: 0 0 0 3px rgba(31,166,162,.2); }
-.fam-act-card.is-mission-complete { border-color: #15803d; background: #f0fdf4; }
-.fam-mission-complete.is-complete { color: #fff; background: #15803d; border-color: #15803d; }
-.achievement-shelf { grid-template-columns: repeat(5, minmax(0, 1fr)); }
-
-@media (max-width: 760px) {
-  .fam-act-head { display: block; }
-  .family-mission-picker { width: 100%; margin-top: 12px; }
-  .achievement-shelf { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-}
-@media print {
-  body.print-problems-only .hw-answer-key,
-  body.print-problems-only .feedback,
-  body.print-problems-only .problem-check-result,
-  body.print-problems-only .solution-explanation,
-  body.print-problems-only .problem-feedback { display:none !important; }
-}
-
-/* A short finish and tools that stay out of the reading column. */
-.hw-tools-menu { margin: 14px 0; }
-.hw-tools-menu > summary, .family-mission-alternatives > summary { cursor:pointer; min-height:44px; padding:10px 0; font-size:16px; font-weight:750; }
-.hw-hero-titles h1 { margin:0; font-size:clamp(26px,5vw,44px); }
-.hw-hero-titles h1 .welcome-title-es { font-size:inherit; }
-.homework-message-action { margin:16px 0; }
-.homework-message-action p, .homework-optional-extras > p, .family-roles { font-size:16px; line-height:1.55; }
-.homework-optional-extras { margin-top:24px; border-top:1px solid #cbd5e1; }
-.homework-optional-extras h3 { margin:18px 0 6px; font-size:23px; color:#12355b; }
-.homework-extra-actions { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; margin:16px 0 22px; }
-.homework-extra-actions .btn { display:flex; align-items:center; justify-content:center; min-height:54px; padding:10px; text-align:center; white-space:normal; font-size:16px; }
-@media(max-width:700px) { .homework-extra-actions { grid-template-columns:1fr; } }
-.hw-utility-controls { display:flex; align-items:center; flex-wrap:wrap; gap:10px; }
-.hw-utility-controls .hw-stuck-fab { position:static; margin:0; box-shadow:none; min-height:44px; }
-.hw-utility-controls #nsr-root { position:static !important; inset:auto !important; margin:0 !important; }
-.hw-utility-controls #nsr-launcher, .hw-utility-controls #nsr-workbench { min-height:44px; font-size:14px; }
-.hw-utility-controls #nsr-panel { position:fixed; top:16px; bottom:auto; right:16px; max-height:calc(100dvh - 32px); }
-@media(max-width:600px) { .homework-tab-chrome { position:static; } .hw-tab-meta-row { flex-wrap:wrap; gap:8px; } .hw-hero-share-bar { gap:8px; } }
-@media print { .hw-tools-menu, .hw-utility-controls, .homework-message-action, .homework-optional-extras { display:none !important; } }
-.hw-hero { padding:20px !important; }
-.family-reasoning-support, .family-extra-ladder { margin:16px 0; padding:14px; border:1px solid #cbd5e1; border-radius:12px; }
-.family-reasoning-support summary, .family-extra-ladder summary { min-height:44px; cursor:pointer; font-weight:700; }
-@media(max-width:700px) {
-  .hw-hero { padding:14px !important; }
-  .hw-hero-head { margin:0; }
-  .hw-hero-emoji, .hw-hero-kicker { display:none; }
-  .hw-hero-titles h1 { font-size:24px; }
-  .hw-hero-lesson { margin:8px 0; }
-  .lang-selector-buttons { gap:6px; }
-  .lang-toggle-btn { min-height:44px; }
-}
-@media print {
-  /* A whole card can be taller than the page left on it; avoiding a break
-     there pushed slivers and empty pages into the packet. Keep the header and
-     question together and let the work space flow. */
-  body.print-problems-only .problem-header-row,
-  body.print-problems-only .problem-stem { break-after:avoid; break-inside:avoid; }
-  body.print-problems-only .problem-section::after { content:""; display:block; min-height:26mm; }
-}
-
-/* Phone tap targets and type: every tappable is at least 44px, and nothing
-   readable sits below 12px. Audited on a 390px viewport. */
-@media (max-width: 620px) {
-  .btn-read-aloud,
-  .btn-listen-concept,
-  .obj-term,
-  .hw-draw-clear,
-  .btn-listen-prob,
-  .sound-toggle-btn,
-  .powerup-choice-btn { min-height: 44px; }
-  .btn-read-aloud,
-  .btn-listen-concept { min-width: 44px; }
-  .homework-tab-bar .homework-tab-btn .tab-en,
-  .homework-tab-bar .homework-tab-btn .tab-es { font-size: 11px; }
-  .homework-tab-bar .tab-step { width: 20px; height: 20px; font-size: 12px; }
-  .lang-selector-title,
-  .powerup-tag { font-size: 12px; }
-}
-.done-problem-list { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0 14px; padding: 0; list-style: none; }
-.done-problem-list:empty { display: none; }
-.done-problem-chip {
-  min-width: 48px;
-  min-height: 48px;
-  padding: 6px 12px;
-  border: 2px solid var(--line);
-  border-radius: 12px;
-  background: #fff;
-  color: var(--navy);
-  font: 800 16px/1 inherit;
-  cursor: pointer;
-}
-.done-problem-chip.is-done { border-color: var(--teal); background: var(--teal-light); color: var(--teal-ink); }
-
-.learn-jump-row { display: none; }
-@media (max-width: 620px) {
-  .learn-jump-row { display: flex; gap: 8px; margin: 0 0 12px; overflow-x: auto; }
-  .learn-jump-row a {
-    display: inline-flex;
-    align-items: center;
-    flex: 0 0 auto;
-    min-height: 44px;
-    padding: 6px 14px;
-    border: 2px solid var(--teal);
-    border-radius: 999px;
-    background: #fff;
-    color: var(--teal-ink);
-    font-size: 14px;
-    font-weight: 800;
-    text-decoration: none;
-  }
-}
-
-.watch-for-summary {
-  min-height: 44px;
-  display: flex;
-  align-items: center;
-  padding: 8px 14px;
-  border: 2px solid var(--line);
-  border-radius: 12px;
-  background: #fff;
-  color: var(--teal-ink);
-  font-weight: 800;
-  cursor: pointer;
-}
-.watch-for-drawer[open] > .watch-for-summary { margin-bottom: 10px; }
-
-@media print {
-  .concept-zoom-btn,
-  .concept-zoom-dialog { display: none !important; }
-}
 `;

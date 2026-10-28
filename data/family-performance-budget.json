@@ -1,0 +1,21 @@
+{
+  "_why": "Budgets for the family homework pages (docs/family-homework-v3/brief-stage2.md, workstream A). `target` is the brief; `ratchet` is today's measured worst page and may only go DOWN, so a regression cannot hide behind a target nobody meets yet. The effective limit is the smaller of the two numbers that is still above the measurement: lower `ratchet` to the new maximum whenever a change reduces weight, and remove it once it reaches `target`.",
+  "inlineHandlers": {
+    "target": 200,
+    "ratchet": 200
+  },
+  "firstViewGzipKB": {
+    "target": 150,
+    "ratchet": 175
+  },
+  "scriptGzipKB": {
+    "target": 250
+  },
+  "layoutShift": {
+    "target": 0.05
+  },
+  "actions": {
+    "ratchet": 700,
+    "_why": "data-act attributes are declarative (no code); capped so the replacement for inline handlers cannot grow back into 1,000 per page"
+  }
+}

@@ -1,3 +1,122 @@
+/*
+ * Delegated actions for the family homework page.
+ *
+ * Markup names what a control does with data attributes and never carries code:
+ *   data-act="fn"            click  -> window.fn(...args)
+ *   data-act-input="fn"      input  (also change, keydown, dragstart, dragend, dragover, drop)
+ *   data-act="a b c"         call a, then b, then c; only `a` receives the arguments
+ *   data-args='["x", 3]'     arguments; "$el" is the element, "$ev" the event, "$value" the
+ *                            element's value, and a literal string that starts with "$" is
+ *                            written "$$..." (see scripts/lib/homework-actions.mjs)
+ *   data-prevent             preventDefault() on that event, like `return false` did
+ *   data-stop                stopPropagation(), like `event.stopPropagation()` did
+ *
+ * One listener per event type replaces ~400 inline handlers on every page. Like inline
+ * handlers, an action fires on the element and then on each ancestor that has one, until a
+ * handler stops propagation.
+ */
+(() => {
+  const EVENTS = [
+    "click",
+    "change",
+    "input",
+    "keydown",
+    "dragstart",
+    "dragend",
+    "dragover",
+    "drop",
+  ];
+
+  /** Small named behaviours that used to be inline statements. Signature: (el, ev, ...args). */
+  const BUILTIN = {
+    hwNoop: () => {},
+    // A vocabulary flashcard: the face that is turned away leaves the tab order and the tree.
+    hwFlipCard: (el) => {
+      const card = el.closest(".vocab-card");
+      if (!card) return;
+      const flipped = card.classList.toggle("flipped");
+      card.querySelector(".vocab-card-front")?.toggleAttribute("inert", flipped);
+      card.querySelector(".vocab-card-back")?.toggleAttribute("inert", !flipped);
+      card.querySelector(".flip-prompt")?.setAttribute("aria-expanded", String(flipped));
+    },
+    hwToggleClass: (el, _ev, name) => el.classList.toggle(name),
+    hwPrint: () => window.print(),
+    // Enter or Space on a focusable non-button activates it like a click.
+    hwActivateOnKey: (el, ev) => {
+      if (ev.key === "Enter" || ev.key === " ") {
+        ev.preventDefault();
+        el.click();
+      }
+    },
+    hwOpenDetails: (_el, _ev, id) => {
+      const node = document.getElementById(id);
+      if (node) node.open = true;
+    },
+    hwOpenMorePractice: (_el, _ev, tab) => {
+      window.switchHomeworkTab(tab);
+      document.querySelector(".more-practice")?.setAttribute("open", "");
+    },
+    hwCloseVocabPopup: () => window.__closeHwVocabPopup?.(),
+    hwInsertSentenceStarter: (el, _ev, idx) =>
+      window.insertSentenceStarter(
+        idx,
+        window.pickLangText(el.dataset.starterEn, el.dataset.starterEs),
+      ),
+    hwInsertWord: (el, _ev, idx) =>
+      window.insertWord(idx, window.pickLangText(el.dataset.wordEn, el.dataset.wordEs)),
+    hwSpeakProblem: (_el, _ev, idx) => {
+      const stem = (lang) =>
+        document.querySelector(`#problem_${idx} .problem-stem .lang-${lang}`)?.textContent || "";
+      window.speakHomeworkText(stem("en"), stem("es"));
+    },
+  };
+
+  const resolve = (arg, el, ev) => {
+    if (typeof arg !== "string" || arg[0] !== "$") return arg;
+    if (arg === "$el") return el;
+    if (arg === "$ev") return ev;
+    if (arg === "$value") return el.value;
+    return arg.slice(1);
+  };
+
+  const attrFor = (type, base) => (type === "click" ? base : `${base}-${type}`);
+
+  function run(el, type, ev) {
+    const names = el.getAttribute(attrFor(type, "data-act")).split(/\s+/).filter(Boolean);
+    let raw = [];
+    try {
+      raw = JSON.parse(el.getAttribute(attrFor(type, "data-args")) || "[]");
+    } catch (error) {
+      console.error("homework action: unreadable data-args", error);
+    }
+    const args = raw.map((arg) => resolve(arg, el, ev));
+    names.forEach((name, i) => {
+      const own = BUILTIN[name];
+      const fn = own || window[name];
+      if (typeof fn !== "function") {
+        console.error(`homework action: no function named ${name}`);
+        return;
+      }
+      if (own) own(el, ev, ...(i === 0 ? args : []));
+      else fn.apply(window, i === 0 ? args : []);
+    });
+    if (el.hasAttribute(attrFor(type, "data-prevent"))) ev.preventDefault();
+    if (el.hasAttribute(attrFor(type, "data-stop"))) ev.stopPropagation();
+  }
+
+  for (const type of EVENTS) {
+    document.addEventListener(type, (ev) => {
+      const attr = attrFor(type, "data-act");
+      for (let el = ev.target; el?.nodeType === 1; el = el.parentElement) {
+        if (!el.hasAttribute(attr)) continue;
+        run(el, type, ev);
+        if (ev.cancelBubble) break;
+      }
+    });
+  }
+})();
+
+
 function journeyStorageKey() {
   return 'hw_journey_' + (window.LESSON_ID || location.pathname);
 }
@@ -78,6 +197,7 @@ function dominoTileEl(tile, isButton) {
   var el = document.createElement(isButton ? 'button' : 'div');
   if (isButton) el.type = 'button'; else el.setAttribute('role', 'listitem');
   el.className = 'fam-dom-tile';
+  if (isButton) el.innerHTML = '<span class="hw-sr-only"><span class="lang-en">Domino tile: </span><span class="lang-es" lang="es">Ficha de dominó: </span></span>';
   var l = domHalfEl('fam-dom-half fam-dom-left', tile.left, tile.leftEs);
   var r = domHalfEl('fam-dom-half fam-dom-right', tile.right, tile.rightEs);
   el.appendChild(l);
@@ -790,8 +910,8 @@ function ensureLearnPager(panel) {
     '<div class="learn-pager-dots" aria-hidden="true"></div>' +
     '<p class="learn-pager-label" aria-live="polite"><span class="lang-en"></span><span class="lang-es" lang="es"></span></p>' +
     '<div class="learn-pager-actions">' +
-    '<button type="button" class="btn btn-outline-primary learn-pager-back" onclick="learnStep(-1)"><span class="lang-en">← Back</span><span class="lang-es" lang="es">← Atrás</span></button>' +
-    '<button type="button" class="btn btn-primary learn-pager-next" onclick="learnStep(1)"><span class="lang-en">Next →</span><span class="lang-es" lang="es">Siguiente →</span></button>' +
+    '<button type="button" class="btn btn-outline-primary learn-pager-back" data-act="learnStep" data-args="[-1]"><span class="lang-en">← Back</span><span class="lang-es" lang="es">← Atrás</span></button>' +
+    '<button type="button" class="btn btn-primary learn-pager-next" data-act="learnStep" data-args="[1]"><span class="lang-en">Next →</span><span class="lang-es" lang="es">Siguiente →</span></button>' +
     '</div>';
   panel.insertBefore(pager, panel.querySelector(':scope > .learn-card') || panel.firstChild);
   /* Swipe left for the next card, right for the previous one (one listener, on the panel). */
@@ -1032,6 +1152,8 @@ function setLanguageMode(mode) {
   if (saveLabel) saveLabel.textContent = mode === 'es' ? 'Guardar / Continuar' : 'Save / Resume';
   initHomeworkShareLinks();
   document.querySelectorAll('[data-aria-en]').forEach(function (el) { el.setAttribute('aria-label', mode === 'es' ? el.dataset.ariaEs : el.dataset.ariaEn); });
+  document.querySelectorAll('[data-title-en]').forEach(function (el) { el.setAttribute('title', mode === 'es' ? el.dataset.titleEs : el.dataset.titleEn); });
+  document.querySelectorAll('[data-placeholder-en]').forEach(function (el) { el.setAttribute('placeholder', mode === 'es' ? el.dataset.placeholderEs : el.dataset.placeholderEn); });
   document.querySelectorAll('.lang-toggle-btn').forEach(function(btn) {
     const active = btn.getAttribute('data-lang-mode') === mode;
     btn.classList.toggle('active', active);
@@ -1058,8 +1180,10 @@ function openConceptZoom(btn) {
     dlg = document.createElement('dialog');
     dlg.id = 'hw_concept_zoom';
     dlg.className = 'concept-zoom-dialog';
-    dlg.setAttribute('aria-label', 'Enlarged picture / Imagen ampliada');
-    dlg.innerHTML = '<button type="button" class="concept-zoom-close" aria-label="Close / Cerrar">✕ Close / Cerrar</button><div class="concept-zoom-body"></div>';
+    dlg.dataset.ariaEn = 'Enlarged picture';
+    dlg.dataset.ariaEs = 'Imagen ampliada';
+    dlg.setAttribute('aria-label', document.documentElement.lang === 'es' ? dlg.dataset.ariaEs : dlg.dataset.ariaEn);
+    dlg.innerHTML = '<button type="button" class="concept-zoom-close" data-aria-en="Close" data-aria-es="Cerrar" aria-label="' + (document.documentElement.lang === 'es' ? 'Cerrar' : 'Close') + '"><span aria-hidden="true">✕</span> <span class="lang-en">Close</span><span class="lang-es" lang="es">Cerrar</span></button><div class="concept-zoom-body"></div>';
     dlg.addEventListener('click', function (e) {
       if (e.target === dlg || e.target.closest('.concept-zoom-close')) dlg.close();
     });
@@ -1711,7 +1835,7 @@ function initHomeworkVocabPopups() {
     backdrop.style.display = 'none';
     backdrop.innerHTML =
       '<div class="obj-popup" role="dialog" aria-modal="true" aria-labelledby="hw-obj-term">' +
-      '<button type="button" class="obj-popup-close" aria-label="Close" onclick="window.__closeHwVocabPopup && window.__closeHwVocabPopup()">&times;</button>' +
+      '<button type="button" class="obj-popup-close" aria-label="Close" data-act="hwCloseVocabPopup">&times;</button>' +
       '<h3 id="hw-obj-term" class="obj-popup-term"></h3>' +
       '<p class="obj-popup-translation"><span class="obj-popup-tr-label">Español:</span> <span class="obj-popup-tr-es" lang="es"></span></p>' +
       '<p class="obj-popup-def"></p>' +
@@ -2292,10 +2416,10 @@ function renderPhotoboothComposite() {
     ctx.clearRect(0, 0, w, h);
     ctx.drawImage(img, 0, 0, w, h);
 
-    var frameColor = '#f59e0b';
-    if (pbState.frame === 'notebook') frameColor = '#0284c7';
-    else if (pbState.frame === 'stars') frameColor = '#8b5cf6';
-    else if (pbState.frame === 'polaroid') frameColor = '#ffffff';
+    var frameColor = 'var(--fm-m-unknown)';
+    if (pbState.frame === 'notebook') frameColor = 'var(--fm-m-whole)';
+    else if (pbState.frame === 'stars') frameColor = 'var(--fm-m-whole)';
+    else if (pbState.frame === 'polaroid') frameColor = 'var(--fm-raised)';
 
     var borderW = Math.max(12, Math.round(w * 0.025));
     ctx.lineWidth = borderW;
@@ -2637,7 +2761,7 @@ function initStudioStepper() {
       var d = document.createElement('button');
       d.type = 'button';
       d.className = 'hw-stepper-dot';
-      d.textContent = String(i + 1);
+      d.innerHTML = '<span class="hw-sr-only"><span class="lang-en">Problem </span><span class="lang-es" lang="es">Problema </span></span>' + (i + 1);
       d.addEventListener('click', function () { show(i); });
       dots.appendChild(d);
       return d;
@@ -2786,7 +2910,7 @@ function initStudioSubRail() {
         sBtn.type = 'button';
         sBtn.className = 'hw-sub-btn' + (idx === 0 ? ' is-active' : '');
         sBtn.dataset.problemIdx = String(idx);
-        sBtn.innerHTML = '<span class="sub-icon">' + item.icon + '</span><span class="sub-text"><span class="lang-en">' + item.en + '</span><span class="lang-es" lang="es">' + item.es + '</span></span>';
+        sBtn.innerHTML = '<span class="sub-icon" aria-hidden="true">' + item.icon + '</span><span class="sub-text"><span class="lang-en">' + item.en + '</span><span class="lang-es" lang="es">' + item.es + '</span></span>';
         sBtn.addEventListener('click', function () {
           rail.querySelectorAll('.hw-sub-btn').forEach(function (b) { b.classList.remove('is-active'); });
           sBtn.classList.add('is-active');
@@ -2800,7 +2924,7 @@ function initStudioSubRail() {
         var extraBtn = document.createElement('button');
         extraBtn.type = 'button';
         extraBtn.className = 'hw-sub-btn hw-sub-extra-btn';
-        extraBtn.innerHTML = '<span class="sub-icon">⭐</span><span class="sub-text"><span class="lang-en">More Practice</span><span class="lang-es" lang="es">Más práctica</span></span>';
+        extraBtn.innerHTML = '<span class="sub-icon" aria-hidden="true">⭐</span><span class="sub-text"><span class="lang-en">More Practice</span><span class="lang-es" lang="es">Más práctica</span></span>';
         extraBtn.addEventListener('click', function () {
           if (document.body.dataset.activeTab !== 'check' && typeof switchHomeworkTab === 'function') {
             switchHomeworkTab('check', { preventScroll: true });
@@ -2833,7 +2957,7 @@ function initStudioSubRail() {
         sBtn.type = 'button';
         sBtn.className = 'hw-sub-btn' + (idx === 0 ? ' is-active' : '');
         sBtn.dataset.subId = v.c.id;
-        sBtn.innerHTML = '<span class="sub-icon">' + v.c.icon + '</span><span class="sub-text"><span class="lang-en">' + v.c.en + '</span><span class="lang-es" lang="es">' + v.c.es + '</span></span>';
+        sBtn.innerHTML = '<span class="sub-icon" aria-hidden="true">' + v.c.icon + '</span><span class="sub-text"><span class="lang-en">' + v.c.en + '</span><span class="lang-es" lang="es">' + v.c.es + '</span></span>';
         sBtn.addEventListener('click', function () {
           if (document.body.dataset.activeTab !== tabId && typeof switchHomeworkTab === 'function') {
             switchHomeworkTab(tabId, { preventScroll: true });
@@ -2950,9 +3074,11 @@ function initHomeworkImageZoom() {
     dlg = document.createElement('dialog');
     dlg.id = 'hw_image_lightbox';
     dlg.className = 'hw-lightbox-dialog';
-    dlg.setAttribute('aria-label', 'Enlarged view / Vista ampliada');
+    dlg.dataset.ariaEn = 'Enlarged view';
+    dlg.dataset.ariaEs = 'Vista ampliada';
+    dlg.setAttribute('aria-label', document.documentElement.lang === 'es' ? dlg.dataset.ariaEs : dlg.dataset.ariaEn);
     dlg.innerHTML = '<div class="hw-lightbox-inner">' +
-      '<button type="button" class="hw-lightbox-close" aria-label="Close / Cerrar">✕ <span class="lang-en">Close</span><span class="lang-es" lang="es">Cerrar</span></button>' +
+      '<button type="button" class="hw-lightbox-close" data-aria-en="Close" data-aria-es="Cerrar" aria-label="' + (document.documentElement.lang === 'es' ? 'Cerrar' : 'Close') + '"><span aria-hidden="true">✕</span> <span class="lang-en">Close</span><span class="lang-es" lang="es">Cerrar</span></button>' +
       '<div class="hw-lightbox-stage"></div>' +
       '</div>';
     document.body.appendChild(dlg);
@@ -3047,10 +3173,14 @@ function initHomeworkImageZoom() {
 
     el.dataset.zoomable = '1';
     el.classList.add('is-zoomable');
-    if (!el.getAttribute('tabindex')) el.setAttribute('tabindex', '0');
-    if (!el.getAttribute('role')) el.setAttribute('role', 'button');
-    if (!el.getAttribute('title')) {
-      el.setAttribute('title', 'Click to enlarge / Clic para ampliar');
+    // A decorative drawing (aria-hidden) still zooms on a tap but is never a focusable button.
+    var decorative = !!el.closest('[aria-hidden="true"]');
+    if (!decorative && !el.getAttribute('tabindex')) el.setAttribute('tabindex', '0');
+    if (!decorative && !el.getAttribute('role')) el.setAttribute('role', 'button');
+    if (!decorative && !el.getAttribute('title')) {
+      el.dataset.titleEn = 'Click to enlarge';
+      el.dataset.titleEs = 'Clic para ampliar';
+      el.setAttribute('title', document.documentElement.lang === 'es' ? el.dataset.titleEs : el.dataset.titleEn);
     }
 
     el.addEventListener('click', function (e) {
@@ -3458,7 +3588,7 @@ function hwVoiceInstallBars() {
     btn.type = 'button';
     btn.className = 'btn-read-aloud hw-listen hw-listen-stop';
     btn.setAttribute('aria-pressed', 'false');
-    btn.innerHTML = '🔊 <span class="lang-en">Read this stop aloud</span><span class="lang-es" lang="es">Leer esta etapa en voz alta</span>';
+    btn.innerHTML = '<span aria-hidden="true">🔊</span> <span class="lang-en">Read this stop aloud</span><span class="lang-es" lang="es">Leer esta etapa en voz alta</span>';
     btn.addEventListener('click', function () {
       if (btn.classList.contains('is-speaking')) { hwVoice.stop(); return; }
       hwVoice.readPanel(panel, btn);
@@ -4902,17 +5032,15 @@ window.addEventListener('load', function () { hwRestoreSolved(); hwRenderGoal(fa
     if (m === 'copilot') { var g = document.getElementById('hw_grownup'); if (g) g.open = true; }
     try { localStorage.setItem('hw_persona_' + LESSON, m); } catch (e) {}
   }
-  function theme(dark) {
-    document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
-    var b = document.getElementById('hw_theme_toggle_btn');
-    if (b) b.setAttribute('aria-pressed', dark ? 'true' : 'false');
-    try { localStorage.setItem('hw_theme_pref', dark ? 'dark' : 'light'); } catch (e) {}
-  }
   document.addEventListener('click', function (e) {
-    var t = e.target.closest('[data-persona-btn], #hw_theme_toggle_btn, .hw-transfer-choice-btn, .hw-glitch-step-btn, .hw-spiral-opt-btn');
+    var t = e.target.closest('[data-persona-btn], .hw-transfer-choice-btn, .hw-glitch-step-btn, .hw-spiral-opt-btn');
     if (!t) return;
-    if (t.hasAttribute('data-persona-btn')) return persona(t.getAttribute('data-persona-btn'));
-    if (t.id === 'hw_theme_toggle_btn') return theme(document.documentElement.getAttribute('data-theme') !== 'dark');
+    if (t.hasAttribute('data-persona-btn')) {
+      var want = t.getAttribute('data-persona-btn');
+      /* The top-bar button is one switch: pressing it again turns the grown-up tips off. */
+      if (want === 'copilot' && t.getAttribute('aria-pressed') === 'true') want = 'student';
+      return persona(want);
+    }
     if (t.classList.contains('hw-transfer-choice-btn')) {
       var tHost = t.closest('.hw-subcard');
       if (t.getAttribute('data-correct') !== '1') return nudge(t);
@@ -4932,8 +5060,85 @@ window.addEventListener('load', function () { hwRestoreSolved(); hwRenderGoal(fa
   });
   try {
     if (localStorage.getItem('hw_persona_' + LESSON) === 'copilot') persona('copilot');
-    theme(localStorage.getItem('hw_theme_pref') === 'dark');
-  } catch (e) { theme(false); }
+  } catch (e) {}
+})();
+
+
+(function () {
+  var KEY = 'fm-reader-v1';
+  var root = document.documentElement;
+  var TEXT = ['100', '115', '130', '150'];
+  function load() { try { return JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch (e) { return {}; } }
+  function save(next) { try { localStorage.setItem(KEY, JSON.stringify(next)); return true; } catch (e) { return false; } }
+  function current() {
+    var s = load();
+    return {
+      theme: s.theme === 'light' || s.theme === 'dark' || s.theme === 'contrast' ? s.theme : 'auto',
+      text: TEXT.indexOf(s.text) > -1 ? s.text : '100',
+      spacing: s.spacing === 'more' ? 'more' : 'default',
+      reading: s.reading === 'dyslexia' ? 'dyslexia' : 'default'
+    };
+  }
+  function attr(name, on, value) { if (on) root.setAttribute(name, value); else root.removeAttribute(name); }
+  function apply(o) {
+    attr('data-theme', o.theme !== 'auto', o.theme);
+    attr('data-text-size', o.text !== '100', o.text);
+    attr('data-spacing', o.spacing === 'more', 'more');
+    attr('data-reading', o.reading === 'dyslexia', 'dyslexia');
+    document.querySelectorAll('input[data-fm-pref]').forEach(function (i) { i.checked = o[i.getAttribute('data-fm-pref')] === i.value; });
+    document.querySelectorAll('[data-fm-switch]').forEach(function (b) {
+      var on = (b.getAttribute('data-fm-switch') === 'spacing' ? o.spacing === 'more' : o.reading === 'dyslexia');
+      b.setAttribute('aria-checked', on ? 'true' : 'false');
+      var state = b.querySelector('.fm-switch__state');
+      if (state) state.innerHTML = on ? '<span class="lang-en">On</span><span class="lang-es" lang="es">Sí</span>' : '<span class="lang-en">Off</span><span class="lang-es" lang="es">No</span>';
+    });
+    var cycle = document.querySelector('[data-fm-text-cycle]');
+    if (cycle) cycle.setAttribute('title', o.text + '%');
+  }
+  function setState(ok) {
+    document.querySelectorAll('[data-fm-save]').forEach(function (el) {
+      el.setAttribute('data-state', ok ? 'saved' : 'offline');
+      el.innerHTML = ok
+        ? '<span class="lang-en">Saved on this device</span><span class="lang-es" lang="es">Guardado en este dispositivo</span>'
+        : '<span class="lang-en">Not saved: this browser blocks storage</span><span class="lang-es" lang="es">Sin guardar: este navegador bloquea el almacenamiento</span>';
+    });
+  }
+  function change(patch) { var o = current(); Object.keys(patch).forEach(function (k) { o[k] = patch[k]; }); setState(save(o)); apply(o); }
+  document.addEventListener('click', function (e) {
+    var open = e.target.closest('[data-open-sheet]');
+    if (open) {
+      var d = document.getElementById(open.getAttribute('data-open-sheet'));
+      if (d && typeof d.showModal === 'function' && !d.open) d.showModal();
+      return;
+    }
+    var dlg = e.target.closest('dialog.fm-sheet');
+    if (dlg && (e.target === dlg || e.target.closest('[data-close]'))) { dlg.close(); return; }
+    var cycle = e.target.closest('[data-fm-text-cycle]');
+    if (cycle) { var o = current(); change({ text: TEXT[(TEXT.indexOf(o.text) + 1) % TEXT.length] }); return; }
+    var sw = e.target.closest('[data-fm-switch]');
+    if (sw) {
+      var k = sw.getAttribute('data-fm-switch'); var cur = current();
+      change(k === 'spacing' ? { spacing: cur.spacing === 'more' ? 'default' : 'more' } : { reading: cur.reading === 'dyslexia' ? 'default' : 'dyslexia' });
+      return;
+    }
+    var read = e.target.closest('[data-fm-read]');
+    if (read && typeof window.speakHomeworkText === 'function') { window.speakHomeworkText(read.getAttribute('data-en'), read.getAttribute('data-es')); return; }
+    var tip = e.target.closest('[data-fm-tip]');
+    if (tip) { var host = tip.closest('.fm-tooltip'); host.setAttribute('data-open', host.getAttribute('data-open') === 'true' ? 'false' : 'true'); return; }
+    document.querySelectorAll('.fm-tooltip[data-open="true"]').forEach(function (t) { t.setAttribute('data-open', 'false'); });
+  });
+  document.addEventListener('change', function (e) {
+    var i = e.target.closest && e.target.closest('input[data-fm-pref]');
+    if (!i) return;
+    var patch = {}; patch[i.getAttribute('data-fm-pref')] = i.value; change(patch);
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') document.querySelectorAll('.fm-tooltip[data-open="true"]').forEach(function (t) { t.setAttribute('data-open', 'false'); });
+  });
+  apply(current());
+  var probe = false;
+  try { localStorage.setItem(KEY + '-probe', '1'); localStorage.removeItem(KEY + '-probe'); probe = true; } catch (e) {}
+  setState(probe);
 })();
 
 
@@ -5129,7 +5334,7 @@ window.printDominoSheet = printDominoSheet;
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',initRatioComparisons);else initRatioComparisons();
   var NS = "http://www.w3.org/2000/svg";
   function clamp(n, min, max) { return Math.max(min, Math.min(max, n)); }
-  function svgWrap(body, label, equation) { var es = 'Modelo matemático que representa: ' + equation, current = document.body.classList.contains('lang-mode-es') ? es : label; return '<svg viewBox="0 0 560 280" role="img" aria-label="' + current + '" data-aria-en="' + label + '" data-aria-es="' + es + '"><rect x="8" y="8" width="544" height="264" rx="24" fill="#f8fbf2" stroke="#173a5e" stroke-width="3"/>' + body + '</svg>'; }
+  function svgWrap(body, label, equation) { var es = 'Modelo matemático que representa: ' + equation, current = document.body.classList.contains('lang-mode-es') ? es : label; return '<svg viewBox="0 0 560 280" role="img" aria-label="' + current + '" data-aria-en="' + label + '" data-aria-es="' + es + '"><rect x="8" y="8" width="544" height="264" rx="24" fill="var(--fm-success-tint)" stroke="var(--fm-primary)" stroke-width="3"/>' + body + '</svg>'; }
   function text(x,y,value,cls,anchor){return '<text x="'+x+'" y="'+y+'" class="'+(cls||'lab-label')+'" text-anchor="'+(anchor||'start')+'">'+value+'</text>';}
   function circle(x,y,r,cls){return '<circle cx="'+x+'" cy="'+y+'" r="'+r+'" class="'+(cls||'lab-teal')+'"/>';}
   function rect(x,y,w,h,cls,rx){return '<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="'+(rx||0)+'" class="'+(cls||'lab-teal')+'"/>';}
@@ -5160,17 +5365,17 @@ window.printDominoSheet = printDominoSheet;
     if(topic==='exponents'){var total=Math.pow(v.base,v.power);for(var i=0;i<v.power;i++){body+=rect(70+i*105,92,72,72,i%2?'lab-accent':'lab-teal',14)+text(106+i*105,138,String(v.base),'lab-big','middle');if(i<v.power-1)body+=text(160+i*105,138,'×','lab-big','middle');}body+=text(280,220,'Multiply '+v.base+' a total of '+v.power+' times','lab-label','middle');eq=Array(v.power).fill(v.base).join(' × ')+' = '+total;obs='The exponent tells how many equal factors to use.';status=v.base+' to the power of '+v.power+' equals '+total;mini=v.power;}
     else if(topic==='ratios'){var a=v.batches*v.blue,b=v.batches*3;body+=dots(a,v.blue,90,72,36)+dots(b,3,350,72,36)+text(150,224,a+' blue','lab-big','middle')+text(410,224,b+' coral','lab-big','middle')+text(280,46,v.batches+' equivalent batch'+(v.batches===1?'':'es'),'lab-label','middle');eq=a+' : '+b+' = '+v.blue+' : 3';obs='Both parts are multiplied by the same number of batches.';status='The ratio is '+a+' to '+b;mini=Math.min(18,a+b);}
     else if(topic==='equations'){var totalEq=v.unknown+v.add;body+=line(90,105,470,105)+line(280,105,280,235)+rect(235,235,90,18,'lab-sun',6)+rect(80,125,180,70,'lab-teal',14)+rect(300,125,180,70,'lab-accent',14)+text(170,167,'x  +  '+v.add,'lab-big','middle')+text(390,167,String(totalEq),'lab-big','middle')+text(280,58,'Both sides have the same value','lab-label','middle');eq='x + '+v.add+' = '+totalEq+'  →  x = '+v.unknown;obs='Removing the same amount from both sides keeps the scale balanced.';status='The unknown value is '+v.unknown;mini=v.add;}
-    else if(topic==='inequalities'){var start=70,step=42,y=145;body+=line(start,y,start+10*step,y);for(var ni=-5;ni<=5;ni++){var nx=start+(ni+5)*step;body+=line(nx,y-8,nx,y+8,'lab-axis')+text(nx,y+30,String(ni),'lab-small','middle');}var bx=start+(v.boundary+5)*step;body+='<rect x="'+bx+'" y="125" width="'+(start+10*step-bx)+'" height="40" fill="#0b8f87" opacity=".28"/>'+circle(bx,y,11,'lab-accent');var tx=start+(v.test+5)*step;body+=circle(tx,82,12,v.test>v.boundary?'lab-teal':'lab-sun')+line(tx,94,tx,126,'lab-axis')+text(280,52,'Shaded values are greater than '+v.boundary,'lab-label','middle');eq='x > '+v.boundary;obs=v.test+(v.test>v.boundary?' is':' is not')+' in the shaded solution set.';status='Test point '+v.test+(v.test>v.boundary?' works':' does not work');mini=Math.abs(v.test-v.boundary)+2;}
-    else if(topic==='properties'){var cols=v.left+v.right,cell=Math.min(34,300/cols),gx=130,gy=58;body+=gridLines(gx,gy,cols,v.rows,cell);body+='<rect x="'+gx+'" y="'+gy+'" width="'+(v.left*cell)+'" height="'+(v.rows*cell)+'" fill="#0b8f87" opacity=".55"/><rect x="'+(gx+v.left*cell)+'" y="'+gy+'" width="'+(v.right*cell)+'" height="'+(v.rows*cell)+'" fill="#ff775f" opacity=".55"/>';body+=text(280,245,v.rows+' rows split into '+v.left+' and '+v.right+' columns','lab-label','middle');eq=v.rows+'('+v.left+' + '+v.right+') = '+(v.rows*v.left)+' + '+(v.rows*v.right)+' = '+(v.rows*cols);obs='Splitting the array does not change its total number of squares.';status='Total area: '+(v.rows*cols)+' square units';mini=Math.min(18,v.rows*cols);}
+    else if(topic==='inequalities'){var start=70,step=42,y=145;body+=line(start,y,start+10*step,y);for(var ni=-5;ni<=5;ni++){var nx=start+(ni+5)*step;body+=line(nx,y-8,nx,y+8,'lab-axis')+text(nx,y+30,String(ni),'lab-small','middle');}var bx=start+(v.boundary+5)*step;body+='<rect x="'+bx+'" y="125" width="'+(start+10*step-bx)+'" height="40" fill="var(--fm-m-part)" opacity=".28"/>'+circle(bx,y,11,'lab-accent');var tx=start+(v.test+5)*step;body+=circle(tx,82,12,v.test>v.boundary?'lab-teal':'lab-sun')+line(tx,94,tx,126,'lab-axis')+text(280,52,'Shaded values are greater than '+v.boundary,'lab-label','middle');eq='x > '+v.boundary;obs=v.test+(v.test>v.boundary?' is':' is not')+' in the shaded solution set.';status='Test point '+v.test+(v.test>v.boundary?' works':' does not work');mini=Math.abs(v.test-v.boundary)+2;}
+    else if(topic==='properties'){var cols=v.left+v.right,cell=Math.min(34,300/cols),gx=130,gy=58;body+=gridLines(gx,gy,cols,v.rows,cell);body+='<rect x="'+gx+'" y="'+gy+'" width="'+(v.left*cell)+'" height="'+(v.rows*cell)+'" fill="var(--fm-m-part)" opacity=".55"/><rect x="'+(gx+v.left*cell)+'" y="'+gy+'" width="'+(v.right*cell)+'" height="'+(v.rows*cell)+'" fill="var(--fm-m-unknown)" opacity=".55"/>';body+=text(280,245,v.rows+' rows split into '+v.left+' and '+v.right+' columns','lab-label','middle');eq=v.rows+'('+v.left+' + '+v.right+') = '+(v.rows*v.left)+' + '+(v.rows*v.right)+' = '+(v.rows*cols);obs='Splitting the array does not change its total number of squares.';status='Total area: '+(v.rows*cols)+' square units';mini=Math.min(18,v.rows*cols);}
     else if(topic==='expressions'){for(var xt=0;xt<v.coefficient;xt++)body+=rect(55+xt*76,65,54,120,xt%2?'lab-accent':'lab-teal',9)+text(82+xt*76,135,'x','lab-big','middle');body+=dots(v.constant,5,135,225,33)+text(280,42,'Algebra tiles','lab-label','middle');eq=v.coefficient+'x + '+v.constant;obs='Long tiles represent x; small tiles represent units.';status=v.coefficient+' variable tiles and '+v.constant+' unit tiles';mini=v.coefficient+v.constant;}
-    else if(topic==='area'){var cellA=Math.min(30,300/v.width,150/v.height),ax=130,ay=52;body+=gridLines(ax,ay,v.width,v.height,cellA)+'<rect x="'+ax+'" y="'+ay+'" width="'+(v.width*cellA)+'" height="'+(v.height*cellA)+'" fill="#0b8f87" opacity=".38"/>';body+=text(ax+v.width*cellA/2,ay+v.height*cellA+35,v.width+' columns','lab-label','middle')+text(75,ay+v.height*cellA/2,v.height+' rows','lab-label','middle');eq=v.width+' × '+v.height+' = '+(v.width*v.height)+' square units';obs='Area counts every square inside the shape.';status='Area: '+(v.width*v.height)+' square units';mini=Math.min(18,v.width*v.height);}
-    else if(topic==='volume'){var layer=v.length*v.width,totalV=layer*v.height;for(var z=0;z<v.height;z++){var ox=105+z*18,oy=165-z*30;body+='<polygon points="'+ox+','+oy+' '+(ox+v.length*38)+','+oy+' '+(ox+v.length*38+v.width*18)+','+(oy-v.width*18)+' '+(ox+v.width*18)+','+(oy-v.width*18)+'" fill="'+(z%2?'#ff775f':'#0b8f87')+'" opacity=".52" stroke="#173a5e" stroke-width="2"/>';}body+=text(280,45,v.height+' layer'+(v.height===1?'':'s')+' · '+layer+' cubes each','lab-label','middle')+text(280,242,totalV+' unit cubes','lab-big','middle');eq=v.length+' × '+v.width+' × '+v.height+' = '+totalV+' cubic units';obs='Each layer has length × width cubes.';status='Volume: '+totalV+' cubic units';mini=Math.min(18,totalV);}
+    else if(topic==='area'){var cellA=Math.min(30,300/v.width,150/v.height),ax=130,ay=52;body+=gridLines(ax,ay,v.width,v.height,cellA)+'<rect x="'+ax+'" y="'+ay+'" width="'+(v.width*cellA)+'" height="'+(v.height*cellA)+'" fill="var(--fm-m-part)" opacity=".38"/>';body+=text(ax+v.width*cellA/2,ay+v.height*cellA+35,v.width+' columns','lab-label','middle')+text(75,ay+v.height*cellA/2,v.height+' rows','lab-label','middle');eq=v.width+' × '+v.height+' = '+(v.width*v.height)+' square units';obs='Area counts every square inside the shape.';status='Area: '+(v.width*v.height)+' square units';mini=Math.min(18,v.width*v.height);}
+    else if(topic==='volume'){var layer=v.length*v.width,totalV=layer*v.height;for(var z=0;z<v.height;z++){var ox=105+z*18,oy=165-z*30;body+='<polygon points="'+ox+','+oy+' '+(ox+v.length*38)+','+oy+' '+(ox+v.length*38+v.width*18)+','+(oy-v.width*18)+' '+(ox+v.width*18)+','+(oy-v.width*18)+'" fill="'+(z%2?'var(--fm-m-unknown)':'var(--fm-m-part)')+'" opacity=".52" stroke="var(--fm-primary)" stroke-width="2"/>';}body+=text(280,45,v.height+' layer'+(v.height===1?'':'s')+' · '+layer+' cubes each','lab-label','middle')+text(280,242,totalV+' unit cubes','lab-big','middle');eq=v.length+' × '+v.width+' × '+v.height+' = '+totalV+' cubic units';obs='Each layer has length × width cubes.';status='Volume: '+totalV+' cubic units';mini=Math.min(18,totalV);}
     else if(topic==='surface-area'){var scale=18,l=v.length*scale,w=v.width*scale,h=v.height*scale,cx=280,cy=135;body+=rect(cx-l/2,cy-h/2,l,h,'lab-teal')+rect(cx-l/2,cy-h/2-w,l,w,'lab-sun')+rect(cx-l/2,cy+h/2,l,w,'lab-sun')+rect(cx-l/2-w,cy-h/2,w,h,'lab-accent')+rect(cx+l/2,cy-h/2,w,h,'lab-accent')+rect(cx-l/2,cy+h/2+w,l,w,'lab-teal');var sa=2*(v.length*v.width+v.length*v.height+v.width*v.height);body+=text(280,45,'Six faces unfold into one net','lab-label','middle')+text(280,255,'Add every face','lab-label','middle');eq='2('+v.length+'×'+v.width+' + '+v.length+'×'+v.height+' + '+v.width+'×'+v.height+') = '+sa;obs='Opposite faces have matching dimensions and areas.';status='Surface area: '+sa+' square units';mini=6;}
     else if(topic==='statistics'){var vals=[v.center-v.spread,v.center-1,v.center,v.center,v.center+1,v.center+v.spread];var counts={},dataMin=Math.min.apply(null,vals)-1,dataMax=Math.max.apply(null,vals)+1,dataSpan=dataMax-dataMin;vals.forEach(function(n){counts[n]=(counts[n]||0)+1;});body+=line(70,220,490,220);for(var sn=dataMin;sn<=dataMax;sn++){var sx=70+(sn-dataMin)*(420/dataSpan);body+=line(sx,212,sx,228,'lab-axis')+text(sx,250,String(sn),'lab-small','middle');}Object.keys(counts).forEach(function(k){for(var di=0;di<counts[k];di++)body+=circle(70+(Number(k)-dataMin)*(420/dataSpan),195-di*32,11,Number(k)===v.center?'lab-accent':'lab-teal');});body+=text(280,45,'Data values: '+vals.join(', '),'lab-label','middle');eq='center = '+v.center+' · range = '+(Math.max.apply(null,vals)-Math.min.apply(null,vals));obs='A larger spread moves the outside dots farther from the center.';status='Six data points centered near '+v.center;mini=6;}
     else if(topic==='coordinate-plane'){var ox=280,oy=140,st=22;for(var gi=-5;gi<=5;gi++){body+=line(ox+gi*st,30,ox+gi*st,250,'lab-grid')+line(170,oy+gi*st,390,oy+gi*st,'lab-grid');}body+=line(160,oy,400,oy)+line(ox,20,ox,260)+circle(ox+v.x*st,oy-v.y*st,13,'lab-accent')+line(ox,oy-v.y*st,ox+v.x*st,oy-v.y*st,'lab-grid')+line(ox+v.x*st,oy,ox+v.x*st,oy-v.y*st,'lab-grid')+text(ox+v.x*st+18,oy-v.y*st-10,'('+v.x+', '+v.y+')','lab-label');eq='(x, y) = ('+v.x+', '+v.y+')';obs='Move across for x first, then move up or down for y.';status='Point at '+v.x+', '+v.y;mini=Math.abs(v.x)+Math.abs(v.y)+2;}
-    else if(topic==='number-line'){var nstart=70,nstep=14,ny=150;body+=line(nstart,ny,nstart+30*nstep,ny);for(var nn=-15;nn<=15;nn++){var xx=nstart+(nn+15)*nstep;body+=line(xx,ny-7,xx,ny+7,'lab-axis');if(nn%5===0)body+=text(xx,ny+28,String(nn),'lab-small','middle');}var end=v.point+v.jump,p1=nstart+(v.point+15)*nstep,p2=nstart+(end+15)*nstep;body+=circle(p1,ny,12,'lab-teal')+circle(p2,ny,12,'lab-accent')+'<path d="M'+p1+' 115 Q'+((p1+p2)/2)+' 68 '+p2+' 115" fill="none" stroke="#ff775f" stroke-width="5"/>';body+=text(280,48,'Start '+v.point+' · jump '+v.jump,'lab-label','middle');eq=v.point+(v.jump>=0?' + ':' − ')+Math.abs(v.jump)+' = '+end;obs='Positive jumps move right; negative jumps move left.';status='The jump lands on '+end;mini=Math.abs(v.jump)+3;}
+    else if(topic==='number-line'){var nstart=70,nstep=14,ny=150;body+=line(nstart,ny,nstart+30*nstep,ny);for(var nn=-15;nn<=15;nn++){var xx=nstart+(nn+15)*nstep;body+=line(xx,ny-7,xx,ny+7,'lab-axis');if(nn%5===0)body+=text(xx,ny+28,String(nn),'lab-small','middle');}var end=v.point+v.jump,p1=nstart+(v.point+15)*nstep,p2=nstart+(end+15)*nstep;body+=circle(p1,ny,12,'lab-teal')+circle(p2,ny,12,'lab-accent')+'<path d="M'+p1+' 115 Q'+((p1+p2)/2)+' 68 '+p2+' 115" fill="none" stroke="var(--fm-m-unknown-edge)" stroke-width="5"/>';body+=text(280,48,'Start '+v.point+' · jump '+v.jump,'lab-label','middle');eq=v.point+(v.jump>=0?' + ':' − ')+Math.abs(v.jump)+' = '+end;obs='Positive jumps move right; negative jumps move left.';status='The jump lands on '+end;mini=Math.abs(v.jump)+3;}
     else if(topic==='fractions'){var den=v.denominator,num=clamp(v.numerator,0,12),barCount=Math.max(1,Math.ceil(num/den)),bw=380/den,barH=Math.min(38,150/barCount),barGap=8,fy=64;for(var fb=0;fb<barCount;fb++){for(var fi=0;fi<den;fi++){var part=fb*den+fi;body+=rect(90+fi*bw,fy+fb*(barH+barGap),bw,barH,part<num?'lab-teal':'lab-sun',0);}}body+=text(280,42,num+' shaded parts · '+den+' equal parts per whole','lab-label','middle')+text(280,250,num+'/'+den,'lab-big','middle');eq=num+' / '+den;obs='The denominator sets equal parts in each whole; the numerator counts all shaded parts.';status=num+' parts are shaded in groups of '+den;mini=Math.min(18,Math.max(den,num));}
-    else if(topic==='decimals'){var hv=v.hundredths,cellD=18,dx=190,dy=38;body+=gridLines(dx,dy,10,10,cellD);for(var hi=0;hi<hv;hi++)body+='<rect x="'+(dx+(hi%10)*cellD)+'" y="'+(dy+Math.floor(hi/10)*cellD)+'" width="'+cellD+'" height="'+cellD+'" fill="'+(hi%10===0?'#ff775f':'#0b8f87')+'" opacity=".75"/>';body+=text(110,126,(hv/100).toFixed(2),'lab-big','middle')+text(450,126,hv+'%','lab-big','middle');eq=hv+'/100 = '+(hv/100).toFixed(2)+' = '+hv+'%';obs='Each small square is one hundredth of the whole grid.';status=hv+' hundredths are shaded';mini=Math.min(18,Math.ceil(hv/6));}
+    else if(topic==='decimals'){var hv=v.hundredths,cellD=18,dx=190,dy=38;body+=gridLines(dx,dy,10,10,cellD);for(var hi=0;hi<hv;hi++)body+='<rect x="'+(dx+(hi%10)*cellD)+'" y="'+(dy+Math.floor(hi/10)*cellD)+'" width="'+cellD+'" height="'+cellD+'" fill="'+(hi%10===0?'var(--fm-m-unknown)':'var(--fm-m-part)')+'" opacity=".75"/>';body+=text(110,126,(hv/100).toFixed(2),'lab-big','middle')+text(450,126,hv+'%','lab-big','middle');eq=hv+'/100 = '+(hv/100).toFixed(2)+' = '+hv+'%';obs='Each small square is one hundredth of the whole grid.';status=hv+' hundredths are shaded';mini=Math.min(18,Math.ceil(hv/6));}
     else if(topic==='division'){var dNum=clamp(v.dividend||1344,10,9999),qDiv=clamp(v.divisor||12,1,99),quot=Math.floor(dNum/qDiv),rem=dNum%qDiv,curStep=clamp(v.step||4,1,4);body+=rect(30,30,500,220,'lab-sun',16);body+=text(140,88,String(qDiv),'lab-big','end')+line(150,55,150,102,'lab-axis')+line(150,55,340,55,'lab-axis')+text(165,88,String(dNum),'lab-big','start')+text(165,46,curStep>=1?String(quot):'?','lab-big','start');var stepLetters=['D','M','S','B'],stepLabels=['Divide','Multiply','Subtract','Bring down'],stepNames=['1. D — Divide: determine quotient digit','2. M — Multiply: multiply quotient digit × divisor','3. S — Subtract: find difference (must be < divisor)','4. B — Bring down: bring next digit down and repeat'];for(var si=0;si<4;si++){var px=45+si*118,py=120,isAct=(si+1)===curStep;body+=rect(px,py,110,34,isAct?'lab-accent':(si+1<curStep?'lab-teal':'lab-sun'),8)+circle(px+16,py+17,10,isAct?'lab-sun':'lab-teal')+text(px+16,py+22,stepLetters[si],'lab-small','middle')+text(px+34,py+22,stepLabels[si],'lab-small','start');}body+=text(280,188,stepNames[curStep-1],'lab-label','middle')+text(280,225,dNum+' ÷ '+qDiv+' = '+quot+(rem>0?' R '+rem:''),'lab-big','middle');eq=dNum+' ÷ '+qDiv+' = '+quot+(rem>0?' R '+rem:'');obs='Long division standard algorithm: Divide → Multiply → Subtract → Bring down (DMSB).';status=dNum+' ÷ '+qDiv+' = '+quot+(rem>0?' with remainder '+rem:'')+' · Check: '+qDiv+' × '+quot+(rem>0?' + '+rem:'')+' = '+dNum;mini=4;}
     else{var total=v.groups*v.items;for(var gr=0;gr<v.groups;gr++){body+=rect(45+gr*82,70,66,130,gr%2?'lab-accent':'lab-teal',14)+text(78+gr*82,58,'Group '+(gr+1),'lab-small','middle')+dots(v.items,2,66+gr*82,95,25);}eq=v.groups+' × '+v.items+' = '+total;obs='Equal groups connect a picture to multiplication.';status=total+' items in all';mini=Math.min(18,total);}
     var es=spanishCopy(topic,v);return result(svgWrap(body,status||'Interactive math visual',eq),eq,obs,status,mini,es[0],es[1]);
@@ -5544,7 +5749,7 @@ function escalateHint(section, idx, type) {
     const retry = document.createElement("div");
     retry.className = "exp-retry";
     retry.style.cssText = "display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px;";
-    retry.innerHTML = '<button type="button" class="btn btn-sm btn-secondary hw-reveal-btn" onclick="forceReveal(' + idx + ')">' +
+    retry.innerHTML = '<button type="button" class="btn btn-sm btn-secondary hw-reveal-btn" data-act="forceReveal" data-args="[' + idx + ']">' +
       '<span class="lang-en">Show me how</span><span class="lang-es" lang="es">Muéstrame cómo</span></button>';
     card.appendChild(retry);
   }
@@ -5649,7 +5854,7 @@ function triggerConfettiBurst(originX, originY, count = 50) {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
     const ctx = canvas.getContext("2d");
-    const colors = ["#1fa6a2", "#f2c15b", "#d9795d", "#12355b", "#10b981", "#8b5cf6"];
+    const colors = ["var(--fm-m-part)", "var(--fm-m-unknown)", "var(--fm-m-unknown)", "var(--fm-primary)", "var(--fm-success)", "var(--fm-m-whole)"];
     const particles = [];
     const startX = originX || window.innerWidth / 2;
     const startY = originY || window.innerHeight / 3;
@@ -6012,7 +6217,7 @@ function updateCelebrationTab() {
     } else if (total) {
       summary.className = "done-summary is-partial";
       summary.innerHTML = '<span class="lang-en">You checked ' + correctCount + ' of ' + total + ' problems. ' + left + ' left to finish.</span><span class="lang-es" lang="es">Revisaste ' + correctCount + ' de ' + total + ' problemas. Faltan ' + left + '.</span>' +
-        '<br><button type="button" class="btn btn-secondary" onclick="switchHomeworkTab(&#39;check&#39;)"><span class="lang-en">Back to the problems</span><span class="lang-es" lang="es">Volver a los problemas</span></button>';
+        '<br><button type="button" class="btn btn-secondary" data-act="switchHomeworkTab" data-args="[&quot;check&quot;]"><span class="lang-en">Back to the problems</span><span class="lang-es" lang="es">Volver a los problemas</span></button>';
     }
   }
   /* One chip per problem, so a family sees WHICH ones are open and can jump
@@ -6023,7 +6228,7 @@ function updateCelebrationTab() {
     list.innerHTML = problems
       .map((s, i) => {
         const done = s.classList.contains("correct") || s.classList.contains("reviewed");
-        return '<li><button type="button" class="done-problem-chip' + (done ? " is-done" : "") + '" onclick="jumpToHomeworkProblem(' + i + ')" aria-label="' + (document.documentElement.lang === "es" ? "Problema " + (i + 1) + (done ? ", revisado" : ", sin revisar") : "Problem " + (i + 1) + (done ? ", checked" : ", not checked yet")) + '"><span aria-hidden="true">' + (i + 1) + (done ? " ✓" : "") + '</span></button></li>';
+        return '<li><button type="button" class="done-problem-chip' + (done ? " is-done" : "") + '" data-act="jumpToHomeworkProblem" data-args="[' + i + ']" aria-label="' + (document.documentElement.lang === "es" ? "Problema " + (i + 1) + (done ? ", revisado" : ", sin revisar") : "Problem " + (i + 1) + (done ? ", checked" : ", not checked yet")) + '"><span aria-hidden="true">' + (i + 1) + (done ? " ✓" : "") + '</span></button></li>';
       })
       .join("");
   }
@@ -7252,7 +7457,7 @@ function openWorkbench(tool) {
 
 function workbenchActionButton(labelEn, labelEs) {
   if (!document.querySelector(".workbench-drawer")) return "";
-  return '<button type="button" class="btn btn-sm btn-outline-secondary" onclick="openWorkbench()">' +
+  return '<button type="button" class="btn btn-sm btn-outline-secondary" data-act="openWorkbench">' +
     '🧮 <span class="lang-en">' + labelEn + '</span><span class="lang-es" lang="es">' + labelEs + '</span></button>';
 }
 
@@ -7313,12 +7518,12 @@ function drawCoordGrid() {
   let content = "";
   for (let i = -5; i <= 5; i++) {
     const pos = i * 20;
-    content += '<line x1="' + pos + '" y1="-100" x2="' + pos + '" y2="100" stroke="#e2e8f0" stroke-width="1" />';
-    content += '<line x1="-100" y1="' + pos + '" x2="100" y2="' + pos + '" stroke="#e2e8f0" stroke-width="1" />';
+    content += '<line x1="' + pos + '" y1="-100" x2="' + pos + '" y2="100" stroke="var(--fm-m-whole)" stroke-width="1" />';
+    content += '<line x1="-100" y1="' + pos + '" x2="100" y2="' + pos + '" stroke="var(--fm-m-whole)" stroke-width="1" />';
   }
-  content += '<line x1="-105" y1="0" x2="105" y2="0" stroke="#1e293b" stroke-width="2" />';
-  content += '<line x1="0" y1="-105" x2="0" y2="105" stroke="#1e293b" stroke-width="2" />';
-  content += '<circle id="coord_plot_dot" cx="0" cy="0" r="5" fill="#e11d48" />';
+  content += '<line x1="-105" y1="0" x2="105" y2="0" stroke="var(--fm-primary)" stroke-width="2" />';
+  content += '<line x1="0" y1="-105" x2="0" y2="105" stroke="var(--fm-primary)" stroke-width="2" />';
+  content += '<circle id="coord_plot_dot" cx="0" cy="0" r="5" fill="var(--fm-m-unknown)" />';
   svg.innerHTML = content;
 }
 
@@ -7559,7 +7764,7 @@ function checkProblem(idx, options) {
                 'Pregunta a tu estudiante: <em>“¿Qué te pide hallar o comparar este problema?”</em> Luego intenta otra opción.'
               ) + '</div>';
             html += '<div class="exp-retry" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px;">' +
-              '<button type="button" class="btn btn-sm btn-secondary hw-reveal-btn" onclick="forceReveal(' + idx + ')">' +
+              '<button type="button" class="btn btn-sm btn-secondary hw-reveal-btn" data-act="forceReveal" data-args="[' + idx + ']">' +
               '<span class="lang-en">Show me how</span><span class="lang-es" lang="es">Muéstrame cómo</span></button>' +
               workbenchActionButton("Try with tonight's tool", "Probar con la herramienta de hoy") + '</div>';
             expDiv.innerHTML = html;
@@ -7581,7 +7786,7 @@ function checkProblem(idx, options) {
                 'Pregunta: <em>“¿Qué número va arriba y cuál va abajo?”</em> o usa las herramientas de matemáticas abajo.'
               ) + '</div>';
             html += '<div class="exp-retry" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px;">' +
-              '<button type="button" class="btn btn-sm btn-secondary hw-reveal-btn" onclick="forceReveal(' + idx + ')">' +
+              '<button type="button" class="btn btn-sm btn-secondary hw-reveal-btn" data-act="forceReveal" data-args="[' + idx + ']">' +
               '<span class="lang-en">Show me how</span><span class="lang-es" lang="es">Muéstrame cómo</span></button>' +
               workbenchActionButton("Open tonight's tool", "Abrir la herramienta de hoy") + '</div>';
             expDiv.innerHTML = html;
@@ -8097,9 +8302,11 @@ var NeftGraph = (function () {
     wrap.appendChild(input); container.appendChild(wrap);
     return input;
   }
-  function graphHit(node, label, action) {
+  // en and es are separate so the label is read in one language; setLanguageMode swaps it.
+  function graphHit(node, en, es, action) {
     node.setAttribute("role", "button"); node.setAttribute("tabindex", "0");
-    node.setAttribute("aria-label", label);
+    node.dataset.ariaEn = en; node.dataset.ariaEs = es;
+    node.setAttribute("aria-label", document.documentElement.lang === "es" ? es : en);
     node.addEventListener("click", action);
     node.addEventListener("keydown", function(e) {
       if (e.key === "Enter" || e.key === " ") { e.preventDefault(); action(); }
@@ -8115,21 +8322,21 @@ var NeftGraph = (function () {
     var svg = el("svg", { viewBox: "0 0 344 96", "class": "hw-visual-svg", role: "group", "aria-label": "Interactive number line" });
     var tickLayer = el("g"), rayLayer = el("g"), pointLayer = el("g");
     svg.appendChild(tickLayer);
-    svg.appendChild(el("line", { x1: 14, y1: y, x2: 330, y2: y, stroke: "#12355b", "stroke-width": 2 }));
-    svg.appendChild(el("polygon", { points: "330," + y + " 320," + (y - 5) + " 320," + (y + 5), fill: "#12355b" }));
-    svg.appendChild(el("polygon", { points: "14," + y + " 24," + (y - 5) + " 24," + (y + 5), fill: "#12355b" }));
+    svg.appendChild(el("line", { x1: 14, y1: y, x2: 330, y2: y, stroke: "var(--fm-primary)", "stroke-width": 2 }));
+    svg.appendChild(el("polygon", { points: "330," + y + " 320," + (y - 5) + " 320," + (y + 5), fill: "var(--fm-primary)" }));
+    svg.appendChild(el("polygon", { points: "14," + y + " 24," + (y - 5) + " 24," + (y + 5), fill: "var(--fm-primary)" }));
     function xFor(v) { return x0 + (v - MIN) * stepX; }
     function drawTicks() {
       tickLayer.replaceChildren();
       var tickStep = Math.max(1, Math.ceil(MAX / 5));
       for (var v = MIN; v <= MAX; v += tickStep) {
         var x = xFor(v);
-        tickLayer.appendChild(el("line", { x1:x, y1:y-6, x2:x, y2:y+6, stroke:"#12355b" }));
+        tickLayer.appendChild(el("line", { x1:x, y1:y-6, x2:x, y2:y+6, stroke:"var(--fm-primary)" }));
         var lbl = el("text", { x:x, y:y+22, "text-anchor":"middle", "class":"ng-tick-lbl" });
         lbl.textContent = String(v); tickLayer.appendChild(lbl);
         (function(val, cx) {
           var hit = el("rect", { x:cx-stepX*tickStep/2, y:6, width:stepX*tickStep, height:60, "class":"ng-hit" });
-          graphHit(hit, "Plot / Marcar " + val, function() { state.v=val; render(); });
+          graphHit(hit, "Plot " + val, "Marcar " + val, function() { state.v=val; render(); });
           tickLayer.appendChild(hit);
         })(v,x);
       }
@@ -8147,8 +8354,8 @@ var NeftGraph = (function () {
       if (Number.isFinite(value)) { state.v = value; render(); }
     });
     var bCircle = makeBtn("", function () { state.closed = !state.closed; render(); });
-    var bLeft = makeBtn(bi("◀ Shade left", "◀ Sombrear izq."), function () { state.dir = state.dir === "left" ? null : "left"; render(); });
-    var bRight = makeBtn(bi("Shade right ▶", "Sombrear der. ▶"), function () { state.dir = state.dir === "right" ? null : "right"; render(); });
+    var bLeft = makeBtn(bi('<span aria-hidden="true">◀</span> Shade left', '<span aria-hidden="true">◀</span> Sombrear izq.'), function () { state.dir = state.dir === "left" ? null : "left"; render(); });
+    var bRight = makeBtn(bi('Shade right <span aria-hidden="true">▶</span>', 'Sombrear der. <span aria-hidden="true">▶</span>'), function () { state.dir = state.dir === "right" ? null : "right"; render(); });
     controls.appendChild(bCircle); controls.appendChild(bLeft); controls.appendChild(bRight);
 
     function render() {
@@ -8194,11 +8401,11 @@ var NeftGraph = (function () {
     function sx(x) { return O + x * STEP; }
     function sy(yv) { return O - yv * STEP; }
     for (var i = MIN; i <= MAX; i++) {
-      svg.appendChild(el("line", { x1: sx(i), y1: sy(MAX), x2: sx(i), y2: sy(MIN), stroke: "#d6e2ee", "stroke-width": 1 }));
-      svg.appendChild(el("line", { x1: sx(MIN), y1: sy(i), x2: sx(MAX), y2: sy(i), stroke: "#d6e2ee", "stroke-width": 1 }));
+      svg.appendChild(el("line", { x1: sx(i), y1: sy(MAX), x2: sx(i), y2: sy(MIN), stroke: "var(--fm-m-whole)", "stroke-width": 1 }));
+      svg.appendChild(el("line", { x1: sx(MIN), y1: sy(i), x2: sx(MAX), y2: sy(i), stroke: "var(--fm-m-whole)", "stroke-width": 1 }));
     }
-    svg.appendChild(el("line", { x1: O, y1: sy(MAX) - 6, x2: O, y2: sy(MIN) + 6, stroke: "#12355b", "stroke-width": 2 }));
-    svg.appendChild(el("line", { x1: sx(MIN) - 6, y1: O, x2: sx(MAX) + 6, y2: O, stroke: "#12355b", "stroke-width": 2 }));
+    svg.appendChild(el("line", { x1: O, y1: sy(MAX) - 6, x2: O, y2: sy(MIN) + 6, stroke: "var(--fm-primary)", "stroke-width": 2 }));
+    svg.appendChild(el("line", { x1: sx(MIN) - 6, y1: O, x2: sx(MAX) + 6, y2: O, stroke: "var(--fm-primary)", "stroke-width": 2 }));
     var xlbl = el("text", { x: sx(MAX) + 2, y: O + 14, "class": "ng-axis-lbl" }); xlbl.textContent = "x"; svg.appendChild(xlbl);
     var ylbl = el("text", { x: O + 4, y: sy(MAX) + 2, "class": "ng-axis-lbl" }); ylbl.textContent = "y"; svg.appendChild(ylbl);
     var plotLayer = el("g"), hitLayer = el("g");
@@ -8224,7 +8431,7 @@ var NeftGraph = (function () {
       hitLayer.replaceChildren();
       var tickStep = Math.max(1, Math.ceil(MAX/5));
       for (var i=MIN; i<=MAX; i+=tickStep) {
-        var shade = i === 0 ? "#12355b" : "#d6e2ee";
+        var shade = i === 0 ? "var(--fm-primary)" : "var(--fm-m-whole-tint)";
         svg.insertBefore(el("line", {x1:sx(i),y1:sy(MAX),x2:sx(i),y2:sy(MIN),stroke:shade}), hitLayer);
         svg.insertBefore(el("line", {x1:sx(MIN),y1:sy(i),x2:sx(MAX),y2:sy(i),stroke:shade}), hitLayer);
         var label = el("text", {x:sx(i), y:O+14, "class":"ng-tick-lbl", "text-anchor":"middle"});
@@ -8236,7 +8443,7 @@ var NeftGraph = (function () {
         for (var j=MIN; j<=MAX; j+=tickStep) {
           (function(x,y) {
             var hit = el("circle", {cx:sx(x),cy:sy(y),r:8,"class":"ng-hit"});
-            graphHit(hit,"Plot / Marcar ("+x+", "+y+")",function(){toggle(x,y);});
+            graphHit(hit,"Plot ("+x+", "+y+")","Marcar ("+x+", "+y+")",function(){toggle(x,y);});
             hitLayer.appendChild(hit);
           })(i,j);
         }
@@ -8276,17 +8483,17 @@ var NeftGraph = (function () {
     var on = {}; for (var i = 0; i < state.cells.length; i++) on[state.cells[i]] = true;
     var oldSvg = frame.querySelector(".hw-visual-svg");
     var svg = el("svg", { viewBox: "0 0 " + W + " " + H, "class": "hw-visual-svg", role: "group", "aria-label": "Interactive grid" });
-    svg.appendChild(el("rect", { x: PAD, y: PAD, width: COLS * CELL, height: ROWS * CELL, fill: "#ffffff", stroke: "#12355b", "stroke-width": 1.5 }));
+    svg.appendChild(el("rect", { x: PAD, y: PAD, width: COLS * CELL, height: ROWS * CELL, fill: "var(--fm-raised)", stroke: "var(--fm-primary)", "stroke-width": 1.5 }));
     var cellLayer = el("g");
     svg.appendChild(cellLayer);
-    for (var c = 0; c <= COLS; c++) svg.appendChild(el("line", { x1: PAD + c * CELL, y1: PAD, x2: PAD + c * CELL, y2: PAD + ROWS * CELL, stroke: "#d6e2ee", "stroke-width": 1 }));
-    for (var r = 0; r <= ROWS; r++) svg.appendChild(el("line", { x1: PAD, y1: PAD + r * CELL, x2: PAD + COLS * CELL, y2: PAD + r * CELL, stroke: "#d6e2ee", "stroke-width": 1 }));
+    for (var c = 0; c <= COLS; c++) svg.appendChild(el("line", { x1: PAD + c * CELL, y1: PAD, x2: PAD + c * CELL, y2: PAD + ROWS * CELL, stroke: "var(--fm-m-whole)", "stroke-width": 1 }));
+    for (var r = 0; r <= ROWS; r++) svg.appendChild(el("line", { x1: PAD, y1: PAD + r * CELL, x2: PAD + COLS * CELL, y2: PAD + r * CELL, stroke: "var(--fm-m-whole)", "stroke-width": 1 }));
     for (var rr = 0; rr < ROWS; rr++) {
       for (var cc = 0; cc < COLS; cc++) {
         (function (row, col) {
           var key = row + "," + col;
           var rect = el("rect", { x: PAD + col * CELL, y: PAD + row * CELL, width: CELL, height: CELL, "class": "ng-cell" + (on[key] ? " is-on" : "") });
-          graphHit(rect, "Square / Cuadro " + (row+1) + ", " + (col+1), function () {
+          graphHit(rect, "Square " + (row+1) + ", " + (col+1), "Cuadro " + (row+1) + ", " + (col+1), function () {
             if (on[key]) { delete on[key]; rect.setAttribute("class", "ng-cell"); }
             else { on[key] = true; rect.setAttribute("class", "ng-cell is-on"); }
             commit();

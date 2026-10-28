@@ -2,7 +2,9 @@
  * Topic-matched mini-games for family homework Play tab.
  * Generator-driven HTML + inline JS — no external deps (2D/CSS fallback).
  */
+
 import { decimalOperation, detectVisualTopic } from "./homework-alignment.mjs";
+import { act, actOn, EL, EV } from "./lib/homework-actions.mjs";
 
 // Build-time shuffles must be reproducible: with Math.random() a no-op
 // regeneration rewrote the Play-tab games in ~10 lesson files every run, which
@@ -881,25 +883,25 @@ function dragBucketGame(id, _title, nameEn, nameEs, items, buckets, coach) {
           ${Object.entries(buckets)
             .map(
               ([key, labels]) => `
-            <div class="hw-game-bucket" data-bucket="${esc(key)}" ondragover="hwGameAllowDrop(event)" ondrop="hwGameDrop(event,'${esc(key)}')">
+            <div class="hw-game-bucket" data-bucket="${esc(key)}" ${actOn("dragover", "hwGameAllowDrop", [EV])} ${actOn("drop", "hwGameDrop", [EV, esc(key)])}>
               <div class="hw-game-bucket-label"><span class="lang-en">${esc(labels.en)}</span><span class="lang-es" lang="es">${esc(labels.es)}</span></div>
               <div class="hw-game-bucket-slots" id="bucket_${esc(key)}"></div>
             </div>`,
             )
             .join("")}
         </div>
-        <div class="hw-game-pile" id="hw_game_pile" ondragover="hwGameAllowDrop(event)" ondrop="hwGameDrop(event,'')">
+        <div class="hw-game-pile" id="hw_game_pile" ${actOn("dragover", "hwGameAllowDrop", [EV])} ${actOn("drop", "hwGameDrop", [EV, ""])}>
           ${shuffled
             .map(
               (it, i) => `
             <div class="hw-game-card" draggable="true" id="hwcard_${i}" data-bucket="${esc(it.bucket)}"
-                 ondragstart="hwGameDragStart(event)" onclick="hwGameTapCard(this)">
+                 ${actOn("dragstart", "hwGameDragStart", [EV])} ${act("hwGameTapCard", EL)}>
               ${esc(it.text)}
             </div>`,
             )
             .join("")}
         </div>
-        <button type="button" class="btn btn-primary" onclick="hwGameCheckSort()"><span class="lang-en">Check sort</span><span class="lang-es" lang="es">Verificar</span></button>
+        <button type="button" class="btn btn-primary" ${act("hwGameCheckSort")}><span class="lang-en">Check sort</span><span class="lang-es" lang="es">Verificar</span></button>
         <p class="hw-game-feedback" id="hw_game_feedback" role="status" aria-live="polite"></p>
       </div>`,
     initScript: "",

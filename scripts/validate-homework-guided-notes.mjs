@@ -108,7 +108,8 @@ function selfTestCountQuickChecks() {
 selfTestCountQuickChecks();
 
 const REQUIRED_MARKERS = [
-  "Family Math Night",
+  // The page is Family Math Studio (hero aria-label, title, wordmark); "Family Math Night" was the pre-v3 hero label.
+  "Family Math Studio",
   "Estudio familiar de matemáticas",
   "What we're learning tonight",
   "Qué aprendemos hoy",
@@ -339,7 +340,8 @@ for (const id of lessonIds) {
     if ((ratioComparison || paperModel || questionModel) && sharedModelMarkers.has(marker))
       continue;
     if (paperModel && ["TOUCH &amp; TRY", "TOCA Y PRUEBA"].includes(marker)) continue;
-    if (!html.includes(marker)) {
+    // Stylesheet rules are formatted across lines in the shared sheets: compare with whitespace folded.
+    if (!html.includes(marker) && !html.replace(/\s+/g, " ").includes(marker)) {
       issues.push({ id, level: "CRITICAL", msg: `Missing marker: ${marker}` });
     }
   }

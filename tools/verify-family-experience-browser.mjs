@@ -251,7 +251,9 @@ async function sweepPhone(browser, lesson) {
       evidence: window.__HW_INSTRUCTIONAL_EVIDENCE__,
     };
     const languageButton = document.querySelector(
-      "#problem_intelligence_" + idx(sections[0]) + " [onclick*=language-access]",
+      "#problem_intelligence_" +
+        idx(sections[0]) +
+        " [data-act=hwChooseHelp][data-args*=language-access]",
     );
     if (languageButton) languageButton.click();
     const spanishGuidance =
@@ -464,6 +466,9 @@ async function sweepDesktop(browser, lesson) {
     .locator("#hw_case svg.cf-tag, #hw_case svg.cf-line, #hw_panel_learn .concept-visual-wrap svg")
     .first();
   if (await gfx.count()) {
+    // One idea at a time on every width: the Learn stop shows the card that holds the graphic only after the
+    // family reaches it (the design system's [hidden] rule always wins), so go to it the way the stepper does.
+    await gfx.evaluate((el) => window.revealLearnCardFor?.(el));
     await gfx.scrollIntoViewIfNeeded();
     await gfx.click();
     const opened = await page.locator(".hw-lightbox-dialog[open]").count();

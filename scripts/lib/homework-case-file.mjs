@@ -90,10 +90,10 @@ export function pickEvidence(vocab, titleEn) {
 
 function tagSvg(tag) {
   return `<svg class="cf-tag" viewBox="0 0 340 130" role="img" aria-label="${esc(tag.en)}">
-    <path d="M20 20 h210 l40 45 l-40 45 h-210 a10 10 0 0 1 -10 -10 v-70 a10 10 0 0 1 10 -10z" fill="#fffaf0" stroke="#f2c15b" stroke-width="4"/>
-    <circle cx="250" cy="65" r="8" fill="#12355b"/>
-    <text x="120" y="68" text-anchor="middle" font-family="Georgia,serif" font-weight="700" font-size="46" fill="#12355b">${esc(tag.big)}</text>
-    <text x="120" y="98" text-anchor="middle" font-family="system-ui,sans-serif" font-weight="700" font-size="17" fill="#8a5a00">${esc(tag.en)}</text>
+    <path d="M20 20 h210 l40 45 l-40 45 h-210 a10 10 0 0 1 -10 -10 v-70 a10 10 0 0 1 10 -10z" class="cf-tag-body"/>
+    <circle cx="250" cy="65" r="8" class="cf-tag-hole"/>
+    <text x="120" y="68" text-anchor="middle" font-size="46" class="cf-tag-big">${esc(tag.big)}</text>
+    <text x="120" y="98" text-anchor="middle" font-size="17" class="cf-tag-label">${esc(tag.en)}</text>
   </svg>`;
 }
 
@@ -174,60 +174,6 @@ export function renderCaseFile({ lessonId, title, tonight, scene, vocab }) {
 }
 
 /* ── Styles ────────────────────────────────────────────────────────────── */
-
-export const CASE_FILE_CSS = `
-/* ── Case file card and side rail ───────────────────────────────────────── */
-.cf { --cf-navy:#12355b; --cf-amber:#f2c15b; --cf-paper:#fffaf0; --cf-teal:#0c6f6b;
-  margin: 0 0 20px; border-radius: 20px; background: var(--cf-navy); color: #fff; padding: 18px 16px 20px; box-shadow: 0 6px 20px rgb(18 53 91 / 25%); }
-.cf * { box-sizing: border-box; }
-.cf-kicker { font-size: 13px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: var(--cf-amber); }
-.cf h2 { margin: 6px 0 8px; font-size: 1.6rem; line-height: 1.15; color: #fff; border: 0; background: transparent; padding: 0; box-shadow: none; }
-.cf p { margin: 0 0 12px; color: #e8eef6; font-size: 1.05rem; line-height: 1.5; }
-.cf p b { color: var(--cf-amber); }
-.cf .obj-term { background: rgb(255 255 255 / 16%) !important; color: #fff !important; border-bottom-color: var(--cf-amber) !important; }
-.cf .cf-q .obj-term { background: rgb(15 118 110 / 8%) !important; color: #0b5f58 !important; border-bottom-color: #0f766e !important; }
-.cf-grid { display: grid; gap: 16px; }
-.cf-tag { display: block; width: 100%; max-width: 340px; margin: 6px 0 4px; }
-.cf-row { display: flex; gap: 10px; flex-wrap: wrap; }
-.cf-btn { min-height: 48px; padding: 0 18px; border-radius: 12px; border: 2px solid var(--cf-teal); background: var(--cf-teal); color: #fff; font: inherit; font-weight: 800; cursor: pointer; }
-.cf-btn.alt { background: #fff; color: var(--cf-navy); border-color: #c9d3df; }
-.cf-btn.picked { border-color: var(--cf-amber); box-shadow: 0 0 0 2px var(--cf-amber); }
-.cf-btn[disabled] { opacity: .5; cursor: default; }
-.cf-btn:focus-visible, .cf-ev-card:focus-visible { outline: 3px solid var(--cf-amber); outline-offset: 2px; }
-.cf-q { background: var(--cf-paper); color: #1d2733; border-radius: 16px; padding: 14px; }
-.cf-q p { color: #1d2733; margin-bottom: 10px; font-weight: 700; }
-.cf-fb { margin-top: 10px; padding: 10px 12px; border-radius: 12px; background: #e3f3e8; color: #14361f; font-weight: 600; }
-.cf-fb.no { background: #fff3e0; color: #4a2f00; }
-.cf-fb[hidden] { display: none; }
-.cf-ev { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; margin-top: 12px; }
-.cf-ev-hint { grid-column: 1 / -1; margin: 0 0 2px !important; font-size: .9rem !important; color: #c7d3e2 !important; }
-.cf-ev-card { text-align: left; border-radius: 12px; padding: 10px 12px; background: rgb(255 255 255 / 10%); border: 2px dashed rgb(255 255 255 / 35%); color: #fff; font: inherit; cursor: pointer; min-height: 64px; }
-.cf-ev-card[aria-expanded="true"] { background: var(--cf-paper); color: #1d2733; border: 2px solid var(--cf-amber); }
-.cf-ev-card b { display: block; font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: var(--cf-amber); }
-.cf-ev-card[aria-expanded="true"] b { color: #8a5a00; }
-.cf-ev-term { display: block; font-size: 1.05rem; font-weight: 800; margin-top: 2px; }
-.cf-ev-def { display: block; font-size: .95rem; margin-top: 6px; font-weight: 500; }
-.cf-ev-def[hidden] { display: none; }
-.cf-lab { margin-top: 14px; background: var(--cf-paper); color: #1d2733; border-radius: 16px; padding: 14px; }
-.cf-lab h3 { margin: 0 0 4px; font-size: 1.1rem; color: #12355b; }
-.cf-lab p { color: #1d2733 !important; font-weight: 500; font-size: 1rem; }
-.cf-line { display: block; width: 100%; height: auto; margin-bottom: 12px; cursor: zoom-in; }
-.cf-b { fill: #fff; stroke: #c9d3df; stroke-width: 2; }
-.cf-b.q, .cf-b.on { fill: #e8f1ed; stroke: #0c6f6b; }
-.cf-b.new { fill: #fff3e0; stroke: #b5532a; }
-.cf-t { font: 800 17px system-ui, sans-serif; fill: #1d2733; text-anchor: middle; }
-.cf-t.s { font-size: 14px; font-weight: 600; fill: #566274; }
-@media (min-width: 1000px) {
-  .cf { padding: 22px 24px 24px; }
-  .cf-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: 28px; align-items: start; }
-  .cf-lab { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); column-gap: 24px; align-items: center; }
-  .cf-lab h3, .cf-lab .cf-msg { grid-column: 2; }
-  .cf-lab .cf-line { grid-column: 1; grid-row: 1 / span 3; margin: 0; }
-  .cf-lab .cf-row { grid-column: 2; }
-}
-@media (prefers-reduced-motion: no-preference) { .cf-b { transition: fill .25s, stroke .25s; } }
-@media print { .cf { display: none !important; } }
-`;
 
 /* ── Behaviour ─────────────────────────────────────────────────────────── */
 

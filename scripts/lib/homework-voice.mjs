@@ -31,16 +31,6 @@
 export const LISTEN_EXCLUDE =
   'button, summary, label, h1, h2, h3, h4, option, select, [aria-hidden="true"], [hidden], [data-no-listen], .problem-section, .hw-answer-key, .hw-answer-sheet, .hw-domino-sheet, .vocab-card, .vocab-container, .feedback, .feedback-box, .explanation-box, .obj-popup-backdrop, .cga-feedback, .hw-listen-bar, .homework-tab-bar';
 
-export const VOICE_CSS = `
-.hw-listen-bar { margin: 0 0 14px; }
-.hw-listen-bar .btn-read-aloud { min-height: 44px; }
-.hw-listen-bar .btn-read-aloud[aria-pressed="true"] { background: var(--st-navy, #17324d); color: #fff; }
-.is-reading { outline: 3px solid #d97706; outline-offset: 3px; border-radius: 6px; background: rgba(245, 158, 11, 0.12); }
-.hw-voice-status { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
-body.no-speech .hw-listen-bar, body.no-speech .hw-listen, body.no-speech .btn-read-aloud, body.no-speech .btn-listen-prob, body.no-speech .btn-listen-concept, body.no-speech .vocab-speak-btn { display: none !important; }
-@media print { .hw-listen-bar { display: none; } }
-`;
-
 export const VOICE_JS = String.raw`
 /* Voice: read-aloud for every stop, plus hooks for voice entry into answer boxes. */
 var hwVoice = (function () {
@@ -259,7 +249,7 @@ function hwVoiceInstallBars() {
     btn.type = 'button';
     btn.className = 'btn-read-aloud hw-listen hw-listen-stop';
     btn.setAttribute('aria-pressed', 'false');
-    btn.innerHTML = '🔊 <span class="lang-en">Read this stop aloud</span><span class="lang-es" lang="es">Leer esta etapa en voz alta</span>';
+    btn.innerHTML = '<span aria-hidden="true">🔊</span> <span class="lang-en">Read this stop aloud</span><span class="lang-es" lang="es">Leer esta etapa en voz alta</span>';
     btn.addEventListener('click', function () {
       if (btn.classList.contains('is-speaking')) { hwVoice.stop(); return; }
       hwVoice.readPanel(panel, btn);

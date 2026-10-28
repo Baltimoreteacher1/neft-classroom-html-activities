@@ -81,7 +81,7 @@ const REQUIRED_MARKERS = [
   },
   {
     id: "global-workbench-hidden",
-    test: (h) => h.includes("#nsr-workbench { display: none !important; }"),
+    test: (h) => h.replace(/\s+/g, " ").includes("#nsr-workbench { display: none !important; }"),
   },
   {
     // Every game lives in one arcade on the Play stop: the four family games
@@ -110,7 +110,7 @@ const REQUIRED_MARKERS = [
     test: (h) =>
       // Decision "family-homework-route-choices" in data/product-decisions.json, as amended
       // for the two-choice landing: Quick Practice and Keep Going, with real stop/problem behavior.
-      h.includes('class="hw-route-chooser"') &&
+      /class="hw-route-chooser[\s"]/.test(h) &&
       ["quick", "full"].every((mode) => h.includes(`data-route-mode="${mode}"`)) &&
       h.includes("setHomeworkRoute") &&
       h.includes("restoreHomeworkRoute") &&

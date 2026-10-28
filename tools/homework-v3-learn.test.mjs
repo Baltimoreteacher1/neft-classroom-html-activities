@@ -1,14 +1,14 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import test from "node:test";
 import { JSDOM } from "jsdom";
 import {
   renderLearnModules,
   renderPrintFooter,
   renderProblemAsk,
-  renderTopBar,
   v3Of,
 } from "../scripts/lib/homework-v3-learn.mjs";
-import { V3_LEARN_CSS, V3_LEARN_JS } from "../scripts/lib/homework-v3-learn-assets.mjs";
+import { V3_LEARN_JS } from "../scripts/lib/homework-v3-learn-assets.mjs";
 
 const bi = (en, es) => ({ en, es });
 const v3 = (extra = {}) => ({
@@ -62,13 +62,6 @@ test("Learn modules come from the lesson's own v3 block; the glitch shows on Par
   assert.doesNotMatch(base + part2, /smoothie|berries|Jordan|Ratio Tape|onclick=/);
 });
 
-test("the top bar has no dev-style progress readout and no inline handlers", () => {
-  const bar = renderTopBar();
-  assert.match(bar, /data-persona-btn="student"/);
-  assert.match(bar, /data-persona-btn="copilot"/);
-  assert.doesNotMatch(bar, /Completed:|Accuracy:|Streak:|onclick=/);
-});
-
 test("the per-problem ask renders only when the problem authored one; the print footer uses this lesson's questions", () => {
   assert.equal(renderProblemAsk({}, 0, null), "");
   assert.match(
@@ -84,7 +77,7 @@ test("answer checks work in a browser: a wrong pick nudges and reveals nothing, 
   const html = `<body><section class="hw-subcard" id="s"><div class="hw-glitch-steps"><button class="hw-glitch-step-btn" data-is-glitch="0">a</button><button class="hw-glitch-step-btn" data-is-glitch="1">b</button></div>
     <p class="hw-v3-nudge" hidden>try</p><div class="hw-glitch-feedback" hidden>fix</div></section>
     <div class="hw-spiral-item"><button class="hw-spiral-opt-btn" data-correct="0">1</button><button class="hw-spiral-opt-btn" data-correct="1">2</button><p class="hw-v3-nudge" hidden>t</p><p class="hw-spiral-exp" hidden>why</p></div>
-    <div data-persona-btn="student" aria-pressed="true"></div><button data-persona-btn="copilot" aria-pressed="false"></button><button id="hw_theme_toggle_btn"></button><script>window.LESSON_ID="t";${V3_LEARN_JS}</script></body>`;
+    <button data-persona-btn="copilot" aria-pressed="false"></button><script>window.LESSON_ID="t";${V3_LEARN_JS}</script></body>`;
   const dom = new JSDOM(html, { runScripts: "dangerously", url: "https://example.test/" });
   const d = dom.window.document;
   const [a, b] = d.querySelectorAll(".hw-glitch-step-btn");
@@ -104,15 +97,22 @@ test("answer checks work in a browser: a wrong pick nudges and reveals nothing, 
   assert.equal(d.querySelector(".hw-spiral-exp").hidden, false);
   d.querySelector('button[data-persona-btn="copilot"]').click();
   assert.equal(d.body.getAttribute("data-persona-mode"), "copilot");
-  d.getElementById("hw_theme_toggle_btn").click();
-  assert.equal(d.documentElement.getAttribute("data-theme"), "dark");
+  // The top-bar Grown-up tips button is one switch: a second press turns the tips off again.
+  assert.equal(d.querySelector("[data-persona-btn]").getAttribute("aria-pressed"), "true");
+  d.querySelector('button[data-persona-btn="copilot"]').click();
+  assert.equal(d.body.getAttribute("data-persona-mode"), "student");
 });
 
-test("styles: print footer on paper only, reduced motion respected, no red or shake", () => {
-  assert.match(V3_LEARN_CSS, /@media print/);
-  assert.match(V3_LEARN_CSS, /hw-print-socratic-footer/);
-  assert.match(V3_LEARN_CSS, /prefers-reduced-motion: no-preference/);
-  assert.doesNotMatch(V3_LEARN_CSS, /shake|#f00|#ff0000|red\b/i);
+test("styles: print footer on paper only, no red or shake", () => {
+  const legacy = readFileSync(
+    new URL("../scripts/lib/homework-legacy-shell.css", import.meta.url),
+    "utf8",
+  );
+  const body = readFileSync(new URL("../assets/design/family/body.css", import.meta.url), "utf8");
+  assert.match(legacy, /@media print/);
+  assert.match(legacy, /hw-print-socratic-footer/);
+  assert.doesNotMatch(body, /shake|#f00|#ff0000/i);
+  assert.doesNotMatch(body, /@keyframes/, "motion comes from family.css, gated by reduced motion");
 });
 
 test("a worked example that belongs to another lesson is never offered as a hint", async () => {

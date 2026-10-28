@@ -66,8 +66,8 @@ export const FAMILY_CSS = `
 .wp-bar-out { font-size: 1.2rem; font-weight: 800; color: var(--fp-unit-ink); margin: 6px 0 0; }
 .wp-bar-out small { display: block; font-size: 1rem; font-weight: 600; color: var(--fp-ink-soft); }
 .wp-stars { font-weight: 800; }
-.wp-meter { height: 12px; border-radius: 99px; background: rgba(255,255,255,.3); overflow: hidden; margin: 10px 0 0; }
-.wp-meter > span { display: block; height: 100%; width: 0; background: #ffd34d; transition: width .4s ease; }
+.wp-meter { height: 12px; border-radius: 99px; background: var(--fm-sunken); overflow: hidden; margin: 10px 0 0; }
+.wp-meter > span { display: block; height: 100%; width: 0; background: var(--unit-accent); transition: width .4s ease; }
 .homework-tab-btn.wp-tab-complete .tab-label::after { content: " \\2713"; font-weight: 800; }
 .wp-cert-wrap { margin-top: 18px; }
 .wp-cert { position: relative; text-align: center; padding: 28px 22px; border: 6px double var(--fp-unit-ink); border-radius: 18px; background: #fffdf8; }
@@ -147,7 +147,7 @@ const FAMILY_STATE_JS = `
   function confetti() {
     if (!motionOk) return;
     var box = $('#wp-confetti');
-    var colors = ['#ffd34d', '#ff7a59', '#4cc3a5', '#5b8def', '#e86aa6'];
+    var colors = ['var(--fm-m-unknown)', 'var(--fm-m-unknown)', 'var(--fm-success)', 'var(--fm-m-whole)', 'var(--fm-m-whole)'];
     for (var i = 0; i < 40; i++) {
       var piece = document.createElement('span');
       piece.className = 'wp-confetti';
@@ -323,12 +323,3 @@ export const LANGUAGE_BOOT = `(function () {
   document.body.classList.add('lang-mode-' + mode);
   document.documentElement.lang = mode === 'es' ? 'es' : 'en';
 })();`;
-
-export const LANGUAGE_SELECTOR = `<div class="lang-selector-card">
-  <span class="lang-selector-title">Language / Idioma</span>
-  <div class="lang-selector-buttons" role="group" aria-label="Language Mode Selector" data-aria-en="Language Mode Selector" data-aria-es="Seleccionar idioma">
-    <button type="button" class="lang-toggle-btn active" data-lang-mode="bilingual" aria-pressed="true">🇺🇸🇪🇸 <span class="lang-btn-long">Bilingual / Bilingüe</span><span class="lang-btn-short">EN + ES</span></button>
-    <button type="button" class="lang-toggle-btn" data-lang-mode="en" aria-pressed="false">🇺🇸 <span>English</span></button>
-    <button type="button" class="lang-toggle-btn" data-lang-mode="es" aria-pressed="false">🇪🇸 <span>Español</span></button>
-  </div>
-</div>`;
