@@ -1,4 +1,5 @@
 /** Authored mission catalogue. Unit means the CURRENT course, never the legacy folder number. */
+import { fieldsFor, model } from "./math.mjs";
 const mission = (
   id,
   unit,
@@ -204,7 +205,7 @@ export const PROJECTS = [
       "Explain the fraction, decimal and percent forms of the offer.",
     ],
     "The discount increases by five percentage points. Test the new receipt and explain the change.",
-    { a: 40, b: 20, c: 6, d: 50 },
+    { a: 60, b: 25, c: 4, d: 65 },
     "/math/unit-4/projects/version-a/",
   ),
   mission(
@@ -420,7 +421,7 @@ export const PROJECTS = [
       "Use the same usage amount when comparing two plans.",
     ],
     "Increase the fixed fee but lower the usage rate. Test at two usage levels before recommending a plan.",
-    { a: 4, b: 12, c: 8 },
+    { a: 12, b: 4, c: 8 },
     "/math/unit-9/projects/version-b/",
   ),
   mission(
@@ -456,7 +457,7 @@ export const PROJECTS = [
       "Explain why surface area and volume use different units.",
     ],
     "Make the tank taller while keeping its floor the same. Compare the change in glass area and capacity.",
-    { a: 8, b: 5, c: 4, d: 1.5, e: 150 },
+    { a: 4, b: 3, c: 2, d: 1.5, e: 24 },
     "/math/unit-10/projects/version-b/",
   ),
   mission(
@@ -568,6 +569,73 @@ export const PROJECTS = [
     null,
   ),
 ];
+const discourseByFamily = {
+  discovery: ["The pattern grows by ___ tiles per stage; therefore stage ___ has ___. Grouping the array as ___ shows ___.", "El patrón aumenta ___ fichas por etapa; por eso, la etapa ___ tiene ___. Agrupar el arreglo como ___ muestra ___."],
+  statistics: ["The ___ is ___ and the ___ is ___. Because ___, this sample does/does not support ___.", "La/el ___ es ___ y la/el ___ es ___. Como ___, esta muestra sí/no respalda ___."],
+  ratio: ["The unit rate is ___ per ___. Multiplying both quantities by ___ preserves the ratio because ___.", "La tasa unitaria es ___ por ___. Multiplicar ambas cantidades por ___ conserva la razón porque ___."],
+  percent: ["The discount is ___% of ___, so the subtotal is ___. Tax applies to ___, giving a final total of ___.", "El descuento es ___% de ___, así que el subtotal es ___. El impuesto se aplica a ___ y da un total de ___."],
+  area: ["The non-overlapping regions have areas ___ and ___ square units. Their total is ___ because the triangle uses one-half of ___.", "Las regiones sin superposición tienen áreas de ___ y ___ unidades cuadradas. El total es ___ porque el triángulo usa la mitad de ___."],
+  solids: ["Capacity is ___ × ___ × ___ = ___ cubic units. Five-face area is ___ square units because the ___ face is open.", "La capacidad es ___ × ___ × ___ = ___ unidades cúbicas. El área de cinco caras es ___ unidades cuadradas porque la cara ___ queda abierta."],
+  relationships: ["Option A is ___ + ___h and option B is ___ + ___h. They are equal at h = ___; the graph shows ___.", "La opción A es ___ + ___h y la opción B es ___ + ___h. Son iguales en h = ___; la gráfica muestra ___."],
+};
+const numericContextDesigns = {
+  discovery: [{ a: 4, b: 3, c: 4 }, { a: 2, b: 6, c: 5 }, { a: 5, b: 2, c: 6 }],
+  "unit-3-b": [{ a: 18, b: 2, c: 5, d: 84, e: 6, f: 110, g: 10 }, { a: 5, b: 4, c: 3, d: 84, e: 6, f: 110, g: 10 }, { a: 14, b: 1, c: 10, d: 84, e: 6, f: 110, g: 10 }],
+  "unit-4-a": [{ a: 60, b: 25, c: 4, d: 65 }, { a: 48, b: 20, c: 4, d: 55 }, { a: 72, b: 15, c: 4, d: 80 }],
+  "unit-5-a": [{ a: 6, b: 4, c: 3, d: 2, e: 8, f: 2, g: 1, h: 1.5 }, { a: 7, b: 5, c: 4, d: 3, e: 8, f: 2, g: 1, h: 1.5 }, { a: 8, b: 4, c: 5, d: 2, e: 8, f: 2, g: 1, h: 1.5 }],
+  "unit-9-b": [{ a: 12, b: 4, c: 8 }, { a: 8, b: 12, c: 8 }, { a: 6, b: 8, c: 10 }],
+  "unit-10-b": [{ a: 4, b: 3, c: 2, d: 1.5, e: 24 }, { a: 6, b: 2, c: 2, d: 1.5, e: 24 }, { a: 3, b: 4, c: 2, d: 1.5, e: 24 }],
+  "statistics-a": [{ data: "3, 5, 5, 7, 9, 13" }, { data: "4, 6, 6, 8, 10, 14" }, { data: "8, 8, 9, 10, 12, 16" }],
+};
+const nationalForFamily = { ratio: ["6.RP.A.1", "6.RP.A.3"], statistics: ["6.SP.B.4", "6.SP.B.5"], area: ["6.G.A.1", "6.G.A.2"], solids: ["6.G.A.2", "6.G.A.4"], percent: ["6.RP.A.3c"], relationships: ["6.EE.C.9"], discovery: ["6.EE.A.2", "6.NS.B.3"] };
+for (const p of PROJECTS) {
+  const fields = fieldsFor(p).filter((field) => !field.text);
+  p.contextDesigns = numericContextDesigns[p.id] || p.choices.map((_, index) => {
+    const design = { ...p.defaults };
+    if (typeof design.data === "string" && index > 0) {
+      design.data = design.data.split(",").map((value) => Number(value.trim()) + index * 2).join(", ");
+      return design;
+    }
+    if (index > 0 && fields[index - 1]) {
+      const field = fields[index - 1], initial = Number(design[field.key]);
+      design[field.key] = initial < field.max ? initial + 1 : initial - 1;
+    }
+    return model(p, design).errors.length ? { ...p.defaults } : design;
+  });
+  p.contextDetails = p.choices.map((choice, i) => {
+    const design = p.contextDesigns[i], nums = Object.values(design).filter((v) => typeof v === "number").slice(0, 4);
+    const data = typeof design.data === "string" ? `Simulated observations ${design.data}.` : `Selected quantities ${nums.join(", ")}; units and meaning are shown in the model.`;
+    const goal = p.family === "solids" ? "Meet the capacity constraint and compare five-face material area." : p.family === "percent" ? "Calculate discount, subtotal, then tax on the subtotal." : p.family === "area" ? "Decompose the floor without overlap and account for the storage prism." : p.family === "relationships" ? "Compare both equations at four inputs including zero." : p.family === "statistics" ? "Use the data display to compare center, spread and a limitation." : p.family === "ratio" ? "Scale both quantities by the same factor and compare unit rates." : p.family === "discovery" ? "Show four stages and explain the growth rule." : `Use the selected quantities to answer: ${p.question}`;
+    return [choice, `${data} ${p.question}`, goal];
+  });
+  if (numericContextDesigns[p.id]) p.contextDesigns = numericContextDesigns[p.id];
+  const familyFrames = discourseByFamily[p.family] || [`For ${p.title}, ___ represents ___. The calculation ___ shows ___, so I conclude ___.`, `En ${p.title}, ___ representa ___. El cálculo ___ muestra ___, así que concluyo ___.`];
+  p.discourse = [`${familyFrames[0]} For this mission, ${p.question} Use ___ as evidence.`, `${familyFrames[1]} En esta misión, usa ___ para responder la pregunta y sustentar la conclusión.`];
+  p.crosswalk = { ccss: nationalForFamily[p.family] || ["6.NS.B.3", "6.EE.A.2"], smp: ["SMP 1", "SMP 2", "SMP 3", "SMP 4", "SMP 6"] };
+  p.misconceptions = p.family === "solids" ? ["Subtract the open top once; do not subtract the bottom.", "Use cubic units for volume and square units for surface area."] : p.family === "percent" ? ["Apply tax to the discounted subtotal.", "Convert a percent to a decimal before multiplying."] : p.family === "area" ? ["Use one-half in the triangle area formula.", "Keep component regions from overlapping."] : p.family === "relationships" ? ["At zero usage, the ordered pair is (0, base fee).", "Compare both rules at the same input."] : ["Keep units attached to quantities.", "Match the representation to the calculation."];
+}
+const specialContexts = {
+  discovery: [["Tile mural", "Stage 1 has 4 tiles; add 3 per stage", "24-tile wall budget"], ["Team badge", "Stage 1 has 2 marks; add 6 per stage", "18-mark badge limit"], ["Pocket puzzle", "Stage 1 has 5 pieces; add 2 per stage", "25-piece challenge cap"]],
+  "statistics-a": [["Paper tower", "Simulated heights: 8, 9, 9, 10, 11, 15 cm", "Compare center and spread with a target"], ["Bridge span", "Times: 4, 6, 6, 8, 10, 14 min", "Compare mean and median"], ["Prototype test", "Scores: 8, 8, 9, 10, 12, 16", "Describe a typical result and an outlier"]],
+  "unit-3-b": [["Basketball scorer", "18 points in 2 games", "Scale the rate to 6 games"], ["Soccer passer", "5 assists in 4 matches", "Scale the rate to 12 matches"], ["Track team", "84 laps in 6 practices", "Compare laps per practice"]],
+  "unit-4-a": [["Sticker studio", "$60 · 25% off · 4% tax", "Tax applies to the $45 subtotal"], ["Book swap supplies", "$48 · 20% off · 4% tax", "Stay below the $55 budget"], ["Craft stall", "$72 · 15% off · 4% tax", "Compare subtotal and total"]],
+  "unit-5-a": [["Reading corner", "6 × 4 m rectangle; 3 × 2 m triangle", "Avoid overlap and keep a clear path"], ["Music nook", "7 × 5 m rectangle; 4 × 3 m triangle", "Fit seating within the floor area"], ["Maker station", "8 × 4 m rectangle; 5 × 2 m triangle", "Reserve space for storage"]],
+  "unit-10-b": [["Reef model", "Open tank: 4 × 3 × 2 units", "24 cubic units; 5 faces"], ["River model", "Open tank: 6 × 2 × 2 units", "Keep 24 cubic units"], ["Research tank", "Open tank: 3 × 4 × 2 units", "Compare panel area and capacity"]],
+  "unit-9-b": [["Starter Maker Pass", "Base $4 plus $12 per lab hour", "Compare at 0, 2, 4 and 6 hours"], ["Robotics Team Pass", "Base $12 plus $8 per lab hour", "Find the crossover"], ["Open Studio Pass", "Base $8 plus $10 per lab hour", "Test below and above crossover"]],
+};
+for (const p of PROJECTS) {
+  if (specialContexts[p.id]) p.contextDetails = specialContexts[p.id];
+  if (numericContextDesigns[p.id]) p.contextDesigns = numericContextDesigns[p.id];
+}
+{
+  const p = PROJECTS.find((item) => item.id === "unit-9-b");
+  p.title = "Maker Pass Showdown";
+  p.role = "Compare fictional school maker-lab passes.";
+  p.question = "Which pass fits different hours of 3D printing and open-lab use?";
+  p.product = "A maker-lab recommendation with equations, tables and a graph.";
+  p.choices = specialContexts["unit-9-b"].map((c) => c[0]);
+  p.contextDetails = specialContexts["unit-9-b"];
+}
 export const UNIT_NAMES = [
   "Pre-Unit · Division",
   "Math Is Discovery",
@@ -581,5 +649,6 @@ export const UNIT_NAMES = [
   "Two-Variable Relationships",
   "Math Is Synthesis",
 ];
-export const getProject = (id) => PROJECTS.find((p) => p.id === id);
+const aliases = { "maker-pass-showdown": "unit-9-b", "aquarium-build-lab": "unit-10-b", "dream-room-designer": "unit-5-a", "pop-up-shop-owner": "unit-4-a" };
+export const getProject = (id) => PROJECTS.find((p) => p.id === (aliases[id] || id));
 export const studioURL = (id) => `/curriculum/projects/studio/?project=${encodeURIComponent(id)}`;

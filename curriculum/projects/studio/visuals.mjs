@@ -6,11 +6,21 @@ const escape = (s) =>
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;");
 const text = (x, y, s) => `<text x="${x}" y="${y}">${escape(s)}</text>`;
+const format = (n) => Number.isInteger(n) ? String(n) : Number(n.toFixed(2)).toString();
 const line = (x, y, x2, y2, stroke = "#536e65", extra = "") =>
   `<line x1="${x}" y1="${y}" x2="${x2}" y2="${y2}" stroke="${stroke}" stroke-width="2" ${extra}/>`;
 export function visualMarkup(m) {
   if (!m.visual) return "";
   const { type, values: v, labels } = m.visual;
+  const fig = (svg, caption) => `<figure class="model">${svg}<figcaption>${escape(caption)}</figcaption></figure>`;
+  if (type === "dots") return fig(makeDataDistributionSVG(v), "One dot represents one observation. Vertical stacks show repeated values; the overlay marks center and spread.");
+  if (type === "dual") return fig(makeTwoVariableLinearGraphSVG([v[0], v[1]], [v[2], v[3]], v[4]), "Compare both cost rules using ordered pairs, including zero usage, and locate their break-even point.");
+  if (type === "percent") return fig(makePercentGridAndBarSVG(v[1], v[0], v[2]), `${v[0]}% discount, then ${v[2]}% tax on the discounted subtotal.`);
+  if (type === "area") return fig(makeCompositeFloorAndPrismSVG(v[0], v[1], v[2], v[3], v.slice(4, 7).length === 3 ? v.slice(4, 7) : [2, 1, 1]), "Rectangle and non-overlapping triangle with perpendicular height marker; storage prism shown separately.");
+  if (type === "box" && v[3]) return fig(makeOpenTopPrismNetSVG(v[0], v[1], v[2]), "The open-top net includes one base and four walls. Compare its surface area with a closed prism.");
+  if (type === "pattern") return fig(makePatternStagesSVG(v[1], v[0]), "Four stages show repeated growth and two ways to group the same pattern.");
+  if (type === "ratio") return fig(makeDoubleNumberLineSVG(v[0], v[1], v[2], labels?.length ? labels : ["units", "amount"]), "Equivalent quantities scale together on the double number line.");
+  if (type === "numberline") return fig(makeNumberLineAndBalanceSVG({ value: v[0], operator: "≥", inclusive: true }), "A closed circle includes the boundary; the arrow shows all allowed values.");
   let shapes = "",
     caption = "A model to help you reason. Show calculations and explain what the model means.";
   if (type === "dots") {
@@ -60,25 +70,50 @@ export function visualMarkup(m) {
     caption =
       "Composite model: the triangle meets the rectangle along an edge. Their interiors do not overlap. Storage dimensions are modeled separately in your net.";
   } else if (type === "box") {
-    shapes =
-      '<path d="M140 80 L330 80 L390 40 L200 40 Z" fill="' +
-      (v[3] ? "#f9fcfb" : "#e4efbb") +
-      '" stroke="#14594f" stroke-width="2"/><path d="M140 80 L330 80 L330 205 L140 205 Z" fill="#dbece5" stroke="#14594f" stroke-width="2"/><path d="M330 80 L390 40 L390 165 L330 205 Z" fill="#b7d6cb" stroke="#14594f" stroke-width="2"/>' +
-      text(190, 231, `length ${v[0]}`) +
-      text(398, 106, `width ${v[1]}`) +
-      text(40, 150, `height ${v[2]}`) +
-      text(50, 25, v[3] ? "Open top · 5 faces" : "Closed prism · 6 faces");
-    caption =
-      "Prism sketch, not drawn to scale. Create your own labeled net to show the faces that need material.";
+    const [l, w, h, open] = v;
+    const scale = Math.min(90 / Math.max(l, w), 44 / h);
+    const lw = l * scale, wh = w * scale, lh = l * scale * h / w;
+    const faces = [[95, 95, lw, wh, "base", "#dbece5"], [95, 34, lw, lh, "wall", "#e4efbb"], [95, 95 + wh, lw, lh, "wall", "#e4efbb"], [95 - wh - 5, 95, wh, lh, "wall", "#b7d6cb"], [95 + lw + 5, 95, wh, lh, "wall", "#b7d6cb"]];
+    shapes = faces.map(([x, y, width, height, name, fill]) => `<rect x="${x}" y="${y}" width="${width}" height="${height}" fill="${fill}" stroke="#14594f" stroke-width="2"/>`).join("");
+    if (open) shapes += `<rect x="${95 + lw + wh + 12}" y="95" width="${lw}" height="${wh}" fill="#fff" stroke="#b53e20" stroke-width="2" stroke-dasharray="6 4"/>` + text(95 + lw + wh + 15, 122, "Missing top") + text(95 + lw + wh + 15, 145, `${format(l)} × ${format(w)}`);
+    shapes += text(95, 24, `${open ? "Five-face open tank net" : "Six-face closed prism"}`) + text(95, 95 + wh + lh + 20, `Base ${format(l)} × ${format(w)} · walls ${format(l)} × ${format(h)} and ${format(w)} × ${format(h)}`);
+    const total5 = l * w + 2 * l * h + 2 * w * h, total6 = total5 + l * w;
+    shapes += text(95, 95 + wh + lh + 45, `5-face area ${format(total5)} sq units · closed ${format(total6)} sq units`);
+    caption = `Open-top rectangular prism net. The top ${format(l)} by ${format(w)} face is excluded once. Volume ${format(l * w * h)} cubic units; five-face area ${format(total5)} square units versus ${format(total6)} closed.`;
   } else if (type === "percent") {
+    const [discount, original = 100, tax = 0, total = original * (1 - discount / 100) * (1 + tax / 100)] = v;
     for (let i = 0; i < 100; i++) {
-      const col = i % 20,
-        row = Math.floor(i / 20);
-      shapes += `<rect x="${30 + col * 25}" y="${30 + row * 30}" width="22" height="27" fill="${i < v[0] ? "#b53e20" : "#dbece5"}" stroke="#526a60"/>`;
+      const col = i % 10, row = Math.floor(i / 10);
+      shapes += `<rect x="${25 + col * 20}" y="${32 + row * 20}" width="18" height="18" fill="${i < discount ? "#b53e20" : "#dbece5"}" stroke="#526a60"/>`;
     }
-    shapes += text(30, 215, `${v[0]} of 100 squares: discount`);
-    caption =
-      "A 100-grid: orange shows the discount percent; the remaining squares show the portion still paid before tax.";
+    const subtotal = original * (1 - discount / 100), barX = 275, barWidth = 240;
+    shapes += text(25, 250, `${discount}% shaded · ${format(original * discount / 100)} discount`);
+    shapes += `<rect x="${barX}" y="62" width="${barWidth}" height="42" fill="#dbece5" stroke="#14594f"/><rect x="${barX}" y="62" width="${barWidth * (1 - discount / 100)}" height="42" fill="#e4efbb" stroke="#14594f"/>`;
+    shapes += text(barX, 52, `Original $${format(original)} → subtotal $${format(subtotal)}`);
+    shapes += `<rect x="${barX}" y="145" width="${barWidth * subtotal / Math.max(total, original)}" height="42" fill="#e4efbb" stroke="#14594f"/><rect x="${barX + barWidth * subtotal / Math.max(total, original)}" y="145" width="${Math.max(2, barWidth * (total - subtotal) / Math.max(total, original))}" height="42" fill="#b53e20" stroke="#14594f"/>`;
+    shapes += text(barX, 210, `Tax ${tax}% on $${format(subtotal)} = $${format(subtotal * tax / 100)} → total $${format(total)}`);
+    caption = `100-square percent grid shows ${discount} percent. $${format(original)} less $${format(original * discount / 100)} is $${format(subtotal)}; ${tax} percent tax on the discounted subtotal gives $${format(total)}.`;
+  } else if (type === "dual") {
+    const [rateA, baseA, rateB, baseB, maxX] = v;
+    const maxY = Math.max(rateA, rateB) * maxX + Math.max(baseA, baseB), sx = 440 / maxX, sy = 165 / maxY;
+    for (let i = 0; i <= 4; i++) {
+      const gx = 65 + i * 110, xVal = (maxX * i) / 4;
+      shapes += line(gx, 35, gx, 210, "#d5dfda") + text(gx - 5, 231, format(xVal));
+    }
+    shapes += line(65, 210, 515, 210) + line(65, 25, 65, 210);
+    const series = [[rateA, baseA, "#14594f", "A"], [rateB, baseB, "#b53e20", "B"]];
+    for (const [rate, base, color, name] of series) {
+      shapes += line(65, 210 - base * sy, 505, 210 - (rate * maxX + base) * sy, color, 'stroke-width="3"');
+      for (const xVal of [0, 2, 4, 6, maxX].filter((n, i, a) => n <= maxX && a.indexOf(n) === i)) {
+        const yVal = rate * xVal + base;
+        shapes += `<circle cx="${65 + xVal * sx}" cy="${210 - yVal * sy}" r="4" fill="${color}"/>` + text(65 + xVal * sx - 8, 197 - yVal * sy, `(${format(xVal)},${format(yVal)})`);
+      }
+      shapes += text(420, 30 + (name === "B" ? 22 : 0), `Option ${name}: ${base} + ${rate}h`);
+    }
+    const cross = (baseB - baseA) / (rateA - rateB);
+    if (Number.isFinite(cross) && cross >= 0 && cross <= maxX) shapes += `<circle cx="${65 + cross * sx}" cy="${210 - (rateA * cross + baseA) * sy}" r="8" fill="#f0b900" stroke="#142c3b" stroke-width="2"/>` + text(325, 250, `Break-even: ${format(cross)} hours`);
+    shapes += text(515, 214, "hours") + text(72, 20, "cost");
+    caption = `Two maker-pass cost rules. Option A begins at ${baseA} and adds ${rateA} per hour; option B begins at ${baseB} and adds ${rateB} per hour. Plotted pairs include zero usage.`;
   } else if (type === "line") {
     const [rate, start, target] = v;
     const maxX = Math.max(target, 4),
@@ -146,5 +181,6 @@ export function visualMarkup(m) {
     caption =
       "The grouping model invites an interpretation: explain what the remainder means in this mission.";
   }
-  return `<figure class="model"><svg viewBox="0 0 560 255" role="img" aria-label="${escape(caption)}">${shapes}</svg><figcaption>${escape(caption)}</figcaption></figure>`;
+  return `<figure class="model"><svg width="560" height="280" viewBox="0 0 560 280" role="img" aria-label="${escape(caption)}" style="background:white">${shapes}</svg><figcaption>${escape(caption)}</figcaption></figure>`;
 }
+import { makePatternStagesSVG, makeDataDistributionSVG, makeDoubleNumberLineSVG, makePercentGridAndBarSVG, makeCompositeFloorAndPrismSVG, makeOpenTopPrismNetSVG, makeTwoVariableLinearGraphSVG, makeNumberLineAndBalanceSVG } from "./math-svg-studio.mjs";

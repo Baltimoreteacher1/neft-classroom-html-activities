@@ -135,12 +135,26 @@ function load() {
   }
 }
 function sidebar() {
-  return `<aside class="sidebar"><section class="card soft"><h2 style="font-size:1.15rem">Make it yours</h2><p>${esc(project.product)}</p><p><strong>Time plan</strong><br>Day 1: choose, build, test.<br>Day 2: revise, explain, share.<br>Add a day for a physical model.</p><p>Work solo or with a partner. Each person explains the math.</p></section><section class="card"><h2 style="font-size:1.15rem">Words that help</h2><details ${state.supports ? "open" : ""}><summary>See a worked example</summary><p>${esc(workedExampleFor(project))}</p><p>Use this strategy with your own numbers. All six math checks still belong to your project.</p></details>${FAMILY[project.family].vocab.map(([en, es, definition]) => `<p><strong>${esc(en)}</strong> · <span lang="es">${esc(es)}</span><br>${esc(definition)}</p>`).join("")}<details><summary>Language supports</summary><p>You may rehearse, label a drawing, or draft in your strongest language before writing.</p><p lang="es">Elegí ___ porque ___. Mi evidencia es ___. Cambié ___; por eso ___.</p><p>I chose ___ because ___. My evidence is ___. I changed ___, so ___.</p></details></section></aside>`;
+  const m = model(project, state.design);
+  return `<aside class="sidebar"><section class="card model-canvas" aria-label="Live mathematical representation"><h2>Live model · ${stages[state.stage]}</h2><div data-model-canvas>${modelView(m)}</div><p class="muted">Updates from your design inputs. Diagram labels and checks use the same values.</p></section><section class="card soft"><h2 style="font-size:1.15rem">Make it yours</h2><p>${esc(project.product)}</p><p><strong>Time plan</strong><br>Day 1: choose, build, test.<br>Day 2: revise, explain, share.</p><p>Work solo or with a partner. Each person explains the math.</p></section><section class="card"><h2 style="font-size:1.15rem">Words that help</h2><details ${state.supports ? "open" : ""}><summary>See a worked example</summary><p>${esc(workedExampleFor(project))}</p><p>Use this strategy with your own numbers. All six math checks still belong to your project.</p></details>${FAMILY[project.family].vocab.map(([en, es, definition]) => `<p><strong>${esc(en)}</strong> · <span lang="es">${esc(es)}</span><br>${esc(definition)}</p>`).join("")}<details ${state.supports ? "open" : ""}><summary>Language supports · Tier 1 and Tier 2/3</summary>${state.lang === "es" ? `<p lang="es"><strong>Tier 1:</strong> Elegí ___ porque ___. Mi evidencia es ___. Cambié ___; por eso ___.</p><p lang="es"><strong>Tier 2/3:</strong> ${esc(project.discourse[1])}</p>` : `<p><strong>Tier 1:</strong> I chose ___ because ___. My evidence is ___. I changed ___, so ___.</p><p><strong>Tier 2/3:</strong> ${esc(project.discourse[0])}</p>`}</details></section></aside>`;
+}
+function contextIndex() { return Math.max(0, project.choices.indexOf(state.choice)); }
+function contextBrief() {
+  const detail = project.contextDetails[contextIndex()];
+  return `<p class="context-brief"><strong>${esc(detail[0])}:</strong> ${esc(detail[1])} <span>${esc(detail[2])}</span></p>`;
+}
+function contextGoal() {
+  const detail = project.contextDetails[contextIndex()];
+  return `${detail[2]}. Name your audience and how the values in your model will show success.`;
+}
+function teacherPanel() {
+  return `<section class="teacher-panel card" id="teacher-panel"><h2>Teacher &amp; publisher view</h2><p><strong>Standards:</strong> CCSS-M ${project.crosswalk.ccss.join(" · ")} · ${project.crosswalk.smp.join(" · ")} · course codes ${FAMILY[project.family].standards.join(" · ")} · DOK 3</p><h3>Analytic rubric · score each dimension 1–4</h3><div class="rubric-grid"><div><strong>Calculations</strong><p>1 incomplete · 2 emerging accuracy · 3 accurate with units · 4 accurate, checked and interpreted</p></div><div><strong>Visual representation</strong><p>1 absent · 2 partial labels · 3 matches quantities · 4 precise and explains structure</p></div><div><strong>Mathematical reasoning</strong><p>1 claim only · 2 some evidence · 3 evidence supports claim · 4 explains why and considers alternatives</p></div><div><strong>Revision &amp; limitation</strong><p>1 no comparison · 2 change named · 3 quantified tradeoff · 4 evaluates a meaningful limitation</p></div></div><h3>Misconceptions to notice</h3><ul>${project.misconceptions.map((item) => `<li>${esc(item)}</li>`).join("")}</ul><div class="actions">${action("exemplar", "Load Completed Exemplar Project", false)}${action("reset", "Reset to Blank Student Workspace")}</div></section>`;
 }
 function render(focus = false) {
+  document.documentElement.dataset.theme = state.theme || "light";
   const p = progress(project, state);
   document.title = `${project.title} — Project Studio`;
-  main.innerHTML = `<section class="hero"><div><p class="eyebrow">${project.unit ? `Unit ${project.unit} · ` : ""}${esc(UNIT_NAMES[project.unit])}</p><h1>${esc(project.title)}</h1><p class="lede">${esc(project.question)}</p><div class="meta"><span class="chip">${esc(FAMILY[project.family].label)}</span><span class="chip">${p.passed}/6 math checks</span></div></div><aside class="hero-stamp"><strong>You are the designer.</strong><p>${esc(project.role)} Make a choice, test it and show why it works.</p></aside></section>${restoreMessage ? `<p class="notice" role="status">${esc(restoreMessage)}</p>` : ""}<div class="toolbar"><span id="save-status" class="save-status ${storageOK ? "" : "error"}" role="status">${storageOK ? "Work stays on this device. Use Download backup to move it." : "Device saving is unavailable. Download a backup to keep your work."}</span><div class="toolbar-actions">${action("backup", "Download backup")}${action("restore", "Restore backup")}${action("supports", state.supports ? "Hide starting points" : "Show starting points")}</div></div><input id="import-file" hidden type="file" accept=".json,application/json" aria-label="Choose a project backup"><p id="file-status" role="status"></p><nav class="journey" aria-label="Project stages">${stages.map((s, i) => `<button type="button" data-stage="${i}" ${state.stage === i ? 'aria-current="step"' : ""}><span class="step-number">${i + 1}</span>${s}</button>`).join("")}</nav><div class="workspace"><section id="stage-panel" class="panel" aria-labelledby="stage-heading"><h2 id="stage-heading" tabindex="-1">${stageTitle()}</h2><div class="read-tools">${action("read", "Read directions aloud")}${action("stop-reading", "Stop reading")}</div>${stageContent()}<div class="stage-footer">${state.stage > 0 ? `<button class="secondary" type="button" data-stage="${state.stage - 1}">← ${stages[state.stage - 1]}</button>` : '<a href="/curriculum/projects/studio/">Choose another mission</a>'}${state.stage < 4 ? `<button type="button" data-stage="${state.stage + 1}">${stages[state.stage + 1]} →</button>` : ""}</div></section>${sidebar()}</div><details class="compact"><summary>Teacher notes, standards and companion tools</summary><p><strong>Essential standards:</strong> ${FAMILY[project.family].standards.map(esc).join(" · ")}. Unit placement follows the current curriculum; older companion folder numbers may differ.</p><p>Assess calculations, representations, reasoning and revision separately. On-screen checks verify numeric work only. Read the explanation and inspect the drawing or physical model before assessing mastery. Provide manipulatives, read-aloud and oral rehearsal as needed; the same core evidence applies to every student.</p><p>Use the supplied fictional data and prices. Optional outside research is never required. Drawings can stay on paper; attach them to the downloaded report when submitting.</p>${project.classic ? `<p><a href="${project.classic}">Open companion tools or continue earlier saved work</a>. Earlier work remains in that workspace; it is not automatically imported into this new mission.</p>` : ""}<p>No timer, ranking or automatic grade. Download and hand in your work using your teacher’s usual method.</p></details>`;
+  main.innerHTML = `<section class="hero"><div><p class="eyebrow">${project.unit ? `Unit ${project.unit} · ` : ""}${esc(UNIT_NAMES[project.unit])}</p><h1>${esc(project.title)}</h1><p class="lede">${esc(project.question)}</p><div class="meta"><span class="chip">${esc(FAMILY[project.family].label)}</span><span class="chip">${p.passed}/6 math checks</span>${project.crosswalk.ccss.map((code) => `<span class="chip standards-badge">CCSS-M ${esc(code)}</span>`).join("")}${project.crosswalk.smp.map((code) => `<span class="chip standards-badge">${esc(code)}</span>`).join("")}</div></div><aside class="hero-stamp"><strong>You are the designer.</strong><p>${esc(project.role)} Make a choice, test it and show why it works.</p></aside></section>${restoreMessage ? `<p class="notice" role="status">${esc(restoreMessage)}</p>` : ""}<div class="toolbar"><span id="save-status" class="save-status ${storageOK ? "" : "error"}" role="status">${storageOK ? "Work stays on this device. Use Download backup to move it." : "Device saving is unavailable. Download a backup to keep your work."}</span><div class="toolbar-actions">${action("backup", "Download backup")}${action("restore", "Restore backup")}${action("supports", state.supports ? "Hide starting points" : "Show starting points")}${action("language", state.lang === "es" ? "ES | EN" : "EN | ES")}${action("teacher", state.role === "teacher" ? "Student" : "Teacher")}${action("theme", state.theme === "dark" ? "Light" : "Dark")}</div></div><input id="import-file" hidden type="file" accept=".json,application/json" aria-label="Choose a project backup"><p id="file-status" role="status"></p><nav class="journey" aria-label="Project stages">${stages.map((s, i) => `<button type="button" data-stage="${i}" ${state.stage === i ? 'aria-current="step"' : ""}><span class="step-number">${i + 1}</span>${s}</button>`).join("")}</nav><div class="workspace"><section id="stage-panel" class="panel" aria-labelledby="stage-heading"><h2 id="stage-heading" tabindex="-1">${stageTitle()}</h2><div class="read-tools">${action("read", "Read directions aloud")}${action("stop-reading", "Stop reading")}</div>${stageContent()}<div class="stage-footer">${state.stage > 0 ? `<button class="secondary" type="button" data-stage="${state.stage - 1}">← ${stages[state.stage - 1]}</button>` : '<a href="/curriculum/projects/studio/">Choose another mission</a>'}${state.stage < 4 ? `<button type="button" data-stage="${state.stage + 1}">${stages[state.stage + 1]} →</button>` : ""}</div></section>${sidebar()}</div>${state.role === "teacher" ? teacherPanel() : ""}<details class="compact"><summary>Teacher notes and companion tools</summary><p><strong>Essential standards:</strong> ${FAMILY[project.family].standards.map(esc).join(" · ")}. CCSS-M: ${project.crosswalk.ccss.join(", ")} · ${project.crosswalk.smp.join(", ")}.</p><p>Assess calculations, representations, reasoning and revision separately. On-screen checks verify numeric work; review the explanations and generated SVG representation together. Provide manipulatives, read-aloud and oral rehearsal as needed; the same core evidence applies to every student.</p><p>Use the supplied fictional data and prices. Optional outside research is never required. The generated SVG representation is embedded in the downloadable report.</p>${project.classic ? `<p><a href="${project.classic}">Open companion tools or continue earlier saved work</a>. This link carries the mission context; local project data remains on this device.</p>` : ""}<p>No timer, ranking or automatic grade. Download and hand in your work using your teacher’s usual method.</p></details>`;
   bind();
   if (focus) {
     $("#stage-heading").focus();
@@ -161,7 +175,7 @@ function stageContent() {
   const p = progress(project, state),
     m = p.m;
   if (state.stage === 0)
-    return `<section class="card accent"><p class="eyebrow">The brief</p><h3>${esc(project.role)}</h3><p><strong>Your final product:</strong> ${esc(project.product)}</p><fieldset><legend>Choose your context</legend><div class="choice-grid">${project.choices.map((c, i) => `<label class="choice"><input name="context" type="radio" value="${esc(c)}" ${state.choice === c ? "checked" : ""}><span>${esc(c)}</span></label>`).join("")}</div></fieldset>${textField("vision", "Who is this for, and what would make your design successful?", state.vision, "Name your audience and at least one measurable goal. For example: fit everyone, stay below a cost, or explain variation honestly.")}${frame("My design is for ___. It succeeds if ___. I can check that by ___.")}<details><summary>What strong work looks like</summary><ol><li>A design with labeled quantities and units.</li><li>Six math checks, with reasoning and a representation.</li><li>A changed design and a comparison of the results.</li><li>A claim supported by math, plus one limitation.</li></ol></details></section><section class="card"><h3>Your evidence checklist</h3><ol>${project.evidence.map((s) => `<li>${esc(s)}</li>`).join("")}</ol><p>Use paper, a model, a digital drawing or labeled text. Keep it with your final report.</p></section>`;
+    return `<section class="card accent"><p class="eyebrow">The brief</p><h3>${esc(project.role)}</h3><p><strong>Your final product:</strong> ${esc(project.product)}</p><fieldset><legend>Choose your context</legend><div class="choice-grid">${project.choices.map((c, i) => `<label class="choice"><input name="context" type="radio" value="${esc(c)}" ${state.choice === c ? "checked" : ""}><span>${esc(c)}</span></label>`).join("")}</div></fieldset>${contextBrief()}${textField("vision", "Who is this for, and what measurable goal will your design meet?", state.vision, contextGoal())}${frame("My design is for ___. It succeeds if ___. I can check that by ___.")}<details><summary>What strong work looks like</summary><ol><li>A design with labeled quantities and units.</li><li>Six math checks, with reasoning and a representation.</li><li>A changed design and a comparison of the results.</li><li>A claim supported by math, plus one limitation.</li></ol></details></section><section class="card"><h3>Your evidence checklist</h3><ol>${project.evidence.map((s) => `<li>${esc(s)}</li>`).join("")}</ol><p>Your live SVG representation is included in the downloadable mathematical defense report.</p></section>`;
   if (state.stage === 1)
     return `<section class="card accent"><p>Start with the supplied design or change its numbers. You own the choices. Fractions such as <strong>3/4</strong> and mixed numbers such as <strong>2 1/2</strong> are accepted.</p><form id="design-form"><fieldset><legend>Design inputs</legend><div class="field-grid">${fieldsFor(
       project,
@@ -172,14 +186,14 @@ function stageContent() {
       )
       .join(
         "",
-      )}</div></fieldset><p class="actions compact"><button type="submit">Update my model</button></p></form><div id="model-preview">${modelView(m)}</div><p class="hint">Changing a design input clears its math checks. Your explanations stay available to revise.</p></section><section class="card"><h3>Choose a constraint</h3><p>${esc(m.decision || "Use the valid-input ranges to build a design you can test.")}</p><p>Your model is an estimate. State assumptions instead of treating simulated prices, constant growth or ideal shapes as exact descriptions of the world.</p></section>`;
+      )}</div></fieldset><p class="actions compact"><button type="submit">Update my model</button></p></form><p class="hint">Changing a design input clears its math checks. Your explanations stay available to revise.</p></section><section class="card"><h3>Choose a constraint</h3><p>${esc(m.decision || "Use the valid-input ranges to build a design you can test.")}</p><p>Your model is an estimate. State assumptions instead of treating simulated prices, constant growth or ideal shapes as exact descriptions of the world.</p></section>`;
   if (state.stage === 2) {
     if (m.errors.length)
       return `<div class="notice">Fix the design inputs before checking the math. ${action("build", "Return to Build")}</div>`;
-    return `<div class="checkpoint-meter"><progress value="${p.passed}" max="6" aria-label="Math checks completed"></progress><strong>${p.passed} of 6 checks match your current design</strong></div><p>Work on paper first. Enter a number, fraction or mixed number. Round to hundredths unless the prompt says otherwise. Use the hints whenever they help.</p>${m.checks.map((q, i) => `<section class="card check-card ${state.checked[q.id] ? "passed" : ""}" id="card-${q.id}"><h3>${i + 1}. ${esc(q.prompt)}</h3><form data-check="${q.id}"><div class="answer-row"><label for="answer-${q.id}">Your answer${q.unit ? ` (${esc(q.unit)})` : ""}<input type="text" inputmode="decimal" name="answer" id="answer-${q.id}" data-answer="${q.id}" value="${esc(state.answers[q.id] || "")}" aria-describedby="feedback-${q.id}" maxlength="100"></label><button type="submit">Check answer ${i + 1}</button></div></form><p id="feedback-${q.id}" class="feedback ${state.checked[q.id] ? "correct" : ""}" role="status">${state.checked[q.id] ? "Matches this design. " + esc(q.reason) : ""}</p><div id="diagnostic-${q.id}">${diagnostic(q.id)}</div>${frame(q.hint)}<button type="button" class="secondary small" data-action="read-check" data-check-id="${q.id}">Read question ${i + 1} aloud</button></section>`).join("")}<section class="card accent"><h3>Make your thinking visible</h3>${project.evidence.map((e, i) => textField(`evidence-${i}`, e, state.evidence[i], "Describe your reasoning here. Keep drawings or physical models with your report.")).join("")}${frame("I represented ___ with ___. The calculation ___ shows ___. This makes sense because ___.")}</section>`;
+    return `<div class="checkpoint-meter"><progress value="${p.passed}" max="6" aria-label="Math checks completed"></progress><strong>${p.passed} of 6 checks match your current design</strong></div><p>Enter a number, fraction or mixed number. Round to hundredths unless the prompt says otherwise. Use the hints whenever they help.</p>${m.checks.map((q, i) => `<section class="card check-card ${state.checked[q.id] ? "passed" : ""}" id="card-${q.id}"><h3>${i + 1}. ${esc(q.prompt)}</h3><form data-check="${q.id}"><div class="answer-row"><label for="answer-${q.id}">Your answer${q.unit ? ` (${esc(q.unit)})` : ""}<input type="text" inputmode="decimal" name="answer" id="answer-${q.id}" data-answer="${q.id}" value="${esc(state.answers[q.id] || "")}" aria-describedby="feedback-${q.id}" maxlength="100"></label><button type="submit">Check answer ${i + 1}</button></div></form><p id="feedback-${q.id}" class="feedback ${state.checked[q.id] ? "correct" : ""}" role="status">${state.checked[q.id] ? "Matches this design. " + esc(q.reason) : ""}</p><div id="diagnostic-${q.id}">${diagnostic(q.id)}</div>${frame(q.hint)}<button type="button" class="secondary small" data-action="read-check" data-check-id="${q.id}">Read question ${i + 1} aloud</button></section>`).join("")}<section class="card accent"><h3>Make your thinking visible</h3>${project.evidence.map((e, i) => textField(`evidence-${i}`, e, state.evidence[i], "Explain how the live model and its labels connect to your calculations.")).join("")}${frame("I represented ___ with ___. The calculation ___ shows ___. This makes sense because ___.")}</section>`;
   }
   if (state.stage === 3)
-    return `<section class="card accent"><p class="eyebrow">Design update</p><h3>${esc(project.twist)}</h3><p>1. Save your first tested design.<br>2. Return to Build and change at least one input.<br>3. Recheck the new math, then explain the tradeoff here.</p>${state.baseline ? '<p class="notice good">Your first design is saved for comparison. It stays fixed while you revise.</p>' : action("baseline", "Save my tested first design", false)}<p id="baseline-status" role="status"></p><div class="actions compact">${action("build", "Change my design")}${action("test", "Recheck the math")}</div>${comparison(p)}${textField("critique", "Ask a partner—or be your own skeptical reviewer. What should be checked?", state.critique, "Try: Which assumption is weakest? Which unit could be confused? Would the design still work with different numbers?")}${frame("I can follow ___. I want to check ___ because ___. An example that would test it is ___.")}${textField("revision", "What changed, what happened, and why is the revised design better—or a useful tradeoff?", state.revision, "Use at least two before-and-after values. A revision can reveal that your first design was better; explain the evidence.")}${frame("I changed ___ from ___ to ___. As a result, ___ changed from ___ to ___. I gained ___ but gave up ___.")}</section><section class="card"><h3>Optional stretch: convince a skeptic</h3><p>Find a different design that works. Is yours always better, or only under your assumptions? Support your answer with a counterexample or a general argument.</p></section>`;
+    return `<section class="card accent"><p class="eyebrow">Design update</p><h3>${esc(project.twist)}</h3><p>Save a tested Design v1, select a client twist, then revise and compare the math.</p>${state.baseline ? '<p class="notice good">Your first design is saved as locked Design v1 for comparison.</p>' : action("baseline", "Lock Design v1 baseline", false)}<p id="baseline-status" role="status"></p><div class="twist-grid" role="group" aria-label="Client constraint twists">${project.contextDetails.map((d, i) => `<button class="secondary" type="button" data-twist="${i}">Twist ${i + 1}: ${esc(d[2])}</button>`).join("")}</div><div class="actions compact">${action("build", "Change my design")}${action("test", "Recheck the math")}</div>${comparison(p)}${textField("critique", "Mathematical claim: what changed from v1 to v2, and what numeric evidence supports your conclusion?", state.critique, "Use a value from both designs and the change Δ. State the condition under which your conclusion holds.")}${frame("The value changed from ___ to ___, a difference of ___. This supports my claim because ___ .")}${textField("revision", "Model limitation: name one real-world factor this model does not capture.", state.revision, "Choose a factor that could change the decision, such as material thickness, uneven trials, access time or changing rates.")}${frame("The model assumes ___. In the real setting, ___ could change the result because ___ .")}</section><section class="card"><h3>Optional stretch: convince a skeptic</h3><p>Find a different design that works. Is yours always better, or only under your assumptions? Support your answer with a counterexample or a general argument.</p></section>`;
   return `<section class="card accent"><h3>Your recommendation</h3>${textField("claim", "What should your audience choose, and why?", state.claim, "Write a claim, support it with math from your design, explain how the evidence supports your claim, and name one limitation.")}${frame("I recommend ___ because ___. My evidence is ___ and ___. This supports my choice because ___. The model does not account for ___.")}<h3>Review before sharing</h3><ul class="review-list">${["My quantities, units and math match the current design.", "My drawing, table, graph or physical model is labeled and ready to include.", "I explained the original and revised designs with evidence.", "My recommendation includes a reason and a limitation."].map((s, i) => `<li><label><input type="checkbox" data-review="${i}" ${state.review[i] ? "checked" : ""}>${s}</label></li>`).join("")}</ul><div id="readiness">${readiness(p)}</div><div class="actions">${action("report", "Download my report", false)}${action("print", "Print / Save as PDF")}${action("backup", "Download editable backup")}</div><p class="hint">You can export a draft at any time. A complete checklist means ready for a human review, not an automatic grade. Attach your drawing and submit using your teacher’s usual method.</p></section><section class="card"><h3>What your teacher will look for</h3><div class="rubric-grid"><div><strong>Accurate mathematics</strong><p>Correct calculations, notation and units. Explain at least one check.</p></div><div><strong>Useful representations</strong><p>Labels connect the drawing, table, graph or model to the numbers.</p></div><div><strong>Reasoned decisions</strong><p>A claim uses specific evidence and acknowledges a limitation.</p></div><div><strong>Purposeful revision</strong><p>Compare both designs and explain the effect of your change.</p></div></div></section><details><summary>Preview the text report</summary><pre id="report-preview" class="report-preview">${esc(report())}</pre></details>`;
 }
 function modelView(m) {
@@ -191,12 +205,12 @@ function comparison(p) {
   if (!state.baseline) return "";
   const old = model(project, state.baseline.design);
   const comparable = !p.m.errors.length && p.passed === p.total;
-  return `<h3 class="compact">Your design comparison</h3><p>${p.changed ? "At least one design input changed." : "Change at least one input to test a revision."}</p><div class="table-scroll"><table><caption>First design → current design</caption><thead><tr><th scope="col">Quantity</th><th scope="col">First</th><th scope="col">Current</th></tr></thead><tbody>${fieldsFor(
+  return `<h3 class="compact">Design v1 vs. Design v2 · Δ</h3><p>${p.changed ? "At least one design input changed." : "Change at least one input to test a revision."}</p><div class="table-scroll"><table><caption>Baseline → revised design</caption><thead><tr><th scope="col">Quantity</th><th scope="col">Design v1</th><th scope="col">Design v2</th><th scope="col">Δ (v2 − v1)</th></tr></thead><tbody>${fieldsFor(
     project,
   )
     .map(
       (f) =>
-        `<tr><th scope="row">${esc(f.label)}</th><td>${esc(state.baseline.design[f.key])}</td><td>${esc(state.design[f.key])}</td></tr>`,
+        `<tr><th scope="row">${esc(f.label)}</th><td>${esc(state.baseline.design[f.key])}</td><td>${esc(state.design[f.key])}</td><td>Δ ${Number(state.design[f.key]) - Number(state.baseline.design[f.key]) || 0}</td></tr>`,
     )
     .join(
       "",
@@ -234,9 +248,31 @@ function bind() {
   document.querySelectorAll("[name=context]").forEach((el) =>
     el.addEventListener("change", () => {
       state.choice = el.value;
+      const index = contextIndex();
+      const profile = project.contextDesigns?.[index];
+      if (profile) {
+        state.design = { ...state.design, ...profile };
+        state.checked = {};
+      }
       save();
+      render();
     }),
   );
+  document.querySelectorAll("[data-twist]").forEach((el) => el.addEventListener("click", () => {
+    state.selectedTwist = Number(el.dataset.twist);
+    const preset = project.contextDesigns?.[state.selectedTwist];
+    if (preset) state.design = { ...state.design, ...preset };
+    const unchanged = fieldsFor(project).every((field) => String(state.design[field.key]) === String(state.baseline?.design?.[field.key]));
+    const first = unchanged ? fieldsFor(project).find((field) => !field.text && Number.isFinite(Number(state.design[field.key]))) : null;
+    if (first) {
+      const current = Number(state.design[first.key]);
+      state.design[first.key] = String(Math.min(first.max, Math.max(first.min, current + (state.selectedTwist + 1) * (first.integer ? 1 : 0.5))));
+    }
+    state.checked = {};
+    state.review[0] = false;
+    save();
+    render();
+  }));
   document.querySelectorAll("[data-text]").forEach((el) =>
     el.addEventListener("input", () => {
       const k = el.dataset.text;
@@ -259,14 +295,12 @@ function bind() {
       state.checked = {};
       state.review[0] = false;
       save();
-      if ($("#model-preview"))
-        $("#model-preview").innerHTML =
-          '<p class="notice">Inputs changed. Update your model, then recheck your answers in Test.</p>';
+      if ($("[data-model-canvas]")) $("[data-model-canvas]").innerHTML = modelView(model(project, state.design));
     }),
   );
   $("#design-form")?.addEventListener("submit", (e) => {
     e.preventDefault();
-    $("#model-preview").innerHTML = modelView(model(project, state.design));
+    if ($("[data-model-canvas]")) $("[data-model-canvas]").innerHTML = modelView(model(project, state.design));
     save();
   });
   document.querySelectorAll("[data-answer]").forEach((el) =>
@@ -353,10 +387,50 @@ function doAction(name, checkId) {
     $("#import-file").value = "";
     $("#import-file").click();
   }
+  if (name === "theme") {
+    state.theme = state.theme === "dark" ? "light" : "dark";
+    save();
+    render();
+  }
+  if (name === "language") {
+    state.lang = state.lang === "es" ? "en" : "es";
+    save();
+    render();
+  }
   if (name === "supports") {
     state.supports = !state.supports;
     save();
     render();
+  }
+  if (name === "teacher") {
+    state.role = state.role === "teacher" ? "student" : "teacher";
+    save();
+    render();
+    if (state.role === "teacher") document.querySelector("#teacher-panel")?.scrollIntoView({ block: "start" });
+  }
+  if (name === "exemplar") {
+    const m = model(project, state.design);
+    state.choice = project.choices[0];
+    state.vision = `${project.contextDetails[0][0]} client: meet the stated constraint using checked quantities and a clear model.`;
+    state.answers = Object.fromEntries(m.checks.map((q) => [q.id, format(q.answer)]));
+    state.checked = Object.fromEntries(m.checks.map((q) => [q.id, true]));
+    state.evidence = project.evidence.map((entry, index) => `${entry} Our labels and calculations match: ${m.checks[index % m.checks.length].reason}`);
+    state.baseline = { design: { ...state.design, [fieldsFor(project).find((f) => !f.text).key]: String(Number(state.design[fieldsFor(project).find((f) => !f.text).key]) + 1) } };
+    state.critique = `Does the model still meet the constraint if ${fieldsFor(project).find((f) => !f.text).label.toLowerCase()} changes? Compare both designs using the displayed values.`;
+    state.revision = `The model represents idealized measurements; material thickness, build variation and access needs could change a real decision.`;
+    state.claim = `I recommend ${project.contextDetails[0][0]} because the checked results meet the goal. Design v1 and v2 differ by the values shown in the comparison. The model assumes the supplied measurements are exact.`;
+    state.review = [true, true, true, true];
+    state.role = "teacher";
+    state.stage = 4;
+    save();
+    render(true);
+  }
+  if (name === "reset") {
+    state = fresh(project);
+    try { localStorage.removeItem(keyFor(project.id)); } catch { storageOK = false; }
+    restoreMessage = "Blank student workspace restored.";
+    save();
+    render(true);
   }
   if (name === "baseline") {
     const p = progress(project, state);
@@ -370,15 +444,15 @@ function doAction(name, checkId) {
     render();
   }
   if (name === "report")
-    download(`${project.id}-math-defense.txt`, report(), "text/plain;charset=utf-8");
+    download(`${project.id}-math-defense.html`, reportHTML(), "text/html;charset=utf-8");
   if (name === "print") {
-    let pre = $("#print-report");
-    if (!pre) {
-      pre = document.createElement("pre");
-      pre.id = "print-report";
-      document.body.append(pre);
+    let reportNode = $("#print-report");
+    if (!reportNode) {
+      reportNode = document.createElement("article");
+      reportNode.id = "print-report";
+      document.body.append(reportNode);
     }
-    pre.textContent = report();
+    reportNode.innerHTML = reportHTML();
     window.print();
   }
   if (name === "read" || name === "read-check") {
@@ -501,11 +575,17 @@ function report() {
   ];
   return lines.join("\n");
 }
+function reportHTML() {
+  const p = progress(project, state);
+  return `<h1>${esc(project.title)} · Mathematical Defense</h1><p>${p.ready ? "READY FOR HUMAN REVIEW" : "DRAFT — review unfinished items before submitting."}</p><p>${esc(UNIT_NAMES[project.unit])} · ${esc(state.choice || "Context not selected")} · ${p.passed}/6 checks</p><h2>Design and evidence model</h2>${modelView(p.m)}<h2>Recommendation</h2><p>${esc(state.claim || "Draft not yet written")}</p><h2>Revision and limitation</h2><p>${esc(state.revision || "Draft not yet written")}</p><h2>Evidence</h2><ol>${project.evidence.map((e, i) => `<li><strong>${esc(e)}</strong><p>${esc(state.evidence[i] || "Not yet explained")}</p></li>`).join("")}</ol><h2>Design comparison</h2>${state.baseline ? comparison(p) : "<p>Baseline not saved.</p>"}<p class="report-note">Numeric checks support review; they are not an automatic grade.</p>`;
+}
 if (!id) catalog();
 else if (!project) {
   main.innerHTML =
     '<h1>Choose an available project</h1><p>This project link is not in the studio catalogue.</p><a class="button" href="/curriculum/projects/studio/">Browse all missions</a>';
 } else {
   load();
+  if (new URL(location.href).searchParams.get("exemplar") === "true") state.role = "teacher";
   render();
+  if (new URL(location.href).searchParams.get("exemplar") === "true") doAction("exemplar");
 }
