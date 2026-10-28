@@ -384,7 +384,7 @@ function ratioTableHtml(cols, labels, pending = null) {
   return `<table class="tp-ratio">${pending ? `<caption>${esc(pending.label)}</caption>` : ""}${row(0)}${row(1)}</table>`;
 }
 
-// GCF: the student types factors (each one brings its partner). LCM: the student types the next multiple.
+// GCF: the student types each factor. LCM: the student types the next multiple.
 function factorLists(model) {
   const prompt =
     model.find === "gcf"
@@ -822,13 +822,17 @@ export function handleModelTap(target) {
       note.textContent = `${input.value.trim() || "That"} is not a factor of ${n}. A factor divides ${n} with nothing left over.`;
       return true;
     }
-    note.textContent = `${f} × ${n / f} = ${n}`;
-    for (const value of [f, n / f])
-      if (!chips.querySelector(`[data-chip="${value}"]`))
-        chips.insertAdjacentHTML(
-          "beforeend",
-          `<b data-chip="${value}">${value}</b>`,
-        );
+    if (chips.querySelector(`[data-chip="${f}"]`)) {
+      note.textContent = `${f} is already in the list for ${n}.`;
+      input.value = "";
+      input.focus();
+      return true;
+    }
+    note.textContent = `${f} is a factor of ${n}.`;
+    chips.insertAdjacentHTML(
+      "beforeend",
+      `<b data-chip="${f}">${f}</b>`,
+    );
     [...chips.children]
       .sort((a, b) => Number(a.dataset.chip) - Number(b.dataset.chip))
       .forEach((chip) => chips.append(chip));
@@ -961,6 +965,11 @@ if (typeof document !== "undefined" && !globalThis.__fluencyFillWired) {
     if (event.key === "Enter" && event.target.matches?.("input.tr-fill")) {
       event.preventDefault();
       settle(event.target, true);
+    }
+    if (event.key === "Enter" && event.target.matches?.("input[data-factor-of]")) {
+      event.preventDefault();
+      const n = event.target.dataset.factorOf;
+      event.target.closest(".tp-live")?.querySelector(`[data-add-factor="${n}"]`)?.click();
     }
   });
 }
