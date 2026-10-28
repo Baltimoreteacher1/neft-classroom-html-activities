@@ -8420,6 +8420,31 @@ export function renderLearnTab(config, visualLabHtml = "", workbenchHtml = "", m
     : "";
 
   const bridge = bridgeOf(config?.familyNotes);
+  /* The case opens Learn: one short story the tap-to-build model below will solve. A
+     lesson may author its own `caseFile` in its sidecar; otherwise its corner mission is
+     the case. Nothing is invented here. */
+  const caseText = config.familyNotes?.caseFile?.en
+    ? config.familyNotes.caseFile
+    : familyGuidance(config).mission;
+  /* One card per Learn block. The pager shows one card at a time (see initLearnCards);
+     an empty block is dropped, so a card never shows a blank page. */
+  const learnCard = (en, es, inner) =>
+    `<section class="learn-card" data-card-en="${esc(en)}" data-card-es="${esc(es)}" >${inner}</section>`;
+  const caseHtml = caseText?.en
+    ? `<section class="hw-case" aria-labelledby="hw_case_title">
+        <p class="hw-case-kicker" id="hw_case_title"><span class="lang-en">Tonight's case</span><span class="lang-es" lang="es">Caso de hoy</span></p>
+        <p class="hw-case-text"><span class="lang-en">${esc(caseText.en)}</span><span class="lang-es" lang="es">${esc(caseText.es)}</span></p>
+      </section>`
+    : "";
+  const planHtml = `${renderDinnerTalkCard(ask, topic)}
+      ${renderStudentPathwayBar(topic, bridge)}
+      ${renderConfidence("before")}
+      ${renderMysteryChallenge(mystery)}`;
+  const toolsHtml = `${workbenchLaunchHtml}
+${workbenchHtml}
+      <div class="learn-extended-block" id="hw_learn_quick">${parentDrawerHtml}${powerUpHtml}${renderLearnCoLearningModules(config, config.lessonId || "", topic)}</div>
+${renderWarmupHuddle(confusedGrownUpCard(config))}
+      <p class="tab-help-row learn-extended-block">${helpButton("💡 Need more help? / ¿Más ayuda?", { titleEn: "The big idea", titleEs: "La idea principal", en: keyEn, es: keyEs })}</p>`;
   return `
     <div ${tabPanelAttrs("learn")}>
       <nav class="learn-jump-row" aria-label="On this page / En esta página">
@@ -8428,18 +8453,12 @@ export function renderLearnTab(config, visualLabHtml = "", workbenchHtml = "", m
         ${visualLabHtml.trim() ? '<a href="#hw_learn_try"><span class="lang-en">Touch &amp; try</span><span class="lang-es" lang="es">Toca y prueba</span></a>' : ""}
         <a href="#hw_learn_quick"><span class="lang-en">Quick question</span><span class="lang-es" lang="es">Pregunta rápida</span></a>
       </nav>
-      <div class="learn-summary-block">${learning}</div>
-      ${renderDinnerTalkCard(ask, topic)}
-      ${renderStudentPathwayBar(topic, bridge)}
-      ${renderConfidence("before")}
-      ${renderMysteryChallenge(mystery)}
-      <div class="learn-big-idea-block" id="hw_learn_idea">${concept}</div>
-      <div class="learn-extended-block" id="hw_learn_try">${visualLabHtml}</div>
-${workbenchLaunchHtml}
-${workbenchHtml}
-      <div class="learn-extended-block" id="hw_learn_quick">${parentDrawerHtml}${powerUpHtml}${renderLearnCoLearningModules(config, config.lessonId || "", topic)}</div>
-${renderWarmupHuddle(confusedGrownUpCard(config))}
-      <p class="tab-help-row learn-extended-block">${helpButton("💡 Need more help? / ¿Más ayuda?", { titleEn: "The big idea", titleEs: "La idea principal", en: keyEn, es: keyEs })}</p>
+      ${learnCard("What we're learning", "Qué aprendemos", `<div class="learn-summary-block">${learning}</div>`)}
+      ${learnCard("Tonight's case", "Caso de hoy", caseHtml)}
+      ${learnCard("Build it", "Constrúyelo", `<div class="learn-extended-block" id="hw_learn_try">${visualLabHtml}</div>`)}
+      ${learnCard("Tonight's plan", "Plan de hoy", planHtml)}
+      ${learnCard("Big idea", "Idea principal", `<div class="learn-big-idea-block" id="hw_learn_idea">${concept}</div>`)}
+      ${learnCard("Tools and quick question", "Herramientas y pregunta rápida", toolsHtml)}
       <div class="tab-flow-nav">
         <button type="button" class="btn btn-primary flow-next-btn" onclick="goNextHomeworkStop('learn')">
           <span class="lang-en">Continue ➔</span>
@@ -8937,69 +8956,55 @@ export function renderPlayTabPanel(config, lessonId = "") {
     </div>`;
 }
 
+/* Family Coach for one practice problem: three levels in order, each written for
+   this problem (see familyCoachLevels in lib/homework-problems.mjs).
+   Ask: a question for the grown-up that names the next move, never the answer.
+   Show: the first representation or step, with the model when there is one.
+   Explain: the worked explanation. It is locked until the family has made a real
+   attempt (the page unlocks it; see unlockCoachExplain) and opens on one tap. */
 export function renderProblemHintButton(_problem, _visual = "", coach = {}) {
-  /* A single hint forced two bad choices: make it so vague it did not help, or
-     make it so specific it leaked the answer. The ladder gives one useful move
-     at a time and never uses the worked explanation or correct answer. */
+  const levels = coach.levels;
+  const ask = levels?.ask || { en: "", es: "" };
+  const show = levels?.show || { en: "", es: "" };
+  const explain = levels?.explain || { en: "", es: "" };
+  const visual = coach.visualSvg
+    ? `\n              <div class="coach-step-visual" style="margin:10px 0;">${coach.visualSvg}</div>`
+    : "";
   const steps = [
     {
-      labelEn: "Hint 1: Nudge — Notice",
-      labelEs: "Pista 1: Impulso — Observa",
-      en:
-        coach.noticeEn ||
-        "Say the question in your own words. Circle what you know and underline what you need to find.",
-      es:
-        coach.noticeEs ||
-        "Explica la pregunta con tus propias palabras. Encierra lo que sabes y subraya lo que debes hallar.",
+      labelEn: "Ask — a question for the grown-up",
+      labelEs: "Pregunta — para el adulto",
+      help: `<p class="lang-en">${esc(ask.en)}</p><p class="lang-es" lang="es">${esc(ask.es)}</p>`,
     },
     {
-      labelEn: "Hint 2: Visual Model Setup — Choose a strategy",
-      labelEs: "Pista 2: Modelo visual — Elige una estrategia",
-      en:
-        coach.strategyEn ||
-        "Ask: What picture, table, number line, or equation could show what is happening?",
-      es:
-        coach.strategyEs ||
-        "Pregunta: ¿Qué dibujo, tabla, recta numérica o ecuación puede mostrar lo que pasa?",
+      labelEn: "Show — the first step",
+      labelEs: "Muestra — el primer paso",
+      help: `<p class="lang-en">${esc(show.en)}</p><p class="lang-es" lang="es">${esc(show.es)}</p>${visual}
+              <button type="button" class="coach-scratchpad-btn" onclick="toggleScratchpad()">✏️ <span class="lang-en">Try it on the scratchpad</span><span class="lang-es" lang="es">Pruébalo en la pizarra</span></button>`,
     },
     {
-      labelEn: "Hint 3: Step-by-Step — Start the first step",
-      labelEs: "Pista 3: Paso a paso — Empieza el primer paso",
-      en:
-        coach.startEn ||
-        "Draw the model first. Label it with the numbers from the question, then write only the first calculation.",
-      es:
-        coach.startEs ||
-        "Dibuja primero el modelo. Rotúlalo con los números de la pregunta y escribe solo el primer cálculo.",
+      labelEn: "Explain — the worked answer",
+      labelEs: "Explica — la respuesta resuelta",
+      locked: true,
+      help: `<p class="lang-en">${esc(explain.en)}</p><p class="lang-es" lang="es">${esc(explain.es)}</p>`,
     },
   ];
   return `
-    <details class="problem-coach-ladder">
+    <details class="problem-coach-ladder" data-coach-levels>
       <summary>
-        <span>🪜 <span class="lang-en">Coach me step by step</span><span class="lang-es" lang="es">Guíame paso a paso</span></span>
-        <small><span class="lang-en">No answer spoilers</span><span class="lang-es" lang="es">Sin revelar la respuesta</span></small>
+        <span>🪜 <span class="lang-en">Family Coach: Ask, Show, Explain</span><span class="lang-es" lang="es">Guía familiar: Pregunta, Muestra, Explica</span></span>
+        <small><span class="lang-en">Ask and Show anytime</span><span class="lang-es" lang="es">Pregunta y Muestra en cualquier momento</span></small>
       </summary>
       <ol class="coach-ladder-list">${steps
         .map(
           (step, index) => `
-          <li class="coach-ladder-step">
-            <button type="button" aria-expanded="false" onclick="revealCoachStep(this)">
+          <li class="coach-ladder-step${step.locked ? " coach-explain-step" : ""}">
+            <button type="button" aria-expanded="false" onclick="revealCoachStep(this)"${step.locked ? " data-coach-explain disabled" : ""}>
               <span class="coach-step-number">${index + 1}</span>
               <span class="lang-en">${esc(step.labelEn)}</span><span class="lang-es" lang="es">${esc(step.labelEs)}</span>
             </button>
-            <div class="coach-step-help" hidden>
-              <p class="lang-en">${esc(step.en)}</p>
-              <p class="lang-es" lang="es">${esc(step.es)}</p>${
-                (index === 1 || index === 2) && coach.visualSvg
-                  ? `\n              <div class="coach-step-visual" style="margin:10px 0;">${coach.visualSvg}</div>`
-                  : ""
-              }${
-                index === 2
-                  ? `
-              <button type="button" class="coach-scratchpad-btn" onclick="toggleScratchpad()">✏️ <span class="lang-en">Try it on the scratchpad</span><span class="lang-es" lang="es">Pruébalo en la pizarra</span></button>`
-                  : ""
-              }
-            </div>
+            ${step.locked ? `<small class="coach-explain-lock" data-coach-lock><span class="lang-en">Make one try first. Explain opens after your first answer.</span><span class="lang-es" lang="es">Hagan un intento primero. Explica se abre después de la primera respuesta.</span></small>` : ""}
+            <div class="coach-step-help" hidden>${step.help}</div>
           </li>`,
         )
         .join("")}
@@ -9325,9 +9330,9 @@ export function renderRefrigeratorSheet(config = {}, lessonId = "") {
 const HOMEWORK_TABS = [
   { id: "learn", icon: "📖", en: "Learn", es: "Aprender" },
   { id: "words", icon: "📚", en: "Words", es: "Palabras" },
-  { id: "check", icon: "✅", en: "Check", es: "Repaso" },
+  { id: "check", icon: "✅", en: "Practice", es: "Práctica" },
   { id: "play", icon: "🎮", en: "Play", es: "Jugar" },
-  { id: "done", icon: "🎉", en: "Done", es: "Listo" },
+  { id: "done", icon: "🎉", en: "Celebrate", es: "Celebrar" },
 ];
 
 /**
@@ -9400,6 +9405,15 @@ export function renderHomeworkTabs(panelsHtml, helpDrawerHtml = "", unit = null)
         ${scratchpad}
         ${panelsHtml}
       </div>
+      <nav class="hw-stop-nav" aria-label="Stop navigation / Navegación de paradas">
+        <button type="button" class="btn btn-outline-primary hw-stop-back" id="hw_stop_back" onclick="hwStopStep(-1)">
+          <span class="lang-en">← Back</span><span class="lang-es" lang="es">← Atrás</span>
+        </button>
+        <span class="hw-stop-here" id="hw_stop_here" aria-live="polite"></span>
+        <button type="button" class="btn btn-primary hw-stop-next" id="hw_stop_next" onclick="hwStopStep(1)">
+          <span class="lang-en">Next →</span><span class="lang-es" lang="es">Siguiente →</span>
+        </button>
+      </nav>
     </div>
     ${helpDrawerHtml}`;
 }
@@ -10215,6 +10229,124 @@ function syncHomeworkChromeHeights() {
    20/30-minute choice. */
 var hwTabsBooted = false;
 
+/* Back and Next move through the stops of the family's route, one stop at a time.
+   Panels are hidden, never rebuilt, so every answer survives the move. */
+function hwStopStep(delta) {
+  var tabs = activeHomeworkRoute().tabs;
+  var next = tabs[tabs.indexOf(document.body.dataset.activeTab) + delta];
+  if (next) switchHomeworkTab(next);
+}
+
+/* Learn is a run of cards: one idea, one next action. The pager replaces the stop
+   bar while Learn is open; its last Next moves on to the next stop. */
+var learnCardIndex = 0;
+
+function learnCardList() {
+  var panel = document.querySelector('[data-tab-panel="learn"]');
+  if (!panel) return [];
+  return Array.from(panel.querySelectorAll(':scope > .learn-card')).filter(function (c) {
+    return (c.innerText || '').trim() !== '' || !!c.querySelector('svg, canvas, button, iframe, input');
+  });
+}
+
+function ensureLearnPager(panel) {
+  var pager = document.getElementById('hw_learn_pager');
+  if (pager || !panel) return pager;
+  pager = document.createElement('div');
+  pager.id = 'hw_learn_pager';
+  pager.className = 'learn-pager';
+  pager.innerHTML =
+    '<div class="learn-pager-dots" aria-hidden="true"></div>' +
+    '<p class="learn-pager-label" aria-live="polite"><span class="lang-en"></span><span class="lang-es" lang="es"></span></p>' +
+    '<div class="learn-pager-actions">' +
+    '<button type="button" class="btn btn-outline-primary learn-pager-back" onclick="learnStep(-1)"><span class="lang-en">← Back</span><span class="lang-es" lang="es">← Atrás</span></button>' +
+    '<button type="button" class="btn btn-primary learn-pager-next" onclick="learnStep(1)"><span class="lang-en">Next →</span><span class="lang-es" lang="es">Siguiente →</span></button>' +
+    '</div>';
+  panel.insertBefore(pager, panel.querySelector(':scope > .learn-card') || panel.firstChild);
+  /* Swipe left for the next card, right for the previous one (one listener, on the panel). */
+  var touchX = null, touchY = null;
+  panel.addEventListener('touchstart', function (e) { touchX = e.touches[0].clientX; touchY = e.touches[0].clientY; }, { passive: true });
+  panel.addEventListener('touchend', function (e) {
+    if (touchX === null || document.body.dataset.activeTab !== 'learn') return;
+    if (e.target.closest && e.target.closest('input, select, textarea, svg, canvas, .mathpad, [data-no-swipe]')) { touchX = null; return; }
+    var dx = e.changedTouches[0].clientX - touchX;
+    var dy = e.changedTouches[0].clientY - touchY;
+    touchX = null;
+    if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) learnStep(dx < 0 ? 1 : -1);
+  }, { passive: true });
+  return pager;
+}
+
+/* A link or chip that points into a card that is not showing opens that card first. */
+function revealLearnCardFor(el) {
+  var card = el && el.closest ? el.closest('.learn-card') : null;
+  if (!card || !card.hidden) return;
+  var index = learnCardList().indexOf(card);
+  if (index >= 0) setLearnCard(index, true);
+}
+
+document.addEventListener('click', function (e) {
+  var link = e.target.closest ? e.target.closest('a[href^="#"]') : null;
+  if (!link || link.getAttribute('href').length < 2) return;
+  var target = document.getElementById(link.getAttribute('href').slice(1));
+  if (target) revealLearnCardFor(target);
+}, true);
+
+function learnStep(delta) {
+  var cards = learnCardList();
+  if (!cards.length) return;
+  if (learnCardIndex + delta >= cards.length) {
+    if (typeof goNextHomeworkStop === 'function') goNextHomeworkStop('learn');
+    return;
+  }
+  setLearnCard(learnCardIndex + delta, true);
+}
+
+function setLearnCard(i, scroll) {
+  var panel = document.querySelector('[data-tab-panel="learn"]');
+  var cards = learnCardList();
+  if (!panel || !cards.length) return;
+  learnCardIndex = Math.max(0, Math.min(i, cards.length - 1));
+  var pager = ensureLearnPager(panel);
+  panel.querySelectorAll(':scope > .learn-card').forEach(function (c) { c.hidden = true; });
+  cards.forEach(function (c, k) { c.hidden = k !== learnCardIndex; });
+  panel.querySelectorAll('.learn-jump-row').forEach(function (n) { n.hidden = true; });
+  var card = cards[learnCardIndex];
+  var last = learnCardIndex >= cards.length - 1;
+  var dots = pager.querySelector('.learn-pager-dots');
+  dots.innerHTML = cards.map(function (c, k) { return '<span class="learn-pager-dot' + (k === learnCardIndex ? ' is-on' : (k < learnCardIndex ? ' is-done' : '')) + '"></span>'; }).join('');
+  var label = pager.querySelector('.learn-pager-label');
+  label.querySelector('.lang-en').textContent = 'Card ' + (learnCardIndex + 1) + ' of ' + cards.length + ' · ' + (card.dataset.cardEn || '');
+  label.querySelector('.lang-es').textContent = 'Tarjeta ' + (learnCardIndex + 1) + ' de ' + cards.length + ' · ' + (card.dataset.cardEs || '');
+  var backBtn = pager.querySelector('.learn-pager-back');
+  if (learnCardIndex === 0 && document.activeElement === backBtn) pager.querySelector('.learn-pager-next').focus();
+  backBtn.hidden = learnCardIndex === 0;
+  var next = pager.querySelector('.learn-pager-next');
+  next.querySelector('.lang-en').textContent = last ? 'Next stop →' : 'Next: ' + (cards[learnCardIndex + 1].dataset.cardEn || '') + ' →';
+  next.querySelector('.lang-es').textContent = last ? 'Siguiente parada →' : 'Siguiente: ' + (cards[learnCardIndex + 1].dataset.cardEs || '') + ' →';
+  var stopNav = document.querySelector('.hw-stop-nav');
+  if (stopNav) stopNav.hidden = true;
+  pager.hidden = false;
+  if (scroll && card && card.scrollIntoView) card.scrollIntoView({ block: 'start', behavior: (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) ? 'auto' : 'smooth' });
+}
+
+function updateStopNav(tabId) {
+  var tabs = activeHomeworkRoute().tabs;
+  var i = tabs.indexOf(tabId);
+  var back = document.getElementById('hw_stop_back');
+  var next = document.getElementById('hw_stop_next');
+  var here = document.getElementById('hw_stop_here');
+  var bar = document.querySelector('.hw-stop-nav');
+  if (bar) bar.hidden = tabId === 'learn' && learnCardList().length > 0;
+  if (back) back.hidden = i <= 0;
+  if (next) next.hidden = i < 0 || i >= tabs.length - 1;
+  if (here && i >= 0) here.textContent = (i + 1) + ' / ' + tabs.length;
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+  if (document.body.dataset.activeTab === 'learn') setLearnCard(0);
+});
+
 function switchHomeworkTab(tabId) {
   const leaving = document.body.dataset.activeTab;
   const allTabs = document.querySelectorAll('.homework-tab-btn');
@@ -10247,6 +10379,8 @@ function switchHomeworkTab(tabId) {
     p.hidden = p.dataset.tabPanel !== tabId;
   });
   document.body.dataset.activeTab = tabId;
+  updateStopNav(tabId);
+  if (tabId === 'learn') setLearnCard(learnCardIndex);
   // Practice is inside the Check panel. Recalculate only after that panel is
   // visible so route-aware scoring sees the two or six active core problems
   // instead of treating every problem as hidden behind its tab panel.
@@ -15710,7 +15844,8 @@ export const ARENA_CSS = `
   .hw-hero { padding: 24px 20px 40px; border-radius: 20px; }
   /* The stands would eat a third of a 375px hero. */
   .hw-hero::before, .hw-hero::after { width: 46px; opacity: .5; }
-  .homework-tab-chrome { margin-top: -22px; padding: 7px 7px 6px; border-radius: 16px; }
+  /* No negative top margin: it pulled the stop tracker over the Key Vocabulary and Theme row above it. */
+  .homework-tab-chrome { margin-top: 8px; padding: 7px 7px 6px; border-radius: 16px; }
 }
 
 @media print {

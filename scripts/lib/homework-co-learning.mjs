@@ -1152,25 +1152,23 @@ export function renderLearnCoLearningModules(config = {}, lessonId = "", topic =
 /**
  * 3. Per-Problem Caregiver Co-Pilot Callout Card
  */
-export function renderProblemCoPilotCard(it = {}, pIdx = 0, topic = "ratios") {
+export function renderProblemCoPilotCard(it = {}, pIdx = 0, topic = "ratios", levels = null) {
   const bank = getTopicCoLearningData(topic);
+  // The Ask line is this problem's own question (Family Coach level 1). The topic
+  // bank is only a fallback for a problem that has no levels at all.
   const socraticEn =
+    levels?.ask?.en ||
     it.coach ||
     bank.socraticPromptsEn[pIdx % bank.socraticPromptsEn.length] ||
     bank.socraticPromptsEn[0];
   const socraticEs =
+    levels?.ask?.es ||
     it.coachEs ||
     bank.socraticPromptsEs[pIdx % bank.socraticPromptsEs.length] ||
     bank.socraticPromptsEs[0];
-  const ansEn =
-    it.explanation ||
-    (Array.isArray(it.choices) && typeof it.correct === "number"
-      ? `Correct choice: ${it.choices[it.correct]}.`
-      : it.answer !== undefined
-        ? `Expected answer: ${it.answer}${it.unit ? " " + it.unit : ""}.`
-        : "Check the step-by-step model in the Solution Key below.");
-  const ansEs = it.explanationEs || ansEn;
 
+  // The worked answer is not repeated here: Family Coach level 3 (Explain) and the
+  // answer key below the problem carry it, so the answer has one home on the page.
   return `
     <aside class="hw-copilot-card hw-problem-copilot" id="hw_copilot_prob_${pIdx}" data-copilot-for="${pIdx}">
       <div class="hw-copilot-badge">🧭 ${bi(`Caregiver Co-Pilot · Problem ${pIdx + 1}`, `Copiloto familiar · Problema ${pIdx + 1}`)}</div>
@@ -1182,12 +1180,6 @@ export function renderProblemCoPilotCard(it = {}, pIdx = 0, topic = "ratios") {
         <strong>🌉 ${bi("Model Bridge:", "Puente del modelo:")}</strong>
         <span>${bi(bank.bridgeTodayEn, bank.bridgeTodayEs)}</span>
       </p>
-      <details class="hw-copilot-solution-key">
-        <summary>🔑 ${bi("Solution + Reasoning Key", "Clave de solución y razonamiento")}</summary>
-        <div class="hw-copilot-solution-body">
-          <p>${bi(ansEn, ansEs)}</p>
-        </div>
-      </details>
     </aside>`;
 }
 

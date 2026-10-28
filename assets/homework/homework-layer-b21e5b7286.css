@@ -6408,7 +6408,8 @@ body.lang-mode-es .concept-title-es { display: inline; }
   .hw-hero { padding: 24px 20px 40px; border-radius: 20px; }
   /* The stands would eat a third of a 375px hero. */
   .hw-hero::before, .hw-hero::after { width: 46px; opacity: .5; }
-  .homework-tab-chrome { margin-top: -22px; padding: 7px 7px 6px; border-radius: 16px; }
+  /* No negative top margin: it pulled the stop tracker over the Key Vocabulary and Theme row above it. */
+  .homework-tab-chrome { margin-top: 8px; padding: 7px 7px 6px; border-radius: 16px; }
 }
 
 @media print {
@@ -8788,7 +8789,8 @@ body[data-homework-route="quick"] #hw_cga .cga-quick-note { display: block; }
 }
 .lang-btn-short { display: none; }
 @media (max-width: 640px) { .lang-btn-long { display: none; } .lang-btn-short { display: inline; } }
-body[data-active-tab="check"] .ls-launcher { bottom: calc(92px + env(safe-area-inset-bottom, 0px)); }
+/* Inside the utility row the launcher is an in-flow icon, not a fixed overlay. */
+.hw-utility-controls .ls-launcher { position: static !important; inset: auto !important; width: 44px !important; height: 44px !important; min-height: 44px !important; padding: 0 !important; justify-content: center; margin: 0 !important; }
 
 /* Tonight at a glance. */
 .hw-tonight { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0 0; padding: 0; list-style: none; }
@@ -9006,6 +9008,32 @@ body[data-hw-pathway="express"] .hw-mystery { display: flex !important; }
 @media print {
   .hw-nights, .hw-tonight, .hw-mystery, .hw-confidence, .hw-grownup, .hw-teach, .hw-share, .hw-toast, dialog.hw-dialog, .hw-goal-card, .hw-dinner-talk, .hw-pathway-bar, .hw-voice-chips { display: none !important; }
 }
+/* Tonight's case (opens Learn) and the stop bar (Back / Next). */
+.hw-case { margin: 14px 0; padding: 14px 16px; border-left: 6px solid var(--teal-ink, #0c6f6b); border-radius: 14px; background: #f0fdfa; }
+.hw-case-kicker { margin: 0; font-size: 13px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--teal-ink, #0c6f6b); }
+.hw-case-text { margin: 6px 0 0; font-size: 17px; line-height: 1.5; color: var(--ink, #21313f); }
+.hw-stop-nav { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 18px 0 8px; }
+.hw-stop-nav .btn { min-height: 44px; font-size: 16px; }
+.hw-stop-nav [hidden] { display: none !important; }
+.hw-stop-here { font-size: 14px; font-weight: 800; color: var(--ink, #21313f); }
+/* Learn as cards: one idea on screen, one next action. */
+.learn-card[hidden], .learn-jump-row[hidden] { display: none !important; }
+.learn-pager { margin: 8px 0 14px; }
+.learn-pager-dots { display: flex; gap: 6px; align-items: center; margin-bottom: 8px; }
+.learn-pager-dot { width: 10px; height: 10px; border-radius: 999px; background: #cbd5e1; display: inline-block; transition: width .2s ease, background .2s ease; }
+.learn-pager-dot.is-done { background: #5eead4; }
+.learn-pager-dot.is-on { width: 26px; background: var(--teal-ink, #0c6f6b); }
+.learn-pager-label { margin: 0 0 10px; font-size: 15px; font-weight: 800; color: var(--ink, #21313f); }
+.learn-pager-actions { display: flex; justify-content: space-between; gap: 10px; }
+.learn-pager-actions .btn { min-height: 44px; font-size: 16px; }
+.learn-pager-back[hidden] { display: none !important; }
+@media (prefers-reduced-motion: reduce) { .learn-pager-dot { transition: none; } }
+.learn-card { scroll-margin-top: 170px; }
+#hw_panel_learn .tab-flow-nav { display: none; }
+.homework-tab-btn { min-width: 0; }
+.homework-tab-btn .tab-label { overflow-wrap: anywhere; line-height: 1.15; }
+.learn-pager-actions .btn, .hw-stop-nav .btn { white-space: nowrap; min-width: 112px; }
+@media (max-width: 640px) { .homework-tab-bar { gap: 2px; } .homework-tab-bar .homework-tab-btn { padding-left: 2px !important; padding-right: 2px !important; } }
 
 
 .dom-duo { margin: 0 0 12px; }

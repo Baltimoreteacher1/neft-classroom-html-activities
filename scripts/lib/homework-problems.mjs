@@ -181,6 +181,29 @@ export function questionGuide(item, topic = "") {
   };
 }
 
+/* Family Coach, three levels for one practice problem. Each level is written for
+   the problem it belongs to; nothing here is a topic-wide default when the problem
+   carries its own hints.
+   - ask:     one question-shaped prompt for the grown-up. It names the next move,
+              never the answer.
+   - show:    the first representation or step (hint 1 of the problem's ladder).
+   - explain: the accurate worked explanation. The page reveals it only after a
+              real attempt or an explicit tap (see renderProblemHintButton).
+   Returns { ask, show, explain } as { en, es } pairs. */
+export function familyCoachLevels(item, topic = "") {
+  const guide = questionGuide(item, topic);
+  const hints = item.hints || (item.hint ? [item.hint] : []);
+  const hintsEs = item.hintsEs || (item.hintEs ? [item.hintEs] : []);
+  return {
+    ask: { en: hints[1] || guide.coach, es: hintsEs[1] || guide.coachEs },
+    show: { en: hints[0] || guide.en, es: hintsEs[0] || guide.es },
+    explain: {
+      en: item.explanation || hints[2] || guide.coach,
+      es: item.explanationEs || hintsEs[2] || guide.coachEs,
+    },
+  };
+}
+
 export function spanishChoiceFeedback(item) {
   return (item.choices || []).map(
     (_, index) =>

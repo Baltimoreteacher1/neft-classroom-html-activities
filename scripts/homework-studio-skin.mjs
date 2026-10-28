@@ -801,6 +801,7 @@ export const STUDIO_SKIN_JS = `
 /* Helper: smooth scroll to element accounting for sticky rail and display:contents */
 function scrollStudioTo(el) {
   if (!el) return;
+  if (typeof revealLearnCardFor === 'function') revealLearnCardFor(el);
   var node = el;
   while (node && window.getComputedStyle(node).display === 'contents') {
     node = node.firstElementChild;

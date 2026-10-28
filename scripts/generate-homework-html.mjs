@@ -80,6 +80,7 @@ import { applyPracticeReview, loadPracticeReview } from "./lib/homework-practice
 import { PRINT_CSS, PRINT_JS } from "./lib/homework-print.mjs";
 import {
   answerKeyLines,
+  familyCoachLevels,
   matchingPairs,
   normalizeDragSort,
   questionGuide,
@@ -1169,11 +1170,9 @@ function renderProblem(it, pIdx, topic = "fallback", opts = {}) {
   const typeChip = renderProblemTypeChip(displayType);
   const guide = questionGuide(it, topic);
   const scaffold = renderWorkspace(pIdx, guide, topic, workspaceSvg, opts.unit);
+  const coachLevels = familyCoachLevels(it, topic);
   const coachLadder = {
-    strategyEn: guide.coach,
-    strategyEs: guide.coachEs,
-    startEn: guide.draw ? `Start here: ${guide.draw}` : "",
-    startEs: guide.drawEs ? `Empieza aquí: ${guide.drawEs}` : "",
+    levels: coachLevels,
     visualSvg: visualSvg || renderTopicModelSVG(topic, {}, "bridge"),
   };
   return `
@@ -1203,7 +1202,7 @@ function renderProblem(it, pIdx, topic = "fallback", opts = {}) {
         </div>
         <button type="button" class="btn btn-sm btn-primary" data-intelligence-next onclick="hwGoToNextPractice(${pIdx})" hidden></button>
       </aside>
-      ${renderProblemCoPilotCard(it, pIdx, topic)}
+      ${renderProblemCoPilotCard(it, pIdx, topic, coachLevels)}
       ${renderAnswerKey(it, pIdx, solvedVisualSvg)}
     </section>
   `;
@@ -5963,11 +5962,38 @@ function updateCertParentName(val) {
   if (pName) pName.textContent = val || "Family Coach";
 }
 
+/* Family Coach: Explain opens after a real answer. An answer is any checked choice or
+   any filled answer box in the problem; it is also re-read on load so a restored
+   answer keeps Explain open. */
+function unlockCoachExplain(section) {
+  if (!section) return;
+  section.querySelectorAll("[data-coach-explain]").forEach((btn) => {
+    btn.disabled = false;
+    const lock = btn.closest(".coach-explain-step")?.querySelector("[data-coach-lock]");
+    if (lock) lock.hidden = true;
+  });
+}
+
+function refreshCoachExplain(section) {
+  if (!section) return;
+  const answered = Array.from(section.querySelectorAll("input, textarea, select"))
+    .filter((el) => !el.closest(".hw-workspace-toggle, .workspace-svg-wrapper"))
+    .some((el) => (el.type === "radio" || el.type === "checkbox" ? el.checked : String(el.value || "").trim() !== ""));
+  if (answered) unlockCoachExplain(section);
+}
+
+document.addEventListener("change", (e) => refreshCoachExplain(e.target.closest && e.target.closest(".problem-section")));
+document.addEventListener("input", (e) => refreshCoachExplain(e.target.closest && e.target.closest(".problem-section")));
+document.addEventListener("DOMContentLoaded", () => {
+  document.querySelectorAll(".problem-section").forEach(refreshCoachExplain);
+});
+
 function checkProblem(idx, options) {
   const silent = options && options.silent;
   const priorAttempts = problemAttempts[idx] || 0;
   const section = document.getElementById("problem_" + idx);
   if (!section) return { correct: false, message: "" };
+  refreshCoachExplain(section);
 
   const type = section.dataset.problemType;
   let isProblemCorrect = true;
@@ -6313,7 +6339,12 @@ function checkProblem(idx, options) {
       const container = section.querySelector(".mc-options");
       const explanation = pickLangText(container?.dataset.explanation, container?.dataset.explanationEs);
       if (isProblemCorrect) {
-        feedbackMessage = pickLangText("✓ Correct! Read the explanation above.", "✓ ¡Correcto! Lee la explicación de arriba.");
+        // Name the idea the answer used: the problem's own first explanation sentence.
+        var ideaMatch = explanation ? explanation.match(/^.*?[.!?](?=\\s|$)/) : null;
+        var idea = ideaMatch ? ideaMatch[0] : (explanation || "");
+        feedbackMessage = idea
+          ? pickLangText("✓ Correct. You used this idea: " + idea, "✓ Correcto. Usaste esta idea: " + idea)
+          : pickLangText("✓ Correct! Read the explanation above.", "✓ ¡Correcto! Lee la explicación de arriba.");
       } else if (!section.querySelector("input[type='radio']:checked")) {
         feedbackMessage = pickLangText("Choose an answer, then check again.", "Elige una respuesta y revisa otra vez.");
       } else if (!revealIsDue(idx)) {

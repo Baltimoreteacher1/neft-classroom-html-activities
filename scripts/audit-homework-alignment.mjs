@@ -137,7 +137,7 @@ const REQUIRED_MARKERS = [
     id: "graduated-coaching",
     test: (h) =>
       h.includes('class="problem-coach-ladder"') &&
-      h.includes("No answer spoilers") &&
+      h.includes("data-coach-explain") &&
       h.includes("revealCoachStep"),
   },
   {

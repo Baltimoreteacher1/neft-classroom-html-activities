@@ -760,6 +760,124 @@ function syncHomeworkChromeHeights() {
    20/30-minute choice. */
 var hwTabsBooted = false;
 
+/* Back and Next move through the stops of the family's route, one stop at a time.
+   Panels are hidden, never rebuilt, so every answer survives the move. */
+function hwStopStep(delta) {
+  var tabs = activeHomeworkRoute().tabs;
+  var next = tabs[tabs.indexOf(document.body.dataset.activeTab) + delta];
+  if (next) switchHomeworkTab(next);
+}
+
+/* Learn is a run of cards: one idea, one next action. The pager replaces the stop
+   bar while Learn is open; its last Next moves on to the next stop. */
+var learnCardIndex = 0;
+
+function learnCardList() {
+  var panel = document.querySelector('[data-tab-panel="learn"]');
+  if (!panel) return [];
+  return Array.from(panel.querySelectorAll(':scope > .learn-card')).filter(function (c) {
+    return (c.innerText || '').trim() !== '' || !!c.querySelector('svg, canvas, button, iframe, input');
+  });
+}
+
+function ensureLearnPager(panel) {
+  var pager = document.getElementById('hw_learn_pager');
+  if (pager || !panel) return pager;
+  pager = document.createElement('div');
+  pager.id = 'hw_learn_pager';
+  pager.className = 'learn-pager';
+  pager.innerHTML =
+    '<div class="learn-pager-dots" aria-hidden="true"></div>' +
+    '<p class="learn-pager-label" aria-live="polite"><span class="lang-en"></span><span class="lang-es" lang="es"></span></p>' +
+    '<div class="learn-pager-actions">' +
+    '<button type="button" class="btn btn-outline-primary learn-pager-back" onclick="learnStep(-1)"><span class="lang-en">← Back</span><span class="lang-es" lang="es">← Atrás</span></button>' +
+    '<button type="button" class="btn btn-primary learn-pager-next" onclick="learnStep(1)"><span class="lang-en">Next →</span><span class="lang-es" lang="es">Siguiente →</span></button>' +
+    '</div>';
+  panel.insertBefore(pager, panel.querySelector(':scope > .learn-card') || panel.firstChild);
+  /* Swipe left for the next card, right for the previous one (one listener, on the panel). */
+  var touchX = null, touchY = null;
+  panel.addEventListener('touchstart', function (e) { touchX = e.touches[0].clientX; touchY = e.touches[0].clientY; }, { passive: true });
+  panel.addEventListener('touchend', function (e) {
+    if (touchX === null || document.body.dataset.activeTab !== 'learn') return;
+    if (e.target.closest && e.target.closest('input, select, textarea, svg, canvas, .mathpad, [data-no-swipe]')) { touchX = null; return; }
+    var dx = e.changedTouches[0].clientX - touchX;
+    var dy = e.changedTouches[0].clientY - touchY;
+    touchX = null;
+    if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) learnStep(dx < 0 ? 1 : -1);
+  }, { passive: true });
+  return pager;
+}
+
+/* A link or chip that points into a card that is not showing opens that card first. */
+function revealLearnCardFor(el) {
+  var card = el && el.closest ? el.closest('.learn-card') : null;
+  if (!card || !card.hidden) return;
+  var index = learnCardList().indexOf(card);
+  if (index >= 0) setLearnCard(index, true);
+}
+
+document.addEventListener('click', function (e) {
+  var link = e.target.closest ? e.target.closest('a[href^="#"]') : null;
+  if (!link || link.getAttribute('href').length < 2) return;
+  var target = document.getElementById(link.getAttribute('href').slice(1));
+  if (target) revealLearnCardFor(target);
+}, true);
+
+function learnStep(delta) {
+  var cards = learnCardList();
+  if (!cards.length) return;
+  if (learnCardIndex + delta >= cards.length) {
+    if (typeof goNextHomeworkStop === 'function') goNextHomeworkStop('learn');
+    return;
+  }
+  setLearnCard(learnCardIndex + delta, true);
+}
+
+function setLearnCard(i, scroll) {
+  var panel = document.querySelector('[data-tab-panel="learn"]');
+  var cards = learnCardList();
+  if (!panel || !cards.length) return;
+  learnCardIndex = Math.max(0, Math.min(i, cards.length - 1));
+  var pager = ensureLearnPager(panel);
+  panel.querySelectorAll(':scope > .learn-card').forEach(function (c) { c.hidden = true; });
+  cards.forEach(function (c, k) { c.hidden = k !== learnCardIndex; });
+  panel.querySelectorAll('.learn-jump-row').forEach(function (n) { n.hidden = true; });
+  var card = cards[learnCardIndex];
+  var last = learnCardIndex >= cards.length - 1;
+  var dots = pager.querySelector('.learn-pager-dots');
+  dots.innerHTML = cards.map(function (c, k) { return '<span class="learn-pager-dot' + (k === learnCardIndex ? ' is-on' : (k < learnCardIndex ? ' is-done' : '')) + '"></span>'; }).join('');
+  var label = pager.querySelector('.learn-pager-label');
+  label.querySelector('.lang-en').textContent = 'Card ' + (learnCardIndex + 1) + ' of ' + cards.length + ' · ' + (card.dataset.cardEn || '');
+  label.querySelector('.lang-es').textContent = 'Tarjeta ' + (learnCardIndex + 1) + ' de ' + cards.length + ' · ' + (card.dataset.cardEs || '');
+  var backBtn = pager.querySelector('.learn-pager-back');
+  if (learnCardIndex === 0 && document.activeElement === backBtn) pager.querySelector('.learn-pager-next').focus();
+  backBtn.hidden = learnCardIndex === 0;
+  var next = pager.querySelector('.learn-pager-next');
+  next.querySelector('.lang-en').textContent = last ? 'Next stop →' : 'Next: ' + (cards[learnCardIndex + 1].dataset.cardEn || '') + ' →';
+  next.querySelector('.lang-es').textContent = last ? 'Siguiente parada →' : 'Siguiente: ' + (cards[learnCardIndex + 1].dataset.cardEs || '') + ' →';
+  var stopNav = document.querySelector('.hw-stop-nav');
+  if (stopNav) stopNav.hidden = true;
+  pager.hidden = false;
+  if (scroll && card && card.scrollIntoView) card.scrollIntoView({ block: 'start', behavior: (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) ? 'auto' : 'smooth' });
+}
+
+function updateStopNav(tabId) {
+  var tabs = activeHomeworkRoute().tabs;
+  var i = tabs.indexOf(tabId);
+  var back = document.getElementById('hw_stop_back');
+  var next = document.getElementById('hw_stop_next');
+  var here = document.getElementById('hw_stop_here');
+  var bar = document.querySelector('.hw-stop-nav');
+  if (bar) bar.hidden = tabId === 'learn' && learnCardList().length > 0;
+  if (back) back.hidden = i <= 0;
+  if (next) next.hidden = i < 0 || i >= tabs.length - 1;
+  if (here && i >= 0) here.textContent = (i + 1) + ' / ' + tabs.length;
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+  if (document.body.dataset.activeTab === 'learn') setLearnCard(0);
+});
+
 function switchHomeworkTab(tabId) {
   const leaving = document.body.dataset.activeTab;
   const allTabs = document.querySelectorAll('.homework-tab-btn');
@@ -792,6 +910,8 @@ function switchHomeworkTab(tabId) {
     p.hidden = p.dataset.tabPanel !== tabId;
   });
   document.body.dataset.activeTab = tabId;
+  updateStopNav(tabId);
+  if (tabId === 'learn') setLearnCard(learnCardIndex);
   // Practice is inside the Check panel. Recalculate only after that panel is
   // visible so route-aware scoring sees the two or six active core problems
   // instead of treating every problem as hidden behind its tab panel.
@@ -2466,6 +2586,7 @@ window.addEventListener("afterprint", function () {
 /* Helper: smooth scroll to element accounting for sticky rail and display:contents */
 function scrollStudioTo(el) {
   if (!el) return;
+  if (typeof revealLearnCardFor === 'function') revealLearnCardFor(el);
   var node = el;
   while (node && window.getComputedStyle(node).display === 'contents') {
     node = node.firstElementChild;
@@ -4234,6 +4355,22 @@ var HW_GOAL_QUICK = 2;
 var HW_ROUTE_TIMES = {"quick":"5–10","full":"20–30"};
 var HW_ROUTE_DEFAULT = "quick";
 
+/* The Learning-supports icon lives in the stop tracker's utility row on every page, so
+   it never floats over the lesson text or the goal bar. */
+(function () {
+  var place = function () {
+    var util = document.getElementById('hw_utility_controls');
+    var launcher = document.querySelector('.ls-launcher');
+    if (!util || !launcher) return false;
+    if (launcher.parentElement !== util) util.appendChild(launcher);
+    return true;
+  };
+  if (place()) return;
+  var observer = new MutationObserver(function () { if (place()) observer.disconnect(); });
+  observer.observe(document.body, { childList: true, subtree: true });
+  setTimeout(function () { observer.disconnect(); }, 10000);
+})();
+
 function hwKey(name) { return 'hw_exp_' + (window.LESSON_ID || location.pathname) + '_' + name; }
 function hwGet(name) { try { return localStorage.getItem(hwKey(name)); } catch (e) { return null; } }
 /* Sign-off photos and voice notes (homework-guided-notes) are stored per lesson and are
@@ -4383,7 +4520,7 @@ function hwRenderGoal(celebrate) {
   var shown = Math.min(snap.done, snap.goal);
   var met = snap.done >= snap.goal;
   var text = document.getElementById('progress_text');
-  if (text) text.textContent = shown + ' / ' + snap.goal;
+  if (text) text.textContent = snap.done > 0 ? shown + ' / ' + snap.goal : (document.body.classList.contains('lang-mode-es') ? 'Sin empezar' : 'Not started');
   var bar = document.getElementById('progress_bar');
   if (bar) bar.style.width = (shown / snap.goal * 100) + '%';
   document.querySelectorAll('.hw-pips').forEach(function (el) { hwDrawPips(el, shown, snap.goal); });
@@ -7157,11 +7294,38 @@ function updateCertParentName(val) {
   if (pName) pName.textContent = val || "Family Coach";
 }
 
+/* Family Coach: Explain opens after a real answer. An answer is any checked choice or
+   any filled answer box in the problem; it is also re-read on load so a restored
+   answer keeps Explain open. */
+function unlockCoachExplain(section) {
+  if (!section) return;
+  section.querySelectorAll("[data-coach-explain]").forEach((btn) => {
+    btn.disabled = false;
+    const lock = btn.closest(".coach-explain-step")?.querySelector("[data-coach-lock]");
+    if (lock) lock.hidden = true;
+  });
+}
+
+function refreshCoachExplain(section) {
+  if (!section) return;
+  const answered = Array.from(section.querySelectorAll("input, textarea, select"))
+    .filter((el) => !el.closest(".hw-workspace-toggle, .workspace-svg-wrapper"))
+    .some((el) => (el.type === "radio" || el.type === "checkbox" ? el.checked : String(el.value || "").trim() !== ""));
+  if (answered) unlockCoachExplain(section);
+}
+
+document.addEventListener("change", (e) => refreshCoachExplain(e.target.closest && e.target.closest(".problem-section")));
+document.addEventListener("input", (e) => refreshCoachExplain(e.target.closest && e.target.closest(".problem-section")));
+document.addEventListener("DOMContentLoaded", () => {
+  document.querySelectorAll(".problem-section").forEach(refreshCoachExplain);
+});
+
 function checkProblem(idx, options) {
   const silent = options && options.silent;
   const priorAttempts = problemAttempts[idx] || 0;
   const section = document.getElementById("problem_" + idx);
   if (!section) return { correct: false, message: "" };
+  refreshCoachExplain(section);
 
   const type = section.dataset.problemType;
   let isProblemCorrect = true;
@@ -7507,7 +7671,12 @@ function checkProblem(idx, options) {
       const container = section.querySelector(".mc-options");
       const explanation = pickLangText(container?.dataset.explanation, container?.dataset.explanationEs);
       if (isProblemCorrect) {
-        feedbackMessage = pickLangText("✓ Correct! Read the explanation above.", "✓ ¡Correcto! Lee la explicación de arriba.");
+        // Name the idea the answer used: the problem's own first explanation sentence.
+        var ideaMatch = explanation ? explanation.match(/^.*?[.!?](?=\s|$)/) : null;
+        var idea = ideaMatch ? ideaMatch[0] : (explanation || "");
+        feedbackMessage = idea
+          ? pickLangText("✓ Correct. You used this idea: " + idea, "✓ Correcto. Usaste esta idea: " + idea)
+          : pickLangText("✓ Correct! Read the explanation above.", "✓ ¡Correcto! Lee la explicación de arriba.");
       } else if (!section.querySelector("input[type='radio']:checked")) {
         feedbackMessage = pickLangText("Choose an answer, then check again.", "Elige una respuesta y revisa otra vez.");
       } else if (!revealIsDue(idx)) {

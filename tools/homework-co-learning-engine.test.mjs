@@ -106,10 +106,12 @@ test("Part 1 vs Part 2 cognitive differentiation and Dual-Persona Mode Switcher 
     assert.match(html, /id="hw_kitchen_table_prompt"/);
     assert.match(html, /id="hw_print_socratic_footer"/);
 
-    // 3-step progressive hints
-    assert.match(html, /Hint 1: Nudge/);
-    assert.match(html, /Hint 2: Visual Model Setup/);
-    assert.match(html, /Hint 3: Step-by-Step/);
+    // Family Coach: three levels per problem, Explain locked until an attempt
+    assert.match(html, /Family Coach: Ask, Show, Explain/);
+    assert.match(html, /Ask — a question for the grown-up/);
+    assert.match(html, /Show — the first step/);
+    assert.match(html, /Explain — the worked answer/);
+    assert.match(html, /data-coach-explain disabled/);
   }
 });
 

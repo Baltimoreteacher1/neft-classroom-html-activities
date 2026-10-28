@@ -86,7 +86,8 @@ test("a wrong answer is not progress and nothing celebrates before the goal", ()
   w.document.body.dataset.homeworkRoute = "full"; // Keep Going: goal of four
   w.document.getElementById("problem_0").classList.add("incorrect");
   w.hwRenderGoal(true);
-  assert.equal(w.document.getElementById("progress_text").textContent, "0 / 4");
+  // Before any solved problem the progress reads "Not started", never "0 / 4".
+  assert.equal(w.document.getElementById("progress_text").textContent, "Not started");
   assert.equal(w.document.getElementById("goal_reached_banner").hidden, true);
   assert.equal(w.document.body.dataset.goalMet, "0");
   assert.equal(w.eval("bursts"), 0);
