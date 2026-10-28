@@ -345,7 +345,7 @@ const drive = {
     const t = [...host.querySelectorAll("button")].find((b) => /Test my pick/.test(b.textContent));
     t.click();
   },
-  receipt(host, spec, sol) {
+  receipt(host, _spec, sol) {
     radios(host, 0)[sol.zone].click();
     sol.flags.forEach((f, i) => radios(host, i + 1)[f ? 1 : 0].click());
   },
