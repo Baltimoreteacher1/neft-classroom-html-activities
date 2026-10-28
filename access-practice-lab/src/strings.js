@@ -1,0 +1,456 @@
+// Keyed bilingual UI copy for the family experience. Every entry carries English and Spanish;
+// {name} marks a value the app fills in. tools/access-i18n.test.mjs fails on a missing language,
+// on placeholders that differ between the two, and on a key the source uses but this file lacks.
+// Long-form guidance (tips, help topics, coaching) lives in content/family-help.json and
+// content/family-coach.json. Spanish addresses the caregiver as "usted" and the child as "tú".
+const s = (en, es) => ({ en, es });
+
+export const STRINGS = {
+  // ── family home ──────────────────────────────────────────────────────────
+  "hub.eyebrow": s("Family Corner", "Rincón de la familia"),
+  "hub.title": s("Let’s Practice English Together", "Practiquemos inglés juntos"),
+  "hub.lead": s(
+    "Fun, short activities to help your child listen, read, speak, and write in English. You don’t need to be an English teacher to help.",
+    "Actividades cortas y divertidas para que su hijo o hija escuche, lea, hable y escriba en inglés. No necesita ser maestro de inglés para ayudar.",
+  ),
+  "hub.lang.heading": s("Choose your language", "Elija su idioma"),
+  "hub.lang.note": s(
+    "The practice stays in English. Menus, help and guidance change language.",
+    "La práctica sigue en inglés. Los menús, la ayuda y las guías cambian de idioma.",
+  ),
+  "hub.cta.together": s("Practice with my child", "Practicar con mi hijo o hija"),
+  "hub.cta.independent": s(
+    "My child can practice independently",
+    "Mi hijo o hija puede practicar solo o sola",
+  ),
+  "hub.cta.continue": s("Continue where we left off", "Seguir donde nos quedamos"),
+  "hub.cta.how": s("How does this work?", "¿Cómo funciona?"),
+  "hub.steps.heading": s("Three easy steps", "Tres pasos fáciles"),
+  "hub.skills.heading": s("Practice by skill", "Practicar por destreza"),
+  "hub.skills.lead": s(
+    "Pick one skill, or let us mix them.",
+    "Elija una destreza, o nosotros las combinamos.",
+  ),
+  "hub.skill.Listening": s("Hear and understand.", "Escuchar y comprender."),
+  "hub.skill.Reading": s("Read and find meaning.", "Leer y encontrar el significado."),
+  "hub.skill.Speaking": s("Practice saying your ideas.", "Practicar cómo decir las ideas."),
+  "hub.skill.Writing": s("Put your ideas into words.", "Poner las ideas en palabras."),
+  "hub.skill.name.Listening": s("Listening", "Escuchar"),
+  "hub.skill.name.Reading": s("Reading", "Leer"),
+  "hub.skill.name.Speaking": s("Speaking", "Hablar"),
+  "hub.skill.name.Writing": s("Writing", "Escribir"),
+  "hub.skill.time": s("About {min} min each", "Unos {min} min cada una"),
+  "hub.skill.start": s("Start", "Empezar"),
+  "hub.reco.heading": s("Recommended practice", "Práctica recomendada"),
+  "hub.reco.basis.history": s(
+    "Chosen from the practice saved on this device. Unfinished work comes first.",
+    "Elegida según la práctica guardada en este dispositivo. Lo que quedó sin terminar va primero.",
+  ),
+  "hub.reco.basis.start": s(
+    "A good place to start. Nothing is saved on this device yet, so this is a general starting point, not a measure of your child’s level.",
+    "Un buen lugar para empezar. Aún no hay nada guardado en este dispositivo, así que es un punto de partida general, no una medida del nivel de su hijo o hija.",
+  ),
+  "hub.reco.start": s("Start this practice", "Empezar esta práctica"),
+  "hub.reco.size": s("{n} activities · about {min} min", "{n} actividades · unos {min} min"),
+  "hub.reco.empty": s(
+    "No activities are available for this grade group yet.",
+    "Todavía no hay actividades para este grupo de grados.",
+  ),
+  "hub.tips.heading": s(
+    "How to help — without giving the answers",
+    "Cómo ayudar sin dar las respuestas",
+  ),
+  "hub.progress.heading": s("Your progress at a glance", "Su progreso de un vistazo"),
+  "hub.progress.empty": s(
+    "Nothing practiced on this device yet. After the first activity, this area shows what you practiced.",
+    "Todavía no se ha practicado nada en este dispositivo. Después de la primera actividad, aquí verá lo que practicaron.",
+  ),
+  "hub.progress.link": s("See full progress", "Ver todo el progreso"),
+  "hub.more.heading": s("More for families", "Más para las familias"),
+  "hub.more.help": s("Help Center", "Centro de ayuda"),
+  "hub.more.save": s("Save & Continue Later", "Guardar y continuar después"),
+  "hub.more.setup": s("Change my setup", "Cambiar mi configuración"),
+  "hub.more.choose": s("Choose my own activities", "Elegir mis propias actividades"),
+  "hub.window.label": s("Maryland ACCESS testing", "Pruebas ACCESS en Maryland"),
+  "hub.window.note": s(
+    "Your child’s school picks the exact days.",
+    "La escuela de su hijo o hija escoge los días exactos.",
+  ),
+  "hub.disclaimer": s(
+    "Original practice inspired by WIDA ACCESS. It is not an official WIDA test, score or placement.",
+    "Práctica original inspirada en WIDA ACCESS. No es una prueba, puntaje ni ubicación oficial de WIDA.",
+  ),
+
+  // ── setup ────────────────────────────────────────────────────────────────
+  "setup.title": s("Quick setup", "Configuración rápida"),
+  "setup.lead": s(
+    "Four quick questions, about 30 seconds. We never ask for a name, birthday or email.",
+    "Cuatro preguntas rápidas, unos 30 segundos. Nunca pedimos nombre, fecha de nacimiento ni correo.",
+  ),
+  "setup.step": s("Step {n} of {total}", "Paso {n} de {total}"),
+  "setup.q.lang": s(
+    "Which language should the menus and help use?",
+    "¿En qué idioma quiere los menús y la ayuda?",
+  ),
+  "setup.q.grade": s("Which grades is your child in?", "¿En qué grados está su hijo o hija?"),
+  "setup.q.who": s("Who is practicing?", "¿Quién va a practicar?"),
+  "setup.q.time": s("How much time do you have?", "¿Cuánto tiempo tienen?"),
+  "setup.grade.35": s("Grades 3–5", "Grados 3.º a 5.º"),
+  "setup.grade.35.sub": s("Short, guided activities", "Actividades cortas y guiadas"),
+  "setup.grade.68": s("Grades 6–8", "Grados 6.º a 8.º"),
+  "setup.grade.68.sub": s("Practice and challenge", "Práctica y retos"),
+  "setup.who.together": s("Together", "Juntos"),
+  "setup.who.together.sub": s(
+    "An adult sits with the child and helps.",
+    "Un adulto se sienta con el niño o la niña y lo ayuda.",
+  ),
+  "setup.who.independent": s(
+    "My child practices on their own",
+    "Mi hijo o hija practica solo o sola",
+  ),
+  "setup.who.independent.sub": s(
+    "The Help My Child panel stays out of the way.",
+    "El panel para ayudar al niño o la niña queda fuera del camino.",
+  ),
+  "setup.time.5": s("5 minutes", "5 minutos"),
+  "setup.time.10": s("10 minutes", "10 minutos"),
+  "setup.time.15": s("15 minutes", "15 minutos"),
+  "setup.time.0": s("I’ll choose my own", "Yo elegiré"),
+  "setup.time.note": s(
+    "Times are estimates, not countdowns. There is no timer.",
+    "Los tiempos son estimados, no una cuenta regresiva. No hay cronómetro.",
+  ),
+  "setup.skip": s("Skip setup", "Omitir la configuración"),
+  "setup.back": s("Back", "Atrás"),
+  "setup.next": s("Next", "Siguiente"),
+  "setup.done.title": s("You’re ready", "Todo listo"),
+  "setup.done.lead": s(
+    "You can change these answers any time. Nothing is sent anywhere; they stay on this device.",
+    "Puede cambiar estas respuestas cuando quiera. No se envía nada; se quedan en este dispositivo.",
+  ),
+  "setup.done.start": s("Choose a practice session", "Elegir una sesión de práctica"),
+  "setup.done.change": s("Change", "Cambiar"),
+  "setup.summary.lang": s("Language", "Idioma"),
+  "setup.summary.grade": s("Grades", "Grados"),
+  "setup.summary.who": s("Practicing", "Quién practica"),
+  "setup.summary.time": s("Time", "Tiempo"),
+  "setup.unset": s("Not chosen", "Sin elegir"),
+
+  // ── practice planner ─────────────────────────────────────────────────────
+  "plan.title": s("Choose a practice session", "Elija una sesión de práctica"),
+  "plan.lead": s(
+    "Pick how long you have. We build a short, purposeful session from the lab’s activities.",
+    "Elija cuánto tiempo tienen. Armamos una sesión corta y con propósito con las actividades del laboratorio.",
+  ),
+  "plan.time.label": s("How long?", "¿Cuánto tiempo?"),
+  "plan.time.own": s("Choose my own", "Elegir yo"),
+  "plan.recommended": s("Today’s recommended practice", "Práctica recomendada de hoy"),
+  "plan.oneSkill": s("Practice one skill", "Practicar una destreza"),
+  "plan.allFour": s("Practice all four skills", "Practicar las cuatro destrezas"),
+  "plan.continue": s("Continue previous practice", "Seguir con la práctica anterior"),
+  "plan.review": s("Review something challenging", "Repasar algo difícil"),
+  "plan.own": s("Choose my own activities", "Elegir mis propias actividades"),
+  "plan.basis.history": s("Based on your saved practice", "Según su práctica guardada"),
+  "plan.basis.start": s("General starting suggestion", "Sugerencia general para empezar"),
+  "plan.size": s("{n} activities · about {min} min", "{n} actividades · unos {min} min"),
+  "plan.start": s("Start", "Empezar"),
+  "plan.none": s(
+    "Nothing to continue or review right now.",
+    "No hay nada que continuar ni repasar por ahora.",
+  ),
+  "plan.none.reason.continue": s(
+    "You have no unfinished activities.",
+    "No tiene actividades sin terminar.",
+  ),
+  "plan.none.reason.review": s(
+    "No activity needs another try right now.",
+    "Ninguna actividad necesita otro intento por ahora.",
+  ),
+  "plan.estimate": s(
+    "Times are estimates, not countdowns.",
+    "Los tiempos son estimados, no una cuenta regresiva.",
+  ),
+  "plan.grade": s("Grade group", "Grupo de grados"),
+  "plan.finder.heading": s("Find an activity", "Buscar una actividad"),
+  "plan.finder.matches": s("{n} matches", "{n} resultados"),
+  "plan.filter.skill": s("Skill", "Destreza"),
+  "plan.filter.time": s("Time", "Tiempo"),
+  "plan.filter.support": s("Support", "Apoyo"),
+  "plan.filter.any": s("Any", "Cualquiera"),
+  "plan.filter.upTo": s("Up to {n} min", "Hasta {n} min"),
+  "plan.support.A": s("More support", "Más apoyo"),
+  "plan.support.B": s("Some support", "Algo de apoyo"),
+  "plan.support.C": s("More independence", "Más independencia"),
+
+  // ── progress ─────────────────────────────────────────────────────────────
+  "prog.title": s("My Progress", "Mi progreso"),
+  "prog.lead": s(
+    "What we practiced on this device. Finishing an activity shows effort and practice, not mastery or a test score.",
+    "Lo que practicamos en este dispositivo. Terminar una actividad muestra esfuerzo y práctica, no dominio ni un puntaje de examen.",
+  ),
+  "prog.practiced.heading": s("What we practiced", "Lo que practicamos"),
+  "prog.practiced.today": s("Most recent practice", "Práctica más reciente"),
+  "prog.practiced.line": s(
+    "On {date} your child practiced {skill} in a {domain} activity.",
+    "El {date} su hijo o hija practicó {skill} en una actividad de {domain}.",
+  ),
+  "prog.practiced.line.general": s(
+    "On {date} your child practiced a {domain} activity.",
+    "El {date} su hijo o hija practicó una actividad de {domain}.",
+  ),
+  "prog.next.line": s(
+    "Next time, try another short {domain} activity and ask your child which words helped them understand.",
+    "La próxima vez, hagan otra actividad corta de {domain} y pregunte a su hijo o hija qué palabras lo o la ayudaron a entender.",
+  ),
+  "prog.empty": s(
+    "No practice saved on this device yet. Start with a short session and this page fills in.",
+    "Todavía no hay práctica guardada en este dispositivo. Empiecen con una sesión corta y esta página se llenará.",
+  ),
+  "prog.completed.heading": s("Activities completed", "Actividades terminadas"),
+  "prog.skills.heading": s("Skills we’ve tried", "Destrezas que hemos probado"),
+  "prog.skills.caption": s(
+    "How many activities were completed in each skill. This shows participation, not ability.",
+    "Cuántas actividades se terminaron en cada destreza. Muestra participación, no capacidad.",
+  ),
+  "prog.skills.count": s("{n} completed", "{n} terminadas"),
+  "prog.skills.none": s("Not tried yet", "Aún sin probar"),
+  "prog.improved.heading": s("What my child improved", "Lo que mejoró mi hijo o hija"),
+  "prog.improved.revised": s(
+    "Revised a draft after feedback: {n} time(s).",
+    "Revisó un borrador después de recibir comentarios: {n} vez/veces.",
+  ),
+  "prog.improved.retry": s(
+    "Found the right answer after a retry or help: {n} time(s).",
+    "Encontró la respuesta correcta después de reintentar o recibir ayuda: {n} vez/veces.",
+  ),
+  "prog.improved.none": s(
+    "There is not enough practice yet to show improvement. We only report what the saved work shows.",
+    "Todavía no hay suficiente práctica para mostrar mejoras. Solo informamos lo que muestra el trabajo guardado.",
+  ),
+  "prog.next.heading": s("What to practice next", "Qué practicar a continuación"),
+  "prog.next.try": s(
+    "Try a {domain} activity. You have not tried this skill yet.",
+    "Prueben una actividad de {domain}. Todavía no han probado esta destreza.",
+  ),
+  "prog.next.balance": s(
+    "Try another {domain} activity to keep the four skills balanced.",
+    "Prueben otra actividad de {domain} para equilibrar las cuatro destrezas.",
+  ),
+  "prog.next.go": s("Start a short session", "Empezar una sesión corta"),
+  "prog.measures.heading": s("What each measure means", "Qué significa cada medida"),
+  "prog.m.completed": s("Completed", "Terminadas"),
+  "prog.m.completed.text": s(
+    "An activity was finished. It shows effort, not how well it went.",
+    "Se terminó una actividad. Muestra esfuerzo, no qué tan bien salió.",
+  ),
+  "prog.m.independent": s("Independent", "Sin ayuda"),
+  "prog.m.independent.text": s(
+    "A choice was correct on the first try, with no help opened.",
+    "Una opción fue correcta al primer intento, sin abrir ayuda.",
+  ),
+  "prog.m.help": s("With help or a retry", "Con ayuda o un reintento"),
+  "prog.m.help.text": s(
+    "The answer was right after a hint, a model or another try. This is how learning happens.",
+    "La respuesta fue correcta después de una pista, un modelo u otro intento. Así se aprende.",
+  ),
+  "prog.m.revised": s("Revised", "Revisadas"),
+  "prog.m.revised.text": s(
+    "A written draft was improved. Earlier tries are kept.",
+    "Se mejoró un borrador escrito. Los intentos anteriores se conservan.",
+  ),
+  "prog.counts.completed": s("Completed", "Terminadas"),
+  "prog.counts.independent": s("Independent and correct", "Sin ayuda y correctas"),
+  "prog.counts.help": s("Correct with help or a retry", "Correctas con ayuda o reintento"),
+  "prog.counts.revised": s("Writing revised", "Escritos revisados"),
+  "prog.days": s("Days practiced", "Días de práctica"),
+  "prog.print": s("Print this page", "Imprimir esta página"),
+  "prog.print.note": s(
+    "The printed page uses the language you have selected.",
+    "La página impresa usa el idioma que tiene seleccionado.",
+  ),
+  "prog.save": s("Save & Continue Later", "Guardar y continuar después"),
+  "prog.disclaimer": s(
+    "This is practice information from this device. It is not an ACCESS score and does not predict one.",
+    "Esta es información de práctica de este dispositivo. No es un puntaje de ACCESS ni lo predice.",
+  ),
+
+  // ── save & continue later ───────────────────────────────────────────────
+  "save.title": s("Save & Continue Later", "Guardar y continuar después"),
+  "save.lead": s(
+    "Your work is already saved on this device. Use a backup code to keep it safe or to move to another device.",
+    "Su trabajo ya está guardado en este dispositivo. Use un código de respaldo para protegerlo o para pasarlo a otro dispositivo.",
+  ),
+  "save.where.heading": s("Where your work is saved", "Dónde se guarda su trabajo"),
+  "save.where.1": s(
+    "Saved in this browser, on this device. No account is needed.",
+    "Guardado en este navegador, en este dispositivo. No necesita cuenta.",
+  ),
+  "save.where.2": s(
+    "A backup code lets you restore the work later or on another device.",
+    "Un código de respaldo le permite recuperar el trabajo después o en otro dispositivo.",
+  ),
+  "save.where.3": s(
+    "A different device only sees your work after you paste the backup code there.",
+    "Otro dispositivo solo verá su trabajo cuando pegue allí el código de respaldo.",
+  ),
+  "save.where.4": s(
+    "Voice recordings are not saved. They disappear when the page closes.",
+    "Las grabaciones de voz no se guardan. Desaparecen al cerrar la página.",
+  ),
+  "save.where.5": s(
+    "Clearing browser data can erase saved work. Copy a code first.",
+    "Borrar los datos del navegador puede eliminar el trabajo guardado. Copie un código antes.",
+  ),
+  "save.copy": s("Copy backup code", "Copiar código de respaldo"),
+  "save.download": s("Download backup file", "Descargar archivo de respaldo"),
+  "save.copied": s(
+    "Backup code copied. Paste it in a safe place, like a note to yourself.",
+    "Código copiado. Péguelo en un lugar seguro, como una nota para usted.",
+  ),
+  "save.copyFail": s(
+    "Copy did not work. Select the code in the box and copy it by hand.",
+    "No se pudo copiar. Seleccione el código en el cuadro y cópielo a mano.",
+  ),
+  "save.downloaded": s("Backup file downloaded.", "Archivo de respaldo descargado."),
+  "save.private": s(
+    "Keep codes private: they can include written answers.",
+    "Guarde los códigos en privado: pueden incluir respuestas escritas.",
+  ),
+  "save.restore.heading": s("Restore from a backup code", "Recuperar con un código de respaldo"),
+  "save.restore.label": s("Paste your backup code", "Pegue su código de respaldo"),
+  "save.restore.button": s("Restore my work", "Recuperar mi trabajo"),
+  "save.restore.keep": s(
+    "Work already on this device is kept. Only missing activities are added.",
+    "El trabajo que ya está en este dispositivo se conserva. Solo se agregan las actividades que faltan.",
+  ),
+  "save.restore.ok": s(
+    "Backup restored. {n} saved record(s) added.",
+    "Respaldo recuperado. Se agregaron {n} registro(s).",
+  ),
+  "save.restore.empty": s(
+    "Nothing to add: this device already has that work.",
+    "No hay nada que agregar: este dispositivo ya tiene ese trabajo.",
+  ),
+  "save.restore.bad": s(
+    "That is not a backup code. Paste the whole code, which starts with ACCESS1.",
+    "Eso no es un código de respaldo. Pegue el código completo, que empieza con ACCESS1.",
+  ),
+  "save.restore.short": s(
+    "That looks like a short site code from Save & Resume. Use the site code button below instead.",
+    "Eso parece un código corto del sitio de Guardar y continuar. Use mejor el botón del código del sitio, más abajo.",
+  ),
+  "save.restore.empty.input": s("Paste a code first.", "Primero pegue un código."),
+  "save.site.heading": s("Short site code (optional)", "Código corto del sitio (opcional)"),
+  "save.site.text": s(
+    "The whole site can give you a short code too. It is separate from the backup code and depends on the site’s storage service. The backup code above always works.",
+    "El sitio completo también puede darle un código corto. Es distinto del código de respaldo y depende del servicio de almacenamiento del sitio. El código de respaldo de arriba siempre funciona.",
+  ),
+  "save.site.open": s("Open site Save & Resume", "Abrir Guardar y continuar del sitio"),
+  "save.site.unavailable": s(
+    "Site saving is not available right now. Use the backup code above.",
+    "El guardado del sitio no está disponible ahora. Use el código de respaldo de arriba.",
+  ),
+  "save.shared.heading": s("Sharing this device", "Compartir este dispositivo"),
+  "save.shared.text": s(
+    "Another child will see your child’s work unless you switch. First save a backup code, then start fresh for the next learner.",
+    "Otro niño o niña verá el trabajo de su hijo o hija a menos que cambie de perfil. Primero guarde un código de respaldo y luego empiece de cero para la siguiente persona.",
+  ),
+  "save.shared.have": s(
+    "I saved a backup code for the current learner",
+    "Guardé un código de respaldo del estudiante actual",
+  ),
+  "save.shared.switch": s(
+    "Start fresh for a new learner",
+    "Empezar de cero para un estudiante nuevo",
+  ),
+  "save.shared.confirm": s(
+    "Yes, clear this device and start fresh",
+    "Sí, borrar este dispositivo y empezar de cero",
+  ),
+  "save.shared.cancel": s("Cancel", "Cancelar"),
+  "save.shared.warn": s(
+    "This removes the saved practice from this browser. Your language choice stays. Restore it later with the backup code.",
+    "Esto elimina la práctica guardada en este navegador. Su elección de idioma se conserva. Podrá recuperarla después con el código de respaldo.",
+  ),
+  "save.shared.done": s(
+    "This device is ready for a new learner.",
+    "Este dispositivo está listo para un estudiante nuevo.",
+  ),
+  "save.shared.need": s(
+    "Copy a backup code first, or check the box to say you already saved one.",
+    "Primero copie un código de respaldo, o marque la casilla para indicar que ya guardó uno.",
+  ),
+  "save.status.unsaved": s(
+    "Storage is blocked in this browser. Work is kept only in this tab. Copy a backup code before you close it.",
+    "El almacenamiento está bloqueado en este navegador. El trabajo solo se conserva en esta pestaña. Copie un código antes de cerrarla.",
+  ),
+
+  // ── help center ──────────────────────────────────────────────────────────
+  "help.title": s("Family Help Center", "Centro de ayuda para familias"),
+  "help.lead": s(
+    "Short answers in plain language. Search, or open a card.",
+    "Respuestas cortas en lenguaje sencillo. Busque o abra una tarjeta.",
+  ),
+  "help.search.label": s("Search the help", "Buscar en la ayuda"),
+  "help.search.placeholder": s(
+    "For example: microphone, save, print",
+    "Por ejemplo: micrófono, guardar, imprimir",
+  ),
+  "help.count": s("{n} help topics shown", "{n} temas de ayuda"),
+  "help.none": s(
+    "No help topic matches. Try a shorter word.",
+    "Ningún tema coincide. Pruebe con una palabra más corta.",
+  ),
+  "help.quick.heading": s("Printable quick-start", "Guía de inicio rápido para imprimir"),
+  "help.quick.print": s("Print quick-start", "Imprimir guía de inicio rápido"),
+  "help.walk.heading": s("The practice page, step by step", "La página de práctica, paso a paso"),
+  "help.walk.1": s(
+    "Directions at the top, with a Hear directions button.",
+    "Las instrucciones arriba, con un botón para escucharlas.",
+  ),
+  "help.walk.2": s(
+    "Help My Child opens tips for the adult: before, during, after.",
+    "El panel para ayudar al niño o la niña abre consejos para el adulto: antes, durante y después.",
+  ),
+  "help.walk.3": s(
+    "The activity: listen, read, speak or write, then check.",
+    "La actividad: escuchar, leer, hablar o escribir, y luego revisar.",
+  ),
+  "help.walk.4": s(
+    "Feedback explains what to notice. You can try again.",
+    "Los comentarios explican en qué fijarse. Se puede intentar de nuevo.",
+  ),
+
+  // ── Co-Pilot ─────────────────────────────────────────────────────────────
+  "copilot.title": s("Help My Child", "Ayude a su hijo o hija"),
+  "copilot.optional": s("Tips for the adult", "Consejos para el adulto"),
+  "copilot.time": s("about {time}", "unos {time}"),
+  "copilot.scope": s(
+    "Your child is practicing: {skill}",
+    "Su hijo o hija está practicando: {skill}",
+  ),
+  "copilot.general": s(
+    "General tips. This activity does not list a specific goal, so these ideas work for any activity.",
+    "Consejos generales. Esta actividad no indica una meta específica, así que estas ideas sirven para cualquier actividad.",
+  ),
+  "copilot.note": s(
+    "Ask and listen. Let your child find the answer. You can talk in your home language.",
+    "Pregunte y escuche. Deje que su hijo o hija encuentre la respuesta. Pueden hablar en su idioma del hogar.",
+  ),
+  "copilot.phase.before": s("Before practice", "Antes de practicar"),
+  "copilot.phase.during": s("During practice", "Durante la práctica"),
+  "copilot.phase.after": s("After practice", "Después de practicar"),
+
+  // ── shared bits ──────────────────────────────────────────────────────────
+  "nav.family.home": s("Family home", "Inicio para familias"),
+  "nav.family.setup": s("Setup", "Configuración"),
+  "nav.family.practice": s("Practice", "Practicar"),
+  "nav.family.progress": s("Progress", "Progreso"),
+  "nav.family.help": s("Help", "Ayuda"),
+  "nav.family.save": s("Save", "Guardar"),
+  "nav.family.label": s("Family pages", "Páginas para familias"),
+  "crumb.lab": s("Lab", "Laboratorio"),
+  "crumb.family": s("Families", "Familias"),
+  "common.grades": s("Grades {band}", "Grados {band}"),
+  "common.minutes": s("{n} min", "{n} min"),
+};

@@ -19,7 +19,9 @@ export const progressKey = (band, domain, level) =>
 export const testKey = (id) => `${PREFIX}:test:${id}`;
 
 // ── preferences ───────────────────────────────────────────────────────────────
-const DEFAULT_PREFS = { band: "", tiers: {}, rate: 0.9, textSize: 1, lang: "en", focus: "" };
+// `lang` is "en" | "es" | "bi" (src/i18n.js); `langChosen` records that a person picked one, so the
+// first-visit banner shows once. `family` is the Family Setup Wizard answers (src/family/setup.js, schema v1).
+const DEFAULT_PREFS = { band: "", tiers: {}, rate: 0.9, textSize: 1, lang: "en", langChosen: false, focus: "" };
 export function getPrefs() {
   const saved = safeJson(storage.get(PREFS_KEY), {}) || {};
   const prefs = { ...DEFAULT_PREFS, ...saved, tiers: { ...(saved.tiers || {}) } };

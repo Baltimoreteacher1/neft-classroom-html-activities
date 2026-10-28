@@ -11,6 +11,7 @@ import { availableBands, loadIndex } from "./content.js";
 import * as rec from "./recorder.js";
 import { stop as stopSpeech, speak } from "./speech.js";
 import { getPrefs, setPrefs } from "./store.js";
+import { LANG_MODES } from "./i18n.js";
 import { mountShell } from "./shell.js";
 import { mountGloss } from "./glossary.js";
 import { registerSaveResume } from "./sync.js";
@@ -305,6 +306,25 @@ async function common(e) {
   if (rate) {
     ctx.setPrefs({ rate: Number(rate.dataset.rate) });
     render({ keepFocus: true });
+    return true;
+  }
+  const langBtn = t.closest("[data-lang-mode]");
+  if (langBtn) {
+    const mode = LANG_MODES.includes(langBtn.dataset.langMode) ? langBtn.dataset.langMode : "en";
+    ctx.setPrefs({ lang: mode, langChosen: true });
+    announce({ en: "Language: English.", es: "Idioma: español.", bi: "Language: English and Español. Idioma: inglés y español." }[mode]);
+    const fromPage = Boolean(langBtn.closest("#app"));
+    await render({ keepFocus: true });
+    // From the header, keep focus on the same control. From the page, a view may already have moved focus
+    // (the setup wizard moves it to the next question); otherwise return to the control that was used.
+    const stillLost = !document.activeElement || document.activeElement === document.body;
+    if (!fromPage) document.querySelector(`.lab-tools [data-lang-mode="${mode}"]`)?.focus({ preventScroll: true });
+    else if (stillLost) document.querySelector(`#app [data-lang-mode="${mode}"]`)?.focus({ preventScroll: true });
+    return true;
+  }
+  if (t.closest("[data-lang-keep]")) {
+    ctx.setPrefs({ langChosen: true });
+    document.getElementById("labLangBanner")?.remove();
     return true;
   }
   const band = t.closest("[data-set-band]");

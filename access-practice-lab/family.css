@@ -1,0 +1,640 @@
+/* ACCESS Practice Lab — family pages (/family, /family/start, practice, progress, help, save)
+   and the Help My Child panel on activities. Tokens come from ds.css. */
+
+/* ── shared family bits ─────────────────────────────────────────────────── */
+.fam-subnav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+  margin: var(--s-6) 0 var(--s-5);
+  padding: var(--s-2);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface);
+}
+.fam-subnav a {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  min-height: 2.75rem;
+  padding: var(--s-1) var(--s-4);
+  border-radius: 999px;
+  color: var(--ink-2);
+  font-weight: 700;
+  text-decoration: none;
+}
+.fam-subnav a:hover {
+  background: var(--surface-2);
+}
+.fam-subnav a[aria-current="page"] {
+  background: var(--ink);
+  color: #fff;
+}
+.fam-subnav .ico {
+  width: 1.15rem;
+  height: 1.15rem;
+}
+.fam-cta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-3);
+  margin-top: var(--s-5);
+}
+.fam-how {
+  font-weight: 700;
+  color: var(--brand-ink);
+  padding: var(--s-2);
+}
+.fam-lang {
+  margin-top: var(--s-4);
+}
+.fam-lang-label {
+  margin: 0 0 var(--s-2);
+  font-weight: 700;
+  color: var(--ink);
+}
+.fam-lang .fine,
+.fam-hero .fine {
+  margin-top: var(--s-2);
+}
+.fam-status,
+.fam-copy-status {
+  min-height: 1.5rem;
+  margin: var(--s-3) 0 0;
+  font-weight: 700;
+  color: var(--reading-ink);
+}
+.fam-warn {
+  border-color: var(--wrong);
+  background: var(--wrong-soft);
+  color: var(--ink);
+}
+.fam-tile {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: var(--radius-sm);
+  background: var(--brand-soft);
+  color: var(--brand-ink);
+}
+
+/* ── home ───────────────────────────────────────────────────────────────── */
+.fam-steps-intro,
+.fam-skills,
+.fam-tips,
+.fam-more {
+  margin-top: var(--s-7);
+}
+.fam-steps-intro h2,
+.fam-tips h2,
+.fam-more h2,
+.fam-reco h2,
+.fam-preview h2 {
+  margin-top: 0;
+}
+.fam-three {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--s-4);
+  margin: var(--s-4) 0;
+  padding: 0;
+  list-style: none;
+}
+.fam-three li {
+  display: flex;
+  gap: var(--s-3);
+  padding: var(--s-4);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+.fam-three h3 {
+  margin: 0 0 var(--s-1);
+  font-size: 1.125rem;
+}
+.fam-three p {
+  margin: 0;
+  color: var(--ink-2);
+}
+.fam-num {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  background: var(--brand);
+  color: #fff;
+  font-weight: 700;
+}
+.fam-grade-line {
+  margin: var(--s-4) 0 0;
+}
+.fam-skill-cards {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--s-4);
+  margin: var(--s-4) 0 0;
+  padding: 0;
+  list-style: none;
+}
+.fam-skill-cards li {
+  display: grid;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-top: 5px solid var(--room, var(--brand));
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+.fam-skill-cards .d-listening {
+  --room: var(--listening);
+}
+.fam-skill-cards .d-reading {
+  --room: var(--reading);
+}
+.fam-skill-cards .d-speaking {
+  --room: var(--speaking);
+}
+.fam-skill-cards .d-writing {
+  --room: var(--writing);
+}
+.fam-skill-cards img {
+  width: 100%;
+  height: auto;
+  background: var(--surface-2);
+}
+.fam-skill-cards li > div {
+  display: grid;
+  gap: var(--s-1);
+  padding: var(--s-4);
+}
+.fam-skill-cards h3 {
+  margin: 0;
+}
+.fam-skill-cards p {
+  margin: 0;
+}
+.fam-reco {
+  margin-top: var(--s-7);
+}
+.fam-basis {
+  margin: 0 0 var(--s-3);
+  padding: var(--s-2) var(--s-3);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  color: var(--ink-2);
+}
+.fam-alt {
+  display: inline-block;
+  margin-left: var(--s-3);
+  padding: var(--s-3) var(--s-2);
+  font-weight: 700;
+}
+.fam-tip-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--s-4);
+  margin: var(--s-4) 0 0;
+  padding: 0;
+  list-style: none;
+}
+.fam-tip-grid li {
+  display: flex;
+  gap: var(--s-3);
+  padding: var(--s-4);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+.fam-tip-grid h3 {
+  margin: 0 0 var(--s-1);
+  font-size: 1.0625rem;
+}
+.fam-tip-grid p {
+  margin: 0;
+  color: var(--ink-2);
+}
+.fam-preview {
+  margin-top: var(--s-7);
+}
+.fam-mini-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(7.5rem, 1fr));
+  gap: var(--s-3);
+  margin: var(--s-3) 0;
+  padding: 0;
+  list-style: none;
+}
+.fam-mini-stats li {
+  display: grid;
+  gap: var(--s-1);
+  padding: var(--s-3);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+}
+.fam-mini-stats strong {
+  font: 650 1.75rem/1 var(--font-display);
+}
+.fam-mini-stats span {
+  color: var(--ink-2);
+  font-size: 0.9375rem;
+}
+.fam-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-3);
+  margin: var(--s-3) 0;
+  padding: 0;
+  list-style: none;
+}
+.fam-links a {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  min-height: 2.75rem;
+  padding: var(--s-2) var(--s-4);
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--ink);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+/* ── setup ──────────────────────────────────────────────────────────────── */
+.fam-setup,
+.fam-plan,
+.fam-help,
+.fam-quick,
+.fam-walk,
+.fam-save {
+  max-width: 56rem;
+  margin-inline: auto;
+}
+.fam-save,
+.fam-quick,
+.fam-walk {
+  margin-top: var(--s-5);
+}
+.fam-step {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  margin: var(--s-4) 0;
+  font-weight: 700;
+}
+.fam-step .bar {
+  flex: 1;
+  max-width: 16rem;
+}
+.fam-choice-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+}
+.lang-switch-large {
+  flex-wrap: wrap;
+  max-width: 100%;
+  border-radius: var(--radius);
+}
+.lang-switch-large .lang-btn {
+  white-space: normal;
+}
+.fam-choice-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--s-3);
+}
+.fam-choice-4 {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+.fam-choice {
+  display: grid;
+  gap: var(--s-1);
+  min-height: 4.5rem;
+  padding: var(--s-4);
+  border: 2px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--ink);
+  font: 400 1rem var(--font);
+  text-align: left;
+  cursor: pointer;
+}
+.fam-choice strong {
+  font-size: 1.125rem;
+}
+.fam-choice span {
+  color: var(--ink-2);
+}
+.fam-choice:hover {
+  border-color: var(--brand);
+}
+.fam-choice[aria-pressed="true"] {
+  border-color: var(--brand);
+  background: var(--brand-soft);
+}
+.fam-setup-nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-3);
+  margin-top: var(--s-5);
+}
+.fam-summary {
+  display: grid;
+  gap: var(--s-2);
+  margin: var(--s-4) 0;
+}
+.fam-summary > div {
+  display: grid;
+  grid-template-columns: 8rem minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--s-3);
+  padding: var(--s-3) var(--s-4);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+}
+.fam-summary dt {
+  font-weight: 700;
+}
+.fam-summary dd {
+  margin: 0;
+}
+
+/* ── planner ────────────────────────────────────────────────────────────── */
+.fam-plan-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  justify-content: space-between;
+  gap: var(--s-4);
+  margin: var(--s-4) 0;
+}
+.fam-sessions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--s-3);
+  margin: var(--s-4) 0 0;
+  padding: 0;
+  list-style: none;
+}
+.fam-session {
+  display: flex;
+  gap: var(--s-3);
+  padding: var(--s-4);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+.fam-session > div {
+  min-width: 0;
+}
+.fam-session h3 {
+  margin: 0 0 var(--s-1);
+  font-size: 1.0625rem;
+}
+.fam-session p {
+  margin: 0 0 var(--s-2);
+}
+.fam-finder {
+  max-width: 56rem;
+  margin: var(--s-6) auto 0;
+}
+
+/* ── progress ───────────────────────────────────────────────────────────── */
+.fam-prog-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--s-4);
+  margin: var(--s-5) 0;
+}
+.fam-prog-grid .panel h2 {
+  margin-top: 0;
+}
+.fam-lines {
+  display: grid;
+  gap: var(--s-2);
+  margin: 0;
+  padding-left: 1.25rem;
+}
+.fam-skill-bars {
+  display: grid;
+  gap: var(--s-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.fam-skill-bars li {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+}
+.fam-skill-bars li > div {
+  flex: 1;
+  display: grid;
+  gap: var(--s-1);
+}
+.fam-skill-bars .bar > i {
+  background: var(--room, var(--brand));
+}
+.fam-skill-bars .d-listening {
+  --room: var(--listening);
+}
+.fam-skill-bars .d-reading {
+  --room: var(--reading);
+}
+.fam-skill-bars .d-speaking {
+  --room: var(--speaking);
+}
+.fam-skill-bars .d-writing {
+  --room: var(--writing);
+}
+.fam-measures {
+  grid-column: 1 / -1;
+}
+.fam-measures dl {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--s-3);
+  margin: 0;
+}
+.fam-measures dt {
+  font-weight: 700;
+}
+.fam-measures dd {
+  margin: 0;
+  color: var(--ink-2);
+}
+
+/* ── help + save ────────────────────────────────────────────────────────── */
+.fam-help-cards {
+  display: grid;
+  gap: var(--s-3);
+  margin: var(--s-4) 0 0;
+  padding: 0;
+  list-style: none;
+}
+.fam-help-cards details {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+.fam-help-cards summary {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  min-height: 3.5rem;
+  padding: var(--s-3) var(--s-4);
+  cursor: pointer;
+  list-style: none;
+}
+.fam-help-cards summary::-webkit-details-marker {
+  display: none;
+}
+.fam-help-cards summary strong {
+  display: block;
+}
+.fam-help-cards .fam-sum {
+  display: block;
+  color: var(--ink-2);
+}
+.fam-help-cards ol {
+  margin: 0;
+  padding: 0 var(--s-5) var(--s-4) 3.25rem;
+  display: grid;
+  gap: var(--s-2);
+}
+.fam-search {
+  margin-top: var(--s-4);
+}
+.fam-search input {
+  width: 100%;
+  min-height: 2.75rem;
+  font: 400 1rem var(--font);
+}
+.fam-none {
+  padding: var(--s-4);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+}
+.fam-code-box textarea,
+.fam-save textarea {
+  width: 100%;
+  font: 400 0.9375rem var(--font);
+}
+body.printing-quickstart .lab-top,
+body.printing-quickstart .lab-footer,
+body.printing-quickstart .fam-help,
+body.printing-quickstart .fam-walk,
+body.printing-quickstart .fam-subnav,
+body.printing-quickstart #labLangBanner {
+  display: none !important;
+}
+
+/* ── Help My Child (activities) ─────────────────────────────────────────── */
+.copilot {
+  margin: var(--s-4) 0;
+  border: 1.5px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+.copilot > summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-2) var(--s-3);
+  min-height: 3rem;
+  padding: var(--s-3) var(--s-4);
+  font-weight: 700;
+  cursor: pointer;
+}
+.copilot-title {
+  color: var(--ink);
+}
+.copilot > summary small {
+  color: var(--ink-3);
+  font-weight: 400;
+}
+.copilot-body {
+  display: grid;
+  gap: var(--s-4);
+  padding: 0 var(--s-4) var(--s-4);
+}
+.copilot-scope {
+  margin: 0;
+  padding: var(--s-3);
+  border-radius: var(--radius-sm);
+  background: var(--brand-soft);
+}
+.copilot-phase h3 {
+  margin: 0 0 var(--s-2);
+  font-size: 1.0625rem;
+}
+.copilot-phase ul {
+  display: grid;
+  gap: var(--s-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.copilot-phase li {
+  padding-left: var(--s-3);
+  border-left: 3px solid var(--line-strong);
+}
+.directions-es {
+  margin-top: var(--s-2);
+}
+.directions .ghost {
+  max-width: 100%;
+  white-space: normal;
+  text-align: left;
+}
+
+/* ── responsive ─────────────────────────────────────────────────────────── */
+@media (max-width: 960px) {
+  .fam-skill-cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .fam-three,
+  .fam-tip-grid {
+    grid-template-columns: 1fr;
+  }
+  .fam-prog-grid,
+  .fam-sessions,
+  .fam-measures dl {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@media (max-width: 560px) {
+  .fam-skill-cards,
+  .fam-choice-grid,
+  .fam-choice-4 {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .fam-subnav {
+    border-radius: var(--radius);
+  }
+  .fam-subnav a {
+    flex: 1 1 calc(50% - var(--s-2));
+    justify-content: center;
+  }
+  .fam-summary > div {
+    grid-template-columns: 1fr;
+  }
+  .fam-cta .btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+@media print {
+  .fam-subnav,
+  .fam-cta,
+  .copilot {
+    display: none;
+  }
+}

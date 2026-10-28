@@ -1,5 +1,6 @@
 // Lab chrome: brand mark, top navigation, "More" menu and footer. One place so the static shell in
 // index.html and the live (bilingual) chrome never describe different navigation.
+import { langSwitchHTML } from "./i18n.js";
 import { BASE, html, icon, raw } from "./util.js";
 
 export const LOGO = raw(
@@ -129,7 +130,8 @@ function menuGroups(band, T) {
   ];
 }
 
-export function navHTML(ctx, T) {
+export function navHTML(ctx, I) {
+  const { T, S } = I;
   const band = ctx.band;
   const view = ctx.route?.view || "home";
   const current = ACTIVE[view] || (PRACTICE_VIEWS.has(view) ? "practice" : "");
@@ -139,6 +141,7 @@ export function navHTML(ctx, T) {
       >${icon(l.icon)}<span>${l.label}</span></a
     >`;
   return html`${primary.map(topLink)}
+    ${langSwitchHTML(I.mode)}
     <details class="lab-utilities">
       <summary>${icon("menu")}<span>${T("More", "Más")}</span></summary>
       <div class="lab-utilities-body">
@@ -158,19 +161,19 @@ export function navHTML(ctx, T) {
           <button type="button" class="menu-item" data-lab-save>
             ${icon("save")}${T("Save and resume", "Guardar y continuar")}
           </button>
-          <span class="text-size" role="group" aria-label="${T("Text size", "Tamaño del texto")}"
+          <span class="text-size" role="group" aria-label="${S("Text size", "Tamaño del texto")}"
             ><button
               type="button"
               class="ts-btn"
               data-text-size="-0.1"
-              aria-label="${T("Smaller text", "Texto más pequeño")}"
+              aria-label="${S("Smaller text", "Texto más pequeño")}"
             >
               A−</button
             ><button
               type="button"
               class="ts-btn"
               data-text-size="0.1"
-              aria-label="${T("Bigger text", "Texto más grande")}"
+              aria-label="${S("Bigger text", "Texto más grande")}"
             >
               A+
             </button></span
@@ -183,7 +186,8 @@ export function navHTML(ctx, T) {
     </details>`;
 }
 
-export function footerHTML(ctx, T, savedCopy) {
+export function footerHTML(ctx, I) {
+  const { T, S } = I;
   const band = ctx.band;
   const q = `?grades=${band}`;
   return html`<div class="footer-grid">
@@ -193,7 +197,7 @@ export function footerHTML(ctx, T, savedCopy) {
           ${T("Classroom practice in listening, reading, speaking and writing for multilingual learners in grades 3–8, by EduWonderLab.", "Práctica de clase en comprensión auditiva, lectura, expresión oral y escritura para estudiantes multilingües de 3.º a 8.º grado, por EduWonderLab.")}
         </p>
       </div>
-      <nav class="footer-links" aria-label="${T("Practice", "Práctica")}">
+      <nav class="footer-links" aria-label="${S("Practice", "Práctica")}">
         <h2>${T("Practice", "Práctica")}</h2>
         <a href="${BASE}/Listening${q}">${T("Listening", "Escuchar")}</a>
         <a href="${BASE}/Reading${q}">${T("Reading", "Leer")}</a>
@@ -201,7 +205,7 @@ export function footerHTML(ctx, T, savedCopy) {
         <a href="${BASE}/Writing${q}">${T("Writing", "Escribir")}</a>
         <a href="${BASE}/tests${q}">${T("Practice tests", "Pruebas de práctica")}</a>
       </nav>
-      <nav class="footer-links" aria-label="${T("More", "Más")}">
+      <nav class="footer-links" aria-label="${S("More", "Más")}">
         <h2>${T("Support", "Apoyo")}</h2>
         <a href="${BASE}/passport${q}">${T("My Passport", "Pasaporte")}</a>
         <a href="${BASE}/family${q}">${T("Families", "Familias")}</a>

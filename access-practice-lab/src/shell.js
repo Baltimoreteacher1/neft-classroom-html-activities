@@ -1,8 +1,9 @@
 // Lab-only shell: shared utilities stay reachable without floating over student work.
+import { i18nFor, langSwitchHTML } from "./i18n.js";
 import { footerHTML, navHTML } from "./nav.js";
 import { toHtml, storage } from "./util.js";
 
-let spanish = false;
+let I = i18nFor({ prefs: {}, route: {} });
 let watching = false;
 let lastLocation = "";
 const savedCopy = {
@@ -16,7 +17,8 @@ function text(selector, value) {
 function updateSavePanel() {
   const panel = document.querySelector("#nsr-panel");
   if (!panel) return;
-  const T = (en, es) => spanish ? es : en;
+  const T = I.S;
+  const spanish = I.spanish;
   panel.lang = spanish ? "es" : "en";
   panel.setAttribute("aria-label", T("Save and resume your work", "Guardar y continuar el trabajo"));
   const labels = {
@@ -30,7 +32,7 @@ function updateSavePanel() {
     "#nsr-switch": T("Use a different code", "Usar otro código"),
     "#nsr-switch-student": T("Switch learner", "Cambiar de estudiante"),
     ".nsr-or": T("— or —", "— o —"),
-    ".nsr-foot": savedCopy[spanish ? "es" : "en"],
+    ".nsr-foot": I.S(savedCopy.en, savedCopy.es),
   };
   for (const [selector, value] of Object.entries(labels)) text(`#nsr-panel ${selector}`, value);
   for (const [id, label, placeholder] of [
@@ -52,21 +54,39 @@ function updateSavePanel() {
   };
   const dot = document.getElementById("nsr-dot");
   const status = Object.entries(states).find(([key]) => dot?.classList.contains(`nsr-dot-${key}`));
-  if (status) text("#nsr-status", status[1][spanish ? 1 : 0]);
+  if (status) text("#nsr-status", I.S(status[1][0], status[1][1]));
   const meta = [T("Alias", "Alias"), T("Class", "Clase"), T("Progress", "Progreso"), T("Last saved", "Último guardado")];
   panel.querySelectorAll("dt").forEach((node, i) => { if (meta[i] && node.textContent !== meta[i]) node.textContent = meta[i]; });
 }
+/** First visit: offer the three language modes once, on every page except the family hub (which has its own). */
+function mountLangBanner(ctx) {
+  const existing = document.getElementById("labLangBanner");
+  const wanted = !ctx.prefs.langChosen && ctx.route?.view !== "family";
+  if (!wanted) return existing?.remove();
+  if (existing) return;
+  const banner = document.createElement("div");
+  banner.id = "labLangBanner";
+  banner.className = "lang-banner no-print";
+  banner.setAttribute("role", "region");
+  banner.setAttribute("aria-label", "Language / Idioma");
+  banner.innerHTML =
+    `<p class="lang-banner-text"><strong>Choose your language</strong> <span lang="es">Elija su idioma</span></p>` +
+    toHtml(langSwitchHTML(ctx.prefs.lang || "en", { large: true, idPrefix: "banner" })) +
+    `<button type="button" class="lang-banner-skip" data-lang-keep>Keep English <span lang="es">/ Seguir en inglés</span></button>`;
+  document.getElementById("labStorageWarning")?.before(banner);
+}
+
 export function mountShell(ctx) {
-  spanish = ctx.route.view === "family" && ctx.prefs.lang === "es";
-  const T = (en, es) => spanish ? es : en;
-  document.documentElement.lang = spanish ? "es" : "en";
+  I = i18nFor(ctx);
+  const T = I.S;
+  document.documentElement.lang = I.pageLang;
   const nav = document.querySelector(".lab-tools");
   const currentLocation = location.pathname + location.search;
   const wasOpen = lastLocation === currentLocation && nav?.querySelector("details")?.open;
   lastLocation = currentLocation;
   if (nav) {
     nav.setAttribute("aria-label", T("Lab navigation", "Navegación del laboratorio"));
-    nav.innerHTML = toHtml(navHTML(ctx, T));
+    nav.innerHTML = toHtml(navHTML(ctx, I));
     nav.querySelector("details").open = Boolean(wasOpen);
     nav.querySelector("[data-lab-save]").addEventListener("click", () => {
       const engine = window.NeftSaveResume;
@@ -77,11 +97,19 @@ export function mountShell(ctx) {
   }
   document.querySelector(".crumbs")?.setAttribute("aria-label", T("Breadcrumb", "Ruta de navegación"));
   text(".skip-link", T("Skip to content", "Saltar al contenido"));
-  text(".lab-wordmark strong", T("ACCESS Practice Lab", "Laboratorio ACCESS"));
+  // The wordmark is a name: bilingual mode keeps it short rather than printing both languages.
+  text(".lab-wordmark strong", I.bilingual ? "ACCESS Practice Lab" : T("ACCESS Practice Lab", "Laboratorio ACCESS"));
+  // Plain-text swaps need their own language tag when Spanish sits on an English page.
+  const tagEs = I.spanish && I.pageLang !== "es";
+  for (const selector of [".skip-link", ".lab-wordmark strong"]) {
+    const node = document.querySelector(selector);
+    if (node) tagEs ? node.setAttribute("lang", "es") : node.removeAttribute("lang");
+  }
+  mountLangBanner(ctx);
   const footer = document.querySelector(".lab-footer");
   if (footer) {
     const build = footer.querySelector("#labBuild")?.dataset.build || "";
-    footer.innerHTML = toHtml(footerHTML(ctx, T));
+    footer.innerHTML = toHtml(footerHTML(ctx, I));
     const stamp = footer.querySelector("#labBuild");
     if (stamp && build) stamp.textContent = stamp.dataset.build = build;
   }

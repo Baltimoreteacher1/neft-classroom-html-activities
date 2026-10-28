@@ -22,6 +22,10 @@ export const loadIndex = () => getJson("index.json");
 export const loadShared = () => getJson("shared.json");
 export const loadRoad = () => getJson("road.json").catch(() => ({}));
 export const loadFamily = () => getJson("family.json").catch(() => null);
+export const loadFamilyCoach = () => getJson("family-coach.json").catch(() => null);
+export const loadFamilyHelp = () => getJson("family-help.json").catch(() => null);
+/** Spanish skill goals and directions by activity id (content/es-guide.json). */
+export const loadEsGuide = () => getJson("es-guide.json").then((d) => d.activities || {}).catch(() => ({}));
 export const loadGlossary = () => getJson("glossary.json").catch(() => null);
 export const loadStudioIndex = async () => (await loadIndex()).studio || { speaking: [], writing: [], missions: [], patterns: [] };
 export const loadSpeakingTasks = () => getJson("studio/speaking.json");

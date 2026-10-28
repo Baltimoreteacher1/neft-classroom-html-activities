@@ -13,7 +13,11 @@ import {
   transcriptHTML,
   vocabHTML,
 } from "../components.js";
-import { findActivity, loadDomain, loadGlossary, loadShared, ordered } from "../content.js";
+import { findActivity, loadDomain, loadEsGuide, loadFamilyCoach, loadGlossary, loadShared, ordered } from "../content.js";
+import { buildCoaching } from "../family/coach.js";
+import { copilotHTML } from "../family/copilot.js";
+import { getFamily } from "../family/state.js";
+import { i18nFor, makeI18n } from "../i18n.js";
 import { glossInline, glossList, glossListHTML, openGloss } from "../glossary.js";
 import {
   SPEAKING_CHECKS,
@@ -237,7 +241,7 @@ function feedbackHTML(a) {
     <p class="fb-title">${icon("retry")} Not yet — try again</p>
     ${a.hint && mode === "supported" ? html`<p>${a.hint}</p>` : html`<p>Review the task, then try again. Switch to Learn with help for a clue.</p>`}
     ${cur.domain === "Reading" ? html`<p>Look back at the sentence, table, or chart that supports your answer.</p>` : ""}
-    <button type="button" class="btn" data-retry>Try again</button>
+    <button type="button" class="btn" data-retry>${I.T("Try again", "Intentar de nuevo")}</button>
   </div>`;
 }
 
@@ -246,7 +250,7 @@ function interactiveHTML(a) {
   const answer = answerOf(cur.record, a.id);
   const reveal = c ? (c.ok || revealHeld(c) ? "mark" : c.reveal || "mark") : "none";
   return html`${cur.domain === "Speaking" ? html`<p class="fine warmup-note">${icon("speaking")} <strong>Warm-up.</strong> This builds ideas and words. Speaking ability is shown by speaking — when you are ready, <a href="${BASE}/speak?grades=${cur.band}">open the Speaking Studio</a>.</p>` : ""}${inputHTML(a, answer, { reveal })}
-  ${!c ? html`<button type="button" class="btn btn-primary btn-check" data-check ${isAnswered(a, answer ?? seedAnswer(a)) ? "" : raw("disabled")}>Check my answer</button>` : ""}
+  ${!c ? html`<button type="button" class="btn btn-primary btn-check" data-check ${isAnswered(a, answer ?? seedAnswer(a)) ? "" : raw("disabled")}>${I.T("Check my answer", "Revisar mi respuesta")}</button>` : ""}
   ${feedbackHTML(a)}
   ${cur.domain === "Speaking" && c?.ok ? recorderHTML(a.id, { level: cur.level, recording: isRecording(a.id) }) : ""}`;
 }
@@ -338,7 +342,7 @@ ${text}</textarea>
       ><span data-meter>${wordCount(text)} / about ${goal} words</span>
     </p>
     <div class="row-actions">
-      <button type="button" class="btn btn-primary" data-check-writing>Check my writing</button>
+      <button type="button" class="btn btn-primary" data-check-writing>${I.T("Check my writing", "Revisar mi escritura")}</button>
       <button type="button" class="btn btn-secondary" data-ask-coach>
         ${icon("detective")} Language Coach
       </button>
@@ -415,34 +419,60 @@ function answerZone(a) {
   return interactiveHTML(a);
 }
 
+const familyOf = (ctx) => getFamily(ctx.prefs);
+
+/** English directions, plus the Spanish translation in Español and bilingual modes (Spanish first in Español). */
+function directionsBlocks(a, es) {
+  const english = html`<div class="directions">
+    ${icon("info", "directions-icon")}
+    <p lang="en">${a.directions}</p>
+    <button type="button" class="ghost small" data-say="${a.directions}" aria-label="${I.S("Read the directions aloud", "Escuchar las instrucciones en inglés")}">
+      ${icon("volume")} ${I.T("Hear directions", "Escuchar en inglés")}
+    </button>
+  </div>`;
+  if (!(I.spanish || I.bilingual) || !es.directions) return english;
+  const spanish = html`<div class="directions directions-es">
+    ${icon("info", "directions-icon")}
+    <p lang="es">${es.directions}</p>
+    <button type="button" class="ghost small" data-say-es="${es.directions}" aria-label="Escuchar las instrucciones en español">
+      ${icon("volume")} Escuchar en español
+    </button>
+  </div>`;
+  return I.spanish ? html`${spanish}${english}` : html`${english}${spanish}`;
+}
+
 function navHTML() {
   if (cur.playlist) {
     const { ids, index, title } = cur.playlist;
     const at = (i) =>
       `${BASE}/play?ids=${ids.join(",")}&i=${i}&grades=${cur.band}&mode=${mode}${title ? `&t=${encodeURIComponent(title)}` : ""}`;
     return html`<nav class="act-nav" aria-label="Playlist">
-      ${index > 0 ? html`<a class="btn" href="${at(index - 1)}">${icon("arrow-left")} Previous</a>` : html`<span></span>`}
-      <span class="act-count">${index + 1} of ${ids.length}</span>
-      ${index < ids.length - 1 ? html`<a class="btn btn-primary" href="${at(index + 1)}">Next ${icon("arrow-right")}</a>` : html`<a class="btn btn-primary" href="${BASE}/passport">Finish ${icon("check")}</a>`}
+      ${index > 0 ? html`<a class="btn" href="${at(index - 1)}">${icon("arrow-left")} ${I.T("Previous", "Anterior")}</a>` : html`<span></span>`}
+      <span class="act-count">${I.T(`${index + 1} of ${ids.length}`, `${index + 1} de ${ids.length}`)}</span>
+      ${index < ids.length - 1 ? html`<a class="btn btn-primary" href="${at(index + 1)}">${I.T("Next", "Siguiente")} ${icon("arrow-right")}</a>` : html`<a class="btn btn-primary" href="${BASE}/family/progress">${I.T("Finish", "Terminar")} ${icon("check")}</a>`}
     </nav>`;
   }
   const prev = cur.list[cur.index - 1];
   const next = cur.list[cur.index + 1];
   return html`<nav class="act-nav" aria-label="Activities">
-    ${prev ? html`<a class="btn" href="${activityHref(cur.domain, cur.level, prev.id)}">${icon("arrow-left")} Previous</a>` : html`<span></span>`}
-    <span class="act-count">${cur.index + 1} of ${cur.list.length}</span>
-    ${next ? html`<a class="btn btn-primary" href="${activityHref(cur.domain, cur.level, next.id)}">Next ${icon("arrow-right")}</a>` : html`<a class="btn btn-primary" href="${roomHref(cur.domain, cur.level)}">Back to the room ${icon("check")}</a>`}
+    ${prev ? html`<a class="btn" href="${activityHref(cur.domain, cur.level, prev.id)}">${icon("arrow-left")} ${I.T("Previous", "Anterior")}</a>` : html`<span></span>`}
+    <span class="act-count">${I.T(`${cur.index + 1} of ${cur.list.length}`, `${cur.index + 1} de ${cur.list.length}`)}</span>
+    ${next ? html`<a class="btn btn-primary" href="${activityHref(cur.domain, cur.level, next.id)}">${I.T("Next", "Siguiente")} ${icon("arrow-right")}</a>` : html`<a class="btn btn-primary" href="${roomHref(cur.domain, cur.level)}">${I.T("Back to the room", "Volver a la sala")} ${icon("check")}</a>`}
   </nav>`;
 }
 
+let I = makeI18n("en");
+
 export async function render(ctx) {
   const generation = ++renderGeneration;
+  I = i18nFor(ctx);
   loading = true;
   const snapshot = { band: ctx.band, route: { ...ctx.route }, prefs: { ...ctx.prefs } };
   const requestedMode = new URLSearchParams(location.search).get("mode");
   const found = await resolve(snapshot);
   const shared = await loadShared().catch(() => null);
   glossary = await loadGlossary();
+  const [coachData, esGuide] = await Promise.all([loadFamilyCoach(), loadEsGuide()]);
   if (generation !== renderGeneration) return { title: "", html: "" };
   loading = false;
   if (!found?.activity)
@@ -469,6 +499,7 @@ export async function render(ctx) {
     picked = null;
   }
   const a = cur.activity;
+  const es = esGuide[a.id] || {};
   mode = requestedMode === "independent" ? "independent" : "supported";
   const meta = DOMAIN_META[cur.domain] || DOMAIN_META.Listening;
   const tier = TIERS[cur.level];
@@ -479,7 +510,7 @@ export async function render(ctx) {
   return {
     title: a.title,
     html: html`${crumbsHTML([
-        ["Lab", `${BASE}/`],
+        [I.S("Lab", "Laboratorio"), `${BASE}/`],
         [meta.room, roomHref(cur.domain, cur.level)],
         [a.title, null],
       ])}
@@ -489,27 +520,17 @@ export async function render(ctx) {
             <p class="act-context">
               ${icon(meta.icon)}<span>${meta.name} · ${tier?.name || cur.level} · ${bandLabel(cur.band)}${cur.playlist?.title ? ` · ${cur.playlist.title}` : ""}</span>
             </p>
-            <p class="act-step"><span>Activity ${step.n} of ${step.total}</span><span class="bar" aria-hidden="true"><i style="width:${Math.round((step.n / step.total) * 100)}%"></i></span></p>
+            <p class="act-step"><span>${I.T(`Activity ${step.n} of ${step.total}`, `Actividad ${step.n} de ${step.total}`)}</span><span class="bar" aria-hidden="true"><i style="width:${Math.round((step.n / step.total) * 100)}%"></i></span></p>
           </div>
           <h1 tabindex="-1">
-            ${a.title}${done ? html` <span class="done-badge">${icon("check")} Done</span>` : ""}
+            ${a.title}${done ? html` <span class="done-badge">${icon("check")} ${I.T("Done", "Hecho")}</span>` : ""}
           </h1>
-          <div class="directions">
-            ${icon("info", "directions-icon")}
-            <p>${a.directions}</p>
-            <button
-              type="button"
-              class="ghost small"
-              data-say="${a.directions}"
-              aria-label="Read the directions aloud"
-            >
-              ${icon("volume")} Hear directions
-            </button>
-          </div>
+          ${directionsBlocks(a, es)}
         </header>
+        ${familyOf(ctx).who === "independent" ? "" : copilotHTML(I, buildCoaching(a, cur.domain, coachData, es))}
         <div class="activity-workspace">
-        <section class="stimulus ${hasPassage ? "has-passage" : ""}" aria-labelledby="sourceHeading"><h2 id="sourceHeading" class="workbook-heading"><span aria-hidden="true">1</span> ${listening ? "Listen and notice" : cur.domain === "Reading" ? "Read and notice" : "Look and plan"}</h2>${stimulusHTML(a, ctx)}</section>
-        <div class="response-workspace"><h2 class="workbook-heading"><span aria-hidden="true">2</span> ${cur.domain === "Speaking" ? "Speak and review" : a.type === "worksheet" ? "Work on paper" : "Respond and review"}</h2>
+        <section class="stimulus ${hasPassage ? "has-passage" : ""}" aria-labelledby="sourceHeading"><h2 id="sourceHeading" class="workbook-heading"><span aria-hidden="true">1</span> ${listening ? I.T("Listen and notice", "Escucha y observa") : cur.domain === "Reading" ? I.T("Read and notice", "Lee y observa") : I.T("Look and plan", "Mira y planifica")}</h2>${stimulusHTML(a, ctx)}</section>
+        <div class="response-workspace"><h2 class="workbook-heading"><span aria-hidden="true">2</span> ${cur.domain === "Speaking" ? I.T("Speak and review", "Habla y revisa") : a.type === "worksheet" ? I.T("Work on paper", "Trabaja en papel") : I.T("Respond and review", "Responde y revisa")}</h2>
         ${
           hasPassage && a.prompt
             ? html`<div class="prompt response-prompt">
@@ -518,18 +539,18 @@ export async function render(ctx) {
               </div>`
             : ""
         }
-        <fieldset class="practice-mode"><legend>Practice mode</legend>
-          <label><input type="radio" name="practiceMode" value="supported" data-mode ${mode === "supported" ? raw("checked") : ""} data-nsr-ignore /> Learn with help</label>
-          <label><input type="radio" name="practiceMode" value="independent" data-mode ${mode === "independent" ? raw("checked") : ""} data-nsr-ignore /> Try independently</label>
-          <p class="fine">${mode === "independent" ? "Vocabulary, models and hints stay closed until you review. Replay and directions remain available. This is classroom practice, not a test simulation." : "Strategies and examples are available below. Help and retries are saved as supported practice."}</p></fieldset>
-        ${mode === "supported" ? html`<details class="strategy" data-help><summary>First: try a strategy</summary><p>${strategyFor(cur.domain)}</p></details>${vocabHTML(a, shared, { focused: Boolean(checked.get(a.id) || writingChecks.get(a.id)) })}` : ""}
+        <fieldset class="practice-mode"><legend>${I.T("Practice mode", "Modo de práctica")}</legend>
+          <label><input type="radio" name="practiceMode" value="supported" data-mode ${mode === "supported" ? raw("checked") : ""} data-nsr-ignore /> ${I.T("Learn with help", "Aprender con ayuda")}</label>
+          <label><input type="radio" name="practiceMode" value="independent" data-mode ${mode === "independent" ? raw("checked") : ""} data-nsr-ignore /> ${I.T("Try independently", "Intentar solo o sola")}</label>
+          <p class="fine">${mode === "independent" ? I.T("Vocabulary, models and hints stay closed until you review. Replay and directions remain available. This is classroom practice, not a test simulation.", "El vocabulario, los modelos y las pistas permanecen cerrados hasta que revises. Puedes volver a escuchar y ver las instrucciones. Es práctica de clase, no una simulación de examen.") : I.T("Strategies and examples are available below. Help and retries are saved as supported practice.", "Abajo hay estrategias y ejemplos. La ayuda y los reintentos se guardan como práctica con apoyo.")}</p></fieldset>
+        ${mode === "supported" ? html`<details class="strategy" data-help><summary>${I.T("First: try a strategy", "Primero: prueba una estrategia")}</summary><p>${strategyFor(cur.domain)}</p></details>${vocabHTML(a, shared, { focused: Boolean(checked.get(a.id) || writingChecks.get(a.id)) })}` : ""}
         ${!["constructed", "worksheet"].includes(a.type) && cur.record.results[a.id] ? html`<div class="fresh-attempt"><button type="button" class="btn" data-fresh-attempt>Start a fresh independent attempt</button><p class="fine">Save a summary of this attempt and clear its selected answers. Earlier help stays in your history; this is another try at the same task.</p></div>` : ""}
         <p id="answerValidation" role="alert" ${validation ? "" : raw("hidden")}>${validation}</p>
         <section class="answer-zone" aria-label="Your answer">${answerZone(a)}</section>
         </div></div>
-        <p class="save-explainer">Writing and checklists save on this browser. Audio does not. <a href="${BASE}/passport">Saved work and transfer options</a></p>
+        <p class="save-explainer">${I.T("Writing and checklists save on this browser. Audio does not.", "La escritura y las listas se guardan en este navegador. El audio no.")} <a href="${BASE}/family/save">${I.T("Save & continue later", "Guardar y continuar después")}</a></p>
       </article>
-      ${cur.record.results[a.id] ? html`<p class="practice-evidence"><strong>Practice evidence:</strong> ${evidenceLabel(cur.record.results[a.id])}. This is not a proficiency score.</p>` : ""}
+      ${cur.record.results[a.id] ? html`<p class="practice-evidence"><strong>${I.T("Practice evidence:", "Evidencia de práctica:")}</strong> ${evidenceLabel(cur.record.results[a.id])}. ${I.T("This is not a proficiency score.", "Esto no es una calificación del dominio del inglés.")}</p>` : ""}
       ${navHTML()}`,
   };
 }

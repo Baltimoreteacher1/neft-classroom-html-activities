@@ -1043,13 +1043,15 @@ details > summary + * {
 }
 
 /* ── responsive chrome ─────────────────────────────────────────────────── */
-@media (max-width: 1120px) {
+@media (max-width: 1320px) {
   .lab-tools > .top-link {
     display: none;
   }
   .menu-compact {
     display: grid;
   }
+}
+@media (max-width: 1120px) {
   .footer-grid {
     grid-template-columns: 1fr 1fr;
   }
@@ -1227,5 +1229,136 @@ h1:focus {
   }
   .ws-line {
     border-bottom-color: #555;
+  }
+}
+
+/* ── language modes: English · Español · both ───────────────────────────── */
+.lang-switch {
+  display: inline-flex;
+  flex: none;
+  gap: 0.15rem;
+  padding: 0.2rem;
+  border: 1.5px solid var(--line-strong);
+  border-radius: 999px;
+  background: var(--surface);
+}
+.lang-btn {
+  min-width: 2.75rem;
+  min-height: 2.5rem;
+  padding: 0.25rem 0.6rem;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ink-2);
+  font: 700 0.875rem var(--font);
+  cursor: pointer;
+}
+.lang-btn:hover {
+  background: var(--surface-2);
+  color: var(--ink);
+}
+.lang-btn[aria-pressed="true"] {
+  background: var(--ink);
+  color: #fff;
+}
+.lang-switch-large .lang-btn {
+  min-height: 2.75rem;
+  padding: 0.4rem 1.1rem;
+  font-size: 1rem;
+}
+.lab-tools .lang-switch {
+  margin-inline: 0.4rem;
+}
+.lang-banner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem 1rem;
+  padding: 0.7rem max(1rem, 3vw);
+  background: var(--brand-soft);
+  border-bottom: 1px solid var(--line);
+}
+.lang-banner-text {
+  margin: 0;
+  color: var(--ink);
+}
+.lang-banner-skip {
+  min-height: 2.75rem;
+  padding: 0.3rem 0.8rem;
+  border: 0;
+  background: transparent;
+  color: var(--brand-deep);
+  font: 700 0.9375rem var(--font);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* Bilingual mode: the Spanish sits under the English, smaller, never replacing it. */
+body {
+  --bi-es-color: var(--ink-3);
+}
+.btn-primary,
+.lab-footer,
+label:has(input:checked),
+[aria-pressed="true"],
+.done-badge,
+.top-link[aria-current="page"],
+.fam-subnav a[aria-current="page"] {
+  --bi-es-color: currentColor;
+}
+.bi-es {
+  display: block;
+  margin-top: 0.15em;
+  color: var(--bi-es-color);
+  font-size: 0.88em;
+  font-weight: 500;
+  font-style: normal;
+  line-height: 1.35;
+}
+.top-link .bi-es,
+.menu-group .bi-es,
+.footer-links .bi-es {
+  font-size: 0.75rem;
+  line-height: 1.1;
+  margin-top: 0;
+}
+.btn .bi-es,
+.band-btn .bi-es,
+.ghost .bi-es {
+  --bi-es-color: currentColor;
+  font-size: 0.8em;
+}
+.lang-banner,
+.fam-hero {
+  --bi-es-color: var(--ink-2);
+}
+.bi-pair {
+  display: inline-block;
+  text-align: inherit;
+}
+.btn .bi-pair,
+.band-btn .bi-pair {
+  text-align: center;
+}
+@media (max-width: 420px) {
+  .lab-top {
+    flex-wrap: wrap;
+    row-gap: 0.25rem;
+  }
+  .lab-brand {
+    flex: 1 1 10rem;
+  }
+  .lab-wordmark strong {
+    white-space: normal;
+  }
+  .lab-wordmark small {
+    display: none;
+  }
+  .lab-tools .lang-switch {
+    margin-inline: 0.15rem;
+  }
+  .lab-tools .lang-btn {
+    min-width: 2.5rem;
+    padding-inline: 0.4rem;
   }
 }
