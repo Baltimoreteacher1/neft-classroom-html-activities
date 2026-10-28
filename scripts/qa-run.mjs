@@ -874,6 +874,12 @@ const COVERAGE = [
   // _engine tests are discovered by run-tests), static links and syntax. 39 of the last 300
   // commits on main touched this folder and escalated to the FULL gate for no check that reads it.
   [/^graphic-novels\//, ["test", "validate:static", "validate:js-syntax", "check"]],
+  // Family app (family-app/**): a static PWA shell. Its behaviour is pinned by
+  // tools/family-app-pwa.test.mjs and tools/family-today.test.mjs (both traced by
+  // test-scope.mjs, so `test` runs only the ones that read a changed file). With no
+  // rule here every commit touching it escalated to the FULL gate, which takes the
+  // machine-wide gate lock and queues every other session's commit behind it.
+  [/^family-app\//, ["test", "validate:static", "validate:js-syntax", "check"]],
   [/^docs\/|\.md$/, []],
 ];
 
