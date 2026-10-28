@@ -5350,7 +5350,7 @@ export const ACTIVITIES = [
   },
   {
     path: "/curriculum/unit-4-test-review/",
-    title: "Unit 4 Test Review | Grade 6 Family Homework",
+    title: "Unit 4 Test Review | Grade 6 Optional Family Practice",
     category: "Hub",
     unit: null,
   },
