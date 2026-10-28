@@ -47,6 +47,9 @@
     const { host, item, solved } = o;
     const multi = item.fields.length > 1;
     const bits = item.facts.map((/** @type {Bi} */ f) => `<li>${bi(f)}</li>`).join("");
+    const ratioTable = item.ratioTable
+      ? `<div class="story-ratio-table"><div class="story-label">${tag("Equivalent ratio table", "Tabla de razones equivalentes")}</div><table><thead><tr><th scope="col">${tag("Percent", "Porcentaje")}</th><th scope="col">${tag("Amount", "Cantidad")}</th><th scope="col">${tag("Step", "Paso")}</th></tr></thead><tbody>${item.ratioTable.map((/** @type {any} */ r) => `<tr><th scope="row">${r.percent}%</th><td>${r.amount}</td><td>${bi(r.step)}</td></tr>`).join("")}</tbody></table></div>`
+      : "";
     const rows = item.fields
       .map((/** @type {any} */ f, /** @type {number} */ i) => {
         const u = unitOf(f.unit);
@@ -66,6 +69,7 @@
         <div class="story-label">${bi({ en: "What you know", es: "Lo que sabes" })}</div>
         <ul>${bits}</ul>
       </div>
+      ${ratioTable}
       <p class="item-q"><span class="story-label">${bi({ en: "Question", es: "Pregunta" })}</span>${bi(item.q)}</p>
       <div class="story-fields">${rows}</div>
       <div class="item-actions">

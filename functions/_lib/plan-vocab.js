@@ -2283,7 +2283,7 @@ export const ACTIVITIES = [
   },
   {
     path: "/math/unit-4/4-5-practice-studio/",
-    title: "Determine the Whole Given Part & Percent · Practice Studio (Grade 6)",
+    title: "Find the Whole with Ratio Tables · Practice Studio (Grade 6)",
     category: "Activity",
     unit: 4,
   },
