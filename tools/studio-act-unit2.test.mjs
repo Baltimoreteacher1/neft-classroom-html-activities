@@ -284,7 +284,7 @@ const mk = () => {
 
 /** drive the widget to the solution with clicks and keys; returns nothing, the last Check is read from calls.submit */
 const drive = {
-  askdots(host, spec, sol) {
+  askdots(host, _spec, sol) {
     radios(host, 0)[sol.who].click();
     radios(host, 1)[sol.when].click();
     radios(host, 2)[sol.predict === "stack" ? 0 : 1].click();
@@ -292,7 +292,7 @@ const drive = {
       .find((b) => /Ask six|Preguntar/.test(b.textContent))
       .click();
   },
-  skewsculptor(host, spec, sol) {
+  skewsculptor(host, _spec, sol) {
     const secs = [...host.querySelectorAll(".u2-bars")];
     const want = [sol.skew, sol.sym];
     secs.slice(0, 2).forEach((sec, s) => {
@@ -312,12 +312,12 @@ const drive = {
       sl.dispatchEvent(new win.Event("input", { bubbles: true }));
     }
   },
-  countoff(host, spec, sol) {
+  countoff(host, _spec, sol) {
     const bars = [...host.querySelectorAll(".u2-colwrap")];
     for (let i = 0; i <= sol.pick; i++) bars[i].querySelectorAll("button")[0].click();
     bars[sol.pick].querySelectorAll("button")[1].click();
   },
-  faultymed(host, spec, sol) {
+  faultymed(host, _spec, sol) {
     const radiosEl = radios(host, 0);
     radiosEl[sol.diag].click();
     const cards = () =>
@@ -331,7 +331,7 @@ const drive = {
   },
   boxtwins: dots,
   madtwins: dots,
-  chipsort(host, spec, sol) {
+  chipsort(host, _spec, sol) {
     const chips = [...host.querySelectorAll(".u2-row[role=group] .u2-opt")];
     const bins = [...host.querySelectorAll(".u2-opt")].filter((b) => !chips.includes(b));
     sol.place.forEach((b, i) => {
@@ -339,7 +339,7 @@ const drive = {
       bins[b].click();
     });
   },
-  headlinecourt(host, spec, sol) {
+  headlinecourt(host, _spec, sol) {
     radios(host, 0)[sol.buyer].click();
     radios(host, 1)[sol.assessor].click();
     const t = [...host.querySelectorAll("button")].find((b) => /Test my pick/.test(b.textContent));
