@@ -5404,6 +5404,12 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/family-app/",
+    title: "EduWonderLab Family",
+    category: "Hub",
+    unit: null,
+  },
+  {
     path: "/math/catch-up/",
     title: "Catch-Up & Bridge",
     category: "Hub",

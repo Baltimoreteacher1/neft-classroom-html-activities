@@ -887,6 +887,7 @@ const TOP_META = {
   directory: { s: "about", c: "Hub", a: "teacher" },
   "double-line-racer": { s: "arcade", c: "Game", a: "student" },
   "ecology-noam": { s: "personal", c: "Tool", a: "family" },
+  "family-app": { s: "math-tools", c: "Hub", a: "family" },
   "end-of-year": { s: "test-prep", c: "Practice", a: "student" },
   esol: { s: "reading", c: "Hub", a: "student" },
   "esol-reading-writing": { s: "reading", c: "Practice", a: "student" },

@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#17345f" />
     <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
+    <link rel="manifest" href="/math/fluency-lab/manifest.json" />
+    <link rel="apple-touch-icon" href="/math/fluency-lab/icons/icon-192.png" />
     <meta
       name="description"
       content="Grades 1–8 adaptive math practice, interactive visual lessons, daily review, starting-point checkups, teacher assignments, family progress, and printable practice."
@@ -565,5 +567,17 @@
     <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
     <script src="/shared/save-resume/save-resume-engine.js?v=20261026-v3" defer></script>
     <!-- nsr-injected:end -->
-  </body>
+  <script src="/family-app/home-link.js" defer></script>
+<!-- offline-sw-injected:begin (offline service worker — tools/inject-offline-sw.mjs) -->
+<script>
+  if ("serviceWorker" in navigator) {
+    addEventListener("load", function () {
+      navigator.serviceWorker
+        .register("/math/fluency-lab/sw.js", { scope: "/math/fluency-lab/" })
+        .catch(function () {});
+    });
+  }
+</script>
+<!-- offline-sw-injected:end -->
+</body>
 </html>
