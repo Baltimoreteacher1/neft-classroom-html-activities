@@ -21,7 +21,7 @@ export const STRINGS = {
   "hub.cta.together": s("Practice with my child", "Practicar con mi hijo o hija"),
   "hub.cta.independent": s(
     "My child can practice independently",
-    "Mi hijo o hija puede practicar solo o sola",
+    "Mi hijo o hija puede practicar por su cuenta",
   ),
   "hub.cta.continue": s("Continue where we left off", "Seguir donde nos quedamos"),
   "hub.cta.how": s("How does this work?", "¿Cómo funciona?"),
@@ -33,8 +33,8 @@ export const STRINGS = {
   ),
   "hub.skill.Listening": s("Hear and understand.", "Escuchar y comprender."),
   "hub.skill.Reading": s("Read and find meaning.", "Leer y encontrar el significado."),
-  "hub.skill.Speaking": s("Practice saying your ideas.", "Practicar cómo decir las ideas."),
-  "hub.skill.Writing": s("Put your ideas into words.", "Poner las ideas en palabras."),
+  "hub.skill.Speaking": s("Practice saying your ideas.", "Practicar cómo decir sus ideas."),
+  "hub.skill.Writing": s("Put your ideas into words.", "Poner sus ideas en palabras."),
   "hub.skill.name.Listening": s("Listening", "Escuchar"),
   "hub.skill.name.Reading": s("Reading", "Leer"),
   "hub.skill.name.Speaking": s("Speaking", "Hablar"),
@@ -85,7 +85,7 @@ export const STRINGS = {
   "setup.title": s("Quick setup", "Configuración rápida"),
   "setup.lead": s(
     "Four quick questions, about 30 seconds. We never ask for a name, birthday or email.",
-    "Cuatro preguntas rápidas, unos 30 segundos. Nunca pedimos nombre, fecha de nacimiento ni correo.",
+    "Cuatro preguntas rápidas, unos 30 segundos. Nunca pedimos nombre, fecha de nacimiento ni correo electrónico.",
   ),
   "setup.step": s("Step {n} of {total}", "Paso {n} de {total}"),
   "setup.q.lang": s(
@@ -95,22 +95,22 @@ export const STRINGS = {
   "setup.q.grade": s("Which grades is your child in?", "¿En qué grados está su hijo o hija?"),
   "setup.q.who": s("Who is practicing?", "¿Quién va a practicar?"),
   "setup.q.time": s("How much time do you have?", "¿Cuánto tiempo tienen?"),
-  "setup.grade.35": s("Grades 3–5", "Grados 3.º a 5.º"),
+  "setup.grade.35": s("Grades 3–5", "Grados 3 a 5"),
   "setup.grade.35.sub": s("Short, guided activities", "Actividades cortas y guiadas"),
-  "setup.grade.68": s("Grades 6–8", "Grados 6.º a 8.º"),
+  "setup.grade.68": s("Grades 6–8", "Grados 6 a 8"),
   "setup.grade.68.sub": s("Practice and challenge", "Práctica y retos"),
   "setup.who.together": s("Together", "Juntos"),
   "setup.who.together.sub": s(
     "An adult sits with the child and helps.",
-    "Un adulto se sienta con el niño o la niña y lo ayuda.",
+    "Un adulto se sienta junto al niño o la niña y le ayuda.",
   ),
   "setup.who.independent": s(
     "My child practices on their own",
-    "Mi hijo o hija practica solo o sola",
+    "Mi hijo o hija practica por su cuenta",
   ),
   "setup.who.independent.sub": s(
     "The Help My Child panel stays out of the way.",
-    "El panel para ayudar al niño o la niña queda fuera del camino.",
+    "El panel «Ayudar a mi hijo o hija» no estorba.",
   ),
   "setup.time.5": s("5 minutes", "5 minutos"),
   "setup.time.10": s("10 minutes", "10 minutos"),
@@ -118,7 +118,7 @@ export const STRINGS = {
   "setup.time.0": s("I’ll choose my own", "Yo elegiré"),
   "setup.time.note": s(
     "Times are estimates, not countdowns. There is no timer.",
-    "Los tiempos son estimados, no una cuenta regresiva. No hay cronómetro.",
+    "Los tiempos son aproximados, no una cuenta regresiva. No hay temporizador.",
   ),
   "setup.skip": s("Skip setup", "Omitir la configuración"),
   "setup.back": s("Back", "Atrás"),
@@ -126,7 +126,7 @@ export const STRINGS = {
   "setup.done.title": s("You’re ready", "Todo listo"),
   "setup.done.lead": s(
     "You can change these answers any time. Nothing is sent anywhere; they stay on this device.",
-    "Puede cambiar estas respuestas cuando quiera. No se envía nada; se quedan en este dispositivo.",
+    "Puede cambiar estas respuestas cuando quiera. No se envía nada a ningún lugar: todo se queda en este dispositivo.",
   ),
   "setup.done.start": s("Choose a practice session", "Elegir una sesión de práctica"),
   "setup.done.change": s("Change", "Cambiar"),
@@ -140,10 +140,10 @@ export const STRINGS = {
   "plan.title": s("Choose a practice session", "Elija una sesión de práctica"),
   "plan.lead": s(
     "Pick how long you have. We build a short, purposeful session from the lab’s activities.",
-    "Elija cuánto tiempo tienen. Armamos una sesión corta y con propósito con las actividades del laboratorio.",
+    "Elija cuánto tiempo tienen. Armamos una sesión corta y bien enfocada con las actividades del laboratorio.",
   ),
   "plan.time.label": s("How long?", "¿Cuánto tiempo?"),
-  "plan.time.own": s("Choose my own", "Elegir yo"),
+  "plan.time.own": s("Choose my own", "Elegir por mi cuenta"),
   "plan.recommended": s("Today’s recommended practice", "Práctica recomendada de hoy"),
   "plan.oneSkill": s("Practice one skill", "Practicar una destreza"),
   "plan.allFour": s("Practice all four skills", "Practicar las cuatro destrezas"),
@@ -168,7 +168,7 @@ export const STRINGS = {
   ),
   "plan.estimate": s(
     "Times are estimates, not countdowns.",
-    "Los tiempos son estimados, no una cuenta regresiva.",
+    "Los tiempos son aproximados, no una cuenta regresiva.",
   ),
   "plan.grade": s("Grade group", "Grupo de grados"),
   "plan.finder.heading": s("Find an activity", "Buscar una actividad"),
@@ -200,7 +200,7 @@ export const STRINGS = {
   ),
   "prog.next.line": s(
     "Next time, try another short {domain} activity and ask your child which words helped them understand.",
-    "La próxima vez, hagan otra actividad corta de {domain} y pregunte a su hijo o hija qué palabras lo o la ayudaron a entender.",
+    "La próxima vez, hagan otra actividad corta de {domain} y pregúntele a su hijo o hija qué palabras le ayudaron a entender.",
   ),
   "prog.empty": s(
     "No practice saved on this device yet. Start with a short session and this page fills in.",
@@ -214,14 +214,14 @@ export const STRINGS = {
   ),
   "prog.skills.count": s("{n} completed", "{n} terminadas"),
   "prog.skills.none": s("Not tried yet", "Aún sin probar"),
-  "prog.improved.heading": s("What my child improved", "Lo que mejoró mi hijo o hija"),
+  "prog.improved.heading": s("What my child improved", "En qué ha mejorado mi hijo o hija"),
   "prog.improved.revised": s(
     "Revised a draft after feedback: {n} time(s).",
-    "Revisó un borrador después de recibir comentarios: {n} vez/veces.",
+    "Veces que revisó un borrador después de recibir comentarios: {n}.",
   ),
   "prog.improved.retry": s(
     "Found the right answer after a retry or help: {n} time(s).",
-    "Encontró la respuesta correcta después de reintentar o recibir ayuda: {n} vez/veces.",
+    "Veces que encontró la respuesta correcta después de reintentar o recibir ayuda: {n}.",
   ),
   "prog.improved.none": s(
     "There is not enough practice yet to show improvement. We only report what the saved work shows.",
@@ -246,14 +246,14 @@ export const STRINGS = {
   "prog.m.independent": s("Independent", "Sin ayuda"),
   "prog.m.independent.text": s(
     "A choice was correct on the first try, with no help opened.",
-    "Una opción fue correcta al primer intento, sin abrir ayuda.",
+    "Una opción fue correcta al primer intento, sin abrir la ayuda.",
   ),
   "prog.m.help": s("With help or a retry", "Con ayuda o un reintento"),
   "prog.m.help.text": s(
     "The answer was right after a hint, a model or another try. This is how learning happens.",
     "La respuesta fue correcta después de una pista, un modelo u otro intento. Así se aprende.",
   ),
-  "prog.m.revised": s("Revised", "Revisadas"),
+  "prog.m.revised": s("Revised", "Escritos revisados"),
   "prog.m.revised.text": s(
     "A written draft was improved. Earlier tries are kept.",
     "Se mejoró un borrador escrito. Los intentos anteriores se conservan.",
@@ -266,7 +266,7 @@ export const STRINGS = {
   "prog.print": s("Print this page", "Imprimir esta página"),
   "prog.print.note": s(
     "The printed page uses the language you have selected.",
-    "La página impresa usa el idioma que tiene seleccionado.",
+    "La página impresa usa el idioma que usted seleccionó.",
   ),
   "prog.save": s("Save & Continue Later", "Guardar y continuar después"),
   "prog.disclaimer": s(
@@ -278,7 +278,7 @@ export const STRINGS = {
   "save.title": s("Save & Continue Later", "Guardar y continuar después"),
   "save.lead": s(
     "Your work is already saved on this device. Use a backup code to keep it safe or to move to another device.",
-    "Su trabajo ya está guardado en este dispositivo. Use un código de respaldo para protegerlo o para pasarlo a otro dispositivo.",
+    "Su trabajo ya está guardado en este dispositivo. Use un código de respaldo para guardarlo de forma segura o llevarlo a otro dispositivo.",
   ),
   "save.where.heading": s("Where your work is saved", "Dónde se guarda su trabajo"),
   "save.where.1": s(
@@ -299,13 +299,13 @@ export const STRINGS = {
   ),
   "save.where.5": s(
     "Clearing browser data can erase saved work. Copy a code first.",
-    "Borrar los datos del navegador puede eliminar el trabajo guardado. Copie un código antes.",
+    "Borrar los datos del navegador puede eliminar el trabajo guardado. Antes, copie un código.",
   ),
   "save.copy": s("Copy backup code", "Copiar código de respaldo"),
   "save.download": s("Download backup file", "Descargar archivo de respaldo"),
   "save.copied": s(
     "Backup code copied. Paste it in a safe place, like a note to yourself.",
-    "Código copiado. Péguelo en un lugar seguro, como una nota para usted.",
+    "Código de respaldo copiado. Péguelo en un lugar seguro, como una nota personal.",
   ),
   "save.copyFail": s(
     "Copy did not work. Select the code in the box and copy it by hand.",
@@ -325,7 +325,7 @@ export const STRINGS = {
   ),
   "save.restore.ok": s(
     "Backup restored. {n} saved record(s) added.",
-    "Respaldo recuperado. Se agregaron {n} registro(s).",
+    "Respaldo recuperado. Registros agregados: {n}.",
   ),
   "save.restore.empty": s(
     "Nothing to add: this device already has that work.",
@@ -337,15 +337,15 @@ export const STRINGS = {
   ),
   "save.restore.short": s(
     "That looks like a short site code from Save & Resume. Use the site code button below instead.",
-    "Eso parece un código corto del sitio de Guardar y continuar. Use mejor el botón del código del sitio, más abajo.",
+    "Eso parece un código corto del sitio de «Guardar y continuar». Mejor use el botón del código del sitio que aparece más abajo.",
   ),
   "save.restore.empty.input": s("Paste a code first.", "Primero pegue un código."),
   "save.site.heading": s("Short site code (optional)", "Código corto del sitio (opcional)"),
   "save.site.text": s(
     "The whole site can give you a short code too. It is separate from the backup code and depends on the site’s storage service. The backup code above always works.",
-    "El sitio completo también puede darle un código corto. Es distinto del código de respaldo y depende del servicio de almacenamiento del sitio. El código de respaldo de arriba siempre funciona.",
+    "También puede obtener un código corto para todo el sitio. Es distinto del código de respaldo y depende del servicio de almacenamiento del sitio. El código de respaldo de arriba siempre funciona.",
   ),
-  "save.site.open": s("Open site Save & Resume", "Abrir Guardar y continuar del sitio"),
+  "save.site.open": s("Open site Save & Resume", "Abrir «Guardar y continuar» del sitio"),
   "save.site.unavailable": s(
     "Site saving is not available right now. Use the backup code above.",
     "El guardado del sitio no está disponible ahora. Use el código de respaldo de arriba.",
@@ -353,7 +353,7 @@ export const STRINGS = {
   "save.shared.heading": s("Sharing this device", "Compartir este dispositivo"),
   "save.shared.text": s(
     "Another child will see your child’s work unless you switch. First save a backup code, then start fresh for the next learner.",
-    "Otro niño o niña verá el trabajo de su hijo o hija a menos que cambie de perfil. Primero guarde un código de respaldo y luego empiece de cero para la siguiente persona.",
+    "Otro niño o niña verá el trabajo de su hijo o hija a menos que usted haga el cambio. Primero guarde un código de respaldo y luego empiece de cero para el siguiente estudiante.",
   ),
   "save.shared.have": s(
     "I saved a backup code for the current learner",
@@ -382,7 +382,7 @@ export const STRINGS = {
   ),
   "save.status.unsaved": s(
     "Storage is blocked in this browser. Work is kept only in this tab. Copy a backup code before you close it.",
-    "El almacenamiento está bloqueado en este navegador. El trabajo solo se conserva en esta pestaña. Copie un código antes de cerrarla.",
+    "El almacenamiento está bloqueado en este navegador. El trabajo solo se conserva en esta pestaña. Copie un código de respaldo antes de cerrarla.",
   ),
 
   // ── help center ──────────────────────────────────────────────────────────
@@ -396,7 +396,7 @@ export const STRINGS = {
     "For example: microphone, save, print",
     "Por ejemplo: micrófono, guardar, imprimir",
   ),
-  "help.count": s("{n} help topics shown", "{n} temas de ayuda"),
+  "help.count": s("{n} help topics shown", "Se muestran {n} temas de ayuda"),
   "help.none": s(
     "No help topic matches. Try a shorter word.",
     "Ningún tema coincide. Pruebe con una palabra más corta.",
@@ -410,7 +410,7 @@ export const STRINGS = {
   ),
   "help.walk.2": s(
     "Help My Child opens tips for the adult: before, during, after.",
-    "El panel para ayudar al niño o la niña abre consejos para el adulto: antes, durante y después.",
+    "«Ayudar a mi hijo o hija» abre consejos para el adulto: antes, durante y después.",
   ),
   "help.walk.3": s(
     "The activity: listen, read, speak or write, then check.",
@@ -422,7 +422,7 @@ export const STRINGS = {
   ),
 
   // ── Co-Pilot ─────────────────────────────────────────────────────────────
-  "copilot.title": s("Help My Child", "Ayude a su hijo o hija"),
+  "copilot.title": s("Help My Child", "Ayudar a mi hijo o hija"),
   "copilot.optional": s("Tips for the adult", "Consejos para el adulto"),
   "copilot.time": s("about {time}", "unos {time}"),
   "copilot.scope": s(
@@ -435,7 +435,7 @@ export const STRINGS = {
   ),
   "copilot.note": s(
     "Ask and listen. Let your child find the answer. You can talk in your home language.",
-    "Pregunte y escuche. Deje que su hijo o hija encuentre la respuesta. Pueden hablar en su idioma del hogar.",
+    "Pregunte y escuche. Deje que su hijo o hija encuentre la respuesta. Pueden hablar en el idioma que usan en casa.",
   ),
   "copilot.phase.before": s("Before practice", "Antes de practicar"),
   "copilot.phase.during": s("During practice", "Durante la práctica"),
@@ -453,4 +453,31 @@ export const STRINGS = {
   "crumb.family": s("Families", "Familias"),
   "common.grades": s("Grades {band}", "Grados {band}"),
   "common.minutes": s("{n} min", "{n} min"),
+
+  // ── engagement ───────────────────────────────────────────────────────────
+  "chal.heading": s("This week’s family challenge", "El reto familiar de esta semana"),
+  "chal.week": s("Week {n}", "Semana {n}"),
+  "chal.try": s("Try the week’s short playlist together", "Hagan juntos la lista corta de actividades de esta semana"),
+  "chal.progress": s("{done} of {total} activities finished this week", "{done} de {total} actividades terminadas esta semana"),
+  "chal.done": s("You finished this week’s playlist. Thank you for practicing together.", "Terminaron la lista de esta semana. Gracias por practicar juntos."),
+  "chal.note": s("There is no streak and nothing is lost if you skip a week.", "No hay rachas y no se pierde nada si se saltan una semana."),
+  "chal.none": s("The weekly challenge is not available for this grade group yet.", "El reto semanal aún no está disponible para este grupo de grados."),
+  "chal.prompt": s("Talk about it at home", "Para conversar en casa"),
+  "recog.heading": s("Recognition for effort", "Reconocimiento al esfuerzo"),
+  "recog.note": s(
+    "These celebrate trying, retrying and revising. They are for your family, not official ACCESS achievements.",
+    "Celebran intentar, reintentar y revisar. Son para su familia, no son logros oficiales de ACCESS.",
+  ),
+  "recog.first": s("First {domain} activity done", "Primera actividad de {domain} terminada"),
+  "recog.allFour": s("Tried all four skills", "Probaron las cuatro destrezas"),
+  "recog.days": s("Practiced on 3 different days", "Practicaron en 3 días distintos"),
+  "recog.retry": s("Kept going and found the answer after trying again", "Siguieron intentando y encontraron la respuesta al intentar de nuevo"),
+  "recog.revised": s("Revised a draft and made it better", "Revisaron un borrador y lo mejoraron"),
+  "recog.next": s("Next to try: {what}", "Para intentar después: {what}"),
+  "recog.none": s("Your first recognition appears after the first activity.", "El primer reconocimiento aparece después de la primera actividad."),
+  "session.done.heading": s("Session complete", "Sesión terminada"),
+  "session.done.text": s(
+    "You finished this session. Thank you for practicing together. Here is what you did.",
+    "Terminaron esta sesión. Gracias por practicar juntos. Esto es lo que hicieron.",
+  ),
 };

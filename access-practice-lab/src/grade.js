@@ -159,3 +159,39 @@ export function writingPracticeScore(analysis, { level = "A", bankAvailable = fa
     nextStep: met.find((item) => !item.ok)?.next || "Reread your response and check that each detail supports your answer.",
   };
 }
+
+// ── display-time Spanish for stored practice wording ──────────────────────────
+// band(), practiceBand() and writingPracticeScore() return English sentences that are saved in the
+// learner's record and compared elsewhere, so their return values never change with the language.
+// The view translates them when it draws them: practiceCopy(english, i18n) → markup-safe text, English
+// when i18n is absent or the sentence is unknown.
+const PRACTICE_ES = {
+  "Not yet": "Todavía no",
+  Strong: "Fuerte",
+  "Almost there": "Casi lo logras",
+  "Keep practicing": "Sigue practicando",
+  "Strong practice response": "Respuesta de práctica sólida",
+  "Getting started": "Empezando",
+  "Used a linking or explanation word": "Usaste una palabra de enlace o de explicación",
+  "Used a word from the word bank": "Usaste una palabra del banco de palabras",
+  "Used ending punctuation in a sentence": "Usaste un signo final en una oración",
+  "Included a detail or evidence signal": "Incluiste un detalle o una señal de evidencia",
+  "Connect two ideas with because, but, so, or then.": "Une dos ideas con because, but, so o then.",
+  "Choose one useful word from the word bank and use it in a sentence.": "Elige una palabra útil del banco de palabras y úsala en una oración.",
+  "Reread one sentence. Finish the thought and add an ending mark.": "Vuelve a leer una oración. Termina la idea y agrega un signo final.",
+  "Add one specific detail from the prompt, source, or word bank.": "Agrega un detalle específico de la pregunta, la fuente o el banco de palabras.",
+  "Reread your response and check that each detail supports your answer.": "Vuelve a leer tu respuesta y revisa que cada detalle apoye tu respuesta.",
+};
+const PRACTICE_ES_PATTERNS = [
+  [/^Reached the (\d+)-word practice target$/, (n) => `Llegaste a la meta de práctica de ${n} palabras`],
+  [/^Add a useful detail to move toward (\d+) words\.$/, (n) => `Agrega un detalle útil para acercarte a ${n} palabras.`],
+];
+function practiceEs(en) {
+  if (PRACTICE_ES[en]) return PRACTICE_ES[en];
+  for (const [re, make] of PRACTICE_ES_PATTERNS) {
+    const m = re.exec(en);
+    if (m) return make(m[1]);
+  }
+  return undefined;
+}
+export const practiceCopy = (en, i18n) => (i18n ? i18n.T(en, practiceEs(en)) : en);

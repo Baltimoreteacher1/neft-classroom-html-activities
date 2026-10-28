@@ -6,10 +6,11 @@
 //    EduWonderLab rehearsal setting), no frames or word banks, flags, section review, and a
 //    practice timer that NEVER auto-submits.
 // Switching mode restarts the test. Each mode keeps its own formative breakdown; they are never merged.
-import { listenPlayerHTML, recorderHTML, transcriptHTML } from "../components.js";
+import { listenPlayerHTML, recorderHTML, setComponentsI18n, transcriptHTML } from "../components.js";
+import { i18nFor, makeI18n } from "../i18n.js";
 import { loadTest } from "../content.js";
 import { correctAnswerText, isAnswered, isAuto, isCorrect } from "../grade.js";
-import { choiceTarget, inputHTML, reduceAnswer, seedAnswer } from "../items.js";
+import { choiceTarget, inputHTML, reduceAnswer, seedAnswer, setItemsI18n } from "../items.js";
 import {
   BAND_POINTS,
   FORMATIVE_SMALL,
@@ -27,7 +28,7 @@ import { visualsHTML } from "../media.js";
 import { clear as clearTake, isRecording, stop as stopRecording, takesFor } from "../recorder.js";
 import { stop as stopSpeech } from "../speech.js";
 import { clearTestRecord, getStudentName, loadTestRecord, saveTestRecord } from "../store.js";
-import { ART, BASE, DOMAIN_META, announce, asList, bandLabel, html, icon, raw, toHtml } from "../util.js";
+import { ART, BASE, DOMAIN_META, announce, asList, html, icon, raw, toHtml } from "../util.js";
 import {
   applyRehearsal,
   onRehearsalClick,
@@ -40,15 +41,17 @@ import {
   answerReviewHTML,
   compositeHTML,
   domainClass,
+  domainName,
   formativeHTML,
   introSideHTML,
   modeBadgeHTML,
   modeCardsHTML,
-  plural,
+  questionsText,
   ratingHTML,
   reviewScreenHTML,
+  sectionsText,
 } from "./test-report.js";
-import { MODES, modeBannerHTML, modeOf, otherMode } from "./test-modes.js";
+import { MODES, MODE_TEXT, gradesText, modeBannerHTML, modeOf, modePhrase, modePhraseS, otherMode, rich } from "./test-modes.js";
 
 export { MODES, modeOf };
 
@@ -56,6 +59,7 @@ const IGN = raw("data-nsr-ignore");
 let T = null; // { test, flat, rec }
 let timerId = 0;
 let renderGeneration = 0;
+let I = makeI18n("en"); // set from the ctx at the top of render() and of the click handler
 
 const rules = () => MODES[modeOf(T.rec)];
 const inProgress = () => Boolean(T.rec.startedAt || Object.keys(T.rec.answers || {}).length);
@@ -197,7 +201,7 @@ function startTimer() {
     if (el)
       el.textContent = T.rec.remaining
         ? clock(T.rec.remaining)
-        : "Time is up — keep going or submit";
+        : I.S("Time is up — keep going or submit", "Se acabó el tiempo: sigue o envía la prueba");
     if (T.rec.remaining % 10 === 0) persist();
   }, 1000);
 }
@@ -221,34 +225,34 @@ const sectionCount = () => (T.test.sections || []).length;
 function introHTML() {
   const test = T.test;
   const mode = modeOf(T.rec);
-  return html`${modeBannerHTML(T.pendingMode, T.rec)}
+  return html`${modeBannerHTML(I, T.pendingMode, T.rec)}
     <header class="test-hero">
       <div class="test-hero-copy">
-        <p class="eyebrow">Classroom practice · ${bandLabel(test.band)}</p>
+        <p class="eyebrow">${I.T("Classroom practice", "Práctica de clase")} · ${gradesText(I, test.band)}</p>
         <h1 tabindex="-1">${test.title}</h1>
         ${test.overview ? html`<p class="lead">${test.overview}</p>` : ""}
         <ul class="test-facts">
-          <li>${icon("list")}${plural(T.flat.length, "question")}</li>
-          <li>${icon("clock")}About ${T.minutes} min</li>
-          <li>${icon("tests")}${plural(sectionCount(), "section")}</li>
+          <li>${icon("list")}${questionsText(I, T.flat.length)}</li>
+          <li>${icon("clock")}${I.T(`About ${T.minutes} min`, `Unos ${T.minutes} min`)}</li>
+          <li>${icon("tests")}${sectionsText(I, sectionCount())}</li>
         </ul>
-        <p class="test-current-mode">${modeBadgeHTML(mode)}</p>
+        <p class="test-current-mode">${modeBadgeHTML(I, mode)}</p>
       </div>
       <img class="test-hero-art" src="${ART}/test-intro.svg" alt="" width="480" height="300" />
     </header>
     <div class="test-intro-grid">
       <div class="test-intro-main">
-        ${modeCardsHTML(T.rec, { started: inProgress(), minutes: T.minutes })}
+        ${modeCardsHTML(I, T.rec, { started: inProgress(), minutes: T.minutes })}
         ${rehearsalToolbarHTML()}
         <div class="row-actions test-start">
           <button type="button" class="btn btn-primary btn-big" data-start>
-            ${inProgress() ? "Resume test" : "Start test"}${icon("arrow-right")}
+            ${inProgress() ? I.T("Resume test", "Continuar la prueba") : I.T("Start test", "Empezar la prueba")}${icon("arrow-right")}
           </button>
-          ${inProgress() ? html`<button type="button" class="ghost" data-restart>Start over</button>` : ""}
-          <a class="ghost" href="${BASE}/tests">All tests</a>
+          ${inProgress() ? html`<button type="button" class="ghost" data-restart>${I.T("Start over", "Empezar de nuevo")}</button>` : ""}
+          <a class="ghost" href="${BASE}/tests">${I.T("All tests", "Todas las pruebas")}</a>
         </div>
       </div>
-      ${introSideHTML(test, { mode, plays: T.rec.conditions ? maxPlays() : 0 })}
+      ${introSideHTML(I, test, { mode, plays: T.rec.conditions ? maxPlays() : 0 })}
     </div>`;
 }
 
@@ -260,9 +264,9 @@ function stimulus(f, ctx) {
     ? [...asList(item.script), ...(item.questionAudio ? [item.questionAudio] : [])]
     : null;
   const playRule = T.rec.conditions
-    ? html`<p class="cond-tag is-independent">${icon("lock")}${maxPlays() === 1 ? "Plays once" : "Plays up to twice"} · Independent Rehearsal</p>`
-    : html`<p class="cond-tag is-guided">${icon("replay")}Replay allowed · Guided Practice</p>`;
-  return html`${listening && script.length ? html`${playRule}${listenPlayerHTML(key, script, T.rec.conditions ? { rate: ctx.prefs.rate, test: true, maxPlays: maxPlays(), played: T.rec.plays?.[key] || 0 } : { rate: ctx.prefs.rate, test: true })}` : ""}
+    ? html`<p class="cond-tag is-independent">${icon("lock")}${maxPlays() === 1 ? I.T(`Plays once · ${MODE_TEXT.independent.name[0]}`, `Suena una vez · ${MODE_TEXT.independent.name[1]}`) : I.T(`Plays up to twice · ${MODE_TEXT.independent.name[0]}`, `Suena hasta dos veces · ${MODE_TEXT.independent.name[1]}`)}</p>`
+    : html`<p class="cond-tag is-guided">${icon("replay")}${I.T(`Replay allowed · ${MODE_TEXT.guided.name[0]}`, `Se puede repetir · ${MODE_TEXT.guided.name[1]}`)}</p>`;
+  return html`${listening && script.length ? html`${playRule}${listenPlayerHTML(key, script, T.rec.conditions ? { rate: ctx.prefs.rate, test: true, maxPlays: maxPlays(), played: T.rec.plays?.[key] || 0, i18n: I } : { rate: ctx.prefs.rate, test: true, i18n: I })}` : ""}
   ${visualsHTML(item)}
   ${
     !listening && asList(item.passage).length
@@ -273,7 +277,7 @@ function stimulus(f, ctx) {
   }`;
 }
 
-const supportLabel = (text) => html`<p class="support-label">${icon("bulb")}<strong>${text}</strong><span>Guided Practice only</span></p>`;
+const supportLabel = (text) => html`<p class="support-label">${icon("bulb")}<strong>${text}</strong><span>${I.T("Guided Practice only", "Solo en práctica guiada")}</span></p>`;
 
 function inputFor(f) {
   const { item, section } = f;
@@ -283,7 +287,7 @@ function inputFor(f) {
     if (section.domain === "Speaking")
       return html`${recorderHTML(key, { prompt: item.prompt, recording: isRecording(key) })}<label
           class="field"
-          ><span>Planning notes (optional)</span
+          ><span>${I.T("Planning notes (optional)", "Notas de planificación (opcional)")}</span
           ><textarea rows="3" data-test-note ${IGN}>${a || ""}</textarea></label
         ><label class="timer-opt opt-row"
           ><input
@@ -292,23 +296,25 @@ function inputFor(f) {
             ${T.rec.oralPractice?.[item.id] ? raw("checked") : ""}
             ${IGN}
           />
-          <span>I said my answer aloud to a teacher or partner.</span></label
+          <span>${I.T("I said my answer aloud to a teacher or partner.", "Dije mi respuesta en voz alta a un docente o compañero.")}</span></label
         >
         <p class="fine">
-          Planning notes do not count as a spoken answer. Recordings stay in this tab; ask your
-          teacher to listen before closing or reloading it.
+          ${I.T(
+            "Planning notes do not count as a spoken answer. Recordings stay in this tab; ask your teacher to listen before closing or reloading it.",
+            "Las notas de planificación no cuentan como respuesta oral. Las grabaciones se quedan en esta pestaña; pide a tu docente que las escuche antes de cerrarla o recargarla.",
+          )}
         </p>`;
     return html`${
         rules().wordBank && item.wordBank?.length
           ? html`<div class="support-zone is-bank">
-              ${supportLabel("Word bank")}
+              ${supportLabel(I.T("Word bank", "Banco de palabras"))}
               <ul class="wordbank">
                 ${item.wordBank.map((w) => html`<li>${w}</li>`)}
               </ul>
             </div>`
           : ""
       }<label class="field"
-        ><span>${item.responseLabel || "Your answer"}</span
+        ><span>${item.responseLabel || I.T("Your answer", "Tu respuesta")}</span
         ><textarea rows="8" data-test-note spellcheck="false" ${IGN}>${a || ""}</textarea>
       </label>`;
   }
@@ -325,13 +331,13 @@ function lookbackHTML(f) {
   const frames = rules().frames ? asList(item.frames) : [];
   const g = T.rec.guided?.[item.id];
   const transcript =
-    section.domain === "Listening" && g?.tries > 0 ? transcriptHTML(item.id, item.script) : "";
+    section.domain === "Listening" && g?.tries > 0 ? transcriptHTML(item.id, item.script, { i18n: I }) : "";
   if (!item.support && !lookFor.length && !frames.length && !transcript) return "";
   return html`<details class="lookback">
-      <summary>${icon("bulb")}Look back: hints and supports (Guided Practice)</summary>
+      <summary>${icon("bulb")}${I.T("Look back: hints and supports (Guided Practice)", "Mira atrás: pistas y apoyos (práctica guiada)")}</summary>
       ${item.support ? html`<p>${item.support}</p>` : ""}
-      ${lookFor.length ? html`<p><strong>${section.domain === "Listening" ? "Listen for" : section.domain === "Reading" ? "Read for" : "Include"}:</strong></p><ul>${lookFor.map((x) => html`<li>${x}</li>`)}</ul>` : ""}
-      ${frames.length ? html`<p><strong>Sentence frames:</strong></p><ul class="frames">${frames.map((x) => html`<li>${x}</li>`)}</ul>` : ""}
+      ${lookFor.length ? html`<p><strong>${section.domain === "Listening" ? I.T("Listen for", "Escucha y busca") : section.domain === "Reading" ? I.T("Read for", "Lee y busca") : I.T("Include", "Incluye")}:</strong></p><ul>${lookFor.map((x) => html`<li>${x}</li>`)}</ul>` : ""}
+      ${frames.length ? html`<p><strong>${I.T("Sentence frames", "Estructuras de oraciones")}:</strong></p><ul class="frames">${frames.map((x) => html`<li>${x}</li>`)}</ul>` : ""}
     </details>
     ${transcript}`;
 }
@@ -345,18 +351,18 @@ function guidedCheckHTML(f) {
   const why = String(item.correct || "").replace(/^correct[.!]?\s*/i, "");
   let body = "";
   if (g && !current)
-    body = html`<div class="feedback is-shown" role="status"><p>You changed your answer. Check it again.</p></div>`;
+    body = html`<div class="feedback is-shown" role="status"><p>${I.T("You changed your answer. Check it again.", "Cambiaste tu respuesta. Revísala otra vez.")}</p></div>`;
   else if (g?.ok)
-    body = html`<div class="feedback is-right" role="status"><p class="fb-title"><span class="visually-hidden">\u2713 Correct</span><span aria-hidden="true">${icon("check")} Correct</span></p>${why ? html`<p>${why}</p>` : ""}</div>`;
+    body = html`<div class="feedback is-right" role="status"><p class="fb-title"><span class="visually-hidden">\u2713 ${I.S("Correct", "Correcta")}</span><span aria-hidden="true">${icon("check")} ${I.T("Correct", "Correcta")}</span></p>${why ? html`<p>${why}</p>` : ""}</div>`;
   else if (g && g.tries < 2)
-    body = html`<div class="feedback is-hint" role="status"><p class="fb-title">${icon("bulb")}Not yet</p><p>${item.hint || "Look back at the question and try again."}</p><p>Change your answer and check again.</p></div>`;
+    body = html`<div class="feedback is-hint" role="status"><p class="fb-title">${icon("bulb")}${I.T("Not yet", "Todavía no")}</p><p>${item.hint || I.T("Look back at the question and try again.", "Vuelve a mirar la pregunta e inténtalo otra vez.")}</p><p>${I.T("Change your answer and check again.", "Cambia tu respuesta y revisa otra vez.")}</p></div>`;
   else if (g)
-    body = html`<div class="feedback is-shown" role="status"><p class="fb-title">${icon("info")}The answer is: ${correctAnswerText(item)}</p>${why ? html`<p>${why}</p>` : ""}</div>`;
+    body = html`<div class="feedback is-shown" role="status"><p class="fb-title">${icon("info")}${rich(I, html`The answer is: ${correctAnswerText(item)}`, html`La respuesta es: ${correctAnswerText(item)}`)}</p>${why ? html`<p>${why}</p>` : ""}</div>`;
   return html`<div class="row-actions">
-      <button type="button" class="btn btn-check" data-guided-check>${g ? "Check again" : "Check my answer"}</button>
+      <button type="button" class="btn btn-check" data-guided-check>${g ? I.T("Check again", "Revisar otra vez") : I.T("Check my answer", "Revisar mi respuesta")}</button>
     </div>
     ${body}
-    ${g ? html`<p class="fine">Supported Practice counts your first check: ${g.first ? "right" : "not yet"}.</p>` : ""}`;
+    ${g ? html`<p class="fine">${g.first ? I.T("Supported Practice counts your first check: right.", "La práctica con apoyos cuenta tu primera revisión: correcta.") : I.T("Supported Practice counts your first check: not yet.", "La práctica con apoyos cuenta tu primera revisión: todavía no.")}</p>` : ""}`;
 }
 
 /** The Guided Practice supports for one question, grouped and labelled so they are never mistaken for test conditions. */
@@ -364,25 +370,25 @@ function supportZoneHTML(f) {
   if (!rules().rationales && !rules().lookback) return "";
   const body = html`${guidedCheckHTML(f)} ${lookbackHTML(f)}`;
   if (!toHtml(body).replace(/\s+/g, "")) return "";
-  return html`<div class="support-zone">${supportLabel("Practice supports")}${body}</div>`;
+  return html`<div class="support-zone">${supportLabel(I.T("Practice supports", "Apoyos de práctica"))}${body}</div>`;
 }
 
 function scratchHTML() {
   if (!rehearsalPrefs().scratch) return "";
   return html`<label class="field rh-scratch"
-    ><span>Scratchpad — EduWonderLab rehearsal setting. Never scored; stays on this device.</span
+    ><span>${I.T("Scratchpad — EduWonderLab rehearsal setting. Never scored; stays on this device.", "Borrador — ajuste de ensayo de EduWonderLab. Nunca se califica; se queda en este dispositivo.")}</span
     ><textarea rows="4" data-scratch ${IGN}>${T.rec.scratch || ""}</textarea></label
   >`;
 }
 
 function paletteHTML() {
   const flags = T.rec.flags || [];
-  return html`<aside class="palette" aria-label="Question navigator">
-    <h2>Questions</h2>
-    <p class="palette-count"><strong>${answered()}</strong> of ${T.flat.length} answered</p>
+  return html`<aside class="palette" aria-label="${I.S("Question navigator", "Navegador de preguntas")}">
+    <h2>${I.T("Questions", "Preguntas")}</h2>
+    <p class="palette-count">${rich(I, html`<strong>${answered()}</strong> of ${T.flat.length} answered`, html`<strong>${answered()}</strong> de ${T.flat.length} respondidas`)}</p>
     ${(T.test.sections || []).map(
       (s, si) => html`<div class="pal-sec ${domainClass(s.domain)}">
-        <p class="pal-sec-title">${icon(DOMAIN_META[s.domain]?.icon || "tests")}<span>${s.title || s.domain}</span></p>
+        <p class="pal-sec-title">${icon(DOMAIN_META[s.domain]?.icon || "tests")}<span>${s.title || domainName(I, s.domain)}</span></p>
         <div class="dots">
           ${T.flat.map((g, i) => {
             if (g.si !== si) return "";
@@ -393,7 +399,7 @@ function paletteHTML() {
               class="dot ${i === T.rec.index ? "is-current" : ""} ${completed ? "is-done" : ""} ${fl ? "is-flag" : ""}"
               data-jump="${i}"
               ${i === T.rec.index ? raw('aria-current="step"') : ""}
-              aria-label="Question ${i + 1}${completed ? ", answered" : ""}${fl ? ", flagged" : ""}"
+              aria-label="${I.S(`Question ${i + 1}${completed ? ", answered" : ""}${fl ? ", flagged" : ""}`, `Pregunta ${i + 1}${completed ? ", respondida" : ""}${fl ? ", marcada" : ""}`)}"
             >
               ${i + 1}
             </button>`;
@@ -401,11 +407,11 @@ function paletteHTML() {
         </div>
       </div>`,
     )}
-    <ul class="pal-key" aria-label="Key">
-      <li><span class="pal-swatch is-current" aria-hidden="true"></span>Current</li>
-      <li><span class="pal-swatch is-done" aria-hidden="true"></span>Answered</li>
-      <li><span class="pal-swatch is-flag" aria-hidden="true"></span>Flagged</li>
-      <li><span class="pal-swatch" aria-hidden="true"></span>Not answered</li>
+    <ul class="pal-key" aria-label="${I.S("Key", "Leyenda")}">
+      <li><span class="pal-swatch is-current" aria-hidden="true"></span>${I.T("Current", "Actual")}</li>
+      <li><span class="pal-swatch is-done" aria-hidden="true"></span>${I.T("Answered", "Respondida")}</li>
+      <li><span class="pal-swatch is-flag" aria-hidden="true"></span>${I.T("Flagged", "Marcada")}</li>
+      <li><span class="pal-swatch" aria-hidden="true"></span>${I.T("Not answered", "Sin responder")}</li>
     </ul>
   </aside>`;
 }
@@ -421,11 +427,11 @@ function runnerHTML(ctx) {
   const response = html`<p class="prompt-text">${f.item.prompt || ""}</p>
     ${inputFor(f)} ${supportZoneHTML(f)}`;
   return html`<div class="test-bar">
-      ${modeBadgeHTML(modeOf(T.rec))}
-      <span class="dom-chip">${icon(DOMAIN_META[f.section.domain]?.icon || "tests")}${f.section.title || f.section.domain}</span>
-      <span class="test-sec">Section ${f.si + 1} of ${T.test.sections.length}</span>
-      ${T.rec.timer ? html`<span class="test-clock-wrap">${icon("clock")}<span class="test-clock-label">Practice timer</span><span class="test-clock" id="testClock" role="timer">${T.rec.remaining ? clock(T.rec.remaining) : "Time is up — keep going or submit"}</span></span>` : ""}
-      <button type="button" class="ghost small" data-exit>${icon("save")}Save &amp; exit</button>
+      ${modeBadgeHTML(I, modeOf(T.rec))}
+      <span class="dom-chip">${icon(DOMAIN_META[f.section.domain]?.icon || "tests")}${f.section.title || domainName(I, f.section.domain)}</span>
+      <span class="test-sec">${I.T(`Section ${f.si + 1} of ${T.test.sections.length}`, `Sección ${f.si + 1} de ${T.test.sections.length}`)}</span>
+      ${T.rec.timer ? html`<span class="test-clock-wrap">${icon("clock")}<span class="test-clock-label">${I.T("Practice timer", "Temporizador de práctica")}</span><span class="test-clock" id="testClock" role="timer">${T.rec.remaining ? clock(T.rec.remaining) : I.S("Time is up — keep going or submit", "Se acabó el tiempo: sigue o envía la prueba")}</span></span>` : ""}
+      <button type="button" class="ghost small" data-exit>${icon("save")}${I.T("Save & exit", "Guardar y salir")}</button>
     </div>
     <div class="test-progress" aria-hidden="true">
       <span style="width:${Math.round(((T.rec.index + 1) / T.flat.length) * 100)}%"></span>
@@ -435,7 +441,7 @@ function runnerHTML(ctx) {
       <section class="test-q ${hasPassage ? "has-passage" : ""} ${hasStimulus ? "has-stimulus" : ""}" aria-labelledby="qTitle">
         <div class="q-head">
           <h1 id="qTitle" tabindex="-1">
-            Question ${T.rec.index + 1} <span>of ${T.flat.length}</span>
+            ${rich(I, html`Question ${T.rec.index + 1} <span>of ${T.flat.length}</span>`, html`Pregunta ${T.rec.index + 1} <span>de ${T.flat.length}</span>`)}
           </h1>
           <button
             type="button"
@@ -443,10 +449,10 @@ function runnerHTML(ctx) {
             data-flag
             aria-pressed="${flagged}"
           >
-            ${icon("flag")}${flagged ? "Flagged" : "Flag for review"}
+            ${icon("flag")}${flagged ? I.T("Flagged", "Marcada") : I.T("Flag for review", "Marcar para revisar")}
           </button>
         </div>
-        ${f.n === 1 && f.section.directions ? html`<p class="section-directions">${icon("info")}<span><strong>Directions.</strong> ${f.section.directions}</span></p>` : ""}
+        ${f.n === 1 && f.section.directions ? html`<p class="section-directions">${icon("info")}<span><strong>${I.T("Directions.", "Instrucciones.")}</strong> ${f.section.directions}</span></p>` : ""}
         ${
           hasStimulus
             ? html`<div class="test-workspace has-stimulus ${hasPassage ? "has-passage" : ""}">
@@ -459,12 +465,12 @@ function runnerHTML(ctx) {
       </section>
       ${paletteHTML()}
     </div>
-    <nav class="act-nav" aria-label="Question navigation">
+    <nav class="act-nav" aria-label="${I.S("Question navigation", "Navegación de preguntas")}">
       <button type="button" class="btn" data-prev ${T.rec.index === 0 ? raw("disabled") : ""}>
-        ${icon("arrow-left")}Back
+        ${icon("arrow-left")}${I.T("Back", "Atrás")}
       </button>
-      <span class="act-count">${answered()}/${T.flat.length} answered</span>
-      ${last ? html`<button type="button" class="btn btn-primary" data-review>Review answers${icon("arrow-right")}</button>` : html`<button type="button" class="btn btn-primary" data-next>Next${icon("arrow-right")}</button>`}
+      <span class="act-count">${I.T(`${answered()}/${T.flat.length} answered`, `${answered()}/${T.flat.length} respondidas`)}</span>
+      ${last ? html`<button type="button" class="btn btn-primary" data-review>${I.T("Review answers", "Repasar respuestas")}${icon("arrow-right")}</button>` : html`<button type="button" class="btn btn-primary" data-next>${I.T("Next", "Siguiente")}${icon("arrow-right")}</button>`}
     </nav>`;
 }
 
@@ -473,14 +479,14 @@ function resultsHTML() {
   const mode = modeOf(T.rec);
   const pct = r.total ? Math.round((r.correct / r.total) * 100) : 0;
   return html`<section class="results">
-      ${modeBannerHTML(T.pendingMode, T.rec)}
+      ${modeBannerHTML(I, T.pendingMode, T.rec)}
       <header class="report-hero">
         <div class="report-copy">
-          <p class="eyebrow">Practice report${r.studentName ? ` · ${r.studentName}` : ""}</p>
+          <p class="eyebrow">${I.T(`Practice report${r.studentName ? ` · ${r.studentName}` : ""}`, `Informe de práctica${r.studentName ? ` · ${r.studentName}` : ""}`)}</p>
           <h1 tabindex="-1">${T.test.title}</h1>
-          <p class="report-mode">${modeBadgeHTML(mode)}</p>
-          <p class="fine"><strong>${MODES[mode].label}.</strong> ${T.rec.conditions ? `Each recording played ${maxPlays() === 1 ? "once" : "up to twice"} and could not be paused.` : "Hints and retries were available, so each checked question counts your first try."}</p>
-          ${r.total ? html`<p class="big-score"><strong>${r.correct}/${r.total}</strong><span>scored questions right</span></p><div class="bar" aria-hidden="true"><i style="width:${pct}%"></i></div>` : ""}
+          <p class="report-mode">${modeBadgeHTML(I, mode)}</p>
+          <p class="fine">${rich(I, html`<strong>${MODE_TEXT[mode].label[0]}.</strong> ${T.rec.conditions ? `Each recording played ${maxPlays() === 1 ? "once" : "up to twice"} and could not be paused.` : "Hints and retries were available, so each checked question counts your first try."}`, html`<strong>${MODE_TEXT[mode].label[1]}.</strong> ${T.rec.conditions ? `Cada grabación se reprodujo ${maxPlays() === 1 ? "una sola vez" : "hasta dos veces"} y no se pudo pausar.` : "Había pistas y nuevos intentos, así que cada pregunta revisada cuenta tu primer intento."}`)}</p>
+          ${r.total ? html`<p class="big-score"><strong>${r.correct}/${r.total}</strong><span>${I.T("scored questions right", "preguntas calificadas correctas")}</span></p><div class="bar" aria-hidden="true"><i style="width:${pct}%"></i></div>` : ""}
         </div>
         <img class="report-art" src="${ART}/test-complete.svg" alt="" width="480" height="300" />
       </header>
@@ -491,34 +497,42 @@ function resultsHTML() {
               <h2>${icon(DOMAIN_META[s.domain]?.icon || "tests")}${s.title}</h2>
               ${
                 s.total
-                  ? html`<p class="rc-score"><strong>${s.correct}</strong> of ${s.total} right</p>
+                  ? html`<p class="rc-score">${rich(I, html`<strong>${s.correct}</strong> of ${s.total} right`, html`<strong>${s.correct}</strong> de ${s.total} correctas`)}</p>
                       <div class="bar" aria-hidden="true">
                         <i style="width:${Math.round((s.correct / s.total) * 100)}%"></i>
                       </div>`
                   : ""
               }
-              ${s.open ? html`<p>${s.openDone} of ${s.open} ${s.domain === "Speaking" ? "spoken" : "written"} answer${s.open === 1 ? "" : "s"} done — ask your teacher to listen or read.</p>` : ""}
+              ${s.open ? html`<p>${I.T(
+                    `${s.openDone} of ${s.open} ${s.domain === "Speaking" ? "spoken" : "written"} answer${s.open === 1 ? "" : "s"} done — ask your teacher to listen or read.`,
+                    `${s.openDone} de ${s.open} ${s.domain === "Speaking" ? (s.open === 1 ? "respuesta oral" : "respuestas orales") : s.open === 1 ? "respuesta escrita" : "respuestas escritas"} ${s.open === 1 ? "hecha" : "hechas"}: pide a tu docente que ${s.open === 1 ? "la" : "las"} ${s.domain === "Speaking" ? "escuche" : "lea"}.`,
+                  )}</p>` : ""}
             </article>`,
         )}
       </div>
-      ${ratingHTML(r, T.rec.ratings)}
-      ${compositeHTML(practiceComposite(r.sections, T.rec.ratings), { WEIGHTS, METHOD, LIMITS, MIN_ITEMS, BAND_POINTS })}
-      ${formativeHTML(T.rec.formative, formativeBreakdown, { SMALL_SAMPLE, FORMATIVE_SMALL })}
+      ${ratingHTML(I, r, T.rec.ratings)}
+      ${compositeHTML(I, practiceComposite(r.sections, T.rec.ratings), { WEIGHTS, METHOD, LIMITS, MIN_ITEMS, BAND_POINTS })}
+      ${formativeHTML(I, T.rec.formative, formativeBreakdown, { SMALL_SAMPLE, FORMATIVE_SMALL })}
       <p class="test-note disclaimer">
-        ${icon("info")}<span>This is practice feedback, not a WIDA ACCESS score or level. Speaking and writing are best
-        judged by your teacher.</span>
+        ${icon("info")}<span>${I.T(
+          "This is practice feedback, not a WIDA ACCESS score or level. Speaking and writing are best judged by your teacher.",
+          "Esta es retroalimentación de práctica, no un puntaje ni un nivel de WIDA ACCESS. Tu docente es quien mejor puede evaluar Hablar y Escribir.",
+        )}</span>
       </p>
       <div class="row-actions report-actions">
-        <button type="button" class="btn" data-print>${icon("print")}Print report</button
-        ><button type="button" class="btn" data-restart>${icon("retry")}Take it again</button
-        ><button type="button" class="btn" data-switch-mode="${otherMode(mode)}">Try ${MODES[otherMode(mode)].label}</button
-        ><a class="ghost" href="${BASE}/tests">All tests</a>
+        <button type="button" class="btn" data-print>${icon("print")}${I.T("Print report", "Imprimir informe")}</button
+        ><button type="button" class="btn" data-restart>${icon("retry")}${I.T("Take it again", "Hacerla de nuevo")}</button
+        ><button type="button" class="btn" data-switch-mode="${otherMode(mode)}">${modePhrase(I, otherMode(mode), "label", "Try {m}", "Probar {m}")}</button
+        ><a class="ghost" href="${BASE}/tests">${I.T("All tests", "Todas las pruebas")}</a>
       </div>
     </section>
-    ${answerReviewHTML(T.flat, T.rec.answers)}`;
+    ${answerReviewHTML(I, T.flat, T.rec.answers)}`;
 }
 
 export async function render(ctx) {
+  I = i18nFor(ctx);
+  setComponentsI18n(I);
+  setItemsI18n(I);
   const generation = ++renderGeneration;
   const id = ctx.route.testId;
   const saved = loadTestRecord(id);
@@ -529,10 +543,10 @@ export async function render(ctx) {
     if (generation !== renderGeneration) return { title: "", html: html`` };
     if (!test)
       return {
-        title: "Test not found",
+        title: I.S("Test not found", "Prueba no encontrada"),
         html: html`<section class="panel">
-          <h1 tabindex="-1">We could not find that test.</h1>
-          <a class="btn" href="${BASE}/tests">All practice tests</a>
+          <h1 tabindex="-1">${I.T("We could not find that test.", "No pudimos encontrar esa prueba.")}</h1>
+          <a class="btn" href="${BASE}/tests">${I.T("All practice tests", "Todas las pruebas de práctica")}</a>
         </section>`,
       };
     const rec = saved;
@@ -560,7 +574,7 @@ export async function render(ctx) {
     T.rec.phase === "running"
       ? runnerHTML(ctx)
       : T.rec.phase === "review"
-        ? reviewScreenHTML({ test: T.test, flat: T.flat, rec: T.rec, done, answered: answered() })
+        ? reviewScreenHTML(I, { test: T.test, flat: T.flat, rec: T.rec, done, answered: answered() })
         : T.rec.phase === "results"
           ? resultsHTML()
           : introHTML();
@@ -589,7 +603,7 @@ function restart(ctx, mode = modeOf(T.rec)) {
     if (formative) T.rec.formative = formative;
     setMode(mode);
     T.pendingMode = null;
-    announce(`${MODES[mode].label}. The test starts over.`);
+    announce(modePhraseS(I, mode, "label", "{m}. The test starts over.", "{m}. La prueba empieza de nuevo."));
     go(ctx, {});
   });
   return true;
@@ -598,7 +612,7 @@ function restart(ctx, mode = modeOf(T.rec)) {
 function guidedCheck(ctx, f) {
   const { item } = f;
   if (!rules().rationales || !isAuto(item)) return;
-  if (!isAnswered(item, T.rec.answers[item.id])) return announce("Choose an answer first.");
+  if (!isAnswered(item, T.rec.answers[item.id])) return announce(I.S("Choose an answer first.", "Primero elige una respuesta."));
   const ok = isCorrect(item, T.rec.answers[item.id] ?? seedAnswer(item));
   T.rec.guided ||= {};
   const g = (T.rec.guided[item.id] ||= { tries: 0 });
@@ -607,7 +621,7 @@ function guidedCheck(ctx, f) {
   g.ok = ok;
   g.last = answerKey(item);
   persist();
-  announce(ok ? "Correct." : g.tries < 2 ? "Not yet. Try again." : "Here is the answer.");
+  announce(ok ? I.S("Correct.", "Correcta.") : g.tries < 2 ? I.S("Not yet. Try again.", "Todavía no. Inténtalo otra vez.") : I.S("Here is the answer.", "Aquí está la respuesta."));
   ctx.rerender();
 }
 
@@ -625,6 +639,7 @@ async function go(ctx, patch) {
 
 export function onClick(e, ctx) {
   if (!T) return;
+  I = i18nFor(ctx);
   const t = e.target;
   const f = T.flat[T.rec.index];
   if (onRehearsalClick(e, ctx)) return true;
@@ -672,7 +687,7 @@ export function onClick(e, ctx) {
     const current = T;
     stopRecording().then(() => {
       if (T !== current) return;
-      announce("Test submitted.");
+      announce(I.S("Test submitted.", "Prueba enviada."));
       const mode = modeOf(T.rec);
       const outcomes = runOutcomes(T.flat, T.rec, (item) => takesFor(`${T.test.id}:${item.id}`).length > 0);
       // Each mode's breakdown lives in its own slot: guided work can never land in the independent one.

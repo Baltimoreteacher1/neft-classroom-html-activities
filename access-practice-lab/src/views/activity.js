@@ -26,6 +26,7 @@ import {
   isAnswered,
   isCorrect,
   practiceBand,
+  practiceCopy,
   writingPracticeScore,
   wordGoal,
 } from "../grade.js";
@@ -42,7 +43,7 @@ import {
   taskCriteria,
   wordBank,
 } from "../learning.js";
-import { choiceTarget, inputHTML, reduceAnswer, seedAnswer } from "../items.js";
+import { choiceTarget, inputHTML, reduceAnswer, seedAnswer, setItemsI18n } from "../items.js";
 import { visualsHTML } from "../media.js";
 import { isRecording, takesFor } from "../recorder.js";
 import { answerOf, loadRecord, saveRecord } from "../store.js";
@@ -138,6 +139,37 @@ const KLU = { inform: "Inform", narrate: "Narrate", explain: "Explain", argue: "
 const keyUseOf = (a) => KLU[purposeOf(a)] || "Inform";
 const coachOptions = (a) => ({ keyUse: keyUseOf(a), modality: cur.domain === "Speaking" ? "speaking" : "writing", wordBank: wordBank(a), stage: mode === "independent" ? "independent" : "supported", expected: { minWords: Math.round(wordGoal(cur.level) * 0.6), maxWords: wordGoal(cur.level) * 2 } });
 
+// learning.js returns these learner-facing sentences in English; the Spanish is looked up here by the
+// English text and falls back to English for anything not listed.
+const ES_LEARNING = {
+  "Correct without opened help": "Correcto sin abrir la ayuda",
+  "Correct after help or a retry": "Correcto después de ayuda o de un reintento",
+  "Answer attempted · revisit": "Respuesta intentada · vuelve a verla",
+  "Draft changed · review needed": "Borrador cambiado · falta revisar",
+  "Written response · self-reviewed": "Respuesta escrita · revisada por ti",
+  "Writing revised · improvement described": "Escritura corregida · mejora descrita",
+  "Speaking practiced · self-reported": "Habla practicada · lo indicaste tú",
+  "Speaking practiced · recording made in this tab": "Habla practicada · grabación hecha en esta pestaña",
+  "Paper practice · self-reported": "Práctica en papel · lo indicaste tú",
+  "Earlier practice · support use not recorded": "Práctica anterior · no se registró el uso de ayuda",
+  "Listen for the main message first. Then listen again for the detail the question asks about.": "Escucha primero el mensaje principal. Luego escucha otra vez el detalle que pregunta la pregunta.",
+  "Read the question, then find the part of the text that helps you answer. Check your choice against it.": "Lee la pregunta y busca la parte del texto que te ayuda a responder. Comprueba tu elección con ella.",
+  "Plan your main idea. Say it aloud, add one useful detail, and listen to your explanation.": "Planea tu idea principal. Dila en voz alta, agrega un detalle útil y escucha tu explicación.",
+  "Say your idea first. Write it, then reread it with the question beside you.": "Di tu idea primero. Escríbela y vuelve a leerla con la pregunta al lado.",
+  "Read the directions, try one step, then check your work.": "Lee las instrucciones, prueba un paso y revisa tu trabajo.",
+  "Name the person, object, or idea you are describing.": "Nombra la persona, el objeto o la idea que describes.",
+  "Add a specific action, fact, or detail from the task.": "Agrega una acción, un dato o un detalle específico de la tarea.",
+  "Tell the important events in an order the reader can follow.": "Cuenta los sucesos importantes en un orden que el lector pueda seguir.",
+  "Add a detail that helps the reader understand what happened.": "Agrega un detalle que ayude al lector a entender lo que pasó.",
+  "Describe what happened or how something works.": "Describe lo que pasó o cómo funciona algo.",
+  "Explain why, using a detail or result from the task.": "Explica por qué, con un detalle o resultado de la tarea.",
+  "State your claim or choice clearly.": "Di con claridad tu afirmación o tu elección.",
+  "Support it with a reason and specific evidence from the task.": "Apóyala con una razón y evidencia específica de la tarea.",
+};
+/** Markup-safe text: English from learning.js, plus Spanish in Español and bilingual modes. */
+const learnCopy = (en) => I.T(en, ES_LEARNING[en]);
+const TAG_ES = { Claim: "Afirmación", Evidence: "Evidencia", Example: "Ejemplo" };
+
 const isListening = (domain, a) => domain === "Listening" || a.listening;
 /** Tap-a-word help is a support, so "on my own" never gets it. */
 const wordHelp = () => (mode === "supported" ? glossary : null);
@@ -183,15 +215,15 @@ function stimulusHTML(a, ctx) {
             gist: mode === "supported" ? gists.get(a.id) || [] : null,
           })}
         </article>
-        ${pinMode && points(a).length ? html`<section aria-labelledby="nbData-${a.id}"><h3 id="nbData-${a.id}" class="helper-title">Pin a data point</h3><ul class="chips" role="list">${points(a).map((t, i) => dataPickHTML(`${a.id}|d${i}`, t, { picked: picked === `d${i}`, tag: itemsFrom(loadNotebook(storage), a.id).find((x) => x.text === t)?.tag }))}</ul></section>` : ""}
-        ${mode === "supported" ? html`<details class="helpers nb-organizer-wrap"><summary>${icon("grid")} Graphic organizer: Claim · Evidence · Example</summary><div class="helper-body">${organizerHTML(itemsFrom(loadNotebook(storage), a.id))}<p class="fine">Turn on “Pin evidence” and tag sentences to fill it. <a href="${BASE}/evidence?grades=${cur.band}#notebook">Open my Evidence Notebook</a></p></div></details>` : ""}`
+        ${pinMode && points(a).length ? html`<section aria-labelledby="nbData-${a.id}"><h3 id="nbData-${a.id}" class="helper-title">${I.T("Pin a data point", "Fija un dato")}</h3><ul class="chips" role="list">${points(a).map((t, i) => dataPickHTML(`${a.id}|d${i}`, t, { picked: picked === `d${i}`, tag: itemsFrom(loadNotebook(storage), a.id).find((x) => x.text === t)?.tag }))}</ul></section>` : ""}
+        ${mode === "supported" ? html`<details class="helpers nb-organizer-wrap"><summary>${icon("grid")} ${I.T("Graphic organizer: Claim · Evidence · Example", "Organizador gráfico: Afirmación · Evidencia · Ejemplo")}</summary><div class="helper-body">${organizerHTML(itemsFrom(loadNotebook(storage), a.id))}<p class="fine">${I.T("Turn on “Pin evidence” and tag sentences to fill it.", "Activa “Fijar evidencia” y etiqueta oraciones para llenarlo.")} <a href="${BASE}/evidence?grades=${cur.band}#notebook">${I.T("Open my Evidence Notebook", "Abrir mi Cuaderno de evidencia")}</a></p></div></details>` : ""}`
       : ""
   }
   ${
     a.prompt && !hasPassage
       ? html`<div class="prompt">
           <p class="prompt-text">${wordHelp() ? glossInline(a.prompt, wordHelp()) : a.prompt}</p>
-          ${cur.domain !== "Reading" ? html`<button type="button" class="ghost small" data-say="${a.prompt}" aria-label="Read the question aloud">${icon("volume")} Hear question</button>` : ""}
+          ${cur.domain !== "Reading" ? html`<button type="button" class="ghost small" data-say="${a.prompt}" aria-label="${I.S("Read the question aloud", "Escuchar la pregunta en inglés")}">${icon("volume")} ${I.T("Hear question", "Escuchar la pregunta")}</button>` : ""}
         </div>`
       : ""
   }
@@ -211,36 +243,38 @@ function pickedText(a) {
 function evidencePinHTML(a) {
   const text = pinMode ? pickedText(a) : "";
   return html`<div class="nb-pin-tools">
-    <button type="button" class="btn small" data-nb-pin-mode aria-pressed="${String(pinMode)}">${icon("pin")} ${pinMode ? "Done pinning" : "Pin evidence"}</button>
+    <button type="button" class="btn small" data-nb-pin-mode aria-pressed="${String(pinMode)}">${icon("pin")} ${pinMode ? I.T("Done pinning", "Terminar de fijar") : I.T("Pin evidence", "Fijar evidencia")}</button>
     ${pinMode ? tagBarHTML(text ? { text } : null) : ""}
   </div>`;
 }
+
+const lookBack = () => I.T("Look back at the sentence, table, or chart that supports your answer.", "Vuelve a la oración, la tabla o la gráfica que apoya tu respuesta.");
 
 function feedbackHTML(a) {
   const c = checked.get(a.id);
   if (!c) return "";
   if (c.ok)
     return html`<div class="feedback is-right" role="status">
-      <p class="fb-title">${icon("check")} ${c.attempt === 1 ? "Correct!" : "You got it!"}</p>
+      <p class="fb-title">${icon("check")} ${c.attempt === 1 ? I.T("Correct!", "¡Correcto!") : I.T("You got it!", "¡Lo lograste!")}</p>
       ${a.correct ? html`<p>${a.correct}</p>` : ""}
-      ${cur.domain === "Reading" ? html`<p class="fb-extra">Look back at the sentence, table, or chart that supports your answer.</p>` : ""}
-      ${a.extension ? html`<p class="fb-extra"><strong>Go further:</strong> ${a.extension}</p>` : ""}
-      ${cur.domain === "Speaking" ? html`<p class="fb-extra"><strong>Now say it:</strong> record yourself saying the best answer.</p>` : ""}
+      ${cur.domain === "Reading" ? html`<p class="fb-extra">${lookBack()}</p>` : ""}
+      ${a.extension ? html`<p class="fb-extra"><strong>${I.T("Go further:", "Ve más allá:")}</strong> ${a.extension}</p>` : ""}
+      ${cur.domain === "Speaking" ? html`<p class="fb-extra"><strong>${I.T("Now say it:", "Ahora dilo:")}</strong> ${I.T("record yourself saying the best answer.", "graba tu voz diciendo la mejor respuesta.")}</p>` : ""}
     </div>`;
   if (c.diag && mode === "supported" && (c.reveal !== "full" || revealHeld(c)))
     return listeningTrapHTML(c.diag, { held: revealHeld(c), hint: a.hint });
   if (c.reveal === "full" && mode === "supported")
     return html`<div class="feedback is-shown" role="status">
-      <p class="fb-title">${icon("info")} Here is the answer</p>
+      <p class="fb-title">${icon("info")} ${I.T("Here is the answer", "Aquí está la respuesta")}</p>
       <p><strong>${correctAnswerText(a)}</strong></p>
       ${a.support ? html`<p>${a.support}</p>` : ""}
-      ${cur.domain === "Reading" ? html`<p>Look back at the sentence, table, or chart that supports your answer.</p>` : ""}
-      <button type="button" class="btn" data-retry>Try it again</button>
+      ${cur.domain === "Reading" ? html`<p>${lookBack()}</p>` : ""}
+      <button type="button" class="btn" data-retry>${I.T("Try it again", "Inténtalo otra vez")}</button>
     </div>`;
   return html`<div class="feedback is-hint" role="status">
-    <p class="fb-title">${icon("retry")} Not yet — try again</p>
-    ${a.hint && mode === "supported" ? html`<p>${a.hint}</p>` : html`<p>Review the task, then try again. Switch to Learn with help for a clue.</p>`}
-    ${cur.domain === "Reading" ? html`<p>Look back at the sentence, table, or chart that supports your answer.</p>` : ""}
+    <p class="fb-title">${icon("retry")} ${I.T("Not yet — try again", "Todavía no — inténtalo otra vez")}</p>
+    ${a.hint && mode === "supported" ? html`<p>${a.hint}</p>` : html`<p>${I.T("Review the task, then try again. Switch to Learn with help for a clue.", "Revisa la tarea y vuelve a intentarlo. Cambia a Aprender con ayuda para ver una pista.")}</p>`}
+    ${cur.domain === "Reading" ? html`<p>${lookBack()}</p>` : ""}
     <button type="button" class="btn" data-retry>${I.T("Try again", "Intentar de nuevo")}</button>
   </div>`;
 }
@@ -249,7 +283,7 @@ function interactiveHTML(a) {
   const c = checked.get(a.id);
   const answer = answerOf(cur.record, a.id);
   const reveal = c ? (c.ok || revealHeld(c) ? "mark" : c.reveal || "mark") : "none";
-  return html`${cur.domain === "Speaking" ? html`<p class="fine warmup-note">${icon("speaking")} <strong>Warm-up.</strong> This builds ideas and words. Speaking ability is shown by speaking — when you are ready, <a href="${BASE}/speak?grades=${cur.band}">open the Speaking Studio</a>.</p>` : ""}${inputHTML(a, answer, { reveal })}
+  return html`${cur.domain === "Speaking" ? html`<p class="fine warmup-note">${icon("speaking")} <strong>${I.T("Warm-up.", "Calentamiento.")}</strong> ${I.T("This builds ideas and words. Speaking ability is shown by speaking — when you are ready,", "Esto te ayuda a reunir ideas y palabras. Hablar se demuestra hablando — cuando estés listo o lista,")} <a href="${BASE}/speak?grades=${cur.band}">${I.T("open the Speaking Studio", "abre el Estudio de habla")}</a>.</p>` : ""}${inputHTML(a, answer, { reveal })}
   ${!c ? html`<button type="button" class="btn btn-primary btn-check" data-check ${isAnswered(a, answer ?? seedAnswer(a)) ? "" : raw("disabled")}>${I.T("Check my answer", "Revisar mi respuesta")}</button>` : ""}
   ${feedbackHTML(a)}
   ${cur.domain === "Speaking" && c?.ok ? recorderHTML(a.id, { level: cur.level, recording: isRecording(a.id) }) : ""}`;
@@ -266,18 +300,18 @@ function speakingHTML(a) {
     thinking: savedChecks.thinking ?? savedChecks.connected,
   };
   return html`${recorderHTML(a.id, { prompt: a.prompt, level: cur.level, recording: isRecording(a.id), models: hasTake && mode === "supported" ? a.models : null, activity: a })}
-    ${!hasTake && a.models ? html`<p class="fine">Record or practice aloud with a partner, then hear sample answers in Learn with help mode.</p>` : ""}
+    ${!hasTake && a.models ? html`<p class="fine">${I.T("Record or practice aloud with a partner, then hear sample answers in Learn with help mode.", "Graba o practica en voz alta con un compañero y luego escucha respuestas de ejemplo en el modo Aprender con ayuda.")}</p>` : ""}
     <label class="field">
-      <span>${a.responseLabel || "Planning notes (optional)"}</span>
+      <span>${a.responseLabel || I.T("Planning notes (optional)", "Notas para planear (opcional)")}</span>
       <textarea
         rows="3"
         data-note
-        placeholder="${a.responsePlaceholder || "Words or ideas I will say…"}"
+        placeholder="${a.responsePlaceholder || I.S("Words or ideas I will say…", "Palabras o ideas que voy a decir…")}"
         ${IGN}
       >
 ${notes}</textarea>
     </label>
-    <section class="task-criteria"><h2>What to include</h2><ul>${taskCriteria(a).map((c) => html`<li>${c}</li>`)}</ul></section>
+    <section class="task-criteria"><h2>${I.T("What to include", "Qué incluir")}</h2><ul>${taskCriteria(a).map((c) => html`<li>${learnCopy(c)}</li>`)}</ul></section>
     ${speakingChecksHTML(checks)}
     <label class="practiced"
       ><input
@@ -286,16 +320,16 @@ ${notes}</textarea>
         ${cur.record.practiced[a.id] ? raw("checked") : ""}
         ${IGN}
       />
-      I practiced out loud (with a partner or my teacher).</label
+      ${I.T("I practiced out loud (with a partner or my teacher).", "Practiqué en voz alta (con un compañero o con mi docente).")}</label
     >
     <button type="button" class="btn btn-primary" data-save-speaking>
-      Save my speaking practice
+      ${I.T("Save my speaking practice", "Guardar mi práctica de habla")}
     </button>
-    ${cur.record.complete.includes(a.id) ? html`<p class="saved-note">${icon("check")} Practice evidence saved. The audio itself is not saved. Try again to add a useful detail.</p>` : ""}
-    ${cur.record.results[a.id]?.total && cur.record.results[a.id]?.meaningful !== false ? html`<section class="practice-score" role="status" aria-label="Speaking practice score">
-      <p class="eyebrow">Practice score · ${cur.record.results[a.id].score} of ${cur.record.results[a.id].total}</p>
-      <h3>${cur.record.results[a.id].band}</h3>
-      <p>Use your self-check and teacher feedback to reflect. This is not an official ACCESS score.</p>
+    ${cur.record.complete.includes(a.id) ? html`<p class="saved-note">${icon("check")} ${I.T("Practice evidence saved. The audio itself is not saved. Try again to add a useful detail.", "Evidencia de práctica guardada. El audio no se guarda. Inténtalo otra vez para agregar un detalle útil.")}</p>` : ""}
+    ${cur.record.results[a.id]?.total && cur.record.results[a.id]?.meaningful !== false ? html`<section class="practice-score" role="status" aria-label="${I.S("Speaking practice score", "Puntos de práctica de habla")}">
+      <p class="eyebrow">${I.T(`Practice score · ${cur.record.results[a.id].score} of ${cur.record.results[a.id].total}`, `Puntos de práctica · ${cur.record.results[a.id].score} de ${cur.record.results[a.id].total}`)}</p>
+      <h3>${practiceCopy(cur.record.results[a.id].band, I)}</h3>
+      <p>${I.T("Use your self-check and teacher feedback to reflect. This is not an official ACCESS score.", "Usa tu autoevaluación y los comentarios de tu docente para reflexionar. Esta no es una puntuación oficial de ACCESS.")}</p>
     </section>` : ""}`;
 }
 
@@ -307,9 +341,9 @@ function writingHTML(a) {
   const savedResult = cur.record.results[a.id];
   const savedScore = result?.practice || (savedResult?.meaningful !== false ? savedResult?.practice : null);
   const usedWords = new Set(bankWordsUsed(text, wordBank(a)).map(bankKey));
-  return html`${mode === "supported" && (bank.length || (a.frames || []).length) ? raw('<details class="writing-starters"><summary>Writing starters</summary>') : ""}${
+  return html`${mode === "supported" && (bank.length || (a.frames || []).length) ? html`<details class="writing-starters"><summary>${I.T("Writing starters", "Ayudas para escribir")}</summary>` : ""}${
       bank.length
-        ? html`<ul class="wordbank" aria-label="Word bank">
+        ? html`<ul class="wordbank" aria-label="${I.S("Word bank", "Banco de palabras")}">
             ${bank.map((w) => html`<li class="${usedWords.has(String(w).split("/")[0].trim().toLowerCase()) ? "is-used" : ""}">${w}</li>`)}
           </ul>`
         : ""
@@ -323,63 +357,63 @@ function writingHTML(a) {
     }
     ${mode === "supported" && (bank.length || (a.frames || []).length) ? raw("</details>") : ""}
     <label class="field">
-      <span>${a.responseLabel || "Your writing"}</span>
+      <span>${a.responseLabel || I.T("Your writing", "Tu escritura")}</span>
       <textarea
         rows="${cur.level === "C" ? 10 : 6}"
         data-note
         spellcheck="false"
-        placeholder="${a.responsePlaceholder || "Write your answer here."}"
+        placeholder="${a.responsePlaceholder || I.S("Write your answer here.", "Escribe tu respuesta aquí.")}"
         ${IGN}
       >
 ${text}</textarea>
     </label>
-    <p class="fine">Answer the question first. The word target is optional; useful details matter more than length.</p>
+    <p class="fine">${I.T("Answer the question first. The word target is optional; useful details matter more than length.", "Primero responde la pregunta. La meta de palabras es opcional; los detalles útiles importan más que la longitud.")}</p>
     <p class="meter">
       <span class="meter-bar"
         ><span
           style="width:${Math.min(100, Math.round((wordCount(text) / goal) * 100))}%"
         ></span></span
-      ><span data-meter>${wordCount(text)} / about ${goal} words</span>
+      ><span data-meter>${I.T(`${wordCount(text)} / about ${goal} words`, `${wordCount(text)} / unas ${goal} palabras`)}</span>
     </p>
     <div class="row-actions">
       <button type="button" class="btn btn-primary" data-check-writing>${I.T("Check my writing", "Revisar mi escritura")}</button>
       <button type="button" class="btn btn-secondary" data-ask-coach>
-        ${icon("detective")} Language Coach
+        ${icon("detective")} ${I.T("Language Coach", "Entrenador de lenguaje")}
       </button>
       <button type="button" class="ghost" data-read-writing data-say="${text || "Write something first."}">
-        ${icon("volume")} Read my writing to me
+        ${icon("volume")} ${I.T("Read my writing to me", "Leer mi escritura en voz alta")}
       </button>
     </div>
     ${coachFeedback ? coachCardHTML(coachFeedback, text, { patternHref: (id) => `${BASE}/detective/${id}?grades=${cur.band}` }) : ""}
-    ${savedScore ? html`<section class="practice-score" aria-label="Writing practice score" role="status">
-      <p class="eyebrow">Practice score · ${savedScore.score} of ${savedScore.total}</p>
-      <h3>${savedScore.band}</h3>
-      <p>These checks notice visible writing signals. They do not judge meaning or language proficiency.</p>
-      <ul>${savedScore.checks.map((check) => html`<li class="${check.ok ? "is-met" : "is-next"}"><span aria-hidden="true">${icon(check.ok ? "check" : "x")}</span>${check.label}</li>`)}</ul>
-      <p><strong>Next step:</strong> ${savedScore.nextStep}</p>
+    ${savedScore ? html`<section class="practice-score" aria-label="${I.S("Writing practice score", "Puntos de práctica de escritura")}" role="status">
+      <p class="eyebrow">${I.T(`Practice score · ${savedScore.score} of ${savedScore.total}`, `Puntos de práctica · ${savedScore.score} de ${savedScore.total}`)}</p>
+      <h3>${practiceCopy(savedScore.band, I)}</h3>
+      <p>${I.T("These checks notice visible writing signals. They do not judge meaning or language proficiency.", "Estas revisiones notan señales visibles de la escritura. No juzgan el significado ni el dominio del idioma.")}</p>
+      <ul>${savedScore.checks.map((check) => html`<li class="${check.ok ? "is-met" : "is-next"}"><span aria-hidden="true">${icon(check.ok ? "check" : "x")}</span>${practiceCopy(check.label, I)}</li>`)}</ul>
+      <p><strong>${I.T("Next step:", "Siguiente paso:")}</strong> ${practiceCopy(savedScore.nextStep, I)}</p>
     </section>` : ""}
     ${
       result
         ? html`<div class="feedback is-hint" role="status">
-              <p class="fb-title">Review your meaning first</p>
-              <ul>${taskCriteria(a).map((c) => html`<li>${c}</li>`)}</ul>
-              <p><strong>One next step:</strong> ${result.nextMoves[0] ? `${result.nextMoves[0].title}. ${result.nextMoves[0].ask}` : "Read your answer aloud. Keep only details that help answer the question."}</p>
-              ${result.strengths.length ? html`<details><summary>What the checker noticed</summary>
+              <p class="fb-title">${I.T("Review your meaning first", "Primero revisa si tu mensaje se entiende")}</p>
+              <ul>${taskCriteria(a).map((c) => html`<li>${learnCopy(c)}</li>`)}</ul>
+              <p><strong>${I.T("One next step:", "Un siguiente paso:")}</strong> ${result.nextMoves[0] ? `${result.nextMoves[0].title}. ${result.nextMoves[0].ask}` : I.T("Read your answer aloud. Keep only details that help answer the question.", "Lee tu respuesta en voz alta. Deja solo los detalles que ayudan a responder la pregunta.")}</p>
+              ${result.strengths.length ? html`<details><summary>${I.T("What the checker noticed", "Lo que notó el revisor")}</summary>
               <ul class="checks">${result.strengths.slice(0, 4).map((x) => html`<li class="ok">${icon("check")} ${x.text}</li>`)}</ul></details>` : ""}
-              ${mode === "supported" && result.word.bankUsed.length ? html`<p class="fine">Word-bank words you used: ${result.word.bankUsed.join(", ")}</p>` : ""}
+              ${mode === "supported" && result.word.bankUsed.length ? html`<p class="fine">${I.T("Word-bank words you used:", "Palabras del banco que usaste:")} ${result.word.bankUsed.join(", ")}</p>` : ""}
               <p class="fine">
-                These checks notice surface features, not meaning or a score. Did you answer every part and include a specific detail? Ask your teacher for feedback.
+                ${I.T("These checks notice surface features, not meaning or a score. Did you answer every part and include a specific detail? Ask your teacher for feedback.", "Estas revisiones notan rasgos de la superficie, no el significado ni un puntaje. ¿Respondiste cada parte e incluiste un detalle específico? Pide comentarios a tu docente.")}
               </p>
             </div>
-            <label class="field"><span>What did you improve, or what did you check?</span><textarea data-reflection rows="2" data-nsr-ignore>${cur.record.reflections[a.id] || ""}</textarea></label>
-            <button type="button" class="btn btn-primary" data-finish-writing>Save my reviewed writing</button>
-            <details class="draft-history"><summary>Compare my first and current draft</summary>
-              <h3>First draft</h3><p>${cur.record.drafts[a.id]?.first || text}</p>
-              <h3>Current draft</h3><p>${text}</p>
+            <label class="field"><span>${I.T("What did you improve, or what did you check?", "¿Qué mejoraste o qué revisaste?")}</span><textarea data-reflection rows="2" data-nsr-ignore>${cur.record.reflections[a.id] || ""}</textarea></label>
+            <button type="button" class="btn btn-primary" data-finish-writing>${I.T("Save my reviewed writing", "Guardar mi escritura revisada")}</button>
+            <details class="draft-history"><summary>${I.T("Compare my first and current draft", "Comparar mi primer borrador con el actual")}</summary>
+              <h3>${I.T("First draft", "Primer borrador")}</h3><p>${cur.record.drafts[a.id]?.first || text}</p>
+              <h3>${I.T("Current draft", "Borrador actual")}</h3><p>${text}</p>
               ${
                 cur.record.drafts[a.id]?.first && cur.record.drafts[a.id]?.first !== text
                   ? html`<div class="revision-coach-card card">
-                      <h4>${icon("growth")} Revision Growth Summary</h4>
+                      <h4>${icon("growth")} ${I.T("Revision Growth Summary", "Resumen del avance en la revisión")}</h4>
                       <ul>
                         ${compareDrafts(cur.record.drafts[a.id].first, text, coachOptions(a)).changes.map((c) => html`<li>${icon("star")} ${c.label}: ${c.from} → ${c.to}</li>`)}
                       </ul>
@@ -403,12 +437,12 @@ function worksheetHTML(a) {
             </ol>
           </section>`,
       )}
-      <p class="ws-name">Name: ______________________ Date: ____________</p>
+      <p class="ws-name">${I.T("Name: ______________________ Date: ____________", "Nombre: ______________________ Fecha: ____________")}</p>
     </div>
     <div class="row-actions">
-      <button type="button" class="btn btn-primary" data-print>${icon("print")} Print this page</button>
+      <button type="button" class="btn btn-primary" data-print>${icon("print")} ${I.T("Print this page", "Imprimir esta página")}</button>
       <button type="button" class="ghost" data-mark-done>
-        ${cur.record.complete.includes(a.id) ? html`${icon("check")} Done` : "Mark as done"}
+        ${cur.record.complete.includes(a.id) ? html`${icon("check")} ${I.T("Done", "Hecho")}` : I.T("Mark as done", "Marcar como hecho")}
       </button>
     </div>`;
 }
@@ -446,15 +480,15 @@ function navHTML() {
     const { ids, index, title } = cur.playlist;
     const at = (i) =>
       `${BASE}/play?ids=${ids.join(",")}&i=${i}&grades=${cur.band}&mode=${mode}${title ? `&t=${encodeURIComponent(title)}` : ""}`;
-    return html`<nav class="act-nav" aria-label="Playlist">
+    return html`<nav class="act-nav" aria-label="${I.S("Playlist", "Lista de actividades")}">
       ${index > 0 ? html`<a class="btn" href="${at(index - 1)}">${icon("arrow-left")} ${I.T("Previous", "Anterior")}</a>` : html`<span></span>`}
       <span class="act-count">${I.T(`${index + 1} of ${ids.length}`, `${index + 1} de ${ids.length}`)}</span>
-      ${index < ids.length - 1 ? html`<a class="btn btn-primary" href="${at(index + 1)}">${I.T("Next", "Siguiente")} ${icon("arrow-right")}</a>` : html`<a class="btn btn-primary" href="${BASE}/family/progress">${I.T("Finish", "Terminar")} ${icon("check")}</a>`}
+      ${index < ids.length - 1 ? html`<a class="btn btn-primary" href="${at(index + 1)}">${I.T("Next", "Siguiente")} ${icon("arrow-right")}</a>` : html`<a class="btn btn-primary" href="${BASE}/family/progress?done=1">${I.T("Finish", "Terminar")} ${icon("check")}</a>`}
     </nav>`;
   }
   const prev = cur.list[cur.index - 1];
   const next = cur.list[cur.index + 1];
-  return html`<nav class="act-nav" aria-label="Activities">
+  return html`<nav class="act-nav" aria-label="${I.S("Activities", "Actividades")}">
     ${prev ? html`<a class="btn" href="${activityHref(cur.domain, cur.level, prev.id)}">${icon("arrow-left")} ${I.T("Previous", "Anterior")}</a>` : html`<span></span>`}
     <span class="act-count">${I.T(`${cur.index + 1} of ${cur.list.length}`, `${cur.index + 1} de ${cur.list.length}`)}</span>
     ${next ? html`<a class="btn btn-primary" href="${activityHref(cur.domain, cur.level, next.id)}">${I.T("Next", "Siguiente")} ${icon("arrow-right")}</a>` : html`<a class="btn btn-primary" href="${roomHref(cur.domain, cur.level)}">${I.T("Back to the room", "Volver a la sala")} ${icon("check")}</a>`}
@@ -466,6 +500,7 @@ let I = makeI18n("en");
 export async function render(ctx) {
   const generation = ++renderGeneration;
   I = i18nFor(ctx);
+  setItemsI18n(I);
   loading = true;
   const snapshot = { band: ctx.band, route: { ...ctx.route }, prefs: { ...ctx.prefs } };
   const requestedMode = new URLSearchParams(location.search).get("mode");
@@ -477,12 +512,12 @@ export async function render(ctx) {
   loading = false;
   if (!found?.activity)
     return {
-      title: "Not found",
+      title: I.S("Not found", "No se encontró"),
       html: html`<section class="panel empty-state">
         <img src="${ART}/empty.svg" width="480" height="300" alt="" />
-        <h1 tabindex="-1">We could not find that activity.</h1>
-        <p>It may have moved. Choose a skill from the lab home.</p>
-        <a class="btn btn-primary" href="${BASE}/">Go to the lab home</a>
+        <h1 tabindex="-1">${I.T("We could not find that activity.", "No pudimos encontrar esa actividad.")}</h1>
+        <p>${I.T("It may have moved. Choose a skill from the lab home.", "Puede que se haya movido. Elige una destreza en la página principal del laboratorio.")}</p>
+        <a class="btn btn-primary" href="${BASE}/">${I.T("Go to the lab home", "Ir a la página principal del laboratorio")}</a>
       </section>`,
     };
   const sameActivity = cur?.activity?.id === found.activity.id;
@@ -535,7 +570,7 @@ export async function render(ctx) {
           hasPassage && a.prompt
             ? html`<div class="prompt response-prompt">
                 <p class="prompt-text">${wordHelp() ? glossInline(a.prompt, wordHelp()) : a.prompt}</p>
-                ${cur.domain !== "Reading" ? html`<button type="button" class="ghost small" data-say="${a.prompt}" aria-label="Read the question aloud">${icon("volume")} Hear question</button>` : ""}
+                ${cur.domain !== "Reading" ? html`<button type="button" class="ghost small" data-say="${a.prompt}" aria-label="${I.S("Read the question aloud", "Escuchar la pregunta en inglés")}">${icon("volume")} ${I.T("Hear question", "Escuchar la pregunta")}</button>` : ""}
               </div>`
             : ""
         }
@@ -543,14 +578,14 @@ export async function render(ctx) {
           <label><input type="radio" name="practiceMode" value="supported" data-mode ${mode === "supported" ? raw("checked") : ""} data-nsr-ignore /> ${I.T("Learn with help", "Aprender con ayuda")}</label>
           <label><input type="radio" name="practiceMode" value="independent" data-mode ${mode === "independent" ? raw("checked") : ""} data-nsr-ignore /> ${I.T("Try independently", "Intentar solo o sola")}</label>
           <p class="fine">${mode === "independent" ? I.T("Vocabulary, models and hints stay closed until you review. Replay and directions remain available. This is classroom practice, not a test simulation.", "El vocabulario, los modelos y las pistas permanecen cerrados hasta que revises. Puedes volver a escuchar y ver las instrucciones. Es práctica de clase, no una simulación de examen.") : I.T("Strategies and examples are available below. Help and retries are saved as supported practice.", "Abajo hay estrategias y ejemplos. La ayuda y los reintentos se guardan como práctica con apoyo.")}</p></fieldset>
-        ${mode === "supported" ? html`<details class="strategy" data-help><summary>${I.T("First: try a strategy", "Primero: prueba una estrategia")}</summary><p>${strategyFor(cur.domain)}</p></details>${vocabHTML(a, shared, { focused: Boolean(checked.get(a.id) || writingChecks.get(a.id)) })}` : ""}
-        ${!["constructed", "worksheet"].includes(a.type) && cur.record.results[a.id] ? html`<div class="fresh-attempt"><button type="button" class="btn" data-fresh-attempt>Start a fresh independent attempt</button><p class="fine">Save a summary of this attempt and clear its selected answers. Earlier help stays in your history; this is another try at the same task.</p></div>` : ""}
+        ${mode === "supported" ? html`<details class="strategy" data-help><summary>${I.T("First: try a strategy", "Primero: prueba una estrategia")}</summary><p>${learnCopy(strategyFor(cur.domain))}</p></details>${vocabHTML(a, shared, { focused: Boolean(checked.get(a.id) || writingChecks.get(a.id)) })}` : ""}
+        ${!["constructed", "worksheet"].includes(a.type) && cur.record.results[a.id] ? html`<div class="fresh-attempt"><button type="button" class="btn" data-fresh-attempt>${I.T("Start a fresh independent attempt", "Empezar un intento nuevo e independiente")}</button><p class="fine">${I.T("Save a summary of this attempt and clear its selected answers. Earlier help stays in your history; this is another try at the same task.", "Guarda un resumen de este intento y borra las respuestas elegidas. La ayuda anterior queda en tu historial; es otro intento de la misma tarea.")}</p></div>` : ""}
         <p id="answerValidation" role="alert" ${validation ? "" : raw("hidden")}>${validation}</p>
-        <section class="answer-zone" aria-label="Your answer">${answerZone(a)}</section>
+        <section class="answer-zone" aria-label="${I.S("Your answer", "Tu respuesta")}">${answerZone(a)}</section>
         </div></div>
         <p class="save-explainer">${I.T("Writing and checklists save on this browser. Audio does not.", "La escritura y las listas se guardan en este navegador. El audio no.")} <a href="${BASE}/family/save">${I.T("Save & continue later", "Guardar y continuar después")}</a></p>
       </article>
-      ${cur.record.results[a.id] ? html`<p class="practice-evidence"><strong>${I.T("Practice evidence:", "Evidencia de práctica:")}</strong> ${evidenceLabel(cur.record.results[a.id])}. ${I.T("This is not a proficiency score.", "Esto no es una calificación del dominio del inglés.")}</p>` : ""}
+      ${cur.record.results[a.id] ? html`<p class="practice-evidence"><strong>${I.T("Practice evidence:", "Evidencia de práctica:")}</strong> ${learnCopy(evidenceLabel(cur.record.results[a.id]))}. ${I.T("This is not a proficiency score.", "Esto no es una calificación del dominio del inglés.")}</p>` : ""}
       ${navHTML()}`,
   };
 }
@@ -563,6 +598,7 @@ function setAnswer(a, next, ctx) {
 }
 
 function check(a, ctx) {
+  const I = i18nFor(ctx);
   const answer = answerOf(cur.record, a.id) ?? seedAnswer(a);
   if (!isAnswered(a, answer)) return;
   if (answer !== undefined && answerOf(cur.record, a.id) === undefined)
@@ -591,12 +627,23 @@ function check(a, ctx) {
   cur.record.complete = cur.record.complete.filter((id) => id !== a.id);
   if (ok) cur.record.complete.push(a.id);
   save();
-  announce(ok ? "Correct!" : revealHeld(checked.get(a.id)) ? "Not yet. Replay one part before you see the answer." : n >= 2 && mode === "supported" ? "Here is the answer." : diag ? "Not yet. Check the listening trap." : "Not yet. Try again.");
+  announce(
+    ok
+      ? I.S("Correct!", "¡Correcto!")
+      : revealHeld(checked.get(a.id))
+        ? I.S("Not yet. Replay one part before you see the answer.", "Todavía no. Vuelve a escuchar una parte antes de ver la respuesta.")
+        : n >= 2 && mode === "supported"
+          ? I.S("Here is the answer.", "Aquí está la respuesta.")
+          : diag
+            ? I.S("Not yet. Check the listening trap.", "Todavía no. Revisa la trampa de escucha.")
+            : I.S("Not yet. Try again.", "Todavía no. Inténtalo otra vez."),
+  );
   ctx.rerender();
 }
 
 /** Listening Strategy Lab controls (Learn with help only). Returns true when it handled the click. */
 function onListeningLabClick(t, a, ctx) {
+  const I = i18nFor(ctx);
   const replay = t.closest("[data-replay-seg]");
   if (replay) {
     const i = Number(String(replay.dataset.replaySeg).split(":").pop());
@@ -604,12 +651,12 @@ function onListeningLabClick(t, a, ctx) {
     if (!part) return true;
     noteHelp(a.id);
     const owner = cur;
-    announce(`Replaying part ${i + 1}.`);
+    announce(I.S(`Replaying part ${i + 1}.`, `Reproduciendo la parte ${i + 1}.`));
     speak(part.text, { rate: ctx.prefs.rate || 0.9 }).then((done) => {
       const c = checked.get(a.id);
       if (cur !== owner || !done || !c?.diag || c.diag.segment !== i || c.replayed) return;
       c.replayed = true;
-      if (c.reveal === "full") announce("You replayed the key part. Here is the answer.");
+      if (c.reveal === "full") announce(I.S("You replayed the key part. Here is the answer.", "Escuchaste otra vez la parte clave. Aquí está la respuesta."));
       ctx.rerender({ keepFocus: true });
     });
     return true;
@@ -620,14 +667,15 @@ function onListeningLabClick(t, a, ctx) {
     const key = tag.dataset.tagSignal;
     set.has(key) ? set.delete(key) : set.add(key);
     listenTags.set(a.id, set);
-    announce(`${set.has(key) ? "Tagged" : "Untagged"} ${tag.textContent.trim()}.`);
+    const word = tag.textContent.trim();
+    announce(set.has(key) ? I.S(`Tagged ${word}.`, `Etiqueta puesta: ${word}.`) : I.S(`Untagged ${word}.`, `Etiqueta quitada: ${word}.`));
     ctx.rerender({ keepFocus: true });
     return true;
   }
   if (t.closest("[data-clear-listen-notes]")) {
     clearListenNotes(storage, a.id);
     for (const box of document.querySelectorAll("[data-listen-note]")) box.value = "";
-    announce("Listening notes cleared.");
+    announce(I.S("Listening notes cleared.", "Notas de escucha borradas."));
     return true;
   }
   return false;
@@ -635,6 +683,7 @@ function onListeningLabClick(t, a, ctx) {
 
 export function onClick(e, ctx) {
   if (!cur || loading) return;
+  const I = i18nFor(ctx);
   const a = cur.activity;
   const t = e.target;
 
@@ -678,7 +727,7 @@ export function onClick(e, ctx) {
   if (t.closest("[data-nb-pin-mode]")) {
     pinMode = !pinMode;
     picked = null;
-    announce(pinMode ? "Pin evidence on. Select a sentence or data point to tag it." : "Pin evidence off.");
+    announce(pinMode ? I.S("Pin evidence on. Select a sentence or data point to tag it.", "Fijar evidencia activado. Elige una oración o un dato para etiquetarlo.") : I.S("Pin evidence off.", "Fijar evidencia desactivado."));
     ctx.rerender({ keepFocus: true });
     return true;
   }
@@ -687,7 +736,7 @@ export function onClick(e, ctx) {
     const key = pick.dataset.nbPick.slice(a.id.length + 1);
     const next = /^d\d+$/.test(key) ? key : Number(key);
     picked = picked === next ? null : next;
-    if (picked !== null) announce(`Selected. Choose Claim, Evidence, or Example.`);
+    if (picked !== null) announce(I.S("Selected. Choose Claim, Evidence, or Example.", "Elegido. Elige Afirmación, Evidencia o Ejemplo."));
     Promise.resolve(ctx.rerender({ keepFocus: true })).then(() => {
       if (picked !== null) document.querySelector("[data-nb-tag]")?.focus();
     });
@@ -695,7 +744,7 @@ export function onClick(e, ctx) {
   }
   if (t.closest("[data-nb-unpick]")) {
     picked = null;
-    announce("Selection cleared.");
+    announce(I.S("Selection cleared.", "Selección borrada."));
     ctx.rerender({ keepFocus: true });
     return true;
   }
@@ -706,9 +755,19 @@ export function onClick(e, ctx) {
     const isData = typeof picked === "string";
     const { status } = pinItem(storage, { tag: tagBtn.dataset.nbTag, text, source: { id: a.id, kind: isData ? "data" : "activity", title: a.passageTitle || a.title } });
     const label = tagLabel(tagBtn.dataset.nbTag);
+    const labelEs = TAG_ES[label] || label;
     const back = `[data-nb-pick="${CSS.escape(`${a.id}|${picked}`)}"]`;
     picked = null;
-    announce(status === "full" ? "Your notebook is full. Remove a pin in the Evidence Notebook first." : status === "unchanged" ? `Already pinned as ${label}.` : `Pinned as ${label}${storage.isVolatile ? " for this tab only" : " in your Evidence Notebook"}.`);
+    announce(
+      status === "full"
+        ? I.S("Your notebook is full. Remove a pin in the Evidence Notebook first.", "Tu cuaderno está lleno. Primero quita un dato fijado del Cuaderno de evidencia.")
+        : status === "unchanged"
+          ? I.S(`Already pinned as ${label}.`, `Ya está fijado como ${labelEs}.`)
+          : I.S(
+              `Pinned as ${label}${storage.isVolatile ? " for this tab only" : " in your Evidence Notebook"}.`,
+              `Fijado como ${labelEs}${storage.isVolatile ? " solo en esta pestaña" : " en tu Cuaderno de evidencia"}.`,
+            ),
+    );
     Promise.resolve(ctx.rerender({ keepFocus: true })).then(() => document.querySelector(back)?.focus());
     return true;
   }
@@ -716,7 +775,7 @@ export function onClick(e, ctx) {
   // Reading - Toggle Spanish Cognates (Learn with help only)
   if (t.closest("[data-toggle-cognates]") && mode === "supported") {
     showCognates = !showCognates;
-    announce(showCognates ? "Cognate highlighting active." : "Cognate highlighting off.");
+    announce(showCognates ? I.S("Cognate highlighting active.", "Resaltado de cognados activado.") : I.S("Cognate highlighting off.", "Resaltado de cognados desactivado."));
     ctx.rerender({ keepFocus: true });
     return true;
   }
@@ -725,7 +784,7 @@ export function onClick(e, ctx) {
   if (t.closest("[data-ask-coach]")) {
     const text = cur.record.notes[a.id] || "";
     if (!wordCount(text)) {
-      validation = "Write your answer or a complete draft first before asking the Language Coach.";
+      validation = I.S("Write your answer or a complete draft first before asking the Language Coach.", "Primero escribe tu respuesta o un borrador completo antes de pedir ayuda al Entrenador de lenguaje.");
       ctx.rerender();
       return true;
     }
@@ -737,7 +796,7 @@ export function onClick(e, ctx) {
     appendEntry(ledger, { src: "writing", task: a.id, band: cur.band, domain: cur.domain, use: keyUseOf(a), stage: mode === "independent" && !used ? "independent" : "supported", kind: first ? "first" : "revision", supports: { bank: mode !== "independent", help: used, coach: !first }, m: coachFeedback.ledger });
     saveLedger(ledger);
     ctx.rerender({ keepFocus: true });
-    announce("The Language Coach looked at your draft.");
+    announce(I.S("The Language Coach looked at your draft.", "El Entrenador de lenguaje revisó tu borrador."));
     return true;
   }
 
@@ -762,7 +821,7 @@ export function onClick(e, ctx) {
     url.searchParams.set("mode", "independent");
     url.searchParams.set("grades", cur.band);
     ctx.navigate(url.pathname + url.search, { replace: true });
-    announce("Fresh attempt started. Your previous attempt summary is in your Passport portfolio.");
+    announce(I.S("Fresh attempt started. Your previous attempt summary is in your Passport portfolio.", "Empezó un intento nuevo. El resumen de tu intento anterior está en tu portafolio del Pasaporte."));
     return;
   }
   if (t.closest("[data-check]")) return check(a, ctx);
@@ -775,7 +834,7 @@ export function onClick(e, ctx) {
     const text = cur.record.notes[a.id] || "";
     const reflection = cur.record.reflections[a.id] || "";
     if (!wordCount(text) || !wordCount(reflection)) {
-      validation = "Write your answer and tell what you improved or checked first.";
+      validation = I.S("Write your answer and tell what you improved or checked first.", "Primero escribe tu respuesta y cuenta qué mejoraste o qué revisaste.");
       ctx.rerender(); return;
     }
     const revised = cur.record.drafts[a.id]?.first?.trim() !== text.trim();
@@ -784,12 +843,12 @@ export function onClick(e, ctx) {
     writingChecks.set(a.id, analysis);
     cur.record.results[a.id] = { words: wordCount(text), meaningful: true, evidence: revised ? "revised" : "writing", mode, supportUsed: (helpUsed.has(a.id) || Boolean(cur.record.supportUsed?.[a.id])), practice: analysis.practice, practiceBand: analysis.practice.band, date: new Date().toISOString() };
     if (!cur.record.complete.includes(a.id)) cur.record.complete.push(a.id);
-    validation = ""; save(); announce(storage.isVolatile ? "Reviewed writing kept in this tab. Export a Passport code before leaving." : "Reviewed writing saved. This is practice evidence, not a score."); ctx.rerender(); return;
+    validation = ""; save(); announce(storage.isVolatile ? I.S("Reviewed writing kept in this tab. Export a Passport code before leaving.", "La escritura revisada se guardó solo en esta pestaña. Exporta un código del Pasaporte antes de salir.") : I.S("Reviewed writing saved. This is practice evidence, not a score.", "Escritura revisada guardada. Es evidencia de práctica, no un puntaje.")); ctx.rerender(); return;
   }
   if (t.closest("[data-check-writing]")) {
     const text = cur.record.notes[a.id] || "";
     if (!wordCount(text)) {
-      validation = "Write a word, phrase, or sentence before checking your writing.";
+      validation = I.S("Write a word, phrase, or sentence before checking your writing.", "Escribe una palabra, una frase o una oración antes de revisar tu escritura.");
       writingChecks.delete(a.id);
       Promise.resolve(ctx.rerender()).then(() => document.querySelector("[data-note]")?.focus());
       return;
@@ -819,7 +878,7 @@ export function onClick(e, ctx) {
     const checks = cur.record.selfChecks[a.id] || {};
     const n = SPEAKING_CHECKS.filter((c) => checks[c.id]).length;
     const practiced = takesFor(a.id).length > 0 || cur.record.practiced[a.id];
-    if (!practiced) { validation = "Record your answer or practice aloud with a partner first."; ctx.rerender(); return; }
+    if (!practiced) { validation = I.S("Record your answer or practice aloud with a partner first.", "Primero graba tu respuesta o practica en voz alta con un compañero."); ctx.rerender(); return; }
     validation = "";
     cur.record.results[a.id] = {
       meaningful: true,
@@ -836,12 +895,12 @@ export function onClick(e, ctx) {
     cur.record.complete = cur.record.complete.filter((id) => id !== a.id);
     if (practiced && n >= 2) {
       if (!cur.record.complete.includes(a.id)) cur.record.complete.push(a.id);
-      announce(storage.isVolatile ? "Speaking practice kept in this tab. Export a Passport code before leaving." : "Speaking practice saved.");
+      announce(storage.isVolatile ? I.S("Speaking practice kept in this tab. Export a Passport code before leaving.", "La práctica de habla se guardó solo en esta pestaña. Exporta un código del Pasaporte antes de salir.") : I.S("Speaking practice saved.", "Práctica de habla guardada."));
     } else
       announce(
         practiced
-          ? "Check at least two boxes on the checklist."
-          : "Record your answer (or practice aloud) first.",
+          ? I.S("Check at least two boxes on the checklist.", "Marca al menos dos casillas de la lista.")
+          : I.S("Record your answer (or practice aloud) first.", "Primero graba tu respuesta (o practica en voz alta)."),
       );
     save();
     ctx.rerender();
@@ -859,11 +918,12 @@ export function onClick(e, ctx) {
 
 export function onChange(e, ctx) {
   if (!cur || loading) return;
+  const I = i18nFor(ctx);
   const a = cur.activity;
   const t = e.target;
   if (t.matches("[data-select-voice]")) {
     ctx.setPrefs({ readingVoice: t.value });
-    announce("Reading voice updated.");
+    announce(I.S("Reading voice updated.", "Voz de lectura actualizada."));
     ctx.rerender({ keepFocus: true });
     return;
   }
@@ -910,7 +970,7 @@ export function onInput(e) {
       invalidateActivity(cur.record, cur.activity.id);
       document.querySelector(".done-badge")?.remove();
       const evidence = document.querySelector(".practice-evidence");
-      if (evidence) evidence.textContent = "Reflection changed — review this version before marking it complete.";
+      if (evidence) evidence.textContent = I.S("Reflection changed — review this version before marking it complete.", "La reflexión cambió — revisa esta versión antes de marcarla como completa.");
     }
     cur.record.reflections[cur.activity.id] = e.target.value; save(); return;
   }
@@ -921,7 +981,7 @@ export function onInput(e) {
     document.querySelector(".done-badge")?.remove();
     writingChecks.delete(a.id);
     const evidence = document.querySelector(".practice-evidence");
-    if (evidence) evidence.textContent = "Draft changed — review this version before marking it complete.";
+    if (evidence) evidence.textContent = I.S("Draft changed — review this version before marking it complete.", "El borrador cambió — revisa esta versión antes de marcarlo como completo.");
     const feedback = document.querySelector(".feedback");
     if (feedback) feedback.hidden = true;
   }
@@ -933,7 +993,7 @@ export function onInput(e) {
   if (meter) {
     const goal = wordGoal(cur.level);
     const n = wordCount(e.target.value);
-    meter.textContent = `${n} / about ${goal} words`;
+    meter.textContent = I.S(`${n} / about ${goal} words`, `${n} / unas ${goal} palabras`);
     const bar = document.querySelector(".meter-bar > span");
     if (bar) bar.style.width = `${Math.min(100, Math.round((n / goal) * 100))}%`;
     const usedWords = new Set(bankWordsUsed(e.target.value, wordBank(a)).map(bankKey));

@@ -1,8 +1,9 @@
 // Family progress: what was practiced, kept apart from how it went. Counts come from saved results;
 // nothing is graded here, and completion is never presented as mastery.
-import { bandRows, loadEsGuide } from "../content.js";
+import { bandRows, loadEsGuide, loadRoad } from "../content.js";
 import { allRecords } from "../store.js";
-import { BASE, html, icon } from "../util.js";
+import { BASE, DOMAIN_META, html, icon, todayISO } from "../util.js";
+import { nextRecognition, recognition, weeklyChallenge } from "./engage.js";
 import { playlistHref, sessionOptions } from "./plan.js";
 import { summarize } from "./summary.js";
 import { SKILLS, crumbs, longDate, skillArt, skillIcon, skillName, subnavHTML } from "./ui.js";
@@ -35,11 +36,39 @@ function skillBars(I, summary) {
   </ul>`;
 }
 
+
+const domainVars = (d) => ({ en: d.toLowerCase(), es: spanishDomain(d) });
+const recogLine = (I, r) => (r.domain ? I.L(`recog.${r.kind}`, { domain: domainVars(r.domain) }) : I.L(`recog.${r.kind}`));
+
+export function challengeHTML(I, challenge, band) {
+  if (!challenge) return html`<p>${I.L("chal.none")}</p>`;
+  const finished = challenge.total > 0 && challenge.done >= challenge.total;
+  const href = `${BASE}/play?${new URLSearchParams({ ids: challenge.ids.join(","), t: `Road to ACCESS · Week ${challenge.n}`, grades: band })}`;
+  return html`<p class="fam-chal-week"><strong>${I.L("chal.week", { n: challenge.n })} · <span lang="en">${challenge.theme}</span></strong></p>
+    ${challenge.prompt ? html`<p class="fam-chal-prompt"><span class="fine">${I.L("chal.prompt")}</span><br />${I.TO(challenge.prompt)}</p>` : ""}
+    <p class="fine" aria-live="polite">${finished ? I.L("chal.done") : I.L("chal.progress", { done: challenge.done, total: challenge.total })}</p>
+    ${challenge.total ? html`<a class="btn ${finished ? "" : "btn-primary"} no-print" href="${href}">${I.L("chal.try")}${icon("arrow-right")}</a>` : ""}
+    <p class="fine">${I.L("chal.note")}</p>`;
+}
+
+function recognitionHTML(I, summary) {
+  const earned = recognition(summary);
+  const next = nextRecognition(summary);
+  const what = next ? I.pair(`recog.${next.kind}`, next.domain ? { domain: domainVars(next.domain) } : {}) : null;
+  return html`${earned.length
+      ? html`<ul class="fam-recog">${earned.map((r) => html`<li><span class="fam-tile">${icon(r.domain ? DOMAIN_META[r.domain].icon : "star")}</span><span>${recogLine(I, r)}</span></li>`)}</ul>`
+      : html`<p>${I.L("recog.none")}</p>`}
+    ${what ? html`<p class="fine">${I.L("recog.next", { what })}</p>` : ""}
+    <p class="fine">${I.L("recog.note")}</p>`;
+}
+
 export async function render(ctx, I) {
   const band = ctx.band;
-  const [es, ...rowLists] = await Promise.all([loadEsGuide(), ...ctx.bands.map((b) => bandRows(b))]);
+  const [es, road, ...rowLists] = await Promise.all([loadEsGuide(), loadRoad(), ...ctx.bands.map((b) => bandRows(b))]);
   const rows = rowLists.flat();
   const summary = summarize(allRecords(), new Map(rows.map((r) => [r.id, r])), es);
+  const challenge = weeklyChallenge(road?.[band], allRecords(), todayISO());
+  const justFinished = new URLSearchParams(location.search).get("done") === "1" && summary.latest;
   const bandRowsNow = rowLists[ctx.bands.indexOf(band)] || [];
   const options = sessionOptions({ rows: bandRowsNow, band, minutes: 10, tiers: ctx.prefs.tiers });
   const next = summary.nextDomain
@@ -65,6 +94,7 @@ export async function render(ctx, I) {
         </div>
         <div class="prog-hero-art"><img src="${skillArt("Reading")}" alt="" width="420" height="300" /></div>
       </section>
+      ${justFinished ? html`<section class="panel fam-done" role="status" aria-labelledby="ppDone"><h2 id="ppDone">${icon("check")} ${I.L("session.done.heading")}</h2><p>${I.L("session.done.text")}</p></section>` : ""}
       <div class="fam-prog-grid">
         <section class="panel" aria-labelledby="pp1"><h2 id="pp1">${I.L("prog.practiced.heading")}</h2>${practicedLines(I, summary.latest)}</section>
         <section class="panel" aria-labelledby="pp2"><h2 id="pp2">${I.L("prog.completed.heading")}</h2>
@@ -84,6 +114,8 @@ export async function render(ctx, I) {
               <p>${I.L("prog.next.line", { domain: { en: next.domain.toLowerCase(), es: spanishDomain(next.domain) } })}</p>
               ${next.plan.length ? html`<a class="btn btn-primary no-print" href="${playlistHref(next.plan, `${next.domain} practice`, band)}">${I.L("prog.next.go")}${icon("arrow-right")}</a>` : ""}`
             : html`<p>${I.L("prog.empty")}</p><a class="btn btn-primary no-print" href="${BASE}/family/practice?grades=${band}">${I.L("prog.next.go")}${icon("arrow-right")}</a>`}</section>
+        <section class="panel" aria-labelledby="pp7"><h2 id="pp7">${I.L("chal.heading")}</h2>${challengeHTML(I, challenge, band)}</section>
+        <section class="panel" aria-labelledby="pp8"><h2 id="pp8">${I.L("recog.heading")}</h2>${recognitionHTML(I, summary)}</section>
         <section class="panel fam-measures" aria-labelledby="pp6"><h2 id="pp6">${I.L("prog.measures.heading")}</h2>
           <dl>
             ${["completed", "independent", "help", "revised"].map((m) => html`<div><dt>${I.L(`prog.m.${m}`)}</dt><dd>${I.L(`prog.m.${m}.text`)}</dd></div>`)}

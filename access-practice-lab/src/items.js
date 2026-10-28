@@ -5,9 +5,16 @@
 // an answer control). Every control carries data-nsr-ignore so the site-wide
 // Save/Resume engine never captures or "restores" it — the lab keeps its own
 // progress, and the engine's generic restore used to click lab controls.
+import { makeI18n } from "./i18n.js";
 import { BASE, html, icon, raw } from "./util.js";
 
 const IGN = raw("data-nsr-ignore");
+
+// Language for the answer-control chrome (labels, helper lines). The views set it at the top of render.
+let I = makeI18n("en");
+export const setItemsI18n = (i18n) => {
+  I = i18n;
+};
 
 /** Deterministic shuffle (seeded by id) that never returns the solved order. */
 export function initialOrder(item) {
@@ -54,7 +61,7 @@ function choiceList(item, answer, { key, reveal, multi }) {
   return html`<div
       class="choices ${hasPictures ? "has-pictures" : ""}"
       role="${multi ? "group" : "radiogroup"}"
-      aria-label="${multi ? "Choose all correct answers" : "Choose one answer"}"
+      aria-label="${multi ? I.S("Choose all correct answers", "Elige todas las respuestas correctas") : I.S("Choose one answer", "Elige una respuesta")}"
     >
       ${(item.options || []).map((o, i) => {
         const on = chosen.has(o.id);
@@ -73,7 +80,7 @@ function choiceList(item, answer, { key, reveal, multi }) {
         </label>`;
       })}
     </div>
-    ${multi ? html`<p class="hint-line">More than one answer is correct.</p>` : ""}`;
+    ${multi ? html`<p class="hint-line">${I.T("More than one answer is correct.", "Más de una respuesta es correcta.")}</p>` : ""}`;
 }
 
 function sortHTML(item, answer, { reveal }) {
@@ -84,9 +91,9 @@ function sortHTML(item, answer, { reveal }) {
       (it) =>
         html`<div class="sort-row ${mark(reveal, a[it.id] === it.answer, Boolean(a[it.id]))}">
           <p class="sort-text">
-            ${item.speakItems ? html`<button type="button" class="mini-say" data-say="${it.text}" aria-label="Listen">${icon("volume")}</button>` : ""}${it.text}
+            ${item.speakItems ? html`<button type="button" class="mini-say" data-say="${it.text}" aria-label="${I.S("Listen", "Escuchar")}">${icon("volume")}</button>` : ""}${it.text}
           </p>
-          <div class="sort-cats" role="radiogroup" aria-label="Group for: ${it.text}">
+          <div class="sort-cats" role="radiogroup" aria-label="${I.S(`Group for: ${it.text}`, `Grupo para: ${it.text}`)}">
             ${cats.map(
               (c) =>
                 html`<button
@@ -102,7 +109,7 @@ function sortHTML(item, answer, { reveal }) {
                 </button>`,
             )}
           </div>
-          ${reveal === "full" && a[it.id] !== it.answer ? html`<p class="sort-fix">Belongs in: <strong>${it.answer}</strong></p>` : ""}
+          ${reveal === "full" && a[it.id] !== it.answer ? html`<p class="sort-fix">${I.T("Belongs in:", "Va en:")} <strong>${it.answer}</strong></p>` : ""}
         </div>`,
     )}
   </div>`;
@@ -126,7 +133,7 @@ function orderHTML(item, answer, { reveal }) {
               class="move"
               data-ans-move="${id}"
               data-dir="-1"
-              aria-label="Move up: ${it.text}"
+              aria-label="${I.S(`Move up: ${it.text}`, `Subir: ${it.text}`)}"
               ${i === 0 || locked ? raw("disabled") : ""}
               ${IGN}
             >
@@ -137,7 +144,7 @@ function orderHTML(item, answer, { reveal }) {
               class="move"
               data-ans-move="${id}"
               data-dir="1"
-              aria-label="Move down: ${it.text}"
+              aria-label="${I.S(`Move down: ${it.text}`, `Bajar: ${it.text}`)}"
               ${i === ids.length - 1 || locked ? raw("disabled") : ""}
               ${IGN}
             >
@@ -147,7 +154,7 @@ function orderHTML(item, answer, { reveal }) {
         </li>`;
       })}
     </ol>
-    <p class="hint-line">Use ▲ and ▼ to put the steps in order.</p>`;
+    <p class="hint-line">${I.T("Use ▲ and ▼ to put the steps in order.", "Usa ▲ y ▼ para poner los pasos en orden.")}</p>`;
 }
 
 function clozeHTML(item, answer, { reveal }) {
@@ -160,14 +167,14 @@ function clozeHTML(item, answer, { reveal }) {
       const b = s.blank;
       const cls = mark(reveal, a[b.id] === b.answer, Boolean(a[b.id]));
       return html`<span class="cloze-blank ${cls}"
-        ><label class="visually-hidden" for="cz-${item.id}-${b.id}">Blank ${n}</label
+        ><label class="visually-hidden" for="cz-${item.id}-${b.id}">${I.T(`Blank ${n}`, `Espacio ${n}`)}</label
         ><select
           id="cz-${item.id}-${b.id}"
           data-ans-cloze="${b.id}"
           ${reveal && reveal !== "none" ? raw("disabled") : ""}
           ${IGN}
         >
-          <option value="">choose…</option>
+          <option value="">${I.S("choose…", "elige…")}</option>
           ${(b.options || []).map((o) => html`<option value="${o}" ${a[b.id] === o ? raw("selected") : ""}>${o}</option>`)}</select
         >${reveal === "full" && a[b.id] !== b.answer ? html`<span class="cloze-fix">${b.answer}</span>` : ""}</span
       >`;
@@ -178,7 +185,7 @@ function clozeHTML(item, answer, { reveal }) {
 function hotTextHTML(item, answer, { reveal }) {
   const chosen = new Set(answer || []);
   const right = new Set(item.answers || []);
-  return html`<div class="hottext" role="group" aria-label="Choose the sentence or sentences">
+  return html`<div class="hottext" role="group" aria-label="${I.S("Choose the sentence or sentences", "Elige la oración o las oraciones")}">
       ${(item.sentences || []).map(
         (s) =>
           html`<button
@@ -193,7 +200,7 @@ function hotTextHTML(item, answer, { reveal }) {
           </button>`,
       )}
     </div>
-    <p class="hint-line">Tap a sentence to choose it. Tap again to unchoose.</p>`;
+    <p class="hint-line">${I.T("Tap a sentence to choose it. Tap again to unchoose.", "Toca una oración para elegirla. Tócala otra vez para quitarla.")}</p>`;
 }
 
 export function inputHTML(item, answer, opts = {}) {

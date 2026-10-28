@@ -4,6 +4,8 @@
 import { findActivity, loadReadingAdventures, loadReadingRoomLessons, loadReadingStrategies } from "../content.js";
 import { ART, BASE, esc, icon, raw, toHtml } from "../util.js";
 import { canSpeak, speak, stop as stopSpeech } from "../speech.js";
+import { i18nFor, makeI18n } from "../i18n.js";
+import { setComponentsI18n } from "../components.js";
 import { appendEntry, loadLedger, saveLedger } from "../lang/ledger.js";
 import {
   loadReadingState,
@@ -21,13 +23,30 @@ let activeMode = "practice";
 let openedLessonId = "";
 let notice = "";
 
+// Chrome strings go through I (set at the top of render and of each event handler). Lesson, story and strategy text,
+// vocabulary, questions and answer choices come from JSON and stay English.
+let I = makeI18n("en");
+const T = (en, es) => toHtml(I.T(en, es)); // markup-safe, for text nodes in the string templates below
+const A = (en, es) => esc(I.S(en, es)); // plain string escaped for attributes and <option> text
+// Like T, for a sentence that carries its own markup (a link). Both sides are HTML strings already escaped by the caller.
+const TH = (en, es) =>
+  I.bilingual
+    ? `<span class="bi-pair">${en}<span class="bi-es" lang="es">${es}</span></span>`
+    : I.spanish
+      ? I.pageLang !== "es"
+        ? `<span lang="es">${es}</span>`
+        : es
+      : en;
 const ic = (name) => toHtml(icon(name));
 const lessonUrl = (id) => `${BASE}/reading-room/${encodeURIComponent(id)}`;
 const stateKey = (l) => `${l.id}@${l.revision}`;
 const gradeLabel = (l) =>
   l.gradeCluster
-    ? `Grades ${l.gradeCluster.replace("-", "–")}`
-    : `Grades ${l.localGradeBand || "3–5"} local · WIDA cluster unspecified`;
+    ? T(`Grades ${l.gradeCluster.replace("-", "–")}`, `Grados ${l.gradeCluster.replace("-", "–")}`)
+    : T(
+        `Grades ${l.localGradeBand || "3–5"} local · WIDA cluster unspecified`,
+        `Grados ${l.localGradeBand || "3–5"} locales · grupo de WIDA sin especificar`,
+      );
 const passageWords = (l) =>
   l.paragraphs.reduce(
     (count, p) => count + p.text.trim().split(/\s+/).filter(Boolean).length,
@@ -35,70 +54,72 @@ const passageWords = (l) =>
   );
 const lengthLabelOf = (words) =>
   words >= 350
-    ? "Sustained read"
+    ? T("Sustained read", "Lectura sostenida")
     : words >= 180
-      ? "Extended practice"
-      : "Short practice";
+      ? T("Extended practice", "Práctica extendida")
+      : T("Short practice", "Práctica corta");
 const clusterParam = () =>
   new URLSearchParams(location.search).get("cluster") || "6-8";
 const CLUSTERS = ["1", "2-3", "4-5", "6-8", "9-12"];
 const clusterOptions = (selected) =>
   CLUSTERS.map(
     (g) =>
-      `<option value="${g}" ${g === selected ? "selected" : ""}>Grades ${g.replace("-", "–")}</option>`,
+      `<option value="${g}" ${g === selected ? "selected" : ""}>${A(`Grades ${g.replace("-", "–")}`, `Grados ${g.replace("-", "–")}`)}</option>`,
   ).join("");
+// [stored value (English, never changes), Spanish label]
 const MARKS = [
-  "Main idea",
-  "Important detail",
-  "Evidence",
-  "Vocabulary",
-  "Inference",
-  "Question",
+  ["Main idea", "Idea principal"],
+  ["Important detail", "Detalle importante"],
+  ["Evidence", "Evidencia"],
+  ["Vocabulary", "Vocabulario"],
+  ["Inference", "Inferencia"],
+  ["Question", "Pregunta"],
 ];
+const markLabel = (mark) => T(mark, Object.fromEntries(MARKS)[mark] || mark);
 const LINE_SPACINGS = [
-  ["1.5", "Compact"],
-  ["1.75", "Comfortable"],
-  ["2", "Open"],
+  ["1.5", "Compact", "Compacto"],
+  ["1.75", "Comfortable", "Cómodo"],
+  ["2", "Open", "Amplio"],
 ];
 const SPEECH_RATES = [
-  ["0.8", "Slow"],
-  ["0.95", "Natural"],
-  ["1.1", "Faster"],
+  ["0.8", "Slow", "Lenta"],
+  ["0.95", "Natural", "Natural"],
+  ["1.1", "Faster", "Más rápida"],
 ];
 
+// title/fields: [English, Español]; the stored key is the first field of each row and never changes.
 const ORGANIZERS = [
-  {id:"main-details",title:"Main Idea · Supporting Details",fields:[["mainIdea","Main idea"],["detail1","Important detail 1"],["detail2","Important detail 2"],["paragraphRef","Paragraph evidence"]]},
-  {id:"sequence",title:"Sequence · Timeline",fields:[["sequenceStart","First event or step"],["sequenceNext","Next event or step"],["sequenceThen","Then"],["sequenceEnd","Final event or result"]]},
-  {id:"cause-effect",title:"Cause · Effect",fields:[["cause","Cause"],["effect","Effect"],["causeLink","How are they connected?"],["causeEvidence","Evidence paragraph"]]},
-  {id:"compare",title:"Compare · Contrast",fields:[["compareA","Idea or source A"],["compareB","Idea or source B"],["compareLink","What is similar or different?"],["compareEvidence","Evidence from each source"]]},
-  {id:"problem-solution",title:"Problem · Solution",fields:[["problem","Problem"],["problemEvidence","Evidence of the problem"],["solution","Proposed solution"],["result","Likely result or remaining question"]]},
-  {id:"cer",title:"Claim · Evidence · Reasoning",fields:[["claim","Claim"],["evidence","Evidence"],["reasoning","Reasoning: how evidence supports the claim"]]},
-  {id:"character",title:"Character Analysis",fields:[["character","Character"],["goal","Goal or motivation"],["challenge","Challenge"],["change","Change and evidence"]]},
-  {id:"story",title:"Story Elements",fields:[["setting","Setting"],["characters","Important characters"],["conflict","Problem or conflict"],["events","Key events and resolution"]]},
-  {id:"summary",title:"Concise Summary",fields:[["summaryTopic","Who or what is the text about?"],["summaryIdea","Central idea or event"],["summaryDetail","One accurate detail"],["summaryDraft","Write a concise summary"]]},
-  {id:"word-web",title:"Word Relationships",fields:[["wordRoot","Focus word or root"],["wordFamily","Related forms or word family"],["wordCollocation","Words often used with it"],["wordSentence","New sentence showing the meaning"]]},
-  {id:"text-structure",title:"Text Structure Explorer",fields:[["structure","Structure (sequence, cause/effect, compare, etc.)"],["signalWords","Signal words"],["evidenceOrganization","How are ideas organized?"],["structureEffect","How does the structure help the reader?"]]},
-  {id:"two-source",title:"Two-Source Synthesis",fields:[["sourceOne","Source 1: claim and evidence"],["sourceTwo","Source 2: claim and evidence"],["sharedIdea","Shared idea or disagreement"],["synthesis","Conclusion supported by both sources"]]},
-  {id:"evidence-table",title:"Evidence Collection",fields:[["evidenceQuestion","Question to investigate"],["evidenceOne","Evidence detail 1"],["evidenceTwo","Evidence detail 2"],["evidenceReasoning","What do the details support?"]]},
-  {id:"vocabulary-map",title:"Vocabulary Concept Map",fields:[["conceptWord","Focus word"],["conceptMeaning","Meaning in this text"],["conceptFeatures","Examples or features"],["conceptConnections","Related words, roots, or concepts"],["conceptUse","Use it in a new sentence"]]},
+  {id:"main-details",title:["Main Idea · Supporting Details","Idea principal · Detalles de apoyo"],fields:[["mainIdea","Main idea","Idea principal"],["detail1","Important detail 1","Detalle importante 1"],["detail2","Important detail 2","Detalle importante 2"],["paragraphRef","Paragraph evidence","Evidencia del párrafo"]]},
+  {id:"sequence",title:["Sequence · Timeline","Secuencia · Línea de tiempo"],fields:[["sequenceStart","First event or step","Primer suceso o paso"],["sequenceNext","Next event or step","Siguiente suceso o paso"],["sequenceThen","Then","Después"],["sequenceEnd","Final event or result","Suceso o resultado final"]]},
+  {id:"cause-effect",title:["Cause · Effect","Causa · Efecto"],fields:[["cause","Cause","Causa"],["effect","Effect","Efecto"],["causeLink","How are they connected?","¿Cómo se relacionan?"],["causeEvidence","Evidence paragraph","Párrafo con evidencia"]]},
+  {id:"compare",title:["Compare · Contrast","Comparar · Contrastar"],fields:[["compareA","Idea or source A","Idea o fuente A"],["compareB","Idea or source B","Idea o fuente B"],["compareLink","What is similar or different?","¿Qué es parecido o diferente?"],["compareEvidence","Evidence from each source","Evidencia de cada fuente"]]},
+  {id:"problem-solution",title:["Problem · Solution","Problema · Solución"],fields:[["problem","Problem","Problema"],["problemEvidence","Evidence of the problem","Evidencia del problema"],["solution","Proposed solution","Solución propuesta"],["result","Likely result or remaining question","Resultado probable o pregunta pendiente"]]},
+  {id:"cer",title:["Claim · Evidence · Reasoning","Afirmación · Evidencia · Razonamiento"],fields:[["claim","Claim","Afirmación"],["evidence","Evidence","Evidencia"],["reasoning","Reasoning: how evidence supports the claim","Razonamiento: cómo la evidencia apoya la afirmación"]]},
+  {id:"character",title:["Character Analysis","Análisis de personaje"],fields:[["character","Character","Personaje"],["goal","Goal or motivation","Meta o motivación"],["challenge","Challenge","Desafío"],["change","Change and evidence","Cambio y evidencia"]]},
+  {id:"story",title:["Story Elements","Elementos del cuento"],fields:[["setting","Setting","Escenario"],["characters","Important characters","Personajes importantes"],["conflict","Problem or conflict","Problema o conflicto"],["events","Key events and resolution","Sucesos clave y resolución"]]},
+  {id:"summary",title:["Concise Summary","Resumen breve"],fields:[["summaryTopic","Who or what is the text about?","¿De quién o de qué trata el texto?"],["summaryIdea","Central idea or event","Idea central o suceso"],["summaryDetail","One accurate detail","Un detalle exacto"],["summaryDraft","Write a concise summary","Escribe un resumen breve"]]},
+  {id:"word-web",title:["Word Relationships","Relaciones entre palabras"],fields:[["wordRoot","Focus word or root","Palabra o raíz principal"],["wordFamily","Related forms or word family","Formas relacionadas o familia de palabras"],["wordCollocation","Words often used with it","Palabras que suelen usarse con ella"],["wordSentence","New sentence showing the meaning","Oración nueva que muestre el significado"]]},
+  {id:"text-structure",title:["Text Structure Explorer","Explorador de la estructura del texto"],fields:[["structure","Structure (sequence, cause/effect, compare, etc.)","Estructura (secuencia, causa y efecto, comparación, etc.)"],["signalWords","Signal words","Palabras clave"],["evidenceOrganization","How are ideas organized?","¿Cómo se organizan las ideas?"],["structureEffect","How does the structure help the reader?","¿Cómo ayuda la estructura al lector?"]]},
+  {id:"two-source",title:["Two-Source Synthesis","Síntesis de dos fuentes"],fields:[["sourceOne","Source 1: claim and evidence","Fuente 1: afirmación y evidencia"],["sourceTwo","Source 2: claim and evidence","Fuente 2: afirmación y evidencia"],["sharedIdea","Shared idea or disagreement","Idea compartida o desacuerdo"],["synthesis","Conclusion supported by both sources","Conclusión apoyada por ambas fuentes"]]},
+  {id:"evidence-table",title:["Evidence Collection","Recopilación de evidencia"],fields:[["evidenceQuestion","Question to investigate","Pregunta para investigar"],["evidenceOne","Evidence detail 1","Detalle de evidencia 1"],["evidenceTwo","Evidence detail 2","Detalle de evidencia 2"],["evidenceReasoning","What do the details support?","¿Qué apoyan los detalles?"]]},
+  {id:"vocabulary-map",title:["Vocabulary Concept Map","Mapa conceptual de vocabulario"],fields:[["conceptWord","Focus word","Palabra principal"],["conceptMeaning","Meaning in this text","Significado en este texto"],["conceptFeatures","Examples or features","Ejemplos o características"],["conceptConnections","Related words, roots, or concepts","Palabras, raíces o conceptos relacionados"],["conceptUse","Use it in a new sentence","Úsala en una oración nueva"]]},
 ];
-;
 const renderOrganizers = (lessonId, progress) =>
-  `<details class="rr-organizers"><summary>${ic("list")} Graphic organizers · ${ORGANIZERS.length} editable tools</summary><p>Write, revise, and save an organizer. Responses stay in this browser.</p>${ORGANIZERS.map(
+  `<details class="rr-organizers"><summary>${ic("list")} ${T(`Graphic organizers · ${ORGANIZERS.length} editable tools`, `Organizadores gráficos · ${ORGANIZERS.length} herramientas editables`)}</summary><p>${T("Write, revise, and save an organizer. Responses stay in this browser.", "Escribe, revisa y guarda un organizador. Las respuestas se quedan en este navegador.")}</p>${ORGANIZERS.map(
     (o) =>
-      `<details class="rr-organizer"><summary>${esc(o.title)}</summary><div class="rr-organizer-grid">${o.fields
+      `<details class="rr-organizer"><summary>${T(o.title[0], o.title[1])}</summary><div class="rr-organizer-grid">${o.fields
         .map(
-          ([key, label]) =>
-            `<label>${esc(label)}<textarea data-rr-organizer="${esc(key)}" data-rr-lesson="${esc(lessonId)}" rows="2">${esc(progress.organizer?.[key] || "")}</textarea></label>`,
+          ([key, label, es]) =>
+            `<label>${T(label, es)}<textarea data-rr-organizer="${esc(key)}" data-rr-lesson="${esc(lessonId)}" rows="2">${esc(progress.organizer?.[key] || "")}</textarea></label>`,
         )
         .join("")}</div></details>`,
   ).join(
     "",
-  )}<button type="button" class="btn small" data-rr-print>${ic("print")} Print lesson and organizers</button></details>`;
+  )}<button type="button" class="btn small" data-rr-print>${ic("print")} ${T("Print lesson and organizers", "Imprimir la lección y los organizadores")}</button></details>`;
 
 /** Page header shared by the shelf's sub-pages. */
 const pageHeader = (eyebrow, title, intro, extra = "") =>
-  `<header class="rr-title"><p class="rr-eyebrow">${esc(eyebrow)}</p><h1>${esc(title)}</h1>${intro}${extra}</header>`;
+  `<header class="rr-title"><p class="rr-eyebrow">${eyebrow}</p><h1>${title}</h1>${intro}${extra}</header>`; // eyebrow, title and intro are markup-safe (T output)
 const backLink = (to, label) =>
   `<a class="rr-link rr-return" href="${to}">${ic("arrow-left")} ${label}</a>`;
 
@@ -108,11 +129,11 @@ function lessonCard(l, state) {
   const p = state.lessons[stateKey(l)] || {};
   const words = passageWords(l);
   const action = p.completed
-    ? "Read again"
+    ? T("Read again", "Leer otra vez")
     : p.started
-      ? "Continue reading"
-      : "Open lesson";
-  return `<article class="rr-book"><div class="rr-book-mark" aria-hidden="true">${ic("reading")}<span>${esc(l.subject)}</span></div><div class="rr-book-copy"><p class="rr-eyebrow">${esc(gradeLabel(l))} · ${esc(l.genre)} · ${l.minutes} min · ${lengthLabelOf(words)} · ${words} words</p><h2><a href="${lessonUrl(l.id)}">${esc(l.title)}</a></h2><p class="rr-summary">${esc(l.summary)}</p><p class="rr-meta">${esc(l.keyUse)} · ${esc(l.languageFunction)}</p><p class="rr-review-status">Editorial review pending</p><a class="rr-link" href="${lessonUrl(l.id)}">${action}<span aria-hidden="true"> →</span></a></div></article>`;
+      ? T("Continue reading", "Seguir leyendo")
+      : T("Open lesson", "Abrir la lección");
+  return `<article class="rr-book"><div class="rr-book-mark" aria-hidden="true">${ic("reading")}<span>${esc(l.subject)}</span></div><div class="rr-book-copy"><p class="rr-eyebrow">${gradeLabel(l)} · ${esc(l.genre)} · ${l.minutes} min · ${lengthLabelOf(words)} · ${T(`${words} words`, `${words} palabras`)}</p><h2><a href="${lessonUrl(l.id)}">${esc(l.title)}</a></h2><p class="rr-summary">${esc(l.summary)}</p><p class="rr-meta">${esc(l.keyUse)} · ${esc(l.languageFunction)}</p><p class="rr-review-status">${T("Editorial review pending", "Revisión editorial pendiente")}</p><a class="rr-link" href="${lessonUrl(l.id)}">${action}<span aria-hidden="true"> →</span></a></div></article>`;
 }
 
 function filterLessons(lessons, state) {
@@ -151,17 +172,17 @@ function shelfHTML(ctx, lessons, state) {
     .slice(0, 5);
   const genres = [...new Set(lessons.map((l) => l.genre))].sort();
   const lastProgress = last ? state.lessons[stateKey(last)] || {} : {};
-  return `<section class="rr-shell d-reading"><header class="rr-hero"><div><p class="rr-eyebrow">${ic("reading")} ACCESS Practice Lab · Reading</p><h1>Reading Room</h1><p class="rr-lead">Read closely, collect evidence, and build the language to explain what a text means.</p><div class="rr-chips"><span>Original classroom practice</span><span>Saved on this device</span><span>WIDA-informed instruction · not an official assessment</span><span>Editorial review pending · teacher preview</span></div></div><div class="rr-hero-art" aria-hidden="true"><img src="${ART}/domain-reading.svg" alt="" width="480" height="360"></div></header>
-    <section class="rr-adventure-entry"><div><p class="rr-eyebrow">Serialized Reading Adventures</p><h2>Follow a story. Gather clues. Explain what changed.</h2><p>Original six-chapter mysteries and investigations with saved chapter notes, evidence responses, and comprehension checks.</p></div><a class="btn btn-primary" href="${BASE}/reading-room/adventures">Explore the adventures</a></section>
-    <section class="rr-adventure-entry"><div><p class="rr-eyebrow">Reading Strategy Academy</p><h2>Learn a strategy, practice it, then transfer it.</h2><p>Short think-alouds and guided lessons help readers predict, investigate, clarify, summarize, and synthesize across new texts.</p></div><a class="btn btn-primary" href="${BASE}/reading-room/strategies">Explore strategy lessons</a></section>
-    ${last ? `<section class="rr-continue"><span class="rr-continue-icon" aria-hidden="true">${ic("bookmark")}</span><div><p class="rr-eyebrow">Pick up where you left off</p><h2>${esc(last.title)}</h2><p>${lastProgress.phase ? "Your lesson progress is saved on this device." : "Your reading place is ready."}</p></div><a class="btn btn-primary btn-domain" href="${lessonUrl(last.id)}">Continue reading</a></section>` : ""}
-    ${recentRows.length ? `<section class="rr-recent"><h2>Recently read</h2><ul>${recentRows.map((l) => `<li><a href="${lessonUrl(l.id)}">${esc(l.title)}</a></li>`).join("")}</ul></section>` : ""}
-    <section class="rr-library" aria-labelledby="rr-library-title"><div class="rr-library-head"><div><p class="rr-eyebrow">The reading shelf</p><h2 id="rr-library-title">Choose a text</h2></div></div>
-      <div class="rr-filters"><label class="rr-search">Search texts <input data-rr-search type="search" value="${esc(query)}" placeholder="Topic, skill, or title"></label><label class="rr-filter">Genre<select data-rr-genre><option value="">All genres</option>${genres.map((g) => `<option value="${esc(g)}" ${genreFilter === g ? "selected" : ""}>${esc(g)}</option>`).join("")}</select></label><label class="rr-filter">Grade cluster<select data-rr-grade><option value="">All clusters</option>${clusterOptions(grade)}<option value="3-5-local" ${grade === "3-5-local" ? "selected" : ""}>Grades 3–5 local · WIDA cluster unspecified</option></select></label><label class="rr-filter">Reading length<select data-rr-length><option value="">Any length</option><option value="short" ${lengthFilter === "short" ? "selected" : ""}>Short practice · under 180 words</option><option value="extended" ${lengthFilter === "extended" ? "selected" : ""}>Extended practice · 180–349 words</option><option value="sustained" ${lengthFilter === "sustained" ? "selected" : ""}>Sustained reads · 350+ words</option></select></label></div>
-      <div class="rr-count-row"><p class="rr-count" aria-live="polite">${filtered.length} of ${lessons.length} authored reading lessons</p><button type="button" class="rr-reset" data-rr-bookmark-filter aria-pressed="${onlyBookmarks}">${ic("bookmark")} ${onlyBookmarks ? "Showing bookmarks" : "Show bookmarks only"}</button></div>
-      <div class="rr-books">${filtered.length ? filtered.map((l) => lessonCard(l, state)).join("") : `<div class="rr-empty"><img src="${ART}/empty.svg" alt="" width="240" height="180"><h3>No texts match yet</h3><p>Try another topic, grade cluster, or reading length.</p></div>`}</div></section>
-    <section class="rr-legacy"><div><p class="rr-eyebrow">More short practice</p><h2>Existing Reading activities</h2><p>Open the established ACCESS Lab Reading activities. These short practices are separate from the authored multi-part lessons above.</p></div><a class="btn" href="${BASE}/Reading?grades=${esc(ctx.band)}">Browse Reading practice ${ic("arrow-right")}</a></section>
-    <section class="rr-tools"><div><h2>Your reading tools</h2><p>Bookmarks, annotations, preferences, and lesson progress stay in this browser. They are not synced across devices.</p><ul class="rr-tool-links"><li><a href="${BASE}/vocabulary?grades=${esc(ctx.band)}">${ic("words")} Open Word Builder</a></li><li><a href="${BASE}/reading-room/words">${ic("bookmark")} Open Reading Word Notebook (${state.words.length})</a></li><li><a href="${BASE}/reading-room/family">${ic("families")} Family reading at home</a></li><li><a href="${BASE}/reading-room/teacher">${ic("teacher")} Local teacher progress view</a></li><li><a href="${BASE}/reading-room/pathways">${ic("road")} Workshop pathways</a></li></ul></div><div class="rr-tools-reset"><button type="button" class="rr-reset" data-rr-action="clear">Clear local Reading Room data</button>${notice ? `<p role="status">${esc(notice)}</p>` : ""}</div></section></section>`;
+  return `<section class="rr-shell d-reading"><header class="rr-hero"><div><p class="rr-eyebrow">${ic("reading")} ${T("ACCESS Practice Lab · Reading", "Laboratorio ACCESS · Lectura")}</p><h1>${T("Reading Room", "Sala de lectura")}</h1><p class="rr-lead">${T("Read closely, collect evidence, and build the language to explain what a text means.", "Lee con atención, reúne evidencia y construye el lenguaje para explicar qué significa un texto.")}</p><div class="rr-chips"><span>${T("Original classroom practice", "Práctica original para el salón")}</span><span>${T("Saved on this device", "Guardado en este dispositivo")}</span><span>${T("WIDA-informed instruction · not an official assessment", "Enseñanza basada en WIDA · no es una evaluación oficial")}</span><span>${T("Editorial review pending · teacher preview", "Revisión editorial pendiente · vista previa para docentes")}</span></div></div><div class="rr-hero-art" aria-hidden="true"><img src="${ART}/domain-reading.svg" alt="" width="480" height="360"></div></header>
+    <section class="rr-adventure-entry"><div><p class="rr-eyebrow">${T("Serialized Reading Adventures", "Aventuras de lectura por capítulos")}</p><h2>${T("Follow a story. Gather clues. Explain what changed.", "Sigue una historia. Reúne pistas. Explica qué cambió.")}</h2><p>${T("Original six-chapter mysteries and investigations with saved chapter notes, evidence responses, and comprehension checks.", "Misterios e investigaciones originales de seis capítulos, con notas de cada capítulo, respuestas con evidencia y preguntas de comprensión guardadas.")}</p></div><a class="btn btn-primary" href="${BASE}/reading-room/adventures">${T("Explore the adventures", "Explora las aventuras")}</a></section>
+    <section class="rr-adventure-entry"><div><p class="rr-eyebrow">${T("Reading Strategy Academy", "Academia de estrategias de lectura")}</p><h2>${T("Learn a strategy, practice it, then transfer it.", "Aprende una estrategia, practícala y luego úsala en otros textos.")}</h2><p>${T("Short think-alouds and guided lessons help readers predict, investigate, clarify, summarize, and synthesize across new texts.", "Pensamientos en voz alta y lecciones guiadas te ayudan a predecir, investigar, aclarar, resumir y sintetizar en textos nuevos.")}</p></div><a class="btn btn-primary" href="${BASE}/reading-room/strategies">${T("Explore strategy lessons", "Explora las lecciones de estrategias")}</a></section>
+    ${last ? `<section class="rr-continue"><span class="rr-continue-icon" aria-hidden="true">${ic("bookmark")}</span><div><p class="rr-eyebrow">${T("Pick up where you left off", "Sigue donde te quedaste")}</p><h2>${esc(last.title)}</h2><p>${lastProgress.phase ? T("Your lesson progress is saved on this device.", "Tu avance en la lección está guardado en este dispositivo.") : T("Your reading place is ready.", "Tu lugar en la lectura está listo.")}</p></div><a class="btn btn-primary btn-domain" href="${lessonUrl(last.id)}">${T("Continue reading", "Seguir leyendo")}</a></section>` : ""}
+    ${recentRows.length ? `<section class="rr-recent"><h2>${T("Recently read", "Leído hace poco")}</h2><ul>${recentRows.map((l) => `<li><a href="${lessonUrl(l.id)}">${esc(l.title)}</a></li>`).join("")}</ul></section>` : ""}
+    <section class="rr-library" aria-labelledby="rr-library-title"><div class="rr-library-head"><div><p class="rr-eyebrow">${T("The reading shelf", "El estante de lectura")}</p><h2 id="rr-library-title">${T("Choose a text", "Elige un texto")}</h2></div></div>
+      <div class="rr-filters"><label class="rr-search">${T("Search texts", "Buscar textos")} <input data-rr-search type="search" value="${esc(query)}" placeholder="${A("Topic, skill, or title", "Tema, destreza o título")}"></label><label class="rr-filter">${T("Genre", "Género")}<select data-rr-genre><option value="">${A("All genres", "Todos los géneros")}</option>${genres.map((g) => `<option value="${esc(g)}" ${genreFilter === g ? "selected" : ""}>${esc(g)}</option>`).join("")}</select></label><label class="rr-filter">${T("Grade cluster", "Grupo de grados")}<select data-rr-grade><option value="">${A("All clusters", "Todos los grupos")}</option>${clusterOptions(grade)}<option value="3-5-local" ${grade === "3-5-local" ? "selected" : ""}>${A("Grades 3–5 local · WIDA cluster unspecified", "Grados 3–5 locales · grupo de WIDA sin especificar")}</option></select></label><label class="rr-filter">${T("Reading length", "Extensión de la lectura")}<select data-rr-length><option value="">${A("Any length", "Cualquier extensión")}</option><option value="short" ${lengthFilter === "short" ? "selected" : ""}>${A("Short practice · under 180 words", "Práctica corta · menos de 180 palabras")}</option><option value="extended" ${lengthFilter === "extended" ? "selected" : ""}>${A("Extended practice · 180–349 words", "Práctica extendida · 180–349 palabras")}</option><option value="sustained" ${lengthFilter === "sustained" ? "selected" : ""}>${A("Sustained reads · 350+ words", "Lecturas sostenidas · 350+ palabras")}</option></select></label></div>
+      <div class="rr-count-row"><p class="rr-count" aria-live="polite">${T(`${filtered.length} of ${lessons.length} authored reading lessons`, `${filtered.length} de ${lessons.length} lecciones de lectura`)}</p><button type="button" class="rr-reset" data-rr-bookmark-filter aria-pressed="${onlyBookmarks}">${ic("bookmark")} ${onlyBookmarks ? T("Showing bookmarks", "Mostrando marcadores") : T("Show bookmarks only", "Mostrar solo marcadores")}</button></div>
+      <div class="rr-books">${filtered.length ? filtered.map((l) => lessonCard(l, state)).join("") : `<div class="rr-empty"><img src="${ART}/empty.svg" alt="" width="240" height="180"><h3>${T("No texts match yet", "Ningún texto coincide todavía")}</h3><p>${T("Try another topic, grade cluster, or reading length.", "Prueba otro tema, grupo de grados o extensión de lectura.")}</p></div>`}</div></section>
+    <section class="rr-legacy"><div><p class="rr-eyebrow">${T("More short practice", "Más práctica corta")}</p><h2>${T("Existing Reading activities", "Actividades de lectura existentes")}</h2><p>${T("Open the established ACCESS Lab Reading activities. These short practices are separate from the authored multi-part lessons above.", "Abre las actividades de lectura del Laboratorio ACCESS. Estas prácticas cortas son aparte de las lecciones de varias partes de arriba.")}</p></div><a class="btn" href="${BASE}/Reading?grades=${esc(ctx.band)}">${T("Browse Reading practice", "Ver práctica de lectura")} ${ic("arrow-right")}</a></section>
+    <section class="rr-tools"><div><h2>${T("Your reading tools", "Tus herramientas de lectura")}</h2><p>${T("Bookmarks, annotations, preferences, and lesson progress stay in this browser. They are not synced across devices.", "Los marcadores, las anotaciones, las preferencias y el avance en las lecciones se quedan en este navegador. No se sincronizan entre dispositivos.")}</p><ul class="rr-tool-links"><li><a href="${BASE}/vocabulary?grades=${esc(ctx.band)}">${ic("words")} ${T("Open Word Builder", "Abrir el Constructor de palabras")}</a></li><li><a href="${BASE}/reading-room/words">${ic("bookmark")} ${T(`Open Reading Word Notebook (${state.words.length})`, `Abrir el Cuaderno de palabras de lectura (${state.words.length})`)}</a></li><li><a href="${BASE}/reading-room/family">${ic("families")} ${T("Family reading at home", "Lectura en familia en casa")}</a></li><li><a href="${BASE}/reading-room/teacher">${ic("teacher")} ${T("Local teacher progress view", "Vista local del avance para docentes")}</a></li><li><a href="${BASE}/reading-room/pathways">${ic("road")} ${T("Workshop pathways", "Rutas del taller")}</a></li></ul></div><div class="rr-tools-reset"><button type="button" class="rr-reset" data-rr-action="clear">${T("Clear local Reading Room data", "Borrar los datos locales de la Sala de lectura")}</button>${notice ? `<p role="status">${esc(notice)}</p>` : ""}</div></section></section>`;
 }
 
 const adventureUrl = (id) => `${BASE}/reading-room/adventure-${encodeURIComponent(id)}`;
@@ -173,6 +194,13 @@ const STRATEGY_STRANDS = {
   "clarify-explore": "Clarify and explore words",
   "summarize-synthesize": "Summarize and synthesize",
 };
+const STRATEGY_STRANDS_ES = {
+  "predict-connect": "Predecir y conectar",
+  "question-investigate": "Preguntar e investigar",
+  "clarify-explore": "Aclarar y explorar palabras",
+  "summarize-synthesize": "Resumir y sintetizar",
+};
+const strandLabel = (id) => T(STRATEGY_STRANDS[id], STRATEGY_STRANDS_ES[id]);
 const STRATEGY_SKILL_LABELS = {
   prediction: "Make and revise predictions",
   "question-generation": "Generate useful questions",
@@ -188,6 +216,25 @@ const STRATEGY_SKILL_LABELS = {
   sequence: "Summarize in sequence",
   "cause-effect": "Summarize cause and effect",
 };
+const STRATEGY_SKILL_LABELS_ES = {
+  prediction: "Hacer y revisar predicciones",
+  "question-generation": "Hacer preguntas útiles",
+  "literal-retrieval": "Ubicar información explícita",
+  "inference-strategy": "Hacer inferencias basadas en evidencia",
+  "evidence-selection-strategy": "Elegir evidencia sólida",
+  "vocabulary-clarification-strategy": "Aclarar palabras desconocidas",
+  morphology: "Usar partes de palabras con significado",
+  "rereading-purpose": "Releer con un propósito",
+  "central-idea-strategy": "Identificar una idea central",
+  summarization: "Resumir la información esencial",
+  synthesis: "Sintetizar ideas de varios textos",
+  sequence: "Resumir en orden",
+  "cause-effect": "Resumir causa y efecto",
+};
+const skillLabel = (skill) => {
+  const en = STRATEGY_SKILL_LABELS[skill] || skill.replaceAll("-", " ");
+  return T(en, STRATEGY_SKILL_LABELS_ES[skill] || en);
+};
 
 function strategiesHTML(data, state) {
   const strand = new URLSearchParams(location.search).get("strand") || "";
@@ -195,10 +242,10 @@ function strategiesHTML(data, state) {
   const lessons = data.lessons.filter((lesson) => (!strand || lesson.strand === strand) && (!cluster || lesson.gradeCluster === cluster));
   const cards = lessons.map((lesson) => {
     const saved = state.strategies[lesson.id] || {};
-    const status = saved.independent?.checked ? "Independent transfer completed" : saved.guided?.checked ? "Guided practice saved" : "New lesson";
-    return `<article class="rr-strategy-card"><p class="rr-eyebrow">Grades ${esc(lesson.gradeCluster.replace("-", "–"))} · ${esc(STRATEGY_STRANDS[lesson.strand])}</p><h2><a href="${strategyUrl(lesson.id)}">${esc(lesson.title)}</a></h2><p><b>Strategy:</b> ${esc(STRATEGY_SKILL_LABELS[lesson.skill] || lesson.skill.replaceAll("-", " "))}</p><p class="rr-adventure-progress">${esc(status)}</p><a class="rr-link" href="${strategyUrl(lesson.id)}">${saved.independent?.checked ? "Practice again" : saved.guided?.checked ? "Continue lesson" : "Start lesson"} →</a></article>`;
+    const status = saved.independent?.checked ? T("Independent transfer completed", "Transferencia independiente completada") : saved.guided?.checked ? T("Guided practice saved", "Práctica guiada guardada") : T("New lesson", "Lección nueva");
+    return `<article class="rr-strategy-card"><p class="rr-eyebrow">${T(`Grades ${lesson.gradeCluster.replace("-", "–")}`, `Grados ${lesson.gradeCluster.replace("-", "–")}`)} · ${strandLabel(lesson.strand)}</p><h2><a href="${strategyUrl(lesson.id)}">${esc(lesson.title)}</a></h2><p><b>${T("Strategy:", "Estrategia:")}</b> ${skillLabel(lesson.skill)}</p><p class="rr-adventure-progress">${status}</p><a class="rr-link" href="${strategyUrl(lesson.id)}">${saved.independent?.checked ? T("Practice again", "Practicar otra vez") : saved.guided?.checked ? T("Continue lesson", "Seguir con la lección") : T("Start lesson", "Empezar la lección")} →</a></article>`;
   }).join("");
-  return shell(`${backLink(`${BASE}/reading-room`, "Return to the Reading Room")}${pageHeader("Model · guided practice · independent transfer", "Reading Strategy Academy", "<p>Each lesson makes a reading move visible, gives you a chance to explain your thinking, and ends with a new passage to try independently. Results are practice evidence, not a reading level.</p>")}<div class="rr-strategy-filters"><label>Strategy strand<select data-strategy-strand><option value="">All strands</option>${Object.entries(STRATEGY_STRANDS).map(([id, title]) => `<option value="${id}" ${strand === id ? "selected" : ""}>${esc(title)}</option>`).join("")}</select></label><label>Grade cluster<select data-strategy-cluster><option value="">All clusters</option><option value="3-5" ${cluster === "3-5" ? "selected" : ""}>Grades 3–5</option><option value="6-8" ${cluster === "6-8" ? "selected" : ""}>Grades 6–8</option></select></label></div><p class="rr-count" aria-live="polite">${lessons.length} original strategy lessons</p><div class="rr-strategy-grid">${cards || `<p>No lessons match these filters.</p>`}</div>`);
+  return shell(`${backLink(`${BASE}/reading-room`, T("Return to the Reading Room", "Volver a la Sala de lectura"))}${pageHeader(T("Model · guided practice · independent transfer", "Modelo · práctica guiada · transferencia independiente"), T("Reading Strategy Academy", "Academia de estrategias de lectura"), `<p>${T("Each lesson makes a reading move visible, gives you a chance to explain your thinking, and ends with a new passage to try independently. Results are practice evidence, not a reading level.", "Cada lección hace visible un paso de la lectura, te da la oportunidad de explicar tu razonamiento y termina con un pasaje nuevo para probar por tu cuenta. Los resultados son evidencia de práctica, no un nivel de lectura.")}</p>`)}<div class="rr-strategy-filters"><label>${T("Strategy strand", "Línea de estrategias")}<select data-strategy-strand><option value="">${A("All strands", "Todas las líneas")}</option>${Object.entries(STRATEGY_STRANDS).map(([id, title]) => `<option value="${id}" ${strand === id ? "selected" : ""}>${A(title, STRATEGY_STRANDS_ES[id])}</option>`).join("")}</select></label><label>${T("Grade cluster", "Grupo de grados")}<select data-strategy-cluster><option value="">${A("All clusters", "Todos los grupos")}</option><option value="3-5" ${cluster === "3-5" ? "selected" : ""}>${A("Grades 3–5", "Grados 3–5")}</option><option value="6-8" ${cluster === "6-8" ? "selected" : ""}>${A("Grades 6–8", "Grados 6–8")}</option></select></label></div><p class="rr-count" aria-live="polite">${T(`${lessons.length} original strategy lessons`, `${lessons.length} lecciones de estrategias originales`)}</p><div class="rr-strategy-grid">${cards || `<p>${T("No lessons match these filters.", "Ninguna lección coincide con estos filtros.")}</p>`}</div>`);
 }
 
 function strategyLessonHTML(lesson, state) {
@@ -207,26 +254,26 @@ function strategyLessonHTML(lesson, state) {
     const response = saved[stage] || {};
     const checked = response.checked === true;
     const selected = task.options.map((option, i) => `<label><input type="radio" name="strategy-${stage}" value="${i}" data-strategy-choice="${stage}" ${response.selected === i ? "checked" : ""}> ${esc(option)}</label>`).join("");
-    const feedback = checked ? `<p role="status" class="rr-adventure-feedback ${response.correct ? "is-correct" : "is-revisit"}">${response.correct ? "That response is supported. " : "Revisit the clue, then try again. "}${esc(response.correct ? task.explanation : task.feedback?.[response.selected] || task.explanation)}</p>` : "";
-    const retry = checked && !response.correct ? `<button class="btn small" type="button" data-strategy-retry="${stage}">Try this question again</button>` : "";
-    return `<fieldset class="rr-adventure-choice"><legend>${esc(task.question)}</legend>${selected}<label class="rr-strategy-explain">Explain your thinking<textarea rows="3" data-strategy-explanation="${stage}" placeholder="Name a clue and explain how it supports your idea.">${esc(response.explanation || "")}</textarea></label><button class="btn small" type="button" data-strategy-check="${stage}" ${response.selected == null || !response.explanation?.trim() || (checked && response.correct) ? "disabled" : ""}>${checked && response.correct ? "Checked" : "Check my thinking"}</button>${retry}${feedback}</fieldset>`;
+    const feedback = checked ? `<p role="status" class="rr-adventure-feedback ${response.correct ? "is-correct" : "is-revisit"}">${response.correct ? T("That response is supported. ", "Esa respuesta tiene apoyo. ") : T("Revisit the clue, then try again. ", "Vuelve a la pista y vuelve a intentarlo. ")}${esc(response.correct ? task.explanation : task.feedback?.[response.selected] || task.explanation)}</p>` : "";
+    const retry = checked && !response.correct ? `<button class="btn small" type="button" data-strategy-retry="${stage}">${T("Try this question again", "Intenta esta pregunta otra vez")}</button>` : "";
+    return `<fieldset class="rr-adventure-choice"><legend>${esc(task.question)}</legend>${selected}<label class="rr-strategy-explain">${T("Explain your thinking", "Explica tu razonamiento")}<textarea rows="3" data-strategy-explanation="${stage}" placeholder="${A("Name a clue and explain how it supports your idea.", "Nombra una pista y explica cómo apoya tu idea.")}">${esc(response.explanation || "")}</textarea></label><button class="btn small" type="button" data-strategy-check="${stage}" ${response.selected == null || !response.explanation?.trim() || (checked && response.correct) ? "disabled" : ""}>${checked && response.correct ? T("Checked", "Revisado") : T("Check my thinking", "Revisar mi razonamiento")}</button>${retry}${feedback}</fieldset>`;
   };
   const completed = saved.independent?.checked && saved.independent?.correct;
   const independentReady = saved.guided?.checked && saved.guided?.correct;
-  const model = independentReady ? "" : `<section class="rr-strategy-stage"><h2>1. Watch: a reader thinks aloud</h2><blockquote><p>${esc(lesson.model.text)}</p><p><b>Think-aloud:</b> ${esc(lesson.model.think)}</p></blockquote></section>`;
-  const guided = independentReady ? "" : `<section class="rr-strategy-stage"><h2>2. Practice together</h2><p>${esc(lesson.guided.text)}</p>${renderQuestion("guided", lesson.guided)}</section>`;
+  const model = independentReady ? "" : `<section class="rr-strategy-stage"><h2>${T("1. Watch: a reader thinks aloud", "1. Observa: un lector piensa en voz alta")}</h2><blockquote><p>${esc(lesson.model.text)}</p><p><b>${T("Think-aloud:", "Pensamiento en voz alta:")}</b> ${esc(lesson.model.think)}</p></blockquote></section>`;
+  const guided = independentReady ? "" : `<section class="rr-strategy-stage"><h2>${T("2. Practice together", "2. Practiquemos juntos")}</h2><p>${esc(lesson.guided.text)}</p>${renderQuestion("guided", lesson.guided)}</section>`;
   const transfer = independentReady
-    ? `<section class="rr-strategy-stage"><h2>3. Try independently: new passage</h2><p>${esc(lesson.independent.text)}</p>${renderQuestion("independent", lesson.independent)}<p class="rr-help">This fresh passage is checked separately from guided practice. No hints are provided in this step.</p></section>`
-    : `<section class="rr-strategy-stage rr-strategy-locked"><h2>3. Independent transfer</h2><p>First complete guided practice. Then you will apply the strategy to a new passage.</p></section>`;
-  return shell(`${backLink(`${BASE}/reading-room/strategies`, "All strategy lessons")}<header class="rr-adventure-heading"><p class="rr-eyebrow">Grades ${esc(lesson.gradeCluster.replace("-", "–"))} · ${esc(STRATEGY_STRANDS[lesson.strand])}</p><h1>${esc(lesson.title)}</h1><p>Strategy focus: <b>${esc(STRATEGY_SKILL_LABELS[lesson.skill] || lesson.skill.replaceAll("-", " "))}</b></p><p>Work is saved on this device. Your answer text stays here; the learning record stores only whether the keyed response was correct.</p></header><ol class="rr-strategy-steps" aria-label="Lesson sequence"><li>Watch a reader think</li><li>Practice together</li><li>Try independently</li></ol>${model}${guided}${transfer}${completed ? `<section role="status" class="rr-adventure-feedback is-correct"><h2>Independent transfer complete</h2><p>You used the strategy on a new passage. Revisit the lesson any time to practice again.</p><a href="${BASE}/reading-room/strategies">Choose another strategy →</a></section>` : ""}<p class="rr-status" role="status">Progress saves automatically in this browser.</p>`);
+    ? `<section class="rr-strategy-stage"><h2>${T("3. Try independently: new passage", "3. Prueba por tu cuenta: pasaje nuevo")}</h2><p>${esc(lesson.independent.text)}</p>${renderQuestion("independent", lesson.independent)}<p class="rr-help">${T("This fresh passage is checked separately from guided practice. No hints are provided in this step.", "Este pasaje nuevo se revisa aparte de la práctica guiada. En este paso no hay pistas.")}</p></section>`
+    : `<section class="rr-strategy-stage rr-strategy-locked"><h2>${T("3. Independent transfer", "3. Transferencia independiente")}</h2><p>${T("First complete guided practice. Then you will apply the strategy to a new passage.", "Primero completa la práctica guiada. Después usarás la estrategia en un pasaje nuevo.")}</p></section>`;
+  return shell(`${backLink(`${BASE}/reading-room/strategies`, T("All strategy lessons", "Todas las lecciones de estrategias"))}<header class="rr-adventure-heading"><p class="rr-eyebrow">${T(`Grades ${lesson.gradeCluster.replace("-", "–")}`, `Grados ${lesson.gradeCluster.replace("-", "–")}`)} · ${strandLabel(lesson.strand)}</p><h1>${esc(lesson.title)}</h1><p>${T("Strategy focus:", "Enfoque de la estrategia:")} <b>${skillLabel(lesson.skill)}</b></p><p>${T("Work is saved on this device. Your answer text stays here; the learning record stores only whether the keyed response was correct.", "Tu trabajo se guarda en este dispositivo. El texto de tus respuestas se queda aquí; el registro de aprendizaje solo guarda si la respuesta clave fue correcta.")}</p></header><ol class="rr-strategy-steps" aria-label="${A("Lesson sequence", "Secuencia de la lección")}"><li>${T("Watch a reader think", "Observa cómo piensa un lector")}</li><li>${T("Practice together", "Practiquemos juntos")}</li><li>${T("Try independently", "Prueba por tu cuenta")}</li></ol>${model}${guided}${transfer}${completed ? `<section role="status" class="rr-adventure-feedback is-correct"><h2>${T("Independent transfer complete", "Transferencia independiente completada")}</h2><p>${T("You used the strategy on a new passage. Revisit the lesson any time to practice again.", "Usaste la estrategia en un pasaje nuevo. Vuelve a la lección cuando quieras para practicar otra vez.")}</p><a href="${BASE}/reading-room/strategies">${T("Choose another strategy", "Elige otra estrategia")} →</a></section>` : ""}<p class="rr-status" role="status">${T("Progress saves automatically in this browser.", "El avance se guarda automáticamente en este navegador.")}</p>`);
 }
 
 function adventuresHTML(stories, state) {
-  return shell(`${backLink(`${BASE}/reading-room`, "Return to the Reading Room")}${pageHeader("Original serialized stories · saved on this device", "Reading Adventures", "<p>Read one chapter at a time. Make predictions, check an idea against the text, and keep a short chapter recap. Work stays in this browser and is not an official assessment.</p>")}<div class="rr-adventure-grid">${stories.map((story) => {
+  return shell(`${backLink(`${BASE}/reading-room`, T("Return to the Reading Room", "Volver a la Sala de lectura"))}${pageHeader(T("Original serialized stories · saved on this device", "Historias originales por capítulos · guardadas en este dispositivo"), T("Reading Adventures", "Aventuras de lectura"), `<p>${T("Read one chapter at a time. Make predictions, check an idea against the text, and keep a short chapter recap. Work stays in this browser and is not an official assessment.", "Lee un capítulo a la vez. Haz predicciones, comprueba una idea con el texto y escribe un resumen breve de cada capítulo. Tu trabajo se queda en este navegador y no es una evaluación oficial.")}</p>`)}<div class="rr-adventure-grid">${stories.map((story) => {
     const progress = state.adventures[story.id] || {};
     const chapter = Math.min(progress.chapter || 0, story.chapters.length - 1);
     const done = progress.completed === true;
-    return `<article class="rr-adventure-card"><p class="rr-eyebrow">Grades ${esc(story.gradeCluster.replace("-", "–"))} · ${esc(story.genre)} · 6 chapters</p><h2><a href="${adventureUrl(story.id)}">${esc(story.title)}</a></h2><p>${esc(story.summary)}</p><p><b>Language focus:</b> ${esc(story.skill)}</p><p class="rr-adventure-progress">${done ? "Completed" : progress.started ? `Chapter ${chapter + 1} of 6 · saved` : "New story"}</p><a class="rr-link" href="${adventureUrl(story.id)}">${done ? "Read again" : progress.started ? "Continue story" : "Start story"} →</a></article>`;
+    return `<article class="rr-adventure-card"><p class="rr-eyebrow">${T(`Grades ${story.gradeCluster.replace("-", "–")}`, `Grados ${story.gradeCluster.replace("-", "–")}`)} · ${esc(story.genre)} · ${T("6 chapters", "6 capítulos")}</p><h2><a href="${adventureUrl(story.id)}">${esc(story.title)}</a></h2><p>${esc(story.summary)}</p><p><b>${T("Language focus:", "Enfoque del lenguaje:")}</b> ${esc(story.skill)}</p><p class="rr-adventure-progress">${done ? T("Completed", "Completada") : progress.started ? T(`Chapter ${chapter + 1} of 6 · saved`, `Capítulo ${chapter + 1} de 6 · guardado`) : T("New story", "Historia nueva")}</p><a class="rr-link" href="${adventureUrl(story.id)}">${done ? T("Read again", "Leer otra vez") : progress.started ? T("Continue story", "Seguir con la historia") : T("Start story", "Empezar la historia")} →</a></article>`;
   }).join("")}</div>`);
 }
 
@@ -235,14 +282,14 @@ function adventureHTML(story, state) {
   const chapterIndex = Math.min(Math.max(0, Number(progress.chapter) || 0), story.chapters.length - 1);
   const chapter = story.chapters[chapterIndex];
   const response = progress.responses?.[chapterIndex] || {};
-  const steps = story.chapters.map((part, i) => `<li><button type="button" data-adv-nav="${i}" aria-current="${chapterIndex === i ? "step" : "false"}"><span>${i + 1}</span>${esc(part.title)}${progress.responses?.[i]?.recap ? " · saved" : ""}</button></li>`).join("");
+  const steps = story.chapters.map((part, i) => `<li><button type="button" data-adv-nav="${i}" aria-current="${chapterIndex === i ? "step" : "false"}"><span>${i + 1}</span>${esc(part.title)}${progress.responses?.[i]?.recap ? ` · ${T("saved", "guardado")}` : ""}</button></li>`).join("");
   const paragraphs = chapter.paragraphs.map((text, i) => `<p id="chapter-${chapterIndex + 1}-p-${i + 1}">${esc(text)}</p>`).join("");
-  const words = chapter.vocabulary.map((v) => `<details class="rr-adventure-word"><summary>${esc(v.term)}</summary><p>${esc(v.definition)}</p><p><b>In this story:</b> ${esc(v.example)}</p></details>`).join("");
-  const choice = `<fieldset class="rr-adventure-choice"><legend>${esc(chapter.question.prompt)}</legend>${chapter.question.options.map((option, i) => `<label><input type="radio" name="adv-answer" value="${i}" ${response.answer === i ? "checked" : ""}> ${esc(option)}</label>`).join("")}<button class="btn small" type="button" data-adv-check="${chapterIndex}" ${response.answer == null ? "disabled" : ""}>Check my thinking</button>${response.checked ? `<p role="status" class="rr-adventure-feedback ${response.correct ? "is-correct" : "is-revisit"}">${response.correct ? "That fits the evidence. " : "Read the explanation and revisit the clue. "}${esc(chapter.question.why)}</p>` : ""}</fieldset>`;
-  const prev = chapterIndex > 0 ? `<button type="button" class="btn" data-adv-nav="${chapterIndex - 1}">← Previous chapter</button>` : "";
-  const next = chapterIndex < story.chapters.length - 1 ? `<button type="button" class="btn btn-primary" data-adv-nav="${chapterIndex + 1}">Next chapter →</button>` : `<button type="button" class="btn btn-primary" data-adv-complete>Finish this adventure</button>`;
-  const done = progress.completed ? `<p role="status" class="rr-adventure-feedback is-correct">Adventure complete. Your chapter notes and responses are saved on this device.</p>` : "";
-  return shell(`${backLink(`${BASE}/reading-room/adventures`, "All Reading Adventures")}<header class="rr-adventure-heading"><p class="rr-eyebrow">Grades ${esc(story.gradeCluster.replace("-", "–"))} · ${esc(story.genre)} · ${esc(story.keyUse)}</p><h1>${esc(story.title)}</h1><p>${esc(story.summary)}</p><p><b>Characters:</b> ${esc(story.characters)} · <b>Reading focus:</b> ${esc(story.skill)}</p><p class="rr-review-status">Original instructional story · independent editorial review pending</p><progress max="${story.chapters.length}" value="${chapterIndex + (progress.responses?.[chapterIndex]?.recap ? 1 : 0)}" aria-label="Adventure reading progress"></progress><span class="rr-adventure-progress-label">Chapter ${chapterIndex + 1} of ${story.chapters.length}</span>${canSpeak() ? `<p><button type="button" class="btn small" data-adv-listen="play">Listen with this device’s voice</button> <button type="button" class="btn small" data-adv-listen="stop">Stop audio</button></p><span class="rr-help">Audio uses your browser’s available speech voice; no recording is saved.</span>` : `<p class="rr-help">Device speech is unavailable. Read the chapter text on screen.</p>`}</header><div class="rr-adventure-layout"><nav class="rr-adventure-nav" aria-label="Chapters"><h2>Chapters</h2><ol>${steps}</ol></nav><article class="rr-adventure-reading"><p class="rr-eyebrow">Chapter ${chapterIndex + 1}</p><h2>${esc(chapter.title)}</h2><p class="rr-adventure-teaser">${esc(chapter.teaser)}</p><div class="rr-passage">${paragraphs}</div><section class="rr-adventure-vocabulary" aria-label="Chapter vocabulary">${words}</section><section class="rr-adventure-response"><h3>Pause and think</h3><label>Make a prediction<textarea rows="3" data-adv-response="prediction" placeholder="What do you think may happen? Use a clue.">${esc(response.prediction || "")}</textarea><span class="rr-help">Your prediction saves as you type. You can revisit it after the next chapter.</span></label>${choice}<label>Explain with evidence<textarea rows="4" data-adv-response="evidence" placeholder="Use a detail from this chapter and explain what it supports.">${esc(response.evidence || "")}</textarea><span class="rr-help">This open response is saved for your review; it is not automatically scored.</span></label><label>Chapter recap<textarea rows="3" data-adv-response="recap" placeholder="What changed, and which detail matters most?">${esc(response.recap || "")}</textarea></label>${done}<div class="rr-adventure-controls">${prev}${next}</div><p class="rr-status" role="status">Your responses save in this browser.</p></section></article></div>`);
+  const words = chapter.vocabulary.map((v) => `<details class="rr-adventure-word"><summary>${esc(v.term)}</summary><p>${esc(v.definition)}</p><p><b>${T("In this story:", "En esta historia:")}</b> ${esc(v.example)}</p></details>`).join("");
+  const choice = `<fieldset class="rr-adventure-choice"><legend>${esc(chapter.question.prompt)}</legend>${chapter.question.options.map((option, i) => `<label><input type="radio" name="adv-answer" value="${i}" ${response.answer === i ? "checked" : ""}> ${esc(option)}</label>`).join("")}<button class="btn small" type="button" data-adv-check="${chapterIndex}" ${response.answer == null ? "disabled" : ""}>${T("Check my thinking", "Revisar mi razonamiento")}</button>${response.checked ? `<p role="status" class="rr-adventure-feedback ${response.correct ? "is-correct" : "is-revisit"}">${response.correct ? T("That fits the evidence. ", "Eso encaja con la evidencia. ") : T("Read the explanation and revisit the clue. ", "Lee la explicación y vuelve a la pista. ")}${esc(chapter.question.why)}</p>` : ""}</fieldset>`;
+  const prev = chapterIndex > 0 ? `<button type="button" class="btn" data-adv-nav="${chapterIndex - 1}">← ${T("Previous chapter", "Capítulo anterior")}</button>` : "";
+  const next = chapterIndex < story.chapters.length - 1 ? `<button type="button" class="btn btn-primary" data-adv-nav="${chapterIndex + 1}">${T("Next chapter", "Capítulo siguiente")} →</button>` : `<button type="button" class="btn btn-primary" data-adv-complete>${T("Finish this adventure", "Terminar esta aventura")}</button>`;
+  const done = progress.completed ? `<p role="status" class="rr-adventure-feedback is-correct">${T("Adventure complete. Your chapter notes and responses are saved on this device.", "Aventura completada. Tus notas de los capítulos y tus respuestas están guardadas en este dispositivo.")}</p>` : "";
+  return shell(`${backLink(`${BASE}/reading-room/adventures`, T("All Reading Adventures", "Todas las aventuras de lectura"))}<header class="rr-adventure-heading"><p class="rr-eyebrow">${T(`Grades ${story.gradeCluster.replace("-", "–")}`, `Grados ${story.gradeCluster.replace("-", "–")}`)} · ${esc(story.genre)} · ${esc(story.keyUse)}</p><h1>${esc(story.title)}</h1><p>${esc(story.summary)}</p><p><b>${T("Characters:", "Personajes:")}</b> ${esc(story.characters)} · <b>${T("Reading focus:", "Enfoque de la lectura:")}</b> ${esc(story.skill)}</p><p class="rr-review-status">${T("Original instructional story · independent editorial review pending", "Historia didáctica original · revisión editorial independiente pendiente")}</p><progress max="${story.chapters.length}" value="${chapterIndex + (progress.responses?.[chapterIndex]?.recap ? 1 : 0)}" aria-label="${A("Adventure reading progress", "Avance de lectura de la aventura")}"></progress><span class="rr-adventure-progress-label">${T(`Chapter ${chapterIndex + 1} of ${story.chapters.length}`, `Capítulo ${chapterIndex + 1} de ${story.chapters.length}`)}</span>${canSpeak() ? `<p><button type="button" class="btn small" data-adv-listen="play">${T("Listen with this device’s voice", "Escucha con la voz de este dispositivo")}</button> <button type="button" class="btn small" data-adv-listen="stop">${T("Stop audio", "Detener el audio")}</button></p><span class="rr-help">${T("Audio uses your browser’s available speech voice; no recording is saved.", "El audio usa la voz disponible en tu navegador; no se guarda ninguna grabación.")}</span>` : `<p class="rr-help">${T("Device speech is unavailable. Read the chapter text on screen.", "La voz del dispositivo no está disponible. Lee el texto del capítulo en la pantalla.")}</p>`}</header><div class="rr-adventure-layout"><nav class="rr-adventure-nav" aria-label="${A("Chapters", "Capítulos")}"><h2>${T("Chapters", "Capítulos")}</h2><ol>${steps}</ol></nav><article class="rr-adventure-reading"><p class="rr-eyebrow">${T(`Chapter ${chapterIndex + 1}`, `Capítulo ${chapterIndex + 1}`)}</p><h2>${esc(chapter.title)}</h2><p class="rr-adventure-teaser">${esc(chapter.teaser)}</p><div class="rr-passage">${paragraphs}</div><section class="rr-adventure-vocabulary" aria-label="${A("Chapter vocabulary", "Vocabulario del capítulo")}">${words}</section><section class="rr-adventure-response"><h3>${T("Pause and think", "Haz una pausa y piensa")}</h3><label>${T("Make a prediction", "Haz una predicción")}<textarea rows="3" data-adv-response="prediction" placeholder="${A("What do you think may happen? Use a clue.", "¿Qué crees que puede pasar? Usa una pista.")}">${esc(response.prediction || "")}</textarea><span class="rr-help">${T("Your prediction saves as you type. You can revisit it after the next chapter.", "Tu predicción se guarda mientras escribes. Puedes volver a ella después del siguiente capítulo.")}</span></label>${choice}<label>${T("Explain with evidence", "Explica con evidencia")}<textarea rows="4" data-adv-response="evidence" placeholder="${A("Use a detail from this chapter and explain what it supports.", "Usa un detalle de este capítulo y explica qué apoya.")}">${esc(response.evidence || "")}</textarea><span class="rr-help">${T("This open response is saved for your review; it is not automatically scored.", "Esta respuesta abierta se guarda para que la revises; no se califica automáticamente.")}</span></label><label>${T("Chapter recap", "Resumen del capítulo")}<textarea rows="3" data-adv-response="recap" placeholder="${A("What changed, and which detail matters most?", "¿Qué cambió y qué detalle importa más?")}">${esc(response.recap || "")}</textarea></label>${done}<div class="rr-adventure-controls">${prev}${next}</div><p class="rr-status" role="status">${T("Your responses save in this browser.", "Tus respuestas se guardan en este navegador.")}</p></section></article></div>`);
 }
 
 // ── sub-pages ───────────────────────────────────────────────────────────────────────────────────────────────────────
@@ -252,16 +299,16 @@ const shell = (inner) =>
 
 function familyHTML(lessons) {
   return shell(
-    `${pageHeader("Read together · optional · no account", "Family Reading", `<p>Choose a short text and spend about 10–15 minutes reading, looking at the details, and talking together. English fluency is not required for a useful conversation.</p><p lang="es">Elijan un texto breve y lean durante unos 10–15 minutos. Pueden conversar en cualquier idioma; no es necesario hablar inglés con fluidez.</p>`)}<div class="rr-books">${lessons.map((l) => `<article class="rr-book"><div class="rr-book-copy"><p class="rr-eyebrow">${esc(gradeLabel(l))} · ${l.minutes} min</p><h2><a href="${lessonUrl(l.id)}">${esc(l.title)}</a></h2><p>${esc(l.familySupport.directions.en)}</p><p lang="es">${esc(l.familySupport.directions.es)}</p><p><b>Try asking:</b> ${esc(l.familySupport.questions[0])}</p></div></article>`).join("")}</div>${backLink(`${BASE}/reading-room`, "Return to the Reading Room")}`,
+    `${pageHeader(T("Read together · optional · no account", "Lean juntos · opcional · sin cuenta"), T("Family Reading", "Lectura en familia"), `<p>${T("Choose a short text and spend about 10–15 minutes reading, looking at the details, and talking together. English fluency is not required for a useful conversation.", "Elijan un texto breve y dediquen unos 10–15 minutos a leer, mirar los detalles y conversar juntos. No hace falta hablar inglés con fluidez para tener una conversación útil.")}</p>${I.mode === "en" ? `<p lang="es">Elijan un texto breve y lean durante unos 10–15 minutos. Pueden conversar en cualquier idioma; no es necesario hablar inglés con fluidez.</p>` : ""}`)}<div class="rr-books">${lessons.map((l) => `<article class="rr-book"><div class="rr-book-copy"><p class="rr-eyebrow">${gradeLabel(l)} · ${l.minutes} min</p><h2><a href="${lessonUrl(l.id)}">${esc(l.title)}</a></h2><p>${esc(l.familySupport.directions.en)}</p><p lang="es">${esc(l.familySupport.directions.es)}</p><p><b>${T("Try asking:", "Pregunten:")}</b> ${esc(l.familySupport.questions[0])}</p></div></article>`).join("")}</div>${backLink(`${BASE}/reading-room`, T("Return to the Reading Room", "Volver a la Sala de lectura"))}`,
   );
 }
 
 function wordsHTML(state) {
   const body = state.words.length
-    ? `<div class="rr-books">${state.words.map((w, i) => `<article class="rr-book"><div class="rr-book-copy"><p class="rr-eyebrow">${esc(w.lessonId || "Reading")}</p><h2>${esc(w.term)}</h2><p>${esc(w.definition)}</p><p><b>Example:</b> ${esc(w.example)}</p><button type="button" class="rr-reset" data-rr-remove-word="${i}">Remove word</button></div></article>`).join("")}</div>`
-    : `<div class="rr-empty"><img src="${ART}/empty.svg" alt="" width="240" height="180"><h2>No words saved yet</h2><p>Open a lesson and choose “Save to Word Notebook” on a vocabulary card.</p></div>`;
+    ? `<div class="rr-books">${state.words.map((w, i) => `<article class="rr-book"><div class="rr-book-copy"><p class="rr-eyebrow">${w.lessonId ? esc(w.lessonId) : T("Reading", "Lectura")}</p><h2>${esc(w.term)}</h2><p>${esc(w.definition)}</p><p><b>${T("Example:", "Ejemplo:")}</b> ${esc(w.example)}</p><button type="button" class="rr-reset" data-rr-remove-word="${i}">${T("Remove word", "Quitar la palabra")}</button></div></article>`).join("")}</div>`
+    : `<div class="rr-empty"><img src="${ART}/empty.svg" alt="" width="240" height="180"><h2>${T("No words saved yet", "Todavía no hay palabras guardadas")}</h2><p>${T("Open a lesson and choose “Save to Word Notebook” on a vocabulary card.", "Abre una lección y elige “Guardar en el Cuaderno de palabras” en una tarjeta de vocabulario.")}</p></div>`;
   return shell(
-    `${pageHeader("Your saved academic words · this device", "Reading Word Notebook", "<p>Review each word in its reading context. Saved words stay in this browser.</p>")}${body}${backLink(`${BASE}/reading-room`, "Return to the Reading Room")}`,
+    `${pageHeader(T("Your saved academic words · this device", "Tus palabras académicas guardadas · este dispositivo"), T("Reading Word Notebook", "Cuaderno de palabras de lectura"), `<p>${T("Review each word in its reading context. Saved words stay in this browser.", "Repasa cada palabra en el contexto de la lectura. Las palabras guardadas se quedan en este navegador.")}</p>`)}${body}${backLink(`${BASE}/reading-room`, T("Return to the Reading Room", "Volver a la Sala de lectura"))}`,
   );
 }
 
@@ -273,78 +320,89 @@ function pathwaysHTML(lessons) {
     `<article class="rr-book"><div class="rr-book-copy"><p class="rr-eyebrow">${eyebrow}</p><h2>${title}</h2><p>${body}</p>${link}</div></article>`;
   const go = (to, label) => `<a class="rr-link" href="${to}">${label} →</a>`;
   return shell(
-    `${pageHeader("Teacher and student pathways · no account required", "Choose a way to read", "<p>Use one lesson for a gradual-release sequence, a whole-class read, independent practice, a focused small group, or a conference. Work and notes stay in this browser.</p>", `<label class="rr-filter rr-inline-filter">Grade cluster <select data-rr-workshop-cluster>${clusterOptions(cluster)}</select></label>`)}<div class="rr-books">${[
+    `${pageHeader(T("Teacher and student pathways · no account required", "Rutas para docentes y estudiantes · no se necesita cuenta"), T("Choose a way to read", "Elija una forma de leer"), `<p>${T("Use one lesson for a gradual-release sequence, a whole-class read, independent practice, a focused small group, or a conference. Work and notes stay in this browser.", "Use una lección para una secuencia de traspaso gradual, una lectura con toda la clase, práctica independiente, un grupo pequeño enfocado o una conferencia. El trabajo y las notas se quedan en este navegador.")}</p>`, `<label class="rr-filter rr-inline-filter">${T("Grade cluster", "Grupo de grados")} <select data-rr-workshop-cluster>${clusterOptions(cluster)}</select></label>`)}<div class="rr-books">${[
       card(
-        "Model and practice",
-        "Learn, practice, then try independently",
-        "Start with the explicit reading move, use guided prompts, and fade supports before a fresh task.",
-        go(`${lessonUrl(feature.id)}?mode=learn`, "Open a modeled lesson"),
+        T("Model and practice", "Modelar y practicar"),
+        T("Learn, practice, then try independently", "Aprender, practicar y luego probar de forma independiente"),
+        T("Start with the explicit reading move, use guided prompts, and fade supports before a fresh task.", "Comience con el paso de lectura explícito, use indicaciones guiadas y retire los apoyos antes de una tarea nueva."),
+        go(`${lessonUrl(feature.id)}?mode=learn`, T("Open a modeled lesson", "Abrir una lección modelada")),
       ),
       card(
-        "Read together",
-        "Chunked whole-class reading",
-        "Project the passage, pause at section questions, discuss evidence, and use teacher prompts.",
+        T("Read together", "Leer juntos"),
+        T("Chunked whole-class reading", "Lectura de toda la clase por partes"),
+        T("Project the passage, pause at section questions, discuss evidence, and use teacher prompts.", "Proyecte el pasaje, haga pausas en las preguntas de cada sección, converse sobre la evidencia y use las indicaciones para docentes."),
         go(
           `${lessonUrl(feature.id)}?mode=together`,
-          "Open a read-together lesson",
+          T("Open a read-together lesson", "Abrir una lección de lectura conjunta"),
         ),
       ),
       card(
-        "Independent reading",
-        "Practice without hints",
-        "Students choose a text, annotate, read, and check their own responses without revealing teacher models.",
+        T("Independent reading", "Lectura independiente"),
+        T("Practice without hints", "Práctica sin pistas"),
+        T("Students choose a text, annotate, read, and check their own responses without revealing teacher models.", "Los estudiantes eligen un texto, lo anotan, lo leen y revisan sus propias respuestas sin ver los modelos del docente."),
         go(
           `${lessonUrl(feature.id)}?mode=independent`,
-          "Open an independent lesson",
+          T("Open an independent lesson", "Abrir una lección independiente"),
         ),
       ),
       card(
-        "Small group",
-        "Plan from checked evidence",
-        "Use observed errors to select a strategy, model it, and assign a fresh independent check.",
-        go(`${BASE}/reading-room/teacher`, "Review local skill evidence"),
+        T("Small group", "Grupo pequeño"),
+        T("Plan from checked evidence", "Planificar con la evidencia comprobada"),
+        T("Use observed errors to select a strategy, model it, and assign a fresh independent check.", "Use los errores observados para elegir una estrategia, modelarla y asignar una nueva comprobación independiente."),
+        go(`${BASE}/reading-room/teacher`, T("Review local skill evidence", "Revisar la evidencia local de destrezas")),
       ),
       card(
-        "Reading conference",
-        "Capture a brief observation and next step",
-        "Keep observation notes on this device, tied to a lesson and instructional follow-up.",
-        go(`${BASE}/reading-room/conference`, "Open a conference note"),
+        T("Reading conference", "Conferencia de lectura"),
+        T("Capture a brief observation and next step", "Registrar una observación breve y el siguiente paso"),
+        T("Keep observation notes on this device, tied to a lesson and instructional follow-up.", "Guarde las notas de observación en este dispositivo, vinculadas a una lección y a un seguimiento de enseñanza."),
+        go(`${BASE}/reading-room/conference`, T("Open a conference note", "Abrir una nota de conferencia")),
       ),
       card(
-        "Weekly workshop",
-        "Plan five connected days",
-        "Build a week around actual Reading Room texts and their objectives.",
+        T("Weekly workshop", "Taller semanal"),
+        T("Plan five connected days", "Planificar cinco días conectados"),
+        T("Build a week around actual Reading Room texts and their objectives.", "Organice una semana en torno a los textos reales de la Sala de lectura y sus objetivos."),
         go(
           `${BASE}/reading-room/workshop?cluster=${encodeURIComponent(cluster)}`,
-          "Open the weekly plan",
+          T("Open the weekly plan", "Abrir el plan semanal"),
         ),
       ),
     ].join(
       "",
-    )}</div><section class="rr-pathway-texts"><h2>Texts for this pathway</h2><div class="rr-books">${picks.map((l) => `<article class="rr-book"><div class="rr-book-copy"><h3><a href="${lessonUrl(l.id)}">${esc(l.title)}</a></h3><p>${esc(l.objectives.content)} · ${esc(l.objectives.language)}</p></div></article>`).join("")}</div></section>${backLink(`${BASE}/reading-room`, "Return to the Reading Room")}`,
+    )}</div><section class="rr-pathway-texts"><h2>${T("Texts for this pathway", "Textos para esta ruta")}</h2><div class="rr-books">${picks.map((l) => `<article class="rr-book"><div class="rr-book-copy"><h3><a href="${lessonUrl(l.id)}">${esc(l.title)}</a></h3><p>${esc(l.objectives.content)} · ${esc(l.objectives.language)}</p></div></article>`).join("")}</div></section>${backLink(`${BASE}/reading-room`, T("Return to the Reading Room", "Volver a la Sala de lectura"))}`,
   );
 }
 
+// [day, description, día, descripción]
 const WORKSHOP_STAGES = [
   [
     "Day 1 · Prepare",
     "Connect background knowledge, introduce the essential question, and preview three useful words.",
+    "Día 1 · Preparar",
+    "Conectar los conocimientos previos, presentar la pregunta esencial y adelantar tres palabras útiles.",
   ],
   [
     "Day 2 · First reading",
     "Read for topic, people or concepts, sequence, and the central idea.",
+    "Día 2 · Primera lectura",
+    "Leer para identificar el tema, las personas o los conceptos, la secuencia y la idea central.",
   ],
   [
     "Day 3 · Investigate",
     "Reread key paragraphs, select evidence, and address a likely misconception.",
+    "Día 3 · Investigar",
+    "Releer párrafos clave, elegir evidencia y abordar un posible error de comprensión.",
   ],
   [
     "Day 4 · Organize and discuss",
     "Complete a lesson-linked organizer and explain how evidence supports an idea.",
+    "Día 4 · Organizar y conversar",
+    "Completar un organizador vinculado a la lección y explicar cómo la evidencia apoya una idea.",
   ],
   [
     "Day 5 · Transfer",
     "Complete an independent challenge and apply the same language function in a new context.",
+    "Día 5 · Transferir",
+    "Completar un desafío independiente y aplicar la misma función del lenguaje en un contexto nuevo.",
   ],
 ];
 
@@ -363,10 +421,10 @@ function workshopHTML(lessons) {
               .languageObjective,
     );
   const plan = selected.length
-    ? `<section class="rr-continue rr-week"><div><p class="rr-eyebrow">Week texts</p>${selected.map((l) => `<h2><a href="${lessonUrl(l.id)}">${esc(l.title)}</a></h2><p>${esc(l.objectives.content)} · ${esc(l.objectives.language)}</p>`).join("")}</div></section><ol class="rr-workshop-days">${WORKSHOP_STAGES.map(([day, desc], i) => `<li><h2>${day}</h2><p>${desc}</p><p><b>Teacher move:</b> ${move(i)}</p><a class="rr-link" href="${lessonUrl(selected[Math.min(i < 3 ? 0 : 1, selected.length - 1)].id)}">Open the lesson for this step →</a></li>`).join("")}</ol><button type="button" class="rr-reset" data-rr-print>${ic("print")} Print this workshop plan</button>`
-    : "<p>No authored lesson is available for that cluster yet.</p>";
+    ? `<section class="rr-continue rr-week"><div><p class="rr-eyebrow">${T("Week texts", "Textos de la semana")}</p>${selected.map((l) => `<h2><a href="${lessonUrl(l.id)}">${esc(l.title)}</a></h2><p>${esc(l.objectives.content)} · ${esc(l.objectives.language)}</p>`).join("")}</div></section><ol class="rr-workshop-days">${WORKSHOP_STAGES.map(([day, desc, dayEs, descEs], i) => `<li><h2>${T(day, dayEs)}</h2><p>${T(desc, descEs)}</p><p><b>${T("Teacher move:", "Acción del docente:")}</b> ${move(i)}</p><a class="rr-link" href="${lessonUrl(selected[Math.min(i < 3 ? 0 : 1, selected.length - 1)].id)}">${T("Open the lesson for this step", "Abrir la lección de este paso")} →</a></li>`).join("")}</ol><button type="button" class="rr-reset" data-rr-print>${ic("print")} ${T("Print this workshop plan", "Imprimir este plan del taller")}</button>`
+    : `<p>${T("No authored lesson is available for that cluster yet.", "Todavía no hay una lección disponible para ese grupo.")}</p>`;
   return shell(
-    `${pageHeader("Teacher planning · local content", "Weekly Reading Workshop", "<p>A flexible five-day sequence built from the Reading Room’s actual lessons. Assign the full sequence or select individual days; students can still browse without signing in.</p>", `<label class="rr-filter rr-inline-filter">Grade cluster <select data-rr-workshop-cluster>${clusterOptions(cluster)}</select></label>`)}${plan}${backLink(`${BASE}/reading-room/teacher`, "Return to teacher evidence")}`,
+    `${pageHeader(T("Teacher planning · local content", "Planificación docente · contenido local"), T("Weekly Reading Workshop", "Taller semanal de lectura"), `<p>${T("A flexible five-day sequence built from the Reading Room’s actual lessons. Assign the full sequence or select individual days; students can still browse without signing in.", "Una secuencia flexible de cinco días basada en las lecciones reales de la Sala de lectura. Asigne la secuencia completa o elija días individuales; los estudiantes aún pueden explorar sin iniciar sesión.")}</p>`, `<label class="rr-filter rr-inline-filter">${T("Grade cluster", "Grupo de grados")} <select data-rr-workshop-cluster>${clusterOptions(cluster)}</select></label>`)}${plan}${backLink(`${BASE}/reading-room/teacher`, T("Return to teacher evidence", "Volver a la evidencia docente"))}`,
   );
 }
 
@@ -386,7 +444,7 @@ function teacherHTML(lessons, state, stories = [], strategies = []) {
   for (const { l, checked } of rows)
     for (const a of checked)
       if (a.correct === false) {
-        const skill = a.skill || "Revisit a checked response";
+        const skill = a.skill || ""; // blank = the lesson item names no skill; shown as a localized fallback below
         const old = groupNeeds.get(skill) || { count: 0, lesson: l };
         old.count++;
         groupNeeds.set(skill, old);
@@ -395,29 +453,29 @@ function teacherHTML(lessons, state, stories = [], strategies = []) {
     ? [...groupNeeds]
         .map(
           ([skill, v]) =>
-            `<article><h3>${esc(skill)}</h3><p>Evidence: ${v.count} checked miss(es) saved in <a href="${lessonUrl(v.lesson.id)}">${esc(v.lesson.title)}</a>. Revisit the linked paragraph, model the strategy, then offer a fresh independent check.</p></article>`,
+            `<article><h3>${skill ? esc(skill) : T("Revisit a checked response", "Repasar una respuesta comprobada")}</h3><p>${TH(`Evidence: ${v.count} checked miss(es) saved in <a href="${lessonUrl(v.lesson.id)}">${esc(v.lesson.title)}</a>. Revisit the linked paragraph, model the strategy, then offer a fresh independent check.`, `Evidencia: ${v.count} error(es) comprobado(s) guardado(s) en <a href="${lessonUrl(v.lesson.id)}">${esc(v.lesson.title)}</a>. Repase el párrafo vinculado, modele la estrategia y luego ofrezca una nueva comprobación independiente.`)}</p></article>`,
         )
         .join("")
-    : "<p>No checked misses are saved yet, so this local view has no evidence-based small-group suggestion.</p>";
+    : `<p>${T("No checked misses are saved yet, so this local view has no evidence-based small-group suggestion.", "Todavía no hay errores comprobados guardados, así que esta vista local no tiene sugerencias para grupos pequeños basadas en evidencia.")}</p>`;
   const next = ({ misses, checked }, found) =>
     misses
-      ? `Revisit: ${esc(found)}.`
+      ? `${T("Revisit:", "Repasar:")} ${found ? esc(found) : T("the checked skill", "la destreza comprobada")}.`
       : checked.length
-        ? "Continue to a new reading."
-        : "No checked evidence saved.";
+        ? T("Continue to a new reading.", "Pasar a una lectura nueva.")
+        : T("No checked evidence saved.", "No hay evidencia comprobada guardada.");
   const adventureSummary = stories.map((story) => {
     const progress = state.adventures[story.id] || {};
     const checks = Object.values(progress.responses || {}).filter((answer) => answer.checked);
-    return `<tr><th scope="row"><a href="${adventureUrl(story.id)}">${esc(story.title)}</a></th><td>${checks.length} of ${story.chapters.length}</td><td>${checks.filter((answer) => answer.correct).length}</td><td>${checks.filter((answer) => !answer.correct).length}</td><td>${progress.completed ? "Completed" : progress.started ? "In progress" : "Not started"}</td></tr>`;
+    return `<tr><th scope="row"><a href="${adventureUrl(story.id)}">${esc(story.title)}</a></th><td>${T(`${checks.length} of ${story.chapters.length}`, `${checks.length} de ${story.chapters.length}`)}</td><td>${checks.filter((answer) => answer.correct).length}</td><td>${checks.filter((answer) => !answer.correct).length}</td><td>${progress.completed ? T("Completed", "Completada") : progress.started ? T("In progress", "En progreso") : T("Not started", "Sin empezar")}</td></tr>`;
   }).join("");
   const strategySummary = strategies.map((lesson) => {
     const progress = state.strategies?.[lesson.id] || {};
     if (!progress.guided?.checked && !progress.independent?.checked) return "";
-    const result = (row) => !row?.checked ? "Not checked" : row.correct ? "Correct" : "Revisit needed";
-    return `<tr><th scope="row">${esc(lesson.title)} · ${esc(lesson.gradeCluster)}</th><td>${esc(STRATEGY_STRANDS[lesson.strand])}</td><td>${result(progress.guided)}</td><td>${result(progress.independent)}</td></tr>`;
+    const result = (row) => !row?.checked ? T("Not checked", "Sin comprobar") : row.correct ? T("Correct", "Correcta") : T("Revisit needed", "Hay que repasar");
+    return `<tr><th scope="row">${esc(lesson.title)} · ${esc(lesson.gradeCluster)}</th><td>${strandLabel(lesson.strand)}</td><td>${result(progress.guided)}</td><td>${result(progress.independent)}</td></tr>`;
   }).join("");
   return shell(
-    `${pageHeader("Teacher view · this device only", "Reading evidence", "<p>These counts come only from the reading data saved in this browser. They do not sync across devices and are not WIDA scores or proficiency estimates.</p>")}<p class="rr-count">${rows.filter((x) => x.p.completed).length} of ${lessons.length} authored lessons marked complete on this device.</p><p><a class="rr-link" href="${BASE}/reading-room/workshop?cluster=6-8">Open Weekly Reading Workshop →</a></p><section class="rr-group-needs"><h2>Small-group next steps</h2>${needs}</section><div class="rr-teacher-table"><table><caption>Saved reading evidence by lesson</caption><thead><tr><th scope="col">Lesson</th><th scope="col">Checked items</th><th scope="col">Independent checks</th><th scope="col">Items to revisit</th><th scope="col">Next step</th></tr></thead><tbody>${rows.map((r) => `<tr><th scope="row"><a href="${lessonUrl(r.l.id)}">${esc(r.l.title)}</a></th><td>${r.checked.length}</td><td>${r.independent}</td><td>${r.misses}</td><td>${next(r, r.checked.find((x) => x.correct === false)?.skill || "the checked skill")}</td></tr>`).join("")}</tbody></table></div><section class="rr-teacher-table"><table><caption>Reading Adventure checkpoint evidence · local counts, not mastery</caption><thead><tr><th scope="col">Adventure</th><th scope="col">Checked checkpoints</th><th scope="col">Correct keyed responses</th><th scope="col">Responses to revisit</th><th scope="col">Progress</th></tr></thead><tbody>${adventureSummary}</tbody></table><p class="rr-fine">Open explanations and recaps remain private student work in this browser; this view shows only checkpoint counts. Independent editorial review is pending.</p></section><section class="rr-teacher-table"><table><caption>Reading Strategy Academy evidence · local counts</caption><thead><tr><th scope="col">Lesson</th><th scope="col">Strategy</th><th scope="col">Guided response</th><th scope="col">Independent transfer</th></tr></thead><tbody>${strategySummary || `<tr><td colspan="4">No strategy evidence is saved on this device.</td></tr>`}</tbody></table><p class="rr-fine">This view stores no student explanation text and does not establish mastery.</p></section><div class="rr-actions-row"><button type="button" class="rr-reset" data-rr-print>${ic("print")} Print this report</button><button type="button" class="rr-reset" data-rr-export>${ic("download")} Download report CSV</button></div><p class="rr-fine">Interpretation rule: a correct supported response is not counted as an independent check. Counts are local descriptive evidence only; they do not establish mastery.</p>${backLink(`${BASE}/reading-room`, "Return to the Reading Room")}`,
+    `${pageHeader(T("Teacher view · this device only", "Vista docente · solo este dispositivo"), T("Reading evidence", "Evidencia de lectura"), `<p>${T("These counts come only from the reading data saved in this browser. They do not sync across devices and are not WIDA scores or proficiency estimates.", "Estos conteos provienen solo de los datos de lectura guardados en este navegador. No se sincronizan entre dispositivos y no son puntajes de WIDA ni estimaciones de nivel de dominio.")}</p>`)}<p class="rr-count">${T(`${rows.filter((x) => x.p.completed).length} of ${lessons.length} authored lessons marked complete on this device.`, `${rows.filter((x) => x.p.completed).length} de ${lessons.length} lecciones marcadas como completas en este dispositivo.`)}</p><p><a class="rr-link" href="${BASE}/reading-room/workshop?cluster=6-8">${T("Open Weekly Reading Workshop", "Abrir el Taller semanal de lectura")} →</a></p><section class="rr-group-needs"><h2>${T("Small-group next steps", "Próximos pasos para grupos pequeños")}</h2>${needs}</section><div class="rr-teacher-table"><table><caption>${T("Saved reading evidence by lesson", "Evidencia de lectura guardada por lección")}</caption><thead><tr><th scope="col">${T("Lesson", "Lección")}</th><th scope="col">${T("Checked items", "Ítems comprobados")}</th><th scope="col">${T("Independent checks", "Comprobaciones independientes")}</th><th scope="col">${T("Items to revisit", "Ítems por repasar")}</th><th scope="col">${T("Next step", "Siguiente paso")}</th></tr></thead><tbody>${rows.map((r) => `<tr><th scope="row"><a href="${lessonUrl(r.l.id)}">${esc(r.l.title)}</a></th><td>${r.checked.length}</td><td>${r.independent}</td><td>${r.misses}</td><td>${next(r, r.checked.find((x) => x.correct === false)?.skill || "")}</td></tr>`).join("")}</tbody></table></div><section class="rr-teacher-table"><table><caption>${T("Reading Adventure checkpoint evidence · local counts, not mastery", "Evidencia de los puntos de control de Aventuras de lectura · conteos locales, no dominio")}</caption><thead><tr><th scope="col">${T("Adventure", "Aventura")}</th><th scope="col">${T("Checked checkpoints", "Puntos de control comprobados")}</th><th scope="col">${T("Correct keyed responses", "Respuestas clave correctas")}</th><th scope="col">${T("Responses to revisit", "Respuestas por repasar")}</th><th scope="col">${T("Progress", "Avance")}</th></tr></thead><tbody>${adventureSummary}</tbody></table><p class="rr-fine">${T("Open explanations and recaps remain private student work in this browser; this view shows only checkpoint counts. Independent editorial review is pending.", "Las explicaciones abiertas y los resúmenes siguen siendo trabajo privado del estudiante en este navegador; esta vista solo muestra conteos de los puntos de control. La revisión editorial independiente está pendiente.")}</p></section><section class="rr-teacher-table"><table><caption>${T("Reading Strategy Academy evidence · local counts", "Evidencia de la Academia de estrategias de lectura · conteos locales")}</caption><thead><tr><th scope="col">${T("Lesson", "Lección")}</th><th scope="col">${T("Strategy", "Estrategia")}</th><th scope="col">${T("Guided response", "Respuesta guiada")}</th><th scope="col">${T("Independent transfer", "Transferencia independiente")}</th></tr></thead><tbody>${strategySummary || `<tr><td colspan="4">${T("No strategy evidence is saved on this device.", "No hay evidencia de estrategias guardada en este dispositivo.")}</td></tr>`}</tbody></table><p class="rr-fine">${T("This view stores no student explanation text and does not establish mastery.", "Esta vista no guarda el texto de las explicaciones de los estudiantes y no establece dominio.")}</p></section><div class="rr-actions-row"><button type="button" class="rr-reset" data-rr-print>${ic("print")} ${T("Print this report", "Imprimir este informe")}</button><button type="button" class="rr-reset" data-rr-export>${ic("download")} ${T("Download report CSV", "Descargar informe en CSV")}</button></div><p class="rr-fine">${T("Interpretation rule: a correct supported response is not counted as an independent check. Counts are local descriptive evidence only; they do not establish mastery.", "Regla de interpretación: una respuesta correcta con apoyo no cuenta como comprobación independiente. Los conteos son solo evidencia descriptiva local; no establecen dominio.")}</p>${backLink(`${BASE}/reading-room`, T("Return to the Reading Room", "Volver a la Sala de lectura"))}`,
   );
 }
 
@@ -429,17 +487,17 @@ function conferenceHTML(lessons, state) {
   const selected = lessons.find((l) => l.id === selectedId) || lessons[0];
   const notes = state.conferences[selected?.id] || {};
   const fields = [
-    ["strength", "Observed strength"],
-    ["evidence", "Evidence observed in the reading or response"],
-    ["support", "Scaffold or prompt used"],
-    ["nextStep", "Instructional next step"],
-    ["followUp", "Fresh independent follow-up task"],
+    ["strength", "Observed strength", "Fortaleza observada"],
+    ["evidence", "Evidence observed in the reading or response", "Evidencia observada en la lectura o la respuesta"],
+    ["support", "Scaffold or prompt used", "Andamio o indicación usada"],
+    ["nextStep", "Instructional next step", "Siguiente paso de enseñanza"],
+    ["followUp", "Fresh independent follow-up task", "Nueva tarea independiente de seguimiento"],
   ];
   const form = selected
-    ? `<p class="rr-goals"><b>Reading goal:</b> ${esc(selected.objectives.content)} <b>Language goal:</b> ${esc(selected.objectives.language)}</p><div class="rr-organizer-grid">${fields.map(([key, label]) => `<label>${label}<textarea data-rr-conference="${key}" data-lesson="${esc(selected.id)}" rows="3">${esc(notes[key] || "")}</textarea></label>`).join("")}</div><p role="status" data-rr-conference-status>Notes save in this browser as you type.</p><button type="button" class="btn small" data-rr-print>${ic("print")} Print conference note</button>`
-    : "<p>No reading lessons are available.</p>";
+    ? `<p class="rr-goals"><b>${T("Reading goal:", "Meta de lectura:")}</b> ${esc(selected.objectives.content)} <b>${T("Language goal:", "Meta de lenguaje:")}</b> ${esc(selected.objectives.language)}</p><div class="rr-organizer-grid">${fields.map(([key, label, es]) => `<label>${T(label, es)}<textarea data-rr-conference="${key}" data-lesson="${esc(selected.id)}" rows="3">${esc(notes[key] || "")}</textarea></label>`).join("")}</div><p role="status" data-rr-conference-status>${T("Notes save in this browser as you type.", "Las notas se guardan en este navegador mientras escribe.")}</p><button type="button" class="btn small" data-rr-print>${ic("print")} ${T("Print conference note", "Imprimir la nota de conferencia")}</button>`
+    : `<p>${T("No reading lessons are available.", "No hay lecciones de lectura disponibles.")}</p>`;
   return shell(
-    `${pageHeader("Teacher conference · stored on this device", "Reading Conference Notes", "<p>Capture instructional observations without adding student names or identifiers. These notes are local to this browser and are not shared or synced.</p>", `<label class="rr-filter rr-inline-filter">Lesson<select data-rr-conference-lesson>${lessons.map((l) => `<option value="${esc(l.id)}" ${l.id === selected?.id ? "selected" : ""}>${esc(l.title)}</option>`).join("")}</select></label>`)}${form}${backLink(`${BASE}/reading-room/pathways`, "Return to workshop pathways")}`,
+    `${pageHeader(T("Teacher conference · stored on this device", "Conferencia docente · guardada en este dispositivo"), T("Reading Conference Notes", "Notas de conferencia de lectura"), `<p>${T("Capture instructional observations without adding student names or identifiers. These notes are local to this browser and are not shared or synced.", "Registre observaciones de enseñanza sin agregar nombres ni identificadores de estudiantes. Estas notas son locales de este navegador y no se comparten ni se sincronizan.")}</p>`, `<label class="rr-filter rr-inline-filter">${T("Lesson", "Lección")}<select data-rr-conference-lesson>${lessons.map((l) => `<option value="${esc(l.id)}" ${l.id === selected?.id ? "selected" : ""}>${esc(l.title)}</option>`).join("")}</select></label>`)}${form}${backLink(`${BASE}/reading-room/pathways`, T("Return to workshop pathways", "Volver a las rutas del taller"))}`,
   );
 }
 
@@ -447,7 +505,7 @@ function conferenceHTML(lessons, state) {
 
 const feedbackBox = (answer, okText, tryText, rationale) =>
   answer?.checked
-    ? `<div role="status" class="feedback ${answer.correct ? "is-right" : "is-hint"}"><p class="fb-title">${ic(answer.correct ? "check" : "bulb")} ${esc(answer.correct ? okText : tryText)}</p><p>${esc(rationale)}</p></div>`
+    ? `<div role="status" class="feedback ${answer.correct ? "is-right" : "is-hint"}"><p class="fb-title">${ic(answer.correct ? "check" : "bulb")} ${answer.correct ? okText : tryText}</p><p>${esc(rationale)}</p></div>`
     : "";
 const checkButton = (id, label) =>
   `<button type="button" class="btn btn-primary btn-domain small" data-rr-check="${esc(id)}">${label}</button>`;
@@ -457,19 +515,19 @@ const optionLabel = (input, text) =>
 function activityHTML(a, progress) {
   const ans = progress.answers?.[a.id];
   if (a.type === "choice" || a.type === "connector")
-    return `<fieldset class="rr-question"><legend>${esc(a.prompt)}</legend>${a.sentence ? `<p class="rr-sentence">${esc(a.sentence.replace("___", "_____"))}</p>` : ""}${a.choices.map((c) => optionLabel(`<input type="radio" name="rr-${esc(a.id)}" data-rr-answer="${esc(a.id)}" value="${esc(c.id)}" ${ans?.value === c.id ? "checked" : ""}>`, esc(c.text))).join("")}${checkButton(a.id, "Check answer")}${feedbackBox(ans, "That answer is supported.", "Look again at the text, then revise.", a.rationale)}</fieldset>`;
+    return `<fieldset class="rr-question"><legend>${esc(a.prompt)}</legend>${a.sentence ? `<p class="rr-sentence">${esc(a.sentence.replace("___", "_____"))}</p>` : ""}${a.choices.map((c) => optionLabel(`<input type="radio" name="rr-${esc(a.id)}" data-rr-answer="${esc(a.id)}" value="${esc(c.id)}" ${ans?.value === c.id ? "checked" : ""}>`, esc(c.text))).join("")}${checkButton(a.id, T("Check answer", "Revisar la respuesta"))}${feedbackBox(ans, T("That answer is supported.", "Esa respuesta tiene apoyo."), T("Look again at the text, then revise.", "Vuelve a mirar el texto y luego corrige."), a.rationale)}</fieldset>`;
   if (a.type === "multi" || a.type === "hotText")
-    return `<fieldset class="rr-question"><legend>${esc(a.prompt)}</legend>${a.choices.map((c) => optionLabel(`<input type="checkbox" data-rr-multi="${esc(a.id)}" value="${esc(c.id)}" ${ans?.values?.includes(c.id) ? "checked" : ""}>`, esc(c.text))).join("")}${checkButton(a.id, "Check selection")}${feedbackBox(ans, "Your selection matches the source key.", "Compare the selected text with the task purpose, then revise.", a.rationale)}</fieldset>`;
+    return `<fieldset class="rr-question"><legend>${esc(a.prompt)}</legend>${a.choices.map((c) => optionLabel(`<input type="checkbox" data-rr-multi="${esc(a.id)}" value="${esc(c.id)}" ${ans?.values?.includes(c.id) ? "checked" : ""}>`, esc(c.text))).join("")}${checkButton(a.id, T("Check selection", "Revisar la selección"))}${feedbackBox(ans, T("Your selection matches the source key.", "Tu selección coincide con la clave."), T("Compare the selected text with the task purpose, then revise.", "Compara el texto elegido con el propósito de la tarea y luego corrige."), a.rationale)}</fieldset>`;
   if (a.type === "cloze")
-    return `<fieldset class="rr-question"><legend>${esc(a.prompt)}</legend><p class="rr-cloze">${a.segments.map((seg) => (seg.blank ? `<label class="rr-inline-cloze"><span class="visually-hidden">Choose a word</span><select data-rr-cloze="${esc(a.id)}" data-blank="${esc(seg.blank.id)}" aria-label="Word for blank ${esc(seg.blank.id)}"><option value="">Choose a word</option>${seg.blank.options.map((v) => `<option value="${esc(v)}" ${ans?.values?.[seg.blank.id] === v ? "selected" : ""}>${esc(v)}</option>`).join("")}</select></label>` : esc(seg.text))).join("")}</p>${checkButton(a.id, "Check words")}${feedbackBox(ans, "The words fit the context.", "Reread the full sentence and revise the word choice.", a.rationale)}</fieldset>`;
+    return `<fieldset class="rr-question"><legend>${esc(a.prompt)}</legend><p class="rr-cloze">${a.segments.map((seg) => (seg.blank ? `<label class="rr-inline-cloze"><span class="visually-hidden">${T("Choose a word", "Elige una palabra")}</span><select data-rr-cloze="${esc(a.id)}" data-blank="${esc(seg.blank.id)}" aria-label="${A(`Word for blank ${seg.blank.id}`, `Palabra para el espacio ${seg.blank.id}`)}"><option value="">${A("Choose a word", "Elige una palabra")}</option>${seg.blank.options.map((v) => `<option value="${esc(v)}" ${ans?.values?.[seg.blank.id] === v ? "selected" : ""}>${esc(v)}</option>`).join("")}</select></label>` : esc(seg.text))).join("")}</p>${checkButton(a.id, T("Check words", "Revisar las palabras"))}${feedbackBox(ans, T("The words fit the context.", "Las palabras encajan en el contexto."), T("Reread the full sentence and revise the word choice.", "Vuelve a leer la oración completa y corrige la palabra."), a.rationale)}</fieldset>`;
   if (a.type === "short")
-    return `<div class="rr-question"><label for="rr-short-${esc(a.id)}">${esc(a.prompt)}</label><textarea id="rr-short-${esc(a.id)}" data-rr-response="${esc(a.id)}" rows="4">${esc(ans?.text || "")}</textarea>${a.model ? `<button type="button" class="btn small" data-rr-model="${esc(a.id)}">Compare with an example</button><p class="rr-model" ${ans?.showModel ? "" : "hidden"}><b>One possible response:</b> ${esc(a.model)}</p>` : `<div class="rr-rubric"><b>Response criteria:</b><ul>${(a.rubric || a.lookFor || []).map((x) => `<li>${esc(x)}</li>`).join("")}</ul><span>Open responses are practice work; automated scoring is not applied.</span></div>`}</div>`;
+    return `<div class="rr-question"><label for="rr-short-${esc(a.id)}">${esc(a.prompt)}</label><textarea id="rr-short-${esc(a.id)}" data-rr-response="${esc(a.id)}" rows="4">${esc(ans?.text || "")}</textarea>${a.model ? `<button type="button" class="btn small" data-rr-model="${esc(a.id)}">${T("Compare with an example", "Compara con un ejemplo")}</button><p class="rr-model" ${ans?.showModel ? "" : "hidden"}><b>${T("One possible response:", "Una respuesta posible:")}</b> ${esc(a.model)}</p>` : `<div class="rr-rubric"><b>${T("Response criteria:", "Criterios de la respuesta:")}</b><ul>${(a.rubric || a.lookFor || []).map((x) => `<li>${esc(x)}</li>`).join("")}</ul><span>${T("Open responses are practice work; automated scoring is not applied.", "Las respuestas abiertas son trabajo de práctica; no se califican automáticamente.")}</span></div>`}</div>`;
   if (a.type === "evidence")
-    return `<fieldset class="rr-question"><legend>${esc(a.prompt)}</legend>${a.paragraphIds.map((pid) => optionLabel(`<input type="checkbox" data-rr-evidence="${esc(a.id)}" value="${esc(pid)}" ${ans?.values?.includes(pid) ? "checked" : ""}>`, `Paragraph ${esc(pid.slice(1))}`)).join("")}${checkButton(a.id, "Check evidence")}${ans?.checked ? `<div role="status" class="feedback is-hint"><p class="fb-title">${ic("bulb")} Evidence check</p><p>${esc(a.rationale)}</p></div>` : ""}</fieldset>`;
+    return `<fieldset class="rr-question"><legend>${esc(a.prompt)}</legend>${a.paragraphIds.map((pid) => optionLabel(`<input type="checkbox" data-rr-evidence="${esc(a.id)}" value="${esc(pid)}" ${ans?.values?.includes(pid) ? "checked" : ""}>`, T(`Paragraph ${pid.slice(1)}`, `Párrafo ${pid.slice(1)}`))).join("")}${checkButton(a.id, T("Check evidence", "Revisar la evidencia"))}${ans?.checked ? `<div role="status" class="feedback is-hint"><p class="fb-title">${ic("bulb")} ${T("Evidence check", "Revisión de la evidencia")}</p><p>${esc(a.rationale)}</p></div>` : ""}</fieldset>`;
   if (a.type === "order")
-    return `<fieldset class="rr-question"><legend>${esc(a.prompt)}</legend>${a.items.map((item, i) => `<label class="rr-option rr-position"><span class="rr-option-text">Step ${i + 1}: ${esc(item.text)}</span><select data-rr-structured="${esc(a.id)}" data-index="${i}" aria-label="Position for ${esc(item.text)}"><option value="">Choose position</option>${a.items.map((_, n) => `<option value="${n}" ${ans?.values?.[i] === n ? "selected" : ""}>${n + 1}</option>`).join("")}</select></label>`).join("")}${checkButton(a.id, "Check sequence")}${feedbackBox(ans, "The sequence matches the passage.", "Return to the text and revise the order.", a.rationale)}</fieldset>`;
+    return `<fieldset class="rr-question"><legend>${esc(a.prompt)}</legend>${a.items.map((item, i) => `<label class="rr-option rr-position"><span class="rr-option-text">${T(`Step ${i + 1}:`, `Paso ${i + 1}:`)} ${esc(item.text)}</span><select data-rr-structured="${esc(a.id)}" data-index="${i}" aria-label="${A(`Position for ${item.text}`, `Posición de ${item.text}`)}"><option value="">${A("Choose position", "Elige la posición")}</option>${a.items.map((_, n) => `<option value="${n}" ${ans?.values?.[i] === n ? "selected" : ""}>${n + 1}</option>`).join("")}</select></label>`).join("")}${checkButton(a.id, T("Check sequence", "Revisar la secuencia"))}${feedbackBox(ans, T("The sequence matches the passage.", "La secuencia coincide con el pasaje."), T("Return to the text and revise the order.", "Vuelve al texto y corrige el orden."), a.rationale)}</fieldset>`;
   if (a.type === "sort")
-    return `<fieldset class="rr-question"><legend>${esc(a.prompt)}</legend>${a.items.map((item, i) => `<label class="rr-option rr-position"><span class="rr-option-text">${esc(item.text)}</span><select data-rr-structured="${esc(a.id)}" data-index="${i}" aria-label="Category for ${esc(item.text)}"><option value="">Choose category</option>${a.categories.map((cat) => `<option value="${esc(cat)}" ${ans?.values?.[i] === cat ? "selected" : ""}>${esc(cat)}</option>`).join("")}</select></label>`).join("")}${checkButton(a.id, "Check categories")}${feedbackBox(ans, "The categories match the passage.", "Compare each choice with the paragraph about that item.", a.rationale)}</fieldset>`;
+    return `<fieldset class="rr-question"><legend>${esc(a.prompt)}</legend>${a.items.map((item, i) => `<label class="rr-option rr-position"><span class="rr-option-text">${esc(item.text)}</span><select data-rr-structured="${esc(a.id)}" data-index="${i}" aria-label="${A(`Category for ${item.text}`, `Categoría de ${item.text}`)}"><option value="">${A("Choose category", "Elige la categoría")}</option>${a.categories.map((cat) => `<option value="${esc(cat)}" ${ans?.values?.[i] === cat ? "selected" : ""}>${esc(cat)}</option>`).join("")}</select></label>`).join("")}${checkButton(a.id, T("Check categories", "Revisar las categorías"))}${feedbackBox(ans, T("The categories match the passage.", "Las categorías coinciden con el pasaje."), T("Compare each choice with the paragraph about that item.", "Compara cada opción con el párrafo sobre ese elemento."), a.rationale)}</fieldset>`;
   return `<div class="rr-question"><h3>${esc(a.skill)}</h3><p>${esc(a.prompt)}</p><p>${esc(a.rationale)}</p></div>`;
 }
 
@@ -480,12 +538,12 @@ function paragraphHTML(l, p, i, state, progress) {
   return `<article class="rr-paragraph ${isPlace ? "is-place" : ""}" id="${esc(p.id)}" ${mark ? `data-mark="${esc(mark)}"` : ""}>
     <span class="rr-paranum" aria-hidden="true">${i + 1}</span>
     <div class="rr-para-body">
-      ${mark || isPlace ? `<p class="rr-para-flags">${mark ? `<span class="rr-flag">${ic("pin")} ${esc(mark)}</span>` : ""}${isPlace ? `<span class="rr-flag rr-flag-place">${ic("bookmark")} Saved place</span>` : ""}</p>` : ""}
+      ${mark || isPlace ? `<p class="rr-para-flags">${mark ? `<span class="rr-flag">${ic("pin")} ${markLabel(mark)}</span>` : ""}${isPlace ? `<span class="rr-flag rr-flag-place">${ic("bookmark")} ${T("Saved place", "Lugar guardado")}</span>` : ""}</p>` : ""}
       <p class="rr-para-text">${esc(p.text)}</p>
-      ${activeMode === "independent" ? "" : `<p class="rr-guide">${ic("bulb")}<span><b>Pause and notice:</b> ${esc(p.guidingQuestion || "What is important in this section?")}</span></p>`}
+      ${activeMode === "independent" ? "" : `<p class="rr-guide">${ic("bulb")}<span><b>${T("Pause and notice:", "Haz una pausa y observa:")}</b> ${p.guidingQuestion ? esc(p.guidingQuestion) : T("What is important in this section?", "¿Qué es importante en esta sección?")}</span></p>`}
       <div class="rr-margin">
-        <div class="rr-paragraph-tools"><label>Mark this paragraph<select data-rr-mark="${esc(l.id)}" data-rr-revision="${esc(l.revision)}" data-rr-paragraph="${esc(p.id)}"><option value="">Choose a reading mark</option>${MARKS.map((c) => `<option value="${c}" ${mark === c ? "selected" : ""}>${c}</option>`).join("")}</select></label><button type="button" class="btn small" data-rr-position="${esc(p.id)}">${ic("bookmark")} Save reading place</button></div>
-        <label class="rr-annotation">Your note for paragraph ${i + 1}<textarea data-rr-note="${esc(p.id)}" data-rr-lesson="${esc(l.id)}" rows="2">${esc(progress.notes?.[p.id] || "")}</textarea></label>
+        <div class="rr-paragraph-tools"><label>${T("Mark this paragraph", "Marca este párrafo")}<select data-rr-mark="${esc(l.id)}" data-rr-revision="${esc(l.revision)}" data-rr-paragraph="${esc(p.id)}"><option value="">${A("Choose a reading mark", "Elige una marca de lectura")}</option>${MARKS.map(([c, es]) => `<option value="${c}" ${mark === c ? "selected" : ""}>${A(c, es)}</option>`).join("")}</select></label><button type="button" class="btn small" data-rr-position="${esc(p.id)}">${ic("bookmark")} ${T("Save reading place", "Guardar el lugar de lectura")}</button></div>
+        <label class="rr-annotation">${T(`Your note for paragraph ${i + 1}`, `Tu nota del párrafo ${i + 1}`)}<textarea data-rr-note="${esc(p.id)}" data-rr-lesson="${esc(l.id)}" rows="2">${esc(progress.notes?.[p.id] || "")}</textarea></label>
       </div>
     </div></article>`;
 }
@@ -502,49 +560,49 @@ function displayControls(state) {
   const spacing = Number(state.settings.lineSpacing) || 1.75;
   const rate = String(Number(state.settings.speechRate) || 0.95);
   const tts = canSpeak()
-    ? `<div class="rr-audio-controls"><span>Optional device voice; the passage text remains the transcript.</span><button type="button" class="btn small" data-rr-listen="play">${ic("play")} Read passage aloud</button><button type="button" class="btn small" data-rr-listen="stop">${ic("stop")} Stop audio</button><label>Speech pace<select data-rr-setting="speechRate">${SPEECH_RATES.map(([v, label]) => `<option value="${v}" ${Number(v) === Number(rate) ? "selected" : ""}>${label}</option>`).join("")}</select></label></div>`
-    : `<p class="rr-audio-note">Read-aloud is not available in this browser. The full passage is displayed as text.</p>`;
-  return `<div class="rr-display"><label>${ic("text-size")} Text size <input type="range" min="0.9" max="1.3" step="0.1" value="${state.settings.fontScale}" data-rr-setting="fontScale"></label><label>Line spacing <select data-rr-setting="lineSpacing">${LINE_SPACINGS.map(([v, label]) => `<option value="${v}" ${Number(v) === spacing ? "selected" : ""}>${label}</option>`).join("")}</select></label></div>${tts}`;
+    ? `<div class="rr-audio-controls"><span>${T("Optional device voice; the passage text remains the transcript.", "Voz opcional del dispositivo; el texto del pasaje sigue siendo la transcripción.")}</span><button type="button" class="btn small" data-rr-listen="play">${ic("play")} ${T("Read passage aloud", "Leer el pasaje en voz alta")}</button><button type="button" class="btn small" data-rr-listen="stop">${ic("stop")} ${T("Stop audio", "Detener el audio")}</button><label>${T("Speech pace", "Ritmo de la voz")}<select data-rr-setting="speechRate">${SPEECH_RATES.map(([v, label, es]) => `<option value="${v}" ${Number(v) === Number(rate) ? "selected" : ""}>${A(label, es)}</option>`).join("")}</select></label></div>`
+    : `<p class="rr-audio-note">${T("Read-aloud is not available in this browser. The full passage is displayed as text.", "La lectura en voz alta no está disponible en este navegador. El pasaje completo se muestra como texto.")}</p>`;
+  return `<div class="rr-display"><label>${ic("text-size")} ${T("Text size", "Tamaño del texto")} <input type="range" min="0.9" max="1.3" step="0.1" value="${state.settings.fontScale}" data-rr-setting="fontScale"></label><label>${T("Line spacing", "Espacio entre líneas")} <select data-rr-setting="lineSpacing">${LINE_SPACINGS.map(([v, label, es]) => `<option value="${v}" ${Number(v) === spacing ? "selected" : ""}>${A(label, es)}</option>`).join("")}</select></label></div>${tts}`;
 }
 
 const MODE_NAMES = {
-  learn: "Learn",
-  practice: "Practice",
-  independent: "Independent challenge",
-  together: "Read together",
+  learn: ["Learn", "Aprender"],
+  practice: ["Practice", "Practicar"],
+  independent: ["Independent challenge", "Desafío independiente"],
+  together: ["Read together", "Leer juntos"],
 };
 
 function modeNoteHTML(l) {
   if (activeMode === "learn")
-    return `<section class="rr-mode-note"><h2>Model the reading move</h2><p>${esc(l.teacherGuide.miniLesson)}</p><p><b>One possible response:</b> ${esc(l.teacherGuide.modelResponse)}</p></section>`;
+    return `<section class="rr-mode-note"><h2>${T("Model the reading move", "Modela el paso de lectura")}</h2><p>${esc(l.teacherGuide.miniLesson)}</p><p><b>${T("One possible response:", "Una respuesta posible:")}</b> ${esc(l.teacherGuide.modelResponse)}</p></section>`;
   if (activeMode === "independent")
-    return `<section class="rr-mode-note"><h2>Independent challenge</h2><p>Use the passage and your own notes. Vocabulary previews, paragraph questions, and models are hidden. This records local practice evidence, not a proficiency score.</p></section>`;
-  return `<section class="rr-mode-note"><h2>Practice with support</h2><p>Use the vocabulary, paragraph questions, and notes as you reread. Revise after feedback.</p></section>`;
+    return `<section class="rr-mode-note"><h2>${T("Independent challenge", "Desafío independiente")}</h2><p>${T("Use the passage and your own notes. Vocabulary previews, paragraph questions, and models are hidden. This records local practice evidence, not a proficiency score.", "Usa el pasaje y tus propias notas. Las vistas previas de vocabulario, las preguntas de los párrafos y los modelos están ocultos. Esto guarda evidencia local de práctica, no un puntaje de dominio.")}</p></section>`;
+  return `<section class="rr-mode-note"><h2>${T("Practice with support", "Practica con apoyo")}</h2><p>${T("Use the vocabulary, paragraph questions, and notes as you reread. Revise after feedback.", "Usa el vocabulario, las preguntas de los párrafos y las notas mientras vuelves a leer. Corrige después de ver los comentarios.")}</p></section>`;
 }
 
 function vocabularyHTML(l) {
-  return `<section class="rr-vocabulary"><h2>${ic("language")} Words to notice</h2><p class="rr-fine">Optional support. Open a word for its meaning in this text.</p><div class="rr-vocab-list">${l.vocabulary.map((v) => `<details class="rr-vocab"><summary><strong>${esc(v.term)}</strong><span>${esc(v.definition)}</span></summary><p><b>In this text:</b> ${esc(v.example)}${v.spanish ? ` <span lang="es">· ${esc(v.spanish)}</span>` : ""}</p><button type="button" class="btn small" data-rr-word="${esc(v.term)}" data-rr-lesson="${esc(l.id)}">Save to Word Notebook</button></details>`).join("")}</div></section>`;
+  return `<section class="rr-vocabulary"><h2>${ic("language")} ${T("Words to notice", "Palabras para notar")}</h2><p class="rr-fine">${T("Optional support. Open a word for its meaning in this text.", "Apoyo opcional. Abre una palabra para ver su significado en este texto.")}</p><div class="rr-vocab-list">${l.vocabulary.map((v) => `<details class="rr-vocab"><summary><strong>${esc(v.term)}</strong><span>${esc(v.definition)}</span></summary><p><b>${T("In this text:", "En este texto:")}</b> ${esc(v.example)}${v.spanish ? ` <span lang="es">· ${esc(v.spanish)}</span>` : ""}</p><button type="button" class="btn small" data-rr-word="${esc(v.term)}" data-rr-lesson="${esc(l.id)}">${T("Save to Word Notebook", "Guardar en el Cuaderno de palabras")}</button></details>`).join("")}</div></section>`;
 }
 
 function workspaceHTML(l, progress) {
   const phases = [
-    { id: "first", label: "1 · Understand" },
-    { id: "second", label: "2 · Investigate" },
-    { id: "third", label: "3 · Apply" },
+    { id: "first", label: T("1 · Understand", "1 · Comprender") },
+    { id: "second", label: T("2 · Investigate", "2 · Investigar") },
+    { id: "third", label: T("3 · Apply", "3 · Aplicar") },
   ];
   const items = l.activities.filter((a) => a.phase === activePhase);
   const activities = items.map((a) => activityHTML(a, progress)).join("");
   const phaseNote =
     activePhase === "first"
-      ? "Build a first understanding"
+      ? T("Build a first understanding", "Construye una primera comprensión")
       : activePhase === "second"
-        ? "Return for evidence"
-        : "Apply the thinking";
-  return `<aside class="rr-workspace" aria-label="Your response"><p class="rr-workspace-label">${ic("writing")} Your response</p><div class="rr-phase" role="tablist" aria-label="Reading sequence">${phases.map((p) => `<button type="button" role="tab" aria-selected="${activePhase === p.id}" data-rr-phase="${p.id}">${p.label}</button>`).join("")}</div><p class="rr-eyebrow">${phaseNote}</p><h2>${esc(l.objectives.language)}</h2>${activities || "<p>This section is a rereading and reflection pause. Use your notes to explain what changed in your understanding.</p>"}${
+        ? T("Return for evidence", "Vuelve para buscar evidencia")
+        : T("Apply the thinking", "Aplica lo que pensaste");
+  return `<aside class="rr-workspace" aria-label="${A("Your response", "Tu respuesta")}"><p class="rr-workspace-label">${ic("writing")} ${T("Your response", "Tu respuesta")}</p><div class="rr-phase" role="tablist" aria-label="${A("Reading sequence", "Secuencia de lectura")}">${phases.map((p) => `<button type="button" role="tab" aria-selected="${activePhase === p.id}" data-rr-phase="${p.id}">${p.label}</button>`).join("")}</div><p class="rr-eyebrow">${phaseNote}</p><h2>${esc(l.objectives.language)}</h2>${activities || `<p>${T("This section is a rereading and reflection pause. Use your notes to explain what changed in your understanding.", "Esta sección es una pausa para volver a leer y reflexionar. Usa tus notas para explicar qué cambió en tu comprensión.")}</p>`}${
     activeMode !== "independent"
-      ? `<div class="rr-teacher"><details><summary>Teacher guide</summary><p><b>Mini-lesson:</b> ${esc(l.teacherGuide.miniLesson)}</p><p><b>Misconception to watch:</b> ${esc(l.teacherGuide.misconception)}</p><ul>${l.teacherGuide.discussion.map((x) => `<li>${esc(x)}</li>`).join("")}</ul><p><b>Model response:</b> ${esc(l.teacherGuide.modelResponse)}</p></details><details><summary>Family reading · 10–15 minutes</summary><p>${esc(l.familySupport.directions.en)}</p><p lang="es">${esc(l.familySupport.directions.es)}</p><p>${esc(l.familySupport.noEnglishRequired)}</p></details></div>${renderOrganizers(l.id, progress)}`
+      ? `<div class="rr-teacher"><details><summary>${T("Teacher guide", "Guía para docentes")}</summary><p><b>${T("Mini-lesson:", "Minilección:")}</b> ${esc(l.teacherGuide.miniLesson)}</p><p><b>${T("Misconception to watch:", "Error de comprensión que vigilar:")}</b> ${esc(l.teacherGuide.misconception)}</p><ul>${l.teacherGuide.discussion.map((x) => `<li>${esc(x)}</li>`).join("")}</ul><p><b>${T("Model response:", "Respuesta modelo:")}</b> ${esc(l.teacherGuide.modelResponse)}</p></details><details><summary>${T("Family reading · 10–15 minutes", "Lectura en familia · 10–15 minutos")}</summary><p>${esc(l.familySupport.directions.en)}</p><p lang="es">${esc(l.familySupport.directions.es)}</p><p>${esc(l.familySupport.noEnglishRequired)}</p></details></div>${renderOrganizers(l.id, progress)}`
       : ""
-  }<label class="rr-reflection">My reflection<textarea data-rr-reflection="${esc(l.id)}" rows="3">${esc(progress.reflection || "")}</textarea></label><button type="button" class="btn btn-primary btn-domain rr-button" data-rr-complete="${esc(l.id)}">Save lesson progress</button><p role="status" class="rr-status">${progress.completed ? "Progress saved on this device." : "Your notes and answers save in this browser."}</p></aside>`;
+  }<label class="rr-reflection">${T("My reflection", "Mi reflexión")}<textarea data-rr-reflection="${esc(l.id)}" rows="3">${esc(progress.reflection || "")}</textarea></label><button type="button" class="btn btn-primary btn-domain rr-button" data-rr-complete="${esc(l.id)}">${T("Save lesson progress", "Guardar el avance de la lección")}</button><p role="status" class="rr-status">${progress.completed ? T("Progress saved on this device.", "Avance guardado en este dispositivo.") : T("Your notes and answers save in this browser.", "Tus notas y respuestas se guardan en este navegador.")}</p></aside>`;
 }
 
 async function lessonHTML(ctx, l, state) {
@@ -581,38 +639,40 @@ async function lessonHTML(ctx, l, state) {
           ?.scrollIntoView({ block: "start" }),
       );
   }
-  const modeControls = `<div class="rr-mode-controls" role="group" aria-label="Reading mode">${Object.entries(
+  const modeControls = `<div class="rr-mode-controls" role="group" aria-label="${A("Reading mode", "Modo de lectura")}">${Object.entries(
     MODE_NAMES,
   )
     .map(
-      ([value, label]) =>
-        `<button type="button" data-rr-mode="${value}" aria-pressed="${activeMode === value}">${label}</button>`,
+      ([value, [label, es]]) =>
+        `<button type="button" data-rr-mode="${value}" aria-pressed="${activeMode === value}">${T(label, es)}</button>`,
     )
     .join("")}</div>`;
   const paragraphs = l.paragraphs
     .map((p, i) => paragraphHTML(l, p, i, state, progress))
     .join("");
-  const links = `<div class="rr-actions">${relatedHref ? `<a href="${relatedHref}">Related Reading practice →</a>` : ""}<a href="${BASE}/write?grades=${esc(ctx.band)}">Write about a text →</a><a href="${BASE}/speak?grades=${esc(ctx.band)}">Speak about a text →</a><a href="${BASE}/vocabulary?grades=${esc(ctx.band)}">Practice academic words →</a></div>`;
-  return `<section class="rr-shell rr-reader d-reading"><nav class="rr-back"><a href="${BASE}/reading-room">${ic("arrow-left")} Reading shelf</a><span>${esc(gradeLabel(l))} · ${esc(l.subject)} · ${l.minutes} min</span><button type="button" class="btn small" data-rr-bookmark="${esc(l.id)}">${ic("bookmark")} ${state.bookmarks.includes(l.id) ? "Bookmarked" : "Bookmark"}</button></nav>
-    <header class="rr-title"><p class="rr-eyebrow">${esc(l.genre)} · ${esc(l.keyUse)} · ${esc(l.eldStandard)}</p><h1>${esc(l.title)}</h1><p class="rr-lead">${esc(l.summary)}</p><div class="rr-objectives"><div><b>Content goal</b><span>${esc(l.objectives.content)}</span></div><div><b>Language goal</b><span>${esc(l.objectives.language)}</span></div></div><p class="rr-alignment">${ic("info")} <span>${esc(l.alignmentStatus)} Independent editorial review is pending for this lesson package. This is original instructional practice, not an official WIDA assessment or score prediction. <a href="https://wida.wisc.edu/assess/access/preparing-students" target="_blank" rel="noreferrer">Official WIDA test familiarization resources</a></span></p></header>
+  const links = `<div class="rr-actions">${relatedHref ? `<a href="${relatedHref}">${T("Related Reading practice", "Práctica de lectura relacionada")} →</a>` : ""}<a href="${BASE}/write?grades=${esc(ctx.band)}">${T("Write about a text", "Escribe sobre un texto")} →</a><a href="${BASE}/speak?grades=${esc(ctx.band)}">${T("Speak about a text", "Habla sobre un texto")} →</a><a href="${BASE}/vocabulary?grades=${esc(ctx.band)}">${T("Practice academic words", "Practica palabras académicas")} →</a></div>`;
+  return `<section class="rr-shell rr-reader d-reading"><nav class="rr-back"><a href="${BASE}/reading-room">${ic("arrow-left")} ${T("Reading shelf", "Estante de lectura")}</a><span>${gradeLabel(l)} · ${esc(l.subject)} · ${l.minutes} min</span><button type="button" class="btn small" data-rr-bookmark="${esc(l.id)}">${ic("bookmark")} ${state.bookmarks.includes(l.id) ? T("Bookmarked", "Con marcador") : T("Bookmark", "Marcador")}</button></nav>
+    <header class="rr-title"><p class="rr-eyebrow">${esc(l.genre)} · ${esc(l.keyUse)} · ${esc(l.eldStandard)}</p><h1>${esc(l.title)}</h1><p class="rr-lead">${esc(l.summary)}</p><div class="rr-objectives"><div><b>${T("Content goal", "Meta de contenido")}</b><span>${esc(l.objectives.content)}</span></div><div><b>${T("Language goal", "Meta de lenguaje")}</b><span>${esc(l.objectives.language)}</span></div></div><p class="rr-alignment">${ic("info")} <span>${esc(l.alignmentStatus)} ${TH("Independent editorial review is pending for this lesson package. This is original instructional practice, not an official WIDA assessment or score prediction. ", "La revisión editorial independiente de este paquete de lección está pendiente. Esta es práctica didáctica original, no una evaluación oficial de WIDA ni una predicción de puntajes. ")}<a href="https://wida.wisc.edu/assess/access/preparing-students" target="_blank" rel="noreferrer">${T("Official WIDA test familiarization resources", "Recursos oficiales de WIDA para familiarizarse con la prueba")}</a></span></p></header>
     ${modeControls}${modeNoteHTML(l)}
-    <div class="rr-layout"><section class="rr-text" aria-label="Reading passage">${displayControls(state)}<section class="rr-before"><h2>Before you read</h2><p><b>Essential question:</b> ${esc(l.beforeReading.essentialQuestion)}</p><p>${esc(l.beforeReading.background)} ${esc(l.beforeReading.hook)}</p><p><b>Read to find out:</b> ${esc(l.beforeReading.purpose)}</p></section>${visualBlockHTML(l)}${activeMode === "independent" ? "" : vocabularyHTML(l)}<div class="rr-passage" style="--rr-font:${Number(state.settings.fontScale) || 1};--rr-leading:${Number(state.settings.lineSpacing) || 1.75}">${paragraphs}</div>${links}</section>${workspaceHTML(l, progress)}</div></section>`;
+    <div class="rr-layout"><section class="rr-text" aria-label="${A("Reading passage", "Pasaje de lectura")}">${displayControls(state)}<section class="rr-before"><h2>${T("Before you read", "Antes de leer")}</h2><p><b>${T("Essential question:", "Pregunta esencial:")}</b> ${esc(l.beforeReading.essentialQuestion)}</p><p>${esc(l.beforeReading.background)} ${esc(l.beforeReading.hook)}</p><p><b>${T("Read to find out:", "Lee para descubrir:")}</b> ${esc(l.beforeReading.purpose)}</p></section>${visualBlockHTML(l)}${activeMode === "independent" ? "" : vocabularyHTML(l)}<div class="rr-passage" style="--rr-font:${Number(state.settings.fontScale) || 1};--rr-leading:${Number(state.settings.lineSpacing) || 1.75}">${paragraphs}</div>${links}</section>${workspaceHTML(l, progress)}</div></section>`;
 }
 
 export async function render(ctx) {
+  I = i18nFor(ctx);
+  setComponentsI18n(I);
   const data = await loadReadingRoomLessons();
   const lessons = data.lessons || [];
   const state = loadReadingState();
   const id = ctx.route.id;
   if (!id)
-    return { title: "Reading Room", html: raw(shelfHTML(ctx, lessons, state)) };
+    return { title: I.S("Reading Room", "Sala de lectura"), html: raw(shelfHTML(ctx, lessons, state)) };
   if (id === "adventures") {
     const { stories = [] } = await loadReadingAdventures();
-    return { title: "Reading Adventures", html: raw(adventuresHTML(stories, state)) };
+    return { title: I.S("Reading Adventures", "Aventuras de lectura"), html: raw(adventuresHTML(stories, state)) };
   }
   if (id === "strategies") {
     const data = await loadReadingStrategies();
-    return { title: "Reading Strategy Academy", html: raw(strategiesHTML(data, state)) };
+    return { title: I.S("Reading Strategy Academy", "Academia de estrategias de lectura"), html: raw(strategiesHTML(data, state)) };
   }
   if (id.startsWith("strategy-")) {
     const data = await loadReadingStrategies();
@@ -625,35 +685,35 @@ export async function render(ctx) {
     if (story) return { title: story.title, html: raw(adventureHTML(story, state)) };
   }
   if (id === "family")
-    return { title: "Family Reading", html: raw(familyHTML(lessons)) };
+    return { title: I.S("Family Reading", "Lectura en familia"), html: raw(familyHTML(lessons)) };
   if (id === "words")
-    return { title: "Reading Word Notebook", html: raw(wordsHTML(state)) };
+    return { title: I.S("Reading Word Notebook", "Cuaderno de palabras de lectura"), html: raw(wordsHTML(state)) };
   if (id === "pathways")
     return {
-      title: "Reading Workshop Pathways",
+      title: I.S("Reading Workshop Pathways", "Rutas del taller de lectura"),
       html: raw(pathwaysHTML(lessons)),
     };
   if (id === "workshop")
     return {
-      title: "Weekly Reading Workshop",
+      title: I.S("Weekly Reading Workshop", "Taller semanal de lectura"),
       html: raw(workshopHTML(lessons)),
     };
   if (id === "teacher")
     return {
-      title: "Reading Progress · Local",
+      title: I.S("Reading Progress · Local", "Avance en lectura · Local"),
       html: raw(teacherHTML(lessons, state, (await loadReadingAdventures()).stories || [], (await loadReadingStrategies()).lessons || [])),
     };
   if (id === "conference")
     return {
-      title: "Reading Conference · Local",
+      title: I.S("Reading Conference · Local", "Conferencia de lectura · Local"),
       html: raw(conferenceHTML(lessons, state)),
     };
   const l = lessons.find((x) => x.id === id);
   if (!l)
     return {
-      title: "Reading not found",
+      title: I.S("Reading not found", "No se encontró la lectura"),
       html: raw(
-        `<section class="rr-shell"><p>This text could not be found.</p><a href="${BASE}/reading-room">Return to the Reading Room</a></section>`,
+        `<section class="rr-shell"><p>${T("This text could not be found.", "No se pudo encontrar este texto.")}</p><a href="${BASE}/reading-room">${T("Return to the Reading Room", "Volver a la Sala de lectura")}</a></section>`,
       ),
     };
   return { title: l.title, html: raw(await lessonHTML(ctx, l, state)) };
@@ -688,6 +748,7 @@ export function onInput(e, ctx) {
   if (el.matches("[data-rr-organizer]")) saveOrganizer(el);
 }
 export function onChange(e,ctx) {
+  I = i18nFor(ctx);
   const el=e.target; if(el.matches("[data-rr-grade]")){grade=el.value;ctx.rerender();}
   if (el.matches("[data-strategy-strand],[data-strategy-cluster]")) {
     const params = new URLSearchParams(location.search);
@@ -730,7 +791,7 @@ function saveOrganizer(el){const s=loadReadingState(),id=el.dataset.rrLesson,key
 function saveConference(el){const s=loadReadingState(),id=el.dataset.lesson;s.conferences={...(s.conferences||{}),[id]:{...(s.conferences?.[id]||{}),[el.dataset.rrConference]:el.value,updatedAt:new Date().toISOString()}};saveReadingState(s);}
 function saveField(el){const s=loadReadingState(),id=el.dataset.rrLesson||el.dataset.rrReflection,key=Object.keys(s.lessons).find(k=>k.startsWith(`${id}@`))||`${id}@1.0.0`,p=s.lessons[key]||{};if(el.dataset.rrNote){p.notes={...(p.notes||{}),[el.dataset.rrNote]:el.value};}else p.reflection=el.value;s.lessons[key]=p;saveReadingState(s);}
 function saveAnswer(id,patch){const s=loadReadingState(),key=Object.keys(s.lessons).find(k=>k.startsWith(`${location.pathname.split("/").pop()}@`)),p=s.lessons[key]||{},a=p.answers||{};a[id]={...(a[id]||{}),...patch};p.answers=a;s.lessons[key]=p;saveReadingState(s);}
-export function onClick(e,ctx){const b=e.target.closest("button");if(!b)return false;const s=loadReadingState(),id=ctx.route.id,key=Object.keys(s.lessons).find(k=>k.startsWith(`${id}@`)),p=s.lessons[key]||{answers:{}};
+export function onClick(e,ctx){I=i18nFor(ctx);const b=e.target.closest("button");if(!b)return false;const s=loadReadingState(),id=ctx.route.id,key=Object.keys(s.lessons).find(k=>k.startsWith(`${id}@`)),p=s.lessons[key]||{answers:{}};
   if (b.dataset.strategyRetry) {
     const lessonId = id.slice("strategy-".length), saved = s.strategies[lessonId] || {};
     saved[b.dataset.strategyRetry] = { ...(saved[b.dataset.strategyRetry] || {}), checked: false };
@@ -803,8 +864,8 @@ export function onClick(e,ctx){const b=e.target.closest("button");if(!b)return f
   if(b.dataset.rrListen === "play"){loadReadingRoomLessons().then(data=>{const lesson=data.lessons.find(x=>x.id===ctx.route.id);return speak(lesson.paragraphs.map(x=>x.text),{lang:"en-US",rate:Number(loadReadingState().settings.speechRate)||0.95});});return true;}
   if(b.dataset.rrRemoveWord){s.words.splice(Number(b.dataset.rrRemoveWord),1);saveReadingState(s);ctx.rerender();return true;}
   if(b.dataset.rrBookmark){s.bookmarks=s.bookmarks.includes(id)?s.bookmarks.filter(x=>x!==id):[...s.bookmarks,id];saveReadingState(s);ctx.rerender();return true;}
-  if(b.dataset.rrAction==="clear"){clearReadingState();notice="Local Reading Room data cleared.";ctx.rerender();return true;}
-  if(b.dataset.rrWord){const lword=document.querySelector(`[data-rr-word="${CSS.escape(b.dataset.rrWord)}"]`);if(lword){const lessonId=b.dataset.rrLesson;const d=lessonId;loadReadingRoomLessons().then(data=>{const lesson=data.lessons.find(x=>x.id===d),v=lesson?.vocabulary.find(x=>x.term===b.dataset.rrWord);const st=loadReadingState();if(v&&!st.words.some(w=>w.term===v.term&&w.lessonId===d))st.words.push({term:v.term,definition:v.definition,example:v.example,lessonId:d});saveReadingState(st);b.textContent="Saved to Word Notebook";});}return true;}
+  if(b.dataset.rrAction==="clear"){clearReadingState();notice=I.S("Local Reading Room data cleared.","Se borraron los datos locales de la Sala de lectura.");ctx.rerender();return true;}
+  if(b.dataset.rrWord){const lword=document.querySelector(`[data-rr-word="${CSS.escape(b.dataset.rrWord)}"]`);if(lword){const lessonId=b.dataset.rrLesson;const d=lessonId;loadReadingRoomLessons().then(data=>{const lesson=data.lessons.find(x=>x.id===d),v=lesson?.vocabulary.find(x=>x.term===b.dataset.rrWord);const st=loadReadingState();if(v&&!st.words.some(w=>w.term===v.term&&w.lessonId===d))st.words.push({term:v.term,definition:v.definition,example:v.example,lessonId:d});saveReadingState(st);b.textContent=I.S("Saved to Word Notebook","Guardado en el Cuaderno de palabras");});}return true;}
   if(b.dataset.rrCheck){const lessonPromise=loadReadingRoomLessons();lessonPromise.then(data=>{const l=data.lessons.find(x=>x.id===id),a=l.activities.find(x=>x.id===b.dataset.rrCheck),ans=p.answers?.[a.id]||{};let correct=false;if(a.type==='choice'||a.type==='connector')correct=ans.value===a.answerId;else if(a.type==='multi'||a.type==='hotText')correct=JSON.stringify([...(ans.values||[])].sort())===JSON.stringify([...(a.answerIds||[])].sort());else if(a.type==='cloze')correct=Object.entries(Object.fromEntries(a.segments.filter(x=>x.blank).map(x=>[x.blank.id,x.blank.answer]))).every(([blank,answer])=>ans.values?.[blank]===answer);else if(a.type==='evidence')correct=JSON.stringify([...(ans.values||[])].sort())===JSON.stringify([...a.answerIds].sort());else if(a.type==='order')correct=JSON.stringify(ans.values||[])===JSON.stringify(a.items.map(x=>a.answerOrder.indexOf(x.id)));else if(a.type==='sort')correct=JSON.stringify(ans.values||[])===JSON.stringify(a.items.map(x=>x.answer));p.answers={...(p.answers||{}),[a.id]:{...ans,checked:true,correct,attempts:(ans.attempts||0)+1,mode:activeMode,skill:a.skill}};s.lessons[key]=p;saveReadingState(s);ctx.rerender();});return true;}
   if(b.dataset.rrModel){p.answers={...(p.answers||{}),[b.dataset.rrModel]:{...(p.answers?.[b.dataset.rrModel]||{}),showModel:true}};s.lessons[key]=p;saveReadingState(s);ctx.rerender();return true;}
   if(b.dataset.rrComplete){p.completed=true;p.phase=activePhase;s.lessons[key]=p;saveReadingState(s);ctx.rerender();return true;}

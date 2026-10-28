@@ -14,7 +14,18 @@ function text(selector, value) {
   const node = document.querySelector(selector);
   if (node && node.textContent !== value) node.textContent = value;
 }
+/** The site-wide Save / Resume launcher is built by the shared engine in English; relabel it for the chosen language. */
+function updateLauncher() {
+  const launcher = document.getElementById("nsr-launcher");
+  if (!launcher) return;
+  const title = I.S("Save / Resume your work", "Guardar y continuar tu trabajo");
+  if (launcher.title !== title) launcher.title = title;
+  const aria = launcher.getAttribute("aria-label");
+  if (aria?.startsWith("Save / Resume your work") && title !== "Save / Resume your work") launcher.setAttribute("aria-label", aria.replace("Save / Resume your work", title));
+  text("#nsr-launcher .nsr-launcher-label", I.S("Save / Resume", "Guardar y continuar"));
+}
 function updateSavePanel() {
+  updateLauncher();
   const panel = document.querySelector("#nsr-panel");
   if (!panel) return;
   const T = I.S;

@@ -6,12 +6,15 @@
 //   /access-practice-lab/test/<id>
 // New: /tests, /road[/<week>], /family, /passport, /play?ids=…, /tools, and
 // ?grades=3-5|6-8 on any URL.
-import { notePlay, scripts } from "./components.js";
+import { micDeniedMessage, notePlay, scripts, setComponentsI18n } from "./components.js";
 import { availableBands, loadIndex } from "./content.js";
 import * as rec from "./recorder.js";
 import { stop as stopSpeech, speak } from "./speech.js";
 import { getPrefs, setPrefs } from "./store.js";
-import { LANG_MODES } from "./i18n.js";
+import { setStudioI18n as setEvidenceUiI18n } from "./evidence-ui.js";
+import { LANG_MODES, i18nFor } from "./i18n.js";
+import { setItemsI18n } from "./items.js";
+import { setStudioI18n as setStudioUiI18n } from "./studio-ui.js";
 import { mountShell } from "./shell.js";
 import { mountGloss } from "./glossary.js";
 import { registerSaveResume } from "./sync.js";
@@ -148,7 +151,10 @@ export const ctx = {
     if (!app.bands.includes(band) || band === app.band) return;
     app.band = band;
     app.prefs = setPrefs({ band });
-    announce(`Showing ${band.replace("-", "–")} practice.`);
+    {
+      const g = band.replace("-", "–");
+      announce(i18nFor(ctx).S(`Showing ${g} practice.`, `Mostrando la práctica de ${g}.`));
+    }
   },
 };
 
@@ -226,6 +232,12 @@ async function render({ keepFocus = false, scroll = false } = {}) {
   document.documentElement.style.setProperty("--lab-scale", String(app.prefs.textSize || 1));
   app.route = route;
   app.band = resolveBand(route);
+  // Shared builders (components, items, studio and evidence UI) read the language from here, once per render.
+  const I = i18nFor(ctx);
+  setComponentsI18n(I);
+  setItemsI18n(I);
+  setStudioUiI18n(I);
+  setEvidenceUiI18n(I);
   if (route.grades && route.grades === app.band && app.prefs.band !== app.band)
     app.prefs = setPrefs({ band: app.band });
   const view = VIEWS[route.view] || homeView;
@@ -281,7 +293,7 @@ async function common(e) {
   if (t.closest("[data-stop-audio]")) {
     stopSpeech();
     document.querySelectorAll(".listen-player.is-playing").forEach((el) => el.classList.remove("is-playing"));
-    announce("Audio stopped.");
+    announce(i18nFor(ctx).S("Audio stopped.", "Audio detenido."));
     return true;
   }
   const say = t.closest("[data-say]");
@@ -349,7 +361,7 @@ async function common(e) {
         const ready = await rec.countdown(prep, {
           onTick: (n) => {
             const el = countdownEl();
-            if (el) el.textContent = n > 0 ? `Recording starts in ${n}…` : "";
+            if (el) el.textContent = n > 0 ? i18nFor(ctx).S(`Recording starts in ${n}…`, `La grabación empieza en ${n}…`) : "";
             if (n > 0) announce(String(n));
           },
         });
@@ -369,7 +381,7 @@ async function common(e) {
         onStop: async (_takes, { limited }) => {
           owner?.onRecorded?.(key, ctx);
           if (app.location !== startedAt) return;
-          if (limited) announce("Time is up. Your recording was saved.");
+          if (limited) announce(i18nFor(ctx).S("Time is up. Your recording was saved.", "Se acabó el tiempo. Se guardó tu grabación."));
           await render({ keepFocus: true });
           // Move to the next thing the learner does: type or review what they said.
           document.querySelector("[data-transcript], [data-rec-start]")?.focus({ preventScroll: false });
@@ -378,14 +390,14 @@ async function common(e) {
       if (recording && app.location === startedAt) {
         await render({ keepFocus: true });
         document.querySelector("[data-rec-stop]")?.focus();
-        announce("Recording. Press Stop when you are done.");
+        announce(i18nFor(ctx).S("Recording. Press Stop when you are done.", "Grabando. Pulsa Detener cuando termines."));
       } else {
         recStart.disabled = false;
       }
     } catch {
       recStart.disabled = false;
       if (app.location !== startedAt) return true;
-      const message = "The microphone is unavailable. Check browser permission and your microphone, or practice aloud with a partner. You can continue without recording.";
+      const message = micDeniedMessage(i18nFor(ctx));
       const status = document.querySelector(`[data-rec-error="${CSS.escape(key)}"]`);
       if (status) { status.textContent = message; status.hidden = false; }
       announce(message);
@@ -405,7 +417,7 @@ async function common(e) {
     );
     ctx.setPrefs({ textSize: next });
     document.documentElement.style.setProperty("--lab-scale", String(next));
-    announce(`Text size ${Math.round(next * 100)}%`);
+    announce(i18nFor(ctx).S(`Text size ${Math.round(next * 100)}%`, `Tamaño del texto ${Math.round(next * 100)}%`));
     return true;
   }
   return false;

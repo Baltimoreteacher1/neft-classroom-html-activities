@@ -12,17 +12,40 @@ import { diffWords } from "../lang/text.js";
 import { speak, speakDialogue, stop as stopSpeech } from "../speech.js";
 import { chooserHeroHTML, disclosure, sourceHTML, stageName, trackDisclosures } from "../studio-ui.js";
 import { ART, BASE, announce, html, icon, raw } from "../util.js";
+import { i18nFor, makeI18n } from "../i18n.js";
 
 const IGN = raw("data-nsr-ignore");
+let I = makeI18n("en");
+// Coaching after a first miss, as [English, Español]. Stored as a plain string in the learner's mission record.
 const COACH = {
-  unsupported: "That idea is not stated in the source. Find the sentence that supports an answer.",
-  opposite: "That is the opposite of what the source says. Reread for the direction of the change.",
-  "true-not-asked":
+  unsupported: [
+    "That idea is not stated in the source. Find the sentence that supports an answer.",
+    "Esa idea no aparece en la fuente. Busca la oración que apoya una respuesta.",
+  ],
+  opposite: [
+    "That is the opposite of what the source says. Reread for the direction of the change.",
+    "Eso es lo contrario de lo que dice la fuente. Vuelve a leer para ver en qué dirección cambia.",
+  ],
+  "true-not-asked": [
     "That might be true, but it does not answer this question. Check the question word again.",
-  overgeneralized: "That goes further than the source. Watch for words like all, always, never.",
-  "detail-trap": "That detail is in the source, but it is not what the question asks about.",
-  partial: "That is only part of the answer. What else does the source say?",
+    "Eso podría ser cierto, pero no responde esta pregunta. Revisa otra vez la palabra de la pregunta.",
+  ],
+  overgeneralized: [
+    "That goes further than the source. Watch for words like all, always, never.",
+    "Eso va más allá de la fuente. Ten cuidado con palabras como todo, siempre, nunca.",
+  ],
+  "detail-trap": [
+    "That detail is in the source, but it is not what the question asks about.",
+    "Ese detalle está en la fuente, pero no es sobre lo que se pregunta.",
+  ],
+  partial: [
+    "That is only part of the answer. What else does the source say?",
+    "Eso es solo una parte de la respuesta. ¿Qué más dice la fuente?",
+  ],
 };
+const SKILL_ES = { Listening: "Escuchar", Reading: "Leer", Decision: "Decidir", Speaking: "Hablar", Writing: "Escribir" };
+const skillT = (skill) => I.T(skill, SKILL_ES[skill]);
+const PROGRESS_ES = { Complete: "Completa", "In progress": "En progreso" };
 const SKILL_ICON = { Listening: "listening", Reading: "reading", Decision: "flag", Speaking: "speaking", Writing: "writing" };
 const skillIcon = (skill) => icon(SKILL_ICON[skill] || "mission");
 const LETTERS = "ABCDEFGH";
@@ -38,34 +61,34 @@ function hubHTML(ctx, index, studio) {
     return s ? (s.done ? "Complete" : s.started ? "In progress" : "") : "";
   };
   return html`${crumbsHTML([
-      ["Lab", `${BASE}/?grades=${ctx.band}`],
-      ["Academic Missions", null],
-    ])}
+      [I.T("Lab", "Laboratorio"), `${BASE}/?grades=${ctx.band}`],
+      [I.T("Academic Missions", "Misiones académicas"), null],
+    ], { i18n: I })}
     ${chooserHeroHTML({
       domain: "d-missions",
-      eyebrow: `Grades ${ctx.band.replace("-", "–")} · ${list.length} missions`,
-      title: "Academic Missions",
-      lead: "Investigations that use all four skills. You listen, read, make a decision that changes what you learn, speak, and write — with your evidence in hand.",
+      eyebrow: I.T(`Grades ${ctx.band.replace("-", "–")} · ${list.length} missions`, `Grados ${ctx.band.replace("-", "–")} · ${list.length} misiones`),
+      title: I.T("Academic Missions", "Misiones académicas"),
+      lead: I.T("Investigations that use all four skills. You listen, read, make a decision that changes what you learn, speak, and write — with your evidence in hand.", "Investigaciones que usan las cuatro destrezas. Escuchas, lees, tomas una decisión que cambia lo que aprendes, hablas y escribes, con tu evidencia en mano."),
       art: `${ART}/studio-mission.svg`,
-      loop: ["Listen", "Read", "Decide", "Speak", "Write"],
+      loop: [I.T("Listen", "Escuchar"), I.T("Read", "Leer"), I.T("Decide", "Decidir"), I.T("Speak", "Hablar"), I.T("Write", "Escribir")],
+      i18n: I,
     })}
     ${
       list.length
-        ? html`<section class="task-group" aria-label="All missions"><div class="mission-grid">
+        ? html`<section class="task-group" aria-label="${I.S("All missions", "Todas las misiones")}"><div class="mission-grid">
             ${list.map((m) => html`<a class="card mission-card" style="--room:${m.theme}" href="${BASE}/missions/${m.id}?grades=${ctx.band}">
-              <span class="mc-top"><span class="mc-emoji" aria-hidden="true">${m.icon}</span><span class="mc-role">${m.role}</span>${prog(m) ? html`<span class="mode-pill ${prog(m) === "Complete" ? "is-done" : ""}">${prog(m) === "Complete" ? icon("check") : icon("clock")} ${prog(m)}</span>` : ""}</span>
+              <span class="mc-top"><span class="mc-emoji" aria-hidden="true">${m.icon}</span><span class="mc-role">${m.role}</span>${prog(m) ? html`<span class="mode-pill ${prog(m) === "Complete" ? "is-done" : ""}">${prog(m) === "Complete" ? icon("check") : icon("clock")} ${I.T(prog(m), PROGRESS_ES[prog(m)])}</span>` : ""}</span>
               <strong class="mc-title">${m.title}</strong>
               <span class="mc-sub">${m.subtitle}</span>
               <span class="mc-sum">${m.summary}</span>
               <span class="mc-foot"><span class="task-meta"><span class="tag">${m.contentArea}</span><span class="tag">${icon("clock")} ${m.minutes} min</span>${(m.keyUses || []).map((k) => html`<span class="tag">${k}</span>`)}</span>
-              <span class="mc-skills" aria-label="Uses listening, reading, a decision, speaking and writing">${["Listening", "Reading", "Decision", "Speaking", "Writing"].map(skillIcon)}</span></span>
+              <span class="mc-skills" aria-label="${I.S("Uses listening, reading, a decision, speaking and writing", "Usa escuchar, leer, una decisión, hablar y escribir")}">${["Listening", "Reading", "Decision", "Speaking", "Writing"].map(skillIcon)}</span></span>
             </a>`)}
           </div></section>`
-        : html`<section class="panel empty-state"><img src="${ART}/empty.svg" alt="" width="480" height="300" /><h2>No missions for this grade band yet</h2><p>Switch grade band from the menu to see the missions that are ready.</p></section>`
+        : html`<section class="panel empty-state"><img src="${ART}/empty.svg" alt="" width="480" height="300" /><h2>${I.T("No missions for this grade band yet", "Todavía no hay misiones para este grupo de grados")}</h2><p>${I.T("Switch grade band from the menu to see the missions that are ready.", "Cambia el grupo de grados en el menú para ver las misiones que están listas.")}</p></section>`
     }
     <p class="disclaimer">
-      Missions are classroom practice, not WIDA assessment simulations. What you do alone and what
-      you do with help are recorded separately.
+      ${I.T("Missions are classroom practice, not WIDA assessment simulations. What you do alone and what you do with help are recorded separately.", "Las misiones son práctica de clase, no simulaciones de evaluaciones de WIDA. Lo que haces por tu cuenta y lo que haces con ayuda se registra por separado.")}
     </p>`;
 }
 
@@ -94,14 +117,14 @@ const feedbackBox = (kind, msg, title) =>
 function questionHTML(t, ms, n, total) {
   const a = ms.answers[t.id] || {};
   return html`<fieldset class="mission-q">
-    <legend><span class="q-n">Question ${n} of ${total}</span>${t.tier === "stretch" ? html` <span class="mode-pill">Stretch</span>` : ""}<span class="q-text">${t.q}</span></legend>
+    <legend><span class="q-n">${I.T(`Question ${n} of ${total}`, `Pregunta ${n} de ${total}`)}</span>${t.tier === "stretch" ? html` <span class="mode-pill">${I.T("Stretch", "Reto")}</span>` : ""}<span class="q-text">${t.q}</span></legend>
     <div class="choices">${t.options.map((o, i) => {
       const right = a.done && o.id === t.answer;
       const miss = a.last === o.id && !a.done;
-      return html`<label class="choice choice-card ${right ? "is-right" : miss ? "is-wrong" : a.pick === o.id ? "is-on" : ""}"><input type="radio" name="q-${t.id}" value="${o.id}" data-q="${t.id}" ${a.pick === o.id ? raw("checked") : ""} ${a.done ? raw("disabled") : ""} ${IGN} /><span class="choice-letter" aria-hidden="true">${LETTERS[i]}</span><span>${o.text}${right ? html` <span class="visually-hidden">(correct answer)</span>` : miss ? html` <span class="visually-hidden">(not correct)</span>` : ""}</span></label>`;
+      return html`<label class="choice choice-card ${right ? "is-right" : miss ? "is-wrong" : a.pick === o.id ? "is-on" : ""}"><input type="radio" name="q-${t.id}" value="${o.id}" data-q="${t.id}" ${a.pick === o.id ? raw("checked") : ""} ${a.done ? raw("disabled") : ""} ${IGN} /><span class="choice-letter" aria-hidden="true">${LETTERS[i]}</span><span>${o.text}${right ? html` <span class="visually-hidden">${I.T("(correct answer)", "(respuesta correcta)")}</span>` : miss ? html` <span class="visually-hidden">${I.T("(not correct)", "(no es correcta)")}</span>` : ""}</span></label>`;
     })}</div>
-    ${!a.done ? html`<button type="button" class="btn btn-primary btn-check" data-check-q="${t.id}" ${a.pick ? "" : raw("disabled")}>Check my answer</button>` : ""}
-    ${a.done ? (a.last === t.answer ? feedbackBox("right", a.msg, "Correct") : feedbackBox("shown", a.msg, "Here is the answer")) : feedbackBox("hint", a.msg, "Not yet")}
+    ${!a.done ? html`<button type="button" class="btn btn-primary btn-check" data-check-q="${t.id}" ${a.pick ? "" : raw("disabled")}>${I.T("Check my answer", "Comprobar mi respuesta")}</button>` : ""}
+    ${a.done ? (a.last === t.answer ? feedbackBox("right", a.msg, I.T("Correct", "Correcto")) : feedbackBox("shown", a.msg, I.T("Here is the answer", "Aquí está la respuesta"))) : feedbackBox("hint", a.msg, I.T("Not yet", "Todavía no"))}
   </fieldset>`;
 }
 
@@ -109,11 +132,11 @@ function evidenceHTML(t, ms) {
   const a = ms.answers[t.id] || {};
   const picked = new Set(a.picks || []);
   return html`<fieldset class="mission-q">
-    <legend><span class="q-n">Collect evidence</span><span class="q-text">${t.q}</span></legend>
-    <p class="fine">Choose every statement that supports the idea. Statements you choose correctly go on your evidence board.</p>
+    <legend><span class="q-n">${I.T("Collect evidence", "Reúne evidencia")}</span><span class="q-text">${t.q}</span></legend>
+    <p class="fine">${I.T("Choose every statement that supports the idea. Statements you choose correctly go on your evidence board.", "Elige todas las afirmaciones que apoyan la idea. Las que elijas correctamente van a tu tablero de evidencia.")}</p>
     <div class="choices">${t.pool.map((e) => html`<label class="choice choice-card is-check ${a.done && e.supports ? "is-right" : picked.has(e.id) ? "is-on" : ""}"><input type="checkbox" value="${e.id}" data-ev="${t.id}" ${picked.has(e.id) ? raw("checked") : ""} ${a.done ? raw("disabled") : ""} ${IGN} /><span class="choice-letter" aria-hidden="true">${icon("check")}</span><span>${e.text}</span></label>`)}</div>
-    ${!a.done ? html`<button type="button" class="btn btn-primary btn-check" data-check-ev="${t.id}" ${picked.size ? "" : raw("disabled")}>Check my evidence</button>` : ""}
-    ${feedbackBox(a.done ? "right" : "hint", a.msg, a.done ? "On your evidence board" : "Not yet")}
+    ${!a.done ? html`<button type="button" class="btn btn-primary btn-check" data-check-ev="${t.id}" ${picked.size ? "" : raw("disabled")}>${I.T("Check my evidence", "Comprobar mi evidencia")}</button>` : ""}
+    ${feedbackBox(a.done ? "right" : "hint", a.msg, a.done ? I.T("On your evidence board", "En tu tablero de evidencia") : I.T("Not yet", "Todavía no"))}
   </fieldset>`;
 }
 
@@ -127,11 +150,11 @@ function studioTaskHTML(t, ms, mission, band, suggestedStage = "") {
   return html`<div class="studio-task card">
     <span class="st-ico">${icon(route === "speak" ? "speaking" : "writing")}</span>
     <div class="st-body">
-      <p class="eyebrow">${t.kind === "speak" ? "Speaking Studio task" : "Writing Studio task"}${done ? html` <span class="mode-pill is-done">${icon("check")} Done</span>` : ""}</p>
+      <p class="eyebrow">${t.kind === "speak" ? I.T("Speaking Studio task", "Tarea del Estudio de expresión oral") : I.T("Writing Studio task", "Tarea del Estudio de escritura")}${done ? html` <span class="mode-pill is-done">${icon("check")} ${I.T("Done", "Hecho")}</span>` : ""}</p>
       <h3>${task.title}</h3>
       <p>${task.scenario}</p>
       <p class="st-prompt">${task.prompt}</p>
-      <a class="btn ${done ? "" : "btn-primary"}" href="${BASE}/${route}/${task.id}?from=mission:${mission.id}&grades=${band}${stageParam}">${done ? "Open again" : t.kind === "speak" ? "Start speaking" : "Start writing"}${icon("arrow-right")}</a>
+      <a class="btn ${done ? "" : "btn-primary"}" href="${BASE}/${route}/${task.id}?from=mission:${mission.id}&grades=${band}${stageParam}">${done ? I.T("Open again", "Abrir otra vez") : t.kind === "speak" ? I.T("Start speaking", "Empezar a hablar") : I.T("Start writing", "Empezar a escribir")}${icon("arrow-right")}</a>
     </div>
   </div>`;
 }
@@ -140,9 +163,9 @@ function decisionHTML(phase, ms) {
   const d = phase.decision;
   const chosen = ms.decisions[phase.id];
   return html`<fieldset class="mission-q is-decision">
-    <legend><span class="q-n">Your decision</span><span class="q-text">${d.q}</span></legend>
+    <legend><span class="q-n">${I.T("Your decision", "Tu decisión")}</span><span class="q-text">${d.q}</span></legend>
     <div class="choices">${d.options.map((o, i) => html`<label class="choice choice-card ${chosen === o.id ? "is-right" : ""}"><input type="radio" name="d-${phase.id}" value="${o.id}" data-decision="${phase.id}" ${chosen === o.id ? raw("checked") : ""} ${chosen ? raw("disabled") : ""} ${IGN} /><span class="choice-letter" aria-hidden="true">${LETTERS[i]}</span><span>${o.text}</span></label>`)}</div>
-    ${chosen ? html`<div class="feedback is-shown" role="status"><p class="fb-title">${icon("flag")} What happens</p><p>${d.options.find((o) => o.id === chosen).consequence}</p></div>` : html`<p class="fine">You can only choose once. The choice changes what you read, say and write next.</p>`}
+    ${chosen ? html`<div class="feedback is-shown" role="status"><p class="fb-title">${icon("flag")} ${I.T("What happens", "Qué pasa")}</p><p>${d.options.find((o) => o.id === chosen).consequence}</p></div>` : html`<p class="fine">${I.T("You can only choose once. The choice changes what you read, say and write next.", "Solo puedes elegir una vez. Tu elección cambia lo que lees, dices y escribes después.")}</p>`}
   </fieldset>`;
 }
 
@@ -158,8 +181,8 @@ function sourcesFor(mission, ms, phase) {
 
 function boardHTML(ms) {
   return ms.board.length
-    ? html`<aside class="panel evidence-board" aria-label="Evidence board">
-        <h3>${icon("pin")} Evidence board</h3>
+    ? html`<aside class="panel evidence-board" aria-label="${I.S("Evidence board", "Tablero de evidencia")}">
+        <h3>${icon("pin")} ${I.T("Evidence board", "Tablero de evidencia")}</h3>
         <ul>
           ${ms.board.map((b) => html`<li><span class="board-label">${b.label}</span>${b.text}</li>`)}
         </ul>
@@ -188,13 +211,13 @@ function debriefHTML(mission, ms, ledger, band, studio) {
     : null;
   return html`<section class="panel case-file">
     <header class="case-head">
-      <span class="case-stamp">${icon("check")} Mission complete</span>
-      <h2>Case file: ${mission.title}</h2>
+      <span class="case-stamp">${icon("check")} ${I.T("Mission complete", "Misión completa")}</span>
+      <h2>${I.T("Case file:", "Expediente:")} ${mission.title}</h2>
       <p class="lead">${mission.debrief?.connections || ""}</p>
     </header>
     <div class="case-grid">
       <section>
-        <h3>${icon("flag")} The path you chose</h3>
+        <h3>${icon("flag")} ${I.T("The path you chose", "El camino que elegiste")}</h3>
         <ol class="path-list">
           ${mission.phases
             .filter((p) => p.skill === "Decision")
@@ -206,45 +229,46 @@ function debriefHTML(mission, ms, ledger, band, studio) {
       </section>
       ${
         ms.board.length
-          ? html`<section><h3>${icon("pin")} Evidence you gathered</h3>
+          ? html`<section><h3>${icon("pin")} ${I.T("Evidence you gathered", "Evidencia que reuniste")}</h3>
               <ul class="board-chips">${ms.board.map((b) => html`<li><span class="board-label">${b.label}</span>${b.text}</li>`)}</ul></section>`
           : ""
       }
     </div>
     ${
       grew
-        ? html`<section class="case-growth"><h3>${icon("growth")} How your writing changed</h3>
-            <p class="fine">Your first draft and your final version of “${writing.task.title}”.</p>
+        ? html`<section class="case-growth"><h3>${icon("growth")} ${I.T("How your writing changed", "Cómo cambió tu escritura")}</h3>
+            <p class="fine">${I.T(`Your first draft and your final version of “${writing.task.title}”.`, `Tu primer borrador y tu versión final de “${writing.task.title}”.`)}</p>
             <p class="diff">${diffWords(firstDraft.text, finalDraft.text).map((x) => (x.op === "same" ? html`${x.text} ` : x.op === "add" ? html`<ins>${x.text}</ins> ` : html`<del>${x.text}</del> `))}</p>
-            ${delta.changes.length || delta.gainedMoves.length ? html`<ul>${delta.changes.map((c) => html`<li>${c.label}: ${c.from} → ${c.to}</li>`)}${delta.gainedMoves.map((m) => html`<li>Now: ${m.toLowerCase()}</li>`)}</ul>` : ""}</section>`
+            ${delta.changes.length || delta.gainedMoves.length ? html`<ul>${delta.changes.map((c) => html`<li>${c.label}: ${c.from} → ${c.to}</li>`)}${delta.gainedMoves.map((m) => html`<li>${I.T(`Now: ${m.toLowerCase()}`, `Ahora: ${m.toLowerCase()}`)}</li>`)}</ul>` : ""}</section>`
         : w
-          ? html`<section class="case-growth"><h3>Your writing</h3><p class="portfolio-response">${finalDraft?.text || ""}</p></section>`
+          ? html`<section class="case-growth"><h3>${I.T("Your writing", "Tu escritura")}</h3><p class="portfolio-response">${finalDraft?.text || ""}</p></section>`
           : ""
     }
-    <section><h3>${icon("conversation")} Talk about it</h3>
+    <section><h3>${icon("conversation")} ${I.T("Talk about it", "Habla sobre esto")}</h3>
       <ul>${(mission.debrief?.teacherQuestions || []).map((q) => html`<li>${q}</li>`)}</ul></section>
     <details class="fine">
-      <summary>Questions</summary>
-      <p>${first} of ${qs.length} questions were right on the first try. This is practice information, not a score.</p>
+      <summary>${I.T("Questions", "Preguntas")}</summary>
+      <p>${I.T(`${first} of ${qs.length} questions were right on the first try. This is practice information, not a score.`, `${first} de ${qs.length} preguntas fueron correctas al primer intento. Esto es información de práctica, no una calificación.`)}</p>
     </details>
     <div class="row-actions no-print">
-      <button type="button" class="btn" data-print>${icon("print")} Print my case file</button>
-      <a class="btn btn-primary" href="${BASE}/missions?grades=${band}">More missions${icon("arrow-right")}</a>
-      <a class="btn" href="${BASE}/growth?grades=${band}">${icon("growth")} My language growth</a>
+      <button type="button" class="btn" data-print>${icon("print")} ${I.T("Print my case file", "Imprimir mi expediente")}</button>
+      <a class="btn btn-primary" href="${BASE}/missions?grades=${band}">${I.T("More missions", "Más misiones")}${icon("arrow-right")}</a>
+      <a class="btn" href="${BASE}/growth?grades=${band}">${icon("growth")} ${I.T("My language growth", "Mi progreso en el lenguaje")}</a>
     </div>
   </section>`;
 }
 
 export async function render(ctx) {
+  I = i18nFor(ctx);
   const index = await loadStudioIndex();
   const studio = loadStudio();
   const id = ctx.route.id || ctx.route.missionId;
-  if (!id) return { title: "Academic Missions", html: hubHTML(ctx, index, studio) };
+  if (!id) return { title: I.S("Academic Missions", "Misiones académicas"), html: hubHTML(ctx, index, studio) };
   const mission = await loadMission(id).catch(() => null);
   if (!mission)
     return {
-      title: "Not found",
-      html: html`<section class="panel empty-state"><img src="${ART}/empty.svg" alt="" width="480" height="300" /><h1 tabindex="-1">We could not find that mission.</h1><a class="btn" href="${BASE}/missions?grades=${ctx.band}">All missions</a></section>`,
+      title: I.S("Not found", "No se encontró"),
+      html: html`<section class="panel empty-state"><img src="${ART}/empty.svg" alt="" width="480" height="300" /><h1 tabindex="-1">${I.T("We could not find that mission.", "No pudimos encontrar esa misión.")}</h1><a class="btn" href="${BASE}/missions?grades=${ctx.band}">${I.T("All missions", "Todas las misiones")}</a></section>`,
     };
   const ledger = loadLedger();
   const ms = missionState(studio, mission.id);
@@ -287,10 +311,10 @@ export async function render(ctx) {
   return {
     title: mission.title,
     html: html`${crumbsHTML([
-        ["Lab", `${BASE}/?grades=${ctx.band}`],
-        ["Academic Missions", `${BASE}/missions?grades=${ctx.band}`],
+        [I.T("Lab", "Laboratorio"), `${BASE}/?grades=${ctx.band}`],
+        [I.T("Academic Missions", "Misiones académicas"), `${BASE}/missions?grades=${ctx.band}`],
         [mission.title, null],
-      ])}
+      ], { i18n: I })}
       <div class="studio-view mission-studio" style="--room:${mission.theme}">
       <section class="mission-hero ${!phase || current > 0 ? "is-compact" : ""}">
         <span class="mh-emoji" aria-hidden="true">${mission.icon}</span>
@@ -299,15 +323,15 @@ export async function render(ctx) {
           <h1 tabindex="-1">${mission.title}</h1>
           ${
             !phase || current > 0
-              ? disclosure("mission-brief", html`${icon("info")} Mission briefing`, html`<p>${mission.briefing.scene}</p><p class="mh-goal">${icon("flag")}<span><strong>Your goal:</strong> ${mission.briefing.goal}</span></p>`, { cls: "mh-brief" })
+              ? disclosure("mission-brief", html`${icon("info")} ${I.T("Mission briefing", "Informe de la misión")}`, html`<p>${mission.briefing.scene}</p><p class="mh-goal">${icon("flag")}<span><strong>${I.T("Your goal:", "Tu meta:")}</strong> ${mission.briefing.goal}</span></p>`, { cls: "mh-brief" })
               : html`<p class="lead">${mission.briefing.scene}</p>
-          <p class="mh-goal">${icon("flag")}<span><strong>Your goal:</strong> ${mission.briefing.goal}</span></p>`
+          <p class="mh-goal">${icon("flag")}<span><strong>${I.T("Your goal:", "Tu meta:")}</strong> ${mission.briefing.goal}</span></p>`
           }
         </div>
       </section>
-      <nav class="mission-steps" aria-label="Mission phases">
+      <nav class="mission-steps" aria-label="${I.S("Mission phases", "Fases de la misión")}">
         <ol>
-          ${phases.map((p, i) => html`<li class="${i === current ? "is-current" : isDone(ms, p) ? "is-done" : ""}"><a ${i === current ? raw('aria-current="step"') : ""} href="${BASE}/missions/${mission.id}?phase=${p.id}&grades=${ctx.band}"><span class="step-n">${isDone(ms, p) && i !== current ? icon("check") : skillIcon(p.skill)}</span><span class="step-l">${p.skill}${isDone(ms, p) && i !== current ? html`<span class="visually-hidden"> (done)</span>` : ""}</span></a></li>`)}
+          ${phases.map((p, i) => html`<li class="${i === current ? "is-current" : isDone(ms, p) ? "is-done" : ""}"><a ${i === current ? raw('aria-current="step"') : ""} href="${BASE}/missions/${mission.id}?phase=${p.id}&grades=${ctx.band}"><span class="step-n">${isDone(ms, p) && i !== current ? icon("check") : skillIcon(p.skill)}</span><span class="step-l">${skillT(p.skill)}${isDone(ms, p) && i !== current ? html`<span class="visually-hidden"> ${I.T("(done)", "(hecha)")}</span>` : ""}</span></a></li>`)}
         </ol>
       </nav>
       ${
@@ -315,23 +339,23 @@ export async function render(ctx) {
           ? html`<div class="mission-layout ${ms.board.length ? "has-board" : ""}">
               <article class="activity mission-phase">
                 <header class="act-head">
-                  <p class="eyebrow">${skillIcon(phase.skill)} Phase ${current + 1} of ${phases.length} · ${phase.skill}</p>
+                  <p class="eyebrow">${skillIcon(phase.skill)} ${I.T(`Phase ${current + 1} of ${phases.length} · ${phase.skill}`, `Fase ${current + 1} de ${phases.length} · ${SKILL_ES[phase.skill] || phase.skill}`)}</p>
                   <h2 tabindex="-1">${phase.title}</h2>
                   <p class="phase-instr">${phase.instructions}</p>
-                  ${sug ? html`<p class="fine sug">${icon("info")}<span>Suggested help for this phase: <strong>${stageName(sug.stage)}</strong> — ${sug.reason}</span></p>` : ""}
+                  ${sug ? html`<p class="fine sug">${icon("info")}<span>${I.T("Suggested help for this phase:", "Ayuda sugerida para esta fase:")} <strong>${stageName(sug.stage, I)}</strong> — ${sug.reason}</span></p>` : ""}
                 </header>
                 <div class="mission-sources">
                   ${sourcesFor(mission, ms, phase).map(
                     ({ id: sid, src }) =>
-                      html`<div class="source-wrap">${sourceHTML(src, { id: sid })}${src.kind === "passage" && phase.skill === "Reading" ? html`<button type="button" class="ghost small" data-read-source="${sid}">${icon("volume")} Read aloud <span class="fine">(saved as support)</span></button>` : ""}${
+                      html`<div class="source-wrap">${sourceHTML(src, { id: sid, i18n: I })}${src.kind === "passage" && phase.skill === "Reading" ? html`<button type="button" class="ghost small" data-read-source="${sid}">${icon("volume")} ${I.T("Read aloud", "Leer en voz alta")} <span class="fine">${I.T("(saved as support)", "(se guarda como apoyo)")}</span></button>` : ""}${
                         src.kind === "audio" && M.support.transcript
-                          ? html`<div class="transcript"><h4>Transcript</h4>${src.turns.map((t) => html`<p><strong>${t.speaker}:</strong> ${t.text}</p>`)}</div>`
+                          ? html`<div class="transcript"><h4>${I.T("Transcript", "Transcripción")}</h4>${src.turns.map((t) => html`<p><strong>${t.speaker}:</strong> ${t.text}</p>`)}</div>`
                           : ""
-                      }${src.kind === "audio" && !M.support.transcript ? html`<button type="button" class="ghost small" data-transcript="${sid}">Can't listen? Show the transcript <span class="fine">(saved as support)</span></button>` : ""}</div>`,
+                      }${src.kind === "audio" && !M.support.transcript ? html`<button type="button" class="ghost small" data-transcript="${sid}">${I.T("Can't listen? Show the transcript", "¿No puedes escuchar? Muestra la transcripción")} <span class="fine">${I.T("(saved as support)", "(se guarda como apoyo)")}</span></button>` : ""}</div>`,
                   )}
                 </div>
-                ${phase.skill === "Decision" ? decisionHTML(phase, ms) : html`${visibleTasks(phase, ledger).map((t) => (t.kind === "question" ? questionHTML(t, ms, qTasks.indexOf(t) + 1, qTasks.length) : t.kind === "evidence" ? evidenceHTML(t, ms) : studioTaskHTML({ ...t, task: t.task || { id: t.taskRef, title: "Speaking or writing task", scenario: "", prompt: "" } }, ms, mission, ctx.band, sug?.stage)))}`}
-                ${isDone(ms, phase) && current < phases.length - 1 ? html`<a class="btn btn-primary btn-big next-phase" href="${BASE}/missions/${mission.id}?phase=${phases[current + 1].id}&grades=${ctx.band}">Next phase: ${phases[current + 1].skill}${icon("arrow-right")}</a>` : ""}
+                ${phase.skill === "Decision" ? decisionHTML(phase, ms) : html`${visibleTasks(phase, ledger).map((t) => (t.kind === "question" ? questionHTML(t, ms, qTasks.indexOf(t) + 1, qTasks.length) : t.kind === "evidence" ? evidenceHTML(t, ms) : studioTaskHTML({ ...t, task: t.task || { id: t.taskRef, title: I.S("Speaking or writing task", "Tarea de hablar o escribir"), scenario: "", prompt: "" } }, ms, mission, ctx.band, sug?.stage)))}`}
+                ${isDone(ms, phase) && current < phases.length - 1 ? html`<a class="btn btn-primary btn-big next-phase" href="${BASE}/missions/${mission.id}?phase=${phases[current + 1].id}&grades=${ctx.band}">${I.T(`Next phase: ${phases[current + 1].skill}`, `Siguiente fase: ${SKILL_ES[phases[current + 1].skill] || phases[current + 1].skill}`)}${icon("arrow-right")}</a>` : ""}
               </article>
               ${boardHTML(ms)}
             </div>`
@@ -375,6 +399,7 @@ function finishPhaseEntry() {
 
 export function onClick(e, ctx) {
   if (!M?.phase) return false;
+  const I = i18nFor(ctx);
   const t = e.target;
   const { ms, phase, mission } = M;
   const q = t.closest("[data-check-q]");
@@ -393,11 +418,14 @@ export function onClick(e, ctx) {
       a.msg = task.explain;
     } else if (a.tries >= 2) {
       a.done = true;
-      a.msg = `The answer is “${task.options.find((o) => o.id === task.answer).text}”. ${task.explain}`;
+      {
+        const right = task.options.find((o) => o.id === task.answer).text;
+        a.msg = I.S(`The answer is “${right}”. ${task.explain}`, `La respuesta es “${right}”. ${task.explain}`);
+      }
     } else
       a.msg =
-        COACH[task.options.find((o) => o.id === a.pick)?.distractor] ||
-        "Not yet. Reread the source and try again.";
+        (COACH[task.options.find((o) => o.id === a.pick)?.distractor] ? I.S(...COACH[task.options.find((o) => o.id === a.pick).distractor]) : "") ||
+        I.S("Not yet. Reread the source and try again.", "Todavía no. Vuelve a leer la fuente e inténtalo de nuevo.");
     if (
       a.done &&
       phase.tasks.filter((x) => x.kind === "question").every((x) => ms.answers[x.id]?.done) &&
@@ -421,15 +449,17 @@ export function onClick(e, ctx) {
     a.tries = (a.tries || 0) + 1;
     if (!wrong.length && !missed.length) {
       a.done = true;
-      a.msg = "Those statements support the idea. They are on your evidence board.";
+      a.msg = I.S("Those statements support the idea. They are on your evidence board.", "Esas afirmaciones apoyan la idea. Están en tu tablero de evidencia.");
       for (const id of want) {
         const e = task.pool.find((x) => x.id === id);
         if (!ms.board.some((b) => b.id === `${task.id}:${id}`))
           ms.board.push({ id: `${task.id}:${id}`, label: task.boardLabel, text: e.text });
       }
     } else
-      a.msg =
-        `${wrong.length ? `${wrong.length} statement${wrong.length === 1 ? " does" : "s do"} not support the idea — check that each one answers the question.` : ""} ${missed.length ? `You missed ${missed.length} supporting statement${missed.length === 1 ? "" : "s"}.` : ""}`.trim();
+      a.msg = I.S(
+        `${wrong.length ? `${wrong.length} statement${wrong.length === 1 ? " does" : "s do"} not support the idea — check that each one answers the question.` : ""} ${missed.length ? `You missed ${missed.length} supporting statement${missed.length === 1 ? "" : "s"}.` : ""}`.trim(),
+        `${wrong.length ? `${wrong.length} ${wrong.length === 1 ? "afirmación no apoya" : "afirmaciones no apoyan"} la idea — revisa que cada una responda la pregunta.` : ""} ${missed.length ? `${missed.length === 1 ? "Te faltó 1 afirmación de apoyo" : `Te faltaron ${missed.length} afirmaciones de apoyo`}.` : ""}`.trim(),
+      );
     save();
     ctx.rerender();
     return true;
@@ -480,7 +510,7 @@ export function onChange(e, ctx) {
     for (const b of opt.board || []) if (!ms.board.some((x) => x.id === b.id)) ms.board.push(b);
     if (opt.flag && !ms.flags.includes(opt.flag)) ms.flags.push(opt.flag);
     save();
-    announce("Decision made. See what changed.");
+    announce(i18nFor(ctx).S("Decision made. See what changed.", "Decisión tomada. Mira qué cambió."));
     ctx.rerender();
   }
 }

@@ -235,7 +235,7 @@ try {
     await page.waitForURL(/\/play\?/);
     await page.waitForSelector(".copilot");
     ok(
-      (await page.locator(".copilot summary").innerText()).includes("Ayude a su hijo"),
+      (await page.locator(".copilot summary").innerText()).includes("Ayudar a mi hijo"),
       "A: Help My Child panel is Spanish",
     );
     await page.locator(".copilot summary").click();

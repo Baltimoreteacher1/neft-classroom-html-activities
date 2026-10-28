@@ -57,11 +57,16 @@ export function makeI18n(mode = DEFAULT_LANG, pageLang = "en") {
     const e = entry(key);
     return S(fill(e.en, vars, "en"), fill(e.es, vars, "es"));
   };
+  /** One entry as { en, es }, filled. Pass it as a var to embed one phrase inside another in both languages. */
+  const pair = (key, vars = {}) => {
+    const e = entry(key);
+    return { en: fill(e.en, vars, "en"), es: fill(e.es, vars, "es") };
+  };
   /** Pick one side of a bilingual object { en, es } (family content JSON). */
   const pick = (o) => (o && typeof o === "object" ? (spanish ? o.es || o.en : o.en) : o);
   /** Both sides of { en, es } as markup honoring the mode. */
   const TO = (o) => (o && typeof o === "object" ? T(o.en, o.es) : o);
-  return { mode, bilingual, spanish, pageLang, T, S, L, LS, pick, TO };
+  return { mode, bilingual, spanish, pageLang, T, S, L, LS, pair, pick, TO };
 }
 
 /** i18n for a render ctx: the mode from prefs, the document language from the current view. */

@@ -414,3 +414,90 @@ test("help search matches either language, every word, and returns all topics fo
   assert.equal(searchTopics(topics, "zzzzqq").length, 0);
   assert.ok(searchTopics(topics, "save backup").length <= searchTopics(topics, "save").length);
 });
+
+// ── engagement ────────────────────────────────────────────────────────────────
+const { weekFor, weeklyChallenge, recognition, nextRecognition } = await import(
+  join(LAB, "src/family/engage.js")
+);
+const road = json("content/road.json");
+
+test("the weekly challenge is the current Road week, with its own authored family prompt", () => {
+  for (const band of ["3-5", "6-8"]) {
+    const plan = road[band];
+    const first = plan.weeks[0];
+    assert.equal(weekFor(plan, "1999-01-01").n, first.n, "before the plan starts, show week 1");
+    const last = plan.weeks.at(-1);
+    assert.equal(weekFor(plan, "2999-01-01").n, last.n, "after the plan ends, show the last week");
+    const mid = plan.weeks[3];
+    assert.equal(weekFor(plan, mid.start).n, mid.n);
+    const done = weeklyChallenge(plan, [{ record: { complete: [mid.activities[0]] } }], mid.start);
+    assert.equal(done.total, mid.activities.length);
+    assert.equal(done.done, 1);
+    assert.ok(done.prompt?.en && done.prompt?.es, "each week carries a bilingual family prompt");
+    assert.equal(weeklyChallenge(plan, [], mid.start).done, 0);
+  }
+  assert.equal(weeklyChallenge({}, [], "2026-10-28"), null);
+});
+
+test("recognition rewards trying, retrying and revising, and only what the saved work shows", () => {
+  const empty = {
+    byDomain: {
+      Listening: { tried: 0 },
+      Reading: { tried: 0 },
+      Speaking: { tried: 0 },
+      Writing: { tried: 0 },
+    },
+    dayCount: 0,
+    help: 0,
+    revised: 0,
+  };
+  assert.deepEqual(recognition(empty), []);
+  assert.deepEqual(nextRecognition(empty), { kind: "first", domain: "Listening" });
+  const some = { ...empty, byDomain: { ...empty.byDomain, Reading: { tried: 2 } }, help: 1 };
+  assert.deepEqual(
+    recognition(some).map((r) => r.kind),
+    ["first", "retry"],
+  );
+  const all = {
+    byDomain: {
+      Listening: { tried: 1 },
+      Reading: { tried: 1 },
+      Speaking: { tried: 1 },
+      Writing: { tried: 1 },
+    },
+    dayCount: 3,
+    help: 1,
+    revised: 1,
+  };
+  assert.deepEqual(
+    recognition(all).map((r) => r.kind),
+    ["first", "first", "first", "first", "allFour", "days", "retry", "revised"],
+  );
+  assert.equal(nextRecognition(all), null);
+  for (const kind of ["first", "allFour", "days", "retry", "revised"])
+    assert.ok(`recog.${kind}` in STRINGS, kind);
+  // Recognition copy never uses pressure language. The one place that says "no streak" is the reassurance itself.
+  for (const [key, e] of Object.entries(STRINGS).filter(
+    ([k]) => /^(recog|chal)\./.test(k) && k !== "chal.note",
+  ))
+    assert.doesNotMatch(
+      e.en,
+      /\b(streak|lose|lost|points?|rank|leaderboard|prize|hurry|fast)\b/i,
+      key,
+    );
+});
+
+test("pair() embeds one phrase inside another in both languages", () => {
+  const bi = makeI18n("bi", "en");
+  const es = makeI18n("es", "es");
+  const what = es.pair("recog.first", { domain: { en: "reading", es: "lectura" } });
+  assert.equal(what.en, "First reading activity done");
+  assert.equal(what.es, "Primera actividad de lectura terminada");
+  assert.equal(
+    es.L("recog.next", { what }),
+    "Para intentar después: Primera actividad de lectura terminada",
+  );
+  assert.ok(
+    toHtml(bi.L("recog.next", { what })).includes("Next to try: First reading activity done"),
+  );
+});

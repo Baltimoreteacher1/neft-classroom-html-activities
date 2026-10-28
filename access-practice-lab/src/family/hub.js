@@ -1,9 +1,11 @@
 // Family home: language, three ways to start, three steps, four skills, a recommended session,
 // how to help, and a progress preview. One dominant action; everything else is quieter.
-import { bandRows, loadEsGuide, loadFamilyHelp, loadShared } from "../content.js";
+import { bandRows, loadEsGuide, loadFamilyHelp, loadRoad, loadShared } from "../content.js";
 import { langSwitchHTML } from "../i18n.js";
 import { allRecords } from "../store.js";
-import { ART, BASE, DOMAIN_META, bandLabel, html, icon, testingWindowPhase } from "../util.js";
+import { ART, BASE, DOMAIN_META, bandLabel, html, icon, testingWindowPhase, todayISO } from "../util.js";
+import { weeklyChallenge } from "./engage.js";
+import { challengeHTML } from "./progress.js";
 import { sessionMinutes, sessionOptions, playlistHref, typicalMinutes } from "./plan.js";
 import { getFamily } from "./state.js";
 import { summarize } from "./summary.js";
@@ -41,12 +43,13 @@ function progressPreview(I, summary, band) {
 
 export async function render(ctx, I) {
   const band = ctx.band;
-  const [rows, help, shared, es] = await Promise.all([bandRows(band), loadFamilyHelp(), loadShared().catch(() => ({})), loadEsGuide()]);
+  const [rows, help, shared, es, road] = await Promise.all([bandRows(band), loadFamilyHelp(), loadShared().catch(() => ({})), loadEsGuide(), loadRoad()]);
   const family = getFamily(ctx.prefs);
   const options = sessionOptions({ rows, band, minutes: family.minutes, tiers: ctx.prefs.tiers });
   const everyBandRows = (await Promise.all(ctx.bands.map((b) => bandRows(b)))).flat();
   const summary = summarize(allRecords(), new Map(everyBandRows.map((r) => [r.id, r])), es);
   const reco = options.recommended;
+  const challenge = weeklyChallenge(road?.[band], allRecords(), todayISO());
   const continuePlan = options.continue.length ? options.continue : options.history ? reco : [];
   const win = shared.testWindow;
   const phase = testingWindowPhase(win);
@@ -100,6 +103,11 @@ export async function render(ctx, I) {
             <a class="btn btn-primary btn-big" href="${playlistHref(reco, I.LS("plan.recommended"), band)}">${I.L("hub.reco.start")} — ${I.L("hub.reco.size", { n: reco.length, min: sessionMinutes(reco) })}${icon("arrow-right")}</a>
             <a class="fam-alt" href="${BASE}/family/practice?grades=${band}">${I.L("plan.title")}</a>`
           : html`<p>${I.L("hub.reco.empty")}</p>`}
+      </section>
+
+      <section class="fam-chal panel" aria-labelledby="famChalTitle">
+        <h2 id="famChalTitle">${I.L("chal.heading")}</h2>
+        ${challengeHTML(I, challenge, band)}
       </section>
 
       <section class="fam-tips" aria-labelledby="famTipsTitle">

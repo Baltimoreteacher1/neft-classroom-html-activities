@@ -3,8 +3,11 @@
 import { bandSwitchHTML, crumbsHTML, domainGlyph } from "../components.js";
 import { bandRows, loadRoad } from "../content.js";
 import { loadRecord } from "../store.js";
-import { BASE, bandLabel, formatDate, html, icon, todayISO } from "../util.js";
+import { i18nFor } from "../i18n.js";
+import { BASE, DOMAIN_META, bandLabel, formatDate, html, icon, todayISO } from "../util.js";
 import { activityHref } from "./room.js";
+
+const bandEs = (band) => `Grados ${band.replace("-", "–")}`;
 
 export function currentWeek(plan) {
   const weeks = plan?.weeks || [];
@@ -15,21 +18,24 @@ export function currentWeek(plan) {
   return pick;
 }
 
-const playHref = (w, band) =>
-  `${BASE}/play?ids=${w.activities.join(",")}&t=${encodeURIComponent(`Road to ACCESS · Week ${w.n}`)}&grades=${band}`;
+const playHref = (w, band, I) =>
+  `${BASE}/play?ids=${w.activities.join(",")}&t=${encodeURIComponent(I.S(`Road to ACCESS · Week ${w.n}`, `Camino a ACCESS · Semana ${w.n}`))}&grades=${band}`;
 
 const minutesOf = (a) => Number(a.minutes) || parseInt(a.time, 10) || 8;
 
 export async function render(ctx) {
   const band = ctx.band;
+  const I = i18nFor(ctx);
+  const { T, S } = I;
+  const dom = (d) => T(d, DOMAIN_META[d]?.es);
   const [road, rows] = await Promise.all([loadRoad(), bandRows(band)]);
   const plan = road?.[band];
   if (!plan?.weeks?.length)
     return {
-      title: "Road to ACCESS",
+      title: S("Road to ACCESS", "Camino a ACCESS"),
       html: html`<section class="panel">
-        <h1 tabindex="-1">Road to ACCESS</h1>
-        <p>The weekly plan for ${bandLabel(band)} is coming soon.</p>
+        <h1 tabindex="-1">${T("Road to ACCESS", "Camino a ACCESS")}</h1>
+        <p>${T(`The weekly plan for ${bandLabel(band)} is coming soon.`, `El plan semanal para ${bandEs(band).toLowerCase()} llegará pronto.`)}</p>
       </section>`,
     };
   const byId = new Map(rows.map((r) => [r.id, r]));
@@ -56,12 +62,12 @@ export async function render(ctx) {
       >
         <span class="rd-node">${done ? icon("check") : w.n}</span>
         <span class="rd-label">
-          <strong>Week ${w.n}${done ? html`<span class="visually-hidden"> · all activities finished</span>` : ""}</strong>
+          <strong>${T(`Week ${w.n}`, `Semana ${w.n}`)}${done ? html`<span class="visually-hidden"> · ${T("all activities finished", "todas las actividades terminadas")}</span>` : ""}</strong>
           <span class="rd-type">${w.taskType}</span>
           <span class="rd-theme">${w.theme}</span>
           <span class="rd-date">${formatDate(w.start)}</span>
         </span>
-        ${isNow ? html`<span class="rd-here">This week</span>` : ""}
+        ${isNow ? html`<span class="rd-here">${T("This week", "Esta semana")}</span>` : ""}
       </a>
     </li>`;
   };
@@ -70,68 +76,70 @@ export async function render(ctx) {
   const prev = plan.weeks.find((w) => w.n === focus.n - 1);
   const next = plan.weeks.find((w) => w.n === focus.n + 1);
   return {
-    title: `Road to ACCESS · Week ${focus.n}`,
+    title: S(`Road to ACCESS · Week ${focus.n}`, `Camino a ACCESS · Semana ${focus.n}`),
     html: html`${crumbsHTML([
-        ["Lab", `${BASE}/`],
-        ["Road to ACCESS", null],
+        [S("Lab", "Laboratorio"), `${BASE}/`],
+        [S("Road to ACCESS", "Camino a ACCESS"), null],
       ])}
       <section class="prog-hero rd-hero">
         <div class="prog-hero-copy">
-          <p class="eyebrow">${icon("road")} ${bandLabel(band)} · 12-week classroom practice plan</p>
-          <h1 tabindex="-1">Road to ACCESS</h1>
+          <p class="eyebrow">${icon("road")} ${T(`${bandLabel(band)} · 12-week classroom practice plan`, `${bandEs(band)} · plan de práctica de 12 semanas para el aula`)}</p>
+          <h1 tabindex="-1">${T("Road to ACCESS", "Camino a ACCESS")}</h1>
           <p class="lead">
-            A weekly playlist with a language goal and something to talk about at home.
-            Family week has two activities. Some weeks include a supported stretch or a familiar review.
+            ${T(
+              "A weekly playlist with a language goal and something to talk about at home. Family week has two activities. Some weeks include a supported stretch or a familiar review.",
+              "Una lista semanal con una meta de lenguaje y un tema para conversar en casa. La semana de la familia tiene dos actividades. Algunas semanas incluyen un reto con apoyo o un repaso de algo conocido.",
+            )}
           </p>
           ${bandSwitchHTML(band, ctx.bands)}
         </div>
-        <div class="rd-summary" role="group" aria-label="Plan progress">
-          <p class="rd-summary-n"><strong>${weeksDone}</strong> of ${plan.weeks.length} weeks finished</p>
+        <div class="rd-summary" role="group" aria-label="${S("Plan progress", "Progreso del plan")}">
+          <p class="rd-summary-n">${I.mode === "en" ? html`<strong>${weeksDone}</strong> of ${plan.weeks.length} weeks finished` : T(`${weeksDone} of ${plan.weeks.length} weeks finished`, `${weeksDone} de ${plan.weeks.length} semanas terminadas`)}</p>
           <div class="bar" aria-hidden="true"><i style="width:${Math.round((weeksDone / plan.weeks.length) * 100)}%"></i></div>
-          <p class="fine">A week is finished when all of its activities are done on this device. This counts practice, not language level.</p>
-          ${now ? html`<a class="btn btn-primary" href="${BASE}/road/${now.n}?grades=${band}">Go to this week (Week ${now.n}) ${icon("arrow-right")}</a>` : ""}
+          <p class="fine">${T("A week is finished when all of its activities are done on this device. This counts practice, not language level.", "Una semana está terminada cuando todas sus actividades están hechas en este dispositivo. Esto cuenta la práctica, no el nivel de idioma.")}</p>
+          ${now ? html`<a class="btn btn-primary" href="${BASE}/road/${now.n}?grades=${band}">${T(`Go to this week (Week ${now.n})`, `Ir a esta semana (Semana ${now.n})`)} ${icon("arrow-right")}</a>` : ""}
         </div>
       </section>
-      <h2 class="prog-heading">The 12-week plan</h2>
+      <h2 class="prog-heading">${T("The 12-week plan", "El plan de 12 semanas")}</h2>
       <ol class="rd-map">
         ${plan.weeks.map(stop)}
       </ol>
       <div class="rd-detail">
         <section class="panel rd-week" aria-labelledby="weekTitle">
           <p class="eyebrow">
-            Week ${focus.n} · starts
+            ${T(`Week ${focus.n} · starts`, `Semana ${focus.n} · empieza`)}
             ${formatDate(focus.start, { weekday: "long", month: "long", day: "numeric" })}
           </p>
           <h2 id="weekTitle">${focus.taskType}: ${focus.theme}</h2>
           <p>${focus.focus}</p>
-          <p class="fine">About ${minutes} minutes for ${acts.length} activities, plus family conversation. Take breaks as needed.</p>
+          <p class="fine">${T(`About ${minutes} minutes for ${acts.length} activities, plus family conversation. Take breaks as needed.`, `Unos ${minutes} minutos para ${acts.length} actividades, más una conversación en familia. Haz pausas cuando las necesites.`)}</p>
           <ol class="rd-acts">
             ${acts.map(
               (a) =>
                 html`<li class="d-${a.domain.toLowerCase()} ${isDone(a.id) ? "is-done" : ""}">
                   <a href="${activityHref(a.domain, a.level, a.id)}?grades=${band}">
                     <span class="prog-tile">${domainGlyph(a.domain)}</span>
-                    <span class="rd-act-body"><strong>${a.title}</strong><span class="rd-act-meta">${a.domain} · ${minutesOf(a)} min</span><span class="fine">${focus.activityRationale?.[a.id] || a.skill}</span></span>
-                    <span class="rd-tick ${isDone(a.id) ? "is-on" : ""}">${isDone(a.id) ? html`${icon("check")} Done` : "Not yet"}</span>
+                    <span class="rd-act-body"><strong>${a.title}</strong><span class="rd-act-meta">${dom(a.domain)} · ${minutesOf(a)} min</span><span class="fine">${focus.activityRationale?.[a.id] || a.skill}</span></span>
+                    <span class="rd-tick ${isDone(a.id) ? "is-on" : ""}">${isDone(a.id) ? html`${icon("check")} ${T("Done", "Hecho")}` : T("Not yet", "Aún no")}</span>
                   </a>
                 </li>`,
             )}
           </ol>
-          <nav class="rd-step" aria-label="Move between weeks">
-            ${prev ? html`<a class="btn small" href="${BASE}/road/${prev.n}?grades=${band}">${icon("arrow-left")} Week ${prev.n}</a>` : html`<span></span>`}
-            ${next ? html`<a class="btn small" href="${BASE}/road/${next.n}?grades=${band}">Week ${next.n} ${icon("arrow-right")}</a>` : ""}
+          <nav class="rd-step" aria-label="${S("Move between weeks", "Moverse entre semanas")}">
+            ${prev ? html`<a class="btn small" href="${BASE}/road/${prev.n}?grades=${band}">${icon("arrow-left")} ${T(`Week ${prev.n}`, `Semana ${prev.n}`)}</a>` : html`<span></span>`}
+            ${next ? html`<a class="btn small" href="${BASE}/road/${next.n}?grades=${band}">${T(`Week ${next.n}`, `Semana ${next.n}`)} ${icon("arrow-right")}</a>` : ""}
           </nav>
         </section>
-        <aside class="rd-aside" aria-label="This week's tools">
+        <aside class="rd-aside" aria-label="${S("This week's tools", "Herramientas de esta semana")}">
           <section class="rd-card">
-            <h3>${icon("play")} Start the week</h3>
-            <a class="btn btn-primary" href="${playHref(focus, band)}">${icon("play")} Play this week in order</a>
+            <h3>${icon("play")} ${T("Start the week", "Empieza la semana")}</h3>
+            <a class="btn btn-primary" href="${playHref(focus, band, I)}">${icon("play")} ${T("Play this week in order", "Haz esta semana en orden")}</a>
             <button type="button" class="btn small" data-copy="${BASE}/road/${focus.n}?grades=${band}">
-              ${icon("copy")} Copy this week's link
+              ${icon("copy")} ${T("Copy this week's link", "Copiar el enlace de esta semana")}
             </button>
           </section>
           <section class="rd-card rd-family">
-            <h3>${icon("families")} Talk at home <span lang="es">· Para hablar en casa</span></h3>
+            <h3>${icon("families")} ${I.mode === "es" ? T("Talk at home", "Para hablar en casa") : html`Talk at home <span lang="es">· Para hablar en casa</span>`}</h3>
             <p>${focus.family.en}</p>
             <p lang="es">${focus.family.es}</p>
           </section>

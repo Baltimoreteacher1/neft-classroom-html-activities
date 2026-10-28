@@ -1,9 +1,11 @@
 // Language Construction Lab: Interactive sentence expansion, grammar-in-context, cohesion,
 // and academic register manipulation (WIDA ELD Sentence and Word/Phrase dimensions).
 import { crumbsHTML } from "../components.js";
+import { i18nFor, makeI18n } from "../i18n.js";
 import { ART, BASE, announce, html, icon, raw, safeJson, storage } from "../util.js";
 
 const CONST_KEY = "accessPracticeLab:v1:construction";
+let I = makeI18n("en");
 
 export const EXPANSION_CHALLENGES = [
   {
@@ -104,17 +106,17 @@ export const REGISTER_TRANSFORMS = [
   }
 ];
 
-const TABS = [
-  ["expansion", "Sentence Expansion"],
-  ["register", "Academic Register Transformer"],
+const tabs = () => [
+  ["expansion", I.T("Sentence Expansion", "Expansión de oraciones")],
+  ["register", I.T("Academic Register Transformer", "Transformador de registro académico")],
 ];
 
 function stageTrack(challenge, stageIdx) {
-  return html`<ol class="cs-stages" aria-label="Expansion stages">
+  return html`<ol class="cs-stages" aria-label="${I.S("Expansion stages", "Etapas de expansión")}">
     ${challenge.stages.map(
       (_, i) =>
         html`<li class="${i < stageIdx ? "is-done" : ""} ${i === stageIdx ? "is-here" : ""}" ${i === stageIdx ? raw('aria-current="step"') : ""}>
-          <span class="cs-stage-num">${i < stageIdx ? icon("check") : i + 1}</span> Stage ${i + 1}
+          <span class="cs-stage-num">${i < stageIdx ? icon("check") : i + 1}</span> ${I.T(`Stage ${i + 1}`, `Etapa ${i + 1}`)}
         </li>`,
     )}
   </ol>`;
@@ -127,31 +129,31 @@ function expansionHTML(saved) {
   const sentence = saved.currentText || challenge.kernel;
   return html`<article class="panel cs-card">
     <p class="eyebrow">${challenge.topic}</p>
-    <h2>Sentence Expansion Workbench</h2>
+    <h2>${I.T("Sentence Expansion Workbench", "Taller de expansión de oraciones")}</h2>
     ${stageTrack(challenge, stageIdx)}
     <div class="cs-sentence">
-      <p class="cs-label">${stageIdx === 0 ? "Starting sentence" : "Current sentence construction"}</p>
+      <p class="cs-label">${stageIdx === 0 ? I.T("Starting sentence", "Oración inicial") : I.T("Current sentence construction", "Oración que estás construyendo")}</p>
       <p class="built-sentence"><strong>${sentence}</strong></p>
-      <button type="button" class="btn ghost small" data-say="${sentence}">${icon("volume")} Hear sentence aloud</button>
+      <button type="button" class="btn ghost small" data-say="${sentence}">${icon("volume")} ${I.T("Hear sentence aloud", "Escuchar la oración en voz alta")}</button>
     </div>
     ${
       stage
         ? html`<div class="stage-container">
-            <h3><span class="cs-stage-tag">Stage ${stageIdx + 1} of ${challenge.stages.length}</span> ${stage.prompt}</h3>
+            <h3><span class="cs-stage-tag">${I.T(`Stage ${stageIdx + 1} of ${challenge.stages.length}`, `Etapa ${stageIdx + 1} de ${challenge.stages.length}`)}</span> ${stage.prompt}</h3>
             <div class="options-grid">
               ${stage.options.map(
                 (opt, oIdx) => html`<div class="cs-option">
                   <p class="cs-option-text">${opt.text}</p>
-                  <p class="cs-option-note"><span>Register note</span> ${opt.note}</p>
-                  <button type="button" class="btn btn-secondary small" data-const-add="${oIdx}">${icon("arrow-right")} Insert and expand</button>
+                  <p class="cs-option-note"><span>${I.T("Register note", "Nota de registro")}</span> ${opt.note}</p>
+                  <button type="button" class="btn btn-secondary small" data-const-add="${oIdx}">${icon("arrow-right")} ${I.T("Insert and expand", "Insertar y expandir")}</button>
                 </div>`,
               )}
             </div>
           </div>`
         : html`<div class="completion-banner" role="status">
-            <p class="fb-title">${icon("check")} Sentence complete</p>
-            <p>You expanded a short kernel into a complex academic sentence with cause, place and consequence clauses. Read it aloud, then try another challenge.</p>
-            <button type="button" class="btn btn-primary btn-domain" data-const-reset>Try another expansion challenge ${icon("arrow-right")}</button>
+            <p class="fb-title">${icon("check")} ${I.T("Sentence complete", "Oración completa")}</p>
+            <p>${I.T("You expanded a short kernel into a complex academic sentence with cause, place and consequence clauses. Read it aloud, then try another challenge.", "Expandiste una oración corta en una oración académica compleja con cláusulas de causa, lugar y consecuencia. Léela en voz alta y luego prueba otro reto.")}</p>
+            <button type="button" class="btn btn-primary btn-domain" data-const-reset>${I.T("Try another expansion challenge", "Probar otro reto de expansión")} ${icon("arrow-right")}</button>
           </div>`
     }
   </article>`;
@@ -159,14 +161,14 @@ function expansionHTML(saved) {
 
 function registerHTML(saved) {
   return html`<article class="panel cs-card">
-    <p class="eyebrow">Academic elevation</p>
-    <h2>Academic Register Transformer</h2>
-    <p class="cs-intro">Evaluate conversational expressions and choose the formal, academic equivalent.</p>
+    <p class="eyebrow">${I.T("Academic elevation", "Elevación académica")}</p>
+    <h2>${I.T("Academic Register Transformer", "Transformador de registro académico")}</h2>
+    <p class="cs-intro">${I.T("Evaluate conversational expressions and choose the formal, academic equivalent.", "Evalúa expresiones de conversación y elige el equivalente formal y académico.")}</p>
     ${REGISTER_TRANSFORMS.map(
       (rt, idx) => html`<section class="cs-register" aria-labelledby="regq-${idx}">
-        <p class="cs-label">${icon("conversation")} Informal, conversational phrasing</p>
+        <p class="cs-label">${icon("conversation")} ${I.T("Informal, conversational phrasing", "Forma informal, de conversación")}</p>
         <blockquote class="informal-speech" id="regq-${idx}">${rt.informal}</blockquote>
-        <h3>Select the formal academic construction</h3>
+        <h3>${I.T("Select the formal academic construction", "Elige la construcción formal y académica")}</h3>
         <div class="choices options-group">
           ${rt.options.map((opt, oIdx) => {
             const chosen = saved.transforms?.[idx] === oIdx;
@@ -179,7 +181,7 @@ function registerHTML(saved) {
               ${
                 chosen
                   ? html`<div class="feedback ${opt.correct ? "is-right" : "is-hint"}" role="status">
-                      <p class="fb-title">${icon(opt.correct ? "check" : "bulb")} ${opt.correct ? "Formal academic wording" : "Needs refinement"}</p>
+                      <p class="fb-title">${icon(opt.correct ? "check" : "bulb")} ${opt.correct ? I.T("Formal academic wording", "Redacción formal y académica") : I.T("Needs refinement", "Necesita mejorarse")}</p>
                       <p>${opt.reason}</p>
                     </div>`
                   : ""
@@ -193,24 +195,25 @@ function registerHTML(saved) {
 }
 
 export async function render(ctx) {
+  I = i18nFor(ctx);
   const saved = safeJson(storage.get(CONST_KEY), {}) || {};
   const activeTab = ctx.route.tab === "register" ? "register" : "expansion";
 
   return {
-    title: "Language Construction Lab",
-    html: html`${crumbsHTML([["Lab", `${BASE}/?grades=${ctx.band}`], ["Language Construction Lab", null]])}
+    title: I.S("Language Construction Lab", "Laboratorio de construcción del lenguaje"),
+    html: html`${crumbsHTML([[I.S("Lab", "Laboratorio"), `${BASE}/?grades=${ctx.band}`], [I.S("Language Construction Lab", "Laboratorio de construcción del lenguaje"), null]])}
       <div class="cs d-writing">
         <section class="lx-hero">
           <div>
-            <p class="eyebrow">${icon("construction")} Grammar-in-context and cohesion workbench</p>
-            <h1 tabindex="-1">Language Construction Lab</h1>
-            <p class="lead">Manipulate, expand, and elevate sentences. Build complex syntax, academic cohesion, and formal register.</p>
+            <p class="eyebrow">${icon("construction")} ${I.T("Grammar-in-context and cohesion workbench", "Taller de gramática en contexto y cohesión")}</p>
+            <h1 tabindex="-1">${I.T("Language Construction Lab", "Laboratorio de construcción del lenguaje")}</h1>
+            <p class="lead">${I.T("Manipulate, expand, and elevate sentences. Build complex syntax, academic cohesion, and formal register.", "Manipula, expande y mejora oraciones. Construye sintaxis compleja, cohesión académica y registro formal.")}</p>
           </div>
           <div class="lx-hero-art"><img src="${ART}/domain-writing.svg" alt="" width="480" height="360" /></div>
         </section>
 
-        <div class="cs-tabs" role="group" aria-label="Choose a workbench">
-          ${TABS.map(
+        <div class="cs-tabs" role="group" aria-label="${I.S("Choose a workbench", "Elige un taller")}">
+          ${tabs().map(
             ([id, label], i) => html`<button type="button" class="cs-tab" data-const-tab="${id}" aria-pressed="${String(activeTab === id)}">
               <span class="cs-tab-num">${i + 1}</span>${label}
             </button>`,
@@ -223,6 +226,7 @@ export async function render(ctx) {
 }
 
 export function onConstructionEvent(t, ctx) {
+  const L = i18nFor(ctx);
   const tab = t.closest("[data-const-tab]");
   if (tab) {
     const val = tab.dataset.constTab;
@@ -243,7 +247,7 @@ export function onConstructionEvent(t, ctx) {
     saved.stageIdx = stageIdx + 1;
     saved.currentText = challenge.stages[stageIdx].target;
     storage.set(CONST_KEY, JSON.stringify(saved));
-    announce("Sentence expanded.");
+    announce(L.S("Sentence expanded.", "Oración expandida."));
     return true;
   }
 
@@ -254,7 +258,7 @@ export function onConstructionEvent(t, ctx) {
     saved.stageIdx = 0;
     saved.currentText = "";
     storage.set(CONST_KEY, JSON.stringify(saved));
-    announce("Loaded next challenge.");
+    announce(L.S("Loaded next challenge.", "Se cargó el siguiente reto."));
     return true;
   }
 
@@ -265,7 +269,7 @@ export function onConstructionEvent(t, ctx) {
     saved.transforms = saved.transforms || {};
     saved.transforms[qIdx] = oIdx;
     storage.set(CONST_KEY, JSON.stringify(saved));
-    announce("Selection updated.");
+    announce(L.S("Selection updated.", "Selección actualizada."));
     return true;
   }
 

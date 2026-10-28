@@ -3,6 +3,7 @@
 // page (see lang/analyze.js); it never scores, and it is withheld from "on my own" attempts until the
 // learner submits a draft. The learner's first draft is always kept so growth is visible.
 import { crumbsHTML } from "../components.js";
+import { i18nFor, makeI18n } from "../i18n.js";
 import { loadExemplars, loadMission, loadStudioIndex, loadWritingTasks } from "../content.js";
 import { recommendTasks } from "../lang/adapt.js";
 import { analyzeResponse, compareDrafts } from "../lang/analyze.js";
@@ -28,6 +29,8 @@ import { ART, BASE, announce, html, icon, raw, wordCount } from "../util.js";
 
 const IGN = raw("data-nsr-ignore");
 let S = null;
+let I = makeI18n("en"); // set at the top of render(); helpers and handlers below read it
+const bandEs = (band) => `Grados ${band.replace("-", "–")}`;
 const chosen = new Map(); // task id → stage picked before the first attempt
 const save = () => saveStudio(S.studio);
 const FOCUS_OF = {
@@ -49,6 +52,17 @@ const FORM = {
   narrative: "Narrative",
   email: "Email",
 };
+const FORM_ES = {
+  cer: "Afirmación–evidencia–razonamiento",
+  paragraph: "Párrafo",
+  essay: "Ensayo",
+  letter: "Carta",
+  report: "Informe",
+  summary: "Resumen",
+  narrative: "Narración",
+  email: "Correo electrónico",
+};
+const formName = (f) => (FORM[f] ? I.T(FORM[f], FORM_ES[f]) : "");
 
 async function findTask(id, from) {
   if (from?.startsWith("mission:")) {
@@ -84,14 +98,14 @@ const optsFor = (task) => ({
 });
 
 const FORM_META = {
-  cer: ["evidence", "Make a claim, support it with evidence, and explain your reasoning."],
-  paragraph: ["list", "Build one well-organized paragraph with a clear main idea."],
-  essay: ["writing", "Develop your ideas across several paragraphs."],
-  letter: ["mail", "Write to a real reader with a clear purpose."],
-  report: ["library", "Organize facts from sources for a reader."],
-  summary: ["bookmark", "Say the main ideas of a text in your own words."],
-  narrative: ["star", "Tell a story with a beginning, a middle and an end."],
-  email: ["mail", "Write a clear message that gets something done."],
+  cer: ["evidence", "Make a claim, support it with evidence, and explain your reasoning.", "Haz una afirmación, apóyala con evidencia y explica tu razonamiento."],
+  paragraph: ["list", "Build one well-organized paragraph with a clear main idea.", "Construye un párrafo bien organizado con una idea principal clara."],
+  essay: ["writing", "Develop your ideas across several paragraphs.", "Desarrolla tus ideas en varios párrafos."],
+  letter: ["mail", "Write to a real reader with a clear purpose.", "Escribe para un lector real con un propósito claro."],
+  report: ["library", "Organize facts from sources for a reader.", "Organiza datos de las fuentes para un lector."],
+  summary: ["bookmark", "Say the main ideas of a text in your own words.", "Di las ideas principales de un texto con tus propias palabras."],
+  narrative: ["star", "Tell a story with a beginning, a middle and an end.", "Cuenta una historia con inicio, desarrollo y final."],
+  email: ["mail", "Write a clear message that gets something done.", "Escribe un mensaje claro que logre algo."],
 };
 const formIcon = (f) => FORM_META[f]?.[0] || "writing";
 
@@ -105,7 +119,7 @@ async function chooserHTML(ctx, index, entries) {
       href: `${BASE}/write/${t.id}?grades=${ctx.band}`,
       title: t.title,
       ico: formIcon(t.form),
-      kind: FORM[t.form],
+      kind: formName(t.form),
       time: t.time,
       desc: full.get(t.id)?.scenario,
       meta: [t.keyUse, t.contentArea],
@@ -113,26 +127,26 @@ async function chooserHTML(ctx, index, entries) {
     });
   const next = recs[0];
   return html`${crumbsHTML([
-      ["Lab", `${BASE}/?grades=${ctx.band}`],
-      ["Writing Studio", null],
+      [I.S("Lab", "Laboratorio"), `${BASE}/?grades=${ctx.band}`],
+      [I.S("Writing Studio", "Estudio de escritura"), null],
     ])}
     <div class="d-writing">
     ${chooserHeroHTML({
       domain: "d-writing",
-      eyebrow: `Grades ${ctx.band.replace("-", "–")} · ${tasks.length} writing tasks`,
-      title: "Writing Studio",
-      lead: "Read sources, collect evidence, write, get specific feedback, and revise. Your first draft is kept so you can see how you grew.",
+      eyebrow: I.T(`Grades ${ctx.band.replace("-", "–")} · ${tasks.length} writing tasks`, `${bandEs(ctx.band)} · ${tasks.length} tareas de escritura`),
+      title: I.T("Writing Studio", "Estudio de escritura"),
+      lead: I.T("Read sources, collect evidence, write, get specific feedback, and revise. Your first draft is kept so you can see how you grew.", "Lee las fuentes, reúne evidencia, escribe, recibe comentarios específicos y revisa. Se guarda tu primer borrador para que veas cómo creciste."),
       art: `${ART}/domain-writing.svg`,
-      loop: ["Read", "Plan", "Write", "Feedback", "Revise"],
-      cta: html`<div class="hero-actions">${next ? html`<a class="btn btn-primary btn-big btn-next" href="${BASE}/write/${next.task.id}?grades=${ctx.band}"><span class="btn-kicker">Try next</span><span class="next-title">${next.task.title}</span>${icon("arrow-right")}</a>` : ""}<a class="btn" href="${BASE}/write?tab=portfolio&grades=${ctx.band}">${icon("bookmark")} My writing portfolio</a></div>`,
+      loop: [I.T("Read", "Leer"), I.T("Plan", "Planear"), I.T("Write", "Escribir"), I.T("Feedback", "Comentarios"), I.T("Revise", "Revisar")],
+      cta: html`<div class="hero-actions">${next ? html`<a class="btn btn-primary btn-big btn-next" href="${BASE}/write/${next.task.id}?grades=${ctx.band}"><span class="btn-kicker">${I.T("Try next", "Prueba la siguiente")}</span><span class="next-title">${next.task.title}</span>${icon("arrow-right")}</a>` : ""}<a class="btn" href="${BASE}/write?tab=portfolio&grades=${ctx.band}">${icon("bookmark")} ${I.T("My writing portfolio", "Mi portafolio de escritura")}</a></div>`,
     })}
     ${
       tasks.length
-        ? html`${jumpNavHTML(forms.map((f) => [`wrt-${f}`, FORM[f]]), "Jump to a kind of writing task")}
+        ? html`${jumpNavHTML(forms.map((f) => [`wrt-${f}`, formName(f)]), I.S("Jump to a kind of writing task", "Ir a un tipo de tarea de escritura"))}
           ${
             recs.length
               ? html`<section class="task-group is-next" aria-labelledby="wrt-next-h">
-                  <header><h2 id="wrt-next-h">${icon("sparkle")} Try next</h2><p class="fine">Picked from the evidence you have saved on this device.</p></header>
+                  <header><h2 id="wrt-next-h">${icon("sparkle")} ${I.T("Try next", "Prueba la siguiente")}</h2><p class="fine">${I.T("Picked from the evidence you have saved on this device.", "Elegida según la evidencia que guardaste en este dispositivo.")}</p></header>
                   <div class="task-grid">${recs.map((r) => card(r.task, r.why))}</div>
                 </section>`
               : ""
@@ -140,17 +154,16 @@ async function chooserHTML(ctx, index, entries) {
           ${forms.map(
             (f) =>
               html`<section class="task-group" id="wrt-${f}" aria-labelledby="wrt-${f}-h">
-                <header><h2 id="wrt-${f}-h">${icon(formIcon(f))} ${FORM[f]}</h2><p class="fine">${FORM_META[f]?.[1] || ""}</p></header>
+                <header><h2 id="wrt-${f}-h">${icon(formIcon(f))} ${formName(f)}</h2><p class="fine">${FORM_META[f] ? I.T(FORM_META[f][1], FORM_META[f][2]) : ""}</p></header>
                 <div class="task-grid">${tasks.filter((t) => t.form === f).map((t) => card(t))}</div>
               </section>`,
           )}`
-        : html`<section class="panel empty-state"><img src="${ART}/empty.svg" alt="" width="480" height="300" /><h2>No writing tasks for this grade band yet</h2><p>Switch grade band from the menu, or open the quick Writing practice room.</p><a class="btn" href="${BASE}/Writing/A?grades=${ctx.band}">Writing practice room</a></section>`
+        : html`<section class="panel empty-state"><img src="${ART}/empty.svg" alt="" width="480" height="300" /><h2>${I.T("No writing tasks for this grade band yet", "Aún no hay tareas de escritura para este grupo de grados")}</h2><p>${I.T("Switch grade band from the menu, or open the quick Writing practice room.", "Cambia el grupo de grados desde el menú, o abre la sala rápida de práctica de escribir.")}</p><a class="btn" href="${BASE}/Writing/A?grades=${ctx.band}">${I.T("Writing practice room", "Sala de práctica de escribir")}</a></section>`
     }
-    <p class="no-print"><a class="btn" href="${BASE}/printables/studio-writing" target="_blank" rel="noopener">${icon("print")} Print writing task cards</a></p>
+    <p class="no-print"><a class="btn" href="${BASE}/printables/studio-writing" target="_blank" rel="noopener">${icon("print")} ${I.T("Print writing task cards", "Imprimir tarjetas de tareas de escritura")}</a></p>
     </div>
     <p class="disclaimer">
-      Classroom writing practice. The Language Coach describes what is on the page — it does not
-      judge whether ideas are correct, and it is not a WIDA score.
+      ${I.T("Classroom writing practice. The Language Coach describes what is on the page — it does not judge whether ideas are correct, and it is not a WIDA score.", "Práctica de escritura en el aula. El Entrenador de lenguaje describe lo que hay en la página; no juzga si las ideas son correctas y no es una puntuación de WIDA.")}
     </p>`;
 }
 
@@ -160,20 +173,20 @@ function portfolioHTML(ctx, tasks) {
     .map(([id, w]) => ({ id, w, task: tasks.find((t) => t.id === id) }))
     .filter((r) => r.task);
   const picks = new Set(S.studio.portfolio.picks.map((p) => p.id));
-  const startedWith = (w) => (w.stage === "independent" ? "on my own" : w.stage === "supported" ? "with a word bank" : "with frames");
+  const startedWith = (w) => (w.stage === "independent" ? I.T("on my own", "por mi cuenta") : w.stage === "supported" ? I.T("with a word bank", "con un banco de palabras") : I.T("with frames", "con marcos de oraciones"));
   return html`${crumbsHTML([
-      ["Lab", `${BASE}/?grades=${ctx.band}`],
-      ["Writing Studio", `${BASE}/write?grades=${ctx.band}`],
-      ["Portfolio", null],
+      [I.S("Lab", "Laboratorio"), `${BASE}/?grades=${ctx.band}`],
+      [I.S("Writing Studio", "Estudio de escritura"), `${BASE}/write?grades=${ctx.band}`],
+      [I.S("Portfolio", "Portafolio"), null],
     ])}
     <section class="practice-portfolio studio-view d-writing">
       <header class="portfolio-head">
         <div>
-          <p class="eyebrow">${icon("bookmark")} Writing Studio</p>
-          <h1 tabindex="-1">My writing portfolio</h1>
-          <p class="lead">Practice work and how it changed. This is a record of practice, not a proficiency score. Audio is not included.</p>
+          <p class="eyebrow">${icon("bookmark")} ${I.T("Writing Studio", "Estudio de escritura")}</p>
+          <h1 tabindex="-1">${I.T("My writing portfolio", "Mi portafolio de escritura")}</h1>
+          <p class="lead">${I.T("Practice work and how it changed. This is a record of practice, not a proficiency score. Audio is not included.", "Trabajo de práctica y cómo cambió. Esto es un registro de práctica, no una puntuación de dominio. No incluye audio.")}</p>
         </div>
-        <div class="row-actions no-print"><button type="button" class="btn btn-primary" data-print>${icon("print")} Print my portfolio</button><a class="btn" href="${BASE}/write?grades=${ctx.band}">${icon("writing")} Write something new</a></div>
+        <div class="row-actions no-print"><button type="button" class="btn btn-primary" data-print>${icon("print")} ${I.T("Print my portfolio", "Imprimir mi portafolio")}</button><a class="btn" href="${BASE}/write?grades=${ctx.band}">${icon("writing")} ${I.T("Write something new", "Escribir algo nuevo")}</a></div>
       </header>
       ${
         rows.length
@@ -184,18 +197,18 @@ function portfolioHTML(ctx, tasks) {
               return html`<article class="portfolio-entry card">
                 <header class="entry-head">
                   <div><h2>${task.title}</h2>
-                    <p class="entry-meta"><span class="tag">${FORM[task.form]}</span><span class="tag">${task.keyUse}</span><span class="tag">${w.versions.length} version${w.versions.length === 1 ? "" : "s"}</span>${w.stage ? html`<span class="tag">Started ${startedWith(w)}</span>` : ""}</p></div>
-                  <label class="pick-toggle no-print"><input type="checkbox" data-pick="${id}" ${picks.has(id) ? raw("checked") : ""} ${IGN} /> Show in my best-work list</label>
+                    <p class="entry-meta"><span class="tag">${formName(task.form)}</span><span class="tag">${task.keyUse}</span><span class="tag">${I.T(`${w.versions.length} version${w.versions.length === 1 ? "" : "s"}`, `${w.versions.length} ${w.versions.length === 1 ? "versión" : "versiones"}`)}</span>${w.stage ? html`<span class="tag">${I.T("Started", "Empezado")} ${startedWith(w)}</span>` : ""}</p></div>
+                  <label class="pick-toggle no-print"><input type="checkbox" data-pick="${id}" ${picks.has(id) ? raw("checked") : ""} ${IGN} /> ${I.T("Show in my best-work list", "Mostrar en mi lista de mejores trabajos")}</label>
                 </header>
                 <div class="entry-drafts ${growth ? "has-two" : ""}">
-                  <section><h3>First draft</h3><p class="portfolio-response">${first.text}</p></section>
-                  ${growth ? html`<section><h3>Latest version</h3><p class="portfolio-response">${last.text}</p></section>` : ""}
+                  <section><h3>${I.T("First draft", "Primer borrador")}</h3><p class="portfolio-response">${first.text}</p></section>
+                  ${growth ? html`<section><h3>${I.T("Latest version", "Última versión")}</h3><p class="portfolio-response">${last.text}</p></section>` : ""}
                 </div>
-                ${growth && (growth.changes.length || growth.gainedMoves.length) ? html`<section class="entry-changes"><h3>${icon("growth")} What changed</h3><ul>${growth.changes.map((c) => html`<li>${c.label}: ${c.from} → ${c.to}</li>`)}${growth.gainedMoves.map((m) => html`<li>Now ${m.toLowerCase()}</li>`)}</ul></section>` : ""}
-                ${w.reflection ? html`<section class="entry-reflection"><h3>What I improved and why</h3><p class="portfolio-response">${w.reflection}</p></section>` : ""}
+                ${growth && (growth.changes.length || growth.gainedMoves.length) ? html`<section class="entry-changes"><h3>${icon("growth")} ${I.T("What changed", "Qué cambió")}</h3><ul>${growth.changes.map((c) => html`<li>${c.label}: ${c.from} → ${c.to}</li>`)}${growth.gainedMoves.map((m) => html`<li>${I.T(`Now ${m.toLowerCase()}`, `Ahora: ${m.toLowerCase()}`)}</li>`)}</ul></section>` : ""}
+                ${w.reflection ? html`<section class="entry-reflection"><h3>${I.T("What I improved and why", "Qué mejoré y por qué")}</h3><p class="portfolio-response">${w.reflection}</p></section>` : ""}
               </article>`;
             })
-          : html`<section class="panel empty-state"><img src="${ART}/empty.svg" alt="" width="480" height="300" /><h2>Nothing in your portfolio yet</h2><p>Your writing will appear here after you save a draft in the Writing Studio.</p><a class="btn btn-primary" href="${BASE}/write?grades=${ctx.band}">Choose a writing task</a></section>`
+          : html`<section class="panel empty-state"><img src="${ART}/empty.svg" alt="" width="480" height="300" /><h2>${I.T("Nothing in your portfolio yet", "Aún no hay nada en tu portafolio")}</h2><p>${I.T("Your writing will appear here after you save a draft in the Writing Studio.", "Tu escritura aparecerá aquí después de que guardes un borrador en el Estudio de escritura.")}</p><a class="btn btn-primary" href="${BASE}/write?grades=${ctx.band}">${I.T("Choose a writing task", "Elige una tarea de escritura")}</a></section>`
       }
     </section>`;
 }
@@ -203,22 +216,22 @@ function portfolioHTML(ctx, tasks) {
 function sourcesHTML(task, state) {
   const sources = task.sources || [];
   const ev = state.evidence || [];
-  return html`<section class="panel sources" id="wrt-sources" aria-label="Sources">
-    <div class="panel-head"><h3>${icon("reading")} Sources</h3><a class="ghost small jump" href="#wrt-write">Jump to my writing ${icon("arrow-right")}</a></div>
+  return html`<section class="panel sources" id="wrt-sources" aria-label="${I.S("Sources", "Fuentes")}">
+    <div class="panel-head"><h3>${icon("reading")} ${I.T("Sources", "Fuentes")}</h3><a class="ghost small jump" href="#wrt-write">${I.T("Jump to my writing", "Ir a mi escritura")} ${icon("arrow-right")}</a></div>
     ${sources.map((src, i) =>
       src.kind === "passage" || src.kind === "text"
         ? html`<section class="source">
             <h4 class="source-title">${icon("reading")} ${src.title}</h4>
             <div class="source-text">${(src.text || []).map((p, pi) => html`<p>${splitSentences(p).map((s, si) => html`<button type="button" class="ev-sent ${ev.some((e) => e.text === s.text) ? "is-picked" : ""}" data-pick-evidence="${i}:${pi}:${si}" aria-pressed="${ev.some((e) => e.text === s.text)}">${s.text}</button>${" "}`)}</p>`)}</div>
-            <button type="button" class="ghost small" data-read-source="${i}">${icon("volume")} Read aloud</button>
+            <button type="button" class="ghost small" data-read-source="${i}">${icon("volume")} ${I.T("Read aloud", "Leer en voz alta")}</button>
           </section>`
         : sourceHTML(src, { id: String(i) }),
     )}
-    <p class="fine tip">${icon("pin")}<span>Press Enter or tap a sentence to add it to your evidence notebook.</span></p>
+    <p class="fine tip">${icon("pin")}<span>${I.T("Press Enter or tap a sentence to add it to your evidence notebook.", "Presiona Enter o toca una oración para agregarla a tu cuaderno de evidencia.")}</span></p>
     ${
       ev.length
-        ? html`<div class="evidence-notebook"><h4>${icon("evidence")} My evidence notebook</h4>
-            <ul>${ev.map((e, i) => html`<li><span>“${e.text}”</span><button type="button" class="ghost small" data-drop-evidence="${i}" aria-label="Remove from notebook">${icon("x")}</button></li>`)}</ul></div>`
+        ? html`<div class="evidence-notebook"><h4>${icon("evidence")} ${I.T("My evidence notebook", "Mi cuaderno de evidencia")}</h4>
+            <ul>${ev.map((e, i) => html`<li><span>“${e.text}”</span><button type="button" class="ghost small" data-drop-evidence="${i}" aria-label="${I.S("Remove from notebook", "Quitar del cuaderno")}">${icon("x")}</button></li>`)}</ul></div>`
         : ""
     }
   </section>`;
@@ -226,10 +239,10 @@ function sourcesHTML(task, state) {
 
 function supportsHTML(task) {
   if (S.stage === "independent")
-    return html`<p class="own-note">${icon("user")}<span>You chose to write on your own. Sources and your notes are available; frames, word bank and model are closed.</span></p>`;
+    return html`<p class="own-note">${icon("user")}<span>${I.T("You chose to write on your own. Sources and your notes are available; frames, word bank and model are closed.", "Elegiste escribir por tu cuenta. Las fuentes y tus notas están disponibles; los marcos de oraciones, el banco de palabras y el modelo están cerrados.")}</span></p>`;
   return supportsPanelHTML(task, S.stage, {
-    title: "Writing starters",
-    modelBody: { summary: "See a model response", body: html`<p class="portfolio-response">${task.stages.guided.model}</p>` },
+    title: I.S("Writing starters", "Para empezar a escribir"),
+    modelBody: { summary: I.S("See a model response", "Ver una respuesta modelo"), body: html`<p class="portfolio-response">${task.stages.guided.model}</p>` },
   });
 }
 
@@ -240,9 +253,9 @@ function versionsHTML(state) {
   const d = diffWords(first.text, last.text);
   return disclosure(
     "wrt-history",
-    html`${icon("replay")} Compare my first draft and now`,
-    html`<p class="diff" aria-label="Changes from first draft to now">${d.map((x) => (x.op === "same" ? html`${x.text} ` : x.op === "add" ? html`<ins>${x.text}</ins> ` : html`<del>${x.text}</del> `))}</p>
-      <p class="fine"><ins>Added</ins> · <del>Removed</del> · ${state.versions.length} versions saved</p>`,
+    html`${icon("replay")} ${I.T("Compare my first draft and now", "Comparar mi primer borrador con el actual")}`,
+    html`<p class="diff" aria-label="${I.S("Changes from first draft to now", "Cambios desde el primer borrador hasta ahora")}">${d.map((x) => (x.op === "same" ? html`${x.text} ` : x.op === "add" ? html`<ins>${x.text}</ins> ` : html`<del>${x.text}</del> `))}</p>
+      <p class="fine"><ins>${I.T("Added", "Agregado")}</ins> · <del>${I.T("Removed", "Quitado")}</del> · ${I.T(`${state.versions.length} versions saved`, `${state.versions.length} versiones guardadas`)}</p>`,
     { open: true, cls: "draft-history" },
   );
 }
@@ -252,7 +265,7 @@ function revisionPromptsHTML(task, a) {
   const focus = top ? FOCUS_OF[top.id] || (top.patternId ? "sentence" : "reasoning") : null;
   const picks = (task.revisionPrompts || []).filter((p) => p.focus === focus).slice(0, 2);
   return picks.length
-    ? html`<div class="revise-prompts"><h4>${icon("retry")} Revise with this question</h4><ul>${picks.map((p) => html`<li>${p.prompt}</li>`)}</ul></div>`
+    ? html`<div class="revise-prompts"><h4>${icon("retry")} ${I.T("Revise with this question", "Revisa con esta pregunta")}</h4><ul>${picks.map((p) => html`<li>${p.prompt}</li>`)}</ul></div>`
     : "";
 }
 
@@ -262,47 +275,50 @@ async function exemplarsHTML(task) {
   const order = ["early", "building", "strong"];
   return disclosure(
     "wrt-exemplars",
-    html`${icon("library")} Compare with sample responses (practice anchors)`,
-    html`<p class="fine">Three sample responses written for practice. They are not WIDA levels. Notice what each one does; then reread your own.</p>
+    html`${icon("library")} ${I.T("Compare with sample responses (practice anchors)", "Comparar con respuestas de ejemplo (referencias de práctica)")}`,
+    html`<p class="fine">${I.T("Three sample responses written for practice. They are not WIDA levels. Notice what each one does; then reread your own.", "Tres respuestas de ejemplo escritas para practicar. No son niveles de WIDA. Fíjate en lo que hace cada una; luego vuelve a leer la tuya.")}</p>
       <div class="exemplar-grid">${order
         .map((b) => all.find((x) => x.practiceBand === b))
         .filter(Boolean)
         .map(
-          (x) => html`<article class="card"><h4><span class="mode-pill">${x.practiceBand[0].toUpperCase() + x.practiceBand.slice(1)}</span></h4>
+          (x) => html`<article class="card"><h4><span class="mode-pill">${I.T(x.practiceBand[0].toUpperCase() + x.practiceBand.slice(1), EXEMPLAR_BAND_ES[x.practiceBand])}</span></h4>
             <p class="portfolio-response">${x.response}</p>
             <ul>${x.annotations.map((a) => html`<li>“${a.quote}” — <em>${a.dimension}</em>: ${a.note}</li>`)}</ul>
-            <p class="fine">${x.whyThisBand} <strong>Next step:</strong> ${x.nextStep}</p></article>`,
+            <p class="fine">${x.whyThisBand} <strong>${I.T("Next step:", "Próximo paso:")}</strong> ${x.nextStep}</p></article>`,
         )}</div>`,
     { cls: "panel" },
   );
 }
 
+const EXEMPLAR_BAND_ES = { early: "Inicial", building: "En construcción", strong: "Sólida" };
+
 function stepsFor(state, text, analyzed) {
   return [
-    { label: "Read", done: (state.evidence || []).length > 0 },
-    { label: "Plan", done: Object.values(state.organizer).some(Boolean) },
-    { label: "Write", done: wordCount(text) >= 4 },
-    { label: "Feedback", done: Boolean(analyzed) },
-    { label: "Finish", done: Boolean(state.finishedAt) },
+    { label: I.T("Read", "Leer"), done: (state.evidence || []).length > 0 },
+    { label: I.T("Plan", "Planear"), done: Object.values(state.organizer).some(Boolean) },
+    { label: I.T("Write", "Escribir"), done: wordCount(text) >= 4 },
+    { label: I.T("Feedback", "Comentarios"), done: Boolean(analyzed) },
+    { label: I.T("Finish", "Terminar"), done: Boolean(state.finishedAt) },
   ];
 }
 
 export async function render(ctx) {
+  I = i18nFor(ctx);
   const index = await loadStudioIndex();
   S = { ...(S || {}), band: ctx.band, studio: loadStudio(), ledger: loadLedger() };
   const q = new URLSearchParams(location.search);
   const id = ctx.route.id;
   if (!id && q.get("tab") === "portfolio")
     return {
-      title: "Writing portfolio",
+      title: I.S("Writing portfolio", "Portafolio de escritura"),
       html: portfolioHTML(ctx, (await loadWritingTasks()).tasks),
     };
-  if (!id) return { title: "Writing Studio", html: await chooserHTML(ctx, index, S.ledger.entries) };
+  if (!id) return { title: I.S("Writing Studio", "Estudio de escritura"), html: await chooserHTML(ctx, index, S.ledger.entries) };
   const found = await findTask(id, q.get("from"));
   if (!found)
     return {
-      title: "Not found",
-      html: html`<section class="panel empty-state"><img src="${ART}/empty.svg" alt="" width="480" height="300" /><h1 tabindex="-1">We could not find that task.</h1><a class="btn" href="${BASE}/write?grades=${ctx.band}">Writing Studio</a></section>`,
+      title: I.S("Not found", "No se encontró"),
+      html: html`<section class="panel empty-state"><img src="${ART}/empty.svg" alt="" width="480" height="300" /><h1 tabindex="-1">${I.T("We could not find that task.", "No pudimos encontrar esa tarea.")}</h1><a class="btn" href="${BASE}/write?grades=${ctx.band}">${I.T("Writing Studio", "Estudio de escritura")}</a></section>`,
     };
   const { task, mission } = found;
   S.task = task;
@@ -322,8 +338,10 @@ export async function render(ctx) {
   const sug = missionStage
     ? {
         stage: missionStage,
-        reason:
+        reason: I.S(
           "Your mission suggested this starting support from your earlier practice. You can choose a different setting.",
+          "Tu misión sugirió este apoyo inicial a partir de tu práctica anterior. Puedes elegir otra opción.",
+        ),
       }
     : baseSuggestion;
   S.stage = S.state.stage || chosen.get(task.id) || sug.stage;
@@ -334,27 +352,27 @@ export async function render(ctx) {
   const goalMin = task.expected.minWords;
   return {
     title: task.title,
-    html: html`${crumbsHTML([["Lab", `${BASE}/?grades=${ctx.band}`], mission ? [mission.title, `${BASE}/missions/${mission.id}?grades=${ctx.band}`] : ["Writing Studio", `${BASE}/write?grades=${ctx.band}`], [task.title, null]])}
+    html: html`${crumbsHTML([[I.S("Lab", "Laboratorio"), `${BASE}/?grades=${ctx.band}`], mission ? [mission.title, `${BASE}/missions/${mission.id}?grades=${ctx.band}`] : [I.S("Writing Studio", "Estudio de escritura"), `${BASE}/write?grades=${ctx.band}`], [task.title, null]])}
       <article class="activity studio-view write-studio d-writing">
         <header class="act-head">
           <div class="act-bar">
-            <p class="act-context">${icon("writing")} Writing Studio · ${FORM[task.form]} · ${task.keyUse}</p>
+            <p class="act-context">${icon("writing")} ${I.T("Writing Studio", "Estudio de escritura")} · ${formName(task.form)} · ${task.keyUse}</p>
             <p class="act-step">${icon("clock")} ${task.time} · ${task.contentArea}</p>
           </div>
           <h1 tabindex="-1">${task.title}</h1>
           ${purposeBadgeHTML(S.stage)}
           <div class="task-brief">
-            <div><span class="brief-label">${icon("info")} Situation</span><p>${task.scenario}</p></div>
-            <div class="brief-task"><span class="brief-label">${icon("flag")} Your task</span><p>${task.prompt}${S.fx.promptAdd.map((x) => html` <span class="path-add">${x}</span>`)}</p>
-              <button type="button" class="ghost small" data-say="${task.prompt}">${icon("volume")} Hear the task</button></div>
+            <div><span class="brief-label">${icon("info")} ${I.T("Situation", "Situación")}</span><p>${task.scenario}</p></div>
+            <div class="brief-task"><span class="brief-label">${icon("flag")} ${I.T("Your task", "Tu tarea")}</span><p>${task.prompt}${S.fx.promptAdd.map((x) => html` <span class="path-add">${x}</span>`)}</p>
+              <button type="button" class="ghost small" data-say="${task.prompt}">${icon("volume")} ${I.T("Hear the task", "Escuchar la tarea")}</button></div>
           </div>
         </header>
-        ${stepperHTML(stepsFor(S.state, text, analyzed), { label: "Writing steps" })}
+        ${stepperHTML(stepsFor(S.state, text, analyzed), { label: I.S("Writing steps", "Pasos de escritura") })}
         ${S.state.versions.length ? stageLockedHTML(S.stage) : stagePickerHTML(S.stage, sug)}
         <div class="studio-cols is-write">
           <div class="studio-col">${sourcesHTML(task, S.state)}
             <section class="panel organizer" id="wrt-plan">
-              <h3><span class="step-badge">2</span> Plan</h3>
+              <h3><span class="step-badge">2</span> ${I.T("Plan", "Planear")}</h3>
               <div class="slot-grid">
                 ${task.organizer.map((slot, i) => html`<label class="field slot"><span><b class="slot-n">${i + 1}</b>${slot.label}</span><textarea rows="2" data-org="${slot.id}" ${S.stage === "independent" ? "" : html`placeholder="${S.fx.hints[slot.id] || slot.hint}"`} ${IGN}>${S.state.organizer[slot.id] || ""}</textarea></label>`)}
               </div>
@@ -363,13 +381,13 @@ export async function render(ctx) {
           <div class="studio-col">
 
             <section class="panel editor-panel" id="wrt-write">
-              <h3><span class="step-badge">3</span> Write</h3>
-              <label class="field paper"><span class="paper-head">Your writing <span class="fine">Saved on this device as you type</span></span><textarea id="wrt-draft" rows="${task.expected.paragraphs > 1 ? 16 : 11}" spellcheck="false" data-draft ${IGN}>
+              <h3><span class="step-badge">3</span> ${I.T("Write", "Escribir")}</h3>
+              <label class="field paper"><span class="paper-head">${I.T("Your writing", "Tu escritura")} <span class="fine">${I.T("Saved on this device as you type", "Se guarda en este dispositivo mientras escribes")}</span></span><textarea id="wrt-draft" rows="${task.expected.paragraphs > 1 ? 16 : 11}" spellcheck="false" data-draft ${IGN}>
 ${text}</textarea></label>
-              <p class="meter"><span class="meter-bar"><span style="width:${Math.min(100, Math.round((wordCount(text) / goalMin) * 100))}%"></span></span><span data-meter>${wordCount(text)} words · usually about ${goalMin}–${task.expected.maxWords}</span></p>
+              <p class="meter"><span class="meter-bar"><span style="width:${Math.min(100, Math.round((wordCount(text) / goalMin) * 100))}%"></span></span><span data-meter>${meterText(wordCount(text), goalMin, task.expected.maxWords)}</span></p>
               <div class="row-actions">
-                <button type="button" class="btn btn-primary" data-feedback ${wordCount(text) < 4 ? raw("disabled") : ""}>${icon("sparkle")} Get feedback</button>
-                <button type="button" class="ghost" data-read-draft>${icon("volume")} Read my writing to me</button>
+                <button type="button" class="btn btn-primary" data-feedback ${wordCount(text) < 4 ? raw("disabled") : ""}>${icon("sparkle")} ${I.T("Get feedback", "Obtener comentarios")}</button>
+                <button type="button" class="ghost" data-read-draft>${icon("volume")} ${I.T("Read my writing to me", "Leer mi escritura en voz alta")}</button>
               </div>
             </section>
             ${supportsHTML(task)}
@@ -378,24 +396,26 @@ ${text}</textarea></label>
         ${
           a
             ? html`<section class="panel" id="wrt-feedback">
-                  <h3><span class="step-badge">4</span> What your writing shows</h3>
-                  ${feedbackHTML(a, text, { patternHref: (pid) => `${BASE}/detective/${pid}?grades=${ctx.band}` })}${revisionPromptsHTML(task, a)}${S.fx.revise.length ? html`<div class="revise-prompts"><h4>${icon("mission")} From your mission choice</h4><ul>${S.fx.revise.map((q) => html`<li>${q}</li>`)}</ul></div>` : ""}${versionsHTML(S.state)}
-                  <p class="fine revise-line">${icon("retry")}<span>Now revise: change your draft, then press <strong>Get feedback</strong> again to see what changed.</span><button type="button" class="btn small" data-revise>Back to my draft</button></p>
+                  <h3><span class="step-badge">4</span> ${I.T("What your writing shows", "Lo que muestra tu escritura")}</h3>
+                  ${feedbackHTML(a, text, { patternHref: (pid) => `${BASE}/detective/${pid}?grades=${ctx.band}` })}${revisionPromptsHTML(task, a)}${S.fx.revise.length ? html`<div class="revise-prompts"><h4>${icon("mission")} ${I.T("From your mission choice", "De tu elección en la misión")}</h4><ul>${S.fx.revise.map((q) => html`<li>${q}</li>`)}</ul></div>` : ""}${versionsHTML(S.state)}
+                  <p class="fine revise-line">${icon("retry")}<span>${I.mode === "en" ? html`Now revise: change your draft, then press <strong>Get feedback</strong> again to see what changed.` : I.T("Now revise: change your draft, then press Get feedback again to see what changed.", "Ahora revisa: cambia tu borrador y luego presiona Obtener comentarios otra vez para ver qué cambió.")}</span><button type="button" class="btn small" data-revise>${I.T("Back to my draft", "Volver a mi borrador")}</button></p>
                 </section>
                 <section class="panel" id="wrt-finish">
-                  <h3><span class="step-badge">5</span> Finish</h3>
-                  <label class="field"><span>What did you improve, and why?</span><textarea rows="3" data-reflection ${IGN}>${S.state.reflection}</textarea></label>
-                  <div class="row-actions"><button type="button" class="btn btn-primary" data-finish ${wordCount(S.state.reflection) >= 5 ? "" : raw("disabled")}>${icon("bookmark")} Save to my portfolio</button></div>
-                  ${S.state.finishedAt ? html`<p class="saved-note">${icon("check")} <span>Saved to your portfolio. <a href="${BASE}/write?tab=portfolio&grades=${ctx.band}">See my portfolio</a></span></p>` : ""}
+                  <h3><span class="step-badge">5</span> ${I.T("Finish", "Terminar")}</h3>
+                  <label class="field"><span>${I.T("What did you improve, and why?", "¿Qué mejoraste y por qué?")}</span><textarea rows="3" data-reflection ${IGN}>${S.state.reflection}</textarea></label>
+                  <div class="row-actions"><button type="button" class="btn btn-primary" data-finish ${wordCount(S.state.reflection) >= 5 ? "" : raw("disabled")}>${icon("bookmark")} ${I.T("Save to my portfolio", "Guardar en mi portafolio")}</button></div>
+                  ${S.state.finishedAt ? html`<p class="saved-note">${icon("check")} <span>${I.T("Saved to your portfolio.", "Guardado en tu portafolio.")} <a href="${BASE}/write?tab=portfolio&grades=${ctx.band}">${I.T("See my portfolio", "Ver mi portafolio")}</a></span></p>` : ""}
                 </section>
                 ${S.state.finishedAt ? await exemplarsHTML(task) : ""}`
             : ""
         }
       </article>
-      ${mission ? html`<p><a class="btn" href="${BASE}/missions/${mission.id}?grades=${ctx.band}">${icon("arrow-left")} Back to the mission</a></p>` : ""}`,
+      ${mission ? html`<p><a class="btn" href="${BASE}/missions/${mission.id}?grades=${ctx.band}">${icon("arrow-left")} ${I.T("Back to the mission", "Volver a la misión")}</a></p>` : ""}`,
   };
 }
 
+
+const meterText = (n, min, max) => I.S(`${n} words · usually about ${min}–${max}`, `${n} palabras · normalmente entre ${min} y ${max}`);
 
 function lockStage() {
   if (S.state.stage) return;
@@ -406,7 +426,7 @@ function lockStage() {
 function feedback(ctx) {
   const text = S.state.draft ?? S.state.versions.at(-1)?.text ?? "";
   if (S.state.analyzedText === text && text) {
-    announce("Nothing has changed since your last feedback. Revise your writing, then ask again.");
+    announce(I.S("Nothing has changed since your last feedback. Revise your writing, then ask again.", "No ha cambiado nada desde tus últimos comentarios. Revisa tu escritura y vuelve a pedirlos."));
     return;
   }
   lockStage();
@@ -438,7 +458,7 @@ function feedback(ctx) {
   });
   saveLedger(S.ledger);
   save();
-  announce("Feedback ready. Read your next moves, then revise.");
+  announce(I.S("Feedback ready. Read your next moves, then revise.", "Comentarios listos. Lee tus próximos pasos y luego revisa."));
   ctx.rerender();
 }
 
@@ -450,7 +470,7 @@ export function onInput(e) {
     const n = wordCount(t.value);
     const meter = document.querySelector("[data-meter]");
     if (meter)
-      meter.textContent = `${n} words · usually about ${S.task.expected.minWords}–${S.task.expected.maxWords}`;
+      meter.textContent = meterText(n, S.task.expected.minWords, S.task.expected.maxWords);
     const bar = document.querySelector(".meter-bar > span");
     if (bar)
       bar.style.width = `${Math.min(100, Math.round((n / S.task.expected.minWords) * 100))}%`;
@@ -486,6 +506,7 @@ export function onChange(e, ctx) {
 
 export function onClick(e, ctx) {
   if (!S) return false;
+  I = i18nFor(ctx);
   const t = e.target;
   if (t.closest("[data-print]")) {
     window.print();
@@ -503,7 +524,7 @@ export function onClick(e, ctx) {
     const i = S.state.evidence.findIndex((x) => x.text === sent.text);
     if (i >= 0) S.state.evidence.splice(i, 1);
     else S.state.evidence.push({ src: S.task.sources[si].title, text: sent.text });
-    announce(i >= 0 ? "Removed from your evidence notebook." : "Added to your evidence notebook.");
+    announce(i >= 0 ? I.S("Removed from your evidence notebook.", "Quitado de tu cuaderno de evidencia.") : I.S("Added to your evidence notebook.", "Agregado a tu cuaderno de evidencia."));
     save();
     ctx.rerender();
     return true;
@@ -540,7 +561,7 @@ export function onClick(e, ctx) {
       ms.tasks[S.task.id] = { done: true, t: S.state.finishedAt };
     }
     save();
-    announce("Saved to your portfolio.");
+    announce(I.S("Saved to your portfolio.", "Guardado en tu portafolio."));
     ctx.rerender();
     return true;
   }

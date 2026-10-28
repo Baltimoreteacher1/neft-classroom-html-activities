@@ -23,8 +23,38 @@ import { recommendTasks } from "../lang/adapt.js";
 import { filterByKeyUse, KEY_LANGUAGE_USES, KLU_DOMAINS, kluReference } from "../lang/purpose.js";
 import { loadLedger } from "../lang/ledger.js";
 import { loadStudio } from "../lang/studio.js";
-import { buildPracticePlan } from "../practice-plan.js";
+import { buildPracticePlan, STATUS_REASON } from "../practice-plan.js";
+import { i18nFor } from "../i18n.js";
 import { currentWeek } from "./road.js";
+
+// Spanish for the plan's fixed status reasons, keyed like STATUS_REASON. Reasons composed from the
+// learner's own evidence (review items, task recommendations) come from the engine and stay English.
+const STATUS_REASON_ES = {
+  draft: "Continúa tu trabajo guardado y revisa esta versión.",
+  retry: "Vuelve a esta actividad y aplica los comentarios.",
+  new: "Desarrolla tu lenguaje con una actividad nueva.",
+  done: "Practica otra vez una actividad terminada.",
+  revisit: "Antes usaste ayuda o un reintento. Prueba una respuesta nueva por tu cuenta.",
+};
+const BLURB_ES = {
+  Listening: "Sigue instrucciones, capta los detalles clave y comprende lo que escuchas.",
+  Reading: "Lee textos cortos, busca evidencia y explica la idea principal.",
+  Speaking: "Planea lo que vas a decir, grábalo y escúchalo.",
+  Writing: "Crea oraciones y párrafos con las palabras y estructuras que elijas.",
+};
+const PRACTICE_STATUS_ES = {
+  "Needs Review": "Necesita repaso",
+  "Strong Practice": "Práctica sólida",
+  "Practice Complete": "Práctica completa",
+  "In Progress": "En progreso",
+  "Not Started": "Sin empezar",
+};
+const domT = (I, d) => (DOMAIN_META[d] ? I.T(DOMAIN_META[d].name, DOMAIN_META[d].es) : d);
+const domS = (I, d) => (DOMAIN_META[d] ? I.S(DOMAIN_META[d].name, DOMAIN_META[d].es) : d);
+const reasonT = (I, reason) => {
+  const key = Object.keys(STATUS_REASON).find((k) => STATUS_REASON[k] === reason);
+  return key ? I.T(reason, STATUS_REASON_ES[key]) : reason;
+};
 
 export function tierFor(ctx, domain, levels) {
   const t = ctx.prefs.tiers?.[domain];
@@ -46,21 +76,21 @@ const reviewHref = (item, plan, band, ctx) => {
   return `${BASE}/${item.domain}/${ctx.prefs.tiers?.[item.domain] || "A"}?grades=${band}`;
 };
 
-function reviewHTML(due, plan, band, ctx) {
+function reviewHTML(I, due, plan, band, ctx) {
   return html`<section class="panel review-due" aria-labelledby="reviewTitle">
-    <h2 id="reviewTitle">Due for spaced review</h2>
-    <p class="fine">Quick checks spaced 1, 3, 7 and 14 days apart help you keep what you practiced. Each reason comes from your saved work on this device.</p>
+    <h2 id="reviewTitle">${I.T("Due for spaced review", "Repaso espaciado pendiente")}</h2>
+    <p class="fine">${I.T("Quick checks spaced 1, 3, 7 and 14 days apart help you keep what you practiced. Each reason comes from your saved work on this device.", "Repasos rápidos a 1, 3, 7 y 14 días de distancia te ayudan a recordar lo que practicaste. Cada motivo viene de tu trabajo guardado en este dispositivo.")}</p>
     <ul class="evidence-list">
       ${due.map((item) => html`<li>
-        <span><a href="${reviewHref(item, plan, band, ctx)}">${item.kind === "pattern" ? `Pattern: ${item.name}` : item.name}</a> · ${item.domain}</span>
-        <span class="fine"><strong>Why this is recommended:</strong> ${item.reason}</span>
+        <span><a href="${reviewHref(item, plan, band, ctx)}">${item.kind === "pattern" ? I.T(`Pattern: ${item.name}`, `Patrón: ${item.name}`) : item.name}</a> · ${domT(I, item.domain)}</span>
+        <span class="fine"><strong>${I.T("Why this is recommended:", "Por qué se recomienda:")}</strong> ${item.reason}</span>
       </li>`)}
     </ul>
-    <p class="fine"><a href="${BASE}/growth?grades=${band}#supportChoiceTitle">Choose how much support you get</a></p>
+    <p class="fine"><a href="${BASE}/growth?grades=${band}#supportChoiceTitle">${I.T("Choose how much support you get", "Elige cuánto apoyo recibes")}</a></p>
   </section>`;
 }
 
-function kluHTML(ctx, band, rows, idx) {
+function kluHTML(I, ctx, band, rows, idx) {
   const klu = KEY_LANGUAGE_USES.includes(ctx.prefs.kluFocus) ? ctx.prefs.kluFocus : "";
   const ref = klu ? kluReference(klu, band) : null;
   const studioTasks = [...(idx?.speaking || []).map((t) => ({ ...t, domain: "Speaking" })), ...(idx?.writing || []).map((t) => ({ ...t, domain: "Writing" }))].filter((t) => !t.band || t.band === band);
@@ -72,30 +102,31 @@ function kluHTML(ctx, band, rows, idx) {
   };
   const missions = klu ? filterByKeyUse((idx?.missions || []).filter((m) => !m.band || m.band === band), klu) : [];
   return html`<section class="panel klu-practice" aria-labelledby="kluTitle">
-    <p class="eyebrow">Practice by Key Language Use</p>
-    <h2 id="kluTitle">What do you want your language to do?</h2>
-    <div class="sort-cats" role="group" aria-label="Key Language Use">
+    <p class="eyebrow">${I.T("Practice by Key Language Use", "Practica por Uso clave del lenguaje")}</p>
+    <h2 id="kluTitle">${I.T("What do you want your language to do?", "¿Qué quieres que haga tu lenguaje?")}</h2>
+    <div class="sort-cats" role="group" aria-label="${I.S("Key Language Use", "Uso clave del lenguaje")}">
       ${KEY_LANGUAGE_USES.map((k) => html`<button type="button" class="cat-chip" id="klu-${k}" data-klu="${k}" aria-pressed="${k === klu ? "true" : "false"}">${k}</button>`)}
     </div>
     ${ref ? html`<p>${ref.purpose}</p>
       <div class="domain-grid">
-        <div class="card"><h3>How it is organized</h3><ol>${ref.moves.map((m) => html`<li>${m}</li>`)}</ol></div>
-        <div class="card"><h3>Language functions</h3><ul>${ref.functions.map((m) => html`<li>${m}</li>`)}</ul></div>
-        <div class="card"><h3>Signal words</h3><p>${ref.signals.join(" · ")}</p></div>
+        <div class="card"><h3>${I.T("How it is organized", "Cómo se organiza")}</h3><ol>${ref.moves.map((m) => html`<li>${m}</li>`)}</ol></div>
+        <div class="card"><h3>${I.T("Language functions", "Funciones del lenguaje")}</h3><ul>${ref.functions.map((m) => html`<li>${m}</li>`)}</ul></div>
+        <div class="card"><h3>${I.T("Signal words", "Palabras señal")}</h3><p>${ref.signals.join(" · ")}</p></div>
       </div>
       <div class="domain-grid">
         ${KLU_DOMAINS.map((d) => {
           const links = practice(d);
-          return html`<div class="card"><h3>${d}</h3><p class="fine">${ref.domains[d]}</p>${links.length ? html`<ul>${links.map(([href, title]) => html`<li><a href="${href}">${title}</a></li>`)}</ul>` : html`<p class="fine">No ${klu} activity at your ${d} support right now. <a href="${BASE}/library?grades=${band}">Find one in the library</a>.</p>`}</div>`;
+          return html`<div class="card"><h3>${domT(I, d)}</h3><p class="fine">${ref.domains[d]}</p>${links.length ? html`<ul>${links.map(([href, title]) => html`<li><a href="${href}">${title}</a></li>`)}</ul>` : html`<p class="fine">${I.T(`No ${klu} activity at your ${d} support right now.`, `No hay actividades de ${klu} para ${DOMAIN_META[d]?.es?.toLowerCase() ?? d} con tu apoyo actual.`)} <a href="${BASE}/library?grades=${band}">${I.T("Find one in the library", "Busca una en la biblioteca")}</a>.</p>`}</div>`;
         })}
       </div>
-      ${missions.length ? html`<p class="fine">Missions that use ${klu}: ${missions.map((m, i) => html`${i ? " · " : ""}<a href="${BASE}/missions/${m.id}?grades=${band}">${m.title}</a>`)}</p>` : ""}
-      <p class="fine">Reference for grades ${ref.band.replace("-", "–")}, in the lab's own words. Choose the same button again to close it.</p>`
-    : html`<p class="fine">Choose Narrate, Inform, Explain or Argue to see how that kind of language is organized, its signal words, and practice in listening, reading, speaking and writing.</p>`}
+      ${missions.length ? html`<p class="fine">${I.T(`Missions that use ${klu}:`, `Misiones que usan ${klu}:`)} ${missions.map((m, i) => html`${i ? " · " : ""}<a href="${BASE}/missions/${m.id}?grades=${band}">${m.title}</a>`)}</p>` : ""}
+      <p class="fine">${I.T(`Reference for grades ${ref.band.replace("-", "–")}, in the lab's own words. Choose the same button again to close it.`, `Referencia para los grados ${ref.band.replace("-", "–")}, con las palabras del laboratorio. Elige el mismo botón otra vez para cerrarla.`)}</p>`
+    : html`<p class="fine">${I.T("Choose Narrate, Inform, Explain or Argue to see how that kind of language is organized, its signal words, and practice in listening, reading, speaking and writing.", "Elige Narrate, Inform, Explain o Argue para ver cómo se organiza ese tipo de lenguaje, sus palabras señal y práctica de escuchar, leer, hablar y escribir.")}</p>`}
   </section>`;
 }
 
 export async function render(ctx) {
+  const I = i18nFor(ctx);
   const band = ctx.band;
   const [domains, road, shared] = await Promise.all([
     bandDomains(band),
@@ -116,7 +147,7 @@ export async function render(ctx) {
     if (!records.has(key)) records.set(key, loadRecord(band, r.domain, r.level));
     return records.get(key);
   });
-  const playlist = `${BASE}/play?${new URLSearchParams({ ids: plan.map((r) => r.id).join(","), t: "My language practice", grades: band })}`;
+  const playlist = `${BASE}/play?${new URLSearchParams({ ids: plan.map((r) => r.id).join(","), t: I.S("My language practice", "Mi práctica de lenguaje"), grades: band })}`;
   const option = (value, label, selected) =>
     html`<option value="${value}" ${selected === value ? raw("selected") : ""}>${label}</option>`;
   const focus = CORE_DOMAINS.includes(settings.focus) ? settings.focus : "balanced";
@@ -131,13 +162,15 @@ export async function render(ctx) {
   const open = Object.entries(studio.missions).find(([, m]) => m.started && !m.done);
   const idx = await loadStudioIndex().catch(() => null);
   let next = null;
-  if (open) next = { href: `${BASE}/missions/${open[0]}?grades=${band}`, title: "Continue your mission", why: "Pick up where you left off." };
+  if (open) next = { href: `${BASE}/missions/${open[0]}?grades=${band}`, title: I.T("Continue your mission", "Continúa tu misión"), why: I.T("Pick up where you left off.", "Sigue donde lo dejaste.") };
   else {
     const pool = [...(idx?.speaking || []), ...(idx?.writing || [])].filter((t) => t.band === band);
     const rec = recommendTasks(pool, ledger.entries, { band, n: 1 })[0];
-    if (rec) next = { href: `${BASE}/${rec.task.taskType ? "speak" : "write"}/${rec.task.id}?grades=${band}`, title: rec.task.title, why: `${rec.task.taskType ? "Speaking" : "Writing"} · ${rec.why}` };
+    if (rec) next = { href: `${BASE}/${rec.task.taskType ? "speak" : "write"}/${rec.task.id}?grades=${band}`, title: rec.task.title, why: html`${domT(I, rec.task.taskType ? "Speaking" : "Writing")} · ${rec.why}` };
   }
   const windowPhase = testingWindowPhase(win);
+  const dateOpts = { month: "short", day: "numeric", year: "numeric" };
+  const winRange = windowPhase ? `${formatDate(win.start, dateOpts)} – ${formatDate(win.end, dateOpts)}` : "";
 
   const tiles = CORE_DOMAINS.filter((d) => domains[d]).map((d) => {
     const meta = DOMAIN_META[d];
@@ -155,18 +188,18 @@ export async function render(ctx) {
         ><img src="${ART}/domain-${d.toLowerCase()}.svg" width="480" height="360" alt="" loading="lazy" decoding="async"
       /></a>
       <div class="room-body">
-        <h3 class="room-name"><a class="room-link" href="${roomHref}">${meta.name}</a></h3>
-        <p class="room-blurb">${meta.blurb}</p>
-          <span class="practice-status is-${statusClass}">${status}</span>
+        <h3 class="room-name"><a class="room-link" href="${roomHref}">${I.T(meta.name, meta.es)}</a></h3>
+        <p class="room-blurb">${I.T(meta.blurb, BLURB_ES[d])}</p>
+          <span class="practice-status is-${statusClass}">${I.T(status, PRACTICE_STATUS_ES[status])}</span>
         <div class="room-progress">
-          <div class="bar" role="img" aria-label="${meta.name}: ${done} of ${total} activities done"><i style="width:${pct}%"></i></div>
-          <p class="fine">${done} of ${total} done · ${TIERS[tier]?.name || tier} support</p>
+          <div class="bar" role="img" aria-label="${I.S(`${meta.name}: ${done} of ${total} activities done`, `${meta.es}: ${done} de ${total} actividades hechas`)}"><i style="width:${pct}%"></i></div>
+          <p class="fine">${I.T(`${done} of ${total} done · ${TIERS[tier]?.name || tier} support`, `${done} de ${total} hechas · apoyo ${TIERS[tier]?.es || tier}`)}</p>
         </div>
         ${
           next
-            ? html`<a class="btn btn-room" href="${href}">${done ? `Continue ${meta.name.toLowerCase()}` : `Start ${meta.name.toLowerCase()}`}${icon("arrow-right")}</a>
-                <p class="room-next fine">Next: ${next[1]}</p>`
-            : html`<a class="btn btn-room" href="${roomHref}">Level complete — choose another${icon("arrow-right")}</a>`
+            ? html`<a class="btn btn-room" href="${href}">${done ? I.T(`Continue ${meta.name.toLowerCase()}`, `Seguir con ${meta.es.toLowerCase()}`) : I.T(`Start ${meta.name.toLowerCase()}`, `Empezar a ${meta.es.toLowerCase()}`)}${icon("arrow-right")}</a>
+                <p class="room-next fine">${I.T("Next:", "Siguiente:")} ${next[1]}</p>`
+            : html`<a class="btn btn-room" href="${roomHref}">${I.T("Level complete — choose another", "Nivel completo: elige otro")}${icon("arrow-right")}</a>`
         }
       </div>
     </article>`;
@@ -177,36 +210,36 @@ export async function render(ctx) {
   const tool = (id, ic, title, text) =>
     html`<a class="tool-row" href="${id.startsWith("/") ? id : `${BASE}/${id}?grades=${band}`}">${icon(ic)}<span><strong>${title}</strong><span>${text}</span></span></a>`;
   const worldCard = (id, title, text, color, domain) =>
-    html`<a class="world-mini-card" href="${BASE}/worlds/${id}?grades=${band}" style="--world:${color}"><img src="${BASE}/pictures/worlds/${id}.svg" alt="" width="96" height="70" loading="lazy" /><span><strong>${title}</strong><span>${domain} · ${text}</span></span></a>`;
+    html`<a class="world-mini-card" href="${BASE}/worlds/${id}?grades=${band}" style="--world:${color}"><img src="${BASE}/pictures/worlds/${id}.svg" alt="" width="96" height="70" loading="lazy" /><span><strong>${title}</strong><span>${domT(I, domain)} · ${text}</span></span></a>`;
 
   return {
     title: "",
     html: html`<section class="home-hero" aria-labelledby="homeTitle">
         <div class="hero-copy">
-          <p class="eyebrow">ACCESS Practice Lab · ${bandLabel(band)}</p>
+          <p class="eyebrow">${I.T(`ACCESS Practice Lab · ${bandLabel(band)}`, `Laboratorio de práctica ACCESS · Grados ${band.replace("-", "–")}`)}</p>
           ${bandSwitchHTML(band, ctx.bands)}
-          <h1 id="homeTitle" tabindex="-1"><span class="w-listening">Listen.</span> <span class="w-reading">Read.</span> <span class="w-speaking">Speak.</span> <span class="w-writing">Write.</span></h1>
-          <p class="lead">Short practice sessions for multilingual learners, with supports you choose and time to try again.</p>
+          <h1 id="homeTitle" tabindex="-1"><span class="w-listening">${I.T("Listen.", "Escucha.")}</span> <span class="w-reading">${I.T("Read.", "Lee.")}</span> <span class="w-speaking">${I.T("Speak.", "Habla.")}</span> <span class="w-writing">${I.T("Write.", "Escribe.")}</span></h1>
+          <p class="lead">${I.T("Short practice sessions for multilingual learners, with supports you choose and time to try again.", "Sesiones cortas de práctica para estudiantes multilingües, con apoyos que tú eliges y tiempo para intentar de nuevo.")}</p>
           <div class="session-heading">
             ${
               plan.length
-                ? html`<a class="btn btn-primary btn-big" href="${playlist}">${plan[0].status === "draft" ? "Continue my practice" : "Start practicing"}${icon("arrow-right")}</a>
-                    <a class="btn btn-big" href="#skills">Choose a skill</a>`
-                : html`<a class="btn btn-big" href="#skills">Choose a skill</a>`
+                ? html`<a class="btn btn-primary btn-big" href="${playlist}">${plan[0].status === "draft" ? I.T("Continue my practice", "Continuar mi práctica") : I.T("Start practicing", "Empezar a practicar")}${icon("arrow-right")}</a>
+                    <a class="btn btn-big" href="#skills">${I.T("Choose a skill", "Elige una habilidad")}</a>`
+                : html`<a class="btn btn-big" href="#skills">${I.T("Choose a skill", "Elige una habilidad")}</a>`
             }
           </div>
-          <p class="session-summary" aria-live="polite">${plan.length ? `${plan.length} activities · about ${estimateMinutes(plan)} minutes${focus === "balanced" ? "" : ` · ${focus}`}` : "No activities match your plan. Change it below."}</p>
+          <p class="session-summary" aria-live="polite">${plan.length ? I.T(`${plan.length} activities · about ${estimateMinutes(plan)} minutes${focus === "balanced" ? "" : ` · ${focus}`}`, `${plan.length} actividades · unos ${estimateMinutes(plan)} minutos${focus === "balanced" ? "" : ` · ${DOMAIN_META[focus]?.es ?? focus}`}`) : I.T("No activities match your plan. Change it below.", "Ninguna actividad coincide con tu plan. Cámbialo abajo.")}</p>
         </div>
-        <div class="hero-art"><img src="${ART}/hero.svg" width="720" height="600" alt="Four tiles for listening, reading, speaking and writing, linked by a speech bubble" decoding="async" fetchpriority="high" /></div>
+        <div class="hero-art"><img src="${ART}/hero.svg" width="720" height="600" alt="${I.S("Four tiles for listening, reading, speaking and writing, linked by a speech bubble", "Cuatro mosaicos para escuchar, leer, hablar y escribir, unidos por un globo de diálogo")}" decoding="async" fetchpriority="high" /></div>
       </section>
 
       ${
         windowPhase
-          ? html`<aside class="window-card" aria-label="ACCESS testing window">
+          ? html`<aside class="window-card" aria-label="${I.S("ACCESS testing window", "Período de pruebas de ACCESS")}">
               ${icon("calendar")}
-              <p><strong>${win.state} ACCESS testing: ${formatDate(win.start, { month: "short", day: "numeric", year: "numeric" })} – ${formatDate(win.end, { month: "short", day: "numeric", year: "numeric" })}</strong>
-              <span>${windowPhase.phase === "upcoming" ? `${windowPhase.daysAway} days away` : windowPhase.phase === "starting" ? "Starts today" : "Testing is happening now"}. Your school chooses your testing days.</span></p>
-              <a href="${win.source || "https://wida.wisc.edu/about/consortium/md"}">Official testing window</a>
+              <p><strong>${I.T(`${win.state} ACCESS testing: ${winRange}`, `Pruebas ACCESS de ${win.state}: ${winRange}`)}</strong>
+              <span>${I.T(`${windowPhase.phase === "upcoming" ? `${windowPhase.daysAway} days away` : windowPhase.phase === "starting" ? "Starts today" : "Testing is happening now"}. Your school chooses your testing days.`, `${windowPhase.phase === "upcoming" ? (windowPhase.daysAway === 1 ? "Falta 1 día" : `Faltan ${windowPhase.daysAway} días`) : windowPhase.phase === "starting" ? "Comienza hoy" : "Las pruebas están en curso ahora"}. Tu escuela elige los días de tus pruebas.`)}</span></p>
+              <a href="${win.source || "https://wida.wisc.edu/about/consortium/md"}">${I.T("Official testing window", "Período oficial de pruebas")}</a>
             </aside>`
           : ""
       }
@@ -214,78 +247,78 @@ export async function render(ctx) {
       <div class="home-today">
         <section class="session-plan panel" aria-labelledby="sessionTitle">
           <div class="plan-head">
-            <h2 id="sessionTitle">Today's practice</h2>
-            <p class="fine">${plan.length ? `${plan.length} activities, about ${estimateMinutes(plan)} minutes. Unfinished work comes first.` : "Change your plan to see activities."}</p>
+            <h2 id="sessionTitle">${I.T("Today's practice", "Práctica de hoy")}</h2>
+            <p class="fine">${plan.length ? I.T(`${plan.length} activities, about ${estimateMinutes(plan)} minutes. Unfinished work comes first.`, `${plan.length} actividades, unos ${estimateMinutes(plan)} minutos. Primero va lo que no has terminado.`) : I.T("Change your plan to see activities.", "Cambia tu plan para ver actividades.")}</p>
           </div>
           <ol class="plan-preview">
-            ${plan.slice(0, 3).map((r) => html`<li><span class="plan-dot d-${r.domain.toLowerCase()}">${icon(DOMAIN_META[r.domain]?.icon || "star")}</span><span><a href="${BASE}/${r.domain}/${r.level}/${r.id}?grades=${band}">${r.title}</a><span class="fine">${r.domain} · ${r.reason}</span></span></li>`)}
+            ${plan.slice(0, 3).map((r) => html`<li><span class="plan-dot d-${r.domain.toLowerCase()}">${icon(DOMAIN_META[r.domain]?.icon || "star")}</span><span><a href="${BASE}/${r.domain}/${r.level}/${r.id}?grades=${band}">${r.title}</a><span class="fine">${domT(I, r.domain)} · ${reasonT(I, r.reason)}</span></span></li>`)}
           </ol>
-          <details id="planOptions" class="session-options"><summary>Change my plan or see all activities</summary>
+          <details id="planOptions" class="session-options"><summary>${I.T("Change my plan or see all activities", "Cambiar mi plan o ver todas las actividades")}</summary>
           <div class="session-controls">
-            <label class="field"><span>Skill focus</span><select id="planFocus" data-plan="focus" data-nsr-ignore>
-              ${option("balanced", "Any skill · unfinished work first", focus)}
-              ${CORE_DOMAINS.map((d) => option(d, d, focus))}
+            <label class="field"><span>${I.T("Skill focus", "Habilidad principal")}</span><select id="planFocus" data-plan="focus" data-nsr-ignore>
+              ${option("balanced", I.S("Any skill · unfinished work first", "Cualquier habilidad · primero lo que falta"), focus)}
+              ${CORE_DOMAINS.map((d) => option(d, domS(I, d), focus))}
             </select></label>
-            <label class="field"><span>Support choice</span><select id="planLevel" data-plan="level" data-nsr-ignore>
-              ${option("preferred", "My chosen room supports", level)}
-              ${option("A", "Starting · words and short sentences", level)}
-              ${option("B", "Growing · connected ideas", level)}
-              ${option("C", "Expanding · details and explanations", level)}
+            <label class="field"><span>${I.T("Support choice", "Apoyo elegido")}</span><select id="planLevel" data-plan="level" data-nsr-ignore>
+              ${option("preferred", I.S("My chosen room supports", "Los apoyos que elegí en cada sala"), level)}
+              ${option("A", I.S("Starting · words and short sentences", "Comenzando · palabras y oraciones cortas"), level)}
+              ${option("B", I.S("Growing · connected ideas", "Creciendo · ideas conectadas"), level)}
+              ${option("C", I.S("Expanding · details and explanations", "Ampliando · detalles y explicaciones"), level)}
             </select></label>
-            <label class="field"><span>Session length</span><select id="planCount" data-plan="count" data-nsr-ignore>
-              ${[2, 4, 6].map((n) => option(String(n), `${n} activities`, String(count)))}
+            <label class="field"><span>${I.T("Session length", "Duración de la sesión")}</span><select id="planCount" data-plan="count" data-nsr-ignore>
+              ${[2, 4, 6].map((n) => option(String(n), I.S(`${n} activities`, `${n} actividades`), String(count)))}
             </select></label>
           </div>
-          <p class="fine">Starting: name and describe with words or short sentences. Growing: connect ideas. Expanding: explain with details. These choices change tasks and scaffolds; they are not WIDA scores. Change support any time.</p>
-          <p class="fine">This browser’s saved practice puts unfinished work first, then retries, then new activities. On a shared device, check that the saved work is yours.</p>
+          <p class="fine">${I.T("Starting: name and describe with words or short sentences. Growing: connect ideas. Expanding: explain with details. These choices change tasks and scaffolds; they are not WIDA scores. Change support any time.", "Comenzando: nombra y describe con palabras u oraciones cortas. Creciendo: conecta ideas. Ampliando: explica con detalles. Estas opciones cambian las tareas y los apoyos; no son puntajes de WIDA. Puedes cambiar el apoyo cuando quieras.")}</p>
+          <p class="fine">${I.T("This browser’s saved practice puts unfinished work first, then retries, then new activities. On a shared device, check that the saved work is yours.", "La práctica guardada en este navegador pone primero lo que no has terminado, luego los reintentos y después las actividades nuevas. En un dispositivo compartido, verifica que el trabajo guardado sea tuyo.")}</p>
           <ol class="session-list">
             ${plan.map(
               (r) => html`<li>
-              <span class="session-domain">${r.domain} · ${TIERS[r.level].name}</span>
+              <span class="session-domain">${domT(I, r.domain)} · ${I.T(TIERS[r.level].name, TIERS[r.level].es)}</span>
               <a href="${BASE}/${r.domain}/${r.level}/${r.id}?grades=${band}">${r.title}</a>
-              <span class="fine">${r.reason} · about ${estimateMinutes([r])} minutes</span>
+              <span class="fine">${reasonT(I, r.reason)} · ${I.T(`about ${estimateMinutes([r])} minutes`, `unos ${estimateMinutes([r])} minutos`)}</span>
             </li>`,
             )}
           </ol>
           </details>
         </section>
-        <aside class="today-side" aria-label="Your next step">
-          ${next ? html`<a class="next-step" href="${next.href}"><span class="eyebrow">Your next step</span><strong>${next.title}</strong><span class="fine">${next.why}</span><span class="next-go">${icon("arrow-right")}</span></a>` : ""}
-          <a class="progress-note" href="${BASE}/passport?grades=${band}">${icon("passport")}<span><strong>${stamps ? `${stamps} activit${stamps === 1 ? "y" : "ies"} finished` : "Your Passport is empty"}</strong><span class="fine">${stamps ? `${streak ? `${streak}-week practice streak. ` : ""}See your saved work.` : "Finish an activity and it is saved here, on this device."}</span></span></a>
+        <aside class="today-side" aria-label="${I.S("Your next step", "Tu próximo paso")}">
+          ${next ? html`<a class="next-step" href="${next.href}"><span class="eyebrow">${I.T("Your next step", "Tu próximo paso")}</span><strong>${next.title}</strong><span class="fine">${next.why}</span><span class="next-go">${icon("arrow-right")}</span></a>` : ""}
+          <a class="progress-note" href="${BASE}/passport?grades=${band}">${icon("passport")}<span><strong>${stamps ? I.T(`${stamps} activit${stamps === 1 ? "y" : "ies"} finished`, `${stamps} ${stamps === 1 ? "actividad terminada" : "actividades terminadas"}`) : I.T("Your Passport is empty", "Tu Pasaporte está vacío")}</strong><span class="fine">${stamps ? I.T(`${streak ? `${streak}-week practice streak. ` : ""}See your saved work.`, `${streak ? `Racha de práctica de ${streak} ${streak === 1 ? "semana" : "semanas"}. ` : ""}Mira tu trabajo guardado.`) : I.T("Finish an activity and it is saved here, on this device.", "Termina una actividad y se guarda aquí, en este dispositivo.")}</span></span></a>
         </aside>
       </div>
 
-      ${due.length ? reviewHTML(due, plan, band, ctx) : ""}
+      ${due.length ? reviewHTML(I, due, plan, band, ctx) : ""}
 
       <section class="skills" id="skills" aria-labelledby="roomsTitle">
-        <div class="section-head"><h2 id="roomsTitle">Choose a skill</h2><p class="fine">Each skill has three support levels. Start at Starting and move on when you are ready.</p></div>
+        <div class="section-head"><h2 id="roomsTitle">${I.T("Choose a skill", "Elige una habilidad")}</h2><p class="fine">${I.T("Each skill has three support levels. Start at Starting and move on when you are ready.", "Cada habilidad tiene tres niveles de apoyo. Empieza en Comenzando y avanza cuando estés listo o lista.")}</p></div>
         <div class="room-grid">${tiles}</div>
       </section>
 
       <section class="more-ways" aria-labelledby="moreTitle">
-        <div class="section-head"><h2 id="moreTitle">More ways to practice</h2><p class="fine">Do real language tasks, get specific feedback, revise, then try it on your own.</p></div>
+        <div class="section-head"><h2 id="moreTitle">${I.T("More ways to practice", "Más formas de practicar")}</h2><p class="fine">${I.T("Do real language tasks, get specific feedback, revise, then try it on your own.", "Haz tareas de lenguaje reales, recibe comentarios específicos, revisa y luego inténtalo por tu cuenta.")}</p></div>
         <div class="studio-grid">
-          ${studioLink("speak", "speaking", "Speaking Studio", "Plan, record, listen back, and say it better.")}
-          ${studioLink("write", "writing", "Writing Studio", "Use sources, draft, get feedback, revise.")}
-          ${studioLink("reading-room", "reading", "Reading Room", "Choose a text, annotate evidence, and keep your place.")}
-          ${studioLink("missions", "mission", "Academic missions", "Listen, read, decide, speak and write in one investigation.")}
-          ${studioLink("detective", "detective", "Error Detective", "Find a pattern in your work and fix it for good.")}
-          ${studioLink("vocabulary", "words", "Word Builder", "Prefixes, roots, and academic words in context.")}
+          ${studioLink("speak", "speaking", I.T("Speaking Studio", "Estudio de expresión oral"), I.T("Plan, record, listen back, and say it better.", "Planea, graba, escucha y mejora lo que dices."))}
+          ${studioLink("write", "writing", I.T("Writing Studio", "Estudio de escritura"), I.T("Use sources, draft, get feedback, revise.", "Usa fuentes, escribe un borrador, recibe comentarios y revisa."))}
+          ${studioLink("reading-room", "reading", I.T("Reading Room", "Sala de lectura"), I.T("Choose a text, annotate evidence, and keep your place.", "Elige un texto, anota la evidencia y guarda dónde ibas."))}
+          ${studioLink("missions", "mission", I.T("Academic missions", "Misiones académicas"), I.T("Listen, read, decide, speak and write in one investigation.", "Escucha, lee, decide, habla y escribe en una sola investigación."))}
+          ${studioLink("detective", "detective", I.T("Error Detective", "Detective de errores"), I.T("Find a pattern in your work and fix it for good.", "Encuentra un patrón en tu trabajo y corrígelo para siempre."))}
+          ${studioLink("vocabulary", "words", I.T("Word Builder", "Constructor de palabras"), I.T("Prefixes, roots, and academic words in context.", "Prefijos, raíces y palabras académicas en contexto."))}
         </div>
-        ${kluHTML(ctx, band, rows, idx)}
+        ${kluHTML(I, ctx, band, rows, idx)}
       </section>
 
       <section class="world-showcase" aria-labelledby="worldEntryTitle">
         <div class="world-copy">
-          <h2 id="worldEntryTitle">Language Worlds</h2>
-          <p>Step into four places where language has consequences: dispatch audio, investigate with evidence, join a dialogue, and publish your story.</p>
-          <a class="btn" href="${BASE}/worlds?grades=${band}">Open Language Worlds${icon("arrow-right")}</a>
+          <h2 id="worldEntryTitle">${I.T("Language Worlds", "Mundos lingüísticos")}</h2>
+          <p>${I.T("Step into four places where language has consequences: dispatch audio, investigate with evidence, join a dialogue, and publish your story.", "Entra a cuatro lugares donde el lenguaje tiene consecuencias: envía audio, investiga con evidencia, participa en un diálogo y publica tu historia.")}</p>
+          <a class="btn" href="${BASE}/worlds?grades=${band}">${I.T("Open Language Worlds", "Abrir Mundos lingüísticos")}${icon("arrow-right")}</a>
         </div>
         <div class="world-cards-grid">
-          ${worldCard("signal-station", "Signal Station", "Audio dispatch", "var(--listening)", "Listening")}
-          ${worldCard("evidence-city", "Evidence City", "Investigations", "var(--reading)", "Reading")}
-          ${worldCard("conversation-quest", "Conversation Quest", "Dialogue", "var(--speaking)", "Speaking")}
-          ${worldCard("storyworks", "StoryWorks", "Publishing", "var(--writing)", "Writing")}
+          ${worldCard("signal-station", "Signal Station", I.T("Audio dispatch", "Mensajes de audio"), "var(--listening)", "Listening")}
+          ${worldCard("evidence-city", "Evidence City", I.T("Investigations", "Investigaciones"), "var(--reading)", "Reading")}
+          ${worldCard("conversation-quest", "Conversation Quest", I.T("Dialogue", "Diálogo"), "var(--speaking)", "Speaking")}
+          ${worldCard("storyworks", "StoryWorks", I.T("Publishing", "Publicación"), "var(--writing)", "Writing")}
         </div>
       </section>
 
@@ -293,26 +326,26 @@ export async function render(ctx) {
         week
           ? html`<section class="road-strip" aria-labelledby="roadStripTitle">
               <div>
-                <p class="eyebrow">Road to ACCESS · Week ${week.n} of 12</p>
+                <p class="eyebrow">${I.T(`Road to ACCESS · Week ${week.n} of 12`, `Camino a ACCESS · Semana ${week.n} de 12`)}</p>
                 <h2 id="roadStripTitle">${week.taskType}: ${week.theme}</h2>
                 <p>${week.focus}</p>
               </div>
-              <a class="btn btn-primary" href="${BASE}/road/${week.n}?grades=${band}">Open this week${icon("arrow-right")}</a>
+              <a class="btn btn-primary" href="${BASE}/road/${week.n}?grades=${band}">${I.T("Open this week", "Abrir esta semana")}${icon("arrow-right")}</a>
             </section>`
           : ""
       }
 
       <section class="tools-band" aria-labelledby="toolsTitle">
-        <h2 id="toolsTitle">Plan, check and share</h2>
+        <h2 id="toolsTitle">${I.T("Plan, check and share", "Planifica, revisa y comparte")}</h2>
         <div class="tool-grid">
-          ${tool("tests", "tests", "Practice tests", "Full tests and short minis.")}
-          ${tool("library", "library", "Find an activity", "Search every quick-practice activity.")}
-          ${tool("road", "road", "Road to ACCESS", "A 12-week plan, one stop a week.")}
-          ${tool("diagnostic", "checkin", "Skill check-in", "Optional 4-minute starting point.")}
-          ${tool("growth", "growth", "My growth", "Evidence from your own work.")}
-          ${tool("tools", "tools", "Test tools warm-up", "Audio check and the WIDA demo.")}
-          ${tool("classroom", "classroom", "Whole-Class Studio", "Projector-ready routines.")}
-          ${tool("launch-studio", "launch", "Launch Studio", "QR codes and direct links for teachers.")}
+          ${tool("tests", "tests", I.T("Practice tests", "Pruebas de práctica"), I.T("Full tests and short minis.", "Pruebas completas y minipruebas cortas."))}
+          ${tool("library", "library", I.T("Find an activity", "Buscar una actividad"), I.T("Search every quick-practice activity.", "Busca entre todas las actividades de práctica rápida."))}
+          ${tool("road", "road", I.T("Road to ACCESS", "Camino a ACCESS"), I.T("A 12-week plan, one stop a week.", "Un plan de 12 semanas, una parada por semana."))}
+          ${tool("diagnostic", "checkin", I.T("Skill check-in", "Chequeo de destrezas"), I.T("Optional 4-minute starting point.", "Punto de partida opcional de 4 minutos."))}
+          ${tool("growth", "growth", I.T("My growth", "Mi progreso"), I.T("Evidence from your own work.", "Evidencia de tu propio trabajo."))}
+          ${tool("tools", "tools", I.T("Test tools warm-up", "Calentamiento con las herramientas de prueba"), I.T("Audio check and the WIDA demo.", "Prueba de audio y demostración de WIDA."))}
+          ${tool("classroom", "classroom", I.T("Whole-Class Studio", "Estudio para toda la clase"), I.T("Projector-ready routines.", "Rutinas listas para proyectar."))}
+          ${tool("launch-studio", "launch", I.T("Launch Studio", "Estudio de lanzamiento"), I.T("QR codes and direct links for teachers.", "Códigos QR y enlaces directos para docentes."))}
         </div>
       </section>`,
   };
