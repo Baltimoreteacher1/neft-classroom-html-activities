@@ -1035,7 +1035,7 @@ export function injectSmallGroupStyles(accent) {
       body::after{content:"";position:fixed;left:0;right:0;bottom:0;height:62px;background:var(--sg-card);border-top:1px solid var(--sg-line);z-index:880;pointer-events:none}
       #app{padding-right:58px}
       .sg-station-timer{top:auto!important;bottom:12px!important;left:8px!important;right:auto!important}
-      #nt-focus-fab{top:auto!important;bottom:9px!important;left:178px!important;right:auto!important;width:44px;min-width:44px;padding:0!important;justify-content:center}
+      #nt-focus-fab{top:auto!important;bottom:72px!important;left:12px!important;right:auto!important;width:44px;min-width:44px;padding:0!important;justify-content:center}
       #nt-focus-fab .nt-focus-label{display:none}
       #nsr-root{top:auto!important;bottom:16px!important;right:8px!important;left:auto!important}
       /* Passport and Save/Resume go icon-only in the bar; both keep their

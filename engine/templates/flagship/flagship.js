@@ -165,6 +165,10 @@ function applySimulation(config, fl) {
 }
 
 function showMissionIntro(fl, config, onStart) {
+  if (new URLSearchParams(window.location.search).get("demo") === "1") {
+    onStart();
+    return;
+  }
   const mission = fl.mission || {};
   const root = document.getElementById("app");
   if (!root) {
@@ -188,6 +192,7 @@ function showMissionIntro(fl, config, onStart) {
           : ""
       }
       <button class="btn btn-primary btn-lg flagship-mission-start">${esc(mission.cta || t("startActivity"))}</button>
+      <a class="flagship-demo-link" href="?demo=1">Demo / Preview · Vista previa</a>
     </div>
   `;
   // Into #app, NOT document.body — and `root` above exists for exactly this.

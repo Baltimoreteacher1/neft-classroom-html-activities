@@ -99,6 +99,28 @@ body.editorial #nt-focus-fab.nt-focus-fab {
   font-family: var(--ds-font-body);
   font-size: var(--ds-text-caption);
 }
+/* The interactive lesson template marks the current lesson step in both the
+   phase rail and its nested tabs. Keep the selected state light even after a
+   phase is complete; the later completion style used to restore navy on navy. */
+body.editorial .sidebar .phase-btn.active,
+body.editorial .sidebar .phase-btn.active.completed,
+body.editorial .sidebar .phase-btn.phase-subtab.active {
+  background: var(--ds-surface);
+  color: var(--ds-primary);
+  border-color: var(--ds-accent-ink);
+}
+/* Reserve space for the fixed Next control so the final answer choice can be
+   scrolled fully above it. */
+body.editorial .main {
+  padding-bottom: 104px;
+}
+/* Editorial shell styles put each direct child of the header into a column.
+   The badges are themselves a row and must stay that way on every phase. */
+body.editorial .lesson-hero-top > .lesson-hero-badges {
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+}
 /* The navy sidebar scrolls; its last entries must be able to clear the two fixed
    pills in the bottom-left corner instead of hiding underneath them. */
 body.editorial.skin-warm-deck .sidebar {

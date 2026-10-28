@@ -144,8 +144,8 @@ export function mountUniversalFocusButton() {
       /* The one button left standing: a quiet pill that puts everything back. */
       .nt-focus-fab {
         position: fixed;
-        left: 14px;
-        bottom: 14px;
+        left: 12px;
+        bottom: 72px;
         z-index: 2147483000;
         display: inline-flex;
         align-items: center;

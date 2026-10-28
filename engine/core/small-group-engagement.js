@@ -348,7 +348,10 @@ function modelSentence(word) {
 // write ABOUT rather than a bare "use it in a sentence".
 function writePrompt(word) {
   if (word.visual) {
-    return `Look at ${word.visual}. Write one sentence that explains what is happening — and use "${word.term}".`;
+    const visual = String(word.visual)
+      .trim()
+      .replace(/[.!?]+$/, "");
+    return `Look at ${visual}. Write one sentence that explains what is happening — and use "${word.term}".`;
   }
   return `Teach a classmate what "${word.term}" means in today's math. Write one sentence that uses the word.`;
 }

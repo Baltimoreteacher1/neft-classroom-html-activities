@@ -221,7 +221,7 @@ export function renderTapeDiagram(host, cfg) {
   // Only consulted when there is no whole/parts model — the two shapes are
   // mutually exclusive by construction (one needs a single-part row, the other
   // forbids it).
-  const ratio = model ? null : readRatioModel(rows, linked ? 1 : 2);
+  const ratio = model || cfg.ratioExplore === false ? null : readRatioModel(rows, linked ? 1 : 2);
   tdlSeq += 1;
   const inputId = `tdl-ans-${tdlSeq}`;
 
@@ -240,7 +240,9 @@ export function renderTapeDiagram(host, cfg) {
             esc(
               `Read the bars: each group is ${ratio.a} to ${ratio.b}, and there are ${ratio.groups} groups.`,
             )
-          : "Read the bars: the top one is the whole, the bottom one shows the equal parts."
+          : cfg.ratioExplore === false
+            ? "Use the row labels and values to reason about the quantities shown."
+            : "Read the bars: the top one is the whole, the bottom one shows the equal parts."
     }</div>
     <div class="tdl-stage"></div>
     ${
