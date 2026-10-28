@@ -30,7 +30,13 @@ export const COPY = {
     "A learner and a caregiver take turns, and the coach asks a question after each round.",
     "Un estudiante y un familiar se turnan, y el entrenador hace una pregunta después de cada ronda.",
   ),
-  start: c("Start", "Comenzar"),
+  start: c("Start a game mix", "Empezar una mezcla de juegos"),
+  guidedStart: c("Start tonight’s 5–10 minutes", "Empezar los 5 a 10 minutos de hoy"),
+  guidedResume: c("Continue tonight’s session", "Seguir la sesión de hoy"),
+  guidedNote: c(
+    "One idea, a few problems, a game and a chance to explain. We pick what to practice.",
+    "Una idea, unos problemas, un juego y una oportunidad de explicar. Nosotros elegimos qué practicar.",
+  ),
   startNote: c(
     "{n} activities · about {min} min · {mode}",
     "{n} actividades · unos {min} min · {mode}",

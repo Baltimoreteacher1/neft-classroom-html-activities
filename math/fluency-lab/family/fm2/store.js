@@ -1,7 +1,7 @@
 // Learner progress for Family Math 2.0, kept on this device and separated per learner profile.
 // Everything is validated on the way in (sanitize) so a damaged or hand-edited value can never crash a page.
 // @fm2 FM-023 FM-025 FM-026
-import { profileKey } from "../../school-tools.js";
+import { profileKey } from "./profile-key.js";
 import { applyAttempt, mastery, starsFor } from "./adapt.js";
 
 export const KEY = "ewl-fm2-v1";

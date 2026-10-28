@@ -179,6 +179,7 @@ const EXCLUSIVE = new Set([
   "validate:learning-labs-browser",
   "validate:family-experience-browser",
   "validate:fluency-family-browser",
+  "validate:fluency-family-session",
   "validate:studio-enhancements-browser",
   "validate:studio-linked-models-browser",
   "validate:studio-pathways-browser",
@@ -345,6 +346,7 @@ const COVERAGE = [
       "validate:family-homework-content",
       "validate:family-v3",
       "validate:family-plain-definitions",
+      "validate:family-spanish",
       "validate:homework",
       "test",
       "check",
@@ -358,6 +360,13 @@ const COVERAGE = [
     ["validate:family-v3", "validate:family-no-leakage", "validate:homework", "test", "check"],
   ],
 
+  // The Spanish of the family homework (docs/family-homework-v3/es-style-guide.md): the sidecars, the homework-*-spanish and
+  // family-*.json data, the glossary, and the generators' Spanish literals. The gate also reads every generated page.
+  [
+    /^(data\/(family-homework-notes\/|homework-[a-z-]*spanish\.json$|family-[a-z-]+(\.json$|\/)|homework-confused-grownup-tags\.json$)|docs\/family-homework-v3\/es-style-guide\.md$|tools\/(validate-family-spanish\.mjs|lib\/family-spanish\.mjs)$|scripts\/(homework-[a-z-]+|generate-homework-html|generate-word-problems|lib\/(homework|family)-[a-z0-9-]+)\.mjs$)/,
+    ["validate:family-spanish", "validate:homework", "test", "check"],
+  ],
+
   // The "Learn more online" links on every family homework page: topics, verification record, renderer.
   // scripts/verify-family-resources.mjs (network + browser) writes the record; the gate only reads it.
   [
@@ -369,8 +378,14 @@ const COVERAGE = [
   // scripts/lib/family-plain-definitions.mjs applies it to the homework glossary and the family guides, and the
   // gate holds every vocabulary term to the rules (length, reading grade, no circular wording, numbers the lesson states).
   [
-    /^(data\/family-plain-definitions\.json|tools\/(validate-family-plain-definitions\.mjs|family-plain-definitions\.test\.mjs|lib\/family-plain-definitions\.mjs)|scripts\/lib\/family-plain-definitions\.mjs)$/,
-    ["validate:family-plain-definitions", "validate:homework", "test", "check"],
+    /^(data\/family-glossary\.json|tools\/(validate-family-plain-definitions\.mjs|family-plain-definitions\.test\.mjs|lib\/family-plain-definitions\.mjs)|scripts\/lib\/family-plain-definitions\.mjs)$/,
+    [
+      "validate:family-plain-definitions",
+      "validate:family-spanish",
+      "validate:homework",
+      "test",
+      "check",
+    ],
   ],
 
   // Generated per-lesson practice studios for Units 2-9 (/math/practice-studio/). The pages and the
@@ -771,9 +786,22 @@ const COVERAGE = [
     ],
   ],
   [
-    /^(math\/fluency-lab\/|docs\/fluency-family-implementation-matrix\.md$|tools\/(validate-fluency-lab|package-fluency-desktop|verify-fluency-family-browser|fluency-family(?:\.test)?)\.mjs$)/,
-    ["validate:fluency", "validate:fluency-family-browser", "validate:static", "test"],
+    /^(math\/fluency-lab\/|docs\/fluency-family-implementation-matrix\.md$|docs\/family-homework-v3\/fluency-family-matrix\.md$|tools\/(validate-fluency-lab|package-fluency-desktop|verify-fluency-family-browser|verify-fluency-family-session|generate-guided-skill-index|fluency-family(?:-guided)?(?:\.test)?)\.mjs$)/,
+    [
+      "validate:fluency",
+      "validate:fluency-family-browser",
+      "validate:fluency-family-session",
+      "validate:static",
+      "test",
+    ],
   ],
+  // Family Math Studio v3 art kit: its builders, shared libs, gallery page and validator (the design tokens have their own rules).
+  [
+    /^(design\/family-system\/art\.html$|tools\/(build-family-(?:art|brand-icons)|validate-family-art|verify-family-art-browser)\.mjs$|tools\/lib\/family-art-[\w-]+\.mjs$)/,
+    ["validate:family-art", "validate:static", "test"],
+  ],
+  // The save/resume injector configuration decides which pages carry the engine.
+  [/^tools\/save-resume-config\.js$/, ["validate:save-resume", "validate:injection", "test"]],
   // Family Math 2.0 — requirement ledger and its suites (unit suites run inside `test`).
   [/^(docs\/family-math-2-|tools\/fm2\/)/, ["validate:fm2", "validate:static", "test"]],
   // MATH WORKBENCH — the student whiteboard. The static gate proves its promises in text

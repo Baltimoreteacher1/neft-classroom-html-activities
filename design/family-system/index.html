@@ -1,0 +1,1841 @@
+<!doctype html>
+<html lang="en" data-unit="4">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <meta
+      name="description"
+      content="Every token, component and pattern of the Family Math Studio design system, in English and Spanish, light, dark and high contrast."
+    />
+    <title>Family design system</title>
+    <link
+      rel="preload"
+      href="../../assets/design/family/fonts/nunito-var.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href="../../assets/design/family/fonts/baloo2-var.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link rel="stylesheet" href="../../assets/design/family/tokens.css" />
+    <link rel="stylesheet" href="../../assets/design/family/family.css" />
+    <link rel="stylesheet" href="./specimen.css" />
+    <script src="./specimen-boot.js"></script>
+    <script src="./specimen.js" defer></script>
+  </head>
+  <body>
+    <!-- Icon sprite for this specimen only. Production pages load /assets/design/family/art/icons.svg
+     (ids i-*). Components never depend on an icon being present: every control also prints words. -->
+    <svg hidden aria-hidden="true" width="0" height="0" focusable="false">
+      <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" /></symbol>
+      <symbol id="i-eye" viewBox="0 0 24 24">
+        <path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z" />
+        <circle cx="12" cy="12" r="3" />
+      </symbol>
+      <symbol id="i-bulb" viewBox="0 0 24 24">
+        <path
+          d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.7.6 1 1.3 1 2.1h5c0-.8.3-1.5 1-2.1A6 6 0 0 0 12 3z"
+        />
+      </symbol>
+      <symbol id="i-info" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="9.5" />
+        <path d="M12 11v6M12 7.5v.01" />
+      </symbol>
+      <symbol id="i-star" viewBox="0 0 24 24">
+        <path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z" />
+      </symbol>
+      <symbol id="i-alert" viewBox="0 0 24 24">
+        <path d="M12 3.5L2.5 20h19z" />
+        <path d="M12 10v5M12 17.5v.01" />
+      </symbol>
+      <symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" /></symbol>
+      <symbol id="i-chevron" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6" /></symbol>
+      <symbol id="i-speaker" viewBox="0 0 24 24">
+        <path d="M4 9.5v5h3.5L12 18.5v-13L7.5 9.5z" />
+        <path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a8 8 0 0 1 0 11" />
+      </symbol>
+      <symbol id="i-textsize" viewBox="0 0 24 24">
+        <path d="M3 18l4.5-12L12 18M4.7 14h5.6M13.5 18l3-8 3 8M14.6 15.6h3.8" />
+      </symbol>
+      <symbol id="i-globe" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="9" />
+        <path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18" />
+      </symbol>
+      <symbol id="i-save" viewBox="0 0 24 24">
+        <path d="M7 18a4.5 4.5 0 0 1-.5-9A6 6 0 0 1 18 10a4 4 0 0 1-.5 8z" />
+        <path d="M9.5 13l2 2 3.5-3.5" />
+      </symbol>
+      <symbol id="i-more" viewBox="0 0 24 24">
+        <circle cx="5" cy="12" r="1.5" />
+        <circle cx="12" cy="12" r="1.5" />
+        <circle cx="19" cy="12" r="1.5" />
+      </symbol>
+      <symbol id="i-grownup" viewBox="0 0 24 24">
+        <circle cx="9" cy="8" r="3" />
+        <path d="M3.5 19c0-3 2.5-5 5.5-5s5.5 2 5.5 5" />
+        <circle cx="17" cy="9" r="2.3" />
+        <path d="M17.5 14.5c2 .4 3.5 2 3.5 4.5" />
+      </symbol>
+      <symbol id="i-up" viewBox="0 0 24 24"><path d="M12 19V5M6 11l6-6 6 6" /></symbol>
+      <symbol id="i-down" viewBox="0 0 24 24"><path d="M12 5v14M6 13l6 6 6-6" /></symbol>
+      <symbol id="i-hand" viewBox="0 0 24 24">
+        <path
+          d="M8 12V6.5a1.5 1.5 0 0 1 3 0V11M11 10V5a1.5 1.5 0 0 1 3 0v6M14 10V6.5a1.5 1.5 0 0 1 3 0V13c0 4-2 7-6 7-3 0-4.500-1.500-6-4l-1.500-3a1.500 1.500 0 0 1 2.500-1.500L8 14"
+        />
+      </symbol>
+      <symbol id="i-pencil" viewBox="0 0 24 24">
+        <path d="M4 20l1-4L16.500 4.500a2 2 0 0 1 3 3L8 19z" />
+      </symbol>
+      <symbol id="i-puzzle" viewBox="0 0 24 24">
+        <path d="M5 8h3a2 2 0 1 1 4 0h3v3a2 2 0 1 1 0 4v3H5z" />
+      </symbol>
+      <symbol id="i-reset" viewBox="0 0 24 24">
+        <path d="M4 12a8 8 0 1 0 2.500-5.800M4 4v5h5" />
+      </symbol>
+      <symbol id="i-home" viewBox="0 0 24 24">
+        <path d="M3.500 11L12 4l8.500 7M6 10v9h12v-9" />
+      </symbol>
+    </svg>
+
+    <a class="fm-skip" href="#main"><span data-es="Saltar al contenido">Skip to content</span></a>
+
+    <div class="fm-container">
+      <header class="sp-intro">
+        <p class="fm-eyebrow">
+          <span class="fm-motif fm-motif--sm" aria-hidden="true"></span
+          ><span data-es="Estudio de Matemáticas en Familia · Sistema de diseño 3.0"
+            >Family Math Studio · Design system 3.0</span
+          >
+        </p>
+        <h1 data-es="Un sistema, una familia de páginas">One system for every family page</h1>
+        <p
+          class="fm-hero__hook"
+          data-es="Cada ficha, componente y patrón del sistema, en inglés y español, en claro, oscuro y alto contraste. Si dos cosas se ven distintas, significan cosas distintas."
+        >
+          Every token, component and pattern, in English and Spanish, in light, dark and high
+          contrast. If two things look different, they mean different things.
+        </p>
+        <nav class="sp-nav sp-intro-extra" aria-label="Sections" data-es-label="Secciones">
+          <a class="fm-chip fm-chip--accent" href="#color"><span data-es="Color">Color</span></a>
+          <a class="fm-chip fm-chip--accent" href="#units"><span data-es="Unidades">Units</span></a>
+          <a class="fm-chip fm-chip--accent" href="#type"><span data-es="Tipografía">Type</span></a>
+          <a class="fm-chip fm-chip--accent" href="#shape"
+            ><span data-es="Forma y movimiento">Shape and motion</span></a
+          >
+          <a class="fm-chip fm-chip--accent" href="#components"
+            ><span data-es="Componentes">Components</span></a
+          >
+          <a class="fm-chip fm-chip--accent" href="#patterns"
+            ><span data-es="Patrones">Patterns</span></a
+          >
+          <a class="fm-chip fm-chip--accent" href="#models"
+            ><span data-es="Modelos matemáticos">Math models</span></a
+          >
+          <a class="fm-chip fm-chip--accent" href="#beads"
+            ><span data-es="Cuentas y bloques">Beads and blocks</span></a
+          >
+        </nav>
+      </header>
+
+      <section class="sp-controls-wrap" aria-labelledby="controls-h">
+        <h2 id="controls-h" class="fm-sr" data-es="Controles de la muestra">Specimen controls</h2>
+        <div class="fm-card--inset">
+          <div class="sp-controls">
+            <fieldset>
+              <legend data-es="Idioma">Language</legend>
+              <div class="fm-seg">
+                <label class="fm-seg__opt"
+                  ><input type="radio" name="opt-lang" data-opt="lang" value="en" /><span
+                    >English</span
+                  ></label
+                ><label class="fm-seg__opt"
+                  ><input type="radio" name="opt-lang" data-opt="lang" value="es" /><span
+                    >Español</span
+                  ></label
+                >
+              </div>
+            </fieldset>
+            <fieldset>
+              <legend data-es="Tema">Theme</legend>
+              <div class="fm-seg">
+                <label class="fm-seg__opt"
+                  ><input type="radio" name="opt-theme" data-opt="theme" value="auto" /><span
+                    data-es="Auto"
+                    >Auto</span
+                  ></label
+                >
+                <label class="fm-seg__opt"
+                  ><input type="radio" name="opt-theme" data-opt="theme" value="light" /><span
+                    data-es="Claro"
+                    >Light</span
+                  ></label
+                >
+                <label class="fm-seg__opt"
+                  ><input type="radio" name="opt-theme" data-opt="theme" value="dark" /><span
+                    data-es="Oscuro"
+                    >Dark</span
+                  ></label
+                >
+                <label class="fm-seg__opt"
+                  ><input type="radio" name="opt-theme" data-opt="theme" value="contrast" /><span
+                    data-es="Alto contraste"
+                    >High contrast</span
+                  ></label
+                >
+              </div>
+            </fieldset>
+            <fieldset>
+              <legend data-es="Ancho de pantalla">Viewport width</legend>
+              <div class="fm-seg">
+                <label class="fm-seg__opt"
+                  ><input type="radio" name="opt-frame" data-opt="frame" value="full" /><span
+                    data-es="Completo"
+                    >Full</span
+                  ></label
+                >
+                <label class="fm-seg__opt"
+                  ><input type="radio" name="opt-frame" data-opt="frame" value="320" /><span
+                    >320</span
+                  ></label
+                >
+                <label class="fm-seg__opt"
+                  ><input type="radio" name="opt-frame" data-opt="frame" value="390" /><span
+                    >390</span
+                  ></label
+                >
+                <label class="fm-seg__opt"
+                  ><input type="radio" name="opt-frame" data-opt="frame" value="768" /><span
+                    >768</span
+                  ></label
+                >
+                <label class="fm-seg__opt"
+                  ><input type="radio" name="opt-frame" data-opt="frame" value="1280" /><span
+                    >1280</span
+                  ></label
+                >
+              </div>
+            </fieldset>
+            <fieldset>
+              <legend data-es="Tamaño del texto">Text size</legend>
+              <div class="fm-seg">
+                <label class="fm-seg__opt"
+                  ><input type="radio" name="opt-text" data-opt="text" value="100" /><span
+                    >100%</span
+                  ></label
+                >
+                <label class="fm-seg__opt"
+                  ><input type="radio" name="opt-text" data-opt="text" value="115" /><span
+                    >115%</span
+                  ></label
+                >
+                <label class="fm-seg__opt"
+                  ><input type="radio" name="opt-text" data-opt="text" value="130" /><span
+                    >130%</span
+                  ></label
+                >
+                <label class="fm-seg__opt"
+                  ><input type="radio" name="opt-text" data-opt="text" value="150" /><span
+                    >150%</span
+                  ></label
+                >
+              </div>
+            </fieldset>
+            <fieldset>
+              <legend data-es="Unidad (color y motivo)">Unit (color and motif)</legend>
+              <div class="fm-seg">
+                <label class="fm-seg__opt"
+                  ><input type="radio" name="opt-unit" data-opt="unit" value="1" /><span
+                    >1</span
+                  ></label
+                >
+                <label class="fm-seg__opt"
+                  ><input type="radio" name="opt-unit" data-opt="unit" value="2" /><span
+                    >2</span
+                  ></label
+                >
+                <label class="fm-seg__opt"
+                  ><input type="radio" name="opt-unit" data-opt="unit" value="3" /><span
+                    >3</span
+                  ></label
+                >
+                <label class="fm-seg__opt"
+                  ><input type="radio" name="opt-unit" data-opt="unit" value="4" /><span
+                    >4</span
+                  ></label
+                >
+                <label class="fm-seg__opt"
+                  ><input type="radio" name="opt-unit" data-opt="unit" value="5" /><span
+                    >5</span
+                  ></label
+                >
+                <label class="fm-seg__opt"
+                  ><input type="radio" name="opt-unit" data-opt="unit" value="6" /><span
+                    >6</span
+                  ></label
+                >
+                <label class="fm-seg__opt"
+                  ><input type="radio" name="opt-unit" data-opt="unit" value="7" /><span
+                    >7</span
+                  ></label
+                >
+                <label class="fm-seg__opt"
+                  ><input type="radio" name="opt-unit" data-opt="unit" value="8" /><span
+                    >8</span
+                  ></label
+                >
+                <label class="fm-seg__opt"
+                  ><input type="radio" name="opt-unit" data-opt="unit" value="9" /><span
+                    >9</span
+                  ></label
+                >
+                <label class="fm-seg__opt"
+                  ><input type="radio" name="opt-unit" data-opt="unit" value="10" /><span
+                    >10</span
+                  ></label
+                >
+              </div>
+            </fieldset>
+            <fieldset>
+              <legend data-es="Opciones de lectura">Reading options</legend>
+              <div class="fm-stack fm-stack--sm">
+                <button
+                  type="button"
+                  class="fm-switch"
+                  role="switch"
+                  aria-checked="false"
+                  data-opt-switch="spacing"
+                  data-on="more"
+                >
+                  <span class="fm-switch__track" aria-hidden="true"></span
+                  ><span data-es="Más espacio entre letras y líneas">More text spacing</span
+                  ><span class="fm-switch__state">Off</span>
+                </button>
+                <button
+                  type="button"
+                  class="fm-switch"
+                  role="switch"
+                  aria-checked="false"
+                  data-opt-switch="reading"
+                  data-on="dyslexia"
+                >
+                  <span class="fm-switch__track" aria-hidden="true"></span
+                  ><span data-es="Letra para dislexia">Dyslexia-friendly font</span
+                  ><span class="fm-switch__state">Off</span>
+                </button>
+                <button
+                  type="button"
+                  class="fm-switch"
+                  role="switch"
+                  aria-checked="false"
+                  data-opt-switch="measure"
+                  data-on="narrow"
+                >
+                  <span class="fm-switch__track" aria-hidden="true"></span
+                  ><span data-es="Líneas más cortas">Shorter lines</span
+                  ><span class="fm-switch__state">Off</span>
+                </button>
+                <button
+                  type="button"
+                  class="fm-switch"
+                  role="switch"
+                  aria-checked="false"
+                  data-opt-switch="motion"
+                  data-on="reduce"
+                >
+                  <span class="fm-switch__track" aria-hidden="true"></span
+                  ><span data-es="Reducir el movimiento">Reduce motion</span
+                  ><span class="fm-switch__state">Off</span>
+                </button>
+                <button
+                  type="button"
+                  class="fm-switch"
+                  role="switch"
+                  aria-checked="false"
+                  data-opt-switch="gray"
+                  data-on="on"
+                >
+                  <span class="fm-switch__track" aria-hidden="true"></span
+                  ><span data-es="Ver en escala de grises">Preview in grayscale</span
+                  ><span class="fm-switch__state">Off</span>
+                </button>
+              </div>
+            </fieldset>
+          </div>
+        </div>
+      </section>
+
+      <div class="sp-frame" aria-live="polite"></div>
+
+      <main id="main" class="sp-body">
+        <!-- ════════════════════════ COLOUR ════════════════════════ -->
+        <section id="color" class="sp-section" aria-labelledby="color-h">
+          <header>
+            <h2 id="color-h" data-es="Color">Color</h2>
+            <p
+              data-es="Ocho familias de color: papel, tinta, azul marino, verde azulado, ámbar, verde, rojo y la unidad activa. El verde azulado y el ámbar de la marca son relleno; el texto usa su tinta."
+            >
+              Eight families: paper, ink, navy, teal, amber, green, red and the active unit. Brand
+              teal and amber are fills; text uses their ink.
+            </p>
+          </header>
+          <div class="sp-stack">
+            <h3 data-es="Superficies, texto y líneas">Surfaces, text and lines</h3>
+            <div
+              class="sp-swatches"
+              data-swatch-list="--fm-surface,--fm-raised,--fm-sunken,--fm-inverse,--fm-text,--fm-text-muted,--fm-text-inverse,--fm-border,--fm-border-strong"
+            ></div>
+            <h3 data-es="Primario, verde azulado y ámbar">Primary, teal and amber</h3>
+            <div
+              class="sp-swatches"
+              data-swatch-list="--fm-primary,--fm-primary-hover,--fm-primary-press,--fm-on-primary,--fm-accent,--fm-accent-ink,--fm-accent-tint,--fm-highlight,--fm-on-highlight,--fm-highlight-ink,--fm-highlight-tint"
+            ></div>
+            <h3 data-es="Estados: éxito, “mira de otra manera”, información, falla del sistema">
+              States: success, “try another look”, info, system fault
+            </h3>
+            <div
+              class="sp-swatches"
+              data-swatch-list="--fm-success,--fm-success-ink,--fm-success-tint,--fm-look,--fm-look-tint,--fm-info-ink,--fm-info-tint,--fm-error-ink,--fm-error-tint"
+            ></div>
+            <h3 data-es="Foco y mapa matemático">Focus and math mapping</h3>
+            <div
+              class="sp-swatches"
+              data-swatch-list="--fm-focus,--fm-focus-halo,--fm-focus-inverse,--fm-m-part,--fm-m-whole,--fm-m-unknown,--fm-m-given,--fm-m-answer"
+            ></div>
+            <div class="fm-callout fm-callout--watch">
+              <svg class="fm-icon fm-callout__icon" aria-hidden="true"><use href="#i-alert" /></svg>
+              <p class="fm-callout__label" data-es="Una respuesta equivocada nunca es roja">
+                A wrong answer is never red
+              </p>
+              <div class="fm-callout__body">
+                <p
+                  data-es="El rojo es solo para fallas del sistema y para confirmar un borrado. Una respuesta por revisar usa el ámbar suave, un ojo y las palabras “Mira de otra manera”."
+                >
+                  Red is only for system faults and delete confirmation. An answer to rethink uses
+                  soft amber, an eye icon and the words “Try another look”.
+                </p>
+              </div>
+            </div>
+          </div>
+          <h3 data-es="Contraste en vivo (calculado por el navegador para el tema actual)">
+            Live contrast (computed by the browser for the current theme)
+          </h3>
+          <table class="sp-live">
+            <caption class="fm-sr" data-es="Pares de contraste">
+              Contrast pairs
+            </caption>
+            <thead>
+              <tr>
+                <th scope="col" data-es="Texto o borde">Foreground</th>
+                <th scope="col" data-es="Fondo">Background</th>
+                <th scope="col" data-es="Necesita">Needs</th>
+                <th scope="col" data-es="Resultado">Result</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr data-fg="--fm-text" data-bg="--fm-surface" data-min="4.5">
+                <td data-label="Foreground">text</td>
+                <td data-label="Background">surface</td>
+                <td data-label="Needs">4.5</td>
+                <td class="sp-ratio-cell" data-label="Result"></td>
+              </tr>
+              <tr data-fg="--fm-text" data-bg="--fm-raised" data-min="4.5">
+                <td data-label="Foreground">text</td>
+                <td data-label="Background">raised</td>
+                <td data-label="Needs">4.5</td>
+                <td class="sp-ratio-cell" data-label="Result"></td>
+              </tr>
+              <tr data-fg="--fm-text-muted" data-bg="--fm-sunken" data-min="4.5">
+                <td data-label="Foreground">text-muted</td>
+                <td data-label="Background">sunken</td>
+                <td data-label="Needs">4.5</td>
+                <td class="sp-ratio-cell" data-label="Result"></td>
+              </tr>
+              <tr data-fg="--fm-accent-ink" data-bg="--fm-surface" data-min="4.5">
+                <td data-label="Foreground">accent-ink</td>
+                <td data-label="Background">surface</td>
+                <td data-label="Needs">4.5</td>
+                <td class="sp-ratio-cell" data-label="Result"></td>
+              </tr>
+              <tr data-fg="--fm-highlight-ink" data-bg="--fm-highlight-tint" data-min="4.5">
+                <td data-label="Foreground">highlight-ink</td>
+                <td data-label="Background">highlight-tint</td>
+                <td data-label="Needs">4.5</td>
+                <td class="sp-ratio-cell" data-label="Result"></td>
+              </tr>
+              <tr data-fg="--fm-success-ink" data-bg="--fm-success-tint" data-min="4.5">
+                <td data-label="Foreground">success-ink</td>
+                <td data-label="Background">success-tint</td>
+                <td data-label="Needs">4.5</td>
+                <td class="sp-ratio-cell" data-label="Result"></td>
+              </tr>
+              <tr data-fg="--fm-info-ink" data-bg="--fm-info-tint" data-min="4.5">
+                <td data-label="Foreground">info-ink</td>
+                <td data-label="Background">info-tint</td>
+                <td data-label="Needs">4.5</td>
+                <td class="sp-ratio-cell" data-label="Result"></td>
+              </tr>
+              <tr data-fg="--fm-error-ink" data-bg="--fm-error-tint" data-min="4.5">
+                <td data-label="Foreground">error-ink</td>
+                <td data-label="Background">error-tint</td>
+                <td data-label="Needs">4.5</td>
+                <td class="sp-ratio-cell" data-label="Result"></td>
+              </tr>
+              <tr data-fg="--fm-on-primary" data-bg="--fm-primary" data-min="4.5">
+                <td data-label="Foreground">on-primary</td>
+                <td data-label="Background">primary</td>
+                <td data-label="Needs">4.5</td>
+                <td class="sp-ratio-cell" data-label="Result"></td>
+              </tr>
+              <tr data-fg="--fm-text-inverse" data-bg="--fm-inverse" data-min="4.5">
+                <td data-label="Foreground">text-inverse</td>
+                <td data-label="Background">inverse</td>
+                <td data-label="Needs">4.5</td>
+                <td class="sp-ratio-cell" data-label="Result"></td>
+              </tr>
+              <tr data-fg="--unit-accent-ink" data-bg="--unit-accent-tint" data-min="4.5">
+                <td data-label="Foreground">unit-accent-ink</td>
+                <td data-label="Background">unit-accent-tint</td>
+                <td data-label="Needs">4.5</td>
+                <td class="sp-ratio-cell" data-label="Result"></td>
+              </tr>
+              <tr data-fg="--fm-border-strong" data-bg="--fm-raised" data-min="3">
+                <td data-label="Foreground">border-strong</td>
+                <td data-label="Background">raised</td>
+                <td data-label="Needs">3</td>
+                <td class="sp-ratio-cell" data-label="Result"></td>
+              </tr>
+              <tr data-fg="--fm-focus" data-bg="--fm-surface" data-min="3">
+                <td data-label="Foreground">focus</td>
+                <td data-label="Background">surface</td>
+                <td data-label="Needs">3</td>
+                <td class="sp-ratio-cell" data-label="Result"></td>
+              </tr>
+              <tr data-fg="--unit-accent" data-bg="--fm-surface" data-min="3">
+                <td data-label="Foreground">unit-accent</td>
+                <td data-label="Background">surface</td>
+                <td data-label="Needs">3</td>
+                <td class="sp-ratio-cell" data-label="Result"></td>
+              </tr>
+            </tbody>
+          </table>
+          <p class="fm-hint">
+            <span
+              data-es="La matriz completa de los tres temas, calculada desde tokens.css, está en docs/design/family-contrast-matrix.md."
+              >The full matrix for all three themes, computed from tokens.css, is in
+              docs/design/family-contrast-matrix.md.</span
+            >
+          </p>
+        </section>
+
+        <!-- ════════════════════════ UNITS ════════════════════════ -->
+        <section id="units" class="sp-section" aria-labelledby="units-h">
+          <header>
+            <h2 id="units-h" data-es="Identidad de cada unidad">Unit identity</h2>
+            <p
+              data-es="Cada unidad tiene un número, un motivo y un tono. El tono nunca lleva la identidad solo: use el interruptor de escala de grises para comprobarlo."
+            >
+              Each unit has a number, a motif and a hue. The hue never carries the identity alone:
+              use the grayscale switch to check.
+            </p>
+          </header>
+          <div class="sp-grid">
+            <article class="sp-unit" data-unit="1">
+              <p class="sp-unit__head">
+                <span class="fm-motif" aria-hidden="true"></span
+                ><span data-es="Unidad 1 · Las matemáticas son descubrimiento"
+                  >Unit 1 · Math Is Discovery</span
+                >
+              </p>
+              <div class="sp-unit__bars" aria-hidden="true">
+                <span></span><span></span><span></span>
+              </div>
+            </article>
+            <article class="sp-unit" data-unit="2">
+              <p class="sp-unit__head">
+                <span class="fm-motif" aria-hidden="true"></span
+                ><span data-es="Unidad 2 · Estadística">Unit 2 · Statistics</span>
+              </p>
+              <div class="sp-unit__bars" aria-hidden="true">
+                <span></span><span></span><span></span>
+              </div>
+            </article>
+            <article class="sp-unit" data-unit="3">
+              <p class="sp-unit__head">
+                <span class="fm-motif" aria-hidden="true"></span
+                ><span data-es="Unidad 3 · Razones y tasas">Unit 3 · Ratios &amp; Rates</span>
+              </p>
+              <div class="sp-unit__bars" aria-hidden="true">
+                <span></span><span></span><span></span>
+              </div>
+            </article>
+            <article class="sp-unit" data-unit="4">
+              <p class="sp-unit__head">
+                <span class="fm-motif" aria-hidden="true"></span
+                ><span data-es="Unidad 4 · Porcentajes">Unit 4 · Percents</span>
+              </p>
+              <div class="sp-unit__bars" aria-hidden="true">
+                <span></span><span></span><span></span>
+              </div>
+            </article>
+            <article class="sp-unit" data-unit="5">
+              <p class="sp-unit__head">
+                <span class="fm-motif" aria-hidden="true"></span
+                ><span data-es="Unidad 5 · Área, área superficial y volumen"
+                  >Unit 5 · Area, Surface Area &amp; Volume</span
+                >
+              </p>
+              <div class="sp-unit__bars" aria-hidden="true">
+                <span></span><span></span><span></span>
+              </div>
+            </article>
+            <article class="sp-unit" data-unit="6">
+              <p class="sp-unit__head">
+                <span class="fm-motif" aria-hidden="true"></span
+                ><span data-es="Unidad 6 · Expresiones">Unit 6 · Expressions</span>
+              </p>
+              <div class="sp-unit__bars" aria-hidden="true">
+                <span></span><span></span><span></span>
+              </div>
+            </article>
+            <article class="sp-unit" data-unit="7">
+              <p class="sp-unit__head">
+                <span class="fm-motif" aria-hidden="true"></span
+                ><span data-es="Unidad 7 · Enteros y el plano cartesiano"
+                  >Unit 7 · Integers &amp; the Coordinate Plane</span
+                >
+              </p>
+              <div class="sp-unit__bars" aria-hidden="true">
+                <span></span><span></span><span></span>
+              </div>
+            </article>
+            <article class="sp-unit" data-unit="8">
+              <p class="sp-unit__head">
+                <span class="fm-motif" aria-hidden="true"></span
+                ><span data-es="Unidad 8 · Ecuaciones y desigualdades"
+                  >Unit 8 · Equations &amp; Inequalities</span
+                >
+              </p>
+              <div class="sp-unit__bars" aria-hidden="true">
+                <span></span><span></span><span></span>
+              </div>
+            </article>
+            <article class="sp-unit" data-unit="9">
+              <p class="sp-unit__head">
+                <span class="fm-motif" aria-hidden="true"></span
+                ><span data-es="Unidad 9 · Relaciones de dos variables"
+                  >Unit 9 · Two-Variable Relationships</span
+                >
+              </p>
+              <div class="sp-unit__bars" aria-hidden="true">
+                <span></span><span></span><span></span>
+              </div>
+            </article>
+            <article class="sp-unit" data-unit="10">
+              <p class="sp-unit__head">
+                <span class="fm-motif" aria-hidden="true"></span
+                ><span data-es="Unidad 10 · Las matemáticas son síntesis"
+                  >Unit 10 · Math Is Synthesis</span
+                >
+              </p>
+              <div class="sp-unit__bars" aria-hidden="true">
+                <span></span><span></span><span></span>
+              </div>
+            </article>
+          </div>
+          <p class="fm-hint">
+            <span data-es="Las tres barras de cada tarjeta son acento, tinta y tinte."
+              >The three bars on each card are accent, ink and tint.</span
+            >
+          </p>
+        </section>
+
+        <!-- ════════════════════════ TYPE ════════════════════════ -->
+        <section id="type" class="sp-section" aria-labelledby="type-h">
+          <header>
+            <h2 id="type-h" data-es="Tipografía">Typography</h2>
+            <p
+              data-es="Una familia de título (Baloo 2) y una de texto (Nunito), ambas con licencia SIL OFL y alojadas aquí. Ocho tamaños, el menor de 13 px."
+            >
+              One display family (Baloo 2) and one text family (Nunito), both SIL OFL and hosted
+              here. Eight sizes, the smallest 13 px.
+            </p>
+          </header>
+          <div>
+            <div class="sp-type" data-s="xs">
+              <p class="sp-type__meta">
+                xs <span data-readout=".sp-type[data-s='xs'] .sp-type__sample"></span>
+              </p>
+              <p
+                class="sp-type__sample"
+                data-es="Etiqueta y nota al pie: lo más pequeño que existe"
+              >
+                Label and footnote: the smallest anything gets
+              </p>
+            </div>
+            <div class="sp-type" data-s="sm">
+              <p class="sp-type__meta">
+                sm <span data-readout=".sp-type[data-s='sm'] .sp-type__sample"></span>
+              </p>
+              <p class="sp-type__sample" data-es="Pie de figura, ayuda y contadores">
+                Captions, helper text and counters
+              </p>
+            </div>
+            <div class="sp-type" data-s="md">
+              <p class="sp-type__meta">
+                md <span data-readout=".sp-type[data-s='md'] .sp-type__sample"></span>
+              </p>
+              <p
+                class="sp-type__sample"
+                data-es="Texto del cuerpo: 16 a 18 px, interlineado 1,5, de 60 a 70 caracteres por línea."
+              >
+                Body text: 16 to 18 px, line height 1.5, 60 to 70 characters per line.
+              </p>
+            </div>
+            <div class="sp-type" data-s="lg">
+              <p class="sp-type__meta">
+                lg <span data-readout=".sp-type[data-s='lg'] .sp-type__sample"></span>
+              </p>
+              <p class="sp-type__sample" data-es="Introducción de una sola frase">
+                A one-sentence introduction
+              </p>
+            </div>
+            <div class="sp-type" data-s="xl">
+              <p class="sp-type__meta">
+                xl <span data-readout=".sp-type[data-s='xl'] .sp-type__sample"></span>
+              </p>
+              <p class="sp-type__sample" data-es="Título de tarjeta">Card title</p>
+            </div>
+            <div class="sp-type" data-s="2xl">
+              <p class="sp-type__meta">
+                2xl <span data-readout=".sp-type[data-s='2xl'] .sp-type__sample"></span>
+              </p>
+              <p class="sp-type__sample" data-es="Título de sección">Section title</p>
+            </div>
+            <div class="sp-type" data-s="3xl">
+              <p class="sp-type__meta">
+                3xl <span data-readout=".sp-type[data-s='3xl'] .sp-type__sample"></span>
+              </p>
+              <p class="sp-type__sample" data-es="Título de página">Page title</p>
+            </div>
+            <div class="sp-type" data-s="4xl">
+              <p class="sp-type__meta">
+                4xl <span data-readout=".sp-type[data-s='4xl'] .sp-type__sample"></span>
+              </p>
+              <p class="sp-type__sample" data-es="¡Excelente!">Great work!</p>
+            </div>
+          </div>
+          <div class="fm-card fm-card--wide fm-stack">
+            <h3 class="fm-card__title" data-es="Números, signos y diacríticos">
+              Numbers, signs and diacritics
+            </h3>
+            <p class="fm-num fm-cluster"><span class="fm-nowrap">1,234.56</span><span class="fm-nowrap">7 − 3 = 4</span><span class="fm-nowrap">6 × 4 = 24</span><span class="fm-nowrap">24 ÷ 4 = 6</span></p>
+            <p
+              data-es="¿Qué número falta? ¡Inténtalo otra vez! Año, niño, canción, razón, más, él, ejercicio."
+            >
+              What number is missing? Try it again! Piñata, café, niño, ratio, area, volume.
+            </p>
+            <p
+              class="fm-hint"
+              data-es="Las cifras son tabulares y alineadas. El signo menos es −, no un guion. Los símbolos que las fuentes no incluyen (≈ ≠ ≤ ≥ π) usan la fuente del sistema."
+            >
+              Digits are tabular and lining. The minus sign is −, not a hyphen. Symbols the fonts do
+              not include (≈ ≠ ≤ ≥ π) fall back to the system font.
+            </p>
+          </div>
+        </section>
+
+        <!-- ════════════════════════ SHAPE, SPACE, MOTION ════════════════════════ -->
+        <section id="shape" class="sp-section" aria-labelledby="shape-h">
+          <header>
+            <h2 id="shape-h" data-es="Espacio, forma, elevación y movimiento">
+              Space, shape, elevation and motion
+            </h2>
+          </header>
+          <div class="sp-grid">
+            <div class="sp-demo">
+              <h3 data-es="Espacio (4 / 8)">Space (4 / 8)</h3>
+              <div class="sp-scale">
+                <div class="sp-scale__row" data-s="1">
+                  <span>space-1</span><span class="sp-scale__bar"></span>
+                </div>
+                <div class="sp-scale__row" data-s="2">
+                  <span>space-2</span><span class="sp-scale__bar"></span>
+                </div>
+                <div class="sp-scale__row" data-s="3">
+                  <span>space-3</span><span class="sp-scale__bar"></span>
+                </div>
+                <div class="sp-scale__row" data-s="4">
+                  <span>space-4</span><span class="sp-scale__bar"></span>
+                </div>
+                <div class="sp-scale__row" data-s="5">
+                  <span>space-5</span><span class="sp-scale__bar"></span>
+                </div>
+                <div class="sp-scale__row" data-s="6">
+                  <span>space-6</span><span class="sp-scale__bar"></span>
+                </div>
+                <div class="sp-scale__row" data-s="7">
+                  <span>space-7</span><span class="sp-scale__bar"></span>
+                </div>
+                <div class="sp-scale__row" data-s="8">
+                  <span>space-8</span><span class="sp-scale__bar"></span>
+                </div>
+              </div>
+            </div>
+            <div class="sp-demo">
+              <h3 data-es="Radios (5)">Radii (5)</h3>
+              <div class="sp-grid">
+                <div class="sp-shape" data-r="xs">xs</div>
+                <div class="sp-shape" data-r="sm">sm</div>
+                <div class="sp-shape" data-r="md">md</div>
+                <div class="sp-shape" data-r="lg">lg</div>
+                <div class="sp-shape" data-r="pill">pill</div>
+              </div>
+            </div>
+            <div class="sp-demo">
+              <h3 data-es="Elevación (5)">Elevation (5)</h3>
+              <div class="sp-grid">
+                <div class="sp-shape" data-r="md" data-sh="raised">raised</div>
+                <div class="sp-shape" data-r="md" data-sh="float">float</div>
+                <div class="sp-shape" data-r="md" data-sh="sheet">sheet</div>
+                <div class="sp-shape" data-r="md" data-sh="inset">inset</div>
+                <div class="sp-shape" data-r="md" data-sh="press">press</div>
+              </div>
+            </div>
+            <div class="sp-demo">
+              <h3 data-es="Movimiento: 120 / 200 / 320 ms, dos curvas">
+                Motion: 120 / 200 / 320 ms, two easings
+              </h3>
+              <p
+                class="fm-hint"
+                data-es="Entra con desvanecer y subir, el éxito pulsa suave, la revisión se mece sin sacudir. Todo se detiene con “Reducir el movimiento”."
+              >
+                Entrances fade and rise, success pulses softly, a rethink nudges without shaking.
+                Everything stops with “Reduce motion”.
+              </p>
+              <div class="fm-cluster">
+                <button type="button" class="fm-btn" data-play="rise" data-target="#anim-box">
+                  <span data-es="Entrada">Entrance</span>
+                </button>
+                <button type="button" class="fm-btn" data-play="pulse" data-target="#anim-box">
+                  <span data-es="Éxito">Success</span>
+                </button>
+                <button type="button" class="fm-btn" data-play="nudge" data-target="#anim-box">
+                  <span data-es="Mira de otra manera">Try another look</span>
+                </button>
+              </div>
+              <div id="anim-box" class="sp-shape sp-anim" data-r="md" data-sh="raised">
+                <span data-es="Caja de prueba">Test box</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ════════════════════════ COMPONENTS ════════════════════════ -->
+        <section id="components" class="sp-section" aria-labelledby="components-h">
+          <header>
+            <h2 id="components-h" data-es="Componentes">Components</h2>
+            <p
+              data-es="Cada componente tiene estados visibles sin depender del color: normal, enfoque, activo, desactivado, cargando, éxito."
+            >
+              Every component has states you can see without relying on color: default, focus,
+              active, disabled, loading, success.
+            </p>
+          </header>
+          <div class="sp-grid sp-grid--wide">
+            <div class="sp-demo">
+              <h3 data-es="Botones">Buttons</h3>
+              <div class="sp-states">
+                <figure>
+                  <button type="button" class="fm-btn fm-btn--primary">
+                    <span data-es="Primario">Primary</span>
+                  </button>
+                  <figcaption data-es="primario">primary</figcaption>
+                </figure>
+                <figure>
+                  <button type="button" class="fm-btn">
+                    <span data-es="Secundario">Secondary</span>
+                  </button>
+                  <figcaption data-es="secundario">secondary</figcaption>
+                </figure>
+                <figure>
+                  <button type="button" class="fm-btn fm-btn--quiet">
+                    <span data-es="Discreto">Quiet</span>
+                  </button>
+                  <figcaption data-es="discreto">quiet</figcaption>
+                </figure>
+                <figure>
+                  <button
+                    type="button"
+                    class="fm-btn fm-btn--icon"
+                    aria-label="Read aloud"
+                    data-es-label="Leer en voz alta"
+                  >
+                    <svg class="fm-icon" aria-hidden="true"><use href="#i-speaker" /></svg>
+                  </button>
+                  <figcaption data-es="solo icono">icon only</figcaption>
+                </figure>
+                <figure>
+                  <button type="button" class="fm-btn fm-btn--primary" disabled>
+                    <span data-es="Desactivado">Disabled</span>
+                  </button>
+                  <figcaption data-es="desactivado">disabled</figcaption>
+                </figure>
+                <figure>
+                  <button type="button" class="fm-btn fm-btn--primary" aria-busy="true">
+                    <span data-es="Guardando">Saving</span>
+                  </button>
+                  <figcaption data-es="cargando">loading</figcaption>
+                </figure>
+                <figure>
+                  <button type="button" class="fm-btn" data-state="success">
+                    <span data-es="Guardado">Saved</span>
+                  </button>
+                  <figcaption data-es="éxito">success</figcaption>
+                </figure>
+                <figure>
+                  <button type="button" class="fm-btn fm-btn--danger" data-confirm-button>
+                    <svg class="fm-icon" aria-hidden="true"><use href="#i-reset" /></svg
+                    ><span data-es="Borrar mi práctica">Clear my practice</span>
+                  </button>
+                  <figcaption data-es="confirmar en dos toques">two-tap confirm</figcaption>
+                </figure>
+              </div>
+              <button type="button" class="fm-btn fm-btn--primary fm-btn--lg fm-btn--block">
+                <span data-es="Empezar la práctica de hoy">Start tonight’s practice</span>
+              </button>
+            </div>
+
+            <div class="sp-demo">
+              <h3 data-es="Control segmentado, interruptor y fichas">
+                Segmented control, switch and chips
+              </h3>
+              <fieldset>
+                <legend class="fm-label" data-es="Ruta">Route</legend>
+                <div class="fm-seg">
+                  <label class="fm-seg__opt"
+                    ><input type="radio" name="demo-route-seg" checked /><span data-es="Rápida"
+                      >Quick</span
+                    ></label
+                  ><label class="fm-seg__opt"
+                    ><input type="radio" name="demo-route-seg" /><span data-es="Seguir"
+                      >Keep going</span
+                    ></label
+                  >
+                </div>
+              </fieldset>
+              <button
+                type="button"
+                class="fm-switch"
+                role="switch"
+                aria-checked="true"
+                data-demo-switch
+              >
+                <span class="fm-switch__track" aria-hidden="true"></span
+                ><span data-es="Consejos para adultos">Grown-up tips</span
+                ><span class="fm-switch__state">On</span>
+              </button>
+              <div class="fm-cluster">
+                <span class="fm-chip"><span data-es="10 min">10 min</span></span>
+                <span class="fm-chip fm-chip--accent"
+                  ><span data-es="Práctica guiada">Guided</span></span
+                >
+                <span class="fm-chip fm-chip--amber"><span data-es="Observa">Watch for</span></span>
+                <span class="fm-chip fm-chip--success"><span data-es="Terminado">Done</span></span>
+                <span class="fm-chip fm-chip--info"
+                  ><span data-es="Para adultos">Grown-up</span></span
+                >
+                <span class="fm-chip fm-chip--unit"><span data-es="Unidad 4">Unit 4</span></span>
+                <button type="button" class="fm-chip" aria-pressed="true">
+                  <span data-es="Con fracciones">With fractions</span>
+                </button>
+                <button type="button" class="fm-chip" aria-pressed="false">
+                  <span data-es="Con decimales">With decimals</span>
+                </button>
+              </div>
+              <p>
+                <span data-es="Un ">A </span
+                ><button type="button" class="fm-vocab" aria-describedby="vocab-tip">
+                  <span data-es="porcentaje">percent</span></button
+                ><span data-es=" es una razón de partes por cien.">
+                  is a ratio out of one hundred.</span
+                >
+              </p>
+              <p
+                id="vocab-tip"
+                class="fm-hint"
+                data-es="Término subrayado con puntos: toca para ver su definición."
+              >
+                Dotted underline: tap a term to see its definition.
+              </p>
+            </div>
+
+            <div class="sp-demo">
+              <h3 data-es="Tarjetas: elevada e incrustada, nada más">
+                Cards: raised and inset, nothing else
+              </h3>
+              <div class="fm-card fm-stack fm-stack--sm">
+                <h4 class="fm-card__title" data-es="Tarjeta elevada">Raised card</h4>
+                <p
+                  data-es="La superficie principal. Dentro solo cabe una tarjeta incrustada, nunca otra elevada."
+                >
+                  The main surface. Only an inset card fits inside, never another raised one.
+                </p>
+                <div class="fm-card--inset">
+                  <p data-es="Tarjeta incrustada: para un modelo, una nota o un campo de práctica.">
+                    Inset card: for a model, a note or a practice field.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div class="sp-demo">
+              <h3 data-es="Avisos">Callouts</h3>
+              <div class="fm-callout">
+                <svg class="fm-icon fm-callout__icon" aria-hidden="true">
+                  <use href="#i-bulb" />
+                </svg>
+                <p class="fm-callout__label" data-es="Consejo">Tip</p>
+                <div class="fm-callout__body">
+                  <p data-es="Dibuja la cinta primero y luego escribe los números.">
+                    Draw the tape first, then write the numbers.
+                  </p>
+                </div>
+              </div>
+              <div class="fm-callout fm-callout--watch">
+                <svg class="fm-icon fm-callout__icon" aria-hidden="true">
+                  <use href="#i-alert" />
+                </svg>
+                <p class="fm-callout__label" data-es="Ojo con esto">Watch out</p>
+                <div class="fm-callout__body">
+                  <p data-es="El 25 % de 80 no es 25 de 80.">25% of 80 is not 25 of 80.</p>
+                </div>
+              </div>
+              <div class="fm-callout fm-callout--grownup">
+                <svg class="fm-icon fm-callout__icon" aria-hidden="true">
+                  <use href="#i-grownup" />
+                </svg>
+                <p class="fm-callout__label" data-es="Nota para adultos">Grown-up note</p>
+                <div class="fm-callout__body">
+                  <p data-es="Pregunte: “¿Cómo lo supiste?” y espere. No hace falta corregir.">
+                    Ask “How did you know?” and wait. No need to correct.
+                  </p>
+                </div>
+              </div>
+              <div class="fm-callout fm-callout--celebrate">
+                <svg class="fm-icon fm-callout__icon" aria-hidden="true">
+                  <use href="#i-star" />
+                </svg>
+                <p class="fm-callout__label" data-es="¡Lo lograste!">You did it!</p>
+                <div class="fm-callout__body">
+                  <p data-es="Cuatro respuestas correctas abren el reto misterioso.">
+                    Four right answers open the mystery challenge.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div class="sp-demo">
+              <h3 data-es="Progreso: puntos, anillo, barra, pasos">
+                Progress: dots, ring, bar, steps
+              </h3>
+              <div class="fm-cluster">
+                <ol class="fm-dots" aria-label="Stop 3 of 5" data-es-label="Parada 3 de 5">
+                  <li class="fm-dot" data-state="done">
+                    <span class="fm-sr" data-es="Parada 1, hecha">Stop 1, done</span>
+                  </li>
+                  <li class="fm-dot" data-state="done">
+                    <span class="fm-sr" data-es="Parada 2, hecha">Stop 2, done</span>
+                  </li>
+                  <li class="fm-dot" data-state="current" aria-current="step">
+                    <span class="fm-sr" data-es="Parada 3, actual">Stop 3, current</span>
+                  </li>
+                  <li class="fm-dot" data-state="todo">
+                    <span class="fm-sr" data-es="Parada 4, por hacer">Stop 4, to do</span>
+                  </li>
+                  <li class="fm-dot" data-state="todo">
+                    <span class="fm-sr" data-es="Parada 5, por hacer">Stop 5, to do</span>
+                  </li>
+                </ol>
+                <p class="fm-hint" data-es="Parada 3 de 5">Stop 3 of 5</p>
+              </div>
+              <div class="fm-cluster">
+                <div
+                  class="fm-ring"
+                  role="img"
+                  aria-label="2 of 4 right"
+                  data-es-label="2 de 4 correctas"
+                  style="--pct: 50"
+                >
+                  <span>2 / 4</span>
+                </div>
+                <div class="fm-stack fm-stack--sm sp-grow">
+                  <div
+                    class="fm-bar"
+                    role="progressbar"
+                    aria-valuemin="0"
+                    aria-valuemax="100"
+                    aria-valuenow="60"
+                    aria-label="Progress"
+                    data-es-label="Progreso"
+                    style="--pct: 60"
+                  >
+                    <span class="fm-bar__fill"></span>
+                  </div>
+                  <p class="fm-hint" data-es="60 % del camino">60% of the way</p>
+                </div>
+              </div>
+              <ol class="fm-stepper">
+                <li class="fm-step" data-state="done"><span data-es="Mira">Look</span></li>
+                <li class="fm-step" data-state="current" aria-current="step">
+                  <span data-es="Prueba">Try</span>
+                </li>
+                <li class="fm-step" data-state="todo"><span data-es="Explica">Explain</span></li>
+              </ol>
+            </div>
+
+            <div class="sp-demo">
+              <h3 data-es="Despliegue y pestañas">Disclosure and tabs</h3>
+              <details class="fm-disclosure">
+                <summary><span data-es="¿Por qué funciona?">Why does it work?</span></summary>
+                <div class="fm-disclosure__body">
+                  <p
+                    data-es="Un porcentaje compara con cien, así que 25 % significa 25 de cada 100."
+                  >
+                    A percent compares to one hundred, so 25% means 25 out of every 100.
+                  </p>
+                </div>
+              </details>
+              <div class="fm-tabs">
+                <div
+                  class="fm-tabs__list"
+                  role="tablist"
+                  aria-label="Model views"
+                  data-es-label="Vistas del modelo"
+                >
+                  <button
+                    type="button"
+                    role="tab"
+                    class="fm-tab"
+                    id="tab-a"
+                    aria-selected="true"
+                    aria-controls="panel-a"
+                  >
+                    <span data-es="Cinta">Tape</span>
+                  </button>
+                  <button
+                    type="button"
+                    role="tab"
+                    class="fm-tab"
+                    id="tab-b"
+                    aria-selected="false"
+                    tabindex="-1"
+                    aria-controls="panel-b"
+                  >
+                    <span data-es="Recta">Line</span>
+                  </button>
+                  <button
+                    type="button"
+                    role="tab"
+                    class="fm-tab"
+                    id="tab-c"
+                    aria-selected="false"
+                    tabindex="-1"
+                    aria-controls="panel-c"
+                  >
+                    <span data-es="Tabla">Table</span>
+                  </button>
+                </div>
+                <div
+                  class="fm-tabs__panel"
+                  role="tabpanel"
+                  id="panel-a"
+                  aria-labelledby="tab-a"
+                  tabindex="0"
+                >
+                  <p data-es="Una cinta muestra partes de un todo.">
+                    A tape shows parts of a whole.
+                  </p>
+                </div>
+                <div
+                  class="fm-tabs__panel"
+                  role="tabpanel"
+                  id="panel-b"
+                  aria-labelledby="tab-b"
+                  tabindex="0"
+                  hidden
+                >
+                  <p data-es="Una recta numérica muestra saltos.">A number line shows jumps.</p>
+                </div>
+                <div
+                  class="fm-tabs__panel"
+                  role="tabpanel"
+                  id="panel-c"
+                  aria-labelledby="tab-c"
+                  tabindex="0"
+                  hidden
+                >
+                  <p data-es="Una tabla ordena razones equivalentes.">
+                    A table lines up equivalent ratios.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div class="sp-demo">
+              <h3 data-es="Información emergente, hoja inferior y aviso">
+                Tooltip, bottom sheet and toast
+              </h3>
+              <div class="fm-cluster">
+                <span class="fm-tooltip">
+                  <button
+                    type="button"
+                    class="fm-btn fm-btn--icon"
+                    aria-label="What is Hands-on?"
+                    data-es-label="¿Qué es Con las manos?"
+                    aria-describedby="tip-1"
+                  >
+                    <svg class="fm-icon" aria-hidden="true"><use href="#i-info" /></svg>
+                  </button>
+                  <span
+                    class="fm-tooltip__bubble"
+                    role="tooltip"
+                    id="tip-1"
+                    data-es="Con las manos: usa objetos de la casa, como monedas o cucharas."
+                    >Hands-on: uses things from home, like coins or spoons.</span
+                  >
+                </span>
+                <button type="button" class="fm-btn" data-open-sheet="sheet-more">
+                  <svg class="fm-icon" aria-hidden="true"><use href="#i-more" /></svg
+                  ><span data-es="Más">More</span>
+                </button>
+                <button
+                  type="button"
+                  class="fm-btn"
+                  data-toast="Saved on this device."
+                  data-toast-es="Guardado en este dispositivo."
+                >
+                  <svg class="fm-icon" aria-hidden="true"><use href="#i-save" /></svg
+                  ><span data-es="Mostrar aviso">Show toast</span>
+                </button>
+              </div>
+              <p
+                class="fm-hint"
+                data-es="El aviso es amable, se quita solo y nunca cubre la barra de acción."
+              >
+                The toast is polite, goes away on its own and never covers the action bar.
+              </p>
+            </div>
+
+            <div class="sp-demo">
+              <h3 data-es="Entradas: numérica, opción múltiple, ordenar">
+                Inputs: numeric, multiple choice, sort
+              </h3>
+              <div class="fm-field" data-try="12">
+                <label class="fm-label" for="num-1" data-es="¿Cuánto es el 25 % de 48?"
+                  >What is 25% of 48?</label
+                >
+                <input
+                  class="fm-input fm-input--num"
+                  id="num-1"
+                  inputmode="decimal"
+                  autocomplete="off"
+                  aria-describedby="num-1-h"
+                />
+                <p
+                  class="fm-hint"
+                  id="num-1-h"
+                  data-es="Escribe solo el número. Prueba con 12 y con 10."
+                >
+                  Type only the number. Try 12, then 10.
+                </p>
+                <div class="fm-try__actions">
+                  <button type="button" class="fm-btn fm-btn--primary" data-check>
+                    <span data-es="Comprobar">Check</span>
+                  </button>
+                </div>
+                <div aria-live="polite">
+                  <div class="fm-feedback fm-feedback--right" data-fb="right" hidden>
+                    <svg class="fm-icon fm-feedback__icon fm-check" aria-hidden="true">
+                      <use href="#i-check" />
+                    </svg>
+                    <p class="fm-feedback__title" data-es="¡Sí!">Yes!</p>
+                    <div class="fm-feedback__body">
+                      <p data-es="25 % es un cuarto, y un cuarto de 48 es 12.">
+                        25% is one quarter, and a quarter of 48 is 12.
+                      </p>
+                    </div>
+                  </div>
+                  <div class="fm-feedback fm-feedback--look" data-fb="look" hidden>
+                    <svg class="fm-icon fm-feedback__icon" aria-hidden="true">
+                      <use href="#i-eye" />
+                    </svg>
+                    <p class="fm-feedback__title" data-es="Mira de otra manera">Try another look</p>
+                    <div class="fm-feedback__body">
+                      <p data-es="¿Cuántas partes iguales hay en 100? Piensa en un cuarto.">
+                        How many equal parts make 100? Think about one quarter.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <fieldset class="fm-field" data-try="b">
+                <legend class="fm-label" data-es="¿Qué modelo muestra 3 de 8?">
+                  Which model shows 3 of 8?
+                </legend>
+                <div class="fm-choices">
+                  <label class="fm-choice"
+                    ><input type="radio" name="mc-1" value="a" /><span
+                      class="fm-choice__mark"
+                      aria-hidden="true"
+                      >A</span
+                    ><span data-es="3 partes en total, 8 sombreadas"
+                      >3 parts in all, 8 shaded</span
+                    ></label
+                  >
+                  <label class="fm-choice"
+                    ><input type="radio" name="mc-1" value="b" /><span
+                      class="fm-choice__mark"
+                      aria-hidden="true"
+                      >B</span
+                    ><span data-es="8 partes iguales, 3 sombreadas"
+                      >8 equal parts, 3 shaded</span
+                    ></label
+                  >
+                </div>
+                <div class="fm-try__actions">
+                  <button type="button" class="fm-btn fm-btn--primary" data-check>
+                    <span data-es="Comprobar">Check</span>
+                  </button>
+                </div>
+                <div aria-live="polite">
+                  <div class="fm-feedback fm-feedback--right" data-fb="right" hidden>
+                    <svg class="fm-icon fm-feedback__icon fm-check" aria-hidden="true">
+                      <use href="#i-check" />
+                    </svg>
+                    <p class="fm-feedback__title" data-es="¡Sí!">Yes!</p>
+                  </div>
+                  <div class="fm-feedback fm-feedback--look" data-fb="look" hidden>
+                    <svg class="fm-icon fm-feedback__icon" aria-hidden="true">
+                      <use href="#i-eye" />
+                    </svg>
+                    <p class="fm-feedback__title" data-es="Mira de otra manera">Try another look</p>
+                    <div class="fm-feedback__body">
+                      <p data-es="Cuenta las partes del todo primero.">
+                        Count the parts in the whole first.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </fieldset>
+              <div class="fm-field">
+                <p class="fm-label" id="sort-l" data-es="Ordena de menor a mayor">
+                  Order from least to greatest
+                </p>
+                <ol class="fm-sort" aria-labelledby="sort-l">
+                  <li class="fm-sort__item">
+                    <span>3/4</span><button
+                      type="button"
+                      class="fm-btn fm-btn--icon"
+                      data-move="up"
+                      aria-label="Move up"
+                      data-es-label="Subir"
+                    >
+                      <svg class="fm-icon" aria-hidden="true"><use href="#i-up" /></svg></button
+                    ><button
+                      type="button"
+                      class="fm-btn fm-btn--icon"
+                      data-move="down"
+                      aria-label="Move down"
+                      data-es-label="Bajar"
+                    >
+                      <svg class="fm-icon" aria-hidden="true"><use href="#i-down" /></svg>
+                    </button>
+                  </li>
+                  <li class="fm-sort__item">
+                    <span>1/2</span><button
+                      type="button"
+                      class="fm-btn fm-btn--icon"
+                      data-move="up"
+                      aria-label="Move up"
+                      data-es-label="Subir"
+                    >
+                      <svg class="fm-icon" aria-hidden="true"><use href="#i-up" /></svg></button
+                    ><button
+                      type="button"
+                      class="fm-btn fm-btn--icon"
+                      data-move="down"
+                      aria-label="Move down"
+                      data-es-label="Bajar"
+                    >
+                      <svg class="fm-icon" aria-hidden="true"><use href="#i-down" /></svg>
+                    </button>
+                  </li>
+                  <li class="fm-sort__item">
+                    <span>1/4</span><button
+                      type="button"
+                      class="fm-btn fm-btn--icon"
+                      data-move="up"
+                      aria-label="Move up"
+                      data-es-label="Subir"
+                    >
+                      <svg class="fm-icon" aria-hidden="true"><use href="#i-up" /></svg></button
+                    ><button
+                      type="button"
+                      class="fm-btn fm-btn--icon"
+                      data-move="down"
+                      aria-label="Move down"
+                      data-es-label="Bajar"
+                    >
+                      <svg class="fm-icon" aria-hidden="true"><use href="#i-down" /></svg>
+                    </button>
+                  </li>
+                </ol>
+              </div>
+              <div class="fm-field">
+                <label class="fm-label" for="num-off" data-es="Campo desactivado"
+                  >Disabled field</label
+                ><input class="fm-input" id="num-off" disabled value="42" />
+              </div>
+              <div class="fm-field">
+                <label class="fm-label" for="num-bad" data-es="Formato no válido"
+                  >Invalid format</label
+                ><input
+                  class="fm-input"
+                  id="num-bad"
+                  value="4x2"
+                  aria-invalid="true"
+                  aria-describedby="num-bad-e"
+                />
+                <p class="fm-field__fault" id="num-bad-e">
+                  <svg class="fm-icon fm-icon--sm" aria-hidden="true"><use href="#i-alert" /></svg
+                  ><span data-es="Escribe solo números.">Type numbers only.</span>
+                </p>
+              </div>
+            </div>
+
+            <div class="sp-demo">
+              <h3 data-es="Retroalimentación y escalera de pistas">Feedback and the hint ladder</h3>
+              <div class="fm-feedback">
+                <svg class="fm-icon fm-feedback__icon" aria-hidden="true">
+                  <use href="#i-bulb" />
+                </svg>
+                <p class="fm-feedback__title" data-es="Pista">Hint</p>
+                <div class="fm-feedback__body">
+                  <p data-es="Busca el todo en el problema.">Look for the whole in the problem.</p>
+                </div>
+              </div>
+              <div class="fm-feedback fm-feedback--fault">
+                <svg class="fm-icon fm-feedback__icon" aria-hidden="true">
+                  <use href="#i-alert" />
+                </svg>
+                <p class="fm-feedback__title" data-es="No se pudo guardar">We could not save</p>
+                <div class="fm-feedback__body">
+                  <p data-es="Tu trabajo sigue aquí. Inténtalo de nuevo en un momento.">
+                    Your work is still here. Try again in a moment.
+                  </p>
+                </div>
+              </div>
+              <div>
+                <ol class="fm-hints" data-ladder>
+                  <li class="fm-rung" data-state="open">
+                    <div>
+                      <p class="fm-label" data-es="Idea">Idea</p>
+                      <p data-es="Piensa en el todo y en las partes.">
+                        Think about the whole and the parts.
+                      </p>
+                    </div>
+                  </li>
+                  <li class="fm-rung" data-state="locked">
+                    <div>
+                      <p class="fm-label" data-es="Pasos">Steps</p>
+                      <p data-locked-text data-es="Se abre después de la pista 1.">
+                        Opens after hint 1.
+                      </p>
+                      <p data-open-text hidden data-es="Divide 100 en 4 partes iguales.">
+                        Split 100 into 4 equal parts.
+                      </p>
+                    </div>
+                  </li>
+                  <li class="fm-rung" data-state="locked">
+                    <div>
+                      <p class="fm-label" data-es="Ejemplo resuelto">Worked example</p>
+                      <p data-locked-text data-es="Se abre después de la pista 2.">
+                        Opens after hint 2.
+                      </p>
+                      <p
+                        data-open-text
+                        hidden
+                        data-es="Con 20 % de 50: 20 es una quinta parte, y una quinta de 50 es 10."
+                      >
+                        With 20% of 50: 20 is one fifth, and a fifth of 50 is 10.
+                      </p>
+                    </div>
+                  </li>
+                </ol>
+                <div class="sp-demo-actions">
+                  <button type="button" class="fm-btn" data-next-hint>
+                    <svg class="fm-icon" aria-hidden="true"><use href="#i-bulb" /></svg
+                    ><span data-es="Mostrar la siguiente pista">Show the next hint</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="sp-demo">
+              <h3 data-es="Tarjeta de vocabulario y parejas">
+                Vocabulary flip card and match tiles
+              </h3>
+              <button type="button" class="fm-flip" aria-pressed="false">
+                <span class="fm-flip__face fm-flip__face--front"
+                  ><span class="fm-flip__term" data-es="razón">ratio</span
+                  ><span class="fm-flip__cue" data-es="Toca para ver el significado"
+                    >Tap to see the meaning</span
+                  ></span
+                >
+                <span class="fm-flip__face fm-flip__face--back"
+                  ><span class="fm-flip__cue" data-es="Significado">Meaning</span
+                  ><span data-es="Una comparación de dos cantidades."
+                    >A comparison of two quantities.</span
+                  ></span
+                >
+              </button>
+              <div>
+                <div class="fm-match" data-match>
+                  <button type="button" class="fm-tile" data-pair="1">
+                    <span data-es="mitad">half</span>
+                  </button>
+                  <button type="button" class="fm-tile" data-pair="2">
+                    <span data-es="cuarto">quarter</span>
+                  </button>
+                  <button type="button" class="fm-tile" data-pair="2"><span>25%</span></button>
+                  <button type="button" class="fm-tile" data-pair="1"><span>50%</span></button>
+                </div>
+                <p
+                  class="fm-hint"
+                  data-match-status
+                  role="status"
+                  data-es="Une cada palabra con su porcentaje."
+                >
+                  Match each word with its percent.
+                </p>
+              </div>
+            </div>
+
+            <div class="sp-demo">
+              <h3 data-es="Marco de juego">Game shell</h3>
+              <section class="fm-game" aria-labelledby="game-t">
+                <div class="fm-game__head">
+                  <h4 id="game-t" class="fm-card__title" data-es="Parejas de porcentajes">
+                    Percent pairs
+                  </h4>
+                  <p class="fm-game__stat" data-es="Movimientos: 3">Moves: 3</p>
+                </div>
+                <div class="fm-game__board">
+                  <p
+                    data-es="El tablero del juego va aquí. Sin reloj, sin tabla de posiciones, nada bloqueado."
+                  >
+                    The game board goes here. No clock, no leaderboard, nothing locked.
+                  </p>
+                </div>
+                <div class="fm-game__foot">
+                  <button type="button" class="fm-btn fm-btn--quiet">
+                    <svg class="fm-icon" aria-hidden="true"><use href="#i-reset" /></svg
+                    ><span data-es="Empezar de nuevo">Start over</span></button
+                  ><button type="button" class="fm-btn">
+                    <svg class="fm-icon" aria-hidden="true"><use href="#i-bulb" /></svg
+                    ><span data-es="Pista">Hint</span>
+                  </button>
+                </div>
+              </section>
+            </div>
+
+            <div class="sp-demo">
+              <h3 data-es="Certificado">Certificate</h3>
+              <div class="fm-cert">
+                <div class="fm-cert__seal" aria-hidden="true">
+                  <span class="fm-motif sp-seal"></span>
+                </div>
+                <p class="fm-eyebrow" data-es="Estudio de Matemáticas en Familia">
+                  Family Math Studio
+                </p>
+                <h4 class="fm-cert__title" data-es="Certificado de logro">
+                  Certificate of achievement
+                </h4>
+                <p data-es="Se otorga a">Awarded to</p>
+                <p class="fm-cert__name"><span class="fm-sr">Name line</span></p>
+                <p data-es="por terminar la unidad de porcentajes en familia.">
+                  for finishing the percents unit together as a family.
+                </p>
+              </div>
+            </div>
+
+            <div class="sp-demo">
+              <h3 data-es="Vacío, error y carga">Empty, error and loading</h3>
+              <div class="fm-state">
+                <span class="fm-state__icon" aria-hidden="true"
+                  ><svg class="fm-icon fm-icon--lg"><use href="#i-pencil" /></svg
+                ></span>
+                <p class="fm-state__title" data-es="Aún no hay respuestas">No answers yet</p>
+                <p data-es="Cuando respondas, aquí verás tu trabajo.">
+                  When you answer, your work shows here.
+                </p>
+              </div>
+              <div class="fm-state fm-state--fault">
+                <span class="fm-state__icon" aria-hidden="true"
+                  ><svg class="fm-icon fm-icon--lg"><use href="#i-alert" /></svg
+                ></span>
+                <p class="fm-state__title" data-es="No se pudo cargar">We could not load this</p>
+                <button type="button" class="fm-btn">
+                  <svg class="fm-icon" aria-hidden="true"><use href="#i-reset" /></svg
+                  ><span data-es="Probar de nuevo">Try again</span>
+                </button>
+              </div>
+              <div role="status" aria-label="Loading" data-es-label="Cargando">
+                <span class="fm-skeleton fm-skeleton--block"></span
+                ><span class="fm-skeleton sp-skel-short"></span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+<!-- ════════════════════════ PATTERNS ════════════════════════ -->
+<section id="patterns" class="sp-section" aria-labelledby="patterns-h">
+  <header>
+    <h2 id="patterns-h" data-es="Patrones de página">Page patterns</h2>
+    <p data-es="Un solo punto de atención por pantalla. Una tarjeta elevada, una incrustada como máximo. Una barra de acción abajo, nunca dos controles fijos.">One focus per screen. One raised card and at most one inset inside it. One action bar at the bottom, never two fixed controls.</p>
+  </header>
+
+  <div class="sp-stack">
+    <h3 data-es="Barra superior compacta">Compact top bar</h3>
+    <div class="fm-topbar">
+      <a class="fm-topbar__brand" href="#main" aria-label="Family Math Studio home" data-es-label="Inicio de Estudio de Matemáticas en Familia"><span class="fm-topbar__mark"><svg class="fm-icon" aria-hidden="true"><use href="#i-home"/></svg></span><span class="fm-topbar__brand-text" data-es="Matemáticas en Familia">Family Math</span></a>
+      <div class="fm-topbar__tools">
+        <div class="fm-seg" role="group" aria-label="Language" data-es-label="Idioma"><label class="fm-seg__opt"><input type="radio" name="demo-lang" checked><span>EN</span></label><label class="fm-seg__opt"><input type="radio" name="demo-lang"><span>ES</span></label></div>
+        <button type="button" class="fm-btn fm-btn--icon" aria-pressed="true" aria-label="Grown-up tips" data-es-label="Consejos para adultos"><svg class="fm-icon" aria-hidden="true"><use href="#i-grownup"/></svg></button>
+        <button type="button" class="fm-btn fm-btn--icon fm-topbar__wide" aria-label="Text size" data-es-label="Tamaño del texto"><svg class="fm-icon" aria-hidden="true"><use href="#i-textsize"/></svg></button>
+        <button type="button" class="fm-btn fm-btn--icon fm-topbar__wide" aria-label="Read aloud" data-es-label="Leer en voz alta"><svg class="fm-icon" aria-hidden="true"><use href="#i-speaker"/></svg></button>
+        <span class="fm-save fm-topbar__wide" data-state="saved" role="status"><span data-es="Guardado">Saved</span></span>
+        <button type="button" class="fm-btn fm-btn--icon" aria-label="More" data-es-label="Más" data-open-sheet="sheet-more"><svg class="fm-icon" aria-hidden="true"><use href="#i-more"/></svg></button>
+      </div>
+    </div>
+
+    <h3 data-es="Encabezado de parada con barra de acción (dentro de un teléfono)">Stop header and action bar (inside a phone)</h3>
+    <div class="sp-phone" role="region" aria-label="Phone preview of a stop" data-es-label="Vista de teléfono de una parada" tabindex="0">
+      <div class="fm-stopbar fm-container">
+        <div class="fm-stopbar__row"><div><p class="fm-stopbar__count" data-es="Parada 3 de 5">Stop 3 of 5</p><p class="fm-stopbar__title" data-es="Prueba tú">Try it</p></div>
+          <ol class="fm-dots" aria-label="Progress" data-es-label="Progreso"><li class="fm-dot" data-state="done"><span class="fm-sr">1</span></li><li class="fm-dot" data-state="done"><span class="fm-sr">2</span></li><li class="fm-dot" data-state="current" aria-current="step"><span class="fm-sr">3</span></li><li class="fm-dot" data-state="todo"><span class="fm-sr">4</span></li><li class="fm-dot" data-state="todo"><span class="fm-sr">5</span></li></ol></div>
+      </div>
+      <div class="sp-phone__scroll">
+        <div class="fm-card"><p class="fm-try__prompt" data-es="Una mochila cuesta $48 y tiene 25 % de descuento. ¿Cuánto es el descuento?">A backpack costs $48 and is 25% off. How much is the discount?</p></div>
+        <div class="fm-card--inset"><p data-es="Contenido largo para adultos va en la hoja inferior, no aquí.">Long grown-up content goes in the bottom sheet, not here.</p></div>
+        <p data-es="Desplázate: la barra de arriba y la de abajo se quedan en su lugar y no tapan nada.">Scroll: the top and bottom bars stay put and never cover anything.</p>
+      </div>
+      <div class="fm-actionbar fm-container"><button type="button" class="fm-btn fm-btn--primary fm-btn--lg"><span data-es="Comprobar">Check</span></button><button type="button" class="fm-btn fm-btn--icon" aria-label="Grown-up drawer" data-es-label="Panel para adultos" data-open-sheet="sheet-grownup"><svg class="fm-icon" aria-hidden="true"><use href="#i-grownup"/></svg></button></div>
+    </div>
+
+    <h3 data-es="Bienvenida">Welcome</h3>
+    <section class="fm-hero" aria-labelledby="hero-t">
+      <div class="fm-hero__art" aria-hidden="true"><span class="fm-motif"></span></div>
+      <div class="fm-hero__copy">
+        <p class="fm-eyebrow"><span class="fm-motif fm-motif--sm" aria-hidden="true"></span><span data-es="Unidad 4 · Porcentajes">Unit 4 · Percents</span></p>
+        <h3 id="hero-t" class="fm-hero__title" data-es="Encuentra el precio de oferta sin calculadora">Find the sale price without a calculator</h3>
+        <p class="fm-hero__hook" data-es="Una mochila de $48 tiene 25 % de descuento. ¿Cuánto pagas?">A $48 backpack is 25% off. What do you pay?</p>
+        <div class="fm-cluster">
+          <span class="fm-xp-badge"><span class="fm-xp-badge__disc" aria-hidden="true"><svg class="fm-icon fm-icon--sm"><use href="#i-hand"/></svg></span><span data-es="Con las manos">Hands-on</span></span>
+          <span class="fm-tooltip"><button type="button" class="fm-btn fm-btn--icon fm-btn--quiet" aria-label="About Hands-on" data-es-label="Sobre Con las manos" aria-describedby="tip-2"><svg class="fm-icon" aria-hidden="true"><use href="#i-info"/></svg></button><span class="fm-tooltip__bubble" role="tooltip" id="tip-2" data-es="Usa cosas de la casa, como monedas o cucharas.">Uses things from home, like coins or spoons.</span></span>
+        </div>
+      </div>
+      <div class="fm-hero__action">
+        <fieldset><legend class="fm-sr" data-es="Elige una ruta">Choose a route</legend>
+          <div class="fm-routes">
+            <label class="fm-route"><input type="radio" name="route" checked><span class="fm-route__title" data-es="Rápida">Quick</span><span class="fm-chip fm-chip--accent"><span data-es="10 min">10 min</span></span><span class="fm-route__desc" data-es="Dos ejemplos y cuatro preguntas">Two examples and four questions</span></label>
+            <label class="fm-route"><input type="radio" name="route"><span class="fm-route__title" data-es="Seguir">Keep going</span><span class="fm-chip fm-chip--accent"><span data-es="25 min">25 min</span></span><span class="fm-route__desc" data-es="Suma un juego y un reto">Adds a game and a challenge</span></label>
+          </div>
+        </fieldset>
+        <button type="button" class="fm-btn fm-btn--primary fm-btn--lg fm-btn--block"><span data-es="Empezar">Start</span></button>
+      </div>
+    </section>
+
+    <h3 data-es="Tarjetas de gancho (seis formas)">Hook cards (six shapes)</h3>
+    <div class="sp-grid">
+      <div class="fm-hook" data-variant="price-tag"><p class="fm-hook__kicker" data-es="Etiqueta de precio">Price tag</p><p class="fm-hook__big">$48.00</p><p data-es="25 % de descuento hoy">25% off today</p></div>
+      <div class="fm-hook" data-variant="recipe"><p class="fm-hook__kicker" data-es="Tarjeta de receta">Recipe card</p><p class="fm-hook__big" data-es="2 tazas de jugo">2 cups juice</p><p data-es="por cada 3 tazas de agua">for every 3 cups water</p></div>
+      <div class="fm-hook" data-variant="scoreboard"><p class="fm-hook__kicker" data-es="Marcador">Score board</p><p class="fm-hook__big">18 – 12</p><p data-es="Tu equipo anotó 18 de 30 puntos.">Your team made 18 of 30 points.</p></div>
+      <div class="fm-hook" data-variant="map-pin"><p class="fm-hook__kicker" data-es="Punto en el mapa">Map pin</p><p class="fm-hook__big">3 mi</p><p data-es="hasta el parque, en 10 minutos">to the park, in 10 minutes</p></div>
+      <div class="fm-hook" data-variant="ticket"><p class="fm-hook__kicker" data-es="Boleto">Ticket</p><p class="fm-hook__big">4 × $7</p><p data-es="cuatro entradas al museo">four museum tickets</p></div>
+      <div class="fm-hook" data-variant="receipt"><p class="fm-hook__kicker" data-es="Recibo">Receipt</p><p class="fm-hook__big">$23.50</p><p data-es="total con propina del 20 %">total with a 20% tip</p></div>
+    </div>
+
+    <h3 data-es="Tarjeta de aprender, escenario del modelo y ejercicio">Learn card, model stage and try item</h3>
+    <div class="fm-split">
+      <div class="fm-card fm-card--wide fm-stack fm-stack--sm">
+        <p class="fm-learn__step"><svg class="fm-icon fm-icon--sm" aria-hidden="true"><use href="#i-bulb"/></svg><span data-es="Aprende · 1 de 2">Learn · 1 of 2</span></p>
+        <h4 class="fm-card__title" data-es="El 25 % es un cuarto">25% is one quarter</h4>
+        <p data-es="Cien partes iguales, divididas en cuatro grupos, dan 25 en cada grupo.">One hundred equal parts split into four groups give 25 in each group.</p>
+        <p class="fm-learn__say" data-es="Dilo: “25 de cada 100 es un cuarto.”">Say it: “25 out of every 100 is one quarter.”</p>
+      </div>
+      <figure class="fm-stage">
+        <svg viewBox="0 0 280 90" role="img" aria-label="A bar split into 4 equal parts, 1 part shaded" data-es-label="Una barra en 4 partes iguales, 1 sombreada">
+          <rect class="fm-mv-whole" x="10" y="14" width="260" height="44" rx="6"/>
+          <rect class="fm-mv-part" x="10" y="14" width="65" height="44" rx="6"/>
+          <path class="fm-mv-axis" d="M75 14v44M140 14v44M205 14v44"/>
+          <text class="fm-mv-label" x="42" y="42" text-anchor="middle">25%</text>
+          <text class="fm-mv-label" x="140" y="82" text-anchor="middle">100%</text>
+        </svg>
+        <figcaption data-es="Cuatro partes iguales: una está sombreada.">Four equal parts: one is shaded.</figcaption>
+      </figure>
+    </div>
+
+    <h3 data-es="Celebración (el único lugar con confeti)">Celebrate (the only place with confetti)</h3>
+    <section class="fm-celebrate" id="celebrate-demo" aria-labelledby="cel-t">
+      <div class="fm-confetti" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      <div class="fm-celebrate__badge" aria-hidden="true"><svg class="fm-icon fm-icon--lg fm-icon--fill"><use href="#i-star"/></svg></div>
+      <h3 id="cel-t" class="fm-hero__title" data-es="¡Terminaste la práctica de hoy!">You finished tonight’s practice!</h3>
+      <p data-es="Cuatro respuestas correctas y una idea explicada en voz alta.">Four right answers and one idea explained out loud.</p>
+      <div class="fm-cluster"><button type="button" class="fm-btn fm-btn--primary"><span data-es="Ver mi certificado">See my certificate</span></button><button type="button" class="fm-btn" data-replay="#celebrate-demo"><svg class="fm-icon" aria-hidden="true"><use href="#i-reset"/></svg><span data-es="Repetir la animación">Replay the animation</span></button></div>
+    </section>
+
+    <h3 data-es="Banner de continuar, panel para adultos y pie de página">Resume banner, grown-up drawer and footer</h3>
+    <div class="fm-resume">
+      <svg class="fm-icon" aria-hidden="true"><use href="#i-save"/></svg>
+      <p class="fm-resume__text" data-es="Bienvenido de nuevo. Ibas en la parada 3.">Welcome back. You were on stop 3.</p>
+      <div class="fm-resume__actions"><button type="button" class="fm-btn fm-btn--primary"><span data-es="Seguir">Continue</span></button><button type="button" class="fm-btn fm-btn--quiet"><span data-es="Empezar de nuevo">Start over</span></button></div>
+    </div>
+    <button type="button" class="fm-btn" data-open-sheet="sheet-grownup"><svg class="fm-icon" aria-hidden="true"><use href="#i-grownup"/></svg><span data-es="Abrir el panel para adultos">Open the grown-up drawer</span></button>
+    <footer class="fm-footer">
+      <p class="fm-footer__meta"><span data-es="Lección 4-5">Lesson 4-5</span><span>6.RP.3c</span><span data-es="Versión 3.0">Version 3.0</span></p>
+      <p data-es="Sin cuentas ni seguimiento. Tu progreso se guarda solo en este dispositivo.">No accounts, no tracking. Your progress is saved on this device only.</p>
+    </footer>
+  </div>
+</section>
+
+<!-- ════════════════════════ MATH MODELS ════════════════════════ -->
+<section id="models" class="sp-section" aria-labelledby="models-h">
+  <header>
+    <h2 id="models-h" data-es="Modelos matemáticos: una sola gramática">Math models: one grammar</h2>
+    <p data-es="Mismo trazo, mismo radio, etiquetas de 15 unidades. Parte, todo, incógnita, dato y respuesta se distinguen por el contorno, no solo por el color.">Same stroke, same radius, 15-unit labels. Part, whole, unknown, given and answer differ by outline, not by color alone.</p>
+  </header>
+  <ul class="sp-legend">
+    <li><svg width="36" height="22" aria-hidden="true"><rect class="fm-mv-part" x="3" y="3" width="30" height="16" rx="4"/></svg><span data-es="Parte: contorno sólido">Part: solid outline</span></li>
+    <li><svg width="36" height="22" aria-hidden="true"><rect class="fm-mv-whole" x="3" y="3" width="30" height="16" rx="4"/></svg><span data-es="Todo: contorno grueso">Whole: thick outline</span></li>
+    <li><svg width="36" height="22" aria-hidden="true"><rect class="fm-mv-unknown" x="3" y="3" width="30" height="16" rx="4"/></svg><span data-es="Incógnita: línea punteada y ?">Unknown: dashed and ?</span></li>
+    <li><svg width="36" height="22" aria-hidden="true"><rect class="fm-mv-given" x="3" y="3" width="30" height="16" rx="4"/></svg><span data-es="Dato: gris">Given: gray</span></li>
+    <li><svg width="36" height="22" aria-hidden="true"><rect class="fm-mv-answer" x="3" y="3" width="30" height="16" rx="4"/></svg><span data-es="Respuesta: verde y ✓">Answer: green and ✓</span></li>
+  </ul>
+  <div class="sp-grid sp-model sp-gap">
+    <figure class="fm-stage"><svg viewBox="0 0 280 130" role="img" aria-label="Tape diagram: the whole is 20, one part is 6, the other part is unknown" data-es-label="Diagrama de cinta: el todo es 20, una parte es 6 y la otra es desconocida">
+      <path class="fm-mv-axis" d="M10 40V30H270V40"/><text class="fm-mv-label" x="140" y="22" text-anchor="middle">20</text>
+      <rect class="fm-mv-whole" x="10" y="48" width="260" height="44" rx="6"/>
+      <rect class="fm-mv-part" x="10" y="48" width="78" height="44" rx="6"/>
+      <rect class="fm-mv-unknown" x="88" y="48" width="182" height="44" rx="6"/>
+      <text class="fm-mv-label" x="49" y="76" text-anchor="middle">6</text><text class="fm-mv-label fm-mv-label--unknown" x="179" y="76" text-anchor="middle">?</text>
+      <text class="fm-mv-label" x="140" y="120" text-anchor="middle">20 − 6 = ?</text></svg>
+      <figcaption data-es="Cinta: partes y todo">Tape diagram: parts and whole</figcaption></figure>
+    <figure class="fm-stage"><svg viewBox="0 0 280 110" role="img" aria-label="Number line from 0 to 10: start at 4, jump 3, land on an unknown point" data-es-label="Recta numérica de 0 a 10: empieza en 4, salta 3 y llega a un punto desconocido">
+      <path class="fm-mv-axis" d="M20 62H262"/>
+      <path class="fm-mv-axis" d="M20 56v12M44 56v12M68 56v12M92 56v12M116 56v12M140 56v12M164 56v12M188 56v12M212 56v12M236 56v12M260 56v12"/>
+      <path class="fm-mv-axis" d="M116 50Q152 8 188 50M180 42l8 8-11 3"/>
+      <text class="fm-mv-label" x="152" y="22" text-anchor="middle">+3</text>
+      <circle class="fm-mv-given" cx="116" cy="62" r="7"/>
+      <circle class="fm-mv-unknown" cx="188" cy="62" r="11"/><text class="fm-mv-label fm-mv-label--unknown" x="188" y="68" text-anchor="middle">?</text>
+      <text class="fm-mv-label" x="20" y="94" text-anchor="middle">0</text><text class="fm-mv-label" x="116" y="94" text-anchor="middle">4</text><text class="fm-mv-label" x="260" y="94" text-anchor="middle">10</text></svg>
+      <figcaption data-es="Recta numérica con un salto">Number line with a jump</figcaption></figure>
+    <figure class="fm-stage"><svg viewBox="0 0 280 140" role="img" aria-label="Double number line: 2 miles take 10 minutes, 4 miles take 20 minutes, 6 miles take an unknown number of minutes" data-es-label="Recta numérica doble: 2 millas tardan 10 minutos, 4 millas 20 minutos, 6 millas un tiempo desconocido">
+      <path class="fm-mv-axis" d="M34 40H266M34 104H266"/>
+      <path class="fm-mv-grid" stroke-dasharray="4 4" d="M50 40v64M118 40v64M186 40v64M254 40v64"/>
+      <text class="fm-mv-label" x="2" y="26">mi</text><text class="fm-mv-label" x="2" y="94">min</text>
+      <text class="fm-mv-label" x="50" y="26" text-anchor="middle">0</text><text class="fm-mv-label" x="118" y="26" text-anchor="middle">2</text><text class="fm-mv-label" x="186" y="26" text-anchor="middle">4</text><text class="fm-mv-label" x="254" y="26" text-anchor="middle">6</text>
+      <text class="fm-mv-label" x="50" y="126" text-anchor="middle">0</text><text class="fm-mv-label" x="118" y="126" text-anchor="middle">10</text><text class="fm-mv-label" x="186" y="126" text-anchor="middle">20</text>
+      <rect class="fm-mv-unknown" x="234" y="108" width="40" height="24" rx="6"/><text class="fm-mv-label fm-mv-label--unknown" x="254" y="126" text-anchor="middle">?</text></svg>
+      <figcaption data-es="Recta numérica doble">Double number line</figcaption></figure>
+    <figure class="fm-stage sp-model"><table class="sp-ratio">
+      <caption class="fm-sr" data-es="Tabla de razones">Ratio table</caption>
+      <thead><tr><th scope="row" data-es="Jugo (tazas)">Juice (cups)</th><td>2</td><td>4</td><td>6</td></tr></thead>
+      <tbody><tr><th scope="row" data-es="Agua (tazas)">Water (cups)</th><td>3</td><td>6</td><td data-unknown>?</td></tr></tbody></table>
+      <figcaption data-es="Tabla de razones equivalentes">Ratio table of equivalent ratios</figcaption></figure>
+    <figure class="fm-stage"><svg viewBox="0 0 280 150" role="img" aria-label="Area model: 13 times 4 split into 10 times 4 is 40 and 3 times 4 is 12, total 52" data-es-label="Modelo de área: 13 por 4 se divide en 10 por 4 igual a 40 y 3 por 4 igual a 12, total 52">
+      <text class="fm-mv-label" x="100" y="22" text-anchor="middle">10</text><text class="fm-mv-label" x="225" y="22" text-anchor="middle">3</text><text class="fm-mv-label" x="0" y="70">4</text>
+      <rect class="fm-mv-part" x="16" y="30" width="170" height="70" rx="6"/><rect class="fm-mv-part" x="186" y="30" width="74" height="70" rx="6"/>
+      <text class="fm-mv-label" x="101" y="72" text-anchor="middle">40</text><text class="fm-mv-label" x="223" y="72" text-anchor="middle">12</text>
+      <rect class="fm-mv-answer" x="50" y="112" width="180" height="30" rx="6"/><text class="fm-mv-label" x="140" y="133" text-anchor="middle">40 + 12 = 52 ✓</text></svg>
+      <figcaption data-es="Modelo de área">Area model</figcaption></figure>
+    <figure class="fm-stage"><svg viewBox="0 0 280 100" role="img" aria-label="Fraction bar: 3 of 8 equal parts shaded" data-es-label="Barra de fracción: 3 de 8 partes iguales sombreadas">
+      <rect class="fm-mv-part" x="12" y="14" width="96" height="40"/><rect class="fm-mv-given" x="108" y="14" width="160" height="40"/>
+      <path class="fm-mv-axis" d="M44 14v40M76 14v40M108 14v40M140 14v40M172 14v40M204 14v40M236 14v40"/>
+      <text class="fm-mv-label" x="140" y="88" text-anchor="middle">3 / 8</text></svg>
+      <figcaption data-es="Barra de fracción: 3 de 8">Fraction bar: 3 of 8</figcaption></figure>
+    <figure class="fm-stage"><svg viewBox="0 0 280 205" role="img" aria-label="Coordinate plane: the point (3, 2) is given, the point (4, 4) is unknown" data-es-label="Plano cartesiano: el punto (3, 2) es un dato y el punto (4, 4) es desconocido">
+      <path class="fm-mv-grid" d="M40 10v160M72 10v160M104 10v160M136 10v160M168 10v160M200 10v160M40 10h160M40 42h160M40 74h160M40 106h160M40 138h160M40 170h160"/>
+      <path class="fm-mv-axis" d="M40 170H214M40 170V6"/>
+      <text class="fm-mv-label" x="40" y="194" text-anchor="middle">0</text><text class="fm-mv-label" x="104" y="194" text-anchor="middle">2</text><text class="fm-mv-label" x="168" y="194" text-anchor="middle">4</text><text class="fm-mv-label" x="28" y="143" text-anchor="end">1</text><text class="fm-mv-label" x="28" y="79" text-anchor="end">3</text><text class="fm-mv-label" x="224" y="176">x</text><text class="fm-mv-label" x="48" y="10">y</text>
+      <circle class="fm-mv-answer" cx="136" cy="106" r="8"/><text class="fm-mv-label" x="150" y="100">(3, 2)</text>
+      <circle class="fm-mv-unknown" cx="168" cy="42" r="12"/><text class="fm-mv-label fm-mv-label--unknown" x="168" y="48" text-anchor="middle">?</text></svg>
+      <figcaption data-es="Plano cartesiano">Coordinate plane</figcaption></figure>
+  </div>
+</section>
+
+<!-- ════════════════════════ BEADS ════════════════════════ -->
+<section id="beads" class="sp-section" aria-labelledby="beads-h">
+  <header>
+    <h2 id="beads-h" data-es="Cuadrícula de cuentas y bloques">Bead and block grid</h2>
+    <p data-es="Los grupos de 5 y de 10 nunca se parten. Cada grupo lleva su etiqueta. Probar a 320 px: nada se desborda.">Groups of 5 and 10 never split. Every group is labelled. Try it at 320 px: nothing overflows.</p>
+  </header>
+  <div class="sp-stack">
+    <ul class="sp-legend">
+      <li><span class="fm-bead" data-state="filled" aria-hidden="true"></span><span data-es="Llena">Filled</span></li>
+      <li><span class="fm-bead" data-state="empty" aria-hidden="true"></span><span data-es="Vacía">Empty</span></li>
+      <li><span class="fm-bead" data-state="selected" aria-hidden="true"></span><span data-es="Elegida ✓">Selected ✓</span></li>
+      <li><span class="fm-bead" data-state="unknown" aria-hidden="true"></span><span data-es="Desconocida ?">Unknown ?</span></li>
+    </ul>
+    <h3 data-es="27 = 2 decenas y 7 unidades">27 = 2 tens and 7 ones</h3>
+    <div class="fm-beads" role="group" aria-label="27 shown as two full tens and a ten with 7 filled" data-es-label="27 mostrado como dos decenas llenas y una decena con 7 llenas">
+      <div class="fm-beads__group"><div class="fm-beads__cells" data-beads="ffffffffff"></div><span class="fm-beads__label">10</span></div>
+      <div class="fm-beads__group"><div class="fm-beads__cells" data-beads="ffffffffff"></div><span class="fm-beads__label">20</span></div>
+      <div class="fm-beads__group"><div class="fm-beads__cells" data-beads="fffffffeee"></div><span class="fm-beads__label">27</span></div>
+    </div>
+    <h3 data-es="Toca para elegir (objetivos de 44 px)">Tap to choose (44 px targets)</h3>
+    <div class="fm-beads fm-beads--tap" role="group" aria-label="Choose beads" data-es-label="Elige cuentas">
+      <div class="fm-beads__group"><div class="fm-beads__cells" data-beads="ffsesuseee" data-tap></div><span class="fm-beads__label" data-es="Una decena">One ten</span></div>
+    </div>
+    <h3 data-es="Bloques">Blocks</h3>
+    <div class="fm-beads fm-beads--block" role="group" aria-label="Three tens as blocks" data-es-label="Tres decenas como bloques">
+      <div class="fm-beads__group"><div class="fm-beads__cells" data-beads="ffffffffff"></div><span class="fm-beads__label">10</span></div>
+      <div class="fm-beads__group"><div class="fm-beads__cells" data-beads="ffffffffff"></div><span class="fm-beads__label">20</span></div>
+      <div class="fm-beads__group"><div class="fm-beads__cells" data-beads="ffffuuuuuu"></div><span class="fm-beads__label" data-es="¿30?">30?</span></div>
+    </div>
+  </div>
+</section>
+
+</main>
+</div>
+
+<!-- ════════════════════════ SHEETS AND TOASTS ════════════════════════ -->
+<dialog class="fm-sheet" id="sheet-more" aria-labelledby="sheet-more-h">
+  <span class="fm-sheet__grab" aria-hidden="true"></span>
+  <div class="fm-sheet__head"><h2 id="sheet-more-h" class="fm-card__title" data-es="Más">More</h2><button type="button" class="fm-btn fm-btn--icon" data-close aria-label="Close" data-es-label="Cerrar"><svg class="fm-icon" aria-hidden="true"><use href="#i-close"/></svg></button></div>
+  <div class="fm-sheet__body">
+    <fieldset class="fm-field"><legend class="fm-label" data-es="Tamaño del texto">Text size</legend>
+      <div class="fm-seg"><label class="fm-seg__opt"><input type="radio" name="sheet-text" checked><span>100%</span></label><label class="fm-seg__opt"><input type="radio" name="sheet-text"><span>115%</span></label><label class="fm-seg__opt"><input type="radio" name="sheet-text"><span>130%</span></label><label class="fm-seg__opt"><input type="radio" name="sheet-text"><span>150%</span></label></div></fieldset>
+    <button type="button" class="fm-btn fm-btn--block"><svg class="fm-icon" aria-hidden="true"><use href="#i-speaker"/></svg><span data-es="Leer en voz alta">Read aloud</span></button>
+    <button type="button" class="fm-btn fm-btn--block"><svg class="fm-icon" aria-hidden="true"><use href="#i-pencil"/></svg><span data-es="Imprimir la hoja">Print the sheet</span></button>
+    <p class="fm-save" data-state="saved" role="status"><span data-es="Guardado en este dispositivo">Saved on this device</span></p>
+  </div>
+</dialog>
+<dialog class="fm-sheet" id="sheet-grownup" data-variant="drawer" aria-labelledby="sheet-grownup-h">
+  <span class="fm-sheet__grab" aria-hidden="true"></span>
+  <div class="fm-sheet__head"><h2 id="sheet-grownup-h" class="fm-card__title" data-es="Para adultos">For grown-ups</h2><button type="button" class="fm-btn fm-btn--icon" data-close aria-label="Close" data-es-label="Cerrar"><svg class="fm-icon" aria-hidden="true"><use href="#i-close"/></svg></button></div>
+  <div class="fm-sheet__body">
+    <section class="fm-drawer__sec"><h3 class="fm-card__title" data-es="Qué aprende hoy">What is being learned</h3><p data-es="Su hijo o hija calcula un porcentaje de una cantidad usando un modelo de barra.">Your child finds a percent of a quantity using a bar model.</p></section>
+    <section class="fm-drawer__sec"><h3 class="fm-card__title" data-es="Pregunte esto">Ask this</h3><p data-es="“¿Cómo lo supiste?” y “¿Cómo lo comprobarías?”">“How did you know?” and “How would you check?”</p></section>
+    <section class="fm-drawer__sec"><h3 class="fm-card__title" data-es="Si se atasca">If they get stuck</h3><p data-es="Pida que dibujen la barra del todo y la dividan en partes iguales.">Ask them to draw the whole as a bar and split it into equal parts.</p></section>
+  </div>
+</dialog>
+<div class="fm-toasts" role="status" aria-live="polite"></div>
+</body>
+</html>

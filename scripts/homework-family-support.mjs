@@ -402,7 +402,7 @@ const SUPPORT = {
   ),
   "4-5": profile(
     "Find the missing whole",
-    "Encuentra el entero que falta",
+    "Encuentra el total que falta",
     [
       pair(
         "Identify the part and percent: 6 beads is 25% of the bag.",
@@ -411,7 +411,7 @@ const SUPPORT = {
       ),
       pair(
         "Model the whole: 25% is 1 of 4 equal blocks, so 4 × 6 = 24 beads.",
-        "Modela el entero: 25% es 1 de 4 bloques iguales, así que 4 × 6 = 24 cuentas.",
+        "Modela el total: 25% es 1 de 4 bloques iguales, así que 4 × 6 = 24 cuentas.",
         { icon: "🧩", en: "Model with tape diagram", es: "Modela con diagrama de cinta" },
       ),
       pair(

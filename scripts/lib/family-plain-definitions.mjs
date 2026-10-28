@@ -4,7 +4,8 @@
 // teacher ("A reasoned answer that is close enough to be useful, found without
 // exact computation."). The adult at the kitchen table, often reading in their
 // second language, needs the short version first. This module is the single
-// source of truth for that short version: `data/family-plain-definitions.json`.
+// source of truth for that short version: `data/family-glossary.json`, the family glossary (the Spanish
+// term, the plain EN/ES definition and the example of every vocabulary word, one entry each).
 //
 // Rules, and the gate that enforces them: tools/validate-family-plain-definitions.mjs.
 // The lesson's authored definition is never edited. It travels beside the plain
@@ -14,7 +15,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
-export const PLAIN_DEFINITIONS_PATH = join(ROOT, "data", "family-plain-definitions.json");
+export const PLAIN_DEFINITIONS_PATH = join(ROOT, "data", "family-glossary.json");
 
 /** The one normalised vocabulary key. Singularises by dropping a final "s". */
 export const vocabKey = (term) =>
@@ -72,11 +73,42 @@ export function senseFor(entry, lessonId) {
  * No lessonId = the default sense (what the shared glossary shows).
  */
 export function plainFor(term, lessonId = "", map = loadPlainDefinitions()) {
-  const sense = senseFor(map.get(vocabKey(term)), lessonId);
+  const entry = map.get(vocabKey(term));
+  const sense = senseFor(entry, lessonId);
   if (!sense) return null;
   const out = { en: sense.en, es: sense.es };
+  if (sense === entry && entry.termEs) {
+    out.name = entry.name;
+    out.termEs = entry.termEs;
+    if (entry.alsoEs) out.alsoEs = entry.alsoEs;
+  }
   if (sense.example) out.example = sense.example;
   return out;
+}
+
+const sameCase = (spanish, like) =>
+  like && like[0] !== like[0].toLowerCase() && spanish[0] !== spanish[0].toUpperCase()
+    ? spanish[0].toUpperCase() + spanish.slice(1)
+    : spanish;
+
+/**
+ * The ONE Spanish term for a vocabulary item: the glossary's `termEs` (or one of its `alsoEs` forms, kept when the
+ * lesson uses a different part of speech), written in the lesson's own capitalisation. A lesson that names the same
+ * word two ways ("el todo", "Total") is brought to the glossary term. Plural/other forms (the English term is not the
+ * glossary key itself) are left to the lesson, since only the glossary key's own number is defined.
+ */
+function glossaryTermEs(item, plain) {
+  const own = String(item.termEs || "");
+  if (
+    !plain.termEs ||
+    String(item.term || "")
+      .toLowerCase()
+      .trim() !== plain.name.toLowerCase().trim()
+  )
+    return own;
+  const known = [plain.termEs, ...(plain.alsoEs || [])].map((x) => x.toLowerCase());
+  if (own && known.includes(own.toLowerCase().trim())) return own;
+  return sameCase(plain.termEs, own);
 }
 
 /**
@@ -100,6 +132,7 @@ export function withPlainDefinitions(vocabList, lessonId = "", map = loadPlainDe
     const formalEs = String(item.definitionEs || "");
     const out = {
       ...item,
+      termEs: glossaryTermEs(item, plain),
       definition: plain.en,
       definitionEs: plain.es,
       formal: formal === plain.en ? "" : formal,

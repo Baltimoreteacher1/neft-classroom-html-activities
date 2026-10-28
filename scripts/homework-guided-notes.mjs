@@ -2124,7 +2124,7 @@ function conceptVisual(config) {
           label: "Solving for the Whole with an Equation: 0.15 × b = 6 leads to b = 6 ÷ 0.15 = 40",
           tone: "amber",
           height: 420,
-          title: "Solve for the Whole with an Equation / Halla el entero con una ecuación",
+          title: "Solve for the Whole with an Equation / Halla el total con una ecuación",
           body: `
           <!-- Equation Solving Card -->
           ${conceptCard(34, 68, 572, 224)}
@@ -2146,7 +2146,7 @@ function conceptVisual(config) {
             <text x="260" y="52" font-size="17" font-weight="800" fill="#12355b">b = 6 ÷ 0.15</text>
 
             <text class="concept-title-en" x="0" y="84" font-size="15" font-weight="800" fill="#b45309">3. Calculate the missing whole:</text>
-            <text class="concept-title-es" lang="es" x="0" y="84" font-size="15" font-weight="800" fill="#b45309">3. Calcula el entero que falta:</text>
+            <text class="concept-title-es" lang="es" x="0" y="84" font-size="15" font-weight="800" fill="#b45309">3. Calcula el total que falta:</text>
             <text x="260" y="84" font-size="18" font-weight="800" fill="#0f766e">b = $40 total bill</text>
           </g>
 
@@ -2157,14 +2157,14 @@ function conceptVisual(config) {
           <text class="concept-title-en" x="54" y="352" font-size="14" font-weight="700" fill="#12355b">Multiply back: 15% of $40 = 0.15 × 40 = $6. ✓ Matches the tip!</text>
           <text class="concept-title-es" lang="es" x="54" y="352" font-size="14" font-weight="700" fill="#12355b">Multiplica de regreso: 15% de $40 = 0.15 × 40 = $6. ✓ ¡Coincide!</text>
           <text class="concept-title-en" x="54" y="374" font-size="13" font-weight="700" fill="#12355b">Sanity check: 15% is less than 100%, so the whole MUST exceed the part ($40 &gt; $6).</text>
-          <text class="concept-title-es" lang="es" x="54" y="374" font-size="13" font-weight="700" fill="#12355b">Sentido común: 15% es menor que 100%, así que el entero DEBE superar la parte ($40 &gt; $6).</text>
+          <text class="concept-title-es" lang="es" x="54" y="374" font-size="13" font-weight="700" fill="#12355b">Sentido común: 15% es menor que 100%, así que el total DEBE superar la parte ($40 &gt; $6).</text>
           <text class="concept-title-en" x="54" y="392" font-size="13" font-weight="700" fill="#047857">Multiplying by 0.15 would give $0.90 — an obvious red flag for a total bill!</text>
           <text class="concept-title-es" lang="es" x="54" y="392" font-size="13" font-weight="700" fill="#047857">Multiplicar por 0.15 daría $0.90 — ¡una señal clara de que algo falló!</text>`,
         })}</div>`,
         capEn:
           "Percent times whole equals part. Divide both sides by the decimal percent to isolate the whole.",
         capEs:
-          "Porcentaje por entero es igual a parte. Dividan ambos lados entre el porcentaje decimal para despejar el entero.",
+          "Porcentaje por el total es igual a la parte. Dividan ambos lados entre el porcentaje decimal para despejar el total.",
       };
     }
 
@@ -2203,7 +2203,7 @@ function conceptVisual(config) {
         <!-- Division Formula Card -->
         <rect x="34" y="222" width="572" height="182" rx="14" fill="#f0fdfa" stroke="#0f766e" stroke-width="2"/>
         <text class="concept-title-en" x="54" y="246" font-size="15" font-weight="800" fill="#0f766e">✔ DIVISION FINDS THE WHOLE:</text>
-        <text class="concept-title-es" lang="es" x="54" y="246" font-size="15" font-weight="800" fill="#0f766e">✔ LA DIVISIÓN HALLA EL ENTERO:</text>
+        <text class="concept-title-es" lang="es" x="54" y="246" font-size="15" font-weight="800" fill="#0f766e">✔ LA DIVISIÓN HALLA EL TOTAL:</text>
         <g transform="translate(54, 262)">
           <text class="concept-title-en" x="0" y="18" font-size="15" font-weight="700" fill="#12355b">Formula: Whole = Part ÷ Percent (as decimal)</text>
           <text class="concept-title-es" lang="es" x="0" y="18" font-size="15" font-weight="700" fill="#12355b">Fórmula: Entero = Parte ÷ Porcentaje (en decimal)</text>
@@ -6986,7 +6986,7 @@ const FAMILY_WYR = {
       a: { en: "Half of a large pizza", es: "La mitad de una pizza grande" },
       b: { en: "Three quarters of a small pizza", es: "Tres cuartos de una pizza pequeña" },
       en: "It depends on the whole! A fraction only means something next to the size it is a fraction OF.",
-      es: "¡Depende del entero! Una fracción solo significa algo junto al tamaño DEL que es fracción.",
+      es: "¡Depende del total! Una fracción solo significa algo junto al tamaño DEL que es fracción.",
     },
     {
       a: { en: "Split 4 candy bars among 8 people", es: "Repartir 4 barras entre 8 personas" },
@@ -8164,7 +8164,7 @@ export function renderVocabQuiz(vocabList, resolveVocabImage, vocabImageAlt) {
   const island = JSON.stringify(items).replace(/</g, "\\u003c");
   return `
     <div class="vocab-quiz card-ish" id="vocab_quiz">
-      <h3 class="vq-title">🎯 <span class="lang-en">Word Quiz</span><span class="lang-es" lang="es">Quiz de palabras</span></h3>
+      <h3 class="vq-title">🎯 <span class="lang-en">Word Quiz</span><span class="lang-es" lang="es">Prueba de palabras</span></h3>
       <div class="vq-stars" id="vocab_quiz_stars" aria-hidden="true"></div>
       <div id="vocab_quiz_play">
         <p class="vq-ask"><span class="lang-en">Which word fits?</span><span class="lang-es" lang="es">¿Qué palabra encaja?</span></p>
@@ -8177,7 +8177,7 @@ export function renderVocabQuiz(vocabList, resolveVocabImage, vocabImageAlt) {
         <button type="button" class="btn btn-primary vq-next" id="vocab_quiz_next" onclick="nextVocabQuiz()" hidden><span class="lang-en">Next ➔</span><span class="lang-es" lang="es">Siguiente ➔</span></button>
       </div>
       <div class="vq-done" id="vocab_quiz_done" hidden>
-        <p class="vq-done-title">🎉 <span class="lang-en">Quiz done!</span><span class="lang-es" lang="es">¡Quiz terminado!</span></p>
+        <p class="vq-done-title">🎉 <span class="lang-en">Quiz done!</span><span class="lang-es" lang="es">¡Prueba terminada!</span></p>
         <p class="vq-done-score"><span class="lang-en">First-try stars:</span><span class="lang-es" lang="es">Estrellas al primer intento:</span> <strong id="vocab_quiz_score"></strong></p>
         <button type="button" class="btn btn-secondary" onclick="startVocabQuiz()"><span class="lang-en">Play again 🔄</span><span class="lang-es" lang="es">Jugar de nuevo 🔄</span></button>
       </div>
@@ -8197,7 +8197,7 @@ export function renderWordsToKnow(vocabList, resolveVocabImage, vocabImageAlt) {
       <h2 class="section-title">📚 Words to know / Palabras clave</h2>
       <p class="vocab-family-note bilingual-block">
         <span class="lang-en">1. Tap a card to flip it. 2. Play the quiz. 3. Match the words.</span>
-        <span class="lang-es" lang="es">1. Toca una tarjeta para voltearla. 2. Juega el quiz. 3. Empareja las palabras.</span>
+        <span class="lang-es" lang="es">1. Toca una tarjeta para voltearla. 2. Haz la prueba. 3. Empareja las palabras.</span>
       </p>
       <div class="vocab-container">
         ${vocabList

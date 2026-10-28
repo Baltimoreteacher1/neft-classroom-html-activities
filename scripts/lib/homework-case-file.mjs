@@ -119,7 +119,7 @@ function labHtml(b) {
   const f = buildUpFacts(b);
   const money = (n) => `${b.sym || ""}${n}`;
   return `<div class="cf-lab" data-cf-lab='${esc(JSON.stringify({ ...b, ...f }))}'>
-    <h3>${bi("The lab: build up to the whole", "El laboratorio: construyan hasta el entero")}</h3>
+    <h3>${bi("The lab: build up to the whole", "El laboratorio: construyan hasta el total")}</h3>
     <p class="cf-msg" data-cf-msg>${bi(
       `Split ${money(b.part)} into ${f.blocks} equal blocks, then add the next 10% until you reach 100%.`,
       `Dividan ${money(b.part)} en ${f.blocks} bloques iguales y luego agreguen el siguiente 10% hasta llegar al 100%.`,

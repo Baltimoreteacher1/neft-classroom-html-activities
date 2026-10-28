@@ -38,7 +38,8 @@ export function selectProfile(id) {
   const data = profiles(); if (!data.ids.includes(id)) data.ids.push(id); data.active = id; writeLocal(PROFILE_KEY, data);
   try { sessionStorage.setItem(TAB_PROFILE_KEY, String(id)); } catch { /* the tab then follows the device's last choice */ }
 }
-export const profileKey = (base, id) => id === 0 ? base : `${base}:profile-${id}`;
+import { profileKey } from "./family/fm2/profile-key.js";
+export { profileKey };
 
 export function cleanProgress(value) {
   const clean = {};

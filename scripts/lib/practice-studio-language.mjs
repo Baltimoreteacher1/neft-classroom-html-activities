@@ -5,7 +5,7 @@
 //
 // The WORD BANK is derived, never hand-listed: the lesson's own glossary first (unchanged), then every math term its problems
 // actually use -- the stems of the authored items plus a fixed sample of what each generator and activity makes -- up to MAX_BANK.
-// Definitions are the plain EN/ES ones in data/family-plain-definitions.json; Spanish term names come from the lesson vocabulary.
+// Definitions are the plain EN/ES ones in data/family-glossary.json; Spanish term names come from the lesson vocabulary.
 // A term is a math term when it is a glossary term, a family-plain-definition key of at most three words that is not on the
 // NOT_TERMS list, or an `extraTerms` entry of the layer file. Nothing here knows any mathematics beyond that list.
 import { existsSync, readFileSync } from "node:fs";
@@ -81,8 +81,7 @@ function spanishNames() {
 /** @type {{plain: Record<string, any>, es: Map<string, string>}|null} */
 let cache = null;
 function sources() {
-  if (!cache)
-    cache = { plain: readJson("data/family-plain-definitions.json").terms, es: spanishNames() };
+  if (!cache) cache = { plain: readJson("data/family-glossary.json").terms, es: spanishNames() };
   return cache;
 }
 

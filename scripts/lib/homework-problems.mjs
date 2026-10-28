@@ -372,12 +372,11 @@ export function answerKeyLines(item, { translate } = {}) {
         for (const cat of norm.categories) {
           const members = norm.items.filter((x) => x.category === cat.id);
           if (!members.length) continue;
-          const anyEs = cat.labelEs || members.some((m) => m.textEs);
+          // Spanish only when every card has its own Spanish: never English cards inside a Spanish line.
+          const allEs = Boolean(cat.labelEs) && members.every((m) => m.textEs);
           lines.push({
             en: `${cat.label}: ${joinCards(members.map((m) => m.text))}`,
-            es: anyEs
-              ? `${cat.labelEs || cat.label}: ${joinCards(members.map((m) => m.textEs || m.text))}`
-              : "",
+            es: allEs ? `${cat.labelEs}: ${joinCards(members.map((m) => m.textEs))}` : "",
           });
         }
       }
@@ -435,7 +434,7 @@ export function answerKeyLines(item, { translate } = {}) {
         const keywordsEs = Array.isArray(item.keywordsEs) ? item.keywordsEs.filter(Boolean) : [];
         lines.push({
           en: `A strong answer uses: ${keywords.join(", ")}.`,
-          es: `Una buena respuesta usa: ${(keywordsEs.length ? keywordsEs : keywords).join(", ")}.`,
+          es: keywordsEs.length ? `Una buena respuesta usa: ${keywordsEs.join(", ")}.` : "",
         });
       }
       note = explanationNote() || {

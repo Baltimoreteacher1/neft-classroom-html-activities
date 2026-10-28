@@ -1,13 +1,47 @@
 {
   "$comment": [
-    "Plain-language definitions for families (ESOL; English and Spanish only).",
-    "Source of truth: this file. Rules and gate: tools/validate-family-plain-definitions.mjs (npm run validate:family-plain-definitions).",
-    "Keyed by the term; keys are matched with the generator's vocabKey (lowercase, final 's' dropped), so 'x-axis' and 'x-axi' are the same key.",
-    "en <= 12 words (target 6-10), Flesch-Kincaid grade 5 or lower; es <= 14 words; neither may contain the term itself.",
-    "The lesson's own definition is never edited: it is shown as 'More precisely' (formal / formalEs).",
-    "A term that means different things in different lessons has `senses`; each lists the lessons it applies to (a core id such as '5-1' also covers 5-1-group1, 5-1-part2 ...). The entry's own en/es is the default sense.",
-    "`allow` lists grade-6 words a definition may use although the lessons do not define them; the gate fails an `allow` nothing uses.",
-    "example { en, es }: <= 10 / 12 words, real numbers."
+    "Family glossary: the single source for every vocabulary term on the family pages (term, English, Spanish term, plain definition EN/ES, example).",
+    "Each entry: the key is the English term; `termEs` is the ONE Spanish term (`alsoEs` lists legitimate other forms, such as a verb and a noun); `en`/`es` are the plain definition; `example` is {en, es}; `senses` give other meanings by lesson.",
+    "Keys are matched with the generator's vocabKey (lowercase, final 's' dropped), so 'x-axis' and 'x-axi' are the same key. scripts/lib/family-plain-definitions.mjs applies the entry to every vocabulary list (page words, flashcards, word quiz, glossary popup, read-aloud text), so the pages never carry a second copy.",
+    "Rules and gates: tools/validate-family-plain-definitions.mjs (definitions) and tools/validate-family-spanish.mjs (one Spanish term per concept). `sameInSpanish` lists the words, units and names that are legitimately identical in both languages.",
+    "en <= 12 words (target 6-10), Flesch-Kincaid grade 5 or lower; es <= 14 words; neither may contain the term itself."
+  ],
+  "sameInSpanish": [
+    "am",
+    "ana",
+    "base",
+    "ben",
+    "cleo",
+    "cy",
+    "decimal",
+    "dime",
+    "dimes",
+    "divide",
+    "divisor",
+    "factor",
+    "gb",
+    "horizontal",
+    "jumbo",
+    "kb",
+    "liam",
+    "mb",
+    "nickel",
+    "nickels",
+    "no",
+    "original",
+    "patio",
+    "pennies",
+    "penny",
+    "perpendicular",
+    "pm",
+    "pop",
+    "quarter",
+    "quarters",
+    "rock",
+    "total",
+    "variable",
+    "vertical",
+    "zoe"
   ],
   "terms": {
     "absolute value": {
@@ -16,11 +50,13 @@
       "example": {
         "en": "−3 is 3 steps from 0, so |−3| = 3",
         "es": "|−3| = 3: −3 está a 3 pasos de 0"
-      }
+      },
+      "termEs": "valor absoluto"
     },
     "add": {
       "en": "Join amounts to get a total.",
-      "es": "Juntar cantidades para hallar el total."
+      "es": "Juntar cantidades para hallar el total.",
+      "termEs": "sumar"
     },
     "add and subtract decimals": {
       "en": "Line up the decimal points, then add or subtract.",
@@ -28,7 +64,8 @@
       "example": {
         "en": "2.5 + 0.75 = 3.25",
         "es": "2.5 + 0.75 = 3.25"
-      }
+      },
+      "termEs": "sumar y restar decimales"
     },
     "addition": {
       "en": "Joining amounts to find a total.",
@@ -40,11 +77,13 @@
       "example": {
         "en": "x − 3 = 7 → x = 10",
         "es": "x − 3 = 7 → x = 10"
-      }
+      },
+      "termEs": "propiedad de adición de la igualdad"
     },
     "additive pattern": {
       "en": "Each column grows by adding its own fixed number.",
-      "es": "Cada columna crece sumando su propio número fijo."
+      "es": "Cada columna crece sumando su propio número fijo.",
+      "termEs": "patrón aditivo"
     },
     "algebraic expression": {
       "en": "A math phrase that uses a letter for a number.",
@@ -52,11 +91,13 @@
       "example": {
         "en": "3n + 2",
         "es": "3n + 2"
-      }
+      },
+      "termEs": "expresión algebraica"
     },
     "algorithm": {
       "en": "A set of steps you follow the same way every time.",
-      "es": "Pasos que sigues de la misma manera cada vez."
+      "es": "Pasos que sigues de la misma manera cada vez.",
+      "termEs": "algoritmo"
     },
     "annex a zero": {
       "en": "Put a zero at the end of a decimal. The value stays.",
@@ -64,7 +105,8 @@
       "example": {
         "en": "0.5 = 0.50",
         "es": "0.5 = 0.50"
-      }
+      },
+      "termEs": "agregar un cero"
     },
     "annex zeros": {
       "en": "Put zeros at the end of a decimal. The value stays.",
@@ -72,18 +114,21 @@
       "example": {
         "en": "4.2 = 4.200",
         "es": "4.2 = 4.200"
-      }
+      },
+      "termEs": "agregar ceros"
     },
     "apex": {
       "en": "The top point of a pyramid, where the sides meet.",
-      "es": "El punto de arriba de una pirámide, donde se unen los lados."
+      "es": "El punto de arriba de una pirámide, donde se unen los lados.",
+      "termEs": "ápice"
     },
     "appropriate measures of center": {
       "en": "The mean, median, or mode that best fits the data.",
       "es": "La media, mediana o moda que mejor describe los datos.",
       "allow": [
         "mode"
-      ]
+      ],
+      "termEs": "medidas de centro apropiadas"
     },
     "approximately": {
       "en": "Close to, but not exactly equal.",
@@ -91,7 +136,8 @@
       "example": {
         "en": "3.9 is close to 4, so 3.9 ≈ 4",
         "es": "3.9 está cerca de 4, así que 3.9 ≈ 4"
-      }
+      },
+      "termEs": "aproximadamente"
     },
     "area": {
       "en": "How much flat space a shape covers.",
@@ -99,7 +145,8 @@
       "example": {
         "en": "A 3 by 4 rectangle covers 12 square units",
         "es": "Un rectángulo de 3 por 4 cubre 12 unidades cuadradas"
-      }
+      },
+      "termEs": "área"
     },
     "area of a triangle": {
       "en": "Space inside a triangle: half the base times the height.",
@@ -107,11 +154,13 @@
       "example": {
         "en": "Base 6, height 4: area is 12",
         "es": "Base 6, altura 4: el área es 12"
-      }
+      },
+      "termEs": "área de un triángulo"
     },
     "area of composite figures": {
       "en": "The space inside a figure built from simple shapes.",
-      "es": "El espacio dentro de una figura hecha de figuras simples."
+      "es": "El espacio dentro de una figura hecha de figuras simples.",
+      "termEs": "área de figuras compuestas"
     },
     "area of parallelograms": {
       "en": "Base times height. Measure the height straight up.",
@@ -119,11 +168,13 @@
       "example": {
         "en": "Base 5, height 3: area is 15",
         "es": "Base 5, altura 3: el área es 15"
-      }
+      },
+      "termEs": "área de paralelogramos"
     },
     "area of regular polygons": {
       "en": "Split it into equal triangles, then add their areas.",
-      "es": "Divídelo en triángulos iguales y suma sus áreas."
+      "es": "Divídelo en triángulos iguales y suma sus áreas.",
+      "termEs": "área de polígonos regulares"
     },
     "area of trapezoids": {
       "en": "Add the two bases, halve it, then multiply by the height.",
@@ -131,11 +182,13 @@
       "example": {
         "en": "Bases 4 and 8, height 5: area is 30",
         "es": "Bases 4 y 8, altura 5: el área es 30"
-      }
+      },
+      "termEs": "área de trapecios"
     },
     "argument": {
       "en": "A claim backed by reasons that others can check.",
-      "es": "Una afirmación con razones que otros pueden revisar."
+      "es": "Una afirmación con razones que otros pueden revisar.",
+      "termEs": "argumento"
     },
     "associative property": {
       "en": "Changing the grouping does not change the answer.",
@@ -143,7 +196,8 @@
       "example": {
         "en": "(2+3)+4 = 2+(3+4)",
         "es": "(2+3)+4 = 2+(3+4)"
-      }
+      },
+      "termEs": "propiedad asociativa"
     },
     "at least": {
       "en": "That amount or more.",
@@ -151,11 +205,13 @@
       "example": {
         "en": "At least 42 means 42 or more",
         "es": "Al menos 42 significa 42 o más"
-      }
+      },
+      "termEs": "al menos"
     },
     "at least / at most": {
       "en": "≥ means that amount or more. ≤ means that amount or less.",
-      "es": "≥ significa esa cantidad o más. ≤ significa esa cantidad o menos."
+      "es": "≥ significa esa cantidad o más. ≤ significa esa cantidad o menos.",
+      "termEs": "al menos / a lo más"
     },
     "average": {
       "en": "The amount each one gets when the total is shared equally.",
@@ -163,11 +219,13 @@
       "example": {
         "en": "3, 5, 7 share 15 equally: 5 each",
         "es": "3, 5 y 7 suman 15: a cada uno le toca 5"
-      }
+      },
+      "termEs": "promedio"
     },
     "axis": {
       "en": "One of the two number lines that mark a graph.",
-      "es": "Una de las dos rectas numéricas que marcan una gráfica."
+      "es": "Una de las dos rectas numéricas que marcan una gráfica.",
+      "termEs": "eje"
     },
     "balance": {
       "en": "Doing the same thing to both sides so they stay equal.",
@@ -180,18 +238,20 @@
           "en": "Steady and even. No side is heavier.",
           "es": "Parejo y estable. Ningún lado pesa más."
         }
-      ]
+      ],
+      "termEs": "equilibrio"
     },
     "balance point": {
       "en": "The point where the data evens out. It is the mean.",
-      "es": "El punto donde los datos quedan parejos. Es la media."
+      "es": "El punto donde los datos quedan parejos. Es la media.",
+      "termEs": "punto de equilibrio"
     },
     "base": {
       "en": "The number you take the percent of.",
       "es": "El número del que sacas el porcentaje.",
       "example": {
         "en": "In 25% of 80, the base is 80",
-        "es": "En 25 % de 80, la base es 80"
+        "es": "En 25% de 80, la base es 80"
       },
       "senses": [
         {
@@ -221,23 +281,27 @@
           "en": "The side you pick to measure height from.",
           "es": "El lado que eliges para medir la altura."
         }
-      ]
+      ],
+      "termEs": "base"
     },
     "base 1 (b1)": {
       "en": "A side of a trapezoid. It is one of two parallel sides.",
-      "es": "Un lado de un trapecio. Es uno de los dos lados paralelos."
+      "es": "Un lado de un trapecio. Es uno de los dos lados paralelos.",
+      "termEs": "base 1 (b1)"
     },
     "base 2 (b2)": {
       "en": "A side of a trapezoid. It is the other parallel side.",
-      "es": "Un lado de un trapecio. Es el otro lado paralelo."
+      "es": "Un lado de un trapecio. Es el otro lado paralelo.",
+      "termEs": "base 2 (b2)"
     },
     "base area": {
       "en": "The space covered by the bottom of a solid.",
-      "es": "El espacio que cubre el fondo de un sólido."
+      "es": "El espacio que cubre el fondo de un sólido.",
+      "termEs": "área de la base"
     },
     "benchmark": {
       "en": "An easy number you use to estimate, like 50%.",
-      "es": "Un número fácil que usas para estimar, como 50 %.",
+      "es": "Un número fácil que usas para estimar, como 50%.",
       "senses": [
         {
           "lessons": [
@@ -246,15 +310,17 @@
           "en": "An amount you change both choices to, so you can compare.",
           "es": "Una cantidad a la que cambias ambas opciones para compararlas."
         }
-      ]
+      ],
+      "termEs": "punto de referencia"
     },
     "benchmark percent": {
       "en": "An easy percent you can find in your head.",
       "es": "Un porcentaje fácil que puedes hallar mentalmente.",
       "example": {
         "en": "50% of 80 is half of 80: 40",
-        "es": "50 % de 80 es la mitad de 80: 40"
-      }
+        "es": "50% de 80 es la mitad de 80: 40"
+      },
+      "termEs": "porcentaje de referencia"
     },
     "better buy": {
       "en": "The choice that costs less for each item.",
@@ -262,39 +328,48 @@
       "example": {
         "en": "$6 for 3 ($2 each) beats $8 for 2",
         "es": "$6 por 3 ($2 c/u) es mejor que $8 por 2"
-      }
+      },
+      "termEs": "mejor compra"
     },
     "bilateral symmetry": {
       "en": "Both halves of a living thing match, like mirror images.",
-      "es": "Las dos mitades de un ser vivo son como un espejo."
+      "es": "Las dos mitades de un ser vivo son como un espejo.",
+      "termEs": "simetría bilateral"
     },
     "boundary point": {
       "en": "The number at the edge of the solutions on a number line.",
-      "es": "El número en el borde de las soluciones en la recta numérica."
+      "es": "El número en el borde de las soluciones en la recta numérica.",
+      "termEs": "punto límite"
     },
     "box plot": {
       "en": "A graph that sums up data with five key numbers.",
-      "es": "Una gráfica que resume los datos con cinco números clave."
+      "es": "Una gráfica que resume los datos con cinco números clave.",
+      "termEs": "diagrama de caja"
     },
     "bring down": {
       "en": "In long division, move the next digit down beside what is left.",
-      "es": "En la división larga, baja el siguiente dígito junto a lo que sobró."
+      "es": "En la división larga, baja el siguiente dígito junto a lo que sobró.",
+      "termEs": "bajar el dígito"
     },
     "closed circle": {
       "en": "A filled circle. The number is part of the answer.",
-      "es": "Un círculo relleno. El número es parte de la respuesta."
+      "es": "Un círculo relleno. El número es parte de la respuesta.",
+      "termEs": "círculo cerrado"
     },
     "cluster": {
       "en": "Values that are near each other.",
-      "es": "Valores que están cerca unos de otros."
+      "es": "Valores que están cerca unos de otros.",
+      "termEs": "agrupamiento"
     },
     "coefficient": {
       "en": "The number in front of a letter, like 3 in 3x.",
-      "es": "El número que va delante de una letra, como el 3 en 3x."
+      "es": "El número que va delante de una letra, como el 3 en 3x.",
+      "termEs": "coeficiente"
     },
     "colon notation": {
       "en": "Write a ratio with two dots between the numbers, like 3:2.",
-      "es": "Escribir una razón con dos puntos entre los números, como 3:2."
+      "es": "Escribir una razón con dos puntos entre los números, como 3:2.",
+      "termEs": "notación con dos puntos"
     },
     "combine": {
       "en": "Add or subtract terms with the same letter into one.",
@@ -302,7 +377,8 @@
       "example": {
         "en": "2x + 5x = 7x",
         "es": "2x + 5x = 7x"
-      }
+      },
+      "termEs": "combinar"
     },
     "common denominator": {
       "en": "A bottom number that two fractions share.",
@@ -310,7 +386,8 @@
       "example": {
         "en": "1/2 and 1/3 can share 6",
         "es": "1/2 y 1/3 pueden compartir 6"
-      }
+      },
+      "termEs": "denominador común"
     },
     "common factor": {
       "en": "A number that divides two numbers with none left over.",
@@ -318,11 +395,13 @@
       "example": {
         "en": "4 divides both 8 and 12",
         "es": "El 4 divide al 8 y al 12"
-      }
+      },
+      "termEs": "factor común"
     },
     "common form": {
       "en": "The same form for every value, like all percents.",
-      "es": "La misma forma para todos los valores, como porcentajes."
+      "es": "La misma forma para todos los valores, como porcentajes.",
+      "termEs": "forma común"
     },
     "common multiple": {
       "en": "A number you reach when counting by each number.",
@@ -330,15 +409,18 @@
       "example": {
         "en": "Counting by 4 and by 6 both land on 12",
         "es": "Contando de 4 y de 6: ambos llegan a 12"
-      }
+      },
+      "termEs": "múltiplo común"
     },
     "community": {
       "en": "The people and places around you.",
-      "es": "Las personas y los lugares a tu alrededor."
+      "es": "Las personas y los lugares a tu alrededor.",
+      "termEs": "comunidad"
     },
     "community agreement": {
       "en": "A rule the whole class agrees to follow.",
-      "es": "Una norma que toda la clase acepta cumplir."
+      "es": "Una norma que toda la clase acepta cumplir.",
+      "termEs": "acuerdo comunitario"
     },
     "commutative property": {
       "en": "Changing the order does not change the answer.",
@@ -346,11 +428,13 @@
       "example": {
         "en": "3 + 5 = 5 + 3",
         "es": "3 + 5 = 5 + 3"
-      }
+      },
+      "termEs": "propiedad conmutativa"
     },
     "compare": {
       "en": "Look at two amounts. See which is more, less, or the same.",
-      "es": "Mirar dos cantidades para ver cuál es mayor, menor o igual."
+      "es": "Mirar dos cantidades para ver cuál es mayor, menor o igual.",
+      "termEs": "comparar"
     },
     "compare and order integers": {
       "en": "Tell which integers are bigger. Then put them in order.",
@@ -358,31 +442,37 @@
       "example": {
         "en": "−5, −1, 0, 3 go from least to greatest",
         "es": "−5, −1, 0, 3 van de menor a mayor"
-      }
+      },
+      "termEs": "comparar y ordenar enteros"
     },
     "compare ratios": {
       "en": "Decide which ratio is bigger, smaller, or the same.",
-      "es": "Decidir cuál razón es mayor, menor o igual."
+      "es": "Decidir cuál razón es mayor, menor o igual.",
+      "termEs": "comparar razones"
     },
     "comparison": {
       "en": "Looking at two amounts to see how they relate.",
-      "es": "Mirar dos cantidades para ver cómo se relacionan."
+      "es": "Mirar dos cantidades para ver cómo se relacionan.",
+      "termEs": "comparación"
     },
     "compatible numbers": {
       "en": "Numbers near the real ones that are easy to work with.",
       "es": "Números cercanos a los reales con los que es fácil calcular.",
       "example": {
         "en": "For 8.6% of 216, use 10% and 200",
-        "es": "Para 8.6 % de 216, usa 10 % y 200"
-      }
+        "es": "Para 8.6% de 216, usa 10% y 200"
+      },
+      "termEs": "números compatibles"
     },
     "composite": {
       "en": "Made of two or more simple shapes.",
-      "es": "Formado por dos o más figuras simples."
+      "es": "Formado por dos o más figuras simples.",
+      "termEs": "compuesto"
     },
     "composite figure": {
       "en": "A shape made of simple shapes joined together.",
-      "es": "Una figura hecha de figuras simples juntas."
+      "es": "Una figura hecha de figuras simples juntas.",
+      "termEs": "figura compuesta"
     },
     "composite number": {
       "en": "A number over 1 that is not prime.",
@@ -390,19 +480,23 @@
       "example": {
         "en": "6 is composite: 2 × 3 = 6",
         "es": "6 es compuesto: 2 × 3 = 6"
-      }
+      },
+      "termEs": "número compuesto"
     },
     "confidence": {
       "en": "Trusting yourself to try a hard problem.",
-      "es": "Creer en ti para atreverte a probar un problema difícil."
+      "es": "Creer en ti para atreverte a probar un problema difícil.",
+      "termEs": "confianza"
     },
     "congruent": {
       "en": "Exactly the same size and shape.",
-      "es": "Exactamente del mismo tamaño y forma."
+      "es": "Exactamente del mismo tamaño y forma.",
+      "termEs": "congruente"
     },
     "conjecture": {
       "en": "A math idea you think is true but have not proved.",
-      "es": "Una idea matemática que crees cierta pero no has probado."
+      "es": "Una idea matemática que crees cierta pero no has probado.",
+      "termEs": "conjetura"
     },
     "constant": {
       "en": "A number that stays the same.",
@@ -410,11 +504,13 @@
       "example": {
         "en": "In 3x + 5, the constant is 5",
         "es": "En 3x + 5, la constante es 5"
-      }
+      },
+      "termEs": "constante"
     },
     "constraint": {
       "en": "A rule an answer must follow.",
-      "es": "Una regla que la respuesta debe cumplir."
+      "es": "Una regla que la respuesta debe cumplir.",
+      "termEs": "restricción"
     },
     "conversion factor": {
       "en": "A ratio you use to change units.",
@@ -422,11 +518,13 @@
       "example": {
         "en": "12 inches for each 1 foot",
         "es": "12 pulgadas por cada 1 pie"
-      }
+      },
+      "termEs": "factor de conversión"
     },
     "convert": {
       "en": "Change to a new unit or form; the amount stays the same.",
-      "es": "Cambiar a otra unidad o forma sin cambiar la cantidad."
+      "es": "Cambiar a otra unidad o forma sin cambiar la cantidad.",
+      "termEs": "convertir"
     },
     "convert measurement units": {
       "en": "Say a measure in a different unit. The amount stays the same.",
@@ -434,7 +532,8 @@
       "example": {
         "en": "3 feet = 36 inches",
         "es": "3 pies = 36 pulgadas"
-      }
+      },
+      "termEs": "convertir unidades de medida"
     },
     "convert measurements between systems": {
       "en": "Change US units to metric units, or back.",
@@ -445,7 +544,8 @@
       },
       "allow": [
         "metric unit"
-      ]
+      ],
+      "termEs": "convertir medidas entre sistemas"
     },
     "convert measurements within the same system": {
       "en": "Switch to a new unit in the same system.",
@@ -453,11 +553,13 @@
       "example": {
         "en": "3 feet = 36 inches",
         "es": "3 pies = 36 pulgadas"
-      }
+      },
+      "termEs": "convertir medidas dentro del mismo sistema"
     },
     "coordinate plane": {
       "en": "A flat grid for placing points with two numbers.",
-      "es": "Una cuadrícula plana para ubicar puntos con dos números."
+      "es": "Una cuadrícula plana para ubicar puntos con dos números.",
+      "termEs": "plano cartesiano"
     },
     "coordinates": {
       "en": "The two numbers that tell where a point is.",
@@ -465,15 +567,18 @@
       "example": {
         "en": "(3, 2) is 3 right, 2 up",
         "es": "(3, 2) es 3 a la derecha, 2 arriba"
-      }
+      },
+      "termEs": "coordenadas"
     },
     "counterexample": {
       "en": "One example that shows it is not always true.",
-      "es": "Un ejemplo que muestra que no siempre es cierto."
+      "es": "Un ejemplo que muestra que no siempre es cierto.",
+      "termEs": "contraejemplo"
     },
     "critique": {
       "en": "Look at an idea and say what works and what does not.",
-      "es": "Revisar una idea y decir qué funciona y qué no."
+      "es": "Revisar una idea y decir qué funciona y qué no.",
+      "termEs": "criticar constructivamente"
     },
     "cross-multiply": {
       "en": "Multiply across. See if the ratios match.",
@@ -481,7 +586,8 @@
       "example": {
         "en": "2/3 and 4/6: 2 × 6 = 3 × 4",
         "es": "2/3 y 4/6: 2 × 6 = 3 × 4"
-      }
+      },
+      "termEs": "multiplicación cruzada"
     },
     "cubed": {
       "en": "A number written three times in a product.",
@@ -489,35 +595,43 @@
       "example": {
         "en": "2³ = 2 × 2 × 2 = 8",
         "es": "2³ = 2 × 2 × 2 = 8"
-      }
+      },
+      "termEs": "al cubo"
     },
     "cubic unit": {
       "en": "A cube with sides 1 unit long. It measures volume.",
-      "es": "Un cubo de 1 unidad por lado. Sirve para medir volumen."
+      "es": "Un cubo de 1 unidad por lado. Sirve para medir volumen.",
+      "termEs": "unidad cúbica"
     },
     "customary system": {
       "en": "Units like inches and pounds, used in the US.",
-      "es": "Unidades como pulgadas y libras, usadas en Estados Unidos."
+      "es": "Unidades como pulgadas y libras, usadas en Estados Unidos.",
+      "termEs": "sistema usual"
     },
     "customary units": {
       "en": "Units like inches, feet, and pounds.",
-      "es": "Unidades como pulgadas, pies y libras."
+      "es": "Unidades como pulgadas, pies y libras.",
+      "termEs": "unidades usuales (sistema inglés)"
     },
     "data": {
       "en": "Facts and numbers you collect.",
-      "es": "Información y números que reúnes, como respuestas de una encuesta."
+      "es": "Información y números que reúnes, como respuestas de una encuesta.",
+      "termEs": "datos"
     },
     "data distribution": {
       "en": "Where the values sit and how far apart they are.",
-      "es": "Dónde están los valores y qué tan separados están."
+      "es": "Dónde están los valores y qué tan separados están.",
+      "termEs": "distribución de datos"
     },
     "data set": {
       "en": "All the values that were collected.",
-      "es": "Todos los valores que se reunieron."
+      "es": "Todos los valores que se reunieron.",
+      "termEs": "conjunto de datos"
     },
     "decimal": {
       "en": "A number with a dot, like 0.5, that shows a part.",
-      "es": "Un número con un punto, como 0.5, que muestra una parte."
+      "es": "Un número con un punto, como 0.5, que muestra una parte.",
+      "termEs": "decimal"
     },
     "decimal division algorithm": {
       "en": "Slide both decimal points right the same amount. Then divide.",
@@ -525,11 +639,13 @@
       "example": {
         "en": "1.2 ÷ 0.4 becomes 12 ÷ 4 = 3",
         "es": "1.2 ÷ 0.4 pasa a 12 ÷ 4 = 3"
-      }
+      },
+      "termEs": "algoritmo de división decimal"
     },
     "decimal grid": {
       "en": "A grid of 100 squares. Each square is one percent.",
-      "es": "Una cuadrícula de 100 cuadros. Cada cuadro es el uno por ciento."
+      "es": "Una cuadrícula de 100 cuadros. Cada cuadro es el uno por ciento.",
+      "termEs": "cuadrícula decimal"
     },
     "decimal places": {
       "en": "How many digits are after the dot.",
@@ -537,11 +653,13 @@
       "example": {
         "en": "3.14 has two digits after the dot",
         "es": "3.14 tiene dos dígitos después del punto"
-      }
+      },
+      "termEs": "cifras decimales"
     },
     "decimal point": {
       "en": "The dot between whole numbers and parts.",
-      "es": "El punto que separa los enteros de las partes."
+      "es": "El punto que separa los enteros de las partes.",
+      "termEs": "punto decimal"
     },
     "decompose": {
       "en": "Break a number or shape into smaller parts.",
@@ -549,11 +667,13 @@
       "example": {
         "en": "78.5 = 70 + 8.5",
         "es": "78.5 = 70 + 8.5"
-      }
+      },
+      "termEs": "descomponer"
     },
     "define the variables": {
       "en": "Say what each letter stands for.",
-      "es": "Decir qué representa cada letra."
+      "es": "Decir qué representa cada letra.",
+      "termEs": "definir las variables"
     },
     "denominator": {
       "en": "The bottom number of a fraction. It tells how many equal parts.",
@@ -561,15 +681,18 @@
       "example": {
         "en": "In 3/4, the bottom number is 4",
         "es": "En 3/4, el número de abajo es 4"
-      }
+      },
+      "termEs": "denominador"
     },
     "dependent variable": {
       "en": "The amount that changes when the other does.",
-      "es": "La cantidad que cambia cuando cambia la otra."
+      "es": "La cantidad que cambia cuando cambia la otra.",
+      "termEs": "variable dependiente"
     },
     "depends on": {
       "en": "It changes when the other one changes.",
-      "es": "Cambia cuando la otra cantidad cambia."
+      "es": "Cambia cuando la otra cantidad cambia.",
+      "termEs": "depende de"
     },
     "describe the data using the median": {
       "en": "Use the middle value to say what is typical.",
@@ -577,27 +700,32 @@
       "example": {
         "en": "3, 5, 9: the middle is 5",
         "es": "3, 5, 9: el del medio es 5"
-      }
+      },
+      "termEs": "describir los datos con la mediana"
     },
     "determine the whole given the part and percent": {
       "en": "Use a part and its percent to find the whole.",
       "es": "Usar una parte y su porcentaje para hallar el total.",
       "example": {
         "en": "30 is 20% of what? 30 ÷ 0.2 = 150",
-        "es": "30 es el 20 % de qué? 30 ÷ 0.2 = 150"
-      }
+        "es": "30 es el 20% de qué? 30 ÷ 0.2 = 150"
+      },
+      "termEs": "hallar el total dados la parte y el porcentaje"
     },
     "deviation": {
       "en": "How far a number is from the mean.",
-      "es": "Qué tan lejos está un número de la media."
+      "es": "Qué tan lejos está un número de la media.",
+      "termEs": "desviación"
     },
     "diagonal": {
       "en": "A line between two corners that are not side by side.",
-      "es": "Una línea entre dos esquinas que no están una al lado de la otra."
+      "es": "Una línea entre dos esquinas que no están una al lado de la otra.",
+      "termEs": "diagonal"
     },
     "difference": {
       "en": "The answer when you subtract.",
-      "es": "El resultado de restar."
+      "es": "El resultado de restar.",
+      "termEs": "diferencia"
     },
     "digit": {
       "en": "One of the symbols 0 to 9.",
@@ -605,7 +733,8 @@
     },
     "dimensions": {
       "en": "How long, how wide, and how tall something is.",
-      "es": "Qué tan largo, ancho y alto es algo."
+      "es": "Qué tan largo, ancho y alto es algo.",
+      "termEs": "dimensiones"
     },
     "discount": {
       "en": "Money taken off a price.",
@@ -613,19 +742,23 @@
       "example": {
         "en": "$40 minus a $10 discount is $30",
         "es": "$40 menos $10 de descuento son $30"
-      }
+      },
+      "termEs": "descuento"
     },
     "display data with box plots": {
       "en": "Draw a box plot from five key numbers.",
-      "es": "Dibujar un diagrama de caja con cinco números clave."
+      "es": "Dibujar un diagrama de caja con cinco números clave.",
+      "termEs": "representar datos con diagramas de caja"
     },
     "display data with histograms": {
       "en": "Sort data into groups and draw a bar for each group.",
-      "es": "Agrupar los datos y dibujar una barra para cada grupo."
+      "es": "Agrupar los datos y dibujar una barra para cada grupo.",
+      "termEs": "representar datos con histogramas"
     },
     "distance": {
       "en": "How far apart two points are. It is never negative.",
-      "es": "Qué tan separados están dos puntos. Nunca es negativa."
+      "es": "Qué tan separados están dos puntos. Nunca es negativa.",
+      "termEs": "distancia"
     },
     "distance between vertices": {
       "en": "How far apart two corners are.",
@@ -633,15 +766,18 @@
       "example": {
         "en": "From (5, 3) to (5, −3.75) is 6.75",
         "es": "De (5, 3) a (5, −3.75) hay 6.75"
-      }
+      },
+      "termEs": "distancia entre vértices"
     },
     "distance on the coordinate plane": {
       "en": "How far apart two points are on a grid.",
-      "es": "Qué tan separados están dos puntos en una cuadrícula."
+      "es": "Qué tan separados están dos puntos en una cuadrícula.",
+      "termEs": "distancia en el plano de coordenadas"
     },
     "distribution": {
       "en": "Where the values sit and how far apart they are.",
-      "es": "Dónde están los valores y qué tan separados están."
+      "es": "Dónde están los valores y qué tan separados están.",
+      "termEs": "distribución"
     },
     "distributive property": {
       "en": "Multiply by each part inside the ( ).",
@@ -649,7 +785,8 @@
       "example": {
         "en": "3(4 + 5) = 3 × 4 + 3 × 5",
         "es": "3(4 + 5) = 3 × 4 + 3 × 5"
-      }
+      },
+      "termEs": "propiedad distributiva"
     },
     "divide": {
       "en": "Split a total into equal groups.",
@@ -657,7 +794,8 @@
       "example": {
         "en": "12 split into 3 groups is 4 each",
         "es": "12 en 3 grupos son 4 en cada uno"
-      }
+      },
+      "termEs": "dividir"
     },
     "divide decimals": {
       "en": "Slide both decimal points right, then divide.",
@@ -665,7 +803,8 @@
       "example": {
         "en": "1.2 ÷ 0.4 becomes 12 ÷ 4",
         "es": "1.2 ÷ 0.4 pasa a 12 ÷ 4"
-      }
+      },
+      "termEs": "dividir decimales"
     },
     "divide fractions": {
       "en": "Keep the first, flip the second, then multiply.",
@@ -673,11 +812,13 @@
       "example": {
         "en": "1/2 ÷ 1/4 = 1/2 × 4 = 2",
         "es": "1/2 ÷ 1/4 = 1/2 × 4 = 2"
-      }
+      },
+      "termEs": "dividir fracciones"
     },
     "divide mixed numbers": {
       "en": "Change both to improper fractions. Then divide the fractions.",
-      "es": "Cambia ambos a fracciones impropias. Luego divide las fracciones."
+      "es": "Cambia ambos a fracciones impropias. Luego divide las fracciones.",
+      "termEs": "dividir números mixtos"
     },
     "divide multi-digit numbers": {
       "en": "Split a big number into equal groups.",
@@ -685,7 +826,8 @@
       "example": {
         "en": "1,344 ÷ 12 = 112",
         "es": "1,344 ÷ 12 = 112"
-      }
+      },
+      "termEs": "dividir números de varias cifras"
     },
     "divide whole numbers by fractions": {
       "en": "Find how many fraction pieces fit in the number.",
@@ -693,7 +835,8 @@
       "example": {
         "en": "6 ÷ 1/2 = 12 halves fit in 6",
         "es": "6 ÷ 1/2 = 12 mitades caben en 6"
-      }
+      },
+      "termEs": "dividir números enteros entre fracciones"
     },
     "dividend": {
       "en": "The number you split up.",
@@ -701,7 +844,8 @@
       "example": {
         "en": "In 12 ÷ 3, the 12 is the dividend",
         "es": "En 12 ÷ 3, el 12 es el dividendo"
-      }
+      },
+      "termEs": "dividendo"
     },
     "divisible": {
       "en": "Can be split with none left over.",
@@ -709,7 +853,8 @@
       "example": {
         "en": "12 ÷ 3 = 4 with nothing left over",
         "es": "12 ÷ 3 = 4 sin que sobre nada"
-      }
+      },
+      "termEs": "divisible"
     },
     "division": {
       "en": "Sharing a total in equal groups.",
@@ -717,7 +862,8 @@
     },
     "division of fractions": {
       "en": "Find how many small pieces fit in a big one.",
-      "es": "Hallar cuántas partes pequeñas caben en una grande."
+      "es": "Hallar cuántas partes pequeñas caben en una grande.",
+      "termEs": "división de fracciones"
     },
     "division property of equality": {
       "en": "Divide both sides by the same number, not zero. They stay equal.",
@@ -725,7 +871,8 @@
       "example": {
         "en": "3x = 12 → x = 4",
         "es": "3x = 12 → x = 4"
-      }
+      },
+      "termEs": "propiedad de división de la igualdad"
     },
     "divisor": {
       "en": "The number you divide by.",
@@ -733,11 +880,13 @@
       "example": {
         "en": "In 12 ÷ 3, the 3 is the divisor",
         "es": "En 12 ÷ 3, el 3 es el divisor"
-      }
+      },
+      "termEs": "divisor"
     },
     "doer of math": {
       "en": "Anyone who uses math. That is all of us.",
-      "es": "Cualquiera que usa matemáticas. Somos todos."
+      "es": "Cualquiera que usa matemáticas. Somos todos.",
+      "termEs": "persona que hace matemáticas"
     },
     "dot plot": {
       "en": "A number line with one dot for each value.",
@@ -745,19 +894,23 @@
       "example": {
         "en": "Values 2, 3, 3: two dots stack above 3",
         "es": "Valores 2, 3, 3: dos puntos juntos sobre el 3"
-      }
+      },
+      "termEs": "diagrama de puntos"
     },
     "double number line": {
       "en": "Two number lines side by side. Marks that line up go together.",
-      "es": "Dos rectas numéricas juntas. Las marcas que coinciden van juntas."
+      "es": "Dos rectas numéricas juntas. Las marcas que coinciden van juntas.",
+      "termEs": "recta numérica doble"
     },
     "edge": {
       "en": "Where two flat sides of a solid meet.",
-      "es": "Donde se unen dos lados planos de un sólido."
+      "es": "Donde se unen dos lados planos de un sólido.",
+      "termEs": "arista"
     },
     "equal sign": {
       "en": "The = sign. Both sides are the same.",
-      "es": "El signo =. Ambos lados son iguales."
+      "es": "El signo =. Ambos lados son iguales.",
+      "termEs": "signo igual"
     },
     "equation": {
       "en": "A math sentence with an equal sign.",
@@ -765,11 +918,13 @@
       "example": {
         "en": "x + 3 = 10",
         "es": "x + 3 = 10"
-      }
+      },
+      "termEs": "ecuación"
     },
     "equations and inequalities problem solving": {
       "en": "Use = for one exact answer, or < or > for many answers.",
-      "es": "Usar = para una respuesta exacta, o < o > para muchas respuestas."
+      "es": "Usar = para una respuesta exacta, o < o > para muchas respuestas.",
+      "termEs": "resolución de problemas con ecuaciones y desigualdades"
     },
     "equivalent": {
       "en": "The same value shown in a new way.",
@@ -777,7 +932,8 @@
       "example": {
         "en": "1/2 and 0.5 have the same value",
         "es": "1/2 y 0.5 tienen el mismo valor"
-      }
+      },
+      "termEs": "equivalente"
     },
     "equivalent division": {
       "en": "Multiply both numbers by 10 or 100. The answer is the same.",
@@ -785,7 +941,8 @@
       "example": {
         "en": "12 ÷ 0.4 = 120 ÷ 4 = 30",
         "es": "12 ÷ 0.4 = 120 ÷ 4 = 30"
-      }
+      },
+      "termEs": "división equivalente"
     },
     "equivalent expressions": {
       "en": "Math phrases that look different but give the same value.",
@@ -793,7 +950,8 @@
       "example": {
         "en": "2(x + 3) and 2x + 6 always match",
         "es": "2(x + 3) y 2x + 6 siempre coinciden"
-      }
+      },
+      "termEs": "expresiones equivalentes"
     },
     "equivalent fraction": {
       "en": "Fractions that name the same amount.",
@@ -801,7 +959,8 @@
       "example": {
         "en": "1/2 and 2/4 name the same amount",
         "es": "1/2 y 2/4 nombran la misma cantidad"
-      }
+      },
+      "termEs": "fracción equivalente"
     },
     "equivalent ratio": {
       "en": "Ratios that compare in the same way.",
@@ -809,7 +968,8 @@
       "example": {
         "en": "1:2 and 2:4 compare the same way",
         "es": "1:2 y 2:4 comparan de la misma manera"
-      }
+      },
+      "termEs": "razón equivalente"
     },
     "estimate": {
       "en": "An answer that is close, found without exact work.",
@@ -817,7 +977,11 @@
       "example": {
         "en": "18.576 is about 20",
         "es": "18.576 es casi 20"
-      }
+      },
+      "termEs": "estimar",
+      "alsoEs": [
+        "estimación"
+      ]
     },
     "evaluate": {
       "en": "Find the value by putting in numbers for the letters.",
@@ -825,7 +989,8 @@
       "example": {
         "en": "n + 4 with n = 3 is 7",
         "es": "n + 4 con n = 3 es 7"
-      }
+      },
+      "termEs": "evaluar"
     },
     "evaluate expressions": {
       "en": "Put numbers in for the letters, then work in order.",
@@ -833,7 +998,8 @@
       "example": {
         "en": "2n + 1 with n = 5 is 11",
         "es": "2n + 1 con n = 5 es 11"
-      }
+      },
+      "termEs": "evaluar expresiones"
     },
     "expand": {
       "en": "Multiply so the ( ) are gone.",
@@ -841,11 +1007,13 @@
       "example": {
         "en": "3(x + 2) = 3x + 6",
         "es": "3(x + 2) = 3x + 6"
-      }
+      },
+      "termEs": "desarrollar"
     },
     "expanded form": {
       "en": "A power written out in full, like 2 × 2 × 2.",
-      "es": "Una potencia escrita completa, como 2 × 2 × 2."
+      "es": "Una potencia escrita completa, como 2 × 2 × 2.",
+      "termEs": "forma desarrollada"
     },
     "exponent": {
       "en": "A small raised number. It counts the times a number is used.",
@@ -853,7 +1021,8 @@
       "example": {
         "en": "In 2³, the exponent is 3",
         "es": "En 2³, el exponente es 3"
-      }
+      },
+      "termEs": "exponente"
     },
     "expression": {
       "en": "A math phrase. It has no equal sign.",
@@ -861,15 +1030,18 @@
       "example": {
         "en": "3n + 4",
         "es": "3n + 4"
-      }
+      },
+      "termEs": "expresión"
     },
     "extreme value": {
       "en": "The lowest or highest value, far from the rest.",
-      "es": "El valor más bajo o más alto, lejos de los demás."
+      "es": "El valor más bajo o más alto, lejos de los demás.",
+      "termEs": "valor extremo"
     },
     "face": {
       "en": "One flat side of a solid shape.",
-      "es": "Un lado plano de una figura sólida."
+      "es": "Un lado plano de una figura sólida.",
+      "termEs": "cara"
     },
     "factor": {
       "en": "A number that goes into a number with none left.",
@@ -877,7 +1049,8 @@
       "example": {
         "en": "3 × 4 = 12, so 3 and 4 are factors",
         "es": "3 × 4 = 12, así que 3 y 4 son factores"
-      }
+      },
+      "termEs": "factor"
     },
     "factor an expression": {
       "en": "Pull out a number that is in every part.",
@@ -885,7 +1058,8 @@
       "example": {
         "en": "6x + 9 = 3(2x + 3)",
         "es": "6x + 9 = 3(2x + 3)"
-      }
+      },
+      "termEs": "factorizar una expresión"
     },
     "factor pair": {
       "en": "Two numbers that give the number as a product.",
@@ -893,7 +1067,8 @@
       "example": {
         "en": "3 × 4 = 12 and 2 × 6 = 12",
         "es": "3 × 4 = 12 y 2 × 6 = 12"
-      }
+      },
+      "termEs": "par de factores"
     },
     "factor tree": {
       "en": "A picture that splits a number down to prime numbers.",
@@ -901,15 +1076,18 @@
       "example": {
         "en": "12 → 2 × 2 × 3",
         "es": "12 → 2 × 2 × 3"
-      }
+      },
+      "termEs": "árbol de factores"
     },
     "find factors and multiples": {
       "en": "List the factors and multiples, then see what two numbers share.",
-      "es": "Hacer la lista de factores y múltiplos y ver qué comparten dos números."
+      "es": "Hacer la lista de factores y múltiplos y ver qué comparten dos números.",
+      "termEs": "hallar factores y múltiplos"
     },
     "five-number summary": {
       "en": "Five numbers that sum up the data, from lowest to highest.",
-      "es": "Cinco números que resumen los datos, del menor al mayor."
+      "es": "Cinco números que resumen los datos, del menor al mayor.",
+      "termEs": "resumen de cinco números"
     },
     "formula": {
       "en": "A rule written with letters and numbers.",
@@ -917,7 +1095,8 @@
       "example": {
         "en": "A = 5 × 3 = 15",
         "es": "A = 5 × 3 = 15"
-      }
+      },
+      "termEs": "fórmula"
     },
     "fraction": {
       "en": "A number that shows part of a whole.",
@@ -925,19 +1104,22 @@
       "example": {
         "en": "3/4 means 3 of 4 equal parts",
         "es": "3/4 son 3 de 4 partes iguales"
-      }
+      },
+      "termEs": "fracción"
     },
     "fraction division problem solving": {
       "en": "Divide with fractions to find how many groups or how big.",
-      "es": "Dividir con fracciones para hallar cuántos grupos o qué tamaño."
+      "es": "Dividir con fracciones para hallar cuántos grupos o qué tamaño.",
+      "termEs": "resolución de problemas de división de fracciones"
     },
     "fractions, decimals, and percents": {
       "en": "Three ways to write the same part of a whole.",
       "es": "Tres maneras de escribir la misma parte de un todo.",
       "example": {
         "en": "1/2 = 0.5 = 50%",
-        "es": "1/2 = 0.5 = 50 %"
-      }
+        "es": "1/2 = 0.5 = 50%"
+      },
+      "termEs": "fracciones, decimales y porcentajes"
     },
     "frequency": {
       "en": "How many times a value shows up.",
@@ -945,15 +1127,18 @@
       "example": {
         "en": "In 2, 3, 3, 5, the 3 shows up twice",
         "es": "En 2, 3, 3, 5, el 3 aparece dos veces"
-      }
+      },
+      "termEs": "frecuencia"
     },
     "frequency table": {
       "en": "A table that counts how many values are in each group.",
-      "es": "Una tabla que cuenta cuántos valores hay en cada grupo."
+      "es": "Una tabla que cuenta cuántos valores hay en cada grupo.",
+      "termEs": "tabla de frecuencias"
     },
     "gap": {
       "en": "An empty space where there is no data.",
-      "es": "Un espacio vacío donde no hay datos."
+      "es": "Un espacio vacío donde no hay datos.",
+      "termEs": "brecha"
     },
     "gear": {
       "en": "A wheel with teeth that turns another wheel.",
@@ -961,11 +1146,13 @@
       "example": {
         "en": "A 48-tooth gear turns a 12-tooth gear",
         "es": "Un engranaje de 48 dientes mueve uno de 12"
-      }
+      },
+      "termEs": "engranaje"
     },
     "generalization": {
       "en": "A rule that is true for a whole pattern.",
-      "es": "Una regla que es cierta para todo un patrón."
+      "es": "Una regla que es cierta para todo un patrón.",
+      "termEs": "generalización"
     },
     "graph": {
       "en": "A picture that shows how two amounts are related.",
@@ -982,11 +1169,16 @@
           "en": "Show answers on a number line.",
           "es": "Mostrar las respuestas en una recta numérica."
         }
+      ],
+      "termEs": "gráfica",
+      "alsoEs": [
+        "graficar"
       ]
     },
     "graph inequalities": {
       "en": "Show all the answers on a line with a dot and arrow.",
-      "es": "Mostrar todas las respuestas en una recta con un punto y una flecha."
+      "es": "Mostrar todas las respuestas en una recta con un punto y una flecha.",
+      "termEs": "representar desigualdades en una recta numérica"
     },
     "graph on the coordinate plane": {
       "en": "Mark a point: go across first, then up or down.",
@@ -994,11 +1186,13 @@
       "example": {
         "en": "(3, 2): 3 across, 2 up",
         "es": "(3, 2): 3 a la derecha, 2 arriba"
-      }
+      },
+      "termEs": "representar en el plano de coordenadas"
     },
     "graph ratio tables": {
       "en": "Plot each pair from the table as a point.",
-      "es": "Marcar cada pareja de la tabla como un punto."
+      "es": "Marcar cada pareja de la tabla como un punto.",
+      "termEs": "representar tablas de razones en una gráfica"
     },
     "greater than": {
       "en": "The > sign. It shows one number is bigger.",
@@ -1006,15 +1200,17 @@
       "example": {
         "en": "9 > 4",
         "es": "9 > 4"
-      }
+      },
+      "termEs": "mayor que"
     },
     "greater than 100%": {
       "en": "More than the whole thing. It is over 100%.",
-      "es": "Más que el total. Es más de 100 %.",
+      "es": "Más que el total. Es más de 100%.",
       "example": {
         "en": "150% of 40 is 60",
-        "es": "150 % de 40 es 60"
-      }
+        "es": "150% de 40 es 60"
+      },
+      "termEs": "mayor que 100%"
     },
     "greatest common factor": {
       "en": "The biggest number that goes into both.",
@@ -1022,7 +1218,8 @@
       "example": {
         "en": "For 12 and 18, the biggest shared number is 6",
         "es": "Para 12 y 18, el número compartido más grande es 6"
-      }
+      },
+      "termEs": "máximo común divisor"
     },
     "greatest common factor (gcf)": {
       "en": "The biggest number that goes into both.",
@@ -1030,7 +1227,8 @@
       "example": {
         "en": "For 12 and 18, the biggest shared number is 6",
         "es": "Para 12 y 18, el número compartido más grande es 6"
-      }
+      },
+      "termEs": "máximo común divisor (mcd)"
     },
     "grouping symbols": {
       "en": "Marks like ( ) that tell you what to do first.",
@@ -1038,11 +1236,13 @@
       "example": {
         "en": "2 × (3 + 4): do 3 + 4 first",
         "es": "2 × (3 + 4): primero 3 + 4"
-      }
+      },
+      "termEs": "símbolos de agrupación"
     },
     "growth": {
       "en": "How much more you can do now than before.",
-      "es": "Cuánto más puedes hacer ahora que antes."
+      "es": "Cuánto más puedes hacer ahora que antes.",
+      "termEs": "crecimiento"
     },
     "halfway value": {
       "en": "The spot halfway between the two middle ones.",
@@ -1050,7 +1250,8 @@
       "example": {
         "en": "Middle values 4 and 6: halfway is 5",
         "es": "Valores del medio 4 y 6: a medio camino está 5"
-      }
+      },
+      "termEs": "valor intermedio"
     },
     "height": {
       "en": "How tall it is, measured straight up from the base.",
@@ -1058,11 +1259,13 @@
       "example": {
         "en": "A triangle 4 units tall has height 4",
         "es": "Un triángulo de 4 unidades de alto tiene altura 4"
-      }
+      },
+      "termEs": "altura"
     },
     "histogram": {
       "en": "A bar graph with touching bars. Each bar counts one group.",
-      "es": "Una gráfica de barras que se tocan. Cada barra cuenta un grupo."
+      "es": "Una gráfica de barras que se tocan. Cada barra cuenta un grupo.",
+      "termEs": "histograma"
     },
     "horizontal distance": {
       "en": "How far apart two points are, left to right.",
@@ -1070,7 +1273,8 @@
       "example": {
         "en": "From (1, 2) to (6, 2) is 5",
         "es": "De (1, 2) a (6, 2) hay 5"
-      }
+      },
+      "termEs": "distancia horizontal"
     },
     "hundredths": {
       "en": "The second digit after the dot. It counts parts of 100.",
@@ -1078,7 +1282,8 @@
       "example": {
         "en": "In 0.47, the 7 is 7 hundredths",
         "es": "En 0.47, el 7 son 7 centésimas"
-      }
+      },
+      "termEs": "centésimas"
     },
     "identity property": {
       "en": "Add 0 or multiply by 1. The number stays.",
@@ -1086,15 +1291,18 @@
       "example": {
         "en": "7 + 0 = 7 and 7 × 1 = 7",
         "es": "7 + 0 = 7 y 7 × 1 = 7"
-      }
+      },
+      "termEs": "propiedad de identidad"
     },
     "improper fraction": {
       "en": "A fraction that is 1 or more, like 5/2.",
-      "es": "Una fracción que es 1 o más, como 5/2."
+      "es": "Una fracción que es 1 o más, como 5/2.",
+      "termEs": "fracción impropia"
     },
     "independent variable": {
       "en": "The amount you choose. The other amount depends on it.",
-      "es": "La cantidad que eliges. La otra cantidad depende de ella."
+      "es": "La cantidad que eliges. La otra cantidad depende de ella.",
+      "termEs": "variable independiente"
     },
     "inequality": {
       "en": "A math sentence that compares sides with <, >, ≤, or ≥.",
@@ -1102,11 +1310,13 @@
       "example": {
         "en": "x > 3 means x is more than 3",
         "es": "x > 3 significa que x es más que 3"
-      }
+      },
+      "termEs": "desigualdad"
     },
     "ingenuity": {
       "en": "Finding new and clever ways to solve a problem.",
-      "es": "Hallar maneras nuevas y creativas de resolver un problema."
+      "es": "Hallar maneras nuevas y creativas de resolver un problema.",
+      "termEs": "ingenio"
     },
     "input": {
       "en": "The number you put in to start.",
@@ -1114,19 +1324,23 @@
       "example": {
         "en": "Input 3 gives output 7",
         "es": "Entrada 3 da salida 7"
-      }
+      },
+      "termEs": "entrada"
     },
     "integer": {
       "en": "A whole number or its opposite, like 2 and −2.",
-      "es": "Un número de contar, su opuesto o el cero, como 2, −2 y 0."
+      "es": "Un número de contar, su opuesto o el cero, como 2, −2 y 0.",
+      "termEs": "número entero"
     },
     "integers and absolute value": {
       "en": "Whole numbers and their opposites, and how far each is from zero.",
-      "es": "Números enteros y sus opuestos, y qué tan lejos está cada uno del cero."
+      "es": "Números enteros y sus opuestos, y qué tan lejos está cada uno del cero.",
+      "termEs": "enteros y valor absoluto"
     },
     "interpret": {
       "en": "Say what a point on a graph means.",
-      "es": "Decir con palabras qué significa un punto en una gráfica."
+      "es": "Decir con palabras qué significa un punto en una gráfica.",
+      "termEs": "interpretar"
     },
     "interquartile range": {
       "en": "The distance across the middle half of the data.",
@@ -1134,7 +1348,8 @@
       "example": {
         "en": "Q3 − Q1 = 10 − 4 = 6",
         "es": "Q3 − Q1 = 10 − 4 = 6"
-      }
+      },
+      "termEs": "rango intercuartílico"
     },
     "interval": {
       "en": "A group of numbers between two values.",
@@ -1142,11 +1357,13 @@
       "example": {
         "en": "Groups 0–4, 5–9, 10–14",
         "es": "Grupos 0–4, 5–9, 10–14"
-      }
+      },
+      "termEs": "intervalo"
     },
     "inventory": {
       "en": "The items a business has in stock.",
-      "es": "Los artículos que un negocio tiene guardados."
+      "es": "Los artículos que un negocio tiene guardados.",
+      "termEs": "inventario"
     },
     "inverse operation": {
       "en": "Two actions that undo each other, like × and ÷.",
@@ -1154,7 +1371,8 @@
       "example": {
         "en": "5 + 3 = 8, then 8 − 3 = 5",
         "es": "5 + 3 = 8, luego 8 − 3 = 5"
-      }
+      },
+      "termEs": "operación inversa"
     },
     "isolate": {
       "en": "Get the letter alone on one side.",
@@ -1162,11 +1380,13 @@
       "example": {
         "en": "x + 3 = 10 → x = 7",
         "es": "x + 3 = 10 → x = 7"
-      }
+      },
+      "termEs": "despejar"
     },
     "justify": {
       "en": "Explain WHY your answer makes sense.",
-      "es": "Explicar POR QUÉ tu respuesta tiene sentido."
+      "es": "Explicar POR QUÉ tu respuesta tiene sentido.",
+      "termEs": "justificar"
     },
     "keep-change-flip": {
       "en": "Keep the first, change ÷ to ×, flip the second.",
@@ -1182,15 +1402,18 @@
       "example": {
         "en": "1/2 ÷ 1/4 → 1/2 × 4/1 = 2",
         "es": "1/2 ÷ 1/4 → 1/2 × 4/1 = 2"
-      }
+      },
+      "termEs": "mantener, cambiar, invertir"
     },
     "lateral area": {
       "en": "The area of just the sides, not the bottom.",
-      "es": "El área solo de los lados, sin el fondo."
+      "es": "El área solo de los lados, sin el fondo.",
+      "termEs": "área lateral"
     },
     "lateral face": {
       "en": "A side face of a solid, not the top or bottom.",
-      "es": "Un lado de un sólido, no la parte de arriba ni la de abajo."
+      "es": "Un lado de un sólido, no la parte de arriba ni la de abajo.",
+      "termEs": "cara lateral"
     },
     "least common denominator": {
       "en": "The smallest bottom number both can use.",
@@ -1206,7 +1429,8 @@
       "example": {
         "en": "Counting by 4 and 6 first meets at 12",
         "es": "Contando de 4 y de 6, primero coinciden en 12"
-      }
+      },
+      "termEs": "mínimo común múltiplo"
     },
     "least common multiple (lcm)": {
       "en": "The smallest number both numbers count up to.",
@@ -1214,7 +1438,8 @@
       "example": {
         "en": "Counting by 4 and 6 first meets at 12",
         "es": "Contando de 4 y de 6, primero coinciden en 12"
-      }
+      },
+      "termEs": "mínimo común múltiplo (mcm)"
     },
     "length, width, height": {
       "en": "How long, how wide, and how tall a box is.",
@@ -1222,7 +1447,8 @@
       "example": {
         "en": "A box 5 long, 3 wide, 2 tall",
         "es": "Una caja de 5 de largo, 3 de ancho, 2 de alto"
-      }
+      },
+      "termEs": "largo, ancho, altura"
     },
     "less than": {
       "en": "The < sign. It shows one number is smaller.",
@@ -1230,15 +1456,17 @@
       "example": {
         "en": "3 < 8",
         "es": "3 < 8"
-      }
+      },
+      "termEs": "menor que"
     },
     "less than 1%": {
       "en": "A percent below 1%. It is a very tiny part.",
-      "es": "Un porcentaje por debajo de 1 %. Es una parte muy pequeña.",
+      "es": "Un porcentaje por debajo de 1%. Es una parte muy pequeña.",
       "example": {
         "en": "0.5% is half of 1%",
-        "es": "0.5 % es la mitad de 1 %"
-      }
+        "es": "0.5% es la mitad de 1%"
+      },
+      "termEs": "menor que 1%"
     },
     "like terms": {
       "en": "Terms with the same letter and the same power.",
@@ -1246,11 +1474,13 @@
       "example": {
         "en": "2x and 5x have the same letter",
         "es": "2x y 5x tienen la misma letra"
-      }
+      },
+      "termEs": "términos semejantes"
     },
     "line of symmetry": {
       "en": "A line that cuts a shape into two matching halves.",
-      "es": "Una línea que divide una figura en dos mitades iguales que se reflejan."
+      "es": "Una línea que divide una figura en dos mitades iguales que se reflejan.",
+      "termEs": "eje de simetría"
     },
     "line segment": {
       "en": "A straight piece of a line with two ends.",
@@ -1258,7 +1488,8 @@
     },
     "linear pattern": {
       "en": "Points that line up in a straight line.",
-      "es": "Puntos que forman una línea recta en una cuadrícula."
+      "es": "Puntos que forman una línea recta en una cuadrícula.",
+      "termEs": "patrón lineal"
     },
     "long division": {
       "en": "Divide big numbers one step at a time.",
@@ -1266,15 +1497,18 @@
       "example": {
         "en": "156 ÷ 12 = 13",
         "es": "156 ÷ 12 = 13"
-      }
+      },
+      "termEs": "división larga"
     },
     "magnitude": {
       "en": "The size of a number: its distance from zero.",
-      "es": "El tamaño de un número: su distancia al cero."
+      "es": "El tamaño de un número: su distancia al cero.",
+      "termEs": "magnitud"
     },
     "make sense of a problem": {
       "en": "Figure out what is asked and what you know.",
-      "es": "Descubrir qué se pregunta y qué sabes."
+      "es": "Descubrir qué se pregunta y qué sabes.",
+      "termEs": "comprender un problema"
     },
     "markup": {
       "en": "Money a store adds to its cost to set a price.",
@@ -1282,15 +1516,18 @@
       "example": {
         "en": "Cost $20 plus $5 markup is $25",
         "es": "Costo $20 más $5 de recargo son $25"
-      }
+      },
+      "termEs": "recargo (margen)"
     },
     "math biography": {
       "en": "The story of you and math.",
-      "es": "La historia de ti y las matemáticas."
+      "es": "La historia de ti y las matemáticas.",
+      "termEs": "biografía matemática"
     },
     "math story": {
       "en": "What you have done, felt, and learned about math.",
-      "es": "Lo que has hecho, sentido y aprendido sobre las matemáticas."
+      "es": "Lo que has hecho, sentido y aprendido sobre las matemáticas.",
+      "termEs": "historia matemática"
     },
     "mean": {
       "en": "Add all the numbers, then divide by how many.",
@@ -1298,27 +1535,33 @@
       "example": {
         "en": "2, 4, 9: 15 ÷ 3 = 5",
         "es": "2, 4, 9: 15 ÷ 3 = 5"
-      }
+      },
+      "termEs": "media"
     },
     "mean absolute deviation": {
       "en": "The typical distance of the data from the mean.",
-      "es": "La distancia típica de los datos a la media."
+      "es": "La distancia típica de los datos a la media.",
+      "termEs": "desviación media absoluta"
     },
     "mean, median, and mode": {
       "en": "Three ways to find the center of the data.",
-      "es": "Tres maneras de hallar el centro de los datos."
+      "es": "Tres maneras de hallar el centro de los datos.",
+      "termEs": "media, mediana y moda"
     },
     "measure of center": {
       "en": "One number that tells what is typical.",
-      "es": "Un número que dice qué es típico."
+      "es": "Un número que dice qué es típico.",
+      "termEs": "medida de centro"
     },
     "measure of variation": {
       "en": "One number that tells how far apart the data is.",
-      "es": "Un número que dice qué tan separados están los datos."
+      "es": "Un número que dice qué tan separados están los datos.",
+      "termEs": "medida de variación"
     },
     "measurement system": {
       "en": "A set of units that go together.",
-      "es": "Un conjunto de unidades que van juntas."
+      "es": "Un conjunto de unidades que van juntas.",
+      "termEs": "sistema de medidas"
     },
     "median": {
       "en": "The middle number when they are in order.",
@@ -1326,27 +1569,33 @@
       "example": {
         "en": "3, 5, 9: the median is 5",
         "es": "3, 5, 9: la mediana es 5"
-      }
+      },
+      "termEs": "mediana"
     },
     "metric system": {
       "en": "Units like meters, grams, and liters, used in most of the world.",
-      "es": "Unidades como metros, gramos y litros, usadas en casi todo el mundo."
+      "es": "Unidades como metros, gramos y litros, usadas en casi todo el mundo.",
+      "termEs": "sistema métrico"
     },
     "metric units": {
       "en": "Units like meters, liters, and grams.",
-      "es": "Unidades como metros, litros y gramos."
+      "es": "Unidades como metros, litros y gramos.",
+      "termEs": "unidades métricas"
     },
     "middle half": {
       "en": "The box part of a box plot. It holds half the data.",
-      "es": "La caja de un diagrama de caja. Tiene la mitad de los datos."
+      "es": "La caja de un diagrama de caja. Tiene la mitad de los datos.",
+      "termEs": "mitad central"
     },
     "mirror image": {
       "en": "A flip of a shape across a line.",
-      "es": "Una figura volteada al otro lado de una línea."
+      "es": "Una figura volteada al otro lado de una línea.",
+      "termEs": "imagen reflejada"
     },
     "mixed number": {
       "en": "A whole number and a fraction together, like 2 1/2.",
-      "es": "Un número entero y una fracción juntos, como 2 1/2."
+      "es": "Un número entero y una fracción juntos, como 2 1/2.",
+      "termEs": "número mixto"
     },
     "mode": {
       "en": "The number that shows up most.",
@@ -1354,7 +1603,8 @@
       "example": {
         "en": "2, 3, 3, 5: the mode is 3",
         "es": "2, 3, 3, 5: la moda es 3"
-      }
+      },
+      "termEs": "moda"
     },
     "model": {
       "en": "A picture or math sentence that shows the problem.",
@@ -1371,6 +1621,10 @@
           "en": "Use math to show a real situation.",
           "es": "Usar matemáticas para mostrar una situación real."
         }
+      ],
+      "termEs": "modelo",
+      "alsoEs": [
+        "modelar"
       ]
     },
     "multi-digit": {
@@ -1383,7 +1637,8 @@
     },
     "multi-step problem": {
       "en": "A problem that takes more than one step.",
-      "es": "Un problema que lleva más de un paso."
+      "es": "Un problema que lleva más de un paso.",
+      "termEs": "problema de varios pasos"
     },
     "multiple": {
       "en": "A number you land on when you count by it.",
@@ -1391,7 +1646,8 @@
       "example": {
         "en": "Counting by 6: 6, 12, 18",
         "es": "Contando de 6 en 6: 6, 12, 18"
-      }
+      },
+      "termEs": "múltiplo"
     },
     "multiplication": {
       "en": "Adding the same group again and again.",
@@ -1407,7 +1663,8 @@
       "example": {
         "en": "x ÷ 2 = 5 → x = 10",
         "es": "x ÷ 2 = 5 → x = 10"
-      }
+      },
+      "termEs": "propiedad de multiplicación de la igualdad"
     },
     "multiplicative inverse": {
       "en": "Two numbers that multiply to make 1.",
@@ -1415,11 +1672,13 @@
       "example": {
         "en": "2/3 × 3/2 = 1",
         "es": "2/3 × 3/2 = 1"
-      }
+      },
+      "termEs": "inverso multiplicativo"
     },
     "multiply": {
       "en": "Add the same group again and again.",
-      "es": "Sumar el mismo grupo una y otra vez."
+      "es": "Sumar el mismo grupo una y otra vez.",
+      "termEs": "multiplicar"
     },
     "multiply decimals": {
       "en": "Multiply as whole numbers. Then count the digits after the dot.",
@@ -1427,19 +1686,23 @@
       "example": {
         "en": "0.3 × 0.2: 3 × 2 = 6, so 0.06",
         "es": "0.3 × 0.2: 3 × 2 = 6, así 0.06"
-      }
+      },
+      "termEs": "multiplicar decimales"
     },
     "negative": {
       "en": "A number less than zero.",
-      "es": "Un número menor que cero."
+      "es": "Un número menor que cero.",
+      "termEs": "negativo"
     },
     "negative coordinate": {
       "en": "A number less than zero. It means left or below the center.",
-      "es": "Un número menor que cero. Significa a la izquierda o abajo del centro."
+      "es": "Un número menor que cero. Significa a la izquierda o abajo del centro.",
+      "termEs": "coordenada negativa"
     },
     "negative integer": {
       "en": "A whole number less than zero, like −5.",
-      "es": "Un número entero menor que cero, como −5."
+      "es": "Un número entero menor que cero, como −5.",
+      "termEs": "entero negativo"
     },
     "negative number": {
       "en": "A number less than 0, written with a − sign.",
@@ -1447,11 +1710,13 @@
       "example": {
         "en": "−5 is left of 0",
         "es": "−5 está a la izquierda del 0"
-      }
+      },
+      "termEs": "número negativo"
     },
     "net": {
       "en": "A flat shape that folds into a solid.",
-      "es": "Una figura plana que se dobla para formar un sólido."
+      "es": "Una figura plana que se dobla para formar un sólido.",
+      "termEs": "plantilla (desarrollo plano)"
     },
     "no more than": {
       "en": "This much or less. It is the same as ≤.",
@@ -1459,15 +1724,18 @@
       "example": {
         "en": "No more than 5 means 5 or less",
         "es": "No más de 5 significa 5 o menos"
-      }
+      },
+      "termEs": "no más de"
     },
     "non-statistical question": {
       "en": "A question with only one answer.",
-      "es": "Una pregunta con una sola respuesta."
+      "es": "Una pregunta con una sola respuesta.",
+      "termEs": "pregunta no estadística"
     },
     "number line": {
       "en": "A line with numbers in order, left to right.",
-      "es": "Una recta con los números en orden, de izquierda a derecha."
+      "es": "Una recta con los números en orden, de izquierda a derecha.",
+      "termEs": "recta numérica"
     },
     "numerator": {
       "en": "The top number of a fraction. It counts the parts you have.",
@@ -1475,7 +1743,8 @@
       "example": {
         "en": "In 3/4, the top number is 3",
         "es": "En 3/4, el número de arriba es 3"
-      }
+      },
+      "termEs": "numerador"
     },
     "numerical expression": {
       "en": "A math phrase with numbers and signs, but no letters.",
@@ -1483,7 +1752,8 @@
       "example": {
         "en": "3 + 4 × 2",
         "es": "3 + 4 × 2"
-      }
+      },
+      "termEs": "expresión numérica"
     },
     "one-step equation": {
       "en": "An equation you solve with just one step.",
@@ -1491,11 +1761,13 @@
       "example": {
         "en": "x + 4 = 9 → x = 5",
         "es": "x + 4 = 9 → x = 5"
-      }
+      },
+      "termEs": "ecuación de un paso"
     },
     "open circle": {
       "en": "An empty circle. The number is left out.",
-      "es": "Un círculo vacío. El número NO está incluido."
+      "es": "Un círculo vacío. El número NO está incluido.",
+      "termEs": "círculo abierto"
     },
     "opposite": {
       "en": "A number the same distance from 0 on the other side.",
@@ -1503,7 +1775,8 @@
       "example": {
         "en": "3 and −3 are both 3 steps from 0",
         "es": "3 y −3 están a 3 pasos del 0"
-      }
+      },
+      "termEs": "opuesto"
     },
     "opposite of the opposite": {
       "en": "Switching the sign twice gives the first number.",
@@ -1511,7 +1784,8 @@
       "example": {
         "en": "−(−7) = 7",
         "es": "−(−7) = 7"
-      }
+      },
+      "termEs": "opuesto del opuesto"
     },
     "order": {
       "en": "Put numbers from smallest to biggest, or the reverse.",
@@ -1519,7 +1793,8 @@
       "example": {
         "en": "9, 2, 5 → 2, 5, 9",
         "es": "9, 2, 5 → 2, 5, 9"
-      }
+      },
+      "termEs": "ordenar"
     },
     "order of operations": {
       "en": "Do ( ) first, powers next, then × and ÷, then + and −, left to right.",
@@ -1527,23 +1802,28 @@
       "example": {
         "en": "2 + 3 × 4 = 14, not 20",
         "es": "2 + 3 × 4 = 14, no 20"
-      }
+      },
+      "termEs": "orden de las operaciones"
     },
     "ordered pair": {
       "en": "Two numbers (x, y) that tell where a point is.",
-      "es": "Dos números (x, y) que dicen dónde está un punto."
+      "es": "Dos números (x, y) que dicen dónde está un punto.",
+      "termEs": "par ordenado"
     },
     "ordered pairs in all four quadrants": {
       "en": "Plot (x, y) points in all four parts of the grid.",
-      "es": "Ubicar puntos (x, y) en cualquiera de las cuatro partes de la cuadrícula."
+      "es": "Ubicar puntos (x, y) en cualquiera de las cuatro partes de la cuadrícula.",
+      "termEs": "pares ordenados en los cuatro cuadrantes"
     },
     "organize": {
       "en": "Put facts in a table so patterns are easy to see.",
-      "es": "Poner los datos en una tabla para ver los patrones con facilidad."
+      "es": "Poner los datos en una tabla para ver los patrones con facilidad.",
+      "termEs": "organizar"
     },
     "origin": {
       "en": "The point (0, 0), where the two number lines cross.",
-      "es": "El punto (0, 0), donde se cruzan las dos rectas numéricas."
+      "es": "El punto (0, 0), donde se cruzan las dos rectas numéricas.",
+      "termEs": "origen"
     },
     "outlier": {
       "en": "A number far bigger or smaller than the rest.",
@@ -1551,7 +1831,8 @@
       "example": {
         "en": "2, 3, 3, 4, 40: 40 is far away",
         "es": "2, 3, 3, 4, 40: el 40 está lejos"
-      }
+      },
+      "termEs": "valor atípico"
     },
     "output": {
       "en": "The number that comes out.",
@@ -1559,23 +1840,27 @@
       "example": {
         "en": "Input 3 gives output 7",
         "es": "Entrada 3 da salida 7"
-      }
+      },
+      "termEs": "salida"
     },
     "parallel": {
       "en": "Lines that stay the same distance apart and never meet.",
-      "es": "Líneas que siempre están a la misma distancia y nunca se cruzan."
+      "es": "Líneas que siempre están a la misma distancia y nunca se cruzan.",
+      "termEs": "paralelas"
     },
     "parallelogram": {
       "en": "A shape with four sides. Opposite sides are parallel.",
-      "es": "Una figura de cuatro lados. Los lados opuestos son paralelos."
+      "es": "Una figura de cuatro lados. Los lados opuestos son paralelos.",
+      "termEs": "paralelogramo"
     },
     "part": {
       "en": "A piece of the whole.",
       "es": "Una pieza del total.",
       "example": {
         "en": "In 25% of 80 = 20, the part is 20",
-        "es": "En 25 % de 80 = 20, la parte es 20"
-      }
+        "es": "En 25% de 80 = 20, la parte es 20"
+      },
+      "termEs": "parte"
     },
     "part-to-part": {
       "en": "Compares one piece of a group with another piece.",
@@ -1583,7 +1868,8 @@
       "example": {
         "en": "3 boys to 2 girls",
         "es": "3 niños a 2 niñas"
-      }
+      },
+      "termEs": "parte a parte"
     },
     "part-to-whole": {
       "en": "Compares one piece with the whole group.",
@@ -1591,7 +1877,8 @@
       "example": {
         "en": "3 boys to 5 kids in all",
         "es": "3 niños de 5 en total"
-      }
+      },
+      "termEs": "parte a total"
     },
     "pattern": {
       "en": "Something that repeats or changes by a rule.",
@@ -1599,7 +1886,8 @@
       "example": {
         "en": "2, 4, 6, 8: add 2 each time",
         "es": "2, 4, 6, 8: se suma 2 cada vez"
-      }
+      },
+      "termEs": "patrón"
     },
     "pattern rule": {
       "en": "The rule that tells how to get the next number.",
@@ -1607,23 +1895,28 @@
       "example": {
         "en": "Add 3 each time: 4, 7, 10",
         "es": "Sumar 3 cada vez: 4, 7, 10"
-      }
+      },
+      "termEs": "regla del patrón"
     },
     "pattern unit": {
       "en": "The smallest part that repeats.",
-      "es": "La parte más pequeña que se repite."
+      "es": "La parte más pequeña que se repite.",
+      "termEs": "unidad del patrón"
     },
     "peak": {
       "en": "The tallest bar or stack of dots.",
-      "es": "La barra o pila de puntos más alta."
+      "es": "La barra o pila de puntos más alta.",
+      "termEs": "pico"
     },
     "per": {
       "en": "For each one, as in 5 dollars for each book.",
-      "es": "Por cada uno, como 5 dólares por cada libro."
+      "es": "Por cada uno, como 5 dólares por cada libro.",
+      "termEs": "por"
     },
     "per hundred": {
       "en": "For every group of 100. That is what percent means.",
-      "es": "Por cada grupo de 100. Eso significa porcentaje."
+      "es": "Por cada grupo de 100. Eso significa porcentaje.",
+      "termEs": "por cada cien"
     },
     "per unit": {
       "en": "For each single item.",
@@ -1631,31 +1924,36 @@
       "example": {
         "en": "$2 for each 1 pen",
         "es": "$2 por cada 1 bolígrafo"
-      }
+      },
+      "termEs": "por unidad"
     },
     "percent": {
       "en": "A number out of 100, shown with the % sign.",
       "es": "Un número de cada 100, con el signo %.",
       "example": {
         "en": "30% means 30 out of 100",
-        "es": "30 % significa 30 de cada 100"
-      }
+        "es": "30% significa 30 de cada 100"
+      },
+      "termEs": "porcentaje"
     },
     "percent of a number": {
       "en": "The piece of a number that the percent names.",
       "es": "La parte de un número que indica el porcentaje.",
       "example": {
         "en": "25% of 80 = 0.25 × 80 = 20",
-        "es": "25 % de 80 = 0.25 × 80 = 20"
-      }
+        "es": "25% de 80 = 0.25 × 80 = 20"
+      },
+      "termEs": "porcentaje de un número"
     },
     "percent problem solving": {
       "en": "Use a percent to find a part, a whole, or a change.",
-      "es": "Usar un porcentaje para hallar una parte, un total o un cambio."
+      "es": "Usar un porcentaje para hallar una parte, un total o un cambio.",
+      "termEs": "resolución de problemas con porcentajes"
     },
     "percents greater than 100% and less than 1%": {
       "en": "A percent can be more than the whole or very tiny.",
-      "es": "Un porcentaje puede ser más que el total o muy pequeño."
+      "es": "Un porcentaje puede ser más que el total o muy pequeño.",
+      "termEs": "porcentajes mayores que 100% y menores que 1%"
     },
     "perimeter": {
       "en": "The distance around a shape.",
@@ -1663,15 +1961,18 @@
       "example": {
         "en": "Sides 3, 4, 5: perimeter is 12",
         "es": "Lados 3, 4, 5: el perímetro es 12"
-      }
+      },
+      "termEs": "perímetro"
     },
     "perpendicular": {
       "en": "Lines that meet at a square corner (90°).",
-      "es": "Líneas que se cruzan en una esquina cuadrada (90°)."
+      "es": "Líneas que se cruzan en una esquina cuadrada (90°).",
+      "termEs": "perpendicular"
     },
     "persevere": {
       "en": "Keep going when a problem is hard.",
-      "es": "Seguir intentando cuando un problema es difícil."
+      "es": "Seguir intentando cuando un problema es difícil.",
+      "termEs": "perseverar"
     },
     "place value": {
       "en": "What a digit is worth by where it sits.",
@@ -1679,31 +1980,38 @@
       "example": {
         "en": "In 352, the 5 is worth 50",
         "es": "En 352, el 5 vale 50"
-      }
+      },
+      "termEs": "valor posicional"
     },
     "polygon": {
       "en": "A closed shape with straight sides.",
-      "es": "Una figura cerrada con lados rectos."
+      "es": "Una figura cerrada con lados rectos.",
+      "termEs": "polígono"
     },
     "portion": {
       "en": "The amount of food for one person.",
-      "es": "La cantidad de comida para una persona."
+      "es": "La cantidad de comida para una persona.",
+      "termEs": "porción"
     },
     "positive": {
       "en": "A number more than zero.",
-      "es": "Un número mayor que cero."
+      "es": "Un número mayor que cero.",
+      "termEs": "positivo"
     },
     "positive number": {
       "en": "A number greater than 0, to the right of 0.",
-      "es": "Un número mayor que 0, a la derecha del 0."
+      "es": "Un número mayor que 0, a la derecha del 0.",
+      "termEs": "número positivo"
     },
     "power": {
       "en": "A short way to write 2 × 2 × 2 as 2³.",
-      "es": "Una forma corta de escribir 2 × 2 × 2 como 2³."
+      "es": "Una forma corta de escribir 2 × 2 × 2 como 2³.",
+      "termEs": "potencia"
     },
     "power of ten": {
       "en": "Ten, one hundred, one thousand, and so on.",
-      "es": "Diez, cien, mil, y así sucesivamente."
+      "es": "Diez, cien, mil, y así sucesivamente.",
+      "termEs": "potencia de diez"
     },
     "powers and exponents": {
       "en": "Short ways to write the same number times itself.",
@@ -1711,15 +2019,18 @@
       "example": {
         "en": "5² = 5 × 5 = 25",
         "es": "5² = 5 × 5 = 25"
-      }
+      },
+      "termEs": "potencias y exponentes"
     },
     "predict": {
       "en": "Say what will happen before it happens.",
-      "es": "Decir qué va a pasar antes de que pase."
+      "es": "Decir qué va a pasar antes de que pase.",
+      "termEs": "predecir"
     },
     "predictability": {
       "en": "Knowing what comes next because of a rule.",
-      "es": "Saber qué sigue porque hay una regla."
+      "es": "Saber qué sigue porque hay una regla.",
+      "termEs": "previsibilidad"
     },
     "prime factor": {
       "en": "A factor that is also a prime number.",
@@ -1738,7 +2049,8 @@
       "example": {
         "en": "12 = 2 × 2 × 3",
         "es": "12 = 2 × 2 × 3"
-      }
+      },
+      "termEs": "factorización prima"
     },
     "prime number": {
       "en": "A number over 1 that only splits by 1 and itself.",
@@ -1746,15 +2058,18 @@
       "example": {
         "en": "7 is prime: only 1 and 7 divide it",
         "es": "7 es primo: solo 1 y 7 lo dividen"
-      }
+      },
+      "termEs": "número primo"
     },
     "prism": {
       "en": "A 3-D solid with two matching ends and flat sides.",
-      "es": "Un sólido 3-D con dos extremos iguales y lados planos."
+      "es": "Un sólido 3-D con dos extremos iguales y lados planos.",
+      "termEs": "prisma"
     },
     "problem solving": {
       "en": "Use ratios and rates to find a missing amount.",
-      "es": "Usar razones y tasas para hallar una cantidad que falta."
+      "es": "Usar razones y tasas para hallar una cantidad que falta.",
+      "termEs": "resolución de problemas"
     },
     "product": {
       "en": "The answer to a times problem.",
@@ -1762,19 +2077,23 @@
       "example": {
         "en": "3 × 4 = 12",
         "es": "3 × 4 = 12"
-      }
+      },
+      "termEs": "producto"
     },
     "profession": {
       "en": "A job someone is trained to do.",
-      "es": "Un trabajo para el que alguien se preparó."
+      "es": "Un trabajo para el que alguien se preparó.",
+      "termEs": "profesión"
     },
     "properties of operations": {
       "en": "Rules that let you change the order or grouping.",
-      "es": "Reglas que permiten cambiar el orden o la agrupación."
+      "es": "Reglas que permiten cambiar el orden o la agrupación.",
+      "termEs": "propiedades de las operaciones"
     },
     "property": {
       "en": "A rule that is always true in math.",
-      "es": "Una regla que siempre es cierta en matemáticas."
+      "es": "Una regla que siempre es cierta en matemáticas.",
+      "termEs": "propiedad"
     },
     "proportion": {
       "en": "A math sentence that says two ratios are equal.",
@@ -1782,31 +2101,38 @@
       "example": {
         "en": "1/2 = 3/6",
         "es": "1/2 = 3/6"
-      }
+      },
+      "termEs": "proporción"
     },
     "proportional": {
       "en": "Two amounts that grow together at the same rate.",
-      "es": "Dos cantidades que crecen juntas al mismo ritmo."
+      "es": "Dos cantidades que crecen juntas al mismo ritmo.",
+      "termEs": "proporcional"
     },
     "puzzle": {
       "en": "A problem to play with. It has rules and a goal.",
-      "es": "Un problema para jugar, con reglas y una meta."
+      "es": "Un problema para jugar, con reglas y una meta.",
+      "termEs": "rompecabezas"
     },
     "pyramid": {
       "en": "A solid with a flat bottom and triangles that meet on top.",
-      "es": "Un sólido con fondo plano y lados triangulares que se juntan arriba."
+      "es": "Un sólido con fondo plano y lados triangulares que se juntan arriba.",
+      "termEs": "pirámide"
     },
     "quadrant": {
       "en": "One of the four parts of a coordinate grid.",
-      "es": "Una de las cuatro partes de una cuadrícula de coordenadas."
+      "es": "Una de las cuatro partes de una cuadrícula de coordenadas.",
+      "termEs": "cuadrante"
     },
     "quantity": {
       "en": "A number with a meaning, like 540 meters.",
-      "es": "Un número con un significado, como 540 metros."
+      "es": "Un número con un significado, como 540 metros.",
+      "termEs": "cantidad"
     },
     "quartile": {
       "en": "One of three numbers that split data into four equal parts.",
-      "es": "Uno de tres números que dividen los datos en cuatro partes iguales."
+      "es": "Uno de tres números que dividen los datos en cuatro partes iguales.",
+      "termEs": "cuartil"
     },
     "quotient": {
       "en": "The answer when you divide.",
@@ -1814,7 +2140,8 @@
       "example": {
         "en": "12 ÷ 3 = 4",
         "es": "12 ÷ 3 = 4"
-      }
+      },
+      "termEs": "cociente"
     },
     "range": {
       "en": "How far it is from the least to the greatest.",
@@ -1822,11 +2149,13 @@
       "example": {
         "en": "Values 2 to 9: range is 9 − 2 = 7",
         "es": "Valores de 2 a 9: el rango es 9 − 2 = 7"
-      }
+      },
+      "termEs": "rango"
     },
     "range and interquartile range": {
       "en": "Two numbers that tell how far apart the data is.",
-      "es": "Dos números que dicen qué tan separados están los datos."
+      "es": "Dos números que dicen qué tan separados están los datos.",
+      "termEs": "rango y rango intercuartílico"
     },
     "rate": {
       "en": "Two amounts compared, like miles for each hour.",
@@ -1834,15 +2163,18 @@
       "example": {
         "en": "60 miles in 1 hour",
         "es": "60 millas en 1 hora"
-      }
+      },
+      "termEs": "tasa"
     },
     "rate of change": {
       "en": "How much y changes each time x goes up by one.",
-      "es": "Cuánto cambia y cada vez que x sube en uno."
+      "es": "Cuánto cambia y cada vez que x sube en uno.",
+      "termEs": "tasa de cambio"
     },
     "rates and unit rates": {
       "en": "A rate compares two amounts. A unit rate is for 1.",
-      "es": "Una tasa compara dos cantidades. Una tasa unitaria es por 1."
+      "es": "Una tasa compara dos cantidades. Una tasa unitaria es por 1.",
+      "termEs": "tasas y tasas unitarias"
     },
     "ratio": {
       "en": "A way to compare two amounts, like 3 to 2.",
@@ -1850,15 +2182,18 @@
       "example": {
         "en": "2 red for every 3 blue",
         "es": "2 rojas por cada 3 azules"
-      }
+      },
+      "termEs": "razón"
     },
     "ratio and rate problem solving": {
       "en": "Use ratios and rates to find what is missing.",
-      "es": "Usar razones y tasas para hallar lo que falta."
+      "es": "Usar razones y tasas para hallar lo que falta.",
+      "termEs": "resolución de problemas de razones y tasas"
     },
     "ratio reasoning": {
       "en": "Use tables, graphs, or equal ratios to solve a problem.",
-      "es": "Usar tablas, gráficas o razones iguales para resolver un problema."
+      "es": "Usar tablas, gráficas o razones iguales para resolver un problema.",
+      "termEs": "razonamiento con razones"
     },
     "ratio table": {
       "en": "A table that lists equal ratios.",
@@ -1866,7 +2201,8 @@
       "example": {
         "en": "Row 1: 2 to 3. Row 2: 4 to 6",
         "es": "Fila 1: 2 a 3. Fila 2: 4 a 6"
-      }
+      },
+      "termEs": "tabla de razones"
     },
     "rational number": {
       "en": "A number you can write as a fraction.",
@@ -1874,19 +2210,23 @@
       "example": {
         "en": "0.5 = 1/2 and −3 = −3/1",
         "es": "0.5 = 1/2 y −3 = −3/1"
-      }
+      },
+      "termEs": "número racional"
     },
     "rational numbers on the number line": {
       "en": "Each fraction or decimal has one exact spot on the line.",
-      "es": "Cada fracción o decimal tiene un lugar exacto en la recta."
+      "es": "Cada fracción o decimal tiene un lugar exacto en la recta.",
+      "termEs": "números racionales en la recta numérica"
     },
     "reasonable": {
       "en": "An answer that makes sense.",
-      "es": "Una respuesta que tiene sentido."
+      "es": "Una respuesta que tiene sentido.",
+      "termEs": "razonable"
     },
     "reasonableness": {
       "en": "Checking that an answer makes sense.",
-      "es": "Comprobar que una respuesta tiene sentido."
+      "es": "Comprobar que una respuesta tiene sentido.",
+      "termEs": "razonabilidad"
     },
     "reciprocal": {
       "en": "A fraction turned upside down.",
@@ -1894,7 +2234,8 @@
       "example": {
         "en": "2/3 turned upside down is 3/2",
         "es": "2/3 al revés es 3/2"
-      }
+      },
+      "termEs": "recíproco"
     },
     "rectangle": {
       "en": "A shape with 4 sides and 4 square corners.",
@@ -1902,11 +2243,13 @@
     },
     "rectangular prism": {
       "en": "A box shape with six flat sides.",
-      "es": "Una figura en forma de caja con seis lados planos."
+      "es": "Una figura en forma de caja con seis lados planos.",
+      "termEs": "prisma rectangular"
     },
     "reflect": {
       "en": "Look back at what you did and learned.",
-      "es": "Pensar en lo que hiciste y aprendiste."
+      "es": "Pensar en lo que hiciste y aprendiste.",
+      "termEs": "reflexionar"
     },
     "reflect points across axes": {
       "en": "Flip a point over an axis, keeping the same distance.",
@@ -1914,11 +2257,13 @@
       "example": {
         "en": "(2, 3) over the x-axis is (2, −3)",
         "es": "(2, 3) sobre el eje x es (2, −3)"
-      }
+      },
+      "termEs": "reflejar puntos sobre los ejes"
     },
     "reflection": {
       "en": "A flip of a shape across a line.",
-      "es": "Una figura volteada al otro lado de una línea."
+      "es": "Una figura volteada al otro lado de una línea.",
+      "termEs": "reflexión"
     },
     "regroup": {
       "en": "Trade 10 of one place for 1 of the next.",
@@ -1930,11 +2275,13 @@
     },
     "regular polygon": {
       "en": "A closed shape with equal sides and equal angles.",
-      "es": "Una figura cerrada con lados iguales y ángulos iguales."
+      "es": "Una figura cerrada con lados iguales y ángulos iguales.",
+      "termEs": "polígono regular"
     },
     "relationship": {
       "en": "How two amounts are linked.",
-      "es": "Cómo están conectadas dos cantidades."
+      "es": "Cómo están conectadas dos cantidades.",
+      "termEs": "relación"
     },
     "remainder": {
       "en": "What is left over when you divide.",
@@ -1942,7 +2289,8 @@
       "example": {
         "en": "13 ÷ 4 = 3 with 1 left over",
         "es": "13 ÷ 4 = 3 y sobra 1"
-      }
+      },
+      "termEs": "residuo"
     },
     "repeated multiplication": {
       "en": "Times the same number again and again.",
@@ -1950,39 +2298,48 @@
       "example": {
         "en": "2 × 2 × 2 × 2",
         "es": "2 × 2 × 2 × 2"
-      }
+      },
+      "termEs": "multiplicación repetida"
     },
     "repetition": {
       "en": "The same shape used again and again.",
-      "es": "La misma figura usada una y otra vez."
+      "es": "La misma figura usada una y otra vez.",
+      "termEs": "repetición"
     },
     "represent": {
       "en": "Show it with a table, a graph, or an equation.",
-      "es": "Mostrarlo con una tabla, una gráfica o una ecuación."
+      "es": "Mostrarlo con una tabla, una gráfica o una ecuación.",
+      "termEs": "representar"
     },
     "representation": {
       "en": "A picture or table that shows a problem.",
-      "es": "Un dibujo o tabla que muestra un problema."
+      "es": "Un dibujo o tabla que muestra un problema.",
+      "termEs": "representación"
     },
     "rhombus": {
       "en": "A shape with four sides that are all the same length.",
-      "es": "Una figura de cuatro lados que miden lo mismo."
+      "es": "Una figura de cuatro lados que miden lo mismo.",
+      "termEs": "rombo"
     },
     "rhythm": {
       "en": "Changing the size, spot, or order of the same shapes.",
-      "es": "Cambiar el tamaño, el lugar o el orden de las mismas figuras."
+      "es": "Cambiar el tamaño, el lugar o el orden de las mismas figuras.",
+      "termEs": "ritmo"
     },
     "right trapezoid": {
       "en": "A trapezoid with two square corners.",
-      "es": "Un trapecio con dos esquinas cuadradas."
+      "es": "Un trapecio con dos esquinas cuadradas.",
+      "termEs": "trapecio rectángulo"
     },
     "rotation": {
       "en": "One full turn all the way around.",
-      "es": "Una vuelta completa."
+      "es": "Una vuelta completa.",
+      "termEs": "rotación"
     },
     "round trip": {
       "en": "A trip there and back.",
-      "es": "Ir a un lugar y regresar."
+      "es": "Ir a un lugar y regresar.",
+      "termEs": "viaje de ida y vuelta"
     },
     "scale": {
       "en": "Change both parts of a ratio the same way.",
@@ -2003,6 +2360,10 @@
             "es": "1 cuadro = 5 millas"
           }
         }
+      ],
+      "termEs": "escala",
+      "alsoEs": [
+        "escalar"
       ]
     },
     "scale factor": {
@@ -2011,7 +2372,8 @@
       "example": {
         "en": "2:3 → 4:6 uses scale factor 2",
         "es": "2:3 → 4:6 usa el factor de escala 2"
-      }
+      },
+      "termEs": "factor de escala"
     },
     "segment": {
       "en": "A piece of a line with a start and an end.",
@@ -2019,15 +2381,18 @@
     },
     "shape of data distributions": {
       "en": "How the data looks: even, lopsided, bunched, or with gaps.",
-      "es": "Cómo se ven los datos: parejos, ladeados, juntos o con espacios."
+      "es": "Cómo se ven los datos: parejos, ladeados, juntos o con espacios.",
+      "termEs": "forma de las distribuciones de datos"
     },
     "shape of the data": {
       "en": "The pattern the bars or dots make.",
-      "es": "El patrón que forman las barras o los puntos."
+      "es": "El patrón que forman las barras o los puntos.",
+      "termEs": "forma de los datos"
     },
     "side length": {
       "en": "How long one side is.",
-      "es": "Qué tan largo es un lado."
+      "es": "Qué tan largo es un lado.",
+      "termEs": "longitud del lado"
     },
     "simplest form": {
       "en": "A ratio with the smallest whole numbers that still match.",
@@ -2035,7 +2400,8 @@
       "example": {
         "en": "6:8 in simplest form is 3:4",
         "es": "6:8 en su forma más simple es 3:4"
-      }
+      },
+      "termEs": "forma más simple"
     },
     "simplify": {
       "en": "Write it in a smaller form with the same value.",
@@ -2043,7 +2409,8 @@
       "example": {
         "en": "2/4 = 1/2",
         "es": "2/4 = 1/2"
-      }
+      },
+      "termEs": "simplificar"
     },
     "simplify algebraic expressions": {
       "en": "Make an expression shorter. It keeps the same value.",
@@ -2051,23 +2418,28 @@
       "example": {
         "en": "2x + 3x = 5x",
         "es": "2x + 3x = 5x"
-      }
+      },
+      "termEs": "simplificar expresiones algebraicas"
     },
     "skewed": {
       "en": "Most data sits on one side, with a tail on the other.",
-      "es": "La mayoría de los datos está de un lado, con una cola del otro."
+      "es": "La mayoría de los datos está de un lado, con una cola del otro.",
+      "termEs": "sesgado"
     },
     "skip counting": {
       "en": "Counting by a number, like 2, 4, 6.",
-      "es": "Contar de un número en un número, como 2, 4, 6."
+      "es": "Contar de un número en un número, como 2, 4, 6.",
+      "termEs": "conteo salteado"
     },
     "slant height": {
       "en": "The height of a side triangle, measured along the tilted side.",
-      "es": "La altura de un triángulo lateral, medida por su lado inclinado."
+      "es": "La altura de un triángulo lateral, medida por su lado inclinado.",
+      "termEs": "altura inclinada (apotema)"
     },
     "slanted side": {
       "en": "A side that leans. It is not the straight-up height.",
-      "es": "Un lado que se inclina. No es la altura en línea recta."
+      "es": "Un lado que se inclina. No es la altura en línea recta.",
+      "termEs": "lado inclinado"
     },
     "solution": {
       "en": "A value that makes the math sentence true.",
@@ -2075,7 +2447,8 @@
       "example": {
         "en": "In x + 2 = 5, the answer is x = 3",
         "es": "En x + 2 = 5, la respuesta es x = 3"
-      }
+      },
+      "termEs": "solución"
     },
     "solution set": {
       "en": "All the values that make the sentence true.",
@@ -2083,15 +2456,18 @@
       "example": {
         "en": "x > 3: 4, 5, 6 and more all work",
         "es": "x > 3: 4, 5, 6 y más sirven"
-      }
+      },
+      "termEs": "conjunto solución"
     },
     "solve": {
       "en": "Find the number that makes it true.",
-      "es": "Hallar el número que lo hace verdadero."
+      "es": "Hallar el número que lo hace verdadero.",
+      "termEs": "resolver"
     },
     "solve and graph inequalities": {
       "en": "Get the letter alone, then show all answers on a line.",
-      "es": "Dejar la letra sola y mostrar todas las respuestas en una recta."
+      "es": "Dejar la letra sola y mostrar todas las respuestas en una recta.",
+      "termEs": "resolver y representar desigualdades"
     },
     "solve multiplication and division equations": {
       "en": "Undo the × or ÷ to get the letter alone.",
@@ -2099,7 +2475,8 @@
       "example": {
         "en": "3x = 12 → x = 4",
         "es": "3x = 12 → x = 4"
-      }
+      },
+      "termEs": "resolver ecuaciones de multiplicación y división"
     },
     "solve one-step addition and subtraction equations": {
       "en": "Undo the + or − to get the letter alone.",
@@ -2107,11 +2484,13 @@
       "example": {
         "en": "x + 5 = 9 → x = 4",
         "es": "x + 5 = 9 → x = 4"
-      }
+      },
+      "termEs": "resolver ecuaciones de suma y resta de un paso"
     },
     "spread": {
       "en": "How far apart the numbers are.",
-      "es": "Qué tan separados están los números."
+      "es": "Qué tan separados están los números.",
+      "termEs": "dispersión"
     },
     "squared": {
       "en": "A number times itself.",
@@ -2119,23 +2498,28 @@
       "example": {
         "en": "3² = 3 × 3 = 9",
         "es": "3² = 3 × 3 = 9"
-      }
+      },
+      "termEs": "al cuadrado"
     },
     "statistical question": {
       "en": "A question with answers that change from person to person.",
-      "es": "Una pregunta cuyas respuestas cambian de una persona a otra."
+      "es": "Una pregunta cuyas respuestas cambian de una persona a otra.",
+      "termEs": "pregunta estadística"
     },
     "statistical questions and data": {
       "en": "Questions that have many answers, and the facts you collect.",
-      "es": "Preguntas con muchas respuestas, y los datos que reúnes."
+      "es": "Preguntas con muchas respuestas, y los datos que reúnes.",
+      "termEs": "preguntas estadísticas y datos"
     },
     "strategy": {
       "en": "A plan for how to solve a problem.",
-      "es": "Un plan para resolver un problema."
+      "es": "Un plan para resolver un problema.",
+      "termEs": "estrategia"
     },
     "strength": {
       "en": "Something you do well and can share.",
-      "es": "Algo que haces bien y puedes compartir."
+      "es": "Algo que haces bien y puedes compartir.",
+      "termEs": "fortaleza"
     },
     "substitute": {
       "en": "Put a number in place of a letter.",
@@ -2143,11 +2527,13 @@
       "example": {
         "en": "n + 4 with n = 3 becomes 3 + 4",
         "es": "n + 4 con n = 3 pasa a 3 + 4"
-      }
+      },
+      "termEs": "sustituir"
     },
     "subtract": {
       "en": "Take an amount away.",
-      "es": "Quitar una cantidad."
+      "es": "Quitar una cantidad.",
+      "termEs": "restar"
     },
     "subtraction": {
       "en": "Taking away. It also tells how far apart two numbers are.",
@@ -2159,7 +2545,8 @@
       "example": {
         "en": "x + 3 = 10 → x = 7",
         "es": "x + 3 = 10 → x = 7"
-      }
+      },
+      "termEs": "propiedad de sustracción de la igualdad"
     },
     "sum": {
       "en": "The answer when you add numbers.",
@@ -2167,7 +2554,8 @@
       "example": {
         "en": "3 + 4 = 7",
         "es": "3 + 4 = 7"
-      }
+      },
+      "termEs": "suma (total)"
     },
     "surface area": {
       "en": "The area of all the flat sides added together.",
@@ -2175,23 +2563,28 @@
       "example": {
         "en": "Cube with edge 2: 6 faces × 4 = 24",
         "es": "Cubo de arista 2: 6 caras × 4 = 24"
-      }
+      },
+      "termEs": "área de superficie"
     },
     "surface area of prisms": {
       "en": "Add the area of every face of a prism.",
-      "es": "Sumar el área de cada cara de un prisma."
+      "es": "Sumar el área de cada cara de un prisma.",
+      "termEs": "área de superficie de prismas"
     },
     "surface area of pyramids": {
       "en": "Add the area of the base and the triangle sides.",
-      "es": "Sumar el área de la base y de los lados triangulares."
+      "es": "Sumar el área de la base y de los lados triangulares.",
+      "termEs": "área de superficie de pirámides"
     },
     "surface area using nets": {
       "en": "Unfold the solid. Then add up every face.",
-      "es": "Desplegar el sólido y sumar el área de cada cara."
+      "es": "Desplegar el sólido y sumar el área de cada cara.",
+      "termEs": "área de superficie usando redes"
     },
     "survey": {
       "en": "Ask people questions to get facts.",
-      "es": "Hacer preguntas a las personas para reunir datos."
+      "es": "Hacer preguntas a las personas para reunir datos.",
+      "termEs": "encuesta"
     },
     "symmetric": {
       "en": "Both halves match, like a mirror.",
@@ -2204,11 +2597,13 @@
           "en": "Data that looks about the same on both sides.",
           "es": "Datos que se ven casi iguales a ambos lados."
         }
-      ]
+      ],
+      "termEs": "simétrico"
     },
     "symmetry": {
       "en": "When both sides of a line match.",
-      "es": "Cuando los dos lados de una línea coinciden."
+      "es": "Cuando los dos lados de una línea coinciden.",
+      "termEs": "simetría"
     },
     "table of values": {
       "en": "A table that lists matching pairs of numbers.",
@@ -2216,15 +2611,21 @@
       "example": {
         "en": "x: 1, 2, 3 and y: 2, 4, 6",
         "es": "x: 1, 2, 3 y y: 2, 4, 6"
-      }
+      },
+      "termEs": "tabla de valores"
     },
     "tape diagram": {
       "en": "A bar cut into equal parts to show amounts.",
-      "es": "Una barra dividida en partes iguales para mostrar cantidades."
+      "es": "Una barra dividida en partes iguales para mostrar cantidades.",
+      "termEs": "diagrama de cintas",
+      "alsoEs": [
+        "diagrama de cinta"
+      ]
     },
     "target mean": {
       "en": "The mean you want to reach.",
-      "es": "La media que quieres alcanzar."
+      "es": "La media que quieres alcanzar.",
+      "termEs": "media objetivo"
     },
     "target total": {
       "en": "The total the data must add up to.",
@@ -2232,15 +2633,17 @@
       "example": {
         "en": "Mean 5 for 4 values: total 20",
         "es": "Media 5 con 4 valores: total 20"
-      }
+      },
+      "termEs": "total objetivo"
     },
     "tax": {
       "en": "A percent of the price, paid on top.",
       "es": "Un porcentaje del precio que se paga además.",
       "example": {
         "en": "5% of $40 is $2 tax",
-        "es": "5 % de $40 son $2 de impuesto"
-      }
+        "es": "5% de $40 son $2 de impuesto"
+      },
+      "termEs": "impuesto"
     },
     "tenths": {
       "en": "The first digit after the dot. It counts parts of 10.",
@@ -2248,7 +2651,8 @@
       "example": {
         "en": "In 0.7, the 7 is 7 tenths",
         "es": "En 0.7, el 7 son 7 décimas"
-      }
+      },
+      "termEs": "décimas"
     },
     "term": {
       "en": "One of the two numbers in a ratio.",
@@ -2270,7 +2674,8 @@
             "es": "3x + 5 tiene dos términos"
           }
         }
-      ]
+      ],
+      "termEs": "término"
     },
     "the distributive property": {
       "en": "Multiply by each part inside the ( ).",
@@ -2278,23 +2683,27 @@
       "example": {
         "en": "3(4 + 5) = 3 × 4 + 3 × 5",
         "es": "3(4 + 5) = 3 × 4 + 3 × 5"
-      }
+      },
+      "termEs": "la propiedad distributiva"
     },
     "the whole": {
       "en": "The full amount. It counts as 100%.",
-      "es": "La cantidad completa. Cuenta como 100 %."
+      "es": "La cantidad completa. Cuenta como 100%.",
+      "termEs": "el total"
     },
     "tip": {
       "en": "A percent of the bill that you add for service.",
       "es": "Un porcentaje de la cuenta que agregas por el servicio.",
       "example": {
         "en": "10% of a $20 bill is $2",
-        "es": "10 % de una cuenta de $20 son $2"
-      }
+        "es": "10% de una cuenta de $20 son $2"
+      },
+      "termEs": "propina"
     },
     "tool": {
       "en": "Anything that helps you see and solve a problem.",
-      "es": "Cualquier cosa que te ayuda a ver y resolver un problema."
+      "es": "Cualquier cosa que te ayuda a ver y resolver un problema.",
+      "termEs": "herramienta"
     },
     "total parts": {
       "en": "Add the two parts of a ratio.",
@@ -2302,7 +2711,8 @@
       "example": {
         "en": "3:2 has 3 + 2 = 5 parts",
         "es": "3:2 tiene 3 + 2 = 5 partes"
-      }
+      },
+      "termEs": "partes totales"
     },
     "total price": {
       "en": "What the whole package costs.",
@@ -2310,19 +2720,23 @@
       "example": {
         "en": "3 pens for $6: total price is $6",
         "es": "3 bolígrafos por $6: el precio total es $6"
-      }
+      },
+      "termEs": "precio total"
     },
     "trapezoid": {
       "en": "A shape with four sides and just one pair of parallel sides.",
-      "es": "Una figura de cuatro lados con un solo par de lados paralelos."
+      "es": "Una figura de cuatro lados con un solo par de lados paralelos.",
+      "termEs": "trapecio"
     },
     "triangle": {
       "en": "A shape with three sides.",
-      "es": "Una figura de tres lados."
+      "es": "Una figura de tres lados.",
+      "termEs": "triángulo"
     },
     "triangular prism": {
       "en": "A solid with two triangle ends and three flat sides.",
-      "es": "Un sólido con dos extremos triangulares y tres lados planos."
+      "es": "Un sólido con dos extremos triangulares y tres lados planos.",
+      "termEs": "prisma triangular"
     },
     "true statement": {
       "en": "A math sentence that is correct.",
@@ -2330,15 +2744,18 @@
       "example": {
         "en": "3 + 4 = 7 is true",
         "es": "3 + 4 = 7 es verdadero"
-      }
+      },
+      "termEs": "enunciado verdadero"
     },
     "two-dimensional": {
       "en": "A flat shape with length and width, but no thickness.",
-      "es": "Una figura plana con largo y ancho, pero sin grosor."
+      "es": "Una figura plana con largo y ancho, pero sin grosor.",
+      "termEs": "bidimensional"
     },
     "understand percent": {
       "en": "A percent tells how many out of 100.",
-      "es": "Un porcentaje dice cuántos de cada 100."
+      "es": "Un porcentaje dice cuántos de cada 100.",
+      "termEs": "comprender el porcentaje"
     },
     "understand ratios": {
       "en": "A ratio compares two things.",
@@ -2346,23 +2763,28 @@
       "example": {
         "en": "3 red to 2 blue",
         "es": "3 rojas a 2 azules"
-      }
+      },
+      "termEs": "comprender razones"
     },
     "unit": {
       "en": "An amount used to measure, like an inch or a liter.",
-      "es": "Una cantidad que se usa para medir, como una pulgada o un litro."
+      "es": "Una cantidad que se usa para medir, como una pulgada o un litro.",
+      "termEs": "unidad"
     },
     "unit cube": {
       "en": "A cube with every edge one unit long.",
-      "es": "Un cubo con todas las aristas de una unidad."
+      "es": "Un cubo con todas las aristas de una unidad.",
+      "termEs": "cubo unitario"
     },
     "unit fraction": {
       "en": "A fraction with 1 on top, like 1/4.",
-      "es": "Una fracción con 1 arriba, como 1/4."
+      "es": "Una fracción con 1 arriba, como 1/4.",
+      "termEs": "fracción unitaria"
     },
     "unit price": {
       "en": "The cost of just one item, like $0.60 a game.",
-      "es": "El costo de un solo artículo, como $0.60 por juego."
+      "es": "El costo de un solo artículo, como $0.60 por juego.",
+      "termEs": "precio unitario"
     },
     "unit rate": {
       "en": "The amount for just 1 of something.",
@@ -2370,19 +2792,23 @@
       "example": {
         "en": "$6 for 3 pens is $2 for 1 pen",
         "es": "$6 por 3 bolígrafos son $2 por 1 bolígrafo"
-      }
+      },
+      "termEs": "tasa unitaria"
     },
     "unit rate point": {
       "en": "The point (1, r): r is the amount for 1.",
-      "es": "El punto (1, r): r es la cantidad para 1."
+      "es": "El punto (1, r): r es la cantidad para 1.",
+      "termEs": "punto de tasa unitaria"
     },
     "unit rate problem solving": {
       "en": "Find the amount for 1, then use it to compare or solve.",
-      "es": "Hallar la cantidad para 1 y usarla para comparar o resolver."
+      "es": "Hallar la cantidad para 1 y usarla para comparar o resolver.",
+      "termEs": "resolución de problemas con tasas unitarias"
     },
     "unit ratio": {
       "en": "A ratio for 1 unit, like 12 inches to 1 foot.",
-      "es": "Una razón para 1 unidad, como 12 pulgadas por 1 pie."
+      "es": "Una razón para 1 unidad, como 12 pulgadas por 1 pie.",
+      "termEs": "razón unitaria"
     },
     "unknown": {
       "en": "The value you want to find.",
@@ -2390,11 +2816,13 @@
       "example": {
         "en": "In x + 2 = 5, the unknown is x",
         "es": "En x + 2 = 5, la incógnita es x"
-      }
+      },
+      "termEs": "incógnita"
     },
     "variability": {
       "en": "How far apart the numbers are.",
-      "es": "Qué tan separados están los números."
+      "es": "Qué tan separados están los números.",
+      "termEs": "variabilidad"
     },
     "variable": {
       "en": "A letter that stands for a number.",
@@ -2402,15 +2830,18 @@
       "example": {
         "en": "In 3n + 2, the letter n can change",
         "es": "En 3n + 2, la letra n puede cambiar"
-      }
+      },
+      "termEs": "variable"
     },
     "variation": {
       "en": "How much the values vary.",
-      "es": "Cuánto varían los valores entre sí."
+      "es": "Cuánto varían los valores entre sí.",
+      "termEs": "variación"
     },
     "vertex": {
       "en": "A corner where edges or sides meet.",
-      "es": "Una esquina donde se unen aristas o lados."
+      "es": "Una esquina donde se unen aristas o lados.",
+      "termEs": "vértice"
     },
     "vertical distance": {
       "en": "How far apart two points are, up or down.",
@@ -2418,7 +2849,8 @@
       "example": {
         "en": "From (4, 1) to (4, 7) is 6",
         "es": "De (4, 1) a (4, 7) hay 6"
-      }
+      },
+      "termEs": "distancia vertical"
     },
     "volume": {
       "en": "How much space is inside a solid shape.",
@@ -2426,7 +2858,8 @@
       "example": {
         "en": "A 2 by 3 by 4 box holds 24 cubes",
         "es": "Una caja de 2 por 3 por 4 tiene 24 cubos"
-      }
+      },
+      "termEs": "volumen"
     },
     "volume of rectangular prisms": {
       "en": "Length times width times height.",
@@ -2434,7 +2867,8 @@
       "example": {
         "en": "5 × 3 × 2 = 30 cubes",
         "es": "5 × 3 × 2 = 30 cubos"
-      }
+      },
+      "termEs": "volumen de prismas rectangulares"
     },
     "volume with whole-number edges": {
       "en": "Count the unit cubes that fill the box.",
@@ -2442,23 +2876,28 @@
       "example": {
         "en": "4 by 3 by 2 is 24 unit cubes",
         "es": "4 por 3 por 2 son 24 cubos unitarios"
-      }
+      },
+      "termEs": "volumen con aristas de números enteros"
     },
     "whisker": {
       "en": "A line from the box out to the lowest or highest value.",
-      "es": "Una línea desde la caja hasta el valor más bajo o más alto."
+      "es": "Una línea desde la caja hasta el valor más bajo o más alto.",
+      "termEs": "bigote"
     },
     "whole": {
       "en": "The full amount. It is always 100%.",
-      "es": "La cantidad completa. Siempre es 100 %."
+      "es": "La cantidad completa. Siempre es 100%.",
+      "termEs": "total"
     },
     "whole number": {
       "en": "A number with no fraction or decimal, like 0, 1, 2.",
-      "es": "Un número sin fracción ni decimal, como 0, 1, 2."
+      "es": "Un número sin fracción ni decimal, como 0, 1, 2.",
+      "termEs": "número entero"
     },
     "work backward": {
       "en": "Start at the end and undo each step.",
-      "es": "Empezar por el final y deshacer cada paso."
+      "es": "Empezar por el final y deshacer cada paso.",
+      "termEs": "trabajar hacia atrás"
     },
     "write algebraic expressions": {
       "en": "Turn words into numbers and letters.",
@@ -2466,7 +2905,8 @@
       "example": {
         "en": "5 more than n is n + 5",
         "es": "5 más que n es n + 5"
-      }
+      },
+      "termEs": "escribir expresiones algebraicas"
     },
     "write and evaluate numerical expressions with exponents": {
       "en": "Write a number phrase with powers, then find its value.",
@@ -2474,7 +2914,8 @@
       "example": {
         "en": "3 + 2² = 3 + 4 = 7",
         "es": "3 + 2² = 3 + 4 = 7"
-      }
+      },
+      "termEs": "escribir y evaluar expresiones numéricas con exponentes"
     },
     "write equations": {
       "en": "Use an equal sign to show two sides match.",
@@ -2482,7 +2923,8 @@
       "example": {
         "en": "5 more than n is 12: n + 5 = 12",
         "es": "5 más que n es 12: n + 5 = 12"
-      }
+      },
+      "termEs": "escribir ecuaciones"
     },
     "write inequalities": {
       "en": "Use <, >, ≤, or ≥ to show many numbers.",
@@ -2490,11 +2932,13 @@
       "example": {
         "en": "At least 3 apples: a ≥ 3",
         "es": "Al menos 3 manzanas: a ≥ 3"
-      }
+      },
+      "termEs": "escribir desigualdades"
     },
     "x-axis": {
       "en": "The number line that goes left to right.",
-      "es": "La recta numérica que va de izquierda a derecha."
+      "es": "La recta numérica que va de izquierda a derecha.",
+      "termEs": "eje x"
     },
     "x-coordinate": {
       "en": "The first number in a pair. It tells left or right.",
@@ -2502,11 +2946,13 @@
       "example": {
         "en": "In (3, 2), the x is 3",
         "es": "En (3, 2), la x es 3"
-      }
+      },
+      "termEs": "coordenada x"
     },
     "y-axis": {
       "en": "The number line that goes up and down.",
-      "es": "La recta numérica que va hacia arriba y abajo."
+      "es": "La recta numérica que va hacia arriba y abajo.",
+      "termEs": "eje y"
     }
   }
 }

@@ -7,7 +7,7 @@
  * close enough to be useful, found without exact computation."). Families — nearly
  * all of them reading English as a second language — met that sentence on the
  * Words flashcards, in every glossary popup and in the family guide. This gate
- * holds `data/family-plain-definitions.json`, the short version, to the rules
+ * holds `data/family-glossary.json`, the short version, to the rules
  * that make it plain:
  *
  *   - every vocabulary term (every lesson config, the vocab bank, the shared

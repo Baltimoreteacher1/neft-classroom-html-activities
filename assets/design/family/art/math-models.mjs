@@ -292,7 +292,7 @@ function numberline(d, { lang }) {
   const desc = tr(
     lang,
     `Number line from ${minus(clean(min))} to ${minus(clean(max))}, ticks every ${clean(step)}${unit ? ` ${unit}` : ""}.${descs.length ? ` Points: ${descs.join("; ")}.` : ""}`,
-    `Recta numérica de ${minus(clean(min))} a ${minus(clean(max))}, marcas cada ${clean(step)}${unit ? ` ${unit}` : ""}.${descs.length ? ` Puntos: ${descs.join("; ")}.` : ""}`,
+    `Recta numérica de ${minus(clean(min))} a ${minus(clean(max))}, marcas cada ${clean(step)}${unit ? (unit === "%" ? unit : ` ${unit}`) : ""}.${descs.length ? ` Puntos: ${descs.join("; ")}.` : ""}`,
   );
   return { h: unit ? 170 : 146, body: out.join(""), desc };
 }

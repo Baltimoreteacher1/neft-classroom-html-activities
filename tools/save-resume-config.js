@@ -51,6 +51,7 @@ export const SKIP_DIRS = new Set([
 // These get skipped to avoid showing a student "save your work" widget where it
 // makes no sense. Adjust here if a surface should be included.
 export const SKIP_TOPLEVEL = new Set([
+  "design", // design-system specimens and the art gallery: no student state to save
   "dashboard",
   "teacher-data-dashboard",
   "teacher-tools",
@@ -62,6 +63,7 @@ export const SKIP_TOPLEVEL = new Set([
   "assets",
   "docs",
   "curriculum", // curriculum hub/index pages, not activities
+  "design", // design-system specimen: a read-only reference page, no student work to save
   "families", // read-only family reference guides, not student work surfaces
   "family-app", // installable family home screen: three links, no student work
   "about", // public about/impact/accessibility/privacy info pages — not activities

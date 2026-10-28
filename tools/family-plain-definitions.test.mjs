@@ -34,7 +34,7 @@ import {
 } from "./lib/family-plain-definitions.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
-const data = JSON.parse(readFileSync(join(ROOT, "data", "family-plain-definitions.json"), "utf8"));
+const data = JSON.parse(readFileSync(join(ROOT, "data", "family-glossary.json"), "utf8"));
 const map = parsePlainDefinitions(data);
 
 test("vocabKey is the generator's key: lowercase, final s dropped", () => {

@@ -1,9 +1,33 @@
 // English and Spanish for Family Math 2.0. Copy is {en, es}; there is no English-key lookup, so a missing Spanish
 // string is a visible test failure rather than a quiet fallback. The language choice is the Fluency Lab's own
 // (ewl-fluency-lang-v1), so it follows the learner across the whole lab. @fm2 FM-020 FM-021
-import { getLang, setLang } from "../../i18n.js";
+// Light on purpose: the full i18n module drags in the ~100 KB Game Room dictionaries and the legacy school tools, none of
+// which Family Math reads. The key and the stored shape ("en" / "es" as JSON) are the same, so the choice is shared.
+const KEY = "ewl-fluency-lang-v1";
+let current = null;
 
-export { getLang, setLang };
+export function getLang() {
+  if (current === null) {
+    try {
+      current = JSON.parse(localStorage.getItem(KEY)) === "es" ? "es" : "en";
+    } catch {
+      current = "en";
+    }
+  }
+  return current;
+}
+
+export function setLang(next, { persist = true } = {}) {
+  current = next === "es" ? "es" : "en";
+  if (persist) {
+    try {
+      localStorage.setItem(KEY, JSON.stringify(current));
+    } catch {
+      /* a browser that cannot save still switches language for this visit */
+    }
+  }
+  if (typeof document !== "undefined") document.documentElement.lang = current;
+}
 
 export const LANGS = ["en", "es"];
 

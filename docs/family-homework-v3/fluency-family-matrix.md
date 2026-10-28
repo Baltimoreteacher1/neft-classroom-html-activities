@@ -1,0 +1,30 @@
+# Fluency Lab family page, Family Math 3.0: requirement matrix
+
+Brief: `docs/family-homework-v3/brief-fluency-family.md`. Target: `/math/fluency-lab/family/`.
+Status: DONE = built and verified by a script named in the last column; PARTIAL = built, evidence incomplete; OPEN = not built.
+The guided session lives in `math/fluency-lab/family/fm2/guided/` and runs on `math/fluency-lab/family/session.html`.
+
+| # | Requirement | Status | Source | Evidence |
+|---|---|---|---|---|
+| 1 | Guided 5-10 minute session is the default first action ("Start tonight's 5-10 minutes"); the older game mix stays as a quiet second button | DONE | `index.html` (`#guided-start`), `home.js` `paintGuidedStart`, `fm2/home-copy.js` | `validate:fluency-family-session` (home to Learn), `validate:fluency-family-browser`, `tools/fm2/e2e-new-family.mjs`, `e2e-mobile-family.mjs` |
+| 2 | Flow Choose, Learn, Try, Play, Explain, Celebrate, Continue with a visible stepper (7 dots plus "Step n of 7") | DONE | `fm2/guided/guided-ui.js`, `guided-core.js` `FLOW` | `tools/fluency-family-guided.test.mjs`, session gate |
+| 3 | Grade and skill choice needs no vocabulary: grade tiles K-8, recommended skills first, everything else behind one disclosure | DONE | `guided-ui.js` `chooseGrade`, `chooseSkill` | session gate (`coldChoose`, ES, axe) |
+| 4 | Learn: one worked idea (the game's own strategy hint and a worked example on other numbers) and a parent line (say / avoid / ask) that needs no math | DONE | `guided-core.js` `learnFromBank`, `fm2/guided/learn-bank/*.json` (generated), `guided-copy.js` `PARENT` | unit test: 273 cards, 254 worked equations recomputed with `scripts/lib/rational.mjs`, no card states its own round's answer, no digits in grown-up lines |
+| 5 | Try: real game rounds with hints; a wrong answer teaches and never counts | DONE | `guided-ui.js` `hostGame` reuses `fm2/shell.js` | session gate answers rounds through the shell; `tools/fm2/shell.test.mjs` |
+| 6 | Play: a different existing game covering the grade, same strand when possible, never the two-player duel | DONE | `guided-core.js` `pickTonight` | unit test, all grades and both lengths |
+| 7 | Explain: say it aloud, tap what helped; nothing graded, nothing recorded beyond the tapped kind, nothing sent | DONE | `guided-core.js` `buildExplain`, `guided-ui.js` `renderExplain` | session gate (asks for a choice, no write request, no cross-origin request) |
+| 8 | Celebrate is calm: no timer, countdown, grade, streak or ranking word | DONE | `guided-ui.js` `renderCelebrate` | session gate scans visible text; unit test scans every copy pair |
+| 9 | Continue picks the next session from what happened (again gentler / keep / next skill) | DONE | `guided-core.js` `nextPlan` | unit test (all three kinds, level cap), session gate |
+| 10 | Local-only honest reporting: history lines hold grade, skill, rounds right, explain kind; sessions reach the existing progress record once | DONE | `guided-core.js` `createGuidedStore`, `store.recordSession` | unit test (stored keys, no streak/score/rank), session gate |
+| 10b | No streak shaming on the older home and progress tiles | PARTIAL | `home.js` and `progress.js` still show the existing "Day streak" count (never a loss message). The guided screens show none. Left because `tools/fm2/e2e-*.mjs` pin that tile | stated as a limitation |
+| 11 | Resume after reload without an account; graceful no-storage fallback | DONE | `guided-core.js` (try/catch, one calm warning), `guided-ui.js` | unit test (throwing and absent storage), session gate (reload on Learn and mid-Try, storage blocked) |
+| 12 | English and Spanish complete on every screen; tu for the child, ustedes for adults | DONE | `guided-copy.js` | unit test (pairs, no singular usted, Spanish not a copy), session gate (no English guided text in ES at every step) |
+| 13 | Read aloud for key text (Learn, Explain), hidden when the browser has no speech | DONE | `guided-ui.js` `readButton` (`speechSynthesis`) | manual: button present in Chromium; spoken output not testable headless |
+| 14 | First view <= 150 KB gzip, no layout shift, no external request, no new dependency | DONE | `session.html`, `fm2/lang.js` (no dictionary import), `fm2/profile-key.js`, `fm2/urls.js`, per-grade `skill-index/`, `learn-bank/` | session gate measured 140 KB gzip, layout shift 0.000; the games, `school-tools.js` and the dictionaries load only when Try starts |
+| 15 | WCAG 2.2 AA: axe 0 serious/critical at 390 and 1280 in EN and ES, keyboard path, 3px focus ring, targets >= 44px, body >= 16px, reduced motion honored, polite live regions | DONE | `guided.css`, `guided-ui.js` | session gate (axe on Choose, Learn, Try, Explain, Celebrate, Continue; target and font floors; Tab path; reduced-motion context); hosted game shell is checked by `fm2` suites |
+| 16 | Design system and art kit used (tokens, family.css, icon sprite, spot per strand, celebration badge) | DONE | `session.html`, `guided.css`, `guided-ui.js` | `validate:family-design-tokens` unchanged and green |
+| 17 | Mathematical accuracy by script | DONE | existing per-game suites (`tools/fm2/*.test.mjs`, 19 files) plus the guided learn-bank check | all 19 fm2 unit suites pass; unit test above |
+| 18 | Existing `fluency-family*` tests stay green | DONE | `tools/fluency-family*.test.mjs`, `verify-fluency-family-browser.mjs` | run, all pass. No old assertion needed replacing: the old Start button, `#tonight-link` and the planned-mix flow all still exist |
+| 19 | `validate:fluency-family-session` wired into `validate`, qa-run COVERAGE and EXCLUSIVE, the CLAUDE.md gate table | DONE | `package.json`, `scripts/qa-run.mjs`, `CLAUDE.md` | `validate:gate-coverage`, `tools/qa-run.test.mjs`, `tools/documented-gates-wired.test.mjs` |
+| 20 | Never touches the ACCESS Practice Lab; no push, no deploy | DONE | diff scope | `git diff --stat origin/main` |
+| 21 | Works offline once loaded | OPEN | the family pages have no service worker; the installable family app (`family-app/`, other session) owns that | not built here |

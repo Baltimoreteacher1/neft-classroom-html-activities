@@ -1,0 +1,521 @@
+/* ============================================================================
+   Family Math Studio v3.0 — design TOKENS (the only file in the family system
+   that may contain a raw color value).
+
+   Everything else (family.css, pages, the specimen) reads these as var(--fm-*).
+   tools/validate-family-design-tokens.mjs fails on a raw hex/rgb()/hsl() anywhere else.
+
+   BROWSERS: colors use light-dark() (Chrome/Edge 123, Safari 17.5, Firefox 120+).
+   THEMES (attributes on <html>): data-theme="light|dark|contrast". No attribute =
+   follow prefers-color-scheme, and prefers-contrast: more selects the contrast theme.
+   OPTIONS: data-text-size="100|115|130|150"  data-spacing="more"  data-reading="dyslexia"
+            data-measure="narrow"  data-motion="reduce"  data-unit="1".."10".
+
+   BRAND ALIGNMENT. engine/design/tokens.json stays the source of the brand palette;
+   tools/build-family-tokens-report.mjs checks that every shared value below equals
+   it, except the deliberate adjustments listed here:
+     - accent-ink  #177B78 -> #136E6B : 4.22:1 on the inset surface; this holds 5.04.
+     - highlight-ink #886C33 -> #7A5F28 : 4.51:1 on paper was one rounding from failing;
+       this holds 5.47 on paper, tint and inset.
+     - success-ink #0F7C4A -> #0B6B40 : text on its own tint needs 4.5 (was 4.50).
+     - brand teal #1FA6A2 and amber #F2C15B are FILLS. Teal is 2.99:1 on white, so it is
+       decoration only; text, outlines and button fills use accent-ink.
+   ============================================================================ */
+
+@layer reset, tokens, base, components, patterns, utilities, unit-theme, print;
+
+/* ── Fonts ─────────────────────────────────────────────────────────────────
+   ONE display family (Baloo 2) and ONE text family (Nunito), both SIL OFL 1.1,
+   self-hosted latin WOFF2 (Spanish diacritics, inverted marks, minus, times,
+   divide are covered; the symbols not in the files fall back to the system).
+   Critical path = 3 files (baloo2-var, nunito-var, nunito-var-italic).
+   Atkinson Hyperlegible (Braille Institute, SIL OFL 1.1) loads ONLY when the family
+   turns the dyslexia-friendly option on: it then replaces both families.
+   Size-adjusted fallbacks keep the first paint from shifting when the font swaps. */
+@font-face {
+  font-family: "Baloo 2";
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+  src: url("./fonts/baloo2-var.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Nunito";
+  font-style: normal;
+  font-weight: 200 1000;
+  font-display: swap;
+  src: url("./fonts/nunito-var.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Nunito";
+  font-style: italic;
+  font-weight: 200 1000;
+  font-display: swap;
+  src: url("./fonts/nunito-var-italic.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Atkinson Hyperlegible";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("./fonts/atkinson-hyperlegible-400.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Atkinson Hyperlegible";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("./fonts/atkinson-hyperlegible-700.woff2") format("woff2");
+}
+/* Metrics measured from the font files against Arial (weighted by EN + ES letter frequency). */
+@font-face {
+  font-family: "Baloo 2 Fallback";
+  src: local("Arial Bold"), local("Arial-BoldMT"), local("Arial");
+  font-weight: 700;
+  size-adjust: 88.6%;
+  ascent-override: 121.7%;
+  descent-override: 59.2%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: "Nunito Fallback";
+  src: local("Arial"), local("ArialMT");
+  size-adjust: 97.3%;
+  ascent-override: 103.9%;
+  descent-override: 36.3%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: "Atkinson Hyperlegible Fallback";
+  src: local("Arial"), local("ArialMT");
+  size-adjust: 99%;
+  ascent-override: 96%;
+  descent-override: 29.3%;
+  line-gap-override: 0%;
+}
+
+@layer tokens {
+  :root {
+    color-scheme: light dark;
+
+    /* ── Color: surfaces ──────────────────────────────────────────────── */
+    --fm-surface: light-dark(#f7f4ec, #0f1b27);
+    --fm-raised: light-dark(#ffffff, #172636);
+    --fm-sunken: light-dark(#efeadd, #0b1520);
+    --fm-inverse: light-dark(#17324d, #1e3a57);
+    --fm-scrim: light-dark(rgb(10 22 36 / 0.55), rgb(0 0 0 / 0.65));
+
+    /* ── Color: text ──────────────────────────────────────────────────── */
+    --fm-text: light-dark(#24323f, #e9eef2);
+    --fm-text-muted: light-dark(#4a555e, #b2bec9);
+    --fm-text-inverse: light-dark(#ffffff, #ffffff);
+
+    /* ── Color: lines. border is decoration; border-strong is a UI edge (>= 3:1) ── */
+    --fm-border: light-dark(rgb(36 50 63 / 0.18), rgb(233 238 242 / 0.18));
+    --fm-border-strong: light-dark(#65717c, #8497aa);
+
+    /* ── Color: primary (navy; teal-light in dark) ───────────────────── */
+    --fm-primary: light-dark(#17324d, #5fd0cb);
+    --fm-primary-hover: light-dark(#0f2539, #7ddad6);
+    --fm-primary-press: light-dark(#0a1b2b, #96e2df);
+    --fm-on-primary: light-dark(#ffffff, #0b1520);
+
+    /* ── Color: teal. accent = decoration, accent-ink = text/outline/fill with white text ── */
+    --fm-accent: light-dark(#1fa6a2, #3fb8b3);
+    --fm-accent-ink: light-dark(#136e6b, #5fd0cb);
+    --fm-accent-tint: light-dark(#e3f1ef, #123438);
+
+    /* ── Color: amber. highlight = fill with navy text, highlight-ink = text ── */
+    --fm-highlight: light-dark(#f2c15b, #f2c15b);
+    --fm-on-highlight: light-dark(#17324d, #0b1520);
+    --fm-highlight-ink: light-dark(#7a5f28, #f2c15b);
+    --fm-highlight-tint: light-dark(#fbf0d2, #3a3320);
+
+    /* ── Color: states ────────────────────────────────────────────────── */
+    --fm-success: light-dark(#0f7c4a, #3fb77d);
+    --fm-success-ink: light-dark(#0b6b40, #7adba9);
+    --fm-success-tint: light-dark(#e2f1e9, #14301f);
+    --fm-on-success: light-dark(#ffffff, #0b1520);
+    /* error is for system faults and destructive confirmation. It is NEVER a wrong answer. */
+    --fm-error: light-dark(#b3402a, #e0705a);
+    --fm-error-ink: light-dark(#a63a25, #f2a08e);
+    --fm-error-tint: light-dark(#f8e7e2, #3a1e1a);
+    --fm-on-error: light-dark(#ffffff, #0b1520);
+    --fm-info-ink: light-dark(#1f4d80, #a9c5e6);
+    --fm-info-tint: light-dark(#e3e9ef, #1d3550);
+
+    /* "Try another look" is soft and warm, never red: amber family, an eye icon, no shake. */
+    --fm-look: var(--fm-highlight-ink);
+    --fm-look-tint: var(--fm-highlight-tint);
+    --fm-look-edge: var(--fm-highlight);
+    --fm-warn: var(--fm-highlight-ink);
+    --fm-warn-tint: var(--fm-highlight-tint);
+
+    /* ── Color: focus (dual ring: color + halo, readable on any background) ── */
+    --fm-focus: light-dark(#17324d, #f2c15b);
+    --fm-focus-halo: light-dark(#ffffff, #0b1520);
+    --fm-focus-inverse: light-dark(#f2c15b, #f2c15b);
+
+    /* ── Color: math mapping. Never color alone: shape, pattern or label too. ── */
+    --fm-m-part: var(--fm-accent-ink);
+    --fm-m-part-tint: var(--fm-accent-tint);
+    --fm-m-whole: var(--fm-info-ink);
+    --fm-m-whole-tint: var(--fm-info-tint);
+    --fm-m-unknown: var(--fm-highlight-ink);
+    --fm-m-unknown-tint: var(--fm-highlight-tint);
+    --fm-m-unknown-edge: var(--fm-highlight);
+    --fm-m-given: var(--fm-text-muted);
+    --fm-m-given-tint: var(--fm-sunken);
+    --fm-m-answer: var(--fm-success-ink);
+    --fm-m-answer-tint: var(--fm-success-tint);
+
+    /* ── Color: shade (shadows are built from these) ──────────────────── */
+    --fm-shade-1: light-dark(rgb(23 50 77 / 0.1), rgb(0 0 0 / 0.45));
+    --fm-shade-2: light-dark(rgb(23 50 77 / 0.07), rgb(0 0 0 / 0.3));
+    --fm-shade-3: light-dark(rgb(23 50 77 / 0.28), rgb(0 0 0 / 0.6));
+
+    /* ── Unit palettes. Each unit: accent (graphic, >= 3:1), ink (text, >= 4.5), tint (band).
+          Hues avoid violet/purple (255-335) by product rule. Hue never carries the unit alone:
+          every unit also has a number and a motif. Mapped to --unit-accent in family.css. ── */
+    --unit-1-accent: light-dark(#2b7a48, #3ba863);
+    --unit-1-ink: light-dark(#205a35, #91cea8);
+    --unit-1-tint: light-dark(#dfe6d9, #1e403f);
+    --unit-2-accent: light-dark(#3742a6, #8890d7);
+    --unit-2-ink: light-dark(#3742a6, #babfe8);
+    --unit-2-tint: light-dark(#dfdee4, #2e3b56);
+    --unit-3-accent: light-dark(#be5d33, #d1815f);
+    --unit-3-ink: light-dark(#7f3e22, #e4b5a1);
+    --unit-3-tint: light-dark(#f1e2d6, #3c383e);
+    --unit-4-accent: light-dark(#1e6980, #38a1c0);
+    --unit-4-ink: light-dark(#185568, #92cbdc);
+    --unit-4-tint: light-dark(#dce3df, #1e3f52);
+    --unit-5-accent: light-dark(#ac7f1e, #b88f35);
+    --unit-5-ink: light-dark(#694d12, #d5bd88);
+    --unit-5-tint: light-dark(#eee6d2, #373b36);
+    --unit-6-accent: light-dark(#93374f, #cf7d93);
+    --unit-6-ink: light-dark(#833146, #e3b2bf);
+    --unit-6-tint: light-dark(#ecddd9, #3c3749);
+    --unit-7-accent: light-dark(#3674bb, #6598d2);
+    --unit-7-ink: light-dark(#265183, #a9c5e6);
+    --unit-7-tint: light-dark(#dfe4e6, #273d55);
+    --unit-8-accent: light-dark(#5a7025, #80a035);
+    --unit-8-ink: light-dark(#45561c, #b5c88a);
+    --unit-8-tint: light-dark(#e4e4d3, #2c3e36);
+    --unit-9-accent: light-dark(#2d8d77, #35a68c);
+    --unit-9-ink: light-dark(#1d5a4c, #8ecdbf);
+    --unit-9-tint: light-dark(#dee8de, #1d4047);
+    --unit-10-accent: light-dark(#515c6b, #8a96a6);
+    --unit-10-ink: light-dark(#464f5c, #bbc2cb);
+    --unit-10-tint: light-dark(#e2e1dc, #2e3c4c);
+
+    /* Unit motifs: one stroke glyph per unit, used as a CSS mask (alpha only, no color). */
+    --unit-1-motif: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M24 6l4 14 14 4-14 4-4 14-4-14-14-4 14-4z'/%3E%3C/svg%3E");
+    --unit-2-motif: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M8 40h32M12 40V26M22 40V14M32 40V22'/%3E%3C/svg%3E");
+    --unit-3-motif: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='6' y='10' width='36' height='9' rx='3'/%3E%3Crect x='6' y='29' width='18' height='9' rx='3'/%3E%3C/svg%3E");
+    --unit-4-motif: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='14' cy='14' r='5'/%3E%3Ccircle cx='34' cy='34' r='5'/%3E%3Cpath d='M38 10L10 38'/%3E%3C/svg%3E");
+    --unit-5-motif: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M24 6l15 8.5v17L24 40 9 31.500v-17zM24 23v17M9 14.500L24 23l15-8.500'/%3E%3C/svg%3E");
+    --unit-6-motif: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M15 8q-8 16 0 32M33 8q8 16 0 32M20 20l8 8M28 20l-8 8'/%3E%3C/svg%3E");
+    --unit-7-motif: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M24 6v36M6 24h36'/%3E%3Ccircle cx='34' cy='14' r='3.500'/%3E%3C/svg%3E");
+    --unit-8-motif: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M10 18h28M10 30h28'/%3E%3C/svg%3E");
+    --unit-9-motif: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M8 40L8 8M8 40h32M12 34l10-8 8 4 10-16'/%3E%3C/svg%3E");
+    --unit-10-motif: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='18' cy='20' r='10'/%3E%3Ccircle cx='30' cy='20' r='10'/%3E%3Ccircle cx='24' cy='30' r='10'/%3E%3C/svg%3E");
+
+    /* ── Type: ONE display + ONE text family, each with a size-adjusted fallback ── */
+    --fm-font-display:
+      "Baloo 2", "Baloo 2 Fallback", "Arial Rounded MT Bold", system-ui, sans-serif;
+    --fm-font-text: "Nunito", "Nunito Fallback", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --fm-text-scale: 1;
+
+    /* Eight sizes; the label size is the 13px floor. Fluid between 320px and 1280px viewports. */
+    --fm-fs-xs: 0.8125rem;
+    --fm-fs-sm: 0.9375rem;
+    --fm-fs-md: clamp(1rem, 0.96rem + 0.2vw, 1.125rem);
+    --fm-fs-lg: clamp(1.125rem, 1.04rem + 0.4vw, 1.375rem);
+    --fm-fs-xl: clamp(1.25rem, 1.12rem + 0.65vw, 1.625rem);
+    --fm-fs-2xl: clamp(1.5rem, 1.25rem + 1.2vw, 2.125rem);
+    --fm-fs-3xl: clamp(1.75rem, 1.35rem + 2vw, 2.625rem);
+    --fm-fs-4xl: clamp(2.125rem, 1.5rem + 3vw, 2.75rem);
+
+    --fm-lh-body: 1.5;
+    --fm-lh-heading: 1.15;
+    --fm-lh-ui: 1.3;
+    --fm-fw-regular: 400;
+    --fm-fw-semibold: 600;
+    --fm-fw-bold: 700;
+    --fm-ls: normal;
+    --fm-ws: normal;
+    --fm-para-gap: 1em;
+    --fm-measure: 68ch;
+
+    /* ── Space (4/8 scale, rem so it follows the text-size option) ─────── */
+    --fm-space-1: 0.25rem;
+    --fm-space-2: 0.5rem;
+    --fm-space-3: 0.75rem;
+    --fm-space-4: 1rem;
+    --fm-space-5: 1.5rem;
+    --fm-space-6: 2rem;
+    --fm-space-7: 3rem;
+    --fm-space-8: 4rem;
+    --fm-gutter: max(1rem, env(safe-area-inset-left, 0px));
+    --fm-container: 68.75rem;
+    --fm-card-max: 40rem;
+    --fm-target: 2.75rem;
+    --fm-target-min: 1.5rem;
+
+    /* ── Shape ─────────────────────────────────────────────────────────── */
+    --fm-radius-xs: 0.25rem;
+    --fm-radius-sm: 0.5rem;
+    --fm-radius-md: 0.875rem;
+    --fm-radius-lg: 1.5rem;
+    --fm-radius-pill: 62rem;
+    --fm-line: 1px;
+    --fm-line-strong: 2px;
+    --fm-focus-width: 3px;
+    --fm-focus-offset: 2px;
+
+    /* ── Elevation: one raised, one floating, one sheet, one inset, one pressed ── */
+    --fm-shadow-raised: 0 1px 2px var(--fm-shade-1), 0 2px 8px var(--fm-shade-2);
+    --fm-shadow-float: 0 8px 24px -8px var(--fm-shade-3);
+    --fm-shadow-sheet: 0 -8px 32px -8px var(--fm-shade-3);
+    --fm-shadow-inset: inset 0 1px 2px var(--fm-shade-1);
+    --fm-shadow-press: inset 0 2px 4px var(--fm-shade-3);
+
+    /* ── Motion: three durations, two easings ──────────────────────────── */
+    --fm-dur-1: 120ms;
+    --fm-dur-2: 200ms;
+    --fm-dur-3: 320ms;
+    --fm-ease: cubic-bezier(0.2, 0, 0, 1);
+    --fm-ease-soft: cubic-bezier(0.4, 0, 0.2, 1);
+
+    /* ── Layers ────────────────────────────────────────────────────────── */
+    --fm-z-raised: 10;
+    --fm-z-sticky: 100;
+    --fm-z-bar: 200;
+    --fm-z-overlay: 300;
+    --fm-z-sheet: 400;
+    --fm-z-toast: 500;
+    --fm-z-tooltip: 600;
+
+    /* Breakpoints (media queries cannot read variables; these are the literal values used):
+       320, 390, 768 = 48rem, 1024 = 64rem, 1280 = 80rem, 1920 = 120rem. */
+  }
+
+  :root[data-theme="light"] {
+    color-scheme: light;
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+  }
+
+  /* ── High contrast (light): 7:1 text, black edges, no shadows. Same block as the media query below. ── */
+  :root[data-theme="contrast"] {
+    color-scheme: light;
+    --fm-surface: #ffffff;
+    --fm-raised: #ffffff;
+    --fm-sunken: #f2f2f2;
+    --fm-inverse: #0a1b2e;
+    --fm-scrim: rgb(0 0 0 / 0.7);
+    --fm-text: #0a1624;
+    --fm-text-muted: #1f2a35;
+    --fm-text-inverse: #ffffff;
+    --fm-border: #0a1624;
+    --fm-border-strong: #0a1624;
+    --fm-primary: #0a1b2e;
+    --fm-primary-hover: #000000;
+    --fm-primary-press: #000000;
+    --fm-on-primary: #ffffff;
+    --fm-accent: #0b4f4d;
+    --fm-accent-ink: #0b4f4d;
+    --fm-accent-tint: #e8f3f2;
+    --fm-highlight: #f2c15b;
+    --fm-on-highlight: #000000;
+    --fm-highlight-ink: #5c4510;
+    --fm-highlight-tint: #fff6dc;
+    --fm-success: #0a5a34;
+    --fm-success-ink: #064d2c;
+    --fm-success-tint: #e6f4ec;
+    --fm-on-success: #ffffff;
+    --fm-error: #8a2512;
+    --fm-error-ink: #7a1f10;
+    --fm-error-tint: #fbeae6;
+    --fm-on-error: #ffffff;
+    --fm-info-ink: #123a66;
+    --fm-info-tint: #e8eef5;
+    --fm-focus: #000000;
+    --fm-focus-halo: #ffffff;
+    --fm-shade-1: transparent;
+    --fm-shade-2: transparent;
+    --fm-shade-3: transparent;
+    --fm-line: 2px;
+    --unit-1-accent: #2b7a48;
+    --unit-1-ink: #205a35;
+    --unit-1-tint: #f0f6f2;
+    --unit-2-accent: #3742a6;
+    --unit-2-ink: #3742a6;
+    --unit-2-tint: #f1f2f9;
+    --unit-3-accent: #af562f;
+    --unit-3-ink: #7e3e22;
+    --unit-3-tint: #f9f3f0;
+    --unit-4-accent: #1e6980;
+    --unit-4-ink: #19576a;
+    --unit-4-tint: #eff5f6;
+    --unit-5-accent: #8d6819;
+    --unit-5-ink: #674c12;
+    --unit-5-tint: #f7f4ef;
+    --unit-6-accent: #93374f;
+    --unit-6-ink: #873349;
+    --unit-6-tint: #f7f1f3;
+    --unit-7-accent: #3471b5;
+    --unit-7-ink: #265284;
+    --unit-7-tint: #f1f5fa;
+    --unit-8-accent: #5a7025;
+    --unit-8-ink: #45561c;
+    --unit-8-tint: #f3f5f0;
+    --unit-9-accent: #287c69;
+    --unit-9-ink: #1d594c;
+    --unit-9-tint: #f0f6f5;
+    --unit-10-accent: #515c6b;
+    --unit-10-ink: #47515e;
+    --unit-10-tint: #f3f4f5;
+  }
+  @media (prefers-contrast: more) {
+    :root:not([data-theme]) {
+      color-scheme: light;
+      --fm-surface: #ffffff;
+      --fm-raised: #ffffff;
+      --fm-sunken: #f2f2f2;
+      --fm-inverse: #0a1b2e;
+      --fm-scrim: rgb(0 0 0 / 0.7);
+      --fm-text: #0a1624;
+      --fm-text-muted: #1f2a35;
+      --fm-text-inverse: #ffffff;
+      --fm-border: #0a1624;
+      --fm-border-strong: #0a1624;
+      --fm-primary: #0a1b2e;
+      --fm-primary-hover: #000000;
+      --fm-primary-press: #000000;
+      --fm-on-primary: #ffffff;
+      --fm-accent: #0b4f4d;
+      --fm-accent-ink: #0b4f4d;
+      --fm-accent-tint: #e8f3f2;
+      --fm-highlight: #f2c15b;
+      --fm-on-highlight: #000000;
+      --fm-highlight-ink: #5c4510;
+      --fm-highlight-tint: #fff6dc;
+      --fm-success: #0a5a34;
+      --fm-success-ink: #064d2c;
+      --fm-success-tint: #e6f4ec;
+      --fm-on-success: #ffffff;
+      --fm-error: #8a2512;
+      --fm-error-ink: #7a1f10;
+      --fm-error-tint: #fbeae6;
+      --fm-on-error: #ffffff;
+      --fm-info-ink: #123a66;
+      --fm-info-tint: #e8eef5;
+      --fm-focus: #000000;
+      --fm-focus-halo: #ffffff;
+      --fm-shade-1: transparent;
+      --fm-shade-2: transparent;
+      --fm-shade-3: transparent;
+      --fm-line: 2px;
+      --unit-1-accent: #2b7a48;
+      --unit-1-ink: #205a35;
+      --unit-1-tint: #f0f6f2;
+      --unit-2-accent: #3742a6;
+      --unit-2-ink: #3742a6;
+      --unit-2-tint: #f1f2f9;
+      --unit-3-accent: #af562f;
+      --unit-3-ink: #7e3e22;
+      --unit-3-tint: #f9f3f0;
+      --unit-4-accent: #1e6980;
+      --unit-4-ink: #19576a;
+      --unit-4-tint: #eff5f6;
+      --unit-5-accent: #8d6819;
+      --unit-5-ink: #674c12;
+      --unit-5-tint: #f7f4ef;
+      --unit-6-accent: #93374f;
+      --unit-6-ink: #873349;
+      --unit-6-tint: #f7f1f3;
+      --unit-7-accent: #3471b5;
+      --unit-7-ink: #265284;
+      --unit-7-tint: #f1f5fa;
+      --unit-8-accent: #5a7025;
+      --unit-8-ink: #45561c;
+      --unit-8-tint: #f3f5f0;
+      --unit-9-accent: #287c69;
+      --unit-9-ink: #1d594c;
+      --unit-9-tint: #f0f6f5;
+      --unit-10-accent: #515c6b;
+      --unit-10-ink: #47515e;
+      --unit-10-tint: #f3f4f5;
+    }
+  }
+
+  /* ── Forced colors: the system palette wins; tokens only keep meaning and shape. ── */
+  @media (forced-colors: active) {
+    :root {
+      --fm-surface: Canvas;
+      --fm-raised: Canvas;
+      --fm-sunken: Canvas;
+      --fm-text: CanvasText;
+      --fm-text-muted: CanvasText;
+      --fm-border: CanvasText;
+      --fm-border-strong: CanvasText;
+      --fm-primary: ButtonFace;
+      --fm-on-primary: ButtonText;
+      --fm-focus: Highlight;
+      --fm-focus-halo: Canvas;
+      --fm-line: 2px;
+    }
+  }
+
+  /* ── Reader options (data attributes on <html>, persisted by the page) ── */
+  :root[data-text-size="115"] {
+    --fm-text-scale: 1.15;
+  }
+  :root[data-text-size="130"] {
+    --fm-text-scale: 1.3;
+  }
+  :root[data-text-size="150"] {
+    --fm-text-scale: 1.5;
+  }
+  /* WCAG 1.4.12 text spacing: line 1.8, paragraphs 2em, letters 0.12em, words 0.16em. */
+  :root[data-spacing="more"] {
+    --fm-lh-body: 1.8;
+    --fm-para-gap: 2em;
+    --fm-ls: 0.12em;
+    --fm-ws: 0.16em;
+  }
+  :root[data-measure="narrow"] {
+    --fm-measure: 52ch;
+  }
+  /* Dyslexia-friendly: Atkinson Hyperlegible replaces both families, a little more air, no italics. */
+  :root[data-reading="dyslexia"] {
+    --fm-font-display:
+      "Atkinson Hyperlegible", "Atkinson Hyperlegible Fallback", system-ui, sans-serif;
+    --fm-font-text:
+      "Atkinson Hyperlegible", "Atkinson Hyperlegible Fallback", system-ui, sans-serif;
+    --fm-lh-body: 1.7;
+    --fm-ls: 0.04em;
+    --fm-ws: 0.1em;
+  }
+  :root[data-reading="dyslexia"][data-spacing="more"] {
+    --fm-lh-body: 1.8;
+    --fm-ls: 0.12em;
+    --fm-ws: 0.16em;
+  }
+
+  /* ── Motion: the OS setting and the in-page switch both zero every duration. ── */
+  @media (prefers-reduced-motion: reduce) {
+    :root {
+      --fm-dur-1: 0.01ms;
+      --fm-dur-2: 0.01ms;
+      --fm-dur-3: 0.01ms;
+    }
+  }
+  :root[data-motion="reduce"] {
+    --fm-dur-1: 0.01ms;
+    --fm-dur-2: 0.01ms;
+    --fm-dur-3: 0.01ms;
+  }
+}

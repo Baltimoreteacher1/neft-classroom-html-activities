@@ -40,6 +40,7 @@ import { forGrade } from "./fm2/realworld.js";
 import { GAME_IDS } from "./fm2/registry.js";
 import { seedFrom } from "./fm2/rng.js";
 import { dailyMission, encodePlan, MINUTE_CHOICES, planSession } from "./fm2/session.js";
+import { createGuidedStore } from "./fm2/guided/guided-core.js";
 import { createStore, dayKey, minutesThisWeek, streak } from "./fm2/store.js";
 
 const params = new URLSearchParams(location.search);
@@ -134,8 +135,8 @@ function setupHtml(info) {
   const code = planCode(info.plan);
   const count = info.plan?.activities.length || 0;
   const start = code
-    ? `<a class="fm2-btn fm2-btn-primary hm-start" id="start-link" data-testid="start-session" href="${playUrl({ plan: code, ...here() })}">${esc(t(C.start, lang))}</a>`
-    : `<button type="button" class="fm2-btn fm2-btn-primary hm-start" id="start-link" data-testid="start-session" aria-disabled="true" disabled>${esc(t(C.start, lang))}</button>`;
+    ? `<a class="fm2-btn hm-start" id="start-link" data-testid="start-session" href="${playUrl({ plan: code, ...here() })}">${esc(t(C.start, lang))}</a>`
+    : `<button type="button" class="fm2-btn hm-start" id="start-link" data-testid="start-session" aria-disabled="true" disabled>${esc(t(C.start, lang))}</button>`;
   const note = code
     ? t(C.startNote, lang, {
         n: count,
@@ -296,6 +297,19 @@ document.addEventListener("click", (event) => {
   printWeekReport({ lang: S.lang, profile: S.profile ?? 0, grade: S.grade });
 });
 
+// The guided session is the default first action: its link carries the grade and language, and says "Continue" when a
+// session is already saved on this device.
+function paintGuidedStart() {
+  const link = $("#guided-start");
+  if (!link) return;
+  const saved = createGuidedStore({ profile: S.profile ?? 0 }).state.active;
+  const open = saved && !saved.recorded;
+  const query = new URLSearchParams({ grade: S.grade, profile: S.profile ?? 0, lang: S.lang, minutes: S.minutes === 5 ? 5 : 10 });
+  if (!open) query.set("new", "1");
+  link.href = `session.html?${query}`;
+  link.textContent = t(open ? C.guidedResume : C.guidedStart, S.lang);
+}
+
 function draw() {
   const { lang } = S;
   renderTopbar(lang);
@@ -307,6 +321,7 @@ function draw() {
   $("#rw-sub").textContent = t(C.rwLead, lang, { grade: gradeName(S.grade, lang) });
   $("#rw-print-title").textContent = t(C.printRealworld, lang, { grade: gradeName(S.grade, lang) });
   paint($("#setup"), setupHtml(info));
+  paintGuidedStart();
   paint($("#resume-region"), resumeHtml());
   paint($("#mission-body"), missionHtml(info));
   paint($("#progress-body"), progressHtml());
