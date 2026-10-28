@@ -9,6 +9,8 @@ export const STRAND_KEYS = ["counting-place-value", "addition-subtraction", "mul
 
 // Order matters: the first matching rule wins, so the narrower strands come before the broad ones.
 const RULES = [
+  // This is a specific algebra area model. Keep it ahead of generic algebra and area matches.
+  ["binomial-area", /g8-expand|binomial/],
   ["money", /\bmoney\b|\bcoins?\b|\bdollars?\b|\bcents?\b|\bprices?\b|\bcosts?\b|\bchange\b|\bshop|\bmarket\b|\bbills?\b|\bcash\b/],
   ["ratios-percents", /\bratios?\b|\bpercents?\b|\brates?\b|\bproportions?\b|unit price|\bscale\b/],
   ["equations", /equation|inequalit|variable|solve for|balance|expression/],
@@ -25,6 +27,7 @@ const RULES = [
 
 export function strandKey(strand, skillId = "", gameId = "") {
   const sources = [typeof strand === "string" ? strand : strand?.en || "", String(skillId).replaceAll("-", " "), String(gameId).replaceAll("-", " ")];
+  if (/g8-expand|binomial/i.test(`${skillId} ${sources[0]}`)) return "binomial-area";
   for (const source of sources) {
     const text = source.toLowerCase();
     for (const [key, pattern] of RULES) if (pattern.test(text)) return key;
@@ -33,6 +36,12 @@ export function strandKey(strand, skillId = "", gameId = "") {
 }
 
 export const STRAND_BANK = {
+  "binomial-area": {
+    ask: [t("What side lengths label the rectangle? How does each partial area connect to those sides?", "¿Qué medidas tienen los lados del rectángulo? ¿Cómo se relaciona cada área parcial con esos lados?"), t("How do the four smaller areas combine? Which terms can you combine, and why?", "¿Cómo se combinan las cuatro áreas pequeñas? ¿Qué términos puedes combinar y por qué?")],
+    lookFor: t("Listen for each side being split into its two terms, each partial rectangle area matching one pair of side lengths, and like terms combined only after all areas are added.", "Escucha si cada lado se separa en sus dos términos, si cada área parcial corresponde a un par de medidas, y si combina términos semejantes después de sumar todas las áreas."),
+    ifStuck: t("Sketch a rectangle. Label one side with the two terms from one binomial and the other side with the two terms from the second. Find the area of each small rectangle, then add the four parts.", "Dibujen un rectángulo. Etiqueten un lado con los dos términos de un binomio y el otro lado con los dos términos del segundo. Encuentren el área de cada rectángulo pequeño y luego sumen las cuatro partes."),
+    extend: t("How could you check that the expanded expression has the same area as the original side lengths?", "¿Cómo podrías comprobar que la expresión desarrollada conserva el área de las medidas originales?"),
+  },
   "counting-place-value": {
     ask: [t("How do you know how many there are? Show me how you counted.", "¿Cómo sabes cuántos hay? Muéstrame cómo contaste."), t("What does each digit in your number tell us?", "¿Qué nos dice cada dígito de tu número?"), t("Why did you group them that way?", "¿Por qué los agrupaste de esa manera?")],
     lookFor: t("Listen for grouping in tens and ones, touching or pointing while counting, and saying what each digit is worth.", "Escucha si agrupa en decenas y unidades, si señala o toca mientras cuenta, y si dice cuánto vale cada dígito."),

@@ -4,6 +4,8 @@ import { readFile } from "node:fs/promises";
 import AxeBuilder from "@axe-core/playwright";
 import { chromium } from "playwright";
 import { createServer } from "vite";
+import { loadAll } from "../math/fluency-lab/family/fm2/registry.js";
+import { decodePlan } from "../math/fluency-lab/family/fm2/session.js";
 import { createLesson } from "../math/fluency-lab/lesson-content.js";
 import { GRADES } from "../math/fluency-lab/problem-bank.js";
 import { REPO_ROOT } from "./lib/curriculum-source.mjs";
@@ -71,7 +73,106 @@ try {
     "English family page has no serious or critical accessibility violations",
   );
 
-  await page.getByRole("button", { name: "Grade 4" }).click();
+  const directLinkContext = await browser.newContext({
+    viewport: { width: 390, height: 844 },
+    reducedMotion: "reduce",
+  });
+  const directLinkPage = await directLinkContext.newPage();
+  await directLinkPage.goto(
+    `${base}/math/fluency-lab/family/?grade=8&game=array-architect&skill=g8-expand&minutes=5&mode=together&lang=en`,
+    { waitUntil: "networkidle" },
+  );
+  const focusedMission = directLinkPage.locator(
+    '[data-testid="mission-activity"][data-game="array-architect"][data-skill="g8-expand"]',
+  );
+  assert.equal(
+    await focusedMission.count(),
+    1,
+    "a teacher link foregrounds the exact grade 8 skill",
+  );
+  assert.equal(
+    await directLinkPage.locator("#welcome-title").innerText(),
+    "Practice: Multiply binomials with area",
+  );
+  assert.match(
+    await directLinkPage.locator(".hm-hero-lead").innerText(),
+    /side lengths.*partial area/i,
+  );
+  assert.match(
+    await directLinkPage.locator("#mission-sub").innerText(),
+    /Multiply binomials with area/,
+  );
+  const sourceShareUrl = new URL(
+    `${base}/math/fluency-lab/family/?grade=8&game=array-architect&skill=g8-expand&minutes=5&mode=together&lang=en`,
+  );
+  assert.equal(
+    sourceShareUrl.searchParams.has("profile"),
+    false,
+    "the teacher link contains no learner profile",
+  );
+  await directLinkPage.locator("#add-learner").click();
+  let sharedParams = new URL(directLinkPage.url()).searchParams;
+  assert.equal(sharedParams.get("profile"), "1");
+  assert.equal(sharedParams.get("grade"), "8");
+  assert.equal(sharedParams.get("game"), "array-architect");
+  assert.equal(sharedParams.get("skill"), "g8-expand");
+  assert.equal(sharedParams.get("minutes"), "5");
+  assert.equal(sharedParams.get("mode"), "together");
+  const regeneratedShare = new URL(await directLinkPage.locator("#teacher-link").inputValue());
+  assert.equal(
+    regeneratedShare.searchParams.has("profile"),
+    false,
+    "re-shared skill links exclude the local profile",
+  );
+  await directLinkPage.locator("#lang-toggle").click();
+  sharedParams = new URL(directLinkPage.url()).searchParams;
+  assert.equal(sharedParams.get("lang"), "es");
+  assert.equal(sharedParams.get("skill"), "g8-expand");
+  assert.equal(await directLinkPage.locator("html").getAttribute("lang"), "es");
+  assert.equal(
+    await directLinkPage.locator("#welcome-title").innerText(),
+    "Práctica: Multiplicar binomios con área",
+  );
+  assert.match(
+    await directLinkPage.locator(".hm-hero-lead").innerText(),
+    /binomios.*área parcial/i,
+  );
+  const focusedStart = new URL(
+    await directLinkPage.locator("#start-link").getAttribute("href"),
+    directLinkPage.url(),
+  );
+  const focusedPlan = decodePlan(focusedStart.searchParams.get("plan"), await loadAll());
+  assert.equal(focusedPlan.grade, 8);
+  assert.equal(focusedPlan.minutes, 5);
+  assert.equal(focusedPlan.mode, "together");
+  assert.deepEqual(
+    focusedPlan.activities.map(({ gameId, skillId }) => [gameId, skillId]),
+    [["array-architect", "g8-expand"]],
+    "the primary action starts only the requested skill",
+  );
+  await directLinkPage.locator("#start-link").click();
+  await directLinkPage.waitForSelector('[data-fm2-shell][data-game="array-architect"]');
+  assert.match(await directLinkPage.locator("[data-fm2-skill]").innerText(), /binomios/i);
+  assert.equal(await directLinkPage.locator("html").getAttribute("lang"), "es");
+  assert.equal(new URL(directLinkPage.url()).searchParams.get("resume"), "1");
+  await directLinkPage.locator("[data-fm2-exit]").click();
+  await directLinkPage.waitForURL(/\/math\/fluency-lab\/family\/$/);
+  const continueLink = new URL(
+    await directLinkPage.locator('[data-testid="resume-link"]').getAttribute("href"),
+    directLinkPage.url(),
+  );
+  const continuedPlan = decodePlan(continueLink.searchParams.get("plan"), await loadAll());
+  assert.deepEqual(
+    continuedPlan.activities.map(({ gameId, skillId }) => [gameId, skillId]),
+    [["array-architect", "g8-expand"]],
+    "resume keeps the requested skill as the only activity",
+  );
+  await directLinkPage.locator('[data-testid="resume-link"]').click();
+  await directLinkPage.waitForSelector('[data-fm2-shell][data-game="array-architect"]');
+  assert.match(await directLinkPage.locator("[data-fm2-skill]").innerText(), /binomios/i);
+  await directLinkContext.close();
+
+  await page.locator("#family-grade").selectOption("4");
   // The home still picks Tonight's Math from the learner's real Fluency Lab evidence (seeded above: round-large is due).
   assert.match(await page.locator("#tonight-link").getAttribute("href"), /skill=round-large/);
   const firstRow = page.locator('[data-testid="skill-row"]').first();
@@ -359,7 +460,7 @@ try {
   const noSavePage = await noSaveContext.newPage();
   await noSavePage.goto(`${base}/math/fluency-lab/family/`, { waitUntil: "networkidle" });
   // The new home saves the grade in the learner's Family Math record only when the grade is changed.
-  await noSavePage.getByRole("button", { name: "Grade 3" }).click();
+  await noSavePage.locator("#family-grade").selectOption("3");
   assert.equal(
     await noSavePage.locator("#family-storage-warning").isVisible(),
     true,

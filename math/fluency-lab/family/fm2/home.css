@@ -23,6 +23,9 @@
   color: #fff;
   box-shadow: var(--fm-shadow);
 }
+.hm-hero.is-directed .hm-hero-copy h1 {
+  font-size: clamp(1.8rem, 5.4vw, 2.8rem);
+}
 .hm-hero-copy {
   position: relative;
   min-width: 0;
@@ -88,51 +91,31 @@
   font-size: 0.95rem;
   font-weight: 800;
 }
+.hm-field-label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 0.95rem;
+  font-weight: 800;
+}
 .hm-field-row {
   display: grid;
   gap: 14px;
 }
-.hm-grades {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
-}
-.hm-grade {
-  display: grid;
-  place-items: center;
-  align-content: center;
-  gap: 0;
-  min-height: 56px;
-  padding: 4px;
+.hm-grade-select {
+  width: 100%;
+  min-height: 48px;
+  padding: 8px 12px;
   border: 2px solid var(--fm-line);
-  border-radius: 14px;
+  border-radius: 12px;
   background: #fff;
   color: var(--fm-ink);
   font-family: var(--fm-font);
-  cursor: pointer;
+  font-size: 1rem;
   touch-action: manipulation;
 }
-.hm-grade span {
-  font-size: 0.72rem;
-  font-weight: 700;
-  color: var(--fm-muted);
-  line-height: 1.1;
-}
-.hm-grade b {
-  font-size: 1.35rem;
-  line-height: 1.1;
-}
-.hm-grade:hover {
-  background: var(--fm-violet-soft);
-}
-.hm-grade[aria-pressed="true"] {
-  border-color: var(--fm-violet-deep);
-  background: var(--fm-violet-deep);
-  color: #fff;
-  box-shadow: inset 0 0 0 2px #fff;
-}
-.hm-grade[aria-pressed="true"] span {
-  color: #ddd8ff;
+.hm-grade-select:focus-visible {
+  outline: 3px solid var(--fm-focus-ring, #8b7cff);
+  outline-offset: 2px;
 }
 .hm-seg {
   display: flex;
@@ -387,6 +370,37 @@
   font-size: 0.88rem;
   overflow-wrap: anywhere;
 }
+.hm-teacher-picker {
+  display: grid;
+  gap: 10px;
+  margin: 14px 0 20px;
+  padding: 16px;
+  border: 1px solid var(--fm-line);
+  border-radius: 16px;
+  background: var(--fm-paper);
+}
+.hm-teacher-picker label { font-weight: 800; }
+.hm-teacher-picker input,
+.hm-teacher-picker textarea {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 1px solid var(--fm-muted);
+  border-radius: 10px;
+  color: var(--fm-ink);
+  background: #fff;
+  font: inherit;
+}
+.hm-teacher-picker textarea { min-height: 84px; resize: vertical; }
+.hm-teacher-picker ul { display: grid; gap: 6px; max-height: 18rem; overflow: auto; margin: 0; padding: 0; list-style: none; }
+.hm-teacher-picker li { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; padding: 6px 0; border-bottom: 1px solid var(--fm-mist); }
+.hm-picker-skill { flex: 1 1 240px; min-width: 0; }
+.hm-picker-skill > strong,
+.hm-picker-skill > small { display: block; }
+.hm-picker-skill > small { color: var(--fm-muted); }
+.hm-picker-skill p,
+.hm-skill-example { margin: 4px 0; font-size: 0.92rem; overflow-wrap: anywhere; }
+.hm-teacher-picker button { min-height: 44px; }
 
 /* Coaching card and real-world */
 .hm-coach {
@@ -484,9 +498,6 @@
 }
 
 @media (min-width: 600px) {
-  .hm-grades {
-    grid-template-columns: repeat(9, 1fr);
-  }
   .hm-chips {
     display: flex;
   }
@@ -502,9 +513,6 @@
     grid-template-columns: minmax(0, 1fr) minmax(0, 480px);
     gap: 40px;
   }
-  .hm-grades {
-    grid-template-columns: repeat(3, 1fr);
-  }
   .hm-field-row {
     grid-template-columns: 1fr;
   }
@@ -515,6 +523,22 @@
   }
   .hm-hero {
     border-radius: 22px;
+    gap: 14px;
+    padding: 16px 14px;
+  }
+  .hm-hero.is-directed {
+    gap: 10px;
+    padding: 14px 12px;
+  }
+  .hm-hero.is-directed h1 {
+    margin-bottom: 6px;
+  }
+  .hm-hero.is-directed .hm-privacy {
+    margin-top: 8px;
+  }
+  .hm-setup {
+    gap: 10px;
+    padding: 14px;
   }
   .hm-stats {
     gap: 8px;

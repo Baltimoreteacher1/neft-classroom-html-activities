@@ -673,3 +673,33 @@ body.printing-quickstart #labLangBanner {
   margin-top: 0;
   color: var(--right);
 }
+
+/* Optional family activities, local encouragement, and reminders */
+.fam-quest, .fam-encourage-settings, .fam-reminders, .fam-encouragement {
+  margin-block: 1.25rem;
+  padding: clamp(1rem, 3vw, 1.5rem);
+  border: 1px solid var(--fam-line, #d8e2e8);
+  border-radius: 1rem;
+  background: linear-gradient(140deg, #fff 0%, #f4f8f6 100%);
+}
+.fam-quest-roles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; margin-block: 1rem; }
+.fam-quest-roles article { padding: 1rem; border-radius: .8rem; background: #f0f5f7; }
+.fam-quest-roles h3 { margin-top: 0; }
+.fam-quest .fam-cta, .fam-reminders .fam-cta { display: flex; gap: .75rem; flex-wrap: wrap; margin-top: 1rem; }
+.fam-reminders fieldset { display: flex; flex-wrap: wrap; gap: .75rem 1rem; margin-block: 1rem; border: 0; padding: 0; }
+.fam-reminders fieldset label, .fam-reminders .check-row { min-height: 44px; display: inline-flex; align-items: center; gap: .45rem; }
+.fam-reminders input[type="checkbox"] { width: 1.25rem; height: 1.25rem; accent-color: #16735d; }
+.fam-reminders .field { max-width: 20rem; }
+.fam-encouragement { border-inline-start: .35rem solid #cf8a30; }
+.fam-encouragement p:not(.eyebrow) { font-size: 1.15rem; font-weight: 650; }
+@media (max-width: 640px) {
+  .fam-quest-roles { grid-template-columns: 1fr; }
+  .fam-quest .fam-cta > .btn, .fam-reminders .fam-cta > .btn { width: 100%; }
+}
+@media print {
+  body[data-lab-view="family"] #app > :not(.fam-quest) { display: none !important; }
+  body[data-lab-view="family"] .fam-more, body[data-lab-view="family"] .fam-skills,
+  body[data-lab-view="family"] .fam-tips, body[data-lab-view="family"] .fam-reco,
+  body[data-lab-view="family"] .fam-reminders, body[data-lab-view="family"] .fam-encourage-settings { display: none !important; }
+  body[data-lab-view="family"] .fam-quest { break-inside: avoid; border: 2px solid #333; }
+}

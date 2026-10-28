@@ -10,8 +10,10 @@ import { sessionMinutes, sessionOptions, playlistHref, typicalMinutes } from "./
 import { getFamily } from "./state.js";
 import { summarize } from "./summary.js";
 import { SKILLS, crumbs, gradeSwitch, longDate, skillArt, skillIcon, skillName, subnavHTML } from "./ui.js";
+import { award, getEngagement, saveEngagement, weekKey } from "../engagement.js";
 
 const tipIcon = (name) => icon(name === "microphone" ? "record" : name || "info");
+const promptReadHTML = (I, en, es) => html`<div class="fam-prompt-audio">${!I.spanish ? html`<button type="button" class="ghost small" data-say="${en}">${I.L("hub.quest.listen.en")}</button>` : ""}${I.spanish || I.bilingual ? html`<button type="button" class="ghost small" data-say-es="${es}">${I.L("hub.quest.listen.es")}</button>` : ""}</div>`;
 
 function skillCards(I, rows, options, band) {
   return html`<ul class="fam-skill-cards">
@@ -45,9 +47,15 @@ export async function render(ctx, I) {
   const band = ctx.band;
   const [rows, help, shared, es, road] = await Promise.all([bandRows(band), loadFamilyHelp(), loadShared().catch(() => ({})), loadEsGuide(), loadRoad()]);
   const family = getFamily(ctx.prefs);
+  const engage = getEngagement(ctx.prefs);
+  const questDone = engage.questWeek === weekKey() && engage.questDone;
+  const encouragement = {
+    proud: I.S("I’m proud of the way you kept trying.", "Me enorgullece que hayas seguido intentando."),
+    keepgoing: I.S("Your ideas are worth sharing. Keep going.", "Tus ideas merecen ser compartidas. Sigue adelante."),
+    strategy: I.S("I noticed you used a helpful strategy today.", "Noté que usaste una estrategia útil hoy."),
+  }[engage.encouragement];
   const options = sessionOptions({ rows, band, minutes: family.minutes, tiers: ctx.prefs.tiers });
-  const everyBandRows = (await Promise.all(ctx.bands.map((b) => bandRows(b)))).flat();
-  const summary = summarize(allRecords(), new Map(everyBandRows.map((r) => [r.id, r])), es);
+  const summary = summarize(allRecords().filter((r) => r.band === band), new Map(rows.map((r) => [r.id, r])), es);
   const reco = options.recommended;
   const challenge = weeklyChallenge(road?.[band], allRecords(), todayISO());
   const continuePlan = options.continue.length ? options.continue : options.history ? reco : [];
@@ -80,6 +88,16 @@ export async function render(ctx, I) {
       </section>
       ${subnavHTML(I, "", band)}
 
+      ${encouragement ? html`<section class="fam-encouragement panel" aria-label="${I.L("hub.encourage.heading")}"><p class="eyebrow">${I.L("hub.encourage.heading")}</p><p lang="${I.spanish ? "es" : "en"}">“${encouragement}”</p><a href="${BASE}/?grades=${band}">${I.L("hub.encourage.child")}</a></section>` : ""}
+
+      <section class="fam-quest panel" aria-labelledby="famQuestTitle"><p class="eyebrow">${I.L("hub.quest.eyebrow")}</p><h2 id="famQuestTitle">${I.L("hub.quest.title")}</h2><p>${I.L("hub.quest.lead")}</p>
+        <h3>${I.L("chal.heading")}</h3>${challengeHTML(I, challenge, band)}
+        <div class="fam-quest-roles"><article><h3>${I.L("hub.quest.adult")}</h3><p>${I.L("hub.quest.adult.prompt")}</p>${promptReadHTML(I, "What detail helped you choose that answer?", "¿Qué detalle te ayudó a elegir esa respuesta?")}</article><article><h3>${I.L("hub.quest.child")}</h3><p>${I.L("hub.quest.child.prompt")}</p>${promptReadHTML(I, "Point to a clue and explain how it helped.", "Señala una pista y explica cómo te ayudó.")}</article></div><p class="fine">${I.L("hub.quest.independent")}</p><div class="fam-cta">${questDone ? html`<p class="goal-done" role="status">${I.L("hub.quest.done")}</p><button type="button" class="btn" data-print>${I.L("hub.quest.print")}</button>` : html`<button type="button" class="btn btn-primary" data-family-quest>${I.L("hub.quest.complete")}</button><button type="button" class="btn" data-independent-quest>${I.L("hub.quest.independent.complete")}</button>`}<a class="btn" href="${continuePlan.length ? playlistHref(continuePlan, I.LS("plan.recommended"), band) : `${BASE}/family/practice?grades=${band}`}" data-quest-independent>${I.L("hub.quest.independent.action")}</a></div></section>
+
+      <details class="fam-family-settings" data-family-settings><summary>${I.L("hub.settings.more")}</summary><section class="fam-encourage-settings" aria-labelledby="famEncourageTitle"><h2 id="famEncourageTitle">${I.L("hub.encourage.choose")}</h2><p>${I.L("hub.encourage.note")}</p><label class="field"><span>${I.L("hub.encourage.choose")}</span><select data-family-encouragement><option value="">${I.L("hub.encourage.none")}</option><option value="proud" ${engage.encouragement === "proud" ? "selected" : ""}>${I.L("hub.encourage.proud")}</option><option value="keepgoing" ${engage.encouragement === "keepgoing" ? "selected" : ""}>${I.L("hub.encourage.keepgoing")}</option><option value="strategy" ${engage.encouragement === "strategy" ? "selected" : ""}>${I.L("hub.encourage.strategy")}</option></select></label></section>
+
+      <section class="fam-reminders" aria-labelledby="famReminderTitle"><h2 id="famReminderTitle">${I.L("hub.reminder.title")}</h2><p>${I.L("hub.reminder.explain")}</p><fieldset><legend>${I.L("hub.reminder.days")}</legend>${[1,2,3,4,5,6,0].map((d) => html`<label><input type="checkbox" data-reminder-day="${d}" ${engage.reminder.days.includes(d) ? "checked" : ""} /> ${I.L(`hub.reminder.day.${d}`)}</label>`)}</fieldset><label class="field"><span>${I.L("hub.reminder.time")}</span><input type="time" min="${engage.reminder.quiet ? "07:00" : "00:00"}" max="${engage.reminder.quiet ? "21:00" : "23:59"}" value="${engage.reminder.time}" data-reminder-time /></label><label class="check-row"><input type="checkbox" data-reminder-quiet ${engage.reminder.quiet ? "checked" : ""} /> ${I.L("hub.reminder.quiet")}</label><div class="fam-cta"><button type="button" class="btn btn-primary" data-reminder-enable>${engage.reminder.enabled ? I.L("hub.reminder.enabled") : I.L("hub.reminder.enable")}</button><button type="button" class="btn" data-reminder-off>${I.L("hub.reminder.off")}</button></div><p class="fine" data-reminder-status role="status">${I.L("hub.reminder.tabonly")}</p></section></details>
+
       <section class="fam-steps-intro" id="famSteps" aria-labelledby="famStepsTitle" tabindex="-1">
         <h2 id="famStepsTitle">${I.L("hub.steps.heading")}</h2>
         <ol class="fam-three">
@@ -103,11 +121,6 @@ export async function render(ctx, I) {
             <a class="btn btn-primary btn-big" href="${playlistHref(reco, I.LS("plan.recommended"), band)}">${I.L("hub.reco.start")} — ${I.L("hub.reco.size", { n: reco.length, min: sessionMinutes(reco) })}${icon("arrow-right")}</a>
             <a class="fam-alt" href="${BASE}/family/practice?grades=${band}">${I.L("plan.title")}</a>`
           : html`<p>${I.L("hub.reco.empty")}</p>`}
-      </section>
-
-      <section class="fam-chal panel" aria-labelledby="famChalTitle">
-        <h2 id="famChalTitle">${I.L("chal.heading")}</h2>
-        ${challengeHTML(I, challenge, band)}
       </section>
 
       <section class="fam-tips" aria-labelledby="famTipsTitle">
@@ -136,10 +149,67 @@ export async function render(ctx, I) {
 }
 
 export function onClick(e, ctx) {
+  const S = (en, es) => ctx.prefs.lang === "es" ? es : ctx.prefs.lang === "bi" ? `${en} / ${es}` : en;
+  if (e.target.closest("[data-family-quest], [data-independent-quest]")) {
+    saveEngagement(ctx, { questWeek: weekKey(), questDone: true });
+    award(ctx, `family-quest:${weekKey()}`, 2, "Family quest participation");
+    ctx.rerender();
+    return true;
+  }
+  if (e.target.closest("[data-reminder-enable]")) {
+    const status = document.querySelector("[data-reminder-status]");
+    if (!("Notification" in window)) { if (status) status.textContent = S("Notifications are not supported in this browser. The family planner remains available.", "Este navegador no admite notificaciones. El plan familiar sigue disponible."); return true; }
+    Notification.requestPermission().then((permission) => {
+      if (permission === "granted") {
+        saveEngagement(ctx, { reminder: { ...getEngagement(ctx.prefs).reminder, enabled: true } });
+        scheduleReminder(ctx);
+        ctx.rerender();
+      } else if (status) status.textContent = S("Permission was not granted. Reminders are off; the planner still works.", "No se concedió el permiso. Los recordatorios están apagados; el plan sigue funcionando.");
+    });
+    return true;
+  }
+  if (e.target.closest("[data-reminder-off]")) { saveEngagement(ctx, { reminder: { ...getEngagement(ctx.prefs).reminder, enabled: false } }); ctx.rerender(); return true; }
+  if (e.target.closest("[data-print]")) { window.print(); return true; }
   const who = e.target.closest("[data-fam-who]");
   if (!who) return false;
   const family = getFamily(ctx.prefs);
   ctx.setPrefs({ family: { ...family, who: who.dataset.famWho } });
   ctx.navigate(`${BASE}/family/${family.done || family.skipped ? "practice" : "start"}?grades=${ctx.band}`);
   return true;
+}
+
+export function onChange(e, ctx) {
+  const state = getEngagement(ctx.prefs);
+  if (e.target.matches("[data-family-encouragement]")) { const open = document.querySelector("[data-family-settings]")?.open; saveEngagement(ctx, { encouragement: e.target.value }); ctx.rerender().then(() => { const details = document.querySelector("[data-family-settings]"); if (details) details.open = open; }); return; }
+  if (e.target.matches("[data-reminder-day]")) {
+    const day = Number(e.target.dataset.reminderDay);
+    const days = new Set(state.reminder.days);
+    e.target.checked ? days.add(day) : days.delete(day);
+    saveEngagement(ctx, { reminder: { ...state.reminder, days: [...days].sort() } });
+  }
+  if (e.target.matches("[data-reminder-time]")) saveEngagement(ctx, { reminder: { ...state.reminder, time: e.target.value } });
+  if (e.target.matches("[data-reminder-quiet]")) saveEngagement(ctx, { reminder: { ...state.reminder, quiet: e.target.checked } });
+}
+
+export function mount(_root, ctx) {
+  const reminder = getEngagement(ctx.prefs).reminder;
+  if (reminder.enabled && "Notification" in window && Notification.permission === "granted") scheduleReminder(ctx);
+}
+
+let reminderTimer;
+function scheduleReminder(ctx) {
+  if (reminderTimer) return;
+  reminderTimer = window.setInterval(() => {
+    const reminder = getEngagement(ctx.prefs).reminder;
+    const now = new Date();
+    if (!reminder.enabled || Notification.permission !== "granted" || !reminder.days.includes(now.getDay())) return;
+    const selected = reminder.time.split(":").map(Number);
+    if (reminder.quiet && (now.getHours() < 7 || now.getHours() >= 21)) return;
+    if (now.getHours() !== selected[0] || now.getMinutes() !== selected[1]) return;
+    const stamp = `${todayISO(now)}:${reminder.time}`;
+    if (sessionStorage.getItem("ewl-family-reminder") === stamp) return;
+    sessionStorage.setItem("ewl-family-reminder", stamp);
+    const spanish = ctx.prefs.lang === "es";
+    new Notification(spanish ? "Práctica familiar de EduWonderLab" : "EduWonderLab family practice", { body: spanish ? "Hay una práctica breve y opcional cuando le venga bien a su familia." : "A short optional practice moment is ready when it works for your family." });
+  }, 30000);
 }

@@ -9,6 +9,8 @@ export const LOGO = raw(
 
 const PRACTICE_VIEWS = new Set([
   "home",
+  "session-done",
+  "stories",
   "room",
   "activity",
   "play",
@@ -39,6 +41,8 @@ const ACTIVE = {
   passport: "passport",
   family: "family",
   tools: "help",
+  road: "journey",
+  growth: "review",
 };
 
 /** The six places a learner, family or teacher goes first. */
@@ -46,12 +50,8 @@ export function primaryLinks(band, T) {
   const q = `?grades=${band}`;
   return [
     { id: "practice", icon: "home", label: T("Practice", "Practicar"), href: `${BASE}/${q}` },
-    {
-      id: "tests",
-      icon: "tests",
-      label: T("Practice tests", "Pruebas"),
-      href: `${BASE}/tests${q}`,
-    },
+    { id: "journey", icon: "road", label: T("Journey", "Recorrido"), href: `${BASE}/road${q}` },
+    { id: "review", icon: "growth", label: T("Keep it strong", "Repasar"), href: `${BASE}/growth${q}` },
     {
       id: "passport",
       icon: "passport",
@@ -100,6 +100,7 @@ function menuGroups(band, T) {
         link("reading", T("Reading Room", "Sala de lectura"), "reading-room"),
         link("mission", T("Academic missions", "Misiones académicas"), "missions"),
         link("worlds", T("Language Worlds", "Mundos lingüísticos"), "worlds"),
+        link("worlds", T("Neighborhood Notes stories", "Historias del cuaderno del vecindario"), "stories"),
         link("words", T("Word Builder", "Constructor de palabras"), "vocabulary"),
         link("detective", T("Error Detective", "Detective de errores"), "detective"),
       ],
@@ -107,6 +108,7 @@ function menuGroups(band, T) {
     {
       title: T("Plan and review", "Planificar y repasar"),
       items: [
+        link("tests", T("Practice tests", "Pruebas de práctica"), "tests"),
         link("road", T("Road to ACCESS", "Camino a ACCESS"), "road"),
         link("growth", T("My growth", "Mi progreso"), "growth"),
         link("checkin", T("Skill check-in", "Chequeo de destrezas"), "diagnostic"),

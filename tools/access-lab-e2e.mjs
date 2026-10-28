@@ -143,7 +143,7 @@ try {
     (await page.textContent(".session-list li:first-child")).includes("Continue your saved work"),
     "planner surfaces saved unfinished writing",
   );
-  await page.getByRole("link", { name: "Continue my practice" }).click();
+  await page.getByRole("button", { name: "Start today’s mission · 10 min" }).click();
   await page.waitForSelector("[data-note]");
   ok(
     (await page.inputValue("[data-note]")).includes("draft I will continue"),
@@ -358,8 +358,8 @@ try {
   ok(await page.isVisible(".recorder"), "speaking item has a recorder");
   await page.click("[data-practiced]");
   await page.waitForSelector("[data-practiced]:checked");
-  await page.check('[data-selfcheck="answered"]');
-  await page.check('[data-selfcheck="clear"]');
+  await page.check('[data-selfcheck="topic"]');
+  await page.check('[data-selfcheck="details"]');
   await page.click("[data-save-speaking]");
   ok(await page.isVisible(".saved-note"), "speaking practice saves");
 

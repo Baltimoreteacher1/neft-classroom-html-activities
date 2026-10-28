@@ -12,6 +12,7 @@ import { loadLedger } from "../lang/ledger.js";
 import { loadStudio } from "../lang/studio.js";
 import { downloadText } from "../studio-ui.js";
 import { bandDomains, bandRows } from "../content.js";
+import { getEngagement, saveEngagement } from "../engagement.js";
 import {
   clearAll,
   exportCode,
@@ -96,6 +97,9 @@ function badges(stats, streak, days, extra) {
   const all4 = stats.every((s) => s.done > 0);
   const doneIn = (d) => stats.find((s) => s.domain === d)?.done || 0;
   return [
+    { on: extra.awards.includes("review-explorer"), icon: "calendar", name: "Review Explorer", how: "Return to previous work for a spaced review." },
+    { on: extra.awards.includes("welcome-back"), icon: "star", name: "Welcome Back", how: "Return to practice after time away." },
+    { on: extra.awards.includes("strategy-on-new-task"), icon: "mission", name: "Strategy on a New Task", how: "Try a language strategy in a related new situation." },
     {
       on: total >= 1,
       icon: "star",
@@ -103,7 +107,7 @@ function badges(stats, streak, days, extra) {
       how: I.T("Finish any activity.", "Termina cualquier actividad."),
     },
     {
-      on: all4,
+      on: all4 || extra.awards.includes("all-four-skills"),
       icon: "grid",
       name: I.T("All four skills", "Las cuatro destrezas"),
       how: I.T("Finish one activity in every skill.", "Termina una actividad en cada destreza."),
@@ -133,10 +137,10 @@ function badges(stats, streak, days, extra) {
       how: I.T("Record yourself speaking and check your language in 3 Speaking Studio tries.", "Grábate hablando y revisa tu lenguaje en 3 intentos del Estudio de expresión oral."),
     },
     {
-      on: extra.revised,
+      on: extra.revised || extra.awards.includes("thoughtful-reviser"),
       icon: "retry",
-      name: I.T("Reviser", "Revisión"),
-      how: I.T("Get feedback on a draft, change it, and ask again.", "Recibe comentarios sobre un borrador, cámbialo y pídelos otra vez."),
+      name: I.T("Thoughtful Reviser", "Revisión reflexiva"),
+      how: I.T("Read specific feedback and revise your response.", "Lee comentarios específicos y revisa tu respuesta."),
     },
     {
       on: extra.independentWriting,
@@ -145,10 +149,10 @@ function badges(stats, streak, days, extra) {
       how: I.T("Write or speak a first attempt with no frames, word bank or model.", "Escribe o habla en un primer intento sin estructuras, banco de palabras ni modelo."),
     },
     {
-      on: extra.sourceUse,
+      on: extra.sourceUse || extra.awards.includes("evidence-finder"),
       icon: "bookmark",
-      name: I.T("Evidence user", "Uso de evidencia"),
-      how: I.T("Use at least two pieces of evidence from a source in your own writing.", "Usa al menos dos pruebas de una fuente en tu propia escritura."),
+      name: I.T("Evidence Finder", "Buscador de evidencia"),
+      how: I.T("Use details from a source to support your response.", "Usa detalles de una fuente para apoyar tu respuesta."),
     },
     {
       on: extra.patternClosed,
@@ -489,10 +493,12 @@ export async function render(ctx) {
     .sort((a, b) => b.result.date.localeCompare(a.result.date));
   const days = practiceDays();
   const streak = weekStreak(days);
+  const engagement = getEngagement(ctx.prefs);
   const ledger = loadLedger();
   const studio = loadStudio();
   const mine = ledger.entries.filter((e) => e.band === band);
   const extra = {
+    awards: engagement.awards,
     recordings: mine.filter((e) => e.src === "speaking").length,
     revised: mine.some((e) => e.kind === "revision"),
     independentWriting: mine.some(
@@ -528,7 +534,7 @@ export async function render(ctx) {
         [I.S("My Passport", "Pasaporte"), null],
       ])}
       <section class="pass-page">
-        <header class="pass-hero">
+        <header class="pass-hero ${engagement.cosmetic ? `cosmetic-${engagement.cosmetic}` : ""}">
           <div class="pass-hero-copy">
             <p class="eyebrow">${I.T(`ACCESS Practice Passport · ${bandLabel(band)}`, `Pasaporte de práctica ACCESS · ${bandLabel(band)}`)}</p>
             <h1 tabindex="-1">${name ? I.T(`${name}'s Passport`, `Pasaporte de ${name}`) : I.T("My Passport", "Pasaporte")}</h1>
@@ -605,6 +611,7 @@ export async function render(ctx) {
         </div>
 
         <section aria-labelledby="passMiles">
+          <section class="pass-cosmetics" aria-labelledby="passCosmeticsTitle"><h2 id="passCosmeticsTitle">Passport decorations</h2><p class="fine">Earn XP for meaningful practice, then choose a small decoration. Every lesson and support stays available either way.</p><p class="pass-xp"><strong>${engagement.xp} XP</strong> · participation points, not a proficiency score.</p><div class="pass-cosmetic-list">${[{ id: "trail-glow", need: 25, label: "Trail glow", icon: "worlds" }, { id: "map-pin", need: 60, label: "Golden map pin", icon: "road" }, { id: "word-wings", need: 100, label: "Word wings", icon: "writing" }].map((item) => html`<button type="button" class="btn" data-equip-cosmetic="${item.id}" ${engagement.xp < item.need ? "disabled" : ""} aria-pressed="${engagement.cosmetic === item.id}">${icon(item.icon)} ${item.label} · ${item.need} XP ${engagement.xp >= item.need ? (engagement.cosmetic === item.id ? "· Selected" : "· Unlocked") : "· Locked"}</button>`)}</div></section>
           <div class="pass-heading-row">
             <h2 id="passMiles" class="pass-heading">${I.T("Milestones", "Logros")}</h2>
             <p class="fine">
@@ -759,6 +766,13 @@ function shareBundle(ctx) {
 export async function onClick(e, ctx) {
   const I = i18nFor(ctx);
   const t = e.target;
+  const equip = t.closest("[data-equip-cosmetic]");
+  if (equip) {
+    const state = getEngagement(ctx.prefs);
+    const need = { "trail-glow": 25, "map-pin": 60, "word-wings": 100 }[equip.dataset.equipCosmetic];
+    if (need && state.xp >= need) { saveEngagement(ctx, { cosmetic: equip.dataset.equipCosmetic }); ctx.rerender(); }
+    return true;
+  }
   if (t.closest("[data-refresh-report]")) {
     announce(I.S("Practice report updated from saved work on this device.", "Informe de práctica actualizado con el trabajo guardado en este dispositivo."));
     ctx.rerender();

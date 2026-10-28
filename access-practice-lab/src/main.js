@@ -43,10 +43,13 @@ import * as worldsView from "./views/worlds.js";
 import * as classroomView from "./views/classroom.js";
 import * as vocabularyView from "./views/vocabulary.js";
 import * as readingRoomView from "./views/reading-room.js";
+import * as storiesView from "./views/stories.js";
 
 export const BUILD = "2026.10.25.1";
 const VIEWS = {
   home: homeView,
+  "session-done": homeView,
+  stories: storiesView,
   library: libraryView,
   room: roomView,
   activity: activityView,
@@ -94,7 +97,7 @@ export function parseRoute(pathname = location.pathname, search = location.searc
   if (a === "worlds") {
     return { ...r, view: "worlds", id: b || "", worldId: b || "", missionId: c || "", tab: q.get("tab") || "" };
   }
-  if (["tests", "family", "passport", "tools", "library", "missions", "mission", "conversation", "construction", "evidence", "growth", "speak", "write", "detective", "launch", "launch-studio", "teacher-launch", "classroom", "vocabulary"].includes(a)) {
+  if (["tests", "family", "passport", "tools", "library", "missions", "mission", "conversation", "construction", "evidence", "growth", "speak", "write", "detective", "launch", "launch-studio", "teacher-launch", "classroom", "vocabulary", "stories"].includes(a)) {
     return { ...r, view: a, id: b || "", missionId: b || "", scenarioId: b || "", tab: q.get("tab") || "" };
   }
   if (a === "diagnostic") return { ...r, view: "diagnostic", domain: b || "" };
@@ -106,7 +109,9 @@ export function parseRoute(pathname = location.pathname, search = location.searc
       ids: (q.get("ids") || "").split(",").filter(Boolean),
       index: Number(q.get("i")) || 0,
       title: q.get("t") || "",
+      sessionId: q.get("sid") || "",
     };
+  if (a === "session-done") return { ...r, view: "session-done", sessionId: b || q.get("sid") || "" };
   if (!DOMAINS.includes(a)) return { ...r, notFound: true };
   if (a === "Model-Test") {
     const level = b && c ? `${b}-${c}` : "";

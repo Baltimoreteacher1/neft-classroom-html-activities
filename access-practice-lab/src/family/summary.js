@@ -3,6 +3,7 @@
 // and revision are kept apart because they mean different things.
 import { needsReview } from "../store.js";
 import { CORE_DOMAINS } from "../util.js";
+import { todayISO } from "../util.js";
 
 const countable = (r) => r && !needsReview(r) && r.meaningful !== false && r.words !== 0 && r.practiced !== false;
 const dayOf = (iso) => (typeof iso === "string" ? iso.slice(0, 10) : "");
@@ -48,6 +49,16 @@ export function summarize(entries, rowsById = new Map(), esGuide = {}) {
     };
   }
   out.dayCount = out.days.size;
+  const today = new Date();
+  today.setHours(12, 0, 0, 0);
+  today.setDate(today.getDate() - ((today.getDay() + 6) % 7));
+  const weekStart = todayISO(today);
+  const nextWeek = new Date(today);
+  nextWeek.setDate(nextWeek.getDate() + 7);
+  const weekEnd = todayISO(nextWeek);
+  const weekItems = dated.filter((item) => item.day >= weekStart && item.day < weekEnd);
+  out.weeklyDays = new Set(weekItems.map((item) => item.day)).size;
+  out.weeklyDomains = [...new Set(weekItems.map((item) => item.domain))];
   out.hasWork = out.completed > 0 || dated.length > 0;
   // The next skill: an untried one first, else the one with the fewest completed activities.
   // With no saved practice there is nothing to be "next" after, so the page shows its starting prompt instead.

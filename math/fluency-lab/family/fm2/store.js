@@ -69,18 +69,26 @@ export function createStore({ profile = 0, storage = null, onUnavailable = () =>
   }
   const key = profileKey(KEY, profile);
   let warned = false;
+  let persistenceAvailable = Boolean(backing);
   const read = () => {
     try { return backing ? backing.getItem(key) : memory.get(key) ?? null; } catch { return memory.get(key) ?? null; }
   };
   const write = (text) => {
     memory.set(key, text);
-    try { backing?.setItem(key, text); } catch { if (!warned) { warned = true; onUnavailable(); } }
+    try {
+      if (!backing) throw new Error("Persistent storage is unavailable");
+      backing.setItem(key, text);
+    } catch {
+      persistenceAvailable = false;
+      if (!warned) { warned = true; onUnavailable(); }
+    }
   };
   let state;
   try { state = sanitize(JSON.parse(read())); } catch { state = emptyState(); }
   const save = () => write(JSON.stringify(state));
   return {
     profile,
+    get persistenceAvailable() { return persistenceAvailable; },
     get state() { return state; },
     save,
     reset() { state = emptyState(); save(); },

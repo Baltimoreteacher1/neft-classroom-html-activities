@@ -17,6 +17,7 @@ import { findActivity, loadDomain, loadEsGuide, loadFamilyCoach, loadGlossary, l
 import { buildCoaching } from "../family/coach.js";
 import { copilotHTML } from "../family/copilot.js";
 import { getFamily } from "../family/state.js";
+import { award, getEngagement, saveEngagement } from "../engagement.js";
 import { i18nFor, makeI18n } from "../i18n.js";
 import { glossInline, glossList, glossListHTML, openGloss } from "../glossary.js";
 import {
@@ -104,7 +105,7 @@ async function resolve(ctx) {
     return {
       ...found,
       index: found.list.indexOf(found.activity),
-      playlist: { ids, index, title: r.title },
+      playlist: { ids, index, title: r.title, sessionId: r.sessionId },
     };
   }
   const data = await loadDomain(ctx.band, r.domain).catch(() => null);
@@ -479,11 +480,11 @@ function navHTML() {
   if (cur.playlist) {
     const { ids, index, title } = cur.playlist;
     const at = (i) =>
-      `${BASE}/play?ids=${ids.join(",")}&i=${i}&grades=${cur.band}&mode=${mode}${title ? `&t=${encodeURIComponent(title)}` : ""}`;
+      `${BASE}/play?ids=${ids.join(",")}&i=${i}&grades=${cur.band}&mode=${mode}${title ? `&t=${encodeURIComponent(title)}` : ""}${cur.playlist.sessionId ? `&sid=${encodeURIComponent(cur.playlist.sessionId)}` : ""}`;
     return html`<nav class="act-nav" aria-label="${I.S("Playlist", "Lista de actividades")}">
       ${index > 0 ? html`<a class="btn" href="${at(index - 1)}">${icon("arrow-left")} ${I.T("Previous", "Anterior")}</a>` : html`<span></span>`}
       <span class="act-count">${I.T(`${index + 1} of ${ids.length}`, `${index + 1} de ${ids.length}`)}</span>
-      ${index < ids.length - 1 ? html`<a class="btn btn-primary" href="${at(index + 1)}">${I.T("Next", "Siguiente")} ${icon("arrow-right")}</a>` : html`<a class="btn btn-primary" href="${BASE}/family/progress?done=1">${I.T("Finish", "Terminar")} ${icon("check")}</a>`}
+      ${index < ids.length - 1 ? html`<a class="btn btn-primary" href="${at(index + 1)}">${I.T("Next", "Siguiente")} ${icon("arrow-right")}</a>` : html`<a class="btn btn-primary" href="${cur.playlist.sessionId ? `${BASE}/session-done/${encodeURIComponent(cur.playlist.sessionId)}?grades=${cur.band}` : `${BASE}/family/progress?done=1&grades=${cur.band}`}">${I.T("Finish", "Terminar")} ${icon("check")}</a>`}
     </nav>`;
   }
   const prev = cur.list[cur.index - 1];
@@ -520,6 +521,11 @@ export async function render(ctx) {
         <a class="btn btn-primary" href="${BASE}/">${I.T("Go to the lab home", "Ir a la página principal del laboratorio")}</a>
       </section>`,
     };
+  if (snapshot.route.sessionId) {
+    const engagement = getEngagement(ctx.prefs);
+    if (engagement.activeSession?.id === snapshot.route.sessionId && engagement.activeSession.index !== snapshot.route.index)
+      saveEngagement(ctx, { activeSession: { ...engagement.activeSession, index: snapshot.route.index } });
+  }
   const sameActivity = cur?.activity?.id === found.activity.id;
   cur = { ...found, record: loadRecord(found.band, found.domain, found.level) };
   if (!sameActivity) {
@@ -625,7 +631,13 @@ function check(a, ctx) {
     tries: n,
   };
   cur.record.complete = cur.record.complete.filter((id) => id !== a.id);
-  if (ok) cur.record.complete.push(a.id);
+  if (ok) {
+    cur.record.complete.push(a.id);
+    award(ctx, `skill-${cur.domain.toLowerCase()}:${cur.band}:${a.id}`, 0, cur.domain);
+    award(ctx, `activity:${cur.band}:${cur.domain}:${cur.level}:${a.id}`, 4, "First meaningful practice");
+    const activeSession = getEngagement(ctx.prefs).activeSession;
+    if (cur.playlist?.title?.toLowerCase().includes("review") || activeSession?.reviewIds?.includes(a.id)) award(ctx, `review:${cur.band}:${a.id}`, 2, "Reviewed previous work");
+  }
   save();
   announce(
     ok

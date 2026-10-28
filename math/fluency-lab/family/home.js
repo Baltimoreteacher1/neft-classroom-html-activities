@@ -39,6 +39,7 @@ import { recommend, reasonText } from "./fm2/recommend.js";
 import { forGrade } from "./fm2/realworld.js";
 import { GAME_IDS } from "./fm2/registry.js";
 import { seedFrom } from "./fm2/rng.js";
+import { directedSkillPlan, findDirectedSkill, skillExample, skillExplanation, skillSearchText, teacherMessage, teacherSkillLink } from "./fm2/teacher-link.js";
 import { dailyMission, encodePlan, MINUTE_CHOICES, planSession } from "./fm2/session.js";
 import { createGuidedStore } from "./fm2/guided/guided-core.js";
 import { createStore, dayKey, minutesThisWeek, streak } from "./fm2/store.js";
@@ -58,6 +59,11 @@ const S = {
   loaded: false,
   strands: new Set(),
   openRw: new Set(), rwAll: false,
+  selectedSkill: params.get("skill") || "",
+  selectedGame: params.get("game") || "",
+  shareMinutes: [5, 10, 15].includes(Number(params.get("minutes"))) ? Number(params.get("minutes")) : 10,
+  search: "",
+  requestedSkillState: "none",
   fresh: true,
 };
 
@@ -68,9 +74,14 @@ function openProfile() {
     onUnavailable: () => showStorageWarning($("#family-storage-warning"), S.lang),
   });
   const saved = S.store.state.settings;
-  S.grade = S.fresh ? (intParam(params, "grade", 0, 8) ?? saved.grade) : saved.grade;
-  S.minutes = saved.minutes;
-  S.mode = saved.mode;
+  S.grade = S.selectedSkill
+    ? (intParam(params, "grade", 0, 8) ?? S.grade ?? saved.grade)
+    : S.fresh
+      ? (intParam(params, "grade", 0, 8) ?? saved.grade)
+      : saved.grade;
+  const linkedMinutes = Number(params.get("minutes"));
+  S.minutes = S.selectedSkill && [5, 10, 15].includes(linkedMinutes) ? linkedMinutes : saved.minutes;
+  S.mode = S.selectedSkill && ["solo", "together"].includes(params.get("mode")) ? params.get("mode") : saved.mode;
   S.strands = new Set();
   S.openRw = new Set();
   S.rwAll = false;
@@ -78,7 +89,20 @@ function openProfile() {
 }
 function choose(name, value) {
   S[name] = value;
+  if (name === "grade" && S.selectedSkill && !findDirectedSkill(S.games, value, S.selectedSkill, S.selectedGame)) {
+    S.selectedSkill = "";
+    S.selectedGame = "";
+    S.requestedSkillState = "invalid";
+    const url = new URL(location.href);
+    url.searchParams.delete("skill");
+    url.searchParams.delete("game");
+    url.searchParams.delete("minutes");
+    history.replaceState(null, "", url);
+  }
   S.store.setSetting(name, value);
+  if (name === "minutes") S.shareMinutes = Number(value);
+  if (["minutes", "mode"].includes(name) && S.selectedSkill)
+    keepUrl({ grade: S.grade, profile: S.profile, game: S.selectedGame, skill: S.selectedSkill, minutes: S.shareMinutes, mode: S.mode });
   keepUrl({ grade: S.grade, profile: S.profile });
   draw();
 }
@@ -89,6 +113,10 @@ function derive() {
   if (!games.length) return { plan: null, daily: null, recs: [] };
   const state = store.state;
   const seed = seedFrom(dayKey(), grade, mode);
+  const directed = findDirectedSkill(games, grade, S.selectedSkill, S.selectedGame);
+  if (directed) {
+    return { plan: directedSkillPlan({ ...directed, grade, minutes, mode, level: suggestLevel(store, directed.game.id, directed.skill, grade) }), daily: null, recs: recommend({ state, grade, games, limit: 8 }) };
+  }
   return {
     plan: planSession({ grade, minutes, mode, state, games, seed }),
     daily: dailyMission({ grade, state, games, mode }),
@@ -122,8 +150,10 @@ function tonightSkill() {
 function setupHtml(info) {
   const { lang } = S;
   const grades = GRADE_LIST.map((g) => {
-    const label = gradeName(g, lang);
-    return `<button type="button" class="hm-grade" data-grade="${g}" aria-pressed="${g === S.grade}" aria-label="${esc(label)}" data-fk="grade-${g}" data-testid="grade-${g}"><span>${esc(t(C.gradeWord, lang))}</span><b>${gradeShort(g)}</b></button>`;
+    const label = g === 0
+      ? `${t(C.gradeWord, lang)} K · ${gradeName(g, lang)}`
+      : `${t(C.gradeWord, lang)} ${g}`;
+    return `<option value="${g}" ${g === S.grade ? "selected" : ""}>${esc(label)}</option>`;
   }).join("");
   const radios = (name, values, label) =>
     values
@@ -135,8 +165,8 @@ function setupHtml(info) {
   const code = planCode(info.plan);
   const count = info.plan?.activities.length || 0;
   const start = code
-    ? `<a class="fm2-btn hm-start" id="start-link" data-testid="start-session" href="${playUrl({ plan: code, ...here() })}">${esc(t(C.start, lang))}</a>`
-    : `<button type="button" class="fm2-btn hm-start" id="start-link" data-testid="start-session" aria-disabled="true" disabled>${esc(t(C.start, lang))}</button>`;
+    ? `<a class="fm2-btn fm2-btn-primary hm-start" id="start-link" data-testid="start-session" href="${playUrl({ plan: code, ...here() })}">${esc(t(C.start, lang, { min: S.minutes }))}</a>`
+    : `<button type="button" class="fm2-btn fm2-btn-primary hm-start" id="start-link" data-testid="start-session" aria-disabled="true" disabled>${esc(t(C.start, lang, { min: S.minutes }))}</button>`;
   const note = code
     ? t(C.startNote, lang, {
         n: count,
@@ -144,13 +174,15 @@ function setupHtml(info) {
         mode: t(C[S.mode], lang),
       })
     : t(S.loaded ? C.noGames : C.loading, lang);
-  return `<fieldset class="hm-field"><legend>${esc(t(C.grade, lang))}</legend><div class="hm-grades" data-testid="grade-selector">${grades}</div></fieldset>
+  return `<div class="hm-field"><label class="hm-field-label" for="family-grade">${esc(t(C.grade, lang))}</label><select class="hm-grade-select" id="family-grade" name="grade" data-testid="grade-selector">${grades}</select></div>
     <div class="hm-field-row">
       <fieldset class="hm-field"><legend>${esc(t(C.length, lang))}</legend><div class="hm-seg" data-testid="length-group">${radios("minutes", MINUTE_CHOICES, (v) => t(C.minutesOpt, lang, { n: v }))}</div></fieldset>
       <fieldset class="hm-field"><legend>${esc(t(C.how, lang))}</legend><div class="hm-seg" data-testid="mode-group">${radios("mode", ["solo", "together"], (v) => t(C[v], lang))}</div></fieldset>
     </div>
     <p class="hm-hint">${esc(t(C[`${S.mode}Hint`], lang))}</p>
-    ${start}<p class="hm-note" id="plan-summary" data-testid="plan-summary" role="status">${esc(note)}</p>`;
+    ${start}<p class="hm-note" id="plan-summary" data-testid="plan-summary" role="status">${esc(note)}</p>
+    ${S.requestedSkillState === "invalid" ? `<p class="hm-note" role="status">${esc(t(C.skillInvalid, lang))}</p>` : ""}
+    ${S.requestedSkillState === "unavailable" ? `<p class="hm-note" role="status">${esc(t(C.skillUnavailable, lang))}</p>` : ""}`;
 }
 
 function missionHtml(info) {
@@ -200,7 +232,10 @@ function shelfHtml() {
     const href = playUrl({ game: id, skill: skill.id, level, ...here() });
     return `<li class="hm-game" data-testid="game-card" data-game="${id}" data-ready="true" style="--i:${index}">${icon(game)}<div class="hm-game-main"><strong>${esc(L(game.title, lang))}</strong><span>${esc(L(game.tagline, lang))}</span><small>${esc(t(C.gradesRange, lang, { range: gradeRange(low, high) }))}</small></div><a class="fm2-btn" href="${href}" aria-label="${esc(`${t(C.play, lang)}: ${L(game.title, lang)}`)}" data-testid="game-play">${esc(t(C.play, lang))}</a></li>`;
   });
-  return `<ul class="hm-games">${cards.join("")}</ul>`;
+  const retry = S.loaded && S.missing.length
+    ? `<button type="button" class="fm2-btn" data-action="retry-games" data-testid="retry-games">${esc(t(C.retry, lang))}</button>`
+    : "";
+  return `${retry}<ul class="hm-games">${cards.join("")}</ul>`;
 }
 
 function skillsHtml() {
@@ -216,24 +251,52 @@ function skillsHtml() {
   }
   const keys = STRAND_KEYS.filter((k) => groups.has(k));
   if (!S.strands.size) S.strands.add(keys[0]);
+  const needle = S.search.trim().toLocaleLowerCase();
   return keys
     .map((key) => {
-      const rows = groups.get(key).map((entry) => {
+      const rows = groups.get(key).filter((entry) => {
+        if (!needle) return true;
+        const game = gameOf(entry.gameId);
+        const skill = skillOf(entry.gameId, entry.skillId);
+        return skillSearchText(game, skill).includes(needle.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLocaleLowerCase());
+      }).map((entry) => {
         const game = gameOf(entry.gameId);
         const skill = skillOf(entry.gameId, entry.skillId);
         const level = suggestLevel(store, entry.gameId, skill, grade);
         const href = playUrl({ game: entry.gameId, skill: entry.skillId, level, ...here() });
         const label = `${t(C.practice, lang)}: ${L(skill.title, lang)} (${L(game.title, lang)})`;
-        return `<li class="hm-skill" data-testid="skill-row" data-game="${entry.gameId}" data-skill="${entry.skillId}">${icon(game)}<div class="hm-skill-main"><strong>${esc(L(skill.title, lang))}</strong><span>${esc(L(game.title, lang))} · ${esc(entry.standard)}</span>${starsHtml(store.stars(entry.gameId, entry.skillId), lang)}</div><a class="fm2-btn hm-practice" href="${href}" aria-label="${esc(label)}" data-testid="skill-practice">${esc(t(C.practice, lang))}</a></li>`;
+        return `<li class="hm-skill" data-testid="skill-row" data-game="${entry.gameId}" data-skill="${entry.skillId}">${icon(game)}<div class="hm-skill-main"><strong>${esc(L(skill.title, lang))}</strong><span>${esc(L(game.title, lang))} · ${esc(entry.standard)}</span>${starsHtml(store.stars(entry.gameId, entry.skillId), lang)}</div><button type="button" class="fm2-btn hm-practice" aria-label="${esc(`${t(C.focusSkill, lang)}: ${L(skill.title, lang)}`)}" data-select-skill="${entry.skillId}" data-game="${game.id}" data-fk="select-${entry.skillId}">${esc(t(C.focusSkill, lang))}</button><a class="fm2-btn hm-practice" href="${href}" aria-label="${esc(label)}" data-testid="skill-practice">${esc(t(C.practice, lang))}</a></li>`;
       });
+      if (!rows.length) return "";
       return `<details class="hm-strand" data-strand="${key}" data-testid="strand-group" ${S.strands.has(key) ? "open" : ""}><summary data-fk="strand-${key}"><span>${esc(t(STRAND_LABEL[key], lang))}</span><small>${esc(rows.length === 1 ? t(C.skillOne, lang) : t(C.skillCount, lang, { n: rows.length }))}</small></summary><ul class="hm-skills">${rows.join("")}</ul></details>`;
     })
     .join("");
 }
 
+function teacherPickerHtml() {
+  const { lang, grade } = S;
+  const entries = skillsFor(S.games, grade).filter((entry) => {
+    const game = gameOf(entry.gameId);
+    const skill = skillOf(entry.gameId, entry.skillId);
+    const needle = S.search.trim().normalize("NFD").replace(/\p{Diacritic}/gu, "").toLocaleLowerCase();
+    return !needle || skillSearchText(game, skill).includes(needle);
+  }).map((entry) => ({ game: gameOf(entry.gameId), skill: skillOf(entry.gameId, entry.skillId) })).filter((entry) => entry.game && entry.skill);
+  const selected = findDirectedSkill(S.games, grade, S.selectedSkill, S.selectedGame);
+  const guide = (game, skill) => `<p>${esc(skillExplanation(skill, lang))}</p><p class="hm-skill-example"><b>${esc(t(C.examplePrompt, lang))}</b> ${esc(skillExample(game, skill, grade, lang))}</p>`;
+  const options = entries.map(({ game, skill }) => `<li><div class="hm-picker-skill"><strong>${esc(L(skill.title, lang))}</strong><small>${esc(L(game.title, lang))} · ${esc(skill.standard)}</small>${guide(game, skill)}</div><button type="button" class="fm2-btn" aria-label="${esc(`${t(C.focusSkill, lang)}: ${L(skill.title, lang)}`)}" data-select-skill="${skill.id}" data-game="${game.id}">${esc(t(C.focusSkill, lang))}</button></li>`).join("");
+  let share = "";
+  if (selected) {
+    const url = new URL(teacherSkillLink({ grade, gameId: selected.game.id, skillId: selected.skill.id, minutes: S.shareMinutes, mode: S.mode, lang, path: location.pathname }), location.href).href;
+    const message = teacherMessage({ skill: selected.skill, grade, minutes: S.shareMinutes, lang, url });
+    const durationOptions = [5, 10, 15].map((n) => `<option value="${n}" ${n === S.shareMinutes ? "selected" : ""}>${esc(t(C.minutesOpt, lang, { n }))}</option>`).join("");
+    share = `<p><strong>${esc(t(C.focusSelected, lang, { skill: L(selected.skill.title, lang) }))}</strong></p><p>${esc(skillExplanation(selected.skill, lang))}</p><p class="hm-skill-example"><b>${esc(t(C.examplePrompt, lang))}</b> ${esc(skillExample(selected.game, selected.skill, grade, lang))}</p><label for="share-minutes">${esc(t(C.shareLength, lang))}</label><select id="share-minutes" data-testid="share-minutes">${durationOptions}</select><label for="teacher-message">${esc(t(C.teacherMessage, lang))}</label><textarea id="teacher-message" readonly rows="4" data-testid="teacher-message">${esc(message)}</textarea><button type="button" class="fm2-btn" data-copy-message>${esc(t(C.copyMessage, lang))}</button><span role="status" aria-live="polite">${esc(S.shareState === "copied" ? t(C.copied, lang) : S.shareState === "fallback" ? t(C.copyFallback, lang) : "")}</span><label for="teacher-link">${esc(t(C.teacherLink, lang))}</label><input id="teacher-link" type="url" readonly value="${esc(url)}" data-testid="teacher-link"><button type="button" class="fm2-btn" data-copy-link>${esc(t(C.copyLink, lang))}</button><button type="button" class="pk-link-btn" data-clear-skill>${esc(t(C.clearSkill, lang))}</button>`;
+  }
+  return `<div class="hm-teacher-picker" data-testid="teacher-skill-picker"><label for="skill-search">${esc(t(C.skillSearch, lang))}</label><input id="skill-search" type="search" value="${esc(S.search)}" data-testid="skill-search" data-fk="skill-search"><ul>${options}</ul>${share}</div>`;
+}
+
 function coachHtml(info) {
   const { lang, grade } = S;
-  const lead = info.recs[0] || info.plan?.activities[0];
+  const lead = S.selectedSkill ? info.plan?.activities[0] : info.recs[0] || info.plan?.activities[0];
   const game = lead && gameOf(lead.gameId);
   const skill = lead && skillOf(lead.gameId, lead.skillId);
   if (!skill)
@@ -287,7 +350,10 @@ function resumeHtml() {
     mode: saved.mode,
     resume: true,
   });
-  return `<section class="hm-resume" data-testid="resume-banner" aria-labelledby="resume-title"><div><h2 id="resume-title">${esc(t(C.resumeTitle, lang))}</h2><p>${esc(t(C.resumeText, lang, { game: game ? L(game.title, lang) : titleCase(saved.gameId) }))}</p></div><a class="fm2-btn fm2-btn-primary" href="${href}" data-testid="resume-link">${esc(t(C.resumeGo, lang))}</a></section>`;
+  const conflict = S.selectedSkill && (saved.skillId !== S.selectedSkill || saved.gameId !== S.selectedGame)
+    ? `<p role="status">${esc(t(C.resumeConflict, lang))}</p>`
+    : "";
+  return `<section class="hm-resume" data-testid="resume-banner" aria-labelledby="resume-title"><div><h2 id="resume-title">${esc(t(C.resumeTitle, lang))}</h2><p>${esc(t(C.resumeText, lang, { game: game ? L(game.title, lang) : titleCase(saved.gameId) }))}</p>${conflict}</div><a class="fm2-btn fm2-btn-primary" href="${href}" data-testid="resume-link">${esc(t(C.resumeGo, lang))}</a></section>`;
 }
 
 // ---- draw -----------------------------------------------------------------------------------------------------------
@@ -316,7 +382,13 @@ function draw() {
   applyStatic(document, C, lang);
   const info = derive();
   const lead = info.daily?.title;
-  $("#mission-sub").textContent = lead ? L(lead, lang) : "";
+  const focused = S.selectedSkill ? findDirectedSkill(S.games, S.grade, S.selectedSkill, S.selectedGame) : null;
+  document.querySelector(".hm-hero")?.classList.toggle("is-directed", Boolean(focused));
+  if (focused) {
+    $("#welcome-title").textContent = t(C.focusedTitle, lang, { skill: L(focused.skill.title, lang) });
+    $(".hm-hero-lead").textContent = skillExplanation(focused.skill, lang);
+  }
+  $("#mission-sub").textContent = focused ? t(C.focusSelected, lang, { skill: L(focused.skill.title, lang) }) : lead ? L(lead, lang) : "";
   $("#skills-sub").textContent = t(C.skillsLead, lang, { grade: gradeName(S.grade, lang) });
   $("#rw-sub").textContent = t(C.rwLead, lang, { grade: gradeName(S.grade, lang) });
   $("#rw-print-title").textContent = t(C.printRealworld, lang, { grade: gradeName(S.grade, lang) });
@@ -326,7 +398,7 @@ function draw() {
   paint($("#mission-body"), missionHtml(info));
   paint($("#progress-body"), progressHtml());
   paint($("#games-body"), shelfHtml());
-  paint($("#skills-body"), skillsHtml());
+  paint($("#skills-body"), `${teacherPickerHtml()}${skillsHtml()}`);
   const coach = coachHtml(info);
   $("#coach-sub").textContent = coach.sub;
   paint($("#coach-body"), coach.html);
@@ -341,6 +413,35 @@ function draw() {
   $("#lab-link").href = familyLaunch({ grade: S.grade, profile: S.profile });
   if ($("#family-storage-warning") && !$("#family-storage-warning").hidden)
     showStorageWarning($("#family-storage-warning"), lang);
+}
+
+function clearDirectedSkill() {
+  S.selectedSkill = "";
+  S.selectedGame = "";
+  S.requestedSkillState = "none";
+  S.shareState = "";
+  const url = new URL(location.href);
+  url.searchParams.delete("skill");
+  url.searchParams.delete("game");
+  url.searchParams.delete("minutes");
+  history.replaceState(null, "", url);
+  draw();
+}
+
+async function copyTeacherText(text, fallback) {
+  try {
+    if (!navigator.clipboard?.writeText) throw new Error("Clipboard unavailable");
+    await navigator.clipboard.writeText(text);
+    S.shareState = "copied";
+  } catch {
+    S.shareState = "fallback";
+  }
+  draw();
+  if (S.shareState === "fallback") {
+    const replacement = fallback?.id ? document.getElementById(fallback.id) : null;
+    replacement?.focus();
+    replacement?.select();
+  }
 }
 
 // ---- events ---------------------------------------------------------------------------------------------------------
@@ -358,10 +459,23 @@ window.addEventListener("afterprint", () => {
 });
 
 document.addEventListener("click", (event) => {
-  const grade = event.target.closest("[data-grade]");
-  if (grade) return choose("grade", Number(grade.dataset.grade));
+  const selectSkill = event.target.closest("[data-select-skill]");
+  if (selectSkill) {
+    S.selectedSkill = selectSkill.dataset.selectSkill;
+    S.selectedGame = selectSkill.dataset.game || "";
+    S.minutes = S.shareMinutes;
+    S.store.setSetting("minutes", S.minutes);
+    S.requestedSkillState = "valid";
+    S.shareState = "";
+    keepUrl({ grade: S.grade, profile: S.profile, game: S.selectedGame, skill: S.selectedSkill, minutes: S.minutes, mode: S.mode });
+    return draw();
+  }
+  if (event.target.closest("[data-clear-skill]")) return clearDirectedSkill();
+  if (event.target.closest("[data-copy-message]")) return copyTeacherText($("#teacher-message").value, $("#teacher-message"));
+  if (event.target.closest("[data-copy-link]")) return copyTeacherText($("#teacher-link").value, $("#teacher-link"));
   const rw = event.target.closest("[data-print-rw]");
   if (rw) return printRegion("realworld", rw.closest("details"));
+  if (event.target.closest("[data-action=retry-games]")) return location.reload();
   if (event.target.closest("[data-action=rw-toggle]")) {
     S.rwAll = !S.rwAll;
     return draw();
@@ -369,6 +483,7 @@ document.addEventListener("click", (event) => {
   if (event.target.closest("#print-coach")) return printRegion("coach");
   if (event.target.closest("#lang-toggle")) {
     S.lang = switchLanguage(S.lang);
+    keepUrl({ grade: S.grade, profile: S.profile, ...(S.selectedSkill ? { game: S.selectedGame, skill: S.selectedSkill, minutes: S.minutes, mode: S.mode } : {}), lang: S.lang });
     return draw();
   }
   if (event.target.closest("#add-learner")) {
@@ -389,7 +504,20 @@ document.addEventListener("change", (event) => {
     keepUrl({ grade: S.grade, profile: S.profile });
     draw();
   } else if (el.name === "minutes") choose("minutes", Number(el.value));
+  else if (el.name === "grade") choose("grade", Number(el.value));
+  else if (el.id === "share-minutes") {
+    S.shareMinutes = Number(el.value);
+    S.minutes = S.shareMinutes;
+    S.store.setSetting("minutes", S.minutes);
+    S.shareState = "";
+    draw();
+  }
   else if (el.name === "mode") choose("mode", el.value);
+});
+document.addEventListener("input", (event) => {
+  if (event.target.id !== "skill-search") return;
+  S.search = event.target.value;
+  draw();
 });
 document.addEventListener(
   "toggle",
@@ -407,6 +535,15 @@ window.addEventListener("fluency-storage-unavailable", () =>
   showStorageWarning($("#family-storage-warning"), S.lang),
 );
 
+function validateRequestedSkill() {
+  if (!S.selectedSkill) return (S.requestedSkillState = "none");
+  S.requestedSkillState = findDirectedSkill(S.games, S.grade, S.selectedSkill, S.selectedGame)
+    ? "valid"
+    : S.missing.length
+      ? "unavailable"
+      : "invalid";
+}
+
 // ---- boot -----------------------------------------------------------------------------------------------------------
 try {
   openProfile();
@@ -416,9 +553,10 @@ try {
   S.games = games;
   S.missing = missing;
   S.loaded = true;
+  validateRequestedSkill();
   draw();
 } catch (error) {
   console.error(error);
   $("#error-region").innerHTML =
-    `<div class="pk-banner" data-testid="home-error-card"><strong>${esc(t(C.errorTitle, S.lang))}</strong> ${esc(t(C.errorText, S.lang))} <a href="tonight.html">${esc(t(C.tonightTitle, S.lang))}</a></div>`;
+    `<div class="pk-banner" data-testid="home-error-card"><strong>${esc(t(C.errorTitle, S.lang))}</strong> ${esc(t(C.errorText, S.lang))} <button type="button" class="fm2-btn" data-action="retry-games">${esc(t(C.retry, S.lang))}</button></div>`;
 }

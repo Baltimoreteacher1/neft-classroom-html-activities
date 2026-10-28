@@ -655,8 +655,8 @@ await go(`${BASE}/?grades=6-8`);
 const review = page.locator("section.review-due");
 ok(
   (await review.count()) === 1 &&
-    (await page.locator("#reviewTitle").innerText()).includes("Due for spaced review"),
-  "home shows 'Due for spaced review' when stored evidence makes an item due",
+    (await page.locator("#reviewTitle").innerText()).includes("Keep it strong"),
+  "home shows the Keep it strong review hub when stored evidence makes an item due",
 );
 const traces = await review.locator("li .fine").allInnerTexts();
 const seededTrace = traces.find((t) => /Error Detective/.test(t)) || "";

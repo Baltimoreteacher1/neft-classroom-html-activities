@@ -1,7 +1,8 @@
 // Family progress: what was practiced, kept apart from how it went. Counts come from saved results;
 // nothing is graded here, and completion is never presented as mastery.
 import { bandRows, loadEsGuide, loadRoad } from "../content.js";
-import { allRecords } from "../store.js";
+import { allRecords, getStudentName } from "../store.js";
+import { loadLedger } from "../lang/ledger.js";
 import { BASE, DOMAIN_META, html, icon, todayISO } from "../util.js";
 import { nextRecognition, recognition, weeklyChallenge } from "./engage.js";
 import { playlistHref, sessionOptions } from "./plan.js";
@@ -65,17 +66,20 @@ function recognitionHTML(I, summary) {
 export async function render(ctx, I) {
   const band = ctx.band;
   const [es, road, ...rowLists] = await Promise.all([loadEsGuide(), loadRoad(), ...ctx.bands.map((b) => bandRows(b))]);
-  const rows = rowLists.flat();
-  const summary = summarize(allRecords(), new Map(rows.map((r) => [r.id, r])), es);
-  const challenge = weeklyChallenge(road?.[band], allRecords(), todayISO());
-  const justFinished = new URLSearchParams(location.search).get("done") === "1" && summary.latest;
   const bandRowsNow = rowLists[ctx.bands.indexOf(band)] || [];
+  const bandRecords = allRecords().filter((r) => r.band === band);
+  const summary = summarize(bandRecords, new Map(bandRowsNow.map((r) => [r.id, r])), es);
+  const challenge = weeklyChallenge(road?.[band], bandRecords, todayISO());
+  const justFinished = new URLSearchParams(location.search).get("done") === "1" && summary.latest;
+  const alias = getStudentName();
+  const revisions = summary.revised + loadLedger().entries.filter((entry) => entry.band === band && entry.kind === "revision").length;
+  summary.revised = revisions;
   const options = sessionOptions({ rows: bandRowsNow, band, minutes: 10, tiers: ctx.prefs.tiers });
   const next = summary.nextDomain
     ? { domain: summary.nextDomain, plan: options.oneSkill[summary.nextDomain] }
     : null;
   const improved = [
-    summary.revised ? I.L("prog.improved.revised", { n: summary.revised }) : "",
+    revisions ? I.L("prog.improved.revised", { n: revisions }) : "",
     summary.help ? I.L("prog.improved.retry", { n: summary.help }) : "",
   ].filter(Boolean);
   return {
@@ -86,6 +90,7 @@ export async function render(ctx, I) {
           <p class="eyebrow">${icon("passport")} ${I.L("hub.eyebrow")}</p>
           <h1 id="famProgTitle" tabindex="-1">${I.L("prog.title")}</h1>
           <p class="lead">${I.L("prog.lead")}</p>
+          <p class="fine">${I.L("prog.scope", { band: band.replace("-", "–"), alias: alias || I.LS("prog.scope.learner") })}</p>
           <div class="fam-cta no-print">
             <button type="button" class="btn" data-print>${icon("print")} ${I.L("prog.print")}</button>
             <a class="btn" href="${BASE}/family/save?grades=${band}">${icon("save")} ${I.L("prog.save")}</a>
@@ -104,7 +109,8 @@ export async function render(ctx, I) {
             <li><strong>${summary.help}</strong><span>${I.L("prog.counts.help")}</span></li>
             <li><strong>${summary.revised}</strong><span>${I.L("prog.counts.revised")}</span></li>
           </ul>
-          <p class="fine">${I.L("prog.days")}: ${summary.dayCount}</p></section>
+          <p class="fine">${I.L("prog.days")}: ${summary.dayCount}</p>
+          <p class="fine">${I.L("prog.week.summary", { days: summary.weeklyDays, skills: summary.weeklyDomains.length ? summary.weeklyDomains.map((d) => I.LS(`hub.skill.name.${d}`)).join(", ") : I.LS("prog.week.none") })}</p></section>
         <section class="panel" aria-labelledby="pp3"><h2 id="pp3">${I.L("prog.skills.heading")}</h2>${skillBars(I, summary)}<p class="fine">${I.L("prog.skills.caption")}</p></section>
         <section class="panel" aria-labelledby="pp4"><h2 id="pp4">${I.L("prog.improved.heading")}</h2>
           ${improved.length ? html`<ul class="fam-lines">${improved.map((l) => html`<li>${l}</li>`)}</ul>` : html`<p>${I.L("prog.improved.none")}</p>`}</section>

@@ -26,6 +26,7 @@ import {
   trackDisclosures,
 } from "../studio-ui.js";
 import { ART, BASE, announce, html, icon, raw, wordCount } from "../util.js";
+import { award } from "../engagement.js";
 
 const IGN = raw("data-nsr-ignore");
 let S = null;
@@ -456,6 +457,8 @@ function feedback(ctx) {
     supports,
     m: a.ledger,
   });
+  if (!first) award(ctx, `revision:${S.band}:${S.task.id}`, 3, "Thoughtful revision");
+  if ((a.ledger?.cites || 0) >= 2) award(ctx, `evidence:${S.band}:${S.task.id}`, 3, "Evidence finder");
   saveLedger(S.ledger);
   save();
   announce(I.S("Feedback ready. Read your next moves, then revise.", "Comentarios listos. Lee tus próximos pasos y luego revisa."));

@@ -48,6 +48,8 @@ const U = {
   ofTotal: c("{correct} of {total}", "{correct} de {total}"),
   minutes: c("Minutes", "Minutos"),
   skills: c("Skills practiced", "Destrezas practicadas"),
+  savedLocal: c("This session’s results are saved on this device. These practice counts do not show mastery.", "Los resultados de esta sesión se guardan en este dispositivo. Estas cantidades de práctica no indican dominio."),
+  notSaved: c("This browser could not save the result. You can still finish, but it may not be remembered after you close this page.", "Este navegador no pudo guardar el resultado. Pueden terminar, pero quizá no se recuerde al cerrar esta página."),
   tryNext: c("What to try next", "Qué probar después"),
   tryIt: c("Try it", "Probar"),
   reflect: c("Family reflection", "Reflexión en familia"),
@@ -274,11 +276,11 @@ export async function runSession({
       seed: asSeed(Date.now()),
     });
     const code = again.activities.length ? encodePlan(again) : null;
-    drawComplete({ next, code, all });
+    drawComplete({ next, code, all, saved: store.persistenceAvailable });
   }
 
   function drawComplete(extra) {
-    const { next, code, all } = extra;
+    const { next, code, all, saved } = extra;
     const done = session.summaries.filter(Boolean);
     const correct = done.reduce((n, s) => n + s.correct, 0);
     const rounds = done.reduce((n, s) => n + s.rounds, 0);
@@ -326,6 +328,7 @@ export async function runSession({
       <div class="sr-stat"><b data-testid="session-minutes">${session.minutes}</b><span>${esc(t(U.minutes, lang))}</span></div>
       <div class="sr-stat"><b data-testid="session-skill-count">${skills.length}</b><span>${esc(t(U.skills, lang))}</span></div></div>
       <ul class="sr-acts" data-testid="session-skills" aria-label="${esc(t(U.list, lang))}">${rows.join("")}</ul>
+      <p class="sr-note" data-testid="session-save-status">${esc(t(saved ? U.savedLocal : U.notSaved, lang))}</p>
       ${nextBlock}${reflection}
       <div class="sr-actions">${againLink}<a class="fm2-btn" href="${homeUrl({ grade: plan.grade, profile, lang })}" data-testid="session-home">${esc(t(U.home, lang))}</a>
       <a class="fm2-btn" href="${progressUrl({ grade: plan.grade, profile, lang })}" data-testid="session-progress">${esc(t(U.progress, lang))}</a>
