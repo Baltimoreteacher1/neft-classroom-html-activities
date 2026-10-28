@@ -537,5 +537,319 @@
       ],
       "image": "/assets/vocab-images/positive.svg"
     }
-  ]
+  ],
+  "v3": {
+    "version": 1,
+    "kind": "math",
+    "topicKey": "absolute-value-total-distance-apply",
+    "standardPlain": {
+      "en": "Use absolute value to find the distance between two numbers.",
+      "es": "Usar el valor absoluto para hallar la distancia entre dos números."
+    },
+    "hook": {
+      "style": "scoreboard",
+      "en": "A town's weather board shows a low of −27 degrees and a high of 55 degrees in one day. By how many degrees did the temperature rise?",
+      "es": "El tablero del clima de un pueblo muestra un mínimo de −27 grados y un máximo de 55 grados en un día. ¿Cuántos grados subió la temperatura?",
+      "guess": {
+        "en": "Guess first: did it rise by more than 55 degrees, or less?",
+        "es": "Primero adivina: ¿subió más de 55 grados o menos?"
+      },
+      "reveal": {
+        "en": "More! Zero is between −27 and 55. The trip goes up to 0, then on to 55. Add: 27 + 55 = 82 degrees.",
+        "es": "¡Más! El cero está entre −27 y 55. El camino sube hasta el 0 y sigue hasta el 55. Suma: 27 + 55 = 82 grados."
+      }
+    },
+    "classModel": {
+      "name": {
+        "en": "up to zero, then out again",
+        "es": "hasta el cero y luego hacia afuera"
+      }
+    },
+    "model": {
+      "kind": "numberline",
+      "data": {
+        "min": -30,
+        "max": 60,
+        "step": 10,
+        "points": [
+          {
+            "value": -27,
+            "label": "−27",
+            "kind": "given"
+          },
+          {
+            "value": 0,
+            "label": "0",
+            "kind": "given"
+          },
+          {
+            "value": 55,
+            "label": "55",
+            "kind": "given"
+          }
+        ],
+        "unit": {
+          "en": "degrees",
+          "es": "grados"
+        }
+      },
+      "alt": {
+        "en": "A number line from −30 to 60 in degrees. The low, −27, sits 27 units left of 0. The high, 55, sits 55 units right of 0. Zero is between them.",
+        "es": "Una recta numérica de −30 a 60 en grados. El mínimo, −27, está a 27 unidades a la izquierda del 0. El máximo, 55, está a 55 unidades a la derecha del 0. El cero está entre los dos."
+      }
+    },
+    "transfer": {
+      "stem": {
+        "en": "A trail starts 3 meters below sea level, at −3, and climbs to 12 meters above sea level. How many meters does it climb in all?",
+        "es": "Un sendero empieza 3 metros bajo el nivel del mar, en −3, y sube hasta 12 metros sobre el nivel del mar. ¿Cuántos metros sube en total?"
+      },
+      "choices": [
+        {
+          "en": "9 meters",
+          "es": "9 metros",
+          "correct": false,
+          "misconception": "subtracted-across-zero"
+        },
+        {
+          "en": "36 meters",
+          "es": "36 metros",
+          "correct": false,
+          "misconception": "multiplied-the-distances"
+        },
+        {
+          "en": "15 meters",
+          "es": "15 metros",
+          "correct": true,
+          "misconception": null
+        }
+      ],
+      "reasoning": {
+        "en": "Zero is between −3 and 12, so the climb crosses sea level. Add the distances from 0: 3 + 12 = 15.",
+        "es": "El cero está entre −3 y 12, así que la subida cruza el nivel del mar. Suma las distancias al 0: 3 + 12 = 15."
+      },
+      "calc": {
+        "expr": "3 + 12",
+        "value": 15
+      }
+    },
+    "glitch": {
+      "scenario": {
+        "en": "A different situation: A diver goes from −8 feet to 5 feet. Mia writes three steps. One step has a glitch.",
+        "es": "Otra situación: Una buceadora va de −8 pies a 5 pies. Mia escribe tres pasos. Un paso tiene un error."
+      },
+      "steps": [
+        {
+          "en": "Zero is between −8 and 5, so the trip crosses zero.",
+          "es": "El cero está entre −8 y 5, así que el camino cruza el cero.",
+          "isGlitch": false
+        },
+        {
+          "en": "Subtract the distances from 0: 8 − 5 = 3 feet.",
+          "es": "Resta las distancias al 0: 8 − 5 = 3 pies.",
+          "isGlitch": true
+        },
+        {
+          "en": "Check: −8 to 0 is one part of the trip, and 0 to 5 is the other.",
+          "es": "Comprueba: de −8 a 0 es una parte del camino, y de 0 a 5 es la otra.",
+          "isGlitch": false
+        }
+      ],
+      "fix": {
+        "en": "Zero is between them, so add the distances: 8 + 5 = 13 feet.",
+        "es": "El cero está entre los dos, así que suma las distancias: 8 + 5 = 13 pies."
+      },
+      "frame": {
+        "en": "The glitch is in step ___. Zero is ___ the two numbers, so I ___ the distances.",
+        "es": "El error está en el paso ___. El cero está ___ los dos números, así que ___ las distancias."
+      },
+      "calc": {
+        "expr": "8 + 5",
+        "value": 13
+      }
+    },
+    "spiral": [
+      {
+        "from": "7-3",
+        "q": {
+          "en": "How far is −14 from 0?",
+          "es": "¿A qué distancia del 0 está −14?"
+        },
+        "options": [
+          "14",
+          "28",
+          "0"
+        ],
+        "correctIdx": 0,
+        "exp": {
+          "en": "Distance is never negative. |−14| = 14.",
+          "es": "La distancia nunca es negativa. |−14| = 14."
+        },
+        "calc": {
+          "expr": "-1 * -14",
+          "value": 14
+        }
+      },
+      {
+        "from": "7-2",
+        "q": {
+          "en": "What is the opposite of 7.5?",
+          "es": "¿Cuál es el opuesto de 7.5?"
+        },
+        "options": [
+          "7.5",
+          "−5.7",
+          "−7.5"
+        ],
+        "correctIdx": 2,
+        "exp": {
+          "en": "The opposite is the same distance from 0, on the other side: −7.5.",
+          "es": "El opuesto está a la misma distancia del 0, del otro lado: −7.5."
+        },
+        "calc": {
+          "expr": "-7.5",
+          "value": -7.5
+        }
+      }
+    ],
+    "kitchenTable": {
+      "en": "Pick a spot in the room as zero. Put a sock 5 steps to its left and a spoon 3 steps to its right. Ask your student how many steps lie between them. Do they add or subtract? Why?",
+      "es": "Elijan un lugar del cuarto como el cero. Pongan un calcetín a 5 pasos a la izquierda y una cuchara a 3 pasos a la derecha. Pregunten a su estudiante cuántos pasos hay entre los dos. ¿Se suman o se restan? ¿Por qué?"
+    },
+    "vocab": [
+      {
+        "term": "Distance",
+        "example": {
+          "en": "The rise from −27 to 55 is a distance: up to 0, then on to 55.",
+          "es": "La subida de −27 a 55 es una distancia: hasta el 0 y luego hasta el 55."
+        },
+        "nonExample": {
+          "en": "−27 is not a distance. It is a place on the line.",
+          "es": "−27 no es una distancia. Es un lugar en la recta."
+        },
+        "frame": {
+          "en": "The distance from ___ to ___ is ___.",
+          "es": "La distancia de ___ a ___ es ___."
+        }
+      },
+      {
+        "term": "Absolute value",
+        "example": {
+          "en": "|−27| = 27 shows how far the low is from 0.",
+          "es": "|−27| = 27 muestra qué tan lejos del 0 está el mínimo."
+        },
+        "nonExample": {
+          "en": "|−27| is not −27. Distance is never negative.",
+          "es": "|−27| no es −27. La distancia nunca es negativa."
+        },
+        "frame": {
+          "en": "|___| = ___, so it is ___ units from zero.",
+          "es": "|___| = ___, así que está a ___ unidades del cero."
+        }
+      },
+      {
+        "term": "Opposite",
+        "example": {
+          "en": "−27 and 27 are opposites. Both are 27 units from 0.",
+          "es": "−27 y 27 son opuestos. Los dos están a 27 unidades del 0."
+        },
+        "nonExample": {
+          "en": "−27 and 55 are not opposites. Their distances from 0 are different.",
+          "es": "−27 y 55 no son opuestos. Sus distancias al 0 son distintas."
+        },
+        "frame": {
+          "en": "___ and ___ are opposites, so both are ___ from zero.",
+          "es": "___ y ___ son opuestos, así que los dos están a ___ del cero."
+        }
+      },
+      {
+        "term": "Negative",
+        "example": {
+          "en": "The low, −27, is negative. It sits left of 0.",
+          "es": "El mínimo, −27, es negativo. Está a la izquierda del 0."
+        },
+        "nonExample": {
+          "en": "The high, 55, is not negative. It sits right of 0.",
+          "es": "El máximo, 55, no es negativo. Está a la derecha del 0."
+        },
+        "frame": {
+          "en": "___ is negative, so it is ___ units left of zero.",
+          "es": "___ es negativo, así que está a ___ unidades a la izquierda del cero."
+        }
+      },
+      {
+        "term": "Positive",
+        "example": {
+          "en": "The high, 55, is positive. It sits right of 0.",
+          "es": "El máximo, 55, es positivo. Está a la derecha del 0."
+        },
+        "nonExample": {
+          "en": "−27 is not positive. It sits left of 0.",
+          "es": "−27 no es positivo. Está a la izquierda del 0."
+        },
+        "frame": {
+          "en": "___ is positive, so it is ___ units right of zero.",
+          "es": "___ es positivo, así que está a ___ unidades a la derecha del cero."
+        }
+      }
+    ],
+    "confused": [
+      {
+        "wrong": {
+          "en": "From −27 to 55 is 55 − 27 = 28 degrees.",
+          "es": "De −27 a 55 hay 55 − 27 = 28 grados."
+        },
+        "coach": {
+          "en": "Does zero sit between those two numbers?",
+          "es": "¿El cero está entre esos dos números?"
+        },
+        "why": {
+          "en": "Zero is between them, so the trip goes up to 0 and then on. Add: 27 + 55 = 82.",
+          "es": "El cero está entre los dos, así que el camino sube hasta el 0 y sigue. Suma: 27 + 55 = 82."
+        },
+        "misconception": "subtracted-across-zero",
+        "calc": {
+          "expr": "27 + 55",
+          "value": 82
+        }
+      },
+      {
+        "wrong": {
+          "en": "−8 is less than −3, so −8 is closer to zero.",
+          "es": "−8 es menor que −3, así que −8 está más cerca del cero."
+        },
+        "coach": {
+          "en": "Count the steps from zero to each number. Which count is bigger?",
+          "es": "Cuenta los pasos desde el cero hasta cada número. ¿Cuál cuenta es mayor?"
+        },
+        "why": {
+          "en": "Smaller does not mean closer. −8 is 8 steps from 0, and −3 is only 3 steps. So −8 is farther from zero.",
+          "es": "Menor no significa más cerca. −8 está a 8 pasos del 0, y −3 solo a 3 pasos. Así que −8 está más lejos del cero."
+        },
+        "misconception": "less-than-means-closer-to-zero",
+        "calc": {
+          "expr": "-1 * -8",
+          "value": 8
+        }
+      },
+      {
+        "wrong": {
+          "en": "−12 and −5 are both negative, so I add: 12 + 5 = 17.",
+          "es": "−12 y −5 son negativos, así que sumo: 12 + 5 = 17."
+        },
+        "coach": {
+          "en": "Do the two numbers sit on the same side of zero? Does the trip cross zero?",
+          "es": "¿Los dos números están del mismo lado del cero? ¿El camino cruza el cero?"
+        },
+        "why": {
+          "en": "Same side of zero means subtract. The trip does not cross zero. 12 − 5 = 7.",
+          "es": "Del mismo lado del cero se resta. El camino no cruza el cero. 12 − 5 = 7."
+        },
+        "misconception": "added-on-the-same-side",
+        "calc": {
+          "expr": "12 - 5",
+          "value": 7
+        }
+      }
+    ]
+  }
 }

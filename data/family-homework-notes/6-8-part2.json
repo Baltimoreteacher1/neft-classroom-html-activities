@@ -564,5 +564,290 @@
       "en": "It is the same split-and-multiply idea. The outside number multiplies every part inside, so expanding and factoring undo each other and each one checks the other.",
       "es": "Es la misma idea de partir y multiplicar. El número de afuera multiplica cada parte de adentro, así que desarrollar y factorizar se deshacen entre sí y cada una comprueba la otra."
     }
+  },
+  "v3": {
+    "version": 1,
+    "kind": "math",
+    "topicKey": "expand-factor-gcf-apply",
+    "standardPlain": {
+      "en": "Expand to remove parentheses, or factor by pulling out the greatest common factor.",
+      "es": "Desarrollar para quitar el paréntesis, o factorizar sacando el máximo común divisor."
+    },
+    "hook": {
+      "style": "map",
+      "en": "A rug is 3 feet tall and made of two strips. One strip covers 15 square feet. The other covers 12 square feet. How wide is the whole rug?",
+      "es": "Una alfombra mide 3 pies de alto y tiene dos franjas. Una franja cubre 15 pies cuadrados. La otra cubre 12 pies cuadrados. ¿Qué tan ancha es toda la alfombra?",
+      "guess": {
+        "en": "Guess first: is the rug wider than 5 feet, or narrower?",
+        "es": "Primero adivina: ¿la alfombra mide más de 5 pies de ancho o menos?"
+      },
+      "reveal": {
+        "en": "Wider! Both strips are 3 feet tall. 15 + 12 = 3(5 + 4), so the width is 5 + 4 = 9 feet.",
+        "es": "¡Más ancha! Las dos franjas miden 3 pies de alto. 15 + 12 = 3(5 + 4), así que el ancho es 5 + 4 = 9 pies."
+      }
+    },
+    "classModel": {
+      "name": {
+        "en": "pull out the GCF",
+        "es": "sacar el MCD"
+      }
+    },
+    "model": {
+      "kind": "area",
+      "data": {
+        "shape": "rectangle",
+        "dims": {
+          "base": 9,
+          "height": 3,
+          "split": [
+            5,
+            4
+          ]
+        },
+        "unit": "ft"
+      },
+      "alt": {
+        "en": "A rectangle 3 feet tall and 9 feet wide. A line splits the width into a 5-foot strip and a 4-foot strip. The strips have areas 3 × 5 = 15 and 3 × 4 = 12 square feet. The whole rug is 3 × 9 = 27 square feet.",
+        "es": "Un rectángulo de 3 pies de alto y 9 pies de ancho. Una línea divide el ancho en una franja de 5 pies y una de 4 pies. Las franjas tienen áreas 3 × 5 = 15 y 3 × 4 = 12 pies cuadrados. Toda la alfombra mide 3 × 9 = 27 pies cuadrados."
+      }
+    },
+    "transfer": {
+      "stem": {
+        "en": "Two ribbons are 20 inches and 28 inches long. Ivy cuts each into equal pieces with none left over. All pieces have the same length. What is the longest piece she can cut?",
+        "es": "Dos listones miden 20 pulgadas y 28 pulgadas. Ivy corta cada uno en piezas iguales sin que sobre nada. Todas las piezas miden lo mismo. ¿Cuál es la pieza más larga que puede cortar?"
+      },
+      "choices": [
+        {
+          "en": "2 inches",
+          "es": "2 pulgadas",
+          "correct": false,
+          "misconception": "any-common-factor-not-the-greatest"
+        },
+        {
+          "en": "140 inches",
+          "es": "140 pulgadas",
+          "correct": false,
+          "misconception": "multiple-instead-of-factor"
+        },
+        {
+          "en": "4 inches",
+          "es": "4 pulgadas",
+          "correct": true,
+          "misconception": null
+        }
+      ],
+      "reasoning": {
+        "en": "Find the greatest common factor of 20 and 28. 20 = 4 × 5 and 28 = 4 × 7. The 5 and 7 share nothing more, so the longest piece is 4 inches.",
+        "es": "Halla el máximo común divisor de 20 y 28. 20 = 4 × 5 y 28 = 4 × 7. El 5 y el 7 no comparten nada más, así que la pieza más larga mide 4 pulgadas."
+      },
+      "calc": {
+        "expr": "20 / 5",
+        "value": 4
+      }
+    },
+    "glitch": {
+      "scenario": {
+        "en": "A different situation: Sam factors 16x + 24 by pulling out the greatest common factor.",
+        "es": "Otra situación: Sam factoriza 16x + 24 sacando el máximo común divisor."
+      },
+      "steps": [
+        {
+          "en": "Find a number that divides both 16 and 24.",
+          "es": "Halla un número que divida tanto 16 como 24.",
+          "isGlitch": false
+        },
+        {
+          "en": "Use 4 as the GCF. Divide each term by 4: 16x ÷ 4 = 4x and 24 ÷ 4 = 6.",
+          "es": "Usa 4 como MCD. Divide cada término entre 4: 16x ÷ 4 = 4x y 24 ÷ 4 = 6.",
+          "isGlitch": true
+        },
+        {
+          "en": "Write 4(4x + 6). Check by expanding: 4 × 4x = 16x and 4 × 6 = 24.",
+          "es": "Escribe 4(4x + 6). Comprueba desarrollando: 4 × 4x = 16x y 4 × 6 = 24.",
+          "isGlitch": false
+        }
+      ],
+      "fix": {
+        "en": "4 divides both, but 8 is greater and also divides both. 16x ÷ 8 = 2x and 24 ÷ 8 = 3, so 16x + 24 = 8(2x + 3). Check: 8 × 3 = 24.",
+        "es": "El 4 divide a los dos, pero el 8 es mayor y también divide a los dos. 16x ÷ 8 = 2x y 24 ÷ 8 = 3, así que 16x + 24 = 8(2x + 3). Comprueba: 8 × 3 = 24."
+      },
+      "frame": {
+        "en": "The GCF of ___ and ___ is ___ because it is the greatest number that divides both.",
+        "es": "El MCD de ___ y ___ es ___ porque es el número más grande que divide a los dos."
+      },
+      "calc": {
+        "expr": "8 * 3",
+        "value": 24
+      }
+    },
+    "spiral": [
+      {
+        "from": "6-8",
+        "q": {
+          "en": "Use the properties to find 25 × 7 × 4. What is the product?",
+          "es": "Usa las propiedades para hallar 25 × 7 × 4. ¿Cuál es el producto?"
+        },
+        "options": [
+          "70",
+          "700",
+          "36"
+        ],
+        "correctIdx": 1,
+        "exp": {
+          "en": "Swap and regroup: (25 × 4) × 7 = 100 × 7 = 700.",
+          "es": "Cambia el orden y reagrupa: (25 × 4) × 7 = 100 × 7 = 700."
+        },
+        "calc": {
+          "expr": "25 * 4 * 7",
+          "value": 700
+        }
+      },
+      {
+        "from": "6-7",
+        "q": {
+          "en": "What is the greatest common factor of 30 and 45?",
+          "es": "¿Cuál es el máximo común divisor de 30 y 45?"
+        },
+        "options": [
+          "5",
+          "15",
+          "90"
+        ],
+        "correctIdx": 1,
+        "exp": {
+          "en": "30 = 15 × 2 and 45 = 15 × 3. The greatest factor they share is 15.",
+          "es": "30 = 15 × 2 y 45 = 15 × 3. El factor más grande que comparten es 15."
+        },
+        "calc": {
+          "expr": "3 * 5",
+          "value": 15
+        }
+      }
+    ],
+    "kitchenTable": {
+      "en": "Set out 4 plates. Put 3 crackers and 2 grapes on each. Can your student say the total two ways, 4(3 + 2) and 4 × 3 + 4 × 2? Then push the food together: 12 crackers and 8 grapes. What number is shared by both?",
+      "es": "Pongan 4 platos. Pongan 3 galletas saladas y 2 uvas en cada uno. ¿Puede su estudiante decir el total de dos maneras, 4(3 + 2) y 4 × 3 + 4 × 2? Después junten la comida: 12 galletas y 8 uvas. ¿Qué número comparten los dos grupos?"
+    },
+    "vocab": [
+      {
+        "term": "Distributive Property",
+        "example": {
+          "en": "3(5 + 4) = 3 × 5 + 3 × 4. The 3 reaches both strips of the rug.",
+          "es": "3(5 + 4) = 3 × 5 + 3 × 4. El 3 llega a las dos franjas de la alfombra."
+        },
+        "nonExample": {
+          "en": "3 × 5 + 4 = 19 is not equal to 3(5 + 4). The 3 skipped the 4-foot strip.",
+          "es": "3 × 5 + 4 = 19 no es igual a 3(5 + 4). El 3 se saltó la franja de 4 pies."
+        },
+        "frame": {
+          "en": "The ___ must reach both ___ and ___.",
+          "es": "El ___ debe llegar a ___ y a ___."
+        }
+      },
+      {
+        "term": "Expand",
+        "example": {
+          "en": "Expand 3(x + 4) to get 3x + 12. The parentheses are gone.",
+          "es": "Desarrollar 3(x + 4) da 3x + 12. Ya no hay paréntesis."
+        },
+        "nonExample": {
+          "en": "3x + 4 is not the expansion of 3(x + 4). The 4 never got its 3.",
+          "es": "3x + 4 no es el desarrollo de 3(x + 4). El 4 nunca recibió su 3."
+        },
+        "frame": {
+          "en": "To expand ___(___ + ___), I write ___ × ___ + ___ × ___.",
+          "es": "Para desarrollar ___(___ + ___), escribo ___ × ___ + ___ × ___."
+        }
+      },
+      {
+        "term": "Factor an expression",
+        "example": {
+          "en": "Factor 15 + 12 to get 3(5 + 4). The shared 3 moves outside.",
+          "es": "Factorizar 15 + 12 da 3(5 + 4). El 3 compartido sale del paréntesis."
+        },
+        "nonExample": {
+          "en": "Writing 15 + 12 as 27 is adding, not factoring. No factor moved outside.",
+          "es": "Escribir 15 + 12 como 27 es sumar, no factorizar. Ningún factor salió."
+        },
+        "frame": {
+          "en": "I factor ___ + ___ as ___(___ + ___).",
+          "es": "Factorizo ___ + ___ como ___(___ + ___)."
+        }
+      },
+      {
+        "term": "Greatest common factor (GCF)",
+        "example": {
+          "en": "The GCF of 15 and 12 is 3, the greatest number that divides both.",
+          "es": "El MCD de 15 y 12 es 3, el número más grande que divide a los dos."
+        },
+        "nonExample": {
+          "en": "1 divides 15 and 12, but 1 is not the greatest. 3 is bigger.",
+          "es": "El 1 divide a 15 y a 12, pero no es el más grande. El 3 es mayor."
+        },
+        "frame": {
+          "en": "The GCF of ___ and ___ is ___ because ___ divides both.",
+          "es": "El MCD de ___ y ___ es ___ porque ___ divide a los dos."
+        }
+      }
+    ],
+    "confused": [
+      {
+        "wrong": {
+          "en": "The rug is 3 feet tall and the strips are x feet and 4 feet wide. I wrote 3(x + 4) = 3x + 4.",
+          "es": "La alfombra mide 3 pies de alto y las franjas miden x pies y 4 pies de ancho. Escribí 3(x + 4) = 3x + 4."
+        },
+        "coach": {
+          "en": "The rug is 3 feet tall. What is the area of the 4-foot strip?",
+          "es": "La alfombra mide 3 pies de alto. ¿Cuál es el área de la franja de 4 pies?"
+        },
+        "why": {
+          "en": "The 3 is the height of both strips. The 4-foot strip has area 3 × 4 = 12, so 3(x + 4) = 3x + 12.",
+          "es": "El 3 es la altura de las dos franjas. La franja de 4 pies tiene área 3 × 4 = 12, así que 3(x + 4) = 3x + 12."
+        },
+        "misconception": "outside-number-reaches-first-term-only",
+        "calc": {
+          "expr": "3 * 4",
+          "value": 12
+        }
+      },
+      {
+        "wrong": {
+          "en": "For 18x + 24, the GCF is 6. I wrote 6(3x + 24).",
+          "es": "Para 18x + 24, el MCD es 6. Escribí 6(3x + 24)."
+        },
+        "coach": {
+          "en": "When you pulled out the 6, what did you do to the 24?",
+          "es": "Cuando sacaron el 6, ¿qué le hicieron al 24?"
+        },
+        "why": {
+          "en": "Divide every term by 6. 18x ÷ 6 = 3x and 24 ÷ 6 = 4. Check: 6 × 24 is 144, but 6 × 4 is 24.",
+          "es": "Se divide cada término entre 6. 18x ÷ 6 = 3x y 24 ÷ 6 = 4. Comprueba: 6 × 24 es 144, pero 6 × 4 es 24."
+        },
+        "misconception": "divided-only-the-first-term",
+        "calc": {
+          "expr": "24 / 6",
+          "value": 4
+        }
+      },
+      {
+        "wrong": {
+          "en": "I factored 18x + 24 as 6(3x + 4), but I cannot check it. Expanding only goes one way.",
+          "es": "Factoricé 18x + 24 como 6(3x + 4), pero no puedo comprobarlo. Desarrollar solo va en un sentido."
+        },
+        "coach": {
+          "en": "What do you get when you multiply the 6 by 3x and by 4?",
+          "es": "¿Qué obtienen al multiplicar el 6 por 3x y por 4?"
+        },
+        "why": {
+          "en": "Expanding checks factoring. 6 × 3x = 18x and 6 × 4 = 24, so you get 18x + 24 back.",
+          "es": "Desarrollar comprueba la factorización. 6 × 3x = 18x y 6 × 4 = 24, así que vuelven a obtener 18x + 24."
+        },
+        "misconception": "expanding-cannot-check-factoring",
+        "calc": {
+          "expr": "6 * 4",
+          "value": 24
+        }
+      }
+    ]
   }
 }

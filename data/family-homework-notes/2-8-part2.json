@@ -542,5 +542,315 @@
       ],
       "image": "/assets/vocab-images/sum.svg"
     }
-  ]
+  ],
+  "v3": {
+    "version": 1,
+    "kind": "math",
+    "topicKey": "mean-target-total-apply",
+    "standardPlain": {
+      "en": "Find a missing value when you know the mean you want.",
+      "es": "Hallar un valor que falta cuando conoces la media que quieres."
+    },
+    "hook": {
+      "style": "scoreboard",
+      "en": "A player scored 12, 18, 14 and 16 points in four games. She wants a mean of 16 after five games. How many points must she score in game five?",
+      "es": "Una jugadora anotó 12, 18, 14 y 16 puntos en cuatro partidos. Quiere una media de 16 después de cinco partidos. ¿Cuántos puntos debe anotar en el quinto partido?",
+      "guess": {
+        "en": "Guess first: will she need more than 16 points, or fewer?",
+        "es": "Primero adivina: ¿necesitará más de 16 puntos o menos?"
+      },
+      "reveal": {
+        "en": "More! Four games total 60 points. Five games with a mean of 16 need 16 × 5 = 80. She needs 80 − 60 = 20 points.",
+        "es": "¡Más! Cuatro partidos suman 60 puntos. Cinco partidos con media de 16 necesitan 16 × 5 = 80. Necesita 80 − 60 = 20 puntos."
+      }
+    },
+    "classModel": {
+      "name": {
+        "en": "the target total",
+        "es": "el total objetivo"
+      }
+    },
+    "model": {
+      "kind": "barplot",
+      "data": {
+        "categories": [
+          {
+            "label": {
+              "en": "Game 1",
+              "es": "Partido 1"
+            },
+            "value": 12
+          },
+          {
+            "label": {
+              "en": "Game 2",
+              "es": "Partido 2"
+            },
+            "value": 18
+          },
+          {
+            "label": {
+              "en": "Game 3",
+              "es": "Partido 3"
+            },
+            "value": 14
+          },
+          {
+            "label": {
+              "en": "Game 4",
+              "es": "Partido 4"
+            },
+            "value": 16
+          }
+        ],
+        "unit": {
+          "en": "points scored",
+          "es": "puntos anotados"
+        }
+      },
+      "alt": {
+        "en": "A bar graph of four games: 12, 18, 14 and 16 points, 60 in all. A fifth game is still missing. Five games with a mean of 16 need 80 points in all.",
+        "es": "Una gráfica de barras de cuatro partidos: 12, 18, 14 y 16 puntos, 60 en total. Falta un quinto partido. Cinco partidos con media de 16 necesitan 80 puntos en total."
+      }
+    },
+    "transfer": {
+      "stem": {
+        "en": "Maya wants a mean of 9 minutes of reading over 4 days. She read 7, 10 and 8 minutes on three days. How many minutes must she read on day 4?",
+        "es": "Maya quiere una media de 9 minutos de lectura en 4 días. Leyó 7, 10 y 8 minutos en tres días. ¿Cuántos minutos debe leer el día 4?"
+      },
+      "choices": [
+        {
+          "en": "11 minutes",
+          "es": "11 minutos",
+          "correct": true,
+          "misconception": null
+        },
+        {
+          "en": "9 minutes",
+          "es": "9 minutos",
+          "correct": false,
+          "misconception": "missing-value-equals-target-mean"
+        },
+        {
+          "en": "2 minutes",
+          "es": "2 minutos",
+          "correct": false,
+          "misconception": "counted-only-existing-days"
+        }
+      ],
+      "reasoning": {
+        "en": "Target total: 9 × 4 = 36 minutes. She has 7 + 10 + 8 = 25. Day 4 needs 36 − 25 = 11 minutes.",
+        "es": "Total objetivo: 9 × 4 = 36 minutos. Ya tiene 7 + 10 + 8 = 25. El día 4 necesita 36 − 25 = 11 minutos."
+      },
+      "calc": {
+        "expr": "9 * 4 - (7 + 10 + 8)",
+        "value": 11,
+        "unit": "minutes"
+      }
+    },
+    "glitch": {
+      "scenario": {
+        "en": "A different situation: Jo swam 6, 8 and 7 laps on three days. He wants a mean of 8 laps over four days. How many laps does he need on day four?",
+        "es": "Otra situación: Jo nadó 6, 8 y 7 vueltas en tres días. Quiere una media de 8 vueltas en cuatro días. ¿Cuántas vueltas necesita el día cuatro?"
+      },
+      "steps": [
+        {
+          "en": "Target total: 8 × 3 = 24, because he has swum on three days.",
+          "es": "Total objetivo: 8 × 3 = 24, porque ha nadado en tres días.",
+          "isGlitch": true
+        },
+        {
+          "en": "Add what he has: 6 + 8 + 7 = 21 laps so far.",
+          "es": "Suma lo que lleva: 6 + 8 + 7 = 21 vueltas hasta ahora.",
+          "isGlitch": false
+        },
+        {
+          "en": "Subtract: 24 − 21 = 3, so he needs 3 laps on day four.",
+          "es": "Resta: 24 − 21 = 3, así que necesita 3 vueltas el día cuatro.",
+          "isGlitch": false
+        }
+      ],
+      "fix": {
+        "en": "Day four counts too, so there are 4 days. Target total: 8 × 4 = 32. Then 32 − 21 = 11 laps. Check: (6 + 8 + 7 + 11) ÷ 4 = 32 ÷ 4 = 8.",
+        "es": "El día cuatro también cuenta, así que son 4 días. Total objetivo: 8 × 4 = 32. Luego 32 − 21 = 11 vueltas. Comprueba: (6 + 8 + 7 + 11) ÷ 4 = 32 ÷ 4 = 8."
+      },
+      "frame": {
+        "en": "My target total is ___ × ___ = ___, and I still need ___.",
+        "es": "Mi total objetivo es ___ × ___ = ___, y todavía necesito ___."
+      },
+      "calc": {
+        "expr": "8 * 4 - (6 + 8 + 7)",
+        "value": 11
+      }
+    },
+    "spiral": [
+      {
+        "from": "2-8",
+        "q": {
+          "en": "What is the mean of 6, 8 and 10?",
+          "es": "¿Cuál es la media de 6, 8 y 10?"
+        },
+        "options": [
+          "24",
+          "8",
+          "10"
+        ],
+        "correctIdx": 1,
+        "exp": {
+          "en": "Add: 6 + 8 + 10 = 24. Divide by 3 numbers: 24 ÷ 3 = 8.",
+          "es": "Suma: 6 + 8 + 10 = 24. Divide entre 3 números: 24 ÷ 3 = 8."
+        },
+        "calc": {
+          "expr": "(6 + 8 + 10) / 3",
+          "value": 8
+        }
+      },
+      {
+        "from": "2-7",
+        "q": {
+          "en": "What is 7.2 ÷ 0.4?",
+          "es": "¿Cuánto es 7.2 ÷ 0.4?"
+        },
+        "options": [
+          "1.8",
+          "18",
+          "180"
+        ],
+        "correctIdx": 1,
+        "exp": {
+          "en": "Multiply both numbers by 10 to make a whole-number divisor: 72 ÷ 4 = 18.",
+          "es": "Multiplica ambos números por 10 para tener un divisor entero: 72 ÷ 4 = 18."
+        },
+        "calc": {
+          "expr": "7.2 / 0.4",
+          "value": 18
+        }
+      }
+    ],
+    "kitchenTable": {
+      "en": "Pretend your family wants a mean of 6 glasses of water a day for 4 days. Days 1 to 3 were 5, 7 and 4. Ask your student how many glasses day 4 needs.",
+      "es": "Imaginen que su familia quiere una media de 6 vasos de agua al día durante 4 días. Los días 1 a 3 fueron 5, 7 y 4. Pregunten a su estudiante cuántos vasos necesita el día 4."
+    },
+    "vocab": [
+      {
+        "term": "Mean",
+        "example": {
+          "en": "After four games the mean is 15, because 60 ÷ 4 = 15.",
+          "es": "Después de cuatro partidos la media es 15, porque 60 ÷ 4 = 15."
+        },
+        "nonExample": {
+          "en": "The mean is not the score in game five.",
+          "es": "La media no es el puntaje del quinto partido."
+        },
+        "frame": {
+          "en": "The mean of ___ values with a total of ___ is ___.",
+          "es": "La media de ___ valores con un total de ___ es ___."
+        }
+      },
+      {
+        "term": "Target mean",
+        "example": {
+          "en": "The mean of 16 that she wants is the target mean.",
+          "es": "La media de 16 que ella quiere es la media objetivo."
+        },
+        "nonExample": {
+          "en": "Her mean so far, 15, is not the target mean.",
+          "es": "Su media hasta ahora, 15, no es la media objetivo."
+        },
+        "frame": {
+          "en": "My target mean is ___ over ___ games.",
+          "es": "Mi media objetivo es ___ en ___ partidos."
+        }
+      },
+      {
+        "term": "Target total",
+        "example": {
+          "en": "16 × 5 = 80 points is the target total for five games.",
+          "es": "16 × 5 = 80 puntos es el total objetivo para cinco partidos."
+        },
+        "nonExample": {
+          "en": "60 points is what she has now. It is not the target total.",
+          "es": "60 puntos es lo que tiene ahora. No es el total objetivo."
+        },
+        "frame": {
+          "en": "The target total is ___ because ___ games at a mean of ___ make ___.",
+          "es": "El total objetivo es ___ porque ___ partidos con media de ___ suman ___."
+        }
+      },
+      {
+        "term": "sum",
+        "example": {
+          "en": "12 + 18 + 14 + 16 = 60. The sum so far is 60 points.",
+          "es": "12 + 18 + 14 + 16 = 60. La suma hasta ahora es 60 puntos."
+        },
+        "nonExample": {
+          "en": "80 is a goal, not the sum so far.",
+          "es": "80 es una meta, no la suma hasta ahora."
+        },
+        "frame": {
+          "en": "The sum so far is ___ and the target total is ___.",
+          "es": "La suma hasta ahora es ___ y el total objetivo es ___."
+        }
+      }
+    ],
+    "confused": [
+      {
+        "wrong": {
+          "en": "She wants a mean of 16, so game five must be 16.",
+          "es": "Ella quiere una media de 16, así que el quinto partido debe ser 16."
+        },
+        "coach": {
+          "en": "If game five is 16, what would the five-game total be?",
+          "es": "Si el quinto partido es 16, ¿cuánto sería el total de los cinco partidos?"
+        },
+        "why": {
+          "en": "Games one to four total 60. Adding 16 makes 76, but five games with a mean of 16 need 80. She needs 80 − 60 = 20.",
+          "es": "Los partidos uno a cuatro suman 60. Con 16 serían 76, pero cinco partidos con media de 16 necesitan 80. Necesita 80 − 60 = 20."
+        },
+        "misconception": "missing-value-equals-target-mean",
+        "calc": {
+          "expr": "16 * 5 - 60",
+          "value": 20
+        }
+      },
+      {
+        "wrong": {
+          "en": "Target total: 16 × 4 = 64. So game five is 64 − 60 = 4.",
+          "es": "Total objetivo: 16 × 4 = 64. Entonces el quinto partido es 64 − 60 = 4."
+        },
+        "coach": {
+          "en": "How many games will there be once game five is played?",
+          "es": "¿Cuántos partidos habrá cuando se juegue el quinto?"
+        },
+        "why": {
+          "en": "The new game counts too. There are 5 games: 16 × 5 = 80. Then 80 − 60 = 20.",
+          "es": "El partido nuevo también cuenta. Son 5 partidos: 16 × 5 = 80. Luego 80 − 60 = 20."
+        },
+        "misconception": "counted-only-existing-games",
+        "calc": {
+          "expr": "16 * 5 - 60",
+          "value": 20
+        }
+      },
+      {
+        "wrong": {
+          "en": "The target total is 80, so she needs 80 points in game five.",
+          "es": "El total objetivo es 80, así que necesita 80 puntos en el quinto partido."
+        },
+        "coach": {
+          "en": "Did she already score some points in games one to four?",
+          "es": "¿Ya anotó algunos puntos en los partidos uno a cuatro?"
+        },
+        "why": {
+          "en": "She already has 60 points. Only the rest comes from game five: 80 − 60 = 20.",
+          "es": "Ya tiene 60 puntos. Solo el resto sale del quinto partido: 80 − 60 = 20."
+        },
+        "misconception": "target-total-as-missing-value",
+        "calc": {
+          "expr": "80 - 60",
+          "value": 20
+        }
+      }
+    ]
+  }
 }

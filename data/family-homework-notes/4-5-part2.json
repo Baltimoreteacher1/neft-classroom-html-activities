@@ -567,5 +567,320 @@
       "en": "Percent times whole equals part, so dividing the part by the percent gets you back to the whole. Checking agrees: 0.15 × 40 = 6, which is where trying and adjusting would end up too.",
       "es": "Porcentaje por todo es igual a parte, así que dividir la parte entre el porcentaje te regresa al todo. La comprobación coincide: 0.15 × 40 = 6, y ahí también terminaría probar y ajustar."
     }
+  },
+  "v3": {
+    "version": 1,
+    "kind": "math",
+    "topicKey": "percent-whole-equation-apply",
+    "standardPlain": {
+      "en": "Find the whole when you know a part and its percent, using an equation.",
+      "es": "Hallar el total cuando conoces una parte y su porcentaje, con una ecuación."
+    },
+    "hook": {
+      "style": "receipt",
+      "en": "A dinner receipt got torn. You can only read the tip: $6. A note says the tip is 15% of the bill. What was the bill?",
+      "es": "Se rasgó el recibo de una cena. Solo se lee la propina: $6. Una nota dice que la propina es el 15% de la cuenta. ¿Cuánto era la cuenta?",
+      "guess": {
+        "en": "Make a guess first: did the family spend more than $20, or less?",
+        "es": "Primero adivina: ¿la familia gastó más de $20 o menos?"
+      },
+      "reveal": {
+        "en": "More! The tip is 15% of the bill, so 0.15 × bill = 6. Undo the multiplying: 6 ÷ 0.15 = 40. The bill was $40.",
+        "es": "¡Más! La propina es el 15% de la cuenta, así que 0.15 × cuenta = 6. Deshaz la multiplicación: 6 ÷ 0.15 = 40. La cuenta fue de $40."
+      }
+    },
+    "classModel": {
+      "name": {
+        "en": "the percent equation",
+        "es": "la ecuación del porcentaje"
+      }
+    },
+    "model": {
+      "kind": "doubleline",
+      "data": {
+        "top": {
+          "label": {
+            "en": "Percent",
+            "es": "Porcentaje"
+          },
+          "ticks": [
+            "0%",
+            "15%",
+            "100%"
+          ]
+        },
+        "bottom": {
+          "label": {
+            "en": "Dinner bill",
+            "es": "Cuenta de la cena"
+          },
+          "ticks": [
+            "$0",
+            "$6",
+            "?"
+          ]
+        },
+        "unknown": [
+          2
+        ]
+      },
+      "alt": {
+        "en": "Two number lines lined up. The top line shows 0%, 15% and 100%. The bottom line shows $0, $6 and an unknown bill. The $6 tip lines up with 15%, and the unknown bill lines up with 100%.",
+        "es": "Dos rectas numéricas alineadas. La recta de arriba muestra 0%, 15% y 100%. La de abajo muestra $0, $6 y una cuenta desconocida. La propina de $6 coincide con el 15%, y la cuenta desconocida coincide con el 100%."
+      }
+    },
+    "transfer": {
+      "stem": {
+        "en": "A player scored 21 points. That was 35% of her team's points. How many points did the team score?",
+        "es": "Una jugadora anotó 21 puntos. Eso fue el 35% de los puntos de su equipo. ¿Cuántos puntos anotó el equipo?"
+      },
+      "choices": [
+        {
+          "en": "7.35 points",
+          "es": "7.35 puntos",
+          "correct": false,
+          "misconception": "multiplied-instead-of-divided"
+        },
+        {
+          "en": "56 points",
+          "es": "56 puntos",
+          "correct": false,
+          "misconception": "added-part-and-percent"
+        },
+        {
+          "en": "60 points",
+          "es": "60 puntos",
+          "correct": true,
+          "misconception": null
+        }
+      ],
+      "reasoning": {
+        "en": "Write 0.35 × t = 21. Undo the multiplying: 21 ÷ 0.35 = 60. Check: 0.35 × 60 = 21.",
+        "es": "Escribe 0.35 × t = 21. Deshaz la multiplicación: 21 ÷ 0.35 = 60. Comprueba: 0.35 × 60 = 21."
+      },
+      "calc": {
+        "expr": "21 / 0.35",
+        "value": 60
+      }
+    },
+    "glitch": {
+      "scenario": {
+        "en": "A different situation: A $12 discount is 40% of a ticket's original price. Rosa wants the original price.",
+        "es": "Otra situación: Un descuento de $12 es el 40% del precio original de un boleto. Rosa quiere el precio original."
+      },
+      "steps": [
+        {
+          "en": "Write the equation: 0.4 × p = 12.",
+          "es": "Escribe la ecuación: 0.4 × p = 12.",
+          "isGlitch": false
+        },
+        {
+          "en": "Divide: p = 12 ÷ 0.4 = 3, so the original price was $3.",
+          "es": "Divide: p = 12 ÷ 0.4 = 3, así que el precio original fue de $3.",
+          "isGlitch": true
+        },
+        {
+          "en": "Check: find 40% of the answer and compare it with 12.",
+          "es": "Comprueba: halla el 40% de la respuesta y compárala con 12.",
+          "isGlitch": false
+        }
+      ],
+      "fix": {
+        "en": "Dividing by 0.4 gives a bigger number: 12 ÷ 0.4 = 30. Check: 0.4 × 30 = 12. The original price was $30.",
+        "es": "Dividir entre 0.4 da un número mayor: 12 ÷ 0.4 = 30. Comprueba: 0.4 × 30 = 12. El precio original fue de $30."
+      },
+      "frame": {
+        "en": "The whole is ___ because ___ × ___ = ___.",
+        "es": "El total es ___ porque ___ × ___ = ___."
+      },
+      "calc": {
+        "expr": "12 / 0.4",
+        "value": 30
+      }
+    },
+    "spiral": [
+      {
+        "from": "4-4",
+        "q": {
+          "en": "What is 30% of 50?",
+          "es": "¿Cuánto es el 30% de 50?"
+        },
+        "options": [
+          "15",
+          "20",
+          "1.5"
+        ],
+        "correctIdx": 0,
+        "exp": {
+          "en": "30% is 0.30. 0.30 × 50 = 15.",
+          "es": "El 30% es 0.30. 0.30 × 50 = 15."
+        },
+        "calc": {
+          "expr": "0.3 * 50",
+          "value": 15
+        }
+      },
+      {
+        "from": "4-2",
+        "q": {
+          "en": "Which decimal is the same as 15%?",
+          "es": "¿Qué decimal es igual al 15%?"
+        },
+        "options": [
+          "1.5",
+          "0.015",
+          "0.15"
+        ],
+        "correctIdx": 2,
+        "exp": {
+          "en": "15% means 15 out of 100, and 15 ÷ 100 = 0.15.",
+          "es": "15% significa 15 de 100, y 15 ÷ 100 = 0.15."
+        },
+        "calc": {
+          "expr": "15 / 100",
+          "value": 0.15
+        }
+      }
+    ],
+    "kitchenTable": {
+      "en": "Use a real receipt. Pretend the tip was $5 and it was 20% of the bill. Can your student write 0.2 × b = 5 and solve it? Then check: is 20% of the answer really $5?",
+      "es": "Usen un recibo de verdad. Imaginen que la propina fue de $5 y era el 20% de la cuenta. ¿Puede su estudiante escribir 0.2 × b = 5 y resolverlo? Después comprueben: ¿el 20% de la respuesta es de verdad $5?"
+    },
+    "vocab": [
+      {
+        "term": "Part",
+        "example": {
+          "en": "The $6 tip is the part. It is only a piece of the bill.",
+          "es": "La propina de $6 es la parte. Es solo un pedazo de la cuenta."
+        },
+        "nonExample": {
+          "en": "The $40 bill is not the part. It is the whole.",
+          "es": "La cuenta de $40 no es la parte. Es el total."
+        },
+        "frame": {
+          "en": "The part is ___ and it is ___% of the bill.",
+          "es": "La parte es ___ y es el ___% de la cuenta."
+        }
+      },
+      {
+        "term": "Whole",
+        "example": {
+          "en": "The dinner bill, 100%, is the whole.",
+          "es": "La cuenta de la cena, 100%, es el total."
+        },
+        "nonExample": {
+          "en": "The $6 tip is not the whole. It is only 15% of it.",
+          "es": "La propina de $6 no es el total. Es solo el 15%."
+        },
+        "frame": {
+          "en": "I divide ___ by ___ to find the whole, ___.",
+          "es": "Divido ___ entre ___ para hallar el total, ___."
+        }
+      },
+      {
+        "term": "Equation",
+        "example": {
+          "en": "0.15 × b = 6 says 15% of the bill is $6.",
+          "es": "0.15 × b = 6 dice que el 15% de la cuenta es $6."
+        },
+        "nonExample": {
+          "en": "0.15 + b = 6 adds. A percent of something is a multiplying idea.",
+          "es": "0.15 + b = 6 suma. El porcentaje de algo es una idea de multiplicar."
+        },
+        "frame": {
+          "en": "My equation is ___ × b = ___.",
+          "es": "Mi ecuación es ___ × b = ___."
+        }
+      },
+      {
+        "term": "Inverse operation",
+        "example": {
+          "en": "To undo ×0.15, divide by 0.15.",
+          "es": "Para deshacer ×0.15, se divide entre 0.15."
+        },
+        "nonExample": {
+          "en": "Multiplying by 0.15 again does not undo it. 6 × 0.15 is much too small.",
+          "es": "Multiplicar otra vez por 0.15 no lo deshace. 6 × 0.15 da un número muy pequeño."
+        },
+        "frame": {
+          "en": "I undo ×___ by dividing by ___, so b = ___.",
+          "es": "Deshago ×___ dividiendo entre ___, así que b = ___."
+        }
+      },
+      {
+        "term": "Percent",
+        "example": {
+          "en": "15% means 15 out of every 100, or 0.15.",
+          "es": "15% significa 15 de cada 100, o 0.15."
+        },
+        "nonExample": {
+          "en": "15% does not mean $15. It is a rate per 100.",
+          "es": "15% no significa $15. Es una razón por cada 100."
+        },
+        "frame": {
+          "en": "___% is ___ as a decimal.",
+          "es": "___% es ___ como decimal."
+        }
+      }
+    ],
+    "confused": [
+      {
+        "wrong": {
+          "en": "The tip is $6 and 15% is 0.15. So 6 × 0.15 = 0.90. The bill was 90 cents.",
+          "es": "La propina es $6 y 15% es 0.15. Entonces 6 × 0.15 = 0.90. La cuenta fue de 90 centavos."
+        },
+        "coach": {
+          "en": "Is the tip a small piece of the bill, or the biggest part?",
+          "es": "¿La propina es un pedazo pequeño de la cuenta o la parte más grande?"
+        },
+        "why": {
+          "en": "The tip is a small piece, so the bill must be bigger than $6. Undo ×0.15 by dividing: 6 ÷ 0.15 = 40.",
+          "es": "La propina es un pedazo pequeño, así que la cuenta debe ser mayor que $6. Deshaz ×0.15 dividiendo: 6 ÷ 0.15 = 40."
+        },
+        "misconception": "multiplied-instead-of-divided",
+        "calc": {
+          "expr": "6 / 0.15",
+          "value": 40
+        }
+      },
+      {
+        "wrong": {
+          "en": "15% is 1.5 as a decimal, so 1.5 × b = 6. Then b = 6 ÷ 1.5 = 4.",
+          "es": "15% es 1.5 como decimal, así que 1.5 × b = 6. Entonces b = 6 ÷ 1.5 = 4."
+        },
+        "coach": {
+          "en": "15% means 15 out of how many?",
+          "es": "15% significa 15 de ¿cuántos?"
+        },
+        "why": {
+          "en": "15% means 15 out of 100, which is 0.15, not 1.5. Then 6 ÷ 0.15 = 40.",
+          "es": "15% significa 15 de 100, que es 0.15 y no 1.5. Entonces 6 ÷ 0.15 = 40."
+        },
+        "misconception": "percent-wrong-decimal",
+        "calc": {
+          "expr": "6 / 0.15",
+          "value": 40
+        }
+      },
+      {
+        "wrong": {
+          "en": "I solved 0.15 × b = 6 and got b = 40. So the tip was $40.",
+          "es": "Resolví 0.15 × b = 6 y obtuve b = 40. Entonces la propina fue de $40."
+        },
+        "coach": {
+          "en": "What does the letter b stand for in your equation?",
+          "es": "¿Qué representa la letra b en tu ecuación?"
+        },
+        "why": {
+          "en": "The b is the bill, not the tip. The tip is the part we were given. Check: 15% of $40 is 0.15 × 40 = $6.",
+          "es": "La b es la cuenta, no la propina. La propina es la parte que nos dieron. Comprueba: el 15% de $40 es 0.15 × 40 = $6."
+        },
+        "misconception": "answer-mislabeled-as-part",
+        "calc": {
+          "expr": "0.15 * 40",
+          "value": 6
+        }
+      }
+    ]
   }
 }

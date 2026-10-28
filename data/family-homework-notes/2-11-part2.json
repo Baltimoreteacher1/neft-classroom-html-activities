@@ -558,5 +558,329 @@
       ],
       "image": "/assets/vocab-images/difference.svg"
     }
-  ]
+  ],
+  "v3": {
+    "version": 1,
+    "kind": "math",
+    "topicKey": "decimals-running-log-apply",
+    "standardPlain": {
+      "en": "Add and subtract decimals in several steps, keeping a running total.",
+      "es": "Sumar y restar decimales en varios pasos, llevando un total corrido."
+    },
+    "hook": {
+      "style": "ticket",
+      "en": "A cargo scale reads 342.6 kg. The crew unloads 128.75 kg of food, then loads 56.4 kg of samples. What does the scale read now?",
+      "es": "Una balanza de carga marca 342.6 kg. La tripulación descarga 128.75 kg de comida y luego carga 56.4 kg de muestras. ¿Qué marca ahora la balanza?",
+      "guess": {
+        "en": "Guess first: will the scale read more or less than 342.6 kg at the end?",
+        "es": "Primero adivina: ¿la balanza marcará al final más o menos de 342.6 kg?"
+      },
+      "reveal": {
+        "en": "Less! More came off than went on. 342.60 − 128.75 = 213.85. Then 213.85 + 56.40 = 270.25 kg.",
+        "es": "¡Menos! Salió más de lo que entró. 342.60 − 128.75 = 213.85. Luego 213.85 + 56.40 = 270.25 kg."
+      }
+    },
+    "classModel": {
+      "name": {
+        "en": "the running log",
+        "es": "el registro corrido"
+      }
+    },
+    "model": {
+      "kind": "numberline",
+      "data": {
+        "min": 200,
+        "max": 350,
+        "step": 25,
+        "points": [
+          {
+            "value": 342.6,
+            "label": {
+              "en": "start 342.6",
+              "es": "inicio 342.6"
+            },
+            "kind": "given"
+          },
+          {
+            "value": 213.85,
+            "label": {
+              "en": "step 1: 213.85",
+              "es": "paso 1: 213.85"
+            },
+            "kind": "given"
+          },
+          {
+            "value": 270.25,
+            "label": {
+              "en": "end 270.25",
+              "es": "final 270.25"
+            },
+            "kind": "answer"
+          }
+        ],
+        "unit": {
+          "en": "kilograms",
+          "es": "kilogramos"
+        }
+      },
+      "alt": {
+        "en": "A number line from 200 to 350 kilograms. The scale starts at 342.6, drops to 213.85 after 128.75 is unloaded, then rises to 270.25 after 56.40 is loaded.",
+        "es": "Una recta numérica de 200 a 350 kilogramos. La balanza empieza en 342.6, baja a 213.85 al descargar 128.75 y sube a 270.25 al cargar 56.40."
+      }
+    },
+    "transfer": {
+      "stem": {
+        "en": "A jug holds 8.5 liters. You pour out 2.75 liters, then add 1.6 liters. How many liters are in the jug now?",
+        "es": "Una jarra tiene 8.5 litros. Sacas 2.75 litros y luego agregas 1.6 litros. ¿Cuántos litros hay ahora en la jarra?"
+      },
+      "choices": [
+        {
+          "en": "7.35 liters",
+          "es": "7.35 litros",
+          "correct": true,
+          "misconception": null
+        },
+        {
+          "en": "12.85 liters",
+          "es": "12.85 litros",
+          "correct": false,
+          "misconception": "added-every-step"
+        },
+        {
+          "en": "4.15 liters",
+          "es": "4.15 litros",
+          "correct": false,
+          "misconception": "subtracted-every-step"
+        }
+      ],
+      "reasoning": {
+        "en": "Pouring out is subtract: 8.50 − 2.75 = 5.75. Adding is plus: 5.75 + 1.60 = 7.35 liters.",
+        "es": "Sacar es restar: 8.50 − 2.75 = 5.75. Agregar es sumar: 5.75 + 1.60 = 7.35 litros."
+      },
+      "calc": {
+        "expr": "8.5 - 2.75 + 1.6",
+        "value": 7.35,
+        "unit": "liters"
+      }
+    },
+    "glitch": {
+      "scenario": {
+        "en": "A different situation: A bucket holds 20.4 liters. Sam pours out 6.85 liters, then adds 3.5 liters. How much water is in the bucket now?",
+        "es": "Otra situación: Un balde tiene 20.4 litros. Sam saca 6.85 litros y luego agrega 3.5 litros. ¿Cuánta agua hay ahora en el balde?"
+      },
+      "steps": [
+        {
+          "en": "Pouring out is subtract: 20.40 − 6.85 = 13.55 liters.",
+          "es": "Sacar es restar: 20.40 − 6.85 = 13.55 litros.",
+          "isGlitch": false
+        },
+        {
+          "en": "Add 3.5 by lining up the right edges: 13.55 + 3.5 = 13.90 liters.",
+          "es": "Suma 3.5 alineando los bordes de la derecha: 13.55 + 3.5 = 13.90 litros.",
+          "isGlitch": true
+        },
+        {
+          "en": "The bucket holds 13.90 liters, which is less than the 20.4 it started with.",
+          "es": "El balde tiene 13.90 litros, que es menos que los 20.4 con los que empezó.",
+          "isGlitch": false
+        }
+      ],
+      "fix": {
+        "en": "Line up the decimal points. Write 3.5 as 3.50: 13.55 + 3.50 = 17.05. The bucket holds 17.05 liters.",
+        "es": "Alinea los puntos decimales. Escribe 3.5 como 3.50: 13.55 + 3.50 = 17.05. El balde tiene 17.05 litros."
+      },
+      "frame": {
+        "en": "I line up the ___ and write ___ as ___ before I add.",
+        "es": "Alineo los ___ y escribo ___ como ___ antes de sumar."
+      },
+      "calc": {
+        "expr": "20.4 - 6.85 + 3.5",
+        "value": 17.05
+      }
+    },
+    "spiral": [
+      {
+        "from": "2-11",
+        "q": {
+          "en": "What is 7.3 − 2.85?",
+          "es": "¿Cuánto es 7.3 − 2.85?"
+        },
+        "options": [
+          "4.55",
+          "4.45",
+          "5.55"
+        ],
+        "correctIdx": 1,
+        "exp": {
+          "en": "Write 7.3 as 7.30 and line up the points: 7.30 − 2.85 = 4.45.",
+          "es": "Escribe 7.3 como 7.30 y alinea los puntos: 7.30 − 2.85 = 4.45."
+        },
+        "calc": {
+          "expr": "7.3 - 2.85",
+          "value": 4.45
+        }
+      },
+      {
+        "from": "2-7",
+        "q": {
+          "en": "What is 6.3 ÷ 0.9?",
+          "es": "¿Cuánto es 6.3 ÷ 0.9?"
+        },
+        "options": [
+          "0.7",
+          "70",
+          "7"
+        ],
+        "correctIdx": 2,
+        "exp": {
+          "en": "Multiply both numbers by 10: 63 ÷ 9 = 7.",
+          "es": "Multiplica ambos números por 10: 63 ÷ 9 = 7."
+        },
+        "calc": {
+          "expr": "6.3 / 0.9",
+          "value": 7
+        }
+      }
+    ],
+    "kitchenTable": {
+      "en": "Pick a bag of rice or flour at home. Say it weighs 4.5 kg. Pretend you use 1.25 kg, then add 0.8 kg. Write a running log with the decimal points in a line.",
+      "es": "Elijan una bolsa de arroz o harina de la casa. Digan que pesa 4.5 kg. Imaginen que usan 1.25 kg y luego agregan 0.8 kg. Escriban un registro corrido con los puntos decimales en línea."
+    },
+    "vocab": [
+      {
+        "term": "Decimal point",
+        "example": {
+          "en": "In 213.85, the decimal point sits between the ones and the tenths.",
+          "es": "En 213.85, el punto decimal está entre las unidades y las décimas."
+        },
+        "nonExample": {
+          "en": "In a stack, the right edges do not have to match. The decimal points do.",
+          "es": "En una columna, los bordes de la derecha no tienen que coincidir. Los puntos decimales sí."
+        },
+        "frame": {
+          "en": "I line up the decimal points so ___ sits under ___.",
+          "es": "Alineo los puntos decimales para que ___ quede debajo de ___."
+        }
+      },
+      {
+        "term": "Annex zeros",
+        "example": {
+          "en": "Write 56.4 as 56.40 so it matches 213.85.",
+          "es": "Escribe 56.4 como 56.40 para que coincida con 213.85."
+        },
+        "nonExample": {
+          "en": "Writing 56.4 as 56.04 changes the amount.",
+          "es": "Escribir 56.4 como 56.04 cambia la cantidad."
+        },
+        "frame": {
+          "en": "I write ___ as ___ so both numbers have ___ decimal places.",
+          "es": "Escribo ___ como ___ para que ambos números tengan ___ lugares decimales."
+        }
+      },
+      {
+        "term": "sum",
+        "example": {
+          "en": "213.85 + 56.40 = 270.25. The sum is 270.25 kg.",
+          "es": "213.85 + 56.40 = 270.25. La suma es 270.25 kg."
+        },
+        "nonExample": {
+          "en": "213.85 − 56.40 is not a sum. It finds a difference.",
+          "es": "213.85 − 56.40 no es una suma. Halla una diferencia."
+        },
+        "frame": {
+          "en": "The sum of ___ and ___ is ___.",
+          "es": "La suma de ___ y ___ es ___."
+        }
+      },
+      {
+        "term": "difference",
+        "example": {
+          "en": "342.60 − 128.75 = 213.85. The difference is 213.85 kg.",
+          "es": "342.60 − 128.75 = 213.85. La diferencia es 213.85 kg."
+        },
+        "nonExample": {
+          "en": "342.60 + 128.75 is not a difference. It is a sum.",
+          "es": "342.60 + 128.75 no es una diferencia. Es una suma."
+        },
+        "frame": {
+          "en": "The difference of ___ and ___ is ___.",
+          "es": "La diferencia de ___ y ___ es ___."
+        }
+      },
+      {
+        "term": "Hundredths",
+        "example": {
+          "en": "The 5 in 213.85 is 5 hundredths.",
+          "es": "El 5 en 213.85 son 5 centésimas."
+        },
+        "nonExample": {
+          "en": "The 8 in 213.85 is tenths, not hundredths.",
+          "es": "El 8 en 213.85 son décimas, no centésimas."
+        },
+        "frame": {
+          "en": "In ___, the hundredths digit is ___.",
+          "es": "En ___, el dígito de las centésimas es ___."
+        }
+      }
+    ],
+    "confused": [
+      {
+        "wrong": {
+          "en": "Unloading means more weight, so I added: 342.6 + 128.75 = 471.35.",
+          "es": "Descargar significa más peso, así que sumé: 342.6 + 128.75 = 471.35."
+        },
+        "coach": {
+          "en": "When the crew takes food off, should the scale read more or less?",
+          "es": "Cuando la tripulación quita comida, ¿la balanza debe marcar más o menos?"
+        },
+        "why": {
+          "en": "Unloading takes weight off, so subtract: 342.60 − 128.75 = 213.85 kg.",
+          "es": "Descargar quita peso, así que se resta: 342.60 − 128.75 = 213.85 kg."
+        },
+        "misconception": "added-for-unloading",
+        "calc": {
+          "expr": "342.6 - 128.75",
+          "value": 213.85
+        }
+      },
+      {
+        "wrong": {
+          "en": "I lined up the right edges: 213.85 + 56.4 = 219.49 kg.",
+          "es": "Alineé los bordes de la derecha: 213.85 + 56.4 = 219.49 kg."
+        },
+        "coach": {
+          "en": "Are the decimal points in a straight line in your stack?",
+          "es": "¿Los puntos decimales están en línea recta en tu columna?"
+        },
+        "why": {
+          "en": "Line up the points and write 56.4 as 56.40: 213.85 + 56.40 = 270.25 kg.",
+          "es": "Alinea los puntos y escribe 56.4 como 56.40: 213.85 + 56.40 = 270.25 kg."
+        },
+        "misconception": "lined-up-right-edges",
+        "calc": {
+          "expr": "213.85 + 56.4",
+          "value": 270.25
+        }
+      },
+      {
+        "wrong": {
+          "en": "After the first step I stopped. The scale reads 213.85 kg.",
+          "es": "Después del primer paso me detuve. La balanza marca 213.85 kg."
+        },
+        "coach": {
+          "en": "How many things happened to the scale in the story?",
+          "es": "¿Cuántas cosas le pasaron a la balanza en la historia?"
+        },
+        "why": {
+          "en": "Two things happened. Keep the running total from step one, 213.85, and do step two: 213.85 + 56.40 = 270.25 kg.",
+          "es": "Pasaron dos cosas. Guarda el total corrido del paso uno, 213.85, y haz el paso dos: 213.85 + 56.40 = 270.25 kg."
+        },
+        "misconception": "stopped-after-one-step",
+        "calc": {
+          "expr": "342.6 - 128.75 + 56.4",
+          "value": 270.25
+        }
+      }
+    ]
+  }
 }

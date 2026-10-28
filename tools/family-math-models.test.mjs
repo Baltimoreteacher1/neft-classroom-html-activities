@@ -421,3 +421,80 @@ test("any key the contract does not name throws instead of being ignored", () =>
   for (const m of bad)
     assert.throws(() => renderModel(m), /unrecognized key|does not apply/, JSON.stringify(m));
 });
+
+// ---- coord label collision avoidance (lesson 7-5-part2: three points near the corners of a four-quadrant plane) ----
+function labelBoxes(svg) {
+  const m = svg.match(
+    /<path class="m-ln" d="M(\d+(?:\.\d+)?) (\d+(?:\.\d+)?)H[\d.]+M(\d+(?:\.\d+)?) [\d.]+V/,
+  );
+  const axis = { y: Number(m[2]), x: Number(m[3]) };
+  const dots = [...svg.matchAll(/<circle class="m-dot" cx="([\d.]+)" cy="([\d.]+)"/g)].map((d) => ({
+    x: Number(d[1]),
+    y: Number(d[2]),
+  }));
+  const boxes = [
+    ...svg.matchAll(
+      /<text class="m-t m-n" x="([\d.-]+)" y="([\d.-]+)" text-anchor="(\w+)">([^<]*)<\/text>/g,
+    ),
+  ]
+    .filter((t) => dots.length && /^\(/.test(t[4]))
+    .map((t) => {
+      const w = Math.ceil(t[4].length * 16 * 0.56) + 4;
+      const x = Number(t[1]);
+      const l = t[3] === "end" ? x - w : t[3] === "middle" ? x - w / 2 : x;
+      return { text: t[4], l, r: l + w, t: Number(t[2]) - 14, b: Number(t[2]) + 5 };
+    });
+  return { axis, dots, boxes };
+}
+const hit = (a, b) => a.l < b.r && b.l < a.r && a.t < b.b && b.t < a.b;
+
+for (const lang of ["en", "es"]) {
+  test(`lesson 7-5-part2 [${lang}]: point labels never overlap each other, a point or an axis, and stay in the plot`, () => {
+    const svg = renderModel(LESSONS["7-5-part2"], { lang });
+    const { axis, dots, boxes } = labelBoxes(svg);
+    assert.equal(boxes.length, 3);
+    for (let i = 0; i < boxes.length; i++) {
+      for (let j = i + 1; j < boxes.length; j++)
+        assert.ok(!hit(boxes[i], boxes[j]), `${boxes[i].text} overlaps ${boxes[j].text}`);
+      assert.ok(
+        boxes[i].l < axis.x && boxes[i].r < axis.x ? true : boxes[i].l > axis.x,
+        `${boxes[i].text} crosses the y-axis`,
+      );
+      assert.ok(boxes[i].t > axis.y || boxes[i].b < axis.y, `${boxes[i].text} crosses the x-axis`);
+      for (const d of dots)
+        assert.ok(
+          !hit(boxes[i], { l: d.x - 5.5, r: d.x + 5.5, t: d.y - 5.5, b: d.y + 5.5 }),
+          `${boxes[i].text} covers a point`,
+        );
+      assert.ok(
+        boxes[i].l >= 52 && boxes[i].r <= 52 + 270 && boxes[i].t >= 18 && boxes[i].b <= 18 + 270,
+        `${boxes[i].text} leaves the plot`,
+      );
+    }
+    assert.equal(svg, renderModel(LESSONS["7-5-part2"], { lang }), "deterministic");
+  });
+}
+
+test("a plane with no collisions keeps the classic label position (byte-for-byte with the earlier layout)", () => {
+  const svg = renderModel(SAMPLES.find((s) => s.id === "coord"));
+  assert.match(
+    svg,
+    /<text class="m-t m-n" x="\d+(?:\.\d+)?" y="\d+(?:\.\d+)?" text-anchor="start">A<\/text>/,
+  );
+});
+
+test("labels that cannot sit beside a crowded point fall back to a leader line", () => {
+  const pts = Array.from({ length: 5 }, (_, i) => ({
+    x: 4 + i * 0.2,
+    y: 4,
+    label: `Point ${i + 1}`,
+  }));
+  const svg = renderModel({
+    kind: "coord",
+    data: { xmax: 8, ymax: 8, quadrants: false, points: pts },
+  });
+  const { boxes } = labelBoxes(svg.replace(/>Point /g, ">(Point "));
+  for (let i = 0; i < boxes.length; i++)
+    for (let j = i + 1; j < boxes.length; j++)
+      assert.ok(!hit(boxes[i], boxes[j]), "no two labels overlap");
+});

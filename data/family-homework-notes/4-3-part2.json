@@ -571,5 +571,307 @@
       "en": "Friendly numbers change the answer only a little, and tracking which way each number moved tells you whether the estimate is a bit high or a bit low. That lets you trust it without a calculator.",
       "es": "Los números fáciles cambian la respuesta solo un poco, y seguir hacia dónde se movió cada número te dice si la estimación queda un poco alta o un poco baja. Así puedes confiar en ella sin calculadora."
     }
+  },
+  "v3": {
+    "version": 1,
+    "kind": "math",
+    "topicKey": "estimate-percent-high-low-apply",
+    "standardPlain": {
+      "en": "Estimate a percent of a number, and say if the estimate runs a bit high or low.",
+      "es": "Estimar un porcentaje de un número y decir si la estimación queda un poco alta o baja."
+    },
+    "hook": {
+      "style": "receipt",
+      "en": "A food drive receipt says 412 cans came in. 18.5% were soup. About how many cans of soup is that?",
+      "es": "El recibo de una colecta de comida dice que llegaron 412 latas. El 18.5% eran de sopa. ¿Más o menos cuántas latas de sopa son?",
+      "guess": {
+        "en": "Make a guess first: is it more or less than 100 cans?",
+        "es": "Primero adivina: ¿son más o menos de 100 latas?"
+      },
+      "reveal": {
+        "en": "Less! Round 18.5% up to 20% and 412 down to 400. 10% of 400 is 40, so 20% is 80. About 80 cans, a little high.",
+        "es": "¡Menos! Redondea 18.5% a 20% y 412 a 400. El 10% de 400 es 40, así que el 20% es 80. Unas 80 latas, un poco alto."
+      }
+    },
+    "classModel": {
+      "name": {
+        "en": "round, then lean",
+        "es": "redondear y ver hacia dónde se inclina"
+      }
+    },
+    "model": {
+      "kind": "doubleline",
+      "data": {
+        "top": {
+          "label": {
+            "en": "Percent",
+            "es": "Porcentaje"
+          },
+          "ticks": [
+            "0%",
+            "10%",
+            "20%",
+            "100%"
+          ]
+        },
+        "bottom": {
+          "label": {
+            "en": "Cans",
+            "es": "Latas"
+          },
+          "ticks": [
+            "0",
+            "40",
+            "?",
+            "400"
+          ]
+        },
+        "unknown": [
+          2
+        ]
+      },
+      "alt": {
+        "en": "Two number lines lined up. The top line shows 0%, 10%, 20% and 100%. The bottom line shows 0, 40, an unknown number and 400 cans. 10% lines up with 40. 400 lines up with 100%. The 20% lines up with the unknown.",
+        "es": "Dos rectas numéricas alineadas. La de arriba muestra 0%, 10%, 20% y 100%. La de abajo muestra 0, 40, un número desconocido y 400 latas. El 10% coincide con 40. El 400 coincide con el 100%. El 20% coincide con el número desconocido."
+      }
+    },
+    "transfer": {
+      "stem": {
+        "en": "A school has 295 students. About 31% walk to school. About how many students walk?",
+        "es": "Una escuela tiene 295 estudiantes. Cerca del 31% camina a la escuela. ¿Más o menos cuántos estudiantes caminan?"
+      },
+      "choices": [
+        {
+          "en": "About 30",
+          "es": "Unos 30",
+          "correct": false,
+          "misconception": "stopped-at-one-ten-percent-step"
+        },
+        {
+          "en": "About 900",
+          "es": "Unos 900",
+          "correct": false,
+          "misconception": "decimal-point-misplaced"
+        },
+        {
+          "en": "About 90",
+          "es": "Unos 90",
+          "correct": true,
+          "misconception": null
+        }
+      ],
+      "reasoning": {
+        "en": "Round 31% to 30% and 295 to 300. 10% of 300 is 30. Three 10% steps make 90.",
+        "es": "Redondea 31% a 30% y 295 a 300. El 10% de 300 es 30. Tres peldaños del 10% suman 90."
+      },
+      "calc": {
+        "expr": "300 / 10 * 3",
+        "value": 90
+      }
+    },
+    "glitch": {
+      "scenario": {
+        "en": "A different situation: Leo has a $48 shirt that is 18% off. He estimates the discount.",
+        "es": "Otra situación: Leo tiene una camisa de $48 con 18% de descuento. Él estima el descuento."
+      },
+      "steps": [
+        {
+          "en": "Round 18% up to 20% and $48 up to $50.",
+          "es": "Redondea 18% a 20% y $48 a $50.",
+          "isGlitch": false
+        },
+        {
+          "en": "10% of $50 is $0.50, so 20% is $1.",
+          "es": "El 10% de $50 es $0.50, así que el 20% es $1.",
+          "isGlitch": true
+        },
+        {
+          "en": "Write the answer with the word \"about\".",
+          "es": "Escribe la respuesta con la palabra «unos».",
+          "isGlitch": false
+        }
+      ],
+      "fix": {
+        "en": "To find 10%, move the decimal point one place left: 10% of $50 is $5. Double it: 20% is about $10.",
+        "es": "Para hallar el 10%, mueve el punto decimal un lugar a la izquierda: el 10% de $50 es $5. Duplícalo: el 20% es unos $10."
+      },
+      "frame": {
+        "en": "I rounded ___ to ___ and ___ to ___, so I estimate about ___.",
+        "es": "Redondeé ___ a ___ y ___ a ___, así que estimo unos ___."
+      },
+      "calc": {
+        "expr": "50 / 10 * 2",
+        "value": 10
+      }
+    },
+    "spiral": [
+      {
+        "from": "4-3",
+        "q": {
+          "en": "What is 10% of 90?",
+          "es": "¿Cuánto es el 10% de 90?"
+        },
+        "options": [
+          "9",
+          "0.9",
+          "81"
+        ],
+        "correctIdx": 0,
+        "exp": {
+          "en": "10% is one tenth. 90 ÷ 10 = 9.",
+          "es": "El 10% es una décima parte. 90 ÷ 10 = 9."
+        },
+        "calc": {
+          "expr": "90 / 10",
+          "value": 9
+        }
+      },
+      {
+        "from": "4-2",
+        "q": {
+          "en": "What is 0.6 as a percent?",
+          "es": "¿Qué porcentaje es 0.6?"
+        },
+        "options": [
+          "6%",
+          "0.6%",
+          "60%"
+        ],
+        "correctIdx": 2,
+        "exp": {
+          "en": "0.6 is 60 hundredths, so it is 60/100, or 60%.",
+          "es": "0.6 son 60 centésimos, así que es 60/100, o 60%."
+        },
+        "calc": {
+          "expr": "0.6 * 100",
+          "value": 60
+        }
+      }
+    ],
+    "kitchenTable": {
+      "en": "Count the cans or boxes in a kitchen cabinet. Round the count to a friendly number. Estimate 20% of it. Does your estimate run high or low?",
+      "es": "Cuenten las latas o cajas de una alacena. Redondeen el número a uno fácil. Estimen el 20%. ¿Su estimación queda alta o baja?"
+    },
+    "vocab": [
+      {
+        "term": "benchmark percent",
+        "example": {
+          "en": "20% is the benchmark percent for 18.5%. It is double 10%.",
+          "es": "20% es el porcentaje de referencia para 18.5%. Es el doble del 10%."
+        },
+        "nonExample": {
+          "en": "18.5% is not a benchmark percent. It is hard to take in your head.",
+          "es": "18.5% no es un porcentaje de referencia. Es difícil sacarlo de memoria."
+        },
+        "frame": {
+          "en": "I use ___% for ___% because it is easy to find.",
+          "es": "Uso ___% para ___% porque es fácil de hallar."
+        }
+      },
+      {
+        "term": "compatible numbers",
+        "example": {
+          "en": "400 is a compatible number for 412. Its 10% is an easy 40.",
+          "es": "400 es un número compatible con 412. Su 10% es un 40 fácil."
+        },
+        "nonExample": {
+          "en": "412 is not as friendly. Its 10% is 41.2, which is harder to double.",
+          "es": "412 no es tan fácil. Su 10% es 41.2, que cuesta más duplicar."
+        },
+        "frame": {
+          "en": "___ is a compatible number for ___ because its 10% is ___.",
+          "es": "___ es un número compatible con ___ porque su 10% es ___."
+        }
+      },
+      {
+        "term": "Round",
+        "example": {
+          "en": "I round 18.5% up to 20%. I round 412 down to 400.",
+          "es": "Redondeo 18.5% hacia arriba a 20%. Redondeo 412 hacia abajo a 400."
+        },
+        "nonExample": {
+          "en": "Rounding 412 to 4 would not work. The new number must stay close to 412.",
+          "es": "Redondear 412 a 4 no sirve. El número nuevo debe quedar cerca de 412."
+        },
+        "frame": {
+          "en": "I round ___ up to ___, so the estimate runs ___.",
+          "es": "Redondeo ___ hacia arriba a ___, así que la estimación queda ___."
+        }
+      },
+      {
+        "term": "Reasonable",
+        "example": {
+          "en": "About 80 cans is reasonable. It is close to the exact answer.",
+          "es": "Unas 80 latas es razonable. Está cerca de la respuesta exacta."
+        },
+        "nonExample": {
+          "en": "About 8 cans is not reasonable. It is far too small for 412 cans.",
+          "es": "Unas 8 latas no es razonable. Es muy poco para 412 latas."
+        },
+        "frame": {
+          "en": "My answer is reasonable because ___ is close to ___.",
+          "es": "Mi respuesta es razonable porque ___ está cerca de ___."
+        }
+      }
+    ],
+    "confused": [
+      {
+        "wrong": {
+          "en": "20% of 400 is 20 × 400 = 8,000 cans.",
+          "es": "El 20% de 400 es 20 × 400 = 8,000 latas."
+        },
+        "coach": {
+          "en": "Can a part be bigger than the 400 cans it came from?",
+          "es": "¿Una parte puede ser mayor que las 400 latas de las que viene?"
+        },
+        "why": {
+          "en": "A part of 400 cans must be less than 400. 20% is two 10% steps: 40 + 40 = 80.",
+          "es": "Una parte de 400 latas debe ser menor que 400. El 20% son dos peldaños del 10%: 40 + 40 = 80."
+        },
+        "misconception": "multiplied-by-percent-number",
+        "calc": {
+          "expr": "400 / 5",
+          "value": 80
+        }
+      },
+      {
+        "wrong": {
+          "en": "I rounded 18.5% up and 412 down, so my estimate must be too low.",
+          "es": "Redondeé 18.5% hacia arriba y 412 hacia abajo, así que mi estimación debe ser baja."
+        },
+        "coach": {
+          "en": "Which change makes the answer bigger: a bigger percent or a smaller total?",
+          "es": "¿Qué cambio hace mayor la respuesta: un porcentaje mayor o un total menor?"
+        },
+        "why": {
+          "en": "Rounding 18.5% up pushes the answer up. Rounding 412 down pushes it down. The first change is bigger, so 80 runs a little high.",
+          "es": "Redondear 18.5% hacia arriba sube la respuesta. Redondear 412 hacia abajo la baja. El primer cambio es mayor, así que 80 queda un poco alto."
+        },
+        "misconception": "direction-of-rounding-reversed",
+        "calc": {
+          "expr": "0.2 * 400",
+          "value": 80
+        }
+      },
+      {
+        "wrong": {
+          "en": "10% of 400 is 4, so 20% is 8 cans.",
+          "es": "El 10% de 400 es 4, así que el 20% es 8 latas."
+        },
+        "coach": {
+          "en": "If you split 400 into ten equal groups, how many are in one group?",
+          "es": "Si divides 400 en diez grupos iguales, ¿cuántos hay en un grupo?"
+        },
+        "why": {
+          "en": "10% is one tenth. 400 ÷ 10 = 40, not 4. Double it: 20% is 80.",
+          "es": "El 10% es una décima parte. 400 ÷ 10 = 40, no 4. Duplícalo: el 20% es 80."
+        },
+        "misconception": "moved-decimal-too-far",
+        "calc": {
+          "expr": "400 / 10 * 2",
+          "value": 80
+        }
+      }
+    ]
   }
 }

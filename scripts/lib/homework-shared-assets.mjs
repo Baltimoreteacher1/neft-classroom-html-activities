@@ -77,14 +77,19 @@ export function externalizeSharedCode(html, sharedVocab) {
   return { html: out, files };
 }
 
-/** Write the shared files and delete any older generation nothing references. */
-export function writeSharedFiles(root, files) {
+/**
+ * Write the shared files and delete any older generation nothing references.
+ * `prune: false` (a scoped --only run) keeps older generations, because pages that were not
+ * regenerated still link to them.
+ */
+export function writeSharedFiles(root, files, { prune = true } = {}) {
   const dir = join(root, SHARED_DIR);
   mkdirSync(dir, { recursive: true });
   for (const [name, content] of Object.entries(files)) {
     const path = join(dir, name);
     if (!existsSync(path) || readFileSync(path, "utf8") !== content) writeFileSync(path, content);
   }
+  if (!prune) return;
   for (const name of readdirSync(dir)) {
     if (
       /^homework-(base|layer|core|vocab)-[0-9a-f]{10}\.(css|js|bundle\.js)$/.test(name) &&

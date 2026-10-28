@@ -522,5 +522,306 @@
         "Divide 30 entre 10 y 56 entre 14."
       ]
     }
-  ]
+  ],
+  "v3": {
+    "version": 1,
+    "kind": "math",
+    "topicKey": "unit-rate-best-value-apply",
+    "standardPlain": {
+      "en": "Write each comparison as a fraction, divide to a unit rate, and pick the better value.",
+      "es": "Escribir cada comparación como fracción, dividir para hallar la tasa unitaria y elegir el mejor valor."
+    },
+    "hook": {
+      "style": "ticket",
+      "en": "Theater A sells 3 tickets for $15. Theater B sells 5 tickets for $20. A friend says A is cheaper because $15 is less than $20. Which theater is the better value?",
+      "es": "El cine A vende 3 boletos por $15. El cine B vende 5 boletos por $20. Un amigo dice que A es más barato porque $15 es menos que $20. ¿Cuál cine es el mejor valor?",
+      "guess": {
+        "en": "Make a guess first: does the lower total mean the lower price for one ticket?",
+        "es": "Primero adivina: ¿el total más bajo significa el precio más bajo por un boleto?"
+      },
+      "reveal": {
+        "en": "No! $15 ÷ 3 = $5 per ticket. $20 ÷ 5 = $4 per ticket. Theater B costs less for one ticket.",
+        "es": "¡No! $15 ÷ 3 = $5 por boleto. $20 ÷ 5 = $4 por boleto. El cine B cuesta menos por un boleto."
+      }
+    },
+    "classModel": {
+      "name": {
+        "en": "the unit rate over 1",
+        "es": "la tasa unitaria sobre 1"
+      }
+    },
+    "model": {
+      "kind": "doubleline",
+      "data": {
+        "top": {
+          "label": {
+            "en": "Tickets",
+            "es": "Boletos"
+          },
+          "ticks": [
+            "0",
+            "1",
+            "3"
+          ]
+        },
+        "bottom": {
+          "label": {
+            "en": "Cost, Theater A",
+            "es": "Costo, cine A"
+          },
+          "ticks": [
+            "$0",
+            "?",
+            "$15"
+          ]
+        },
+        "unknown": [
+          1
+        ]
+      },
+      "alt": {
+        "en": "Two number lines lined up for Theater A. The top line shows 0, 1 and 3 tickets. The bottom line shows $0, an unknown cost and $15. The 3 tickets line up with $15, and the 1 ticket lines up with the unknown cost.",
+        "es": "Dos rectas numéricas alineadas para el cine A. La de arriba muestra 0, 1 y 3 boletos. La de abajo muestra $0, un costo desconocido y $15. Los 3 boletos coinciden con $15, y el 1 boleto coincide con el costo desconocido."
+      }
+    },
+    "transfer": {
+      "stem": {
+        "en": "Plan X costs $30 for 10 gigabytes. Plan Y costs $56 for 14 gigabytes. Which plan costs less per gigabyte?",
+        "es": "El plan X cuesta $30 por 10 gigabytes. El plan Y cuesta $56 por 14 gigabytes. ¿Cuál plan cuesta menos por gigabyte?"
+      },
+      "choices": [
+        {
+          "en": "Plan Y, $4 per gigabyte",
+          "es": "Plan Y, $4 por gigabyte",
+          "correct": false,
+          "misconception": "chose-higher-unit-rate"
+        },
+        {
+          "en": "Plan X, $3 per gigabyte",
+          "es": "Plan X, $3 por gigabyte",
+          "correct": true,
+          "misconception": null
+        },
+        {
+          "en": "Plan Y, because it has more gigabytes",
+          "es": "Plan Y, porque tiene más gigabytes",
+          "correct": false,
+          "misconception": "more-amount-means-better"
+        }
+      ],
+      "reasoning": {
+        "en": "Cost goes on top. Plan X: $30 ÷ 10 = $3 per gigabyte. Plan Y: $56 ÷ 14 = $4 per gigabyte. The lower unit rate is the better value: Plan X.",
+        "es": "El costo va arriba. Plan X: $30 ÷ 10 = $3 por gigabyte. Plan Y: $56 ÷ 14 = $4 por gigabyte. La tasa unitaria menor es el mejor valor: plan X."
+      },
+      "calc": {
+        "expr": "30 / 10",
+        "value": 3,
+        "unit": "$"
+      }
+    },
+    "glitch": {
+      "scenario": {
+        "en": "A different situation: A small popcorn is $3.60 for 12 ounces. A medium popcorn is $5.00 for 20 ounces. Dev finds the better value.",
+        "es": "Otra situación: Una palomita chica cuesta $3.60 por 12 onzas. Una mediana cuesta $5.00 por 20 onzas. Dev halla el mejor valor."
+      },
+      "steps": [
+        {
+          "en": "Small: $3.60 ÷ 12 = $0.30 per ounce.",
+          "es": "Chica: $3.60 ÷ 12 = $0.30 por onza.",
+          "isGlitch": false
+        },
+        {
+          "en": "Medium: 20 ÷ 5 = 4, so the medium is $4 per ounce.",
+          "es": "Mediana: 20 ÷ 5 = 4, así que la mediana es $4 por onza.",
+          "isGlitch": true
+        },
+        {
+          "en": "Compare the two unit rates and pick the lower one.",
+          "es": "Compara las dos tasas unitarias y elige la menor.",
+          "isGlitch": false
+        }
+      ],
+      "fix": {
+        "en": "Cost goes on top: $5.00 ÷ 20 = $0.25 per ounce. $0.25 is lower than $0.30, so the medium is the better value.",
+        "es": "El costo va arriba: $5.00 ÷ 20 = $0.25 por onza. $0.25 es menor que $0.30, así que la mediana es el mejor valor."
+      },
+      "frame": {
+        "en": "The unit rate is $___ per ___ because $___ ÷ ___ = $___.",
+        "es": "La tasa unitaria es $___ por ___ porque $___ ÷ ___ = $___."
+      },
+      "calc": {
+        "expr": "5 / 20",
+        "value": 0.25
+      }
+    },
+    "spiral": [
+      {
+        "from": "3-2",
+        "q": {
+          "en": "A bakery sells 12 muffins for $9. What is the price of 1 muffin?",
+          "es": "Una panadería vende 12 panecillos por $9. ¿Cuál es el precio de 1 panecillo?"
+        },
+        "options": [
+          "$3",
+          "$1.33",
+          "$0.75"
+        ],
+        "correctIdx": 2,
+        "exp": {
+          "en": "Cost on top: $9 ÷ 12 = $0.75 per muffin.",
+          "es": "El costo va arriba: $9 ÷ 12 = $0.75 por panecillo."
+        },
+        "calc": {
+          "expr": "9 / 12",
+          "value": 0.75
+        }
+      },
+      {
+        "from": "2-7",
+        "q": {
+          "en": "What is $4.80 ÷ 6?",
+          "es": "¿Cuánto es $4.80 ÷ 6?"
+        },
+        "options": [
+          "$0.80",
+          "$8",
+          "$28.80"
+        ],
+        "correctIdx": 0,
+        "exp": {
+          "en": "6 × 0.80 = 4.80, so $4.80 ÷ 6 = $0.80.",
+          "es": "6 × 0.80 = 4.80, así que $4.80 ÷ 6 = $0.80."
+        },
+        "calc": {
+          "expr": "4.8 / 6",
+          "value": 0.8
+        }
+      }
+    ],
+    "kitchenTable": {
+      "en": "Look at two snack packs at home. Read the price and the count on each. Can your student say the cost of ONE in each pack? Does the lower total always win?",
+      "es": "Miren dos paquetes de botana en casa. Lean el precio y la cantidad de cada uno. ¿Puede su estudiante decir el costo de UNO en cada paquete? ¿El total más bajo siempre gana?"
+    },
+    "vocab": [
+      {
+        "term": "Unit rate",
+        "example": {
+          "en": "$20 / 5 tickets becomes $4 / 1 ticket. The unit rate is $4 per ticket.",
+          "es": "$20 / 5 boletos se convierte en $4 / 1 boleto. La tasa unitaria es $4 por boleto."
+        },
+        "nonExample": {
+          "en": "$20 / 5 tickets is not yet a unit rate. The bottom is 5, not 1.",
+          "es": "$20 / 5 boletos todavía no es una tasa unitaria. El de abajo es 5, no 1."
+        },
+        "frame": {
+          "en": "The unit rate is $___ per ___.",
+          "es": "La tasa unitaria es $___ por ___."
+        }
+      },
+      {
+        "term": "Ratio as a fraction",
+        "example": {
+          "en": "Theater A as a fraction: $15 on top and 3 tickets on the bottom.",
+          "es": "El cine A como fracción: $15 arriba y 3 boletos abajo."
+        },
+        "nonExample": {
+          "en": "3 tickets over $15 puts the amounts in the wrong places.",
+          "es": "3 boletos sobre $15 pone las cantidades en lugares equivocados."
+        },
+        "frame": {
+          "en": "As a fraction, the cost is ___ on top and ___ on the bottom.",
+          "es": "Como fracción, el costo es ___ arriba y ___ abajo."
+        }
+      },
+      {
+        "term": "Better value",
+        "example": {
+          "en": "Theater B is the better value. $4 per ticket is less than $5.",
+          "es": "El cine B es el mejor valor. $4 por boleto es menos que $5."
+        },
+        "nonExample": {
+          "en": "Theater A is not the better value just because its total, $15, is lower.",
+          "es": "El cine A no es el mejor valor solo porque su total, $15, es menor."
+        },
+        "frame": {
+          "en": "___ is the better value because $___ is less than $___.",
+          "es": "___ es el mejor valor porque $___ es menos que $___."
+        }
+      },
+      {
+        "term": "Rate",
+        "example": {
+          "en": "$5 for 1 ticket is a rate. It compares dollars and tickets.",
+          "es": "$5 por 1 boleto es una tasa. Compara dólares y boletos."
+        },
+        "nonExample": {
+          "en": "3 tickets alone is not a rate. It has only one unit.",
+          "es": "3 boletos solos no son una tasa. Tienen una sola unidad."
+        },
+        "frame": {
+          "en": "The rate is $___ for ___ tickets.",
+          "es": "La tasa es $___ por ___ boletos."
+        }
+      }
+    ],
+    "confused": [
+      {
+        "wrong": {
+          "en": "Theater A is $15 and Theater B is $20, so A costs less. A is the better value.",
+          "es": "El cine A es $15 y el cine B es $20, así que A cuesta menos. A es el mejor valor."
+        },
+        "coach": {
+          "en": "Do both theaters sell the same number of tickets?",
+          "es": "¿Los dos cines venden el mismo número de boletos?"
+        },
+        "why": {
+          "en": "They sell different amounts, so compare the price of one ticket. Theater B: $20 ÷ 5 = $4 per ticket.",
+          "es": "Venden cantidades distintas, así que compara el precio de un boleto. Cine B: $20 ÷ 5 = $4 por boleto."
+        },
+        "misconception": "compared-total-prices",
+        "calc": {
+          "expr": "20 / 5",
+          "value": 4
+        }
+      },
+      {
+        "wrong": {
+          "en": "I put 3 tickets on top and $15 on the bottom. 3 ÷ 15 = 0.2, so Theater A is 0.2 per ticket.",
+          "es": "Puse 3 boletos arriba y $15 abajo. 3 ÷ 15 = 0.2, así que el cine A es 0.2 por boleto."
+        },
+        "coach": {
+          "en": "To get a price for one ticket, which goes on top: tickets or dollars?",
+          "es": "Para obtener el precio de un boleto, ¿qué va arriba: boletos o dólares?"
+        },
+        "why": {
+          "en": "Cost goes on top. $15 ÷ 3 = $5 per ticket for Theater A.",
+          "es": "El costo va arriba. $15 ÷ 3 = $5 por boleto para el cine A."
+        },
+        "misconception": "amount-on-top",
+        "calc": {
+          "expr": "15 / 3",
+          "value": 5
+        }
+      },
+      {
+        "wrong": {
+          "en": "I divided $15 by 3 and got $5. I left the bottom as 3 tickets: $5 / 3 tickets.",
+          "es": "Dividí $15 entre 3 y obtuve $5. Dejé el de abajo como 3 boletos: $5 / 3 boletos."
+        },
+        "coach": {
+          "en": "What should the bottom number become, so it shows exactly 1 ticket?",
+          "es": "¿En qué debe convertirse el número de abajo para que muestre exactamente 1 boleto?"
+        },
+        "why": {
+          "en": "Divide BOTH parts by 3. $15 ÷ 3 = $5 and 3 ÷ 3 = 1, so it is $5 / 1 ticket.",
+          "es": "Divide LAS DOS partes entre 3. $15 ÷ 3 = $5 y 3 ÷ 3 = 1, así que es $5 / 1 boleto."
+        },
+        "misconception": "divided-top-only",
+        "calc": {
+          "expr": "15 / 3",
+          "value": 5
+        }
+      }
+    ]
+  }
 }

@@ -613,5 +613,329 @@
       ],
       "image": "/assets/vocab-images/interquartile-range.svg"
     }
-  ]
+  ],
+  "v3": {
+    "version": 1,
+    "kind": "math",
+    "topicKey": "match-center-and-spread-apply",
+    "standardPlain": {
+      "en": "Match the mean with the MAD, or the median with the IQR. Look at the shape first.",
+      "es": "Emparejar la media con la DMA, o la mediana con el RIC, según la forma de los datos."
+    },
+    "hook": {
+      "style": "price-tag",
+      "en": "Two stores list five used-bike prices in dollars. Store 1: 60, 62, 64, 66, 68. Store 2: 60, 62, 64, 66, 210. Both want to post one typical price. Which number is fair for Store 2?",
+      "es": "Dos tiendas anotan cinco precios de bicicletas usadas en dólares. Tienda 1: 60, 62, 64, 66, 68. Tienda 2: 60, 62, 64, 66, 210. Las dos quieren publicar un precio típico. ¿Qué número es justo para la tienda 2?",
+      "guess": {
+        "en": "Guess first: is Store 2's mean closer to $64 or to $90?",
+        "es": "Primero adivina: ¿la media de la tienda 2 está más cerca de $64 o de $90?"
+      },
+      "reveal": {
+        "en": "Closer to $90! The mean is 462 ÷ 5 = 92.4. The $210 pulled it up. The median is $64, so use the median and the IQR.",
+        "es": "¡Más cerca de $90! La media es 462 ÷ 5 = 92.4. Los $210 la subieron. La mediana es $64, así que usen la mediana y el RIC."
+      }
+    },
+    "classModel": {
+      "name": {
+        "en": "matching center and spread",
+        "es": "emparejar centro y dispersión"
+      }
+    },
+    "model": {
+      "kind": "numberline",
+      "data": {
+        "min": 60,
+        "max": 210,
+        "step": 10,
+        "points": [
+          {
+            "value": 64,
+            "label": {
+              "en": "median 64",
+              "es": "mediana 64"
+            },
+            "kind": "answer"
+          },
+          {
+            "value": 92.4,
+            "label": {
+              "en": "mean 92.4",
+              "es": "media 92.4"
+            },
+            "kind": "given"
+          },
+          {
+            "value": 210,
+            "label": {
+              "en": "outlier 210",
+              "es": "valor atípico 210"
+            },
+            "kind": "given"
+          }
+        ],
+        "unit": {
+          "en": "dollars, Store 2",
+          "es": "dólares, tienda 2"
+        }
+      },
+      "alt": {
+        "en": "A number line from 60 to 210 dollars for Store 2. The median, 64, sits with four close prices. The mean, 92.4, is pulled toward the outlier, 210, far on the right.",
+        "es": "Una recta numérica de 60 a 210 dólares para la tienda 2. La mediana, 64, está con cuatro precios cercanos. La media, 92.4, se jala hacia el valor atípico, 210, muy a la derecha."
+      }
+    },
+    "transfer": {
+      "stem": {
+        "en": "Five families paid water bills of $11, $12, $13, $14 and $95. Which value and spread pair should you report?",
+        "es": "Cinco familias pagaron cuentas de agua de $11, $12, $13, $14 y $95. ¿Qué par de valor típico y dispersión deben reportar?"
+      },
+      "choices": [
+        {
+          "en": "The mean, $29, with the MAD",
+          "es": "La media, $29, con la DMA",
+          "correct": false,
+          "misconception": "mean-with-outlier"
+        },
+        {
+          "en": "The median, $13, with the IQR",
+          "es": "La mediana, $13, con el RIC",
+          "correct": true,
+          "misconception": null
+        },
+        {
+          "en": "The mean, $29, with the IQR",
+          "es": "La media, $29, con el RIC",
+          "correct": false,
+          "misconception": "mixed-pair"
+        }
+      ],
+      "reasoning": {
+        "en": "The $95 is an outlier. It pulls the mean to 145 ÷ 5 = $29, higher than four of five bills. Use the median, $13, with the IQR.",
+        "es": "Los $95 son un valor atípico. Jalan la media a 145 ÷ 5 = $29, mayor que cuatro de las cinco cuentas. Usen la mediana, $13, con el RIC."
+      },
+      "calc": {
+        "expr": "(12 + 14) / 2",
+        "value": 13,
+        "unit": "$"
+      }
+    },
+    "glitch": {
+      "scenario": {
+        "en": "A different situation: Five pet weights in pounds are 8, 9, 10, 11 and 12. Dev must pick the pair to report.",
+        "es": "Otra situación: Los pesos de cinco mascotas en libras son 8, 9, 10, 11 y 12. Dev debe elegir el par que va a reportar."
+      },
+      "steps": [
+        {
+          "en": "Check the shape first. The weights spread evenly. No weight is far from the rest.",
+          "es": "Primero revisa la forma. Los pesos se reparten parejo. Ningún peso está lejos de los demás.",
+          "isGlitch": false
+        },
+        {
+          "en": "No outlier, so the data are symmetric. Report the median and the IQR.",
+          "es": "No hay valor atípico, así que los datos son simétricos. Reporta la mediana y el RIC.",
+          "isGlitch": true
+        },
+        {
+          "en": "Find the center. The mean is (8 + 9 + 10 + 11 + 12) ÷ 5 = 10.",
+          "es": "Halla el centro. La media es (8 + 9 + 10 + 11 + 12) ÷ 5 = 10.",
+          "isGlitch": false
+        }
+      ],
+      "fix": {
+        "en": "A symmetric set with no outlier goes with the mean and the MAD. The mean is 50 ÷ 5 = 10 pounds. The gaps are 2, 1, 0, 1, 2, so the MAD is 6 ÷ 5 = 1.2.",
+        "es": "Un conjunto simétrico sin valor atípico va con la media y la DMA. La media es 50 ÷ 5 = 10 libras. Las distancias son 2, 1, 0, 1, 2, así que la DMA es 6 ÷ 5 = 1.2."
+      },
+      "frame": {
+        "en": "The data are symmetric, so I report the ___ and the ___.",
+        "es": "Los datos son simétricos, así que reporto la ___ y la ___."
+      },
+      "calc": {
+        "expr": "(2 + 1 + 0 + 1 + 2) / 5",
+        "value": 1.2
+      }
+    },
+    "spiral": [
+      {
+        "from": "2-10",
+        "q": {
+          "en": "What is the median of 9, 3, 5, 100, 7?",
+          "es": "¿Cuál es la mediana de 9, 3, 5, 100, 7?"
+        },
+        "options": [
+          "24.8",
+          "7",
+          "100"
+        ],
+        "correctIdx": 1,
+        "exp": {
+          "en": "In order: 3, 5, 7, 9, 100. The middle value is 7. The outlier 100 does not move it.",
+          "es": "En orden: 3, 5, 7, 9, 100. El valor del medio es 7. El valor atípico 100 no lo mueve."
+        },
+        "calc": {
+          "expr": "7",
+          "value": 7
+        }
+      },
+      {
+        "from": "2-9",
+        "q": {
+          "en": "The data are 8, 10, 12, 10. The mean is 10. What is the MAD?",
+          "es": "Los datos son 8, 10, 12, 10. La media es 10. ¿Cuál es la DMA?"
+        },
+        "options": [
+          "4",
+          "2",
+          "1"
+        ],
+        "correctIdx": 2,
+        "exp": {
+          "en": "The gaps from 10 are 2, 0, 2 and 0. They add to 4, and 4 ÷ 4 = 1.",
+          "es": "Las distancias a 10 son 2, 0, 2 y 0. Suman 4, y 4 ÷ 4 = 1."
+        },
+        "calc": {
+          "expr": "(2 + 0 + 2 + 0) / 4",
+          "value": 1
+        }
+      }
+    ],
+    "kitchenTable": {
+      "en": "Write five small numbers on sticky notes, like the ages of cousins. Add one huge note, like 100. Put the notes in order. Ask which is fairer to report: the middle note or the mean.",
+      "es": "Escriban cinco números pequeños en notas adhesivas, como las edades de unos primos. Agreguen una nota enorme, como 100. Pongan las notas en orden. Pregunten qué es más justo reportar: la nota del medio o la media."
+    },
+    "vocab": [
+      {
+        "term": "Outlier",
+        "example": {
+          "en": "Store 2's $210 bike is an outlier. It sits far above four close prices.",
+          "es": "La bicicleta de $210 de la tienda 2 es un valor atípico. Está muy por encima de cuatro precios cercanos."
+        },
+        "nonExample": {
+          "en": "Store 1's $68 bike is not an outlier. It is close to its neighbors.",
+          "es": "La bicicleta de $68 de la tienda 1 no es un valor atípico. Está cerca de sus vecinas."
+        },
+        "frame": {
+          "en": "I look for an outlier first. Here it is ___ because ___.",
+          "es": "Primero busco un valor atípico. Aquí es ___ porque ___."
+        }
+      },
+      {
+        "term": "symmetric",
+        "example": {
+          "en": "Store 1's prices spread evenly on both sides of $64. They are symmetric.",
+          "es": "Los precios de la tienda 1 se reparten parejo a ambos lados de $64. Son simétricos."
+        },
+        "nonExample": {
+          "en": "Store 2's prices are not symmetric. One price sits far to the right.",
+          "es": "Los precios de la tienda 2 no son simétricos. Un precio está muy a la derecha."
+        },
+        "frame": {
+          "en": "The data are symmetric because ___ on both sides of ___.",
+          "es": "Los datos son simétricos porque ___ a ambos lados de ___."
+        }
+      },
+      {
+        "term": "Median",
+        "example": {
+          "en": "Store 2's median price is $64, the middle one in order.",
+          "es": "El precio mediano de la tienda 2 es $64, el del medio en orden."
+        },
+        "nonExample": {
+          "en": "Store 2's mean, 92.4, is not a typical price. No bike cost close to it.",
+          "es": "La media de la tienda 2, 92.4, no es un precio típico. Ninguna bicicleta costó cerca de eso."
+        },
+        "frame": {
+          "en": "I use the median, ___, because the outlier ___ the mean.",
+          "es": "Uso la mediana, ___, porque el valor atípico ___ la media."
+        }
+      },
+      {
+        "term": "Interquartile Range",
+        "example": {
+          "en": "The IQR shows the spread of the middle half of the data. It goes with the median.",
+          "es": "El RIC muestra la dispersión de la mitad central de los datos. Va con la mediana."
+        },
+        "nonExample": {
+          "en": "The IQR does not go with the mean. The mean pairs with the MAD.",
+          "es": "El RIC no va con la media. La media se empareja con la DMA."
+        },
+        "frame": {
+          "en": "With the median I report the ___. With the mean I report the ___.",
+          "es": "Con la mediana reporto el ___. Con la media reporto la ___."
+        }
+      },
+      {
+        "term": "Mean Absolute Deviation",
+        "example": {
+          "en": "Store 1's prices are symmetric, so its MAD goes with its mean, 64.",
+          "es": "Los precios de la tienda 1 son simétricos, así que su DMA va con su media, 64."
+        },
+        "nonExample": {
+          "en": "The MAD does not pair with the median. Match the MAD with the mean.",
+          "es": "La DMA no se empareja con la mediana. Emparejen la DMA con la media."
+        },
+        "frame": {
+          "en": "The mean and the ___ go together as a pair.",
+          "es": "La media y la ___ van juntas como pareja."
+        }
+      }
+    ],
+    "confused": [
+      {
+        "wrong": {
+          "en": "Store 2's mean is 92.4, so a typical bike costs about $92.",
+          "es": "La media de la tienda 2 es 92.4, así que una bicicleta típica cuesta unos $92."
+        },
+        "coach": {
+          "en": "How many of the five bikes cost near that mean?",
+          "es": "¿Cuántas de las cinco bicicletas cuestan algo cercano a esa media?"
+        },
+        "why": {
+          "en": "None! Four cost $66 or less. The $210 pulled the mean up. The mean is 462 ÷ 5 = 92.4, but the median, $64, matches the group.",
+          "es": "¡Ninguna! Cuatro cuestan $66 o menos. Los $210 subieron la media. La media es 462 ÷ 5 = 92.4, pero la mediana, $64, coincide con el grupo."
+        },
+        "misconception": "mean-for-skewed-data",
+        "calc": {
+          "expr": "(60 + 62 + 64 + 66 + 210) / 5",
+          "value": 92.4
+        }
+      },
+      {
+        "wrong": {
+          "en": "Store 1 has no outlier, so I will report the mean and the IQR.",
+          "es": "La tienda 1 no tiene valor atípico, así que voy a reportar la media y el RIC."
+        },
+        "coach": {
+          "en": "Which spread measure goes with the mean, and which goes with the median?",
+          "es": "¿Qué medida de dispersión va con la media y cuál va con la mediana?"
+        },
+        "why": {
+          "en": "Pair the mean with the MAD, and the median with the IQR. Store 1 is symmetric. Its mean is 64 and its MAD is 12 ÷ 5 = 2.4.",
+          "es": "Empareja la media con la DMA y la mediana con el RIC. La tienda 1 es simétrica. Su media es 64 y su DMA es 12 ÷ 5 = 2.4."
+        },
+        "misconception": "mixed-pair",
+        "calc": {
+          "expr": "(4 + 2 + 0 + 2 + 4) / 5",
+          "value": 2.4
+        }
+      },
+      {
+        "wrong": {
+          "en": "I do not need to look at the shape. I will always use the mean.",
+          "es": "No necesito mirar la forma. Siempre voy a usar la media."
+        },
+        "coach": {
+          "en": "What should you check on the number line before you pick a measure?",
+          "es": "¿Qué debes revisar en la recta numérica antes de elegir una medida?"
+        },
+        "why": {
+          "en": "Check for an outlier first. Drop the 210 and the mean of the other four is 252 ÷ 4 = 63. That is close to the median, 64.",
+          "es": "Primero busca un valor atípico. Sin el 210, la media de los otros cuatro es 252 ÷ 4 = 63. Eso está cerca de la mediana, 64."
+        },
+        "misconception": "skip-the-shape-check",
+        "calc": {
+          "expr": "(60 + 62 + 64 + 66) / 4",
+          "value": 63
+        }
+      }
+    ]
+  }
 }

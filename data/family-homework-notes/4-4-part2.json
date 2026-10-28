@@ -546,5 +546,321 @@
       "en": "Out of 100, both scores sit on the same scale, so the bigger percent really is the better score. Cross-multiplying checks the same thing a different way, so both point to the 21-out-of-25 quiz.",
       "es": "Sobre 100, ambos puntajes están en la misma escala, así que el porcentaje mayor sí es el mejor puntaje. Multiplicar en cruz comprueba lo mismo de otra manera, así que ambos señalan la prueba de 21 de 25."
     }
+  },
+  "v3": {
+    "version": 1,
+    "kind": "math",
+    "topicKey": "compare-scores-as-percents-apply",
+    "standardPlain": {
+      "en": "Compare two part-to-whole scores fairly by turning each one into a percent.",
+      "es": "Comparar con justicia dos puntajes de parte a todo convirtiendo cada uno en porcentaje."
+    },
+    "hook": {
+      "style": "scoreboard",
+      "en": "A class chart shows two quizzes. Quiz 1 is 21 out of 25. Quiz 2 is 16 out of 20. Which quiz went better?",
+      "es": "Una tabla de la clase muestra dos exámenes cortos. El examen 1 es 21 de 25. El examen 2 es 16 de 20. ¿Cuál salió mejor?",
+      "guess": {
+        "en": "Make a guess first: which quiz had the higher percent?",
+        "es": "Primero adivina: ¿cuál examen tuvo el porcentaje más alto?"
+      },
+      "reveal": {
+        "en": "Quiz 1! 21/25 = 84/100 = 84%. 16/20 = 80/100 = 80%. With the same whole, 84% beats 80%.",
+        "es": "¡El examen 1! 21/25 = 84/100 = 84%. 16/20 = 80/100 = 80%. Con el mismo total, 84% es mayor que 80%."
+      }
+    },
+    "classModel": {
+      "name": {
+        "en": "scale the whole to 100",
+        "es": "llevar el total a 100"
+      }
+    },
+    "model": {
+      "kind": "ratiotable",
+      "data": {
+        "headers": [
+          {
+            "en": "Right",
+            "es": "Correctas"
+          },
+          {
+            "en": "Total",
+            "es": "Total"
+          }
+        ],
+        "rows": [
+          [
+            21,
+            25
+          ],
+          [
+            84,
+            100
+          ],
+          [
+            16,
+            20
+          ],
+          [
+            80,
+            100
+          ]
+        ],
+        "arrows": [
+          {
+            "from": 0,
+            "to": 1,
+            "label": "× 4"
+          },
+          {
+            "from": 2,
+            "to": 3,
+            "label": "× 5"
+          }
+        ]
+      },
+      "alt": {
+        "en": "A table with Right and Total columns. Quiz 1: 21 out of 25 times 4 is 84 out of 100. Quiz 2: 16 out of 20 times 5 is 80 out of 100. Both totals are now 100, so 84% and 80% can be compared.",
+        "es": "Una tabla con columnas Correctas y Total. Examen 1: 21 de 25 por 4 es 84 de 100. Examen 2: 16 de 20 por 5 es 80 de 100. Los dos totales ahora son 100, así que se pueden comparar 84% y 80%."
+      }
+    },
+    "transfer": {
+      "stem": {
+        "en": "Team A made 18 of 25 shots. Team B made 15 of 20 shots. Which team has the higher percent, and what is it?",
+        "es": "El equipo A anotó 18 de 25 tiros. El equipo B anotó 15 de 20 tiros. ¿Cuál equipo tiene el porcentaje más alto y cuál es?"
+      },
+      "choices": [
+        {
+          "en": "Team A, 72%",
+          "es": "Equipo A, 72%",
+          "correct": false,
+          "misconception": "bigger-count-wins"
+        },
+        {
+          "en": "Team B, 75%",
+          "es": "Equipo B, 75%",
+          "correct": true,
+          "misconception": null
+        },
+        {
+          "en": "Team B, 15%",
+          "es": "Equipo B, 15%",
+          "correct": false,
+          "misconception": "count-read-as-percent"
+        }
+      ],
+      "reasoning": {
+        "en": "Scale each to 100. 18/25 × 4/4 = 72/100. 15/20 × 5/5 = 75/100. Team B has 75%, which beats 72%.",
+        "es": "Lleva cada uno a 100. 18/25 × 4/4 = 72/100. 15/20 × 5/5 = 75/100. El equipo B tiene 75%, que es mayor que 72%."
+      },
+      "calc": {
+        "expr": "15 / 20 * 100",
+        "value": 75,
+        "unit": "%"
+      }
+    },
+    "glitch": {
+      "scenario": {
+        "en": "A different situation: Quiz A is 9 out of 10. Quiz B is 17 out of 20. Which is higher?",
+        "es": "Otra situación: El examen A es 9 de 10. El examen B es 17 de 20. ¿Cuál es mayor?"
+      },
+      "steps": [
+        {
+          "en": "Scale 9 out of 10 to 100: 9 × 10 = 90, so it is 90 out of 100.",
+          "es": "Lleva 9 de 10 a 100: 9 × 10 = 90, así que es 90 de 100.",
+          "isGlitch": false
+        },
+        {
+          "en": "Scale 17 out of 20 to 100: add 80 to both, so it is 97 out of 100.",
+          "es": "Lleva 17 de 20 a 100: suma 80 a los dos, así que es 97 de 100.",
+          "isGlitch": true
+        },
+        {
+          "en": "Compare the percents: 97% is more than 90%, so Quiz B is higher.",
+          "es": "Compara los porcentajes: 97% es más que 90%, así que el examen B es mayor.",
+          "isGlitch": false
+        }
+      ],
+      "fix": {
+        "en": "Multiply, do not add: 20 × 5 = 100, so 17 × 5 = 85 out of 100. Then 90% beats 85%, so Quiz A is higher.",
+        "es": "Multiplica, no sumes: 20 × 5 = 100, así que 17 × 5 = 85 de 100. Entonces 90% es mayor que 85%, y el examen A es mayor."
+      },
+      "frame": {
+        "en": "I multiplied ___ and ___ by ___ to get ___ out of 100.",
+        "es": "Multipliqué ___ y ___ por ___ para obtener ___ de 100."
+      },
+      "calc": {
+        "expr": "17 * 5",
+        "value": 85
+      }
+    },
+    "spiral": [
+      {
+        "from": "4-4",
+        "q": {
+          "en": "What is 20% of 45?",
+          "es": "¿Cuánto es el 20% de 45?"
+        },
+        "options": [
+          "0.9",
+          "9",
+          "25"
+        ],
+        "correctIdx": 1,
+        "exp": {
+          "en": "20% as a decimal is 0.2. 0.2 × 45 = 9.",
+          "es": "El 20% como decimal es 0.2. 0.2 × 45 = 9."
+        },
+        "calc": {
+          "expr": "0.2 * 45",
+          "value": 9
+        }
+      },
+      {
+        "from": "4-2",
+        "q": {
+          "en": "What is 0.35 as a percent?",
+          "es": "¿Qué porcentaje es 0.35?"
+        },
+        "options": [
+          "35%",
+          "3.5%",
+          "0.35%"
+        ],
+        "correctIdx": 0,
+        "exp": {
+          "en": "0.35 is 35 hundredths, so it is 35/100, or 35%.",
+          "es": "0.35 son 35 centésimos, así que es 35/100, o 35%."
+        },
+        "calc": {
+          "expr": "0.35 * 100",
+          "value": 35
+        }
+      }
+    ],
+    "kitchenTable": {
+      "en": "Make up two quiz scores with different totals, like 7 out of 10 and 12 out of 20. Can your student scale both to 100 and say which is better?",
+      "es": "Inventen dos puntajes de exámenes con totales distintos, como 7 de 10 y 12 de 20. ¿Puede su estudiante llevar ambos a 100 y decir cuál es mejor?"
+    },
+    "vocab": [
+      {
+        "term": "Percent",
+        "example": {
+          "en": "84% means 84 out of every 100 questions right.",
+          "es": "84% significa 84 respuestas correctas de cada 100 preguntas."
+        },
+        "nonExample": {
+          "en": "84% does not mean 84 questions. The quiz had only 25.",
+          "es": "84% no significa 84 preguntas. El examen tenía solo 25."
+        },
+        "frame": {
+          "en": "___% means ___ out of every 100.",
+          "es": "___% significa ___ de cada 100."
+        }
+      },
+      {
+        "term": "Part-to-whole",
+        "example": {
+          "en": "21 out of 25 compares the part, 21, to the whole, 25.",
+          "es": "21 de 25 compara la parte, 21, con el total, 25."
+        },
+        "nonExample": {
+          "en": "21 and 16 are parts of different quizzes. Comparing them is not part-to-whole.",
+          "es": "21 y 16 son partes de exámenes distintos. Compararlos no es de parte a todo."
+        },
+        "frame": {
+          "en": "The part is ___ and the whole is ___.",
+          "es": "La parte es ___ y el total es ___."
+        }
+      },
+      {
+        "term": "Equivalent fraction",
+        "example": {
+          "en": "84/100 is an equivalent fraction of 21/25.",
+          "es": "84/100 es una fracción equivalente a 21/25."
+        },
+        "nonExample": {
+          "en": "80/100 is not equivalent to 21/25. It matches 16/20.",
+          "es": "80/100 no es equivalente a 21/25. Es igual a 16/20."
+        },
+        "frame": {
+          "en": "___/___ = ___/100 because I multiplied by ___.",
+          "es": "___/___ = ___/100 porque multipliqué por ___."
+        }
+      },
+      {
+        "term": "Denominator",
+        "example": {
+          "en": "In 21/25, the denominator 25 is the whole quiz.",
+          "es": "En 21/25, el denominador 25 es el total del examen."
+        },
+        "nonExample": {
+          "en": "In 21/25, the 21 is not the denominator. It is the number on top.",
+          "es": "En 21/25, el 21 no es el denominador. Es el número de arriba."
+        },
+        "frame": {
+          "en": "To compare, I make the denominator ___ for both.",
+          "es": "Para comparar, hago que el denominador sea ___ en ambos."
+        }
+      }
+    ],
+    "confused": [
+      {
+        "wrong": {
+          "en": "21 is more than 16, so Quiz 1 is better.",
+          "es": "21 es más que 16, así que el examen 1 es mejor."
+        },
+        "coach": {
+          "en": "Do both quizzes have the same number of questions?",
+          "es": "¿Los dos exámenes tienen el mismo número de preguntas?"
+        },
+        "why": {
+          "en": "The wholes are different, so counts cannot be compared. 16/20 = 80%, and 80% is a fair number to compare.",
+          "es": "Los totales son distintos, así que no se pueden comparar los conteos. 16/20 = 80%, y 80% es un número justo para comparar."
+        },
+        "misconception": "compared-counts-different-wholes",
+        "calc": {
+          "expr": "16 / 20 * 100",
+          "value": 80
+        }
+      },
+      {
+        "wrong": {
+          "en": "21 out of 25 is 21 out of 100, so it is 21%.",
+          "es": "21 de 25 es 21 de 100, así que es 21%."
+        },
+        "coach": {
+          "en": "Is the quiz out of 25 questions or out of 100?",
+          "es": "¿El examen es de 25 preguntas o de 100?"
+        },
+        "why": {
+          "en": "The whole is 25, not 100. Multiply top and bottom by 4: 21 × 4 = 84, so it is 84 out of 100.",
+          "es": "El total es 25, no 100. Multiplica arriba y abajo por 4: 21 × 4 = 84, así que es 84 de 100."
+        },
+        "misconception": "denominator-ignored",
+        "calc": {
+          "expr": "21 / 25 * 100",
+          "value": 84
+        }
+      },
+      {
+        "wrong": {
+          "en": "To scale 16 out of 20 to 100, I divide: 16 ÷ 5 = 3.2.",
+          "es": "Para llevar 16 de 20 a 100, divido: 16 ÷ 5 = 3.2."
+        },
+        "coach": {
+          "en": "When the bottom goes from 20 up to 100, should the top get bigger or smaller?",
+          "es": "Cuando el número de abajo pasa de 20 a 100, ¿el de arriba debe hacerse mayor o menor?"
+        },
+        "why": {
+          "en": "20 grows to 100 by multiplying by 5, so the top grows too: 16 × 5 = 80.",
+          "es": "20 llega a 100 multiplicando por 5, así que el de arriba también crece: 16 × 5 = 80."
+        },
+        "misconception": "divided-instead-of-multiplied",
+        "calc": {
+          "expr": "16 * 5",
+          "value": 80
+        }
+      }
+    ]
   }
 }

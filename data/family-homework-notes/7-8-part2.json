@@ -537,5 +537,306 @@
       ],
       "image": "/assets/vocab-images/integer.svg"
     }
-  ]
+  ],
+  "v3": {
+    "version": 1,
+    "kind": "math",
+    "topicKey": "name-quadrant-from-signs-apply",
+    "standardPlain": {
+      "en": "Name the quadrant of a point from the signs of its coordinates.",
+      "es": "Nombrar el cuadrante de un punto con los signos de sus coordenadas."
+    },
+    "hook": {
+      "style": "map",
+      "en": "Base camp is the center of a map. Four clues are at A (4, 3), B (−5, 2), C (−3, −4) and D (2, −5). One clue is in the upper left. Which one?",
+      "es": "El campamento base es el centro de un mapa. Cuatro pistas están en A (4, 3), B (−5, 2), C (−3, −4) y D (2, −5). Una pista está arriba a la izquierda. ¿Cuál?",
+      "guess": {
+        "en": "Make a guess first: how many of the four clues are on the left side of the map?",
+        "es": "Primero adivina: ¿cuántas de las cuatro pistas están en el lado izquierdo del mapa?"
+      },
+      "reveal": {
+        "en": "Clue B! Its signs are (−, +): left, then up. That is Quadrant II. Clues B and C both have a negative first number, so both sit on the left.",
+        "es": "¡La pista B! Sus signos son (−, +): a la izquierda y luego arriba. Es el Cuadrante II. Las pistas B y C tienen un primer número negativo, así que las dos están a la izquierda."
+      }
+    },
+    "classModel": {
+      "name": {
+        "en": "read the signs",
+        "es": "lee los signos"
+      }
+    },
+    "model": {
+      "kind": "coord",
+      "data": {
+        "xmax": 6,
+        "ymax": 6,
+        "points": [
+          {
+            "x": 4,
+            "y": 3,
+            "label": "A (4, 3)"
+          },
+          {
+            "x": -5,
+            "y": 2,
+            "label": "B (−5, 2)"
+          },
+          {
+            "x": -3,
+            "y": -4,
+            "label": "C (−3, −4)"
+          },
+          {
+            "x": 2,
+            "y": -5,
+            "label": "D (2, −5)"
+          }
+        ],
+        "quadrants": true
+      },
+      "alt": {
+        "en": "A grid with all four quadrants and both axes from −6 to 6. A (4, 3) is in the upper right, Quadrant I. B (−5, 2) is in the upper left, Quadrant II. C (−3, −4) is in the lower left, Quadrant III. D (2, −5) is in the lower right, Quadrant IV.",
+        "es": "Una cuadrícula con los cuatro cuadrantes y los dos ejes de −6 a 6. A (4, 3) está arriba a la derecha, en el Cuadrante I. B (−5, 2) está arriba a la izquierda, en el Cuadrante II. C (−3, −4) está abajo a la izquierda, en el Cuadrante III. D (2, −5) está abajo a la derecha, en el Cuadrante IV."
+      }
+    },
+    "transfer": {
+      "stem": {
+        "en": "A game board is a grid. Four tokens sit at (−2, 5), (3, 1), (−6, 4) and (−1, −7). How many tokens are in Quadrant II, the upper left?",
+        "es": "Un tablero de juego es una cuadrícula. Cuatro fichas están en (−2, 5), (3, 1), (−6, 4) y (−1, −7). ¿Cuántas fichas están en el Cuadrante II, arriba a la izquierda?"
+      },
+      "choices": [
+        {
+          "en": "1 token",
+          "es": "1 ficha",
+          "correct": false,
+          "misconception": "mixed-up-quadrants-two-and-three"
+        },
+        {
+          "en": "3 tokens",
+          "es": "3 fichas",
+          "correct": false,
+          "misconception": "counted-any-negative-x"
+        },
+        {
+          "en": "2 tokens",
+          "es": "2 fichas",
+          "correct": true,
+          "misconception": null
+        }
+      ],
+      "reasoning": {
+        "en": "Quadrant II needs a negative x and a positive y. (−2, 5) and (−6, 4) fit. (3, 1) has a positive x. (−1, −7) has a negative y. So 2 tokens.",
+        "es": "El Cuadrante II necesita una x negativa y una y positiva. (−2, 5) y (−6, 4) cumplen. (3, 1) tiene una x positiva. (−1, −7) tiene una y negativa. Entonces son 2 fichas."
+      },
+      "calc": {
+        "expr": "1 + 1",
+        "value": 2,
+        "unit": "tokens"
+      }
+    },
+    "glitch": {
+      "scenario": {
+        "en": "A different situation: Lena walks from base camp to (7, −3). She says she walks 7 right and 3 up, so the point is in Quadrant I.",
+        "es": "Otra situación: Lena camina del campamento base a (7, −3). Dice que camina 7 a la derecha y 3 hacia arriba, así que el punto está en el Cuadrante I."
+      },
+      "steps": [
+        {
+          "en": "The first number, 7, is positive, so she moves 7 units right.",
+          "es": "El primer número, 7, es positivo, así que se mueve 7 unidades a la derecha.",
+          "isGlitch": false
+        },
+        {
+          "en": "The second number, −3, is negative, so she moves 3 units up.",
+          "es": "El segundo número, −3, es negativo, así que se mueve 3 unidades hacia arriba.",
+          "isGlitch": true
+        },
+        {
+          "en": "Name the quadrant from where she ends up.",
+          "es": "Nombra el cuadrante según el lugar donde termina.",
+          "isGlitch": false
+        }
+      ],
+      "fix": {
+        "en": "A negative second number means DOWN. Right 7 and down 3 is the lower right, Quadrant IV. The walk is 7 + 3 = 10 units either way.",
+        "es": "Un segundo número negativo significa hacia ABAJO. 7 a la derecha y 3 hacia abajo es abajo a la derecha, el Cuadrante IV. La caminata es de 7 + 3 = 10 unidades de cualquier forma."
+      },
+      "frame": {
+        "en": "The signs (___, ___) mean ___ and ___, so the point is in Quadrant ___.",
+        "es": "Los signos (___, ___) significan ___ y ___, así que el punto está en el Cuadrante ___."
+      },
+      "calc": {
+        "expr": "7 + 3",
+        "value": 10
+      }
+    },
+    "spiral": [
+      {
+        "from": "7-8",
+        "q": {
+          "en": "From the center, how many units do you walk in all to reach (−8, 3)?",
+          "es": "Desde el centro, ¿cuántas unidades caminas en total para llegar a (−8, 3)?"
+        },
+        "options": [
+          "5",
+          "11",
+          "24"
+        ],
+        "correctIdx": 1,
+        "exp": {
+          "en": "−8 is 8 units left and 3 is 3 units up. Walk 8 + 3 = 11 units.",
+          "es": "−8 son 8 unidades a la izquierda y 3 son 3 unidades hacia arriba. Caminas 8 + 3 = 11 unidades."
+        },
+        "calc": {
+          "expr": "8 + 3",
+          "value": 11
+        }
+      },
+      {
+        "from": "7-6",
+        "q": {
+          "en": "How far apart are the points (5, −2) and (5, 6)?",
+          "es": "¿Qué tan separados están los puntos (5, −2) y (5, 6)?"
+        },
+        "options": [
+          "4",
+          "3",
+          "8"
+        ],
+        "correctIdx": 2,
+        "exp": {
+          "en": "The x-values match, so use the y-values. They are on opposite sides of 0: 2 + 6 = 8 units.",
+          "es": "Los valores de x coinciden, así que usa los de y. Están en lados opuestos del 0: 2 + 6 = 8 unidades."
+        },
+        "calc": {
+          "expr": "2 + 6",
+          "value": 8
+        }
+      }
+    ],
+    "kitchenTable": {
+      "en": "Fold a sheet of paper in half, then in half the other way. The folds cross in the middle. Say only the signs, like (−, +). Can your student point to the right part of the paper? Try (+, −), then (−, −).",
+      "es": "Doblen una hoja de papel por la mitad y luego por la mitad del otro lado. Los dobleces se cruzan en el centro. Digan solo los signos, por ejemplo (−, +). ¿Puede su estudiante señalar la parte correcta de la hoja? Prueben con (+, −) y luego con (−, −)."
+    },
+    "vocab": [
+      {
+        "term": "Quadrant",
+        "example": {
+          "en": "Clue B at (−5, 2) is in Quadrant II, the upper left.",
+          "es": "La pista B en (−5, 2) está en el Cuadrante II, arriba a la izquierda."
+        },
+        "nonExample": {
+          "en": "Clue A at (4, 3) is not in Quadrant II. Its first number is positive.",
+          "es": "La pista A en (4, 3) no está en el Cuadrante II. Su primer número es positivo."
+        },
+        "frame": {
+          "en": "The signs (___, ___) mean Quadrant ___.",
+          "es": "Los signos (___, ___) significan el Cuadrante ___."
+        }
+      },
+      {
+        "term": "Ordered pair",
+        "example": {
+          "en": "(−3, −4) is the ordered pair for clue C. The first number is the sideways move.",
+          "es": "(−3, −4) es el par ordenado de la pista C. El primer número es el movimiento de lado."
+        },
+        "nonExample": {
+          "en": "(−4, −3) is a different ordered pair. The order matters.",
+          "es": "(−4, −3) es otro par ordenado. El orden importa."
+        },
+        "frame": {
+          "en": "In (___, ___), the first number moves me ___ and the second moves me ___.",
+          "es": "En (___, ___), el primer número me mueve hacia ___ y el segundo me mueve hacia ___."
+        }
+      },
+      {
+        "term": "Origin",
+        "example": {
+          "en": "Base camp, (0, 0), is the origin. Every walk starts there.",
+          "es": "El campamento base, (0, 0), es el origen. Toda caminata empieza ahí."
+        },
+        "nonExample": {
+          "en": "Clue A at (4, 3) is not the origin. It is 4 right and 3 up from it.",
+          "es": "La pista A en (4, 3) no es el origen. Está 4 a la derecha y 3 hacia arriba del origen."
+        },
+        "frame": {
+          "en": "I start at the origin and move ___ units ___, then ___ units ___.",
+          "es": "Empiezo en el origen y me muevo ___ unidades hacia ___, luego ___ unidades hacia ___."
+        }
+      },
+      {
+        "term": "Negative coordinate",
+        "example": {
+          "en": "The −5 in clue B, (−5, 2), is a negative coordinate. It sends you left.",
+          "es": "El −5 de la pista B, (−5, 2), es una coordenada negativa. Te manda a la izquierda."
+        },
+        "nonExample": {
+          "en": "The 2 in (−5, 2) is not negative. It sends you up.",
+          "es": "El 2 en (−5, 2) no es negativo. Te manda hacia arriba."
+        },
+        "frame": {
+          "en": "The coordinate ___ is negative, so I go ___ from the origin.",
+          "es": "La coordenada ___ es negativa, así que voy hacia ___ desde el origen."
+        }
+      }
+    ],
+    "confused": [
+      {
+        "wrong": {
+          "en": "B (−5, 2) is in Quadrant IV, because I counted the quadrants clockwise from the upper right.",
+          "es": "B (−5, 2) está en el Cuadrante IV, porque conté los cuadrantes en el sentido de las manecillas desde arriba a la derecha."
+        },
+        "coach": {
+          "en": "Which way around do the quadrant numbers go: with the clock hands, or the other way?",
+          "es": "¿En qué sentido van los números de los cuadrantes: con las manecillas del reloj o al revés?"
+        },
+        "why": {
+          "en": "Quadrants count the other way. I is upper right and II is upper left. III is lower left and IV is lower right. B is left 5 and up 2, so Quadrant II. The walk is 5 + 2 = 7 units.",
+          "es": "Los cuadrantes se cuentan al revés. I es arriba a la derecha y II es arriba a la izquierda. III es abajo a la izquierda y IV es abajo a la derecha. B está 5 a la izquierda y 2 arriba, así que es el Cuadrante II. La caminata es de 5 + 2 = 7 unidades."
+        },
+        "misconception": "quadrants-numbered-clockwise",
+        "calc": {
+          "expr": "5 + 2",
+          "value": 7
+        }
+      },
+      {
+        "wrong": {
+          "en": "(−5, −9) has two negatives, so they cancel and it is in Quadrant I.",
+          "es": "(−5, −9) tiene dos negativos, así que se cancelan y está en el Cuadrante I."
+        },
+        "coach": {
+          "en": "Do the two signs cancel out, or does each one give its own direction?",
+          "es": "¿Los dos signos se cancelan, o cada uno da su propia dirección?"
+        },
+        "why": {
+          "en": "Each sign gives its own direction: left 5 and down 9. That is the lower left, Quadrant III. The walk is 5 + 9 = 14 units.",
+          "es": "Cada signo da su propia dirección: 5 a la izquierda y 9 hacia abajo. Eso es abajo a la izquierda, el Cuadrante III. La caminata es de 5 + 9 = 14 unidades."
+        },
+        "misconception": "two-negatives-cancel",
+        "calc": {
+          "expr": "5 + 9",
+          "value": 14
+        }
+      },
+      {
+        "wrong": {
+          "en": "For (6, −2), the first number tells up or down, so I go 6 units down.",
+          "es": "Para (6, −2), el primer número dice arriba o abajo, así que voy 6 unidades hacia abajo."
+        },
+        "coach": {
+          "en": "Which number do we read first, and does it send you sideways, or up and down?",
+          "es": "¿Cuál número leemos primero, y te manda de lado o hacia arriba y abajo?"
+        },
+        "why": {
+          "en": "The first number is the sideways move: 6 units right. The second number is the up-or-down move: −2 is 2 units down. That is Quadrant IV. The walk is 6 + 2 = 8 units.",
+          "es": "El primer número es el movimiento de lado: 6 unidades a la derecha. El segundo es el movimiento de arriba o abajo: −2 es 2 unidades hacia abajo. Eso es el Cuadrante IV. La caminata es de 6 + 2 = 8 unidades."
+        },
+        "misconception": "swapped-jobs-of-the-numbers",
+        "calc": {
+          "expr": "6 + 2",
+          "value": 8
+        }
+      }
+    ]
+  }
 }

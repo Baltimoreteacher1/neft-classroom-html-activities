@@ -592,5 +592,333 @@
       "en": "Dividing step by step and branching both reach the same primes: 2, 2, 3 and 7. Check: 4 × 3 × 7 = 12 × 7 = 84.",
       "es": "Dividir paso a paso y hacer ramas llegan a los mismos primos: 2, 2, 3 y 7. Comprobación: 4 × 3 × 7 = 12 × 7 = 84."
     }
+  },
+  "v3": {
+    "version": 1,
+    "kind": "math",
+    "topicKey": "prime-factor-tree-finished-apply",
+    "standardPlain": {
+      "en": "Keep splitting a factor tree until every branch is prime.",
+      "es": "Seguir dividiendo un árbol de factores hasta que cada rama sea prima."
+    },
+    "hook": {
+      "style": "price-tag",
+      "en": "A locker tag says 84. Maya splits it into 4 × 21 and says her tree is finished. Her friend says a piece can still split. Who is right?",
+      "es": "La etiqueta de un casillero dice 84. Maya lo divide en 4 × 21 y dice que su árbol está terminado. Su amiga dice que una pieza todavía se puede dividir. ¿Quién tiene razón?",
+      "guess": {
+        "en": "Guess first: is the 4 already prime, or can it split again?",
+        "es": "Primero adivina: ¿el 4 ya es primo o se puede dividir otra vez?"
+      },
+      "reveal": {
+        "en": "It can split! 4 = 2 × 2 and 21 = 3 × 7. Now every branch is prime: 84 = 2 × 2 × 3 × 7, or 2² × 3 × 7.",
+        "es": "¡Se puede dividir! 4 = 2 × 2 y 21 = 3 × 7. Ahora todas las ramas son primas: 84 = 2 × 2 × 3 × 7, o 2² × 3 × 7."
+      }
+    },
+    "classModel": {
+      "name": {
+        "en": "the all-primes check",
+        "es": "la revisión de todos primos"
+      }
+    },
+    "model": {
+      "kind": "ratiotable",
+      "data": {
+        "headers": [
+          {
+            "en": "Number",
+            "es": "Número"
+          },
+          {
+            "en": "Splits into",
+            "es": "Se divide en"
+          }
+        ],
+        "rows": [
+          [
+            84,
+            "4 × 21"
+          ],
+          [
+            4,
+            "2 × 2"
+          ],
+          [
+            21,
+            "3 × 7"
+          ],
+          [
+            84,
+            "2 × 2 × 3 × 7"
+          ]
+        ],
+        "arrows": [
+          {
+            "from": 0,
+            "to": 3,
+            "label": {
+              "en": "all prime",
+              "es": "todos primos"
+            }
+          }
+        ]
+      },
+      "alt": {
+        "en": "A table that follows a factor tree for 84. Row one: 84 splits into 4 × 21. Row two: 4 splits into 2 × 2. Row three: 21 splits into 3 × 7. Row four: 84 ends as 2 × 2 × 3 × 7, and every factor is prime.",
+        "es": "Una tabla que sigue un árbol de factores del 84. Fila uno: 84 se divide en 4 × 21. Fila dos: 4 se divide en 2 × 2. Fila tres: 21 se divide en 3 × 7. Fila cuatro: 84 termina como 2 × 2 × 3 × 7, y todos los factores son primos."
+      }
+    },
+    "transfer": {
+      "stem": {
+        "en": "A factor tree for 56 ends in the primes 2, 2, 2 and 7. When you write 56 with exponents, what is the exponent on the 2?",
+        "es": "Un árbol de factores del 56 termina en los primos 2, 2, 2 y 7. Cuando escribes 56 con exponentes, ¿cuál es el exponente del 2?"
+      },
+      "choices": [
+        {
+          "en": "3",
+          "es": "3",
+          "correct": true,
+          "misconception": null
+        },
+        {
+          "en": "4",
+          "es": "4",
+          "correct": false,
+          "misconception": "counted-all-the-primes"
+        },
+        {
+          "en": "6",
+          "es": "6",
+          "correct": false,
+          "misconception": "added-the-repeated-primes"
+        }
+      ],
+      "reasoning": {
+        "en": "Count the 2s at the bottom. There are three, so 56 = 2³ × 7. Check: 8 × 7 = 56.",
+        "es": "Cuenta los 2 de abajo. Hay tres, así que 56 = 2³ × 7. Comprueba: 8 × 7 = 56."
+      },
+      "calc": {
+        "expr": "1 + 1 + 1",
+        "value": 3
+      }
+    },
+    "glitch": {
+      "scenario": {
+        "en": "A different situation: Leo makes a factor tree for 90. He starts with 9 × 10.",
+        "es": "Otra situación: Leo hace un árbol de factores del 90. Empieza con 9 × 10."
+      },
+      "steps": [
+        {
+          "en": "Split 10 into 2 × 5. Both are prime, so that branch stops.",
+          "es": "Divido 10 en 2 × 5. Los dos son primos, así que esa rama se detiene.",
+          "isGlitch": false
+        },
+        {
+          "en": "Check the other branch. Is 9 prime?",
+          "es": "Reviso la otra rama. ¿El 9 es primo?",
+          "isGlitch": false
+        },
+        {
+          "en": "The 9 is a small number, so I leave it: 90 = 9 × 2 × 5.",
+          "es": "El 9 es un número pequeño, así que lo dejo: 90 = 9 × 2 × 5.",
+          "isGlitch": true
+        }
+      ],
+      "fix": {
+        "en": "9 is composite: 9 = 3 × 3. Every branch must be prime, so 90 = 2 × 3 × 3 × 5, or 2 × 3² × 5.",
+        "es": "El 9 es compuesto: 9 = 3 × 3. Todas las ramas deben ser primas, así que 90 = 2 × 3 × 3 × 5, o 2 × 3² × 5."
+      },
+      "frame": {
+        "en": "The tree is finished because every branch is ___, so ___ = ___.",
+        "es": "El árbol está terminado porque todas las ramas son ___, así que ___ = ___."
+      },
+      "calc": {
+        "expr": "2 * 3 * 3 * 5",
+        "value": 90
+      }
+    },
+    "spiral": [
+      {
+        "from": "6-13",
+        "q": {
+          "en": "Which number is prime?",
+          "es": "¿Cuál número es primo?"
+        },
+        "options": [
+          "21",
+          "27",
+          "23"
+        ],
+        "correctIdx": 2,
+        "exp": {
+          "en": "21 = 3 × 7 and 27 = 3 × 9, so both split. Only 1 and 23 go into 23.",
+          "es": "21 = 3 × 7 y 27 = 3 × 9, así que los dos se dividen. Solo el 1 y el 23 entran en el 23."
+        },
+        "calc": {
+          "expr": "23",
+          "value": 23
+        }
+      },
+      {
+        "from": "6-7",
+        "q": {
+          "en": "What is the greatest common factor of 12 and 20?",
+          "es": "¿Cuál es el máximo común divisor de 12 y 20?"
+        },
+        "options": [
+          "2",
+          "4",
+          "8"
+        ],
+        "correctIdx": 1,
+        "exp": {
+          "en": "Factors of 12: 1, 2, 3, 4, 6, 12. Factors of 20: 1, 2, 4, 5, 10, 20. The greatest shared factor is 4.",
+          "es": "Factores de 12: 1, 2, 3, 4, 6, 12. Factores de 20: 1, 2, 4, 5, 10, 20. El mayor factor en común es 4."
+        },
+        "calc": {
+          "expr": "2 * 2",
+          "value": 4
+        }
+      }
+    ],
+    "kitchenTable": {
+      "en": "Write 84 on paper. Ask your student to start with 2 × 42 instead of 4 × 21. Do both trees end in the same primes?",
+      "es": "Escriban 84 en un papel. Pidan a su estudiante que empiece con 2 × 42 en lugar de 4 × 21. ¿Los dos árboles terminan en los mismos primos?"
+    },
+    "vocab": [
+      {
+        "term": "Prime number",
+        "example": {
+          "en": "In the tree for 84, the 3 and the 7 are prime. They cannot split.",
+          "es": "En el árbol del 84, el 3 y el 7 son primos. No se pueden dividir."
+        },
+        "nonExample": {
+          "en": "The 21 on the tree is not prime. It splits into 3 × 7.",
+          "es": "El 21 del árbol no es primo. Se divide en 3 × 7."
+        },
+        "frame": {
+          "en": "The branch ___ is prime, so I ___ splitting it.",
+          "es": "La rama ___ es prima, así que ___ de dividirla."
+        }
+      },
+      {
+        "term": "Composite number",
+        "example": {
+          "en": "The 4 at the top of Maya's tree is composite. It splits into 2 × 2.",
+          "es": "El 4 de arriba del árbol de Maya es compuesto. Se divide en 2 × 2."
+        },
+        "nonExample": {
+          "en": "The 7 is not composite. Only 1 and 7 go into it.",
+          "es": "El 7 no es compuesto. Solo el 1 y el 7 entran en él."
+        },
+        "frame": {
+          "en": "If a ___ is still at the bottom, the tree is not finished.",
+          "es": "Si todavía hay un ___ abajo, el árbol no está terminado."
+        }
+      },
+      {
+        "term": "Factor tree",
+        "example": {
+          "en": "A finished factor tree for 84 has only 2, 2, 3 and 7 at the bottom.",
+          "es": "Un árbol de factores terminado del 84 tiene solo 2, 2, 3 y 7 abajo."
+        },
+        "nonExample": {
+          "en": "A tree with 4 and 21 at the bottom is not finished.",
+          "es": "Un árbol con 4 y 21 abajo no está terminado."
+        },
+        "frame": {
+          "en": "My tree is finished when every branch ends in ___.",
+          "es": "Mi árbol está terminado cuando todas las ramas terminan en ___."
+        }
+      },
+      {
+        "term": "Exponent",
+        "example": {
+          "en": "2 × 2 × 3 × 7 can be written 2² × 3 × 7. The exponent 2 counts the two 2s.",
+          "es": "2 × 2 × 3 × 7 se puede escribir 2² × 3 × 7. El exponente 2 cuenta los dos 2."
+        },
+        "nonExample": {
+          "en": "The exponent is not on the 3 or the 7. They each appear only once.",
+          "es": "El exponente no va en el 3 ni en el 7. Cada uno aparece solo una vez."
+        },
+        "frame": {
+          "en": "The prime ___ appears ___ times, so I write ___ with an exponent.",
+          "es": "El primo ___ aparece ___ veces, así que escribo ___ con un exponente."
+        }
+      },
+      {
+        "term": "Prime Factorization",
+        "example": {
+          "en": "2² × 3 × 7 is the prime factorization of 84.",
+          "es": "2² × 3 × 7 es la factorización prima de 84."
+        },
+        "nonExample": {
+          "en": "4 × 3 × 7 is not a prime factorization. The 4 is not prime.",
+          "es": "4 × 3 × 7 no es una factorización prima. El 4 no es primo."
+        },
+        "frame": {
+          "en": "To check, I multiply the primes and get ___.",
+          "es": "Para comprobar, multiplico los primos y obtengo ___."
+        }
+      }
+    ],
+    "confused": [
+      {
+        "wrong": {
+          "en": "The 4 and the 21 are small numbers, so the tree is finished.",
+          "es": "El 4 y el 21 son números pequeños, así que el árbol está terminado."
+        },
+        "coach": {
+          "en": "What are the only numbers that go into a prime number?",
+          "es": "¿Cuáles son los únicos números que entran en un número primo?"
+        },
+        "why": {
+          "en": "Small does not mean prime. 4 = 2 × 2 and 21 = 3 × 7 both split. Finished: 2 × 2 × 3 × 7.",
+          "es": "Pequeño no significa primo. 4 = 2 × 2 y 21 = 3 × 7 se dividen. Terminado: 2 × 2 × 3 × 7."
+        },
+        "misconception": "small-means-prime",
+        "calc": {
+          "expr": "2 * 2 * 3 * 7",
+          "value": 84
+        }
+      },
+      {
+        "wrong": {
+          "en": "I split 84 into 2 × 42. The 2 is prime, so I am done.",
+          "es": "Dividí 84 en 2 × 42. El 2 es primo, así que ya terminé."
+        },
+        "coach": {
+          "en": "Is the other branch prime, or can it still split?",
+          "es": "¿La otra rama es prima o todavía se puede dividir?"
+        },
+        "why": {
+          "en": "Every branch must be prime, not just one. 42 = 2 × 21 and 21 = 3 × 7. Keep going until all are prime.",
+          "es": "Todas las ramas deben ser primas, no solo una. 42 = 2 × 21 y 21 = 3 × 7. Sigue hasta que todas sean primas."
+        },
+        "misconception": "only-one-branch-checked",
+        "calc": {
+          "expr": "2 * 2 * 3 * 7",
+          "value": 84
+        }
+      },
+      {
+        "wrong": {
+          "en": "My tree started with 6 × 14 and Maya's started with 4 × 21. We cannot both be right.",
+          "es": "Mi árbol empezó con 6 × 14 y el de Maya empezó con 4 × 21. No podemos tener razón los dos."
+        },
+        "coach": {
+          "en": "What do you get when you split each tree all the way down?",
+          "es": "¿Qué obtienes cuando divides cada árbol hasta el final?"
+        },
+        "why": {
+          "en": "6 × 14 splits to 2 × 3 × 2 × 7. 4 × 21 splits to 2 × 2 × 3 × 7. Same primes, so the same answer: 2² × 3 × 7.",
+          "es": "6 × 14 se divide en 2 × 3 × 2 × 7. 4 × 21 se divide en 2 × 2 × 3 × 7. Los mismos primos, así que la misma respuesta: 2² × 3 × 7."
+        },
+        "misconception": "different-trees-different-answers",
+        "calc": {
+          "expr": "2 * 2 * 3 * 7",
+          "value": 84
+        }
+      }
+    ]
   }
 }

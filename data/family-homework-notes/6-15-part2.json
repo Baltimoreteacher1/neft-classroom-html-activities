@@ -535,5 +535,334 @@
       "en": "Both ways give $41, because combining like terms does not change the value. Simplifying first just leaves less to work out.",
       "es": "Las dos maneras dan $41, porque combinar términos semejantes no cambia el valor. Simplificar primero deja menos que calcular."
     }
+  },
+  "v3": {
+    "version": 1,
+    "kind": "math",
+    "topicKey": "combine-like-terms-then-evaluate-apply",
+    "standardPlain": {
+      "en": "Combine like terms, then find the value of the expression.",
+      "es": "Combinar términos semejantes y luego hallar el valor de la expresión."
+    },
+    "hook": {
+      "style": "price-tag",
+      "en": "A team orders 5 shirts and a $7 banner. Later it orders 3 more shirts and a $2 sticker sheet. Each shirt costs $4. What is the total bill?",
+      "es": "Un equipo pide 5 camisetas y una pancarta de $7. Después pide 3 camisetas más y una hoja de calcomanías de $2. Cada camiseta cuesta $4. ¿Cuál es la cuenta total?",
+      "guess": {
+        "en": "Guess first: is the total more than $40, or less?",
+        "es": "Primero adivina: ¿el total es más de $40 o menos?"
+      },
+      "reveal": {
+        "en": "More! 5x + 7 + 3x + 2 becomes 8x + 9. With x = 4: 8 × 4 + 9 = 32 + 9 = $41.",
+        "es": "¡Más! 5x + 7 + 3x + 2 se convierte en 8x + 9. Con x = 4: 8 × 4 + 9 = 32 + 9 = $41."
+      }
+    },
+    "classModel": {
+      "name": {
+        "en": "combine first, then evaluate",
+        "es": "combinar primero y luego evaluar"
+      }
+    },
+    "model": {
+      "kind": "ratiotable",
+      "data": {
+        "headers": [
+          {
+            "en": "x-terms",
+            "es": "Términos con x"
+          },
+          {
+            "en": "Plain numbers",
+            "es": "Números sin letra"
+          }
+        ],
+        "rows": [
+          [
+            "5x",
+            7
+          ],
+          [
+            "3x",
+            2
+          ],
+          [
+            "8x",
+            9
+          ],
+          [
+            "8 × 4 = 32",
+            9
+          ]
+        ],
+        "arrows": [
+          {
+            "from": 2,
+            "to": 3,
+            "label": {
+              "en": "x = 4",
+              "es": "x = 4"
+            }
+          }
+        ]
+      },
+      "alt": {
+        "en": "A table with two columns, x-terms and plain numbers. Row one: 5x and 7. Row two: 3x and 2. Row three, the combined row: 8x and 9. Row four puts in x = 4: 8 × 4 = 32, and the plain number stays 9. Then 32 + 9 = 41.",
+        "es": "Una tabla con dos columnas, términos con x y números sin letra. Fila uno: 5x y 7. Fila dos: 3x y 2. Fila tres, la fila combinada: 8x y 9. La fila cuatro pone x = 4: 8 × 4 = 32, y el número sin letra sigue siendo 9. Luego 32 + 9 = 41."
+      }
+    },
+    "transfer": {
+      "stem": {
+        "en": "A club sells bracelets for a dollars each. Day 1: 4 bracelets and $3 in tips. Day 2: 2 bracelets and $5 in tips. The total is 4a + 3 + 2a + 5. If a = 2, how many dollars in all?",
+        "es": "Un club vende pulseras a a dólares cada una. Día 1: 4 pulseras y $3 de propinas. Día 2: 2 pulseras y $5 de propinas. El total es 4a + 3 + 2a + 5. Si a = 2, ¿cuántos dólares son en total?"
+      },
+      "choices": [
+        {
+          "en": "$28",
+          "es": "$28",
+          "correct": false,
+          "misconception": "plain-number-joined-letter-term"
+        },
+        {
+          "en": "$20",
+          "es": "$20",
+          "correct": true,
+          "misconception": null
+        },
+        {
+          "en": "$12",
+          "es": "$12",
+          "correct": false,
+          "misconception": "forgot-the-plain-numbers"
+        }
+      ],
+      "reasoning": {
+        "en": "Combine: 4a + 2a = 6a and 3 + 5 = 8, so 6a + 8. With a = 2: 6 × 2 + 8 = 12 + 8 = 20.",
+        "es": "Combina: 4a + 2a = 6a y 3 + 5 = 8, así que 6a + 8. Con a = 2: 6 × 2 + 8 = 12 + 8 = 20."
+      },
+      "calc": {
+        "expr": "6 * 2 + 8",
+        "value": 20,
+        "unit": "$"
+      }
+    },
+    "glitch": {
+      "scenario": {
+        "en": "A different situation: Omar simplifies 3y + 5 + 4y, then finds the value when y = 2.",
+        "es": "Otra situación: Omar simplifica 3y + 5 + 4y y luego halla el valor cuando y = 2."
+      },
+      "steps": [
+        {
+          "en": "Add every number in front: 3 + 5 + 4 = 12, so the answer is 12y.",
+          "es": "Sumo todos los números: 3 + 5 + 4 = 12, así que la respuesta es 12y.",
+          "isGlitch": true
+        },
+        {
+          "en": "Put the number in for y.",
+          "es": "Pongo el número en lugar de y.",
+          "isGlitch": false
+        },
+        {
+          "en": "Multiply first, then add what is left.",
+          "es": "Multiplico primero y luego sumo lo que queda.",
+          "isGlitch": false
+        }
+      ],
+      "fix": {
+        "en": "The 5 has no letter, so it stays apart. 3y + 4y = 7y, so the answer is 7y + 5. With y = 2: 7 × 2 + 5 = 19.",
+        "es": "El 5 no tiene letra, así que se queda aparte. 3y + 4y = 7y, así que la respuesta es 7y + 5. Con y = 2: 7 × 2 + 5 = 19."
+      },
+      "frame": {
+        "en": "Only the ___ terms combine, so I get ___ + ___.",
+        "es": "Solo se combinan los términos con ___, así que obtengo ___ + ___."
+      },
+      "calc": {
+        "expr": "7 * 2 + 5",
+        "value": 19
+      }
+    },
+    "spiral": [
+      {
+        "from": "6-15",
+        "q": {
+          "en": "Simplify 4x + 3x.",
+          "es": "Simplifica 4x + 3x."
+        },
+        "options": [
+          "12x",
+          "7x",
+          "43x"
+        ],
+        "correctIdx": 1,
+        "exp": {
+          "en": "Both are x-terms. Add the coefficients: 4 + 3 = 7, so 7x.",
+          "es": "Los dos tienen x. Suma los coeficientes: 4 + 3 = 7, así que 7x."
+        },
+        "calc": {
+          "expr": "4 + 3",
+          "value": 7
+        }
+      },
+      {
+        "from": "6-5",
+        "q": {
+          "en": "What is the value of 4x + 1 when x = 3?",
+          "es": "¿Cuál es el valor de 4x + 1 cuando x = 3?"
+        },
+        "options": [
+          "15",
+          "13",
+          "43"
+        ],
+        "correctIdx": 1,
+        "exp": {
+          "en": "Put 3 in for x: 4 × 3 + 1 = 12 + 1 = 13.",
+          "es": "Pon 3 en lugar de x: 4 × 3 + 1 = 12 + 1 = 13."
+        },
+        "calc": {
+          "expr": "4 * 3 + 1",
+          "value": 13
+        }
+      }
+    ],
+    "kitchenTable": {
+      "en": "Pick x = 4 for the price of one shirt. Ask your student to find 5x + 7 + 3x + 2 two ways: simplify first, or put in 4 first. Do the answers match?",
+      "es": "Elijan x = 4 como el precio de una camiseta. Pidan a su estudiante que halle 5x + 7 + 3x + 2 de dos formas: simplificando primero, o poniendo el 4 primero. ¿Coinciden las respuestas?"
+    },
+    "vocab": [
+      {
+        "term": "Like Terms",
+        "example": {
+          "en": "5x and 3x are like terms. Both have the letter x.",
+          "es": "5x y 3x son términos semejantes. Los dos tienen la letra x."
+        },
+        "nonExample": {
+          "en": "5x and 7 are not like terms. The 7 has no x.",
+          "es": "5x y 7 no son términos semejantes. El 7 no tiene x."
+        },
+        "frame": {
+          "en": "I can combine ___ and ___ because both have ___.",
+          "es": "Puedo combinar ___ y ___ porque los dos tienen ___."
+        }
+      },
+      {
+        "term": "Coefficient",
+        "example": {
+          "en": "In 5x, the coefficient is 5. It multiplies x.",
+          "es": "En 5x, el coeficiente es 5. Multiplica a x."
+        },
+        "nonExample": {
+          "en": "In 5x + 7, the 7 is not the coefficient of x.",
+          "es": "En 5x + 7, el 7 no es el coeficiente de x."
+        },
+        "frame": {
+          "en": "The coefficient of x in ___ is ___.",
+          "es": "El coeficiente de x en ___ es ___."
+        }
+      },
+      {
+        "term": "Combine",
+        "example": {
+          "en": "I combine 7 + 2 = 9 because both are plain numbers.",
+          "es": "Combino 7 + 2 = 9 porque los dos son números sin letra."
+        },
+        "nonExample": {
+          "en": "I do not combine 8x and 9. One has an x and one does not.",
+          "es": "No combino 8x y 9. Uno tiene x y el otro no."
+        },
+        "frame": {
+          "en": "I combine ___ + ___ = ___, and the other group stays apart.",
+          "es": "Combino ___ + ___ = ___, y el otro grupo se queda aparte."
+        }
+      },
+      {
+        "term": "Simplify",
+        "example": {
+          "en": "5x + 7 + 3x + 2 simplifies to 8x + 9.",
+          "es": "5x + 7 + 3x + 2 se simplifica a 8x + 9."
+        },
+        "nonExample": {
+          "en": "8x + 9 does not simplify to 17x. The 9 has no x.",
+          "es": "8x + 9 no se simplifica a 17x. El 9 no tiene x."
+        },
+        "frame": {
+          "en": "I simplify ___ by combining ___ and ___.",
+          "es": "Simplifico ___ combinando ___ y ___."
+        }
+      },
+      {
+        "term": "Evaluate",
+        "example": {
+          "en": "To evaluate 8x + 9 when x = 4, I do 8 × 4 + 9 = 41.",
+          "es": "Para evaluar 8x + 9 cuando x = 4, hago 8 × 4 + 9 = 41."
+        },
+        "nonExample": {
+          "en": "Evaluating is not simplifying. I put in a number for x.",
+          "es": "Evaluar no es simplificar. Pongo un número en lugar de x."
+        },
+        "frame": {
+          "en": "When x = ___, 8x + 9 = ___ × ___ + ___.",
+          "es": "Cuando x = ___, 8x + 9 = ___ × ___ + ___."
+        }
+      }
+    ],
+    "confused": [
+      {
+        "wrong": {
+          "en": "5x + 7 + 3x + 2 is 17x, because I add all the numbers.",
+          "es": "5x + 7 + 3x + 2 es 17x, porque sumo todos los números."
+        },
+        "coach": {
+          "en": "Does the 7 have an x on it?",
+          "es": "¿El 7 tiene una x?"
+        },
+        "why": {
+          "en": "The 7 has no x, so it cannot join the x-terms. 5x + 3x = 8x and 7 + 2 = 9, so 8x + 9.",
+          "es": "El 7 no tiene x, así que no se une a los términos con x. 5x + 3x = 8x y 7 + 2 = 9, así que 8x + 9."
+        },
+        "misconception": "plain-number-joined-letter-term",
+        "calc": {
+          "expr": "5 + 3",
+          "value": 8
+        }
+      },
+      {
+        "wrong": {
+          "en": "I simplified to 8x + 9. With x = 4, I got 8 + 4 + 9 = 21.",
+          "es": "Simplifiqué a 8x + 9. Con x = 4, obtuve 8 + 4 + 9 = 21."
+        },
+        "coach": {
+          "en": "Does 8x mean 8 plus x, or 8 times x?",
+          "es": "¿8x significa 8 más x o 8 por x?"
+        },
+        "why": {
+          "en": "8x means 8 times x. With x = 4: 8 × 4 = 32, and then 32 + 9 = 41.",
+          "es": "8x significa 8 por x. Con x = 4: 8 × 4 = 32, y luego 32 + 9 = 41."
+        },
+        "misconception": "coefficient-added-not-multiplied",
+        "calc": {
+          "expr": "8 * 4 + 9",
+          "value": 41
+        }
+      },
+      {
+        "wrong": {
+          "en": "In 8x + 9, I added 8 + 9 = 17 and then multiplied by 4. I got 68.",
+          "es": "En 8x + 9, sumé 8 + 9 = 17 y luego multiplicé por 4. Obtuve 68."
+        },
+        "coach": {
+          "en": "In 8x + 9, does the x touch the 9?",
+          "es": "En 8x + 9, ¿la x toca el 9?"
+        },
+        "why": {
+          "en": "Only the 8 goes with x. Multiply 8 × 4 = 32 first, then add the 9: 32 + 9 = 41.",
+          "es": "Solo el 8 va con la x. Multiplica primero 8 × 4 = 32 y luego suma el 9: 32 + 9 = 41."
+        },
+        "misconception": "multiplied-the-whole-sum",
+        "calc": {
+          "expr": "32 + 9",
+          "value": 41
+        }
+      }
+    ]
   }
 }

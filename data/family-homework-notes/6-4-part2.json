@@ -543,5 +543,327 @@
       "en": "PEMDAS lists the same order. Just remember that multiply and divide share a rank and go left to right, and so do add and subtract. Rewriting each step keeps every term in view.",
       "es": "PEMDAS enumera el mismo orden. Solo recuerda que multiplicar y dividir van juntas de izquierda a derecha, y sumar y restar también. Reescribir cada paso mantiene todos los términos a la vista."
     }
+  },
+  "v3": {
+    "version": 1,
+    "kind": "math",
+    "topicKey": "order-of-operations-grouping-apply",
+    "standardPlain": {
+      "en": "Evaluate expressions with grouping symbols, powers and arithmetic in one order.",
+      "es": "Evaluar expresiones con símbolos de agrupación, potencias y operaciones, en un solo orden."
+    },
+    "hook": {
+      "style": "scoreboard",
+      "en": "A rec-center game gives you 4 points to start. Then you play 3 bonus rounds. Each bonus round is worth (9 − 7)² points. What is your final score?",
+      "es": "Un juego del centro recreativo te da 4 puntos al empezar. Luego juegas 3 rondas de bonificación. Cada ronda vale (9 − 7)² puntos. ¿Cuál es tu puntaje final?",
+      "guess": {
+        "en": "Make a guess first: is the final score more or less than 10?",
+        "es": "Primero adivina: ¿el puntaje final es mayor o menor que 10?"
+      },
+      "reveal": {
+        "en": "More! Parentheses first: 9 − 7 = 2. Then 2² = 4. Three rounds: 3 × 4 = 12. Add the start: 4 + 12 = 16.",
+        "es": "¡Mayor! Primero los paréntesis: 9 − 7 = 2. Luego 2² = 4. Tres rondas: 3 × 4 = 12. Suma el inicio: 4 + 12 = 16."
+      }
+    },
+    "classModel": {
+      "name": {
+        "en": "rewrite after every step",
+        "es": "reescribir después de cada paso"
+      }
+    },
+    "model": {
+      "kind": "ratiotable",
+      "data": {
+        "headers": [
+          {
+            "en": "Step",
+            "es": "Paso"
+          },
+          {
+            "en": "Expression",
+            "es": "Expresión"
+          }
+        ],
+        "rows": [
+          [
+            {
+              "en": "Start",
+              "es": "Inicio"
+            },
+            "4+3×(9−7)²"
+          ],
+          [
+            {
+              "en": "Parentheses",
+              "es": "Paréntesis"
+            },
+            "4+3×2²"
+          ],
+          [
+            {
+              "en": "Power",
+              "es": "Potencia"
+            },
+            "4+3×4"
+          ],
+          [
+            {
+              "en": "Multiply",
+              "es": "Multiplicar"
+            },
+            "4+12"
+          ],
+          [
+            {
+              "en": "Add",
+              "es": "Sumar"
+            },
+            "16"
+          ]
+        ]
+      },
+      "alt": {
+        "en": "A table with two columns, Step and Expression. Each row rewrites the expression after one step: 4 + 3 × (9 − 7)², then 4 + 3 × 2², then 4 + 3 × 4, then 4 + 12, then 16.",
+        "es": "Una tabla con dos columnas, Paso y Expresión. Cada fila reescribe la expresión después de un paso: 4 + 3 × (9 − 7)², luego 4 + 3 × 2², luego 4 + 3 × 4, luego 4 + 12 y por último 16."
+      }
+    },
+    "transfer": {
+      "stem": {
+        "en": "A garden has 2 square beds. Each bed has (7 − 4) plants on each side. There are also 5 herb plants. How many plants are there in all?",
+        "es": "Un jardín tiene 2 camas cuadradas. Cada cama tiene (7 − 4) plantas por lado. También hay 5 plantas de hierbas. ¿Cuántas plantas hay en total?"
+      },
+      "choices": [
+        {
+          "en": "63 plants",
+          "es": "63 plantas",
+          "correct": false,
+          "misconception": "left-to-right-only"
+        },
+        {
+          "en": "17 plants",
+          "es": "17 plantas",
+          "correct": false,
+          "misconception": "exponent-means-multiply"
+        },
+        {
+          "en": "23 plants",
+          "es": "23 plantas",
+          "correct": true,
+          "misconception": null
+        }
+      ],
+      "reasoning": {
+        "en": "Parentheses first: 7 − 4 = 3. A square bed has 3² = 9 plants. Two beds: 2 × 9 = 18. Add the herbs: 5 + 18 = 23.",
+        "es": "Primero los paréntesis: 7 − 4 = 3. Una cama cuadrada tiene 3² = 9 plantas. Dos camas: 2 × 9 = 18. Suma las hierbas: 5 + 18 = 23."
+      },
+      "calc": {
+        "expr": "5 + 2 * (7 - 4) * (7 - 4)",
+        "value": 23
+      }
+    },
+    "glitch": {
+      "scenario": {
+        "en": "A different situation: Leo is evaluating 20 − (3 + 1)².",
+        "es": "Otra situación: Leo está evaluando 20 − (3 + 1)²."
+      },
+      "steps": [
+        {
+          "en": "Do the parentheses first: 3 + 1 = 4.",
+          "es": "Primero los paréntesis: 3 + 1 = 4.",
+          "isGlitch": false
+        },
+        {
+          "en": "Square the 4: 4² = 4 × 2 = 8.",
+          "es": "Eleva el 4 al cuadrado: 4² = 4 × 2 = 8.",
+          "isGlitch": true
+        },
+        {
+          "en": "Subtract: 20 − 8 = 12.",
+          "es": "Resta: 20 − 8 = 12.",
+          "isGlitch": false
+        }
+      ],
+      "fix": {
+        "en": "4² means 4 × 4 = 16, not 4 × 2. Then 20 − 16 = 4.",
+        "es": "4² significa 4 × 4 = 16, no 4 × 2. Luego 20 − 16 = 4."
+      },
+      "frame": {
+        "en": "First I ___, then I ___, so the value is ___.",
+        "es": "Primero ___, luego ___, así que el valor es ___."
+      },
+      "calc": {
+        "expr": "20 - (3 + 1) * (3 + 1)",
+        "value": 4
+      }
+    },
+    "spiral": [
+      {
+        "from": "6-4",
+        "q": {
+          "en": "What is 8 − 2 × 3?",
+          "es": "¿Cuánto es 8 − 2 × 3?"
+        },
+        "options": [
+          "18",
+          "2",
+          "9"
+        ],
+        "correctIdx": 1,
+        "exp": {
+          "en": "Multiply first: 2 × 3 = 6. Then 8 − 6 = 2.",
+          "es": "Multiplica primero: 2 × 3 = 6. Luego 8 − 6 = 2."
+        },
+        "calc": {
+          "expr": "8 - 2 * 3",
+          "value": 2
+        }
+      },
+      {
+        "from": "6-3",
+        "q": {
+          "en": "What is the value of 2⁴?",
+          "es": "¿Cuál es el valor de 2⁴?"
+        },
+        "options": [
+          "8",
+          "6",
+          "16"
+        ],
+        "correctIdx": 2,
+        "exp": {
+          "en": "2⁴ = 2 × 2 × 2 × 2. That is 4 × 4 = 16.",
+          "es": "2⁴ = 2 × 2 × 2 × 2. Eso es 4 × 4 = 16."
+        },
+        "calc": {
+          "expr": "2 * 2 * 2 * 2",
+          "value": 16
+        }
+      }
+    ],
+    "kitchenTable": {
+      "en": "Make a game score at the table. Start with 6 points, then add 2 rounds worth (6 − 3)² points each. Ask your student to say the expression and rewrite it after every step.",
+      "es": "Inventen un puntaje de juego en la mesa. Empiecen con 6 puntos y sumen 2 rondas de (6 − 3)² puntos cada una. Pidan a su estudiante que diga la expresión y la reescriba después de cada paso."
+    },
+    "vocab": [
+      {
+        "term": "Grouping symbols",
+        "example": {
+          "en": "In 4 + 3 × (9 − 7)², the parentheses are grouping symbols. Do 9 − 7 first.",
+          "es": "En 4 + 3 × (9 − 7)², los paréntesis son símbolos de agrupación. Haz primero 9 − 7."
+        },
+        "nonExample": {
+          "en": "The plus sign is not a grouping symbol. Only parentheses and brackets group.",
+          "es": "El signo más no es un símbolo de agrupación. Solo agrupan los paréntesis y los corchetes."
+        },
+        "frame": {
+          "en": "The grouping symbols are ___, so I do ___ first.",
+          "es": "Los símbolos de agrupación son ___, así que hago ___ primero."
+        }
+      },
+      {
+        "term": "Power",
+        "example": {
+          "en": "(9 − 7)² is a power. First 9 − 7 = 2, then 2² = 4.",
+          "es": "(9 − 7)² es una potencia. Primero 9 − 7 = 2 y luego 2² = 4."
+        },
+        "nonExample": {
+          "en": "The little 2 does not belong to the 7 alone. It belongs to the whole group.",
+          "es": "El 2 pequeño no es solo del 7. Es de todo el grupo."
+        },
+        "frame": {
+          "en": "The power is ___ and its value is ___.",
+          "es": "La potencia es ___ y su valor es ___."
+        }
+      },
+      {
+        "term": "Order of operations",
+        "example": {
+          "en": "In 4 + 3 × 4, multiply first, then add: 4 + 12 = 16.",
+          "es": "En 4 + 3 × 4, multiplica primero y luego suma: 4 + 12 = 16."
+        },
+        "nonExample": {
+          "en": "Adding 4 + 3 first gives 7 × 4 = 28, a different value.",
+          "es": "Sumar 4 + 3 primero da 7 × 4 = 28, un valor distinto."
+        },
+        "frame": {
+          "en": "First ___, then ___, then ___, so the value is ___.",
+          "es": "Primero ___, luego ___, después ___, así que el valor es ___."
+        }
+      },
+      {
+        "term": "Evaluate",
+        "example": {
+          "en": "To evaluate 4 + 3 × (9 − 7)², rewrite it after each step until one number is left: 16.",
+          "es": "Para evaluar 4 + 3 × (9 − 7)², reescríbela en cada paso hasta que quede un número: 16."
+        },
+        "nonExample": {
+          "en": "Stopping at 4 + 12 is not done. Evaluate means one number is left.",
+          "es": "Parar en 4 + 12 no es terminar. Evaluar significa que queda un solo número."
+        },
+        "frame": {
+          "en": "I rewrite ___ and keep going until I have one number, ___.",
+          "es": "Reescribo ___ y sigo hasta tener un solo número, ___."
+        }
+      }
+    ],
+    "confused": [
+      {
+        "wrong": {
+          "en": "I went left to right: 4 + 3 = 7, then 7 × 4 = 28.",
+          "es": "Fui de izquierda a derecha: 4 + 3 = 7, luego 7 × 4 = 28."
+        },
+        "coach": {
+          "en": "Which comes first in 4 + 3 × 4, the adding or the multiplying?",
+          "es": "¿Qué va primero en 4 + 3 × 4, sumar o multiplicar?"
+        },
+        "why": {
+          "en": "Multiply before you add: 3 × 4 = 12. Then 4 + 12 = 16.",
+          "es": "Multiplica antes de sumar: 3 × 4 = 12. Luego 4 + 12 = 16."
+        },
+        "misconception": "left-to-right-only",
+        "calc": {
+          "expr": "4 + 3 * 4",
+          "value": 16
+        }
+      },
+      {
+        "wrong": {
+          "en": "I squared only the 7: 7² = 49, so 9 − 49 = −40.",
+          "es": "Elevé al cuadrado solo el 7: 7² = 49, así que 9 − 49 = −40."
+        },
+        "coach": {
+          "en": "Which numbers are inside the parentheses, before the little 2?",
+          "es": "¿Cuáles números están dentro de los paréntesis, antes del 2 pequeño?"
+        },
+        "why": {
+          "en": "The little 2 is outside the parentheses, so it squares the whole group. 9 − 7 = 2 first, then 2² = 4.",
+          "es": "El 2 pequeño está fuera de los paréntesis, así que eleva todo el grupo. Primero 9 − 7 = 2 y luego 2² = 4."
+        },
+        "misconception": "power-on-last-number-only",
+        "calc": {
+          "expr": "(9 - 7) * (9 - 7)",
+          "value": 4
+        }
+      },
+      {
+        "wrong": {
+          "en": "3 × 4 = 12, so the final score is 12.",
+          "es": "3 × 4 = 12, así que el puntaje final es 12."
+        },
+        "coach": {
+          "en": "What did the game give you before the bonus rounds?",
+          "es": "¿Qué te dio el juego antes de las rondas de bonificación?"
+        },
+        "why": {
+          "en": "The 4 starting points still count. Add them: 12 + 4 = 16.",
+          "es": "Los 4 puntos del inicio también cuentan. Súmalos: 12 + 4 = 16."
+        },
+        "misconception": "dropped-a-term",
+        "calc": {
+          "expr": "12 + 4",
+          "value": 16
+        }
+      }
+    ]
   }
 }

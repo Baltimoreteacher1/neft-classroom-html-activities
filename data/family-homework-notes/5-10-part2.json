@@ -533,5 +533,308 @@
       ],
       "image": "/assets/vocab-images/decimal.svg"
     }
-  ]
+  ],
+  "v3": {
+    "version": 1,
+    "kind": "math",
+    "topicKey": "volume-compare-boxes-choose-apply",
+    "standardPlain": {
+      "en": "Find the volume of several boxes, with exact decimal edges, and use the volumes to choose.",
+      "es": "Hallar el volumen de varias cajas, con medidas decimales exactas, y usar los volúmenes para elegir."
+    },
+    "hook": {
+      "style": "price-tag",
+      "en": "A class needs a storage box that holds at least 5 cubic feet. Small is 2 × 1 × 1 ft. Medium is 2 × 1.5 × 1 ft. Large is 2 × 2 × 1.5 ft. Which box works?",
+      "es": "Una clase necesita una caja que guarde al menos 5 pies cúbicos. La pequeña mide 2 × 1 × 1 pies. La mediana mide 2 × 1.5 × 1 pies. La grande mide 2 × 2 × 1.5 pies. ¿Cuál caja sirve?",
+      "guess": {
+        "en": "Guess first: does the Medium box hold enough?",
+        "es": "Primero adivina: ¿la caja mediana guarda lo suficiente?"
+      },
+      "reveal": {
+        "en": "Only Large works! Small is 2 cubic feet. Medium is 3. Large is 2 × 2 × 1.5 = 6, and 6 is more than 5.",
+        "es": "¡Solo la grande sirve! La pequeña es 2 pies cúbicos. La mediana es 3. La grande es 2 × 2 × 1.5 = 6, y 6 es más que 5."
+      }
+    },
+    "classModel": {
+      "name": {
+        "en": "exact edges, then compare",
+        "es": "medidas exactas y luego comparar"
+      }
+    },
+    "model": {
+      "kind": "barplot",
+      "data": {
+        "categories": [
+          {
+            "label": {
+              "en": "Small",
+              "es": "Pequeña"
+            },
+            "value": 2
+          },
+          {
+            "label": {
+              "en": "Medium",
+              "es": "Mediana"
+            },
+            "value": 3
+          },
+          {
+            "label": {
+              "en": "Large",
+              "es": "Grande"
+            },
+            "value": 6
+          }
+        ],
+        "unit": {
+          "en": "cubic feet",
+          "es": "pies cúbicos"
+        }
+      },
+      "alt": {
+        "en": "A bar graph of three box volumes in cubic feet. Small is 2, Medium is 3 and Large is 6. The class needs at least 5, so only the Large bar reaches it.",
+        "es": "Una gráfica de barras con el volumen de tres cajas en pies cúbicos. La pequeña es 2, la mediana es 3 y la grande es 6. La clase necesita al menos 5, así que solo la barra de la grande lo alcanza."
+      }
+    },
+    "transfer": {
+      "stem": {
+        "en": "Bin X is 5 ft × 2 ft × 1 ft. Bin Y is 3 ft × 2 ft × 2.5 ft. Which bin holds more, and how much more?",
+        "es": "El contenedor X mide 5 pies × 2 pies × 1 pie. El contenedor Y mide 3 pies × 2 pies × 2.5 pies. ¿Cuál contenedor guarda más y cuánto más?"
+      },
+      "choices": [
+        {
+          "en": "Bin X holds more because it has the longest edge.",
+          "es": "El contenedor X guarda más porque tiene la arista más larga.",
+          "correct": false,
+          "misconception": "chose-the-longest-edge"
+        },
+        {
+          "en": "Bin Y holds 2 cubic feet more.",
+          "es": "El contenedor Y guarda 2 pies cúbicos más.",
+          "correct": false,
+          "misconception": "rounded-the-edge-first"
+        },
+        {
+          "en": "Bin Y holds 5 cubic feet more.",
+          "es": "El contenedor Y guarda 5 pies cúbicos más.",
+          "correct": true,
+          "misconception": null
+        }
+      ],
+      "reasoning": {
+        "en": "Bin X: 5 × 2 × 1 = 10 cubic feet. Bin Y: 3 × 2 × 2.5 = 15 cubic feet. Then 15 − 10 = 5 more.",
+        "es": "Contenedor X: 5 × 2 × 1 = 10 pies cúbicos. Contenedor Y: 3 × 2 × 2.5 = 15 pies cúbicos. Entonces 15 − 10 = 5 más."
+      },
+      "calc": {
+        "expr": "3 * 2 * 2.5 - 5 * 2 * 1",
+        "value": 5,
+        "unit": "cubic feet"
+      }
+    },
+    "glitch": {
+      "scenario": {
+        "en": "A different situation: A pet crate is 4 ft long, 2 ft wide and 1.5 ft tall. Eli wants its volume.",
+        "es": "Otra situación: Una jaula para mascotas mide 4 pies de largo, 2 pies de ancho y 1.5 pies de alto. Eli quiere su volumen."
+      },
+      "steps": [
+        {
+          "en": "Write V = 4 × 2 × 1.5.",
+          "es": "Escribe V = 4 × 2 × 1.5.",
+          "isGlitch": false
+        },
+        {
+          "en": "Round 1.5 up to 2 first: 4 × 2 × 2 = 16 cubic feet.",
+          "es": "Redondea 1.5 a 2 primero: 4 × 2 × 2 = 16 pies cúbicos.",
+          "isGlitch": true
+        },
+        {
+          "en": "Write the answer in cubic feet.",
+          "es": "Escribe la respuesta en pies cúbicos.",
+          "isGlitch": false
+        }
+      ],
+      "fix": {
+        "en": "Keep 1.5 exact: 4 × 2 × 1.5 = 8 × 1.5 = 12. The volume is 12 cubic feet.",
+        "es": "Deja 1.5 exacto: 4 × 2 × 1.5 = 8 × 1.5 = 12. El volumen es 12 pies cúbicos."
+      },
+      "frame": {
+        "en": "I do not round the edges, so ___ × ___ × ___ = ___.",
+        "es": "No redondeo las medidas, así que ___ × ___ × ___ = ___."
+      },
+      "calc": {
+        "expr": "4 * 2 * 1.5",
+        "value": 12
+      }
+    },
+    "spiral": [
+      {
+        "from": "5-10",
+        "q": {
+          "en": "A box is 6 ft long, 2 ft wide and 0.5 ft tall. What is its volume?",
+          "es": "Una caja mide 6 pies de largo, 2 pies de ancho y 0.5 pies de alto. ¿Cuál es su volumen?"
+        },
+        "options": [
+          "12",
+          "6",
+          "8.5"
+        ],
+        "correctIdx": 1,
+        "exp": {
+          "en": "6 × 2 = 12. Half of 12 is 6, so the volume is 6 cubic feet.",
+          "es": "6 × 2 = 12. La mitad de 12 es 6, así que el volumen es 6 pies cúbicos."
+        },
+        "calc": {
+          "expr": "6 * 2 * 0.5",
+          "value": 6
+        }
+      },
+      {
+        "from": "5-9",
+        "q": {
+          "en": "A regular hexagon splits into 6 triangles of 5 square units each. What is its area?",
+          "es": "Un hexágono regular se divide en 6 triángulos de 5 unidades cuadradas cada uno. ¿Cuál es su área?"
+        },
+        "options": [
+          "11",
+          "15",
+          "30"
+        ],
+        "correctIdx": 2,
+        "exp": {
+          "en": "Repeat the triangle's area 6 times: 6 × 5 = 30.",
+          "es": "Repite el área del triángulo 6 veces: 6 × 5 = 30."
+        },
+        "calc": {
+          "expr": "6 * 5",
+          "value": 30
+        }
+      }
+    ],
+    "kitchenTable": {
+      "en": "Pick two boxes, like a cereal box and a snack box. Measure each edge to the nearest half inch. Find each volume without rounding. Which holds more?",
+      "es": "Elijan dos cajas, como una de cereal y una de botanas. Midan cada arista a la media pulgada más cercana. Hallen cada volumen sin redondear. ¿Cuál guarda más?"
+    },
+    "vocab": [
+      {
+        "term": "Volume",
+        "example": {
+          "en": "The Large box has a volume of 6 cubic feet. That is how much it holds.",
+          "es": "La caja grande tiene un volumen de 6 pies cúbicos. Eso es lo que guarda."
+        },
+        "nonExample": {
+          "en": "The longest edge of the Large box is not its volume. It is one dimension.",
+          "es": "La arista más larga de la caja grande no es su volumen. Es una dimensión."
+        },
+        "frame": {
+          "en": "The ___ box has a volume of ___, so it holds ___ than 5.",
+          "es": "La caja ___ tiene un volumen de ___, así que guarda ___ que 5."
+        }
+      },
+      {
+        "term": "Cubic units",
+        "example": {
+          "en": "The box volumes are in cubic feet: 2, 3 and 6.",
+          "es": "Los volúmenes de las cajas están en pies cúbicos: 2, 3 y 6."
+        },
+        "nonExample": {
+          "en": "Square feet are not cubic units. They do not tell how much a box holds.",
+          "es": "Los pies cuadrados no son unidades cúbicas. No dicen cuánto guarda una caja."
+        },
+        "frame": {
+          "en": "I write each volume in cubic ___, like ___.",
+          "es": "Escribo cada volumen en ___ cúbicos, como ___."
+        }
+      },
+      {
+        "term": "Dimensions",
+        "example": {
+          "en": "The Medium box has dimensions 2 ft, 1.5 ft and 1 ft.",
+          "es": "La caja mediana tiene dimensiones de 2 pies, 1.5 pies y 1 pie."
+        },
+        "nonExample": {
+          "en": "The volume, 3 cubic feet, is not a dimension. It comes from the dimensions.",
+          "es": "El volumen, 3 pies cúbicos, no es una dimensión. Sale de las dimensiones."
+        },
+        "frame": {
+          "en": "The dimensions are ___, ___ and ___, so the volume is ___.",
+          "es": "Las dimensiones son ___, ___ y ___, así que el volumen es ___."
+        }
+      },
+      {
+        "term": "Decimal",
+        "example": {
+          "en": "The 1.5 in the Medium box is a decimal. We keep it exact.",
+          "es": "El 1.5 de la caja mediana es un decimal. Lo dejamos exacto."
+        },
+        "nonExample": {
+          "en": "The whole number 2 is not a decimal edge. It needs no decimal point.",
+          "es": "El número entero 2 no es una medida decimal. No necesita punto decimal."
+        },
+        "frame": {
+          "en": "The decimal edge is ___, and I do not ___ it first.",
+          "es": "La medida decimal es ___, y no la ___ primero."
+        }
+      }
+    ],
+    "confused": [
+      {
+        "wrong": {
+          "en": "Medium is 2 × 1.5 × 1. I round 1.5 down to 1, so it holds 2 cubic feet.",
+          "es": "La mediana es 2 × 1.5 × 1. Redondeo 1.5 a 1, así que guarda 2 pies cúbicos."
+        },
+        "coach": {
+          "en": "Is the Medium box exactly 1 foot wide, or 1.5 feet wide?",
+          "es": "¿La caja mediana mide exactamente 1 pie de ancho o 1.5 pies de ancho?"
+        },
+        "why": {
+          "en": "The box is 1.5 feet wide, so use 1.5. Rounding it down throws away a whole cubic foot: 2 × 1.5 × 1 = 3.",
+          "es": "La caja mide 1.5 pies de ancho, así que usa 1.5. Redondear hacia abajo pierde un pie cúbico entero: 2 × 1.5 × 1 = 3."
+        },
+        "misconception": "rounded-the-decimal-edge",
+        "calc": {
+          "expr": "2 * 1.5 * 1",
+          "value": 3
+        }
+      },
+      {
+        "wrong": {
+          "en": "Large is 2 + 2 + 1.5 = 5.5 cubic feet. So it holds 5.5.",
+          "es": "La grande es 2 + 2 + 1.5 = 5.5 pies cúbicos. Entonces guarda 5.5."
+        },
+        "coach": {
+          "en": "How did you find the volume of the Medium box?",
+          "es": "¿Cómo hallaron el volumen de la caja mediana?"
+        },
+        "why": {
+          "en": "Volume multiplies the three edges. 2 × 2 × 1.5 = 6 cubic feet.",
+          "es": "El volumen multiplica las tres medidas. 2 × 2 × 1.5 = 6 pies cúbicos."
+        },
+        "misconception": "added-edges-instead-of-multiplied",
+        "calc": {
+          "expr": "2 * 2 * 1.5",
+          "value": 6
+        }
+      },
+      {
+        "wrong": {
+          "en": "Medium and Large both have a 2 foot edge, so they hold the same.",
+          "es": "La mediana y la grande tienen una arista de 2 pies, así que guardan lo mismo."
+        },
+        "coach": {
+          "en": "Do two boxes with one matching edge always hold the same amount?",
+          "es": "¿Dos cajas con una arista igual siempre guardan la misma cantidad?"
+        },
+        "why": {
+          "en": "One edge does not decide volume. Medium holds 3 cubic feet and Large holds 2 × 2 × 1.5 = 6.",
+          "es": "Una arista no decide el volumen. La mediana guarda 3 pies cúbicos y la grande guarda 2 × 2 × 1.5 = 6."
+        },
+        "misconception": "matched-edge-means-same-volume",
+        "calc": {
+          "expr": "2 * 2 * 1.5",
+          "value": 6
+        }
+      }
+    ]
+  }
 }

@@ -537,5 +537,329 @@
       ],
       "image": "/assets/vocab-images/spread.svg"
     }
-  ]
+  ],
+  "v3": {
+    "version": 1,
+    "kind": "math",
+    "topicKey": "box-plots-compare-center-spread-apply",
+    "standardPlain": {
+      "en": "Compare two box plots by their centers and by how spread out they are.",
+      "es": "Comparar dos diagramas de caja por sus centros y por cuánto se dispersan."
+    },
+    "hook": {
+      "style": "scoreboard",
+      "en": "Two rec-center teams post their game scores as box plots. Team A: median 53, box 12 wide. Team B: median 57, box 11 wide. Which team scores higher, and which is steadier?",
+      "es": "Dos equipos del centro recreativo publican sus puntajes como diagramas de caja. Equipo A: mediana 53, caja de 12 de ancho. Equipo B: mediana 57, caja de 11 de ancho. ¿Qué equipo anota más y cuál es más constante?",
+      "guess": {
+        "en": "Make a guess first: which team is typically higher, A or B?",
+        "es": "Primero adivina: ¿qué equipo es típicamente mayor, A o B?"
+      },
+      "reveal": {
+        "en": "Team B! Its median is 57, higher than 53. Its box is also a little narrower, 11 to 12, so its middle half is a bit tighter.",
+        "es": "¡El equipo B! Su mediana es 57, mayor que 53. Su caja también es un poco más angosta, 11 contra 12, así que su mitad central es un poco más ajustada."
+      }
+    },
+    "classModel": {
+      "name": {
+        "en": "two looks at two boxes",
+        "es": "dos miradas a dos cajas"
+      }
+    },
+    "model": {
+      "kind": "barplot",
+      "data": {
+        "categories": [
+          {
+            "label": {
+              "en": "A median",
+              "es": "Mediana A"
+            },
+            "value": 53
+          },
+          {
+            "label": {
+              "en": "B median",
+              "es": "Mediana B"
+            },
+            "value": 57
+          },
+          {
+            "label": {
+              "en": "A box width",
+              "es": "Caja de A"
+            },
+            "value": 12
+          },
+          {
+            "label": {
+              "en": "B box width",
+              "es": "Caja de B"
+            },
+            "value": 11
+          }
+        ],
+        "unit": {
+          "en": "Points",
+          "es": "Puntos"
+        }
+      },
+      "alt": {
+        "en": "A bar graph with four bars. Team A median is 53 and Team B median is 57. Team A box width is 12 and Team B box width is 11. The medians answer which team is higher. The widths answer which team is steadier.",
+        "es": "Una gráfica de barras con cuatro barras. La mediana del equipo A es 53 y la del equipo B es 57. El ancho de la caja del equipo A es 12 y el del equipo B es 11. Las medianas responden qué equipo es mayor. Los anchos responden qué equipo es más constante."
+      }
+    },
+    "transfer": {
+      "stem": {
+        "en": "Bus wait times in minutes. Route 1: Q1 = 6, median = 10, Q3 = 14. Route 2: Q1 = 7, median = 9, Q3 = 11. The narrower box is more consistent. How wide is that box?",
+        "es": "Tiempos de espera del autobús en minutos. Ruta 1: Q1 = 6, mediana = 10, Q3 = 14. Ruta 2: Q1 = 7, mediana = 9, Q3 = 11. La caja más angosta es más constante. ¿Cuánto mide de ancho esa caja?"
+      },
+      "choices": [
+        {
+          "en": "4 minutes",
+          "es": "4 minutos",
+          "correct": true,
+          "misconception": null
+        },
+        {
+          "en": "8 minutes",
+          "es": "8 minutos",
+          "correct": false,
+          "misconception": "picked-wider-box"
+        },
+        {
+          "en": "9 minutes",
+          "es": "9 minutos",
+          "correct": false,
+          "misconception": "median-for-box-width"
+        }
+      ],
+      "reasoning": {
+        "en": "Box width is Q3 − Q1. Route 1: 14 − 6 = 8. Route 2: 11 − 7 = 4. Route 2 has the narrower box, so 4 minutes.",
+        "es": "El ancho de la caja es Q3 − Q1. Ruta 1: 14 − 6 = 8. Ruta 2: 11 − 7 = 4. La ruta 2 tiene la caja más angosta, así que 4 minutos."
+      },
+      "calc": {
+        "expr": "11 - 7",
+        "value": 4
+      }
+    },
+    "glitch": {
+      "scenario": {
+        "en": "A different situation: Class X has median 70 and a box 20 wide. Class Y has median 64 and a box 8 wide. Mia compares the two classes.",
+        "es": "Otra situación: La clase X tiene mediana 70 y una caja de 20 de ancho. La clase Y tiene mediana 64 y una caja de 8 de ancho. Mia compara las dos clases."
+      },
+      "steps": [
+        {
+          "en": "Compare the medians: 70 is greater than 64, so Class X is typically higher.",
+          "es": "Compara las medianas: 70 es mayor que 64, así que la clase X es típicamente mayor.",
+          "isGlitch": false
+        },
+        {
+          "en": "Compare the boxes: 20 is wider than 8, so Class X is more consistent.",
+          "es": "Compara las cajas: 20 es más ancho que 8, así que la clase X es más constante.",
+          "isGlitch": true
+        },
+        {
+          "en": "Say both facts in one sentence: one for the center and one for the spread.",
+          "es": "Di los dos hechos en una oración: uno para el centro y otro para la dispersión.",
+          "isGlitch": false
+        }
+      ],
+      "fix": {
+        "en": "A wider box means more spread out, not more consistent. Class Y's box is only 8 wide, so Class Y is more consistent. Class X is still typically higher.",
+        "es": "Una caja más ancha significa más dispersión, no más constancia. La caja de la clase Y mide solo 8, así que la clase Y es más constante. La clase X sigue siendo típicamente mayor."
+      },
+      "frame": {
+        "en": "The group with the higher median is ___, and the group with the narrower box is ___.",
+        "es": "El grupo con la mediana mayor es ___, y el grupo con la caja más angosta es ___."
+      },
+      "calc": {
+        "expr": "70 - 64",
+        "value": 6
+      }
+    },
+    "spiral": [
+      {
+        "from": "2-4",
+        "q": {
+          "en": "A box plot has Q1 = 18 and Q3 = 30. How wide is the box?",
+          "es": "Un diagrama de caja tiene Q1 = 18 y Q3 = 30. ¿Cuánto mide de ancho la caja?"
+        },
+        "options": [
+          "30",
+          "12",
+          "48"
+        ],
+        "correctIdx": 1,
+        "exp": {
+          "en": "The width is Q3 − Q1 = 30 − 18 = 12.",
+          "es": "El ancho es Q3 − Q1 = 30 − 18 = 12."
+        },
+        "calc": {
+          "expr": "30 - 18",
+          "value": 12
+        }
+      },
+      {
+        "from": "2-3",
+        "q": {
+          "en": "What is the median of 7, 3, 9, 5?",
+          "es": "¿Cuál es la mediana de 7, 3, 9, 5?"
+        },
+        "options": [
+          "6",
+          "7",
+          "5"
+        ],
+        "correctIdx": 0,
+        "exp": {
+          "en": "In order: 3, 5, 7, 9. Four numbers, so the median is halfway between 5 and 7: 6.",
+          "es": "En orden: 3, 5, 7, 9. Son cuatro números, así que la mediana está a la mitad entre 5 y 7: 6."
+        },
+        "calc": {
+          "expr": "(5 + 7) / 2",
+          "value": 6
+        }
+      }
+    ],
+    "kitchenTable": {
+      "en": "Think of two bus routes you know. Which is typically faster? Which is more on time every day? Can one route win one question and lose the other?",
+      "es": "Piensen en dos rutas de autobús que conocen. ¿Cuál es típicamente más rápida? ¿Cuál llega más a tiempo todos los días? ¿Puede una ruta ganar una pregunta y perder la otra?"
+    },
+    "vocab": [
+      {
+        "term": "Median",
+        "example": {
+          "en": "Team A's median is 53 and Team B's is 57. The higher median is typically higher.",
+          "es": "La mediana del equipo A es 53 y la del B es 57. La mediana mayor es típicamente mayor."
+        },
+        "nonExample": {
+          "en": "A team's top score, like 66 or 71, is not its median.",
+          "es": "El puntaje más alto de un equipo, como 66 o 71, no es su mediana."
+        },
+        "frame": {
+          "en": "Team ___ is typically higher because its median is ___.",
+          "es": "El equipo ___ es típicamente mayor porque su mediana es ___."
+        }
+      },
+      {
+        "term": "Middle half",
+        "example": {
+          "en": "Team A's box runs from 47 to 59. That is its middle half.",
+          "es": "La caja del equipo A va de 47 a 59. Esa es su mitad central."
+        },
+        "nonExample": {
+          "en": "Team A's whiskers, 40 to 66, cover all of its scores. That is not the middle half.",
+          "es": "Los bigotes del equipo A, de 40 a 66, cubren todos sus puntajes. Esa no es la mitad central."
+        },
+        "frame": {
+          "en": "The middle half of Team ___ runs from ___ to ___.",
+          "es": "La mitad central del equipo ___ va de ___ a ___."
+        }
+      },
+      {
+        "term": "Interquartile Range",
+        "example": {
+          "en": "Team B's box is 62 − 51 = 11 wide. That is its interquartile range.",
+          "es": "La caja del equipo B mide 62 − 51 = 11 de ancho. Ese es su rango intercuartílico."
+        },
+        "nonExample": {
+          "en": "The median 57 is not the interquartile range. It shows the center, not the spread.",
+          "es": "La mediana 57 no es el rango intercuartílico. Muestra el centro, no la dispersión."
+        },
+        "frame": {
+          "en": "The interquartile range is ___ − ___ = ___.",
+          "es": "El rango intercuartílico es ___ − ___ = ___."
+        }
+      },
+      {
+        "term": "Variability",
+        "example": {
+          "en": "Team A's box is 12 wide and Team B's is 11 wide, so Team A varies a little more.",
+          "es": "La caja del equipo A mide 12 y la del B mide 11, así que el equipo A varía un poco más."
+        },
+        "nonExample": {
+          "en": "A higher median does not mean more variability. It only moves the center.",
+          "es": "Una mediana mayor no significa más variabilidad. Solo mueve el centro."
+        },
+        "frame": {
+          "en": "Team ___ is more consistent because its box is ___ wide.",
+          "es": "El equipo ___ es más constante porque su caja mide ___ de ancho."
+        }
+      },
+      {
+        "term": "Box Plot",
+        "example": {
+          "en": "Each team's five numbers make one box plot, with its median as a line in the box.",
+          "es": "Los cinco números de cada equipo forman un diagrama de caja, con su mediana como una línea en la caja."
+        },
+        "nonExample": {
+          "en": "One list of scores is not a comparison. Two box plots on one number line are.",
+          "es": "Una sola lista de puntajes no es una comparación. Dos diagramas de caja en una recta numérica sí lo son."
+        },
+        "frame": {
+          "en": "I compare two box plots by the ___ first and the ___ second.",
+          "es": "Comparo dos diagramas de caja primero por la ___ y después por la ___."
+        }
+      }
+    ],
+    "confused": [
+      {
+        "wrong": {
+          "en": "Team A's box is wider, so Team A scored higher.",
+          "es": "La caja del equipo A es más ancha, así que el equipo A anotó más."
+        },
+        "coach": {
+          "en": "Which part of a box plot shows who is typically higher: the width or the line inside?",
+          "es": "¿Qué parte de un diagrama de caja muestra quién es típicamente mayor: el ancho o la línea de adentro?"
+        },
+        "why": {
+          "en": "Width shows spread, not height. Team A's box is 59 − 47 = 12 wide, but the median line shows who is higher: 57 beats 53, so Team B.",
+          "es": "El ancho muestra la dispersión, no la altura. La caja del equipo A mide 59 − 47 = 12 de ancho, pero la línea de la mediana muestra quién es mayor: 57 supera a 53, así que el equipo B."
+        },
+        "misconception": "wide-box-means-higher",
+        "calc": {
+          "expr": "59 - 47",
+          "value": 12
+        }
+      },
+      {
+        "wrong": {
+          "en": "To compare spread I subtracted the medians: 57 − 53 = 4.",
+          "es": "Para comparar la dispersión resté las medianas: 57 − 53 = 4."
+        },
+        "coach": {
+          "en": "Which two numbers make the width of one box?",
+          "es": "¿Qué dos números forman el ancho de una caja?"
+        },
+        "why": {
+          "en": "The medians show the center. Spread comes from one box: Q3 − Q1. For Team B that is 62 − 51 = 11.",
+          "es": "Las medianas muestran el centro. La dispersión sale de una caja: Q3 − Q1. Para el equipo B es 62 − 51 = 11."
+        },
+        "misconception": "medians-subtracted-for-spread",
+        "calc": {
+          "expr": "62 - 51",
+          "value": 11
+        }
+      },
+      {
+        "wrong": {
+          "en": "The boxes are 12 and 11 wide, so Team B is a lot more consistent.",
+          "es": "Las cajas miden 12 y 11 de ancho, así que el equipo B es mucho más constante."
+        },
+        "coach": {
+          "en": "Is a gap of one point a big difference or a small one for scores in the 40s to 70s?",
+          "es": "Para puntajes de entre 40 y 70, ¿una diferencia de un punto es grande o pequeña?"
+        },
+        "why": {
+          "en": "The boxes are only 12 − 11 = 1 point apart. Team B is slightly more consistent, not a lot.",
+          "es": "Las cajas están a solo 12 − 11 = 1 punto de diferencia. El equipo B es un poco más constante, no mucho más."
+        },
+        "misconception": "overstates-small-difference",
+        "calc": {
+          "expr": "12 - 11",
+          "value": 1
+        }
+      }
+    ]
+  }
 }

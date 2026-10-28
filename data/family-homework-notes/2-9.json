@@ -392,5 +392,299 @@
         "Halla la media de cada conjunto e imagina las distancias."
       ]
     }
-  ]
+  ],
+  "v3": {
+    "version": 1,
+    "kind": "math",
+    "topicKey": "mean-absolute-deviation-spread",
+    "standardPlain": {
+      "en": "Find the mean absolute deviation to show how spread out data is.",
+      "es": "Hallar la desviación media absoluta para mostrar qué tan separados están los datos."
+    },
+    "hook": {
+      "style": "ticket",
+      "en": "A corner store delivers groceries. Four deliveries took 6, 8, 10 and 12 minutes. The mean is 9 minutes. About how far is a typical delivery from 9?",
+      "es": "Una tienda de la esquina entrega comestibles. Cuatro entregas tardaron 6, 8, 10 y 12 minutos. La media es 9 minutos. ¿Más o menos qué tan lejos de 9 está una entrega típica?",
+      "guess": {
+        "en": "Guess first: is a typical gap more than 4 minutes, or less?",
+        "es": "Primero adivina: ¿la distancia típica es de más de 4 minutos o de menos?"
+      },
+      "reveal": {
+        "en": "Less! The gaps from 9 are 3, 1, 1 and 3. They add to 8, and 8 ÷ 4 = 2. A typical gap is 2 minutes. That is the MAD.",
+        "es": "¡Menos! Las distancias a 9 son 3, 1, 1 y 3. Suman 8, y 8 ÷ 4 = 2. Una distancia típica es 2 minutos. Esa es la DMA."
+      }
+    },
+    "classModel": {
+      "name": {
+        "en": "MAD, the average gap",
+        "es": "la DMA, la distancia promedio"
+      }
+    },
+    "model": {
+      "kind": "numberline",
+      "data": {
+        "min": 4,
+        "max": 14,
+        "step": 1,
+        "points": [
+          {
+            "value": 6,
+            "label": "6",
+            "kind": "given"
+          },
+          {
+            "value": 8,
+            "label": "8",
+            "kind": "given"
+          },
+          {
+            "value": 9,
+            "label": {
+              "en": "mean 9",
+              "es": "media 9"
+            },
+            "kind": "answer"
+          },
+          {
+            "value": 10,
+            "label": "10",
+            "kind": "given"
+          },
+          {
+            "value": 12,
+            "label": "12",
+            "kind": "given"
+          }
+        ],
+        "unit": {
+          "en": "minutes",
+          "es": "minutos"
+        }
+      },
+      "alt": {
+        "en": "A number line from 4 to 14 minutes. Dots mark 6, 8, 10 and 12. The mean, 9, is marked in the middle. The gaps from 9 are 3, 1, 1 and 3 minutes.",
+        "es": "Una recta numérica de 4 a 14 minutos. Los puntos marcan 6, 8, 10 y 12. La media, 9, está marcada en el medio. Las distancias a 9 son 3, 1, 1 y 3 minutos."
+      }
+    },
+    "transfer": {
+      "stem": {
+        "en": "Four swimmers at the rec center swam 10, 14, 16 and 20 laps. The mean is 15 laps. What is the MAD?",
+        "es": "Cuatro nadadores del centro recreativo nadaron 10, 14, 16 y 20 vueltas. La media es 15 vueltas. ¿Cuál es la DMA?"
+      },
+      "choices": [
+        {
+          "en": "12 laps",
+          "es": "12 vueltas",
+          "correct": false,
+          "misconception": "forgot-to-divide-distances"
+        },
+        {
+          "en": "3 laps",
+          "es": "3 vueltas",
+          "correct": true,
+          "misconception": null
+        },
+        {
+          "en": "0 laps",
+          "es": "0 vueltas",
+          "correct": false,
+          "misconception": "kept-negative-signs"
+        }
+      ],
+      "reasoning": {
+        "en": "The gaps from 15 are 5, 1, 1 and 5. They add to 12, and 12 ÷ 4 = 3 laps.",
+        "es": "Las distancias a 15 son 5, 1, 1 y 5. Suman 12, y 12 ÷ 4 = 3 vueltas."
+      },
+      "calc": {
+        "expr": "(5 + 1 + 1 + 5) / 4",
+        "value": 3,
+        "unit": "laps"
+      }
+    },
+    "glitch": null,
+    "spiral": [
+      {
+        "from": "2-8",
+        "q": {
+          "en": "What is the mean of 5, 7 and 12?",
+          "es": "¿Cuál es la media de 5, 7 y 12?"
+        },
+        "options": [
+          "24",
+          "12",
+          "8"
+        ],
+        "correctIdx": 2,
+        "exp": {
+          "en": "Add: 5 + 7 + 12 = 24. Divide by 3 numbers: 24 ÷ 3 = 8.",
+          "es": "Suma: 5 + 7 + 12 = 24. Divide entre 3 números: 24 ÷ 3 = 8."
+        },
+        "calc": {
+          "expr": "(5 + 7 + 12) / 3",
+          "value": 8
+        }
+      },
+      {
+        "from": "2-5",
+        "q": {
+          "en": "What is the range of 3, 8, 15, 6?",
+          "es": "¿Cuál es el rango de 3, 8, 15, 6?"
+        },
+        "options": [
+          "32",
+          "12",
+          "8"
+        ],
+        "correctIdx": 1,
+        "exp": {
+          "en": "The range is the biggest number minus the smallest: 15 − 3 = 12.",
+          "es": "El rango es el número mayor menos el menor: 15 − 3 = 12."
+        },
+        "calc": {
+          "expr": "15 - 3",
+          "value": 12
+        }
+      }
+    ],
+    "kitchenTable": {
+      "en": "Pick four whole-dollar prices on a receipt. Find their mean together. Then say how far each price is from the mean. Is the MAD small or big?",
+      "es": "Elijan cuatro precios en dólares enteros de un recibo. Hallen su media juntos. Luego digan qué tan lejos está cada precio de la media. ¿La DMA es pequeña o grande?"
+    },
+    "vocab": [
+      {
+        "term": "Mean Absolute Deviation",
+        "example": {
+          "en": "For 6, 8, 10 and 12 minutes, the MAD is 2 minutes.",
+          "es": "Para 6, 8, 10 y 12 minutos, la DMA es 2 minutos."
+        },
+        "nonExample": {
+          "en": "The MAD is not the mean. The mean is 9. The MAD is the gap from 9.",
+          "es": "La DMA no es la media. La media es 9. La DMA es la distancia a 9."
+        },
+        "frame": {
+          "en": "The MAD is ___ because the distances add to ___ and I divide by ___.",
+          "es": "La DMA es ___ porque las distancias suman ___ y divido entre ___."
+        }
+      },
+      {
+        "term": "Deviation",
+        "example": {
+          "en": "6 − 9 = −3 is the deviation of 6 minutes from the mean.",
+          "es": "6 − 9 = −3 es la desviación de 6 minutos respecto a la media."
+        },
+        "nonExample": {
+          "en": "The number 6 alone is not a deviation. A deviation compares a value to the mean.",
+          "es": "El número 6 solo no es una desviación. Una desviación compara un valor con la media."
+        },
+        "frame": {
+          "en": "The deviation of ___ from the mean ___ is ___.",
+          "es": "La desviación de ___ respecto a la media ___ es ___."
+        }
+      },
+      {
+        "term": "Absolute Value",
+        "example": {
+          "en": "The absolute value of −3 is 3. It is the distance from zero.",
+          "es": "El valor absoluto de −3 es 3. Es la distancia a cero."
+        },
+        "nonExample": {
+          "en": "A distance is never −3. Distances are not negative.",
+          "es": "Una distancia nunca es −3. Las distancias no son negativas."
+        },
+        "frame": {
+          "en": "The absolute value of ___ is ___.",
+          "es": "El valor absoluto de ___ es ___."
+        }
+      },
+      {
+        "term": "Spread",
+        "example": {
+          "en": "The times run from 6 to 12 minutes. That is some spread.",
+          "es": "Los tiempos van de 6 a 12 minutos. Eso es algo de dispersión."
+        },
+        "nonExample": {
+          "en": "Four deliveries that each took 9 minutes have no spread.",
+          "es": "Cuatro entregas que tardaron 9 minutos cada una no tienen dispersión."
+        },
+        "frame": {
+          "en": "The data have a small spread when ___ and a big spread when ___.",
+          "es": "Los datos tienen poca dispersión cuando ___ y mucha cuando ___."
+        }
+      },
+      {
+        "term": "Mean",
+        "example": {
+          "en": "The mean of 6, 8, 10 and 12 is 9, since 36 ÷ 4 = 9.",
+          "es": "La media de 6, 8, 10 y 12 es 9, pues 36 ÷ 4 = 9."
+        },
+        "nonExample": {
+          "en": "10 is not the mean. It is only one of the four times.",
+          "es": "10 no es la media. Es solo uno de los cuatro tiempos."
+        },
+        "frame": {
+          "en": "The mean is ___ because ___ ÷ ___ = ___.",
+          "es": "La media es ___ porque ___ ÷ ___ = ___."
+        }
+      }
+    ],
+    "confused": [
+      {
+        "wrong": {
+          "en": "The gaps are −3, −1, 1 and 3. They add to 0, so the MAD is 0.",
+          "es": "Las distancias son −3, −1, 1 y 3. Suman 0, así que la DMA es 0."
+        },
+        "coach": {
+          "en": "Can a distance from the mean be negative?",
+          "es": "¿Una distancia a la media puede ser negativa?"
+        },
+        "why": {
+          "en": "A distance is never negative. Use 3, 1, 1 and 3. They add to 8, and 8 ÷ 4 = 2.",
+          "es": "Una distancia nunca es negativa. Usa 3, 1, 1 y 3. Suman 8, y 8 ÷ 4 = 2."
+        },
+        "misconception": "kept-negative-signs",
+        "calc": {
+          "expr": "(3 + 1 + 1 + 3) / 4",
+          "value": 2
+        }
+      },
+      {
+        "wrong": {
+          "en": "The distances add to 8. So the MAD is 8.",
+          "es": "Las distancias suman 8. Entonces la DMA es 8."
+        },
+        "coach": {
+          "en": "The MAD is the average distance. How do you turn a total into an average?",
+          "es": "La DMA es la distancia promedio. ¿Cómo conviertes un total en un promedio?"
+        },
+        "why": {
+          "en": "An average shares the total. Divide by how many numbers there are. There are 4: 8 ÷ 4 = 2.",
+          "es": "Un promedio reparte el total. Se divide entre la cantidad de números. Hay 4: 8 ÷ 4 = 2."
+        },
+        "misconception": "forgot-to-divide-distances",
+        "calc": {
+          "expr": "8 / 4",
+          "value": 2
+        }
+      },
+      {
+        "wrong": {
+          "en": "The mean is 9. The biggest time is 12. So the MAD is 12 − 9 = 3.",
+          "es": "La media es 9. El tiempo mayor es 12. Entonces la DMA es 12 − 9 = 3."
+        },
+        "coach": {
+          "en": "Does every number in the set count, or just the biggest?",
+          "es": "¿Cuentan todos los números del conjunto o solo el mayor?"
+        },
+        "why": {
+          "en": "The MAD uses every gap, not just one. The gaps are 3, 1, 1 and 3. Their average is 8 ÷ 4 = 2.",
+          "es": "La DMA usa todas las distancias, no solo una. Las distancias son 3, 1, 1 y 3. Su promedio es 8 ÷ 4 = 2."
+        },
+        "misconception": "used-only-the-farthest-gap",
+        "calc": {
+          "expr": "8 / 4",
+          "value": 2
+        }
+      }
+    ]
+  }
 }

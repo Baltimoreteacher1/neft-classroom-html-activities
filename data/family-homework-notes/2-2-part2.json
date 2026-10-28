@@ -537,5 +537,313 @@
       ],
       "image": "/assets/vocab-images/skewed.svg"
     }
-  ]
+  ],
+  "v3": {
+    "version": 1,
+    "kind": "math",
+    "topicKey": "histogram-shape-apply",
+    "standardPlain": {
+      "en": "Describe the shape of a histogram: where the peak is and whether the sides match.",
+      "es": "Describir la forma de un histograma: dónde está el pico y si los lados coinciden."
+    },
+    "hook": {
+      "style": "ticket",
+      "en": "A poster shows quiz scores in a histogram. The bars over 60–69, 70–79 and 80–89 have heights 2, 4 and 2. Do the two sides of the tallest bar look alike?",
+      "es": "Un cartel muestra las notas de un examen corto en un histograma. Las barras sobre 60–69, 70–79 y 80–89 tienen alturas 2, 4 y 2. ¿Se parecen los dos lados de la barra más alta?",
+      "guess": {
+        "en": "Make a guess first: will the shape look balanced or lean to one side?",
+        "es": "Primero adivina: ¿la forma se verá equilibrada o se inclinará hacia un lado?"
+      },
+      "reveal": {
+        "en": "Balanced! The peak is 70–79, with height 4. Both sides are height 2, so the data is symmetric. A typical score sits in 70–79.",
+        "es": "¡Equilibrada! El pico es 70–79, con altura 4. Los dos lados tienen altura 2, así que los datos son simétricos. Una nota típica está en 70–79."
+      }
+    },
+    "classModel": {
+      "name": {
+        "en": "reading the shape",
+        "es": "leer la forma"
+      }
+    },
+    "model": {
+      "kind": "barplot",
+      "data": {
+        "categories": [
+          {
+            "label": "60–69",
+            "value": 2
+          },
+          {
+            "label": "70–79",
+            "value": 4
+          },
+          {
+            "label": "80–89",
+            "value": 2
+          }
+        ],
+        "unit": {
+          "en": "students (frequency)",
+          "es": "estudiantes (frecuencia)"
+        }
+      },
+      "alt": {
+        "en": "A bar graph of quiz scores in intervals of 10: 60–69 has 2 students, 70–79 has 4, and 80–89 has 2. The longest bar, 70–79, is the peak, and the two end bars match.",
+        "es": "Una gráfica de barras de notas en intervalos de 10: 60–69 tiene 2 estudiantes, 70–79 tiene 4 y 80–89 tiene 2. La barra más larga, 70–79, es el pico, y las dos barras de los extremos coinciden."
+      }
+    },
+    "transfer": {
+      "stem": {
+        "en": "A different histogram has bars of height 5, 3, 1 and 1 over 0–9, 10–19, 20–29 and 30–39. It shows 10 values in all. Which sentence describes it best?",
+        "es": "Otro histograma tiene barras de altura 5, 3, 1 y 1 sobre 0–9, 10–19, 20–29 y 30–39. Muestra 10 valores en total. ¿Qué oración lo describe mejor?"
+      },
+      "choices": [
+        {
+          "en": "The peak is over 0–9 with 5 values. It is skewed right.",
+          "es": "El pico está sobre 0–9 con 5 valores. Está sesgado a la derecha.",
+          "correct": true,
+          "misconception": null
+        },
+        {
+          "en": "The peak is over 30–39. It is symmetric.",
+          "es": "El pico está sobre 30–39. Es simétrico.",
+          "correct": false,
+          "misconception": "shortest-bar-read-as-peak"
+        },
+        {
+          "en": "The peak is over 0–9, so it is skewed left.",
+          "es": "El pico está sobre 0–9, así que está sesgado a la izquierda.",
+          "correct": false,
+          "misconception": "skew-named-for-peak-side"
+        }
+      ],
+      "reasoning": {
+        "en": "The tallest bar is over 0–9, and 10 − 3 − 1 − 1 = 5 values fit there. The bars trail off to the right, so the tail is on the right and the data is skewed right.",
+        "es": "La barra más alta está sobre 0–9, y 10 − 3 − 1 − 1 = 5 valores caben ahí. Las barras se alargan hacia la derecha, así que la cola está a la derecha y los datos están sesgados a la derecha."
+      },
+      "calc": {
+        "expr": "10 - 3 - 1 - 1",
+        "value": 5
+      }
+    },
+    "glitch": {
+      "scenario": {
+        "en": "A different situation: A histogram has bars of height 6, 3, 2 and 1 over 0–9, 10–19, 20–29 and 30–39. Dani describes its shape.",
+        "es": "Otra situación: Un histograma tiene barras de altura 6, 3, 2 y 1 sobre 0–9, 10–19, 20–29 y 30–39. Dani describe su forma."
+      },
+      "steps": [
+        {
+          "en": "Find the peak: the tallest bar has height 6 and sits over 0–9.",
+          "es": "Halla el pico: la barra más alta tiene altura 6 y está sobre 0–9.",
+          "isGlitch": false
+        },
+        {
+          "en": "Count the values: 6 + 3 + 2 + 1 = 12, so the peak holds half of them.",
+          "es": "Cuenta los valores: 6 + 3 + 2 + 1 = 12, así que el pico tiene la mitad.",
+          "isGlitch": false
+        },
+        {
+          "en": "The peak is on the left, so the data is skewed left.",
+          "es": "El pico está a la izquierda, así que los datos están sesgados a la izquierda.",
+          "isGlitch": true
+        }
+      ],
+      "fix": {
+        "en": "Skewed is named for the side with the long tail, not the peak. These bars trail off to the right, so the data is skewed right.",
+        "es": "Sesgado se nombra por el lado de la cola larga, no por el pico. Estas barras se alargan a la derecha, así que los datos están sesgados a la derecha."
+      },
+      "frame": {
+        "en": "The data is skewed ___ because the long tail stretches to the ___.",
+        "es": "Los datos están sesgados a la ___ porque la cola larga se estira hacia la ___."
+      },
+      "calc": {
+        "expr": "6 / (6 + 3 + 2 + 1)",
+        "value": 0.5
+      }
+    },
+    "spiral": [
+      {
+        "from": "2-2",
+        "q": {
+          "en": "The data are 3, 7, 12, 15, 18, 24. Use intervals of 10. How many values are in 10–19?",
+          "es": "Los datos son 3, 7, 12, 15, 18, 24. Usa intervalos de 10. ¿Cuántos valores hay en 10–19?"
+        },
+        "options": [
+          "2",
+          "6",
+          "3"
+        ],
+        "correctIdx": 2,
+        "exp": {
+          "en": "12, 15 and 18 fit in 10–19. That is 3 values.",
+          "es": "12, 15 y 18 caben en 10–19. Son 3 valores."
+        },
+        "calc": {
+          "expr": "1 + 1 + 1",
+          "value": 3
+        }
+      },
+      {
+        "from": "2-1",
+        "q": {
+          "en": "The scores are 8, 12, 12, 15, 18, 20, 22. How many players scored exactly 12?",
+          "es": "Las anotaciones son 8, 12, 12, 15, 18, 20, 22. ¿Cuántos jugadores anotaron exactamente 12?"
+        },
+        "options": [
+          "1",
+          "2",
+          "12"
+        ],
+        "correctIdx": 1,
+        "exp": {
+          "en": "The score 12 appears two times, so two players scored 12.",
+          "es": "La anotación 12 aparece dos veces, así que dos jugadores anotaron 12."
+        },
+        "calc": {
+          "expr": "1 + 1",
+          "value": 2
+        }
+      }
+    ],
+    "kitchenTable": {
+      "en": "Stack coins in three columns on the table: 2, 4 and 2. Ask your student if the two sides match. Now add a fourth column with 1 coin. Which way does the tail stretch now?",
+      "es": "Apilen monedas en tres columnas sobre la mesa: 2, 4 y 2. Pregunten a su estudiante si los dos lados coinciden. Ahora agreguen una cuarta columna con 1 moneda. ¿Hacia dónde se estira ahora la cola?"
+    },
+    "vocab": [
+      {
+        "term": "Histogram",
+        "example": {
+          "en": "The quiz poster with touching bars of height 2, 4 and 2 is a histogram.",
+          "es": "El cartel del examen con barras pegadas de altura 2, 4 y 2 es un histograma."
+        },
+        "nonExample": {
+          "en": "A different situation: A graph of favorite colors with gaps between bars is not a histogram.",
+          "es": "Otra situación: Una gráfica de colores favoritos con espacios entre las barras no es un histograma."
+        },
+        "frame": {
+          "en": "In my histogram, the tallest bar is over ___.",
+          "es": "En mi histograma, la barra más alta está sobre ___."
+        }
+      },
+      {
+        "term": "Interval",
+        "example": {
+          "en": "60–69, 70–79 and 80–89 are equal intervals of 10.",
+          "es": "60–69, 70–79 y 80–89 son intervalos iguales de 10."
+        },
+        "nonExample": {
+          "en": "60–69 and then 75–89 are not equal intervals.",
+          "es": "60–69 y luego 75–89 no son intervalos iguales."
+        },
+        "frame": {
+          "en": "The interval ___ is where the bar of height ___ sits.",
+          "es": "El intervalo ___ es donde está la barra de altura ___."
+        }
+      },
+      {
+        "term": "Peak",
+        "example": {
+          "en": "70–79 is the peak. Its bar has height 4.",
+          "es": "70–79 es el pico. Su barra tiene altura 4."
+        },
+        "nonExample": {
+          "en": "60–69 is not the peak. Its bar has height 2.",
+          "es": "60–69 no es el pico. Su barra tiene altura 2."
+        },
+        "frame": {
+          "en": "The peak is over ___, where most values sit.",
+          "es": "El pico está sobre ___, donde está la mayoría de los valores."
+        }
+      },
+      {
+        "term": "symmetric",
+        "example": {
+          "en": "Bars of 2, 4 and 2 match on both sides of the peak, so the quiz scores are symmetric.",
+          "es": "Las barras de 2, 4 y 2 coinciden a ambos lados del pico, así que las notas son simétricas."
+        },
+        "nonExample": {
+          "en": "A different situation: Bars of 4, 2 and 1 trail off to one side, so they are not symmetric.",
+          "es": "Otra situación: Las barras de 4, 2 y 1 se alargan hacia un lado, así que no son simétricas."
+        },
+        "frame": {
+          "en": "The data is symmetric because the bars on both sides of the peak ___.",
+          "es": "Los datos son simétricos porque las barras a ambos lados del pico ___."
+        }
+      },
+      {
+        "term": "Skewed",
+        "example": {
+          "en": "A different situation: Bars of 4, 2 and 1 over 0–9, 10–19 and 20–29 pile up on the left, with a tail on the right. They are skewed right.",
+          "es": "Otra situación: Las barras de 4, 2 y 1 sobre 0–9, 10–19 y 20–29 se juntan a la izquierda, con una cola a la derecha. Están sesgadas a la derecha."
+        },
+        "nonExample": {
+          "en": "The quiz bars 2, 4 and 2 are not skewed. Both sides match.",
+          "es": "Las barras del examen, 2, 4 y 2, no están sesgadas. Los dos lados coinciden."
+        },
+        "frame": {
+          "en": "The shape is skewed ___ because the tail is on the ___.",
+          "es": "La forma está sesgada a la ___ porque la cola está a la ___."
+        }
+      }
+    ],
+    "confused": [
+      {
+        "wrong": {
+          "en": "The tallest bar has height 4, so the peak is 4.",
+          "es": "La barra más alta tiene altura 4, así que el pico es 4."
+        },
+        "coach": {
+          "en": "Is the peak a number of students, or a bar over a range of scores?",
+          "es": "¿El pico es una cantidad de estudiantes o una barra sobre un rango de notas?"
+        },
+        "why": {
+          "en": "The height tells how many students are in the peak bar. The peak is the bar itself, over 70–79. Check: 8 − 2 − 2 = 4 students.",
+          "es": "La altura dice cuántos estudiantes hay en la barra del pico. El pico es la barra misma, sobre 70–79. Comprueba: 8 − 2 − 2 = 4 estudiantes."
+        },
+        "misconception": "peak-named-by-height",
+        "calc": {
+          "expr": "8 - 2 - 2",
+          "value": 4
+        }
+      },
+      {
+        "wrong": {
+          "en": "A different situation: Bars of height 1, 3 and 6 stand over 0–9, 10–19 and 20–29. The peak is on the right, so it is skewed right.",
+          "es": "Otra situación: Barras de altura 1, 3 y 6 están sobre 0–9, 10–19 y 20–29. El pico está a la derecha, así que está sesgada a la derecha."
+        },
+        "coach": {
+          "en": "Which side has the long tail?",
+          "es": "¿Cuál lado tiene la cola larga?"
+        },
+        "why": {
+          "en": "Skewed is named for the tail, not the peak. The tail stretches left, so it is skewed left. The bars show 1 + 3 + 6 = 10 values.",
+          "es": "Sesgado se nombra por la cola, no por el pico. La cola se estira a la izquierda, así que está sesgada a la izquierda. Las barras muestran 1 + 3 + 6 = 10 valores."
+        },
+        "misconception": "skew-named-for-peak-side",
+        "calc": {
+          "expr": "1 + 3 + 6",
+          "value": 10
+        }
+      },
+      {
+        "wrong": {
+          "en": "The same bars, 1, 3 and 6, have a middle bar over 10–19. So a typical value is in 10–19.",
+          "es": "Las mismas barras, 1, 3 y 6, tienen una barra del medio sobre 10–19. Así que un valor típico está en 10–19."
+        },
+        "coach": {
+          "en": "Where do most of the values sit?",
+          "es": "¿Dónde está la mayoría de los valores?"
+        },
+        "why": {
+          "en": "A typical value sits at the peak, not the middle bar. The peak is over 20–29, where 10 − 3 − 1 = 6 of the 10 values sit.",
+          "es": "Un valor típico está en el pico, no en la barra del medio. El pico está sobre 20–29, donde están 10 − 3 − 1 = 6 de los 10 valores."
+        },
+        "misconception": "typical-is-middle-bar",
+        "calc": {
+          "expr": "10 - 3 - 1",
+          "value": 6
+        }
+      }
+    ]
+  }
 }

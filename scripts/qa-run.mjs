@@ -343,11 +343,19 @@ const COVERAGE = [
     /^(data\/family-homework-notes\/|tools\/(validate-family-homework-content\.mjs|lib\/family-homework-content\.mjs)$|scripts\/homework-family-guidance\.mjs$)/,
     [
       "validate:family-homework-content",
+      "validate:family-v3",
       "validate:family-plain-definitions",
       "validate:homework",
       "test",
       "check",
     ],
+  ],
+
+  // v3.0 lesson-keyed family content: the validators, the Learn-stop renderer, the model library and the docs that define them.
+  // The generated pages are checked for wrong-lesson content by validate:family-no-leakage.
+  [
+    /^(tools\/(validate-family-v3|validate-family-no-leakage|family-v3-packet|family-homework-scorecard|family-math-models\.test|homework-v3-learn\.test|homework-svg-models\.test)\.mjs$|tools\/lib\/family-v3\.mjs$|tools\/fixtures\/family-math-models-lessons\.json$|scripts\/(export-family-spanish-review\.mjs|lib\/homework-(v3-|center-css)[a-z-]*\.mjs)$|assets\/design\/family\/|docs\/(family-homework-v3\/|specs\/family-homework-v3\.md$))/,
+    ["validate:family-v3", "validate:family-no-leakage", "validate:homework", "test", "check"],
   ],
 
   // The "Learn more online" links on every family homework page: topics, verification record, renderer.

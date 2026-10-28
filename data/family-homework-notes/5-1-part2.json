@@ -537,5 +537,304 @@
       ],
       "image": "/assets/vocab-images/slanted-side.svg"
     }
-  ]
+  ],
+  "v3": {
+    "version": 1,
+    "kind": "math",
+    "topicKey": "area-rhombus-apply",
+    "standardPlain": {
+      "en": "Find the area of a rhombus. It is a parallelogram, so use base × straight-up height.",
+      "es": "Hallar el área de un rombo. Es un paralelogramo, así que usa base × altura recta hacia arriba."
+    },
+    "hook": {
+      "style": "price-tag",
+      "en": "A hardware store sells diamond-shaped floor tiles. The sign says every side is 13 cm. A ruler straight up from the bottom edge to the top edge reads 8 cm. How much floor does one tile cover?",
+      "es": "Una ferretería vende losetas de piso en forma de diamante. El letrero dice que cada lado mide 13 cm. Una regla, derecho hacia arriba desde el borde de abajo hasta el de arriba, marca 8 cm. ¿Cuánto piso cubre una loseta?",
+      "guess": {
+        "en": "Guess first: is it more or less than 150 square centimeters?",
+        "es": "Primero adivina: ¿son más o menos de 150 centímetros cuadrados?"
+      },
+      "reveal": {
+        "en": "104 square centimeters. Not 13 × 13 = 169, because the sides lean. Only the straight-up 8 is the height: 13 × 8 = 104.",
+        "es": "104 centímetros cuadrados. No es 13 × 13 = 169, porque los lados se inclinan. Solo el 8 recto hacia arriba es la altura: 13 × 8 = 104."
+      }
+    },
+    "classModel": {
+      "name": {
+        "en": "a rhombus is a parallelogram",
+        "es": "un rombo es un paralelogramo"
+      }
+    },
+    "model": {
+      "kind": "area",
+      "data": {
+        "shape": "parallelogram",
+        "dims": {
+          "base": 13,
+          "height": 8,
+          "slant": 13
+        },
+        "unit": "cm",
+        "cutAndSlide": false
+      },
+      "alt": {
+        "en": "A diamond-shaped rhombus leaning to one side. All four sides are 13 cm. A dashed line goes straight up 8 cm from the bottom side to the top side and makes a square corner. Area = 13 × 8 = 104 square centimeters.",
+        "es": "Un rombo en forma de diamante inclinado hacia un lado. Los cuatro lados miden 13 cm. Una línea de rayas sube derecho 8 cm desde el lado de abajo hasta el de arriba y forma una esquina cuadrada. Área = 13 × 8 = 104 centímetros cuadrados."
+      }
+    },
+    "transfer": {
+      "stem": {
+        "en": "A quilt block is a rhombus. Each side is 9 inches. A line straight up from the bottom to the top is 6 inches. How many square inches of fabric cover the block?",
+        "es": "Un bloque de colcha es un rombo. Cada lado mide 9 pulgadas. Una línea derecho hacia arriba, de abajo a arriba, mide 6 pulgadas. ¿Cuántas pulgadas cuadradas de tela cubren el bloque?"
+      },
+      "choices": [
+        {
+          "en": "54 square inches",
+          "es": "54 pulgadas cuadradas",
+          "correct": true,
+          "misconception": null
+        },
+        {
+          "en": "81 square inches",
+          "es": "81 pulgadas cuadradas",
+          "correct": false,
+          "misconception": "multiplied-side-by-side"
+        },
+        {
+          "en": "15 square inches",
+          "es": "15 pulgadas cuadradas",
+          "correct": false,
+          "misconception": "added-side-and-height"
+        }
+      ],
+      "reasoning": {
+        "en": "The height is the straight-up 6 inches, not the 9-inch side. Area = 9 × 6 = 54 square inches.",
+        "es": "La altura es las 6 pulgadas rectas hacia arriba, no el lado de 9 pulgadas. Área = 9 × 6 = 54 pulgadas cuadradas."
+      },
+      "calc": {
+        "expr": "9 * 6",
+        "value": 54,
+        "unit": "square inches"
+      }
+    },
+    "glitch": {
+      "scenario": {
+        "en": "Ana measures a diamond-shaped floor decal at the rec center. Each side is 12 inches. The straight-up height is 5 inches. She writes three steps.",
+        "es": "Ana mide una calcomanía de piso en forma de diamante en el centro recreativo. Cada lado mide 12 pulgadas. La altura recta hacia arriba mide 5 pulgadas. Ella escribe tres pasos."
+      },
+      "steps": [
+        {
+          "en": "A rhombus is a parallelogram, so area = base × height.",
+          "es": "Un rombo es un paralelogramo, así que área = base × altura.",
+          "isGlitch": false
+        },
+        {
+          "en": "The base is 12 inches. The height is the straight-up 5 inches.",
+          "es": "La base mide 12 pulgadas. La altura son las 5 pulgadas rectas hacia arriba.",
+          "isGlitch": false
+        },
+        {
+          "en": "12 × 5 = 60, so the area is 60 inches.",
+          "es": "12 × 5 = 60, así que el área es 60 pulgadas.",
+          "isGlitch": true
+        }
+      ],
+      "fix": {
+        "en": "Area is measured in square units. The area is 60 square inches.",
+        "es": "El área se mide en unidades cuadradas. El área es 60 pulgadas cuadradas."
+      },
+      "frame": {
+        "en": "The glitch is in step ___. The area should be ___ × ___ = ___ square ___.",
+        "es": "El error está en el paso ___. El área debe ser ___ × ___ = ___ ___ cuadradas."
+      },
+      "calc": {
+        "expr": "12 * 5",
+        "value": 60
+      }
+    },
+    "spiral": [
+      {
+        "from": "5-1",
+        "q": {
+          "en": "A parallelogram is 10 feet along the bottom and 4 feet straight up. How many square feet is its area?",
+          "es": "Un paralelogramo mide 10 pies por abajo y 4 pies derecho hacia arriba. ¿Cuántos pies cuadrados tiene de área?"
+        },
+        "options": [
+          "14",
+          "20",
+          "40"
+        ],
+        "correctIdx": 2,
+        "exp": {
+          "en": "Area = base × height = 10 × 4 = 40 square feet.",
+          "es": "Área = base × altura = 10 × 4 = 40 pies cuadrados."
+        },
+        "calc": {
+          "expr": "10 * 4",
+          "value": 40
+        }
+      },
+      {
+        "from": "4-4",
+        "q": {
+          "en": "What is 40% of 80?",
+          "es": "¿Cuánto es el 40% de 80?"
+        },
+        "options": [
+          "3.2",
+          "32",
+          "40"
+        ],
+        "correctIdx": 1,
+        "exp": {
+          "en": "40% is 0.40. Then 0.40 × 80 = 32.",
+          "es": "El 40% es 0.40. Entonces 0.40 × 80 = 32."
+        },
+        "calc": {
+          "expr": "0.4 * 80",
+          "value": 32
+        }
+      }
+    ],
+    "kitchenTable": {
+      "en": "A different situation: lay four pencils of the same length into a square. Gently push one corner so it leans into a diamond. The sides stay the same. Which measure got smaller: the side, or the straight-up height?",
+      "es": "Otra situación: pongan cuatro lápices del mismo largo formando un cuadrado. Empujen una esquina con cuidado para que se incline como un diamante. Los lados siguen iguales. ¿Cuál medida se hizo menor: el lado o la altura recta hacia arriba?"
+    },
+    "vocab": [
+      {
+        "term": "Rhombus",
+        "example": {
+          "en": "The 13 cm floor tile has four equal sides, so it is a rhombus.",
+          "es": "La loseta de piso de 13 cm tiene cuatro lados iguales, así que es un rombo."
+        },
+        "nonExample": {
+          "en": "A 4 cm by 6 cm rectangle is not a rhombus. Its sides are not all equal.",
+          "es": "Un rectángulo de 4 cm por 6 cm no es un rombo. Sus lados no son todos iguales."
+        },
+        "frame": {
+          "en": "It is a rhombus because all four sides are ___.",
+          "es": "Es un rombo porque sus cuatro lados son ___."
+        }
+      },
+      {
+        "term": "Base",
+        "example": {
+          "en": "Any 13 cm side of the tile can be the base.",
+          "es": "Cualquier lado de 13 cm de la loseta puede ser la base."
+        },
+        "nonExample": {
+          "en": "The 8 cm is not the base. It is the height.",
+          "es": "Los 8 cm no son la base. Son la altura."
+        },
+        "frame": {
+          "en": "The base is ___ cm. It is one side of the rhombus.",
+          "es": "La base mide ___ cm. Es un lado del rombo."
+        }
+      },
+      {
+        "term": "Height",
+        "example": {
+          "en": "The straight-up 8 cm is the height of the tile.",
+          "es": "Los 8 cm rectos hacia arriba son la altura de la loseta."
+        },
+        "nonExample": {
+          "en": "The 13 cm side is not the height, even though all four sides match.",
+          "es": "El lado de 13 cm no es la altura, aunque los cuatro lados sean iguales."
+        },
+        "frame": {
+          "en": "The height is ___ cm because it goes straight up from the ___.",
+          "es": "La altura es ___ cm porque sube derecho desde la ___."
+        }
+      },
+      {
+        "term": "Perpendicular",
+        "example": {
+          "en": "The 8 cm line meets the bottom side at a square corner. It is perpendicular.",
+          "es": "La línea de 8 cm toca el lado de abajo en una esquina cuadrada. Es perpendicular."
+        },
+        "nonExample": {
+          "en": "A leaning side does not make a square corner with the base. It is not perpendicular.",
+          "es": "Un lado inclinado no forma una esquina cuadrada con la base. No es perpendicular."
+        },
+        "frame": {
+          "en": "The height is perpendicular because it makes a ___ corner with the base.",
+          "es": "La altura es perpendicular porque forma una esquina ___ con la base."
+        }
+      },
+      {
+        "term": "Slanted side",
+        "example": {
+          "en": "Each 13 cm side of the tile leans, so each one is a slanted side.",
+          "es": "Cada lado de 13 cm de la loseta se inclina, así que cada uno es un lado inclinado."
+        },
+        "nonExample": {
+          "en": "The 8 cm height is not a slanted side. It goes straight up.",
+          "es": "La altura de 8 cm no es un lado inclinado. Sube derecho."
+        },
+        "frame": {
+          "en": "The slanted side is ___ cm, but the height is ___ cm.",
+          "es": "El lado inclinado mide ___ cm, pero la altura mide ___ cm."
+        }
+      }
+    ],
+    "confused": [
+      {
+        "wrong": {
+          "en": "13 + 8 = 21 square centimeters.",
+          "es": "13 + 8 = 21 centímetros cuadrados."
+        },
+        "coach": {
+          "en": "How could you count the 1-centimeter squares that cover the tile, row by row?",
+          "es": "¿Cómo podrías contar los cuadrados de 1 centímetro que cubren la loseta, fila por fila?"
+        },
+        "why": {
+          "en": "Area counts flat squares, so we multiply: 13 × 8 = 104 square centimeters.",
+          "es": "El área cuenta cuadrados planos, así que se multiplica: 13 × 8 = 104 centímetros cuadrados."
+        },
+        "misconception": "added-side-and-height",
+        "calc": {
+          "expr": "13 * 8",
+          "value": 104
+        }
+      },
+      {
+        "wrong": {
+          "en": "The diamond has pointed ends, so I take half: 13 × 8 ÷ 2 = 52 square centimeters.",
+          "es": "El diamante tiene puntas, así que tomo la mitad: 13 × 8 ÷ 2 = 52 centímetros cuadrados."
+        },
+        "coach": {
+          "en": "A rhombus belongs to a family of shapes. What is that family's area rule?",
+          "es": "Un rombo pertenece a una familia de figuras. ¿Cuál es la regla del área de esa familia?"
+        },
+        "why": {
+          "en": "A rhombus is a parallelogram. It uses the whole base × height: 13 × 8 = 104. Do not halve it.",
+          "es": "Un rombo es un paralelogramo. Usa la base × altura completa: 13 × 8 = 104. No se divide a la mitad."
+        },
+        "misconception": "halved-the-product",
+        "calc": {
+          "expr": "13 * 8",
+          "value": 104
+        }
+      },
+      {
+        "wrong": {
+          "en": "All four sides are 13 cm, so the area is 13 × 13 = 169 square centimeters.",
+          "es": "Los cuatro lados miden 13 cm, así que el área es 13 × 13 = 169 centímetros cuadrados."
+        },
+        "coach": {
+          "en": "Which measure goes straight up from the bottom edge and makes a square corner?",
+          "es": "¿Cuál medida sube derecho desde el borde de abajo y forma una esquina cuadrada?"
+        },
+        "why": {
+          "en": "The sides lean, so a side is not the height. The height is the straight-up 8: 13 × 8 = 104.",
+          "es": "Los lados se inclinan, así que un lado no es la altura. La altura es el 8 recto hacia arriba: 13 × 8 = 104."
+        },
+        "misconception": "used-side-as-height",
+        "calc": {
+          "expr": "13 * 8",
+          "value": 104
+        }
+      }
+    ]
+  }
 }

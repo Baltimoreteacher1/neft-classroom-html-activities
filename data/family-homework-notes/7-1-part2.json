@@ -537,5 +537,321 @@
       ],
       "image": "/assets/vocab-images/opposite.svg"
     }
-  ]
+  ],
+  "v3": {
+    "version": 1,
+    "kind": "math",
+    "topicKey": "integers-gains-losses-apply",
+    "standardPlain": {
+      "en": "Write integers for gains, losses, above and below, and say what zero means.",
+      "es": "Escribir números enteros para ganancias, pérdidas, arriba y abajo, y decir qué significa el cero."
+    },
+    "hook": {
+      "style": "scoreboard",
+      "en": "In a board game, your score is −58. One card says: change your score to its opposite. A second card says the same thing. What is your score now?",
+      "es": "En un juego de mesa, tu puntaje es −58. Una carta dice: cambia tu puntaje a su opuesto. Una segunda carta dice lo mismo. ¿Cuál es tu puntaje ahora?",
+      "guess": {
+        "en": "Guess first: will your score end positive or negative?",
+        "es": "Primero adivina: ¿tu puntaje terminará positivo o negativo?"
+      },
+      "reveal": {
+        "en": "Negative! The opposite of −58 is 58. The opposite of 58 is −58. Two flips bring you back to −58.",
+        "es": "¡Negativo! El opuesto de −58 es 58. El opuesto de 58 es −58. Dos cambios te regresan a −58."
+      }
+    },
+    "classModel": {
+      "name": {
+        "en": "flipping to the opposite",
+        "es": "cambiar al opuesto"
+      }
+    },
+    "model": {
+      "kind": "numberline",
+      "data": {
+        "min": -60,
+        "max": 60,
+        "step": 20,
+        "points": [
+          {
+            "value": -58,
+            "label": {
+              "en": "−58 (start and end)",
+              "es": "−58 (inicio y final)"
+            },
+            "kind": "answer"
+          },
+          {
+            "value": 58,
+            "label": {
+              "en": "58 (after one card)",
+              "es": "58 (con una carta)"
+            },
+            "kind": "given"
+          }
+        ],
+        "unit": {
+          "en": "score",
+          "es": "puntaje"
+        }
+      },
+      "alt": {
+        "en": "A number line from −60 to 60. The score starts at −58, left of 0. The first card flips it to 58, right of 0. The second card flips it back to −58. Both numbers are 58 units from 0.",
+        "es": "Una recta numérica de −60 a 60. El puntaje empieza en −58, a la izquierda del 0. La primera carta lo cambia a 58, a la derecha del 0. La segunda carta lo regresa a −58. Los dos números están a 58 unidades del 0."
+      }
+    },
+    "transfer": {
+      "stem": {
+        "en": "Marcus's account changed by +45 dollars on Monday. On Tuesday the change was the opposite. Which integer shows Tuesday's change?",
+        "es": "La cuenta de Marcus cambió +45 dólares el lunes. El martes el cambio fue el opuesto. ¿Cuál número entero muestra el cambio del martes?"
+      },
+      "choices": [
+        {
+          "en": "45 dollars",
+          "es": "45 dólares",
+          "correct": false,
+          "misconception": "opposite-keeps-sign"
+        },
+        {
+          "en": "0 dollars",
+          "es": "0 dólares",
+          "correct": false,
+          "misconception": "opposite-means-zero"
+        },
+        {
+          "en": "−45 dollars",
+          "es": "−45 dólares",
+          "correct": true,
+          "misconception": null
+        }
+      ],
+      "reasoning": {
+        "en": "The opposite of +45 is on the other side of 0, at the same distance. Tuesday's change is −45 dollars.",
+        "es": "El opuesto de +45 está del otro lado del 0, a la misma distancia. El cambio del martes es −45 dólares."
+      },
+      "calc": {
+        "expr": "0 - 45",
+        "value": -45,
+        "unit": "dollars"
+      }
+    },
+    "glitch": {
+      "scenario": {
+        "en": "A different situation: A cave is 33 meters below the ground, which is 0. Rosa finds the opposite of the opposite of −33.",
+        "es": "Otra situación: Una cueva está 33 metros bajo el suelo, que es 0. Rosa halla el opuesto del opuesto de −33."
+      },
+      "steps": [
+        {
+          "en": "The opposite of −33 is 33. Both are 33 units from 0.",
+          "es": "El opuesto de −33 es 33. Los dos están a 33 unidades del 0.",
+          "isGlitch": false
+        },
+        {
+          "en": "The opposite of 33 is −33. It is back on the left side.",
+          "es": "El opuesto de 33 es −33. Vuelve al lado izquierdo.",
+          "isGlitch": false
+        },
+        {
+          "en": "So the opposite of the opposite of −33 is 33.",
+          "es": "Entonces el opuesto del opuesto de −33 es 33.",
+          "isGlitch": true
+        }
+      ],
+      "fix": {
+        "en": "Two flips bring you back to where you started: −33. Check: −33 to 33 to −33.",
+        "es": "Dos cambios te regresan al punto de partida: −33. Comprueba: −33 a 33 a −33."
+      },
+      "frame": {
+        "en": "After two flips I am at ___ because flip one goes to ___.",
+        "es": "Después de dos cambios estoy en ___ porque el primer cambio va a ___."
+      },
+      "calc": {
+        "expr": "0 - 33",
+        "value": -33
+      }
+    },
+    "spiral": [
+      {
+        "from": "7-1",
+        "q": {
+          "en": "What is the opposite of 19?",
+          "es": "¿Cuál es el opuesto de 19?"
+        },
+        "options": [
+          "19",
+          "−19",
+          "91"
+        ],
+        "correctIdx": 1,
+        "exp": {
+          "en": "The opposite is on the other side of 0, at the same distance. The opposite of 19 is −19.",
+          "es": "El opuesto está del otro lado del 0, a la misma distancia. El opuesto de 19 es −19."
+        },
+        "calc": {
+          "expr": "0 - 19",
+          "value": -19
+        }
+      },
+      {
+        "from": "6-5",
+        "q": {
+          "en": "What is the value of 2n + 7 when n = 5?",
+          "es": "¿Cuál es el valor de 2n + 7 cuando n = 5?"
+        },
+        "options": [
+          "17",
+          "45",
+          "12"
+        ],
+        "correctIdx": 0,
+        "exp": {
+          "en": "Put 5 in for n: 2 × 5 + 7 = 10 + 7 = 17.",
+          "es": "Pon 5 en lugar de n: 2 × 5 + 7 = 10 + 7 = 17."
+        },
+        "calc": {
+          "expr": "2 * 5 + 7",
+          "value": 17
+        }
+      }
+    ],
+    "kitchenTable": {
+      "en": "Write −58 on one side of a paper and 58 on the other. Flip it three times. Can your student say what shows, and why?",
+      "es": "Escriban −58 de un lado de un papel y 58 del otro. Voltéenlo tres veces. ¿Puede su estudiante decir qué número se ve y por qué?"
+    },
+    "vocab": [
+      {
+        "term": "Integer",
+        "example": {
+          "en": "−58 and 58 are integers. So is 0.",
+          "es": "−58 y 58 son números enteros. El 0 también."
+        },
+        "nonExample": {
+          "en": "58.5 is not an integer. It sits between two integers.",
+          "es": "58.5 no es un número entero. Está entre dos enteros."
+        },
+        "frame": {
+          "en": "___ is an integer, and so is its opposite, ___.",
+          "es": "___ es un número entero, y su opuesto, ___, también."
+        }
+      },
+      {
+        "term": "Opposite",
+        "example": {
+          "en": "The opposite of −58 is 58. The score flips to the other side of 0.",
+          "es": "El opuesto de −58 es 58. El puntaje cambia al otro lado del 0."
+        },
+        "nonExample": {
+          "en": "The opposite of −58 is not −58. The sign must change.",
+          "es": "El opuesto de −58 no es −58. El signo debe cambiar."
+        },
+        "frame": {
+          "en": "The opposite of ___ is ___, on the other side of ___.",
+          "es": "El opuesto de ___ es ___, del otro lado del ___."
+        }
+      },
+      {
+        "term": "Negative number",
+        "example": {
+          "en": "A score of −58 is negative. It is below 0.",
+          "es": "Un puntaje de −58 es negativo. Está abajo del 0."
+        },
+        "nonExample": {
+          "en": "A score of 58 is not negative. It is above 0.",
+          "es": "Un puntaje de 58 no es negativo. Está arriba del 0."
+        },
+        "frame": {
+          "en": "A loss is negative, so I write ___.",
+          "es": "Una pérdida es negativa, así que escribo ___."
+        }
+      },
+      {
+        "term": "Positive number",
+        "example": {
+          "en": "After one card, the score 58 is positive.",
+          "es": "Después de una carta, el puntaje 58 es positivo."
+        },
+        "nonExample": {
+          "en": "−58 is not positive, even though 58 is the size of the move.",
+          "es": "−58 no es positivo, aunque 58 sea el tamaño del movimiento."
+        },
+        "frame": {
+          "en": "A gain is positive, so I write ___.",
+          "es": "Una ganancia es positiva, así que escribo ___."
+        }
+      },
+      {
+        "term": "Opposite of the opposite",
+        "example": {
+          "en": "The opposite of the opposite of −58 is −58.",
+          "es": "El opuesto del opuesto de −58 es −58."
+        },
+        "nonExample": {
+          "en": "The opposite of the opposite of −58 is not 58. That is only one flip.",
+          "es": "El opuesto del opuesto de −58 no es 58. Eso es solo un cambio."
+        },
+        "frame": {
+          "en": "Two flips take ___ to ___ and back to ___.",
+          "es": "Dos cambios llevan ___ a ___ y de vuelta a ___."
+        }
+      }
+    ],
+    "confused": [
+      {
+        "wrong": {
+          "en": "Your score is −58, so the opposite is also −58. Opposites keep the sign.",
+          "es": "Tu puntaje es −58, así que el opuesto también es −58. Los opuestos conservan el signo."
+        },
+        "coach": {
+          "en": "Is the opposite on the same side of 0, or the other side?",
+          "es": "¿El opuesto está del mismo lado del 0 o del otro lado?"
+        },
+        "why": {
+          "en": "Opposites sit on opposite sides of 0. The opposite of −58 is 58, the same distance from 0.",
+          "es": "Los opuestos están en lados contrarios del 0. El opuesto de −58 es 58, a la misma distancia del 0."
+        },
+        "misconception": "opposite-keeps-sign",
+        "calc": {
+          "expr": "0 + 58",
+          "value": 58
+        }
+      },
+      {
+        "wrong": {
+          "en": "Two cards flip it twice, so the score is 58 after both.",
+          "es": "Dos cartas lo cambian dos veces, así que el puntaje es 58 después de las dos."
+        },
+        "coach": {
+          "en": "What does a second flip do to a number on the positive side?",
+          "es": "¿Qué hace un segundo cambio con un número del lado positivo?"
+        },
+        "why": {
+          "en": "The second flip sends 58 back to −58. Two flips return you to where you started.",
+          "es": "El segundo cambio manda el 58 de regreso a −58. Dos cambios te regresan al punto de partida."
+        },
+        "misconception": "double-opposite-not-back",
+        "calc": {
+          "expr": "0 - 58",
+          "value": -58
+        }
+      },
+      {
+        "wrong": {
+          "en": "The negative sign means the number is smaller in size, so −58 is closer to 0 than 58.",
+          "es": "El signo negativo significa que el número es menor en tamaño, así que −58 está más cerca del 0 que 58."
+        },
+        "coach": {
+          "en": "How far is each number from 0 on the number line?",
+          "es": "¿A qué distancia del 0 está cada número en la recta numérica?"
+        },
+        "why": {
+          "en": "The sign shows direction, not size. Both −58 and 58 are 58 units from 0.",
+          "es": "El signo muestra la dirección, no el tamaño. Tanto −58 como 58 están a 58 unidades del 0."
+        },
+        "misconception": "negative-means-smaller-size",
+        "calc": {
+          "expr": "0 + 58",
+          "value": 58
+        }
+      }
+    ]
+  }
 }

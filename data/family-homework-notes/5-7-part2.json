@@ -533,5 +533,310 @@
       ],
       "image": "/assets/vocab-images/equivalent.svg"
     }
-  ]
+  ],
+  "v3": {
+    "version": 1,
+    "kind": "math",
+    "topicKey": "surface-area-triangular-prism-net-apply",
+    "standardPlain": {
+      "en": "Find the surface area of a triangular prism by adding its two triangles and three rectangles.",
+      "es": "Hallar el área de superficie de un prisma triangular sumando sus dos triángulos y sus tres rectángulos."
+    },
+    "hook": {
+      "style": "price-tag",
+      "en": "A craft shop sells a tent-shaped wooden box. It is 11 cm long. Each triangle end is a right triangle with sides of 6, 8 and 10 cm. Paper covers every face. How many square centimeters of paper?",
+      "es": "Una tienda de manualidades vende una caja de madera con forma de tienda de campaña. Mide 11 cm de largo. Cada extremo es un triángulo rectángulo con lados de 6, 8 y 10 cm. El papel cubre todas las caras. ¿Cuántos centímetros cuadrados de papel se necesitan?",
+      "guess": {
+        "en": "Guess first: is it more than 200 square centimeters, or less?",
+        "es": "Primero adivina: ¿son más de 200 centímetros cuadrados o menos?"
+      },
+      "reveal": {
+        "en": "More! The two triangle ends make 48. The rectangles make 66 + 88 + 110 = 264. Add every face: 48 + 264 = 312 square centimeters.",
+        "es": "¡Más! Los dos extremos triangulares suman 48. Los rectángulos suman 66 + 88 + 110 = 264. Suma todas las caras: 48 + 264 = 312 centímetros cuadrados."
+      }
+    },
+    "classModel": {
+      "name": {
+        "en": "the net with five faces",
+        "es": "la plantilla de cinco caras"
+      }
+    },
+    "model": {
+      "kind": "barplot",
+      "data": {
+        "categories": [
+          {
+            "label": {
+              "en": "Triangle end",
+              "es": "Extremo triangular"
+            },
+            "value": 24
+          },
+          {
+            "label": {
+              "en": "Triangle end",
+              "es": "Extremo triangular"
+            },
+            "value": 24
+          },
+          {
+            "label": "6 × 11",
+            "value": 66
+          },
+          {
+            "label": "8 × 11",
+            "value": 88
+          },
+          {
+            "label": "10 × 11",
+            "value": 110
+          }
+        ],
+        "unit": "cm²"
+      },
+      "alt": {
+        "en": "A bar graph of the five faces of the wooden box. Each triangle end is 24 square centimeters. The rectangles are 66, 88 and 110. All five faces add to 312 square centimeters.",
+        "es": "Una gráfica de barras de las cinco caras de la caja de madera. Cada extremo triangular mide 24 centímetros cuadrados. Los rectángulos miden 66, 88 y 110. Las cinco caras suman 312 centímetros cuadrados."
+      }
+    },
+    "transfer": {
+      "stem": {
+        "en": "A doorstop is a triangular prism. Each triangle end has a base of 5 cm, a height of 12 cm and a longest side of 13 cm. It is 4 cm long. How much paint covers the whole outside?",
+        "es": "Un tope de puerta es un prisma triangular. Cada extremo triangular tiene base de 5 cm, altura de 12 cm y lado mayor de 13 cm. Mide 4 cm de largo. ¿Cuánta pintura cubre todo el exterior?"
+      },
+      "choices": [
+        {
+          "en": "120 square cm",
+          "es": "120 cm cuadrados",
+          "correct": false,
+          "misconception": "left-out-the-triangle-ends"
+        },
+        {
+          "en": "150 square cm",
+          "es": "150 cm cuadrados",
+          "correct": false,
+          "misconception": "counted-one-triangle-end"
+        },
+        {
+          "en": "180 square cm",
+          "es": "180 cm cuadrados",
+          "correct": true,
+          "misconception": null
+        }
+      ],
+      "reasoning": {
+        "en": "The two ends are 2 × (½ × 5 × 12) = 60. The rectangles are (5 + 12 + 13) × 4 = 120. Add every face: 60 + 120 = 180.",
+        "es": "Los dos extremos son 2 × (½ × 5 × 12) = 60. Los rectángulos son (5 + 12 + 13) × 4 = 120. Suma todas las caras: 60 + 120 = 180."
+      },
+      "calc": {
+        "expr": "2 * (0.5 * 5 * 12) + (5 + 12 + 13) * 4",
+        "value": 180,
+        "unit": "square cm"
+      }
+    },
+    "glitch": {
+      "scenario": {
+        "en": "A different situation: Maya covers a triangular prism with paper. It is 6 in. long. Each triangle end has a base of 4 in., a height of 3 in. and a longest side of 5 in.",
+        "es": "Otra situación: Maya cubre con papel un prisma triangular. Mide 6 pulg. de largo. Cada extremo triangular tiene base de 4 pulg., altura de 3 pulg. y lado mayor de 5 pulg."
+      },
+      "steps": [
+        {
+          "en": "Rectangles: 4 × 6 = 24, 3 × 6 = 18 and 5 × 6 = 30. Together they make 72.",
+          "es": "Rectángulos: 4 × 6 = 24, 3 × 6 = 18 y 5 × 6 = 30. Juntos suman 72.",
+          "isGlitch": false
+        },
+        {
+          "en": "Triangle ends: 2 × (½ × 4 × 3) = 12.",
+          "es": "Extremos triangulares: 2 × (½ × 4 × 3) = 12.",
+          "isGlitch": false
+        },
+        {
+          "en": "The rectangles wrap the prism, so the surface area is 72 square inches.",
+          "es": "Los rectángulos envuelven el prisma, así que el área de superficie es 72 pulgadas cuadradas.",
+          "isGlitch": true
+        }
+      ],
+      "fix": {
+        "en": "The two triangle ends are faces too. Add them: 12 + 72 = 84. The surface area is 84 square inches.",
+        "es": "Los dos extremos triangulares también son caras. Sumen: 12 + 72 = 84. El área de superficie es 84 pulgadas cuadradas."
+      },
+      "frame": {
+        "en": "A triangular prism has ___ faces, so I add ___ areas.",
+        "es": "Un prisma triangular tiene ___ caras, así que sumo ___ áreas."
+      },
+      "calc": {
+        "expr": "2 * (0.5 * 4 * 3) + (4 + 3 + 5) * 6",
+        "value": 84
+      }
+    },
+    "spiral": [
+      {
+        "from": "5-7",
+        "q": {
+          "en": "A cube has edges of 3 cm. What is its surface area?",
+          "es": "Un cubo tiene aristas de 3 cm. ¿Cuál es su área de superficie?"
+        },
+        "options": [
+          "27",
+          "36",
+          "54"
+        ],
+        "correctIdx": 2,
+        "exp": {
+          "en": "A cube has 6 matching faces. Each face is 3 × 3 = 9, so 6 × 9 = 54.",
+          "es": "Un cubo tiene 6 caras iguales. Cada cara es 3 × 3 = 9, así que 6 × 9 = 54."
+        },
+        "calc": {
+          "expr": "6 * 3 * 3",
+          "value": 54
+        }
+      },
+      {
+        "from": "5-2",
+        "q": {
+          "en": "A triangle has a base of 8 and a height of 5. What is its area?",
+          "es": "Un triángulo tiene base de 8 y altura de 5. ¿Cuál es su área?"
+        },
+        "options": [
+          "20",
+          "40",
+          "13"
+        ],
+        "correctIdx": 0,
+        "exp": {
+          "en": "A triangle is half of a rectangle. ½ × 8 × 5 = 20.",
+          "es": "Un triángulo es la mitad de un rectángulo. ½ × 8 × 5 = 20."
+        },
+        "calc": {
+          "expr": "0.5 * 8 * 5",
+          "value": 20
+        }
+      }
+    ],
+    "kitchenTable": {
+      "en": "Find a tent-shaped box, like a snack package or a toy tent. Count the faces out loud: triangles first, then rectangles. Which rectangle is the biggest?",
+      "es": "Busquen una caja con forma de tienda de campaña, como un paquete de botana o una tienda de juguete. Cuenten las caras en voz alta: primero los triángulos y luego los rectángulos. ¿Cuál rectángulo es el más grande?"
+    },
+    "vocab": [
+      {
+        "term": "Surface area",
+        "example": {
+          "en": "The paper that covers all five faces of the wooden box is its surface area.",
+          "es": "El papel que cubre las cinco caras de la caja de madera es su área de superficie."
+        },
+        "nonExample": {
+          "en": "The space inside the wooden box is not surface area. That is volume.",
+          "es": "El espacio dentro de la caja de madera no es área de superficie. Eso es volumen."
+        },
+        "frame": {
+          "en": "The surface area is ___ because ___ + ___ + ___ + ___ + ___ = ___.",
+          "es": "El área de superficie es ___ porque ___ + ___ + ___ + ___ + ___ = ___."
+        }
+      },
+      {
+        "term": "Net",
+        "example": {
+          "en": "The net of the wooden box lays out 2 triangles and 3 rectangles flat.",
+          "es": "La plantilla de la caja de madera muestra 2 triángulos y 3 rectángulos planos."
+        },
+        "nonExample": {
+          "en": "A picture of the closed box is not a net. A net is flat.",
+          "es": "El dibujo de la caja cerrada no es una plantilla. Una plantilla es plana."
+        },
+        "frame": {
+          "en": "My net has ___ triangles and ___ rectangles.",
+          "es": "Mi plantilla tiene ___ triángulos y ___ rectángulos."
+        }
+      },
+      {
+        "term": "Lateral face",
+        "example": {
+          "en": "The 6 by 11 rectangle is a lateral face of the wooden box.",
+          "es": "El rectángulo de 6 por 11 es una cara lateral de la caja de madera."
+        },
+        "nonExample": {
+          "en": "A triangle end is not a lateral face. It is a base.",
+          "es": "Un extremo triangular no es una cara lateral. Es una base."
+        },
+        "frame": {
+          "en": "Every lateral face uses the prism's length, ___.",
+          "es": "Cada cara lateral usa el largo del prisma, ___."
+        }
+      },
+      {
+        "term": "Congruent",
+        "example": {
+          "en": "The two triangle ends of the box are congruent. They match exactly.",
+          "es": "Los dos extremos triangulares de la caja son congruentes. Son exactamente iguales."
+        },
+        "nonExample": {
+          "en": "The 66 and 88 rectangles are not congruent. They are different sizes.",
+          "es": "Los rectángulos de 66 y 88 no son congruentes. Tienen tamaños distintos."
+        },
+        "frame": {
+          "en": "The two ___ are congruent, so I find one area and ___.",
+          "es": "Los dos ___ son congruentes, así que hallo un área y la ___."
+        }
+      }
+    ],
+    "confused": [
+      {
+        "wrong": {
+          "en": "I multiplied 6 × 8 × 11 = 528. So the paper is 528 square centimeters.",
+          "es": "Multipliqué 6 × 8 × 11 = 528. Entonces el papel es de 528 centímetros cuadrados."
+        },
+        "coach": {
+          "en": "Are we covering the outside of the box, or filling the inside?",
+          "es": "¿Estamos cubriendo el exterior de la caja o llenando el interior?"
+        },
+        "why": {
+          "en": "Multiplying three edges gives volume, the space inside. Surface area adds the faces: 48 + 66 + 88 + 110 = 312.",
+          "es": "Multiplicar tres medidas da el volumen, el espacio interior. El área de superficie suma las caras: 48 + 66 + 88 + 110 = 312."
+        },
+        "misconception": "volume-instead-of-surface-area",
+        "calc": {
+          "expr": "48 + 66 + 88 + 110",
+          "value": 312
+        }
+      },
+      {
+        "wrong": {
+          "en": "I added both triangles and two rectangles: 48 + 66 + 88 = 202.",
+          "es": "Sumé los dos triángulos y dos rectángulos: 48 + 66 + 88 = 202."
+        },
+        "coach": {
+          "en": "How many rectangles does a triangular prism have? Did you use every one?",
+          "es": "¿Cuántos rectángulos tiene un prisma triangular? ¿Usaron todos?"
+        },
+        "why": {
+          "en": "There is one rectangle for each side of the triangle. The third one is 10 × 11 = 110. Then 202 + 110 = 312.",
+          "es": "Hay un rectángulo por cada lado del triángulo. El tercero es 10 × 11 = 110. Entonces 202 + 110 = 312."
+        },
+        "misconception": "left-out-a-rectangle",
+        "calc": {
+          "expr": "202 + 110",
+          "value": 312
+        }
+      },
+      {
+        "wrong": {
+          "en": "The long side of the triangle is 10, so its rectangle is 10 × 8 = 80.",
+          "es": "El lado mayor del triángulo es 10, así que su rectángulo es 10 × 8 = 80."
+        },
+        "coach": {
+          "en": "Which number is the length of the whole prism?",
+          "es": "¿Cuál número es el largo de todo el prisma?"
+        },
+        "why": {
+          "en": "Every rectangle uses the prism's length, 11. So the rectangle on the long side is 10 × 11 = 110.",
+          "es": "Cada rectángulo usa el largo del prisma, 11. Así que el rectángulo del lado mayor es 10 × 11 = 110."
+        },
+        "misconception": "rectangle-ignores-prism-length",
+        "calc": {
+          "expr": "10 * 11",
+          "value": 110
+        }
+      }
+    ]
+  }
 }

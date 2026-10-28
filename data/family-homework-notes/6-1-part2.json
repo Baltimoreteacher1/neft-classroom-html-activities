@@ -530,5 +530,288 @@
       "en": "Cutting something into 6 equal shares leaves 1/6 of it in each share, so dividing by 6 and multiplying by 1/6 match. Check: 1/8 × 6 gives back 3/4.",
       "es": "Partir algo en 6 partes iguales deja 1/6 en cada una, así que dividir entre 6 y multiplicar por 1/6 es lo mismo. Comprobación: 1/8 × 6 devuelve 3/4."
     }
+  },
+  "v3": {
+    "version": 1,
+    "kind": "math",
+    "topicKey": "divide-fraction-by-whole-apply",
+    "standardPlain": {
+      "en": "Divide a fraction by a whole number to split it into equal shares.",
+      "es": "Dividir una fracción entre un número entero para repartirla en partes iguales."
+    },
+    "hook": {
+      "style": "recipe",
+      "en": "A snack bar has a 3/4-pound bag of almonds. A coach splits it evenly into 6 snack cups for the team. How much goes in each cup?",
+      "es": "Un puesto de bocadillos tiene una bolsa de almendras de 3/4 de libra. Un entrenador la reparte en partes iguales en 6 vasitos para el equipo. ¿Cuánto va en cada vasito?",
+      "guess": {
+        "en": "Make a guess first: will each cup hold more than 3/4 pound, or less?",
+        "es": "Primero adivina: ¿cada vasito tendrá más de 3/4 de libra o menos?"
+      },
+      "reveal": {
+        "en": "Less! Splitting makes smaller shares. 3/4 ÷ 6 = 3/4 × 1/6 = 3/24 = 1/8 pound in each cup.",
+        "es": "¡Menos! Repartir da partes más pequeñas. 3/4 ÷ 6 = 3/4 × 1/6 = 3/24 = 1/8 de libra en cada vasito."
+      }
+    },
+    "classModel": {
+      "name": {
+        "en": "splitting into equal shares",
+        "es": "repartir en partes iguales"
+      }
+    },
+    "model": {
+      "kind": "tape",
+      "data": {
+        "parts": 6,
+        "highlight": 6,
+        "partLabel": "3/4 lb of almonds",
+        "blockLabel": {
+          "en": "1 cup = ? lb",
+          "es": "1 vasito = ¿? lb"
+        },
+        "unknown": null
+      },
+      "alt": {
+        "en": "A bar split into 6 equal blocks. Together the 6 blocks are 3/4 pound of almonds. One block is one snack cup, and the amount in it is the unknown.",
+        "es": "Una barra dividida en 6 bloques iguales. Juntos, los 6 bloques son 3/4 de libra de almendras. Un bloque es un vasito de bocadillo y la cantidad que tiene es la incógnita."
+      }
+    },
+    "transfer": {
+      "stem": {
+        "en": "A cook has 7/8 pound of cheese. She splits it evenly into 2 bags. How much cheese is in each bag?",
+        "es": "Una cocinera tiene 7/8 de libra de queso. Lo reparte en partes iguales en 2 bolsas. ¿Cuánto queso hay en cada bolsa?"
+      },
+      "choices": [
+        {
+          "en": "7/4 pound",
+          "es": "7/4 de libra",
+          "correct": false,
+          "misconception": "multiplied-by-divisor-not-reciprocal"
+        },
+        {
+          "en": "4/7 pound",
+          "es": "4/7 de libra",
+          "correct": false,
+          "misconception": "flipped-the-first-fraction"
+        },
+        {
+          "en": "7/16 pound",
+          "es": "7/16 de libra",
+          "correct": true,
+          "misconception": null
+        }
+      ],
+      "reasoning": {
+        "en": "Write 2 as 2/1. Flip the divisor: 7/8 × 1/2 = 7/16. Check: 7/16 × 2 = 14/16 = 7/8.",
+        "es": "Escribe 2 como 2/1. Voltea el divisor: 7/8 × 1/2 = 7/16. Comprueba: 7/16 × 2 = 14/16 = 7/8."
+      },
+      "calc": {
+        "expr": "(7/8) / 2",
+        "value": "7/16"
+      }
+    },
+    "glitch": {
+      "scenario": {
+        "en": "A different situation: Marcus splits 4/5 of a pizza evenly between 2 friends. He wants each friend's share.",
+        "es": "Otra situación: Marcus reparte 4/5 de una pizza en partes iguales entre 2 amigos. Quiere la parte de cada amigo."
+      },
+      "steps": [
+        {
+          "en": "Write the whole number as a fraction: 4/5 ÷ 2/1.",
+          "es": "Escribe el número entero como fracción: 4/5 ÷ 2/1.",
+          "isGlitch": false
+        },
+        {
+          "en": "Change ÷ to ×: 4/5 × 2/1 = 8/5, so each friend gets 1 3/5 pizzas.",
+          "es": "Cambia ÷ por ×: 4/5 × 2/1 = 8/5, así que cada amigo recibe 1 3/5 pizzas.",
+          "isGlitch": true
+        },
+        {
+          "en": "Check: multiply each share by 2 and compare with 4/5.",
+          "es": "Comprueba: multiplica cada parte por 2 y compárala con 4/5.",
+          "isGlitch": false
+        }
+      ],
+      "fix": {
+        "en": "Flip the divisor too: 2/1 becomes 1/2. Then 4/5 × 1/2 = 4/10 = 2/5. Check: 2/5 × 2 = 4/5. Each friend gets 2/5 of a pizza.",
+        "es": "Voltea también el divisor: 2/1 se convierte en 1/2. Entonces 4/5 × 1/2 = 4/10 = 2/5. Comprueba: 2/5 × 2 = 4/5. Cada amigo recibe 2/5 de pizza."
+      },
+      "frame": {
+        "en": "I flip ___ to get ___, so each share is ___.",
+        "es": "Volteo ___ para obtener ___, así que cada parte es ___."
+      },
+      "calc": {
+        "expr": "(4/5) / 2",
+        "value": "2/5"
+      }
+    },
+    "spiral": [
+      {
+        "from": "6-1",
+        "q": {
+          "en": "How many 1/2-cup scoops fit in 4 cups?",
+          "es": "¿Cuántas medidas de 1/2 taza caben en 4 tazas?"
+        },
+        "options": [
+          "2",
+          "4 1/2",
+          "8"
+        ],
+        "correctIdx": 2,
+        "exp": {
+          "en": "Each cup holds 2 half-cup scoops. 4 ÷ 1/2 = 4 × 2 = 8.",
+          "es": "Cada taza tiene 2 medidas de media taza. 4 ÷ 1/2 = 4 × 2 = 8."
+        },
+        "calc": {
+          "expr": "4 / (1/2)",
+          "value": 8
+        }
+      },
+      {
+        "from": "2-7",
+        "q": {
+          "en": "A 4.5-liter jug is poured evenly into 3 bottles. How many liters are in each bottle?",
+          "es": "Una jarra de 4.5 litros se vierte en partes iguales en 3 botellas. ¿Cuántos litros hay en cada botella?"
+        },
+        "options": [
+          "13.5",
+          "1.5",
+          "0.15"
+        ],
+        "correctIdx": 1,
+        "exp": {
+          "en": "Share 4.5 into 3 equal groups: 4.5 ÷ 3 = 1.5 liters.",
+          "es": "Reparte 4.5 en 3 grupos iguales: 4.5 ÷ 3 = 1.5 litros."
+        },
+        "calc": {
+          "expr": "4.5 / 3",
+          "value": 1.5
+        }
+      }
+    ],
+    "kitchenTable": {
+      "en": "Fold a sheet of paper in half, then in half again, to make fourths. Shade 3 fourths. Pretend it is the bag of almonds. Fold each fourth in half. What fraction of the whole sheet is one cup?",
+      "es": "Doblen una hoja de papel por la mitad y otra vez por la mitad para hacer cuartos. Sombreen 3 cuartos. Imaginen que es la bolsa de almendras. Doblen cada cuarto por la mitad. ¿Qué fracción de la hoja entera es un vasito?"
+    },
+    "vocab": [
+      {
+        "term": "Dividend",
+        "example": {
+          "en": "In 3/4 ÷ 6, the dividend is 3/4 pound, the almonds being shared.",
+          "es": "En 3/4 ÷ 6, el dividendo es 3/4 de libra, las almendras que se reparten."
+        },
+        "nonExample": {
+          "en": "The 6 cups is not the dividend. It is the divisor.",
+          "es": "Los 6 vasitos no son el dividendo. Son el divisor."
+        },
+        "frame": {
+          "en": "The ___ pound of almonds is the dividend, so it stays the same.",
+          "es": "Las ___ libras de almendras son el dividendo, así que se quedan igual."
+        }
+      },
+      {
+        "term": "Divisor",
+        "example": {
+          "en": "In 3/4 ÷ 6, the divisor is 6, the number of cups.",
+          "es": "En 3/4 ÷ 6, el divisor es 6, el número de vasitos."
+        },
+        "nonExample": {
+          "en": "The 3/4 pound is not the divisor, so we do not flip it.",
+          "es": "Los 3/4 de libra no son el divisor, así que no los volteamos."
+        },
+        "frame": {
+          "en": "The divisor is ___, so I flip it to ___.",
+          "es": "El divisor es ___, así que lo volteo a ___."
+        }
+      },
+      {
+        "term": "Reciprocal",
+        "example": {
+          "en": "The reciprocal of 6 is 1/6. Dividing by 6 is the same as × 1/6.",
+          "es": "El recíproco de 6 es 1/6. Dividir entre 6 es lo mismo que × 1/6."
+        },
+        "nonExample": {
+          "en": "6/1 is not the reciprocal of 6. It is just 6 written as a fraction.",
+          "es": "6/1 no es el recíproco de 6. Es solo 6 escrito como fracción."
+        },
+        "frame": {
+          "en": "The reciprocal of ___ is ___, so ÷ ___ becomes × ___.",
+          "es": "El recíproco de ___ es ___, así que ÷ ___ se convierte en × ___."
+        }
+      },
+      {
+        "term": "Quotient",
+        "example": {
+          "en": "The quotient, 1/8 pound, is the amount in one cup.",
+          "es": "El cociente, 1/8 de libra, es la cantidad en un vasito."
+        },
+        "nonExample": {
+          "en": "The 3/4 pound is not the quotient. It is what we started with.",
+          "es": "Los 3/4 de libra no son el cociente. Es con lo que empezamos."
+        },
+        "frame": {
+          "en": "The quotient is ___ pound in each ___.",
+          "es": "El cociente es ___ de libra en cada ___."
+        }
+      }
+    ],
+    "confused": [
+      {
+        "wrong": {
+          "en": "Dividing should make it bigger. 3/4 ÷ 6 = 3/4 × 6 = 18/4, so 4 1/2 pounds per cup.",
+          "es": "Dividir debe hacerlo mayor. 3/4 ÷ 6 = 3/4 × 6 = 18/4, así que 4 1/2 libras por vasito."
+        },
+        "coach": {
+          "en": "When you split a bag into 6 cups, does one cup get more than the bag, or less?",
+          "es": "Cuando repartes una bolsa en 6 vasitos, ¿un vasito recibe más que la bolsa o menos?"
+        },
+        "why": {
+          "en": "One cup is a small share of the bag, so the answer must be less than 3/4. Flip 6 to 1/6: 3/4 × 1/6 = 3/24 = 1/8.",
+          "es": "Un vasito es una parte pequeña de la bolsa, así que la respuesta debe ser menor que 3/4. Voltea 6 a 1/6: 3/4 × 1/6 = 3/24 = 1/8."
+        },
+        "misconception": "multiplied-by-divisor-not-reciprocal",
+        "calc": {
+          "expr": "(3/4) / 6",
+          "value": "1/8"
+        }
+      },
+      {
+        "wrong": {
+          "en": "I flipped the 3/4 and kept the 6/1: 4/3 × 6/1 = 24/3 = 8.",
+          "es": "Volteé el 3/4 y mantuve el 6/1: 4/3 × 6/1 = 24/3 = 8."
+        },
+        "coach": {
+          "en": "Which number comes after the ÷ sign?",
+          "es": "¿Qué número viene después del signo ÷?"
+        },
+        "why": {
+          "en": "Only the divisor flips. Keep 3/4, change ÷ to ×, flip 6/1 to 1/6: 3/4 × 1/6 = 1/8.",
+          "es": "Solo el divisor se voltea. Mantén 3/4, cambia ÷ por × y voltea 6/1 a 1/6: 3/4 × 1/6 = 1/8."
+        },
+        "misconception": "flipped-the-first-fraction",
+        "calc": {
+          "expr": "(3/4) * (1/6)",
+          "value": "1/8"
+        }
+      },
+      {
+        "wrong": {
+          "en": "3/4 × 1/6 = 3/24, so each cup holds 3/24 pound. I am done.",
+          "es": "3/4 × 1/6 = 3/24, así que cada vasito tiene 3/24 de libra. Ya terminé."
+        },
+        "coach": {
+          "en": "Do 3 and 24 share a factor bigger than 1?",
+          "es": "¿Tienen 3 y 24 un factor común mayor que 1?"
+        },
+        "why": {
+          "en": "3/24 is right, but it can be written smaller. Divide the top and bottom by 3 to get 1/8 pound.",
+          "es": "3/24 es correcto, pero se puede escribir más pequeño. Divide arriba y abajo entre 3 para obtener 1/8 de libra."
+        },
+        "misconception": "left-unsimplified",
+        "calc": {
+          "expr": "3 / 24",
+          "value": "1/8"
+        }
+      }
+    ]
   }
 }

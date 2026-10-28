@@ -537,5 +537,297 @@
         }
       ]
     }
-  ]
+  ],
+  "v3": {
+    "version": 1,
+    "kind": "math",
+    "topicKey": "equations-from-words-estimate-apply",
+    "standardPlain": {
+      "en": "Write equations from words, then test and revise your guess.",
+      "es": "Escribir ecuaciones a partir de palabras, y luego probar y ajustar tu estimación."
+    },
+    "hook": {
+      "style": "receipt",
+      "en": "A corner bakery made 64 rolls. Some were sold, and 27 are left. How many rolls were sold?",
+      "es": "Una panadería de la esquina hizo 64 panes. Se vendieron algunos y quedan 27. ¿Cuántos panes se vendieron?",
+      "guess": {
+        "en": "Make a guess first: were more than 30 rolls sold, or fewer?",
+        "es": "Primero adivina: ¿se vendieron más de 30 panes o menos?"
+      },
+      "reveal": {
+        "en": "More! Let r be the rolls sold: 64 − r = 27. Try r = 37: 64 − 37 = 27. It works.",
+        "es": "¡Más! Sea r los panes vendidos: 64 − r = 27. Prueba r = 37: 64 − 37 = 27. Funciona."
+      }
+    },
+    "classModel": {
+      "name": {
+        "en": "say it in words first",
+        "es": "dilo primero con palabras"
+      }
+    },
+    "model": {
+      "kind": "numberline",
+      "data": {
+        "min": 0,
+        "max": 64,
+        "step": 8,
+        "points": [
+          {
+            "value": 27,
+            "label": "27 left",
+            "kind": "given"
+          },
+          {
+            "value": 64,
+            "label": "64 made",
+            "kind": "given"
+          }
+        ],
+        "unit": "rolls"
+      },
+      "alt": {
+        "en": "A number line from 0 to 64. One point marks 27 rolls left. Another marks 64 rolls made. The gap between them is the unknown r, the rolls sold. Going back r from 64 lands on 27, so 64 − r = 27.",
+        "es": "Una recta numérica de 0 a 64. Un punto marca 27 panes que quedan. Otro marca 64 panes hechos. El espacio entre ellos es la incógnita r, los panes vendidos. Retroceder r desde 64 llega a 27, así que 64 − r = 27."
+      }
+    },
+    "transfer": {
+      "stem": {
+        "en": "A bottle held 40 ounces. Some water was drunk, and 15 ounces are left. How many ounces were drunk?",
+        "es": "Una botella tenía 40 onzas. Se tomó algo de agua y quedan 15 onzas. ¿Cuántas onzas se tomaron?"
+      },
+      "choices": [
+        {
+          "en": "25 ounces",
+          "es": "25 onzas",
+          "correct": true,
+          "misconception": null
+        },
+        {
+          "en": "55 ounces",
+          "es": "55 onzas",
+          "correct": false,
+          "misconception": "added-the-two-numbers"
+        },
+        {
+          "en": "15 ounces",
+          "es": "15 onzas",
+          "correct": false,
+          "misconception": "used-the-amount-left"
+        }
+      ],
+      "reasoning": {
+        "en": "Say it in words: held − drunk = left. With d for the ounces drunk, 40 − d = 15. Test d = 25: 40 − 25 = 15, true.",
+        "es": "Dilo con palabras: tenía − tomado = lo que queda. Con d para las onzas tomadas, 40 − d = 15. Prueba d = 25: 40 − 25 = 15, verdadero."
+      },
+      "calc": {
+        "expr": "40 - 15",
+        "value": 25,
+        "unit": "ounces"
+      }
+    },
+    "glitch": {
+      "scenario": {
+        "en": "A different situation: A number decreased by 8 is 5. Tia writes an equation for it.",
+        "es": "Otra situación: Un número disminuido en 8 es 5. Tia escribe una ecuación para eso."
+      },
+      "steps": [
+        {
+          "en": "Name the unknown: let n be the number.",
+          "es": "Nombra la incógnita: sea n el número.",
+          "isGlitch": false
+        },
+        {
+          "en": "Write 8 − n = 5, because 8 comes first in the words.",
+          "es": "Escribe 8 − n = 5, porque el 8 va primero en las palabras.",
+          "isGlitch": true
+        },
+        {
+          "en": "Test a guess by substituting it for n.",
+          "es": "Prueba una estimación sustituyéndola en lugar de n.",
+          "isGlitch": false
+        }
+      ],
+      "fix": {
+        "en": "The variable goes first: n − 8 = 5. Test n = 13: 13 − 8 = 5, true.",
+        "es": "La variable va primero: n − 8 = 5. Prueba n = 13: 13 − 8 = 5, verdadero."
+      },
+      "frame": {
+        "en": "The variable comes first, so I write ___ − ___ = ___.",
+        "es": "La variable va primero, así que escribo ___ − ___ = ___."
+      },
+      "calc": {
+        "expr": "13 - 8",
+        "value": 5
+      }
+    },
+    "spiral": [
+      {
+        "from": "8-1",
+        "q": {
+          "en": "Which value of x makes x + 5 = 12 true?",
+          "es": "¿Cuál valor de x hace verdadera x + 5 = 12?"
+        },
+        "options": [
+          "17",
+          "7",
+          "5"
+        ],
+        "correctIdx": 1,
+        "exp": {
+          "en": "Substitute 7: 7 + 5 = 12, true. 17 + 5 = 22 and 5 + 5 = 10 are false.",
+          "es": "Sustituye 7: 7 + 5 = 12, verdadero. 17 + 5 = 22 y 5 + 5 = 10 son falsos."
+        },
+        "calc": {
+          "expr": "12 - 5",
+          "value": 7
+        }
+      },
+      {
+        "from": "6-15",
+        "q": {
+          "en": "What is 9y − 4y?",
+          "es": "¿Cuánto es 9y − 4y?"
+        },
+        "options": [
+          "5y",
+          "13y",
+          "36y"
+        ],
+        "correctIdx": 0,
+        "exp": {
+          "en": "These are like terms. Subtract the numbers in front: 9 − 4 = 5, so 5y.",
+          "es": "Son términos semejantes. Resta los números del frente: 9 − 4 = 5, así que 5y."
+        },
+        "calc": {
+          "expr": "9 - 4",
+          "value": 5
+        }
+      }
+    ],
+    "kitchenTable": {
+      "en": "Count out 12 spoons or coins. Hide some under a cup and leave 7 in view. Can your student write 12 − c = 7? Then lift the cup to test a guess.",
+      "es": "Cuenten 12 cucharas o monedas. Escondan algunas bajo una taza y dejen 7 a la vista. ¿Puede su estudiante escribir 12 − c = 7? Después levanten la taza para probar una estimación."
+    },
+    "vocab": [
+      {
+        "term": "Equation",
+        "example": {
+          "en": "64 − r = 27 is an equation for the bakery. It says 64 minus the rolls sold equals 27.",
+          "es": "64 − r = 27 es una ecuación para la panadería. Dice que 64 menos los panes vendidos es igual a 27."
+        },
+        "nonExample": {
+          "en": "64 − r is not an equation yet. It needs an equal sign and what it equals.",
+          "es": "64 − r todavía no es una ecuación. Necesita un signo igual y a qué es igual."
+        },
+        "frame": {
+          "en": "My equation is ___ − ___ = ___.",
+          "es": "Mi ecuación es ___ − ___ = ___."
+        }
+      },
+      {
+        "term": "Variable",
+        "example": {
+          "en": "The letter r is the variable. It stands for the rolls sold.",
+          "es": "La letra r es la variable. Representa los panes vendidos."
+        },
+        "nonExample": {
+          "en": "The 64 is not the variable. It is how many rolls were made.",
+          "es": "El 64 no es la variable. Es cuántos panes se hicieron."
+        },
+        "frame": {
+          "en": "I let ___ stand for the ___ that I do not know.",
+          "es": "Dejo que ___ represente los ___ que no conozco."
+        }
+      },
+      {
+        "term": "Estimate",
+        "example": {
+          "en": "Trying r = 35 is an estimate. It leaves 29, which is too many.",
+          "es": "Probar r = 35 es una estimación. Deja 29, que son demasiados."
+        },
+        "nonExample": {
+          "en": "Picking a number and never checking it is not an estimate. Use the result to choose your next try.",
+          "es": "Elegir un número y nunca revisarlo no es estimar. Usa el resultado para elegir tu siguiente intento."
+        },
+        "frame": {
+          "en": "I tried ___ and got ___. That is too ___, so next I try ___.",
+          "es": "Probé ___ y obtuve ___. Es demasiado ___, así que ahora pruebo ___."
+        }
+      },
+      {
+        "term": "Substitute",
+        "example": {
+          "en": "To test r = 37, substitute 37 for r: 64 − 37 = 27.",
+          "es": "Para probar r = 37, sustituye r por 37: 64 − 37 = 27."
+        },
+        "nonExample": {
+          "en": "Adding 37 to the end of the equation is not substituting. Replace the letter r.",
+          "es": "Agregar 37 al final de la ecuación no es sustituir. Cambia la letra r."
+        },
+        "frame": {
+          "en": "When I substitute ___ for ___, I get ___, which ___ the right side.",
+          "es": "Cuando sustituyo ___ por ___, obtengo ___, que ___ el lado derecho."
+        }
+      }
+    ],
+    "confused": [
+      {
+        "wrong": {
+          "en": "I start with the 27 that are left: 27 − r = 64.",
+          "es": "Empiezo con los 27 que quedan: 27 − r = 64."
+        },
+        "coach": {
+          "en": "Which amount do you start with, the rolls made or the rolls left?",
+          "es": "¿Con cuál cantidad empiezas, los panes hechos o los que quedan?"
+        },
+        "why": {
+          "en": "You start with all 64 rolls and take away r. So write 64 − r = 27. Then r = 64 − 27 = 37.",
+          "es": "Empiezas con los 64 panes y les quitas r. Entonces escribe 64 − r = 27. Luego r = 64 − 27 = 37."
+        },
+        "misconception": "subtraction-order-reversed",
+        "calc": {
+          "expr": "64 - 27",
+          "value": 37
+        }
+      },
+      {
+        "wrong": {
+          "en": "I tried r = 35: 64 − 35 = 29, not 27. So my equation must be wrong.",
+          "es": "Probé r = 35: 64 − 35 = 29, no 27. Entonces mi ecuación debe estar mal."
+        },
+        "coach": {
+          "en": "Did 29 tell you to try a bigger r, or a smaller r?",
+          "es": "¿El 29 te dice que pruebes una r mayor o una menor?"
+        },
+        "why": {
+          "en": "A wrong guess does not make the equation wrong. 29 is too many left, so more were sold. Try r = 37: 64 − 37 = 27.",
+          "es": "Una estimación incorrecta no hace que la ecuación esté mal. Quedan 29, demasiados, así que se vendieron más. Prueba r = 37: 64 − 37 = 27."
+        },
+        "misconception": "wrong-guess-means-wrong-equation",
+        "calc": {
+          "expr": "64 - 37",
+          "value": 27
+        }
+      },
+      {
+        "wrong": {
+          "en": "I found r = 37. I do not need to check it.",
+          "es": "Hallé r = 37. No necesito comprobarlo."
+        },
+        "coach": {
+          "en": "How could you put 37 back into the equation to see if both sides match?",
+          "es": "¿Cómo podrías poner el 37 de nuevo en la ecuación para ver si los dos lados coinciden?"
+        },
+        "why": {
+          "en": "Substituting is the check. 64 − 37 = 27, and 27 is what is left. Both sides match, so r = 37 is a solution.",
+          "es": "Sustituir es la comprobación. 64 − 37 = 27, y 27 es lo que queda. Los dos lados coinciden, así que r = 37 es una solución."
+        },
+        "misconception": "skipped-the-substitution-check",
+        "calc": {
+          "expr": "64 - 37",
+          "value": 27
+        }
+      }
+    ]
+  }
 }

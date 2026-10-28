@@ -345,7 +345,7 @@ body[data-family-style] .visual-lab-heading>p,body[data-family-style] .visual-la
 body[data-family-style] .hw-hero-lead,body[data-family-style] .hw-experience-description,body[data-family-style] .hw-route-note,body[data-family-style] .hw-route-chooser>p,body[data-family-style] .hw-route-option { font-size:18px!important; line-height:1.45!important; }
 body[data-family-style] .homework-tab-btn { font-size:18px!important; }
 </style>
-<link rel="stylesheet" href="/assets/homework/homework-layer-e3e10b6a22.css">
+<link rel="stylesheet" href="/assets/homework/homework-layer-87faa63211.css">
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
   <!-- nsr-injected:end -->
@@ -568,123 +568,13 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
       </div>
     </header>
 
-    <section class="hw-colearn-hud" id="hw_colearn_hud" aria-label="Family Co-Learning Studio Controls" data-part-mode="part1">
-      <div class="hw-colearn-hud-top">
-        <div class="hw-cognitive-pill" id="hw_cognitive_pill">
-          <span class="hw-cognitive-dot" aria-hidden="true"></span>
-          <span class="lang-en">Family Practice · Part 1 (Optional) — Core Concept &amp; Fluency (~8–10 mins)</span><span class="lang-es" lang="es">Práctica familiar · Parte 1 (Opcional) — Concepto central y fluidez (~8–10 min)</span>
-        </div>
-        <div class="hw-hud-tracker" id="hw_hud_tracker" aria-live="polite">
-          <span class="hw-hud-metric"><span class="lang-en">Completed:</span><span class="lang-es" lang="es">Completado:</span> <strong id="hw_hud_completed">0/0</strong></span>
-          <span class="hw-hud-sep" aria-hidden="true">·</span>
-          <span class="hw-hud-metric"><span class="lang-en">Accuracy:</span><span class="lang-es" lang="es">Precisión:</span> <strong id="hw_hud_accuracy">100%</strong></span>
-          <span class="hw-hud-sep" aria-hidden="true">·</span>
-          <span class="hw-hud-metric"><span class="lang-en">Streak:</span><span class="lang-es" lang="es">Racha:</span> 🔥 <strong id="hw_hud_streak">0</strong></span>
-        </div>
+    <nav class="hw-topbar" id="hw_topbar" aria-label="Page options">
+      <div class="hw-persona-switcher" id="hw_persona_switcher" role="group" aria-label="Who is reading">
+        <button type="button" class="hw-persona-btn is-active" data-persona-btn="student" aria-pressed="true"><span class="lang-en">Student view</span><span class="lang-es" lang="es">Vista del estudiante</span></button>
+        <button type="button" class="hw-persona-btn" data-persona-btn="copilot" aria-pressed="false"><span class="lang-en">Grown-up tips</span><span class="lang-es" lang="es">Consejos para adultos</span></button>
       </div>
-
-      <div class="hw-colearn-hud-controls">
-        <div class="hw-persona-switcher" id="hw_persona_switcher" role="group" aria-label="Persona View Switcher">
-          <button type="button" class="hw-persona-btn is-active" data-persona-btn="student" aria-pressed="true" onclick="setHomeworkPersona('student')">
-            <span aria-hidden="true">🧑‍🎓</span> <span class="lang-en">Student View</span><span class="lang-es" lang="es">Vista de estudiante</span>
-          </button>
-          <button type="button" class="hw-persona-btn" data-persona-btn="copilot" aria-pressed="false" onclick="setHomeworkPersona('copilot')">
-            <span aria-hidden="true">🧭</span> <span class="lang-en">Caregiver Co-Pilot</span><span class="lang-es" lang="es">Copiloto familiar</span>
-          </button>
-        </div>
-
-        <div class="hw-hud-utility-btns">
-          <div class="hw-hud-lang-group" role="group" aria-label="Language Selector">
-            <button type="button" class="hw-hud-lang-btn is-active" data-lang-mode="en" onclick="setLanguageMode('en')" title="English">English</button>
-            <button type="button" class="hw-hud-lang-btn" data-lang-mode="es" onclick="setLanguageMode('es')" title="Español">Español</button>
-            <button type="button" class="hw-hud-lang-btn" data-lang-mode="bilingual" onclick="setLanguageMode('bilingual')" title="Bilingual EN+ES">🇺🇸🇪🇸 Bilingual</button>
-          </div>
-          <button type="button" class="hw-hud-util-btn" id="hw_vocab_drawer_btn" aria-expanded="false" aria-controls="hw_vocab_drawer" onclick="toggleVocabQuickGlossary()">
-            <span aria-hidden="true">📖</span> <span class="lang-en">Key Vocabulary</span><span class="lang-es" lang="es">Vocabulario clave</span>
-          </button>
-          <button type="button" class="hw-hud-util-btn" id="hw_theme_toggle_btn" aria-pressed="false" onclick="toggleHomeworkTheme()" title="Toggle Light / Dark Theme">
-            <span aria-hidden="true" id="hw_theme_icon">🌓</span> <span class="lang-en">Theme</span><span class="lang-es" lang="es">Tema</span>
-          </button>
-        </div>
-      </div>
-
-      <div class="hw-vocab-drawer" id="hw_vocab_drawer" data-glossary-lang="en" hidden>
-        <div class="hw-vocab-drawer-head">
-          <h4>📖 <span class="lang-en">Bilingual Quick-Glossary &amp; Sentence Frames</span><span class="lang-es" lang="es">Glosario rápido bilingüe y marcos de oración</span></h4>
-          <div class="hw-vocab-lang-switch" role="group" aria-label="Glossary Language Toggle">
-            <button type="button" class="hw-vocab-lang-btn is-active" id="hw_vocab_lang_en" onclick="setVocabDrawerLang('en')">English</button>
-            <button type="button" class="hw-vocab-lang-btn" id="hw_vocab_lang_es" onclick="setVocabDrawerLang('es')">Español</button>
-            <button type="button" class="hw-vocab-lang-btn" id="hw_vocab_lang_bi" onclick="setVocabDrawerLang('both')">EN + ES</button>
-          </div>
-        </div>
-        <div class="hw-vocab-drawer-grid">
-
-        <article class="hw-glossary-card">
-          <div class="hw-glossary-term-head">
-            <strong class="hw-glossary-term">
-              <span class="vg-en">Fractions, Decimals, and Percents</span>
-              <span class="vg-es" lang="es">Fracciones, decimales y porcentajes</span>
-            </strong>
-            <span class="hw-glossary-cue">🎨 <span class="vg-en">Visual Model Cue</span><span class="vg-es" lang="es">Clave visual</span></span>
-          </div>
-          <p class="hw-glossary-def">
-            <span class="vg-en">Three ways to write the same part of a whole.</span>
-            <span class="vg-es" lang="es">Tres maneras de escribir la misma parte de un todo.</span>
-          </p>
-          <div class="hw-glossary-meta-grid">
-            <div class="hw-glossary-ex"><strong>✓ <span class="vg-en">Example:</span><span class="vg-es" lang="es">Ejemplo:</span></strong> <span>Scaling both parts of a model equally (×2).</span></div>
-            <div class="hw-glossary-nonex"><strong>✗ <span class="vg-en">Non-Example:</span><span class="vg-es" lang="es">Contraejemplo:</span></strong> <span>Changing only one part of the model.</span></div>
-          </div>
-          <div class="hw-glossary-frame">
-            <strong>🗣️ <span class="vg-en">Sentence Frame:</span><span class="vg-es" lang="es">Marco de oración:</span></strong>
-            <em><span class="vg-en">"I can use fractions, decimals, and percents to explain why..."</span><span class="vg-es" lang="es">"Puedo usar fracciones, decimales y porcentajes para explicar por qué..."</span></em>
-          </div>
-        </article>
-        <article class="hw-glossary-card">
-          <div class="hw-glossary-term-head">
-            <strong class="hw-glossary-term">
-              <span class="vg-en">Percent</span>
-              <span class="vg-es" lang="es">Porcentaje</span>
-            </strong>
-            <span class="hw-glossary-cue">🎨 <span class="vg-en">Visual Model Cue</span><span class="vg-es" lang="es">Clave visual</span></span>
-          </div>
-          <p class="hw-glossary-def">
-            <span class="vg-en">A number out of 100, shown with the % sign.</span>
-            <span class="vg-es" lang="es">Un número de cada 100, con el signo %.</span>
-          </p>
-          <div class="hw-glossary-meta-grid">
-            <div class="hw-glossary-ex"><strong>✓ <span class="vg-en">Example:</span><span class="vg-es" lang="es">Ejemplo:</span></strong> <span>Scaling both parts of a model equally (×2).</span></div>
-            <div class="hw-glossary-nonex"><strong>✗ <span class="vg-en">Non-Example:</span><span class="vg-es" lang="es">Contraejemplo:</span></strong> <span>Changing only one part of the model.</span></div>
-          </div>
-          <div class="hw-glossary-frame">
-            <strong>🗣️ <span class="vg-en">Sentence Frame:</span><span class="vg-es" lang="es">Marco de oración:</span></strong>
-            <em><span class="vg-en">"I can use percent to explain why..."</span><span class="vg-es" lang="es">"Puedo usar porcentaje para explicar por qué..."</span></em>
-          </div>
-        </article>
-        <article class="hw-glossary-card">
-          <div class="hw-glossary-term-head">
-            <strong class="hw-glossary-term">
-              <span class="vg-en">Decimal</span>
-              <span class="vg-es" lang="es">Decimal</span>
-            </strong>
-            <span class="hw-glossary-cue">🎨 <span class="vg-en">Visual Model Cue</span><span class="vg-es" lang="es">Clave visual</span></span>
-          </div>
-          <p class="hw-glossary-def">
-            <span class="vg-en">A number with a dot, like 0.5, that shows a part.</span>
-            <span class="vg-es" lang="es">Un número con un punto, como 0.5, que muestra una parte.</span>
-          </p>
-          <div class="hw-glossary-meta-grid">
-            <div class="hw-glossary-ex"><strong>✓ <span class="vg-en">Example:</span><span class="vg-es" lang="es">Ejemplo:</span></strong> <span>Scaling both parts of a model equally (×2).</span></div>
-            <div class="hw-glossary-nonex"><strong>✗ <span class="vg-en">Non-Example:</span><span class="vg-es" lang="es">Contraejemplo:</span></strong> <span>Changing only one part of the model.</span></div>
-          </div>
-          <div class="hw-glossary-frame">
-            <strong>🗣️ <span class="vg-en">Sentence Frame:</span><span class="vg-es" lang="es">Marco de oración:</span></strong>
-            <em><span class="vg-en">"I can use decimal to explain why..."</span><span class="vg-es" lang="es">"Puedo usar decimal para explicar por qué..."</span></em>
-          </div>
-        </article>
-        </div>
-      </div>
-    </section>
+      <button type="button" id="hw_theme_toggle_btn" aria-pressed="false"><span class="lang-en">Dark mode</span><span class="lang-es" lang="es">Modo oscuro</span></button>
+    </nav>
 
 
     <div class="homework-tabs-shell" data-tab-count="5">
@@ -842,8 +732,8 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
         </div>
       </div>
     </div></section>
-      <section class="learn-card" data-card-en="Tonight&#039;s case" data-card-es="Caso de hoy" ><section class="hw-case" aria-labelledby="hw_case_title">
-        <p class="hw-case-kicker" id="hw_case_title"><span class="lang-en">Tonight's case</span><span class="lang-es" lang="es">Caso de hoy</span></p>
+      <section class="learn-card" data-card-en="Tonight&#039;s case" data-card-es="Caso de hoy" ><section class="hw-case" aria-labelledby="hw_case_kicker">
+        <p class="hw-case-kicker" id="hw_case_kicker"><span class="lang-en">Tonight's case</span><span class="lang-es" lang="es">Caso de hoy</span></p>
         <p class="hw-case-text"><span class="lang-en">Draw a $40 price tag with a 25% discount. Label the whole, percent, savings, and final price. Then cover one label and ask your partner to recover it. Alone, explain the check in writing.</span><span class="lang-es" lang="es">Dibuja una etiqueta de $40 con 25% de descuento. Indica el total, porcentaje, ahorro y precio final. Tapa una etiqueta y pide a alguien que la recupere. A solas, explica la comprobación por escrito.</span></p>
       </section></section>
       <section class="learn-card" data-card-en="Build it" data-card-es="Constrúyelo" ><div class="learn-extended-block" id="hw_learn_try"><section class="family-visual-lab" data-visual-lab="ratios" data-lesson-model="percent-grid" aria-labelledby="visual_lab_title">
@@ -1116,260 +1006,63 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
         <div class="powerup-feedback-content" id="powerup_feedback_content"></div>
       </div>
     </section>
-    <!-- PART 1 CORE MODULES: 60-Second Family Bridge & Worked Practice Partner Example -->
-    <section class="hw-colearn-card card-ish" id="hw_family_bridge_60s" data-colearn-section="bridge-60s">
-      <div class="hw-colearn-header">
-        <span class="hw-colearn-kicker">🌉 <span class="lang-en">60-SECOND FAMILY BRIDGE · VISUAL MODEL EXPLAINER</span><span class="lang-es" lang="es">PUENTE FAMILIAR DE 60 SEGUNDOS · MODELO VISUAL</span></span>
-        <h3 class="hw-colearn-title"><span class="lang-en">How Today's Visual Model Works</span><span class="lang-es" lang="es">Cómo funciona el modelo visual de hoy</span></h3>
-      </div>
-      <p class="hw-colearn-lead"><span class="lang-en">Today we used tape diagrams and double number lines to see equivalent ratios as scaling both quantities by the same multiplier.</span><span class="lang-es" lang="es">Hoy usamos diagramas de cinta y rectas numéricas dobles para ver las razones equivalentes al escalar ambas cantidades por el mismo multiplicador.</span></p>
-      <div class="hw-colearn-svg-stage" role="img" aria-label="Visual math model for today's lesson">
-        <svg viewBox="0 0 520 136" width="520" height="136" class="hw-model-svg hw-tape-diagram-svg" style="background:white; max-width:100%; height:auto; display:block; margin:0 auto; border-radius:10px; border:1px solid #cbd5e1;" role="img" aria-label="Tape diagram with 3 parts, Ratio Tape Model · 3 equal parts = 9" xmlns="http://www.w3.org/2000/svg">
-  <title>Tape Diagram (3 parts)</title>
-  <path d="M 36 36 L 36 26 L 260 26 L 260 20 L 260 26 L 484 26 L 484 36" fill="none" stroke="#0f766e" stroke-width="2" stroke-linecap="round"/>
-  <rect x="172" y="4" width="176" height="20" rx="5" fill="#0f766e"/>
-  <text x="260" y="18" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="12" font-weight="800" fill="#ffffff">Ratio Tape Model · 3 equal parts = 9</text>
-  <g class="hw-svg-tape-part" data-highlighted="true">
-    <rect x="36.0" y="44" width="149.3" height="44" fill="#1fa6a2" stroke="#12355b" stroke-width="2"/>
-    <text x="110.7" y="71" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="14" font-weight="800" fill="#ffffff">3</text>
-  </g>
-  <g class="hw-svg-tape-part">
-    <rect x="185.3" y="44" width="149.3" height="44" fill="#f8fafc" stroke="#12355b" stroke-width="2"/>
-    <text x="260.0" y="71" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="14" font-weight="800" fill="#12355b">3</text>
-  </g>
-  <g class="hw-svg-tape-part">
-    <rect x="334.7" y="44" width="149.3" height="44" fill="#e3f6f5" stroke="#12355b" stroke-width="2"/>
-    <text x="409.3" y="71" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="14" font-weight="800" fill="#12355b">3</text>
-  </g>
-  <rect x="36" y="44" width="448" height="44" rx="4" fill="none" stroke="#12355b" stroke-width="2.5"/>
-  <text x="260" y="116" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="13" font-weight="700" fill="#334155">Multiply or divide both parts by the same scale factor</text>
-</svg>
-      </div>
 
-      <!-- Caregiver Co-Pilot Callout (expanded automatically in Caregiver Co-Pilot view) -->
-      <aside class="hw-copilot-card" data-copilot-bridge="true">
-        <div class="hw-copilot-badge">🧭 <span class="lang-en">Caregiver Co-Pilot · How We Learned This Today vs. How You Learned It</span><span class="lang-es" lang="es">Copiloto familiar · Cómo lo aprendimos hoy vs. cómo lo aprendiste tú</span></div>
-        <div class="hw-copilot-columns">
-          <div class="hw-copilot-col">
-            <strong>🏫 <span class="lang-en">In Class Today (Visual Model):</span><span class="lang-es" lang="es">Hoy en clase (Modelo visual):</span></strong>
-            <p><span class="lang-en">Today we used tape diagrams and double number lines to see equivalent ratios as scaling both quantities by the same multiplier.</span><span class="lang-es" lang="es">Hoy usamos diagramas de cinta y rectas numéricas dobles para ver las razones equivalentes al escalar ambas cantidades por el mismo multiplicador.</span></p>
-          </div>
-          <div class="hw-copilot-col">
-            <strong>🏡 <span class="lang-en">How You Likely Learned It:</span><span class="lang-es" lang="es">Cómo lo aprendiste probablemente:</span></strong>
-            <p><span class="lang-en">You likely learned to cross-multiply or set up proportions with x. Our visual models build the intuition for WHY multiplying both parts by the same factor keeps the relationship invariant.</span><span class="lang-es" lang="es">Probablemente aprendiste a multiplicar en cruz. Nuestros modelos visuales muestran POR QUÉ multiplicar ambas partes por el mismo factor mantiene la relación igual.</span></p>
-          </div>
-        </div>
-        <div class="hw-copilot-socratic">
-          <strong>💬 <span class="lang-en">Socratic Kitchen-Table Prompts (Ask Instead of Telling):</span><span class="lang-es" lang="es">Preguntas socráticas para la mesa (Pregunta sin dar la respuesta):</span></strong>
-          <ul>
-            <li><em>"<span class="lang-en">What does 1 box in the tape diagram represent?</span><span class="lang-es" lang="es">¿Qué representa 1 caja en el diagrama de cinta?</span>"</em></li><li><em>"<span class="lang-en">If we multiply the first quantity by this factor, what must we do to the second quantity to keep the taste/color the same?</span><span class="lang-es" lang="es">Si multiplicamos la primera cantidad por este factor, ¿qué debemos hacer con la segunda cantidad?</span>"</em></li>
-          </ul>
-        </div>
-      </aside>
+    <section class="hw-colearn-card card-ish" id="hw_family_bridge_60s" data-colearn-section="model-stage" aria-labelledby="hw_model_title">
+      <h3 class="hw-colearn-title" id="hw_model_title"><span class="lang-en">The picture for tonight</span><span class="lang-es" lang="es">El dibujo de hoy</span></h3>
+      <p class="hw-colearn-lead"><span class="lang-en">In class we used</span><span class="lang-es" lang="es">En clase usamos</span> <strong><span class="lang-en">the fraction with 100 on the bottom</span><span class="lang-es" lang="es">la fracción con 100 abajo</span></strong>.</p>
+      <figure class="hw-colearn-svg-stage"><span class="lang-en"><svg xmlns="http://www.w3.org/2000/svg" class="fm-model fm-grid" lang="en" viewBox="0 0 360 336" width="360" height="336" role="img" aria-labelledby="fm-q26fk9-en-t fm-q26fk9-en-d"><title id="fm-q26fk9-en-t">A grid of 10 rows and 10 columns, 100 dots in all. 75 dots are filled. That is 75 out of 100, so 3/4 = 75/100 = 0.75 = 75%.</title><desc id="fm-q26fk9-en-d">Grid of 10 rows and 10 columns, 100 dots in groups of 10. The first 75 dots are filled (solid) and the rest are empty rings: 3/4 = 75/100 = 75%.</desc><style>.m-t{font:600 14px var(--ds-font-text,system-ui,-apple-system,"Segoe UI",sans-serif);fill:var(--ink,#17324D)}.m-n{font-weight:700;font-size:16px}.m-q{font-weight:700;font-size:18px;fill:var(--m-unknown-ink,#886C33)}.m-ln{fill:none;stroke:var(--ink,#17324D);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}.m-gr{fill:none;stroke:var(--ink,#17324D);stroke-opacity:.2;stroke-width:1}.m-dash{fill:none;stroke:var(--ink,#17324D);stroke-opacity:.45;stroke-width:1.5;stroke-dasharray:4 4}.m-p{fill:var(--m-part,#70C6C3);stroke:var(--m-part-ink,#177B78);stroke-width:2;stroke-linejoin:round}.m-g{fill:var(--art-card,#FFFFFF);stroke:var(--ink,#17324D);stroke-width:2;stroke-linejoin:round}.m-u{fill:var(--m-unknown,#FDF5E5);stroke:var(--m-unknown-ink,#886C33);stroke-width:2;stroke-dasharray:5 4;stroke-linejoin:round}.m-a{fill:var(--m-answer,#ECF5F1);stroke:var(--m-answer-ink,#0F7C4A);stroke-width:2.5}.m-e{stroke:var(--m-error-ink,#B3402A);stroke-width:2}.m-ok{fill:none;stroke:var(--m-answer-ink,#0F7C4A);stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}.m-x{fill:none;stroke:var(--m-error-ink,#B3402A);stroke-width:3;stroke-linecap:round}.m-h{fill:var(--m-head,#DADEE3);stroke:var(--ink,#17324D);stroke-width:2}.m-r1,.m-r2,.m-f1,.m-f2{fill:none;stroke-linecap:round}.m-r1{stroke:var(--m-part-ink,#177B78)}.m-r2{stroke:var(--ink,#17324D)}.m-f1{stroke:var(--m-part,#70C6C3)}.m-f2{stroke:var(--art-card,#FFFFFF)}.m-dot{fill:var(--ink,#17324D)}.m-arr{fill:var(--ink,#17324D)}</style><path class="m-r2" stroke-width="22.8" d="M214.4 226h0M243.2 226h0M272 226h0M300.8 226h0M329.6 226h0M70.4 254.8h0M99.2 254.8h0M128 254.8h0M156.8 254.8h0M185.6 254.8h0M214.4 254.8h0M243.2 254.8h0M272 254.8h0M300.8 254.8h0M329.6 254.8h0M70.4 283.6h0M99.2 283.6h0M128 283.6h0M156.8 283.6h0M185.6 283.6h0M214.4 283.6h0M243.2 283.6h0M272 283.6h0M300.8 283.6h0M329.6 283.6h0"/><path class="m-f2" stroke-width="19.2" d="M214.4 226h0M243.2 226h0M272 226h0M300.8 226h0M329.6 226h0M70.4 254.8h0M99.2 254.8h0M128 254.8h0M156.8 254.8h0M185.6 254.8h0M214.4 254.8h0M243.2 254.8h0M272 254.8h0M300.8 254.8h0M329.6 254.8h0M70.4 283.6h0M99.2 283.6h0M128 283.6h0M156.8 283.6h0M185.6 283.6h0M214.4 283.6h0M243.2 283.6h0M272 283.6h0M300.8 283.6h0M329.6 283.6h0"/><path class="m-r1" stroke-width="22.8" d="M70.4 24.4h0M99.2 24.4h0M128 24.4h0M156.8 24.4h0M185.6 24.4h0M214.4 24.4h0M243.2 24.4h0M272 24.4h0M300.8 24.4h0M329.6 24.4h0M70.4 53.2h0M99.2 53.2h0M128 53.2h0M156.8 53.2h0M185.6 53.2h0M214.4 53.2h0M243.2 53.2h0M272 53.2h0M300.8 53.2h0M329.6 53.2h0M70.4 82h0M99.2 82h0M128 82h0M156.8 82h0M185.6 82h0M214.4 82h0M243.2 82h0M272 82h0M300.8 82h0M329.6 82h0M70.4 110.8h0M99.2 110.8h0M128 110.8h0M156.8 110.8h0M185.6 110.8h0M214.4 110.8h0M243.2 110.8h0M272 110.8h0M300.8 110.8h0M329.6 110.8h0M70.4 139.6h0M99.2 139.6h0M128 139.6h0M156.8 139.6h0M185.6 139.6h0M214.4 139.6h0M243.2 139.6h0M272 139.6h0M300.8 139.6h0M329.6 139.6h0M70.4 168.4h0M99.2 168.4h0M128 168.4h0M156.8 168.4h0M185.6 168.4h0M214.4 168.4h0M243.2 168.4h0M272 168.4h0M300.8 168.4h0M329.6 168.4h0M70.4 197.2h0M99.2 197.2h0M128 197.2h0M156.8 197.2h0M185.6 197.2h0M214.4 197.2h0M243.2 197.2h0M272 197.2h0M300.8 197.2h0M329.6 197.2h0M70.4 226h0M99.2 226h0M128 226h0M156.8 226h0M185.6 226h0"/><path class="m-f1" stroke-width="19.2" d="M70.4 24.4h0M99.2 24.4h0M128 24.4h0M156.8 24.4h0M185.6 24.4h0M214.4 24.4h0M243.2 24.4h0M272 24.4h0M300.8 24.4h0M329.6 24.4h0M70.4 53.2h0M99.2 53.2h0M128 53.2h0M156.8 53.2h0M185.6 53.2h0M214.4 53.2h0M243.2 53.2h0M272 53.2h0M300.8 53.2h0M329.6 53.2h0M70.4 82h0M99.2 82h0M128 82h0M156.8 82h0M185.6 82h0M214.4 82h0M243.2 82h0M272 82h0M300.8 82h0M329.6 82h0M70.4 110.8h0M99.2 110.8h0M128 110.8h0M156.8 110.8h0M185.6 110.8h0M214.4 110.8h0M243.2 110.8h0M272 110.8h0M300.8 110.8h0M329.6 110.8h0M70.4 139.6h0M99.2 139.6h0M128 139.6h0M156.8 139.6h0M185.6 139.6h0M214.4 139.6h0M243.2 139.6h0M272 139.6h0M300.8 139.6h0M329.6 139.6h0M70.4 168.4h0M99.2 168.4h0M128 168.4h0M156.8 168.4h0M185.6 168.4h0M214.4 168.4h0M243.2 168.4h0M272 168.4h0M300.8 168.4h0M329.6 168.4h0M70.4 197.2h0M99.2 197.2h0M128 197.2h0M156.8 197.2h0M185.6 197.2h0M214.4 197.2h0M243.2 197.2h0M272 197.2h0M300.8 197.2h0M329.6 197.2h0M70.4 226h0M99.2 226h0M128 226h0M156.8 226h0M185.6 226h0"/><text class="m-t" x="48" y="29.4" text-anchor="end">10</text><text class="m-t" x="48" y="58.2" text-anchor="end">20</text><text class="m-t" x="48" y="87" text-anchor="end">30</text><text class="m-t" x="48" y="115.8" text-anchor="end">40</text><text class="m-t" x="48" y="144.6" text-anchor="end">50</text><text class="m-t" x="48" y="173.4" text-anchor="end">60</text><text class="m-t" x="48" y="202.2" text-anchor="end">70</text><text class="m-t" x="48" y="231" text-anchor="end">80</text><text class="m-t" x="48" y="259.8" text-anchor="end">90</text><text class="m-t" x="48" y="288.6" text-anchor="end">100</text><text class="m-t m-n" x="180" y="322" text-anchor="middle">3/4 = 75/100 = 75%</text></svg></span><span class="lang-es" lang="es"><svg xmlns="http://www.w3.org/2000/svg" class="fm-model fm-grid" lang="es" viewBox="0 0 360 336" width="360" height="336" role="img" aria-labelledby="fm-q26fk9-es-t fm-q26fk9-es-d"><title id="fm-q26fk9-es-t">Una cuadrícula de 10 filas y 10 columnas, 100 puntos en total. 75 puntos están rellenos. Son 75 de 100, así que 3/4 = 75/100 = 0.75 = 75%.</title><desc id="fm-q26fk9-es-d">Cuadrícula de 10 filas y 10 columnas, 100 puntos en grupos de 10. Los primeros 75 puntos están llenos (sólidos) y el resto son anillos vacíos: 3/4 = 75/100 = 75%.</desc><style>.m-t{font:600 14px var(--ds-font-text,system-ui,-apple-system,"Segoe UI",sans-serif);fill:var(--ink,#17324D)}.m-n{font-weight:700;font-size:16px}.m-q{font-weight:700;font-size:18px;fill:var(--m-unknown-ink,#886C33)}.m-ln{fill:none;stroke:var(--ink,#17324D);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}.m-gr{fill:none;stroke:var(--ink,#17324D);stroke-opacity:.2;stroke-width:1}.m-dash{fill:none;stroke:var(--ink,#17324D);stroke-opacity:.45;stroke-width:1.5;stroke-dasharray:4 4}.m-p{fill:var(--m-part,#70C6C3);stroke:var(--m-part-ink,#177B78);stroke-width:2;stroke-linejoin:round}.m-g{fill:var(--art-card,#FFFFFF);stroke:var(--ink,#17324D);stroke-width:2;stroke-linejoin:round}.m-u{fill:var(--m-unknown,#FDF5E5);stroke:var(--m-unknown-ink,#886C33);stroke-width:2;stroke-dasharray:5 4;stroke-linejoin:round}.m-a{fill:var(--m-answer,#ECF5F1);stroke:var(--m-answer-ink,#0F7C4A);stroke-width:2.5}.m-e{stroke:var(--m-error-ink,#B3402A);stroke-width:2}.m-ok{fill:none;stroke:var(--m-answer-ink,#0F7C4A);stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}.m-x{fill:none;stroke:var(--m-error-ink,#B3402A);stroke-width:3;stroke-linecap:round}.m-h{fill:var(--m-head,#DADEE3);stroke:var(--ink,#17324D);stroke-width:2}.m-r1,.m-r2,.m-f1,.m-f2{fill:none;stroke-linecap:round}.m-r1{stroke:var(--m-part-ink,#177B78)}.m-r2{stroke:var(--ink,#17324D)}.m-f1{stroke:var(--m-part,#70C6C3)}.m-f2{stroke:var(--art-card,#FFFFFF)}.m-dot{fill:var(--ink,#17324D)}.m-arr{fill:var(--ink,#17324D)}</style><path class="m-r2" stroke-width="22.8" d="M214.4 226h0M243.2 226h0M272 226h0M300.8 226h0M329.6 226h0M70.4 254.8h0M99.2 254.8h0M128 254.8h0M156.8 254.8h0M185.6 254.8h0M214.4 254.8h0M243.2 254.8h0M272 254.8h0M300.8 254.8h0M329.6 254.8h0M70.4 283.6h0M99.2 283.6h0M128 283.6h0M156.8 283.6h0M185.6 283.6h0M214.4 283.6h0M243.2 283.6h0M272 283.6h0M300.8 283.6h0M329.6 283.6h0"/><path class="m-f2" stroke-width="19.2" d="M214.4 226h0M243.2 226h0M272 226h0M300.8 226h0M329.6 226h0M70.4 254.8h0M99.2 254.8h0M128 254.8h0M156.8 254.8h0M185.6 254.8h0M214.4 254.8h0M243.2 254.8h0M272 254.8h0M300.8 254.8h0M329.6 254.8h0M70.4 283.6h0M99.2 283.6h0M128 283.6h0M156.8 283.6h0M185.6 283.6h0M214.4 283.6h0M243.2 283.6h0M272 283.6h0M300.8 283.6h0M329.6 283.6h0"/><path class="m-r1" stroke-width="22.8" d="M70.4 24.4h0M99.2 24.4h0M128 24.4h0M156.8 24.4h0M185.6 24.4h0M214.4 24.4h0M243.2 24.4h0M272 24.4h0M300.8 24.4h0M329.6 24.4h0M70.4 53.2h0M99.2 53.2h0M128 53.2h0M156.8 53.2h0M185.6 53.2h0M214.4 53.2h0M243.2 53.2h0M272 53.2h0M300.8 53.2h0M329.6 53.2h0M70.4 82h0M99.2 82h0M128 82h0M156.8 82h0M185.6 82h0M214.4 82h0M243.2 82h0M272 82h0M300.8 82h0M329.6 82h0M70.4 110.8h0M99.2 110.8h0M128 110.8h0M156.8 110.8h0M185.6 110.8h0M214.4 110.8h0M243.2 110.8h0M272 110.8h0M300.8 110.8h0M329.6 110.8h0M70.4 139.6h0M99.2 139.6h0M128 139.6h0M156.8 139.6h0M185.6 139.6h0M214.4 139.6h0M243.2 139.6h0M272 139.6h0M300.8 139.6h0M329.6 139.6h0M70.4 168.4h0M99.2 168.4h0M128 168.4h0M156.8 168.4h0M185.6 168.4h0M214.4 168.4h0M243.2 168.4h0M272 168.4h0M300.8 168.4h0M329.6 168.4h0M70.4 197.2h0M99.2 197.2h0M128 197.2h0M156.8 197.2h0M185.6 197.2h0M214.4 197.2h0M243.2 197.2h0M272 197.2h0M300.8 197.2h0M329.6 197.2h0M70.4 226h0M99.2 226h0M128 226h0M156.8 226h0M185.6 226h0"/><path class="m-f1" stroke-width="19.2" d="M70.4 24.4h0M99.2 24.4h0M128 24.4h0M156.8 24.4h0M185.6 24.4h0M214.4 24.4h0M243.2 24.4h0M272 24.4h0M300.8 24.4h0M329.6 24.4h0M70.4 53.2h0M99.2 53.2h0M128 53.2h0M156.8 53.2h0M185.6 53.2h0M214.4 53.2h0M243.2 53.2h0M272 53.2h0M300.8 53.2h0M329.6 53.2h0M70.4 82h0M99.2 82h0M128 82h0M156.8 82h0M185.6 82h0M214.4 82h0M243.2 82h0M272 82h0M300.8 82h0M329.6 82h0M70.4 110.8h0M99.2 110.8h0M128 110.8h0M156.8 110.8h0M185.6 110.8h0M214.4 110.8h0M243.2 110.8h0M272 110.8h0M300.8 110.8h0M329.6 110.8h0M70.4 139.6h0M99.2 139.6h0M128 139.6h0M156.8 139.6h0M185.6 139.6h0M214.4 139.6h0M243.2 139.6h0M272 139.6h0M300.8 139.6h0M329.6 139.6h0M70.4 168.4h0M99.2 168.4h0M128 168.4h0M156.8 168.4h0M185.6 168.4h0M214.4 168.4h0M243.2 168.4h0M272 168.4h0M300.8 168.4h0M329.6 168.4h0M70.4 197.2h0M99.2 197.2h0M128 197.2h0M156.8 197.2h0M185.6 197.2h0M214.4 197.2h0M243.2 197.2h0M272 197.2h0M300.8 197.2h0M329.6 197.2h0M70.4 226h0M99.2 226h0M128 226h0M156.8 226h0M185.6 226h0"/><text class="m-t" x="48" y="29.4" text-anchor="end">10</text><text class="m-t" x="48" y="58.2" text-anchor="end">20</text><text class="m-t" x="48" y="87" text-anchor="end">30</text><text class="m-t" x="48" y="115.8" text-anchor="end">40</text><text class="m-t" x="48" y="144.6" text-anchor="end">50</text><text class="m-t" x="48" y="173.4" text-anchor="end">60</text><text class="m-t" x="48" y="202.2" text-anchor="end">70</text><text class="m-t" x="48" y="231" text-anchor="end">80</text><text class="m-t" x="48" y="259.8" text-anchor="end">90</text><text class="m-t" x="48" y="288.6" text-anchor="end">100</text><text class="m-t m-n" x="180" y="322" text-anchor="middle">3/4 = 75/100 = 75%</text></svg></span></figure>
     </section>
+    <section class="hw-colearn-card card-ish hw-part2-suite" id="hw_part2_deepening_suite" data-colearn-section="part2-suite" aria-labelledby="hw_stretch_title">
+      <h3 class="hw-colearn-title" id="hw_stretch_title"><span class="lang-en">Stretch and connect</span><span class="lang-es" lang="es">Ve más allá y conecta</span></h3>
 
-    <section class="hw-colearn-card card-ish" id="hw_worked_partner_example" data-colearn-section="worked-partner">
-      <div class="hw-colearn-header">
-        <span class="hw-colearn-kicker">🤝 <span class="lang-en">WORKED 'PRACTICE PARTNER' EXAMPLE · STEP-BY-STEP WALKTHROUGH</span><span class="lang-es" lang="es">EJEMPLO RESUELTO EN PAREJA · PASO A PASO</span></span>
-        <h3 class="hw-colearn-title"><span class="lang-en">Walk Through One Together First</span><span class="lang-es" lang="es">Revisen un ejemplo juntos primero</span></h3>
-      </div>
-      <p class="hw-colearn-stem"><span class="lang-en">A smoothie recipe uses 3 cups of berries for every 2 cups of yogurt. If we use 12 cups of berries, how many cups of yogurt do we need?</span><span class="lang-es" lang="es">Una receta de batido usa 3 tazas de bayas por cada 2 tazas de yogur. Si usamos 12 tazas de bayas, ¿cuántas tazas de yogur necesitamos?</span></p>
-      <div class="hw-colearn-svg-stage">
-        <svg viewBox="0 0 540 148" width="540" height="148" class="hw-model-svg hw-double-number-line-svg" style="background:white; max-width:100%; height:auto; display:block; margin:0 auto; border-radius:10px; border:1px solid #cbd5e1;" role="img" aria-label="Double number line comparing Batches and Cups" xmlns="http://www.w3.org/2000/svg">
-  <title>Double Number Line: Batches and Cups</title>
-  <text x="14" y="53" font-family="Outfit, system-ui, sans-serif" font-size="13" font-weight="800" fill="#12355b">Batches</text>
-  <text x="14" y="103" font-family="Outfit, system-ui, sans-serif" font-size="13" font-weight="800" fill="#0f766e">Cups</text>
-  <line x1="118" y1="48" x2="510" y2="48" stroke="#12355b" stroke-width="2.5"/>
-  <polygon points="514,48 505,43 505,53" fill="#12355b"/>
-  <line x1="118" y1="98" x2="510" y2="98" stroke="#0f766e" stroke-width="2.5"/>
-  <polygon points="514,98 505,93 505,103" fill="#0f766e"/>
-  <g class="hw-svg-dnl-tick">
-    <line x1="118.0" y1="40" x2="118.0" y2="106" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="3 2"/>
-    <line x1="118.0" y1="41" x2="118.0" y2="55" stroke="#12355b" stroke-width="2.2"/>
-    <line x1="118.0" y1="91" x2="118.0" y2="105" stroke="#0f766e" stroke-width="2.2"/>
-    <text x="118.0" y="34" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="13" font-weight="800" fill="#12355b">0</text>
-    <text x="118.0" y="123" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="13" font-weight="800" fill="#0f766e">0</text>
-  </g>
-  <g class="hw-svg-dnl-tick">
-    <line x1="244.0" y1="40" x2="244.0" y2="106" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="3 2"/>
-    <line x1="244.0" y1="41" x2="244.0" y2="55" stroke="#12355b" stroke-width="2.2"/>
-    <line x1="244.0" y1="91" x2="244.0" y2="105" stroke="#0f766e" stroke-width="2.2"/>
-    <text x="244.0" y="34" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="13" font-weight="800" fill="#12355b">1</text>
-    <text x="244.0" y="123" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="13" font-weight="800" fill="#0f766e">3</text>
-  </g>
-  <g class="hw-svg-dnl-tick">
-    <line x1="370.0" y1="40" x2="370.0" y2="106" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="3 2"/>
-    <line x1="370.0" y1="41" x2="370.0" y2="55" stroke="#12355b" stroke-width="2.2"/>
-    <line x1="370.0" y1="91" x2="370.0" y2="105" stroke="#0f766e" stroke-width="2.2"/>
-    <text x="370.0" y="34" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="13" font-weight="800" fill="#12355b">2</text>
-    <text x="370.0" y="123" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="13" font-weight="800" fill="#0f766e">6</text>
-  </g>
-  <g class="hw-svg-dnl-tick" data-missing="true">
-    <line x1="496.0" y1="40" x2="496.0" y2="106" stroke="#d97706" stroke-width="1.5" stroke-dasharray="3 2"/>
-    <line x1="496.0" y1="41" x2="496.0" y2="55" stroke="#12355b" stroke-width="2.2"/>
-    <line x1="496.0" y1="91" x2="496.0" y2="105" stroke="#0f766e" stroke-width="2.2"/>
-    <text x="496.0" y="34" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="13" font-weight="800" fill="#12355b">3</text>
-    <rect x="474.0" y="109" width="44" height="22" rx="5" fill="#fef3c7" stroke="#d97706" stroke-width="1.8"/>
-    <text x="496.0" y="124" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="13" font-weight="900" fill="#b45309">?</text>
-  </g>
-</svg>
-      </div>
-      <ol class="hw-partner-steps">
-
-          <li class="hw-partner-step">
-            <span class="hw-partner-step-num">1</span>
-            <div class="hw-partner-step-body">
-              <strong><span class="lang-en">Draw the ratio model</span><span class="lang-es" lang="es">Dibuja el modelo de razón</span></strong>
-              <p><span class="lang-en">3 boxes for berries : 2 boxes for yogurt.</span><span class="lang-es" lang="es">3 cajas para bayas : 2 cajas para yogur.</span></p>
-            </div>
-          </li>
-          <li class="hw-partner-step">
-            <span class="hw-partner-step-num">2</span>
-            <div class="hw-partner-step-body">
-              <strong><span class="lang-en">Find the value of 1 box (scale factor)</span><span class="lang-es" lang="es">Halla el valor de 1 caja (factor de escala)</span></strong>
-              <p><span class="lang-en">12 cups of berries ÷ 3 boxes = 4 cups per box.</span><span class="lang-es" lang="es">12 tazas de bayas ÷ 3 cajas = 4 tazas por caja.</span></p>
-            </div>
-          </li>
-          <li class="hw-partner-step">
-            <span class="hw-partner-step-num">3</span>
-            <div class="hw-partner-step-body">
-              <strong><span class="lang-en">Scale the second quantity</span><span class="lang-es" lang="es">Escala la segunda cantidad</span></strong>
-              <p><span class="lang-en">2 boxes of yogurt × 4 cups per box = 8 cups of yogurt.</span><span class="lang-es" lang="es">2 cajas de yogur × 4 tazas por caja = 8 tazas de yogur.</span></p>
-            </div>
-          </li>
-      </ol>
-      <details class="hw-copilot-solution-key" open>
-        <summary>🔑 <span class="lang-en">Solution + Reasoning Key (Verify Your Thinking)</span><span class="lang-es" lang="es">Clave de solución y razonamiento</span></summary>
-        <div class="hw-copilot-solution-body">
-          <p><strong><span class="lang-en">Complete Reasoning:</span><span class="lang-es" lang="es">Razonamiento completo:</span></strong> <span class="lang-en">8 cups of yogurt (3 : 2 is equivalent to 12 : 8 because both parts scale by ×4).</span><span class="lang-es" lang="es">8 tazas de yogur (3 : 2 es equivalente a 12 : 8 porque ambas partes escalan por ×4).</span></p>
-        </div>
-      </details>
-    </section>
-
-    <!-- PART 2 DEEPENING SUITE: Application & Transfer, Spot the Glitch, Spiral Check, Kitchen Table Math -->
-    <section class="hw-colearn-card card-ish hw-part2-suite" id="hw_part2_deepening_suite" data-colearn-section="part2-suite">
-      <div class="hw-colearn-header">
-        <span class="hw-colearn-kicker">🚀 <span class="lang-en">PART 2 EXTENSION PREVIEW · DEEPENING, ERROR ANALYSIS &amp; REAL-WORLD CONNECTION</span><span class="lang-es" lang="es">EXTENSIÓN PARTE 2 · PROFUNDIZACIÓN, ANÁLISIS DE ERRORES Y CONEXIÓN REAL</span></span>
-        <h3 class="hw-colearn-title"><span class="lang-en">Transfer, Spot the Glitch &amp; Kitchen Table Connection</span><span class="lang-es" lang="es">Transferencia, detecta el error y conexión en casa</span></h3>
-      </div>
-
-      <!-- 1. Application & Transfer Problem -->
       <div class="hw-subcard" id="hw_part2_application">
-        <div class="hw-subcard-head">
-          <span class="hw-subcard-tag">1 · <span class="lang-en">Application &amp; Transfer Problem</span><span class="lang-es" lang="es">Problema de aplicación y transferencia</span></span>
-        </div>
-        <p class="hw-colearn-stem"><span class="lang-en">A community garden mixes 4 scoops of compost with 6 scoops of topsoil for every raised bed. A neighbor wants to make a smaller batch using 2 scoops of compost, and a larger batch using 10 scoops of compost. How many scoops of topsoil does each batch need?</span><span class="lang-es" lang="es">Un jardín comunitario mezcla 4 cucharadas de abono con 6 cucharadas de tierra para cada cama de cultivo. Un vecino quiere hacer un lote más pequeño con 2 cucharadas de abono y uno más grande con 10 cucharadas de abono. ¿Cuántas cucharadas de tierra necesita cada lote?</span></p>
-        <div class="hw-colearn-svg-stage"><svg viewBox="0 0 520 136" width="520" height="136" class="hw-model-svg hw-tape-diagram-svg" style="background:white; max-width:100%; height:auto; display:block; margin:0 auto; border-radius:10px; border:1px solid #cbd5e1;" role="img" aria-label="Tape diagram with 3 parts, Ratio Tape Model · 3 equal parts = 9" xmlns="http://www.w3.org/2000/svg">
-  <title>Tape Diagram (3 parts)</title>
-  <path d="M 36 36 L 36 26 L 260 26 L 260 20 L 260 26 L 484 26 L 484 36" fill="none" stroke="#0f766e" stroke-width="2" stroke-linecap="round"/>
-  <rect x="172" y="4" width="176" height="20" rx="5" fill="#0f766e"/>
-  <text x="260" y="18" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="12" font-weight="800" fill="#ffffff">Ratio Tape Model · 3 equal parts = 9</text>
-  <g class="hw-svg-tape-part" data-highlighted="true">
-    <rect x="36.0" y="44" width="149.3" height="44" fill="#1fa6a2" stroke="#12355b" stroke-width="2"/>
-    <text x="110.7" y="71" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="14" font-weight="800" fill="#ffffff">3</text>
-  </g>
-  <g class="hw-svg-tape-part">
-    <rect x="185.3" y="44" width="149.3" height="44" fill="#f8fafc" stroke="#12355b" stroke-width="2"/>
-    <text x="260.0" y="71" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="14" font-weight="800" fill="#12355b">3</text>
-  </g>
-  <g class="hw-svg-tape-part">
-    <rect x="334.7" y="44" width="149.3" height="44" fill="#e3f6f5" stroke="#12355b" stroke-width="2"/>
-    <text x="409.3" y="71" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="14" font-weight="800" fill="#12355b">3</text>
-  </g>
-  <rect x="36" y="44" width="448" height="44" rx="4" fill="none" stroke="#12355b" stroke-width="2.5"/>
-  <text x="260" y="116" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="13" font-weight="700" fill="#334155">Multiply or divide both parts by the same scale factor</text>
-</svg></div>
-        <div class="hw-transfer-choices" role="group" aria-label="Application problem choices">
+        <h4 class="hw-subcard-tag"><span class="lang-en">A new situation</span><span class="lang-es" lang="es">Una situación nueva</span></h4>
+        <p class="hw-colearn-stem"><span class="lang-en">A baker used 7/20 of a bag of flour. What percent of the bag did the baker use?</span><span class="lang-es" lang="es">Una panadera usó 7/20 de una bolsa de harina. ¿Qué porcentaje de la bolsa usó?</span></p>
+        <div class="hw-transfer-choices" role="group" aria-label="Choices">
 
-            <button type="button" class="hw-transfer-choice-btn" data-correct="1" onclick="checkTransferProblem(this, true)">
-              <span class="hw-choice-letter">A</span>
-              <span class="hw-choice-copy"><span class="lang-en">Small batch: 3 scoops; Large batch: 15 scoops</span><span class="lang-es" lang="es">Lote pequeño: 3 cucharadas; Lote grande: 15 cucharadas</span></span>
-            </button>
-            <button type="button" class="hw-transfer-choice-btn" data-correct="0" onclick="checkTransferProblem(this, false)">
-              <span class="hw-choice-letter">B</span>
-              <span class="hw-choice-copy"><span class="lang-en">Small batch: 4 scoops; Large batch: 12 scoops</span><span class="lang-es" lang="es">Lote pequeño: 4 cucharadas; Lote grande: 12 cucharadas</span></span>
-            </button>
-            <button type="button" class="hw-transfer-choice-btn" data-correct="0" onclick="checkTransferProblem(this, false)">
-              <span class="hw-choice-letter">C</span>
-              <span class="hw-choice-copy"><span class="lang-en">Small batch: 2 scoops; Large batch: 14 scoops</span><span class="lang-es" lang="es">Lote pequeño: 2 cucharadas; Lote grande: 14 cucharadas</span></span>
-            </button>
+          <button type="button" class="hw-transfer-choice-btn" data-correct="0">
+            <span class="hw-choice-letter" aria-hidden="true">A</span>
+            <span class="hw-choice-copy"><span class="lang-en">7%</span><span class="lang-es" lang="es">7%</span></span>
+          </button>
+          <button type="button" class="hw-transfer-choice-btn" data-correct="0">
+            <span class="hw-choice-letter" aria-hidden="true">B</span>
+            <span class="hw-choice-copy"><span class="lang-en">20%</span><span class="lang-es" lang="es">20%</span></span>
+          </button>
+          <button type="button" class="hw-transfer-choice-btn" data-correct="1">
+            <span class="hw-choice-letter" aria-hidden="true">C</span>
+            <span class="hw-choice-copy"><span class="lang-en">35%</span><span class="lang-es" lang="es">35%</span></span>
+          </button>
         </div>
+        <p class="hw-v3-nudge" role="status" hidden><span class="lang-en">Not yet. Try another look.</span><span class="lang-es" lang="es">Todavía no. Intenta otra mirada.</span></p>
         <div class="hw-transfer-feedback" id="hw_transfer_feedback" role="status" aria-live="polite" hidden>
-          <p><span class="lang-en">Simplifying 4 : 6 by ÷2 gives 2 scoops of compost to 3 scoops of topsoil. Scaling 2 : 3 by ×5 gives 10 scoops of compost to 15 scoops of topsoil.</span><span class="lang-es" lang="es">Simplificar 4 : 6 entre 2 da 2 de abono por 3 de tierra. Escalar 2 : 3 por ×5 da 10 de abono por 15 de tierra.</span></p>
-        </div>
-        <details class="hw-copilot-solution-key">
-          <summary>🧭 <span class="lang-en">Caregiver Solution + Reasoning Key</span><span class="lang-es" lang="es">Clave de solución y razonamiento para el adulto</span></summary>
-          <div class="hw-copilot-solution-body">
-            <p><span class="lang-en">Simplifying 4 : 6 by ÷2 gives 2 scoops of compost to 3 scoops of topsoil. Scaling 2 : 3 by ×5 gives 10 scoops of compost to 15 scoops of topsoil.</span><span class="lang-es" lang="es">Simplificar 4 : 6 entre 2 da 2 de abono por 3 de tierra. Escalar 2 : 3 por ×5 da 10 de abono por 15 de tierra.</span></p>
-          </div>
-        </details>
-      </div>
-
-      <!-- 2. "Be the Teacher: Spot the Glitch" Error Analysis -->
-      <div class="hw-subcard" id="hw_spot_the_glitch">
-        <div class="hw-subcard-head">
-          <span class="hw-subcard-tag">2 · 🔍 <span class="lang-en">Be the Teacher: Spot the Glitch</span><span class="lang-es" lang="es">Sé el maestro: Detecta el error</span></span>
-        </div>
-        <p class="hw-colearn-stem"><span class="lang-en">Jordan says: 'To go from a ratio of 3 : 5 to 6 : 8, I added 3 to both numbers (3 + 3 = 6 and 5 + 3 = 8), so 3 : 5 and 6 : 8 are equivalent ratios.'</span><span class="lang-es" lang="es">Jordan dice: 'Para pasar de la razón 3 : 5 a 6 : 8, sumé 3 a ambos números (3 + 3 = 6 y 5 + 3 = 8), así que 3 : 5 y 6 : 8 son razones equivalentes.'</span></p>
-        <p class="hw-glitch-instruction"><span class="lang-en">Tap the step below where the math thinking went off track, then explain why to your family member:</span><span class="lang-es" lang="es">Toca el paso donde el razonamiento se desvió y explica por qué a tu familiar:</span></p>
-        <div class="hw-glitch-steps" role="group" aria-label="Spot the glitch steps">
-
-            <button type="button" class="hw-glitch-step-btn" data-is-glitch="0" onclick="checkSpotTheGlitch(this, false)">
-              <span class="lang-en">Step 1: Start with the ratio 3 : 5.</span><span class="lang-es" lang="es">Paso 1: Empezar con la razón 3 : 5.</span>
-            </button>
-            <button type="button" class="hw-glitch-step-btn" data-is-glitch="1" onclick="checkSpotTheGlitch(this, true)">
-              <span class="lang-en">Step 2: Add +3 to both parts to get 6 : 8.</span><span class="lang-es" lang="es">Paso 2: Sumar +3 a ambas partes para obtener 6 : 8.</span>
-            </button>
-            <button type="button" class="hw-glitch-step-btn" data-is-glitch="0" onclick="checkSpotTheGlitch(this, false)">
-              <span class="lang-en">Step 3: Check if the relationship stayed the same.</span><span class="lang-es" lang="es">Paso 3: Comprobar si la relación se mantuvo igual.</span>
-            </button>
-        </div>
-        <div class="hw-glitch-feedback" id="hw_glitch_feedback" role="status" aria-live="polite" hidden>
-          <p><strong>💡 <span class="lang-en">Why it glitched &amp; how to fix it:</span><span class="lang-es" lang="es">Por qué ocurrió el error y cómo corregirlo:</span></strong> <span class="lang-en">Equivalent ratios require multiplying or dividing both quantities by the same factor—not adding! Doubling 3 : 5 by ×2 gives 6 : 10.</span><span class="lang-es" lang="es">Las razones equivalentes requieren multiplicar o dividir ambas cantidades por el mismo factor, ¡no sumar! Duplicar 3 : 5 por ×2 da 6 : 10.</span></p>
-          <p class="hw-glitch-frame"><strong>🗣️ <span class="lang-en">Explain out loud:</span><span class="lang-es" lang="es">Explica en voz alta:</span></strong> <em>"<span class="lang-en">The glitch is in Step 2 because ratios scale by ___ instead of ___.</span><span class="lang-es" lang="es">El error está en el Paso 2 porque las razones se escalan mediante ___ en lugar de ___.</span>"</em></p>
+          <p><span class="lang-en">20 × 5 = 100, so multiply the top by 5 too: 7 × 5 = 35. So 7/20 = 35/100 = 35%.</span><span class="lang-es" lang="es">20 × 5 = 100, así que multiplica también el numerador por 5: 7 × 5 = 35. Entonces 7/20 = 35/100 = 35%.</span></p>
         </div>
       </div>
-
-      <!-- 3. Spiral "Remember" Check -->
       <div class="hw-subcard" id="hw_spiral_remember">
-        <div class="hw-subcard-head">
-          <span class="hw-subcard-tag">3 · 🔄 <span class="lang-en">Spiral 'Remember' Check (Prior Lesson Retrieval)</span><span class="lang-es" lang="es">Repaso en espiral 'Recuerda'</span></span>
-        </div>
+        <h4 class="hw-subcard-tag"><span class="lang-en">Remember these?</span><span class="lang-es" lang="es">¿Recuerdas esto?</span></h4>
         <div class="hw-spiral-grid">
 
-            <div class="hw-spiral-item" id="hw_spiral_item_0">
-              <p class="hw-colearn-stem"><strong>#1:</strong> <span class="lang-en">Which ratio is equivalent to 4 : 5?</span><span class="lang-es" lang="es">¿Qué razón es equivalente a 4 : 5?</span></p>
-              <div class="hw-spiral-options">
-
-                  <button type="button" class="hw-spiral-opt-btn" data-correct="1" onclick="checkSpiralRemember(this, 0, true)">8 : 10</button>
-                  <button type="button" class="hw-spiral-opt-btn" data-correct="0" onclick="checkSpiralRemember(this, 0, false)">5 : 6</button>
-                  <button type="button" class="hw-spiral-opt-btn" data-correct="0" onclick="checkSpiralRemember(this, 0, false)">4 : 10</button>
-              </div>
-              <p class="hw-spiral-exp" id="hw_spiral_exp_0" hidden><span class="lang-en">Multiply both 4 and 5 by 2 to get 8 : 10.</span><span class="lang-es" lang="es">Multiplica tanto 4 como 5 por 2 para obtener 8 : 10.</span></p>
+          <div class="hw-spiral-item" id="hw_spiral_item_0">
+            <p class="hw-colearn-stem"><span class="lang-en">4 out of every 10 voters chose the tiger. What percent is that?</span><span class="lang-es" lang="es">4 de cada 10 votantes eligieron al tigre. ¿Qué porcentaje es?</span></p>
+            <div class="hw-spiral-options">
+              <button type="button" class="hw-spiral-opt-btn" data-correct="0">4%</button><button type="button" class="hw-spiral-opt-btn" data-correct="0">14%</button><button type="button" class="hw-spiral-opt-btn" data-correct="1">40%</button>
             </div>
-            <div class="hw-spiral-item" id="hw_spiral_item_1">
-              <p class="hw-colearn-stem"><strong>#2:</strong> <span class="lang-en">If 3 notebooks cost $6, what is the cost per 1 notebook?</span><span class="lang-es" lang="es">Si 3 cuadernos cuestan $6, ¿cuál es el costo por 1 cuaderno?</span></p>
-              <div class="hw-spiral-options">
-
-                  <button type="button" class="hw-spiral-opt-btn" data-correct="1" onclick="checkSpiralRemember(this, 1, true)">$2</button>
-                  <button type="button" class="hw-spiral-opt-btn" data-correct="0" onclick="checkSpiralRemember(this, 1, false)">$3</button>
-                  <button type="button" class="hw-spiral-opt-btn" data-correct="0" onclick="checkSpiralRemember(this, 1, false)">$18</button>
-              </div>
-              <p class="hw-spiral-exp" id="hw_spiral_exp_1" hidden><span class="lang-en">$6 ÷ 3 notebooks = $2 per notebook.</span><span class="lang-es" lang="es">$6 ÷ 3 cuadernos = $2 por cuaderno.</span></p>
+            <p class="hw-v3-nudge" role="status" hidden><span class="lang-en">Not yet. Try another look.</span><span class="lang-es" lang="es">Todavía no. Intenta otra mirada.</span></p>
+            <p class="hw-spiral-exp" id="hw_spiral_exp_0" hidden><span class="lang-en">Multiply both numbers by 10. 4 out of 10 is 40 out of 100, or 40%.</span><span class="lang-es" lang="es">Multiplica los dos números por 10. 4 de 10 es 40 de 100, o 40%.</span></p>
+          </div>
+          <div class="hw-spiral-item" id="hw_spiral_item_1">
+            <p class="hw-colearn-stem"><span class="lang-en">3:2 is equivalent to 12:?. What goes in the blank?</span><span class="lang-es" lang="es">3:2 es equivalente a 12:?. ¿Qué va en el espacio?</span></p>
+            <div class="hw-spiral-options">
+              <button type="button" class="hw-spiral-opt-btn" data-correct="0">6</button><button type="button" class="hw-spiral-opt-btn" data-correct="1">8</button><button type="button" class="hw-spiral-opt-btn" data-correct="0">10</button>
             </div>
+            <p class="hw-v3-nudge" role="status" hidden><span class="lang-en">Not yet. Try another look.</span><span class="lang-es" lang="es">Todavía no. Intenta otra mirada.</span></p>
+            <p class="hw-spiral-exp" id="hw_spiral_exp_1" hidden><span class="lang-en">12 ÷ 3 = 4, so multiply 2 by 4. The blank is 8.</span><span class="lang-es" lang="es">12 ÷ 3 = 4, así que multiplica 2 por 4. El espacio es 8.</span></p>
+          </div>
         </div>
       </div>
-
-      <!-- 4. "Kitchen Table Math" Offline Prompt -->
       <div class="hw-subcard hw-kitchen-offline-card" id="hw_kitchen_table_prompt" data-kitchen-table-prompt="true">
-        <div class="hw-subcard-head">
-          <span class="hw-subcard-tag">4 · 🍽️ <span class="lang-en">Kitchen Table Math · 2-Minute Offline Prompt</span><span class="lang-es" lang="es">Matemáticas en la mesa · Conversación de 2 minutos</span></span>
-        </div>
-        <p class="hw-kitchen-offline-text"><span class="lang-en">At the kitchen table or pantry, pick any food label or recipe. Ask your student: 'If we doubled or halved this recipe for our family, how would the two main ingredients change together?'</span><span class="lang-es" lang="es">En la cocina, elijan una etiqueta o receta. Pregunte: 'Si duplicamos o reducimos a la mitad esta receta para nuestra familia, ¿cómo cambiarían juntos los dos ingredientes principales?'</span></p>
-        <div class="hw-kitchen-socratic-note">
-          <strong>🧭 <span class="lang-en">Caregiver Tip:</span><span class="lang-es" lang="es">Consejo para el adulto:</span></strong>
-          <span><span class="lang-en">No pencil needed—just listen for how your student describes the relationship in their own words!</span><span class="lang-es" lang="es">No necesitan lápiz: ¡solo escuche cómo su estudiante describe la relación con sus propias palabras!</span></span>
-        </div>
+        <h4 class="hw-subcard-tag"><span class="lang-en">At the table</span><span class="lang-es" lang="es">En la mesa</span></h4>
+        <p class="hw-kitchen-offline-text"><span class="lang-en">Say, &quot;A player scored 3/4 of the team's points.&quot; Can your student say it as a decimal and a percent out loud? Then try 1/2 and 1/5.</span><span class="lang-es" lang="es">Digan: «Una jugadora anotó 3/4 de los puntos del equipo». ¿Puede su estudiante decirlo como decimal y como porcentaje en voz alta? Después prueben con 1/2 y con 1/5.</span></p>
       </div>
     </section></div>
 
@@ -2073,26 +1766,6 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
             </button>
 
             <div class="coach-step-help" hidden><p class="lang-en">A fraction bar means divide.</p><p class="lang-es" lang="es">La barra de fracción significa dividir.</p>
-              <div class="coach-step-visual" style="margin:10px 0;"><svg viewBox="0 0 520 136" width="520" height="136" class="hw-model-svg hw-tape-diagram-svg" style="background:white; max-width:100%; height:auto; display:block; margin:0 auto; border-radius:10px; border:1px solid #cbd5e1;" role="img" aria-label="Tape diagram with 3 parts, Ratio Tape Model · 3 equal parts = 9" xmlns="http://www.w3.org/2000/svg">
-  <title>Tape Diagram (3 parts)</title>
-  <path d="M 36 36 L 36 26 L 260 26 L 260 20 L 260 26 L 484 26 L 484 36" fill="none" stroke="#0f766e" stroke-width="2" stroke-linecap="round"/>
-  <rect x="172" y="4" width="176" height="20" rx="5" fill="#0f766e"/>
-  <text x="260" y="18" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="12" font-weight="800" fill="#ffffff">Ratio Tape Model · 3 equal parts = 9</text>
-  <g class="hw-svg-tape-part" data-highlighted="true">
-    <rect x="36.0" y="44" width="149.3" height="44" fill="#1fa6a2" stroke="#12355b" stroke-width="2"/>
-    <text x="110.7" y="71" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="14" font-weight="800" fill="#ffffff">3</text>
-  </g>
-  <g class="hw-svg-tape-part">
-    <rect x="185.3" y="44" width="149.3" height="44" fill="#f8fafc" stroke="#12355b" stroke-width="2"/>
-    <text x="260.0" y="71" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="14" font-weight="800" fill="#12355b">3</text>
-  </g>
-  <g class="hw-svg-tape-part">
-    <rect x="334.7" y="44" width="149.3" height="44" fill="#e3f6f5" stroke="#12355b" stroke-width="2"/>
-    <text x="409.3" y="71" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="14" font-weight="800" fill="#12355b">3</text>
-  </g>
-  <rect x="36" y="44" width="448" height="44" rx="4" fill="none" stroke="#12355b" stroke-width="2.5"/>
-  <text x="260" y="116" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="13" font-weight="700" fill="#334155">Multiply or divide both parts by the same scale factor</text>
-</svg></div>
               <button type="button" class="coach-scratchpad-btn" onclick="toggleScratchpad()">✏️ <span class="lang-en">Try it on the scratchpad</span><span class="lang-es" lang="es">Pruébalo en la pizarra</span></button></div>
           </li>
           <li class="coach-ladder-step coach-explain-step">
@@ -2175,15 +1848,7 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
       </aside>
 
     <aside class="hw-copilot-card hw-problem-copilot" id="hw_copilot_prob_0" data-copilot-for="0">
-      <div class="hw-copilot-badge">🧭 <span class="lang-en">Caregiver Co-Pilot · Problem 1</span><span class="lang-es" lang="es">Copiloto familiar · Problema 1</span></div>
-      <p class="hw-copilot-socratic-line">
-        <strong>💬 <span class="lang-en">Ask if stuck:</span><span class="lang-es" lang="es">Pregunta si se detiene:</span></strong>
-        <em>"<span class="lang-en">Divide the top number by the bottom number.</span><span class="lang-es" lang="es">Divide el número de arriba entre el de abajo.</span>"</em>
-      </p>
-      <p class="hw-copilot-bridge-line">
-        <strong>🌉 <span class="lang-en">Model Bridge:</span><span class="lang-es" lang="es">Puente del modelo:</span></strong>
-        <span><span class="lang-en">Today we used tape diagrams and double number lines to see equivalent ratios as scaling both quantities by the same multiplier.</span><span class="lang-es" lang="es">Hoy usamos diagramas de cinta y rectas numéricas dobles para ver las razones equivalentes al escalar ambas cantidades por el mismo multiplicador.</span></span>
-      </p>
+      <p class="hw-copilot-socratic-line"><strong><span class="lang-en">Ask if stuck:</span><span class="lang-es" lang="es">Pregunta si se detiene:</span></strong> <em><span class="lang-en">Divide the top number by the bottom number.</span><span class="lang-es" lang="es">Divide el número de arriba entre el de abajo.</span></em></p>
     </aside>
 
       <details class="hw-answer-key" id="answer_key_0">
@@ -2230,26 +1895,6 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
             </button>
 
             <div class="coach-step-help" hidden><p class="lang-en">How many hundredths are in 0.75?</p><p class="lang-es" lang="es">¿Cuántas centésimas hay en 0.75?</p>
-              <div class="coach-step-visual" style="margin:10px 0;"><svg viewBox="0 0 520 136" width="520" height="136" class="hw-model-svg hw-tape-diagram-svg" style="background:white; max-width:100%; height:auto; display:block; margin:0 auto; border-radius:10px; border:1px solid #cbd5e1;" role="img" aria-label="Tape diagram with 3 parts, Ratio Tape Model · 3 equal parts = 9" xmlns="http://www.w3.org/2000/svg">
-  <title>Tape Diagram (3 parts)</title>
-  <path d="M 36 36 L 36 26 L 260 26 L 260 20 L 260 26 L 484 26 L 484 36" fill="none" stroke="#0f766e" stroke-width="2" stroke-linecap="round"/>
-  <rect x="172" y="4" width="176" height="20" rx="5" fill="#0f766e"/>
-  <text x="260" y="18" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="12" font-weight="800" fill="#ffffff">Ratio Tape Model · 3 equal parts = 9</text>
-  <g class="hw-svg-tape-part" data-highlighted="true">
-    <rect x="36.0" y="44" width="149.3" height="44" fill="#1fa6a2" stroke="#12355b" stroke-width="2"/>
-    <text x="110.7" y="71" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="14" font-weight="800" fill="#ffffff">3</text>
-  </g>
-  <g class="hw-svg-tape-part">
-    <rect x="185.3" y="44" width="149.3" height="44" fill="#f8fafc" stroke="#12355b" stroke-width="2"/>
-    <text x="260.0" y="71" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="14" font-weight="800" fill="#12355b">3</text>
-  </g>
-  <g class="hw-svg-tape-part">
-    <rect x="334.7" y="44" width="149.3" height="44" fill="#e3f6f5" stroke="#12355b" stroke-width="2"/>
-    <text x="409.3" y="71" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="14" font-weight="800" fill="#12355b">3</text>
-  </g>
-  <rect x="36" y="44" width="448" height="44" rx="4" fill="none" stroke="#12355b" stroke-width="2.5"/>
-  <text x="260" y="116" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="13" font-weight="700" fill="#334155">Multiply or divide both parts by the same scale factor</text>
-</svg></div>
               <button type="button" class="coach-scratchpad-btn" onclick="toggleScratchpad()">✏️ <span class="lang-en">Try it on the scratchpad</span><span class="lang-es" lang="es">Pruébalo en la pizarra</span></button></div>
           </li>
           <li class="coach-ladder-step coach-explain-step">
@@ -2332,15 +1977,7 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
       </aside>
 
     <aside class="hw-copilot-card hw-problem-copilot" id="hw_copilot_prob_1" data-copilot-for="1">
-      <div class="hw-copilot-badge">🧭 <span class="lang-en">Caregiver Co-Pilot · Problem 2</span><span class="lang-es" lang="es">Copiloto familiar · Problema 2</span></div>
-      <p class="hw-copilot-socratic-line">
-        <strong>💬 <span class="lang-en">Ask if stuck:</span><span class="lang-es" lang="es">Pregunta si se detiene:</span></strong>
-        <em>"<span class="lang-en">Percent means per hundred.</span><span class="lang-es" lang="es">Porcentaje significa por cada cien.</span>"</em>
-      </p>
-      <p class="hw-copilot-bridge-line">
-        <strong>🌉 <span class="lang-en">Model Bridge:</span><span class="lang-es" lang="es">Puente del modelo:</span></strong>
-        <span><span class="lang-en">Today we used tape diagrams and double number lines to see equivalent ratios as scaling both quantities by the same multiplier.</span><span class="lang-es" lang="es">Hoy usamos diagramas de cinta y rectas numéricas dobles para ver las razones equivalentes al escalar ambas cantidades por el mismo multiplicador.</span></span>
-      </p>
+      <p class="hw-copilot-socratic-line"><strong><span class="lang-en">Ask if stuck:</span><span class="lang-es" lang="es">Pregunta si se detiene:</span></strong> <em><span class="lang-en">Percent means per hundred.</span><span class="lang-es" lang="es">Porcentaje significa por cada cien.</span></em></p>
     </aside>
 
       <details class="hw-answer-key" id="answer_key_1">
@@ -2387,26 +2024,6 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
             </button>
 
             <div class="coach-step-help" hidden><p class="lang-en">What do you multiply 5 by to get 100?</p><p class="lang-es" lang="es">¿Por cuánto multiplicas 5 para obtener 100?</p>
-              <div class="coach-step-visual" style="margin:10px 0;"><svg viewBox="0 0 520 136" width="520" height="136" class="hw-model-svg hw-tape-diagram-svg" style="background:white; max-width:100%; height:auto; display:block; margin:0 auto; border-radius:10px; border:1px solid #cbd5e1;" role="img" aria-label="Tape diagram with 3 parts, Ratio Tape Model · 3 equal parts = 9" xmlns="http://www.w3.org/2000/svg">
-  <title>Tape Diagram (3 parts)</title>
-  <path d="M 36 36 L 36 26 L 260 26 L 260 20 L 260 26 L 484 26 L 484 36" fill="none" stroke="#0f766e" stroke-width="2" stroke-linecap="round"/>
-  <rect x="172" y="4" width="176" height="20" rx="5" fill="#0f766e"/>
-  <text x="260" y="18" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="12" font-weight="800" fill="#ffffff">Ratio Tape Model · 3 equal parts = 9</text>
-  <g class="hw-svg-tape-part" data-highlighted="true">
-    <rect x="36.0" y="44" width="149.3" height="44" fill="#1fa6a2" stroke="#12355b" stroke-width="2"/>
-    <text x="110.7" y="71" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="14" font-weight="800" fill="#ffffff">3</text>
-  </g>
-  <g class="hw-svg-tape-part">
-    <rect x="185.3" y="44" width="149.3" height="44" fill="#f8fafc" stroke="#12355b" stroke-width="2"/>
-    <text x="260.0" y="71" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="14" font-weight="800" fill="#12355b">3</text>
-  </g>
-  <g class="hw-svg-tape-part">
-    <rect x="334.7" y="44" width="149.3" height="44" fill="#e3f6f5" stroke="#12355b" stroke-width="2"/>
-    <text x="409.3" y="71" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="14" font-weight="800" fill="#12355b">3</text>
-  </g>
-  <rect x="36" y="44" width="448" height="44" rx="4" fill="none" stroke="#12355b" stroke-width="2.5"/>
-  <text x="260" y="116" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="13" font-weight="700" fill="#334155">Multiply or divide both parts by the same scale factor</text>
-</svg></div>
               <button type="button" class="coach-scratchpad-btn" onclick="toggleScratchpad()">✏️ <span class="lang-en">Try it on the scratchpad</span><span class="lang-es" lang="es">Pruébalo en la pizarra</span></button></div>
           </li>
           <li class="coach-ladder-step coach-explain-step">
@@ -2489,15 +2106,7 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
       </aside>
 
     <aside class="hw-copilot-card hw-problem-copilot" id="hw_copilot_prob_2" data-copilot-for="2">
-      <div class="hw-copilot-badge">🧭 <span class="lang-en">Caregiver Co-Pilot · Problem 3</span><span class="lang-es" lang="es">Copiloto familiar · Problema 3</span></div>
-      <p class="hw-copilot-socratic-line">
-        <strong>💬 <span class="lang-en">Ask if stuck:</span><span class="lang-es" lang="es">Pregunta si se detiene:</span></strong>
-        <em>"<span class="lang-en">Do the same to the top number.</span><span class="lang-es" lang="es">Haz lo mismo con el número de arriba.</span>"</em>
-      </p>
-      <p class="hw-copilot-bridge-line">
-        <strong>🌉 <span class="lang-en">Model Bridge:</span><span class="lang-es" lang="es">Puente del modelo:</span></strong>
-        <span><span class="lang-en">Today we used tape diagrams and double number lines to see equivalent ratios as scaling both quantities by the same multiplier.</span><span class="lang-es" lang="es">Hoy usamos diagramas de cinta y rectas numéricas dobles para ver las razones equivalentes al escalar ambas cantidades por el mismo multiplicador.</span></span>
-      </p>
+      <p class="hw-copilot-socratic-line"><strong><span class="lang-en">Ask if stuck:</span><span class="lang-es" lang="es">Pregunta si se detiene:</span></strong> <em><span class="lang-en">Do the same to the top number.</span><span class="lang-es" lang="es">Haz lo mismo con el número de arriba.</span></em></p>
     </aside>
 
       <details class="hw-answer-key" id="answer_key_2">
@@ -2544,26 +2153,6 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
             </button>
 
             <div class="coach-step-help" hidden><p class="lang-en">Say 0.4 as a fraction in tenths.</p><p class="lang-es" lang="es">Di 0.4 como fracción en décimos.</p>
-              <div class="coach-step-visual" style="margin:10px 0;"><svg viewBox="0 0 520 136" width="520" height="136" class="hw-model-svg hw-tape-diagram-svg" style="background:white; max-width:100%; height:auto; display:block; margin:0 auto; border-radius:10px; border:1px solid #cbd5e1;" role="img" aria-label="Tape diagram with 3 parts, Ratio Tape Model · 3 equal parts = 9" xmlns="http://www.w3.org/2000/svg">
-  <title>Tape Diagram (3 parts)</title>
-  <path d="M 36 36 L 36 26 L 260 26 L 260 20 L 260 26 L 484 26 L 484 36" fill="none" stroke="#0f766e" stroke-width="2" stroke-linecap="round"/>
-  <rect x="172" y="4" width="176" height="20" rx="5" fill="#0f766e"/>
-  <text x="260" y="18" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="12" font-weight="800" fill="#ffffff">Ratio Tape Model · 3 equal parts = 9</text>
-  <g class="hw-svg-tape-part" data-highlighted="true">
-    <rect x="36.0" y="44" width="149.3" height="44" fill="#1fa6a2" stroke="#12355b" stroke-width="2"/>
-    <text x="110.7" y="71" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="14" font-weight="800" fill="#ffffff">3</text>
-  </g>
-  <g class="hw-svg-tape-part">
-    <rect x="185.3" y="44" width="149.3" height="44" fill="#f8fafc" stroke="#12355b" stroke-width="2"/>
-    <text x="260.0" y="71" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="14" font-weight="800" fill="#12355b">3</text>
-  </g>
-  <g class="hw-svg-tape-part">
-    <rect x="334.7" y="44" width="149.3" height="44" fill="#e3f6f5" stroke="#12355b" stroke-width="2"/>
-    <text x="409.3" y="71" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="14" font-weight="800" fill="#12355b">3</text>
-  </g>
-  <rect x="36" y="44" width="448" height="44" rx="4" fill="none" stroke="#12355b" stroke-width="2.5"/>
-  <text x="260" y="116" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="13" font-weight="700" fill="#334155">Multiply or divide both parts by the same scale factor</text>
-</svg></div>
               <button type="button" class="coach-scratchpad-btn" onclick="toggleScratchpad()">✏️ <span class="lang-en">Try it on the scratchpad</span><span class="lang-es" lang="es">Pruébalo en la pizarra</span></button></div>
           </li>
           <li class="coach-ladder-step coach-explain-step">
@@ -2646,15 +2235,7 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
       </aside>
 
     <aside class="hw-copilot-card hw-problem-copilot" id="hw_copilot_prob_3" data-copilot-for="3">
-      <div class="hw-copilot-badge">🧭 <span class="lang-en">Caregiver Co-Pilot · Problem 4</span><span class="lang-es" lang="es">Copiloto familiar · Problema 4</span></div>
-      <p class="hw-copilot-socratic-line">
-        <strong>💬 <span class="lang-en">Ask if stuck:</span><span class="lang-es" lang="es">Pregunta si se detiene:</span></strong>
-        <em>"<span class="lang-en">Simplify 4/10.</span><span class="lang-es" lang="es">Simplifica 4/10.</span>"</em>
-      </p>
-      <p class="hw-copilot-bridge-line">
-        <strong>🌉 <span class="lang-en">Model Bridge:</span><span class="lang-es" lang="es">Puente del modelo:</span></strong>
-        <span><span class="lang-en">Today we used tape diagrams and double number lines to see equivalent ratios as scaling both quantities by the same multiplier.</span><span class="lang-es" lang="es">Hoy usamos diagramas de cinta y rectas numéricas dobles para ver las razones equivalentes al escalar ambas cantidades por el mismo multiplicador.</span></span>
-      </p>
+      <p class="hw-copilot-socratic-line"><strong><span class="lang-en">Ask if stuck:</span><span class="lang-es" lang="es">Pregunta si se detiene:</span></strong> <em><span class="lang-en">Simplify 4/10.</span><span class="lang-es" lang="es">Simplifica 4/10.</span></em></p>
     </aside>
 
       <details class="hw-answer-key" id="answer_key_3">
@@ -2701,26 +2282,6 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
             </button>
 
             <div class="coach-step-help" hidden><p class="lang-en">What do you multiply 20 by to get 100?</p><p class="lang-es" lang="es">¿Por cuánto multiplicas 20 para obtener 100?</p>
-              <div class="coach-step-visual" style="margin:10px 0;"><svg viewBox="0 0 520 136" width="520" height="136" class="hw-model-svg hw-tape-diagram-svg" style="background:white; max-width:100%; height:auto; display:block; margin:0 auto; border-radius:10px; border:1px solid #cbd5e1;" role="img" aria-label="Tape diagram with 3 parts, Ratio Tape Model · 3 equal parts = 9" xmlns="http://www.w3.org/2000/svg">
-  <title>Tape Diagram (3 parts)</title>
-  <path d="M 36 36 L 36 26 L 260 26 L 260 20 L 260 26 L 484 26 L 484 36" fill="none" stroke="#0f766e" stroke-width="2" stroke-linecap="round"/>
-  <rect x="172" y="4" width="176" height="20" rx="5" fill="#0f766e"/>
-  <text x="260" y="18" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="12" font-weight="800" fill="#ffffff">Ratio Tape Model · 3 equal parts = 9</text>
-  <g class="hw-svg-tape-part" data-highlighted="true">
-    <rect x="36.0" y="44" width="149.3" height="44" fill="#1fa6a2" stroke="#12355b" stroke-width="2"/>
-    <text x="110.7" y="71" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="14" font-weight="800" fill="#ffffff">3</text>
-  </g>
-  <g class="hw-svg-tape-part">
-    <rect x="185.3" y="44" width="149.3" height="44" fill="#f8fafc" stroke="#12355b" stroke-width="2"/>
-    <text x="260.0" y="71" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="14" font-weight="800" fill="#12355b">3</text>
-  </g>
-  <g class="hw-svg-tape-part">
-    <rect x="334.7" y="44" width="149.3" height="44" fill="#e3f6f5" stroke="#12355b" stroke-width="2"/>
-    <text x="409.3" y="71" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="14" font-weight="800" fill="#12355b">3</text>
-  </g>
-  <rect x="36" y="44" width="448" height="44" rx="4" fill="none" stroke="#12355b" stroke-width="2.5"/>
-  <text x="260" y="116" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="13" font-weight="700" fill="#334155">Multiply or divide both parts by the same scale factor</text>
-</svg></div>
               <button type="button" class="coach-scratchpad-btn" onclick="toggleScratchpad()">✏️ <span class="lang-en">Try it on the scratchpad</span><span class="lang-es" lang="es">Pruébalo en la pizarra</span></button></div>
           </li>
           <li class="coach-ladder-step coach-explain-step">
@@ -2803,15 +2364,7 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
       </aside>
 
     <aside class="hw-copilot-card hw-problem-copilot" id="hw_copilot_prob_4" data-copilot-for="4">
-      <div class="hw-copilot-badge">🧭 <span class="lang-en">Caregiver Co-Pilot · Problem 5</span><span class="lang-es" lang="es">Copiloto familiar · Problema 5</span></div>
-      <p class="hw-copilot-socratic-line">
-        <strong>💬 <span class="lang-en">Ask if stuck:</span><span class="lang-es" lang="es">Pregunta si se detiene:</span></strong>
-        <em>"<span class="lang-en">3 out of 20 is how many out of 100?</span><span class="lang-es" lang="es">¿3 de cada 20 son cuántos de cada 100?</span>"</em>
-      </p>
-      <p class="hw-copilot-bridge-line">
-        <strong>🌉 <span class="lang-en">Model Bridge:</span><span class="lang-es" lang="es">Puente del modelo:</span></strong>
-        <span><span class="lang-en">Today we used tape diagrams and double number lines to see equivalent ratios as scaling both quantities by the same multiplier.</span><span class="lang-es" lang="es">Hoy usamos diagramas de cinta y rectas numéricas dobles para ver las razones equivalentes al escalar ambas cantidades por el mismo multiplicador.</span></span>
-      </p>
+      <p class="hw-copilot-socratic-line"><strong><span class="lang-en">Ask if stuck:</span><span class="lang-es" lang="es">Pregunta si se detiene:</span></strong> <em><span class="lang-en">3 out of 20 is how many out of 100?</span><span class="lang-es" lang="es">¿3 de cada 20 son cuántos de cada 100?</span></em></p>
     </aside>
 
       <details class="hw-answer-key" id="answer_key_4">
@@ -2858,26 +2411,6 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
             </button>
 
             <div class="coach-step-help" hidden><p class="lang-en">Change the fraction to a decimal first.</p><p class="lang-es" lang="es">Primero cambia la fracción a decimal.</p>
-              <div class="coach-step-visual" style="margin:10px 0;"><svg viewBox="0 0 520 136" width="520" height="136" class="hw-model-svg hw-tape-diagram-svg" style="background:white; max-width:100%; height:auto; display:block; margin:0 auto; border-radius:10px; border:1px solid #cbd5e1;" role="img" aria-label="Tape diagram with 3 parts, Ratio Tape Model · 3 equal parts = 9" xmlns="http://www.w3.org/2000/svg">
-  <title>Tape Diagram (3 parts)</title>
-  <path d="M 36 36 L 36 26 L 260 26 L 260 20 L 260 26 L 484 26 L 484 36" fill="none" stroke="#0f766e" stroke-width="2" stroke-linecap="round"/>
-  <rect x="172" y="4" width="176" height="20" rx="5" fill="#0f766e"/>
-  <text x="260" y="18" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="12" font-weight="800" fill="#ffffff">Ratio Tape Model · 3 equal parts = 9</text>
-  <g class="hw-svg-tape-part" data-highlighted="true">
-    <rect x="36.0" y="44" width="149.3" height="44" fill="#1fa6a2" stroke="#12355b" stroke-width="2"/>
-    <text x="110.7" y="71" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="14" font-weight="800" fill="#ffffff">3</text>
-  </g>
-  <g class="hw-svg-tape-part">
-    <rect x="185.3" y="44" width="149.3" height="44" fill="#f8fafc" stroke="#12355b" stroke-width="2"/>
-    <text x="260.0" y="71" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="14" font-weight="800" fill="#12355b">3</text>
-  </g>
-  <g class="hw-svg-tape-part">
-    <rect x="334.7" y="44" width="149.3" height="44" fill="#e3f6f5" stroke="#12355b" stroke-width="2"/>
-    <text x="409.3" y="71" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="14" font-weight="800" fill="#12355b">3</text>
-  </g>
-  <rect x="36" y="44" width="448" height="44" rx="4" fill="none" stroke="#12355b" stroke-width="2.5"/>
-  <text x="260" y="116" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="13" font-weight="700" fill="#334155">Multiply or divide both parts by the same scale factor</text>
-</svg></div>
               <button type="button" class="coach-scratchpad-btn" onclick="toggleScratchpad()">✏️ <span class="lang-en">Try it on the scratchpad</span><span class="lang-es" lang="es">Pruébalo en la pizarra</span></button></div>
           </li>
           <li class="coach-ladder-step coach-explain-step">
@@ -2960,15 +2493,7 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
       </aside>
 
     <aside class="hw-copilot-card hw-problem-copilot" id="hw_copilot_prob_5" data-copilot-for="5">
-      <div class="hw-copilot-badge">🧭 <span class="lang-en">Caregiver Co-Pilot · Problem 6</span><span class="lang-es" lang="es">Copiloto familiar · Problema 6</span></div>
-      <p class="hw-copilot-socratic-line">
-        <strong>💬 <span class="lang-en">Ask if stuck:</span><span class="lang-es" lang="es">Pregunta si se detiene:</span></strong>
-        <em>"<span class="lang-en">Then change the decimal to a percent.</span><span class="lang-es" lang="es">Luego cambia el decimal a porcentaje.</span>"</em>
-      </p>
-      <p class="hw-copilot-bridge-line">
-        <strong>🌉 <span class="lang-en">Model Bridge:</span><span class="lang-es" lang="es">Puente del modelo:</span></strong>
-        <span><span class="lang-en">Today we used tape diagrams and double number lines to see equivalent ratios as scaling both quantities by the same multiplier.</span><span class="lang-es" lang="es">Hoy usamos diagramas de cinta y rectas numéricas dobles para ver las razones equivalentes al escalar ambas cantidades por el mismo multiplicador.</span></span>
-      </p>
+      <p class="hw-copilot-socratic-line"><strong><span class="lang-en">Ask if stuck:</span><span class="lang-es" lang="es">Pregunta si se detiene:</span></strong> <em><span class="lang-en">Then change the decimal to a percent.</span><span class="lang-es" lang="es">Luego cambia el decimal a porcentaje.</span></em></p>
     </aside>
 
       <details class="hw-answer-key" id="answer_key_5">
@@ -3036,26 +2561,6 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
             </button>
 
             <div class="coach-step-help" hidden><p class="lang-en">50% is the same as 1/2 or 0.5 — that is your comparison line for every card.</p><p class="lang-es" lang="es">50% es lo mismo que 1/2 o 0.5: esa es tu línea de comparación para cada tarjeta.</p>
-              <div class="coach-step-visual" style="margin:10px 0;"><svg viewBox="0 0 520 136" width="520" height="136" class="hw-model-svg hw-tape-diagram-svg" style="background:white; max-width:100%; height:auto; display:block; margin:0 auto; border-radius:10px; border:1px solid #cbd5e1;" role="img" aria-label="Tape diagram with 3 parts, Ratio Tape Model · 3 equal parts = 9" xmlns="http://www.w3.org/2000/svg">
-  <title>Tape Diagram (3 parts)</title>
-  <path d="M 36 36 L 36 26 L 260 26 L 260 20 L 260 26 L 484 26 L 484 36" fill="none" stroke="#0f766e" stroke-width="2" stroke-linecap="round"/>
-  <rect x="172" y="4" width="176" height="20" rx="5" fill="#0f766e"/>
-  <text x="260" y="18" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="12" font-weight="800" fill="#ffffff">Ratio Tape Model · 3 equal parts = 9</text>
-  <g class="hw-svg-tape-part" data-highlighted="true">
-    <rect x="36.0" y="44" width="149.3" height="44" fill="#1fa6a2" stroke="#12355b" stroke-width="2"/>
-    <text x="110.7" y="71" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="14" font-weight="800" fill="#ffffff">3</text>
-  </g>
-  <g class="hw-svg-tape-part">
-    <rect x="185.3" y="44" width="149.3" height="44" fill="#f8fafc" stroke="#12355b" stroke-width="2"/>
-    <text x="260.0" y="71" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="14" font-weight="800" fill="#12355b">3</text>
-  </g>
-  <g class="hw-svg-tape-part">
-    <rect x="334.7" y="44" width="149.3" height="44" fill="#e3f6f5" stroke="#12355b" stroke-width="2"/>
-    <text x="409.3" y="71" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="14" font-weight="800" fill="#12355b">3</text>
-  </g>
-  <rect x="36" y="44" width="448" height="44" rx="4" fill="none" stroke="#12355b" stroke-width="2.5"/>
-  <text x="260" y="116" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="13" font-weight="700" fill="#334155">Multiply or divide both parts by the same scale factor</text>
-</svg></div>
               <button type="button" class="coach-scratchpad-btn" onclick="toggleScratchpad()">✏️ <span class="lang-en">Try it on the scratchpad</span><span class="lang-es" lang="es">Pruébalo en la pizarra</span></button></div>
           </li>
           <li class="coach-ladder-step coach-explain-step">
@@ -3253,15 +2758,7 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
       </aside>
 
     <aside class="hw-copilot-card hw-problem-copilot" id="hw_copilot_prob_6" data-copilot-for="6">
-      <div class="hw-copilot-badge">🧭 <span class="lang-en">Caregiver Co-Pilot · Problem 7</span><span class="lang-es" lang="es">Copiloto familiar · Problema 7</span></div>
-      <p class="hw-copilot-socratic-line">
-        <strong>💬 <span class="lang-en">Ask if stuck:</span><span class="lang-es" lang="es">Pregunta si se detiene:</span></strong>
-        <em>"<span class="lang-en">Turn each card into a fraction out of 100 or a decimal, then ask: is it more or less than 50/100?</span><span class="lang-es" lang="es">Convierte cada tarjeta en una fracción de cada 100 o en un decimal y luego pregunta: ¿es más o menos que 50/100?</span>"</em>
-      </p>
-      <p class="hw-copilot-bridge-line">
-        <strong>🌉 <span class="lang-en">Model Bridge:</span><span class="lang-es" lang="es">Puente del modelo:</span></strong>
-        <span><span class="lang-en">Today we used tape diagrams and double number lines to see equivalent ratios as scaling both quantities by the same multiplier.</span><span class="lang-es" lang="es">Hoy usamos diagramas de cinta y rectas numéricas dobles para ver las razones equivalentes al escalar ambas cantidades por el mismo multiplicador.</span></span>
-      </p>
+      <p class="hw-copilot-socratic-line"><strong><span class="lang-en">Ask if stuck:</span><span class="lang-es" lang="es">Pregunta si se detiene:</span></strong> <em><span class="lang-en">Turn each card into a fraction out of 100 or a decimal, then ask: is it more or less than 50/100?</span><span class="lang-es" lang="es">Convierte cada tarjeta en una fracción de cada 100 o en un decimal y luego pregunta: ¿es más o menos que 50/100?</span></em></p>
     </aside>
 
       <details class="hw-answer-key" id="answer_key_6">
@@ -3308,26 +2805,6 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
             </button>
 
             <div class="coach-step-help" hidden><p class="lang-en">Percent means out of 100. What do you multiply the denominator 5 by to get 100?</p><p class="lang-es" lang="es">Porcentaje significa de cada 100. ¿Por cuánto multiplicas el denominador 5 para llegar a 100?</p>
-              <div class="coach-step-visual" style="margin:10px 0;"><svg viewBox="0 0 520 136" width="520" height="136" class="hw-model-svg hw-tape-diagram-svg" style="background:white; max-width:100%; height:auto; display:block; margin:0 auto; border-radius:10px; border:1px solid #cbd5e1;" role="img" aria-label="Tape diagram with 3 parts, Ratio Tape Model · 3 equal parts = 9" xmlns="http://www.w3.org/2000/svg">
-  <title>Tape Diagram (3 parts)</title>
-  <path d="M 36 36 L 36 26 L 260 26 L 260 20 L 260 26 L 484 26 L 484 36" fill="none" stroke="#0f766e" stroke-width="2" stroke-linecap="round"/>
-  <rect x="172" y="4" width="176" height="20" rx="5" fill="#0f766e"/>
-  <text x="260" y="18" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="12" font-weight="800" fill="#ffffff">Ratio Tape Model · 3 equal parts = 9</text>
-  <g class="hw-svg-tape-part" data-highlighted="true">
-    <rect x="36.0" y="44" width="149.3" height="44" fill="#1fa6a2" stroke="#12355b" stroke-width="2"/>
-    <text x="110.7" y="71" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="14" font-weight="800" fill="#ffffff">3</text>
-  </g>
-  <g class="hw-svg-tape-part">
-    <rect x="185.3" y="44" width="149.3" height="44" fill="#f8fafc" stroke="#12355b" stroke-width="2"/>
-    <text x="260.0" y="71" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="14" font-weight="800" fill="#12355b">3</text>
-  </g>
-  <g class="hw-svg-tape-part">
-    <rect x="334.7" y="44" width="149.3" height="44" fill="#e3f6f5" stroke="#12355b" stroke-width="2"/>
-    <text x="409.3" y="71" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="14" font-weight="800" fill="#12355b">3</text>
-  </g>
-  <rect x="36" y="44" width="448" height="44" rx="4" fill="none" stroke="#12355b" stroke-width="2.5"/>
-  <text x="260" y="116" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="13" font-weight="700" fill="#334155">Multiply or divide both parts by the same scale factor</text>
-</svg></div>
               <button type="button" class="coach-scratchpad-btn" onclick="toggleScratchpad()">✏️ <span class="lang-en">Try it on the scratchpad</span><span class="lang-es" lang="es">Pruébalo en la pizarra</span></button></div>
           </li>
           <li class="coach-ladder-step coach-explain-step">
@@ -3410,15 +2887,7 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
       </aside>
 
     <aside class="hw-copilot-card hw-problem-copilot" id="hw_copilot_prob_7" data-copilot-for="7">
-      <div class="hw-copilot-badge">🧭 <span class="lang-en">Caregiver Co-Pilot · Problem 8</span><span class="lang-es" lang="es">Copiloto familiar · Problema 8</span></div>
-      <p class="hw-copilot-socratic-line">
-        <strong>💬 <span class="lang-en">Ask if stuck:</span><span class="lang-es" lang="es">Pregunta si se detiene:</span></strong>
-        <em>"<span class="lang-en">5 × 20 = 100, so multiply the numerator by that same 20 to build the equivalent fraction.</span><span class="lang-es" lang="es">5 × 20 = 100, así que multiplica el numerador por ese mismo 20 para formar la fracción equivalente.</span>"</em>
-      </p>
-      <p class="hw-copilot-bridge-line">
-        <strong>🌉 <span class="lang-en">Model Bridge:</span><span class="lang-es" lang="es">Puente del modelo:</span></strong>
-        <span><span class="lang-en">Today we used tape diagrams and double number lines to see equivalent ratios as scaling both quantities by the same multiplier.</span><span class="lang-es" lang="es">Hoy usamos diagramas de cinta y rectas numéricas dobles para ver las razones equivalentes al escalar ambas cantidades por el mismo multiplicador.</span></span>
-      </p>
+      <p class="hw-copilot-socratic-line"><strong><span class="lang-en">Ask if stuck:</span><span class="lang-es" lang="es">Pregunta si se detiene:</span></strong> <em><span class="lang-en">5 × 20 = 100, so multiply the numerator by that same 20 to build the equivalent fraction.</span><span class="lang-es" lang="es">5 × 20 = 100, así que multiplica el numerador por ese mismo 20 para formar la fracción equivalente.</span></em></p>
     </aside>
 
       <details class="hw-answer-key" id="answer_key_7">
@@ -3465,26 +2934,6 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
             </button>
 
             <div class="coach-step-help" hidden><p class="lang-en">The denominator 20 is friendly: 20 × 5 = 100, and percents are always &#039;out of 100&#039;.</p><p class="lang-es" lang="es">El denominador 20 es amigable: 20 × 5 = 100, y los porcentajes siempre son &#039;de cada 100&#039;.</p>
-              <div class="coach-step-visual" style="margin:10px 0;"><svg viewBox="0 0 520 136" width="520" height="136" class="hw-model-svg hw-tape-diagram-svg" style="background:white; max-width:100%; height:auto; display:block; margin:0 auto; border-radius:10px; border:1px solid #cbd5e1;" role="img" aria-label="Tape diagram with 3 parts, Ratio Tape Model · 3 equal parts = 9" xmlns="http://www.w3.org/2000/svg">
-  <title>Tape Diagram (3 parts)</title>
-  <path d="M 36 36 L 36 26 L 260 26 L 260 20 L 260 26 L 484 26 L 484 36" fill="none" stroke="#0f766e" stroke-width="2" stroke-linecap="round"/>
-  <rect x="172" y="4" width="176" height="20" rx="5" fill="#0f766e"/>
-  <text x="260" y="18" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="12" font-weight="800" fill="#ffffff">Ratio Tape Model · 3 equal parts = 9</text>
-  <g class="hw-svg-tape-part" data-highlighted="true">
-    <rect x="36.0" y="44" width="149.3" height="44" fill="#1fa6a2" stroke="#12355b" stroke-width="2"/>
-    <text x="110.7" y="71" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="14" font-weight="800" fill="#ffffff">3</text>
-  </g>
-  <g class="hw-svg-tape-part">
-    <rect x="185.3" y="44" width="149.3" height="44" fill="#f8fafc" stroke="#12355b" stroke-width="2"/>
-    <text x="260.0" y="71" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="14" font-weight="800" fill="#12355b">3</text>
-  </g>
-  <g class="hw-svg-tape-part">
-    <rect x="334.7" y="44" width="149.3" height="44" fill="#e3f6f5" stroke="#12355b" stroke-width="2"/>
-    <text x="409.3" y="71" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="14" font-weight="800" fill="#12355b">3</text>
-  </g>
-  <rect x="36" y="44" width="448" height="44" rx="4" fill="none" stroke="#12355b" stroke-width="2.5"/>
-  <text x="260" y="116" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="13" font-weight="700" fill="#334155">Multiply or divide both parts by the same scale factor</text>
-</svg></div>
               <button type="button" class="coach-scratchpad-btn" onclick="toggleScratchpad()">✏️ <span class="lang-en">Try it on the scratchpad</span><span class="lang-es" lang="es">Pruébalo en la pizarra</span></button></div>
           </li>
           <li class="coach-ladder-step coach-explain-step">
@@ -3567,15 +3016,7 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
       </aside>
 
     <aside class="hw-copilot-card hw-problem-copilot" id="hw_copilot_prob_8" data-copilot-for="8">
-      <div class="hw-copilot-badge">🧭 <span class="lang-en">Caregiver Co-Pilot · Problem 9</span><span class="lang-es" lang="es">Copiloto familiar · Problema 9</span></div>
-      <p class="hw-copilot-socratic-line">
-        <strong>💬 <span class="lang-en">Ask if stuck:</span><span class="lang-es" lang="es">Pregunta si se detiene:</span></strong>
-        <em>"<span class="lang-en">Make an equivalent fraction with denominator 100 by multiplying top AND bottom by the same number.</span><span class="lang-es" lang="es">Forma una fracción equivalente con denominador 100 multiplicando arriba Y abajo por el mismo número.</span>"</em>
-      </p>
-      <p class="hw-copilot-bridge-line">
-        <strong>🌉 <span class="lang-en">Model Bridge:</span><span class="lang-es" lang="es">Puente del modelo:</span></strong>
-        <span><span class="lang-en">Today we used tape diagrams and double number lines to see equivalent ratios as scaling both quantities by the same multiplier.</span><span class="lang-es" lang="es">Hoy usamos diagramas de cinta y rectas numéricas dobles para ver las razones equivalentes al escalar ambas cantidades por el mismo multiplicador.</span></span>
-      </p>
+      <p class="hw-copilot-socratic-line"><strong><span class="lang-en">Ask if stuck:</span><span class="lang-es" lang="es">Pregunta si se detiene:</span></strong> <em><span class="lang-en">Make an equivalent fraction with denominator 100 by multiplying top AND bottom by the same number.</span><span class="lang-es" lang="es">Forma una fracción equivalente con denominador 100 multiplicando arriba Y abajo por el mismo número.</span></em></p>
     </aside>
 
       <details class="hw-answer-key" id="answer_key_8">
@@ -3638,26 +3079,6 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
             </button>
 
             <div class="coach-step-help" hidden><p class="lang-en">Each row gives you ONE form. Percent means out of 100, so try to rewrite each fraction with a denominator of 100.</p><p class="lang-es" lang="es">Cada fila te da UNA forma. Porcentaje significa de cada 100, así que intenta reescribir cada fracción con denominador 100.</p>
-              <div class="coach-step-visual" style="margin:10px 0;"><svg viewBox="0 0 520 136" width="520" height="136" class="hw-model-svg hw-tape-diagram-svg" style="background:white; max-width:100%; height:auto; display:block; margin:0 auto; border-radius:10px; border:1px solid #cbd5e1;" role="img" aria-label="Tape diagram with 3 parts, Ratio Tape Model · 3 equal parts = 9" xmlns="http://www.w3.org/2000/svg">
-  <title>Tape Diagram (3 parts)</title>
-  <path d="M 36 36 L 36 26 L 260 26 L 260 20 L 260 26 L 484 26 L 484 36" fill="none" stroke="#0f766e" stroke-width="2" stroke-linecap="round"/>
-  <rect x="172" y="4" width="176" height="20" rx="5" fill="#0f766e"/>
-  <text x="260" y="18" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="12" font-weight="800" fill="#ffffff">Ratio Tape Model · 3 equal parts = 9</text>
-  <g class="hw-svg-tape-part" data-highlighted="true">
-    <rect x="36.0" y="44" width="149.3" height="44" fill="#1fa6a2" stroke="#12355b" stroke-width="2"/>
-    <text x="110.7" y="71" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="14" font-weight="800" fill="#ffffff">3</text>
-  </g>
-  <g class="hw-svg-tape-part">
-    <rect x="185.3" y="44" width="149.3" height="44" fill="#f8fafc" stroke="#12355b" stroke-width="2"/>
-    <text x="260.0" y="71" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="14" font-weight="800" fill="#12355b">3</text>
-  </g>
-  <g class="hw-svg-tape-part">
-    <rect x="334.7" y="44" width="149.3" height="44" fill="#e3f6f5" stroke="#12355b" stroke-width="2"/>
-    <text x="409.3" y="71" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="14" font-weight="800" fill="#12355b">3</text>
-  </g>
-  <rect x="36" y="44" width="448" height="44" rx="4" fill="none" stroke="#12355b" stroke-width="2.5"/>
-  <text x="260" y="116" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="13" font-weight="700" fill="#334155">Multiply or divide both parts by the same scale factor</text>
-</svg></div>
               <button type="button" class="coach-scratchpad-btn" onclick="toggleScratchpad()">✏️ <span class="lang-en">Try it on the scratchpad</span><span class="lang-es" lang="es">Pruébalo en la pizarra</span></button></div>
           </li>
           <li class="coach-ladder-step coach-explain-step">
@@ -3896,15 +3317,7 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
       </aside>
 
     <aside class="hw-copilot-card hw-problem-copilot" id="hw_copilot_prob_9" data-copilot-for="9">
-      <div class="hw-copilot-badge">🧭 <span class="lang-en">Caregiver Co-Pilot · Problem 10</span><span class="lang-es" lang="es">Copiloto familiar · Problema 10</span></div>
-      <p class="hw-copilot-socratic-line">
-        <strong>💬 <span class="lang-en">Ask if stuck:</span><span class="lang-es" lang="es">Pregunta si se detiene:</span></strong>
-        <em>"<span class="lang-en">Fraction → percent: scale to /100 when you can (2, 4, 5, 10, 20, 25, 50 all work). If the denominator will not reach 100 (8, 3, 7), divide instead and then multiply by 100.</span><span class="lang-es" lang="es">Fracción → porcentaje: escala a /100 cuando puedas (2, 4, 5, 10, 20, 25 y 50 funcionan). Si el denominador no llega a 100 (8, 3, 7), divide y luego multiplica por 100.</span>"</em>
-      </p>
-      <p class="hw-copilot-bridge-line">
-        <strong>🌉 <span class="lang-en">Model Bridge:</span><span class="lang-es" lang="es">Puente del modelo:</span></strong>
-        <span><span class="lang-en">Today we used tape diagrams and double number lines to see equivalent ratios as scaling both quantities by the same multiplier.</span><span class="lang-es" lang="es">Hoy usamos diagramas de cinta y rectas numéricas dobles para ver las razones equivalentes al escalar ambas cantidades por el mismo multiplicador.</span></span>
-      </p>
+      <p class="hw-copilot-socratic-line"><strong><span class="lang-en">Ask if stuck:</span><span class="lang-es" lang="es">Pregunta si se detiene:</span></strong> <em><span class="lang-en">Fraction → percent: scale to /100 when you can (2, 4, 5, 10, 20, 25, 50 all work). If the denominator will not reach 100 (8, 3, 7), divide instead and then multiply by 100.</span><span class="lang-es" lang="es">Fracción → porcentaje: escala a /100 cuando puedas (2, 4, 5, 10, 20, 25 y 50 funcionan). Si el denominador no llega a 100 (8, 3, 7), divide y luego multiplica por 100.</span></em></p>
     </aside>
 
       <details class="hw-answer-key" id="answer_key_9">
@@ -3951,26 +3364,6 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
             </button>
 
             <div class="coach-step-help" hidden><p class="lang-en">Try the out-of-100 move first: is there a whole number you can multiply 8 by to get exactly 100?</p><p class="lang-es" lang="es">Prueba primero el paso de cada 100: ¿hay un número entero por el que puedas multiplicar 8 para llegar exactamente a 100?</p>
-              <div class="coach-step-visual" style="margin:10px 0;"><svg viewBox="0 0 520 136" width="520" height="136" class="hw-model-svg hw-tape-diagram-svg" style="background:white; max-width:100%; height:auto; display:block; margin:0 auto; border-radius:10px; border:1px solid #cbd5e1;" role="img" aria-label="Tape diagram with 3 parts, Ratio Tape Model · 3 equal parts = 9" xmlns="http://www.w3.org/2000/svg">
-  <title>Tape Diagram (3 parts)</title>
-  <path d="M 36 36 L 36 26 L 260 26 L 260 20 L 260 26 L 484 26 L 484 36" fill="none" stroke="#0f766e" stroke-width="2" stroke-linecap="round"/>
-  <rect x="172" y="4" width="176" height="20" rx="5" fill="#0f766e"/>
-  <text x="260" y="18" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="12" font-weight="800" fill="#ffffff">Ratio Tape Model · 3 equal parts = 9</text>
-  <g class="hw-svg-tape-part" data-highlighted="true">
-    <rect x="36.0" y="44" width="149.3" height="44" fill="#1fa6a2" stroke="#12355b" stroke-width="2"/>
-    <text x="110.7" y="71" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="14" font-weight="800" fill="#ffffff">3</text>
-  </g>
-  <g class="hw-svg-tape-part">
-    <rect x="185.3" y="44" width="149.3" height="44" fill="#f8fafc" stroke="#12355b" stroke-width="2"/>
-    <text x="260.0" y="71" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="14" font-weight="800" fill="#12355b">3</text>
-  </g>
-  <g class="hw-svg-tape-part">
-    <rect x="334.7" y="44" width="149.3" height="44" fill="#e3f6f5" stroke="#12355b" stroke-width="2"/>
-    <text x="409.3" y="71" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="14" font-weight="800" fill="#12355b">3</text>
-  </g>
-  <rect x="36" y="44" width="448" height="44" rx="4" fill="none" stroke="#12355b" stroke-width="2.5"/>
-  <text x="260" y="116" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="13" font-weight="700" fill="#334155">Multiply or divide both parts by the same scale factor</text>
-</svg></div>
               <button type="button" class="coach-scratchpad-btn" onclick="toggleScratchpad()">✏️ <span class="lang-en">Try it on the scratchpad</span><span class="lang-es" lang="es">Pruébalo en la pizarra</span></button></div>
           </li>
           <li class="coach-ladder-step coach-explain-step">
@@ -4053,15 +3446,7 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
       </aside>
 
     <aside class="hw-copilot-card hw-problem-copilot" id="hw_copilot_prob_10" data-copilot-for="10">
-      <div class="hw-copilot-badge">🧭 <span class="lang-en">Caregiver Co-Pilot · Problem 11</span><span class="lang-es" lang="es">Copiloto familiar · Problema 11</span></div>
-      <p class="hw-copilot-socratic-line">
-        <strong>💬 <span class="lang-en">Ask if stuck:</span><span class="lang-es" lang="es">Pregunta si se detiene:</span></strong>
-        <em>"<span class="lang-en">There isn't (8 × 12 = 96, 8 × 13 = 104), so use the backup method: divide the numerator by the denominator.</span><span class="lang-es" lang="es">No lo hay (8 × 12 = 96, 8 × 13 = 104), así que usa el método de respaldo: divide el numerador entre el denominador.</span>"</em>
-      </p>
-      <p class="hw-copilot-bridge-line">
-        <strong>🌉 <span class="lang-en">Model Bridge:</span><span class="lang-es" lang="es">Puente del modelo:</span></strong>
-        <span><span class="lang-en">Today we used tape diagrams and double number lines to see equivalent ratios as scaling both quantities by the same multiplier.</span><span class="lang-es" lang="es">Hoy usamos diagramas de cinta y rectas numéricas dobles para ver las razones equivalentes al escalar ambas cantidades por el mismo multiplicador.</span></span>
-      </p>
+      <p class="hw-copilot-socratic-line"><strong><span class="lang-en">Ask if stuck:</span><span class="lang-es" lang="es">Pregunta si se detiene:</span></strong> <em><span class="lang-en">There isn't (8 × 12 = 96, 8 × 13 = 104), so use the backup method: divide the numerator by the denominator.</span><span class="lang-es" lang="es">No lo hay (8 × 12 = 96, 8 × 13 = 104), así que usa el método de respaldo: divide el numerador entre el denominador.</span></em></p>
     </aside>
 
       <details class="hw-answer-key" id="answer_key_10">
@@ -4125,26 +3510,6 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
             </button>
 
             <div class="coach-step-help" hidden><p class="lang-en">You are sorting by the FORM each tile is written in, not by its value — no converting is needed here.</p><p class="lang-es" lang="es">Estás clasificando por la FORMA en que está escrita cada ficha, no por su valor; aquí no hace falta convertir nada.</p>
-              <div class="coach-step-visual" style="margin:10px 0;"><svg viewBox="0 0 520 136" width="520" height="136" class="hw-model-svg hw-tape-diagram-svg" style="background:white; max-width:100%; height:auto; display:block; margin:0 auto; border-radius:10px; border:1px solid #cbd5e1;" role="img" aria-label="Tape diagram with 3 parts, Ratio Tape Model · 3 equal parts = 9" xmlns="http://www.w3.org/2000/svg">
-  <title>Tape Diagram (3 parts)</title>
-  <path d="M 36 36 L 36 26 L 260 26 L 260 20 L 260 26 L 484 26 L 484 36" fill="none" stroke="#0f766e" stroke-width="2" stroke-linecap="round"/>
-  <rect x="172" y="4" width="176" height="20" rx="5" fill="#0f766e"/>
-  <text x="260" y="18" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="12" font-weight="800" fill="#ffffff">Ratio Tape Model · 3 equal parts = 9</text>
-  <g class="hw-svg-tape-part" data-highlighted="true">
-    <rect x="36.0" y="44" width="149.3" height="44" fill="#1fa6a2" stroke="#12355b" stroke-width="2"/>
-    <text x="110.7" y="71" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="14" font-weight="800" fill="#ffffff">3</text>
-  </g>
-  <g class="hw-svg-tape-part">
-    <rect x="185.3" y="44" width="149.3" height="44" fill="#f8fafc" stroke="#12355b" stroke-width="2"/>
-    <text x="260.0" y="71" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="14" font-weight="800" fill="#12355b">3</text>
-  </g>
-  <g class="hw-svg-tape-part">
-    <rect x="334.7" y="44" width="149.3" height="44" fill="#e3f6f5" stroke="#12355b" stroke-width="2"/>
-    <text x="409.3" y="71" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="14" font-weight="800" fill="#12355b">3</text>
-  </g>
-  <rect x="36" y="44" width="448" height="44" rx="4" fill="none" stroke="#12355b" stroke-width="2.5"/>
-  <text x="260" y="116" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="13" font-weight="700" fill="#334155">Multiply or divide both parts by the same scale factor</text>
-</svg></div>
               <button type="button" class="coach-scratchpad-btn" onclick="toggleScratchpad()">✏️ <span class="lang-en">Try it on the scratchpad</span><span class="lang-es" lang="es">Pruébalo en la pizarra</span></button></div>
           </li>
           <li class="coach-ladder-step coach-explain-step">
@@ -4316,15 +3681,7 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
       </aside>
 
     <aside class="hw-copilot-card hw-problem-copilot" id="hw_copilot_prob_11" data-copilot-for="11">
-      <div class="hw-copilot-badge">🧭 <span class="lang-en">Caregiver Co-Pilot · Problem 12</span><span class="lang-es" lang="es">Copiloto familiar · Problema 12</span></div>
-      <p class="hw-copilot-socratic-line">
-        <strong>💬 <span class="lang-en">Ask if stuck:</span><span class="lang-es" lang="es">Pregunta si se detiene:</span></strong>
-        <em>"<span class="lang-en">Look for the giveaway mark on each tile: a fraction bar, a decimal point, or a % symbol.</span><span class="lang-es" lang="es">Busca la marca delatora de cada ficha: una barra de fracción, un punto decimal o el símbolo %.</span>"</em>
-      </p>
-      <p class="hw-copilot-bridge-line">
-        <strong>🌉 <span class="lang-en">Model Bridge:</span><span class="lang-es" lang="es">Puente del modelo:</span></strong>
-        <span><span class="lang-en">Today we used tape diagrams and double number lines to see equivalent ratios as scaling both quantities by the same multiplier.</span><span class="lang-es" lang="es">Hoy usamos diagramas de cinta y rectas numéricas dobles para ver las razones equivalentes al escalar ambas cantidades por el mismo multiplicador.</span></span>
-      </p>
+      <p class="hw-copilot-socratic-line"><strong><span class="lang-en">Ask if stuck:</span><span class="lang-es" lang="es">Pregunta si se detiene:</span></strong> <em><span class="lang-en">Look for the giveaway mark on each tile: a fraction bar, a decimal point, or a % symbol.</span><span class="lang-es" lang="es">Busca la marca delatora de cada ficha: una barra de fracción, un punto decimal o el símbolo %.</span></em></p>
     </aside>
 
       <details class="hw-answer-key" id="answer_key_11">
@@ -4371,26 +3728,6 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
             </button>
 
             <div class="coach-step-help" hidden><p class="lang-en">Percent means out of 100, so rewrite 3/5 with 100 on the bottom.</p><p class="lang-es" lang="es">Porcentaje significa de cada 100, así que reescribe 3/5 con 100 abajo.</p>
-              <div class="coach-step-visual" style="margin:10px 0;"><svg viewBox="0 0 520 136" width="520" height="136" class="hw-model-svg hw-tape-diagram-svg" style="background:white; max-width:100%; height:auto; display:block; margin:0 auto; border-radius:10px; border:1px solid #cbd5e1;" role="img" aria-label="Tape diagram with 3 parts, Ratio Tape Model · 3 equal parts = 9" xmlns="http://www.w3.org/2000/svg">
-  <title>Tape Diagram (3 parts)</title>
-  <path d="M 36 36 L 36 26 L 260 26 L 260 20 L 260 26 L 484 26 L 484 36" fill="none" stroke="#0f766e" stroke-width="2" stroke-linecap="round"/>
-  <rect x="172" y="4" width="176" height="20" rx="5" fill="#0f766e"/>
-  <text x="260" y="18" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="12" font-weight="800" fill="#ffffff">Ratio Tape Model · 3 equal parts = 9</text>
-  <g class="hw-svg-tape-part" data-highlighted="true">
-    <rect x="36.0" y="44" width="149.3" height="44" fill="#1fa6a2" stroke="#12355b" stroke-width="2"/>
-    <text x="110.7" y="71" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="14" font-weight="800" fill="#ffffff">3</text>
-  </g>
-  <g class="hw-svg-tape-part">
-    <rect x="185.3" y="44" width="149.3" height="44" fill="#f8fafc" stroke="#12355b" stroke-width="2"/>
-    <text x="260.0" y="71" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="14" font-weight="800" fill="#12355b">3</text>
-  </g>
-  <g class="hw-svg-tape-part">
-    <rect x="334.7" y="44" width="149.3" height="44" fill="#e3f6f5" stroke="#12355b" stroke-width="2"/>
-    <text x="409.3" y="71" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="14" font-weight="800" fill="#12355b">3</text>
-  </g>
-  <rect x="36" y="44" width="448" height="44" rx="4" fill="none" stroke="#12355b" stroke-width="2.5"/>
-  <text x="260" y="116" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="13" font-weight="700" fill="#334155">Multiply or divide both parts by the same scale factor</text>
-</svg></div>
               <button type="button" class="coach-scratchpad-btn" onclick="toggleScratchpad()">✏️ <span class="lang-en">Try it on the scratchpad</span><span class="lang-es" lang="es">Pruébalo en la pizarra</span></button></div>
           </li>
           <li class="coach-ladder-step coach-explain-step">
@@ -4473,15 +3810,7 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
       </aside>
 
     <aside class="hw-copilot-card hw-problem-copilot" id="hw_copilot_prob_12" data-copilot-for="12">
-      <div class="hw-copilot-badge">🧭 <span class="lang-en">Caregiver Co-Pilot · Problem 13</span><span class="lang-es" lang="es">Copiloto familiar · Problema 13</span></div>
-      <p class="hw-copilot-socratic-line">
-        <strong>💬 <span class="lang-en">Ask if stuck:</span><span class="lang-es" lang="es">Pregunta si se detiene:</span></strong>
-        <em>"<span class="lang-en">What do you multiply 5 by to get 100? Multiply the numerator by that same number.</span><span class="lang-es" lang="es">¿Por cuánto multiplicas 5 para llegar a 100? Multiplica el numerador por ese mismo número.</span>"</em>
-      </p>
-      <p class="hw-copilot-bridge-line">
-        <strong>🌉 <span class="lang-en">Model Bridge:</span><span class="lang-es" lang="es">Puente del modelo:</span></strong>
-        <span><span class="lang-en">Today we used tape diagrams and double number lines to see equivalent ratios as scaling both quantities by the same multiplier.</span><span class="lang-es" lang="es">Hoy usamos diagramas de cinta y rectas numéricas dobles para ver las razones equivalentes al escalar ambas cantidades por el mismo multiplicador.</span></span>
-      </p>
+      <p class="hw-copilot-socratic-line"><strong><span class="lang-en">Ask if stuck:</span><span class="lang-es" lang="es">Pregunta si se detiene:</span></strong> <em><span class="lang-en">What do you multiply 5 by to get 100? Multiply the numerator by that same number.</span><span class="lang-es" lang="es">¿Por cuánto multiplicas 5 para llegar a 100? Multiplica el numerador por ese mismo número.</span></em></p>
     </aside>
 
       <details class="hw-answer-key" id="answer_key_12">
@@ -4528,26 +3857,6 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
             </button>
 
             <div class="coach-step-help" hidden><p class="lang-en">Every score tile has exactly one match that shows the SAME value written as a decimal and a percent.</p><p class="lang-es" lang="es">Cada ficha de puntaje tiene exactamente una pareja que muestra el MISMO valor escrito como decimal y como por ciento.</p>
-              <div class="coach-step-visual" style="margin:10px 0;"><svg viewBox="0 0 520 136" width="520" height="136" class="hw-model-svg hw-tape-diagram-svg" style="background:white; max-width:100%; height:auto; display:block; margin:0 auto; border-radius:10px; border:1px solid #cbd5e1;" role="img" aria-label="Tape diagram with 3 parts, Ratio Tape Model · 3 equal parts = 9" xmlns="http://www.w3.org/2000/svg">
-  <title>Tape Diagram (3 parts)</title>
-  <path d="M 36 36 L 36 26 L 260 26 L 260 20 L 260 26 L 484 26 L 484 36" fill="none" stroke="#0f766e" stroke-width="2" stroke-linecap="round"/>
-  <rect x="172" y="4" width="176" height="20" rx="5" fill="#0f766e"/>
-  <text x="260" y="18" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="12" font-weight="800" fill="#ffffff">Ratio Tape Model · 3 equal parts = 9</text>
-  <g class="hw-svg-tape-part" data-highlighted="true">
-    <rect x="36.0" y="44" width="149.3" height="44" fill="#1fa6a2" stroke="#12355b" stroke-width="2"/>
-    <text x="110.7" y="71" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="14" font-weight="800" fill="#ffffff">3</text>
-  </g>
-  <g class="hw-svg-tape-part">
-    <rect x="185.3" y="44" width="149.3" height="44" fill="#f8fafc" stroke="#12355b" stroke-width="2"/>
-    <text x="260.0" y="71" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="14" font-weight="800" fill="#12355b">3</text>
-  </g>
-  <g class="hw-svg-tape-part">
-    <rect x="334.7" y="44" width="149.3" height="44" fill="#e3f6f5" stroke="#12355b" stroke-width="2"/>
-    <text x="409.3" y="71" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="14" font-weight="800" fill="#12355b">3</text>
-  </g>
-  <rect x="36" y="44" width="448" height="44" rx="4" fill="none" stroke="#12355b" stroke-width="2.5"/>
-  <text x="260" y="116" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="13" font-weight="700" fill="#334155">Multiply or divide both parts by the same scale factor</text>
-</svg></div>
               <button type="button" class="coach-scratchpad-btn" onclick="toggleScratchpad()">✏️ <span class="lang-en">Try it on the scratchpad</span><span class="lang-es" lang="es">Pruébalo en la pizarra</span></button></div>
           </li>
           <li class="coach-ladder-step coach-explain-step">
@@ -4652,15 +3961,7 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
       </aside>
 
     <aside class="hw-copilot-card hw-problem-copilot" id="hw_copilot_prob_13" data-copilot-for="13">
-      <div class="hw-copilot-badge">🧭 <span class="lang-en">Caregiver Co-Pilot · Problem 14</span><span class="lang-es" lang="es">Copiloto familiar · Problema 14</span></div>
-      <p class="hw-copilot-socratic-line">
-        <strong>💬 <span class="lang-en">Ask if stuck:</span><span class="lang-es" lang="es">Pregunta si se detiene:</span></strong>
-        <em>"<span class="lang-en">Rewrite each fraction with a denominator of 100 — multiply the top and bottom by the same number. The new numerator is the percent.</span><span class="lang-es" lang="es">Reescribe cada fracción con denominador 100: multiplica arriba y abajo por el mismo número. El nuevo numerador es el porcentaje.</span>"</em>
-      </p>
-      <p class="hw-copilot-bridge-line">
-        <strong>🌉 <span class="lang-en">Model Bridge:</span><span class="lang-es" lang="es">Puente del modelo:</span></strong>
-        <span><span class="lang-en">Today we used tape diagrams and double number lines to see equivalent ratios as scaling both quantities by the same multiplier.</span><span class="lang-es" lang="es">Hoy usamos diagramas de cinta y rectas numéricas dobles para ver las razones equivalentes al escalar ambas cantidades por el mismo multiplicador.</span></span>
-      </p>
+      <p class="hw-copilot-socratic-line"><strong><span class="lang-en">Ask if stuck:</span><span class="lang-es" lang="es">Pregunta si se detiene:</span></strong> <em><span class="lang-en">Rewrite each fraction with a denominator of 100 — multiply the top and bottom by the same number. The new numerator is the percent.</span><span class="lang-es" lang="es">Reescribe cada fracción con denominador 100: multiplica arriba y abajo por el mismo número. El nuevo numerador es el porcentaje.</span></em></p>
     </aside>
 
       <details class="hw-answer-key" id="answer_key_13">
@@ -4707,26 +4008,6 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
             </button>
 
             <div class="coach-step-help" hidden><p class="lang-en">A decimal, a percent, and a fraction can all name the same amount — percent simply means “out of 100”.</p><p class="lang-es" lang="es">Un decimal, un porcentaje y una fracción pueden nombrar la misma cantidad: porcentaje significa simplemente «de cada 100».</p>
-              <div class="coach-step-visual" style="margin:10px 0;"><svg viewBox="0 0 520 136" width="520" height="136" class="hw-model-svg hw-tape-diagram-svg" style="background:white; max-width:100%; height:auto; display:block; margin:0 auto; border-radius:10px; border:1px solid #cbd5e1;" role="img" aria-label="Tape diagram with 3 parts, Ratio Tape Model · 3 equal parts = 9" xmlns="http://www.w3.org/2000/svg">
-  <title>Tape Diagram (3 parts)</title>
-  <path d="M 36 36 L 36 26 L 260 26 L 260 20 L 260 26 L 484 26 L 484 36" fill="none" stroke="#0f766e" stroke-width="2" stroke-linecap="round"/>
-  <rect x="172" y="4" width="176" height="20" rx="5" fill="#0f766e"/>
-  <text x="260" y="18" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="12" font-weight="800" fill="#ffffff">Ratio Tape Model · 3 equal parts = 9</text>
-  <g class="hw-svg-tape-part" data-highlighted="true">
-    <rect x="36.0" y="44" width="149.3" height="44" fill="#1fa6a2" stroke="#12355b" stroke-width="2"/>
-    <text x="110.7" y="71" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="14" font-weight="800" fill="#ffffff">3</text>
-  </g>
-  <g class="hw-svg-tape-part">
-    <rect x="185.3" y="44" width="149.3" height="44" fill="#f8fafc" stroke="#12355b" stroke-width="2"/>
-    <text x="260.0" y="71" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="14" font-weight="800" fill="#12355b">3</text>
-  </g>
-  <g class="hw-svg-tape-part">
-    <rect x="334.7" y="44" width="149.3" height="44" fill="#e3f6f5" stroke="#12355b" stroke-width="2"/>
-    <text x="409.3" y="71" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="14" font-weight="800" fill="#12355b">3</text>
-  </g>
-  <rect x="36" y="44" width="448" height="44" rx="4" fill="none" stroke="#12355b" stroke-width="2.5"/>
-  <text x="260" y="116" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="13" font-weight="700" fill="#334155">Multiply or divide both parts by the same scale factor</text>
-</svg></div>
               <button type="button" class="coach-scratchpad-btn" onclick="toggleScratchpad()">✏️ <span class="lang-en">Try it on the scratchpad</span><span class="lang-es" lang="es">Pruébalo en la pizarra</span></button></div>
           </li>
           <li class="coach-ladder-step coach-explain-step">
@@ -4809,15 +4090,7 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
       </aside>
 
     <aside class="hw-copilot-card hw-problem-copilot" id="hw_copilot_prob_14" data-copilot-for="14">
-      <div class="hw-copilot-badge">🧭 <span class="lang-en">Caregiver Co-Pilot · Problem 15</span><span class="lang-es" lang="es">Copiloto familiar · Problema 15</span></div>
-      <p class="hw-copilot-socratic-line">
-        <strong>💬 <span class="lang-en">Ask if stuck:</span><span class="lang-es" lang="es">Pregunta si se detiene:</span></strong>
-        <em>"<span class="lang-en">To turn a decimal into a percent, multiply by 100 (move the decimal point two places right). To turn it into a fraction, read the decimal using place-value words.</span><span class="lang-es" lang="es">Para convertir un decimal en porcentaje, multiplica por 100 (mueve el punto decimal dos lugares a la derecha). Para convertirlo en fracción, lee el decimal con palabras de valor posicional.</span>"</em>
-      </p>
-      <p class="hw-copilot-bridge-line">
-        <strong>🌉 <span class="lang-en">Model Bridge:</span><span class="lang-es" lang="es">Puente del modelo:</span></strong>
-        <span><span class="lang-en">Today we used tape diagrams and double number lines to see equivalent ratios as scaling both quantities by the same multiplier.</span><span class="lang-es" lang="es">Hoy usamos diagramas de cinta y rectas numéricas dobles para ver las razones equivalentes al escalar ambas cantidades por el mismo multiplicador.</span></span>
-      </p>
+      <p class="hw-copilot-socratic-line"><strong><span class="lang-en">Ask if stuck:</span><span class="lang-es" lang="es">Pregunta si se detiene:</span></strong> <em><span class="lang-en">To turn a decimal into a percent, multiply by 100 (move the decimal point two places right). To turn it into a fraction, read the decimal using place-value words.</span><span class="lang-es" lang="es">Para convertir un decimal en porcentaje, multiplica por 100 (mueve el punto decimal dos lugares a la derecha). Para convertirlo en fracción, lee el decimal con palabras de valor posicional.</span></em></p>
     </aside>
 
       <details class="hw-answer-key" id="answer_key_14">
@@ -4864,26 +4137,6 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
             </button>
 
             <div class="coach-step-help" hidden><p class="lang-en">Percent means &#039;out of 100&#039;, so 45% is the fraction 45/100.</p><p class="lang-es" lang="es">Porcentaje significa &#039;de cada 100&#039;, así que 45% es la fracción 45/100.</p>
-              <div class="coach-step-visual" style="margin:10px 0;"><svg viewBox="0 0 520 136" width="520" height="136" class="hw-model-svg hw-tape-diagram-svg" style="background:white; max-width:100%; height:auto; display:block; margin:0 auto; border-radius:10px; border:1px solid #cbd5e1;" role="img" aria-label="Tape diagram with 3 parts, Ratio Tape Model · 3 equal parts = 9" xmlns="http://www.w3.org/2000/svg">
-  <title>Tape Diagram (3 parts)</title>
-  <path d="M 36 36 L 36 26 L 260 26 L 260 20 L 260 26 L 484 26 L 484 36" fill="none" stroke="#0f766e" stroke-width="2" stroke-linecap="round"/>
-  <rect x="172" y="4" width="176" height="20" rx="5" fill="#0f766e"/>
-  <text x="260" y="18" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="12" font-weight="800" fill="#ffffff">Ratio Tape Model · 3 equal parts = 9</text>
-  <g class="hw-svg-tape-part" data-highlighted="true">
-    <rect x="36.0" y="44" width="149.3" height="44" fill="#1fa6a2" stroke="#12355b" stroke-width="2"/>
-    <text x="110.7" y="71" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="14" font-weight="800" fill="#ffffff">3</text>
-  </g>
-  <g class="hw-svg-tape-part">
-    <rect x="185.3" y="44" width="149.3" height="44" fill="#f8fafc" stroke="#12355b" stroke-width="2"/>
-    <text x="260.0" y="71" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="14" font-weight="800" fill="#12355b">3</text>
-  </g>
-  <g class="hw-svg-tape-part">
-    <rect x="334.7" y="44" width="149.3" height="44" fill="#e3f6f5" stroke="#12355b" stroke-width="2"/>
-    <text x="409.3" y="71" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="14" font-weight="800" fill="#12355b">3</text>
-  </g>
-  <rect x="36" y="44" width="448" height="44" rx="4" fill="none" stroke="#12355b" stroke-width="2.5"/>
-  <text x="260" y="116" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="13" font-weight="700" fill="#334155">Multiply or divide both parts by the same scale factor</text>
-</svg></div>
               <button type="button" class="coach-scratchpad-btn" onclick="toggleScratchpad()">✏️ <span class="lang-en">Try it on the scratchpad</span><span class="lang-es" lang="es">Pruébalo en la pizarra</span></button></div>
           </li>
           <li class="coach-ladder-step coach-explain-step">
@@ -4966,15 +4219,7 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
       </aside>
 
     <aside class="hw-copilot-card hw-problem-copilot" id="hw_copilot_prob_15" data-copilot-for="15">
-      <div class="hw-copilot-badge">🧭 <span class="lang-en">Caregiver Co-Pilot · Problem 16</span><span class="lang-es" lang="es">Copiloto familiar · Problema 16</span></div>
-      <p class="hw-copilot-socratic-line">
-        <strong>💬 <span class="lang-en">Ask if stuck:</span><span class="lang-es" lang="es">Pregunta si se detiene:</span></strong>
-        <em>"<span class="lang-en">To turn a percent into a decimal, divide by 100 — the decimal point slides two places to the LEFT.</span><span class="lang-es" lang="es">Para convertir un porcentaje en decimal, divide entre 100: el punto decimal se desliza dos lugares a la IZQUIERDA.</span>"</em>
-      </p>
-      <p class="hw-copilot-bridge-line">
-        <strong>🌉 <span class="lang-en">Model Bridge:</span><span class="lang-es" lang="es">Puente del modelo:</span></strong>
-        <span><span class="lang-en">Today we used tape diagrams and double number lines to see equivalent ratios as scaling both quantities by the same multiplier.</span><span class="lang-es" lang="es">Hoy usamos diagramas de cinta y rectas numéricas dobles para ver las razones equivalentes al escalar ambas cantidades por el mismo multiplicador.</span></span>
-      </p>
+      <p class="hw-copilot-socratic-line"><strong><span class="lang-en">Ask if stuck:</span><span class="lang-es" lang="es">Pregunta si se detiene:</span></strong> <em><span class="lang-en">To turn a percent into a decimal, divide by 100 — the decimal point slides two places to the LEFT.</span><span class="lang-es" lang="es">Para convertir un porcentaje en decimal, divide entre 100: el punto decimal se desliza dos lugares a la IZQUIERDA.</span></em></p>
     </aside>
 
       <details class="hw-answer-key" id="answer_key_15">
@@ -5021,26 +4266,6 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
             </button>
 
             <div class="coach-step-help" hidden><p class="lang-en">0.75 is read &#039;seventy-five hundredths&#039; — the place value tells you the denominator.</p><p class="lang-es" lang="es">0.75 se lee &#039;setenta y cinco centésimas&#039;: el valor posicional te dice el denominador.</p>
-              <div class="coach-step-visual" style="margin:10px 0;"><svg viewBox="0 0 520 136" width="520" height="136" class="hw-model-svg hw-tape-diagram-svg" style="background:white; max-width:100%; height:auto; display:block; margin:0 auto; border-radius:10px; border:1px solid #cbd5e1;" role="img" aria-label="Tape diagram with 3 parts, Ratio Tape Model · 3 equal parts = 9" xmlns="http://www.w3.org/2000/svg">
-  <title>Tape Diagram (3 parts)</title>
-  <path d="M 36 36 L 36 26 L 260 26 L 260 20 L 260 26 L 484 26 L 484 36" fill="none" stroke="#0f766e" stroke-width="2" stroke-linecap="round"/>
-  <rect x="172" y="4" width="176" height="20" rx="5" fill="#0f766e"/>
-  <text x="260" y="18" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="12" font-weight="800" fill="#ffffff">Ratio Tape Model · 3 equal parts = 9</text>
-  <g class="hw-svg-tape-part" data-highlighted="true">
-    <rect x="36.0" y="44" width="149.3" height="44" fill="#1fa6a2" stroke="#12355b" stroke-width="2"/>
-    <text x="110.7" y="71" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="14" font-weight="800" fill="#ffffff">3</text>
-  </g>
-  <g class="hw-svg-tape-part">
-    <rect x="185.3" y="44" width="149.3" height="44" fill="#f8fafc" stroke="#12355b" stroke-width="2"/>
-    <text x="260.0" y="71" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="14" font-weight="800" fill="#12355b">3</text>
-  </g>
-  <g class="hw-svg-tape-part">
-    <rect x="334.7" y="44" width="149.3" height="44" fill="#e3f6f5" stroke="#12355b" stroke-width="2"/>
-    <text x="409.3" y="71" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="14" font-weight="800" fill="#12355b">3</text>
-  </g>
-  <rect x="36" y="44" width="448" height="44" rx="4" fill="none" stroke="#12355b" stroke-width="2.5"/>
-  <text x="260" y="116" text-anchor="middle" font-family="Outfit, system-ui, sans-serif" font-size="13" font-weight="700" fill="#334155">Multiply or divide both parts by the same scale factor</text>
-</svg></div>
               <button type="button" class="coach-scratchpad-btn" onclick="toggleScratchpad()">✏️ <span class="lang-en">Try it on the scratchpad</span><span class="lang-es" lang="es">Pruébalo en la pizarra</span></button></div>
           </li>
           <li class="coach-ladder-step coach-explain-step">
@@ -5123,15 +4348,7 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
       </aside>
 
     <aside class="hw-copilot-card hw-problem-copilot" id="hw_copilot_prob_16" data-copilot-for="16">
-      <div class="hw-copilot-badge">🧭 <span class="lang-en">Caregiver Co-Pilot · Problem 17</span><span class="lang-es" lang="es">Copiloto familiar · Problema 17</span></div>
-      <p class="hw-copilot-socratic-line">
-        <strong>💬 <span class="lang-en">Ask if stuck:</span><span class="lang-es" lang="es">Pregunta si se detiene:</span></strong>
-        <em>"<span class="lang-en">Write the decimal as a fraction over 100, then simplify by dividing top and bottom by a common factor.</span><span class="lang-es" lang="es">Escribe el decimal como fracción sobre 100 y luego simplifica dividiendo arriba y abajo entre un factor común.</span>"</em>
-      </p>
-      <p class="hw-copilot-bridge-line">
-        <strong>🌉 <span class="lang-en">Model Bridge:</span><span class="lang-es" lang="es">Puente del modelo:</span></strong>
-        <span><span class="lang-en">Today we used tape diagrams and double number lines to see equivalent ratios as scaling both quantities by the same multiplier.</span><span class="lang-es" lang="es">Hoy usamos diagramas de cinta y rectas numéricas dobles para ver las razones equivalentes al escalar ambas cantidades por el mismo multiplicador.</span></span>
-      </p>
+      <p class="hw-copilot-socratic-line"><strong><span class="lang-en">Ask if stuck:</span><span class="lang-es" lang="es">Pregunta si se detiene:</span></strong> <em><span class="lang-en">Write the decimal as a fraction over 100, then simplify by dividing top and bottom by a common factor.</span><span class="lang-es" lang="es">Escribe el decimal como fracción sobre 100 y luego simplifica dividiendo arriba y abajo entre un factor común.</span></em></p>
     </aside>
 
       <details class="hw-answer-key" id="answer_key_16">
@@ -6066,13 +5283,12 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
     </div>
 
 
-    <footer class="hw-print-socratic-footer" id="hw_print_socratic_footer" aria-label="Caregiver Socratic Prompts for Print">
+    <footer class="hw-print-socratic-footer" id="hw_print_socratic_footer" aria-label="Questions for the grown-up">
       <div class="hw-print-socratic-inner">
-        <h4>🧭 <span class="lang-en">Caregiver Socratic Prompts &amp; Kitchen Table Notes (Print-to-Fridge Guide)</span><span class="lang-es" lang="es">Preguntas socráticas para la familia y notas de mesa</span></h4>
-        <p><strong><span class="lang-en">How We Learned This Today vs. Traditional Method:</span><span class="lang-es" lang="es">Cómo lo aprendimos hoy vs. método tradicional:</span></strong> <span class="lang-en">Today we used tape diagrams and double number lines to see equivalent ratios as scaling both quantities by the same multiplier. You likely learned to cross-multiply or set up proportions with x. Our visual models build the intuition for WHY multiplying both parts by the same factor keeps the relationship invariant.</span><span class="lang-es" lang="es">Hoy usamos diagramas de cinta y rectas numéricas dobles para ver las razones equivalentes al escalar ambas cantidades por el mismo multiplicador. Probablemente aprendiste a multiplicar en cruz. Nuestros modelos visuales muestran POR QUÉ multiplicar ambas partes por el mismo factor mantiene la relación igual.</span></p>
+        <h4><span class="lang-en">Questions for the grown-up</span><span class="lang-es" lang="es">Preguntas para el adulto</span></h4>
         <ul>
-          <li><strong><span class="lang-en">Ask:</span><span class="lang-es" lang="es">Pregunte:</span></strong> "<span class="lang-en">What does 1 box in the tape diagram represent?</span><span class="lang-es" lang="es">¿Qué representa 1 caja en el diagrama de cinta?</span>"</li><li><strong><span class="lang-en">Ask:</span><span class="lang-es" lang="es">Pregunte:</span></strong> "<span class="lang-en">If we multiply the first quantity by this factor, what must we do to the second quantity to keep the taste/color the same?</span><span class="lang-es" lang="es">Si multiplicamos la primera cantidad por este factor, ¿qué debemos hacer con la segunda cantidad?</span>"</li>
-          <li><strong><span class="lang-en">Kitchen Table Math:</span><span class="lang-es" lang="es">Matemáticas en la mesa:</span></strong> <span class="lang-en">At the kitchen table or pantry, pick any food label or recipe. Ask your student: 'If we doubled or halved this recipe for our family, how would the two main ingredients change together?'</span><span class="lang-es" lang="es">En la cocina, elijan una etiqueta o receta. Pregunte: 'Si duplicamos o reducimos a la mitad esta receta para nuestra familia, ¿cómo cambiarían juntos los dos ingredientes principales?'</span></li>
+          <li><span class="lang-en">Which number do we divide first, the top or the bottom?</span><span class="lang-es" lang="es">¿Qué número dividimos primero, el de arriba o el de abajo?</span></li><li><span class="lang-en">After we get the decimal, what do we multiply by to get the percent?</span><span class="lang-es" lang="es">Después de obtener el decimal, ¿por cuánto multiplicamos para obtener el porcentaje?</span></li><li><span class="lang-en">Is this value more or less than a half? Let's use 50% to check.</span><span class="lang-es" lang="es">¿Este valor es más o menos que la mitad? Usemos 50% para revisar.</span></li>
+          <li><strong><span class="lang-en">At the table:</span><span class="lang-es" lang="es">En la mesa:</span></strong> <span class="lang-en">Say, &quot;A player scored 3/4 of the team's points.&quot; Can your student say it as a decimal and a percent out loud? Then try 1/2 and 1/5.</span><span class="lang-es" lang="es">Digan: «Una jugadora anotó 3/4 de los puntos del equipo». ¿Puede su estudiante decirlo como decimal y como porcentaje en voz alta? Después prueben con 1/2 y con 1/5.</span></li>
         </ul>
       </div>
     </footer>
@@ -6177,7 +5393,7 @@ window.__HW_VOCAB_MATCH__ = {"regexSource":"\\b(?:Write\\s+and\\s+Evaluate\\s+Nu
 window.__HW_WORKED__ = {"title":"Watch me","titleEs":"Mírame","lines":["A player scored 3/4 of the points. Percent means out of 100, so I want an equivalent fraction with 100 on the bottom.","What do I multiply the denominator 4 by to get 100? 4 × 25 = 100, so my scale factor is 25.","I have to multiply the top by that same 25: 3 × 25 = 75. So 3/4 = 75/100.","75 out of 100 is 75%. And 75/100 as a decimal is 0.75, because hundredths sit two places after the point.","So 3/4 = 75/100 = 0.75 = 75%. All three name the same score."],"linesEs":["Un jugador anotó 3/4 de los puntos. Porcentaje significa de cada 100, así que quiero una fracción equivalente con 100 abajo.","¿Por cuánto multiplico el denominador 4 para llegar a 100? 4 × 25 = 100, así que mi factor de escala es 25.","Tengo que multiplicar el numerador por ese mismo 25: 3 × 25 = 75. Entonces 3/4 = 75/100.","75 de cada 100 es 75%. Y 75/100 como decimal es 0.75, porque las centésimas están dos lugares después del punto.","Entonces 3/4 = 75/100 = 0.75 = 75%. Las tres formas nombran el mismo puntaje."]};
 </script>
 <script src="/assets/homework/homework-vocab-12619585d8.bundle.js"></script>
-<script src="/assets/homework/homework-core-4d46e3beb2.bundle.js"></script>
+<script src="/assets/homework/homework-core-749ac27cbc.bundle.js"></script>
 <script src="/assets/family-engagement/engagement-beacon.js" defer></script>
 <script type="module" src="/assets/homework-lesson-models.js"></script>
 <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->

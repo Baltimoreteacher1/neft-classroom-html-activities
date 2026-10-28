@@ -537,5 +537,329 @@
       ],
       "image": "/assets/vocab-images/substitute.svg"
     }
-  ]
+  ],
+  "v3": {
+    "version": 1,
+    "kind": "math",
+    "topicKey": "test-values-in-inequalities-apply",
+    "standardPlain": {
+      "en": "Test numbers in an inequality to see which ones are solutions.",
+      "es": "Probar números en una desigualdad para ver cuáles son soluciones."
+    },
+    "hook": {
+      "style": "receipt",
+      "en": "A pizza coupon says: \"Order total over $20 gets a free drink.\" Does an order of exactly $20 get the free drink? What about $21?",
+      "es": "Un cupón de pizza dice: «Un pedido de más de $20 recibe una bebida gratis». ¿Un pedido de exactamente $20 recibe la bebida gratis? ¿Y uno de $21?",
+      "guess": {
+        "en": "Guess first: does exactly $20 get a free drink, yes or no?",
+        "es": "Primero adivina: ¿exactamente $20 recibe bebida gratis, sí o no?"
+      },
+      "reveal": {
+        "en": "No! Test 20 in t > 20: 20 > 20 is false. But 21 > 20 is true. So the circle at 20 is open.",
+        "es": "¡No! Prueba 20 en t > 20: 20 > 20 es falso. Pero 21 > 20 es verdadero. Así que el círculo en 20 es abierto."
+      }
+    },
+    "classModel": {
+      "name": {
+        "en": "test one value, then decide",
+        "es": "probar un valor y luego decidir"
+      }
+    },
+    "model": {
+      "kind": "numberline",
+      "data": {
+        "min": 16,
+        "max": 26,
+        "step": 1,
+        "points": [
+          {
+            "value": 18,
+            "kind": "error",
+            "label": {
+              "en": "18: no",
+              "es": "18: no"
+            }
+          },
+          {
+            "value": 20,
+            "kind": "given",
+            "label": {
+              "en": "20: no",
+              "es": "20: no"
+            }
+          },
+          {
+            "value": 22,
+            "kind": "answer",
+            "label": {
+              "en": "22: yes",
+              "es": "22: sí"
+            }
+          }
+        ],
+        "unit": {
+          "en": "order total t in dollars",
+          "es": "total del pedido t en dólares"
+        }
+      },
+      "alt": {
+        "en": "A number line from 16 to 26 for order totals in dollars. The boundary 20 is marked but does not work, because 20 > 20 is false. The total 22 works. The total 18 has an X because it is less than 20.",
+        "es": "Una recta numérica de 16 a 26 para los totales del pedido en dólares. El límite 20 está marcado pero no sirve, porque 20 > 20 es falso. El total 22 sirve. El total 18 tiene una X porque es menor que 20."
+      }
+    },
+    "transfer": {
+      "stem": {
+        "en": "Jada has $4. With n more dollars she will have more than $11. The inequality is n + 4 > 11. Which amount of n is a solution?",
+        "es": "Jada tiene $4. Con n dólares más tendrá más de $11. La desigualdad es n + 4 > 11. ¿Qué cantidad de n es una solución?"
+      },
+      "choices": [
+        {
+          "en": "$8",
+          "es": "$8",
+          "correct": true,
+          "misconception": null
+        },
+        {
+          "en": "$7",
+          "es": "$7",
+          "correct": false,
+          "misconception": "boundary-counted-for-strict"
+        },
+        {
+          "en": "$6",
+          "es": "$6",
+          "correct": false,
+          "misconception": "tested-below-the-boundary"
+        }
+      ],
+      "reasoning": {
+        "en": "Substitute 8: 8 + 4 = 12, and 12 > 11 is true. Substitute 7: 7 + 4 = 11, and 11 > 11 is false.",
+        "es": "Sustituye 8: 8 + 4 = 12, y 12 > 11 es verdadero. Sustituye 7: 7 + 4 = 11, y 11 > 11 es falso."
+      },
+      "calc": {
+        "expr": "11 - 4 + 1",
+        "value": 8,
+        "unit": "$"
+      }
+    },
+    "glitch": {
+      "scenario": {
+        "en": "A different situation: Omar tests x = 5 in x + 2 > 7. He writes three steps. One has a glitch.",
+        "es": "Otra situación: Omar prueba x = 5 en x + 2 > 7. Escribe tres pasos. Uno tiene un error."
+      },
+      "steps": [
+        {
+          "en": "Substitute 5 for x: 5 + 2 > 7.",
+          "es": "Sustituye x por 5: 5 + 2 > 7.",
+          "isGlitch": false
+        },
+        {
+          "en": "5 + 2 = 7, and 7 > 7 is true, so 5 is a solution.",
+          "es": "5 + 2 = 7, y 7 > 7 es verdadero, así que 5 es una solución.",
+          "isGlitch": true
+        },
+        {
+          "en": "Then I will test one more value the same way.",
+          "es": "Luego probaré un valor más de la misma manera.",
+          "isGlitch": false
+        }
+      ],
+      "fix": {
+        "en": "7 > 7 is false because 7 is not greater than 7. So 5 is not a solution. Try 6: 6 + 2 = 8, and 8 > 7 is true.",
+        "es": "7 > 7 es falso porque 7 no es mayor que 7. Así que 5 no es una solución. Prueba con 6: 6 + 2 = 8, y 8 > 7 es verdadero."
+      },
+      "frame": {
+        "en": "I substitute ___ and get ___ > ___, which is ___.",
+        "es": "Sustituyo ___ y obtengo ___ > ___, que es ___."
+      },
+      "calc": {
+        "expr": "6 + 2",
+        "value": 8
+      }
+    },
+    "spiral": [
+      {
+        "from": "8-5",
+        "q": {
+          "en": "A graph has an open circle at 3 and shading to the right. What is the smallest whole number solution?",
+          "es": "Una gráfica tiene un círculo abierto en 3 y sombreado a la derecha. ¿Cuál es el menor número entero que es solución?"
+        },
+        "options": [
+          "3",
+          "2",
+          "4"
+        ],
+        "correctIdx": 2,
+        "exp": {
+          "en": "The open circle leaves 3 out. The next whole number is 4.",
+          "es": "El círculo abierto deja fuera el 3. El siguiente número entero es 4."
+        },
+        "calc": {
+          "expr": "3 + 1",
+          "value": 4
+        }
+      },
+      {
+        "from": "8-4",
+        "q": {
+          "en": "A rule says \"no more than 9 riders.\" What is the greatest number of riders allowed?",
+          "es": "Una regla dice «no más de 9 pasajeros». ¿Cuál es la mayor cantidad de pasajeros permitida?"
+        },
+        "options": [
+          "9",
+          "8",
+          "10"
+        ],
+        "correctIdx": 0,
+        "exp": {
+          "en": "\"No more than 9\" includes 9, so r ≤ 9.",
+          "es": "«No más de 9» incluye el 9, así que r ≤ 9."
+        },
+        "calc": {
+          "expr": "9",
+          "value": 9
+        }
+      }
+    ],
+    "kitchenTable": {
+      "en": "Find a real coupon or receipt. Say: \"Over $20 gets a free drink.\" Is 20 > 20 true? Test $21 and $25 the same way. What does that tell you about the circle at 20?",
+      "es": "Busquen un cupón o un recibo de verdad. Digan: «Más de $20 recibe una bebida gratis». ¿Es verdadero 20 > 20? Prueben $21 y $25 de la misma manera. ¿Qué les dice eso del círculo en 20?"
+    },
+    "vocab": [
+      {
+        "term": "Substitute",
+        "example": {
+          "en": "To test $21, substitute 21 for t. Then 21 > 20 is true.",
+          "es": "Para probar $21, sustituye t por 21. Entonces 21 > 20 es verdadero."
+        },
+        "nonExample": {
+          "en": "Guessing \"it looks big enough\" is not substituting.",
+          "es": "Decir «parece suficientemente grande» no es sustituir."
+        },
+        "frame": {
+          "en": "I substitute ___ for t and get ___ > ___.",
+          "es": "Sustituyo t por ___ y obtengo ___ > ___."
+        }
+      },
+      {
+        "term": "Boundary point",
+        "example": {
+          "en": "In t > 20, the boundary point is 20. The solutions start after it.",
+          "es": "En t > 20, el punto límite es 20. Las soluciones empiezan después."
+        },
+        "nonExample": {
+          "en": "$25 is not the boundary point. It is one solution.",
+          "es": "$25 no es el punto límite. Es una solución."
+        },
+        "frame": {
+          "en": "I test the boundary point ___ to see if it is ___.",
+          "es": "Pruebo el punto límite ___ para ver si es ___."
+        }
+      },
+      {
+        "term": "Solution set",
+        "example": {
+          "en": "The solution set of t > 20 includes 21, 22, 25, and every total above 20.",
+          "es": "El conjunto solución de t > 20 incluye 21, 22, 25 y todo total mayor que 20."
+        },
+        "nonExample": {
+          "en": "20 is not in the solution set of t > 20.",
+          "es": "20 no está en el conjunto solución de t > 20."
+        },
+        "frame": {
+          "en": "The solution set of ___ has many numbers, such as ___ and ___.",
+          "es": "El conjunto solución de ___ tiene muchos números, como ___ y ___."
+        }
+      },
+      {
+        "term": "Open circle",
+        "example": {
+          "en": "20 > 20 is false, so the circle at 20 is open.",
+          "es": "20 > 20 es falso, así que el círculo en 20 es abierto."
+        },
+        "nonExample": {
+          "en": "A closed circle at 20 would say exactly $20 gets a free drink.",
+          "es": "Un círculo cerrado en 20 diría que exactamente $20 recibe bebida gratis."
+        },
+        "frame": {
+          "en": "The circle at ___ is open because ___ is false.",
+          "es": "El círculo en ___ es abierto porque ___ es falso."
+        }
+      },
+      {
+        "term": "Closed circle",
+        "example": {
+          "en": "A different situation: x ≥ 4 has a closed circle at 4, because 4 ≥ 4 is true.",
+          "es": "Otra situación: x ≥ 4 tiene un círculo cerrado en 4, porque 4 ≥ 4 es verdadero."
+        },
+        "nonExample": {
+          "en": "t > 20 does not get a closed circle. Testing 20 gives a false statement.",
+          "es": "t > 20 no lleva círculo cerrado. Al probar 20 sale un enunciado falso."
+        },
+        "frame": {
+          "en": "The circle at ___ is closed because ___ is true.",
+          "es": "El círculo en ___ es cerrado porque ___ es verdadero."
+        }
+      }
+    ],
+    "confused": [
+      {
+        "wrong": {
+          "en": "I tried 20 in t > 20 and said it works, so the circle is closed.",
+          "es": "Probé 20 en t > 20 y dije que sirve, así que el círculo es cerrado."
+        },
+        "coach": {
+          "en": "When you put the boundary number in, is the statement true or false?",
+          "es": "Cuando pones el número límite, ¿el enunciado es verdadero o falso?"
+        },
+        "why": {
+          "en": "20 > 20 is false, because 20 is not greater than 20. The smallest whole total that works is 21.",
+          "es": "20 > 20 es falso, porque 20 no es mayor que 20. El menor total entero que sirve es 21."
+        },
+        "misconception": "boundary-counted-for-strict",
+        "calc": {
+          "expr": "20 + 1",
+          "value": 21
+        }
+      },
+      {
+        "wrong": {
+          "en": "$21 works, so 21 is the only answer.",
+          "es": "$21 sirve, así que 21 es la única respuesta."
+        },
+        "coach": {
+          "en": "Would a bigger order also get the free drink?",
+          "es": "¿Un pedido más grande también recibiría la bebida gratis?"
+        },
+        "why": {
+          "en": "An inequality has many solutions. 25 also works: 25 > 20 is true.",
+          "es": "Una desigualdad tiene muchas soluciones. El 25 también sirve: 25 > 20 es verdadero."
+        },
+        "misconception": "inequality-has-one-answer",
+        "calc": {
+          "expr": "21 + 4",
+          "value": 25
+        }
+      },
+      {
+        "wrong": {
+          "en": "I tested $18 and it was false, so the boundary is 18.",
+          "es": "Probé $18 y fue falso, así que el límite es 18."
+        },
+        "coach": {
+          "en": "Which number is written in the rule itself?",
+          "es": "¿Qué número está escrito en la regla misma?"
+        },
+        "why": {
+          "en": "The boundary comes from the rule, not from a test value. Testing 18 only shows it is too small. The first whole total that works is 21.",
+          "es": "El límite sale de la regla, no de un valor de prueba. Probar 18 solo muestra que es muy pequeño. El primer total entero que sirve es 21."
+        },
+        "misconception": "boundary-from-test-value",
+        "calc": {
+          "expr": "18 + 3",
+          "value": 21
+        }
+      }
+    ]
+  }
 }

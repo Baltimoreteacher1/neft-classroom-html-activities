@@ -362,5 +362,310 @@
         "Resta Q1 a Q3."
       ]
     }
-  ]
+  ],
+  "v3": {
+    "version": 1,
+    "kind": "math",
+    "topicKey": "range-and-iqr-measure-spread",
+    "standardPlain": {
+      "en": "Describe how spread out data is with the range and the interquartile range.",
+      "es": "Describir cuánto se dispersan los datos con el rango y el rango intercuartílico."
+    },
+    "hook": {
+      "style": "scoreboard",
+      "en": "A teacher posts 20 history test scores. The lowest is 68. The highest is 94. How many points apart are the lowest and the highest scores?",
+      "es": "Una maestra publica 20 puntajes de un examen de historia. El más bajo es 68. El más alto es 94. ¿Cuántos puntos hay entre el puntaje más bajo y el más alto?",
+      "guess": {
+        "en": "Make a guess first: is the gap more than 20 points or less?",
+        "es": "Primero adivina: ¿la diferencia es de más de 20 puntos o de menos?"
+      },
+      "reveal": {
+        "en": "More! The range is 94 − 68 = 26 points. The middle half is tighter: Q3 − Q1 = 88 − 75.5 = 12.5 points.",
+        "es": "¡Más! El rango es 94 − 68 = 26 puntos. La mitad central está más junta: Q3 − Q1 = 88 − 75.5 = 12.5 puntos."
+      }
+    },
+    "classModel": {
+      "name": {
+        "en": "two measures of spread",
+        "es": "dos medidas de dispersión"
+      }
+    },
+    "model": {
+      "kind": "numberline",
+      "data": {
+        "min": 66,
+        "max": 96,
+        "step": 2,
+        "points": [
+          {
+            "value": 68,
+            "label": {
+              "en": "Min 68",
+              "es": "Mín 68"
+            },
+            "kind": "given"
+          },
+          {
+            "value": 75.5,
+            "label": {
+              "en": "Q1 75.5",
+              "es": "Q1 75.5"
+            },
+            "kind": "given"
+          },
+          {
+            "value": 83.5,
+            "label": {
+              "en": "Median 83.5",
+              "es": "Mediana 83.5"
+            },
+            "kind": "given"
+          },
+          {
+            "value": 88,
+            "label": {
+              "en": "Q3 88",
+              "es": "Q3 88"
+            },
+            "kind": "given"
+          },
+          {
+            "value": 94,
+            "label": {
+              "en": "Max 94",
+              "es": "Máx 94"
+            },
+            "kind": "given"
+          }
+        ],
+        "unit": {
+          "en": "History test score",
+          "es": "Puntaje del examen de historia"
+        }
+      },
+      "alt": {
+        "en": "A number line from 66 to 96 with five marked scores: least 68, Q1 75.5, median 83.5, Q3 88 and greatest 94. The range is 94 − 68 = 26, the whole span. The IQR is 88 − 75.5 = 12.5, the width of the box.",
+        "es": "Una recta numérica de 66 a 96 con cinco puntajes marcados: menor 68, Q1 75.5, mediana 83.5, Q3 88 y mayor 94. El rango es 94 − 68 = 26, todo el tramo. El RIC es 88 − 75.5 = 12.5, el ancho de la caja."
+      }
+    },
+    "transfer": {
+      "stem": {
+        "en": "Pizza delivery times in minutes: least 12, Q1 18, median 24, Q3 30, greatest 52. What is the IQR?",
+        "es": "Tiempos de entrega de pizza en minutos: menor 12, Q1 18, mediana 24, Q3 30, mayor 52. ¿Cuál es el RIC?"
+      },
+      "choices": [
+        {
+          "en": "12 minutes",
+          "es": "12 minutos",
+          "correct": true,
+          "misconception": null
+        },
+        {
+          "en": "40 minutes",
+          "es": "40 minutos",
+          "correct": false,
+          "misconception": "range-for-iqr"
+        },
+        {
+          "en": "30 minutes",
+          "es": "30 minutos",
+          "correct": false,
+          "misconception": "q3-for-iqr"
+        }
+      ],
+      "reasoning": {
+        "en": "The IQR is Q3 − Q1 = 30 − 18 = 12. The range, 52 − 12 = 40, uses the extremes instead.",
+        "es": "El RIC es Q3 − Q1 = 30 − 18 = 12. El rango, 52 − 12 = 40, usa los extremos en su lugar."
+      },
+      "calc": {
+        "expr": "30 - 18",
+        "value": 12
+      }
+    },
+    "glitch": null,
+    "spiral": [
+      {
+        "from": "2-4",
+        "q": {
+          "en": "Data in order: 2, 4, 6, 8, 10, 12, 14. What is Q1?",
+          "es": "Datos en orden: 2, 4, 6, 8, 10, 12, 14. ¿Cuál es Q1?"
+        },
+        "options": [
+          "8",
+          "4",
+          "6"
+        ],
+        "correctIdx": 1,
+        "exp": {
+          "en": "The median is 8. The lower half is 2, 4, 6, and its middle is 4.",
+          "es": "La mediana es 8. La mitad de abajo es 2, 4, 6, y su medio es 4."
+        },
+        "calc": {
+          "expr": "4",
+          "value": 4
+        }
+      },
+      {
+        "from": "2-3",
+        "q": {
+          "en": "What is the median of 12, 18, 14, 20?",
+          "es": "¿Cuál es la mediana de 12, 18, 14, 20?"
+        },
+        "options": [
+          "16",
+          "14",
+          "18"
+        ],
+        "correctIdx": 0,
+        "exp": {
+          "en": "In order: 12, 14, 18, 20. The median is halfway between 14 and 18: 16.",
+          "es": "En orden: 12, 14, 18, 20. La mediana está a la mitad entre 14 y 18: 16."
+        },
+        "calc": {
+          "expr": "(14 + 18) / 2",
+          "value": 16
+        }
+      }
+    ],
+    "kitchenTable": {
+      "en": "Ask each person at home how many minutes they need to get ready. Find the longest time and the shortest time. How far apart are they? That distance is the range.",
+      "es": "Pregunten a cada persona de la casa cuántos minutos necesita para alistarse. Busquen el tiempo más largo y el más corto. ¿Cuánto los separa? Esa distancia es el rango."
+    },
+    "vocab": [
+      {
+        "term": "Range",
+        "example": {
+          "en": "The test scores run from 68 to 94, so the range is 94 − 68 = 26.",
+          "es": "Los puntajes van de 68 a 94, así que el rango es 94 − 68 = 26."
+        },
+        "nonExample": {
+          "en": "68 + 94 = 162 is not the range. A range is a difference.",
+          "es": "68 + 94 = 162 no es el rango. Un rango es una diferencia."
+        },
+        "frame": {
+          "en": "The range is ___ − ___ = ___.",
+          "es": "El rango es ___ − ___ = ___."
+        }
+      },
+      {
+        "term": "Quartile",
+        "example": {
+          "en": "Q1 = 75.5 and Q3 = 88 are quartiles. Each one is the middle of a half.",
+          "es": "Q1 = 75.5 y Q3 = 88 son cuartiles. Cada uno es el medio de una mitad."
+        },
+        "nonExample": {
+          "en": "The lowest score, 68, is not a quartile. It is the least value.",
+          "es": "El puntaje más bajo, 68, no es un cuartil. Es el valor menor."
+        },
+        "frame": {
+          "en": "Q3 is the middle of the ___ half, so Q3 = ___.",
+          "es": "Q3 es el medio de la mitad de ___, así que Q3 = ___."
+        }
+      },
+      {
+        "term": "Interquartile range",
+        "example": {
+          "en": "88 − 75.5 = 12.5 is the IQR. It is the spread of the middle half.",
+          "es": "88 − 75.5 = 12.5 es el RIC. Es la dispersión de la mitad central."
+        },
+        "nonExample": {
+          "en": "26 is the range, not the IQR. It uses the lowest and highest scores.",
+          "es": "26 es el rango, no el RIC. Usa los puntajes más bajo y más alto."
+        },
+        "frame": {
+          "en": "The IQR is Q3 minus Q1, so ___ − ___ = ___.",
+          "es": "El RIC es Q3 menos Q1, así que ___ − ___ = ___."
+        }
+      },
+      {
+        "term": "Variability",
+        "example": {
+          "en": "These scores vary by 26 points from the lowest to the highest.",
+          "es": "Estos puntajes varían 26 puntos del más bajo al más alto."
+        },
+        "nonExample": {
+          "en": "A different situation: if every student scored 80, there would be no variability.",
+          "es": "Otra situación: si todos los estudiantes sacaran 80, no habría variabilidad."
+        },
+        "frame": {
+          "en": "The data varies a lot when the ___ is large, like ___.",
+          "es": "Los datos varían mucho cuando el ___ es grande, como ___."
+        }
+      },
+      {
+        "term": "Extreme value",
+        "example": {
+          "en": "The 68 and the 94 are the extreme values. They set the range.",
+          "es": "El 68 y el 94 son los valores extremos. Ellos fijan el rango."
+        },
+        "nonExample": {
+          "en": "88 is a quartile, not an extreme value.",
+          "es": "88 es un cuartil, no un valor extremo."
+        },
+        "frame": {
+          "en": "The extreme values are ___ and ___.",
+          "es": "Los valores extremos son ___ y ___."
+        }
+      }
+    ],
+    "confused": [
+      {
+        "wrong": {
+          "en": "The range is the middle of the scores: (68 + 94) ÷ 2 = 81.",
+          "es": "El rango es el medio de los puntajes: (68 + 94) ÷ 2 = 81."
+        },
+        "coach": {
+          "en": "Is the range a place on the number line, or a distance?",
+          "es": "¿El rango es un lugar en la recta numérica o una distancia?"
+        },
+        "why": {
+          "en": "The range is a distance, so subtract: 94 − 68 = 26.",
+          "es": "El rango es una distancia, así que se resta: 94 − 68 = 26."
+        },
+        "misconception": "range-as-midpoint",
+        "calc": {
+          "expr": "94 - 68",
+          "value": 26
+        }
+      },
+      {
+        "wrong": {
+          "en": "I added to find the IQR: 75.5 + 88 = 163.5.",
+          "es": "Sumé para hallar el RIC: 75.5 + 88 = 163.5."
+        },
+        "coach": {
+          "en": "Is the IQR a distance across the box, or a total of the two edges?",
+          "es": "¿El RIC es una distancia a lo ancho de la caja o un total de los dos bordes?"
+        },
+        "why": {
+          "en": "Every measure of spread is a subtraction. The IQR is Q3 − Q1 = 88 − 75.5 = 12.5.",
+          "es": "Toda medida de dispersión es una resta. El RIC es Q3 − Q1 = 88 − 75.5 = 12.5."
+        },
+        "misconception": "added-quartiles",
+        "calc": {
+          "expr": "88 - 75.5",
+          "value": 12.5
+        }
+      },
+      {
+        "wrong": {
+          "en": "There are 20 scores, so Q1 is the 5th score: 75.",
+          "es": "Hay 20 puntajes, así que Q1 es el 5.º puntaje: 75."
+        },
+        "coach": {
+          "en": "How many scores are in the lower half, and does one score sit in the exact middle?",
+          "es": "¿Cuántos puntajes hay en la mitad de abajo y hay un puntaje justo en el medio?"
+        },
+        "why": {
+          "en": "The lower half has 10 scores, an even count. Q1 is halfway between the 5th and 6th: (75 + 76) ÷ 2 = 75.5.",
+          "es": "La mitad de abajo tiene 10 puntajes, una cantidad par. Q1 está a la mitad entre el 5.º y el 6.º: (75 + 76) ÷ 2 = 75.5."
+        },
+        "misconception": "even-half-no-average",
+        "calc": {
+          "expr": "(75 + 76) / 2",
+          "value": 75.5
+        }
+      }
+    ]
+  }
 }

@@ -455,5 +455,253 @@
   "caseFile": {
     "en": "The sale tag: a jacket is marked 40% off and costs $30 now. What was the original price? Find the whole before you check the sale.",
     "es": "La etiqueta de oferta: una chaqueta tiene 40% de descuento y ahora cuesta $30. ¿Cuál era el precio original? Halla el total antes de revisar la oferta."
+  },
+  "v3": {
+    "version": 1,
+    "kind": "math",
+    "topicKey": "percent-find-whole",
+    "standardPlain": {
+      "en": "Find the whole when you know a part and its percent.",
+      "es": "Hallar el total cuando conoces una parte y su porcentaje."
+    },
+    "hook": {
+      "style": "price-tag",
+      "en": "A sweater tag says $42 after a sale. The sign says $42 is 60% of the regular price. What was the regular price?",
+      "es": "La etiqueta de un suéter dice $42 después de una oferta. El letrero dice que $42 es el 60% del precio normal. ¿Cuál era el precio normal?",
+      "guess": {
+        "en": "Make a guess first: is the regular price more or less than $42?",
+        "es": "Primero adivina: ¿el precio normal es mayor o menor que $42?"
+      },
+      "reveal": {
+        "en": "More! $42 is only 60% of it. Six 10% steps make $42, so each step is $7. Ten steps make the whole: $70.",
+        "es": "¡Mayor! $42 es solo el 60%. Seis peldaños del 10% suman $42, así que cada peldaño vale $7. Diez peldaños forman el total: $70."
+      }
+    },
+    "classModel": {
+      "name": {
+        "en": "the 10% stepping stone",
+        "es": "el peldaño del 10%"
+      }
+    },
+    "model": {
+      "kind": "tape",
+      "data": {
+        "parts": 10,
+        "highlight": 6,
+        "partLabel": "60% = $42",
+        "wholeLabel": "100% = ?",
+        "blockLabel": "10% = $7",
+        "unknown": "whole"
+      },
+      "alt": {
+        "en": "A bar split into 10 equal blocks. Six blocks are shaded and labeled 60% = $42. Each block is 10% = $7. The whole bar, 100%, is the unknown.",
+        "es": "Una barra dividida en 10 bloques iguales. Seis bloques están sombreados y dicen 60% = $42. Cada bloque es 10% = $7. La barra completa, 100%, es la incógnita."
+      }
+    },
+    "transfer": {
+      "stem": {
+        "en": "Headphones are on sale for $27. That is 30% of the regular price. What was the regular price?",
+        "es": "Unos audífonos están en oferta a $27. Eso es el 30% del precio normal. ¿Cuál era el precio normal?"
+      },
+      "choices": [
+        {
+          "en": "$8.10",
+          "es": "$8.10",
+          "correct": false,
+          "misconception": "multiplied-instead-of-divided"
+        },
+        {
+          "en": "$90",
+          "es": "$90",
+          "correct": true,
+          "misconception": null
+        },
+        {
+          "en": "$57",
+          "es": "$57",
+          "correct": false,
+          "misconception": "added-part-and-percent"
+        }
+      ],
+      "reasoning": {
+        "en": "30% is $27, so 10% is $27 ÷ 3 = $9. The whole is ten 10% steps: $9 × 10 = $90.",
+        "es": "El 30% es $27, así que el 10% es $27 ÷ 3 = $9. El total son diez peldaños del 10%: $9 × 10 = $90."
+      },
+      "calc": {
+        "expr": "27 / 3 * 10",
+        "value": 90,
+        "unit": "$"
+      }
+    },
+    "glitch": null,
+    "spiral": [
+      {
+        "from": "4-4",
+        "q": {
+          "en": "What is 25% of 80?",
+          "es": "¿Cuánto es el 25% de 80?"
+        },
+        "options": [
+          "20",
+          "25",
+          "32"
+        ],
+        "correctIdx": 0,
+        "exp": {
+          "en": "25% is one fourth. 80 ÷ 4 = 20.",
+          "es": "El 25% es un cuarto. 80 ÷ 4 = 20."
+        },
+        "calc": {
+          "expr": "80 / 4",
+          "value": 20
+        }
+      },
+      {
+        "from": "4-2",
+        "q": {
+          "en": "Which decimal is the same as 60%?",
+          "es": "¿Qué decimal es igual al 60%?"
+        },
+        "options": [
+          "0.06",
+          "0.6",
+          "6"
+        ],
+        "correctIdx": 1,
+        "exp": {
+          "en": "60% means 60 out of 100, and 60 ÷ 100 = 0.6.",
+          "es": "60% significa 60 de 100, y 60 ÷ 100 = 0.6."
+        },
+        "calc": {
+          "expr": "60 / 100",
+          "value": 0.6
+        }
+      }
+    ],
+    "kitchenTable": {
+      "en": "Pick any price on a receipt. Say, \"This is 50% of the full price.\" Can your student find the full price out loud? Then try 25%.",
+      "es": "Elijan un precio de un recibo. Digan: «Este es el 50% del precio completo». ¿Puede su estudiante decir en voz alta el precio completo? Después prueben con el 25%."
+    },
+    "vocab": [
+      {
+        "term": "Part",
+        "example": {
+          "en": "The $42 on the sweater tag is the part.",
+          "es": "Los $42 de la etiqueta del suéter son la parte."
+        },
+        "nonExample": {
+          "en": "The regular price is not the part. It is the whole.",
+          "es": "El precio normal no es la parte. Es el total."
+        },
+        "frame": {
+          "en": "The part is ___ and it is ___% of the whole.",
+          "es": "La parte es ___ y es el ___% del total."
+        }
+      },
+      {
+        "term": "Whole",
+        "example": {
+          "en": "The regular price, 100%, is the whole.",
+          "es": "El precio normal, 100%, es el total."
+        },
+        "nonExample": {
+          "en": "The $42 sale price is not the whole. It is only 60% of it.",
+          "es": "El precio de oferta de $42 no es el total. Es solo el 60%."
+        },
+        "frame": {
+          "en": "The whole is ___ because 10% is ___ and I need ten steps.",
+          "es": "El total es ___ porque el 10% es ___ y necesito diez peldaños."
+        }
+      },
+      {
+        "term": "Percent",
+        "example": {
+          "en": "60% means 60 out of every 100.",
+          "es": "60% significa 60 de cada 100."
+        },
+        "nonExample": {
+          "en": "60% does not mean $60. It is a rate per 100.",
+          "es": "60% no significa $60. Es una razón por cada 100."
+        },
+        "frame": {
+          "en": "___% means ___ out of every 100.",
+          "es": "___% significa ___ de cada 100."
+        }
+      },
+      {
+        "term": "Inverse operation",
+        "example": {
+          "en": "To undo ×0.6, divide by 0.6.",
+          "es": "Para deshacer ×0.6, se divide entre 0.6."
+        },
+        "nonExample": {
+          "en": "Multiplying again does not undo it. 42 × 0.6 makes a smaller number.",
+          "es": "Multiplicar otra vez no lo deshace. 42 × 0.6 da un número menor."
+        },
+        "frame": {
+          "en": "I undo ___ by ___, so the whole is ___.",
+          "es": "Deshago ___ con ___, así que el total es ___."
+        }
+      }
+    ],
+    "confused": [
+      {
+        "wrong": {
+          "en": "I multiplied: 42 × 0.6 = 25.2. So the regular price is $25.20.",
+          "es": "Multipliqué: 42 × 0.6 = 25.2. Entonces el precio normal es $25.20."
+        },
+        "coach": {
+          "en": "Should the regular price be more or less than the $42 sale price?",
+          "es": "¿El precio normal debe ser mayor o menor que el precio de oferta de $42?"
+        },
+        "why": {
+          "en": "A sale price is lower than the regular price, so the whole must be bigger than $42. To undo ×0.6, divide: 42 ÷ 0.6 = 70.",
+          "es": "El precio de oferta es menor que el normal, así que el total debe ser mayor que $42. Para deshacer ×0.6, se divide: 42 ÷ 0.6 = 70."
+        },
+        "misconception": "multiplied-instead-of-divided",
+        "calc": {
+          "expr": "42 / 0.6",
+          "value": 70
+        }
+      },
+      {
+        "wrong": {
+          "en": "60% is $42, so 10% is 42 ÷ 10 = $4.20.",
+          "es": "El 60% es $42, así que el 10% es 42 ÷ 10 = $4.20."
+        },
+        "coach": {
+          "en": "How many 10% steps fit inside 60%?",
+          "es": "¿Cuántos peldaños del 10% caben en el 60%?"
+        },
+        "why": {
+          "en": "60% is six 10% steps, so divide by 6, not by 10: 42 ÷ 6 = $7.",
+          "es": "El 60% son seis peldaños del 10%, así que se divide entre 6, no entre 10: 42 ÷ 6 = $7."
+        },
+        "misconception": "divided-by-ten-not-by-steps",
+        "calc": {
+          "expr": "42 / 6",
+          "value": 7
+        }
+      },
+      {
+        "wrong": {
+          "en": "10% is $7, so 100% is 7 × 100 = $700.",
+          "es": "El 10% es $7, así que el 100% es 7 × 100 = $700."
+        },
+        "coach": {
+          "en": "How many 10% steps make 100%?",
+          "es": "¿Cuántos peldaños del 10% forman el 100%?"
+        },
+        "why": {
+          "en": "100% is ten 10% steps, not one hundred. 7 × 10 = $70.",
+          "es": "El 100% son diez peldaños del 10%, no cien. 7 × 10 = $70."
+        },
+        "misconception": "scaled-by-100-not-steps",
+        "calc": {
+          "expr": "7 * 10",
+          "value": 70
+        }
+      }
+    ]
   }
 }

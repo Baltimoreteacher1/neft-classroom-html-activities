@@ -547,5 +547,310 @@
       "en": "A letter works like that box: it holds a number you can swap in. Once 7 is in place, it is ordinary arithmetic, and multiplying before subtracting gives 33.",
       "es": "Una letra funciona como ese recuadro: guarda un número que puedes poner en su lugar. Con el 7 puesto, es aritmética normal, y multiplicar antes de restar da 33."
     }
+  },
+  "v3": {
+    "version": 1,
+    "kind": "math",
+    "topicKey": "substitute-then-evaluate-apply",
+    "standardPlain": {
+      "en": "Put a number in for the letter, then find the value of an algebraic expression.",
+      "es": "Sustituir la letra por un número y luego hallar el valor de una expresión algebraica."
+    },
+    "hook": {
+      "style": "price-tag",
+      "en": "A school store sells packs of 6 pencils. A student buys b packs, then gives away 9 pencils. The pencils left are 6b − 9. If b = 7, how many pencils are left?",
+      "es": "Una tienda escolar vende paquetes de 6 lápices. Un estudiante compra b paquetes y regala 9 lápices. Los lápices que quedan son 6b − 9. Si b = 7, ¿cuántos lápices quedan?",
+      "guess": {
+        "en": "Make a guess first: are there more or fewer than 40 pencils left?",
+        "es": "Primero adivina: ¿quedan más o menos de 40 lápices?"
+      },
+      "reveal": {
+        "en": "Fewer! Put 7 in for b: 6 × 7 = 42, not 67. Then 42 − 9 = 33 pencils.",
+        "es": "¡Menos! Pon 7 en lugar de b: 6 × 7 = 42, no 67. Luego 42 − 9 = 33 lápices."
+      }
+    },
+    "classModel": {
+      "name": {
+        "en": "substitute first, then calculate",
+        "es": "primero sustituye, luego calcula"
+      }
+    },
+    "model": {
+      "kind": "numberline",
+      "data": {
+        "min": 30,
+        "max": 45,
+        "step": 3,
+        "points": [
+          {
+            "value": 42,
+            "label": "6 × 7 = 42",
+            "kind": "given"
+          },
+          {
+            "value": 33,
+            "kind": "unknown"
+          }
+        ],
+        "unit": "pencils"
+      },
+      "alt": {
+        "en": "A number line from 30 to 45. A point at 42 is labeled 6 × 7 = 42. Moving back 9 from 42 lands on an unknown point, the value of 6b − 9.",
+        "es": "Una recta numérica de 30 a 45. Un punto en 42 dice 6 × 7 = 42. Retroceder 9 desde 42 llega a un punto desconocido, el valor de 6b − 9."
+      }
+    },
+    "transfer": {
+      "stem": {
+        "en": "A rec-center game gives 4 points for each ring k that lands on a peg. A foul takes away 3 points. A player lands 6 rings and has 1 foul. The score is 4k − 3. What is the score?",
+        "es": "Un juego del centro recreativo da 4 puntos por cada argolla k que cae en un poste. Una falta quita 3 puntos. Un jugador acierta 6 argollas y tiene 1 falta. El puntaje es 4k − 3. ¿Cuál es el puntaje?"
+      },
+      "choices": [
+        {
+          "en": "21 points",
+          "es": "21 puntos",
+          "correct": true,
+          "misconception": null
+        },
+        {
+          "en": "43 points",
+          "es": "43 puntos",
+          "correct": false,
+          "misconception": "side-by-side-means-join"
+        },
+        {
+          "en": "7 points",
+          "es": "7 puntos",
+          "correct": false,
+          "misconception": "coefficient-added-not-multiplied"
+        }
+      ],
+      "reasoning": {
+        "en": "Substitute k = 6: 4 × 6 − 3. Multiply first: 24 − 3 = 21.",
+        "es": "Sustituye k = 6: 4 × 6 − 3. Multiplica primero: 24 − 3 = 21."
+      },
+      "calc": {
+        "expr": "4 * 6 - 3",
+        "value": 21
+      }
+    },
+    "glitch": {
+      "scenario": {
+        "en": "A different situation: Mia evaluates 3n + 8 when n = 5.",
+        "es": "Otra situación: Mia evalúa 3n + 8 cuando n = 5."
+      },
+      "steps": [
+        {
+          "en": "Substitute 5 for n: 3 × 5 + 8.",
+          "es": "Sustituye n por 5: 3 × 5 + 8.",
+          "isGlitch": false
+        },
+        {
+          "en": "Add first: 5 + 8 = 13, then 3 × 13 = 39.",
+          "es": "Suma primero: 5 + 8 = 13, luego 3 × 13 = 39.",
+          "isGlitch": true
+        },
+        {
+          "en": "The value is 39.",
+          "es": "El valor es 39.",
+          "isGlitch": false
+        }
+      ],
+      "fix": {
+        "en": "Multiply before you add: 3 × 5 = 15. Then 15 + 8 = 23.",
+        "es": "Multiplica antes de sumar: 3 × 5 = 15. Luego 15 + 8 = 23."
+      },
+      "frame": {
+        "en": "After I substitute, I ___ first, then I ___, so the value is ___.",
+        "es": "Después de sustituir, primero ___, luego ___, así que el valor es ___."
+      },
+      "calc": {
+        "expr": "3 * 5 + 8",
+        "value": 23
+      }
+    },
+    "spiral": [
+      {
+        "from": "6-5",
+        "q": {
+          "en": "Tickets cost $12 each plus a $50 fee. The cost is 12t + 50. What is the cost when t = 4?",
+          "es": "Los boletos cuestan $12 cada uno más una cuota de $50. El costo es 12t + 50. ¿Cuánto cuesta cuando t = 4?"
+        },
+        "options": [
+          "66",
+          "98",
+          "248"
+        ],
+        "correctIdx": 1,
+        "exp": {
+          "en": "Substitute: 12 × 4 + 50 = 48 + 50 = 98.",
+          "es": "Sustituye: 12 × 4 + 50 = 48 + 50 = 98."
+        },
+        "calc": {
+          "expr": "12 * 4 + 50",
+          "value": 98
+        }
+      },
+      {
+        "from": "6-4",
+        "q": {
+          "en": "What is 20 − 2³?",
+          "es": "¿Cuánto es 20 − 2³?"
+        },
+        "options": [
+          "12",
+          "14",
+          "18"
+        ],
+        "correctIdx": 0,
+        "exp": {
+          "en": "Power first: 2³ = 8. Then 20 − 8 = 12.",
+          "es": "Primero la potencia: 2³ = 8. Luego 20 − 8 = 12."
+        },
+        "calc": {
+          "expr": "20 - 2 * 2 * 2",
+          "value": 12
+        }
+      }
+    ],
+    "kitchenTable": {
+      "en": "Put 6 coins in each of 4 cups. Take away 9 coins. Ask your student to say 6b − 9 with b = 4, then count the coins left to check.",
+      "es": "Pongan 6 monedas en cada uno de 4 vasos. Quiten 9 monedas. Pidan a su estudiante que diga 6b − 9 con b = 4 y que cuente las monedas que quedan para comprobar."
+    },
+    "vocab": [
+      {
+        "term": "Variable",
+        "example": {
+          "en": "In 6b − 9, the letter b is the variable. It stands for the number of packs.",
+          "es": "En 6b − 9, la letra b es la variable. Representa la cantidad de paquetes."
+        },
+        "nonExample": {
+          "en": "The 9 is not the variable. It stays 9 for every b.",
+          "es": "El 9 no es la variable. Se queda en 9 para cualquier b."
+        },
+        "frame": {
+          "en": "The variable ___ stands for ___, and today it is ___.",
+          "es": "La variable ___ representa ___, y hoy vale ___."
+        }
+      },
+      {
+        "term": "Coefficient",
+        "example": {
+          "en": "In 6b, the coefficient is 6. It means 6 pencils in each pack.",
+          "es": "En 6b, el coeficiente es 6. Significa 6 lápices en cada paquete."
+        },
+        "nonExample": {
+          "en": "6b is not 6 + b. The coefficient multiplies the letter.",
+          "es": "6b no es 6 + b. El coeficiente multiplica a la letra."
+        },
+        "frame": {
+          "en": "The coefficient is ___, so ___b means ___ × b.",
+          "es": "El coeficiente es ___, así que ___b significa ___ × b."
+        }
+      },
+      {
+        "term": "Constant",
+        "example": {
+          "en": "The 9 in 6b − 9 is the constant. It stays 9 for any b.",
+          "es": "El 9 de 6b − 9 es la constante. Se queda en 9 para cualquier b."
+        },
+        "nonExample": {
+          "en": "6b is not a constant. Its value changes when b changes.",
+          "es": "6b no es una constante. Su valor cambia cuando b cambia."
+        },
+        "frame": {
+          "en": "The constant is ___ and it does not change when ___ changes.",
+          "es": "La constante es ___ y no cambia cuando ___ cambia."
+        }
+      },
+      {
+        "term": "Substitute",
+        "example": {
+          "en": "To substitute b = 7, write 6 × 7 − 9.",
+          "es": "Para sustituir b = 7, escribe 6 × 7 − 9."
+        },
+        "nonExample": {
+          "en": "Writing 67 − 9 is not substituting. 6b means 6 times b.",
+          "es": "Escribir 67 − 9 no es sustituir. 6b significa 6 por b."
+        },
+        "frame": {
+          "en": "I substitute ___ for ___ and write ___.",
+          "es": "Sustituyo ___ por ___ y escribo ___."
+        }
+      },
+      {
+        "term": "Evaluate",
+        "example": {
+          "en": "After substituting, evaluate: 6 × 7 = 42, then 42 − 9 = 33.",
+          "es": "Después de sustituir, evalúa: 6 × 7 = 42 y luego 42 − 9 = 33."
+        },
+        "nonExample": {
+          "en": "42 is not the value yet. The − 9 is still waiting.",
+          "es": "42 todavía no es el valor. Aún falta el − 9."
+        },
+        "frame": {
+          "en": "I evaluate ___ and the value is ___.",
+          "es": "Evalúo ___ y el valor es ___."
+        }
+      }
+    ],
+    "confused": [
+      {
+        "wrong": {
+          "en": "b = 7, so 6b is 67. Then 67 − 9 = 58.",
+          "es": "b = 7, así que 6b es 67. Luego 67 − 9 = 58."
+        },
+        "coach": {
+          "en": "What does a number next to a letter ask you to do?",
+          "es": "¿Qué te pide hacer un número junto a una letra?"
+        },
+        "why": {
+          "en": "A number next to a letter means multiply. 6 × 7 = 42, then 42 − 9 = 33.",
+          "es": "Un número junto a una letra significa multiplicar. 6 × 7 = 42 y luego 42 − 9 = 33."
+        },
+        "misconception": "side-by-side-means-join",
+        "calc": {
+          "expr": "6 * 7 - 9",
+          "value": 33
+        }
+      },
+      {
+        "wrong": {
+          "en": "6b means 6 + b, so 6 + 7 − 9 = 4.",
+          "es": "6b significa 6 + b, así que 6 + 7 − 9 = 4."
+        },
+        "coach": {
+          "en": "If each pack has 6 pencils, how many pencils are in 7 packs?",
+          "es": "Si cada paquete tiene 6 lápices, ¿cuántos lápices hay en 7 paquetes?"
+        },
+        "why": {
+          "en": "6b means 6 times b, not 6 plus b. 6 × 7 = 42, so 42 − 9 = 33.",
+          "es": "6b significa 6 por b, no 6 más b. 6 × 7 = 42, así que 42 − 9 = 33."
+        },
+        "misconception": "coefficient-added-not-multiplied",
+        "calc": {
+          "expr": "6 * 7 - 9",
+          "value": 33
+        }
+      },
+      {
+        "wrong": {
+          "en": "6 × 7 = 42, so there are 42 pencils left.",
+          "es": "6 × 7 = 42, así que quedan 42 lápices."
+        },
+        "coach": {
+          "en": "What happened to the 9 pencils given away?",
+          "es": "¿Qué pasó con los 9 lápices que se regalaron?"
+        },
+        "why": {
+          "en": "The − 9 still counts. After 6 × 7 = 42, subtract: 42 − 9 = 33.",
+          "es": "El − 9 todavía cuenta. Después de 6 × 7 = 42, resta: 42 − 9 = 33."
+        },
+        "misconception": "stopped-before-finishing",
+        "calc": {
+          "expr": "42 - 9",
+          "value": 33
+        }
+      }
+    ]
   }
 }

@@ -511,5 +511,315 @@
       ],
       "image": "/assets/vocab-images/justify.svg"
     }
-  ]
+  ],
+  "v3": {
+    "version": 1,
+    "kind": "math",
+    "topicKey": "volume-equal-beds-apply",
+    "standardPlain": {
+      "en": "Compare two boxes by volume. If the volumes are equal, give a second reason.",
+      "es": "Comparar dos cajas por su volumen. Si los volúmenes son iguales, dar una segunda razón."
+    },
+    "hook": {
+      "style": "map",
+      "en": "A community garden map shows two soil beds. Bed A is 6 ft long, 4 ft wide, and 2 ft deep. Bed B is 8 ft long, 3 ft wide, and 2 ft deep. Which bed holds more soil?",
+      "es": "El mapa de un huerto comunitario muestra dos camas de tierra. La cama A mide 6 pies de largo, 4 de ancho y 2 de profundidad. La cama B mide 8 pies de largo, 3 de ancho y 2 de profundidad. ¿Cuál cama contiene más tierra?",
+      "guess": {
+        "en": "Make a guess first: does Bed A or Bed B hold more soil?",
+        "es": "Primero adivina: ¿la cama A o la cama B contiene más tierra?"
+      },
+      "reveal": {
+        "en": "Neither! Both hold 48 cubic feet: 6 × 4 × 2 = 48 and 8 × 3 × 2 = 48. Equal volumes mean we need a second reason.",
+        "es": "¡Ninguna! Las dos contienen 48 pies cúbicos: 6 × 4 × 2 = 48 y 8 × 3 × 2 = 48. Con volúmenes iguales necesitamos una segunda razón."
+      }
+    },
+    "classModel": {
+      "name": {
+        "en": "a recommendation with two halves",
+        "es": "una recomendación con dos partes"
+      }
+    },
+    "model": {
+      "kind": "barplot",
+      "data": {
+        "categories": [
+          {
+            "label": {
+              "en": "Bed A",
+              "es": "Cama A"
+            },
+            "value": 48
+          },
+          {
+            "label": {
+              "en": "Bed B",
+              "es": "Cama B"
+            },
+            "value": 48
+          }
+        ],
+        "unit": {
+          "en": "cubic feet",
+          "es": "pies cúbicos"
+        }
+      },
+      "alt": {
+        "en": "A bar chart in cubic feet. Bed A holds 48 and Bed B holds 48. The two bars are the same length.",
+        "es": "Una gráfica de barras en pies cúbicos. La cama A contiene 48 y la cama B contiene 48. Las dos barras tienen la misma longitud."
+      }
+    },
+    "transfer": {
+      "stem": {
+        "en": "Storage bin P is 4 ft long, 3 ft wide, and 2 ft tall. Bin R is 5 ft long, 2 ft wide, and 2 ft tall. Which is the best recommendation?",
+        "es": "El contenedor P mide 4 pies de largo, 3 de ancho y 2 de alto. El contenedor R mide 5 pies de largo, 2 de ancho y 2 de alto. ¿Cuál es la mejor recomendación?"
+      },
+      "choices": [
+        {
+          "en": "Choose bin R, because its longest side is 5 feet.",
+          "es": "Elijan el contenedor R, porque su lado más largo mide 5 pies.",
+          "correct": false,
+          "misconception": "longest-side-holds-more"
+        },
+        {
+          "en": "Choose either bin. They hold the same amount.",
+          "es": "Elijan cualquiera. Contienen la misma cantidad.",
+          "correct": false,
+          "misconception": "assumed-equal-volumes"
+        },
+        {
+          "en": "Choose bin P, because it holds 24 cubic feet and bin R holds 20 cubic feet.",
+          "es": "Elijan el contenedor P, porque contiene 24 pies cúbicos y el contenedor R contiene 20 pies cúbicos.",
+          "correct": true,
+          "misconception": null
+        }
+      ],
+      "reasoning": {
+        "en": "Bin P: 4 × 3 × 2 = 24 cubic feet. Bin R: 5 × 2 × 2 = 20 cubic feet. Since 24 is greater than 20, bin P holds more.",
+        "es": "Contenedor P: 4 × 3 × 2 = 24 pies cúbicos. Contenedor R: 5 × 2 × 2 = 20 pies cúbicos. Como 24 es mayor que 20, el contenedor P contiene más."
+      },
+      "calc": {
+        "expr": "4 * 3 * 2",
+        "value": 24
+      }
+    },
+    "glitch": {
+      "scenario": {
+        "en": "A different situation: a fish tank is 5 ft long, 3 ft wide, and 2 ft tall. Mia wants its volume.",
+        "es": "Otra situación: una pecera mide 5 pies de largo, 3 de ancho y 2 de alto. Mia quiere su volumen."
+      },
+      "steps": [
+        {
+          "en": "Write the three measurements: 5, 3, and 2.",
+          "es": "Escribe las tres medidas: 5, 3 y 2.",
+          "isGlitch": false
+        },
+        {
+          "en": "Multiply them: 5 × 3 × 2 = 30, so the tank holds 30 square feet.",
+          "es": "Multiplícalas: 5 × 3 × 2 = 30, así que la pecera contiene 30 pies cuadrados.",
+          "isGlitch": true
+        },
+        {
+          "en": "Say the volume in a sentence that names the unit.",
+          "es": "Di el volumen en una oración que nombre la unidad.",
+          "isGlitch": false
+        }
+      ],
+      "fix": {
+        "en": "Water fills space, so the unit is cubic feet, not square feet. 5 × 3 × 2 = 30 cubic feet.",
+        "es": "El agua llena espacio, así que la unidad es pies cúbicos, no pies cuadrados. 5 × 3 × 2 = 30 pies cúbicos."
+      },
+      "frame": {
+        "en": "The volume is ___ × ___ × ___ = ___ cubic ___.",
+        "es": "El volumen es ___ × ___ × ___ = ___ ___ cúbicos."
+      },
+      "calc": {
+        "expr": "5 * 3 * 2",
+        "value": 30
+      }
+    },
+    "spiral": [
+      {
+        "from": "1-4",
+        "q": {
+          "en": "A box is 4 in by 3 in by 5 in. What is its volume?",
+          "es": "Una caja mide 4 pulgadas por 3 por 5. ¿Cuál es su volumen?"
+        },
+        "options": [
+          "12",
+          "60",
+          "24"
+        ],
+        "correctIdx": 1,
+        "exp": {
+          "en": "Multiply the three sides: 4 × 3 × 5 = 60 cubic inches.",
+          "es": "Multiplica las tres medidas: 4 × 3 × 5 = 60 pulgadas cúbicas."
+        },
+        "calc": {
+          "expr": "4 * 3 * 5",
+          "value": 60
+        }
+      },
+      {
+        "from": "1-3",
+        "q": {
+          "en": "$7.50 is shared equally among 3 friends. How much does each friend get?",
+          "es": "$7.50 se reparten en partes iguales entre 3 amigos. ¿Cuánto recibe cada amigo?"
+        },
+        "options": [
+          "$22.50",
+          "$2.50",
+          "$4.50"
+        ],
+        "correctIdx": 1,
+        "exp": {
+          "en": "Draw a tape with 3 equal parts. Then 7.50 ÷ 3 = $2.50.",
+          "es": "Dibuja una barra con 3 partes iguales. Luego 7.50 ÷ 3 = $2.50."
+        },
+        "calc": {
+          "expr": "7.5 / 3",
+          "value": 2.5
+        }
+      }
+    ],
+    "kitchenTable": {
+      "en": "A different situation: use 12 blocks, dice, or ice cubes. Build a box 3 long, 2 wide, and 2 tall. Then build one that is 4 long, 3 wide, and 1 tall. Do they hold the same amount? Which would your student recommend?",
+      "es": "Otra situación: usen 12 bloques, dados o cubos de hielo. Construyan una caja de 3 de largo, 2 de ancho y 2 de alto. Luego construyan otra de 4 de largo, 3 de ancho y 1 de alto. ¿Contienen lo mismo? ¿Cuál recomendaría su estudiante?"
+    },
+    "vocab": [
+      {
+        "term": "volume",
+        "example": {
+          "en": "Bed A holds 6 × 4 × 2 = 48 cubic feet of soil. That is its volume.",
+          "es": "La cama A contiene 6 × 4 × 2 = 48 pies cúbicos de tierra. Ese es su volumen."
+        },
+        "nonExample": {
+          "en": "The wood around Bed A is not its volume. Volume is the space inside.",
+          "es": "La madera alrededor de la cama A no es su volumen. El volumen es el espacio de adentro."
+        },
+        "frame": {
+          "en": "The volume of Bed A is ___ × ___ × ___ = ___.",
+          "es": "El volumen de la cama A es ___ × ___ × ___ = ___."
+        }
+      },
+      {
+        "term": "cubic unit",
+        "example": {
+          "en": "Garden soil is counted in cubic feet, cubes 1 foot on every edge.",
+          "es": "La tierra del huerto se cuenta en pies cúbicos, cubos de 1 pie en cada arista."
+        },
+        "nonExample": {
+          "en": "\"48 square feet\" covers a flat floor. It does not count cubes of soil.",
+          "es": "\"48 pies cuadrados\" cubre un piso plano. No cuenta cubos de tierra."
+        },
+        "frame": {
+          "en": "Soil is measured in cubic ___, because it fills ___.",
+          "es": "La tierra se mide en ___ cúbicos, porque llena ___."
+        }
+      },
+      {
+        "term": "dimensions",
+        "example": {
+          "en": "The dimensions of Bed B are 8 feet long, 3 feet wide, and 2 feet deep.",
+          "es": "Las dimensiones de la cama B son 8 pies de largo, 3 de ancho y 2 de profundidad."
+        },
+        "nonExample": {
+          "en": "\"Bed B is big\" does not give dimensions. It has no measurements.",
+          "es": "\"La cama B es grande\" no da dimensiones. No tiene medidas."
+        },
+        "frame": {
+          "en": "The dimensions are ___ by ___ by ___.",
+          "es": "Las dimensiones son ___ por ___ por ___."
+        }
+      },
+      {
+        "term": "argument",
+        "example": {
+          "en": "\"Both beds hold 48 cubic feet, but Bed A is easier to reach across\" is an argument.",
+          "es": "\"Las dos camas contienen 48 pies cúbicos, pero la cama A es más fácil de alcanzar\" es un argumento."
+        },
+        "nonExample": {
+          "en": "\"Bed A is nicer\" is an opinion. It has no numbers and no reason.",
+          "es": "\"La cama A es más bonita\" es una opinión. No tiene números ni razón."
+        },
+        "frame": {
+          "en": "Both hold ___ cubic feet, so I choose ___ because ___.",
+          "es": "Las dos contienen ___ pies cúbicos, así que elijo ___ porque ___."
+        }
+      },
+      {
+        "term": "justify",
+        "example": {
+          "en": "To justify choosing Bed A, say the volumes are equal and then give a second reason.",
+          "es": "Para justificar la cama A, di que los volúmenes son iguales y da una segunda razón."
+        },
+        "nonExample": {
+          "en": "\"Because I said so\" does not justify a choice.",
+          "es": "\"Porque yo lo digo\" no justifica una elección."
+        },
+        "frame": {
+          "en": "I can justify my choice because ___ and ___.",
+          "es": "Puedo justificar mi elección porque ___ y ___."
+        }
+      }
+    ],
+    "confused": [
+      {
+        "wrong": {
+          "en": "Bed B is longer, so it holds more soil.",
+          "es": "La cama B es más larga, así que contiene más tierra."
+        },
+        "coach": {
+          "en": "What are the other two measurements, and do they matter?",
+          "es": "¿Cuáles son las otras dos medidas, y importan?"
+        },
+        "why": {
+          "en": "Volume uses all three: length, width, and depth. 8 × 3 × 2 = 48, the same as 6 × 4 × 2 = 48.",
+          "es": "El volumen usa las tres: largo, ancho y profundidad. 8 × 3 × 2 = 48, igual que 6 × 4 × 2 = 48."
+        },
+        "misconception": "longest-side-holds-more",
+        "calc": {
+          "expr": "8 * 3 * 2",
+          "value": 48
+        }
+      },
+      {
+        "wrong": {
+          "en": "Both beds hold 48 cubic feet, so they must be the exact same bed.",
+          "es": "Las dos camas contienen 48 pies cúbicos, así que deben ser exactamente la misma cama."
+        },
+        "coach": {
+          "en": "Do two boxes with equal volume have to look the same?",
+          "es": "¿Dos cajas con el mismo volumen tienen que verse iguales?"
+        },
+        "why": {
+          "en": "Equal volumes can have different shapes. Bed A is 6 by 4 and Bed B is 8 by 3. Now give a second reason to choose.",
+          "es": "Volúmenes iguales pueden tener formas distintas. La cama A es de 6 por 4 y la cama B es de 8 por 3. Ahora da una segunda razón para elegir."
+        },
+        "misconception": "equal-volume-means-same-shape",
+        "calc": {
+          "expr": "6 * 4 * 2",
+          "value": 48
+        }
+      },
+      {
+        "wrong": {
+          "en": "Bed A holds 48 feet of soil, so I recommend Bed A.",
+          "es": "La cama A contiene 48 pies de tierra, así que recomiendo la cama A."
+        },
+        "coach": {
+          "en": "What unit shows the space that soil fills?",
+          "es": "¿Qué unidad muestra el espacio que llena la tierra?"
+        },
+        "why": {
+          "en": "Soil fills space, so say 48 cubic feet, not 48 feet. Then add a reason for your choice.",
+          "es": "La tierra llena espacio, así que di 48 pies cúbicos, no 48 pies. Luego agrega una razón para tu elección."
+        },
+        "misconception": "plain-feet-for-volume",
+        "calc": {
+          "expr": "6 * 4 * 2",
+          "value": 48
+        }
+      }
+    ]
+  }
 }

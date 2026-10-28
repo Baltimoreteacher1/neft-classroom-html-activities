@@ -511,5 +511,320 @@
       ],
       "image": "/assets/vocab-images/reasonableness.svg"
     }
-  ]
+  ],
+  "v3": {
+    "version": 1,
+    "kind": "math",
+    "topicKey": "pattern-rule-growth-predict-apply",
+    "standardPlain": {
+      "en": "Use a pattern rule to predict how many steps it takes to reach a goal.",
+      "es": "Usar la regla de un patrón para predecir cuántos pasos se necesitan para llegar a una meta."
+    },
+    "hook": {
+      "style": "scoreboard",
+      "en": "A growth chart tracks a baby sei whale. It is 4.5 meters long at birth and grows 2.5 centimeters each day. The goal is 15 meters. How many days will it take?",
+      "es": "Una tabla de crecimiento sigue a una ballena sei bebé. Mide 4.5 metros al nacer y crece 2.5 centímetros cada día. La meta es 15 metros. ¿Cuántos días tardará?",
+      "guess": {
+        "en": "Make a guess first: more or less than 100 days?",
+        "es": "Primero adivina: ¿más o menos de 100 días?"
+      },
+      "reveal": {
+        "en": "More! Growth left: 15 − 4.5 = 10.5 meters, or 1,050 centimeters. Then 1,050 ÷ 2.5 = 420 days, a little over a year.",
+        "es": "¡Más! Lo que falta crecer: 15 − 4.5 = 10.5 metros, o 1,050 centímetros. Luego 1,050 ÷ 2.5 = 420 días, un poco más de un año."
+      }
+    },
+    "classModel": {
+      "name": {
+        "en": "the growth left ÷ one step",
+        "es": "lo que falta ÷ un paso"
+      }
+    },
+    "model": {
+      "kind": "doubleline",
+      "data": {
+        "top": {
+          "label": {
+            "en": "Days",
+            "es": "Días"
+          },
+          "ticks": [
+            "0",
+            "1",
+            "?"
+          ]
+        },
+        "bottom": {
+          "label": {
+            "en": "Growth (cm)",
+            "es": "Crecimiento (cm)"
+          },
+          "ticks": [
+            "0",
+            "2.5",
+            "1,050"
+          ]
+        },
+        "unknown": [
+          2
+        ]
+      },
+      "alt": {
+        "en": "Two number lines lined up. The top line shows 0 days, 1 day, and an unknown number of days. The bottom line shows 0, 2.5, and 1,050 centimeters of growth. The 2.5 lines up with 1 day, and the 1,050 lines up with the unknown days.",
+        "es": "Dos rectas numéricas alineadas. La de arriba muestra 0 días, 1 día y una cantidad desconocida de días. La de abajo muestra 0, 2.5 y 1,050 centímetros de crecimiento. El 2.5 coincide con 1 día, y el 1,050 coincide con los días desconocidos."
+      }
+    },
+    "transfer": {
+      "stem": {
+        "en": "A bamboo shoot is 30 centimeters tall. It grows 6 centimeters each day. How many days until it is 120 centimeters tall?",
+        "es": "Un brote de bambú mide 30 centímetros. Crece 6 centímetros cada día. ¿Cuántos días pasan hasta que mida 120 centímetros?"
+      },
+      "choices": [
+        {
+          "en": "20 days",
+          "es": "20 días",
+          "correct": false,
+          "misconception": "ignored-starting-length"
+        },
+        {
+          "en": "540 days",
+          "es": "540 días",
+          "correct": false,
+          "misconception": "multiplied-instead-of-divided"
+        },
+        {
+          "en": "15 days",
+          "es": "15 días",
+          "correct": true,
+          "misconception": null
+        }
+      ],
+      "reasoning": {
+        "en": "Growth left: 120 − 30 = 90 centimeters. Divide by one day's growth: 90 ÷ 6 = 15 days.",
+        "es": "Lo que falta crecer: 120 − 30 = 90 centímetros. Divide entre el crecimiento de un día: 90 ÷ 6 = 15 días."
+      },
+      "calc": {
+        "expr": "(120 - 30) / 6",
+        "value": 15
+      }
+    },
+    "glitch": {
+      "scenario": {
+        "en": "A different situation: a pumpkin vine is 20 cm long and grows 5 cm each day. Sam wants to know how many days until it is 100 cm long.",
+        "es": "Otra situación: una planta de calabaza mide 20 cm y crece 5 cm cada día. Sam quiere saber cuántos días pasan hasta que mida 100 cm."
+      },
+      "steps": [
+        {
+          "en": "Sam writes the goal length: 100 cm.",
+          "es": "Sam escribe la longitud meta: 100 cm.",
+          "isGlitch": false
+        },
+        {
+          "en": "Sam divides the goal by one day's growth: 100 ÷ 5 = 20 days.",
+          "es": "Sam divide la meta entre el crecimiento de un día: 100 ÷ 5 = 20 días.",
+          "isGlitch": true
+        },
+        {
+          "en": "Sam checks the answer with a table of values.",
+          "es": "Sam comprueba la respuesta con una tabla de valores.",
+          "isGlitch": false
+        }
+      ],
+      "fix": {
+        "en": "The vine already has 20 cm. Only 100 − 20 = 80 cm is left to grow. Then 80 ÷ 5 = 16 days. Check: 20 + 16 × 5 = 100.",
+        "es": "La planta ya tiene 20 cm. Solo faltan 100 − 20 = 80 cm por crecer. Entonces 80 ÷ 5 = 16 días. Comprueba: 20 + 16 × 5 = 100."
+      },
+      "frame": {
+        "en": "It must still grow ___. Each day adds ___. ___ ÷ ___ = ___ days.",
+        "es": "Todavía debe crecer ___. Cada día suma ___. ___ ÷ ___ = ___ días."
+      },
+      "calc": {
+        "expr": "(100 - 20) / 5",
+        "value": 16
+      }
+    },
+    "spiral": [
+      {
+        "from": "1-5",
+        "q": {
+          "en": "A table shows 1 → 4, 2 → 8, 3 → 12. What is the output for 9?",
+          "es": "Una tabla muestra 1 → 4, 2 → 8, 3 → 12. ¿Cuál es el resultado para 9?"
+        },
+        "options": [
+          "36",
+          "13",
+          "40"
+        ],
+        "correctIdx": 0,
+        "exp": {
+          "en": "The rule is multiply by 4. Then 9 × 4 = 36.",
+          "es": "La regla es multiplicar por 4. Entonces 9 × 4 = 36."
+        },
+        "calc": {
+          "expr": "9 * 4",
+          "value": 36
+        }
+      },
+      {
+        "from": "1-3",
+        "q": {
+          "en": "One ride takes 6.5 minutes. How many minutes do 10 rides take?",
+          "es": "Un viaje dura 6.5 minutos. ¿Cuántos minutos duran 10 viajes?"
+        },
+        "options": [
+          "650",
+          "6.5",
+          "65"
+        ],
+        "correctIdx": 2,
+        "exp": {
+          "en": "10 equal parts of 6.5 minutes. Then 6.5 × 10 = 65 minutes.",
+          "es": "10 partes iguales de 6.5 minutos. Entonces 6.5 × 10 = 65 minutos."
+        },
+        "calc": {
+          "expr": "6.5 * 10",
+          "value": 65
+        }
+      }
+    ],
+    "kitchenTable": {
+      "en": "A different situation: hold a ruler. Pretend a seedling is 5 cm tall and grows 2 cm each day. Ask your student how many days until it is 15 cm tall. Say first how much growth is left.",
+      "es": "Otra situación: tomen una regla. Imaginen que una plantita mide 5 cm y crece 2 cm cada día. Pregunten a su estudiante cuántos días pasan hasta que mida 15 cm. Primero digan cuánto falta por crecer."
+    },
+    "vocab": [
+      {
+        "term": "pattern rule",
+        "example": {
+          "en": "\"Add 2.5 centimeters each day\" is the pattern rule for the whale.",
+          "es": "\"Suma 2.5 centímetros cada día\" es la regla del patrón de la ballena."
+        },
+        "nonExample": {
+          "en": "\"The whale gets longer\" is not a pattern rule. It does not say how much.",
+          "es": "\"La ballena se hace más larga\" no es una regla del patrón. No dice cuánto."
+        },
+        "frame": {
+          "en": "The pattern rule is: add ___ each ___.",
+          "es": "La regla del patrón es: suma ___ cada ___."
+        }
+      },
+      {
+        "term": "table of values",
+        "example": {
+          "en": "A table with day 1, day 2, and day 3 beside the whale's growth is a table of values.",
+          "es": "Una tabla con el día 1, el día 2 y el día 3 junto al crecimiento de la ballena es una tabla de valores."
+        },
+        "nonExample": {
+          "en": "A list of days with no growth beside them is not a table of values.",
+          "es": "Una lista de días sin el crecimiento al lado no es una tabla de valores."
+        },
+        "frame": {
+          "en": "In my table, day ___ goes with ___ centimeters.",
+          "es": "En mi tabla, el día ___ va con ___ centímetros."
+        }
+      },
+      {
+        "term": "predict",
+        "example": {
+          "en": "Using the rule to say the whale reaches 15 meters in 420 days is a prediction.",
+          "es": "Usar la regla para decir que la ballena llega a 15 metros en 420 días es una predicción."
+        },
+        "nonExample": {
+          "en": "Waiting 420 days to measure is not predicting. It is just watching.",
+          "es": "Esperar 420 días para medir no es predecir. Es solo mirar."
+        },
+        "frame": {
+          "en": "I predict it will take ___ days because ___ is left and each day adds ___.",
+          "es": "Predigo que tardará ___ días porque faltan ___ y cada día suma ___."
+        }
+      },
+      {
+        "term": "Divide",
+        "example": {
+          "en": "Divide 1,050 centimeters by 2.5 centimeters to find the number of days.",
+          "es": "Divide 1,050 centímetros entre 2.5 centímetros para hallar el número de días."
+        },
+        "nonExample": {
+          "en": "Multiplying 1,050 × 2.5 gives 2,625, which is far too many days.",
+          "es": "Multiplicar 1,050 × 2.5 da 2,625, que son demasiados días."
+        },
+        "frame": {
+          "en": "I divide ___ by ___ to find the number of ___.",
+          "es": "Divido ___ entre ___ para hallar el número de ___."
+        }
+      },
+      {
+        "term": "reasonableness",
+        "example": {
+          "en": "420 days is a little over a year. That fits a slow, steady grower.",
+          "es": "420 días es un poco más de un año. Eso va con alguien que crece despacio y parejo."
+        },
+        "nonExample": {
+          "en": "4.2 days is not reasonable. A whale cannot grow 10 meters in four days.",
+          "es": "4.2 días no es razonable. Una ballena no puede crecer 10 metros en cuatro días."
+        },
+        "frame": {
+          "en": "My answer is reasonable because ___.",
+          "es": "Mi respuesta es razonable porque ___."
+        }
+      }
+    ],
+    "confused": [
+      {
+        "wrong": {
+          "en": "10.5 meters are left. 10.5 ÷ 2.5 = 4.2, so 4.2 days.",
+          "es": "Faltan 10.5 metros. 10.5 ÷ 2.5 = 4.2, así que 4.2 días."
+        },
+        "coach": {
+          "en": "Are meters and centimeters the same size of unit?",
+          "es": "¿Los metros y los centímetros son unidades del mismo tamaño?"
+        },
+        "why": {
+          "en": "The units do not match. 10.5 meters is 1,050 centimeters. Then 1,050 ÷ 2.5 = 420 days.",
+          "es": "Las unidades no coinciden. 10.5 metros son 1,050 centímetros. Entonces 1,050 ÷ 2.5 = 420 días."
+        },
+        "misconception": "units-do-not-match",
+        "calc": {
+          "expr": "1050 / 2.5",
+          "value": 420
+        }
+      },
+      {
+        "wrong": {
+          "en": "15 meters is 1,500 centimeters. 1,500 ÷ 2.5 = 600 days.",
+          "es": "15 metros son 1,500 centímetros. 1,500 ÷ 2.5 = 600 días."
+        },
+        "coach": {
+          "en": "How long is the whale on day one?",
+          "es": "¿Cuánto mide la ballena el primer día?"
+        },
+        "why": {
+          "en": "The whale already has 4.5 meters. Only 1,050 centimeters are left to grow. Then 1,050 ÷ 2.5 = 420 days.",
+          "es": "La ballena ya tiene 4.5 metros. Solo faltan 1,050 centímetros por crecer. Entonces 1,050 ÷ 2.5 = 420 días."
+        },
+        "misconception": "ignored-starting-length",
+        "calc": {
+          "expr": "1050 / 2.5",
+          "value": 420
+        }
+      },
+      {
+        "wrong": {
+          "en": "1,050 × 2.5 = 2,625 days.",
+          "es": "1,050 × 2.5 = 2,625 días."
+        },
+        "coach": {
+          "en": "Does one day add a lot of length, or only a little?",
+          "es": "¿Un día agrega mucha longitud o solo un poco?"
+        },
+        "why": {
+          "en": "Each day adds only 2.5 centimeters, so it takes many days. Divide the total left by one step: 1,050 ÷ 2.5 = 420.",
+          "es": "Cada día agrega solo 2.5 centímetros, así que se necesitan muchos días. Divide lo que falta entre un paso: 1,050 ÷ 2.5 = 420."
+        },
+        "misconception": "multiplied-instead-of-divided",
+        "calc": {
+          "expr": "1050 / 2.5",
+          "value": 420
+        }
+      }
+    ]
+  }
 }

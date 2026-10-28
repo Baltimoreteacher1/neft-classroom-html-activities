@@ -63,11 +63,7 @@ import {
 import { BRIDGE_CSS } from "./lib/homework-bridge.mjs";
 import { CALM_CSS } from "./lib/homework-calm-css.mjs";
 import { CASE_FILE_CSS, CASE_FILE_JS, renderCaseFile } from "./lib/homework-case-file.mjs";
-import {
-  renderCoLearningHud,
-  renderPrintSocraticFooter,
-  renderProblemCoPilotCard,
-} from "./lib/homework-co-learning.mjs";
+import { CENTER_CSS } from "./lib/homework-center-css.mjs";
 import { CONFUSED_GROWNUP_CSS, CONFUSED_GROWNUP_JS } from "./lib/homework-confused-grownup.mjs";
 import { DOMINO_DUO_CSS, DOMINO_DUO_JS } from "./lib/homework-domino-duo.mjs";
 import {
@@ -98,8 +94,9 @@ import {
   staleSharedFiles,
   writeSharedFiles,
 } from "./lib/homework-shared-assets.mjs";
-import { renderTopicModelSVG } from "./lib/homework-svg-models.mjs";
 import { TOUCH_CSS } from "./lib/homework-touch.mjs";
+import { renderPrintFooter, renderProblemAsk, renderTopBar } from "./lib/homework-v3-learn.mjs";
+import { V3_LEARN_CSS, V3_LEARN_JS } from "./lib/homework-v3-learn-assets.mjs";
 import { VOICE_CSS, VOICE_JS } from "./lib/homework-voice.mjs";
 import { workedExampleFor } from "./lib/homework-worked-example.mjs";
 import { compareFamilyHomeworkIds, generatesFamilyHomework } from "./lib/lesson-scope.mjs";
@@ -127,6 +124,12 @@ function langOption(value, en, es = "") {
 
 /** --check writes nothing and exits non-zero if any committed page has drifted. */
 const CHECK = process.argv.includes("--check");
+/** --only=4-5,5-1 regenerates just those pages (and keeps older shared files). Never the way to ship. */
+const ONLY = process.argv
+  .find((a) => a.startsWith("--only="))
+  ?.slice(7)
+  .split(",")
+  .filter(Boolean);
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, "..");
@@ -1175,7 +1178,7 @@ function renderProblem(it, pIdx, topic = "fallback", opts = {}) {
   const coachLevels = familyCoachLevels(it, topic);
   const coachLadder = {
     levels: coachLevels,
-    visualSvg: visualSvg || renderTopicModelSVG(topic, {}, "bridge"),
+    visualSvg: visualSvg || "",
   };
   return `
     <section class="problem-section card" id="problem_${pIdx}" data-problem-type="${type}" data-topic="${esc(it.topic || it.skill || it.standard || topic)}"${problemSubtype ? ` data-problem-subtype="${problemSubtype}"` : ""}>
@@ -1204,7 +1207,7 @@ function renderProblem(it, pIdx, topic = "fallback", opts = {}) {
         </div>
         <button type="button" class="btn btn-sm btn-primary" data-intelligence-next onclick="hwGoToNextPractice(${pIdx})" hidden></button>
       </aside>
-      ${renderProblemCoPilotCard(it, pIdx, topic, coachLevels)}
+      ${renderProblemAsk(it, pIdx, coachLevels)}
       ${renderAnswerKey(it, pIdx, solvedVisualSvg)}
     </section>
   `;
@@ -1480,8 +1483,8 @@ body[data-family-style] .homework-tab-btn { font-size:18px!important; }
   );
   const helpModalHtml = renderHelpModal();
   const refrigeratorSheetHtml = renderRefrigeratorSheet(config, lessonId);
-  const coLearningHudHtml = renderCoLearningHud(config, lessonId, vocab);
-  const printSocraticFooterHtml = renderPrintSocraticFooter(config, lessonId, topic);
+  const coLearningHudHtml = renderTopBar();
+  const printSocraticFooterHtml = renderPrintFooter(config, lessonId);
   const answerSheetHtml = renderAnswerSheet(
     [
       ...basic.map((it, i) => ({
@@ -4158,12 +4161,14 @@ ${WORKSPACE_CSS}
 ${SESSION_FLOW_CSS}
 ${EXPERIENCE_CSS}
 ${CASE_FILE_CSS}
+${V3_LEARN_CSS}
 ${DOMINO_DUO_CSS}
 ${VOICE_CSS}
 ${familyStyleCss}
 ${PRINT_CSS}
 ${TOUCH_CSS}
 ${CALM_CSS}
+${CENTER_CSS}
 </style>
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
@@ -4329,6 +4334,7 @@ ${WORKSPACE_JS}
 ${SESSION_FLOW_JS}
 ${EXPERIENCE_JS}
 ${CASE_FILE_JS}
+${V3_LEARN_JS}
 ${DOMINO_DUO_JS}
 ${VISUAL_LABS_JS}
 ${MATH_INPUT_JS}
@@ -7060,7 +7066,12 @@ function localizeBilingualLabels(html) {
 }
 
 function main() {
-  const lessons = lessonConfigs();
+  const lessons = lessonConfigs().filter(({ id }) => !ONLY || ONLY.includes(id));
+  if (ONLY && lessons.length !== ONLY.length) {
+    throw new Error(
+      `--only named ${ONLY.length} lessons but ${lessons.length} generate a homework page`,
+    );
+  }
   let count = 0;
 
   const staleHomework = [];
@@ -7094,7 +7105,7 @@ function main() {
   }
 
   if (CHECK) staleHomework.push(...staleSharedFiles(root, sharedFiles));
-  else writeSharedFiles(root, sharedFiles);
+  else writeSharedFiles(root, sharedFiles, { prune: !ONLY });
   if (CHECK) {
     if (staleHomework.length) {
       console.error(

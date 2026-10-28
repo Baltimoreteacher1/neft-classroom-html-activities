@@ -537,5 +537,287 @@
       ],
       "image": "/assets/vocab-images/pyramid.svg"
     }
-  ]
+  ],
+  "v3": {
+    "version": 1,
+    "kind": "math",
+    "topicKey": "lateral-area-pyramid-sides-only-apply",
+    "standardPlain": {
+      "en": "Find the lateral area of a pyramid: only the slanted faces, with the base left out.",
+      "es": "Hallar el área lateral de una pirámide: solo las caras inclinadas, sin la base."
+    },
+    "hook": {
+      "style": "receipt",
+      "en": "A model hut is a pyramid with a triangle floor. The floor is 18 cm on each side. Each of the 3 slanted faces has a slant height of 20 cm. You paint only the slanted faces. How many square centimeters get paint?",
+      "es": "Una cabaña modelo es una pirámide con piso triangular. El piso mide 18 cm por lado. Cada una de las 3 caras inclinadas tiene una altura inclinada de 20 cm. Solo pintas las caras inclinadas. ¿Cuántos centímetros cuadrados llevan pintura?",
+      "guess": {
+        "en": "Guess first: is it more than 500 square centimeters, or less?",
+        "es": "Primero adivina: ¿son más de 500 centímetros cuadrados o menos?"
+      },
+      "reveal": {
+        "en": "More! One slanted face is ½ × 18 × 20 = 180. Three faces make 540 square centimeters. The floor stays out.",
+        "es": "¡Más! Una cara inclinada es ½ × 18 × 20 = 180. Tres caras suman 540 centímetros cuadrados. El piso se queda fuera."
+      }
+    },
+    "classModel": {
+      "name": {
+        "en": "slanted faces only",
+        "es": "solo las caras inclinadas"
+      }
+    },
+    "model": {
+      "kind": "area",
+      "data": {
+        "shape": "triangle",
+        "dims": {
+          "base": 18,
+          "height": 20
+        },
+        "unit": "cm"
+      },
+      "alt": {
+        "en": "One slanted face of the hut: a triangle with a base of 18 centimeters and a slant height of 20 centimeters. Its area is 180 square centimeters. The hut has 3 of these faces, so the lateral area is 540.",
+        "es": "Una cara inclinada de la cabaña: un triángulo con base de 18 centímetros y altura inclinada de 20 centímetros. Su área es 180 centímetros cuadrados. La cabaña tiene 3 de estas caras, así que el área lateral es 540."
+      }
+    },
+    "transfer": {
+      "stem": {
+        "en": "A gazebo roof is a square pyramid. Shingles cover only the slanted faces. The base is 8 ft on each side. The slant height is 5 ft. How many square feet of shingles?",
+        "es": "El techo de un cenador es una pirámide cuadrada. Las tejas cubren solo las caras inclinadas. La base mide 8 pies por lado. La altura inclinada es 5 pies. ¿Cuántos pies cuadrados de tejas se necesitan?"
+      },
+      "choices": [
+        {
+          "en": "80 square feet",
+          "es": "80 pies cuadrados",
+          "correct": true,
+          "misconception": null
+        },
+        {
+          "en": "144 square feet",
+          "es": "144 pies cuadrados",
+          "correct": false,
+          "misconception": "added-the-base-to-lateral"
+        },
+        {
+          "en": "20 square feet",
+          "es": "20 pies cuadrados",
+          "correct": false,
+          "misconception": "counted-one-slanted-face"
+        }
+      ],
+      "reasoning": {
+        "en": "The base is not covered, so leave it out. One slanted face is ½ × 8 × 5 = 20. Four faces make 4 × 20 = 80.",
+        "es": "La base no se cubre, así que se deja fuera. Una cara inclinada es ½ × 8 × 5 = 20. Cuatro caras suman 4 × 20 = 80."
+      },
+      "calc": {
+        "expr": "4 * (0.5 * 8 * 5)",
+        "value": 80,
+        "unit": "square feet"
+      }
+    },
+    "glitch": {
+      "scenario": {
+        "en": "A different situation: Lena paints only the four slanted sides of a square pyramid sign. The base is 6 cm on each side. The slant height is 10 cm.",
+        "es": "Otra situación: Lena pinta solo los cuatro lados inclinados de un letrero con forma de pirámide cuadrada. La base mide 6 cm por lado. La altura inclinada es 10 cm."
+      },
+      "steps": [
+        {
+          "en": "One slanted face: ½ × 6 × 10 = 30.",
+          "es": "Una cara inclinada: ½ × 6 × 10 = 30.",
+          "isGlitch": false
+        },
+        {
+          "en": "Four slanted faces: 4 × 30 = 120.",
+          "es": "Cuatro caras inclinadas: 4 × 30 = 120.",
+          "isGlitch": false
+        },
+        {
+          "en": "Add the base too: 120 + 36 = 156 square centimeters of paint.",
+          "es": "Suma también la base: 120 + 36 = 156 centímetros cuadrados de pintura.",
+          "isGlitch": true
+        }
+      ],
+      "fix": {
+        "en": "Lena paints only the slanted sides, so the base stays out. The lateral area is 120 square centimeters.",
+        "es": "Lena pinta solo los lados inclinados, así que la base se queda fuera. El área lateral es 120 centímetros cuadrados."
+      },
+      "frame": {
+        "en": "I leave out the base because the story paints only ___.",
+        "es": "Dejo fuera la base porque la historia pinta solo ___."
+      },
+      "calc": {
+        "expr": "4 * (0.5 * 6 * 10)",
+        "value": 120
+      }
+    },
+    "spiral": [
+      {
+        "from": "5-8",
+        "q": {
+          "en": "One triangle face of a pyramid has a base of 4 and a slant height of 6. What is its area?",
+          "es": "Una cara triangular de una pirámide tiene base de 4 y altura inclinada de 6. ¿Cuál es su área?"
+        },
+        "options": [
+          "12",
+          "24",
+          "10"
+        ],
+        "correctIdx": 0,
+        "exp": {
+          "en": "A triangle is half of a rectangle. ½ × 4 × 6 = 12.",
+          "es": "Un triángulo es la mitad de un rectángulo. ½ × 4 × 6 = 12."
+        },
+        "calc": {
+          "expr": "0.5 * 4 * 6",
+          "value": 12
+        }
+      },
+      {
+        "from": "5-7",
+        "q": {
+          "en": "A cube has edges of 5 cm. What is its surface area?",
+          "es": "Un cubo tiene aristas de 5 cm. ¿Cuál es su área de superficie?"
+        },
+        "options": [
+          "125",
+          "150",
+          "30"
+        ],
+        "correctIdx": 1,
+        "exp": {
+          "en": "A cube has 6 matching faces. Each face is 5 × 5 = 25, so 6 × 25 = 150.",
+          "es": "Un cubo tiene 6 caras iguales. Cada cara es 5 × 5 = 25, así que 6 × 25 = 150."
+        },
+        "calc": {
+          "expr": "6 * 5 * 5",
+          "value": 150
+        }
+      }
+    ],
+    "kitchenTable": {
+      "en": "Find a gift box and a lampshade or paper cup. For each one, ask: is the bottom covered? Say when you would add the base and when you would leave it out.",
+      "es": "Busquen una caja de regalo y una pantalla de lámpara o un vaso de papel. Para cada uno, pregunten: ¿se cubre el fondo? Digan cuándo sumarían la base y cuándo la dejarían fuera."
+    },
+    "vocab": [
+      {
+        "term": "Lateral area",
+        "example": {
+          "en": "The 540 square centimeters of paint on the three slanted faces of the hut is its lateral area.",
+          "es": "Los 540 centímetros cuadrados de pintura en las tres caras inclinadas de la cabaña son su área lateral."
+        },
+        "nonExample": {
+          "en": "The floor of the hut is not part of the lateral area.",
+          "es": "El piso de la cabaña no es parte del área lateral."
+        },
+        "frame": {
+          "en": "The lateral area is ___ because ___ faces of ___ each.",
+          "es": "El área lateral es ___ porque ___ caras de ___ cada una."
+        }
+      },
+      {
+        "term": "Slant height",
+        "example": {
+          "en": "The 20 cm measured along a slanted face of the hut is the slant height.",
+          "es": "Los 20 cm medidos a lo largo de una cara inclinada de la cabaña son la altura inclinada."
+        },
+        "nonExample": {
+          "en": "The 18 cm floor edge is not the slant height. It is the base of the triangle.",
+          "es": "El borde de 18 cm del piso no es la altura inclinada. Es la base del triángulo."
+        },
+        "frame": {
+          "en": "I use the slant height, ___, in ½ × ___ × ___.",
+          "es": "Uso la altura inclinada, ___, en ½ × ___ × ___."
+        }
+      },
+      {
+        "term": "Lateral face",
+        "example": {
+          "en": "Each of the three slanted triangles of the hut is a lateral face.",
+          "es": "Cada uno de los tres triángulos inclinados de la cabaña es una cara lateral."
+        },
+        "nonExample": {
+          "en": "The triangle floor is not a lateral face. It is the base.",
+          "es": "El piso triangular no es una cara lateral. Es la base."
+        },
+        "frame": {
+          "en": "This pyramid has ___ lateral faces, each with area ___.",
+          "es": "Esta pirámide tiene ___ caras laterales, cada una con área ___."
+        }
+      },
+      {
+        "term": "Base",
+        "example": {
+          "en": "The triangle floor of the hut is its base. The painters leave it out.",
+          "es": "El piso triangular de la cabaña es su base. Los pintores la dejan fuera."
+        },
+        "nonExample": {
+          "en": "A slanted face is not the base of the pyramid.",
+          "es": "Una cara inclinada no es la base de la pirámide."
+        },
+        "frame": {
+          "en": "The base is ___ in this total because the story ___.",
+          "es": "La base ___ en este total porque la historia ___."
+        }
+      }
+    ],
+    "confused": [
+      {
+        "wrong": {
+          "en": "I found the three slanted faces, then added the floor. A total should have every face.",
+          "es": "Hallé las tres caras inclinadas y luego sumé el piso. Un total debe tener todas las caras."
+        },
+        "coach": {
+          "en": "Does the word lateral mean the sides or the bottom?",
+          "es": "La palabra lateral, ¿significa los lados o el fondo?"
+        },
+        "why": {
+          "en": "Lateral means the slanted sides only. The floor stays out: 3 × 180 = 540.",
+          "es": "Lateral significa solo los lados inclinados. El piso se queda fuera: 3 × 180 = 540."
+        },
+        "misconception": "always-adds-the-base",
+        "calc": {
+          "expr": "3 * 180",
+          "value": 540
+        }
+      },
+      {
+        "wrong": {
+          "en": "The floor edge is 18, so I use 18 as the height too: ½ × 18 × 18 = 162.",
+          "es": "El borde del piso es 18, así que uso 18 también como altura: ½ × 18 × 18 = 162."
+        },
+        "coach": {
+          "en": "Which measurement runs along the slanted face?",
+          "es": "¿Cuál medida va a lo largo de la cara inclinada?"
+        },
+        "why": {
+          "en": "The height of a slanted face is the slant height, 20. So one face is ½ × 18 × 20 = 180.",
+          "es": "La altura de una cara inclinada es la altura inclinada, 20. Así que una cara es ½ × 18 × 20 = 180."
+        },
+        "misconception": "used-base-as-slant-height",
+        "calc": {
+          "expr": "0.5 * 18 * 20",
+          "value": 180
+        }
+      },
+      {
+        "wrong": {
+          "en": "One slanted face is 18 × 20 = 360. Three faces are 1,080.",
+          "es": "Una cara inclinada es 18 × 20 = 360. Tres caras son 1,080."
+        },
+        "coach": {
+          "en": "A triangle is half of which rectangle?",
+          "es": "Un triángulo es la mitad de ¿cuál rectángulo?"
+        },
+        "why": {
+          "en": "18 × 20 = 360 is the whole rectangle. One triangle is half, 180. Then 3 × 180 = 540.",
+          "es": "18 × 20 = 360 es el rectángulo completo. Un triángulo es la mitad, 180. Entonces 3 × 180 = 540."
+        },
+        "misconception": "forgot-the-half",
+        "calc": {
+          "expr": "3 * (0.5 * 18 * 20)",
+          "value": 540
+        }
+      }
+    ]
+  }
 }

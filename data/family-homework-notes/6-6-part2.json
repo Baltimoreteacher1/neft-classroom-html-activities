@@ -522,5 +522,305 @@
       "en": "Plugging in works like checking an answer, but a letter can be many numbers. One mismatch shows two expressions are different, and the distributive property shows this pair matches for every y.",
       "es": "Sustituir funciona como comprobar una respuesta, pero una letra puede ser muchos números. Un solo desacuerdo muestra que dos expresiones son distintas, y la propiedad distributiva muestra que este par coincide para toda y."
     }
+  },
+  "v3": {
+    "version": 1,
+    "kind": "math",
+    "topicKey": "equivalent-test-counterexample-apply",
+    "standardPlain": {
+      "en": "Test whether two expressions are equivalent by putting the same number into both.",
+      "es": "Probar si dos expresiones son equivalentes poniendo el mismo número en las dos."
+    },
+    "hook": {
+      "style": "price-tag",
+      "en": "A lunch combo is a sandwich that costs y dollars plus a $7 drink. Dani buys 2 combos and writes 2(y + 7). Kai writes 2y + 14. Do their costs match when y = 9?",
+      "es": "Un combo de almuerzo es un sándwich de y dólares más una bebida de $7. Dani compra 2 combos y escribe 2(y + 7). Kai escribe 2y + 14. ¿Coinciden sus costos cuando y = 9?",
+      "guess": {
+        "en": "Make a guess first: will the two costs match?",
+        "es": "Primero adivina: ¿coincidirán los dos costos?"
+      },
+      "reveal": {
+        "en": "They match: both are $32. 2 × 16 = 32 and 18 + 14 = 32. One match is not proof, but one mismatch would prove they are not equivalent.",
+        "es": "Coinciden: las dos son $32. 2 × 16 = 32 y 18 + 14 = 32. Una coincidencia no es prueba, pero una diferencia probaría que no son equivalentes."
+      }
+    },
+    "classModel": {
+      "name": {
+        "en": "test the same number in both",
+        "es": "probar el mismo número en las dos"
+      }
+    },
+    "model": {
+      "kind": "area",
+      "data": {
+        "shape": "rectangle",
+        "dims": {
+          "base": 16,
+          "height": 2,
+          "split": [
+            9,
+            7
+          ]
+        },
+        "unit": "dollars"
+      },
+      "alt": {
+        "en": "A rectangle 2 rows tall and 16 wide. A line splits the width into 9 (the sandwich, y) and 7 (the drink). The left part has area 2 × 9 = 18. The right part has area 2 × 7 = 14. The whole rectangle has area 2 × 16 = 32.",
+        "es": "Un rectángulo de 2 filas de alto y 16 de ancho. Una línea divide el ancho en 9 (el sándwich, y) y 7 (la bebida). La parte izquierda tiene área 2 × 9 = 18. La parte derecha tiene área 2 × 7 = 14. El rectángulo completo tiene área 2 × 16 = 32."
+      }
+    },
+    "transfer": {
+      "stem": {
+        "en": "A troop packs bags. Each of 5 tables gets k markers plus 1 glue stick. Ray writes 5(k + 1). Lena writes 5k + 1. Test k = 3. What do you find?",
+        "es": "Una tropa llena bolsas. Cada una de 5 mesas recibe k marcadores más 1 barra de pegamento. Ray escribe 5(k + 1). Lena escribe 5k + 1. Prueba k = 3. ¿Qué encuentras?"
+      },
+      "choices": [
+        {
+          "en": "20 and 20, so they are equivalent.",
+          "es": "20 y 20, así que son equivalentes.",
+          "correct": false,
+          "misconception": "assumed-the-same"
+        },
+        {
+          "en": "20 and 16, so they are not equivalent.",
+          "es": "20 y 16, así que no son equivalentes.",
+          "correct": true,
+          "misconception": null
+        },
+        {
+          "en": "20 and 15, so they are not equivalent.",
+          "es": "20 y 15, así que no son equivalentes.",
+          "correct": false,
+          "misconception": "dropped-the-plus-one"
+        }
+      ],
+      "reasoning": {
+        "en": "Ray: 5 × (3 + 1) = 20. Lena: 5 × 3 + 1 = 16. The values differ, so k = 3 is a counterexample.",
+        "es": "Ray: 5 × (3 + 1) = 20. Lena: 5 × 3 + 1 = 16. Los valores son distintos, así que k = 3 es un contraejemplo."
+      },
+      "calc": {
+        "expr": "5 * 3 + 1",
+        "value": 16
+      }
+    },
+    "glitch": {
+      "scenario": {
+        "en": "A different situation: Tia tests whether 2(m + 5) and 2m + 5 are equivalent. She uses m = 3.",
+        "es": "Otra situación: Tia prueba si 2(m + 5) y 2m + 5 son equivalentes. Usa m = 3."
+      },
+      "steps": [
+        {
+          "en": "Put m = 3 in 2(m + 5): 2 × 8 = 16.",
+          "es": "Pon m = 3 en 2(m + 5): 2 × 8 = 16.",
+          "isGlitch": false
+        },
+        {
+          "en": "Put m = 3 in 2m + 5: 6 + 5 = 11.",
+          "es": "Pon m = 3 en 2m + 5: 6 + 5 = 11.",
+          "isGlitch": false
+        },
+        {
+          "en": "16 and 11 differ, but one test is not enough, so they are equivalent.",
+          "es": "16 y 11 son distintos, pero una prueba no basta, así que son equivalentes.",
+          "isGlitch": true
+        }
+      ],
+      "fix": {
+        "en": "One mismatch is enough to prove expressions are not equivalent. 16 and 11 differ, so they are not equivalent.",
+        "es": "Una diferencia basta para probar que dos expresiones no son equivalentes. 16 y 11 son distintos, así que no son equivalentes."
+      },
+      "frame": {
+        "en": "The values are ___ and ___, so the expressions ___ equivalent.",
+        "es": "Los valores son ___ y ___, así que las expresiones ___ equivalentes."
+      },
+      "calc": {
+        "expr": "2 * (3 + 5)",
+        "value": 16
+      }
+    },
+    "spiral": [
+      {
+        "from": "6-6",
+        "q": {
+          "en": "Which expression is equivalent to 7b + 2b?",
+          "es": "¿Cuál expresión es equivalente a 7b + 2b?"
+        },
+        "options": [
+          "14b",
+          "9b",
+          "7b + 2"
+        ],
+        "correctIdx": 1,
+        "exp": {
+          "en": "Both are like terms. 7 + 2 = 9, so 9b.",
+          "es": "Los dos son términos semejantes. 7 + 2 = 9, así que 9b."
+        },
+        "calc": {
+          "expr": "7 + 2",
+          "value": 9
+        }
+      },
+      {
+        "from": "6-5",
+        "q": {
+          "en": "What is the value of 5k − 3 when k = 4?",
+          "es": "¿Cuál es el valor de 5k − 3 cuando k = 4?"
+        },
+        "options": [
+          "51",
+          "6",
+          "17"
+        ],
+        "correctIdx": 2,
+        "exp": {
+          "en": "Substitute: 5 × 4 − 3 = 20 − 3 = 17.",
+          "es": "Sustituye: 5 × 4 − 3 = 20 − 3 = 17."
+        },
+        "calc": {
+          "expr": "5 * 4 - 3",
+          "value": 17
+        }
+      }
+    ],
+    "kitchenTable": {
+      "en": "Pretend a sandwich costs y dollars and a drink costs $7. Pick y = 5. Ask your student to find 2(5 + 7) and 2 × 5 + 14. Do they match? Why can one number not be enough proof?",
+      "es": "Imaginen que un sándwich cuesta y dólares y una bebida cuesta $7. Elijan y = 5. Pidan a su estudiante que halle 2(5 + 7) y 2 × 5 + 14. ¿Coinciden? ¿Por qué un solo número no basta como prueba?"
+    },
+    "vocab": [
+      {
+        "term": "Equivalent Expressions",
+        "example": {
+          "en": "2(y + 7) and 2y + 14 are equivalent. They match for every sandwich price y.",
+          "es": "2(y + 7) y 2y + 14 son equivalentes. Coinciden con cualquier precio y del sándwich."
+        },
+        "nonExample": {
+          "en": "2(y + 7) and 2y + 7 are not equivalent. At y = 9 they give 32 and 25.",
+          "es": "2(y + 7) y 2y + 7 no son equivalentes. Con y = 9 dan 32 y 25."
+        },
+        "frame": {
+          "en": "I test ___ in both expressions and get ___ and ___.",
+          "es": "Pruebo ___ en las dos expresiones y obtengo ___ y ___."
+        }
+      },
+      {
+        "term": "Substitute",
+        "example": {
+          "en": "To test y = 9, substitute 9 for y: 2(9 + 7).",
+          "es": "Para probar y = 9, sustituye y por 9: 2(9 + 7)."
+        },
+        "nonExample": {
+          "en": "Writing 2(9) + 7 is not the same test. The 2 multiplies the whole group.",
+          "es": "Escribir 2(9) + 7 no es la misma prueba. El 2 multiplica todo el grupo."
+        },
+        "frame": {
+          "en": "I substitute ___ for ___ and get ___.",
+          "es": "Sustituyo ___ por ___ y obtengo ___."
+        }
+      },
+      {
+        "term": "Variable",
+        "example": {
+          "en": "The letter y is the variable. It stands for the price of the sandwich.",
+          "es": "La letra y es la variable. Representa el precio del sándwich."
+        },
+        "nonExample": {
+          "en": "The 7 is not a variable. It is the drink price, which stays the same.",
+          "es": "El 7 no es una variable. Es el precio de la bebida, que no cambia."
+        },
+        "frame": {
+          "en": "The variable ___ stands for ___.",
+          "es": "La variable ___ representa ___."
+        }
+      },
+      {
+        "term": "Counterexample",
+        "example": {
+          "en": "For 2(y + 7) and 2y + 7, y = 9 is a counterexample: 32 is not 25.",
+          "es": "Para 2(y + 7) y 2y + 7, y = 9 es un contraejemplo: 32 no es 25."
+        },
+        "nonExample": {
+          "en": "For 2(y + 7) and 2y + 14, y = 9 is not a counterexample. Both give 32.",
+          "es": "Para 2(y + 7) y 2y + 14, y = 9 no es un contraejemplo. Las dos dan 32."
+        },
+        "frame": {
+          "en": "The value ___ is a counterexample because ___ and ___ are different.",
+          "es": "El valor ___ es un contraejemplo porque ___ y ___ son distintos."
+        }
+      },
+      {
+        "term": "Distributive Property",
+        "example": {
+          "en": "2(y + 7) = 2y + 14. The 2 multiplies both the y and the 7.",
+          "es": "2(y + 7) = 2y + 14. El 2 multiplica tanto la y como el 7."
+        },
+        "nonExample": {
+          "en": "2(y + 7) is not 2y + 7. The 2 must multiply both parts.",
+          "es": "2(y + 7) no es 2y + 7. El 2 debe multiplicar las dos partes."
+        },
+        "frame": {
+          "en": "The ___ multiplies ___ and ___, so the expression is ___.",
+          "es": "El ___ multiplica ___ y ___, así que la expresión es ___."
+        }
+      }
+    ],
+    "confused": [
+      {
+        "wrong": {
+          "en": "A different situation: 5x and x + 8 are both 10 when x = 2, so they are equivalent.",
+          "es": "Otra situación: 5x y x + 8 valen 10 cuando x = 2, así que son equivalentes."
+        },
+        "coach": {
+          "en": "What happens to each one if you try x = 3?",
+          "es": "¿Qué pasa con cada una si pruebas x = 3?"
+        },
+        "why": {
+          "en": "One match is not enough. At x = 3, 5x is 15 but x + 8 is 11. That one mismatch shows they are not equivalent.",
+          "es": "Una coincidencia no basta. Con x = 3, 5x es 15 pero x + 8 es 11. Esa diferencia muestra que no son equivalentes."
+        },
+        "misconception": "one-match-proves-equivalent",
+        "calc": {
+          "expr": "5 * 3",
+          "value": 15
+        }
+      },
+      {
+        "wrong": {
+          "en": "2(y + 7) means 2y + 7, so Kai's 2y + 14 is wrong.",
+          "es": "2(y + 7) significa 2y + 7, así que el 2y + 14 de Kai está mal."
+        },
+        "coach": {
+          "en": "What does the 2 outside the parentheses multiply?",
+          "es": "¿Qué multiplica el 2 que está fuera de los paréntesis?"
+        },
+        "why": {
+          "en": "The 2 multiplies both parts: 2 × y and 2 × 7. So 2(y + 7) = 2y + 14. At y = 9, both give 32.",
+          "es": "El 2 multiplica las dos partes: 2 × y y 2 × 7. Así que 2(y + 7) = 2y + 14. Con y = 9, las dos dan 32."
+        },
+        "misconception": "distributed-to-first-term-only",
+        "calc": {
+          "expr": "2 * (9 + 7)",
+          "value": 32
+        }
+      },
+      {
+        "wrong": {
+          "en": "I tested y = 0. Both gave 14, so that is plenty of proof.",
+          "es": "Probé y = 0. Las dos dieron 14, así que es prueba de sobra."
+        },
+        "coach": {
+          "en": "What could happen at another number that did not happen at 0?",
+          "es": "¿Qué podría pasar con otro número que no pasó con 0?"
+        },
+        "why": {
+          "en": "Zero hides mistakes, because many wrong pairs agree there. Try y = 9: 2 × 9 + 14 = 32, and 2(9 + 7) = 32.",
+          "es": "El cero esconde errores, porque muchas parejas incorrectas coinciden ahí. Prueba y = 9: 2 × 9 + 14 = 32, y 2(9 + 7) = 32."
+        },
+        "misconception": "tested-only-zero",
+        "calc": {
+          "expr": "2 * 9 + 14",
+          "value": 32
+        }
+      }
+    ]
   }
 }

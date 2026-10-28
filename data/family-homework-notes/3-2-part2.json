@@ -529,5 +529,346 @@
       ],
       "image": "/assets/vocab-images/denominator.svg"
     }
-  ]
+  ],
+  "v3": {
+    "version": 1,
+    "kind": "math",
+    "topicKey": "unit-price-compare-apply",
+    "standardPlain": {
+      "en": "Find each unit price as a fraction over 1 and pick the better buy.",
+      "es": "Hallar cada precio unitario como fracción sobre 1 y elegir la mejor compra."
+    },
+    "hook": {
+      "style": "price-tag",
+      "en": "At the corner store, Bag C of rice holds 3 pounds for $5.55. Bag D holds 5 pounds for $8.75. Bag C costs less in total. Is Bag C the better buy?",
+      "es": "En la tienda de la esquina, la bolsa C de arroz trae 3 libras por $5.55. La bolsa D trae 5 libras por $8.75. La bolsa C cuesta menos en total. ¿Es la bolsa C la mejor compra?",
+      "guess": {
+        "en": "Make a guess first: does the lower total always mean the lower price per pound?",
+        "es": "Primero adivina: ¿el total más bajo siempre significa el precio más bajo por libra?"
+      },
+      "reveal": {
+        "en": "Not always! Bag C is $5.55 ÷ 3 = $1.85 per pound. Bag D is $8.75 ÷ 5 = $1.75 per pound. Bag D is the better buy.",
+        "es": "¡No siempre! La bolsa C es $5.55 ÷ 3 = $1.85 por libra. La bolsa D es $8.75 ÷ 5 = $1.75 por libra. La bolsa D es la mejor compra."
+      }
+    },
+    "classModel": {
+      "name": {
+        "en": "cost over amount, divided to 1",
+        "es": "costo sobre cantidad, dividido a 1"
+      }
+    },
+    "model": {
+      "kind": "ratiotable",
+      "data": {
+        "headers": [
+          {
+            "en": "Cost",
+            "es": "Costo"
+          },
+          {
+            "en": "Pounds",
+            "es": "Libras"
+          }
+        ],
+        "rows": [
+          [
+            "$5.55",
+            3
+          ],
+          [
+            "$1.85",
+            1
+          ],
+          [
+            "$8.75",
+            5
+          ],
+          [
+            "$1.75",
+            1
+          ]
+        ],
+        "unknownCells": [
+          [
+            1,
+            0
+          ],
+          [
+            3,
+            0
+          ]
+        ],
+        "arrows": [
+          {
+            "from": 0,
+            "to": 1,
+            "label": "÷3"
+          },
+          {
+            "from": 2,
+            "to": 3,
+            "label": "÷5"
+          }
+        ]
+      },
+      "alt": {
+        "en": "A ratio table with columns Cost and Pounds. Bag C: $5.55 for 3 pounds, with an arrow labeled ÷3 to 1 pound and an unknown cost. Bag D: $8.75 for 5 pounds, with an arrow labeled ÷5 to 1 pound and an unknown cost.",
+        "es": "Una tabla de razones con columnas Costo y Libras. Bolsa C: $5.55 por 3 libras, con una flecha ÷3 hasta 1 libra y un costo desconocido. Bolsa D: $8.75 por 5 libras, con una flecha ÷5 hasta 1 libra y un costo desconocido."
+      }
+    },
+    "transfer": {
+      "stem": {
+        "en": "Pack A has 6 batteries for $4.80. Pack B has 10 batteries for $7.00. Which pack is the better buy?",
+        "es": "El paquete A trae 6 pilas por $4.80. El paquete B trae 10 pilas por $7.00. ¿Cuál paquete es la mejor compra?"
+      },
+      "choices": [
+        {
+          "en": "Pack B, $0.70 per battery",
+          "es": "Paquete B, $0.70 por pila",
+          "correct": true,
+          "misconception": null
+        },
+        {
+          "en": "Pack A, because $4.80 is the lower total",
+          "es": "Paquete A, porque $4.80 es el total más bajo",
+          "correct": false,
+          "misconception": "compared-total-prices"
+        },
+        {
+          "en": "Pack A, $0.80 per battery",
+          "es": "Paquete A, $0.80 por pila",
+          "correct": false,
+          "misconception": "chose-higher-unit-price"
+        }
+      ],
+      "reasoning": {
+        "en": "Cost goes on top. Pack A: $4.80 ÷ 6 = $0.80. Pack B: $7.00 ÷ 10 = $0.70. The lower unit price wins: Pack B.",
+        "es": "El costo va arriba. Paquete A: $4.80 ÷ 6 = $0.80. Paquete B: $7.00 ÷ 10 = $0.70. Gana el precio unitario menor: paquete B."
+      },
+      "calc": {
+        "expr": "7 / 10",
+        "value": 0.7,
+        "unit": "$"
+      }
+    },
+    "glitch": {
+      "scenario": {
+        "en": "A different situation: Pack X is 6 pens for $3.00. Pack Y is 4 pens for $2.40. Mia picks the better buy.",
+        "es": "Otra situación: El paquete X son 6 plumas por $3.00. El paquete Y son 4 plumas por $2.40. Mia elige la mejor compra."
+      },
+      "steps": [
+        {
+          "en": "Write cost over pens: $3.00 / 6 pens and $2.40 / 4 pens.",
+          "es": "Escribe costo sobre plumas: $3.00 / 6 plumas y $2.40 / 4 plumas.",
+          "isGlitch": false
+        },
+        {
+          "en": "Divide each by its bottom number: $0.50 per pen for X, $0.60 per pen for Y.",
+          "es": "Divide cada una entre su número de abajo: $0.50 por pluma para X, $0.60 por pluma para Y.",
+          "isGlitch": false
+        },
+        {
+          "en": "Pack Y has the lower total, $2.40, so Pack Y is the better buy.",
+          "es": "El paquete Y tiene el total más bajo, $2.40, así que el paquete Y es la mejor compra.",
+          "isGlitch": true
+        }
+      ],
+      "fix": {
+        "en": "Compare unit prices, not totals. $0.50 is less than $0.60, so Pack X is the better buy.",
+        "es": "Compara los precios unitarios, no los totales. $0.50 es menos que $0.60, así que el paquete X es la mejor compra."
+      },
+      "frame": {
+        "en": "___ is the better buy because $___ per pen is less than $___.",
+        "es": "___ es la mejor compra porque $___ por pluma es menos que $___."
+      },
+      "calc": {
+        "expr": "3 / 6",
+        "value": 0.5
+      }
+    },
+    "spiral": [
+      {
+        "from": "3-2",
+        "q": {
+          "en": "Grapes cost $6 for 4 pounds. What is the price for 1 pound?",
+          "es": "Las uvas cuestan $6 por 4 libras. ¿Cuál es el precio de 1 libra?"
+        },
+        "options": [
+          "$1.50",
+          "$24",
+          "$2"
+        ],
+        "correctIdx": 0,
+        "exp": {
+          "en": "Cost on top: $6 ÷ 4 = $1.50 per pound.",
+          "es": "El costo va arriba: $6 ÷ 4 = $1.50 por libra."
+        },
+        "calc": {
+          "expr": "6 / 4",
+          "value": 1.5
+        }
+      },
+      {
+        "from": "2-7",
+        "q": {
+          "en": "What is 8.4 ÷ 4?",
+          "es": "¿Cuánto es 8.4 ÷ 4?"
+        },
+        "options": [
+          "21",
+          "2.1",
+          "0.21"
+        ],
+        "correctIdx": 1,
+        "exp": {
+          "en": "4 × 2.1 = 8.4, so 8.4 ÷ 4 = 2.1.",
+          "es": "4 × 2.1 = 8.4, así que 8.4 ÷ 4 = 2.1."
+        },
+        "calc": {
+          "expr": "8.4 / 4",
+          "value": 2.1
+        }
+      }
+    ],
+    "kitchenTable": {
+      "en": "Find two sizes of the same food, like two bags of rice. Read each price and weight. Can your student say each price for 1 pound out loud? Which bag is the better buy?",
+      "es": "Busquen dos tamaños de la misma comida, como dos bolsas de arroz. Lean cada precio y peso. ¿Puede su estudiante decir en voz alta cada precio por 1 libra? ¿Cuál bolsa es la mejor compra?"
+    },
+    "vocab": [
+      {
+        "term": "Unit price",
+        "example": {
+          "en": "Bag C: $5.55 ÷ 3 = $1.85 per pound. That is its unit price.",
+          "es": "Bolsa C: $5.55 ÷ 3 = $1.85 por libra. Ese es su precio unitario."
+        },
+        "nonExample": {
+          "en": "$5.55 is the total price of the bag. It is not the unit price.",
+          "es": "$5.55 es el precio total de la bolsa. No es el precio unitario."
+        },
+        "frame": {
+          "en": "The unit price is $___ per ___ because ___ ÷ ___ = ___.",
+          "es": "El precio unitario es $___ por ___ porque ___ ÷ ___ = ___."
+        }
+      },
+      {
+        "term": "Unit Rate",
+        "example": {
+          "en": "$1.75 / 1 lb is the unit rate for Bag D.",
+          "es": "$1.75 / 1 lb es la tasa unitaria de la bolsa D."
+        },
+        "nonExample": {
+          "en": "$8.75 / 5 lb is a rate, but not a unit rate. The bottom is not 1.",
+          "es": "$8.75 / 5 lb es una tasa, pero no una tasa unitaria. El de abajo no es 1."
+        },
+        "frame": {
+          "en": "The unit rate is $___ / 1 ___.",
+          "es": "La tasa unitaria es $___ / 1 ___."
+        }
+      },
+      {
+        "term": "Better Buy",
+        "example": {
+          "en": "Bag D is the better buy. $1.75 per pound is less than $1.85.",
+          "es": "La bolsa D es la mejor compra. $1.75 por libra es menos que $1.85."
+        },
+        "nonExample": {
+          "en": "Bag C is not the better buy just because $5.55 is the lower total.",
+          "es": "La bolsa C no es la mejor compra solo porque $5.55 es el total más bajo."
+        },
+        "frame": {
+          "en": "___ is the better buy because $___ is less than $___.",
+          "es": "___ es la mejor compra porque $___ es menos que $___."
+        }
+      },
+      {
+        "term": "numerator",
+        "example": {
+          "en": "In $5.55 / 3 lb, the numerator is $5.55, the cost.",
+          "es": "En $5.55 / 3 lb, el numerador es $5.55, el costo."
+        },
+        "nonExample": {
+          "en": "3 lb is not the numerator. It is the denominator.",
+          "es": "3 lb no es el numerador. Es el denominador."
+        },
+        "frame": {
+          "en": "The numerator is ___ because it is the ___.",
+          "es": "El numerador es ___ porque es el ___."
+        }
+      },
+      {
+        "term": "denominator",
+        "example": {
+          "en": "In $8.75 / 5 lb, the denominator is 5 lb.",
+          "es": "En $8.75 / 5 lb, el denominador es 5 lb."
+        },
+        "nonExample": {
+          "en": "$8.75 is not the denominator. It is the cost on top.",
+          "es": "$8.75 no es el denominador. Es el costo de arriba."
+        },
+        "frame": {
+          "en": "I divide the top and bottom by the denominator, ___.",
+          "es": "Divido el numerador y el denominador entre el denominador, ___."
+        }
+      }
+    ],
+    "confused": [
+      {
+        "wrong": {
+          "en": "Bag C costs $5.55 and Bag D costs $8.75. Bag C is cheaper, so Bag C is the better buy.",
+          "es": "La bolsa C cuesta $5.55 y la bolsa D cuesta $8.75. La bolsa C es más barata, así que es la mejor compra."
+        },
+        "coach": {
+          "en": "Do the two bags hold the same number of pounds?",
+          "es": "¿Las dos bolsas tienen el mismo número de libras?"
+        },
+        "why": {
+          "en": "The bags hold different amounts, so totals cannot be compared. Find the price for 1 pound: $8.75 ÷ 5 = $1.75.",
+          "es": "Las bolsas tienen cantidades distintas, así que no se pueden comparar los totales. Halla el precio de 1 libra: $8.75 ÷ 5 = $1.75."
+        },
+        "misconception": "compared-total-prices",
+        "calc": {
+          "expr": "8.75 / 5",
+          "value": 1.75
+        }
+      },
+      {
+        "wrong": {
+          "en": "I put 3 lb on top and $5.55 on the bottom. 3 ÷ 5.55 is about 0.54, so Bag C is $0.54 per pound.",
+          "es": "Puse 3 lb arriba y $5.55 abajo. 3 ÷ 5.55 es casi 0.54, así que la bolsa C es $0.54 por libra."
+        },
+        "coach": {
+          "en": "For a price per pound, which goes on top: the dollars or the pounds?",
+          "es": "Para un precio por libra, ¿qué va arriba: los dólares o las libras?"
+        },
+        "why": {
+          "en": "Cost goes on top. $5.55 ÷ 3 = $1.85 per pound for Bag C.",
+          "es": "El costo va arriba. $5.55 ÷ 3 = $1.85 por libra para la bolsa C."
+        },
+        "misconception": "amount-on-top",
+        "calc": {
+          "expr": "5.55 / 3",
+          "value": 1.85
+        }
+      },
+      {
+        "wrong": {
+          "en": "Bag D is $8.75 ÷ 5 = $1.75 per pound. Bag C is $5.55. So Bag D is the better buy.",
+          "es": "La bolsa D es $8.75 ÷ 5 = $1.75 por libra. La bolsa C es $5.55. Así que la bolsa D es la mejor compra."
+        },
+        "coach": {
+          "en": "What do you get if you do the same division for Bag C?",
+          "es": "¿Qué obtienes si haces la misma división para la bolsa C?"
+        },
+        "why": {
+          "en": "Both bags need the same steps. Bag C is $5.55 ÷ 3 = $1.85 per pound, and that is what you compare with $1.75.",
+          "es": "Las dos bolsas necesitan los mismos pasos. La bolsa C es $5.55 ÷ 3 = $1.85 por libra, y eso se compara con $1.75."
+        },
+        "misconception": "divided-only-one-bag",
+        "calc": {
+          "expr": "5.55 / 3",
+          "value": 1.85
+        }
+      }
+    ]
+  }
 }

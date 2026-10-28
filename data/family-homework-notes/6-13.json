@@ -376,5 +376,299 @@
       "en": "Any starting pair ends at the same prime pieces, so the tree and the list agree. Check by multiplying: 2 × 2 × 3 × 5 = 60.",
       "es": "Cualquier par de inicio termina en las mismas piezas primas, así que el árbol y la lista coinciden. Comprueba multiplicando: 2 × 2 × 3 × 5 = 60."
     }
+  },
+  "v3": {
+    "version": 1,
+    "kind": "math",
+    "topicKey": "prime-factor-tree",
+    "standardPlain": {
+      "en": "Break a number into prime factors with a factor tree.",
+      "es": "Descomponer un número en factores primos con un árbol de factores."
+    },
+    "hook": {
+      "style": "scoreboard",
+      "en": "Two friends break 60 into smaller numbers. Ana starts with 6 × 10. Ben starts with 4 × 15. Each keeps splitting until no piece can split. Will their last pieces match?",
+      "es": "Dos amigos descomponen el 60 en números menores. Ana empieza con 6 × 10. Ben empieza con 4 × 15. Cada uno sigue dividiendo hasta que ninguna pieza se pueda dividir. ¿Sus piezas finales serán iguales?",
+      "guess": {
+        "en": "Guess first: will Ana and Ben end with the same pieces?",
+        "es": "Primero adivina: ¿Ana y Ben terminarán con las mismas piezas?"
+      },
+      "reveal": {
+        "en": "Yes! Ana gets 2 × 3 × 2 × 5. Ben gets 2 × 2 × 3 × 5. Both are 2 × 2 × 3 × 5 = 60, or 2² × 3 × 5.",
+        "es": "¡Sí! Ana obtiene 2 × 3 × 2 × 5. Ben obtiene 2 × 2 × 3 × 5. Los dos son 2 × 2 × 3 × 5 = 60, o 2² × 3 × 5."
+      }
+    },
+    "classModel": {
+      "name": {
+        "en": "the factor tree",
+        "es": "el árbol de factores"
+      }
+    },
+    "model": {
+      "kind": "ratiotable",
+      "data": {
+        "headers": [
+          {
+            "en": "Number",
+            "es": "Número"
+          },
+          {
+            "en": "Splits into",
+            "es": "Se divide en"
+          }
+        ],
+        "rows": [
+          [
+            60,
+            "6 × 10"
+          ],
+          [
+            6,
+            "2 × 3"
+          ],
+          [
+            10,
+            "2 × 5"
+          ],
+          [
+            60,
+            "2 × 2 × 3 × 5"
+          ]
+        ],
+        "arrows": [
+          {
+            "from": 0,
+            "to": 3,
+            "label": {
+              "en": "all prime",
+              "es": "todos primos"
+            }
+          }
+        ]
+      },
+      "alt": {
+        "en": "A table that follows a factor tree for 60. Row one: 60 splits into 6 × 10. Row two: 6 splits into 2 × 3. Row three: 10 splits into 2 × 5. Row four: 60 ends as 2 × 2 × 3 × 5, and every factor is prime.",
+        "es": "Una tabla que sigue un árbol de factores del 60. Fila uno: 60 se divide en 6 × 10. Fila dos: 6 se divide en 2 × 3. Fila tres: 10 se divide en 2 × 5. Fila cuatro: 60 termina como 2 × 2 × 3 × 5, y todos los factores son primos."
+      }
+    },
+    "transfer": {
+      "stem": {
+        "en": "Sam finished a factor tree. The primes at the bottom are 2, 2, 5 and 5. What number was at the top of the tree?",
+        "es": "Sam terminó un árbol de factores. Los primos de abajo son 2, 2, 5 y 5. ¿Qué número estaba arriba del árbol?"
+      },
+      "choices": [
+        {
+          "en": "14",
+          "es": "14",
+          "correct": false,
+          "misconception": "added-the-primes"
+        },
+        {
+          "en": "100",
+          "es": "100",
+          "correct": true,
+          "misconception": null
+        },
+        {
+          "en": "20",
+          "es": "20",
+          "correct": false,
+          "misconception": "left-out-a-prime"
+        }
+      ],
+      "reasoning": {
+        "en": "Multiply the primes back together: 2 × 2 = 4, 4 × 5 = 20, and 20 × 5 = 100. The top number is 100.",
+        "es": "Multiplica los primos otra vez: 2 × 2 = 4, 4 × 5 = 20 y 20 × 5 = 100. El número de arriba es 100."
+      },
+      "calc": {
+        "expr": "2 * 2 * 5 * 5",
+        "value": 100
+      }
+    },
+    "glitch": null,
+    "spiral": [
+      {
+        "from": "6-7",
+        "q": {
+          "en": "Which number is a factor of 18?",
+          "es": "¿Cuál número es factor de 18?"
+        },
+        "options": [
+          "5",
+          "6",
+          "4"
+        ],
+        "correctIdx": 1,
+        "exp": {
+          "en": "6 × 3 = 18, so 6 goes into 18 with nothing left over.",
+          "es": "6 × 3 = 18, así que el 6 entra en el 18 sin que sobre nada."
+        },
+        "calc": {
+          "expr": "18 / 3",
+          "value": 6
+        }
+      },
+      {
+        "from": "6-4",
+        "q": {
+          "en": "What is 2³?",
+          "es": "¿Cuánto es 2³?"
+        },
+        "options": [
+          "8",
+          "6",
+          "9"
+        ],
+        "correctIdx": 0,
+        "exp": {
+          "en": "2³ means 2 × 2 × 2, and 2 × 2 × 2 = 8.",
+          "es": "2³ significa 2 × 2 × 2, y 2 × 2 × 2 = 8."
+        },
+        "calc": {
+          "expr": "2 * 2 * 2",
+          "value": 8
+        }
+      }
+    ],
+    "kitchenTable": {
+      "en": "Write 60 on paper. Ask your student to split it a different way than class, like 4 × 15. Does the tree still end in 2, 2, 3 and 5?",
+      "es": "Escriban 60 en un papel. Pidan a su estudiante que lo divida de otra forma que en clase, como 4 × 15. ¿El árbol termina otra vez en 2, 2, 3 y 5?"
+    },
+    "vocab": [
+      {
+        "term": "Prime number",
+        "example": {
+          "en": "2, 3 and 5 are prime. Only 1 and the number itself go into each one.",
+          "es": "2, 3 y 5 son primos. Solo el 1 y el mismo número entran en cada uno."
+        },
+        "nonExample": {
+          "en": "6 is not prime. The numbers 2 and 3 go into it.",
+          "es": "6 no es primo. Los números 2 y 3 entran en él."
+        },
+        "frame": {
+          "en": "___ is prime because only ___ and ___ go into it.",
+          "es": "___ es primo porque solo el ___ y el ___ entran en él."
+        }
+      },
+      {
+        "term": "Composite number",
+        "example": {
+          "en": "6 and 10 are composite. Each one can still split.",
+          "es": "6 y 10 son compuestos. Cada uno todavía se puede dividir."
+        },
+        "nonExample": {
+          "en": "5 is not composite. It cannot split into smaller factors.",
+          "es": "5 no es compuesto. No se puede dividir en factores menores."
+        },
+        "frame": {
+          "en": "___ is composite because ___ goes into it.",
+          "es": "___ es compuesto porque el ___ entra en él."
+        }
+      },
+      {
+        "term": "Factor tree",
+        "example": {
+          "en": "The tree for 60 starts with 6 × 10, then splits each piece.",
+          "es": "El árbol del 60 empieza con 6 × 10 y luego divide cada pieza."
+        },
+        "nonExample": {
+          "en": "A tree that stops at 6 × 10 is not done. Both pieces can still split.",
+          "es": "Un árbol que se detiene en 6 × 10 no está terminado. Las dos piezas todavía se pueden dividir."
+        },
+        "frame": {
+          "en": "I split ___ into ___ × ___, so this branch is ___.",
+          "es": "Divido ___ en ___ × ___, así que esta rama es ___."
+        }
+      },
+      {
+        "term": "Exponent",
+        "example": {
+          "en": "2 × 2 × 3 × 5 can be written 2² × 3 × 5. The small 2 counts two 2s.",
+          "es": "2 × 2 × 3 × 5 se puede escribir 2² × 3 × 5. El 2 pequeño cuenta dos veces el 2."
+        },
+        "nonExample": {
+          "en": "2² is not 22 and it is not 2 + 2. It means 2 × 2.",
+          "es": "2² no es 22 ni es 2 + 2. Significa 2 × 2."
+        },
+        "frame": {
+          "en": "The exponent ___ tells me the factor ___ appears ___ times.",
+          "es": "El exponente ___ me dice que el factor ___ aparece ___ veces."
+        }
+      },
+      {
+        "term": "Factor",
+        "example": {
+          "en": "2 and 3 are factors of 6, because 2 × 3 = 6.",
+          "es": "2 y 3 son factores de 6, porque 2 × 3 = 6."
+        },
+        "nonExample": {
+          "en": "4 is not a factor of 6. Dividing 6 by 4 leaves a remainder.",
+          "es": "4 no es factor de 6. Al dividir 6 entre 4 sobra algo."
+        },
+        "frame": {
+          "en": "___ is a factor of ___ because ___ × ___ = ___.",
+          "es": "___ es factor de ___ porque ___ × ___ = ___."
+        }
+      }
+    ],
+    "confused": [
+      {
+        "wrong": {
+          "en": "60 = 6 × 10, so I am done. That is the prime factorization.",
+          "es": "60 = 6 × 10, así que ya terminé. Esa es la factorización prima."
+        },
+        "coach": {
+          "en": "Are 6 and 10 prime numbers, or can they still split?",
+          "es": "¿El 6 y el 10 son números primos o todavía se pueden dividir?"
+        },
+        "why": {
+          "en": "6 = 2 × 3 and 10 = 2 × 5, so both still split. Keep going until every piece is prime: 2 × 2 × 3 × 5.",
+          "es": "6 = 2 × 3 y 10 = 2 × 5, así que los dos todavía se dividen. Sigue hasta que cada pieza sea prima: 2 × 2 × 3 × 5."
+        },
+        "misconception": "stopped-at-composite",
+        "calc": {
+          "expr": "2 * 2 * 3 * 5",
+          "value": 60
+        }
+      },
+      {
+        "wrong": {
+          "en": "6 = 2 × 3 and 10 = 2 × 5, so 60 = 2 × 3 × 5.",
+          "es": "6 = 2 × 3 y 10 = 2 × 5, así que 60 = 2 × 3 × 5."
+        },
+        "coach": {
+          "en": "Multiply your primes together. Do you get the number you started with?",
+          "es": "Multiplica tus primos. ¿Obtienes el número con el que empezaste?"
+        },
+        "why": {
+          "en": "2 × 3 × 5 = 30, not 60. The 2 shows up in both branches, so keep both: 2 × 2 × 3 × 5 = 60.",
+          "es": "2 × 3 × 5 = 30, no 60. El 2 aparece en las dos ramas, así que conserva los dos: 2 × 2 × 3 × 5 = 60."
+        },
+        "misconception": "dropped-a-repeated-prime",
+        "calc": {
+          "expr": "2 * 2 * 3 * 5",
+          "value": 60
+        }
+      },
+      {
+        "wrong": {
+          "en": "The 5 shows up once and the 2 shows up twice, so 60 = 2 × 3 × 5².",
+          "es": "El 5 aparece una vez y el 2 aparece dos veces, así que 60 = 2 × 3 × 5²."
+        },
+        "coach": {
+          "en": "Which prime shows up two times in the tree?",
+          "es": "¿Cuál primo aparece dos veces en el árbol?"
+        },
+        "why": {
+          "en": "The exponent goes on the prime that repeats, and that is the 2. So 60 = 2² × 3 × 5. Check: 4 × 3 × 5 = 60.",
+          "es": "El exponente va en el primo que se repite, y ese es el 2. Entonces 60 = 2² × 3 × 5. Comprueba: 4 × 3 × 5 = 60."
+        },
+        "misconception": "exponent-on-wrong-prime",
+        "calc": {
+          "expr": "4 * 3 * 5",
+          "value": 60
+        }
+      }
+    ]
   }
 }

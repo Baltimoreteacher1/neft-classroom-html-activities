@@ -520,5 +520,305 @@
       "en": "The ladder and the lists both find the smallest number that 6 and 8 go into evenly. Dividing that number by each pack size tells you how many packs to buy.",
       "es": "La escalera y las listas buscan el número más pequeño en el que caben 6 y 8 exactamente. Dividir ese número entre el tamaño de cada paquete dice cuántos paquetes comprar."
     }
+  },
+  "v3": {
+    "version": 1,
+    "kind": "math",
+    "topicKey": "lcm-matching-packs-apply",
+    "standardPlain": {
+      "en": "Use the least common multiple to solve a buying problem with none left over.",
+      "es": "Usar el mínimo común múltiplo para resolver un problema de compras sin que sobre nada."
+    },
+    "hook": {
+      "style": "recipe",
+      "en": "A cookout needs the same number of hot dogs and buns. Hot dogs come in packs of 6. Buns come in packs of 8. What is the fewest of each you can buy with none left over?",
+      "es": "Una parrillada necesita el mismo número de salchichas y de panes. Las salchichas vienen en paquetes de 6. Los panes vienen en paquetes de 8. ¿Cuál es la menor cantidad de cada uno que puedes comprar sin que sobre nada?",
+      "guess": {
+        "en": "Guess first: is it more than 20 of each, or fewer?",
+        "es": "Primero adivina: ¿son más de 20 de cada uno o menos?"
+      },
+      "reveal": {
+        "en": "More! The LCM of 6 and 8 is 24. That is 24 ÷ 6 = 4 packs of hot dogs and 24 ÷ 8 = 3 packs of buns.",
+        "es": "¡Más! El mínimo común múltiplo de 6 y 8 es 24. Son 24 ÷ 6 = 4 paquetes de salchichas y 24 ÷ 8 = 3 paquetes de panes."
+      }
+    },
+    "classModel": {
+      "name": {
+        "en": "the matching-packs LCM",
+        "es": "el mínimo común múltiplo de paquetes iguales"
+      }
+    },
+    "model": {
+      "kind": "numberline",
+      "data": {
+        "min": 0,
+        "max": 24,
+        "step": 6,
+        "points": [
+          {
+            "value": 8,
+            "label": "8",
+            "kind": "given"
+          },
+          {
+            "value": 16,
+            "label": "16",
+            "kind": "given"
+          },
+          {
+            "value": 24,
+            "label": "24",
+            "kind": "answer"
+          }
+        ],
+        "unit": {
+          "en": "Ticks: hot dogs by 6. Dots: buns by 8.",
+          "es": "Marcas: salchichas de 6 en 6. Puntos: panes de 8 en 8."
+        }
+      },
+      "alt": {
+        "en": "A number line from 0 to 24. Ticks every 6 show hot dogs: 6, 12, 18 and 24. Dots show buns by 8: 8, 16 and 24. The first place with a tick and a dot is 24, so 24 hot dogs and 24 buns.",
+        "es": "Una recta numérica de 0 a 24. Las marcas cada 6 muestran las salchichas: 6, 12, 18 y 24. Los puntos muestran los panes de 8 en 8: 8, 16 y 24. El primer lugar con marca y punto es el 24, así que son 24 salchichas y 24 panes."
+      }
+    },
+    "transfer": {
+      "stem": {
+        "en": "Cups come in packs of 10. Lids come in packs of 4. You want the same number of each, with none left over. What is the fewest cups you can buy?",
+        "es": "Los vasos vienen en paquetes de 10. Las tapas vienen en paquetes de 4. Quieres el mismo número de cada uno, sin que sobre nada. ¿Cuál es la menor cantidad de vasos que puedes comprar?"
+      },
+      "choices": [
+        {
+          "en": "40 cups",
+          "es": "40 vasos",
+          "correct": false,
+          "misconception": "multiplied-sizes-for-lcm"
+        },
+        {
+          "en": "2 cups",
+          "es": "2 vasos",
+          "correct": false,
+          "misconception": "found-gcf-instead"
+        },
+        {
+          "en": "20 cups",
+          "es": "20 vasos",
+          "correct": true,
+          "misconception": null
+        }
+      ],
+      "reasoning": {
+        "en": "Multiples of 10: 10, 20. Multiples of 4: 4, 8, 12, 16, 20. The first shared number is 20 cups.",
+        "es": "Múltiplos de 10: 10, 20. Múltiplos de 4: 4, 8, 12, 16, 20. El primer número en común es 20 vasos."
+      },
+      "calc": {
+        "expr": "10 * 2",
+        "value": 20,
+        "unit": "cups"
+      }
+    },
+    "glitch": {
+      "scenario": {
+        "en": "A different situation: A teacher buys pencils in packs of 8 and erasers in packs of 12. She wants the same number of each, none left over.",
+        "es": "Otra situación: Una maestra compra lápices en paquetes de 8 y borradores en paquetes de 12. Quiere el mismo número de cada uno, sin que sobre nada."
+      },
+      "steps": [
+        {
+          "en": "The words \"the same number\" and \"none left over\" tell me to find the LCM of 8 and 12.",
+          "es": "Las palabras «el mismo número» y «sin que sobre nada» me dicen que busque el mínimo común múltiplo de 8 y 12.",
+          "isGlitch": false
+        },
+        {
+          "en": "Multiply the pack sizes: 8 × 12 = 96, so the LCM is 96.",
+          "es": "Multiplico los tamaños de los paquetes: 8 × 12 = 96, así que el mínimo común múltiplo es 96.",
+          "isGlitch": true
+        },
+        {
+          "en": "Then divide the LCM by each pack size to count the packs.",
+          "es": "Luego divido el mínimo común múltiplo entre el tamaño de cada paquete para contar los paquetes.",
+          "isGlitch": false
+        }
+      ],
+      "fix": {
+        "en": "96 works, but it is not the least. Multiples of 8: 8, 16, 24. Multiples of 12: 12, 24. The LCM is 24: 3 packs of pencils and 2 packs of erasers.",
+        "es": "El 96 sirve, pero no es el menor. Múltiplos de 8: 8, 16, 24. Múltiplos de 12: 12, 24. El mínimo común múltiplo es 24: 3 paquetes de lápices y 2 paquetes de borradores."
+      },
+      "frame": {
+        "en": "The LCM of ___ and ___ is ___ because it is the first number in both lists.",
+        "es": "El mínimo común múltiplo de ___ y ___ es ___ porque es el primer número de las dos listas."
+      },
+      "calc": {
+        "expr": "8 * 3",
+        "value": 24
+      }
+    },
+    "spiral": [
+      {
+        "from": "6-12",
+        "q": {
+          "en": "What is the LCM of 3 and 4?",
+          "es": "¿Cuál es el mínimo común múltiplo de 3 y 4?"
+        },
+        "options": [
+          "7",
+          "1",
+          "12"
+        ],
+        "correctIdx": 2,
+        "exp": {
+          "en": "Multiples of 3: 3, 6, 9, 12. Multiples of 4: 4, 8, 12. The first shared number is 12.",
+          "es": "Múltiplos de 3: 3, 6, 9, 12. Múltiplos de 4: 4, 8, 12. El primer número en común es 12."
+        },
+        "calc": {
+          "expr": "3 * 4",
+          "value": 12
+        }
+      },
+      {
+        "from": "6-7",
+        "q": {
+          "en": "Which number is a multiple of 8?",
+          "es": "¿Cuál número es múltiplo de 8?"
+        },
+        "options": [
+          "28",
+          "32",
+          "18"
+        ],
+        "correctIdx": 1,
+        "exp": {
+          "en": "Count by 8: 8, 16, 24, 32. So 32 is a multiple of 8.",
+          "es": "Cuenta de 8 en 8: 8, 16, 24, 32. Entonces 32 es múltiplo de 8."
+        },
+        "calc": {
+          "expr": "8 * 4",
+          "value": 32
+        }
+      }
+    ],
+    "kitchenTable": {
+      "en": "Line up cups in groups of 6 on one side and spoons in groups of 8 on the other. Keep adding groups until the totals match. Which total do you reach?",
+      "es": "Pongan vasos en grupos de 6 de un lado y cucharas en grupos de 8 del otro. Sigan agregando grupos hasta que los totales sean iguales. ¿Qué total alcanzan?"
+    },
+    "vocab": [
+      {
+        "term": "Least Common Multiple",
+        "example": {
+          "en": "For 6 and 8, the LCM is 24. That is 24 hot dogs and 24 buns.",
+          "es": "Para 6 y 8, el mínimo común múltiplo es 24. Son 24 salchichas y 24 panes."
+        },
+        "nonExample": {
+          "en": "48 is a number both pack sizes go into, but it is not the least. 24 is smaller.",
+          "es": "El 48 es un número al que entran los dos tamaños de paquete, pero no es el menor. El 24 es menor."
+        },
+        "frame": {
+          "en": "I need ___ of each because the LCM of ___ and ___ is ___.",
+          "es": "Necesito ___ de cada uno porque el mínimo común múltiplo de ___ y ___ es ___."
+        }
+      },
+      {
+        "term": "Multiple",
+        "example": {
+          "en": "Hot dogs by packs of 6: 6, 12, 18 and 24 are multiples of 6.",
+          "es": "Salchichas en paquetes de 6: 6, 12, 18 y 24 son múltiplos de 6."
+        },
+        "nonExample": {
+          "en": "20 is not a multiple of 6. You cannot buy exactly 20 hot dogs in packs of 6.",
+          "es": "20 no es múltiplo de 6. No puedes comprar exactamente 20 salchichas en paquetes de 6."
+        },
+        "frame": {
+          "en": "I can buy ___ because it is a multiple of ___.",
+          "es": "Puedo comprar ___ porque es múltiplo de ___."
+        }
+      },
+      {
+        "term": "Common multiple",
+        "example": {
+          "en": "24 is on the hot dog list and on the bun list. It is a common multiple.",
+          "es": "El 24 está en la lista de salchichas y en la lista de panes. Es un múltiplo común."
+        },
+        "nonExample": {
+          "en": "16 is a bun count, but it is not on the hot dog list.",
+          "es": "El 16 es una cantidad de panes, pero no está en la lista de salchichas."
+        },
+        "frame": {
+          "en": "___ is on both lists, so it is a common multiple of ___ and ___.",
+          "es": "___ está en las dos listas, así que es un múltiplo común de ___ y ___."
+        }
+      },
+      {
+        "term": "Skip counting",
+        "example": {
+          "en": "Saying 8, 16, 24 for packs of buns is skip counting by 8.",
+          "es": "Decir 8, 16, 24 para los paquetes de panes es conteo salteado de 8 en 8."
+        },
+        "nonExample": {
+          "en": "Saying 8, 9, 10 is not skip counting by 8. It adds 1 each time.",
+          "es": "Decir 8, 9, 10 no es conteo salteado de 8 en 8. Suma 1 cada vez."
+        },
+        "frame": {
+          "en": "I skip count by ___ to list the number of ___.",
+          "es": "Hago conteo salteado de ___ para listar la cantidad de ___."
+        }
+      }
+    ],
+    "confused": [
+      {
+        "wrong": {
+          "en": "The LCM of 6 and 8 is 24, so I buy 24 packs of hot dogs.",
+          "es": "El mínimo común múltiplo de 6 y 8 es 24, así que compro 24 paquetes de salchichas."
+        },
+        "coach": {
+          "en": "Is the LCM a count of hot dogs or a count of packs?",
+          "es": "¿El mínimo común múltiplo cuenta salchichas o cuenta paquetes?"
+        },
+        "why": {
+          "en": "The LCM counts hot dogs, not packs. Divide once more: 24 ÷ 6 = 4 packs of hot dogs.",
+          "es": "El mínimo común múltiplo cuenta salchichas, no paquetes. Divide una vez más: 24 ÷ 6 = 4 paquetes de salchichas."
+        },
+        "misconception": "items-vs-packs",
+        "calc": {
+          "expr": "24 / 6",
+          "value": 4
+        }
+      },
+      {
+        "wrong": {
+          "en": "I added the pack sizes: 6 + 8 = 14. So I buy 14 of each.",
+          "es": "Sumé los tamaños de los paquetes: 6 + 8 = 14. Entonces compro 14 de cada uno."
+        },
+        "coach": {
+          "en": "When you count by 6s, do you land on that number?",
+          "es": "Al contar de 6 en 6, ¿llegas a ese número?"
+        },
+        "why": {
+          "en": "14 is not a multiple of 6 or of 8. Count by 6s: 6, 12, 18, 24. Count by 8s: 8, 16, 24. The first shared number is 24.",
+          "es": "El 14 no es múltiplo de 6 ni de 8. Cuenta de 6 en 6: 6, 12, 18, 24. Cuenta de 8 en 8: 8, 16, 24. El primer número en común es 24."
+        },
+        "misconception": "added-pack-sizes",
+        "calc": {
+          "expr": "6 * 4",
+          "value": 24
+        }
+      },
+      {
+        "wrong": {
+          "en": "The LCM of 6 and 8 is 48, because 6 × 8 = 48 and that always works.",
+          "es": "El mínimo común múltiplo de 6 y 8 es 48, porque 6 × 8 = 48 y eso siempre funciona."
+        },
+        "coach": {
+          "en": "Is there a smaller number that is in both lists?",
+          "es": "¿Hay un número menor que esté en las dos listas?"
+        },
+        "why": {
+          "en": "48 is in both lists, but 24 comes first. Multiplying the sizes gives the least only when they share no factors.",
+          "es": "El 48 está en las dos listas, pero el 24 llega primero. Multiplicar los tamaños da el menor solo cuando no comparten factores."
+        },
+        "misconception": "product-always-lcm",
+        "calc": {
+          "expr": "8 * 3",
+          "value": 24
+        }
+      }
+    ]
   }
 }

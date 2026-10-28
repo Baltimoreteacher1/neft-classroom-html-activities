@@ -515,5 +515,296 @@
       ],
       "image": "/assets/vocab-images/area.svg"
     }
-  ]
+  ],
+  "v3": {
+    "version": 1,
+    "kind": "math",
+    "topicKey": "polygon-scale-design-apply",
+    "standardPlain": {
+      "en": "Use coordinates and a scale to find real side lengths and areas.",
+      "es": "Usar coordenadas y una escala para hallar longitudes de lados y áreas reales."
+    },
+    "hook": {
+      "style": "map",
+      "en": "A community garden needs 30,000 square feet. On the plan, one side runs from (−2.5, 10.5) to (−2.5, 4.5). One grid unit is 25 feet. How long is the other side, in feet?",
+      "es": "Un huerto comunitario necesita 30,000 pies cuadrados. En el plano, un lado va de (−2.5, 10.5) a (−2.5, 4.5). Cada unidad de la cuadrícula son 25 pies. ¿Cuánto mide el otro lado, en pies?",
+      "guess": {
+        "en": "Make a guess first: is the other side more than 100 feet, or less?",
+        "es": "Primero adivina: ¿el otro lado mide más de 100 pies o menos?"
+      },
+      "reveal": {
+        "en": "More! The first side is 6 units, and 6 × 25 = 150 feet. Then 30,000 ÷ 150 = 200 feet.",
+        "es": "¡Más! El primer lado mide 6 unidades, y 6 × 25 = 150 pies. Entonces 30,000 ÷ 150 = 200 pies."
+      }
+    },
+    "classModel": {
+      "name": {
+        "en": "count units, then convert",
+        "es": "cuenta unidades, luego convierte"
+      }
+    },
+    "model": {
+      "kind": "coord",
+      "data": {
+        "xmax": 6,
+        "ymax": 12,
+        "points": [
+          {
+            "x": -2.5,
+            "y": 10.5,
+            "label": "(−2.5, 10.5)"
+          },
+          {
+            "x": -2.5,
+            "y": 4.5,
+            "label": "(−2.5, 4.5)"
+          }
+        ],
+        "quadrants": true
+      },
+      "alt": {
+        "en": "A grid with all four quadrants. Two garden corners sit on the same vertical line at (−2.5, 10.5) and (−2.5, 4.5). They are 6 grid units apart. One unit is 25 feet, so that side is 150 feet.",
+        "es": "Una cuadrícula con los cuatro cuadrantes. Dos esquinas del huerto están en la misma línea vertical, en (−2.5, 10.5) y (−2.5, 4.5). Están a 6 unidades de la cuadrícula. Cada unidad son 25 pies, así que ese lado mide 150 pies."
+      }
+    },
+    "transfer": {
+      "stem": {
+        "en": "A skate park plan has two corners at (3.5, 2) and (3.5, −6). One grid unit is 15 feet. How long is that side in real feet?",
+        "es": "El plano de una pista de patinaje tiene dos esquinas en (3.5, 2) y (3.5, −6). Cada unidad de la cuadrícula son 15 pies. ¿Cuánto mide ese lado en pies reales?"
+      },
+      "choices": [
+        {
+          "en": "120 feet",
+          "es": "120 pies",
+          "correct": true,
+          "misconception": null
+        },
+        {
+          "en": "8 feet",
+          "es": "8 pies",
+          "correct": false,
+          "misconception": "left-in-grid-units"
+        },
+        {
+          "en": "60 feet",
+          "es": "60 pies",
+          "correct": false,
+          "misconception": "subtracted-across-zero"
+        }
+      ],
+      "reasoning": {
+        "en": "The x-values match. The y-values are on opposite sides of 0: 2 + 6 = 8 units. Convert: 8 × 15 = 120 feet.",
+        "es": "Los valores de x coinciden. Los de y están en lados opuestos del 0: 2 + 6 = 8 unidades. Convierte: 8 × 15 = 120 pies."
+      },
+      "calc": {
+        "expr": "(2 + 6) * 15",
+        "value": 120,
+        "unit": "feet"
+      }
+    },
+    "glitch": {
+      "scenario": {
+        "en": "A different situation: A plan side runs from (4, 1.5) to (4, 7.5). One grid unit is 20 feet. Marisol wants its real length.",
+        "es": "Otra situación: Un lado de un plano va de (4, 1.5) a (4, 7.5). Cada unidad de la cuadrícula son 20 pies. Marisol quiere su longitud real."
+      },
+      "steps": [
+        {
+          "en": "The x-values match, so count the y-values: 7.5 − 1.5 = 6 units.",
+          "es": "Los valores de x coinciden, así que cuenta los de y: 7.5 − 1.5 = 6 unidades.",
+          "isGlitch": false
+        },
+        {
+          "en": "Units and feet are the same thing, so the side is 6 feet.",
+          "es": "Las unidades y los pies son lo mismo, así que el lado mide 6 pies.",
+          "isGlitch": true
+        },
+        {
+          "en": "Check by turning the feet back into grid units.",
+          "es": "Comprueba convirtiendo los pies otra vez en unidades de la cuadrícula.",
+          "isGlitch": false
+        }
+      ],
+      "fix": {
+        "en": "One grid unit stands for 20 feet, so multiply: 6 × 20 = 120 feet. Check: 120 ÷ 20 = 6 units.",
+        "es": "Cada unidad de la cuadrícula son 20 pies, así que multiplica: 6 × 20 = 120 pies. Comprueba: 120 ÷ 20 = 6 unidades."
+      },
+      "frame": {
+        "en": "The side is ___ units, and each unit is ___ feet, so it is ___ feet.",
+        "es": "El lado mide ___ unidades, cada unidad son ___ pies, así que son ___ pies."
+      },
+      "calc": {
+        "expr": "(7.5 - 1.5) * 20",
+        "value": 120
+      }
+    },
+    "spiral": [
+      {
+        "from": "7-7",
+        "q": {
+          "en": "A rectangle is 8 units long and 3 units wide. What is its area in square units?",
+          "es": "Un rectángulo mide 8 unidades de largo y 3 de ancho. ¿Cuál es su área en unidades cuadradas?"
+        },
+        "options": [
+          "11",
+          "24",
+          "22"
+        ],
+        "correctIdx": 1,
+        "exp": {
+          "en": "Area is length times width: 8 × 3 = 24 square units.",
+          "es": "El área es largo por ancho: 8 × 3 = 24 unidades cuadradas."
+        },
+        "calc": {
+          "expr": "8 * 3",
+          "value": 24
+        }
+      },
+      {
+        "from": "7-6",
+        "q": {
+          "en": "How far apart are the points (−3, 2) and (4, 2)?",
+          "es": "¿Qué tan separados están los puntos (−3, 2) y (4, 2)?"
+        },
+        "options": [
+          "7",
+          "1",
+          "6"
+        ],
+        "correctIdx": 0,
+        "exp": {
+          "en": "The y-values match, so use the x-values. They are on opposite sides of 0: 3 + 4 = 7 units.",
+          "es": "Los valores de y coinciden, así que usa los de x. Están en lados opuestos del 0: 3 + 4 = 7 unidades."
+        },
+        "calc": {
+          "expr": "3 + 4",
+          "value": 7
+        }
+      }
+    ],
+    "kitchenTable": {
+      "en": "Choose a hallway or a counter. Let one step stand for 2 feet. Ask your student: if the hallway is 7 steps, how many feet is that? Then flip it: a 10-foot wall is how many steps?",
+      "es": "Elijan un pasillo o un mostrador. Un paso representa 2 pies. Pregunten: si el pasillo mide 7 pasos, ¿cuántos pies son? Después al revés: ¿cuántos pasos mide una pared de 10 pies?"
+    },
+    "vocab": [
+      {
+        "term": "scale",
+        "example": {
+          "en": "On the garden plan, 1 unit = 25 feet. That is the scale.",
+          "es": "En el plano del huerto, 1 unidad = 25 pies. Esa es la escala."
+        },
+        "nonExample": {
+          "en": "6 units is not 6 feet. The scale tells you how to convert.",
+          "es": "6 unidades no son 6 pies. La escala te dice cómo convertir."
+        },
+        "frame": {
+          "en": "The scale is 1 unit = ___ feet, so ___ units is ___ feet.",
+          "es": "La escala es 1 unidad = ___ pies, así que ___ unidades son ___ pies."
+        }
+      },
+      {
+        "term": "Side length",
+        "example": {
+          "en": "The side from (−2.5, 10.5) to (−2.5, 4.5) is 6 units, or 150 feet.",
+          "es": "El lado de (−2.5, 10.5) a (−2.5, 4.5) mide 6 unidades, o 150 pies."
+        },
+        "nonExample": {
+          "en": "The 30,000 square feet is not a side length. It measures the space inside.",
+          "es": "Los 30,000 pies cuadrados no son la longitud de un lado. Miden el espacio adentro."
+        },
+        "frame": {
+          "en": "The side is ___ units long, which is ___ feet.",
+          "es": "El lado mide ___ unidades, que son ___ pies."
+        }
+      },
+      {
+        "term": "vertex",
+        "example": {
+          "en": "(−2.5, 10.5) is a vertex of the garden. It is one corner.",
+          "es": "(−2.5, 10.5) es un vértice del huerto. Es una esquina."
+        },
+        "nonExample": {
+          "en": "(−2.5, 7.5) sits on the side but is not a corner, so it is not a vertex.",
+          "es": "(−2.5, 7.5) está sobre el lado pero no es una esquina, así que no es un vértice."
+        },
+        "frame": {
+          "en": "The vertices (___, ___) and (___, ___) share the same ___.",
+          "es": "Los vértices (___, ___) y (___, ___) comparten la misma ___."
+        }
+      },
+      {
+        "term": "Area",
+        "example": {
+          "en": "The garden's area is 30,000 square feet. It is the space inside.",
+          "es": "El área del huerto es de 30,000 pies cuadrados. Es el espacio adentro."
+        },
+        "nonExample": {
+          "en": "The fence around the garden is not the area. That is the perimeter.",
+          "es": "La cerca alrededor del huerto no es el área. Eso es el perímetro."
+        },
+        "frame": {
+          "en": "Area = ___ feet × ___ feet = ___ square feet.",
+          "es": "Área = ___ pies × ___ pies = ___ pies cuadrados."
+        }
+      }
+    ],
+    "confused": [
+      {
+        "wrong": {
+          "en": "From 4.5 up to 10.5, I add: 4.5 + 10.5 = 15 units.",
+          "es": "De 4.5 a 10.5, sumo: 4.5 + 10.5 = 15 unidades."
+        },
+        "coach": {
+          "en": "Are 4.5 and 10.5 on the same side of zero, or on opposite sides?",
+          "es": "¿4.5 y 10.5 están del mismo lado del cero o en lados opuestos?"
+        },
+        "why": {
+          "en": "Both are above zero, so subtract: 10.5 − 4.5 = 6 units. Add only when the points are on opposite sides of 0.",
+          "es": "Los dos están arriba del cero, así que se resta: 10.5 − 4.5 = 6 unidades. Solo se suma cuando los puntos están en lados opuestos del 0."
+        },
+        "misconception": "added-same-side-values",
+        "calc": {
+          "expr": "10.5 - 4.5",
+          "value": 6
+        }
+      },
+      {
+        "wrong": {
+          "en": "The side is 6 units, so it is 6 feet.",
+          "es": "El lado mide 6 unidades, así que mide 6 pies."
+        },
+        "coach": {
+          "en": "What does one grid unit stand for on this plan?",
+          "es": "¿Qué representa una unidad de la cuadrícula en este plano?"
+        },
+        "why": {
+          "en": "One unit is 25 feet, so 6 units is 6 × 25 = 150 feet.",
+          "es": "Una unidad son 25 pies, así que 6 unidades son 6 × 25 = 150 pies."
+        },
+        "misconception": "units-treated-as-feet",
+        "calc": {
+          "expr": "6 * 25",
+          "value": 150
+        }
+      },
+      {
+        "wrong": {
+          "en": "30,000 ÷ 150 = 200, so the other side is 200 units on the grid.",
+          "es": "30,000 ÷ 150 = 200, así que el otro lado mide 200 unidades en la cuadrícula."
+        },
+        "coach": {
+          "en": "Is that 200 counting grid units, or counting feet?",
+          "es": "Esos 200, ¿cuentan unidades de la cuadrícula o pies?"
+        },
+        "why": {
+          "en": "The 200 is in feet. Each unit is 25 feet, so convert back: 200 ÷ 25 = 8 units.",
+          "es": "Los 200 son pies. Cada unidad son 25 pies, así que convierte de regreso: 200 ÷ 25 = 8 unidades."
+        },
+        "misconception": "feet-treated-as-units",
+        "calc": {
+          "expr": "200 / 25",
+          "value": 8
+        }
+      }
+    ]
+  }
 }

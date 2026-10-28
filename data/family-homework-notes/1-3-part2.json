@@ -511,5 +511,299 @@
         }
       ]
     }
-  ]
+  ],
+  "v3": {
+    "version": 1,
+    "kind": "math",
+    "topicKey": "choose-tool-minutes-to-hours-apply",
+    "standardPlain": {
+      "en": "Pick a tool, then change minutes into hours and minutes by dividing by 60.",
+      "es": "Elegir una herramienta y cambiar minutos a horas y minutos dividiendo entre 60."
+    },
+    "hook": {
+      "style": "map",
+      "en": "A route map shows a night bus. It leaves at midnight and rides for 500 minutes. What time does it arrive?",
+      "es": "Un mapa de ruta muestra un autobús nocturno. Sale a medianoche y viaja durante 500 minutos. ¿A qué hora llega?",
+      "guess": {
+        "en": "Make a guess first: does it arrive before 8:00 a.m., or after?",
+        "es": "Primero adivina: ¿llega antes de las 8:00 a.m. o después?"
+      },
+      "reveal": {
+        "en": "After! Eight jumps of 60 minutes reach 480. That leaves 20 minutes. 8 hours 20 minutes after midnight is 8:20 a.m.",
+        "es": "¡Después! Ocho saltos de 60 minutos llegan a 480. Quedan 20 minutos. 8 horas y 20 minutos después de la medianoche son las 8:20 a.m."
+      }
+    },
+    "classModel": {
+      "name": {
+        "en": "the number line of 60-minute jumps",
+        "es": "la recta numérica de saltos de 60 minutos"
+      }
+    },
+    "model": {
+      "kind": "numberline",
+      "data": {
+        "min": 0,
+        "max": 540,
+        "step": 60,
+        "points": [
+          {
+            "value": 480,
+            "label": "8 h",
+            "kind": "given"
+          },
+          {
+            "value": 500,
+            "label": "8 h 20 min",
+            "kind": "answer"
+          }
+        ],
+        "unit": {
+          "en": "minutes",
+          "es": "minutos"
+        }
+      },
+      "alt": {
+        "en": "A number line from 0 to 540 minutes, marked every 60 minutes. Eight jumps of 60 reach 480 minutes, which is 8 hours. The answer, 500 minutes, sits 20 minutes past that: 8 hours 20 minutes.",
+        "es": "Una recta numérica de 0 a 540 minutos, marcada cada 60 minutos. Ocho saltos de 60 llegan a 480 minutos, que son 8 horas. La respuesta, 500 minutos, está 20 minutos más allá: 8 horas y 20 minutos."
+      }
+    },
+    "transfer": {
+      "stem": {
+        "en": "A road trip takes 430 minutes. How many hours and minutes is that?",
+        "es": "Un viaje por carretera dura 430 minutos. ¿Cuántas horas y minutos son?"
+      },
+      "choices": [
+        {
+          "en": "4 hours 30 minutes",
+          "es": "4 horas 30 minutos",
+          "correct": false,
+          "misconception": "moved-the-decimal-point"
+        },
+        {
+          "en": "7 hours 10 minutes",
+          "es": "7 horas 10 minutos",
+          "correct": true,
+          "misconception": null
+        },
+        {
+          "en": "6 hours 70 minutes",
+          "es": "6 horas 70 minutos",
+          "correct": false,
+          "misconception": "leftover-is-60-or-more"
+        }
+      ],
+      "reasoning": {
+        "en": "Seven jumps of 60 reach 420. Then 430 − 420 = 10 minutes are left. So the trip is 7 hours 10 minutes.",
+        "es": "Siete saltos de 60 llegan a 420. Luego 430 − 420 = quedan 10 minutos. Entonces el viaje dura 7 horas y 10 minutos."
+      },
+      "calc": {
+        "expr": "430 - 7 * 60",
+        "value": 10
+      }
+    },
+    "glitch": {
+      "scenario": {
+        "en": "A different situation: a bus ride takes 250 minutes. Dev wants to know the hours and minutes.",
+        "es": "Otra situación: un viaje en autobús dura 250 minutos. Dev quiere saber las horas y los minutos."
+      },
+      "steps": [
+        {
+          "en": "Draw a number line with a jump for every 60 minutes.",
+          "es": "Dibuja una recta numérica con un salto por cada 60 minutos.",
+          "isGlitch": false
+        },
+        {
+          "en": "Move the decimal point: 250 minutes is 2.50 hours, so 2 hours 50 minutes.",
+          "es": "Mueve el punto decimal: 250 minutos son 2.50 horas, o sea 2 horas y 50 minutos.",
+          "isGlitch": true
+        },
+        {
+          "en": "Check the answer by turning the hours back into minutes.",
+          "es": "Comprueba la respuesta convirtiendo las horas de nuevo en minutos.",
+          "isGlitch": false
+        }
+      ],
+      "fix": {
+        "en": "Hours come from dividing by 60, not from moving the decimal point. Four jumps of 60 reach 240, so 250 minutes is 4 hours 10 minutes. Check: 4 × 60 + 10 = 250.",
+        "es": "Las horas salen de dividir entre 60, no de mover el punto decimal. Cuatro saltos de 60 llegan a 240, así que 250 minutos son 4 horas y 10 minutos. Comprueba: 4 × 60 + 10 = 250."
+      },
+      "frame": {
+        "en": "I divide ___ by 60 to get ___ hours with ___ minutes left.",
+        "es": "Divido ___ entre 60 para obtener ___ horas y que sobren ___ minutos."
+      },
+      "calc": {
+        "expr": "250 - 4 * 60",
+        "value": 10
+      }
+    },
+    "spiral": [
+      {
+        "from": "1-3",
+        "q": {
+          "en": "A snack costs $2.25. What do 4 snacks cost?",
+          "es": "Una merienda cuesta $2.25. ¿Cuánto cuestan 4 meriendas?"
+        },
+        "options": [
+          "$9.00",
+          "$6.25",
+          "$0.56"
+        ],
+        "correctIdx": 0,
+        "exp": {
+          "en": "Draw a tape with 4 equal parts of $2.25. Then 2.25 × 4 = $9.00.",
+          "es": "Dibuja una barra con 4 partes iguales de $2.25. Luego 2.25 × 4 = $9.00."
+        },
+        "calc": {
+          "expr": "2.25 * 4",
+          "value": 9
+        }
+      },
+      {
+        "from": "1-2",
+        "q": {
+          "en": "What is 5/6 of 24?",
+          "es": "¿Cuánto es 5/6 de 24?"
+        },
+        "options": [
+          "4",
+          "20",
+          "29"
+        ],
+        "correctIdx": 1,
+        "exp": {
+          "en": "Divide by the bottom number: 24 ÷ 6 = 4. Multiply by the top number: 4 × 5 = 20.",
+          "es": "Divide entre el número de abajo: 24 ÷ 6 = 4. Multiplica por el número de arriba: 4 × 5 = 20."
+        },
+        "calc": {
+          "expr": "24 / 6 * 5",
+          "value": 20
+        }
+      }
+    ],
+    "kitchenTable": {
+      "en": "A different situation: use a phone or clock. Start at midnight and ask what time it is 150 minutes later. Let your student count by 60s on their fingers, then say the leftover minutes.",
+      "es": "Otra situación: usen un teléfono o un reloj. Empiecen a medianoche y pregunten qué hora es 150 minutos después. Dejen que su estudiante cuente de 60 en 60 con los dedos y diga los minutos que sobran."
+    },
+    "vocab": [
+      {
+        "term": "tool",
+        "example": {
+          "en": "The number line with 60-minute jumps is the tool I picked for the night bus.",
+          "es": "La recta numérica con saltos de 60 minutos es la herramienta que elegí para el autobús nocturno."
+        },
+        "nonExample": {
+          "en": "Moving the decimal point is a trick, not a tool. It does not hold the parts of the problem.",
+          "es": "Mover el punto decimal es un truco, no una herramienta. No guarda las partes del problema."
+        },
+        "frame": {
+          "en": "I picked a ___ as my tool because it shows ___.",
+          "es": "Elegí ___ como mi herramienta porque muestra ___."
+        }
+      },
+      {
+        "term": "number line",
+        "example": {
+          "en": "A line marked 0, 60, 120, up to 540 shows the night bus trip in hours.",
+          "es": "Una recta marcada 0, 60, 120, hasta 540 muestra el viaje del autobús nocturno en horas."
+        },
+        "nonExample": {
+          "en": "A line marked 0, 1, 2, 3 with no unit does not tell us that each jump is 60 minutes.",
+          "es": "Una recta marcada 0, 1, 2, 3 sin unidad no nos dice que cada salto es de 60 minutos."
+        },
+        "frame": {
+          "en": "My number line jumps by ___ and I made ___ jumps.",
+          "es": "Mi recta numérica salta de ___ en ___ y hice ___ saltos."
+        }
+      },
+      {
+        "term": "Remainder",
+        "example": {
+          "en": "500 ÷ 60 is 8 with a remainder of 20. The 20 stays as minutes.",
+          "es": "500 ÷ 60 es 8 con un residuo de 20. Los 20 quedan como minutos."
+        },
+        "nonExample": {
+          "en": "A remainder of 75 minutes is not allowed. Another whole hour fits, so keep going.",
+          "es": "Un residuo de 75 minutos no es posible. Cabe otra hora completa, así que sigue."
+        },
+        "frame": {
+          "en": "___ ÷ 60 is ___ with a remainder of ___ minutes.",
+          "es": "___ ÷ 60 es ___ con un residuo de ___ minutos."
+        }
+      },
+      {
+        "term": "representation",
+        "example": {
+          "en": "Eight jumps and one short hop on the line are a representation of 500 minutes.",
+          "es": "Ocho saltos y un salto corto en la recta son una representación de 500 minutos."
+        },
+        "nonExample": {
+          "en": "Writing just 500 on paper is not a representation of the hours inside it.",
+          "es": "Escribir solo 500 en el papel no es una representación de las horas que contiene."
+        },
+        "frame": {
+          "en": "My representation shows ___ jumps of 60 and ___ left over.",
+          "es": "Mi representación muestra ___ saltos de 60 y ___ que sobran."
+        }
+      }
+    ],
+    "confused": [
+      {
+        "wrong": {
+          "en": "500 minutes is 5.00 hours. So the bus arrives at 5:00 a.m.",
+          "es": "500 minutos son 5.00 horas. Entonces el autobús llega a las 5:00 a.m."
+        },
+        "coach": {
+          "en": "How many minutes are in one hour?",
+          "es": "¿Cuántos minutos hay en una hora?"
+        },
+        "why": {
+          "en": "Hours work in groups of 60, not 100. Eight jumps of 60 reach 480, and 500 − 480 = 20. The bus arrives at 8:20 a.m.",
+          "es": "Las horas se cuentan en grupos de 60, no de 100. Ocho saltos de 60 llegan a 480, y 500 − 480 = 20. El autobús llega a las 8:20 a.m."
+        },
+        "misconception": "moved-decimal-point-for-hours",
+        "calc": {
+          "expr": "500 - 8 * 60",
+          "value": 20
+        }
+      },
+      {
+        "wrong": {
+          "en": "500 ÷ 60 = 8.33, so the bus ride is 8 hours 33 minutes.",
+          "es": "500 ÷ 60 = 8.33, así que el viaje dura 8 horas y 33 minutos."
+        },
+        "coach": {
+          "en": "On the number line, how far past the last full jump does the end of the trip sit?",
+          "es": "En la recta numérica, ¿qué tan lejos del último salto completo queda el final del viaje?"
+        },
+        "why": {
+          "en": "A decimal is not minutes. Use a remainder: eight jumps reach 480, and 500 − 480 = 20. So 8 hours 20 minutes.",
+          "es": "Un decimal no son minutos. Usa un residuo: ocho saltos llegan a 480, y 500 − 480 = 20. Entonces son 8 horas y 20 minutos."
+        },
+        "misconception": "decimal-remainder-as-minutes",
+        "calc": {
+          "expr": "500 - 8 * 60",
+          "value": 20
+        }
+      },
+      {
+        "wrong": {
+          "en": "500 ÷ 60 is 8 with 20 left, so the ride is 20 hours and 8 minutes.",
+          "es": "500 ÷ 60 es 8 y sobran 20, así que el viaje dura 20 horas y 8 minutos."
+        },
+        "coach": {
+          "en": "Which number counts the full jumps of 60, and which is the leftover?",
+          "es": "¿Cuál número cuenta los saltos completos de 60 y cuál es lo que sobra?"
+        },
+        "why": {
+          "en": "The 8 counts whole hours, one for each jump of 60. The 20 is the leftover minutes. So the ride is 8 hours 20 minutes.",
+          "es": "El 8 cuenta las horas completas, una por cada salto de 60. El 20 son los minutos que sobran. Entonces el viaje dura 8 horas y 20 minutos."
+        },
+        "misconception": "swapped-hours-and-minutes",
+        "calc": {
+          "expr": "500 - 8 * 60",
+          "value": 20
+        }
+      }
+    ]
+  }
 }

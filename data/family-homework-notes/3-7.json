@@ -408,5 +408,298 @@
         "Multiplica 3.3 por 10."
       ]
     }
-  ]
+  ],
+  "v3": {
+    "version": 1,
+    "kind": "math",
+    "topicKey": "convert-between-systems-factor",
+    "standardPlain": {
+      "en": "Use a conversion factor to change a measurement between the customary and metric systems.",
+      "es": "Usar un factor de conversión para cambiar una medida entre el sistema usual y el sistema métrico."
+    },
+    "hook": {
+      "style": "map",
+      "en": "On a road trip in Canada, a highway sign says 100 kilometers per hour. Back home, the sign says miles. Is 100 kilometers per hour faster or slower than 100 miles per hour?",
+      "es": "En un viaje por Canadá, un letrero de la carretera dice 100 kilómetros por hora. En casa, los letreros dicen millas. ¿100 kilómetros por hora es más rápido o más lento que 100 millas por hora?",
+      "guess": {
+        "en": "Make a guess first: which is longer, a mile or a kilometer?",
+        "es": "Primero adivina: ¿qué es más largo, una milla o un kilómetro?"
+      },
+      "reveal": {
+        "en": "A mile is longer! About 1 kilometer ≈ 0.6 mile, so 100 km ≈ 60 miles. The Canadian sign is slower, about 60 miles per hour.",
+        "es": "¡La milla es más larga! Cerca de 1 kilómetro ≈ 0.6 milla, así que 100 km ≈ 60 millas. El letrero de Canadá es más lento, unas 60 millas por hora."
+      }
+    },
+    "classModel": {
+      "name": {
+        "en": "the factor 1 km ≈ 0.6 mile",
+        "es": "el factor 1 km ≈ 0.6 milla"
+      }
+    },
+    "model": {
+      "kind": "ratiotable",
+      "data": {
+        "headers": [
+          {
+            "en": "Kilometers",
+            "es": "Kilómetros"
+          },
+          {
+            "en": "Miles",
+            "es": "Millas"
+          }
+        ],
+        "rows": [
+          [
+            1,
+            0.6
+          ],
+          [
+            10,
+            6
+          ],
+          [
+            100,
+            60
+          ]
+        ],
+        "unknownCells": [],
+        "arrows": [
+          {
+            "from": 0,
+            "to": 1,
+            "label": "×10"
+          },
+          {
+            "from": 1,
+            "to": 2,
+            "label": "×10"
+          }
+        ]
+      },
+      "alt": {
+        "en": "A ratio table with kilometers and miles. 1 kilometer is about 0.6 mile. 10 kilometers is about 6 miles. 100 kilometers is about 60 miles. Each step multiplies both numbers by 10.",
+        "es": "Una tabla de razones con kilómetros y millas. 1 kilómetro son unas 0.6 milla. 10 kilómetros son unas 6 millas. 100 kilómetros son unas 60 millas. Cada paso multiplica los dos números por 10."
+      }
+    },
+    "transfer": {
+      "stem": {
+        "en": "A fish tank holds 5 gallons. Use 1 gallon ≈ 3.8 liters. About how many liters does the tank hold?",
+        "es": "Una pecera tiene 5 galones. Usa 1 galón ≈ 3.8 litros. ¿Aproximadamente cuántos litros tiene la pecera?"
+      },
+      "choices": [
+        {
+          "en": "About 8.8 liters",
+          "es": "Unos 8.8 litros",
+          "correct": false,
+          "misconception": "added-instead-of-multiplied"
+        },
+        {
+          "en": "About 1.3 liters",
+          "es": "Unos 1.3 litros",
+          "correct": false,
+          "misconception": "divided-instead-of-multiplied"
+        },
+        {
+          "en": "About 19 liters",
+          "es": "Unos 19 litros",
+          "correct": true,
+          "misconception": null
+        }
+      ],
+      "reasoning": {
+        "en": "Scale the factor: 5 gallons ≈ 5 × 3.8 = 19 liters. Use ≈ because 3.8 is rounded.",
+        "es": "Escala el factor: 5 galones ≈ 5 × 3.8 = 19 litros. Usa ≈ porque 3.8 está redondeado."
+      },
+      "calc": {
+        "expr": "5 * 3.8",
+        "value": 19
+      }
+    },
+    "glitch": null,
+    "spiral": [
+      {
+        "from": "3-6",
+        "q": {
+          "en": "A path is 9 yards long. How many feet is that? (1 yard = 3 feet)",
+          "es": "Un sendero mide 9 yardas de largo. ¿Cuántos pies son? (1 yarda = 3 pies)"
+        },
+        "options": [
+          "27",
+          "3",
+          "12"
+        ],
+        "correctIdx": 0,
+        "exp": {
+          "en": "Feet are smaller, so multiply: 9 × 3 = 27.",
+          "es": "Los pies son más pequeños, así que se multiplica: 9 × 3 = 27."
+        },
+        "calc": {
+          "expr": "9 * 3",
+          "value": 27
+        }
+      },
+      {
+        "from": "3-5",
+        "q": {
+          "en": "Store A sells 4 pencils for $3. Store B sells 6 pencils for $4. Scaled to 12 pencils, what does Store A charge?",
+          "es": "La tienda A vende 4 lápices por $3. La tienda B vende 6 lápices por $4. Escalada a 12 lápices, ¿cuánto cobra la tienda A?"
+        },
+        "options": [
+          "$8",
+          "$12",
+          "$9"
+        ],
+        "correctIdx": 2,
+        "exp": {
+          "en": "4 × 3 = 12, so 3 × 3 = $9.",
+          "es": "4 × 3 = 12, así que 3 × 3 = $9."
+        },
+        "calc": {
+          "expr": "3 * 3",
+          "value": 9
+        }
+      }
+    ],
+    "kitchenTable": {
+      "en": "Find a ruler with inches on one edge and centimeters on the other. Ask your student: which unit is longer? Link it to the road sign. A mile is longer than a kilometer. Should the number of miles be smaller or bigger?",
+      "es": "Busquen una regla con pulgadas en un borde y centímetros en el otro. Pregunten a su estudiante: ¿qué unidad es más larga? Conéctenlo con el letrero. Una milla es más larga que un kilómetro. ¿El número de millas debe ser menor o mayor?"
+    },
+    "vocab": [
+      {
+        "term": "Conversion factor",
+        "example": {
+          "en": "1 kilometer ≈ 0.6 mile is the conversion factor.",
+          "es": "1 kilómetro ≈ 0.6 milla es el factor de conversión."
+        },
+        "nonExample": {
+          "en": "100 kilometers is not a conversion factor. It is one measurement.",
+          "es": "100 kilómetros no es un factor de conversión. Es una medida."
+        },
+        "frame": {
+          "en": "The conversion factor is 1 ___ ≈ ___ ___.",
+          "es": "El factor de conversión es 1 ___ ≈ ___ ___."
+        }
+      },
+      {
+        "term": "Approximately",
+        "example": {
+          "en": "100 km is approximately 60 miles, so we write 100 km ≈ 60 mi.",
+          "es": "100 km son aproximadamente 60 millas, así que escribimos 100 km ≈ 60 mi."
+        },
+        "nonExample": {
+          "en": "1 inch = 2.54 cm is exact, so it uses =, not ≈.",
+          "es": "1 pulgada = 2.54 cm es exacto, así que usa =, no ≈."
+        },
+        "frame": {
+          "en": "___ is approximately ___ because the factor is rounded.",
+          "es": "___ es aproximadamente ___ porque el factor está redondeado."
+        }
+      },
+      {
+        "term": "Customary system",
+        "example": {
+          "en": "Miles are in the customary system.",
+          "es": "Las millas están en el sistema usual."
+        },
+        "nonExample": {
+          "en": "Kilometers are not customary. They are metric.",
+          "es": "Los kilómetros no son del sistema usual. Son métricos."
+        },
+        "frame": {
+          "en": "___ and ___ are customary units for ___.",
+          "es": "___ y ___ son unidades del sistema usual para ___."
+        }
+      },
+      {
+        "term": "Metric system",
+        "example": {
+          "en": "Kilometers are in the metric system.",
+          "es": "Los kilómetros están en el sistema métrico."
+        },
+        "nonExample": {
+          "en": "Miles are not metric. They are customary.",
+          "es": "Las millas no son métricas. Son del sistema usual."
+        },
+        "frame": {
+          "en": "___ and ___ are metric units for ___.",
+          "es": "___ y ___ son unidades métricas para ___."
+        }
+      },
+      {
+        "term": "Ratio table",
+        "example": {
+          "en": "Kilometers 1, 10, 100 pair with miles 0.6, 6, 60 in a ratio table.",
+          "es": "Los kilómetros 1, 10, 100 se emparejan con las millas 0.6, 6, 60 en una tabla de razones."
+        },
+        "nonExample": {
+          "en": "A list of only kilometers is not a ratio table. It needs both units.",
+          "es": "Una lista de solo kilómetros no es una tabla de razones. Necesita las dos unidades."
+        },
+        "frame": {
+          "en": "In my ratio table, ___ kilometers pair with ___ miles.",
+          "es": "En mi tabla de razones, ___ kilómetros se emparejan con ___ millas."
+        }
+      }
+    ],
+    "confused": [
+      {
+        "wrong": {
+          "en": "100 and 100 are the same number, so the speeds are the same.",
+          "es": "100 y 100 son el mismo número, así que las velocidades son iguales."
+        },
+        "coach": {
+          "en": "Are a kilometer and a mile the same length?",
+          "es": "¿Un kilómetro y una milla miden lo mismo?"
+        },
+        "why": {
+          "en": "Kilometers and miles are different lengths. Use 1 km ≈ 0.6 mile: 100 × 0.6 = 60 miles.",
+          "es": "Los kilómetros y las millas miden distinto. Usa 1 km ≈ 0.6 milla: 100 × 0.6 = 60 millas."
+        },
+        "misconception": "same-number-same-amount",
+        "calc": {
+          "expr": "100 * 0.6",
+          "value": 60
+        }
+      },
+      {
+        "wrong": {
+          "en": "1 km ≈ 0.6 mile, so 100 km ≈ 100 + 0.6 = 100.6 miles.",
+          "es": "1 km ≈ 0.6 milla, así que 100 km ≈ 100 + 0.6 = 100.6 millas."
+        },
+        "coach": {
+          "en": "What did we do to both numbers to go from 1 km to 100 km?",
+          "es": "¿Qué les hicimos a los dos números para pasar de 1 km a 100 km?"
+        },
+        "why": {
+          "en": "Both numbers multiply by the same factor. 1 × 100 = 100, so 0.6 × 100 = 60 miles.",
+          "es": "Los dos números se multiplican por el mismo factor. 1 × 100 = 100, así que 0.6 × 100 = 60 millas."
+        },
+        "misconception": "added-instead-of-multiplied",
+        "calc": {
+          "expr": "0.6 * 100",
+          "value": 60
+        }
+      },
+      {
+        "wrong": {
+          "en": "100 km is 60 miles, so I write 100 km = 60 miles.",
+          "es": "100 km son 60 millas, así que escribo 100 km = 60 millas."
+        },
+        "coach": {
+          "en": "Is the factor 0.6 exact, or rounded? How should the answer show that?",
+          "es": "¿El factor 0.6 es exacto o redondeado? ¿Cómo debe mostrarlo la respuesta?"
+        },
+        "why": {
+          "en": "The factor is rounded, so the answer is approximate. Write 100 km ≈ 60 miles.",
+          "es": "El factor está redondeado, así que la respuesta es aproximada. Escribe 100 km ≈ 60 millas."
+        },
+        "misconception": "equals-instead-of-approx",
+        "calc": {
+          "expr": "100 * 0.6",
+          "value": 60
+        }
+      }
+    ]
+  }
 }

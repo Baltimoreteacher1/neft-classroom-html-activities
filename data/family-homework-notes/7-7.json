@@ -430,5 +430,272 @@
         "El área es largo por ancho."
       ]
     }
-  ]
+  ],
+  "v3": {
+    "version": 1,
+    "kind": "math",
+    "topicKey": "polygon-sides-from-coordinates",
+    "standardPlain": {
+      "en": "Draw a polygon from its corner coordinates, then find side lengths, perimeter and area.",
+      "es": "Dibujar un polígono con las coordenadas de sus esquinas y hallar longitudes de lados, perímetro y área."
+    },
+    "hook": {
+      "style": "map",
+      "en": "A town plan on a grid shows a garden. Two fence posts sit at (−4, 3) and (5, 3). The fence runs straight between them. How many units long is it?",
+      "es": "Un plano del barrio en una cuadrícula muestra un jardín. Dos postes de la cerca están en (−4, 3) y (5, 3). La cerca va recta entre ellos. ¿Cuántas unidades mide?",
+      "guess": {
+        "en": "Make a guess first: is the fence longer than 5 units, or shorter?",
+        "es": "Primero adivina: ¿la cerca mide más de 5 unidades o menos?"
+      },
+      "reveal": {
+        "en": "Longer! The posts are on opposite sides of 0. Count 4 units to zero, then 5 more: 4 + 5 = 9 units.",
+        "es": "¡Más larga! Los postes están en lados opuestos del 0. Cuenta 4 unidades hasta el cero y 5 más: 4 + 5 = 9 unidades."
+      }
+    },
+    "classModel": {
+      "name": {
+        "en": "the shared-coordinate rule",
+        "es": "la regla de la coordenada compartida"
+      }
+    },
+    "model": {
+      "kind": "coord",
+      "data": {
+        "xmax": 6,
+        "ymax": 4,
+        "points": [
+          {
+            "x": -4,
+            "y": 3,
+            "label": "(−4, 3)"
+          },
+          {
+            "x": 5,
+            "y": 3,
+            "label": "(5, 3)"
+          },
+          {
+            "x": 5,
+            "y": -2,
+            "label": "(5, −2)"
+          },
+          {
+            "x": -4,
+            "y": -2,
+            "label": "(−4, −2)"
+          }
+        ],
+        "quadrants": true
+      },
+      "alt": {
+        "en": "A grid with all four quadrants. A rectangle has corners at (−4, 3), (5, 3), (5, −2) and (−4, −2). The top side runs 9 units, from x = −4 to x = 5. The right side runs 5 units, from y = 3 down to y = −2.",
+        "es": "Una cuadrícula con los cuatro cuadrantes. Un rectángulo tiene esquinas en (−4, 3), (5, 3), (5, −2) y (−4, −2). El lado de arriba mide 9 unidades, de x = −4 a x = 5. El lado derecho mide 5 unidades, de y = 3 hasta y = −2."
+      }
+    },
+    "transfer": {
+      "stem": {
+        "en": "A pool plan on a grid has corners at (−6, 4), (2, 4), (2, −3) and (−6, −3). What is the distance around the pool?",
+        "es": "El plano de una piscina en una cuadrícula tiene esquinas en (−6, 4), (2, 4), (2, −3) y (−6, −3). ¿Cuál es la distancia alrededor de la piscina?"
+      },
+      "choices": [
+        {
+          "en": "15 units",
+          "es": "15 unidades",
+          "correct": false,
+          "misconception": "added-two-sides-only"
+        },
+        {
+          "en": "10 units",
+          "es": "10 unidades",
+          "correct": false,
+          "misconception": "subtracted-across-zero"
+        },
+        {
+          "en": "30 units",
+          "es": "30 unidades",
+          "correct": true,
+          "misconception": null
+        }
+      ],
+      "reasoning": {
+        "en": "The top side runs from −6 to 2: 6 + 2 = 8 units. The right side runs from 4 down to −3: 4 + 3 = 7 units. Around the pool: 8 + 7 + 8 + 7 = 30 units.",
+        "es": "El lado de arriba va de −6 a 2: 6 + 2 = 8 unidades. El lado derecho va de 4 hasta −3: 4 + 3 = 7 unidades. Alrededor de la piscina: 8 + 7 + 8 + 7 = 30 unidades."
+      },
+      "calc": {
+        "expr": "8 + 7 + 8 + 7",
+        "value": 30,
+        "unit": "units"
+      }
+    },
+    "glitch": null,
+    "spiral": [
+      {
+        "from": "7-6",
+        "q": {
+          "en": "How far apart are the points (2, −1) and (2, 5)?",
+          "es": "¿Qué tan separados están los puntos (2, −1) y (2, 5)?"
+        },
+        "options": [
+          "6",
+          "4",
+          "7"
+        ],
+        "correctIdx": 0,
+        "exp": {
+          "en": "The x-values match, so use the y-values. They are on opposite sides of 0: 1 + 5 = 6 units.",
+          "es": "Los valores de x coinciden, así que usa los de y. Están en lados opuestos del 0: 1 + 5 = 6 unidades."
+        },
+        "calc": {
+          "expr": "1 + 5",
+          "value": 6
+        }
+      },
+      {
+        "from": "7-3",
+        "q": {
+          "en": "What is |−3| + |4|?",
+          "es": "¿Cuánto es |−3| + |4|?"
+        },
+        "options": [
+          "1",
+          "7",
+          "12"
+        ],
+        "correctIdx": 1,
+        "exp": {
+          "en": "|−3| = 3 and |4| = 4. Add the two distances from zero: 3 + 4 = 7.",
+          "es": "|−3| = 3 y |4| = 4. Suma las dos distancias al cero: 3 + 4 = 7."
+        },
+        "calc": {
+          "expr": "3 + 4",
+          "value": 7
+        }
+      }
+    ],
+    "kitchenTable": {
+      "en": "Pretend the middle of your table is (0, 0). Let one hand-width be 1 unit. Point to two spots in a straight row: one 3 units left, one 4 units right. How far apart are they? Then try two spots in a straight column.",
+      "es": "Imaginen que el centro de la mesa es (0, 0). Cada ancho de mano es 1 unidad. Señalen dos puntos en una fila recta: uno a 3 unidades a la izquierda y otro a 4 a la derecha. ¿A qué distancia están? Después prueben con dos puntos en una columna recta."
+    },
+    "vocab": [
+      {
+        "term": "vertex",
+        "example": {
+          "en": "(−4, 3) is a vertex of the garden rectangle. It is a corner point.",
+          "es": "(−4, 3) es un vértice del rectángulo del jardín. Es un punto de esquina."
+        },
+        "nonExample": {
+          "en": "The middle of the top side is not a vertex. A vertex is a corner.",
+          "es": "El centro del lado de arriba no es un vértice. Un vértice es una esquina."
+        },
+        "frame": {
+          "en": "A vertex is at (___, ___). It is a corner of the ___.",
+          "es": "Un vértice está en (___, ___). Es una esquina del ___."
+        }
+      },
+      {
+        "term": "polygon",
+        "example": {
+          "en": "The garden rectangle is a polygon. It has four straight sides and four vertices.",
+          "es": "El rectángulo del jardín es un polígono. Tiene cuatro lados rectos y cuatro vértices."
+        },
+        "nonExample": {
+          "en": "A circle is not a polygon. It has no straight sides.",
+          "es": "Un círculo no es un polígono. No tiene lados rectos."
+        },
+        "frame": {
+          "en": "My polygon has ___ sides and ___ vertices.",
+          "es": "Mi polígono tiene ___ lados y ___ vértices."
+        }
+      },
+      {
+        "term": "perimeter",
+        "example": {
+          "en": "The distance around the garden is its perimeter: 9 + 5 + 9 + 5 = 28 units.",
+          "es": "La distancia alrededor del jardín es su perímetro: 9 + 5 + 9 + 5 = 28 unidades."
+        },
+        "nonExample": {
+          "en": "The space inside the garden is not the perimeter. That is the area.",
+          "es": "El espacio dentro del jardín no es el perímetro. Eso es el área."
+        },
+        "frame": {
+          "en": "The perimeter is ___ + ___ + ___ + ___ = ___.",
+          "es": "El perímetro es ___ + ___ + ___ + ___ = ___."
+        }
+      },
+      {
+        "term": "Side length",
+        "example": {
+          "en": "The top side runs from (−4, 3) to (5, 3). Its side length is 9 units.",
+          "es": "El lado de arriba va de (−4, 3) a (5, 3). Su longitud es de 9 unidades."
+        },
+        "nonExample": {
+          "en": "The path from (−4, 3) to (5, −2) cuts across the corner. It is not a side length.",
+          "es": "El camino de (−4, 3) a (5, −2) cruza la esquina. No es la longitud de un lado."
+        },
+        "frame": {
+          "en": "The side from (___, ___) to (___, ___) is ___ units long because ___.",
+          "es": "El lado de (___, ___) a (___, ___) mide ___ unidades porque ___."
+        }
+      }
+    ],
+    "confused": [
+      {
+        "wrong": {
+          "en": "From −4 to 5, I subtract: 5 − 4 = 1. The fence is 1 unit long.",
+          "es": "De −4 a 5, resto: 5 − 4 = 1. La cerca mide 1 unidad."
+        },
+        "coach": {
+          "en": "Are −4 and 5 on the same side of zero?",
+          "es": "¿−4 y 5 están del mismo lado del cero?"
+        },
+        "why": {
+          "en": "−4 is left of zero and 5 is right of it. Count both parts: 4 + 5 = 9 units.",
+          "es": "−4 está a la izquierda del cero y 5 a la derecha. Cuenta las dos partes: 4 + 5 = 9 unidades."
+        },
+        "misconception": "subtracted-across-zero",
+        "calc": {
+          "expr": "4 + 5",
+          "value": 9
+        }
+      },
+      {
+        "wrong": {
+          "en": "For (5, 3) and (5, −2), I compare the x-values: 5 and 5. The side is 0 units long.",
+          "es": "Para (5, 3) y (5, −2), comparo los valores de x: 5 y 5. El lado mide 0 unidades."
+        },
+        "coach": {
+          "en": "Which coordinate is different for these two points?",
+          "es": "¿Cuál coordenada es diferente en estos dos puntos?"
+        },
+        "why": {
+          "en": "The x-values match, so the side is vertical. The y-values differ: from 3 down to −2 is 3 + 2 = 5 units.",
+          "es": "Los valores de x coinciden, así que el lado es vertical. Los de y son distintos: de 3 hasta −2 hay 3 + 2 = 5 unidades."
+        },
+        "misconception": "measured-matching-coordinate",
+        "calc": {
+          "expr": "3 + 2",
+          "value": 5
+        }
+      },
+      {
+        "wrong": {
+          "en": "The sides are 9 and 5, so the perimeter is 9 + 5 = 14 units.",
+          "es": "Los lados miden 9 y 5, así que el perímetro es 9 + 5 = 14 unidades."
+        },
+        "coach": {
+          "en": "How many sides does a rectangle have, and how many did you add?",
+          "es": "¿Cuántos lados tiene un rectángulo, y cuántos sumaste?"
+        },
+        "why": {
+          "en": "A rectangle has four sides: two of 9 and two of 5. Add all four: 9 + 5 + 9 + 5 = 28 units.",
+          "es": "Un rectángulo tiene cuatro lados: dos de 9 y dos de 5. Suma los cuatro: 9 + 5 + 9 + 5 = 28 unidades."
+        },
+        "misconception": "added-only-two-sides",
+        "calc": {
+          "expr": "9 + 5 + 9 + 5",
+          "value": 28
+        }
+      }
+    ]
+  }
 }

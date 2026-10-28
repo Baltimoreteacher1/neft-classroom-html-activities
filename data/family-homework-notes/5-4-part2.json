@@ -516,5 +516,330 @@
       ],
       "image": "/assets/vocab-images/area.svg"
     }
-  ]
+  ],
+  "v3": {
+    "version": 1,
+    "kind": "math",
+    "topicKey": "area-composite-add-or-subtract-apply",
+    "standardPlain": {
+      "en": "Decide for each piece of a shape whether to add it or subtract it.",
+      "es": "Decidir con cada parte de una figura si se suma o se resta."
+    },
+    "hook": {
+      "style": "receipt",
+      "en": "A painter will paint a wall that is 12 feet wide and 9 feet tall. The wall has a window that is 3 feet by 4 feet and a door that is 2 feet by 5 feet. How many square feet need paint?",
+      "es": "Un pintor va a pintar una pared de 12 pies de ancho y 9 pies de alto. La pared tiene una ventana de 3 pies por 4 pies y una puerta de 2 pies por 5 pies. ¿Cuántos pies cuadrados necesitan pintura?",
+      "guess": {
+        "en": "Guess first: the whole wall is 108 square feet. Will the painted part be more or less?",
+        "es": "Primero adivina: la pared completa mide 108 pies cuadrados. ¿La parte pintada será mayor o menor?"
+      },
+      "reveal": {
+        "en": "Less! Window: 3 × 4 = 12. Door: 2 × 5 = 10. They are not painted, so subtract: 108 − 12 − 10 = 86 square feet.",
+        "es": "¡Menor! Ventana: 3 × 4 = 12. Puerta: 2 × 5 = 10. No se pintan, así que resta: 108 − 12 − 10 = 86 pies cuadrados."
+      }
+    },
+    "classModel": {
+      "name": {
+        "en": "part of it or missing from it",
+        "es": "es parte de la figura o le falta"
+      }
+    },
+    "model": {
+      "kind": "barplot",
+      "data": {
+        "categories": [
+          {
+            "label": {
+              "en": "Whole wall",
+              "es": "Pared completa"
+            },
+            "value": 108
+          },
+          {
+            "label": {
+              "en": "Window",
+              "es": "Ventana"
+            },
+            "value": 12
+          },
+          {
+            "label": {
+              "en": "Door",
+              "es": "Puerta"
+            },
+            "value": 10
+          },
+          {
+            "label": {
+              "en": "To paint",
+              "es": "Por pintar"
+            },
+            "value": 86
+          }
+        ],
+        "unit": {
+          "en": "square feet",
+          "es": "pies cuadrados"
+        }
+      },
+      "alt": {
+        "en": "A bar chart with four bars. The whole 12 by 9 wall is 108 square feet. The window is 12 square feet and the door is 10 square feet. The part to paint is 108 − 12 − 10 = 86 square feet.",
+        "es": "Una gráfica de barras con cuatro barras. La pared completa de 12 por 9 mide 108 pies cuadrados. La ventana mide 12 pies cuadrados y la puerta mide 10 pies cuadrados. La parte por pintar es 108 − 12 − 10 = 86 pies cuadrados."
+      }
+    },
+    "transfer": {
+      "stem": {
+        "en": "A garden is 15 meters by 8 meters. A pond that is 4 meters by 3 meters sits inside it. How many square meters of the garden are grass?",
+        "es": "Un jardín mide 15 metros por 8 metros. Dentro hay un estanque de 4 metros por 3 metros. ¿Cuántos metros cuadrados del jardín son césped?"
+      },
+      "choices": [
+        {
+          "en": "108 square meters",
+          "es": "108 metros cuadrados",
+          "correct": true,
+          "misconception": null
+        },
+        {
+          "en": "132 square meters",
+          "es": "132 metros cuadrados",
+          "correct": false,
+          "misconception": "added-the-cut-out"
+        },
+        {
+          "en": "113 square meters",
+          "es": "113 metros cuadrados",
+          "correct": false,
+          "misconception": "subtracted-side-lengths"
+        }
+      ],
+      "reasoning": {
+        "en": "The whole garden is 15 × 8 = 120. The pond is 4 × 3 = 12. The pond is not grass, so subtract: 120 − 12 = 108.",
+        "es": "El jardín completo es 15 × 8 = 120. El estanque es 4 × 3 = 12. El estanque no es césped, así que resta: 120 − 12 = 108."
+      },
+      "calc": {
+        "expr": "15 * 8 - 4 * 3",
+        "value": 108,
+        "unit": "square meters"
+      }
+    },
+    "glitch": {
+      "scenario": {
+        "en": "A different situation: Kai finds what is left of a 10 by 6 rectangle after a 4 by 3 hole is cut out.",
+        "es": "Otra situación: Kai halla lo que queda de un rectángulo de 10 por 6 después de recortar un hueco de 4 por 3."
+      },
+      "steps": [
+        {
+          "en": "Whole rectangle: 10 × 6 = 60.",
+          "es": "Rectángulo completo: 10 × 6 = 60.",
+          "isGlitch": false
+        },
+        {
+          "en": "Hole: 4 × 3 = 12.",
+          "es": "Hueco: 4 × 3 = 12.",
+          "isGlitch": false
+        },
+        {
+          "en": "The hole is part of the figure, so add: 60 + 12 = 72.",
+          "es": "El hueco es parte de la figura, así que suma: 60 + 12 = 72.",
+          "isGlitch": true
+        }
+      ],
+      "fix": {
+        "en": "A hole is missing from the figure, so subtract: 60 − 12 = 48. Check: 48 + 12 = 60.",
+        "es": "Un hueco le falta a la figura, así que resta: 60 − 12 = 48. Comprueba: 48 + 12 = 60."
+      },
+      "frame": {
+        "en": "I subtract the ___ because it is ___ out of the figure.",
+        "es": "Resto el/la ___ porque está ___ de la figura."
+      },
+      "calc": {
+        "expr": "10 * 6 - 4 * 3",
+        "value": 48
+      }
+    },
+    "spiral": [
+      {
+        "from": "5-4",
+        "q": {
+          "en": "A 6 by 4 rectangle has a 2 by 3 rectangle joined to its side. What is the total area?",
+          "es": "A un rectángulo de 6 por 4 se le une a un lado un rectángulo de 2 por 3. ¿Cuál es el área total?"
+        },
+        "options": [
+          "18",
+          "30",
+          "12"
+        ],
+        "correctIdx": 1,
+        "exp": {
+          "en": "The pieces are joined, so add: 6 × 4 = 24 and 2 × 3 = 6. 24 + 6 = 30.",
+          "es": "Las partes están unidas, así que suma: 6 × 4 = 24 y 2 × 3 = 6. 24 + 6 = 30."
+        },
+        "calc": {
+          "expr": "6 * 4 + 2 * 3",
+          "value": 30
+        }
+      },
+      {
+        "from": "5-2",
+        "q": {
+          "en": "A triangle has a base of 12 and a height of 5. What is its area?",
+          "es": "Un triángulo tiene una base de 12 y una altura de 5. ¿Cuál es su área?"
+        },
+        "options": [
+          "60",
+          "17",
+          "30"
+        ],
+        "correctIdx": 2,
+        "exp": {
+          "en": "A triangle is half of a rectangle. ½ × 12 × 5 = 30.",
+          "es": "Un triángulo es la mitad de un rectángulo. ½ × 12 × 5 = 30."
+        },
+        "calc": {
+          "expr": "0.5 * 12 * 5",
+          "value": 30
+        }
+      }
+    ],
+    "kitchenTable": {
+      "en": "Look at a wall at home. Pretend it is 10 feet wide and 8 feet tall with one window that is 3 feet by 3 feet. How much wall needs paint? Which piece do you subtract?",
+      "es": "Miren una pared de su casa. Imaginen que mide 10 pies de ancho y 8 pies de alto, con una ventana de 3 pies por 3 pies. ¿Cuánta pared necesita pintura? ¿Cuál pieza se resta?"
+    },
+    "vocab": [
+      {
+        "term": "Composite Figure",
+        "example": {
+          "en": "The wall with a window and a door is a composite figure: one big rectangle with two pieces cut out.",
+          "es": "La pared con una ventana y una puerta es una figura compuesta: un rectángulo grande con dos piezas recortadas."
+        },
+        "nonExample": {
+          "en": "A plain 12 by 9 wall with nothing on it is one simple shape.",
+          "es": "Una pared simple de 12 por 9 sin nada es una sola figura simple."
+        },
+        "frame": {
+          "en": "The figure has a big ___ with ___ cut out.",
+          "es": "La figura tiene un ___ grande con ___ recortado."
+        }
+      },
+      {
+        "term": "Decompose",
+        "example": {
+          "en": "I split the painting job into three rectangles: the wall, the window and the door.",
+          "es": "Dividí el trabajo de pintura en tres rectángulos: la pared, la ventana y la puerta."
+        },
+        "nonExample": {
+          "en": "Adding up the side lengths does not break the wall into shapes.",
+          "es": "Sumar las longitudes de los lados no separa la pared en figuras."
+        },
+        "frame": {
+          "en": "I decompose the figure into ___, ___ and ___.",
+          "es": "Descompongo la figura en ___, ___ y ___."
+        }
+      },
+      {
+        "term": "Add",
+        "example": {
+          "en": "A different situation: an L-shaped rug is a 16 by 9 rectangle and a 7 by 3 rectangle. Both pieces are the rug, so we add.",
+          "es": "Otra situación: una alfombra en L es un rectángulo de 16 por 9 y uno de 7 por 3. Las dos piezas son la alfombra, así que sumamos."
+        },
+        "nonExample": {
+          "en": "The window is not part of the paint area. We do not add its 12 square feet.",
+          "es": "La ventana no es parte del área por pintar. No sumamos sus 12 pies cuadrados."
+        },
+        "frame": {
+          "en": "I add the ___ because it is part of the figure.",
+          "es": "Sumo el/la ___ porque es parte de la figura."
+        }
+      },
+      {
+        "term": "Subtract",
+        "example": {
+          "en": "The 3 by 4 window and the 2 by 5 door are missing from the paint area, so we subtract 12 and 10.",
+          "es": "La ventana de 3 por 4 y la puerta de 2 por 5 le faltan al área por pintar, así que restamos 12 y 10."
+        },
+        "nonExample": {
+          "en": "We do not subtract the part of the wall that gets paint.",
+          "es": "No restamos la parte de la pared que sí se pinta."
+        },
+        "frame": {
+          "en": "I subtract the ___ because it is missing from the figure.",
+          "es": "Resto el/la ___ porque le falta a la figura."
+        }
+      },
+      {
+        "term": "Area",
+        "example": {
+          "en": "The paint area is 86 square feet. Area is flat space, so we use square feet.",
+          "es": "El área por pintar es 86 pies cuadrados. El área es espacio plano, así que usamos pies cuadrados."
+        },
+        "nonExample": {
+          "en": "86 feet is not an area. Area uses square units.",
+          "es": "86 pies no es un área. El área usa unidades cuadradas."
+        },
+        "frame": {
+          "en": "The area is ___ square feet because ___ − ___ − ___ = ___.",
+          "es": "El área es ___ pies cuadrados porque ___ − ___ − ___ = ___."
+        }
+      }
+    ],
+    "confused": [
+      {
+        "wrong": {
+          "en": "I added everything: 108 + 12 + 10 = 130 square feet.",
+          "es": "Sumé todo: 108 + 12 + 10 = 130 pies cuadrados."
+        },
+        "coach": {
+          "en": "Is a window part of the wall that gets painted, or missing from it?",
+          "es": "¿Una ventana es parte de la pared que se pinta o le falta?"
+        },
+        "why": {
+          "en": "The window and door are not painted, so they are taken away. 108 − 12 − 10 = 86.",
+          "es": "La ventana y la puerta no se pintan, así que se quitan. 108 − 12 − 10 = 86."
+        },
+        "misconception": "added-the-cut-out",
+        "calc": {
+          "expr": "12 * 9 - 3 * 4 - 2 * 5",
+          "value": 86
+        }
+      },
+      {
+        "wrong": {
+          "en": "I subtracted the window: 108 − 12 = 96. The paint area is 96 square feet.",
+          "es": "Resté la ventana: 108 − 12 = 96. El área por pintar es 96 pies cuadrados."
+        },
+        "coach": {
+          "en": "Is anything else on the wall missing from the paint area?",
+          "es": "¿Hay algo más en la pared que le falte al área por pintar?"
+        },
+        "why": {
+          "en": "The door is cut out too. Subtract it as well: 96 − 10 = 86.",
+          "es": "La puerta también está recortada. Réstala también: 96 − 10 = 86."
+        },
+        "misconception": "left-out-a-piece",
+        "calc": {
+          "expr": "12 * 9 - 3 * 4 - 2 * 5",
+          "value": 86
+        }
+      },
+      {
+        "wrong": {
+          "en": "The window is 3 by 4, so I subtract 3 + 4 = 7. The door is 2 by 5, so I subtract 7. 108 − 7 − 7 = 94.",
+          "es": "La ventana es de 3 por 4, así que resto 3 + 4 = 7. La puerta es de 2 por 5, así que resto 7. 108 − 7 − 7 = 94."
+        },
+        "coach": {
+          "en": "Does a window take away a length, or a flat space?",
+          "es": "¿Una ventana quita una longitud o un espacio plano?"
+        },
+        "why": {
+          "en": "A window takes away flat space. Multiply: 3 × 4 = 12 and 2 × 5 = 10. Then 108 − 12 − 10 = 86.",
+          "es": "Una ventana quita espacio plano. Multiplica: 3 × 4 = 12 y 2 × 5 = 10. Luego 108 − 12 − 10 = 86."
+        },
+        "misconception": "subtracted-side-lengths",
+        "calc": {
+          "expr": "12 * 9 - 3 * 4 - 2 * 5",
+          "value": 86
+        }
+      }
+    ]
+  }
 }

@@ -538,5 +538,296 @@
       ],
       "image": "/assets/vocab-images/divide.svg"
     }
-  ]
+  ],
+  "v3": {
+    "version": 1,
+    "kind": "math",
+    "topicKey": "triangle-missing-measure-apply",
+    "standardPlain": {
+      "en": "Find a missing base or height of a triangle when you know its area.",
+      "es": "Hallar la base o la altura que falta de un triángulo cuando conoces su área."
+    },
+    "hook": {
+      "style": "price-tag",
+      "en": "A triangular flag has a tag that says 45 square inches. The flag is 9 inches tall. How long is its base?",
+      "es": "Una bandera triangular tiene una etiqueta que dice 45 pulgadas cuadradas. La bandera mide 9 pulgadas de alto. ¿Cuánto mide su base?",
+      "guess": {
+        "en": "Make a guess first: is the base longer or shorter than the height?",
+        "es": "Primero adivina: ¿la base es más larga o más corta que la altura?"
+      },
+      "reveal": {
+        "en": "Longer! Undo the half first: 45 × 2 = 90. Then divide by the height: 90 ÷ 9 = 10. The base is 10 inches.",
+        "es": "¡Más larga! Primero deshaz la mitad: 45 × 2 = 90. Luego divide entre la altura: 90 ÷ 9 = 10. La base mide 10 pulgadas."
+      }
+    },
+    "classModel": {
+      "name": {
+        "en": "work the formula backwards",
+        "es": "usar la fórmula al revés"
+      }
+    },
+    "model": {
+      "kind": "tape",
+      "data": {
+        "parts": 2,
+        "highlight": 1,
+        "partLabel": {
+          "en": "triangle = 45 in²",
+          "es": "triángulo = 45 pulg²"
+        },
+        "wholeLabel": {
+          "en": "rectangle = ?",
+          "es": "rectángulo = ?"
+        },
+        "blockLabel": {
+          "en": "half",
+          "es": "mitad"
+        },
+        "unknown": "whole"
+      },
+      "alt": {
+        "en": "A bar split into 2 equal blocks. One block is shaded: the triangle's area, 45 square inches. The whole bar is the rectangle with the same base and a height of 9 inches. Its area is the unknown. Double 45, then divide by 9 to find the base.",
+        "es": "Una barra dividida en 2 bloques iguales. Un bloque está sombreado: el área del triángulo, 45 pulgadas cuadradas. La barra completa es el rectángulo con la misma base y altura de 9 pulgadas. Su área es la incógnita. Duplica 45 y divide entre 9 para hallar la base."
+      }
+    },
+    "transfer": {
+      "stem": {
+        "en": "A tent flap is a triangle. Its area is 36 square feet and its base is 8 feet. What is its height?",
+        "es": "La solapa de una tienda de campaña es un triángulo. Su área es 36 pies cuadrados y su base es 8 pies. ¿Cuál es su altura?"
+      },
+      "choices": [
+        {
+          "en": "9 feet",
+          "es": "9 pies",
+          "correct": true,
+          "misconception": null
+        },
+        {
+          "en": "4.5 feet",
+          "es": "4.5 pies",
+          "correct": false,
+          "misconception": "forgot-to-double"
+        },
+        {
+          "en": "144 feet",
+          "es": "144 pies",
+          "correct": false,
+          "misconception": "multiplied-instead-of-divided"
+        }
+      ],
+      "reasoning": {
+        "en": "Write 36 = ½ × 8 × h. Double the area: 36 × 2 = 72. Divide by the base: 72 ÷ 8 = 9 feet.",
+        "es": "Escribe 36 = ½ × 8 × h. Duplica el área: 36 × 2 = 72. Divide entre la base: 72 ÷ 8 = 9 pies."
+      },
+      "calc": {
+        "expr": "36 * 2 / 8",
+        "value": 9,
+        "unit": "feet"
+      }
+    },
+    "glitch": {
+      "scenario": {
+        "en": "A different situation: A triangle has an area of 28 cm² and a base of 7 cm. Find its height.",
+        "es": "Otra situación: Un triángulo tiene un área de 28 cm² y una base de 7 cm. Halla su altura."
+      },
+      "steps": [
+        {
+          "en": "Write the formula with the numbers: 28 = ½ × 7 × h.",
+          "es": "Escribe la fórmula con los números: 28 = ½ × 7 × h.",
+          "isGlitch": false
+        },
+        {
+          "en": "Divide: h = 28 ÷ 7 = 4, so the height is 4 cm.",
+          "es": "Divide: h = 28 ÷ 7 = 4, así que la altura es 4 cm.",
+          "isGlitch": true
+        },
+        {
+          "en": "Check by putting the height back into the formula.",
+          "es": "Comprueba poniendo la altura de nuevo en la fórmula.",
+          "isGlitch": false
+        }
+      ],
+      "fix": {
+        "en": "Double the area first: 28 × 2 = 56. Then 56 ÷ 7 = 8. Check: ½ × 7 × 8 = 28. The height is 8 cm.",
+        "es": "Primero duplica el área: 28 × 2 = 56. Luego 56 ÷ 7 = 8. Comprueba: ½ × 7 × 8 = 28. La altura es 8 cm."
+      },
+      "frame": {
+        "en": "I double ___ to get ___. Then I divide by ___ to get ___.",
+        "es": "Duplico ___ para obtener ___. Luego divido entre ___ para obtener ___."
+      },
+      "calc": {
+        "expr": "28 * 2 / 7",
+        "value": 8
+      }
+    },
+    "spiral": [
+      {
+        "from": "5-2",
+        "q": {
+          "en": "A triangle has a base of 14 cm and a height of 6 cm. What is its area?",
+          "es": "Un triángulo tiene base de 14 cm y altura de 6 cm. ¿Cuál es su área?"
+        },
+        "options": [
+          "84",
+          "42",
+          "20"
+        ],
+        "correctIdx": 1,
+        "exp": {
+          "en": "A = ½ × 14 × 6. 14 × 6 = 84, and half of 84 is 42 square centimeters.",
+          "es": "A = ½ × 14 × 6. 14 × 6 = 84, y la mitad de 84 es 42 centímetros cuadrados."
+        },
+        "calc": {
+          "expr": "1 / 2 * 14 * 6",
+          "value": 42
+        }
+      },
+      {
+        "from": "4-5",
+        "q": {
+          "en": "20 is 50% of a whole. What is the whole?",
+          "es": "20 es el 50% de un total. ¿Cuál es el total?"
+        },
+        "options": [
+          "40",
+          "10",
+          "25"
+        ],
+        "correctIdx": 0,
+        "exp": {
+          "en": "50% is one half, so the whole is double the part. 20 × 2 = 40.",
+          "es": "El 50% es la mitad, así que el total es el doble de la parte. 20 × 2 = 40."
+        },
+        "calc": {
+          "expr": "20 / 0.5",
+          "value": 40
+        }
+      }
+    ],
+    "kitchenTable": {
+      "en": "Say, \"A flag has an area of 45 square inches and a height of 9 inches.\" Ask your student to explain how to find the base. What do you do first? Then ask them to check the answer in the formula.",
+      "es": "Digan: «Una bandera tiene un área de 45 pulgadas cuadradas y una altura de 9 pulgadas». Pidan a su estudiante que explique cómo hallar la base. ¿Qué se hace primero? Después pídanle que compruebe la respuesta en la fórmula."
+    },
+    "vocab": [
+      {
+        "term": "Base",
+        "example": {
+          "en": "The flag's base is the missing side. We solve for it.",
+          "es": "La base de la bandera es el lado que falta. Lo calculamos."
+        },
+        "nonExample": {
+          "en": "The 45 on the tag is not the base. It is the area.",
+          "es": "El 45 de la etiqueta no es la base. Es el área."
+        },
+        "frame": {
+          "en": "The base is ___ because ___ ÷ ___ = ___.",
+          "es": "La base es ___ porque ___ ÷ ___ = ___."
+        }
+      },
+      {
+        "term": "Height",
+        "example": {
+          "en": "The flag's height is 9 inches, straight from the base to the top corner.",
+          "es": "La altura de la bandera es 9 pulgadas, recta desde la base hasta la esquina de arriba."
+        },
+        "nonExample": {
+          "en": "The 45 on the tag is not the height. It is the area.",
+          "es": "El 45 de la etiqueta no es la altura. Es el área."
+        },
+        "frame": {
+          "en": "The height is ___ and it makes a square corner with the ___.",
+          "es": "La altura es ___ y forma una esquina cuadrada con la ___."
+        }
+      },
+      {
+        "term": "Substitute",
+        "example": {
+          "en": "I substitute 45 for A and 9 for h: 45 = ½ × b × 9.",
+          "es": "Sustituyo A por 45 y h por 9: 45 = ½ × b × 9."
+        },
+        "nonExample": {
+          "en": "Putting 45 in place of b is not right. 45 is the area.",
+          "es": "Poner 45 en lugar de b no es correcto. 45 es el área."
+        },
+        "frame": {
+          "en": "I substitute ___ for A and ___ for ___.",
+          "es": "Sustituyo A por ___ y ___ por ___."
+        }
+      },
+      {
+        "term": "Inverse operation",
+        "example": {
+          "en": "To undo ½, double. To undo × 9, divide by 9.",
+          "es": "Para deshacer ½, se duplica. Para deshacer × 9, se divide entre 9."
+        },
+        "nonExample": {
+          "en": "Taking half again does not undo the half. It makes the number smaller.",
+          "es": "Tomar la mitad otra vez no deshace la mitad. Hace el número menor."
+        },
+        "frame": {
+          "en": "I undo ½ by ___, then undo × ___ by ___.",
+          "es": "Deshago ½ con ___ y luego deshago × ___ con ___."
+        }
+      }
+    ],
+    "confused": [
+      {
+        "wrong": {
+          "en": "45 × 9 = 405, then half is 202.5. So the base is 202.5 inches.",
+          "es": "45 × 9 = 405, y la mitad es 202.5. Entonces la base mide 202.5 pulgadas."
+        },
+        "coach": {
+          "en": "Does a base over 200 inches make sense for a flag only 9 inches tall?",
+          "es": "¿Tiene sentido una base de más de 200 pulgadas en una bandera de solo 9 pulgadas de alto?"
+        },
+        "why": {
+          "en": "Undo the multiplying by dividing, not multiplying. Double the area: 45 × 2 = 90. Then 90 ÷ 9 = 10.",
+          "es": "Deshaz la multiplicación dividiendo, no multiplicando. Duplica el área: 45 × 2 = 90. Luego 90 ÷ 9 = 10."
+        },
+        "misconception": "multiplied-instead-of-divided",
+        "calc": {
+          "expr": "45 * 2 / 9",
+          "value": 10
+        }
+      },
+      {
+        "wrong": {
+          "en": "I halved the area: 45 ÷ 2 = 22.5. Then 22.5 ÷ 9 = 2.5.",
+          "es": "Tomé la mitad del área: 45 ÷ 2 = 22.5. Luego 22.5 ÷ 9 = 2.5."
+        },
+        "coach": {
+          "en": "What do you do to undo cutting something in half?",
+          "es": "¿Qué se hace para deshacer partir algo por la mitad?"
+        },
+        "why": {
+          "en": "The formula already has a half in it. Undo it by doubling: 45 × 2 = 90. Then 90 ÷ 9 = 10.",
+          "es": "La fórmula ya tiene una mitad. Se deshace duplicando: 45 × 2 = 90. Luego 90 ÷ 9 = 10."
+        },
+        "misconception": "halved-instead-of-doubled",
+        "calc": {
+          "expr": "45 * 2 / 9",
+          "value": 10
+        }
+      },
+      {
+        "wrong": {
+          "en": "I tried b = 10. Check: 10 × 9 = 90, and 90 is not 45, so 10 is wrong.",
+          "es": "Probé con b = 10. Comprobación: 10 × 9 = 90, y 90 no es 45, así que 10 está mal."
+        },
+        "coach": {
+          "en": "In your check, did you use the ½ from the formula?",
+          "es": "En tu comprobación, ¿usaste la ½ de la fórmula?"
+        },
+        "why": {
+          "en": "Put the half back in: ½ × 10 × 9 = 45. It matches, so a base of 10 inches works.",
+          "es": "Vuelve a poner la mitad: ½ × 10 × 9 = 45. Coincide, así que una base de 10 pulgadas sirve."
+        },
+        "misconception": "skipped-half-in-check",
+        "calc": {
+          "expr": "1 / 2 * 10 * 9",
+          "value": 45
+        }
+      }
+    ]
+  }
 }

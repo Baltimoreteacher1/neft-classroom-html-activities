@@ -525,5 +525,308 @@
       ],
       "image": "/assets/vocab-images/divide.svg"
     }
-  ]
+  ],
+  "v3": {
+    "version": 1,
+    "kind": "math",
+    "topicKey": "multiply-to-undo-division-apply",
+    "standardPlain": {
+      "en": "Solve equations where the letter is divided by multiplying both sides.",
+      "es": "Resolver ecuaciones donde la letra está dividida, multiplicando ambos lados."
+    },
+    "hook": {
+      "style": "receipt",
+      "en": "A torn supply receipt shows a box of pens shared evenly. Six club members each got 13 pens. The box total is torn off. How many pens were in the box?",
+      "es": "Un recibo de útiles roto muestra una caja de plumas repartida en partes iguales. Seis miembros del club recibieron 13 plumas cada uno. El total de la caja se rasgó. ¿Cuántas plumas había en la caja?",
+      "guess": {
+        "en": "Guess first: were there more than 50 pens in the box, or fewer?",
+        "es": "Primero adivina: ¿había más de 50 plumas en la caja, o menos?"
+      },
+      "reveal": {
+        "en": "More! Six shares of 13 make the whole box. Multiply to put the shares back together: 13 × 6 = 78 pens.",
+        "es": "¡Más! Seis partes de 13 forman la caja completa. Se multiplica para juntar las partes: 13 × 6 = 78 plumas."
+      }
+    },
+    "classModel": {
+      "name": {
+        "en": "multiply to undo dividing",
+        "es": "multiplicar para deshacer la división"
+      }
+    },
+    "model": {
+      "kind": "tape",
+      "data": {
+        "parts": 6,
+        "highlight": 1,
+        "partLabel": {
+          "en": "1 share = 13",
+          "es": "1 parte = 13"
+        },
+        "wholeLabel": {
+          "en": "whole box = n",
+          "es": "caja completa = n"
+        },
+        "blockLabel": "13",
+        "unknown": "whole"
+      },
+      "alt": {
+        "en": "A bar split into 6 equal blocks. Each block is one member's share of 13 pens. The whole bar, the full box n, is the unknown.",
+        "es": "Una barra dividida en 6 bloques iguales. Cada bloque es la parte de un miembro: 13 plumas. La barra completa, la caja entera n, es la incógnita."
+      }
+    },
+    "transfer": {
+      "stem": {
+        "en": "Five cousins share the cost of a gift equally. Each pays $24. The equation is g ÷ 5 = 24. What did the gift cost?",
+        "es": "Cinco primos se reparten el costo de un regalo en partes iguales. Cada uno paga $24. La ecuación es g ÷ 5 = 24. ¿Cuánto costó el regalo?"
+      },
+      "choices": [
+        {
+          "en": "$29",
+          "es": "$29",
+          "correct": false,
+          "misconception": "added-instead-of-multiplied"
+        },
+        {
+          "en": "$4.80",
+          "es": "$4.80",
+          "correct": false,
+          "misconception": "divided-again-instead-of-multiplied"
+        },
+        {
+          "en": "$120",
+          "es": "$120",
+          "correct": true,
+          "misconception": null
+        }
+      ],
+      "reasoning": {
+        "en": "g is divided by 5, so multiply both sides by 5. 24 × 5 = 120. The gift cost $120.",
+        "es": "La g está dividida entre 5, así que se multiplica ambos lados por 5. 24 × 5 = 120. El regalo costó $120."
+      },
+      "calc": {
+        "expr": "24 * 5",
+        "value": 120,
+        "unit": "$"
+      }
+    },
+    "glitch": {
+      "scenario": {
+        "en": "Lee solves m ÷ 3 = 7. He writes three steps. One step has a glitch.",
+        "es": "Lee resuelve m ÷ 3 = 7. Escribe tres pasos. Un paso tiene un error."
+      },
+      "steps": [
+        {
+          "en": "The equation is m ÷ 3 = 7. The letter m is being divided by 3.",
+          "es": "La ecuación es m ÷ 3 = 7. La letra m está dividida entre 3.",
+          "isGlitch": false
+        },
+        {
+          "en": "To undo dividing, I divide both sides by 3 again, so m = 7 ÷ 3.",
+          "es": "Para deshacer dividir, divido ambos lados entre 3 otra vez, así que m = 7 ÷ 3.",
+          "isGlitch": true
+        },
+        {
+          "en": "I will put my answer back into the equation to check it.",
+          "es": "Voy a poner mi respuesta de nuevo en la ecuación para comprobarla.",
+          "isGlitch": false
+        }
+      ],
+      "fix": {
+        "en": "Dividing is undone by multiplying. Multiply both sides by 3: m = 7 × 3 = 21. Check: 21 ÷ 3 = 7.",
+        "es": "Dividir se deshace multiplicando. Se multiplica ambos lados por 3: m = 7 × 3 = 21. Comprueba: 21 ÷ 3 = 7."
+      },
+      "frame": {
+        "en": "The glitch is in step ___. To undo ÷ ___, the right move is to ___ both sides.",
+        "es": "El error está en el paso ___. Para deshacer ÷ ___, lo correcto es ___ ambos lados."
+      },
+      "calc": {
+        "expr": "7 * 3",
+        "value": 21
+      }
+    },
+    "spiral": [
+      {
+        "from": "8-3",
+        "q": {
+          "en": "Solve: 4p = 36",
+          "es": "Resuelve: 4p = 36"
+        },
+        "options": [
+          "144",
+          "32",
+          "9"
+        ],
+        "correctIdx": 2,
+        "exp": {
+          "en": "Divide both sides by 4: 36 ÷ 4 = 9.",
+          "es": "Divide ambos lados entre 4: 36 ÷ 4 = 9."
+        },
+        "calc": {
+          "expr": "36 / 4",
+          "value": 9
+        }
+      },
+      {
+        "from": "8-2",
+        "q": {
+          "en": "Solve: m − 9 = 20",
+          "es": "Resuelve: m − 9 = 20"
+        },
+        "options": [
+          "29",
+          "11",
+          "180"
+        ],
+        "correctIdx": 0,
+        "exp": {
+          "en": "Add 9 to both sides: 20 + 9 = 29.",
+          "es": "Suma 9 a ambos lados: 20 + 9 = 29."
+        },
+        "calc": {
+          "expr": "20 + 9",
+          "value": 29
+        }
+      }
+    ],
+    "kitchenTable": {
+      "en": "Put the same number of beans in each of 6 cups, without counting out loud. Tell your student only how many are in one cup, such as 4. Can they say how many beans there are in all? Pour the cups together to check.",
+      "es": "Pongan la misma cantidad de frijoles en cada uno de 6 vasos, sin contar en voz alta. Díganle a su estudiante solo cuántos hay en un vaso, por ejemplo 4. ¿Puede decir cuántos frijoles hay en total? Junten los vasos para comprobar."
+    },
+    "vocab": [
+      {
+        "term": "Inverse operation",
+        "example": {
+          "en": "Multiplying by 6 undoes ÷ 6. It is the inverse operation in n ÷ 6 = 13.",
+          "es": "Multiplicar por 6 deshace ÷ 6. Es la operación inversa en n ÷ 6 = 13."
+        },
+        "nonExample": {
+          "en": "Dividing by 6 again does not undo ÷ 6. 13 ÷ 6 is smaller than one share.",
+          "es": "Dividir entre 6 otra vez no deshace ÷ 6. 13 ÷ 6 es menor que una parte."
+        },
+        "frame": {
+          "en": "To undo ÷ ___, I multiply both sides by ___.",
+          "es": "Para deshacer ÷ ___, multiplico ambos lados por ___."
+        }
+      },
+      {
+        "term": "Isolate",
+        "example": {
+          "en": "Multiplying both sides of n ÷ 6 = 13 by 6 leaves n alone. That isolates n.",
+          "es": "Multiplicar ambos lados de n ÷ 6 = 13 por 6 deja la n sola. Eso despeja la n."
+        },
+        "nonExample": {
+          "en": "In n ÷ 6 = 13, n is not isolated yet. The ÷ 6 is still attached.",
+          "es": "En n ÷ 6 = 13, la n todavía no está despejada. El ÷ 6 sigue pegado."
+        },
+        "frame": {
+          "en": "I isolate ___ by multiplying both sides by ___.",
+          "es": "Despejo ___ al multiplicar ambos lados por ___."
+        }
+      },
+      {
+        "term": "Multiplication Property of Equality",
+        "example": {
+          "en": "Multiplying both sides of n ÷ 6 = 13 by 6 keeps the equation balanced.",
+          "es": "Multiplicar ambos lados de n ÷ 6 = 13 por 6 mantiene la ecuación en equilibrio."
+        },
+        "nonExample": {
+          "en": "Multiplying only the left side by 6 breaks the balance.",
+          "es": "Multiplicar solo el lado izquierdo por 6 rompe el equilibrio."
+        },
+        "frame": {
+          "en": "I multiply both sides by ___, so ___ = ___ × ___.",
+          "es": "Multiplico ambos lados por ___, así que ___ = ___ × ___."
+        }
+      },
+      {
+        "term": "Division Property of Equality",
+        "example": {
+          "en": "A different situation: in 6x = 42, dividing both sides by 6 keeps the balance.",
+          "es": "Una situación diferente: en 6x = 42, dividir ambos lados entre 6 mantiene el equilibrio."
+        },
+        "nonExample": {
+          "en": "A different situation: dividing only the right side of 6x = 42 by 6 breaks the balance.",
+          "es": "Una situación diferente: dividir solo el lado derecho de 6x = 42 entre 6 rompe el equilibrio."
+        },
+        "frame": {
+          "en": "I divide both sides by ___, so ___ = ___ ÷ ___.",
+          "es": "Divido ambos lados entre ___, así que ___ = ___ ÷ ___."
+        }
+      },
+      {
+        "term": "Solution",
+        "example": {
+          "en": "n = 78 is the solution, because 78 ÷ 6 = 13.",
+          "es": "n = 78 es la solución, porque 78 ÷ 6 = 13."
+        },
+        "nonExample": {
+          "en": "n = 19 is not the solution, because 19 ÷ 6 is not 13.",
+          "es": "n = 19 no es la solución, porque 19 ÷ 6 no es 13."
+        },
+        "frame": {
+          "en": "___ is the solution because ___ ÷ ___ = ___.",
+          "es": "___ es la solución porque ___ ÷ ___ = ___."
+        }
+      }
+    ],
+    "confused": [
+      {
+        "wrong": {
+          "en": "n ÷ 6 = 13, so I divide by 6 again: n = 13 ÷ 6.",
+          "es": "n ÷ 6 = 13, así que divido entre 6 otra vez: n = 13 ÷ 6."
+        },
+        "coach": {
+          "en": "Should the whole box hold more pens, or fewer pens, than one member's share?",
+          "es": "¿La caja entera debe tener más plumas, o menos, que la parte de un miembro?"
+        },
+        "why": {
+          "en": "The box holds more than one share, so dividing again cannot work. Multiply: 13 × 6 = 78.",
+          "es": "La caja tiene más que una parte, así que dividir otra vez no sirve. Se multiplica: 13 × 6 = 78."
+        },
+        "misconception": "divided-again-instead-of-multiplied",
+        "calc": {
+          "expr": "13 * 6",
+          "value": 78
+        }
+      },
+      {
+        "wrong": {
+          "en": "A different situation: 6x = 42. Tonight we multiply, so I multiply both sides by 6 and get x = 252.",
+          "es": "Una situación diferente: 6x = 42. Esta noche multiplicamos, así que multiplico ambos lados por 6 y obtengo x = 252."
+        },
+        "coach": {
+          "en": "In 6x = 42, is x being multiplied or divided? What undoes that?",
+          "es": "En 6x = 42, ¿la x se multiplica o se divide? ¿Qué lo deshace?"
+        },
+        "why": {
+          "en": "Tonight's pen equation divides, so we multiply. In 6x = 42, x is multiplied, so divide by 6: 42 ÷ 6 = 7.",
+          "es": "La ecuación de las plumas divide, así que se multiplica. En 6x = 42, la x está multiplicada, así que se divide entre 6: 42 ÷ 6 = 7."
+        },
+        "misconception": "always-multiply",
+        "calc": {
+          "expr": "42 / 6",
+          "value": 7
+        }
+      },
+      {
+        "wrong": {
+          "en": "I got n = 78. So 78 is how many pens each member gets.",
+          "es": "Obtuve n = 78. Entonces 78 es cuántas plumas recibe cada miembro."
+        },
+        "coach": {
+          "en": "In n ÷ 6 = 13, what does n count: the pens in the box, or the pens for one member?",
+          "es": "En n ÷ 6 = 13, ¿qué cuenta la n: las plumas de la caja, o las plumas de un miembro?"
+        },
+        "why": {
+          "en": "n is the whole box. Each member gets 13. The box holds 78 pens.",
+          "es": "La n es la caja entera. Cada miembro recibe 13. La caja tiene 78 plumas."
+        },
+        "misconception": "answer-without-meaning",
+        "calc": {
+          "expr": "13 * 6",
+          "value": 78
+        }
+      }
+    ]
+  }
 }

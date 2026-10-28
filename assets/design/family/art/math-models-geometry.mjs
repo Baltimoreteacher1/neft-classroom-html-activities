@@ -180,6 +180,76 @@ export function renderGrid(d, { lang }) {
   return { h: bottom + 28, body: out.join(""), desc };
 }
 
+// ---------------------------------------------------------------- coord label placement
+const overlap = (a, b) => a.l < b.r && b.l < a.r && a.t < b.b && b.t < a.b;
+const inside = (a, plot) => a.l >= plot.l && a.r <= plot.r && a.t >= plot.t && a.b <= plot.b;
+
+/**
+ * Place each point label so it overlaps no other label, no point, no axis line and stays inside the plot.
+ * Deterministic: points are placed in input order and candidates are tried in a fixed order (the classic
+ * right-above spot first, so a plane with no collisions keeps its original layout). Falls back to a short
+ * leader line, and finally to the classic spot, if nothing is free.
+ * Label box: text baseline y, 16px bold, width estimated with textW (slightly generous).
+ */
+function placePointLabels(points, { plot, axisX, axisY }) {
+  const dots = points.map((p) => ({ l: p.cx - 7.5, r: p.cx + 7.5, t: p.cy - 7.5, b: p.cy + 7.5 }));
+  const axes = [
+    { l: plot.l, r: plot.r, t: axisY - 1.5, b: axisY + 1.5 },
+    { l: axisX - 1.5, r: axisX + 1.5, t: plot.t, b: plot.b },
+  ];
+  const placed = [];
+  return points.map((p) => {
+    const w = textW(p.name, 16);
+    const box = (x, y, anchor) => {
+      const l = anchor === "end" ? x - w : anchor === "middle" ? x - w / 2 : x;
+      return { l, r: l + w, t: y - 14, b: y + 5 };
+    };
+    // horizontal room on the point's own side of the y-axis
+    const lo = p.side < 0 ? plot.l : axisX + 4;
+    const hi = p.side < 0 ? axisX - 4 : plot.r;
+    const clampX = (x) => Math.max(lo, Math.min(hi - w, x));
+    const flip = p.cx + 10 + w > W - PAD;
+    const cands = [
+      flip ? [p.cx - 9, p.cy - 9, "end"] : [p.cx + 9, p.cy - 9, "start"],
+      [p.cx - 9, p.cy - 9, "end"],
+      [p.cx + 9, p.cy + 19, "start"],
+      [p.cx - 9, p.cy + 19, "end"],
+      [clampX(p.cx - w / 2), p.cy - 11, "start"],
+      [clampX(p.cx - w / 2), p.cy + 25, "start"],
+      [clampX(p.cx - w / 2), p.cy - 26, "start"],
+      [clampX(p.cx - w / 2), p.cy + 40, "start"],
+      [p.cx + 11, p.cy + 5, "start"],
+      [p.cx - 11, p.cy + 5, "end"],
+    ];
+    const free = (b) => inside(b, plot) && !axes.some((a) => overlap(b, a)) && !dots.some((d) => overlap(b, d)) && !placed.some((q) => overlap({ l: b.l - 2, r: b.r + 2, t: b.t - 2, b: b.b + 2 }, q));
+    for (const [x, y, anchor] of cands) {
+      const b = box(x, y, anchor);
+      if (free(b)) {
+        placed.push(b);
+        return { x, y, anchor };
+      }
+    }
+    // leader line: step outward in eight directions until a free box appears
+    for (const r of [34, 50, 68]) {
+      for (const [ux, uy] of [[1, -1], [-1, -1], [1, 1], [-1, 1], [0, -1], [0, 1], [1, 0], [-1, 0]]) {
+        const tx = p.cx + ux * r;
+        const ty = p.cy + uy * r;
+        const anchor = ux > 0 ? "start" : ux < 0 ? "end" : "middle";
+        const b = box(tx, ty, anchor);
+        if (free(b)) {
+          placed.push(b);
+          const ex = Math.max(b.l, Math.min(b.r, p.cx));
+          const ey = Math.max(b.t, Math.min(b.b, p.cy));
+          return { x: tx, y: ty, anchor, leader: `M${n1(p.cx)} ${n1(p.cy)}L${n1(ex)} ${n1(ey)}` };
+        }
+      }
+    }
+    const [x, y, anchor] = cands[0];
+    placed.push(box(x, y, anchor));
+    return { x, y, anchor };
+  });
+}
+
 // ---------------------------------------------------------------- coord
 export function renderCoord(d, { lang }) {
   assertKeys(d, ["xmax", "ymax", "points", "quadrants"], 'model "coord" data');
@@ -222,11 +292,18 @@ export function renderCoord(d, { lang }) {
     if (typeof p.x !== "number" || typeof p.y !== "number" || Math.abs(p.x) > xmax || Math.abs(p.y) > ymax || (!quad && (p.x < 0 || p.y < 0))) {
       throw new Error(`model "coord": points[${k}] (${p.x}, ${p.y}) is outside the plane`);
     }
+  });
+  const plot = { l: left, r: left + nx * px, t: top, b: top + ny * py };
+  const labels = placePointLabels(
+    pts.map((p) => ({ cx: X(p.x), cy: Y(p.y), name: lab(p.label, lang), side: p.x < 0 ? -1 : 1 })),
+    { plot, axisX: x0, axisY: y0 },
+  );
+  pts.forEach((p, k) => {
     const name = lab(p.label, lang);
     out.push(`<circle class="m-dot" cx="${n1(X(p.x))}" cy="${n1(Y(p.y))}" r="5.5"/>`);
-    const w = textW(name, 16);
-    const flip = X(p.x) + 10 + w > W - PAD;
-    out.push(text(flip ? X(p.x) - 9 : X(p.x) + 9, Y(p.y) - 9, name, { anchor: flip ? "end" : "start", cls: "m-t m-n" }));
+    const L = labels[k];
+    if (L.leader) out.push(`<path class="m-dash" d="${L.leader}"/>`);
+    out.push(text(L.x, L.y, name, { anchor: L.anchor, cls: "m-t m-n" }));
     pd.push(`${name ? `${name} ` : ""}(${minus(String(p.x))}, ${minus(String(p.y))})`);
   });
   const desc = tr(

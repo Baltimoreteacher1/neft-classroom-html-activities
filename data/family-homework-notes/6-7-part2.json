@@ -526,5 +526,321 @@
       "en": "A common denominator is a common multiple, and the least one is the LCM. Both 6 and 9 go into 18, and the lists show nothing smaller works.",
       "es": "Un denominador común es un múltiplo común, y el menor es el mcm. Tanto 6 como 9 caben en 18, y las listas muestran que ningún número menor sirve."
     }
+  },
+  "v3": {
+    "version": 1,
+    "kind": "math",
+    "topicKey": "least-common-multiple-meet-apply",
+    "standardPlain": {
+      "en": "Find the least common multiple to tell when two repeating things happen together.",
+      "es": "Hallar el mínimo común múltiplo para saber cuándo dos cosas que se repiten coinciden."
+    },
+    "hook": {
+      "style": "map",
+      "en": "Two city buses leave the same stop at 8:00. One leaves every 6 minutes. The other leaves every 9 minutes. When do they leave together again?",
+      "es": "Dos autobuses de la ciudad salen de la misma parada a las 8:00. Uno sale cada 6 minutos. El otro sale cada 9 minutos. ¿Cuándo vuelven a salir juntos?",
+      "guess": {
+        "en": "Make a guess first: is it sooner than 10 minutes, or later?",
+        "es": "Primero adivina: ¿es antes de 10 minutos o después?"
+      },
+      "reveal": {
+        "en": "Later! Bus A: 6, 12, 18. Bus B: 9, 18. The first number in both lists is 18, so they leave together at 8:18.",
+        "es": "¡Después! Autobús A: 6, 12, 18. Autobús B: 9, 18. El primer número en las dos listas es 18, así que salen juntos a las 8:18."
+      }
+    },
+    "classModel": {
+      "name": {
+        "en": "skip-count both lists, find the first match",
+        "es": "contar de salto en las dos listas y hallar la primera coincidencia"
+      }
+    },
+    "model": {
+      "kind": "numberline",
+      "data": {
+        "min": 0,
+        "max": 36,
+        "step": 3,
+        "points": [
+          {
+            "value": 6,
+            "label": "6",
+            "kind": "given"
+          },
+          {
+            "value": 9,
+            "label": "9",
+            "kind": "given"
+          },
+          {
+            "value": 12,
+            "label": "12",
+            "kind": "given"
+          },
+          {
+            "value": 18,
+            "label": "18",
+            "kind": "answer"
+          }
+        ],
+        "unit": "minutes"
+      },
+      "alt": {
+        "en": "A number line from 0 to 36. Bus A leaves at multiples of 6: 6, 12, 18. Bus B leaves at multiples of 9: 9, 18. The first number on both lists, 18, is marked as the answer.",
+        "es": "Una recta numérica de 0 a 36. El autobús A sale en múltiplos de 6: 6, 12, 18. El autobús B sale en múltiplos de 9: 9, 18. El primer número en las dos listas, 18, está marcado como la respuesta."
+      }
+    },
+    "transfer": {
+      "stem": {
+        "en": "A library van visits a school every 6 days. A food truck visits every 8 days. Both come today. In how many days do both come again?",
+        "es": "Una camioneta de la biblioteca visita una escuela cada 6 días. Un camión de comida la visita cada 8 días. Los dos vienen hoy. ¿En cuántos días vuelven a venir los dos?"
+      },
+      "choices": [
+        {
+          "en": "2 days",
+          "es": "2 días",
+          "correct": false,
+          "misconception": "used-gcf-for-lcm"
+        },
+        {
+          "en": "48 days",
+          "es": "48 días",
+          "correct": false,
+          "misconception": "used-the-product"
+        },
+        {
+          "en": "24 days",
+          "es": "24 días",
+          "correct": true,
+          "misconception": null
+        }
+      ],
+      "reasoning": {
+        "en": "Multiples of 6: 6, 12, 18, 24. Multiples of 8: 8, 16, 24. The first number in both lists is 24.",
+        "es": "Múltiplos de 6: 6, 12, 18, 24. Múltiplos de 8: 8, 16, 24. El primer número en las dos listas es 24."
+      },
+      "calc": {
+        "expr": "8 * 3",
+        "value": 24
+      }
+    },
+    "glitch": {
+      "scenario": {
+        "en": "A different situation: Omar finds the least common multiple of 4 and 6.",
+        "es": "Otra situación: Omar halla el mínimo común múltiplo de 4 y 6."
+      },
+      "steps": [
+        {
+          "en": "List multiples of 4: 4, 8, 12, 16.",
+          "es": "Lista los múltiplos de 4: 4, 8, 12, 16.",
+          "isGlitch": false
+        },
+        {
+          "en": "List multiples of 6: 6, 12, 18.",
+          "es": "Lista los múltiplos de 6: 6, 12, 18.",
+          "isGlitch": false
+        },
+        {
+          "en": "Multiply the numbers: 4 × 6 = 24, so the LCM is 24.",
+          "es": "Multiplica los números: 4 × 6 = 24, así que el mcm es 24.",
+          "isGlitch": true
+        }
+      ],
+      "fix": {
+        "en": "The LCM is the first number in both lists, not the product. 12 is in both lists first, so the LCM is 12.",
+        "es": "El mcm es el primer número en las dos listas, no el producto. 12 está primero en las dos listas, así que el mcm es 12."
+      },
+      "frame": {
+        "en": "The first number in both lists is ___, so the LCM of ___ and ___ is ___.",
+        "es": "El primer número en las dos listas es ___, así que el mcm de ___ y ___ es ___."
+      },
+      "calc": {
+        "expr": "4 * 3",
+        "value": 12
+      }
+    },
+    "spiral": [
+      {
+        "from": "6-7",
+        "q": {
+          "en": "What is the greatest common factor of 18 and 27?",
+          "es": "¿Cuál es el máximo común divisor de 18 y 27?"
+        },
+        "options": [
+          "3",
+          "9",
+          "18"
+        ],
+        "correctIdx": 1,
+        "exp": {
+          "en": "Factors of 18 include 9, and factors of 27 include 9. No bigger number divides both. 3 × 3 = 9.",
+          "es": "Los factores de 18 incluyen el 9, y los de 27 también. Ningún número mayor divide a los dos. 3 × 3 = 9."
+        },
+        "calc": {
+          "expr": "3 * 3",
+          "value": 9
+        }
+      },
+      {
+        "from": "6-6",
+        "q": {
+          "en": "Which expression is equivalent to 5x + 2x + 3?",
+          "es": "¿Cuál expresión es equivalente a 5x + 2x + 3?"
+        },
+        "options": [
+          "10x + 3",
+          "10x",
+          "7x + 3"
+        ],
+        "correctIdx": 2,
+        "exp": {
+          "en": "Combine like terms: 5x + 2x = 7x. The 3 stays alone: 7x + 3.",
+          "es": "Combina términos semejantes: 5x + 2x = 7x. El 3 queda solo: 7x + 3."
+        },
+        "calc": {
+          "expr": "5 + 2",
+          "value": 7
+        }
+      }
+    ],
+    "kitchenTable": {
+      "en": "Skip-count out loud. Your student says every 3rd number and you say every 4th number. Which number do you both say first? That number is the LCM of 3 and 4.",
+      "es": "Cuenten de salto en voz alta. Su estudiante dice cada 3.er número y ustedes dicen cada 4.º número. ¿Cuál número dicen los dos primero? Ese número es el mcm de 3 y 4."
+    },
+    "vocab": [
+      {
+        "term": "Multiple",
+        "example": {
+          "en": "Bus A leaves at 6, 12, 18 and 24 minutes. These are multiples of 6.",
+          "es": "El autobús A sale a los 6, 12, 18 y 24 minutos. Son múltiplos de 6."
+        },
+        "nonExample": {
+          "en": "Bus A does not leave at 15. 15 is not a multiple of 6.",
+          "es": "El autobús A no sale a los 15. 15 no es un múltiplo de 6."
+        },
+        "frame": {
+          "en": "___ is a multiple of ___ because ___ × ___ = ___.",
+          "es": "___ es un múltiplo de ___ porque ___ × ___ = ___."
+        }
+      },
+      {
+        "term": "Common multiple",
+        "example": {
+          "en": "18 is a common multiple of 6 and 9. Both buses leave then.",
+          "es": "18 es un múltiplo común de 6 y 9. Los dos autobuses salen entonces."
+        },
+        "nonExample": {
+          "en": "12 is a multiple of 6 but not of 9. Only Bus A leaves then.",
+          "es": "12 es un múltiplo de 6 pero no de 9. Solo sale el autobús A."
+        },
+        "frame": {
+          "en": "___ is a common multiple of ___ and ___ because both lists have it.",
+          "es": "___ es un múltiplo común de ___ y ___ porque las dos listas lo tienen."
+        }
+      },
+      {
+        "term": "Least common multiple (LCM)",
+        "example": {
+          "en": "The LCM of 6 and 9 is 18. It is the first time both buses leave together.",
+          "es": "El mcm de 6 y 9 es 18. Es la primera vez que los dos autobuses salen juntos."
+        },
+        "nonExample": {
+          "en": "36 is a common multiple, but it is not the least. 18 comes first.",
+          "es": "36 es un múltiplo común, pero no el menor. El 18 viene primero."
+        },
+        "frame": {
+          "en": "The first number in both lists is ___, so the LCM of ___ and ___ is ___.",
+          "es": "El primer número en las dos listas es ___, así que el mcm de ___ y ___ es ___."
+        }
+      },
+      {
+        "term": "Factor",
+        "example": {
+          "en": "3 is a factor of both 6 and 9. It divides each with none left over.",
+          "es": "3 es un factor de 6 y de 9. Divide a cada uno sin que sobre nada."
+        },
+        "nonExample": {
+          "en": "18 is not a factor of 6. A factor of 6 can never be bigger than 6.",
+          "es": "18 no es un factor de 6. Un factor de 6 nunca puede ser mayor que 6."
+        },
+        "frame": {
+          "en": "___ is a factor of ___ because ___ ÷ ___ = ___.",
+          "es": "___ es un factor de ___ porque ___ ÷ ___ = ___."
+        }
+      },
+      {
+        "term": "Greatest common factor (GCF)",
+        "example": {
+          "en": "The GCF of 6 and 9 is 3. It answers a splitting question, not a meeting question.",
+          "es": "El MCD de 6 y 9 es 3. Responde una pregunta de repartir, no una de coincidir."
+        },
+        "nonExample": {
+          "en": "18 is not the GCF of 6 and 9. A GCF is never bigger than the smaller number.",
+          "es": "18 no es el MCD de 6 y 9. Un MCD nunca es mayor que el número menor."
+        },
+        "frame": {
+          "en": "I use the GCF when ___. I use the LCM when ___.",
+          "es": "Uso el MCD cuando ___. Uso el mcm cuando ___."
+        }
+      }
+    ],
+    "confused": [
+      {
+        "wrong": {
+          "en": "The buses meet at 6 × 9 = 54, so they leave together at 8:54.",
+          "es": "Los autobuses coinciden en 6 × 9 = 54, así que salen juntos a las 8:54."
+        },
+        "coach": {
+          "en": "Where do the two lists first meet?",
+          "es": "¿Dónde se encuentran por primera vez las dos listas?"
+        },
+        "why": {
+          "en": "Multiplying gives a common multiple, but not always the first. 18 is in both lists first, so they leave together at 8:18.",
+          "es": "Multiplicar da un múltiplo común, pero no siempre el primero. El 18 está primero en las dos listas, así que salen juntos a las 8:18."
+        },
+        "misconception": "used-the-product",
+        "calc": {
+          "expr": "6 * 3",
+          "value": 18
+        }
+      },
+      {
+        "wrong": {
+          "en": "The GCF of 6 and 9 is 3, so the buses leave together every 3 minutes.",
+          "es": "El MCD de 6 y 9 es 3, así que los autobuses salen juntos cada 3 minutos."
+        },
+        "coach": {
+          "en": "Are we splitting something into groups, or waiting for two cycles to meet?",
+          "es": "¿Estamos repartiendo algo en grupos o esperando que dos ciclos coincidan?"
+        },
+        "why": {
+          "en": "Waiting for cycles to meet needs multiples, not factors. The GCF is 3, but the buses first meet at 18.",
+          "es": "Esperar que dos ciclos coincidan necesita múltiplos, no factores. El MCD es 3, pero los autobuses coinciden primero en 18."
+        },
+        "misconception": "used-gcf-for-lcm",
+        "calc": {
+          "expr": "9 * 2",
+          "value": 18
+        }
+      },
+      {
+        "wrong": {
+          "en": "Multiples of 6: 6, 12, 18, 24. Multiples of 9: 9, 18, 27. The LCM is 24, the last number in my list.",
+          "es": "Múltiplos de 6: 6, 12, 18, 24. Múltiplos de 9: 9, 18, 27. El mcm es 24, el último número de mi lista."
+        },
+        "coach": {
+          "en": "Is 24 in the list for 9?",
+          "es": "¿El 24 está en la lista del 9?"
+        },
+        "why": {
+          "en": "24 is not a multiple of 9. The first number in both lists is 18.",
+          "es": "24 no es un múltiplo de 9. El primer número en las dos listas es 18."
+        },
+        "misconception": "took-last-number-in-list",
+        "calc": {
+          "expr": "2 * 9",
+          "value": 18
+        }
+      }
+    ]
   }
 }

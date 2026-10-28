@@ -392,5 +392,281 @@
         "Compara ese total con 100."
       ]
     }
-  ]
+  ],
+  "v3": {
+    "version": 1,
+    "kind": "math",
+    "topicKey": "volume-defend-cereal-choice",
+    "standardPlain": {
+      "en": "Use volume to compare boxes and defend your choice with numbers.",
+      "es": "Usar el volumen para comparar cajas y defender tu elección con números."
+    },
+    "hook": {
+      "style": "price-tag",
+      "en": "A corner store sells cereal at one price: three large boxes or two jumbo boxes. A large box is 8 by 3 by 10 inches. A jumbo box is 10 by 4 by 10 inches. Which deal holds more cereal?",
+      "es": "Una tienda de la esquina vende cereal a un mismo precio: tres cajas grandes o dos cajas jumbo. Una caja grande mide 8 por 3 por 10 pulgadas. Una caja jumbo mide 10 por 4 por 10 pulgadas. ¿Cuál oferta trae más cereal?",
+      "guess": {
+        "en": "Make a guess first: three large boxes or two jumbo boxes?",
+        "es": "Primero adivina: ¿tres cajas grandes o dos cajas jumbo?"
+      },
+      "reveal": {
+        "en": "Two jumbo! A large box holds 8 × 3 × 10 = 240 cubic inches, so three hold 720. A jumbo holds 400, so two hold 800.",
+        "es": "¡Dos jumbo! Una caja grande contiene 8 × 3 × 10 = 240 pulgadas cúbicas, así que tres contienen 720. Una jumbo contiene 400, así que dos contienen 800."
+      }
+    },
+    "classModel": {
+      "name": {
+        "en": "multiply the three sides",
+        "es": "multiplicar las tres medidas"
+      }
+    },
+    "model": {
+      "kind": "barplot",
+      "data": {
+        "categories": [
+          {
+            "label": {
+              "en": "3 large",
+              "es": "3 grandes"
+            },
+            "value": 720
+          },
+          {
+            "label": {
+              "en": "2 jumbo",
+              "es": "2 jumbo"
+            },
+            "value": 800
+          }
+        ],
+        "unit": {
+          "en": "cubic inches",
+          "es": "pulgadas cúbicas"
+        }
+      },
+      "alt": {
+        "en": "A bar chart in cubic inches. Three large boxes hold 720. Two jumbo boxes hold 800. The jumbo bar is longer.",
+        "es": "Una gráfica de barras en pulgadas cúbicas. Tres cajas grandes contienen 720. Dos cajas jumbo contienen 800. La barra de las jumbo es más larga."
+      }
+    },
+    "transfer": {
+      "stem": {
+        "en": "A storage bin is 10 inches long, 6 inches wide, and 5 inches tall. What is its volume?",
+        "es": "Un contenedor mide 10 pulgadas de largo, 6 de ancho y 5 de alto. ¿Cuál es su volumen?"
+      },
+      "choices": [
+        {
+          "en": "300 cubic inches",
+          "es": "300 pulgadas cúbicas",
+          "correct": true,
+          "misconception": null
+        },
+        {
+          "en": "21 cubic inches",
+          "es": "21 pulgadas cúbicas",
+          "correct": false,
+          "misconception": "added-the-sides"
+        },
+        {
+          "en": "60 cubic inches",
+          "es": "60 pulgadas cúbicas",
+          "correct": false,
+          "misconception": "left-out-the-height"
+        }
+      ],
+      "reasoning": {
+        "en": "Multiply all three sides: 10 × 6 × 5 = 300. Volume is measured in cubic inches.",
+        "es": "Multiplica las tres medidas: 10 × 6 × 5 = 300. El volumen se mide en pulgadas cúbicas."
+      },
+      "calc": {
+        "expr": "10 * 6 * 5",
+        "value": 300
+      }
+    },
+    "glitch": null,
+    "spiral": [
+      {
+        "from": "1-3",
+        "q": {
+          "en": "A bus ride costs $1.75. What do 4 rides cost?",
+          "es": "Un viaje en autobús cuesta $1.75. ¿Cuánto cuestan 4 viajes?"
+        },
+        "options": [
+          "$5.75",
+          "$7.00",
+          "$0.44"
+        ],
+        "correctIdx": 1,
+        "exp": {
+          "en": "Draw a tape with 4 equal parts of $1.75. Then 1.75 × 4 = $7.00.",
+          "es": "Dibuja una barra con 4 partes iguales de $1.75. Luego 1.75 × 4 = $7.00."
+        },
+        "calc": {
+          "expr": "1.75 * 4",
+          "value": 7
+        }
+      },
+      {
+        "from": "1-2",
+        "q": {
+          "en": "What is 2/3 of 18?",
+          "es": "¿Cuánto es 2/3 de 18?"
+        },
+        "options": [
+          "12",
+          "6",
+          "27"
+        ],
+        "correctIdx": 0,
+        "exp": {
+          "en": "Divide by the bottom number: 18 ÷ 3 = 6. Multiply by the top number: 6 × 2 = 12.",
+          "es": "Divide entre el número de abajo: 18 ÷ 3 = 6. Multiplica por el número de arriba: 6 × 2 = 12."
+        },
+        "calc": {
+          "expr": "18 / 3 * 2",
+          "value": 12
+        }
+      }
+    ],
+    "kitchenTable": {
+      "en": "Find a cereal box and a snack box. Measure each side in inches with a ruler. Multiply to find each volume. Can your student say which box holds more and finish the sentence with \"because\"?",
+      "es": "Busquen una caja de cereal y una caja de meriendas. Midan cada lado en pulgadas con una regla. Multipliquen para hallar cada volumen. ¿Puede su estudiante decir cuál caja contiene más y terminar la oración con \"porque\"?"
+    },
+    "vocab": [
+      {
+        "term": "argument",
+        "example": {
+          "en": "\"Two jumbo boxes hold more, because 800 is greater than 720\" is an argument.",
+          "es": "\"Dos cajas jumbo contienen más, porque 800 es mayor que 720\" es un argumento."
+        },
+        "nonExample": {
+          "en": "\"I just like the jumbo box\" is an opinion, not an argument.",
+          "es": "\"Me gusta más la caja jumbo\" es una opinión, no un argumento."
+        },
+        "frame": {
+          "en": "I recommend ___ because ___ cubic inches is greater than ___.",
+          "es": "Recomiendo ___ porque ___ pulgadas cúbicas es mayor que ___."
+        }
+      },
+      {
+        "term": "conjecture",
+        "example": {
+          "en": "\"I think three large boxes hold more cereal\" is a conjecture until we test it.",
+          "es": "\"Creo que tres cajas grandes contienen más cereal\" es una conjetura hasta que la probemos."
+        },
+        "nonExample": {
+          "en": "800 > 720 is not a conjecture. We already checked it with numbers.",
+          "es": "800 > 720 no es una conjetura. Ya lo comprobamos con números."
+        },
+        "frame": {
+          "en": "My conjecture is that ___ holds more. I will test it by ___.",
+          "es": "Mi conjetura es que ___ contiene más. La voy a probar ___."
+        }
+      },
+      {
+        "term": "counterexample",
+        "example": {
+          "en": "A different situation: a tall, thin box that holds less than a short, wide box is a counterexample to \"the taller box always holds more.\"",
+          "es": "Otra situación: una caja alta y delgada que contiene menos que una caja baja y ancha es un contraejemplo de \"la caja más alta siempre contiene más\"."
+        },
+        "nonExample": {
+          "en": "A different situation: another tall box that does hold more does not disprove the claim.",
+          "es": "Otra situación: otra caja alta que sí contiene más no desmiente la afirmación."
+        },
+        "frame": {
+          "en": "The claim \"___\" is false because ___ is a counterexample.",
+          "es": "La afirmación \"___\" es falsa porque ___ es un contraejemplo."
+        }
+      },
+      {
+        "term": "volume",
+        "example": {
+          "en": "A large cereal box holds 8 × 3 × 10 = 240 cubic inches. That is its volume.",
+          "es": "Una caja grande de cereal contiene 8 × 3 × 10 = 240 pulgadas cúbicas. Ese es su volumen."
+        },
+        "nonExample": {
+          "en": "The paper on the outside of the box is not its volume. Volume is the space inside.",
+          "es": "El papel de afuera de la caja no es su volumen. El volumen es el espacio de adentro."
+        },
+        "frame": {
+          "en": "The volume is ___ × ___ × ___ = ___ cubic inches.",
+          "es": "El volumen es ___ × ___ × ___ = ___ pulgadas cúbicas."
+        }
+      },
+      {
+        "term": "cubic unit",
+        "example": {
+          "en": "A cubic inch is a cube 1 inch on every edge. Cereal volume is counted in them.",
+          "es": "Una pulgada cúbica es un cubo de 1 pulgada en cada arista. El volumen del cereal se cuenta con ellas."
+        },
+        "nonExample": {
+          "en": "\"240 inches\" is a length. It does not count cubes.",
+          "es": "\"240 pulgadas\" es una longitud. No cuenta cubos."
+        },
+        "frame": {
+          "en": "The volume is ___ cubic ___, so I count cubes, not lengths.",
+          "es": "El volumen es ___ ___ cúbicas, así que cuento cubos, no longitudes."
+        }
+      }
+    ],
+    "confused": [
+      {
+        "wrong": {
+          "en": "I added the sides: 8 + 3 + 10 = 21, so a large box holds 21.",
+          "es": "Sumé las medidas: 8 + 3 + 10 = 21, así que una caja grande contiene 21."
+        },
+        "coach": {
+          "en": "Which operation fills up space in three directions?",
+          "es": "¿Cuál operación llena el espacio en tres direcciones?"
+        },
+        "why": {
+          "en": "Volume multiplies length, width, and height: 8 × 3 × 10 = 240 cubic inches.",
+          "es": "El volumen multiplica largo, ancho y alto: 8 × 3 × 10 = 240 pulgadas cúbicas."
+        },
+        "misconception": "added-the-sides",
+        "calc": {
+          "expr": "8 * 3 * 10",
+          "value": 240
+        }
+      },
+      {
+        "wrong": {
+          "en": "Three large boxes hold 240 × 3 = 720. A jumbo box holds 400. So three large boxes win.",
+          "es": "Tres cajas grandes contienen 240 × 3 = 720. Una caja jumbo contiene 400. Entonces ganan las tres cajas grandes."
+        },
+        "coach": {
+          "en": "How many jumbo boxes are in the deal?",
+          "es": "¿Cuántas cajas jumbo vienen en la oferta?"
+        },
+        "why": {
+          "en": "The deal is two jumbo boxes, so compare totals: 400 × 2 = 800, which is greater than 720.",
+          "es": "La oferta es de dos cajas jumbo, así que compara los totales: 400 × 2 = 800, que es mayor que 720."
+        },
+        "misconception": "forgot-the-number-of-boxes",
+        "calc": {
+          "expr": "400 * 2",
+          "value": 800
+        }
+      },
+      {
+        "wrong": {
+          "en": "Two jumbo boxes hold 800 square inches, and three large boxes hold 720 square inches.",
+          "es": "Dos cajas jumbo contienen 800 pulgadas cuadradas, y tres cajas grandes contienen 720 pulgadas cuadradas."
+        },
+        "coach": {
+          "en": "Does cereal cover a flat surface, or fill the space inside a box?",
+          "es": "¿El cereal cubre una superficie plana o llena el espacio dentro de una caja?"
+        },
+        "why": {
+          "en": "Cereal fills space, so volume uses cubic units: 800 cubic inches is greater than 720 cubic inches.",
+          "es": "El cereal llena espacio, así que el volumen usa unidades cúbicas: 800 pulgadas cúbicas es mayor que 720 pulgadas cúbicas."
+        },
+        "misconception": "square-units-for-volume",
+        "calc": {
+          "expr": "400 * 2",
+          "value": 800
+        }
+      }
+    ]
+  }
 }

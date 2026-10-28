@@ -41,7 +41,6 @@ import {
 } from "./homework-spanish.mjs";
 import { getUnitTheme } from "./homework-themes.mjs";
 import { bridgeOf, bridgeSpeech, renderBridgeCard } from "./lib/homework-bridge.mjs";
-import { renderLearnCoLearningModules } from "./lib/homework-co-learning.mjs";
 import { confusedRoundsFor, renderConfusedGrownUp } from "./lib/homework-confused-grownup.mjs";
 import { renderDominoDuo } from "./lib/homework-domino-duo.mjs";
 import {
@@ -68,6 +67,7 @@ import {
   SESSIONS,
   sessionOf,
 } from "./lib/homework-session-flow.mjs";
+import { renderLearnModules } from "./lib/homework-v3-learn.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const _root = join(__dirname, "..");
@@ -8437,8 +8437,8 @@ export function renderLearnTab(
   const learnCard = (en, es, inner) =>
     `<section class="learn-card" data-card-en="${esc(en)}" data-card-es="${esc(es)}" >${inner}</section>`;
   const caseHtml = caseText?.en
-    ? `<section class="hw-case" aria-labelledby="hw_case_title">
-        <p class="hw-case-kicker" id="hw_case_title"><span class="lang-en">Tonight's case</span><span class="lang-es" lang="es">Caso de hoy</span></p>
+    ? `<section class="hw-case" aria-labelledby="hw_case_kicker">
+        <p class="hw-case-kicker" id="hw_case_kicker"><span class="lang-en">Tonight's case</span><span class="lang-es" lang="es">Caso de hoy</span></p>
         <p class="hw-case-text"><span class="lang-en">${esc(caseText.en)}</span><span class="lang-es" lang="es">${esc(caseText.es)}</span></p>
       </section>`
     : "";
@@ -8448,7 +8448,7 @@ export function renderLearnTab(
       ${renderMysteryChallenge(mystery)}`;
   const toolsHtml = `${workbenchLaunchHtml}
 ${workbenchHtml}
-      <div class="learn-extended-block" id="hw_learn_quick">${parentDrawerHtml}${powerUpHtml}${renderLearnCoLearningModules(config, config.lessonId || "", topic)}</div>
+      <div class="learn-extended-block" id="hw_learn_quick">${parentDrawerHtml}${powerUpHtml}${renderLearnModules(config, config.lessonId || "")}</div>
 ${renderWarmupHuddle(confusedGrownUpCard(config))}
       <p class="tab-help-row learn-extended-block">${helpButton("💡 Need more help? / ¿Más ayuda?", { titleEn: "The big idea", titleEs: "La idea principal", en: keyEn, es: keyEs })}</p>`;
   return `

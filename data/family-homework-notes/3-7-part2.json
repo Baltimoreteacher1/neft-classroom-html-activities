@@ -537,5 +537,305 @@
         }
       ]
     }
-  ]
+  ],
+  "v3": {
+    "version": 1,
+    "kind": "math",
+    "topicKey": "convert-two-step-dosage-apply",
+    "standardPlain": {
+      "en": "Solve a two-step problem: convert to the unit the rate uses, then apply the rate.",
+      "es": "Resolver un problema de dos pasos: convertir a la unidad que usa la tasa y después aplicar la tasa."
+    },
+    "hook": {
+      "style": "price-tag",
+      "en": "A pet medicine label says 6 milligrams for every 1 kilogram. A cat weighs 11 pounds. Math fact: 1 kilogram is about 2.2 pounds. About how many milligrams is the dose?",
+      "es": "La etiqueta de una medicina para mascotas dice 6 miligramos por cada 1 kilogramo. Un gato pesa 11 libras. Dato: 1 kilogramo son unas 2.2 libras. ¿Aproximadamente cuántos miligramos es la dosis?",
+      "guess": {
+        "en": "Make a guess first: is the dose more than 66 mg, or less?",
+        "es": "Primero adivina: ¿la dosis es más de 66 mg o menos?"
+      },
+      "reveal": {
+        "en": "Less! 11 pounds is only about 5 kilograms, since 11 ÷ 2.2 = 5. Then 6 × 5 = 30. The dose is about 30 mg.",
+        "es": "¡Menos! 11 libras son solo unos 5 kilogramos, porque 11 ÷ 2.2 = 5. Luego 6 × 5 = 30. La dosis es de unos 30 mg."
+      }
+    },
+    "classModel": {
+      "name": {
+        "en": "convert first, then use the rate",
+        "es": "convertir primero, luego usar la tasa"
+      }
+    },
+    "model": {
+      "kind": "doubleline",
+      "data": {
+        "top": {
+          "label": {
+            "en": "Pounds",
+            "es": "Libras"
+          },
+          "ticks": [
+            "0",
+            "2.2",
+            "11"
+          ]
+        },
+        "bottom": {
+          "label": {
+            "en": "Kilograms",
+            "es": "Kilogramos"
+          },
+          "ticks": [
+            "0",
+            "1",
+            "?"
+          ]
+        },
+        "unknown": [
+          2
+        ]
+      },
+      "alt": {
+        "en": "Two number lines lined up. The top line shows 0, 2.2 and 11 pounds. The bottom line shows 0, 1 and an unknown number of kilograms. 2.2 pounds lines up with 1 kilogram. The cat's 11 pounds lines up with the unknown.",
+        "es": "Dos rectas numéricas alineadas. La de arriba muestra 0, 2.2 y 11 libras. La de abajo muestra 0, 1 y un número desconocido de kilogramos. 2.2 libras coinciden con 1 kilogramo. Las 11 libras del gato coinciden con la incógnita."
+      }
+    },
+    "transfer": {
+      "stem": {
+        "en": "A puppy weighs 22 pounds. The dose is 4 mg for every 1 kilogram. Use 1 kg ≈ 2.2 lb. About how many mg is the dose?",
+        "es": "Un cachorro pesa 22 libras. La dosis es de 4 mg por cada 1 kilogramo. Usa 1 kg ≈ 2.2 lb. ¿Aproximadamente cuántos mg es la dosis?"
+      },
+      "choices": [
+        {
+          "en": "About 40 mg",
+          "es": "Unos 40 mg",
+          "correct": true,
+          "misconception": null
+        },
+        {
+          "en": "About 88 mg",
+          "es": "Unos 88 mg",
+          "correct": false,
+          "misconception": "skipped-the-conversion"
+        },
+        {
+          "en": "About 10 mg",
+          "es": "Unos 10 mg",
+          "correct": false,
+          "misconception": "stopped-after-converting"
+        }
+      ],
+      "reasoning": {
+        "en": "Convert first: 22 ÷ 2.2 = 10 kilograms. Then apply the rate: 4 × 10 = 40 mg.",
+        "es": "Convierte primero: 22 ÷ 2.2 = 10 kilogramos. Luego aplica la tasa: 4 × 10 = 40 mg."
+      },
+      "calc": {
+        "expr": "22 / 2.2 * 4",
+        "value": 40
+      }
+    },
+    "glitch": {
+      "scenario": {
+        "en": "A different situation: A child weighs 66 pounds. The dose is 2 mg for every 1 kilogram. Use 1 kg ≈ 2.2 lb.",
+        "es": "Otra situación: Un niño pesa 66 libras. La dosis es de 2 mg por cada 1 kilogramo. Usa 1 kg ≈ 2.2 lb."
+      },
+      "steps": [
+        {
+          "en": "The rate is per kilogram, but the weight is in pounds.",
+          "es": "La tasa es por kilogramo, pero el peso está en libras.",
+          "isGlitch": false
+        },
+        {
+          "en": "Use the rate right away: 2 × 66 = 132 mg.",
+          "es": "Usa la tasa de inmediato: 2 × 66 = 132 mg.",
+          "isGlitch": true
+        },
+        {
+          "en": "Check that the answer has the unit mg.",
+          "es": "Comprueba que la respuesta tenga la unidad mg.",
+          "isGlitch": false
+        }
+      ],
+      "fix": {
+        "en": "Convert first: 66 ÷ 2.2 = 30 kilograms. Then 2 × 30 = 60. The dose is about 60 mg.",
+        "es": "Convierte primero: 66 ÷ 2.2 = 30 kilogramos. Luego 2 × 30 = 60. La dosis es de unos 60 mg."
+      },
+      "frame": {
+        "en": "First I convert ___ to ___. Then I multiply by ___.",
+        "es": "Primero convierto ___ a ___. Luego multiplico por ___."
+      },
+      "calc": {
+        "expr": "66 / 2.2 * 2",
+        "value": 60
+      }
+    },
+    "spiral": [
+      {
+        "from": "3-7",
+        "q": {
+          "en": "Use 1 kilometer ≈ 0.6 mile. About how many miles is 30 kilometers?",
+          "es": "Usa 1 kilómetro ≈ 0.6 milla. ¿Aproximadamente cuántas millas son 30 kilómetros?"
+        },
+        "options": [
+          "18",
+          "50",
+          "30.6"
+        ],
+        "correctIdx": 0,
+        "exp": {
+          "en": "Scale the factor: 30 × 0.6 = 18 miles.",
+          "es": "Escala el factor: 30 × 0.6 = 18 millas."
+        },
+        "calc": {
+          "expr": "30 * 0.6",
+          "value": 18
+        }
+      },
+      {
+        "from": "3-6",
+        "q": {
+          "en": "A bag weighs 8 pounds. How many ounces is that? (1 pound = 16 ounces)",
+          "es": "Una bolsa pesa 8 libras. ¿Cuántas onzas son? (1 libra = 16 onzas)"
+        },
+        "options": [
+          "0.5",
+          "128",
+          "24"
+        ],
+        "correctIdx": 1,
+        "exp": {
+          "en": "Ounces are smaller, so multiply: 8 × 16 = 128.",
+          "es": "Las onzas son más pequeñas, así que se multiplica: 8 × 16 = 128."
+        },
+        "calc": {
+          "expr": "8 * 16",
+          "value": 128
+        }
+      }
+    ],
+    "kitchenTable": {
+      "en": "Find a bag of rice or flour labeled in pounds. Pretend a made-up rate: 2 mg for every 1 kilogram. Ask your student which step comes first. Real doses always come from a vet or doctor.",
+      "es": "Busquen una bolsa de arroz o harina marcada en libras. Imaginen una tasa inventada: 2 mg por cada 1 kilogramo. Pregunten a su estudiante qué paso va primero. Las dosis reales siempre las dan un veterinario o un médico."
+    },
+    "vocab": [
+      {
+        "term": "Multi-step problem",
+        "example": {
+          "en": "The cat dose needs two steps: convert pounds, then use the rate.",
+          "es": "La dosis del gato necesita dos pasos: convertir las libras y luego usar la tasa."
+        },
+        "nonExample": {
+          "en": "11 ÷ 2.2 = 5 alone is not the whole problem. It is only step one.",
+          "es": "11 ÷ 2.2 = 5 solo no es todo el problema. Es apenas el paso uno."
+        },
+        "frame": {
+          "en": "Step one is to ___. Step two is to ___.",
+          "es": "El paso uno es ___. El paso dos es ___."
+        }
+      },
+      {
+        "term": "Conversion factor",
+        "example": {
+          "en": "1 kg ≈ 2.2 lb is the conversion factor for the cat's weight.",
+          "es": "1 kg ≈ 2.2 lb es el factor de conversión para el peso del gato."
+        },
+        "nonExample": {
+          "en": "6 mg for 1 kg is a dose rate, not a conversion factor.",
+          "es": "6 mg por 1 kg es una tasa de dosis, no un factor de conversión."
+        },
+        "frame": {
+          "en": "The conversion factor is 1 ___ ≈ ___ ___.",
+          "es": "El factor de conversión es 1 ___ ≈ ___ ___."
+        }
+      },
+      {
+        "term": "Rate",
+        "example": {
+          "en": "6 mg for every 1 kilogram is a rate.",
+          "es": "6 mg por cada 1 kilogramo es una tasa."
+        },
+        "nonExample": {
+          "en": "11 pounds is not a rate. It is just a weight.",
+          "es": "11 libras no es una tasa. Es solo un peso."
+        },
+        "frame": {
+          "en": "The rate is ___ mg for every 1 ___.",
+          "es": "La tasa es ___ mg por cada 1 ___."
+        }
+      },
+      {
+        "term": "Approximately",
+        "example": {
+          "en": "The dose is approximately 30 mg, because 2.2 is rounded.",
+          "es": "La dosis es aproximadamente 30 mg, porque 2.2 está redondeado."
+        },
+        "nonExample": {
+          "en": "Writing exactly 30 mg hides that the factor was rounded.",
+          "es": "Escribir exactamente 30 mg oculta que el factor estaba redondeado."
+        },
+        "frame": {
+          "en": "The dose is approximately ___ mg, so I write ≈ ___.",
+          "es": "La dosis es aproximadamente ___ mg, así que escribo ≈ ___."
+        }
+      }
+    ],
+    "confused": [
+      {
+        "wrong": {
+          "en": "The cat weighs 11 pounds. The dose is 6 mg per kg, so 6 × 11 = 66 mg.",
+          "es": "El gato pesa 11 libras. La dosis es de 6 mg por kg, así que 6 × 11 = 66 mg."
+        },
+        "coach": {
+          "en": "What unit does the dose rate use, and what unit is the cat's weight in?",
+          "es": "¿Qué unidad usa la tasa de la dosis y en qué unidad está el peso del gato?"
+        },
+        "why": {
+          "en": "The rate is per kilogram, but 11 is pounds. Convert first: 11 ÷ 2.2 = 5 kg. Then 6 × 5 = 30 mg.",
+          "es": "La tasa es por kilogramo, pero 11 son libras. Convierte primero: 11 ÷ 2.2 = 5 kg. Luego 6 × 5 = 30 mg."
+        },
+        "misconception": "skipped-the-conversion",
+        "calc": {
+          "expr": "11 / 2.2 * 6",
+          "value": 30
+        }
+      },
+      {
+        "wrong": {
+          "en": "Pounds to kilograms: I multiply by 2.2. So 11 × 2.2 = 24.2 kg.",
+          "es": "De libras a kilogramos: multiplico por 2.2. Entonces 11 × 2.2 = 24.2 kg."
+        },
+        "coach": {
+          "en": "Is a kilogram heavier or lighter than a pound? Should the number of kilograms be bigger or smaller?",
+          "es": "¿Un kilogramo es más pesado o más liviano que una libra? ¿El número de kilogramos debe ser mayor o menor?"
+        },
+        "why": {
+          "en": "A kilogram is heavier, so there are fewer kilograms. Divide: 11 ÷ 2.2 = 5 kg.",
+          "es": "Un kilogramo es más pesado, así que hay menos kilogramos. Se divide: 11 ÷ 2.2 = 5 kg."
+        },
+        "misconception": "multiplied-instead-of-divided",
+        "calc": {
+          "expr": "11 / 2.2",
+          "value": 5
+        }
+      },
+      {
+        "wrong": {
+          "en": "I converted the cat to 5 kg, so the dose is 5 mg.",
+          "es": "Convertí el gato a 5 kg, así que la dosis es 5 mg."
+        },
+        "coach": {
+          "en": "What does the label say about the dose for each kilogram?",
+          "es": "¿Qué dice la etiqueta sobre la dosis para cada kilogramo?"
+        },
+        "why": {
+          "en": "The label gives 6 mg for each kilogram. Five kilograms is five groups of 6: 6 × 5 = 30 mg.",
+          "es": "La etiqueta da 6 mg por cada kilogramo. Cinco kilogramos son cinco grupos de 6: 6 × 5 = 30 mg."
+        },
+        "misconception": "stopped-after-converting",
+        "calc": {
+          "expr": "6 * 5",
+          "value": 30
+        }
+      }
+    ]
+  }
 }

@@ -537,5 +537,327 @@
       ],
       "image": "/assets/vocab-images/multiply.svg"
     }
-  ]
+  ],
+  "v3": {
+    "version": 1,
+    "kind": "math",
+    "topicKey": "unit-rate-buying-decision-apply",
+    "standardPlain": {
+      "en": "Write cost over quantity, find the unit rate, and choose the better seller.",
+      "es": "Escribir el costo sobre la cantidad, hallar la tasa unitaria y elegir al mejor vendedor."
+    },
+    "hook": {
+      "style": "receipt",
+      "en": "A team needs 12 notebooks. Shop A sells 4 notebooks for $10.00. Shop B sells 6 notebooks for $13.80. Which shop costs less for 12 notebooks?",
+      "es": "Un equipo necesita 12 cuadernos. La tienda A vende 4 cuadernos por $10.00. La tienda B vende 6 cuadernos por $13.80. ¿Cuál tienda cuesta menos por 12 cuadernos?",
+      "guess": {
+        "en": "Make a guess first: is Shop A or Shop B cheaper?",
+        "es": "Primero adivina: ¿es más barata la tienda A o la B?"
+      },
+      "reveal": {
+        "en": "Shop B! A costs $2.50 a notebook. B costs $2.30 a notebook. For 12 notebooks, B is $27.60 and A is $30.00.",
+        "es": "¡La tienda B! A cuesta $2.50 por cuaderno. B cuesta $2.30 por cuaderno. Por 12 cuadernos, B cuesta $27.60 y A cuesta $30.00."
+      }
+    },
+    "classModel": {
+      "name": {
+        "en": "cost on top, quantity on the bottom",
+        "es": "el costo arriba y la cantidad abajo"
+      }
+    },
+    "model": {
+      "kind": "ratiotable",
+      "data": {
+        "headers": [
+          {
+            "en": "Notebooks (Shop B)",
+            "es": "Cuadernos (tienda B)"
+          },
+          {
+            "en": "Cost (Shop B)",
+            "es": "Costo (tienda B)"
+          }
+        ],
+        "rows": [
+          [
+            6,
+            "$13.80"
+          ],
+          [
+            1,
+            "$2.30"
+          ],
+          [
+            12,
+            "$27.60"
+          ]
+        ],
+        "unknownCells": [
+          [
+            1,
+            1
+          ],
+          [
+            2,
+            1
+          ]
+        ],
+        "arrows": [
+          {
+            "from": 0,
+            "to": 1,
+            "label": "÷6"
+          },
+          {
+            "from": 1,
+            "to": 2,
+            "label": "×12"
+          }
+        ]
+      },
+      "alt": {
+        "en": "A ratio table for Shop B. Row 1: 6 notebooks cost $13.80. Row 2: 1 notebook, cost unknown, found by dividing by 6. Row 3: 12 notebooks, cost unknown, found by multiplying the unit rate by 12.",
+        "es": "Una tabla de razones de la tienda B. Fila 1: 6 cuadernos cuestan $13.80. Fila 2: 1 cuaderno, costo desconocido, que se halla al dividir entre 6. Fila 3: 12 cuadernos, costo desconocido, que se halla al multiplicar la tasa unitaria por 12."
+      }
+    },
+    "transfer": {
+      "stem": {
+        "en": "Gym A charges $45 for 3 months. Gym B charges $72 for 6 months. How much less per month is Gym B?",
+        "es": "El gimnasio A cobra $45 por 3 meses. El gimnasio B cobra $72 por 6 meses. ¿Cuánto menos por mes cobra el gimnasio B?"
+      },
+      "choices": [
+        {
+          "en": "$27",
+          "es": "$27",
+          "correct": false,
+          "misconception": "compared-totals-not-unit-rates"
+        },
+        {
+          "en": "$12",
+          "es": "$12",
+          "correct": false,
+          "misconception": "gave-one-rate-not-the-difference"
+        },
+        {
+          "en": "$3",
+          "es": "$3",
+          "correct": true,
+          "misconception": null
+        }
+      ],
+      "reasoning": {
+        "en": "Gym A: $45 ÷ 3 = $15 a month. Gym B: $72 ÷ 6 = $12 a month. The difference is $15 − $12 = $3.",
+        "es": "Gimnasio A: $45 ÷ 3 = $15 por mes. Gimnasio B: $72 ÷ 6 = $12 por mes. La diferencia es $15 − $12 = $3."
+      },
+      "calc": {
+        "expr": "45 / 3 - 72 / 6",
+        "value": 3,
+        "unit": "$"
+      }
+    },
+    "glitch": {
+      "scenario": {
+        "en": "A different situation: A pack of 8 juice boxes costs $6.00. Marcus needs the cost of 20 juice boxes.",
+        "es": "Otra situación: Un paquete de 8 jugos cuesta $6.00. Marcus necesita el costo de 20 jugos."
+      },
+      "steps": [
+        {
+          "en": "Cost on top, boxes on the bottom: 6.00 ÷ 8 = 0.75 dollars for 1 box.",
+          "es": "Costo arriba, jugos abajo: 6.00 ÷ 8 = 0.75 dólares por 1 jugo.",
+          "isGlitch": false
+        },
+        {
+          "en": "Use the rate: add 0.75 + 20 = 20.75, so 20 boxes cost $20.75.",
+          "es": "Usa la tasa: suma 0.75 + 20 = 20.75, así que 20 jugos cuestan $20.75.",
+          "isGlitch": true
+        },
+        {
+          "en": "Write the answer with its unit: dollars.",
+          "es": "Escribe la respuesta con su unidad: dólares.",
+          "isGlitch": false
+        }
+      ],
+      "fix": {
+        "en": "Each box costs $0.75, so multiply by the number of boxes: 0.75 × 20 = 15. Twenty boxes cost $15.",
+        "es": "Cada jugo cuesta $0.75, así que multiplica por el número de jugos: 0.75 × 20 = 15. Veinte jugos cuestan $15."
+      },
+      "frame": {
+        "en": "The total is $___ because ___ × ___ = ___.",
+        "es": "El total es $___ porque ___ × ___ = ___."
+      },
+      "calc": {
+        "expr": "0.75 * 20",
+        "value": 15
+      }
+    },
+    "spiral": [
+      {
+        "from": "3-8",
+        "q": {
+          "en": "A bag of 4 oranges costs $3.20. What is the cost of 1 orange?",
+          "es": "Una bolsa de 4 naranjas cuesta $3.20. ¿Cuánto cuesta 1 naranja?"
+        },
+        "options": [
+          "$1.25",
+          "$0.80",
+          "$12.80"
+        ],
+        "correctIdx": 1,
+        "exp": {
+          "en": "Divide the cost by the oranges: 3.20 ÷ 4 = 0.80.",
+          "es": "Divide el costo entre las naranjas: 3.20 ÷ 4 = 0.80."
+        },
+        "calc": {
+          "expr": "3.2 / 4",
+          "value": 0.8
+        }
+      },
+      {
+        "from": "3-2",
+        "q": {
+          "en": "A faucet fills 15 gallons in 5 minutes. How many gallons per minute?",
+          "es": "Una llave llena 15 galones en 5 minutos. ¿Cuántos galones por minuto?"
+        },
+        "options": [
+          "3",
+          "10",
+          "75"
+        ],
+        "correctIdx": 0,
+        "exp": {
+          "en": "Divide gallons by minutes: 15 ÷ 5 = 3.",
+          "es": "Divide los galones entre los minutos: 15 ÷ 5 = 3."
+        },
+        "calc": {
+          "expr": "15 / 5",
+          "value": 3
+        }
+      }
+    ],
+    "kitchenTable": {
+      "en": "Find two shelf tags for the same item in different sizes. Write each as cost over amount, like $13.80 over 6. Divide the top and the bottom by the bottom number. Which is cheaper for 1?",
+      "es": "Busquen dos etiquetas de precio del mismo producto en tamaños distintos. Escriban cada una como costo sobre cantidad, como $13.80 sobre 6. Dividan el número de arriba y el de abajo entre el de abajo. ¿Cuál es más barata por 1?"
+    },
+    "vocab": [
+      {
+        "term": "Unit Rate",
+        "example": {
+          "en": "$13.80 over 6 becomes $2.30 over 1. Shop B costs $2.30 per notebook.",
+          "es": "$13.80 sobre 6 se convierte en $2.30 sobre 1. La tienda B cuesta $2.30 por cuaderno."
+        },
+        "nonExample": {
+          "en": "$13.80 for 6 notebooks is not a unit rate yet. Divide both parts by 6.",
+          "es": "$13.80 por 6 cuadernos todavía no es una tasa unitaria. Divide las dos partes entre 6."
+        },
+        "frame": {
+          "en": "Divide both parts by ___ to get $___ per ___.",
+          "es": "Divide las dos partes entre ___ para obtener $___ por ___."
+        }
+      },
+      {
+        "term": "Better Buy",
+        "example": {
+          "en": "Shop B at $2.30 each is the better buy, even though its total, $13.80, is bigger than $10.00.",
+          "es": "La tienda B a $2.30 cada uno es la mejor compra, aunque su total, $13.80, es mayor que $10.00."
+        },
+        "nonExample": {
+          "en": "Shop A is not the better buy just because $10.00 is the smaller total.",
+          "es": "La tienda A no es la mejor compra solo porque $10.00 es el total menor."
+        },
+        "frame": {
+          "en": "___ is the better buy because it costs $___ per ___.",
+          "es": "___ es la mejor compra porque cuesta $___ por ___."
+        }
+      },
+      {
+        "term": "numerator",
+        "example": {
+          "en": "In $13.80 over 6, the numerator is $13.80, the total cost.",
+          "es": "En $13.80 sobre 6, el numerador es $13.80, el costo total."
+        },
+        "nonExample": {
+          "en": "The 6 is not the numerator. It sits on the bottom.",
+          "es": "El 6 no es el numerador. Está abajo."
+        },
+        "frame": {
+          "en": "The numerator is ___, the ___.",
+          "es": "El numerador es ___, el ___."
+        }
+      },
+      {
+        "term": "denominator",
+        "example": {
+          "en": "In $13.80 over 6, the denominator is 6, the number of notebooks.",
+          "es": "En $13.80 sobre 6, el denominador es 6, el número de cuadernos."
+        },
+        "nonExample": {
+          "en": "The $13.80 is not the denominator. Cost goes on top.",
+          "es": "Los $13.80 no son el denominador. El costo va arriba."
+        },
+        "frame": {
+          "en": "The denominator is ___, the ___.",
+          "es": "El denominador es ___, la ___."
+        }
+      }
+    ],
+    "confused": [
+      {
+        "wrong": {
+          "en": "Shop A is cheaper because $10.00 is less than $13.80.",
+          "es": "La tienda A es más barata porque $10.00 es menos que $13.80."
+        },
+        "coach": {
+          "en": "Do both shops sell the same number of notebooks?",
+          "es": "¿Las dos tiendas venden el mismo número de cuadernos?"
+        },
+        "why": {
+          "en": "The shops sell different amounts, so compare the cost of 1: 10 ÷ 4 = 2.50 and 13.80 ÷ 6 = 2.30. Shop B is cheaper.",
+          "es": "Las tiendas venden cantidades distintas, así que compara el costo de 1: 10 ÷ 4 = 2.50 y 13.80 ÷ 6 = 2.30. La tienda B es más barata."
+        },
+        "misconception": "compared-totals-not-unit-rates",
+        "calc": {
+          "expr": "13.8 / 6",
+          "value": 2.3
+        }
+      },
+      {
+        "wrong": {
+          "en": "I put the notebooks on top: 6 over 13.80. Then 6 ÷ 13.80 is about 0.43.",
+          "es": "Puse los cuadernos arriba: 6 sobre 13.80. Entonces 6 ÷ 13.80 es casi 0.43."
+        },
+        "coach": {
+          "en": "In our fraction, does the cost go on top, or the quantity?",
+          "es": "En nuestra fracción, ¿el costo va arriba o la cantidad?"
+        },
+        "why": {
+          "en": "Cost goes on top and notebooks on the bottom. Divide: 10 ÷ 4 = 2.50 dollars for 1 notebook in Shop A.",
+          "es": "El costo va arriba y los cuadernos abajo. Divide: 10 ÷ 4 = 2.50 dólares por 1 cuaderno en la tienda A."
+        },
+        "misconception": "fraction-flipped",
+        "calc": {
+          "expr": "10 / 4",
+          "value": 2.5
+        }
+      },
+      {
+        "wrong": {
+          "en": "Shop B is $2.30 a notebook. For 12 notebooks I add: 12 + 2.30 = $14.30.",
+          "es": "La tienda B cuesta $2.30 por cuaderno. Para 12 cuadernos sumo: 12 + 2.30 = $14.30."
+        },
+        "coach": {
+          "en": "If one notebook costs $2.30, what do two notebooks cost?",
+          "es": "Si un cuaderno cuesta $2.30, ¿cuánto cuestan dos cuadernos?"
+        },
+        "why": {
+          "en": "Each notebook costs $2.30, so 12 notebooks are 12 groups of $2.30. Multiply: 2.30 × 12 = 27.60.",
+          "es": "Cada cuaderno cuesta $2.30, así que 12 cuadernos son 12 grupos de $2.30. Multiplica: 2.30 × 12 = 27.60."
+        },
+        "misconception": "added-instead-of-multiplied",
+        "calc": {
+          "expr": "2.3 * 12",
+          "value": 27.6
+        }
+      }
+    ]
+  }
 }

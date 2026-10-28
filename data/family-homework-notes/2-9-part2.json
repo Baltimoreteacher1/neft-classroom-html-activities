@@ -566,5 +566,300 @@
       ],
       "image": "/assets/vocab-images/spread.svg"
     }
-  ]
+  ],
+  "v3": {
+    "version": 1,
+    "kind": "math",
+    "topicKey": "compare-spread-mad-apply",
+    "standardPlain": {
+      "en": "Use the MAD to compare two data sets that have the same mean.",
+      "es": "Usar la DMA para comparar dos conjuntos de datos que tienen la misma media."
+    },
+    "hook": {
+      "style": "map",
+      "en": "Two cities both have an average high of 52 degrees. City A highs: 46, 50, 54, 58. City B highs: 36, 48, 56, 68. You pack one jacket. Which city is easier to pack for?",
+      "es": "Dos ciudades tienen una máxima promedio de 52 grados. Máximas de la ciudad A: 46, 50, 54, 58. Máximas de la ciudad B: 36, 48, 56, 68. Llevas una sola chamarra. ¿Para qué ciudad es más fácil empacar?",
+      "guess": {
+        "en": "Guess first: which city has highs that stay closer to 52?",
+        "es": "Primero adivina: ¿qué ciudad tiene máximas más cercanas a 52?"
+      },
+      "reveal": {
+        "en": "City A! Its highs are 6, 2, 2 and 6 degrees from 52, so its MAD is 4. City B is 16, 4, 4 and 16 away, so its MAD is 10.",
+        "es": "¡La ciudad A! Sus máximas están a 6, 2, 2 y 6 grados de 52, así que su DMA es 4. La ciudad B está a 16, 4, 4 y 16, así que su DMA es 10."
+      }
+    },
+    "classModel": {
+      "name": {
+        "en": "comparing with the MAD",
+        "es": "comparar con la DMA"
+      }
+    },
+    "model": {
+      "kind": "barplot",
+      "data": {
+        "categories": [
+          {
+            "label": {
+              "en": "City A MAD",
+              "es": "DMA ciudad A"
+            },
+            "value": 4
+          },
+          {
+            "label": {
+              "en": "City B MAD",
+              "es": "DMA ciudad B"
+            },
+            "value": 10
+          }
+        ],
+        "unit": {
+          "en": "degrees from the mean of 52",
+          "es": "grados desde la media de 52"
+        }
+      },
+      "alt": {
+        "en": "A bar graph comparing two cities with the same mean, 52 degrees. City A has a MAD of 4 degrees. City B has a MAD of 10 degrees. The longer bar means more spread.",
+        "es": "Una gráfica de barras compara dos ciudades con la misma media, 52 grados. La ciudad A tiene una DMA de 4 grados. La ciudad B tiene una DMA de 10 grados. La barra más larga significa más dispersión."
+      }
+    },
+    "transfer": {
+      "stem": {
+        "en": "Mia's quiz scores are 8, 9, 10, 9. Leo's are 5, 7, 11, 13. Both means are 9. Who is more consistent?",
+        "es": "Los puntajes de Mia son 8, 9, 10, 9. Los de Leo son 5, 7, 11, 13. Las dos medias son 9. ¿Quién es más constante?"
+      },
+      "choices": [
+        {
+          "en": "Leo, because his scores go higher. His MAD is 3.",
+          "es": "Leo, porque sus puntajes llegan más alto. Su DMA es 3.",
+          "correct": false,
+          "misconception": "bigger-mad-means-better"
+        },
+        {
+          "en": "Neither. Both means are 9, so they are the same.",
+          "es": "Ninguno. Las dos medias son 9, así que son iguales.",
+          "correct": false,
+          "misconception": "same-mean-same-spread"
+        },
+        {
+          "en": "Mia, because her MAD is 0.5, the smaller one.",
+          "es": "Mia, porque su DMA es 0.5, la menor.",
+          "correct": true,
+          "misconception": null
+        }
+      ],
+      "reasoning": {
+        "en": "Mia's gaps are 1, 0, 1 and 0, so her MAD is 2 ÷ 4 = 0.5. Leo's gaps are 4, 2, 2 and 4, so his MAD is 12 ÷ 4 = 3. A smaller MAD means more consistent.",
+        "es": "Las distancias de Mia son 1, 0, 1 y 0, así que su DMA es 2 ÷ 4 = 0.5. Las de Leo son 4, 2, 2 y 4, así que su DMA es 12 ÷ 4 = 3. Una DMA menor significa más constante."
+      },
+      "calc": {
+        "expr": "(1 + 0 + 1 + 0) / 4",
+        "value": 0.5
+      }
+    },
+    "glitch": {
+      "scenario": {
+        "en": "A different situation: Two cooks both average 30 minutes per dish. Cook X took 28, 30, 30, 32. Cook Y took 20, 28, 32, 40. Which cook is more consistent?",
+        "es": "Otra situación: Dos cocineros tardan en promedio 30 minutos por platillo. El cocinero X tardó 28, 30, 30, 32. El cocinero Y tardó 20, 28, 32, 40. ¿Quién es más constante?"
+      },
+      "steps": [
+        {
+          "en": "Find each distance from 30. X: 2, 0, 0, 2. Y: 10, 2, 2, 10.",
+          "es": "Halla cada distancia a 30. X: 2, 0, 0, 2. Y: 10, 2, 2, 10.",
+          "isGlitch": false
+        },
+        {
+          "en": "Average each list. X: 4 ÷ 4 = 1. Y: 24 ÷ 4 = 6.",
+          "es": "Promedia cada lista. X: 4 ÷ 4 = 1. Y: 24 ÷ 4 = 6.",
+          "isGlitch": false
+        },
+        {
+          "en": "Cook Y has the bigger MAD, so Cook Y is more consistent.",
+          "es": "El cocinero Y tiene la DMA mayor, así que el cocinero Y es más constante.",
+          "isGlitch": true
+        }
+      ],
+      "fix": {
+        "en": "A bigger MAD means more scatter. Cook X has the smaller MAD, 1, so Cook X is more consistent.",
+        "es": "Una DMA mayor significa más dispersión. El cocinero X tiene la DMA menor, 1, así que el cocinero X es más constante."
+      },
+      "frame": {
+        "en": "The smaller MAD is ___, so the more consistent one is ___.",
+        "es": "La DMA menor es ___, así que el más constante es ___."
+      },
+      "calc": {
+        "expr": "(2 + 0 + 0 + 2) / 4",
+        "value": 1
+      }
+    },
+    "spiral": [
+      {
+        "from": "2-9",
+        "q": {
+          "en": "The mean is 20. How far is 13 from the mean?",
+          "es": "La media es 20. ¿A qué distancia de la media está 13?"
+        },
+        "options": [
+          "13",
+          "7",
+          "33"
+        ],
+        "correctIdx": 1,
+        "exp": {
+          "en": "The distance is the bigger number minus the smaller: 20 − 13 = 7.",
+          "es": "La distancia es el número mayor menos el menor: 20 − 13 = 7."
+        },
+        "calc": {
+          "expr": "20 - 13",
+          "value": 7
+        }
+      },
+      {
+        "from": "2-8",
+        "q": {
+          "en": "What is the mean of 4, 8, 6, 10?",
+          "es": "¿Cuál es la media de 4, 8, 6, 10?"
+        },
+        "options": [
+          "28",
+          "10",
+          "7"
+        ],
+        "correctIdx": 2,
+        "exp": {
+          "en": "Add: 4 + 8 + 6 + 10 = 28. Divide by 4 numbers: 28 ÷ 4 = 7.",
+          "es": "Suma: 4 + 8 + 6 + 10 = 28. Divide entre 4 números: 28 ÷ 4 = 7."
+        },
+        "calc": {
+          "expr": "(4 + 8 + 6 + 10) / 4",
+          "value": 7
+        }
+      }
+    ],
+    "kitchenTable": {
+      "en": "Two bus routes both average 20 minutes. Route 1 takes 19, 20, 20, 21. Route 2 takes 10, 15, 25, 30. Ask your student which route they want on a school morning, and why.",
+      "es": "Dos rutas de autobús tienen un promedio de 20 minutos. La ruta 1 tarda 19, 20, 20, 21. La ruta 2 tarda 10, 15, 25, 30. Pregunten a su estudiante qué ruta querría en una mañana de escuela, y por qué."
+    },
+    "vocab": [
+      {
+        "term": "Mean Absolute Deviation",
+        "example": {
+          "en": "City A's MAD is 4 degrees. City B's MAD is 10 degrees.",
+          "es": "La DMA de la ciudad A es 4 grados. La DMA de la ciudad B es 10 grados."
+        },
+        "nonExample": {
+          "en": "Both cities have a mean of 52, but the mean does not show the MAD.",
+          "es": "Las dos ciudades tienen media 52, pero la media no muestra la DMA."
+        },
+        "frame": {
+          "en": "A MAD of ___ means the values are ___ from the mean, on average.",
+          "es": "Una DMA de ___ significa que los valores están a ___ de la media, en promedio."
+        }
+      },
+      {
+        "term": "Deviation",
+        "example": {
+          "en": "City B's 36 is 16 degrees below 52. Its deviation is −16.",
+          "es": "El 36 de la ciudad B está 16 grados debajo de 52. Su desviación es −16."
+        },
+        "nonExample": {
+          "en": "City B's 36 alone is not a deviation. Compare it with 52.",
+          "es": "El 36 de la ciudad B solo no es una desviación. Compáralo con 52."
+        },
+        "frame": {
+          "en": "The deviation of ___ from ___ is ___.",
+          "es": "La desviación de ___ respecto a ___ es ___."
+        }
+      },
+      {
+        "term": "Absolute Value",
+        "example": {
+          "en": "The absolute value of −16 is 16. We add distances, not signs.",
+          "es": "El valor absoluto de −16 es 16. Sumamos distancias, no signos."
+        },
+        "nonExample": {
+          "en": "Adding −6, −2, 2 and 6 gives 0. That hides the spread.",
+          "es": "Sumar −6, −2, 2 y 6 da 0. Eso esconde la dispersión."
+        },
+        "frame": {
+          "en": "I make ___ positive: the absolute value of ___ is ___.",
+          "es": "Hago positivo ___: el valor absoluto de ___ es ___."
+        }
+      },
+      {
+        "term": "Variability",
+        "example": {
+          "en": "City B has more variability. Its highs run from 36 to 68.",
+          "es": "La ciudad B tiene más variabilidad. Sus máximas van de 36 a 68."
+        },
+        "nonExample": {
+          "en": "Two cities with the same mean, 52, do not have the same variability.",
+          "es": "Dos ciudades con la misma media, 52, no tienen la misma variabilidad."
+        },
+        "frame": {
+          "en": "___ has more variability because its MAD is ___.",
+          "es": "___ tiene más variabilidad porque su DMA es ___."
+        }
+      }
+    ],
+    "confused": [
+      {
+        "wrong": {
+          "en": "Both cities have a mean of 52, so they have the same weather.",
+          "es": "Las dos ciudades tienen media 52, así que tienen el mismo clima."
+        },
+        "coach": {
+          "en": "What does the mean not tell us about each city's highs?",
+          "es": "¿Qué no nos dice la media sobre las máximas de cada ciudad?"
+        },
+        "why": {
+          "en": "The mean is only the center. City A's MAD is 4 and City B's MAD is 10, so City B swings more.",
+          "es": "La media es solo el centro. La DMA de la ciudad A es 4 y la de la ciudad B es 10, así que la B cambia más."
+        },
+        "misconception": "same-mean-same-spread",
+        "calc": {
+          "expr": "(6 + 2 + 2 + 6) / 4",
+          "value": 4
+        }
+      },
+      {
+        "wrong": {
+          "en": "City B has the bigger MAD, 10, so it is more consistent.",
+          "es": "La ciudad B tiene la DMA mayor, 10, así que es más constante."
+        },
+        "coach": {
+          "en": "When the highs stay close to the mean, is the MAD big or small?",
+          "es": "Cuando las máximas se quedan cerca de la media, ¿la DMA es grande o pequeña?"
+        },
+        "why": {
+          "en": "Close to the mean means a small MAD. City A's MAD is smaller, so City A is more consistent. City B's MAD is 10.",
+          "es": "Cerca de la media significa una DMA pequeña. La DMA de la ciudad A es menor, así que A es más constante. La DMA de B es 10."
+        },
+        "misconception": "bigger-mad-means-more-consistent",
+        "calc": {
+          "expr": "(16 + 4 + 4 + 16) / 4",
+          "value": 10
+        }
+      },
+      {
+        "wrong": {
+          "en": "City A gaps: −6, −2, 2 and 6. They add to 0, so the MAD is 0.",
+          "es": "Distancias de la ciudad A: −6, −2, 2 y 6. Suman 0, así que la DMA es 0."
+        },
+        "coach": {
+          "en": "What should we do to the −6 and the −2 before adding?",
+          "es": "¿Qué debemos hacer con el −6 y el −2 antes de sumar?"
+        },
+        "why": {
+          "en": "Take the absolute value first: 6, 2, 2 and 6. They add to 16, and 16 ÷ 4 = 4.",
+          "es": "Primero toma el valor absoluto: 6, 2, 2 y 6. Suman 16, y 16 ÷ 4 = 4."
+        },
+        "misconception": "kept-negative-signs",
+        "calc": {
+          "expr": "16 / 4",
+          "value": 4
+        }
+      }
+    ]
+  }
 }

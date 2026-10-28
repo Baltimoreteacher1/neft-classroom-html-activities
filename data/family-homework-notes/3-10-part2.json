@@ -516,5 +516,306 @@
       ],
       "image": "/assets/vocab-images/divide.svg"
     }
-  ]
+  ],
+  "v3": {
+    "version": 1,
+    "kind": "math",
+    "topicKey": "convert-units-direction-apply",
+    "standardPlain": {
+      "en": "Choose whether to multiply or divide when you change customary units.",
+      "es": "Elegir si se multiplica o se divide al cambiar unidades usuales."
+    },
+    "hook": {
+      "style": "receipt",
+      "en": "A flour sack says 96 ounces. The bakery orders by the pound, and 1 pound = 16 ounces. How many pounds of flour are in the sack?",
+      "es": "Un costal de harina dice 96 onzas. La panadería pide por libras, y 1 libra = 16 onzas. ¿Cuántas libras de harina hay en el costal?",
+      "guess": {
+        "en": "Make a guess first: will the answer be more than 96, or less?",
+        "es": "Primero adivina: ¿la respuesta será mayor que 96 o menor?"
+      },
+      "reveal": {
+        "en": "Less! A pound is a bigger unit, so it takes fewer of them. 96 ÷ 16 = 6 pounds.",
+        "es": "¡Menor! Una libra es una unidad más grande, así que se necesitan menos. 96 ÷ 16 = 6 libras."
+      }
+    },
+    "classModel": {
+      "name": {
+        "en": "bigger unit, fewer; smaller unit, more",
+        "es": "unidad más grande, menos; unidad más pequeña, más"
+      }
+    },
+    "model": {
+      "kind": "doubleline",
+      "data": {
+        "top": {
+          "label": {
+            "en": "Pounds",
+            "es": "Libras"
+          },
+          "ticks": [
+            "0",
+            "1",
+            "?"
+          ]
+        },
+        "bottom": {
+          "label": {
+            "en": "Ounces",
+            "es": "Onzas"
+          },
+          "ticks": [
+            "0",
+            "16",
+            "96"
+          ]
+        },
+        "unknown": [
+          2
+        ]
+      },
+      "alt": {
+        "en": "Two number lines lined up. The top line shows 0 pounds, 1 pound and an unknown number of pounds. The bottom line shows 0, 16 and 96 ounces. 1 pound lines up with 16 ounces, and the unknown lines up with 96 ounces.",
+        "es": "Dos rectas numéricas alineadas. La de arriba muestra 0 libras, 1 libra y un número desconocido de libras. La de abajo muestra 0, 16 y 96 onzas. 1 libra coincide con 16 onzas, y la incógnita coincide con 96 onzas."
+      }
+    },
+    "transfer": {
+      "stem": {
+        "en": "A cooler holds 20 quarts of juice. How many gallons is that? (1 gallon = 4 quarts)",
+        "es": "Una hielera tiene 20 cuartos de jugo. ¿Cuántos galones son? (1 galón = 4 cuartos)"
+      },
+      "choices": [
+        {
+          "en": "80 gallons",
+          "es": "80 galones",
+          "correct": false,
+          "misconception": "multiplied-to-bigger-unit"
+        },
+        {
+          "en": "5 gallons",
+          "es": "5 galones",
+          "correct": true,
+          "misconception": null
+        },
+        {
+          "en": "16 gallons",
+          "es": "16 galones",
+          "correct": false,
+          "misconception": "subtracted-the-factor"
+        }
+      ],
+      "reasoning": {
+        "en": "A gallon is a bigger unit, so you need fewer of them. Divide: 20 ÷ 4 = 5 gallons.",
+        "es": "Un galón es una unidad más grande, así que se necesitan menos. Divide: 20 ÷ 4 = 5 galones."
+      },
+      "calc": {
+        "expr": "20 / 4",
+        "value": 5,
+        "unit": "gallons"
+      }
+    },
+    "glitch": {
+      "scenario": {
+        "en": "A different situation: A board is 4 yards long. Lena wants to know how many feet. 1 yard = 3 feet.",
+        "es": "Otra situación: Una tabla mide 4 yardas de largo. Lena quiere saber cuántos pies son. 1 yarda = 3 pies."
+      },
+      "steps": [
+        {
+          "en": "Write the conversion factor: 1 yard = 3 feet.",
+          "es": "Escribe el factor de conversión: 1 yarda = 3 pies.",
+          "isGlitch": false
+        },
+        {
+          "en": "Divide: 4 ÷ 3 = 1.33, so the board is about 1.33 feet.",
+          "es": "Divide: 4 ÷ 3 = 1.33, así que la tabla mide casi 1.33 pies.",
+          "isGlitch": true
+        },
+        {
+          "en": "Check: a foot is smaller than a yard, so the number of feet should be bigger than 4.",
+          "es": "Comprueba: un pie es menor que una yarda, así que el número de pies debe ser mayor que 4.",
+          "isGlitch": false
+        }
+      ],
+      "fix": {
+        "en": "A foot is a smaller unit, so you need more feet. Multiply: 4 × 3 = 12. The board is 12 feet long.",
+        "es": "Un pie es una unidad más pequeña, así que se necesitan más pies. Multiplica: 4 × 3 = 12. La tabla mide 12 pies."
+      },
+      "frame": {
+        "en": "I multiply because ___ is a smaller unit than ___, so ___ × ___ = ___.",
+        "es": "Multiplico porque ___ es una unidad más pequeña que ___, así que ___ × ___ = ___."
+      },
+      "calc": {
+        "expr": "4 * 3",
+        "value": 12
+      }
+    },
+    "spiral": [
+      {
+        "from": "3-10",
+        "q": {
+          "en": "How many inches are in 3 feet? (1 foot = 12 inches)",
+          "es": "¿Cuántas pulgadas hay en 3 pies? (1 pie = 12 pulgadas)"
+        },
+        "options": [
+          "36",
+          "15",
+          "4"
+        ],
+        "correctIdx": 0,
+        "exp": {
+          "en": "An inch is smaller, so multiply: 3 × 12 = 36.",
+          "es": "Una pulgada es más pequeña, así que multiplica: 3 × 12 = 36."
+        },
+        "calc": {
+          "expr": "3 * 12",
+          "value": 36
+        }
+      },
+      {
+        "from": "3-9",
+        "q": {
+          "en": "What is the missing number? 2:5 = 6:___",
+          "es": "¿Cuál es el número que falta? 2:5 = 6:___"
+        },
+        "options": [
+          "15",
+          "9",
+          "30"
+        ],
+        "correctIdx": 0,
+        "exp": {
+          "en": "2 × 3 = 6, so 5 × 3 = 15.",
+          "es": "2 × 3 = 6, así que 5 × 3 = 15."
+        },
+        "calc": {
+          "expr": "5 * 3",
+          "value": 15
+        }
+      }
+    ],
+    "kitchenTable": {
+      "en": "Find a bag of flour, rice, or sugar with ounces on the label. Ask your student: how many ounces are in 3 pounds? If a bag says 64 ounces, how many pounds is that? Say \"bigger or smaller?\" before you calculate.",
+      "es": "Busquen una bolsa de harina, arroz o azúcar con onzas en la etiqueta. Pregunten: ¿cuántas onzas hay en 3 libras? Si una bolsa dice 64 onzas, ¿cuántas libras son? Digan «¿mayor o menor?» antes de calcular."
+    },
+    "vocab": [
+      {
+        "term": "Conversion Factor",
+        "example": {
+          "en": "1 pound = 16 ounces connects the two units on the flour sack.",
+          "es": "1 libra = 16 onzas conecta las dos unidades del costal de harina."
+        },
+        "nonExample": {
+          "en": "96 ounces = 6 pounds is the answer, not the factor.",
+          "es": "96 onzas = 6 libras es la respuesta, no el factor."
+        },
+        "frame": {
+          "en": "My conversion factor is 1 ___ = ___ ___.",
+          "es": "Mi factor de conversión es 1 ___ = ___ ___."
+        }
+      },
+      {
+        "term": "Customary units",
+        "example": {
+          "en": "Ounces and pounds are customary units. So are feet and yards.",
+          "es": "Las onzas y las libras son unidades usuales. También lo son los pies y las yardas."
+        },
+        "nonExample": {
+          "en": "Grams and kilograms are metric units, not customary units.",
+          "es": "Los gramos y los kilogramos son unidades métricas, no unidades usuales."
+        },
+        "frame": {
+          "en": "___ and ___ are customary units that measure ___.",
+          "es": "___ y ___ son unidades usuales que miden ___."
+        }
+      },
+      {
+        "term": "multiply",
+        "example": {
+          "en": "A different situation: from 3 pounds to ounces, multiply: 3 × 16 = 48.",
+          "es": "Otra situación: de 3 libras a onzas, se multiplica: 3 × 16 = 48."
+        },
+        "nonExample": {
+          "en": "Multiplying 96 × 16 gives 1,536 pounds. That is far too big for one sack.",
+          "es": "Multiplicar 96 × 16 da 1,536 libras. Es demasiado para un solo costal."
+        },
+        "frame": {
+          "en": "I multiply because ___ is a smaller unit than ___.",
+          "es": "Multiplico porque ___ es una unidad más pequeña que ___."
+        }
+      },
+      {
+        "term": "Divide",
+        "example": {
+          "en": "To go from 96 ounces to pounds, divide: 96 ÷ 16 = 6.",
+          "es": "Para pasar de 96 onzas a libras, se divide: 96 ÷ 16 = 6."
+        },
+        "nonExample": {
+          "en": "Dividing is wrong for 6 pounds to ounces. That gives 0.375, but the sack has 96 ounces.",
+          "es": "Dividir no sirve para pasar de 6 libras a onzas. Da 0.375, pero el costal tiene 96 onzas."
+        },
+        "frame": {
+          "en": "I divide because ___ is a bigger unit than ___.",
+          "es": "Divido porque ___ es una unidad más grande que ___."
+        }
+      }
+    ],
+    "confused": [
+      {
+        "wrong": {
+          "en": "96 ounces to pounds: I multiply. 96 × 16 = 1,536 pounds.",
+          "es": "De 96 onzas a libras: multiplico. 96 × 16 = 1,536 libras."
+        },
+        "coach": {
+          "en": "Should the number of pounds be bigger or smaller than 96?",
+          "es": "¿El número de libras debe ser mayor o menor que 96?"
+        },
+        "why": {
+          "en": "A pound is a bigger unit, so you need fewer pounds. Divide: 96 ÷ 16 = 6.",
+          "es": "Una libra es una unidad más grande, así que se necesitan menos libras. Divide: 96 ÷ 16 = 6."
+        },
+        "misconception": "multiplied-to-bigger-unit",
+        "calc": {
+          "expr": "96 / 16",
+          "value": 6
+        }
+      },
+      {
+        "wrong": {
+          "en": "Converting always means multiplying. So 15 feet is 15 × 3 = 45 yards.",
+          "es": "Convertir siempre significa multiplicar. Entonces 15 pies son 15 × 3 = 45 yardas."
+        },
+        "coach": {
+          "en": "Is a yard longer or shorter than a foot?",
+          "es": "¿Una yarda es más larga o más corta que un pie?"
+        },
+        "why": {
+          "en": "A yard is longer, so you need fewer yards. Divide: 15 ÷ 3 = 5.",
+          "es": "Una yarda es más larga, así que se necesitan menos yardas. Divide: 15 ÷ 3 = 5."
+        },
+        "misconception": "always-multiply",
+        "calc": {
+          "expr": "15 / 3",
+          "value": 5
+        }
+      },
+      {
+        "wrong": {
+          "en": "I divided 96 by 16 and got 6, so there are 6 ounces.",
+          "es": "Dividí 96 entre 16 y obtuve 6, así que hay 6 onzas."
+        },
+        "coach": {
+          "en": "What unit did you start with, and what unit are you finding?",
+          "es": "¿Con qué unidad empezaste y qué unidad estás hallando?"
+        },
+        "why": {
+          "en": "The 6 counts groups of 16 ounces, so it counts pounds. Check: 6 × 16 = 96 ounces.",
+          "es": "El 6 cuenta grupos de 16 onzas, así que cuenta libras. Comprueba: 6 × 16 = 96 onzas."
+        },
+        "misconception": "answer-wrong-unit",
+        "calc": {
+          "expr": "6 * 16",
+          "value": 96
+        }
+      }
+    ]
+  }
 }

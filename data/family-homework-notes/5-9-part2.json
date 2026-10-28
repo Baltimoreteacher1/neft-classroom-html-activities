@@ -517,5 +517,308 @@
       "role": "concept",
       "image": "/assets/vocab-images/area-of-regular-polygons.svg"
     }
-  ]
+  ],
+  "v3": {
+    "version": 1,
+    "kind": "math",
+    "topicKey": "regular-polygon-area-cost-apply",
+    "standardPlain": {
+      "en": "Find the area of a regular polygon from its triangles, then use it to find a cost.",
+      "es": "Hallar el área de un polígono regular a partir de sus triángulos y usarla para hallar un costo."
+    },
+    "hook": {
+      "style": "price-tag",
+      "en": "A rooftop garden bed is a regular decagon with 10 sides. It splits into 10 equal triangles. Each has a base of 3 feet and a height of 4 feet. Soil costs $5 per square foot. How much to fill the bed?",
+      "es": "Un jardín en la azotea tiene forma de decágono regular con 10 lados. Se divide en 10 triángulos iguales. Cada uno tiene base de 3 pies y altura de 4 pies. La tierra cuesta $5 por pie cuadrado. ¿Cuánto cuesta llenar el jardín?",
+      "guess": {
+        "en": "Guess first: is it more than $200, or less?",
+        "es": "Primero adivina: ¿cuesta más de $200 o menos?"
+      },
+      "reveal": {
+        "en": "More! One triangle is ½ × 3 × 4 = 6. Ten triangles make 60 square feet. Then 60 × $5 = $300.",
+        "es": "¡Más! Un triángulo es ½ × 3 × 4 = 6. Diez triángulos suman 60 pies cuadrados. Entonces 60 × $5 = $300."
+      }
+    },
+    "classModel": {
+      "name": {
+        "en": "one triangle, then multiply",
+        "es": "un triángulo y luego multiplicar"
+      }
+    },
+    "model": {
+      "kind": "ratiotable",
+      "data": {
+        "headers": [
+          {
+            "en": "Triangles",
+            "es": "Triángulos"
+          },
+          {
+            "en": "Area (square feet)",
+            "es": "Área (pies cuadrados)"
+          }
+        ],
+        "rows": [
+          [
+            1,
+            6
+          ],
+          [
+            10,
+            60
+          ]
+        ],
+        "arrows": [
+          {
+            "from": 0,
+            "to": 1,
+            "label": "×10"
+          }
+        ]
+      },
+      "alt": {
+        "en": "A ratio table. One triangle of the garden bed has an area of 6 square feet. Ten triangles have an area of 60 square feet. An arrow shows multiplying by 10.",
+        "es": "Una tabla de razones. Un triángulo del jardín tiene un área de 6 pies cuadrados. Diez triángulos tienen un área de 60 pies cuadrados. Una flecha muestra multiplicar por 10."
+      }
+    },
+    "transfer": {
+      "stem": {
+        "en": "A playground pad is a regular pentagon. It splits into 5 equal triangles. Each has a base of 8 feet and a height of 5.5 feet. The pad costs $4 per square foot. What is the cost?",
+        "es": "Un piso de juegos es un pentágono regular. Se divide en 5 triángulos iguales. Cada uno tiene base de 8 pies y altura de 5.5 pies. El piso cuesta $4 por pie cuadrado. ¿Cuál es el costo?"
+      },
+      "choices": [
+        {
+          "en": "$110",
+          "es": "$110",
+          "correct": false,
+          "misconception": "stopped-before-the-price"
+        },
+        {
+          "en": "$440",
+          "es": "$440",
+          "correct": true,
+          "misconception": null
+        },
+        {
+          "en": "$88",
+          "es": "$88",
+          "correct": false,
+          "misconception": "priced-one-triangle-only"
+        }
+      ],
+      "reasoning": {
+        "en": "One triangle is ½ × 8 × 5.5 = 22. Five triangles make 5 × 22 = 110 square feet. At $4 each: 110 × 4 = $440.",
+        "es": "Un triángulo es ½ × 8 × 5.5 = 22. Cinco triángulos suman 5 × 22 = 110 pies cuadrados. A $4 cada uno: 110 × 4 = $440."
+      },
+      "calc": {
+        "expr": "5 * (0.5 * 8 * 5.5) * 4",
+        "value": 440,
+        "unit": "$"
+      }
+    },
+    "glitch": {
+      "scenario": {
+        "en": "A different situation: A regular octagon rug splits into 8 equal triangles. Each has a base of 3 ft and a height of 4 ft. Rug pad costs $2 per square foot.",
+        "es": "Otra situación: Un tapete en forma de octágono regular se divide en 8 triángulos iguales. Cada uno tiene base de 3 pies y altura de 4 pies. La base antideslizante cuesta $2 por pie cuadrado."
+      },
+      "steps": [
+        {
+          "en": "One triangle: ½ × 3 × 4 = 6 square feet.",
+          "es": "Un triángulo: ½ × 3 × 4 = 6 pies cuadrados.",
+          "isGlitch": false
+        },
+        {
+          "en": "The rug has 8 triangles, so add: 6 + 8 = 14 square feet.",
+          "es": "El tapete tiene 8 triángulos, así que sumo: 6 + 8 = 14 pies cuadrados.",
+          "isGlitch": true
+        },
+        {
+          "en": "Cost: 14 × $2 = $28.",
+          "es": "Costo: 14 × $2 = $28.",
+          "isGlitch": false
+        }
+      ],
+      "fix": {
+        "en": "The 8 counts triangles, so multiply: 8 × 6 = 48 square feet. Then 48 × $2 = $96.",
+        "es": "El 8 cuenta triángulos, así que se multiplica: 8 × 6 = 48 pies cuadrados. Entonces 48 × $2 = $96."
+      },
+      "frame": {
+        "en": "I multiply the triangle's area by ___ because there are ___ triangles.",
+        "es": "Multiplico el área del triángulo por ___ porque hay ___ triángulos."
+      },
+      "calc": {
+        "expr": "8 * 6",
+        "value": 48
+      }
+    },
+    "spiral": [
+      {
+        "from": "5-9",
+        "q": {
+          "en": "A regular hexagon splits into 6 triangles of 7 square units each. What is its area?",
+          "es": "Un hexágono regular se divide en 6 triángulos de 7 unidades cuadradas cada uno. ¿Cuál es su área?"
+        },
+        "options": [
+          "13",
+          "36",
+          "42"
+        ],
+        "correctIdx": 2,
+        "exp": {
+          "en": "Repeat the triangle's area 6 times: 6 × 7 = 42.",
+          "es": "Repite el área del triángulo 6 veces: 6 × 7 = 42."
+        },
+        "calc": {
+          "expr": "6 * 7",
+          "value": 42
+        }
+      },
+      {
+        "from": "5-2",
+        "q": {
+          "en": "A triangle has a base of 10 and a height of 4. What is its area?",
+          "es": "Un triángulo tiene base de 10 y altura de 4. ¿Cuál es su área?"
+        },
+        "options": [
+          "20",
+          "40",
+          "14"
+        ],
+        "correctIdx": 0,
+        "exp": {
+          "en": "A triangle is half of a rectangle. ½ × 10 × 4 = 20.",
+          "es": "Un triángulo es la mitad de un rectángulo. ½ × 10 × 4 = 20."
+        },
+        "calc": {
+          "expr": "0.5 * 10 * 4",
+          "value": 20
+        }
+      }
+    ],
+    "kitchenTable": {
+      "en": "Pick a plate or a rug and imagine it as a hexagon of 6 triangles. If one triangle is 5 square units and tile costs $2 per unit, how would you find the cost out loud?",
+      "es": "Elijan un plato o un tapete e imaginen un hexágono de 6 triángulos. Si un triángulo mide 5 unidades cuadradas y la loseta cuesta $2 por unidad, ¿cómo hallarían el costo en voz alta?"
+    },
+    "vocab": [
+      {
+        "term": "Regular Polygon",
+        "example": {
+          "en": "The decagon garden bed has 10 equal sides and equal angles, so it is a regular polygon.",
+          "es": "El jardín decagonal tiene 10 lados iguales y ángulos iguales, así que es un polígono regular."
+        },
+        "nonExample": {
+          "en": "A kite-shaped bed is not a regular polygon. Its sides are not all equal.",
+          "es": "Un jardín con forma de cometa no es un polígono regular. Sus lados no son todos iguales."
+        },
+        "frame": {
+          "en": "A regular polygon with ___ sides splits into ___ triangles.",
+          "es": "Un polígono regular con ___ lados se divide en ___ triángulos."
+        }
+      },
+      {
+        "term": "Decompose",
+        "example": {
+          "en": "We decompose the garden bed into 10 triangles from its center.",
+          "es": "Descomponemos el jardín en 10 triángulos desde su centro."
+        },
+        "nonExample": {
+          "en": "Pricing the soil is not decomposing. Decomposing means breaking the shape apart.",
+          "es": "Calcular el precio de la tierra no es descomponer. Descomponer es separar la figura en partes."
+        },
+        "frame": {
+          "en": "I decompose the polygon into ___ triangles, so I multiply by ___.",
+          "es": "Descompongo el polígono en ___ triángulos, así que multiplico por ___."
+        }
+      },
+      {
+        "term": "Congruent",
+        "example": {
+          "en": "The 10 triangles of the garden bed are congruent. They match exactly.",
+          "es": "Los 10 triángulos del jardín son congruentes. Son exactamente iguales."
+        },
+        "nonExample": {
+          "en": "A square and a triangle are not congruent. They are different shapes.",
+          "es": "Un cuadrado y un triángulo no son congruentes. Son figuras distintas."
+        },
+        "frame": {
+          "en": "The triangles are congruent, so I find ___ area and ___.",
+          "es": "Los triángulos son congruentes, así que hallo ___ área y ___."
+        }
+      },
+      {
+        "term": "Triangle",
+        "example": {
+          "en": "Each piece of the garden bed, with a 3-foot base and a 4-foot height, is a triangle.",
+          "es": "Cada pieza del jardín, con base de 3 pies y altura de 4 pies, es un triángulo."
+        },
+        "nonExample": {
+          "en": "The whole bed is not a triangle. It has 10 sides.",
+          "es": "El jardín completo no es un triángulo. Tiene 10 lados."
+        },
+        "frame": {
+          "en": "One triangle has an area of ___, so ___ triangles have an area of ___.",
+          "es": "Un triángulo tiene un área de ___, así que ___ triángulos tienen un área de ___."
+        }
+      }
+    ],
+    "confused": [
+      {
+        "wrong": {
+          "en": "One triangle is 6 square feet. The bed has 10 sides, so 6 + 10 = 16 square feet.",
+          "es": "Un triángulo es 6 pies cuadrados. El jardín tiene 10 lados, así que 6 + 10 = 16 pies cuadrados."
+        },
+        "coach": {
+          "en": "What does the 10 count: square feet, or triangles?",
+          "es": "¿Qué cuenta el 10: pies cuadrados o triángulos?"
+        },
+        "why": {
+          "en": "The 10 counts triangles. Repeat the area 10 times: 10 × 6 = 60 square feet.",
+          "es": "El 10 cuenta triángulos. Repite el área 10 veces: 10 × 6 = 60 pies cuadrados."
+        },
+        "misconception": "added-sides-instead-of-multiplying",
+        "calc": {
+          "expr": "10 * 6",
+          "value": 60
+        }
+      },
+      {
+        "wrong": {
+          "en": "The bed is 60 square feet. Soil is $5, so 60 + 5 = $65.",
+          "es": "El jardín mide 60 pies cuadrados. La tierra cuesta $5, así que 60 + 5 = $65."
+        },
+        "coach": {
+          "en": "The $5 is the price for how many square feet?",
+          "es": "Los $5 son el precio de ¿cuántos pies cuadrados?"
+        },
+        "why": {
+          "en": "Each square foot costs $5, so multiply: 60 × $5 = $300.",
+          "es": "Cada pie cuadrado cuesta $5, así que se multiplica: 60 × $5 = $300."
+        },
+        "misconception": "added-price-instead-of-multiplying",
+        "calc": {
+          "expr": "60 * 5",
+          "value": 300
+        }
+      },
+      {
+        "wrong": {
+          "en": "I found one triangle: ½ × 3 × 4 = 6. So the soil costs 6 × $5 = $30.",
+          "es": "Hallé un triángulo: ½ × 3 × 4 = 6. Entonces la tierra cuesta 6 × $5 = $30."
+        },
+        "coach": {
+          "en": "Does the soil fill one triangle, or the whole bed?",
+          "es": "¿La tierra llena un triángulo o todo el jardín?"
+        },
+        "why": {
+          "en": "The soil fills all 10 triangles, so the bed is 10 × 6 = 60 square feet. Then 60 × $5 = $300.",
+          "es": "La tierra llena los 10 triángulos, así que el jardín mide 10 × 6 = 60 pies cuadrados. Entonces 60 × $5 = $300."
+        },
+        "misconception": "priced-one-triangle-only",
+        "calc": {
+          "expr": "10 * (0.5 * 3 * 4) * 5",
+          "value": 300
+        }
+      }
+    ]
+  }
 }

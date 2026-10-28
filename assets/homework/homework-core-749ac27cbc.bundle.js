@@ -4876,6 +4876,67 @@ window.addEventListener('load', function () { hwRestoreSolved(); hwRenderGoal(fa
 })();
 
 
+(function () {
+  var LESSON = window.LESSON_ID || 'default';
+  function show(el) { if (el) el.hidden = false; }
+  function nudge(btn) {
+    btn.classList.add('is-try-again');
+    var host = btn.closest('.hw-subcard, .hw-spiral-item');
+    var n = host && host.querySelector('.hw-v3-nudge');
+    if (n) { n.hidden = false; }
+  }
+  function settle(btn, host, group) {
+    group.forEach(function (b) { b.classList.remove('is-try-again'); });
+    btn.classList.add('is-correct');
+    var n = host && host.querySelector('.hw-v3-nudge');
+    if (n) n.hidden = true;
+  }
+  function persona(mode) {
+    var m = mode === 'copilot' ? 'copilot' : 'student';
+    document.body.setAttribute('data-persona-mode', m);
+    document.querySelectorAll('[data-persona-btn]').forEach(function (b) {
+      var on = b.getAttribute('data-persona-btn') === m;
+      b.classList.toggle('is-active', on);
+      b.setAttribute('aria-pressed', on ? 'true' : 'false');
+    });
+    if (m === 'copilot') { var g = document.getElementById('hw_grownup'); if (g) g.open = true; }
+    try { localStorage.setItem('hw_persona_' + LESSON, m); } catch (e) {}
+  }
+  function theme(dark) {
+    document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+    var b = document.getElementById('hw_theme_toggle_btn');
+    if (b) b.setAttribute('aria-pressed', dark ? 'true' : 'false');
+    try { localStorage.setItem('hw_theme_pref', dark ? 'dark' : 'light'); } catch (e) {}
+  }
+  document.addEventListener('click', function (e) {
+    var t = e.target.closest('[data-persona-btn], #hw_theme_toggle_btn, .hw-transfer-choice-btn, .hw-glitch-step-btn, .hw-spiral-opt-btn');
+    if (!t) return;
+    if (t.hasAttribute('data-persona-btn')) return persona(t.getAttribute('data-persona-btn'));
+    if (t.id === 'hw_theme_toggle_btn') return theme(document.documentElement.getAttribute('data-theme') !== 'dark');
+    if (t.classList.contains('hw-transfer-choice-btn')) {
+      var tHost = t.closest('.hw-subcard');
+      if (t.getAttribute('data-correct') !== '1') return nudge(t);
+      settle(t, tHost, tHost.querySelectorAll('.hw-transfer-choice-btn'));
+      return show(tHost.querySelector('.hw-transfer-feedback'));
+    }
+    if (t.classList.contains('hw-glitch-step-btn')) {
+      var gHost = t.closest('.hw-subcard');
+      if (t.getAttribute('data-is-glitch') !== '1') return nudge(t);
+      settle(t, gHost, gHost.querySelectorAll('.hw-glitch-step-btn'));
+      return show(gHost.querySelector('.hw-glitch-feedback'));
+    }
+    var sHost = t.closest('.hw-spiral-item');
+    if (t.getAttribute('data-correct') !== '1') return nudge(t);
+    settle(t, sHost, sHost.querySelectorAll('.hw-spiral-opt-btn'));
+    show(sHost.querySelector('.hw-spiral-exp'));
+  });
+  try {
+    if (localStorage.getItem('hw_persona_' + LESSON) === 'copilot') persona('copilot');
+    theme(localStorage.getItem('hw_theme_pref') === 'dark');
+  } catch (e) { theme(false); }
+})();
+
+
 /* Math Dominoes: two players on one device, and the paper version. */
 var domDuo = { on: false };
 

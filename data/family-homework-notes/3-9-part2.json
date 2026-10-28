@@ -526,5 +526,306 @@
       ],
       "image": "/assets/vocab-images/multiply.svg"
     }
-  ]
+  ],
+  "v3": {
+    "version": 1,
+    "kind": "math",
+    "topicKey": "scale-factor-recipe-apply",
+    "standardPlain": {
+      "en": "Find the scale factor that grows a recipe and keeps the ratio the same.",
+      "es": "Hallar el factor de escala que agranda una receta y mantiene la misma razón."
+    },
+    "hook": {
+      "style": "recipe",
+      "en": "A lemonade recipe uses 3 cups of water for every 2 cups of juice. A team fills a cooler with 18 cups of water. How many cups of juice do they need?",
+      "es": "Una receta de limonada usa 3 tazas de agua por cada 2 tazas de jugo. Un equipo llena una hielera con 18 tazas de agua. ¿Cuántas tazas de jugo necesita?",
+      "guess": {
+        "en": "Make a guess first: more than 10 cups of juice, or fewer?",
+        "es": "Primero adivina: ¿más de 10 tazas de jugo o menos?"
+      },
+      "reveal": {
+        "en": "More! 3 × 6 = 18, so the scale factor is 6. Then 2 × 6 = 12 cups of juice. The lemonade tastes the same.",
+        "es": "¡Más! 3 × 6 = 18, así que el factor de escala es 6. Entonces 2 × 6 = 12 tazas de jugo. La limonada sabe igual."
+      }
+    },
+    "classModel": {
+      "name": {
+        "en": "the scale factor",
+        "es": "el factor de escala"
+      }
+    },
+    "model": {
+      "kind": "doubleline",
+      "data": {
+        "top": {
+          "label": {
+            "en": "Water (cups)",
+            "es": "Agua (tazas)"
+          },
+          "ticks": [
+            "0",
+            "3",
+            "18"
+          ]
+        },
+        "bottom": {
+          "label": {
+            "en": "Juice (cups)",
+            "es": "Jugo (tazas)"
+          },
+          "ticks": [
+            "0",
+            "2",
+            "?"
+          ]
+        },
+        "unknown": [
+          2
+        ]
+      },
+      "alt": {
+        "en": "Two number lines lined up. The top line shows 0, 3 and 18 cups of water. The bottom line shows 0, 2 and an unknown number of cups of juice. 3 cups of water line up with 2 cups of juice. 18 cups of water line up with the unknown juice.",
+        "es": "Dos rectas numéricas alineadas. La de arriba muestra 0, 3 y 18 tazas de agua. La de abajo muestra 0, 2 y un número desconocido de tazas de jugo. 3 tazas de agua coinciden con 2 tazas de jugo. 18 tazas de agua coinciden con el jugo desconocido."
+      }
+    },
+    "transfer": {
+      "stem": {
+        "en": "A gardener mixes 5 buckets of soil with 2 buckets of sand. She uses 30 buckets of soil. How many buckets of sand does she use?",
+        "es": "Una jardinera mezcla 5 cubetas de tierra con 2 cubetas de arena. Usa 30 cubetas de tierra. ¿Cuántas cubetas de arena usa?"
+      },
+      "choices": [
+        {
+          "en": "12 buckets",
+          "es": "12 cubetas",
+          "correct": true,
+          "misconception": null
+        },
+        {
+          "en": "27 buckets",
+          "es": "27 cubetas",
+          "correct": false,
+          "misconception": "added-instead-of-multiplied"
+        },
+        {
+          "en": "75 buckets",
+          "es": "75 cubetas",
+          "correct": false,
+          "misconception": "flipped-the-ratio"
+        }
+      ],
+      "reasoning": {
+        "en": "The scale factor is 30 ÷ 5 = 6. Multiply the sand by 6 too: 2 × 6 = 12 buckets.",
+        "es": "El factor de escala es 30 ÷ 5 = 6. Multiplica la arena por 6 también: 2 × 6 = 12 cubetas."
+      },
+      "calc": {
+        "expr": "30 / 5 * 2",
+        "value": 12,
+        "unit": "buckets"
+      }
+    },
+    "glitch": {
+      "scenario": {
+        "en": "A different situation: A paint mix uses 4 cups of blue for every 3 cups of white. Dee wants to use 20 cups of blue.",
+        "es": "Otra situación: Una mezcla de pintura usa 4 tazas de azul por cada 3 tazas de blanco. Dee quiere usar 20 tazas de azul."
+      },
+      "steps": [
+        {
+          "en": "The blue goes from 4 to 20. 20 ÷ 4 = 5, so the scale factor is 5.",
+          "es": "El azul pasa de 4 a 20. 20 ÷ 4 = 5, así que el factor de escala es 5.",
+          "isGlitch": false
+        },
+        {
+          "en": "Add the factor to the white: 3 + 5 = 8 cups of white.",
+          "es": "Suma el factor al blanco: 3 + 5 = 8 tazas de blanco.",
+          "isGlitch": true
+        },
+        {
+          "en": "The new mix is 20 cups of blue and 8 cups of white.",
+          "es": "La mezcla nueva es 20 tazas de azul y 8 tazas de blanco.",
+          "isGlitch": false
+        }
+      ],
+      "fix": {
+        "en": "Multiply, do not add. 3 × 5 = 15 cups of white. The mix is 20:15, and dividing both by 5 gives 4:3 again.",
+        "es": "Multiplica, no sumes. 3 × 5 = 15 tazas de blanco. La mezcla es 20:15, y al dividir los dos entre 5 se obtiene 4:3 otra vez."
+      },
+      "frame": {
+        "en": "The white is ___ because ___ × ___ = ___.",
+        "es": "El blanco es ___ porque ___ × ___ = ___."
+      },
+      "calc": {
+        "expr": "3 * 5",
+        "value": 15
+      }
+    },
+    "spiral": [
+      {
+        "from": "3-9",
+        "q": {
+          "en": "What is the missing number? 1:4 = 5:___",
+          "es": "¿Cuál es el número que falta? 1:4 = 5:___"
+        },
+        "options": [
+          "20",
+          "9",
+          "8"
+        ],
+        "correctIdx": 0,
+        "exp": {
+          "en": "1 × 5 = 5, so 4 × 5 = 20.",
+          "es": "1 × 5 = 5, así que 4 × 5 = 20."
+        },
+        "calc": {
+          "expr": "4 * 5",
+          "value": 20
+        }
+      },
+      {
+        "from": "3-3",
+        "q": {
+          "en": "A ratio table says 5 miles in 10 minutes. At the same pace, how many minutes for 15 miles?",
+          "es": "Una tabla de razones dice 5 millas en 10 minutos. Al mismo paso, ¿cuántos minutos para 15 millas?"
+        },
+        "options": [
+          "25",
+          "30",
+          "20"
+        ],
+        "correctIdx": 1,
+        "exp": {
+          "en": "5 × 3 = 15, so 10 × 3 = 30 minutes.",
+          "es": "5 × 3 = 15, así que 10 × 3 = 30 minutos."
+        },
+        "calc": {
+          "expr": "10 * 3",
+          "value": 30
+        }
+      }
+    ],
+    "kitchenTable": {
+      "en": "Use a pitcher and a cup. Pretend a drink needs 3 cups of water for 2 cups of juice. Ask your student: how much juice for 9 cups of water? What number did you multiply by?",
+      "es": "Usen una jarra y una taza. Imaginen que una bebida necesita 3 tazas de agua por 2 tazas de jugo. Pregunten: ¿cuánto jugo para 9 tazas de agua? ¿Por qué número multiplicaste?"
+    },
+    "vocab": [
+      {
+        "term": "Scale factor",
+        "example": {
+          "en": "From 3 cups of water to 18 cups, the scale factor is 6.",
+          "es": "De 3 tazas de agua a 18 tazas, el factor de escala es 6."
+        },
+        "nonExample": {
+          "en": "18 − 3 = 15 is only the gap. It is not the scale factor.",
+          "es": "18 − 3 = 15 es solo la diferencia. No es el factor de escala."
+        },
+        "frame": {
+          "en": "The scale factor is ___ because ___ × ___ = ___.",
+          "es": "El factor de escala es ___ porque ___ × ___ = ___."
+        }
+      },
+      {
+        "term": "Equivalent Ratios",
+        "example": {
+          "en": "3:2 and 18:12 are equivalent ratios. Both numbers were multiplied by 6.",
+          "es": "3:2 y 18:12 son razones equivalentes. Los dos números se multiplicaron por 6."
+        },
+        "nonExample": {
+          "en": "3:2 and 8:7 are not equivalent. Adding 5 to both changed the taste.",
+          "es": "3:2 y 8:7 no son equivalentes. Sumar 5 a los dos cambió el sabor."
+        },
+        "frame": {
+          "en": "These ratios are equivalent because I ___ both terms by ___.",
+          "es": "Estas razones son equivalentes porque ___ los dos términos por ___."
+        }
+      },
+      {
+        "term": "Simplify",
+        "example": {
+          "en": "18:12 simplifies back to 3:2 when you divide both by 6.",
+          "es": "18:12 se simplifica de nuevo a 3:2 cuando divides los dos entre 6."
+        },
+        "nonExample": {
+          "en": "Dividing only 12 by 6 gives 18:2. That is a different recipe.",
+          "es": "Dividir solo 12 entre 6 da 18:2. Es una receta distinta."
+        },
+        "frame": {
+          "en": "I divide both by ___ to simplify ___:___ back to ___:___.",
+          "es": "Divido los dos entre ___ para simplificar ___:___ y volver a ___:___."
+        }
+      },
+      {
+        "term": "multiply",
+        "example": {
+          "en": "Multiply both terms by 6: 3 × 6 = 18 and 2 × 6 = 12.",
+          "es": "Multiplica los dos términos por 6: 3 × 6 = 18 y 2 × 6 = 12."
+        },
+        "nonExample": {
+          "en": "Multiplying only the water, 3 × 6, and keeping 2 cups of juice changes the lemonade.",
+          "es": "Multiplicar solo el agua, 3 × 6, y dejar 2 tazas de jugo cambia la limonada."
+        },
+        "frame": {
+          "en": "I multiply ___ and ___ by ___.",
+          "es": "Multiplico ___ y ___ por ___."
+        }
+      }
+    ],
+    "confused": [
+      {
+        "wrong": {
+          "en": "18:12 is not the same as 3:2. The numbers are bigger, so it tastes different.",
+          "es": "18:12 no es igual que 3:2. Los números son mayores, así que sabe distinto."
+        },
+        "coach": {
+          "en": "If you divide both 18 and 12 by the same number, what ratio do you get?",
+          "es": "Si divides 18 y 12 entre el mismo número, ¿qué razón obtienes?"
+        },
+        "why": {
+          "en": "Divide both by 6: 18 ÷ 6 = 3 and 12 ÷ 6 = 2. So 18:12 is 3:2 again, with the same taste.",
+          "es": "Divide los dos entre 6: 18 ÷ 6 = 3 y 12 ÷ 6 = 2. Así 18:12 vuelve a ser 3:2, con el mismo sabor."
+        },
+        "misconception": "equivalent-means-same-numbers",
+        "calc": {
+          "expr": "18 / 6",
+          "value": 3
+        }
+      },
+      {
+        "wrong": {
+          "en": "I multiplied the water by 6 to get 18. I kept 2 cups of juice.",
+          "es": "Multipliqué el agua por 6 y obtuve 18. Dejé 2 tazas de jugo."
+        },
+        "coach": {
+          "en": "Would the lemonade taste the same with 18 cups of water and only 2 cups of juice?",
+          "es": "¿La limonada sabría igual con 18 tazas de agua y solo 2 tazas de jugo?"
+        },
+        "why": {
+          "en": "Multiply both terms by the same factor. The juice must grow too: 18 ÷ 3 × 2 = 12 cups.",
+          "es": "Multiplica los dos términos por el mismo factor. El jugo también debe crecer: 18 ÷ 3 × 2 = 12 tazas."
+        },
+        "misconception": "scaled-one-term-only",
+        "calc": {
+          "expr": "18 / 3 * 2",
+          "value": 12
+        }
+      },
+      {
+        "wrong": {
+          "en": "The scale factor is 15 because 18 − 3 = 15. So the juice is 2 × 15 = 30 cups.",
+          "es": "El factor de escala es 15 porque 18 − 3 = 15. Entonces el jugo es 2 × 15 = 30 tazas."
+        },
+        "coach": {
+          "en": "What number do you multiply 3 by to get 18?",
+          "es": "¿Por qué número multiplicas 3 para obtener 18?"
+        },
+        "why": {
+          "en": "The scale factor is what you multiply by, not the gap. 18 ÷ 3 = 6.",
+          "es": "El factor de escala es por lo que multiplicas, no la diferencia. 18 ÷ 3 = 6."
+        },
+        "misconception": "scale-factor-is-the-gap",
+        "calc": {
+          "expr": "18 / 3",
+          "value": 6
+        }
+      }
+    ]
+  }
 }

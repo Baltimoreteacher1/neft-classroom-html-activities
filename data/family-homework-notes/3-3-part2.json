@@ -530,5 +530,329 @@
       ],
       "image": "/assets/vocab-images/divide.svg"
     }
-  ]
+  ],
+  "v3": {
+    "version": 1,
+    "kind": "math",
+    "topicKey": "ratio-table-missing-value-apply",
+    "standardPlain": {
+      "en": "Find a missing value in a ratio table by multiplying or dividing both numbers.",
+      "es": "Hallar un valor que falta en una tabla de razones multiplicando o dividiendo los dos números."
+    },
+    "hook": {
+      "style": "recipe",
+      "en": "An art room mixes orange paint with 4 cups of red for every 3 cups of yellow. Today there are 6 cups of yellow. How many cups of red go in?",
+      "es": "En el salón de arte mezclan pintura naranja con 4 tazas de rojo por cada 3 tazas de amarillo. Hoy hay 6 tazas de amarillo. ¿Cuántas tazas de rojo se necesitan?",
+      "guess": {
+        "en": "Make a guess first: will the red be more than 4 cups, or less?",
+        "es": "Primero adivina: ¿el rojo será más de 4 tazas o menos?"
+      },
+      "reveal": {
+        "en": "More! Yellow went from 3 to 6, which is ×2. Do the same to the red: 4 × 2 = 8 cups of red.",
+        "es": "¡Más! El amarillo pasó de 3 a 6, que es ×2. Haz lo mismo con el rojo: 4 × 2 = 8 tazas de rojo."
+      }
+    },
+    "classModel": {
+      "name": {
+        "en": "the same move on both numbers",
+        "es": "la misma operación en los dos números"
+      }
+    },
+    "model": {
+      "kind": "ratiotable",
+      "data": {
+        "headers": [
+          {
+            "en": "Red (cups)",
+            "es": "Rojo (tazas)"
+          },
+          {
+            "en": "Yellow (cups)",
+            "es": "Amarillo (tazas)"
+          }
+        ],
+        "rows": [
+          [
+            4,
+            3
+          ],
+          [
+            8,
+            6
+          ]
+        ],
+        "unknownCells": [
+          [
+            1,
+            0
+          ]
+        ],
+        "arrows": [
+          {
+            "from": 0,
+            "to": 1,
+            "label": "×2"
+          }
+        ]
+      },
+      "alt": {
+        "en": "A ratio table with columns red and yellow. Row one: 4 cups of red and 3 cups of yellow. Row two: an unknown amount of red and 6 cups of yellow. An arrow labeled ×2 joins the two rows.",
+        "es": "Una tabla de razones con columnas rojo y amarillo. Fila uno: 4 tazas de rojo y 3 tazas de amarillo. Fila dos: una cantidad de rojo desconocida y 6 tazas de amarillo. Una flecha con ×2 une las dos filas."
+      }
+    },
+    "transfer": {
+      "stem": {
+        "en": "A cleaning spray uses 9 spoons of soap for every 6 cups of water. How many cups of water go with 3 spoons of soap?",
+        "es": "Un limpiador usa 9 cucharadas de jabón por cada 6 tazas de agua. ¿Cuántas tazas de agua van con 3 cucharadas de jabón?"
+      },
+      "choices": [
+        {
+          "en": "2 cups",
+          "es": "2 tazas",
+          "correct": true,
+          "misconception": null
+        },
+        {
+          "en": "0 cups",
+          "es": "0 tazas",
+          "correct": false,
+          "misconception": "subtracted-the-gap"
+        },
+        {
+          "en": "3 cups",
+          "es": "3 tazas",
+          "correct": false,
+          "misconception": "copied-the-first-number"
+        }
+      ],
+      "reasoning": {
+        "en": "Soap goes from 9 down to 3. That is ÷3. Divide the water too: 6 ÷ 3 = 2 cups. The row is 3:2.",
+        "es": "El jabón baja de 9 a 3. Eso es ÷3. Divide también el agua: 6 ÷ 3 = 2 tazas. La fila es 3:2."
+      },
+      "calc": {
+        "expr": "6 / (9 / 3)",
+        "value": 2,
+        "unit": "cups"
+      }
+    },
+    "glitch": {
+      "scenario": {
+        "en": "A different situation: A tile design uses 12 red tiles for every 8 blue tiles. Sam wants to know how many red tiles go with 2 blue tiles.",
+        "es": "Otra situación: Un diseño de azulejos usa 12 azulejos rojos por cada 8 azulejos azules. Sam quiere saber cuántos rojos van con 2 azules."
+      },
+      "steps": [
+        {
+          "en": "Blue goes from 8 down to 2. That is ÷4, because 8 ÷ 4 = 2.",
+          "es": "El azul baja de 8 a 2. Eso es ÷4, porque 8 ÷ 4 = 2.",
+          "isGlitch": false
+        },
+        {
+          "en": "Blue went down by 6, so take 6 from red: 12 − 6 = 6.",
+          "es": "El azul bajó 6, así que quita 6 al rojo: 12 − 6 = 6.",
+          "isGlitch": true
+        },
+        {
+          "en": "Write the new row with the numbers you found.",
+          "es": "Escribe la fila nueva con los números que hallaste.",
+          "isGlitch": false
+        }
+      ],
+      "fix": {
+        "en": "Do the same move to red: divide by 4. 12 ÷ 4 = 3 red tiles. Check: 3:2 is 12:8 divided by 4.",
+        "es": "Haz la misma operación con el rojo: divide entre 4. 12 ÷ 4 = 3 azulejos rojos. Comprueba: 3:2 es 12:8 dividido entre 4."
+      },
+      "frame": {
+        "en": "I divide both numbers by ___, so ___ ÷ ___ = ___.",
+        "es": "Divido los dos números entre ___, así que ___ ÷ ___ = ___."
+      },
+      "calc": {
+        "expr": "12 / 4",
+        "value": 3
+      }
+    },
+    "spiral": [
+      {
+        "from": "3-3",
+        "q": {
+          "en": "A ratio table row is 6:10. What is the scale factor to reach 18:30?",
+          "es": "Una fila de una tabla de razones es 6:10. ¿Cuál es el factor de escala para llegar a 18:30?"
+        },
+        "options": [
+          "3",
+          "12",
+          "24"
+        ],
+        "correctIdx": 0,
+        "exp": {
+          "en": "6 × 3 = 18 and 10 × 3 = 30, so the scale factor is 3.",
+          "es": "6 × 3 = 18 y 10 × 3 = 30, así que el factor de escala es 3."
+        },
+        "calc": {
+          "expr": "18 / 6",
+          "value": 3
+        }
+      },
+      {
+        "from": "3-2",
+        "q": {
+          "en": "A faucet fills 20 liters in 4 minutes. How many liters per minute is that?",
+          "es": "Una llave llena 20 litros en 4 minutos. ¿Cuántos litros por minuto son?"
+        },
+        "options": [
+          "80",
+          "16",
+          "5"
+        ],
+        "correctIdx": 2,
+        "exp": {
+          "en": "Liters divided by minutes: 20 ÷ 4 = 5 liters per minute.",
+          "es": "Litros entre minutos: 20 ÷ 4 = 5 litros por minuto."
+        },
+        "calc": {
+          "expr": "20 / 4",
+          "value": 5
+        }
+      }
+    ],
+    "kitchenTable": {
+      "en": "Pick any recipe with two amounts, like 1 cup of rice to 2 cups of water. Ask your student to make half a batch, then three batches, saying both new amounts out loud.",
+      "es": "Elijan una receta con dos cantidades, como 1 taza de arroz por 2 tazas de agua. Pidan a su estudiante que haga media tanda y luego tres tandas, diciendo en voz alta las dos cantidades nuevas."
+    },
+    "vocab": [
+      {
+        "term": "Ratio table",
+        "example": {
+          "en": "Row 1: 4 red, 3 yellow. Row 2: 8 red, 6 yellow.",
+          "es": "Fila 1: 4 rojo, 3 amarillo. Fila 2: 8 rojo, 6 amarillo."
+        },
+        "nonExample": {
+          "en": "A row of 4 red and 6 yellow does not belong in the same table. It changes the mix.",
+          "es": "Una fila de 4 rojo y 6 amarillo no pertenece a la misma tabla. Cambia la mezcla."
+        },
+        "frame": {
+          "en": "Row 1 is ___ and ___. Row 2 is ___ and ___.",
+          "es": "La fila 1 es ___ y ___. La fila 2 es ___ y ___."
+        }
+      },
+      {
+        "term": "Equivalent ratio",
+        "example": {
+          "en": "8:6 is equivalent to 4:3. Both make the same orange.",
+          "es": "8:6 es equivalente a 4:3. Las dos hacen el mismo naranja."
+        },
+        "nonExample": {
+          "en": "7:6 is not equivalent to 4:3. The orange would change.",
+          "es": "7:6 no es equivalente a 4:3. El naranja cambiaría."
+        },
+        "frame": {
+          "en": "___:___ is equivalent to ___:___ because ___.",
+          "es": "___:___ es equivalente a ___:___ porque ___."
+        }
+      },
+      {
+        "term": "Scale factor",
+        "example": {
+          "en": "From 3 yellow to 6 yellow, the scale factor is 2.",
+          "es": "De 3 amarillo a 6 amarillo, el factor de escala es 2."
+        },
+        "nonExample": {
+          "en": "The scale factor is not 3, the number of cups added. It is 2.",
+          "es": "El factor de escala no es 3, las tazas que se agregaron. Es 2."
+        },
+        "frame": {
+          "en": "The scale factor is ___ because ___ × ___ = ___.",
+          "es": "El factor de escala es ___ porque ___ × ___ = ___."
+        }
+      },
+      {
+        "term": "multiply",
+        "example": {
+          "en": "To scale up, multiply both numbers: 4 × 2 = 8 and 3 × 2 = 6.",
+          "es": "Para escalar hacia arriba, multiplica los dos números: 4 × 2 = 8 y 3 × 2 = 6."
+        },
+        "nonExample": {
+          "en": "Adding 3 to each does not multiply. 4 + 3 = 7 changes the orange.",
+          "es": "Sumar 3 a cada uno no es multiplicar. 4 + 3 = 7 cambia el naranja."
+        },
+        "frame": {
+          "en": "I multiply ___ by ___ and ___ by ___.",
+          "es": "Multiplico ___ por ___ y ___ por ___."
+        }
+      },
+      {
+        "term": "Divide",
+        "example": {
+          "en": "To scale down from 8:6, divide both numbers by 2 to get 4:3.",
+          "es": "Para escalar hacia abajo desde 8:6, divide los dos números entre 2 y obtén 4:3."
+        },
+        "nonExample": {
+          "en": "Dividing only the red by 2 gives 4:6, a different color.",
+          "es": "Dividir solo el rojo entre 2 da 4:6, un color distinto."
+        },
+        "frame": {
+          "en": "I divide ___ by ___ and ___ by ___.",
+          "es": "Divido ___ entre ___ y ___ entre ___."
+        }
+      }
+    ],
+    "confused": [
+      {
+        "wrong": {
+          "en": "Yellow goes from 3 to 6, which is 3 more. So I add 3 to the red: 4 + 3 = 7 cups.",
+          "es": "El amarillo pasa de 3 a 6, que son 3 más. Entonces sumo 3 al rojo: 4 + 3 = 7 tazas."
+        },
+        "coach": {
+          "en": "What number would you multiply 3 by to get 6?",
+          "es": "¿Por qué número multiplicarías 3 para obtener 6?"
+        },
+        "why": {
+          "en": "Use the same move on both: ×2. Red is 4 × 2 = 8 cups.",
+          "es": "Usa la misma operación en los dos: ×2. El rojo es 4 × 2 = 8 tazas."
+        },
+        "misconception": "added-instead-of-multiplied",
+        "calc": {
+          "expr": "4 * 2",
+          "value": 8
+        }
+      },
+      {
+        "wrong": {
+          "en": "Yellow doubled to 6. So I divide the red by 2: 4 ÷ 2 = 2 cups.",
+          "es": "El amarillo se duplicó a 6. Entonces divido el rojo entre 2: 4 ÷ 2 = 2 tazas."
+        },
+        "coach": {
+          "en": "Does the red go up or down when the yellow goes up?",
+          "es": "¿El rojo sube o baja cuando el amarillo sube?"
+        },
+        "why": {
+          "en": "Both parts move the same way. Yellow was multiplied by 2, so red is too: 4 × 2 = 8 cups.",
+          "es": "Las dos partes se mueven igual. El amarillo se multiplicó por 2, así que el rojo también: 4 × 2 = 8 tazas."
+        },
+        "misconception": "divided-instead-of-multiplied",
+        "calc": {
+          "expr": "4 * 2",
+          "value": 8
+        }
+      },
+      {
+        "wrong": {
+          "en": "The scale factor is 2, so I need 2 cups of red.",
+          "es": "El factor de escala es 2, así que necesito 2 tazas de rojo."
+        },
+        "coach": {
+          "en": "What does the scale factor tell you to do with the 4?",
+          "es": "¿Qué te dice el factor de escala que hagas con el 4?"
+        },
+        "why": {
+          "en": "The scale factor is the move, not the answer. Multiply the red by it: 4 × 2 = 8 cups.",
+          "es": "El factor de escala es la operación, no la respuesta. Multiplica el rojo por él: 4 × 2 = 8 tazas."
+        },
+        "misconception": "scale-factor-as-answer",
+        "calc": {
+          "expr": "4 * 2",
+          "value": 8
+        }
+      }
+    ]
+  }
 }

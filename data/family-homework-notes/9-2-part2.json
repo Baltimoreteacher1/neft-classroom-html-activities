@@ -540,5 +540,339 @@
       ],
       "image": "/assets/vocab-images/origin.svg"
     }
-  ]
+  ],
+  "v3": {
+    "version": 1,
+    "kind": "math",
+    "topicKey": "graph-rate-of-change-apply",
+    "standardPlain": {
+      "en": "Read the rate of change from a graph and use it to predict a value you cannot see.",
+      "es": "Leer la tasa de cambio en una gráfica y usarla para predecir un valor que no se ve."
+    },
+    "hook": {
+      "style": "map",
+      "en": "A school printer graph has the points (1, 13), (2, 26) and (3, 39). The x-values are minutes and the y-values are pages. The graph stops at 3 minutes. How many pages print in 10 minutes?",
+      "es": "La gráfica de una impresora escolar tiene los puntos (1, 13), (2, 26) y (3, 39). Los valores x son minutos y los valores y son páginas. La gráfica termina en 3 minutos. ¿Cuántas páginas se imprimen en 10 minutos?",
+      "guess": {
+        "en": "Guess first: is it more than 100 pages, or less?",
+        "es": "Primero adivina: ¿son más de 100 páginas o menos?"
+      },
+      "reveal": {
+        "en": "More! The rate of change is 13 pages each minute. For 10 minutes: 10 × 13 = 130 pages. The point is (10, 130).",
+        "es": "¡Más! La tasa de cambio es 13 páginas por minuto. Para 10 minutos: 10 × 13 = 130 páginas. El punto es (10, 130)."
+      }
+    },
+    "classModel": {
+      "name": {
+        "en": "read the rate, then predict",
+        "es": "leer la tasa y luego predecir"
+      }
+    },
+    "model": {
+      "kind": "ratiotable",
+      "data": {
+        "headers": [
+          {
+            "en": "Minutes (x)",
+            "es": "Minutos (x)"
+          },
+          {
+            "en": "Pages (y)",
+            "es": "Páginas (y)"
+          }
+        ],
+        "rows": [
+          [
+            1,
+            13
+          ],
+          [
+            2,
+            26
+          ],
+          [
+            3,
+            39
+          ],
+          [
+            10,
+            "?"
+          ]
+        ],
+        "unknownCells": [
+          [
+            3,
+            1
+          ]
+        ],
+        "arrows": [
+          {
+            "from": 0,
+            "to": 3,
+            "label": {
+              "en": "13 each",
+              "es": "13 cada uno"
+            }
+          }
+        ]
+      },
+      "alt": {
+        "en": "A table with two columns: Minutes (x) and Pages (y). The rows are 1 and 13, 2 and 26, 3 and 39, and 10 with the pages unknown. An arrow from the first row to the last shows 13 pages for each minute.",
+        "es": "Una tabla con dos columnas: Minutos (x) y Páginas (y). Las filas son 1 y 13, 2 y 26, 3 y 39, y 10 con las páginas desconocidas. Una flecha de la primera fila a la última muestra 13 páginas por cada minuto."
+      }
+    },
+    "transfer": {
+      "stem": {
+        "en": "A graph of baked muffins has the points (1, 12), (2, 24) and (3, 36). The x-value is trays. How many muffins are on 7 trays?",
+        "es": "Una gráfica de panecillos horneados tiene los puntos (1, 12), (2, 24) y (3, 36). El valor x son las bandejas. ¿Cuántos panecillos hay en 7 bandejas?"
+      },
+      "choices": [
+        {
+          "en": "19 muffins",
+          "es": "19 panecillos",
+          "correct": false,
+          "misconception": "added-instead-of-multiplied"
+        },
+        {
+          "en": "84 muffins",
+          "es": "84 panecillos",
+          "correct": true,
+          "misconception": null
+        },
+        {
+          "en": "36 muffins",
+          "es": "36 panecillos",
+          "correct": false,
+          "misconception": "rate-is-last-y-value"
+        }
+      ],
+      "reasoning": {
+        "en": "The rate of change is 12 muffins per tray: 24 − 12 = 12. For 7 trays: 7 × 12 = 84.",
+        "es": "La tasa de cambio es 12 panecillos por bandeja: 24 − 12 = 12. Para 7 bandejas: 7 × 12 = 84."
+      },
+      "calc": {
+        "expr": "7 * 12",
+        "value": 84
+      }
+    },
+    "glitch": {
+      "scenario": {
+        "en": "A different situation: A graph has the points (1, 5), (2, 10) and (3, 15). Mia wants the rate of change.",
+        "es": "Otra situación: Una gráfica tiene los puntos (1, 5), (2, 10) y (3, 15). Mia quiere la tasa de cambio."
+      },
+      "steps": [
+        {
+          "en": "Look at how y grows each time x goes up by 1: 5, 10, 15.",
+          "es": "Mira cómo crece y cada vez que x sube 1: 5, 10, 15.",
+          "isGlitch": false
+        },
+        {
+          "en": "The rate of change is the last y-value, so the rate is 15.",
+          "es": "La tasa de cambio es el último valor de y, así que la tasa es 15.",
+          "isGlitch": true
+        },
+        {
+          "en": "Use the rate to find y when x = 4, then see if it fits the pattern.",
+          "es": "Usa la tasa para hallar y cuando x = 4, y mira si encaja con el patrón.",
+          "isGlitch": false
+        }
+      ],
+      "fix": {
+        "en": "The rate of change is how much y climbs for each 1 of x: 10 − 5 = 5. Check: when x = 4, y = 4 × 5 = 20.",
+        "es": "La tasa de cambio es cuánto sube y por cada 1 de x: 10 − 5 = 5. Comprueba: cuando x = 4, y = 4 × 5 = 20."
+      },
+      "frame": {
+        "en": "The rate of change is ___ because y goes up ___ when x goes up 1.",
+        "es": "La tasa de cambio es ___ porque y sube ___ cuando x sube 1."
+      },
+      "calc": {
+        "expr": "10 - 5",
+        "value": 5
+      }
+    },
+    "spiral": [
+      {
+        "from": "9-2",
+        "q": {
+          "en": "A graph has the points (1, 7), (2, 14) and (3, 21). What is the rate of change?",
+          "es": "Una gráfica tiene los puntos (1, 7), (2, 14) y (3, 21). ¿Cuál es la tasa de cambio?"
+        },
+        "options": [
+          "7",
+          "21",
+          "14"
+        ],
+        "correctIdx": 0,
+        "exp": {
+          "en": "y goes up 14 − 7 = 7 each time x goes up by 1.",
+          "es": "y sube 14 − 7 = 7 cada vez que x sube 1."
+        },
+        "calc": {
+          "expr": "14 - 7",
+          "value": 7
+        }
+      },
+      {
+        "from": "8-3",
+        "q": {
+          "en": "Solve: 8n = 72",
+          "es": "Resuelve: 8n = 72"
+        },
+        "options": [
+          "64",
+          "80",
+          "9"
+        ],
+        "correctIdx": 2,
+        "exp": {
+          "en": "n is multiplied by 8, so divide both sides by 8: 72 ÷ 8 = 9.",
+          "es": "La n está multiplicada por 8, así que se divide ambos lados entre 8: 72 ÷ 8 = 9."
+        },
+        "calc": {
+          "expr": "72 / 8",
+          "value": 9
+        }
+      }
+    ],
+    "kitchenTable": {
+      "en": "Pretend a printer makes 13 pages each minute. Ask your student to say the point for 5 minutes, with minutes first. Then ask how they found it.",
+      "es": "Imaginen que una impresora hace 13 páginas por minuto. Pidan a su estudiante que diga el punto para 5 minutos, con los minutos primero. Después pregunten cómo lo encontró."
+    },
+    "vocab": [
+      {
+        "term": "graph",
+        "example": {
+          "en": "The printer graph shows minutes on one axis and pages on the other.",
+          "es": "La gráfica de la impresora muestra los minutos en un eje y las páginas en el otro."
+        },
+        "nonExample": {
+          "en": "A list of numbers alone is not a graph. A graph plots points.",
+          "es": "Una lista de números sola no es una gráfica. Una gráfica marca puntos."
+        },
+        "frame": {
+          "en": "My graph shows how ___ changes as ___ changes.",
+          "es": "Mi gráfica muestra cómo cambia ___ cuando cambia ___."
+        }
+      },
+      {
+        "term": "ordered pair",
+        "example": {
+          "en": "(3, 39) is an ordered pair. It says 3 minutes print 39 pages.",
+          "es": "(3, 39) es un par ordenado. Dice que 3 minutos imprimen 39 páginas."
+        },
+        "nonExample": {
+          "en": "(39, 3) is not the same. It would say 39 minutes print 3 pages.",
+          "es": "(39, 3) no es lo mismo. Diría que 39 minutos imprimen 3 páginas."
+        },
+        "frame": {
+          "en": "In (___, ___), the first number is the ___.",
+          "es": "En (___, ___), el primer número es el ___."
+        }
+      },
+      {
+        "term": "Rate of change",
+        "example": {
+          "en": "The printer's rate of change is 13 pages each minute.",
+          "es": "La tasa de cambio de la impresora es 13 páginas por minuto."
+        },
+        "nonExample": {
+          "en": "The last y-value, 39, is not the rate of change.",
+          "es": "El último valor de y, 39, no es la tasa de cambio."
+        },
+        "frame": {
+          "en": "The rate of change is ___ because ___ minus ___ is ___.",
+          "es": "La tasa de cambio es ___ porque ___ menos ___ es ___."
+        }
+      },
+      {
+        "term": "Unit rate",
+        "example": {
+          "en": "The unit rate is 13 pages for 1 minute.",
+          "es": "La tasa unitaria es 13 páginas por 1 minuto."
+        },
+        "nonExample": {
+          "en": "39 pages for 3 minutes is not a unit rate. It is for 3 units, not 1.",
+          "es": "39 páginas en 3 minutos no es una tasa unitaria. Es para 3 unidades, no para 1."
+        },
+        "frame": {
+          "en": "The unit rate is ___ for each 1 ___.",
+          "es": "La tasa unitaria es ___ por cada 1 ___."
+        }
+      },
+      {
+        "term": "Origin",
+        "example": {
+          "en": "The origin (0, 0) means 0 minutes print 0 pages.",
+          "es": "El origen (0, 0) significa que 0 minutos imprimen 0 páginas."
+        },
+        "nonExample": {
+          "en": "The point (1, 13) is not the origin. It is where 1 minute meets 13 pages.",
+          "es": "El punto (1, 13) no es el origen. Es donde 1 minuto se une con 13 páginas."
+        },
+        "frame": {
+          "en": "A line through the origin means ___ is 0 when ___ is 0.",
+          "es": "Una recta por el origen significa que ___ es 0 cuando ___ es 0."
+        }
+      }
+    ],
+    "confused": [
+      {
+        "wrong": {
+          "en": "The rate of change is the last y-value, 39.",
+          "es": "La tasa de cambio es el último valor de y, 39."
+        },
+        "coach": {
+          "en": "How much does y climb each time x goes up by 1?",
+          "es": "¿Cuánto sube y cada vez que x sube 1?"
+        },
+        "why": {
+          "en": "The rate is the change for each 1 of x, not a y-value. From (2, 26) to (3, 39): 39 − 26 = 13.",
+          "es": "La tasa es el cambio por cada 1 de x, no un valor de y. De (2, 26) a (3, 39): 39 − 26 = 13."
+        },
+        "misconception": "rate-is-last-y-value",
+        "calc": {
+          "expr": "39 - 26",
+          "value": 13
+        }
+      },
+      {
+        "wrong": {
+          "en": "To find y when x = 10, I add: 39 + 10 = 49.",
+          "es": "Para hallar y cuando x = 10, sumo: 39 + 10 = 49."
+        },
+        "coach": {
+          "en": "If y climbs by the rate for each 1 of x, how many rates fit in 10?",
+          "es": "Si y sube la tasa por cada 1 de x, ¿cuántas tasas caben en 10?"
+        },
+        "why": {
+          "en": "Each of the 10 steps of x adds the rate: 10 × 13 = 130.",
+          "es": "Cada uno de los 10 pasos de x suma la tasa: 10 × 13 = 130."
+        },
+        "misconception": "added-instead-of-multiplied",
+        "calc": {
+          "expr": "10 * 13",
+          "value": 130
+        }
+      },
+      {
+        "wrong": {
+          "en": "I wrote the first point as (13, 1), because 13 is bigger.",
+          "es": "Escribí el primer punto como (13, 1), porque 13 es mayor."
+        },
+        "coach": {
+          "en": "In an ordered pair, which comes first: the one you choose, or the one that responds?",
+          "es": "En un par ordenado, ¿cuál va primero: el que eliges o el que responde?"
+        },
+        "why": {
+          "en": "The independent variable goes first. You choose minutes, so the point is (1, 13). Check: 1 × 13 = 13.",
+          "es": "La variable independiente va primero. Tú eliges los minutos, así que el punto es (1, 13). Comprueba: 1 × 13 = 13."
+        },
+        "misconception": "x-and-y-reversed",
+        "calc": {
+          "expr": "1 * 13",
+          "value": 13
+        }
+      }
+    ]
+  }
 }

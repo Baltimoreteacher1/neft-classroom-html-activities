@@ -537,5 +537,313 @@
       ],
       "image": "/assets/vocab-images/bar-model.svg"
     }
-  ]
+  ],
+  "v3": {
+    "version": 1,
+    "kind": "math",
+    "topicKey": "equation-or-inequality-limit-apply",
+    "standardPlain": {
+      "en": "Decide if a situation gives one exact value or a limit, then pick an equation or an inequality.",
+      "es": "Decidir si una situación da un valor exacto o un límite, y elegir una ecuación o una desigualdad."
+    },
+    "hook": {
+      "style": "map",
+      "en": "Two notes are on the community-center board. A: a reward split equally among 5 people gave each $40. B: the van held no more than 6 bags. Which note gives ONE exact number?",
+      "es": "Hay dos notas en el tablero del centro comunitario. A: una recompensa repartida por partes iguales entre 5 personas dio $40 a cada una. B: la camioneta llevó no más de 6 bolsas. ¿Cuál nota da UN número exacto?",
+      "guess": {
+        "en": "Guess first: is it note A or note B?",
+        "es": "Primero adivina: ¿es la nota A o la nota B?"
+      },
+      "reveal": {
+        "en": "Note A! Five equal shares of $40 make one exact total, so use an equation. Note B gives a limit, b ≤ 6, not one number.",
+        "es": "¡La nota A! Cinco partes iguales de $40 forman un total exacto, así que usa una ecuación. La nota B da un límite, b ≤ 6, no un solo número."
+      }
+    },
+    "classModel": {
+      "name": {
+        "en": "exact value or limit",
+        "es": "valor exacto o límite"
+      }
+    },
+    "model": {
+      "kind": "numberline",
+      "data": {
+        "min": 0,
+        "max": 8,
+        "step": 1,
+        "points": [
+          {
+            "value": 4,
+            "label": {
+              "en": "4 bags fit",
+              "es": "4 bolsas caben"
+            },
+            "kind": "answer"
+          },
+          {
+            "value": 6,
+            "label": {
+              "en": "limit: 6",
+              "es": "límite: 6"
+            },
+            "kind": "given"
+          },
+          {
+            "value": 7,
+            "label": {
+              "en": "7 is too many",
+              "es": "7 son demasiadas"
+            },
+            "kind": "error"
+          }
+        ],
+        "unit": {
+          "en": "bags in the van",
+          "es": "bolsas en la camioneta"
+        }
+      },
+      "alt": {
+        "en": "A number line from 0 to 8. A dot at 6 marks the limit. Any number of bags from 0 up to 6 is allowed, such as 4. An X at 7 shows 7 bags is too many. So b ≤ 6.",
+        "es": "Una recta numérica de 0 a 8. Un punto en 6 marca el límite. Se permite cualquier cantidad de bolsas de 0 a 6, como 4. Una X en 7 muestra que 7 bolsas son demasiadas. Entonces b ≤ 6."
+      }
+    },
+    "transfer": {
+      "stem": {
+        "en": "A pool allows at most 30 swimmers. 22 swimmers are already in. Which model fits, and how many more (s) can join?",
+        "es": "Una piscina permite como máximo 30 nadadores. Ya hay 22 adentro. ¿Qué modelo encaja y cuántos más (s) pueden entrar?"
+      },
+      "choices": [
+        {
+          "en": "s = 30, so exactly 30 more can join",
+          "es": "s = 30, así que pueden entrar exactamente 30 más",
+          "correct": false,
+          "misconception": "equation-for-a-limit"
+        },
+        {
+          "en": "22 + s ≤ 30, so s ≤ 52",
+          "es": "22 + s ≤ 30, así que s ≤ 52",
+          "correct": false,
+          "misconception": "added-instead-of-subtracted"
+        },
+        {
+          "en": "22 + s ≤ 30, so s ≤ 8",
+          "es": "22 + s ≤ 30, así que s ≤ 8",
+          "correct": true,
+          "misconception": null
+        }
+      ],
+      "reasoning": {
+        "en": "At most is a limit, so use an inequality: 22 + s ≤ 30. Subtract 22 from both sides: s ≤ 30 − 22 = 8. Check: 22 + 8 = 30.",
+        "es": "Como máximo es un límite, así que usa una desigualdad: 22 + s ≤ 30. Resta 22 de ambos lados: s ≤ 30 − 22 = 8. Comprueba: 22 + 8 = 30."
+      },
+      "calc": {
+        "expr": "30 - 22",
+        "value": 8
+      }
+    },
+    "glitch": {
+      "scenario": {
+        "en": "A different situation: A food truck can serve no more than 25 plates in one hour. It has served 18 plates. Marcus wants to know how many more plates it can serve.",
+        "es": "Otra situación: Un camión de comida puede servir no más de 25 platos en una hora. Ya sirvió 18 platos. Marcus quiere saber cuántos platos más puede servir."
+      },
+      "steps": [
+        {
+          "en": "No more than 25 is a limit, so use an inequality: 18 + p ≤ 25.",
+          "es": "No más de 25 es un límite, así que usa una desigualdad: 18 + p ≤ 25.",
+          "isGlitch": false
+        },
+        {
+          "en": "Undo + 18 by adding 18: p ≤ 25 + 18 = 43.",
+          "es": "Deshaz + 18 sumando 18: p ≤ 25 + 18 = 43.",
+          "isGlitch": true
+        },
+        {
+          "en": "Check that the answer fits the story before you trust it.",
+          "es": "Comprueba que la respuesta encaje con la historia antes de confiar en ella.",
+          "isGlitch": false
+        }
+      ],
+      "fix": {
+        "en": "To undo + 18, subtract 18 from both sides: p ≤ 25 − 18 = 7. Check: 18 + 7 = 25, which is not more than 25.",
+        "es": "Para deshacer + 18, resta 18 de ambos lados: p ≤ 25 − 18 = 7. Comprueba: 18 + 7 = 25, que no es más de 25."
+      },
+      "frame": {
+        "en": "I use ___ because the clue words are ___.",
+        "es": "Uso ___ porque las palabras de la pista son ___."
+      },
+      "calc": {
+        "expr": "25 - 18",
+        "value": 7
+      }
+    },
+    "spiral": [
+      {
+        "from": "8-7",
+        "q": {
+          "en": "A total split equally among 6 people gave each $15. What was the total?",
+          "es": "Un total repartido por partes iguales entre 6 personas dio $15 a cada una. ¿Cuál era el total?"
+        },
+        "options": [
+          "90",
+          "21",
+          "2.50"
+        ],
+        "correctIdx": 0,
+        "exp": {
+          "en": "Undo ÷ 6 by multiplying: 15 × 6 = 90.",
+          "es": "Deshaz ÷ 6 multiplicando: 15 × 6 = 90."
+        },
+        "calc": {
+          "expr": "15 * 6",
+          "value": 90
+        }
+      },
+      {
+        "from": "8-2",
+        "q": {
+          "en": "Solve: n − 9 = 14",
+          "es": "Resuelve: n − 9 = 14"
+        },
+        "options": [
+          "5",
+          "14",
+          "23"
+        ],
+        "correctIdx": 2,
+        "exp": {
+          "en": "Add 9 to both sides: 14 + 9 = 23.",
+          "es": "Suma 9 a ambos lados: 14 + 9 = 23."
+        },
+        "calc": {
+          "expr": "14 + 9",
+          "value": 23
+        }
+      }
+    ],
+    "kitchenTable": {
+      "en": "Find two notes at home: one with an exact amount (\"the total is $28\") and one with a limit (\"at most 3 snacks\"). Ask your student which is an equation and which is an inequality, and which words decided it.",
+      "es": "Busquen dos notas en casa: una con una cantidad exacta («el total es $28») y otra con un límite («como máximo 3 bocadillos»). Pregunten a su estudiante cuál es una ecuación y cuál es una desigualdad, y qué palabras lo decidieron."
+    },
+    "vocab": [
+      {
+        "term": "Equation",
+        "example": {
+          "en": "Five equal shares of $40 give an exact total. An equation fits.",
+          "es": "Cinco partes iguales de $40 dan un total exacto. Una ecuación encaja."
+        },
+        "nonExample": {
+          "en": "The van held no more than 6 bags is not an equation. It gives a limit.",
+          "es": "La camioneta llevó no más de 6 bolsas no es una ecuación. Da un límite."
+        },
+        "frame": {
+          "en": "I write an equation when the situation gives ___.",
+          "es": "Escribo una ecuación cuando la situación da ___."
+        }
+      },
+      {
+        "term": "Inequality",
+        "example": {
+          "en": "b ≤ 6 is an inequality. It says the bags can be 6 or fewer.",
+          "es": "b ≤ 6 es una desigualdad. Dice que las bolsas pueden ser 6 o menos."
+        },
+        "nonExample": {
+          "en": "b = 6 is not the same. It says exactly 6 bags.",
+          "es": "b = 6 no es lo mismo. Dice exactamente 6 bolsas."
+        },
+        "frame": {
+          "en": "I write an inequality when the words say ___.",
+          "es": "Escribo una desigualdad cuando las palabras dicen ___."
+        }
+      },
+      {
+        "term": "Constraint",
+        "example": {
+          "en": "No more than 6 bags is the constraint on the van.",
+          "es": "No más de 6 bolsas es la restricción de la camioneta."
+        },
+        "nonExample": {
+          "en": "Each person got $40 is not a constraint. It is one exact fact.",
+          "es": "Cada persona recibió $40 no es una restricción. Es un dato exacto."
+        },
+        "frame": {
+          "en": "The constraint is ___, so the answer can be ___.",
+          "es": "La restricción es ___, así que la respuesta puede ser ___."
+        }
+      },
+      {
+        "term": "Reasonableness",
+        "example": {
+          "en": "Test 7 bags in the van. It breaks the limit of 6, so 7 is not reasonable.",
+          "es": "Prueba 7 bolsas en la camioneta. Pasa el límite de 6, así que 7 no es razonable."
+        },
+        "nonExample": {
+          "en": "Negative bags is not reasonable. You cannot carry less than 0 bags.",
+          "es": "Bolsas negativas no es razonable. No se puede llevar menos de 0 bolsas."
+        },
+        "frame": {
+          "en": "My answer is reasonable because ___ stays within ___.",
+          "es": "Mi respuesta es razonable porque ___ queda dentro de ___."
+        }
+      }
+    ],
+    "confused": [
+      {
+        "wrong": {
+          "en": "The van held no more than 6 bags. The van has 6 bags. They mean the same, so b = 6.",
+          "es": "La camioneta llevó no más de 6 bolsas. La camioneta tiene 6 bolsas. Es lo mismo, así que b = 6."
+        },
+        "coach": {
+          "en": "Could the van carry fewer bags and still follow no more than?",
+          "es": "¿La camioneta podría llevar menos bolsas y aun así cumplir con no más de?"
+        },
+        "why": {
+          "en": "No more than 6 allows 6, 5, 4 and fewer, so b ≤ 6. Seven bags is not allowed: 7 − 6 = 1 bag too many.",
+          "es": "No más de 6 permite 6, 5, 4 y menos, así que b ≤ 6. Siete bolsas no se permiten: 7 − 6 = 1 bolsa de más."
+        },
+        "misconception": "same-meaning-for-is-and-at-most",
+        "calc": {
+          "expr": "7 - 6",
+          "value": 1
+        }
+      },
+      {
+        "wrong": {
+          "en": "A reward split equally among 5 people gave each $40. So r ÷ 5 = 40 and r = 40 ÷ 5 = 8.",
+          "es": "Una recompensa repartida por partes iguales entre 5 personas dio $40 a cada una. Entonces r ÷ 5 = 40 y r = 40 ÷ 5 = 8."
+        },
+        "coach": {
+          "en": "Should the whole reward be bigger or smaller than one share?",
+          "es": "¿La recompensa total debe ser mayor o menor que una parte?"
+        },
+        "why": {
+          "en": "The whole reward is bigger than one share. Undo ÷ 5 by multiplying: 40 × 5 = 200.",
+          "es": "La recompensa total es mayor que una parte. Deshaz ÷ 5 multiplicando: 40 × 5 = 200."
+        },
+        "misconception": "divided-instead-of-multiplied",
+        "calc": {
+          "expr": "40 * 5",
+          "value": 200
+        }
+      },
+      {
+        "wrong": {
+          "en": "Split equally sounds like a limit, so I wrote r ≤ 200.",
+          "es": "Repartido por partes iguales suena a un límite, así que escribí r ≤ 200."
+        },
+        "coach": {
+          "en": "Does this situation give one exact total, or a limit?",
+          "es": "¿Esta situación da un total exacto o un límite?"
+        },
+        "why": {
+          "en": "Equally and each name one exact total, so use an equation. Check by sharing: 200 ÷ 5 = 40 each.",
+          "es": "Por partes iguales y cada nombran un total exacto, así que usa una ecuación. Comprueba repartiendo: 200 ÷ 5 = 40 cada una."
+        },
+        "misconception": "inequality-for-exact-amount",
+        "calc": {
+          "expr": "200 / 5",
+          "value": 40
+        }
+      }
+    ]
+  }
 }

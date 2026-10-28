@@ -516,5 +516,329 @@
         }
       ]
     }
-  ]
+  ],
+  "v3": {
+    "version": 1,
+    "kind": "math",
+    "topicKey": "compare-spread-range-iqr-apply",
+    "standardPlain": {
+      "en": "Use the range and the IQR together to say which group is more consistent.",
+      "es": "Usar el rango y el RIC juntos para decir qué grupo es más constante."
+    },
+    "hook": {
+      "style": "scoreboard",
+      "en": "Two classes took the same quiz. Class A scores run from 52 to 89. Class B scores run from 57 to 83. Which class has scores closer together?",
+      "es": "Dos clases hicieron la misma prueba. Los puntajes de la clase A van de 52 a 89. Los de la clase B van de 57 a 83. ¿Qué clase tiene los puntajes más juntos?",
+      "guess": {
+        "en": "Make a guess first: Class A or Class B?",
+        "es": "Primero adivina: ¿la clase A o la clase B?"
+      },
+      "reveal": {
+        "en": "Class B! Its range is 83 − 57 = 26, but Class A's is 89 − 52 = 37. The IQR agrees: Class B has 8 and Class A has 13.",
+        "es": "¡La clase B! Su rango es 83 − 57 = 26, pero el de la clase A es 89 − 52 = 37. El RIC coincide: la clase B tiene 8 y la clase A tiene 13."
+      }
+    },
+    "classModel": {
+      "name": {
+        "en": "range and IQR side by side",
+        "es": "rango y RIC lado a lado"
+      }
+    },
+    "model": {
+      "kind": "barplot",
+      "data": {
+        "categories": [
+          {
+            "label": {
+              "en": "A range",
+              "es": "Rango de A"
+            },
+            "value": 37
+          },
+          {
+            "label": {
+              "en": "B range",
+              "es": "Rango de B"
+            },
+            "value": 26
+          },
+          {
+            "label": {
+              "en": "A IQR",
+              "es": "RIC de A"
+            },
+            "value": 13
+          },
+          {
+            "label": {
+              "en": "B IQR",
+              "es": "RIC de B"
+            },
+            "value": 8
+          }
+        ],
+        "unit": {
+          "en": "Points",
+          "es": "Puntos"
+        }
+      },
+      "alt": {
+        "en": "A bar graph with four bars. Class A range is 37 and Class B range is 26. Class A IQR is 13 and Class B IQR is 8. Class B has the shorter bar in both pairs, so its scores sit closer together.",
+        "es": "Una gráfica de barras con cuatro barras. El rango de la clase A es 37 y el de la clase B es 26. El RIC de la clase A es 13 y el de la clase B es 8. La clase B tiene la barra más corta en ambos pares, así que sus puntajes están más juntos."
+      }
+    },
+    "transfer": {
+      "stem": {
+        "en": "Team R scores: least 8, Q1 15, Q3 25, greatest 40. Team S scores: least 12, Q1 18, Q3 23, greatest 36. How many points smaller is Team S's IQR than Team R's?",
+        "es": "Puntajes del equipo R: menor 8, Q1 15, Q3 25, mayor 40. Puntajes del equipo S: menor 12, Q1 18, Q3 23, mayor 36. ¿Cuántos puntos menor es el RIC del equipo S que el del equipo R?"
+      },
+      "choices": [
+        {
+          "en": "8 points",
+          "es": "8 puntos",
+          "correct": false,
+          "misconception": "compared-range-not-iqr"
+        },
+        {
+          "en": "10 points",
+          "es": "10 puntos",
+          "correct": false,
+          "misconception": "gave-one-iqr"
+        },
+        {
+          "en": "5 points",
+          "es": "5 puntos",
+          "correct": true,
+          "misconception": null
+        }
+      ],
+      "reasoning": {
+        "en": "Team R: 25 − 15 = 10. Team S: 23 − 18 = 5. The IQR is 10 − 5 = 5 points smaller.",
+        "es": "Equipo R: 25 − 15 = 10. Equipo S: 23 − 18 = 5. El RIC es 10 − 5 = 5 puntos menor."
+      },
+      "calc": {
+        "expr": "(25 - 15) - (23 - 18)",
+        "value": 5
+      }
+    },
+    "glitch": {
+      "scenario": {
+        "en": "A different situation: Lab 1 has range 30 and IQR 10. Lab 2 has range 25 and IQR 14. Eli compares the two labs.",
+        "es": "Otra situación: El laboratorio 1 tiene rango 30 y RIC 10. El laboratorio 2 tiene rango 25 y RIC 14. Eli compara los dos laboratorios."
+      },
+      "steps": [
+        {
+          "en": "Compare the ranges: 25 is less than 30, so Lab 2 is more consistent by range.",
+          "es": "Compara los rangos: 25 es menor que 30, así que el laboratorio 2 es más constante por el rango.",
+          "isGlitch": false
+        },
+        {
+          "en": "Compare the IQRs: 14 is greater than 10, so Lab 2 is more consistent by IQR.",
+          "es": "Compara los RIC: 14 es mayor que 10, así que el laboratorio 2 es más constante por el RIC.",
+          "isGlitch": true
+        },
+        {
+          "en": "Say what each measure means: a smaller number means the values sit closer together.",
+          "es": "Di qué significa cada medida: un número menor significa que los valores están más juntos.",
+          "isGlitch": false
+        }
+      ],
+      "fix": {
+        "en": "A bigger IQR means more spread, not less. Lab 1's IQR of 10 is smaller, so its middle half is tighter. Lab 2 has the smaller range, so the two measures disagree.",
+        "es": "Un RIC mayor significa más dispersión, no menos. El RIC de 10 del laboratorio 1 es menor, así que su mitad central está más junta. El laboratorio 2 tiene el rango menor, así que las dos medidas no coinciden."
+      },
+      "frame": {
+        "en": "The group with the smaller ___ has values closer together, so it is more ___.",
+        "es": "El grupo con el ___ menor tiene valores más juntos, así que es más ___."
+      },
+      "calc": {
+        "expr": "30 - 25",
+        "value": 5
+      }
+    },
+    "spiral": [
+      {
+        "from": "2-5",
+        "q": {
+          "en": "Q1 = 40 and Q3 = 52. What is the IQR?",
+          "es": "Q1 = 40 y Q3 = 52. ¿Cuál es el RIC?"
+        },
+        "options": [
+          "92",
+          "10",
+          "12"
+        ],
+        "correctIdx": 2,
+        "exp": {
+          "en": "The IQR is Q3 − Q1 = 52 − 40 = 12.",
+          "es": "El RIC es Q3 − Q1 = 52 − 40 = 12."
+        },
+        "calc": {
+          "expr": "52 - 40",
+          "value": 12
+        }
+      },
+      {
+        "from": "2-4",
+        "q": {
+          "en": "A box plot has least 5, Q1 9, median 12, Q3 18, greatest 25. Where does the box end on the right?",
+          "es": "Un diagrama de caja tiene menor 5, Q1 9, mediana 12, Q3 18, mayor 25. ¿Dónde termina la caja a la derecha?"
+        },
+        "options": [
+          "18",
+          "25",
+          "12"
+        ],
+        "correctIdx": 0,
+        "exp": {
+          "en": "The box runs from Q1 to Q3. Its right edge is Q3 = 18.",
+          "es": "La caja va de Q1 a Q3. Su borde derecho es Q3 = 18."
+        },
+        "calc": {
+          "expr": "18",
+          "value": 18
+        }
+      }
+    ],
+    "kitchenTable": {
+      "en": "Think of two ways to get to school or the store. Which one always takes about the same time? Which one is sometimes fast and sometimes slow? Which has the smaller spread?",
+      "es": "Piensen en dos maneras de llegar a la escuela o a la tienda. ¿Cuál tarda casi siempre lo mismo? ¿Cuál a veces es rápida y a veces lenta? ¿Cuál tiene la dispersión menor?"
+    },
+    "vocab": [
+      {
+        "term": "Range",
+        "example": {
+          "en": "Class B's range is 83 − 57 = 26.",
+          "es": "El rango de la clase B es 83 − 57 = 26."
+        },
+        "nonExample": {
+          "en": "Class B's highest score, 83, is not its range.",
+          "es": "El puntaje más alto de la clase B, 83, no es su rango."
+        },
+        "frame": {
+          "en": "The range of Class ___ is ___ − ___ = ___.",
+          "es": "El rango de la clase ___ es ___ − ___ = ___."
+        }
+      },
+      {
+        "term": "Quartile",
+        "example": {
+          "en": "Class A's Q1 is 61 and its Q3 is 74.",
+          "es": "Q1 de la clase A es 61 y su Q3 es 74."
+        },
+        "nonExample": {
+          "en": "Class A's lowest score, 52, is not a quartile.",
+          "es": "El puntaje más bajo de la clase A, 52, no es un cuartil."
+        },
+        "frame": {
+          "en": "Q1 = ___ and Q3 = ___, so the IQR is ___.",
+          "es": "Q1 = ___ y Q3 = ___, así que el RIC es ___."
+        }
+      },
+      {
+        "term": "Interquartile range",
+        "example": {
+          "en": "Class B's IQR is 71 − 63 = 8.",
+          "es": "El RIC de la clase B es 71 − 63 = 8."
+        },
+        "nonExample": {
+          "en": "Class A's range, 37, is not its IQR.",
+          "es": "El rango de la clase A, 37, no es su RIC."
+        },
+        "frame": {
+          "en": "A smaller IQR means the middle half is ___.",
+          "es": "Un RIC menor significa que la mitad central está más ___."
+        }
+      },
+      {
+        "term": "Variability",
+        "example": {
+          "en": "Class A has more variability: its range is 37 and its IQR is 13.",
+          "es": "La clase A tiene más variabilidad: su rango es 37 y su RIC es 13."
+        },
+        "nonExample": {
+          "en": "Class B's higher median, 69, does not mean it has more variability.",
+          "es": "La mediana mayor de la clase B, 69, no significa que tenga más variabilidad."
+        },
+        "frame": {
+          "en": "Class ___ varies less because its range is ___ and its IQR is ___.",
+          "es": "La clase ___ varía menos porque su rango es ___ y su RIC es ___."
+        }
+      },
+      {
+        "term": "Measure of variation",
+        "example": {
+          "en": "The range and the IQR are two measures of variation for the same classes.",
+          "es": "El rango y el RIC son dos medidas de variación para las mismas clases."
+        },
+        "nonExample": {
+          "en": "A median is a measure of center, not a measure of variation.",
+          "es": "Una mediana es una medida de centro, no una medida de variación."
+        },
+        "frame": {
+          "en": "Two measures of variation are ___ and ___.",
+          "es": "Dos medidas de variación son ___ y ___."
+        }
+      }
+    ],
+    "confused": [
+      {
+        "wrong": {
+          "en": "Class B's median is 69 and Class A's is 68, so Class B is more spread out.",
+          "es": "La mediana de la clase B es 69 y la de la clase A es 68, así que la clase B está más dispersa."
+        },
+        "coach": {
+          "en": "Is spread about how big the numbers are, or about how far apart they are?",
+          "es": "¿La dispersión trata de qué tan grandes son los números o de qué tan separados están?"
+        },
+        "why": {
+          "en": "Spread is the distance between values. Class A's range is 89 − 52 = 37, wider than Class B's, so Class A is more spread out.",
+          "es": "La dispersión es la distancia entre valores. El rango de la clase A es 89 − 52 = 37, más amplio que el de la clase B, así que la clase A está más dispersa."
+        },
+        "misconception": "bigger-numbers-more-spread",
+        "calc": {
+          "expr": "89 - 52",
+          "value": 37
+        }
+      },
+      {
+        "wrong": {
+          "en": "Class A's IQR is 89 − 61 = 28.",
+          "es": "El RIC de la clase A es 89 − 61 = 28."
+        },
+        "coach": {
+          "en": "Which two numbers are the edges of the middle half?",
+          "es": "¿Qué dos números son los bordes de la mitad central?"
+        },
+        "why": {
+          "en": "The middle half runs from Q1 to Q3, not to the greatest score. The IQR is 74 − 61 = 13.",
+          "es": "La mitad central va de Q1 a Q3, no hasta el puntaje mayor. El RIC es 74 − 61 = 13."
+        },
+        "misconception": "iqr-from-wrong-edges",
+        "calc": {
+          "expr": "74 - 61",
+          "value": 13
+        }
+      },
+      {
+        "wrong": {
+          "en": "Class B's IQR is 8, so all of its scores are within 8 points of each other.",
+          "es": "El RIC de la clase B es 8, así que todos sus puntajes están a 8 puntos o menos entre sí."
+        },
+        "coach": {
+          "en": "Which scores does the IQR describe: all of them, or only the middle ones?",
+          "es": "¿Qué puntajes describe el RIC: todos o solo los del medio?"
+        },
+        "why": {
+          "en": "The IQR covers only the middle half. All of Class B's scores span the range: 83 − 57 = 26.",
+          "es": "El RIC cubre solo la mitad central. Todos los puntajes de la clase B abarcan el rango: 83 − 57 = 26."
+        },
+        "misconception": "iqr-applies-to-all",
+        "calc": {
+          "expr": "83 - 57",
+          "value": 26
+        }
+      }
+    ]
+  }
 }

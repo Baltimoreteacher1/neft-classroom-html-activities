@@ -517,5 +517,305 @@
       ],
       "image": "/assets/vocab-images/reasonableness.svg"
     }
-  ]
+  ],
+  "v3": {
+    "version": 1,
+    "kind": "math",
+    "topicKey": "convert-metric-powers-of-ten-apply",
+    "standardPlain": {
+      "en": "Convert metric units with powers of ten and check that the answer makes sense.",
+      "es": "Convertir unidades métricas con potencias de diez y comprobar que la respuesta tenga sentido."
+    },
+    "hook": {
+      "style": "recipe",
+      "en": "A team cooler holds 6 liters of water. The coach's cups are marked in milliliters. One liter is 1,000 milliliters. How many milliliters does the cooler hold?",
+      "es": "Una hielera del equipo tiene 6 litros de agua. Los vasos del entrenador están marcados en mililitros. Un litro son 1,000 mililitros. ¿Cuántos mililitros tiene la hielera?",
+      "guess": {
+        "en": "Make a guess first: is it closer to 60, 600 or 6,000?",
+        "es": "Primero adivina: ¿está más cerca de 60, 600 o 6,000?"
+      },
+      "reveal": {
+        "en": "6,000! A milliliter is tiny, so it takes many of them. Each liter is 1,000 mL, so 6 × 1,000 = 6,000 mL.",
+        "es": "¡6,000! Un mililitro es muy pequeño, así que se necesitan muchos. Cada litro son 1,000 mL, así que 6 × 1,000 = 6,000 mL."
+      }
+    },
+    "classModel": {
+      "name": {
+        "en": "the power of ten jump",
+        "es": "el salto de la potencia de diez"
+      }
+    },
+    "model": {
+      "kind": "doubleline",
+      "data": {
+        "top": {
+          "label": {
+            "en": "Liters",
+            "es": "Litros"
+          },
+          "ticks": [
+            "0",
+            "1",
+            "6"
+          ]
+        },
+        "bottom": {
+          "label": {
+            "en": "Milliliters",
+            "es": "Mililitros"
+          },
+          "ticks": [
+            "0",
+            "1,000",
+            "?"
+          ]
+        },
+        "unknown": [
+          2
+        ]
+      },
+      "alt": {
+        "en": "Two number lines lined up. The top line shows 0, 1 and 6 liters. The bottom line shows 0, 1,000 and an unknown number of milliliters. 1 liter lines up with 1,000 milliliters, and 6 liters lines up with the unknown.",
+        "es": "Dos rectas numéricas alineadas. La de arriba muestra 0, 1 y 6 litros. La de abajo muestra 0, 1,000 y un número desconocido de mililitros. 1 litro coincide con 1,000 mililitros, y 6 litros coincide con la incógnita."
+      }
+    },
+    "transfer": {
+      "stem": {
+        "en": "A rope is 450 centimeters long. There are 100 centimeters in 1 meter. How many meters long is the rope?",
+        "es": "Una soga mide 450 centímetros de largo. Hay 100 centímetros en 1 metro. ¿Cuántos metros mide la soga?"
+      },
+      "choices": [
+        {
+          "en": "45,000 meters",
+          "es": "45,000 metros",
+          "correct": false,
+          "misconception": "multiplied-instead-of-divided"
+        },
+        {
+          "en": "4.5 meters",
+          "es": "4.5 metros",
+          "correct": true,
+          "misconception": null
+        },
+        {
+          "en": "45 meters",
+          "es": "45 metros",
+          "correct": false,
+          "misconception": "shifted-one-place-not-two"
+        }
+      ],
+      "reasoning": {
+        "en": "A meter is bigger than a centimeter, so there are fewer meters. Divide by 100: 450 ÷ 100 = 4.5 meters.",
+        "es": "Un metro es mayor que un centímetro, así que hay menos metros. Se divide entre 100: 450 ÷ 100 = 4.5 metros."
+      },
+      "calc": {
+        "expr": "450 / 100",
+        "value": 4.5
+      }
+    },
+    "glitch": {
+      "scenario": {
+        "en": "A different situation: A juice carton holds 2,500 milliliters. Priya wants to know how many liters that is.",
+        "es": "Otra situación: Un cartón de jugo tiene 2,500 mililitros. Priya quiere saber cuántos litros son."
+      },
+      "steps": [
+        {
+          "en": "There are 1,000 milliliters in 1 liter, so the factor is 1,000.",
+          "es": "Hay 1,000 mililitros en 1 litro, así que el factor es 1,000.",
+          "isGlitch": false
+        },
+        {
+          "en": "Multiply: 2,500 × 1,000 = 2,500,000, so the carton holds 2,500,000 liters.",
+          "es": "Multiplica: 2,500 × 1,000 = 2,500,000, así que el cartón tiene 2,500,000 litros.",
+          "isGlitch": true
+        },
+        {
+          "en": "Ask: does this answer make sense for a juice carton?",
+          "es": "Pregunta: ¿tiene sentido esta respuesta para un cartón de jugo?",
+          "isGlitch": false
+        }
+      ],
+      "fix": {
+        "en": "Liters are bigger than milliliters, so there are fewer liters. Divide: 2,500 ÷ 1,000 = 2.5 liters.",
+        "es": "Los litros son mayores que los mililitros, así que hay menos litros. Se divide: 2,500 ÷ 1,000 = 2.5 litros."
+      },
+      "frame": {
+        "en": "___ is a bigger unit, so I divide by ___ to get ___.",
+        "es": "___ es una unidad mayor, así que divido entre ___ para obtener ___."
+      },
+      "calc": {
+        "expr": "2500 / 1000",
+        "value": 2.5
+      }
+    },
+    "spiral": [
+      {
+        "from": "3-6",
+        "q": {
+          "en": "A banner is 5 yards long. How many feet is that? (1 yard = 3 feet)",
+          "es": "Una pancarta mide 5 yardas de largo. ¿Cuántos pies son? (1 yarda = 3 pies)"
+        },
+        "options": [
+          "15",
+          "8",
+          "2"
+        ],
+        "correctIdx": 0,
+        "exp": {
+          "en": "Feet are smaller, so multiply: 5 × 3 = 15.",
+          "es": "Los pies son más pequeños, así que se multiplica: 5 × 3 = 15."
+        },
+        "calc": {
+          "expr": "5 * 3",
+          "value": 15
+        }
+      },
+      {
+        "from": "3-2",
+        "q": {
+          "en": "A pack of 5 pencils costs $2.50. What does one pencil cost?",
+          "es": "Un paquete de 5 lápices cuesta $2.50. ¿Cuánto cuesta un lápiz?"
+        },
+        "options": [
+          "$2",
+          "$0.50",
+          "$12.50"
+        ],
+        "correctIdx": 1,
+        "exp": {
+          "en": "2.50 ÷ 5 = $0.50 for one pencil.",
+          "es": "2.50 ÷ 5 = $0.50 por un lápiz."
+        },
+        "calc": {
+          "expr": "2.5 / 5",
+          "value": 0.5
+        }
+      }
+    ],
+    "kitchenTable": {
+      "en": "Find a bottle labeled 1 L or 1,000 mL. Say: \"The cooler holds 6 liters.\" Ask your student how many bottles like this fill it. Then ask how many milliliters that is in all.",
+      "es": "Busquen una botella marcada con 1 L o 1,000 mL. Digan: «La hielera tiene 6 litros». Pregunten a su estudiante cuántas botellas como esta la llenan. Después pregunten cuántos mililitros son en total."
+    },
+    "vocab": [
+      {
+        "term": "Conversion factor",
+        "example": {
+          "en": "1 liter = 1,000 milliliters. The factor is 1,000.",
+          "es": "1 litro = 1,000 mililitros. El factor es 1,000."
+        },
+        "nonExample": {
+          "en": "6 liters is not a conversion factor. It is the amount we start with.",
+          "es": "6 litros no es un factor de conversión. Es la cantidad con la que empezamos."
+        },
+        "frame": {
+          "en": "The conversion factor is ___ ___ in 1 ___.",
+          "es": "El factor de conversión es ___ ___ en 1 ___."
+        }
+      },
+      {
+        "term": "Metric units",
+        "example": {
+          "en": "Liters and milliliters are metric units.",
+          "es": "Los litros y los mililitros son unidades métricas."
+        },
+        "nonExample": {
+          "en": "Cups and quarts are not metric units. They are customary.",
+          "es": "Las tazas y los cuartos de galón no son unidades métricas. Son del sistema usual."
+        },
+        "frame": {
+          "en": "___ and ___ are metric units for ___.",
+          "es": "___ y ___ son unidades métricas de ___."
+        }
+      },
+      {
+        "term": "Power of ten",
+        "example": {
+          "en": "1,000 is a power of ten. Each liter jumps by 1,000.",
+          "es": "1,000 es una potencia de diez. Cada litro salta 1,000."
+        },
+        "nonExample": {
+          "en": "12 is not a power of ten. It was the factor for feet and inches.",
+          "es": "12 no es una potencia de diez. Era el factor de pies y pulgadas."
+        },
+        "frame": {
+          "en": "Going from liters to milliliters is a jump of ___, so I ___ by ___.",
+          "es": "Pasar de litros a mililitros es un salto de ___, así que ___ por ___."
+        }
+      },
+      {
+        "term": "reasonableness",
+        "example": {
+          "en": "6 liters is 6,000 mL. A tiny unit gives a big number, so it is reasonable.",
+          "es": "6 litros son 6,000 mL. Una unidad pequeña da un número grande, así que es razonable."
+        },
+        "nonExample": {
+          "en": "0.006 mL for a full cooler is not reasonable. It is far too small.",
+          "es": "0.006 mL para una hielera llena no es razonable. Es demasiado pequeño."
+        },
+        "frame": {
+          "en": "My answer is reasonable because a smaller unit should give a ___ number.",
+          "es": "Mi respuesta es razonable porque una unidad más pequeña debe dar un número ___."
+        }
+      }
+    ],
+    "confused": [
+      {
+        "wrong": {
+          "en": "Milliliters are small, so I divide: 6 ÷ 1,000 = 0.006 mL.",
+          "es": "Los mililitros son pequeños, así que divido: 6 ÷ 1,000 = 0.006 mL."
+        },
+        "coach": {
+          "en": "Will there be more milliliters or fewer milliliters than liters?",
+          "es": "¿Habrá más mililitros o menos mililitros que litros?"
+        },
+        "why": {
+          "en": "A milliliter is tiny, so it takes many of them. Multiply: 6 × 1,000 = 6,000 mL.",
+          "es": "Un mililitro es muy pequeño, así que se necesitan muchos. Se multiplica: 6 × 1,000 = 6,000 mL."
+        },
+        "misconception": "divided-for-smaller-unit",
+        "calc": {
+          "expr": "6 * 1000",
+          "value": 6000
+        }
+      },
+      {
+        "wrong": {
+          "en": "A liter is 100 milliliters, like centimeters. So 6 L is 600 mL.",
+          "es": "Un litro son 100 mililitros, como los centímetros. Entonces 6 L son 600 mL."
+        },
+        "coach": {
+          "en": "What does the prefix milli- tell us about a milliliter?",
+          "es": "¿Qué nos dice el prefijo mili- sobre un mililitro?"
+        },
+        "why": {
+          "en": "Milli- means one thousandth, so 1 liter is 1,000 mL, not 100. Then 6 × 1,000 = 6,000.",
+          "es": "Mili- significa una milésima, así que 1 litro son 1,000 mL, no 100. Entonces 6 × 1,000 = 6,000."
+        },
+        "misconception": "wrong-power-of-ten",
+        "calc": {
+          "expr": "6 * 1000",
+          "value": 6000
+        }
+      },
+      {
+        "wrong": {
+          "en": "The cooler holds 6 liters, so it holds 6 milliliters. The number stays the same.",
+          "es": "La hielera tiene 6 litros, así que tiene 6 mililitros. El número se queda igual."
+        },
+        "coach": {
+          "en": "Is a milliliter a big amount or a tiny amount of water?",
+          "es": "¿Un mililitro es una cantidad grande o muy pequeña de agua?"
+        },
+        "why": {
+          "en": "The unit changed, so the number must change. 6 liters is much more than 6 milliliters. 6 × 1,000 = 6,000 mL.",
+          "es": "La unidad cambió, así que el número debe cambiar. 6 litros es mucho más que 6 mililitros. 6 × 1,000 = 6,000 mL."
+        },
+        "misconception": "number-stays-the-same",
+        "calc": {
+          "expr": "6 * 1000",
+          "value": 6000
+        }
+      }
+    ]
+  }
 }

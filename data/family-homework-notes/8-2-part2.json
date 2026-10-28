@@ -533,5 +533,306 @@
       ],
       "image": "/assets/vocab-images/equation.svg"
     }
-  ]
+  ],
+  "v3": {
+    "version": 1,
+    "kind": "math",
+    "topicKey": "undo-subtraction-with-addition-apply",
+    "standardPlain": {
+      "en": "Solve equations that subtract by adding the same amount to both sides.",
+      "es": "Resolver ecuaciones de resta sumando la misma cantidad en los dos lados."
+    },
+    "hook": {
+      "style": "price-tag",
+      "en": "A corner store had some bags of chips on the shelf. Today it sold 18 bags. Now 27 bags are left. How many bags were on the shelf this morning?",
+      "es": "Una tienda de la esquina tenía unas bolsas de papitas en el estante. Hoy vendió 18 bolsas. Ahora quedan 27. ¿Cuántas bolsas había en el estante esta mañana?",
+      "guess": {
+        "en": "Guess first: were there more than 27 bags, or fewer?",
+        "es": "Primero adivina: ¿había más de 27 bolsas o menos?"
+      },
+      "reveal": {
+        "en": "More! The store lost 18 bags, so s − 18 = 27. Undo subtracting by adding 18: 27 + 18 = 45 bags.",
+        "es": "¡Más! La tienda perdió 18 bolsas, así que s − 18 = 27. Deshaz el restar sumando 18: 27 + 18 = 45 bolsas."
+      }
+    },
+    "classModel": {
+      "name": {
+        "en": "adding back to undo subtracting",
+        "es": "sumar para deshacer restar"
+      }
+    },
+    "model": {
+      "kind": "tape",
+      "data": {
+        "parts": 5,
+        "highlight": 3,
+        "partLabel": {
+          "en": "27 left",
+          "es": "27 quedan"
+        },
+        "wholeLabel": {
+          "en": "start: s = ?",
+          "es": "al inicio: s = ?"
+        },
+        "unknown": "whole"
+      },
+      "alt": {
+        "en": "A bar split into 5 equal blocks. Three shaded blocks are the 27 bags left. The two blocks that are not shaded are the 18 bags sold. The whole bar, s, is the unknown starting amount.",
+        "es": "Una barra dividida en 5 bloques iguales. Tres bloques sombreados son las 27 bolsas que quedan. Los dos bloques sin sombrear son las 18 bolsas vendidas. La barra completa, s, es la cantidad inicial desconocida."
+      }
+    },
+    "transfer": {
+      "stem": {
+        "en": "A rec center put out jump ropes. After 12 were borrowed, 28 are left. The equation is r − 12 = 28. How many ropes were out at first?",
+        "es": "Un centro recreativo sacó unas cuerdas de saltar. Después de prestar 12, quedan 28. La ecuación es r − 12 = 28. ¿Cuántas cuerdas había al principio?"
+      },
+      "choices": [
+        {
+          "en": "40 ropes",
+          "es": "40 cuerdas",
+          "correct": true,
+          "misconception": null
+        },
+        {
+          "en": "16 ropes",
+          "es": "16 cuerdas",
+          "correct": false,
+          "misconception": "subtracted-again-instead-of-added"
+        },
+        {
+          "en": "12 ropes",
+          "es": "12 cuerdas",
+          "correct": false,
+          "misconception": "gave-the-number-taken-away"
+        }
+      ],
+      "reasoning": {
+        "en": "The 12 was subtracted from r, so add 12 to both sides. r = 28 + 12 = 40. Check: 40 − 12 = 28.",
+        "es": "El 12 se le restó a r, así que se suma 12 en los dos lados. r = 28 + 12 = 40. Comprueba: 40 − 12 = 28."
+      },
+      "calc": {
+        "expr": "28 + 12",
+        "value": 40
+      }
+    },
+    "glitch": {
+      "scenario": {
+        "en": "A different situation: Lee solves k − 15 = 20. He writes three steps. One has a glitch.",
+        "es": "Otra situación: Lee resuelve k − 15 = 20. Escribe tres pasos. Uno tiene un error."
+      },
+      "steps": [
+        {
+          "en": "The equation k − 15 = 20 says 15 was taken away from k.",
+          "es": "La ecuación k − 15 = 20 dice que a k se le quitó 15.",
+          "isGlitch": false
+        },
+        {
+          "en": "To undo it, I subtract 15 from both sides, so k = 20 − 15 = 5.",
+          "es": "Para deshacerlo, resto 15 en los dos lados, así que k = 20 − 15 = 5.",
+          "isGlitch": true
+        },
+        {
+          "en": "Then I will put my answer back into k − 15 = 20 to check.",
+          "es": "Luego pondré mi respuesta en k − 15 = 20 para comprobar.",
+          "isGlitch": false
+        }
+      ],
+      "fix": {
+        "en": "Subtracting is already in the equation. Undo it by adding 15 to both sides: k = 20 + 15 = 35. Check: 35 − 15 = 20.",
+        "es": "Restar ya está en la ecuación. Se deshace sumando 15 en los dos lados: k = 20 + 15 = 35. Comprueba: 35 − 15 = 20."
+      },
+      "frame": {
+        "en": "To undo subtracting ___, I ___ both sides, so k = ___.",
+        "es": "Para deshacer restar ___, ___ en los dos lados, así que k = ___."
+      },
+      "calc": {
+        "expr": "20 + 15",
+        "value": 35
+      }
+    },
+    "spiral": [
+      {
+        "from": "8-2",
+        "q": {
+          "en": "Solve n + 9 = 30. What is n?",
+          "es": "Resuelve n + 9 = 30. ¿Cuánto es n?"
+        },
+        "options": [
+          "21",
+          "39",
+          "9"
+        ],
+        "correctIdx": 0,
+        "exp": {
+          "en": "Subtract 9 from both sides. 30 − 9 = 21.",
+          "es": "Resta 9 en los dos lados. 30 − 9 = 21."
+        },
+        "calc": {
+          "expr": "30 - 9",
+          "value": 21
+        }
+      },
+      {
+        "from": "8-1",
+        "q": {
+          "en": "Which value of x makes x + 5 = 12 true?",
+          "es": "¿Qué valor de x hace verdadera x + 5 = 12?"
+        },
+        "options": [
+          "17",
+          "5",
+          "7"
+        ],
+        "correctIdx": 2,
+        "exp": {
+          "en": "7 + 5 = 12, so x = 7 makes it true.",
+          "es": "7 + 5 = 12, así que x = 7 la hace verdadera."
+        },
+        "calc": {
+          "expr": "12 - 5",
+          "value": 7
+        }
+      }
+    ],
+    "kitchenTable": {
+      "en": "Fill a bowl with beans without counting. Take out 18 and count what is left. Say s − 18 = your count. Can your student find s? Pour them back to check.",
+      "es": "Llenen un tazón con frijoles sin contarlos. Saquen 18 y cuenten los que quedan. Digan s − 18 = su cuenta. ¿Puede su estudiante hallar s? Vuelvan a echarlos para comprobar."
+    },
+    "vocab": [
+      {
+        "term": "Inverse operation",
+        "example": {
+          "en": "Adding 18 undoes subtracting 18. It is the inverse operation.",
+          "es": "Sumar 18 deshace restar 18. Es la operación inversa."
+        },
+        "nonExample": {
+          "en": "Subtracting 18 again does not undo it. It leaves 9 from 27.",
+          "es": "Restar 18 otra vez no lo deshace. De 27 quedan 9."
+        },
+        "frame": {
+          "en": "To undo subtracting ___, I add ___ to both sides.",
+          "es": "Para deshacer restar ___, sumo ___ en los dos lados."
+        }
+      },
+      {
+        "term": "Isolate",
+        "example": {
+          "en": "Adding 18 to both sides of s − 18 = 27 leaves s alone.",
+          "es": "Sumar 18 en los dos lados de s − 18 = 27 deja la s sola."
+        },
+        "nonExample": {
+          "en": "s − 18 = 27 has not isolated s. The 18 is still attached.",
+          "es": "s − 18 = 27 todavía no despeja la s. El 18 sigue pegado."
+        },
+        "frame": {
+          "en": "I isolate s by adding ___ to both sides.",
+          "es": "Despejo la s al sumar ___ en los dos lados."
+        }
+      },
+      {
+        "term": "Balance",
+        "example": {
+          "en": "s − 18 and 27 are in balance. Add 18 to both sides and they stay in balance.",
+          "es": "s − 18 y 27 están en equilibrio. Si sumas 18 en los dos lados, siguen en equilibrio."
+        },
+        "nonExample": {
+          "en": "Adding 18 to just one side tips the balance.",
+          "es": "Sumar 18 en un solo lado rompe el equilibrio."
+        },
+        "frame": {
+          "en": "It stays in balance because I did ___ to both sides.",
+          "es": "Sigue en equilibrio porque hice ___ en los dos lados."
+        }
+      },
+      {
+        "term": "Addition Property of Equality",
+        "example": {
+          "en": "If s − 18 = 27, then s − 18 + 18 = 27 + 18. Both sides stay equal.",
+          "es": "Si s − 18 = 27, entonces s − 18 + 18 = 27 + 18. Los dos lados siguen iguales."
+        },
+        "nonExample": {
+          "en": "s − 18 + 18 = 27 changes only one side. That breaks the rule.",
+          "es": "s − 18 + 18 = 27 cambia solo un lado. Eso rompe la regla."
+        },
+        "frame": {
+          "en": "I add ___ to both sides, so the equation stays equal.",
+          "es": "Sumo ___ en los dos lados, así que la ecuación sigue igual."
+        }
+      },
+      {
+        "term": "Solution",
+        "example": {
+          "en": "s = 45 is the solution. 45 − 18 = 27 is true.",
+          "es": "s = 45 es la solución. 45 − 18 = 27 es verdadero."
+        },
+        "nonExample": {
+          "en": "s = 9 is not a solution. 9 − 18 does not make 27.",
+          "es": "s = 9 no es una solución. 9 − 18 no da 27."
+        },
+        "frame": {
+          "en": "My solution is s = ___ because ___ − 18 = 27.",
+          "es": "Mi solución es s = ___ porque ___ − 18 = 27."
+        }
+      }
+    ],
+    "confused": [
+      {
+        "wrong": {
+          "en": "s − 18 = 27, so I subtract 18 again. 27 − 18 = 9 bags.",
+          "es": "s − 18 = 27, así que resto 18 otra vez. 27 − 18 = 9 bolsas."
+        },
+        "coach": {
+          "en": "At the start, did the shelf have more bags or fewer bags than the ones left?",
+          "es": "Al principio, ¿el estante tenía más bolsas o menos que las que quedan?"
+        },
+        "why": {
+          "en": "Bags were sold, so the start must be bigger than what is left. Undo subtracting by adding: 27 + 18 = 45.",
+          "es": "Se vendieron bolsas, así que el inicio debe ser mayor que lo que queda. Se deshace restar sumando: 27 + 18 = 45."
+        },
+        "misconception": "subtracted-again-instead-of-added",
+        "calc": {
+          "expr": "27 + 18",
+          "value": 45
+        }
+      },
+      {
+        "wrong": {
+          "en": "I add 18 to the left side so s is alone. That means s = 27.",
+          "es": "Sumo 18 en el lado izquierdo para dejar sola la s. Eso significa s = 27."
+        },
+        "coach": {
+          "en": "If you add to one side, what must you do to the other side?",
+          "es": "Si sumas en un lado, ¿qué debes hacer en el otro lado?"
+        },
+        "why": {
+          "en": "Both sides must change together. s − 18 + 18 = 27 + 18, so s = 45.",
+          "es": "Los dos lados deben cambiar juntos. s − 18 + 18 = 27 + 18, así que s = 45."
+        },
+        "misconception": "one-side-only",
+        "calc": {
+          "expr": "27 + 18",
+          "value": 45
+        }
+      },
+      {
+        "wrong": {
+          "en": "I found s = 45, so there are 45 bags left on the shelf.",
+          "es": "Hallé s = 45, así que quedan 45 bolsas en el estante."
+        },
+        "coach": {
+          "en": "In the story, what does the letter s stand for?",
+          "es": "En la historia, ¿qué representa la letra s?"
+        },
+        "why": {
+          "en": "The letter s is the bags at the start, not the bags left. Check: 45 − 18 = 27 bags are left.",
+          "es": "La letra s son las bolsas del inicio, no las que quedan. Comprueba: 45 − 18 = 27 bolsas quedan."
+        },
+        "misconception": "answer-mislabeled",
+        "calc": {
+          "expr": "45 - 18",
+          "value": 27
+        }
+      }
+    ]
+  }
 }

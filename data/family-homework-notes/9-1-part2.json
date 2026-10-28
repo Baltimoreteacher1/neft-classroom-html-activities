@@ -539,5 +539,335 @@
       ],
       "image": "/assets/vocab-images/rate.svg"
     }
-  ]
+  ],
+  "v3": {
+    "version": 1,
+    "kind": "math",
+    "topicKey": "table-of-values-rule-apply",
+    "standardPlain": {
+      "en": "Build a table of values and find the rule that connects the input to the output.",
+      "es": "Construir una tabla de valores y hallar la regla que conecta la entrada con la salida."
+    },
+    "hook": {
+      "style": "scoreboard",
+      "en": "A faucet at the rec center fills a tub with 11 gallons each minute. You make a table for 1, 2 and 4 minutes. How many gallons are in the tub after 4 minutes?",
+      "es": "Una llave del centro recreativo llena una tina con 11 galones cada minuto. Haces una tabla para 1, 2 y 4 minutos. ¿Cuántos galones hay en la tina después de 4 minutos?",
+      "guess": {
+        "en": "Guess first: is it more than 40 gallons, or less?",
+        "es": "Primero adivina: ¿son más de 40 galones o menos?"
+      },
+      "reveal": {
+        "en": "More! Each minute adds 11 gallons. 1 minute is 11, 2 minutes is 22, and 4 minutes is 44. The rule is gallons = 11 × minutes.",
+        "es": "¡Más! Cada minuto suma 11 galones. 1 minuto son 11, 2 minutos son 22 y 4 minutos son 44. La regla es galones = 11 × minutos."
+      }
+    },
+    "classModel": {
+      "name": {
+        "en": "the input-output table rule",
+        "es": "la regla de la tabla de entrada y salida"
+      }
+    },
+    "model": {
+      "kind": "ratiotable",
+      "data": {
+        "headers": [
+          {
+            "en": "Minutes (input)",
+            "es": "Minutos (entrada)"
+          },
+          {
+            "en": "Gallons (output)",
+            "es": "Galones (salida)"
+          }
+        ],
+        "rows": [
+          [
+            1,
+            11
+          ],
+          [
+            2,
+            22
+          ],
+          [
+            4,
+            "?"
+          ]
+        ],
+        "unknownCells": [
+          [
+            2,
+            1
+          ]
+        ],
+        "arrows": [
+          {
+            "from": 0,
+            "to": 1,
+            "label": {
+              "en": "+11",
+              "es": "+11"
+            }
+          }
+        ]
+      },
+      "alt": {
+        "en": "A table with two columns: Minutes (input) and Gallons (output). The rows are 1 minute and 11 gallons, 2 minutes and 22 gallons, and 4 minutes with the gallons unknown. An arrow shows 11 more gallons each minute.",
+        "es": "Una tabla con dos columnas: Minutos (entrada) y Galones (salida). Las filas son 1 minuto y 11 galones, 2 minutos y 22 galones, y 4 minutos con los galones desconocidos. Una flecha muestra 11 galones más cada minuto."
+      }
+    },
+    "transfer": {
+      "stem": {
+        "en": "A game app gives 2 starting coins plus 3 coins for each level. Levels 1, 2 and 3 give 5, 8 and 11 coins. How many coins are there at level 5?",
+        "es": "Una app de juegos da 2 monedas al inicio más 3 monedas por cada nivel. Los niveles 1, 2 y 3 dan 5, 8 y 11 monedas. ¿Cuántas monedas hay en el nivel 5?"
+      },
+      "choices": [
+        {
+          "en": "17 coins",
+          "es": "17 monedas",
+          "correct": true,
+          "misconception": null
+        },
+        {
+          "en": "15 coins",
+          "es": "15 monedas",
+          "correct": false,
+          "misconception": "rule-ignores-starting-amount"
+        },
+        {
+          "en": "14 coins",
+          "es": "14 monedas",
+          "correct": false,
+          "misconception": "stopped-at-next-row"
+        }
+      ],
+      "reasoning": {
+        "en": "Each level adds 3 coins, and the table starts at 2. The rule is y = 3x + 2. For level 5: 3 × 5 + 2 = 17.",
+        "es": "Cada nivel suma 3 monedas, y la tabla empieza en 2. La regla es y = 3x + 2. Para el nivel 5: 3 × 5 + 2 = 17."
+      },
+      "calc": {
+        "expr": "3 * 5 + 2",
+        "value": 17
+      }
+    },
+    "glitch": {
+      "scenario": {
+        "en": "A different situation: A bakery table shows x = 1, 2, 3 and y = 6, 12, 18. Dee wants the rule that connects y to x.",
+        "es": "Otra situación: Una tabla de una panadería muestra x = 1, 2, 3 y y = 6, 12, 18. Dee quiere la regla que conecta y con x."
+      },
+      "steps": [
+        {
+          "en": "Watch how y changes each time x goes up by 1: 6, 12, 18.",
+          "es": "Observa cómo cambia y cada vez que x sube 1: 6, 12, 18.",
+          "isGlitch": false
+        },
+        {
+          "en": "The rule is y = x + 6, because the first output is 6.",
+          "es": "La regla es y = x + 6, porque la primera salida es 6.",
+          "isGlitch": true
+        },
+        {
+          "en": "Test the rule on one row of the table before you trust it.",
+          "es": "Prueba la regla en una fila de la tabla antes de confiar en ella.",
+          "isGlitch": false
+        }
+      ],
+      "fix": {
+        "en": "The output grows by 6 for each 1 of x, so multiply: y = 6x. Test: 6 × 3 = 18. The wrong rule gives 3 + 6 = 9, not 18.",
+        "es": "La salida crece 6 por cada 1 de x, así que multiplica: y = 6x. Prueba: 6 × 3 = 18. La regla incorrecta da 3 + 6 = 9, no 18."
+      },
+      "frame": {
+        "en": "My rule is y = ___ × x because the output grows by ___.",
+        "es": "Mi regla es y = ___ × x porque la salida crece ___."
+      },
+      "calc": {
+        "expr": "6 * 3",
+        "value": 18
+      }
+    },
+    "spiral": [
+      {
+        "from": "9-1",
+        "q": {
+          "en": "A table shows inputs 1, 2, 3 and outputs 4, 8, 12. What is the output for input 5?",
+          "es": "Una tabla muestra entradas 1, 2, 3 y salidas 4, 8, 12. ¿Cuál es la salida para la entrada 5?"
+        },
+        "options": [
+          "9",
+          "25",
+          "20"
+        ],
+        "correctIdx": 2,
+        "exp": {
+          "en": "Each output is 4 times its input. 5 × 4 = 20.",
+          "es": "Cada salida es 4 veces su entrada. 5 × 4 = 20."
+        },
+        "calc": {
+          "expr": "5 * 4",
+          "value": 20
+        }
+      },
+      {
+        "from": "8-3",
+        "q": {
+          "en": "Solve: 4n = 36",
+          "es": "Resuelve: 4n = 36"
+        },
+        "options": [
+          "9",
+          "32",
+          "144"
+        ],
+        "correctIdx": 0,
+        "exp": {
+          "en": "n is multiplied by 4, so divide both sides by 4: 36 ÷ 4 = 9.",
+          "es": "La n está multiplicada por 4, así que se divide ambos lados entre 4: 36 ÷ 4 = 9."
+        },
+        "calc": {
+          "expr": "36 / 4",
+          "value": 9
+        }
+      }
+    ],
+    "kitchenTable": {
+      "en": "Take a small cup and a bowl. Pour 2 cups at a time. Make a table for 1, 2 and 3 pours. Can your student say which column is the input and tell you the rule?",
+      "es": "Tomen una taza pequeña y un tazón. Echen 2 tazas cada vez. Hagan una tabla para 1, 2 y 3 veces. ¿Puede su estudiante decir cuál columna es la entrada y decirles la regla?"
+    },
+    "vocab": [
+      {
+        "term": "Table of values",
+        "example": {
+          "en": "The faucet table has minutes in column 1 and gallons in column 2.",
+          "es": "La tabla de la llave tiene los minutos en la columna 1 y los galones en la columna 2."
+        },
+        "nonExample": {
+          "en": "A list of only gallons is not a table of values. It has no inputs.",
+          "es": "Una lista de solo galones no es una tabla de valores. No tiene entradas."
+        },
+        "frame": {
+          "en": "My table shows ___ in column 1 and ___ in column 2.",
+          "es": "Mi tabla muestra ___ en la columna 1 y ___ en la columna 2."
+        }
+      },
+      {
+        "term": "Input",
+        "example": {
+          "en": "The minutes 1, 2 and 4 are the input. You choose how long to run the faucet.",
+          "es": "Los minutos 1, 2 y 4 son la entrada. Tú eliges cuánto tiempo abrir la llave."
+        },
+        "nonExample": {
+          "en": "The gallons are not the input. They result from the minutes.",
+          "es": "Los galones no son la entrada. Resultan de los minutos."
+        },
+        "frame": {
+          "en": "The input is ___ because I can choose ___.",
+          "es": "La entrada es ___ porque puedo elegir ___."
+        }
+      },
+      {
+        "term": "Output",
+        "example": {
+          "en": "The gallons 11, 22 and 44 are the output. They follow from the minutes.",
+          "es": "Los galones 11, 22 y 44 son la salida. Siguen de los minutos."
+        },
+        "nonExample": {
+          "en": "The minutes are not the output. You picked them first.",
+          "es": "Los minutos no son la salida. Tú los escogiste primero."
+        },
+        "frame": {
+          "en": "The output is ___ because it depends on ___.",
+          "es": "La salida es ___ porque depende de ___."
+        }
+      },
+      {
+        "term": "Rate",
+        "example": {
+          "en": "The rate is 11 gallons for each minute.",
+          "es": "La tasa es 11 galones por cada minuto."
+        },
+        "nonExample": {
+          "en": "The first output, 11, is not always the rate. Check how y changes each step.",
+          "es": "La primera salida, 11, no siempre es la tasa. Mira cómo cambia y en cada paso."
+        },
+        "frame": {
+          "en": "The rate is ___ ___ for each ___.",
+          "es": "La tasa es ___ ___ por cada ___."
+        }
+      },
+      {
+        "term": "independent variable",
+        "example": {
+          "en": "Minutes are the independent variable. They fill column 1.",
+          "es": "Los minutos son la variable independiente. Llenan la columna 1."
+        },
+        "nonExample": {
+          "en": "Gallons are not independent. They respond to the minutes.",
+          "es": "Los galones no son independientes. Responden a los minutos."
+        },
+        "frame": {
+          "en": "I put ___ in column 1 because I choose it.",
+          "es": "Pongo ___ en la columna 1 porque yo lo elijo."
+        }
+      }
+    ],
+    "confused": [
+      {
+        "wrong": {
+          "en": "The rule is the first output. The first output is 11, so the rule is just 11.",
+          "es": "La regla es la primera salida. La primera salida es 11, así que la regla es solo 11."
+        },
+        "coach": {
+          "en": "What happens to the output each time the minutes go up by 1?",
+          "es": "¿Qué pasa con la salida cada vez que los minutos suben 1?"
+        },
+        "why": {
+          "en": "A rule describes the change at each step, not only the first number. The gallons grow by 11 each minute, so 3 minutes hold 3 × 11 = 33.",
+          "es": "Una regla describe el cambio en cada paso, no solo el primer número. Los galones crecen 11 cada minuto, así que 3 minutos tienen 3 × 11 = 33."
+        },
+        "misconception": "rule-is-first-output",
+        "calc": {
+          "expr": "3 * 11",
+          "value": 33
+        }
+      },
+      {
+        "wrong": {
+          "en": "I put gallons in column 1 because the tub is what I care about.",
+          "es": "Puse los galones en la columna 1 porque me importa la tina."
+        },
+        "coach": {
+          "en": "Which one can you choose: how many minutes, or how many gallons?",
+          "es": "¿Cuál puedes elegir: cuántos minutos o cuántos galones?"
+        },
+        "why": {
+          "en": "You choose the minutes, so minutes are the input and go in column 1. The gallons follow: 2 × 11 = 22.",
+          "es": "Tú eliges los minutos, así que los minutos son la entrada y van en la columna 1. Los galones siguen: 2 × 11 = 22."
+        },
+        "misconception": "output-placed-in-input-column",
+        "calc": {
+          "expr": "2 * 11",
+          "value": 22
+        }
+      },
+      {
+        "wrong": {
+          "en": "From 2 minutes to 4 minutes I add 11 once: 22 + 11 = 33 gallons.",
+          "es": "De 2 minutos a 4 minutos sumo 11 una vez: 22 + 11 = 33 galones."
+        },
+        "coach": {
+          "en": "How many minutes passed between minute 2 and minute 4?",
+          "es": "¿Cuántos minutos pasaron entre el minuto 2 y el minuto 4?"
+        },
+        "why": {
+          "en": "Two minutes passed, so add 11 two times: 22 + 22 = 44.",
+          "es": "Pasaron dos minutos, así que suma 11 dos veces: 22 + 22 = 44."
+        },
+        "misconception": "added-rate-once-for-two-steps",
+        "calc": {
+          "expr": "22 + 22",
+          "value": 44
+        }
+      }
+    ]
+  }
 }

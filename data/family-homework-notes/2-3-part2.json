@@ -523,5 +523,322 @@
       ],
       "image": "/assets/vocab-images/data.svg"
     }
-  ]
+  ],
+  "v3": {
+    "version": 1,
+    "kind": "math",
+    "topicKey": "median-even-set-apply",
+    "standardPlain": {
+      "en": "Find the median when a data set has an even number of values.",
+      "es": "Hallar la mediana cuando un conjunto de datos tiene una cantidad par de valores."
+    },
+    "hook": {
+      "style": "map",
+      "en": "A trail sign wants one number for a typical bike ride. Six rides lasted 52, 67, 58, 62, 55 and 70 minutes. What number should the sign show?",
+      "es": "Un letrero del sendero quiere un número para un paseo en bicicleta típico. Seis paseos duraron 52, 67, 58, 62, 55 y 70 minutos. ¿Qué número debe mostrar el letrero?",
+      "guess": {
+        "en": "Make a guess first: will it be one of the six ride times, or not?",
+        "es": "Primero adivina: ¿será uno de los seis tiempos o no?"
+      },
+      "reveal": {
+        "en": "Not one of them! In order: 52, 55, 58, 62, 67, 70. The two middle rides are 58 and 62. Halfway between them is (58 + 62) ÷ 2 = 60 minutes.",
+        "es": "¡Ninguno de ellos! En orden: 52, 55, 58, 62, 67, 70. Los dos paseos del medio son 58 y 62. A la mitad entre ellos está (58 + 62) ÷ 2 = 60 minutos."
+      }
+    },
+    "classModel": {
+      "name": {
+        "en": "halfway between the two middle numbers",
+        "es": "a la mitad entre los dos números del medio"
+      }
+    },
+    "model": {
+      "kind": "numberline",
+      "data": {
+        "min": 50,
+        "max": 70,
+        "step": 2,
+        "points": [
+          {
+            "value": 52,
+            "kind": "given"
+          },
+          {
+            "value": 55,
+            "kind": "given"
+          },
+          {
+            "value": 58,
+            "kind": "given"
+          },
+          {
+            "value": 60,
+            "label": {
+              "en": "median 60",
+              "es": "mediana 60"
+            },
+            "kind": "answer"
+          },
+          {
+            "value": 62,
+            "kind": "given"
+          },
+          {
+            "value": 67,
+            "kind": "given"
+          },
+          {
+            "value": 70,
+            "kind": "given"
+          }
+        ],
+        "unit": {
+          "en": "minutes",
+          "es": "minutos"
+        }
+      },
+      "alt": {
+        "en": "A number line from 50 to 70 minutes. Six ride times are marked: 52, 55, 58, 62, 67 and 70. The two middle times, 58 and 62, have the median, 60, halfway between them.",
+        "es": "Una recta numérica de 50 a 70 minutos. Se marcan seis tiempos: 52, 55, 58, 62, 67 y 70. Entre los dos tiempos del medio, 58 y 62, a la mitad está la mediana, 60."
+      }
+    },
+    "transfer": {
+      "stem": {
+        "en": "Four students saved these dollars this month: 14, 5, 10, 24. What is the median amount?",
+        "es": "Cuatro estudiantes ahorraron estos dólares este mes: 14, 5, 10, 24. ¿Cuál es la mediana?"
+      },
+      "choices": [
+        {
+          "en": "$7.50",
+          "es": "$7.50",
+          "correct": false,
+          "misconception": "middle-of-unsorted-list"
+        },
+        {
+          "en": "$14",
+          "es": "$14",
+          "correct": false,
+          "misconception": "picked-one-middle-number"
+        },
+        {
+          "en": "$12",
+          "es": "$12",
+          "correct": true,
+          "misconception": null
+        }
+      ],
+      "reasoning": {
+        "en": "Order first: 5, 10, 14, 24. The two middle values are 10 and 14. Halfway between: (10 + 14) ÷ 2 = $12.",
+        "es": "Primero ordena: 5, 10, 14, 24. Los dos valores del medio son 10 y 14. A la mitad entre ellos: (10 + 14) ÷ 2 = $12."
+      },
+      "calc": {
+        "expr": "(10 + 14) / 2",
+        "value": 12,
+        "unit": "$"
+      }
+    },
+    "glitch": {
+      "scenario": {
+        "en": "A different situation: Four games gave these scores: 9, 3, 7, 5. Lena finds the median.",
+        "es": "Otra situación: Cuatro juegos dieron estas anotaciones: 9, 3, 7, 5. Lena halla la mediana."
+      },
+      "steps": [
+        {
+          "en": "Pick the middle two numbers of 9, 3, 7, 5 as written: 3 and 7.",
+          "es": "Toma los dos números del medio de 9, 3, 7, 5 como están escritos: 3 y 7.",
+          "isGlitch": true
+        },
+        {
+          "en": "With an even count, add the two middle numbers and divide by 2.",
+          "es": "Con una cantidad par, suma los dos números del medio y divide entre 2.",
+          "isGlitch": false
+        },
+        {
+          "en": "Check: about half the numbers should be less than your answer, and half greater.",
+          "es": "Comprueba: más o menos la mitad de los números debe ser menor que tu respuesta y la otra mitad mayor.",
+          "isGlitch": false
+        }
+      ],
+      "fix": {
+        "en": "Order first: 3, 5, 7, 9. The middle two are 5 and 7. Then (5 + 7) ÷ 2 = 6. The median is 6.",
+        "es": "Primero ordena: 3, 5, 7, 9. Los dos del medio son 5 y 7. Entonces (5 + 7) ÷ 2 = 6. La mediana es 6."
+      },
+      "frame": {
+        "en": "I order first, so the middle two are ___ and ___, and the median is ___.",
+        "es": "Primero ordeno, así que los dos del medio son ___ y ___, y la mediana es ___."
+      },
+      "calc": {
+        "expr": "(5 + 7) / 2",
+        "value": 6
+      }
+    },
+    "spiral": [
+      {
+        "from": "2-3",
+        "q": {
+          "en": "A student walked a dog 6, 3, 8, 5, 7 miles over five days. What is the median number of miles?",
+          "es": "Un estudiante paseó a un perro 6, 3, 8, 5, 7 millas en cinco días. ¿Cuál es la mediana de millas?"
+        },
+        "options": [
+          "8",
+          "5.8",
+          "6"
+        ],
+        "correctIdx": 2,
+        "exp": {
+          "en": "In order: 3, 5, 6, 7, 8. The middle value is 6.",
+          "es": "En orden: 3, 5, 6, 7, 8. El valor del medio es 6."
+        },
+        "calc": {
+          "expr": "6",
+          "value": 6
+        }
+      },
+      {
+        "from": "2-2",
+        "q": {
+          "en": "The scores 2, 4, 8, 11, 13, 16, 21 use intervals of 10. How many values are in 0–9?",
+          "es": "Las notas 2, 4, 8, 11, 13, 16, 21 usan intervalos de 10. ¿Cuántos valores hay en 0–9?"
+        },
+        "options": [
+          "3",
+          "7",
+          "1"
+        ],
+        "correctIdx": 0,
+        "exp": {
+          "en": "The values 2, 4 and 8 fit in 0–9. Check: 7 − 3 − 1 = 3.",
+          "es": "Los valores 2, 4 y 8 caben en 0–9. Comprueba: 7 − 3 − 1 = 3."
+        },
+        "calc": {
+          "expr": "7 - 3 - 1",
+          "value": 3
+        }
+      }
+    ],
+    "kitchenTable": {
+      "en": "Write 52, 55, 58, 62, 67 and 70 on six small papers and mix them up. Ask your student to put them in order and touch the two middle ones. Then ask: what number is halfway between them? Is there a paper with that number?",
+      "es": "Escriban 52, 55, 58, 62, 67 y 70 en seis papelitos y revuélvanlos. Pidan a su estudiante que los ponga en orden y toque los dos del medio. Luego pregunten: ¿qué número está a la mitad entre ellos? ¿Hay un papelito con ese número?"
+    },
+    "vocab": [
+      {
+        "term": "Median",
+        "example": {
+          "en": "60 minutes is the median of the six ride times once they are in order.",
+          "es": "60 minutos es la mediana de los seis tiempos de paseo cuando están en orden."
+        },
+        "nonExample": {
+          "en": "62 is not the median. It is only one of the two middle times.",
+          "es": "El 62 no es la mediana. Es solo uno de los dos tiempos del medio."
+        },
+        "frame": {
+          "en": "The median is ___ because it is halfway between ___ and ___.",
+          "es": "La mediana es ___ porque está a la mitad entre ___ y ___."
+        }
+      },
+      {
+        "term": "Halfway value",
+        "example": {
+          "en": "60 is the halfway value between the middle times 58 and 62.",
+          "es": "60 es el valor intermedio entre los tiempos del medio 58 y 62."
+        },
+        "nonExample": {
+          "en": "A different situation: For the middle values 18 and 22, the number 18 is not the halfway value.",
+          "es": "Otra situación: Para los valores del medio 18 y 22, el número 18 no es el valor intermedio."
+        },
+        "frame": {
+          "en": "The halfway value between ___ and ___ is ___.",
+          "es": "El valor intermedio entre ___ y ___ es ___."
+        }
+      },
+      {
+        "term": "Measure of center",
+        "example": {
+          "en": "The median, 60 minutes, is one number for a typical ride.",
+          "es": "La mediana, 60 minutos, es un número para un paseo típico."
+        },
+        "nonExample": {
+          "en": "The number of rides, 6, does not describe a typical ride.",
+          "es": "La cantidad de paseos, 6, no describe un paseo típico."
+        },
+        "frame": {
+          "en": "The median ___ tells me a typical ride lasts about ___.",
+          "es": "La mediana ___ me dice que un paseo típico dura cerca de ___."
+        }
+      },
+      {
+        "term": "Data set",
+        "example": {
+          "en": "The six ride times 52, 55, 58, 62, 67 and 70 make one data set.",
+          "es": "Los seis tiempos 52, 55, 58, 62, 67 y 70 forman un conjunto de datos."
+        },
+        "nonExample": {
+          "en": "The single time 70 is one value, not the whole data set.",
+          "es": "El tiempo 70 solo es un valor, no todo el conjunto de datos."
+        },
+        "frame": {
+          "en": "My data set has ___ values, so the count is ___.",
+          "es": "Mi conjunto de datos tiene ___ valores, así que la cantidad es ___."
+        }
+      }
+    ],
+    "confused": [
+      {
+        "wrong": {
+          "en": "The two middle times are 58 and 62. I pick 62 for the median.",
+          "es": "Los dos tiempos del medio son 58 y 62. Escojo el 62 como mediana."
+        },
+        "coach": {
+          "en": "Is the median one of the two middle numbers, or a number between them?",
+          "es": "¿La mediana es uno de los dos números del medio o un número entre ellos?"
+        },
+        "why": {
+          "en": "With an even count, no single ride is in the middle. Add the two middle times and divide by 2: (58 + 62) ÷ 2 = 60.",
+          "es": "Con una cantidad par, ningún paseo solo está en el medio. Suma los dos tiempos del medio y divide entre 2: (58 + 62) ÷ 2 = 60."
+        },
+        "misconception": "picked-one-middle-number",
+        "calc": {
+          "expr": "(58 + 62) / 2",
+          "value": 60
+        }
+      },
+      {
+        "wrong": {
+          "en": "I did not reorder 67, 52, 70, 58, 55, 62. The middle two are 70 and 58, so the median is 64.",
+          "es": "No reordené 67, 52, 70, 58, 55, 62. Los dos del medio son 70 y 58, así que la mediana es 64."
+        },
+        "coach": {
+          "en": "What should you do to the list before you pick the middle two?",
+          "es": "¿Qué debes hacer con la lista antes de escoger los dos del medio?"
+        },
+        "why": {
+          "en": "Order first: 52, 55, 58, 62, 67, 70. The middle two are 58 and 62, and their sum is 120. Then 120 ÷ 2 = 60.",
+          "es": "Primero ordena: 52, 55, 58, 62, 67, 70. Los dos del medio son 58 y 62, y su suma es 120. Entonces 120 ÷ 2 = 60."
+        },
+        "misconception": "middle-of-unsorted-list",
+        "calc": {
+          "expr": "120 / 2",
+          "value": 60
+        }
+      },
+      {
+        "wrong": {
+          "en": "No ride lasted 60 minutes. So 60 cannot be the median.",
+          "es": "Ningún paseo duró 60 minutos. Así que 60 no puede ser la mediana."
+        },
+        "coach": {
+          "en": "Must the median be one of the numbers in the list?",
+          "es": "¿La mediana tiene que ser uno de los números de la lista?"
+        },
+        "why": {
+          "en": "The median can be a number that is not in the data. Start at 58 and go halfway up to 62: 58 + (62 − 58) ÷ 2 = 60.",
+          "es": "La mediana puede ser un número que no está en los datos. Empieza en 58 y sube la mitad hasta 62: 58 + (62 − 58) ÷ 2 = 60."
+        },
+        "misconception": "median-must-be-in-the-data",
+        "calc": {
+          "expr": "58 + (62 - 58) / 2",
+          "value": 60
+        }
+      }
+    ]
+  }
 }

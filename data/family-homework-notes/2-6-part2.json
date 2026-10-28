@@ -537,5 +537,313 @@
       ],
       "image": "/assets/vocab-images/difference.svg"
     }
-  ]
+  ],
+  "v3": {
+    "version": 1,
+    "kind": "math",
+    "topicKey": "multi-step-division-staffing-apply",
+    "standardPlain": {
+      "en": "Use long division more than once in a real problem, then compare the answers.",
+      "es": "Usar la división larga más de una vez en un problema real y comparar las respuestas."
+    },
+    "hook": {
+      "style": "map",
+      "en": "A big school district has 621,000 students. Right now there is 1 teacher for every 20 students. The goal is 1 teacher for every 15. How many more teachers must the district hire?",
+      "es": "Un distrito escolar grande tiene 621,000 estudiantes. Ahora hay 1 maestro por cada 20 estudiantes. La meta es 1 maestro por cada 15. ¿Cuántos maestros más debe contratar el distrito?",
+      "guess": {
+        "en": "Make a guess first: more than 5,000 new teachers, or fewer?",
+        "es": "Primero adivina: ¿más de 5,000 maestros nuevos o menos?"
+      },
+      "reveal": {
+        "en": "More! Now: 621,000 ÷ 20 = 31,050 teachers. Goal: 621,000 ÷ 15 = 41,400 teachers. The difference is 41,400 − 31,050 = 10,350 new teachers.",
+        "es": "¡Más! Ahora: 621,000 ÷ 20 = 31,050 maestros. Meta: 621,000 ÷ 15 = 41,400 maestros. La diferencia es 41,400 − 31,050 = 10,350 maestros nuevos."
+      }
+    },
+    "classModel": {
+      "name": {
+        "en": "two divisions, then subtract",
+        "es": "dos divisiones y luego una resta"
+      }
+    },
+    "model": {
+      "kind": "ratiotable",
+      "data": {
+        "headers": [
+          {
+            "en": "Students per teacher",
+            "es": "Estudiantes por maestro"
+          },
+          {
+            "en": "Teachers",
+            "es": "Maestros"
+          }
+        ],
+        "rows": [
+          [
+            "20",
+            "31,050"
+          ],
+          [
+            "15",
+            "41,400"
+          ],
+          [
+            {
+              "en": "More needed",
+              "es": "Faltan"
+            },
+            "?"
+          ]
+        ],
+        "unknownCells": [
+          [
+            2,
+            1
+          ]
+        ]
+      },
+      "alt": {
+        "en": "A table with students per teacher and teachers. 20 students per teacher means 31,050 teachers. 15 students per teacher means 41,400 teachers. The last row asks how many more teachers are needed, and it is unknown.",
+        "es": "Una tabla con estudiantes por maestro y maestros. 20 estudiantes por maestro significa 31,050 maestros. 15 estudiantes por maestro significa 41,400 maestros. La última fila pregunta cuántos maestros más se necesitan, y es desconocido."
+      }
+    },
+    "transfer": {
+      "stem": {
+        "en": "A school has 480 students. Now there is 1 aide for every 40 students. The goal is 1 aide for every 30 students. How many more aides are needed?",
+        "es": "Una escuela tiene 480 estudiantes. Ahora hay 1 asistente por cada 40 estudiantes. La meta es 1 asistente por cada 30. ¿Cuántos asistentes más se necesitan?"
+      },
+      "choices": [
+        {
+          "en": "16 aides",
+          "es": "16 asistentes",
+          "correct": false,
+          "misconception": "forgot-final-subtraction"
+        },
+        {
+          "en": "12 aides",
+          "es": "12 asistentes",
+          "correct": false,
+          "misconception": "stopped-after-first-division"
+        },
+        {
+          "en": "4 aides",
+          "es": "4 asistentes",
+          "correct": true,
+          "misconception": null
+        }
+      ],
+      "reasoning": {
+        "en": "Now: 480 ÷ 40 = 12 aides. Goal: 480 ÷ 30 = 16 aides. Subtract: 16 − 12 = 4 more aides.",
+        "es": "Ahora: 480 ÷ 40 = 12 asistentes. Meta: 480 ÷ 30 = 16 asistentes. Resta: 16 − 12 = 4 asistentes más."
+      },
+      "calc": {
+        "expr": "480 / 30 - 480 / 40",
+        "value": 4
+      }
+    },
+    "glitch": {
+      "scenario": {
+        "en": "A different situation: A school has 900 students. Now there is 1 counselor for every 300 students. The goal is 1 counselor for every 150. How many more counselors?",
+        "es": "Otra situación: Una escuela tiene 900 estudiantes. Ahora hay 1 consejero por cada 300 estudiantes. La meta es 1 consejero por cada 150. ¿Cuántos consejeros más?"
+      },
+      "steps": [
+        {
+          "en": "Divide for now: 900 ÷ 300 = 3 counselors.",
+          "es": "Divide para ahora: 900 ÷ 300 = 3 consejeros.",
+          "isGlitch": false
+        },
+        {
+          "en": "Divide for the goal: 900 ÷ 150 = 60 counselors.",
+          "es": "Divide para la meta: 900 ÷ 150 = 60 consejeros.",
+          "isGlitch": true
+        },
+        {
+          "en": "Subtract the two quotients to find how many more.",
+          "es": "Resta los dos cocientes para hallar cuántos más.",
+          "isGlitch": false
+        }
+      ],
+      "fix": {
+        "en": "900 ÷ 150 = 6, not 60. Check: 150 × 6 = 900. Then 6 − 3 = 3 more counselors.",
+        "es": "900 ÷ 150 = 6, no 60. Comprueba: 150 × 6 = 900. Luego 6 − 3 = 3 consejeros más."
+      },
+      "frame": {
+        "en": "The first quotient counts ___ and the second quotient counts ___.",
+        "es": "El primer cociente cuenta ___ y el segundo cociente cuenta ___."
+      },
+      "calc": {
+        "expr": "900 / 150",
+        "value": 6
+      }
+    },
+    "spiral": [
+      {
+        "from": "2-6",
+        "q": {
+          "en": "What is 960 ÷ 15?",
+          "es": "¿Cuánto es 960 ÷ 15?"
+        },
+        "options": [
+          "64",
+          "640",
+          "6.4"
+        ],
+        "correctIdx": 0,
+        "exp": {
+          "en": "15 × 60 = 900 and 15 × 4 = 60, so 60 + 4 = 64.",
+          "es": "15 × 60 = 900 y 15 × 4 = 60, así que 60 + 4 = 64."
+        },
+        "calc": {
+          "expr": "960 / 15",
+          "value": 64
+        }
+      },
+      {
+        "from": "2-5",
+        "q": {
+          "en": "Q1 = 21 and Q3 = 35. What is the IQR?",
+          "es": "Q1 = 21 y Q3 = 35. ¿Cuál es el RIC?"
+        },
+        "options": [
+          "56",
+          "28",
+          "14"
+        ],
+        "correctIdx": 2,
+        "exp": {
+          "en": "The IQR is Q3 − Q1 = 35 − 21 = 14.",
+          "es": "El RIC es Q3 − Q1 = 35 − 21 = 14."
+        },
+        "calc": {
+          "expr": "35 - 21",
+          "value": 14
+        }
+      }
+    ],
+    "kitchenTable": {
+      "en": "Say the plan out loud: one teacher for every 20 students, then one for every 15. Which plan needs more teachers? How do you know before you divide?",
+      "es": "Digan el plan en voz alta: un maestro por cada 20 estudiantes, y luego uno por cada 15. ¿Qué plan necesita más maestros? ¿Cómo lo saben antes de dividir?"
+    },
+    "vocab": [
+      {
+        "term": "Long division",
+        "example": {
+          "en": "Dividing 621,000 by 20, and then by 15, takes two long divisions.",
+          "es": "Dividir 621,000 entre 20, y luego entre 15, toma dos divisiones largas."
+        },
+        "nonExample": {
+          "en": "Adding 31,050 + 41,400 is not long division.",
+          "es": "Sumar 31,050 + 41,400 no es una división larga."
+        },
+        "frame": {
+          "en": "In long division I divide ___ by ___ first, then ___.",
+          "es": "En la división larga divido primero ___ entre ___, y luego ___."
+        }
+      },
+      {
+        "term": "Dividend",
+        "example": {
+          "en": "In 621,000 ÷ 20, the dividend is 621,000, the number of students.",
+          "es": "En 621,000 ÷ 20, el dividendo es 621,000, el número de estudiantes."
+        },
+        "nonExample": {
+          "en": "20 is not the dividend. It is the students for each teacher.",
+          "es": "20 no es el dividendo. Son los estudiantes por cada maestro."
+        },
+        "frame": {
+          "en": "The dividend is ___ and it counts ___.",
+          "es": "El dividendo es ___ y cuenta ___."
+        }
+      },
+      {
+        "term": "Divisor",
+        "example": {
+          "en": "In 621,000 ÷ 15, the divisor is 15, the goal of students for each teacher.",
+          "es": "En 621,000 ÷ 15, el divisor es 15, la meta de estudiantes por cada maestro."
+        },
+        "nonExample": {
+          "en": "621,000 is not the divisor. It is the number being split.",
+          "es": "621,000 no es el divisor. Es el número que se reparte."
+        },
+        "frame": {
+          "en": "The divisor is ___ because each teacher has ___ students.",
+          "es": "El divisor es ___ porque cada maestro tiene ___ estudiantes."
+        }
+      },
+      {
+        "term": "Quotient",
+        "example": {
+          "en": "The quotient 31,050 counts the teachers the district has now.",
+          "es": "El cociente 31,050 cuenta los maestros que el distrito tiene ahora."
+        },
+        "nonExample": {
+          "en": "31,050 is not the number to hire. It is the number of teachers now.",
+          "es": "31,050 no es el número por contratar. Es el número de maestros de ahora."
+        },
+        "frame": {
+          "en": "The quotient ___ counts ___.",
+          "es": "El cociente ___ cuenta ___."
+        }
+      }
+    ],
+    "confused": [
+      {
+        "wrong": {
+          "en": "621,000 ÷ 20 = 31,050. That is the answer: 31,050 new teachers.",
+          "es": "621,000 ÷ 20 = 31,050. Esa es la respuesta: 31,050 maestros nuevos."
+        },
+        "coach": {
+          "en": "What does that first quotient count: teachers now, or teachers still to hire?",
+          "es": "¿Qué cuenta ese primer cociente: los maestros de ahora o los maestros que faltan por contratar?"
+        },
+        "why": {
+          "en": "31,050 is the teachers the district has now. The goal needs a second division, then a subtraction.",
+          "es": "31,050 son los maestros que el distrito tiene ahora. La meta necesita una segunda división y luego una resta."
+        },
+        "misconception": "stopped-after-first-division",
+        "calc": {
+          "expr": "621000 / 20",
+          "value": 31050
+        }
+      },
+      {
+        "wrong": {
+          "en": "621,000 ÷ 15 = 4,140. So the goal is 4,140 teachers.",
+          "es": "621,000 ÷ 15 = 4,140. Entonces la meta es 4,140 maestros."
+        },
+        "coach": {
+          "en": "Should fewer students per teacher mean more teachers or fewer teachers?",
+          "es": "Si cada maestro tiene menos estudiantes, ¿se necesitan más maestros o menos maestros?"
+        },
+        "why": {
+          "en": "Fewer students per teacher needs more teachers, so the goal must be above 31,050. A zero went missing: 621,000 ÷ 15 = 41,400.",
+          "es": "Menos estudiantes por maestro necesita más maestros, así que la meta debe ser mayor que 31,050. Faltó un cero: 621,000 ÷ 15 = 41,400."
+        },
+        "misconception": "dropped-zero-in-quotient",
+        "calc": {
+          "expr": "621000 / 15",
+          "value": 41400
+        }
+      },
+      {
+        "wrong": {
+          "en": "I added them: 41,400 + 31,050 = 72,450 more teachers.",
+          "es": "Los sumé: 41,400 + 31,050 = 72,450 maestros más."
+        },
+        "coach": {
+          "en": "The question asks how many MORE. Do you combine the two numbers or find the gap between them?",
+          "es": "La pregunta es cuántos MÁS. ¿Se combinan los dos números o se halla la diferencia entre ellos?"
+        },
+        "why": {
+          "en": "Both numbers count teachers in the same district, so find the gap: 41,400 − 31,050 = 10,350 more teachers.",
+          "es": "Los dos números cuentan maestros del mismo distrito, así que se halla la diferencia: 41,400 − 31,050 = 10,350 maestros más."
+        },
+        "misconception": "added-instead-of-subtracted",
+        "calc": {
+          "expr": "41400 - 31050",
+          "value": 10350
+        }
+      }
+    ]
+  }
 }

@@ -542,5 +542,340 @@
       ],
       "image": "/assets/vocab-images/bar-model.svg"
     }
-  ]
+  ],
+  "v3": {
+    "version": 1,
+    "kind": "math",
+    "topicKey": "start-amount-plus-rate-apply",
+    "standardPlain": {
+      "en": "Write an equation for a situation with a rate that multiplies and a start amount that adds.",
+      "es": "Escribir una ecuación para una situación con una tasa que multiplica y una cantidad inicial que suma."
+    },
+    "hook": {
+      "style": "ticket",
+      "en": "A parking garage charges $5 to drive in, plus $2 for each hour. A driver parks for 3 hours. How much does the driver pay?",
+      "es": "Un estacionamiento cobra $5 por entrar, más $2 por cada hora. Un conductor estaciona 3 horas. ¿Cuánto paga el conductor?",
+      "guess": {
+        "en": "Guess first: is it more than $10, or less?",
+        "es": "Primero adivina: ¿son más de $10 o menos?"
+      },
+      "reveal": {
+        "en": "More! The $5 is paid once. The $2 is paid every hour: 2 × 3 = 6. Then add 5 to get $11. The equation is y = 2x + 5.",
+        "es": "¡Más! Los $5 se pagan una vez. Los $2 se pagan cada hora: 2 × 3 = 6. Luego suma 5 y son $11. La ecuación es y = 2x + 5."
+      }
+    },
+    "classModel": {
+      "name": {
+        "en": "rate multiplies, start adds",
+        "es": "la tasa multiplica, el inicio suma"
+      }
+    },
+    "model": {
+      "kind": "ratiotable",
+      "data": {
+        "headers": [
+          {
+            "en": "Hours (x)",
+            "es": "Horas (x)"
+          },
+          {
+            "en": "Total cost (y)",
+            "es": "Costo total (y)"
+          }
+        ],
+        "rows": [
+          [
+            0,
+            "$5"
+          ],
+          [
+            1,
+            "$7"
+          ],
+          [
+            2,
+            "$9"
+          ],
+          [
+            3,
+            "?"
+          ]
+        ],
+        "unknownCells": [
+          [
+            3,
+            1
+          ]
+        ],
+        "arrows": [
+          {
+            "from": 0,
+            "to": 1,
+            "label": {
+              "en": "+$2",
+              "es": "+$2"
+            }
+          }
+        ]
+      },
+      "alt": {
+        "en": "A table with two columns: Hours (x) and Total cost (y). The rows are 0 and $5, 1 and $7, 2 and $9, and 3 with the cost unknown. An arrow shows $2 more for each hour, starting from $5.",
+        "es": "Una tabla con dos columnas: Horas (x) y Costo total (y). Las filas son 0 y $5, 1 y $7, 2 y $9, y 3 con el costo desconocido. Una flecha muestra $2 más por cada hora, empezando en $5."
+      }
+    },
+    "transfer": {
+      "stem": {
+        "en": "A locker costs $3 to start plus $4 for each week. Which equation fits (c = cost, w = weeks), and what do 5 weeks cost?",
+        "es": "Un casillero cuesta $3 al inicio más $4 por cada semana. ¿Qué ecuación encaja (c = costo, w = semanas) y cuánto cuestan 5 semanas?"
+      },
+      "choices": [
+        {
+          "en": "c = 7w, so 5 weeks cost $35",
+          "es": "c = 7w, así que 5 semanas cuestan $35",
+          "correct": false,
+          "misconception": "combined-start-and-rate"
+        },
+        {
+          "en": "c = 4w, so 5 weeks cost $20",
+          "es": "c = 4w, así que 5 semanas cuestan $20",
+          "correct": false,
+          "misconception": "ignored-start-amount"
+        },
+        {
+          "en": "c = 4w + 3, so 5 weeks cost $23",
+          "es": "c = 4w + 3, así que 5 semanas cuestan $23",
+          "correct": true,
+          "misconception": null
+        }
+      ],
+      "reasoning": {
+        "en": "The $4 per week multiplies the weeks, and the $3 start is added once: c = 4w + 3. For 5 weeks: 4 × 5 + 3 = 23.",
+        "es": "Los $4 por semana multiplican las semanas, y los $3 del inicio se suman una vez: c = 4w + 3. Para 5 semanas: 4 × 5 + 3 = 23."
+      },
+      "calc": {
+        "expr": "4 * 5 + 3",
+        "value": 23,
+        "unit": "$"
+      }
+    },
+    "glitch": {
+      "scenario": {
+        "en": "A different situation: A bike rental charges $6 to start plus $3 for each hour. Lena wants an equation for the cost y of x hours.",
+        "es": "Otra situación: Un alquiler de bicicletas cobra $6 al inicio más $3 por cada hora. Lena quiere una ecuación para el costo y de x horas."
+      },
+      "steps": [
+        {
+          "en": "Define the variables: x is hours and y is total cost in dollars.",
+          "es": "Define las variables: x son las horas y y es el costo total en dólares.",
+          "isGlitch": false
+        },
+        {
+          "en": "The one-time $6 is multiplied by the hours, so y = 6x + 3.",
+          "es": "Los $6 de una sola vez se multiplican por las horas, así que y = 6x + 3.",
+          "isGlitch": true
+        },
+        {
+          "en": "Test the equation with 2 hours before you trust it.",
+          "es": "Prueba la ecuación con 2 horas antes de confiar en ella.",
+          "isGlitch": false
+        }
+      ],
+      "fix": {
+        "en": "The $3 per hour multiplies the hours, and the $6 is added once: y = 3x + 6. Test: 3 × 2 + 6 = 12.",
+        "es": "Los $3 por hora multiplican las horas, y los $6 se suman una vez: y = 3x + 6. Prueba: 3 × 2 + 6 = 12."
+      },
+      "frame": {
+        "en": "___ is added once, and ___ per hour multiplies the hours.",
+        "es": "___ se suma una vez, y ___ por hora multiplica las horas."
+      },
+      "calc": {
+        "expr": "3 * 2 + 6",
+        "value": 12
+      }
+    },
+    "spiral": [
+      {
+        "from": "9-3",
+        "q": {
+          "en": "In c = 12p, what is c when p = 6?",
+          "es": "En c = 12p, ¿cuánto es c cuando p = 6?"
+        },
+        "options": [
+          "72",
+          "18",
+          "66"
+        ],
+        "correctIdx": 0,
+        "exp": {
+          "en": "Replace p with 6: 12 × 6 = 72.",
+          "es": "Cambia p por 6: 12 × 6 = 72."
+        },
+        "calc": {
+          "expr": "12 * 6",
+          "value": 72
+        }
+      },
+      {
+        "from": "9-2",
+        "q": {
+          "en": "A graph has the points (1, 8), (2, 16) and (3, 24). What is the rate of change?",
+          "es": "Una gráfica tiene los puntos (1, 8), (2, 16) y (3, 24). ¿Cuál es la tasa de cambio?"
+        },
+        "options": [
+          "24",
+          "16",
+          "8"
+        ],
+        "correctIdx": 2,
+        "exp": {
+          "en": "y goes up 16 − 8 = 8 each time x goes up by 1.",
+          "es": "y sube 16 − 8 = 8 cada vez que x sube 1."
+        },
+        "calc": {
+          "expr": "16 - 8",
+          "value": 8
+        }
+      }
+    ],
+    "kitchenTable": {
+      "en": "Pretend a parking spot costs $5 to enter plus $2 for each hour. Ask your student for the cost of 4 hours. Which number is paid once, and which number repeats?",
+      "es": "Imaginen que un lugar de estacionamiento cuesta $5 por entrar más $2 por cada hora. Pidan a su estudiante el costo de 4 horas. ¿Cuál número se paga una vez y cuál se repite?"
+    },
+    "vocab": [
+      {
+        "term": "equation",
+        "example": {
+          "en": "y = 2x + 5 is an equation for the garage cost.",
+          "es": "y = 2x + 5 es una ecuación para el costo del estacionamiento."
+        },
+        "nonExample": {
+          "en": "2x + 5 alone is not an equation. It has no equal sign.",
+          "es": "2x + 5 solo no es una ecuación. No tiene signo igual."
+        },
+        "frame": {
+          "en": "My equation is y = ___ x + ___.",
+          "es": "Mi ecuación es y = ___ x + ___."
+        }
+      },
+      {
+        "term": "variable",
+        "example": {
+          "en": "In y = 2x + 5, x is hours and y is total cost. Both are variables.",
+          "es": "En y = 2x + 5, x son las horas y y es el costo total. Ambas son variables."
+        },
+        "nonExample": {
+          "en": "The 5 is not a variable. It is the same for every driver.",
+          "es": "El 5 no es una variable. Es igual para todos los conductores."
+        },
+        "frame": {
+          "en": "The variable ___ stands for ___.",
+          "es": "La variable ___ representa ___."
+        }
+      },
+      {
+        "term": "rate",
+        "example": {
+          "en": "The garage rate is $2 for each hour.",
+          "es": "La tasa del estacionamiento es $2 por cada hora."
+        },
+        "nonExample": {
+          "en": "The $5 to drive in is not the rate. It is paid only once.",
+          "es": "Los $5 por entrar no son la tasa. Se pagan solo una vez."
+        },
+        "frame": {
+          "en": "The rate is ___ for each ___, and it multiplies.",
+          "es": "La tasa es ___ por cada ___, y multiplica."
+        }
+      },
+      {
+        "term": "Constant",
+        "example": {
+          "en": "The $5 start fee is the constant. It does not change with the hours.",
+          "es": "La cuota inicial de $5 es la constante. No cambia con las horas."
+        },
+        "nonExample": {
+          "en": "The 2x part is not constant. It grows as the hours grow.",
+          "es": "La parte 2x no es constante. Crece cuando crecen las horas."
+        },
+        "frame": {
+          "en": "The constant is ___ and it is added ___.",
+          "es": "La constante es ___ y se suma ___."
+        }
+      },
+      {
+        "term": "define the variables",
+        "example": {
+          "en": "Let x = hours parked and y = total cost in dollars.",
+          "es": "Sea x = horas estacionadas y y = costo total en dólares."
+        },
+        "nonExample": {
+          "en": "Writing y = 2x + 5 with no meaning for the letters does not define the variables.",
+          "es": "Escribir y = 2x + 5 sin decir qué significan las letras no define las variables."
+        },
+        "frame": {
+          "en": "Let x = ___ and y = ___.",
+          "es": "Sea x = ___ y y = ___."
+        }
+      }
+    ],
+    "confused": [
+      {
+        "wrong": {
+          "en": "A $2 per hour rate and a $5 start make y = 7x.",
+          "es": "Una tasa de $2 por hora y un inicio de $5 hacen y = 7x."
+        },
+        "coach": {
+          "en": "Is the $5 paid again every hour, or only one time?",
+          "es": "¿Los $5 se pagan otra vez cada hora o solo una vez?"
+        },
+        "why": {
+          "en": "The $5 is paid once. Only the $2 repeats each hour. For 3 hours: 2 × 3 + 5 = 11.",
+          "es": "Los $5 se pagan una vez. Solo los $2 se repiten cada hora. Para 3 horas: 2 × 3 + 5 = 11."
+        },
+        "misconception": "combined-start-and-rate",
+        "calc": {
+          "expr": "2 * 3 + 5",
+          "value": 11
+        }
+      },
+      {
+        "wrong": {
+          "en": "The cost for 4 hours is 2 × 4 = 8, so y = 8.",
+          "es": "El costo de 4 horas es 2 × 4 = 8, así que y = 8."
+        },
+        "coach": {
+          "en": "What does a driver pay just to drive in, before any hours?",
+          "es": "¿Qué paga un conductor solo por entrar, antes de contar las horas?"
+        },
+        "why": {
+          "en": "Add the one-time amount too: 2 × 4 + 5 = 13.",
+          "es": "Suma también la cantidad de una sola vez: 2 × 4 + 5 = 13."
+        },
+        "misconception": "forgot-start-amount",
+        "calc": {
+          "expr": "2 * 4 + 5",
+          "value": 13
+        }
+      },
+      {
+        "wrong": {
+          "en": "y = 2x + 5 looks right, so I will skip testing it.",
+          "es": "y = 2x + 5 se ve bien, así que no la voy a probar."
+        },
+        "coach": {
+          "en": "Which pair from the table can you try in your equation?",
+          "es": "¿Cuál pareja de la tabla puedes probar en tu ecuación?"
+        },
+        "why": {
+          "en": "Test with a known pair. A driver who parks 2 hours pays 2 × 2 + 5 = 9, and that matches the $9 in the table.",
+          "es": "Prueba con una pareja conocida. Un conductor que estaciona 2 horas paga 2 × 2 + 5 = 9, y eso coincide con los $9 de la tabla."
+        },
+        "misconception": "skipped-testing-equation",
+        "calc": {
+          "expr": "2 * 2 + 5",
+          "value": 9
+        }
+      }
+    ]
+  }
 }

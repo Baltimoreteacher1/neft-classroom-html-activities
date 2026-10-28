@@ -516,5 +516,306 @@
       ],
       "image": "/assets/vocab-images/dimensions.svg"
     }
-  ]
+  ],
+  "v3": {
+    "version": 1,
+    "kind": "math",
+    "topicKey": "volume-missing-edge-apply",
+    "standardPlain": {
+      "en": "Find a missing edge of a box when you know its volume and two edges.",
+      "es": "Hallar una arista que falta de una caja cuando conoces su volumen y dos aristas."
+    },
+    "hook": {
+      "style": "price-tag",
+      "en": "The label on a storage box is torn. It says the box holds 720 cubic centimeters. The box is 15 cm wide and 12 cm tall. How long is the box?",
+      "es": "La etiqueta de una caja de almacenaje está rota. Dice que la caja guarda 720 centímetros cúbicos. La caja mide 15 cm de ancho y 12 cm de alto. ¿Cuánto mide de largo?",
+      "guess": {
+        "en": "Guess first: is the box longer or shorter than 15 cm?",
+        "es": "Primero adivina: ¿la caja es más larga o más corta que 15 cm?"
+      },
+      "reveal": {
+        "en": "Shorter! The two edges you know make 15 × 12 = 180. Then 720 ÷ 180 = 4. The box is 4 cm long.",
+        "es": "¡Más corta! Las dos aristas que conoces dan 15 × 12 = 180. Luego 720 ÷ 180 = 4. La caja mide 4 cm de largo."
+      }
+    },
+    "classModel": {
+      "name": {
+        "en": "work the formula backwards",
+        "es": "usar la fórmula al revés"
+      }
+    },
+    "model": {
+      "kind": "doubleline",
+      "data": {
+        "top": {
+          "label": {
+            "en": "Length (cm)",
+            "es": "Largo (cm)"
+          },
+          "ticks": [
+            "0",
+            "1",
+            "?"
+          ]
+        },
+        "bottom": {
+          "label": {
+            "en": "Volume (cm³)",
+            "es": "Volumen (cm³)"
+          },
+          "ticks": [
+            "0",
+            "180",
+            "720"
+          ]
+        },
+        "unknown": [
+          2
+        ]
+      },
+      "alt": {
+        "en": "Two number lines lined up. The top line is length in centimeters: 0, 1 and an unknown length. The bottom line is volume: 0, 180 and 720 cubic centimeters. Each 1 cm of length adds 180 cubic centimeters, and 720 lines up with the unknown length.",
+        "es": "Dos rectas numéricas alineadas. La recta de arriba es el largo en centímetros: 0, 1 y un largo desconocido. La recta de abajo es el volumen: 0, 180 y 720 centímetros cúbicos. Cada 1 cm de largo agrega 180 centímetros cúbicos, y el 720 coincide con el largo desconocido."
+      }
+    },
+    "transfer": {
+      "stem": {
+        "en": "A shelf fits a fish tank that is 20 inches long and 9 inches wide. The tank must hold 1,800 cubic inches. How tall can the tank be?",
+        "es": "Un estante tiene espacio para una pecera de 20 pulgadas de largo y 9 pulgadas de ancho. La pecera debe guardar 1,800 pulgadas cúbicas. ¿Qué altura puede tener?"
+      },
+      "choices": [
+        {
+          "en": "90 inches",
+          "es": "90 pulgadas",
+          "correct": false,
+          "misconception": "divided-by-one-edge"
+        },
+        {
+          "en": "10 inches",
+          "es": "10 pulgadas",
+          "correct": true,
+          "misconception": null
+        },
+        {
+          "en": "29 inches",
+          "es": "29 pulgadas",
+          "correct": false,
+          "misconception": "added-the-edges"
+        }
+      ],
+      "reasoning": {
+        "en": "Multiply the two edges you know: 20 × 9 = 180. Divide the volume by it: 1,800 ÷ 180 = 10 inches.",
+        "es": "Multiplica las dos aristas que conoces: 20 × 9 = 180. Divide el volumen entre ese número: 1,800 ÷ 180 = 10 pulgadas."
+      },
+      "calc": {
+        "expr": "1800 / (20 * 9)",
+        "value": 10,
+        "unit": "inches"
+      }
+    },
+    "glitch": {
+      "scenario": {
+        "en": "A different situation: A box is 4 inches long, 2 inches wide, and 2.5 inches tall. Dana finds its volume.",
+        "es": "Otra situación: Una caja mide 4 pulgadas de largo, 2 pulgadas de ancho y 2.5 pulgadas de alto. Dana halla su volumen."
+      },
+      "steps": [
+        {
+          "en": "Write the formula: V = 4 × 2 × 2.5.",
+          "es": "Escribe la fórmula: V = 4 × 2 × 2.5.",
+          "isGlitch": false
+        },
+        {
+          "en": "Round 2.5 down to 2 to make it easier: V = 4 × 2 × 2 = 16.",
+          "es": "Redondea 2.5 a 2 para que sea más fácil: V = 4 × 2 × 2 = 16.",
+          "isGlitch": true
+        },
+        {
+          "en": "Label the answer: 16 cubic inches.",
+          "es": "Pon la unidad: 16 pulgadas cúbicas.",
+          "isGlitch": false
+        }
+      ],
+      "fix": {
+        "en": "Keep the 2.5. First 4 × 2 = 8, then 8 × 2.5 = 20 cubic inches. Rounding threw away 4 cubic inches.",
+        "es": "Conserva el 2.5. Primero 4 × 2 = 8, luego 8 × 2.5 = 20 pulgadas cúbicas. Redondear descartó 4 pulgadas cúbicas."
+      },
+      "frame": {
+        "en": "I keep the fraction exact: ___ × ___ × ___ = ___.",
+        "es": "Conservo la fracción exacta: ___ × ___ × ___ = ___."
+      },
+      "calc": {
+        "expr": "4 * 2 * 2.5",
+        "value": 20
+      }
+    },
+    "spiral": [
+      {
+        "from": "5-5",
+        "q": {
+          "en": "A box is 5 long, 3 wide, and 2 tall. What is its volume?",
+          "es": "Una caja mide 5 de largo, 3 de ancho y 2 de alto. ¿Cuál es su volumen?"
+        },
+        "options": [
+          "10",
+          "30",
+          "15"
+        ],
+        "correctIdx": 1,
+        "exp": {
+          "en": "Multiply all three edges: 5 × 3 × 2 = 30 cubic units.",
+          "es": "Multiplica las tres aristas: 5 × 3 × 2 = 30 unidades cúbicas."
+        },
+        "calc": {
+          "expr": "5 * 3 * 2",
+          "value": 30
+        }
+      },
+      {
+        "from": "5-3",
+        "q": {
+          "en": "A trapezoid has bases of 6 and 8 and a height of 3. What is its area?",
+          "es": "Un trapecio tiene bases de 6 y 8 y una altura de 3. ¿Cuál es su área?"
+        },
+        "options": [
+          "21",
+          "42",
+          "17"
+        ],
+        "correctIdx": 0,
+        "exp": {
+          "en": "Add the bases: 6 + 8 = 14. Then 14 × 3 = 42, and half is 21.",
+          "es": "Suma las bases: 6 + 8 = 14. Luego 14 × 3 = 42 y la mitad es 21."
+        },
+        "calc": {
+          "expr": "0.5 * (6 + 8) * 3",
+          "value": 21
+        }
+      }
+    ],
+    "kitchenTable": {
+      "en": "Pick a small box. Pretend its volume is 100 cubic centimeters and two edges are 5 cm and 4 cm. Can your student find the third edge, then check by multiplying all three?",
+      "es": "Elijan una caja pequeña. Imaginen que su volumen es 100 centímetros cúbicos y dos aristas miden 5 cm y 4 cm. ¿Puede su estudiante hallar la tercera arista y comprobar multiplicando las tres?"
+    },
+    "vocab": [
+      {
+        "term": "Volume",
+        "example": {
+          "en": "The storage box holds 720 cubic centimeters. That is the volume we know.",
+          "es": "La caja de almacenaje guarda 720 centímetros cúbicos. Ese es el volumen que conocemos."
+        },
+        "nonExample": {
+          "en": "The 15 cm width is not the volume. It is one edge.",
+          "es": "Los 15 cm de ancho no son el volumen. Son una arista."
+        },
+        "frame": {
+          "en": "V = ___ × ___ × ___, so the missing edge is ___.",
+          "es": "V = ___ × ___ × ___, así que la arista que falta es ___."
+        }
+      },
+      {
+        "term": "Edge",
+        "example": {
+          "en": "We know two edges of the storage box, 15 cm and 12 cm. The length is the missing edge.",
+          "es": "Conocemos dos aristas de la caja, 15 cm y 12 cm. El largo es la arista que falta."
+        },
+        "nonExample": {
+          "en": "A different situation: an edge of 1.5 ft is still an edge. We do not round it away.",
+          "es": "Otra situación: una arista de 1.5 pies sigue siendo una arista. No la redondeamos."
+        },
+        "frame": {
+          "en": "I know the edges ___ and ___, so the missing edge is ___.",
+          "es": "Conozco las aristas ___ y ___, así que la arista que falta es ___."
+        }
+      },
+      {
+        "term": "Cubic units",
+        "example": {
+          "en": "720 cm³ is in cubic units. The missing length is only in cm.",
+          "es": "720 cm³ está en unidades cúbicas. El largo que falta va solo en cm."
+        },
+        "nonExample": {
+          "en": "4 cm³ is wrong for a length. A length uses plain units.",
+          "es": "4 cm³ no sirve para un largo. Un largo usa unidades simples."
+        },
+        "frame": {
+          "en": "Volume is in cubic ___, but one edge is in plain ___.",
+          "es": "El volumen va en ___ cúbicas, pero una arista va en ___ simples."
+        }
+      },
+      {
+        "term": "Length, width, height",
+        "example": {
+          "en": "The label gives the width, 15 cm, and the height, 12 cm. The length is missing.",
+          "es": "La etiqueta da el ancho, 15 cm, y la altura, 12 cm. Falta el largo."
+        },
+        "nonExample": {
+          "en": "The volume 720 is not the length, the width or the height.",
+          "es": "El volumen 720 no es el largo, el ancho ni la altura."
+        },
+        "frame": {
+          "en": "Length = volume ÷ (width × height) = ___ ÷ (___ × ___).",
+          "es": "Largo = volumen ÷ (ancho × altura) = ___ ÷ (___ × ___)."
+        }
+      }
+    ],
+    "confused": [
+      {
+        "wrong": {
+          "en": "I divided by one edge: 720 ÷ 15 = 48 cm.",
+          "es": "Dividí entre una arista: 720 ÷ 15 = 48 cm."
+        },
+        "coach": {
+          "en": "Which edge did your division leave out?",
+          "es": "¿Cuál arista dejó fuera tu división?"
+        },
+        "why": {
+          "en": "The volume used both edges. Divide by their product: 15 × 12 = 180, and 720 ÷ 180 = 4.",
+          "es": "El volumen usó las dos aristas. Divide entre su producto: 15 × 12 = 180 y 720 ÷ 180 = 4."
+        },
+        "misconception": "divided-by-one-edge",
+        "calc": {
+          "expr": "720 / (15 * 12)",
+          "value": 4
+        }
+      },
+      {
+        "wrong": {
+          "en": "I added the edges I know: 15 + 12 = 27. Then 720 − 27 = 693 cm.",
+          "es": "Sumé las aristas que conozco: 15 + 12 = 27. Luego 720 − 27 = 693 cm."
+        },
+        "coach": {
+          "en": "Does the volume formula add edges, or multiply them?",
+          "es": "¿La fórmula del volumen suma aristas o las multiplica?"
+        },
+        "why": {
+          "en": "Volume multiplies, so we undo it by dividing. 15 × 12 = 180, and 720 ÷ 180 = 4 cm.",
+          "es": "El volumen multiplica, así que lo deshacemos dividiendo. 15 × 12 = 180 y 720 ÷ 180 = 4 cm."
+        },
+        "misconception": "subtracted-instead-of-divided",
+        "calc": {
+          "expr": "720 / (15 * 12)",
+          "value": 4
+        }
+      },
+      {
+        "wrong": {
+          "en": "A different situation: a box is 2 ft long, 3 ft wide, and 1.5 ft tall. 1.5 is close to 1, so 2 × 3 × 1 = 6 cubic feet.",
+          "es": "Otra situación: una caja mide 2 pies de largo, 3 pies de ancho y 1.5 pies de alto. 1.5 es casi 1, así que 2 × 3 × 1 = 6 pies cúbicos."
+        },
+        "coach": {
+          "en": "What happens to the extra half foot of height when you round it away?",
+          "es": "¿Qué pasa con el medio pie extra de altura cuando lo redondeas?"
+        },
+        "why": {
+          "en": "Keep the 1.5. First 2 × 3 = 6, then 6 × 1.5 = 9 cubic feet. Rounding lost 3 cubic feet.",
+          "es": "Conserva el 1.5. Primero 2 × 3 = 6, luego 6 × 1.5 = 9 pies cúbicos. Redondear perdió 3 pies cúbicos."
+        },
+        "misconception": "rounded-fraction-edge",
+        "calc": {
+          "expr": "2 * 3 * 1.5",
+          "value": 9
+        }
+      }
+    ]
+  }
 }

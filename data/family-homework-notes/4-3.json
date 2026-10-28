@@ -401,5 +401,271 @@
       "en": "An exact method and an estimate describe the same amount. The estimate tells you how big the exact answer should be, so you can spot a slip.",
       "es": "Un método exacto y una estimación hablan de la misma cantidad. La estimación te dice qué tan grande debe ser la respuesta exacta, y así descubres un error."
     }
+  },
+  "v3": {
+    "version": 1,
+    "kind": "math",
+    "topicKey": "estimate-percent-of-number",
+    "standardPlain": {
+      "en": "Use friendly percents and friendly numbers to estimate a percent of an amount.",
+      "es": "Usar porcentajes y números fáciles para estimar un porcentaje de una cantidad."
+    },
+    "hook": {
+      "style": "price-tag",
+      "en": "A jacket costs $81. The sign says 23% off, and you have no calculator. About how much will you save?",
+      "es": "Una chamarra cuesta $81. El letrero dice 23% de descuento, y no tienes calculadora. ¿Más o menos cuánto ahorrarás?",
+      "guess": {
+        "en": "Make a guess first: will you save more or less than $40?",
+        "es": "Primero adivina: ¿ahorrarás más o menos de $40?"
+      },
+      "reveal": {
+        "en": "About $20! 23% is close to 25%, and $81 is close to $80. One fourth of $80 is $20.",
+        "es": "¡Unos $20! El 23% está cerca del 25%, y $81 está cerca de $80. Una cuarta parte de $80 es $20."
+      }
+    },
+    "classModel": {
+      "name": {
+        "en": "the friendly benchmark",
+        "es": "el porcentaje de referencia fácil"
+      }
+    },
+    "model": {
+      "kind": "doubleline",
+      "data": {
+        "top": {
+          "label": {
+            "en": "Percent",
+            "es": "Porcentaje"
+          },
+          "ticks": [
+            "0%",
+            "25%",
+            "100%"
+          ]
+        },
+        "bottom": {
+          "label": {
+            "en": "Jacket price",
+            "es": "Precio de la chamarra"
+          },
+          "ticks": [
+            "$0",
+            "?",
+            "$80"
+          ]
+        },
+        "unknown": [
+          1
+        ]
+      },
+      "alt": {
+        "en": "Two number lines lined up. The top line shows 0%, 25% and 100%. The bottom line shows $0, an unknown amount and $80. The 100% lines up with $80, since $81 is close to $80. The 25% lines up with the unknown.",
+        "es": "Dos rectas numéricas alineadas. La de arriba muestra 0%, 25% y 100%. La de abajo muestra $0, una cantidad desconocida y $80. El 100% coincide con $80, porque $81 está cerca de $80. El 25% coincide con la cantidad desconocida."
+      }
+    },
+    "transfer": {
+      "stem": {
+        "en": "A cafeteria served 119 lunches. About 25% were pizza. About how many lunches were pizza?",
+        "es": "Una cafetería sirvió 119 almuerzos. Cerca del 25% fueron de pizza. ¿Más o menos cuántos almuerzos fueron de pizza?"
+      },
+      "choices": [
+        {
+          "en": "About 25",
+          "es": "Unos 25",
+          "correct": false,
+          "misconception": "percent-number-as-amount"
+        },
+        {
+          "en": "About 30",
+          "es": "Unos 30",
+          "correct": true,
+          "misconception": null
+        },
+        {
+          "en": "About 95",
+          "es": "Unos 95",
+          "correct": false,
+          "misconception": "subtracted-percent-number"
+        }
+      ],
+      "reasoning": {
+        "en": "119 is close to 120, and 25% is one fourth. 120 ÷ 4 = 30. About 30 lunches were pizza.",
+        "es": "119 está cerca de 120, y 25% es una cuarta parte. 120 ÷ 4 = 30. Unos 30 almuerzos fueron de pizza."
+      },
+      "calc": {
+        "expr": "120 / 4",
+        "value": 30
+      }
+    },
+    "glitch": null,
+    "spiral": [
+      {
+        "from": "4-2",
+        "q": {
+          "en": "What is 1/4 as a percent?",
+          "es": "¿Qué porcentaje es 1/4?"
+        },
+        "options": [
+          "14%",
+          "25%",
+          "4%"
+        ],
+        "correctIdx": 1,
+        "exp": {
+          "en": "4 × 25 = 100, so 1 × 25 = 25. That is 25/100, or 25%.",
+          "es": "4 × 25 = 100, así que 1 × 25 = 25. Es 25/100, o 25%."
+        },
+        "calc": {
+          "expr": "1 / 4 * 100",
+          "value": 25
+        }
+      },
+      {
+        "from": "4-1",
+        "q": {
+          "en": "A grid has 100 squares and 35 are shaded. What percent is shaded?",
+          "es": "Una cuadrícula tiene 100 cuadros y 35 están sombreados. ¿Qué porcentaje está sombreado?"
+        },
+        "options": [
+          "65%",
+          "3.5%",
+          "35%"
+        ],
+        "correctIdx": 2,
+        "exp": {
+          "en": "Percent means out of 100. 35 out of 100 is 35%.",
+          "es": "Porcentaje significa de cada 100. 35 de 100 es 35%."
+        },
+        "calc": {
+          "expr": "35 / 100 * 100",
+          "value": 35
+        }
+      }
+    ],
+    "kitchenTable": {
+      "en": "Look at a price tag at home. Pretend it is 23% off. Round the price to a friendly number. About how much would you save?",
+      "es": "Miren una etiqueta de precio en casa. Imaginen que tiene 23% de descuento. Redondeen el precio a un número fácil. ¿Más o menos cuánto ahorrarían?"
+    },
+    "vocab": [
+      {
+        "term": "estimate",
+        "example": {
+          "en": "About $20 is an estimate of 23% of $81.",
+          "es": "Unos $20 son una estimación del 23% de $81."
+        },
+        "nonExample": {
+          "en": "$18.63 is the exact answer, not an estimate.",
+          "es": "$18.63 es la respuesta exacta, no una estimación."
+        },
+        "frame": {
+          "en": "My estimate is about ___ because ___% is close to ___%.",
+          "es": "Mi estimación es unos ___ porque ___% está cerca de ___%."
+        }
+      },
+      {
+        "term": "benchmark percent",
+        "example": {
+          "en": "25% is a benchmark percent close to 23%. It is one fourth.",
+          "es": "25% es un porcentaje de referencia cercano a 23%. Es una cuarta parte."
+        },
+        "nonExample": {
+          "en": "23% is not a benchmark percent. It is hard to use in your head.",
+          "es": "23% no es un porcentaje de referencia. Es difícil usarlo de memoria."
+        },
+        "frame": {
+          "en": "___% is close to the benchmark percent ___%.",
+          "es": "___% está cerca del porcentaje de referencia ___%."
+        }
+      },
+      {
+        "term": "compatible numbers",
+        "example": {
+          "en": "$80 is a compatible number for $81. It splits into four equal groups.",
+          "es": "$80 es un número compatible con $81. Se divide en cuatro grupos iguales."
+        },
+        "nonExample": {
+          "en": "$81 does not split evenly into four groups, so it is not friendly.",
+          "es": "$81 no se divide en cuatro grupos iguales, así que no es fácil."
+        },
+        "frame": {
+          "en": "I changed ___ to ___ because it splits evenly by ___.",
+          "es": "Cambié ___ a ___ porque se divide exacto entre ___."
+        }
+      },
+      {
+        "term": "double number line",
+        "example": {
+          "en": "A double number line pairs 25% with about $20 and 100% with about $80.",
+          "es": "Una recta numérica doble une 25% con unos $20 y 100% con unos $80."
+        },
+        "nonExample": {
+          "en": "A line with only dollars on it is not a double number line.",
+          "es": "Una recta con solo dólares no es una recta numérica doble."
+        },
+        "frame": {
+          "en": "On my double number line, ___% lines up with about ___.",
+          "es": "En mi recta numérica doble, ___% coincide con unos ___."
+        }
+      }
+    ],
+    "confused": [
+      {
+        "wrong": {
+          "en": "23% of $81 is about $23, because the percent is 23.",
+          "es": "El 23% de $81 es unos $23, porque el porcentaje es 23."
+        },
+        "coach": {
+          "en": "Is 23% almost all of $81, or only a small part?",
+          "es": "¿El 23% es casi todo de $81 o solo una parte pequeña?"
+        },
+        "why": {
+          "en": "23% is a bit less than one fourth. One fourth of about $80 is about $20.",
+          "es": "El 23% es un poco menos de una cuarta parte. Una cuarta parte de unos $80 es unos $20."
+        },
+        "misconception": "percent-number-as-amount",
+        "calc": {
+          "expr": "80 / 4",
+          "value": 20
+        }
+      },
+      {
+        "wrong": {
+          "en": "10% of $80 is $8, so 23% is about $8.",
+          "es": "El 10% de $80 es $8, así que el 23% es unos $8."
+        },
+        "coach": {
+          "en": "How many 10% steps are close to 23%?",
+          "es": "¿Cuántos peldaños del 10% están cerca del 23%?"
+        },
+        "why": {
+          "en": "23% is close to 25%, which is 2.5 steps of 10%. So 8 × 2.5 = 20, about $20.",
+          "es": "El 23% está cerca del 25%, que son 2.5 peldaños del 10%. Entonces 8 × 2.5 = 20, unos $20."
+        },
+        "misconception": "stopped-at-one-ten-percent-step",
+        "calc": {
+          "expr": "8 * 2.5",
+          "value": 20
+        }
+      },
+      {
+        "wrong": {
+          "en": "I rounded $81 to $100, so 25% of that is about $25.",
+          "es": "Redondeé $81 a $100, así que el 25% de eso es unos $25."
+        },
+        "coach": {
+          "en": "Which friendly number is closest to $81?",
+          "es": "¿Qué número fácil está más cerca de $81?"
+        },
+        "why": {
+          "en": "$81 is much closer to $80 than to $100. 25% of $80 is $20, so $25 runs too high.",
+          "es": "$81 está mucho más cerca de $80 que de $100. El 25% de $80 es $20, así que $25 es demasiado."
+        },
+        "misconception": "rounded-too-far",
+        "calc": {
+          "expr": "0.25 * 80",
+          "value": 20
+        }
+      }
+    ]
   }
 }

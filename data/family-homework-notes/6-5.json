@@ -427,5 +427,303 @@
       "en": "The letter holds the place of any ticket count. Put in 4 and 12t + 50 becomes 12 × 4 + 50, the same arithmetic you already do, written once for every case.",
       "es": "La letra ocupa el lugar de cualquier cantidad de boletos. Si pones 4, 12t + 50 se vuelve 12 × 4 + 50, la misma aritmética de siempre, escrita una vez para todos los casos."
     }
+  },
+  "v3": {
+    "version": 1,
+    "kind": "math",
+    "topicKey": "algebraic-expression-write-cost",
+    "standardPlain": {
+      "en": "Write an algebraic expression for a situation and find its value.",
+      "es": "Escribir una expresión algebraica para una situación y hallar su valor."
+    },
+    "hook": {
+      "style": "ticket",
+      "en": "A concert charges $12 for each ticket plus one $50 fee, paid once. Nobody knows how many tickets the family will buy. Can one short line show the cost?",
+      "es": "Un concierto cobra $12 por cada boleto más una cuota de $50 que se paga una sola vez. Nadie sabe cuántos boletos comprará la familia. ¿Puede una línea corta mostrar el costo?",
+      "guess": {
+        "en": "Make a guess first: for 3 tickets, is the cost more or less than $80?",
+        "es": "Primero adivina: con 3 boletos, ¿el costo es mayor o menor que $80?"
+      },
+      "reveal": {
+        "en": "Yes! Let t be the tickets. The cost is 12t + 50. For 3 tickets: 12 × 3 + 50 = $86, which is more.",
+        "es": "¡Sí! Sea t la cantidad de boletos. El costo es 12t + 50. Con 3 boletos: 12 × 3 + 50 = $86, que es más."
+      }
+    },
+    "classModel": {
+      "name": {
+        "en": "a letter for the count",
+        "es": "una letra para la cantidad"
+      }
+    },
+    "model": {
+      "kind": "ratiotable",
+      "data": {
+        "headers": [
+          {
+            "en": "Tickets (t)",
+            "es": "Boletos (t)"
+          },
+          {
+            "en": "Cost: 12t + 50",
+            "es": "Costo: 12t + 50"
+          }
+        ],
+        "rows": [
+          [
+            1,
+            62
+          ],
+          [
+            2,
+            74
+          ],
+          [
+            3,
+            86
+          ],
+          [
+            4,
+            98
+          ]
+        ],
+        "unknownCells": [
+          [
+            2,
+            1
+          ]
+        ],
+        "arrows": [
+          {
+            "from": 0,
+            "to": 1,
+            "label": "+ 12"
+          }
+        ]
+      },
+      "alt": {
+        "en": "A table of tickets and cost. 1 ticket costs $62. 2 tickets cost $74. 3 tickets cost an unknown amount. 4 tickets cost $98. Each extra ticket adds $12.",
+        "es": "Una tabla de boletos y costo. 1 boleto cuesta $62. 2 boletos cuestan $74. 3 boletos cuestan una cantidad desconocida. 4 boletos cuestan $98. Cada boleto extra suma $12."
+      }
+    },
+    "transfer": {
+      "stem": {
+        "en": "A rec center charges $5 for each swim visit plus a $20 sign-up fee, paid once. What is the cost of 6 visits?",
+        "es": "Un centro recreativo cobra $5 por cada visita de natación más una cuota de inscripción de $20 que se paga una vez. ¿Cuánto cuestan 6 visitas?"
+      },
+      "choices": [
+        {
+          "en": "$150",
+          "es": "$150",
+          "correct": false,
+          "misconception": "fee-multiplied-by-variable"
+        },
+        {
+          "en": "$50",
+          "es": "$50",
+          "correct": true,
+          "misconception": null
+        },
+        {
+          "en": "$31",
+          "es": "$31",
+          "correct": false,
+          "misconception": "added-instead-of-multiplied"
+        }
+      ],
+      "reasoning": {
+        "en": "Let v be the visits. The cost is 5v + 20. For v = 6: 5 × 6 + 20 = 30 + 20 = 50.",
+        "es": "Sea v la cantidad de visitas. El costo es 5v + 20. Con v = 6: 5 × 6 + 20 = 30 + 20 = 50."
+      },
+      "calc": {
+        "expr": "5 * 6 + 20",
+        "value": 50,
+        "unit": "$"
+      }
+    },
+    "glitch": null,
+    "spiral": [
+      {
+        "from": "6-4",
+        "q": {
+          "en": "What is 7 + 2 × 3²?",
+          "es": "¿Cuánto es 7 + 2 × 3²?"
+        },
+        "options": [
+          "81",
+          "19",
+          "25"
+        ],
+        "correctIdx": 2,
+        "exp": {
+          "en": "Power first: 3² = 9. Then 2 × 9 = 18. Then 7 + 18 = 25.",
+          "es": "Primero la potencia: 3² = 9. Luego 2 × 9 = 18. Luego 7 + 18 = 25."
+        },
+        "calc": {
+          "expr": "7 + 2 * 3 * 3",
+          "value": 25
+        }
+      },
+      {
+        "from": "6-3",
+        "q": {
+          "en": "What is the value of 10²?",
+          "es": "¿Cuál es el valor de 10²?"
+        },
+        "options": [
+          "20",
+          "100",
+          "1,000"
+        ],
+        "correctIdx": 1,
+        "exp": {
+          "en": "10² = 10 × 10 = 100.",
+          "es": "10² = 10 × 10 = 100."
+        },
+        "calc": {
+          "expr": "10 * 10",
+          "value": 100
+        }
+      }
+    ],
+    "kitchenTable": {
+      "en": "Pick a price from a ticket stub or a menu, like $8, and a one-time fee, like $10. Ask your student for the cost of 2 tickets, then 5. What stays the same? What changes?",
+      "es": "Elijan un precio de un boleto o un menú, como $8, y una cuota única, como $10. Pidan a su estudiante el costo de 2 boletos y luego de 5. ¿Qué se queda igual? ¿Qué cambia?"
+    },
+    "vocab": [
+      {
+        "term": "Variable",
+        "example": {
+          "en": "In 12t + 50, the letter t is the variable. It stands for the number of tickets.",
+          "es": "En 12t + 50, la letra t es la variable. Representa la cantidad de boletos."
+        },
+        "nonExample": {
+          "en": "The 12 is not the variable. It is a number that does not change.",
+          "es": "El 12 no es la variable. Es un número que no cambia."
+        },
+        "frame": {
+          "en": "The variable ___ stands for ___.",
+          "es": "La variable ___ representa ___."
+        }
+      },
+      {
+        "term": "Algebraic Expression",
+        "example": {
+          "en": "12t + 50 is an algebraic expression for the cost of t tickets.",
+          "es": "12t + 50 es una expresión algebraica para el costo de t boletos."
+        },
+        "nonExample": {
+          "en": "12t + 50 = 86 is not an expression. It has an equals sign.",
+          "es": "12t + 50 = 86 no es una expresión. Tiene un signo igual."
+        },
+        "frame": {
+          "en": "My expression for the cost is ___ × ___ + ___.",
+          "es": "Mi expresión para el costo es ___ × ___ + ___."
+        }
+      },
+      {
+        "term": "Coefficient",
+        "example": {
+          "en": "In 12t, the coefficient is 12. It is the price of one ticket.",
+          "es": "En 12t, el coeficiente es 12. Es el precio de un boleto."
+        },
+        "nonExample": {
+          "en": "The 50 is not the coefficient. It has no letter next to it.",
+          "es": "El 50 no es el coeficiente. No tiene una letra al lado."
+        },
+        "frame": {
+          "en": "The coefficient is ___ because it multiplies ___.",
+          "es": "El coeficiente es ___ porque multiplica a ___."
+        }
+      },
+      {
+        "term": "Constant",
+        "example": {
+          "en": "The $50 fee is the constant. It is paid once, so it does not change with t.",
+          "es": "La cuota de $50 es la constante. Se paga una vez, así que no cambia con t."
+        },
+        "nonExample": {
+          "en": "The 12t part is not a constant. It changes when t changes.",
+          "es": "La parte 12t no es una constante. Cambia cuando t cambia."
+        },
+        "frame": {
+          "en": "The constant is ___ because it stays the same when ___ changes.",
+          "es": "La constante es ___ porque no cambia cuando ___ cambia."
+        }
+      },
+      {
+        "term": "Evaluate",
+        "example": {
+          "en": "To evaluate 12t + 50 for t = 3, work out 12 × 3 + 50 = 86.",
+          "es": "Para evaluar 12t + 50 con t = 3, calcula 12 × 3 + 50 = 86."
+        },
+        "nonExample": {
+          "en": "12 × 3 is not the whole value. You still add the $50 fee.",
+          "es": "12 × 3 no es el valor completo. Todavía falta sumar la cuota de $50."
+        },
+        "frame": {
+          "en": "When ___ = ___, the value is ___ × ___ + ___ = ___.",
+          "es": "Cuando ___ = ___, el valor es ___ × ___ + ___ = ___."
+        }
+      }
+    ],
+    "confused": [
+      {
+        "wrong": {
+          "en": "12t means 12 + t. With t = 3, that is 12 + 3 + 50 = $65.",
+          "es": "12t significa 12 + t. Con t = 3, eso es 12 + 3 + 50 = $65."
+        },
+        "coach": {
+          "en": "If each ticket costs $12, what do 3 tickets cost?",
+          "es": "Si cada boleto cuesta $12, ¿cuánto cuestan 3 boletos?"
+        },
+        "why": {
+          "en": "12t means 12 × t. For t = 3: 12 × 3 = 36, and 36 + 50 = 86.",
+          "es": "12t significa 12 × t. Con t = 3: 12 × 3 = 36, y 36 + 50 = 86."
+        },
+        "misconception": "coefficient-added-not-multiplied",
+        "calc": {
+          "expr": "12 * 3 + 50",
+          "value": 86
+        }
+      },
+      {
+        "wrong": {
+          "en": "The $50 fee is for each ticket too, so the cost is (12 + 50) × t. For 3 tickets that is $186.",
+          "es": "La cuota de $50 también es por cada boleto, así que el costo es (12 + 50) × t. Con 3 boletos son $186."
+        },
+        "coach": {
+          "en": "How many times is the venue fee paid?",
+          "es": "¿Cuántas veces se paga la cuota del lugar?"
+        },
+        "why": {
+          "en": "The fee is paid once. Only the $12 repeats: 12 × 3 = 36. Then add 50 one time: 86.",
+          "es": "La cuota se paga una vez. Solo se repiten los $12: 12 × 3 = 36. Luego suma 50 una sola vez: 86."
+        },
+        "misconception": "fee-multiplied-by-variable",
+        "calc": {
+          "expr": "36 + 50",
+          "value": 86
+        }
+      },
+      {
+        "wrong": {
+          "en": "I let t be the total cost, so t is 86.",
+          "es": "Dejé que t fuera el costo total, así que t es 86."
+        },
+        "coach": {
+          "en": "What does the t count in this story?",
+          "es": "¿Qué cuenta la t en esta historia?"
+        },
+        "why": {
+          "en": "The t counts tickets, not dollars. The total is 12t + 50, and for 3 tickets it is $86.",
+          "es": "La t cuenta boletos, no dólares. El total es 12t + 50, y con 3 boletos son $86."
+        },
+        "misconception": "variable-means-total",
+        "calc": {
+          "expr": "12 * 3 + 50",
+          "value": 86
+        }
+      }
+    ]
   }
 }

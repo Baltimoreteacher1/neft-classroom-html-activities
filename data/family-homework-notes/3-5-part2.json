@@ -522,5 +522,322 @@
       ],
       "image": "/assets/vocab-images/scale-factor.svg"
     }
-  ]
+  ],
+  "v3": {
+    "version": 1,
+    "kind": "math",
+    "topicKey": "ratio-compare-benchmark-apply",
+    "standardPlain": {
+      "en": "Compare two rates by scaling both to the same benchmark amount.",
+      "es": "Comparar dos tasas escalando ambas a la misma cantidad de referencia."
+    },
+    "hook": {
+      "style": "scoreboard",
+      "en": "Two runners train on the rec-center track. Runner A does 9 laps in 6 minutes. Runner B does 12 laps in 9 minutes. Who is faster?",
+      "es": "Dos corredores entrenan en la pista del centro recreativo. El corredor A da 9 vueltas en 6 minutos. El corredor B da 12 vueltas en 9 minutos. ¿Quién es más rápido?",
+      "guess": {
+        "en": "Make a guess first: is the runner with more laps the faster one?",
+        "es": "Primero adivina: ¿el corredor con más vueltas es el más rápido?"
+      },
+      "reveal": {
+        "en": "Not always! Pick a benchmark both can reach: 18 minutes. A runs 9 × 3 = 27 laps. B runs 12 × 2 = 24 laps. Runner A is faster.",
+        "es": "¡No siempre! Elige un punto de referencia al que ambos lleguen: 18 minutos. A da 9 × 3 = 27 vueltas. B da 12 × 2 = 24 vueltas. El corredor A es más rápido."
+      }
+    },
+    "classModel": {
+      "name": {
+        "en": "the benchmark",
+        "es": "el punto de referencia"
+      }
+    },
+    "model": {
+      "kind": "ratiotable",
+      "data": {
+        "headers": [
+          {
+            "en": "Laps",
+            "es": "Vueltas"
+          },
+          {
+            "en": "Minutes",
+            "es": "Minutos"
+          }
+        ],
+        "rows": [
+          [
+            9,
+            6
+          ],
+          [
+            27,
+            18
+          ],
+          [
+            12,
+            9
+          ],
+          [
+            24,
+            18
+          ]
+        ],
+        "unknownCells": [],
+        "arrows": [
+          {
+            "from": 0,
+            "to": 1,
+            "label": "×3"
+          },
+          {
+            "from": 2,
+            "to": 3,
+            "label": "×2"
+          }
+        ]
+      },
+      "alt": {
+        "en": "A ratio table with laps and minutes. Runner A scales 9 laps in 6 minutes by 3. That is 27 laps in 18 minutes. Runner B scales 12 laps in 9 minutes by 2. That is 24 laps in 18 minutes. At the 18-minute benchmark, 27 is more than 24.",
+        "es": "Una tabla de razones con vueltas y minutos. El corredor A escala 9 vueltas en 6 minutos ×3. Son 27 vueltas en 18 minutos. El corredor B escala 12 vueltas en 9 minutos ×2. Son 24 vueltas en 18 minutos. Con el punto de referencia de 18 minutos, 27 es más que 24."
+      }
+    },
+    "transfer": {
+      "stem": {
+        "en": "Store A sells 4 water bottles for $6. Store B sells 6 water bottles for $8. Which store has the lower price for 12 bottles, and what is it?",
+        "es": "La tienda A vende 4 botellas de agua por $6. La tienda B vende 6 botellas por $8. ¿Qué tienda tiene el precio más bajo por 12 botellas, y cuál es?"
+      },
+      "choices": [
+        {
+          "en": "Store A: $18",
+          "es": "Tienda A: $18",
+          "correct": false,
+          "misconception": "picked-the-higher-price"
+        },
+        {
+          "en": "Store B: $14",
+          "es": "Tienda B: $14",
+          "correct": false,
+          "misconception": "added-to-scale"
+        },
+        {
+          "en": "Store B: $16",
+          "es": "Tienda B: $16",
+          "correct": true,
+          "misconception": null
+        }
+      ],
+      "reasoning": {
+        "en": "Scale both to 12 bottles. A: 4 × 3 = 12, so 6 × 3 = $18. B: 6 × 2 = 12, so 8 × 2 = $16. Store B is lower.",
+        "es": "Escala ambas a 12 botellas. A: 4 × 3 = 12, así que 6 × 3 = $18. B: 6 × 2 = 12, así que 8 × 2 = $16. La tienda B es más baja."
+      },
+      "calc": {
+        "expr": "8 * 2",
+        "value": 16,
+        "unit": "$"
+      }
+    },
+    "glitch": {
+      "scenario": {
+        "en": "A different situation: Pool A fills 6 gallons in 4 minutes. Pool B fills 9 gallons in 5 minutes. Which fills faster?",
+        "es": "Otra situación: La piscina A llena 6 galones en 4 minutos. La piscina B llena 9 galones en 5 minutos. ¿Cuál se llena más rápido?"
+      },
+      "steps": [
+        {
+          "en": "Pick a benchmark both can reach: 20 minutes.",
+          "es": "Elige un punto de referencia al que ambas lleguen: 20 minutos.",
+          "isGlitch": false
+        },
+        {
+          "en": "Scale A: 6 × 5 = 30 gallons. Scale B: 9 × 5 = 45 gallons.",
+          "es": "Escala A: 6 × 5 = 30 galones. Escala B: 9 × 5 = 45 galones.",
+          "isGlitch": true
+        },
+        {
+          "en": "Compare the gallons at 20 minutes. The bigger number fills faster.",
+          "es": "Compara los galones a los 20 minutos. El número mayor se llena más rápido.",
+          "isGlitch": false
+        }
+      ],
+      "fix": {
+        "en": "B goes from 5 to 20 minutes, which is ×4, not ×5. So 9 × 4 = 36 gallons. Now 36 is more than 30, so Pool B fills faster.",
+        "es": "B pasa de 5 a 20 minutos, que es ×4 y no ×5. Entonces 9 × 4 = 36 galones. Ahora 36 es más que 30, así que la piscina B se llena más rápido."
+      },
+      "frame": {
+        "en": "I scale ___ minutes to ___ with a factor of ___, so gallons are ___.",
+        "es": "Escalo ___ minutos a ___ con un factor de ___, así que los galones son ___."
+      },
+      "calc": {
+        "expr": "9 * 4",
+        "value": 36
+      }
+    },
+    "spiral": [
+      {
+        "from": "3-5",
+        "q": {
+          "en": "Shop A sells 2 slices for $5. How much do 8 slices cost at that price?",
+          "es": "La tienda A vende 2 rebanadas por $5. ¿Cuánto cuestan 8 rebanadas a ese precio?"
+        },
+        "options": [
+          "$20",
+          "$13",
+          "$10"
+        ],
+        "correctIdx": 0,
+        "exp": {
+          "en": "2 × 4 = 8, so 5 × 4 = $20.",
+          "es": "2 × 4 = 8, así que 5 × 4 = $20."
+        },
+        "calc": {
+          "expr": "5 * 4",
+          "value": 20
+        }
+      },
+      {
+        "from": "3-2",
+        "q": {
+          "en": "A faucet fills 15 gallons in 5 minutes. How many gallons is that per minute?",
+          "es": "Un grifo llena 15 galones en 5 minutos. ¿Cuántos galones son por minuto?"
+        },
+        "options": [
+          "75",
+          "3",
+          "10"
+        ],
+        "correctIdx": 1,
+        "exp": {
+          "en": "15 ÷ 5 = 3 gallons in 1 minute.",
+          "es": "15 ÷ 5 = 3 galones en 1 minuto."
+        },
+        "calc": {
+          "expr": "15 / 5",
+          "value": 3
+        }
+      }
+    ],
+    "kitchenTable": {
+      "en": "Pretend one pizza shop sells 2 slices for $3. Another sells 3 slices for $5. Ask your student to pick a benchmark both deals can reach. Which shop is the better deal at that benchmark?",
+      "es": "Imaginen que una pizzería vende 2 rebanadas por $3. Otra vende 3 rebanadas por $5. Pidan a su estudiante que elija un punto de referencia al que lleguen ambas ofertas. ¿Qué pizzería es la mejor oferta con ese punto de referencia?"
+    },
+    "vocab": [
+      {
+        "term": "Benchmark",
+        "example": {
+          "en": "18 minutes is the benchmark. Both runners can reach it.",
+          "es": "18 minutos es el punto de referencia. Ambos corredores pueden llegar a él."
+        },
+        "nonExample": {
+          "en": "12 minutes does not work. Runner B cannot land on it by whole-number steps.",
+          "es": "12 minutos no sirve. El corredor B no llega a esa cifra con pasos de números enteros."
+        },
+        "frame": {
+          "en": "My benchmark is ___ because both ___ and ___ reach it.",
+          "es": "Mi punto de referencia es ___ porque tanto ___ como ___ llegan a él."
+        }
+      },
+      {
+        "term": "Common multiple",
+        "example": {
+          "en": "18 is a multiple of 6 and of 9.",
+          "es": "18 es múltiplo de 6 y de 9."
+        },
+        "nonExample": {
+          "en": "12 is a multiple of 6, but not of 9.",
+          "es": "12 es múltiplo de 6, pero no de 9."
+        },
+        "frame": {
+          "en": "___ is a common multiple of ___ and ___.",
+          "es": "___ es un múltiplo común de ___ y ___."
+        }
+      },
+      {
+        "term": "Rate",
+        "example": {
+          "en": "9 laps in 6 minutes is a rate for Runner A.",
+          "es": "9 vueltas en 6 minutos es una tasa del corredor A."
+        },
+        "nonExample": {
+          "en": "9 laps alone is not a rate. It needs the minutes.",
+          "es": "9 vueltas solas no son una tasa. Faltan los minutos."
+        },
+        "frame": {
+          "en": "The rate is ___ laps in ___ minutes.",
+          "es": "La tasa es ___ vueltas en ___ minutos."
+        }
+      },
+      {
+        "term": "Scale factor",
+        "example": {
+          "en": "Going from 6 to 18 minutes is a scale factor of 3.",
+          "es": "Pasar de 6 a 18 minutos es un factor de escala de 3."
+        },
+        "nonExample": {
+          "en": "Adding 12 minutes is not a scale factor. A scale factor multiplies.",
+          "es": "Sumar 12 minutos no es un factor de escala. Un factor de escala multiplica."
+        },
+        "frame": {
+          "en": "I scale ___ by a factor of ___ to get ___.",
+          "es": "Escalo ___ con un factor de ___ para obtener ___."
+        }
+      }
+    ],
+    "confused": [
+      {
+        "wrong": {
+          "en": "Runner B did 12 laps and A did 9, so B is faster.",
+          "es": "El corredor B dio 12 vueltas y A dio 9, así que B es más rápido."
+        },
+        "coach": {
+          "en": "Did they run for the same number of minutes?",
+          "es": "¿Corrieron durante la misma cantidad de minutos?"
+        },
+        "why": {
+          "en": "The times are different: 6 and 9 minutes. Scale both to 18 minutes. A runs 9 × 3 = 27 laps. B runs 24.",
+          "es": "Los tiempos son distintos: 6 y 9 minutos. Escala ambos a 18 minutos. A da 9 × 3 = 27 vueltas. B da 24."
+        },
+        "misconception": "more-laps-means-faster",
+        "calc": {
+          "expr": "9 * 3",
+          "value": 27
+        }
+      },
+      {
+        "wrong": {
+          "en": "To get A to 18 minutes I add 12: 6 + 12 = 18. So A runs 9 + 12 = 21 laps.",
+          "es": "Para llevar a A a 18 minutos sumo 12: 6 + 12 = 18. Entonces A da 9 + 12 = 21 vueltas."
+        },
+        "coach": {
+          "en": "If the minutes triple, what happens to the laps?",
+          "es": "Si los minutos se triplican, ¿qué pasa con las vueltas?"
+        },
+        "why": {
+          "en": "Going from 6 to 18 minutes is multiplying by 3, not adding 12. The laps also multiply by 3.",
+          "es": "Pasar de 6 a 18 minutos es multiplicar por 3, no sumar 12. Las vueltas también se multiplican por 3."
+        },
+        "misconception": "added-instead-of-scaled",
+        "calc": {
+          "expr": "18 / 6",
+          "value": 3
+        }
+      },
+      {
+        "wrong": {
+          "en": "My benchmark is 12 minutes. Both runners can reach it.",
+          "es": "Mi punto de referencia es 12 minutos. Ambos corredores pueden llegar a él."
+        },
+        "coach": {
+          "en": "Can 9 minutes be multiplied by a whole number to land on that benchmark?",
+          "es": "¿Se puede multiplicar 9 minutos por un número entero para llegar a ese punto de referencia?"
+        },
+        "why": {
+          "en": "9 × 1 = 9 and 9 × 2 = 18, so 12 is skipped. A benchmark must be a common multiple of 6 and 9, like 18.",
+          "es": "9 × 1 = 9 y 9 × 2 = 18, así que 12 se salta. Un punto de referencia debe ser un múltiplo común de 6 y 9, como 18."
+        },
+        "misconception": "benchmark-not-a-common-multiple",
+        "calc": {
+          "expr": "9 * 2",
+          "value": 18
+        }
+      }
+    ]
+  }
 }

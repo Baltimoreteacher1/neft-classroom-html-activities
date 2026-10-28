@@ -554,5 +554,316 @@
       ],
       "image": "/assets/vocab-images/rectangular-prism.svg"
     }
-  ]
+  ],
+  "v3": {
+    "version": 1,
+    "kind": "math",
+    "topicKey": "net-name-solid-prism-pyramid-apply",
+    "standardPlain": {
+      "en": "Read a flat net and name the solid it folds into by counting its pieces.",
+      "es": "Leer una plantilla plana y nombrar el sólido que forma contando sus piezas."
+    },
+    "hook": {
+      "style": "ticket",
+      "en": "A craft kit comes with a flat paper pattern. It has 1 square and 4 identical triangles. You fold it up. What solid do you get?",
+      "es": "Un kit de manualidades trae un patrón plano de papel. Tiene 1 cuadrado y 4 triángulos idénticos. Lo doblas. ¿Qué sólido obtienes?",
+      "guess": {
+        "en": "Guess first: does it have two bases or one?",
+        "es": "Primero adivina: ¿tiene dos bases o una?"
+      },
+      "reveal": {
+        "en": "One! The square is the base, and the 4 triangles meet at a point. One base makes a pyramid. Two matching bases make a prism.",
+        "es": "¡Una! El cuadrado es la base y los 4 triángulos se juntan en un punto. Una base forma una pirámide. Dos bases iguales forman un prisma."
+      }
+    },
+    "classModel": {
+      "name": {
+        "en": "count the bases to name the solid",
+        "es": "contar las bases para nombrar el sólido"
+      }
+    },
+    "model": {
+      "kind": "barplot",
+      "data": {
+        "categories": [
+          {
+            "label": {
+              "en": "Squares",
+              "es": "Cuadrados"
+            },
+            "value": 1
+          },
+          {
+            "label": {
+              "en": "Triangles",
+              "es": "Triángulos"
+            },
+            "value": 4
+          }
+        ],
+        "unit": {
+          "en": "faces",
+          "es": "caras"
+        }
+      },
+      "alt": {
+        "en": "A bar chart of the pieces in the craft-kit net: 1 square and 4 triangles, which is 5 faces in all. One square is the single base.",
+        "es": "Una gráfica de barras de las piezas de la plantilla del kit: 1 cuadrado y 4 triángulos, que son 5 caras en total. Un cuadrado es la única base."
+      }
+    },
+    "transfer": {
+      "stem": {
+        "en": "A net has 2 matching pentagons and 5 rectangles. How many faces does the solid have?",
+        "es": "Una plantilla tiene 2 pentágonos iguales y 5 rectángulos. ¿Cuántas caras tiene el sólido?"
+      },
+      "choices": [
+        {
+          "en": "7 faces",
+          "es": "7 caras",
+          "correct": true,
+          "misconception": null
+        },
+        {
+          "en": "5 faces",
+          "es": "5 caras",
+          "correct": false,
+          "misconception": "counted-only-rectangles"
+        },
+        {
+          "en": "10 faces",
+          "es": "10 caras",
+          "correct": false,
+          "misconception": "counted-each-pair-twice"
+        }
+      ],
+      "reasoning": {
+        "en": "Every piece of the net is one face. 2 pentagons + 5 rectangles = 7 faces. Two matching bases make it a pentagonal prism.",
+        "es": "Cada pieza de la plantilla es una cara. 2 pentágonos + 5 rectángulos = 7 caras. Dos bases iguales lo hacen un prisma pentagonal."
+      },
+      "calc": {
+        "expr": "2 + 5",
+        "value": 7,
+        "unit": "faces"
+      }
+    },
+    "glitch": {
+      "scenario": {
+        "en": "A different situation: A net has 2 triangles and 3 rectangles. Lena names the solid.",
+        "es": "Otra situación: Una plantilla tiene 2 triángulos y 3 rectángulos. Lena nombra el sólido."
+      },
+      "steps": [
+        {
+          "en": "Count the faces: 2 triangles + 3 rectangles = 5 faces.",
+          "es": "Cuenta las caras: 2 triángulos + 3 rectángulos = 5 caras.",
+          "isGlitch": false
+        },
+        {
+          "en": "The net has triangles in it, so it must be a pyramid.",
+          "es": "La plantilla tiene triángulos, así que debe ser una pirámide.",
+          "isGlitch": true
+        },
+        {
+          "en": "Write the name: a triangular pyramid.",
+          "es": "Escribe el nombre: una pirámide triangular.",
+          "isGlitch": false
+        }
+      ],
+      "fix": {
+        "en": "Triangles can be the bases of a prism. Two matching triangles are two bases, so it is a triangular prism with 2 + 3 = 5 faces.",
+        "es": "Los triángulos pueden ser las bases de un prisma. Dos triángulos iguales son dos bases, así que es un prisma triangular con 2 + 3 = 5 caras."
+      },
+      "frame": {
+        "en": "The solid is a ___ because it has ___ base(s).",
+        "es": "El sólido es un/una ___ porque tiene ___ base(s)."
+      },
+      "calc": {
+        "expr": "2 + 3",
+        "value": 5
+      }
+    },
+    "spiral": [
+      {
+        "from": "5-6",
+        "q": {
+          "en": "A box is 5 long, 4 wide, and 3 tall. What is its surface area?",
+          "es": "Una caja mide 5 de largo, 4 de ancho y 3 de alto. ¿Cuál es su área de superficie?"
+        },
+        "options": [
+          "47",
+          "94",
+          "60"
+        ],
+        "correctIdx": 1,
+        "exp": {
+          "en": "Top and bottom: 2 × 20 = 40. Front and back: 2 × 15 = 30. Sides: 2 × 12 = 24. 40 + 30 + 24 = 94.",
+          "es": "Arriba y abajo: 2 × 20 = 40. Frente y atrás: 2 × 15 = 30. Lados: 2 × 12 = 24. 40 + 30 + 24 = 94."
+        },
+        "calc": {
+          "expr": "2 * (5 * 4) + 2 * (5 * 3) + 2 * (4 * 3)",
+          "value": 94
+        }
+      },
+      {
+        "from": "5-5",
+        "q": {
+          "en": "A box is 6 long, 2 wide, and 5 tall. What is its volume?",
+          "es": "Una caja mide 6 de largo, 2 de ancho y 5 de alto. ¿Cuál es su volumen?"
+        },
+        "options": [
+          "60",
+          "13",
+          "30"
+        ],
+        "correctIdx": 0,
+        "exp": {
+          "en": "Multiply all three edges: 6 × 2 × 5 = 60 cubic units.",
+          "es": "Multiplica las tres aristas: 6 × 2 × 5 = 60 unidades cúbicas."
+        },
+        "calc": {
+          "expr": "6 * 2 * 5",
+          "value": 60
+        }
+      }
+    ],
+    "kitchenTable": {
+      "en": "Open an empty box flat and point to its two matching bases. Can your student say how they know this net folds into a prism and not a pyramid?",
+      "es": "Abran una caja vacía y señalen sus dos bases iguales. ¿Puede su estudiante decir cómo sabe que esta plantilla forma un prisma y no una pirámide?"
+    },
+    "vocab": [
+      {
+        "term": "Net",
+        "example": {
+          "en": "The craft-kit pattern is a net: 1 square and 4 triangles that fold up.",
+          "es": "El patrón del kit es una plantilla: 1 cuadrado y 4 triángulos que se doblan."
+        },
+        "nonExample": {
+          "en": "A drawing of the folded solid is not a net. A net is flat.",
+          "es": "Un dibujo del sólido doblado no es una plantilla. Una plantilla es plana."
+        },
+        "frame": {
+          "en": "The net has ___ and ___, so it folds into a ___.",
+          "es": "La plantilla tiene ___ y ___, así que forma un/una ___."
+        }
+      },
+      {
+        "term": "Prism",
+        "example": {
+          "en": "A different situation: a net with 2 matching triangles and 3 rectangles folds into a prism.",
+          "es": "Otra situación: una plantilla con 2 triángulos iguales y 3 rectángulos forma un prisma."
+        },
+        "nonExample": {
+          "en": "The craft kit has only one base, so it is not a prism.",
+          "es": "El kit tiene solo una base, así que no es un prisma."
+        },
+        "frame": {
+          "en": "A prism has ___ matching bases and rectangle sides.",
+          "es": "Un prisma tiene ___ bases iguales y lados rectangulares."
+        }
+      },
+      {
+        "term": "Pyramid",
+        "example": {
+          "en": "The craft kit has a square base and 4 triangles, so it is a pyramid.",
+          "es": "El kit tiene una base cuadrada y 4 triángulos, así que es una pirámide."
+        },
+        "nonExample": {
+          "en": "A box has two matching bases. It is a prism, not a pyramid.",
+          "es": "Una caja tiene dos bases iguales. Es un prisma, no una pirámide."
+        },
+        "frame": {
+          "en": "A pyramid has ___ base, and its side faces are ___.",
+          "es": "Una pirámide tiene ___ base, y sus caras laterales son ___."
+        }
+      },
+      {
+        "term": "Base",
+        "example": {
+          "en": "The square is the base of the craft-kit pyramid.",
+          "es": "El cuadrado es la base de la pirámide del kit."
+        },
+        "nonExample": {
+          "en": "Each triangle is a side face, not the base.",
+          "es": "Cada triángulo es una cara lateral, no la base."
+        },
+        "frame": {
+          "en": "The base is the ___, and the side faces are ___.",
+          "es": "La base es el/la ___, y las caras laterales son ___."
+        }
+      },
+      {
+        "term": "Vertex",
+        "example": {
+          "en": "The 4 triangles meet at one point at the top of the pyramid. That point is a vertex.",
+          "es": "Los 4 triángulos se juntan en un punto en la cima de la pirámide. Ese punto es un vértice."
+        },
+        "nonExample": {
+          "en": "The middle of the square base is not a vertex.",
+          "es": "El centro de la base cuadrada no es un vértice."
+        },
+        "frame": {
+          "en": "A vertex is a ___ where edges meet.",
+          "es": "Un vértice es un/una ___ donde se juntan aristas."
+        }
+      }
+    ],
+    "confused": [
+      {
+        "wrong": {
+          "en": "I see 4 triangles and 1 square. I count 4 faces.",
+          "es": "Veo 4 triángulos y 1 cuadrado. Cuento 4 caras."
+        },
+        "coach": {
+          "en": "Does the square count as a face too?",
+          "es": "¿El cuadrado también cuenta como cara?"
+        },
+        "why": {
+          "en": "Every piece is a face, including the base. 4 triangles + 1 square = 5 faces.",
+          "es": "Cada pieza es una cara, incluida la base. 4 triángulos + 1 cuadrado = 5 caras."
+        },
+        "misconception": "counted-only-triangles",
+        "calc": {
+          "expr": "4 + 1",
+          "value": 5
+        }
+      },
+      {
+        "wrong": {
+          "en": "A different situation: a net has 2 triangles and 3 rectangles. It has triangles, so it is a pyramid.",
+          "es": "Otra situación: una plantilla tiene 2 triángulos y 3 rectángulos. Tiene triángulos, así que es una pirámide."
+        },
+        "coach": {
+          "en": "How many matching bases does this net have?",
+          "es": "¿Cuántas bases iguales tiene esta plantilla?"
+        },
+        "why": {
+          "en": "Two matching triangles are two bases, so it is a triangular prism with 2 + 3 = 5 faces.",
+          "es": "Dos triángulos iguales son dos bases, así que es un prisma triangular con 2 + 3 = 5 caras."
+        },
+        "misconception": "triangles-always-pyramid",
+        "calc": {
+          "expr": "2 + 3",
+          "value": 5
+        }
+      },
+      {
+        "wrong": {
+          "en": "A different situation: the 8 by 5 by 3 box. I found 2 × 40 = 80 and 2 × 24 = 48, and stopped. 80 + 48 = 128.",
+          "es": "Otra situación: la caja de 8 por 5 por 3. Hallé 2 × 40 = 80 y 2 × 24 = 48, y paré. 80 + 48 = 128."
+        },
+        "coach": {
+          "en": "How many pairs of faces does a box have? Did you use all of them?",
+          "es": "¿Cuántos pares de caras tiene una caja? ¿Usaste todos?"
+        },
+        "why": {
+          "en": "A box has 3 pairs of faces. The left and right pair is 2 × 15 = 30. Add it: 80 + 48 + 30 = 158.",
+          "es": "Una caja tiene 3 pares de caras. El par de izquierda y derecha es 2 × 15 = 30. Súmalo: 80 + 48 + 30 = 158."
+        },
+        "misconception": "left-out-a-pair",
+        "calc": {
+          "expr": "80 + 48 + 30",
+          "value": 158
+        }
+      }
+    ]
+  }
 }
