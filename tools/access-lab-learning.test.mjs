@@ -1,8 +1,13 @@
 #!/usr/bin/env node
 import assert from "node:assert/strict";
 import test from "node:test";
-import { SPEAKING_CHECKS } from "../access-practice-lab/src/grade.js";
+import {
+  practiceBand,
+  SPEAKING_CHECKS,
+  writingPracticeScore,
+} from "../access-practice-lab/src/grade.js";
 import { analyzeResponse, bankWordsUsed } from "../access-practice-lab/src/lang/analyze.js";
+import { practiceSummary } from "../access-practice-lab/src/practice-report.js";
 import { TIERS, testingWindowPhase } from "../access-practice-lab/src/util.js";
 
 test("word-bank feedback does not reward embedded substrings", () => {
@@ -45,10 +50,53 @@ test("a task without a word bank does not ask for missing resources", () => {
 test("support choices preserve route keys without claiming official scores", () => {
   assert.deepEqual(Object.keys(TIERS), ["A", "B", "C"]);
   for (const tier of Object.values(TIERS)) assert.doesNotMatch(tier.range, /WIDA|\d/);
-  assert.match(
-    SPEAKING_CHECKS.find((check) => check.id === "clear").label,
-    /words, phrases, or sentences/,
+  assert.deepEqual(
+    SPEAKING_CHECKS.map((check) => check.label),
+    ["I named the topic.", "I used details.", "I explained my thinking.", "I spoke clearly."],
   );
+});
+
+test("practice bands describe classroom evidence, not proficiency", () => {
+  assert.equal(practiceBand(0, 4), "Not yet");
+  assert.equal(practiceBand(1, 4), "Getting started");
+  assert.equal(practiceBand(2, 4), "Almost there");
+  assert.equal(practiceBand(4, 4), "Strong practice response");
+});
+
+test("practice report uses consistent progress states and distinct independent tasks", () => {
+  assert.equal(practiceSummary({}, 0, 2).status, "Not Started");
+  assert.equal(practiceSummary({ a: { ok: false } }, 0, 2).status, "Needs Review");
+  assert.equal(practiceSummary({}, 2, 2).status, "Practice Complete");
+  assert.equal(practiceSummary({ a: { mode: "supported" } }, 0, 2).status, "In Progress");
+  const strong = practiceSummary([
+    ["a", { mode: "independent", ok: true, tries: 1 }],
+    ["b", { mode: "independent", ok: true, tries: 1 }],
+  ]);
+  assert.equal(strong.status, "Strong Practice");
+  assert.equal(
+    practiceSummary([
+      ["a", { mode: "independent", ok: true, tries: 1 }],
+      ["a", { mode: "independent", ok: true, tries: 1 }],
+    ]).status,
+    "In Progress",
+  );
+});
+
+test("writing practice score reports observable signals and a specific next step", () => {
+  const text =
+    "I think erosion changed the creek because the chart shows soil moved after rain. The water became muddy, so plants need clean water.";
+  const analysis = analyzeResponse(text, {
+    wordBank: ["erosion"],
+    sourceText: "The chart shows soil moved after rain.",
+    sourceTerms: ["soil"],
+  });
+  const score = writingPracticeScore(analysis, { level: "A", bankAvailable: true });
+  assert.equal(score.total, 5);
+  assert.equal(score.band, "Strong practice response");
+  assert.ok(score.checks.every((check) => check.ok));
+  const short = writingPracticeScore(analyzeResponse("Because it changed."), { level: "A" });
+  assert.ok(short.score < short.total);
+  assert.match(short.nextStep, /20 words/);
 });
 
 test("testing window status ends with the configured regular window", () => {

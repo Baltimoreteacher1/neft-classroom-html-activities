@@ -22,6 +22,7 @@ import {
   setStudentName,
   weekStreak,
 } from "../store.js";
+import { practiceSummary } from "../practice-report.js";
 import {
   ART,
   BASE,
@@ -253,6 +254,7 @@ function domainCard(s, band) {
   const next = s.byLevel.find((l) => l.n < l.of);
   const target = next || s.byLevel[0];
   const name = DOMAIN_META[s.domain].room;
+  const statusClass = s.status.toLowerCase().replace(/\s+/g, "-");
   return html`<article
     class="pass-domain ${domainClass(s.domain)}"
     aria-labelledby="pass-${s.domain}"
@@ -264,11 +266,13 @@ function domainCard(s, band) {
         <p class="pass-count">
           <strong>${s.done}</strong> of ${s.total} activities finished
         </p>
+        <span class="practice-status is-${statusClass}">${s.status}</span>
       </div>
     </header>
     <div class="bar" aria-hidden="true">
       <i style="width:${pctOf(s.done, s.total)}%"></i>
     </div>
+    ${s.possible ? html`<p class="fine pass-score">Practice score: <strong>${s.score}/${s.possible}</strong> · ${s.scoreBand}</p>` : ""}
     <ul class="pass-levels">
       ${s.byLevel.map(
         (l) =>
@@ -405,15 +409,20 @@ export async function render(ctx) {
   const stats = CORE_DOMAINS.filter((d) => domains[d]).map((d) => {
     let done = 0;
     let total = 0;
+    const practiceRows = [];
     const byLevel = LEVEL_KEYS.filter((k) => domains[d].levels[k]).map((k) => {
       const ids = new Set(domains[d].levels[k].activities.map((r) => r[0]));
       const record = loadRecord(band, d, k);
       const n = [...ids].filter((id) => isActivityComplete(record, id)).length;
       done += n;
       total += ids.size;
+      for (const [id, result] of Object.entries(record.results)) {
+        practiceRows.push([`${k}:${id}`, result]);
+      }
       return { level: k, n, of: ids.size };
     });
-    return { domain: d, done, total, byLevel, color: domains[d].color };
+    const summary = practiceSummary(practiceRows, done, total);
+    return { domain: d, done, total, byLevel, color: domains[d].color, ...summary };
   });
   const evidence = saved
     .map((row) => ({ ...row, result: row.record.results[row.id] }))
@@ -455,6 +464,10 @@ export async function render(ctx) {
   const name = getStudentName();
   const stamps = stats.reduce((n, s) => n + s.done, 0);
   const totalActs = stats.reduce((n, s) => n + s.total, 0);
+  const scoredStats = stats.filter((s) => s.percent != null).sort((a, b) => b.percent - a.percent);
+  const strongest = scoredStats[0] || null;
+  const nextDomain = stats.find((s) => s.status === "Needs Review") || [...stats].filter((s) => s.done < s.total).sort((a, b) => (a.percent ?? -1) - (b.percent ?? -1))[0] || null;
+  const pathway = CORE_DOMAINS.map((d) => `${d} ${ctx.prefs.tiers?.[d] || "A"}`).join(" · ");
   return {
     title: "My Passport",
     html: html`${crumbsHTML([
@@ -489,8 +502,18 @@ export async function render(ctx) {
           </ul>
         </header>
 
-        <section aria-labelledby="passSkills">
-          <h2 id="passSkills" class="pass-heading">Practice by skill</h2>
+        <section>
+          <section class="panel practice-report" aria-labelledby="practiceReportTitle">
+            <div class="practice-report-head"><div><p class="eyebrow">${formatDate(todayISO())} · ${bandLabel(band)} · ${pathway}</p><h2 id="practiceReportTitle">ACCESS-style practice report</h2></div>
+              <div class="row-actions no-print"><button type="button" class="btn small" data-refresh-report>${icon("retry")} Update My Report</button><button type="button" class="btn btn-primary small" data-print>${icon("print")} Print Practice Report</button></div>
+            </div>
+            <p>Student: <strong>${name || "My practice"}</strong> · Teacher review recommended for speaking and writing.</p>
+            <p class="fine">Strongest practice evidence: <strong>${strongest ? `${DOMAIN_META[strongest.domain].room} · ${strongest.scoreBand}` : "Not enough scored practice yet"}</strong>. Suggested next domain: <strong>${nextDomain ? DOMAIN_META[nextDomain.domain].room : "Choose a new task"}</strong>.</p>
+            <ul class="practice-next-steps">${stats.map((s) => html`<li><strong>${DOMAIN_META[s.domain].room} · ${s.status}</strong>${s.possible ? html`<span>Practice score: ${s.score} of ${s.possible} · ${s.scoreBand}</span>` : html`<span>No scored practice saved yet.</span>`}<span><strong>Next step:</strong> ${s.domain === "Listening" ? "Replay the key part and name one signal word." : s.domain === "Reading" ? "Point to a sentence, table value, or chart detail that supports your answer." : s.domain === "Speaking" ? "Name the topic, add a detail, and explain your thinking." : "Connect two ideas and add one specific detail."}</span></li>`)}</ul>
+            <p class="practice-disclaimer">This is classroom practice feedback, not an official WIDA ACCESS score. Practice scores summarize visible task checks across different activities and are not proficiency levels or placement decisions.</p>
+          </section>
+          <details class="panel teacher-score-guide"><summary>Teacher quick-use scoring guide</summary><div><p><strong>Not yet:</strong> Re-model one strategy and let the learner try a similar item with support.</p><p><strong>Getting started:</strong> Name one signal that is working, then practice one missing step in a short conference.</p><p><strong>Almost there:</strong> Ask the learner to explain a choice or add evidence, then try a fresh task independently.</p><p><strong>Strong practice response:</strong> Confirm the evidence with the learner and offer a transfer task or peer explanation.</p><p>For a small group, model a short example, practice together, and close with one independent check. Bands describe this classroom practice only; teacher review is recommended and they are not official ACCESS scoring.</p></div></details>
+          <div class="pass-heading-row"><h2 id="passSkills" class="pass-heading">Practice by skill</h2></div>
           <div class="pass-domains">
             ${stats.map((s) => domainCard(s, band))}
           </div>
@@ -550,7 +573,7 @@ export async function render(ctx) {
             >${icon("growth")} View Language Growth Map</a
           >
           <button type="button" class="btn btn-primary" data-print>
-            ${icon("print")} Print my passport
+            ${icon("print")} Print Practice Report
           </button>
           <a class="btn" href="${BASE}/passport?grades=${band}&portfolio=1"
             >${icon("list")} Review and print my portfolio</a
@@ -687,7 +710,7 @@ export async function render(ctx) {
               this browser and cannot be undone.
             </p>
             <button type="button" class="ghost danger" data-clear>
-              Clear my progress on this device
+              Clear My Practice Data
             </button>
           </div>
         </section>
@@ -706,6 +729,11 @@ function shareBundle(ctx) {
 
 export async function onClick(e, ctx) {
   const t = e.target;
+  if (t.closest("[data-refresh-report]")) {
+    announce("Practice report updated from saved work on this device.");
+    ctx.rerender();
+    return true;
+  }
   const status = document.querySelector("[data-share-status]");
   if (t.closest("[data-share-copy]")) {
     const code = encodeShare(shareBundle(ctx));

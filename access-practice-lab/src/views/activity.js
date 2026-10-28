@@ -21,6 +21,8 @@ import {
   correctAnswerText,
   isAnswered,
   isCorrect,
+  practiceBand,
+  writingPracticeScore,
   wordGoal,
 } from "../grade.js";
 import {
@@ -217,6 +219,7 @@ function feedbackHTML(a) {
     return html`<div class="feedback is-right" role="status">
       <p class="fb-title">${icon("check")} ${c.attempt === 1 ? "Correct!" : "You got it!"}</p>
       ${a.correct ? html`<p>${a.correct}</p>` : ""}
+      ${cur.domain === "Reading" ? html`<p class="fb-extra">Look back at the sentence, table, or chart that supports your answer.</p>` : ""}
       ${a.extension ? html`<p class="fb-extra"><strong>Go further:</strong> ${a.extension}</p>` : ""}
       ${cur.domain === "Speaking" ? html`<p class="fb-extra"><strong>Now say it:</strong> record yourself saying the best answer.</p>` : ""}
     </div>`;
@@ -227,11 +230,13 @@ function feedbackHTML(a) {
       <p class="fb-title">${icon("info")} Here is the answer</p>
       <p><strong>${correctAnswerText(a)}</strong></p>
       ${a.support ? html`<p>${a.support}</p>` : ""}
+      ${cur.domain === "Reading" ? html`<p>Look back at the sentence, table, or chart that supports your answer.</p>` : ""}
       <button type="button" class="btn" data-retry>Try it again</button>
     </div>`;
   return html`<div class="feedback is-hint" role="status">
     <p class="fb-title">${icon("retry")} Not yet — try again</p>
     ${a.hint && mode === "supported" ? html`<p>${a.hint}</p>` : html`<p>Review the task, then try again. Switch to Learn with help for a clue.</p>`}
+    ${cur.domain === "Reading" ? html`<p>Look back at the sentence, table, or chart that supports your answer.</p>` : ""}
     <button type="button" class="btn" data-retry>Try again</button>
   </div>`;
 }
@@ -249,6 +254,13 @@ function interactiveHTML(a) {
 function speakingHTML(a) {
   const notes = cur.record.notes[a.id] || "";
   const hasTake = takesFor(a.id).length > 0 || cur.record.practiced[a.id];
+  const savedChecks = cur.record.selfChecks[a.id] || {};
+  const checks = {
+    ...savedChecks,
+    topic: savedChecks.topic ?? savedChecks.answered,
+    details: savedChecks.details ?? savedChecks.words,
+    thinking: savedChecks.thinking ?? savedChecks.connected,
+  };
   return html`${recorderHTML(a.id, { prompt: a.prompt, level: cur.level, recording: isRecording(a.id), models: hasTake && mode === "supported" ? a.models : null, activity: a })}
     ${!hasTake && a.models ? html`<p class="fine">Record or practice aloud with a partner, then hear sample answers in Learn with help mode.</p>` : ""}
     <label class="field">
@@ -262,7 +274,7 @@ function speakingHTML(a) {
 ${notes}</textarea>
     </label>
     <section class="task-criteria"><h2>What to include</h2><ul>${taskCriteria(a).map((c) => html`<li>${c}</li>`)}</ul></section>
-    ${speakingChecksHTML(cur.record.selfChecks[a.id] || {})}
+    ${speakingChecksHTML(checks)}
     <label class="practiced"
       ><input
         type="checkbox"
@@ -275,7 +287,12 @@ ${notes}</textarea>
     <button type="button" class="btn btn-primary" data-save-speaking>
       Save my speaking practice
     </button>
-    ${cur.record.complete.includes(a.id) ? html`<p class="saved-note">${icon("check")} Practice evidence saved. The audio itself is not saved. Try again to add a useful detail.</p>` : ""}`;
+    ${cur.record.complete.includes(a.id) ? html`<p class="saved-note">${icon("check")} Practice evidence saved. The audio itself is not saved. Try again to add a useful detail.</p>` : ""}
+    ${cur.record.results[a.id]?.total && cur.record.results[a.id]?.meaningful !== false ? html`<section class="practice-score" role="status" aria-label="Speaking practice score">
+      <p class="eyebrow">Practice score · ${cur.record.results[a.id].score} of ${cur.record.results[a.id].total}</p>
+      <h3>${cur.record.results[a.id].band}</h3>
+      <p>Use your self-check and teacher feedback to reflect. This is not an official ACCESS score.</p>
+    </section>` : ""}`;
 }
 
 function writingHTML(a) {
@@ -283,6 +300,8 @@ function writingHTML(a) {
   const goal = wordGoal(cur.level);
   const bank = mode === "supported" ? wordBank(a).slice(0, 12) : [];
   const result = writingChecks.get(a.id);
+  const savedResult = cur.record.results[a.id];
+  const savedScore = result?.practice || (savedResult?.meaningful !== false ? savedResult?.practice : null);
   const usedWords = new Set(bankWordsUsed(text, wordBank(a)).map(bankKey));
   return html`${mode === "supported" && (bank.length || (a.frames || []).length) ? raw('<details class="writing-starters"><summary>Writing starters</summary>') : ""}${
       bank.length
@@ -328,6 +347,13 @@ ${text}</textarea>
       </button>
     </div>
     ${coachFeedback ? coachCardHTML(coachFeedback, text, { patternHref: (id) => `${BASE}/detective/${id}?grades=${cur.band}` }) : ""}
+    ${savedScore ? html`<section class="practice-score" aria-label="Writing practice score" role="status">
+      <p class="eyebrow">Practice score · ${savedScore.score} of ${savedScore.total}</p>
+      <h3>${savedScore.band}</h3>
+      <p>These checks notice visible writing signals. They do not judge meaning or language proficiency.</p>
+      <ul>${savedScore.checks.map((check) => html`<li class="${check.ok ? "is-met" : "is-next"}"><span aria-hidden="true">${icon(check.ok ? "check" : "x")}</span>${check.label}</li>`)}</ul>
+      <p><strong>Next step:</strong> ${savedScore.nextStep}</p>
+    </section>` : ""}
     ${
       result
         ? html`<div class="feedback is-hint" role="status">
@@ -732,8 +758,10 @@ export function onClick(e, ctx) {
       ctx.rerender(); return;
     }
     const revised = cur.record.drafts[a.id]?.first?.trim() !== text.trim();
-    writingChecks.set(a.id, analyzeResponse(text, coachOptions(a)));
-    cur.record.results[a.id] = { words: wordCount(text), meaningful: true, evidence: revised ? "revised" : "writing", mode, supportUsed: (helpUsed.has(a.id) || Boolean(cur.record.supportUsed?.[a.id])), date: new Date().toISOString() };
+    const analysis = analyzeResponse(text, coachOptions(a));
+    analysis.practice = writingPracticeScore(analysis, { level: cur.level, bankAvailable: wordBank(a).length > 0 });
+    writingChecks.set(a.id, analysis);
+    cur.record.results[a.id] = { words: wordCount(text), meaningful: true, evidence: revised ? "revised" : "writing", mode, supportUsed: (helpUsed.has(a.id) || Boolean(cur.record.supportUsed?.[a.id])), practice: analysis.practice, practiceBand: analysis.practice.band, date: new Date().toISOString() };
     if (!cur.record.complete.includes(a.id)) cur.record.complete.push(a.id);
     validation = ""; save(); announce(storage.isVolatile ? "Reviewed writing kept in this tab. Export a Passport code before leaving." : "Reviewed writing saved. This is practice evidence, not a score."); ctx.rerender(); return;
   }
@@ -748,6 +776,7 @@ export function onClick(e, ctx) {
     validation = "";
     cur.record.drafts[a.id] ||= { first: text };
     const result = analyzeResponse(text, coachOptions(a));
+    result.practice = writingPracticeScore(result, { level: cur.level, bankAvailable: wordBank(a).length > 0 });
     writingChecks.set(a.id, result);
     cur.record.results[a.id] = {
       meaningful: true,
@@ -755,6 +784,8 @@ export function onClick(e, ctx) {
       mode,
       supportUsed: (helpUsed.has(a.id) || Boolean(cur.record.supportUsed?.[a.id])),
       words: result.words,
+      practice: result.practice,
+      practiceBand: result.practice.band,
       date: new Date().toISOString(),
     };
     // Completion is a deliberate meaning review, never a surface-feature score.
@@ -776,7 +807,8 @@ export function onClick(e, ctx) {
       supportUsed: (helpUsed.has(a.id) || Boolean(cur.record.supportUsed?.[a.id])),
       score: n,
       total: SPEAKING_CHECKS.length,
-      band: band(n, SPEAKING_CHECKS.length),
+      band: practiceBand(n, SPEAKING_CHECKS.length),
+      practiceBand: practiceBand(n, SPEAKING_CHECKS.length),
       practiced: Boolean(practiced),
       date: new Date().toISOString(),
     };

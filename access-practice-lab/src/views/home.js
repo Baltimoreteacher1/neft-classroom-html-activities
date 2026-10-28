@@ -3,6 +3,7 @@
 import { bandSwitchHTML } from "../components.js";
 import { bandDomains, bandRows, loadRoad, loadShared } from "../content.js";
 import { allRecords, loadRecord, weekStreak } from "../store.js";
+import { practiceSummary } from "../practice-report.js";
 import {
   ART,
   BASE,
@@ -143,6 +144,9 @@ export async function render(ctx) {
     const levels = domains[d].levels;
     const tier = tierFor(ctx, d, levels);
     const { done, total, next } = nextActivity(band, d, tier, levels[tier].activities);
+    const record = loadRecord(band, d, tier);
+    const { status } = practiceSummary(record.results, done, total);
+    const statusClass = status.toLowerCase().replace(/\s+/g, "-");
     const roomHref = `${BASE}/${d}/${tier}?grades=${band}`;
     const href = next ? `${BASE}/${d}/${tier}/${next[0]}?grades=${band}` : roomHref;
     const pct = total ? Math.round((done / total) * 100) : 0;
@@ -153,6 +157,7 @@ export async function render(ctx) {
       <div class="room-body">
         <h3 class="room-name"><a class="room-link" href="${roomHref}">${meta.name}</a></h3>
         <p class="room-blurb">${meta.blurb}</p>
+          <span class="practice-status is-${statusClass}">${status}</span>
         <div class="room-progress">
           <div class="bar" role="img" aria-label="${meta.name}: ${done} of ${total} activities done"><i style="width:${pct}%"></i></div>
           <p class="fine">${done} of ${total} done · ${TIERS[tier]?.name || tier} support</p>
