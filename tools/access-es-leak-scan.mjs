@@ -91,9 +91,13 @@ const ROUTES = [
   "/family/save?grades=3-5",
 ];
 // English function words that essentially never appear in Spanish interface text.
+// Unicode letter boundaries avoid reading Spanish words such as "Noté" as
+// the English function word "not" (JavaScript's \b treats accented letters
+// as non-word characters without the Unicode property check).
 const ENGLISH =
-  /\b(the|your|you|and|with|for|this|that|from|are|is|will|can|not|have|has|an|of|to|in|on|or|each|then|next|back|start|choose|open|save|close|continue|practice|listen|read|write|speak|try|check|answer)\b/i;
-const STRONG = /\b(the|your|you|and|with|this|that|from|are|will|can|have|each|then)\b/i;
+  /(?<!\p{L})(the|your|you|and|with|for|this|that|from|are|is|will|can|not|have|has|an|of|to|in|on|or|each|then|next|back|start|choose|open|save|close|continue|practice|listen|read|write|speak|try|check|answer)(?!\p{L})/iu;
+const STRONG =
+  /(?<!\p{L})(the|your|you|and|with|this|that|from|are|will|can|have|each|then)(?!\p{L})/iu;
 
 const browser = await chromium.launch();
 const context = await browser.newContext({ viewport: { width: 1280, height: 900 } });
@@ -114,8 +118,8 @@ for (const route of ROUTES) {
   await page.waitForTimeout(350);
   const leaks = await page.evaluate(
     ({ ENGLISH, STRONG }) => {
-      const english = new RegExp(ENGLISH, "i");
-      const strong = new RegExp(STRONG, "i");
+      const english = new RegExp(ENGLISH, "iu");
+      const strong = new RegExp(STRONG, "iu");
       const SKIP =
         "[lang='en'], script, style, pre, code, svg, textarea, input, .stimulus, .passage, .prompt-text, .choice, .choice-text, .opt, h1, [data-content], .act-context, .crumbs li:last-child";
       const found = [];
