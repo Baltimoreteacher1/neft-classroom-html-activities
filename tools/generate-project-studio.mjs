@@ -88,9 +88,10 @@ for (const [root, companionProjects] of groups) {
   if (legacyUnit !== null && legacyUnit !== currentUnit)
     alignLegacyFolderLabels(legacyUnit, currentUnit);
   const currentProjects = PROJECTS.filter((p) => p.unit === currentUnit);
-  const placement = currentUnit === 0
-    ? `Pre-Unit · ${UNIT_NAMES[currentUnit]}`
-    : `Unit ${currentUnit} · ${UNIT_NAMES[currentUnit]}`;
+  const placement =
+    currentUnit === 0
+      ? `Pre-Unit · ${UNIT_NAMES[currentUnit]}`
+      : `Unit ${currentUnit} · ${UNIT_NAMES[currentUnit]}`;
   const isLegacyAlias = legacyUnit !== null && legacyUnit !== currentUnit;
   const aliasNote = isLegacyAlias
     ? `<p class="studio-entry-note"><strong>Current course placement:</strong> ${esc(placement)}. The old folder URL is preserved for saved links.${currentUnit > 0 ? ` <a href="/math/unit-${currentUnit}/projects/">Open the current Unit ${currentUnit} project hub.</a>` : ""}${legacyUnit === 1 ? ` For current Unit 1 missions, open <a href="/curriculum/projects/studio/?unit=1">Math Is Discovery in Project Studio</a>.` : ""}</p>`
@@ -117,18 +118,21 @@ for (let unit = 1; unit <= 10; unit++) {
   const start = units.indexOf(`<details class="unit" id="unit-${unit}"`);
   if (start < 0) throw new Error("Missing unit " + unit);
   const bodyStart = units.indexOf('<div class="unit-body">', start);
-  const nextUnit = unit < 10
-    ? units.indexOf(`<details class="unit" id="unit-${unit + 1}"`, start)
-    : -1;
+  const nextUnit =
+    unit < 10 ? units.indexOf(`<details class="unit" id="unit-${unit + 1}"`, start) : -1;
   const searchEnd = nextUnit < 0 ? units.length : nextUnit;
-  const candidateEndLabel = units.indexOf('<span class="unit-res-label">End of Unit</span>', bodyStart);
+  const candidateEndLabel = units.indexOf(
+    '<span class="unit-res-label">End of Unit</span>',
+    bodyStart,
+  );
   const endLabel = candidateEndLabel >= 0 && candidateEndLabel < searchEnd ? candidateEndLabel : -1;
   const rowStart = endLabel < 0 ? -1 : units.indexOf('<div class="res-row">', endLabel);
   const rowIsInsideUnit = rowStart >= 0 && rowStart < searchEnd;
   const position = rowIsInsideUnit
     ? rowStart + '<div class="res-row">'.length
-    : units.lastIndexOf("\n", units.lastIndexOf('</details>', searchEnd)) + 1;
-  if (position < bodyStart) throw new Error(`Could not place the Project Studio link for Unit ${unit}`);
+    : units.lastIndexOf("\n", units.lastIndexOf("</details>", searchEnd)) + 1;
+  if (position < bodyStart)
+    throw new Error(`Could not place the Project Studio link for Unit ${unit}`);
   const missionWord = PROJECTS.filter((p) => p.unit === unit).length === 1 ? "mission" : "missions";
   const label = `Project Studio · Unit ${unit}${unit === 10 ? " synthesis" : ""} ${missionWord}`;
   const link = rowIsInsideUnit
