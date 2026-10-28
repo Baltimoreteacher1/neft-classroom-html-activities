@@ -548,6 +548,18 @@ const COVERAGE = [
   // The units page is the authority on which unit an End-of-Unit resource belongs
   // to, so an edit there must re-run the placement gate.
   [
+    /^tools\/generate-project-studio\.mjs$/,
+    [
+      "validate:project-studio-browser",
+      "validate:projects-publication",
+      "validate:projects-award",
+      "validate:solve-along",
+      "validate:projects-check",
+      "validate:injection",
+      "validate:unit-placement",
+    ],
+  ],
+  [
     /^(curriculum\/units\/index\.html|tools\/(validate-unit-resource-placement|unit-placement\.test|validate-curriculum-links)\.mjs|scripts\/lib\/download-taxonomy\.mjs)$/,
     [
       "validate:unit-placement",
@@ -713,6 +725,7 @@ const COVERAGE = [
       "validate:solve-along",
       "validate:projects-check",
       "validate:injection",
+      "validate:unit-placement",
     ],
   ],
   [

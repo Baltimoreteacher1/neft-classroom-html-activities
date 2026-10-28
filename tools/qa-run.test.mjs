@@ -225,6 +225,11 @@ check(
   "a Project Studio edit must pull in validate:project-studio-browser",
 );
 check(
+  scopeFor(["tools/generate-project-studio.mjs"])?.includes("validate:project-studio-browser") &&
+    scopeFor(["tools/generate-project-studio.mjs"])?.includes("validate:unit-placement"),
+  "the Project Studio generator must pull in Studio and unit placement gates",
+);
+check(
   scopeFor(["curriculum/fluency/unit-1-workshop.html"])?.includes(
     "validate:fluency-workshops-browser",
   ),
