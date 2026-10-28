@@ -14,6 +14,7 @@ import {
   PAD,
   RADIUS,
   W,
+  assertKeys,
   bracket,
   clampX,
   clean,
@@ -28,6 +29,7 @@ import {
   text,
   textW,
   unknownPill,
+  wrap,
 } from "./math-kit.mjs";
 import { renderArea, renderBalance, renderCoord, renderGrid } from "./math-models-geometry.mjs";
 
@@ -35,6 +37,7 @@ const tr = (lang, en, es) => (lang === "es" ? es : en);
 
 // ---------------------------------------------------------------- tape
 function tape(d, { lang }) {
+  assertKeys(d, ["parts", "highlight", "partLabel", "wholeLabel", "blockLabel", "unknown"], 'model "tape" data');
   need(d, "tape", "parts", "highlight");
   const n = int(d, "tape", "parts", 1, 24);
   const hi = int(d, "tape", "highlight", 0, n);
@@ -104,8 +107,10 @@ function tape(d, { lang }) {
 
 // ---------------------------------------------------------------- doubleline
 function doubleline(d, { lang }) {
+  assertKeys(d, ["top", "bottom", "unknown"], 'model "doubleline" data');
   need(d, "doubleline", "top", "bottom");
   for (const row of ["top", "bottom"]) {
+    assertKeys(d[row], ["label", "ticks"], `model "doubleline" data.${row}`);
     need(d[row], `doubleline.${row}`, "ticks");
     if (!Array.isArray(d[row].ticks) || d[row].ticks.length < 2) {
       throw new Error(`model "doubleline": data.${row}.ticks needs at least 2 values`);
@@ -160,34 +165,40 @@ function doubleline(d, { lang }) {
 
 // ---------------------------------------------------------------- ratiotable
 function ratiotable(d, { lang }) {
+  assertKeys(d, ["headers", "rows", "unknownCells", "arrows"], 'model "ratiotable" data');
   need(d, "ratiotable", "headers", "rows");
   if (!Array.isArray(d.headers) || d.headers.length !== 2) throw new Error('model "ratiotable": data.headers needs exactly 2 labels');
   if (!Array.isArray(d.rows) || d.rows.length < 1 || d.rows.length > 8) throw new Error('model "ratiotable": data.rows needs 1 to 8 rows');
+  if (d.unknownCells !== undefined && !Array.isArray(d.unknownCells)) throw new Error('model "ratiotable": data.unknownCells must be a list of [row, column]');
   for (const r of d.rows) {
     if (!Array.isArray(r) || r.length !== 2) throw new Error('model "ratiotable": every row needs exactly 2 values');
   }
   const unk = new Set((d.unknownCells ?? []).map(([r, c]) => `${r},${c}`));
   const rowH = 38;
-  const colW = 104;
+  const colW = 124;
   const x0 = PAD;
   const y0 = 8;
   const out = [];
+  const heads = [0, 1].map((c) => wrap(lab(d.headers[c], lang), 13));
+  const headH = Math.max(rowH, 14 + 18 * Math.max(heads[0].length, heads[1].length));
   for (let c = 0; c < 2; c++) {
-    out.push(`<rect class="m-h" x="${x0 + c * colW}" y="${y0}" width="${colW}" height="${rowH}"/>`);
-    out.push(text(x0 + c * colW + colW / 2, y0 + 24, lab(d.headers[c], lang), { cls: "m-t m-n" }));
+    out.push(`<rect class="m-h" x="${x0 + c * colW}" y="${y0}" width="${colW}" height="${headH}"/>`);
+    const top = y0 + (headH - 18 * heads[c].length) / 2 + 14;
+    heads[c].forEach((ln, i) => out.push(text(x0 + c * colW + colW / 2, top + i * 18, ln, { cls: "m-t m-n" })));
   }
   d.rows.forEach((row, r) => {
     for (let c = 0; c < 2; c++) {
       const x = x0 + c * colW;
-      const y = y0 + (r + 1) * rowH;
+      const y = y0 + headH + r * rowH;
       const u = unk.has(`${r},${c}`);
       out.push(`<rect class="${u ? "m-u" : "m-g"}" x="${x}" y="${y}" width="${colW}" height="${rowH}"/>`);
       out.push(u ? text(x + colW / 2, y + 26, "?", { cls: "m-q" }) : text(x + colW / 2, y + 24, lab(row[c], lang)));
     }
   });
-  const rowMid = (r) => y0 + (r + 1) * rowH + rowH / 2;
+  const rowMid = (r) => y0 + headH + r * rowH + rowH / 2;
   const arrows = d.arrows ?? [];
   arrows.forEach((a, k) => {
+    assertKeys(a, ["from", "to", "label"], `model "ratiotable" data.arrows[${k}]`);
     for (const f of ["from", "to"]) {
       if (!Number.isInteger(a[f]) || a[f] < 0 || a[f] >= d.rows.length) {
         throw new Error(`model "ratiotable": arrows[${k}].${f} must be a row index from 0 to ${d.rows.length - 1}`);
@@ -214,12 +225,13 @@ function ratiotable(d, { lang }) {
     `Ratio table with columns ${lab(d.headers[0], lang)} and ${lab(d.headers[1], lang)}. Rows: ${rowsDesc.join("; ")}.${arrDesc.length ? ` Arrows: ${arrDesc.join("; ")}.` : ""}`,
     `Tabla de razones con columnas ${lab(d.headers[0], lang)} y ${lab(d.headers[1], lang)}. Filas: ${rowsDesc.join("; ")}.${arrDesc.length ? ` Flechas: ${arrDesc.join("; ")}.` : ""}`,
   );
-  return { h: y0 + (d.rows.length + 1) * rowH + 12, body: out.join(""), desc };
+  return { h: y0 + headH + d.rows.length * rowH + 12, body: out.join(""), desc };
 }
 
 // ---------------------------------------------------------------- numberline
 const KINDS = ["given", "unknown", "answer", "error"];
 function numberline(d, { lang }) {
+  assertKeys(d, ["min", "max", "step", "points", "unit"], 'model "numberline" data');
   need(d, "numberline", "min", "max", "step");
   const { min, max, step } = d;
   if (![min, max, step].every((v) => typeof v === "number" && Number.isFinite(v)) || max <= min || step <= 0) {
@@ -240,6 +252,7 @@ function numberline(d, { lang }) {
     if (i % every === 0 || i === count - 1) out.push(text(xv(v), y + 28, minus(clean(v))));
   }
   const pts = (d.points ?? []).map((p, k) => {
+    assertKeys(p, ["value", "label", "kind"], `model "numberline" data.points[${k}]`);
     if (typeof p.value !== "number" || p.value < min - 1e-9 || p.value > max + 1e-9) {
       throw new Error(`model "numberline": points[${k}].value must be a number from ${min} to ${max}`);
     }
@@ -291,10 +304,12 @@ const niceMax = (m) => {
   return 10 * p;
 };
 function barplot(d, { lang }) {
+  assertKeys(d, ["categories", "unit"], 'model "barplot" data');
   need(d, "barplot", "categories");
   const cats = d.categories;
   if (!Array.isArray(cats) || cats.length < 1 || cats.length > 8) throw new Error('model "barplot": data.categories needs 1 to 8 entries');
   cats.forEach((c, i) => {
+    assertKeys(c, ["label", "value"], `model "barplot" data.categories[${i}]`);
     if (typeof c.value !== "number" || c.value < 0 || !Number.isFinite(c.value)) {
       throw new Error(`model "barplot": categories[${i}].value must be a number >= 0`);
     }
@@ -340,6 +355,7 @@ function barplot(d, { lang }) {
 
 // ---------------------------------------------------------------- fraction
 function fraction(d, { lang }) {
+  assertKeys(d, ["parts", "shaded", "label"], 'model "fraction" data');
   need(d, "fraction", "parts", "shaded");
   const n = int(d, "fraction", "parts", 1, 24);
   const s = int(d, "fraction", "shaded", 0, n);

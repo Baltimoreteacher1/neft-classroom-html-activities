@@ -13,8 +13,10 @@
  *  - an unknown kind and a missing required field throw (no silent generic diagram).
  */
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import test from "node:test";
 import { JSDOM } from "jsdom";
+import { esc } from "../assets/design/family/art/math-kit.mjs";
 import {
   describeModel,
   MODEL_KINDS,
@@ -285,4 +287,137 @@ test("kind none draws nothing; every documented kind is exported", () => {
       SAMPLES.some((s) => s.kind === k),
       `no sample for ${k}`,
     );
+});
+
+// ---- real lesson data (v3.model from data/family-homework-notes/<id>.json, copied 2026-10-28) ----
+const LESSONS = JSON.parse(
+  readFileSync(new URL("./fixtures/family-math-models-lessons.json", import.meta.url), "utf8"),
+);
+
+for (const [id, model] of Object.entries(LESSONS)) {
+  for (const lang of ["en", "es"]) {
+    test(`lesson ${id} [${lang}]: the authored model draws, titles itself with the lesson alt, and fits`, () => {
+      const svg = renderModel(model, { lang });
+      assert.equal(svg, renderModel(model, { lang }), "deterministic");
+      assert.ok(Buffer.byteLength(svg) <= MAX_BYTES, `${Buffer.byteLength(svg)} bytes`);
+      new JSDOM(svg, { contentType: "image/svg+xml" });
+      assert.ok(
+        svg.includes(`>${esc(model.alt[lang])}</title>`),
+        "the lesson alt text is the <title>",
+      );
+      assert.doesNotMatch(withoutVarFallbacks(svg), /#[0-9a-fA-F]{3,8}\b(?![\w-])/);
+      // every label the lesson wrote is drawn
+      const drawn = textOf(svg).join(" | ");
+      const labels = [];
+      const d = model.data;
+      for (const key of ["partLabel", "wholeLabel", "blockLabel"])
+        if (d[key]) labels.push(lang === "es" ? (d[key].es ?? d[key]) : (d[key].en ?? d[key]));
+      for (const l of labels)
+        assert.ok(drawn.includes(l), `label ${JSON.stringify(l)} missing from ${drawn}`);
+      if (d.unit) assert.ok(drawn.length > 0);
+    });
+  }
+}
+
+test("lesson 5-1: parallelogram with offset and cut-and-slide shows the cut piece, the rectangle and the height", () => {
+  const svg = renderModel(LESSONS["5-1"]);
+  assert.match(svg, /class="m-u"/, "the cut triangle is drawn as its own piece");
+  assert.match(svg, /class="m-dash"/, "dashed target rectangle and height line");
+  assert.deepEqual(
+    ["14 ft", "9 ft"].filter((t) => !textOf(svg).includes(t)),
+    [],
+  );
+});
+
+test("lesson 5-1-part2: slant is the side length and the offset is derived (13, 8 -> sqrt(105))", () => {
+  const svg = renderModel(LESSONS["5-1-part2"]);
+  const t = textOf(svg);
+  assert.ok(t.filter((x) => x === "13 cm").length >= 2, "base and slant are both labeled 13 cm");
+  assert.ok(t.includes("8 cm"));
+  assert.doesNotMatch(svg, /class="m-u"/, "cutAndSlide:false draws no cut piece");
+  assert.match(describeModel(LESSONS["5-1-part2"]), /slanted side is 13 cm/);
+  assert.throws(
+    () =>
+      renderModel({
+        kind: "area",
+        data: { shape: "parallelogram", dims: { base: 5, height: 8, slant: 6 } },
+      }),
+    /slant .* must be longer than the height/,
+  );
+  assert.throws(
+    () =>
+      renderModel({
+        kind: "area",
+        data: { shape: "parallelogram", dims: { base: 5, height: 4, slant: 6, offset: 2 } },
+      }),
+    /not both/,
+  );
+});
+
+test("lessons 6-14 and 6-14-part2: split rectangles draw both parts and the two products, never the total area", () => {
+  for (const [id, parts, h, base] of [
+    ["6-14", [15, 5], 3, 20],
+    ["6-14-part2", [11, 6], 7, 17],
+  ]) {
+    const svg = renderModel(LESSONS[id]);
+    const t = textOf(svg);
+    for (const p of parts) assert.ok(t.includes(`$${p}`), `part $${p}`);
+    assert.ok(
+      t.includes(`$${base}`) && t.includes(`$${h}`),
+      "whole base and height labeled with the dollar unit",
+    );
+    for (const p of parts) assert.ok(t.includes(`${h} × ${p}`), `${h} x ${p}`);
+    assert.ok(!t.includes(String(h * base)), "the total area is not printed");
+  }
+  assert.throws(
+    () =>
+      renderModel({
+        kind: "area",
+        data: { shape: "rectangle", dims: { base: 20, height: 3, split: [15, 6] } },
+      }),
+    /add up to the base/,
+  );
+});
+
+test("lesson 4-5-part2: the '?' tick in a double number line is drawn as unknown and not in the text alternative", () => {
+  const svg = renderModel(LESSONS["4-5-part2"]);
+  assert.ok(textOf(svg).includes("?"));
+  assert.match(describeModel(LESSONS["4-5-part2"]), /unknown/);
+  assert.ok(textOf(svg).includes("15%") && textOf(svg).includes("$6"));
+});
+
+test("lesson 3-1-part2: long Spanish table headers wrap inside their column", () => {
+  const svg = renderModel(LESSONS["3-1-part2"], { lang: "es" });
+  const t = textOf(svg);
+  assert.ok(t.includes("(cucharadas)"), "wrapped header line");
+  assert.ok(
+    !t.some((x) => x.length > 15 && /cucharadas|oliva/.test(x)),
+    "no header line wider than its column",
+  );
+  assert.ok(t.includes("×4"), "arrow label");
+});
+
+test("any key the contract does not name throws instead of being ignored", () => {
+  const bad = [
+    { kind: "tape", data: { parts: 4, highlight: 1, colour: "red" } },
+    { kind: "area", data: { shape: "rectangle", dims: { base: 4, height: 2, depth: 3 } } },
+    { kind: "area", data: { shape: "rectangle", dims: { base: 4, height: 2, slant: 3 } } },
+    { kind: "area", data: { shape: "rectangle", dims: { base: 4, height: 2 }, fill: "x" } },
+    { kind: "grid", data: { rows: 2, cols: 2, filled: 1, groupsize: 5 } },
+    {
+      kind: "numberline",
+      data: { min: 0, max: 4, step: 1, points: [{ value: 1, colour: "red" }] },
+    },
+    {
+      kind: "ratiotable",
+      data: { headers: ["a", "b"], rows: [[1, 2]], arrows: [{ from: 0, to: 0, text: "x" }] },
+    },
+    { kind: "balance", data: { left: [1], right: [1], level: true } },
+    { kind: "doubleline", data: { top: { ticks: [0, 1], title: "x" }, bottom: { ticks: [0, 1] } } },
+    { kind: "coord", data: { xmax: 4, ymax: 4, points: [{ x: 1, y: 1, size: 3 }] } },
+    { kind: "barplot", data: { categories: [{ label: "a", value: 1, colour: "x" }] } },
+    { kind: "fraction", data: { parts: 4, shaded: 1, colour: "x" } },
+  ];
+  for (const m of bad)
+    assert.throws(() => renderModel(m), /unrecognized key|does not apply/, JSON.stringify(m));
 });

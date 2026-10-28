@@ -1,50 +1,89 @@
 // Geometry-flavoured models for math-models.mjs: area, grid, coord, balance.
 // Same grammar (math-kit.mjs), same contract: data -> { h, body, defs?, desc } or a thrown Error.
 
-import { PAD, W, clean, head, int, lab, minus, n1, need, pos, text, textW } from "./math-kit.mjs";
+import { PAD, W, assertKeys, clean, head, int, lab, minus, n1, need, pos, text, textW } from "./math-kit.mjs";
 
 const tr = (lang, en, es) => (lang === "es" ? es : en);
-const withUnit = (v, unit, lang) => `${minus(clean(v))}${unit ? ` ${lab(unit, lang)}` : ""}`;
 
 // ---------------------------------------------------------------- area
 const SHAPES = ["rectangle", "parallelogram", "triangle", "trapezoid"];
+const DOLLAR_UNITS = ["$", "dollar", "dollars", "dólar", "dólares"];
+
+/** "14 ft", "$20" (dollar units become a prefix), or a bare number. */
+const withUnit = (v, unit, lang) => {
+  const u = lab(unit, lang);
+  const num = minus(clean(v));
+  if (!u) return num;
+  return DOLLAR_UNITS.includes(u.toLowerCase()) ? `$${num}` : `${num} ${u}`;
+};
 
 export function renderArea(d, { lang }) {
+  assertKeys(d, ["shape", "dims", "unit", "cutAndSlide"], 'model "area" data');
   need(d, "area", "shape", "dims");
   if (!SHAPES.includes(d.shape)) throw new Error(`model "area": data.shape must be one of ${SHAPES.join(", ")}; got ${JSON.stringify(d.shape)}`);
   const dm = d.dims;
+  assertKeys(dm, ["base", "height", "base1", "base2", "offset", "slant", "split", "apex"], 'model "area" data.dims');
+  const dimsFor = { rectangle: ["base", "height", "split"], parallelogram: ["base", "height", "offset", "slant"], triangle: ["base", "height", "apex"], trapezoid: ["base1", "base2", "height"] }[d.shape];
+  for (const key of Object.keys(dm)) {
+    if (!dimsFor.includes(key)) throw new Error(`model "area": data.dims.${key} does not apply to a ${d.shape} (use ${dimsFor.join(", ")})`);
+  }
   const b = pos(dm, "area", d.shape === "trapezoid" ? "base1" : "base");
   const b2 = d.shape === "trapezoid" ? pos(dm, "area", "base2") : b;
   const h = pos(dm, "area", "height");
-  const offset = d.shape === "parallelogram" ? (dm.offset ?? h * 0.5) : 0;
-  const wide = Math.max(b, b2) + offset;
-  const s = Math.min(236 / wide, 130 / h);
-  const pw = (v) => v * s;
-  const H = h * s;
-  const x = PAD + 78 + (236 - wide * s) / 2;
-  const top = d.cutAndSlide ? 40 : 24;
+  let offset = 0;
+  if (d.shape === "parallelogram") {
+    if (dm.offset !== undefined && dm.slant !== undefined) throw new Error('model "area": give data.dims.offset or data.dims.slant, not both');
+    if (dm.slant !== undefined) {
+      const sl = pos(dm, "area", "slant");
+      if (sl <= h) throw new Error(`model "area": data.dims.slant (${sl}) must be longer than the height (${h})`);
+      offset = Math.sqrt(sl * sl - h * h);
+    } else offset = dm.offset === undefined ? h * 0.5 : dm.offset;
+    if (typeof offset !== "number" || offset < 0) throw new Error('model "area": data.dims.offset must be a number >= 0');
+  }
+  let split = null;
+  if (dm.split !== undefined) {
+    if (!Array.isArray(dm.split) || dm.split.length !== 2 || dm.split.some((v) => typeof v !== "number" || v <= 0)) throw new Error('model "area": data.dims.split must be two positive numbers');
+    if (Math.abs(dm.split[0] + dm.split[1] - b) > 1e-9) throw new Error(`model "area": data.dims.split ${JSON.stringify(dm.split)} must add up to the base (${b})`);
+    split = dm.split;
+  }
   const unit = d.unit;
   const cut = Boolean(d.cutAndSlide);
+  const wide = Math.max(b, b2) + offset;
+  const leftRoom = d.shape === "rectangle" ? 66 : 0;
+  const rightRoom = d.shape === "parallelogram" && dm.slant !== undefined ? 64 : 0;
+  const avail = W - 2 * PAD - leftRoom - rightRoom;
+  const s = Math.min(avail / wide, 130 / h);
+  const pw = (v) => v * s;
+  const H = h * s;
+  const x = PAD + leftRoom + (avail - wide * s) / 2;
+  const top = cut ? 44 : split || d.shape === "trapezoid" ? 36 : 24;
   const out = [];
   const bottom = top + H;
-  const baseLabel = (cx, y, v) => text(cx, y, withUnit(v, unit, lang), { cls: "m-t m-n" });
+  const lbl = (cx, y, v) => text(cx, y, withUnit(v, unit, lang), { cls: "m-t m-n" });
   const right = (px, py, size = 11) => `<path class="m-ln" d="M${n1(px)} ${n1(py - size)}h${size}v${size}" transform="translate(${-size} 0)"/>`;
-  let grid = "";
-  if (d.shape === "rectangle" && Number.isInteger(b) && Number.isInteger(h) && b <= 14 && h <= 14) {
-    for (let i = 1; i < b; i++) grid += `M${n1(x + pw(i))} ${top}v${n1(H)}`;
-    for (let j = 1; j < h; j++) grid += `M${n1(x)} ${n1(top + j * s)}h${n1(pw(b))}`;
-  }
-  let shapePath = "";
   if (d.shape === "rectangle") {
-    out.push(`<rect class="m-p" x="${n1(x)}" y="${top}" width="${n1(pw(b))}" height="${n1(H)}"/>`);
-    if (grid) out.push(`<path class="m-gr" style="stroke-opacity:.5" d="${grid}"/>`);
-    out.push(`<rect class="m-ln" x="${n1(x)}" y="${top}" width="${n1(pw(b))}" height="${n1(H)}"/>`);
-    out.push(baseLabel(x + pw(b) / 2, bottom + 24, b));
+    out.push(`<rect class="${split ? "m-g" : "m-p"}" x="${n1(x)}" y="${top}" width="${n1(pw(b))}" height="${n1(H)}"/>`);
+    if (split) {
+      out.push(`<rect class="m-p" x="${n1(x)}" y="${top}" width="${n1(pw(split[0]))}" height="${n1(H)}"/>`);
+      out.push(`<path class="m-ln" d="M${n1(x + pw(split[0]))} ${top - 6}V${n1(bottom)}"/>`);
+      out.push(`<rect class="m-ln" x="${n1(x)}" y="${top}" width="${n1(pw(b))}" height="${n1(H)}"/>`);
+      out.push(lbl(x + pw(split[0]) / 2, top - 12, split[0]) + lbl(x + pw(split[0]) + pw(split[1]) / 2, top - 12, split[1]));
+      out.push(text(x + pw(split[0]) / 2, top + H / 2 + 5, `${minus(clean(h))} \u00D7 ${minus(clean(split[0]))}`, { cls: "m-t m-n" }));
+      out.push(text(x + pw(split[0]) + pw(split[1]) / 2, top + H / 2 + 5, `${minus(clean(h))} \u00D7 ${minus(clean(split[1]))}`, { cls: "m-t m-n" }));
+    } else {
+      let grid = "";
+      if (Number.isInteger(b) && Number.isInteger(h) && b <= 14 && h <= 14) {
+        for (let i = 1; i < b; i++) grid += `M${n1(x + pw(i))} ${top}v${n1(H)}`;
+        for (let j = 1; j < h; j++) grid += `M${n1(x)} ${n1(top + j * s)}h${n1(pw(b))}`;
+      }
+      if (grid) out.push(`<path class="m-gr" style="stroke-opacity:.5" d="${grid}"/>`);
+      out.push(`<rect class="m-ln" x="${n1(x)}" y="${top}" width="${n1(pw(b))}" height="${n1(H)}"/>`);
+    }
+    out.push(lbl(x + pw(b) / 2, bottom + 24, b));
     out.push(text(x - 8, top + H / 2 + 5, withUnit(h, unit, lang), { anchor: "end", cls: "m-t m-n" }));
   } else if (d.shape === "parallelogram") {
     const o = pw(offset);
-    shapePath = `M${n1(x + o)} ${top}H${n1(x + o + pw(b))}L${n1(x + pw(b))} ${n1(bottom)}H${n1(x)}Z`;
-    out.push(`<path class="m-p" d="${shapePath}"/>`);
+    out.push(`<path class="m-p" d="M${n1(x + o)} ${top}H${n1(x + o + pw(b))}L${n1(x + pw(b))} ${n1(bottom)}H${n1(x)}Z"/>`);
     if (cut) {
       out.push(`<path class="m-u" d="M${n1(x)} ${n1(bottom)}L${n1(x + o)} ${top}V${n1(bottom)}Z"/>`);
       out.push(`<rect class="m-dash" x="${n1(x + o)}" y="${top}" width="${n1(pw(b))}" height="${n1(H)}"/>`);
@@ -53,42 +92,53 @@ export function renderArea(d, { lang }) {
       out.push(`<path class="m-ln" d="M${n1(ax)} ${top + 8}Q${n1((ax + bx) / 2)} ${top - 30} ${n1(bx - 4)} ${top + 4}"/>${head(bx, top + 8, "d")}`);
     }
     out.push(`<path class="m-dash" d="M${n1(x + o)} ${top}V${n1(bottom)}"/>${right(x + o, bottom)}`);
-    out.push(baseLabel(x + pw(b) / 2, bottom + 24, b));
+    out.push(lbl(x + pw(b) / 2, bottom + 24, b));
     out.push(text(x + o + 8, top + H / 2 + 5, withUnit(h, unit, lang), { anchor: "start", cls: "m-t m-n" }));
+    if (dm.slant !== undefined) out.push(text(x + pw(b) + o / 2 + 10, top + H / 2 + 5, withUnit(dm.slant, unit, lang), { anchor: "start", cls: "m-t m-n" }));
   } else if (d.shape === "triangle") {
     const apex = dm.apex ?? b / 2;
     if (cut) out.push(`<rect class="m-dash" x="${n1(x)}" y="${top}" width="${n1(pw(b))}" height="${n1(H)}"/>`);
     out.push(`<path class="m-p" d="M${n1(x + pw(apex))} ${top}L${n1(x + pw(b))} ${n1(bottom)}H${n1(x)}Z"/>`);
     out.push(`<path class="m-dash" d="M${n1(x + pw(apex))} ${top}V${n1(bottom)}"/>${right(x + pw(apex), bottom)}`);
-    out.push(baseLabel(x + pw(b) / 2, bottom + 24, b));
+    out.push(lbl(x + pw(b) / 2, bottom + 24, b));
     out.push(text(x + pw(apex) + 8, top + H / 2 + 5, withUnit(h, unit, lang), { anchor: "start", cls: "m-t m-n" }));
   } else {
     const inset = pw((b2 - b) / 2);
     const topW = pw(b);
     out.push(`<path class="m-p" d="M${n1(x + inset)} ${top}h${n1(topW)}L${n1(x + pw(b2))} ${n1(bottom)}H${n1(x)}Z"/>`);
     out.push(`<path class="m-dash" d="M${n1(x + inset)} ${top}V${n1(bottom)}"/>${right(x + inset, bottom)}`);
-    out.push(baseLabel(x + inset + topW / 2, top - 8, b));
-    out.push(baseLabel(x + pw(b2) / 2, bottom + 24, b2));
+    out.push(lbl(x + inset + topW / 2, top - 8, b));
+    out.push(lbl(x + pw(b2) / 2, bottom + 24, b2));
     out.push(text(x + inset + 8, top + H / 2 + 5, withUnit(h, unit, lang), { anchor: "start", cls: "m-t m-n" }));
   }
-  const dimsText = d.shape === "trapezoid"
-    ? tr(lang, `bases ${withUnit(b, unit, lang)} and ${withUnit(b2, unit, lang)}, height ${withUnit(h, unit, lang)}`, `bases ${withUnit(b, unit, lang)} y ${withUnit(b2, unit, lang)}, altura ${withUnit(h, unit, lang)}`)
-    : tr(lang, `base ${withUnit(b, unit, lang)}, height ${withUnit(h, unit, lang)}`, `base ${withUnit(b, unit, lang)}, altura ${withUnit(h, unit, lang)}`);
-  const names = { rectangle: ["rectangle", "rectángulo"], parallelogram: ["parallelogram", "paralelogramo"], triangle: ["triangle", "triángulo"], trapezoid: ["trapezoid", "trapecio"] }[d.shape];
-  const slide = cut && d.shape === "parallelogram"
-    ? tr(lang, " The triangle on the left is cut off and slid to the right end, which makes a rectangle with the same base and height.", " El triángulo de la izquierda se corta y se desliza al extremo derecho, y forma un rectángulo con la misma base y altura.")
-    : cut && d.shape === "triangle"
-      ? tr(lang, " A dashed rectangle with the same base and height shows the triangle is half of it.", " Un rectángulo punteado con la misma base y altura muestra que el triángulo es la mitad.")
-      : "";
+  const dimsText =
+    d.shape === "trapezoid"
+      ? tr(lang, `bases ${withUnit(b, unit, lang)} and ${withUnit(b2, unit, lang)}, height ${withUnit(h, unit, lang)}`, `bases ${withUnit(b, unit, lang)} y ${withUnit(b2, unit, lang)}, altura ${withUnit(h, unit, lang)}`)
+      : tr(lang, `base ${withUnit(b, unit, lang)}, height ${withUnit(h, unit, lang)}`, `base ${withUnit(b, unit, lang)}, altura ${withUnit(h, unit, lang)}`);
+  const names = { rectangle: ["rectangle", "rect\u00E1ngulo"], parallelogram: ["parallelogram", "paralelogramo"], triangle: ["triangle", "tri\u00E1ngulo"], trapezoid: ["trapezoid", "trapecio"] }[d.shape];
+  const extra = [];
+  if (dm.slant !== undefined) extra.push(tr(lang, `The slanted side is ${withUnit(dm.slant, unit, lang)}.`, `El lado inclinado mide ${withUnit(dm.slant, unit, lang)}.`));
+  if (split) {
+    extra.push(
+      tr(
+        lang,
+        `A line splits the base into ${withUnit(split[0], unit, lang)} and ${withUnit(split[1], unit, lang)}, so the rectangle is two smaller rectangles: ${minus(clean(h))} \u00D7 ${minus(clean(split[0]))} and ${minus(clean(h))} \u00D7 ${minus(clean(split[1]))}.`,
+        `Una l\u00EDnea divide la base en ${withUnit(split[0], unit, lang)} y ${withUnit(split[1], unit, lang)}, as\u00ED que el rect\u00E1ngulo son dos rect\u00E1ngulos m\u00E1s peque\u00F1os: ${minus(clean(h))} \u00D7 ${minus(clean(split[0]))} y ${minus(clean(h))} \u00D7 ${minus(clean(split[1]))}.`,
+      ),
+    );
+  }
+  if (cut && d.shape === "parallelogram") extra.push(tr(lang, "The triangle on the left is cut off and slid to the right end, which makes a rectangle with the same base and height.", "El tri\u00E1ngulo de la izquierda se corta y se desliza al extremo derecho, y forma un rect\u00E1ngulo con la misma base y altura."));
+  if (cut && d.shape === "triangle") extra.push(tr(lang, "A dashed rectangle with the same base and height shows the triangle is half of it.", "Un rect\u00E1ngulo punteado con la misma base y altura muestra que el tri\u00E1ngulo es la mitad."));
   return {
     h: bottom + 40,
     body: out.join(""),
-    desc: tr(lang, `Area model: a ${names[0]} with ${dimsText}.${slide}`, `Modelo de área: un ${names[1]} con ${dimsText}.${slide}`),
+    desc: tr(lang, `Area model: a ${names[0]} with ${dimsText}. ${extra.join(" ")}`.trim(), `Modelo de \u00E1rea: un ${names[1]} con ${dimsText}. ${extra.join(" ")}`.trim()),
   };
 }
 
 // ---------------------------------------------------------------- grid (bead / ten-frame / 10x10)
 export function renderGrid(d, { lang }) {
+  assertKeys(d, ["rows", "cols", "filled", "groupSize", "label"], 'model "grid" data');
   need(d, "grid", "rows", "cols", "filled");
   const rows = int(d, "grid", "rows", 1, 12);
   const cols = int(d, "grid", "cols", 1, 12);
@@ -132,6 +182,7 @@ export function renderGrid(d, { lang }) {
 
 // ---------------------------------------------------------------- coord
 export function renderCoord(d, { lang }) {
+  assertKeys(d, ["xmax", "ymax", "points", "quadrants"], 'model "coord" data');
   need(d, "coord", "xmax", "ymax");
   const xmax = int(d, "coord", "xmax", 1, 20);
   const ymax = int(d, "coord", "ymax", 1, 20);
@@ -167,6 +218,7 @@ export function renderCoord(d, { lang }) {
   const pts = d.points ?? [];
   const pd = [];
   pts.forEach((p, k) => {
+    assertKeys(p, ["x", "y", "label"], `model "coord" data.points[${k}]`);
     if (typeof p.x !== "number" || typeof p.y !== "number" || Math.abs(p.x) > xmax || Math.abs(p.y) > ymax || (!quad && (p.x < 0 || p.y < 0))) {
       throw new Error(`model "coord": points[${k}] (${p.x}, ${p.y}) is outside the plane`);
     }
@@ -187,6 +239,7 @@ export function renderCoord(d, { lang }) {
 
 // ---------------------------------------------------------------- balance
 export function renderBalance(d, { lang }) {
+  assertKeys(d, ["left", "right", "unknown"], 'model "balance" data');
   need(d, "balance", "left", "right");
   for (const side of ["left", "right"]) {
     if (!Array.isArray(d[side]) || d[side].length < 1 || d[side].length > 6) throw new Error(`model "balance": data.${side} needs 1 to 6 items`);

@@ -63,6 +63,30 @@ export function need(data, kind, ...fields) {
   }
 }
 
+/** Reject any key the contract does not name: a typo or an invented key must fail loudly, not be ignored. */
+export function assertKeys(obj, allowed, where) {
+  if (obj === null || typeof obj !== "object" || Array.isArray(obj)) return;
+  for (const key of Object.keys(obj)) {
+    if (!allowed.includes(key)) {
+      throw new Error(`${where}: unrecognized key "${key}" (allowed: ${allowed.join(", ")})`);
+    }
+  }
+}
+
+/** Greedy word wrap by character count (labels are short; this avoids measuring fonts). */
+export function wrap(s, max) {
+  const out = [];
+  let line = "";
+  for (const word of String(s).split(" ")) {
+    if (line && `${line} ${word}`.length > max) {
+      out.push(line);
+      line = word;
+    } else line = line ? `${line} ${word}` : word;
+  }
+  if (line) out.push(line);
+  return out;
+}
+
 export function int(data, kind, field, min, max) {
   const v = data[field];
   if (!Number.isInteger(v) || v < min || v > max) {
