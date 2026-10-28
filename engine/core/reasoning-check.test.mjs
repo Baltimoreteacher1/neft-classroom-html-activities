@@ -372,7 +372,7 @@ test("whole-class Write About the Math: every writing box gets the control, and 
 
   boxes[2].value = "Both quantities are multiplied by the same number.";
   boxes[2].dispatchEvent(new window.Event("input", { bubbles: true }));
-  [...document.querySelectorAll("button")].find((b) => b.textContent === "Save My Writing").click();
+  [...document.querySelectorAll("button")].find((b) => b.textContent === "Save my writing").click();
   assert.deepEqual(submitted, [1, 3], "saving is unchanged by the control");
   await settle();
   assert.ok(document.querySelector("[data-strategy-gallery]"), "sample solutions are offered after saving");

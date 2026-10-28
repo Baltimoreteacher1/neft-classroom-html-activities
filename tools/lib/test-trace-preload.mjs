@@ -12,8 +12,9 @@
 import childProcess from "node:child_process";
 import fs from "node:fs";
 import moduleApi, { registerHooks, syncBuiltinESMExports } from "node:module";
+import { tmpdir } from "node:os";
 import { basename, isAbsolute, relative, resolve } from "node:path";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import { promisify } from "node:util";
 import workerThreads from "node:worker_threads";
 import { commandReads } from "./test-trace-commands.mjs";
@@ -45,7 +46,7 @@ const FILE_READS = [
 const DIR_READS = ["readdirSync", "readdir", "opendirSync", "opendir", "cpSync", "cp"];
 const SPAWNERS = ["spawn", "spawnSync", "exec", "execSync", "execFile", "execFileSync", "fork"];
 
-function install() {
+async function install() {
   const files = new Set();
   const dirs = new Set();
   let wide = null;
@@ -212,12 +213,27 @@ function install() {
   };
   syncBuiltinESMExports();
 
-  registerHooks({
+  const hooks = registerHooks({
     load(url, context, nextLoad) {
       if (url.startsWith("file:")) noteFile(new URL(url));
       return nextLoad(url, context);
     },
   });
+  // KNOWN NODE DEFECT (reproduced on 22.16, 22.20, 22.22, 23.11 and 24.11): once ANY
+  // module.registerHooks() hook is installed — even a pass-through — a CommonJS file
+  // that require()s an ES module which itself imports a sibling throws
+  // ERR_VM_MODULE_LINK_FAILURE ("request for './x.js' is not in cache / not linked").
+  // jsdom 30 does exactly that (html-encoding-sniffer -> @exodus/bytes), so every
+  // gated test that touches jsdom died here, not in its own code, and the whole
+  // `test` check was red. Probe for the defect with a throwaway module graph; if it
+  // is present, drop the hook and call the trace untrustworthy (wide), which makes
+  // the scoper run the test unconditionally — slower, never less safe.
+  if (!(await moduleGraphLoadsWithHooks())) {
+    try {
+      hooks.deregister();
+    } catch {}
+    widen("module loads cannot be traced on this Node (registerHooks breaks require(esm))");
+  }
   if (process.argv[1]) noteFile(process.argv[1]);
 
   process.on("exit", () => {
@@ -237,4 +253,24 @@ function install() {
   });
 }
 
-if (OUT && ROOT) install();
+/**
+ * True when an ESM-imported CJS file that require()s an ES module (which imports a
+ * sibling) still loads under the installed hook. The shape matters: this is the exact
+ * path jsdom takes, and a plain CJS-to-ESM require does NOT reproduce the defect.
+ */
+async function moduleGraphLoadsWithHooks() {
+  let dir = null;
+  try {
+    dir = fs.mkdtempSync(`${tmpdir()}/qa-trace-probe-`);
+    fs.writeFileSync(`${dir}/c.mjs`, "export const c = 1;\n");
+    fs.writeFileSync(`${dir}/b.mjs`, 'import { c } from "./c.mjs";\nexport const b = c + 1;\n');
+    fs.writeFileSync(`${dir}/a.cjs`, 'module.exports = require("./b.mjs");\n');
+    return (await import(pathToFileURL(`${dir}/a.cjs`).href)).default.b === 2;
+  } catch {
+    return false;
+  } finally {
+    if (dir) fs.rmSync(dir, { recursive: true, force: true });
+  }
+}
+
+if (OUT && ROOT) await install();

@@ -478,7 +478,7 @@ export function renderFillTable(container, config) {
 
   const checkBtn = document.createElement("button");
   checkBtn.className = "btn btn-primary mt-4";
-  checkBtn.textContent = "Check Table";
+  checkBtn.textContent = "Check table";
 
   let completed = false;
 

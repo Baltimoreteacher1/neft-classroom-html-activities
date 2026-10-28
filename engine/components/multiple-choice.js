@@ -1,4 +1,5 @@
 import { choiceOrderFor } from "../core/choice-order.js";
+import { AUTHORED_BOILERPLATE, missCoach } from "../core/copy-dictionary.js";
 import { stackContent } from "../core/i18n.js";
 import { diagnoseChoice, misconceptionLabel, studentExplanation } from "../core/misconceptions.js";
 import { compareYourWorkFor } from "../core/notebook-prompt.js";
@@ -9,13 +10,7 @@ const LETTERS = ["A", "B", "C", "D", "E", "F"];
 // distractor. These exact strings are templated across hundreds of items, so
 // when one of them is what an author left, an inferred diagnosis is strictly
 // more useful and takes precedence. Substantive authored feedback still wins.
-const BOILERPLATE_FEEDBACK = new Set([
-  "Check your operation. Re-read what the problem asks.",
-  "Double-check: verify the math step-by-step against the question.",
-  "Re-read the problem carefully and try again.",
-  "Take another look and try again.",
-  "Not quite — try again.",
-]);
+const BOILERPLATE_FEEDBACK = new Set(AUTHORED_BOILERPLATE);
 
 const MC_STYLE_ID = "mc-enhancements-styles";
 
@@ -340,12 +335,12 @@ export function renderMultipleChoice(container, opts) {
   const checkBtn = document.createElement("button");
   checkBtn.type = "button";
   checkBtn.className = "btn btn-primary btn-check-one";
-  checkBtn.textContent = "Check Answer";
+  checkBtn.textContent = "Check answer";
 
   const tryAgainBtn = document.createElement("button");
   tryAgainBtn.type = "button";
   tryAgainBtn.className = "btn btn-secondary btn-try-again";
-  tryAgainBtn.textContent = "Try Again";
+  tryAgainBtn.textContent = "Try again";
   tryAgainBtn.style.display = "none";
 
   let wrongAttempts = 0;
@@ -405,7 +400,7 @@ export function renderMultipleChoice(container, opts) {
         const authored = (Array.isArray(choiceFeedback) && choiceFeedback[selected]) || "";
         const useful = authored && !BOILERPLATE_FEEDBACK.has(authored.trim());
         const coach = useful ? authored : diagnosis?.student || authored || hint || scaffold || "";
-        fbMsg = coach ? `Not quite. ${coach}` : "Not quite — take another look and try again.";
+        fbMsg = coach ? `Not quite. ${coach}` : missCoach("choice", "en");
         // The misconception table is the one coaching source that ships with a
         // Spanish lane (`studentEs`), and only when the diagnosis is what we
         // actually showed — authored per-choice feedback outranks it above, and
@@ -430,7 +425,7 @@ export function renderMultipleChoice(container, opts) {
           ? coachEs && coachEs !== coach
             ? `No exactamente. ${coachEs}`
             : undefined
-          : "No exactamente — míralo otra vez e inténtalo de nuevo.";
+          : missCoach("choice", "es");
         tryAgainBtn.style.display = "inline-flex";
       }
     }

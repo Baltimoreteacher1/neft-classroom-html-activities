@@ -42,6 +42,18 @@ function wireDisk(w) {
   };
 }
 const tick = (ms = 20) => new Promise((r) => setTimeout(r, ms));
+// Wait for something to exist instead of guessing how long a render takes. A fixed
+// tick(120) passed alone and failed under the gate's parallel load (the panel had not
+// rendered yet), so the assertion below read null. Bounded, and it names what never came.
+const until = async (find, what, limitMs = 8000) => {
+  const end = Date.now() + limitMs;
+  for (;;) {
+    const found = find();
+    if (found) return found;
+    if (Date.now() > end) throw new Error(`timed out after ${limitMs}ms waiting for ${what}`);
+    await tick(25);
+  }
+};
 function evalEwl(w, files) {
   for (const f of files) w.eval(readFileSync(rel(`assets/ewl/${f}`), "utf8"));
 }
@@ -183,9 +195,8 @@ export async function domTests(ref, plan, cfg, G, C) {
       refReady: () => true,
     });
     host.querySelector('[data-stage="check"]').click();
-    await tick(120);
-    const codeForm = host.querySelector(".ewlc-coderow");
-    host.querySelector("#ewlc-code").value = "4821";
+    const codeForm = await until(() => host.querySelector(".ewlc-coderow"), ".ewlc-coderow");
+    (await until(() => host.querySelector("#ewlc-code"), "#ewlc-code")).value = "4821";
     codeForm.dispatchEvent(new w.Event("submit", { bubbles: true, cancelable: true }));
     const wanted = C.buildItems(
       G,

@@ -1,3 +1,5 @@
+import { ico } from "./icons.js";
+
 // Word-problem annotation — lets students mark up the text of a word problem the
 // way they would on paper: highlight key numbers, underline the question, bold a
 // keyword. Active reading is a core math-literacy move (UIFR), so every rendered
@@ -184,7 +186,7 @@ function buildDock() {
   toggle.className = "annot-dock-toggle";
   toggle.setAttribute("aria-expanded", "false");
   toggle.setAttribute("aria-label", "Mark up this page — highlight, underline, bold");
-  toggle.innerHTML = '<span aria-hidden="true">🖍️</span>';
+  toggle.innerHTML = `<span aria-hidden="true">${ico("🖍️")}</span>`;
   host.append(toggle);
 
   const panel = document.createElement("div");

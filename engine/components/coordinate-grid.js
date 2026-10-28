@@ -191,7 +191,7 @@ export function renderCoordinateGrid(container, config = {}) {
     const left = targets.length - placedPoints.length;
     const done = left <= 0;
     instrTxt.textContent = done
-      ? "All points plotted — now press Check Points."
+      ? "All points plotted — now press Check points."
       : `${left} ${left === 1 ? "point" : "points"} left to plot`;
     instrTxt.classList.toggle("is-done", done);
   }
@@ -379,7 +379,7 @@ export function renderCoordinateGrid(container, config = {}) {
 
   const checkBtn = document.createElement("button");
   checkBtn.className = "btn btn-primary mt-4 cgrid-check";
-  checkBtn.textContent = "Check Points";
+  checkBtn.textContent = "Check points";
   let done = false;
 
   checkBtn.addEventListener("click", () => {

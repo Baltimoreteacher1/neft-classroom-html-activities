@@ -106,7 +106,7 @@ export function renderErrorAnalysis(
 
   const checkBtn = document.createElement("button");
   checkBtn.className = "btn btn-primary mt-4 ea-check-btn";
-  checkBtn.textContent = "Check My Analysis";
+  checkBtn.textContent = "Check my analysis";
   checkBtn.style.display = "none";
   wrapper.append(checkBtn);
 

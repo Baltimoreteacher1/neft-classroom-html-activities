@@ -11,6 +11,7 @@
 // the later stages, drew pictures guessed from the step text, and told
 // students to "try the practice problems below" when there was nothing below.
 
+import { missCoach } from "./copy-dictionary.js";
 import { mathHtml, numericValue } from "./small-group-build-figure-kit.js";
 import { figureMarkup } from "./small-group-build-figures.js";
 import { biHtml, el, esc, sectionHeading } from "./small-group-ui.js";
@@ -109,7 +110,7 @@ function askStep(step, index, onChecked) {
       }
       misses++;
       fb.className = "sgp-step-fb is-wrong";
-      fb.textContent = misses >= 2 ? "Not yet — tap Show me." : "Not yet. Try again.";
+      fb.textContent = misses >= 2 ? "Not yet — tap Show me." : missCoach("answer", "en");
       if (misses >= 2 && !row.querySelector(".sgp-showme")) {
         const show = revealButton("Show me", () => {
           row.remove();

@@ -1,3 +1,4 @@
+import { ico } from "./icons.js";
 // focus-mode.js — Clean, native distraction-free Focus Mode across whole-group lessons,
 // small-group studios, interactive labs, and math tools.
 
@@ -217,7 +218,7 @@ export function mountUniversalFocusButton() {
     fab.setAttribute("data-nt-focus-toggle", "");
     fab.setAttribute("aria-pressed", "false");
     fab.title = "Hide every other button and menu — Esc brings them back";
-    fab.innerHTML = `<span aria-hidden="true">🙈</span> <span class="nt-focus-label">Hide buttons</span>`;
+    fab.innerHTML = `<span aria-hidden="true">${ico("🙈")}</span> <span class="nt-focus-label">Hide buttons</span>`;
     fab.addEventListener("click", () => toggleFocusMode());
     document.body.appendChild(fab);
   }

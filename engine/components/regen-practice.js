@@ -3,6 +3,7 @@
 //   item: { stem, answer, choices?, correctIndex?, visual?, difficulty? }
 //   returns null (attaches nothing) when the item can't be safely regenerated.
 
+import { missCoach } from "../core/copy-dictionary.js";
 import { mountSymbolPad, needsSymbolPad } from "../core/symbol-pad.js";
 import { canRegenerate, regenerate } from "./problem-generator.js";
 
@@ -133,7 +134,7 @@ export function attachRegenPractice(container, item, opts = {}) {
         streak = 0;
         streakEl.textContent = "";
         fb.className = "regen-fb no";
-        fb.textContent = "Not quite — try again.";
+        fb.textContent = missCoach("answer", "en");
       };
 
       if (hasChoices) {

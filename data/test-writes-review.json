@@ -2,6 +2,16 @@
   "_doc": "Every test file that performs filesystem writes, with a reviewed statement of where those writes land and why that is safe. Enforced by tools/validate-test-writes.mjs: a writing test without an entry fails, and an entry whose file is gone or no longer writes fails. Written after two same-day incidents (2026-09-05): the cartridge self-test clobbered the real neft-library artifact on every npm test, and a sandbox test overwrote six real lesson configs when a refactor broke its generator's root redirection.",
   "entries": [
     {
+      "file": "tools/validate-math-notation.test.mjs",
+      "targets": "tmpdir",
+      "reason": "seeds defects into throwaway lesson trees created with mkdtempSync(join(tmpdir(), 'math-notation-')); the real lesson configs are only read, by the final real-site case"
+    },
+    {
+      "file": "tools/validate-microcopy.test.mjs",
+      "targets": "tmpdir",
+      "reason": "seeds defects into throwaway lesson and engine trees created with mkdtempSync(join(tmpdir(), 'microcopy-')); the real configs and engine are only read, by the final real-site case"
+    },
+    {
       "file": "tools/reveal-document-refresh.test.mjs",
       "targets": "tmpdir",
       "reason": "All synthetic masters, destinations, conflict fixtures and cleanup stay inside one mkdtempSync-derived temporary directory; the test never writes actual curriculum resources."
@@ -120,6 +130,21 @@
       "file": "tools/access-teacher-insights.test.mjs",
       "targets": "tmpdir",
       "reason": "the station-card generator test writes its output only under mkdtempSync(join(tmpdir(), \"station-\")); no repo file is written"
+    },
+    {
+      "file": "tools/design-tokens.test.mjs",
+      "targets": "tmpdir",
+      "reason": "Every write goes into one mkdtempSync directory under os.tmpdir(): a mutated copy of tokens.json, the generated CSS and a copy of the style guide. The real script is pointed at them through the DS_TOKENS_SRC/OUT/GUIDE overrides, so the committed tokens, generated CSS and guide are never written."
+    },
+    {
+      "file": "tools/test-trace-preload-esm.test.mjs",
+      "targets": "tmpdir",
+      "reason": "Writes a throwaway CJS/ESM module graph, a driver script and the tracer output into one mkdtempSync directory under os.tmpdir(), runs the preload against it, then removes it. The only repo path touched is package.json, and only read."
+    },
+    {
+      "file": "tools/validate-palette.test.mjs",
+      "targets": "tmpdir",
+      "reason": "Every write goes into mkdtempSync directories under os.tmpdir(): small synthetic trees (a manifest, an engine file, a lesson page) with and without a seeded purple literal, which the real gate is pointed at through --root. The repo tree is only read, and the browser controls use page.setContent, so nothing is written."
     }
   ]
 }

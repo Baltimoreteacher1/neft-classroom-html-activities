@@ -844,9 +844,9 @@ export function injectSmallGroupStyles(accent) {
     .sg-tool-instance{color:var(--sg-ink);font-size:13px;font-weight:700}
     /* Per-item teacher lens: hidden for students, revealed by the
        authenticated teacher flow adding body.sg-is-teacher. */
-    .sg-lens{display:none;margin-top:12px;padding:10px 12px;border-radius:10px;background:color-mix(in srgb, var(--sg-accent, #6b5b95) 8%, var(--sg-card, #fff));border:1px dashed color-mix(in srgb, var(--sg-accent, #6b5b95) 45%, transparent)}
+    .sg-lens{display:none;margin-top:12px;padding:10px 12px;border-radius:10px;background:color-mix(in srgb, var(--sg-accent, #17324d) 8%, var(--sg-card, #fff));border:1px dashed color-mix(in srgb, var(--sg-accent, #17324d) 45%, transparent)}
     body.sg-is-teacher .sg-lens{display:block}
-    .sg-lens-tag{font-size:14px;font-weight:800;letter-spacing:0;text-transform:none;color:var(--sg-accent-ink, #4a3f6b);margin-bottom:6px}
+    .sg-lens-tag{font-size:14px;font-weight:800;letter-spacing:0;text-transform:none;color:var(--sg-accent-ink, #17324d);margin-bottom:6px}
     .sg-lens-row{display:flex;flex-direction:column;gap:2px;padding:5px 0;border-top:1px solid color-mix(in srgb, var(--sg-line, #d9dde5) 60%, transparent);font-size:14px}
     .sg-lens-row b{color:var(--sg-ink, #232831)}
     .sg-lens-row span{color:var(--sg-muted, #5a6170)}

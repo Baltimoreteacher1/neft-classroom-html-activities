@@ -43,6 +43,7 @@ import { mountCertificateDownload } from "./certificate-export.js";
 import { mountChalkAnnotations } from "./chalk-annotate.js";
 import { choiceOrderFor } from "./choice-order.js";
 import { deriveCommonMistake, deriveErrorExample } from "./content-enrichment.js";
+import { missCoach } from "./copy-dictionary.js";
 import { mountDiscussionMoment } from "./discourse.js";
 import { extractDivisionDiagram } from "./division-helper.js";
 import { getFeedbackMode, MODES, mountFeedbackModeToggle } from "./feedback-mode.js";
@@ -67,6 +68,7 @@ import {
   stackHtml,
   t,
 } from "./i18n.js";
+import { ico } from "./icons.js";
 import { attachImageZoom, isLightboxOpen, observeContentImageZoom } from "./image-zoom.js";
 import {
   analyzeEvidence,
@@ -79,7 +81,7 @@ import { interactiveVisualHost, mountInteractiveVisuals } from "./interactive-vi
 import { mountLevel3Launch } from "./level3-launch.js";
 import { getLevel, levelOverride, mountLevelSelector } from "./levels.js";
 import { augmentVocabWithGlossary } from "./math-glossary.js";
-import { renderMathText } from "./math-typography.js";
+import { renderMathText, typesetPlain } from "./math-typography.js";
 import { checkIntervention, interventionFor } from "./misconception-interventions.js";
 import {
   detectMisconception,
@@ -853,7 +855,7 @@ function renderTurnAndTalk(host, prompt, state, phaseId, onDone, config) {
   // Level 1 (support): a "Start here" kernel + a word-bank chip strip. Both are
   // optional — older configs without these fields simply render nothing here.
   const kernelHtml = prompt.kernel
-    ? `<p style="margin:0 0 var(--sp-3); font-weight:500;"><span style="display:inline-block; font-weight:700; color:var(--coral); margin-right:var(--sp-2);">Start here:</span>${esc(prompt.kernel)}</p>`
+    ? `<p style="margin:0 0 var(--sp-3); font-weight:500;"><span style="display:inline-block; font-weight:700; color:var(--coral-ink, var(--coral)); margin-right:var(--sp-2);">Start here:</span>${esc(prompt.kernel)}</p>`
     : "";
   // Academic vocabulary belongs IN the talk, not just in the Vocab tab: when a
   // prompt authors no word bank, hand students this lesson's own math terms so
@@ -939,7 +941,7 @@ function renderTurnAndTalk(host, prompt, state, phaseId, onDone, config) {
   card.innerHTML = `
     <div style="display:flex; align-items:center; flex-wrap:wrap; gap:var(--sp-2); margin-bottom:var(--sp-2);">
       <span style="font-size:1.3rem;" aria-hidden="true">🗣️</span>
-      <h4 id="${uid}-title" style="color:var(--coral); margin:0;">Turn &amp; Talk</h4>
+      <h4 id="${uid}-title" style="color:var(--coral-ink, var(--coral)); margin:0;">Turn &amp; Talk</h4>
       <span class="badge badge-teal" style="font-size:.78rem;">🅰️ shares first</span>
       <span class="badge badge-amber" style="font-size:.78rem;">🅱️ goes next</span>
     </div>
@@ -985,7 +987,7 @@ function renderTurnAndTalk(host, prompt, state, phaseId, onDone, config) {
     const timerLabel = document.createElement("span");
     timerLabel.setAttribute("role", "timer");
     timerLabel.setAttribute("aria-live", "polite");
-    timerLabel.style.cssText = "font-weight:700; color:var(--coral);";
+    timerLabel.style.cssText = "font-weight:700; color:var(--coral-ink, var(--coral));";
 
     window.__ntTalkTimer = window.__ntTalkTimer || {
       isRunning: false,
@@ -2086,7 +2088,7 @@ function renderShowYourWork(host, config, state) {
     talk.style.cssText =
       "margin-top:var(--sp-4); padding:var(--sp-3); border-radius:var(--radius-md,12px); background:rgba(217,121,93,0.08); border:1px solid rgba(217,121,93,0.28);";
     talk.innerHTML =
-      `<div style="font-weight:700; color:var(--coral); margin-bottom:var(--sp-2);">🗣️ Turn &amp; Talk</div>` +
+      `<div style="font-weight:700; color:var(--coral-ink, var(--coral)); margin-bottom:var(--sp-2);">🗣️ Turn &amp; Talk</div>` +
       `<p style="margin:0 0 var(--sp-2); font-weight:500;">${esc(tt.question)}</p>` +
       (stems.length
         ? `<div style="font-size:0.9rem; color:var(--muted);">Try starting with: ${stems
@@ -2655,7 +2657,7 @@ function renderObjectives(el, config, state, opts = {}) {
   block.innerHTML =
     card({
       cardClass: "card-teal",
-      ink: "var(--teal-ink)",
+      ink: "var(--ds-primary)",
       label: review ? "Content Objective — Achieved" : "Content Objective",
       key: "content",
       text: contentHtml,
@@ -2675,7 +2677,7 @@ function renderObjectives(el, config, state, opts = {}) {
     }) +
     card({
       cardClass: "card-coral",
-      ink: "var(--coral)",
+      ink: "var(--ds-primary)",
       label: review ? "Language Objective — Achieved" : "Language Objective",
       key: "language",
       text: languageHtml,
@@ -4016,7 +4018,7 @@ function renderLaunchPhase(el, state, ctx, config, opts = {}) {
 
     const wonderCard = document.createElement("div");
     wonderCard.className = "card card-coral";
-    wonderCard.innerHTML = `<h4 style="color:var(--coral); margin-bottom:var(--sp-3);">🤔 I Wonder...</h4>
+    wonderCard.innerHTML = `<h4 style="color:var(--coral-ink, var(--coral)); margin-bottom:var(--sp-3);">🤔 I Wonder...</h4>
       ${(cfg.wonderPrompts || []).map((p) => `<div class="sentence-frame" style="margin-bottom:var(--sp-2); border-color:rgba(217,121,93,0.25); background:rgba(217,121,93,0.06);"><span style="font-weight:500;">${esc(p)}</span></div>`).join("")}`;
     wonderTA = document.createElement("textarea");
     wonderTA.className = "text-input";
@@ -4384,18 +4386,18 @@ function renderExplorePhase(el, state, ctx, config, opts = {}) {
 
 // ── Phase 4: Practice (adaptive) ──
 const TIER_LABELS = {
-  level1: { name: "🟢 Level 1 (Scaffolded)", badge: "badge-teal" },
-  core: { name: "🔵 Level 2 (On-Level)", badge: "badge-amber" },
-  level2: { name: "🟣 Level 3 (Challenge)", badge: "badge-navy" },
+  level1: { name: "Level 1 (Scaffolded)", badge: "badge-teal" },
+  core: { name: "Level 2 (On-Level)", badge: "badge-amber" },
+  level2: { name: "Level 3 (Challenge)", badge: "badge-navy" },
 };
 
 // Leveled coaching register per tier — the same voice contract the
 // small-group studio uses (supportive build / steady core / skeptic press).
 // Chrome only; the problems themselves are untouched.
 const TIER_VOICE = {
-  level1: "🟢 Step-by-step with hints — build your confidence one part at a time.",
-  core: "🔵 Standard grade-level practice — solve, check, and explain your steps.",
-  level2: "🟣 Stretch challenge & error analysis — test your deepest understanding.",
+  level1: "Step-by-step with hints — build your confidence one part at a time.",
+  core: "Standard grade-level practice — solve, check, and explain your steps.",
+  level2: "Stretch challenge & error analysis — test your deepest understanding.",
 };
 
 // Normalize a typed math answer for the "is this simple enough to mark wrong?"
@@ -4677,7 +4679,8 @@ function renderSkillProbe(reveal, move, { answer, why, onSettled }) {
     }
     settle(false, `<strong>${esc(move.accept[0])}.</strong> ${esc(move.then)}`);
   });
-  skip.addEventListener("click", () => settle(false, "<strong>❌ Not quite.</strong>"));
+  skip.addEventListener("click", () =>
+    settle(false, `<strong>${esc(move.accept[0])}.</strong> ${esc(move.then)}`));
   input.focus?.();
 }
 
@@ -4736,13 +4739,13 @@ function renderSkillPractice(host, config, state) {
     // grader reads, so no interaction change, just the missing information.
     const choicesHtml = Array.isArray(it.choices)
       ? `<ul class="sp-choices" style="margin:var(--sp-2,8px) 0 var(--sp-3,12px); padding-left:1.4rem; line-height:1.7;">${it.choices
-          .map((c) => `<li>${esc(String(c))}</li>`)
+          .map((c) => `<li>${typesetPlain(esc(String(c)))}</li>`)
           .join("")}</ul>`
       : "";
     const wrap = document.createElement("div");
     wrap.className = "sp-problem";
     wrap.innerHTML = `
-      <p class="sp-stem"><span class="sp-num" aria-hidden="true">${i + 1}</span><span class="sp-stem-text" data-annotate="word-problem"><span class="sr-only">Problem ${i + 1} of ${total}. </span>${esc(it.stem)}</span></p>
+      <p class="sp-stem"><span class="sp-num" aria-hidden="true">${i + 1}</span><span class="sp-stem-text" data-annotate="word-problem"><span class="sr-only">Problem ${i + 1} of ${total}. </span>${typesetPlain(esc(it.stem))}</span></p>
       ${choicesHtml}
       <textarea class="sp-work text-input" rows="3" placeholder="Show your steps here…" aria-label="Problem ${i + 1}: show your steps"></textarea>
       <div class="sp-row">
@@ -5002,7 +5005,7 @@ function renderPracticePhase(el, state, ctx, config, opts = {}) {
   instructionCallout(
     el,
     "🎯",
-    "<strong>Pick your level:</strong> 🟢 guided help · 🔵 on-level · 🟣 challenge · ⚡ adjusts as you answer.",
+    "<strong>Pick your level:</strong> Level 1 has guided help · Level 2 is on-level · Level 3 is a challenge · Adaptive adjusts as you answer.",
   );
 
   // Optional interactive "practice lab(s)" (factor-tree-lab, power-builder,
@@ -6359,7 +6362,9 @@ function mstarChoiceBlock(host, state, opts) {
     // `is-incorrect` is the class the stylesheet defines; `is-wrong` styled
     // nothing. `visible` is what makes the box appear at all.
     out.className = `problem-check-result visible ${right ? "is-correct" : "is-incorrect"}`;
-    out.innerHTML = right ? `✓ Correct. ${opts.explanation || ""}` : "✗ Not yet — try again.";
+    out.innerHTML = right
+      ? `✓ Correct. ${opts.explanation || ""}`
+      : `✗ ${missCoach("choice", "en")}`;
   });
 
   row.append(btn);
@@ -6802,7 +6807,7 @@ export function renderActSteps(el, state, phaseIdx, steps) {
     // teaching moment in the act did.
     chip.dataset.stepKey = step.key;
     chip.setAttribute("role", "tab");
-    chip.innerHTML = `<span class="act-step-num">${i + 1}</span>${step.icon} ${esc(step.label)}`;
+    chip.innerHTML = `<span class="act-step-num">${i + 1}</span>${ico(step.icon)} ${esc(step.label)}`;
     chip.addEventListener("click", () => show(i, true));
     strip.append(chip);
     chips.push(chip);
@@ -6824,7 +6829,7 @@ export function renderActSteps(el, state, phaseIdx, steps) {
       next.className = "btn btn-primary";
       next.style.cssText =
         "padding:12px 26px; font-weight:800; border-radius:12px; background:#0f766e; color:#ffffff;";
-      next.innerHTML = `Next: ${steps[i + 1].icon} ${esc(steps[i + 1].label)} →`;
+      next.innerHTML = `Next: ${ico(steps[i + 1].icon)} ${esc(steps[i + 1].label)} →`;
       next.addEventListener("click", () => show(i + 1, true));
       row.append(next);
       host.append(row);

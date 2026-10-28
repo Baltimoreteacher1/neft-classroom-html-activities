@@ -12,6 +12,7 @@
 // around it — strategy pickers, a readiness pulse, a level ladder, a consensus
 // protocol, a coach — that put six or more buttons on every problem.
 
+import { missCoach } from "./copy-dictionary.js";
 import { mathHtml } from "./small-group-build-figure-kit.js";
 import {
   figure,
@@ -282,7 +283,9 @@ function practiceCard(it, { n, key, store, score, mode, onAnswered, model, tick 
       return;
     }
     feedback.textContent =
-      misses >= 2 ? "Not yet. Read the hint and the steps, then try again." : "Not yet. Try again.";
+      misses >= 2
+        ? "Not yet. Read the hint and the steps, then try again."
+        : missCoach("answer", "en");
     if (misses >= 2) hintText.hidden = false;
     hintBtn.hidden = !hintText.hidden;
     if (mode !== "check" && steps) stepsBtn.hidden = !steps.hidden;
@@ -540,7 +543,7 @@ function togetherStep(s, i, key, store, score, t, onDone) {
     }
     misses++;
     fb.className = "sgp-step-fb is-wrong";
-    fb.textContent = misses >= 2 ? "Not yet — tap Show me." : "Not yet. Try again.";
+    fb.textContent = misses >= 2 ? "Not yet — tap Show me." : missCoach("answer", "en");
     if (misses >= 2 && !row.querySelector(".sgp-showme")) {
       const show = revealButton("Show me", () => {
         row.remove();

@@ -10,6 +10,7 @@
 // hidden #nsr-launcher, whose panel still opens in its usual spot.
 
 import { t } from "./i18n.js";
+import { ico } from "./icons.js";
 import { isTeacherMode } from "./teacher-mode.js";
 
 export function mountUtilityMenu() {
@@ -26,7 +27,7 @@ export function mountUtilityMenu() {
   btn.setAttribute("aria-expanded", "false");
   btn.setAttribute("aria-label", t("lessonToolsMenu"));
   btn.innerHTML =
-    '<span aria-hidden="true">🧰</span><span>Tools</span>' +
+    `<span aria-hidden="true">${ico("🧰")}</span><span>Tools</span>` +
     '<span class="nt-utility-caret" aria-hidden="true">▾</span>';
 
   const pop = document.createElement("div");

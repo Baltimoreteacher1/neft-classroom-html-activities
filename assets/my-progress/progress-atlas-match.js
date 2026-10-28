@@ -49,7 +49,10 @@ var NTAnswerMatch = (function () {
   // (with optional $ prefix / % suffix). Returns null for anything else — a
   // stem like "x + 2 = 4" must never collapse to its first digit.
   const numberOf = (value) => {
+    // The lesson now DISPLAYS the true minus sign (U+2212, engine/core/math-typography.js),
+    // so a student can copy "−5" off the screen. It is the same number as "-5".
     const text = String(value ?? "")
+      .replace(/[−–]/g, "-")
       .replace(/[$,]/g, "")
       .replace(/%\s*$/, "")
       .trim();

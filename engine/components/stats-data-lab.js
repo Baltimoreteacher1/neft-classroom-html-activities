@@ -27,7 +27,7 @@ const C = {
   muted: "#54677c",
   line: "#d7e2ed",
   chipBg: "#f4f8ff",
-  mean: "#7c3aed",
+  mean: "#17324d",
 };
 
 function esc(s) {

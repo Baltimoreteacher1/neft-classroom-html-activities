@@ -222,7 +222,7 @@ export function renderStatTowers(container, cfg = {}) {
       `<span style="display:inline-flex;align-items:center;gap:6px;"><span style="width:12px;height:12px;border-radius:3px;background:${color};"></span><b style="color:${C.navy}">${name}:</b> ${val}</span>`;
     readout.innerHTML =
       chip(C.meanLine, "Mean", r2(s.mean)) +
-      chip("#6d4ad6", "Median", r2(s.median)) +
+      chip("#17324d", "Median", r2(s.median)) +
       (mode === "spread" ? chip(C.amber, "MAD", r2(s.mad)) : "") +
       `<span style="color:${C.muted}">n = ${s.n} · total = ${s.sum}${unit ? ` ${esc(unit)}` : ""}</span>`;
     if (leveled) {
