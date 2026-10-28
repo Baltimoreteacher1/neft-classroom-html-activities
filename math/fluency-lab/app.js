@@ -9,7 +9,7 @@ import {
   validateAnswer,
 } from "./problem-bank.js";
 import { adaptiveProblem, dailyPlan, diagnosticPlan, difficulty, emptyTutor, evidence, feedbackFor, findSkill, localDay, missionPlan, prerequisites, prerequisiteGraph, recommendations, recordAnswer, rememberMistake, sanitizeTutor, skillForItem, skillKey as tutorSkillKey } from "./tutor-engine.js";
-import { copiesTable, factorTreeSvg, keptPrimes, primeList } from "./factor-tree.js";
+import { copiesTable, factorTreeSvg, keptPrimes, powerGroups, primeList, treeCaption } from "./factor-tree.js";
 import { mountVisualLesson, renderModel, renderInlineProblemModel } from "./visual-lab.js";
 import { skillIdForWorld } from "./puzzle-worlds.js";
 import { transferPrompt } from "./lesson-content.js";
@@ -579,7 +579,7 @@ function renderLearn() {
   const rng = seededRandom(skill.id.length * 97 + skill.grade * 13);
   const example = Array.from({ length: 12 }, () => generateProblem(skill, rng)).reduce((best, item) => (item.steps.length > best.steps.length ? item : best));
   state.learnExample = { item: example, shown: 1 };
-  const picture = interactivePicture(example.model) || trailPicture(example.model);
+  const picture = interactivePicture({ ...example.model, worked: true }) || trailPicture(example.model);
   els.learnPanel.innerHTML = `
     <div class="learn-simple" style="--trail:${getGrade(skill.grade).color}">
       <h3 class="tr-idea">${highlightVocab(escapeHtml(t(skill.learn.rule)))}</h3>
@@ -5279,8 +5279,16 @@ const InteractiveSolver = {
             <span>3) ${t("Keep the most copies of each prime:")}</span>
             ${slots(kept, "keep", t("Kept prime"))}
           </div>
+          <div class="lcm-row lcm-powers" data-lcm-powers hidden>
+            <span>${t("Write repeats as exponents:")}</span>
+            <strong class="lcm-power-line">${powerGroups(kept).map(({ prime, count }) => (count > 1 ? `${prime}<sup>${count}</sup>` : prime)).join(" × ")}</strong>
+          </div>
           <div class="lcm-row" style="margin-top:0.5rem">
-            <span>4) ${t("Multiply the kept primes:")}</span>
+            <span>4) ${t("Work out each power:")}</span>
+            ${powerGroups(kept).map(({ prime, count, value }) => `<span class="lcm-power-item">${count > 1 ? `${prime}<sup>${count}</sup>` : prime} = <input type="text" class="lcm-prime-input" inputmode="numeric" data-target="${value}" data-group="value" style="width:56px" placeholder="?" aria-label="${t("the value of the power of {p}", { p: prime })}" /></span>`).join(" × ")}
+          </div>
+          <div class="lcm-row" style="margin-top:0.5rem">
+            <span>5) ${t("Multiply the powers:")}</span>
             <span>LCM(${a}, ${b}) = </span>
             <input type="text" class="lcm-prime-input" inputmode="numeric" data-target="${ans}" data-group="lcm-final" style="width:72px" placeholder="LCM" aria-label="LCM(${a}, ${b})" />
           </div>
@@ -5295,13 +5303,14 @@ const InteractiveSolver = {
       `;
 
       // Each group accepts its primes in any order: the next typed value is right if it is still unclaimed.
-      const claimed = { a: [], b: [], keep: [] };
-      const expected = { a: pa, b: pb, keep: kept };
+      const claimed = { a: [], b: [], keep: [], value: [] };
+      const expected = { a: pa, b: pb, keep: kept, value: powerGroups(kept).map(({ value }) => value) };
+      const powersLine = container.querySelector("[data-lcm-powers]");
       const guide = container.querySelector("[data-lcm-trees]");
       const showTrees = () => {
         if (claimed.a.length < pa.length || claimed.b.length < pb.length) return;
         guide.hidden = false;
-        guide.innerHTML = `<h4>${t("Your factor trees")}</h4><div class="ft-pair">${factorTreeSvg(a, { label: String(a) })}${factorTreeSvg(b, { label: String(b) })}</div>${copiesTable(a, b, { hideKeep: true })}`;
+        guide.innerHTML = `<h4>${t("Your factor trees")}</h4><div class="ft-pair">${factorTreeSvg(a, { label: treeCaption(a) })}${factorTreeSvg(b, { label: treeCaption(b) })}</div>${copiesTable(a, b, { hideKeep: true })}`;
       };
       container.querySelectorAll(".lcm-prime-input").forEach((inp) => {
         inp.addEventListener("input", () => {
@@ -5323,6 +5332,7 @@ const InteractiveSolver = {
             els.answerInput.value = String(ans);
             chime("good");
           } else showTrees();
+          if (group === "keep" && claimed.keep.length === kept.length) powersLine.hidden = false;
         });
       });
       return;

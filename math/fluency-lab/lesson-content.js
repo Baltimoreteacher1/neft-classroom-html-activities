@@ -1,5 +1,5 @@
 import { baseGenerator } from "./problem-bank.js";
-import { countOf, factorText, keptPrimes, primeList } from "./factor-tree.js";
+import { countOf, factorText, keptPrimes, multiplyText, primeList } from "./factor-tree.js";
 import { t } from "./i18n.js";
 
 const step = (prompt, answer, hint, explanation, kind = "number", choices = null) => ({ prompt, answers: [String(answer)], kind, choices, hint, explanation });
@@ -230,7 +230,12 @@ export function createLesson(skill, variant = 0) {
       [
         step(`Which primes multiply to make ${a}? Type them with × between, like 2 × 3.`, factorText(pa), "Split the number into two factors, then keep splitting until every circle is prime.", `${a} = ${factorText(pa)}.`, "primes"),
         step(`Which primes multiply to make ${b}?`, factorText(pb), "Use a factor tree again and stop at prime circles.", `${b} = ${factorText(pb)}.`, "primes"),
-        step(`Keep the larger count of each prime from the two trees, then multiply. What is the LCM of ${a} and ${b}?`, lcm, `For each prime, compare its copies in ${a} and ${b} (see the table) and keep the larger count. Then multiply the kept primes.`, `${primes.map((p) => `${p}: ${countOf(pa, p)} in ${a}, ${countOf(pb, p)} in ${b}, keep ${most(p)}`).join("; ")}. ${factorText(kept)} = ${lcm}, so the LCM is ${lcm}.`),
+        step(
+          `Keep the larger count of each prime from the two trees. Write repeats as exponents, like 2², then multiply. What is the LCM of ${a} and ${b}?`,
+          lcm,
+          `For each prime, compare its copies in ${a} and ${b} (see the table) and keep the larger count. Work out each power first (2² means 2 × 2 = 4), then multiply the results.`,
+          `${primes.map((p) => `${p}: ${countOf(pa, p)} in ${a}, ${countOf(pb, p)} in ${b}, keep ${most(p)}`).join("; ")}. ${multiplyText(kept)}, so the LCM is ${lcm}.`,
+        ),
       ],
     );
   }

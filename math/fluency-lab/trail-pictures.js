@@ -1,4 +1,4 @@
-import { countOf, primeList } from "./factor-tree.js";
+import { countOf, factorTreeSvg, keptPrimes, parsePrimes, powerBricksHtml, powerGroups, primeList, treeCaption } from "./factor-tree.js";
 import { t } from "./i18n.js";
 import { columnSpec, verticalHtml } from "./vertical-columns.js";
 import { fillKey, isSolved, peekFill, register, splitFill, tryFill } from "./step-fill.js";
@@ -397,16 +397,24 @@ function factorLists(model) {
   return `<div class="tp-live" data-live="lists" data-find="${model.find}"><p class="tp-prompt">${prompt}</p>${row(model.a)}${row(model.b)}<p class="tp-readout" data-list-note></p></div>`;
 }
 
-// LCM by prime factorization: type each number's primes, then the copies of each prime, then keep the larger count.
+// LCM by prime factorization, in the order a learner works it:
+// type each number's primes (its factor tree grows), keep the larger count of each prime, write that power as a number,
+// then multiply the powers. A worked example (`model.worked`) shows the trees from the start; practice earns them.
 function primeTreesPicture(model) {
   const [pa, pb] = [primeList(model.a), primeList(model.b)];
   const row = (n, list) =>
-    `<p class="tp-prime-row"><strong>${n}</strong> = ${list.map((p, i) => box(p, t("prime factor {i} of {n}", { i: i + 1, n }), 'data-then="prime"')).join(" × ")}</p>`;
+    `<div class="tp-prime-block"><p class="tp-prime-row" data-prime-row="${n}"><strong>${n}</strong> = ${list.map((p, i) => box(p, t("prime factor {i} of {n}", { i: i + 1, n }), 'data-then="prime"')).join(" × ")}</p><div class="tp-tree" data-tree-for="${n}"${model.worked ? "" : " hidden"}>${factorTreeSvg(n, { label: treeCaption(n) })}</div></div>`;
   const primes = [...new Set([...pa, ...pb])].sort((x, y) => x - y);
+  const kept = keptPrimes(model.a, model.b);
   const copies = primes
-    .map((p) => `<tr><th scope="row">${p}</th><td>${box(countOf(pa, p), t("copies of {p} in {n}", { p, n: model.a }), 'data-then="copies"')}</td><td>${box(countOf(pb, p), t("copies of {p} in {n}", { p, n: model.b }), 'data-then="copies"')}</td><td>${box(Math.max(countOf(pa, p), countOf(pb, p)), t("copies of {p} to keep", { p }), 'data-then="copies"')}</td></tr>`)
+    .map((p) => {
+      const keep = Math.max(countOf(pa, p), countOf(pb, p));
+      const power = keep > 1 ? `${p}<sup>${keep}</sup>` : String(p);
+      return `<tr><th scope="row">${p}</th><td>${box(countOf(pa, p), t("copies of {p} in {n}", { p, n: model.a }), 'data-then="copies"')}</td><td>${box(countOf(pb, p), t("copies of {p} in {n}", { p, n: model.b }), 'data-then="copies"')}</td><td>${box(keep, t("copies of {p} to keep", { p }), 'data-then="keep"')}</td><td class="tp-power"><span data-power-label hidden>${power} =</span> ${box(p ** keep, t("the value of the power of {p}", { p }), 'data-then="value" disabled')}</td></tr>`;
+    })
     .join("");
-  return `<div class="tp-live" data-live="primeTrees"><p class="tp-prompt">${t("Split each number into primes, smallest first. Then keep the larger count of every prime.")}</p>${row(model.a, pa)}${row(model.b, pb)}<table class="tp-ratio"><thead><tr><th scope="col">${t("Prime")}</th><th scope="col">${t("Copies in {n}", { n: model.a })}</th><th scope="col">${t("Copies in {n}", { n: model.b })}</th><th scope="col">${t("Keep")}</th></tr></thead><tbody>${copies}</tbody></table></div>`;
+  const values = powerGroups(kept).map(({ value }) => value);
+  return `<div class="tp-live" data-live="primeTrees"><p class="tp-prompt">${t("Split each number into primes, smallest first. Then keep the larger count of every prime.")}</p>${row(model.a, pa)}${row(model.b, pb)}<table class="tp-ratio"><thead><tr><th scope="col">${t("Prime")}</th><th scope="col">${t("Copies in {n}", { n: model.a })}</th><th scope="col">${t("Copies in {n}", { n: model.b })}</th><th scope="col">${t("Keep")}</th><th scope="col">${t("Power")}</th></tr></thead><tbody>${copies}</tbody></table><p class="tp-multiply" data-multiply hidden aria-live="polite">${t("Multiply the powers:")} ${values.join(" × ")} = ${box(kept.reduce((total, x) => total * x, 1), t("the LCM of {a} and {b}", { a: model.a, b: model.b }), 'data-then="lcm"')}</p></div>`;
 }
 
 // Powers: the student types each running product.
@@ -649,8 +657,25 @@ export function handleModelInput(target) {
     }
     input.remove();
     markShared(live);
-  } else if (then === "prime" || then === "copies") {
-    live.querySelector(".tp-in:not([readonly])")?.focus();
+  } else if (then === "prime") {
+    const primeRow = input.closest("[data-prime-row]");
+    if (!primeRow.querySelector(".tp-in:not([readonly])"))
+      live.querySelector(`[data-tree-for="${primeRow.dataset.primeRow}"]`)?.removeAttribute("hidden");
+    live.querySelector(".tp-in:not([readonly]):not([disabled])")?.focus();
+  } else if (then === "copies") {
+    live.querySelector(".tp-in:not([readonly]):not([disabled])")?.focus();
+  } else if (then === "keep") {
+    const value = input.closest("tr").querySelector('[data-then="value"]');
+    input.closest("tr").querySelector("[data-power-label]").hidden = false;
+    value.disabled = false;
+    value.focus();
+  } else if (then === "value") {
+    const values = [...live.querySelectorAll('[data-then="value"]')];
+    if (values.every((box) => box.readOnly)) {
+      const multiply = live.querySelector("[data-multiply]");
+      multiply.hidden = false;
+      multiply.querySelector("input").focus();
+    } else live.querySelector(".tp-in:not([readonly]):not([disabled])")?.focus();
   } else if (then === "power") {
     const used = Number(input.dataset.used);
     const base = Number(live.dataset.base);
@@ -995,12 +1020,32 @@ function miniHops(values) {
   return `<span class="sv sv-hops" aria-hidden="true">${shown.map((value, i) => `<b class="${i === shown.length - 1 ? "last" : ""}">${typeof value === "number" ? value.toLocaleString("en-US") : value}</b>`).join("")}</span>`;
 }
 
+// LCM by prime factorization: a factor tree for "… 20 = 2 × 2 × 5", the kept powers, then the multiplication.
+const productOf = (list) => list.reduce((total, x) => total * x, 1);
+function lcmStepVisual(text) {
+  const tree = text.match(/factor tree.*?\b(\d+) = (\d+(?: × \d+)+)$/);
+  if (tree) {
+    const primes = parsePrimes(tree[2]);
+    const n = Number(tree[1]);
+    return primes && productOf(primes) === n && primes.join() === primeList(n).join()
+      ? `<div class="sv-tree">${factorTreeSvg(n)}</div>`
+      : "";
+  }
+  // The step that names the kept primes shows the bricks; only the multiply step shows what they come to.
+  const keeping = text.match(/The primes you keep: ([\d × ]+),/);
+  const multiplying = text.match(/^Multiply the kept primes: ([^=]+?) =/);
+  const primes = parsePrimes((keeping || multiplying || [])[1] ?? "");
+  return primes ? `<div class="sv-bricks">${powerBricksHtml(primes, { withTotal: Boolean(multiplying) })}</div>` : "";
+}
+
 export function stepVisual(line) {
   // Drop thousands commas (not list commas) and lead-ins such as "So" or "Size:".
   const text = String(line)
     .replace(/(\d),(\d{3})/g, "$1$2")
     .replace(/^(?:So|Check:)\s+/, "")
     .replace(/\.$/, "");
+  const lcm = lcmStepVisual(text);
+  if (lcm) return lcm;
   const start = text.match(/^Start at (-?\d+)$/);
   if (start) return miniHops([Number(start[1])]);
   const move = text.match(/^Start at (-?\d+)\. Move (\d+) (left|right)$/);

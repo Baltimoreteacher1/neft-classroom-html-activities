@@ -1,7 +1,7 @@
 import { detailSteps } from "./detail-steps.js";
 import { leakCap } from "./step-leak.js";
 import { workedSteps } from "./step-builders.js";
-import { countOf, factorText, keptPrimes, parsePrimes, primeList } from "./factor-tree.js";
+import { countOf, factorText, keptPrimes, multiplyText, parsePrimes, powerText, primeList } from "./factor-tree.js";
 
 const whole = new Intl.NumberFormat("en-US", { maximumFractionDigits: 6 });
 
@@ -122,8 +122,8 @@ function lcmPrimeSteps(a, b, answer) {
   return [
     `Build a factor tree for ${a} and stop when every branch ends in a prime. ${line(a, pa)}`,
     `Build a factor tree for ${b} the same way. ${line(b, pb)}`,
-    `For each prime, compare how many copies each number has and keep the larger count (${counts}). The primes you keep: ${factorText(kept)}.`,
-    `Multiply the kept primes: ${factorText(kept)} = ${answer}. Check that ${a} and ${b} both divide ${answer} evenly.`,
+    `For each prime, compare how many copies each number has and keep the larger count (${counts}). The primes you keep: ${factorText(kept)}, written with exponents as ${powerText(kept)}.`,
+    `Multiply the kept primes: ${multiplyText(kept)}. Check that ${a} and ${b} both divide ${answer} evenly.`,
   ];
 }
 
@@ -865,8 +865,8 @@ const generators = {
     const find = config.find || "gcf";
     const answer = find === "gcf" ? gcd(a, b) : lcm(a, b);
     return problem(`Find the ${find.toUpperCase()} of ${a} and ${b}.`, answer, {
-      hint: find === "gcf" ? "List factor pairs and find the greatest shared factor." : "Write each number as a product of primes with a factor tree, keep the most copies of each prime, then multiply.",
-      explanation: find === "gcf" ? `The GCF of ${a} and ${b} is ${answer}.` : `The LCM of ${a} and ${b} is ${answer}: keep ${factorText(keptPrimes(a, b))}, which multiply to ${answer}.`,
+      hint: find === "gcf" ? "List factor pairs and find the greatest shared factor." : "Write each number as a product of primes with a factor tree, keep the most copies of each prime (write repeats as exponents, like 2²), then multiply.",
+      explanation: find === "gcf" ? `The GCF of ${a} and ${b} is ${answer}.` : `The LCM of ${a} and ${b} is ${answer}: keep ${powerText(keptPrimes(a, b))}, and ${multiplyText(keptPrimes(a, b))}.`,
       model: find === "gcf" ? { type: "lists", a, b, find } : { type: "primeTrees", a, b, find, practice: true },
       steps: gcfLcmSteps(find, a, b, answer),
     });

@@ -5,9 +5,13 @@ import {
   copiesTable,
   factorTreeSvg,
   keptPrimes,
+  lcmMultiplyHtml,
+  multiplyText,
   parsePrimes,
+  powerText,
   primeList,
   splitPair,
+  treeCaption,
   treeOf,
 } from "../math/fluency-lab/factor-tree.js";
 import { createLesson } from "../math/fluency-lab/lesson-content.js";
@@ -17,6 +21,7 @@ import {
   seededRandom,
   validateAnswer,
 } from "../math/fluency-lab/problem-bank.js";
+import { stepVisual } from "../math/fluency-lab/trail-pictures.js";
 import { renderModel } from "../math/fluency-lab/visual-lab.js";
 
 let checks = 0;
@@ -53,6 +58,62 @@ for (let a = 2; a <= 60; a += 1) {
     check(product === bruteLcm(a, b), `kept primes of ${a},${b} give the LCM`);
   }
 }
+
+// Exponent form: re-derived from the leaves, never from the code under test. Repeats become powers, the powers
+// parse back to the same primes, and the multiplication chain ends at the true product.
+const SUP = { 2: "²", 3: "³", 4: "⁴", 5: "⁵", 6: "⁶" };
+for (const list of [
+  [2, 2, 3, 3],
+  [2, 3],
+  [2, 2, 2, 5],
+  [3, 3, 3],
+  [2, 2, 2, 2, 2],
+  [2, 3, 5, 7],
+]) {
+  const counts = new Map();
+  for (const p of list) counts.set(p, (counts.get(p) ?? 0) + 1);
+  const expected = [...counts]
+    .sort(([x], [y]) => x - y)
+    .map(([p, n]) => (n > 1 ? `${p}${SUP[n]}` : String(p)))
+    .join(" × ");
+  check(powerText(list) === expected, `powerText(${list.join(",")}) is ${expected}`);
+  check(
+    parsePrimes(powerText(list)).join() === [...list].sort((x, y) => x - y).join(),
+    `${powerText(list)} parses back to the primes`,
+  );
+  check(
+    multiplyText(list).endsWith(`= ${list.reduce((p, x) => p * x, 1)}`),
+    `multiplyText(${list.join(",")}) ends at the product`,
+  );
+}
+check(
+  multiplyText([2, 2, 3, 3]) === "2² × 3² = 4 × 9 = 36",
+  "chain writes powers, values, product",
+);
+check(multiplyText([2, 2, 2]) === "2³ = 8", "a single power skips the middle step");
+check(treeCaption(20) === "20 = 2 × 2 × 5 = 2² × 5", "tree caption shows the exponent form");
+check(treeCaption(30) === "30 = 2 × 3 × 5", "no exponent when nothing repeats");
+for (let a = 2; a <= 40; a += 1) {
+  for (let b = 2; b <= 40; b += 1) {
+    if (a === b) continue;
+    const kept = keptPrimes(a, b);
+    check(
+      lcmMultiplyHtml(a, b).includes(`= ${bruteLcm(a, b)}</p>`),
+      `multiply line of ${a},${b} ends at the LCM`,
+    );
+    check(
+      lcmMultiplyHtml(a, b, { hideResult: true }).endsWith("= ?</p>"),
+      `hidden multiply line of ${a},${b} does not print the LCM`,
+    );
+    check(kept.length > 0, "kept primes exist");
+  }
+}
+check(
+  copiesTable(12, 18).includes("2<sup>2</sup> = 4") &&
+    copiesTable(12, 18).includes("3<sup>2</sup> = 9"),
+  "table shows each kept power as a number",
+);
+check(!copiesTable(12, 18, { hideKeep: true }).includes("<sup>"), "hidden table prints no power");
 
 // Answer parsing accepts every sensible way to write a factorization and rejects look-alikes.
 const key = { kind: "primes", answers: ["2 × 2 × 3"] };
@@ -96,6 +157,30 @@ for (let i = 0; i < 400; i += 1) {
   );
   check(item.steps[3].includes(`= ${item.answers[0]}`), "last step multiplies to the answer");
   check(
+    item.steps[2].includes(powerText(keptPrimes(a, b))) &&
+      item.steps[3].includes(multiplyText(keptPrimes(a, b))),
+    "keep and multiply steps use exponents",
+  );
+  check(/exponent/i.test(item.hint), "hint mentions exponents");
+  // "Watch me solve it": each step draws its own picture, and only the last one shows the product.
+  for (const [i, n] of [
+    [0, a],
+    [1, b],
+  ])
+    check(
+      stepVisual(item.steps[i]).includes("ft-tree") === primeList(n).length > 1,
+      `step ${i + 1} draws the factor tree of ${n} unless it is prime`,
+    );
+  check(
+    stepVisual(item.steps[2]).includes("ft-brick") &&
+      !stepVisual(item.steps[2]).includes("ft-total"),
+    "keep step shows the power bricks without the product",
+  );
+  check(
+    stepVisual(item.steps[3]).includes(`<b class="ft-brick ft-total">${item.answers[0]}</b>`),
+    "multiply step shows the product",
+  );
+  check(
     item.model.type === "primeTrees" && item.model.practice === true,
     "item model is the prime-tree picture",
   );
@@ -123,7 +208,29 @@ for (let variant = 0; variant < 5; variant += 1) {
     lesson.steps.at(-1).answers[0] === String(bruteLcm(a, b)),
     `lesson ${a},${b} ends at the LCM`,
   );
-  check(lesson.steps.length === 3, "factor a, factor b, keep and multiply");
+  check(lesson.steps.length === 3, "factor a, factor b, keep the powers and multiply");
+  const keptList = keptPrimes(a, b);
+  check(
+    /exponent/i.test(lesson.steps[2].prompt) && /exponent|power/i.test(lesson.steps[2].hint),
+    "last step teaches exponents",
+  );
+  check(
+    lesson.steps[2].explanation.includes(multiplyText(keptList)),
+    "last step explains with the multiplication chain",
+  );
+  // The picture follows the steps: the Power column and the multiplication spell out the answer, so they wait for it.
+  check(
+    !renderModel(lesson.model, { step: 2 }).includes("ft-multiply"),
+    "no multiplication while answering",
+  );
+  check(
+    !renderModel(lesson.model, { step: 2 }).includes("<sup>"),
+    "no power printed while answering",
+  );
+  check(
+    renderModel(lesson.model, { step: 3 }).includes(`= ${bruteLcm(a, b)}</p>`),
+    "finished lesson shows the product",
+  );
   check(
     !copiesTable(a, b, { hideKeep: true }).includes("<td>0</td><td>0</td>"),
     "table has no empty rows",
