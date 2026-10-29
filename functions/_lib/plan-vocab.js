@@ -5355,6 +5355,18 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/curriculum/unit-4-test-practice-challenge/",
+    title: "Unit 4 Test Practice · Challenge | Grade 6 Percents",
+    category: "Hub",
+    unit: null,
+  },
+  {
+    path: "/curriculum/unit-4-test-practice/",
+    title: "Unit 4 Test Practice | Grade 6 Percents",
+    category: "Hub",
+    unit: null,
+  },
+  {
     path: "/curriculum/unit-4-test-review/",
     title: "Unit 4 Test Review | Grade 6 Optional Family Practice",
     category: "Hub",
