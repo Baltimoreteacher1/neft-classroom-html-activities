@@ -3,9 +3,9 @@
 export const COLORS = {
   blue: "#4a90d9",
   green: "#3fa36b",
-  pink: "#e0679a",
+  pink: "#D0674F",
   orange: "#f08a3c",
-  purple: "#8a5cc8",
+  purple: "#1FA6A2",
   teal: "#2aa7a0",
 };
 

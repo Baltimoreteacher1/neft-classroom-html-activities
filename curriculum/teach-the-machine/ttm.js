@@ -985,8 +985,8 @@ function renderVisualProofBuilder() {
       <line x1="80" y1="58" x2="380" y2="58" stroke="#0f172a" stroke-width="3.5"/>
       <rect x="85" y="26" width="110" height="28" rx="6" fill="#fef3c7" stroke="#b45309" stroke-width="1.5"/>
       <text x="140" y="45" text-anchor="middle" font-family="system-ui,sans-serif" font-size="13" font-weight="800" fill="#92400e">${a}x (${a} groups)</text>
-      <rect x="265" y="26" width="110" height="28" rx="6" fill="#ede9fe" stroke="#6d28d9" stroke-width="1.5"/>
-      <text x="320" y="45" text-anchor="middle" font-family="system-ui,sans-serif" font-size="13" font-weight="800" fill="#5b21b6">${totalRight} total (x = ${b})</text>
+      <rect x="265" y="26" width="110" height="28" rx="6" fill="#F7F4EC" stroke="#17324D" stroke-width="1.5"/>
+      <text x="320" y="45" text-anchor="middle" font-family="system-ui,sans-serif" font-size="13" font-weight="800" fill="#17324D">${totalRight} total (x = ${b})</text>
     </svg>`;
     caption = isEs
       ? `[Prueba visual — Balanza en equilibrio] La balanza muestra ${a}x = ${totalRight}. Para mantener el equilibrio, dividimos ambos lados entre ${a}, por lo que cada x vale ${b}.`

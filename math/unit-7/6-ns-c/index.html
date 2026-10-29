@@ -19,11 +19,11 @@
     --text:#eef6ff;
     --muted:#8faec8;
     --cyan:#22d3ee;
-    --violet:#a78bfa;
+    --teal:#1FA6A2;
     --green:#34d399;
     --yellow:#fbbf24;
     --red:#f87171;
-    --grad:linear-gradient(135deg,var(--cyan),var(--violet));
+    --grad:linear-gradient(135deg,var(--cyan),var(--teal));
     --shadow:0 20px 50px rgba(0,0,0,.45);
     --r:20px;
     --r2:14px;
@@ -35,7 +35,7 @@
     color:var(--text);background:var(--bg);min-height:100vh;overflow-x:hidden;
     background-image:
       radial-gradient(ellipse at 10% 0%,rgba(34,211,238,.12) 0%,transparent 45%),
-      radial-gradient(ellipse at 90% 5%,rgba(167,139,250,.14) 0%,transparent 40%),
+      radial-gradient(ellipse at 90% 5%,rgba(31,166,162,.14) 0%,transparent 40%),
       radial-gradient(ellipse at 50% 100%,rgba(52,211,153,.07) 0%,transparent 50%);
   }
 
@@ -60,7 +60,7 @@
     background:rgba(255,255,255,.07);border:1px solid var(--border2);color:var(--muted);
   }
   .chip.cyan{background:rgba(34,211,238,.12);border-color:rgba(34,211,238,.35);color:var(--cyan)}
-  .chip.violet{background:rgba(167,139,250,.12);border-color:rgba(167,139,250,.35);color:var(--violet)}
+  .chip.teal{background:rgba(31,166,162,.12);border-color:rgba(31,166,162,.35);color:var(--teal)}
   .chip.green{background:rgba(52,211,153,.12);border-color:rgba(52,211,153,.35);color:var(--green)}
 
   .stats-bar{
@@ -74,7 +74,7 @@
   .stat-card .lbl{font-size:.78rem;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
   .stat-card .val{font-size:1.8rem;font-weight:800;margin-top:4px;color:var(--text)}
   .stat-card.cyan .val{color:var(--cyan)}
-  .stat-card.violet .val{color:var(--violet)}
+  .stat-card.teal .val{color:var(--teal)}
   .stat-card.green .val{color:var(--green)}
   .stat-card.yellow .val{color:var(--yellow)}
 
@@ -162,9 +162,9 @@
 
   .target-box{
     margin-top:10px;border-radius:var(--r2);padding:13px 15px;
-    background:rgba(167,139,250,.08);border:1px solid rgba(167,139,250,.25);
+    background:rgba(31,166,162,.08);border:1px solid rgba(31,166,162,.25);
   }
-  .target-box-label{font-size:.72rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--violet);margin-bottom:4px}
+  .target-box-label{font-size:.72rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--teal);margin-bottom:4px}
   .target-box-val{font-size:1.05rem;font-weight:700;color:var(--text)}
 
   .overlay{
@@ -177,7 +177,7 @@
     border:1px solid rgba(255,255,255,.15);border-radius:24px;
     box-shadow:0 40px 80px rgba(0,0,0,.6);padding:28px;
   }
-  .overlay-eyebrow{font-size:.75rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--violet);margin-bottom:6px}
+  .overlay-eyebrow{font-size:.75rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--teal);margin-bottom:6px}
   .overlay-question{font-size:1.1rem;font-weight:700;line-height:1.45;margin-bottom:18px}
   .choices{display:grid;gap:10px}
   .choice-btn{
@@ -231,7 +231,7 @@
       <p class="sub">Plot points, identify opposites, classify quadrants, and defeat the boss in this four-mission coordinate-plane challenge. Covers 6.NOS.C.6 — rational numbers on the coordinate plane.</p>
       <div class="chips">
         <span class="chip cyan">4 Missions</span>
-        <span class="chip violet">Adaptive Boss Round</span>
+        <span class="chip teal">Adaptive Boss Round</span>
         <span class="chip green">Touch &amp; Mouse</span>
         <span class="chip">Instant Feedback</span>
       </div>
@@ -243,7 +243,7 @@
       <div class="lbl">Level</div>
       <div class="val" id="levelOut">1</div>
     </div>
-    <div class="stat-card violet">
+    <div class="stat-card teal">
       <div class="lbl">XP</div>
       <div class="val" id="xpOut">0</div>
     </div>
@@ -310,7 +310,7 @@
         <div class="info-box-title">Quadrant Signs</div>
         <div class="info-box-body">
           <strong style="color:var(--cyan)">I</strong> (+, +) &nbsp;
-          <strong style="color:var(--violet)">II</strong> (−, +) &nbsp;
+          <strong style="color:var(--teal)">II</strong> (−, +) &nbsp;
           <strong style="color:var(--yellow)">III</strong> (−, −) &nbsp;
           <strong style="color:var(--green)">IV</strong> (+, −)
         </div>
@@ -377,7 +377,7 @@ const QTINTS=[
   {x:C.center,y:0,w:C.center,h:C.center,col:'rgba(52,211,153,.06)'},
   {x:0,y:0,w:C.center,h:C.center,col:'rgba(34,211,238,.06)'},
   {x:0,y:C.center,w:C.center,h:C.center,col:'rgba(251,191,36,.06)'},
-  {x:C.center,y:C.center,w:C.center,h:C.center,col:'rgba(167,139,250,.06)'}
+  {x:C.center,y:C.center,w:C.center,h:C.center,col:'rgba(31,166,162,.06)'}
 ];
 
 function drawPlane(opts={}){
@@ -419,7 +419,7 @@ function drawPlane(opts={}){
     ctx.fillStyle='rgba(52,211,153,.55)'; ctx.fillText('I',C.center+C.size*.18,C.center-C.size*.18);
     ctx.fillStyle='rgba(34,211,238,.55)'; ctx.fillText('II',C.center-C.size*.18,C.center-C.size*.18);
     ctx.fillStyle='rgba(251,191,36,.55)'; ctx.fillText('III',C.center-C.size*.18,C.center+C.size*.18);
-    ctx.fillStyle='rgba(167,139,250,.55)';ctx.fillText('IV',C.center+C.size*.18,C.center+C.size*.18);
+    ctx.fillStyle='rgba(31,166,162,.55)';ctx.fillText('IV',C.center+C.size*.18,C.center+C.size*.18);
   }
 
   if(state.activeTarget && state.missions[state.missionIndex].type==='plot'){
@@ -438,7 +438,7 @@ function drawPlane(opts={}){
   if(state.plotted){
     const px=C.center+state.plotted.x*C.step, py=C.center-state.plotted.y*C.step;
     const grad=ctx.createRadialGradient(px,py,0,px,py,13);
-    grad.addColorStop(0,'#a78bfa');grad.addColorStop(1,'#7c3aed');
+    grad.addColorStop(0,'#1FA6A2');grad.addColorStop(1,'#1FA6A2');
     ctx.fillStyle=grad;
     ctx.beginPath();ctx.arc(px,py,12,0,Math.PI*2);ctx.fill();
     ctx.strokeStyle='rgba(255,255,255,.6)';ctx.lineWidth=2;ctx.stroke();
@@ -486,7 +486,7 @@ function gainXP(n){
 
 function celebrate(){
   const wrap=document.getElementById('confetti'); wrap.innerHTML='';
-  const cols=['#22d3ee','#a78bfa','#34d399','#fbbf24','#f87171','#fff'];
+  const cols=['#22d3ee','#1FA6A2','#34d399','#fbbf24','#f87171','#fff'];
   for(let i=0;i<40;i++){
     const p=document.createElement('div');p.className='piece';
     p.style.left=Math.random()*100+'vw';

@@ -30,7 +30,7 @@
     window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches
   );
 
-  var COLORS = ["#1aa179", "#f0a400", "#3b7dd8", "#e0542f", "#9b5de5"];
+  var COLORS = ["#1aa179", "#f0a400", "#3b7dd8", "#e0542f", "#17324D"];
   var SUCCESS_CLASS = /(^|\s)(right|correct|is-correct|is-right|ok|success|won|gfx-correct)(\s|$)/i;
   var WRONG_CLASS = /(^|\s)(wrong|incorrect|is-incorrect|is-wrong|fail|error|gfx-wrong|bad)(\s|$)/i;
   var INTERACTIVE = /(^|\s)(opt|option|choice|answer|tile|card|btn|cell|key)(\s|$)/i;

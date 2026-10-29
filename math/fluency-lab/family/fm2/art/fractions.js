@@ -225,8 +225,8 @@ export function stripSvg({
     body += label(at(point.value), y - 50, point.text, 15, point.color || PALETTE.coral);
   }
   const mx = at(toNumber(marker));
-  body += `<line class="fk-marker-line" x1="${mx}" y1="${y - 30}" x2="${mx}" y2="${y}" stroke="${PALETTE.violet}" stroke-width="5" stroke-linecap="round"/>`;
-  body += `<circle class="fk-marker" cx="${mx}" cy="${y - 34}" r="10" fill="${PALETTE.violet}" stroke="${PALETTE.ink}" stroke-width="2"/>`;
+  body += `<line class="fk-marker-line" x1="${mx}" y1="${y - 30}" x2="${mx}" y2="${y}" stroke="${PALETTE.teal}" stroke-width="5" stroke-linecap="round"/>`;
+  body += `<circle class="fk-marker" cx="${mx}" cy="${y - 34}" r="10" fill="${PALETTE.teal}" stroke="${PALETTE.ink}" stroke-width="2"/>`;
   return svg(
     STRIP.width,
     STRIP.height,

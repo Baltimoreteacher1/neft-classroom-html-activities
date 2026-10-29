@@ -1441,7 +1441,7 @@ export const GRADES = [
   },
   {
     grade: 7,
-    color: "#6657b8",
+    color: "#17324D",
     label: "Grade 7",
     promise: "Build speed and precision with rational numbers, proportions, equations, and probability.",
     skills: [
@@ -1460,7 +1460,7 @@ export const GRADES = [
   },
   {
     grade: 8,
-    color: "#88518e",
+    color: "#17324D",
     label: "Grade 8",
     promise: "Practice the essential moves behind exponents, linear relationships, systems, and geometry.",
     skills: [

@@ -72,7 +72,7 @@
     btn.type = "button";
     btn.className = "nt-btn-replay";
     btn.style.cssText =
-      "margin-top:10px;padding:8px 16px;background:linear-gradient(135deg, #4f46e5, #7c3aed);color:#fff;border:none;border-radius:8px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:6px;box-shadow:0 4px 12px rgba(79,70,229,0.3);";
+      "margin-top:10px;padding:8px 16px;background:linear-gradient(135deg, #17324D, #17324D);color:#fff;border:none;border-radius:8px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:6px;box-shadow:0 4px 12px rgba(23,50,77,0.3);";
     btn.innerHTML = '<span aria-hidden="true">🎬</span> Watch 20s Reasoning Replay';
     btn.addEventListener("click", showReplayModal);
 

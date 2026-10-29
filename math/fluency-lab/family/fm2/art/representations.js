@@ -7,8 +7,8 @@ import { PALETTE } from "./base.js";
 
 const {
   ink,
-  violet,
-  violetSoft,
+  teal,
+  tealSoft,
   mint,
   coral,
   coralSoft,
@@ -22,7 +22,7 @@ const {
 } = PALETTE;
 const art = (body, extra = "") =>
   `<svg class="fm2-art mm-art" viewBox="0 0 120 84" aria-hidden="true" focusable="false" ${extra}>${body}</svg>`;
-const cell = (cx, cy, r, cls, fill = violet) =>
+const cell = (cx, cy, r, cls, fill = teal) =>
   `<circle class="${cls}" cx="${cx}" cy="${cy}" r="${r}" fill="${fill}" stroke="${ink}" stroke-width="1.5"/>`;
 const text = (x, y, value, size = 11, anchor = "middle", fill = ink) =>
   `<text x="${x}" y="${y}" text-anchor="${anchor}" font-size="${size}" font-weight="700" fill="${fill}" font-family="Atkinson Hyperlegible, system-ui, sans-serif">${escapeHtml(value)}</text>`;
@@ -71,7 +71,7 @@ function groups({ a, b }) {
       return draw(x, top + Math.floor(i / 5) * 15, rows);
     }).join("");
   };
-  const circles = cluster(a, 10, (x, y) => cell(x, y + 6, 6, "mm-circle", violet));
+  const circles = cluster(a, 10, (x, y) => cell(x, y + 6, 6, "mm-circle", teal));
   const top = 10 + Math.ceil(a / 5) * 15 + 6;
   const squares = cluster(
     b,
@@ -165,7 +165,7 @@ function clock({ h, m }) {
   return art(
     `<circle cx="60" cy="42" r="38" fill="${paper}" stroke="${ink}" stroke-width="2.5"/>${ticks}${nums}` +
       `<line class="mm-hour-hand" data-angle="${hourDeg}" x1="60" y1="42" x2="${hx}" y2="${hy}" stroke="${ink}" stroke-width="4.5" stroke-linecap="round"/>` +
-      `<line class="mm-min-hand" data-angle="${minDeg}" x1="60" y1="42" x2="${mx}" y2="${my}" stroke="${violet}" stroke-width="3" stroke-linecap="round"/>` +
+      `<line class="mm-min-hand" data-angle="${minDeg}" x1="60" y1="42" x2="${mx}" y2="${my}" stroke="${teal}" stroke-width="3" stroke-linecap="round"/>` +
       `<circle cx="60" cy="42" r="3" fill="${ink}"/>`,
   );
 }
@@ -179,7 +179,7 @@ function fracBar({ n, d }) {
     for (let j = 0; j < d; j += 1) {
       const on = b * d + j < n;
       out.push(
-        `<rect class="mm-part${on ? " mm-on" : ""}" x="${10 + (100 / d) * j}" y="${top + b * (height + 8)}" width="${100 / d}" height="${height}" fill="${on ? violet : paper}" stroke="${ink}" stroke-width="1.5"/>`,
+        `<rect class="mm-part${on ? " mm-on" : ""}" x="${10 + (100 / d) * j}" y="${top + b * (height + 8)}" width="${100 / d}" height="${height}" fill="${on ? teal : paper}" stroke="${ink}" stroke-width="1.5"/>`,
       );
     }
   return art(out.join(""));
@@ -202,7 +202,7 @@ function hundredGrid({ k }) {
   const out = [];
   for (let i = 0; i < 100; i += 1)
     out.push(
-      `<rect class="mm-hcell${i < k ? " mm-on" : ""}" x="${25 + (i % 10) * 7}" y="${7 + Math.floor(i / 10) * 7}" width="7" height="7" fill="${i < k ? violet : paper}" stroke="${line}" stroke-width="0.8"/>`,
+      `<rect class="mm-hcell${i < k ? " mm-on" : ""}" x="${25 + (i % 10) * 7}" y="${7 + Math.floor(i / 10) * 7}" width="7" height="7" fill="${i < k ? teal : paper}" stroke="${line}" stroke-width="0.8"/>`,
     );
   return art(
     `${out.join("")}<rect x="25" y="7" width="70" height="70" fill="none" stroke="${ink}" stroke-width="1.5"/>`,
@@ -220,7 +220,7 @@ function table(heads, top, bottom) {
   [top, bottom].forEach((values, r) => {
     const y = 42 - rowHeight + r * rowHeight;
     out.push(
-      `<rect x="4" y="${y}" width="${first}" height="${rowHeight}" fill="${violetSoft}" stroke="${ink}" stroke-width="1.5"/>`,
+      `<rect x="4" y="${y}" width="${first}" height="${rowHeight}" fill="${tealSoft}" stroke="${ink}" stroke-width="1.5"/>`,
       text(4 + first / 2, y + 17, rows[r], 13),
     );
     values.forEach((value, i) => {
@@ -243,7 +243,7 @@ function ratioTable({ rows }, ctx) {
       const x = 8 + c * 52;
       const y = top + r * height;
       out.push(
-        `<rect class="${r ? "mm-trow" : "mm-thead"}" x="${x}" y="${y}" width="52" height="${height}" fill="${r ? paper : violetSoft}" stroke="${ink}" stroke-width="1.5"/>`,
+        `<rect class="${r ? "mm-trow" : "mm-thead"}" x="${x}" y="${y}" width="52" height="${height}" fill="${r ? paper : tealSoft}" stroke="${ink}" stroke-width="1.5"/>`,
         text(x + 26, y + 13, String(value), r ? 13 : 11),
       );
     });
@@ -267,7 +267,7 @@ function moveLine({ a, s }) {
     `<line class="mm-arrow" data-from="${a}" data-to="${a + s}" x1="${x(a)}" y1="34" x2="${x(a + s) - dir * 6}" y2="34" stroke="${coral}" stroke-width="3" stroke-linecap="round"/>`,
     `<polygon points="${x(a + s)},34 ${x(a + s) - dir * 9},29 ${x(a + s) - dir * 9},39" fill="${coral}" stroke="${coral}"/>`,
     seg(x(a), 36, x(a), 53, ink, 1),
-    cell(x(a), 58, 5, "mm-start", violet),
+    cell(x(a), 58, 5, "mm-start", teal),
     text(x(a), 24, minus(a), 11),
   );
   return art(out.join(""));

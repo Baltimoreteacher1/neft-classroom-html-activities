@@ -136,10 +136,10 @@
       tile: "#23306b",
     },
     "time-capsule": {
-      top: "#2a1a3e",
-      bot: "#4a2c6e",
-      accent: "#d8b4fe",
-      tile: "#3c2a5e",
+      top: "#17324D",
+      bot: "#17324D",
+      accent: "#17324D",
+      tile: "#17324D",
     },
     "detective-agency": {
       top: "#1c1917",
@@ -155,9 +155,9 @@
     },
     "arcade-builder": {
       top: "#10182e",
-      bot: "#241b52",
-      accent: "#f472b6",
-      tile: "#2a2350",
+      bot: "#17324D",
+      accent: "#1FA6A2",
+      tile: "#17324D",
     },
     "architecture-firm": {
       top: "#0f2430",
@@ -166,10 +166,10 @@
       tile: "#1d3f4f",
     },
     "music-studio": {
-      top: "#2b123a",
-      bot: "#5a2170",
-      accent: "#e879f9",
-      tile: "#43215a",
+      top: "#17324D",
+      bot: "#17324D",
+      accent: "#17324D",
+      tile: "#17324D",
     },
     "sports-analytics": {
       top: "#0c2a1a",

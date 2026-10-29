@@ -133,7 +133,7 @@
     var n = 80;
     var box = document.createElement("div");
     box.className = "pki-confetti";
-    var colors = ["#1763c7", "#0e9a8c", "#f4a924", "#ef6b52", "#6d4ad6", "#19a35a"];
+    var colors = ["#1763c7", "#0e9a8c", "#f4a924", "#ef6b52", "#17324D", "#19a35a"];
     for (var i = 0; i < n; i++) {
       var p = document.createElement("i");
       p.style.left = Math.round((i / n) * 100) + "%";

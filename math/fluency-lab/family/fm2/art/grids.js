@@ -3,8 +3,8 @@
 // @fm2 FM-036 FM-059
 import { circle, label, line, PALETTE, rect, svg } from "./base.js";
 
-const SOFT = [PALETTE.violetSoft, PALETTE.mintSoft, PALETTE.goldSoft, PALETTE.skySoft];
-const STRONG = [PALETTE.violet, PALETTE.mint, PALETTE.gold, PALETTE.sky];
+const SOFT = [PALETTE.tealSoft, PALETTE.mintSoft, PALETTE.goldSoft, PALETTE.skySoft];
+const STRONG = [PALETTE.teal, PALETTE.mint, PALETTE.gold, PALETTE.sky];
 const num = (n) => (Number.isInteger(n) ? String(n) : String(Math.round(n * 100) / 100));
 
 // A rows x cols array of tiles or counters with its dimensions written on the top and left.
@@ -25,8 +25,8 @@ export function arraySvg(rows, cols, { counters = false, caption = "", maxWidth 
         const x = left + j * size;
         const y = top + i * size;
         body += counters
-          ? `<rect x="${x}" y="${y}" width="${size}" height="${size}" fill="${PALETTE.paper}" stroke="${PALETTE.line}" stroke-width="1"/>${circle(x + size / 2, y + size / 2, size * 0.36, PALETTE.violet)}`
-          : `<rect x="${x}" y="${y}" width="${size}" height="${size}" fill="${PALETTE.violetSoft}" stroke="${PALETTE.violet}" stroke-width="${size > 12 ? 1.5 : 1}"/>`;
+          ? `<rect x="${x}" y="${y}" width="${size}" height="${size}" fill="${PALETTE.paper}" stroke="${PALETTE.line}" stroke-width="1"/>${circle(x + size / 2, y + size / 2, size * 0.36, PALETTE.teal)}`
+          : `<rect x="${x}" y="${y}" width="${size}" height="${size}" fill="${PALETTE.tealSoft}" stroke="${PALETTE.teal}" stroke-width="${size > 12 ? 1.5 : 1}"/>`;
       }
     }
     if (labels) body += label(left + (c * size) / 2, top - 10, String(c), 15) + label(left - 10, top + (r * size) / 2 + 5, String(r), 15, PALETTE.ink, "end");
@@ -118,7 +118,7 @@ export function prismSvg(rows, cols, layers, caption = "") {
         const face = (list, fill) => `<polygon points="${pts(list)}" fill="${fill}" stroke="${PALETTE.ink}" stroke-width="1" stroke-linejoin="round"/>`;
         body += face([[x, y, z + 1], [x + 1, y, z + 1], [x + 1, y + 1, z + 1], [x, y + 1, z + 1]], PALETTE.mintSoft);
         body += face([[x, y + 1, z], [x + 1, y + 1, z], [x + 1, y + 1, z + 1], [x, y + 1, z + 1]], PALETTE.skySoft);
-        body += face([[x + 1, y, z], [x + 1, y + 1, z], [x + 1, y + 1, z + 1], [x + 1, y, z + 1]], PALETTE.violetSoft);
+        body += face([[x + 1, y, z], [x + 1, y + 1, z], [x + 1, y + 1, z + 1], [x + 1, y, z + 1]], PALETTE.tealSoft);
       }
     }
   }
@@ -131,7 +131,7 @@ export function prismSvg(rows, cols, layers, caption = "") {
   return svg(Math.ceil(maxX - minX + pad * 2), Math.ceil(maxY - minY + pad * 2), inner, caption || `Prism: ${layers} layers of ${rows} by ${cols} cubes`);
 }
 
-// Algebra tiles: width = w0 + w1 x, height = h0 + h1 x. x^2 tile violet, x tiles mint, unit tiles gold.
+// Algebra tiles: width = w0 + w1 x, height = h0 + h1 x. x^2 tile teal, x tiles mint, unit tiles gold.
 export function tilesSvg(w, h, { widthText = "", heightText = "", caption = "" } = {}) {
   const u = 13;
   const X = 4.4 * u;
@@ -148,7 +148,7 @@ export function tilesSvg(w, h, { widthText = "", heightText = "", caption = "" }
     for (const cw of cols) {
       const big = cw === X && rh === X;
       const long = (cw === X) !== (rh === X);
-      const [fill, edge] = big ? [PALETTE.violetSoft, PALETTE.violet] : long ? [PALETTE.mintSoft, PALETTE.mint] : [PALETTE.goldSoft, PALETTE.gold];
+      const [fill, edge] = big ? [PALETTE.tealSoft, PALETTE.teal] : long ? [PALETTE.mintSoft, PALETTE.mint] : [PALETTE.goldSoft, PALETTE.gold];
       body += rect(x, y, cw, rh, fill, edge, 2);
       if (big) body += label(x + cw / 2, y + rh / 2 + 6, "x²", 18);
       else if (long) body += label(x + cw / 2, y + rh / 2 + 5, "x", 14);

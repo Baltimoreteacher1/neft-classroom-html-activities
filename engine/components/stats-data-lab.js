@@ -446,7 +446,7 @@ function injectStyles() {
   .sdlab-addrow{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;}
   .sdlab-input{width:110px;padding:9px 10px;font-size:1rem;font-weight:600;color:${C.ink};border:2px solid ${C.line};border-radius:10px;background:#fbfcfe;font-family:inherit;}
   .sdlab-input:focus-visible{outline:3px solid ${C.accent};outline-offset:1px;border-color:${C.accent};}
-  .sdlab-addbtn{padding:9px 16px;font-size:.9rem;font-weight:700;color:#fff;background:linear-gradient(135deg,#4f46e5,#0e8a7d);border:0;border-radius:10px;cursor:pointer;font-family:inherit;}
+  .sdlab-addbtn{padding:9px 16px;font-size:.9rem;font-weight:700;color:#fff;background:linear-gradient(135deg,#17324D,#0e8a7d);border:0;border-radius:10px;cursor:pointer;font-family:inherit;}
   .sdlab-addbtn:hover{filter:brightness(1.08);}
   .sdlab-clear{padding:9px 14px;font-size:.85rem;font-weight:700;color:${C.navy};background:#fff;border:1.5px solid ${C.line};border-radius:10px;cursor:pointer;font-family:inherit;}
   .sdlab-clear:hover{background:${C.chipBg};}
@@ -455,11 +455,11 @@ function injectStyles() {
   .sdlab-plot svg{width:100%;height:auto;display:block;}
   .sdlab-measures{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px;}
   .sdlab-mcard{flex:1 1 90px;min-width:84px;padding:9px 10px;background:#fbfcfe;border:1px solid ${C.line};border-radius:12px;text-align:center;}
-  .sdlab-mcard-hi{background:#f4f2ff;border-color:#d9d0ff;}
+  .sdlab-mcard-hi{background:#F7F4EC;border-color:#17324D;}
   .sdlab-mlabel{display:block;font-size:.68rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:${C.muted};}
   .sdlab-mval{display:block;margin-top:2px;font-family:"Outfit",system-ui,sans-serif;font-size:1.2rem;font-weight:700;color:${C.navy};}
   .sdlab-note{margin-top:10px;}
-  .sdlab-msg{padding:10px 14px;border-radius:12px;font-size:.92rem;line-height:1.5;background:#f4f2ff;color:${C.navy};border:1px solid #d9d0ff;}
+  .sdlab-msg{padding:10px 14px;border-radius:12px;font-size:.92rem;line-height:1.5;background:#F7F4EC;color:${C.navy};border:1px solid #17324D;}
   @media (max-width:480px){.sdlab-mcard{flex-basis:calc(50% - 4px);}}
   `;
   document.head.appendChild(s);

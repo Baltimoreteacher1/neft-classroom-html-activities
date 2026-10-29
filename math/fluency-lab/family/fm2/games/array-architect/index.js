@@ -7,7 +7,7 @@ import { answerText, makeRound, solve } from "./logic.js";
 import { SKILLS } from "./skills.js";
 import { mount } from "./ui.js";
 
-const icon = `<svg viewBox="0 0 48 48" aria-hidden="true"><rect x="6" y="6" width="36" height="36" rx="5" fill="#e7e3fb" stroke="#5b49c9" stroke-width="2.5"/><path d="M18 6v36M30 6v36M6 18h36M6 30h36" stroke="#5b49c9" stroke-width="2"/><rect x="18" y="18" width="12" height="12" fill="#5b49c9" opacity=".85"/></svg>`;
+const icon = `<svg viewBox="0 0 48 48" aria-hidden="true"><rect x="6" y="6" width="36" height="36" rx="5" fill="#F7F4EC" stroke="#1FA6A2" stroke-width="2.5"/><path d="M18 6v36M30 6v36M6 18h36M6 30h36" stroke="#1FA6A2" stroke-width="2"/><rect x="18" y="18" width="12" height="12" fill="#1FA6A2" opacity=".85"/></svg>`;
 
 export default {
   id: "array-architect",

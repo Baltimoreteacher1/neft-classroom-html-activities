@@ -61,7 +61,7 @@ function mark(m, scale, base) {
   const fill =
     m.shape === "start" ? PALETTE.mintSoft : m.shape === "dot" ? PALETTE.coral : PALETTE.paper;
   const stroke =
-    m.shape === "dot" ? PALETTE.ink : m.shape === "start" ? PALETTE.mint : PALETTE.violet;
+    m.shape === "dot" ? PALETTE.ink : m.shape === "start" ? PALETTE.mint : PALETTE.teal;
   const lift = m.lift || 0;
   const leader = lift ? `<line x1="${x}" y1="${base - 10}" x2="${x}" y2="${base - lift - 12}" stroke="${PALETTE.muted}" stroke-width="2" stroke-dasharray="3 3"/>` : "";
   return `${leader}<circle cx="${x}" cy="${base}" r="8" fill="${fill}" stroke="${stroke}" stroke-width="3"/>${m.text ? label(x, base - 16 - lift, m.text, 14) : ""}`;
@@ -76,9 +76,9 @@ function arc(a, scale, base, index) {
   const y = base - 5;
   const dir = x2 >= x1 ? 1 : -1;
   const dash = a.back ? ' stroke-dasharray="6 4"' : "";
-  const head = `<path d="M${x2} ${y} l${-6 * dir} -6 l0 12 z" fill="${PALETTE.violet}"/>`;
-  const text = span >= 26 ? label(mid, y - rise * 0.75 - 6, a.text, 13, PALETTE.violet) : "";
-  return `<path d="M${x1} ${y} Q${mid} ${y - rise * 2} ${x2} ${y}" fill="none" stroke="${PALETTE.violet}" stroke-width="3"${dash}/>${head}${text}`;
+  const head = `<path d="M${x2} ${y} l${-6 * dir} -6 l0 12 z" fill="${PALETTE.teal}"/>`;
+  const text = span >= 26 ? label(mid, y - rise * 0.75 - 6, a.text, 13, PALETTE.teal) : "";
+  return `<path d="M${x1} ${y} Q${mid} ${y - rise * 2} ${x2} ${y}" fill="none" stroke="${PALETTE.teal}" stroke-width="3"${dash}/>${head}${text}`;
 }
 
 // Options: width, min, max, ticks (spacing), labels (values to label), text(v) -> label string, marks, arcs, bracket,

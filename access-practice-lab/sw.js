@@ -11,7 +11,7 @@
  * The block between the build markers is written by tools/sync-access-shell.mjs; do not edit it by hand.
  */
 /* build:begin */
-const BUILD_HASH = "1f40d6613fc7";
+const BUILD_HASH = "24a6003bdc2e";
 const PRECACHE_CORE = [
   "/access-practice-lab/library.css?v=159952795a3e",
   "/access-practice-lab/studio.css?v=28d71fd235dd",
@@ -20,21 +20,21 @@ const PRECACHE_CORE = [
   "/access-practice-lab/worlds.css?v=f1d3ed0a5626",
   "/access-practice-lab/classroom-studio.css?v=9668bf1c9d32",
   "/access-practice-lab/vocabulary.css?v=6304fc492f10",
-  "/access-practice-lab/rehearsal.css?v=c9d87f37f398",
-  "/access-practice-lab/ds.css?v=895f402e8d2d",
-  "/access-practice-lab/home.css?v=16f241a00a24",
+  "/access-practice-lab/rehearsal.css?v=42b55b2b213a",
+  "/access-practice-lab/ds.css?v=808fe798267c",
+  "/access-practice-lab/home.css?v=24f72d64ede6",
   "/access-practice-lab/activity.css?v=4aa03a774c3e",
   "/access-practice-lab/room.css?v=c08f2daa7ca0",
   "/access-practice-lab/tests.css?v=0785ce20e036",
   "/access-practice-lab/progress.css?v=51a9f64d45c8",
   "/access-practice-lab/family.css?v=fca99cee559f",
-  "/access-practice-lab/studios.css?v=b8182f7508bd",
+  "/access-practice-lab/studios.css?v=840bd1593530",
   "/access-practice-lab/labs.css?v=acd96df68051",
   "/access-practice-lab/src/attempts.js?v=9ad8ee9e3283",
   "/access-practice-lab/src/audio-store.js?v=d05edac67707",
   "/access-practice-lab/src/components.js?v=e82f534d71d7",
   "/access-practice-lab/src/content/vocabulary-items.js?v=8504c5643bba",
-  "/access-practice-lab/src/content/world-missions.js?v=6ac1466837b1",
+  "/access-practice-lab/src/content/world-missions.js?v=2ece6b5cb6f7",
   "/access-practice-lab/src/content.js?v=80bcf826c857",
   "/access-practice-lab/src/engagement.js?v=e69a60b25d4c",
   "/access-practice-lab/src/evidence-ui.js?v=92a03c56a063",
@@ -79,9 +79,9 @@ const PRECACHE_CORE = [
   "/access-practice-lab/src/lang/text.js?v=391bde3f4bec",
   "/access-practice-lab/src/learning.js?v=8a99a6d8753a",
   "/access-practice-lab/src/main.js?v=6fc88ab42486",
-  "/access-practice-lab/src/media.js?v=41d2ac925829",
+  "/access-practice-lab/src/media.js?v=4d0d596071cf",
   "/access-practice-lab/src/multilingual.js?v=d0b46fb38de3",
-  "/access-practice-lab/src/nav.js?v=880570380349",
+  "/access-practice-lab/src/nav.js?v=6653aff44a74",
   "/access-practice-lab/src/paper-passport.js?v=4e74d1041708",
   "/access-practice-lab/src/practice-plan.js?v=e0ccb901e2cd",
   "/access-practice-lab/src/practice-report.js?v=afae890a5d67",

@@ -384,7 +384,7 @@ function injectStyles() {
   .bplab-dotkey{width:11px;height:11px;border-radius:999px;display:inline-block;}
   .bplab-leg-tip{margin-left:auto;font-weight:500;font-style:italic;}
   .bplab-actions{margin-top:10px;}
-  .bplab-go{padding:9px 16px;font-size:.95rem;font-weight:700;color:#fff;background:linear-gradient(135deg,#4f46e5,#0e8a7d);border:0;border-radius:10px;cursor:pointer;}
+  .bplab-go{padding:9px 16px;font-size:.95rem;font-weight:700;color:#fff;background:linear-gradient(135deg,#17324D,#0e8a7d);border:0;border-radius:10px;cursor:pointer;}
   .bplab-go:hover{filter:brightness(1.08);}
   .bplab-go:focus-visible,.bplab-chip:focus-visible,.bplab-sort:focus-visible{outline:3px solid ${C.accent};outline-offset:2px;}
   .bplab-feed{margin-top:10px;}

@@ -309,7 +309,7 @@ function injectStyles() {
   .hglab-bar:focus-visible rect{stroke:${C.accent};stroke-width:3;}
   .hglab-tip{margin:4px 0 0;font-size:.8rem;color:${C.muted};font-style:italic;text-align:right;}
   .hglab-actions{margin-top:8px;}
-  .hglab-go{padding:9px 16px;font-size:.95rem;font-weight:700;color:#fff;background:linear-gradient(135deg,#4f46e5,#0e8a7d);border:0;border-radius:10px;cursor:pointer;}
+  .hglab-go{padding:9px 16px;font-size:.95rem;font-weight:700;color:#fff;background:linear-gradient(135deg,#17324D,#0e8a7d);border:0;border-radius:10px;cursor:pointer;}
   .hglab-go:hover{filter:brightness(1.08);}
   .hglab-go:focus-visible,.hglab-chip:focus-visible,.hglab-sort:focus-visible{outline:3px solid ${C.accent};outline-offset:2px;}
   .hglab-feed{margin-top:10px;}

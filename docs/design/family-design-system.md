@@ -49,7 +49,7 @@ Hue is never the identity alone: each unit also has a number and a motif (`--uni
 | Unit | Name                            | Hue         | Accent (light) | Ink (light) | Motif         |
 | ---: | ------------------------------- | ----------- | -------------- | ----------- | ------------- |
 |    1 | Math Is Discovery               | green       | `#2B7A48`      | `#205A35`   | spark         |
-|    2 | Statistics                      | indigo-blue | `#3742A6`      | `#3742A6`   | bars          |
+|    2 | Statistics                      | navy        | `#17324D`      | `#17324D`   | bars          |
 |    3 | Ratios & Rates                  | clay        | `#BE5D33`      | `#7F3E22`   | two bars      |
 |    4 | Percents                        | cyan        | `#1E6980`      | `#185568`   | percent sign  |
 |    5 | Area, Surface Area & Volume     | gold        | `#AC7F1E`      | `#694D12`   | cube          |

@@ -363,7 +363,7 @@ export function celebrate(host) {
   const layer = host.ownerDocument.createElement("div");
   layer.className = "rw-confetti";
   layer.setAttribute("aria-hidden", "true");
-  const colors = ["#d14f7a", "#f0a92b", "#2f9e6e", "#3b82c4", "#8a5cc8"];
+  const colors = ["#d14f7a", "#f0a92b", "#2f9e6e", "#3b82c4", "#1FA6A2"];
   layer.innerHTML = Array.from(
     { length: 36 },
     (_, i) =>

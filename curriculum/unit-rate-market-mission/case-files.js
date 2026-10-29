@@ -16,26 +16,26 @@
   function scene(ctx) {
     const at = X[ctx.finished ? 3 : Math.min(ctx.now, 3)] - 60;
     return `<svg viewBox="0 0 960 230" preserveAspectRatio="xMidYMid slice" focusable="false">
-      <defs><linearGradient id="cfSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0d1030"/><stop offset="1" stop-color="#2b2160"/></linearGradient></defs>
+      <defs><linearGradient id="cfSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#17324D"/><stop offset="1" stop-color="#17324D"/></linearGradient></defs>
       <rect width="960" height="230" fill="url(#cfSky)"/>
-      <circle cx="90" cy="48" r="24" fill="#f5f0d0"/><circle cx="102" cy="42" r="22" fill="#141638"/>
+      <circle cx="90" cy="48" r="24" fill="#f5f0d0"/><circle cx="102" cy="42" r="22" fill="#17324D"/>
       <g fill="#fff" opacity=".7"><circle cx="220" cy="30" r="1.6"/><circle cx="480" cy="22" r="1.4"/><circle cx="700" cy="40" r="1.8"/><circle cx="900" cy="26" r="1.4"/><circle cx="340" cy="60" r="1.2"/></g>
-      <path d="M0 140 h60 v-50 h40 v30 h50 v-70 h44 v90 h70 v-40 h40 v60 h80 v-80 h50 v80 h90 v-50 h60 v50 h80 v-90 h40 v90 h120 v-60 h50 v60 H960 V230 H0Z" fill="#171a3d"/>
-      <rect y="178" width="960" height="52" fill="#262a52"/>
-      <path d="M0 184 H960" stroke="#ff5fa2" stroke-width="2" opacity=".5"/>
+      <path d="M0 140 h60 v-50 h40 v30 h50 v-70 h44 v90 h70 v-40 h40 v60 h80 v-80 h50 v80 h90 v-50 h60 v50 h80 v-90 h40 v90 h120 v-60 h50 v60 H960 V230 H0Z" fill="#17324D"/>
+      <rect y="178" width="960" height="52" fill="#17324D"/>
+      <path d="M0 184 H960" stroke="#F2C15B" stroke-width="2" opacity=".5"/>
       <path d="M60 60 Q480 110 920 60" stroke="#ffd76a" stroke-width="1.5" fill="none" opacity=".45"/>
-      <g class="${cls(ctx, 0)}" transform="translate(${X[0]} 166)">${stall(0, "#ff5fa2")}<circle class="xc-glow" cx="-40" cy="-58" r="7" fill="#ffd76a"/><circle class="xc-glow" cx="40" cy="-58" r="7" fill="#ff8a3d"/></g>
+      <g class="${cls(ctx, 0)}" transform="translate(${X[0]} 166)">${stall(0, "#F2C15B")}<circle class="xc-glow" cx="-40" cy="-58" r="7" fill="#ffd76a"/><circle class="xc-glow" cx="40" cy="-58" r="7" fill="#ff8a3d"/></g>
       <g class="${cls(ctx, 1)}" transform="translate(${X[1]} 166)">
-        <rect x="-40" y="-64" width="80" height="76" rx="8" fill="#26205a" stroke="#7ad7ff" stroke-width="3"/>
+        <rect x="-40" y="-64" width="80" height="76" rx="8" fill="#17324D" stroke="#7ad7ff" stroke-width="3"/>
         <circle class="xc-glow" cx="0" cy="-28" r="20" fill="none" stroke="#7ad7ff" stroke-width="4"/><path d="M0 -28 L0 -42 M0 -28 L10 -22" stroke="#ffd76a" stroke-width="3"/>
       </g>
       <g class="${cls(ctx, 2)}" transform="translate(${X[2]} 166)">
-        <rect x="-60" y="-56" width="120" height="68" fill="#3a2f4f"/><path d="M-66 -56 L0 -86 L66 -56Z" fill="#4b3d66"/>
+        <rect x="-60" y="-56" width="120" height="68" fill="#17324D"/><path d="M-66 -56 L0 -86 L66 -56Z" fill="#17324D"/>
         <rect x="-44" y="-30" width="28" height="22" fill="#8a6b3c"/><rect x="-10" y="-30" width="28" height="22" fill="#8a6b3c"/><rect class="xc-glow" x="24" y="-44" width="20" height="14" fill="#ffd76a"/>
       </g>
       <g class="${cls(ctx, 3)}" transform="translate(${X[3]} 166)">
-        <path d="M-26 12 V-50 Q0 -80 26 -50 V12Z" fill="#141638" stroke="#ff5fa2" stroke-width="3"/>
-        <ellipse class="xc-glow" cx="0" cy="-36" rx="16" ry="12" fill="#f5f0d0"/><circle cx="-6" cy="-38" r="3" fill="#141638"/><circle cx="6" cy="-38" r="3" fill="#141638"/>
+        <path d="M-26 12 V-50 Q0 -80 26 -50 V12Z" fill="#17324D" stroke="#F2C15B" stroke-width="3"/>
+        <ellipse class="xc-glow" cx="0" cy="-36" rx="16" ry="12" fill="#f5f0d0"/><circle cx="-6" cy="-38" r="3" fill="#17324D"/><circle cx="6" cy="-38" r="3" fill="#17324D"/>
       </g>
       <g class="xc-vehicle" style="transform:translate(${at}px,138px)">
         <path d="M10 6 h26 l4 36 h-34z" fill="#c9a26b"/><circle cx="23" cy="0" r="9" fill="#e2b48a"/><path d="M8 -4 h30 l-4 -8 h-22z" fill="#6b4a2b"/>

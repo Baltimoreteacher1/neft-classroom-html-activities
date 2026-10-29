@@ -1132,7 +1132,7 @@ function celebrateSparkles() {
   const container = document.createElement("div");
   container.className = "sparkle-container";
   container.setAttribute("aria-hidden", "true");
-  const colors = ["#fbbf24", "#3b82f6", "#10b981", "#ec4899", "#8b5cf6"];
+  const colors = ["#fbbf24", "#3b82f6", "#10b981", "#D0674F", "#1FA6A2"];
   for (let i = 0; i < 20; i++) {
     const sparkle = document.createElement("span");
     sparkle.className = "sparkle-particle";
@@ -1527,8 +1527,8 @@ function printDeskHelperStrips() {
               Keep both pans level!<br/>
               <span style="color:#78350f">Whatever you do to one side, you MUST do to both!</span>
             </div>
-            <div style="border:1px solid #cbd5e1; border-radius:6px; padding:4px; background:#fdf2f8">
-              <strong style="color:#be185d; font-size:8.5pt">🔄 Inverses</strong><br/>
+            <div style="border:1px solid #cbd5e1; border-radius:6px; padding:4px; background:#F7F4EC">
+              <strong style="color:#17324D; font-size:8.5pt">🔄 Inverses</strong><br/>
               + undoes −<br/>
               − undoes +<br/>
               × undoes ÷<br/>
@@ -4656,13 +4656,13 @@ function printNumberTalkRoutine(talk) {
         </div>
       </div>
 
-      <div style="border:1.5px solid #4f46e5; border-radius:8px; padding:0.12in; background:#f5f3ff">
-        <h3 style="margin:0 0 8px; font-size:11pt; color:#3730a3">🗣️ Phase 3: Strategy Showcase (Anticipated Approaches)</h3>
+      <div style="border:1.5px solid #17324D; border-radius:8px; padding:0.12in; background:#F7F4EC">
+        <h3 style="margin:0 0 8px; font-size:11pt; color:#17324D">🗣️ Phase 3: Strategy Showcase (Anticipated Approaches)</h3>
         <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:0.1in">
           ${talk.strategies.map((strat) => `
-            <div style="background:#ffffff; border:1px solid #c7d2fe; border-radius:6px; padding:0.08in">
-              <strong style="font-size:9.5pt; color:#1e1b4b">${escapeHtml(strat.student)}: ${escapeHtml(strat.name.en)}</strong>
-              <div style="font-family:monospace; font-weight:700; font-size:9pt; margin:4px 0; color:#4338ca">${escapeHtml(strat.steps)}</div>
+            <div style="background:#ffffff; border:1px solid #1FA6A2; border-radius:6px; padding:0.08in">
+              <strong style="font-size:9.5pt; color:#17324D">${escapeHtml(strat.student)}: ${escapeHtml(strat.name.en)}</strong>
+              <div style="font-family:monospace; font-weight:700; font-size:9pt; margin:4px 0; color:#17324D">${escapeHtml(strat.steps)}</div>
               <p style="margin:0; font-size:8pt; color:#475569">${escapeHtml(strat.explanation.en)}</p>
             </div>
           `).join("")}
@@ -7022,10 +7022,10 @@ function renderTransferChallengeButton(item) {
       </button>
       <div class="transfer-challenge-card" id="transfer-challenge-card" hidden>
         <div style="display:flex; justify-content:space-between; align-items:center">
-          <span style="font-size:0.75rem; font-weight:800; color:#7c3aed; background:#ede9fe; padding:2px 8px; border-radius:9999px">${escapeHtml(challenge.title)}</span>
+          <span style="font-size:0.75rem; font-weight:800; color:#1FA6A2; background:#F7F4EC; padding:2px 8px; border-radius:9999px">${escapeHtml(challenge.title)}</span>
           <span style="font-size:0.75rem; font-weight:700; color:#6b7280">+15 Mastery XP</span>
         </div>
-        <p style="margin:4px 0 6px; font-weight:700; color:#1e1b4b; font-size:0.92rem">${escapeHtml(challenge.scenario)}</p>
+        <p style="margin:4px 0 6px; font-weight:700; color:#17324D; font-size:0.92rem">${escapeHtml(challenge.scenario)}</p>
         <div style="display:flex; flex-direction:column; gap:0.4rem">
           ${challenge.options.map((opt, idx) => `
             <button type="button" class="transfer-opt-btn" data-transfer-choice="${idx}" data-transfer-correct="${opt.correct}" style="text-align:left; font-size:0.85rem; padding:6px 10px; border-radius:6px; border:1px solid #cbd5e1; background:#ffffff; cursor:pointer">
@@ -9418,7 +9418,7 @@ const TeacherPrintCenter = {
                 <option value="array">Roll &amp; Split Array · Distributive Property (Grades 1–3)</option>
               </select>
             </label>
-            <button type="button" class="tpt-print-action-btn" id="print-selected-partner-game" style="background:#4f46e5; border-color:#4338ca">🖨️ Print 2-Player Game Sheet (2 Pages)</button>
+            <button type="button" class="tpt-print-action-btn" id="print-selected-partner-game" style="background:#17324D; border-color:#17324D">🖨️ Print 2-Player Game Sheet (2 Pages)</button>
           </div>
           <div class="tpt-preview-mockup">
             <strong>Game Highlights:</strong>
@@ -9483,7 +9483,7 @@ const TeacherPrintCenter = {
             </div>
             <div style="display:flex; gap:0.5rem; flex-wrap:wrap">
               <button type="button" class="tpt-print-action-btn" data-tpt-print="passport">🖨️ Print Fluency Passport</button>
-              <button type="button" class="tpt-print-action-btn" data-tpt-print="brag" style="background:#7c3aed; border-color:#6d28d9">🖨️ Print Brag Tags (9-Up)</button>
+              <button type="button" class="tpt-print-action-btn" data-tpt-print="brag" style="background:#1FA6A2; border-color:#17324D">🖨️ Print Brag Tags (9-Up)</button>
             </div>
           </div>
           <div class="tpt-preview-mockup">
@@ -9625,7 +9625,7 @@ function handleExplanationInteraction(event) {
       if (captionEl) captionEl.innerHTML = `<strong>1. KEEP:</strong> Leave the first fraction exactly as it is!`;
     } else if (phase === "change") {
       const c = widget.querySelector('[data-kcf-card="change"]');
-      if (c) { c.style.transform = "scale(1.08)"; c.style.boxShadow = "0 0 0 3px #a855f7"; }
+      if (c) { c.style.transform = "scale(1.08)"; c.style.boxShadow = "0 0 0 3px #1FA6A2"; }
       if (captionEl) captionEl.innerHTML = `<strong>2. CHANGE:</strong> Change the division sign (÷) into a multiplication sign (×)!`;
     } else if (phase === "flip") {
       const c = widget.querySelector('[data-kcf-card="flip"]');

@@ -7,11 +7,11 @@ import { activityMinutes, orderedActivities } from "./access-lab-content.mjs";
 
 const TIERS = { A: "Starting", B: "Growing", C: "Expanding" };
 const ACCENTS = {
-  Listening: "#215f77",
-  Reading: "#365f47",
-  Speaking: "#74452f",
-  Writing: "#584777",
-  "Model-Test": "#334d68",
+  Listening: "#17324d",
+  Reading: "#126e6c",
+  Speaking: "#a43d30",
+  Writing: "#8a6100",
+  "Model-Test": "#17324d",
 };
 
 export function answerKey(a) {

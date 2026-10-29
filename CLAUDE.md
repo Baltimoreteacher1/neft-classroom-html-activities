@@ -557,3 +557,12 @@ ratchet).
 > `tools/graph/**` and `.claude/{settings.json,hooks/}`. Cross-repo paths are
 > reported as un-checkable rather than passed silently. Verify a hook by RUNNING
 > it as well — the gate proves the file exists, not that it behaves.
+
+## EduWonderLab / ACCESS Practice Lab v6.0 release rules
+
+- New and changed student-facing surfaces use navy `#17324D`, teal `#1FA6A2`, warm off-white `#F7F4EC`, amber `#F2C15B`, and body text `#24323F`; coral may distinguish ACCESS speaking. Do not add violet, purple, or indigo.
+- `npm run validate:no-purple` gates changed production sources and assets. `npm run validate:no-purple -- --full` inventories legacy pages for planned cleanup; it is report-only while untouched surfaces are migrated. Do not skip the changed-surface gate.
+- ACCESS Practice Lab is original practice aligned to WIDA domains, not an official test. Keep the disclaimer and “stamps are not a score” wording; never predict ACCESS scores or placement. Student identity and recordings stay on-device, with no third-party analytics.
+- Never hand-edit generated output. Trace changes to their generator and regenerate indexes, import maps, cache hashes, page groups, printables, and illustrations.
+- Preserve exact-match self-hosted font bundles, mobile navigation, 44px targets, semantic landmarks, keyboard focus, reduced-motion support, offline behavior, and the Canvas/SCORM reporting contract.
+- New work must not add teacher prep or physical manipulatives. Student-facing pages contain no student initials or SPED labels.

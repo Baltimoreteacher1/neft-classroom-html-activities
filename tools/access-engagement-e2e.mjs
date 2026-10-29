@@ -46,6 +46,10 @@ const browser = await chromium.launch(
 );
 const context = await browser.newContext({ viewport: { width: 390, height: 844 } });
 const page = await context.newPage();
+// Keep the weekly-goal fixture anchored to Wednesday: the three synthetic
+// Monday–Wednesday results overlap the real Wednesday lesson completed above.
+// Freezing Date (without freezing timers) makes the exact 3-of-3 assertion stable.
+await page.clock.setFixedTime(new Date("2026-10-28T12:00:00"));
 const failures = [];
 const check = (ok, label) => {
   (ok ? console.log : console.error)(`${ok ? "PASS" : "FAIL"} ${label}`);

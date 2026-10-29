@@ -1,7 +1,7 @@
 /* Family Math 2.0 shared visual system: tokens, controls, shell, cards. Games add their own game.css on top. */
 :root {
   --fm-ink: #1f2740; --fm-muted: #5d6683; --fm-paper: #fff; --fm-mist: #f1f4fb; --fm-line: #c9d0e4;
-  --fm-violet: #5b49c9; --fm-violet-deep: #30265f; --fm-violet-soft: #e7e3fb;
+  --fm-accent: #1FA6A2; --fm-navy: #17324D; --fm-paper: #F7F4EC;
   --fm-mint: #1d9a6c; --fm-mint-soft: #dff5ec; --fm-coral: #c4452e; --fm-coral-soft: #fde5df;
   --fm-gold: #d99a12; --fm-gold-soft: #fbefcf; --fm-sky: #2a7bd6; --fm-sky-soft: #dcebfb;
   --fm-radius: 16px; --fm-shadow: 0 8px 24px rgba(31, 39, 64, 0.1); --fm-focus: 0 0 0 3px #fff, 0 0 0 6px #1f2740;
@@ -11,15 +11,15 @@
 .fm2-page *, .fm2-page *::before, .fm2-page *::after { box-sizing: border-box; }
 .fm2-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 .fm2-wrap { width: min(1120px, 100% - 32px); margin: 0 auto; padding: 16px 0 96px; } /* the Save/Resume pill floats bottom-right: always leave room to scroll content clear of it */
-.fm2-eyebrow { margin: 0; font-size: 0.78rem; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: var(--fm-violet); }
+.fm2-eyebrow { margin: 0; font-size: 0.78rem; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: var(--fm-accent); }
 .fm2-card { background: var(--fm-paper); border: 1px solid var(--fm-line); border-radius: var(--fm-radius); padding: 20px; box-shadow: var(--fm-shadow); }
 
-.fm2-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; min-width: 48px; padding: 8px 18px; border: 2px solid var(--fm-violet-deep); border-radius: 999px; background: var(--fm-paper); color: var(--fm-violet-deep); font: 800 1rem/1.2 var(--fm-font); cursor: pointer; text-decoration: none; touch-action: manipulation; }
-.fm2-btn:hover { background: var(--fm-violet-soft); }
+.fm2-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; min-width: 48px; padding: 8px 18px; border: 2px solid var(--fm-navy); border-radius: 999px; background: var(--fm-paper); color: var(--fm-navy); font: 800 1rem/1.2 var(--fm-font); cursor: pointer; text-decoration: none; touch-action: manipulation; }
+.fm2-btn:hover { background: var(--fm-paper); }
 .fm2-btn:focus-visible, .fm2-page a:focus-visible, .fm2-page select:focus-visible, .fm2-page input:focus-visible, .fm2-page [tabindex]:focus-visible { outline: none; box-shadow: var(--fm-focus); }
 .fm2-btn[disabled] { opacity: 0.5; cursor: not-allowed; }
-.fm2-btn-primary { background: var(--fm-violet-deep); color: #fff; }
-.fm2-btn-primary:hover { background: var(--fm-violet); }
+.fm2-btn-primary { background: var(--fm-navy); color: #fff; }
+.fm2-btn-primary:hover { background: var(--fm-accent); }
 .fm2-btn-quiet { border-color: transparent; background: transparent; text-decoration: underline; text-underline-offset: 3px; }
 
 .fm2-shell { display: grid; gap: 14px; }
@@ -28,13 +28,13 @@
 .fm2-shell-title { display: flex; align-items: center; gap: 12px; min-width: 0; flex: 1 1 240px; }
 .fm2-shell-title h1 { margin: 0; font-size: clamp(1.3rem, 4vw, 1.8rem); line-height: 1.1; }
 .fm2-shell-title p { margin: 2px 0 0; color: var(--fm-muted); font-size: 0.95rem; }
-.fm2-shell-icon { width: 52px; height: 52px; flex: none; display: grid; place-items: center; border-radius: 14px; background: var(--fm-violet-soft); }
+.fm2-shell-icon { width: 52px; height: 52px; flex: none; display: grid; place-items: center; border-radius: 14px; background: var(--fm-paper); }
 .fm2-shell-icon svg { width: 36px; height: 36px; }
 .fm2-shell-actions { display: flex; flex-wrap: wrap; gap: 4px; }
 .fm2-progress-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
 .fm2-dots { display: flex; gap: 8px; margin: 0; padding: 0; list-style: none; }
 .fm2-dot { position: relative; display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; border: 2px solid var(--fm-line); background: var(--fm-paper); font-weight: 800; font-size: 0.9rem; }
-.fm2-dot-current { border-color: var(--fm-violet); background: var(--fm-violet-soft); }
+.fm2-dot-current { border-color: var(--fm-accent); background: var(--fm-paper); }
 .fm2-dot-done { border-color: var(--fm-mint); background: var(--fm-mint-soft); color: #0f5e42; }
 .fm2-dot-shown { border-color: var(--fm-gold); background: var(--fm-gold-soft); }
 .fm2-round-label { margin: 0; color: var(--fm-muted); font-weight: 700; }
@@ -54,7 +54,7 @@
 .fm2-feedback-try .fm2-feedback-icon { background: var(--fm-coral); }
 .fm2-feedback-info .fm2-feedback-icon { background: var(--fm-sky); }
 .fm2-toolbar { display: flex; flex-wrap: wrap; gap: 10px; }
-.fm2-dialog { max-width: min(560px, calc(100vw - 32px)); border: 3px solid var(--fm-violet-deep); border-radius: var(--fm-radius); padding: 22px; color: var(--fm-ink); }
+.fm2-dialog { max-width: min(560px, calc(100vw - 32px)); border: 3px solid var(--fm-navy); border-radius: var(--fm-radius); padding: 22px; color: var(--fm-ink); }
 .fm2-dialog::backdrop { background: rgba(31, 39, 64, 0.5); }
 .fm2-finish-card { max-width: 560px; margin: 24px auto; padding: 28px; text-align: center; background: var(--fm-paper); border: 1px solid var(--fm-line); border-radius: var(--fm-radius); box-shadow: var(--fm-shadow); }
 .fm2-finish-card h1 { margin: 6px 0; }

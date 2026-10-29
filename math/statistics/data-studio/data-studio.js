@@ -1056,7 +1056,7 @@ function renderAnalysisCharts() {
             data: bins.map(
               (b) => scores.filter((s) => s >= b.min && s <= b.max).length,
             ),
-            backgroundColor: "#4f46e5",
+            backgroundColor: "#17324D",
             borderRadius: 10,
           },
         ],
@@ -1169,7 +1169,7 @@ function renderAnalysisCharts() {
             {
               label: "Average score",
               data: sub.groups.map((g) => round(g.avg, 1)),
-              backgroundColor: "#7c3aed",
+              backgroundColor: "#17324D",
               borderRadius: 10,
             },
           ],

@@ -14,14 +14,14 @@ export function unlockedIds(summary) {
 
 const MOUTH = {
   happy: '<path d="M44 66q16 14 32 0" fill="none" stroke="#13233a" stroke-width="4" stroke-linecap="round"/>',
-  cheer: '<path d="M42 62q18 24 36 0z" fill="#13233a"/><path d="M50 70q10 8 20 0" fill="#e0679a"/>',
+  cheer: '<path d="M42 62q18 24 36 0z" fill="#13233a"/><path d="M50 70q10 8 20 0" fill="#D0674F"/>',
   think: '<path d="M46 70h28" fill="none" stroke="#13233a" stroke-width="4" stroke-linecap="round"/>',
 };
 
 const HATS = {
   cap: '<path d="M32 38q28-30 56 0z" fill="#e0453a"/><path d="M80 38h18q-4 8-20 8z" fill="#b6362d"/>',
-  party: '<path d="M60 4l-20 38h40z" fill="#f3b61f"/><circle cx="60" cy="4" r="5" fill="#e0679a"/><path d="M48 28l24-8M44 36l32-10" stroke="#fff" stroke-width="3"/>',
-  wizard: '<path d="M60 -6l-26 46h52z" fill="#5b3fa8"/><path d="M26 40h68" stroke="#3a2670" stroke-width="6" stroke-linecap="round"/><circle cx="58" cy="20" r="4" fill="#f3b61f"/>',
+  party: '<path d="M60 4l-20 38h40z" fill="#f3b61f"/><circle cx="60" cy="4" r="5" fill="#D0674F"/><path d="M48 28l24-8M44 36l32-10" stroke="#fff" stroke-width="3"/>',
+  wizard: '<path d="M60 -6l-26 46h52z" fill="#1FA6A2"/><path d="M26 40h68" stroke="#17324D" stroke-width="6" stroke-linecap="round"/><circle cx="58" cy="20" r="4" fill="#f3b61f"/>',
   crown: '<path d="M34 38l4-22 14 12 8-18 8 18 14-12 4 22z" fill="#f3b61f" stroke="#c98f00" stroke-width="2"/>',
 };
 const FACES = {

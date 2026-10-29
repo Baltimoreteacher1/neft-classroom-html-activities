@@ -222,18 +222,18 @@ const THEME_SVGS = {
   "figure-composite": `<svg viewBox="0 0 320 200" role="img" aria-hidden="true" class="theme-hero-svg">
     <defs>
       <linearGradient id="com-bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#0f172a"/><stop offset="100%" stop-color="#1e293b"/></linearGradient>
-      <linearGradient id="com-b1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#818cf8"/><stop offset="100%" stop-color="#4f46e5"/></linearGradient>
+      <linearGradient id="com-b1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#1FA6A2"/><stop offset="100%" stop-color="#17324D"/></linearGradient>
       <linearGradient id="com-b2" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#fbbf24"/><stop offset="100%" stop-color="#d97706"/></linearGradient>
     </defs>
     <rect width="320" height="200" rx="16" fill="url(#com-bg)"/>
-    <polygon points="90,105 210,105 250,135 130,135" fill="rgba(99,102,241,0.3)" stroke="#818cf8" stroke-width="2"/>
-    <polygon points="90,105 130,135 130,165 90,135" fill="url(#com-b1)" stroke="#818cf8" stroke-width="2"/>
-    <polygon points="130,135 250,135 250,165 130,165" fill="url(#com-b1)" opacity="0.8" stroke="#818cf8" stroke-width="2"/>
+    <polygon points="90,105 210,105 250,135 130,135" fill="rgba(23,50,77,0.3)" stroke="#1FA6A2" stroke-width="2"/>
+    <polygon points="90,105 130,135 130,165 90,135" fill="url(#com-b1)" stroke="#1FA6A2" stroke-width="2"/>
+    <polygon points="130,135 250,135 250,165 130,165" fill="url(#com-b1)" opacity="0.8" stroke="#1FA6A2" stroke-width="2"/>
     <polygon points="90,105 210,105 150,55" fill="url(#com-b2)" stroke="#fbbf24" stroke-width="2"/>
     <polygon points="210,105 250,135 190,85 150,55" fill="url(#com-b2)" opacity="0.7" stroke="#fbbf24" stroke-width="2"/>
     <text x="160" y="130" font-size="13" font-weight="800" fill="#e0e7ff" text-anchor="middle">A₁ (3D Box)</text>
     <text x="160" y="88" font-size="12" font-weight="800" fill="#fef3c7" text-anchor="middle">A₂ (3D Roof)</text>
-    <text x="160" y="24" font-size="11" font-weight="800" fill="#818cf8" text-anchor="middle" letter-spacing="1">3D COMPOSITE PRISM STRUCTURE</text>
+    <text x="160" y="24" font-size="11" font-weight="800" fill="#1FA6A2" text-anchor="middle" letter-spacing="1">3D COMPOSITE PRISM STRUCTURE</text>
     <text x="160" y="188" font-size="13" font-weight="800" fill="#fef08a" text-anchor="middle">Total Area A = A₁ + A₂  ·  Total Vol = V₁ + V₂</text>
   </svg>`,
 };

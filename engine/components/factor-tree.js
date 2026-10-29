@@ -356,7 +356,7 @@ function injectStyles() {
   .ftlab-field{display:flex;flex-direction:column;gap:3px;font-size:.72rem;font-weight:600;color:${C.muted};text-transform:uppercase;letter-spacing:.03em;}
   .ftlab-field input{width:96px;padding:8px 10px;font-size:1.1rem;font-weight:600;color:${C.ink};border:2px solid ${C.line};border-radius:10px;background:#fbfcfe;text-transform:none;letter-spacing:normal;}
   .ftlab-field input:focus-visible{outline:3px solid ${C.accent};outline-offset:1px;border-color:${C.accent};}
-  .ftlab-go{padding:9px 16px;font-size:.95rem;font-weight:700;color:#fff;background:linear-gradient(135deg,#4f46e5,#0e8a7d);border:0;border-radius:10px;cursor:pointer;}
+  .ftlab-go{padding:9px 16px;font-size:.95rem;font-weight:700;color:#fff;background:linear-gradient(135deg,#17324D,#0e8a7d);border:0;border-radius:10px;cursor:pointer;}
   .ftlab-go:hover{filter:brightness(1.08);}
   .ftlab-rand{padding:9px 12px;font-size:.85rem;font-weight:600;color:${C.navy};background:#eef4ff;border:1px solid ${C.line};border-radius:10px;cursor:pointer;}
   .ftlab-go:focus-visible,.ftlab-rand:focus-visible,.ftlab-chip:focus-visible{outline:3px solid ${C.accent};outline-offset:2px;}

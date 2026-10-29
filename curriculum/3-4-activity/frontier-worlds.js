@@ -15,20 +15,20 @@
 
   function frontierScene(ctx) {
     return `<svg viewBox="0 0 960 230" preserveAspectRatio="xMidYMid slice" focusable="false">
-      <defs><radialGradient id="frSky" cx=".5" cy=".3" r=".9"><stop offset="0" stop-color="#3a2a7a"/><stop offset="1" stop-color="#0b0b26"/></radialGradient></defs>
+      <defs><radialGradient id="frSky" cx=".5" cy=".3" r=".9"><stop offset="0" stop-color="#17324D"/><stop offset="1" stop-color="#17324D"/></radialGradient></defs>
       <rect width="960" height="230" fill="url(#frSky)"/>
       <g fill="#fff"><circle cx="60" cy="40" r="1.5"/><circle cx="210" cy="190" r="1.2"/><circle cx="300" cy="30" r="1.8"/><circle cx="470" cy="200" r="1.3"/><circle cx="540" cy="50" r="1.1"/><circle cx="760" cy="30" r="1.6"/><circle cx="910" cy="180" r="1.4"/><circle cx="700" cy="200" r="1.1"/></g>
-      <path d="M0 160 C200 100 400 200 960 90" stroke="#5a4bb0" stroke-width="40" opacity=".25" fill="none"/>
+      <path d="M0 160 C200 100 400 200 960 90" stroke="#17324D" stroke-width="40" opacity=".25" fill="none"/>
       <path class="xc-road" d="M${X[0]} 120 L${X[1]} 110 L${X[2]} 120 L${X[3]} 100" stroke="#7ad7ff" stroke-width="2" stroke-dasharray="3 9" fill="none"/>
       ${[0, 1, 2]
         .map(
           (i) => `<g class="${cls(ctx, i)}" transform="translate(${X[i]} ${i === 1 ? 110 : 120})">
-        <polygon points="0,-30 18,0 0,30 -18,0" fill="#6a5fd0" stroke="#bfb6ff" stroke-width="2"/>
+        <polygon points="0,-30 18,0 0,30 -18,0" fill="#17324D" stroke="#F7F4EC" stroke-width="2"/>
         <polygon class="xc-glow" points="0,-20 11,0 0,20 -11,0" fill="#9ff3ff"/></g>`,
         )
         .join("")}
       <g class="${cls(ctx, 3)}" transform="translate(${X[3]} 100)">
-        <circle r="34" fill="#251d5c" stroke="#bfb6ff" stroke-width="3"/><circle class="xc-glow" r="20" fill="#ffe27a"/>
+        <circle r="34" fill="#17324D" stroke="#F7F4EC" stroke-width="3"/><circle class="xc-glow" r="20" fill="#ffe27a"/>
         <path class="xc-glow" d="M-60 0 H-36 M36 0 H60 M0 -60 V-36" stroke="#ffe27a" stroke-width="3"/>
       </g>
       <g class="xc-vehicle" style="transform:translate(${stop(ctx) - 80}px,150px)">

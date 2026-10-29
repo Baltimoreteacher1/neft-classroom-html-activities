@@ -44,7 +44,7 @@
       </g>
       <g class="xc-vehicle" style="transform:translate(${vx - 34}px,${vy - 26}px)">
         <circle cx="10" cy="4" r="7" fill="#f2c38a"/><rect x="3" y="11" width="14" height="18" rx="3" fill="#e8743b"/><rect x="-4" y="12" width="8" height="14" rx="2" fill="#2f6f5e"/>
-        <path d="M5 29 v8 M15 29 v8" stroke="#2a2a3a" stroke-width="3"/><path d="M22 10 l8 24" stroke="#c8d3f0" stroke-width="2"/>
+        <path d="M5 29 v8 M15 29 v8" stroke="#17324D" stroke-width="3"/><path d="M22 10 l8 24" stroke="#c8d3f0" stroke-width="2"/>
       </g>
     </svg>`;
   }

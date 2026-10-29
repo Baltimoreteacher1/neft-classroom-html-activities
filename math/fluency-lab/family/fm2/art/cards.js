@@ -19,7 +19,7 @@ function pipDots(count) {
     const col = i % 2;
     const row = Math.floor(i / 2);
     out.push(
-      `<circle cx="${22 + col * 20}" cy="${58 + row * 6.4}" r="2.4" fill="${PALETTE.violet}"/>`,
+      `<circle cx="${22 + col * 20}" cy="${58 + row * 6.4}" r="2.4" fill="${PALETTE.teal}"/>`,
     );
   }
   return out.join("");
@@ -64,7 +64,7 @@ export function cardArt(card) {
 
 export function backCard() {
   return wrap(
-    `<rect x="2" y="2" width="60" height="84" rx="9" fill="${PALETTE.violet}" stroke="${PALETTE.ink}" stroke-width="2.5"/>
+    `<rect x="2" y="2" width="60" height="84" rx="9" fill="${PALETTE.teal}" stroke="${PALETTE.ink}" stroke-width="2.5"/>
     <rect x="9" y="9" width="46" height="70" rx="6" fill="none" stroke="#fff" stroke-width="2" stroke-dasharray="4 4"/>
     <circle cx="32" cy="44" r="9" fill="#fff"/>`,
   );

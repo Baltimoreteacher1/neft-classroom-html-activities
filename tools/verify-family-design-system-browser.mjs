@@ -121,7 +121,9 @@ async function matrix(browser, origin) {
             await page.screenshot({
               path: `${SHOTS}/full-${theme}-${lang}-${width}.jpg`,
               type: "jpeg",
-              quality: 55,
+              // Keep palette scans faithful; lower JPEG quality creates violet chroma halos
+              // around navy text and amber swatches even when the rendered tokens are clean.
+              quality: 100,
               fullPage: true,
             });
         }

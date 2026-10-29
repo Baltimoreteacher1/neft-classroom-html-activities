@@ -151,7 +151,7 @@ function selfTests() {
     failing.problems.filter((p) => /text-muted/.test(p)),
   );
   const violet = buildReport({
-    css: good.replace("--unit-6-accent: light-dark(#93374f", "--unit-6-accent: light-dark(#6a3fa0"),
+    css: good.replace("--unit-6-accent: light-dark(#d25435", "--unit-6-accent: light-dark(#6a3fa0"),
   });
   fired(
     "violet token",

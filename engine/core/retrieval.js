@@ -283,11 +283,11 @@ export async function mountRetrievalOpener(host, config, state, phaseId, opts = 
     // stem size), with an indigo spine so it still reads as a different KIND of
     // question rather than a fifth one of today's.
     card.style.cssText =
-      "border:1px solid #c7d2fe; border-left:6px solid #4f46e5; border-radius:12px; padding:16px; background:#f6f7ff;";
+      "border:1px solid #c7d2fe; border-left:6px solid #17324D; border-radius:12px; padding:16px; background:#f6f7ff;";
     card.innerHTML = spiral
       ? `
     <div id="retrieval-heading" style="font-weight:700; font-size:19px; line-height:1.5; color:#0f172a; margin-bottom:6px;">
-      <span style="color:#4f46e5; font-weight:800; margin-right:6px;">⭐</span> 🌀 ${stackHtml("Bonus · Spiral review", "Bono · Repaso en espiral")}
+      <span style="color:#17324D; font-weight:800; margin-right:6px;">⭐</span> 🌀 ${stackHtml("Bonus · Spiral review", "Bono · Repaso en espiral")}
     </div>
     <p style="margin:0 0 12px; font-size:15px; font-weight:500; line-height:1.5; color:#4b5563;">
       ${stackHtml(
@@ -298,7 +298,7 @@ export async function mountRetrievalOpener(host, config, state, phaseId, opts = 
   `
       : `
     <div id="retrieval-heading" style="font-weight:700; font-size:19px; line-height:1.5; color:#0f172a; margin-bottom:6px;">
-      <span style="color:#4f46e5; font-weight:800; margin-right:6px;">⭐ Bonus.</span> 🔁 Remember When
+      <span style="color:#17324D; font-weight:800; margin-right:6px;">⭐ Bonus.</span> 🔁 Remember When
     </div>
     <p style="margin:0 0 12px; font-size:15px; font-weight:500; line-height:1.5; color:#4b5563;">
       ${picks.length === 1 ? "One question" : `${picks.length} questions`} from earlier this year — extra credit for your brain, not for your score.

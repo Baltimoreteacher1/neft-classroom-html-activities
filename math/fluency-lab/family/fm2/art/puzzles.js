@@ -43,10 +43,10 @@ export function scaleSvg(tilt, name) {
   };
   const body =
     line(SCALE.pivotX, SCALE.pivotY, SCALE.pivotX, 160, PALETTE.ink, 8) +
-    rect(SCALE.pivotX - 54, 156, 108, 12, PALETTE.violetSoft, PALETTE.ink, 5) +
+    rect(SCALE.pivotX - 54, 156, 108, 12, PALETTE.tealSoft, PALETTE.ink, 5) +
     strings(left, 1) +
     strings(right, -1) +
-    line(left[0], left[1], right[0], right[1], PALETTE.violet, 10) +
+    line(left[0], left[1], right[0], right[1], PALETTE.teal, 10) +
     circle(SCALE.pivotX, SCALE.pivotY, 13, PALETTE.gold) +
     circle(left[0], left[1], 6, PALETTE.paper) +
     circle(right[0], right[1], 6, PALETTE.paper);
@@ -68,7 +68,7 @@ export function bondSvg(name) {
   const body =
     line(top[0], top[1], a[0], a[1], PALETTE.ink, 4) +
     line(top[0], top[1], b[0], b[1], PALETTE.ink, 4) +
-    circle(top[0], top[1], 40, PALETTE.violetSoft) +
+    circle(top[0], top[1], 40, PALETTE.tealSoft) +
     circle(a[0], a[1], 40, PALETTE.mintSoft) +
     circle(b[0], b[1], 40, PALETTE.mintSoft);
   return picture(W, H, body, "pz-bond-art", name);
@@ -91,8 +91,8 @@ export function triangleSvg(name, target) {
   const [top, bl, br] = [0, 1, 2].map((i) => at(TRI_NODES[i]));
   const body =
     `<path d="M${top[0]} ${top[1]} L${bl[0]} ${bl[1]} L${br[0]} ${br[1]} Z" fill="${PALETTE.skySoft}" stroke="${PALETTE.ink}" stroke-width="4" stroke-linejoin="round"/>` +
-    TRI_NODES.map((n) => circle(...at(n), 27, PALETTE.paper, PALETTE.violet)).join("") +
-    label(150, 140, `${target}`, 30, PALETTE.violet);
+    TRI_NODES.map((n) => circle(...at(n), 27, PALETTE.paper, PALETTE.teal)).join("") +
+    label(150, 140, `${target}`, 30, PALETTE.teal);
   return picture(W, H, body, "pz-tri-art", name);
 }
 
@@ -136,7 +136,7 @@ export function gridFrameSvg(n, cages = [], name = "") {
         Math.floor(first / n) * S + 24,
         cage.label,
         22,
-        PALETTE.violet,
+        PALETTE.teal,
         "start",
       );
     }

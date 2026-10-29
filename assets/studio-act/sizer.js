@@ -1359,7 +1359,7 @@
         ];
         for (let i = 0; i < widths.length; i++) {
           const width = widths[i];
-          sideFaces += `<rect x="${cursor}" y="${stripY}" width="${width}" height="${stripH}" fill="${faceColors[i]}" stroke="var(--ink,#223)"/><text x="${cursor + width / 2}" y="${stripY + stripH / 2}" text-anchor="middle" font-size="9">${faceNames[i]}</text>`;
+          sideFaces += `<rect x="${cursor}" y="${stripY}" width="${width}" height="${stripH}" fill="${faceColors[i]}" stroke="var(--ink,#17324D)"/><text x="${cursor + width / 2}" y="${stripY + stripH / 2}" text-anchor="middle" font-size="9">${faceNames[i]}</text>`;
           if (i === 0) {
             const topY = stripY - w * netScale;
             const bottomY = stripY + stripH;

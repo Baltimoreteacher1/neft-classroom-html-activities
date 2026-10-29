@@ -6,7 +6,7 @@ import { expeditionWorldsEs } from './expedition-worlds-es.mjs';
 import * as sound from './sound.mjs';
 
 export function worldArt(theme, repaired, selected = -1) {
-  const sky = { ocean:'#113e55', mountain:'#223c4a', factory:'#33344c', citadel:'#293350', observatory:'#192640', city:'#264249' }[theme];
+  const sky = { ocean:'#113e55', mountain:'#223c4a', factory:'#17324D', citadel:'#293350', observatory:'#192640', city:'#264249' }[theme];
   let scenery = '';
   if (theme === 'mountain') scenery = '<path d="M0 230 120 56 225 183 342 20 465 193 581 75 720 236Z" fill="#42596a"/><path d="m285 98 57-78 54 76-49-23Z" fill="#d0e5df"/><path d="M0 260 160 165 340 233 507 142 720 261V320H0Z" fill="#2d6264"/>';
   if (theme === 'ocean') scenery = '<path d="M0 151Q70 124 150 151T300 151T450 151T600 151T750 151V320H0Z" fill="#19657a"/><path d="M0 239Q100 205 220 239T460 239T720 239" fill="none" stroke="#52b4b5" stroke-width="3"/><path d="M55 320q-22-100 10-151m-9 78-29-21m29 0 31-31M650 320q40-100 0-137m12 55 34-22" fill="none" stroke="#559d85" stroke-width="10"/>';

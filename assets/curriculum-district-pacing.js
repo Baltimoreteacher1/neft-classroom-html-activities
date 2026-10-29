@@ -501,7 +501,7 @@
    * here instead. tools/validate-download-manifest.mjs pins this ?v= to the
    * file's content hash, exactly as it pins the shim's copy.
    */
-  const DOWNLOADER_URL = "/assets/curriculum-download.js?v=2a2b096e";
+  const DOWNLOADER_URL = "/assets/curriculum-download.js?v=d1655d9c";
   let downloaderPromise = null;
   const loadDownloader = () => {
     if (window.NTCurriculumDownload) return Promise.resolve();
@@ -624,8 +624,8 @@
     modal.style.cssText =
       "position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(15,23,42,0.68);z-index:99999;display:flex;align-items:center;justify-content:center;padding:16px;box-sizing:border-box;";
     modal.innerHTML = `
-      <div role="dialog" aria-modal="true" aria-labelledby="ewl-sg-router-title" style="background:#ffffff;border-radius:18px;max-width:780px;width:100%;max-height:90vh;display:flex;flex-direction:column;box-shadow:0 20px 45px rgba(0,0,0,0.28);border:1.5px solid #c084fc;overflow:hidden;font-family:Nunito,system-ui,sans-serif;">
-        <div style="background:linear-gradient(135deg,#6d28d9,#4c1d95);color:#ffffff;padding:16px 22px;display:flex;align-items:center;justify-content:space-between;">
+      <div role="dialog" aria-modal="true" aria-labelledby="ewl-sg-router-title" style="background:#ffffff;border-radius:18px;max-width:780px;width:100%;max-height:90vh;display:flex;flex-direction:column;box-shadow:0 20px 45px rgba(0,0,0,0.28);border:1.5px solid #17324D;overflow:hidden;font-family:Nunito,system-ui,sans-serif;">
+        <div style="background:linear-gradient(135deg,#17324D,#17324D);color:#ffffff;padding:16px 22px;display:flex;align-items:center;justify-content:space-between;">
           <div style="display:flex;align-items:center;gap:10px;">
             <span style="font-size:22px;">🔀</span>
             <div>
@@ -636,7 +636,7 @@
           <button type="button" onclick="document.getElementById('ewl-small-group-router-modal').remove()" style="background:rgba(255,255,255,0.2);border:none;color:#ffffff;font-size:18px;font-weight:900;border-radius:50%;width:32px;height:32px;cursor:pointer;display:flex;align-items:center;justify-content:center;">✕</button>
         </div>
         <div style="padding:20px 22px;overflow-y:auto;flex:1;">
-          <div style="background:#f5f3ff;border:1px solid #ddd6fe;border-radius:10px;padding:12px 16px;margin-bottom:16px;font-size:13px;color:#4c1d95;line-height:1.5;">
+          <div style="background:#F7F4EC;border:1px solid #17324D;border-radius:10px;padding:12px 16px;margin-bottom:16px;font-size:13px;color:#17324D;line-height:1.5;">
             <strong>⚡ Zero-Prep Instructional Routing:</strong> ${localSignalNote} Assign each student group their synchronized pathway below—every tier preserves the grade-level standard while varying concrete-to-abstract representation density.
           </div>
           <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-bottom:16px;">
@@ -672,11 +672,11 @@
           <textarea id="ewl-sg-router-snippet" readonly style="width:100%;height:110px;padding:10px 12px;border:1.5px solid #cbd5e1;border-radius:10px;font-size:12px;font-family:ui-monospace,monospace;color:#1e293b;background:#f8fafc;box-sizing:border-box;resize:none;">${boardSnippet}</textarea>
         </div>
         <div style="padding:14px 22px;background:#f8fafc;border-top:1px solid #e2e8f0;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;">
-          <button type="button" onclick="navigator.clipboard.writeText(document.getElementById('ewl-sg-router-snippet').value).then(()=>{this.textContent='✓ Rotation Links Copied!';this.style.background='#16a34a';})" style="min-height:40px;background:#6d28d9;color:#ffffff;border:none;border-radius:8px;font-size:13px;font-weight:800;cursor:pointer;padding:0 16px;">
+          <button type="button" onclick="navigator.clipboard.writeText(document.getElementById('ewl-sg-router-snippet').value).then(()=>{this.textContent='✓ Rotation Links Copied!';this.style.background='#16a34a';})" style="min-height:40px;background:#17324D;color:#ffffff;border:none;border-radius:8px;font-size:13px;font-weight:800;cursor:pointer;padding:0 16px;">
             📋 Copy 3-Group Rotation Links
           </button>
           <div style="display:flex;gap:8px;">
-            <a href="${rotationToolUrl}" style="min-height:40px;background:#f3e8ff;color:#5b21b6;border:1.5px solid #c084fc;border-radius:8px;font-size:13px;font-weight:800;padding:0 14px;display:inline-flex;align-items:center;text-decoration:none;">
+            <a href="${rotationToolUrl}" style="min-height:40px;background:#F7F4EC;color:#17324D;border:1.5px solid #17324D;border-radius:8px;font-size:13px;font-weight:800;padding:0 14px;display:inline-flex;align-items:center;text-decoration:none;">
               👥 Open Live Rotation Console &amp; Roster
             </a>
             <button type="button" onclick="document.getElementById('ewl-small-group-router-modal').remove()" style="min-height:40px;background:#e2e8f0;color:#334155;border:none;border-radius:8px;font-size:13px;font-weight:800;cursor:pointer;padding:0 14px;">

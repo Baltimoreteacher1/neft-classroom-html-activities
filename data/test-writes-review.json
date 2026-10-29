@@ -145,6 +145,11 @@
       "file": "tools/validate-palette.test.mjs",
       "targets": "tmpdir",
       "reason": "Every write goes into mkdtempSync directories under os.tmpdir(): small synthetic trees (a manifest, an engine file, a lesson page) with and without a seeded purple literal, which the real gate is pointed at through --root. The repo tree is only read, and the browser controls use page.setContent, so nothing is written."
+    },
+    {
+      "file": "tools/validate-no-purple.test.mjs",
+      "targets": "tmpdir",
+      "reason": "Creates synthetic site trees under mkdtempSync(tmpdir) to test forbidden paint detection; all fixture writes stay outside the repository."
     }
   ]
 }

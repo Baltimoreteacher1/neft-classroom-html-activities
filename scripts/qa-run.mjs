@@ -110,6 +110,7 @@ const GATE = [
   "validate:practice",
   "validate:lesson-boot",
   "validate:palette",
+  "validate:no-purple",
   "validate:studio-guess-browser",
   "validate:studio-layout-browser",
   "validate:studio-answer-bias",
@@ -176,6 +177,7 @@ const EXCLUSIVE = new Set([
   "validate:fluency-workshops-browser",
   "validate:lesson-boot",
   "validate:palette",
+  "validate:no-purple",
   "validate:learning-labs-browser",
   "validate:family-experience-browser",
   "validate:family-design-tokens",
@@ -929,10 +931,16 @@ const COVERAGE = [
     /^(scripts\/readiness\/|scripts\/generate-readiness-(html|docx)\.mjs$|esol\/reveal-math-guides\/|tools\/validate-lesson-labels\.mjs$)/,
     ["validate:lesson-labels", "validate:static", "audit:links", "test"],
   ],
+  // Curriculum discovery routes and their shared source palette
+  [
+    /^(curriculum\/(?:index\.html|units\/index\.html)|assets\/curriculum-system\.css|tools\/validate-no-purple(?:\.test)?\.mjs)$/,
+    ["validate:no-purple", "validate:hub", "validate:static", "test"],
+  ],
   // Curriculum hub shared styles and scripts
   [
     /^assets\/(curriculum-[^/]+\.(js|css)|pacing-[^/]+\.css)$/,
     [
+      "validate:no-purple",
       "validate:html-experiences-browser",
       "validate:hub",
       "validate:curriculum-top1",

@@ -437,11 +437,11 @@ export function renderNetFolder(
   explodeBtn.textContent = labT("net-folder.explode", "💥 Explode Net");
   explodeBtn.title = labT("net-folder.explode-title", "Deconstruct 3D faces in spatial view");
   explodeBtn.style.cssText =
-    "font-weight:600; color:#4f46e5; border:1.5px solid #818cf8; background:rgba(99,102,241,0.06); border-radius:8px; padding:4px 10px; cursor:pointer;";
+    "font-weight:600; color:#17324D; border:1.5px solid #1FA6A2; background:rgba(23,50,77,0.06); border-radius:8px; padding:4px 10px; cursor:pointer;";
   explodeBtn.addEventListener("click", () => {
     isExploded = !isExploded;
-    explodeBtn.style.background = isExploded ? "#4f46e5" : "rgba(99,102,241,0.06)";
-    explodeBtn.style.color = isExploded ? "#ffffff" : "#4f46e5";
+    explodeBtn.style.background = isExploded ? "#17324D" : "rgba(23,50,77,0.06)";
+    explodeBtn.style.color = isExploded ? "#ffffff" : "#17324D";
     const scale = isExploded ? 1.25 : 1;
     sceneWrap.style.transform = `scale(${scale})`;
     sceneWrap.style.transition = "transform 0.3s cubic-bezier(0.34,1.56,0.64,1)";
