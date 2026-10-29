@@ -1,0 +1,189 @@
+/* ==========================================================================
+   Neft Teacher — Background Color Picker (Shopping Mall Mogul project pages)
+   Lets a student recolor the page (background, cards, panels) and the banner.
+   Colors arrive as CSS variables set by bg-picker.js; nothing changes until a
+   student picks something. Hidden on print. Reference as
+   /shared/bg-picker/bg-picker.css
+   ========================================================================== */
+html[data-bgp-page] {
+  background: var(--bgp-page) !important;
+}
+/* The page hardcodes a few pink tints instead of using its variables. */
+html[data-bgp-page] .tool-panel {
+  background: linear-gradient(to bottom, var(--mall-bg), var(--mall-pink-light));
+}
+html[data-bgp-page] .data-table tr:nth-child(even) td,
+html[data-bgp-page] .phase-nav {
+  background: var(--mall-pink-light);
+}
+html[data-bgp-page] .btn-secondary:hover {
+  background: color-mix(in srgb, var(--mall-pink-light) 85%, #000);
+}
+html[data-bgp-header] .app-header {
+  background: var(--bgp-header) !important;
+}
+
+.bgp-open {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 16px;
+  font: inherit;
+  font-weight: 700;
+  color: #3b0764;
+  background: #fff;
+  border: 2px solid #fbcfe8;
+  border-radius: 999px;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.18);
+  cursor: pointer;
+}
+.bgp-open:hover {
+  background: #fdf4ff;
+}
+.bgp-open:focus-visible,
+.bgp-sw:focus-visible,
+.bgp-reset:focus-visible,
+.bgp-close:focus-visible,
+.bgp-custom input:focus-visible {
+  outline: 3px solid #1d4ed8;
+  outline-offset: 2px;
+}
+
+.bgp-panel {
+  position: fixed;
+  z-index: 9700;
+  top: 64px;
+  right: 12px;
+  width: min(380px, calc(100vw - 24px));
+  max-height: calc(100vh - 80px);
+  overflow-y: auto;
+  padding: 18px;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  color: #3b0764;
+  background: #fff;
+  border: 2px solid #fbcfe8;
+  border-radius: 16px;
+  box-shadow: 0 16px 48px rgba(59, 7, 100, 0.28);
+}
+.bgp-panel[hidden] {
+  display: none;
+}
+.bgp-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+.bgp-title {
+  margin: 0;
+  font-size: 1.2rem;
+}
+.bgp-close {
+  min-width: 44px;
+  min-height: 44px;
+  font: inherit;
+  font-size: 1.3rem;
+  line-height: 1;
+  color: #3b0764;
+  background: #f3e8ff;
+  border: 0;
+  border-radius: 12px;
+  cursor: pointer;
+}
+.bgp-group {
+  margin: 14px 0 0;
+  padding: 0;
+  border: 0;
+}
+.bgp-group legend {
+  padding: 0;
+  margin-bottom: 8px;
+  font-weight: 800;
+}
+.bgp-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.bgp-sw {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 3px solid #fff;
+  border-radius: 50%;
+  box-shadow: 0 0 0 2px #9ca3af;
+  cursor: pointer;
+}
+.bgp-sw[aria-pressed="true"] {
+  box-shadow: 0 0 0 4px #3b0764;
+}
+.bgp-sw[aria-pressed="true"]::after {
+  content: "\2713";
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-weight: 900;
+  color: var(--bgp-tick, #3b0764);
+}
+.bgp-custom {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+  font-weight: 600;
+}
+.bgp-custom input {
+  width: 56px;
+  height: 44px;
+  padding: 2px;
+  background: #fff;
+  border: 2px solid #9ca3af;
+  border-radius: 10px;
+  cursor: pointer;
+}
+.bgp-note {
+  margin: 8px 0 0;
+  min-height: 1.4em;
+  font-size: 0.95rem;
+  color: #6b21a8;
+}
+.bgp-reset {
+  margin-top: 14px;
+  min-height: 44px;
+  padding: 8px 16px;
+  font: inherit;
+  font-weight: 700;
+  color: #3b0764;
+  background: #f3e8ff;
+  border: 2px solid #d8b4fe;
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+@media (max-width: 560px) {
+  .bgp-open {
+    top: 8px;
+    right: 8px;
+  }
+  .bgp-panel {
+    top: 60px;
+    right: 12px;
+  }
+}
+@media print {
+  html[data-bgp-page] {
+    background: #fff !important;
+  }
+  .bgp-open,
+  .bgp-panel {
+    display: none !important;
+  }
+}

@@ -256,6 +256,22 @@ const COVERAGE = [
     /^(sitemap\.xml|scripts\/(generate-sitemap\.mjs|lib\/sitemap\.mjs)|tools\/sitemap\.test\.mjs)$/,
     ["validate:static", "test"],
   ],
+  // UNIT PROJECT PAGES — a post-test project page and the self-contained shared
+  // widget it loads (shared/bg-picker). Before this rule every edit to a page here
+  // escalated to the FULL gate. The pages are standalone HTML: structure, injected
+  // blocks and save/resume wiring are what an edit can break; the download manifest
+  // records their byte sizes and has its own rule.
+  [
+    /^(post-test\/unit\d+-[a-z0-9-]+\.html|shared\/bg-picker\/.*)$/,
+    [
+      "validate:static",
+      "validate:save-resume",
+      "validate:injection",
+      "validate:js-syntax",
+      "validate:shared-claims",
+      "check",
+    ],
+  ],
   // NOTES PACKET PDFs — the print stylesheet, the PDF renderer and the 672
   // rendered binaries. `validate:notes-pdf-layout` is the only check that can see
   // a header-only page or a printed "Type your name" placeholder (both lint clean
