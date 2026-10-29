@@ -24,6 +24,7 @@ import {
   weekStreak,
 } from "../store.js";
 import { practiceSummary } from "../practice-report.js";
+import { paperPassportMenu } from "../paper-passport.js";
 import { i18nFor, makeI18n } from "../i18n.js";
 import {
   ART,
@@ -541,6 +542,7 @@ export async function render(ctx) {
             <p class="lead">
               ${I.T("Your finished practice, saved on this device. Stamps show how much you practiced. They are not an ACCESS score or a language level.", "Tu práctica terminada, guardada en este dispositivo. Los sellos muestran cuánto practicaste. No son un puntaje de ACCESS ni un nivel de lenguaje.")}
             </p>
+            ${paperPassportMenu(I)}
             <label class="field pass-name"
               ><span>${I.T("My nickname or initials (not my full name)", "Mi apodo o iniciales (no mi nombre completo)")}</span
               ><input

@@ -152,8 +152,12 @@ try {
   await page.waitForSelector("[data-weekly-goal]");
   await page.locator("[data-weekly-goal]").selectOption("3");
   await page.reload({ waitUntil: "networkidle" });
+  // The three synthetic days are Monday-Wednesday; the real session finished above adds today.
+  // From Thursday on that is a fourth practice day, so assert the goal is reached, not an exact count.
+  const goalText = await page.locator(".weekly-goal h2").innerText();
+  const daysDone = Number(goalText.match(/^(\d+) of 3 practice days/)?.[1]);
   check(
-    (await page.locator(".weekly-goal").innerText()).includes("3 of 3 practice days"),
+    daysDone >= 3 && (await page.locator(".weekly-goal .goal-done").isVisible()),
     "saved synthetic practice reaches the learner-selected weekly goal",
   );
   await page.setViewportSize({ width: 768, height: 1024 });
