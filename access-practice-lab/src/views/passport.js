@@ -24,6 +24,7 @@ import {
   weekStreak,
 } from "../store.js";
 import { practiceSummary } from "../practice-report.js";
+import { journeyHTML, routeProgress } from "../journey.js";
 import { paperPassportMenu } from "../paper-passport.js";
 import { i18nFor, makeI18n } from "../i18n.js";
 import {
@@ -573,6 +574,7 @@ export async function render(ctx) {
             <p class="practice-disclaimer">${I.T("This is classroom practice feedback, not an official WIDA ACCESS score. Practice scores summarize visible task checks across different activities and are not proficiency levels or placement decisions.", "Estos son comentarios de práctica de clase, no un puntaje oficial de WIDA ACCESS. Los puntajes de práctica resumen las verificaciones visibles de tareas en distintas actividades y no son niveles de dominio ni decisiones de ubicación.")}</p>
           </section>
           <details class="panel teacher-score-guide"><summary>${I.T("Teacher quick-use scoring guide", "Guía rápida de puntuación para docentes")}</summary><div><p><strong>${I.T("Not yet:", "Todavía no:")}</strong> ${I.T("Re-model one strategy and let the learner try a similar item with support.", "Vuelva a modelar una estrategia y deje que el estudiante pruebe un ítem similar con apoyo.")}</p><p><strong>${I.T("Getting started:", "Empezando:")}</strong> ${I.T("Name one signal that is working, then practice one missing step in a short conference.", "Nombre una señal que esté funcionando y luego practique un paso que falte en una conferencia breve.")}</p><p><strong>${I.T("Almost there:", "Casi lo logra:")}</strong> ${I.T("Ask the learner to explain a choice or add evidence, then try a fresh task independently.", "Pida al estudiante que explique una elección o agregue evidencia, y luego que intente una tarea nueva de forma independiente.")}</p><p><strong>${I.T("Strong practice response:", "Respuesta de práctica sólida:")}</strong> ${I.T("Confirm the evidence with the learner and offer a transfer task or peer explanation.", "Confirme la evidencia con el estudiante y ofrezca una tarea de transferencia o una explicación a un compañero.")}</p><p>${I.T("For a small group, model a short example, practice together, and close with one independent check. Bands describe this classroom practice only; teacher review is recommended and they are not official ACCESS scoring.", "En un grupo pequeño, modele un ejemplo breve, practiquen juntos y cierre con una verificación independiente. Las bandas describen solo esta práctica de clase; se recomienda la revisión del docente y no son una puntuación oficial de ACCESS.")}</p></div></details>
+          ${journeyHTML(I, routeProgress(saved))}
           <div class="pass-heading-row"><h2 id="passSkills" class="pass-heading">${I.T("Practice by skill", "Práctica por destreza")}</h2></div>
           <div class="pass-domains">
             ${stats.map((s) => domainCard(s, band))}

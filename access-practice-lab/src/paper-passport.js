@@ -24,6 +24,11 @@ export const PAPER_PASSPORT_FILES = [
     note: ["Print on sticker paper, then cut along the dashed lines.", "Imprime en papel adhesivo y corta por las líneas punteadas."],
   },
   {
+    file: "language-passport-teacher-key.pdf",
+    name: ["Teacher key: countries and levels", "Llave del docente: países y niveles"],
+    note: ["Which country is which skill and level.", "Qué país es cada destreza y nivel."],
+  },
+  {
     file: "language-passport-family-guide.pdf",
     name: ["Family guide (English and Spanish)", "Guía para la familia (inglés y español)"],
     note: ["One sheet, printed front and back.", "Una hoja, impresa por ambos lados."],

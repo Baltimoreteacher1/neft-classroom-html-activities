@@ -11,7 +11,7 @@
  * The block between the build markers is written by tools/sync-access-shell.mjs; do not edit it by hand.
  */
 /* build:begin */
-const BUILD_HASH = "d1889833abbb";
+const BUILD_HASH = "d2627449d75c";
 const PRECACHE_CORE = [
   "/access-practice-lab/library.css?v=159952795a3e",
   "/access-practice-lab/studio.css?v=28d71fd235dd",
@@ -26,7 +26,7 @@ const PRECACHE_CORE = [
   "/access-practice-lab/activity.css?v=4aa03a774c3e",
   "/access-practice-lab/room.css?v=c08f2daa7ca0",
   "/access-practice-lab/tests.css?v=0785ce20e036",
-  "/access-practice-lab/progress.css?v=481fa8885c76",
+  "/access-practice-lab/progress.css?v=51a9f64d45c8",
   "/access-practice-lab/family.css?v=a282475f8ee2",
   "/access-practice-lab/studios.css?v=b8182f7508bd",
   "/access-practice-lab/labs.css?v=acd96df68051",
@@ -55,6 +55,7 @@ const PRECACHE_CORE = [
   "/access-practice-lab/src/grade.js?v=632a26ffc0a8",
   "/access-practice-lab/src/i18n.js?v=1b7b3f2b1314",
   "/access-practice-lab/src/items.js?v=3bc82e5c0470",
+  "/access-practice-lab/src/journey.js?v=82cc2083ae3a",
   "/access-practice-lab/src/lang/adapt.js?v=15890fbe0aac",
   "/access-practice-lab/src/lang/analyze.js?v=8ce4f669ba4c",
   "/access-practice-lab/src/lang/audio.js?v=54ef48960185",
@@ -79,7 +80,7 @@ const PRECACHE_CORE = [
   "/access-practice-lab/src/media.js?v=41d2ac925829",
   "/access-practice-lab/src/multilingual.js?v=d0b46fb38de3",
   "/access-practice-lab/src/nav.js?v=880570380349",
-  "/access-practice-lab/src/paper-passport.js?v=30d16a5b8c4f",
+  "/access-practice-lab/src/paper-passport.js?v=89e0075b7425",
   "/access-practice-lab/src/practice-plan.js?v=e0ccb901e2cd",
   "/access-practice-lab/src/practice-report.js?v=afae890a5d67",
   "/access-practice-lab/src/reading-state.js?v=64118b5a2430",
@@ -105,7 +106,7 @@ const PRECACHE_CORE = [
   "/access-practice-lab/src/views/launch-studio.js?v=6880d54d6c9e",
   "/access-practice-lab/src/views/library.js?v=e8a96dbcad64",
   "/access-practice-lab/src/views/missions.js?v=e5ea30e3834d",
-  "/access-practice-lab/src/views/passport.js?v=9f6b628c1a4c",
+  "/access-practice-lab/src/views/passport.js?v=a4240197bc73",
   "/access-practice-lab/src/views/reading-room.js?v=3e89e9643a30",
   "/access-practice-lab/src/views/road.js?v=cb5d56fdfccb",
   "/access-practice-lab/src/views/room.js?v=00925e232ab0",

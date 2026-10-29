@@ -5,7 +5,7 @@ family-guide.html). Needs Google Chrome for the HTML -> PDF step (set CHROME to 
 
     python3 tools/paper-passport/build.py
 """
-import math, os, pathlib, shutil, subprocess, tempfile
+import math, os, pathlib, re, shutil, subprocess, tempfile
 
 HERE = pathlib.Path(__file__).parent
 DEST = HERE.parents[1] / "access-practice-lab" / "paper-passport"
@@ -52,6 +52,17 @@ DOMAINS = [
 ]
 FAMILY = ("Family", "Familia", "star", "#b7791f", "#fdf3d6")
 
+def read_countries():
+    """COUNTRIES from access-practice-lab/src/journey.js: {skill: {level: (en, es)}}."""
+    src = (HERE.parents[1] / "access-practice-lab" / "src" / "journey.js").read_text(encoding="utf-8")
+    out = {}
+    for skill, body in re.findall(r"(\w+): \{ (A: .*?) \},?\n", src):
+        out[skill] = {lv: (en, es) for lv, en, es in re.findall(r'(\w): \["([^"]+)", "([^"]+)"\]', body)}
+    assert sorted(out) == ["Listening", "Reading", "Speaking", "Writing"] and all(len(v) == 3 for v in out.values()), out
+    return out
+
+COUNTRIES = read_countries()
+
 def icon_svg(name, color, x=30, y=14, scale=1.0):
     return f'<g transform="translate({x} {y}) scale({scale})" stroke="{color}" fill="{color}" stroke-linecap="round">{ICONS[name]}</g>'
 
@@ -96,43 +107,52 @@ def p_welcome():
   <div class="phead"><div><h2>Welcome, traveler!</h2><p class="es">¡Bienvenidos, viajeros!</p></div></div>
   <ol class="steps">
     <li><b>Practice online.</b> Open <span class="site">eduwonderlab.com/access-practice-lab</span> and finish activities.<em>Practica en línea y termina actividades.</em></li>
-    <li><b>Show your teacher.</b> Tell your teacher about your work. Get a stamp or a sticker.<em>Cuéntale a tu maestro o maestra sobre tu trabajo. Recibe un sello o una calcomanía.</em></li>
-    <li><b>Family check.</b> Once a week, practice 10 minutes with a grown-up. They check the box. You add a star.<em>Una vez por semana, practica 10 minutos con un adulto. Marca el cuadro y pega una estrella.</em></li>
+    <li><b>Show your teacher.</b> Tell your teacher about your work. Your teacher marks a stop in a country.<em>Cuéntale a tu maestro o maestra sobre tu trabajo. Tu maestro marca una parada en un país.</em></li>
+    <li><b>Family trip.</b> Once a week, practice 10 minutes with a grown-up. They check the box in the Trip Log. You add a star.<em>Una vez por semana, practica 10 minutos con un adulto. Marca el cuadro del Registro del viaje y pega una estrella.</em></li>
   </ol>
-  <div class="tipbox"><b>A stamp means:</b> I finished my practice. It is not a grade.<em>Un sello significa: terminé mi práctica. No es una calificación.</em></div>
+  <div class="tipbox"><b>A stop means:</b> I finished my practice. It is not a grade.<em>Una parada significa: terminé mi práctica. No es una calificación.</em></div>
   <div class="goal"><b>My goal this week / Mi meta de esta semana</b><p>I will practice <i></i> times. / Voy a practicar <i></i> veces.</p><p>I want to get better at / Quiero mejorar en: <i class="w"></i></p></div>
   <div class="spotline"><span>My teacher’s stamp goes here / Aquí va el sello de mi maestro</span>{spot("circle", NAVY, "")}</div>
 </div>'''
 
 def p_domain(d):
     en, es, kind, color, tint, pen, pes = d
-    spots = "".join(spot(kind, color, n) for n in range(1, 13))
+    rows = ""
+    for level in "ABC":
+        cen, ces = COUNTRIES[en][level]
+        boxes = "".join(f'<span class="stop">{n}</span>' for n in range(1, 13))
+        rows += (f'<div class="route"><div class="rname"><b>{cen}</b> <span class="es">/ {ces}</span></div>'
+                 f'<div class="rbody"><div class="stops">{boxes}</div>'
+                 f'<div class="rsticker">{spot("circle", color, "")}<span>Country sticker<br><em>Calcomanía del país</em></span></div></div></div>')
     return f'''<div class="panel">
   {head(en, es, kind, color, en)}
   <div class="prompt" style="border-color:{color};background:{tint}"><b>Show your teacher:</b> {pen}<em>Muéstrale a tu maestro o maestra: {pes}</em></div>
-  <p class="how">One spot = one finished activity. / Un espacio = una actividad terminada.</p>
-  <div class="grid3">{spots}</div>
+  <p class="how">Your teacher marks a stop when you show finished work. Finish all 12 stops for a country sticker. / Tu maestro marca una parada cuando muestras trabajo terminado. Termina las 12 paradas para ganar la calcomanía del país.</p>
+  {rows}
 </div>'''
 
 def p_family():
     fam = FAMILY
-    cells = "".join(
-        f'<div class="wk"><div class="wkt"><b>Week {n}</b><span class="box"></span></div>{spot("star", fam[3], "")}</div>'
-        for n in range(1, 13))
+    def trip(letter):
+        cells = "".join(
+            f'<div class="wk"><div class="wkt"><b>Stop {n}</b><span class="box"></span></div>{spot("star", fam[3], "")}</div>'
+            for n in range(1, 7))
+        return (f'<div class="trip"><div class="tripname"><b>Trip {letter}</b> / Viaje {letter}: <i></i>'
+                f'<span class="tstamp">Trip stamp {spot("circle", fam[3], "")}</span></div><div class="grid3 wks">{cells}</div></div>')
     return f'''<div class="panel">
-  {head("Family Check-In", "Revisión de la familia")}
-  <p class="how big">After 10 minutes of practice together, a grown-up checks the box. Then add a star!<br>
-  <em>Después de 10 minutos de práctica juntos, un adulto marca el cuadro. ¡Luego pega una estrella!</em></p>
-  <div class="grid3 wks">{cells}</div>
+  {head("Family Trip Log", "Registro del viaje en familia")}
+  <p class="how big">A trip is 6 stops, one 10-minute practice with a grown-up each week. After each stop the grown-up checks the box and you add a star. Write the trip’s name on the line.<br>
+  <em>Un viaje tiene 6 paradas, una práctica de 10 minutos por semana con un adulto. Después de cada parada, el adulto marca el cuadro y tú pegas una estrella. Escribe el nombre del viaje en la línea.</em></p>
+  {trip("A")}{trip("B")}
 </div>'''
 
 MILESTONES = [
-    ("First stamp", "Primer sello", "Get your first stamp.", "Consigue tu primer sello."),
-    ("All four skills", "Las cuatro destrezas", "Get a stamp on every skill page.", "Un sello en cada página de destreza."),
-    ("Ten stamps", "Diez sellos", "Collect 10 stamps.", "Reúne 10 sellos."),
-    ("Language Navigator", "Navegante del Lenguaje", "Collect 15 stamps.", "Reúne 15 sellos."),
-    ("Three-week streak", "Tres semanas seguidas", "3 Family checks in a row.", "3 revisiones de la familia seguidas."),
-    ("Thirty stamps", "Treinta sellos", "Collect 30 stamps.", "Reúne 30 sellos."),
+    ("First stamp", "Primer sello", "Get your first stop marked.", "Consigue tu primera parada marcada."),
+    ("All four skills", "Las cuatro destrezas", "Get a stop marked in every skill.", "Una parada marcada en cada destreza."),
+    ("Ten stamps", "Diez sellos", "Get 10 stops marked.", "Consigue 10 paradas marcadas."),
+    ("Language Navigator", "Navegante del Lenguaje", "Get 15 stops marked.", "Consigue 15 paradas marcadas."),
+    ("Three-week streak", "Tres semanas seguidas", "3 Family stops in a row.", "3 paradas en familia seguidas."),
+    ("Thirty stamps", "Treinta sellos", "Get 30 stops marked.", "Consigue 30 paradas marcadas."),
 ]
 def p_milestones():
     rows = "".join(
@@ -140,7 +160,7 @@ def p_milestones():
         for a, b, c, d in MILESTONES)
     return f'''<div class="panel">
   {head("Milestones", "Metas del viaje")}
-  <p class="how">Earn a country sticker for each milestone. Put it in the circle. / Gana una calcomanía de país por cada meta. Pégala en el círculo.</p>
+  <p class="how">Put a bought country sticker in the circle for each milestone. / Pega una calcomanía de país comprada en el círculo de cada meta.</p>
   <ol class="mile">{rows}</ol>
   <p class="fine">Stamps show finished practice, not a score.<br>Los sellos muestran práctica terminada, no un puntaje.</p>
 </div>'''
@@ -183,10 +203,23 @@ em {{ display: block; color: #4a5568; font-size: 8.5pt; }}
 .how.big {{ font-size: 9.5pt; }}
 .grid3 {{ display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px 6px; justify-items: center; }}
 .spot {{ width: 1.2in; height: 1.2in; }}
-.wks .spot {{ width: 1.1in; height: 1.1in; }}
+.wks .spot {{ width: .85in; height: .85in; }}
 .wk {{ text-align: center; }}
 .wkt {{ display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 1px; }}
 .box {{ width: .27in; height: .27in; border: 2px solid {NAVY}; border-radius: 4px; display: inline-block; }}
+.route {{ margin: 0 0 10px; padding-bottom: 8px; border-bottom: 1px solid #d8dee9; }}
+.route:last-child {{ border-bottom: 0; }}
+.rname {{ font-size: 11pt; margin-bottom: 4px; }}
+.rbody {{ display: flex; align-items: center; gap: 10px; }}
+.stops {{ display: grid; grid-template-columns: repeat(6, .5in); gap: 5px; }}
+.stop {{ width: .5in; height: .5in; border: 2px solid {NAVY}; border-radius: 6px; font-size: 8pt; color: #b8c0cd; padding: 1px 3px; }}
+.rsticker {{ display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 6.5pt; color: {NAVY}; font-weight: 700; line-height: 1.15; text-align: center; }}
+.rsticker svg {{ width: .8in; height: .8in; flex: none; }}
+.trip {{ margin: 8px 0 0; }}
+.tripname {{ display: flex; align-items: center; gap: 6px; font-size: 10pt; margin-bottom: 3px; color: {NAVY}; }}
+.tripname i {{ flex: 1; border-bottom: 1.5px solid #1c2536; height: 16px; }}
+.tstamp {{ display: flex; align-items: center; gap: 4px; font-size: 8pt; }}
+.tstamp svg {{ width: .5in; height: .5in; }}
 .mile {{ list-style: none; padding: 0; margin: 4px 0 0; }}
 .mile li {{ display: flex; align-items: center; gap: 12px; padding: 7px 0; border-bottom: 1px solid #d8dee9; }}
 .mile .spot {{ width: .82in; height: .82in; flex: none; }}
@@ -219,6 +252,23 @@ h3 {{ font: 700 11pt Georgia, serif; color: {NAVY}; margin: 0 0 6px; }}
 .note {{ font-size: 8pt; color: #4a5568; margin-top: 6px; text-align: center; }}
 '''
 (OUT / "stickers.html").write_text(doc(f'<h3>Language Passport stickers · Calcomanías del Pasaporte de Idiomas</h3><div class="sg">{grid}</div><p class="note">Print on sticker paper or plain paper, then cut along the dashed lines. · Imprima en papel adhesivo o papel normal y corte por las líneas punteadas.</p>', "size: Letter", sheet_css), encoding="utf-8")
+LEVEL_NAMES = {"A": ("Starting", "Comenzando"), "B": ("Growing", "Creciendo"), "C": ("Expanding", "Ampliando")}
+SKILL_ES = {"Listening": "Escuchar", "Speaking": "Hablar", "Reading": "Leer", "Writing": "Escribir"}
+key_rows = "".join(
+    f"<tr><td><b>{COUNTRIES[sk][lv][0]}</b> / {COUNTRIES[sk][lv][1]}</td><td>{sk} / {SKILL_ES[sk]}</td><td>{lv} · {LEVEL_NAMES[lv][0]} / {LEVEL_NAMES[lv][1]}</td></tr>"
+    for sk in ("Listening", "Speaking", "Reading", "Writing") for lv in "ABC")
+(OUT / "teacher-key.html").write_text(f'''<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Language Passport – Teacher key</title><style>
+@page {{ size: Letter; margin: .6in; }} body {{ font: 11pt/1.4 "Helvetica Neue", Arial, sans-serif; color: #1c2536; }}
+h1 {{ font: 700 20pt Georgia, serif; color: {NAVY}; margin: 0 0 4px; }} p {{ margin: 6px 0; }}
+table {{ border-collapse: collapse; width: 100%; margin: 14px 0; }} th, td {{ border: 1.5px solid {NAVY}; padding: 7px 10px; text-align: left; }}
+th {{ background: #f2f6fd; color: {NAVY}; }} .fine {{ color: #4a5568; font-size: 9.5pt; }}
+</style></head><body><h1>Language Passport · Teacher key</h1><p class="fine">Llave para el docente</p>
+<p>The paper passport shows country names, not level letters, so families never see tiers. Each country is one skill at one level in the ACCESS Practice Lab; use this table to match them.</p>
+<table><tr><th>Country / País</th><th>Skill / Destreza</th><th>Level in the lab / Nivel en el laboratorio</th></tr>{key_rows}</table>
+<p><b>Stops.</b> Every country has 12 stops. Grades 3–5: one activity per stop. Grades 6–8: two or three activities per stop (24–28 activities per level). Mark a stop when the student shows finished work for all of its activities. The digital My Passport shows the same countries and stops.</p>
+<p><b>Paradas.</b> Cada país tiene 12 paradas. Grados 3–5: una actividad por parada. Grados 6–8: dos o tres actividades por parada. Marque una parada cuando el estudiante muestre el trabajo terminado de todas sus actividades.</p>
+<p class="fine">Stops show finished practice. They are not a score or a language level. / Las paradas muestran práctica terminada. No son un puntaje ni un nivel de lenguaje.</p></body></html>''', encoding="utf-8")
+
 shutil.copy(HERE / "family-guide.html", OUT / "family-guide.html")
 
 JOBS = {
@@ -226,6 +276,7 @@ JOBS = {
     "booklet-reading": "language-passport-booklet-pages",
     "stickers": "language-passport-stickers",
     "family-guide": "language-passport-family-guide",
+    "teacher-key": "language-passport-teacher-key",
 }
 DEST.mkdir(parents=True, exist_ok=True)
 for src, name in JOBS.items():
