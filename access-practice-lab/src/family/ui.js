@@ -8,6 +8,7 @@ const PAGES = [
   ["", "nav.family.home", "families"],
   ["start", "nav.family.setup", "settings"],
   ["practice", "nav.family.practice", "home"],
+  ["trip", "nav.family.trip", "road"],
   ["progress", "nav.family.progress", "passport"],
   ["help", "nav.family.help", "help"],
   ["save", "nav.family.save", "save"],

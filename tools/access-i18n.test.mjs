@@ -384,6 +384,7 @@ test("setup answers are versioned, sanitized and never hold identity", () => {
     minutes: 0,
     done: false,
     skipped: false,
+    trip: null,
   });
   assert.equal(
     getFamily({ family: { grade: "9-12", who: "x", minutes: 7, name: "Ana", email: "a@b.c" } })
@@ -395,6 +396,7 @@ test("setup answers are versioned, sanitized and never hold identity", () => {
     "grade",
     "minutes",
     "skipped",
+    "trip",
     "v",
     "who",
   ]);

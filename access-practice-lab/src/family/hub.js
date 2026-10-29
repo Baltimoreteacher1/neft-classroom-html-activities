@@ -80,6 +80,7 @@ export async function render(ctx, I) {
             <button type="button" class="btn btn-primary btn-big" data-fam-who="together">${I.L("hub.cta.together")}${icon("arrow-right")}</button>
             <button type="button" class="btn btn-big" data-fam-who="independent">${I.L("hub.cta.independent")}</button>
             ${continuePlan.length ? html`<a class="btn btn-big" href="${playlistHref(continuePlan, "Continue",  band)}">${I.L("hub.cta.continue")}</a>` : ""}
+            <a class="btn btn-big" href="${BASE}/family/trip?grades=${band}">${I.L("trip.cta")}</a>
             <a class="fam-how" href="#famSteps">${I.L("hub.cta.how")}</a>
           </div>
           ${phase ? html`<aside class="fam-window"><span class="fam-window-ico">${icon("calendar")}</span><div><span class="window-kicker">${I.L("hub.window.label")}</span><strong>${date(win.start)} – ${date(win.end)}</strong><span>${I.L("hub.window.note")}</span></div></aside>` : ""}

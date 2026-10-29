@@ -2,7 +2,8 @@
 // and every string comes through the language mode (src/i18n.js), so English, Español and bilingual
 // all work on every page.
 //   /family            home            /family/start     setup (language, grade, who, time)
-//   /family/practice   planner+finder  /family/progress  what we practiced
+//   /family/practice   planner+finder  /family/trip      guided six-stop trip
+//   /family/progress   what we practiced
 //   /family/help       help center     /family/save      Save & Continue Later
 // Old /family?skill=…&minutes=…&level=… links (teacher shares) open the planner's finder.
 import { i18nFor } from "../i18n.js";
@@ -12,8 +13,9 @@ import * as planner from "../family/planner.js";
 import * as progress from "../family/progress.js";
 import * as save from "../family/save.js";
 import * as setup from "../family/setup.js";
+import * as trip from "../family/trip.js";
 
-const PAGES = { "": hub, start: setup, practice: planner, progress, help, save };
+const PAGES = { "": hub, start: setup, practice: planner, trip, progress, help, save };
 const LEGACY_FILTERS = ["skill", "minutes", "level"];
 
 let current = hub;
