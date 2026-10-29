@@ -689,6 +689,12 @@ export function handleModelInput(target) {
   return true;
 }
 
+function factorCount(n) {
+  let count = 0;
+  for (let f = 1; f <= n; f += 1) if (n % f === 0) count += 1;
+  return count;
+}
+
 function markShared(live) {
   const lists = [...live.querySelectorAll("[data-chips]")].map(
     (list) =>
@@ -862,8 +868,13 @@ export function handleModelTap(target) {
       .sort((a, b) => Number(a.dataset.chip) - Number(b.dataset.chip))
       .forEach((chip) => chips.append(chip));
     input.value = "";
-    input.focus();
     markShared(live);
+    if (chips.children.length === factorCount(n)) {
+      // Every factor is listed: close the row so there is nothing left to type or add.
+      input.disabled = true;
+      addFactor.disabled = true;
+      note.textContent = t("That is all {count} factors of {n}. This list is complete.", { count: chips.children.length, n });
+    } else input.focus();
     return true;
   }
   const grow = target.closest("[data-square-step]");

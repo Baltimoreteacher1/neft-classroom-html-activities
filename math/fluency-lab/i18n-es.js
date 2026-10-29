@@ -54,6 +54,7 @@ export const ES = {
   "in each row": "en cada fila",
   "tiles": "fichas",
   "Rows": "Filas",
+  "That is all {count} factors of {n}. This list is complete.": "Esos son los {count} factores de {n}. La lista está completa.",
   "Tiles in each row": "Fichas en cada fila",
   "Choose the number of rows": "Elige la cantidad de filas",
   "Choose tiles in each row": "Elige las fichas en cada fila",
