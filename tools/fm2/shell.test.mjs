@@ -344,6 +344,81 @@ ok(
   "resume continues at round 2 with round 1 done",
 );
 resumed.destroy();
+// A skill opened directly beside a saved session (keepSaved) leaves that session untouched, in every round and at
+// the finish, while still recording the practice itself. Without keepSaved the old behaviour holds.
+{
+  const guarded = makeStore();
+  guarded.saveResume({
+    gameId: "fake-game",
+    skillId: "s5",
+    grade: 5,
+    level: 2,
+    seed: 7,
+    rounds: 4,
+    index: 2,
+    mode: "solo",
+    results: [],
+    plan: "1~g5~m10~s~fake-game_s5_2_4_m",
+    step: 0,
+  });
+  const saved = JSON.stringify(guarded.state.resume);
+  const direct = startActivity({
+    root,
+    game: fake,
+    store: guarded,
+    grade: 4,
+    skillId: "s4",
+    level: 1,
+    rounds: 1,
+    seed: 9,
+    lang: "en",
+    keepSaved: true,
+  });
+  ok(
+    JSON.stringify(guarded.state.resume) === saved,
+    "a direct launch does not overwrite the saved session",
+  );
+  window.__fm2.submit(window.__fm2.solve());
+  click("[data-fm2-next]");
+  ok(
+    JSON.stringify(guarded.state.resume) === saved,
+    "finishing a direct launch does not clear the saved session",
+  );
+  ok(
+    guarded.skill("fake-game", "s4")?.plays === 1,
+    "the directly launched practice is still recorded",
+  );
+  direct.destroy();
+
+  const plain = makeStore();
+  plain.saveResume({
+    gameId: "fake-game",
+    skillId: "s5",
+    grade: 5,
+    level: 2,
+    seed: 7,
+    rounds: 4,
+    index: 2,
+    mode: "solo",
+    results: [],
+  });
+  const owner = startActivity({
+    root,
+    game: fake,
+    store: plain,
+    grade: 4,
+    skillId: "s4",
+    level: 1,
+    rounds: 1,
+    seed: 9,
+    lang: "en",
+  });
+  ok(
+    plain.state.resume?.skillId === "s4",
+    "without keepSaved the activity still owns the resume slot",
+  );
+  owner.destroy();
+}
 ok(
   starCount(10, 10) === 3 &&
     starCount(7, 10) === 2 &&

@@ -1,6 +1,7 @@
 import { covers } from "./inventory.js";
 import { makeRng, seedFrom } from "./rng.js";
 import { estFor } from "./session.js";
+import { noteFor } from "./skill-notes.js";
 
 const ID = /^[a-z][a-z0-9-]{1,40}$/;
 const TERM_ALIASES = [
@@ -17,20 +18,6 @@ const TERM_ALIASES = [
   [/integer|number line|negative|opposite/i, "integer number line negative opposite absolute value entero recta numérica negativo opuesto valor absoluto"],
 ];
 
-const GUIDE = [
-  [/g8-expand|binomial/i, { en: "Use the two binomials as side lengths. Find each partial area, then combine like terms.", es: "Usa los dos binomios como lados. Halla cada área parcial y luego combina términos semejantes." }],
-  [/fraction|numerator|denominator/i, { en: "Use equal parts and a visual model to compare, locate, or combine fractions.", es: "Usa partes iguales y un modelo visual para comparar, ubicar o combinar fracciones." }],
-  [/multip|array|factor|product/i, { en: "Connect equal groups, an array, or an area model to multiplication; explain what each part represents.", es: "Relaciona los grupos iguales, una matriz o un modelo de área con la multiplicación; explica qué representa cada parte." }],
-  [/divis|quotient|share/i, { en: "Use equal groups or fair shares to show what the quotient means.", es: "Usa grupos iguales o repartos justos para mostrar qué significa el cociente." }],
-  [/decimal|place value|scientific notation|expanded form/i, { en: "Use place value to explain what each digit represents and how the number can be written.", es: "Usa el valor posicional para explicar qué representa cada cifra y cómo se puede escribir el número." }],
-  [/ratio|percent|rate|proportion|slope/i, { en: "Compare the quantities with an equivalent ratio, rate, or percent, and explain what each number describes.", es: "Compara las cantidades con una razón, tasa o porcentaje equivalente y explica qué describe cada número." }],
-  [/equation|expression|algebra|variable|pattern|sequence|function/i, { en: "Represent a relationship with a model, variables, or a rule, then explain how each part fits.", es: "Representa una relación con un modelo, variables o una regla y explica cómo encaja cada parte." }],
-  [/geometry|area|perimeter|volume|shape|length|angle|measurement/i, { en: "Use labeled dimensions or units to model the shape and explain what is being measured.", es: "Usa medidas o unidades etiquetadas para representar la figura y explica qué se mide." }],
-  [/data|graph|chart|statistic|probab|mean|median/i, { en: "Read the title and labels, then use the data as evidence for a comparison or conclusion.", es: "Lee el título y las etiquetas, y usa los datos como evidencia para comparar o concluir." }],
-  [/money|price|cost|change|coin|dollar/i, { en: "Use the amounts and labels to make a calculation, then check whether it fits the situation.", es: "Usa las cantidades y etiquetas para calcular y comprueba si el resultado tiene sentido en la situación." }],
-  [/number line|integer|negative|opposite/i, { en: "Use zero, the scale, and labeled intervals to locate and compare numbers.", es: "Usa el cero, la escala y los intervalos marcados para ubicar y comparar números." }],
-];
-
 const textOf = (value) => Array.isArray(value) ? value.map(textOf).join(" ") : typeof value === "string" ? value : value && typeof value === "object" ? Object.values(value).map(textOf).join(" ") : "";
 const normalize = (text) => String(text || "").normalize("NFD").replace(/\p{Diacritic}/gu, "").toLocaleLowerCase();
 
@@ -40,12 +27,14 @@ export function skillSearchText(game, skill) {
   return normalize(`${catalog} ${aliases}`);
 }
 
-export function skillExplanation(skill, lang = "en") {
+// The authored sentence for one skill (fm2/skill-notes.js). A skill added without a note falls back to its own title,
+// never to a guess from keywords: tools/fm2/skill-notes.test.mjs fails first.
+export function skillExplanation(skill, lang = "en", gameId = "") {
   const locale = lang === "es" ? "es" : "en";
   if (skill?.description?.[locale] || skill?.summary?.[locale]) return skill.description?.[locale] || skill.summary[locale];
-  const descriptor = `${skill?.id || ""} ${textOf(skill?.title)} ${textOf(skill?.strand)}`;
-  return GUIDE.find(([pattern]) => pattern.test(descriptor))?.[1][locale]
-    || (locale === "es" ? "Resuelve el reto y explica cómo lo sabes." : "Work through the prompt and explain how you know.");
+  const note = noteFor(gameId, skill?.id);
+  if (note) return note[locale];
+  return textOf(skill?.title?.[locale]);
 }
 
 export function skillExample(game, skill, grade, lang = "en") {
@@ -78,16 +67,10 @@ export function teacherSkillLink({ grade, gameId, skillId, minutes = 10, mode = 
   return `${path}?${params.toString()}`;
 }
 
-export function teacherMessage({ skill, grade, minutes, lang = "en", url } = {}) {
+export function teacherMessage({ skill, gameId = "", grade, minutes, lang = "en", url } = {}) {
   if (!skill || !url) return "";
   const title = skill.title?.[lang] || skill[lang] || "the selected skill";
-  const description = skill.description?.[lang] || skill.summary?.[lang] || (skill.id === "g8-expand"
-    ? lang === "es"
-      ? "Usen un modelo de área rectangular para multiplicar dos binomios, hallar las áreas parciales y combinar términos semejantes."
-      : "Use a rectangle area model to multiply two binomials, find the partial areas, and combine like terms."
-    : lang === "es"
-      ? `Practica ${skill.es} y explica cómo sabes que tu estrategia funciona.`
-      : `Practice ${skill.en} and explain how you know your strategy works.`);
+  const description = skillExplanation(skill, lang, gameId);
   return lang === "es"
     ? `Práctica opcional de matemáticas: ${lang === "es" ? title : skill.title?.es || title} (${grade === 0 ? "Jardín de niños" : `Grado ${grade}`}), unos ${minutes} minutos. ${description} No es una tarea obligatoria ni una prueba de velocidad. ${url}`
     : `Optional math practice: ${lang === "en" ? title : skill.title?.en || title} (Grade ${grade === 0 ? "Kindergarten" : grade}), about ${minutes} minutes. ${description} This is not a required assignment or a speed test. ${url}`;

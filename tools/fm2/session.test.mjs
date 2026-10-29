@@ -2,6 +2,7 @@
 // share code round trip, and strict rejection of malformed codes. Expected totals are recomputed here from the
 // fixture games' seconds-per-round. @fm2 FM-003 FM-004 FM-005 FM-030 FM-065 FM-020
 import assert from "node:assert/strict";
+import { STRAND_LABEL, strandKey } from "../../math/fluency-lab/family/fm2/coach.js";
 import { missingLanguages } from "../../math/fluency-lab/family/fm2/lang.js";
 import { recommend } from "../../math/fluency-lab/family/fm2/recommend.js";
 import {
@@ -10,6 +11,7 @@ import {
   encodePlan,
   planSession,
   REFLECTIONS,
+  themeText,
 } from "../../math/fluency-lab/family/fm2/session.js";
 import { FAKE_GAMES, FAKE_SEC, makeFakeGames, subset } from "./fixtures/fake-games.mjs";
 
@@ -592,12 +594,29 @@ ok(longestCode <= 600, `codes fit the 600 character resume field (longest ${long
       a.title.en !== a.title.es,
     "bilingual title",
   );
-  const lead = GAMES.find((g) => g.id === a.activities[1].gameId).skills.find(
-    (s) => s.id === a.activities[1].skillId,
-  );
+  // The theme names every activity, not only the main one (a pattern + money + addition mission was titled "Money").
+  const topicOf = (act) => {
+    const skill = GAMES.find((g) => g.id === act.gameId).skills.find((s) => s.id === act.skillId);
+    return strandKey(skill.strand, skill.id, act.gameId);
+  };
+  const expected = [...new Set(a.activities.map(topicOf))];
   ok(
-    a.title.en.includes(lead.strand.en) && a.title.es.includes(lead.strand.es),
-    "the title names the main activity's strand",
+    JSON.stringify(a.topics) === JSON.stringify(expected),
+    "the mission lists the topic of every activity once",
+  );
+  for (const key of expected.slice(0, 3)) {
+    ok(
+      a.title.en.includes(STRAND_LABEL[key].en) && a.title.es.includes(STRAND_LABEL[key].es),
+      `the title names ${key}`,
+    );
+  }
+  ok(
+    themeText(["money"], "en") === "Money" &&
+      themeText(["money", "fractions"], "en") === "Money · Fractions" &&
+      themeText(["money", "fractions", "decimals"], "es") === "Dinero · Fracciones · Decimales" &&
+      themeText(["money", "fractions", "decimals", "data"], "en") ===
+        "Money · Fractions · Decimals · more",
+    "theme text joins one, two, three and many topics",
   );
   ok(a.estSec >= 510 && a.estSec <= 630, "within the 10-minute budget");
   const c = dailyMission({ grade: 3, state, games: GAMES, now: nextDay });

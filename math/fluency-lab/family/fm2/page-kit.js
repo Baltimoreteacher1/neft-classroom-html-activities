@@ -9,7 +9,7 @@ import {
   selectProfile,
   writeLocal,
 } from "../../school-tools.js";
-import { strandKey } from "./coach.js";
+import { STRAND_LABEL, strandKey } from "./coach.js";
 import { validateGame } from "./contract.js";
 import { escapeHtml as esc, getLang, setLang, tx } from "./lang.js";
 import { GAME_IDS, loadGame } from "./registry.js";
@@ -46,20 +46,7 @@ export const KIT = {
   min: c("{n} min", "{n} min"),
 };
 
-export const STRAND_LABEL = {
-  "counting-place-value": c("Counting and place value", "Conteo y valor posicional"),
-  "addition-subtraction": c("Adding and subtracting", "Sumar y restar"),
-  "multiplication-division": c("Multiplying and dividing", "Multiplicar y dividir"),
-  fractions: c("Fractions", "Fracciones"),
-  decimals: c("Decimals", "Decimales"),
-  "ratios-percents": c("Ratios and percents", "Razones y porcentajes"),
-  "patterns-algebra": c("Patterns and algebra", "Patrones y álgebra"),
-  "geometry-measure": c("Shapes and measuring", "Figuras y medidas"),
-  money: c("Money", "Dinero"),
-  "number-line": c("Number line and integers", "Recta numérica y enteros"),
-  equations: c("Equations", "Ecuaciones"),
-  data: c("Data and graphs", "Datos y gráficas"),
-};
+export { STRAND_LABEL };
 export const strandOf = (gameId, skill) => strandKey(skill?.strand, skill?.id, gameId);
 
 export const t = (copy, lang, vars) => tx(copy, lang, vars);

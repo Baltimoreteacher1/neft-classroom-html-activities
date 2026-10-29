@@ -4,7 +4,6 @@ const c = (en, es) => ({ en, es });
 
 export const COPY = {
   skip: c("Skip to family practice", "Ir a la práctica en familia"),
-  heroEyebrow: c("A LITTLE MATH, TOGETHER", "UN POCO DE MATEMÁTICAS, EN FAMILIA"),
   heroTitle: c("Make room for a math moment.", "Hagamos un momento para las matemáticas."),
   focusedTitle: c("Practice: {skill}", "Práctica: {skill}"),
   heroLead: c(
@@ -31,12 +30,21 @@ export const COPY = {
     "Take turns, and pause to explain a thought.",
     "Túrnense y expliquen una idea.",
   ),
-  start: c("Start {min}-minute practice", "Iniciar práctica de {min} minutos"),
-  guidedStart: c("Start tonight’s 5–10 minutes", "Empezar los 5 a 10 minutos de hoy"),
-  guidedResume: c("Continue tonight’s session", "Seguir la sesión de hoy"),
+  start: c(
+    "Start today’s {min}-minute practice",
+    "Empezar la práctica de hoy: {min} minutos",
+  ),
+  guidedStart: c(
+    "Try a guided session instead",
+    "Probar una sesión guiada",
+  ),
+  guidedResume: c(
+    "Continue the guided session",
+    "Seguir la sesión guiada",
+  ),
   guidedNote: c(
-    "One idea, a few problems, a game and a chance to explain. We pick what to practice.",
-    "Una idea, unos problemas, un juego y una oportunidad de explicar. Nosotros elegimos qué practicar.",
+    "Guided: one idea, a few problems, a game and a chance to explain, about {min} minutes. We choose the skill.",
+    "Guiada: una idea, unos problemas, un juego y una oportunidad de explicar, unos {min} minutos. Nosotros elegimos la destreza.",
   ),
   startNote: c(
     "{n} activities · about {min} min · {mode}. This is an estimate, not a speed test.",
@@ -69,7 +77,10 @@ export const COPY = {
   ),
   soon: c("Temporarily unavailable", "No disponible por ahora"),
   retry: c("Try loading activities again", "Volver a cargar las actividades"),
-  focusSkill: c("Focus on this skill", "Practicar esta destreza"),
+  focusSkill: c(
+    "Share or focus",
+    "Compartir o enfocar",
+  ),
   focusSelected: c("Focused practice: {skill}", "Práctica enfocada: {skill}"),
   skillSearch: c("Find a skill for this grade", "Buscar una destreza para este grado"),
   examplePrompt: c("Example prompt:", "Ejemplo de consigna:"),
@@ -85,10 +96,13 @@ export const COPY = {
   skillUnavailable: c("That activity is temporarily unavailable. Try today’s recommendation or reload the activities.", "Esa actividad no está disponible por ahora. Prueba la recomendación de hoy o vuelve a cargar las actividades."),
   gradesRange: c("Grades {range}", "Grados {range}"),
   play: c("Play", "Jugar"),
-  skillsTitle: c("Practice a skill", "Practica una destreza"),
+  skillsTitle: c(
+    "Browse skills",
+    "Explorar destrezas",
+  ),
   skillsLead: c(
-    "Skills for {grade}. Stars summarize saved practice; they do not show mastery.",
-    "Destrezas de {grade}. Las estrellas resumen la práctica guardada; no indican dominio.",
+    "Skills for {grade}. Search, then open a group.",
+    "Destrezas de {grade}. Busca y abre un grupo.",
   ),
   practice: c("Practice", "Practicar"),
   skillOne: c("1 skill", "1 destreza"),
@@ -96,7 +110,10 @@ export const COPY = {
   rwLess: c("Show fewer", "Mostrar menos"),
   skillCount: c("{n} skills", "{n} destrezas"),
   coachTitle: c("Try this together", "Prueben juntos"),
-  coachFor: c("A question for {skill} in {game}.", "Una pregunta para {skill} en {game}."),
+  coachFor: c(
+    "For {skill}, one of today’s activities.",
+    "Para {skill}, una de las actividades de hoy.",
+  ),
   coachEmpty: c(
     "A coaching question appears here as soon as a game is ready.",
     "Aquí aparecerá una pregunta de apoyo cuando haya un juego listo.",
@@ -122,16 +139,16 @@ export const COPY = {
   printThis: c("Print this activity", "Imprimir esta actividad"),
   resumeTitle: c("Continue your activity", "Continúa tu actividad"),
   resumeText: c(
-    "You stopped in the middle of {game}. Your place is saved.",
-    "Te detuviste a la mitad de {game}. Tu lugar está guardado.",
+    "You paused {skill} in {game}, round {n} of {total}. Your place is saved.",
+    "Pausaste {skill} en {game}, ronda {n} de {total}. Tu lugar está guardado.",
   ),
   resumeGo: c("Continue", "Continuar"),
   resumeConflict: c("Choose Continue to return to the saved activity, or start the selected skill below.", "Elige Continuar para volver a la actividad guardada o inicia la destreza elegida abajo."),
   moreTitle: c("More ways to practice", "Más maneras de practicar"),
   tonightTitle: c("Tonight’s Math", "Matemáticas de hoy"),
   tonightText: c(
-    "A five-part guided path built from your learner’s saved practice.",
-    "Un camino guiado de cinco partes basado en la práctica guardada de tu estudiante.",
+    "A separate five-part path from the Fluency Lab, built from your learner’s saved Fluency Lab practice.",
+    "Un camino aparte de cinco partes del laboratorio de fluidez, basado en la práctica guardada allí.",
   ),
   labTitle: c("The full Fluency Lab", "El laboratorio de fluidez completo"),
   labText: c(
@@ -141,4 +158,76 @@ export const COPY = {
   backLab: c("Back to the Fluency Lab", "Volver al laboratorio de fluidez"),
   errorTitle: c("Something went wrong loading this page.", "Algo salió mal al cargar esta página."),
   errorText: c("Reload the page, or try", "Recarga la página o prueba"),
+  savedReplace: c(
+    "Starting a new session replaces your saved activity.",
+    "Empezar una sesión nueva reemplaza tu actividad guardada.",
+  ),
+  elseText: c(
+    "Want to choose something else?",
+    "¿Quieres elegir otra cosa?",
+  ),
+  elseLink: c(
+    "Browse skills and games",
+    "Explorar destrezas y juegos",
+  ),
+  missionTheme: c(
+    "Today’s focus: {theme}",
+    "Enfoque de hoy: {theme}",
+  ),
+  missionLead: c(
+    "Start the whole mission above, or open any one skill.",
+    "Empieza toda la misión arriba o abre una sola destreza.",
+  ),
+  practiceThis: c(
+    "Practice this skill",
+    "Practicar esta destreza",
+  ),
+  practiceThisAria: c(
+    "Practice this skill: {skill} ({game})",
+    "Practicar esta destreza: {skill} ({game})",
+  ),
+  resumeSession: c(
+    "It is part of a longer session.",
+    "Es parte de una sesión más larga.",
+  ),
+  coachForPicked: c(
+    "For {skill}, the skill you chose.",
+    "Para {skill}, la destreza que elegiste.",
+  ),
+  moreIdeas: c(
+    "More ideas",
+    "Más ideas",
+  ),
+  progressNote: c(
+    "Stars show practice saved on this device. They do not measure mastery.",
+    "Las estrellas muestran la práctica guardada en este dispositivo. No miden el dominio.",
+  ),
+  weekSummary: c(
+    "This week’s summary",
+    "Resumen de esta semana",
+  ),
+  skillDetails: c(
+    "Details",
+    "Detalles",
+  ),
+  standardLabel: c(
+    "Standard:",
+    "Estándar:",
+  ),
+  searchNone: c(
+    "No skills match “{q}”. Try a shorter word.",
+    "Ninguna destreza coincide con «{q}». Prueba con una palabra más corta.",
+  ),
+  searchCount: c(
+    "{n} matching skills",
+    "{n} destrezas coinciden",
+  ),
+  guidedResumeTitle: c(
+    "Continue your guided session",
+    "Continúa tu sesión guiada",
+  ),
+  guidedResumeText: c(
+    "You started a guided session on {skill}. Your place is saved.",
+    "Empezaste una sesión guiada sobre {skill}. Tu lugar está guardado.",
+  ),
 };

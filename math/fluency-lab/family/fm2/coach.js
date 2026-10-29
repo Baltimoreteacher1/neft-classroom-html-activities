@@ -7,6 +7,22 @@ const t = (en, es) => ({ en, es });
 
 export const STRAND_KEYS = ["counting-place-value", "addition-subtraction", "multiplication-division", "fractions", "decimals", "ratios-percents", "patterns-algebra", "geometry-measure", "money", "number-line", "equations", "data"];
 
+export const STRAND_LABEL = {
+  "counting-place-value": t("Counting and place value", "Conteo y valor posicional"),
+  "addition-subtraction": t("Adding and subtracting", "Sumar y restar"),
+  "multiplication-division": t("Multiplying and dividing", "Multiplicar y dividir"),
+  fractions: t("Fractions", "Fracciones"),
+  decimals: t("Decimals", "Decimales"),
+  "ratios-percents": t("Ratios and percents", "Razones y porcentajes"),
+  "patterns-algebra": t("Patterns and algebra", "Patrones y álgebra"),
+  "geometry-measure": t("Shapes and measuring", "Figuras y medidas"),
+  money: t("Money", "Dinero"),
+  "number-line": t("Number line and integers", "Recta numérica y enteros"),
+  equations: t("Equations", "Ecuaciones"),
+  data: t("Data and graphs", "Datos y gráficas"),
+  "binomial-area": t("Multiplying with area models", "Multiplicar con modelos de área"),
+};
+
 // Order matters: the first matching rule wins, so the narrower strands come before the broad ones.
 const RULES = [
   // This is a specific algebra area model. Keep it ahead of generic algebra and area matches.
@@ -172,8 +188,14 @@ export function explain({ game, skill, grade = 1, round } = {}) {
   return pool[seedFrom(skill?.id ?? "", grade, marker) % pool.length];
 }
 
-export function coachingCard({ gameId = "", skillId = "", strand, grade = 1 } = {}) {
-  const key = strandKey(strand, skillId, gameId);
+// The stored "look for" sentences open with "Listen for" / "Escucha si". A page that prints its own label for the row
+// shows only what follows, so the lead is never said twice.
+const LISTEN_LEAD = { en: /^listen for\s+/i, es: /^escucha si\s+/i };
+export const withoutListenLead = (text) => ({ en: String(text?.en ?? "").replace(LISTEN_LEAD.en, ""), es: String(text?.es ?? "").replace(LISTEN_LEAD.es, "") });
+
+// `topic` is the authored topic of the skill (skill-notes.js); without it the card falls back to the keyword match.
+export function coachingCard({ gameId = "", skillId = "", strand, grade = 1, topic } = {}) {
+  const key = Object.hasOwn(STRAND_BANK, topic) ? topic : strandKey(strand, skillId, gameId);
   const bank = STRAND_BANK[key];
   const ask = bank.ask[seedFrom(skillId, grade) % bank.ask.length];
   const young = Number(grade) <= 2;

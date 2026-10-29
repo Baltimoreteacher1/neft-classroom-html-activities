@@ -63,6 +63,7 @@ export function startActivity(options) {
     mode = "solo",
     coach = null,
     showSummary = true,
+    keepSaved = false,
     onFinish = () => {},
     onExit = () => {},
   } = options;
@@ -321,7 +322,9 @@ export function startActivity(options) {
         return tools;
       },
     };
-    store.saveResume({
+    // A direct launch beside a saved session must not take over its single slot (see play.js).
+    if (!keepSaved)
+      store.saveResume({
       gameId: game.id,
       skillId,
       grade,
@@ -357,7 +360,7 @@ export function startActivity(options) {
   function finish() {
     const done = summary();
     store.completeActivity({ gameId: game.id, correct: done.correct, total: done.rounds });
-    store.clearResume();
+    if (!keepSaved) store.clearResume();
     mounted?.destroy?.();
     if (!showSummary) {
       onFinish(done);

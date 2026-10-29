@@ -1,83 +1,70 @@
-/* Family Math 2.0 home. Calm, mobile-first; tokens come from fm2.css. @fm2 FM-001 FM-002 FM-036 */
+/* Family Math home. Calm, mobile-first; tokens come from fm2.css. One primary button (.fm2-btn-primary) at a time,
+   quiet outlined buttons for everything else, muted text only for supporting detail. @fm2 FM-001 FM-002 FM-036 */
 .home-page {
   overflow-x: clip;
 }
 .hm-region {
-  margin-top: 32px;
+  margin-top: 28px;
 }
 .hm-head {
-  margin-bottom: 14px;
+  margin-bottom: 12px;
 }
 .hm-noprint {
   align-self: flex-start;
 }
+.hm-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
 
-/* Hero and the setup card */
+/* Welcome and practice setup: one compact card */
 .hm-hero {
   display: grid;
-  gap: 22px;
+  gap: 18px;
   margin-top: 0;
-  padding: clamp(20px, 4vw, 40px);
-  border-radius: 28px;
-  background: linear-gradient(118deg, #17324D 0%, #17324D 68%, #17324D 100%);
-  color: #fff;
-  box-shadow: var(--fm-shadow);
-}
-.hm-hero.is-directed .hm-hero-copy h1 {
-  font-size: clamp(1.8rem, 5.4vw, 2.8rem);
+  padding: clamp(16px, 3vw, 24px);
+  border: 1px solid var(--fm-line);
+  border-radius: 20px;
+  background: #fff;
 }
 .hm-hero-copy {
-  position: relative;
   min-width: 0;
-  align-self: center;
-}
-.hm-eyebrow {
-  margin: 0 0 8px;
-  color: #F7F4EC;
-  font-size: 0.78rem;
-  font-weight: 800;
-  letter-spacing: 0.14em;
+  align-self: start;
 }
 .hm-hero h1 {
-  margin: 0 0 12px;
+  margin: 0 0 8px;
   font:
-    700 clamp(2rem, 6.5vw, 3.1rem) / 1.08 Georgia,
+    700 clamp(1.6rem, 4.6vw, 2.2rem) / 1.12 Georgia,
     serif;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.02em;
   overflow-wrap: anywhere;
 }
 .hm-hero-lead {
   margin: 0;
   max-width: 34em;
-  color: #F7F4EC;
-  font-size: 1.08rem;
+  font-size: 1.05rem;
 }
 .hm-privacy {
-  margin: 14px 0 0;
-  color: #F7F4EC;
-  font-size: 0.9rem;
-}
-.hm-chips {
-  display: none;
-  gap: 10px;
-  margin-top: 22px;
-}
-.hm-chips span {
-  padding: 8px 14px;
-  border: 1px solid #ffffff55;
-  border-radius: 12px;
-  background: #ffffff1c;
-  font-weight: 800;
+  margin: 10px 0 0;
+  color: var(--fm-muted);
+  font-size: 0.92rem;
 }
 .hm-setup {
   display: grid;
-  gap: 14px;
+  gap: 12px;
   min-width: 0;
-  padding: 18px;
-  border-radius: 20px;
-  background: #fff;
+  padding: 16px;
+  border-radius: 16px;
+  background: var(--fm-paper);
   color: var(--fm-ink);
-  box-shadow: 0 14px 40px rgba(23,50,77,.25);
+}
+.hm-controls {
+  display: grid;
+  gap: 12px;
 }
 .hm-field {
   min-width: 0;
@@ -85,21 +72,13 @@
   padding: 0;
   border: 0;
 }
-.hm-field legend {
-  padding: 0;
-  margin-bottom: 8px;
-  font-size: 0.95rem;
-  font-weight: 800;
-}
+.hm-field legend,
 .hm-field-label {
   display: block;
-  margin-bottom: 8px;
-  font-size: 0.95rem;
+  padding: 0;
+  margin-bottom: 6px;
+  font-size: 0.92rem;
   font-weight: 800;
-}
-.hm-field-row {
-  display: grid;
-  gap: 14px;
 }
 .hm-grade-select {
   width: 100%;
@@ -113,20 +92,15 @@
   font-size: 1rem;
   touch-action: manipulation;
 }
-.hm-grade-select:focus-visible {
-  outline: 3px solid var(--fm-focus-ring, #17324D);
-  outline-offset: 2px;
-}
 .hm-seg {
   display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
+  gap: 6px;
 }
 .hm-pill {
   position: relative;
   display: inline-flex;
-  flex: 1 1 auto;
-  min-width: 80px;
+  flex: 1 1 0;
+  min-width: 0;
 }
 .hm-pill input {
   position: absolute;
@@ -141,14 +115,17 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: 4px;
   width: 100%;
   min-height: 48px;
-  padding: 6px 16px;
+  padding: 6px 8px;
   border: 2px solid var(--fm-line);
   border-radius: 999px;
   background: #fff;
+  font-size: 0.95rem;
   font-weight: 800;
+  text-align: center;
+  line-height: 1.15;
   pointer-events: none;
 }
 .hm-pill input:checked + span {
@@ -162,39 +139,67 @@
 .hm-pill input:focus-visible + span {
   box-shadow: var(--fm-focus);
 }
-.hm-hint {
-  margin: 0;
-  color: var(--fm-muted);
-  font-size: 0.92rem;
-}
-.hm-start {
-  width: 100%;
-  min-height: 60px;
-  font-size: 1.25rem;
-}
+.hm-hint,
 .hm-note {
   margin: 0;
   color: var(--fm-muted);
   font-size: 0.92rem;
+}
+.hm-note {
   text-align: center;
+}
+.hm-note-start {
+  text-align: start;
+  margin-bottom: 12px;
+}
+.hm-start {
+  width: 100%;
+  min-height: 56px;
+  font-size: 1.15rem;
 }
 .hm-loading {
   margin: 0;
   color: var(--fm-muted);
 }
+.hm-guided-box {
+  display: grid;
+  gap: 6px;
+  padding-top: 12px;
+  border-top: 1px solid var(--fm-line);
+}
+.hm-guided {
+  width: 100%;
+  min-height: 48px;
+  text-align: center;
+}
+.hm-else {
+  margin: 0;
+  text-align: center;
+  font-size: 0.95rem;
+}
+.hm-else a,
+.hm-skill-link,
+.hm-act-link {
+  color: var(--fm-navy);
+  text-underline-offset: 3px;
+}
 
-/* Resume banner */
+/* Saved activity */
 .hm-resume {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   gap: 10px 16px;
-  margin-bottom: 18px;
+  margin-bottom: 14px;
   padding: 14px 18px;
   border: 2px solid var(--fm-mint);
   border-radius: 16px;
   background: var(--fm-mint-soft);
+}
+.hm-resume > div {
+  flex: 1 1 260px;
+  min-width: 0;
 }
 .hm-resume h2 {
   margin: 0;
@@ -213,76 +218,130 @@
   list-style: none;
 }
 .hm-act {
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: start;
+  gap: 8px 12px;
   padding: 14px;
   border: 1px solid var(--fm-line);
   border-radius: 16px;
   background: #fff;
-  box-shadow: var(--fm-shadow);
 }
 .hm-act-main {
-  flex: 1 1 auto;
   min-width: 0;
 }
-.hm-act-main strong {
-  display: block;
+.hm-act-main p,
+.hm-act-main h3 {
+  margin: 0;
+}
+.hm-act-meta {
+  color: var(--fm-muted);
+  font-size: 0.85rem;
+}
+.hm-act-title {
+  font-size: 1.1rem;
+  line-height: 1.25;
+}
+.hm-act-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-weight: 800;
   overflow-wrap: anywhere;
 }
-.hm-act-main > span {
-  color: var(--fm-muted);
-  font-size: 0.92rem;
-}
-.hm-why {
-  margin: 4px 0 0;
+.hm-act-game {
   color: var(--fm-muted);
   font-size: 0.9rem;
 }
-.hm-min {
-  flex: none;
-  padding: 2px 10px;
-  border-radius: 999px;
-  background: var(--fm-mist);
-  font-size: 0.85rem;
-  font-weight: 800;
-  white-space: nowrap;
+.hm-act-note {
+  margin-top: 4px;
+}
+.hm-why {
+  margin-top: 4px;
+  color: var(--fm-muted);
+  font-size: 0.88rem;
+}
+.hm-act-go {
+  grid-column: 1 / -1;
 }
 .hm-total {
   margin: 10px 2px 0;
   color: var(--fm-muted);
+  font-size: 0.95rem;
 }
 
-/* Progress strip */
+/* Progress */
 .hm-stats {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 10px;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
 }
 .hm-stat {
-  padding: 14px;
+  padding: 12px;
   border: 1px solid var(--fm-line);
-  border-radius: 16px;
+  border-radius: 14px;
   background: #fff;
 }
 .hm-stat b {
   display: block;
   font:
-    700 clamp(1.5rem, 5vw, 2.1rem) / 1.1 Georgia,
+    700 clamp(1.4rem, 5vw, 1.9rem) / 1.1 Georgia,
     serif;
 }
 .hm-stat span {
   color: var(--fm-muted);
   font-size: 0.88rem;
 }
+.hm-week {
+  margin-bottom: 12px;
+  border: 1px solid var(--fm-line);
+  border-radius: 14px;
+  background: #fff;
+}
+.hm-week summary,
+.hm-skill-more summary,
+.hm-more-ideas summary {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 6px 14px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.hm-week > :not(summary) {
+  padding: 0 14px 14px;
+}
+
+/* Collapsible browsing sections: games and math at home */
+.hm-fold {
+  border: 1px solid var(--fm-line);
+  border-radius: 16px;
+  background: #fff;
+}
+.hm-fold > summary {
+  display: flex;
+  align-items: center;
+  min-height: 56px;
+  padding: 8px 18px;
+  cursor: pointer;
+}
+.hm-fold > summary h2 {
+  display: inline;
+}
+.hm-fold > :not(summary) {
+  margin-inline: 18px;
+}
+.hm-fold > :last-child {
+  margin-bottom: 18px;
+}
 
 /* Games shelf */
 .hm-games {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
-  gap: 12px;
-  margin: 0;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
+  gap: 10px;
+  margin: 12px 0 0;
   padding: 0;
   list-style: none;
 }
@@ -291,9 +350,9 @@
   align-items: center;
   flex-wrap: wrap;
   gap: 8px 12px;
-  padding: 14px;
+  padding: 12px;
   border: 1px solid var(--fm-line);
-  border-radius: 16px;
+  border-radius: 14px;
   background: #fff;
 }
 .hm-game-main {
@@ -320,14 +379,60 @@
   border-style: dashed;
 }
 
-/* Skill browser */
+/* Skill browser: search, topic groups, details on demand */
+.hm-browser {
+  display: grid;
+  gap: 10px;
+}
+.hm-search label,
+.hm-share label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 800;
+}
+.hm-search input,
+.hm-share input,
+.hm-share textarea,
+.hm-share select {
+  width: 100%;
+  min-height: 48px;
+  padding: 10px 12px;
+  border: 2px solid var(--fm-line);
+  border-radius: 12px;
+  color: var(--fm-ink);
+  background: #fff;
+  font: inherit;
+}
+.hm-share textarea {
+  min-height: 84px;
+  resize: vertical;
+}
+.hm-search-status {
+  margin: 0;
+  min-height: 1.3em;
+  color: var(--fm-muted);
+  font-size: 0.92rem;
+}
+.hm-share {
+  display: grid;
+  gap: 8px;
+  padding: 16px;
+  border: 2px solid var(--fm-mint);
+  border-radius: 16px;
+  background: var(--fm-mint-soft);
+}
+.hm-share p {
+  margin: 0;
+}
+.hm-share button {
+  justify-self: start;
+}
 .hm-strand {
-  margin-bottom: 10px;
   border: 1px solid var(--fm-line);
   border-radius: 16px;
   background: #fff;
 }
-.hm-strand summary {
+.hm-strand > summary {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -338,73 +443,66 @@
   cursor: pointer;
   border-radius: 16px;
 }
-.hm-strand summary small {
+.hm-strand > summary small {
   color: var(--fm-muted);
   font-weight: 700;
+  white-space: nowrap;
 }
 .hm-skills {
   display: grid;
-  gap: 0;
   margin: 0;
   padding: 0 12px 8px;
   list-style: none;
 }
 .hm-skill {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
-  gap: 6px 12px;
-  padding: 10px 4px;
+  gap: 4px 12px;
+  padding: 8px 4px;
   border-top: 1px solid var(--fm-mist);
 }
 .hm-skill-main {
-  flex: 1 1 180px;
   min-width: 0;
 }
-.hm-skill-main strong {
-  display: block;
+.hm-skill-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-weight: 800;
   overflow-wrap: anywhere;
 }
 .hm-skill-main span {
+  display: block;
   color: var(--fm-muted);
   font-size: 0.88rem;
+}
+.hm-skill-main .pk-stars {
+  display: block;
+  margin-top: 2px;
+}
+.hm-practice {
+  min-height: 44px;
+  padding: 6px 16px;
+}
+.hm-skill-more {
+  grid-column: 1 / -1;
+}
+.hm-skill-more summary {
+  min-height: 44px;
+  padding-inline: 0;
+  color: var(--fm-navy);
+  font-size: 0.92rem;
+}
+.hm-skill-more p {
+  margin: 4px 0;
+  font-size: 0.95rem;
   overflow-wrap: anywhere;
 }
-.hm-teacher-picker {
-  display: grid;
-  gap: 10px;
-  margin: 14px 0 20px;
-  padding: 16px;
-  border: 1px solid var(--fm-line);
-  border-radius: 16px;
-  background: var(--fm-paper);
-}
-.hm-teacher-picker label { font-weight: 800; }
-.hm-teacher-picker input,
-.hm-teacher-picker textarea {
-  width: 100%;
-  min-height: 44px;
-  padding: 10px 12px;
-  border: 1px solid var(--fm-muted);
-  border-radius: 10px;
-  color: var(--fm-ink);
-  background: #fff;
-  font: inherit;
-}
-.hm-teacher-picker textarea { min-height: 84px; resize: vertical; }
-.hm-teacher-picker ul { display: grid; gap: 6px; max-height: 18rem; overflow: auto; margin: 0; padding: 0; list-style: none; }
-.hm-teacher-picker li { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; padding: 6px 0; border-bottom: 1px solid var(--fm-mist); }
-.hm-picker-skill { flex: 1 1 240px; min-width: 0; }
-.hm-picker-skill > strong,
-.hm-picker-skill > small { display: block; }
-.hm-picker-skill > small { color: var(--fm-muted); }
-.hm-picker-skill p,
-.hm-skill-example { margin: 4px 0; font-size: 0.92rem; overflow-wrap: anywhere; }
-.hm-teacher-picker button { min-height: 44px; }
 
-/* Coaching card and real-world */
+/* Coaching card and real-world activities */
 .hm-coach {
-  padding: 20px;
+  padding: 18px;
   border: 1px solid #bfe3d3;
   border-radius: 20px;
   background: var(--fm-mint-soft);
@@ -419,11 +517,15 @@
 }
 .hm-coach-row {
   margin: 8px 0;
+  max-width: 44em;
+}
+.hm-more-ideas summary {
+  padding-inline: 0;
 }
 .hm-rw {
-  margin-bottom: 10px;
+  margin-top: 10px;
   border: 1px solid var(--fm-line);
-  border-radius: 16px;
+  border-radius: 14px;
   background: #fff;
 }
 .hm-rw summary {
@@ -450,6 +552,9 @@
 }
 .hm-rw-body li {
   margin: 4px 0;
+}
+.hm-more-btn {
+  margin-top: 10px;
 }
 
 /* More ways + footer */
@@ -493,61 +598,63 @@
   display: inline-flex;
   align-items: center;
   min-height: 44px;
-  color: #17324D;
+  color: #17324d;
   font-weight: 700;
 }
 
-@media (min-width: 600px) {
-  .hm-chips {
-    display: flex;
-  }
-  .hm-field-row {
-    grid-template-columns: 1fr 1fr;
+@media (min-width: 700px) {
+  .hm-controls {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr) minmax(0, 1.5fr);
+    align-items: start;
   }
   .hm-more {
     grid-template-columns: 1fr 1fr;
   }
+  .hm-act {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+  }
+  .hm-act-go {
+    grid-column: 3;
+  }
 }
 @media (min-width: 1000px) {
   .hm-hero {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 480px);
-    gap: 40px;
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.4fr);
+    gap: 32px;
   }
-  .hm-field-row {
+  .hm-controls {
     grid-template-columns: 1fr;
+  }
+  .hm-seg {
+    max-width: 22rem;
   }
 }
 @media (max-width: 520px) {
   .hm-region {
-    margin-top: 26px;
-  }
-  .hm-hero {
-    border-radius: 22px;
-    gap: 14px;
-    padding: 16px 14px;
-  }
-  .hm-hero.is-directed {
-    gap: 10px;
-    padding: 14px 12px;
-  }
-  .hm-hero.is-directed h1 {
-    margin-bottom: 6px;
-  }
-  .hm-hero.is-directed .hm-privacy {
-    margin-top: 8px;
+    margin-top: 22px;
   }
   .hm-setup {
-    gap: 10px;
-    padding: 14px;
+    padding: 12px;
   }
-  .hm-stats {
-    gap: 8px;
+  .hm-pill span {
+    padding: 6px 4px;
+    font-size: 0.9rem;
+  }
+  .hm-skill .pk-ico {
+    display: none;
+  }
+  .hm-skill {
+    grid-template-columns: minmax(0, 1fr) auto;
   }
   .hm-stat {
-    padding: 12px 10px;
+    padding: 10px;
   }
-  .hm-act {
-    flex-wrap: wrap;
+  .hm-fold > summary {
+    padding-inline: 14px;
+  }
+  .hm-fold > :not(summary) {
+    margin-inline: 14px;
   }
 }
 
@@ -558,7 +665,8 @@
   }
   .hm-footer,
   .hm-noprint,
-  .hm-resume {
+  .hm-resume,
+  .hm-more-btn {
     display: none !important;
   }
   body[data-print] .hm-region,
@@ -573,7 +681,9 @@
   body[data-print="realworld"] .hm-rw:not([data-printing]) {
     display: none;
   }
-  body[data-print="realworld"] #rw-region .hm-head {
+  body[data-print="realworld"] #rw-region > summary,
+  body[data-print="realworld"] #rw-region .pk-lead,
+  body[data-print="coach"] .hm-more-ideas summary {
     display: none;
   }
   .hm-coach {
@@ -587,41 +697,4 @@
   .hm-rw summary::marker {
     content: "";
   }
-}
-.hm-more-btn { margin-top: 4px; }
-.hm-skill-main .pk-stars { display: block; margin-top: 2px; }
-.hm-practice { min-height: 44px; padding: 6px 16px; }
-.hm-act { display: grid; grid-template-columns: auto minmax(0, 1fr); }
-.hm-min { grid-column: 2; justify-self: start; }
-@media (min-width: 700px) {
-  .hm-act { grid-template-columns: auto minmax(0, 1fr) auto; }
-  .hm-min { grid-column: 3; justify-self: end; }
-}
-.hm-pill { min-width: 0; flex: 1 1 0; }
-.hm-seg .hm-pill span { padding: 6px 8px; }
-@media (max-width: 520px) {
-  .hm-hero { padding: 16px 14px; }
-  .hm-setup { padding: 14px; }
-  .hm-skill .pk-ico { display: none; }
-  .hm-skill { flex-wrap: nowrap; }
-}
-.hm-pill span { white-space: nowrap; font-size: 0.95rem; }
-.hm-seg .hm-pill span { padding: 6px 4px; gap: 4px; }
-.hm-strand summary small { white-space: nowrap; }
-.hm-strand summary span { min-width: 0; }
-@media print { .hm-more-btn { display: none !important; } }
-.hm-guided {
-  display: flex;
-  width: 100%;
-  max-width: 26rem;
-  min-height: 64px;
-  font-size: 1.25rem;
-  text-align: center;
-  text-decoration: none;
-}
-.hm-hero-copy .hm-note {
-  text-align: start;
-}
-.hm-hero.is-directed #setup > .hm-start {
-  display: none;
 }

@@ -134,6 +134,8 @@ async function boot() {
     rounds: saved?.rounds ?? rounds,
     seed: saved?.seed ?? intParam("seed", 0, 4294967295, undefined),
     index: saved?.index ?? 0,
+    // Opening a skill directly (not through Continue) while another session is saved leaves that saved session alone.
+    keepSaved: !resume && Boolean(store.state.resume),
     results: saved?.results || [],
     mode: params.get("mode") === "together" ? "together" : saved?.mode || "solo",
     onExit: () => {
