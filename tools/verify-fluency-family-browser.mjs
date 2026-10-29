@@ -141,6 +141,10 @@ try {
     await directLinkPage.locator("#start-link").getAttribute("href"),
     directLinkPage.url(),
   );
+  const prominentStart = new URL(
+    await directLinkPage.locator("#guided-start").getAttribute("href"),
+    directLinkPage.url(),
+  );
   const focusedPlan = decodePlan(focusedStart.searchParams.get("plan"), await loadAll());
   assert.equal(focusedPlan.grade, 8);
   assert.equal(focusedPlan.minutes, 5);
@@ -150,7 +154,17 @@ try {
     [["array-architect", "g8-expand"]],
     "the primary action starts only the requested skill",
   );
-  await directLinkPage.locator("#start-link").click();
+  assert.equal(
+    prominentStart.searchParams.get("plan"),
+    focusedStart.searchParams.get("plan"),
+    "the prominent mobile action keeps the teacher-requested skill",
+  );
+  assert.equal(
+    await directLinkPage.locator("#start-link").isVisible(),
+    false,
+    "directed practice presents only one prominent start action",
+  );
+  await directLinkPage.locator("#guided-start").click();
   await directLinkPage.waitForSelector('[data-fm2-shell][data-game="array-architect"]');
   assert.match(await directLinkPage.locator("[data-fm2-skill]").innerText(), /binomios/i);
   assert.equal(await directLinkPage.locator("html").getAttribute("lang"), "es");

@@ -368,6 +368,22 @@ document.addEventListener("click", (event) => {
 function paintGuidedStart() {
   const link = $("#guided-start");
   if (!link) return;
+  const note = $("#guided-note");
+  if (S.selectedSkill) {
+    const directed = S.requestedSkillState === "valid"
+      ? findDirectedSkill(S.games, S.grade, S.selectedSkill, S.selectedGame)
+      : null;
+    const start = $("#start-link");
+    link.hidden = !directed || !start || start.getAttribute("aria-disabled") === "true";
+    if (directed && start) {
+      link.href = start.href;
+      link.textContent = t(C.start, S.lang, { min: S.minutes });
+    }
+    if (note) note.hidden = true;
+    return;
+  }
+  link.hidden = false;
+  if (note) note.hidden = false;
   const saved = createGuidedStore({ profile: S.profile ?? 0 }).state.active;
   const open = saved && !saved.recorded;
   const query = new URLSearchParams({ grade: S.grade, profile: S.profile ?? 0, lang: S.lang, minutes: S.minutes === 5 ? 5 : 10 });
