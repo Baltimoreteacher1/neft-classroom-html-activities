@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-unit="4">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -7,9 +7,10 @@
       name="description"
       content="Optional, ungraded Grade 6 family practice for the Unit 4 Test on percents — percent tape diagrams, fractions, decimals and percents, percent of a number, finding the whole, combining and comparing data, and estimating with benchmark percents. New numbers, hints, and a family note in English and Spanish."
     />
-    <meta name="theme-color" content="#15487f" />
+    <meta name="theme-color" content="#705137" />
     <link href="/assets/fonts/outfit-hanken-grotesk-56e206.css" rel="stylesheet" />
     <link href="/assets/fonts/fraunces-hanken-grotesk-e8a3b5.css" rel="stylesheet" />
+    <link href="/assets/family-paper.css" rel="stylesheet" />
     <!-- Assignable in the Family Connections homework publisher (see generate-curriculum-manifest.mjs). -->
     <meta name="family-homework-id" content="4-test-review" />
     <meta name="family-homework-title-es" content="Repaso para el examen de la Unidad 4" />
@@ -378,63 +379,42 @@
         padding: 22px 18px 54px;
       }
 
-      /* Hero Section */
+      /* Hero Section: unit-tint panel on paper (family paper system, Unit 4 = cocoa) */
       .hero {
-        position: relative;
-        overflow: hidden;
-        border-radius: var(--radius-lg);
-        background: linear-gradient(132deg, #17324d 0%, #20506a 50%, #147e86 100%);
-        color: white;
-        padding: 32px 34px;
-        box-shadow: var(--shadow-lg);
-        display: grid;
-        grid-template-columns: minmax(0, 1.45fr) minmax(280px, 0.75fr);
-        gap: 28px;
-        align-items: center;
-        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 24px;
+        background: var(--fp-unit-tint);
+        color: var(--fp-ink);
+        padding: clamp(20px, 3.4vw, 40px);
+        border: 1px solid var(--fp-rule);
       }
-      .hero::before {
-        content: "";
-        position: absolute;
-        width: 330px;
-        height: 330px;
-        border-radius: 50%;
-        right: -120px;
-        top: -170px;
-        background: rgba(255, 255, 255, 0.08);
-      }
-      .hero::after {
-        content: "";
-        position: absolute;
-        width: 250px;
-        height: 250px;
-        border: 36px solid rgba(233, 180, 76, 0.1);
-        border-radius: 50%;
-        left: -110px;
-        bottom: -170px;
-      }
-      .hero > div { position: relative; z-index: 1; }
       .eyebrow {
-        font-size: 0.75rem;
-        text-transform: uppercase;
-        letter-spacing: 0.16em;
-        font-weight: 950;
-        color: #c5eef0;
-        margin-bottom: 9px;
+        display: inline-flex;
+        margin: 0 0 14px;
+        padding: 6px 14px;
+        border-radius: 14px;
+        background: #fff;
+        color: var(--fp-unit-ink);
+        font-size: 0.88rem;
+        font-weight: 800;
+        letter-spacing: 0.02em;
       }
       .hero h2 {
-        font-size: clamp(1.9rem, 3.2vw, 3.2rem);
-        line-height: 1.05;
+        font-family: var(--fp-serif);
+        font-size: clamp(1.9rem, 3.8vw, 2.75rem);
+        font-weight: 800;
+        line-height: 1.08;
         margin: 0 0 12px;
-        letter-spacing: -0.035em;
-        max-width: 760px;
+        letter-spacing: -0.01em;
+        max-width: 20em;
+        color: var(--fp-unit-ink);
+        text-wrap: balance;
       }
       .hero p {
         margin: 0;
-        max-width: 760px;
-        color: #e5f4f5;
-        font-size: 1.01rem;
-        line-height: 1.62;
+        max-width: 46em;
+        color: var(--fp-ink);
+        font-size: clamp(1.05rem, 2vw, 1.25rem);
+        line-height: 1.5;
       }
       .hero-chips {
         display: flex;
@@ -443,122 +423,55 @@
         margin-top: 18px;
       }
       .hero-chip {
-        border: 1px solid rgba(255, 255, 255, 0.22);
-        background: rgba(255, 255, 255, 0.12);
-        color: white;
-        padding: 6px 11px;
+        border: 1px solid var(--fp-rule);
+        background: #fff;
+        color: var(--fp-ink);
+        padding: 6px 14px;
         border-radius: 999px;
-        font-size: 0.78rem;
-        font-weight: 850;
-        backdrop-filter: blur(4px);
-      }
-      .formula-card {
-        position: relative;
-        background: rgba(255, 255, 255, 0.97);
-        color: var(--ink);
-        border: 1px solid rgba(255, 255, 255, 0.9);
-        border-radius: 18px;
-        padding: 18px;
-        box-shadow: 0 14px 30px rgba(8, 31, 48, 0.19);
-      }
-      .formula-card::before {
-        content: "REVIEW CARD · REPASO FAMILIAR";
-        display: block;
-        font-size: 0.67rem;
-        letter-spacing: 0.14em;
-        font-weight: 950;
-        color: var(--teal);
-        border-bottom: 1px dashed #b8ced3;
-        padding-bottom: 7px;
-        margin-bottom: 10px;
-      }
-      .formula-card strong {
-        display: block;
-        color: var(--navy);
-        margin-bottom: 10px;
-        font-size: 0.92rem;
-      }
-      .recap {
-        display: grid;
-        gap: 7px;
-        margin: 0;
-        padding: 0;
-        list-style: none;
-      }
-      .recap li {
-        display: flex;
-        gap: 8px;
-        align-items: flex-start;
-        font-size: 0.85rem;
-        font-weight: 800;
-        color: var(--navy);
-        line-height: 1.38;
-      }
-      .recap li::before {
-        content: "✓";
-        flex: 0 0 auto;
-        width: 18px;
-        height: 18px;
-        border-radius: 50%;
-        background: var(--good-bg);
-        color: var(--good);
-        display: grid;
-        place-items: center;
-        font-size: 0.7rem;
-        font-weight: 950;
-        margin-top: 1px;
-      }
-      .formula-note {
-        font-size: 0.78rem;
-        text-align: center;
-        margin-top: 12px;
-        color: var(--muted);
-        line-height: 1.4;
+        font-size: 0.9rem;
+        font-weight: 700;
       }
 
-      /* Tabs */
+      /* Tabs: the review path. A row on phones, a left rail on laptops. */
       .tabs {
         position: sticky;
         top: 65px;
         z-index: 25;
         display: flex;
-        gap: 8px;
+        gap: 6px;
         margin: 18px 0 0;
         overflow-x: auto;
         padding: 7px;
         scrollbar-width: thin;
-        background: rgba(245, 249, 250, 0.94);
+        background: rgba(255, 253, 248, 0.96);
         backdrop-filter: blur(10px);
-        border: 1px solid var(--line);
-        border-radius: 16px;
-        box-shadow: var(--shadow-sm);
+        border: 1px solid var(--fp-rule);
+        border-radius: 18px;
       }
       .tab-btn {
         flex: 0 0 auto;
         border: 1px solid transparent;
         background: transparent;
-        color: var(--navy);
-        font-weight: 850;
-        padding: 9px 13px;
-        border-radius: 10px;
+        color: var(--fp-ink);
+        font-weight: 700;
+        padding: 9px 14px;
+        border-radius: 12px;
         transition: 0.16s ease;
         white-space: nowrap;
         text-align: center;
       }
       .tab-btn:hover {
-        background: white;
-        border-color: var(--line);
-        transform: translateY(-1px);
+        background: #fff;
+        border-color: var(--fp-rule);
       }
       .tab-btn.active {
-        background: var(--navy);
-        color: white;
-        border-color: var(--navy);
-        box-shadow: 0 6px 15px rgba(24, 50, 74, 0.18);
+        background: var(--fp-unit-tint);
+        color: var(--fp-unit-ink);
+        border-color: var(--fp-unit);
       }
       .tab-btn.done::after {
         content: " ✓";
-        color: #9de3b8;
+        color: var(--good);
         font-weight: 950;
       }
 
@@ -1696,8 +1609,7 @@
         .speak, .fam-btn, .tab-btn, .btn, .choice, .coach-toggle { min-height: 44px; }
       }
       @media (max-width: 900px) {
-        .hero { grid-template-columns: 1fr; padding: 26px; }
-        .formula-card { max-width: 520px; transform: none; }
+        .hero { padding: 26px; }
         .vocab { grid-template-columns: repeat(2, minmax(0, 1fr)); }
         .progress-card { grid-template-columns: 1fr; }
         .helprow { grid-template-columns: 1fr; }
@@ -1717,7 +1629,6 @@
         .tab-btn { padding: 8px 10px; font-size: 0.8rem; }
         .hero { border-radius: 18px; padding: 18px 16px; gap: 12px; }
         .hero h2 { font-size: 1.55rem; }
-        .hero-chips, .hero .formula-card { display: none; }
         .grid-2, .vocab, .badge-grid, .covered, .choices.two, .sign-lines, .fields.cols-2 {
           grid-template-columns: 1fr;
         }
@@ -1810,47 +1721,90 @@
         text-align: center;
       }
 
-      /* Family Math homework visual system */
+      /* Family paper system (assets/family-paper.css, data-unit="4"): warm paper, cocoa hue,
+         Fraunces headings, and a left review-path rail on laptops. */
+      :root {
+        --navy: var(--fp-ink);
+        --navy-2: var(--fp-ink-soft);
+        --page: var(--fp-paper);
+        --cream: var(--fp-paper);
+        --line: var(--fp-rule);
+        --gold-soft: var(--fp-note);
+        --shadow-sm: 0 2px 8px rgba(27, 42, 73, 0.05);
+        --shadow: 0 6px 22px rgba(27, 42, 73, 0.07);
+      }
       body {
-        font-family: "Hanken Grotesk", Calibri, "Segoe UI", system-ui, sans-serif;
-        background: linear-gradient(180deg, #f8fafc 0%, #ffffff 48%, #f7f4ec 100%);
+        font-family: var(--fp-sans);
+        background: var(--fp-paper);
       }
-      h1, h2, h3, h4, h5, .brand small, .eyebrow, .tab-btn {
-        font-family: "Outfit", "Hanken Grotesk", system-ui, sans-serif;
-      }
+      body::before { display: none; }
+      h1, h2, h3, h4, h5 { font-family: var(--fp-serif); }
+      .brand small, .eyebrow, .tab-btn { font-family: var(--fp-sans); }
       .topbar {
-        background: rgba(255, 255, 255, 0.97);
-        border-bottom-color: #cbd5e1;
-        box-shadow: 0 4px 18px rgba(21, 72, 127, 0.08);
+        background: rgba(255, 253, 248, 0.97);
+        border-bottom-color: var(--fp-rule);
+        box-shadow: none;
       }
       .brand-mark {
-        background: linear-gradient(145deg, #0284c7, #15487f);
+        background: var(--fp-unit-ink);
         border-radius: 12px;
+        box-shadow: none;
       }
-      .family-bar { background: #f1f5f9; }
-      .global-progress { background: #e2e8f0; }
-      .global-progress > span { background: linear-gradient(90deg, #0284c7, #1c5999, #d97706); }
-      .hero {
-        grid-template-columns: minmax(0, 1fr);
-        background: linear-gradient(135deg, #15487f 0%, #0f2b5c 100%);
-        border: 1.5px solid #cbd5e1;
-        border-radius: 18px;
-        box-shadow: 0 12px 28px rgba(15, 43, 92, 0.16);
+      .student-box { background: #fff; border-color: var(--fp-rule); }
+      .pill { border-color: var(--fp-rule); box-shadow: none; }
+      .family-bar { background: var(--fp-wash); border-bottom-color: var(--fp-rule); }
+      .fam-btn { border-color: var(--fp-rule); border-radius: 999px; }
+      .fam-btn:hover { background: #fff; border-color: var(--fp-unit); }
+      .fam-btn.active { background: var(--fp-unit-ink); border-color: var(--fp-unit-ink); box-shadow: none; }
+      .global-progress { background: var(--fp-rule); }
+      .global-progress > span { background: linear-gradient(90deg, var(--fp-unit), var(--gold)); }
+      .section-head h3 { color: var(--fp-unit-ink); }
+      .card { border-radius: 16px; box-shadow: none; background: #fff; }
+      .question-card:hover { border-color: var(--fp-unit); box-shadow: var(--shadow); }
+      .question-card::before { background: var(--fp-unit); opacity: 1; }
+      .page-footer { color: var(--fp-muted); }
+      body.high-contrast .hero { background: #fff; border-color: #000; }
+      body.high-contrast .hero h2,
+      body.high-contrast .eyebrow { color: #000; }
+
+      @media (min-width: 1000px) {
+        .wrap {
+          display: grid;
+          grid-template-columns: 268px minmax(0, 1fr);
+          column-gap: 28px;
+          align-items: start;
+        }
+        .hero { grid-column: 1 / -1; grid-row: 1; }
+        .page-footer { grid-column: 1 / -1; grid-row: 3; }
+        .tabs {
+          grid-column: 1;
+          grid-row: 2;
+          flex-direction: column;
+          overflow: visible;
+          top: 128px;
+          padding: 14px 10px 10px;
+        }
+        .tabs::before {
+          content: "Review path";
+          display: block;
+          margin: 0 8px 8px;
+          padding-bottom: 10px;
+          border-bottom: 1px solid var(--fp-rule);
+          color: var(--fp-muted);
+          font-size: 0.74rem;
+          font-weight: 800;
+          letter-spacing: 0.1em;
+          text-transform: uppercase;
+        }
+        body.lang-mode-es .tabs::before { content: "Ruta de repaso"; }
+        body.lang-mode-bilingual .tabs::before { content: "Review path · Ruta de repaso"; }
+        .tab-btn { width: 100%; text-align: left; white-space: normal; }
+        .panel { grid-column: 2; grid-row: 2; }
       }
-      .eyebrow { color: #dbeafe; letter-spacing: 0.1em; }
-      .hero p { color: #eaf4ff; }
-      .tabs {
-        background: rgba(248, 250, 252, 0.97);
-        border-color: #cbd5e1;
-        border-radius: 14px;
-      }
-      .tab-btn { border-radius: 9px; }
-      .tab-btn.active { background: #15487f; border-color: #15487f; }
-      .card { border-radius: 14px; box-shadow: 0 4px 14px rgba(21, 72, 127, 0.06); }
       @media (max-width: 640px) {
         .wrap { padding: 16px 12px 40px; }
-        .hero { padding: 24px 20px; }
-        .brand { min-width: 0; }
+        .hero { padding: 22px 18px; }
+        .brand { min-width: 0; flex: 1 1 100%; }
       }
         </style>
   </head>
@@ -1950,6 +1904,11 @@
           <div class="eyebrow"><span class="lang-en">Optional family practice · End of Unit 4</span><span class="lang-es" lang="es">Práctica familiar opcional · Fin de la Unidad 4</span></div>
           <h2><span class="lang-en">Let's get ready for the Unit 4 Test — together.</span><span class="lang-es" lang="es">Preparémonos para el examen de la Unidad 4 — juntos.</span></h2>
           <p><span class="lang-en">Optional, ungraded practice—not a test. Try a few questions together, use a hint when you need one, and stop whenever it works for your family.</span><span class="lang-es" lang="es">Práctica opcional y sin calificación; no es un examen. Prueben algunas preguntas juntos, usen una pista cuando la necesiten y paren cuando les convenga.</span></p>
+          <div class="hero-chips">
+            <span class="hero-chip"><span class="lang-en">Optional · ungraded</span><span class="lang-es" lang="es">Opcional · sin calificación</span></span>
+            <span class="hero-chip"><span class="lang-en">Hints when you need them</span><span class="lang-es" lang="es">Pistas cuando las necesiten</span></span>
+            <span class="hero-chip"><span class="lang-en">Saves on this device</span><span class="lang-es" lang="es">Se guarda en este dispositivo</span></span>
+          </div>
         </div>
       </section>
 
