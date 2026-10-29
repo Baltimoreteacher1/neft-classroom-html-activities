@@ -50,6 +50,7 @@ import { STUDIO_SKIN_JS } from "./homework-studio-skin.mjs";
 import { renderVisualMathLab, VISUAL_LABS_JS } from "./homework-visual-labs.mjs";
 import { renderIconSprite } from "./lib/family-icons.mjs";
 import { vocabKey, withPlainDefinitions } from "./lib/family-plain-definitions.mjs";
+import { WEB_PRINT_CSS } from "./lib/family-takehome-css.mjs";
 import { stampForUnit, WORKSPACE_JS, workspaceHtml } from "./lib/family-workspace.mjs";
 import { A11Y_CSS, a11yMarkup } from "./lib/homework-a11y.mjs";
 import { act, actOn, EL, EV, HOMEWORK_ACTIONS_JS } from "./lib/homework-actions.mjs";
@@ -67,6 +68,11 @@ import { EXPERIENCE_JS } from "./lib/homework-experience-js.mjs";
 import { HERO_JS, READER_BOOT_JS } from "./lib/homework-hero.mjs";
 import { applyPracticeReview, loadPracticeReview } from "./lib/homework-practice-review.mjs";
 import { PRINT_JS } from "./lib/homework-print.mjs";
+import {
+  PRINT_PLAN_JS,
+  renderPrintPlanButton,
+  renderPrintPlanSheets,
+} from "./lib/homework-print-plan.mjs";
 import {
   answerKeyLines,
   familyCoachLevels,
@@ -1414,6 +1420,7 @@ function generateHtml(lessonId, config) {
   const helpModalHtml = renderHelpModal();
   const refrigeratorSheetHtml = renderRefrigeratorSheet(config, lessonId);
   const printSocraticFooterHtml = renderPrintFooter(config, lessonId);
+  const printPlanSheetsHtml = renderPrintPlanSheets(lessonId);
   const answerSheetHtml = renderAnswerSheet(
     [
       ...basic.map((it, i) => ({
@@ -1446,6 +1453,7 @@ ${DESIGN_HEAD_MARK}
 <style>
 ${LEGACY_SHELL_CSS}
 ${A11Y_CSS}
+${WEB_PRINT_CSS}
 </style>
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
@@ -1548,8 +1556,10 @@ ${renderIconSprite()}
   ${tabsHtml}
   ${refrigeratorSheetHtml}
   ${printSocraticFooterHtml}
+  ${renderPrintPlanButton()}
 
 </div>
+${printPlanSheetsHtml}
 
 ${helpModalHtml}
 ${renderExperienceDialogs()}
@@ -1603,6 +1613,7 @@ window.__HW_WORKED__ = ${jsonForScript(workedExampleFor(config, coreSelected))};
 ${HOMEWORK_ACTIONS_JS}
 ${HOMEWORK_TABS_JS}
 ${PRINT_JS}
+${PRINT_PLAN_JS}
 ${STUDIO_SKIN_JS}
 ${HOMEWORK_GAME_JS}
 ${VOICE_JS}

@@ -7787,14 +7787,14 @@ export const LESSONS = [
     unit: 3,
     lesson: 6,
     title: "Ratio Reasoning: Convert Measurements within the Same System",
-    standard: "6.AT.3",
+    standard: "6.AT.3c",
   },
   {
     id: "3-7",
     unit: 3,
     lesson: 7,
     title: "Ratio Reasoning: Convert Measurements Between Systems",
-    standard: "6.AT.3",
+    standard: "6.AT.3c",
   },
   {
     id: "3-8",

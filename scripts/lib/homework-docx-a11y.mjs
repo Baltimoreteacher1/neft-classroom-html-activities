@@ -295,12 +295,33 @@ async function partText(zip, name) {
   return f ? f.async("string") : "";
 }
 
+const PUBLISHER_STANDARD = /(Maryland Standard )([A-Za-z0-9.]+)(?=\s+·)/;
+
+/**
+ * The standard code a homework .docx prints, whichever generator wrote it: the publisher files say
+ * "Maryland Standard 6.RP.A.3c · Learning target ...", the generated ones "Lesson 2-11 • Standard 6.NOS.3"
+ * (Spanish "Estándar"). Null when the document prints none.
+ */
+export function printedStandard(documentXml) {
+  const text = textOf(documentXml.replace(/<w:tab\/>/g, " "));
+  return (
+    (PUBLISHER_STANDARD.exec(text) ?? /(?:Standard|Estándar) ([A-Za-z0-9.]+)/.exec(text))?.[
+      PUBLISHER_STANDARD.exec(text) ? 2 : 1
+    ] ?? null
+  );
+}
+
+/** The publisher files carry the CCSS-style code; the family surfaces use the lesson config's. Idempotent. */
+export const withLessonStandard = (documentXml, standard) =>
+  documentXml.replace(PUBLISHER_STANDARD, (_m, label) => `${label}${standard}`);
+
 /**
  * Remediate one publisher homework .docx buffer. Returns a new Buffer.
+ * `standard`: the lesson's one standard code (config.json), printed in place of the publisher's own.
  * Throws when the kicker ("Lesson 3-4 · Session 1") cannot be found, since the
  * document title is derived from it.
  */
-export async function remediatePublisherHomework(buffer) {
+export async function remediatePublisherHomework(buffer, { standard } = {}) {
   const zip = await JSZip.loadAsync(buffer);
   const docXml = await zip.file(DOC).async("string");
   const kicker =
@@ -309,7 +330,8 @@ export async function remediatePublisherHomework(buffer) {
     throw new Error("homework docx: no 'Lesson N-M · Session S' kicker to title it from");
 
   const writes = new Map();
-  writes.set(DOC, remediateDocumentXml(docXml));
+  const remediated = remediateDocumentXml(docXml);
+  writes.set(DOC, standard ? withLessonStandard(remediated, standard) : remediated);
   writes.set(STYLES, remediateStyles(await zip.file(STYLES).async("string")));
   writes.set(CORE, remediateCore(await zip.file(CORE).async("string"), homeworkTitle(kicker)));
   for (const name of Object.keys(zip.files)) {

@@ -8,12 +8,14 @@
  *
  * Only files carrying the publisher's legacy style part are touched; the ones
  * scripts/generate-homework.mjs writes are already accessible by construction.
- * The pass is idempotent (see scripts/lib/homework-docx-a11y.mjs).
+ * The pass is idempotent (see scripts/lib/homework-docx-a11y.mjs). It also prints the lesson's ONE standard code
+ * (config.json `standard`) where the publisher file printed its own CCSS-style code: docs/family-homework-v3/standards.md.
  */
 import { readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { LESSONS_DIR } from "../tools/lib/curriculum-source.mjs";
 import { isPublisherSourcedDocx, remediatePublisherHomework } from "./lib/homework-docx-a11y.mjs";
+import { lessonStandard } from "./lib/lesson-identity.mjs";
 
 const args = process.argv.slice(2);
 const check = args.includes("--check");
@@ -31,7 +33,7 @@ for (const id of readdirSync(LESSONS_DIR).sort()) {
     continue;
   }
   if (!(await isPublisherSourcedDocx(before))) continue;
-  const after = await remediatePublisherHomework(before);
+  const after = await remediatePublisherHomework(before, { standard: lessonStandard(id) });
   if (Buffer.compare(before, after) === 0) {
     current++;
     continue;

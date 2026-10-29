@@ -21,6 +21,8 @@
  *   LABEL     no "Version N" / "Regular" internal label in header, footer or
  *             the title block
  *   TABLE     every table is captioned as layout/data or has a header row
+ *   SHEET     (take-home sheets only) Heading 1 and Heading 2 sections, numbered lists that are real w:numPr lists
+ *             backed by numbering.xml, at least one drawing (the QR code; a model when the lesson has one), and no drawing without alt text
  *
  * Usage: node tools/validate-docx-a11y.mjs
  */
@@ -29,6 +31,11 @@ import JSZip from "jszip";
 import { lessonPath, listLessonDirs } from "./lib/curriculum-source.mjs";
 
 const FILES = ["homework.docx", "homework-es.docx"];
+/** The Family Take-Home Sheet Word files (scripts/generate-family-takehome.mjs): held to the homework rules plus SHEET. */
+const SHEET_FILES = (id) => [
+  `downloads/${id}-family-sheet.docx`,
+  `downloads/${id}-family-sheet-es.docx`,
+];
 const BAD_TITLE = /HW\s+Version|Version\s+\d|^\s*$|^\d+\.\d+\s+Session/i;
 const LABEL_HEADER_FOOTER = /\bVersion\s+\d|\bRegular\b|\bV\d\b/;
 const LABEL_TITLE_BLOCK = /^Version\s+\d+(\s*[/·]\s*\w+)?$/;
@@ -40,7 +47,7 @@ const textOf = (xml) =>
     .replace(/[ \t]+/g, " ");
 
 /** Findings for one .docx buffer. Pure: no filesystem access. */
-export async function auditDocx(buffer) {
+export async function auditDocx(buffer, { sheet = false } = {}) {
   const found = [];
   const zip = await JSZip.loadAsync(buffer);
   const read = async (name) => (zip.file(name) ? zip.file(name).async("string") : "");
@@ -92,6 +99,16 @@ export async function auditDocx(buffer) {
   ).length;
   if (unmarked) found.push(`TABLE: ${unmarked} table(s) neither captioned nor given a header row`);
 
+  if (sheet) {
+    if (!/<w:pStyle w:val="Heading2"/.test(doc)) found.push("SHEET: no Heading 2 section heads");
+    if (!/<w:numPr>/.test(doc) || !/<w:num\b/.test(await read("word/numbering.xml")))
+      found.push("SHEET: practice items are not a real numbered list");
+    if (drawings.length < 1)
+      found.push("SHEET: no drawing; the QR code is expected on every sheet");
+    if (/<w:tbl>/.test(doc))
+      found.push("SHEET: the sheet has nothing tabular; use paragraphs, not a table");
+  }
+
   return found;
 }
 
@@ -134,6 +151,11 @@ async function selfTest() {
   const good = await auditDocx(await syntheticDocx({ bad: false }));
   if (good.length) throw new Error(`self-test: the clean fixture failed: ${good.join("; ")}`);
   const bad = (await auditDocx(await syntheticDocx({ bad: true }))).map((f) => f.split(":")[0]);
+  const badSheet = (await auditDocx(await syntheticDocx({ bad: true }), { sheet: true })).map(
+    (f) => f.split(":")[0],
+  );
+  if (!badSheet.includes("SHEET"))
+    throw new Error("self-test: the SHEET detector did not fire on the bad fixture");
   for (const kind of ["HEADING", "ALT", "TOKEN", "KEY", "TITLE", "LANGUAGE", "LABEL", "TABLE"]) {
     if (!bad.includes(kind))
       throw new Error(`self-test: the ${kind} detector did not fire on the bad fixture`);
@@ -145,11 +167,14 @@ async function main() {
   const failures = [];
   let checked = 0;
   for (const id of listLessonDirs()) {
-    for (const file of FILES) {
+    for (const [file, sheet] of [
+      ...FILES.map((f) => [f, false]),
+      ...SHEET_FILES(id).map((f) => [f, true]),
+    ]) {
       const path = lessonPath(id, file);
       if (!existsSync(path)) continue;
       checked++;
-      for (const finding of await auditDocx(readFileSync(path)))
+      for (const finding of await auditDocx(readFileSync(path), { sheet }))
         failures.push(`${id}/${file}: ${finding}`);
     }
   }

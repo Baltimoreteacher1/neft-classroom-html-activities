@@ -686,6 +686,18 @@ const COVERAGE = [
   [/^lessons\/[^/]+\/reveal-assets\//, ["validate:reveal-assets"]],
   // the retention manifest is part of the same contract as the files it records
   [/^data\/reveal-assets-retained\.json$/, ["validate:reveal-assets"]],
+  // The Family Take-Home Sheet (PDF + Word, EN + ES) and the one-standard-code rule: generator, shared modules, the files, both gates.
+  [
+    /^(lessons\/[^/]+\/downloads\/[^/]+-family-(sheet|guide)(-es)?\.(pdf|docx)|scripts\/(generate-family-takehome\.mjs|lib\/(family-takehome-[a-z]+|qr-code|pdf-text-sizes|lesson-identity|homework-print-plan)\.mjs)|tools\/(validate-family-print|validate-family-standards|qr-code\.test)\.mjs|docs\/family-homework-v3\/standards\.md)$/,
+    [
+      "validate:family-print",
+      "validate:family-standards",
+      "validate:docx-a11y",
+      "validate:student-pdfs",
+      "test",
+      "check",
+    ],
+  ],
   // Student homework Word files: opened and read as XML (headings, alt text, title,
   // language, internal labels). Covers the generator, the publisher-file remediation
   // pass and the gate itself.
