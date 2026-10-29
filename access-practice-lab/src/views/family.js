@@ -37,6 +37,7 @@ export async function render(ctx) {
 }
 
 export const mount = (root, ctx) => current.mount?.(root, ctx);
+export const unmount = () => current.unmount?.();
 export const onClick = (e, ctx) => current.onClick?.(e, ctx, i18nFor(ctx)) ?? false;
 export const onChange = (e, ctx) => current.onChange?.(e, ctx, i18nFor(ctx));
 export const onInput = (e, ctx) => current.onInput?.(e, ctx, i18nFor(ctx));

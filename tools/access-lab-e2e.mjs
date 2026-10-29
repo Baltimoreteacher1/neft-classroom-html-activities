@@ -65,9 +65,10 @@ if (!BASE) {
 }
 let browser;
 try {
-  browser = await chromium.launch(
-    process.env.PW_CHROMIUM_PATH ? { executablePath: process.env.PW_CHROMIUM_PATH } : {},
-  );
+  browser = await chromium.launch({
+    ...(process.env.PW_CHROMIUM_PATH ? { executablePath: process.env.PW_CHROMIUM_PATH } : {}),
+    args: ["--use-fake-device-for-media-stream", "--use-fake-ui-for-media-stream"],
+  });
 } catch (error) {
   console.warn(`access-lab-e2e: SKIP — no browser (${error.message.split("\n")[0]})`);
   server?.close();
@@ -563,14 +564,184 @@ try {
   }
   await page.click('[data-set-band="6-8"]').catch(() => {});
 
+  // Camera postcards: completed Family Trip only; exercise the accessible no-camera path and explicit share opt-in.
+  await page.evaluate(async () => {
+    const idx = await (await fetch("/access-practice-lab/content/index.json")).json();
+    const level = idx.bands["3-5"].domains.Reading.levels.A;
+    const id = level.activities[0][0];
+    const key = "accessPracticeLab:v1:g3-5:Reading:A";
+    localStorage.setItem(
+      key,
+      JSON.stringify({
+        complete: [id],
+        results: { [id]: { ok: true, meaningful: true, practiced: true } },
+      }),
+    );
+    const prefsKey = "accessPracticeLab:v1:prefs";
+    const prefs = JSON.parse(localStorage.getItem(prefsKey) || "{}");
+    prefs.family = {
+      v: 1,
+      grade: "3-5",
+      who: "together",
+      minutes: 10,
+      done: true,
+      skipped: false,
+      trip: { skill: "Reading", stop: 0, ids: [id] },
+      tripWeeks: [],
+    };
+    prefs.lang = "en";
+    localStorage.setItem(prefsKey, JSON.stringify(prefs));
+  });
+  await go("/family/trip?grades=3-5");
+  ok(
+    await page.locator("[data-postcard-camera]").isVisible(),
+    "completed Family Trip offers optional postcards",
+  );
+  ok(
+    (await page.locator("[data-postcard-return]").getAttribute("href"))?.startsWith(
+      "/access-practice-lab/family/trip",
+    ),
+    "postcard maker has a direct return link to Family Trip",
+  );
+  ok(
+    (await page.locator("[data-postcard-passport]").getAttribute("href"))?.startsWith(
+      "/access-practice-lab/passport",
+    ),
+    "postcard maker has a direct return link to My Passport",
+  );
+
+  ok(
+    await page.locator("[data-postcard-capture]").isHidden(),
+    "camera is not activated until explicitly requested",
+  );
+  await context.grantPermissions(["camera", "clipboard-read", "clipboard-write"], { origin: BASE });
+  await page.click("[data-postcard-camera]");
+  await page.waitForFunction(() => document.querySelector("[data-postcard-video]")?.videoWidth > 0);
+  ok(
+    await page.locator("[data-postcard-capture]").isVisible(),
+    "camera stream starts only after the learner taps Use camera",
+  );
+  await page.click("[data-postcard-capture]");
+  ok(
+    await page.locator("[data-postcard-capture]").isHidden(),
+    "capturing a frame stops the camera stream",
+  );
+  await page.fill("[data-postcard-alt]", "A test camera picture of an object.");
+  await page.click("[data-postcard-save]");
+  await page.waitForFunction(() =>
+    /saved on this device/i.test(
+      document.querySelector("[data-postcard-status]")?.textContent || "",
+    ),
+  );
+  await go("/passport?grades=3-5");
+  ok(
+    (await page.locator(".postcard-list > li").count()) === 1,
+    "Passport lists the locally saved camera postcard",
+  );
+  await page.click("[data-postcard-delete]");
+  await page.waitForFunction(() => document.querySelectorAll(".postcard-list > li").length === 0);
+  await go("/family/trip?grades=3-5");
+  await page.click("[data-postcard-picture]");
+  await page.fill("[data-postcard-alt]", "A green plant beside a sunny window.");
+  await page.click("[data-postcard-save]");
+  await page.waitForFunction(() =>
+    /saved on this device/i.test(
+      document.querySelector("[data-postcard-status]")?.textContent || "",
+    ),
+  );
+  await go("/passport?grades=3-5");
+  ok(
+    (await page.locator(".postcard-list > li").count()) === 1,
+    "Passport lists the locally saved postcard",
+  );
+  await page.click("[data-share-copy]");
+  await page.waitForFunction(() =>
+    (document.querySelector("[data-share-status]")?.textContent || "").includes("copied"),
+  );
+  let postcardShare = await page.evaluate(async () => {
+    const code = await navigator.clipboard.readText();
+    return JSON.parse(decodeURIComponent(escape(atob(code.slice(9)))));
+  });
+  ok(
+    postcardShare.postcards.length === 0,
+    "postcard is excluded from teacher share until the learner opts in",
+  );
+  await page.check("[data-postcard-keep]");
+  await page.click("[data-share-copy]");
+  await page.waitForFunction(() =>
+    (document.querySelector("[data-share-status]")?.textContent || "").includes("copied"),
+  );
+  postcardShare = await page.evaluate(async () => {
+    const code = await navigator.clipboard.readText();
+    return JSON.parse(decodeURIComponent(escape(atob(code.slice(9)))));
+  });
+  ok(
+    postcardShare.postcards.length === 1 &&
+      postcardShare.postcards[0].alt === "A green plant beside a sunny window.",
+    "explicitly kept postcard enters the teacher share with sentence alt text",
+  );
+  await page.uncheck("[data-postcard-keep]");
+  await page.click("[data-export]");
+  await page.waitForFunction(async () =>
+    (await navigator.clipboard.readText()).startsWith("ACCESS1."),
+  );
+  const defaultProgressCode = await page.evaluate(() => navigator.clipboard.readText());
+  const defaultProgress = JSON.parse(
+    decodeURIComponent(escape(atob(defaultProgressCode.slice(8)))),
+  );
+  ok(
+    !JSON.stringify(defaultProgress).includes("data:image/jpeg"),
+    "ACCESS1 backup excludes postcards unless the learner opts in",
+  );
+  await page.check("[data-postcard-keep]");
+  await page.click("[data-export]");
+  await page.waitForFunction(
+    async (previous) => (await navigator.clipboard.readText()) !== previous,
+    defaultProgressCode,
+  );
+  const progressCode = await page.evaluate(() => navigator.clipboard.readText());
+  const progressData = JSON.parse(decodeURIComponent(escape(atob(progressCode.slice(8)))));
+  ok(
+    progressData.postcards?.length === 1,
+    "ACCESS1 backup includes only the postcard marked for the teacher",
+  );
+  await page.click("[data-postcard-delete]");
+  await page.waitForFunction(() => document.querySelectorAll(".postcard-list > li").length === 0);
+  ok(true, "Passport delete removes the local postcard");
+  await page.fill("[data-import-text]", progressCode);
+  await page.click("[data-import]");
+  await page.waitForFunction(() => document.querySelectorAll(".postcard-list > li").length === 1);
+  ok(
+    await page.locator("[data-postcard-keep]").isChecked(),
+    "restoring an opted-in ACCESS1 backup restores the postcard sharing choice",
+  );
+
   // Phone width: no horizontal scroll on the busiest pages
   await page.setViewportSize({ width: 375, height: 800 });
+  await page.evaluate(() => {
+    const key = "accessPracticeLab:v1:prefs";
+    const prefs = JSON.parse(localStorage.getItem(key) || "{}");
+    prefs.lang = "es";
+    localStorage.setItem(key, JSON.stringify(prefs));
+  });
+  await go("/family/trip?grades=3-5");
+  ok(
+    await page.getByRole("heading", { name: "Crea una postal" }).isVisible(),
+    "postcard maker is available in Spanish mode on phone width",
+  );
+  await page.evaluate(() => {
+    const key = "accessPracticeLab:v1:prefs";
+    const prefs = JSON.parse(localStorage.getItem(key) || "{}");
+    prefs.lang = "en";
+    localStorage.setItem(key, JSON.stringify(prefs));
+  });
   for (const p of [
     "/",
     "/Listening/A",
     "/Listening/A/g35-l-a-fraction-circle",
     "/test/g35-form-a",
     "/passport",
+    "/family/trip?grades=3-5",
     "/library?grades=3-5",
   ]) {
     await go(p);

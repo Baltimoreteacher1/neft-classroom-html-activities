@@ -5,6 +5,9 @@ import { bandRows } from "../content.js";
 import { BASE, html, icon, todayISO } from "../util.js";
 import { playlistHref, sessionMinutes } from "./plan.js";
 import { TRIP_STOPS, familyPatch, getFamily } from "./state.js";
+import { ACCESS_LAB_FLAGS } from "../lang/feature-flags.js";
+import { COUNTRIES } from "../journey.js";
+import * as postcards from "../postcards.js";
 import { nextStopIds, stopProgress, suggestSkill } from "./trip-plan.js";
 import { SKILLS, crumbs, skillIcon, skillName, subnavHTML } from "./ui.js";
 
@@ -44,6 +47,7 @@ function stopCard(I, trip, rows, band, progress) {
       <li><strong>${I.L("trip.step.say")}</strong><span>${I.L(`trip.say.${trip.skill}.${promptVariant}`)}</span></li>
     </ol>
     ${n === TRIP_STOPS ? html`<p class="fine">${I.L("trip.souvenir")}</p><a class="btn" href="${BASE}/speak?grades=${band}">${I.L("trip.keep")}${icon("arrow-right")}</a>` : ""}
+    ${doneNow && ACCESS_LAB_FLAGS.cameraPostcardsEnabled ? postcards.makerHTML(I, { place: COUNTRIES[trip.skill]?.[rows.find((r) => trip.ids.includes(r.id))?.level]?.[0] || "" }) : ""}
     ${doneNow
       ? html`<p class="goal-done" role="status">${I.L("trip.paper")}</p><button type="button" class="btn btn-primary" data-trip-next>${I.L("trip.next")}${icon("arrow-right")}</button>`
       : html`<a class="btn btn-primary" href="${playlistHref(plan, I.LS("trip.title"), band)}">${I.L("trip.start")}${icon("arrow-right")}</a>`}
@@ -78,7 +82,10 @@ export async function render(ctx, I) {
   };
 }
 
-export async function onClick(e, ctx) {
+export function unmount() { postcards.unmount(); }
+
+export async function onClick(e, ctx, I) {
+  if (ACCESS_LAB_FLAGS.cameraPostcardsEnabled && postcards.onClick(e, I, ctx.rerender)) return true;
   const begin = e.target.closest("[data-trip-begin]");
   const next = e.target.closest("[data-trip-next]");
   const fresh = e.target.closest("[data-trip-new]");

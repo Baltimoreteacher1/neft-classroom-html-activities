@@ -358,8 +358,8 @@ export const STRINGS = {
   ),
   "save.downloaded": s("Backup file downloaded.", "Archivo de respaldo descargado."),
   "save.private": s(
-    "Keep codes private: they can include written answers.",
-    "Guarde los códigos en privado: pueden incluir respuestas escritas.",
+    "Keep codes private: they can include written answers and postcards marked “Keep for my teacher.”",
+    "Guarde los códigos en privado: pueden incluir respuestas escritas y postales marcadas “Guardar para mi docente”.",
   ),
   "save.restore.heading": s("Restore from a backup code", "Recuperar con un código de respaldo"),
   "save.restore.label": s("Paste your backup code", "Pegue su código de respaldo"),
@@ -369,8 +369,8 @@ export const STRINGS = {
     "El trabajo que ya está en este dispositivo se conserva. Solo se agregan las actividades que faltan.",
   ),
   "save.restore.ok": s(
-    "Backup restored. {n} saved record(s) added.",
-    "Respaldo recuperado. Registros agregados: {n}.",
+    "Backup restored. {n} saved record(s) and {postcards} postcard(s) added.",
+    "Respaldo recuperado. Registros agregados: {n}; postales agregadas: {postcards}.",
   ),
   "save.restore.empty": s(
     "Nothing to add: this device already has that work.",

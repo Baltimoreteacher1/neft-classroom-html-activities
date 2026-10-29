@@ -321,7 +321,7 @@ function classTab(allRows) {
         Print student sheets (${rows.length})
       </button>
     </div>
-    ${T.pick ? studentPanel(allRows.find((r) => r.id === T.pick)) : ""}`;
+    ${T.pick ? studentPanel(allRows.find((r) => r.id === T.pick), T.students.find((student) => student.id === T.pick)) : ""}`;
 }
 
 function evidenceList(r) {
@@ -339,13 +339,14 @@ function evidenceList(r) {
   </ul>`;
 }
 
-function studentPanel(r) {
+function studentPanel(r, student) {
   if (!r) return "";
   const p = r.profile;
   const iv = interventionsFor(r, T.patterns);
   return html`<section class="panel student-panel ev-screen" aria-labelledby="stuTitle">
     <h3 id="stuTitle" tabindex="-1">${r.alias} <span class="fine">· ${r.section}</span></h3>
     ${evidenceList(r)}
+    ${student?.postcards?.length ? html`<h4>Postcards shared for this teacher review</h4><ul class="postcard-list">${student.postcards.map((postcard) => html`<li><img src="${postcard.image}" alt="${postcard.alt}"><div><strong>${postcard.place || "Postcard"}</strong><p>${postcard.alt}</p><time>${String(postcard.created).slice(0, 10)}</time></div></li>`)}</ul><p class="fine">Shared postcard images stay in this open dashboard only; they are not saved in the teacher roster.</p>` : ""}
     ${
       p.errors.length
         ? html`<p>

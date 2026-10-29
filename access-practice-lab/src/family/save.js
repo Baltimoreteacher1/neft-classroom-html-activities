@@ -2,7 +2,9 @@
 // mechanisms without changing either: the ACCESS1 backup code (Passport's export/import) and the site-wide
 // Save/Resume short code. Import keeps every activity already on this device and only adds missing ones.
 import * as audioStore from "../audio-store.js";
-import { clearAll, exportCode, getPrefs, importCode, setPrefs } from "../store.js";
+import * as postcardStore from "../postcard-store.js";
+import { exportCodeWithPostcards, importPostcardsFromCode } from "../postcard-code.js";
+import { clearAll, getPrefs, importCode, setPrefs } from "../store.js";
 import { announce, html, icon, raw, storage } from "../util.js";
 import { crumbs, subnavHTML } from "./ui.js";
 
@@ -93,7 +95,7 @@ async function handle(e, ctx, I) {
   const live = () => document.querySelector("[data-fam-status]");
   const show = () => { const n = live(); if (n) n.textContent = status; };
   if (t.closest("[data-fam-copy-code]")) {
-    const code = exportCode();
+    const code = await exportCodeWithPostcards();
     const ok = await copyQuietly(code);
     const wrap = document.querySelector("[data-fam-code-wrap]");
     const box = document.querySelector("[data-fam-code]");
@@ -110,7 +112,7 @@ async function handle(e, ctx, I) {
     return true;
   }
   if (t.closest("[data-fam-download-code]")) {
-    const blob = new Blob([exportCode()], { type: "text/plain" });
+    const blob = new Blob([await exportCodeWithPostcards()], { type: "text/plain" });
     const a = Object.assign(document.createElement("a"), { href: URL.createObjectURL(blob), download: `access-practice-backup-${new Date().toISOString().slice(0, 10)}.txt` });
     document.body.append(a);
     a.click();
@@ -128,7 +130,8 @@ async function handle(e, ctx, I) {
     else {
       try {
         const n = importCode(text);
-        say(I, n ? "save.restore.ok" : "save.restore.empty", { n });
+        const postcards = await importPostcardsFromCode(text);
+        say(I, n || postcards ? "save.restore.ok" : "save.restore.empty", { n, postcards });
         ctx.rerender();
         return true;
       } catch {
@@ -166,6 +169,7 @@ async function handle(e, ctx, I) {
     // Restore them in the same tick as the clear, so there is never a moment with the language reset.
     setPrefs({ lang: keep.lang, langChosen: keep.langChosen, textSize: keep.textSize, rate: keep.rate });
     await audioStore.clearAll();
+    await postcardStore.clearAll();
     backedUp = false;
     confirming = false;
     say(I, "save.shared.done");

@@ -10,6 +10,6 @@ export const ACCESS_LAB_FLAGS = Object.freeze({
   dynamicScaffoldingEnabled: false,
   externalAiEnabled: false,
   transcriptionEnabled: false,
-  // Student photo postcards require school-policy and privacy review before any capture UI is available.
-  cameraPostcardsEnabled: false,
+  // Local-only camera postcards are enabled: explicit capture, canvas re-encoding, 30-day local expiry and delete controls.
+  cameraPostcardsEnabled: true,
 });

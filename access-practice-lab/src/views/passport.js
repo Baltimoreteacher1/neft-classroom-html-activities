@@ -7,6 +7,10 @@ import { isActivityComplete } from "../attempts.js";
 import { evidenceLabel } from "../learning.js";
 import { activityStatus } from "../practice-plan.js";
 import * as audioStore from "../audio-store.js";
+import * as postcardStore from "../postcard-store.js";
+import * as postcards from "../postcards.js";
+import { ACCESS_LAB_FLAGS } from "../lang/feature-flags.js";
+import { exportCodeWithPostcards, importPostcardsFromCode } from "../postcard-code.js";
 import { buildShare, encodeShare } from "../lang/share.js";
 import { loadLedger } from "../lang/ledger.js";
 import { loadStudio } from "../lang/studio.js";
@@ -15,7 +19,6 @@ import { bandDomains, bandRows } from "../content.js";
 import { getEngagement, saveEngagement } from "../engagement.js";
 import {
   clearAll,
-  exportCode,
   getStudentName,
   importCode,
   loadRecord,
@@ -534,6 +537,7 @@ export async function render(ctx) {
     (row) => row.record.attemptHistory?.[row.id]?.length,
   ).length;
   const kept = await audioStore.list();
+  const postcardsHTML = ACCESS_LAB_FLAGS.cameraPostcardsEnabled ? await postcards.albumHTML(I) : "";
   const list = badges(stats, streak, days, extra);
   const routes = routeProgress(saved);
   const stopBadges = stopMilestones(routes, tripWeekStreak(getFamily(ctx.prefs).tripWeeks));
@@ -630,6 +634,8 @@ export async function render(ctx) {
           </div>
         </div>
 
+        ${postcardsHTML}
+
         <section aria-labelledby="passMiles">
           <section class="pass-cosmetics" aria-labelledby="passCosmeticsTitle"><h2 id="passCosmeticsTitle">Passport decorations</h2><p class="fine">Earn XP for meaningful practice, then choose a small decoration. Every lesson and support stays available either way.</p><p class="pass-xp"><strong>${engagement.xp} XP</strong> · participation points, not a proficiency score.</p><div class="pass-cosmetic-list">${[{ id: "trail-glow", need: 25, label: "Trail glow", icon: "worlds" }, { id: "map-pin", need: 60, label: "Golden map pin", icon: "road" }, { id: "word-wings", need: 100, label: "Word wings", icon: "writing" }].map((item) => html`<button type="button" class="btn" data-equip-cosmetic="${item.id}" ${engagement.xp < item.need ? "disabled" : ""} aria-pressed="${engagement.cosmetic === item.id}">${icon(item.icon)} ${item.label} · ${item.need} XP ${engagement.xp >= item.need ? (engagement.cosmetic === item.id ? "· Selected" : "· Unlocked") : "· Locked"}</button>`)}</div></section>
           <div class="pass-heading-row">
@@ -661,7 +667,7 @@ export async function render(ctx) {
         <section class="panel pass-share" aria-labelledby="shareTitle">
           <h2 id="shareTitle">${icon("mail")} ${I.T("Send my work to my teacher", "Enviar mi trabajo a mi docente")}</h2>
           <p>
-            ${I.T("Choose what to share. The code may contain your writing, speaking transcripts, mission and detective results, and reading/listening practice results. It has no email, school ID or recordings. Only your alias is included. Keep the code private and give it only to your teacher.", "Elige qué compartir. El código puede incluir tu escritura, las transcripciones de lo que dijiste, los resultados de misiones y de detective, y los resultados de práctica de lectura y escucha. No incluye correo electrónico, identificación escolar ni grabaciones. Solo se incluye tu alias. Mantén el código en privado y dáselo solo a tu docente.")}
+            ${I.T("Choose what to share. The code may contain your writing, speaking transcripts, mission and detective results, reading/listening practice results, and postcards you marked “Keep for my teacher.” It has no email, school ID or recordings. Only your alias is included. Keep the code private and give it only to your teacher.", "Elige qué compartir. El código puede incluir tu escritura, las transcripciones de lo que dijiste, los resultados de misiones y de detective, los resultados de práctica de lectura y escucha, y las postales que marcaste “Guardar para mi docente”. No incluye correo electrónico, identificación escolar ni grabaciones. Solo se incluye tu alias. Mantén el código en privado y dáselo solo a tu docente.")}
           </p>
           <label class="field"
             ><span
@@ -724,7 +730,7 @@ export async function render(ctx) {
         <section class="panel pass-backup" aria-labelledby="backupTitle">
           <h2 id="backupTitle">${icon("save")} ${I.T("Use another computer", "Usar otra computadora")}</h2>
           <p>
-            ${I.T("Your written answers, planning notes, checklists, first drafts, revision reflections and practice records are saved in this browser. Clearing browser data can remove them. Audio recordings are not included. Copy the full ACCESS1 progress code, then paste it here on another device. It contains your work, so keep it private. No name is required to practice. On a shared device, export your own work before using the clear option; do not clear another student’s work. Site Save/Resume short codes are a separate system; for a portable lab backup use this full progress code.", "Tus respuestas escritas, notas de planificación, listas de verificación, primeros borradores, reflexiones de revisión y registros de práctica se guardan en este navegador. Borrar los datos del navegador puede eliminarlos. Las grabaciones de audio no se incluyen. Copia el código de progreso ACCESS1 completo y pégalo aquí en otro dispositivo. Contiene tu trabajo, así que mantenlo en privado. No se necesita un nombre para practicar. En un dispositivo compartido, exporta tu propio trabajo antes de usar la opción de borrar; no borres el trabajo de otro estudiante. Los códigos cortos de Guardar y continuar del sitio son un sistema aparte; para una copia de seguridad portátil del laboratorio usa este código de progreso completo.")}
+            ${I.T("Your written answers, planning notes, checklists, first drafts, revision reflections and practice records are saved in this browser. Clearing browser data can remove them. Audio recordings are not included. Postcards are included only when you mark “Keep for my teacher.” Copy the full ACCESS1 progress code, then paste it here on another device. It contains your work, so keep it private. No name is required to practice. On a shared device, export your own work before using the clear option; do not clear another student’s work. Site Save/Resume short codes are a separate system; for a portable lab backup use this full progress code.", "Tus respuestas escritas, notas de planificación, listas de verificación, primeros borradores, reflexiones de revisión y registros de práctica se guardan en este navegador. Borrar los datos del navegador puede eliminarlos. Las grabaciones de audio no se incluyen. Copia el código de progreso ACCESS1 completo y pégalo aquí en otro dispositivo. Contiene tu trabajo, así que mantenlo en privado. Las postales se incluyen solo si marcas “Guardar para mi docente”. No se necesita un nombre para practicar. En un dispositivo compartido, exporta tu propio trabajo antes de usar la opción de borrar; no borres el trabajo de otro estudiante. Los códigos cortos de Guardar y continuar del sitio son un sistema aparte; para una copia de seguridad portátil del laboratorio usa este código de progreso completo.")}
           </p>
           <p>
             ${I.T("Loading a backup keeps work already on this device and adds missing activities. It also keeps existing test attempts and settings. To use a different version of an activity, open the backup in a separate browser profile.", "Cargar una copia de seguridad conserva el trabajo que ya está en este dispositivo y agrega las actividades que faltan. También conserva los intentos de prueba y los ajustes existentes. Para usar una versión distinta de una actividad, abre la copia de seguridad en un perfil de navegador separado.")}
@@ -774,18 +780,22 @@ export async function render(ctx) {
       </div>`,
   };
 }
+export function unmount() { postcards.unmount(); postcards.releaseAlbumUrls(); }
+export function onChange(e, ctx) { if (ACCESS_LAB_FLAGS.cameraPostcardsEnabled) postcards.onChange(e, ctx.rerender); }
 export function onInput(e) {
   if (e.target.matches("[data-name]")) setStudentName(e.target.value.trim());
 }
 
-function shareBundle(ctx) {
+async function shareBundle(ctx) {
   const alias = document.querySelector("[data-share-alias]")?.value || "";
   const include = Object.fromEntries([...document.querySelectorAll("[data-share-opt]")].map((el) => [el.dataset.shareOpt, el.checked]));
-  return buildShare({ alias, band: ctx.band, include });
+  const postcards = ACCESS_LAB_FLAGS.cameraPostcardsEnabled ? await postcardStore.shared() : [];
+  return buildShare({ alias, band: ctx.band, include, postcards });
 }
 
 export async function onClick(e, ctx) {
   const I = i18nFor(ctx);
+  if (ACCESS_LAB_FLAGS.cameraPostcardsEnabled && postcards.onClick(e, I, ctx.rerender)) return true;
   const t = e.target;
   const equip = t.closest("[data-equip-cosmetic]");
   if (equip) {
@@ -801,7 +811,7 @@ export async function onClick(e, ctx) {
   }
   const status = document.querySelector("[data-share-status]");
   if (t.closest("[data-share-copy]")) {
-    const code = encodeShare(shareBundle(ctx));
+    const code = encodeShare(await shareBundle(ctx));
     try {
       await navigator.clipboard.writeText(code);
       if (status) status.textContent = I.S(`Share code copied (${Math.ceil(code.length / 1000)} KB). Paste it into your teacher's dashboard or message.`, `Código para compartir copiado (${Math.ceil(code.length / 1000)} KB). Pégalo en el panel de tu docente o en un mensaje.`);
@@ -812,7 +822,7 @@ export async function onClick(e, ctx) {
   }
   if (t.closest("[data-share-file]")) {
     {
-      const b = shareBundle(ctx);
+      const b = await shareBundle(ctx);
       downloadText(`access-${b.alias.replace(/[^A-Za-z0-9_-]+/g, "-").slice(0, 24)}-${new Date().toISOString().slice(0, 10)}.json`, JSON.stringify(b), "application/json");
     }
     if (status) status.textContent = I.S("File downloaded. Give it to your teacher.", "Archivo descargado. Entrégaselo a tu docente.");
@@ -832,7 +842,7 @@ export async function onClick(e, ctx) {
     return true;
   }
   if (t.closest("[data-export]")) {
-    const code = exportCode();
+    const code = await exportCodeWithPostcards();
     try {
       await navigator.clipboard.writeText(code);
       announce(I.S("Progress code copied. Paste it on your other device.", "Código de progreso copiado. Pégalo en tu otro dispositivo."));
@@ -848,8 +858,10 @@ export async function onClick(e, ctx) {
   }
   if (t.closest("[data-import]")) {
     try {
-      const n = importCode(document.querySelector("[data-import-text]")?.value);
-      announce(I.S(`Backup checked (${n} records loaded). Work already on this device was kept; missing activities were added.`, `Copia de seguridad revisada (${n} registros cargados). Se conservó el trabajo que ya estaba en este dispositivo y se agregaron las actividades que faltaban.`));
+      const text = document.querySelector("[data-import-text]")?.value;
+      const n = importCode(text);
+      const photoCount = await importPostcardsFromCode(text);
+      announce(I.S(`Backup checked (${n} records and ${photoCount} postcards loaded). Work already on this device was kept; missing activities were added.`, `Copia de seguridad revisada (${n} registros y ${photoCount} postales cargados). Se conservó el trabajo que ya estaba en este dispositivo y se agregaron las actividades que faltaban.`));
       ctx.rerender();
     } catch (err) {
       announce(err.message || I.S("That code did not work.", "Ese código no funcionó."));
@@ -865,6 +877,7 @@ export async function onClick(e, ctx) {
       return;
     clearAll();
     await audioStore.clearAll();
+    await postcardStore.clearAll();
     announce(I.S("Progress cleared.", "Progreso borrado."));
     ctx.rerender();
   }

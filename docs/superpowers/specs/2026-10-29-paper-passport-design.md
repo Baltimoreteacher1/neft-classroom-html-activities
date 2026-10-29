@@ -1,6 +1,6 @@
 # Paper + digital Language Passport — design
 
-Status: sections 1–4 are built and committed on `feat/access-paper-passport` (not pushed, not deployed). Section 5 (postcards) is deliberately not built. On 2026-10-29 Joel delegated every open decision to the builder; the calls made are recorded under "Decisions made".
+Status: sections 1–5 are implemented. The postcard feature is learner-initiated, local-only, enabled behind `cameraPostcardsEnabled`, and follows the behavior below. On 2026-10-29 Joel delegated the open implementation choices to the builder; the calls made are recorded under "Decisions made".
 
 ## Intent
 
@@ -22,7 +22,7 @@ phone or tablet they use at home to school.
 - No leaderboards, timers, or competition between children. Class-wide goals only, if any.
 - No languages beyond English and Spanish.
 - No student photo, recording or name leaves the device unless the student chooses "Keep for my teacher".
-- No change to existing practice, scoring, or the ACCESS1/ACCESST1 codes.
+- No change to existing practice or scoring. ACCESS1 and ACCESST1 keep their existing fields; an optional postcard field is added only for postcards explicitly marked “Keep for my teacher.”
 
 ## 1. Paper passport (built)
 
@@ -57,20 +57,20 @@ Open and Download for each file. Test: `tools/access-lab-paper-passport.test.mjs
 - Paper: Family Check-In becomes a Trip Log (two trips per page, a route line of six stop boxes each; a star sticker per checked stop; a trip stamp at the end).
 - Progress is per device like everything else; the paper box is the authoritative record.
 
-## 5. Postcards with the camera (NOT built — deferred)
+## 5. Postcards with the camera (built; learner initiated)
 
 - After a stop, the student photographs **an object or place, not a person**, and says or writes 1–2 sentences about it (a picture-description task). The lab adds a city name, date and stamp frame, making an album postcard.
 - Stored on-device only (IndexedDB, same pattern as kept audio), deletable from My Passport, 30-day expiry, excluded from transfer codes unless the student chooses to share.
 - Re-saving through a canvas drops location metadata. Rear camera by default.
 - Fallback: choose a lab picture or draw one, so no camera is never a barrier. Offer "download postcard" because Safari can evict site data after about a week unused.
-- **Needs review before building:** school device policy on cameras and the lab's privacy document (`docs/access-practice-lab/privacy-and-ai-governance.md`), since photos of children are student records.
+- Implemented behind `cameraPostcardsEnabled` (on for this release): local IndexedDB, lazy 30-day expiry, individual Passport deletion, canvas JPEG re-encoding, rear-camera preference, object/place prompt, no-camera picture/drawing paths, postcard download and sentence-derived alt text. Both ACCESS1 and ACCESST1 exclude photos by default and include only photos explicitly kept for the teacher. School device policy and family consent expectations still apply; see the privacy document.
 
 ## Decisions made (Joel delegated them on 2026-10-29: "you decide, full autonomy")
 
 1. **Country names, not level letters, on paper.** Built. `src/journey.js` is the single table; the booklet generator reads it, and a teacher key PDF maps countries to skill and level.
 2. **Trip pick: automatic suggestion with a teacher override.** Built. The skill with the least finished practice on the device is suggested; `/family/trip?skill=Reading` marks a teacher's choice; a family can still choose any of the four.
 3. **The 12 countries:** Listening Japan/Kenya/Brazil, Speaking Mexico/Italy/India, Reading Egypt/Peru/Australia, Writing Canada/Morocco/China (levels A/B/C in that order). Chosen for a world spread and easy Spanish names. Country stickers are bought or drawn by the teacher; none are designed here, so there is no art to license.
-4. **Camera postcards: deferred.** They put photos of children on a device and need a privacy and school-policy review first (`docs/access-practice-lab/privacy-and-ai-governance.md`). Nothing is stored or captured. When approved, follow the privacy rules in this section.
+4. **Camera postcards: learner-initiated and local-only.** Implemented per section 5. The flag is on; capture starts only after a button tap and local-only/no-camera safeguards apply. Follow the applicable school device policy and family consent expectations.
 
 ## Built and verified (2026-10-29)
 
@@ -78,16 +78,11 @@ Open and Download for each file. Test: `tools/access-lab-paper-passport.test.mjs
 - Fixed on the way: `tools/access-engagement-e2e.mjs` failed every Thursday to Sunday on a clean `origin/main` (it expected exactly 3 practice days but the session it runs adds today); `tools/access-i18n.test.mjs` now expects the `trip` field in family state.
 - Checks: `qa:fast` change-scoped gate passed on each commit, new unit tests, and browser checks at 1280px and 390px in English and Spanish.
 
-## Not done / next
+## Remaining notes
 
-- Push and deploy need Joel's explicit say (`ALLOW_DEPLOY=1 npm run ship`).
-- Postcards (section 5).
 - The family guide PDF was updated to say Trip Log; print only after the booklet is final.
-- No native Spanish review of any new Spanish text.
-
-## Suggested phases
-
-0–3. Done (see above). 4. Postcards, only after the privacy review.
+- School device-policy and family-consent expectations vary; follow local policy for camera use.
+- No native Spanish review of the postcard copy has been completed.
 
 ## Verification plan
 
