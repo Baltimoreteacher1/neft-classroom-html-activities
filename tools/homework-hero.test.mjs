@@ -14,7 +14,9 @@ import {
   READER_KEY,
   renderHookCard,
   renderTopBar,
+  renderWeeklySheetCard,
   unitScene,
+  WEEKLY_SHEET_BASE,
 } from "../scripts/lib/homework-hero.mjs";
 import { lessonPath, REPO_ROOT } from "./lib/curriculum-source.mjs";
 
@@ -150,4 +152,39 @@ test("reader options persist, apply before paint and the More sheet opens", () =
   third.window.eval(READER_BOOT_JS);
   assert.equal(r.getAttribute("data-theme"), null);
   assert.equal(r.getAttribute("data-text-size"), null);
+});
+
+test("the weekly practice sheet card links the online sheet and the PDF, in the reader's language", () => {
+  const card = renderWeeklySheetCard();
+  assert.match(card, /data-ws-link="online"/);
+  assert.match(card, /data-ws-link="pdf"/);
+  assert.match(card, /fm-no-print/);
+  const dom = new JSDOM(`<body>${card}<script>${HERO_JS}</script></body>`, {
+    runScripts: "dangerously",
+    url: "https://example.test/",
+  });
+  const w = dom.window;
+  const online = w.document.querySelector('[data-ws-link="online"]');
+  const pdf = w.document.querySelector('[data-ws-link="pdf"]');
+  assert.equal(online.getAttribute("href"), `${WEEKLY_SHEET_BASE}?lang=en`);
+  w.localStorage.setItem("hw_lang_mode", "es");
+  online.dispatchEvent(new w.MouseEvent("click", { bubbles: true, cancelable: true }));
+  assert.equal(online.getAttribute("href"), `${WEEKLY_SHEET_BASE}?lang=es`);
+  // With no schedule loaded the PDF button is the online sheet, never a dead link.
+  pdf.dispatchEvent(new w.MouseEvent("click", { bubbles: true, cancelable: true }));
+  assert.equal(pdf.getAttribute("href"), `${WEEKLY_SHEET_BASE}?lang=es`);
+});
+
+test("all 166 pages carry the weekly sheet card once, above the hero extras", () => {
+  const bad = ids.filter((id) => {
+    const html = readFileSync(lessonPath(id, "homework.html"), "utf8");
+    const count = (re) => (html.match(re) ?? []).length;
+    return !(
+      count(/data-ws-card/g) === 1 &&
+      count(/data-ws-link="online"/g) === 1 &&
+      count(/data-ws-link="pdf"/g) === 1 &&
+      html.indexOf('<div class="fm-hero__more"><div class="hw-weekly-sheet') > 0
+    );
+  });
+  assert.deepEqual(bad.slice(0, 10), []);
 });

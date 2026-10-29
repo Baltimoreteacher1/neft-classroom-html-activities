@@ -394,9 +394,12 @@ for (const id of lessonIds) {
     issues.push({ id, level: "HIGH", msg: "No quick check problems" });
   }
 
-  // The AI Learning Lab is an allowed student-practice link. The general Math
-  // Workbench is intentionally not: each homework embeds only its matched tool.
-  const htmlNoAiHub = html.replace(/\/curriculum\/ai-hub\/[^"'\s]*/gi, "");
+  // The AI Learning Lab and the Weekly Practice Sheet are the allowed /curriculum/ links.
+  // The general Math Workbench is intentionally not: each homework embeds only its matched tool.
+  const htmlNoAiHub = html.replace(
+    /\/curriculum\/(?:ai-hub|family-connections\/weekly-sheet)\/[^"'\s]*/gi,
+    "",
+  );
   if (
     /\/curriculum\//i.test(htmlNoAiHub) ||
     /Curriculum Hub/i.test(html) ||

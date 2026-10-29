@@ -1640,6 +1640,12 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/curriculum/family-connections/weekly-sheet/",
+    title: "Weekly Family Practice",
+    category: "Activity",
+    unit: null,
+  },
+  {
     path: "/curriculum/fluency/teacher/",
     title: "Fluency & Readiness",
     category: "Activity",

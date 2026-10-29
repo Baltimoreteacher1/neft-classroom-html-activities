@@ -5147,6 +5147,30 @@ window.addEventListener('load', function () { hwRestoreSolved(); hwRenderGoal(fa
   document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape') document.querySelectorAll('.fm-tooltip[data-open="true"]').forEach(function (t) { t.setAttribute('data-open', 'false'); });
   });
+  (function weeklySheet() {
+    var card = document.querySelector('[data-ws-card]');
+    if (!card) return;
+    var BASE = '/curriculum/family-connections/weekly-sheet/';
+    var start = '';
+    function lang() { try { return localStorage.getItem('hw_lang_mode') === 'es' ? 'es' : 'en'; } catch (e) { return 'en'; } }
+    function point(a) {
+      var es = lang() === 'es';
+      if (a.getAttribute('data-ws-link') === 'pdf' && start) {
+        a.href = BASE + 'downloads/week-' + start + (es ? '-es' : '') + '.pdf';
+        a.setAttribute('download', '');
+      } else {
+        a.href = BASE + '?lang=' + (es ? 'es' : 'en');
+        a.removeAttribute('download');
+      }
+    }
+    function pointAll() { card.querySelectorAll('[data-ws-link]').forEach(point); }
+    card.addEventListener('click', function (e) { var a = e.target.closest('[data-ws-link]'); if (a) point(a); });
+    pointAll();
+    if (typeof fetch !== 'function') return;
+    fetch(BASE + 'weeks.json').then(function (r) { return r.json(); }).then(function (data) {
+      return import(BASE + 'week-pick.js').then(function (m) { start = m.weekFor(data.weeks, m.todayIso()).start; pointAll(); });
+    }).catch(function () {});
+  })();
   apply(current());
   var probe = false;
   try { localStorage.setItem(KEY + '-probe', '1'); localStorage.removeItem(KEY + '-probe'); probe = true; } catch (e) {}

@@ -215,6 +215,20 @@ export function renderMoreSheet({ standard, hasReader = true } = {}) {
     </dialog>`;
 }
 
+/** Where the weekly sheet lives; hero script and card both point here. */
+export const WEEKLY_SHEET_BASE = "/curriculum/family-connections/weekly-sheet/";
+
+/**
+ * "Weekly practice sheet": the online sheet and this week's printable PDF, first row under the hero.
+ * Both links work with no script (the PDF one falls back to the online sheet); HERO_JS points the PDF
+ * at the current week and both at the reader's language.
+ */
+export function renderWeeklySheetCard() {
+  const link = (kind, svg, en, es) =>
+    `<a class="fm-btn" href="${WEEKLY_SHEET_BASE}" data-ws-link="${kind}">${svg}<span class="lang-en">${en}</span><span class="lang-es" lang="es">${es}</span></a>`;
+  return `<div class="hw-weekly-sheet fm-cluster fm-no-print" role="group" aria-labelledby="hw_ws_title" data-ws-card><strong id="hw_ws_title">${bi("Weekly practice sheet", "Hoja semanal de práctica")}</strong>${link("online", icon("pencil", "sm"), "Fill it in online", "Llenarla en línea")}${link("pdf", icon("print", "sm"), "Print a copy (PDF)", "Imprimir una copia (PDF)")}</div>`;
+}
+
 /**
  * The hero. `routes` is the route-chooser markup (two route cards, Start, notes); omit it for a page
  * with no routes. `extras` are quieter rows under the hero: session banner, big idea, tonight chips.
@@ -241,7 +255,7 @@ export function renderHero({
       <div class="fm-hero__copy">${eyebrow}${h1.replace("<h1 ", '<h1 id="hw_hero_title" ')}${meta}${hook ? renderHookCard(hook) : ""}</div>
       ${routes}
     </section>
-    <div class="fm-hero__more">${extras}</div>
+    <div class="fm-hero__more">${renderWeeklySheetCard()}${extras}</div>
     ${sheet}
   </header>`;
 }
@@ -319,6 +333,30 @@ export const HERO_JS = `
   document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape') document.querySelectorAll('.fm-tooltip[data-open="true"]').forEach(function (t) { t.setAttribute('data-open', 'false'); });
   });
+  (function weeklySheet() {
+    var card = document.querySelector('[data-ws-card]');
+    if (!card) return;
+    var BASE = '${WEEKLY_SHEET_BASE}';
+    var start = '';
+    function lang() { try { return localStorage.getItem('hw_lang_mode') === 'es' ? 'es' : 'en'; } catch (e) { return 'en'; } }
+    function point(a) {
+      var es = lang() === 'es';
+      if (a.getAttribute('data-ws-link') === 'pdf' && start) {
+        a.href = BASE + 'downloads/week-' + start + (es ? '-es' : '') + '.pdf';
+        a.setAttribute('download', '');
+      } else {
+        a.href = BASE + '?lang=' + (es ? 'es' : 'en');
+        a.removeAttribute('download');
+      }
+    }
+    function pointAll() { card.querySelectorAll('[data-ws-link]').forEach(point); }
+    card.addEventListener('click', function (e) { var a = e.target.closest('[data-ws-link]'); if (a) point(a); });
+    pointAll();
+    if (typeof fetch !== 'function') return;
+    fetch(BASE + 'weeks.json').then(function (r) { return r.json(); }).then(function (data) {
+      return import(BASE + 'week-pick.js').then(function (m) { start = m.weekFor(data.weeks, m.todayIso()).start; pointAll(); });
+    }).catch(function () {});
+  })();
   apply(current());
   var probe = false;
   try { localStorage.setItem(KEY + '-probe', '1'); localStorage.removeItem(KEY + '-probe'); probe = true; } catch (e) {}

@@ -1,0 +1,70 @@
+/* The Weekly Family Practice Sheet. Used by the digital page, the browser's print, and the PDFs.
+ * Letter, 0.5in margins, nothing under 11pt, black on white (grayscale-safe: every role also differs in shape/label). */
+.ws-sheet {
+  --ws-ink: #14181d;
+  --ws-accent: #17406b;
+  --ws-soft: #f1f3f5;
+  --ws-rule: #14181d;
+  box-sizing: border-box;
+  width: 7.5in;
+  max-width: 100%;
+  margin: 0 auto;
+  color: var(--ws-ink);
+  background: #fff;
+  font: 400 12pt/1.35 "Atkinson Hyperlegible", "Helvetica Neue", Arial, sans-serif;
+}
+.ws-sheet *, .ws-sheet *::before, .ws-sheet *::after { box-sizing: border-box; }
+.ws-sheet a { color: inherit; text-decoration: none; }
+
+.ws-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 12pt;
+  border-bottom: 3pt solid var(--ws-accent); padding-bottom: 5pt; }
+.ws-brand { margin: 0; font-weight: 700; font-size: 12pt; color: var(--ws-accent); }
+.ws-title { margin: 0; font-size: 25pt; line-height: 1.1; font-weight: 700; }
+.ws-where { margin: 0; text-align: right; font-size: 12pt; }
+
+.ws-name, .ws-sign { display: flex; gap: 18pt; margin: 9pt 0 0; }
+.ws-field { display: flex; align-items: flex-end; gap: 6pt; font-weight: 700; white-space: nowrap; }
+.ws-field-name, .ws-field-sign { flex: 1 1 62%; }
+.ws-field-period, .ws-field-date { flex: 1 1 28%; }
+.ws-line, .ws-initials { flex: 1; min-width: 0; border: 0; border-bottom: 1.5pt solid var(--ws-rule); border-radius: 0;
+  background: transparent; font: inherit; font-weight: 400; color: inherit; height: 24pt; padding: 0 2pt; }
+.ws-how { margin: 9pt 0 8pt; }
+
+.ws-table { width: 100%; border-collapse: collapse; table-layout: fixed; border: 1.5pt solid var(--ws-rule); }
+.ws-table th, .ws-table td { border: 1pt solid var(--ws-rule); padding: 4pt 7pt; text-align: left; vertical-align: middle; }
+.ws-table thead th { background: var(--ws-accent); color: #fff; font-size: 11pt; font-weight: 700; }
+.ws-table thead th:nth-child(3) { width: 0.7in; text-align: center; }
+.ws-table thead th:nth-child(1) { width: 1.2in; }
+.ws-table thead th:nth-child(4) { width: 1.1in; }
+.ws-table tbody th { background: var(--ws-soft); font-weight: 400; }
+.ws-dayname { display: block; font-weight: 700; }
+.ws-date { display: block; font-size: 11pt; }
+.ws-night { height: 0.7in; }
+.ws-url { display: block; margin-top: 2pt; font-size: 11pt; color: var(--ws-accent); overflow-wrap: anywhere; }
+.ws-done { text-align: center; }
+.ws-initials { width: 100%; text-align: center; border-bottom: 0; height: 30pt; font-weight: 700; text-transform: uppercase; }
+.ws-off td, .ws-turnin td { font-style: italic; }
+.ws-off, .ws-off th { background: repeating-linear-gradient(135deg, #fff 0 5pt, var(--ws-soft) 5pt 6pt); }
+.ws-turnin td { font-weight: 700; font-style: normal; border-top: 2pt solid var(--ws-accent); }
+
+.ws-check, .ws-box { appearance: none; -webkit-appearance: none; display: inline-block; vertical-align: middle;
+  width: 25pt; height: 25pt; margin: 0; border: 2pt solid var(--ws-rule); border-radius: 4pt; background: #fff; cursor: pointer; position: relative; }
+.ws-check:checked { background: var(--ws-accent); border-color: var(--ws-accent); }
+.ws-check:checked::after { content: ""; position: absolute; left: 7pt; top: 1.5pt; width: 7pt; height: 14pt;
+  border: solid #fff; border-width: 0 3pt 3pt 0; transform: rotate(45deg); }
+.ws-check:focus-visible, .ws-line:focus-visible, .ws-initials:focus-visible, .ws-lines:focus-visible { outline: 3pt solid #f59e0b; outline-offset: 1pt; }
+.ws-box { width: 15pt; height: 15pt; cursor: default; }
+
+.ws-goal { margin: 8pt 0 6pt; font-weight: 700; padding: 5pt 8pt; border: 2pt dashed var(--ws-accent); border-radius: 6pt; }
+.ws-reflect { display: block; font-weight: 700; margin-top: 4pt; }
+.ws-lines { display: block; width: 100%; resize: none; border: 0; padding: 0 2pt; color: inherit; font: 400 12pt/25pt "Atkinson Hyperlegible", Arial, sans-serif; font-weight: 400;
+  height: 75pt; background: repeating-linear-gradient(to bottom, transparent 0 24pt, var(--ws-rule) 24pt 25pt); }
+.ws-teacher { display: flex; flex-wrap: wrap; align-items: center; gap: 4pt 16pt; margin-top: 8pt; padding: 6pt 9pt;
+  border: 1.5pt solid var(--ws-rule); background: var(--ws-soft); }
+.ws-blank { display: inline-block; width: 0.5in; border-bottom: 1.25pt solid var(--ws-rule); height: 1em; vertical-align: bottom; }
+.ws-foot { margin: 8pt 0 0; font-size: 11pt; text-align: center; }
+
+/* PDFs: one sheet per Letter page. */
+.ws-print { margin: 0; }
+.ws-print .ws-sheet { width: 8.5in; height: 11in; padding: 0.5in; break-after: page; overflow: hidden; }
+@page { size: Letter; margin: 0; }

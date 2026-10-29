@@ -9,6 +9,7 @@ import * as checks from "./shared/publication-checks.js";
 import * as welcomeModule from "./shared/family-welcome.js";
 import * as hubLanguage from "./shared/hub-language.js";
 import * as hubRoutes from "./shared/hub-routes.js";
+import * as weeklySheetLinks from "./shared/weekly-sheet-links.js";
 import { weekStartFor } from "./shared/pacing-week.js";
 
 const monday = weekStartFor(hub.schoolDate());
@@ -31,7 +32,7 @@ async function boot(path, state, query = "", options = {}) {
   globalThis.document = dom.window.document;
   for (const [name, value] of Object.entries(options.stored ?? {})) dom.window.localStorage.setItem(name, value);
   Object.defineProperty(dom.window.navigator, "languages", { value: options.languages ?? ["en-US", "en"], configurable: true });
-  Object.assign(dom.window, model, hub, weeks, checks, welcomeModule, hubLanguage, hubRoutes, {
+  Object.assign(dom.window, model, hub, weeks, checks, welcomeModule, hubLanguage, hubRoutes, weeklySheetLinks, {
     loadDraft: async () => structuredClone(state),
     saveDraft: async (draft) => structuredClone(draft),
     publishDraft: async () => { throw new Error("Test must not publish"); },
@@ -121,7 +122,14 @@ test("the page is Family Math Studio from the first paint, in both languages, wi
     assert.equal(d.getElementById("hub-intro").textContent, "A few minutes of math at home. Optional. No grades.");
     assert.equal(d.getElementById("edition-label").textContent, "A weekly note from Mr. Neft");
     assert.equal(d.title, "Family Math Studio · EduWonderLab");
+    const sheet = d.getElementById("weekly-sheet-links");
+    assert.equal(sheet.hidden, false);
+    assert.equal(sheet.querySelector("[data-ws=online]").textContent, "Fill it in online");
+    assert.equal(sheet.querySelector("[data-ws=online]").getAttribute("href"), "./weekly-sheet/?lang=en");
     d.querySelector('#language-switch [data-lang="es"]').click();
+    assert.equal(sheet.querySelector("[data-ws=online]").textContent, "Llenarla en línea");
+    assert.equal(sheet.querySelector("[data-ws=print]").textContent, "Imprimir una copia (PDF)");
+    assert.equal(sheet.querySelector("[data-ws=online]").getAttribute("href"), "./weekly-sheet/?lang=es");
     assert.equal(d.getElementById("hub-title").textContent, "Estudio familiar de matemáticas");
     assert.equal(d.getElementById("hub-intro").textContent, "Unos minutos de matemáticas en casa. Opcional. Sin calificaciones.");
     assert.equal(d.getElementById("edition-label").textContent, "Una nota semanal del Sr. Neft");

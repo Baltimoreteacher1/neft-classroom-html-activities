@@ -728,7 +728,7 @@ const COVERAGE = [
   // The weekly hub (and its optional "A note from Mr. Neft" data): its own tests
   // drive the shipped page in jsdom, and the welcome gate holds the data file.
   [
-    /^(curriculum\/family-connections\/|data\/family-welcome\.json$|docs\/family-welcome-script\.md$|tools\/validate-family-welcome\.mjs$)/,
+    /^(curriculum\/family-connections\/|scripts\/generate-weekly-sheets\.mjs$|data\/family-welcome\.json$|docs\/family-welcome-script\.md$|tools\/validate-family-welcome\.mjs$)/,
     ["validate:family-broadcast", "validate:family-welcome", "test", "check"],
   ],
   [
