@@ -42,3 +42,7 @@ There is no cloud transcription confidence value because no cloud transcription 
 ## Items requiring organizational or legal review
 
 Before introducing cloud processing or centralized storage, review student privacy/consent, provider terms and training use, retention/deletion guarantees, school/district authorization, tenant identity and access, breach response, and any applicable records obligations with the responsible organization. This document does not decide those questions.
+
+## Camera postcards — disabled
+
+The camera postcard experience is not available in this release. `cameraPostcardsEnabled` is hard-coded to `false`; no camera permission is requested, no photo is captured or stored, and no postcard media is added to ACCESS1 / ACCESST1 transfers. Keep the flag off until the school device policy, family consent expectations, local retention/deletion behavior, accessible no-camera path, and teacher-sharing behavior have been reviewed. Any future implementation must re-encode media through a canvas to strip metadata, keep photo bytes in local IndexedDB only with a 30-day expiry and a Passport delete control, provide a no-camera path, and add photos to a transfer only after an explicit “Keep for my teacher” choice.

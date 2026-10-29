@@ -1,6 +1,11 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { familyPatch, getFamily, TRIP_STOPS } from "../access-practice-lab/src/family/state.js";
+import {
+  familyPatch,
+  getFamily,
+  TRIP_STOPS,
+  tripWeekStreak,
+} from "../access-practice-lab/src/family/state.js";
 import {
   nextStopIds,
   stopProgress,
@@ -72,4 +77,11 @@ test("saved trip state is sanitized and never carries anything but a skill, a st
   assert.deepEqual(dirty, { skill: "Reading", stop: 0, ids: ["ok"] });
   assert.equal(getFamily({ family: { trip: { skill: "Math", stop: 1, ids: [] } } }).trip, null);
   assert.equal(TRIP_STOPS, 6);
+});
+
+test("Family Trip streak counts only completed-stop weeks in a recent consecutive run", () => {
+  const today = new Date("2026-10-28T12:00:00Z");
+  assert.equal(tripWeekStreak(["2026-10-12", "2026-10-19", "2026-10-26"], today), 3);
+  assert.equal(tripWeekStreak(["2026-10-05", "2026-10-19", "2026-10-26"], today), 2);
+  assert.equal(tripWeekStreak(["2026-10-05", "2026-10-12"], today), 0);
 });

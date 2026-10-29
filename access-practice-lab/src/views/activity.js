@@ -70,6 +70,7 @@ import {
   storage,
 } from "../util.js";
 import { activityHref, roomHref } from "./room.js";
+import { COUNTRIES, stopSlices } from "../journey.js";
 
 const IGN = raw("data-nsr-ignore");
 // Transient per-visit check state: id → { ok, attempt, reveal }
@@ -548,6 +549,9 @@ export async function render(ctx) {
   const listening = isListening(cur.domain, a);
   const hasPassage = !listening && asList(a.passage).length > 0;
   const step = cur.playlist ? { n: cur.playlist.index + 1, total: cur.playlist.ids.length } : { n: cur.index + 1, total: cur.list.length };
+  const journeyStops = stopSlices(cur.list.length);
+  const journeyStop = Math.max(1, journeyStops.findIndex(([from, to]) => cur.index >= from && cur.index < to) + 1);
+  const country = COUNTRIES[cur.domain]?.[cur.level];
   return {
     title: a.title,
     html: html`${crumbsHTML([
@@ -561,11 +565,16 @@ export async function render(ctx) {
             <p class="act-context">
               ${icon(meta.icon)}<span>${meta.name} · ${tier?.name || cur.level} · ${bandLabel(cur.band)}${cur.playlist?.title ? ` · ${cur.playlist.title}` : ""}</span>
             </p>
+            ${country ? html`<p class="act-journey-label">${I.T(`${country[0]} · stop ${journeyStop} of ${journeyStops.length}`, `${country[1]} · parada ${journeyStop} de ${journeyStops.length}`)}</p>` : ""}
             <p class="act-step"><span>${I.T(`Activity ${step.n} of ${step.total}`, `Actividad ${step.n} de ${step.total}`)}</span><span class="bar" aria-hidden="true"><i style="width:${Math.round((step.n / step.total) * 100)}%"></i></span></p>
           </div>
           <h1 tabindex="-1">
             ${a.title}${done ? html` <span class="done-badge">${icon("check")} ${I.T("Done", "Hecho")}</span>` : ""}
           </h1>
+          <nav class="act-return" aria-label="${I.S("Return to practice", "Volver a la práctica")}">
+            <a class="btn small" href="${roomHref(cur.domain, cur.level)}">${I.T("Back to activity list", "Volver a la lista de actividades")}</a>
+            <a class="btn small" href="${BASE}/passport?grades=${cur.band}">${I.T("My Passport", "Mi Pasaporte")}</a>
+          </nav>
           ${directionsBlocks(a, es)}
         </header>
         ${familyOf(ctx).who === "independent" ? "" : copilotHTML(I, buildCoaching(a, cur.domain, coachData, es))}

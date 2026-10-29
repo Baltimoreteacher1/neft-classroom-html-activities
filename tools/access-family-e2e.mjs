@@ -578,6 +578,197 @@ try {
     await page.context().close();
   }
 
+  // ── Teacher Hub: assigned trip link, teacher key and filter reset ──────────
+  {
+    const page = await newPage({ width: 1280 });
+    await page.goto(`${origin}/access-teacher/`, { waitUntil: "networkidle" });
+    await page.waitForSelector("#familyTrip");
+    await page.locator("[data-trip-grade]").selectOption("3-5");
+    await page.locator("[data-trip-skill]").selectOption("Writing");
+    ok(
+      (await page.locator("[data-trip-open]").getAttribute("href")).includes(
+        "grades=3-5&skill=Writing",
+      ),
+      "Teacher Hub: assignment link updates from grade and skill selections",
+    );
+    ok(
+      (await page.locator('a[href*="language-passport-teacher-key.pdf"]').count()) === 1,
+      "Teacher Hub: teacher key is linked inside the gated hub",
+    );
+    await page.locator("[data-f=domain]").selectOption("Reading");
+    await page.locator("[data-reset-filters]").click();
+    ok(
+      (await page.locator("[data-f=domain]").inputValue()) === "",
+      "Teacher Hub: reset clears activity filters",
+    );
+    ok(
+      (await page.locator("[data-trip-grade]").inputValue()) === "3-5",
+      "Teacher Hub: activity filter reset preserves trip assignment choices",
+    );
+    await page.context().grantPermissions(["clipboard-read", "clipboard-write"]);
+    await page.locator("[data-trip-copy]").click();
+    await page.waitForFunction(() =>
+      /copied|unavailable/i.test(document.querySelector("[data-trip-status]")?.textContent || ""),
+    );
+    ok(
+      /copied|unavailable/i.test(await page.locator("[data-trip-status]").innerText()),
+      "Teacher Hub: copy action reports its result",
+    );
+    const copiedTrip = await page.evaluate(() => navigator.clipboard.readText()).catch(() => "");
+    ok(
+      copiedTrip.includes("grades=3-5") && copiedTrip.includes("skill=Writing"),
+      "Teacher Hub: copied URL carries the selected grade and skill",
+    );
+    ok(
+      (await page.evaluate(
+        () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+      )) <= 0,
+      "Teacher Hub: desktop layout has no horizontal overflow",
+    );
+    await axe(page, "Teacher Hub desktop");
+    await page.setViewportSize({ width: 375, height: 850 });
+    ok(
+      (await page.evaluate(
+        () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+      )) <= 0,
+      "Teacher Hub: phone layout has no horizontal overflow",
+    );
+    clean(page, "Teacher Hub");
+    await page.context().close();
+  }
+
+  // ── Grade-band choices on the student home ────────────────────────────────
+  {
+    const page = await newPage({ width: 375 });
+    await page.go(`${BASE}/?grades=3-5`);
+    ok(
+      (await page.locator('[data-set-band="3-5"]').count()) === 1,
+      "Home: Grades 3–5 button is available",
+    );
+    ok(
+      (await page.locator('[data-set-band="6-8"]').count()) === 1,
+      "Home: Grades 6–8 button is available",
+    );
+    ok(
+      (await page.locator('[data-set-band="3-5"]').getAttribute("aria-pressed")) === "true",
+      "Home: selected grade band is clear",
+    );
+    await page.locator('[data-set-band="6-8"]').click();
+    await page.waitForFunction(() => new URLSearchParams(location.search).get("grades") === "6-8");
+    ok(
+      (await page.locator('[data-set-band="6-8"]').getAttribute("aria-pressed")) === "true",
+      "Home: grade band switches and updates selected state",
+    );
+    ok(
+      (await page.evaluate(
+        () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+      )) <= 0,
+      "Home: grade selection fits a 375px phone",
+    );
+    clean(page, "student grade-band selector");
+    await page.context().close();
+  }
+
+  // ── Trip + journey: every skill, both languages and desktop/phone ──────────
+  {
+    const page = await newPage();
+    for (const mode of ["en", "es"]) {
+      for (const width of [1280, 375]) {
+        await page.setViewportSize({ width, height: 850 });
+        for (const skill of ["Listening", "Speaking", "Reading", "Writing"]) {
+          await page.go(`${BASE}/family/trip?grades=3-5`);
+          await page.evaluate(
+            ({ lang, key }) =>
+              localStorage.setItem(
+                key,
+                JSON.stringify({
+                  lang,
+                  langChosen: true,
+                  family: {
+                    v: 1,
+                    grade: "3-5",
+                    who: "together",
+                    minutes: 10,
+                    done: true,
+                    skipped: false,
+                    trip: null,
+                    tripWeeks: [],
+                  },
+                }),
+              ),
+            { lang: mode, key: PREFS },
+          );
+          await page.go(`${BASE}/family/trip?grades=3-5`);
+          await page.locator(`[data-trip-begin="${skill}"]`).click();
+          const stopText = await page.text();
+          ok(
+            stopText.includes(mode === "en" ? "Stop 1 of 6" : "Parada 1 de 6"),
+            `Trip ${skill}: ${mode} stop renders at ${width}px`,
+          );
+          ok(
+            stopText.includes(mode === "en" ? "Look" : "Mira"),
+            `Trip ${skill}: ${mode} prompt renders at ${width}px`,
+          );
+          if (skill === "Listening") await page.shot(`trip-stop-${mode}-${width}.png`);
+          const href = await page.locator('a[href*="/play?ids="]').last().getAttribute("href");
+          ok(Boolean(href), `Trip ${skill}: ${mode} activity link exists at ${width}px`);
+          await axe(page, `Family Trip ${skill} (${mode}, ${width}px)`);
+          if (href) {
+            await page.go(href);
+            if (
+              skill === "Listening" &&
+              ((mode === "en" && width === 1280) || (mode === "es" && width === 375))
+            )
+              await page.shot(`trip-activity-${mode}-${width}.png`);
+            const family = (await page.prefs())?.family;
+            ok(
+              family?.trip?.stop === 0,
+              `Trip ${skill}: opening activity does not advance or complete its stamp`,
+            );
+            ok(
+              (await page.locator('.act-return a[href*="/passport"]').count()) === 1,
+              `Trip ${skill}: activity has a Passport return link`,
+            );
+            ok(
+              (await page
+                .locator(
+                  '.act-return a[href*="/Listening/"], .act-return a[href*="/Speaking/"], .act-return a[href*="/Reading/"], .act-return a[href*="/Writing/"]',
+                )
+                .count()) === 1,
+              `Trip ${skill}: activity has an activity-list return link`,
+            );
+            await page.locator('.act-return a[href*="/passport"]').click();
+            await page.locator(".journey-stops a").first().waitFor();
+            ok(
+              (await page.locator(".journey-stops a").count()) > 0,
+              `Trip ${skill}: Passport shows links for journey stops`,
+            );
+            const passportText = await page.text();
+            ok(
+              passportText.includes(
+                mode === "en" ? "Language Navigator" : "Navegante del Lenguaje",
+              ),
+              `Trip ${skill}: stop-based Passport milestones render in ${mode}`,
+            );
+            await page.locator(".journey-stops a").first().click();
+            ok(
+              (await page.prefs())?.family?.trip?.stop === 0,
+              `Trip ${skill}: opening a passport stamp does not advance or complete the trip`,
+            );
+            ok(
+              (await page.evaluate(
+                () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+              )) <= 0,
+              `Trip ${skill}: no horizontal overflow at ${width}px`,
+            );
+            clean(page, `Family Trip activity ${skill} (${mode}, ${width}px)`);
+          }
+        }
+      }
+    }
+    await page.context().close();
+  }
+
   // ── K: keyboard only ──────────────────────────────────────────────────────
   {
     const page = await newPage();

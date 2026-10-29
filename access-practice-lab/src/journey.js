@@ -4,7 +4,7 @@
 // Finishing all stops earns the country sticker on the paper passport. This is finished practice,
 // never a score or a level: the paper passport shows country names, not level letters.
 import { isActivityComplete } from "./store.js";
-import { CORE_DOMAINS, DOMAIN_META, LEVEL_KEYS, html } from "./util.js";
+import { BASE, CORE_DOMAINS, DOMAIN_META, LEVEL_KEYS, html, icon } from "./util.js";
 
 export const STOPS = 12;
 
@@ -24,7 +24,7 @@ export function stopSlices(count) {
 
 /**
  * @param {{id: string, domain: string, level: string, record: object}[]} rows activities in authored order, each with its saved record
- * @returns {{domain: string, level: string, country: string[], total: number, stops: boolean[], stopsDone: number, complete: boolean}[]}
+ * @returns {{domain: string, level: string, country: string[], total: number, stops: boolean[], stopIds: string[][], band: string, stopsDone: number, complete: boolean}[]}
  */
 export function routeProgress(rows) {
   const routes = [];
@@ -33,9 +33,11 @@ export function routeProgress(rows) {
       const acts = rows.filter((r) => r.domain === domain && r.level === level);
       if (!acts.length) continue;
       const done = acts.map((r) => isActivityComplete(r.record, r.id));
-      const stops = stopSlices(acts.length).map(([from, to]) => done.slice(from, to).every(Boolean));
+      const slices = stopSlices(acts.length);
+      const stops = slices.map(([from, to]) => done.slice(from, to).every(Boolean));
+      const stopIds = slices.map(([from, to]) => acts.slice(from, to).map((a) => a.id));
       const stopsDone = stops.filter(Boolean).length;
-      routes.push({ domain, level, country: COUNTRIES[domain][level], total: acts.length, stops, stopsDone, complete: stopsDone === stops.length });
+      routes.push({ domain, level, country: COUNTRIES[domain][level], total: acts.length, stops, stopIds, band: acts[0].band, stopsDone, complete: stopsDone === stops.length });
     }
   }
   return routes;
@@ -45,7 +47,7 @@ export function journeyHTML(I, routes) {
   const cards = routes.map(
     (r) => html`<li class="journey-card d-${r.domain.toLowerCase()} ${r.complete ? "is-done" : ""}">
       <div class="journey-name"><strong>${I.T(...r.country)}</strong><span class="fine">${I.T(r.domain, DOMAIN_META[r.domain].es)}</span></div>
-      <ol class="journey-stops" aria-label="${I.S(`${r.stopsDone} of ${r.stops.length} stops finished`, `${r.stopsDone} de ${r.stops.length} paradas terminadas`)}">${r.stops.map((on) => html`<li class="${on ? "on" : ""}"></li>`)}</ol>
+      <ol class="journey-stops" aria-label="${I.S(`${r.stopsDone} of ${r.stops.length} stops finished`, `${r.stopsDone} de ${r.stops.length} paradas terminadas`)}">${r.stops.map((on, i) => html`<li class="${on ? "on" : ""}"><a href="${BASE}/play?ids=${encodeURIComponent(r.stopIds[i].join(","))}&grades=${r.band}" aria-label="${I.S(`Stop ${i + 1}: ${r.country[0]} — open its activities`, `Parada ${i + 1}: ${r.country[1]} — abrir sus actividades`)}">${on ? html`${icon("check")}<span class="visually-hidden">${I.S("Finished", "Terminada")}</span>` : i + 1}</a></li>`)}</ol>
       <p class="journey-count">${r.complete ? I.T("Country sticker earned!", "¡Calcomanía del país ganada!") : I.T(`${r.stopsDone} of ${r.stops.length} stops`, `${r.stopsDone} de ${r.stops.length} paradas`)}</p>
     </li>`,
   );

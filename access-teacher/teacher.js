@@ -43,6 +43,8 @@ const TYPE_LABEL = {
 const PAGE = 25;
 const S = {
   band: "6-8",
+  tripGrade: "6-8",
+  tripSkill: "Listening",
   q: "",
   domain: "",
   level: "",
@@ -152,6 +154,19 @@ async function render() {
       ${cats.map(([href, ico, title, n, text, kind]) => html`<a class="th-cat" href="${href}"><span class="th-tile">${icon(ico)}</span><span class="th-cat-body"><strong>${title}</strong><span>${text}</span><span class="th-cat-tags">${tag(kind)}</span></span><span class="th-cat-n">${n}</span></a>`)}
     </section>
 
+    <section class="th-sec" id="familyTrip" aria-labelledby="familyTripTitle">
+      <header class="th-sec-head"><div><h2 id="familyTripTitle">Assign a Family Trip</h2>
+        <p class="fine">Choose a grade band and skill, then copy a student-facing link. Progress stays on the family’s device.</p></div>${TAG_STUDENT}</header>
+      <div class="th-trip-link">
+        <label class="field"><span>Grade band</span><select data-trip-grade><option value="3-5" ${S.tripGrade === "3-5" ? "selected" : ""}>Grades 3–5</option><option value="6-8" ${S.tripGrade === "6-8" ? "selected" : ""}>Grades 6–8</option></select></label>
+        <label class="field"><span>Skill</span><select data-trip-skill>${["Listening", "Speaking", "Reading", "Writing"].map((d) => html`<option value="${d}" ${S.tripSkill === d ? "selected" : ""}>${d}</option>`)}</select></label>
+        <button type="button" class="btn btn-primary" data-trip-copy>Copy Family Trip link</button>
+        <a class="btn small" data-trip-open href="${BASE}/family/trip?grades=${S.tripGrade}&skill=${S.tripSkill}">Open link</a>
+      </div>
+      <p class="fine" role="status" data-trip-status aria-live="polite"></p>
+      <p><a class="btn small" href="${BASE}/paper-passport/language-passport-teacher-key.pdf" target="_blank" rel="noopener">Open teacher country key (PDF)</a></p>
+    </section>
+
     <section class="th-sec" id="activities" aria-labelledby="actTitle">
       <header class="th-sec-head">
         <div>
@@ -184,6 +199,7 @@ async function render() {
           <option value="">All types</option>
           ${Object.entries(TYPE_LABEL).map(([k, v]) => html`<option value="${k}" ${S.type === k ? "selected" : ""}>${v}</option>`)}
         </select>
+        <button type="button" class="btn small" data-reset-filters>Reset filters</button>
       </div>
       <div class="lab-table-wrap">
         <table class="hub-table th-table">
@@ -402,6 +418,21 @@ root.addEventListener("change", (e) => {
 });
 root.addEventListener("click", (e) => {
   const t = e.target;
+  if (t.closest("[data-trip-copy]")) {
+    const url = new URL(`${BASE}/family/trip`, location.origin);
+    url.searchParams.set("grades", root.querySelector("[data-trip-grade]")?.value || "6-8");
+    url.searchParams.set("skill", root.querySelector("[data-trip-skill]")?.value || "Listening");
+    copyText(url.href).then((ok) => {
+      const status = root.querySelector("[data-trip-status]");
+      if (status) status.textContent = ok ? "Family Trip link copied." : "Copy was unavailable. Use the Open link button.";
+    });
+    return;
+  }
+  if (t.closest("[data-reset-filters]")) {
+    Object.assign(S, { q: "", domain: "", level: "", type: "", limit: PAGE });
+    render().then(() => root.querySelector('[data-f="q"]')?.focus());
+    return;
+  }
   const band = t.closest("[data-hub-band]");
   if (band) {
     Object.assign(S, {
@@ -432,6 +463,15 @@ root.addEventListener("click", (e) => {
     announce("Playlist cleared.");
     render();
   }
+});
+root.addEventListener("change", (e) => {
+  if (!e.target.matches("[data-trip-grade], [data-trip-skill]")) return;
+  if (e.target.matches("[data-trip-grade]")) S.tripGrade = e.target.value;
+  if (e.target.matches("[data-trip-skill]")) S.tripSkill = e.target.value;
+  const grade = S.tripGrade;
+  const skill = S.tripSkill;
+  const link = root.querySelector("[data-trip-open]");
+  if (link) link.href = `${BASE}/family/trip?grades=${encodeURIComponent(grade)}&skill=${encodeURIComponent(skill)}`;
 });
 
 render().catch((err) => {

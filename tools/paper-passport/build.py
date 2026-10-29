@@ -5,7 +5,7 @@ family-guide.html). Needs Google Chrome for the HTML -> PDF step (set CHROME to 
 
     python3 tools/paper-passport/build.py
 """
-import math, os, pathlib, re, shutil, subprocess, tempfile
+import base64, math, os, pathlib, re, shutil, subprocess, tempfile
 
 HERE = pathlib.Path(__file__).parent
 DEST = HERE.parents[1] / "access-practice-lab" / "paper-passport"
@@ -62,6 +62,14 @@ def read_countries():
     return out
 
 COUNTRIES = read_countries()
+
+def lab_qr():
+    root = HERE.parents[1]
+    svg = subprocess.run(
+        ["node", "--input-type=module", "-e", "import { qrSvg } from './scripts/lib/qr-code.mjs'; process.stdout.write(qrSvg('https://eduwonderlab.com/access-practice-lab/', {px: 96, label: 'Open ACCESS Practice Lab'}));"],
+        cwd=root, check=True, capture_output=True, text=True,
+    ).stdout
+    return "data:image/svg+xml;base64," + base64.b64encode(svg.encode("utf-8")).decode("ascii")
 
 def icon_svg(name, color, x=30, y=14, scale=1.0):
     return f'<g transform="translate({x} {y}) scale({scale})" stroke="{color}" fill="{color}" stroke-linecap="round">{ICONS[name]}</g>'
@@ -158,8 +166,9 @@ def p_milestones():
     rows = "".join(
         f'<li>{spot("circle", NAVY, "")}<div><b>{a}</b> <span class="es">/ {b}</span><br>{c}<em>{d}</em></div><div class="init">Teacher<i></i></div></li>'
         for a, b, c, d in MILESTONES)
-    return f'''<div class="panel">
+    return f'''<div class="panel" style="position:relative">
   {head("Milestones", "Metas del viaje")}
+  <div style="position:absolute;top:18px;right:26px;display:grid;justify-items:center;gap:1px"><img style="width:48px;height:48px" src="{lab_qr()}" alt="QR code to open ACCESS Practice Lab"><small style="font-size:5pt">Scan · Escanea</small></div>
   <p class="how">Put a bought country sticker in the circle for each milestone. / Pega una calcomanía de país comprada en el círculo de cada meta.</p>
   <ol class="mile">{rows}</ol>
   <p class="fine">Stamps show finished practice, not a score.<br>Los sellos muestran práctica terminada, no un puntaje.</p>
@@ -269,7 +278,11 @@ th {{ background: #f2f6fd; color: {NAVY}; }} .fine {{ color: #4a5568; font-size:
 <p><b>Paradas.</b> Cada país tiene 12 paradas. Grados 3–5: una actividad por parada. Grados 6–8: dos o tres actividades por parada. Marque una parada cuando el estudiante muestre el trabajo terminado de todas sus actividades.</p>
 <p class="fine">Stops show finished practice. They are not a score or a language level. / Las paradas muestran práctica terminada. No son un puntaje ni un nivel de lenguaje.</p></body></html>''', encoding="utf-8")
 
-shutil.copy(HERE / "family-guide.html", OUT / "family-guide.html")
+guide = (HERE / "family-guide.html").read_text(encoding="utf-8")
+qr = lab_qr()
+qr_contact = f'<div style="display:grid;justify-items:center;gap:2px"><img style="width:48px;height:48px" src="{qr}" alt="QR code to open ACCESS Practice Lab"><small>Scan · Escanea</small></div>'
+guide = re.sub(r'(<div class="contact">.*?<div class="line"></div>)(</div>)', rf'\1{qr_contact}\2', guide, count=1, flags=re.S)
+(OUT / "family-guide.html").write_text(guide, encoding="utf-8")
 
 JOBS = {
     "booklet-print": "language-passport-booklet-print",

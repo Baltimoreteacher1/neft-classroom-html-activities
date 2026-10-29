@@ -11,7 +11,7 @@ export const WHO = ["together", "independent"];
 export const MINUTES = [5, 10, 15];
 export const TRIP_STOPS = 6;
 
-export const DEFAULT_FAMILY = Object.freeze({ v: FAMILY_SCHEMA, grade: "", who: "", minutes: 0, done: false, skipped: false, trip: null });
+export const DEFAULT_FAMILY = Object.freeze({ v: FAMILY_SCHEMA, grade: "", who: "", minutes: 0, done: false, skipped: false, trip: null, tripWeeks: [] });
 
 function cleanTrip(t) {
   if (!t || typeof t !== "object" || !CORE_DOMAINS.includes(t.skill)) return null;
@@ -31,8 +31,30 @@ export function getFamily(prefs) {
     done: f.done === true,
     skipped: f.skipped === true,
     trip: cleanTrip(f.trip),
+    tripWeeks: Array.isArray(f.tripWeeks) ? [...new Set(f.tripWeeks.filter((w) => /^\d{4}-\d{2}-\d{2}$/.test(w)))].slice(-30) : [],
   };
 }
 
 /** Merge a patch into the saved answers. */
 export const familyPatch = (prefs, patch) => ({ family: { ...getFamily(prefs), ...patch, v: FAMILY_SCHEMA } });
+
+export function tripWeekStreak(weeks, today = new Date()) {
+  const monday = (date) => {
+    const d = new Date(`${date}T00:00:00Z`);
+    d.setUTCDate(d.getUTCDate() - ((d.getUTCDay() + 6) % 7));
+    return d.toISOString().slice(0, 10);
+  };
+  const keys = new Set((weeks || []).map(monday));
+  const current = monday(today.toISOString().slice(0, 10));
+  const previous = new Date(`${current}T00:00:00Z`);
+  previous.setUTCDate(previous.getUTCDate() - 7);
+  let cursor = keys.has(current) ? current : previous.toISOString().slice(0, 10);
+  let count = 0;
+  while (keys.has(cursor)) {
+    count++;
+    const d = new Date(`${cursor}T00:00:00Z`);
+    d.setUTCDate(d.getUTCDate() - 7);
+    cursor = d.toISOString().slice(0, 10);
+  }
+  return count;
+}

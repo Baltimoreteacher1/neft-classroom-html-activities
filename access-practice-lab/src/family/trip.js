@@ -2,7 +2,7 @@
 // Look (talk about it, any language) / Do (the stop's activities) / Say (tell a grown-up one thing).
 // The grown-up checks the stop's box in the paper Trip Log. Progress lives on this device only.
 import { bandRows } from "../content.js";
-import { html, icon } from "../util.js";
+import { BASE, html, icon, todayISO } from "../util.js";
 import { playlistHref, sessionMinutes } from "./plan.js";
 import { TRIP_STOPS, familyPatch, getFamily } from "./state.js";
 import { nextStopIds, stopProgress, suggestSkill } from "./trip-plan.js";
@@ -35,14 +35,15 @@ function stopCard(I, trip, rows, band, progress) {
   const plan = trip.ids.map((id) => ({ id }));
   const minutes = sessionMinutes(rows.filter((r) => trip.ids.includes(r.id)));
   const doneNow = progress.finished;
+  const promptVariant = (trip.stop % 3) + 1;
   return html`<div class="trip-stop panel" aria-labelledby="tripStopTitle">
     <h2 id="tripStopTitle">${doneNow ? I.L("trip.stop.done", { n }) : I.L("trip.stop", { n, total: TRIP_STOPS })}</h2>
     <ol class="trip-steps">
-      <li><strong>${I.L("trip.step.look")}</strong><span>${I.L(`trip.look.${trip.skill}`)}</span></li>
+      <li><strong>${I.L("trip.step.look")}</strong><span>${I.L(`trip.look.${trip.skill}.${promptVariant}`)}</span></li>
       <li><strong>${I.L("trip.step.do")}</strong><span>${I.L("trip.do", { n: progress.total, min: minutes, done: progress.done })}</span></li>
-      <li><strong>${I.L("trip.step.say")}</strong><span>${I.L(`trip.say.${trip.skill}`)}</span></li>
+      <li><strong>${I.L("trip.step.say")}</strong><span>${I.L(`trip.say.${trip.skill}.${promptVariant}`)}</span></li>
     </ol>
-    ${n === TRIP_STOPS ? html`<p class="fine">${I.L("trip.souvenir")}</p>` : ""}
+    ${n === TRIP_STOPS ? html`<p class="fine">${I.L("trip.souvenir")}</p><a class="btn" href="${BASE}/speak?grades=${band}">${I.L("trip.keep")}${icon("arrow-right")}</a>` : ""}
     ${doneNow
       ? html`<p class="goal-done" role="status">${I.L("trip.paper")}</p><button type="button" class="btn btn-primary" data-trip-next>${I.L("trip.next")}${icon("arrow-right")}</button>`
       : html`<a class="btn btn-primary" href="${playlistHref(plan, I.LS("trip.title"), band)}">${I.L("trip.start")}${icon("arrow-right")}</a>`}
@@ -95,6 +96,12 @@ export async function onClick(e, ctx) {
     ctx.rerender();
   };
   if (begin) pick(begin.dataset.tripBegin, 0);
-  else if (family.trip) pick(family.trip.skill, family.trip.stop + 1);
+  else if (family.trip) {
+    const week = new Date(`${todayISO()}T00:00:00Z`);
+    week.setUTCDate(week.getUTCDate() - ((week.getUTCDay() + 6) % 7));
+    const tripWeeks = [...new Set([...family.tripWeeks, week.toISOString().slice(0, 10)])].slice(-30);
+    ctx.setPrefs(familyPatch(ctx.prefs, { tripWeeks }));
+    pick(family.trip.skill, family.trip.stop + 1);
+  }
   return true;
 }
