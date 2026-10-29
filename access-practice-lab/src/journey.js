@@ -43,12 +43,19 @@ export function routeProgress(rows) {
   return routes;
 }
 
+/** One tap to the first unfinished stop of a country. */
+const nextStopLink = (I, r) => {
+  const i = r.stops.indexOf(false);
+  return html`<a class="btn btn-primary small journey-go" href="${BASE}/play?ids=${encodeURIComponent(r.stopIds[i].join(","))}&grades=${r.band}">${I.T(`${r.stopsDone ? "Continue" : "Start"}: stop ${i + 1}`, `${r.stopsDone ? "Continuar" : "Empezar"}: parada ${i + 1}`)} ${icon("arrow-right")}</a>`;
+};
+
 export function journeyHTML(I, routes) {
   const cards = routes.map(
     (r) => html`<li class="journey-card d-${r.domain.toLowerCase()} ${r.complete ? "is-done" : ""}">
       <div class="journey-name"><strong>${I.T(...r.country)}</strong><span class="fine">${I.T(r.domain, DOMAIN_META[r.domain].es)}</span></div>
       <ol class="journey-stops" aria-label="${I.S(`${r.stopsDone} of ${r.stops.length} stops finished`, `${r.stopsDone} de ${r.stops.length} paradas terminadas`)}">${r.stops.map((on, i) => html`<li class="${on ? "on" : ""}"><a href="${BASE}/play?ids=${encodeURIComponent(r.stopIds[i].join(","))}&grades=${r.band}" aria-label="${I.S(`Stop ${i + 1}: ${r.country[0]} — open its activities`, `Parada ${i + 1}: ${r.country[1]} — abrir sus actividades`)}">${on ? html`${icon("check")}<span class="visually-hidden">${I.S("Finished", "Terminada")}</span>` : i + 1}</a></li>`)}</ol>
       <p class="journey-count">${r.complete ? I.T("Country sticker earned!", "¡Calcomanía del país ganada!") : I.T(`${r.stopsDone} of ${r.stops.length} stops`, `${r.stopsDone} de ${r.stops.length} paradas`)}</p>
+      ${r.complete ? "" : nextStopLink(I, r)}
     </li>`,
   );
   return html`<section class="panel pass-journey" aria-labelledby="journeyTitle">
