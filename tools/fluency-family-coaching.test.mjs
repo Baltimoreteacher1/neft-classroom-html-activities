@@ -10,7 +10,7 @@ import {
   skillSearchText,
   teacherMessage,
   teacherSkillLink,
-} from "../math/fluency-lab/family/fm2/teacher-link.js";
+} from "../math/fluency-lab/family/fm2/skill-link.js";
 import { GRADES } from "../math/fluency-lab/problem-bank.js";
 
 const skillById = (grade, id) =>

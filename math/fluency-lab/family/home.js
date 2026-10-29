@@ -39,7 +39,7 @@ import { recommend, reasonText } from "./fm2/recommend.js";
 import { forGrade } from "./fm2/realworld.js";
 import { GAME_IDS } from "./fm2/registry.js";
 import { seedFrom } from "./fm2/rng.js";
-import { directedSkillPlan, findDirectedSkill, skillExample, skillExplanation, skillSearchText, teacherMessage, teacherSkillLink } from "./fm2/teacher-link.js";
+import { directedSkillPlan, findDirectedSkill, skillExample, skillExplanation, skillSearchText, teacherMessage, teacherSkillLink } from "./fm2/skill-link.js";
 import { dailyMission, encodePlan, MINUTE_CHOICES, planSession } from "./fm2/session.js";
 import { createGuidedStore } from "./fm2/guided/guided-core.js";
 import { createStore, dayKey, minutesThisWeek, streak } from "./fm2/store.js";
