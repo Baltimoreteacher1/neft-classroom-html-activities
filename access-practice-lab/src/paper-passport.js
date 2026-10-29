@@ -1,5 +1,7 @@
 // "Paper passport" menu: the printable booklet, sticker sheet and family guide.
 // The PDFs are committed in access-practice-lab/paper-passport/ and built by tools/paper-passport/build.py.
+// language-passport-teacher-key.pdf is deliberately not listed: any path with "teacher" in it is teacher-gated
+// (functions/_middleware.js), so teachers open it by URL after signing in and students never meet a password prompt.
 import { BASE, html, icon } from "./util.js";
 
 const DIR = `${BASE}/paper-passport`;
@@ -22,11 +24,6 @@ export const PAPER_PASSPORT_FILES = [
     file: "language-passport-stickers.pdf",
     name: ["Sticker sheet", "Hoja de calcomanías"],
     note: ["Print on sticker paper, then cut along the dashed lines.", "Imprime en papel adhesivo y corta por las líneas punteadas."],
-  },
-  {
-    file: "language-passport-teacher-key.pdf",
-    name: ["Teacher key: countries and levels", "Llave del docente: países y niveles"],
-    note: ["Which country is which skill and level.", "Qué país es cada destreza y nivel."],
   },
   {
     file: "language-passport-family-guide.pdf",
