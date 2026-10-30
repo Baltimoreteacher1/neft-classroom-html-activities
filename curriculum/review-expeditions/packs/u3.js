@@ -3212,10 +3212,10 @@
       lesson: '3-5',
       title: 'Tape diagram error analysis',
       xp: o.xp || 15,
-      prompt: `<p>A bakery sells ${hl(i1)} and ${hl(i2)} in a ratio of ${hl(a + ' : ' + b)}. ${name} drew this tape diagram.</p>${V.tape([
+      prompt: `<p>A shop sells ${hl(i1)} and ${hl(i2)} in a ratio of ${hl(a + ' : ' + b)}. ${name} drew this tape diagram.</p>${V.tape([
         { label: i1, boxes: a },
         { label: i2, boxes: b },
-      ])}<p>${name} says: "There are ${diff} more ${i1} than ${i2}, so every group has ${diff} extra ${i1}." Later the bakery has ${hl(known + ' ' + kn)}, and ${name} decides there must be ${hl(wrongAns + ' ' + un)} by ${hard ? 'adding' : 'subtracting'} ${diff}.</p><p>Why is ${name}'s reasoning incorrect?</p>`,
+      ])}<p>${name} says: "There are ${diff} more ${i1} than ${i2}, so every group has ${diff} extra ${i1}." Later the shop has ${hl(known + ' ' + kn)}, and ${name} decides there must be ${hl(wrongAns + ' ' + un)} by ${hard ? 'adding' : 'subtracting'} ${diff}.</p><p>Why is ${name}'s reasoning incorrect?</p>`,
       work: hard ? `${known} + ${diff} = ${wrongAns} ${un}` : `${known} − ${diff} = ${wrongAns} ${un}`,
       options: sh.options,
       answer: sh.answer,
@@ -4826,6 +4826,356 @@
         correct: 'Correct. The right unit rate, in the right direction, settles the comparison.',
         wrong: (ans) => why(sh.options, ans) || 'Divide dollars by hours for each job, then compare.',
       },
+    };
+  });
+})(typeof window !== 'undefined' ? window : globalThis);
+
+/* js/units/u3/gen-test-b.js */
+/* Unit 3 Summit: parallel practice for Version B, Q1-Q13 (18 response parts).
+ * Kept identical in the two engines. A mission passes one seeded RNG through
+ * its questions; the WeakMap shares each linked scenario without global state,
+ * save-schema changes, or dependence on a student's previous answer.
+ */
+(function (root) {
+  'use strict';
+  const RX = root.RX || root.U3;
+  const { G, V, R, NAMES, round, money, fmt, shuffleOptions, parseNum } = RX;
+  const cases = new WeakMap();
+  const scenario = (r, key, build) => {
+    if (!cases.has(r)) cases.set(r, new Map());
+    const cache = cases.get(r);
+    if (!cache.has(key)) cache.set(key, build(R.make(r.int(1, 2147483646))));
+    return cache.get(key);
+  };
+  const define = (id, build) => G.define('u3b_' + id.toLowerCase(), (r) => {
+    const q = build(r);
+    q.title = `Review ${id}: ${q.title}`;
+    q.testB = { item: id, ...(q.testB || {}) };
+    q.xp = 15;
+    if (q.type === 'cr') q.feedback.correct += `<div class="fb-solution"><b>Compare your explanation</b>${q.solution}</div>`;
+    return q;
+  });
+  const feedback = (correct, wrong) => ({ correct, wrong: typeof wrong === 'function' ? wrong : () => wrong });
+  const choice = (r, options, correct = 0) => shuffleOptions(r, options, correct);
+  const explain = (r, options) => ({ prompt: 'Check your reasoning: which statement is correct?', ...choice(r, options) });
+  const writingFeedback = (check) => feedback(
+    'Your reasoning check is correct. Compare your written explanation with the model below.',
+    (a, d) => !d.wroteEnough ? 'Write a sentence using the quantities and units in this problem.' : check.options[a.check]?.why || 'Use the quantities in the problem to support your explanation.',
+  );
+  const writing = {
+    type: 'cr', minWords: 8,
+    starters: ['I know this because ...', 'First, I ...', 'This means ...'],
+  };
+  const reference = '<p class="muted">Reference: 1 yard = 3 feet; 1 foot = 12 inches; 1 kilogram ≈ 2.2 pounds.</p>';
+
+  define('1', (r) => {
+    const [a, b] = r.pick([[2, 5], [3, 4], [2, 7]]), k = r.int(4, 9);
+    const total = (a + b) * k, name = r.pick(NAMES);
+    return {
+      type: 'blanks', skill: 'part-whole', lesson: '3-1', title: 'Divide a total in a ratio',
+      prompt: `<p>${name} makes a bracelet with ${a} green beads for every ${b} gold beads. There are ${total} beads in all.</p><p>How many beads of each color are needed?</p>`,
+      fields: [{ label: 'Gold beads', answer: b * k }, { label: 'Green beads', answer: a * k }],
+      hints: ['Add the two ratio parts to find the beads in one group.', `One group has ${a} + ${b} beads. Divide ${total} by this sum.`, 'Multiply each ratio part by the number of groups. Check that the two amounts add to the total.'],
+      hintEs: 'Suma las dos partes de la razón para encontrar las cuentas en un grupo.',
+      solution: `<p>${a} + ${b} = ${a + b} beads per group. ${total} ÷ ${a + b} = ${k} groups. Gold: ${b} × ${k} = <b>${b * k}</b>. Green: ${a} × ${k} = <b>${a * k}</b>. The sum is ${total}.</p>`,
+      feedback: feedback('Correct. Both parts use the same scale factor and add to the total.', 'Use the total of both ratio parts as the divisor. Check the color beside each answer box.'),
+      testB: { givens: { a, b, total } },
+    };
+  });
+
+  const school = (r) => scenario(r, 'school', (s) => {
+    const [a, b] = s.pick([[3, 4], [4, 7], [5, 8]]), k = s.int(4, 8);
+    const groups = s.pickN(['Chess Club', 'Drama Club', 'Science Club', 'Track Team', 'Band'], 4);
+    const rows = s.shuffle([[groups[0], a * k], [groups[1], b * k], [groups[2], s.int(15, 35)], [groups[3], s.int(18, 40)]]);
+    return { a, b, x: a * k, y: b * k, groups, rows };
+  });
+  const schoolPrompt = (d) => `<p>A school lists the number of students in each group.</p>${V.table([['School group', 'Students'], ...d.rows], { cls: 'compact' })}<p>Compare ${d.groups[0]} to ${d.groups[1]}, in that order.</p>`;
+  define('2A', (r) => {
+    const d = school(r), { a, b, x, y } = d;
+    return {
+      type: 'blanks', skill: 'ratio-language', lesson: '3-1', title: 'Write a simplified fraction',
+      prompt: schoolPrompt(d) + '<p>Write this ratio as a fraction in simplest form.</p>',
+      layout: 'fraction', fields: [{ label: 'Numerator', answer: a }, { label: 'Denominator', answer: b }],
+      hints: ['Keep the groups in the order named. Find a common factor.', `Start with ${x}/${y}. Divide the numerator and denominator by the same factor.`, `The greatest common factor is ${x / a}. Divide both numbers by it.`],
+      hintEs: 'Mantén los grupos en el orden indicado y divide ambos números por el mismo factor.',
+      solution: `<p>${x}/${y} = (${x} ÷ ${x / a}) / (${y} ÷ ${x / a}) = <b>${a}/${b}</b>.</p>`,
+      feedback: feedback('Correct. The fraction is in simplest form and preserves the order.', (v) => parseNum(v[0]) / parseNum(v[1]) === a / b ? 'Your fraction is equivalent. Now divide both numbers by their greatest common factor.' : 'Use the first group as the numerator and the second as the denominator. Then simplify.'),
+      testB: { group: 'school', givens: d },
+    };
+  });
+  define('2B', (r) => {
+    const d = school(r), { a, b, groups: [g1, g2] } = d;
+    const check = explain(r, [
+      { html: `For every ${a} students in ${g1}, there are ${b} in ${g2}.`, ok: true },
+      { html: `For every ${b} students in ${g1}, there are ${a} in ${g2}.`, why: 'This reverses the groups. Keep the first group first.' },
+      { html: `${a} out of every ${b} students in both groups are in ${g1}.`, why: `This compares two parts. A combined group contains ${a + b} ratio parts, not ${b}.` },
+    ]);
+    return {
+      ...writing, skill: 'ratio-language', lesson: '3-1', title: 'Explain the ratio',
+      prompt: schoolPrompt(d) + '<p>Explain what the simplified ratio means. Name both groups and use “for every.” Then check your reasoning.</p>',
+      check,
+      hints: ['A ratio compares the two named quantities, in order.', 'Simplify the two group counts by dividing by their greatest common factor.', 'Use: “For every ___ students in the first group, there are ___ in the second group.”'],
+      hintEs: 'Una razón compara dos cantidades en el orden indicado. Usa la frase «por cada».',
+      solution: `<p>Model: “For every <b>${a}</b> students in ${g1}, there are <b>${b}</b> in ${g2}.” The denominator names the second group, not the total.</p>`,
+      feedback: writingFeedback(check), testB: { group: 'school', givens: d },
+    };
+  });
+
+  define('3', (r) => {
+    const rate = r.pick([3, 5, 6]), seconds = r.pick([18, 24, 36]), total = rate * seconds;
+    return {
+      type: 'num', skill: 'unit-rate', lesson: '3-2', title: 'Find a unit rate',
+      prompt: `<p>${r.pick(NAMES)} does ${total} jumping jacks in ${seconds} seconds. Write the rate in jumping jacks per second.</p>`,
+      answer: total / seconds, unit: 'jumping jacks per second',
+      hints: ['“Per second” means for one second.', `Divide ${total} jumping jacks by ${seconds} seconds.`, 'Check your quotient by multiplying it by the number of seconds.'],
+      hintEs: '«Por segundo» significa para un segundo. Divide la cantidad entre los segundos.',
+      solution: `<p>${total} ÷ ${seconds} = <b>${rate} jumping jacks per second</b>.</p>`,
+      feedback: feedback('Correct. Dividing by seconds gives the amount for one second.', 'Divide jumping jacks by seconds, in that order. Label the result per second.'),
+      testB: { givens: { total, seconds } },
+    };
+  });
+
+  const shops = (r) => scenario(r, 'shops', (s) => {
+    const stores = s.pickN(['Trail Market', 'Valley Foods', 'Summit Grocer', 'Park Pantry'], 2);
+    const weights = [s.pick([3, 4, 5]), s.pick([1.5, 2.5, 3.5])];
+    const rates = [s.int(17, 27) / 4, s.int(18, 37) / 5];
+    if (Math.abs(rates[0] - rates[1]) < 0.1) rates[1] += 0.4;
+    const costs = rates.map((v, i) => round(v * weights[i], 2));
+    return { stores, weights, costs };
+  });
+  const shopPrompt = (d) => `<p>${d.stores[0]} sells ${d.weights[0]} pounds of granola for ${money(d.costs[0])}. ${d.stores[1]} sells ${d.weights[1]} pounds for ${money(d.costs[1])}.</p>`;
+  define('4A', (r) => {
+    const d = shops(r), rates = d.costs.map((v, i) => round(v / d.weights[i], 2));
+    return {
+      type: 'blanks', skill: 'unit-price', lesson: '3-2', title: 'Calculate both unit prices',
+      prompt: shopPrompt(d) + '<p>Find the price per pound at each store.</p>',
+      fields: d.stores.map((label, i) => ({ label, prefix: '$', suffix: 'per pound', answer: rates[i] })),
+      hints: ['Unit price is the cost of one pound.', d.stores.map((s, i) => `${s}: ${money(d.costs[i])} ÷ ${d.weights[i]}`).join('; ') + '.', 'Check each unit price by multiplying it by the bag weight.'],
+      hintEs: 'El precio unitario es el costo de una libra. Divide el precio entre las libras.',
+      solution: `<p>${d.stores.map((s, i) => `${s}: ${money(d.costs[i])} ÷ ${d.weights[i]} = <b>${money(rates[i])} per pound</b>.`).join('<br>')}</p>`,
+      feedback: feedback('Correct. Both prices now describe one pound.', 'Divide each bag price by its own weight, including the decimal weight. Keep the stores in order.'),
+      testB: { group: 'shops', givens: d },
+    };
+  });
+  define('4B', (r) => {
+    const d = shops(r), rates = d.costs.map((v, i) => round(v / d.weights[i], 2)), best = rates[0] < rates[1] ? 0 : 1;
+    const sh = choice(r, [
+      ...d.stores.map((s, i) => ({ html: `${s}, because its unit price is lower.`, ok: i === best, why: `${s} costs ${money(rates[i])} per pound. Compare with the other store.` })),
+      { html: `${d.stores[d.weights[0] > d.weights[1] ? 0 : 1]}, because it sells the bigger bag.`, why: 'Bag size alone does not tell you the cost of one pound.' },
+      { html: 'Either store; the unit prices are equal.', why: 'Divide each price by its weight. The unit prices are different.' },
+    ], best);
+    return {
+      type: 'mc', skill: 'unit-price', lesson: '3-2', title: 'Choose the better buy',
+      prompt: shopPrompt(d) + '<p>Using the unit prices, which store offers the better buy?</p>', ...sh,
+      hints: ['Use dollars per pound at both stores.', 'Divide each total price by its bag weight.', 'The better buy has the lower cost per pound.'],
+      hintEs: 'Compara dólares por libra. La mejor compra tiene el precio unitario menor.',
+      solution: `<p>${d.stores[0]}: ${money(rates[0])}/lb. ${d.stores[1]}: ${money(rates[1])}/lb. <b>${d.stores[best]}</b> has the lower unit price.</p>`,
+      feedback: feedback('Correct. The lower unit price determines the better buy.', (a) => sh.options[a]?.why || 'Compare unit prices.'),
+      testB: { group: 'shops', givens: d },
+    };
+  });
+
+  define('5', (r) => {
+    const names = r.pickN(NAMES, 2), rate = r.int(10, 17), hours = r.int(3, 6), difference = r.int(1, 4);
+    const other = rate + (r.chance(0.5) ? difference : -difference), ticks = [0, 1, 2, 3, 4, 5];
+    return {
+      type: 'cloze', skill: 'dnl', lesson: '3-2', title: 'Compare hourly earnings',
+      prompt: `<p>${names[0]} earns $${rate * hours} in ${hours} hours. The double number line shows ${names[1]}'s earnings.</p>${V.dnl({ label: 'Hours', values: ticks }, { label: 'Dollars', values: ticks.map((h) => h * other) }, { aria: `${names[1]}'s double number line. Matching hours and dollars: ${ticks.map((h) => `${h} hours, ${h * other} dollars`).join('; ')}.` })}<p>Complete the comparison.</p>`,
+      template: '{0} earns ${1} more per hour.', choices: [names, ['1', '2', '3', '4']], answers: [rate > other ? 0 : 1, difference - 1],
+      hints: ['Find dollars per hour for both people.', `Divide $${rate * hours} by ${hours}. Read the dollars aligned with 1 hour on the line.`, 'Subtract the smaller hourly rate from the larger one.'],
+      hintEs: 'Encuentra los dólares por hora de cada persona. Después calcula la diferencia.',
+      solution: `<p>${names[0]}: ${rate * hours} ÷ ${hours} = $${rate}/hour. ${names[1]}: $${other}/hour. <b>${names[rate > other ? 0 : 1]}</b> earns <b>$${difference} more per hour</b>.</p>`,
+      feedback: feedback('Correct. You compared equal amounts of time.', 'Find both hourly rates before deciding who earns more. Subtract the rates, not the total earnings.'),
+      testB: { givens: { names, total: rate * hours, hours, ticks, dollars: ticks.map((h) => h * other) } },
+    };
+  });
+
+  const survey = (r) => scenario(r, 'survey', (s) => {
+    const [a, b] = s.pick([[3, 4], [5, 3], [2, 5]]);
+    const factors = s.pickN([2, 3, 4, 5, 7, 8, 9, 11], 4).sort((x, y) => x - y);
+    return { a, b, top: factors.map((n) => n * a) };
+  });
+  const surveyPrompt = (d) => `<p>A survey finds ${d.a} people who prefer apple juice for every ${d.b} who prefer orange juice.</p>`;
+  define('6A', (r) => {
+    const d = survey(r);
+    return {
+      type: 'table', skill: 'tables', lesson: '3-3', title: 'Complete the ratio table',
+      prompt: surveyPrompt(d) + '<p>Complete all four missing values.</p>',
+      rows: [['Apple', ...d.top], ['Orange', ...d.top.map((_, i) => `__IN:c${i}__`)]], header: false, rowHeader: true,
+      inputs: d.top.map((v, i) => ({ id: 'c' + i, answer: v / d.a * d.b })),
+      hints: ['Each column must have the same ratio.', `For each apple count, divide by ${d.a} to find its scale factor.`, `Multiply each scale factor by ${d.b} to find the orange count.`],
+      hintEs: 'Cada columna debe tener la misma razón. Multiplica ambas cantidades por el mismo factor.',
+      solution: `<p>${d.top.map((v) => `${v} ÷ ${d.a} × ${d.b} = <b>${v / d.a * d.b}</b>`).join('; ')}. Both parts of each ratio use the same factor.</p>`,
+      feedback: feedback('Correct. All four columns preserve the ratio.', 'Divide the apple count by the apple part of the ratio, then multiply by the orange part. Do this separately for each column.'),
+      testB: { group: 'survey', givens: d },
+    };
+  });
+  define('6B', (r) => {
+    const d = survey(r), target = d.top[2];
+    const check = explain(r, [
+      { html: `Divide ${target} by ${d.a}, then multiply that factor by ${d.b}.`, ok: true },
+      { html: `Add ${target - d.a} to ${d.b}.`, why: 'Adding the same amount to both parts does not preserve their ratio.' },
+      { html: `Multiply ${target} by ${d.b}.`, why: `First divide by ${d.a} to find the scale factor.` },
+    ]);
+    return {
+      ...writing, skill: 'tables', lesson: '3-3', title: 'Explain the table method',
+      prompt: surveyPrompt(d) + V.table([['Apple', ...d.top], ['Orange', '?', '?', '?', '?']], { header: false, rowHeader: true, cls: 'compact' }) + `<p>Explain how you find the orange count paired with ${target} apple votes. Show why your method preserves the ratio.</p>`, check,
+      hints: ['Equivalent ratios multiply both parts by the same factor.', `Find the scale factor: ${target} ÷ ${d.a}.`, `Use that same factor with ${d.b}, and describe both operations in your sentence.`],
+      hintEs: 'Las razones equivalentes multiplican ambas partes por el mismo factor.',
+      solution: `<p>Model: “I know this because ${target} ÷ ${d.a} = ${target / d.a}. I multiply ${d.b} by that same factor to get <b>${target / d.a * d.b}</b>. Both quantities scale equally.”</p>`,
+      feedback: writingFeedback(check), testB: { group: 'survey', givens: d },
+    };
+  });
+
+  define('7', (r) => {
+    const rate = r.pick([2, 4, 5]), points = [1, 2, 3, 4, 5].map((x) => [x, x * rate]);
+    return {
+      type: 'plot', skill: 'graphs', lesson: '3-4', title: 'Plot five ratio points',
+      prompt: `<p>${r.pick(NAMES)} puts ${rate} stickers on each scrapbook page. Plot the points for 1, 2, 3, 4, and 5 pages.</p><p>Each ordered pair is (pages, stickers). Select a point again to remove it.</p>`,
+      xMax: 7, yMax: Math.ceil((rate * 5 + 2) / 2) * 2, xStep: 1, yStep: 2,
+      xLabel: 'Number of Pages', yLabel: 'Number of Stickers', count: 5, points,
+      hints: ['Use pages on the horizontal axis and stickers on the vertical axis.', `Multiply each page count by ${rate}.`, 'Check that every point has the correct height for its page count. The five points should form a straight line.'],
+      hintEs: 'Usa páginas en el eje horizontal y calcomanías en el eje vertical.',
+      solution: `<p>Multiply pages by ${rate}. The points are <b>${points.map(([x, y]) => `(${x}, ${y})`).join(', ')}</b>.</p>`,
+      feedback: feedback('Correct. Each point shows the same stickers-per-page ratio.', 'Check coordinate order: pages first, stickers second. Multiply the page count by the stickers per page.'),
+      testB: { givens: { rate, pages: [1, 2, 3, 4, 5] } },
+    };
+  });
+
+  const cereal = (r) => scenario(r, 'cereal', (s) => {
+    const a = s.pick([2, 4, 5]), b = s.pick([2, 3, 5, 6].filter((n) => n !== a));
+    return { a, servings: [2, 3, 4], fiber: [2, 3, 4].map((n) => n * b) };
+  });
+  const cerealPrompt = (d) => `<p>Brand A cereal has ${d.a} grams of fiber per serving. The table shows Brand B.</p>${V.table([['Brand B servings', ...d.servings], ['Fiber (g)', ...d.fiber]], { header: false, rowHeader: true, cls: 'compact' })}`;
+  define('8A', (r) => {
+    const d = cereal(r), b = d.fiber[0] / d.servings[0];
+    const fields = [d.a, b].flatMap((rate, i) => [1, 2, 3, 4].map((x) => ({ label: `Brand ${i === 0 ? 'A' : 'B'} (${x},`, suffix: ')', answer: x * rate, width: 'sm' })));
+    return {
+      type: 'blanks', skill: 'graphs', lesson: '3-4', title: 'Write both sets of ordered pairs',
+      prompt: cerealPrompt(d) + '<p>Complete (servings, grams of fiber) for 1, 2, 3, and 4 servings of each brand.</p>',
+      layout: 'two-col', groups: ['Brand A', 'Brand B'], fields,
+      hints: ['Find the grams per serving for each brand.', `For Brand B, divide ${d.fiber[0]} grams by ${d.servings[0]} servings.`, 'Multiply each brand’s unit rate by 1, 2, 3, and 4. Keep the coordinates in (servings, grams) order.'],
+      hintEs: 'Encuentra los gramos por porción de cada marca y multiplica por el número de porciones.',
+      solution: `<p>${[d.a, b].map((rate, i) => `Brand ${i === 0 ? 'A' : 'B'}: <b>${[1, 2, 3, 4].map((x) => `(${x}, ${x * rate})`).join(', ')}</b>.`).join('<br>')}</p>`,
+      feedback: feedback('Correct. Both sets use servings first and grams second.', 'Brand B’s table starts with more than one serving. Divide to find one serving before building its ordered pairs.'),
+      testB: { group: 'cereal', givens: d },
+    };
+  });
+  define('8B', (r) => {
+    const d = cereal(r), b = d.fiber[0] / d.servings[0];
+    return {
+      type: 'cloze', skill: 'graphs', lesson: '3-4', title: 'Compare the two ratios',
+      prompt: cerealPrompt(d) + '<p>Which brand offers the greater ratio of grams of fiber to servings?</p>',
+      template: 'Brand {0} offers more grams of fiber per serving.', choices: [['A', 'B']], answers: [d.a > b ? 0 : 1],
+      hints: ['Compare equal serving amounts.', 'Find Brand B’s grams per serving by dividing a fiber value by its matching serving value.', 'Choose the brand with the greater grams-per-serving rate.'],
+      hintEs: 'Compara cantidades para una porción. Elige la marca con más gramos de fibra por porción.',
+      solution: `<p>Brand A: ${d.a} g/serving. Brand B: ${d.fiber[0]} ÷ ${d.servings[0]} = ${b} g/serving. <b>Brand ${d.a > b ? 'A' : 'B'}</b> has the greater ratio.</p>`,
+      feedback: feedback('Correct. You compared the same serving size.', 'The table’s fiber total covers several servings. Divide first, then compare grams for one serving.'),
+      testB: { group: 'cereal', givens: d },
+    };
+  });
+
+  define('9', (r) => {
+    const miles = r.pick([2, 4, 5]), pace = r.pick([6, 8, 10, 12]), targetMiles = r.pick([3, 6, 7, 9]);
+    const minutes = miles * pace, targetMinutes = targetMiles * pace, name = r.pick(NAMES);
+    return {
+      type: 'blanks', skill: 'rate-problems', lesson: '3-5', title: 'Find the rate, then solve',
+      prompt: `<p>${name} runs ${miles} miles in ${minutes} minutes at a constant pace. Complete both sentences.</p>`,
+      template: ['The unit rate is {0} minutes per mile.', `At this rate, ${name} runs {1} miles in ${targetMinutes} minutes.`],
+      fields: [{ label: 'Minutes per mile', answer: minutes / miles }, { label: 'Miles in the new time', answer: targetMinutes / pace }],
+      hints: ['Minutes per mile means the time for one mile.', `Divide ${minutes} minutes by ${miles} miles.`, `Divide ${targetMinutes} minutes by the minutes needed for one mile.`],
+      hintEs: 'Minutos por milla significa el tiempo para una milla. Divide minutos entre millas.',
+      solution: `<p>${minutes} ÷ ${miles} = <b>${pace} minutes per mile</b>. ${targetMinutes} ÷ ${pace} = <b>${targetMiles} miles</b>.</p>`,
+      feedback: feedback('Correct. You used the minutes-per-mile rate to find the new distance.', 'Find minutes per mile first. Then divide the new time by that rate; do not multiply.'),
+      testB: { givens: { miles, minutes, targetMinutes } },
+    };
+  });
+
+  define('10', (r) => {
+    const u1 = r.int(6, 12), u2 = r.chance(0.5) ? u1 : u1 + r.pick([-2, 2]);
+    const t1 = r.pick([15, 25, 35]), t2 = r.pick([20, 40, 45]), c1 = u1 * t1, c2 = u2 * t2, equal = u1 === u2;
+    const check = explain(r, [
+      { html: `${equal ? 'Yes' : 'No'}. The rates are ${u1} and ${u2} calories per minute.`, ok: true },
+      { html: `${equal ? 'No' : 'Yes'}, because both activities burn calories.`, why: 'Using the same units does not guarantee equivalent rates. Compare calories per minute.' },
+      { html: `${equal ? 'No' : 'Yes'}, because the calorie totals are different.`, why: 'The activities last different amounts of time. Compare unit rates, not totals.' },
+    ]);
+    return {
+      ...writing, skill: 'compare', lesson: '3-5', title: 'Explain whether rates are equivalent',
+      prompt: `<p>${r.pick(NAMES)} burns ${c1} calories swimming for ${t1} minutes and ${c2} calories cycling for ${t2} minutes.</p><p>Are these rates equivalent? Show both unit-rate calculations and explain your conclusion.</p>`, check,
+      hints: ['Find calories per minute for each activity.', `Swimming: ${c1} ÷ ${t1}. Cycling: ${c2} ÷ ${t2}.`, 'Equivalent rates have equal unit rates. Name the units in your explanation.'],
+      hintEs: 'Encuentra las calorías por minuto de cada actividad. Compara las dos tasas unitarias.',
+      solution: `<p>Model: “Swimming: ${c1} ÷ ${t1} = ${u1} calories per minute. Cycling: ${c2} ÷ ${t2} = ${u2} calories per minute. The rates are <b>${equal ? 'equivalent' : 'not equivalent'}</b> because their unit rates are ${equal ? 'equal' : 'different'}.”</p>`,
+      feedback: writingFeedback(check), testB: { givens: { c1, t1, c2, t2 } },
+    };
+  });
+
+  define('11', (r) => {
+    const kg = r.pick([25, 35, 45, 55, 65]), pounds = round(kg * 2.2, 1);
+    const sh = choice(r, [
+      { html: `${pounds} pounds`, ok: true },
+      { html: `${Math.round(kg / 2.2)} pounds`, why: 'A kilogram is heavier than a pound. Converting kilograms to pounds increases the numerical value; multiply.' },
+      { html: `${round(kg * 1.8, 1)} pounds`, why: 'Use 2.2 pounds per kilogram from the reference.' },
+      { html: `${kg * 2} pounds`, why: 'Multiplying by 2 leaves out 0.2 pound for every kilogram. Use 2.2.' },
+    ]);
+    return {
+      type: 'mc', skill: 'convert-between', lesson: '3-7', title: 'Approximate pounds',
+      prompt: `<p>${r.pick(NAMES)} lifts ${kg}-kilogram weights. Which is the best approximation in pounds? Use the reference.</p>${reference}`,
+      ...sh, reference: true,
+      hints: ['Decide whether the number of pounds should be larger or smaller than the number of kilograms.', 'The reference gives approximately 2.2 pounds for each kilogram.', `Calculate ${kg} × 2.2, or ${kg} × 2 plus ${kg} × 0.2.`],
+      hintEs: 'Un kilogramo equivale aproximadamente a 2.2 libras. Multiplica para convertir a libras.',
+      solution: `<p>${kg} × 2.2 = <b>${pounds} pounds</b>, approximately.</p>`,
+      feedback: feedback('Correct. You multiplied kilograms by 2.2 pounds per kilogram.', (a) => sh.options[a]?.why || 'Use the kilogram-to-pound reference.'),
+      testB: { givens: { kg, factor: 2.2 } },
+    };
+  });
+
+  const bakery = (r) => scenario(r, 'bakery', (s) => {
+    const [a, b] = s.pick([[5, 3], [8, 5], [7, 3]]), k = s.int(4, 9);
+    return { a, b, muffins: a * k, name: s.pick(NAMES) };
+  });
+  const bakeryPrompt = (d) => `<p>A bakery sells muffins and bagels in a ratio of ${d.a} : ${d.b}. There are ${d.muffins} muffins.</p>`;
+  define('12A', (r) => {
+    const d = bakery(r), gap = d.a - d.b, k = d.muffins / d.a;
+    const check = explain(r, [
+      { html: 'The difference counts boxes, not individual baked goods. Find the value of a box and scale both rows.', ok: true },
+      { html: `Subtract ${gap} from the muffins because that difference always stays the same.`, why: `The gap is ${gap} boxes. Each box can contain more than one item.` },
+      { html: `Divide ${d.muffins} by ${d.a + d.b}, because it is the total for both rows.`, why: 'The given amount counts muffins only. Divide by the number of muffin boxes.' },
+    ]);
+    return {
+      ...writing, skill: 'tape', lesson: '3-5', title: 'Explain the tape-diagram mistake',
+      prompt: bakeryPrompt(d) + V.tape([{ label: 'Muffins', boxes: d.a }, { label: 'Bagels', boxes: d.b }]) + `<p>${d.name} says, “There are ${gap} more muffins, so ${d.muffins} − ${gap} = ${d.muffins - gap} bagels.”</p><p>Explain why this is incorrect and how the equal boxes give the correct number of bagels.</p>`, check,
+      hints: ['Each box represents the same number of items. The gap between rows is measured in boxes.', `The ${d.a} muffin boxes represent ${d.muffins} muffins. Divide to find the value of one box.`, `Multiply the box value by ${d.b} for the bagels. The difference between totals also scales.`],
+      hintEs: 'Cada caja representa la misma cantidad. La diferencia entre las filas cuenta cajas, no objetos individuales.',
+      solution: `<p>Model: “${d.name} subtracted ${gap} as if each box were 1. Each box is ${d.muffins} ÷ ${d.a} = <b>${k}</b>. There are ${d.b} × ${k} = <b>${d.b * k} bagels</b>. The difference is ${gap} × ${k} = ${gap * k}, not ${gap}.”</p>`,
+      feedback: writingFeedback(check), testB: { group: 'bakery', givens: d },
+    };
+  });
+  define('12B', (r) => {
+    const d = bakery(r), k = d.muffins / d.a;
+    return {
+      type: 'tape', skill: 'tape', lesson: '3-5', title: 'Label the tape diagram',
+      prompt: bakeryPrompt(d) + '<p>Enter the value of each equal box to label the diagram. Then enter the number of bagels.</p>',
+      rows: [{ label: 'Muffins', boxes: d.a }, { label: 'Bagels', boxes: d.b }], given: { rowA: d.muffins },
+      fields: [{ key: 'box', label: 'Value of each box', answer: k }, { key: 'bagels', label: 'Number of bagels', answer: d.b * k }],
+      hints: ['Use the muffin row to find the value of a box.', `${d.muffins} muffins fill ${d.a} equal boxes. Divide ${d.muffins} by ${d.a}.`, `The bagel row has ${d.b} boxes. Multiply that count by your box value.`],
+      hintEs: 'Usa la fila de muffins para encontrar el valor de una caja. Después multiplica por las cajas de bagels.',
+      solution: `<p>Label every box <b>${k}</b>. Muffins: ${d.a} × ${k} = ${d.muffins}. Bagels: ${d.b} × ${k} = <b>${d.b * k}</b>.</p>` + V.tape([{ label: 'Muffins', boxes: d.a, value: k, total: d.muffins }, { label: 'Bagels', boxes: d.b, value: k, total: d.b * k }]),
+      feedback: feedback('Correct. Equal box values preserve the ratio.', 'The muffin amount fills only the muffin row. Divide it by the muffin boxes, then multiply by the bagel boxes.'),
+      testB: { group: 'bakery', givens: d },
+    };
+  });
+
+  define('13', (r) => {
+    const yards = r.pick([450, 650, 850, 950, 1150]), feet = yards * 3;
+    return {
+      type: 'num', skill: 'convert-within', lesson: '3-6', title: 'Convert feet to yards',
+      prompt: `<p>${r.pick(NAMES)} walks ${fmt(feet)} feet to a community center. How many yards is that? Use the reference.</p>${reference}`,
+      answer: feet / 3, unit: 'yards', reference: true,
+      hints: ['A yard is longer than a foot, so the number of yards should be smaller.', 'One yard contains 3 feet. Group the feet into sets of 3.', `Calculate ${fmt(feet)} ÷ 3. Check by multiplying your answer by 3.`],
+      hintEs: 'Una yarda contiene 3 pies. Divide los pies entre 3 para encontrar las yardas.',
+      solution: `<p>${fmt(feet)} ÷ 3 = <b>${fmt(yards)} yards</b>.</p>`,
+      feedback: feedback('Correct. Dividing by 3 converts feet to yards.', (a) => parseNum(a) === feet * 3 ? 'Multiplying goes from yards to feet. You are starting with feet, so divide by 3.' : 'Use 3 feet per yard. Divide the feet into groups of 3.'),
+      testB: { givens: { feet, factor: 3 } },
     };
   });
 })(typeof window !== 'undefined' ? window : globalThis);

@@ -630,7 +630,9 @@ a.btn { text-decoration: none; }
     o = o || {};
     const bw = o.boxW || 42, bh = 34, lw = o.labelW || 80, gap = 14;
     const maxBoxes = Math.max(...rows.map((r) => r.boxes));
-    const w = lw + maxBoxes * bw + 10, h = rows.length * (bh + gap) + 4;
+    // Reserve room for totals printed to the right of the longest tape row.
+    const totalPad = Math.max(10, ...rows.map((r) => r.total == null ? 0 : String(r.total).length * 8 + 20));
+    const w = lw + maxBoxes * bw + totalPad, h = rows.length * (bh + gap) + 4;
     let s = `<svg class="viz-tape" viewBox="0 0 ${w} ${h}" width="${w}" height="${h}" role="img" aria-label="${esc(o.aria || 'Tape diagram')}">`;
     rows.forEach((r, ri) => {
       const y = 2 + ri * (bh + gap);
@@ -6780,9 +6782,16 @@ a.btn { text-decoration: none; }
   const Sup = () => RX.Support;
   const levelNow = () => Sup().levelOf(s);
   /** The challenge list of the running mission: a sharpen replay, an ad-hoc retry list, or the mission's own generators. */
+  // Finish an older in-progress mission with its original question order.
+  // Completed missions retain their progress; a replay uses the current set.
   const specsOf = (cur) => {
     if (cur.sharpen && cur.slots) return cur.slots;
-    return cur.gens || missionDef(cur.zone, cur.mission).gens;
+    if (cur.gens) return cur.gens;
+    const m = missionDef(cur.zone, cur.mission);
+    const legacy = m.legacyGens;
+    const oldRun = legacy && (cur.results || []).some((result) =>
+      legacy.some((spec) => (Array.isArray(spec) ? spec[0] : spec) === result.gen));
+    return oldRun ? legacy : m.gens;
   };
   const missionName = (cur) => (cur.sharpen ? 'Sharpen' : cur.retry ? 'Practice what you missed' : missionDef(cur.zone, cur.mission).name);
   /** Self-paced stars for one finished round. 1 at 3 correct, 2 at a streak of 3 or 8 correct, 3 at 80%+ on a round of 4 or more. */
