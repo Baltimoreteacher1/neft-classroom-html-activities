@@ -584,7 +584,7 @@ function renderLearn() {
   const rng = seededRandom(skill.id.length * 97 + skill.grade * 13);
   const draws = Array.from({ length: 12 }, () => generateProblem(skill, rng));
   // A worked example about zero ("10 + 0 = 10") shows nothing; prefer a draw with real numbers when there is one.
-  const trivial = (item) => String(item.displayAnswer) === "0" || /(^|[^\d.])0([^\d.]|$)/.test(item.question);
+  const trivial = (item) => String(item.displayAnswer) === "0" || /(^|[^\d.])0([^\d.]|$)|(^|[^\d.])1 ×|× 1([^\d.]|$)/.test(item.question);
   const example = (draws.filter((item) => !trivial(item)).length ? draws.filter((item) => !trivial(item)) : draws).reduce((best, item) => (item.steps.length > best.steps.length ? item : best));
   state.learnExample = { item: example, shown: 1 };
   const picture = interactivePicture({ ...example.model, worked: true }) || trailPicture(example.model);

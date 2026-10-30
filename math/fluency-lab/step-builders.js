@@ -99,15 +99,15 @@ const BUILDERS = [
   [
     /^(\d+)\/(\d+) ___ (\d+)\/(\d+)$/,
     (a, b, c, d) => [
-      `Cross-multiply: each top times the other fraction's bottom.`,
-      `Work out ${a} × ${d} and ${c} × ${b}.`,
-      `The bigger product belongs to the bigger fraction.`,
+      `The bottoms are different, so the pieces are different sizes.`,
+      `Multiply each top by the other bottom: ${a} × ${d} and ${c} × ${b}.`,
+      `The bigger product goes with the bigger fraction.`,
     ],
   ],
   [
     /^Area of a rectangle with length (\d+) and width (\d+)\?$/,
     (l, w) => [
-      `Area is the number of square units inside: length × width.`,
+      `Area is the number of squares inside: length × width.`,
       `Multiply ${l} × ${w}.`,
     ],
   ],
@@ -116,25 +116,25 @@ const BUILDERS = [
     (l, w) => [
       `Perimeter is the distance all the way around.`,
       `Add one length and one width: ${l} + ${w}.`,
-      `Then double it, because the rectangle has two of each.`,
+      `A rectangle has 2 lengths and 2 widths. Double the sum.`,
     ],
   ],
   [
     /^Volume of a rectangular prism: (\d+) × (\d+) × (\d+)\?$/,
     (a, b) => [
       `Volume = length × width × height.`,
-      `Multiply ${a} × ${b} first to find one layer.`,
+      `Multiply ${a} × ${b} first. That is one layer of cubes.`,
       `Then multiply by the height.`,
     ],
   ],
   [
     /^A circle has radius (\d+)\./,
-    (r) => [`The area of a circle is π × r × r.`, `Square the radius: ${r} × ${r}.`],
+    (r) => [`Circle area = π × r × r. The radius (r) is the distance from center to edge.`, `Square the radius: ${r} × ${r}.`],
   ],
   [
     /^What digit is in the ([a-z]+) place of ([\d.]+)\?$/,
     (place, n) => [
-      `Look to the right of the decimal point in ${n}: tenths, hundredths, thousandths.`,
+      `Look right of the decimal point in ${n}. The places are tenths, hundredths, thousandths.`,
       `Count to the ${place} place.`,
     ],
   ],
@@ -142,8 +142,8 @@ const BUILDERS = [
     /^([\d.]+) ([+−]) ([\d.]+) = \?$/,
     (a, op) => [
       `Line up the decimal points.`,
-      `Add zeros so both have the same number of decimal places.`,
-      `${op === "+" ? "Add" : "Subtract"} each column from right to left, regrouping when needed.`,
+      `Add zeros so both numbers have the same number of decimal places.`,
+      `${op === "+" ? "Add" : "Subtract"} each column, from right to left.`,
     ],
   ],
   [
@@ -152,7 +152,7 @@ const BUILDERS = [
       const places = (a.split(".")[1] || "").length + (b.split(".")[1] || "").length;
       return [
         `Ignore the decimal points and multiply ${a.replace(".", "")} × ${b.replace(".", "")}.`,
-        `Count the decimal places in both factors: ${places} in all.`,
+        `Count the decimal places in both numbers: ${places} in all.`,
         `Give the product ${places} decimal place${places === 1 ? "" : "s"}.`,
       ];
     },
@@ -163,12 +163,12 @@ const BUILDERS = [
       b === d
         ? [
             `The bottoms are the same, so ${op === "+" ? "add" : "subtract"} the tops.`,
-            `Keep the bottom ${b}.`,
+            `Keep ${b} on the bottom.`,
           ]
         : [
-            `The bottoms are different, so find a common denominator.`,
-            `Rename both fractions with it.`,
-            `Then ${op === "+" ? "add" : "subtract"} the tops and simplify.`,
+            `The bottoms are different. Find a common denominator, a bottom both share.`,
+            `Change both fractions to that bottom.`,
+            `Then ${op === "+" ? "add" : "subtract"} the tops. Simplify if you can.`,
           ],
   ],
   [
@@ -178,45 +178,45 @@ const BUILDERS = [
   [
     /^(\d+)\/(\d+) ÷ (\d+)\/(\d+) = \?$/,
     (a, b, c, d) => [
-      `To divide by a fraction, multiply by its reciprocal.`,
-      `Flip ${c}/${d} to ${d}/${c}.`,
-      `Multiply the tops, multiply the bottoms, and simplify.`,
+      `To divide by a fraction, flip it and multiply.`,
+      `Flip ${c}/${d} to ${d}/${c}. That is the reciprocal.`,
+      `Multiply the tops. Multiply the bottoms. Then simplify.`,
     ],
   ],
   [
     /^What is (\d+)\/(\d+) of (\d+)\?$/,
     (n, d, w) => [
-      `The bottom ${d} says to split ${w} into ${d} equal groups.`,
+      `The bottom number ${d} says: split ${w} into ${d} equal groups.`,
       `Find the size of one group.`,
-      `The top ${n} says to take ${n} of those groups.`,
+      `The top number ${n} says: take ${n} of those groups.`,
     ],
   ],
   [
     /^(\d+):(\d+) = (\d+):□$/,
     (a, b, c) => [
-      `Find what ${a} was multiplied by to make ${c}.`,
-      `Multiply ${b} by the same number.`,
+      `What times ${a} makes ${c}?`,
+      `Multiply ${b} by that same number.`,
     ],
   ],
   [
     /^(\d+):(\d+) = □:(\d+)$/,
     (a, b, d) => [
-      `Find what ${b} was multiplied by to make ${d}.`,
-      `Multiply ${a} by the same number.`,
+      `What times ${b} makes ${d}?`,
+      `Multiply ${a} by that same number.`,
     ],
   ],
   [
     /^([\d.]+) for (\d+) items\. How much for 1 item\?$/,
     (total, n) => [
       `A unit rate is the amount for 1 item.`,
-      `Share ${total} equally among ${n} items: divide.`,
+      `Share ${total} equally among ${n} items: ${total} ÷ ${n}.`,
     ],
   ],
   [
     /^What is (\d+)% of (\d+)\?$/,
     (p, w) => [
       `${p}% means ${p} out of every 100.`,
-      `Write it as ${p}/100, or use a benchmark like 10% or 50%.`,
+      `Write it as ${p}/100. Or use 10% or 50% as a shortcut.`,
       `Multiply that by ${w}.`,
     ],
   ],
@@ -230,8 +230,8 @@ const BUILDERS = [
   [
     /^Evaluate (.+) when x = (-?\d+)\.$/,
     (expr, x) => [
-      `Replace x with ${x}, using parentheses: ${expr.replace("x", `(${x})`)}.`,
-      `Multiply first, then add or subtract.`,
+      `Write ${x} where x is: ${expr.replace("x", `(${x})`)}.`,
+      `Multiply first. Then add or subtract.`,
     ],
   ],
   [
@@ -240,22 +240,22 @@ const BUILDERS = [
       `Get x alone. First undo the ${op === "+" ? "adding" : "subtracting"}: ${op === "+" ? "subtract" : "add"} ${c} on both sides.`,
       k
         ? `Then undo the multiplying: divide both sides by ${k}.`
-        : `Whatever you do to one side, do to the other.`,
+        : `Do the same thing to both sides.`,
     ],
   ],
   [
     /^\|(-?\d+)\| = \?$/,
     (n) => [
       `Absolute value is the distance from 0 on a number line.`,
-      `${n} sits some distance from 0. A distance is never negative.`,
+      `Count how many steps ${n} is from 0. A distance is never negative.`,
     ],
   ],
   [
     /^(\d+)\/(\d+) = x\/(\d+)\. Find x\.$/,
     (a, b, c) => [
-      `Look at the bottoms: ${b} changed to ${c}.`,
-      `Find what ${b} was multiplied by.`,
-      `Multiply the top, ${a}, by the same number.`,
+      `Look at the bottoms: ${b} became ${c}.`,
+      `What times ${b} makes ${c}?`,
+      `Multiply the top, ${a}, by that same number.`,
     ],
   ],
   [
@@ -265,80 +265,142 @@ const BUILDERS = [
   [
     /^(\d+) of (\d+) equal sections are winning sections/,
     (w, t) => [
-      `Probability = favorable outcomes ÷ total outcomes.`,
-      `Favorable: ${w} sections. Total: ${t} sections.`,
-      `Write it as a fraction: favorable over total.`,
+      `Probability = wanted outcomes out of all outcomes.`,
+      `Wanted: ${w} sections. All: ${t} sections.`,
+      `Write it as a fraction: wanted over all.`,
     ],
   ],
   [
     /^(\d+)\^(\d+) = \?$/,
     (b, e) => [
-      `The exponent ${e} says to use ${b} as a factor ${e} times.`,
-      `Write ${b} ${e} times with × between them. Multiply left to right.`,
+      `The exponent ${e} says to write ${b} ${e} times, with × between.`,
+      `Multiply two at a time, from left to right.`,
     ],
   ],
   [
     /^([\d.]+) × 10\^(-?\d+) = \?$/,
     (n, e) => [
-      `The exponent ${e} tells you how many places to move the decimal point.`,
+      `The exponent ${e} tells how many places to move the decimal point.`,
       Number(e) > 0
-        ? `A positive exponent moves it right ${e} place${e === "1" ? "" : "s"}. Add zeros if you run out of digits.`
+        ? `A positive exponent moves it right ${e} place${e === "1" ? "" : "s"}. Add zeros if you need them.`
         : `A negative exponent moves it left ${-e} place${e === "-1" ? "" : "s"}.`,
     ],
   ],
   [
     /^√(\d+) = \?$/,
     (n) => [
-      `Ask: what number times itself makes ${n}?`,
-      `Use nearby perfect squares to estimate. Test your guess by multiplying.`,
+      `√${n} asks: what number times itself makes ${n}?`,
+      `Guess a number. Multiply it by itself. Try higher or lower.`,
     ],
   ],
   [
     /^Find the slope through/,
     () => [
-      `Slope = rise ÷ run = (y₂ − y₁) ÷ (x₂ − x₁).`,
+      `Slope = rise ÷ run. Rise is up or down. Run is across.`,
       `Rise: subtract the two y-values.`,
-      `Run: subtract the two x-values in the same order.`,
+      `Run: subtract the two x-values, in the same order.`,
     ],
   ],
   [
     /^If y = (.+), find y when x = (-?\d+)\.$/,
     (rule, x) => [
-      `Replace x with ${x}, using parentheses: y = ${rule.replace("x", `(${x})`)}.`,
-      `Multiply first, then add or subtract.`,
+      `Write ${x} where x is: y = ${rule.replace("x", `(${x})`)}.`,
+      `Multiply first. Then add or subtract.`,
     ],
   ],
   [
     /^x \+ y = (-?\d+) and x − y = (-?\d+)\. Find x\.$/,
     () => [
-      `Add the two equations. The y terms cancel.`,
-      `What is left is an equation with only x. Solve it.`,
+      `Add the two equations. The y parts cancel each other out.`,
+      `Only x is left. Solve for x.`,
     ],
   ],
   [
     /^Reflect \((-?\d+), (-?\d+)\) across the (x-axis|y-axis|origin)\.$/,
     (x, y, line) => [
       {
-        "x-axis": `Across the x-axis, the y-value changes sign and x stays the same.`,
-        "y-axis": `Across the y-axis, the x-value changes sign and y stays the same.`,
-        origin: `Across the origin, both values change sign.`,
+        "x-axis": `Across the x-axis: keep x. Change y to its opposite.`,
+        "y-axis": `Across the y-axis: keep y. Change x to its opposite.`,
+        origin: `Across the origin: change both x and y to their opposites.`,
       }[line],
-      `Apply that rule to (${x}, ${y}).`,
+      `Now use that rule on (${x}, ${y}).`,
     ],
   ],
   [
     /^A right triangle has legs (\d+) and (\d+)\./,
     (a, b) => [
-      `Use a² + b² = c².`,
-      `Square each leg (${a} and ${b}) and add the squares.`,
-      `Take the square root of the total. That is the hypotenuse.`,
+      `a² + b² = c². The legs are a and b. The hypotenuse c is the longest side.`,
+      `Square each leg (${a} and ${b}). Then add the squares.`,
+      `Take the square root of the total. That is c.`,
     ],
+  ],
+  [
+    /^A jug holds (\d+) liters\. How many 1\/(\d+)-liter servings can it fill\?$/,
+    (whole, d) => [
+      `One serving is 1/${d} liter. How many servings fit in 1 liter?`,
+      `1 liter holds ${d} servings. You have ${whole} liters.`,
+      `Multiply: ${whole} × ${d}.`,
+    ],
+  ],
+  [
+    /^A ribbon that is 1\/(\d+) meter long is shared equally by (\d+) students/,
+    (d, whole) => [
+      `Share 1/${d} meter equally among ${whole} students. That means divide: 1/${d} ÷ ${whole}.`,
+      `Dividing by ${whole} is the same as multiplying by 1/${whole}.`,
+      `Multiply the bottoms: ${d} × ${whole}. The top stays 1.`,
+    ],
+  ],
+  [
+    /^Area of a triangle with base (\d+) and height (\d+)\?$/,
+    (b, h) => [
+      `A triangle is half of a rectangle. It has the same base and height.`,
+      `Multiply base × height: ${b} × ${h}.`,
+      `Then take half of that product.`,
+    ],
+  ],
+  [
+    /^A scale drawing uses 1 cm to represent (\d+) m\. A wall is (\d+) cm long/,
+    (scale, drawing) => [
+      `The scale says 1 cm on paper is ${scale} m in real life.`,
+      `The wall is ${drawing} cm on paper. That is ${drawing} groups of 1 cm.`,
+      `Each group is ${scale} m. Multiply ${drawing} × ${scale}.`,
+    ],
+  ],
+  [
+    /^Two (complementary|supplementary) angles include one angle that measures (\d+)°/,
+    (kind, known) => {
+      const total = kind === "complementary" ? 90 : 180;
+      return [
+        `${kind[0].toUpperCase()}${kind.slice(1)} angles add up to ${total}°.`,
+        `You know one angle: ${known}°. The other angle is the missing part.`,
+        `Subtract to find the missing part: ${total}° − ${known}°.`,
+      ];
+    },
+  ],
+  [
+    /^One of two vertical angles measures (\d+)°/,
+    () => [
+      `Vertical angles sit across from each other where two lines cross.`,
+      `Vertical angles are equal. So the other angle matches the one you know.`,
+    ],
+  ],
+  [
+    /^Two angles total (\d+)°\. One angle is (\d+)°/,
+    (total, known) => [`The two angles add up to ${total}°.`, `One angle is ${known}°. Subtract to find the missing part: ${total}° − ${known}°.`],
+  ],
+  [
+    /^\((\d+) \+ (\d+)\) × (\d+) = \?$/,
+    (a, b, c) => [`Do the parentheses first: ${a} + ${b}.`, `Then multiply that sum by ${c}.`],
+  ],
+  [
+    /^(\d+) \+ (\d+) × (\d+) = \?$/,
+    (a, b, c) => [`Multiply before you add: ${b} × ${c}.`, `Then add ${a}.`],
   ],
   [
     /^A data table has x-values/,
     () => [
-      `Read the y-values from left to right as x goes up.`,
-      `Does y mostly rise, fall, or jump around? Pick the matching choice.`,
+      `Read the y-values from left to right. x goes up each time.`,
+      `Does y go up, go down, or jump around? Pick the matching choice.`,
     ],
   ],
 ];

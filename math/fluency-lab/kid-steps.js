@@ -180,6 +180,17 @@ function groups(item, skill) {
   if (!match) return null;
   const [a, b] = [Number(match[1]), Number(match[2])];
   const c = a * b;
+  if (skill.id === "mul-10-12") {
+    const [tens, plain] = a % 10 === 0 ? [a, b] : [b, a];
+    if (tens % 10 || tens < 10 || plain > 12) return null;
+    const count = tens / 10;
+    return ending([
+      `${tens} is ${count} ${count === 1 ? "ten" : "tens"}.`,
+      `${plain} × ${count} = ${plain * count}`,
+      "Each one is a ten. Slide the numbers one place left.",
+      `${plain * count} tens is ${c}. So ${a} × ${b} = ${c}`,
+    ]);
+  }
   if (a < 2 || b < 2) return null;
   if (skill.id === "mul-0-5" && Math.min(a, b) <= 5 && c <= 60) {
     const list = Array.from({ length: a }, (_, i) => b * (i + 1));
@@ -193,17 +204,6 @@ function groups(item, skill) {
     const [big, other] = a >= 6 && a <= 8 ? [a, b] : [b, a];
     if (big < 6 || big > 8) return null;
     return ending([`Split ${big} into 5 and ${big - 5}.`, `5 × ${other} = ${5 * other}`, `${big - 5} × ${other} = ${(big - 5) * other}`, `${5 * other} + ${(big - 5) * other} = ${c}`]);
-  }
-  if (skill.id === "mul-10-12") {
-    const [tens, plain] = a % 10 === 0 ? [a, b] : [b, a];
-    if (tens % 10 || tens < 10 || plain > 12) return null;
-    const count = tens / 10;
-    return ending([
-      `${tens} is ${count} ${count === 1 ? "ten" : "tens"}.`,
-      `${plain} × ${count} = ${plain * count}`,
-      "Each one is a ten. Slide the numbers one place left.",
-      `${plain * count} tens is ${c}. So ${a} × ${b} = ${c}`,
-    ]);
   }
   return null;
 }

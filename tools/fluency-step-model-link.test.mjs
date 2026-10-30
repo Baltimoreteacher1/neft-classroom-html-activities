@@ -112,5 +112,22 @@ document.body.innerHTML = `<div class="learn-simple"><div data-live="array"><div
 sync();
 ok(!document.querySelector("[data-step-caption]"), "other pictures are not touched");
 
+// A row-and-column picture lights the rows an "a × b" step is about; the numbers a step uses light up.
+const row = `<button class="tp-row"><span></span><span></span><span></span><span></span></button>`;
+document.body.innerHTML = `<div class="learn-simple"><div class="tp-live" data-live="array"><p class="tp-prompt">3 rows of 4.</p>
+  <div class="tp-array">${row}${row}${row}</div><p class="tp-readout">Rows counted: <b>3</b></p></div>
+  <div data-learn-steps data-total-steps="3"><ol class="tr-steps"><li><span class="tr-step-text">3 groups of 4.</span></li><li><span class="tr-step-text">2 × 4 = 8</span></li></ol></div></div>`;
+sync();
+const rowStates = () =>
+  [...document.querySelectorAll(".tp-row")].map(
+    (r) => r.className.replace("tp-row", "").trim() || "-",
+  );
+ok(
+  rowStates().join() === "step-focus,step-focus,step-dim",
+  `2 × 4 lights two rows: ${rowStates()}`,
+);
+ok(/Step 2 of 3/.test(caption()), "generic picture gets a caption");
+ok(!document.querySelector(".tp-prompt .step-lit"), "the prompt text is never marked");
+
 console.log(`fluency-step-model-link: ${checks} checks passed`);
 dom.window.close();

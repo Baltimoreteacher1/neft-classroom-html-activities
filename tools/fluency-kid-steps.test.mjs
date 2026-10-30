@@ -68,19 +68,21 @@ for (const skill of ALL_SKILLS.filter((entry) => entry.grade <= 3)) {
     }
   }
 }
-// The "big idea" and "watch out" lines: every Kindergarten to Grade 3 skill has them, short, in both languages.
+// The "big idea" and "watch out" lines: every skill (Kindergarten to Grade 8) has them, short, in both languages.
 const { kidLearnFor } = await import(`${lab}kid-learn.js`);
-for (const skill of ALL_SKILLS.filter((entry) => entry.grade <= 3)) {
+for (const skill of ALL_SKILLS) {
   const row = kidLearnFor(skill, skill.grade);
-  ok(row, `${skill.grade}:${skill.id} has young-learner learn lines`);
+  const limit = skill.grade <= 3 ? 16 : 24;
+  ok(row, `${skill.grade}:${skill.id} has plain-word learn lines`);
   ok(
     skill.learn.rule === row.idea.en && skill.learn.watch === row.watch.en,
-    `${skill.id} learn lines are applied`,
+    `${skill.grade}:${skill.id} learn lines are applied`,
   );
   for (const pair of [row.idea, row.watch]) {
     ok(pair.es && pair.es !== pair.en, `${skill.id} has Spanish: ${pair.en}`);
-    ok(pair.en.split(/\s+/).length <= 16, `${skill.id} line is short: ${pair.en}`);
-    ok(!TECHNICAL.test(pair.en), `${skill.id} line avoids vocabulary words: ${pair.en}`);
+    ok(pair.en.split(/\s+/).length <= limit, `${skill.id} line is short: ${pair.en}`);
+    if (skill.grade <= 3)
+      ok(!TECHNICAL.test(pair.en), `${skill.id} line avoids vocabulary words: ${pair.en}`);
   }
 }
 ok(covered.size >= 34, `young-learner steps cover ${covered.size} skills`);

@@ -87,12 +87,47 @@ function applyArea(area, steps, active, total, selector) {
   area.before(caption);
 }
 
+const NUMBERS = /\d[\d,]*(?:\.\d+)?/g;
+
+// Any other picture: number the step, light the numbers the step uses wherever the picture prints them, and, for a
+// row-and-column picture, light the rows a "a × b" step is about.
+function applyGeneric(live, steps, active, total, selector) {
+  clearGeneric(live);
+  const line = stepLine(steps[active], selector);
+  const used = new Set((line.match(NUMBERS) || []).map((value) => value.replaceAll(",", "")));
+  for (const node of live.querySelectorAll("b, em, small, span, i, td, th, text, tspan")) {
+    if (node.children.length || node.closest(".tp-prompt, input, button")) continue;
+    if (used.has(norm(node.textContent))) node.classList.add("step-lit");
+  }
+  const rows = [...live.querySelectorAll(".tp-row")];
+  const product = /(\d+) × (\d+)/.exec(line) || /^(\d+) groups? of (\d+)/.exec(line);
+  if (rows.length && product && Number(product[1]) <= rows.length) {
+    const cols = rows[0].children.length;
+    const [x, y] = [Number(product[1]), Number(product[2])];
+    if (y === cols && x < rows.length)
+      rows.forEach((row, index) => row.classList.add(index < x ? "step-focus" : "step-dim"));
+    else if (y === cols) rows.forEach((row) => row.classList.add("step-focus"));
+  }
+  const caption = live.ownerDocument.createElement("p");
+  caption.className = "step-caption";
+  caption.dataset.stepCaption = "";
+  caption.textContent = t("Step {n} of {total}", { n: active + 1, total });
+  live.before(caption);
+}
+
+function clearGeneric(live) {
+  for (const node of live.querySelectorAll(".step-lit, .step-focus, .step-dim"))
+    node.classList.remove("step-lit", "step-focus", "step-dim");
+  live.parentElement?.querySelector("[data-step-caption]")?.remove();
+}
+
 export function sync() {
   for (const surface of SURFACES) {
     const list = document.querySelector(surface.steps);
     const model = document.querySelector(surface.model);
-    const area = model?.querySelector('[data-live="area"] .tp-area');
-    if (!list || !area) continue;
+    const live = model?.querySelector(".tp-live");
+    const area = live?.querySelector(".tp-area");
+    if (!list || !live) continue;
     const steps = [...list.querySelectorAll(":scope > li")];
     if (!steps.length) continue;
     const count = steps.length;
@@ -112,13 +147,13 @@ export function sync() {
       active,
       count,
       steps.map((li) => li.textContent.length).join("."),
-      area.textContent.length,
-      area.querySelectorAll("input").length,
+      live.textContent.length,
+      live.querySelectorAll("input").length,
     ].join("|");
-    if (area.dataset.linkSignature === signature && model.querySelector("[data-step-caption]"))
-      continue;
-    area.dataset.linkSignature = signature;
-    applyArea(area, steps, active, Math.max(shownTotal, count), surface.line);
+    if (live.dataset.linkSignature === signature && model.querySelector("[data-step-caption]")) continue;
+    live.dataset.linkSignature = signature;
+    if (area) applyArea(area, steps, active, Math.max(shownTotal, count), surface.line);
+    else applyGeneric(live, steps, active, Math.max(shownTotal, count), surface.line);
   }
 }
 
@@ -144,8 +179,8 @@ export function initStepModelLink(roots) {
       if (!li) continue;
       const list = li.parentElement;
       list.dataset.activeStep = String([...list.children].indexOf(li));
-      const area = document.querySelector(`${surface.model} [data-live="area"] .tp-area`);
-      if (area) delete area.dataset.linkSignature;
+      const live = document.querySelector(`${surface.model} .tp-live`);
+      if (live) delete live.dataset.linkSignature;
       schedule();
       return;
     }
