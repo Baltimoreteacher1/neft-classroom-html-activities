@@ -8,6 +8,53 @@
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231B2C3F'/%3E%3Ctext x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' font-family='Georgia,serif' font-weight='bold' font-size='26' fill='%231FA6A2'%3EW%3C/text%3E%3C/svg%3E">
   <link rel="stylesheet" href="/assets/u4-studio.css">
   <link rel="stylesheet" href="/assets/studio-comfort.css">
+  <style id="ladder-css">
+    .lad-head{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px}
+    .lad-count{font-size:.84rem;font-weight:800;color:var(--brand)}
+    .lad-problem{background:var(--brand);color:var(--on-brand);border-radius:var(--radius-md);padding:16px 22px;margin-bottom:16px}
+    .lad-kicker{font-size:.82rem;font-weight:700;opacity:.85}
+    .lad-fact{font-size:1.05rem;margin-top:4px}
+    .lad-q{font-size:1.45rem;font-family:var(--font-display);font-weight:700;margin-top:4px}
+    .lad-problem .es-text{color:inherit;opacity:.9;font-size:1rem}
+    .lad-step{margin:10px 0;font-size:.98rem}
+    .lad-chips{display:flex;flex-wrap:wrap;gap:8px}
+    .lad-chip{min-width:64px;min-height:44px;padding:8px 16px;font:800 1.1rem var(--font-display,inherit);color:var(--brand);background:var(--surface);border:2px solid var(--brand);border-radius:var(--radius-sm);cursor:pointer}
+    .lad-chip:hover:not(:disabled){background:var(--surface-soft)}
+    .lad-chip.on{background:var(--brand);color:var(--on-brand)}
+    .lad-chip.err{border-color:var(--bad);background:var(--bad-tint);color:var(--bad)}
+    .lad-chip:disabled{cursor:default;opacity:.85}
+    .lad-model{background:var(--surface-soft);border:1.5px solid var(--border);border-radius:var(--radius-md);padding:16px;margin:12px 0}
+    .lad-table{width:100%;max-width:560px;margin:0 auto;text-align:center}
+    .lad-table th,.lad-table td{padding:10px 12px}
+    .lad-table tbody th{background:var(--surface);color:var(--brand)}
+    .lad-move td,.lad-move th{font-size:.85rem;font-weight:700;color:var(--brand);background:var(--surface-soft)}
+    .lad-wait{color:var(--ink-muted);font-style:italic;font-weight:600;font-size:.85rem}
+    .lad-whole-tag{color:var(--ok);font-weight:800}
+    .lad-in{width:7.5em;text-align:center;font-weight:800;font-size:1.05rem}
+    .lad-actions{display:flex;justify-content:center;margin:12px 0}
+    .lad-scroll{overflow-x:auto;padding-bottom:6px}
+    .lad-line{position:relative;height:190px;min-width:600px;margin:0 52px}
+    .lad-rail{position:absolute;left:0;right:0;height:0;border-top:3px solid var(--brand)}
+    .lad-rail-top{top:48px}.lad-rail-bot{top:132px}
+    .lad-guide{position:absolute;top:44px;height:92px;border-left:2px dashed var(--border);transform:translateX(-1px)}
+    .lad-tick-label{position:absolute;transform:translateX(-50%);white-space:nowrap;font-weight:700;color:var(--brand)}
+    .lad-top{top:14px}.lad-bot{top:142px}
+    .lad-axis{position:absolute;left:-48px;font-size:.72rem;font-weight:800;color:var(--ink-muted);text-transform:uppercase;width:44px;text-align:right}
+    .lad-axis-top{top:38px}.lad-axis-bot{top:122px}
+    .lad-hop{position:absolute;top:80px;transform:translateX(-50%);white-space:nowrap;background:var(--surface);border:1.5px solid var(--brand);border-radius:99px;padding:2px 10px;font-weight:800;font-size:.9rem;color:var(--brand)}
+    .lad-line .lad-in{width:5.2em;padding:6px 4px}
+    .lad-tape-wrap{min-width:560px}
+    .lad-tape{display:grid;grid-template-columns:repeat(var(--n),1fr);gap:2px;height:56px}
+    .lad-tape.lad-uncut{display:block;position:relative;background:var(--surface);border:2px solid var(--brand);border-radius:6px}
+    .lad-solid{display:block;height:100%;background:var(--brand);opacity:.85;border-radius:4px 0 0 4px}
+    .lad-cell{display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:800;color:var(--brand);background:var(--surface);border:2px solid var(--brand);border-radius:4px}
+    .lad-cell.on{background:var(--brand);color:var(--on-brand)}
+    .lad-brace-row{display:flex;margin-top:6px}
+    .lad-brace{border-top:3px solid var(--brand);padding-top:4px;font-size:.9rem;color:var(--brand);text-align:center;white-space:nowrap}
+    .lad-brace-all{border-top-style:dashed;color:var(--ink-muted)}
+    .lad-tape-in{display:flex;flex-wrap:wrap;gap:12px 28px;margin-top:12px;font-weight:700;color:var(--brand);align-items:center}
+    .lad-tape-in .lad-in{margin-left:6px}
+  </style>
   <script src="/assets/studio-comfort.js" defer></script>
   <script src="/assets/u4-studio.js"></script>
   <script src="/assets/u4-studio-bonus.js"></script>
@@ -56,32 +103,32 @@
       <button type="button" class="tab-btn" role="tab" id="tab-1" aria-selected="true" aria-controls="panel-1" tabindex="0" data-tab="1">
         <span class="tab-badge" id="badge-1">1</span>
         <span class="tab-text">
-          <span class="tab-name">Build from 1%</span>
-          <span class="tab-desc">Ratio table · unit rate (8)</span>
+          <span class="tab-name">Ratio Table</span>
+          <span class="tab-desc">Friendly % → 100% (8)</span>
         </span>
       </button>
 
       <button type="button" class="tab-btn" role="tab" id="tab-2" aria-selected="false" aria-controls="panel-2" tabindex="-1" data-tab="2">
         <span class="tab-badge" id="badge-2">2</span>
         <span class="tab-text">
-          <span class="tab-name">Scale Equivalent Ratios</span>
-          <span class="tab-desc">Part → 100% (8)</span>
+          <span class="tab-name">Double Number Line</span>
+          <span class="tab-desc">Friendly % → 100% (8)</span>
         </span>
       </button>
 
       <button type="button" class="tab-btn" role="tab" id="tab-3" aria-selected="false" aria-controls="panel-3" tabindex="-1" data-tab="3">
         <span class="tab-badge" id="badge-3">3</span>
         <span class="tab-text">
-          <span class="tab-name">Choose a Helpful Row</span>
-          <span class="tab-desc">Scale the table (8)</span>
+          <span class="tab-name">Tape Diagram</span>
+          <span class="tab-desc">Friendly % → 100% (8)</span>
         </span>
       </button>
 
       <button type="button" class="tab-btn" role="tab" id="tab-4" aria-selected="false" aria-controls="panel-4" tabindex="-1" data-tab="4">
         <span class="tab-badge" id="badge-4">4</span>
         <span class="tab-text">
-          <span class="tab-name">Ratio Tables in Stories</span>
-          <span class="tab-desc">Model and solve (8)</span>
+          <span class="tab-name">Stories</span>
+          <span class="tab-desc">Ratio tables in context (8)</span>
         </span>
       </button>
 
@@ -103,11 +150,11 @@
     <section id="panel-1" class="tab-panel active" role="tabpanel" aria-labelledby="tab-1">
       <div class="topic-strip">
         <div>
-          <h2>Tab 1: Build a Ratio Table through 1%</h2>
-          <p>Put the known percent and part in matching columns. Divide both by the percent to reach 1%, then scale both values to 100%.</p>
-          <div class="es-text">Coloca el porcentaje y la parte conocida en columnas correspondientes. Divide ambos entre el porcentaje para llegar al 1% y luego escala ambos valores al 100%.</div>
+          <h2>Tab 1: Ratio Table to a Friendly Percent</h2>
+          <p>Scale the known percent down to a friendly percent (5%, 10%, 20%, 25% or 50%). Divide the amount the same way. Then scale up to 100% to find the whole.</p>
+          <div class="es-text">Reduce el porcentaje conocido a un porcentaje útil (5%, 10%, 20%, 25% o 50%). Divide la cantidad de la misma manera. Luego escala hasta el 100% para hallar el total.</div>
         </div>
-        <div class="key-rule-pill">&#127753; Equivalent ratios: Percent ↔ Amount · 100% ↔ Whole</div>
+        <div class="key-rule-pill">&#127753; Down to a friendly %, then up to 100%</div>
       </div>
 
       <div class="stepper-bar">
@@ -125,11 +172,11 @@
     <section id="panel-2" class="tab-panel" role="tabpanel" aria-labelledby="tab-2">
       <div class="topic-strip">
         <div>
-          <h2>Tab 2: Scale Equivalent Ratios to 100%</h2>
-          <p>Use the same scale factor in both columns. The percent reaches 100%, and the matching amount becomes the whole.</p>
-          <div class="es-text">Usa el mismo factor de escala en ambas columnas. El porcentaje llega al 100% y la cantidad correspondiente se convierte en el total.</div>
+          <h2>Tab 2: Double Number Line</h2>
+          <p>Same method on a double number line: jump from the known percent down to a friendly percent, then jump up to 100%. The amount line jumps by the same factors.</p>
+          <div class="es-text">El mismo método en una recta numérica doble: salta del porcentaje conocido a un porcentaje útil y luego salta hasta el 100%. La recta de cantidades salta con los mismos factores.</div>
         </div>
-        <div class="key-rule-pill">&#128207; Multiply both columns by 100% ÷ known percent</div>
+        <div class="key-rule-pill">&#128207; Both lines make the same jumps</div>
       </div>
 
       <div class="stepper-bar">
@@ -147,11 +194,11 @@
     <section id="panel-3" class="tab-panel" role="tabpanel" aria-labelledby="tab-3">
       <div class="topic-strip">
         <div>
-          <h2>Tab 3: Choose a Helpful Equivalent Row</h2>
-          <p>Scale down to a friendly percent such as 10%, 5%, or 1%, then scale up to 100%. Keep the ratio equivalent at every step.</p>
-          <div class="es-text">Reduce a un porcentaje útil, como 10%, 5% o 1%, y luego escala al 100%. Mantén una razón equivalente en cada paso.</div>
+          <h2>Tab 3: Tape Diagram</h2>
+          <p>Same method with a tape: cut the 100% tape into equal chunks of a friendly percent (5%, 10%, 20%, 25% or 50%). Find the value of one chunk, then count up to all the chunks.</p>
+          <div class="es-text">El mismo método con una cinta: divide la cinta del 100% en partes iguales de un porcentaje útil (5%, 10%, 20%, 25% o 50%). Halla el valor de una parte y luego cuenta hasta el total.</div>
         </div>
-        <div class="key-rule-pill">&#128221; Same operation on both columns keeps ratios equivalent</div>
+        <div class="key-rule-pill">&#128221; One chunk, then all the chunks</div>
       </div>
 
       <div class="stepper-bar">
@@ -169,11 +216,11 @@
     <section id="panel-4" class="tab-panel" role="tabpanel" aria-labelledby="tab-4">
       <div class="topic-strip">
         <div>
-          <h2>Tab 4: Build Ratio Tables from Stories</h2>
-          <p>Identify the known part and percent, choose an easy row, and scale the table to 100% to find the whole.</p>
-          <div class="es-text">Identifica la parte y el porcentaje conocidos, elige una fila sencilla y escala la tabla al 100% para hallar el total.</div>
+          <h2>Tab 4: Ratio Tables in Stories</h2>
+          <p>Find the known part and percent in the story. Scale down to a friendly percent, then scale up to 100% to find the whole.</p>
+          <div class="es-text">Encuentra la parte y el porcentaje conocidos en el problema. Reduce a un porcentaje útil y luego escala hasta el 100% para hallar el total.</div>
         </div>
-        <div class="key-rule-pill">&#129367; Show how the percent and amount stay in proportion</div>
+        <div class="key-rule-pill">&#129367; Down to a friendly %, then up to 100%</div>
       </div>
 
       <div class="stepper-bar">
@@ -361,821 +408,242 @@
       }
 
       // =========================================================================
-      // TAB 1: 1% UNIT RATE BRIDGE
+      // TABS 1-4: ONE METHOD, FOUR MODELS
+      // Scale the known percent DOWN to a friendly percent (5, 10, 20, 25 or 50), then UP to 100%.
+      // Tab 1 vertical ratio table · Tab 2 double number line · Tab 3 tape · Tab 4 story table.
       // =========================================================================
-      const T1_BRIDGES = [
-        {
-          id: 't1_1',
-          part: 15,
-          percent: 30,
-          onePercent: 0.5,
-          whole: 50,
-          prompt: '15 is 30% of what number?',
-          promptEs: '¿15 es el 30% de qué número?',
-          explain: 'Ratio Table: 15 ÷ 30 = 0.5 for each 1%. Then scale up to 100%: 0.5 × 100 = 50.',
-          explainEs: 'Tabla de razones: 15 ÷ 30 = 0.5 para cada 1%. Luego escala al 100%: 0.5 × 100 = 50.'
-        },
-        {
-          id: 't1_2',
-          part: 12,
-          percent: 40,
-          onePercent: 0.3,
-          whole: 30,
-          prompt: '12 is 40% of what number?',
-          promptEs: '¿12 es el 40% de qué número?',
-          explain: 'Ratio Table: 12 ÷ 40 = 0.3 for each 1%. Then scale up to 100%: 0.3 × 100 = 30.',
-          explainEs: 'Tabla de razones: 12 ÷ 40 = 0.3 para cada 1%. Luego escala al 100%: 0.3 × 100 = 30.'
-        },
-        {
-          id: 't1_3',
-          part: 36,
-          percent: 60,
-          onePercent: 0.6,
-          whole: 60,
-          prompt: '36 is 60% of what number?',
-          promptEs: '¿36 es el 60% de qué número?',
-          explain: 'Ratio Table: 36 ÷ 60 = 0.6 for each 1%. Then scale up to 100%: 0.6 × 100 = 60.',
-          explainEs: 'Tabla de razones: 36 ÷ 60 = 0.6 para cada 1%. Luego escala al 100%: 0.6 × 100 = 60.'
-        },
-        {
-          id: 't1_4',
-          part: 14,
-          percent: 20,
-          onePercent: 0.7,
-          whole: 70,
-          prompt: '14 is 20% of what number?',
-          promptEs: '¿14 es el 20% de qué número?',
-          explain: 'Ratio Table: 14 ÷ 20 = 0.7 for each 1%. Then scale up to 100%: 0.7 × 100 = 70.',
-          explainEs: 'Tabla de razones: 14 ÷ 20 = 0.7 para cada 1%. Luego escala al 100%: 0.7 × 100 = 70.'
-        },
-        {
-          id: 't1_5',
-          part: 27,
-          percent: 90,
-          onePercent: 0.3,
-          whole: 30,
-          prompt: '27 is 90% of what number?',
-          promptEs: '¿27 es el 90% de qué número?',
-          explain: 'Ratio Table: 27 ÷ 90 = 0.3 for each 1%. Then scale up to 100%: 0.3 × 100 = 30.',
-          explainEs: 'Tabla de razones: 27 ÷ 90 = 0.3 para cada 1%. Luego escala al 100%: 0.3 × 100 = 30.'
-        },
-        {
-          id: 't1_6',
-          part: 35,
-          percent: 70,
-          onePercent: 0.5,
-          whole: 50,
-          prompt: '35 is 70% of what number?',
-          promptEs: '¿35 es el 70% de qué número?',
-          explain: 'Ratio Table: 35 ÷ 70 = 0.5 for each 1%. Then scale up to 100%: 0.5 × 100 = 50.',
-          explainEs: 'Tabla de razones: 35 ÷ 70 = 0.5 para cada 1%. Luego escala al 100%: 0.5 × 100 = 50.'
-        },
-        {
-          id: 't1_7',
-          part: 48,
-          percent: 80,
-          onePercent: 0.6,
-          whole: 60,
-          prompt: '48 is 80% of what number?',
-          promptEs: '¿48 es el 80% de qué número?',
-          explain: 'Ratio Table: 48 ÷ 80 = 0.6 for each 1%. Then scale up to 100%: 0.6 × 100 = 60.',
-          explainEs: 'Tabla de razones: 48 ÷ 80 = 0.6 para cada 1%. Luego escala al 100%: 0.6 × 100 = 60.'
-        },
-        {
-          id: 't1_8',
-          part: 21,
-          percent: 15,
-          onePercent: 1.4,
-          whole: 140,
-          prompt: '21 is 15% of what number?',
-          promptEs: '¿21 es el 15% de qué número?',
-          explain: 'Ratio Table: 21 ÷ 15 = 1.4 for each 1%. Then scale up to 100%: 1.4 × 100 = 140.',
-          explainEs: 'Tabla de razones: 21 ÷ 15 = 1.4 para cada 1%. Luego escala al 100%: 1.4 × 100 = 140.'
-        }
+      const FRIENDLY = [5, 10, 20, 25, 50];
+      const num = (n) => String(Math.round(n * 1e6) / 1e6);
+      const orList = (list, w) => list.map((o) => o + '%').join(', ').replace(/, ([^,]*)$/, ` ${w} $1`);
+      const bi = (en, es) => `${en}<span class="es-text">${es}</span>`;
+      /** Friendly percents the known percent scales down to in whole steps. */
+      const stepsFor = (p) => FRIENDLY.filter((f) => f <= p && p % f === 0);
+      const plainItems = (tab, pairs) => pairs.map(([part, percent], i) => ({
+        id: `t${tab}_f${i + 1}`, part, percent, whole: part * 100 / percent,
+        prompt: `${part} is ${percent}% of what number?`,
+        promptEs: `¿${part} es el ${percent}% de qué número?`
+      }));
+
+      const T1_ITEMS = plainItems(1, [[15, 30], [12, 40], [36, 60], [14, 35], [27, 90], [49, 70], [48, 80], [21, 15]]);
+      const T2_ITEMS = plainItems(2, [[18, 45], [33, 55], [39, 65], [63, 75], [72, 90], [21, 35], [56, 70], [30, 60]]);
+      const T3_ITEMS = plainItems(3, [[24, 40], [18, 75], [45, 30], [35, 70], [49, 35], [63, 90], [52, 65], [27, 45]]);
+      const story = (id, part, percent, title, titleEs, facts, q, qEs, unit, unitEs) => ({
+        id, part, percent, whole: part * 100 / percent, title, titleEs, facts, q, qEs, unit, unitEs
+      });
+      const T4_ITEMS = [
+        story('t4_f1', 90, 30, 'Cafeteria: Cheese Sticks', 'Cafetería: palitos de queso',
+          [['In a cafeteria survey, 30% of the students chose cheese sticks.', 'En una encuesta de la cafetería, el 30% de los estudiantes eligió palitos de queso.'], ['90 students chose cheese sticks.', '90 estudiantes eligieron palitos de queso.']],
+          'How many students voted in all?', '¿Cuántos estudiantes votaron en total?', 'students', 'estudiantes'),
+        story('t4_f2', 135, 45, 'Cafeteria: Fruit', 'Cafetería: fruta',
+          [['In a cafeteria survey, 45% of the students chose fresh fruit.', 'En una encuesta de la cafetería, el 45% de los estudiantes eligió fruta fresca.'], ['135 students chose fruit.', '135 estudiantes eligieron fruta.']],
+          'How many students took the survey?', '¿Cuántos estudiantes respondieron la encuesta?', 'students', 'estudiantes'),
+        story('t4_f3', 180, 60, 'Cafeteria: Veggie Sticks', 'Cafetería: palitos de verdura',
+          [['In a cafeteria survey, 60% of the students chose veggie sticks.', 'En una encuesta de la cafetería, el 60% de los estudiantes eligió palitos de verdura.'], ['180 students chose veggie sticks.', '180 estudiantes eligieron palitos de verdura.']],
+          'How many students took the survey?', '¿Cuántos estudiantes respondieron la encuesta?', 'students', 'estudiantes'),
+        story('t4_f4', 16, 80, 'Math Test: Problems Done', 'Examen de matemáticas: problemas hechos',
+          [['Leo finished 16 problems on a math test.', 'Leo terminó 16 problemas de un examen de matemáticas.'], ['Those 16 problems are 80% of the whole test.', 'Esos 16 problemas son el 80% de todo el examen.']],
+          'How many problems are on the whole test?', '¿Cuántos problemas tiene todo el examen?', 'problems', 'problemas'),
+        story('t4_f5', 21, 35, 'Coupon Savings', 'Ahorro con cupón',
+          [['You used a coupon for 35% off a jacket.', 'Usaste un cupón de 35% de descuento en una chaqueta.'], ['The coupon saved you $21.', 'El cupón te ahorró $21.']],
+          'What was the original price of the jacket?', '¿Cuál era el precio original de la chaqueta?', 'dollars ($)', 'dólares ($)'),
+        story('t4_f6', 42, 70, 'Basketball Free Throws', 'Tiros libres de baloncesto',
+          [['A basketball team made 42 free throws.', 'Un equipo de baloncesto anotó 42 tiros libres.'], ['Those 42 shots are 70% of all the free throws they tried.', 'Esos 42 tiros son el 70% de todos los tiros libres que intentaron.']],
+          'How many free throws did the team try?', '¿Cuántos tiros libres intentó el equipo?', 'free throws', 'tiros libres'),
+        story('t4_f7', 36, 15, 'Novel Pages Read', 'Páginas leídas de una novela',
+          [['Maya read 36 pages of a novel.', 'Maya leyó 36 páginas de una novela.'], ['Those 36 pages are 15% of the whole book.', 'Esas 36 páginas son el 15% de todo el libro.']],
+          'How many pages are in the whole novel?', '¿Cuántas páginas tiene toda la novela?', 'pages', 'páginas'),
+        story('t4_f8', 540, 90, 'Concert Hall Tickets', 'Boletos del auditorio',
+          [['540 tickets have been sold for a concert.', 'Se han vendido 540 boletos para un concierto.'], ['Those tickets fill 90% of the seats in the auditorium.', 'Esos boletos llenan el 90% de los asientos del auditorio.']],
+          'How many seats are in the auditorium?', '¿Cuántos asientos tiene el auditorio?', 'seats', 'asientos')
       ];
+      const LADDERS = {
+        1: { items: T1_ITEMS, model: 'table', name: 'Vertical Ratio Table', nameEs: 'Tabla de razones vertical', unit: 'Ratio Table' },
+        2: { items: T2_ITEMS, model: 'line', name: 'Double Number Line', nameEs: 'Recta numérica doble', unit: 'Number Line' },
+        3: { items: T3_ITEMS, model: 'tape', name: 'Tape Diagram', nameEs: 'Diagrama de cinta', unit: 'Tape Diagram' },
+        4: { items: T4_ITEMS, model: 'story', name: 'Story Ratio Table', nameEs: 'Tabla de razones del problema', unit: 'Story' }
+      };
 
-      function renderT1() {
-        const b = T1_BRIDGES[state.idx1];
-        const isSolved = !!state.solved1[b.id];
+      const inputHtml = (id, label, value, solved) =>
+        `<input type="number" step="any" inputmode="decimal" id="${id}" class="num-input lad-in${solved ? ' ok' : ''}" aria-label="${label}" placeholder="?" value="${value}" ${solved ? 'disabled' : ''}>`;
 
-        renderDots('t1-dots', T1_BRIDGES, state.idx1, state.solved1, (ni) => {
-          state.idx1 = ni; renderT1();
-        });
+      /** The model picture. `f` is the chosen friendly percent (null until picked); inputs are #lad-amt and #lad-whole. */
+      function ladderModel(model, it, f, solved) {
+        const k = f ? it.percent / f : null;
+        const m = f ? 100 / f : null;
+        const amt = f ? it.part / k : null;
+        const fPct = f ? `${f}%` : '?%';
+        const amtIn = f ? inputHtml('lad-amt', `Amount at ${f} percent`, solved ? num(amt) : '', solved) : '<span class="lad-wait">pick a % above</span>';
+        const wholeIn = f ? inputHtml('lad-whole', 'Amount at 100 percent, the whole', solved ? num(it.whole) : '', solved) : '<span class="lad-wait">?</span>';
+        const down = f ? `÷ ${num(k)}` : '÷ ?';
+        const up = f ? `× ${num(m)}` : '× ?';
 
-        const stage = document.getElementById('t1-stage-card');
+        if (model === 'table') {
+          return `<table class="data-table lad-table"><thead><tr><th scope="col">Percent</th><th scope="col">Amount</th><th scope="col">Move</th></tr></thead><tbody>
+            <tr><th scope="row">${it.percent}%</th><td>${it.part}</td><td>Given</td></tr>
+            <tr class="lad-move"><td>↓ ${down}</td><td>↓ ${down}</td><td>Same on both sides</td></tr>
+            <tr><th scope="row" class="${f ? '' : 'lad-wait'}">${fPct}</th><td>${amtIn}</td><td>Friendly row</td></tr>
+            <tr class="lad-move"><td>↓ ${up}</td><td>↓ ${up}</td><td>Same on both sides</td></tr>
+            <tr><th scope="row">100%</th><td>${wholeIn}</td><td class="lad-whole-tag">The whole</td></tr></tbody></table>`;
+        }
+        if (model === 'story') {
+          return `<table class="data-table lad-table lad-hrow"><thead><tr><th scope="col"></th><th scope="col">Given</th><th scope="col">Friendly</th><th scope="col">Whole</th></tr></thead><tbody>
+            <tr><th scope="row">Percent</th><td>${it.percent}%</td><td class="${f ? '' : 'lad-wait'}">${fPct}</td><td>100%</td></tr>
+            <tr><th scope="row">Amount (${it.unit})</th><td>${it.part}</td><td>${amtIn}</td><td>${wholeIn}</td></tr>
+            <tr class="lad-move"><th scope="row">Move</th><td></td><td>← ${down}</td><td>${up} →</td></tr></tbody></table>`;
+        }
+        if (model === 'line') {
+          const at = (pct, html, row) => `<span class="lad-tick-label lad-${row}" style="left:${pct}%">${html}</span>`;
+          const stops = f ? [f, it.percent, 100] : [it.percent, 100];
+          const guides = [0, ...stops].map((p) => `<i class="lad-guide" style="left:${p}%"></i>`).join('');
+          const mid = (a, b) => (a + b) / 2;
+          const moves = f
+            ? `<span class="lad-hop" style="left:${mid(f, it.percent)}%">← ${down}</span><span class="lad-hop" style="left:${mid(f, 100)}%">${up} →</span>`
+            : '';
+          return `<div class="lad-scroll"><div class="lad-line" role="group" aria-label="Double number line, percent above amount">
+            <span class="lad-rail lad-rail-top"></span><span class="lad-rail lad-rail-bot"></span>${guides}
+            <span class="lad-axis lad-axis-top">Percent</span><span class="lad-axis lad-axis-bot">Amount</span>
+            ${at(0, '0%', 'top')}${f ? at(f, `${f}%`, 'top') : ''}${at(it.percent, `<b>${it.percent}%</b>`, 'top')}${at(100, '100%', 'top')}
+            ${f && f > 10 ? at(0, '0', 'bot') : ''}${f ? at(f, amtIn, 'bot') : ''}${at(it.percent, `<b>${it.part}</b>`, 'bot')}${at(100, wholeIn, 'bot')}
+            ${moves}</div></div>`;
+        }
+        // tape: 100% bar; once a friendly percent is chosen it is cut into chunks of that size
+        const n = f ? m : 1;
+        const shaded = f ? k : 1;
+        const cells = f
+          ? Array.from({ length: n }, (_, i) => `<span class="lad-cell${i < shaded ? ' on' : ''}">${n <= 10 ? f + '%' : ''}</span>`).join('')
+          : `<span class="lad-solid" style="width:${it.percent}%"></span>`;
+        return `<div class="lad-scroll"><div class="lad-tape-wrap">
+            <div class="lad-tape${f ? '' : ' lad-uncut'}" style="--n:${n}">${cells}</div>
+            <div class="lad-brace-row"><span class="lad-brace" style="width:${it.percent}%"><b>${it.percent}%</b> = ${it.part}</span><span class="lad-brace lad-brace-all" style="width:${100 - it.percent}%">to 100%</span></div>
+            <div class="lad-tape-in"><div>${f ? `1 chunk (${f}%) =` : 'Cut the tape into equal chunks: pick a friendly percent'} ${amtIn}</div>
+            <div>The whole (all ${f ? num(m) : '?'} chunks, 100%) = ${wholeIn}</div></div></div></div>`;
+      }
+
+      function renderLadder(tab) {
+        const L = LADDERS[tab];
+        const it = L.items[state[`idx${tab}`]];
+        const solvedMap = state[`solved${tab}`];
+        const isSolved = !!solvedMap[it.id];
+        const options = stepsFor(it.percent);
+        let pick = isSolved ? options[options.length - 1] : null;
+        const rerender = () => renderLadder(tab);
+        const isStory = tab === 4;
+        const wholeNote = isStory ? ` So there are ${num(it.whole)} ${it.unit}.` : '';
+        const wholeNoteEs = isStory ? ` Así que hay ${num(it.whole)} ${it.unitEs}.` : '';
+
+        renderDots(`t${tab}-dots`, L.items, state[`idx${tab}`], solvedMap, (ni) => { state[`idx${tab}`] = ni; rerender(); });
+
+        const problem = isStory
+          ? `<div class="lad-problem"><div class="lad-kicker">${it.title}</div>
+              ${it.facts.map((f) => `<div class="lad-fact">${bi(f[0], f[1])}</div>`).join('')}
+              <div class="lad-q">${bi(it.q, it.qEs)}</div></div>`
+          : `<div class="lad-problem"><div class="lad-kicker">Problem</div><div class="lad-q">${bi(it.prompt, it.promptEs)}</div></div>`;
+        const chips = FRIENDLY.map((f) => `<button type="button" class="lad-chip" data-f="${f}" aria-pressed="false">${f}%</button>`).join('');
+        const stage = document.getElementById(`t${tab}-stage-card`);
         stage.innerHTML = `
-          <div style="display:flex; justify-content:space-between; margin-bottom:12px;">
-            <span style="font-size:0.84rem; font-weight:800; color:var(--brand);">Bridge Problem ${state.idx1 + 1} of ${T1_BRIDGES.length}</span>
-            <button type="button" class="speak-btn" id="t1-speak">🔊 Read Question</button>
+          <div class="lad-head"><span class="lad-count">${L.unit} ${state[`idx${tab}`] + 1} of ${L.items.length} · ${L.name}</span>
+            <button type="button" class="speak-btn" id="lad-speak">🔊 Read</button></div>
+          ${problem}
+          <div class="lad-pick" role="group" aria-label="Friendly percent">
+            <div class="lad-step">${bi('<b>Step 1.</b> Scale ' + it.percent + '% down to a friendly percent. Which one will you use?', '<b>Paso 1.</b> Reduce el ' + it.percent + '% a un porcentaje útil. ¿Cuál usarás?')}</div>
+            <div class="lad-chips">${chips}</div>
           </div>
+          <div class="lad-step">${bi('<b>Step 2.</b> Find the amount at your friendly percent. <b>Step 3.</b> Scale up to 100% to find the whole.', '<b>Paso 2.</b> Halla la cantidad en tu porcentaje útil. <b>Paso 3.</b> Escala hasta el 100% para hallar el total.')}</div>
+          <div id="lad-model" class="lad-model"></div>
+          <div class="lad-actions"><button type="button" class="btn btn-primary" id="lad-check" ${isSolved ? 'disabled' : ''}>Check</button></div>
+          <div id="lad-fb" class="feedback-box"></div>`;
 
-          <div style="background:var(--brand); color:var(--on-brand); border-radius:var(--radius-md); padding:18px 24px; margin-bottom:20px;">
-            <div style="font-size:0.82rem; color:var(--border); font-weight:700;">Problem</div>
-            <div style="font-size:1.5rem; font-family:var(--font-display); font-weight:700;">${b.prompt}</div>
-            <div class="es-text" style="color:var(--ok-line); font-size:1rem; margin-top:4px;">${b.promptEs}</div>
-          </div>
-
-          <div style="background:var(--surface-soft); border:1.5px solid var(--border); border-radius:var(--radius-md); padding:16px; margin-bottom:20px;">
-            <div style="font-size:0.88rem; font-weight:800; color:var(--brand); margin-bottom:10px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px;">
-              <span>Vertical Ratio Table &mdash; Division Method</span>
-              <span style="font-size:0.8rem; font-weight:600; color:var(--ink-muted);">(Type directly in the boxes below)</span>
-            </div>
-            <table class="data-table" style="width:100%; max-width:520px; margin:0 auto; text-align:center; border-collapse:separate; border-spacing:0; border:1.5px solid var(--border); border-radius:var(--radius-sm); overflow:hidden;">
-              <thead>
-                <tr style="background:var(--brand); color:var(--on-brand);">
-                  <th style="padding:10px 14px; font-size:0.9rem; text-align:center;">Percent</th>
-                  <th style="padding:10px 14px; font-size:0.9rem; text-align:center;">Amount</th>
-                  <th style="padding:10px 14px; font-size:0.85rem; text-align:center;">Vertical Step</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr style="background:var(--surface);">
-                  <td style="padding:12px 14px; font-weight:800; font-size:1.15rem; color:var(--brand);">${b.percent}%</td>
-                  <td style="padding:12px 14px; font-weight:800; font-size:1.15rem;">${b.part}</td>
-                  <td style="padding:12px 14px; font-size:0.85rem; color:var(--ink-muted); font-weight:600;">Given Part</td>
-                </tr>
-                <tr style="background:var(--surface-soft); font-size:0.82rem; color:var(--brand);">
-                  <td style="padding:4px 14px; font-weight:700;">&darr; &divide; ${b.percent}</td>
-                  <td style="padding:4px 14px; font-weight:700;">&darr; &divide; ${b.percent}</td>
-                  <td style="padding:4px 14px; font-style:italic; font-size:0.8rem;">Divide by ${b.percent} vertically</td>
-                </tr>
-                <tr style="background:var(--surface);">
-                  <td style="padding:12px 14px; font-weight:800; font-size:1.15rem; color:var(--brand);">1%</td>
-                  <td style="padding:8px 14px;">
-                    <input type="number" step="any" id="t1-one-in" class="num-input" style="width:130px; font-size:1.1rem; font-weight:800; text-align:center; padding:6px 10px; border:2px solid var(--brand); border-radius:var(--radius-sm);" placeholder="1% value..." value="${isSolved ? b.onePercent : ''}" ${isSolved ? 'disabled' : ''} aria-label="1% amount">
-                  </td>
-                  <td style="padding:12px 14px; font-size:0.85rem; color:var(--brand); font-weight:700;">Find 1% (Unit Rate)</td>
-                </tr>
-                <tr style="background:var(--surface-soft); font-size:0.82rem; color:var(--brand);">
-                  <td style="padding:4px 14px; font-weight:700;">&darr; &times; 100</td>
-                  <td style="padding:4px 14px; font-weight:700;">&darr; &times; 100</td>
-                  <td style="padding:4px 14px; font-style:italic; font-size:0.8rem;">Scale up by 100 vertically</td>
-                </tr>
-                <tr style="background:var(--surface);">
-                  <td style="padding:12px 14px; font-weight:800; font-size:1.15rem; color:var(--brand);">100%</td>
-                  <td style="padding:8px 14px;">
-                    <input type="number" step="any" id="t1-whole-in" class="num-input" style="width:130px; font-size:1.1rem; font-weight:800; text-align:center; padding:6px 10px; border:2px solid var(--brand); border-radius:var(--radius-sm);" placeholder="The Whole..." value="${isSolved ? b.whole : ''}" ${isSolved ? 'disabled' : ''} aria-label="The whole amount">
-                  </td>
-                  <td style="padding:12px 14px; font-size:0.9rem; color:var(--ok-line, #16a34a); font-weight:800;">100% (The Whole)</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          <div style="display:flex; justify-content:center; margin-bottom:16px;">
-            <button type="button" class="btn btn-primary" id="t1-check-btn" style="min-width:180px;" ${isSolved ? 'disabled' : ''}>Check Bridge</button>
-          </div>
-
-          <div id="t1-fb" class="feedback-box ${isSolved ? 'show ok' : ''}">
-            ${isSolved ? `Solved! ${state.showEs ? b.explainEs : b.explain}` : ''}
-          </div>
-        `;
-
-        stage.querySelector('#t1-speak').onclick = () => speak(state.showEs ? b.promptEs : b.prompt);
-
-        if (isSolved) appendNext(document.getElementById('t1-fb'), 1, T1_BRIDGES.length, renderT1);
-
-        stage.querySelector('#t1-check-btn').onclick = () => {
-          const one = parseFloat(stage.querySelector('#t1-one-in').value);
-          const wh = parseFloat(stage.querySelector('#t1-whole-in').value);
-          const fb = document.getElementById('t1-fb');
-
-          if (Math.abs(one - b.onePercent) < 0.01 && Math.abs(wh - b.whole) < 0.1) {
-            playSound('correct');
-            state.solved1[b.id] = true;
-            fb.className = 'feedback-box show ok';
-            fb.innerHTML = `<strong>Excellent ratio table bridge thinking!</strong><br>${state.showEs ? b.explainEs : b.explain}`;
-            renderDots('t1-dots', T1_BRIDGES, state.idx1, state.solved1, (ni) => { state.idx1 = ni; renderT1(); });
-            updateProgressHeader();
-            appendNext(fb, 1, T1_BRIDGES.length, renderT1);
-          } else {
-            playSound('wrong');
-            U4Studio.wrong(1);
-            fb.className = 'feedback-box show warn';
-            fb.textContent = `In the ratio table: divide ${b.part} by ${b.percent} to find 1%. Then multiply that 1% result by 100 to get the 100% whole.`;
-          }
-          saveState();
+        const fb = stage.querySelector('#lad-fb');
+        const explain = (f) => {
+          const k = it.percent / f, m = 100 / f, a = it.part / k;
+          return {
+            en: `${it.percent}% ÷ ${num(k)} = ${f}% and ${it.part} ÷ ${num(k)} = ${num(a)}. Then ${f}% × ${num(m)} = 100% and ${num(a)} × ${num(m)} = ${num(it.whole)}.${wholeNote}`,
+            es: `${it.percent}% ÷ ${num(k)} = ${f}% y ${it.part} ÷ ${num(k)} = ${num(a)}. Luego ${f}% × ${num(m)} = 100% y ${num(a)} × ${num(m)} = ${num(it.whole)}.${wholeNoteEs}`
+          };
         };
-
-        for (const id of ['#t1-one-in', '#t1-whole-in']) {
-          stage.querySelector(id)?.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') stage.querySelector('#t1-check-btn')?.click();
+        const paint = () => {
+          stage.querySelector('#lad-model').innerHTML = ladderModel(L.model, it, pick, isSolved);
+          stage.querySelectorAll('.lad-chip').forEach((c) => {
+            const on = Number(c.dataset.f) === pick;
+            c.classList.toggle('on', on);
+            c.setAttribute('aria-pressed', on ? 'true' : 'false');
+            if (isSolved) c.disabled = true;
           });
+          for (const id of ['#lad-amt', '#lad-whole']) {
+            stage.querySelector(id)?.addEventListener('keydown', (e) => { if (e.key === 'Enter') stage.querySelector('#lad-check').click(); });
+          }
+        };
+        const show = (cls, html) => { fb.className = `feedback-box show ${cls}`; fb.innerHTML = html; };
+        paint();
+        if (isSolved) {
+          const ex = explain(pick);
+          show('ok', `Solved! ${bi(ex.en, ex.es)}`);
+          appendNext(fb, tab, L.items.length, rerender);
         }
-      }
 
-      document.getElementById('t1-prev-btn').onclick = () => {
-        state.idx1 = (state.idx1 - 1 + T1_BRIDGES.length) % T1_BRIDGES.length; renderT1();
-      };
-      document.getElementById('t1-next-btn').onclick = () => {
-        state.idx1 = (state.idx1 + 1) % T1_BRIDGES.length; renderT1();
-      };
+        stage.querySelector('#lad-speak').onclick = () => speak(isStory
+          ? (state.showEs ? `${it.facts.map((f) => f[1]).join(' ')} ${it.qEs}` : `${it.facts.map((f) => f[0]).join(' ')} ${it.q}`)
+          : (state.showEs ? it.promptEs : it.prompt));
 
-      // =========================================================================
-      // TAB 2: VISUAL TAPE CHUNKS
-      // =========================================================================
-      const T2_CHUNKS = [
-        {
-          id: 't2_1',
-          percent: 25,
-          chunks: 4,
-          chunkVal: 18,
-          whole: 72,
-          prompt: '25% of a number is 18. Find the whole.',
-          explain: 'In the ratio table, multiply both values by 4: 25% × 4 = 100% and 18 × 4 = 72.'
-        },
-        {
-          id: 't2_2',
-          percent: 20,
-          chunks: 5,
-          chunkVal: 14,
-          whole: 70,
-          prompt: '20% of a number is 14. Find the whole.',
-          explain: 'In the ratio table, multiply both values by 5: 20% × 5 = 100% and 14 × 5 = 70.'
-        },
-        {
-          id: 't2_3',
-          percent: 50,
-          chunks: 2,
-          chunkVal: 46,
-          whole: 92,
-          prompt: '50% of a number is 46. Find the whole.',
-          explain: 'In the ratio table, multiply both values by 2: 50% × 2 = 100% and 46 × 2 = 92.'
-        },
-        {
-          id: 't2_4',
-          percent: 10,
-          chunks: 10,
-          chunkVal: 8,
-          whole: 80,
-          prompt: '10% of a number is 8. Find the whole.',
-          explain: 'In the ratio table, multiply both values by 10: 10% × 10 = 100% and 8 × 10 = 80.'
-        },
-        {
-          id: 't2_5',
-          percent: 25,
-          chunks: 4,
-          chunkVal: 35,
-          whole: 140,
-          prompt: '25% of a number is 35. Find the whole.',
-          explain: 'In the ratio table, multiply both values by 4: 25% × 4 = 100% and 35 × 4 = 140.'
-        },
-        {
-          id: 't2_6',
-          percent: 20,
-          chunks: 5,
-          chunkVal: 22,
-          whole: 110,
-          prompt: '20% of a number is 22. Find the whole.',
-          explain: 'In the ratio table, multiply both values by 5: 20% × 5 = 100% and 22 × 5 = 110.'
-        },
-        {
-          id: 't2_7',
-          percent: 50,
-          chunks: 2,
-          chunkVal: 65,
-          whole: 130,
-          prompt: '50% of a number is 65. Find the whole.',
-          explain: 'In the ratio table, multiply both values by 2: 50% × 2 = 100% and 65 × 2 = 130.'
-        },
-        {
-          id: 't2_8',
-          percent: 10,
-          chunks: 10,
-          chunkVal: 16,
-          whole: 160,
-          prompt: '10% of a number is 16. Find the whole.',
-          explain: 'In the ratio table, multiply both values by 10: 10% × 10 = 100% and 16 × 10 = 160.'
-        }
-      ];
-
-      function renderT2() {
-        const c = T2_CHUNKS[state.idx2];
-        const isSolved = !!state.solved2[c.id];
-
-        renderDots('t2-dots', T2_CHUNKS, state.idx2, state.solved2, (ni) => {
-          state.idx2 = ni; renderT2();
+        stage.querySelectorAll('.lad-chip').forEach((chip) => {
+          chip.onclick = () => {
+            const f = Number(chip.dataset.f);
+            if (!options.includes(f)) {
+              playSound('wrong');
+              chip.classList.add('err');
+              setTimeout(() => chip.classList.remove('err'), 700);
+              const why = f > it.percent
+                ? bi(`${f}% is bigger than ${it.percent}%. Scale DOWN to a smaller friendly percent.`, `${f}% es mayor que ${it.percent}%. Reduce a un porcentaje útil menor.`)
+                : bi(`${it.percent}% cannot be divided evenly to get ${f}%. Try ${orList(options, 'or')}.`, `El ${it.percent}% no se puede dividir exactamente para obtener ${f}%. Prueba con ${orList(options, 'o')}.`);
+              show('warn', why);
+              return;
+            }
+            pick = f;
+            const k = it.percent / f;
+            show('ok', bi(`Good choice: ${it.percent}% ÷ ${num(k)} = ${f}%. Do the same to the amount.`, `Buena elección: ${it.percent}% ÷ ${num(k)} = ${f}%. Haz lo mismo con la cantidad.`));
+            paint();
+            stage.querySelector('#lad-amt')?.focus();
+          };
         });
 
-        const stage = document.getElementById('t2-stage-card');
-        stage.innerHTML = `
-          <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
-            <span style="font-size:0.84rem; font-weight:800; color:var(--brand);">Ratio Table ${state.idx2 + 1} of ${T2_CHUNKS.length}</span>
-            <button type="button" class="speak-btn" id="t2-speak">🔊 Read</button>
-          </div>
-          <h3 style="font-size:1.25rem; font-family:var(--font-display); color:var(--brand); margin:0 0 14px 0;">${c.prompt}</h3>
-          <p>Scale both columns by the same factor to move from ${c.percent}% to 100%.</p>
-          <div class="ratio-table-wrap" style="overflow-x:auto; margin:14px 0 18px;">
-            <table class="data-table" style="width:100%; max-width:560px; margin:0 auto; text-align:center; border-collapse:separate; border-spacing:0; border:1.5px solid var(--border); border-radius:var(--radius-sm); overflow:hidden;">
-              <thead><tr style="background:var(--brand); color:var(--on-brand);"><th scope="col" style="padding:10px 14px;">Percent</th><th scope="col" style="padding:10px 14px;">Amount</th><th scope="col" style="padding:10px 14px;">Scale factor</th></tr></thead>
-              <tbody>
-                <tr style="background:var(--surface);"><th scope="row" style="padding:12px 14px; color:var(--brand);">${c.percent}%</th><td style="padding:12px 14px;">${c.chunkVal}</td><td style="padding:12px 14px;">Given row</td></tr>
-                <tr style="background:var(--surface-soft);"><th scope="row" style="padding:8px 14px; color:var(--brand);">× ${c.chunks}</th><td style="padding:8px 14px;">× ${c.chunks}</td><td style="padding:8px 14px;">Use the same factor</td></tr>
-                <tr style="background:var(--surface);"><th scope="row" style="padding:12px 14px; color:var(--brand);">100%</th><td style="padding:8px 14px;"><label for="t2-in" class="sr-only">Whole amount at 100 percent</label><input type="number" id="t2-in" class="num-input" style="width:130px;" placeholder="Whole?" value="${isSolved ? c.whole : ''}" ${isSolved ? 'disabled' : ''}></td><td style="padding:12px 14px;">The whole</td></tr>
-              </tbody>
-            </table>
-          </div>
-          <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap; justify-content:center;">
-            <button type="button" class="btn btn-primary" id="t2-check-btn" ${isSolved ? 'disabled' : ''}>Check Ratio Table</button>
-          </div>
-          <div id="t2-fb" class="feedback-box ${isSolved ? 'show ok' : ''}">${isSolved ? `Correct! ${c.explain}` : ''}</div>
-        `;
-
-        stage.querySelector('#t2-speak').onclick = () => speak(c.prompt);
-
-        if (isSolved) appendNext(document.getElementById('t2-fb'), 2, T2_CHUNKS.length, renderT2);
-
-        stage.querySelector('#t2-check-btn').onclick = () => {
-          const val = parseFloat(stage.querySelector('#t2-in').value);
-          const fb = document.getElementById('t2-fb');
-          if (isNaN(val)) return;
-
-          if (val === c.whole) {
+        stage.querySelector('#lad-check').onclick = () => {
+          if (!pick) { show('warn', bi('First pick a friendly percent: 5%, 10%, 20%, 25% or 50%.', 'Primero elige un porcentaje útil: 5%, 10%, 20%, 25% o 50%.')); return; }
+          const aEl = stage.querySelector('#lad-amt');
+          const wEl = stage.querySelector('#lad-whole');
+          const a = parseFloat(aEl.value);
+          const w = parseFloat(wEl.value);
+          if (Number.isNaN(a) || Number.isNaN(w)) { show('warn', bi('Fill in both empty boxes.', 'Llena las dos casillas vacías.')); return; }
+          const k = it.percent / pick, m = 100 / pick;
+          const aOk = Math.abs(a - it.part / k) < 0.01;
+          const wOk = Math.abs(w - it.whole) < 0.1;
+          aEl.classList.toggle('err', !aOk); aEl.classList.toggle('ok', aOk);
+          wEl.classList.toggle('err', !wOk); wEl.classList.toggle('ok', wOk);
+          if (aOk && wOk) {
             playSound('correct');
-            state.solved2[c.id] = true;
-            fb.className = 'feedback-box show ok';
-            fb.innerHTML = `Great job! ${c.explain}`;
-            stage.querySelector('#t2-in').classList.add('ok');
-            renderDots('t2-dots', T2_CHUNKS, state.idx2, state.solved2, (ni) => { state.idx2 = ni; renderT2(); });
+            solvedMap[it.id] = true;
+            const ex = explain(pick);
+            show('ok', `<strong>${bi('Correct!', '¡Correcto!')}</strong><br>${bi(ex.en, ex.es)}`);
+            stage.querySelectorAll('.lad-chip').forEach((c) => { c.disabled = true; });
+            stage.querySelector('#lad-check').disabled = true;
+            renderDots(`t${tab}-dots`, L.items, state[`idx${tab}`], solvedMap, (ni) => { state[`idx${tab}`] = ni; rerender(); });
             updateProgressHeader();
-            appendNext(fb, 2, T2_CHUNKS.length, renderT2);
+            appendNext(fb, tab, L.items.length, rerender);
           } else {
             playSound('wrong');
-            U4Studio.wrong(2);
-            fb.className = 'feedback-box show warn';
-            fb.textContent = `Multiply both ratio-table values by ${c.chunks}. Then ${c.chunkVal} × ${c.chunks} gives the 100% whole.`;
-            stage.querySelector('#t2-in').classList.add('err');
-            setTimeout(() => stage.querySelector('#t2-in').classList.remove('err'), 800);
+            U4Studio.wrong(tab);
+            show('warn', !aOk
+              ? bi(`Divide BOTH columns by ${num(k)}: ${it.percent}% ÷ ${num(k)} = ${pick}%, so ${it.part} ÷ ${num(k)} = ?`, `Divide AMBAS columnas entre ${num(k)}: ${it.percent}% ÷ ${num(k)} = ${pick}%, así que ${it.part} ÷ ${num(k)} = ?`)
+              : bi(`Now scale up: multiply BOTH by ${num(m)}. ${pick}% × ${num(m)} = 100%, so multiply ${num(a)} by ${num(m)}.`, `Ahora escala hacia arriba: multiplica AMBOS por ${num(m)}. ${pick}% × ${num(m)} = 100%, así que multiplica ${num(a)} por ${num(m)}.`));
           }
           saveState();
         };
-
-        stage.querySelector('#t2-in')?.addEventListener('keydown', (e) => {
-          if (e.key === 'Enter') stage.querySelector('#t2-check-btn')?.click();
-        });
       }
 
-      document.getElementById('t2-prev-btn').onclick = () => {
-        state.idx2 = (state.idx2 - 1 + T2_CHUNKS.length) % T2_CHUNKS.length; renderT2();
-      };
-      document.getElementById('t2-next-btn').onclick = () => {
-        state.idx2 = (state.idx2 + 1) % T2_CHUNKS.length; renderT2();
-      };
-
-      // =========================================================================
-      // TAB 3: DIVISION EQUATION
-      // =========================================================================
-      const T3_EQUATIONS = [
-        {
-          id: 't3_1',
-          part: 24,
-          percent: 40,
-          decimal: 0.40,
-          whole: 60,
-          explain: 'Ratio Table: 24 corresponds to 40% (0.40). Whole = Part ÷ Decimal = 24 ÷ 0.40 = 60.',
-          explainEs: 'Tabla de razones: 24 corresponde al 40% (0.40). Total = Parte ÷ Decimal = 24 ÷ 0.40 = 60.'
-        },
-        {
-          id: 't3_2',
-          part: 18,
-          percent: 75,
-          decimal: 0.75,
-          whole: 24,
-          explain: 'Ratio Table: 18 corresponds to 75% (0.75). Whole = Part ÷ Decimal = 18 ÷ 0.75 = 24.',
-          explainEs: 'Tabla de razones: 18 corresponde al 75% (0.75). Total = Parte ÷ Decimal = 18 ÷ 0.75 = 24.'
-        },
-        {
-          id: 't3_3',
-          part: 45,
-          percent: 30,
-          decimal: 0.30,
-          whole: 150,
-          explain: 'Ratio Table: 45 corresponds to 30% (0.30). Whole = Part ÷ Decimal = 45 ÷ 0.30 = 150.',
-          explainEs: 'Tabla de razones: 45 corresponde al 30% (0.30). Total = Parte ÷ Decimal = 45 ÷ 0.30 = 150.'
-        },
-        {
-          id: 't3_4',
-          part: 35,
-          percent: 70,
-          decimal: 0.70,
-          whole: 50,
-          explain: 'Ratio Table: 35 corresponds to 70% (0.70). Whole = Part ÷ Decimal = 35 ÷ 0.70 = 50.',
-          explainEs: 'Tabla de razones: 35 corresponde al 70% (0.70). Total = Parte ÷ Decimal = 35 ÷ 0.70 = 50.'
-        },
-        {
-          id: 't3_5',
-          part: 8,
-          percent: 16,
-          decimal: 0.16,
-          whole: 50,
-          explain: 'Ratio Table: 8 corresponds to 16% (0.16). Whole = Part ÷ Decimal = 8 ÷ 0.16 = 50.',
-          explainEs: 'Tabla de razones: 8 corresponde al 16% (0.16). Total = Parte ÷ Decimal = 8 ÷ 0.16 = 50.'
-        },
-        {
-          id: 't3_6',
-          part: 63,
-          percent: 90,
-          decimal: 0.90,
-          whole: 70,
-          explain: 'Ratio Table: 63 corresponds to 90% (0.90). Whole = Part ÷ Decimal = 63 ÷ 0.90 = 70.',
-          explainEs: 'Tabla de razones: 63 corresponde al 90% (0.90). Total = Parte ÷ Decimal = 63 ÷ 0.90 = 70.'
-        },
-        {
-          id: 't3_7',
-          part: 52,
-          percent: 65,
-          decimal: 0.65,
-          whole: 80,
-          explain: 'Ratio Table: 52 corresponds to 65% (0.65). Whole = Part ÷ Decimal = 52 ÷ 0.65 = 80.',
-          explainEs: 'Tabla de razones: 52 corresponde al 65% (0.65). Total = Parte ÷ Decimal = 52 ÷ 0.65 = 80.'
-        },
-        {
-          id: 't3_8',
-          part: 27,
-          percent: 45,
-          decimal: 0.45,
-          whole: 60,
-          explain: 'Ratio Table: 27 corresponds to 45% (0.45). Whole = Part ÷ Decimal = 27 ÷ 0.45 = 60.',
-          explainEs: 'Tabla de razones: 27 corresponde al 45% (0.45). Total = Parte ÷ Decimal = 27 ÷ 0.45 = 60.'
-        }
-      ];
-
-      function renderT3() {
-        const eq = T3_EQUATIONS[state.idx3];
-        const isSolved = !!state.solved3[eq.id];
-        const scaleFactor = 100 / eq.percent;
-        const explain = `In the ratio table, multiply both values by ${Number(scaleFactor.toFixed(4))}: ${eq.percent}% × ${Number(scaleFactor.toFixed(4))} = 100% and ${eq.part} × ${Number(scaleFactor.toFixed(4))} = ${eq.whole}.`;
-        const explainEs = `En la tabla de razones, multiplica ambos valores por ${Number(scaleFactor.toFixed(4))}: ${eq.percent}% × ${Number(scaleFactor.toFixed(4))} = 100% y ${eq.part} × ${Number(scaleFactor.toFixed(4))} = ${eq.whole}.`;
-
-        renderDots('t3-dots', T3_EQUATIONS, state.idx3, state.solved3, (ni) => {
-          state.idx3 = ni; renderT3();
-        });
-
-        const stage = document.getElementById('t3-stage-card');
-        stage.innerHTML = `
-          <div style="display:flex; justify-content:space-between; margin-bottom:12px;">
-            <span style="font-size:0.84rem; font-weight:800; color:var(--brand);">Scale Factor ${state.idx3 + 1} of ${T3_EQUATIONS.length}</span>
-            <button type="button" class="speak-btn" id="t3-speak">🔊 Read Question</button>
-          </div>
-
-          <div style="background:var(--brand); color:var(--on-brand); border-radius:var(--radius-md); padding:18px 24px; margin-bottom:20px;">
-            <div style="font-size:0.82rem; color:var(--border); font-weight:700;">Problem</div>
-            <div style="font-size:1.5rem; font-family:var(--font-display); font-weight:700;">${eq.part} is ${eq.percent}% of what whole?</div>
-          </div>
-
-          <div style="background:var(--surface-soft); border:1.5px solid var(--border); border-radius:var(--radius-md); padding:16px; margin-bottom:20px;">
-            <div style="font-size:0.88rem; font-weight:800; color:var(--brand); margin-bottom:10px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px;">
-              <span>Equivalent Ratio Table &mdash; Scale to 100%</span>
-              <span style="font-size:0.8rem; font-weight:600; color:var(--ink-muted);">(Type directly in the boxes below)</span>
-            </div>
-
-            <table class="data-table" style="width:100%; max-width:520px; margin:0 auto; text-align:center; border-collapse:separate; border-spacing:0; border:1.5px solid var(--border); border-radius:var(--radius-sm); overflow:hidden;">
-              <thead>
-                <tr style="background:var(--brand); color:var(--on-brand);">
-                  <th style="padding:10px 14px; font-size:0.9rem; text-align:center;">Percent</th>
-                  <th style="padding:10px 14px; font-size:0.9rem; text-align:center;">Amount</th>
-                  <th style="padding:10px 14px; font-size:0.85rem; text-align:center;">Table move</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr style="background:var(--surface);">
-                  <td style="padding:12px 14px; font-weight:800; font-size:1.15rem; color:var(--brand);">${eq.percent}%</td>
-                  <td style="padding:12px 14px; font-weight:800; font-size:1.15rem;">${eq.part}</td>
-                  <td style="padding:12px 14px; font-size:0.85rem; color:var(--ink-muted); font-weight:600;">Given row</td>
-                </tr>
-                <tr style="background:var(--surface-soft); font-size:0.82rem; color:var(--brand);">
-                  <td style="padding:4px 14px; font-weight:700;">× <label for="t3-factor-in" class="sr-only">Scale factor</label><input type="number" step="any" id="t3-factor-in" class="num-input" style="width:100px; text-align:center;" placeholder="factor" value="${isSolved ? scaleFactor : ''}" ${isSolved ? 'disabled' : ''}></td>
-                  <td style="padding:4px 14px; font-weight:700;">× same factor</td>
-                  <td style="padding:4px 14px; font-style:italic; font-size:0.8rem;">Use the same factor in both columns</td>
-                </tr>
-                <tr style="background:var(--surface);">
-                  <td style="padding:12px 14px; font-weight:800; font-size:1.15rem; color:var(--brand);">100%</td>
-                  <td style="padding:8px 14px;">
-                    <input type="number" step="any" id="t3-ans-in" class="num-input" style="width:130px; font-size:1.1rem; font-weight:800; text-align:center; padding:6px 10px; border:2px solid var(--brand); border-radius:var(--radius-sm);" placeholder="The Whole..." value="${isSolved ? eq.whole : ''}" ${isSolved ? 'disabled' : ''} aria-label="The whole amount">
-                  </td>
-                  <td style="padding:12px 14px; font-size:0.9rem; color:var(--ok-line, #16a34a); font-weight:800;">The Whole</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          <div style="display:flex; justify-content:center; margin-bottom:16px;">
-            <button type="button" class="btn btn-primary" id="t3-check-btn" style="min-width:180px;" ${isSolved ? 'disabled' : ''}>Check Ratio Table</button>
-          </div>
-
-          <div id="t3-fb" class="feedback-box ${isSolved ? 'show ok' : ''}">
-            ${isSolved ? `Solved! ${state.showEs ? explainEs : explain}` : ''}
-          </div>
-        `;
-
-        stage.querySelector('#t3-speak').onclick = () => speak(`${eq.part} is ${eq.percent} percent of what whole? Use the same scale factor to move the percent and amount to 100 percent.`);
-
-        if (isSolved) appendNext(document.getElementById('t3-fb'), 3, T3_EQUATIONS.length, renderT3);
-
-        stage.querySelector('#t3-check-btn').onclick = () => {
-          const factor = parseFloat(stage.querySelector('#t3-factor-in').value);
-          const ans = parseFloat(stage.querySelector('#t3-ans-in').value);
-          const fb = document.getElementById('t3-fb');
-
-          if (Math.abs(factor - scaleFactor) < 0.02 && Math.abs(ans - eq.whole) < 0.1) {
-            playSound('correct');
-            state.solved3[eq.id] = true;
-            fb.className = 'feedback-box show ok';
-            fb.innerHTML = `<strong>Equivalent ratio table!</strong><br>${state.showEs ? explainEs : explain}`;
-            renderDots('t3-dots', T3_EQUATIONS, state.idx3, state.solved3, (ni) => { state.idx3 = ni; renderT3(); });
-            updateProgressHeader();
-            appendNext(fb, 3, T3_EQUATIONS.length, renderT3);
-          } else {
-            playSound('wrong');
-            U4Studio.wrong(3);
-            fb.className = 'feedback-box show warn';
-            fb.textContent = `In the ratio table, find the factor that changes ${eq.percent}% to 100%. Multiply ${eq.part} by that same factor to find the whole.`;
-          }
-          saveState();
-        };
-
-        for (const id of ['#t3-factor-in', '#t3-ans-in']) {
-          stage.querySelector(id)?.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') stage.querySelector('#t3-check-btn')?.click();
-          });
-        }
+      for (const tab of [1, 2, 3, 4]) {
+        const n = LADDERS[tab].items.length;
+        document.getElementById(`t${tab}-prev-btn`).onclick = () => { state[`idx${tab}`] = (state[`idx${tab}`] - 1 + n) % n; renderLadder(tab); };
+        document.getElementById(`t${tab}-next-btn`).onclick = () => { state[`idx${tab}`] = (state[`idx${tab}`] + 1) % n; renderLadder(tab); };
       }
-
-      document.getElementById('t3-prev-btn').onclick = () => {
-        state.idx3 = (state.idx3 - 1 + T3_EQUATIONS.length) % T3_EQUATIONS.length; renderT3();
-      };
-      document.getElementById('t3-next-btn').onclick = () => {
-        state.idx3 = (state.idx3 + 1) % T3_EQUATIONS.length; renderT3();
-      };
-
-      // =========================================================================
-      // TAB 4: CAFETERIA SNACKS & REAL-WORLD STORIES
-      // =========================================================================
-      const T4_STORIES = [
-        {
-          id: 't4_1',
-          ratioTable: [{ percent: 30, amount: 90, step: { en: 'Given', es: 'Dato' } }, { percent: 10, amount: 30, step: { en: '÷ 3', es: '÷ 3' } }, { percent: 100, amount: '?', step: { en: '× 10', es: '× 10' } }],
-          title: { en: "Cafeteria: Cheese Sticks", es: "Cafetería: palitos de queso" },
-          facts: [
-            { en: "In a cafeteria survey, 30% of the students chose cheese sticks.", es: "En una encuesta de la cafetería, el 30% de los estudiantes eligió palitos de queso." },
-            { en: "90 students chose cheese sticks.", es: "90 estudiantes eligieron palitos de queso." }
-          ],
-          q: { en: "How many students voted in all?", es: "¿Cuántos estudiantes votaron en total?" },
-          fields: [{
-            label: { en: "Students who voted", es: "Estudiantes que votaron" },
-            unit: { en: "students", es: "estudiantes" },
-            ans: 300,
-            wrong: {
-              27: { en: "That multiplies 90 by 0.30. 90 is the part, so divide it by the percent to find the whole.", es: "Eso multiplica 90 por 0.30. 90 es la parte, así que divídela entre el porcentaje para hallar el total." },
-              3: { en: "That divides by 30. Write 30% as a decimal (0.30) before you divide.", es: "Eso divide entre 30. Escribe 30% como decimal (0.30) antes de dividir." },
-              2700: { en: "That multiplies by 30. The whole is bigger than 90, but not that big. Divide the part by the decimal.", es: "Eso multiplica por 30. El total es mayor que 90, pero no tanto. Divide la parte entre el decimal." },
-              90: { en: "90 is the students who chose cheese sticks. That is only part of the voters.", es: "90 son los estudiantes que eligieron palitos de queso. Esa es solo una parte de los votantes." },
-              30: { en: "30 is the percent, not a number of students.", es: "30 es el porcentaje, no una cantidad de estudiantes." }
-            }
-          }],
-          hints: [
-            { en: "The part is 90. It is 30% of the whole. Write 30% as a decimal.", es: "La parte es 90. Es el 30% del total. Escribe 30% como decimal." },
-            { en: "Divide the part by the decimal: 90 ÷ 0.30 = ?", es: "Divide la parte entre el decimal: 90 ÷ 0.30 = ?" }
-          ],
-          miss: { en: "The whole is bigger than the part, so the answer must be more than 90. Divide the part by the percent, written as a decimal.", es: "El total es mayor que la parte, así que la respuesta debe ser más que 90. Divide la parte entre el porcentaje escrito como decimal." },
-          explain: { en: "90 ÷ 0.30 = 300 students voted in all.", es: "90 ÷ 0.30 = 300 estudiantes votaron en total." }
-        },
-        {
-          id: 't4_2',
-          ratioTable: [{ percent: 45, amount: 135, step: { en: 'Given', es: 'Dato' } }, { percent: 5, amount: 15, step: { en: '÷ 9', es: '÷ 9' } }, { percent: 100, amount: '?', step: { en: '× 20', es: '× 20' } }],
-          title: { en: "Cafeteria: Fruit", es: "Cafetería: fruta" },
-          facts: [
-            { en: "In a cafeteria survey, 45% of the students chose fresh fruit.", es: "En una encuesta de la cafetería, el 45% de los estudiantes eligió fruta fresca." },
-            { en: "135 students chose fruit.", es: "135 estudiantes eligieron fruta." }
-          ],
-          q: { en: "How many students took the survey?", es: "¿Cuántos estudiantes respondieron la encuesta?" },
-          fields: [{
-            label: { en: "Students in the survey", es: "Estudiantes en la encuesta" },
-            unit: { en: "students", es: "estudiantes" },
-            ans: 300,
-            wrong: {
-              60.75: { en: "That multiplies 135 by 0.45. 135 is the part, so divide it by the percent to find the whole.", es: "Eso multiplica 135 por 0.45. 135 es la parte, así que divídela entre el porcentaje para hallar el total." },
-              3: { en: "That divides by 45. Write 45% as a decimal (0.45) before you divide.", es: "Eso divide entre 45. Escribe 45% como decimal (0.45) antes de dividir." },
-              6075: { en: "That multiplies by 45. The whole is bigger than 135, but not that big. Divide the part by the decimal.", es: "Eso multiplica por 45. El total es mayor que 135, pero no tanto. Divide la parte entre el decimal." },
-              135: { en: "135 is the students who chose fruit. That is only part of the survey.", es: "135 son los estudiantes que eligieron fruta. Esa es solo una parte de la encuesta." },
-              45: { en: "45 is the percent, not a number of students.", es: "45 es el porcentaje, no una cantidad de estudiantes." }
-            }
-          }],
-          hints: [
-            { en: "The part is 135. It is 45% of the whole. Write 45% as a decimal.", es: "La parte es 135. Es el 45% del total. Escribe 45% como decimal." },
-            { en: "Divide the part by the decimal: 135 ÷ 0.45 = ?", es: "Divide la parte entre el decimal: 135 ÷ 0.45 = ?" }
-          ],
-          miss: { en: "The whole is bigger than the part, so the answer must be more than 135. Divide the part by the percent, written as a decimal.", es: "El total es mayor que la parte, así que la respuesta debe ser más que 135. Divide la parte entre el porcentaje escrito como decimal." },
-          explain: { en: "135 ÷ 0.45 = 300 students took the survey.", es: "135 ÷ 0.45 = 300 estudiantes respondieron la encuesta." }
-        },
-        {
-          id: 't4_3',
-          ratioTable: [{ percent: 25, amount: 75, step: { en: 'Given', es: 'Dato' } }, { percent: 100, amount: '?', step: { en: '× 4', es: '× 4' } }],
-          title: { en: "Cafeteria: Veggie Sticks", es: "Cafetería: palitos de verdura" },
-          facts: [
-            { en: "In a cafeteria survey, 25% of the students chose veggie sticks.", es: "En una encuesta de la cafetería, el 25% de los estudiantes eligió palitos de verdura." },
-            { en: "75 students chose veggie sticks.", es: "75 estudiantes eligieron palitos de verdura." }
-          ],
-          q: { en: "How many students took the survey?", es: "¿Cuántos estudiantes respondieron la encuesta?" },
-          fields: [{
-            label: { en: "Students in the survey", es: "Estudiantes en la encuesta" },
-            unit: { en: "students", es: "estudiantes" },
-            ans: 300,
-            wrong: {
-              18.75: { en: "That multiplies 75 by 0.25. 75 is the part, so divide it by the percent to find the whole.", es: "Eso multiplica 75 por 0.25. 75 es la parte, así que divídela entre el porcentaje para hallar el total." },
-              3: { en: "That divides by 25. Write 25% as a decimal (0.25) before you divide.", es: "Eso divide entre 25. Escribe 25% como decimal (0.25) antes de dividir." },
-              1875: { en: "That multiplies by 25. The whole is bigger than 75, but not that big. Divide the part by the decimal.", es: "Eso multiplica por 25. El total es mayor que 75, pero no tanto. Divide la parte entre el decimal." },
-              75: { en: "75 is the students who chose veggie sticks. That is only part of the survey.", es: "75 son los estudiantes que eligieron palitos de verdura. Esa es solo una parte de la encuesta." },
-              25: { en: "25 is the percent, not a number of students.", es: "25 es el porcentaje, no una cantidad de estudiantes." },
-              100: { en: "Do not add the part and the percent. Divide the part by the percent written as a decimal.", es: "No sumes la parte y el porcentaje. Divide la parte entre el porcentaje escrito como decimal." }
-            }
-          }],
-          hints: [
-            { en: "The part is 75. It is 25% of the whole. Write 25% as a decimal.", es: "La parte es 75. Es el 25% del total. Escribe 25% como decimal." },
-            { en: "Divide the part by the decimal: 75 ÷ 0.25 = ?", es: "Divide la parte entre el decimal: 75 ÷ 0.25 = ?" }
-          ],
-          miss: { en: "The whole is bigger than the part, so the answer must be more than 75. Divide the part by the percent, written as a decimal.", es: "El total es mayor que la parte, así que la respuesta debe ser más que 75. Divide la parte entre el porcentaje escrito como decimal." },
-          explain: { en: "75 ÷ 0.25 = 300 students took the survey. (Another way: 25% is 1/4, so 4 × 75 = 300.)", es: "75 ÷ 0.25 = 300 estudiantes respondieron la encuesta. (Otra forma: 25% es 1/4, así que 4 × 75 = 300.)" }
-        },
-        {
-          id: 't4_4',
-          ratioTable: [{ percent: 80, amount: 16, step: { en: 'Given', es: 'Dato' } }, { percent: 20, amount: 4, step: { en: '÷ 4', es: '÷ 4' } }, { percent: 100, amount: '?', step: { en: '× 5', es: '× 5' } }],
-          title: { en: "Math Test: Problems Done", es: "Examen de matemáticas: problemas resueltos" },
-          facts: [
-            { en: "Leo finished 16 problems on a math test.", es: "Leo terminó 16 problemas de un examen de matemáticas." },
-            { en: "Those 16 problems are 80% of the whole test.", es: "Esos 16 problemas son el 80% de todo el examen." }
-          ],
-          q: { en: "How many problems are on the whole test?", es: "¿Cuántos problemas tiene todo el examen?" },
-          fields: [{
-            label: { en: "Problems on the test", es: "Problemas en el examen" },
-            unit: { en: "problems", es: "problemas" },
-            ans: 20,
-            wrong: {
-              12.8: { en: "That multiplies 16 by 0.80. 16 is the part, so divide it by the percent to find the whole.", es: "Eso multiplica 16 por 0.80. 16 es la parte, así que divídela entre el porcentaje para hallar el total." },
-              0.2: { en: "That divides by 80. Write 80% as a decimal (0.80) before you divide.", es: "Eso divide entre 80. Escribe 80% como decimal (0.80) antes de dividir." },
-              1280: { en: "That multiplies by 80. The whole is only a little bigger than 16. Divide the part by the decimal.", es: "Eso multiplica por 80. El total es solo un poco mayor que 16. Divide la parte entre el decimal." },
-              16: { en: "16 is the problems Leo finished. That is only part of the test.", es: "16 son los problemas que Leo terminó. Esa es solo una parte del examen." },
-              80: { en: "80 is the percent, not a number of problems.", es: "80 es el porcentaje, no una cantidad de problemas." }
-            }
-          }],
-          hints: [
-            { en: "The part is 16. It is 80% of the whole. Write 80% as a decimal.", es: "La parte es 16. Es el 80% del total. Escribe 80% como decimal." },
-            { en: "Divide the part by the decimal: 16 ÷ 0.80 = ?", es: "Divide la parte entre el decimal: 16 ÷ 0.80 = ?" }
-          ],
-          miss: { en: "The whole is bigger than the part, so the answer must be more than 16. Divide the part by the percent, written as a decimal.", es: "El total es mayor que la parte, así que la respuesta debe ser más que 16. Divide la parte entre el porcentaje escrito como decimal." },
-          explain: { en: "16 ÷ 0.80 = 20 problems on the test.", es: "16 ÷ 0.80 = 20 problemas en el examen." }
-        },
-        {
-          id: 't4_5',
-          ratioTable: [{ percent: 25, amount: 15, step: { en: 'Given', es: 'Dato' } }, { percent: 100, amount: '?', step: { en: '× 4', es: '× 4' } }],
-          title: { en: "Coupon Savings", es: "Ahorro con cupón" },
-          facts: [
-            { en: "You used a coupon for 25% off a jacket.", es: "Usaste un cupón de 25% de descuento en una chaqueta." },
-            { en: "The coupon saved you $15.", es: "El cupón te ahorró $15." }
-          ],
-          q: { en: "What was the original price of the jacket?", es: "¿Cuál era el precio original de la chaqueta?" },
-          fields: [{
-            label: { en: "Original price", es: "Precio original" },
-            unit: { en: "dollars ($)", es: "dólares ($)" },
-            ans: 60,
-            wrong: {
-              3.75: { en: "That multiplies 15 by 0.25. $15 is the part, so divide it by the percent to find the whole.", es: "Eso multiplica 15 por 0.25. $15 es la parte, así que divídela entre el porcentaje para hallar el total." },
-              0.6: { en: "That divides by 25. Write 25% as a decimal (0.25) before you divide.", es: "Eso divide entre 25. Escribe 25% como decimal (0.25) antes de dividir." },
-              375: { en: "That multiplies by 25. The original price is bigger than $15, but not that big. Divide the part by the decimal.", es: "Eso multiplica por 25. El precio original es mayor que $15, pero no tanto. Divide la parte entre el decimal." },
-              45: { en: "That is the price after the coupon. The question asks for the original price, before the coupon.", es: "Ese es el precio después del cupón. La pregunta es por el precio original, antes del cupón." },
-              15: { en: "$15 is the amount you saved. That is only part of the original price.", es: "$15 es lo que ahorraste. Esa es solo una parte del precio original." },
-              25: { en: "25 is the percent, not dollars.", es: "25 es el porcentaje, no dólares." }
-            }
-          }],
-          hints: [
-            { en: "The part is $15. It is 25% of the whole. Write 25% as a decimal.", es: "La parte es $15. Es el 25% del total. Escribe 25% como decimal." },
-            { en: "Divide the part by the decimal: $15 ÷ 0.25 = ?", es: "Divide la parte entre el decimal: $15 ÷ 0.25 = ?" }
-          ],
-          miss: { en: "The whole is bigger than the part, so the answer must be more than $15. Divide the part by the percent, written as a decimal.", es: "El total es mayor que la parte, así que la respuesta debe ser más que $15. Divide la parte entre el porcentaje escrito como decimal." },
-          explain: { en: "$15 is 25% of the original price. 15 ÷ 0.25 = $60. (Another way: 25% is 1/4, so 4 × $15 = $60.)", es: "$15 es el 25% del precio original. 15 ÷ 0.25 = $60. (Otra forma: 25% es 1/4, así que 4 × $15 = $60.)" }
-        },
-        {
-          id: 't4_6',
-          ratioTable: [{ percent: 70, amount: 42, step: { en: 'Given', es: 'Dato' } }, { percent: 10, amount: 6, step: { en: '÷ 7', es: '÷ 7' } }, { percent: 100, amount: '?', step: { en: '× 10', es: '× 10' } }],
-          title: { en: "Basketball Free Throws", es: "Tiros libres de baloncesto" },
-          facts: [
-            { en: "A basketball team made 42 free throws.", es: "Un equipo de baloncesto encestó 42 tiros libres." },
-            { en: "Those 42 shots are 70% of all the free throws they tried.", es: "Esos 42 tiros son el 70% de todos los tiros libres que intentaron." }
-          ],
-          q: { en: "How many free throws did the team try?", es: "¿Cuántos tiros libres intentó el equipo?" },
-          fields: [{
-            label: { en: "Free throws tried", es: "Tiros libres intentados" },
-            unit: { en: "free throws", es: "tiros libres" },
-            ans: 60,
-            wrong: {
-              29.4: { en: "That multiplies 42 by 0.70. 42 is the part, so divide it by the percent to find the whole.", es: "Eso multiplica 42 por 0.70. 42 es la parte, así que divídela entre el porcentaje para hallar el total." },
-              0.6: { en: "That divides by 70. Write 70% as a decimal (0.70) before you divide.", es: "Eso divide entre 70. Escribe 70% como decimal (0.70) antes de dividir." },
-              2940: { en: "That multiplies by 70. The whole is bigger than 42, but not that big. Divide the part by the decimal.", es: "Eso multiplica por 70. El total es mayor que 42, pero no tanto. Divide la parte entre el decimal." },
-              42: { en: "42 is the shots the team made. That is only part of the shots they tried.", es: "42 son los tiros que el equipo encestó. Esa es solo una parte de los tiros que intentó." },
-              70: { en: "70 is the percent, not a number of shots.", es: "70 es el porcentaje, no una cantidad de tiros." }
-            }
-          }],
-          hints: [
-            { en: "The part is 42. It is 70% of the whole. Write 70% as a decimal.", es: "La parte es 42. Es el 70% del total. Escribe 70% como decimal." },
-            { en: "Divide the part by the decimal: 42 ÷ 0.70 = ?", es: "Divide la parte entre el decimal: 42 ÷ 0.70 = ?" }
-          ],
-          miss: { en: "The whole is bigger than the part, so the answer must be more than 42. Divide the part by the percent, written as a decimal.", es: "El total es mayor que la parte, así que la respuesta debe ser más que 42. Divide la parte entre el porcentaje escrito como decimal." },
-          explain: { en: "42 ÷ 0.70 = 60 free throws tried.", es: "42 ÷ 0.70 = 60 tiros libres intentados." }
-        },
-        {
-          id: 't4_7',
-          ratioTable: [{ percent: 15, amount: 36, step: { en: 'Given', es: 'Dato' } }, { percent: 5, amount: 12, step: { en: '÷ 3', es: '÷ 3' } }, { percent: 100, amount: '?', step: { en: '× 20', es: '× 20' } }],
-          title: { en: "Novel Pages Read", es: "Páginas leídas de una novela" },
-          facts: [
-            { en: "Maya read 36 pages of a novel.", es: "Maya leyó 36 páginas de una novela." },
-            { en: "Those 36 pages are 15% of the whole book.", es: "Esas 36 páginas son el 15% de todo el libro." }
-          ],
-          q: { en: "How many pages are in the whole novel?", es: "¿Cuántas páginas tiene toda la novela?" },
-          fields: [{
-            label: { en: "Pages in the novel", es: "Páginas de la novela" },
-            unit: { en: "pages", es: "páginas" },
-            ans: 240,
-            wrong: {
-              5.4: { en: "That multiplies 36 by 0.15. 36 is the part, so divide it by the percent to find the whole.", es: "Eso multiplica 36 por 0.15. 36 es la parte, así que divídela entre el porcentaje para hallar el total." },
-              2.4: { en: "That divides by 15. Write 15% as a decimal (0.15) before you divide.", es: "Eso divide entre 15. Escribe 15% como decimal (0.15) antes de dividir." },
-              540: { en: "That multiplies by 15. The whole is bigger than 36, but not that big. Divide the part by the decimal.", es: "Eso multiplica por 15. El total es mayor que 36, pero no tanto. Divide la parte entre el decimal." },
-              36: { en: "36 is the pages Maya read. That is only part of the book.", es: "36 son las páginas que Maya leyó. Esa es solo una parte del libro." },
-              15: { en: "15 is the percent, not a number of pages.", es: "15 es el porcentaje, no una cantidad de páginas." }
-            }
-          }],
-          hints: [
-            { en: "The part is 36. It is 15% of the whole. Write 15% as a decimal.", es: "La parte es 36. Es el 15% del total. Escribe 15% como decimal." },
-            { en: "Divide the part by the decimal: 36 ÷ 0.15 = ?", es: "Divide la parte entre el decimal: 36 ÷ 0.15 = ?" }
-          ],
-          miss: { en: "The whole is bigger than the part, so the answer must be more than 36. Divide the part by the percent, written as a decimal.", es: "El total es mayor que la parte, así que la respuesta debe ser más que 36. Divide la parte entre el porcentaje escrito como decimal." },
-          explain: { en: "36 ÷ 0.15 = 240 pages in the novel.", es: "36 ÷ 0.15 = 240 páginas en la novela." }
-        },
-        {
-          id: 't4_8',
-          ratioTable: [{ percent: 90, amount: 540, step: { en: 'Given', es: 'Dato' } }, { percent: 10, amount: 60, step: { en: '÷ 9', es: '÷ 9' } }, { percent: 100, amount: '?', step: { en: '× 10', es: '× 10' } }],
-          title: { en: "Concert Hall Tickets", es: "Boletos del auditorio" },
-          facts: [
-            { en: "540 tickets have been sold for a concert.", es: "Se han vendido 540 boletos para un concierto." },
-            { en: "Those tickets fill 90% of the seats in the auditorium.", es: "Esos boletos llenan el 90% de los asientos del auditorio." }
-          ],
-          q: { en: "How many seats are in the auditorium?", es: "¿Cuántos asientos tiene el auditorio?" },
-          fields: [{
-            label: { en: "Seats in the auditorium", es: "Asientos del auditorio" },
-            unit: { en: "seats", es: "asientos" },
-            ans: 600,
-            wrong: {
-              486: { en: "That multiplies 540 by 0.90. 540 is the part, so divide it by the percent to find the whole.", es: "Eso multiplica 540 por 0.90. 540 es la parte, así que divídela entre el porcentaje para hallar el total." },
-              6: { en: "That divides by 90. Write 90% as a decimal (0.90) before you divide.", es: "Eso divide entre 90. Escribe 90% como decimal (0.90) antes de dividir." },
-              48600: { en: "That multiplies by 90. The whole is only a little bigger than 540. Divide the part by the decimal.", es: "Eso multiplica por 90. El total es solo un poco mayor que 540. Divide la parte entre el decimal." },
-              540: { en: "540 is the tickets sold. That is only part of the seats.", es: "540 son los boletos vendidos. Esa es solo una parte de los asientos." },
-              90: { en: "90 is the percent, not a number of seats.", es: "90 es el porcentaje, no una cantidad de asientos." },
-              60: { en: "That is only 10% of the seats. 540 tickets fill 90% of them.", es: "Eso es solo el 10% de los asientos. Los 540 boletos llenan el 90%." }
-            }
-          }],
-          hints: [
-            { en: "The part is 540. It is 90% of the whole. Write 90% as a decimal.", es: "La parte es 540. Es el 90% del total. Escribe 90% como decimal." },
-            { en: "Divide the part by the decimal: 540 ÷ 0.90 = ?", es: "Divide la parte entre el decimal: 540 ÷ 0.90 = ?" }
-          ],
-          miss: { en: "The whole is bigger than the part, so the answer must be more than 540. Divide the part by the percent, written as a decimal.", es: "El total es mayor que la parte, así que la respuesta debe ser más que 540. Divide la parte entre el porcentaje escrito como decimal." },
-          explain: { en: "540 ÷ 0.90 = 600 seats.", es: "540 ÷ 0.90 = 600 asientos." }
-        }
-      ];
-
-      function renderT4() {
-        const s = T4_STORIES[state.idx4];
-        const isSolved = !!state.solved4[s.id];
-
-        renderDots('t4-dots', T4_STORIES, state.idx4, state.solved4, (ni) => {
-          state.idx4 = ni; renderT4();
-        });
-
-        const { fb } = U4Studio.story.card({
-          host: document.getElementById('t4-stage-card'),
-          item: s,
-          index: state.idx4,
-          count: T4_STORIES.length,
-          solved: isSolved,
-          speak,
-          showEs: () => state.showEs,
-          onMiss: () => { playSound('wrong'); saveState(); },
-          onSolve: (fbEl) => {
-            playSound('correct');
-            state.solved4[s.id] = true;
-            renderDots('t4-dots', T4_STORIES, state.idx4, state.solved4, (ni) => { state.idx4 = ni; renderT4(); });
-            updateProgressHeader();
-            appendNext(fbEl, 4, T4_STORIES.length, renderT4);
-            saveState();
-          }
-        });
-        if (isSolved) appendNext(fb, 4, T4_STORIES.length, renderT4);
-      }
-
-      document.getElementById('t4-prev-btn').onclick = () => {
-        state.idx4 = (state.idx4 - 1 + T4_STORIES.length) % T4_STORIES.length; renderT4();
-      };
-      document.getElementById('t4-next-btn').onclick = () => {
-        state.idx4 = (state.idx4 + 1) % T4_STORIES.length; renderT4();
-      };
 
       // =========================================================================
       // TAB 5: PRACTICE ARENA
@@ -1499,10 +967,11 @@
           ]
         },
       });
-      renderT1();
-      renderT2();
-      renderT3();
-      renderT4();
+      for (const tab of [1, 2, 3, 4]) {
+        const ids = new Set(LADDERS[tab].items.map((i) => i.id));
+        state[`solved${tab}`] = Object.fromEntries(Object.entries(state[`solved${tab}`] || {}).filter(([k]) => ids.has(k)));
+        renderLadder(tab);
+      }
       renderT5();
       selectTab(state.activeTab || 1);
       updateProgressHeader();
