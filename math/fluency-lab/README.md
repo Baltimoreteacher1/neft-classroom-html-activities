@@ -50,6 +50,25 @@ Every learner picks a **Talk & write help** level (Starter, Building, Growing, O
 - **Spanish stems** (`question-es.js`, `story-problems.js`): every generated question stem has a Spanish version with the same numbers; story problems carry Spanish wording. `tools/fluency-language.test.mjs` generates thousands of questions across all 88 skills and fails on any wordy stem without a Spanish rule or a changed number.
 - **Teacher**: the teacher studio's "Print the language pack" prints, for the chosen skills, the words in both languages, the frames at each level, a partner-talk task, and a teacher page that explains the levels (with WIDA ELD Standard 3 language functions, no placement).
 
+## Math Writing Studio
+
+The **Write** tab (and "Write about it" on every skill's Learn page) is a writing room for math. A learner picks an organizer, gets a fresh problem from any skill, writes one part at a time, and watches the paragraph build. Writing never changes practice evidence or mastery, and nothing is graded.
+
+- **Five organizers** (`writing-organizers.js`): Math paragraph (topic sentence, steps, because, check, closing), Test-style response (restate, answer, show your work, explain), Claim-evidence-reasoning, Compare two ways, and Find and fix the mistake. Each part has one job (say it, show it, explain why, check it, wrap up) and a colour that follows the job into the finished paragraph. Colour is always paired with the job's name. Every organizer has a worked model about a different problem.
+- **Four support levels** are the same Starter, Building, Growing and On my own as the explain card. Each part offers a sentence starter that fades with the level (level 4 shows the task only, with "Need a starter?"). Starters contain no numbers, so one can never state an answer. English and Español are a writing choice separate from the page language.
+- **Practice like the test** turns any organizer into one ruled response box with no starters or word bank, plus the four-idea checklist and two self-check boxes.
+- **Prompts** (`writing-prompts.js`) generate a new problem from the chosen skill. Claim-evidence-reasoning and find-and-fix show a classmate's answer that is either correct or a plausible slip (a slip is never labelled), so the learner decides.
+- **Checklist**: the four language moves the journal reads (math word, reason, first-then order, a check). It shows ideas the words already carry; it is not a grade.
+- **Folder, print, backup**: finished pieces (`writing-store.js`) stay on the device, print as a one-page piece, and travel in the JSON backup (`play-backup.js`). "Print a blank organizer" gives ruled paper for writing by hand.
+
+Test: `node tools/fluency-writing.test.mjs`. New learner strings need Spanish in `i18n-es-language.js`.
+
+## Explanation steps
+
+Guided steps (Learn it, the step player, live help, and "Work it with me" in practice) share one workbook-card style in `explain.css`: one idea per card, large type, a short "why" callout, and the picture directly under the words. Step wording lives in `detail-steps.js` and the generators in `problem-bank.js`: one idea per step, short sentences, number sentences instead of prose. Two-digit by two-digit multiplication splits the first factor, matching the area model beside the problem.
+
+The picture beside the steps follows the active step (`step-model-link.js`, pinned by `tools/fluency-step-model-link.test.mjs`). In the area model, the split step marks the split, each partial-product step lights its own part with a "Step n of N" tag, finished parts get a check, and the adding step lights the total with arrows up from the parts. Tapping any step shows it in the picture. Other pictures are left alone.
+
 ## Buddy and weekly goal
 
 Every learner has a buddy (no name, no photo). Six colors are free; hats, face items and back items unlock with stickers and ranks, so a buddy's look is always earned. The buddy shows on the trail strip and cheers after each game with a short message that praises thinking, never speed. A weekly goal of 2–5 practice days (Monday to Sunday) is set in the Game Room; meeting it earns a sticker. Buddy look, goal, retired flash cards, and missed-fact cards travel with the JSON backup.

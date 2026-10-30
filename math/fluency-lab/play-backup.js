@@ -3,10 +3,11 @@ import { cleanRecent, loadTrail, saveTrail } from "./fact-trail.js";
 import { cleanJournal, loadJournal, saveJournal } from "./language-journal.js";
 import { getLevel, setLevel } from "./language-settings.js";
 import { cleanRewards, loadRewards, saveRewards } from "./rewards.js";
+import { cleanPieces, loadPieces, savePieces } from "./writing-store.js";
 
 const count = (value, max = 100000) => (Number.isFinite(value) && value >= 0 ? Math.min(Math.floor(value), max) : 0);
 
-export const exportPlay = () => ({ trail: loadTrail(), rewards: loadRewards(), language: { journal: loadJournal(), level: getLevel() } });
+export const exportPlay = () => ({ trail: loadTrail(), rewards: loadRewards(), language: { journal: loadJournal(), level: getLevel() }, writing: loadPieces() });
 
 export function cleanPlay(value) {
   if (!value || typeof value !== "object") return null;
@@ -26,6 +27,8 @@ export function cleanPlay(value) {
   return {
     trail: { stations, facts, recent: cleanRecent(value.trail?.recent) },
     rewards: cleanRewards(value.rewards || {}),
+    // A backup made before the writing studio has no folder; a missing list leaves the learner's folder alone.
+    writing: Array.isArray(value.writing) ? cleanPieces(value.writing) : null,
     language: value.language && typeof value.language === "object" ? { journal: cleanJournal(value.language.journal), level: [1, 2, 3, 4].includes(value.language.level) ? value.language.level : 2 } : null,
   };
 }
@@ -34,6 +37,7 @@ export function importPlay(clean) {
   if (!clean) return;
   saveTrail(clean.trail);
   saveRewards(clean.rewards);
+  if (clean.writing) savePieces(clean.writing);
   // A backup made before the language layer has no journal; leave the learner's own journal alone.
   if (!clean.language) return;
   saveJournal(clean.language.journal);

@@ -31,6 +31,8 @@ import { mistakeCategoryLabel } from "./mistake-notes.js";
 import { runFluencySelfTest } from "./fluency-diagnostics.js";
 import { decodeMasteryReceipt, makeMasteryReceipt } from "./mastery-receipts.js";
 import { renderNumberTalkBoard } from "./number-talk-board.js";
+import { mountWriting } from "./writing-studio.js";
+import { initStepModelLink } from "./step-model-link.js";
 import { renderPrerequisiteMap } from "./prerequisite-map.js";
 import { factsReport, mountSnapshot } from "./class-snapshot.js";
 import { whyFor } from "./step-whys.js";
@@ -72,6 +74,7 @@ setLanguageProfile(activeProfile);
 let cleanupVisual = null;
 let cleanupTrail = null;
 let cleanupGames = null;
+let cleanupWriting = null;
 let pendingRestore = null;
 
 const els = {
@@ -148,6 +151,7 @@ const els = {
   path: document.querySelector("#path-view"),
   notebook: document.querySelector("#notebook-view"),
   games: document.querySelector("#games-view"),
+  write: document.querySelector("#write-view"),
   teacher: document.querySelector("#teacher-view"),
   teacherStudio: document.querySelector("#teacher-studio"),
   insight: document.querySelector("#session-insight"),
@@ -591,7 +595,7 @@ function renderLearn() {
         </div>
         <div class="tr-guide">
           <p class="tr-guide-title">Watch me solve it</p>
-          <div data-learn-steps>${stepsBlock(example.steps, 1, { id: "learn-steps" })}</div>
+          <div data-learn-steps data-total-steps="${example.steps.length}">${stepsBlock(example.steps, 1, { id: "learn-steps" })}</div>
         </div>
       </div>
       <p class="learn-watch"><strong>Watch out:</strong> ${highlightVocab(escapeHtml(skill.learn.watch))}</p>
@@ -601,6 +605,7 @@ function renderLearn() {
         <button class="primary-action" data-start-guided>Try 5 with help</button>
         <button class="primary-action" data-start-independent>Practice 10</button>
         <button class="outline-action" data-start-visual>Build it step by step</button>
+        <button class="outline-action" data-write-about>${t("Write about it")}</button>
       </div>
     </div>`;
 }
@@ -7260,6 +7265,7 @@ function showArea(view) {
     workspace: ["Practice a skill", t("Practice a skill"), "Use a model, try a strategy, and revise your thinking as you go.", t("Use a model, try a strategy, and revise your thinking as you go.")],
     path: ["My progress", t("My progress"), "See what you have practiced and what is ready to revisit.", t("See what you have practiced and what is ready to revisit.")],
     notebook: ["Fix my mistakes", t("Fix my mistakes"), "Revisit mistakes and try a related problem independently.", t("Revisit mistakes and try a related problem independently.")],
+    write: ["Math Writing Studio", t("Math Writing Studio"), "Plan with an organizer, write a paragraph, and check it like a test.", t("Plan with an organizer, write a paragraph, and check it like a test.")],
     games: ["Play with math", t("Play with math"), "Play without a timer. Use models and explain your thinking.", t("Play without a timer. Use models and explain your thinking.")],
     teacher: ["Teacher resources", t("Teacher resources"), "Plan assignments, print materials, and project math talk tools.", t("Plan assignments, print materials, and project math talk tools.")],
   }[view];
@@ -7271,8 +7277,9 @@ function showArea(view) {
     description.dataset.i18nEn = intro[2];
     description.textContent = intro[3];
   }
-  for (const [name, element] of [["library", els.library], ["workspace", els.workspace], ["path", els.path], ["notebook", els.notebook], ["games", els.games], ["teacher", els.teacher]]) element.hidden = name !== view;
+  for (const [name, element] of [["library", els.library], ["workspace", els.workspace], ["path", els.path], ["notebook", els.notebook], ["games", els.games], ["write", els.write], ["teacher", els.teacher]]) element.hidden = name !== view;
   if (view !== "games") { cleanupGames?.(); cleanupGames = null; }
+  if (view !== "write") { cleanupWriting?.(); cleanupWriting = null; }
   document.body.classList.toggle("working-on-skill", view === "workspace");
   document.body.classList.toggle("teacher-resources", view === "teacher");
   document.querySelectorAll("#hub-tabs button").forEach((button) => {
@@ -7364,6 +7371,7 @@ function openHubView(view) {
   if (view === "path") renderPath();
   if (view === "notebook") renderNotebook();
   if (view === "games") { cleanupGames?.(); cleanupGames = mountGames(els.games, { grade: state.grade, autostart: state.autoGame, assignedStop: state.autoStop, onEvidence: recordPuzzleEvidence }); state.autoGame = null; state.autoStop = null; }
+  if (view === "write") { cleanupWriting?.(); cleanupWriting = mountWriting(els.write, { grade: state.grade, skillKey: state.writeSkill, onPrint: printHtml, announce }); state.writeSkill = null; }
   if (view === "teacher") mountTeacherStudio(els.teacherStudio, {
     grade: state.grade,
     onLaunch: launchAssignment,
@@ -7382,7 +7390,7 @@ function openHubView(view) {
       mountPaperGames(host, { grade: studioGrade, stopsFor, onPrint: printHtml });
     },
   });
-  document.title = `${{ teacher: 'Teacher studio', path: 'My learning path', games: 'Game Room' }[view] || 'Mistake notebook'} | Math Fluency Lab`;
+  document.title = `${{ teacher: 'Teacher studio', path: 'My learning path', games: 'Game Room', write: 'Math Writing Studio' }[view] || 'Mistake notebook'} | Math Fluency Lab`;
   setUrl();
   document.querySelector(`#${view}-view`)?.scrollIntoView({ behavior: "smooth", block: "start" });
 }
@@ -8239,6 +8247,8 @@ document.addEventListener("click", (event) => {
     });
     return;
   }
+  const writeAbout = event.target.closest("[data-write-about]");
+  if (writeAbout && state.skill) { state.writeSkill = `${state.skill.grade}:${state.skill.id}`; openHubView("write"); return; }
   const view = event.target.closest("[data-view]");
   if (view) openHubView(view.dataset.view);
   const open = event.target.closest("[data-open-key]");
@@ -9982,11 +9992,12 @@ if (document.readyState === "loading") {
 } else {
   registerSharedSaveResume();
 }
+initStepModelLink([els.learnPanel, document.querySelector("#drill-panel")]);
 const initialSkill = initialParams.get("skill");
-if (initialSkill) openSkill(initialSkill);
+if (initialSkill && initialParams.get("view") !== "write") openSkill(initialSkill);
 renderProfiles();
 renderAssignmentBanner();
-if (["teacher", "games"].includes(initialParams.get("view"))) openHubView(initialParams.get("view"));
+if (["teacher", "games", "write"].includes(initialParams.get("view"))) { state.writeSkill = initialSkill; openHubView(initialParams.get("view")); }
 // Family launch links enter the existing adaptive flows; no parallel practice engine is created.
 if (initialParams.get("start") === "daily") openPlanned("daily", dailyPlan(state.tutor, state.grade));
 if (initialParams.get("start") === "mission") openMission();

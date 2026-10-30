@@ -20,7 +20,7 @@ function comparePlaces(a, b) {
   const at = [...px].findIndex((digit, i) => digit !== py[i]);
   if (at < 0) return [`Both numbers have the same digits in every place.`];
   const place = PLACES[width - 1 - at];
-  const steps = [`Line up the digits and start at the left, with the biggest place, because it changes the size of a number the most.`];
+  const steps = [`Line up the digits. Start at the left, the biggest place.`];
   if (at > 0) steps.push(`The digits match until the ${place} place, so look there.`);
   steps.push(`Compare the ${place} digits: ${Number(px[at])} and ${Number(py[at])}.`);
   return steps;
@@ -46,7 +46,7 @@ const BUILDERS = [
     (kind, place, n) =>
       [
         `Label the places from the right: ${PLACES.slice(0, Math.max(PLACES.indexOf(place) + 1, 2)).join(", ")}.`,
-        `Count over to the ${place} place and point at its digit in ${n}. Each place has its own name and worth.`,
+        `Count over to the ${place} place. Point at its digit in ${n}.`,
         kind.startsWith("is") ? `Say what that digit is worth in its place.` : "",
       ].filter(Boolean),
   ],
@@ -63,7 +63,7 @@ const BUILDERS = [
       `Start at ${t}.`,
       Number(m) % 60 === 0
         ? `${m} minutes is ${Number(m) / 60} hour${Number(m) === 60 ? "" : "s"}. Move the hour, keep the minutes.`
-        : `${m} minutes is half an hour. Move the minute hand halfway round the clock.`,
+        : `${m} minutes is half an hour. Move the minute hand halfway round.`,
     ],
   ],
   [
@@ -77,7 +77,7 @@ const BUILDERS = [
     /^\d+ quarters/,
     () => [
       `A quarter is 25¢, a dime is 10¢, a nickel is 5¢, and a penny is 1¢.`,
-      `Find what each kind of coin is worth, then add the values together.`,
+      `Find what each kind of coin is worth. Then add the values.`,
     ],
   ],
   [
@@ -85,7 +85,7 @@ const BUILDERS = [
     (n, place) => [
       `Find the ${place} place in ${n}.`,
       `Look at the digit just to its right.`,
-      `If that digit is 5 or more, round up. If it is 4 or less, the place stays the same.`,
+      `5 or more: round up. 4 or less: the place stays the same.`,
     ],
   ],
   [
@@ -142,7 +142,7 @@ const BUILDERS = [
     /^([\d.]+) ([+−]) ([\d.]+) = \?$/,
     (a, op) => [
       `Line up the decimal points.`,
-      `Add zeros so both numbers have the same number of decimal places.`,
+      `Add zeros so both have the same number of decimal places.`,
       `${op === "+" ? "Add" : "Subtract"} each column from right to left, regrouping when needed.`,
     ],
   ],
@@ -209,14 +209,14 @@ const BUILDERS = [
     /^([\d.]+) for (\d+) items\. How much for 1 item\?$/,
     (total, n) => [
       `A unit rate is the amount for 1 item.`,
-      `Share ${total} equally among ${n} items. That is a division.`,
+      `Share ${total} equally among ${n} items: divide.`,
     ],
   ],
   [
     /^What is (\d+)% of (\d+)\?$/,
     (p, w) => [
       `${p}% means ${p} out of every 100.`,
-      `Turn it into ${p}/100 (or a decimal), or use a benchmark like 10% or 50%.`,
+      `Write it as ${p}/100, or use a benchmark like 10% or 50%.`,
       `Multiply that by ${w}.`,
     ],
   ],
@@ -274,7 +274,7 @@ const BUILDERS = [
     /^(\d+)\^(\d+) = \?$/,
     (b, e) => [
       `The exponent ${e} says to use ${b} as a factor ${e} times.`,
-      `Write ${b} ${e} times with × between them, then multiply from left to right.`,
+      `Write ${b} ${e} times with × between them. Multiply left to right.`,
     ],
   ],
   [
@@ -290,7 +290,7 @@ const BUILDERS = [
     /^√(\d+) = \?$/,
     (n) => [
       `Ask: what number times itself makes ${n}?`,
-      `Use nearby perfect squares to estimate, then test your guess by multiplying.`,
+      `Use nearby perfect squares to estimate. Test your guess by multiplying.`,
     ],
   ],
   [
@@ -331,14 +331,14 @@ const BUILDERS = [
     (a, b) => [
       `Use a² + b² = c².`,
       `Square each leg (${a} and ${b}) and add the squares.`,
-      `Take the square root of the total to find the hypotenuse.`,
+      `Take the square root of the total. That is the hypotenuse.`,
     ],
   ],
   [
     /^A data table has x-values/,
     () => [
-      `Read the y-values from left to right and see how they change as x goes up.`,
-      `Does y mostly rise, mostly fall, or jump around? Match what you see to one of the choices.`,
+      `Read the y-values from left to right as x goes up.`,
+      `Does y mostly rise, fall, or jump around? Pick the matching choice.`,
     ],
   ],
 ];

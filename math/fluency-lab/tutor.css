@@ -731,6 +731,13 @@ button:disabled { cursor: default; opacity: .65; }
 @media (max-width: 780px) {
   .practice-visual-workspace.is-docked { display: block; }
 }
+/* The answer zone is a centred flex item whose nowrap rows were wider than a docked arena, so it spilled out of the
+   question card on both sides. Let it shrink to the card and wrap its rows instead. */
+.problem-arena .problem-question-zone,
+.problem-arena .problem-answer-zone { width: 100%; min-width: 0; max-width: 100%; }
+.problem-answer-zone .answer-input-row { flex-wrap: wrap; justify-content: center; }
+.problem-answer-zone fieldset { min-width: 0; max-width: 100%; }
+.problem-answer-zone fieldset label { flex-wrap: wrap; }
 .problem-visual-scaffold {
   margin: 1.5rem 0;
 }

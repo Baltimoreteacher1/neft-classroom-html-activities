@@ -1,0 +1,419 @@
+/* Explanation steps, redrawn as workbook cards: one idea per card, large type, the picture directly under the words.
+   Loaded after trail.css and styles.css, which each restyle .tr-steps several times; the :root/html prefix lifts these
+   rules above the older "body.working-on-skill ..." selectors so one definition wins everywhere a step list appears
+   (Learn it, the step player, live help, the side coach). */
+html:root body .tr-steps.tr-steps {
+  display: grid;
+  gap: 0.85rem;
+  counter-reset: none;
+}
+
+html:root body .tr-steps.tr-steps > li {
+  display: grid;
+  grid-template-columns: 2.6rem minmax(0, 1fr);
+  align-items: start;
+  column-gap: 0.95rem;
+  row-gap: 0.55rem;
+  padding: 1rem 1.15rem 1.05rem 1rem;
+  border: 1px solid var(--pub-rule);
+  border-left: 6px solid var(--trail, var(--pub-teal));
+  border-radius: var(--pub-radius);
+  background: #fff;
+  box-shadow: var(--pub-lift);
+  color: var(--pub-navy);
+  font-family: var(--pub-sans);
+  font-size: clamp(1.3rem, 1.05rem + 0.9vw, 1.7rem);
+  font-weight: 500;
+  line-height: 1.32;
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+html:root body .tr-steps.tr-steps > li.latest {
+  background: #fff;
+  box-shadow:
+    var(--pub-lift),
+    inset 0 0 0 2px color-mix(in srgb, var(--trail, var(--pub-teal)) 28%, transparent);
+}
+
+html:root body .tr-steps.tr-steps > li > .tr-step-num {
+  grid-row: 1;
+  width: 2.6rem;
+  height: 2.6rem;
+  margin-top: 0.1rem;
+  background: var(--pub-navy);
+  color: #fff;
+  font-family: var(--pub-serif);
+  font-size: 1.35rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+html:root body .tr-steps.tr-steps > li > :not(.tr-step-num) {
+  grid-column: 2;
+  min-width: 0;
+  margin: 0;
+}
+
+html:root body .tr-steps.tr-steps .tr-step-text {
+  display: block;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  overflow-wrap: anywhere;
+}
+
+/* The phase tag sits above the sentence in sentence case: it names the step's role, it is not a headline. */
+html:root body .tr-steps.tr-steps .tr-step-badge {
+  display: block;
+  width: fit-content;
+  margin: 0 0 0.3rem;
+  padding: 0.1rem 0.6rem;
+  border: 0;
+  border-radius: 999px;
+  background: var(--pub-teal-tint);
+  color: var(--pub-teal-ink);
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+/* A short "why": a calm callout, not italic fine print. !important is documented: trail.css and styles.css both
+   set display/margin/font-style on this node with !important. */
+html:root body .tr-steps.tr-steps .tr-step-why {
+  display: flex !important;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin: 0 !important;
+  padding: 0.55rem 0.8rem;
+  border: 0;
+  border-left: 4px solid var(--pub-amber);
+  border-radius: 10px;
+  background: var(--pub-amber-tint);
+  color: var(--pub-navy);
+  font-size: 1.02rem;
+  font-style: normal !important;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+/* Pictures: bigger, centred under the words. */
+html:root body .tr-steps.tr-steps .sv {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-self: start;
+  max-width: 100%;
+  margin: 0.15rem 0 0;
+  padding: 0.65rem 0.8rem;
+  border-radius: 12px;
+  background: var(--pub-paper);
+  font-size: 1rem;
+}
+html:root body .tr-steps.tr-steps .sv-dot {
+  width: 13px;
+  height: 13px;
+}
+html:root body .tr-steps.tr-steps .sv-array {
+  gap: 5px;
+}
+html:root body .tr-steps.tr-steps .sv-rect {
+  min-width: 11rem;
+  height: 5.2rem;
+  margin: 1.6rem 0.4rem 0.2rem 2.2rem;
+  border-width: 2px;
+  font-size: 1.15rem;
+}
+html:root body .tr-steps.tr-steps .sv-rect em {
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+html:root body .tr-steps.tr-steps .sv-rect b {
+  font-size: 1.35rem;
+}
+html:root body .tr-steps.tr-steps .sv-bar b {
+  min-height: 2.6rem;
+  font-size: 1.1rem;
+}
+html:root body .tr-steps.tr-steps .sv-hops b {
+  font-size: 1.1rem;
+}
+
+html:root body .tr-steps.tr-steps .step-audio-btn {
+  grid-column: 2;
+  justify-self: start;
+  min-width: 44px;
+  min-height: 44px;
+}
+
+/* "Your turn" boxes: large and obvious. */
+html:root body .tr-steps.tr-steps .tr-fill-row {
+  font-size: inherit;
+  gap: 0.6rem;
+}
+html:root body .tr-steps.tr-steps .tr-fill {
+  min-width: 5rem;
+  min-height: 3.2rem;
+  border: 2px solid var(--pub-navy);
+  border-radius: 10px;
+  background: #fff;
+  font-family: inherit;
+  font-size: 1.4rem;
+  font-weight: 700;
+  text-align: center;
+}
+html:root body .tr-steps.tr-steps .tr-fill:focus-visible {
+  outline: 3px solid var(--pub-amber);
+  outline-offset: 2px;
+}
+
+/* The step the learner tapped, in the step player. */
+html:root body .step-player .tr-steps.tr-steps > li.sp-active {
+  background: var(--pub-amber-tint);
+  box-shadow:
+    var(--pub-lift),
+    0 0 0 3px var(--pub-amber);
+}
+html:root body .step-player mark.sp-link {
+  padding: 0 0.2em;
+  border-radius: 0.3em;
+  background: var(--pub-amber);
+  color: var(--pub-navy);
+}
+
+html:root body .tr-step-next {
+  min-height: 3.1rem;
+  padding: 0.55rem 1.5rem;
+  border: 0;
+  border-radius: 999px;
+  background: var(--pub-navy);
+  color: #fff;
+  font-family: var(--pub-sans);
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+html:root body .tr-step-next:hover:not(:disabled) {
+  background: var(--pub-teal-ink);
+}
+html:root body .tr-step-next:focus-visible {
+  outline: 3px solid var(--pub-amber);
+  outline-offset: 3px;
+}
+
+/* The "Watch me solve it" panel and the step player frame. */
+html:root body .tr-guide {
+  padding: 1.1rem 1.2rem 1.25rem;
+}
+html:root body .tr-guide-title,
+html:root body .step-player .sp-label {
+  font-family: var(--pub-serif);
+  font-size: 1.35rem;
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--pub-navy);
+}
+html:root body .step-player {
+  padding: 1.1rem;
+  border: 1px solid var(--pub-rule);
+  border-radius: 18px;
+  background: var(--pub-paper);
+}
+html:root body .step-player .sp-problem {
+  font-size: 1.6rem;
+  font-weight: 600;
+}
+html:root body .step-player .sp-hint {
+  font-size: 1rem;
+  color: var(--pub-ink-soft);
+}
+
+@media (max-width: 560px) {
+  html:root body .tr-steps.tr-steps > li {
+    grid-template-columns: 2.1rem minmax(0, 1fr);
+    column-gap: 0.7rem;
+    padding: 0.85rem 0.8rem 0.9rem 0.75rem;
+    font-size: 1.28rem;
+  }
+  html:root body .tr-steps.tr-steps > li > .tr-step-num {
+    width: 2.1rem;
+    height: 2.1rem;
+    font-size: 1.1rem;
+  }
+  html:root body .tr-steps.tr-steps .sv-rect {
+    min-width: 8rem;
+    margin-left: 1.6rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html:root body .tr-steps.tr-steps > li,
+  html:root body .tr-step-next {
+    transition: none;
+  }
+}
+
+/* "Work it with me" in the practice coach: the same workbook card, built from .guided-step-* markup. */
+html:root body .guided-steps li {
+  display: grid;
+  grid-template-columns: 2.6rem minmax(0, 1fr);
+  column-gap: 0.95rem;
+  align-items: start;
+  margin-bottom: 0.85rem;
+  padding: 1rem 1.15rem 1.05rem 1rem;
+  border: 1px solid var(--pub-rule);
+  border-left: 6px solid var(--pub-teal);
+  border-radius: var(--pub-radius);
+  background: #fff;
+  box-shadow: var(--pub-lift);
+}
+html:root body .guided-steps li.current { border-left-color: var(--pub-navy); }
+html:root body .guided-steps li.complete .guided-step-num { background: var(--pub-teal-ink); }
+html:root body .guided-step-num {
+  width: 2.6rem;
+  height: 2.6rem;
+  background: var(--pub-navy);
+  font-family: var(--pub-serif);
+  font-size: 1.35rem;
+  font-weight: 700;
+}
+html:root body .guided-step-body { display: grid; gap: 0.55rem; min-width: 0; }
+html:root body .guided-step-body > * { margin: 0; }
+html:root body .guided-step-text {
+  margin: 0 !important; /* styles.css sets this with !important */
+  font-family: var(--pub-sans);
+  font-size: clamp(1.3rem, 1.05rem + 0.9vw, 1.7rem);
+  font-weight: 600;
+  line-height: 1.32;
+  color: var(--pub-navy);
+}
+html:root body .guided-step-badge {
+  width: fit-content;
+  margin: 0;
+  padding: 0.1rem 0.6rem;
+  border: 0;
+  border-radius: 999px;
+  background: var(--pub-teal-tint);
+  color: var(--pub-teal-ink);
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+}
+html:root body .guided-step-body .tr-step-why {
+  display: flex !important;
+  margin: 0 !important;
+  padding: 0.55rem 0.8rem;
+  border: 0;
+  border-left: 4px solid var(--pub-amber);
+  border-radius: 10px;
+  background: var(--pub-amber-tint);
+  color: var(--pub-navy);
+  font-size: 1.02rem;
+  font-style: normal !important;
+  font-weight: 500;
+}
+html:root body .guided-step-body .sv {
+  justify-self: start;
+  max-width: 100%;
+  padding: 0.65rem 0.8rem;
+  border-radius: 12px;
+  background: var(--pub-paper);
+}
+html:root body .guided-step-body .sv-dot { width: 13px; height: 13px; }
+html:root body .guided-step-body .sv-rect { min-width: 11rem; height: 5.2rem; margin: 1.6rem 0.4rem 0.2rem 2.2rem; }
+html:root body .guided-step-body .tr-fill { min-height: 3.2rem; min-width: 5rem; border: 2px solid var(--pub-navy); border-radius: 10px; font-size: 1.4rem; font-weight: 700; text-align: center; }
+@media (max-width: 560px) {
+  html:root body .guided-steps li { grid-template-columns: 2.1rem minmax(0, 1fr); column-gap: 0.7rem; padding: 0.85rem 0.8rem; }
+  html:root body .guided-step-num { width: 2.1rem; height: 2.1rem; font-size: 1.1rem; }
+}
+html:root body .guided-step-body .tr-fill-row {
+  font-size: clamp(1.3rem, 1.05rem + 0.9vw, 1.7rem);
+  font-weight: 600;
+  color: var(--pub-navy);
+}
+
+/* Worked-example picture follows the step: caption, the part being worked on, finished parts, and the total. */
+.step-caption {
+  width: fit-content;
+  max-width: 100%;
+  margin: 0 auto 0.7rem;
+  padding: 0.3rem 0.9rem;
+  border-radius: 999px;
+  background: var(--pub-navy);
+  color: #fff;
+  font-family: var(--pub-sans);
+  font-size: 1rem;
+  font-weight: 600;
+  text-align: center;
+}
+.tp-area .tp-part {
+  transition: opacity 0.25s ease, box-shadow 0.25s ease, background-color 0.25s ease;
+}
+.tp-area .tp-part.step-dim {
+  opacity: 0.42;
+}
+.tp-area .tp-part.step-focus {
+  background: var(--pub-amber-tint);
+  box-shadow: inset 0 0 0 5px var(--pub-amber);
+}
+.tp-area .tp-part.step-done::after,
+.tp-area.link-sum .tp-part::before {
+  position: absolute;
+  top: 0.25rem;
+  right: 0.45rem;
+  color: var(--pub-teal-ink);
+  font-size: 1.3rem;
+  font-weight: 800;
+  line-height: 1;
+}
+.tp-area .tp-part.step-done::after {
+  content: "✓";
+}
+.tp-area.link-split .tp-area-box {
+  box-shadow: 0 0 0 5px var(--pub-amber);
+  animation: step-pulse 1.2s ease-in-out 2;
+}
+.tp-area.link-split .tp-part + .tp-part {
+  border-left: 5px dashed var(--pub-coral);
+}
+.tp-area.link-sum .tp-part {
+  box-shadow: inset 0 -6px 0 var(--pub-teal);
+}
+.tp-area.link-sum .tp-part::before {
+  content: "↓";
+  top: auto;
+  right: 50%;
+  bottom: 0.45rem;
+  transform: translateX(50%);
+  font-size: 1.7rem;
+  color: var(--pub-navy);
+}
+.tp-live .tp-sum.step-focus {
+  padding: 0.45rem 0.8rem;
+  border-radius: 12px;
+  background: var(--pub-amber-tint);
+  box-shadow: 0 0 0 4px var(--pub-amber);
+}
+.tr-steps > li.step-linked,
+.guided-steps > li.step-linked {
+  cursor: pointer;
+}
+@keyframes step-pulse {
+  50% {
+    box-shadow: 0 0 0 9px color-mix(in srgb, var(--pub-amber) 55%, transparent);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tp-area.link-split .tp-area-box {
+    animation: none;
+  }
+  .tp-area .tp-part {
+    transition: none;
+  }
+}
+
+/* The area picture is the .sv card itself; its factor labels sit above and left of it, so the card needs room. */
+html:root body .tr-steps.tr-steps .sv.sv-rect,
+html:root body .guided-step-body .sv.sv-rect {
+  margin: 1.9rem 0.4rem 0.4rem 2.4rem;
+}

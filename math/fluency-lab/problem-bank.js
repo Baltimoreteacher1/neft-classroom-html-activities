@@ -56,13 +56,13 @@ function decimalDivisionSteps(dividend, divisor) {
   const shift = decimalPlaces(divisor);
   if (!shift) {
     return [
-      `The divisor ${divisor} is already a whole number, so no decimal point has to move. Set up long division and write the decimal point in the quotient straight above the one in ${dividend}${decimalPlaces(dividend) ? "" : ` (write ${dividend} as ${dividend}.0 to see it)`}.`,
-      "Divide one place at a time. If a remainder is left, bring down a zero and keep going.",
+      `The divisor ${divisor} is a whole number, so keep both numbers as they are. Write the decimal point in the quotient straight above the one in ${dividend}${decimalPlaces(dividend) ? "" : ` (write ${dividend} as ${dividend}.0 to see it)`}.`,
+      "Divide one place at a time. If a remainder is left, bring down a zero.",
     ];
   }
   const factor = 10 ** shift;
   return [
-    `The divisor ${divisor} has ${plural(shift, "decimal place")}. Multiply both ${dividend} and ${divisor} by ${factor} so the divisor becomes a whole number. Doing the same thing to both numbers keeps the quotient the same.`,
+    `The divisor ${divisor} has ${plural(shift, "decimal place")}. Multiply ${dividend} and ${divisor} by ${factor} so the divisor is a whole number. Both numbers change the same way, so the quotient stays the same.`,
     `Now divide as whole numbers: ${decimalText(Number(dividend) * factor, 4)} ÷ ${decimalText(Number(divisor) * factor, 4)}.`,
   ];
 }
@@ -76,7 +76,7 @@ function signedFractionSteps(op, [n1, d1], [n2, d2], worked) {
     const [mn, md] = flip ? [d2 * Math.sign(n2), Math.abs(n2)] : [n2, d2];
     return [
       ...(flip ? [`Dividing by ${text(n2, d2)} is the same as multiplying by its reciprocal: ${text(n1, d1)} × ${text(mn, md)}.`] : []),
-      `Size first, ignoring the signs: multiply the tops (${Math.abs(n1)} × ${Math.abs(mn)}) and the bottoms (${d1} × ${md}), then simplify.`,
+      `Size first, ignoring the signs: multiply the tops (${Math.abs(n1)} × ${Math.abs(mn)}) and the bottoms (${d1} × ${md}). Then simplify.`,
       `Sign next: ${sameSign ? "the signs are the same, so the answer is positive" : "the signs are different, so the answer is negative"}.`,
       worked,
     ];
@@ -85,8 +85,8 @@ function signedFractionSteps(op, [n1, d1], [n2, d2], worked) {
   const same = n1 < 0 === second[0] < 0;
   return [
     ...(op === "sub" ? [`Subtracting ${text(n2, d2)} is the same as adding its opposite: ${text(n1, d1)} + ${text(second[0], second[1])}.`] : []),
-    `${same ? "Same signs: add the sizes and keep that sign" : "Different signs: subtract the smaller size from the larger and keep the sign of the larger"}.`,
-    `Rename both fractions with a common denominator (${lcm(d1, d2)}) so the pieces are the same size, then combine the tops.`,
+    `${same ? "Same signs: add the sizes and keep that sign" : "Different signs: subtract the smaller size from the larger. Keep the larger one's sign"}.`,
+    `Rename both fractions with a common denominator (${lcm(d1, d2)}). Then combine the tops.`,
     worked,
   ];
 }
@@ -120,16 +120,16 @@ function lcmPrimeSteps(a, b, answer) {
   const counts = primes.map((p) => `${p}: ${countOf(pa, p)} in ${a}, ${countOf(pb, p)} in ${b}, keep ${Math.max(countOf(pa, p), countOf(pb, p))}`).join("; ");
   const kept = keptPrimes(a, b);
   return [
-    `Build a factor tree for ${a} and stop when every branch ends in a prime. ${line(a, pa)}`,
+    `Build a factor tree for ${a}. Stop when every branch ends in a prime. ${line(a, pa)}`,
     `Build a factor tree for ${b} the same way. ${line(b, pb)}`,
-    `For each prime, compare how many copies each number has and keep the larger count (${counts}). The primes you keep: ${factorText(kept)}, written with exponents as ${powerText(kept)}.`,
-    `Multiply the kept primes: ${multiplyText(kept)}. Check that ${a} and ${b} both divide ${answer} evenly.`,
+    `For each prime, keep the larger count of copies (${counts}). The primes you keep: ${factorText(kept)}, written with exponents as ${powerText(kept)}.`,
+    `Multiply the kept primes: ${multiplyText(kept)}. Check: ${a} and ${b} both divide ${answer} evenly.`,
   ];
 }
 
 function gcfLcmSteps(find, a, b, answer) {
   if (find === "gcf") {
-    return [`Find factor pairs for ${a}. Record the factors that divide it evenly.`, `Find factor pairs for ${b}. Record the factors that divide it evenly.`, "Compare the two factor lists. Which factors are shared?", `Choose the greatest shared factor: ${answer}. Check that it divides both numbers evenly.`];
+    return [`List the factor pairs of ${a}. A factor divides ${a} evenly.`, `List the factor pairs of ${b}.`, "Compare the two lists. Which factors are shared?", `Choose the greatest shared factor: ${answer}. Check: it divides both numbers evenly.`];
   }
   return lcmPrimeSteps(a, b, answer);
 }
@@ -166,12 +166,12 @@ export function factSteps(op, a, b, answer, strategy) {
   if (op === "sub") {
     if (b === 0) return [`Take away 0. Nothing changes.`, `${a} − 0 = ${a}`];
     if (strategy === "countBack" || (a <= 20 && b <= 2)) return [`Start at ${a}.`, `Count back ${b}: ${Array.from({ length: b }, (_, i) => a - i - 1).join(", ")}`];
-    if (a <= 20) return [`${b} + ? = ${a}`, `Count up from ${b} to ${a}: ${Array.from({ length: a - b }, (_, i) => b + i + 1).join(", ")}`, `Count how many numbers you said. That count is the missing addend.`, `${b} + ${answer} = ${a}, so ${a} − ${b} = ${answer}`];
+    if (a <= 20) return [`${b} + ? = ${a}`, `Count up from ${b} to ${a}: ${Array.from({ length: a - b }, (_, i) => b + i + 1).join(", ")}`, `Count the numbers you said. That count is the missing addend.`, `${b} + ${answer} = ${a}, so ${a} − ${b} = ${answer}`];
     let at = a;
     return friendlyJumps(a, b, -1).map((jump) => `${fmt(at)} − ${fmt(-jump)} = ${fmt((at += jump))}`);
   }
   if (op === "mul") {
-    if (small === 0) return [`Zero groups, or nothing in each group, leaves nothing.`, `${a} × ${b} = 0`];
+    if (small === 0) return [`Zero groups, or zero in each group, makes zero.`, `${a} × ${b} = 0`];
     if (small === 1) return [`Multiplying by 1 keeps the other number the same.`, `${a} × ${b} = ${big}`];
     const zerosA = String(a).match(/0*$/)[0].length;
     const zerosB = String(b).match(/0*$/)[0].length;
@@ -201,10 +201,10 @@ export function factSteps(op, a, b, answer, strategy) {
   // quotient only appears in the last steps (the old first step, "16 × 20 = 320", already stated it).
   if (answer <= 12) {
     const multiples = Array.from({ length: answer }, (_, i) => fmt(b * (i + 1)));
-    return [`${b} × ? = ${fmt(a)}`, `Count by ${b}s until you reach ${fmt(a)}: ${multiples.join(", ")}`, `Count how many numbers you said. That count is the quotient.`, `${b} × ${answer} = ${fmt(a)}, so ${fmt(a)} ÷ ${b} = ${answer}`];
+    return [`${b} × ? = ${fmt(a)}`, `Count by ${b}s until you reach ${fmt(a)}: ${multiples.join(", ")}`, `Count the numbers you said. That count is the quotient.`, `${b} × ${answer} = ${fmt(a)}, so ${fmt(a)} ÷ ${b} = ${answer}`];
   }
   const tens = Math.floor(answer / 10) * 10;
-  if (answer % 10 === 0) return [`${b} × ? = ${fmt(a)}`, `Think of ${fmt(a)} as ${fmt(a / 10)} tens, and share the tens: ${fmt(a / 10)} ÷ ${b}.`, `${fmt(a / 10)} ÷ ${b} = ${answer / 10}, so ${answer / 10} tens, and ${fmt(a)} ÷ ${b} = ${fmt(answer)}`];
+  if (answer % 10 === 0) return [`${b} × ? = ${fmt(a)}`, `Think of ${fmt(a)} as ${fmt(a / 10)} tens. Share the tens: ${fmt(a / 10)} ÷ ${b}.`, `${fmt(a / 10)} ÷ ${b} = ${answer / 10}, so ${answer / 10} tens, and ${fmt(a)} ÷ ${b} = ${fmt(answer)}`];
   return [`${b} × ? = ${fmt(a)}`, `${b} × ${fmt(tens)} = ${fmt(b * tens)}`, `${b} × ${answer - tens} = ${fmt(b * (answer - tens))}`, `${fmt(tens)} + ${answer - tens} = ${fmt(answer)}`];
 }
 
@@ -804,8 +804,8 @@ const generators = {
       const dividerMax = config.scaffolded ? 5 : 12;
       const f = yes ? pick(dividers, rng) : pick(Array.from({ length: dividerMax - 1 }, (_, i) => i + 2).filter((v) => n % v), rng);
       return yesNo(`Is ${f} a factor of ${n}?`, yes, "A factor divides the number evenly, with no remainder.", yes ? `${n} ÷ ${f} = ${n / f} with nothing left over, so ${f} is a factor of ${n}.` : `${n} ÷ ${f} leaves a remainder of ${n % f}, so ${f} is not a factor of ${n}.`, [
-        `A factor of ${n} divides it evenly, with nothing left over. So check whether ${n} ÷ ${f} comes out even.`,
-        `Another way: count up by ${f}s toward ${n} and see whether you land exactly on it.`,
+        `A factor of ${n} divides it evenly. Check whether ${n} ÷ ${f} comes out even.`,
+        `Another way: count up by ${f}s. Do you land exactly on ${n}?`,
       ]);
     }
     if (form === "isMultiple") {
@@ -814,7 +814,7 @@ const generators = {
       const n = f * randInt(2, Math.floor((config.scaffolded ? 30 : 100) / f), rng) + (yes ? 0 : randInt(1, f - 1, rng));
       return yesNo(`Is ${n} a multiple of ${f}?`, yes, `A multiple of ${f} is what you get counting by ${f}s.`, yes ? `${f} × ${n / f} = ${n}, so ${n} is a multiple of ${f}.` : `${n} is between ${f * Math.floor(n / f)} and ${f * Math.ceil(n / f)}, which are multiples of ${f}, so it is not one.`, [
         `Multiples of ${f} come from counting by ${f}s: ${f}, ${2 * f}, ${3 * f}, and so on.`,
-        `Ask whether ${n} is on that list, or check whether ${n} ÷ ${f} comes out even.`,
+        `Is ${n} on that list? Or check whether ${n} ÷ ${f} comes out even.`,
       ]);
     }
     if (form === "nthMultiple") {
@@ -823,7 +823,7 @@ const generators = {
       return problem(`What is the ${ordinal(m)} multiple of ${f}?`, f * m, {
         hint: `Count by ${f}s, or multiply ${f} by ${m}.`,
         explanation: `The ${ordinal(m)} multiple of ${f} is ${f} × ${m} = ${f * m}.`,
-        steps: [`The first multiple of ${f} is ${f} × 1. Each new multiple adds one more group of ${f}.`, `The ${ordinal(m)} multiple is ${m} jumps of ${f}. Write that as ${f} × ${m}.`, `The ${ordinal(m)} multiple of ${f} is ${f} × ${m} = ${f * m}.`],
+        steps: [`The first multiple of ${f} is ${f} × 1. Each new multiple adds ${f} more.`, `The ${ordinal(m)} multiple is ${m} jumps of ${f}. Write that as ${f} × ${m}.`, `The ${ordinal(m)} multiple of ${f} is ${f} × ${m} = ${f * m}.`],
       });
     }
     if (form === "countFactors") {
@@ -833,8 +833,8 @@ const generators = {
         hint: "List factor pairs: 1 × the number, then test 2, 3, 4, … for pairs that multiply to it.",
         explanation: `The factors of ${n} are ${all.join(", ")}, so it has ${all.length}.`,
         steps: [
-          `A factor pair multiplies to make ${n}. Start with 1 × ${n}, then test 2, 3, 4, … to see which numbers divide ${n} evenly.`,
-          "Stop when the pairs start to repeat. Count every number in the pairs, each only once.",
+          `A factor pair multiplies to make ${n}. Start with 1 × ${n}. Then test 2, 3, 4, … to see which divide ${n} evenly.`,
+          "Stop when the pairs repeat. Count each number in the pairs once.",
           `The factors of ${n} are ${all.join(", ")}, so it has ${all.length}.`,
         ],
       });
@@ -1139,7 +1139,7 @@ const generators = {
       hint: "Read x first (left/right), then y (down/up).",
       explanation: `(${x}, ${y}) is in Quadrant ${answer}.`,
       model: { type: "coordinate", points: [[x, y]], caption: "Find the point: x tells left or right, y tells down or up" },
-      steps: [`x = ${x} is ${x > 0 ? "positive, so the point is right of" : "negative, so the point is left of"} the y-axis.`, `y = ${y} is ${y > 0 ? "positive, so the point is above" : "negative, so the point is below"} the x-axis.`, "The quadrants are numbered counterclockwise from the top right: right and up, left and up, left and down, right and down.", `(${x}, ${y}) is in Quadrant ${answer}.`],
+      steps: [`x = ${x} is ${x > 0 ? "positive, so the point is right of" : "negative, so the point is left of"} the y-axis.`, `y = ${y} is ${y > 0 ? "positive, so the point is above" : "negative, so the point is below"} the x-axis.`, "Quadrants go counterclockwise from the top right: right and up, left and up, left and down, right and down.", `(${x}, ${y}) is in Quadrant ${answer}.`],
     });
   },
 
@@ -1256,7 +1256,7 @@ const generators = {
             ? "As x increases, y increases, so the association is positive."
             : type === "negative"
               ? "As x increases, y decreases, so the association is negative."
-              : "As x increases, y moves up and down without a steady direction, so there is no association.",
+              : "As x increases, y moves up and down with no steady direction. There is no association.",
         model: { type: "chain", picture: "scatter", xs: xValues, ys: yValues, prompt: "Read the points from left to right. Do they go up, go down, or neither?" },
       },
     );
