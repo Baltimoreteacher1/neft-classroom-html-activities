@@ -1492,7 +1492,13 @@ async function main() {
   const LOG_DIR = join(ROOT, ".qa-logs");
   mkdirSync(LOG_DIR, { recursive: true });
   const LOG = join(LOG_DIR, `qa-${new Date().toISOString().replace(/[:.]/g, "-")}.log`);
-  const logTo = (s) => appendFileSync(LOG, s);
+  const logTo = (s) => {
+    // Some checks clear scratch directories during cleanup. Recreate the log
+    // directory before each asynchronous result is appended so that cleanup
+    // cannot turn an otherwise completed gate into an ENOENT failure.
+    mkdirSync(LOG_DIR, { recursive: true });
+    appendFileSync(LOG, s);
+  };
   logTo(`${label}\n`);
 
   const results = new Map();
