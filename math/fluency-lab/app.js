@@ -32,6 +32,7 @@ import { runFluencySelfTest } from "./fluency-diagnostics.js";
 import { decodeMasteryReceipt, makeMasteryReceipt } from "./mastery-receipts.js";
 import { renderNumberTalkBoard } from "./number-talk-board.js";
 import { mountWriting } from "./writing-studio.js";
+import { fractionPicture } from "./fraction-picture.js";
 import { initStepModelLink } from "./step-model-link.js";
 import { renderPrerequisiteMap } from "./prerequisite-map.js";
 import { factsReport, mountSnapshot } from "./class-snapshot.js";
@@ -587,7 +588,7 @@ function renderLearn() {
   const trivial = (item) => String(item.displayAnswer) === "0" || /(^|[^\d.])0([^\d.]|$)|(^|[^\d.])1 ×|× 1([^\d.]|$)/.test(item.question);
   const example = (draws.filter((item) => !trivial(item)).length ? draws.filter((item) => !trivial(item)) : draws).reduce((best, item) => (item.steps.length > best.steps.length ? item : best));
   state.learnExample = { item: example, shown: 1 };
-  const picture = interactivePicture({ ...example.model, worked: true }) || trailPicture(example.model);
+  const picture = interactivePicture({ ...example.model, worked: true }) || trailPicture(example.model) || fractionPicture(example.question, { worked: true });
   els.learnPanel.innerHTML = `
     <div class="learn-simple" style="--trail:${getGrade(skill.grade).color}">
       <h3 class="tr-idea">${highlightVocab(escapeHtml(t(skill.learn.rule)))}</h3>
@@ -6557,7 +6558,7 @@ function mountProblemModel(show, collapsed = true) {
     `;
     if (els.toggleProblemVisual) els.toggleProblemVisual.hidden = false;
   } else {
-    const picture = interactivePicture(state.item.model) || renderInlineProblemModel(state.item.skill, state.item);
+    const picture = interactivePicture(state.item.model) || renderInlineProblemModel(state.item.skill, state.item) || fractionPicture(state.item.question);
     els.drillPanel.style.setProperty("--trail", getGrade(state.item.skill?.grade || state.grade).color);
     if (picture) {
       host.innerHTML = `<div class="tr-model">${picture}</div>`;

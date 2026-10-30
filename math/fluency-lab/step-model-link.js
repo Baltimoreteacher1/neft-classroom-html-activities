@@ -115,6 +115,33 @@ function applyGeneric(live, steps, active, total, selector) {
   live.before(caption);
 }
 
+// Fraction bars: light the bar a step talks about (by its fraction, or the renamed and result bars by the words
+// "common denominator", "new tops" and the last step); the "of a fraction" grid shows tops, bottoms or the result.
+function applyFraction(live, steps, active, total, selector) {
+  clearGeneric(live);
+  const line = stepLine(steps[active], selector);
+  const named = new Set(line.match(/\d+\/\d+/g) || []);
+  const last = active >= total - 1;
+  const rows = [...live.querySelectorAll(".fp-row")];
+  const hits = rows.filter((row) => {
+    if (named.has(row.dataset.frac) && row.dataset.role !== "r") return true;
+    if (row.dataset.role === "r") return last || named.has(row.dataset.frac);
+    if (row.dataset.role === "a2" || row.dataset.role === "b2")
+      return /common denominator|new tops|rename|same number|same size|bottom/i.test(line) && !last;
+    return false;
+  });
+  if (hits.length && hits.length < rows.length) {
+    rows.forEach((row) => row.classList.add(hits.includes(row) ? "step-focus" : "step-dim"));
+  } else hits.forEach((row) => row.classList.add("step-focus"));
+  const grid = live.querySelector(".fp-grid");
+  if (grid) grid.dataset.focus = last ? "result" : /top|numerator/i.test(line) ? "tops" : /bottom|denominator/i.test(line) ? "bottoms" : "";
+  const caption = live.ownerDocument.createElement("p");
+  caption.className = "step-caption";
+  caption.dataset.stepCaption = "";
+  caption.textContent = t("Step {n} of {total}", { n: active + 1, total });
+  live.before(caption);
+}
+
 function clearGeneric(live) {
   for (const node of live.querySelectorAll(".step-lit, .step-focus, .step-dim"))
     node.classList.remove("step-lit", "step-focus", "step-dim");
@@ -153,6 +180,7 @@ export function sync() {
     if (live.dataset.linkSignature === signature && model.querySelector("[data-step-caption]")) continue;
     live.dataset.linkSignature = signature;
     if (area) applyArea(area, steps, active, Math.max(shownTotal, count), surface.line);
+    else if (live.dataset.live === "fraction") applyFraction(live, steps, active, Math.max(shownTotal, count), surface.line);
     else applyGeneric(live, steps, active, Math.max(shownTotal, count), surface.line);
   }
 }

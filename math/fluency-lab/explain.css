@@ -537,3 +537,111 @@ html:root body .guided-step-body .sv.sv-frame {
   border-radius: 8px;
   box-shadow: 0 0 0 3px var(--pub-amber);
 }
+
+/* Fraction pictures: bars cut into equal parts, the grid for "of a fraction", and wholes cut into servings. */
+.fp {
+  display: grid;
+  gap: 0.9rem;
+}
+.fp .fp-row {
+  display: grid;
+  gap: 0.35rem;
+  padding: 0.3rem 0.4rem;
+  border-radius: 10px;
+  transition: opacity 0.25s ease, background-color 0.25s ease;
+}
+.fp .fp-label {
+  color: var(--pub-navy);
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+.fp .fp-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.fp .fp-whole {
+  display: flex;
+  flex: 1 1 9rem;
+  height: 2.2rem;
+  min-width: 9rem;
+  max-width: 24rem;
+  overflow: hidden;
+  border: 2px solid var(--pub-navy);
+  border-radius: 6px;
+  background: #fff;
+}
+.fp .fp-cell {
+  flex: 1 1 0;
+  min-width: 0;
+  border-left: 1px solid color-mix(in srgb, var(--pub-navy) 35%, transparent);
+}
+.fp .fp-cell:first-child {
+  border-left: 0;
+}
+.fp .fp-a {
+  background: var(--pub-teal);
+}
+.fp .fp-b {
+  background: var(--pub-amber);
+}
+.fp .fp-r {
+  background: var(--pub-blue);
+}
+.fp .fp-take {
+  background: repeating-linear-gradient(45deg, var(--pub-coral) 0 4px, #fff 4px 8px);
+}
+.fp .fp-first {
+  box-shadow: inset 4px 0 0 var(--pub-navy);
+}
+.fp .fp-note {
+  color: var(--pub-ink-soft);
+  font-size: 0.98rem;
+  font-weight: 500;
+}
+.fp .fp-verdict {
+  margin: 0;
+  color: var(--pub-navy);
+  font-size: 1.7rem;
+  font-weight: 700;
+}
+.fp .fp-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--cols), 1fr);
+  width: min(100%, 17rem);
+  border: 2px solid var(--pub-navy);
+  background: #fff;
+}
+.fp .fp-grid .fp-cell {
+  aspect-ratio: 1;
+  border: 1px solid color-mix(in srgb, var(--pub-navy) 35%, transparent);
+}
+.fp .fp-grid .fp-AB {
+  background: var(--pub-navy);
+}
+.fp .fp-grid[data-focus="tops"] .fp-AB,
+.fp .fp-grid[data-focus="result"] .fp-AB {
+  box-shadow: inset 0 0 0 3px var(--pub-amber);
+}
+.fp .fp-grid[data-focus="bottoms"] .fp-cell {
+  border-color: var(--pub-coral);
+}
+.fp .fp-row.step-dim {
+  opacity: 0.4;
+}
+.fp .fp-row.step-focus {
+  background: var(--pub-amber-tint);
+  box-shadow: 0 0 0 3px var(--pub-amber);
+}
+
+.fp .fp-piece {
+  box-shadow: inset 0 3px 0 var(--pub-coral), inset 0 -3px 0 var(--pub-coral);
+}
+.fp .fp-piece.fp-first {
+  box-shadow: inset 4px 0 0 var(--pub-navy), inset 0 3px 0 var(--pub-coral), inset 0 -3px 0 var(--pub-coral);
+}
+/* One whole fills the row; several wholes sit side by side at one size. */
+.fp .fp-bar:has(.fp-whole + .fp-whole) .fp-whole {
+  flex: 0 0 min(100%, 11rem);
+  min-width: 0;
+}
