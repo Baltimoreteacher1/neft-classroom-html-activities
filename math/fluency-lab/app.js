@@ -8,6 +8,8 @@ import {
   seededRandom,
   validateAnswer,
 } from "./problem-bank.js";
+import { FEEDBACK_PHASES, feedbackView, nextPhase } from "./feedback-machine.js";
+import { paintActions, paintFeedback } from "./feedback-panel.js";
 import { itemSignature } from "./mastery-model.js";
 import { adaptiveProblem, dailyPlan, difficulty, emptyTutor, evidence, feedbackFor, findSkill, localDay, missionPlan, prerequisites, prerequisiteGraph, recommendations, recordAnswer, rememberMistake, sanitizeTutor, skillForItem, skillKey as tutorSkillKey } from "./tutor-engine.js";
 import { checkupPlan, checkupSummary, recordCheckupAnswer } from "./placement.js";
@@ -127,6 +129,10 @@ const els = {
   feedback: document.querySelector("#feedback"),
   languageSlot: document.querySelector("#language-slot"),
   feedbackTitle: document.querySelector("#feedback-title"),
+  feedbackIcon: document.querySelector("#feedback-icon"),
+  feedbackBadge: document.querySelector("#feedback-badge"),
+  feedbackAnswers: document.querySelector("#feedback-answers"),
+  feedbackActions: document.querySelector("#feedback-actions"),
   feedbackCopy: document.querySelector("#feedback-copy"),
   scratchpad: document.querySelector("#scratchpad"),
   summary: document.querySelector("#session-summary"),
@@ -745,6 +751,9 @@ function nextProblem(restoredItem = null) {
   state.itemAttempts = 0;
   state.itemDone = false;
   state.firstAnswerCorrect = null;
+  state.fbPhase = "idle";
+  state.lastSubmitted = "";
+  if (els.feedbackActions) els.feedbackActions.hidden = true;
   if (els.answerResultStatus) {
     els.answerResultStatus.hidden = true;
     els.answerResultStatus.textContent = "";
@@ -6699,7 +6708,8 @@ function renderStrategyTagPicker() {
 
 function submitAnswer(value) {
   if (!state.item || !state.session || state.session.finished) return;
-  if (!String(value).trim()) { showFeedback("Enter an answer", "Type an answer before checking, or open a strategy hint.", "try"); return; }
+  if (!String(value).trim()) { showFeedback("Enter an answer", t("Type an answer before checking, or open a strategy hint."), "try", "try", "empty"); return; }
+  state.lastSubmitted = String(value).trim();
 
   if (state.isFixing) {
     const isFixed = validateAnswer(value, state.item);
@@ -6716,10 +6726,12 @@ function submitAnswer(value) {
         state.session.revised = (state.session.revised || 0) + 1;
         updateSessionHeader();
       }
-      showFeedback("Answer revised", t("Your revised answer is a useful step. It does not count as an independent check. Try the new problem next."), "try");
+      sendFeedback("revise-right");
+      showFeedback("Answer revised", t("Your revised answer is a useful step. It does not count as an independent check. Try the new problem next."), "try", "try", "revised");
       return;
     } else {
-      showFeedback("Keep trying!", "Almost! Review the steps above carefully and try one more time.", "try", "incorrect");
+      sendFeedback("revise-wrong");
+      showFeedback("Keep trying!", t("Almost! Review the steps above carefully and try one more time."), "try", "incorrect", "revealed");
       els.answerInput.select();
       return;
     }
@@ -6759,7 +6771,7 @@ function submitAnswer(value) {
   }
   if (state.initialSupport && state.itemAttempts < 3) {
     const nextStep = revealGuidedStep() || guidedStepContent().at(-1);
-    showFeedback("Let's use the next step", `${feedbackFor(state.item.skill, state.item, value)} ${nextStep.copy}`, "try", "incorrect");
+    showFeedback("Let's use the next step", `${feedbackFor(state.item.skill, state.item, value)} ${nextStep.copy}`, "try", "incorrect", sendFeedback(state.fbPhase === "idle" ? "wrong" : "wrong-again"));
     addInstructionalChoices();
     saveActiveSession();
     if (!state.item.choices) els.answerInput.select();
@@ -6770,9 +6782,9 @@ function submitAnswer(value) {
     const diagnostic = state.tutor.mistakes.find((entry) => entry.key === tutorSkillKey(state.item.skill) && entry.question === state.item.question && !entry.resolvedAt);
     if (diagnostic?.misconceptionCode) {
       const label = mistakeCategoryLabel(diagnostic.misconceptionCode);
-      if (label) showFeedback("Let’s check the idea", `${label}. ${nudge}`, "try", "incorrect");
-      else showFeedback("Try once more", nudge, "try", "incorrect");
-    } else showFeedback("Try once more", nudge, "try", "incorrect");
+      if (label) showFeedback("Let’s check the idea", `${label}. ${nudge}`, "try", "incorrect", sendFeedback("wrong"));
+      else showFeedback("Try once more", nudge, "try", "incorrect", sendFeedback("wrong"));
+    } else showFeedback("Try once more", nudge, "try", "incorrect", sendFeedback("wrong"));
     addInstructionalChoices();
     els.repair.hidden = false;
     saveActiveSession();
@@ -6831,7 +6843,9 @@ function finalizeProblem(correct, { unsure = false } = {}) {
     } else {
       title = "Lightning Recall! 🦁⚡";
     }
-    showFeedback(title, copy, isRevision ? "try" : "correct");
+    const phase = isRevision ? "revised" : sendFeedback("right", { independent: !assisted });
+    showFeedback(title, copy, isRevision ? "try" : "correct", isRevision ? "try" : "correct", phase);
+    paintActions(els, []);
     if (els.fixAnswerBtn) els.fixAnswerBtn.hidden = true;
   } else {
     const lostStreak = session.mode === "streak" && session.streak > 0;
@@ -6850,7 +6864,8 @@ function finalizeProblem(correct, { unsure = false } = {}) {
         ? "Incorrect — new streak starts now"
         : "Incorrect — review your thinking";
     }
-    showFeedback(title, copy, "incorrect");
+    showFeedback(title, copy, "incorrect", "incorrect", sendFeedback("wrong-final"));
+    paintActions(els, []);
     if (els.fixAnswerBtn && session.mode !== "streak" && session.mode !== "sprint") {
       els.fixAnswerBtn.hidden = false;
     }
@@ -6898,6 +6913,7 @@ function finalizeProblem(correct, { unsure = false } = {}) {
   els.hintButton.hidden = true;
   els.skip.hidden = true;
   els.nextButton.hidden = false;
+  state.settledAt = performance.now();
   els.nextButton.textContent = session.answered >= session.target || streakComplete(session) ? "Finish set" : "Next problem";
   updateSessionHeader();
   saveActiveSession();
@@ -7049,14 +7065,44 @@ function renderTransferChallengeButton(item) {
   `;
 }
 
-function showFeedback(title, copy, type, resultType = type) {
+// What the learner typed or picked, and the plain-text answer key, for the feedback panel's answer lines.
+function expectedAnswerText(item = state.item) {
+  const answer = String(item?.answers?.[0] ?? "");
+  return item?.unit && answer && !answer.includes(item.unit) ? `${answer} ${item.unit}` : answer;
+}
+
+// Sends an event to the shared feedback machine and returns the phase the panel should show. A duplicate
+// submission is not accepted and leaves the phase where it was.
+function sendFeedback(event, options) {
+  const next = nextPhase(state.fbPhase || "idle", event, options);
+  if (next.accepted) state.fbPhase = next.phase;
+  return state.fbPhase;
+}
+
+function feedbackContext() {
+  const steps = guidedStepContent();
+  return {
+    submitted: state.lastSubmitted,
+    expected: expectedAnswerText(),
+    reveal: state.session?.mode !== "diagnostic",
+    hintAvailable: !els.hintButton.hidden,
+    stepsAvailable: steps.length > 0 && state.guidedStepsShown < steps.length,
+  };
+}
+
+function showFeedback(title, copy, type, resultType = type, phase = null) {
   els.feedback.hidden = false;
   els.feedback.dataset.type = type;
-  const heading = resultType === "incorrect" && !/^incorrect\b/i.test(title)
-    ? `Incorrect — ${title}`
-    : resultType === "correct" && !/^correct\b/i.test(title)
-      ? `Correct — ${title}`
-      : title;
+  const view = phase ? feedbackView(phase, feedbackContext()) : null;
+  if (view) paintFeedback(els, view);
+  else {
+    els.feedbackIcon.replaceChildren();
+    els.feedbackBadge.hidden = true;
+    els.feedbackAnswers.hidden = true;
+    delete els.feedback.dataset.tone;
+    delete els.feedback.dataset.phase;
+  }
+  const heading = view ? view.heading : title;
   els.feedbackTitle.textContent = heading;
   if (els.answerResultStatus) {
     const assisted = resultType === "correct" && title === t("Good strategy work");
@@ -7084,6 +7130,16 @@ function showFeedback(title, copy, type, resultType = type) {
   }
   if (type === "correct" || type === "incorrect") renderLanguageSlot(type === "correct");
   if (type === "correct") chime("good");
+  if (view && phase !== "empty") settleOnFeedback(phase);
+}
+
+// The result must be on screen when it appears. A settled problem moves keyboard focus to Next, which ignores
+// clicks for a moment, so Enter pressed twice cannot skip the result.
+const prefersReducedMotion = () => Boolean(globalThis.matchMedia?.("(prefers-reduced-motion: reduce)").matches);
+
+function settleOnFeedback(phase) {
+  els.feedback.scrollIntoView?.({ block: "nearest", behavior: prefersReducedMotion() ? "auto" : "smooth" });
+  if (["correct", "assisted", "revealed", "revised"].includes(phase) && !els.nextButton.hidden) els.nextButton.focus({ preventScroll: true });
 }
 
 // The explain card sits beside the feedback, not inside it: the feedback is a live region, and a screen reader would
@@ -7998,7 +8054,7 @@ function saveActiveSession() {
   const snapshot = { version: 2, grade: state.grade, skillId: state.skill?.id || null, session, item: state.item, itemDone: state.itemDone,
     itemAttempts: state.itemAttempts, firstAnswerCorrect: state.firstAnswerCorrect, hintBeforeFirst: state.hintBeforeFirst, initialSupport: state.initialSupport,
     guidedStepsShown: state.guidedStepsShown, assignment: state.assignment, recentQuestions: state.recentQuestions,
-    feedback: els.feedback.hidden ? null : { title: els.feedbackTitle.textContent, copy: els.feedbackCopy.textContent, type: els.feedback.dataset.type } };
+    feedback: els.feedback.hidden ? null : { title: els.feedbackTitle.textContent, copy: els.feedbackCopy.textContent, type: els.feedback.dataset.type, phase: state.fbPhase || "idle", submitted: state.lastSubmitted || "" } };
   writeLocal(profileKey(SESSION_KEY, activeProfile), snapshot);
   saveProgress();
 }
@@ -8026,7 +8082,12 @@ function resumePractice(saved = loadJson(SESSION_KEY, null)) {
     state.itemAttempts = saved.itemAttempts || 0; state.firstAnswerCorrect = saved.firstAnswerCorrect; state.hintBeforeFirst = saved.hintBeforeFirst;
     state.initialSupport = saved.initialSupport; state.guidedStepsShown = saved.guidedStepsShown;
     renderGuidedCoach();
-    if (saved.feedback) showFeedback(saved.feedback.title, saved.feedback.copy, saved.feedback.type);
+    if (saved.feedback) {
+      const phase = FEEDBACK_PHASES.includes(saved.feedback.phase) && saved.feedback.phase !== "idle" ? saved.feedback.phase : null;
+      state.fbPhase = phase || "idle";
+      state.lastSubmitted = String(saved.feedback.submitted || "").slice(0, 120);
+      showFeedback(saved.feedback.title, saved.feedback.copy, saved.feedback.type, saved.feedback.type, phase);
+    }
     saveActiveSession();
   }
   setUrl(); announce("Your saved practice is ready.");
@@ -8212,7 +8273,35 @@ els.hintButton.addEventListener("click", () => {
   saveActiveSession();
 });
 
-els.nextButton.addEventListener("click", nextProblem);
+// "Try again", "Show hint" and "See worked example" under a not-quite answer. Each reuses the control the page
+// already has, so there is one hint path and one steps path.
+els.feedbackActions.addEventListener("click", (event) => {
+  const id = event.target.closest("[data-feedback-action]")?.dataset.feedbackAction;
+  if (!id || !state.item || state.itemDone) return;
+  if (id === "try-again") {
+    (state.item.choices ? els.choiceAnswers.querySelector("button:not([disabled])") : els.answerInput)?.focus();
+    if (!state.item.choices) els.answerInput.select();
+    return;
+  }
+  if (id === "hint" && !els.hintButton.hidden) els.hintButton.click();
+  if (id === "worked") {
+    while (revealGuidedStep());
+    els.guidedSteps.scrollIntoView?.({ block: "center", behavior: prefersReducedMotion() ? "auto" : "smooth" });
+    announce(t("Worked example opened."));
+    saveActiveSession();
+  }
+  paintActions(els, feedbackView(state.fbPhase, feedbackContext())?.actions || []);
+});
+
+// Next takes the place of Check, so a double click (or a held Enter) on Check would otherwise skip the result it
+// just earned. Only real user input is held back: the second click of a double click, and a key press that lands
+// within SETTLE_MS of the result.
+const SETTLE_MS = 600;
+els.nextButton.addEventListener("click", (event) => {
+  const tooSoon = performance.now() - (state.settledAt || 0) < SETTLE_MS;
+  if (event.isTrusted && (event.detail > 1 || (event.detail === 0 && tooSoon))) return;
+  nextProblem();
+});
 els.guidedSteps.addEventListener("fluency-fill-solved", () => renderGuidedCoach());
 els.guidedNextStep.addEventListener("click", () => {
   const step = revealGuidedStep();

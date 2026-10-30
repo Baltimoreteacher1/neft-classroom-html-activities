@@ -1,6 +1,17 @@
 // Spanish for the language layer: the word strip, Spanish peek, explain card, math journal and language levels.
 // English text is the key, like i18n-es.js, and the two tables are merged there.
 export const ES_LANGUAGE = {
+  "Correct answer": "Respuesta correcta",
+  "You got it on your own.": "Lo lograste por tu cuenta.",
+  "You got it with help. A fresh problem checks it on your own.": "Lo lograste con ayuda. Un problema nuevo muestra si puedes hacerlo por tu cuenta.",
+  "Not quite. Let's work through it.": "Casi. Vamos a resolverlo paso a paso.",
+  "Show hint": "Mostrar pista",
+  "See worked example": "Ver un ejemplo resuelto",
+  "A revised answer is a useful step. It does not count as an independent check.": "Una respuesta corregida es un buen paso. No cuenta como una comprobación independiente.",
+  "Add an answer first.": "Escribe una respuesta primero.",
+  "Type an answer before checking, or open a strategy hint.": "Escribe una respuesta antes de comprobar, o abre una pista de estrategia.",
+  "Almost! Review the steps above carefully and try one more time.": "¡Casi! Revisa los pasos de arriba con cuidado e inténtalo una vez más.",
+  "Worked example opened.": "Se abrió el ejemplo resuelto.",
   "Math talk": "Conversación matemática",
   "{n} explanations written and {w} different math words so far.": "Hasta ahora: {n} explicaciones escritas y {w} palabras de matemáticas distintas.",
   "Explaining in any language is real math thinking. Try this starter together, in Spanish or English: “I know ___ because ___.”": "Explicar en cualquier idioma es pensar de verdad en matemáticas. Prueben juntos esta frase para empezar, en español o en inglés: «Sé que ___ porque ___».",
