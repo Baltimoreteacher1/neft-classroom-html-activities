@@ -11,7 +11,7 @@
  * The block between the build markers is written by tools/sync-access-shell.mjs; do not edit it by hand.
  */
 /* build:begin */
-const BUILD_HASH = "25e85dad8be5";
+const BUILD_HASH = "f5120ecaaa7e";
 const PRECACHE_CORE = [
   "/access-practice-lab/library.css?v=159952795a3e",
   "/access-practice-lab/studio.css?v=28d71fd235dd",
@@ -21,7 +21,7 @@ const PRECACHE_CORE = [
   "/access-practice-lab/classroom-studio.css?v=9668bf1c9d32",
   "/access-practice-lab/vocabulary.css?v=6304fc492f10",
   "/access-practice-lab/rehearsal.css?v=42b55b2b213a",
-  "/access-practice-lab/ds.css?v=808fe798267c",
+  "/access-practice-lab/ds.css?v=c342a6225f47",
   "/access-practice-lab/home.css?v=24f72d64ede6",
   "/access-practice-lab/activity.css?v=cfd12a6a178c",
   "/access-practice-lab/room.css?v=c08f2daa7ca0",
@@ -84,7 +84,7 @@ const PRECACHE_CORE = [
   "/access-practice-lab/src/main.js?v=6fc88ab42486",
   "/access-practice-lab/src/media.js?v=4d0d596071cf",
   "/access-practice-lab/src/multilingual.js?v=d0b46fb38de3",
-  "/access-practice-lab/src/nav.js?v=6653aff44a74",
+  "/access-practice-lab/src/nav.js?v=2d1c91843875",
   "/access-practice-lab/src/paper-passport.js?v=4e74d1041708",
   "/access-practice-lab/src/postcard-code.js?v=ef2881c1ee81",
   "/access-practice-lab/src/postcard-store.js?v=af17944635b2",

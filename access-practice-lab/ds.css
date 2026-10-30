@@ -1043,8 +1043,37 @@ details > summary + * {
 }
 
 /* ── responsive chrome ─────────────────────────────────────────────────── */
+/* Expedition buttons stay on the top row at every width; the other links give way to the menu first. */
+.top-expedition {
+  border: 2px solid var(--brand);
+  color: var(--brand-deep);
+  margin-inline-start: 0.35rem;
+}
+@media (max-width: 1759px) {
+  .lab-tools > .top-link[data-tier="low"] {
+    display: none;
+  }
+}
+@media (max-width: 1099px) {
+  .top-expedition {
+    padding-inline: 0.65rem;
+  }
+  .top-expedition > span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+}
+@media (max-width: 559px) {
+  .lab-tools > .top-expedition {
+    display: none;
+  }
+}
 @media (max-width: 1320px) {
-  .lab-tools > .top-link {
+  .lab-tools > .top-link:not(.top-expedition) {
     display: none;
   }
   .menu-compact {

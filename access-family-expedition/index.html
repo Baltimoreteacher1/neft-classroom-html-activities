@@ -1,0 +1,841 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta
+      name="description"
+      content="A short, bilingual family adventure through the ACCESS Practice Lab. Four stops, about 12 minutes, on any phone, tablet or computer. Aventura familiar bilingüe en inglés y español."
+    />
+    <meta name="theme-color" content="#17324d" />
+    <title>Family Adventure | Aventura familiar</title>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 36'%3E%3Crect width='36' height='36' rx='11' fill='%2317324d'/%3E%3Cpath d='m18 5 3.5 9.5L31 18l-9.5 3.5L18 31l-3.5-9.5L5 18l9.5-3.5Z' fill='%23ffce5b'/%3E%3C/svg%3E"
+    />
+    <style>
+      :root {
+        --navy: #17324d;
+        --ink: #1d2b38;
+        --muted: #4a5d6e;
+        --line: #c2d2df;
+        --paper: #f4f8fb;
+        --card: #fff;
+        --gold: #ffce5b;
+        --accent: #17324d;
+        --tint: #e8f0f7;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html {
+        -webkit-text-size-adjust: 100%;
+      }
+      body {
+        margin: 0;
+        background: var(--paper);
+        color: var(--ink);
+        font:
+          18px/1.55 system-ui,
+          -apple-system,
+          "Segoe UI",
+          Roboto,
+          "Helvetica Neue",
+          Arial,
+          sans-serif;
+      }
+      a {
+        color: inherit;
+      }
+      h1,
+      h2,
+      p {
+        margin: 0;
+      }
+      h1 {
+        font-size: clamp(28px, 7vw, 42px);
+        line-height: 1.15;
+        color: var(--navy);
+      }
+      h2 {
+        font-size: clamp(21px, 5vw, 26px);
+        line-height: 1.25;
+        color: var(--navy);
+      }
+      .es {
+        display: block;
+        font-weight: 500;
+        color: var(--muted);
+        margin-top: 2px;
+      }
+      .es::before {
+        content: none;
+      }
+      button,
+      .btn {
+        font: inherit;
+        font-weight: 700;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 2px;
+        min-height: 56px;
+        padding: 12px 20px;
+        border-radius: 14px;
+        border: 2px solid var(--navy);
+        background: var(--card);
+        color: var(--navy);
+        text-decoration: none;
+        text-align: center;
+        cursor: pointer;
+        width: 100%;
+        line-height: 1.3;
+      }
+      button .es,
+      .btn .es {
+        font-weight: 600;
+        color: inherit;
+        opacity: 0.85;
+        margin: 0;
+      }
+      button:focus-visible,
+      .btn:focus-visible,
+      a:focus-visible,
+      [tabindex]:focus-visible {
+        outline: 4px solid #ffb300;
+        outline-offset: 3px;
+      }
+      .primary {
+        background: var(--navy);
+        color: #fff;
+      }
+      .quiet {
+        border-color: transparent;
+        background: transparent;
+        text-decoration: underline;
+        text-underline-offset: 4px;
+        font-weight: 600;
+        min-height: 48px;
+        width: auto;
+      }
+      header {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px 14px;
+        max-width: 760px;
+        margin: auto;
+        padding: 14px 16px;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 800;
+        color: var(--navy);
+        font-size: 17px;
+        text-decoration: none;
+      }
+      .brand svg {
+        flex: none;
+      }
+      .head-actions {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px;
+      }
+      .head-actions button,
+      .head-actions a {
+        width: auto;
+        min-height: 48px;
+        padding: 8px 14px;
+        font-size: 15px;
+        border-width: 1px;
+        flex-direction: row;
+      }
+      .lang {
+        display: flex;
+        gap: 0;
+        border: 2px solid var(--navy);
+        border-radius: 14px;
+        overflow: hidden;
+        background: #fff;
+      }
+      .lang button {
+        border: 0;
+        border-radius: 0;
+        width: auto;
+        min-height: 48px;
+        padding: 8px 14px;
+        font-size: 16px;
+        background: #fff;
+      }
+      .lang button[aria-pressed="true"] {
+        background: var(--navy);
+        color: #fff;
+      }
+      main {
+        max-width: 760px;
+        margin: auto;
+        padding: 8px 16px 40px;
+        outline: none;
+      }
+      main:focus-visible {
+        outline: none;
+      }
+      .card {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 22px;
+        padding: 22px 20px;
+        box-shadow: 0 6px 24px #17324d14;
+      }
+      .stack {
+        display: grid;
+        gap: 14px;
+      }
+      .lead {
+        font-size: 20px;
+      }
+      .eyebrow {
+        display: inline-block;
+        background: var(--tint);
+        color: var(--accent);
+        font-weight: 800;
+        font-size: 15px;
+        padding: 5px 13px;
+        border-radius: 30px;
+      }
+      .grades {
+        display: grid;
+        gap: 12px;
+        grid-template-columns: 1fr;
+      }
+      .grade {
+        align-items: flex-start;
+        text-align: left;
+        padding: 16px 18px;
+        min-height: 84px;
+      }
+      .grade strong {
+        font-size: 21px;
+      }
+      .dots {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+      .dots li {
+        flex: 1;
+        height: 12px;
+        border-radius: 8px;
+        background: #d5e1ea;
+      }
+      .dots li.done {
+        background: #1fa6a2;
+      }
+      .dots li.now {
+        background: var(--navy);
+      }
+      .stoplabel {
+        display: grid;
+        gap: 6px;
+        justify-items: start;
+      }
+      .skill {
+        font-size: 24px;
+        color: var(--accent);
+        line-height: 1.2;
+      }
+      .skill .es {
+        font-size: 18px;
+      }
+      .stophead {
+        display: flex;
+        gap: 16px;
+        align-items: center;
+      }
+      .bigicon {
+        flex: none;
+        width: 76px;
+        height: 76px;
+        border-radius: 22px;
+        background: var(--tint);
+        color: var(--accent);
+        display: grid;
+        place-items: center;
+      }
+      .bigicon svg {
+        width: 44px;
+        height: 44px;
+      }
+      .steps {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: grid;
+        gap: 12px;
+        counter-reset: s;
+      }
+      .steps li {
+        display: flex;
+        gap: 14px;
+        align-items: flex-start;
+        counter-increment: s;
+      }
+      .steps li::before {
+        content: counter(s);
+        flex: none;
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        background: var(--accent);
+        color: #fff;
+        font-weight: 800;
+        display: grid;
+        place-items: center;
+      }
+      .ask {
+        background: #fff6de;
+        border: 1px solid #ddc98c;
+        border-radius: 16px;
+        padding: 14px 16px;
+      }
+      .ask strong {
+        color: #6b4a00;
+      }
+      .note {
+        font-size: 16px;
+        color: var(--muted);
+      }
+      .row {
+        display: grid;
+        gap: 12px;
+      }
+      .confirm {
+        max-width: 728px;
+        margin: 0 auto 14px;
+        padding: 16px;
+        background: #fff6de;
+        border: 1px solid #ddc98c;
+        border-radius: 16px;
+      }
+      .confirm .row {
+        margin-top: 12px;
+      }
+      .stars {
+        font-size: 34px;
+        letter-spacing: 6px;
+        color: #e0a100;
+        text-align: center;
+      }
+      .toast {
+        position: fixed;
+        left: 50%;
+        bottom: 16px;
+        transform: translateX(-50%);
+        background: var(--navy);
+        color: #fff;
+        border: 2px solid var(--gold);
+        padding: 12px 20px;
+        border-radius: 30px;
+        font-size: 16px;
+        max-width: 92%;
+        text-align: center;
+        z-index: 5;
+      }
+      .sr {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+      }
+      footer {
+        max-width: 760px;
+        margin: auto;
+        padding: 0 16px 30px;
+        color: var(--muted);
+        font-size: 15px;
+      }
+      @media (min-width: 640px) {
+        .grades {
+          grid-template-columns: 1fr 1fr;
+        }
+        .row.two {
+          grid-template-columns: 1fr 1fr;
+        }
+        .card {
+          padding: 30px 32px;
+        }
+      }
+      @media (prefers-reduced-motion: no-preference) {
+        main > * {
+          animation: rise 0.25s ease-out;
+        }
+        @keyframes rise {
+          from {
+            opacity: 0;
+            transform: translateY(6px);
+          }
+          to {
+            opacity: 1;
+            transform: none;
+          }
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <a class="brand" href="/access-practice-lab/family"
+        ><svg aria-hidden="true" width="34" height="34" viewBox="0 0 36 36">
+          <rect width="36" height="36" rx="11" fill="currentColor" />
+          <path d="m18 5 3.5 9.5L31 18l-9.5 3.5L18 31l-3.5-9.5L5 18l9.5-3.5Z" fill="#ffce5b" /></svg
+        ><span>EduWonderLab</span></a
+      >
+      <div class="head-actions">
+        <div class="lang" role="group" aria-label="Language / Idioma" id="lang"></div>
+        <button type="button" id="resetBtn" hidden></button>
+      </div>
+    </header>
+    <div id="resetBar" class="confirm" role="alertdialog" aria-labelledby="resetMsg" hidden></div>
+    <main id="content" tabindex="-1"></main>
+    <footer id="foot"></footer>
+    <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+    <noscript
+      ><p style="padding: 16px">
+        Turn on JavaScript to use the Family Adventure, or go to the
+        <a href="/access-practice-lab/family">Family Corner</a>. · Active JavaScript para usar la
+        Aventura familiar, o vaya al <a href="/access-practice-lab/family">Rincón de la familia</a>.
+      </p></noscript
+    >
+    <script>
+      (() => {
+        "use strict";
+        const KEY = "ewl-family-adventure-v1";
+        const LAB_PREFS = "accessPracticeLab:v1:prefs";
+        const LAB = "/access-practice-lab";
+        const MODES = ["en", "es", "bi"];
+        const BANDS = ["3-5", "6-8"];
+
+        const ICONS = {
+          listening:
+            '<path d="M5 14v-4a7 7 0 0 1 14 0v4M5 11H3v7h4v-7Zm14 0h2v7h-4v-7ZM9 11v5m3-7v9m3-7v5"/>',
+          reading:
+            '<path d="M12 5c-3-2-6-2-10-1v15c4-1 7-1 10 1 3-2 6-2 10-1V4c-4-1-7-1-10 1Zm0 0v15M5 8h4m-4 4h4m6-4h4m-4 4h4"/>',
+          speaking:
+            '<path d="M14 16H8l-5 4v-6a7 7 0 0 1-1-4 7 7 0 0 1 7-7h4a7 7 0 0 1 7 7c0 3-2 5-6 6Z"/><path d="m17 16 4 4v-7M7 9h8M7 12h5"/>',
+          writing: '<path d="m4 16-1 5 5-1L21 7l-4-4L4 16Zm0 0 4 4M14 6l4 4"/>',
+          home: '<path d="m2 10 10-8 10 8M5 8v14h14V8M9 22v-7h6v7"/>',
+        };
+        const svg = (id) =>
+          `<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${ICONS[id]}</svg>`;
+
+        // One table: the four stops, their colors, the real lab activity per grade band, and the copy.
+        // Spanish addresses the family as "ustedes" (adult and child together), matching the lab's family pages.
+        const STOPS = [
+          {
+            id: "listening",
+            color: "#234cda",
+            tint: "#e9efff",
+            min: 3,
+            path: {
+              "3-5": "Listening/A/g35-l-a-classroom-place",
+              "6-8": "Listening/A/classroom-directions",
+            },
+            name: ["Listen", "Escuchar"],
+            title: ["Hear it. Then do it.", "Escúchenlo. Luego háganlo."],
+            steps: [
+              [
+                "Press the play button and listen for what to do.",
+                "Toquen el botón de reproducir y escuchen qué hay que hacer.",
+              ],
+              [
+                "Pick the answer you think is right. You can listen again.",
+                "Elijan la respuesta que crean correcta. Pueden escuchar otra vez.",
+              ],
+              ["Check your answer.", "Revisen su respuesta."],
+            ],
+            ask: [
+              "What did you hear first? Say it in any language you like.",
+              "¿Qué oyeron primero? Díganlo en el idioma que quieran.",
+            ],
+          },
+          {
+            id: "reading",
+            color: "#006c60",
+            tint: "#e4f4ec",
+            min: 3,
+            path: { "3-5": "Reading/A/g35-r-a-library", "6-8": "Reading/A/read-main-idea" },
+            name: ["Read", "Leer"],
+            title: ["Find the clue.", "Encuentren la pista."],
+            steps: [
+              [
+                "Read the short text together. Take turns if you like.",
+                "Lean juntos el texto corto. Pueden turnarse.",
+              ],
+              [
+                "Choose the answer that matches the text.",
+                "Elijan la respuesta que coincida con el texto.",
+              ],
+              [
+                "Check your answer. Read the feedback.",
+                "Revisen su respuesta. Lean los comentarios.",
+              ],
+            ],
+            ask: [
+              "Where in the text did you find the answer?",
+              "¿En qué parte del texto encontraron la respuesta?",
+            ],
+          },
+          {
+            id: "speaking",
+            color: "#9a5700",
+            tint: "#fff3d5",
+            min: 3,
+            path: {
+              "3-5": "Speaking/A/g35-s-a-playground",
+              "6-8": "Speaking/A/sv5-describe-lunch-tray",
+            },
+            name: ["Speak", "Hablar"],
+            title: ["Say it out loud.", "Díganlo en voz alta."],
+            steps: [
+              ["Look at the picture and read the prompt.", "Miren la imagen y lean la indicación."],
+              [
+                "Say one sentence in English. It is okay to start in your home language first.",
+                "Digan una oración en inglés. Pueden empezar en su idioma si quieren.",
+              ],
+              ["Say it again, a little more slowly.", "Díganla otra vez, un poco más despacio."],
+            ],
+            ask: ["Can you say it a second way?", "¿Pueden decirlo de otra manera?"],
+          },
+          {
+            id: "writing",
+            color: "#b13f31",
+            tint: "#ffebe6",
+            min: 3,
+            path: { "3-5": "Writing/A/g35-w-a-class-pet", "6-8": "Writing/A/write-complete-frame" },
+            name: ["Write", "Escribir"],
+            title: ["Finish the sentence.", "Terminen la oración."],
+            steps: [
+              ["Read the sentence starter.", "Lean el comienzo de la oración."],
+              [
+                "Add your own idea. A short sentence is great.",
+                "Agreguen su propia idea. Una oración corta está muy bien.",
+              ],
+              [
+                "Read your sentence out loud to each other.",
+                "Lean su oración en voz alta el uno al otro.",
+              ],
+            ],
+            ask: ["Which word did you choose, and why?", "¿Qué palabra eligieron y por qué?"],
+          },
+        ];
+        const TOTAL = STOPS.length;
+
+        const COPY = {
+          tagline: [
+            "A short adventure for the whole family",
+            "Una aventura corta para toda la familia",
+          ],
+          welcomeTitle: ["Family Adventure", "Aventura familiar"],
+          welcomeLead: [
+            `Four short stops. About ${TOTAL * 3} minutes. Try English practice together on a phone, tablet or computer.`,
+            `Cuatro paradas cortas. Unos ${TOTAL * 3} minutos. Practiquen inglés juntos en un teléfono, una tableta o una computadora.`,
+          ],
+          pickGrade: [
+            "Tap your child’s grade to begin.",
+            "Toquen el grado de su hijo o hija para empezar.",
+          ],
+          g35: ["Grades 3–5", "Grados 3–5"],
+          g35s: ["Elementary school", "Primaria"],
+          g68: ["Grades 6–8", "Grados 6–8"],
+          g68s: ["Middle school", "Secundaria"],
+          saved: [
+            "No account. Your place is saved on this device only.",
+            "Sin cuenta. Su avance se guarda solo en este dispositivo.",
+          ],
+          practiceNote: [
+            "The practice is in English. These pages help in your language.",
+            "La práctica es en inglés. Estas páginas ayudan en su idioma.",
+          ],
+          stopOf: (n) => [`Stop ${n} of ${TOTAL}`, `Parada ${n} de ${TOTAL}`],
+          about: ["About 3 minutes", "Unos 3 minutos"],
+          open: ["Open the activity", "Abrir la actividad"],
+          comeBack: [
+            "When you finish, come back here: tap Back in your browser, or the Family Adventure button at the top of the lab.",
+            "Cuando terminen, regresen aquí: toquen Atrás en su navegador o el botón Aventura familiar en la parte de arriba del laboratorio.",
+          ],
+          did: ["We did it!", "¡Lo hicimos!"],
+          didLast: ["We did it! See our stars", "¡Lo hicimos! Ver nuestras estrellas"],
+          skip: ["Skip this stop", "Saltar esta parada"],
+          back: ["Back", "Atrás"],
+          askTitle: ["Talk about it together", "Conversen juntos"],
+          toastDone: ["Star earned!", "¡Estrella ganada!"],
+          endTitle: ["You finished the adventure!", "¡Terminaron la aventura!"],
+          endLead: [
+            "Every stop counts, even a short one. Come back any day.",
+            "Cada parada cuenta, aunque sea corta. Vuelvan cualquier día.",
+          ],
+          nextTitle: ["Keep going", "Sigan adelante"],
+          corner: ["Family Corner", "Rincón de la familia"],
+          cornerHelp: ["A practice plan and tips", "Un plan de práctica y consejos"],
+          helpMe: ["Help My Child", "Ayuda para mi hijo o hija"],
+          helpMeHelp: ["How to help without giving the answer", "Cómo ayudar sin dar la respuesta"],
+          trip: ["Family Trip", "Viaje familiar"],
+          tripHelp: [
+            "A longer practice for the weekend",
+            "Una práctica más larga para el fin de semana",
+          ],
+          again: ["Do the adventure again", "Hacer la aventura otra vez"],
+          start: ["Start over", "Empezar de nuevo"],
+          startQ: ["Start over from the beginning?", "¿Empezar de nuevo desde el principio?"],
+          startQd: [
+            "This clears your grade and your stars on this page. Your lab practice stays saved.",
+            "Esto borra su grado y sus estrellas en esta página. Su práctica en el laboratorio se conserva.",
+          ],
+          yesStart: ["Yes, start over", "Sí, empezar de nuevo"],
+          keep: ["Keep my place", "Conservar mi avance"],
+          fresh: [
+            "Fresh start. Pick a grade to begin.",
+            "Comienzo nuevo. Elijan un grado para empezar.",
+          ],
+          foot: [
+            "A family companion to the ACCESS Practice Lab by EduWonderLab. No names or emails are collected here.",
+            "Un complemento familiar del Laboratorio de práctica ACCESS de EduWonderLab. Aquí no se recopilan nombres ni correos.",
+          ],
+          labLink: ["ACCESS Lab", "Laboratorio ACCESS"],
+        };
+
+        const fresh = () => ({ lang: "", band: "", stop: 0, done: [], view: "welcome" });
+        let state = fresh(),
+          toastTimer;
+        const $ = (id) => document.getElementById(id);
+        const esc = (v) =>
+          String(v ?? "").replace(
+            /[&<>"']/g,
+            (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c],
+          );
+
+        // Language: one decision point. 'en' English only, 'es' Spanish only, 'bi' English with Spanish beneath.
+        const mode = () => (MODES.includes(state.lang) ? state.lang : "en");
+        const T = (pair) => {
+          const [e, s] = pair;
+          const m = mode();
+          return m === "en"
+            ? esc(e)
+            : m === "es"
+              ? esc(s)
+              : `${esc(e)}<span class="es" lang="es">${esc(s)}</span>`;
+        };
+        const S = (pair) => {
+          const [e, s] = pair;
+          const m = mode();
+          return m === "en" ? e : m === "es" ? s : `${e} / ${s}`;
+        };
+
+        function readLabPrefs() {
+          try {
+            return JSON.parse(localStorage.getItem(LAB_PREFS) || "{}") || {};
+          } catch {
+            return {};
+          }
+        }
+        function shareLangWithLab() {
+          // The lab reads the same preference, so a family only chooses a language once.
+          try {
+            const p = readLabPrefs();
+            localStorage.setItem(
+              LAB_PREFS,
+              JSON.stringify({ ...p, lang: mode(), langChosen: true }),
+            );
+          } catch {}
+        }
+        function restore() {
+          let raw = null;
+          try {
+            raw = JSON.parse(localStorage.getItem(KEY) || "null");
+          } catch {}
+          const lab = readLabPrefs();
+          const navEs = /^es\b/i.test(navigator.language || "");
+          state.lang = MODES.includes(raw?.lang)
+            ? raw.lang
+            : lab.langChosen && MODES.includes(lab.lang)
+              ? lab.lang
+              : navEs
+                ? "es"
+                : "en";
+          if (!raw || !BANDS.includes(raw.band)) return;
+          state.band = raw.band;
+          state.done = Array.isArray(raw.done)
+            ? [...new Set(raw.done.filter((i) => Number.isInteger(i) && i >= 0 && i < TOTAL))]
+            : [];
+          state.stop =
+            Number.isInteger(raw.stop) && raw.stop >= 0 && raw.stop < TOTAL ? raw.stop : 0;
+          state.view = raw.view === "end" ? "end" : "stop";
+        }
+        function save() {
+          try {
+            localStorage.setItem(KEY, JSON.stringify(state));
+          } catch {}
+        }
+
+        const labHref = (path) => `${LAB}/${path}?grades=${state.band || "3-5"}`;
+        const dots = () =>
+          `<ol class="dots" aria-label="${esc(S(COPY.stopOf(state.stop + 1)))}">${STOPS.map((s, i) => `<li class="${state.done.includes(i) ? "done" : i === state.stop && state.view === "stop" ? "now" : ""}"></li>`).join("")}</ol>`;
+
+        function welcome() {
+          return `<section class="card stack"><span class="eyebrow">${T(COPY.tagline)}</span>
+  <h1>${T(COPY.welcomeTitle)}</h1><p class="lead">${T(COPY.welcomeLead)}</p>
+  <h2>${T(COPY.pickGrade)}</h2>
+  <div class="grades">
+    <button type="button" class="grade" data-band="3-5"><strong>${T(COPY.g35)}</strong><span>${T(COPY.g35s)}</span></button>
+    <button type="button" class="grade" data-band="6-8"><strong>${T(COPY.g68)}</strong><span>${T(COPY.g68s)}</span></button>
+  </div>
+  <p class="note">${T(COPY.practiceNote)}</p><p class="note">${T(COPY.saved)}</p></section>`;
+        }
+        function stop() {
+          const s = STOPS[state.stop];
+          return `<section class="card stack" style="--accent:${s.color};--tint:${s.tint}">${dots()}
+  <div class="stophead"><div class="bigicon">${svg(s.id)}</div><div class="stoplabel"><span class="eyebrow">${T(COPY.stopOf(state.stop + 1))}</span><strong class="skill">${T(s.name)}</strong></div></div>
+  <h1 id="stopTitle">${T(s.title)}</h1><p class="note">${T(COPY.about)}</p>
+  <ol class="steps">${s.steps.map(([e, es]) => `<li><span>${T([e, es])}</span></li>`).join("")}</ol>
+  <a class="btn primary" href="${labHref(s.path[state.band])}">${T(COPY.open)}</a>
+  <p class="note">${T(COPY.comeBack)}</p>
+  <div class="ask"><strong>${T(COPY.askTitle)}</strong><p>${T(s.ask)}</p></div>
+  <div class="row"><button type="button" data-done>${T(state.stop === TOTAL - 1 ? COPY.didLast : COPY.did)}</button></div>
+  <div class="row two">${state.stop > 0 ? `<button type="button" class="quiet" data-nav="-1">${T(COPY.back)}</button>` : "<span></span>"}<button type="button" class="quiet" data-nav="1">${T(COPY.skip)}</button></div></section>`;
+        }
+        function end() {
+          const n = state.done.length;
+          const link = (href, title, help) =>
+            `<a class="btn" href="${href}">${T(title)}<span class="note">${T(help)}</span></a>`;
+          return `<section class="card stack"><div class="stars" role="img" aria-label="${n} / ${TOTAL}">${STOPS.map((_, i) => (state.done.includes(i) ? "★" : "☆")).join("")}</div>
+  <h1>${T(COPY.endTitle)}</h1><p class="lead">${T(COPY.endLead)}</p>
+  <h2>${T(COPY.nextTitle)}</h2>
+  <div class="row">${link(`${LAB}/family?grades=${state.band}`, COPY.corner, COPY.cornerHelp)}${link(`${LAB}/family/help?grades=${state.band}`, COPY.helpMe, COPY.helpMeHelp)}${link(`${LAB}/family/trip?grades=${state.band}`, COPY.trip, COPY.tripHelp)}</div>
+  <div class="row"><button type="button" data-restart-run>${T(COPY.again)}</button></div></section>`;
+        }
+
+        function chrome() {
+          const labels = { en: "English", es: "Español", bi: "EN + ES" };
+          $("lang").innerHTML = MODES.map(
+            (m) =>
+              `<button type="button" data-lang="${m}" aria-pressed="${mode() === m}" ${m === "es" ? 'lang="es"' : ""}>${labels[m]}</button>`,
+          ).join("");
+          const started = !!state.band;
+          $("resetBtn").hidden = !started;
+          $("resetBtn").textContent = S(COPY.start);
+          $("resetBar").innerHTML =
+            `<p id="resetMsg"><strong>${T(COPY.startQ)}</strong><br>${T(COPY.startQd)}</p><div class="row two"><button type="button" class="primary" data-reset>${T(COPY.yesStart)}</button><button type="button" data-reset-cancel>${T(COPY.keep)}</button></div>`;
+          $("foot").innerHTML =
+            `<p>${T(COPY.foot)}</p><p><a href="${LAB}/">${esc(S(COPY.labLink))}</a></p>`;
+          document.documentElement.lang = mode() === "es" ? "es" : "en";
+          document.title = S(["Family Adventure", "Aventura familiar"]) + " | EduWonderLab";
+        }
+        function render(focus = true) {
+          if (!state.band) state.view = "welcome";
+          $("content").innerHTML =
+            state.view === "welcome" ? welcome() : state.view === "end" ? end() : stop();
+          chrome();
+          save();
+          if (focus) {
+            $("content").focus({ preventScroll: true });
+            window.scrollTo(0, 0);
+          }
+        }
+        function toast(pair) {
+          clearTimeout(toastTimer);
+          $("toast").textContent = S(pair);
+          $("toast").hidden = false;
+          toastTimer = setTimeout(() => {
+            $("toast").hidden = true;
+          }, 2600);
+        }
+        function advance() {
+          if (state.stop >= TOTAL - 1) {
+            state.view = "end";
+          } else {
+            state.stop += 1;
+          }
+          render();
+        }
+
+        document.addEventListener("click", (e) => {
+          const b = e.target.closest("button");
+          if (!b) return;
+          if (b.dataset.lang) {
+            state.lang = b.dataset.lang;
+            shareLangWithLab();
+            render(false);
+            $("lang").querySelector(`[data-lang="${state.lang}"]`)?.focus();
+            return;
+          }
+          if (b.dataset.band) {
+            state.band = b.dataset.band;
+            state.view = "stop";
+            state.stop = 0;
+            state.done = [];
+            render();
+            return;
+          }
+          if ("done" in b.dataset) {
+            if (!state.done.includes(state.stop)) {
+              state.done.push(state.stop);
+              toast(COPY.toastDone);
+            }
+            advance();
+            return;
+          }
+          if (b.dataset.nav) {
+            const n = state.stop + Number(b.dataset.nav);
+            if (n < 0) return;
+            if (n >= TOTAL) {
+              state.view = "end";
+            } else {
+              state.stop = n;
+            }
+            render();
+            return;
+          }
+          if ("restartRun" in b.dataset) {
+            state.view = "stop";
+            state.stop = 0;
+            state.done = [];
+            render();
+            return;
+          }
+          if (b.id === "resetBtn") {
+            $("resetBar").hidden = false;
+            $("resetBar").scrollIntoView({ block: "nearest" });
+            $("resetBar").querySelector("[data-reset]").focus({ preventScroll: true });
+            return;
+          }
+          if ("resetCancel" in b.dataset) {
+            $("resetBar").hidden = true;
+            $("resetBtn").focus();
+            return;
+          }
+          if ("reset" in b.dataset) {
+            const lang = state.lang;
+            state = fresh();
+            state.lang = lang;
+            $("resetBar").hidden = true;
+            render();
+            toast(COPY.fresh);
+          }
+        });
+
+        restore();
+        render(false);
+      })();
+    </script>
+  </body>
+</html>

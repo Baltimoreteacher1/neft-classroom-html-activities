@@ -49,9 +49,9 @@ const ACTIVE = {
 export function primaryLinks(band, T) {
   const q = `?grades=${band}`;
   return [
-    { id: "practice", icon: "home", label: T("Practice", "Practicar"), href: `${BASE}/${q}` },
-    { id: "journey", icon: "road", label: T("Journey", "Recorrido"), href: `${BASE}/road${q}` },
-    { id: "review", icon: "growth", label: T("Keep it strong", "Repasar"), href: `${BASE}/growth${q}` },
+    { id: "practice", icon: "home", label: T("Practice", "Practicar"), href: `${BASE}/${q}`, low: true },
+    { id: "journey", icon: "road", label: T("Journey", "Recorrido"), href: `${BASE}/road${q}`, low: true },
+    { id: "review", icon: "growth", label: T("Keep it strong", "Repasar"), href: `${BASE}/growth${q}`, low: true },
     {
       id: "passport",
       icon: "passport",
@@ -65,12 +65,26 @@ export function primaryLinks(band, T) {
       href: `${BASE}/family${q}`,
     },
     {
+      id: "family-adventure",
+      icon: "sparkle",
+      label: T("Family Adventure", "Aventura familiar"),
+      href: "/access-family-expedition/",
+      pill: true,
+    },
+    {
       id: "teacher",
       icon: "teacher",
       label: T("Teacher Hub", "Centro docente"),
       href: "/access-teacher/",
     },
-    { id: "help", icon: "help", label: T("Help", "Ayuda"), href: `${BASE}/tools${q}` },
+    {
+      id: "teacher-expedition",
+      icon: "flag",
+      label: T("Teacher Expedition", "Expedición docente"),
+      href: "/access-expedition/",
+      pill: true,
+    },
+    { id: "help", icon: "help", label: T("Help", "Ayuda"), href: `${BASE}/tools${q}`, low: true },
   ];
 }
 
@@ -125,6 +139,7 @@ function menuGroups(band, T) {
       title: T("For teachers", "Para docentes"),
       items: [
         link("teacher", T("Teacher Hub", "Centro docente"), "/access-teacher/"),
+        link("flag", T("Teacher Expedition", "Expedición docente"), "/access-expedition/"),
         link("classroom", T("Whole-Class Studio", "Estudio para toda la clase"), "classroom"),
         link("launch", T("Launch Studio", "Estudio de lanzamiento"), "launch-studio"),
       ],
@@ -138,11 +153,16 @@ export function navHTML(ctx, I) {
   const view = ctx.route?.view || "home";
   const current = ACTIVE[view] || (PRACTICE_VIEWS.has(view) ? "practice" : "");
   const primary = primaryLinks(band, T);
+  // The two expedition buttons stay on the top row at every width; the other links give way to the menu first.
   const topLink = (l) =>
-    html`<a class="top-link" href="${l.href}" ${l.id === current ? raw('aria-current="page"') : ""}
+    html`<a
+      class="top-link${l.pill ? " top-expedition" : ""}"
+      ${l.low ? raw('data-tier="low"') : ""}
+      href="${l.href}"
+      ${l.id === current ? raw('aria-current="page"') : ""}
       >${icon(l.icon)}<span>${l.label}</span></a
     >`;
-  return html`${primary.map(topLink)}
+  return html`${primary.filter((l) => !l.pill).map(topLink)}${primary.filter((l) => l.pill).map(topLink)}
     ${langSwitchHTML(I.mode)}
     <details class="lab-utilities">
       <summary>${icon("menu")}<span>${T("More", "Más")}</span></summary>

@@ -5530,6 +5530,12 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/access-expedition/",
+    title: "Side Quest: WonderLab | Explore the lab your way",
+    category: "Tool",
+    unit: null,
+  },
+  {
     path: "/access-guide/",
     title: "ACCESS Practice Lab · Quick Guide",
     category: "Tool",
@@ -6078,6 +6084,12 @@ export const ACTIVITIES = [
   {
     path: "/about/privacy-and-data/",
     title: "Privacy and Data Practices — Neft Classroom Platform",
+    category: "Practice",
+    unit: null,
+  },
+  {
+    path: "/access-family-expedition/",
+    title: "Family Adventure | Aventura familiar",
     category: "Practice",
     unit: null,
   },

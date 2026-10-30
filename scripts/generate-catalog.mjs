@@ -871,6 +871,8 @@ const INDEXLESS_SECTIONS = new Set(["games", "activities", "practice"]);
 const TOP_META = {
   about: { s: "about", c: "Hub", a: "teacher" },
   "access-practice-lab": { s: "test-prep", c: "Practice", a: "student" },
+  "access-expedition": { s: "test-prep", c: "Tool", a: "teacher" },
+  "access-family-expedition": { s: "test-prep", c: "Practice", a: "family" },
   "access-teacher": { s: "test-prep", c: "Tool", a: "teacher" },
   activities: { s: "activities", c: "Practice", a: "student" },
   "activity-studio": { s: "teacher-tools", c: "Tool", a: "teacher" },
