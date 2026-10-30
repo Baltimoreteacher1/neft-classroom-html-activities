@@ -416,14 +416,23 @@
         Expedición familiar, o vaya al <a href="/access-practice-lab/family">Rincón de la familia</a>.
       </p></noscript
     >
-    <script>
+    <script type="module">
+      import {
+        LAB,
+        MODES,
+        STOPS,
+        TOTAL,
+        esc,
+        loadState,
+        modeOf,
+        saveState,
+        stopUrl,
+        tr,
+        trText,
+      } from "./stops.js";
+
       (() => {
-        "use strict";
-        const KEY = "ewl-family-expedition-v1";
         const LAB_PREFS = "accessPracticeLab:v1:prefs";
-        const LAB = "/access-practice-lab";
-        const MODES = ["en", "es", "bi"];
-        const BANDS = ["3-5", "6-8"];
 
         const ICONS = {
           listening:
@@ -443,223 +452,7 @@
         const svg = (id) =>
           `<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${ICONS[id]}</svg>`;
 
-        // One table: the stops of the tour. Each stop is one real part of the lab, what it is for, and how to use it.
-        // `path` is relative to /access-practice-lab/ ("" is the Practice home). Spanish addresses the family as
-        // "ustedes" (adult and child together), matching the lab's family pages.
-        const STOPS = [
-          {
-            id: "home",
-            color: "#234cda",
-            tint: "#e9efff",
-            path: "family",
-            name: ["Family Corner", "Rincón de la familia"],
-            title: ["Start here: your home base.", "Empiecen aquí: su punto de partida."],
-            what: [
-              "The Family Corner is the front door for families. It is written for adults, in English, Spanish or both.",
-              "El Rincón de la familia es la puerta de entrada para las familias. Está escrito para adultos, en inglés, en español o en ambos.",
-            ],
-            steps: [
-              [
-                "Choose your language at the top: English, Español, or both together.",
-                "Elijan su idioma arriba: English, Español o ambos juntos.",
-              ],
-              [
-                "Scroll down to see a suggested practice, simple tips, and how the lab works.",
-                "Bajen para ver una práctica sugerida, consejos sencillos y cómo funciona el laboratorio.",
-              ],
-              [
-                "Open the setup page to say your child’s grade and how many minutes you have.",
-                "Abran la página de configuración para indicar el grado de su hijo o hija y cuántos minutos tienen.",
-              ],
-            ],
-            tip: [
-              "You do not need an account. Everything is saved on this device.",
-              "No necesitan una cuenta. Todo se guarda en este dispositivo.",
-            ],
-          },
-          {
-            id: "listening",
-            color: "#006c60",
-            tint: "#e4f4ec",
-            path: "",
-            name: ["Today’s mission", "La misión de hoy"],
-            title: ["A short practice, picked for you.", "Una práctica corta, elegida para ustedes."],
-            what: [
-              "The Practice page puts together a short mission for today: a few activities that mix listening, reading, speaking and writing.",
-              "La página de Práctica prepara una misión corta para hoy: unas pocas actividades que mezclan escuchar, leer, hablar y escribir.",
-            ],
-            steps: [
-              [
-                "Choose how long you have: 5, 10 or 15 minutes.",
-                "Elijan cuánto tiempo tienen: 5, 10 o 15 minutos.",
-              ],
-              [
-                "Tap the mission button and do the first activity together.",
-                "Toquen el botón de la misión y hagan juntos la primera actividad.",
-              ],
-              [
-                "Unfinished activities and review come first the next time.",
-                "Las actividades sin terminar y el repaso van primero la próxima vez.",
-              ],
-            ],
-            tip: [
-              "Short practice on many days works better than one long session.",
-              "Practicar poco muchos días funciona mejor que una sola sesión larga.",
-            ],
-          },
-          {
-            id: "find",
-            color: "#9a5700",
-            tint: "#fff3d5",
-            path: "library",
-            name: ["Find an activity", "Buscar una actividad"],
-            title: ["Pick the skill you want.", "Elijan la destreza que quieren."],
-            what: [
-              "Want to work on one skill? Here you can browse activities for Listening, Reading, Speaking and Writing.",
-              "¿Quieren practicar una destreza? Aquí pueden ver actividades de Escuchar, Leer, Hablar y Escribir.",
-            ],
-            steps: [
-              [
-                "Choose a skill, or search for a topic your child likes.",
-                "Elijan una destreza o busquen un tema que le guste a su hijo o hija.",
-              ],
-              [
-                "Open an activity. Look for the supports, like word help or listening again.",
-                "Abran una actividad. Busquen las ayudas, como ayuda con palabras o escuchar otra vez.",
-              ],
-              [
-                "Check the answer and read the feedback together.",
-                "Revisen la respuesta y lean juntos los comentarios.",
-              ],
-            ],
-            tip: [
-              "Start with one that feels comfortable. Success builds confidence.",
-              "Empiecen con una que se sienta cómoda. El éxito da confianza.",
-            ],
-          },
-          {
-            id: "help",
-            color: "#b13f31",
-            tint: "#ffebe6",
-            path: "family/help",
-            name: ["Help My Child", "Ayuda para mi hijo o hija"],
-            title: ["Help without giving the answer.", "Ayuden sin dar la respuesta."],
-            what: [
-              "A short guide for adults: how to support practice at home, even if English is not your strongest language.",
-              "Una guía corta para adultos: cómo apoyar la práctica en casa, aunque el inglés no sea su idioma más fuerte.",
-            ],
-            steps: [
-              [
-                "Read the first few tips. Each one is short.",
-                "Lean los primeros consejos. Cada uno es corto.",
-              ],
-              [
-                "Pick one idea to try the next time your child practices.",
-                "Elijan una idea para probar la próxima vez que su hijo o hija practique.",
-              ],
-              [
-                "Come back here whenever you feel stuck.",
-                "Vuelvan aquí cuando no sepan qué hacer.",
-              ],
-            ],
-            tip: [
-              "You can help in any language. Talking about the idea in your home language is welcome.",
-              "Pueden ayudar en cualquier idioma. Hablar de la idea en su idioma es bienvenido.",
-            ],
-          },
-          {
-            id: "passport",
-            color: "#2d5a9e",
-            tint: "#e9f0fb",
-            path: "passport",
-            name: ["My Passport", "Pasaporte"],
-            title: ["See what has been practiced.", "Vean lo que han practicado."],
-            what: [
-              "My Passport keeps a record of practice, like stamps in a travel book. It also has a paper passport you can print.",
-              "El Pasaporte guarda un registro de la práctica, como sellos en un libro de viaje. También tiene un pasaporte en papel que pueden imprimir.",
-            ],
-            steps: [
-              [
-                "Open it to see the practice done so far.",
-                "Ábranlo para ver la práctica hecha hasta ahora.",
-              ],
-              [
-                "Look at the next suggested step and celebrate what is finished.",
-                "Miren el siguiente paso sugerido y celebren lo que ya terminaron.",
-              ],
-              [
-                "Look for the paper passport menu if you like to print.",
-                "Busquen el menú del pasaporte en papel si les gusta imprimir.",
-              ],
-            ],
-            tip: [
-              "Progress is saved on this device. Use the same phone or computer each time.",
-              "El avance se guarda en este dispositivo. Usen el mismo teléfono o computadora cada vez.",
-            ],
-          },
-          {
-            id: "trip",
-            color: "#7a4a00",
-            tint: "#fdf0d8",
-            path: "family/trip",
-            name: ["Family Trip", "Viaje familiar"],
-            title: ["A longer practice for the weekend.", "Una práctica más larga para el fin de semana."],
-            what: [
-              "The Family Trip is a guided route of six stops. It is for a day when you have more time to sit together.",
-              "El Viaje familiar es una ruta guiada de seis paradas. Es para un día en que tengan más tiempo para sentarse juntos.",
-            ],
-            steps: [
-              [
-                "Pick a skill, or use the one the lab suggests.",
-                "Elijan una destreza o usen la que sugiere el laboratorio.",
-              ],
-              [
-                "Follow the stops in order.",
-                "Sigan las paradas en orden.",
-              ],
-              [
-                "Stop any time. The trip remembers where you were.",
-                "Paren cuando quieran. El viaje recuerda dónde se quedaron.",
-              ],
-            ],
-            tip: [
-              "A trip can take several days. There is no rush.",
-              "Un viaje puede durar varios días. No hay prisa.",
-            ],
-          },
-          {
-            id: "save",
-            color: "#17324d",
-            tint: "#e8eef4",
-            path: "family/save",
-            name: ["Save & Continue Later", "Guardar y continuar después"],
-            title: ["Keep your work safe.", "Mantengan su trabajo seguro."],
-            what: [
-              "Your work is saved on this device. A backup code lets you keep it safe or move it to another phone or computer.",
-              "Su trabajo se guarda en este dispositivo. Un código de respaldo les permite protegerlo o llevarlo a otro teléfono o computadora.",
-            ],
-            steps: [
-              [
-                "Open the page and read where your work is saved.",
-                "Abran la página y lean dónde se guarda su trabajo.",
-              ],
-              [
-                "Copy or download your backup code and keep it somewhere safe.",
-                "Copien o descarguen su código de respaldo y guárdenlo en un lugar seguro.",
-              ],
-              [
-                "On a new device, paste the code to bring your work back.",
-                "En un dispositivo nuevo, peguen el código para recuperar su trabajo.",
-              ],
-            ],
-            tip: [
-              "Voice recordings are not saved. They disappear when the page closes.",
-              "Las grabaciones de voz no se guardan. Desaparecen al cerrar la página.",
-            ],
-          },
-        ];
-        const TOTAL = STOPS.length;
-
+        
         const COPY = {
           tagline: [
             "A guided tour for the whole family",
@@ -690,8 +483,8 @@
           about: ["About 2 minutes", "Unos 2 minutos"],
           open: ["Open this part of the site", "Abrir esta parte del sitio"],
           comeBack: [
-            "When you are done looking around, tap Back in your browser, or the Family Expedition button at the top of the lab.",
-            "Cuando terminen de explorar, toquen Atrás en su navegador o el botón Expedición familiar en la parte de arriba del laboratorio.",
+            "A guide stays with you while you look around: beside the page on a computer, at the bottom on a phone. Tap “Back to the tour” in it any time.",
+            "Una guía los acompaña mientras exploran: al lado de la página en una computadora, abajo en un teléfono. Toquen “Volver al recorrido” cuando quieran.",
           ],
           did: ["I know this one", "Ya lo conozco"],
           didLast: ["I know this one. See my map", "Ya lo conozco. Ver mi mapa"],
@@ -744,28 +537,10 @@
         let state = fresh(),
           toastTimer;
         const $ = (id) => document.getElementById(id);
-        const esc = (v) =>
-          String(v ?? "").replace(
-            /[&<>"']/g,
-            (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c],
-          );
-
-        // Language: one decision point. 'en' English only, 'es' Spanish only, 'bi' English with Spanish beneath.
-        const mode = () => (MODES.includes(state.lang) ? state.lang : "en");
-        const T = (pair) => {
-          const [e, s] = pair;
-          const m = mode();
-          return m === "en"
-            ? esc(e)
-            : m === "es"
-              ? esc(s)
-              : `${esc(e)}<span class="es" lang="es">${esc(s)}</span>`;
-        };
-        const S = (pair) => {
-          const [e, s] = pair;
-          const m = mode();
-          return m === "en" ? e : m === "es" ? s : `${e} / ${s}`;
-        };
+        // Language: one decision point (see stops.js for the three modes).
+        const mode = () => modeOf(state.lang);
+        const T = (pair) => tr(state.lang, pair);
+        const S = (pair) => trText(state.lang, pair);
 
         function readLabPrefs() {
           try {
@@ -785,35 +560,20 @@
           } catch {}
         }
         function restore() {
-          let raw = null;
-          try {
-            raw = JSON.parse(localStorage.getItem(KEY) || "null");
-          } catch {}
+          const saved = loadState();
           const lab = readLabPrefs();
           const navEs = /^es\b/i.test(navigator.language || "");
-          state.lang = MODES.includes(raw?.lang)
-            ? raw.lang
+          state.lang = saved?.lang
+            ? saved.lang
             : lab.langChosen && MODES.includes(lab.lang)
               ? lab.lang
               : navEs
                 ? "es"
                 : "en";
-          if (!raw || !BANDS.includes(raw.band)) return;
-          state.band = raw.band;
-          state.done = Array.isArray(raw.done)
-            ? [...new Set(raw.done.filter((i) => Number.isInteger(i) && i >= 0 && i < TOTAL))]
-            : [];
-          state.stop =
-            Number.isInteger(raw.stop) && raw.stop >= 0 && raw.stop < TOTAL ? raw.stop : 0;
-          state.view = raw.view === "end" ? "end" : "stop";
+          if (saved) Object.assign(state, saved, { lang: state.lang });
         }
-        function save() {
-          try {
-            localStorage.setItem(KEY, JSON.stringify(state));
-          } catch {}
-        }
+        const save = () => saveState(state);
 
-        const labHref = (path) => `${LAB}/${path}?grades=${state.band || "3-5"}`;
         const dots = () =>
           `<ol class="dots" aria-label="${esc(S(COPY.stopOf(state.stop + 1)))}">${STOPS.map((s, i) => `<li class="${state.done.includes(i) ? "done" : i === state.stop && state.view === "stop" ? "now" : ""}"></li>`).join("")}</ol>`;
 
@@ -833,7 +593,7 @@
   <div class="stophead"><div class="bigicon">${svg(s.id)}</div><div class="stoplabel"><span class="eyebrow">${T(COPY.stopOf(state.stop + 1))}</span><strong class="skill">${T(s.name)}</strong></div></div>
   <h1 id="stopTitle">${T(s.title)}</h1><p class="lead">${T(s.what)}</p><p class="note">${T(COPY.about)}</p>
   <ol class="steps">${s.steps.map(([e, es]) => `<li><span>${T([e, es])}</span></li>`).join("")}</ol>
-  <a class="btn primary" href="${labHref(s.path)}">${T(COPY.open)}</a>
+  <a class="btn primary" href="${stopUrl(state.stop, state.band)}">${T(COPY.open)}</a>
   <p class="note">${T(COPY.comeBack)}</p>
   <div class="ask"><strong>${T(COPY.askTitle)}</strong><p>${T(s.tip)}</p></div>
   <div class="row"><button type="button" data-done>${T(state.stop === TOTAL - 1 ? COPY.didLast : COPY.did)}</button></div>
@@ -967,6 +727,9 @@
           }
         });
 
+        try {
+          sessionStorage.removeItem("ewl-tour-dock");
+        } catch {}
         restore();
         render(false);
       })();

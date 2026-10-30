@@ -508,5 +508,16 @@ async function boot() {
   document.documentElement.classList.add("lab-ready");
   watchNetwork();
   registerOffline();
+  mountTourGuide();
+}
+
+/** The Family Expedition guide panel loads only for families who opened a lab page from the tour. */
+function mountTourGuide() {
+  let saved = null;
+  try {
+    saved = sessionStorage.getItem("ewl-tour-dock");
+  } catch {}
+  if (!new URLSearchParams(location.search).has("tour") && saved === null) return;
+  import("./tour-dock.js").then((m) => m.mountTourDock()).catch(() => {});
 }
 boot();
