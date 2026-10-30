@@ -4,6 +4,7 @@
 // to the learner's own words, and no screen shows a proficiency level or combines evidence into one number.
 import {
   loadAlignment,
+  loadGoalBank,
   loadBlueprint,
   loadExemplars,
   loadPatterns,
@@ -32,11 +33,14 @@ import { highlightHTML } from "/access-practice-lab/src/studio-ui.js";
 import { buildSkillGraph, makeMiniLesson, recommendInstructionalGroups } from "/access-practice-lab/src/lang/skill-graph.js";
 import { ACCESS_LAB_FLAGS } from "/access-practice-lab/src/lang/feature-flags.js";
 import { announce, html, icon, raw, toHtml } from "/access-practice-lab/src/util.js";
+import { createExtras } from "./evidence-extras.js";
 
 const KEY = "accessTeacher:v1:roster";
 const GROUP_KEY = "accessTeacher:v1:instructionalGroups";
 const LESSON_KEY = "accessTeacher:v1:miniLessons";
 const OVERRIDE_KEY = "accessTeacher:v1:skillOverrides";
+const GOALS_KEY = "accessTeacher:v1:goals";
+const OFFICIAL_KEY = "accessTeacher:v1:officialResults";
 const ALIGNMENT_REVIEW_KEY = "accessTeacher:v1:alignmentReviews";
 const QUOTA_WARN = 3_500_000; // characters; localStorage holds roughly 5 MB
 const root = document.getElementById("classEvidence");
@@ -78,6 +82,10 @@ const T = {
   groups: read(GROUP_KEY, []),
   lessons: read(LESSON_KEY, []),
   overrides: read(OVERRIDE_KEY, {}),
+  goalBank: { goals: [] },
+  goals: read(GOALS_KEY, {}),
+  official: read(OFFICIAL_KEY, {}),
+  checkin: { start: new Date().toISOString().slice(0, 10), everyDays: 28, count: 6, label: "" },
   tasks: [],
   demo: null, // SYNTHETIC DEMO class: in memory only, never persisted, cleared when real codes are added
 };
@@ -93,6 +101,7 @@ const slim = (s) => ({
   ledger: s.ledger,
   studio: s.studio,
   records: s.records || {},
+  readingLog: s.readingLog || [],
 });
 const persist = () => {
   try {
@@ -101,6 +110,8 @@ const persist = () => {
     localStorage.setItem(GROUP_KEY, JSON.stringify(T.groups));
     localStorage.setItem(LESSON_KEY, JSON.stringify(T.lessons));
     localStorage.setItem(OVERRIDE_KEY, JSON.stringify(T.overrides));
+    localStorage.setItem(GOALS_KEY, JSON.stringify(T.goals));
+    localStorage.setItem(OFFICIAL_KEY, JSON.stringify(T.official));
     localStorage.setItem(ALIGNMENT_REVIEW_KEY, JSON.stringify(T.alignmentReviews));
     T.saveError = "";
   } catch {
@@ -121,6 +132,7 @@ const note = (m) => {
   T.messages.push(m);
   announce(m);
 };
+const extras = createExtras(T, { persist, note, draw, download });
 
 /** Add one share code or file. A newer file replaces an older one for the same student; an older one never does. */
 function addStudent(text, section) {
@@ -149,6 +161,7 @@ function tabs() {
       ...(ACCESS_LAB_FLAGS.teacherDiagnosticsEnabled ? [["skills", "Skill diagnostics"]] : []),
       ...(ACCESS_LAB_FLAGS.instructionalGroupsEnabled ? [["groups", "Small groups"]] : []),
       ...(ACCESS_LAB_FLAGS.contentProvenanceEnabled ? [["content", "Lesson review"]] : []),
+      ["checkins", "Check-ins"],
       ["samples", "Response samples"],
       ["scoring", "Scoring practice"],
       ["blueprint", "Blueprint and quality"],
@@ -206,7 +219,7 @@ function importBox() {
         : ""
     }
     <p class="fine">
-      Data stays in this browser. “Remove everything” also clears saved scores. On a shared
+      Data stays in this browser. “Remove everything” also clears saved scores, goals and official results. On a shared
       computer, remove students when you finish.
     </p>
   </div>`;
@@ -368,6 +381,7 @@ function studentPanel(r, student) {
           </p>`
         : ""
     }
+    ${extras.studentSections(student)}
     <h4>Suggested next steps</h4>
     <ol>
       ${iv.map((x) => html`<li>${x.what} <span class="fine">— ${x.why}</span></li>`)}
@@ -395,6 +409,7 @@ function sheetFor(r, student) {
     </p>
     <h3>What the work shows</h3>
     ${evidenceList(r)}
+    ${extras.sheetSections(student)}
     ${
       r.profile.errors.length
         ? html`<p>
@@ -888,7 +903,9 @@ function alignmentCoverageTab(alignment) {
 function draw() {
   const rows = classSummary(T.students);
   const body =
-    T.tab === "plans"
+    T.tab === "checkins"
+      ? extras.checkinsTab()
+      : T.tab === "plans"
       ? plansTab()
       : T.tab === "groups"
       ? groupsTab(rows)
@@ -937,6 +954,7 @@ root.addEventListener("click", async (e) => {
     T.alignmentPage = Number(alignmentPage.dataset.alignPage) || 1;
     return draw();
   }
+  if (extras.click(t)) return;
   const tab = t.closest("[data-tab]");
   if (tab) {
     T.tab = tab.dataset.tab;
@@ -1083,6 +1101,7 @@ root.addEventListener("click", async (e) => {
       for (const lesson of T.lessons) lesson.evidenceRefs = lesson.evidenceRefs.filter((ref) => ref.student !== removed.alias);
       for (const key of Object.keys(T.overrides)) if (key.startsWith(`${removed.id}:`)) delete T.overrides[key];
       T.scores = T.scores.filter((row) => row.who !== removed.alias);
+      extras.forget(removed.id);
     }
     if (T.pick === rm.dataset.remove) T.pick = "";
     persist();
@@ -1090,12 +1109,13 @@ root.addEventListener("click", async (e) => {
     return draw();
   }
   if (t.closest("[data-clear]")) {
-    if (confirm("Remove all students and saved scores from this browser?")) {
+    if (confirm("Remove all students, saved scores, goals and official results from this browser?")) {
       T.students = [];
       T.scores = [];
       T.groups = [];
       T.lessons = [];
       T.overrides = {};
+      extras.forget();
       T.pick = "";
       T.messages = [];
       persist();
@@ -1160,6 +1180,7 @@ root.addEventListener("input", (e) => {
 
 root.addEventListener("change", async (e) => {
   const t = e.target;
+  if (extras.change(t)) return;
   if (t.matches("[data-align-filter]")) {
     T.alignmentFilters[t.dataset.alignFilter] = t.value;
     T.alignmentPage = 1;
@@ -1224,7 +1245,9 @@ Promise.all([
   loadSpeakingTasks().catch(() => ({ tasks: [] })),
   loadWritingTasks().catch(() => ({ tasks: [] })),
   loadAlignment().catch(() => null),
-]).then(([p, x, bp, idx, sp, wr, alignment]) => {
+  loadGoalBank().catch(() => ({ goals: [] })),
+]).then(([p, x, bp, idx, sp, wr, alignment, goalBank]) => {
+  T.goalBank = goalBank;
   T.tasks = [
     ...(sp.tasks || []).map((t) => ({ id: t.id, title: t.title, keyUse: t.keyUse, band: t.band, modality: "speaking" })),
     ...(wr.tasks || []).map((t) => ({ id: t.id, title: t.title, keyUse: t.keyUse, band: t.band, modality: "writing" })),

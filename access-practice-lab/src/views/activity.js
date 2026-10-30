@@ -51,6 +51,8 @@ import { answerOf, loadRecord, saveRecord } from "../store.js";
 import { invalidateActivity, startIndependentAttempt, updateActivityAnswer } from "../attempts.js";
 import { analyzeResponse, bankKey, bankWordsUsed, compareDrafts } from "../lang/analyze.js";
 import { appendEntry, loadLedger, saveLedger } from "../lang/ledger.js";
+import { SURE, normalizeSure, sureFlag } from "../lang/calibration.js";
+import { retellHTML, toggleRetellCheck } from "./retell.js";
 import { feedbackHTML as coachCardHTML } from "../studio-ui.js";
 import { dataPoints, itemsFrom, loadNotebook, passageSentences, pinItem, pinnedIndex, tagLabel } from "../lang/evidence-notebook.js";
 import { dataPickHTML, organizerHTML, tagBarHTML } from "../evidence-ui.js";
@@ -75,6 +77,7 @@ import { COUNTRIES, stopSlices } from "../journey.js";
 const IGN = raw("data-nsr-ignore");
 // Transient per-visit check state: id → { ok, attempt, reveal }
 const checked = new Map();
+const sureNow = new Map(); // id → 1|2|3, the learner's optional "how sure" before checking
 const writingChecks = new Map();
 const tries = new Map(); // id → checks this visit (2nd miss reveals the answer)
 const helpUsed = new Set();
@@ -252,7 +255,24 @@ function evidencePinHTML(a) {
 
 const lookBack = () => I.T("Look back at the sentence, table, or chart that supports your answer.", "Vuelve a la oración, la tabla o la gráfica que apoya tu respuesta.");
 
+function sureHTML(a) {
+  const now = sureNow.get(a.id) ?? null;
+  return html`<div class="sure-row" role="group" aria-label="${I.S("How sure are you? (optional)", "¿Qué tan seguro o segura estás? (opcional)")}">
+    <span class="sure-label">${I.T("How sure are you?", "¿Qué tan seguro o segura estás?")}</span>
+    ${SURE.map((s) => html`<button type="button" class="cat-chip" data-sure="${s.id}" aria-pressed="${now === s.id}">${I.T(s.en, s.es)}</button>`)}
+  </div>`;
+}
+
+function sureNoteHTML(c) {
+  const note = c?.sure ? sureFlag(c.ok, c.sure) : null;
+  return note?.flag ? html`<p class="sure-note is-${note.flag}" role="status">${icon(note.flag === "sure-wrong" ? "alert" : note.flag === "lucky" ? "retry" : "check")} ${I.T(note.en, note.es)}</p>` : "";
+}
+
 function feedbackHTML(a) {
+  return html`${feedbackBody(a)}${sureNoteHTML(checked.get(a.id))}`;
+}
+
+function feedbackBody(a) {
   const c = checked.get(a.id);
   if (!c) return "";
   if (c.ok)
@@ -286,8 +306,10 @@ function interactiveHTML(a) {
   const answer = answerOf(cur.record, a.id);
   const reveal = c ? (c.ok || revealHeld(c) ? "mark" : c.reveal || "mark") : "none";
   return html`${cur.domain === "Speaking" ? html`<p class="fine warmup-note">${icon("speaking")} <strong>${I.T("Warm-up.", "Calentamiento.")}</strong> ${I.T("This builds ideas and words. Speaking ability is shown by speaking — when you are ready,", "Esto te ayuda a reunir ideas y palabras. Hablar se demuestra hablando — cuando estés listo o lista,")} <a href="${BASE}/speak?grades=${cur.band}">${I.T("open the Speaking Studio", "abre el Estudio de habla")}</a>.</p>` : ""}${inputHTML(a, answer, { reveal })}
+  ${!c ? sureHTML(a) : ""}
   ${!c ? html`<button type="button" class="btn btn-primary btn-check" data-check ${isAnswered(a, answer ?? seedAnswer(a)) ? "" : raw("disabled")}>${I.T("Check my answer", "Revisar mi respuesta")}</button>` : ""}
   ${feedbackHTML(a)}
+  ${["Reading", "Listening"].includes(cur.domain) && c?.ok ? retellHTML(I, { activity: a, domain: cur.domain, level: cur.level, mode, record: cur.record }) : ""}
   ${cur.domain === "Speaking" && c?.ok ? recorderHTML(a.id, { level: cur.level, recording: isRecording(a.id) }) : ""}`;
 }
 
@@ -625,7 +647,9 @@ function check(a, ctx) {
   tries.set(a.id, n);
   // Learn with help: a wrong listening answer gets a rule-based trap diagnosis when one clearly applies.
   const diag = !ok && mode === "supported" && isListening(cur.domain, a) ? diagnoseListening(a, answer) : null;
-  checked.set(a.id, { ok, attempt: n, reveal: ok ? "mark" : n >= 2 && mode === "supported" ? "full" : "mark", diag });
+  const sure = normalizeSure(sureNow.get(a.id));
+  sureNow.delete(a.id);
+  checked.set(a.id, { ok, sure, attempt: n, reveal: ok ? "mark" : n >= 2 && mode === "supported" ? "full" : "mark", diag });
   cur.record.results[a.id] = {
     ok,
     skill: a.skill || "",
@@ -638,6 +662,7 @@ function check(a, ctx) {
     band: band(ok ? 1 : 0, 1),
     date: new Date().toISOString(),
     tries: n,
+    ...(sure ? { sure } : {}),
   };
   cur.record.complete = cur.record.complete.filter((id) => id !== a.id);
   if (ok) {
@@ -835,7 +860,7 @@ export function onClick(e, ctx) {
   if (t.closest("[data-fresh-attempt]")) {
     if (["constructed", "worksheet"].includes(a.type)) return;
     startIndependentAttempt(cur.record, a.id);
-    checked.delete(a.id); tries.delete(a.id); helpUsed.delete(a.id); listenTags.delete(a.id);
+    checked.delete(a.id); tries.delete(a.id); helpUsed.delete(a.id); listenTags.delete(a.id); sureNow.delete(a.id);
     validation = "";
     save();
     const url = new URL(location.href);
@@ -843,6 +868,20 @@ export function onClick(e, ctx) {
     url.searchParams.set("grades", cur.band);
     ctx.navigate(url.pathname + url.search, { replace: true });
     announce(I.S("Fresh attempt started. Your previous attempt summary is in your Passport portfolio.", "Empezó un intento nuevo. El resumen de tu intento anterior está en tu portafolio del Pasaporte."));
+    return;
+  }
+  const retellBox = t.closest("[data-retell-check]");
+  if (retellBox) {
+    toggleRetellCheck(cur.record, a.id, retellBox.dataset.retellCheck);
+    save();
+    return;
+  }
+  const sureBtn = t.closest("[data-sure]");
+  if (sureBtn) {
+    const level = normalizeSure(Number(sureBtn.dataset.sure));
+    if (sureNow.get(a.id) === level) sureNow.delete(a.id);
+    else sureNow.set(a.id, level);
+    ctx.rerender({ keepFocus: true });
     return;
   }
   if (t.closest("[data-check]")) return check(a, ctx);

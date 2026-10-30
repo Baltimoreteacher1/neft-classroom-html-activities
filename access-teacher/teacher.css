@@ -340,6 +340,7 @@
 
 /* tables */
 .lab-table-wrap {
+  position: relative; /* contains visually-hidden header text so it cannot widen the page */
   overflow-x: auto;
   margin: var(--s-3) 0;
   border: 1px solid var(--line);
@@ -1076,3 +1077,65 @@ del {
 .ev-screen .postcard-list p { overflow-wrap: anywhere; }
 @media (max-width: 560px) { .ev-screen .postcard-list > li { grid-template-columns: 1fr; } }
 .ev-screen .postcard-list p, .ev-screen .postcard-list .fine { font-size: 1rem; line-height: 1.5; }
+
+/* ── goals, gradual release and conference sheet extras ───────────────── */
+.ev-goals {
+  display: grid;
+  gap: var(--s-3);
+  margin: 0 0 var(--s-3);
+  padding: 0;
+  list-style: none;
+}
+.ev-goal {
+  padding: var(--s-3) var(--s-4);
+  border: 1.5px solid var(--line);
+  border-inline-start: 4px solid var(--reading);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  break-inside: avoid;
+}
+.ev-goal p {
+  margin: 0 0 var(--s-2);
+}
+.badge.is-not-enough {
+  background: var(--surface-2);
+  color: var(--ink-2);
+}
+.badge.is-building {
+  background: var(--accent);
+  color: var(--ink);
+}
+.badge.is-on-own {
+  background: var(--reading-soft);
+  color: var(--reading-ink);
+}
+.ev-fade .fade-steps {
+  display: inline-flex;
+  gap: 0.25rem;
+}
+.fade-step {
+  display: inline-grid;
+  place-items: center;
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 50%;
+  border: 1.5px solid var(--ink);
+  font: 700 0.8rem var(--font);
+}
+.fade-step.is-guided {
+  background: var(--surface);
+  color: var(--ink);
+}
+.fade-step.is-supported {
+  background: var(--surface-3);
+  color: var(--ink);
+}
+.fade-step.is-independent {
+  background: var(--ink);
+  color: #fff;
+}
+.ev-lines {
+  margin: var(--s-4) 0;
+  white-space: nowrap;
+  overflow: hidden;
+}

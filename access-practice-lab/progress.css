@@ -1724,3 +1724,70 @@
 .pass-checkin { margin: 0 0 var(--s-5); }
 .pass-checkin .row-actions .btn { min-height: 44px; }
 .pass-checkin .row-actions .btn[disabled] { opacity: 0.55; cursor: not-allowed; }
+
+/* ── Passport: "How I work" and the family letter ─────────────────────── */
+.pass-lines {
+  display: grid;
+  gap: var(--s-2);
+  margin: var(--s-2) 0;
+  padding: 0;
+  list-style: none;
+}
+.pass-sub {
+  margin: var(--s-4) 0 var(--s-2);
+  font-size: 1rem;
+}
+.fade-steps {
+  display: inline-flex;
+  gap: 0.25rem;
+  margin-inline: var(--s-2);
+  vertical-align: middle;
+}
+.fade-step {
+  display: inline-grid;
+  place-items: center;
+  width: 1.6rem;
+  height: 1.6rem;
+  border: 1.5px solid var(--ink);
+  border-radius: 50%;
+  font: 700 0.8rem var(--font);
+}
+.fade-step.is-guided {
+  background: var(--surface);
+  color: var(--ink);
+}
+.fade-step.is-supported {
+  background: var(--surface-3);
+  color: var(--ink);
+}
+.fade-step.is-independent {
+  background: var(--ink);
+  color: #fff;
+}
+.fam-letter-wrap {
+  margin-block: var(--s-5);
+}
+.fam-letter {
+  max-width: 42rem;
+  margin: var(--s-4) 0;
+  padding: var(--s-4) var(--s-5);
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+}
+.fam-letter h4 {
+  margin: var(--s-4) 0 var(--s-1);
+}
+@media print {
+  body[data-printing="letter"] #app > *:not(.fam-letter-wrap):not(:has(.fam-letter-wrap)) {
+    display: none !important;
+  }
+  body[data-printing="letter"] .fam-letter {
+    border: 0;
+    padding: 0;
+    break-after: page;
+  }
+  body[data-printing="letter"] .fam-letter:last-of-type {
+    break-after: auto;
+  }
+}

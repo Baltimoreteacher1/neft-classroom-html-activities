@@ -141,6 +141,7 @@ export async function render(ctx, I) {
         <ul class="fam-links">
           <li><a href="${BASE}/family/help?grades=${band}">${icon("help")} ${I.L("hub.more.help")}</a></li>
           <li><a href="${BASE}/family/save?grades=${band}">${icon("save")} ${I.L("hub.more.save")}</a></li>
+          <li><a href="${BASE}/flashcards?grades=${band}">${icon("words")} ${I.L("hub.more.cards")}</a></li>
           <li><a href="${setupHref}">${icon("settings")} ${I.L("hub.more.setup")}</a></li>
           <li><a href="${BASE}/family/practice?grades=${band}#finder">${icon("library")} ${I.L("hub.more.choose")}</a></li>
         </ul>

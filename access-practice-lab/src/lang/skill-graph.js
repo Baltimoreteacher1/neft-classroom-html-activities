@@ -139,7 +139,7 @@ export function evidenceFromPracticeRecords(records = {}) {
       const skill = skillForQuestion(record.domain, result.skill);
       if (!skill) continue;
       const createdAt = typeof result.date === "string" && !Number.isNaN(Date.parse(result.date)) ? result.date : new Date(0).toISOString();
-      out.push({ id: `${key}:${activityId}`, studentId: null, activityId, responseId: `${key}:${activityId}`, skillId: skill.id, domain: skill.domain, evidenceType: "first-response", rawPerformance: result.ok ? 1 : 0, normalizedPerformance: result.ok ? 1 : 0, independenceLevel: result.supportUsed ? "supported" : "independent", confidence: 0.65, feedbackSource: "rule-based-check", modelVersion: null, promptVersion: null, teacherOverride: false, createdAt });
+      out.push({ id: `${key}:${activityId}`, studentId: null, activityId, responseId: `${key}:${activityId}`, skillId: skill.id, domain: skill.domain, evidenceType: "first-response", rawPerformance: result.ok ? 1 : 0, normalizedPerformance: result.ok ? 1 : 0, independenceLevel: result.supportUsed ? "supported" : "independent", confidence: 0.65, selfSure: result.sure === 1 || result.sure === 2 || result.sure === 3 ? result.sure : null, feedbackSource: "rule-based-check", modelVersion: null, promptVersion: null, teacherOverride: false, createdAt });
     }
   }
   return out;

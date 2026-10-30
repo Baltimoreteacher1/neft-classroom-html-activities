@@ -110,6 +110,7 @@ export const STRINGS = {
   "hub.more.heading": s("More for families", "Más para las familias"),
   "hub.more.help": s("Help Center", "Centro de ayuda"),
   "hub.more.save": s("Save & Continue Later", "Guardar y continuar después"),
+  "hub.more.cards": s("Word cards and partner talk", "Tarjetas de palabras y conversación en pareja"),
   "hub.more.setup": s("Change my setup", "Cambiar mi configuración"),
   "hub.more.choose": s("Choose my own activities", "Elegir mis propias actividades"),
   "hub.window.label": s("Maryland ACCESS testing", "Pruebas ACCESS en Maryland"),

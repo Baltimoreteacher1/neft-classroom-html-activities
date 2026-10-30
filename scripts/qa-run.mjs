@@ -319,7 +319,7 @@ const COVERAGE = [
   // answer-revealing visuals, on-screen listening scripts and "look at the
   // picture" with no picture, all of which shipped in the pre-2026-10 lab.
   [
-    /^(access-practice-lab\/|access-teacher\/|access-expedition\/|access-family-expedition\/|docs\/access-reading-room-2\/|tools\/paper-passport\/|tools\/(validate-access-lab|access-lab-index|access-lab-e2e|access-engagement-e2e|access-studio-e2e|access-family-e2e|access-es-leak-scan|generate-access-printables|gen-access-inventory|sync-access-shell|validate-reading-room|validate-reading-adventures|access-reading-room-e2e|expand-reading-room-library|author-reading-room-additions|author-reading-room-sustained-reads)\.mjs$|tools\/lib\/access-lab-content\.mjs$|tools\/(access-lab|access-engagement|access-skill-graph|access-teacher-evidence|access-i18n)[^/]*\.test\.mjs$)/,
+    /^(access-practice-lab\/|access-teacher\/|access-expedition\/|access-family-expedition\/|docs\/access-reading-room-2\/|tools\/paper-passport\/|tools\/(validate-access-lab|access-lab-index|access-lab-e2e|access-engagement-e2e|access-studio-e2e|access-evidence-e2e|access-family-e2e|access-es-leak-scan|generate-access-printables|gen-access-inventory|sync-access-shell|validate-reading-room|validate-reading-adventures|access-reading-room-e2e|expand-reading-room-library|author-reading-room-additions|author-reading-room-sustained-reads)\.mjs$|tools\/lib\/access-lab-content\.mjs$|tools\/(access-lab|access-engagement|access-skill-graph|access-teacher-evidence|access-i18n|access-calibration|access-evidence-tools|access-student-tools)[^/]*\.test\.mjs$)/,
     ["validate:access-lab", "test", "validate:js-syntax", "check"],
   ],
 

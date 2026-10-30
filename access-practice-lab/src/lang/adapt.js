@@ -198,6 +198,7 @@ function helpPhrase(ev) {
 }
 
 function nextPhrase(s) {
+  if (s.last.guessed) return "you marked it a guess, so one more try on your own will help it stick";
   if (!s.last.independent) return "try a quick independent check today";
   if (!s.last.ok) return "one more short try today will help it stick";
   return `you showed it on your own, and a quick check after ${s.interval} days helps you keep it`;
@@ -221,7 +222,7 @@ export function dueForReview(entries, now = Date.now(), { records = {}, n = 3 } 
   for (const ev of evidence) {
     if (!(dayNumber(ev.createdAt) > 0)) continue;
     if (!skillEvents.has(ev.skillId)) skillEvents.set(ev.skillId, []);
-    skillEvents.get(ev.skillId).push({ t: ev.createdAt, independent: ev.independenceLevel === "independent", ok: ev.normalizedPerformance >= PERFORMANCE_OK, perf: ev.normalizedPerformance, source: ev.responseId, entry: byId.get(ev.responseId) || null, activity: ev.activityId });
+    skillEvents.get(ev.skillId).push({ t: ev.createdAt, independent: ev.independenceLevel === "independent", ok: ev.normalizedPerformance >= PERFORMANCE_OK && ev.selfSure !== 1, guessed: ev.selfSure === 1, perf: ev.normalizedPerformance, source: ev.responseId, entry: byId.get(ev.responseId) || null, activity: ev.activityId });
   }
   const items = [];
   for (const [id, events] of skillEvents) {

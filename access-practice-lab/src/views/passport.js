@@ -29,6 +29,7 @@ import {
 import { practiceSummary } from "../practice-report.js";
 import { journeyHTML, routeProgress } from "../journey.js";
 import { checkinHTML, onCheckinClick } from "../checkin-ui.js";
+import { familyLetterHTML, howIWorkHTML, onLetterClick } from "./passport-work.js";
 import { paperPassportMenu } from "../paper-passport.js";
 import { getFamily, tripWeekStreak } from "../family/state.js";
 import { i18nFor, makeI18n } from "../i18n.js";
@@ -613,6 +614,7 @@ export async function render(ctx) {
           </section>
           <div class="pass-side">
             ${calendarHTML(days)} ${continueHTML(saved, band)}
+            ${howIWorkHTML(I, { entries: mine, records: saved })}
             <section class="pass-card" aria-labelledby="passRevise">
               <h2 id="passRevise">
                 ${icon("retry")} ${I.T("Revisions and earlier tries", "Revisiones e intentos anteriores")}
@@ -664,6 +666,8 @@ export async function render(ctx) {
           >
         </div>
       </section>
+
+      ${familyLetterHTML(I, { name, counts: Object.fromEntries(stats.map((s) => [s.domain, s.done])), entries: mine, records: saved })}
 
       <div class="pass-split pass-split-even no-print">
         <section class="panel pass-share" aria-labelledby="shareTitle">
@@ -799,6 +803,7 @@ export async function onClick(e, ctx) {
   const I = i18nFor(ctx);
   if (ACCESS_LAB_FLAGS.cameraPostcardsEnabled && postcards.onClick(e, I, ctx.rerender)) return true;
   if (await onCheckinClick(e, ctx, I)) return true;
+  if (onLetterClick(e, ctx)) return true;
   const t = e.target;
   const equip = t.closest("[data-equip-cosmetic]");
   if (equip) {

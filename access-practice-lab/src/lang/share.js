@@ -3,6 +3,8 @@
 // (LMS, email, USB), exactly like the existing ACCESS1 progress code, which the reader also accepts.
 // Only an alias is included; there is no email, no school ID, no device ID.
 import { PREFIX, allRecords } from "../store.js";
+import { normalizeSure } from "./calibration.js";
+import { loadReadingState } from "../reading-state.js";
 import { loadLedger } from "./ledger.js";
 import { loadStudio } from "./studio.js";
 
@@ -10,6 +12,13 @@ export const SHARE_PREFIX = "ACCESST1.";
 const b64 = (s) => btoa(unescape(encodeURIComponent(s)));
 const unb64 = (s) => decodeURIComponent(escape(atob(s)));
 const isObj = (v) => v && typeof v === "object" && !Array.isArray(v);
+
+/** The independent reading log as shared: newest 30, only the learner's own title, minutes and note. */
+const cleanLog = (log) =>
+  (Array.isArray(log) ? log : [])
+    .filter((r) => isObj(r) && typeof r.t === "string" && typeof r.title === "string" && r.title.trim())
+    .slice(-30)
+    .map((r) => ({ t: r.t.slice(0, 30), title: r.title.slice(0, 80), minutes: Number.isInteger(r.minutes) && r.minutes >= 1 && r.minutes <= 240 ? r.minutes : null, note: String(r.note || "").slice(0, 140) }));
 
 /** @param {{alias?:string, band?:string, include?:{writing?:boolean,speaking?:boolean,missions?:boolean,detective?:boolean,readingListening?:boolean}}} o */
 export function buildShare({ alias = "", band = "6-8", include = {}, postcards = [] } = {}, ledger = loadLedger(), studio = loadStudio(), records = allRecords()) {
@@ -21,7 +30,7 @@ export function buildShare({ alias = "", band = "6-8", include = {}, postcards =
   const practice = {};
   if (inc.readingListening) for (const row of records) {
     if (row.band !== band || !["Listening", "Reading"].includes(row.domain)) continue;
-    const results = Object.fromEntries(Object.entries(row.record?.results || {}).filter(([, r]) => typeof r?.ok === "boolean" && r.meaningful !== false).map(([id, r]) => [id, { skill: String(r.skill || "").slice(0, 80), ok: r.ok, supportUsed: Boolean(r.supportUsed), date: String(r.date || "").slice(0, 40) }]));
+    const results = Object.fromEntries(Object.entries(row.record?.results || {}).filter(([, r]) => typeof r?.ok === "boolean" && r.meaningful !== false).map(([id, r]) => [id, { skill: String(r.skill || "").slice(0, 80), ok: r.ok, supportUsed: Boolean(r.supportUsed), ...(normalizeSure(r.sure) ? { sure: normalizeSure(r.sure) } : {}), date: String(r.date || "").slice(0, 40) }]));
     if (Object.keys(results).length) practice[`${row.band === "3-5" ? "g3-5:" : ""}${row.domain}:${row.level}`] = { band: row.band, domain: row.domain, level: row.level, results };
   }
   return {
@@ -32,6 +41,7 @@ export function buildShare({ alias = "", band = "6-8", include = {}, postcards =
     band,
     ledger: { entries: ledger.entries.filter((e) => e.band === band) },
     records: practice,
+    readingLog: inc.readingListening ? cleanLog(loadReadingState().log) : [],
     postcards: postcards.slice(0, 6),
     studio: { v: 1, writing: keep(studio.writing, inc.writing), speaking, missions: keep(studio.missions, inc.missions), detective: keep(studio.detective, inc.detective), portfolio: studio.portfolio },
   };
@@ -86,7 +96,7 @@ export function normalize(o) {
   if (isObj(o.records)) for (const [key, row] of Object.entries(o.records)) {
     if (!/^(?:g3-5:)?(?:Listening|Reading):[ABC]$/.test(key) || !isObj(row) || !isObj(row.results)) continue;
     const domain = key.includes("Listening:") ? "Listening" : "Reading";
-    const results = Object.fromEntries(Object.entries(row.results).filter(([, r]) => isObj(r) && typeof r.ok === "boolean").slice(0, 1000).map(([id, r]) => [String(id).slice(0, 100), { skill: String(r.skill || "").slice(0, 80), ok: r.ok, supportUsed: Boolean(r.supportUsed), date: String(r.date || "").slice(0, 40) }]));
+    const results = Object.fromEntries(Object.entries(row.results).filter(([, r]) => isObj(r) && typeof r.ok === "boolean").slice(0, 1000).map(([id, r]) => [String(id).slice(0, 100), { skill: String(r.skill || "").slice(0, 80), ok: r.ok, supportUsed: Boolean(r.supportUsed), ...(normalizeSure(r.sure) ? { sure: normalizeSure(r.sure) } : {}), date: String(r.date || "").slice(0, 40) }]));
     if (Object.keys(results).length) records[key] = { band: key.startsWith("g3-5:") ? "3-5" : "6-8", domain, level: key.split(":").at(-1), results };
   }
   return {
@@ -95,6 +105,7 @@ export function normalize(o) {
     created: String(o.created || ""),
     ledger: { entries },
     records,
+    readingLog: cleanLog(o.readingLog),
     postcards,
     studio: { writing: isObj(s.writing) ? s.writing : {}, speaking: isObj(s.speaking) ? s.speaking : {}, missions: isObj(s.missions) ? s.missions : {}, detective: isObj(s.detective) ? s.detective : {} },
   };
