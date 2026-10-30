@@ -83,7 +83,7 @@ export const ES_LANGUAGE = {
   "used first-then order": "usó el orden de primero y luego",
   "explained a check": "explicó cómo comprobar",
   // Math Writing Studio
-  "A finished example about a different problem. Notice how each colour does one job.": "Un ejemplo terminado sobre otro problema. Observa cómo cada color hace un trabajo.",
+  "A finished example about a different problem. Notice how each colour does one job.": "Un ejemplo terminado sobre otro problema. Observa cómo cada color cumple una sola función.",
   "Back to the organizer": "Volver al organizador",
   "Check my writing": "Revisar mi escritura",
   "Choose an organizer": "Elige un organizador",
