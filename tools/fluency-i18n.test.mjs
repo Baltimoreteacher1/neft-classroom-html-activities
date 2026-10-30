@@ -24,13 +24,13 @@ const { LEVELS, FUNCTIONS } = await import("../math/fluency-lab/language-frames.
 const { MOVE_FN, MOVE_LABELS, STAT_LABELS } = await import("../math/fluency-lab/language-card.js");
 
 const { ALL_SKILLS } = await import("../math/fluency-lab/problem-bank.js");
-const { KID_LEARN } = await import("../math/fluency-lab/kid-learn.js");
+const { kidLearnFor } = await import("../math/fluency-lab/kid-learn.js");
 
 const failures = [];
 const keys = new Set();
 // The young-learner "big idea" and "watch out" lines pass through t() on the Learn page.
 for (const skill of ALL_SKILLS)
-  if (KID_LEARN[skill.id] && skill.grade <= 3) {
+  if (kidLearnFor(skill, skill.grade)) {
     keys.add(skill.learn.rule);
     keys.add(skill.learn.watch);
   }

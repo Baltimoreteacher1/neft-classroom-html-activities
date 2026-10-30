@@ -69,9 +69,9 @@ for (const skill of ALL_SKILLS.filter((entry) => entry.grade <= 3)) {
   }
 }
 // The "big idea" and "watch out" lines: every Kindergarten to Grade 3 skill has them, short, in both languages.
-const { KID_LEARN } = await import(`${lab}kid-learn.js`);
+const { kidLearnFor } = await import(`${lab}kid-learn.js`);
 for (const skill of ALL_SKILLS.filter((entry) => entry.grade <= 3)) {
-  const row = KID_LEARN[skill.id];
+  const row = kidLearnFor(skill, skill.grade);
   ok(row, `${skill.grade}:${skill.id} has young-learner learn lines`);
   ok(
     skill.learn.rule === row.idea.en && skill.learn.watch === row.watch.en,

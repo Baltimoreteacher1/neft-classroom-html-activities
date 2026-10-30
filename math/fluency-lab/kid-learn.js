@@ -59,9 +59,12 @@ export const KID_LEARN = Object.fromEntries(
     }),
 );
 
-// Replace a skill's idea and watch-out lines (Kindergarten to Grade 3 only; other grades keep their own).
+// A row keyed "grade:id" belongs to that grade only (ids repeat across grades). A bare id is a Kindergarten to Grade 3 skill.
+export const kidLearnFor = (skill, grade) => KID_LEARN[`${grade}:${skill.id}`] || (grade <= 3 ? KID_LEARN[skill.id] : null) || null;
+
+// Replace a skill's idea and watch-out lines with the plain-word ones.
 export function applyKidLearn(skill, grade) {
-  const kid = grade <= 3 ? KID_LEARN[skill.id] : null;
+  const kid = kidLearnFor(skill, grade);
   if (kid) skill.learn = { ...skill.learn, rule: kid.idea.en, watch: kid.watch.en };
 }
 
