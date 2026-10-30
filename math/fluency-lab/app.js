@@ -582,7 +582,10 @@ function renderModeTabs(mixed = false) {
 function renderLearn() {
   const skill = state.skill;
   const rng = seededRandom(skill.id.length * 97 + skill.grade * 13);
-  const example = Array.from({ length: 12 }, () => generateProblem(skill, rng)).reduce((best, item) => (item.steps.length > best.steps.length ? item : best));
+  const draws = Array.from({ length: 12 }, () => generateProblem(skill, rng));
+  // A worked example about zero ("10 + 0 = 10") shows nothing; prefer a draw with real numbers when there is one.
+  const trivial = (item) => String(item.displayAnswer) === "0" || /(^|[^\d.])0([^\d.]|$)/.test(item.question);
+  const example = (draws.filter((item) => !trivial(item)).length ? draws.filter((item) => !trivial(item)) : draws).reduce((best, item) => (item.steps.length > best.steps.length ? item : best));
   state.learnExample = { item: example, shown: 1 };
   const picture = interactivePicture({ ...example.model, worked: true }) || trailPicture(example.model);
   els.learnPanel.innerHTML = `
@@ -598,7 +601,7 @@ function renderLearn() {
           <div data-learn-steps data-total-steps="${example.steps.length}">${stepsBlock(example.steps, 1, { id: "learn-steps" })}</div>
         </div>
       </div>
-      <p class="learn-watch"><strong>Watch out:</strong> ${highlightVocab(escapeHtml(skill.learn.watch))}</p>
+      <p class="learn-watch"><strong>Watch out:</strong> ${highlightVocab(escapeHtml(t(skill.learn.watch)))}</p>
       ${wordStripHtml(skill, { heading: t("Words to know") })}
       ${languagePromptHtml(skill, { heading: t("Pause, notice, and explain") })}
       <div class="learn-actions">

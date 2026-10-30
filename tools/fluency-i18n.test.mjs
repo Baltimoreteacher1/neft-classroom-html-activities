@@ -23,8 +23,17 @@ const { ITEMS } = await import("../math/fluency-lab/buddy-items.js");
 const { LEVELS, FUNCTIONS } = await import("../math/fluency-lab/language-frames.js");
 const { MOVE_FN, MOVE_LABELS, STAT_LABELS } = await import("../math/fluency-lab/language-card.js");
 
+const { ALL_SKILLS } = await import("../math/fluency-lab/problem-bank.js");
+const { KID_LEARN } = await import("../math/fluency-lab/kid-learn.js");
+
 const failures = [];
 const keys = new Set();
+// The young-learner "big idea" and "watch out" lines pass through t() on the Learn page.
+for (const skill of ALL_SKILLS)
+  if (KID_LEARN[skill.id] && skill.grade <= 3) {
+    keys.add(skill.learn.rule);
+    keys.add(skill.learn.watch);
+  }
 for (const file of readdirSync(dir).filter((f) => f.endsWith(".js") && !f.startsWith("i18n-es"))) {
   const source = readFileSync(new URL(file, dir), "utf8");
   for (const match of source.matchAll(/\bt\((?:"((?:[^"\\]|\\.)*)"|'((?:[^'\\]|\\.)*)')/g))

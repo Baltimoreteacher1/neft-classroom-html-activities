@@ -1,5 +1,6 @@
 // Spanish for the learner-facing Game Room, trail, rewards and family summary. The English text is the key.
 // Math problems, skill titles, and worked-example steps are not translated here.
+import { ES_KID } from "./i18n-es-kid.js";
 import { ES_LANGUAGE } from "./i18n-es-language.js";
 
 export const ES = {
@@ -769,8 +770,8 @@ export const ES = {
   "Start with the number you already have.": "Empieza con el número que ya tienes.",
   "Counting on adds one at a time, so you can see each step.": "Contar hacia adelante suma de uno en uno, así ves cada paso.",
   "Counting back takes away one at a time.": "Contar hacia atrás quita de uno en uno.",
-  "Subtraction asks: how much do I add to the small number to reach the big one?": "La resta pregunta: ¿cuánto sumo al número pequeño para llegar al grande?",
-  "Division asks: what number times the divisor makes the total?": "La división pregunta: ¿qué número por el divisor da el total?",
+  "How many do I add to reach the big number?": "¿Cuántos sumo para llegar al número grande?",
+  "Which number times the group size makes the total?": "¿Qué número multiplicado por el tamaño del grupo da el total?",
   "Now we can say what the original problem equals.": "Ahora podemos decir cuánto es el problema original.",
   "Ten groups is easy: just put a zero on the end.": "Diez grupos es fácil: solo pon un cero al final.",
   "Five groups is half of ten groups, so it is easy to find.": "Cinco grupos es la mitad de diez grupos, así que es fácil de hallar.",
@@ -1032,6 +1033,7 @@ Object.assign(ES, {
 });
 
 Object.assign(ES, ES_LANGUAGE);
+Object.assign(ES, ES_KID);
 
 Object.assign(ES, {
   "{percent}% from {count} independent tries": "{percent}% en {count} intentos independientes",

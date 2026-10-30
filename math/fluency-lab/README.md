@@ -69,6 +69,10 @@ Guided steps (Learn it, the step player, live help, and "Work it with me" in pra
 
 The picture beside the steps follows the active step (`step-model-link.js`, pinned by `tools/fluency-step-model-link.test.mjs`). In the area model, the split step marks the split, each partial-product step lights its own part with a "Step n of N" tag, finished parts get a check, and the adding step lights the total with arrows up from the parts. Tapping any step shows it in the picture. Other pictures are left alone.
 
+## Kindergarten to Grade 3 explanations
+
+Young learners get their own wording (`kid-steps.js`, applied in `problem-bank.js` before the older step writers): short sentences, no vocabulary words (addend, digit, quotient, interval, regroup), one idea per step, and number sentences wherever a picture can be drawn. `kid-learn.js` holds the "big idea" and "watch out" lines for every K-3 skill, in English and Español, from one table. Step pictures include a ten-frame ("Picture 10 boxes. 5 are full."), split bars ("Split 7 into 5 and 2."), tens-and-ones blocks, place-name boxes, and tens blocks for comparing numbers. A builder returns null for a shape it does not know and the skill's own steps stay. `tools/fluency-kid-steps.test.mjs` checks every K-3 draw for jargon, sentence length, true arithmetic, step count and answer-only-on-the-last-step.
+
 ## Buddy and weekly goal
 
 Every learner has a buddy (no name, no photo). Six colors are free; hats, face items and back items unlock with stickers and ranks, so a buddy's look is always earned. The buddy shows on the trail strip and cheers after each game with a short message that praises thinking, never speed. A weekly goal of 2–5 practice days (Monday to Sunday) is set in the Game Room; meeting it earns a sticker. Buddy look, goal, retired flash cards, and missed-fact cards travel with the JSON backup.

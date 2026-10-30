@@ -1049,6 +1049,34 @@ function lcmStepVisual(text) {
   return primes ? `<div class="sv-bricks">${powerBricksHtml(primes, { withTotal: Boolean(multiplying) })}</div>` : "";
 }
 
+// Pictures for the young-learner steps: a ten-frame, and blocks for tens and ones.
+const BLOCK = { hundred: "pv-h", ten: "pv-t", one: "pv-o" };
+function tenFrame(full) {
+  const boxes = Array.from({ length: 10 }, (_, i) => `<i${i < full ? ' class="on"' : ""}></i>`).join("");
+  return `<span class="sv sv-frame" aria-hidden="true">${boxes}</span>`;
+}
+function blockGroup(count, unit) {
+  const kind = unit.replace(/s$/, "");
+  const shown = Math.min(count, 12);
+  return `<span class="pv-group"><span class="pv-blocks">${`<i class="${BLOCK[kind]}"></i>`.repeat(shown)}</span><small>${count} ${esc(unit)}</small></span>`;
+}
+function placeBlocks(parts) {
+  const groups = [...parts.matchAll(/(\d+) (hundreds?|tens?|ones?)/g)].map((m) => blockGroup(Number(m[1]), m[2]));
+  return groups.length ? `<span class="sv sv-place" aria-hidden="true">${groups.join("")}</span>` : "";
+}
+function placeNames(list) {
+  const boxes = list
+    .split(/,\s*/)
+    .reverse()
+    .map((name) => `<span class="pv-name"><i></i><small>${esc(name)}</small></span>`)
+    .join("");
+  return `<span class="sv sv-places" aria-hidden="true">${boxes}</span>`;
+}
+function compareBlocks(a, da, ua, b, db, ub) {
+  const row = (label, count, unit) => `<span class="pv-row"><b>${esc(label)}</b>${blockGroup(Number(count), unit)}</span>`;
+  return `<span class="sv sv-place sv-compare" aria-hidden="true">${row(a, da, ua)}${row(b, db, ub)}</span>`;
+}
+
 export function stepVisual(line) {
   // Drop thousands commas (not list commas) and lead-ins such as "So" or "Size:".
   const text = String(line)
@@ -1070,6 +1098,16 @@ export function stepVisual(line) {
     /(?:^|:\s*)((?:-?\d+(?:\.\d+)?,\s*)*-?\d+(?:\.\d+)?)$/,
   );
   if (list) return miniHops(list[1].split(/,\s*/).map(Number));
+  const frame = text.match(/^Picture 10 boxes\. (\d+) are full$/);
+  if (frame) return tenFrame(Number(frame[1]));
+  const split = text.match(/^Split (\d+) into (\d+) and (\d+)$/);
+  if (split) return miniBar([Number(split[2]), Number(split[3])]);
+  const names = text.match(/^Name the places from the right: (.+)$/);
+  if (names) return placeNames(names[1]);
+  const apart = text.match(/^Take \d+ apart: (.+)$/);
+  if (apart) return placeBlocks(apart[1]);
+  const place = text.match(/^(\d+) has (\d+) (hundreds?|tens?|ones?)\. (\d+) has (\d+) (hundreds?|tens?|ones?)$/);
+  if (place) return compareBlocks(place[1], place[2], place[3], place[4], place[5], place[6]);
   const eq = text.match(
     /^(-?\d+(?:\.\d+)?) ([+−×÷]) \(?(-?\d+(?:\.\d+)?|\?)\)? = (-?\d+(?:\.\d+)?|\?)$/,
   );

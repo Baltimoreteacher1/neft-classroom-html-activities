@@ -1,4 +1,6 @@
 import { detailSteps } from "./detail-steps.js";
+import { applyKidLearn } from "./kid-learn.js";
+import { kidSteps } from "./kid-steps.js";
 import { leakCap } from "./step-leak.js";
 import { workedSteps } from "./step-builders.js";
 import { countOf, factorText, keptPrimes, multiplyText, parsePrimes, powerText, primeList } from "./factor-tree.js";
@@ -1518,6 +1520,8 @@ for (const grade of GRADES) {
   }
 }
 
+for (const grade of GRADES) for (const skill of grade.skills) applyKidLearn(skill, grade.grade);
+
 export const ALL_SKILLS = GRADES.flatMap((grade) =>
   grade.skills.map((skill) => ({ ...skill, grade: grade.grade, gradeLabel: grade.label, color: grade.color })),
 );
@@ -1553,7 +1557,7 @@ function drawProblem(skill, generator, rng) {
   }
   // The trail and games record answers by generator, so the tutor can credit the matching skill.
   item.generator = skill.generator;
-  item.steps = detailSteps(item) || item.steps;
+  item.steps = kidSteps(item, skill) || detailSteps(item) || item.steps;
   // A generator with no authored steps would otherwise open "Watch me solve it" on the answer itself:
   // lead with the skill's own strategy lines and state the worked line last.
   if (item.steps.length < 2) item.steps = workedSteps(item) || [...(skill.learn?.steps || []), ...item.steps];

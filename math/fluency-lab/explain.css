@@ -417,3 +417,104 @@ html:root body .tr-steps.tr-steps .sv.sv-rect,
 html:root body .guided-step-body .sv.sv-rect {
   margin: 1.9rem 0.4rem 0.4rem 2.4rem;
 }
+
+/* Young-learner pictures: a ten-frame, and blocks for hundreds, tens and ones. */
+.sv-frame {
+  display: grid;
+  grid-template-columns: repeat(5, 2.1rem);
+  gap: 4px;
+}
+.sv-frame i {
+  width: 2.1rem;
+  height: 2.1rem;
+  border: 2px solid var(--pub-navy);
+  border-radius: 6px;
+  background: #fff;
+}
+.sv-frame i.on {
+  background: var(--pub-teal);
+}
+.sv-place {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 0.6rem 1.6rem;
+}
+.sv-place .pv-group {
+  display: grid;
+  gap: 0.35rem;
+}
+.sv-place .pv-blocks {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 3px;
+  max-width: 17rem;
+}
+.sv-place small {
+  color: var(--pub-navy);
+  font-size: 1rem;
+  font-weight: 600;
+}
+.pv-h {
+  width: 2.2rem;
+  height: 2.2rem;
+  border-radius: 3px;
+  background: var(--pub-blue);
+}
+.pv-t {
+  width: 0.8rem;
+  height: 2.2rem;
+  border-radius: 2px;
+  background: var(--pub-teal);
+}
+.pv-o {
+  width: 0.85rem;
+  height: 0.85rem;
+  border-radius: 50%;
+  background: var(--pub-amber);
+}
+.sv-compare {
+  display: grid;
+  gap: 0.6rem;
+}
+.sv-compare .pv-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.9rem;
+}
+.sv-compare .pv-row > b {
+  min-width: 2.6rem;
+  font-size: 1.3rem;
+}
+
+/* Beat the generic ".sv {display:inline-flex}" above for the ten-frame, which needs its 5-wide grid. */
+html:root body .tr-steps.tr-steps .sv.sv-frame,
+html:root body .guided-step-body .sv.sv-frame {
+  display: grid;
+  grid-template-columns: repeat(5, 2.1rem);
+  gap: 4px;
+}
+
+/* "Name the places": empty boxes under their place names, biggest place on the left. */
+.sv-places {
+  display: flex;
+  gap: 0.7rem;
+}
+.sv-places .pv-name {
+  display: grid;
+  justify-items: center;
+  gap: 0.3rem;
+}
+.sv-places .pv-name i {
+  width: 2.6rem;
+  height: 3.2rem;
+  border: 2px solid var(--pub-navy);
+  border-radius: 8px;
+  background: #fff;
+}
+.sv-places small {
+  color: var(--pub-navy);
+  font-size: 1rem;
+  font-weight: 600;
+}
