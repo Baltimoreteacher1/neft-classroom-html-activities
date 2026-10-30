@@ -1043,7 +1043,8 @@ details > summary + * {
 }
 
 /* ── responsive chrome ─────────────────────────────────────────────────── */
-/* Expedition buttons stay on the top row at every width; the other links give way to the menu first. */
+/* Family Adventure keeps its label on the top row at every width (families are mostly on phones).
+   Teacher Expedition shrinks to an icon, then lives in the More menu on narrow screens. */
 .top-expedition {
   border: 2px solid var(--brand);
   color: var(--brand-deep);
@@ -1055,10 +1056,10 @@ details > summary + * {
   }
 }
 @media (max-width: 1099px) {
-  .top-expedition {
+  .top-expedition:not(.top-family) {
     padding-inline: 0.65rem;
   }
-  .top-expedition > span {
+  .top-expedition:not(.top-family) > span {
     position: absolute;
     width: 1px;
     height: 1px;
@@ -1067,9 +1068,31 @@ details > summary + * {
     white-space: nowrap;
   }
 }
-@media (max-width: 559px) {
-  .lab-tools > .top-expedition {
+@media (max-width: 979px) {
+  .lab-top {
+    flex-wrap: wrap;
+    gap: 0.25rem 0.4rem;
+  }
+  .lab-brand {
+    flex: 1 1 calc(100% - 7rem);
+  }
+  .lab-tools {
+    display: contents;
+  }
+  .lab-tools > .top-expedition:not(.top-family) {
     display: none;
+  }
+  .lab-utilities {
+    order: 1;
+  }
+  .top-family {
+    order: 2;
+    flex: 1 1 auto;
+    justify-content: center;
+    margin-inline-start: 0;
+  }
+  .lab-tools .lang-switch {
+    order: 3;
   }
 }
 @media (max-width: 1320px) {
@@ -1387,7 +1410,13 @@ label:has(input:checked),
     display: none;
   }
   .lab-tools .lang-switch {
-    margin-inline: 0.15rem;
+    margin-inline: 0;
+  }
+  .top-family {
+    padding-inline: 0.7rem;
+  }
+  .top-family .ico {
+    display: none;
   }
   .lab-tools .lang-btn {
     min-width: 2.5rem;

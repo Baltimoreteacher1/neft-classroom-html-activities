@@ -155,10 +155,11 @@ export function navHTML(ctx, I) {
   const view = ctx.route?.view || "home";
   const current = ACTIVE[view] || (PRACTICE_VIEWS.has(view) ? "practice" : "");
   const primary = primaryLinks(band, T);
-  // The two expedition buttons stay on the top row at every width; the other links give way to the menu first.
+  // The Family Adventure button keeps its label on the top row at every width (families are mostly on phones);
+  // Teacher Expedition shrinks to an icon, then moves to the More menu on narrow screens.
   const topLink = (l) =>
     html`<a
-      class="top-link${l.pill ? " top-expedition" : ""}"
+      class="top-link${l.pill ? " top-expedition" : ""}${l.id === "family-adventure" ? " top-family" : ""}"
       ${l.low ? raw('data-tier="low"') : ""}
       href="${l.href}"
       ${l.id === current ? raw('aria-current="page"') : ""}
