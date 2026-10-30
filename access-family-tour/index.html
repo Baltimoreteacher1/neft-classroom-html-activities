@@ -1,0 +1,975 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta
+      name="description"
+      content="A guided, bilingual tour of the ACCESS Practice Lab for families. Seven short stops show what each part of the site is for and how to use it, on any phone, tablet or computer. Recorrido guiado bilingüe del laboratorio ACCESS para familias."
+    />
+    <meta name="theme-color" content="#17324d" />
+    <title>Family Expedition | Expedición familiar</title>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 36'%3E%3Crect width='36' height='36' rx='11' fill='%2317324d'/%3E%3Cpath d='m18 5 3.5 9.5L31 18l-9.5 3.5L18 31l-3.5-9.5L5 18l9.5-3.5Z' fill='%23ffce5b'/%3E%3C/svg%3E"
+    />
+    <style>
+      :root {
+        --navy: #17324d;
+        --ink: #1d2b38;
+        --muted: #4a5d6e;
+        --line: #c2d2df;
+        --paper: #f4f8fb;
+        --card: #fff;
+        --gold: #ffce5b;
+        --accent: #17324d;
+        --tint: #e8f0f7;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html {
+        -webkit-text-size-adjust: 100%;
+      }
+      body {
+        margin: 0;
+        background: var(--paper);
+        color: var(--ink);
+        font:
+          18px/1.55 system-ui,
+          -apple-system,
+          "Segoe UI",
+          Roboto,
+          "Helvetica Neue",
+          Arial,
+          sans-serif;
+      }
+      a {
+        color: inherit;
+      }
+      h1,
+      h2,
+      p {
+        margin: 0;
+      }
+      h1 {
+        font-size: clamp(28px, 7vw, 42px);
+        line-height: 1.15;
+        color: var(--navy);
+      }
+      h2 {
+        font-size: clamp(21px, 5vw, 26px);
+        line-height: 1.25;
+        color: var(--navy);
+      }
+      .es {
+        display: block;
+        font-weight: 500;
+        color: var(--muted);
+        margin-top: 2px;
+      }
+      .es::before {
+        content: none;
+      }
+      button,
+      .btn {
+        font: inherit;
+        font-weight: 700;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 2px;
+        min-height: 56px;
+        padding: 12px 20px;
+        border-radius: 14px;
+        border: 2px solid var(--navy);
+        background: var(--card);
+        color: var(--navy);
+        text-decoration: none;
+        text-align: center;
+        cursor: pointer;
+        width: 100%;
+        line-height: 1.3;
+      }
+      button .es,
+      .btn .es {
+        font-weight: 600;
+        color: inherit;
+        opacity: 0.85;
+        margin: 0;
+      }
+      button:focus-visible,
+      .btn:focus-visible,
+      a:focus-visible,
+      [tabindex]:focus-visible {
+        outline: 4px solid #ffb300;
+        outline-offset: 3px;
+      }
+      .primary {
+        background: var(--navy);
+        color: #fff;
+      }
+      .quiet {
+        border-color: transparent;
+        background: transparent;
+        text-decoration: underline;
+        text-underline-offset: 4px;
+        font-weight: 600;
+        min-height: 48px;
+        width: auto;
+      }
+      header {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px 14px;
+        max-width: 760px;
+        margin: auto;
+        padding: 14px 16px;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 800;
+        color: var(--navy);
+        font-size: 17px;
+        text-decoration: none;
+      }
+      .brand svg {
+        flex: none;
+      }
+      .head-actions {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px;
+      }
+      .head-actions button,
+      .head-actions a {
+        width: auto;
+        min-height: 48px;
+        padding: 8px 14px;
+        font-size: 15px;
+        border-width: 1px;
+        flex-direction: row;
+      }
+      .lang {
+        display: flex;
+        gap: 0;
+        border: 2px solid var(--navy);
+        border-radius: 14px;
+        overflow: hidden;
+        background: #fff;
+      }
+      .lang button {
+        border: 0;
+        border-radius: 0;
+        width: auto;
+        min-height: 48px;
+        padding: 8px 14px;
+        font-size: 16px;
+        background: #fff;
+      }
+      .lang button[aria-pressed="true"] {
+        background: var(--navy);
+        color: #fff;
+      }
+      main {
+        max-width: 760px;
+        margin: auto;
+        padding: 8px 16px 40px;
+        outline: none;
+      }
+      main:focus-visible {
+        outline: none;
+      }
+      .card {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 22px;
+        padding: 22px 20px;
+        box-shadow: 0 6px 24px #17324d14;
+      }
+      .stack {
+        display: grid;
+        gap: 14px;
+      }
+      .lead {
+        font-size: 20px;
+      }
+      .eyebrow {
+        display: inline-block;
+        background: var(--tint);
+        color: var(--accent);
+        font-weight: 800;
+        font-size: 15px;
+        padding: 5px 13px;
+        border-radius: 30px;
+      }
+      .grades {
+        display: grid;
+        gap: 12px;
+        grid-template-columns: 1fr;
+      }
+      .grade {
+        align-items: flex-start;
+        text-align: left;
+        padding: 16px 18px;
+        min-height: 84px;
+      }
+      .grade strong {
+        font-size: 21px;
+      }
+      .dots {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+      .dots li {
+        flex: 1;
+        height: 12px;
+        border-radius: 8px;
+        background: #d5e1ea;
+      }
+      .dots li.done {
+        background: #1fa6a2;
+      }
+      .dots li.now {
+        background: var(--navy);
+      }
+      .stoplabel {
+        display: grid;
+        gap: 6px;
+        justify-items: start;
+      }
+      .skill {
+        font-size: 24px;
+        color: var(--accent);
+        line-height: 1.2;
+      }
+      .skill .es {
+        font-size: 18px;
+      }
+      .stophead {
+        display: flex;
+        gap: 16px;
+        align-items: center;
+      }
+      .bigicon {
+        flex: none;
+        width: 76px;
+        height: 76px;
+        border-radius: 22px;
+        background: var(--tint);
+        color: var(--accent);
+        display: grid;
+        place-items: center;
+      }
+      .bigicon svg {
+        width: 44px;
+        height: 44px;
+      }
+      .steps {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: grid;
+        gap: 12px;
+        counter-reset: s;
+      }
+      .steps li {
+        display: flex;
+        gap: 14px;
+        align-items: flex-start;
+        counter-increment: s;
+      }
+      .steps li::before {
+        content: counter(s);
+        flex: none;
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        background: var(--accent);
+        color: #fff;
+        font-weight: 800;
+        display: grid;
+        place-items: center;
+      }
+      .ask {
+        background: #fff6de;
+        border: 1px solid #ddc98c;
+        border-radius: 16px;
+        padding: 14px 16px;
+      }
+      .ask strong {
+        color: #6b4a00;
+      }
+      .note {
+        font-size: 16px;
+        color: var(--muted);
+      }
+      .row {
+        display: grid;
+        gap: 12px;
+      }
+      .confirm {
+        max-width: 728px;
+        margin: 0 auto 14px;
+        padding: 16px;
+        background: #fff6de;
+        border: 1px solid #ddc98c;
+        border-radius: 16px;
+      }
+      .confirm .row {
+        margin-top: 12px;
+      }
+      .stars {
+        font-size: 34px;
+        letter-spacing: 6px;
+        color: #e0a100;
+        text-align: center;
+      }
+      .toast {
+        position: fixed;
+        left: 50%;
+        bottom: 16px;
+        transform: translateX(-50%);
+        background: var(--navy);
+        color: #fff;
+        border: 2px solid var(--gold);
+        padding: 12px 20px;
+        border-radius: 30px;
+        font-size: 16px;
+        max-width: 92%;
+        text-align: center;
+        z-index: 5;
+      }
+      .sr {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+      }
+      footer {
+        max-width: 760px;
+        margin: auto;
+        padding: 0 16px 30px;
+        color: var(--muted);
+        font-size: 15px;
+      }
+      @media (min-width: 640px) {
+        .grades {
+          grid-template-columns: 1fr 1fr;
+        }
+        .row.two {
+          grid-template-columns: 1fr 1fr;
+        }
+        .card {
+          padding: 30px 32px;
+        }
+      }
+      @media (prefers-reduced-motion: no-preference) {
+        main > * {
+          animation: rise 0.25s ease-out;
+        }
+        @keyframes rise {
+          from {
+            opacity: 0;
+            transform: translateY(6px);
+          }
+          to {
+            opacity: 1;
+            transform: none;
+          }
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <a class="brand" href="/access-practice-lab/family"
+        ><svg aria-hidden="true" width="34" height="34" viewBox="0 0 36 36">
+          <rect width="36" height="36" rx="11" fill="currentColor" />
+          <path d="m18 5 3.5 9.5L31 18l-9.5 3.5L18 31l-3.5-9.5L5 18l9.5-3.5Z" fill="#ffce5b" /></svg
+        ><span>EduWonderLab</span></a
+      >
+      <div class="head-actions">
+        <div class="lang" role="group" aria-label="Language / Idioma" id="lang"></div>
+        <button type="button" id="resetBtn" hidden></button>
+      </div>
+    </header>
+    <div id="resetBar" class="confirm" role="alertdialog" aria-labelledby="resetMsg" hidden></div>
+    <main id="content" tabindex="-1"></main>
+    <footer id="foot"></footer>
+    <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+    <noscript
+      ><p style="padding: 16px">
+        Turn on JavaScript to use the Family Expedition, or go to the
+        <a href="/access-practice-lab/family">Family Corner</a>. · Active JavaScript para usar la
+        Expedición familiar, o vaya al <a href="/access-practice-lab/family">Rincón de la familia</a>.
+      </p></noscript
+    >
+    <script>
+      (() => {
+        "use strict";
+        const KEY = "ewl-family-expedition-v1";
+        const LAB_PREFS = "accessPracticeLab:v1:prefs";
+        const LAB = "/access-practice-lab";
+        const MODES = ["en", "es", "bi"];
+        const BANDS = ["3-5", "6-8"];
+
+        const ICONS = {
+          listening:
+            '<path d="M5 14v-4a7 7 0 0 1 14 0v4M5 11H3v7h4v-7Zm14 0h2v7h-4v-7ZM9 11v5m3-7v9m3-7v5"/>',
+          reading:
+            '<path d="M12 5c-3-2-6-2-10-1v15c4-1 7-1 10 1 3-2 6-2 10-1V4c-4-1-7-1-10 1Zm0 0v15M5 8h4m-4 4h4m6-4h4m-4 4h4"/>',
+          speaking:
+            '<path d="M14 16H8l-5 4v-6a7 7 0 0 1-1-4 7 7 0 0 1 7-7h4a7 7 0 0 1 7 7c0 3-2 5-6 6Z"/><path d="m17 16 4 4v-7M7 9h8M7 12h5"/>',
+          writing: '<path d="m4 16-1 5 5-1L21 7l-4-4L4 16Zm0 0 4 4M14 6l4 4"/>',
+          home: '<path d="m2 10 10-8 10 8M5 8v14h14V8M9 22v-7h6v7"/>',
+          find: '<circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/>',
+          help: '<circle cx="12" cy="12" r="10"/><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 1-1 1.7M12 17h.01"/>',
+          passport: '<path d="M5 2h14a2 2 0 0 1 2 2v18H5a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2Zm0 0v20M9 18h8"/><circle cx="13" cy="10" r="4"/>',
+          trip: '<circle cx="12" cy="12" r="10"/><path d="m16 8-3 5-5 3 3-5 5-3Z"/>',
+          save: '<path d="M5 3h12l2 2v16H5Z"/><path d="M8 3v6h8V3M8 21v-7h8v7"/>',
+        };
+        const svg = (id) =>
+          `<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${ICONS[id]}</svg>`;
+
+        // One table: the stops of the tour. Each stop is one real part of the lab, what it is for, and how to use it.
+        // `path` is relative to /access-practice-lab/ ("" is the Practice home). Spanish addresses the family as
+        // "ustedes" (adult and child together), matching the lab's family pages.
+        const STOPS = [
+          {
+            id: "home",
+            color: "#234cda",
+            tint: "#e9efff",
+            path: "family",
+            name: ["Family Corner", "Rincón de la familia"],
+            title: ["Start here: your home base.", "Empiecen aquí: su punto de partida."],
+            what: [
+              "The Family Corner is the front door for families. It is written for adults, in English, Spanish or both.",
+              "El Rincón de la familia es la puerta de entrada para las familias. Está escrito para adultos, en inglés, en español o en ambos.",
+            ],
+            steps: [
+              [
+                "Choose your language at the top: English, Español, or both together.",
+                "Elijan su idioma arriba: English, Español o ambos juntos.",
+              ],
+              [
+                "Scroll down to see a suggested practice, simple tips, and how the lab works.",
+                "Bajen para ver una práctica sugerida, consejos sencillos y cómo funciona el laboratorio.",
+              ],
+              [
+                "Open the setup page to say your child’s grade and how many minutes you have.",
+                "Abran la página de configuración para indicar el grado de su hijo o hija y cuántos minutos tienen.",
+              ],
+            ],
+            tip: [
+              "You do not need an account. Everything is saved on this device.",
+              "No necesitan una cuenta. Todo se guarda en este dispositivo.",
+            ],
+          },
+          {
+            id: "listening",
+            color: "#006c60",
+            tint: "#e4f4ec",
+            path: "",
+            name: ["Today’s mission", "La misión de hoy"],
+            title: ["A short practice, picked for you.", "Una práctica corta, elegida para ustedes."],
+            what: [
+              "The Practice page puts together a short mission for today: a few activities that mix listening, reading, speaking and writing.",
+              "La página de Práctica prepara una misión corta para hoy: unas pocas actividades que mezclan escuchar, leer, hablar y escribir.",
+            ],
+            steps: [
+              [
+                "Choose how long you have: 5, 10 or 15 minutes.",
+                "Elijan cuánto tiempo tienen: 5, 10 o 15 minutos.",
+              ],
+              [
+                "Tap the mission button and do the first activity together.",
+                "Toquen el botón de la misión y hagan juntos la primera actividad.",
+              ],
+              [
+                "Unfinished activities and review come first the next time.",
+                "Las actividades sin terminar y el repaso van primero la próxima vez.",
+              ],
+            ],
+            tip: [
+              "Short practice on many days works better than one long session.",
+              "Practicar poco muchos días funciona mejor que una sola sesión larga.",
+            ],
+          },
+          {
+            id: "find",
+            color: "#9a5700",
+            tint: "#fff3d5",
+            path: "library",
+            name: ["Find an activity", "Buscar una actividad"],
+            title: ["Pick the skill you want.", "Elijan la destreza que quieren."],
+            what: [
+              "Want to work on one skill? Here you can browse activities for Listening, Reading, Speaking and Writing.",
+              "¿Quieren practicar una destreza? Aquí pueden ver actividades de Escuchar, Leer, Hablar y Escribir.",
+            ],
+            steps: [
+              [
+                "Choose a skill, or search for a topic your child likes.",
+                "Elijan una destreza o busquen un tema que le guste a su hijo o hija.",
+              ],
+              [
+                "Open an activity. Look for the supports, like word help or listening again.",
+                "Abran una actividad. Busquen las ayudas, como ayuda con palabras o escuchar otra vez.",
+              ],
+              [
+                "Check the answer and read the feedback together.",
+                "Revisen la respuesta y lean juntos los comentarios.",
+              ],
+            ],
+            tip: [
+              "Start with one that feels comfortable. Success builds confidence.",
+              "Empiecen con una que se sienta cómoda. El éxito da confianza.",
+            ],
+          },
+          {
+            id: "help",
+            color: "#b13f31",
+            tint: "#ffebe6",
+            path: "family/help",
+            name: ["Help My Child", "Ayuda para mi hijo o hija"],
+            title: ["Help without giving the answer.", "Ayuden sin dar la respuesta."],
+            what: [
+              "A short guide for adults: how to support practice at home, even if English is not your strongest language.",
+              "Una guía corta para adultos: cómo apoyar la práctica en casa, aunque el inglés no sea su idioma más fuerte.",
+            ],
+            steps: [
+              [
+                "Read the first few tips. Each one is short.",
+                "Lean los primeros consejos. Cada uno es corto.",
+              ],
+              [
+                "Pick one idea to try the next time your child practices.",
+                "Elijan una idea para probar la próxima vez que su hijo o hija practique.",
+              ],
+              [
+                "Come back here whenever you feel stuck.",
+                "Vuelvan aquí cuando no sepan qué hacer.",
+              ],
+            ],
+            tip: [
+              "You can help in any language. Talking about the idea in your home language is welcome.",
+              "Pueden ayudar en cualquier idioma. Hablar de la idea en su idioma es bienvenido.",
+            ],
+          },
+          {
+            id: "passport",
+            color: "#2d5a9e",
+            tint: "#e9f0fb",
+            path: "passport",
+            name: ["My Passport", "Pasaporte"],
+            title: ["See what has been practiced.", "Vean lo que han practicado."],
+            what: [
+              "My Passport keeps a record of practice, like stamps in a travel book. It also has a paper passport you can print.",
+              "El Pasaporte guarda un registro de la práctica, como sellos en un libro de viaje. También tiene un pasaporte en papel que pueden imprimir.",
+            ],
+            steps: [
+              [
+                "Open it to see the practice done so far.",
+                "Ábranlo para ver la práctica hecha hasta ahora.",
+              ],
+              [
+                "Look at the next suggested step and celebrate what is finished.",
+                "Miren el siguiente paso sugerido y celebren lo que ya terminaron.",
+              ],
+              [
+                "Look for the paper passport menu if you like to print.",
+                "Busquen el menú del pasaporte en papel si les gusta imprimir.",
+              ],
+            ],
+            tip: [
+              "Progress is saved on this device. Use the same phone or computer each time.",
+              "El avance se guarda en este dispositivo. Usen el mismo teléfono o computadora cada vez.",
+            ],
+          },
+          {
+            id: "trip",
+            color: "#7a4a00",
+            tint: "#fdf0d8",
+            path: "family/trip",
+            name: ["Family Trip", "Viaje familiar"],
+            title: ["A longer practice for the weekend.", "Una práctica más larga para el fin de semana."],
+            what: [
+              "The Family Trip is a guided route of six stops. It is for a day when you have more time to sit together.",
+              "El Viaje familiar es una ruta guiada de seis paradas. Es para un día en que tengan más tiempo para sentarse juntos.",
+            ],
+            steps: [
+              [
+                "Pick a skill, or use the one the lab suggests.",
+                "Elijan una destreza o usen la que sugiere el laboratorio.",
+              ],
+              [
+                "Follow the stops in order.",
+                "Sigan las paradas en orden.",
+              ],
+              [
+                "Stop any time. The trip remembers where you were.",
+                "Paren cuando quieran. El viaje recuerda dónde se quedaron.",
+              ],
+            ],
+            tip: [
+              "A trip can take several days. There is no rush.",
+              "Un viaje puede durar varios días. No hay prisa.",
+            ],
+          },
+          {
+            id: "save",
+            color: "#17324d",
+            tint: "#e8eef4",
+            path: "family/save",
+            name: ["Save & Continue Later", "Guardar y continuar después"],
+            title: ["Keep your work safe.", "Mantengan su trabajo seguro."],
+            what: [
+              "Your work is saved on this device. A backup code lets you keep it safe or move it to another phone or computer.",
+              "Su trabajo se guarda en este dispositivo. Un código de respaldo les permite protegerlo o llevarlo a otro teléfono o computadora.",
+            ],
+            steps: [
+              [
+                "Open the page and read where your work is saved.",
+                "Abran la página y lean dónde se guarda su trabajo.",
+              ],
+              [
+                "Copy or download your backup code and keep it somewhere safe.",
+                "Copien o descarguen su código de respaldo y guárdenlo en un lugar seguro.",
+              ],
+              [
+                "On a new device, paste the code to bring your work back.",
+                "En un dispositivo nuevo, peguen el código para recuperar su trabajo.",
+              ],
+            ],
+            tip: [
+              "Voice recordings are not saved. They disappear when the page closes.",
+              "Las grabaciones de voz no se guardan. Desaparecen al cerrar la página.",
+            ],
+          },
+        ];
+        const TOTAL = STOPS.length;
+
+        const COPY = {
+          tagline: [
+            "A guided tour for the whole family",
+            "Un recorrido guiado para toda la familia",
+          ],
+          welcomeTitle: ["Family Expedition", "Expedición familiar"],
+          welcomeLead: [
+            `${TOTAL} short stops. At each one you open a real part of the site, see what it is for, and try it. About ${TOTAL * 2} minutes in all. Stop any time and come back.`,
+            `${TOTAL} paradas cortas. En cada una abren una parte real del sitio, ven para qué sirve y la prueban. Unos ${TOTAL * 2} minutos en total. Pueden parar cuando quieran y volver.`,
+          ],
+          pickGrade: [
+            "Tap your child’s grade so the links open the right practice.",
+            "Toquen el grado de su hijo o hija para que los enlaces abran la práctica correcta.",
+          ],
+          g35: ["Grades 3–5", "Grados 3–5"],
+          g35s: ["Elementary school", "Primaria"],
+          g68: ["Grades 6–8", "Grados 6–8"],
+          g68s: ["Middle school", "Secundaria"],
+          saved: [
+            "No account. Your place is saved on this device only.",
+            "Sin cuenta. Su avance se guarda solo en este dispositivo.",
+          ],
+          practiceNote: [
+            "The practice itself is in English. These pages explain the site in your language.",
+            "La práctica es en inglés. Estas páginas explican el sitio en su idioma.",
+          ],
+          stopOf: (n) => [`Stop ${n} of ${TOTAL}`, `Parada ${n} de ${TOTAL}`],
+          about: ["About 2 minutes", "Unos 2 minutos"],
+          open: ["Open this part of the site", "Abrir esta parte del sitio"],
+          comeBack: [
+            "When you are done looking around, tap Back in your browser, or the Family Expedition button at the top of the lab.",
+            "Cuando terminen de explorar, toquen Atrás en su navegador o el botón Expedición familiar en la parte de arriba del laboratorio.",
+          ],
+          did: ["I know this one", "Ya lo conozco"],
+          didLast: ["I know this one. See my map", "Ya lo conozco. Ver mi mapa"],
+          skip: ["Skip this stop", "Saltar esta parada"],
+          back: ["Back", "Atrás"],
+          askTitle: ["Good to know", "Es bueno saber"],
+          toastDone: ["Stop checked off!", "¡Parada marcada!"],
+          endTitle: ["You know your way around!", "¡Ya conocen el sitio!"],
+          endLead: [
+            "Come back to any stop whenever you want a reminder.",
+            "Vuelvan a cualquier parada cuando quieran un recordatorio.",
+          ],
+          nextTitle: ["Ready to practice?", "¿Listos para practicar?"],
+          corner: ["Family Corner", "Rincón de la familia"],
+          cornerHelp: ["A practice plan and tips", "Un plan de práctica y consejos"],
+          helpMe: ["Help My Child", "Ayuda para mi hijo o hija"],
+          helpMeHelp: ["How to help without giving the answer", "Cómo ayudar sin dar la respuesta"],
+          trip: ["Family Trip", "Viaje familiar"],
+          tripHelp: [
+            "A longer practice for the weekend",
+            "Una práctica más larga para el fin de semana",
+          ],
+          again: ["Take the tour again", "Hacer el recorrido otra vez"],
+          start: ["Start over", "Empezar de nuevo"],
+          startQ: ["Start over from the beginning?", "¿Empezar de nuevo desde el principio?"],
+          startQd: [
+            "This clears your grade and your checked stops on this page. Your lab practice stays saved.",
+            "Esto borra su grado y las paradas marcadas en esta página. Su práctica en el laboratorio se conserva.",
+          ],
+          yesStart: ["Yes, start over", "Sí, empezar de nuevo"],
+          keep: ["Keep my place", "Conservar mi avance"],
+          fresh: [
+            "Fresh start. Pick a grade to begin.",
+            "Comienzo nuevo. Elijan un grado para empezar.",
+          ],
+          foot: [
+            "A family companion to the ACCESS Practice Lab by EduWonderLab. No names or emails are collected here.",
+            "Un complemento familiar del Laboratorio de práctica ACCESS de EduWonderLab. Aquí no se recopilan nombres ni correos.",
+          ],
+          adventure: ["Family Adventure", "Aventura familiar"],
+          adventureHelp: [
+            "Four short practice activities, one for each skill",
+            "Cuatro actividades cortas de práctica, una por cada destreza",
+          ],
+          mapTitle: ["Jump back to a stop", "Volver a una parada"],
+          labLink: ["ACCESS Lab", "Laboratorio ACCESS"],
+        };
+
+        const fresh = () => ({ lang: "", band: "", stop: 0, done: [], view: "welcome" });
+        let state = fresh(),
+          toastTimer;
+        const $ = (id) => document.getElementById(id);
+        const esc = (v) =>
+          String(v ?? "").replace(
+            /[&<>"']/g,
+            (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c],
+          );
+
+        // Language: one decision point. 'en' English only, 'es' Spanish only, 'bi' English with Spanish beneath.
+        const mode = () => (MODES.includes(state.lang) ? state.lang : "en");
+        const T = (pair) => {
+          const [e, s] = pair;
+          const m = mode();
+          return m === "en"
+            ? esc(e)
+            : m === "es"
+              ? esc(s)
+              : `${esc(e)}<span class="es" lang="es">${esc(s)}</span>`;
+        };
+        const S = (pair) => {
+          const [e, s] = pair;
+          const m = mode();
+          return m === "en" ? e : m === "es" ? s : `${e} / ${s}`;
+        };
+
+        function readLabPrefs() {
+          try {
+            return JSON.parse(localStorage.getItem(LAB_PREFS) || "{}") || {};
+          } catch {
+            return {};
+          }
+        }
+        function shareLangWithLab() {
+          // The lab reads the same preference, so a family only chooses a language once.
+          try {
+            const p = readLabPrefs();
+            localStorage.setItem(
+              LAB_PREFS,
+              JSON.stringify({ ...p, lang: mode(), langChosen: true }),
+            );
+          } catch {}
+        }
+        function restore() {
+          let raw = null;
+          try {
+            raw = JSON.parse(localStorage.getItem(KEY) || "null");
+          } catch {}
+          const lab = readLabPrefs();
+          const navEs = /^es\b/i.test(navigator.language || "");
+          state.lang = MODES.includes(raw?.lang)
+            ? raw.lang
+            : lab.langChosen && MODES.includes(lab.lang)
+              ? lab.lang
+              : navEs
+                ? "es"
+                : "en";
+          if (!raw || !BANDS.includes(raw.band)) return;
+          state.band = raw.band;
+          state.done = Array.isArray(raw.done)
+            ? [...new Set(raw.done.filter((i) => Number.isInteger(i) && i >= 0 && i < TOTAL))]
+            : [];
+          state.stop =
+            Number.isInteger(raw.stop) && raw.stop >= 0 && raw.stop < TOTAL ? raw.stop : 0;
+          state.view = raw.view === "end" ? "end" : "stop";
+        }
+        function save() {
+          try {
+            localStorage.setItem(KEY, JSON.stringify(state));
+          } catch {}
+        }
+
+        const labHref = (path) => `${LAB}/${path}?grades=${state.band || "3-5"}`;
+        const dots = () =>
+          `<ol class="dots" aria-label="${esc(S(COPY.stopOf(state.stop + 1)))}">${STOPS.map((s, i) => `<li class="${state.done.includes(i) ? "done" : i === state.stop && state.view === "stop" ? "now" : ""}"></li>`).join("")}</ol>`;
+
+        function welcome() {
+          return `<section class="card stack"><span class="eyebrow">${T(COPY.tagline)}</span>
+  <h1>${T(COPY.welcomeTitle)}</h1><p class="lead">${T(COPY.welcomeLead)}</p>
+  <h2>${T(COPY.pickGrade)}</h2>
+  <div class="grades">
+    <button type="button" class="grade" data-band="3-5"><strong>${T(COPY.g35)}</strong><span>${T(COPY.g35s)}</span></button>
+    <button type="button" class="grade" data-band="6-8"><strong>${T(COPY.g68)}</strong><span>${T(COPY.g68s)}</span></button>
+  </div>
+  <p class="note">${T(COPY.practiceNote)}</p><p class="note">${T(COPY.saved)}</p></section>`;
+        }
+        function stop() {
+          const s = STOPS[state.stop];
+          return `<section class="card stack" style="--accent:${s.color};--tint:${s.tint}">${dots()}
+  <div class="stophead"><div class="bigicon">${svg(s.id)}</div><div class="stoplabel"><span class="eyebrow">${T(COPY.stopOf(state.stop + 1))}</span><strong class="skill">${T(s.name)}</strong></div></div>
+  <h1 id="stopTitle">${T(s.title)}</h1><p class="lead">${T(s.what)}</p><p class="note">${T(COPY.about)}</p>
+  <ol class="steps">${s.steps.map(([e, es]) => `<li><span>${T([e, es])}</span></li>`).join("")}</ol>
+  <a class="btn primary" href="${labHref(s.path)}">${T(COPY.open)}</a>
+  <p class="note">${T(COPY.comeBack)}</p>
+  <div class="ask"><strong>${T(COPY.askTitle)}</strong><p>${T(s.tip)}</p></div>
+  <div class="row"><button type="button" data-done>${T(state.stop === TOTAL - 1 ? COPY.didLast : COPY.did)}</button></div>
+  <div class="row two">${state.stop > 0 ? `<button type="button" class="quiet" data-nav="-1">${T(COPY.back)}</button>` : "<span></span>"}<button type="button" class="quiet" data-nav="1">${T(COPY.skip)}</button></div></section>`;
+        }
+        function end() {
+          const n = state.done.length;
+          const link = (href, title, help) =>
+            `<a class="btn" href="${href}">${T(title)}<span class="note">${T(help)}</span></a>`;
+          return `<section class="card stack"><div class="stars" role="img" aria-label="${n} / ${TOTAL}">${STOPS.map((_, i) => (state.done.includes(i) ? "★" : "☆")).join("")}</div>
+  <h1>${T(COPY.endTitle)}</h1><p class="lead">${T(COPY.endLead)}</p>
+  <h2>${T(COPY.nextTitle)}</h2>
+  <div class="row">${link("/access-family-expedition/", COPY.adventure, COPY.adventureHelp)}${link(`${LAB}/?grades=${state.band}`, ["Start today’s mission", "Empezar la misión de hoy"], ["Five to fifteen minutes of practice", "De cinco a quince minutos de práctica"])}</div>
+  <h2>${T(COPY.mapTitle)}</h2>
+  <div class="row">${STOPS.map((s, i) => `<button type="button" data-goto="${i}">${T(s.name)}</button>`).join("")}</div>
+  <div class="row"><button type="button" data-restart-run>${T(COPY.again)}</button></div></section>`;
+        }
+
+        function chrome() {
+          const labels = { en: "English", es: "Español", bi: "EN + ES" };
+          $("lang").innerHTML = MODES.map(
+            (m) =>
+              `<button type="button" data-lang="${m}" aria-pressed="${mode() === m}" ${m === "es" ? 'lang="es"' : ""}>${labels[m]}</button>`,
+          ).join("");
+          const started = !!state.band;
+          $("resetBtn").hidden = !started;
+          $("resetBtn").textContent = S(COPY.start);
+          $("resetBar").innerHTML =
+            `<p id="resetMsg"><strong>${T(COPY.startQ)}</strong><br>${T(COPY.startQd)}</p><div class="row two"><button type="button" class="primary" data-reset>${T(COPY.yesStart)}</button><button type="button" data-reset-cancel>${T(COPY.keep)}</button></div>`;
+          $("foot").innerHTML =
+            `<p>${T(COPY.foot)}</p><p><a href="${LAB}/">${esc(S(COPY.labLink))}</a></p>`;
+          document.documentElement.lang = mode() === "es" ? "es" : "en";
+          document.title = S(["Family Expedition", "Expedición familiar"]) + " | EduWonderLab";
+        }
+        function render(focus = true) {
+          if (!state.band) state.view = "welcome";
+          $("content").innerHTML =
+            state.view === "welcome" ? welcome() : state.view === "end" ? end() : stop();
+          chrome();
+          save();
+          if (focus) {
+            $("content").focus({ preventScroll: true });
+            window.scrollTo(0, 0);
+          }
+        }
+        function toast(pair) {
+          clearTimeout(toastTimer);
+          $("toast").textContent = S(pair);
+          $("toast").hidden = false;
+          toastTimer = setTimeout(() => {
+            $("toast").hidden = true;
+          }, 2600);
+        }
+        function advance() {
+          if (state.stop >= TOTAL - 1) {
+            state.view = "end";
+          } else {
+            state.stop += 1;
+          }
+          render();
+        }
+
+        document.addEventListener("click", (e) => {
+          const b = e.target.closest("button");
+          if (!b) return;
+          if (b.dataset.lang) {
+            state.lang = b.dataset.lang;
+            shareLangWithLab();
+            render(false);
+            $("lang").querySelector(`[data-lang="${state.lang}"]`)?.focus();
+            return;
+          }
+          if (b.dataset.band) {
+            state.band = b.dataset.band;
+            state.view = "stop";
+            state.stop = 0;
+            state.done = [];
+            render();
+            return;
+          }
+          if ("done" in b.dataset) {
+            if (!state.done.includes(state.stop)) {
+              state.done.push(state.stop);
+              toast(COPY.toastDone);
+            }
+            advance();
+            return;
+          }
+          if (b.dataset.nav) {
+            const n = state.stop + Number(b.dataset.nav);
+            if (n < 0) return;
+            if (n >= TOTAL) {
+              state.view = "end";
+            } else {
+              state.stop = n;
+            }
+            render();
+            return;
+          }
+          if (b.dataset.goto) {
+            state.view = "stop";
+            state.stop = Number(b.dataset.goto);
+            render();
+            return;
+          }
+          if ("restartRun" in b.dataset) {
+            state.view = "stop";
+            state.stop = 0;
+            state.done = [];
+            render();
+            return;
+          }
+          if (b.id === "resetBtn") {
+            $("resetBar").hidden = false;
+            $("resetBar").scrollIntoView({ block: "nearest" });
+            $("resetBar").querySelector("[data-reset]").focus({ preventScroll: true });
+            return;
+          }
+          if ("resetCancel" in b.dataset) {
+            $("resetBar").hidden = true;
+            $("resetBtn").focus();
+            return;
+          }
+          if ("reset" in b.dataset) {
+            const lang = state.lang;
+            state = fresh();
+            state.lang = lang;
+            $("resetBar").hidden = true;
+            render();
+            toast(COPY.fresh);
+          }
+        });
+
+        restore();
+        render(false);
+      })();
+    </script>
+  </body>
+</html>

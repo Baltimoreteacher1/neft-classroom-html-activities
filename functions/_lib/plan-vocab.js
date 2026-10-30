@@ -5542,6 +5542,12 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/access-family-tour/",
+    title: "Family Expedition | Expedición familiar",
+    category: "Tool",
+    unit: null,
+  },
+  {
     path: "/access-guide/",
     title: "ACCESS Practice Lab · Quick Guide",
     category: "Tool",

@@ -71,6 +71,15 @@ export function primaryLinks(band, T) {
       label: T("Family Adventure", "Aventura familiar"),
       href: "/access-family-expedition/",
       pill: true,
+      family: true,
+    },
+    {
+      id: "family-expedition",
+      icon: "road",
+      label: T("Family Expedition", "Expedición familiar"),
+      href: "/access-family-tour/",
+      pill: true,
+      family: true,
     },
     {
       id: "teacher",
@@ -155,11 +164,11 @@ export function navHTML(ctx, I) {
   const view = ctx.route?.view || "home";
   const current = ACTIVE[view] || (PRACTICE_VIEWS.has(view) ? "practice" : "");
   const primary = primaryLinks(band, T);
-  // The Family Adventure button keeps its label on the top row at every width (families are mostly on phones);
+  // The two family buttons keep their labels on the top row at every width (families are mostly on phones);
   // Teacher Expedition shrinks to an icon, then moves to the More menu on narrow screens.
   const topLink = (l) =>
     html`<a
-      class="top-link${l.pill ? " top-expedition" : ""}${l.id === "family-adventure" ? " top-family" : ""}"
+      class="top-link${l.pill ? " top-expedition" : ""}${l.family ? " top-family" : ""}"
       ${l.low ? raw('data-tier="low"') : ""}
       href="${l.href}"
       ${l.id === current ? raw('aria-current="page"') : ""}

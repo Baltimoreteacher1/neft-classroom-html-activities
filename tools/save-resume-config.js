@@ -73,6 +73,7 @@ export const SKIP_TOPLEVEL = new Set([
   "access-guide", // read-only practice guide, with no student work to save
   "access-expedition", // teacher field-trip companion: links out to the lab, saves only its own route
   "access-family-expedition", // bilingual family trail: links out to the lab, saves only its own place
+  "access-family-tour", // bilingual family site tour: links out to the lab, saves only its own place
   "work-coach", // stateless AI photo-coaching tool — no progress to save/resume
   "math-sims", // stateless physics sandboxes (slope/probability) — nothing to save
   "infinite-practice", // stateless AI practice generator — nothing to save
