@@ -164,6 +164,7 @@ test("Quick Practice is the default, migrates the old automatic paths, and retai
   w.restoreHomeworkRoute();
   assert.equal(w.document.body.dataset.homeworkRoute, "quick");
   assert.equal(w.document.getElementById("hw_tab_play").hidden, true);
+  assert.equal(w.document.getElementById("hw_tab_photobooth").hidden, false);
   // Earlier defaults were written without a choice: "core" and "full" both fall back to Quick.
   w.localStorage.setItem("hw_route_3-2", "core");
   w.restoreHomeworkRoute();
@@ -173,9 +174,11 @@ test("Quick Practice is the default, migrates the old automatic paths, and retai
   assert.equal(w.document.body.dataset.homeworkRoute, "quick");
   // An explicit choice is kept.
   w.setHomeworkRoute("full");
+  assert.equal(w.document.getElementById("hw_tab_photobooth").hidden, false);
   w.restoreHomeworkRoute();
   assert.equal(w.document.body.dataset.homeworkRoute, "full");
   w.setHomeworkRoute("core");
+  assert.equal(w.document.getElementById("hw_tab_photobooth").hidden, false);
   w.restoreHomeworkRoute();
   assert.equal(w.document.body.dataset.homeworkRoute, "full");
   dom.window.close();

@@ -60,7 +60,7 @@ export function unitScene(unit) {
 }
 
 /** Inline script run in <head> so the reader's options apply before the first paint. */
-export const READER_BOOT_JS = `(function(){try{var s=JSON.parse(localStorage.getItem('${READER_KEY}')||'{}'),r=document.documentElement;if(s.theme==='light'||s.theme==='dark'||s.theme==='contrast')r.setAttribute('data-theme',s.theme);if(s.text==='115'||s.text==='130'||s.text==='150')r.setAttribute('data-text-size',s.text);if(s.spacing==='more')r.setAttribute('data-spacing','more');if(s.reading==='dyslexia')r.setAttribute('data-reading','dyslexia');}catch(e){}})();`;
+export const READER_BOOT_JS = `(function(){try{var s=JSON.parse(localStorage.getItem('${READER_KEY}')||'{}'),r=document.documentElement;if(s.theme==='auto')r.removeAttribute('data-theme');else r.setAttribute('data-theme',s.theme==='dark'||s.theme==='contrast'?s.theme:'light');if(s.text==='115'||s.text==='130'||s.text==='150')r.setAttribute('data-text-size',s.text);if(s.spacing==='more')r.setAttribute('data-spacing','more');if(s.reading==='dyslexia')r.setAttribute('data-reading','dyslexia');}catch(e){}})();`;
 
 const LANGS = [
   { mode: "en", short: "EN", en: "English", es: "Inglés" },
@@ -271,7 +271,7 @@ export const HERO_JS = `
   function current() {
     var s = load();
     return {
-      theme: s.theme === 'light' || s.theme === 'dark' || s.theme === 'contrast' ? s.theme : 'auto',
+      theme: s.theme === 'auto' || s.theme === 'dark' || s.theme === 'contrast' ? s.theme : 'light',
       text: TEXT.indexOf(s.text) > -1 ? s.text : '100',
       spacing: s.spacing === 'more' ? 'more' : 'default',
       reading: s.reading === 'dyslexia' ? 'dyslexia' : 'default'

@@ -9898,7 +9898,9 @@ function setHomeworkRoute(mode, options) {
     btn.setAttribute('aria-label', document.documentElement.lang === 'es' ? btn.dataset.ariaEs : btn.dataset.ariaEn);
   });
   document.querySelectorAll('.homework-tab-extra').forEach(function (btn) {
-    btn.hidden = mode !== 'full';
+    // The photobooth is an optional tool, so keep it available on every
+    // family-practice route, including the default Quick Practice path.
+    btn.hidden = false;
   });
   var shell = document.querySelector('.homework-tabs-shell');
   if (shell) shell.dataset.tabCount = String(route.tabs.length);

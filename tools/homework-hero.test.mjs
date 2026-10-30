@@ -101,6 +101,7 @@ test("reader options persist, apply before paint and the More sheet opens", () =
   const w = dom.window;
   const root = w.document.documentElement;
   const stored = () => JSON.parse(w.localStorage.getItem(READER_KEY));
+  assert.equal(root.getAttribute("data-theme"), "light", "a first visit uses the light theme");
   w.document.querySelector("[data-fm-text-cycle]").click();
   assert.equal(root.getAttribute("data-text-size"), "115");
   assert.equal(stored().text, "115");
@@ -124,7 +125,7 @@ test("reader options persist, apply before paint and the More sheet opens", () =
   );
   assert.equal(
     again.window.document.documentElement.getAttribute("data-theme"),
-    null,
+    "light",
     "separate origin storage",
   );
   w.localStorage.setItem(
@@ -142,6 +143,17 @@ test("reader options persist, apply before paint and the More sheet opens", () =
     [r.dataset.theme, r.dataset.textSize, r.dataset.spacing, r.dataset.reading],
     ["contrast", "130", "more", "dyslexia"],
   );
+  const device = new JSDOM(
+    `<html><head><script>${READER_BOOT_JS}</script></head><body></body></html>`,
+    {
+      runScripts: "dangerously",
+      url: "https://example.test/",
+    },
+  );
+  device.window.localStorage.setItem(READER_KEY, JSON.stringify({ theme: "auto" }));
+  device.window.eval(READER_BOOT_JS);
+  assert.equal(device.window.document.documentElement.hasAttribute("data-theme"), false);
+  device.window.close();
   // A hostile value is ignored, never written to the page.
   third.window.localStorage.setItem(
     READER_KEY,
@@ -150,7 +162,7 @@ test("reader options persist, apply before paint and the More sheet opens", () =
   r.removeAttribute("data-theme");
   r.removeAttribute("data-text-size");
   third.window.eval(READER_BOOT_JS);
-  assert.equal(r.getAttribute("data-theme"), null);
+  assert.equal(r.getAttribute("data-theme"), "light", "invalid saved themes fall back to light");
   assert.equal(r.getAttribute("data-text-size"), null);
 });
 
