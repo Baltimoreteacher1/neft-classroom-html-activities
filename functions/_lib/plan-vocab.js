@@ -3056,6 +3056,12 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/math/fluency-lab/family-adventure/",
+    title: "Family Math Adventure | Aventura matemática en familia",
+    category: "Math Tool",
+    unit: null,
+  },
+  {
     path: "/math/fluency-lab/family/",
     title: "Family Math",
     category: "Math Tool",

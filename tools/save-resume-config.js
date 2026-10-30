@@ -115,6 +115,8 @@ export const SKIP_FILE_RE =
 //   - math/student-board/index.html → the live Class Board (teacher-authored,
 //     student-visible display; its own state lives in D1 via /api/board, not in
 //     the generic student save/resume widget)
+//   - math/fluency-lab/family-adventure/ → a links-only family guide that saves its
+//     own place (language, grade, stars); the practice it opens carries its own save
 //   - today/index.html           → the daily front door: a nav screen that READS
 //     save/resume state (via /api/progress/mine) to decide what to link to. It
 //     holds no student work of its own, so a Save widget on it would offer to
@@ -123,4 +125,4 @@ export const SKIP_FILE_RE =
 // (The math/intervention/<topic>/ pages DO carry student self-assessment +
 // quiz state and are intentionally NOT excluded.)
 export const SKIP_PATH_RE =
-  /(^|\/)(?:teacher(\/|$)|living-school\/neft-city-|focus-school\/|shai-school\/|games-live\/|games\/3d\/|math\/(?:intervention|student-board)\/index\.html$|today\/index\.html$)/i;
+  /(^|\/)(?:teacher(\/|$)|living-school\/neft-city-|focus-school\/|shai-school\/|games-live\/|games\/3d\/|math\/(?:intervention|student-board)\/index\.html$|math\/fluency-lab\/family-adventure\/index\.html$|today\/index\.html$)/i;
