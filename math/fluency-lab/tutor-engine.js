@@ -1,3 +1,4 @@
+import { REVIEW_LADDER, masteryScore, masteryState, nextInterval } from "./mastery-model.js";
 import { classifyMistake, isKnownMistakeCategory, likelyMistake } from "./mistake-notes.js";
 import { ALL_SKILLS, GENERATOR_PARTS, baseGenerator, generateProblem, getGrade, opsOf, resolveOp, seededRandom } from "./problem-bank.js";
 
@@ -152,7 +153,7 @@ export function evidence(tutor, skill, now = Date.now()) {
   if (record.lessonCompleted && !recent.length) label = "Lesson explored";
   if (recent.length) label = independent.length >= 4 && ratio >= 0.75 ? "Building confidence" : recent.some((entry) => !entry.independent) ? "Learning with support" : "Getting started";
   if (secure) label = due ? "Ready for a refresh" : "Remembered independently";
-  return { ...record, recent, independent: independent.length, successes, ratio, secure, due, label, score: independent.length ? Math.round(ratio * 100) : null };
+  return { ...record, recent, independent: independent.length, successes, ratio, secure, due, label, score: masteryScore(record, now), state: masteryState(record, now) };
 }
 
 export function difficulty(tutor, skill) {
@@ -351,18 +352,19 @@ export function recordAnswer(tutor, skill, result, now = Date.now()) {
     correct: Boolean(result.correct), independent, level, at: now,
     ...(strategies.length ? { strategies } : {}),
     ...(Number.isFinite(responseMs) ? { responseMs, paceEligible } : {}),
+    ...(result.sig ? { sig: String(result.sig).slice(0, 24) } : {}),
   }].slice(-RECENT_WINDOW);
   record.metrics = summarizeMetrics(record);
   if (independent) record.independentTotal = (record.independentTotal || 0) + 1;
   else record.supportedTotal = (record.supportedTotal || 0) + 1;
   const previousDay = record.lastSuccessfulDay;
   if (independent && result.correct && result.level !== 0) {
-    if (previousDay !== localDay(now)) record.interval = previousDay ? Math.min(14, Math.max(1, record.interval) * 2) : 1;
+    if (previousDay !== localDay(now)) record.interval = previousDay ? nextInterval(record.interval, { correct: true, independent: true, advance: true }) : REVIEW_LADDER[0];
     record.lastSuccessfulDay = localDay(now);
     record.dueAt = now + Math.max(1, record.interval) * DAY;
   } else {
     // An independent miss means the skill needs a short recheck; a hinted or easier-level success only halves the wait.
-    record.interval = independent || !result.correct ? 1 : Math.max(1, Math.floor((record.interval || 1) / 2));
+    record.interval = nextInterval(record.interval || 1, { correct: Boolean(result.correct) && !independent, independent: false });
     record.dueAt = now + record.interval * DAY;
   }
   record.lastAt = now;
@@ -512,6 +514,7 @@ export function sanitizeTutor(value) {
       return {
         correct: entry.correct, independent: entry.independent, at: entry.at, level,
         ...(strategies.length ? { strategies } : {}),
+        ...(typeof entry.sig === "string" && entry.sig ? { sig: entry.sig.slice(0, 24) } : {}),
         ...(validResponse ? { responseMs, paceEligible: Boolean(entry.paceEligible && entry.independent && level >= 1) } : {}),
       };
     });
@@ -519,7 +522,7 @@ export function sanitizeTutor(value) {
     clean.records[key] = {
       recent,
       independentTotal: Math.max(0, Number(record.independentTotal) || 0), supportedTotal: Math.max(0, Number(record.supportedTotal) || 0),
-      dueAt: Number.isFinite(record.dueAt) ? record.dueAt : null, interval: Math.min(14, Math.max(0, Number(record.interval) || 0)),
+      dueAt: Number.isFinite(record.dueAt) ? record.dueAt : null, interval: Math.min(REVIEW_LADDER.at(-1), Math.max(0, Number(record.interval) || 0)),
       lastAt: Number.isFinite(record.lastAt) ? record.lastAt : null, lastSuccessfulDay: String(record.lastSuccessfulDay || "").slice(0, 10), lessonCompleted: Boolean(record.lessonCompleted),
       strategyTags: [...new Set([...strategyTags, ...recent.flatMap((entry) => entry.strategies || [])])],
       metrics: summarizeMetrics({ recent, strategyTags }),

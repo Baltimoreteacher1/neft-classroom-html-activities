@@ -8,6 +8,7 @@ import {
   seededRandom,
   validateAnswer,
 } from "./problem-bank.js";
+import { itemSignature } from "./mastery-model.js";
 import { adaptiveProblem, dailyPlan, difficulty, emptyTutor, evidence, feedbackFor, findSkill, localDay, missionPlan, prerequisites, prerequisiteGraph, recommendations, recordAnswer, rememberMistake, sanitizeTutor, skillForItem, skillKey as tutorSkillKey } from "./tutor-engine.js";
 import { checkupPlan, checkupSummary, recordCheckupAnswer } from "./placement.js";
 import { copiesTable, factorTreeSvg, keptPrimes, powerGroups, primeList, treeCaption } from "./factor-tree.js";
@@ -6867,6 +6868,7 @@ function finalizeProblem(correct, { unsure = false } = {}) {
         independent,
         level: state.item.level,
         strategyTags,
+        sig: itemSignature(state.item.question),
         responseMs: state.firstResponseMs,
         // Practice is untimed. This is a descriptive first-response sample, never a speed score.
         calm: true,
