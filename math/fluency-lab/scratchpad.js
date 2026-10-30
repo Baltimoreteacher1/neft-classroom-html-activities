@@ -1,4 +1,3 @@
-import "./scratchpad.css";
 
 const WIDTH = 1000;
 const HEIGHT = 500;

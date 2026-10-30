@@ -7,7 +7,7 @@
 .intro-copy > p:not(.plain-label):not(.intro-kicker) { max-width: 66ch; margin: .7rem 0 0; font-size: 1.05rem; line-height: 1.55; }
 .overall-stats { margin-top: .8rem; }
 .grade-rail { padding: 1rem 1.2rem .8rem; border: 1px solid #d8dfd8; border-radius: 16px; box-shadow: 0 4px 18px rgba(28,57,53,.04); }
-.grade-tabs { grid-template-columns: repeat(8, minmax(48px, 1fr)); }
+.grade-tabs { grid-template-columns: repeat(9, minmax(0, 1fr)); }
 .grade-tab { min-height: 58px; border: 1px solid #dfe5df; border-top: 3px solid var(--grade); border-radius: 9px; background: #fbfcf8; }
 .grade-tab[aria-selected="true"] { border-color: var(--navy-dark); background: var(--navy); color: #fff; }
 .hub-tabs { border-color: #dbe2dc; }
@@ -24,7 +24,7 @@
 .journey-checkup-icon { display: grid; width: 34px; height: 34px; place-items: center; border-radius: 10px; background: #deece5; color: var(--navy); font-size: 1.25rem; font-weight: 800; }
 .journey-checkup strong, .journey-checkup small { display: block; }
 .journey-checkup small { margin-top: .15rem; color: var(--ink-soft); font-size: .82rem; }
-.journey-cards { display: grid; grid-template-columns: minmax(0, 1.25fr) repeat(2, minmax(0, .82fr)); align-items: start; gap: .9rem; }
+.journey-cards { display: grid; grid-template-columns: minmax(0, 1.25fr) repeat(2, minmax(0, .82fr)); align-items: stretch; gap: .9rem; }
 .journey-card { position: relative; display: flex; min-width: 0; min-height: 255px; overflow: hidden; flex-direction: column; align-items: stretch; border: 1px solid #e2e6df; border-radius: 18px; background: #fff; color: var(--ink); text-align: left; box-shadow: 0 4px 14px rgba(28,57,53,.035); transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease; }
 .journey-card:hover { transform: translateY(-3px); border-color: #c3d6cc; box-shadow: 0 12px 28px rgba(28,57,53,.09); }
 .journey-card:focus-visible { outline: 3px solid #237c6b; outline-offset: 3px; }
@@ -38,6 +38,7 @@
 .journey-art { display: grid; min-height: 135px; place-items: center; align-self: start; margin: .1rem -.7rem 0 0; color: #477a6d; }
 .journey-continue .journey-art { grid-area: art; }
 .journey-art svg { width: 100%; max-width: 185px; height: auto; overflow: visible; }
+.journey-art-continue circle { fill: currentColor; }
 .journey-progress { max-width: 430px; width: 100%; margin-top: .15rem; }
 .journey-progress > div { display: flex; align-items: baseline; justify-content: space-between; gap: .7rem; margin-bottom: .25rem; color: var(--ink-soft); font-size: .86rem; }
 .journey-progress > div strong { color: var(--navy); font-size: .92rem; }
@@ -96,6 +97,7 @@
 .working-on-skill .mastery-box { min-width: 210px; padding: .85rem 1rem; border: 1px solid #dce6de; border-radius: 14px; background: #f5f8f3; }
 .working-on-skill .mastery-box label { color: #405b54; font-size: .78rem; }
 .working-on-skill .mastery-box progress { height: 9px; border-radius: 99px; }
+.practice-subnav { border: 1px solid #dce5dd; border-radius: 15px; background: #f5f7f3; }
 .working-on-skill .mode-tabs {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
@@ -225,7 +227,7 @@
   .intro { padding: 1.7rem 0 1rem; }
   .intro h1 { font-size: clamp(2rem, 9vw, 2.75rem); }
   .grade-rail { padding: .8rem .65rem .65rem; }
-  .grade-tabs { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .grade-tabs { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .grade-tab { min-height: 50px; }
   .personal-dashboard { padding: .85rem; border-radius: 18px; }
   .journey-heading { align-items: flex-start; flex-direction: column; }
@@ -381,4 +383,8 @@
   .teacher-evidence-actions button { flex: 1 1 100%; }
   .teacher-evidence-metrics { grid-template-columns: 1fr; }
   .teacher-routine { grid-template-columns: 1fr; }
+}
+@media (max-width: 680px) {
+  .strand-filters { flex-wrap: wrap; overflow: visible; }
+  .hub-tabs .teacher-tab { grid-column: 1 / -1; }
 }
