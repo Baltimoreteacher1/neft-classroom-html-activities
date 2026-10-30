@@ -404,6 +404,10 @@ function resumeHtml() {
 
 // ---- draw -----------------------------------------------------------------------------------------------------------
 // Print handler for the weekly summary (delegated, because the panel is redrawn on every change).
+// "Browse skills and games" jumps to the folded skill list, so it opens it first.
+document.addEventListener("click", (event) => {
+  if (event.target.closest?.('a[href="#skills-region"]')) $("#skills-region").open = true;
+});
 document.addEventListener("click", (event) => {
   if (!event.target.closest?.("#print-week-report")) return;
   printWeekReport({ lang: S.lang, profile: S.profile ?? 0, grade: S.grade });
@@ -432,6 +436,8 @@ function draw() {
   paint($("#progress-body"), progressHtml());
   paint($("#games-body"), shelfHtml());
   paint($("#skills-body"), skillsHtml());
+  // The skill list is folded away so families see the plan first; a search or a chosen skill opens it.
+  if (S.search.trim() || S.selectedSkill) $("#skills-region").open = true;
   const coach = coachHtml(info);
   $("#coach-sub").textContent = coach.sub;
   paint($("#coach-body"), coach.html);

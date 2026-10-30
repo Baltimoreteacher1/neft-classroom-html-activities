@@ -97,8 +97,8 @@ export const COPY = {
   gradesRange: c("Grades {range}", "Grados {range}"),
   play: c("Play", "Jugar"),
   skillsTitle: c(
-    "Browse skills",
-    "Explorar destrezas",
+    "Pick a skill yourself",
+    "Elige una destreza tú mismo",
   ),
   skillsLead: c(
     "Skills for {grade}. Search, then open a group.",
