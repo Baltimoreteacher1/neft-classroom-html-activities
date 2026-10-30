@@ -155,6 +155,11 @@ export const COPY = {
     "Skills, games and tools from the whole Math Fluency Lab.",
     "Destrezas, juegos y herramientas de todo el laboratorio de fluidez.",
   ),
+  tourTitle: c("New here? Take the 3-minute tour", "¿Es la primera vez? Hagan el recorrido de 3 minutos"),
+  tourText: c(
+    "Four short stops show you what this is and how to help. In English and Spanish.",
+    "Cuatro paradas cortas les muestran qué es esto y cómo ayudar. En inglés y español.",
+  ),
   backLab: c("Back to the Fluency Lab", "Volver al laboratorio de fluidez"),
   errorTitle: c("Something went wrong loading this page.", "Algo salió mal al cargar esta página."),
   errorText: c("Reload the page, or try", "Recarga la página o prueba"),
