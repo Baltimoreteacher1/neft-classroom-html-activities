@@ -53,7 +53,7 @@ const fake = {
   hint: (round, tier) => ({ en: `hint tier ${tier}`, es: `pista nivel ${tier}` }),
   solve: (round) => round.a + round.b,
   answerText: (round) => String(round.a + round.b),
-  mount(root, ctx) {
+  mount(root, _ctx) {
     root.innerHTML = `<button type="button" data-send>send</button>`;
     return {
       destroy() {

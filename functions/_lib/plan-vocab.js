@@ -5277,6 +5277,12 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/curriculum/publisher-demo/",
+    title: "Publisher Demonstration",
+    category: "Hub",
+    unit: null,
+  },
+  {
     path: "/curriculum/ratio-quest/",
     title: "Ratio Quest: Meridian Market",
     category: "Hub",

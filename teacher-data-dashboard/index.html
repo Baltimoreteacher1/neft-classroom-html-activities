@@ -4267,7 +4267,7 @@
                             <span class="nav-icon">⚖️</span> What-If Planner
                           </button>
                           <button class="nav-item ${AppRepository.state.tab === "predictions" ? "active" : ""}" onclick="UIController.switchTab('predictions')">
-                            <span class="nav-icon">🔭</span> Score Predictor
+                            <span class="nav-icon">🔭</span> Score Scenarios
                           </button>
                           <button class="nav-item ${AppRepository.state.tab === "classcompare" ? "active" : ""}" onclick="UIController.switchTab('classcompare')">
                             <span class="nav-icon">&#127982;</span> Class Comparison
@@ -5640,7 +5640,7 @@
                         </div>
                       </div>
 
-                      
+
                       <!-- Heat Map User Guide -->
                       <div style="background:var(--bg-panel); border:1px solid var(--border-light); border-radius:var(--radius-md); padding:16px 20px; margin-bottom:20px;">
                         <div style="display:flex; align-items:center; gap:8px; margin-bottom:12px;">
@@ -5817,8 +5817,8 @@
                       <div class="card">
                         <div class="card-header">
                           <div>
-                            <h2 class="card-title">Longitudinal Regression Projection <span class="info-btn" onclick="showStatsExplanation('regression')" title="Learn more about Linear Regression and R²">ⓘ</span></h2>
-                            <p class="card-subtitle">Estimating performance window outcomes based on linear progression analysis</p>
+                            <h2 class="card-title">Historical trend line <span class="info-btn" onclick="showStatsExplanation('regression')" title="Learn more about Linear Regression and R²">ⓘ</span></h2>
+                            <p class="card-subtitle">Descriptive fit to the assessment windows in this file; it does not forecast outcomes</p>
                           </div>
                         </div>
                         ${
@@ -5829,18 +5829,18 @@
                               <div class="kpi-icon" style="font-size:2rem;">🔮</div>
                               <div class="kpi-data">
                                 <span class="kpi-value">${pred.projected.toFixed(1)}%</span>
-                                <span class="kpi-label">Projected Next Average</span>
+                                <span class="kpi-label">Linear trend extension (illustrative)</span>
                               </div>
                             </div>
                             <p style="font-size:0.95rem; color:var(--text-secondary);">
-                              Mathematical slope analysis suggests the class trajectory is moving by <strong>${pred.reg.slope.toFixed(2)} points</strong> per assessment cycle.
-                              Model confidence is currently marked as <strong>${pred.confidence}</strong> (R² ≈ ${pred.reg.r2.toFixed(3)}).
+                              In these records, the fitted line changes by <strong>${pred.reg.slope.toFixed(2)} points</strong> per assessment cycle.
+                              (R² = ${pred.reg.r2.toFixed(3)}). This describes past data only; it is not a forecast, confidence estimate, or evidence of intervention impact.
                             </p>
                           </div>
                         `
                             : `
                           <div style="text-align:center; padding:40px 20px;">
-                            <p class="hint">Prediction requires at least 2 chronological assessment windows in the uploaded sheet.</p>
+                            <p class="hint">A historical trend line needs at least 2 assessment windows in the uploaded sheet. It does not predict future performance.</p>
                           </div>
                         `
                         }
@@ -6449,12 +6449,14 @@
                   <div class="container">
                     ${this.renderFilters()}
 
+                    <p role="note" style="margin:0 0 14px;padding:12px 14px;border-left:4px solid var(--brand-secondary);background:var(--brand-soft);color:var(--text-primary);font-size:0.9rem;"><strong>Scenario illustration only.</strong> The selected assessment name is a reference label, not a validated crosswalk. This dashboard does not predict standardized scores, mastery, or intervention outcomes. Do not use this view for placement, eligibility, reporting, or high-stakes decisions.</p>
+
                     <!-- Configuration Sub-bar -->
                     <div class="card" style="margin-bottom:24px; padding:16px; background:var(--bg-panel); border:1px solid var(--border-light);">
 
                       <!-- Row 1: Grade Level -->
                       <div style="margin-bottom:14px;">
-                        <label style="font-size:0.75rem; font-weight:800; text-transform:uppercase; color:var(--text-secondary); display:block; margin-bottom:8px;">Grade Level <span style="font-weight:500; text-transform:none; color:var(--text-muted);">(adjusts benchmarks for MCAP, i-Ready, and DIBELS)</span></label>
+                        <label style="font-size:0.75rem; font-weight:800; text-transform:uppercase; color:var(--text-secondary); display:block; margin-bottom:8px;">Grade Level <span style="font-weight:500; text-transform:none; color:var(--text-muted);">(selects illustrative reference values only)</span></label>
                         <div class="grade-selector">
                           ${["k", "1", "2", "3", "4", "5", "6", "7", "8", "hs"]
                             .map(
@@ -6469,7 +6471,7 @@
                       <div style="display:flex; gap:20px; flex-wrap:wrap; align-items:flex-start;">
 
                         <div style="display:flex; flex-direction:column; gap:4px; flex:1; min-width:200px;">
-                          <label style="font-size:0.75rem; font-weight:800; text-transform:uppercase; color:var(--text-secondary);">Target Assessment</label>
+                          <label style="font-size:0.75rem; font-weight:800; text-transform:uppercase; color:var(--text-secondary);">Illustrative reference scale</label>
                           <select onchange="UIController.updateFilter('predictTest', this.value)" style="padding:8px 12px; border:1px solid var(--border-primary); border-radius:6px; background:var(--bg-card); color:var(--text-primary); font-size:0.88rem; font-weight:600;">
                             <optgroup label="Maryland State Assessments">
                               <option value="mcap" ${predictTest === "mcap" ? "selected" : ""}>MCAP Math (Maryland)</option>
@@ -6498,22 +6500,22 @@
                           </select>
                           <span style="font-size:0.72rem; color:var(--text-muted); margin-top:2px;">
                             ${testConfig.name} &mdash; Benchmark: <strong style="color:var(--brand-secondary);">${testConfig.benchmark}${testConfig.unit ? " " + testConfig.unit : ""}</strong>
-                            &nbsp;|&nbsp; Range: ${testConfig.minScale}&ndash;${testConfig.maxScale}
+                            &nbsp;|&nbsp; Range: ${testConfig.minScale}&ndash;${testConfig.maxScale}; no official score crosswalk is applied.
                           </span>
                         </div>
 
                         <div style="display:flex; flex-direction:column; gap:4px; min-width:120px;">
-                          <label style="font-size:0.75rem; font-weight:800; text-transform:uppercase; color:var(--text-secondary);">Confidence Interval</label>
+                          <label style="font-size:0.75rem; font-weight:800; text-transform:uppercase; color:var(--text-secondary);">Illustrative range factor</label>
                           <select onchange="UIController.updateFilter('predictConfidence', this.value)" style="padding:8px 12px; border:1px solid var(--border-primary); border-radius:6px; background:var(--bg-card); color:var(--text-primary); font-size:0.88rem; font-weight:600;">
-                            <option value="80" ${predictConfidence === "80" ? "selected" : ""}>80% (z=1.28)</option>
-                            <option value="90" ${predictConfidence === "90" ? "selected" : ""}>90% (z=1.64)</option>
-                            <option value="95" ${predictConfidence === "95" ? "selected" : ""}>95% (z=1.96)</option>
+                            <option value="80" ${predictConfidence === "80" ? "selected" : ""}>1.28×</option>
+                            <option value="90" ${predictConfidence === "90" ? "selected" : ""}>1.64×</option>
+                            <option value="95" ${predictConfidence === "95" ? "selected" : ""}>1.96×</option>
                           </select>
                         </div>
 
                         <div style="display:flex; flex-direction:column; gap:4px; flex:1; min-width:200px;">
                           <div style="display:flex; justify-content:space-between; align-items:center;">
-                            <label style="font-size:0.75rem; font-weight:800; text-transform:uppercase; color:var(--text-secondary);">Sprint Growth Modifier</label>
+                            <label style="font-size:0.75rem; font-weight:800; text-transform:uppercase; color:var(--text-secondary);">What-if score adjustment</label>
                             <strong id="modifierValue" style="font-size:0.88rem; color:var(--brand-secondary);">${predictModifier >= 0 ? "+" : ""}${predictModifier}%</strong>
                           </div>
                           <div style="display:flex; align-items:center; gap:8px; margin-top:4px;">
@@ -6530,38 +6532,38 @@
                     <div class="grid grid-3" style="margin-bottom:24px; gap:20px;">
                       <div class="card" style="background:var(--bg-panel); border:1px solid var(--border-light); position:relative; overflow:hidden;">
                         <div style="display:flex; justify-content:space-between; align-items:center;">
-                          <span style="font-size:0.75rem; text-transform:uppercase; font-weight:800; color:var(--text-secondary);">Predicted Proficiency Rate</span>
-                          <span class="kpi-info-btn" onclick="showStatsExplanation('predictions')" title="Learn about Predictors">ⓘ</span>
+                          <span style="font-size:0.75rem; text-transform:uppercase; font-weight:800; color:var(--text-secondary);">Scenario share at selected reference</span>
+                          <span class="kpi-info-btn" onclick="showStatsExplanation('predictions')" title="About this illustrative scenario">ⓘ</span>
                         </div>
                         <h3 style="font-size:2.2rem; font-weight:800; color:${predictedProficiencyRate >= 70 ? "var(--color-extension)" : "var(--color-urgent)"}; margin-top:8px;">
                           ${predictedProficiencyRate.toFixed(1)}%
                         </h3>
                         <p class="hint" style="margin-top:4px;">
-                          ${predictions.filter((p) => p.predScale >= testConfig.benchmark).length} out of ${predictions.length} students predicted to cross standard cutoff.
+                          ${predictions.filter((p) => p.predScale >= testConfig.benchmark).length} of ${predictions.length} records fall above the selected reference in this what-if scenario. This is not a prediction.
                         </p>
                       </div>
 
                       <div class="card" style="background:var(--bg-panel); border:1px solid var(--border-light);">
                         <div>
-                          <span style="font-size:0.75rem; text-transform:uppercase; font-weight:800; color:var(--text-secondary);">Predicted Cohort Mean Score</span>
+                          <span style="font-size:0.75rem; text-transform:uppercase; font-weight:800; color:var(--text-secondary);">Scenario mean on selected scale</span>
                         </div>
                         <h3 style="font-size:2.2rem; font-weight:800; color:var(--brand-secondary); margin-top:8px;">
                           ${predictedCohortMean.toFixed(0)}
                         </h3>
                         <p class="hint" style="margin-top:4px;">
-                          Average scaled score mapped onto ${testConfig.name} range [${testConfig.minScale} - ${testConfig.maxScale}].
+                          Illustrative linear mapping to the selected ${testConfig.name} scale [${testConfig.minScale}–${testConfig.maxScale}]; not an exam score estimate.
                         </p>
                       </div>
 
                       <div class="card" style="background:var(--bg-panel); border:1px solid var(--border-light);">
                         <div>
-                          <span style="font-size:0.75rem; text-transform:uppercase; font-weight:800; color:var(--text-secondary);">Model Reliability Margin</span>
+                          <span style="font-size:0.75rem; text-transform:uppercase; font-weight:800; color:var(--text-secondary);">Assumption-based scenario range</span>
                         </div>
                         <h3 style="font-size:2.2rem; font-weight:800; color:var(--brand-primary); margin-top:8px;">
                           &plusmn;${scaledMargin.toFixed(1)}
                         </h3>
                         <p class="hint" style="margin-top:4px;">
-                          Scale bounds at ${predictConfidence}% Confidence (Z = ${z}, SEM = &plusmn;${semVal.toFixed(1)}%).
+                          A sensitivity range from the selected assumptions; not a confidence interval or measured test error.
                         </p>
                       </div>
                     </div>
@@ -6569,7 +6571,7 @@
                     <!-- Chart and Explanation -->
                     <div class="grid grid-2" style="gap:24px; margin-bottom:24px; align-items: stretch;">
                       <div class="card" style="padding:16px; display:flex; flex-direction:column; justify-content:center; align-items:center;">
-                        <h3 style="font-size:1.1rem; font-weight:800; color:var(--brand-primary); margin-bottom:12px; align-self:flex-start;">🔭 Programmatic Prediction Scatter Plot</h3>
+                        <h3 style="font-size:1.1rem; font-weight:800; color:var(--brand-primary); margin-bottom:12px; align-self:flex-start;">Illustrative score-scale scenario</h3>
                         ${this.generatePredictionScatterSVG(predictions, testConfig, predictModifier, z, semVal)}
                       </div>
 
@@ -6577,18 +6579,18 @@
                         <div>
                           <h3 style="font-size:1.15rem; font-weight:800; color:var(--brand-primary);">🔭 How to Interpret the Model</h3>
                           <p style="font-size:0.88rem; color:var(--text-secondary); line-height:1.5; margin-top:8px;">
-                            The <strong>Standardized Score Predictor</strong> uses student mastery percentages in this gradebook to project performance bands on high-stakes standardized exams.
+                            <strong>This is a what-if illustration, not a standardized-score predictor.</strong> It linearly maps classroom percentages to a selected score range using assumptions entered in this dashboard. No assessment linking study or validated predictive model supports that mapping.
                           </p>
                           <ul style="font-size:0.84rem; color:var(--text-primary); padding-left:16px; margin-top:10px; display:flex; flex-direction:column; gap:8px;">
-                            <li><strong>Cutoff Quadrants</strong>: Dots in the top-right represent students meeting both the classroom target and standardized test benchmark. Bottom-left dots represent students needing focused remediation to cross the bar.</li>
-                            <li><strong>Growth Slider</strong>: Simulate sprint interventions! Adding a 5% or 10% modifier immediately recalculates the projected scores and proficiency metrics in real-time.</li>
-                            <li><strong>Confidence Bounds</strong>: Scaled scores are not point estimates. True scores fall within the error band determined by test noise (SEM) and z-scores.</li>
+                            <li><strong>Reference line</strong>: Shows which records fall above the selected classroom reference in this scenario. It does not identify who will meet a test benchmark.</li>
+                            <li><strong>Scenario adjustment</strong>: The slider changes the displayed assumptions only. It does not estimate the effect of an intervention.</li>
+                            <li><strong>Range</strong>: The shaded span is assumption-based sensitivity, not a statistical confidence interval or a claim about a learner’s true score.</li>
                           </ul>
                         </div>
                         <div style="background:var(--brand-soft); border-left:4px solid var(--brand-secondary); padding:10px 14px; border-radius:6px; margin-top:12px;">
-                          <span style="font-size:0.75rem; font-weight:800; color:var(--brand-secondary); text-transform:uppercase;">Statisticians' Note</span>
+                          <span style="font-size:0.75rem; font-weight:800; color:var(--brand-secondary); text-transform:uppercase;">Use with care</span>
                           <p style="font-size:0.82rem; color:var(--text-secondary); margin-top:4px; line-height:1.4;">
-                            Calculations utilize a standard z-interval mapping of the Standard Error of Measurement (SEM). Reliability estimate: Cronbach's &alpha; = 0.80.
+                            This page has no validated score crosswalk, calibrated measurement error, or local predictive validation. Do not use these scenarios for placement, eligibility, reporting, or high-stakes decisions. Use observed classroom work and professional judgment.
                           </p>
                         </div>
                       </div>
@@ -6598,8 +6600,8 @@
                     <div class="card">
                       <div class="card-header" style="margin-bottom:16px;">
                         <div>
-                          <h2 class="card-title">Student Predictions Master Roster</h2>
-                          <p class="card-subtitle">Complete list of student predictions, confidence intervals, and teacher pacing accommodations</p>
+                          <h2 class="card-title">Illustrative scenario roster</h2>
+                          <p class="card-subtitle">Assumption-based calculations for teacher discussion. These are not forecasts, standardized scores, or validated mastery estimates.</p>
                         </div>
                       </div>
 
@@ -6609,9 +6611,9 @@
                             <tr>
                               <th class="sortable">Student Name</th>
                               <th class="sortable">Observed Grade (%)</th>
-                              <th class="sortable">Predicted Scale Score</th>
-                              <th class="sortable">Confidence Bounds (${predictConfidence}% CI)</th>
-                              <th class="sortable">Predicted Band</th>
+                              <th class="sortable">Scenario scale value</th>
+                              <th class="sortable">Illustrative range</th>
+                              <th class="sortable">Scenario category</th>
                               <th>Pathway Accommodations</th>
                             </tr>
                           </thead>
@@ -6766,7 +6768,7 @@
 
                     <!-- Labels -->
                     <text x="${xOffset + chartWidth / 2}" y="${height - 6}" text-anchor="middle" fill="var(--text-secondary)" font-size="9" font-weight="800">X = Observed Grade (%)</text>
-                    <text x="12" y="${topMargin + chartHeight / 2}" text-anchor="middle" transform="rotate(-90 12 ${topMargin + chartHeight / 2})" fill="var(--text-secondary)" font-size="9" font-weight="800">Y = Predicted Scale Score</text>
+                    <text x="12" y="${topMargin + chartHeight / 2}" text-anchor="middle" transform="rotate(-90 12 ${topMargin + chartHeight / 2})" fill="var(--text-secondary)" font-size="9" font-weight="800">Y = Scenario scale value</text>
                   </svg>
                 `;
         },
@@ -7705,9 +7707,9 @@
         tooltip.innerHTML = `
                 <strong style="color:var(--brand-secondary); font-size:0.9rem;">Student: ${name}</strong><br/>
                 Observed Score: <strong>${rawPct.toFixed(1)}%</strong><br/>
-                Predicted Scale Score: <strong style="color:${bandColor};">${predScale.toFixed(0)}</strong><br/>
-                Confidence Bounds: <strong>${lowerScale.toFixed(0)} - ${upperScale.toFixed(0)}</strong><br/>
-                Predicted Band: <strong style="color:${bandColor};">${bandName}</strong>
+                Scenario scale value: <strong style="color:${bandColor};">${predScale.toFixed(0)}</strong><br/>
+                Illustrative range: <strong>${lowerScale.toFixed(0)} - ${upperScale.toFixed(0)}</strong><br/>
+                Scenario category: <strong style="color:${bandColor};">${bandName}</strong>
               `;
         tooltip.style.left = `${e.pageX + 12}px`;
         tooltip.style.top = `${e.pageY - 16}px`;
@@ -8067,18 +8069,18 @@
                   `,
           },
           regression: {
-            title: "Regression Projection — Simple Explanation",
+            title: "Historical Trend Line — Simple Explanation",
             html: `
                     <p><strong>What is it?</strong><br/>
-                    This tool traces a mathematical trajectory line (linear regression) through all your past assessment averages to project exactly where the class average is likely to land on the next assessment window.</p>
+                    This tool fits a line to the past assessment averages in the selected records. Extending that line is an illustration only; it does not predict the next result.</p>
                     <p><strong>Key Metrics Explained:</strong></p>
                     <ul>
                       <li><strong>Slope:</strong> The rate of improvement. A slope of +1.5 means the class average is growing by 1.5 points per assessment.</li>
-                      <li><strong>R² (R-squared Confidence):</strong> A value between 0 and 1 showing model accuracy. An R² close to 1.0 means student growth is highly steady and predictable; a low R² means progress is erratic.</li>
+                      <li><strong>R² (coefficient of determination):</strong> Describes how closely this line fits the historical data shown. It is not predictive confidence and does not establish that future growth will follow the same pattern.</li>
                     </ul>
                     <h4>Teacher's Playbook: How to Use It</h4>
                     <ul>
-                      <li><strong>Proactive Adjustments:</strong> If the model projects a decline or a plateau below your target threshold, it's a prompt to adjust your pacing guide or increase small-group practice before the next test occurs.</li>
+                      <li>Use this descriptive summary as one context for reflection, then review current item-level evidence before choosing an instructional response.</li>
                     </ul>
                   `,
           },
@@ -8208,19 +8210,20 @@
                   `,
           },
           predictions: {
-            title: "Standardized Score Predictor — Simple Explanation",
+            title: "Illustrative Score Scenarios — Limits and Use",
             html: `
                     <p><strong>What is it?</strong><br/>
-                    The <strong>Score Predictor</strong> maps classroom assessment grades onto scaled high-stakes standardized assessments (like MCAP Math, i-Ready, SAT Math, or State Accountability Indices) using linear scaling formulas and error estimation.</p>
-                    <p><strong>How the predictions are calculated:</strong></p>
+                    A what-if display that linearly maps a classroom percentage to a selected reference range using assumptions in this dashboard. <strong>It is not a standardized score, test prediction, probability, or validated mastery estimate.</strong></p>
+                    <p><strong>How to interpret it:</strong></p>
                     <ul>
-                      <li><strong>Scale Mapping:</strong> We map the student's observed grade (adjusted by your Sprint Growth Modifier) directly onto the standardized score scale based on the exam's minimum, maximum, and passing benchmarks.</li>
-                      <li><strong>Confidence Bounds (&plusmn; Margin):</strong> No single score is a perfect projection. By multiplying the Standard Error of Measurement (SEM) by a z-score multiplier for your chosen Confidence Interval (80%, 90%, or 95%), we draw a statistical "range" within which the student's actual standardized score is highly likely to fall.</li>
+                      <li>The selected assessment name only labels the range and reference values used in this display. No validated linking study, score equating, calibrated measurement error, or local predictive validation supports the calculation.</li>
+                      <li>The displayed range is an assumption-based sensitivity illustration. Its multiplier is not a confidence level and it does not describe a learner's likely true score.</li>
+                      <li>The adjustment slider changes a hypothetical input only; it does not model an intervention effect or imply a learner will gain that amount.</li>
                     </ul>
                     <h4>Teacher's Playbook: How to Use It</h4>
                     <ul>
-                      <li><strong>Simulate Growth Interventions:</strong> Drag the Sprint Growth Modifier slider to see how a +5% or +10% average growth sprint would increase your overall Predicted Proficiency Rate. Celebrate small milestones with students!</li>
-                      <li><strong>Plan Accommodations Proactively:</strong> Look at the Pathway Accommodations column. Students predicted to score below passing benchmarks can be immediately grouped for scaffolded reteach pacing before the standardized test day!</li>
+                      <li>Use observed classroom work, item-level evidence, reassessment, and professional judgment to plan instruction.</li>
+
                     </ul>
                   `,
           },
@@ -8542,7 +8545,7 @@
                           <div class="demo-card launch-card">
                             <div class="drop-icon" style="background:var(--brand-soft); color:var(--brand-secondary);">⚡</div>
                             <div class="drop-title">Just Let Me Explore</div>
-                            <p class="hint">Load sample classroom data and try every feature — dashboards, grouping, predictions, exports.</p>
+                            <p class="hint">Load sample classroom data and try every feature — dashboards, grouping, scenario tools, exports.</p>
                             <button class="btn btn-teal" onclick="UIController.loadDemo()">Load Demo Data</button>
                           </div>
                         </div>
@@ -8679,7 +8682,7 @@
                           ${navItem("trends", "📈", "Growth Trajectory")}
                           ${navItem("patterns", "🧩", "Pattern Matrix")}
                           ${navItem("advanced", "🔮", "Advanced Lab")}
-                          ${navItem("predictions", "🔭", "Score Predictor")}
+                          ${navItem("predictions", "🔭", "Score Scenarios")}
                           ${navItem("classcompare", "&#127982;", "Class Comparison")}
                         </div>
                       </div>
@@ -9193,9 +9196,9 @@
                         <div class="insight-item"><strong style="color:var(--brand-primary);">Flexible Groups</strong><p class="hint">Automatic 4-tier differentiation: Urgent Support, Guided Reteach, On Track, Extension. Use for station rotations and small-group planning.</p></div>
                         <div class="insight-item"><strong style="color:var(--brand-primary);">Growth Trajectory</strong><p class="hint">First-to-latest assessment shifts with inline sparklines. Click any student name to view their full profile modal.</p></div>
                         <div class="insight-item"><strong style="color:var(--brand-primary);">Pattern Matrix</strong><p class="hint">Color-coded mastery grid (student x standard). Spot red columns (class-wide gaps) vs red rows (individual gaps). Click names for profiles.</p></div>
-                        <div class="insight-item"><strong style="color:var(--brand-primary);">Score Predictor</strong><p class="hint">Maps classroom grades onto MCAP, i-Ready, SAT, or state accountability scales. Includes a growth modifier slider and confidence intervals.</p></div>
+                        <div class="insight-item"><strong style="color:var(--brand-primary);">Score Scenarios</strong><p class="hint">Illustrates a user-adjustable linear score-scale scenario. This is not an official score crosswalk, prediction, or confidence interval.</p></div>
                         <div class="insight-item"><strong style="color:var(--brand-primary);">Advanced Lab</strong><p class="hint">Regression projections and inter-measure correlation (e.g. attendance vs. scores). Requires supplemental data upload for correlation.</p></div>
-                        <div class="insight-item"><strong style="color:var(--brand-primary);">What-If Planner</strong><p class="hint">Three scenarios: +5% review sprint, +10% intervention impact, and raised target bar. Use for goal-setting and benchmarking conversations.</p></div>
+                        <div class="insight-item"><strong style="color:var(--brand-primary);">What-If Planner</strong><p class="hint">Three arithmetic what-if scenarios. They do not estimate intervention impact or establish mastery.</p></div>
                       </div>
                     </section>
 
@@ -10388,7 +10391,7 @@
           trends: "Growth Trajectory",
           patterns: "Pattern Matrix",
           advanced: "Advanced Lab",
-          predictions: "Score Predictor",
+          predictions: "Score Scenarios",
           manager: "Data Manager",
           guide: "Teacher Guide",
         };
@@ -11614,7 +11617,7 @@
           {
             section: "Views",
             icon: "🔭",
-            label: "Score Predictor",
+            label: "Score Scenarios",
             tab: "predictions",
             shortcut: "6",
           },
@@ -11875,7 +11878,7 @@
           executive: [
             { icon: "📊", label: "Drill into Overview", tab: "overview" },
             { icon: "📝", label: "Build Action Plan", tab: "action" },
-            { icon: "🔭", label: "Predict Test Scores", tab: "predictions" },
+            { icon: "🔭", label: "Explore Score Scenarios", tab: "predictions" },
           ],
           overview: [
             { icon: "📈", label: "See Growth Trends", tab: "trends" },
@@ -11889,7 +11892,7 @@
           ],
           trends: [
             { icon: "🔮", label: "Advanced Analysis", tab: "advanced" },
-            { icon: "🔭", label: "Predict Scores", tab: "predictions" },
+            { icon: "🔭", label: "Explore Score Scenarios", tab: "predictions" },
           ],
           patterns: [
             { icon: "📝", label: "Create Action Plan", tab: "action" },
@@ -11902,18 +11905,18 @@
           predictions: [
             {
               icon: "📝",
-              label: "Build Action Plan from Predictions",
+              label: "Build Action Plan from Classroom Evidence",
               tab: "action",
             },
             { icon: "⚖️", label: "What-If Planner", tab: "whatif" },
             { icon: "📈", label: "Growth Trajectory", tab: "trends" },
           ],
           whatif: [
-            { icon: "🔭", label: "Score Predictor", tab: "predictions" },
+            { icon: "🔭", label: "Score Scenarios", tab: "predictions" },
             { icon: "📝", label: "Action Plan", tab: "action" },
           ],
           advanced: [
-            { icon: "🔭", label: "Score Predictor", tab: "predictions" },
+            { icon: "🔭", label: "Score Scenarios", tab: "predictions" },
             { icon: "📈", label: "Growth Trajectory", tab: "trends" },
           ],
           planning: [

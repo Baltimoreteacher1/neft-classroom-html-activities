@@ -742,6 +742,8 @@ const COVERAGE = [
   [/^curriculum\/ai-hub\//, ["validate:ai-hub", "validate:hub", "audit:links"]],
   [/^curriculum\/forge\//, ["validate:forge"]],
   [/^curriculum\/showcase\//, ["validate:showcase"]],
+  [/^curriculum\/publisher-demo\//, ["validate:publisher-demo", "audit:links", "check"]],
+  [/^tools\/validate-publisher-demo\.mjs$/, ["validate:publisher-demo", "check"]],
   [/^curriculum\/class-boss\//, ["validate:class-boss"]],
   [/^curriculum\/teach-the-machine\//, ["validate:teach-machine"]],
   // The weekly hub (and its optional "A note from Mr. Neft" data): its own tests
