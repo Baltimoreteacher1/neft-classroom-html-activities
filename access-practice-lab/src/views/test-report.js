@@ -6,6 +6,7 @@ import { transcriptHTML } from "../components.js";
 import { correctAnswerText, isAuto, isCorrect } from "../grade.js";
 import { seedAnswer } from "../items.js";
 import { CRITERIA, PRACTICE_BANDS } from "../lang/rubrics.js";
+import { loadErrorReflections } from "../store.js";
 import { BASE, CORE_DOMAINS, DOMAIN_META, html, icon, raw } from "../util.js";
 import { modeOf, modePhrase, modeText, otherMode, rich } from "./test-modes.js";
 
@@ -370,14 +371,44 @@ export function formativeHTML(I, formative, formativeBreakdown, { SMALL_SAMPLE, 
 }
 
 /** Every question with its key; Listening keeps its transcript here, after the test. */
-export function answerReviewHTML(I, flat, answers) {
+export function answerReviewHTML(I, flat, answers, testId = "") {
+  const allReflections = loadErrorReflections();
+  const testReflections = testId ? allReflections[testId] || {} : {};
+  const counts = { vocab: 0, rushed: 0, trap: 0, evidence: 0 };
+  for (const tag of Object.values(testReflections)) if (counts[tag] != null) counts[tag]++;
+  const totalTagged = Object.values(counts).reduce((a, b) => a + b, 0);
+
   return html`<section class="panel answer-review-panel">
     <h2>${I.T("Answer review", "Repaso de respuestas")}</h2>
+    ${
+      totalTagged > 0
+        ? html`<div class="ar-error-summary">
+            <h3>${icon("bulb")} ${I.T("Metacognitive Error Reflection", "Reflexión metacognitiva de errores")}</h3>
+            <p class="fine">${I.T("Understanding WHY you missed a question is the fastest way to increase your score:", "Comprender POR QUÉ fallaste una pregunta es la vía más rápida para subir tu puntaje:")}</p>
+            <div class="ar-summary-chips">
+              <span class="ar-chip is-vocab">${icon("words")} ${I.T(`${counts.vocab} Vocabulary`, `${counts.vocab} Vocabulario`)}</span>
+              <span class="ar-chip is-rushed">${icon("clock")} ${I.T(`${counts.rushed} Rushed`, `${counts.rushed} Prisa`)}</span>
+              <span class="ar-chip is-trap">${icon("alert")} ${I.T(`${counts.trap} Distractor trap`, `${counts.trap} Opción trampa`)}</span>
+              <span class="ar-chip is-evidence">${icon("search")} ${I.T(`${counts.evidence} Evidence gap`, `${counts.evidence} Falta de pista`)}</span>
+            </div>
+            ${
+              counts.vocab >= 2
+                ? html`<p class="ar-advice">${I.T("Tip: Review academic roots and prefixes in Word Builder before retesting.", "Consejo: Repasa raíces y prefijos académicos en Word Builder antes de volver a intentar.")}</p>`
+                : counts.rushed >= 2
+                  ? html`<p class="ar-advice">${I.T("Tip: Use the line reader tool and take 20 extra seconds to verify evidence.", "Consejo: Usa la herramienta de lector de líneas y tómate 20 segundos más para verificar la pista.")}</p>`
+                  : counts.trap >= 2
+                    ? html`<p class="ar-advice">${I.T("Tip: Practice the Process of Elimination (POE) to spot extreme words and verbatim traps.", "Consejo: Practica el Proceso de descarte (POE) para detectar palabras absolutas y trampas textuales.")}</p>`
+                    : ""
+            }
+          </div>`
+        : ""
+    }
     <ol class="answer-review">
       ${flat.map((f, i) => {
         const a = answers[f.item.id] ?? seedAnswer(f.item);
         const auto = isAuto(f.item);
         const ok = auto && isCorrect(f.item, a);
+        const userTag = testReflections[f.item.id];
         return html`<li
           class="${auto ? (ok ? "is-right" : "is-wrong") : "is-open"} ${domainClass(f.section.domain)}"
         >
@@ -400,6 +431,27 @@ export function answerReviewHTML(I, flat, answers) {
                   </p>`
             }
             ${!ok && f.item.hint ? html`<p class="fine">${f.item.hint}</p>` : ""}
+            ${
+              auto && !ok && testId
+                ? html`<div class="ar-meta-tagger" data-error-item="${f.item.id}">
+                    <span class="ar-meta-prompt">${I.T("Why did you miss this?", "¿Por qué fallaste esta?")}</span>
+                    <div class="ar-meta-options">
+                      <button type="button" class="btn small ar-tag-btn ${userTag === "vocab" ? "is-active" : ""}" data-error-tag="vocab" title="${I.S("Academic vocabulary gap", "Vocabulario académico desconocido")}">
+                        ${icon("words")}${I.T("Vocabulary", "Vocabulario")}
+                      </button>
+                      <button type="button" class="btn small ar-tag-btn ${userTag === "rushed" ? "is-active" : ""}" data-error-tag="rushed" title="${I.S("Rushed or misread detail", "Leí con prisa u omití un detalle")}">
+                        ${icon("clock")}${I.T("Rushed", "Prisa")}
+                      </button>
+                      <button type="button" class="btn small ar-tag-btn ${userTag === "trap" ? "is-active" : ""}" data-error-tag="trap" title="${I.S("Fell for distractor trap", "Caí en la opción trampa")}">
+                        ${icon("alert")}${I.T("Trap choice", "Trampa")}
+                      </button>
+                      <button type="button" class="btn small ar-tag-btn ${userTag === "evidence" ? "is-active" : ""}" data-error-tag="evidence" title="${I.S("Missed key evidence clue", "Pasé por alto la pista en el texto o audio")}">
+                        ${icon("search")}${I.T("Evidence gap", "Falta de pista")}
+                      </button>
+                    </div>
+                  </div>`
+                : ""
+            }
             ${f.section.domain === "Listening" && f.item.script ? transcriptHTML(f.item.id, f.item.script, { i18n: I }) : ""}
           </div>
         </li>`;
