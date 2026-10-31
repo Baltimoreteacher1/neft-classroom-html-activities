@@ -5,25 +5,26 @@
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <meta
       name="description"
-      content="A short, bilingual family adventure through the ACCESS Practice Lab. Four stops, about 12 minutes, on any phone, tablet or computer. Aventura familiar bilingüe en inglés y español."
+      content="A short, bilingual family adventure through the ACCESS Practice Lab. Four stops in any order, about 12 minutes, on any phone, tablet or computer. Aventura familiar bilingüe en inglés y español."
     />
-    <meta name="theme-color" content="#17324d" />
+    <meta name="theme-color" content="#173a50" />
     <title>Family Adventure | Aventura familiar</title>
     <link
       rel="icon"
-      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 36'%3E%3Crect width='36' height='36' rx='11' fill='%2317324d'/%3E%3Cpath d='m18 5 3.5 9.5L31 18l-9.5 3.5L18 31l-3.5-9.5L5 18l9.5-3.5Z' fill='%23ffce5b'/%3E%3C/svg%3E"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 36'%3E%3Crect width='36' height='36' rx='11' fill='%23173a50'/%3E%3Cpath d='m18 5 3.5 9.5L31 18l-9.5 3.5L18 31l-3.5-9.5L5 18l9.5-3.5Z' fill='%23ffce5b'/%3E%3C/svg%3E"
     />
     <style>
       :root {
-        --navy: #17324d;
-        --ink: #1d2b38;
-        --muted: #4a5d6e;
+        --navy: #173a50;
+        --ink: #163247;
+        --muted: #496477;
         --line: #c2d2df;
-        --paper: #f4f8fb;
+        --paper: #edf5fa;
         --card: #fff;
         --gold: #ffce5b;
-        --accent: #17324d;
-        --tint: #e8f0f7;
+        --teal: #006a65;
+        --accent: #234cda;
+        --tint: #e8efff;
       }
       * {
         box-sizing: border-box;
@@ -36,16 +37,15 @@
         background: var(--paper);
         color: var(--ink);
         font:
-          18px/1.55 system-ui,
-          -apple-system,
+          17px/1.55 "Avenir Next",
+          Avenir,
           "Segoe UI",
-          Roboto,
-          "Helvetica Neue",
-          Arial,
+          system-ui,
           sans-serif;
       }
       a {
-        color: inherit;
+        color: #1843ba;
+        text-underline-offset: 3px;
       }
       h1,
       h2,
@@ -53,13 +53,15 @@
         margin: 0;
       }
       h1 {
-        font-size: clamp(28px, 7vw, 42px);
-        line-height: 1.15;
+        font:
+          500 clamp(32px, 7vw, 56px) / 1.08 Georgia,
+          serif;
+        letter-spacing: -1px;
         color: var(--navy);
       }
       h2 {
-        font-size: clamp(21px, 5vw, 26px);
-        line-height: 1.25;
+        font-size: clamp(20px, 4.6vw, 24px);
+        line-height: 1.3;
         color: var(--navy);
       }
       .es {
@@ -67,9 +69,6 @@
         font-weight: 500;
         color: var(--muted);
         margin-top: 2px;
-      }
-      .es::before {
-        content: none;
       }
       button,
       .btn {
@@ -80,10 +79,10 @@
         align-items: center;
         justify-content: center;
         gap: 2px;
-        min-height: 56px;
-        padding: 12px 20px;
-        border-radius: 14px;
-        border: 2px solid var(--navy);
+        min-height: 52px;
+        padding: 11px 18px;
+        border-radius: 10px;
+        border: 1px solid #8ea7ba;
         background: var(--card);
         color: var(--navy);
         text-decoration: none;
@@ -91,6 +90,12 @@
         cursor: pointer;
         width: 100%;
         line-height: 1.3;
+        touch-action: manipulation;
+      }
+      button:hover,
+      .btn:hover {
+        background: #f0f6fb;
+        border-color: #5f7f96;
       }
       button .es,
       .btn .es {
@@ -99,16 +104,18 @@
         opacity: 0.85;
         margin: 0;
       }
-      button:focus-visible,
-      .btn:focus-visible,
-      a:focus-visible,
-      [tabindex]:focus-visible {
-        outline: 4px solid #ffb300;
+      :focus-visible {
+        outline: 3px solid #aa4600;
         outline-offset: 3px;
       }
       .primary {
-        background: var(--navy);
+        background: var(--accent);
+        border-color: var(--accent);
         color: #fff;
+      }
+      .primary:hover {
+        background: #1738ae;
+        border-color: #1738ae;
       }
       .quiet {
         border-color: transparent;
@@ -118,6 +125,23 @@
         font-weight: 600;
         min-height: 48px;
         width: auto;
+        padding-inline: 8px;
+      }
+      .skip {
+        position: absolute;
+        top: -90px;
+        background: #fff;
+        padding: 12px;
+        z-index: 30;
+      }
+      .skip:focus {
+        top: 8px;
+      }
+      header,
+      main,
+      footer {
+        max-width: 1040px;
+        margin: auto;
       }
       header {
         display: flex;
@@ -125,8 +149,6 @@
         align-items: center;
         justify-content: space-between;
         gap: 10px 14px;
-        max-width: 760px;
-        margin: auto;
         padding: 14px 16px;
       }
       .brand {
@@ -135,11 +157,18 @@
         gap: 10px;
         font-weight: 800;
         color: var(--navy);
-        font-size: 17px;
+        font-size: 18px;
         text-decoration: none;
       }
       .brand svg {
         flex: none;
+      }
+      .brand small {
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--muted);
+        border-left: 1px solid #b7cad7;
+        padding-left: 12px;
       }
       .head-actions {
         display: flex;
@@ -147,30 +176,24 @@
         align-items: center;
         gap: 8px;
       }
-      .head-actions button,
-      .head-actions a {
+      .head-actions button {
         width: auto;
         min-height: 48px;
         padding: 8px 14px;
         font-size: 15px;
-        border-width: 1px;
         flex-direction: row;
       }
       .lang {
         display: flex;
-        gap: 0;
-        border: 2px solid var(--navy);
-        border-radius: 14px;
+        border: 1px solid #8ea7ba;
+        border-radius: 10px;
         overflow: hidden;
         background: #fff;
       }
       .lang button {
         border: 0;
         border-radius: 0;
-        width: auto;
-        min-height: 48px;
-        padding: 8px 14px;
-        font-size: 16px;
+        font-size: 15px;
         background: #fff;
       }
       .lang button[aria-pressed="true"] {
@@ -178,109 +201,372 @@
         color: #fff;
       }
       main {
-        max-width: 760px;
-        margin: auto;
-        padding: 8px 16px 40px;
+        padding: 6px 16px 36px;
         outline: none;
       }
-      main:focus-visible {
-        outline: none;
+      .tag,
+      .pill {
+        display: inline-block;
+        justify-self: start;
+        padding: 6px 13px;
+        border-radius: 30px;
+        font-size: 14px;
+        font-weight: 750;
+        line-height: 1.4;
       }
-      .card {
-        background: var(--card);
-        border: 1px solid var(--line);
-        border-radius: 22px;
-        padding: 22px 20px;
-        box-shadow: 0 6px 24px #17324d14;
+      .tag {
+        background: #fff7dc;
+        border: 1px solid #e1c477;
+        color: #5c4300;
       }
-      .stack {
-        display: grid;
-        gap: 14px;
+      .pill {
+        background: var(--tint);
+        color: var(--accent);
       }
       .lead {
         font-size: 20px;
+        line-height: 1.5;
       }
-      .eyebrow {
-        display: inline-block;
-        background: var(--tint);
-        color: var(--accent);
-        font-weight: 800;
+      .note {
         font-size: 15px;
-        padding: 5px 13px;
-        border-radius: 30px;
+        color: var(--muted);
+      }
+      .stack {
+        display: grid;
+        gap: 16px;
+      }
+      .row {
+        display: grid;
+        gap: 12px;
+      }
+      .sr {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        white-space: nowrap;
+      }
+
+      /* welcome */
+      .welcome {
+        display: grid;
+        border: 1px solid #ccdae5;
+        border-radius: 22px;
+        overflow: hidden;
+        background: #fff;
+      }
+      .welcome-copy {
+        padding: 28px 22px;
+      }
+      .welcome-visual {
+        display: none;
+        background: #dfeff5;
+        padding: 38px 30px;
+        align-content: center;
+      }
+      .postcard {
+        background: #fff;
+        border: 1px solid #a8c0ce;
+        border-radius: 14px;
+        padding: 25px 24px;
+        box-shadow: 9px 10px 0 #c0dae7;
+        transform: rotate(3deg);
+      }
+      .postcard h2 {
+        font:
+          500 29px/1.15 Georgia,
+          serif;
+      }
+      .icon-row {
+        display: flex;
+        justify-content: space-between;
+        margin: 20px 0;
+        color: var(--teal);
+      }
+      .icon-row svg {
+        width: 37px;
+        height: 37px;
       }
       .grades {
         display: grid;
         gap: 12px;
-        grid-template-columns: 1fr;
       }
       .grade {
         align-items: flex-start;
         text-align: left;
         padding: 16px 18px;
-        min-height: 84px;
+        min-height: 88px;
+        border-radius: 12px;
       }
       .grade strong {
         font-size: 21px;
       }
-      .dots {
-        display: flex;
-        gap: 8px;
-        align-items: center;
-        margin: 0;
-        padding: 0;
-        list-style: none;
+      .grade[aria-pressed="true"] {
+        border: 2px solid var(--teal);
+        background: #eaf6f2;
       }
-      .dots li {
-        flex: 1;
-        height: 12px;
-        border-radius: 8px;
-        background: #d5e1ea;
+      .grade[aria-pressed="true"] strong::after {
+        content: " ✓";
       }
-      .dots li.done {
-        background: #1fa6a2;
-      }
-      .dots li.now {
-        background: var(--navy);
-      }
-      .stoplabel {
+      .brief {
         display: grid;
-        gap: 6px;
-        justify-items: start;
+        gap: 16px;
+        margin: 22px 6px 0;
       }
-      .skill {
-        font-size: 24px;
+      .brief .n {
+        display: block;
+        font-size: 14px;
+        font-weight: 750;
         color: var(--accent);
-        line-height: 1.2;
       }
-      .skill .es {
+      .brief h2 {
         font-size: 18px;
       }
-      .stophead {
-        display: flex;
-        gap: 16px;
-        align-items: center;
+      .brief p {
+        font-size: 15px;
       }
-      .bigicon {
-        flex: none;
-        width: 76px;
-        height: 76px;
-        border-radius: 22px;
-        background: var(--tint);
-        color: var(--accent);
+
+      /* map */
+      .hub-head {
+        display: grid;
+        gap: 10px;
+        margin: 12px 4px 18px;
+      }
+      .hub-head p {
+        font-size: 18px;
+      }
+      progress {
+        width: 100%;
+        height: 10px;
+        accent-color: var(--teal);
+      }
+      .progress-line {
+        font-weight: 750;
+      }
+      .hub-layout {
+        display: grid;
+        gap: 18px;
+        grid-template-areas: "next" "map" "ticket";
+      }
+      .next-card {
+        grid-area: next;
+      }
+      .worldmap {
+        grid-area: map;
+      }
+      .ticket {
+        grid-area: ticket;
+      }
+      .railcard {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 20px;
+      }
+      .next-card {
+        border-top: 5px solid var(--gold);
+      }
+      .ticket {
+        border-top: 5px solid var(--teal);
+      }
+      .visit-list {
+        list-style: none;
+        padding: 0;
+        margin: 6px 0 12px;
+      }
+      .visit-list li {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        font-size: 16px;
+        padding: 6px 0;
+      }
+      .checkdot {
         display: grid;
         place-items: center;
+        min-width: 24px;
+        height: 24px;
+        border: 1px solid #9db4c2;
+        border-radius: 50%;
+        font-size: 13px;
       }
-      .bigicon svg {
-        width: 44px;
-        height: 44px;
+      .checkdot.done {
+        background: var(--teal);
+        border-color: var(--teal);
+        color: #fff;
+      }
+      .worldmap {
+        position: relative;
+        border: 1px solid #bad1dd;
+        border-radius: 20px;
+        background: #e2f0f3;
+        padding: 18px 14px 20px;
+        display: grid;
+        gap: 14px;
+        overflow: hidden;
+      }
+      .terrain {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        opacity: 0.7;
+      }
+      .map-label {
+        position: relative;
+        font-size: 13px;
+        color: #3d6372;
+        font-weight: 700;
+      }
+      .portals {
+        position: relative;
+        display: grid;
+        gap: 14px;
+      }
+      .portal {
+        display: grid;
+        grid-template-columns: 46px minmax(0, 1fr);
+        column-gap: 12px;
+        align-items: center;
+        text-align: left;
+        padding: 16px 16px 12px;
+        min-height: 112px;
+        border: 1px solid #a7becb;
+        border-bottom: 5px solid var(--accent);
+        border-radius: 13px;
+        box-shadow: 0 5px 0 #b8d1de;
+      }
+      .portal:hover {
+        background: #fff;
+        box-shadow: 0 7px 0 #b8d1de;
+      }
+      .portal .icon {
+        grid-row: 1 / 3;
+        width: 46px;
+        height: 46px;
+        padding: 10px;
+        border-radius: 10px;
+        background: var(--tint);
+        color: var(--accent);
+      }
+      .portal .icon svg {
+        width: 100%;
+        height: 100%;
+      }
+      .portal .name {
+        font-size: 19px;
+        font-weight: 800;
+        display: block;
+        text-align: left;
+      }
+      .portal .place {
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--muted);
+        display: block;
+        text-align: left;
+      }
+      .portal .badge {
+        grid-column: 1 / -1;
+        margin-top: 8px;
+        font-size: 13px;
+        color: var(--accent);
+        font-weight: 750;
+        display: block;
+        text-align: left;
+      }
+      .portal.next {
+        border: 2px solid var(--accent);
+        border-bottom-width: 5px;
+        background: var(--tint);
+      }
+      .portal.visited .badge {
+        color: #006449;
+      }
+
+      /* stop */
+      .return-line {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        align-items: center;
+        flex-wrap: wrap;
+        margin: 10px 0 14px;
+      }
+      .screen {
+        background: #fff;
+        border: 1px solid #ccdbe4;
+        border-radius: 20px;
+        overflow: hidden;
+      }
+      .destination-top {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        align-items: center;
+        gap: 16px;
+        background: var(--tint);
+        padding: 22px 20px;
+        border-bottom: 1px solid #d1dfe7;
+      }
+      .destination-top h1 {
+        font-size: clamp(30px, 7vw, 48px);
+        margin-top: 10px;
+      }
+      .large-icon {
+        width: 76px;
+        height: 76px;
+        padding: 16px;
+        color: var(--accent);
+        border: 2px solid currentColor;
+        border-radius: 50%;
+        transform: rotate(-7deg);
+      }
+      .large-icon svg {
+        width: 100%;
+        height: 100%;
+      }
+      .destination-body {
+        padding: 20px;
+        display: grid;
+        gap: 18px;
+      }
+      .mini-map {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 8px;
+      }
+      .mini-map button {
+        display: grid;
+        justify-items: center;
+        gap: 4px;
+        min-height: 68px;
+        padding: 8px 2px;
+        font-size: 13px;
+        border-radius: 10px;
+      }
+      .mini-map svg {
+        width: 24px;
+        height: 24px;
+        color: var(--accent);
+      }
+      .mini-map button[aria-current="page"] {
+        border: 2px solid var(--accent);
+        background: var(--tint);
+      }
+      .mini-map button.visited::after {
+        content: "✓";
+        font-size: 12px;
+        color: var(--teal);
+        line-height: 1;
       }
       .steps {
         list-style: none;
         margin: 0;
         padding: 0;
         display: grid;
-        gap: 12px;
+        gap: 14px;
         counter-reset: s;
       }
       .steps li {
@@ -292,48 +578,97 @@
       .steps li::before {
         content: counter(s);
         flex: none;
-        width: 34px;
-        height: 34px;
+        width: 30px;
+        height: 30px;
         border-radius: 50%;
         background: var(--accent);
         color: #fff;
         font-weight: 800;
+        font-size: 15px;
         display: grid;
         place-items: center;
+        margin-top: 1px;
+      }
+      .playcard {
+        border: 1px solid #b8cdd8;
+        border-radius: 13px;
+        padding: 20px;
+        background: #f8fbfd;
+        display: grid;
+        gap: 16px;
       }
       .ask {
         background: #fff6de;
         border: 1px solid #ddc98c;
-        border-radius: 16px;
+        border-radius: 12px;
         padding: 14px 16px;
       }
       .ask strong {
         color: #6b4a00;
       }
-      .note {
-        font-size: 16px;
-        color: var(--muted);
-      }
-      .row {
+      .stop-actions {
         display: grid;
-        gap: 12px;
+        gap: 10px;
+        border-top: 1px solid #ccdae4;
+        padding-top: 18px;
       }
-      .confirm {
-        max-width: 728px;
-        margin: 0 auto 14px;
-        padding: 16px;
-        background: #fff6de;
-        border: 1px solid #ddc98c;
-        border-radius: 16px;
+      .stop-actions .primary {
+        background: var(--accent);
+        border-color: var(--accent);
       }
-      .confirm .row {
-        margin-top: 12px;
+      .collected {
+        background: #e5f6ed;
+        border: 1px solid #afd1be;
+        border-radius: 12px;
+        padding: 12px 16px;
+        font-weight: 700;
+        color: #064a35;
+      }
+
+      /* end */
+      .outro {
+        background: #fff;
+        border: 1px solid #c2d4df;
+        border-radius: 20px;
+        padding: 26px 20px;
       }
       .stars {
         font-size: 34px;
         letter-spacing: 6px;
-        color: #e0a100;
+        color: #8a5f00;
         text-align: center;
+      }
+      .souvenirs {
+        display: flex;
+        gap: 9px;
+        flex-wrap: wrap;
+      }
+      .souvenir {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        padding: 8px 12px;
+        background: var(--tint);
+        color: var(--accent);
+        border: 1px solid #c2d2df;
+        border-radius: 30px;
+        font-size: 14px;
+        font-weight: 700;
+      }
+      .souvenir svg {
+        width: 20px;
+        height: 20px;
+      }
+      .confirm {
+        max-width: 1008px;
+        margin: 0 auto 14px;
+        padding: 16px;
+        background: #fff6de;
+        border: 1px solid #ddc98c;
+        border-radius: 12px;
+      }
+      .confirm .row {
+        margin-top: 12px;
       }
       .toast {
         position: fixed;
@@ -343,41 +678,99 @@
         background: var(--navy);
         color: #fff;
         border: 2px solid var(--gold);
-        padding: 12px 20px;
+        padding: 12px 22px;
         border-radius: 30px;
         font-size: 16px;
         max-width: 92%;
         text-align: center;
         z-index: 5;
       }
-      .sr {
-        position: absolute;
-        width: 1px;
-        height: 1px;
-        overflow: hidden;
-        clip: rect(0 0 0 0);
-      }
       footer {
-        max-width: 760px;
-        margin: auto;
         padding: 0 16px 30px;
         color: var(--muted);
-        font-size: 15px;
+        font-size: 14px;
+      }
+      [hidden] {
+        display: none !important;
       }
       @media (min-width: 640px) {
-        .grades {
+        .grades,
+        .row.two,
+        .brief,
+        .portals {
           grid-template-columns: 1fr 1fr;
         }
-        .row.two {
-          grid-template-columns: 1fr 1fr;
+        .brief {
+          grid-template-columns: repeat(3, 1fr);
         }
-        .card {
-          padding: 30px 32px;
+        .portals .portal:nth-child(even) {
+          margin-top: 26px;
+        }
+        .destination-top,
+        .destination-body,
+        .outro {
+          padding-inline: 32px;
+        }
+        .stop-actions {
+          grid-template-columns: auto 1fr;
+          align-items: center;
+        }
+        .large-icon {
+          width: 110px;
+          height: 110px;
+          padding: 24px;
+        }
+      }
+      @media (min-width: 900px) {
+        header,
+        main,
+        footer {
+          padding-inline: 28px;
+        }
+        .welcome {
+          grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+        }
+        .welcome-copy {
+          padding: 42px 44px;
+        }
+        .welcome-visual {
+          display: grid;
+        }
+        .hub-layout {
+          grid-template-columns: minmax(0, 1fr) 290px;
+          grid-template-areas: "map next" "map ticket";
+          align-items: start;
+        }
+        .worldmap {
+          padding: 26px 24px 30px;
+        }
+      }
+      @media (max-width: 520px) {
+        .brand small {
+          display: none;
+        }
+        .head-actions {
+          width: 100%;
+        }
+        .lang {
+          flex: 1;
+        }
+        .lang button {
+          flex: 1;
+          padding-inline: 6px;
         }
       }
       @media (prefers-reduced-motion: no-preference) {
         main > * {
           animation: rise 0.25s ease-out;
+        }
+        .portal {
+          transition:
+            transform 0.15s,
+            box-shadow 0.15s;
+        }
+        .portal:hover {
+          transform: translateY(-2px);
         }
         @keyframes rise {
           from {
@@ -393,17 +786,19 @@
     </style>
   </head>
   <body>
+    <a class="skip" href="#content">Skip to the adventure · Saltar a la aventura</a>
     <header>
       <a class="brand" href="/access-practice-lab/family"
         ><svg aria-hidden="true" width="34" height="34" viewBox="0 0 36 36">
-          <rect width="36" height="36" rx="11" fill="currentColor" />
+          <rect width="36" height="36" rx="11" fill="#173a50" />
           <path d="m18 5 3.5 9.5L31 18l-9.5 3.5L18 31l-3.5-9.5L5 18l9.5-3.5Z" fill="#ffce5b" /></svg
-        ><span>EduWonderLab</span></a
-      >
-      <div class="head-actions">
+        ><span>EduWonderLab <small id="brandSub"></small></span
+      ></a>
+      <nav class="head-actions" aria-label="Adventure / Aventura">
         <div class="lang" role="group" aria-label="Language / Idioma" id="lang"></div>
+        <button type="button" id="mapBtn" hidden></button>
         <button type="button" id="resetBtn" hidden></button>
-      </div>
+      </nav>
     </header>
     <div id="resetBar" class="confirm" role="alertdialog" aria-labelledby="resetMsg" hidden></div>
     <main id="content" tabindex="-1"></main>
@@ -433,7 +828,7 @@
           speaking:
             '<path d="M14 16H8l-5 4v-6a7 7 0 0 1-1-4 7 7 0 0 1 7-7h4a7 7 0 0 1 7 7c0 3-2 5-6 6Z"/><path d="m17 16 4 4v-7M7 9h8M7 12h5"/>',
           writing: '<path d="m4 16-1 5 5-1L21 7l-4-4L4 16Zm0 0 4 4M14 6l4 4"/>',
-          home: '<path d="m2 10 10-8 10 8M5 8v14h14V8M9 22v-7h6v7"/>',
+          compass: '<circle cx="12" cy="12" r="10"/><path d="m16 8-3 5-5 3 3-5 5-3Z"/>',
         };
         const svg = (id) =>
           `<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${ICONS[id]}</svg>`;
@@ -445,12 +840,12 @@
             id: "listening",
             color: "#234cda",
             tint: "#e9efff",
-            min: 3,
             path: {
               "3-5": "Listening/A/g35-l-a-classroom-place",
               "6-8": "Listening/A/classroom-directions",
             },
             name: ["Listen", "Escuchar"],
+            place: ["Signal Station", "Estación de señales"],
             title: ["Hear it. Then do it.", "Escúchenlo. Luego háganlo."],
             steps: [
               [
@@ -472,9 +867,9 @@
             id: "reading",
             color: "#006c60",
             tint: "#e4f4ec",
-            min: 3,
             path: { "3-5": "Reading/A/g35-r-a-library", "6-8": "Reading/A/read-main-idea" },
             name: ["Read", "Leer"],
+            place: ["Evidence City", "Ciudad de evidencias"],
             title: ["Find the clue.", "Encuentren la pista."],
             steps: [
               [
@@ -499,12 +894,12 @@
             id: "speaking",
             color: "#9a5700",
             tint: "#fff3d5",
-            min: 3,
             path: {
               "3-5": "Speaking/A/g35-s-a-playground",
               "6-8": "Speaking/A/sv5-describe-lunch-tray",
             },
             name: ["Speak", "Hablar"],
+            place: ["Conversation Quest", "Misión de conversación"],
             title: ["Say it out loud.", "Díganlo en voz alta."],
             steps: [
               ["Look at the picture and read the prompt.", "Miren la imagen y lean la indicación."],
@@ -520,9 +915,9 @@
             id: "writing",
             color: "#b13f31",
             tint: "#ffebe6",
-            min: 3,
             path: { "3-5": "Writing/A/g35-w-a-class-pet", "6-8": "Writing/A/write-complete-frame" },
             name: ["Write", "Escribir"],
+            place: ["StoryWorks", "Taller de cuentos"],
             title: ["Finish the sentence.", "Terminen la oración."],
             steps: [
               ["Read the sentence starter.", "Lean el comienzo de la oración."],
@@ -541,14 +936,15 @@
         const TOTAL = STOPS.length;
 
         const COPY = {
+          sub: ["Family adventure", "Aventura familiar"],
           tagline: [
             "A short adventure for the whole family",
             "Una aventura corta para toda la familia",
           ],
           welcomeTitle: ["Family Adventure", "Aventura familiar"],
           welcomeLead: [
-            `Four short stops. About ${TOTAL * 3} minutes. Try English practice together on a phone, tablet or computer.`,
-            `Cuatro paradas cortas. Unos ${TOTAL * 3} minutos. Practiquen inglés juntos en un teléfono, una tableta o una computadora.`,
+            `Four short stops, in any order. About ${TOTAL * 3} minutes. Try English practice together on a phone, tablet or computer.`,
+            `Cuatro paradas cortas, en el orden que quieran. Unos ${TOTAL * 3} minutos. Practiquen inglés juntos en un teléfono, una tableta o una computadora.`,
           ],
           pickGrade: [
             "Tap your child’s grade to begin.",
@@ -566,17 +962,69 @@
             "The practice is in English. These pages help in your language.",
             "La práctica es en inglés. Estas páginas ayudan en su idioma.",
           ],
+          postcardTitle: ["Four stops.\nYour route.", "Cuatro paradas.\nSu ruta."],
+          postcardLine: [
+            "Listen. Read. Speak. Write.\nTogether.",
+            "Escuchar. Leer. Hablar. Escribir.\nJuntos.",
+          ],
+          brief: [
+            [
+              "01 · Pick a stop",
+              "Escojan una parada",
+              "Go in any order. The map keeps your place.",
+              "Vayan en el orden que quieran. El mapa guarda su avance.",
+            ],
+            [
+              "02 · Try it together",
+              "Inténtenlo juntos",
+              "Each stop opens a real activity. Three short steps.",
+              "Cada parada abre una actividad real. Tres pasos cortos.",
+            ],
+            [
+              "03 · Tap “We did it!”",
+              "Toquen “¡Lo hicimos!”",
+              "Come back, earn a star, and head to the next stop.",
+              "Regresen, ganen una estrella y sigan a la próxima parada.",
+            ],
+          ],
+          mapTitle: ["Pick your next stop", "Escojan su próxima parada"],
+          mapLead: [
+            "Four stops. Any order. About 3 minutes each.",
+            "Cuatro paradas. En cualquier orden. Unos 3 minutos cada una.",
+          ],
+          progress: (n) => [`${n} of ${TOTAL} stops done`, `${n} de ${TOTAL} paradas hechas`],
+          nextTitle: ["Up next", "Sigue"],
+          startStop: (name) => [`Start with ${name[0]}`, `Empezar con ${name[1]}`],
+          nextStop: (name) => [`Next stop: ${name[0]}`, `Próxima parada: ${name[1]}`],
+          seeStars: ["See our stars", "Ver nuestras estrellas"],
+          nextHelp: [
+            "Not sure where to start? Tap the big button. Or pick any door on the map.",
+            "¿No saben por dónde empezar? Toquen el botón grande. O escojan cualquier puerta del mapa.",
+          ],
+          mapLabel: [
+            "Adventure map · every door is open",
+            "Mapa de la aventura · todas las puertas están abiertas",
+          ],
+          ticketTitle: ["Our trip", "Nuestro viaje"],
+          startHere: ["Start here", "Empiecen aquí"],
+          upNext: ["Up next", "Sigue"],
+          doneOpen: ["✓ Done · open again", "✓ Hecho · abrir otra vez"],
+          openStop: ["Open this stop", "Abrir esta parada"],
+          changeGrade: ["Change grade", "Cambiar de grado"],
           stopOf: (n) => [`Stop ${n} of ${TOTAL}`, `Parada ${n} de ${TOTAL}`],
           about: ["About 3 minutes", "Unos 3 minutos"],
           open: ["Open the activity", "Abrir la actividad"],
-          comeBack: [
-            "When you finish, come back here: tap Back in your browser, or the Family Adventure button at the top of the lab.",
-            "Cuando terminen, regresen aquí: toquen Atrás en su navegador o el botón Aventura familiar en la parte de arriba del laboratorio.",
+          newTab: [
+            "Opens in a new tab. When you finish, come back to this tab and tap “We did it!”",
+            "Se abre en otra pestaña. Cuando terminen, regresen a esta pestaña y toquen “¡Lo hicimos!”",
           ],
-          did: ["We did it!", "¡Lo hicimos!"],
+          newTabSr: [" (opens in a new tab)", " (se abre en otra pestaña)"],
+          where: ["Where to next?", "¿A dónde ahora?"],
+          didNext: (name) => [`We did it! Next: ${name[0]}`, `¡Lo hicimos! Sigue: ${name[1]}`],
           didLast: ["We did it! See our stars", "¡Lo hicimos! Ver nuestras estrellas"],
-          skip: ["Skip this stop", "Saltar esta parada"],
-          back: ["Back", "Atrás"],
+          doneHere: ["This stop is on your map. ★", "Esta parada ya está en su mapa. ★"],
+          backMap: ["‹ Back to map", "‹ Volver al mapa"],
+          mapBtn: ["Map", "Mapa"],
           askTitle: ["Talk about it together", "Conversen juntos"],
           toastDone: ["Star earned!", "¡Estrella ganada!"],
           endTitle: ["You finished the adventure!", "¡Terminaron la aventura!"],
@@ -584,7 +1032,7 @@
             "Every stop counts, even a short one. Come back any day.",
             "Cada parada cuenta, aunque sea corta. Vuelvan cualquier día.",
           ],
-          nextTitle: ["Keep going", "Sigan adelante"],
+          nextSteps: ["Keep going", "Sigan adelante"],
           corner: ["Family Corner", "Rincón de la familia"],
           cornerHelp: ["A practice plan and tips", "Un plan de práctica y consejos"],
           helpMe: ["Help My Child", "Ayuda para mi hijo o hija"],
@@ -626,14 +1074,15 @@
 
         // Language: one decision point. 'en' English only, 'es' Spanish only, 'bi' English with Spanish beneath.
         const mode = () => (MODES.includes(state.lang) ? state.lang : "en");
+        const lines = (v) => esc(v).replace(/\n/g, "<br>");
         const T = (pair) => {
           const [e, s] = pair;
           const m = mode();
           return m === "en"
-            ? esc(e)
+            ? lines(e)
             : m === "es"
-              ? esc(s)
-              : `${esc(e)}<span class="es" lang="es">${esc(s)}</span>`;
+              ? lines(s)
+              : `${lines(e)}<span class="es" lang="es">${lines(s)}</span>`;
         };
         const S = (pair) => {
           const [e, s] = pair;
@@ -679,7 +1128,7 @@
             : [];
           state.stop =
             Number.isInteger(raw.stop) && raw.stop >= 0 && raw.stop < TOTAL ? raw.stop : 0;
-          state.view = raw.view === "end" ? "end" : "stop";
+          state.view = ["map", "stop", "end"].includes(raw.view) ? raw.view : "map";
         }
         function save() {
           try {
@@ -688,40 +1137,100 @@
         }
 
         const labHref = (path) => `${LAB}/${path}?grades=${state.band || "3-5"}`;
-        const dots = () =>
-          `<ol class="dots" aria-label="${esc(S(COPY.stopOf(state.stop + 1)))}">${STOPS.map((s, i) => `<li class="${state.done.includes(i) ? "done" : i === state.stop && state.view === "stop" ? "now" : ""}"></li>`).join("")}</ol>`;
+        const theme = (s) => `--accent:${s.color};--tint:${s.tint}`;
+        const isDone = (i) => state.done.includes(i);
+        // The stop to suggest: the first one not done, searching on from the stop the family is on.
+        function nextIdx() {
+          const start = isDone(state.stop) ? state.stop + 1 : state.stop;
+          for (let k = 0; k < TOTAL; k++) {
+            const i = (start + k) % TOTAL;
+            if (!isDone(i)) return i;
+          }
+          return -1;
+        }
+        // The stop after the current one: the first one not done, wrapping, never the current stop.
+        function following() {
+          for (let k = 1; k < TOTAL; k++) {
+            const i = (state.stop + k) % TOTAL;
+            if (!isDone(i)) return i;
+          }
+          return -1;
+        }
+        const gradeLabel = () => (state.band === "6-8" ? COPY.g68 : COPY.g35);
 
         function welcome() {
-          return `<section class="card stack"><span class="eyebrow">${T(COPY.tagline)}</span>
+          const grade = (band, title, sub) =>
+            `<button type="button" class="grade" data-band="${band}" aria-pressed="${state.band === band}"><strong>${T(title)}</strong><span>${T(sub)}</span></button>`;
+          return `<section class="welcome"><div class="welcome-copy stack"><span class="tag">${esc(S(COPY.tagline))}</span>
   <h1>${T(COPY.welcomeTitle)}</h1><p class="lead">${T(COPY.welcomeLead)}</p>
   <h2>${T(COPY.pickGrade)}</h2>
-  <div class="grades">
-    <button type="button" class="grade" data-band="3-5"><strong>${T(COPY.g35)}</strong><span>${T(COPY.g35s)}</span></button>
-    <button type="button" class="grade" data-band="6-8"><strong>${T(COPY.g68)}</strong><span>${T(COPY.g68s)}</span></button>
-  </div>
-  <p class="note">${T(COPY.practiceNote)}</p><p class="note">${T(COPY.saved)}</p></section>`;
+  <div class="grades">${grade("3-5", COPY.g35, COPY.g35s)}${grade("6-8", COPY.g68, COPY.g68s)}</div>
+  <p class="note">${T(COPY.practiceNote)}</p><p class="note">${T(COPY.saved)}</p></div>
+  <div class="welcome-visual" aria-hidden="true"><div class="postcard"><span class="note">${esc(S(COPY.sub))}</span><h2>${T(COPY.postcardTitle)}</h2><div class="icon-row">${STOPS.map((s) => svg(s.id)).join("")}</div><p class="note">${T(COPY.postcardLine)}</p></div></div></section>
+  <section class="brief" aria-label="${esc(S(COPY.sub))}">${COPY.brief.map(([n, nEs, t, tEs]) => `<div><span class="n">${T([n, nEs])}</span><p>${T([t, tEs])}</p></div>`).join("")}</section>`;
+        }
+
+        function terrain() {
+          return `<svg class="terrain" viewBox="0 0 900 650" preserveAspectRatio="none" aria-hidden="true"><g stroke="#c0dde2" fill="none"><path d="M-40 80Q170-10 320 120T940 90M-40 170Q170 80 320 210T940 180M-40 260Q170 170 320 300T940 270M-40 350Q170 260 320 390T940 360M-40 440Q170 350 320 480T940 450M-40 530Q170 440 320 570T940 540"/></g><path d="M220 135C395 10 735 125 670 200S120 220 220 295 760 265 670 365 120 390 220 465 760 440 670 530" fill="none" stroke="#729aaf" stroke-width="3" stroke-dasharray="6 9"/></svg>`;
+        }
+        function portal(s, i) {
+          const done = isDone(i),
+            next = i === nextIdx();
+          const badge = done
+            ? COPY.doneOpen
+            : next
+              ? state.done.length
+                ? COPY.upNext
+                : COPY.startHere
+              : COPY.openStop;
+          return `<button type="button" class="portal ${done ? "visited" : ""} ${next ? "next" : ""}" style="${theme(s)}" data-stop="${i}"><span class="icon">${svg(s.id)}</span><span class="name">${T(s.name)}</span><span class="place">${T(s.place)}</span><span class="badge">${T(badge)}</span></button>`;
+        }
+        function visitList() {
+          return `<ul class="visit-list">${STOPS.map((s, i) => `<li><span class="checkdot ${isDone(i) ? "done" : ""}" aria-hidden="true">${isDone(i) ? "✓" : "·"}</span>${T(s.name)}</li>`).join("")}</ul>`;
+        }
+        function map() {
+          const n = state.done.length,
+            nx = nextIdx();
+          const go =
+            nx < 0
+              ? `<button type="button" class="primary" data-view="end">${T(COPY.seeStars)}</button>`
+              : `<button type="button" class="primary" data-stop="${nx}">${T((n ? COPY.nextStop : COPY.startStop)(STOPS[nx].name))}</button>`;
+          return `<div class="hub-head"><span class="tag">${esc(S(gradeLabel()))}</span><h1>${T(COPY.mapTitle)}</h1><p>${T(COPY.mapLead)}</p>
+  <div><div class="progress-line">${T(COPY.progress(n))}</div><progress max="${TOTAL}" value="${n}" aria-label="${esc(S(COPY.progress(n)))}"></progress></div></div>
+  <div class="hub-layout">
+  <section class="railcard next-card"><h2>${T(COPY.nextTitle)}</h2><div class="stack"><p class="note">${T(COPY.nextHelp)}</p>${go}</div></section>
+  <section class="worldmap" aria-label="${esc(S(COPY.mapLabel))}">${terrain()}<div class="map-label">${esc(S(COPY.mapLabel))}</div><div class="portals">${STOPS.map(portal).join("")}</div></section>
+  <section class="railcard ticket"><h2>${T(COPY.ticketTitle)}</h2>${visitList()}<button type="button" class="quiet" data-view="welcome">${T(COPY.changeGrade)}</button></section></div>`;
+        }
+
+        function miniMap(current) {
+          return `<nav class="mini-map" aria-label="${esc(S(COPY.where))}">${STOPS.map((s, i) => `<button type="button" style="${theme(s)}" class="${isDone(i) ? "visited" : ""}" data-stop="${i}" ${i === current ? 'aria-current="page"' : ""}>${svg(s.id)}${T(s.name)}</button>`).join("")}</nav>`;
         }
         function stop() {
-          const s = STOPS[state.stop];
-          return `<section class="card stack" style="--accent:${s.color};--tint:${s.tint}">${dots()}
-  <div class="stophead"><div class="bigicon">${svg(s.id)}</div><div class="stoplabel"><span class="eyebrow">${T(COPY.stopOf(state.stop + 1))}</span><strong class="skill">${T(s.name)}</strong></div></div>
-  <h1 id="stopTitle">${T(s.title)}</h1><p class="note">${T(COPY.about)}</p>
-  <ol class="steps">${s.steps.map(([e, es]) => `<li><span>${T([e, es])}</span></li>`).join("")}</ol>
-  <a class="btn primary" href="${labHref(s.path[state.band])}">${T(COPY.open)}</a>
-  <p class="note">${T(COPY.comeBack)}</p>
+          const s = STOPS[state.stop],
+            done = isDone(state.stop);
+          const nx = following();
+          const doneLabel = nx < 0 ? COPY.didLast : COPY.didNext(STOPS[nx].name);
+          return `<div class="return-line"><button type="button" class="quiet" data-view="map">${T(COPY.backMap)}</button><span class="tag">${esc(S(COPY.stopOf(state.stop + 1)))} · ${esc(S(COPY.about))}</span></div>
+  <article class="screen" style="${theme(s)}"><header class="destination-top"><div><span class="pill">${esc(S(s.name))} · ${esc(S(s.place))}</span><h1 id="stopTitle">${T(s.title)}</h1></div><div class="large-icon">${svg(s.id)}</div></header>
+  <div class="destination-body">${miniMap(state.stop)}
+  <section class="playcard"><ol class="steps">${s.steps.map(([e, es]) => `<li><span>${T([e, es])}</span></li>`).join("")}</ol>
+  <a class="btn primary" href="${labHref(s.path[state.band])}" target="_blank" rel="noopener noreferrer">${T(COPY.open)}<span class="sr">${esc(S(COPY.newTabSr))}</span></a>
+  <p class="note">${T(COPY.newTab)}</p></section>
   <div class="ask"><strong>${T(COPY.askTitle)}</strong><p>${T(s.ask)}</p></div>
-  <div class="row"><button type="button" data-done>${T(state.stop === TOTAL - 1 ? COPY.didLast : COPY.did)}</button></div>
-  <div class="row two">${state.stop > 0 ? `<button type="button" class="quiet" data-nav="-1">${T(COPY.back)}</button>` : "<span></span>"}<button type="button" class="quiet" data-nav="1">${T(COPY.skip)}</button></div></section>`;
+  ${done ? `<p class="collected">${T(COPY.doneHere)}</p>` : ""}
+  <div class="stop-actions"><button type="button" class="quiet" data-view="map">${T(COPY.backMap)}</button><button type="button" class="primary" data-done>${T(doneLabel)}</button></div></div></article>`;
         }
         function end() {
           const n = state.done.length;
           const link = (href, title, help) =>
             `<a class="btn" href="${href}">${T(title)}<span class="note">${T(help)}</span></a>`;
-          return `<section class="card stack"><div class="stars" role="img" aria-label="${n} / ${TOTAL}">${STOPS.map((_, i) => (state.done.includes(i) ? "★" : "☆")).join("")}</div>
+          return `<section class="outro stack"><div class="stars" role="img" aria-label="${n} / ${TOTAL}">${STOPS.map((_, i) => (isDone(i) ? "★" : "☆")).join("")}</div>
   <h1>${T(COPY.endTitle)}</h1><p class="lead">${T(COPY.endLead)}</p>
-  <h2>${T(COPY.nextTitle)}</h2>
+  <div class="souvenirs">${STOPS.map((s, i) => (isDone(i) ? `<span class="souvenir" style="${theme(s)}">${svg(s.id)}${T(s.name)}</span>` : "")).join("")}</div>
+  <h2>${T(COPY.nextSteps)}</h2>
   <div class="row">${link(`${LAB}/family?grades=${state.band}`, COPY.corner, COPY.cornerHelp)}${link(`${LAB}/family/help?grades=${state.band}`, COPY.helpMe, COPY.helpMeHelp)}${link(`${LAB}/family/trip?grades=${state.band}`, COPY.trip, COPY.tripHelp)}</div>
-  <div class="row"><button type="button" data-restart-run>${T(COPY.again)}</button></div></section>`;
+  <div class="row two"><button type="button" data-view="map">${T(COPY.backMap)}</button><button type="button" data-restart-run>${T(COPY.again)}</button></div></section>`;
         }
 
         function chrome() {
@@ -731,8 +1240,11 @@
               `<button type="button" data-lang="${m}" aria-pressed="${mode() === m}" ${m === "es" ? 'lang="es"' : ""}>${labels[m]}</button>`,
           ).join("");
           const started = !!state.band;
+          $("mapBtn").hidden = !started || state.view === "map";
+          $("mapBtn").textContent = S(COPY.mapBtn);
           $("resetBtn").hidden = !started;
           $("resetBtn").textContent = S(COPY.start);
+          $("brandSub").textContent = S(COPY.sub);
           $("resetBar").innerHTML =
             `<p id="resetMsg"><strong>${T(COPY.startQ)}</strong><br>${T(COPY.startQd)}</p><div class="row two"><button type="button" class="primary" data-reset>${T(COPY.yesStart)}</button><button type="button" data-reset-cancel>${T(COPY.keep)}</button></div>`;
           $("foot").innerHTML =
@@ -742,8 +1254,8 @@
         }
         function render(focus = true) {
           if (!state.band) state.view = "welcome";
-          $("content").innerHTML =
-            state.view === "welcome" ? welcome() : state.view === "end" ? end() : stop();
+          const views = { welcome, map, stop, end };
+          $("content").innerHTML = (views[state.view] || map)();
           chrome();
           save();
           if (focus) {
@@ -759,11 +1271,18 @@
             $("toast").hidden = true;
           }, 2600);
         }
-        function advance() {
-          if (state.stop >= TOTAL - 1) {
+        function finishStop() {
+          const first = !isDone(state.stop);
+          if (first) {
+            state.done.push(state.stop);
+            toast(COPY.toastDone);
+          }
+          const nx = nextIdx();
+          if (nx < 0) {
             state.view = "end";
           } else {
-            state.stop += 1;
+            state.stop = nx;
+            state.view = "stop";
           }
           render();
         }
@@ -780,35 +1299,31 @@
           }
           if (b.dataset.band) {
             state.band = b.dataset.band;
+            state.view = "map";
+            render();
+            return;
+          }
+          if (b.dataset.stop !== undefined) {
+            state.stop = Number(b.dataset.stop);
             state.view = "stop";
-            state.stop = 0;
-            state.done = [];
             render();
             return;
           }
-          if ("done" in b.dataset) {
-            if (!state.done.includes(state.stop)) {
-              state.done.push(state.stop);
-              toast(COPY.toastDone);
-            }
-            advance();
-            return;
-          }
-          if (b.dataset.nav) {
-            const n = state.stop + Number(b.dataset.nav);
-            if (n < 0) return;
-            if (n >= TOTAL) {
-              state.view = "end";
-            } else {
-              state.stop = n;
-            }
+          if (b.dataset.view) {
+            state.view = b.dataset.view;
             render();
             return;
           }
+          if ("done" in b.dataset) return finishStop();
           if ("restartRun" in b.dataset) {
-            state.view = "stop";
+            state.view = "map";
             state.stop = 0;
             state.done = [];
+            render();
+            return;
+          }
+          if (b.id === "mapBtn") {
+            state.view = "map";
             render();
             return;
           }
