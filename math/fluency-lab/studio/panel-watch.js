@@ -52,15 +52,16 @@ export function mountWatch(ctx, root) {
   const caption = (f) => pick(ctx.simple && f.easy ? f.easy : f.cap, ctx.lang());
   function show(n, { speakIt = true } = {}) {
     i = Math.max(0, Math.min(frames.length - 1, n));
-    const f = frames[i];
+    // At a Predict point the learner sees the step before it, so what happens next is theirs to think about.
+    const p = predicts.find((x) => x.at === i && !answered.has(x.at));
+    const f = p && i > 0 ? frames[i - 1] : frames[i];
     morph(stage, f.svg, { animate: !calm });
     q("[data-eq]").textContent = f.eq || "";
     q("[data-cap]").textContent = caption(f);
-    root.querySelectorAll("[data-dot]").forEach((d, k) => d.classList.toggle("on", k <= i));
+    root.querySelectorAll("[data-dot]").forEach((d, k) => d.classList.toggle("on", k <= (p ? i - 1 : i)));
     q('[data-w="back"]').disabled = i === 0;
     q('[data-w="next"]').disabled = Boolean(gate) || i === frames.length - 1;
-    if (ctx.narrate && speakIt) speak(caption(f), ctx.lang(), { raw: true });
-    const p = predicts.find((x) => x.at === i && !answered.has(x.at));
+    if (ctx.narrate && speakIt && !p) speak(caption(f), ctx.lang(), { raw: true });
     if (p) openGate(p);
     if (i === frames.length - 1 && !gate) {
       stop();

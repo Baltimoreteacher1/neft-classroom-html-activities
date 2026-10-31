@@ -89,8 +89,8 @@ for (const skill of ALL_SKILLS) {
           !re.test(norm(h.text.en)),
           `${skill.id} "${item.question}": hint text states ${token}: ${h.text.en}`,
         );
-        // A number line labels every integer in range, so the tick for the answer is always there; the point is not marked.
-        if (h.frame && engine.id !== "line")
+        // A number line labels every integer in range, and the rounding line labels both candidate ends, so the answer's label is always there; it is not marked as the answer.
+        if (h.frame && !["line", "round"].includes(engine.id))
           assert.ok(
             !re.test(norm(textOf(h.frame.svg))),
             `${skill.id} "${item.question}": hint picture shows ${token}`,
@@ -179,6 +179,32 @@ function checkInvariants(id, spec, frames, rep, item) {
           Math.abs(l * spec.base[1] - r * spec.base[0]) < 1e-6,
           "every row keeps the ratio",
         );
+  } else if (id === "fracmul") {
+    if (spec.mode === "grid") {
+      const o = frames.find((f) => f.id === "overlap").meta;
+      assert.equal(
+        o.overlap * spec.b * spec.d,
+        o.cells * spec.a * spec.c,
+        "overlap over cells is the product",
+      );
+      assert.equal(o.cols, spec.a);
+      assert.equal(o.rows, spec.c);
+    } else {
+      const k = frames.at(-1).meta;
+      assert.equal(k.parts.length * spec.part, spec.result, "kept parts add to the answer");
+      assert.equal(spec.part * spec.b, spec.n, "the equal parts rebuild the whole");
+    }
+  } else if (id === "round") {
+    const c = frames.at(-1).meta;
+    assert.equal(c.upper - c.lower, spec.p);
+    assert.ok(Math.abs(spec.n - spec.result) <= spec.p / 2, "the answer is within half a step");
+    assert.ok(
+      spec.n === spec.mid
+        ? spec.result === c.upper
+        : Math.abs(spec.n - spec.result) <
+            Math.abs(spec.n - (spec.result === c.upper ? c.lower : c.upper)),
+      "the answer is the nearer end, halfway rounds up",
+    );
   } else if (id === "area") {
     for (const f of frames)
       if (f.meta?.parts && !f.meta.half)
@@ -225,7 +251,6 @@ for (const q of [
   "x² = 4",
   "7:0 = 14:□",
   "2x + 3 = 4. Find x.",
-  "Round 603 to the nearest ten.",
 ]) {
   const l = lessonFor({ question: q, steps: [] });
   assert.ok(!l || !l.modeled, `"${q}" is not modeled`);
@@ -343,6 +368,35 @@ function solve(engineId, question) {
   assert.ok(d.b.done(ds, d.spec));
 }
 
+{
+  const f = solve("fracmul", "2/3 × 3/4 = ?");
+  let st = f.b.init(f.spec);
+  for (let n = 0; n < 2; n += 1) st = f.b.act(st, "x", 1, f.spec).state;
+  for (let n = 0; n < 3; n += 1) st = f.b.act(st, "y", 1, f.spec).state;
+  assert.ok(
+    f.b.done(st, f.spec) && f.b.render(st, f.spec).status.en.includes("6 of 12"),
+    "shading 2 columns and 3 rows overlaps 6 of 12 cells",
+  );
+  assert.equal(ENGINES.fracmul.answer(f.spec), "1/2");
+  const o = solve("fracmul", "What is 2/6 of 72?");
+  let os = o.b.init(o.spec);
+  assert.ok(!o.b.act({ x: 0, y: 0 }, "x", -1, o.spec).ok, "cannot shade fewer than none");
+  for (let n = 0; n < 2; n += 1) os = o.b.act(os, "x", 1, o.spec).state;
+  assert.ok(o.b.done(os, o.spec));
+  const r = solve("round", "Round 602 to the nearest ten.");
+  assert.ok(!r.b.act(r.b.init(r.spec), "pick", "upper", r.spec).ok, "602 is nearer 600 than 610");
+  assert.ok(r.b.done(r.b.act(r.b.init(r.spec), "pick", "lower", r.spec).state, r.spec));
+  assert.equal(
+    ENGINES.round.answer(ENGINES.round.parse("Round 85 to the nearest ten.")),
+    90,
+    "halfway rounds up",
+  );
+  assert.equal(
+    ENGINES.round.answer(ENGINES.round.parse("Round 827,738 to the nearest hundred.")),
+    827700,
+  );
+}
+
 // ---------- 5. Misconception diagnosis is exact ----------
 {
   const cases = [
@@ -356,6 +410,10 @@ function solve(engineId, question) {
     ["2x + 4 = 10. Find x.", "1", "dividedPart"],
     ["4:6 = 12:□", "14", "additive"],
     ["Area of a rectangle with length 6 and width 5?", "22", "perimeterForArea"],
+    ["2/3 × 3/4 = ?", "5/7", "addedAcross"],
+    ["What is 2/6 of 72?", "12", "forgotKeep"],
+    ["Round 87 to the nearest ten.", "80", "roundedDown"],
+    ["Round 82 to the nearest ten.", "90", "roundedUp"],
   ];
   for (const [q, wrong, tag] of cases) {
     const lesson = lessonFor({ question: q, steps: [] });
@@ -517,6 +575,28 @@ setLang("en");
   );
   setLang("en");
   window.dispatchEvent(new window.Event("fluency-lang-changed"));
+  stop();
+}
+{
+  // A Predict point never shows its own answer: the learner sees the step before it until they have answered.
+  const stop = fresh("add-1000", "123 + 456 = ?");
+  const nx = () => host.querySelector('[data-w="next"]');
+  let guard = 0;
+  while (!host.querySelector("[data-predict]:not([hidden])") && guard++ < 10) click(nx());
+  assert.ok(
+    host.querySelector("[data-predict]:not([hidden])"),
+    "no-trade problems still stop at a prediction",
+  );
+  assert.ok(
+    !host.querySelector("[data-cap]").textContent.includes("579"),
+    "the caption does not state the total at the question",
+  );
+  assert.ok(
+    !host.querySelector("[data-eq]").textContent.includes("579"),
+    "the equation line does not state the total at the question",
+  );
+  click(host.querySelector('[data-c="0"]'));
+  click(host.querySelector('[data-w="go"]') || host.querySelector("[data-c='0']"));
   stop();
 }
 {

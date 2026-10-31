@@ -6,9 +6,11 @@ import { L, esc, frame, num, svgWrap, txt } from "./core.js";
 import * as area from "./engine-area.js";
 import * as balance from "./engine-balance.js";
 import * as fraction from "./engine-fraction.js";
+import * as fracmul from "./engine-fracmul.js";
 import * as line from "./engine-line.js";
 import * as place from "./engine-place.js";
 import * as ratio from "./engine-ratio.js";
+import * as round from "./engine-round.js";
 import { peekCap } from "../step-leak.js";
 
 export const ENGINES = {
@@ -17,9 +19,11 @@ export const ENGINES = {
   line: { id: "line", label: L("Number line", "Recta numérica"), ...line },
   balance: { id: "balance", label: L("Balance scale", "Balanza"), ...balance },
   ratio: { id: "ratio", label: L("Ratio table", "Tabla de razones"), ...ratio },
+  fracmul: { id: "fracmul", label: L("Area grid", "Cuadrícula de área"), ...fracmul },
+  round: { id: "round", label: L("Rounding line", "Recta de redondeo"), ...round },
   area: { id: "area", label: L("Arrays and area", "Arreglos y área"), ...area },
 };
-const ORDER = ["place", "fraction", "line", "balance", "ratio", "area"];
+const ORDER = ["place", "fraction", "fracmul", "round", "line", "balance", "ratio", "area"];
 
 // Worded steps as frames, for skills with no manipulable model yet.
 const wrapText = (text, width = 46) => {

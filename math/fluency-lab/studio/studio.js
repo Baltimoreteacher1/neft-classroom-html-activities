@@ -31,6 +31,8 @@ const BADGE = {
   line: L("Number line walker", "Caminante de la recta"),
   balance: L("Balance keeper", "Guardián de la balanza"),
   ratio: L("Ratio scaler", "Escalador de razones"),
+  fracmul: L("Grid multiplier", "Multiplicador de cuadrícula"),
+  round: L("Line rounder", "Redondeador de recta"),
   area: L("Array architect", "Arquitecto de arreglos"),
   steps: L("Step by step thinker", "Pensador paso a paso"),
 };
