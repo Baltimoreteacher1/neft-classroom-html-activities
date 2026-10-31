@@ -252,12 +252,17 @@ try {
     assert.ok((await page.locator("[data-feedback-action='next']").count()) === 1, "picture: Next waits for the learner");
   });
   await play("arrayarchitect", async (page) => {
+    const target = Number(await page.locator("[data-array-target]").getAttribute("data-array-target"));
+    const setBoard = async (rows, columns) => {
+      for (const [selector, value] of [["[data-array-rows]", rows], ["[data-array-columns]", columns]])
+        await page.locator(selector).evaluate((node, v) => { node.value = String(v); node.dispatchEvent(new Event("input", { bubbles: true })); }, value);
+    };
+    // The target is random and so is the starting board, so a miss is made on purpose: a board that cannot equal it.
+    await setBoard(1, target === 1 ? 2 : 1);
     await page.locator("[data-check]").click();
     await expectRetry(page, "arrayarchitect");
-    const target = Number(await page.locator("[data-array-target]").getAttribute("data-array-target"));
     const rows = [2, 3, 4, 5, 6, 7, 8, 9, 10].find((count) => target % count === 0 && target / count <= 10);
-    for (const [selector, value] of [["[data-array-rows]", rows], ["[data-array-columns]", target / rows]])
-      await page.locator(selector).evaluate((node, v) => { node.value = String(v); node.dispatchEvent(new Event("input", { bubbles: true })); }, value);
+    await setBoard(rows, target / rows);
     await page.locator("[data-check]").click();
     await expectCorrect(page, "arrayarchitect");
     await shot(page, "game-array-correct");
