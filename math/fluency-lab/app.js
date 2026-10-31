@@ -7128,17 +7128,18 @@ function clearStudio() {
   if (slot) slot.replaceChildren();
 }
 function showStudio(item, skill, context) {
-  if (!item || !skill) {
+  const activeSkill = skill ?? (item ? skillForItem(state.grade, item) : null);
+  if (!item || !activeSkill) {
     clearStudio();
     return;
   }
-  if (mountedStudioItem === item && mountedStudioSkill === skill) return;
+  if (mountedStudioItem === item && mountedStudioSkill === activeSkill) return;
   clearStudio();
   const slot = document.querySelector("#studio-slot");
   if (slot) {
-    cleanupStudio = mountStudio(slot, { item, skill, context });
+    cleanupStudio = mountStudio(slot, { item, skill: activeSkill, context });
     mountedStudioItem = item;
-    mountedStudioSkill = skill;
+    mountedStudioSkill = activeSkill;
   }
 }
 
