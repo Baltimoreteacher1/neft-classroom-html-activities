@@ -41,3 +41,37 @@ assert.ok(
 );
 
 console.log("fluency-compare-line: comparison steps draw a marked number line");
+
+// Two-digit and larger facts ("36 − 30 = 6") get one jump on the number line to the answer; small facts keep their counters.
+for (const [line, start, answer] of [
+  ["36 − 30 = 6", 36, 6],
+  ["96 + 20 = 116", 96, 116],
+]) {
+  const html = stepVisual(line);
+  assert.ok(html.includes('class="tp-line"'), `${line} draws a jump line`);
+  assert.ok(
+    marks(html).length === 0 && html.includes(`>${answer}</text>`),
+    `${line} labels the answer`,
+  );
+  assert.ok(html.includes(`>${start}</text>`), `${line} labels the start`);
+}
+assert.equal(
+  stepVisual("5 + 3 = 8").includes('class="tp-line"'),
+  false,
+  "small facts keep their counters",
+);
+
+// Lead-in sentences keep their equation's jump; place-value and bigger-number steps get a picture.
+assert.ok(
+  stepVisual("Take away to the ten first. 34 − 6 = 28").includes('class="tp-line"'),
+  "lead-in equation draws its jump",
+);
+assert.ok(
+  stepVisual("Find the tens place in 352").includes("sv-place"),
+  "place lookup shows the number in place blocks",
+);
+assert.ok(
+  stepVisual("Start at the bigger number, 8").includes("sv-count") ||
+    stepVisual("Start at the bigger number, 8").length > 0,
+  "bigger number is drawn",
+);

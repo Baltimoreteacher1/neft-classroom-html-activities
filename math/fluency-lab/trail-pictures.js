@@ -1125,6 +1125,17 @@ export function stepVisual(line) {
   if (split) return miniBar([Number(split[2]), Number(split[3])]);
   const names = text.match(/^Name the places from the right: (.+)$/);
   if (names) return placeNames(names[1]);
+  // "Find the tens place in 352": the whole number in place blocks, so the place being asked about is visible.
+  const find = text.match(/^Find the (?:ones|tens|hundreds|thousands) place in (\d+)$/);
+  if (find) {
+    const digits = find[1];
+    const units = ["ones", "tens", "hundreds", "thousands"];
+    return placeBlocks(
+      [...digits].map((d, i) => `${d} ${units[digits.length - 1 - i]}`).join(", "),
+    );
+  }
+  const bigger = text.match(/^Start at the bigger number, (\d+)$/);
+  if (bigger) return miniHops([Number(bigger[1])]);
   const apart = text.match(/^Take \d+ apart: (.+)$/);
   if (apart) return placeBlocks(apart[1]);
   const place = text.match(
@@ -1133,6 +1144,15 @@ export function stepVisual(line) {
   if (place) return compareBlocks(place[1], place[2], place[3], place[4], place[5], place[6]);
   const order = text.match(/^(\d+(?:\.\d+)?) ([<>]) (\d+(?:\.\d+)?)$/);
   if (order) return compareLine(num(order[1]), num(order[3]));
+  // "36 − 30 = 6": one jump from the first number to the answer. Small facts keep their counters and arrays.
+  // A lead-in sentence ("Take away to the ten first. 34 − 6 = 28") is allowed before the equation.
+  const jump = text.match(/(?:^|\. )(\d+) ([+−]) (\d+) = (\d+)$/);
+  if (jump && Math.max(Number(jump[1]), Number(jump[4])) > 10) {
+    const [start, op, size, answer] = [Number(jump[1]), jump[2], Number(jump[3]), Number(jump[4])];
+    const hop = op === "+" ? size : -size;
+    if (start + hop === answer && answer >= 0)
+      return `<figure class="tp">${numberLine({ start, jumps: [hop], caption: `${start} ${op} ${size} = ${answer}` }).replace(">?</text>", `>${answer.toLocaleString("en-US")}</text>`)}</figure>`;
+  }
   const eq = text.match(
     /^(-?\d+(?:\.\d+)?) ([+−×÷]) \(?(-?\d+(?:\.\d+)?|\?)\)? = (-?\d+(?:\.\d+)?|\?)$/,
   );
