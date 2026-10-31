@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>Fluency Lab illustration contact sheet</title>
+    <style>
+      :root { --navy: #17324d; --paper: #f7f4ec; --line: #d5d9de; --ink-soft: #52606d; }
+      * { box-sizing: border-box; }
+      body { margin: 0; padding: 16px; background: #fff; color: var(--navy); font: 400 15px/1.45 system-ui, sans-serif; }
+      h1 { margin: 0 0 4px; font: 700 1.6rem Georgia, serif; }
+      h2 { margin: 32px 0 8px; font: 700 1.2rem Georgia, serif; border-bottom: 2px solid var(--line); padding-bottom: 4px; }
+      p { margin: 0 0 8px; color: var(--ink-soft); }
+      nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+      nav a { padding: 8px 12px; border: 2px solid var(--navy); border-radius: 12px; color: var(--navy); text-decoration: none; font-weight: 600; min-height: 44px; display: inline-flex; align-items: center; }
+      nav a:focus-visible { outline: 3px solid #2c6fb0; outline-offset: 3px; }
+      .row { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--line); }
+      .row figure { margin: 0; }
+      .row figcaption { font-size: 12px; color: var(--ink-soft); margin-top: 4px; max-width: 24em; word-break: break-word; }
+      .meta { flex: 1 1 100%; font-weight: 600; }
+      .meta small { font-weight: 400; color: var(--ink-soft); }
+      .dark-note { margin-top: 24px; }
+    </style>
+  </head>
+  <body>
+    <h1>Fluency Lab illustrations</h1>
+    <p>Development contact sheet. Every illustration from <code>illustrations.js</code> at three sizes, light theme. Add <code>?group=badge</code> to show one group, <code>?lang=es</code> for Spanish titles.</p>
+    <nav id="nav" aria-label="Groups"></nav>
+    <main id="sheet"></main>
+    <script type="module">
+      import { ILLUSTRATION_INDEX } from "../illustrations.js";
+      import { setLang } from "../i18n.js";
+      const params = new URLSearchParams(location.search);
+      if (params.get("lang") === "es") setLang("es", { persist: false });
+      const SIZES = {
+        skill: [60, 120, 240], strand: [60, 120, 240], grade: [48, 96, 192], badge: [48, 96, 192], milestone: [48, 96, 192],
+        header: [200, 400, 640], report: [200, 400, 640], pathway: [200, 400, 640], certificate: [120, 240, 400],
+        empty: [120, 240, 360], onboarding: [140, 280, 420], family: [120, 240, 360],
+      };
+      const groups = {};
+      for (const [name, entry] of Object.entries(ILLUSTRATION_INDEX)) (groups[entry.group] ??= []).push([name, entry]);
+      const only = params.get("group");
+      const nav = document.getElementById("nav");
+      for (const g of Object.keys(groups)) nav.insertAdjacentHTML("beforeend", `<a href="?group=${g}${params.get("lang") ? "&lang=" + params.get("lang") : ""}">${g} (${groups[g].length})</a>`);
+      nav.insertAdjacentHTML("beforeend", `<a href="?">all</a>`);
+      const sheet = document.getElementById("sheet");
+      for (const [g, list] of Object.entries(groups)) {
+        if (only && only !== g) continue;
+        const section = document.createElement("section");
+        section.innerHTML = `<h2 id="g-${g}">${g}</h2>`;
+        let n = 0;
+        for (const [name, entry] of list) {
+          const row = document.createElement("div");
+          row.className = "row";
+          row.innerHTML = `<div class="meta">${name} <small>${entry.description}</small></div>`;
+          for (const size of SIZES[g] || [60, 120, 240]) {
+            const fig = document.createElement("figure");
+            fig.innerHTML = entry.factory({ size, idPrefix: `cs${g}${n}-${size}` });
+            fig.insertAdjacentHTML("beforeend", `<figcaption>${size}px</figcaption>`);
+            row.append(fig);
+          }
+          n += 1;
+          section.append(row);
+        }
+        sheet.append(section);
+      }
+    </script>
+  </body>
+</html>
