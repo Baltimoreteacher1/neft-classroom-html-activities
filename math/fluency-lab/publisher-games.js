@@ -1,5 +1,6 @@
 // Three longer-form, math-first games for the Fluency Lab. All checks are untimed,
 // keyboard operable, and send first-try/support evidence through the shared game seam.
+import { mountFeedback, phaseFor } from "./feedback-host.js";
 import { t } from "./i18n.js";
 
 const esc = (s) => String(s).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;");
@@ -69,7 +70,7 @@ export function rallyTask(grade, round) {
 
 function mount(container, name, gameId, grade, onEvidence, finish, makeRound, renderBoard, checkRound, bindBoard = () => {}) {
   const total = 5;
-  const state = { round: 0, first: 0, misses: 0, hinted: false, failed: false, locked: false, selected: null, roundSolved: false, foundPairs: [] };
+  const state = { round: 0, first: 0, misses: 0, hinted: false, failed: false, locked: false, selected: null, roundSolved: false, ended: false, foundPairs: [] };
   let task = makeRound(state.round);
   state.rows = task.rows ?? 2;
   state.columns = task.columns ?? 2;
@@ -81,32 +82,52 @@ function mount(container, name, gameId, grade, onEvidence, finish, makeRound, re
     container.querySelector("[data-check]")?.addEventListener("click", () => {
       if (state.locked) return;
       const result = checkRound(task, state, container);
-      const feedback = container.querySelector("[data-feedback]");
-      feedback.dataset.state = result.ok ? "right" : "retry";
-      feedback.textContent = result.message;
+      const copy = container.querySelector("[data-feedback]");
+      copy.dataset.state = result.ok ? "right" : "retry";
       state.failed ||= !result.ok;
-      if (!result.ok) { onEvidence({ worldId: task.worldId, grade, correct: false, independent: !state.hinted }); state.misses += 1; return; }
+      if (!result.ok) {
+        onEvidence({ worldId: task.worldId, grade, correct: false, independent: !state.hinted });
+        state.misses += 1;
+        showResult(copy, result);
+        return;
+      }
       if (!state.roundSolved) {
         if (!state.failed && !state.hinted) state.first += 1;
         onEvidence({ worldId: task.worldId, grade, correct: true, independent: !state.hinted && !state.failed });
         state.roundSolved = true;
       }
       state.locked = true;
+      showResult(copy, result);
       if (result.exploreMore) {
         const explore = document.createElement("button");
         explore.type = "button"; explore.className = "outline-action"; explore.textContent = t("Find another valid pair");
         explore.addEventListener("click", () => { state.locked = false; state.selected = []; render(); container.querySelector("[data-choice]")?.focus(); });
         container.querySelector(".sig-actions").append(explore);
       }
-      const next = document.createElement("button");
-      next.type = "button"; next.className = "primary-action"; next.textContent = state.round + 1 === total ? t("Finish game") : t("Next challenge");
-      next.addEventListener("click", () => {
-        state.round += 1;
-        if (state.round >= total) { finish(recordResult(gameId, state.first, state.misses, total)); return; }
-        state.hinted = false; state.failed = false; state.locked = false; state.roundSolved = false; state.foundPairs = []; task = makeRound(state.round); state.rows = task.rows ?? 2; state.columns = task.columns ?? 2; state.selected = task.selected ?? null; render(); container.querySelector("[data-choice], input")?.focus();
-      });
-      container.querySelector(".sig-actions").append(next);
     });
+  };
+  // One shared result panel. A solved round waits for its Next button (no timer); a miss never states the answer.
+  let shown = null;
+  const showResult = (copy, result) => {
+    const panel = mountFeedback(copy, {
+      onAction: (action) => {
+        if (action === "next") advance();
+        else if (action === "hint") { container.querySelector("[data-hint]")?.click(); showResult(shown.copy, shown.result); }
+        else if (action === "try-again") { shown.panel.clear(); container.querySelector("[data-choice], input")?.focus(); }
+      },
+    });
+    shown = { copy, result, panel };
+    if (result.ok) {
+      panel.show(phaseFor(gameId, state.failed || state.hinted ? "right-after-miss" : "right"), { expected: result.expected, next: state.round + 1 === total ? t("See results") : t("Next challenge") }, result.message);
+      panel.el.querySelector("[data-feedback-action='next']")?.focus();
+    } else if (result.empty) panel.show("empty", {}, result.message);
+    else panel.show(phaseFor(gameId, "miss"), { submitted: result.submitted, hintAvailable: !state.hinted }, result.message);
+  };
+  const advance = () => {
+    if (!state.locked || state.ended) return;
+    state.round += 1;
+    if (state.round >= total) { state.ended = true; finish(recordResult(gameId, state.first, state.misses, total)); return; }
+    state.hinted = false; state.failed = false; state.locked = false; state.roundSolved = false; state.foundPairs = []; task = makeRound(state.round); state.rows = task.rows ?? 2; state.columns = task.columns ?? 2; state.selected = task.selected ?? null; render(); container.querySelector("[data-choice], input")?.focus();
   };
   render();
   return () => { container.replaceChildren(); };
@@ -120,7 +141,8 @@ export function playMathWorldBuilder(container, { grade, finish, onEvidence = ()
     state.rows = Number(host.querySelector("[data-rows]").value); state.columns = Number(host.querySelector("[data-columns]").value);
     const area = state.rows * state.columns; const fence = 2 * (state.rows + state.columns);
     const result = buildHasValidArea(state.rows, state.columns, task);
-    return { ok: result, message: result ? t("Built {rows} rows of {columns}: {area} floor tiles with {fence} fence units.", { rows: state.rows, columns: state.columns, area, fence }) : task.optimize ? t("That plan has {fence} fence units. Compare factor pairs to find the smallest possible boundary.", { fence }) : t("That plan uses {area} floor tiles and {fence} fence units. Adjust the dimensions to meet both project requirements.", { area, fence }) };
+    const built = `${state.rows} × ${state.columns} = ${area}`;
+    return { ok: result, expected: built, submitted: built, message: result ? t("Built {rows} rows of {columns}: {area} floor tiles with {fence} fence units.", { rows: state.rows, columns: state.columns, area, fence }) : task.optimize ? t("That plan has {fence} fence units. Compare factor pairs to find the smallest possible boundary.", { fence }) : t("That plan uses {area} floor tiles and {fence} fence units. Adjust the dimensions to meet both project requirements.", { area, fence }) };
   }, (task, state, host) => {
     const update = () => {
       state.rows = Number(host.querySelector("[data-rows]").value);
@@ -147,14 +169,15 @@ export function playNumberPuzzleStudio(container, { grade, finish, onEvidence = 
   }, (task, state) => `<p class="sig-instruction">${task.op === "−" ? t("Choose the larger tile first, then choose the amount to subtract.") : t("Select two different tiles. Use the same operation for both.")}</p><div class="gm-cards cols-4" role="group" aria-label="${t("Number tiles")}">${task.values.map((value, i) => `<button type="button" class="gm-card${state.selected?.includes(i) ? " pick" : ""}" data-choice="${i}" aria-pressed="${state.selected?.includes(i) || false}">${value}</button>`).join("")}</div><p class="sig-equation" aria-live="polite" data-puzzle-equation>${state.selected?.length === 2 ? `${task.values[state.selected[0]]} ${task.op} ${task.values[state.selected[1]]} = ?` : t("Choose two tiles")}</p>`, (task, state, host) => {
     const chosen = [...host.querySelectorAll("[data-choice][aria-pressed=true]")].map((button) => Number(button.dataset.choice));
     state.selected = chosen;
-    if (chosen.length !== 2) return { ok: false, message: t("Choose exactly two tiles before checking the puzzle.") };
+    if (chosen.length !== 2) return { ok: false, empty: true, message: t("Choose exactly two tiles before checking the puzzle.") };
     const [a, b] = chosen.map((i) => task.values[i]); const value = task.op === "+" ? a + b : task.op === "×" ? a * b : a - b;
     const key = (task.op === "−" ? chosen : chosen.slice().sort((x, y) => x - y)).join(":");
-    if (value !== task.target) return { ok: false, message: t("That pair makes {value}. Keep one tile and try a different partner.", { value }) };
-    if (state.foundPairs.includes(key)) return { ok: false, message: t("You already found that pair. Try a different pair or move to the next challenge.") };
+    const sum = `${a} ${task.op} ${b} = ${value}`;
+    if (value !== task.target) return { ok: false, submitted: sum, message: t("That pair makes {value}. Keep one tile and try a different partner.", { value }) };
+    if (state.foundPairs.includes(key)) return { ok: false, submitted: sum, message: t("You already found that pair. Try a different pair or move to the next challenge.") };
     state.foundPairs.push(key);
     const exploreMore = state.foundPairs.length < task.pairs.length;
-    return { ok: true, exploreMore, message: exploreMore ? t("{a} {op} {b} makes {target}. You found {found} of {total} valid pairs. Find another or continue.", { a, op: task.op, b, target: task.target, found: state.foundPairs.length, total: task.pairs.length }) : t("{a} {op} {b} makes {target}. You found every valid pair.", { a, op: task.op, b, target: task.target }) };
+    return { ok: true, exploreMore, expected: sum, message: exploreMore ? t("{a} {op} {b} makes {target}. You found {found} of {total} valid pairs. Find another or continue.", { a, op: task.op, b, target: task.target, found: state.foundPairs.length, total: task.pairs.length }) : t("{a} {op} {b} makes {target}. You found every valid pair.", { a, op: task.op, b, target: task.target }) };
   }, (task, state, host) => {
     host.querySelectorAll("[data-choice]").forEach((button) => button.addEventListener("click", () => {
       const i = Number(button.dataset.choice); const chosen = state.selected || [];
@@ -177,13 +200,15 @@ export function playFluencyRally(container, { grade, finish, onEvidence = () => 
   }, (task, state) => `<p class="sig-instruction">${t("Choose a route, calculate its distance, then enter the checkpoint value. Take the time you need.")}</p><div class="gm-cards cols-3" role="group" aria-label="${t("Choose a route")}">${task.choices.map((route, i) => `<button type="button" class="gm-card${state.selected === i ? " pick" : ""}" data-choice="${i}" aria-pressed="${state.selected === i}"><span>${t("Route {n}", { n: i + 1 })}</span><strong>${esc(route)}</strong></button>`).join("")}</div><label class="sig-instruction">${t("Checkpoint distance")} <input type="number" inputmode="numeric" data-distance aria-label="${t("Enter the route distance")}" /></label>`, (task, state, host) => {
     const selected = Number(host.querySelector('[data-choice][aria-pressed="true"]')?.dataset.choice);
     const value = Number(host.querySelector("[data-distance]").value);
+    const typed = host.querySelector("[data-distance]").value;
+    const picked = task.choices[selected];
     const correct = selected === task.correctIndex && Number.isFinite(value) && value === task.answer;
     const support = task.type === "add"
       ? t("Check the addition. Choose the route that combines both parts and enter their total.")
       : task.type === "distributive"
         ? t("Use the distributive property: multiply the factor by both terms inside the parentheses, then add the partial products.")
         : t("Check the order: multiply {factor} by {n}, then add {add}. Choose the matching route and enter its distance.", { factor: task.factor, n: task.n, add: task.add });
-    return { ok: correct, message: correct ? t("Route {n} reaches checkpoint {distance}. The route choice and calculation agree.", { n: selected + 1, distance: task.answer }) : support };
+    return { ok: correct, empty: picked === undefined && typed.trim() === "", expected: `${picked} = ${task.answer}`, submitted: [picked, typed.trim()].filter(Boolean).join(" = "), message: correct ? t("Route {n} reaches checkpoint {distance}. The route choice and calculation agree.", { n: selected + 1, distance: task.answer }) : support };
   }, (task, state, host) => host.querySelectorAll("[data-choice]").forEach((button) => button.addEventListener("click", () => {
     state.selected = Number(button.dataset.choice);
     host.querySelectorAll("[data-choice]").forEach((route) => route.setAttribute("aria-pressed", String(route === button)));

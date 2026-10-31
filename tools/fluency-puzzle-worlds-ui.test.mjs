@@ -42,6 +42,14 @@ const setAll = (selector, value) =>
     input.value = String(value);
     input.dispatchEvent(new win.Event("input", { bubbles: true }));
   });
+// A solved stage waits for the learner: press the panel's Next button.
+const nextStep = async () => {
+  const button = $("[data-feedback-action='next']");
+  if (button) {
+    button.click();
+    await wait();
+  }
+};
 await wait();
 assert.ok($(".gm-menu"), "Grade 6 opens the Game Room");
 for (const id of [
@@ -136,7 +144,7 @@ for (const id of [
       "right",
       `${id} stage ${round + 1} accepts the mathematical solution`,
     );
-    if (round < 4) await wait();
+    await nextStep();
   }
   await wait();
   assert.ok($(".gm-result"), `${id} finishes and returns a result`);
@@ -168,7 +176,7 @@ for (let round = 0; round < 5; round += 1) {
     "right",
     `Division Harbor round ${round + 1} accepts equal shares`,
   );
-  if (round < 4) await wait();
+  await nextStep();
 }
 await wait();
 assert.ok($(".gm-result"), "Division Harbor completes its five-stage cargo run");
@@ -194,7 +202,7 @@ for (let round = 0; round < 5; round += 1) {
     "right",
     `Graph City round ${round + 1} validates the plotted point`,
   );
-  if (round < 4) await wait();
+  await nextStep();
 }
 await wait();
 assert.ok($(".gm-result"), "Graph City completes its five-stage route");
@@ -216,7 +224,7 @@ for (let round = 0; round < 5; round += 1) {
     "right",
     `Ten-Frame Factory round ${round + 1} checks the built quantity`,
   );
-  if (round < 4) await wait();
+  await nextStep();
 }
 await wait();
 assert.ok($(".gm-result"), "Ten-Frame Factory completes its five-stage build");
@@ -233,7 +241,7 @@ for (let round = 0; round < 5; round += 1) {
     /planted|matches the quantity/i,
     `Number Garden round ${round + 1} checks an exact Kindergarten quantity`,
   );
-  if (round < 4) await wait();
+  await nextStep();
 }
 await wait();
 assert.ok($(".gm-result"), "Number Garden completes its five-stage seed placement");

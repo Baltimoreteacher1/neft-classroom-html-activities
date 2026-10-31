@@ -242,6 +242,20 @@ check(
   "a Learning Lab edit must pull in validate:learning-labs-browser",
 );
 check(
+  scopeFor(["tools/lib/fl4-family-fixtures.mjs"])?.includes("validate:fluency-family-browser") &&
+    scopeFor(["tools/lib/mini-lesson-solver.mjs"])?.includes("test"),
+  "Fluency Lab 4 helpers run their validators and dependent tests",
+);
+check(
+  scopeFor(["tools/lib/teacher-4-fixtures.mjs"])?.includes("validate:fluency-family-browser") &&
+    scopeFor(["tools/lib/teacher-4-fixtures.mjs"])?.includes("test"),
+  "teacher lab fixture changes run the relevant browser and unit tests",
+);
+check(
+  scopeFor(["data/test-writes-review.json"])?.includes("validate:test-writes"),
+  "test write review changes run their direct validator",
+);
+check(
   scopeFor(["families/unit-1-week-1.html"])?.includes("verify:families") &&
     scopeFor(["families/unit-1-week-1.html"])?.includes("validate:homework"),
   "a families/homework edit must pull in verify:families and validate:homework",

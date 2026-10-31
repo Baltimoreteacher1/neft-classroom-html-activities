@@ -1,5 +1,6 @@
 // Fact Family Builder: three numbers make four related equations. The learner places number tiles into the
 // equation frames, in both orders for the two add (or multiply) sentences, then checks them.
+import { feedbackAction, feedbackNoteHtml, phaseFor } from "./feedback-host.js";
 import { shuffle } from "./game-pool.js";
 import { t } from "./i18n.js";
 import { syncLive } from "./speech.js";
@@ -49,7 +50,8 @@ export function playFamily(host, { grade, calm, finish, onFact }) {
   let chosen = null;
   let verdict = null;
   let wrong = 0;
-  let timer = null;
+  let settled = false;
+  let fb = null; // shared feedback panel state
   const frames = FRAMES(op);
 
   function start() {
@@ -57,7 +59,15 @@ export function playFamily(host, { grade, calm, finish, onFact }) {
     slots = frames.map(() => [null, null, null]);
     chosen = null;
     verdict = null;
+    settled = false;
+    fb = null;
     render();
+  }
+
+  function nextRound() {
+    round += 1;
+    if (round >= total) return finish({ game: "family", stars: familyStars(wrong), missed: [], line: wrong === 1 ? t("{n} wrong equation", { n: wrong }) : t("{n} wrong equations", { n: wrong }) });
+    start();
   }
 
   const slotButton = (f, s) => {
@@ -76,8 +86,9 @@ export function playFamily(host, { grade, calm, finish, onFact }) {
       <p class="gm-ask">${t("These three numbers are a fact family. Build all four equations. Pick a tile, then tap a spot. Tap a filled spot to clear it.")}</p>
       <div class="gm-tiles" role="group" aria-label="${t("Number tiles")}">${numbers.map((n, i) => `<button type="button" class="gm-card q${chosen === i ? " pick" : ""}" data-t="${i}" aria-pressed="${chosen === i}"><span>${n}</span></button>`).join("")}</div>
       <ul class="gm-eqs">${rows.join("")}</ul>
-      <p class="gm-note">${verdict ? (verdict.every(Boolean) ? t("All four are right!") : t("Some equations need another look.")) : chosen == null ? t("Pick a number tile.") : t("Now tap a spot in an equation.")}</p>
-      <div class="gm-choice"><button type="button" class="tr-go" data-check>${t("Check")}</button>${verdict?.every(Boolean) ? `<button type="button" class="tr-go alt" data-gm-next>${t("Next round")}</button>` : ""}</div></div>`;
+      ${feedbackNoteHtml(verdict ? (verdict.every(Boolean) ? t("All four are right!") : t("Some equations need another look.")) : chosen == null ? t("Pick a number tile.") : t("Now tap a spot in an equation."), fb)}
+      <div class="gm-choice"><button type="button" class="tr-go" data-check ${settled ? "disabled" : ""}>${t("Check")}</button></div></div>`;
+    if (settled) host.querySelector("[data-gm-next]")?.focus();
     syncLive(host);
   }
 
@@ -87,27 +98,41 @@ export function playFamily(host, { grade, calm, finish, onFact }) {
     if (result[0] && result[1] && slots[0][0] === slots[1][0] && slots[0][1] === slots[1][1]) result[1] = false;
     if (result[2] && result[3] && slots[2][0] === slots[3][0] && slots[2][1] === slots[3][1]) result[3] = false;
     verdict = result;
+    settled = result.every(Boolean);
     const failures = result.filter((ok, f) => !ok && slots[f].some((x) => x != null)).length;
     wrong += failures;
     if (failures > 0) {
       onFact?.({ question: `${numbers[0]} ${op} ${numbers[1]} = ?`, answers: [String(numbers[2])], generator: "fact" }, false);
     }
-    render();
-    if (result.every(Boolean)) {
+    if (settled) {
       onFact?.({ question: `${numbers[0]} ${op} ${numbers[1]} = ?`, answers: [String(numbers[2])], generator: "fact" }, wrong === 0);
-      round += 1;
-      if (round >= total) timer = setTimeout(() => finish({ game: "family", stars: familyStars(wrong), missed: [], line: wrong === 1 ? t("{n} wrong equation", { n: wrong }) : t("{n} wrong equations", { n: wrong }) }), 1100);
-      else host.querySelector("[data-gm-next]")?.focus();
+      fb = { phase: phaseFor("family", "right"), ctx: { next: round + 1 >= total ? t("See results") : t("Next round") } };
+    } else {
+      // What they built, never the numbers that belong: only equations that are completely filled in are listed.
+      const built = frames.map((frame, f) => ({ frame, f })).filter(({ f }) => !result[f] && slots[f].every((x) => x != null)).map(({ frame, f }) => {
+        const [x, y, z] = slots[f];
+        return `${x} ${frame.op} ${y} = ${z}`;
+      });
+      fb = { phase: phaseFor("family", "miss"), ctx: { submitted: built.join(" · ") } };
     }
+    render();
   }
 
   host.onclick = (event) => {
-    if (event.target.closest("[data-gm-next]")) return start();
+    const action = feedbackAction(event);
+    if (action === "next" && settled) return nextRound();
+    if (action === "try-again") {
+      verdict = null;
+      fb = null;
+      return render();
+    }
+    if (settled) return;
     if (event.target.closest("[data-check]")) return check();
     const tile = event.target.closest("[data-t]");
     if (tile) {
       chosen = chosen === Number(tile.dataset.t) ? null : Number(tile.dataset.t);
       verdict = null;
+      fb = null;
       render();
       host.querySelector(`[data-t="${chosen ?? tile.dataset.t}"]`)?.focus();
       return;
@@ -116,6 +141,7 @@ export function playFamily(host, { grade, calm, finish, onFact }) {
     if (!slot) return;
     const [f, s] = slot.dataset.slot.split(":").map(Number);
     verdict = null;
+    fb = null;
     if (slots[f][s] != null) slots[f][s] = null;
     else if (chosen != null) {
       // Within one equation each number is used once (the three numbers are always different).
@@ -131,7 +157,6 @@ export function playFamily(host, { grade, calm, finish, onFact }) {
   };
   start();
   return () => {
-    clearTimeout(timer);
     host.onclick = null;
   };
 }

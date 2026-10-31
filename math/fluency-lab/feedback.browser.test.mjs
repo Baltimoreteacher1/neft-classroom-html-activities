@@ -12,12 +12,27 @@ try {
   const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
   const errors = [];
   page.on("pageerror", (error) => errors.push(error.message));
-  await page.goto(`${base}/math/fluency-lab/?grade=1&skill=add-10`, { waitUntil: "networkidle" });
+  await page.addInitScript(() => {
+    Math.random = () => 0.5;
+    const now = Date.now();
+    localStorage.setItem("ewl-fluency-tutor-v2", JSON.stringify({
+      version: 2,
+      records: { "1:add-10": { recent: [
+        { correct: false, independent: true, tier: 3, at: now - 2000 },
+        { correct: true, independent: true, tier: 3, at: now - 1000 },
+        { correct: true, independent: true, tier: 3, at: now },
+      ] } },
+      mistakes: [], diagnostics: {}, sessions: [], rescues: [],
+    }));
+  });
+  await page.goto(`${base}/math/fluency-lab/?grade=1&skill=add-10&profile=0`, { waitUntil: "networkidle" });
   await page.getByRole("button", { name: "Practice 10" }).click();
   const question = page.locator("#question");
   const questionText = await question.innerText();
+  const missing = questionText.match(/(?:□|\?)\s*\+\s*(\d+)\s*(?:=|\s)\s*(\d+)/);
+  const secondMissing = questionText.match(/(\d+)\s*\+\s*(?:□|\?)\s*(?:=|\s)\s*(\d+)/);
   const match = questionText.match(/(\d+)\s*\+\s*(\d+)/);
-  assert.ok(match, `Expected a simple addition item, received: ${questionText}`);
+  assert.ok(missing || secondMissing || match, `Expected a computable addition item, received: ${questionText}`);
   const result = page.locator("#answer-result-status");
   await page.locator("#answer-input").fill("999");
   await page.locator("#check-answer").click();
@@ -35,7 +50,11 @@ try {
   assert.equal(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth), 0, "phone layout has no horizontal overflow");
   assert.match(await result.innerText(), /Incorrect/);
   assert.equal(await result.isVisible(), true);
-  const correctAnswer = Number(match[1]) + Number(match[2]);
+  const correctAnswer = missing
+    ? Number(missing[2]) - Number(missing[1])
+    : secondMissing
+      ? Number(secondMissing[2]) - Number(secondMissing[1])
+      : Number(match[1]) + Number(match[2]);
   await page.locator("#answer-input").fill(String(correctAnswer));
   await page.locator("#check-answer").click();
   await result.waitFor({ state: "visible" });

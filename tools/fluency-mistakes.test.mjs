@@ -384,6 +384,8 @@ for (const [grade, stop] of [
     const wrongFix = item.fixes.findIndex((f) => f !== item.fix);
     $(`[data-fix="${wrongFix}"]`).click();
     $(`[data-fix="${item.fixes.indexOf(item.fix)}"]`).click();
+    // A solved problem waits for the learner: the panel's Next button moves on.
+    $("[data-feedback-action='next']").click();
     await wait(25);
   }
   await wait(40);

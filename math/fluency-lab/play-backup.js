@@ -1,5 +1,6 @@
 // Trail stars, the fact chart, stickers, and strategy notes travel with the learner's JSON backup.
 import { cleanRecent, loadTrail, saveTrail } from "./fact-trail.js";
+import { loadGrowthLog, sanitizeGrowthLog, saveGrowthLog } from "./growth-log.js"; // fl4:teacher
 import { cleanJournal, loadJournal, saveJournal } from "./language-journal.js";
 import { getLevel, setLevel } from "./language-settings.js";
 import { cleanRewards, loadRewards, saveRewards } from "./rewards.js";
@@ -7,7 +8,7 @@ import { cleanPieces, loadPieces, savePieces } from "./writing-store.js";
 
 const count = (value, max = 100000) => (Number.isFinite(value) && value >= 0 ? Math.min(Math.floor(value), max) : 0);
 
-export const exportPlay = () => ({ trail: loadTrail(), rewards: loadRewards(), language: { journal: loadJournal(), level: getLevel() }, writing: loadPieces() });
+export const exportPlay = () => ({ trail: loadTrail(), rewards: loadRewards(), language: { journal: loadJournal(), level: getLevel() }, writing: loadPieces(), growth: loadGrowthLog() }); // fl4:teacher: the growth log travels in the backup
 
 export function cleanPlay(value) {
   if (!value || typeof value !== "object") return null;
@@ -29,6 +30,8 @@ export function cleanPlay(value) {
     rewards: cleanRewards(value.rewards || {}),
     // A backup made before the writing studio has no folder; a missing list leaves the learner's folder alone.
     writing: Array.isArray(value.writing) ? cleanPieces(value.writing) : null,
+    // A backup made before the growth log has none; a missing log leaves the learner's own log alone.
+    growth: value.growth && typeof value.growth === "object" ? sanitizeGrowthLog(value.growth) : null, // fl4:teacher
     language: value.language && typeof value.language === "object" ? { journal: cleanJournal(value.language.journal), level: [1, 2, 3, 4].includes(value.language.level) ? value.language.level : 2 } : null,
   };
 }
@@ -38,6 +41,7 @@ export function importPlay(clean) {
   saveTrail(clean.trail);
   saveRewards(clean.rewards);
   if (clean.writing) savePieces(clean.writing);
+  if (clean.growth) saveGrowthLog(clean.growth); // fl4:teacher
   // A backup made before the language layer has no journal; leave the learner's own journal alone.
   if (!clean.language) return;
   saveJournal(clean.language.journal);

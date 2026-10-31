@@ -1,6 +1,7 @@
 // Spanish for the learner-facing Game Room, trail, rewards and family summary. The English text is the key.
 // Math problems, skill titles, and worked-example steps are not translated here.
 import { ES_KID } from "./i18n-es-kid.js";
+import { ES_LAB4 } from "./i18n-es-lab4.js";
 import { ES_LANGUAGE } from "./i18n-es-language.js";
 
 export const ES = {
@@ -86,26 +87,10 @@ export const ES = {
   "Plan assignments, print materials, and project math talk tools.": "Prepara actividades, imprime materiales y proyecta herramientas para hablar de matemáticas.",
   "Choose a next step, explore a skill, or play with an idea. Your progress stays on this device.": "Elige el siguiente paso, explora una habilidad o juega con una idea. Tu progreso se guarda en este dispositivo.",
   "Grade {n} · {name}": "Grado {n} · {name}",
-  "What would you like to do?": "¿Qué te gustaría hacer?",
-  "Pick up where you left off, play with a math idea, or choose something new.": "Continúa donde te quedaste, explora una idea matemática o elige algo nuevo.",
-  "Try the starting-point check again": "Repite la actividad para conocer tu punto de partida",
   "Find a starting point": "Encuentra un punto de partida",
   "Check my starting point": "Revisar mi punto de partida",
-  "New here?": "¿Es tu primera vez?",
-  "Update your learning snapshot": "Actualiza tu panorama de aprendizaje",
-  "Find a comfortable place to begin": "Encuentra un buen lugar para comenzar",
-  "Ready when you are": "Cuando tú quieras",
-  "A good next step": "Un buen paso siguiente",
   "Continue learning": "Continúa aprendiendo",
   "{n} problems already completed. Your work is saved on this device.": "Ya completaste {n} problemas. Tu trabajo está guardado en este dispositivo.",
-  "Begin with a visual lesson, then try it on your own.": "Comienza con una lección visual y después inténtalo por tu cuenta.",
-  "Independent practice": "Práctica independiente",
-  "{percent}% independent accuracy for {skill}": "Precisión independiente de {percent}% en {skill}",
-  "{n} independent attempts · {status}": "{n} intentos independientes · {status}",
-  "New skill · no score yet": "Habilidad nueva · todavía sin puntaje",
-  "Continue my practice": "Continúa mi práctica",
-  "Explore this skill": "Explora esta habilidad",
-  "Practice independently": "Practica por tu cuenta",
   "Untimed · think and play": "Sin cronómetro · piensa y juega",
   "Play a game": "Juega",
   "Build, compare, and solve with the Game Room activities.": "Construye, compara y resuelve en los juegos de matemáticas.",
@@ -898,7 +883,6 @@ Object.assign(ES, {
   "You already found that equation. Try a different arrangement.": "Ya encontraste esa ecuación. Prueba otra combinación.",
   "That works! Find one more different expression.": "¡Funciona! Encuentra otra expresión diferente.",
   "Two ways found. Nice flexible thinking!": "¡Encontraste dos maneras! ¡Qué pensamiento flexible!",
-  "Finish game": "Terminar juego",
   "Next target": "Siguiente objetivo",
   "You explored {n} targets with different equations.": "Exploraste {n} objetivos con ecuaciones diferentes.",
   "Find two different expressions. There is no timer.": "Encuentra dos expresiones distintas. No hay cronómetro.",
@@ -1039,6 +1023,7 @@ Object.assign(ES, {
 
 Object.assign(ES, ES_LANGUAGE);
 Object.assign(ES, ES_KID);
+Object.assign(ES, ES_LAB4);
 
 Object.assign(ES, {
   "{percent}% from {count} independent tries": "{percent}% en {count} intentos independientes",
@@ -1127,7 +1112,6 @@ Object.assign(ES, {
   "A strategy pair matches. Find the next one.": "Las estrategias coinciden. Encuentra la siguiente pareja.",
   "You matched {n} strategies with visual models.": "Relacionaste {n} estrategias con modelos visuales.",
   "Take your time. Match expressions to models, not to a timer.": "Tómate tu tiempo. Relaciona expresiones con modelos, sin competir contra el reloj.",
-  "Turn cards back over": "Voltear las tarjetas de nuevo",
   "Keep looking for matching quantities.": "Sigue buscando cantidades equivalentes.",
   "Visual model for {expression}": "Modelo visual para {expression}",
   "matched": "emparejada",

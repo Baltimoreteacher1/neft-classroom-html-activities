@@ -11,8 +11,17 @@ const dir = new URL("../math/fluency-lab/", import.meta.url);
 const { ES: ES_BASE } = await import("../math/fluency-lab/i18n-es.js");
 const { ES_MODELS } = await import("../math/fluency-lab/i18n-es-models.js");
 const { ES_WORLDS } = await import("../math/fluency-lab/i18n-es-worlds.js");
+const { ES_LAB4_ANIMATIONS } = await import("../math/fluency-lab/i18n-es-lab4-animations.js");
+const { ES_LAB4_LESSONS } = await import("../math/fluency-lab/i18n-es-lab4-lessons.js");
 const { ES_STUDIO } = await import("../math/fluency-lab/i18n-es-studio.js");
-const ES = { ...ES_STUDIO, ...ES_BASE, ...ES_MODELS, ...ES_WORLDS };
+const ES = {
+  ...ES_STUDIO,
+  ...ES_BASE,
+  ...ES_MODELS,
+  ...ES_WORLDS,
+  ...ES_LAB4_ANIMATIONS,
+  ...ES_LAB4_LESSONS,
+};
 const { setLang, t } = await import("../math/fluency-lab/i18n.js");
 const { TRAILS, BANDS } = await import("../math/fluency-lab/fact-trail.js");
 const { STRATEGIES, TIPS } = await import("../math/fluency-lab/strategies.js");
@@ -29,6 +38,21 @@ const { kidLearnFor } = await import("../math/fluency-lab/kid-learn.js");
 
 const failures = [];
 const keys = new Set();
+// Animation and mini-lesson copy is stored as data and translated by key at render time.
+for (const key of [...Object.keys(ES_LAB4_ANIMATIONS), ...Object.keys(ES_LAB4_LESSONS)])
+  keys.add(key);
+// New Fluency Lab workstreams can own small subdirectories (for example interactive
+// graphics). Include their learner-facing t() strings so Spanish coverage is checked
+// before those modules are imported by the main app.
+function sourceFiles(folder) {
+  return readdirSync(folder, { withFileTypes: true }).flatMap((entry) => {
+    const path = `${folder}/${entry.name}`;
+    if (entry.isDirectory()) return sourceFiles(path);
+    return entry.isFile() && entry.name.endsWith(".js") && !entry.name.startsWith("i18n-es")
+      ? [path]
+      : [];
+  });
+}
 // The young-learner "big idea" and "watch out" lines pass through t() on the Learn page.
 for (const skill of ALL_SKILLS)
   if (kidLearnFor(skill, skill.grade)) {
@@ -36,21 +60,22 @@ for (const skill of ALL_SKILLS)
     keys.add(skill.learn.watch);
   }
 const sources = [
-  ...readdirSync(dir).filter((f) => f.endsWith(".js") && !f.startsWith("i18n-es")),
-  ...readdirSync(new URL("studio/", dir))
-    .filter((f) => f.endsWith(".js"))
-    .map((f) => `studio/${f}`),
+  ...readdirSync(dir)
+    .filter((f) => f.endsWith(".js") && !f.startsWith("i18n-es"))
+    .map((f) => new URL(f, dir)),
+  ...sourceFiles(new URL("graphics", dir).pathname),
+  ...sourceFiles(new URL("studio", dir).pathname),
 ];
 for (const file of sources) {
-  const source = readFileSync(new URL(file, dir), "utf8");
-  for (const match of source.matchAll(/\bt\((?:"((?:[^"\\]|\\.)*)"|'((?:[^'\\]|\\.)*)')/g))
+  const source = readFileSync(file, "utf8");
+  for (const match of source.matchAll(/\bt\(\s*(?:"((?:[^"\\]|\\.)*)"|'((?:[^'\\]|\\.)*)')/g))
     keys.add((match[1] ?? match[2]).replace(/\\["']/g, (escaped) => escaped.slice(1)));
-  for (const match of source.matchAll(/\bt\(`((?:[^`\\]|\\.)*)`/g))
+  for (const match of source.matchAll(/\bt\(\s*`((?:[^`\\]|\\.)*)`/g))
     if (!match[1].includes("${")) keys.add(match[1]);
-  if (file === "family-page.js")
+  if (String(file).endsWith("family-page.js"))
     for (const match of source.matchAll(/(?:add|mul): "((?:[^"\\]|\\.)*)"/g)) keys.add(match[1]);
   for (const match of source.matchAll(/(?:name|blurb): "((?:[^"\\]|\\.)*)"/g))
-    if (file === "games.js") keys.add(match[1]);
+    if (String(file).endsWith("games.js")) keys.add(match[1]);
 }
 for (const match of readFileSync(new URL("index.html", dir), "utf8").matchAll(
   /data-i18n[^>]*>([^<]+)</g,
@@ -101,6 +126,9 @@ keys.add("Trail stops");
 // These labels/prompts are selected from data at runtime rather than passed as
 // string literals directly to t(), so include them in the coverage inventory.
 for (const key of [
+  "count",
+  "overlap",
+  "connected",
   "Number Quest",
   "Array Architect",
   "Number Garden",
@@ -164,7 +192,7 @@ setLang("en");
 if (t("Game Room") !== "Game Room") failures.push("English lookup failed.");
 
 if (failures.length) {
-  console.error(failures.slice(0, 40).join("\n"));
+  console.error(failures.join("\n"));
   console.error(`fluency-i18n: ${failures.length} problem(s)`);
   process.exit(1);
 }

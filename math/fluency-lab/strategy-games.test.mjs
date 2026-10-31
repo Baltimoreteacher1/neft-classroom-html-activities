@@ -38,13 +38,15 @@ cards()[0].click();
 assert.ok(cards()[0].querySelector(".gm-match-expression"));
 cards()[4].click();
 assert.equal(cards()[4].getAttribute("aria-pressed"), "true", "Both mismatched cards stay revealed for review");
-root.querySelector(".gm-play button.outline-action")?.click();
+root.querySelector("[data-feedback-action='try-again']").click(); // fl4:screens: the shared panel turns the pair back over
 for (const [expressionIndex, modelIndex] of [[0, 3], [1, 4], [2, 5]]) {
   cards()[expressionIndex].click();
   cards()[modelIndex].click();
 }
 assert.equal(factCount, 3);
 assert.equal(evidence.length, 4);
+assert.equal(finishResult, null, "the last match waits for the learner");
+root.querySelector("[data-feedback-action='next']").click();
 assert.equal(finishResult?.stars, 2, "The untimed game completes with a calm badge after one mismatch");
 const ghostEvidence = [];
 let ghostFinish = null;

@@ -1,0 +1,103 @@
+/* Achievements 4 and the report page controls. Tokens come from ds4.css (--fl-*); fallbacks keep the sheet usable alone. */
+.a4-page { --a4-navy: var(--fl-navy, #17324d); --a4-teal: var(--fl-teal, #1fa6a2); --a4-teal-ink: var(--fl-teal-ink, #0e6b68); --a4-tint: var(--fl-teal-soft, #dff3f1); --a4-paper: var(--fl-paper, #f7f4ec); --a4-line: var(--fl-line, #d5d9de); --a4-soft: var(--fl-ink-soft, #52606d); --a4-amber: var(--fl-amber-soft, #fff4e0); }
+.a4-wrap { max-width: 1040px; }
+.a4-page .pg-eyebrow { color: var(--a4-teal-ink); }
+.a4-nav { display: flex; flex-wrap: wrap; gap: 4px 20px; }
+.a4-optional { max-width: 62ch; margin: 8px 0 0; padding: 10px 14px; border-left: 4px solid var(--a4-teal); border-radius: 0 12px 12px 0; background: var(--a4-tint); color: var(--a4-navy); font-size: 0.98rem; }
+.a4-sec { margin-top: 40px; }
+.a4-sec h2 { margin: 0; color: var(--a4-navy); font: 700 clamp(1.3rem, 3.4vw, 1.75rem) / 1.15 Georgia, serif; letter-spacing: -0.015em; }
+.a4-lead { max-width: 62ch; margin: 4px 0 16px; color: var(--a4-soft); }
+.a4-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+.a4-stats > div { padding: 14px 16px; border: 1px solid var(--a4-line); border-radius: 16px; background: #fff; }
+.a4-stats b { display: block; color: var(--a4-navy); font: 700 clamp(1.5rem, 5vw, 2rem) / 1.1 Georgia, serif; }
+.a4-stats span { color: var(--a4-soft); font-size: 0.92rem; }
+.a4-top { margin-top: 8px; }
+.a4-grid, .a4-challenges, .a4-goals, .a4-rows { margin: 0; padding: 0; list-style: none; }
+.a4-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; }
+.a4-card { display: flex; gap: 14px; align-items: flex-start; padding: 16px; border: 1px solid var(--a4-line); border-radius: 18px; background: #fff; box-shadow: 0 1px 2px rgb(23 50 77 / 0.06); }
+.a4-art { flex: none; display: grid; place-items: center; width: 64px; height: 64px; border-radius: 16px; background: var(--a4-tint); }
+.a4-art svg { display: block; width: 100%; height: 100%; }
+.a4-card-main { min-width: 0; }
+.a4-card h3, .a4-challenge h3 { margin: 0 0 2px; color: var(--a4-navy); font-size: 1.02rem; line-height: 1.25; overflow-wrap: anywhere; }
+.a4-card p, .a4-challenge p { margin: 0 0 8px; color: var(--a4-soft); font-size: 0.92rem; }
+.a4-chip { display: inline-block; padding: 2px 10px; border: 1.5px solid var(--a4-navy); border-radius: 999px; color: var(--a4-navy) !important; font-size: 0.8rem !important; font-weight: 700; }
+.a4-btn { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 8px 16px; border: 2px solid var(--a4-navy); border-radius: 12px; background: #fff; color: var(--a4-navy); font: 700 0.92rem/1.2 inherit; cursor: pointer; touch-action: manipulation; }
+.a4-btn:hover { background: var(--a4-paper); }
+.a4-primary { background: var(--a4-navy); color: #fff; }
+.a4-primary:hover { background: var(--a4-teal-ink); }
+.a4-btn:focus-visible, .a4-chip-btn:focus-visible, .a4-page select:focus-visible, .a4-page input:focus-visible, .a4-strand summary:focus-visible, .a4-more summary:focus-visible { outline: none; box-shadow: var(--fl-focus, 0 0 0 3px #fff, 0 0 0 6px #2c6fb0); }
+.a4-more { margin-top: 14px; }
+.a4-more summary, .a4-strand summary { min-height: 44px; cursor: pointer; }
+.a4-more summary { display: flex; align-items: center; color: var(--a4-navy); font-weight: 700; text-decoration: underline; text-underline-offset: 4px; }
+.a4-more .a4-grid { margin-top: 12px; }
+.a4-grades { display: flex; flex-wrap: wrap; gap: 8px; }
+.a4-chip-btn { min-width: 44px; min-height: 44px; padding: 6px 16px; border: 2px solid var(--a4-line); border-radius: 999px; background: #fff; color: var(--a4-navy); font: 700 0.95rem/1 inherit; cursor: pointer; }
+.a4-chip-btn[aria-pressed="true"] { border-color: var(--a4-navy); background: var(--a4-navy); color: #fff; }
+.a4-grade-name { margin: 14px 0 10px; color: var(--a4-navy); font-weight: 700; }
+.a4-strands { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px; align-items: start; }
+.a4-strand { border: 1px solid var(--a4-line); border-radius: 18px; background: #fff; }
+.a4-strand[data-level="3"] { border-color: var(--a4-teal-ink); background: var(--a4-tint); }
+.a4-strand summary { display: flex; align-items: center; gap: 12px; padding: 12px 16px; list-style: none; }
+.a4-strand summary::-webkit-details-marker { display: none; }
+.a4-strand summary::after { content: "+"; margin-left: auto; color: var(--a4-navy); font: 700 1.3rem/1 inherit; }
+.a4-strand[open] summary::after { content: "\2212"; }
+.a4-strand .a4-art { width: 56px; height: 56px; }
+.a4-strand-main { display: flex; flex-direction: column; min-width: 0; }
+.a4-strand-main b { color: var(--a4-navy); overflow-wrap: anywhere; }
+.a4-strand-main small { color: var(--a4-soft); font-size: 0.85rem; }
+.a4-rows { padding: 0 16px 12px; }
+.a4-rows li { display: flex; justify-content: space-between; gap: 12px; padding: 8px 0; border-top: 1px solid var(--a4-line); font-size: 0.93rem; }
+.a4-rows b { color: var(--a4-navy); text-align: right; }
+.a4-challenges { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 14px; }
+.a4-challenge { display: flex; gap: 14px; padding: 16px; border: 1px solid var(--a4-line); border-radius: 18px; background: #fff; }
+.a4-challenge .a4-art { width: 48px; height: 48px; }
+.a4-challenge progress { display: block; width: 100%; height: 10px; margin: 6px 0 8px; border: 0; border-radius: 5px; background: var(--a4-line); accent-color: var(--a4-navy); }
+.a4-challenge progress::-webkit-progress-bar { border-radius: 5px; background: var(--a4-line); }
+.a4-challenge progress::-webkit-progress-value { border-radius: 5px; background: var(--a4-navy); }
+.a4-challenge progress::-moz-progress-bar { border-radius: 5px; background: var(--a4-navy); }
+.a4-note { margin: 14px 0 0; padding: 10px 14px; border-radius: 12px; background: var(--a4-amber); color: var(--a4-navy); }
+.a4-field { display: flex; flex-direction: column; gap: 4px; margin-top: 14px; color: var(--a4-navy); font-weight: 700; font-size: 0.92rem; }
+.a4-field select, .a4-field input { min-height: 44px; padding: 8px 12px; border: 2px solid var(--a4-line); border-radius: 12px; background: #fff; color: inherit; font: 400 1rem inherit; }
+.a4-rhythm .a4-field select, .a4-sec > .a4-field select { max-width: 320px; }
+.a4-card-main .a4-chip { margin: 0 8px 8px 0; }
+.a4-field-row { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; }
+.a4-field-row .a4-field { min-width: min(100%, 260px); }
+.a4-goals { display: grid; gap: 10px; }
+.a4-goal { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 14px 16px; border: 1px solid var(--a4-line); border-radius: 16px; background: #fff; }
+.a4-goal[data-met="true"] { border-color: var(--a4-teal-ink); background: var(--a4-tint); }
+.a4-goal p { margin: 2px 0 0; color: var(--a4-soft); font-size: 0.92rem; }
+.a4-empty { display: flex; align-items: center; gap: 16px; padding: 18px; border: 2px dashed var(--a4-line); border-radius: 18px; background: #fff; color: var(--a4-soft); }
+.a4-empty p { margin: 0; max-width: 56ch; }
+.a4-empty span { flex: none; width: 72px; height: 72px; }
+.a4-controls { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 4px 20px; align-items: end; margin-bottom: 20px; padding: 16px 20px 20px; border: 1px solid var(--a4-line); border-radius: 18px; background: #fff; }
+.a4-seg { display: flex; flex-wrap: wrap; gap: 8px; }
+.a4-actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end; margin-top: 14px; }
+.a4-print { display: none; }
+.a4-report-page .rp { border: 1px solid var(--a4-line); border-radius: 18px; }
+@media (max-width: 520px) { .a4-card, .a4-challenge { padding: 14px; } .a4-goal { flex-direction: column; align-items: stretch; } .a4-empty { flex-direction: column; text-align: center; } }
+@media (prefers-reduced-motion: reduce) { .a4-page * { transition: none !important; animation: none !important; } }
+@media print {
+  @page { size: Letter; margin: 0.5in; }
+  @page cert { size: Letter landscape; margin: 0.4in; }
+  .a4-page { background: #fff !important; }
+  body[data-print="certificate"] > :not(#a4-print) { display: none !important; }
+  body[data-print="certificate"] #a4-print { display: block; }
+  body[data-print="certificate"] { margin: 0; background: #fff; }
+  .a4-report-page .a4-chrome, .a4-report-page .skip-link, .a4-report-page .pg-footer { display: none !important; }
+  .a4-report-page .pk-wrap { width: auto; padding: 0; }
+  .a4-report-page .rp { border: 0; border-radius: 0; }
+}
+
+/* Certificate for one recognition (certificate.js). Landscape Letter when printed. */
+.cert-4 { page: cert; border: 3px double #17324d; border-radius: 6px; position: relative; box-sizing: border-box; width: 100%; max-width: 10.2in; min-height: 7.3in; margin: 0 auto; color: #17324d; font-family: Georgia, serif; text-align: center; break-inside: avoid; }
+.cert-4 .cert-frame { position: absolute; inset: 0.14in; display: block; }
+.cert-4 .cert-frame svg { display: block; width: 100%; height: 100%; }
+.cert-4 .cert-body { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.1in; min-height: 7.3in; padding: 0.8in 1.2in; }
+.cert-4 .cert-kicker { margin: 0; color: #0e6b68; font: 700 0.85rem/1 "Atkinson Hyperlegible", system-ui, sans-serif; letter-spacing: 0.16em; text-transform: uppercase; }
+.cert-4 h1 { margin: 0 0 0.1in; font: 700 2.6rem/1.1 Georgia, serif; }
+.cert-4 .cert-line { margin: 0; color: #52606d; font: 400 1.05rem/1.4 "Atkinson Hyperlegible", system-ui, sans-serif; }
+.cert-4 .cert-name { min-width: 4in; margin: 0; padding: 0 0.3in 0.06in; border-bottom: 2px solid #17324d; font: 700 2.2rem/1.2 Georgia, serif; }
+.cert-4 .cert-rank { margin: 0; font: 700 1.7rem/1.25 Georgia, serif; }
+.cert-4 .cert-basis { font-size: 0.9rem; }
+.cert-4 .cert-sign { display: flex; justify-content: space-between; gap: 0.8in; width: 100%; margin: 0.35in 0 0; font: 400 0.95rem/1.3 "Atkinson Hyperlegible", system-ui, sans-serif; }
+.cert-4 .cert-sign span { flex: 1; padding-top: 0.06in; border-top: 1.5px solid #17324d; }

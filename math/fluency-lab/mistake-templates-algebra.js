@@ -296,7 +296,9 @@ function perimeter(rng, { config }) {
 }
 
 function volume(rng, { config }) {
-  const [l, w, h] = [int(rng, 2, Math.min(9, config.max ?? 9)), int(rng, 2, 8), int(rng, 2, 7)];
+  const l = int(rng, 2, Math.min(9, config.max ?? 9));
+  const w = l === 2 ? int(rng, 3, 8) : int(rng, 2, 8);
+  const h = int(rng, 2, 7);
   const good = l * w * h;
   return {
     start: `${l} × ${w} × ${h}`,

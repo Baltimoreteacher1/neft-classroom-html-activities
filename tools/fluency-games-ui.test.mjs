@@ -71,6 +71,14 @@ const sum = (text) =>
       .replaceAll("−", "-")}`,
   )();
 const results = [];
+// A settled result waits for the learner: press the panel's Next button when the game shows one.
+const nextStep = async () => {
+  const button = $("[data-feedback-action='next']");
+  if (button) {
+    button.click();
+    await wait();
+  }
+};
 const toMenu = async () => {
   click("[data-gm-menu]");
   await wait();
@@ -131,8 +139,7 @@ for (let round = 0; round < 5; round += 1) {
     "A valid structure is accepted with its area and resources",
   );
   await wait();
-  click(".sig-actions button:last-child");
-  await wait();
+  await nextStep();
 }
 assert.ok($(".gm-result"), "Math World Builder completes and reports its session");
 results.push(["mathworldbuilder", true]);
@@ -181,8 +188,7 @@ for (let round = 0; round < 5; round += 1) {
       await wait();
     }
   }
-  click(".sig-actions button:last-child");
-  await wait();
+  await nextStep();
 }
 assert.ok($(".gm-result"), "Number Puzzle Studio completes and reports its session");
 results.push(["numberpuzzlestudio", true]);
@@ -213,8 +219,7 @@ for (let round = 0; round < 5; round += 1) {
     "A correct route and calculation advance the rally",
   );
   await wait();
-  click(".sig-actions button:last-child");
-  await wait();
+  await nextStep();
 }
 assert.ok($(".gm-result"), "Fluency Rally completes and reports its session");
 results.push(["fluencyrally", true]);
@@ -245,6 +250,7 @@ assert.equal(win.document.activeElement?.tagName, "B", "Focus moves into the gam
     }
   }
 }
+await nextStep();
 await wait(40);
 assert.ok($(".gm-result"), "Fact Match ends on a result screen");
 results.push(["match", $(".gm-result").textContent.includes("★")]);
@@ -259,6 +265,7 @@ for (let round = 0; round < 3; round += 1) {
     if (Math.abs(sum(card.textContent) - target) < 1e-9) $(`[data-i="${i}"]`).click();
   await wait();
   if (round < 2) click("[data-gm-next]");
+  else await nextStep();
   await wait();
 }
 await wait(40);
@@ -323,6 +330,7 @@ for (let round = 0; round < 5; round += 1) {
     }
   }
   await wait(30);
+  await nextStep();
 }
 await wait(60);
 assert.ok($(".gm-result"), "Spot the Mistake ends on a result screen");
@@ -336,6 +344,7 @@ for (let n = 0; n < 12; n += 1) {
   $(".gm-tile:not(.clear)").click();
   $("#gm-input").value = String(sum($("#gm-q").textContent));
   $(".gm-ask-form").dispatchEvent(new win.Event("submit", { bubbles: true, cancelable: true }));
+  await nextStep();
   await wait(5);
 }
 await wait(60);
@@ -364,6 +373,7 @@ for (let round = 0; round < 3; round += 1) {
   }
   await wait();
   if (round < 2) click("[data-gm-next]");
+  else await nextStep();
   await wait();
 }
 await wait(40);
@@ -394,6 +404,7 @@ for (let round = 0; round < 3; round += 1) {
   );
   await wait();
   if (round < 2) click("[data-gm-next]");
+  else await nextStep();
   await wait();
 }
 await wait(60);
@@ -417,6 +428,7 @@ for (let n = 0; n < 5; n += 1) {
     assert.match(note(), /heavier/, "A wrong try says which side is heavier");
   }
   assert.ok(solved, "Trying the tiles reaches a balanced scale");
+  await nextStep();
   await wait(20);
 }
 await wait(60);
@@ -451,6 +463,7 @@ await toMenu();
     }
     $("#gm-input").value = String(answer);
     $(".gm-ask-form").dispatchEvent(new win.Event("submit", { bubbles: true, cancelable: true }));
+    await nextStep();
     await wait(20);
   }
   await wait(60);
@@ -550,7 +563,7 @@ for (const id of ["arrayarchitect", "fractionforge"]) {
       "right",
       `${id} accepts a mathematically valid model`,
     );
-    await wait(750);
+    await nextStep();
   }
   assert.ok($(".gm-result"), `${id} reaches a completion screen`);
   assert.match(
@@ -603,7 +616,7 @@ for (let round = 0; round < 5; round += 1) {
   setRange("[data-number-position]", target);
   click(`[data-benchmark="${Math.round(target / 10) * 10}"]`);
   click("[data-check]");
-  await wait(750);
+  await nextStep();
 }
 assert.ok($(".gm-result"), "Kindergarten–2 Number Garden completes its five rounds");
 await toMenu();

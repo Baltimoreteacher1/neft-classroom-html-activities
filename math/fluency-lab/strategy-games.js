@@ -1,4 +1,5 @@
-import { answerOf, gameProblem } from "./game-pool.js";
+import { mountFeedback, phaseFor } from "./feedback-host.js";
+import { answerOf, answerText, gameProblem } from "./game-pool.js";
 import { profileKey, profiles, readLocal, writeLocal } from "./school-tools.js";
 import { t } from "./i18n.js";
 
@@ -15,6 +16,19 @@ const header = (title, detail, onExit) => {
   bar.append(action(t("← Games"), "tr-back", onExit), node("b", "", title), node("span", "", detail));
   return bar;
 };
+
+// Results use the shared feedback panel, which sits beside the game's status line. Plain guidance (a hint, a repeat
+// entry) stays in the status line and hides the panel, so a stale "Not quite" never sits over new guidance.
+function resultPanel(status, onAction) {
+  const copy = node("p", "gm-note");
+  status.after(copy);
+  const panel = mountFeedback(copy, { onAction });
+  return {
+    say(message) { panel.clear(); status.hidden = false; status.textContent = message; },
+    show(phase, ctx, message) { status.hidden = true; panel.show(phase, ctx, message); },
+  };
+}
+const nextLabel = (last, label = t("Next")) => (last ? t("See results") : label);
 
 /** Safe arithmetic parser. Values must come from the displayed tiles, each at most once. */
 export function evaluateHiveExpression(expression, tiles, target) {
@@ -135,37 +149,42 @@ export function playStrategyMatch(container, { grade, stop, finish, onEvidence =
     const candidate = gameProblem(grade, stop);
     if (!items.some((item) => item.question === candidate.question)) items.push(candidate);
   }
-  if (!items.length) { finish({ stars: 0, missed: [], line: t("No matching problems are ready right now.") }); return; }
+  if (!items.length) { finish({ game: "strategymatch", stars: 0, missed: [], line: t("No matching problems are ready right now.") }); return; }
   const pairs = strategyMatchPairs(items);
   const rotation = (Number(grade) + String(stop?.id || stop || "").length) % pairs.length;
   const deck = [
     ...pairs.map((pair) => ({ pair, kind: "expression" })),
     ...pairs.map((pair, index) => ({ pair: pairs[(index + rotation) % pairs.length], kind: "model" })),
   ];
-  const state = { open: null, matched: new Set(), misses: 0, turns: 0 };
-  const render = (message = "") => {
+  const state = { open: null, matched: new Set(), misses: 0, turns: 0, done: false };
+  const summary = () => ({ game: "strategymatch", stars: state.misses === 0 ? 3 : state.misses < 3 ? 2 : 1, missed: [], line: t("You matched {n} strategies with visual models.", { n: pairs.length }) });
+  const render = (message = "", fb = null) => {
     const screen = node("section", "gm-play gm-strategy-match");
-    screen.append(header(t("Strategy Match"), t("{n} of {total} matches", { n: state.matched.size, total: pairs.length }), () => finish({ stars: 0, missed: [], line: t("You can return to strategy match anytime.") })));
+    screen.append(header(t("Strategy Match"), t("{n} of {total} matches", { n: state.matched.size, total: pairs.length }), () => finish({ game: "strategymatch", stars: 0, missed: [], line: t("You can return to strategy match anytime.") })));
     screen.append(node("p", "gm-ask", t("Match each expression with a visual model that shows the same quantities. There is no timer.")));
     const grid = node("div", "gm-match-grid"); grid.setAttribute("role", "group"); grid.setAttribute("aria-label", t("Expression and model match cards"));
     for (const [index, card] of deck.entries()) {
       const isOpen = state.open?.index === index || state.open?.otherIndex === index;
       const matched = state.matched.has(card.pair.id);
       const button = action(isOpen || matched ? "" : t("Reveal card"), `gm-match-card ${isOpen || matched ? "revealed" : "face-down"} ${matched ? "matched" : ""}`, () => {
-        if (matched || isOpen || state.open?.otherIndex != null) return;
+        if (state.done) return;
+        if (state.open?.otherIndex != null) { state.open = null; render(t("Keep looking for matching quantities.")); return; }
+        if (matched || isOpen) return;
         if (!state.open) { state.open = { index, card }; render(); return; }
         state.turns += 1;
         if (state.open.card.kind !== card.kind && state.open.card.pair.id === card.pair.id) {
           state.matched.add(card.pair.id); onFact(card.pair.item, state.misses === 0);
           onEvidence({ worldId: "strategymatch", grade, correct: true, independent: state.misses === 0 });
           state.open = null;
-          if (state.matched.size === pairs.length) finish({ stars: state.misses === 0 ? 3 : state.misses < 3 ? 2 : 1, missed: [], line: t("You matched {n} strategies with visual models.", { n: pairs.length }) });
-          else render(t("A strategy pair matches. Find the next one."));
+          const last = state.matched.size === pairs.length;
+          state.done = last;
+          const ctx = { expected: `${card.pair.expression.replace("= ?", "").trim()} = ${card.pair.answer}`, ...(last ? { next: t("See results") } : {}) };
+          render(last ? t("You matched {n} strategies with visual models.", { n: pairs.length }) : t("A strategy pair matches. Find the next one."), { phase: phaseFor("strategymatch", state.misses === 0 ? "right" : "right-after-miss"), ctx });
         } else {
           state.misses += 1;
           onEvidence({ worldId: "strategymatch", grade, correct: false, independent: true });
           state.open.otherIndex = index;
-          render(t("Those cards do not match. Choose one card to turn them back over."));
+          render(t("Those cards do not match. Choose one card to turn them back over."), { phase: phaseFor("strategymatch", "miss"), ctx: {} });
         }
       });
       button.setAttribute("aria-pressed", String(isOpen || matched));
@@ -178,8 +197,13 @@ export function playStrategyMatch(container, { grade, stop, finish, onEvidence =
     }
     const status = node("p", "gm-note", message || t("Take your time. Match expressions to models, not to a timer.")); status.setAttribute("role", "status"); status.setAttribute("aria-live", "polite");
     screen.append(grid, status);
-    if (state.open?.otherIndex != null) screen.append(action(t("Turn cards back over"), "outline-action", () => { state.open = null; render(t("Keep looking for matching quantities.")); }));
+    const surface = resultPanel(status, (id) => {
+      if (id === "next" && state.done) finish(summary());
+      else if (id === "try-again" && state.open?.otherIndex != null) { state.open = null; render(t("Keep looking for matching quantities.")); }
+    });
+    if (fb) surface.show(fb.phase, fb.ctx, message);
     container.replaceChildren(screen);
+    screen.querySelector("[data-feedback-action]")?.focus();
   };
   render();
 }
@@ -190,12 +214,17 @@ export function personalGhostScore(correct, attempted, elapsedSeconds) {
 }
 
 export function playTargetHive(container, { grade, stop, finish, onEvidence = () => {}, onFact = () => {} }) {
-  const total = 3; const state = { round: 0, answers: [], first: 0, hinted: false, locked: false, misses: 0 };
+  const total = 3; const state = { round: 0, answers: [], first: 0, hinted: false, missed: false, locked: false, ended: false, misses: 0 };
   let problem; let target; let tiles;
-  const draw = () => { problem = gameProblem(grade, stop); target = answerOf(problem); tiles = hiveTilesFor(target); state.answers = []; state.hinted = false; state.locked = false; };
-  const render = (message) => {
+  const draw = () => { problem = gameProblem(grade, stop); target = answerOf(problem); tiles = hiveTilesFor(target); state.answers = []; state.hinted = false; state.missed = false; state.locked = false; };
+  const advance = () => {
+    if (!state.locked || state.ended) return;
+    state.round += 1;
+    if (state.round >= total) { state.ended = true; finish({ game: "targethive", stars: state.first >= total ? 3 : state.first ? 2 : 1, missed: [], line: t("You explored {n} targets with different equations.", { n: total }) }); } else { draw(); render(""); }
+  };
+  const render = (message, fb = null) => {
     const screen = node("section", "gm-play gm-target-hive");
-    screen.append(header(t("Target Number Hive"), t("Target {n} of {total}", { n: state.round + 1, total }), () => finish({ stars: 0, missed: [], line: t("You can return to the hive anytime.") })));
+    screen.append(header(t("Target Number Hive"), t("Target {n} of {total}", { n: state.round + 1, total }), () => finish({ game: "targethive", stars: 0, missed: [], line: t("You can return to the hive anytime.") })));
     screen.append(node("p", "gm-ask", t("Use the number tiles and operations to build an expression for the target. Find two different ways. Take your time.")));
     const targetCard = node("div", "gm-hive-target"); targetCard.append(node("span", "", t("Target")), node("strong", "", fmt(target))); screen.append(targetCard);
     const row = node("div", "gm-hive-tiles"); row.setAttribute("role", "group"); row.setAttribute("aria-label", t("Available number tiles"));
@@ -207,23 +236,30 @@ export function playTargetHive(container, { grade, stop, finish, onEvidence = ()
     form.addEventListener("submit", (event) => {
       event.preventDefault(); if (state.locked) return;
       const result = evaluateHiveExpression(input.value, tiles, target);
-      if (!result.ok) { state.misses += 1; onEvidence({ worldId: "targethive", grade, correct: false, independent: !state.hinted }); status.textContent = result.reason === "tiles" ? t("Use only the tiles shown, and use each tile no more than once.") : result.reason === "target" ? t("That expression is valid. Check its value against the target.") : t("Enter a math expression with the shown operations."); return; }
+      if (!result.ok) { state.misses += 1; state.missed = true; onEvidence({ worldId: "targethive", grade, correct: false, independent: !state.hinted }); const reply = result.reason === "tiles" ? t("Use only the tiles shown, and use each tile no more than once.") : result.reason === "target" ? t("That expression is valid. Check its value against the target.") : t("Enter a math expression with the shown operations."); if (result.reason === "syntax") surface.show("empty", {}, reply); else surface.show(phaseFor("targethive", "miss"), { submitted: input.value.trim(), hintAvailable: !state.hinted }, reply); return; }
       const key = input.value.replace(/\s+/g, "").replaceAll("−", "-").replaceAll("×", "*").replaceAll("÷", "/");
-      if (state.answers.some((answer) => answer.key === key)) { status.textContent = t("You already found that equation. Try a different arrangement."); return; }
+      if (state.answers.some((answer) => answer.key === key)) { surface.say(t("You already found that equation. Try a different arrangement.")); return; }
       state.answers.push({ key, text: input.value }); onFact(problem, !state.hinted); onEvidence({ worldId: "targethive", grade, correct: true, independent: !state.hinted });
       if (!state.hinted && state.answers.length === 1) state.first += 1;
-      if (state.answers.length === 1) render(t("That works! Find one more different expression.")); else {
-        state.locked = true; render(t("Two ways found. Nice flexible thinking!"));
-        screen.append(action(state.round + 1 === total ? t("Finish game") : t("Next target"), "primary-action", () => { state.round += 1; if (state.round >= total) finish({ stars: state.first >= total ? 3 : state.first ? 2 : 1, missed: [], line: t("You explored {n} targets with different equations.", { n: total }) }); else { draw(); render(""); } }));
-      }
+      const found = { phase: phaseFor("targethive", state.hinted || state.missed ? "right-after-miss" : "right"), ctx: { expected: `${input.value.trim()} = ${fmt(target)}` } };
+      if (state.answers.length === 1) render(t("That works! Find one more different expression."), found);
+      else { state.locked = true; found.ctx.next = nextLabel(state.round + 1 === total, t("Next target")); render(t("Two ways found. Nice flexible thinking!"), found); }
     });
     const ops = node("div", "gm-hive-ops");
     for (const symbol of ["+", "−", "×", "÷", "(", ")"]) ops.append(action(symbol, "outline-action", () => { input.value += symbol; input.focus(); }));
-    const status = node("p", "gm-note", message || t("Find two different expressions. There is no timer.")); status.setAttribute("role", "status"); status.setAttribute("aria-live", "polite");
-    const found = node("ol", "gm-hive-found"); for (const answer of state.answers) found.append(node("li", "", answer.text + " = " + fmt(target)));
-    screen.append(form, node("p", "gm-hint", t("Use +, −, ×, ÷, and parentheses. You may use any tile once.")), ops, status, found,
-      action(t("Show a strategy hint"), "outline-action", () => { state.hinted = true; status.textContent = t("Try pairing two tiles with addition, then use a different pair with subtraction."); }));
-    container.replaceChildren(screen); input.focus();
+    const status = node("p", "gm-note", fb ? "" : message || t("Find two different expressions. There is no timer.")); status.setAttribute("role", "status"); status.setAttribute("aria-live", "polite");
+    const foundList = node("ol", "gm-hive-found"); for (const answer of state.answers) foundList.append(node("li", "", answer.text + " = " + fmt(target)));
+    const hintButton = action(t("Show a strategy hint"), "outline-action", () => { if (state.locked) return; state.hinted = true; surface.say(t("Try pairing two tiles with addition, then use a different pair with subtraction.")); });
+    hintButton.dataset.hint = "";
+    screen.append(form, node("p", "gm-hint", t("Use +, −, ×, ÷, and parentheses. You may use any tile once.")), ops, status, foundList, hintButton);
+    const surface = resultPanel(status, (id) => {
+      if (id === "next") advance();
+      else if (id === "hint") hintButton.click();
+      else if (id === "try-again") { surface.say(t("Find two different expressions. There is no timer.")); input.focus(); }
+    });
+    if (fb) surface.show(fb.phase, fb.ctx, message);
+    container.replaceChildren(screen);
+    (fb?.ctx.next ? screen.querySelector("[data-feedback-action='next']") : input)?.focus();
   };
   draw(); render("");
 }
@@ -231,39 +267,70 @@ export function playTargetHive(container, { grade, stop, finish, onEvidence = ()
 const GHOST_KEY = "ewl-personal-ghost-v1";
 export function playPersonalGhost(container, { grade, stop, finish, onEvidence = () => {}, onFact = () => {} }) {
   const activeProfile = profiles().active; const storageKey = profileKey(GHOST_KEY, activeProfile); const records = readLocal(storageKey, {});
-  let items = []; let at = 0; let correct = 0; let attempted = 0; let hinted = false; let hadMiss = false; let started = 0; let closed = false;
+  let items = []; let at = 0; let correct = 0; let attempted = 0; let hinted = false; let hadMiss = false; let settled = false; let started = 0; let closed = false;
   const key = grade + ":" + stop; const previous = records[key]?.score || 0;
-  const complete = () => { if (closed) return; closed = true; const elapsed = Math.max(1, Math.round((Date.now() - started) / 1000)); const score = personalGhostScore(correct, attempted, elapsed); if (score > previous) { records[key] = { score, accuracy: attempted ? Math.round(correct / attempted * 100) : 0 }; writeLocal(storageKey, records); } finish({ stars: correct >= Math.ceil(Math.max(1, attempted) * .8) ? 3 : correct ? 2 : 1, missed: [], line: t("{correct} correct of {attempted} tries · accuracy-adjusted pace {score} · your previous best {best}", { correct, attempted, score, best: Math.max(score, previous) }) }); };
-  const start = () => { items = Array.from({ length: 10 }, () => gameProblem(grade, stop)); at = 0; correct = 0; attempted = 0; hinted = false; hadMiss = false; started = Date.now(); render(""); };
+  const complete = () => { if (closed) return; closed = true; const elapsed = Math.max(1, Math.round((Date.now() - started) / 1000)); const score = personalGhostScore(correct, attempted, elapsed); if (score > previous) { records[key] = { score, accuracy: attempted ? Math.round(correct / attempted * 100) : 0 }; writeLocal(storageKey, records); } finish({ game: "ghostsprint", stars: correct >= Math.ceil(Math.max(1, attempted) * .8) ? 3 : correct ? 2 : 1, missed: [], line: t("{correct} correct of {attempted} tries · accuracy-adjusted pace {score} · your previous best {best}", { correct, attempted, score, best: Math.max(score, previous) }) }); };
+  const start = () => { items = Array.from({ length: 10 }, () => gameProblem(grade, stop)); at = 0; correct = 0; attempted = 0; hinted = false; hadMiss = false; settled = false; started = Date.now(); render(""); };
   const init = () => {
-    const screen = node("section", "gm-play gm-ghost-sprint"); screen.append(header(t("Personal Ghost Sprint"), t("Choose a calm run"), () => finish({ stars: 0, missed: [], line: t("You can return to this game anytime.") })), node("p", "gm-ask", t("Your ghost uses only your earlier accuracy-adjusted pace. There is no class leaderboard.")));
+    const screen = node("section", "gm-play gm-ghost-sprint"); screen.append(header(t("Personal Ghost Sprint"), t("Choose a calm run"), () => finish({ game: "ghostsprint", stars: 0, missed: [], line: t("You can return to this game anytime.") })), node("p", "gm-ask", t("Your ghost uses only your earlier accuracy-adjusted pace. There is no class leaderboard.")));
     const status = node("p", "gm-note", t("Your pace stays on this device only.")); status.setAttribute("role", "status");
     screen.append(node("p", "gm-note", t("10 cards · untimed")), action(t("Start my run"), "tr-go", start), status); container.replaceChildren(screen);
   };
-  const render = (message) => {
+  const advance = () => { if (!settled || closed) return; at += 1; hinted = false; hadMiss = false; settled = false; render(""); };
+  const render = (message, fb = null) => {
     if (closed) return; if (at >= items.length) { complete(); return; }
     const item = items[at]; const screen = node("section", "gm-play gm-ghost-sprint"); screen.append(header(t("Personal Ghost Sprint"), t("Card {a} of {b}", { a: at + 1, b: items.length }), complete), node("p", "gm-ask", t("Move at your own pace. Your ghost is your earlier accuracy-adjusted result, never another learner.")), node("p", "gm-q", item.question));
     const form = node("form", "gm-ghost-form"); const input = node("input", "tr-input"); input.id = "ghost-answer"; input.type = "text"; input.inputMode = "decimal"; input.autocomplete = "off"; const label = node("label", "", t("Your answer")); label.htmlFor = input.id; const row = node("div", "tr-answer"); const submit = node("button", "tr-check", t("Check")); submit.type = "submit"; row.append(input, submit); form.append(label, row);
-    const status = node("p", "gm-note", message || t("Your previous best: {n}", { n: previous })); status.setAttribute("role", "status"); status.setAttribute("aria-live", "polite");
-    form.addEventListener("submit", (event) => { event.preventDefault(); const raw = input.value.trim().replaceAll("−", "-").replaceAll(",", ""); const answer = item.answers?.some((n) => String(n).replaceAll("−", "-").replaceAll(",", "") === raw) || Number(raw) === Number(item.answers?.[0]); if (answer) { attempted += 1; correct += 1; onFact(item, !hinted && !hadMiss); onEvidence({ worldId: "ghostsprint", grade, correct: true, independent: !hinted && !hadMiss }); at += 1; hinted = false; hadMiss = false; render(t("Correct. Keep going if you like.")); } else { attempted += 1; hadMiss = true; onEvidence({ worldId: "ghostsprint", grade, correct: false, independent: !hinted }); status.textContent = t("Not yet. Try another strategy or use a hint."); } });
-    screen.append(form, action(t("Show a gentle hint"), "outline-action", () => { hinted = true; status.textContent = t(item.hint || "Try a model or break the numbers into friendly parts."); }), action(t("Skip this card"), "outline-action", () => { attempted += 1; hadMiss = true; onEvidence({ worldId: "ghostsprint", grade, correct: false, independent: !hinted }); at += 1; hinted = false; render(t("Card skipped. You can try the next one.")); }), status);
-    container.replaceChildren(screen); input.focus();
+    const status = node("p", "gm-note", fb ? "" : message || t("Your previous best: {n}", { n: previous })); status.setAttribute("role", "status"); status.setAttribute("aria-live", "polite");
+    form.addEventListener("submit", (event) => {
+      event.preventDefault(); if (settled) return;
+      const raw = input.value.trim().replaceAll("−", "-").replaceAll(",", ""); const answer = item.answers?.some((n) => String(n).replaceAll("−", "-").replaceAll(",", "") === raw) || Number(raw) === Number(item.answers?.[0]);
+      if (answer) { attempted += 1; correct += 1; onFact(item, !hinted && !hadMiss); onEvidence({ worldId: "ghostsprint", grade, correct: true, independent: !hinted && !hadMiss }); settled = true; render(t("Correct. Keep going if you like."), { phase: phaseFor("ghostsprint", hinted || hadMiss ? "right-after-miss" : "right"), ctx: { expected: answerText(item), next: nextLabel(at + 1 >= items.length) } }); }
+      else { attempted += 1; hadMiss = true; onEvidence({ worldId: "ghostsprint", grade, correct: false, independent: !hinted }); surface.show(phaseFor("ghostsprint", "miss"), { submitted: input.value.trim(), hintAvailable: !hinted }, t("Not yet. Try another strategy or use a hint.")); }
+    });
+    const hintButton = action(t("Show a gentle hint"), "outline-action", () => { if (settled) return; hinted = true; surface.say(t(item.hint || "Try a model or break the numbers into friendly parts.")); }); hintButton.dataset.hint = "";
+    screen.append(form, hintButton, action(t("Skip this card"), "outline-action", () => { if (settled) return; attempted += 1; hadMiss = true; onEvidence({ worldId: "ghostsprint", grade, correct: false, independent: !hinted }); at += 1; hinted = false; render(t("Card skipped. You can try the next one.")); }), status);
+    const surface = resultPanel(status, (id) => {
+      if (id === "next") advance();
+      else if (id === "hint") hintButton.click();
+      else if (id === "try-again") { surface.say(t("Your previous best: {n}", { n: previous })); input.focus(); }
+    });
+    if (fb) surface.show(fb.phase, fb.ctx, message);
+    container.replaceChildren(screen);
+    (fb?.ctx.next ? screen.querySelector("[data-feedback-action='next']") : input)?.focus();
   };
   init(); return () => { closed = true; };
 }
 
 export function playFactorFractionPath(container, { grade, stop, finish, onEvidence = () => {}, onFact = () => {} }) {
-  const total = 5; const items = Array.from({ length: total }, () => gameProblem(grade, stop)); let at = 0; let first = 0; let hinted = false;
-  const render = (message) => {
-    if (at >= total) { finish({ stars: first === total ? 3 : first >= 3 ? 2 : 1, missed: [], line: t("You built {n} bridges at your own pace.", { n: total }) }); return; }
-    const item = items[at]; const screen = node("section", "gm-play gm-path-builder"); screen.append(header(t("Factor & Fraction Path Builder"), t("Bridge {a} of {b}", { a: at + 1, b: total }), () => finish({ stars: 0, missed: [], line: t("You can return to this path anytime.") })));
-    const map = node("div", "gm-path-map"); map.setAttribute("role", "img"); map.setAttribute("aria-label", t("A calm path with {n} bridges; {done} are built", { n: total, done: at }));
-    for (let i = 0; i < total; i += 1) { if (i) map.append(node("span", "gm-path-arrow", "→")); map.append(node("span", "gm-path-step " + (i < at ? "built" : i === at ? "current" : ""), i < at ? "✓" : i + 1)); }
+  const total = 5; const items = Array.from({ length: total }, () => gameProblem(grade, stop)); let at = 0; let first = 0; let hinted = false; let missed = false; let settled = false;
+  const advance = () => { if (!settled) return; at += 1; hinted = false; missed = false; settled = false; render(""); };
+  const render = (message, fb = null) => {
+    if (at >= total) { finish({ game: "factorfractionpath", stars: first === total ? 3 : first >= 3 ? 2 : 1, missed: [], line: t("You built {n} bridges at your own pace.", { n: total }) }); return; }
+    const item = items[at]; const built = at + (settled ? 1 : 0); const screen = node("section", "gm-play gm-path-builder"); screen.append(header(t("Factor & Fraction Path Builder"), t("Bridge {a} of {b}", { a: at + 1, b: total }), () => finish({ game: "factorfractionpath", stars: 0, missed: [], line: t("You can return to this path anytime.") })));
+    const map = node("div", "gm-path-map"); map.setAttribute("role", "img"); map.setAttribute("aria-label", t("A calm path with {n} bridges; {done} are built", { n: total, done: built }));
+    for (let i = 0; i < total; i += 1) { if (i) map.append(node("span", "gm-path-arrow", "→")); map.append(node("span", "gm-path-step " + (i < built ? "built" : i === built ? "current" : ""), i < built ? "✓" : i + 1)); }
     screen.append(map, node("p", "gm-ask", t("Solve to place the next bridge. There is no timer and you can ask for a hint at any time.")), node("p", "gm-q", item.question));
     const form = node("form", "gm-path-form"); const input = node("input", "tr-input"); input.id = "path-answer"; input.type = "text"; input.inputMode = "decimal"; const label = node("label", "", t("Your answer")); label.htmlFor = input.id; const row = node("div", "tr-answer"); const submit = node("button", "tr-check", t("Build bridge")); submit.type = "submit"; row.append(input, submit); form.append(label, row);
-    const status = node("p", "gm-note", message || t("Each correct answer moves you forward. Take your time.")); status.setAttribute("role", "status"); status.setAttribute("aria-live", "polite");
-    form.addEventListener("submit", (event) => { event.preventDefault(); const raw = input.value.trim().replaceAll("−", "-").replaceAll(",", ""); const right = item.answers?.some((n) => String(n).replaceAll("−", "-").replaceAll(",", "") === raw) || Number(raw) === Number(item.answers?.[0]); onEvidence({ worldId: "factorfractionpath", grade, correct: right, independent: !hinted }); if (!right) { status.textContent = t("Not yet. The bridge stays here while you revise your thinking."); return; } if (!hinted) first += 1; onFact(item, !hinted); at += 1; hinted = false; render(t("Bridge built. Ready for the next one?")); });
-    screen.append(form, action(t("Show a hint"), "outline-action", () => { hinted = true; status.textContent = t(item.hint || "Look for a pattern or build a model."); }), status); container.replaceChildren(screen); input.focus();
+    const status = node("p", "gm-note", fb ? "" : message || t("Each correct answer moves you forward. Take your time.")); status.setAttribute("role", "status"); status.setAttribute("aria-live", "polite");
+    form.addEventListener("submit", (event) => {
+      event.preventDefault(); if (settled) return;
+      const raw = input.value.trim().replaceAll("−", "-").replaceAll(",", ""); const right = item.answers?.some((n) => String(n).replaceAll("−", "-").replaceAll(",", "") === raw) || Number(raw) === Number(item.answers?.[0]);
+      onEvidence({ worldId: "factorfractionpath", grade, correct: right, independent: !hinted });
+      if (!right) { missed = true; surface.show(phaseFor("factorfractionpath", "miss"), { submitted: input.value.trim(), hintAvailable: !hinted }, t("Not yet. The bridge stays here while you revise your thinking.")); return; }
+      if (!hinted) first += 1; onFact(item, !hinted); settled = true;
+      render(t("Bridge built. Ready for the next one?"), { phase: phaseFor("factorfractionpath", hinted || missed ? "right-after-miss" : "right"), ctx: { expected: answerText(item), next: nextLabel(at + 1 >= total) } });
+    });
+    const hintButton = action(t("Show a hint"), "outline-action", () => { if (settled) return; hinted = true; surface.say(t(item.hint || "Look for a pattern or build a model.")); }); hintButton.dataset.hint = "";
+    screen.append(form, hintButton, status);
+    const surface = resultPanel(status, (id) => {
+      if (id === "next") advance();
+      else if (id === "hint") hintButton.click();
+      else if (id === "try-again") { surface.say(t("Each correct answer moves you forward. Take your time.")); input.focus(); }
+    });
+    if (fb) surface.show(fb.phase, fb.ctx, message);
+    container.replaceChildren(screen);
+    (fb?.ctx.next ? screen.querySelector("[data-feedback-action='next']") : input)?.focus();
   };
   render("");
 }

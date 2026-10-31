@@ -1,0 +1,703 @@
+/* Fluency Lab 4.0 interactive graphics, set A (fraction model, number line, place value, array, area model,
+   ratio table). ds4.css tokens only; no violet. Shaded/active state is never colour alone: B models are hatched,
+   handles carry grips, and every value is also written as text in the readout. */
+.ga {
+  --ga-navy: var(--fl-navy, #17324d);
+  --ga-teal: var(--fl-teal, #1fa6a2);
+  --ga-teal-ink: var(--fl-teal-ink, #0e6b68);
+  --ga-blue: var(--fl-blue, #2c6fb0);
+  --ga-amber: var(--fl-amber, #f2c15b);
+  --ga-ink: var(--fl-ink, #24323f);
+  --ga-soft: var(--fl-ink-soft, #52606d);
+  --ga-line: var(--fl-line, #d5d9de);
+  --ga-paper: var(--fl-paper, #f7f4ec);
+  position: relative;
+  box-sizing: border-box;
+  inline-size: 100%;
+  max-inline-size: 780px;
+  padding: var(--fl-s2, 16px);
+  border: 1px solid var(--ga-line);
+  border-radius: var(--fl-radius-lg, 20px);
+  background: var(--fl-white, #fff);
+  color: var(--ga-ink);
+  font-family: var(--fl-font-body, system-ui, sans-serif);
+  font-size: 1rem;
+  line-height: 1.4;
+}
+.ga *,
+.ga *::before,
+.ga *::after {
+  box-sizing: border-box;
+}
+.ga [hidden] {
+  display: none !important;
+}
+.ga-title {
+  margin: 0 0 var(--fl-s1, 8px);
+  color: var(--ga-navy);
+  font: 600 1.125rem/1.3 var(--fl-font-head, Georgia, serif);
+}
+.ga-controls {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 232px), 1fr));
+  align-items: center;
+  gap: var(--fl-s1, 8px);
+  margin-block-start: var(--fl-s2, 16px);
+}
+.ga-controls > .ga-choice,
+.ga-controls > .ga-wide {
+  grid-column: 1 / -1;
+}
+.ga-controls:empty {
+  display: none;
+}
+.ga-btn {
+  min-block-size: 44px;
+  min-inline-size: 44px;
+  padding: 0 var(--fl-s2, 16px);
+  border: 2px solid var(--ga-navy);
+  border-radius: var(--fl-radius, 12px);
+  background: var(--fl-white, #fff);
+  color: var(--ga-navy);
+  font: 600 0.9375rem var(--fl-font-body, system-ui, sans-serif);
+  cursor: pointer;
+}
+.ga-btn[aria-pressed="true"] {
+  background: var(--ga-navy);
+  color: #fff;
+}
+.ga-btn[aria-disabled="true"] {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.ga-btn--primary {
+  border-color: var(--ga-teal-ink);
+  background: var(--ga-teal-ink);
+  color: #fff;
+}
+.ga-btn--quiet {
+  border-color: var(--ga-line);
+  background: var(--ga-paper);
+}
+.ga-btn:focus-visible,
+.ga-step-value:focus-visible,
+.ga-cell:focus-visible,
+.ga-input:focus-visible {
+  outline: none;
+  box-shadow: var(--fl-focus, 0 0 0 3px #fff, 0 0 0 6px #2c6fb0);
+}
+.ga-choice {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.ga-step {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 2px 4px;
+  border: 1px solid var(--ga-line);
+  border-radius: var(--fl-radius, 12px);
+  background: var(--ga-paper);
+}
+.ga-step-label {
+  flex: 1;
+  padding: 0 6px;
+  color: var(--ga-soft);
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+.ga-step-btn {
+  padding: 0;
+  font-size: 1.25rem;
+}
+.ga-step-value {
+  min-inline-size: 2.5ch;
+  padding: 8px 2px;
+  border-radius: 8px;
+  text-align: center;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.ga-stage {
+  inline-size: 100%;
+  overflow: hidden;
+}
+.ga-svg {
+  display: block;
+  max-inline-size: 100%;
+  block-size: auto;
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.ga-text {
+  fill: var(--ga-ink);
+  font-family: var(--fl-font-body, system-ui, sans-serif);
+  pointer-events: none;
+}
+.ga-text.ga-label {
+  fill: var(--ga-navy);
+}
+.ga-part {
+  fill: #fff;
+  stroke: var(--ga-navy);
+  stroke-width: 1.5;
+}
+.ga-part--on.ga-fill-a {
+  fill: var(--ga-teal);
+}
+.ga-part--on.ga-fill-b {
+  fill: var(--ga-hatch, var(--ga-blue));
+}
+.ga-part--on.ga-fill-r {
+  fill: var(--ga-amber);
+}
+.ga-hatch-bg {
+  fill: var(--ga-blue);
+}
+.ga-hatch-line {
+  stroke: #fff;
+  stroke-width: 3;
+}
+.ga-fine {
+  stroke: var(--ga-teal-ink);
+  stroke-width: 1.2;
+  stroke-dasharray: 4 3;
+  pointer-events: none;
+}
+.ga-outline {
+  fill: none;
+  stroke: var(--ga-navy);
+  stroke-width: 2.5;
+  pointer-events: none;
+}
+.ga-hit {
+  fill: transparent;
+  pointer-events: all;
+  cursor: pointer;
+  touch-action: none;
+}
+.ga-handle {
+  outline: none;
+  cursor: grab;
+  touch-action: none;
+}
+.ga-handle:active {
+  cursor: grabbing;
+}
+.ga-ring {
+  fill: none;
+  stroke: var(--ga-blue);
+  stroke-width: 3;
+  opacity: 0;
+  pointer-events: none;
+}
+.ga-handle:focus-visible .ga-ring,
+.ga-focusable:focus-visible .ga-ring {
+  opacity: 1;
+}
+.ga-grip {
+  fill: var(--ga-navy);
+  stroke: #fff;
+  stroke-width: 2;
+}
+.ga-readout {
+  margin-block-start: var(--fl-s1, 8px);
+}
+.ga-readout:empty {
+  display: none;
+}
+.ga-eq {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px var(--fl-s1, 8px);
+  margin: 4px 0;
+  color: var(--ga-navy);
+  font: 600 1.375rem/1.2 var(--fl-font-head, Georgia, serif);
+}
+.ga-op {
+  color: var(--ga-soft);
+}
+.ga-frac-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.ga-frac {
+  display: inline-flex;
+  flex-direction: column;
+  text-align: center;
+  font-size: 1.125rem;
+  line-height: 1.15;
+}
+.ga-frac > span:first-child {
+  padding: 0 4px;
+  border-block-end: 2px solid currentColor;
+}
+.ga-check {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--fl-s1, 8px) var(--fl-s2, 16px);
+  margin-block-start: var(--fl-s1, 8px);
+}
+.ga-verdict {
+  margin: 0;
+  color: var(--ga-navy);
+  font-weight: 600;
+}
+.ga-live {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .ga-part,
+  .ga-btn,
+  .ga-grip {
+    transition:
+      fill 120ms ease,
+      background-color 120ms ease;
+  }
+}
+@media (max-width: 480px) {
+  .ga {
+    padding: 12px;
+    border-radius: 16px;
+  }
+}
+@media (forced-colors: active) {
+  .ga-part--on {
+    fill: Highlight;
+  }
+  .ga-btn[aria-pressed="true"] {
+    outline: 2px solid;
+  }
+}
+.ga-fbar {
+  stroke: var(--ga-ink);
+  stroke-width: 1.6;
+  pointer-events: none;
+}
+.ga-axis {
+  stroke: var(--ga-navy);
+  stroke-width: 3;
+  stroke-linecap: round;
+  pointer-events: none;
+}
+.ga-arrow {
+  fill: var(--ga-navy);
+  pointer-events: none;
+}
+.ga-tick {
+  stroke: var(--ga-navy);
+  stroke-width: 1.5;
+  pointer-events: none;
+}
+.ga-tick--major {
+  stroke-width: 2.5;
+}
+.ga-jump {
+  fill: none;
+  stroke: var(--ga-teal-ink);
+  stroke-width: 3;
+  pointer-events: none;
+}
+.ga-jump-head {
+  fill: var(--ga-teal-ink);
+  pointer-events: none;
+}
+.ga-jump-label {
+  fill: var(--ga-teal-ink);
+}
+.ga-end {
+  fill: var(--ga-amber);
+  stroke: var(--ga-navy);
+  stroke-width: 2;
+  pointer-events: none;
+}
+.ga-stem {
+  stroke: var(--ga-navy);
+  stroke-width: 2;
+  stroke-dasharray: 3 3;
+  pointer-events: none;
+}
+.ga-dot {
+  fill: #fff;
+  stroke: var(--ga-teal-ink);
+  stroke-width: 4;
+}
+.ga-pt--1 .ga-dot {
+  stroke: var(--ga-blue);
+}
+.ga-pt--2 .ga-dot {
+  stroke: var(--ga-navy);
+}
+.ga-pt--3 .ga-dot {
+  stroke: #b45309;
+}
+.ga-dot-letter {
+  fill: var(--ga-navy);
+  font-weight: 700;
+}
+.ga-blk {
+  stroke: var(--ga-navy);
+  stroke-width: 1.2;
+  pointer-events: none;
+}
+.ga-blk--unit {
+  fill: var(--ga-amber);
+}
+.ga-blk--tiny {
+  fill: var(--fl-coral, #d9533a);
+}
+.ga-blk--rod {
+  fill: var(--ga-teal);
+}
+.ga-blk--flat {
+  fill: #9cc4e8;
+}
+.ga-blk--cube {
+  fill: var(--ga-blue);
+}
+.ga-blk--cube-top {
+  fill: #6aa0d4;
+}
+.ga-blk-grid {
+  stroke: rgb(23 50 77 / 0.35);
+  stroke-width: 0.7;
+  pointer-events: none;
+}
+.ga-col {
+  outline: none;
+  cursor: grab;
+  touch-action: none;
+}
+.ga-col-bg {
+  fill: var(--ga-paper);
+  stroke: var(--ga-line);
+  stroke-width: 1.5;
+  pointer-events: none;
+}
+.ga-col--sel .ga-col-bg {
+  fill: #fff;
+  stroke: var(--ga-navy);
+  stroke-width: 2.5;
+}
+.ga-col:focus-visible .ga-col-bg {
+  stroke: var(--ga-blue);
+  stroke-width: 4;
+}
+.ga-digit {
+  fill: #fff;
+  stroke: var(--ga-navy);
+  stroke-width: 2;
+  pointer-events: none;
+}
+.ga-digit--over {
+  fill: var(--ga-amber);
+}
+.ga-digit-text {
+  fill: var(--ga-navy);
+}
+.ga-drop {
+  fill: rgb(31 166 162 / 0.15);
+  stroke: var(--ga-teal-ink);
+  stroke-width: 3;
+  stroke-dasharray: 6 4;
+  pointer-events: none;
+}
+.ga-ghost {
+  pointer-events: none;
+}
+.ga-ghost-box {
+  fill: var(--ga-navy);
+  opacity: 0.92;
+}
+.ga-ghost .ga-text {
+  fill: #fff;
+}
+.ga-bignum {
+  font-size: 2rem;
+  letter-spacing: 0.02em;
+}
+.ga-expanded {
+  margin: 0;
+  color: var(--ga-soft);
+  font-variant-numeric: tabular-nums;
+}
+.ga-hint {
+  margin: 4px 0 0;
+  color: var(--fl-warn, #b45309);
+  font-weight: 600;
+}
+.ga-hint:empty {
+  display: none;
+}
+.ga-paper-dot {
+  fill: var(--ga-line);
+  pointer-events: none;
+}
+.ga-board {
+  fill: #fff;
+  stroke: var(--ga-line);
+  stroke-width: 1.5;
+  stroke-dasharray: 5 4;
+  pointer-events: none;
+}
+.ga-item {
+  fill: var(--ga-teal);
+  stroke: var(--ga-navy);
+  stroke-width: 1.2;
+  pointer-events: none;
+}
+.ga-item--b {
+  fill: var(--ga-blue);
+}
+.ga-item--hit {
+  fill: var(--ga-amber);
+  stroke-width: 2;
+}
+.ga-item--left {
+  fill: #fff;
+  stroke-width: 2.5;
+  stroke-dasharray: 3 2;
+}
+.ga-item-num {
+  fill: var(--ga-navy);
+}
+.ga-area {
+  fill: rgb(31 166 162 / 0.45);
+  stroke: var(--ga-navy);
+  stroke-width: 2.5;
+  pointer-events: none;
+}
+.ga-area--b {
+  fill: rgb(44 111 176 / 0.4);
+}
+.ga-area-line {
+  stroke: rgb(23 50 77 / 0.45);
+  stroke-width: 1;
+  pointer-events: none;
+}
+.ga-bin {
+  fill: var(--ga-paper);
+  stroke: var(--ga-navy);
+  stroke-width: 2;
+  pointer-events: none;
+}
+.ga-bin--left {
+  fill: #fff;
+  stroke-dasharray: 6 4;
+}
+.ga-corner {
+  fill: var(--ga-navy);
+  stroke: #fff;
+  stroke-width: 2;
+  pointer-events: none;
+}
+.ga-handle--split .ga-grip {
+  fill: var(--ga-teal-ink);
+}
+.ga-cell {
+  stroke: var(--ga-navy);
+  stroke-width: 1.5;
+  pointer-events: none;
+}
+.ga-cell--a,
+.ga-cell--deg2 {
+  fill: #bfe6e4;
+}
+.ga-cell--b,
+.ga-cell--deg1 {
+  fill: #cfe1f3;
+}
+.ga-cell--c,
+.ga-cell--deg0 {
+  fill: #fbe6b4;
+}
+.ga-cell--d {
+  fill: #e6efe9;
+}
+.ga-note {
+  fill: var(--ga-soft);
+}
+.ga-entries {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 200px), 1fr));
+  gap: var(--fl-s1, 8px);
+  margin-block-start: var(--fl-s2, 16px);
+}
+.ga-entry {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  color: var(--ga-navy);
+  font-weight: 600;
+  font-size: 0.9375rem;
+}
+.ga-input {
+  min-block-size: 44px;
+  padding: 0 12px;
+  border: 2px solid var(--ga-navy);
+  border-radius: var(--fl-radius, 12px);
+  background: #fff;
+  color: var(--ga-ink);
+  font: 600 1.0625rem var(--fl-font-body, system-ui, sans-serif);
+  inline-size: 100%;
+}
+.ga-input[aria-invalid="true"] {
+  border-color: var(--fl-error, #b42318);
+}
+.ga-field .ga-input {
+  inline-size: 7em;
+}
+.ga-halo {
+  paint-order: stroke;
+  stroke: #fff;
+  stroke-width: 6px;
+  stroke-linejoin: round;
+}
+.ga-sr {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.ga-rt-wrap {
+  inline-size: 100%;
+  overflow-x: auto;
+}
+.ga-rt {
+  inline-size: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+.ga-rt td,
+.ga-rt th {
+  block-size: 56px;
+  padding: 4px 6px;
+  text-align: center;
+  vertical-align: middle;
+}
+.ga-rt-head {
+  block-size: auto;
+  padding-block: 4px 8px;
+  color: var(--ga-navy);
+  font: 600 1rem/1.2 var(--fl-font-head, Georgia, serif);
+}
+.ga-rt-head[data-col="a"] {
+  border-block-end: 4px solid var(--ga-teal);
+}
+.ga-rt-head[data-col="b"] {
+  border-block-end: 4px solid var(--ga-blue);
+}
+.ga-rt-gap,
+.ga-rt-arr {
+  inline-size: 44px;
+  padding: 0;
+}
+.ga-rt-arr {
+  position: relative;
+  z-index: 1;
+}
+.ga-rt-arrow {
+  display: block;
+  overflow: visible;
+}
+.ga-rt-arr[data-side="b"] .ga-rt-arrow {
+  margin-inline-end: auto;
+}
+.ga-rt-stat-head,
+.ga-rt-stat {
+  inline-size: 40px;
+  padding: 0;
+}
+.ga-rt-input {
+  text-align: center;
+  padding: 0 4px;
+}
+.ga-rt-input[readonly] {
+  background: var(--ga-paper);
+  border-color: var(--ga-soft);
+}
+.ga-arrow-path {
+  fill: none;
+  stroke-width: 3;
+}
+.ga-arrow-a {
+  stroke: var(--ga-teal-ink);
+}
+.ga-arrow-b {
+  stroke: var(--ga-blue);
+}
+.ga-arrow-bad {
+  stroke: var(--fl-coral, #d9533a);
+}
+.ga-arrow-tip.ga-arrow-a {
+  fill: var(--ga-teal-ink);
+}
+.ga-arrow-tip.ga-arrow-b {
+  fill: var(--ga-blue);
+}
+.ga-arrow-tip.ga-arrow-bad {
+  fill: var(--fl-coral, #d9533a);
+}
+.ga-arrow-tip {
+  stroke-width: 1;
+}
+.ga-rt-arrow .ga-text {
+  fill: var(--ga-navy);
+}
+.ga-rt-arrow .ga-arrow-bad-text {
+  fill: var(--fl-error, #b42318);
+}
+.ga-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 32px;
+  block-size: 32px;
+  border: 2px solid var(--ga-soft);
+  border-radius: 50%;
+  background: #fff;
+  color: var(--ga-navy);
+  font-weight: 800;
+  font-size: 1.125rem;
+}
+.ga-chip--same {
+  border-color: var(--fl-success, #1b7a4b);
+  background: var(--fl-success-soft, #e4f4ea);
+  color: var(--fl-success, #1b7a4b);
+}
+.ga-chip--different {
+  border-color: var(--fl-error, #b42318);
+  background: var(--fl-error-soft, #fde8e7);
+  color: var(--fl-error, #b42318);
+}
+.ga-rt-unit td {
+  border-block-start: 2px dashed var(--ga-line);
+}
+.ga-rt-one {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.ga-rt-1 {
+  font: 700 1.25rem var(--fl-font-head, Georgia, serif);
+}
+.ga-rt-note {
+  color: var(--ga-soft);
+  font-size: 0.8125rem;
+}
+.ga-rt-out {
+  color: var(--ga-navy);
+  font: 700 1.25rem var(--fl-font-head, Georgia, serif);
+}

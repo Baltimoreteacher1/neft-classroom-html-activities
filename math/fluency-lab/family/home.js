@@ -35,6 +35,8 @@ import {
   intParam,
 } from "./fm2/page-kit.js";
 import { COPY as C } from "./fm2/home-copy.js";
+import { COPY4 } from "./home-4-copy.js"; // fl4:family
+import { celebrateHtml, gradeChipsHtml, guideHtml, optionalHtml, routineList, routinesHtml, topicCardsHtml } from "./home-4.js"; // fl4:family
 import { printWeekReport, weekReportHtml } from "./fm2/week-report.js";
 import { recommend, reasonText } from "./fm2/recommend.js";
 import { forGrade } from "./fm2/realworld.js";
@@ -66,6 +68,7 @@ const S = {
   search: "",
   requestedSkillState: "none",
   fresh: true,
+  guideOpen: null, // fl4:family
 };
 
 // ---- state ----------------------------------------------------------------------------------------------------------
@@ -159,12 +162,6 @@ function savedWork() {
 
 function setupHtml(info) {
   const { lang } = S;
-  const grades = GRADE_LIST.map((g) => {
-    const label = g === 0
-      ? `${t(C.gradeWord, lang)} K · ${gradeName(g, lang)}`
-      : `${t(C.gradeWord, lang)} ${g}`;
-    return `<option value="${g}" ${g === S.grade ? "selected" : ""}>${esc(label)}</option>`;
-  }).join("");
   const radios = (name, values, label) =>
     values
       .map(
@@ -192,7 +189,7 @@ function setupHtml(info) {
   // The guided session picks its own skill, so it is not offered beside a skill someone chose on purpose.
   const guidedOffer = focusedSkill() || saved.guided ? "" : guidedHtml();
   return `<div class="hm-controls">
-      <div class="hm-field"><label class="hm-field-label" for="family-grade">${esc(t(C.grade, lang))}</label><select class="hm-grade-select" id="family-grade" name="grade" data-testid="grade-selector">${grades}</select></div>
+      ${gradeChipsHtml({ grades: GRADE_LIST, current: S.grade, lang })}
       <fieldset class="hm-field"><legend>${esc(t(C.length, lang))}</legend><div class="hm-seg" data-testid="length-group">${radios("minutes", MINUTE_CHOICES, (v) => t(C.minutesOpt, lang, { n: v }))}</div></fieldset>
       <fieldset class="hm-field"><legend>${esc(t(C.how, lang))}</legend><div class="hm-seg" data-testid="mode-group">${radios("mode", ["solo", "together"], (v) => t(C[v], lang))}</div></fieldset>
     </div>
@@ -413,6 +410,36 @@ document.addEventListener("click", (event) => {
   printWeekReport({ lang: S.lang, profile: S.profile ?? 0, grade: S.grade });
 });
 
+// ---- Fluency Lab 4.0 additions (home-4.js) ------------------------------------------------------------------------------
+function routineHref(minutes) {
+  if (!S.loaded || !S.games.length) return null;
+  const plan = planSession({ grade: S.grade, minutes, mode: S.mode, state: S.store.state, games: S.games, seed: seedFrom(dayKey(), S.grade, S.mode) });
+  const code = planCode(plan);
+  return code ? playUrl({ plan: code, ...here() }) : null;
+}
+function topicCards() {
+  const counts = new Map();
+  for (const entry of skillsFor(S.games, S.grade)) {
+    const game = gameOf(entry.gameId);
+    const skill = skillOf(entry.gameId, entry.skillId);
+    if (!game || !skill) continue;
+    const key = topicOfSkill(game, skill);
+    counts.set(key, (counts.get(key) || 0) + 1);
+  }
+  return TOPIC_ORDER.filter((key) => counts.has(key)).map((key) => ({ key, label: t(STRAND_LABEL[key], S.lang), count: counts.get(key) }));
+}
+function paintFamily4(lang) {
+  const text = { ...C, ...COPY4 };
+  for (const root of [$("#routines-region"), $("#topics-region")]) applyStatic(root, text, lang);
+  paint($("#optional-region"), optionalHtml(lang));
+  paint($("#guide-region"), guideHtml(lang, S.guideOpen));
+  const guided = `session.html?${new URLSearchParams({ grade: S.grade, profile: S.profile ?? 0, lang, minutes: 10, new: 1 })}`;
+  paint($("#routines-body"), routinesHtml({ routines: routineList({ lang, quick: routineHref(5), steady: routineHref(10), guided }), grade: S.grade, lang }));
+  paint($("#topics-body"), S.loaded ? topicCardsHtml({ topics: topicCards(), lang }) : "");
+  const query = new URLSearchParams({ grade: S.grade, profile: S.profile ?? 0, lang });
+  paint($("#celebrate-body"), celebrateHtml({ lang, achievementsHref: `achievements.html?${query}`, reportHref: `report.html?${query}&audience=family` }));
+}
+
 function draw() {
   const { lang } = S;
   renderTopbar(lang);
@@ -431,6 +458,7 @@ function draw() {
   $("#rw-sub").textContent = t(C.rwLead, lang, { grade: gradeName(S.grade, lang) });
   $("#rw-print-title").textContent = t(C.printRealworld, lang, { grade: gradeName(S.grade, lang) });
   paint($("#setup"), setupHtml(info));
+  paintFamily4(lang); // fl4:family
   paint($("#resume-region"), resumeHtml());
   paint($("#mission-body"), missionHtml(info));
   paint($("#progress-body"), progressHtml());
@@ -507,6 +535,13 @@ window.addEventListener("afterprint", () => {
 });
 
 document.addEventListener("click", (event) => {
+  const topic = event.target.closest("[data-open-topic]"); // fl4:family
+  if (topic) {
+    S.strands.add(topic.dataset.openTopic);
+    $("#skills-region").open = true;
+    draw();
+    return $("#skills-region").scrollIntoView({ behavior: "auto", block: "start" });
+  }
   const selectSkill = event.target.closest("[data-select-skill]");
   if (selectSkill) {
     S.selectedSkill = selectSkill.dataset.selectSkill;
@@ -573,6 +608,7 @@ document.addEventListener(
   "toggle",
   (event) => {
     const el = event.target;
+    if (el.dataset?.testid === "grownup-guide") S.guideOpen = el.open; // fl4:family
     const set = el.dataset?.strand ? S.strands : el.dataset?.id ? S.openRw : null;
     if (!set || (el.dataset.strand && S.search.trim())) return;
     const key = el.dataset.strand || el.dataset.id;

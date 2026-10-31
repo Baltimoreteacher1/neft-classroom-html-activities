@@ -1,6 +1,7 @@
 // Balance It: a scale shows one side as a problem and the other as a part plus a missing number. The learner
 // picks the number that balances it. The beam tilts toward the heavier side after each try, so the scale gives
 // direction ("too small" or "too big") but never the answer.
+import { feedbackAction, feedbackNoteHtml, phaseFor } from "./feedback-host.js";
 import { ALL_STOPS, answerOf, cardText, gameProblem, shuffle } from "./game-pool.js";
 import { t } from "./i18n.js";
 import { canSpeak, speak, syncLive } from "./speech.js";
@@ -52,8 +53,8 @@ export function playBalance(host, { grade, stop, calm, finish, onFact }) {
   let solved = false;
   let note = "";
   let tilt = 0;
+  let fb = null; // shared feedback panel state
   const missed = new Map();
-  let timer = null;
   const current = () => rounds[at];
 
   function render(focus) {
@@ -70,8 +71,9 @@ export function playBalance(host, { grade, stop, calm, finish, onFact }) {
       ${canSpeak() ? `<button type="button" class="tr-tool" data-gm-read>${t("Read to me")}</button>` : ""}
       <div class="gm-scale-wrap" role="img" aria-label="${esc(t("Left side: {a}. Right side: {b}.", { a: cardText(round.item), b: rightText }))}">${scaleSvg({ left: esc(cardText(round.item)), rightText: esc(rightText), tilt })}</div>
       <div class="gm-cards cols-4" role="group" aria-label="${t("Number tiles")}">${round.choices.map((n) => `<button type="button" class="gm-card q${tried.has(n) ? " nope" : ""}${solved && n === round.missing ? " done" : ""}" data-b="${n}" ${tried.has(n) || solved ? "disabled" : ""}><span>${n}</span></button>`).join("")}</div>
-      <p class="gm-note">${esc(note)}</p></div>`;
-    if (focus) host.querySelector("[data-b]:not(:disabled)")?.focus();
+      ${feedbackNoteHtml(esc(note), fb)}</div>`;
+    if (solved) host.querySelector("[data-gm-next]")?.focus();
+    else if (focus) host.querySelector("[data-b]:not(:disabled)")?.focus();
     syncLive(host);
   }
 
@@ -80,8 +82,9 @@ export function playBalance(host, { grade, stop, calm, finish, onFact }) {
     tried = new Map();
     solved = false;
     note = "";
+    fb = null;
     if (at >= total) {
-      timer = setTimeout(() => finish({ game: "balance", stars: balanceStars(wrong), missed: [...missed.values()], line: wrong === 1 ? t("{n} wrong try", { n: wrong }) : t("{n} wrong tries", { n: wrong }) }), 500);
+      finish({ game: "balance", stars: balanceStars(wrong), missed: [...missed.values()], line: wrong === 1 ? t("{n} wrong try", { n: wrong }) : t("{n} wrong tries", { n: wrong }) });
       return;
     }
     render(true);
@@ -89,28 +92,35 @@ export function playBalance(host, { grade, stop, calm, finish, onFact }) {
 
   host.onclick = (event) => {
     const round = current();
+    const action = feedbackAction(event);
+    if (action === "next") return solved ? advance() : undefined;
+    if (action === "try-again") {
+      fb = null;
+      return render(true);
+    }
     if (event.target.closest("[data-gm-read]")) return speak(`${cardText(round.item)}`);
     const tile = event.target.closest("[data-b]");
     if (!tile || solved) return;
     const n = Number(tile.dataset.b);
     if (n === round.missing) {
+      const first = tried.size === 0;
       solved = true;
-      onFact?.(round.item, tried.size === 0);
+      onFact?.(round.item, first);
       note = t("Balanced!");
+      fb = { phase: phaseFor("balance", first ? "right" : "right-after-miss"), ctx: { expected: `${round.part} + ${round.missing} = ${round.total}`, next: at + 1 >= total ? t("See results") : t("Next") } };
       render();
-      timer = setTimeout(advance, 1000);
       return;
     }
     wrong += 1;
     missed.set(round.item.question, round.item);
     onFact?.(round.item, false);
     tried.set(n, true);
+    fb = { phase: phaseFor("balance", "miss"), ctx: { submitted: String(n) } };
     note = round.part + n < round.total ? t("The left side is still heavier. Try a bigger number.") : t("The right side is heavier now. Try a smaller number.");
     render(true);
   };
   render();
   return () => {
-    clearTimeout(timer);
     host.onclick = null;
   };
 }

@@ -56,4 +56,7 @@ export function announce(text) {
 }
 
 // Announce the visible hint line of a game after it re-renders.
-export const syncLive = (host) => announce(host.querySelector(".gm-note")?.textContent);
+export const syncLive = (host) => {
+  const heading = host.querySelector("[data-fb-host] [data-fb-title]")?.textContent;
+  announce([heading, host.querySelector(".gm-note")?.textContent].filter(Boolean).join(". "));
+}; // fl4:screens: a settled result announces its heading before the note

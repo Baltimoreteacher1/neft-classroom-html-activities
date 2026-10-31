@@ -5,6 +5,7 @@ import { languagePackHtml } from "./language-pack.js";
 import { familySessionShare } from "./family/family-planner.js";
 import { mountTeacherEvidenceDashboard } from "./learning-evidence.js";
 import { qrSvg } from "../../engine/core/qr-mini.js";
+import { cleanExt, decodeExt, decodeShortCode, encodeExt, isShortCode } from "./assignment-codec.js"; // fl4:teacher
 
 export const escapeHtml = (value) => String(value).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#039;");
 const PROFILE_KEY = "ewl-fluency-profiles-v1";
@@ -82,10 +83,15 @@ export function validateAssignment(value) {
   if (!keys.length && !game) return null;
   const challenge = ["adaptive", "building", "grade-stretch"].includes(value.challenge) ? value.challenge : "adaptive";
   const lang = value.lang === "es" ? "es" : value.lang === "en" ? "en" : undefined;
-  return { version: 1, grade: value.grade, keys, ...(game ? { game } : {}), ...(stop ? { stop } : {}), count: [5, 10, 15, 20].includes(value.count) ? value.count : 10, mode: value.mode === "guided" ? "guided" : "adaptive", ...(lang ? { lang } : {}), challenge, label: String(value.label || "Class practice").slice(0, 80) };
+  return { version: 1, grade: value.grade, keys, ...(game ? { game } : {}), ...(stop ? { stop } : {}), count: [5, 10, 15, 20].includes(value.count) ? value.count : 10, mode: value.mode === "guided" ? "guided" : "adaptive", ...(lang ? { lang } : {}), challenge, ...cleanExt(value), label: String(value.label || "Class practice").slice(0, 80) }; // fl4:teacher: tiers, target, due
 }
-export function assignmentDifficultyLevel(challenge, level) {
+// The difficulty tiers (1-5) an assignment allows. Tier range wins; otherwise the challenge setting implies one.
+export const assignmentTierRange = (assignment) => assignment?.tiers || { building: [1, 3], "grade-stretch": [3, 5] }[assignment?.challenge] || [1, 5]; // fl4:teacher
+// Tier 1-2 (concrete, foundational) map to the stored level 0, tier 3 (grade level) to 1, tiers 4-5 to 2.
+const tierLevel = (tier) => (tier <= 2 ? 0 : tier === 3 ? 1 : 2); // fl4:teacher
+export function assignmentDifficultyLevel(challenge, level, tiers = null) {
   const value = Math.max(0, Math.min(2, Math.floor(Number(level) || 0)));
+  if (Array.isArray(tiers)) return Math.max(tierLevel(tiers[0]), Math.min(tierLevel(tiers[1]), value)); // fl4:teacher: an explicit tier range wins
   if (challenge === "building") return Math.min(1, value);
   if (challenge === "grade-stretch") return Math.max(1, value);
   return value;
@@ -95,18 +101,20 @@ export function encodeAssignment(value) {
   const modes = { adaptive: "a", guided: "g" };
   const challenges = { adaptive: "a", building: "b", "grade-stretch": "s" };
   const label = assignment.label === "Class practice" ? "" : encodeURIComponent(assignment.label);
-  return ["ewl1", assignment.grade, assignment.count, modes[assignment.mode], challenges[assignment.challenge], assignment.lang || "", assignment.keys.join(","), label].join("|");
+  const ext = encodeExt(assignment); // fl4:teacher: an optional ninth field; older readers ignore it
+  return ["ewl1", assignment.grade, assignment.count, modes[assignment.mode], challenges[assignment.challenge], assignment.lang || "", assignment.keys.join(","), label, ...(ext ? [ext] : [])].join("|");
 }
 export function decodeAssignment(token) {
   if (typeof token !== "string" || token.length > 5000) return null;
+  if (isShortCode(token)) return validateAssignment(decodeShortCode(token)); // fl4:teacher
   if (token.startsWith("ewl1|")) {
     try {
-      const [version, rawGrade, rawCount, rawMode, rawChallenge, lang, rawKeys, rawLabel] = token.split("|");
+      const [version, rawGrade, rawCount, rawMode, rawChallenge, lang, rawKeys, rawLabel, rawExt] = token.split("|");
       if (version !== "ewl1") return null;
       const mode = rawMode === "g" ? "guided" : rawMode === "a" ? "adaptive" : "";
       const challenge = { a: "adaptive", b: "building", s: "grade-stretch" }[rawChallenge] || "";
       return validateAssignment({ version: 1, grade: Number(rawGrade), count: Number(rawCount), mode, challenge,
-        lang: lang || undefined, keys: rawKeys ? rawKeys.split(",") : [], label: rawLabel ? decodeURIComponent(rawLabel) : "Class practice" });
+        lang: lang || undefined, keys: rawKeys ? rawKeys.split(",") : [], ...decodeExt(rawExt), label: rawLabel ? decodeURIComponent(rawLabel) : "Class practice" });
     } catch { return null; }
   }
   try { const decoded = atob(token.replaceAll("-", "+").replaceAll("_", "/")); return validateAssignment(JSON.parse(new TextDecoder().decode(Uint8Array.from(decoded, (char) => char.charCodeAt(0))))); }

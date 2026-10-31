@@ -40,6 +40,39 @@ export function renderModel(model, { counters, counterPositions, partitions = 1,
     }).join("");
     return caption + svg(`<path d="M25,150 H515"/>${marks}${paths}`, `${model.caption}. Positions ${points.join(', ')}.`);
   }
+  if (model.type === "number-line") {
+    const valueOf = (value) =>
+      typeof value === "number" ? value : Number(value?.n) / Number(value?.d);
+    const min = valueOf(model.min);
+    const max = valueOf(model.max);
+    const stepSize = valueOf(model.step);
+    if (![min, max, stepSize].every(Number.isFinite) || max <= min || stepSize <= 0) return caption;
+    const x = (n) => 45 + ((n - min) / (max - min)) * 450;
+    const tickCount = Math.min(60, Math.floor((max - min) / stepSize + 1e-8));
+    const ticks = Array.from({ length: tickCount + 1 }, (_, i) => min + i * stepSize);
+    const pointValues = new Set((model.points || []).map((point) => valueOf(point.value)));
+    const marks = ticks
+      .map((n) => `<path d="M${x(n)},145 v15"/>${pointValues.has(n) ? "" : text(x(n), 190, Number(n.toFixed(4)).toString())}`)
+      .join("");
+    const points = (model.points || [])
+      .map((point) => {
+        const value = valueOf(point.value);
+        if (!Number.isFinite(value) || value < min || value > max) return "";
+        const label = point.label?.toLowerCase() === "start" ? "Start" : point.label ? `Point ${point.label}` : "";
+        return `<circle class="plot-point" cx="${x(value)}" cy="142" r="8"/>${label ? text(x(value), 120, label, 'class="point-label"') : ""}`;
+      })
+      .join("");
+    return caption + svg(`<path d="M25,150 H515"/>${marks}${points}`, "Number line with marked points and labeled intervals.");
+  }
+  if (model.type === "blankNumberline") {
+    const { min, max, value } = model;
+    if (![min, max, value].every(Number.isFinite) || max <= min || value < min || value > max) return caption;
+    const x = (n) => 45 + ((n - min) / (max - min)) * 450;
+    const ticks = Array.from({ length: max - min + 1 }, (_, index) => min + index);
+    const marks = ticks.map((n) => `<path d="M${x(n)},145 v18"/>${n === value ? "" : text(x(n), 190, n.toLocaleString("en-US"))}`).join("");
+    const mark = `<circle class="plot-point" cx="${x(value)}" cy="142" r="9"/>`;
+    return caption + svg(`<path d="M25,150 H515"/>${marks}${mark}`, "A number line with labeled ticks and one marked point. Read the point's value.");
+  }
   if (model.type === "place") return `${caption}<div class="place-model">${model.numbers.map((n) => `<div class="place-row" aria-label="${esc(n)}">${[...n].map((digit) => `<span class="${digit === '.' ? 'decimal-point' : ''}">${digit}</span>`).join("")}</div>`).join("")}</div>`;
   if (model.type === "unitMeasure") {
     const ticks = Array.from({ length: model.end + 1 }, (_, i) => `<span class="ruler-tick ${i >= model.start && i <= model.end ? "measured" : ""}"><i aria-hidden="true"></i><small>${i}</small></span>`).join("");
@@ -115,6 +148,9 @@ export function renderModel(model, { counters, counterPositions, partitions = 1,
 // The model travels with the problem (built where the numbers are chosen), so the picture always
 // shows exactly the quantities in the question. Problems without an exact model show none.
 export function renderInlineProblemModel(skill, item) {
+  if (item?.model?.graphic === "number-line") {
+    return renderModel({ type: "number-line", ...item.model.config, caption: "Number line" });
+  }
   if (item?.model) return renderModel(item.model, { counters: item.model.shown });
   const point = item?.question?.match(/\((-?\d+),\s*(-?\d+)\)/);
   if (point && ["coordinate", "transform", "numberPlane"].includes(skill?.generator)) {

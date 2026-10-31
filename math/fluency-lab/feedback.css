@@ -1,0 +1,126 @@
+/* Answer feedback panel: one look for correct, not-quite and revised, in every practice mode. Never colour alone:
+   each state has its own icon, heading and border style. */
+.feedback {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 1rem;
+  align-items: start;
+  padding: 1.25rem 1.5rem;
+  border: 2px solid var(--line-strong);
+  border-inline-start-width: 8px;
+  border-radius: 12px;
+}
+.fb-icon {
+  inline-size: 3.5rem;
+  block-size: 3.5rem;
+  color: var(--line-strong);
+}
+.fb-icon:empty {
+  display: none;
+}
+.feedback:has(.fb-icon:empty) {
+  grid-template-columns: minmax(0, 1fr);
+}
+.fb-icon svg {
+  display: block;
+  inline-size: 100%;
+  block-size: 100%;
+}
+#feedback-title {
+  display: block;
+  font-size: 1.5rem;
+  line-height: 1.2;
+}
+.fb-badge {
+  margin: 0.35rem 0 0;
+  font-weight: 700;
+}
+.fb-answers {
+  display: grid;
+  gap: 0.35rem;
+  margin: 0.75rem 0 0;
+}
+.fb-answer-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+.fb-answer-row dt {
+  font-weight: 700;
+}
+.fb-answer-row dd {
+  margin: 0;
+  padding: 0.15rem 0.6rem;
+  border-radius: 8px;
+  background: rgb(255 255 255 / 0.75);
+  font-size: 1.25rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+.feedback[data-tone="success"] {
+  border-style: solid;
+  --line-strong: #1b7a4b;
+}
+.feedback[data-tone="support"] {
+  border-style: dashed;
+  border-color: #b45309;
+  background: #fff4e0;
+  color: #5c2f05;
+  --line-strong: #b45309;
+}
+.feedback[data-tone="success"] .fb-answer-row:last-child dd {
+  outline: 3px solid #1b7a4b;
+}
+.fb-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  margin-top: 0.75rem;
+}
+.fb-actions button {
+  min-block-size: 44px;
+}
+#next-problem:not([hidden]) {
+  min-block-size: 52px;
+  padding-inline: 1.75rem;
+  font-size: 1.1rem;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .feedback[data-phase="correct"],
+  .feedback[data-phase="assisted"] {
+    animation: fb-pop 280ms ease-out;
+  }
+  .feedback[data-phase="correct"] .fb-icon,
+  .feedback[data-phase="assisted"] .fb-icon {
+    animation: fb-check 360ms ease-out;
+  }
+}
+@keyframes fb-pop {
+  from {
+    transform: scale(0.97);
+    opacity: 0.4;
+  }
+}
+@keyframes fb-check {
+  from {
+    transform: scale(0.6);
+  }
+}
+@media (max-width: 520px) {
+  .feedback {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .fb-icon {
+    inline-size: 2.75rem;
+    block-size: 2.75rem;
+  }
+}
+@media (forced-colors: active) {
+  .feedback {
+    border-color: CanvasText;
+  }
+  .fb-icon {
+    color: CanvasText;
+  }
+}

@@ -4,6 +4,7 @@ import { kidSteps } from "./kid-steps.js";
 import { leakCap } from "./step-leak.js";
 import { workedSteps } from "./step-builders.js";
 import { factorText, keptPrimes, multiplyText, parsePrimes, powerText, primeList } from "./factor-tree.js";
+import { checkEquivalent, looseNumberMatch } from "./problem-types/equivalence.js"; // fl4:generators
 
 const whole = new Intl.NumberFormat("en-US", { maximumFractionDigits: 6 });
 
@@ -1600,19 +1601,20 @@ const parseFraction = (value) => {
 export function validateAnswer(value, item) {
   const submitted = compact(value).replaceAll("−", "-");
   if (!submitted) return false;
+  if (item.equiv) return checkEquivalent(value, item).ok; // fl4:generators: 4.0 items carry their own equivalence rules
   if (item.kind === "primes") {
     const got = parsePrimes(value);
     return Boolean(got) && item.answers.some((answer) => parsePrimes(answer)?.join(",") === got.join(","));
   }
   if (item.kind === "fraction") {
     const candidate = parseFraction(value);
-    return item.answers.some((answer) => Math.abs(candidate - parseFraction(answer)) < 1e-8);
+    return item.answers.some((answer) => Math.abs(candidate - parseFraction(answer)) < 1e-8) || looseNumberMatch(value, item); // fl4:generators
   }
   if (item.kind === "number") {
     const candidate = Number(submitted.replace(/,/g, ""));
-    return Number.isFinite(candidate) && item.answers.some((answer) => Math.abs(candidate - Number(compact(answer))) < 1e-8);
+    return (Number.isFinite(candidate) && item.answers.some((answer) => Math.abs(candidate - Number(compact(answer))) < 1e-8)) || looseNumberMatch(value, item); // fl4:generators
   }
-  return item.answers.some((answer) => compact(answer).replace(/\s+/g, "") === submitted);
+  return item.answers.some((answer) => compact(answer).replaceAll("−", "-") === submitted); // fl4:generators: a minus sign in a key matches a typed or tapped one
 }
 
 export function seededRandom(seed) {

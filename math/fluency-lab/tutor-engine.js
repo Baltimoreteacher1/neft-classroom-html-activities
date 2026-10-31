@@ -1,3 +1,7 @@
+import { sanitizeAbility, updateAbility } from "./ability.js";
+import { isTier, levelToTier, tierToLevel } from "./difficulty-levels.js";
+import { sanitizeRescues } from "./rescue-history.js";
+import { REVIEW_LADDER, ladderIndex, masteryScore, masteryState, nextInterval } from "./mastery-model.js";
 import { classifyMistake, isKnownMistakeCategory, likelyMistake } from "./mistake-notes.js";
 import { ALL_SKILLS, GENERATOR_PARTS, baseGenerator, generateProblem, getGrade, opsOf, resolveOp, seededRandom } from "./problem-bank.js";
 
@@ -9,7 +13,7 @@ export const localDay = (time = Date.now()) => {
   const date = new Date(time);
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
 };
-export const emptyTutor = () => ({ version: 2, records: {}, mistakes: [], diagnostics: {}, sessions: [] });
+export const emptyTutor = () => ({ version: 2, records: {}, mistakes: [], diagnostics: {}, sessions: [], rescues: [] });
 
 const RECENT_WINDOW = 20;
 const MIN_CALM_RESPONSE_MS = 600;
@@ -152,7 +156,10 @@ export function evidence(tutor, skill, now = Date.now()) {
   if (record.lessonCompleted && !recent.length) label = "Lesson explored";
   if (recent.length) label = independent.length >= 4 && ratio >= 0.75 ? "Building confidence" : recent.some((entry) => !entry.independent) ? "Learning with support" : "Getting started";
   if (secure) label = due ? "Ready for a refresh" : "Remembered independently";
-  return { ...record, recent, independent: independent.length, successes, ratio, secure, due, label, score: independent.length ? Math.round(ratio * 100) : null };
+  // reviewStep is the rung (1-5) of the 1/3/7/14/30-day ladder the skill is waiting on; 0 means not on it yet.
+  const reviewDueAt = Number.isFinite(record.dueAt) ? record.dueAt : null;
+  const reviewStep = record.interval ? ladderIndex(record.interval) + 1 : 0; // fl4:adaptive
+  return { ...record, recent, independent: independent.length, successes, ratio, secure, due, label, reviewDueAt, reviewStep, score: masteryScore(record, now), state: masteryState(record, now) };
 }
 
 export function difficulty(tutor, skill) {
@@ -342,27 +349,31 @@ export function recordAnswer(tutor, skill, result, now = Date.now()) {
   const key = skillKey(skill);
   const record = tutor.records[key] || { recent: [], independentTotal: 0, supportedTotal: 0, interval: 0 };
   const independent = Boolean(result.independent);
-  const level = [0, 1, 2].includes(result.level) ? result.level : 1;
+  const tier = isTier(result.tier) ? result.tier : null; // fl4:adaptive
+  const level = [0, 1, 2].includes(result.level) ? result.level : tier ? tierToLevel(tier) : 1;
   const strategies = normalizeStrategies(result.strategyTags ?? result.strategy);
   const responseMs = Number(result.responseMs ?? result.responseTimeMs);
   const paceEligible = independent && result.calm !== false && Number.isFinite(responseMs) && responseMs >= MIN_CALM_RESPONSE_MS && responseMs <= MAX_CALM_RESPONSE_MS;
   record.strategyTags = [...new Set([...(record.strategyTags || []).filter((tag) => STRATEGIES.has(tag)), ...strategies])];
   record.recent = [...(record.recent || []), {
     correct: Boolean(result.correct), independent, level, at: now,
+    ...(tier ? { tier } : {}),
     ...(strategies.length ? { strategies } : {}),
     ...(Number.isFinite(responseMs) ? { responseMs, paceEligible } : {}),
+    ...(result.sig ? { sig: String(result.sig).slice(0, 24) } : {}),
   }].slice(-RECENT_WINDOW);
   record.metrics = summarizeMetrics(record);
+  record.ability = updateAbility(record.ability, { correct: Boolean(result.correct), independent, tier: tier ?? levelToTier(level) }, now); // fl4:adaptive
   if (independent) record.independentTotal = (record.independentTotal || 0) + 1;
   else record.supportedTotal = (record.supportedTotal || 0) + 1;
   const previousDay = record.lastSuccessfulDay;
   if (independent && result.correct && result.level !== 0) {
-    if (previousDay !== localDay(now)) record.interval = previousDay ? Math.min(14, Math.max(1, record.interval) * 2) : 1;
+    if (previousDay !== localDay(now)) record.interval = previousDay ? nextInterval(record.interval, { correct: true, independent: true, advance: true }) : REVIEW_LADDER[0];
     record.lastSuccessfulDay = localDay(now);
     record.dueAt = now + Math.max(1, record.interval) * DAY;
   } else {
     // An independent miss means the skill needs a short recheck; a hinted or easier-level success only halves the wait.
-    record.interval = independent || !result.correct ? 1 : Math.max(1, Math.floor((record.interval || 1) / 2));
+    record.interval = nextInterval(record.interval || 1, { correct: Boolean(result.correct) && !independent, independent: false });
     record.dueAt = now + record.interval * DAY;
   }
   record.lastAt = now;
@@ -453,7 +464,7 @@ export function recommendations(tutor, grade, now = Date.now()) {
     // A checkup miss is a starting point, not a verdict: it stops counting once independent practice shows the skill is working.
     const practiced = status.independent >= 3 && status.ratio >= 0.75;
     const diagnosticMiss = diagnostic[skillKey(skill)] === false && !practiced;
-    const priority = misses * 5 + (diagnosticMiss ? 10 : 0) + (status.due ? 8 : 0) + (status.recent.length && status.ratio < 0.75 ? 6 : 0) + (!status.recent.length ? 2 : 0);
+    const priority = misses * 5 + (diagnosticMiss ? 10 : 0) + (status.due ? 8 + Math.min(4, Math.floor((now - status.reviewDueAt) / DAY)) : 0) + (status.recent.length && status.ratio < 0.75 ? 6 : 0) + (!status.recent.length ? 2 : 0);
     const reason = misses ? "Revisit a tricky idea" : status.due ? "Time for a memory refresh" : diagnosticMiss ? "A useful next step from your checkup" : !status.recent.length ? "Explore something new" : status.secure ? "Keep this skill fresh" : "Build independent confidence";
     return { skill, status, reason, priority, index };
   }).sort((a, b) => b.priority - a.priority || a.index - b.index);
@@ -466,12 +477,15 @@ export function dailyPlan(tutor, grade, now = Date.now()) {
   const newSkill = ranked.find((entry) => !entry.status.recent.length && entry !== focus) || ranked[1];
   const daySeed = Number(localDay(now).replaceAll("-", "")) + grade * 997;
   const rng = seededRandom(daySeed);
+  // Reviews that the 1/3/7/14/30-day ladder says are due come first, most overdue first. // fl4:adaptive
+  const due = review.filter((entry) => entry.status.due).sort((a, b) => a.status.reviewDueAt - b.status.reviewDueAt);
   const reviewPool = review.length ? review : ranked.slice(1);
-  const refresh = Array.from({ length: 3 }, (_, i) => reviewPool[(Math.floor(rng() * reviewPool.length) + i) % reviewPool.length]);
+  const refresh = Array.from({ length: 3 }, (_, i) => due[i] || reviewPool[(Math.floor(rng() * reviewPool.length) + i) % reviewPool.length]);
   return [focus, refresh[0], focus, newSkill, refresh[1], focus, newSkill, refresh[2], focus, ranked[1]].map((entry, index) => ({
     key: skillKey(entry.skill),
     purpose: [0, 2, 5, 8].includes(index) ? "Build confidence" : [3, 6].includes(index) ? "Connect a new idea" : index === 9 ? "Finish independently" : "Remember it again",
     reason: entry.reason,
+    ...(entry.status.due ? { reviewDueAt: entry.status.reviewDueAt, reviewStep: entry.status.reviewStep } : {}),
   }));
 }
 
@@ -506,12 +520,15 @@ export function sanitizeTutor(value) {
     if (!record || typeof record !== "object") continue;
     const recent = (Array.isArray(record.recent) ? record.recent : []).filter((entry) => entry && Number.isFinite(entry.at) && typeof entry.correct === "boolean" && typeof entry.independent === "boolean").slice(-RECENT_WINDOW).map((entry) => {
       const level = [0, 1, 2].includes(entry.level) ? entry.level : 1;
+      const tier = isTier(entry.tier) ? entry.tier : null; // fl4:adaptive
       const responseMs = Number(entry.responseMs);
       const validResponse = Number.isFinite(responseMs) && responseMs >= MIN_CALM_RESPONSE_MS && responseMs <= MAX_CALM_RESPONSE_MS;
       const strategies = normalizeStrategies(entry.strategies);
       return {
         correct: entry.correct, independent: entry.independent, at: entry.at, level,
+        ...(tier ? { tier } : {}),
         ...(strategies.length ? { strategies } : {}),
+        ...(typeof entry.sig === "string" && entry.sig ? { sig: entry.sig.slice(0, 24) } : {}),
         ...(validResponse ? { responseMs, paceEligible: Boolean(entry.paceEligible && entry.independent && level >= 1) } : {}),
       };
     });
@@ -519,10 +536,11 @@ export function sanitizeTutor(value) {
     clean.records[key] = {
       recent,
       independentTotal: Math.max(0, Number(record.independentTotal) || 0), supportedTotal: Math.max(0, Number(record.supportedTotal) || 0),
-      dueAt: Number.isFinite(record.dueAt) ? record.dueAt : null, interval: Math.min(14, Math.max(0, Number(record.interval) || 0)),
+      dueAt: Number.isFinite(record.dueAt) ? record.dueAt : null, interval: Math.min(REVIEW_LADDER.at(-1), Math.max(0, Number(record.interval) || 0)),
       lastAt: Number.isFinite(record.lastAt) ? record.lastAt : null, lastSuccessfulDay: String(record.lastSuccessfulDay || "").slice(0, 10), lessonCompleted: Boolean(record.lessonCompleted),
       strategyTags: [...new Set([...strategyTags, ...recent.flatMap((entry) => entry.strategies || [])])],
       metrics: summarizeMetrics({ recent, strategyTags }),
+      ...(sanitizeAbility(record.ability) ? { ability: sanitizeAbility(record.ability) } : {}), // fl4:adaptive
     };
   }
   clean.mistakes = (Array.isArray(value.mistakes) ? value.mistakes : []).filter((entry) => entry && findSkill(entry.key) && typeof entry.question === "string").slice(0, 60).map((entry, index) => ({
@@ -549,6 +567,7 @@ export function sanitizeTutor(value) {
       foundations: Object.fromEntries(Object.entries(diagnostic.foundations || {}).filter(([key, result]) => findSkill(key)?.grade <= grade && typeof result === "boolean")),
     };
   }
+  clean.rescues = sanitizeRescues(value.rescues); // fl4:adaptive
   clean.sessions = (Array.isArray(value.sessions) ? value.sessions : []).filter((session) => session && Number.isFinite(session.at) && Number.isFinite(session.answered)).slice(-60).map((session) => ({ at: session.at, answered: Math.max(0, session.answered), correct: Math.max(0, Number(session.correct) || 0), grade: Math.min(8, Math.max(0, Number(session.grade) || 0)), mode: String(session.mode || "practice").slice(0, 30) }));
   return clean;
 }

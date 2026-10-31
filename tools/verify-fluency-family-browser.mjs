@@ -182,7 +182,7 @@ try {
   assert.match(await directLinkPage.locator("[data-fm2-skill]").innerText(), /binomios/i);
   await directLinkContext.close();
 
-  await page.locator("#family-grade").selectOption("4");
+  await page.locator('[data-testid="grade-4"]').check();
   // The home still picks Tonight's Math from the learner's real Fluency Lab evidence (seeded above: round-large is due).
   assert.match(await page.locator("#tonight-link").getAttribute("href"), /skill=round-large/);
   const firstRow = page.locator('[data-testid="skill-row"]').first();
@@ -470,7 +470,7 @@ try {
   const noSavePage = await noSaveContext.newPage();
   await noSavePage.goto(`${base}/math/fluency-lab/family/`, { waitUntil: "networkidle" });
   // The new home saves the grade in the learner's Family Math record only when the grade is changed.
-  await noSavePage.locator("#family-grade").selectOption("3");
+  await noSavePage.locator('[data-testid="grade-3"]').check();
   assert.equal(
     await noSavePage.locator("#family-storage-warning").isVisible(),
     true,
@@ -728,7 +728,10 @@ try {
         "right",
         `${gameId} accepts its mathematically valid response`,
       );
-      const advance = gamePage.locator(".sig-actions button").last();
+      const nextAction = gamePage.locator("[data-feedback-action='next']");
+      const advance = (await nextAction.count())
+        ? nextAction
+        : gamePage.locator(".sig-actions button").last();
       await advance.focus();
       await advance.press("Enter");
     }

@@ -8,8 +8,16 @@ import {
   seededRandom,
   validateAnswer,
 } from "./problem-bank.js";
-import { adaptiveProblem, dailyPlan, difficulty, emptyTutor, evidence, feedbackFor, findSkill, localDay, missionPlan, prerequisites, prerequisiteGraph, recommendations, recordAnswer, rememberMistake, sanitizeTutor, skillForItem, skillKey as tutorSkillKey } from "./tutor-engine.js";
+import { FEEDBACK_PHASES, feedbackView, nextPhase } from "./feedback-machine.js";
+import { paintActions, paintFeedback } from "./feedback-panel.js";
+import { itemSignature } from "./mastery-model.js";
+import { adaptiveProblem, dailyPlan, emptyTutor, evidence, feedbackFor, findSkill, localDay, missionPlan, prerequisites, prerequisiteGraph, recommendations, recordAnswer, rememberMistake, sanitizeTutor, skillForItem, skillKey as tutorSkillKey } from "./tutor-engine.js";
 import { checkupPlan, checkupSummary, recordCheckupAnswer } from "./placement.js";
+import { adaptiveItem } from "./adaptive-item.js"; // fl4:adaptive
+import { alignTier, nextTier, tierToLevel } from "./difficulty-levels.js"; // fl4:adaptive
+import { checkupAdvice } from "./diagnostic-engine.js"; // fl4:adaptive
+import { consumeScaffold, planRescue, recordRescue, returnMessage, rescueQueue, rescueStep, startRescue } from "./rescue.js"; // fl4:adaptive
+import { openRescueDialog, rescueOfferElement, returnBanner } from "./rescue-ui.js"; // fl4:adaptive
 import { copiesTable, factorTreeSvg, keptPrimes, powerGroups, primeList, treeCaption } from "./factor-tree.js";
 import { mountVisualLesson, renderModel, renderInlineProblemModel } from "./visual-lab.js";
 import { skillIdForWorld } from "./puzzle-worlds.js";
@@ -35,7 +43,11 @@ import { mountWriting } from "./writing-studio.js";
 import { fractionPicture } from "./fraction-picture.js";
 import { initStepModelLink } from "./step-model-link.js";
 import { renderPrerequisiteMap } from "./prerequisite-map.js";
+import { mountDashboard } from "./dashboard-4.js"; // fl4:dashboard
+import { skillSignals } from "./recommendation-engine.js"; // fl4:dashboard
+import { libraryCard } from "./skill-card.js"; // fl4:dashboard
 import { factsReport, mountSnapshot } from "./class-snapshot.js";
+import { launchMiniLesson, miniLessonRequested } from "./lesson-4/launch.js"; // fl4:lessons
 import { whyFor } from "./step-whys.js";
 import { storyFor } from "./story-problems.js";
 import { loadRewards, noteToday, saveRewards } from "./rewards.js";
@@ -45,6 +57,8 @@ import { familySummaryDocument, familySummaryHtml } from "./family-page.js";
 import { mountPaperGames } from "./paper-games.js";
 import { stopOptions, stopsFor } from "./game-pool.js";
 import { cleanPlay, exportPlay, importPlay } from "./play-backup.js";
+import { recordGrowth } from "./growth-log.js"; // fl4:teacher
+import { mountTeacher4 } from "./teacher-4.js"; // fl4:teacher
 import { decideInstruction, independentRecoveryCount, readInstructionalEvidence, recordInstructionalEvidence } from "../../engine/core/instructional-intelligence.js";
 import { VOCAB_BILINGUAL_DB, highlightVocab, initVocabSystem, openVocabModal } from "./vocab.js";
 import { canSpeak, speak, spoken, spokenEs } from "./speech.js";
@@ -130,6 +144,10 @@ const els = {
   feedback: document.querySelector("#feedback"),
   languageSlot: document.querySelector("#language-slot"),
   feedbackTitle: document.querySelector("#feedback-title"),
+  feedbackIcon: document.querySelector("#feedback-icon"),
+  feedbackBadge: document.querySelector("#feedback-badge"),
+  feedbackAnswers: document.querySelector("#feedback-answers"),
+  feedbackActions: document.querySelector("#feedback-actions"),
   feedbackCopy: document.querySelector("#feedback-copy"),
   scratchpad: document.querySelector("#scratchpad"),
   summary: document.querySelector("#session-summary"),
@@ -158,6 +176,7 @@ const els = {
   write: document.querySelector("#write-view"),
   teacher: document.querySelector("#teacher-view"),
   teacherStudio: document.querySelector("#teacher-studio"),
+  teacher4: document.querySelector("#teacher-4"), // fl4:teacher
   insight: document.querySelector("#session-insight"),
   topic: document.querySelector("#problem-topic"),
   skip: document.querySelector("#skip-checkup"),
@@ -237,6 +256,7 @@ function loadJson(key, fallback) {
 function saveProgress() {
   writeLocal(profileKey(STORAGE_KEY, activeProfile), state.progress);
   writeLocal(profileKey(TUTOR_KEY, activeProfile), state.tutor);
+  recordGrowth(state.tutor); // fl4:teacher: one growth snapshot per skill per day
 }
 
 function saveSettings() {
@@ -326,12 +346,12 @@ function setPracticeSubview(subview) {
 
 function filterSkillsBySearch() {
   const query = (els.skillSearchInput?.value || "").trim().toLowerCase();
-  const cards = els.skillGrid?.querySelectorAll(".skill-card") || [];
+  const cards = els.skillGrid?.querySelectorAll(".skill-card, .fl4-skill") || []; // fl4:dashboard
   let matches = 0;
   cards.forEach((card) => {
     const title = card.querySelector("h3")?.textContent.toLowerCase() || "";
-    const strand = card.querySelector(".strand-label")?.textContent.toLowerCase() || "";
-    const rule = card.querySelector("p")?.textContent.toLowerCase() || "";
+    const strand = card.querySelector(".strand-label, .fl4-strand")?.textContent.toLowerCase() || ""; // fl4:dashboard
+    const rule = card.querySelector(".fl4-rule, p")?.textContent.toLowerCase() || ""; // fl4:dashboard
     const match = !query || title.includes(query) || strand.includes(query) || rule.includes(query);
     card.style.display = match ? "" : "none";
     if (match) matches++;
@@ -446,44 +466,16 @@ function displayRecommendationReason(reason) {
   return translated[reason] || reason;
 }
 
+// fl4:dashboard — the library card is built by skill-card.js (art, mastery ring, state word); the hooks the
+// library, search and tests rely on (.open-skill[data-skill], data-quick-skill, data-flashcard-skill, data-visual-skill) are kept.
 function renderSkillCard(skill, recommendation = null) {
-  const status = evidence(state.tutor, skill);
-  const level = status.secure ? 3 : status.independent >= 4 ? 2 : status.recent.length || status.lessonCompleted ? 1 : 0;
-  const label = ["New", "Practicing", "Getting strong", "I know it"][level];
-  const icon = STRAND_ICONS[skill.strand] || "✏️";
   const sample = generateProblem(skill, seededRandom(skillPreviewSeed(skill)));
   const foundations = prerequisites(skill).slice(0, 2);
   const nextSkills = ALL_SKILLS.filter((candidate) => candidate.grade <= skill.grade + 1 && prerequisites(candidate).some((foundation) => tutorSkillKey(foundation) === tutorSkillKey(skill))).slice(0, 2);
-  const quickIcon = '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M11.8 1.8 4.5 10h4.1l-.5 8.2 7.4-9h-4.2l.5-7.4Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>';
-  const cardsIcon = '<svg viewBox="0 0 20 20" aria-hidden="true"><rect x="6" y="3" width="10" height="13" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M4 6H3.5A1.5 1.5 0 0 0 2 7.5v9A1.5 1.5 0 0 0 3.5 18h8" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M9 7h4m-4 3h4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>';
-  const ideaIcon = '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M6.3 13.2a6 6 0 1 1 7.4 0c-.8.6-1.2 1.2-1.3 2H7.6c-.1-.8-.5-1.4-1.3-2Z" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M7.8 17h4.4m-3.7 1.5h3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>';
-  return `
-    <article class="skill-card" data-level="${level}">
-      <div class="skill-card-top">
-        <span class="strand-label"><span aria-hidden="true">${icon}</span> ${escapeHtml(skill.strand)}</span>
-        <span class="mastery-pill level-${level}">${label}</span>
-      </div>
-      <h3>${escapeHtml(t(skill.title))}</h3>
-      <p>${escapeHtml(t(skill.learn.rule))}</p>
-      ${recommendation ? `<p class="skill-recommendation"><strong>${t("Suggested for you")}</strong> · ${escapeHtml(displayRecommendationReason(recommendation.reason))}</p>` : ""}
-      <details class="skill-preview">
-        <summary>${t("Preview a sample question")}</summary>
-        <div class="skill-preview-content">
-          <p><strong>${skill.standardNote ? t("Extension reference") : t("Standard")}: ${escapeHtml(skill.standard)}</strong> · ${escapeHtml(skill.strand)}${skill.standardNote ? ` · ${escapeHtml(skill.standardNote)}` : ""}</p>
-          <p class="skill-preview-question">${escapeHtml(sample.question)}</p>
-          <details class="sample-answer"><summary>${t("Show sample answer")}</summary><p>${escapeHtml(sample.displayAnswer)}</p></details>
-          ${foundations.length || nextSkills.length ? `<div class="skill-connections">${foundations.length ? `<p><strong>${t("Builds on")}</strong> ${foundations.map((related) => escapeHtml(related.title)).join(" · ")}</p>` : ""}${nextSkills.length ? `<p><strong>${t("Can lead to")}</strong> ${nextSkills.map((related) => escapeHtml(related.title)).join(" · ")}</p>` : ""}</div>` : ""}
-        </div>
-      </details>
-      <div class="skill-card-actions">
-        <button class="open-skill primary-action" data-skill="${skill.id}">Practice &amp; Learn</button>
-        <div class="skill-action-row">
-          <button type="button" class="outline-action quick-drill-btn" data-quick-skill="${skill.id}">${quickIcon}<span>Quick 5</span></button>
-          <button type="button" class="outline-action flashcard-btn" data-flashcard-skill="${skill.id}">${cardsIcon}<span>Flashcards</span></button>
-          <button type="button" class="outline-action learn-btn" data-visual-skill="${skill.id}">${ideaIcon}<span>See idea</span></button>
-        </div>
-      </div>
-    </article>`;
+  return libraryCard(skill, skillSignals(state.tutor, skill), {
+    recommendation: recommendation ? displayRecommendationReason(recommendation.reason) : null,
+    preview: { question: sample.question, answer: sample.displayAnswer, foundations, next: nextSkills },
+  });
 }
 
 function renderOverallStats() {
@@ -641,10 +633,22 @@ function renderLearn() {
       <div class="learn-actions">
         <button class="primary-action" data-start-guided>Try 5 with help</button>
         <button class="primary-action" data-start-independent>Practice 10</button>
+        <button class="outline-action" data-mini-lesson>${t("Mini-lesson")}</button>
         <button class="outline-action" data-start-visual>Build it step by step</button>
         <button class="outline-action" data-write-about>${t("Write about it")}</button>
       </div>
     </div>`;
+}
+
+// fl4:lessons Learn It, Watch It, Try It, Explain It inside the Learn panel; its results are supported evidence only.
+function openMiniLesson() {
+  cleanupVisual?.();
+  cleanupVisual = launchMiniLesson({
+    host: els.learnPanel,
+    skill: state.skill,
+    restore: renderLearn,
+    onEvidence: ({ correct }) => { recordAnswer(state.tutor, state.skill, { correct, independent: false, level: 1 }); saveProgress(); renderMastery(); },
+  });
 }
 
 function setMode(mode) {
@@ -761,20 +765,25 @@ function nextProblem(restoredItem = null) {
     finishSession();
     return;
   }
+  document.querySelector("[data-rescue-return]")?.remove(); // fl4:adaptive
   const skill = problemSkill();
   state.session.problemSkills.push(skill);
   const adapting = state.session.mode !== "diagnostic";
   const queueEntry = state.session.queue?.[state.session.answered];
   const missionIndependent = state.session.mode === "mission" && ["Starting point", "Try independently", "Transfer"].includes(queueEntry?.purpose);
   const repairIndependent = state.session.mode === "repair" && queueEntry?.independent === true;
-  const requestedLevel = adapting ? Math.max(missionIndependent || repairIndependent ? 1 : 0, difficulty(state.tutor, skill)) : 1;
-  const level = state.session.mode === "assignment" ? assignmentDifficultyLevel(state.assignment?.challenge, requestedLevel) : requestedLevel;
+  // fl4:adaptive five-tier difficulty: independent evidence picks the tier, a queue entry may pin one, and the tier maps onto the 0-2 generator levels.
+  let tier = adapting ? (queueEntry?.tier ?? nextTier(state.tutor.records[tutorSkillKey(skill)])) : 3;
+  if (missionIndependent || repairIndependent) tier = Math.max(tier, 3);
+  const requestedLevel = adapting ? tierToLevel(tier) : 1;
+  const level = state.session.mode === "assignment" ? assignmentDifficultyLevel(state.assignment?.challenge, requestedLevel, state.assignment?.tiers) : requestedLevel;
+  tier = alignTier(tier, level);
   if (restoredItem) state.item = restoredItem;
   else if (queueEntry?.generated) state.item = { ...queueEntry.generated };
   else if (queueEntry?.original) state.item = { ...queueEntry.original };
   else {
     for (let attempt = 0; attempt < 20; attempt++) {
-      state.item = adaptiveProblem(skill, state.session.rng, level);
+      state.item = adaptiveItem(skill, state.session.rng, tier); // fl4:adaptive
       // About one problem in four is a story version of the same numbers, never in the checkup.
       if (state.session.storyMode || queueEntry?.transfer) state.item = storyFor(state.item, state.session.rng) || state.item;
       else if (state.session.mode !== "diagnostic" && level >= 1 && state.session.rng() < 0.25) state.item = storyFor(state.item, state.session.rng) || state.item;
@@ -786,6 +795,9 @@ function nextProblem(restoredItem = null) {
   state.itemAttempts = 0;
   state.itemDone = false;
   state.firstAnswerCorrect = null;
+  state.fbPhase = "idle";
+  state.lastSubmitted = "";
+  if (els.feedbackActions) els.feedbackActions.hidden = true;
   if (els.answerResultStatus) {
     els.answerResultStatus.hidden = true;
     els.answerResultStatus.textContent = "";
@@ -796,7 +808,7 @@ function nextProblem(restoredItem = null) {
   state.hintBeforeFirst = Boolean(queueEntry?.original);
   if (els.languageSlot) els.languageSlot.innerHTML = "";
   const missionSupport = state.session.mode === "mission" && queueEntry?.purpose === "Build with support";
-  state.initialSupport = state.session.mode === "guided" || missionSupport || Boolean(queueEntry?.original) || Boolean(queueEntry?.forceGuided) || (adapting && level === 0 && !state.forceIndependentFirst && !missionIndependent && !repairIndependent) || (state.session.mode === "assignment" && state.assignment?.mode === "guided");
+  state.initialSupport = state.session.mode === "guided" || missionSupport || Boolean(queueEntry?.original) || Boolean(queueEntry?.forceGuided) || (adapting && level === 0 && tier <= 1 && !state.forceIndependentFirst && !missionIndependent && !repairIndependent) || (!restoredItem && consumeScaffold(state.session, tutorSkillKey(skill))) || (state.session.mode === "assignment" && state.assignment?.mode === "guided");
   state.forceIndependentFirst = false;
   state.guidedStepsShown = state.session.mode === "guided" ? 1 : 0;
   els.feedback.hidden = true;
@@ -6719,13 +6731,12 @@ function renderStrategyTagPicker() {
   const fieldset = document.createElement("fieldset");
   fieldset.id = "strategy-tag-picker";
   fieldset.className = "strategy-tag-picker";
-  fieldset.style.cssText = "display:flex;flex-wrap:wrap;gap:.35rem .8rem;margin:.65rem 0;padding:.55rem .7rem;border:1px solid #cbd5e1;border-radius:9px";
+  // fl4:screens: layout lives in ds4-screens.css (.strategy-tag-picker), not inline.
   const legend = document.createElement("legend");
   legend.textContent = t("Strategies I used");
   fieldset.append(legend);
   for (const [tag, label] of [["visual", t("I used a visual")], ["decomposition", t("I broke numbers apart")], ["fact", t("I used a fact I know")]]) {
     const wrapper = document.createElement("label");
-    wrapper.style.cssText = "display:inline-flex;align-items:center;gap:.35rem;cursor:pointer";
     const input = document.createElement("input");
     input.type = "checkbox";
     input.name = "strategyTag";
@@ -6741,7 +6752,8 @@ function renderStrategyTagPicker() {
 
 function submitAnswer(value) {
   if (!state.item || !state.session || state.session.finished) return;
-  if (!String(value).trim()) { showFeedback("Enter an answer", "Type an answer before checking, or open a strategy hint.", "try"); return; }
+  if (!String(value).trim()) { showFeedback("Enter an answer", t("Type an answer before checking, or open a strategy hint."), "try", "try", "empty"); return; }
+  state.lastSubmitted = String(value).trim();
 
   if (state.isFixing) {
     const isFixed = validateAnswer(value, state.item);
@@ -6758,10 +6770,12 @@ function submitAnswer(value) {
         state.session.revised = (state.session.revised || 0) + 1;
         updateSessionHeader();
       }
-      showFeedback("Answer revised", t("Your revised answer is a useful step. It does not count as an independent check. Try the new problem next."), "try");
+      sendFeedback("revise-right");
+      showFeedback("Answer revised", t("Your revised answer is a useful step. It does not count as an independent check. Try the new problem next."), "try", "try", "revised");
       return;
     } else {
-      showFeedback("Keep trying!", "Almost! Review the steps above carefully and try one more time.", "try", "incorrect");
+      sendFeedback("revise-wrong");
+      showFeedback("Keep trying!", t("Almost! Review the steps above carefully and try one more time."), "try", "incorrect", "revealed");
       els.answerInput.select();
       return;
     }
@@ -6801,7 +6815,7 @@ function submitAnswer(value) {
   }
   if (state.initialSupport && state.itemAttempts < 3) {
     const nextStep = revealGuidedStep() || guidedStepContent().at(-1);
-    showFeedback("Let's use the next step", `${feedbackFor(state.item.skill, state.item, value)} ${nextStep.copy}`, "try", "incorrect");
+    showFeedback("Let's use the next step", `${feedbackFor(state.item.skill, state.item, value)} ${nextStep.copy}`, "try", "incorrect", sendFeedback(state.fbPhase === "idle" ? "wrong" : "wrong-again"));
     addInstructionalChoices();
     saveActiveSession();
     if (!state.item.choices) els.answerInput.select();
@@ -6812,9 +6826,9 @@ function submitAnswer(value) {
     const diagnostic = state.tutor.mistakes.find((entry) => entry.key === tutorSkillKey(state.item.skill) && entry.question === state.item.question && !entry.resolvedAt);
     if (diagnostic?.misconceptionCode) {
       const label = mistakeCategoryLabel(diagnostic.misconceptionCode);
-      if (label) showFeedback("Let’s check the idea", `${label}. ${nudge}`, "try", "incorrect");
-      else showFeedback("Try once more", nudge, "try", "incorrect");
-    } else showFeedback("Try once more", nudge, "try", "incorrect");
+      if (label) showFeedback("Let’s check the idea", `${label}. ${nudge}`, "try", "incorrect", sendFeedback("wrong"));
+      else showFeedback("Try once more", nudge, "try", "incorrect", sendFeedback("wrong"));
+    } else showFeedback("Try once more", nudge, "try", "incorrect", sendFeedback("wrong"));
     addInstructionalChoices();
     els.repair.hidden = false;
     saveActiveSession();
@@ -6873,7 +6887,9 @@ function finalizeProblem(correct, { unsure = false } = {}) {
     } else {
       title = "Lightning Recall! 🦁⚡";
     }
-    showFeedback(title, copy, isRevision ? "try" : "correct");
+    const phase = isRevision ? "revised" : sendFeedback("right", { independent: !assisted });
+    showFeedback(title, copy, isRevision ? "try" : "correct", isRevision ? "try" : "correct", phase);
+    paintActions(els, []);
     if (els.fixAnswerBtn) els.fixAnswerBtn.hidden = true;
   } else {
     const lostStreak = session.mode === "streak" && session.streak > 0;
@@ -6892,7 +6908,8 @@ function finalizeProblem(correct, { unsure = false } = {}) {
         ? "Incorrect — new streak starts now"
         : "Incorrect — review your thinking";
     }
-    showFeedback(title, copy, "incorrect");
+    showFeedback(title, copy, "incorrect", "incorrect", sendFeedback("wrong-final"));
+    paintActions(els, []);
     if (els.fixAnswerBtn && session.mode !== "streak" && session.mode !== "sprint") {
       els.fixAnswerBtn.hidden = false;
     }
@@ -6909,7 +6926,9 @@ function finalizeProblem(correct, { unsure = false } = {}) {
         correct: independent ? firstCorrect : correct,
         independent,
         level: state.item.level,
+        tier: state.item.tier, // fl4:adaptive
         strategyTags,
+        sig: itemSignature(state.item.question),
         responseMs: state.firstResponseMs,
         // Practice is untimed. This is a descriptive first-response sample, never a speed score.
         calm: true,
@@ -6929,6 +6948,7 @@ function finalizeProblem(correct, { unsure = false } = {}) {
       }
     } else if (session.mode === "repair") { (session.repairWins ||= {})[tutorSkillKey(state.item.skill)] = 0; }
   }
+  if (session.rescue && !isRevision) session.rescue = rescueStep(session.rescue, { type: "answer", correct: independent ? firstCorrect : correct, independent }); // fl4:adaptive
   onFluencyProblemFinalized(correct && !isRevision, independent, firstCorrect, !isRevision);
   saveProgress();
   if (state.skill) renderMastery();
@@ -6939,10 +6959,15 @@ function finalizeProblem(correct, { unsure = false } = {}) {
   els.hintButton.hidden = true;
   els.skip.hidden = true;
   els.nextButton.hidden = false;
+  els.nextButton.focus({ preventScroll: true }); // fl4:screens: Next is shown only now, so the focus move in settleOnFeedback never landed
+  state.settledAt = performance.now();
   els.nextButton.textContent = session.answered >= session.target || streakComplete(session) ? "Finish set" : "Next problem";
   updateSessionHeader();
   saveActiveSession();
-  if (!correct && session.missesBySkill[itemSkillKey] >= 2 && state.guidedStepsShown >= 3) {
+  // fl4:adaptive a rescue (mini-lesson, guided repair, independent check, return) replaces the plain boost when the evidence calls for it.
+  state.rescuePlan = !correct && session.mode !== "diagnostic" && !session.quickBoost ? planRescue(state.tutor, state.item.skill, { sessionCount: state.rescuesThisSession || 0 }) : null;
+  if (state.rescuePlan) els.feedbackCopy.append(rescueOfferElement(state.rescuePlan));
+  else if (!correct && session.missesBySkill[itemSkillKey] >= 2 && state.guidedStepsShown >= 3) {
     const foundation = prerequisites(state.item.skill)[0];
     if (foundation) {
       const bridge = document.createElement("div");
@@ -7092,26 +7117,69 @@ function renderTransferChallengeButton(item) {
 
 // The Math Discovery Studio sits beside the feedback, not inside it: the feedback is a live region.
 let cleanupStudio = null;
+let mountedStudioItem = null;
+let mountedStudioSkill = null;
 function clearStudio() {
   cleanupStudio?.();
   cleanupStudio = null;
+  mountedStudioItem = null;
+  mountedStudioSkill = null;
   const slot = document.querySelector("#studio-slot");
   if (slot) slot.replaceChildren();
 }
 function showStudio(item, skill, context) {
+  if (!item || !skill) {
+    clearStudio();
+    return;
+  }
+  if (mountedStudioItem === item && mountedStudioSkill === skill) return;
   clearStudio();
   const slot = document.querySelector("#studio-slot");
-  if (slot) cleanupStudio = mountStudio(slot, { item, skill, context });
+  if (slot) {
+    cleanupStudio = mountStudio(slot, { item, skill, context });
+    mountedStudioItem = item;
+    mountedStudioSkill = skill;
+  }
 }
 
-function showFeedback(title, copy, type, resultType = type) {
+// What the learner typed or picked, and the plain-text answer key, for the feedback panel's answer lines.
+function expectedAnswerText(item = state.item) {
+  const answer = String(item?.answers?.[0] ?? "");
+  return item?.unit && answer && !answer.includes(item.unit) ? `${answer} ${item.unit}` : answer;
+}
+
+// Sends an event to the shared feedback machine and returns the phase the panel should show. A duplicate
+// submission is not accepted and leaves the phase where it was.
+function sendFeedback(event, options) {
+  const next = nextPhase(state.fbPhase || "idle", event, options);
+  if (next.accepted) state.fbPhase = next.phase;
+  return state.fbPhase;
+}
+
+function feedbackContext() {
+  const steps = guidedStepContent();
+  return {
+    submitted: state.lastSubmitted,
+    expected: expectedAnswerText(),
+    reveal: state.session?.mode !== "diagnostic",
+    hintAvailable: !els.hintButton.hidden,
+    stepsAvailable: steps.length > 0 && state.guidedStepsShown < steps.length,
+  };
+}
+
+function showFeedback(title, copy, type, resultType = type, phase = null) {
   els.feedback.hidden = false;
   els.feedback.dataset.type = type;
-  const heading = resultType === "incorrect" && !/^incorrect\b/i.test(title)
-    ? `Incorrect — ${title}`
-    : resultType === "correct" && !/^correct\b/i.test(title)
-      ? `Correct — ${title}`
-      : title;
+  const view = phase ? feedbackView(phase, feedbackContext()) : null;
+  if (view) paintFeedback(els, view);
+  else {
+    els.feedbackIcon.replaceChildren();
+    els.feedbackBadge.hidden = true;
+    els.feedbackAnswers.hidden = true;
+    delete els.feedback.dataset.tone;
+    delete els.feedback.dataset.phase;
+  }
+  const heading = view ? view.heading : title;
   els.feedbackTitle.textContent = heading;
   if (els.answerResultStatus) {
     const assisted = resultType === "correct" && title === t("Good strategy work");
@@ -7141,6 +7209,16 @@ function showFeedback(title, copy, type, resultType = type) {
   }
   if (type === "correct" || type === "incorrect") renderLanguageSlot(type === "correct");
   if (type === "correct") chime("good");
+  if (view && phase !== "empty") settleOnFeedback(phase);
+}
+
+// The result must be on screen when it appears. A settled problem moves keyboard focus to Next, which ignores
+// clicks for a moment, so Enter pressed twice cannot skip the result.
+const prefersReducedMotion = () => Boolean(globalThis.matchMedia?.("(prefers-reduced-motion: reduce)").matches);
+
+function settleOnFeedback(phase) {
+  els.feedback.scrollIntoView?.({ block: "nearest", behavior: prefersReducedMotion() ? "auto" : "smooth" });
+  if (["correct", "assisted", "revealed", "revised"].includes(phase) && !els.nextButton.hidden) els.nextButton.focus({ preventScroll: true });
 }
 
 // The explain card sits beside the feedback, not inside it: the feedback is a live region, and a screen reader would
@@ -7188,9 +7266,12 @@ function finishSession() {
     const savedPractice = loadJson(BRIDGE_RETURN_KEY, null);
     writeLocal(profileKey(BRIDGE_RETURN_KEY, activeProfile), null);
     if (savedPractice) {
+      const rescued = session.rescue; // fl4:adaptive
+      if (rescued) { recordRescue(state.tutor, rescued); saveProgress(); if (rescued.scaffold) savedPractice.session.rescueScaffold = rescued.scaffold; }
       writeLocal(profileKey(SESSION_KEY, activeProfile), savedPractice);
       state.session = null;
       resumePractice(savedPractice);
+      if (rescued) { document.querySelector(".problem-stage").before(returnBanner(returnMessage(rescued))); announce(returnMessage(rescued)); return; } // fl4:adaptive
       announce(t("Quick Boost complete. Your original problem set is ready to continue."));
       return;
     }
@@ -7391,41 +7472,25 @@ function renderProgressEvidenceCard(progress) {
 }
 
 function renderDashboard() {
-  const ranked = recommendations(state.tutor, state.grade);
-  const next = ranked[0];
   const saved = loadJson(SESSION_KEY, null);
-  const today = state.tutor.sessions.filter((session) => localDay(session.at) === localDay()).reduce((sum, session) => sum + session.answered, 0);
-  const due = ranked.filter((entry) => entry.status.due).length;
-  const progress = calculateProgressEvidence();
   const hasSavedSession = saved?.version === 2 && saved.session && !saved.session.finished;
-  const skillStatus = next.status;
-  const progressValue = skillStatus.independent ? Math.round(skillStatus.ratio * 100) : 0;
-  const savedSkill = saved?.item?.skill?.title || "your practice set";
-  const completedToday = today === 1 ? t("{n} problem completed today", { n: today }) : t("{n} problems completed today", { n: today });
-  const refresh = due === 1 ? t("{n} skill ready for a memory refresh.", { n: due }) : t("{n} skills ready for a memory refresh.", { n: due });
-  els.dashboard.innerHTML = `
-    <div class="journey-heading">
-      <div><p class="section-label">${escapeHtml(gradeDisplay(state.grade))} · ${escapeHtml(PROFILE_NAMES[activeProfile])}</p><h2>${t("What would you like to do?")}</h2><p>${t("Pick up where you left off, play with a math idea, or choose something new.")}</p></div>
-      <button class="journey-checkup" type="button" data-start-checkup aria-label="${state.tutor.diagnostics[state.grade] ? t('Try the starting-point check again') : t('Find a starting point')}"><span class="journey-checkup-icon" aria-hidden="true">↗</span><span><strong>${state.tutor.diagnostics[state.grade] ? t('Check my starting point') : t('New here?')}</strong><small>${state.tutor.diagnostics[state.grade] ? t('Update your learning snapshot') : t('Find a comfortable place to begin')}</small></span></button>
-    </div>
-    <div class="journey-cards">
-      <article class="journey-card journey-continue">
-        <div class="journey-art journey-art-continue" aria-hidden="true"><svg viewBox="0 0 220 150" role="presentation"><path d="M25 120c38-8 43-72 88-62 29 7 38 40 82 18" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-dasharray="1 13"/><circle cx="35" cy="116" r="13"/><circle cx="111" cy="59" r="16"/><circle cx="186" cy="76" r="13"/><path d="m157 40 7 17 18-5-14 13 8 17-17-10-13 12 4-18-16-10 19 1z" fill="currentColor" opacity=".48"/></svg></div>
-        <div class="journey-card-copy"><p class="journey-overline">${hasSavedSession ? t('Ready when you are') : t('A good next step')}</p><h3>${t('Continue learning')}</h3><p class="journey-skill">${escapeHtml(hasSavedSession ? savedSkill : next.skill.title)}</p><p>${hasSavedSession ? t('{n} problems already completed. Your work is saved on this device.', { n: saved.session.answered }) : `${escapeHtml(displayRecommendationReason(next.reason))}. ${t('Begin with a visual lesson, then try it on your own.')}`}</p>
-          ${skillStatus.independent ? `<div class="journey-progress"><div><span>${t('Independent practice')}</span><strong>${progressValue}%</strong></div><progress max="100" value="${progressValue}" aria-label="${t('{percent}% independent accuracy for {skill}', { percent: progressValue, skill: escapeHtml(next.skill.title) })}">${progressValue}%</progress><small>${t('{n} independent attempts · {status}', { n: skillStatus.independent, status: escapeHtml(t(skillStatus.label)) })}</small></div>` : `<div class="journey-progress journey-progress-new"><span class="journey-progress-dot" aria-hidden="true"></span><span>${t('New skill · no score yet')}</span></div>`}
-          <div class="button-row journey-actions">${hasSavedSession ? `<button class="primary-action" data-resume-practice>${t('Continue my practice')} <span aria-hidden="true">→</span></button>` : `<button class="primary-action" data-open-key="${tutorSkillKey(next.skill)}" data-open-mode="visual">${t('Explore this skill')} <span aria-hidden="true">→</span></button><button class="journey-text-action" data-open-key="${tutorSkillKey(next.skill)}" data-open-mode="adaptive">${t('Practice independently')}</button>`}</div></div>
-      </article>
-      <button type="button" class="journey-card journey-game" data-view="games">
-        <span class="journey-card-art journey-art-game" aria-hidden="true"><svg viewBox="0 0 160 124" role="presentation"><path d="M34 75h92a15 15 0 0 1 14 20l-6 15a11 11 0 0 1-17 5l-16-13H59l-16 13a11 11 0 0 1-17-5l-6-15a15 15 0 0 1 14-20Z" fill="currentColor" opacity=".18" stroke="currentColor" stroke-width="4"/><path d="M43 87v15m-8-7h16m37-4h.1m15 12h.1" stroke="currentColor" stroke-width="5" stroke-linecap="round"/><path d="M66 56c0-12 9-22 21-22s21 10 21 22" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round"/><path d="m87 17 4 9 10 1-8 7 3 10-9-5-9 5 3-10-8-7 10-1z" fill="currentColor"/></svg></span>
-        <span class="journey-card-copy"><span class="journey-overline">${t('Untimed · think and play')}</span><strong class="journey-card-title">${t('Play a game')}</strong><span>${t('Build, compare, and solve with the Game Room activities.')}</span><span class="journey-card-link">${t('Choose a game')} <span aria-hidden="true">→</span></span></span>
-      </button>
-      <article class="journey-card journey-explore">
-        <span class="journey-card-art journey-art-explore" aria-hidden="true"><svg viewBox="0 0 160 124" role="presentation"><rect x="28" y="24" width="104" height="76" rx="12" fill="none" stroke="currentColor" stroke-width="4"/><path d="M54 24v76m26-76v76m26-76v76M28 49h104M28 75h104" stroke="currentColor" stroke-width="2" opacity=".5"/><path d="M45 64h12m16 19h12m16-39h12m14 37h8" stroke="currentColor" stroke-width="10" stroke-linecap="round"/><circle cx="51" cy="39" r="5" fill="currentColor"/></svg></span>
-        <div class="journey-card-copy"><p class="journey-overline">${t('Grades 1–8 · many ways in')}</p><h3>${t('Explore skills')}</h3><p>${t('Browse the grade-level library by topic. Every skill includes a lesson, practice, and ways to check your thinking.')}</p><a class="journey-card-link" href="#subnav-skills">${t('Browse {count} Grade {grade} skills', { count: getGrade(state.grade).skills.length, grade: state.grade })} <span aria-hidden="true">→</span></a></div>
-      </article>
-    </div>
-    <div class="journey-today"><span class="journey-today-icon" aria-hidden="true">✓</span><strong>${completedToday}</strong><span>${due ? refresh : t('A little practice over time helps ideas stick.')}</span><button type="button" data-start-daily>${t('Open today’s practice')} <span aria-hidden="true">→</span></button></div>
-    <div class="journey-evidence">${renderProgressEvidenceCard(progress)}</div>`;
+  const today = state.tutor.sessions.filter((session) => localDay(session.at) === localDay()).reduce((sum, session) => sum + session.answered, 0);
+  mountDashboard(els.dashboard, {
+    tutor: state.tutor,
+    grade: state.grade,
+    strand: state.strand,
+    gradeLabel: gradeDisplay(state.grade),
+    profileName: PROFILE_NAMES[activeProfile],
+    gradeSkillCount: getGrade(state.grade).skills.length,
+    resume: hasSavedSession ? { title: saved.item?.skill?.title || t("your practice set"), answered: saved.session.answered } : null,
+    completedToday: today,
+    evidenceHtml: renderProgressEvidenceCard(calculateProgressEvidence()),
+    onGrade: (grade) => els.gradeTabs.querySelector(`[data-grade="${grade}"]`)?.click(),
+    onStrand: (strand) => {
+      els.strandFilters.querySelector(`[data-strand="${strand.replaceAll('"', '\\"')}"]`)?.click();
+      els.morePractice?.scrollIntoView({ behavior: "smooth", block: "start" });
+    },
+  });
 }
 
 function openHubView(view) {
@@ -7437,6 +7502,10 @@ function openHubView(view) {
   if (view === "notebook") renderNotebook();
   if (view === "games") { cleanupGames?.(); cleanupGames = mountGames(els.games, { grade: state.grade, autostart: state.autoGame, assignedStop: state.autoStop, onEvidence: recordPuzzleEvidence }); state.autoGame = null; state.autoStop = null; }
   if (view === "write") { cleanupWriting?.(); cleanupWriting = mountWriting(els.write, { grade: state.grade, skillKey: state.writeSkill, onPrint: printHtml, announce }); state.writeSkill = null; }
+  if (view === "teacher") mountTeacher4(els.teacher4, { // fl4:teacher
+    grade: state.grade, onLaunch: launchAssignment, onPrint: printHtml, announce,
+    profileRecords: () => profiles().ids.map((id) => ({ id, label: `Learner ${id + 1} · ${PROFILE_NAMES[id]}`, tutor: sanitizeTutor(readLocal(profileKey(TUTOR_KEY, id), emptyTutor())) })),
+  });
   if (view === "teacher") mountTeacherStudio(els.teacherStudio, {
     grade: state.grade,
     onLaunch: launchAssignment,
@@ -8013,7 +8082,7 @@ function startRepairEntry(id) {
   ]);
 }
 
-function startQuickBoost(foundationKey) {
+function startQuickBoost(foundationKey, rescue = null) {
   const foundation = findSkill(foundationKey);
   if (!foundation || foundation.grade < 1 || foundation.grade > 8 || !state.session || state.session.quickBoost) return;
   saveActiveSession();
@@ -8023,15 +8092,46 @@ function startQuickBoost(foundationKey) {
   state.session = null;
   state.grade = foundation.grade;
   renderGradeTabs();
-  const queue = Array.from({ length: 3 }, (_, index) => ({
+  const queue = rescue ? rescueQueue(rescue) : Array.from({ length: 3 }, (_, index) => ({ // fl4:adaptive
     key: foundationKey,
     purpose: t("Quick Boost problem {n} of 3", { n: index + 1 }),
     independent: true,
   }));
   openPlanned("repair", queue);
   state.session.quickBoost = true;
+  if (rescue) state.session.rescue = rescue; // fl4:adaptive
   saveActiveSession();
-  announce(t("Three calm foundation problems. Your original set will be ready when you finish."));
+  announce(rescue ? t("Three practice problems with help, then one on your own. Your original set will be ready when you finish.") : t("Three calm foundation problems. Your original set will be ready when you finish."));
+}
+
+// fl4:adaptive Rescue flow: the offer opens the mini-lesson; "Start practice" runs the guided repair and the
+// independent check as a boosted session; leaving or declining returns to the problem and is logged against the day's cap.
+function beginRescue(plan) {
+  if (!plan || !state.session || state.session.quickBoost) return;
+  const lesson = rescueStep(startRescue(plan), { type: "accept" });
+  state.rescuePlan = null;
+  const settle = (outcome) => { recordRescue(state.tutor, rescueStep(lesson, { type: outcome })); saveProgress(); };
+  openRescueDialog(plan, {
+    grade: state.grade,
+    lang: getLang(),
+    onEvidence: ({ correct, independent } = {}) => { recordAnswer(state.tutor, findSkill(plan.prereq), { correct: Boolean(correct), independent: Boolean(independent), tier: 2 }); saveProgress(); },
+    onStart: () => {
+      state.rescuesThisSession = (state.rescuesThisSession || 0) + 1;
+      const repair = rescueStep(lesson, { type: "lessonDone" });
+      recordRescue(state.tutor, { ...repair, outcome: "left" });
+      saveProgress();
+      startQuickBoost(plan.prereq, repair);
+    },
+    onLeave: () => { settle("leave"); announce(returnMessage({ outcome: "left", goal: plan.goal, prereq: plan.prereq })); els.answerInput?.focus(); },
+  });
+}
+function declineRescue() {
+  const plan = state.rescuePlan;
+  if (!plan) return;
+  recordRescue(state.tutor, rescueStep(startRescue(plan), { type: "decline" }));
+  saveProgress();
+  document.querySelector(".rescue-offer")?.remove();
+  state.rescuePlan = null;
 }
 
 function launchAssignment(assignment) {
@@ -8049,7 +8149,7 @@ function renderAssignmentBanner() {
   const banner = document.querySelector("#assignment-banner"); banner.hidden = !state.assignment;
   if (!state.assignment) return;
   const assignment = state.assignment;
-  banner.innerHTML = `<div><p class="section-label">Your class practice</p><h2>${escapeHtml(assignment.label)}</h2><p>Grade ${assignment.grade}${assignment.keys.length ? ` · ${assignment.count} fresh questions · ${assignment.keys.map((key) => escapeHtml(findSkill(key).title)).join(', ')}` : ''}${assignment.game ? ` · Game: ${escapeHtml(GAMES.find((g) => g.id === assignment.game)?.name || '')}` : ''}</p></div>${assignment.keys.length ? '<button class="primary-action" data-start-assignment>Start class practice</button>' : ''}${assignment.game ? '<button class="primary-action" data-start-assignment-game>Play the assigned game</button>' : ''}`;
+  banner.innerHTML = `<div><p class="section-label">Your class practice</p><h2>${escapeHtml(assignment.label)}</h2><p>Grade ${assignment.grade}${assignment.keys.length ? ` · ${assignment.count} fresh questions · ${assignment.keys.map((key) => escapeHtml(findSkill(key).title)).join(', ')}` : ''}${assignment.game ? ` · Game: ${escapeHtml(GAMES.find((g) => g.id === assignment.game)?.name || '')}` : ''}${assignment.target ? ` · Goal: score ${assignment.target.score} on ${assignment.target.days} separate days` : ''}${assignment.due ? ` · Due ${escapeHtml(assignment.due)}` : ''}</p></div>${assignment.keys.length ? '<button class="primary-action" data-start-assignment>Start class practice</button>' : ''}${assignment.game ? '<button class="primary-action" data-start-assignment-game>Play the assigned game</button>' : ''}`; // fl4:teacher: goal and due date shown to the learner
 }
 
 function saveActiveSession() {
@@ -8058,7 +8158,7 @@ function saveActiveSession() {
   const snapshot = { version: 2, grade: state.grade, skillId: state.skill?.id || null, session, item: state.item, itemDone: state.itemDone,
     itemAttempts: state.itemAttempts, firstAnswerCorrect: state.firstAnswerCorrect, hintBeforeFirst: state.hintBeforeFirst, initialSupport: state.initialSupport,
     guidedStepsShown: state.guidedStepsShown, assignment: state.assignment, recentQuestions: state.recentQuestions,
-    feedback: els.feedback.hidden ? null : { title: els.feedbackTitle.textContent, copy: els.feedbackCopy.textContent, type: els.feedback.dataset.type } };
+    feedback: els.feedback.hidden ? null : { title: els.feedbackTitle.textContent, copy: els.feedbackCopy.textContent, type: els.feedback.dataset.type, phase: state.fbPhase || "idle", submitted: state.lastSubmitted || "" } };
   writeLocal(profileKey(SESSION_KEY, activeProfile), snapshot);
   saveProgress();
 }
@@ -8086,7 +8186,12 @@ function resumePractice(saved = loadJson(SESSION_KEY, null)) {
     state.itemAttempts = saved.itemAttempts || 0; state.firstAnswerCorrect = saved.firstAnswerCorrect; state.hintBeforeFirst = saved.hintBeforeFirst;
     state.initialSupport = saved.initialSupport; state.guidedStepsShown = saved.guidedStepsShown;
     renderGuidedCoach();
-    if (saved.feedback) showFeedback(saved.feedback.title, saved.feedback.copy, saved.feedback.type);
+    if (saved.feedback) {
+      const phase = FEEDBACK_PHASES.includes(saved.feedback.phase) && saved.feedback.phase !== "idle" ? saved.feedback.phase : null;
+      state.fbPhase = phase || "idle";
+      state.lastSubmitted = String(saved.feedback.submitted || "").slice(0, 120);
+      showFeedback(saved.feedback.title, saved.feedback.copy, saved.feedback.type, saved.feedback.type, phase);
+    }
     saveActiveSession();
   }
   setUrl(); announce("Your saved practice is ready.");
@@ -8189,6 +8294,7 @@ els.learnPanel.addEventListener("click", (event) => {
     host.querySelector("[data-step]")?.focus();
     return;
   }
+  if (event.target.closest("[data-mini-lesson]")) return openMiniLesson(); // fl4:lessons
   if (event.target.closest("[data-start-visual]")) setMode("visual");
   if (event.target.closest("[data-start-guided]")) setMode("guided");
   if (event.target.closest("[data-start-independent]")) {
@@ -8269,7 +8375,35 @@ els.hintButton.addEventListener("click", () => {
   saveActiveSession();
 });
 
-els.nextButton.addEventListener("click", nextProblem);
+// "Try again", "Show hint" and "See worked example" under a not-quite answer. Each reuses the control the page
+// already has, so there is one hint path and one steps path.
+els.feedbackActions.addEventListener("click", (event) => {
+  const id = event.target.closest("[data-feedback-action]")?.dataset.feedbackAction;
+  if (!id || !state.item || state.itemDone) return;
+  if (id === "try-again") {
+    (state.item.choices ? els.choiceAnswers.querySelector("button:not([disabled])") : els.answerInput)?.focus();
+    if (!state.item.choices) els.answerInput.select();
+    return;
+  }
+  if (id === "hint" && !els.hintButton.hidden) els.hintButton.click();
+  if (id === "worked") {
+    while (revealGuidedStep());
+    els.guidedSteps.scrollIntoView?.({ block: "center", behavior: prefersReducedMotion() ? "auto" : "smooth" });
+    announce(t("Worked example opened."));
+    saveActiveSession();
+  }
+  paintActions(els, feedbackView(state.fbPhase, feedbackContext())?.actions || []);
+});
+
+// Next takes the place of Check, so a double click (or a held Enter) on Check would otherwise skip the result it
+// just earned. Only real user input is held back: the second click of a double click, and a key press that lands
+// within SETTLE_MS of the result.
+const SETTLE_MS = 600;
+els.nextButton.addEventListener("click", (event) => {
+  const tooSoon = performance.now() - (state.settledAt || 0) < SETTLE_MS;
+  if (event.isTrusted && (event.detail > 1 || (event.detail === 0 && tooSoon))) return;
+  nextProblem();
+});
 els.guidedSteps.addEventListener("fluency-fill-solved", () => renderGuidedCoach());
 els.guidedNextStep.addEventListener("click", () => {
   const step = revealGuidedStep();
@@ -8321,6 +8455,8 @@ document.addEventListener("click", (event) => {
   }
   if (event.target.closest("[data-start-checkup]")) openPlanned("diagnostic", checkupPlan(state.grade));
   if (event.target.closest("[data-start-daily]")) openPlanned("daily", dailyPlan(state.tutor, state.grade));
+  if (event.target.closest("[data-rescue=start]")) { beginRescue(state.rescuePlan); return; } // fl4:adaptive
+  if (event.target.closest("[data-rescue=decline]")) { declineRescue(); return; } // fl4:adaptive
   const quickBoost = event.target.closest("[data-quick-boost]");
   if (quickBoost) startQuickBoost(quickBoost.dataset.quickBoost);
   if (event.target.closest("[data-resume-practice]")) resumePractice();
@@ -8447,6 +8583,7 @@ document.querySelector("#lang-toggle").addEventListener("click", () => {
   window.dispatchEvent(new Event("fluency-lang-changed"));
   renderGradeTabs();
   if (state.view === "games") openHubView("games");
+  else if (state.view === "teacher") openHubView("teacher"); // fl4:teacher
   else if (state.view === "library") renderLibrary();
 });
 applyLang();
@@ -10060,6 +10197,7 @@ if (document.readyState === "loading") {
 initStepModelLink([els.learnPanel, document.querySelector("#drill-panel")]);
 const initialSkill = initialParams.get("skill");
 if (initialSkill && initialParams.get("view") !== "write") openSkill(initialSkill);
+if (initialSkill && state.skill && miniLessonRequested(initialParams.toString())) openMiniLesson(); // fl4:lessons
 renderProfiles();
 renderAssignmentBanner();
 if (["teacher", "games", "write", "path", "notebook"].includes(initialParams.get("view"))) { state.writeSkill = initialSkill; openHubView(initialParams.get("view")); }

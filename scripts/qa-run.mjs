@@ -224,6 +224,21 @@ const EXCLUSIVE = new Set([
 const UNIVERSAL = ["check"];
 const CARRIES_SCRIPT = /\.(js|mjs|cjs|html?)$/i;
 const COVERAGE = [
+  [
+    /^tools\/lib\/(?:fl4-family-fixtures|fl4-stubs)\.mjs$/,
+    ["validate:fluency", "validate:fluency-family-browser", "test", "check"],
+  ],
+  [/^tools\/lib\/mini-lesson-solver\.mjs$/, ["validate:fluency", "test", "check"]],
+  // Teacher Lab 4 browser fixtures feed synthetic backups to a temporary local browser session.
+  [
+    /^tools\/lib\/teacher-4-fixtures\.mjs$/,
+    ["validate:fluency-family-browser", "validate:js-syntax", "test", "check"],
+  ],
+  // Keep the reviewed write-safety registry under its direct validator as well as the data contracts.
+  [
+    /^data\/test-writes-review\.json$/,
+    ["validate:test-writes", "validate:data-contracts", "validate:nervous-system", "test"],
+  ],
   // COPY AND NOTATION — the render-time math formatter, the microcopy dictionary,
   // the two gates that hold them, their scanner and the logged config fixer. The
   // gates sweep all 84 configs and every engine string; `test` carries the

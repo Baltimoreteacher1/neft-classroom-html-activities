@@ -14,6 +14,7 @@
     <link rel="canonical" href="https://eduwonderlab.com/math/fluency-lab/" />
     <title>Math Fluency Lab · Grades 1–8 | EduWonderLab</title>
     <link rel="stylesheet" href="/assets/fonts/small-group.css" />
+    <link rel="stylesheet" href="./ds4.css" />
     <link rel="stylesheet" href="./styles.css" />
     <link rel="stylesheet" href="./tutor.css" />
     <link rel="stylesheet" href="./journey.css" />
@@ -21,11 +22,17 @@
     <link rel="stylesheet" href="./games.css" />
     <link rel="stylesheet" href="./language.css" />
     <link rel="stylesheet" href="./scratchpad.css" />
+    <link rel="stylesheet" href="./rescue.css" /> <!-- fl4:adaptive -->
     <link rel="stylesheet" href="/assets/fonts/fraunces-87aa83.css" />
     <link rel="stylesheet" href="./publisher.css" />
     <link rel="stylesheet" href="./explain.css" />
+    <link rel="stylesheet" href="./feedback.css" />
     <link rel="stylesheet" href="./studio/studio.css" />
     <link rel="stylesheet" href="./writing.css" />
+    <link rel="stylesheet" href="./dashboard-4.css" /> <!-- fl4:dashboard -->
+    <link rel="stylesheet" href="./mini-lesson.css" /> <!-- fl4:lessons -->
+    <link rel="stylesheet" href="./teacher-4.css" /> <!-- fl4:teacher -->
+    <link rel="stylesheet" href="./ds4-screens.css" />
     <link rel="stylesheet" href="./tour/tour.css" />
     <link rel="stylesheet" href="./grade-experience.css" />
     <script type="module" src="./scratchpad-entry.js"></script>
@@ -170,6 +177,7 @@
             <button id="open-number-talk-btn" class="outline-action number-talk-btn" type="button" title="Classroom Number Talk Projector" data-i18n>Number Talk</button>
           </div>
         </div>
+        <div id="teacher-4"></div> <!-- fl4:teacher -->
         <div id="teacher-studio"></div>
         <section class="receipt-decoder" aria-labelledby="receipt-decoder-title">
           <h3 id="receipt-decoder-title" data-i18n>Mastery receipt decoder & class heatmap</h3>
@@ -202,6 +210,7 @@
         <section id="visual-panel" class="visual-panel" aria-label="Interactive visual lesson" hidden></section>
 
         <section id="drill-panel" class="drill-panel" aria-label="Fluency practice" hidden>
+          <div class="practice-progress"><!-- fl4:screens persistent progress -->
           <div class="session-header">
             <div>
               <p id="session-type" class="session-type">Practice 10</p>
@@ -215,6 +224,7 @@
             </div>
           </div>
           <div class="progress-track" aria-hidden="true"><span id="session-progress"></span></div>
+          </div>
 
           <div class="problem-stage">
             <p id="session-insight" class="session-insight" aria-live="polite"></p>
@@ -342,6 +352,20 @@
                 </form>
               </div>
             </div>
+            <!-- fl4:screens feedback sits directly under the answer card -->
+            <div id="feedback" class="feedback" hidden>
+              <span id="feedback-icon" class="fb-icon" aria-hidden="true"></span>
+              <div class="fb-body">
+                <div class="fb-live" role="status" aria-live="polite">
+                  <strong id="feedback-title"></strong>
+                  <p id="feedback-badge" class="fb-badge" hidden></p>
+                  <dl id="feedback-answers" class="fb-answers" hidden></dl>
+                </div>
+                <div id="feedback-actions" class="fb-actions" hidden></div>
+                <p id="feedback-copy" aria-live="polite"></p>
+              </div>
+            </div>
+            <div id="language-slot" class="language-slot"></div>
             <div class="problem-actions-bar">
               <button id="show-hint" class="outline-action" type="button">💡 Show a step</button>
               <button id="dock-visual-studio" class="outline-action" type="button" aria-pressed="false" data-i18n>Dock Visual Studio</button>
@@ -366,11 +390,6 @@
               </button>
             </section>
 
-            <div id="feedback" class="feedback" role="status" aria-live="polite" hidden>
-              <strong id="feedback-title"></strong>
-              <p id="feedback-copy"></p>
-            </div>
-            <div id="language-slot" class="language-slot"></div>
             <div id="studio-slot" class="sd-slot"></div>
 
             <div id="repair-actions" class="repair-actions" hidden>
