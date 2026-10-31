@@ -2678,3 +2678,40 @@ html:root body .tr-steps.tr-steps > li > .sv.sv {
 .tr-steps li > .tp-line text {
   font-size: 20px;
 }
+
+/* A word problem is a sentence, not an equation: set it at reading size instead of the large equation size. */
+.tr-example-fact.is-long,
+body.working-on-skill .learn-simple .tr-example-fact.is-long {
+  font-size: clamp(1.15rem, 2.2vw, 1.45rem);
+  line-height: 1.45;
+  font-weight: 600;
+}
+
+/* Scale drawing: paper cells over real-life cells, drawn from the problem's own numbers. */
+.tp-line.tp-scale-bars {
+  max-width: 560px;
+}
+.tp-scale-bars .tp-sb-cell {
+  stroke-width: 2;
+}
+.tp-scale-bars .tp-sb-paper {
+  fill: color-mix(in srgb, var(--trail) 16%, #fff);
+  stroke: var(--trail);
+}
+.tp-scale-bars .tp-sb-real {
+  fill: var(--t-practice-soft);
+  stroke: var(--t-practice);
+}
+.tp-scale-bars .tp-sb-ghost {
+  fill: none;
+  stroke: var(--t-ink-soft);
+  stroke-dasharray: 5 4;
+}
+.tp-line .tp-sb-text {
+  font-size: 17px;
+}
+.tp-line .tp-sb-caption {
+  font-size: 18px;
+  text-anchor: start;
+  fill: var(--t-ink-soft);
+}

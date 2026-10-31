@@ -119,6 +119,29 @@ function compareLine(a, b) {
   return `<svg class="tp-line" viewBox="0 0 500 132" role="img" aria-label="${esc(`${hi} is to the right of ${lo} on the number line, so it is bigger.`)}"><path class="tp-axis" d="M14,93 H486"/>${ticks}${marks}</svg>`;
 }
 
+// A scale drawing as two aligned bars: cells of 1 cm on paper over cells of k m in real life.
+// Stage 1 shows one cell of each, stage 2 the paper bar over an empty real bar, stage 3 both bars full
+// (the total is the learner's to find, so it is never drawn).
+function scaleBars(n, k, stage = 3) {
+  const count = stage === 1 ? 1 : n;
+  const width = Math.min(56, 440 / count);
+  const cell = (i, y, cls, label) =>
+    `<rect class="tp-sb-cell ${cls}" x="${30 + i * width}" y="${y}" width="${width - 4}" height="38" rx="4"/>${
+      label ? `<text class="tp-sb-text" x="${30 + i * width + (width - 4) / 2}" y="${y + 26}">${esc(label)}</text>` : ""
+    }`;
+  const paper = Array.from({ length: count }, (_, i) => cell(i, 26, "tp-sb-paper", width >= 56 ? "1 cm" : "1")).join("");
+  const real = Array.from({ length: count }, (_, i) =>
+    stage === 2 ? cell(i, 102, "tp-sb-ghost", "") : cell(i, 102, "tp-sb-real", width >= 56 ? `${k} m` : String(k)),
+  ).join("");
+  const label =
+    stage === 1
+      ? `1 cm on paper stands for ${k} m in real life.`
+      : stage === 2
+        ? `${n} cm on paper is ${n} groups of 1 cm.`
+        : `${n} cm on paper is ${n} groups. Each group stands for ${k} m.`;
+  return `<svg class="tp-line tp-scale-bars" viewBox="0 0 500 150" role="img" aria-label="${esc(label)}"><text class="tp-sb-caption" x="30" y="17">On paper (cm)</text>${paper}<text class="tp-sb-caption" x="30" y="92">In real life (m)</text>${real}</svg>`;
+}
+
 // Returns "" when the problem has no picture; callers then show only the one-sentence tip.
 export function trailPicture(model, { reveal = false } = {}) {
   if (!model) return "";
@@ -127,6 +150,10 @@ export function trailPicture(model, { reveal = false } = {}) {
   if (model.type === "counters") body = tenFrames(model);
   else if (model.type === "array") body = dotArray(model);
   else if (model.type === "numberline") body = numberLine(model);
+  else if (model.type === "table" && model.headers?.[0] === "Drawing (cm)") {
+    const [drawing, scale] = [Number(model.rows?.[1]?.[0]), Number(model.rows?.[0]?.[1])];
+    if (drawing >= 1 && scale >= 1) body = scaleBars(drawing, scale, 3);
+  }
   if (!body) return "";
   if (reveal && model.type === "numberline")
     body = body.replace(
@@ -1146,6 +1173,13 @@ export function stepVisual(line) {
     /^(\d+) has (\d+) (hundreds?|tens?|ones?)\. (\d+) has (\d+) (hundreds?|tens?|ones?)$/,
   );
   if (place) return compareBlocks(place[1], place[2], place[3], place[4], place[5], place[6]);
+  // Scale drawings: the three steps build the paper bar and the real-life bar a cell at a time.
+  const scaleOne = text.match(/^The scale says 1 cm on paper is (\d+) m in real life$/);
+  if (scaleOne) return scaleBars(1, Number(scaleOne[1]), 1);
+  const scalePaper = text.match(/ is (\d+) cm on paper\. That is \1 groups of 1 cm$/);
+  if (scalePaper) return scaleBars(Number(scalePaper[1]), 1, 2);
+  const scaleGroups = text.match(/^Each group is (\d+) m\. Multiply (\d+) × \1$/);
+  if (scaleGroups) return scaleBars(Number(scaleGroups[2]), Number(scaleGroups[1]), 3);
   const order = text.match(/^(\d+(?:\.\d+)?) ([<>]) (\d+(?:\.\d+)?)$/);
   if (order) return compareLine(num(order[1]), num(order[3]));
   // "36 − 30 = 6": one jump from the first number to the answer. Small facts keep their counters and arrays.

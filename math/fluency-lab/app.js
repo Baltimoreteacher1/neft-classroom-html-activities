@@ -623,7 +623,7 @@ function renderLearn() {
       <h3 class="tr-idea">${highlightVocab(escapeHtml(t(skill.learn.rule)))}</h3>
       <div class="tr-lesson">
         <div class="tr-example">
-          <p class="tr-example-fact">${highlightVocab(mathText(example.question))}</p>
+          <p class="tr-example-fact${String(example.question).length > 40 ? " is-long" : ""}">${highlightVocab(mathText(example.question))}</p>
           ${picture}
         </div>
         <div class="tr-guide">

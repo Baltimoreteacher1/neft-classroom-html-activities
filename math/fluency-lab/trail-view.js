@@ -198,7 +198,7 @@ export function mountTrail(container, { grade, onShowSkills, onPlayGame }) {
         ${languagePromptHtml({ grade, name: entry.name }, { compact: true, heading: t("Talk about this strategy") })}
         <div class="tr-lesson">
           <div class="tr-example">
-            <p class="tr-example-fact">${mathText(example.question)}</p>
+            <p class="tr-example-fact${String(example.question).length > 40 ? " is-long" : ""}">${mathText(example.question)}</p>
             ${picture}
           </div>
           <div class="tr-guide">

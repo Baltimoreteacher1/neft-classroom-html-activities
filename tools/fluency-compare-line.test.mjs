@@ -75,3 +75,27 @@ assert.ok(
     stepVisual("Start at the bigger number, 8").length > 0,
   "bigger number is drawn",
 );
+
+// Scale drawings: the first three steps build a paper bar and a real-life bar from the problem's own numbers.
+const bars = (html) => (html.match(/class="tp-sb-cell/g) || []).length;
+assert.equal(
+  bars(stepVisual("The scale says 1 cm on paper is 4 m in real life.")),
+  2,
+  "step 1: one cell on each bar",
+);
+assert.equal(
+  bars(stepVisual("The wall is 8 cm on paper. That is 8 groups of 1 cm.")),
+  16,
+  "step 2: eight paper cells over eight empty cells",
+);
+const groups = stepVisual("Each group is 4 m. Multiply 8 × 4.");
+assert.equal(bars(groups), 16, "step 3: eight paper cells over eight real cells");
+assert.ok(
+  groups.includes("tp-sb-real") && !groups.includes("32"),
+  "step 3 does not draw the total",
+);
+assert.equal(
+  stepVisual("8 × 4 = 32 meters.").includes("tp-scale-bars"),
+  false,
+  "an unrelated product line gets no scale bars",
+);
