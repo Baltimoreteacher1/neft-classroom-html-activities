@@ -3,14 +3,14 @@
 import { ES_LAB4_ADAPTIVE } from "./i18n-es-lab4-adaptive.js";
 import { ES_LAB4_ANIMATIONS } from "./i18n-es-lab4-animations.js";
 import { ES_LAB4_ART } from "./i18n-es-lab4-art.js";
-import { ES_LAB4_DASHBOARD } from "./i18n-es-lab4-dashboard.js";
+import { ES_LAB4_DASHBOARD } from "./i18n-es-lab4-journey.js";
 import { ES_LAB4_FAMILY } from "./i18n-es-lab4-family.js";
 import { ES_LAB4_GENERATORS } from "./i18n-es-lab4-generators.js";
 import { ES_LAB4_GRAPHICS } from "./i18n-es-lab4-graphics.js";
 import { ES_LAB4_GRAPHICS_B } from "./i18n-es-lab4-graphics-b.js";
 import { ES_LAB4_LESSONS } from "./i18n-es-lab4-lessons.js";
 import { ES_LAB4_SCREENS } from "./i18n-es-lab4-screens.js";
-import { ES_LAB4_TEACHER } from "./i18n-es-lab4-teacher.js";
+import { ES_LAB4_TEACHER } from "./i18n-es-lab4-educator.js";
 
 export const ES_LAB4 = {
   ...ES_LAB4_ADAPTIVE,

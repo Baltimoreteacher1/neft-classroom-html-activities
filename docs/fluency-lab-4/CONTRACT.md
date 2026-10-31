@@ -62,7 +62,7 @@ parallel, each in its own worktree and branch, and are merged by the integrator.
 | lessons    | `fl4/lessons`            | `mini-lesson.js`, `lesson-4/**`, mini-lesson data and CSS                                                                                                                                                   |
 | generators | `fl4/generators`         | `problem-types-4.js`, `problem-types/**`, equivalence handling in `problem-bank.js` `validateAnswer`                                                                                                        |
 | adaptive   | `fl4/adaptive`           | `difficulty-levels.js`, `diagnostic-engine.js`, `rescue.js`, `placement.js`, `tutor-engine.js`, practice-flow hooks in `app.js`                                                                             |
-| dashboard  | `fl4/dashboard`          | `dashboard-4.js`, `recommendation-engine.js`, `skill-card.js`, `skill-map.js`, home + practice screen restyle (`ds4-screens.css`), feedback panel placement, trail/games feedback via `feedback-machine.js` |
+| dashboard  | `fl4/dashboard`          | `journey-4.js` (named so the teacher-surface gate does not refuse it to students), `recommendation-engine.js`, `skill-card.js`, `skill-map.js`, home + practice screen restyle (`ds4-screens.css`), feedback panel placement, trail/games feedback via `feedback-machine.js` |
 | teacher    | `fl4/teacher`            | `teacher-4.js`, `reports-4.js`, `achievements-4.js`, `certificate.js`, `family/**`, `family-page.js`                                                                                                        |
 
 The integrator (main session) owns `docs/`, merges, final QA, the `validate:fluency` list and deployment.

@@ -43,7 +43,7 @@ import { mountWriting } from "./writing-studio.js";
 import { fractionPicture } from "./fraction-picture.js";
 import { initStepModelLink } from "./step-model-link.js";
 import { renderPrerequisiteMap } from "./prerequisite-map.js";
-import { mountDashboard } from "./dashboard-4.js"; // fl4:dashboard
+import { mountDashboard } from "./journey-4.js"; // fl4:dashboard
 import { skillSignals } from "./recommendation-engine.js"; // fl4:dashboard
 import { libraryCard } from "./skill-card.js"; // fl4:dashboard
 import { factsReport, mountSnapshot } from "./class-snapshot.js";
@@ -58,7 +58,6 @@ import { mountPaperGames } from "./paper-games.js";
 import { stopOptions, stopsFor } from "./game-pool.js";
 import { cleanPlay, exportPlay, importPlay } from "./play-backup.js";
 import { recordGrowth } from "./growth-log.js"; // fl4:teacher
-import { mountTeacher4 } from "./teacher-4.js"; // fl4:teacher
 import { decideInstruction, independentRecoveryCount, readInstructionalEvidence, recordInstructionalEvidence } from "../../engine/core/instructional-intelligence.js";
 import { VOCAB_BILINGUAL_DB, highlightVocab, initVocabSystem, openVocabModal } from "./vocab.js";
 import { canSpeak, speak, spoken, spokenEs } from "./speech.js";
@@ -70,6 +69,11 @@ import { questionEs } from "./question-es.js";
 import { handleStepPlayerClick, handleStepPlayerSolved, lightStepPlayers, stepPlayer } from "./step-player.js";
 import { applyGradeExperience } from "./grade-experience.js";
 import { mountStudio, studioModeled } from "./studio/studio.js";
+
+// teacher-4.js is teacher-only, so the teacher-surface gate refuses it to an anonymous student. A static import of a
+// refused file stops this whole module; awaiting a guarded import instead leaves null for a student and the real
+// module, available synchronously, for a signed-in teacher.
+const fl4Teacher = await import("./teacher-4.js").catch(() => null);
 
 const STORAGE_KEY = "ewl-fluency-progress-v1";
 const SETTINGS_KEY = "ewl-fluency-settings-v1";
@@ -7503,7 +7507,7 @@ function openHubView(view) {
   if (view === "notebook") renderNotebook();
   if (view === "games") { cleanupGames?.(); cleanupGames = mountGames(els.games, { grade: state.grade, autostart: state.autoGame, assignedStop: state.autoStop, onEvidence: recordPuzzleEvidence }); state.autoGame = null; state.autoStop = null; }
   if (view === "write") { cleanupWriting?.(); cleanupWriting = mountWriting(els.write, { grade: state.grade, skillKey: state.writeSkill, onPrint: printHtml, announce }); state.writeSkill = null; }
-  if (view === "teacher") mountTeacher4(els.teacher4, { // fl4:teacher
+  if (view === "teacher") fl4Teacher?.mountTeacher4(els.teacher4, { // fl4:teacher
     grade: state.grade, onLaunch: launchAssignment, onPrint: printHtml, announce,
     profileRecords: () => profiles().ids.map((id) => ({ id, label: `Learner ${id + 1} · ${PROFILE_NAMES[id]}`, tutor: sanitizeTutor(readLocal(profileKey(TUTOR_KEY, id), emptyTutor())) })),
   });

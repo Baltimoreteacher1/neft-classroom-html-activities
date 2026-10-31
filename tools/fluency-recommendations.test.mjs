@@ -16,7 +16,7 @@ const { masteryScore, masteryState } = await import(new URL("mastery-model.js", 
 const engine = await import(new URL("recommendation-engine.js", lab));
 const { setLang } = await import(new URL("i18n.js", lab));
 const { ES } = await import(new URL("i18n-es.js", lab));
-const { ES_LAB4_DASHBOARD } = await import(new URL("i18n-es-lab4-dashboard.js", lab));
+const { ES_LAB4_DASHBOARD } = await import(new URL("i18n-es-lab4-journey.js", lab));
 const { recommend, continueTarget, upcomingReviews, MASTERY_RULE, SECTION_IDS } = engine;
 
 const NOW = new Date(2026, 9, 14, 15, 0).getTime(); // Wednesday 14 October 2026, local time
@@ -467,7 +467,7 @@ assert.ok(sentences >= 18, `exercised ${sentences} sentences`);
 const files = [
   "recommendation-engine.js",
   "skill-card.js",
-  "dashboard-4.js",
+  "journey-4.js",
   "skill-map.js",
   "progress-summary.js",
 ];
