@@ -1,0 +1,326 @@
+// Concept simulators: change one variable, watch the relationship. Each simulator is pure: `render(state)` returns
+// the drawing, a text description and a one-line reading of what the numbers say right now, so the picture,
+// the numbers and the words always agree. Sliders are real range inputs, so they work with keyboard and touch.
+import { COLORS, L, esc, fmt, gcd, svgWrap, txt } from "./core.js";
+
+const out = (svg, alt, read, extra = {}) => ({
+  svg: svg.replace('aria-label=""', `aria-label="${esc(alt.en)}"`),
+  alt,
+  read,
+  ...extra,
+});
+const slider = (key, label, min, max, step, value) => ({ key, label, min, max, step, value });
+
+const fracEquiv = {
+  id: "fracEquiv",
+  title: L("Fraction equivalence", "Equivalencia de fracciones"),
+  ask: L(
+    "Slide the cuts. What changes? What stays the same?",
+    "Mueve los cortes. ¿Qué cambia? ¿Qué se queda igual?",
+  ),
+  init: () => ({ n: 2, d: 3, k: 1 }),
+  sliders: (s) => [
+    slider("n", L("Shaded pieces", "Partes sombreadas"), 1, s.d, 1, s.n),
+    slider("d", L("Pieces in the whole", "Partes del entero"), 2, 12, 1, s.d),
+    slider("k", L("Cuts in each piece", "Cortes por parte"), 1, 8, 1, s.k),
+  ],
+  clamp: (s) => ({ ...s, n: Math.min(s.n, s.d) }),
+  render(s) {
+    const total = s.d * s.k;
+    const shaded = s.n * s.k;
+    const w = 440 / total;
+    let body = "";
+    for (let i = 0; i < total; i += 1)
+      body += `<rect x="${60 + i * w}" y="60" width="${w}" height="60" fill="${i < shaded ? COLORS.whole : "#fff"}" fill-opacity=".85" stroke="#fff" stroke-width="2"/>`;
+    body += `<rect x="60" y="60" width="440" height="60" fill="none" stroke="${COLORS.ink}" stroke-width="2"/>`;
+    for (let j = 1; j < s.d; j += 1)
+      body += `<line x1="${60 + (j * 440) / s.d}" x2="${60 + (j * 440) / s.d}" y1="52" y2="128" stroke="${COLORS.ink}" stroke-width="3"/>`;
+    body +=
+      txt(280, 170, `${s.n}/${s.d} = ${shaded}/${total}`, { size: 30 }) +
+      txt(280, 210, `= ${fmt(s.n / s.d)}`, { size: 18, fill: COLORS.mute });
+    const alt = L(
+      `A bar with ${total} equal pieces, ${shaded} shaded.`,
+      `Una barra con ${total} partes iguales, ${shaded} sombreadas.`,
+    );
+    return out(
+      svgWrap(body, "", { h: 230 }),
+      alt,
+      L(
+        `${s.n}/${s.d} and ${shaded}/${total} are the same amount. The cuts changed the size of the pieces, not the shaded amount.`,
+        `${s.n}/${s.d} y ${shaded}/${total} son la misma cantidad. Los cortes cambiaron el tamaño de las partes, no la parte sombreada.`,
+      ),
+    );
+  },
+};
+
+const proportional = {
+  id: "proportional",
+  title: L("Proportional relationships", "Relaciones proporcionales"),
+  ask: L(
+    "Change the unit rate. Where does the line go? What is true of every point?",
+    "Cambia la tasa unitaria. ¿Hacia dónde va la recta? ¿Qué es cierto de cada punto?",
+  ),
+  init: () => ({ k: 2 }),
+  sliders: (s) => [
+    slider(
+      "k",
+      L("Unit rate (y for each 1 x)", "Tasa unitaria (y por cada 1 de x)"),
+      0.5,
+      5,
+      0.5,
+      s.k,
+    ),
+  ],
+  render(s) {
+    const X = (x) => 60 + x * 50;
+    const Y = (y) => 210 - y * 8;
+    let body = `<line x1="60" y1="210" x2="520" y2="210" stroke="${COLORS.ink}" stroke-width="2"/><line x1="60" y1="210" x2="60" y2="20" stroke="${COLORS.ink}" stroke-width="2"/>`;
+    for (let x = 0; x <= 8; x += 1)
+      body += txt(X(x), 230, String(x), { size: 12, weight: 500, fill: COLORS.mute });
+    body += `<line x1="${X(0)}" y1="${Y(0)}" x2="${X(8)}" y2="${Y(Math.min(8 * s.k, 24))}" stroke="${COLORS.whole}" stroke-width="3"/>`;
+    for (let x = 1; x <= 6; x += 1)
+      if (x * s.k <= 24)
+        body +=
+          `<circle cx="${X(x)}" cy="${Y(x * s.k)}" r="6" fill="${COLORS.hundreds}"/>` +
+          txt(X(x), Y(x * s.k) - 12, fmt(x * s.k), { size: 12 });
+    const alt = L(
+      `A straight line through the origin with y = ${fmt(s.k)} x.`,
+      `Una recta por el origen con y = ${fmt(s.k)} x.`,
+    );
+    return out(
+      svgWrap(body, "", { h: 240 }),
+      alt,
+      L(
+        `y = ${fmt(s.k)}x. Every point has y ÷ x = ${fmt(s.k)}, and the line goes through (0, 0). At x = 1, y is the unit rate.`,
+        `y = ${fmt(s.k)}x. Todo punto tiene y ÷ x = ${fmt(s.k)}, y la recta pasa por (0, 0). En x = 1, y es la tasa unitaria.`,
+      ),
+    );
+  },
+};
+
+const machine = {
+  id: "machine",
+  title: L("Function machine", "Máquina de funciones"),
+  ask: L(
+    "Change the rule. Predict the output before you read it.",
+    "Cambia la regla. Predice la salida antes de leerla.",
+  ),
+  init: () => ({ m: 2, b: 1, x: 3 }),
+  sliders: (s) => [
+    slider("m", L("Multiply by", "Multiplica por"), -3, 6, 1, s.m),
+    slider("b", L("Then add", "Luego suma"), -6, 9, 1, s.b),
+    slider("x", L("Input x", "Entrada x"), -5, 10, 1, s.x),
+  ],
+  render(s) {
+    const y = s.m * s.x + s.b;
+    const sg = (n) => (n < 0 ? `− ${-n}` : `+ ${n}`);
+    let body = `<rect x="190" y="50" width="180" height="90" rx="14" fill="${COLORS.whole}" fill-opacity=".9"/>${txt(280, 105, `× ${fmt(s.m)} ${sg(s.b)}`, { size: 26, fill: "#fff" })}`;
+    body +=
+      txt(100, 105, `x = ${fmt(s.x)}`, { size: 22 }) +
+      `<path d="M140,95 h45" stroke="${COLORS.ink}" stroke-width="3"/>` +
+      txt(470, 105, `y = ${fmt(y)}`, { size: 22, fill: COLORS.hundreds }) +
+      `<path d="M375,95 h45" stroke="${COLORS.ink}" stroke-width="3"/>`;
+    body +=
+      txt(280, 175, `x:  ${[0, 1, 2, 3, 4].map((t) => t).join("   ")}`, { size: 15, weight: 500 }) +
+      txt(280, 200, `y:  ${[0, 1, 2, 3, 4].map((t) => fmt(s.m * t + s.b)).join("   ")}`, {
+        size: 15,
+        fill: COLORS.hundreds,
+      });
+    const alt = L(
+      `Function machine with rule multiply by ${s.m} then add ${s.b}. Input ${s.x} gives output ${y}.`,
+      `Máquina con la regla multiplicar por ${s.m} y sumar ${s.b}. La entrada ${s.x} da la salida ${y}.`,
+    );
+    return out(
+      svgWrap(body, "", { h: 220 }),
+      alt,
+      L(
+        `y = ${fmt(s.m)}x ${sg(s.b)}. Each time x goes up by 1, y changes by ${fmt(s.m)}: that change is the slope. At x = 0, y = ${fmt(s.b)}.`,
+        `y = ${fmt(s.m)}x ${sg(s.b)}. Cada vez que x sube 1, y cambia ${fmt(s.m)}: ese cambio es la pendiente. En x = 0, y = ${fmt(s.b)}.`,
+      ),
+    );
+  },
+};
+
+const areaPerim = {
+  id: "areaPerim",
+  title: L("Area and perimeter", "Área y perímetro"),
+  ask: L(
+    "Make a rectangle with perimeter 20. How many different areas can you find?",
+    "Haz un rectángulo con perímetro 20. ¿Cuántas áreas distintas puedes hallar?",
+  ),
+  init: () => ({ w: 4, h: 3 }),
+  sliders: (s) => [
+    slider("w", L("Length", "Largo"), 1, 12, 1, s.w),
+    slider("h", L("Width", "Ancho"), 1, 12, 1, s.h),
+  ],
+  render(s) {
+    const c = Math.min(30, 380 / s.w, 150 / s.h);
+    let body = "";
+    for (let r = 0; r < s.h; r += 1)
+      for (let q = 0; q < s.w; q += 1)
+        body += `<rect x="${40 + q * c}" y="${30 + r * c}" width="${c - 2}" height="${c - 2}" fill="${COLORS.whole}" fill-opacity=".8"/>`;
+    body +=
+      `<rect x="38" y="28" width="${s.w * c + 2}" height="${s.h * c + 2}" fill="none" stroke="${COLORS.warn}" stroke-width="4"/>` +
+      txt(470, 80, `A = ${s.w * s.h}`, { size: 22, fill: COLORS.whole }) +
+      txt(470, 120, `P = ${2 * (s.w + s.h)}`, { size: 22, fill: COLORS.warn });
+    const alt = L(
+      `A rectangle ${s.w} by ${s.h}, area ${s.w * s.h}, perimeter ${2 * (s.w + s.h)}.`,
+      `Un rectángulo de ${s.w} por ${s.h}, área ${s.w * s.h}, perímetro ${2 * (s.w + s.h)}.`,
+    );
+    return out(
+      svgWrap(body, "", { h: 210 }),
+      alt,
+      L(
+        `Area ${s.w} × ${s.h} = ${s.w * s.h} counts the squares inside. Perimeter ${s.w} + ${s.h} + ${s.w} + ${s.h} = ${2 * (s.w + s.h)} measures the edge. Rectangles can share a perimeter and still have different areas.`,
+        `Área ${s.w} × ${s.h} = ${s.w * s.h} cuenta los cuadros dentro. Perímetro ${s.w} + ${s.h} + ${s.w} + ${s.h} = ${2 * (s.w + s.h)} mide el borde. Dos rectángulos pueden tener el mismo perímetro y distinta área.`,
+      ),
+    );
+  },
+};
+
+const volume = {
+  id: "volume",
+  title: L("Volume of a box", "Volumen de una caja"),
+  ask: L(
+    "Change one side at a time. Which change makes the volume grow most?",
+    "Cambia un lado a la vez. ¿Qué cambio hace crecer más el volumen?",
+  ),
+  init: () => ({ l: 4, w: 3, h: 2 }),
+  sliders: (s) => [
+    slider("l", L("Length", "Largo"), 1, 10, 1, s.l),
+    slider("w", L("Width", "Ancho"), 1, 10, 1, s.w),
+    slider("h", L("Height", "Alto"), 1, 10, 1, s.h),
+  ],
+  render(s) {
+    const c = Math.min(26, 260 / s.l, 120 / s.w);
+    let body = "";
+    for (let i = Math.min(s.h, 10) - 1; i >= 1; i -= 1)
+      body += `<rect x="${40 + i * 8}" y="${48 - i * 8 + 20}" width="${s.l * c}" height="${s.w * c}" fill="${COLORS.hundreds}" fill-opacity=".16" stroke="${COLORS.hundreds}" stroke-width="2"/>`;
+    for (let r = 0; r < s.w; r += 1)
+      for (let q = 0; q < s.l; q += 1)
+        body += `<rect x="${40 + q * c}" y="${68 + r * c}" width="${c - 2}" height="${c - 2}" fill="${COLORS.whole}" fill-opacity=".85"/>`;
+    body +=
+      txt(440, 90, `${s.l * s.w} per layer`, { size: 18, fill: COLORS.whole }) +
+      txt(440, 125, `× ${s.h} layers`, { size: 18, fill: COLORS.hundreds }) +
+      txt(440, 165, `V = ${s.l * s.w * s.h}`, { size: 24 });
+    const alt = L(
+      `A box ${s.l} by ${s.w} by ${s.h}; volume ${s.l * s.w * s.h}.`,
+      `Una caja de ${s.l} por ${s.w} por ${s.h}; volumen ${s.l * s.w * s.h}.`,
+    );
+    return out(
+      svgWrap(body, "", { h: 220 }),
+      alt,
+      L(
+        `${s.l} × ${s.w} = ${s.l * s.w} cubes in one layer, and ${s.h} layers make ${s.l * s.w * s.h} cubes.`,
+        `${s.l} × ${s.w} = ${s.l * s.w} cubos en una capa, y ${s.h} capas hacen ${s.l * s.w * s.h} cubos.`,
+      ),
+    );
+  },
+};
+
+const angles = {
+  id: "angles",
+  title: L("Angles at a crossing", "Ángulos en un cruce"),
+  ask: L(
+    "Change one angle. Which angles change with it, and which match?",
+    "Cambia un ángulo. ¿Cuáles cambian con él y cuáles son iguales?",
+  ),
+  init: () => ({ a: 60 }),
+  sliders: (s) => [slider("a", L("Angle a (degrees)", "Ángulo a (grados)"), 10, 170, 5, s.a)],
+  render(s) {
+    const r = 90;
+    const rad = (s.a * Math.PI) / 180;
+    const [cx, cy] = [280, 105];
+    const pt = (t, d = r) => `${cx + Math.cos(t) * d},${cy - Math.sin(t) * d}`;
+    let body = `<line x1="${cx - 140}" y1="${cy}" x2="${cx + 140}" y2="${cy}" stroke="${COLORS.ink}" stroke-width="4"/><line x1="${cx + Math.cos(rad) * 120}" y1="${cy - Math.sin(rad) * 120}" x2="${cx - Math.cos(rad) * 120}" y2="${cy + Math.sin(rad) * 120}" stroke="${COLORS.ink}" stroke-width="4"/>`;
+    body +=
+      `<path d="M${pt(0, 50)} A50,50 0 0 0 ${pt(rad, 50)}" fill="none" stroke="${COLORS.whole}" stroke-width="7"/>` +
+      txt(cx + 70, cy - 18, `a = ${s.a}°`, { size: 17, fill: COLORS.whole });
+    body +=
+      `<path d="M${pt(Math.PI, 50)} A50,50 0 0 1 ${pt(Math.PI + rad, 50)}" fill="none" stroke="${COLORS.whole}" stroke-width="7"/>` +
+      txt(cx - 70, cy + 28, `${s.a}°`, { size: 17, fill: COLORS.whole });
+    body +=
+      txt(cx - 70, cy - 18, `${180 - s.a}°`, { size: 17, fill: COLORS.warn }) +
+      txt(cx + 70, cy + 28, `${180 - s.a}°`, { size: 17, fill: COLORS.warn });
+    const alt = L(
+      `Two crossing lines make angles ${s.a} and ${180 - s.a} degrees.`,
+      `Dos rectas que se cruzan forman ángulos de ${s.a} y ${180 - s.a} grados.`,
+    );
+    return out(
+      svgWrap(body, "", { h: 220 }),
+      alt,
+      L(
+        `Opposite (vertical) angles are equal: ${s.a}° and ${s.a}°. Angles next to each other add to 180°: ${s.a}° + ${180 - s.a}° = 180°.`,
+        `Los ángulos opuestos por el vértice son iguales: ${s.a}° y ${s.a}°. Los ángulos contiguos suman 180°: ${s.a}° + ${180 - s.a}° = 180°.`,
+      ),
+    );
+  },
+};
+
+const dotplot = {
+  id: "dotplot",
+  title: L("Dot plot: center and spread", "Diagrama de puntos: centro y dispersión"),
+  ask: L(
+    "Add a dot far from the others. Which moves more, the mean or the median?",
+    "Agrega un punto lejos de los demás. ¿Qué se mueve más, la media o la mediana?",
+  ),
+  init: () => ({ data: [2, 3, 3, 4, 5, 5, 5, 6, 7], at: 5 }),
+  sliders: (s) => [slider("at", L("Place a dot at", "Coloca un punto en"), 0, 20, 1, s.at)],
+  actions: [
+    { id: "add", label: L("Add a dot", "Agregar un punto") },
+    { id: "remove", label: L("Remove a dot here", "Quitar un punto aquí") },
+    { id: "reset", label: L("Start over", "Empezar de nuevo") },
+  ],
+  act(s, id) {
+    if (id === "reset") return { ...s, data: [2, 3, 3, 4, 5, 5, 5, 6, 7] };
+    if (id === "add")
+      return s.data.length >= 24 ? s : { ...s, data: [...s.data, s.at].sort((x, y) => x - y) };
+    const i = s.data.indexOf(s.at);
+    return i < 0 || s.data.length <= 3 ? s : { ...s, data: s.data.filter((_, j) => j !== i) };
+  },
+  stats(data) {
+    const sorted = [...data].sort((a, b) => a - b);
+    const mean = sorted.reduce((a, b) => a + b, 0) / sorted.length;
+    const mid = sorted.length / 2;
+    const median =
+      sorted.length % 2 ? sorted[Math.floor(mid)] : (sorted[mid - 1] + sorted[mid]) / 2;
+    return { mean, median, range: sorted.at(-1) - sorted[0] };
+  },
+  render(s) {
+    const X = (v) => 40 + v * 24;
+    const counts = {};
+    let body = `<line x1="30" y1="170" x2="530" y2="170" stroke="${COLORS.ink}" stroke-width="2"/>`;
+    for (let v = 0; v <= 20; v += 2)
+      body += txt(X(v), 192, String(v), { size: 12, weight: 500, fill: COLORS.mute });
+    for (const v of s.data) {
+      counts[v] = (counts[v] || 0) + 1;
+      body += `<circle cx="${X(v)}" cy="${160 - counts[v] * 14}" r="6" fill="${COLORS.whole}"/>`;
+    }
+    const { mean, median, range } = this.stats(s.data);
+    body +=
+      `<polygon points="${X(mean) - 8},210 ${X(mean) + 8},210 ${X(mean)},196" fill="${COLORS.warn}"/>` +
+      txt(X(mean), 226, `mean ${fmt(Math.round(mean * 10) / 10)}`, {
+        size: 12,
+        fill: COLORS.warn,
+      }) +
+      `<line x1="${X(median)}" x2="${X(median)}" y1="30" y2="170" stroke="${COLORS.hundreds}" stroke-width="2" stroke-dasharray="6 5"/>` +
+      txt(X(median), 24, `median ${fmt(median)}`, { size: 12, fill: COLORS.hundreds }) +
+      `<circle cx="${X(s.at)}" cy="170" r="4" fill="none" stroke="${COLORS.warn}" stroke-width="2"/>`;
+    const alt = L(
+      `Dot plot of ${s.data.length} values. Mean ${fmt(Math.round(mean * 10) / 10)}, median ${fmt(median)}, range ${range}.`,
+      `Diagrama de ${s.data.length} valores. Media ${fmt(Math.round(mean * 10) / 10)}, mediana ${fmt(median)}, rango ${range}.`,
+    );
+    return out(
+      svgWrap(body, "", { h: 240 }),
+      alt,
+      L(
+        `Mean ${fmt(Math.round(mean * 10) / 10)} (balance point), median ${fmt(median)} (middle value), range ${range} (spread). A far-away dot pulls the mean more than the median.`,
+        `Media ${fmt(Math.round(mean * 10) / 10)} (punto de equilibrio), mediana ${fmt(median)} (valor del medio), rango ${range} (dispersión). Un punto lejano mueve más la media que la mediana.`,
+      ),
+    );
+  },
+};
+
+export const SIMS = { fracEquiv, proportional, machine, areaPerim, volume, angles, dotplot };
+export const simFor = (id) => SIMS[id] || null;
+export const _gcd = gcd;

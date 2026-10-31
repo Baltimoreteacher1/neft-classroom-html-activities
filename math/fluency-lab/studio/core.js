@@ -1,0 +1,120 @@
+// Shared pieces for the Math Discovery Studio engines: bilingual text, exact arithmetic, SVG helpers and the
+// keyed updater that lets a model move between frames instead of being redrawn.
+export const L = (en, es) => ({ en, es: es ?? en });
+export const pick = (text, lang) =>
+  text && typeof text === "object" ? (text[lang] ?? text.en) : text;
+
+export const esc = (value) =>
+  String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;");
+
+// One colour per kind of quantity, always paired with a label, never alone.
+export const COLORS = {
+  ones: "#0f766e",
+  tens: "#1d4ed8",
+  hundreds: "#7c3aed",
+  thousands: "#b45309",
+  big: "#be123c",
+  part: "#0f766e",
+  whole: "#1d4ed8",
+  warn: "#b45309",
+  ink: "#17324d",
+  mute: "#64748b",
+  rule: "#cbd5e1",
+};
+export const PLACE_COLORS = [
+  COLORS.ones,
+  COLORS.tens,
+  COLORS.hundreds,
+  COLORS.thousands,
+  COLORS.big,
+  COLORS.part,
+  COLORS.whole,
+];
+
+export const gcd = (a, b) => (b ? gcd(b, a % b) : Math.abs(a));
+export const lcm = (a, b) => Math.abs(a * b) / (gcd(a, b) || 1);
+
+// "1,234" and "−5" and "-5" all read as numbers; anything else is null so a parser can decline.
+export const num = (text) => {
+  const cleaned = String(text).replaceAll(",", "").replaceAll("−", "-").trim();
+  return /^-?\d+(\.\d+)?$/.test(cleaned) ? Number(cleaned) : null;
+};
+export const decimals = (text) => (String(text).split(".")[1] || "").length;
+export const fmt = (value) => {
+  const rounded = Math.round(value * 1e9) / 1e9;
+  return String(rounded).replace("-", "−");
+};
+
+// Question text as math: minus signs and spaces normalised, so parsers read one spelling.
+export const clean = (question) =>
+  String(question).replaceAll("−", "-").replaceAll(",", "").replace(/\s+/g, " ").trim();
+
+// A frame is { id, cap, easy?, eq, svg, alt, focus? }. The studio reads these; engines never touch the DOM.
+export const frame = (f) => ({ easy: null, focus: null, ...f });
+
+export const svgWrap = (body, alt, { w = 560, h = 260 } = {}) =>
+  `<svg class="sd-svg" viewBox="0 0 ${w} ${h}" role="img" aria-label="${esc(alt)}" preserveAspectRatio="xMidYMid meet">${body}</svg>`;
+
+// Keyed element: data-k identifies it across frames; the transform moves it, the class decides how it enters.
+export const keyed = (key, x, y, inner, cls = "") =>
+  `<g class="sd-k ${cls}" data-k="${esc(key)}" style="transform:translate(${x}px,${y}px)">${inner}</g>`;
+
+export const txt = (
+  x,
+  y,
+  value,
+  { size = 18, weight = 700, fill = COLORS.ink, anchor = "middle", cls = "" } = {},
+) =>
+  `<text class="${cls}" x="${x}" y="${y}" text-anchor="${anchor}" font-size="${size}" font-weight="${weight}" fill="${fill}">${esc(value)}</text>`;
+
+// Move the model to its next frame. Keyed groups already on screen slide to their new place; new ones fade in;
+// ones that are gone fade out. With reduced motion the swap is immediate.
+export function morph(stage, html, { animate = true } = {}) {
+  const next = Object.assign(stage.ownerDocument.createElement("div"), { innerHTML: html });
+  const incoming = next.querySelector("svg");
+  const current = stage.querySelector("svg");
+  if (!incoming) return void (stage.innerHTML = html);
+  if (!current || !animate) return void (stage.innerHTML = html);
+  current.setAttribute("aria-label", incoming.getAttribute("aria-label") || "");
+  const old = new Map(
+    [...current.querySelectorAll(":scope > .sd-k")].map((el) => [el.dataset.k, el]),
+  );
+  const seen = new Set();
+  for (const el of current.querySelectorAll(":scope > :not(.sd-k)")) el.remove();
+  for (const el of incoming.querySelectorAll(":scope > :not(.sd-k)"))
+    current.append(el.cloneNode(true));
+  for (const el of incoming.querySelectorAll(":scope > .sd-k")) {
+    const prior = old.get(el.dataset.k);
+    seen.add(el.dataset.k);
+    if (prior) {
+      prior.setAttribute("style", el.getAttribute("style"));
+      prior.className.baseVal = el.className.baseVal;
+      prior.innerHTML = el.innerHTML;
+    } else {
+      const added = el.cloneNode(true);
+      added.classList.add("sd-enter");
+      current.append(added);
+      requestAnimationFrame?.(() => added.classList.remove("sd-enter"));
+    }
+  }
+  for (const [key, el] of old)
+    if (!seen.has(key)) {
+      el.classList.add("sd-leave");
+      setTimeout(() => el.remove(), 320);
+    }
+}
+
+// An engine must be able to prove its frames. Tests call this for every generated lesson.
+export function checkFrames(frames) {
+  const problems = [];
+  frames.forEach((f, i) => {
+    if (!f.cap?.en || !f.cap?.es) problems.push(`frame ${i}: caption needs English and Spanish`);
+    if (!f.svg?.includes("<svg")) problems.push(`frame ${i}: no drawing`);
+    if (!f.alt?.en || !f.alt?.es) problems.push(`frame ${i}: no text description`);
+  });
+  return problems;
+}

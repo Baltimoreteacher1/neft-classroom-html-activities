@@ -11,7 +11,8 @@ const dir = new URL("../math/fluency-lab/", import.meta.url);
 const { ES: ES_BASE } = await import("../math/fluency-lab/i18n-es.js");
 const { ES_MODELS } = await import("../math/fluency-lab/i18n-es-models.js");
 const { ES_WORLDS } = await import("../math/fluency-lab/i18n-es-worlds.js");
-const ES = { ...ES_BASE, ...ES_MODELS, ...ES_WORLDS };
+const { ES_STUDIO } = await import("../math/fluency-lab/i18n-es-studio.js");
+const ES = { ...ES_STUDIO, ...ES_BASE, ...ES_MODELS, ...ES_WORLDS };
 const { setLang, t } = await import("../math/fluency-lab/i18n.js");
 const { TRAILS, BANDS } = await import("../math/fluency-lab/fact-trail.js");
 const { STRATEGIES, TIPS } = await import("../math/fluency-lab/strategies.js");
@@ -34,7 +35,13 @@ for (const skill of ALL_SKILLS)
     keys.add(skill.learn.rule);
     keys.add(skill.learn.watch);
   }
-for (const file of readdirSync(dir).filter((f) => f.endsWith(".js") && !f.startsWith("i18n-es"))) {
+const sources = [
+  ...readdirSync(dir).filter((f) => f.endsWith(".js") && !f.startsWith("i18n-es")),
+  ...readdirSync(new URL("studio/", dir))
+    .filter((f) => f.endsWith(".js"))
+    .map((f) => `studio/${f}`),
+];
+for (const file of sources) {
   const source = readFileSync(new URL(file, dir), "utf8");
   for (const match of source.matchAll(/\bt\((?:"((?:[^"\\]|\\.)*)"|'((?:[^'\\]|\\.)*)')/g))
     keys.add((match[1] ?? match[2]).replace(/\\["']/g, (escaped) => escaped.slice(1)));

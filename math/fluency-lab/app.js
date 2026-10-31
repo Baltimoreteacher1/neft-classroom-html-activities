@@ -55,6 +55,7 @@ import { setLanguageProfile } from "./language-settings.js";
 import { questionEs } from "./question-es.js";
 import { handleStepPlayerClick, handleStepPlayerSolved, lightStepPlayers, stepPlayer } from "./step-player.js";
 import { applyGradeExperience } from "./grade-experience.js";
+import { mountStudio, studioModeled } from "./studio/studio.js";
 
 const STORAGE_KEY = "ewl-fluency-progress-v1";
 const SETTINGS_KEY = "ewl-fluency-settings-v1";
@@ -74,6 +75,7 @@ let activeProfile = Number.isInteger(requestedProfile) && requestedProfile >= 0 
 selectProfile(activeProfile);
 setLanguageProfile(activeProfile);
 let cleanupVisual = null;
+let cleanupVisualStudio = null;
 let cleanupTrail = null;
 let cleanupGames = null;
 let cleanupWriting = null;
@@ -369,6 +371,8 @@ function pickGrade(grade) {
 function renderLibrary() {
   saveActiveSession();
   cleanupVisual?.();
+  cleanupVisualStudio?.();
+  cleanupVisualStudio = null;
   showArea("library");
   state.skill = null;
   state.mixedPool = null;
@@ -660,6 +664,14 @@ function setMode(mode) {
     state.session = null;
     state.item = null;
     els.learnPanel.hidden = mode !== "learn";
+    const visualStudio = document.querySelector("#visual-studio");
+    if (visualStudio) {
+      cleanupVisualStudio?.();
+      cleanupVisualStudio = null;
+      visualStudio.replaceChildren();
+      visualStudio.hidden = mode !== "visual";
+      if (mode === "visual") cleanupVisualStudio = mountStudio(visualStudio, { item: generateProblem(state.skill), skill: state.skill, context: "idea" });
+    }
     if (mode === "visual") {
       cleanupVisual = mountVisualLesson(els.visualPanel, state.skill, {
         onComplete: () => {
@@ -788,6 +800,7 @@ function nextProblem(restoredItem = null) {
   state.forceIndependentFirst = false;
   state.guidedStepsShown = state.session.mode === "guided" ? 1 : 0;
   els.feedback.hidden = true;
+  clearStudio();
   els.nextButton.hidden = true;
   els.nextButton.textContent = "Next problem";
   els.hintButton.hidden = state.initialSupport || state.session.mode === "diagnostic";
@@ -6512,6 +6525,7 @@ function renderStudentFriendlyExplanation(item, copy) {
     ? stepPlayer(item)
     : `<p class="student-expl-goal">${escapeHtml(copy)}</p>`;
 
+  const modeled = studioModeled(item);
   const toolCallout = suggestedTool
     ? `<div class="student-expl-tool-callout">
         <button type="button" class="expl-tool-launcher" data-open-tool="${suggestedTool}">
@@ -6527,8 +6541,7 @@ function renderStudentFriendlyExplanation(item, copy) {
         <button type="button" class="expl-speak-btn" data-speak-expl="true" aria-label="Listen to explanation">🔊 Listen</button>
       </div>
       <p class="student-expl-goal"><strong>🎯 Goal:</strong> ${escapeHtml(goal)}</p>
-      ${visualWidget}
-      ${stepsList}
+      ${modeled ? `<details class="sd-legacy"><summary>${escapeHtml(t("Show the earlier explanation"))}</summary>${visualWidget}${stepsList}</details>` : `${visualWidget}${stepsList}`}
       <div class="student-expl-tip"><strong>💡 Pro Tip:</strong> ${escapeHtml(tip)}</div>
       ${toolCallout}
       ${renderMultiStrategyComparison(item)}
@@ -7077,6 +7090,20 @@ function renderTransferChallengeButton(item) {
   `;
 }
 
+// The Math Discovery Studio sits beside the feedback, not inside it: the feedback is a live region.
+let cleanupStudio = null;
+function clearStudio() {
+  cleanupStudio?.();
+  cleanupStudio = null;
+  const slot = document.querySelector("#studio-slot");
+  if (slot) slot.replaceChildren();
+}
+function showStudio(item, skill, context) {
+  clearStudio();
+  const slot = document.querySelector("#studio-slot");
+  if (slot) cleanupStudio = mountStudio(slot, { item, skill, context });
+}
+
 function showFeedback(title, copy, type, resultType = type) {
   els.feedback.hidden = false;
   els.feedback.dataset.type = type;
@@ -7105,7 +7132,9 @@ function showFeedback(title, copy, type, resultType = type) {
     els.feedbackCopy.innerHTML = renderStudentFriendlyExplanation(state.item, copy);
     lightStepPlayers(els.feedbackCopy);
     wireExplanationWidgets(els.feedbackCopy, state.item);
+    showStudio(state.item, state.skill, "miss");
   } else if (type === "correct" && state.item) {
+    clearStudio();
     els.feedbackCopy.innerHTML = `<p>${escapeHtml(copy)}</p>${renderTransferChallengeButton(state.item)}`;
   } else {
     els.feedbackCopy.textContent = copy;
@@ -7171,6 +7200,7 @@ function finishSession() {
   document.querySelector(".problem-stage").hidden = true;
   els.answerForm.hidden = true;
   els.feedback.hidden = true;
+  clearStudio();
   if (els.languageSlot) els.languageSlot.innerHTML = "";
   els.summary.hidden = false;
   const scoredAttempts = Math.max(0, session.answered - (session.revised || 0));
@@ -8414,6 +8444,7 @@ document.querySelector("#scratchpad-backgrounds")?.addEventListener("click", (ev
 document.querySelector("#lang-toggle").addEventListener("click", () => {
   setLang(getLang() === "es" ? "en" : "es");
   applyLang();
+  window.dispatchEvent(new Event("fluency-lang-changed"));
   renderGradeTabs();
   if (state.view === "games") openHubView("games");
   else if (state.view === "library") renderLibrary();

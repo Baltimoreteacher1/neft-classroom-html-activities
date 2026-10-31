@@ -10,6 +10,21 @@ Teacher studio creates shareable assignments for selected skills, a problem coun
 
 The three longer-form publisher games share the same evidence and reward records. **Math World Builder** sets a target floor area and, from Grade 3, a fence-material budget; changing row and column controls redraws the building grid and updates both calculations. **Number Puzzle Studio** presents a tile bank with multiple valid addition or multiplication pairs for each target, supports touch or keyboard selection, and explains the pair after checking. **Fluency Rally** presents an untimed route checkpoint: students choose the route matching a multi-operation expression, calculate its distance, and enter the result. All three provide hints, feedback, five challenge levels, saved completion rewards, and grade-appropriate teacher assignments.
 
+## Math Discovery Studio
+
+`studio/` is the interactive explanation layer. It opens beside the feedback after a missed practice problem (never inside the live region) and above "See idea" on every skill. One panel set, driven by the problem's own numbers:
+
+- **Watch**: animated frames with Previous / Play / Next / Replay, speed, "Show all steps" and arrow keys. The lesson stops at **Predict** points (a wrong choice is explained, a right one asks for a one-sentence reason) before it shows what happens. Reduced motion removes autoplay and animation.
+- **Build**: the learner makes the moves (trade ten chips for one, break a ten, cut pieces, walk the number line, apply an operation to both pans, scale both ratio numbers). Every action goes through the engine's rules; impossible moves are refused with a reason and change nothing. The moves are kept as "My thinking".
+- **Try**: a fresh problem with a three-rung hint ladder (a clue, a picture, a guided first step). Any rung makes the answer "with help"; the learner is then asked for a new problem on their own. Wrong answers get the named slip and a tip when the engine recognises it.
+- **Explore**: a simulator for the skill's idea (fraction equivalence, proportional graph, function machine, area and perimeter, volume, angles, dot plot).
+- **Find the mistake**: the lab's own mistake bank (first wrong step, the slip, the repair), then the right way in the model and a second case.
+- **Explain it differently**: simpler words, listen, another representation (number line or zero-pair chips; ratio table or double number line), another example, English / Español.
+
+Engines (`engine-*.js`): place value (whole numbers and decimals), fraction bars (equivalent, compare, add or subtract), integers (number line and chips, absolute value), balance (one- and two-step equations), ratio tables (ratios, proportions, unit rates, conversions, scale, percent), arrays and area (facts, area model, division, rectangle area, perimeter, triangle, volume). `engines.js` picks an engine from the question text; a problem with no model gets the worded-steps player and says so. `docs/fluency-studio-coverage.md` (from `node tools/fluency-studio-coverage.mjs`) lists every skill.
+
+The mission (Explore, Build, Solve, Explain, Challenge) records what the learner did and earns one quiet badge per engine; nothing is timed. `adaptive.js` keeps the last 12 attempts per skill on the device (right or wrong, with help or without, a named slip; no names) and uses fixed rules: two independent successes fade one level of support, a miss brings it back, a slip named twice is called out. It is a pattern in recent answers, never a mastery score, and it does not change the lab's mastery evidence. Spanish for the Studio's interface is in `i18n-es-studio.js`; captions, hints and feedback carry both languages inside the engines. Test: `node tools/fluency-studio.test.mjs`.
+
 ## Progress rules
 
 - Profiles are local learner slots, not student accounts or a school roster.
