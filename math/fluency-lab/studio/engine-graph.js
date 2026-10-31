@@ -31,19 +31,25 @@ function grid(s, { points = 0, triangle = 0, tokenAt = null } = {}) {
   const ys = [s.y1, s.y2];
   const [lx, hx] = [Math.min(...xs, 0) - 1, Math.max(...xs, 0) + 1];
   const [ly, hy] = [Math.min(...ys, 0) - 1, Math.max(...ys, 0) + 1];
-  const cell = Math.min(36, 440 / (hx - lx), 210 / (hy - ly));
+  const cell = Math.min(36, 440 / (hx - lx), 280 / (hy - ly));
   const X = (v) => 280 - ((hx + lx) / 2 - v) * cell;
-  const Y = (v) => 130 + ((hy + ly) / 2 - v) * cell;
+  const Y = (v) => 150 + ((hy + ly) / 2 - v) * cell;
   let out = "";
   for (let v = Math.ceil(lx); v <= hx; v += 1) out += `<line x1="${X(v)}" x2="${X(v)}" y1="${Y(hy)}" y2="${Y(ly)}" stroke="${v === 0 ? COLORS.ink : COLORS.rule}" stroke-width="${v === 0 ? 2.5 : 1}"/>`;
   for (let v = Math.ceil(ly); v <= hy; v += 1) out += `<line y1="${Y(v)}" y2="${Y(v)}" x1="${X(lx)}" x2="${X(hx)}" stroke="${v === 0 ? COLORS.ink : COLORS.rule}" stroke-width="${v === 0 ? 2.5 : 1}"/>`;
+  // Numbers on both axes, every `tick`, so a point can be read off the grid.
+  const tick = [1, 2, 5, 10].find((n) => n * cell >= 22) ?? 10;
+  for (let v = Math.ceil(lx / tick) * tick; v <= hx; v += tick)
+    if (v !== 0) out += txt(X(v), Y(0) + 16, sg(v), { size: 12, weight: 600, fill: COLORS.mute });
+  for (let v = Math.ceil(ly / tick) * tick; v <= hy; v += tick)
+    if (v !== 0) out += txt(X(0) - 6, Y(v) + 4, sg(v), { size: 12, weight: 600, fill: COLORS.mute, anchor: "end" });
   const dot = (x, y, key, color) => keyed(key, X(x), Y(y), `<circle r="7" fill="${color}" stroke="#fff" stroke-width="2"/>${txt(10, -10, `(${sg(x)}, ${sg(y)})`, { size: 13, anchor: "start", fill: color })}`);
   if (points >= 1) out += dot(s.x1, s.y1, "p1", COLORS.whole);
   if (points >= 2) out += dot(s.x2, s.y2, "p2", COLORS.hundreds) + `<line x1="${X(s.x1)}" y1="${Y(s.y1)}" x2="${X(s.x2)}" y2="${Y(s.y2)}" stroke="${COLORS.ink}" stroke-width="3"/>`;
   if (triangle >= 1) out += `<line x1="${X(s.x1)}" y1="${Y(s.y1)}" x2="${X(s.x2)}" y2="${Y(s.y1)}" stroke="${COLORS.warn}" stroke-width="4"/>` + txt((X(s.x1) + X(s.x2)) / 2, Y(s.y1) + (s.rise >= 0 ? 20 : -10), `${L("run", "avance").en} ${sg(s.run)}`, { size: 14, fill: COLORS.warn });
   if (triangle >= 2) out += `<line x1="${X(s.x2)}" y1="${Y(s.y1)}" x2="${X(s.x2)}" y2="${Y(s.y2)}" stroke="${COLORS.part}" stroke-width="4"/>` + txt(X(s.x2) + (s.run >= 0 ? 10 : -10), (Y(s.y1) + Y(s.y2)) / 2, `${L("rise", "subida").en} ${sg(s.rise)}`, { size: 14, anchor: s.run >= 0 ? "start" : "end", fill: COLORS.part });
   if (tokenAt) out += keyed("tok", X(tokenAt[0]), Y(tokenAt[1]), `<circle r="9" fill="${COLORS.part}" stroke="#fff" stroke-width="3"/>`);
-  return svgWrap(out, "", { h: 260 });
+  return svgWrap(out, "", { h: 300 });
 }
 
 function machine(s, stage) {

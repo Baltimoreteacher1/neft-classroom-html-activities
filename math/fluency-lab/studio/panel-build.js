@@ -62,8 +62,11 @@ export function mountBuild(ctx, root) {
     svg.dataset.bound = "1";
     let dragging = false;
     const valueAt = (ev) => {
-      const box = svg.getBoundingClientRect();
-      const x = ((ev.clientX - box.left) / box.width) * 560;
+      // Through the SVG's own transform, so it stays right however the drawing was cropped or scaled.
+      const point = svg.createSVGPoint();
+      point.x = ev.clientX;
+      point.y = ev.clientY;
+      const x = point.matrixTransform(svg.getScreenCTM().inverse()).x;
       const lo = Number(svg.dataset.lo);
       const hi = Number(svg.dataset.hi);
       return Math.round(lo + ((x - 40) / 480) * (hi - lo));

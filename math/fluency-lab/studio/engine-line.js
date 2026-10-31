@@ -44,12 +44,13 @@ function line(spec, { pos, show = "start", span = null }) {
   const lo = Math.min(...pts) - 2;
   const hi = Math.max(...pts) + 2;
   const x = (v) => 40 + ((v - lo) / (hi - lo)) * 480;
-  const step = hi - lo <= 30 ? 1 : hi - lo <= 70 ? 5 : 10;
+  // A label every `step`, wide enough apart that a "−10" never touches its neighbour and the text can be large.
+  const step = [1, 2, 5, 10, 20, 50].find((n) => (n * 480) / (hi - lo) >= 46) ?? 100;
   let out = `<line x1="30" x2="530" y1="130" y2="130" stroke="${COLORS.ink}" stroke-width="3"/>`;
   for (let v = Math.ceil(lo / step) * step; v <= hi; v += step) {
     out += `<line x1="${x(v)}" x2="${x(v)}" y1="${v === 0 ? 116 : 122}" y2="${v === 0 ? 144 : 138}" stroke="${COLORS.ink}" stroke-width="${v === 0 ? 4 : 2}"/>`;
     out += txt(x(v), 166, signed(v), {
-      size: 13,
+      size: 17,
       weight: v === 0 ? 900 : 600,
       fill: v === 0 ? COLORS.ink : COLORS.mute,
     });

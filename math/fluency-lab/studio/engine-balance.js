@@ -45,19 +45,26 @@ const width = (label) => Math.max(54, 16 + String(label).length * 13);
 
 // tilt: +1 when the left pan is heavier, -1 right, 0 level. `ghost` adds the operation to the pans.
 function scale(e, { tilt = 0, ghostL = null, ghostR = null, ringB = false } = {}) {
-  const yL = 150 + tilt * 22;
-  const yR = 150 - tilt * 22;
-  let out = `<polygon points="280,148 250,222 310,222" fill="${COLORS.rule}"/>`;
-  out += `<line x1="100" y1="${yL - 38}" x2="460" y2="${yR - 38}" stroke="${COLORS.ink}" stroke-width="7" stroke-linecap="round" style="transition:all .5s"/>`;
+  // The beam is a bar across the top; each pan hangs from it by two upright strings, and the tiles sit on the pan,
+  // below the beam and clear of the strings. (The beam used to run through the tiles.)
+  const yL = 200 + tilt * 22;
+  const yR = 200 - tilt * 22;
+  const beamY = (x) => 70 + ((x - 45) / 470) * (yR - yL);
+  const beamL = yL - 130;
+  let out = `<polygon points="280,${70} 248,236 312,236" fill="${COLORS.rule}"/>`;
+  out += `<line x1="45" y1="${beamL}" x2="515" y2="${yR - 130}" stroke="${COLORS.ink}" stroke-width="8" stroke-linecap="round" style="transition:all .5s"/><circle cx="280" cy="70" r="9" fill="${COLORS.ink}"/>`;
   for (const [cx, y] of [
-    [130, yL],
-    [430, yR],
-  ])
-    out += `<path d="M${cx - 70},${y} h140 q-10,24 -50,24 h-40 q-40,0 -50,-24z" fill="#e2e8f0" stroke="${COLORS.ink}" stroke-width="2" style="transition:all .5s"/><line x1="${cx - 60}" y1="${y - 36}" x2="${cx - 70}" y2="${y}" stroke="${COLORS.ink}"/><line x1="${cx + 60}" y1="${y - 36}" x2="${cx + 70}" y2="${y}" stroke="${COLORS.ink}"/>`;
+    [140, yL],
+    [420, yR],
+  ]) {
+    for (const x of [cx - 96, cx + 96])
+      out += `<line x1="${x}" y1="${beamY(x)}" x2="${x}" y2="${y}" stroke="${COLORS.ink}" stroke-width="2.5" style="transition:all .5s"/>`;
+    out += `<path d="M${cx - 100},${y} h200 q-12,26 -56,26 h-88 q-44,0 -56,-26z" fill="#e2e8f0" stroke="${COLORS.ink}" stroke-width="2" style="transition:all .5s"/>`;
+  }
   const lx = coef(e);
   const bw = e.b ? width(sgn(e.b)) : 0;
   const total = width(lx) + (e.b ? bw + 8 : 0) + (ghostL ? width(ghostL) + 8 : 0);
-  let cursor = 130 - total / 2;
+  let cursor = 140 - total / 2;
   const place = (label, opts, key) => {
     const w = width(label);
     out += tile(key, cursor + w / 2, yL - 52, w, label, opts);
@@ -68,14 +75,14 @@ function scale(e, { tilt = 0, ghostL = null, ghostR = null, ringB = false } = {}
   if (ghostL) place(ghostL, { ghost: true, ring: ringB }, "L-g");
   const rc = String(e.c).replace("-", "−");
   const rw = width(rc) + (ghostR ? width(ghostR) + 8 : 0);
-  let rcur = 430 - rw / 2;
+  let rcur = 420 - rw / 2;
   out += tile("R-c", rcur + width(rc) / 2, yR - 52, width(rc), rc, {
     fill: e.c < 0 ? COLORS.warn : COLORS.hundreds,
   });
   rcur += width(rc) + 8;
   if (ghostR)
     out += tile("R-g", rcur + width(ghostR) / 2, yR - 52, width(ghostR), ghostR, { ghost: true });
-  return svgWrap(out, "", { h: 240 });
+  return svgWrap(out, "", { h: 262 });
 }
 const state = (e, tilt) =>
   tilt === 0

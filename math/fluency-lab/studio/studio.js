@@ -175,7 +175,7 @@ export function mountStudio(host, { item, skill, context = "idea" }) {
     if (reps.length > 1) {
       const current = ctx.rep || reps[0];
       const next = reps[(reps.indexOf(current) + 1) % reps.length];
-      repBtn.textContent = `${t("Show me another way")}: ${pick(REP_NAMES[`${ctx.lesson.engine.id}:${next}`] || L(next, next), getLang())}`;
+      repBtn.textContent = `${t("Another way")}: ${pick(REP_NAMES[`${ctx.lesson.engine.id}:${next}`] || L(next, next), getLang())}`;
       repBtn.dataset.next = next;
     }
     q('[data-tool="lang"]').textContent = getLang() === "es" ? "English" : "Español";

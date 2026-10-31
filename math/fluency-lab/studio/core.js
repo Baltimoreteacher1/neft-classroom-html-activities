@@ -78,26 +78,41 @@ export function morph(stage, html, { animate = true } = {}) {
   const incoming = next.querySelector("svg");
   const current = stage.querySelector("svg");
   if (!incoming) return void (stage.innerHTML = html);
-  if (!current || !animate) return void (stage.innerHTML = html);
+  if (!current || !animate) {
+    stage.innerHTML = html;
+    return void fitWidth(stage.querySelector("svg"));
+  }
   current.setAttribute("aria-label", incoming.getAttribute("aria-label") || "");
   const old = new Map(
     [...current.querySelectorAll(":scope > .sd-k")].map((el) => [el.dataset.k, el]),
   );
   const seen = new Set();
   for (const el of current.querySelectorAll(":scope > :not(.sd-k)")) el.remove();
-  for (const el of incoming.querySelectorAll(":scope > :not(.sd-k)"))
-    current.append(el.cloneNode(true));
-  for (const el of incoming.querySelectorAll(":scope > .sd-k")) {
+  // Keep the drawing order of the incoming frame. Keyed groups already on screen stay where they are (moving a node
+  // would restart its transition), and everything else is placed right after the sibling that precedes it in the new
+  // frame, so a column background still sits under its chips and a label still sits over them.
+  let anchor = null;
+  const place = (node) => {
+    if (anchor) anchor.after(node);
+    else current.prepend(node);
+    anchor = node;
+  };
+  for (const el of [...incoming.children]) {
+    if (!el.classList.contains("sd-k")) {
+      place(el.cloneNode(true));
+      continue;
+    }
     const prior = old.get(el.dataset.k);
     seen.add(el.dataset.k);
     if (prior) {
       prior.setAttribute("style", el.getAttribute("style"));
       prior.className.baseVal = el.className.baseVal;
       prior.innerHTML = el.innerHTML;
+      anchor = prior;
     } else {
       const added = el.cloneNode(true);
       added.classList.add("sd-enter");
-      current.append(added);
+      place(added);
       requestAnimationFrame?.(() => added.classList.remove("sd-enter"));
     }
   }
@@ -106,6 +121,28 @@ export function morph(stage, html, { animate = true } = {}) {
       el.classList.add("sd-leave");
       setTimeout(() => el.remove(), 320);
     }
+  fitWidth(current);
+}
+
+// Crop the drawing's empty side margins so a narrow model fills the stage instead of floating small in the middle
+// (on a phone a 560-unit drawing was scaled to about half size, and its text to about 7px). The crop only ever
+// grows across the frames of one lesson, so the picture never zooms back and forth. Height is untouched.
+export function fitWidth(svg, { pad = 18, min = 300 } = {}) {
+  if (!svg?.getBBox || !svg.viewBox?.baseVal?.height) return;
+  let box;
+  try {
+    box = svg.getBBox();
+  } catch {
+    return;
+  }
+  if (!(box.width > 0)) return;
+  const left = Math.min(Number(svg.dataset.fitL ?? box.x), box.x);
+  const right = Math.max(Number(svg.dataset.fitR ?? box.x + box.width), box.x + box.width);
+  svg.dataset.fitL = String(left);
+  svg.dataset.fitR = String(right);
+  const width = Math.max(right - left + pad * 2, min);
+  const x = (left + right) / 2 - width / 2;
+  svg.setAttribute("viewBox", `${x} 0 ${width} ${svg.viewBox.baseVal.height}`);
 }
 
 // An engine must be able to prove its frames. Tests call this for every generated lesson.

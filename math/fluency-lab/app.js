@@ -6550,17 +6550,22 @@ function renderStudentFriendlyExplanation(item, copy) {
       </div>`
     : "";
 
+  // For a problem the Studio models, the whole earlier explanation stays available but folded away: its goal and
+  // strategy text is generic (it reads any minus sign as integer subtraction, so "259 − 129" offered zero pairs).
+  const legacyBody = `
+      <p class="student-expl-goal"><strong>🎯 Goal:</strong> ${escapeHtml(goal)}</p>
+      ${visualWidget}
+      ${stepsList}
+      <div class="student-expl-tip"><strong>💡 Pro Tip:</strong> ${escapeHtml(tip)}</div>
+      ${toolCallout}
+      ${renderMultiStrategyComparison(item)}`;
   return `
     <div class="student-expl-card">
       <div class="student-expl-header">
         <span class="student-expl-badge">💡 Strategy &amp; Solution Guide</span>
         <button type="button" class="expl-speak-btn" data-speak-expl="true" aria-label="Listen to explanation">🔊 Listen</button>
       </div>
-      <p class="student-expl-goal"><strong>🎯 Goal:</strong> ${escapeHtml(goal)}</p>
-      ${modeled ? `<details class="sd-legacy"><summary>${escapeHtml(t("Show the earlier explanation"))}</summary>${visualWidget}${stepsList}</details>` : `${visualWidget}${stepsList}`}
-      <div class="student-expl-tip"><strong>💡 Pro Tip:</strong> ${escapeHtml(tip)}</div>
-      ${toolCallout}
-      ${renderMultiStrategyComparison(item)}
+      ${modeled ? `<details class="sd-legacy"><summary>${escapeHtml(t("Show the earlier explanation"))}</summary>${legacyBody}</details>` : legacyBody}
     </div>
   `;
 }
