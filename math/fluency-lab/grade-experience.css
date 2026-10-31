@@ -204,3 +204,26 @@ html[data-grade-experience="8"] .workspace-heading { border-top: 4px solid #2455
   .grade-experience-banner,
   .grade-experience-art svg { animation: none !important; }
 }
+
+/* While a skill is open the grade world shrinks to a slim header, so the lesson starts higher on the screen.
+   The ID selector outranks the per-grade themes above. */
+html body.working-on-skill #grade-experience-banner .grade-experience-banner {
+  grid-template-columns: 56px minmax(0, 1fr);
+  align-items: center;
+  gap: 0.9rem;
+  padding: 0.6rem 1rem;
+}
+html body.working-on-skill #grade-experience-banner .grade-experience-art {
+  width: 56px;
+  min-height: 0;
+  height: 56px;
+  padding: 0;
+}
+html body.working-on-skill #grade-experience-banner .grade-experience-copy > p:not(.grade-experience-kicker),
+html body.working-on-skill #grade-experience-banner .grade-experience-focus {
+  display: none;
+}
+html body.working-on-skill #grade-experience-banner .grade-experience-copy h2 {
+  margin: 0;
+  font-size: 1.25rem;
+}
