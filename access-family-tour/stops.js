@@ -258,7 +258,7 @@ export function loadState() {
     band: raw.band,
     stop: inRange(raw.stop) ? raw.stop : 0,
     done: Array.isArray(raw.done) ? [...new Set(raw.done.filter(inRange))] : [],
-    view: raw.view === "end" ? "end" : "stop",
+    view: raw.view === "end" || raw.view === "map" ? raw.view : "stop",
   };
 }
 

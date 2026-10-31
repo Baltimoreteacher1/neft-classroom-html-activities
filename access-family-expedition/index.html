@@ -753,6 +753,9 @@
           width: 100%;
         }
         .lang {
+          flex: 1 1 100%;
+        }
+        .head-actions > button {
           flex: 1;
         }
         .lang button {
@@ -1042,6 +1045,11 @@
             "A longer practice for the weekend",
             "Una práctica más larga para el fin de semana",
           ],
+          tour: ["Family Expedition", "Expedición familiar"],
+          tourHelp: [
+            "A guided tour of every part of the site",
+            "Un recorrido guiado por cada parte del sitio",
+          ],
           again: ["Do the adventure again", "Hacer la aventura otra vez"],
           start: ["Start over", "Empezar de nuevo"],
           startQ: ["Start over from the beginning?", "¿Empezar de nuevo desde el principio?"],
@@ -1229,7 +1237,7 @@
   <h1>${T(COPY.endTitle)}</h1><p class="lead">${T(COPY.endLead)}</p>
   <div class="souvenirs">${STOPS.map((s, i) => (isDone(i) ? `<span class="souvenir" style="${theme(s)}">${svg(s.id)}${T(s.name)}</span>` : "")).join("")}</div>
   <h2>${T(COPY.nextSteps)}</h2>
-  <div class="row">${link(`${LAB}/family?grades=${state.band}`, COPY.corner, COPY.cornerHelp)}${link(`${LAB}/family/help?grades=${state.band}`, COPY.helpMe, COPY.helpMeHelp)}${link(`${LAB}/family/trip?grades=${state.band}`, COPY.trip, COPY.tripHelp)}</div>
+  <div class="row">${link(`${LAB}/family?grades=${state.band}`, COPY.corner, COPY.cornerHelp)}${link(`${LAB}/family/help?grades=${state.band}`, COPY.helpMe, COPY.helpMeHelp)}${link(`${LAB}/family/trip?grades=${state.band}`, COPY.trip, COPY.tripHelp)}${link("/access-family-tour/", COPY.tour, COPY.tourHelp)}</div>
   <div class="row two"><button type="button" data-view="map">${T(COPY.backMap)}</button><button type="button" data-restart-run>${T(COPY.again)}</button></div></section>`;
         }
 

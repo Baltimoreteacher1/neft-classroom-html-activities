@@ -477,7 +477,14 @@ window.addEventListener("pagehide", () => { app.view?.unmount?.(); stopSpeech();
 function watchNetwork() {
   const note = $("#labNet");
   const show = (offline) => {
-    if (note) note.hidden = !offline;
+    if (!note) return;
+    // The shell ships the English sentence; a family reading Spanish gets Spanish (or both) when it appears.
+    if (offline)
+      note.textContent = i18nFor(ctx).S(
+        "You are offline. Practice and saved work keep working. Sharing and the official WIDA demo need a connection.",
+        "No hay conexión. La práctica y el trabajo guardado siguen funcionando. Compartir y la demostración oficial de WIDA necesitan conexión.",
+      );
+    note.hidden = !offline;
   };
   window.addEventListener("online", () => show(false));
   window.addEventListener("offline", () => show(true));
