@@ -1,4 +1,13 @@
-import { countOf, factorTreeSvg, keptPrimes, parsePrimes, powerBricksHtml, powerGroups, primeList, treeCaption } from "./factor-tree.js";
+import {
+  countOf,
+  factorTreeSvg,
+  keptPrimes,
+  parsePrimes,
+  powerBricksHtml,
+  powerGroups,
+  primeList,
+  treeCaption,
+} from "./factor-tree.js";
 import { t } from "./i18n.js";
 import { columnSpec, verticalHtml } from "./vertical-columns.js";
 import { fillKey, isSolved, peekFill, register, splitFill, tryFill } from "./step-fill.js";
@@ -80,6 +89,36 @@ function numberLine(model) {
   return `<svg class="tp-line" viewBox="0 0 500 132" role="img" aria-label="${esc(model.caption || "Number line")}"><path class="tp-axis" d="M14,93 H486"/>${ticks}${arcs}</svg>`;
 }
 
+// A comparison ("47 > 39"): both numbers sit on one number line, the bigger one to the right.
+// The scale is picked so the ticks stay readable whether the numbers are 9 and 12 or 39 and 470.
+function compareLine(a, b) {
+  const lo = Math.min(a, b);
+  const hi = Math.max(a, b);
+  const whole = Number.isInteger(lo) && Number.isInteger(hi);
+  const pad = whole ? Math.max(1, Math.ceil((hi - lo) / 2)) : (hi - lo) / 2;
+  const from = Math.max(0, lo - pad);
+  const to = hi + pad;
+  const x = (v) => 30 + ((v - from) / (to - from)) * 440;
+  const raw = (to - from) / 6;
+  const scale = 10 ** Math.floor(Math.log10(raw));
+  const nice = [1, 2, 5, 10].map((m) => m * scale).find((s) => s >= raw);
+  const step = whole ? Math.max(1, Math.ceil(nice)) : nice;
+  const ticks = [];
+  for (let v = Math.ceil(from / step) * step; v <= to + 1e-9; v += step) {
+    const value = Math.round(v * 1e6) / 1e6;
+    ticks.push(
+      `<path class="tp-tick" d="M${x(value)},86 v10"/><text class="tp-scale" x="${x(value)}" y="116">${value.toLocaleString("en-US")}</text>`,
+    );
+  }
+  const marks = [a, b]
+    .map(
+      (v) =>
+        `<circle class="tp-mark${v === hi ? " tp-mark-big" : ""}" cx="${x(v)}" cy="93" r="8"/><text class="tp-mark-label" x="${x(v)}" y="66">${v.toLocaleString("en-US")}</text>`,
+    )
+    .join("");
+  return `<svg class="tp-line" viewBox="0 0 500 132" role="img" aria-label="${esc(`${hi} is to the right of ${lo} on the number line, so it is bigger.`)}"><path class="tp-axis" d="M14,93 H486"/>${ticks}${marks}</svg>`;
+}
+
 // Returns "" when the problem has no picture; callers then show only the one-sentence tip.
 export function trailPicture(model, { reveal = false } = {}) {
   if (!model) return "";
@@ -103,8 +142,7 @@ export function trailPicture(model, { reveal = false } = {}) {
 
 const tidy = (value) => Math.round(value * 1e6) / 1e6;
 const decimalsOf = (value) => (String(value).split(".")[1] || "").length;
-const fmtN = (value) =>
-  Number(value).toLocaleString("en-US", { maximumFractionDigits: 6 });
+const fmtN = (value) => Number(value).toLocaleString("en-US", { maximumFractionDigits: 6 });
 const box = (expect, label, extra = "") =>
   `<input class="tp-in" data-expect="${expect}" aria-label="${esc(label)}" inputmode="decimal" autocomplete="off" spellcheck="false" ${extra}>`;
 
@@ -116,8 +154,7 @@ function countFrames(model) {
   const frames = Math.max(1, Math.ceil(Math.max(model.target, shown, 1) / 10));
   const cells = Array.from({ length: frames * 10 }, (_, i) => {
     let cls = "empty";
-    if (kind === "join")
-      cls = i < model.filled ? "dot" : i < model.target ? "dot-add" : "empty";
+    if (kind === "join") cls = i < model.filled ? "dot" : i < model.target ? "dot-add" : "empty";
     else if (kind === "takeAway") cls = i < shown ? "dot" : "empty";
     else cls = i < model.filled ? "dot" : i < model.target ? "slot" : "empty";
     return cls === "empty"
@@ -126,8 +163,7 @@ function countFrames(model) {
   });
   const groups = Array.from(
     { length: frames },
-    (_, f) =>
-      `<div class="tp-frame">${cells.slice(f * 10, f * 10 + 10).join("")}</div>`,
+    (_, f) => `<div class="tp-frame">${cells.slice(f * 10, f * 10 + 10).join("")}</div>`,
   ).join("");
   const prompt =
     kind === "join"
@@ -182,14 +218,8 @@ function lineSvg(start, hops, end, confirmed) {
     })
     .join("");
   const here = points.at(-1);
-  const hereLabel = hops.length
-    ? confirmed === hops.length
-      ? fmtN(here)
-      : "?"
-    : "";
-  const ticks = points
-    .map((v) => `<path class="tp-tick" d="M${x(v)},86 v14"/>`)
-    .join("");
+  const hereLabel = hops.length ? (confirmed === hops.length ? fmtN(here) : "?") : "";
+  const ticks = points.map((v) => `<path class="tp-tick" d="M${x(v)},86 v14"/>`).join("");
   return `<svg class="tp-line" viewBox="0 0 500 140" role="img" aria-label="Number line starting at ${fmtN(start)}">
     <path class="tp-axis" d="M10,93 H490"/>${ticks}${arcs}
     ${min < 0 && max > 0 && ![start, end, here].includes(0) ? `<path class="tp-tick zero" d="M${x(0)},84 v18"/><text class="tp-zero" x="${x(0)}" y="122">0</text>` : ""}
@@ -219,14 +249,9 @@ function tapLine(model) {
   if (!total) return "";
   const sign = total < 0 ? -1 : 1;
   const group = model.group || 0;
-  const decimals = Math.max(
-    decimalsOf(model.start),
-    ...model.jumps.map(decimalsOf),
-  );
+  const decimals = Math.max(decimalsOf(model.start), ...model.jumps.map(decimalsOf));
   const sizes = group
-    ? [100, 10, 1]
-        .filter((n) => n <= Math.abs(total) / group)
-        .map((n) => n * group)
+    ? [100, 10, 1].filter((n) => n <= Math.abs(total) / group).map((n) => n * group)
     : jumpSizes(total, decimals);
   const buttons = sizes
     .map((size) => {
@@ -269,10 +294,7 @@ function placeChart(model) {
   const intCols = Math.max(...split.map((row) => row.int.length));
   const decCols = Math.max(...split.map((row) => row.dec.length));
   const heads = [
-    ...Array.from(
-      { length: intCols },
-      (_, i) => PLACE_NAMES[intCols - 1 - i] || "",
-    ),
+    ...Array.from({ length: intCols }, (_, i) => PLACE_NAMES[intCols - 1 - i] || ""),
     ...(decCols ? ["."] : []),
     ...DECIMAL_NAMES.slice(0, decCols),
   ];
@@ -286,8 +308,7 @@ function placeChart(model) {
         cell(digit, PLACE_NAMES[intCols - 1 - i]),
       );
       if (decCols) cells.push('<td class="tp-point">.</td>');
-      for (let i = 0; i < decCols; i += 1)
-        cells.push(cell(dec[i], DECIMAL_NAMES[i]));
+      for (let i = 0; i < decCols; i += 1) cells.push(cell(dec[i], DECIMAL_NAMES[i]));
       return `<tr>${cells.join("")}</tr>`;
     })
     .join("");
@@ -328,7 +349,8 @@ function coinCounter(model) {
 
 function pairUp(model) {
   const note = model.note ? `<p class="tp-prompt">${esc(model.note)}</p>` : "";
-  if (!model.total) return `<div class="tp-live" data-live="pairs">${note}<p class="tp-prompt">There are no ones to pair.</p></div>`;
+  if (!model.total)
+    return `<div class="tp-live" data-live="pairs">${note}<p class="tp-prompt">There are no ones to pair.</p></div>`;
   return `<div class="tp-live" data-live="pairs">${note}<p class="tp-prompt">${model.note ? "Pair up the ones." : "Can every dot get a partner?"}</p>
     <div class="tp-pairs">${dots(model.total)}</div>
     <div class="tp-hop-row"><button type="button" class="tp-hop-btn" data-make-pairs>Make pairs</button></div></div>`;
@@ -358,13 +380,10 @@ function percentBar(model) {
 
 // Ratio table: pick ×n or ÷n, then type the new column; the next step waits until both are right.
 function ratioTable(model) {
-  const divisors = [...new Set([2, 3, 5, 10, model.a])]
-    .filter((n) => n > 1)
-    .sort((x, y) => x - y);
+  const divisors = [...new Set([2, 3, 5, 10, model.a])].filter((n) => n > 1).sort((x, y) => x - y);
   const buttons = [
     ...[2, 3, 4, 5, 6, 7, 8, 9, 10].map(
-      (n) =>
-        `<button type="button" class="tp-hop-btn" data-scale="${n}">× ${n}</button>`,
+      (n) => `<button type="button" class="tp-hop-btn" data-scale="${n}">× ${n}</button>`,
     ),
     ...divisors.map(
       (n) =>
@@ -414,7 +433,11 @@ function primeTreesPicture(model) {
     })
     .join("");
   const values = powerGroups(kept).map(({ value }) => value);
-  return `<div class="tp-live" data-live="primeTrees"><p class="tp-prompt">${t("Split each number into primes, smallest first. Then keep the larger count of every prime.")}</p>${row(model.a, pa)}${row(model.b, pb)}<table class="tp-ratio"><thead><tr><th scope="col">${t("Prime")}</th><th scope="col">${t("Copies in {n}", { n: model.a })}</th><th scope="col">${t("Copies in {n}", { n: model.b })}</th><th scope="col">${t("Keep")}</th><th scope="col">${t("Power")}</th></tr></thead><tbody>${copies}</tbody></table><p class="tp-multiply" data-multiply hidden aria-live="polite">${t("Multiply the powers:")} ${values.join(" × ")} = ${box(kept.reduce((total, x) => total * x, 1), t("the LCM of {a} and {b}", { a: model.a, b: model.b }), 'data-then="lcm"')}</p></div>`;
+  return `<div class="tp-live" data-live="primeTrees"><p class="tp-prompt">${t("Split each number into primes, smallest first. Then keep the larger count of every prime.")}</p>${row(model.a, pa)}${row(model.b, pb)}<table class="tp-ratio"><thead><tr><th scope="col">${t("Prime")}</th><th scope="col">${t("Copies in {n}", { n: model.a })}</th><th scope="col">${t("Copies in {n}", { n: model.b })}</th><th scope="col">${t("Keep")}</th><th scope="col">${t("Power")}</th></tr></thead><tbody>${copies}</tbody></table><p class="tp-multiply" data-multiply hidden aria-live="polite">${t("Multiply the powers:")} ${values.join(" × ")} = ${box(
+    kept.reduce((total, x) => total * x, 1),
+    t("the LCM of {a} and {b}", { a: model.a, b: model.b }),
+    'data-then="lcm"',
+  )}</p></div>`;
 }
 
 // Powers: the student types each running product.
@@ -456,14 +479,17 @@ function stackLayers(model) {
     <p class="tp-readout">Layers: <b data-layer-count>0</b></p></div>`;
 }
 
-
 // ---------- Grades 5–8: short chains of boxes the student fills in, with a picture when one helps.
 // A grid zoomed to the points (always showing the axes), with one square per unit so rise
 // and run can be counted.
 function gridSvg(points, { rise = null } = {}) {
   const xs = [0, ...points.map((p) => p[0])];
   const ys = [0, ...points.map((p) => p[1])];
-  const span = Math.max(6, Math.max(...xs) - Math.min(...xs) + 2, Math.max(...ys) - Math.min(...ys) + 2);
+  const span = Math.max(
+    6,
+    Math.max(...xs) - Math.min(...xs) + 2,
+    Math.max(...ys) - Math.min(...ys) + 2,
+  );
   const lo = [Math.min(...xs) - 1, Math.min(...ys) - 1];
   const unit = 260 / span;
   const x = (v) => 20 + (v - lo[0]) * unit;
@@ -478,7 +504,12 @@ function gridSvg(points, { rise = null } = {}) {
     const [[x1, y1], [x2, y2]] = rise;
     body += `<path class="tp-run" d="M${x(x1)},${y(y1)} H${x(x2)}"/><path class="tp-rise" d="M${x(x2)},${y(y1)} V${y(y2)}"/>`;
   }
-  body += points.map(([px, py, label]) => `<circle class="tp-pt" cx="${x(px)}" cy="${y(py)}" r="6"/><text class="tp-pt-label" x="${x(px) + 8}" y="${y(py) - 9}">${esc(label)}</text>`).join("");
+  body += points
+    .map(
+      ([px, py, label]) =>
+        `<circle class="tp-pt" cx="${x(px)}" cy="${y(py)}" r="6"/><text class="tp-pt-label" x="${x(px) + 8}" y="${y(py) - 9}">${esc(label)}</text>`,
+    )
+    .join("");
   const named = points.map(([px, py]) => `(${fmtN(px)}, ${fmtN(py)})`).join(", ");
   return `<svg class="tp-gridsvg" viewBox="0 0 300 300" role="img" aria-label="${esc(`Coordinate grid with ${points.length === 1 ? "the point" : "the points"} ${named}, one square per unit`)}">${body}</svg>`;
 }
@@ -509,7 +540,8 @@ function picture(kind, model) {
   if (kind === "clock") {
     const minuteAngle = (model.minute / 60) * 2 * Math.PI;
     const hourAngle = (((model.hour % 12) + model.minute / 60) / 12) * 2 * Math.PI;
-    const hand = (angle, len) => `M75,75 L${75 + len * Math.sin(angle)},${75 - len * Math.cos(angle)}`;
+    const hand = (angle, len) =>
+      `M75,75 L${75 + len * Math.sin(angle)},${75 - len * Math.cos(angle)}`;
     const numbers = Array.from({ length: 12 }, (_, i) => {
       const a = ((i + 1) / 12) * 2 * Math.PI;
       return `<text x="${75 + 52 * Math.sin(a)}" y="${80 - 52 * Math.cos(a)}">${i + 1}</text>`;
@@ -541,7 +573,9 @@ function chainModel(model) {
 // with empty boxes for the answer digits and for the regrouping above each column (vertical-columns.js).
 function verticalModel(model) {
   const spec = columnSpec(model.op, model.terms);
-  return spec ? `<div class="tp-live tp-vertical" data-live="vertical"><p class="tp-prompt">${esc(t("Line up the places. Fill each box, one column at a time."))}</p>${verticalHtml(spec)}</div>` : "";
+  return spec
+    ? `<div class="tp-live tp-vertical" data-live="vertical"><p class="tp-prompt">${esc(t("Line up the places. Fill each box, one column at a time."))}</p>${verticalHtml(spec)}</div>`
+    : "";
 }
 
 export function interactivePicture(model) {
@@ -572,12 +606,7 @@ function redrawLine(live) {
   const confirmed = Number(live.dataset.confirmed);
   const start = Number(live.dataset.start);
   const end = Number(live.dataset.end);
-  live.querySelector("[data-line]").innerHTML = lineSvg(
-    start,
-    hops,
-    end,
-    confirmed,
-  );
+  live.querySelector("[data-line]").innerHTML = lineSvg(start, hops, end, confirmed);
   const waiting = hops.length > confirmed;
   const landing = live.querySelector("[data-landing]");
   landing.hidden = !waiting;
@@ -598,16 +627,10 @@ export function handleModelInput(target) {
   if (!input || input.readOnly) return false;
   const raw = input.value.replaceAll(",", "").replace("−", "-").trim();
   const expect = Number(input.dataset.expect);
-  const right =
-    raw !== "" &&
-    Number.isFinite(Number(raw)) &&
-    Math.abs(Number(raw) - expect) < 1e-9;
+  const right = raw !== "" && Number.isFinite(Number(raw)) && Math.abs(Number(raw) - expect) < 1e-9;
   const digits = (text) => String(text).replace(/[-.]/g, "").length;
   input.classList.toggle("ok", right);
-  input.classList.toggle(
-    "no",
-    !right && digits(raw) >= digits(fmtN(expect).replaceAll(",", "")),
-  );
+  input.classList.toggle("no", !right && digits(raw) >= digits(fmtN(expect).replaceAll(",", "")));
   if (!right) return true;
   input.readOnly = true;
   const live = input.closest(".tp-live");
@@ -640,10 +663,7 @@ export function handleModelInput(target) {
   } else if (then === "multiple") {
     const n = Number(input.dataset.multipleOf);
     const chips = live.querySelector(`[data-chips="${n}"]`);
-    chips.insertAdjacentHTML(
-      "beforeend",
-      `<b data-chip="${expect}">${fmtN(expect)}</b>`,
-    );
+    chips.insertAdjacentHTML("beforeend", `<b data-chip="${expect}">${fmtN(expect)}</b>`);
     if (chips.children.length < 12) {
       input.insertAdjacentHTML(
         "afterend",
@@ -660,7 +680,9 @@ export function handleModelInput(target) {
   } else if (then === "prime") {
     const primeRow = input.closest("[data-prime-row]");
     if (!primeRow.querySelector(".tp-in:not([readonly])"))
-      live.querySelector(`[data-tree-for="${primeRow.dataset.primeRow}"]`)?.removeAttribute("hidden");
+      live
+        .querySelector(`[data-tree-for="${primeRow.dataset.primeRow}"]`)
+        ?.removeAttribute("hidden");
     live.querySelector(".tp-in:not([readonly]):not([disabled])")?.focus();
   } else if (then === "copies") {
     live.querySelector(".tp-in:not([readonly]):not([disabled])")?.focus();
@@ -680,9 +702,7 @@ export function handleModelInput(target) {
     const used = Number(input.dataset.used);
     const base = Number(live.dataset.base);
     if (used < Number(live.dataset.exponent)) {
-      live
-        .querySelector("[data-chain]")
-        .insertAdjacentHTML("beforeend", powerRow(base, used + 1));
+      live.querySelector("[data-chain]").insertAdjacentHTML("beforeend", powerRow(base, used + 1));
       live.querySelector("[data-chain] .tp-chain:last-child input").focus();
     }
   }
@@ -697,8 +717,7 @@ function factorCount(n) {
 
 function markShared(live) {
   const lists = [...live.querySelectorAll("[data-chips]")].map(
-    (list) =>
-      new Set([...list.querySelectorAll("b")].map((b) => b.dataset.chip)),
+    (list) => new Set([...list.querySelectorAll("b")].map((b) => b.dataset.chip)),
   );
   live.querySelectorAll("[data-chip]").forEach((chip) =>
     chip.classList.toggle(
@@ -721,10 +740,7 @@ export function handleModelTap(target) {
         cell.textContent = cell.dataset.n;
       }
     } else if (kind === "takeAway") cell.classList.toggle("gone");
-    else if (
-      cell.classList.contains("slot") ||
-      cell.classList.contains("filled")
-    )
+    else if (cell.classList.contains("slot") || cell.classList.contains("filled"))
       cell.classList.toggle("filled");
     return true;
   }
@@ -745,8 +761,7 @@ export function handleModelTap(target) {
     const counted = rows.filter((r) => r.classList.contains("counted")).length;
     if (row.classList.contains("counted") && rows.indexOf(row) === counted - 1)
       row.classList.remove("counted");
-    else if (!row.classList.contains("counted"))
-      rows[counted].classList.add("counted");
+    else if (!row.classList.contains("counted")) rows[counted].classList.add("counted");
     live.querySelector("[data-rows]").textContent = rows.filter((r) =>
       r.classList.contains("counted"),
     ).length;
@@ -757,10 +772,7 @@ export function handleModelTap(target) {
     const hops = JSON.parse(live.dataset.hops || "[]");
     if (hop.hasAttribute("data-hop-undo")) {
       hops.pop();
-      live.dataset.confirmed = Math.min(
-        Number(live.dataset.confirmed),
-        hops.length,
-      );
+      live.dataset.confirmed = Math.min(Number(live.dataset.confirmed), hops.length);
     } else if (hops.length < 30) hops.push(Number(hop.dataset.hopSize));
     live.dataset.hops = JSON.stringify(hops);
     redrawLine(live);
@@ -768,9 +780,7 @@ export function handleModelTap(target) {
   }
   const digit = target.closest("[data-digit]");
   if (digit) {
-    live
-      .querySelectorAll(".tp-digit.on")
-      .forEach((d) => d.classList.remove("on"));
+    live.querySelectorAll(".tp-digit.on").forEach((d) => d.classList.remove("on"));
     digit.classList.add("on");
     live.querySelector("[data-place-readout]").textContent =
       `This ${digit.dataset.digit} is in the ${digit.dataset.digitName} place.`;
@@ -803,13 +813,9 @@ export function handleModelTap(target) {
     const note = live.querySelector("[data-ratio-note]");
     note.textContent = "";
     if (scale.hasAttribute("data-ratio-undo")) {
-      if (cols.length > 1 && !live.querySelector('[data-then="ratio"]'))
-        cols.pop();
+      if (cols.length > 1 && !live.querySelector('[data-then="ratio"]')) cols.pop();
       live.dataset.cols = JSON.stringify(cols);
-      live.querySelector("[data-ratio-table]").innerHTML = ratioTableHtml(
-        cols,
-        labels,
-      );
+      live.querySelector("[data-ratio-table]").innerHTML = ratioTableHtml(cols, labels);
       live.querySelectorAll("[data-scale]").forEach((button) => {
         button.disabled = false;
       });
@@ -817,13 +823,8 @@ export function handleModelTap(target) {
     }
     const factor = Number(scale.dataset.scale);
     const values = cols.at(-1).map((value) => tidy(value * factor));
-    if (
-      values.some(
-        (value) => Math.abs(value * 100 - Math.round(value * 100)) > 1e-6,
-      )
-    ) {
-      note.textContent =
-        "That would make a tiny fraction. Try a different number.";
+    if (values.some((value) => Math.abs(value * 100 - Math.round(value * 100)) > 1e-6)) {
+      note.textContent = "That would make a tiny fraction. Try a different number.";
       return true;
     }
     if (cols.length >= 6) {
@@ -831,11 +832,10 @@ export function handleModelTap(target) {
       return true;
     }
     const label = scale.dataset.scaleLabel || scale.textContent.trim();
-    live.querySelector("[data-ratio-table]").innerHTML = ratioTableHtml(
-      cols,
-      labels,
-      { values, label },
-    );
+    live.querySelector("[data-ratio-table]").innerHTML = ratioTableHtml(cols, labels, {
+      values,
+      label,
+    });
     live.querySelectorAll("[data-scale]").forEach((button) => {
       button.disabled = true;
     });
@@ -860,10 +860,7 @@ export function handleModelTap(target) {
       return true;
     }
     note.textContent = `${f} is a factor of ${n}.`;
-    chips.insertAdjacentHTML(
-      "beforeend",
-      `<b data-chip="${f}">${f}</b>`,
-    );
+    chips.insertAdjacentHTML("beforeend", `<b data-chip="${f}">${f}</b>`);
     [...chips.children]
       .sort((a, b) => Number(a.dataset.chip) - Number(b.dataset.chip))
       .forEach((chip) => chips.append(chip));
@@ -873,7 +870,10 @@ export function handleModelTap(target) {
       // Every factor is listed: close the row so there is nothing left to type or add.
       input.disabled = true;
       addFactor.disabled = true;
-      note.textContent = t("That is all {count} factors of {n}. This list is complete.", { count: chips.children.length, n });
+      note.textContent = t("That is all {count} factors of {n}. This list is complete.", {
+        count: chips.children.length,
+        n,
+      });
     } else input.focus();
     return true;
   }
@@ -915,7 +915,9 @@ export function handleModelTap(target) {
   const sign = target.closest("[data-sign-pick]");
   if (sign) {
     const right = sign.dataset.signPick === sign.dataset.signRight;
-    sign.parentElement.querySelectorAll("[data-sign-pick]").forEach((b) => b.classList.remove("ok", "no"));
+    sign.parentElement
+      .querySelectorAll("[data-sign-pick]")
+      .forEach((b) => b.classList.remove("ok", "no"));
     sign.classList.add(right ? "ok" : "no");
     return true;
   }
@@ -935,7 +937,9 @@ export function openFillRow(line, i, steps, id) {
 }
 
 export const stepWaiting = (steps, count, id) =>
-  steps.slice(0, count).some((line, i) => splitFill(line, i, steps) && !isSolved(fillKey(id, i, line)));
+  steps
+    .slice(0, count)
+    .some((line, i) => splitFill(line, i, steps) && !isSolved(fillKey(id, i, line)));
 
 export function stepPhaseBadge(line, i, steps) {
   if (!Array.isArray(steps) || steps.length <= 1) return "";
@@ -952,13 +956,17 @@ export function stepsBlock(steps, shown, { id, cap = steps.length } = {}) {
     const row = openFillRow(line, i, steps, id);
     const open = row !== null;
     const html = open ? "" : stepVisual(line);
-    const same = html.replace(/>[^<]*</g, "><") === previous.replace(/>[^<]*</g, "><") && html.includes("sv-array");
+    const same =
+      html.replace(/>[^<]*</g, "><") === previous.replace(/>[^<]*</g, "><") &&
+      html.includes("sv-array");
     if (!open) previous = html;
     const why = whyFor(line, i, steps);
     const badge = stepPhaseBadge(line, i, steps);
     const badgeHtml = badge ? `<span class="tr-step-badge">${esc(badge)}</span>` : "";
     const text = open ? row : `<span class="tr-step-text">${badgeHtml}${mathText(line)}</span>`;
-    const whyHtml = why ? `<div class="tr-step-why"><span class="tr-why-icon" aria-hidden="true">💡</span><span class="tr-why-copy">${esc(why)}</span></div>` : "";
+    const whyHtml = why
+      ? `<div class="tr-step-why"><span class="tr-why-icon" aria-hidden="true">💡</span><span class="tr-why-copy">${esc(why)}</span></div>`
+      : "";
     return `<li${i === visible.length - 1 ? ' class="latest"' : ""}><span class="tr-step-num">${i + 1}</span>${text}${same ? "" : html}${whyHtml}</li>`;
   });
   const more = shown < cap;
@@ -990,9 +998,14 @@ if (typeof document !== "undefined" && !globalThis.__fluencyFillWired) {
     row.classList.remove("tr-fill-row");
     row.innerHTML = `${mathText(line)}${result === "shown" ? ` <small class="tr-fill-shown">${esc(t("Here it is. Read it, then keep going."))}</small>` : ` <b class="tr-fill-ok" aria-hidden="true">✓</b><span class="tr-sr"> ${esc(t("Correct"))}</span>`}`;
     li?.insertAdjacentHTML("beforeend", stepVisual(line));
-    row.dispatchEvent(new (row.ownerDocument.defaultView.Event)("fluency-fill-solved", { bubbles: true }));
+    row.dispatchEvent(
+      new row.ownerDocument.defaultView.Event("fluency-fill-solved", { bubbles: true }),
+    );
     const list = li?.closest("ol");
-    if (list && !list.querySelector("input.tr-fill")) list.parentElement.querySelector(`button[data-step="${list.id}"]`)?.removeAttribute("disabled");
+    if (list && !list.querySelector("input.tr-fill"))
+      list.parentElement
+        .querySelector(`button[data-step="${list.id}"]`)
+        ?.removeAttribute("disabled");
   };
   document.addEventListener("input", (event) => {
     if (event.target.matches?.("input.tr-fill")) settle(event.target, false);
@@ -1046,13 +1059,18 @@ function lcmStepVisual(text) {
   const keeping = text.match(/The primes you keep: ([\d × ]+),/);
   const multiplying = text.match(/^Multiply the kept primes: ([^=]+?) =/);
   const primes = parsePrimes((keeping || multiplying || [])[1] ?? "");
-  return primes ? `<div class="sv-bricks">${powerBricksHtml(primes, { withTotal: Boolean(multiplying) })}</div>` : "";
+  return primes
+    ? `<div class="sv-bricks">${powerBricksHtml(primes, { withTotal: Boolean(multiplying) })}</div>`
+    : "";
 }
 
 // Pictures for the young-learner steps: a ten-frame, and blocks for tens and ones.
 const BLOCK = { hundred: "pv-h", ten: "pv-t", one: "pv-o" };
 function tenFrame(full) {
-  const boxes = Array.from({ length: 10 }, (_, i) => `<i${i < full ? ' class="on"' : ""}></i>`).join("");
+  const boxes = Array.from(
+    { length: 10 },
+    (_, i) => `<i${i < full ? ' class="on"' : ""}></i>`,
+  ).join("");
   return `<span class="sv sv-frame" aria-hidden="true">${boxes}</span>`;
 }
 function blockGroup(count, unit) {
@@ -1061,8 +1079,12 @@ function blockGroup(count, unit) {
   return `<span class="pv-group"><span class="pv-blocks">${`<i class="${BLOCK[kind]}"></i>`.repeat(shown)}</span><small>${count} ${esc(unit)}</small></span>`;
 }
 function placeBlocks(parts) {
-  const groups = [...parts.matchAll(/(\d+) (hundreds?|tens?|ones?)/g)].map((m) => blockGroup(Number(m[1]), m[2]));
-  return groups.length ? `<span class="sv sv-place" aria-hidden="true">${groups.join("")}</span>` : "";
+  const groups = [...parts.matchAll(/(\d+) (hundreds?|tens?|ones?)/g)].map((m) =>
+    blockGroup(Number(m[1]), m[2]),
+  );
+  return groups.length
+    ? `<span class="sv sv-place" aria-hidden="true">${groups.join("")}</span>`
+    : "";
 }
 function placeNames(list) {
   const boxes = list
@@ -1073,7 +1095,8 @@ function placeNames(list) {
   return `<span class="sv sv-places" aria-hidden="true">${boxes}</span>`;
 }
 function compareBlocks(a, da, ua, b, db, ub) {
-  const row = (label, count, unit) => `<span class="pv-row"><b>${esc(label)}</b>${blockGroup(Number(count), unit)}</span>`;
+  const row = (label, count, unit) =>
+    `<span class="pv-row"><b>${esc(label)}</b>${blockGroup(Number(count), unit)}</span>`;
   return `<span class="sv sv-place sv-compare" aria-hidden="true">${row(a, da, ua)}${row(b, db, ub)}</span>`;
 }
 
@@ -1094,9 +1117,7 @@ export function stepVisual(line) {
   if (missing && Number(missing[2]) <= 20)
     return `<span class="sv sv-count" aria-hidden="true">${dots(Number(missing[1]))}${dots(Number(missing[2]) - Number(missing[1]), "ghost")}</span>`;
   // "Count on 3: 8, 9, 10", "Count back 2: 6, 5", "10, 20, 30, 40", "Count the empty spaces: 3"
-  const list = text.match(
-    /(?:^|:\s*)((?:-?\d+(?:\.\d+)?,\s*)*-?\d+(?:\.\d+)?)$/,
-  );
+  const list = text.match(/(?:^|:\s*)((?:-?\d+(?:\.\d+)?,\s*)*-?\d+(?:\.\d+)?)$/);
   if (list) return miniHops(list[1].split(/,\s*/).map(Number));
   const frame = text.match(/^Picture 10 boxes\. (\d+) are full$/);
   if (frame) return tenFrame(Number(frame[1]));
@@ -1106,8 +1127,12 @@ export function stepVisual(line) {
   if (names) return placeNames(names[1]);
   const apart = text.match(/^Take \d+ apart: (.+)$/);
   if (apart) return placeBlocks(apart[1]);
-  const place = text.match(/^(\d+) has (\d+) (hundreds?|tens?|ones?)\. (\d+) has (\d+) (hundreds?|tens?|ones?)$/);
+  const place = text.match(
+    /^(\d+) has (\d+) (hundreds?|tens?|ones?)\. (\d+) has (\d+) (hundreds?|tens?|ones?)$/,
+  );
   if (place) return compareBlocks(place[1], place[2], place[3], place[4], place[5], place[6]);
+  const order = text.match(/^(\d+(?:\.\d+)?) ([<>]) (\d+(?:\.\d+)?)$/);
+  if (order) return compareLine(num(order[1]), num(order[3]));
   const eq = text.match(
     /^(-?\d+(?:\.\d+)?) ([+−×÷]) \(?(-?\d+(?:\.\d+)?|\?)\)? = (-?\d+(?:\.\d+)?|\?)$/,
   );
@@ -1121,14 +1146,7 @@ export function stepVisual(line) {
     return miniArray(a, c / a, "ghost");
   if (op === "÷" && c !== null && small(b) && small(c)) return miniArray(b, c);
   // Bigger products: an area rectangle labelled with the two factors and the product.
-  if (
-    op === "×" &&
-    b !== null &&
-    Number.isInteger(a) &&
-    Number.isInteger(b) &&
-    a > 0 &&
-    b > 0
-  )
+  if (op === "×" && b !== null && Number.isInteger(a) && Number.isInteger(b) && a > 0 && b > 0)
     return `<span class="sv sv-rect" aria-hidden="true"><em class="top">${a.toLocaleString("en-US")}</em><em class="side">${b.toLocaleString("en-US")}</em><b>${c === null ? "?" : c.toLocaleString("en-US")}</b></span>`;
   if (
     (op === "+" || op === "−") &&
