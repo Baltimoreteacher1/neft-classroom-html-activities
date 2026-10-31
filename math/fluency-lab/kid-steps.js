@@ -120,7 +120,11 @@ function add(item) {
   const sum = p + q;
   if (sum > 20 || small < 1) return null;
   if (small <= 3 || sum <= 10)
-    return ending([`Start at the bigger number, ${big}.`, `Count on ${small}: ${range(big + 1, big + small).join(", ")}`, `${big} + ${small} = ${sum}`]);
+    return ending([
+      `Start at the bigger number, ${big}.`,
+      `Count on ${small}: ${range(big + 1, big + small).join(", ")}`,
+      `${big} + ${small} = ${sum}`,
+    ]);
   const need = 10 - big;
   if (need > 0 && need < small)
     return ending([
@@ -152,12 +156,22 @@ function placeValue(item) {
   const spot = PLACES.indexOf(match[1]);
   const digit = Number(digits.at(-1 - spot));
   const asks = /value/i.test(item.question);
-  const last = asks ? `The ${digit} is in the ${match[1]} place. It is worth ${fmt(digit * 10 ** spot)}.` : `The ${match[1]} place has a ${digit}.`;
+  const last = asks
+    ? `The ${digit} is in the ${match[1]} place. It is worth ${fmt(digit * 10 ** spot)}.`
+    : `The ${match[1]} place has a ${digit}.`;
   // Showing "4 tens" would give away a question that asks for the digit (or a ones place worth its own digit).
   if (!asks || spot === 0)
-    return ending([`Name the places from the right: ${PLACES.slice(0, digits.length).join(", ")}.`, `Find the ${match[1]} place in ${fmt(value)}.`, last]);
+    return ending([
+      `Name the places from the right: ${PLACES.slice(0, digits.length).join(", ")}.`,
+      `Find the ${match[1]} place in ${fmt(value)}.`,
+      last,
+    ]);
   const parts = [...digits].map((d, i) => `${d} ${PLACES[digits.length - 1 - i]}`).join(", ");
-  return ending([`Take ${fmt(value)} apart: ${parts}.`, `Find the ${match[1]} place. Which number is in it?`, last]);
+  return ending([
+    `Take ${fmt(value)} apart: ${parts}.`,
+    `Find the ${match[1]} place. Which number is in it?`,
+    last,
+  ]);
 }
 
 function rounding(item) {
@@ -194,16 +208,29 @@ function groups(item, skill) {
   if (a < 2 || b < 2) return null;
   if (skill.id === "mul-0-5" && Math.min(a, b) <= 5 && c <= 60) {
     const list = Array.from({ length: a }, (_, i) => b * (i + 1));
-    return ending([`${a} groups of ${b}.`, `Count by ${b}s: ${list.join(", ")}`, `${a} × ${b} = ${c}`]);
+    return ending([
+      `${a} groups of ${b}.`,
+      `Count by ${b}s: ${list.join(", ")}`,
+      `${a} × ${b} = ${c}`,
+    ]);
   }
   if (skill.id === "mul-6-9" && (a === 9 || b === 9)) {
     const other = a === 9 ? b : a;
-    return ending([`10 groups of ${other} is easy. Take one group away.`, `10 × ${other} = ${10 * other}`, `${10 * other} − ${other} = ${c}`]);
+    return ending([
+      `10 groups of ${other} is easy. Take one group away.`,
+      `10 × ${other} = ${10 * other}`,
+      `${10 * other} − ${other} = ${c}`,
+    ]);
   }
   if (skill.id === "mul-6-9") {
     const [big, other] = a >= 6 && a <= 8 ? [a, b] : [b, a];
     if (big < 6 || big > 8) return null;
-    return ending([`Split ${big} into 5 and ${big - 5}.`, `5 × ${other} = ${5 * other}`, `${big - 5} × ${other} = ${(big - 5) * other}`, `${5 * other} + ${(big - 5) * other} = ${c}`]);
+    return ending([
+      `Split ${big} into 5 and ${big - 5}.`,
+      `5 × ${other} = ${5 * other}`,
+      `${big - 5} × ${other} = ${(big - 5) * other}`,
+      `${5 * other} + ${(big - 5) * other} = ${c}`,
+    ]);
   }
   return null;
 }
@@ -226,7 +253,12 @@ function evenOdd(item) {
   const match = item.question.match(/^Is ([\d,]+) even or odd\?$/);
   if (!match) return null;
   const last = match[1].at(-1);
-  return ending(["Look at the last number only.", `The last number of ${match[1]} is ${last}.`, "Even: ends in 0, 2, 4, 6, 8. Odd: ends in 1, 3, 5, 7, 9.", `${match[1]} is ${Number(last) % 2 ? "odd" : "even"}.`]);
+  return ending([
+    "Look at the last number only.",
+    `The last number of ${match[1]} is ${last}.`,
+    "Even: ends in 0, 2, 4, 6, 8. Odd: ends in 1, 3, 5, 7, 9.",
+    `${match[1]} is ${Number(last) % 2 ? "odd" : "even"}.`,
+  ]);
 }
 
 function coins(item) {
@@ -296,14 +328,22 @@ function sameFraction(item) {
     const [a, b, c] = top.slice(1).map(Number);
     if (c % a) return null;
     const f = c / a;
-    return ending([`The top changed from ${a} to ${c}.`, `${a} × ${f} = ${c}`, `Do the same to the bottom: ${b} × ${f} = ${b * f}, so ${a}/${b} = ${c}/${b * f}`]);
+    return ending([
+      `The top changed from ${a} to ${c}.`,
+      `${a} × ${f} = ${c}`,
+      `Do the same to the bottom: ${b} × ${f} = ${b * f}, so ${a}/${b} = ${c}/${b * f}`,
+    ]);
   }
   const bottom = item.question.match(/^(\d+)\/(\d+) = □\/(\d+)$/);
   if (!bottom) return null;
   const [a, b, d] = bottom.slice(1).map(Number);
   if (d % b) return null;
   const f = d / b;
-  return ending([`The bottom changed from ${b} to ${d}.`, `${b} × ${f} = ${d}`, `Do the same to the top: ${a} × ${f} = ${a * f}, so ${a}/${b} = ${a * f}/${d}`]);
+  return ending([
+    `The bottom changed from ${b} to ${d}.`,
+    `${b} × ${f} = ${d}`,
+    `Do the same to the top: ${a} × ${f} = ${a * f}, so ${a}/${b} = ${a * f}/${d}`,
+  ]);
 }
 
 function area(item) {
@@ -318,10 +358,16 @@ function area(item) {
 }
 
 function perimeter(item) {
-  const match = item.question.match(/^Perimeter of a rectangle with length (\d+) and width (\d+)\?$/);
+  const match = item.question.match(
+    /^Perimeter of a rectangle with length (\d+) and width (\d+)\?$/,
+  );
   if (!match) return null;
   const [l, w] = [Number(match[1]), Number(match[2])];
-  return ending(["Perimeter is the way around the outside.", `Add two sides that meet: ${l} + ${w} = ${l + w}`, `A rectangle has two of each: ${l + w} + ${l + w} = ${2 * (l + w)} units.`]);
+  return ending([
+    "Perimeter is the way around the outside.",
+    `Add two sides that meet: ${l} + ${w} = ${l + w}`,
+    `A rectangle has two of each: ${l + w} + ${l + w} = ${2 * (l + w)} units.`,
+  ]);
 }
 
 function subtractWithin100(item) {
@@ -334,25 +380,56 @@ function subtractWithin100(item) {
     const tens = Math.floor(b / 10) * 10;
     const rest = b - tens;
     if (!rest) return null;
-    return ending([`Split ${b} into ${tens} and ${rest}.`, `${a} − ${tens} = ${a - tens}`, `${a - tens} − ${rest} = ${c}`]);
+    return ending([
+      `Split ${b} into ${tens} and ${rest}.`,
+      `${a} − ${tens} = ${a - tens}`,
+      `${a - tens} − ${rest} = ${c}`,
+    ]);
   }
-  if (b <= ones) return ending(["Only the ones change.", `${ones} − ${b} = ${ones - b}`, `${a} − ${b} = ${c}`]);
-  return ending([`Take away to the ten first. ${a} − ${ones} = ${a - ones}`, `Take away the rest. ${a - ones} − ${b - ones} = ${c}`, `${a} − ${b} = ${c}`]);
+  if (b <= ones)
+    return ending([
+      `Only the ones change. Take ${a} apart: ${Math.floor(a / 10)} tens, ${ones} ones.`,
+      `${ones} − ${b} = ${ones - b}`,
+      `${a} − ${b} = ${c}`,
+    ]);
+  return ending([
+    `Take away to the ten first. ${a} − ${ones} = ${a - ones}`,
+    `Take away the rest. ${a - ones} − ${b - ones} = ${c}`,
+    `${a} − ${b} = ${c}`,
+  ]);
 }
 
 function counting(item) {
-  return ending(["Touch one counter at a time.", "Say one number for each counter.", "The last number you say tells how many.", `There are ${answerOf(item)}.`]);
+  return ending([
+    "Touch one counter at a time.",
+    "Say one number for each counter.",
+    "The last number you say tells how many.",
+    `There are ${answerOf(item)}.`,
+  ]);
 }
 
 function groupsOfTwoOrThree(item) {
-  return ending(["Look for small groups. Try groups of 2 or 3.", "Put the groups together.", `That makes ${answerOf(item)}.`]);
+  return ending([
+    "Look for small groups. Try groups of 2 or 3.",
+    "Put the groups together.",
+    `That makes ${answerOf(item)}.`,
+  ]);
 }
 
 function shapePattern(item) {
-  const tokens = item.question.replace(/\s*___\s*$/, "").trim().split(/\s+/);
-  const period = [...Array(tokens.length).keys()].slice(1).find((p) => tokens.every((token, i) => token === tokens[i % p]));
+  const tokens = item.question
+    .replace(/\s*___\s*$/, "")
+    .trim()
+    .split(/\s+/);
+  const period = [...Array(tokens.length).keys()]
+    .slice(1)
+    .find((p) => tokens.every((token, i) => token === tokens[i % p]));
   if (!period || period > 4) return null;
-  return ending(["Find the part that repeats.", `It repeats: ${tokens.slice(0, period).join(" ")}`, `The next one is ${answerOf(item)}.`]);
+  return ending([
+    "Find the part that repeats.",
+    `It repeats: ${tokens.slice(0, period).join(" ")}`,
+    `The next one is ${answerOf(item)}.`,
+  ]);
 }
 
 function comparePieces(item) {
@@ -361,8 +438,18 @@ function comparePieces(item) {
   const [a, b, c, d] = match.slice(1).map(Number);
   const symbol = a * d > c * b ? ">" : a * d < c * b ? "<" : "=";
   const sentence = `${a}/${b} ${symbol} ${c}/${d}`;
-  if (b === d) return ending([`The bottoms are the same: ${b}. The pieces are the same size.`, `Compare the tops: ${a} and ${c}.`, sentence]);
-  if (a === c) return ending([`The tops are the same: ${a}. Look at the bottoms: ${b} and ${d}.`, "More pieces in the whole means each piece is smaller.", sentence]);
+  if (b === d)
+    return ending([
+      `The bottoms are the same: ${b}. The pieces are the same size.`,
+      `Compare the tops: ${a} and ${c}.`,
+      sentence,
+    ]);
+  if (a === c)
+    return ending([
+      `The tops are the same: ${a}. Look at the bottoms: ${b} and ${d}.`,
+      "More pieces in the whole means each piece is smaller.",
+      sentence,
+    ]);
   return null;
 }
 

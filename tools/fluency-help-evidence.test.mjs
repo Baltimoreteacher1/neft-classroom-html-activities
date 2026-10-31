@@ -92,10 +92,14 @@ assert.equal(
 );
 answerNow();
 assert.equal(withoutHelp(), 1, "a solver-assisted answer does not add to 'without help'");
-$("#next-problem").click();
+// The next problem is drawn at random, and only some add-large problems show a column board: click until one does.
+let cells = [];
+for (let attempt = 0; attempt < 30 && !cells.length; attempt += 1) {
+  $("#next-problem").click();
+  cells = [...win.document.querySelectorAll("#problem-visual-scaffold .vc-result")];
+}
 
 // A missed column box in the model panel is help too (ones place, a digit that is certainly wrong).
-const cells = [...win.document.querySelectorAll("#problem-visual-scaffold .vc-result")];
 assert.ok(cells.length, "the model panel shows the column board for add-large");
 const ones = cells[cells.length - 1];
 const rightDigit = Number(String(session().item.answers[0]).slice(-1));

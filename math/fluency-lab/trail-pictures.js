@@ -1136,7 +1136,11 @@ export function stepVisual(line) {
   }
   const bigger = text.match(/^Start at the bigger number, (\d+)$/);
   if (bigger) return miniHops([Number(bigger[1])]);
-  const apart = text.match(/^Take \d+ apart: (.+)$/);
+  // "Only the ones change. Take 38 apart: 3 tens, 8 ones." keeps the place blocks after its lead-in.
+  const apart = text.match(/^(?:.*\. )?Take \d+ apart: (.+)$/);
+  // "Make a ten first. 8 needs 2 more": the ten-frame shows the 8 that are already there.
+  const make = text.match(/^Make a ten first\. (\d+) needs \d+ more$/);
+  if (make) return tenFrame(Number(make[1]));
   if (apart) return placeBlocks(apart[1]);
   const place = text.match(
     /^(\d+) has (\d+) (hundreds?|tens?|ones?)\. (\d+) has (\d+) (hundreds?|tens?|ones?)$/,
