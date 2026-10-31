@@ -197,9 +197,9 @@ export function mountDashboard(host, ctx) {
   contexts.set(host, full);
   const sections = recommend(full.tutor, full.grade, full.now);
   const target = continueTarget(sections);
-  host.innerHTML = `<div class="fl4-home">${heroHtml(full, sections, target)}${reminderHtml(full)}${planHtml(sections)}${rewardsHtml(full)}${navHtml(full)}
+  host.innerHTML = `<div class="fl4-home">${heroHtml(full, sections, target)}${reminderHtml(full)}${planHtml(sections)}${navHtml(full)}
     <section class="fl4-pathway" aria-labelledby="fl4-map-title"><h2 id="fl4-map-title">${escapeHtml(t("Your Grade {n} skill map", { n: full.grade }))}</h2><p>${t("See how skills build on each other. Open any skill to learn or practice it.")}</p><div id="fl4-map-host"></div></section>
-    ${doorsHtml(full)}${full.evidenceHtml ? `<div class="journey-evidence">${full.evidenceHtml}</div>` : ""}</div>`;
+    ${rewardsHtml(full)}${doorsHtml(full)}${full.evidenceHtml ? `<div class="journey-evidence">${full.evidenceHtml}</div>` : ""}</div>`;
   mountSkillMap(host.querySelector("#fl4-map-host"), {
     grade: full.grade,
     tutor: full.tutor,
