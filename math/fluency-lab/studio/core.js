@@ -155,3 +155,58 @@ export function checkFrames(frames) {
   });
   return problems;
 }
+
+// ----- Helpers for the smaller engines: one declaration per frame, and picking an answer as the Build. -----
+// A frame from a drawing body: wraps it in an SVG, attaches the description for screen readers, keeps `meta`.
+export const frameOf = ({ id, cap, easy = null, eq = "", body, alt, meta = {}, h = 220 }) =>
+  Object.assign(frame({ id, cap, easy, eq, svg: svgWrap(body, alt.en, { h }), alt }), { meta });
+
+// A predict point with one right and one wrong answer, each explaining itself in both languages.
+export const predictOf = (at, q, right, wrong, why, explainRight, explainWrong) => ({
+  at,
+  q,
+  choices: [
+    { t: right, ok: true, why: why.right },
+    { t: wrong, ok: false, why: why.wrong },
+  ],
+  explain: [
+    { t: explainRight, ok: true },
+    { t: explainWrong, ok: false },
+  ],
+});
+
+// A Build where the learner chooses among labelled options and the engine says which is right and why not.
+//   options(spec) -> [{ label: L, ok: bool, msg: L }]   draw(spec, picked|null) -> { body, alt, h? }
+export const choiceBuild = ({ prompt, options, draw, doneMsg, available }) => ({
+  available,
+  prompt,
+  init: () => ({ pick: null }),
+  render(st, spec) {
+    const { body, alt, h = 220 } = draw(spec, st.pick);
+    const opts = options(spec);
+    const done = st.pick !== null && opts[st.pick]?.ok;
+    return {
+      svg: svgWrap(body, alt.en, { h }),
+      alt,
+      controls: opts.map((o, i) => ({ id: "pick", arg: i, label: o.label })),
+      status: done ? doneMsg(spec) : null,
+    };
+  },
+  act(st, id, arg, spec) {
+    const o = options(spec)[arg];
+    return { state: { pick: arg }, ok: Boolean(o.ok), msg: o.ok ? null : o.msg, tag: o.ok ? null : "wrongPick" };
+  },
+  done: (st, spec) => st.pick !== null && Boolean(options(spec)[st.pick]?.ok),
+});
+
+// Dots in rows of `per`, for counters and ten-frames. Returns the SVG body and its height.
+export function dotRows(count, { per = 5, r = 16, gap = 8, x0 = 280, y0 = 40, fill = COLORS.whole, filled = count } = {}) {
+  const w = per * (2 * r + gap) - gap;
+  let out = "";
+  for (let i = 0; i < count; i += 1) {
+    const cx = x0 - w / 2 + r + (i % per) * (2 * r + gap);
+    const cy = y0 + r + Math.floor(i / per) * (2 * r + gap);
+    out += keyed(`d${i}`, cx, cy, `<circle r="${r}" fill="${i < filled ? fill : "#fff"}" stroke="${COLORS.ink}" stroke-width="2"/>`);
+  }
+  return { body: out, h: y0 + Math.ceil(count / per) * (2 * r + gap) + 20 };
+}

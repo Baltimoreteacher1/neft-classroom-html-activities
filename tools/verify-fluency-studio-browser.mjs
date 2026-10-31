@@ -33,6 +33,16 @@ try {
     [8, "exponents", ["watch", "build"]],
     [6, "gcf", ["watch", "build"]],
     [8, "slope", ["watch", "build", "explore"]],
+    [0, "compose-10", ["watch", "build"]],
+    [1, "time", ["watch", "build"]],
+    [2, "coins", ["watch", "build"]],
+    [6, "evaluate", ["watch", "build"]],
+    [7, "inequalities", ["watch", "build"]],
+    [5, "decimal-mul", ["watch", "build"]],
+    [8, "pythagorean", ["watch", "build"]],
+    [8, "transformations", ["watch", "build"]],
+    [7, "circle-area", ["watch", "build"]],
+    [7, "probability", ["watch", "build"]],
   ];
   for (const [width, height, reduced] of [
     [390, 844, false],
@@ -67,6 +77,8 @@ try {
       note(opened, `${skill} @${width}${reduced ? " reduced" : ""}: the Studio did not open`);
       if (!opened) continue;
       for (const tab of tabs) {
+        // Some problems have no Build (an even-count median has no single number to tap); skip a tab that is not offered.
+        if (!(await page.locator(`#visual-studio [data-tab="${tab}"]`).count())) continue;
         await page.locator(`#visual-studio [data-tab="${tab}"]`).click();
         await page.waitForTimeout(400);
         const tag = `${skill}/${tab} @${width}${reduced ? " reduced" : ""}`;

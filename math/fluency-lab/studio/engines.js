@@ -5,10 +5,14 @@
 import { L, esc, frame, num, svgWrap, txt } from "./core.js";
 import * as area from "./engine-area.js";
 import * as balance from "./engine-balance.js";
+import * as decimal from "./engine-decimal.js";
 import * as digits from "./engine-digits.js";
+import * as early from "./engine-early.js";
+import * as expr from "./engine-expr.js";
 import * as factors from "./engine-factors.js";
 import * as fraction from "./engine-fraction.js";
 import * as fracmul from "./engine-fracmul.js";
+import * as geo from "./engine-geo.js";
 import * as graph from "./engine-graph.js";
 import * as hops from "./engine-hops.js";
 import * as line from "./engine-line.js";
@@ -31,9 +35,13 @@ export const ENGINES = {
   power: { id: "power", label: L("Powers and roots", "Potencias y raíces"), ...power },
   factors: { id: "factors", label: L("Factor and multiple lists", "Listas de factores y múltiplos"), ...factors },
   graph: { id: "graph", label: L("Coordinate grid and machine", "Cuadrícula y máquina"), ...graph },
+  early: { id: "early", label: L("Counters, clocks and coins", "Fichas, relojes y monedas"), ...early },
+  expr: { id: "expr", label: L("Expressions, equations and data", "Expresiones, ecuaciones y datos"), ...expr },
+  decimal: { id: "decimal", label: L("Decimals and division", "Decimales y división"), ...decimal },
+  geo: { id: "geo", label: L("Geometry, signs and factors", "Geometría, signos y factores"), ...geo },
   area: { id: "area", label: L("Arrays and area", "Arreglos y área"), ...area },
 };
-const ORDER = ["place", "fraction", "fracmul", "round", "digits", "hops", "power", "factors", "graph", "line", "balance", "ratio", "area"];
+const ORDER = ["place", "fraction", "fracmul", "round", "digits", "hops", "power", "factors", "graph", "early", "expr", "decimal", "geo", "line", "balance", "ratio", "area"];
 
 // Worded steps as frames, for skills with no manipulable model yet.
 const wrapText = (text, width = 46) => {
@@ -109,7 +117,7 @@ export function lessonFor(item) {
   const q = item?.question;
   if (typeof q !== "string") return null;
   for (const id of ORDER) {
-    const spec = ENGINES[id].parse(q);
+    const spec = ENGINES[id].parse(q, item);
     if (spec) return { engine: ENGINES[id], spec, modeled: true };
   }
   if ((item.steps || []).length >= 2)

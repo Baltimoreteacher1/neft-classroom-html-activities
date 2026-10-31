@@ -38,6 +38,10 @@ const BADGE = {
   power: L("Power builder", "Constructor de potencias"),
   factors: L("Factor finder", "Buscador de factores"),
   graph: L("Slope tracer", "Trazador de pendientes"),
+  early: L("Early number explorer", "Explorador de números"),
+  expr: L("Expression expert", "Experto en expresiones"),
+  decimal: L("Decimal mover", "Movedor de decimales"),
+  geo: L("Geometry guide", "Guía de geometría"),
   area: L("Array architect", "Arquitecto de arreglos"),
   steps: L("Step by step thinker", "Pensador paso a paso"),
 };

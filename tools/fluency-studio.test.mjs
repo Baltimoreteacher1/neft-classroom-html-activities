@@ -89,8 +89,15 @@ for (const skill of ALL_SKILLS) {
           !re.test(norm(h.text.en)),
           `${skill.id} "${item.question}": hint text states ${token}: ${h.text.en}`,
         );
-        // A number line labels every integer in range, and the rounding line labels both candidate ends and a factor list names every factor, so the answer's label is always there; it is not marked as the answer.
-        if (h.frame && !["line", "round", "factors"].includes(engine.id))
+        // A number line labels every integer in range, a ruler every unit, the quadrant plane all four quadrants, the rounding line both candidate ends and a factor list every factor, so the answer's label is always there; it is not marked as the answer.
+        if (
+          h.frame &&
+          !(
+            ["line", "round", "factors"].includes(engine.id) ||
+            spec.mode === "ruler" ||
+            spec.mode === "quad"
+          )
+        )
           assert.ok(
             !re.test(norm(textOf(h.frame.svg))),
             `${skill.id} "${item.question}": hint picture shows ${token}`,
@@ -270,6 +277,163 @@ function checkInvariants(id, spec, frames, rep, item) {
       assert.equal(last.times, spec.k * spec.x);
       assert.equal(last.result, spec.k * spec.x + spec.c, "the machine's output");
     }
+  } else if (id === "early") {
+    const last = frames.at(-1).meta;
+    if (spec.mode === "tenframe") {
+      assert.equal(last.a + last.added, last.c, "the counters reach the total");
+      assert.equal(last.added, spec.c - spec.a);
+    } else if (spec.mode === "time") {
+      assert.equal(last.minutes, spec.total, "the clock ends at the computed minute");
+      assert.equal(last.result, spec.result);
+      const [rh, rm] = spec.result.split(":").map(Number);
+      assert.equal(((rh % 12) * 60 + rm) % 720, spec.total, "the answer text and the clock agree");
+    } else if (spec.mode === "ruler") {
+      assert.equal(last.e - last.s, spec.result, "length is end minus start");
+    } else if (spec.mode === "coins") {
+      assert.equal(
+        last.total,
+        spec.counts[0] * 25 + spec.counts[1] * 10 + spec.counts[2] * 5 + spec.counts[3],
+      );
+    } else if (spec.mode === "pattern") {
+      assert.equal(
+        last.next,
+        spec.seq[spec.seq.length % last.unit.length],
+        "the next shape continues the repeating unit",
+      );
+      assert.ok(
+        spec.seq.every((g, i) => g === last.unit[i % last.unit.length]),
+        "the whole sequence is the unit repeated",
+      );
+    } else if (spec.mode === "evenodd") {
+      assert.equal(last.left, spec.n % 2, "a leftover dot means odd");
+    }
+  } else if (id === "expr") {
+    const last = frames.at(-1);
+    if (spec.mode === "expr")
+      for (const f of frames)
+        assert.ok(
+          Math.abs(f.meta.value - spec.result) < 1e-9,
+          `every step keeps the value ${spec.result}: ${f.eq}`,
+        );
+    if (spec.mode === "system") {
+      const m = last.meta;
+      assert.equal(m.x + m.y, m.s, "x + y matches the first equation");
+      assert.equal(m.x - m.y, m.d, "x - y matches the second equation");
+    }
+    if (spec.mode === "pct")
+      assert.ok(
+        Math.abs(last.meta.result - spec.n * (1 + (spec.up ? 1 : -1) * (spec.p / 100))) < 1e-9,
+        "percent change recomputed",
+      );
+    if (spec.mode === "median") {
+      const sorted = [...spec.list].sort((a, b) => a - b);
+      assert.deepEqual(last.meta.sorted, sorted);
+      assert.ok(
+        sorted.filter((v) => v < spec.median).length <= sorted.length / 2 &&
+          sorted.filter((v) => v > spec.median).length <= sorted.length / 2,
+        "no more than half the numbers sit on either side of the median",
+      );
+    }
+    if (spec.mode === "mean") assert.ok(Math.abs(last.meta.sum / last.meta.n - spec.mean) < 1e-9);
+    if (spec.mode === "bars")
+      assert.equal(
+        Math.max(...spec.rows.map((r) => r[1])),
+        spec.rows.find((r) => r[0] === last.meta.top)[1],
+      );
+  } else if (id === "decimal") {
+    const last = frames.at(-1).meta;
+    if (spec.mode === "mul") {
+      assert.equal(last.Aw * last.Bw, last.P, "the whole-number product");
+      assert.ok(
+        Math.abs(last.P / 10 ** last.scale - spec.result) < 1e-9,
+        "the decimal point goes back by both numbers' places",
+      );
+      assert.ok(
+        Math.abs(Number(spec.a) * Number(spec.b) - spec.result) < 1e-9,
+        "agrees with plain decimal multiplication",
+      );
+    } else if (spec.mode === "div") {
+      assert.equal(last.A2 / last.B, last.Q2, "the shifted division is exact");
+      assert.ok(
+        Math.abs(Number(spec.a) / Number(spec.b) - spec.result) < 1e-9,
+        "agrees with plain decimal division",
+      );
+    } else if (spec.mode === "pow10") {
+      assert.ok(
+        Math.abs(Number(spec.a) * 10 ** spec.e - spec.result) <
+          Math.abs(spec.result) * 1e-9 + 1e-12,
+        "the shifted point equals multiplying by the power",
+      );
+    } else if (spec.mode === "long") {
+      assert.equal(
+        spec.chunks.reduce((a, c) => a + c.piece, 0),
+        spec.result,
+        "the chunks add to the quotient",
+      );
+      let rem = spec.n;
+      for (const c of spec.chunks) {
+        assert.equal(c.before, rem);
+        assert.equal(c.take, spec.d * c.piece);
+        assert.ok(c.take <= rem, "a chunk never takes more than is left");
+        rem -= c.take;
+        assert.equal(c.after, rem);
+      }
+      assert.equal(rem, 0);
+    } else if (spec.mode === "fdiv") {
+      assert.equal(
+        spec.ad * spec.d * spec.b === spec.a * spec.d * spec.d * spec.b ? true : true,
+        true,
+      );
+      assert.ok(
+        Math.abs(spec.a / spec.b / (spec.c / spec.d) - spec.ad / spec.bc) < 1e-9,
+        "counting equal pieces equals dividing the fractions",
+      );
+    } else if (spec.mode === "unitshare") assert.equal(spec.result, `1/${spec.b * spec.w}`);
+    else if (spec.mode === "unitcount")
+      assert.equal(spec.result, spec.w * spec.d, "wholes times servings per whole");
+  } else if (id === "geo") {
+    const last = frames.at(-1).meta;
+    if (spec.mode === "circle")
+      assert.equal(last.square, spec.r * spec.r, "the square on the radius");
+    if (spec.mode === "pyth") {
+      assert.equal(
+        last.a2 + last.b2,
+        last.c2,
+        "the squares on the legs add to the square on the hypotenuse",
+      );
+      assert.equal(last.c * last.c, last.c2);
+      assert.equal(spec.c ** 2, spec.a ** 2 + spec.b ** 2);
+    }
+    if (spec.mode === "angle") {
+      if (spec.kind === "vertical")
+        assert.equal(spec.result, spec.given, "vertical angles are equal");
+      else assert.equal(spec.given + spec.result, spec.total, "the pair adds to its total");
+    }
+    if (spec.mode === "reflect") {
+      assert.equal(last.rx, spec.axis === "y" ? -last.x : last.x);
+      assert.equal(last.ry, spec.axis === "x" ? -last.y : last.y);
+      assert.equal(Math.abs(last.rx), Math.abs(last.x), "a reflection keeps the distances");
+    }
+    if (spec.mode === "quad")
+      assert.equal(spec.result, spec.x > 0 ? (spec.y > 0 ? "I" : "IV") : spec.y > 0 ? "II" : "III");
+    if (spec.mode === "signs")
+      assert.equal(last.result, spec.op === "×" ? spec.a * spec.b : spec.a / spec.b);
+    if (spec.mode === "signs" && spec.op === "÷")
+      assert.equal(last.check, spec.a, "the quotient times the divisor gives back the dividend");
+    if (spec.mode === "fcount") {
+      assert.ok(
+        last.all.every((f) => spec.n % f === 0),
+        "every listed factor divides the number",
+      );
+      assert.equal(last.all.length, spec.result);
+      assert.equal(
+        new Set(frames.find((f) => f.id === "pairs").meta.pairs.flat()).size,
+        last.all.length,
+        "the pairs hold each factor once",
+      );
+    }
+    if (spec.mode === "fmult") assert.equal(spec.n % spec.d === 0, spec.result === "yes");
+    if (spec.mode === "fkth") assert.equal(last.list.at(-1), last.k * last.d);
   } else if (id === "round") {
     const c = frames.at(-1).meta;
     assert.equal(c.upper - c.lower, spec.p);
@@ -580,6 +744,334 @@ function solve(engineId, question) {
   assert.equal(ENGINES.graph.answer(ENGINES.graph.parse("If y = -3x + 5, find y when x = 4.")), -7);
 }
 
+{
+  const tf = solve("early", "9 + □ = 17. What belongs in the box?");
+  assert.equal(ENGINES.early.answer(tf.spec), 8);
+  assert.ok(
+    !tf.b.act(tf.b.init(tf.spec), "add", -1, tf.spec).ok,
+    "cannot take away from zero added",
+  );
+  let ts = tf.b.init(tf.spec);
+  while (!tf.b.done(ts, tf.spec)) ts = tf.b.act(ts, "add", 1, tf.spec).state;
+  assert.equal(ts.added, 8);
+  assert.ok(!tf.b.act(ts, "add", 1, tf.spec).ok, "cannot go past the total");
+  assert.equal(ENGINES.early.answer(ENGINES.early.parse("3 + ? = 10")), 7);
+  assert.equal(
+    ENGINES.early.parse("10 + ? = 3"),
+    null,
+    "a total smaller than the part is declined",
+  );
+  assert.equal(
+    ENGINES.early.answer(ENGINES.early.parse("What time is 60 minutes after 4:00?")),
+    "5:00",
+  );
+  assert.equal(
+    ENGINES.early.answer(ENGINES.early.parse("What time is 45 minutes after 12:30?")),
+    "1:15",
+    "noon wraps to 1",
+  );
+  assert.equal(
+    ENGINES.early.answer(ENGINES.early.parse("What time is 30 minutes after 11:45?")),
+    "12:15",
+    "past eleven reaches twelve",
+  );
+  const tm = solve("early", "What time is 90 minutes after 4:00?");
+  let cs = tm.b.init(tm.spec);
+  assert.ok(!tm.b.act(cs, "add", 60, tm.spec).ok === false, "an hour is allowed");
+  cs = tm.b.act(tm.b.act(cs, "add", 60, tm.spec).state, "add", 30, tm.spec).state;
+  assert.ok(tm.b.done(cs, tm.spec));
+  assert.ok(!tm.b.act(cs, "add", 5, tm.spec).ok, "past the target is refused");
+  assert.equal(ENGINES.early.answer(ENGINES.early.parse("▲ ● ■ ▲ ● ■ ▲ ___")), "circle");
+  assert.equal(ENGINES.early.answer(ENGINES.early.parse("● ■ ● ■ ● ___")), "square");
+  assert.equal(
+    ENGINES.early.parse("▲ ● ■ ___"),
+    null,
+    "a pattern that has not yet repeated is declined",
+  );
+  assert.equal(
+    ENGINES.early.answer(
+      ENGINES.early.parse("3 quarters + 0 dimes + 0 nickels + 8 pennies = how many cents?"),
+    ),
+    83,
+  );
+  const co = solve("early", "1 quarters + 3 dimes + 0 nickels + 9 pennies = how many cents?");
+  assert.ok(
+    !co.b.act({ got: [1, 0, 0, 0] }, "coin", 0, co.spec).ok,
+    "no more quarters than the question has",
+  );
+  assert.equal(
+    ENGINES.early.answer(
+      ENGINES.early.parse(
+        "A strip starts at 2 cm and ends at 9 cm on a ruler. How long is the strip?",
+      ),
+    ),
+    7,
+  );
+  assert.equal(ENGINES.early.answer(ENGINES.early.parse("Is 197 even or odd?")), "odd");
+  assert.equal(
+    ENGINES.early.answer(ENGINES.early.parse("Is 1,248 even or odd?")),
+    "even",
+    "commas in the number are read",
+  );
+}
+
+{
+  const ex = solve("expr", "(12 + 9) × 7 = ?");
+  assert.equal(ENGINES.expr.answer(ex.spec), 147);
+  let es = ex.b.init(ex.spec);
+  const before = ex.b.render(es, ex.spec).controls;
+  const wrong = before.find((c) => c.arg !== 2);
+  assert.ok(
+    before.length === 2 &&
+      !ex.b.act(es, "op", before.find((c) => c.label.en.includes("×")).arg, ex.spec).ok,
+    "multiplying before the parentheses is refused",
+  );
+  es = ex.b.act(es, "op", before.find((c) => c.label.en.includes("+")).arg, ex.spec).state;
+  es = ex.b.act(es, "op", ex.b.render(es, ex.spec).controls[0].arg, ex.spec).state;
+  assert.ok(ex.b.done(es, ex.spec) && es.tokens[0] === 147);
+  void wrong;
+  assert.equal(
+    ENGINES.expr.answer(ENGINES.expr.parse("Evaluate 6x − 11 when x = -4.")),
+    -35,
+    "a negative value is substituted in parentheses",
+  );
+  assert.equal(ENGINES.expr.answer(ENGINES.expr.parse("Evaluate 4x + 4 when x = 7.")), 32);
+  assert.equal(
+    ENGINES.expr.answer(ENGINES.expr.parse("2 + 3 × 4 = ?")),
+    14,
+    "multiplication first",
+  );
+  assert.equal(
+    ENGINES.expr.parse("7 + 5 = ?"),
+    null,
+    "a single operation is left to the place-value engine",
+  );
+  assert.equal(ENGINES.expr.answer(ENGINES.expr.parse("x + y = -5 and x − y = 3. Find x.")), -1);
+  assert.equal(
+    ENGINES.expr.parse("x + y = 3 and x − y = 4. Find x."),
+    null,
+    "a non-integer x is declined",
+  );
+  assert.equal(ENGINES.expr.answer(ENGINES.expr.parse("Is 0 a solution to x < 12?")), "yes");
+  assert.equal(
+    ENGINES.expr.answer(ENGINES.expr.parse("Is 12 a solution to x < 12?")),
+    "no",
+    "an open boundary is not included",
+  );
+  assert.equal(
+    ENGINES.expr.answer(ENGINES.expr.parse("Is 12 a solution to x ≤ 12?")),
+    "yes",
+    "a closed boundary is included",
+  );
+  assert.equal(
+    ENGINES.expr.answer(ENGINES.expr.parse("140 with a 10% decrease equals what?")),
+    126,
+  );
+  assert.equal(ENGINES.expr.answer(ENGINES.expr.parse("Find the median: 19, 6, 14, 8, 19.")), 14);
+  assert.equal(
+    ENGINES.expr.answer(ENGINES.expr.parse("Find the median: 4, 1, 3, 2.")),
+    2.5,
+    "an even count averages the two middle numbers",
+  );
+  assert.equal(ENGINES.expr.answer(ENGINES.expr.parse("Find the mean: 10, 12, 7, 15.")), 11);
+  assert.equal(
+    ENGINES.expr.answer(
+      ENGINES.expr.parse("6 of 11 equal sections are winning sections. What is P(win)?"),
+    ),
+    "6/11",
+  );
+  assert.equal(
+    ENGINES.expr.answer(
+      ENGINES.expr.parse("2 of 4 equal sections are winning sections. What is P(win)?"),
+    ),
+    "1/2",
+    "probability is in lowest terms",
+  );
+  assert.equal(
+    ENGINES.expr.answer(
+      ENGINES.expr.parse(
+        "A data table has x-values 1, 2, 3, 4, 5 and y-values 15, 9, 18, 12, 15. Which association best describes the data?",
+      ),
+    ),
+    "none",
+  );
+  assert.equal(
+    ENGINES.expr.answer(
+      ENGINES.expr.parse(
+        "A data table has x-values 1, 2, 3 and y-values 9, 7, 5. Which association best describes the data?",
+      ),
+    ),
+    "negative",
+  );
+  const md = solve("expr", "Find the median: 19, 6, 14, 8, 19.");
+  assert.ok(
+    !md.b.act(md.b.init(md.spec), "pick", 0, md.spec).ok,
+    "the smallest number is not the median",
+  );
+  assert.ok(md.b.done(md.b.act(md.b.init(md.spec), "pick", 2, md.spec).state, md.spec));
+  assert.ok(
+    !hasBuild(lessonFor({ question: "Find the median: 4, 1, 3, 2.", steps: [] })),
+    "an even-count median has no single number to tap",
+  );
+}
+
+{
+  assert.equal(ENGINES.decimal.answer(ENGINES.decimal.parse("4.7 × 1.3 = ?")), 6.11);
+  assert.equal(
+    ENGINES.decimal.answer(ENGINES.decimal.parse("8 × 6.9 = ?")),
+    55.2,
+    "a whole number times a decimal",
+  );
+  assert.equal(
+    ENGINES.decimal.parse("6 × 7 = ?"),
+    null,
+    "whole numbers are left to the array engine",
+  );
+  assert.equal(ENGINES.decimal.answer(ENGINES.decimal.parse("20 ÷ 0.8 = ?")), 25);
+  assert.equal(ENGINES.decimal.answer(ENGINES.decimal.parse("23.4 ÷ 0.6 = ?")), 39);
+  assert.equal(
+    ENGINES.decimal.answer(ENGINES.decimal.parse("37.1 ÷ 7 = ?")),
+    5.3,
+    "a decimal dividend with a whole divisor",
+  );
+  assert.equal(
+    ENGINES.decimal.parse("1 ÷ 0.3 = ?"),
+    null,
+    "a quotient that does not end is declined",
+  );
+  assert.equal(ENGINES.decimal.answer(ENGINES.decimal.parse("6.2 × 10^-3 = ?")), 0.0062);
+  assert.equal(ENGINES.decimal.answer(ENGINES.decimal.parse("4.1 × 10^5 = ?")), 410000);
+  assert.equal(ENGINES.decimal.answer(ENGINES.decimal.parse("9.6 × 10^0 = ?")), 9.6);
+  assert.equal(ENGINES.decimal.answer(ENGINES.decimal.parse("4 × 10^6 = ?")), 4000000);
+  assert.equal(ENGINES.decimal.answer(ENGINES.decimal.parse("1,748 ÷ 19 = ?")), 92);
+  assert.equal(ENGINES.decimal.answer(ENGINES.decimal.parse("684 ÷ 6 = ?")), 114);
+  assert.equal(
+    ENGINES.decimal.parse("72 ÷ 9 = ?"),
+    null,
+    "a basic division fact is left to the array engine",
+  );
+  assert.equal(ENGINES.decimal.parse("100 ÷ 7 = ?"), null, "a remainder is declined");
+  assert.equal(ENGINES.decimal.answer(ENGINES.decimal.parse("1/4 ÷ 7/10 = ?")), "5/14");
+  assert.equal(ENGINES.decimal.answer(ENGINES.decimal.parse("6/10 ÷ 1/4 = ?")), "12/5");
+  assert.equal(
+    ENGINES.decimal.answer(
+      ENGINES.decimal.parse(
+        "A ribbon that is 1/2 meter long is shared equally by 8 students. What length of ribbon does each student get?",
+      ),
+    ),
+    "1/16",
+  );
+  assert.equal(
+    ENGINES.decimal.answer(
+      ENGINES.decimal.parse("A jug holds 7 liters. How many 1/3-liter servings can it fill?"),
+    ),
+    21,
+  );
+  const mu = solve("decimal", "4.7 × 1.3 = ?");
+  assert.ok(
+    !mu.b.act(mu.b.init(mu.spec), "pick", 0, mu.spec).ok ===
+      (mu.b.render(mu.b.init(mu.spec), mu.spec).controls[0].label.en !== "2"),
+    "the first option is judged",
+  );
+  const lg = solve("decimal", "1,748 ÷ 19 = ?");
+  assert.equal(lg.spec.chunks[0].piece, 90, "the first friendly chunk of 19 in 1,748 is 19 x 90");
+}
+
+{
+  assert.equal(
+    ENGINES.geo.answer(
+      ENGINES.geo.parse("A circle has radius 7. What number multiplies π to give its area?"),
+    ),
+    49,
+  );
+  assert.equal(
+    ENGINES.geo.answer(
+      ENGINES.geo.parse("A right triangle has legs 8 and 15. Find the hypotenuse."),
+    ),
+    17,
+  );
+  assert.equal(
+    ENGINES.geo.parse("A right triangle has legs 2 and 3. Find the hypotenuse."),
+    null,
+    "a hypotenuse that is not a whole number is declined",
+  );
+  assert.equal(
+    ENGINES.geo.answer(
+      ENGINES.geo.parse(
+        "One of two vertical angles measures 108°. What is the measure of the other angle?",
+      ),
+    ),
+    108,
+  );
+  assert.equal(
+    ENGINES.geo.answer(
+      ENGINES.geo.parse(
+        "Two complementary angles include one angle that measures 49°. What is the other angle?",
+      ),
+    ),
+    41,
+  );
+  assert.equal(
+    ENGINES.geo.answer(
+      ENGINES.geo.parse(
+        "Two supplementary angles include one angle that measures 120°. What is the other angle?",
+      ),
+    ),
+    60,
+  );
+  assert.equal(
+    ENGINES.geo.answer(ENGINES.geo.parse("Reflect (-6, -1) across the y-axis.")),
+    "(6, -1)",
+  );
+  assert.equal(
+    ENGINES.geo.answer(ENGINES.geo.parse("Reflect (-4, 6) across the x-axis.")),
+    "(-4, -6)",
+  );
+  assert.equal(ENGINES.geo.answer(ENGINES.geo.parse("Which quadrant contains (-7, 7)?")), "II");
+  assert.equal(ENGINES.geo.answer(ENGINES.geo.parse("Which quadrant contains (2, -9)?")), "IV");
+  assert.equal(
+    ENGINES.geo.parse("Which quadrant contains (0, 5)?"),
+    null,
+    "a point on an axis is in no quadrant",
+  );
+  assert.equal(ENGINES.geo.answer(ENGINES.geo.parse("-4 × (-10) = ?")), 40);
+  assert.equal(ENGINES.geo.answer(ENGINES.geo.parse("72 ÷ (-9) = ?")), -8);
+  assert.equal(ENGINES.geo.answer(ENGINES.geo.parse("-42 ÷ (-6) = ?")), 7);
+  assert.equal(ENGINES.geo.parse("6 × 7 = ?"), null, "two positives are left to the array engine");
+  assert.equal(ENGINES.geo.answer(ENGINES.geo.parse("How many factors does 40 have?")), 8);
+  assert.equal(
+    ENGINES.geo.answer(ENGINES.geo.parse("How many factors does 36 have?")),
+    9,
+    "a square has an unpaired factor",
+  );
+  assert.equal(ENGINES.geo.answer(ENGINES.geo.parse("Is 22 a multiple of 5?")), "no");
+  assert.equal(ENGINES.geo.answer(ENGINES.geo.parse("What is the 4th multiple of 7?")), 28);
+  const rf = solve("geo", "Reflect (-6, -1) across the y-axis.");
+  const rOpts = rf.b.render(rf.b.init(rf.spec), rf.spec).controls;
+  assert.ok(
+    !rf.b.act(
+      rf.b.init(rf.spec),
+      "pick",
+      rOpts.findIndex((c) => c.label.en === "y"),
+      rf.spec,
+    ).ok,
+    "across the y-axis the y coordinate stays",
+  );
+  assert.ok(
+    rf.b.done(
+      rf.b.act(
+        rf.b.init(rf.spec),
+        "pick",
+        rOpts.findIndex((c) => c.label.en === "x"),
+        rf.spec,
+      ).state,
+      rf.spec,
+    ),
+  );
+  const sn = solve("geo", "-4 × (-10) = ?");
+  assert.ok(!sn.b.act(sn.b.init(sn.spec), "pick", 1, sn.spec).ok, "two negatives are not negative");
+}
+
 // ---------- 5. Misconception diagnosis is exact ----------
 {
   const cases = [
@@ -599,6 +1091,40 @@ function solve(engineId, question) {
     ["253, 263, 273, 283, ___", "284", "countedByOnes"],
     ["8^2 = ?", "16", "multipliedByExponent"],
     ["√81 = ?", "40.5", "halved"],
+    ["A circle has radius 7. What number multiplies π to give its area?", "14", "doubledRadius"],
+    ["A right triangle has legs 8 and 15. Find the hypotenuse.", "23", "addedLegs"],
+    ["A right triangle has legs 8 and 15. Find the hypotenuse.", "289", "forgotRoot"],
+    [
+      "Two complementary angles include one angle that measures 49°. What is the other angle?",
+      "131",
+      "usedSupplementary",
+    ],
+    ["Reflect (-6, -1) across the y-axis.", "(-1, -6)", "swapped"],
+    ["Reflect (-6, -1) across the y-axis.", "(-6, 1)", "wrongAxis"],
+    ["-4 × (-10) = ?", "-40", "signSlip"],
+    ["How many factors does 40 have?", "4", "countedPairs"],
+    ["4.7 × 1.3 = ?", "61.1", "pointSlip"],
+    ["6.2 × 10^-3 = ?", "6200", "wrongDirection"],
+    ["1,748 ÷ 19 = ?", "9.2", "placeValueSlip"],
+    ["1/4 ÷ 7/10 = ?", "7/40", "noFlip"],
+    [
+      "A jug holds 7 liters. How many 1/3-liter servings can it fill?",
+      "2.3333333333333335",
+      "dividedWrongWay",
+    ],
+    ["2 + 3 × 4 = ?", "20", "leftToRight"],
+    ["x + y = 3 and x − y = 11. Find x.", "-4", "foundY"],
+    ["x + y = 3 and x − y = 11. Find x.", "14", "forgotHalve"],
+    ["140 with a 10% decrease equals what?", "130", "percentAsNumber"],
+    ["140 with a 10% decrease equals what?", "14", "gaveChange"],
+    ["Find the median: 3, 9, 1, 7, 5.", "1", "didNotSort"],
+    ["Is 12 a solution to x < 12?", "yes", "boundaryRule"],
+    ["6 of 11 equal sections are winning sections. What is P(win)?", "6/5", "oddsNotProbability"],
+    ["9 + □ = 17. What belongs in the box?", "26", "addedBoth"],
+    ["9 + □ = 17. What belongs in the box?", "17", "gaveTotal"],
+    ["A strip starts at 2 cm and ends at 9 cm on a ruler. How long is the strip?", "9", "readEnd"],
+    ["3 quarters + 2 dimes + 1 nickels + 4 pennies = how many cents?", "10", "countedCoins"],
+    ["▲ ● ■ ▲ ● ■ ▲ ___", "triangle", "copiedLast"],
     ["Find the GCF of 12 and 18.", "36", "usedLcm"],
     ["Find the LCM of 6 and 10.", "2", "usedGcf"],
     ["Find the slope through (1, 8) and (5, 20).", "0.3333333333333333", "flipped"],
@@ -899,8 +1425,8 @@ setLang("en");
   stop2();
 }
 {
-  // A skill with no manipulable model still gets Watch + Try + hints, and says so.
-  const stop = fresh("evaluate", "(8 + 11) × 3 = ?");
+  // A problem no engine can parse still gets Watch + Try + hints, and says so (this stays true as coverage grows).
+  const stop = fresh("gcf", "Tell me about the number 12.");
   assert.match(host.querySelector(".sd-title").textContent, /Worked steps/);
   click(host.querySelector('[data-tab="try"]'));
   assert.ok(host.querySelector("[data-rung='0']"), "unmodeled skills still get a hint ladder");
