@@ -64,3 +64,25 @@ export function awardBadge(engineId) {
 }
 export const badges = () => read().badges;
 export const clearAll = () => writeLocal(KEY, { skills: {}, badges: {} });
+
+// ----- Backup: the record travels with the learner's JSON backup, cleaned on the way in. -----
+const KINDS = new Set(["try", "predict", "detective"]);
+export const exportStudio = () => {
+  const data = read();
+  return { skills: data.skills, badges: data.badges };
+};
+export function cleanStudio(value) {
+  if (!value || typeof value !== "object") return null;
+  const skills = {};
+  for (const [id, list] of Object.entries(value.skills || {})) {
+    if (!/^[0-8]:[\w-]{1,40}$/.test(id) || !Array.isArray(list)) continue;
+    skills[id] = list
+      .filter((e) => e && typeof e === "object" && KINDS.has(e.kind))
+      .slice(-KEEP)
+      .map((e) => ({ kind: e.kind, ok: e.ok === true, supported: e.supported === true, tag: /^[A-Za-z]{1,30}$/.test(e.tag || "") ? e.tag : null }));
+  }
+  const badges = {};
+  for (const [id, on] of Object.entries(value.badges || {})) if (/^[a-z]{1,12}$/.test(id) && on === true) badges[id] = true;
+  return { skills, badges };
+}
+export const importStudio = (clean) => clean && writeLocal(KEY, clean);

@@ -89,8 +89,8 @@ for (const skill of ALL_SKILLS) {
           !re.test(norm(h.text.en)),
           `${skill.id} "${item.question}": hint text states ${token}: ${h.text.en}`,
         );
-        // A number line labels every integer in range, and the rounding line labels both candidate ends, so the answer's label is always there; it is not marked as the answer.
-        if (h.frame && !["line", "round"].includes(engine.id))
+        // A number line labels every integer in range, and the rounding line labels both candidate ends and a factor list names every factor, so the answer's label is always there; it is not marked as the answer.
+        if (h.frame && !["line", "round", "factors"].includes(engine.id))
           assert.ok(
             !re.test(norm(textOf(h.frame.svg))),
             `${skill.id} "${item.question}": hint picture shows ${token}`,
@@ -193,6 +193,82 @@ function checkInvariants(id, spec, frames, rep, item) {
       const k = frames.at(-1).meta;
       assert.equal(k.parts.length * spec.part, spec.result, "kept parts add to the answer");
       assert.equal(spec.part * spec.b, spec.n, "the equal parts rebuild the whole");
+    }
+  } else if (id === "digits") {
+    if (spec.mode === "compare") {
+      const x = Number(spec.ta);
+      const y = Number(spec.tb);
+      assert.equal(
+        spec.result,
+        x > y ? ">" : x < y ? "<" : "=",
+        "compare agrees with plain arithmetic",
+      );
+      if (spec.at >= 0) {
+        for (let i = 0; i < spec.at; i += 1)
+          assert.equal(spec.a[i].d, spec.b[i].d, "every place left of the decider matches");
+        assert.notEqual(spec.a[spec.at].d, spec.b[spec.at].d);
+      }
+    } else {
+      const col = spec.cols.find((c) => c.e === spec.place.e);
+      assert.equal(col.d, spec.digit);
+      assert.ok(Math.abs(col.d * 10 ** spec.place.e - spec.value) < 1e-9, "value = digit x place");
+    }
+  } else if (id === "hops") {
+    spec.nums.forEach(
+      (v, i) =>
+        i &&
+        assert.ok(Math.abs(v - spec.nums[i - 1] - spec.step) < 1e-9, "every hop is the same size"),
+    );
+    assert.ok(
+      Math.abs(frames.at(-1).meta.from + spec.step - spec.result) < 1e-9,
+      "the next number is one more hop",
+    );
+  } else if (id === "power") {
+    for (const f of frames)
+      if (f.meta.product !== undefined)
+        assert.equal(
+          f.meta.product,
+          f.meta.base ** f.meta.factors,
+          "each running product is base to the factor count",
+        );
+    if (spec.mode === "root")
+      assert.equal(
+        frames.at(-1).meta.side ** 2,
+        frames.at(-1).meta.tiles,
+        "the side squared is the tile count",
+      );
+  } else if (id === "factors") {
+    if (spec.mode === "gcf") {
+      assert.ok(
+        spec.common.every((f) => spec.a % f === 0 && spec.b % f === 0),
+        "every marked factor divides both",
+      );
+      assert.equal(Math.max(...spec.common), spec.result, "the greatest shared factor is the GCF");
+      assert.equal(spec.a % spec.result === 0 && spec.b % spec.result === 0, true);
+    } else {
+      assert.ok(
+        spec.result % spec.a === 0 && spec.result % spec.b === 0,
+        "the LCM is a multiple of both",
+      );
+      const first = frames.at(-1).meta.first;
+      assert.equal(first, spec.result, "the first shared multiple is the LCM");
+      assert.ok(
+        ![...Array(spec.result - 1).keys()].some(
+          (i) => i + 1 < spec.result && (i + 1) % spec.a === 0 && (i + 1) % spec.b === 0,
+        ),
+        "nothing smaller is a common multiple",
+      );
+    }
+  } else if (id === "graph") {
+    if (spec.mode === "slope") {
+      const last = frames.at(-1).meta;
+      assert.equal(last.rise, spec.y2 - spec.y1);
+      assert.equal(last.run, spec.x2 - spec.x1);
+      assert.ok(Math.abs(last.result - last.rise / last.run) < 1e-12, "slope = rise / run");
+    } else {
+      const last = frames.at(-1).meta;
+      assert.equal(last.times, spec.k * spec.x);
+      assert.equal(last.result, spec.k * spec.x + spec.c, "the machine's output");
     }
   } else if (id === "round") {
     const c = frames.at(-1).meta;
@@ -397,6 +473,113 @@ function solve(engineId, question) {
   );
 }
 
+{
+  const d = solve("digits", "What is the value of the digit in the tens place of 96?");
+  assert.ok(
+    !d.b.act(d.b.init(d.spec), "pick", 0, d.spec).ok,
+    "the ones column is not the tens place",
+  );
+  assert.ok(d.b.done(d.b.act(d.b.init(d.spec), "pick", 1, d.spec).state, d.spec));
+  assert.equal(ENGINES.digits.answer(d.spec), 90);
+  assert.equal(
+    ENGINES.digits.answer(ENGINES.digits.parse("What digit is in the thousandths place of 2.698?")),
+    8,
+  );
+  assert.equal(
+    ENGINES.digits.answer(
+      ENGINES.digits.parse(
+        "What is the value of the digit in the hundred-thousands place of 385,097?",
+      ),
+    ),
+    300000,
+  );
+  assert.equal(ENGINES.digits.answer(ENGINES.digits.parse("670 ___ 589")), ">");
+  assert.equal(
+    ENGINES.digits.answer(ENGINES.digits.parse("0.5 ___ 0.50")),
+    "=",
+    "trailing zeros compare equal",
+  );
+  assert.equal(
+    ENGINES.digits.parse("What digit is in the millions place of 96?"),
+    null,
+    "a place the number does not reach is declined",
+  );
+  const c = solve("digits", "788 ___ 151");
+  assert.ok(
+    c.b.done(c.b.act(c.b.init(c.spec), "pick", 2, c.spec).state, c.spec),
+    "the hundreds place decides 788 vs 151",
+  );
+  assert.ok(
+    !hasBuild(lessonFor({ question: "42 ___ 42", steps: [] })),
+    "equal numbers have nothing to decide, so no Build",
+  );
+  const h = solve("hops", "253, 263, 273, 283, ___");
+  assert.ok(!h.b.act(h.b.init(h.spec), "hop", 1, h.spec).ok, "a hop of 1 breaks a pattern of 10");
+  assert.ok(h.b.done(h.b.act(h.b.init(h.spec), "hop", 10, h.spec).state, h.spec));
+  assert.equal(ENGINES.hops.answer(ENGINES.hops.parse("13, 14, 15, 16, ___")), 17);
+  assert.equal(
+    ENGINES.hops.answer(ENGINES.hops.parse("100, 95, 90, 85, ___")),
+    80,
+    "a pattern can count down",
+  );
+  assert.equal(ENGINES.hops.parse("1, 2, 4, ___"), null, "uneven hops are not a skip-count");
+  const pw = solve("power", "8^2 = ?");
+  assert.ok(!pw.b.done(pw.b.init(pw.spec), pw.spec));
+  assert.ok(
+    pw.b.done(pw.b.act(pw.b.init(pw.spec), "f", 1, pw.spec).state, pw.spec),
+    "two factors of 8",
+  );
+  assert.equal(ENGINES.power.answer(ENGINES.power.parse("2^6 = ?")), 64);
+  assert.equal(
+    ENGINES.power.parse("2^10 = ?"),
+    null,
+    "more factors than the chain can show is declined",
+  );
+  assert.equal(ENGINES.power.parse("2^40 = ?"), null, "too large to draw is declined");
+  const sq = solve("power", "√81 = ?");
+  let ss = sq.b.init(sq.spec);
+  while (!sq.b.done(ss, sq.spec)) ss = sq.b.act(ss, "k", 1, sq.spec).state;
+  assert.equal(ss.k, 9);
+  assert.equal(ENGINES.power.parse("√80 = ?"), null, "a non-square is declined");
+}
+
+{
+  const g = solve("factors", "Find the GCF of 12 and 18.");
+  assert.deepEqual(g.spec.common, [1, 2, 3, 6]);
+  assert.ok(!g.b.act(g.b.init(g.spec), "pick", 4, g.spec).ok, "4 is not a factor of 18");
+  assert.ok(!g.b.act(g.b.init(g.spec), "pick", 3, g.spec).ok, "3 is shared but not the greatest");
+  assert.ok(g.b.done(g.b.act(g.b.init(g.spec), "pick", 6, g.spec).state, g.spec));
+  assert.equal(
+    ENGINES.factors.answer(ENGINES.factors.parse("Find the GCF of 47 and 2.")),
+    1,
+    "coprime numbers share only 1",
+  );
+  assert.equal(ENGINES.factors.answer(ENGINES.factors.parse("Find the LCM of 6 and 10.")), 30);
+  assert.equal(
+    ENGINES.factors.answer(ENGINES.factors.parse("Find the LCM of 4 and 8.")),
+    8,
+    "one number can be a multiple of the other",
+  );
+  assert.equal(ENGINES.factors.parse("Find the GCF of 0 and 5."), null);
+  const sl = solve("graph", "Find the slope through (1, 8) and (5, 20).");
+  assert.equal(ENGINES.graph.answer(sl.spec), 3);
+  assert.equal(
+    ENGINES.graph.parse("Find the slope through (2, 3) and (2, 9)."),
+    null,
+    "a vertical line is declined",
+  );
+  const fn = solve("graph", "If y = 4x − 8, find y when x = 10.");
+  assert.equal(ENGINES.graph.answer(fn.spec), 32);
+  assert.ok(
+    !fn.b.act(fn.b.init(fn.spec), "step", "wrong", fn.spec).ok,
+    "adding before multiplying is refused",
+  );
+  let fs = fn.b.act(fn.b.init(fn.spec), "step", "multiply", fn.spec).state;
+  fs = fn.b.act(fs, "step", "add", fn.spec).state;
+  assert.ok(fn.b.done(fs, fn.spec));
+  assert.equal(ENGINES.graph.answer(ENGINES.graph.parse("If y = -3x + 5, find y when x = 4.")), -7);
+}
+
 // ---------- 5. Misconception diagnosis is exact ----------
 {
   const cases = [
@@ -411,6 +594,15 @@ function solve(engineId, question) {
     ["4:6 = 12:□", "14", "additive"],
     ["Area of a rectangle with length 6 and width 5?", "22", "perimeterForArea"],
     ["2/3 × 3/4 = ?", "5/7", "addedAcross"],
+    ["What is the value of the digit in the tens place of 96?", "9", "digitNotValue"],
+    ["What digit is in the tens place of 96?", "90", "valueNotDigit"],
+    ["253, 263, 273, 283, ___", "284", "countedByOnes"],
+    ["8^2 = ?", "16", "multipliedByExponent"],
+    ["√81 = ?", "40.5", "halved"],
+    ["Find the GCF of 12 and 18.", "36", "usedLcm"],
+    ["Find the LCM of 6 and 10.", "2", "usedGcf"],
+    ["Find the slope through (1, 8) and (5, 20).", "0.3333333333333333", "flipped"],
+    ["If y = 4x − 8, find y when x = 10.", "8", "addedFirst"],
     ["What is 2/6 of 72?", "12", "forgotKeep"],
     ["Round 87 to the nearest ten.", "80", "roundedDown"],
     ["Round 82 to the nearest ten.", "90", "roundedUp"],
@@ -708,7 +900,7 @@ setLang("en");
 }
 {
   // A skill with no manipulable model still gets Watch + Try + hints, and says so.
-  const stop = fresh("gcf", "Find the GCF of 12 and 18.");
+  const stop = fresh("evaluate", "(8 + 11) × 3 = ?");
   assert.match(host.querySelector(".sd-title").textContent, /Worked steps/);
   click(host.querySelector('[data-tab="try"]'));
   assert.ok(host.querySelector("[data-rung='0']"), "unmodeled skills still get a hint ladder");
@@ -718,3 +910,50 @@ setLang("en");
 console.log(
   "fluency-studio: models agree with the lab, frames are legal states, Build and hints behave, Spanish and reduced motion work",
 );
+
+// ---------- 9. The Studio record travels with the JSON backup, cleaned on the way in ----------
+{
+  const { exportPlay, cleanPlay, importPlay } = await import("../math/fluency-lab/play-backup.js");
+  adaptive.clearAll();
+  adaptive.record("3:round", { kind: "try", ok: true, supported: false });
+  adaptive.record("3:round", { kind: "try", ok: false, supported: true, tag: "roundedDown" });
+  adaptive.awardBadge("round");
+  const backup = JSON.parse(JSON.stringify(exportPlay()));
+  assert.equal(backup.studio.skills["3:round"].length, 2, "the record is in the backup");
+  assert.equal(backup.studio.badges.round, true);
+  adaptive.clearAll();
+  importPlay(cleanPlay(backup));
+  assert.equal(adaptive.history("3:round").length, 2, "importing restores it");
+  assert.equal(adaptive.history("3:round")[1].tag, "roundedDown");
+  const dirty = cleanPlay({
+    studio: {
+      skills: {
+        "3:round": [
+          { kind: "try", ok: true, supported: false, tag: "<img onerror=1>", name: "Ada" },
+        ],
+        "bad key": [],
+      },
+      badges: { Round: true, round: 1 },
+    },
+  });
+  assert.deepEqual(
+    Object.keys(dirty.studio.skills),
+    ["3:round"],
+    "an invalid skill key is dropped",
+  );
+  assert.equal(
+    dirty.studio.skills["3:round"][0].tag,
+    null,
+    "a tag that is not a plain word is dropped",
+  );
+  assert.ok(
+    !("name" in dirty.studio.skills["3:round"][0]),
+    "unknown fields, such as a name, are never kept",
+  );
+  assert.deepEqual(dirty.studio.badges, {}, "only real badge ids survive");
+  assert.equal(
+    cleanPlay({ trail: {} }).studio,
+    null,
+    "an older backup leaves the learner's own record alone",
+  );
+}

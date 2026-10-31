@@ -33,6 +33,11 @@ const BADGE = {
   ratio: L("Ratio scaler", "Escalador de razones"),
   fracmul: L("Grid multiplier", "Multiplicador de cuadrícula"),
   round: L("Line rounder", "Redondeador de recta"),
+  digits: L("Place detective", "Detective de lugares"),
+  hops: L("Hop counter", "Contador de saltos"),
+  power: L("Power builder", "Constructor de potencias"),
+  factors: L("Factor finder", "Buscador de factores"),
+  graph: L("Slope tracer", "Trazador de pendientes"),
   area: L("Array architect", "Arquitecto de arreglos"),
   steps: L("Step by step thinker", "Pensador paso a paso"),
 };

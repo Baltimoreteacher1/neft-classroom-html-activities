@@ -5,10 +5,15 @@
 import { L, esc, frame, num, svgWrap, txt } from "./core.js";
 import * as area from "./engine-area.js";
 import * as balance from "./engine-balance.js";
+import * as digits from "./engine-digits.js";
+import * as factors from "./engine-factors.js";
 import * as fraction from "./engine-fraction.js";
 import * as fracmul from "./engine-fracmul.js";
+import * as graph from "./engine-graph.js";
+import * as hops from "./engine-hops.js";
 import * as line from "./engine-line.js";
 import * as place from "./engine-place.js";
+import * as power from "./engine-power.js";
 import * as ratio from "./engine-ratio.js";
 import * as round from "./engine-round.js";
 import { peekCap } from "../step-leak.js";
@@ -21,9 +26,14 @@ export const ENGINES = {
   ratio: { id: "ratio", label: L("Ratio table", "Tabla de razones"), ...ratio },
   fracmul: { id: "fracmul", label: L("Area grid", "Cuadrícula de área"), ...fracmul },
   round: { id: "round", label: L("Rounding line", "Recta de redondeo"), ...round },
+  digits: { id: "digits", label: L("Place-value columns", "Columnas de valor posicional"), ...digits },
+  hops: { id: "hops", label: L("Number line hops", "Saltos en la recta"), ...hops },
+  power: { id: "power", label: L("Powers and roots", "Potencias y raíces"), ...power },
+  factors: { id: "factors", label: L("Factor and multiple lists", "Listas de factores y múltiplos"), ...factors },
+  graph: { id: "graph", label: L("Coordinate grid and machine", "Cuadrícula y máquina"), ...graph },
   area: { id: "area", label: L("Arrays and area", "Arreglos y área"), ...area },
 };
-const ORDER = ["place", "fraction", "fracmul", "round", "line", "balance", "ratio", "area"];
+const ORDER = ["place", "fraction", "fracmul", "round", "digits", "hops", "power", "factors", "graph", "line", "balance", "ratio", "area"];
 
 // Worded steps as frames, for skills with no manipulable model yet.
 const wrapText = (text, width = 46) => {
