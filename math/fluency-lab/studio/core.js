@@ -15,8 +15,8 @@ export const esc = (value) =>
 export const COLORS = {
   ones: "#0f766e",
   tens: "#1d4ed8",
-  hundreds: "#7c3aed",
-  thousands: "#b45309",
+  hundreds: "#a3401f",
+  thousands: "#7a5200",
   big: "#be123c",
   part: "#0f766e",
   whole: "#1d4ed8",
