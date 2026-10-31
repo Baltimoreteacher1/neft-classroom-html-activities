@@ -6,7 +6,7 @@ import { loadTestRecord } from "../store.js";
 import { i18nFor } from "../i18n.js";
 import { ART, BASE, CORE_DOMAINS, html, icon } from "../util.js";
 import { domainChipHTML, domainName } from "./test-report.js";
-import { gradesText, modeText, rich } from "./test-modes.js";
+import { gradesText, modeText, rich, testStrategiesHTML } from "./test-modes.js";
 
 const KIND = {
   full: ["Four-domain classroom practice", "Práctica de clase de las cuatro destrezas", "tests"],
@@ -157,6 +157,11 @@ export async function render(ctx) {
               </section>`
             : ""
         }
+        <section class="test-extra test-strategy-section" id="strategies">
+          <h2>${icon("bulb")}${I.T("Test-taking strategies & Process of Elimination", "Estrategias de examen y descarte")}</h2>
+          <p>${I.T("Key strategies used by top test-prep programs: learn how to eliminate distractor choices, pace yourself, and anticipate audio clues.", "Estrategias clave de preparación de exámenes: aprende a descartar opciones distractoras, controlar tu ritmo y anticipar pistas en el audio.")}</p>
+          ${testStrategiesHTML(I)}
+        </section>
         <section class="test-extra">
           <h2>${icon("external")}${I.T("Try the official WIDA practice", "Prueba la práctica oficial de WIDA")}</h2>
           <p>

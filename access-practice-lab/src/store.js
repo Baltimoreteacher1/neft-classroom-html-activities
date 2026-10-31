@@ -94,6 +94,25 @@ export const loadTestRecord = (id) => safeJson(storage.get(testKey(id)), {}) || 
 export const saveTestRecord = (id, record) => storage.set(testKey(id), JSON.stringify(record));
 export const clearTestRecord = (id) => storage.remove(testKey(id));
 
+// ── test reflections & wida target goals ───────────────────────────────────────
+export const errorReflectionsKey = () => `${PREFIX}:errorReflections`;
+export const loadErrorReflections = () => safeJson(storage.get(errorReflectionsKey()), {}) || {};
+export const saveErrorReflection = (testId, itemId, reason) => {
+  const current = loadErrorReflections();
+  const testReflections = current[testId] || {};
+  testReflections[itemId] = reason;
+  current[testId] = testReflections;
+  storage.set(errorReflectionsKey(), JSON.stringify(current));
+  return current;
+};
+
+export const targetGoalKey = () => `${PREFIX}:widaTarget`;
+export const loadTargetGoal = () => safeJson(storage.get(targetGoalKey()), null);
+export const saveTargetGoal = (goal) => {
+  storage.set(targetGoalKey(), JSON.stringify(goal));
+  return goal;
+};
+
 // ── whole-device views (passport, export) ─────────────────────────────────────
 /** Every saved level record: [{band, domain, level, record}]. */
 export function allRecords() {

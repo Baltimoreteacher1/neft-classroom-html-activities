@@ -54,9 +54,10 @@ function optionBody(o) {
     >`;
 }
 
-function choiceList(item, answer, { key, reveal, multi }) {
+function choiceList(item, answer, { key, reveal, multi, eliminated = [] }) {
   const chosen = new Set(multi ? answer || [] : answer != null ? [answer] : []);
   const right = new Set(multi ? item.answers || [] : [item.answer]);
+  const elimSet = new Set(eliminated || []);
   const hasPictures = (item.options || []).some((o) => o.picture);
   return html`<div
       class="choices ${hasPictures ? "has-pictures" : ""}"
@@ -65,7 +66,8 @@ function choiceList(item, answer, { key, reveal, multi }) {
     >
       ${(item.options || []).map((o, i) => {
         const on = chosen.has(o.id);
-        return html`<label class="choice ${on ? "is-on" : ""} ${mark(reveal, right.has(o.id), on)}">
+        const isElim = elimSet.has(o.id);
+        return html`<label class="choice ${on ? "is-on" : ""} ${isElim ? "is-eliminated" : ""} ${mark(reveal, right.has(o.id), on)}">
           <input
             type="${multi ? "checkbox" : "radio"}"
             name="ans-${key}"

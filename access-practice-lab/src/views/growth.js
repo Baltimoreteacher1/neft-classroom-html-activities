@@ -11,7 +11,7 @@ import {
   MIN_POINTS,
 } from "../lang/ledger.js";
 import { loadPatterns } from "../content.js";
-import { allRecords } from "../store.js";
+import { allRecords, loadErrorReflections, loadTargetGoal, saveTargetGoal } from "../store.js";
 import { buildSkillGraph } from "../lang/skill-graph.js";
 import { SUPPORT_TIERS, supportOverride } from "../lang/adapt.js";
 import { ACCESS_LAB_FLAGS } from "../lang/feature-flags.js";
@@ -205,6 +205,8 @@ export async function render(ctx) {
         ${p.firstAttempts === 0 ? html`<div class="empty-state grow-empty"><img src="${ART}/empty.svg" alt="" width="320" height="240" /><h3>${T("Your growth map is waiting for work", "Tu mapa de crecimiento espera tu trabajo")}</h3><p>${T("No studio work yet. Try the Writing Studio, Speaking Studio or a mission and your growth map will start to fill in.", "Aún no hay trabajo en los estudios. Prueba el Estudio de escritura, el Estudio de expresión oral o una misión y tu mapa de crecimiento empezará a llenarse.")}</p><div class="row-actions">${studioLinks}</div></div>` : html`<p class="fine">${T(`A trend appears after ${MIN_POINTS} first attempts. “On your own” means no frames, word bank or model were open.`, `Una tendencia aparece después de ${MIN_POINTS} primeros intentos. “Por tu cuenta” significa que no estaban abiertos los marcos de oraciones, el banco de palabras ni el modelo.`)}</p>`}
       </section>
       ${supportChoiceHTML(ctx, I)}
+      ${widaCalculatorHTML(I, band)}
+      ${errorReflectionsHTML(I)}
       ${ACCESS_LAB_FLAGS.skillGraphEnabled ? skillGraphHTML(skillGraph, I) : ""}
       ${
         focus.length
@@ -289,11 +291,121 @@ export async function render(ctx) {
   };
 }
 
+function widaCalculatorHTML(I, band) {
+  const goal = loadTargetGoal() || { prevScore: 3.2, targetScore: 4.5 };
+  const prev = Number(goal.prevScore) || 3.2;
+  const target = Number(goal.targetScore) || 4.5;
+  const gap = Math.max(0, target - prev);
+  const annualTarget = (gap / (target >= 5.0 ? 3 : 2)).toFixed(2);
+
+  const targets = {
+    Listening: Math.min(6.0, prev + 0.9).toFixed(1),
+    Reading: Math.min(6.0, prev + 0.8).toFixed(1),
+    Speaking: Math.min(6.0, prev + 0.5).toFixed(1),
+    Writing: Math.min(6.0, prev + 0.6).toFixed(1),
+  };
+
+  return html`<section class="panel wida-calc-panel" aria-labelledby="widaCalcTitle">
+    <header class="wida-calc-head">
+      <span class="prog-tile">${icon("growth")}</span>
+      <div>
+        <h2 id="widaCalcTitle">${I.T("WIDA Target & Reclassification Trajectory", "Metas WIDA y trayectoria de reclasificación")}</h2>
+        <p class="fine">${I.T("Based on WIDA growth trajectory models used in district EL systems (like Ellevation). Plan your target annual gains toward meeting state proficiency benchmarks.", "Basado en modelos de trayectoria de WIDA usados en plataformas distritales (como Ellevation). Planifica tus metas anuales hacia el dominio del idioma.")}</p>
+      </div>
+    </header>
+
+    <div class="wida-calc-body">
+      <div class="wida-inputs">
+        <div class="field">
+          <span>${I.T("Previous WIDA Overall score", "Puntaje general anterior de WIDA")}</span>
+          <div class="stepper-row">
+            <button type="button" class="btn small" data-wida-prev-step="-0.1" aria-label="${I.S("Decrease score by 0.1", "Disminuir puntaje en 0.1")}">-0.1</button>
+            <strong class="wida-num-display">${prev.toFixed(1)}</strong>
+            <button type="button" class="btn small" data-wida-prev-step="0.1" aria-label="${I.S("Increase score by 0.1", "Aumentar puntaje en 0.1")}">+0.1</button>
+          </div>
+        </div>
+
+        <div class="field">
+          <span>${I.T("Reclassification target", "Meta de reclasificación")}</span>
+          <div class="stepper-row">
+            <button type="button" class="btn small ${target === 4.5 ? "is-active" : ""}" data-wida-target-val="4.5">4.5 · ${I.T("State standard", "Estándar estatal")}</button>
+            <button type="button" class="btn small ${target === 5.0 ? "is-active" : ""}" data-wida-target-val="5.0">5.0 · ${I.T("Advanced", "Avanzado")}</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="wida-results-grid">
+        <div class="wida-kpi">
+          <span class="wida-kpi-label">${I.T("Annual growth target", "Meta de crecimiento anual")}</span>
+          <strong class="wida-kpi-val">+${annualTarget}</strong>
+          <span class="fine">${I.T("typical annual progress rate", "ritmo de avance anual típico")}</span>
+        </div>
+
+        <div class="wida-domain-targets">
+          <p class="fine"><strong>${I.T("Target domain benchmarks for this year:", "Metas por destreza para este año:")}</strong></p>
+          <ul class="wida-domains-list">
+            <li><span>${icon("listening")} ${I.T("Listening", "Escuchar")}</span><strong>${targets.Listening}</strong></li>
+            <li><span>${icon("reading")} ${I.T("Reading", "Lectura")}</span><strong>${targets.Reading}</strong></li>
+            <li><span>${icon("speaking")} ${I.T("Speaking", "Expresión oral")}</span><strong>${targets.Speaking}</strong></li>
+            <li><span>${icon("writing")} ${I.T("Writing", "Escritura")}</span><strong>${targets.Writing}</strong></li>
+          </ul>
+        </div>
+      </div>
+      <p class="fine wida-calc-note">${I.T("Speaking and writing typically require the most deliberate practice. Focus on giving reasons and using academic connectors in Writing Studio and Speaking Studio.", "Hablar y escribir suelen requerir más práctica deliberada. Enfócate en dar razones y usar conectores académicos en los estudios de escritura y expresión oral.")}</p>
+    </div>
+  </section>`;
+}
+
+function errorReflectionsHTML(I) {
+  const all = loadErrorReflections();
+  const totals = { vocab: 0, rushed: 0, trap: 0, evidence: 0 };
+  for (const t of Object.values(all)) {
+    for (const tag of Object.values(t)) {
+      if (totals[tag] != null) totals[tag]++;
+    }
+  }
+  const sum = Object.values(totals).reduce((a, b) => a + b, 0);
+  if (sum === 0) return "";
+
+  return html`<section class="panel" aria-labelledby="errReflTitle">
+    <header class="grow-dim-head">
+      <span class="prog-tile">${icon("detective")}</span>
+      <div>
+        <h2 id="errReflTitle">${I.T("Test Error Metacognition Log", "Registro de reflexión de errores de examen")}</h2>
+        <p class="fine">${I.T("Reflections recorded when reviewing practice test answers on this device:", "Reflexiones guardadas al repasar respuestas de pruebas de práctica en este dispositivo:")}</p>
+      </div>
+    </header>
+    <div class="ar-summary-chips" style="margin-top:var(--s-3);">
+      <span class="ar-chip is-vocab">${icon("words")} <strong>${totals.vocab}</strong> ${I.T("Vocabulary", "Vocabulario")}</span>
+      <span class="ar-chip is-rushed">${icon("clock")} <strong>${totals.rushed}</strong> ${I.T("Rushed reading", "Prisa")}</span>
+      <span class="ar-chip is-trap">${icon("alert")} <strong>${totals.trap}</strong> ${I.T("Distractor traps", "Trampas")}</span>
+      <span class="ar-chip is-evidence">${icon("search")} <strong>${totals.evidence}</strong> ${I.T("Evidence gaps", "Falta de pista")}</span>
+    </div>
+  </section>`;
+}
+
 export function onClick(e, ctx) {
   const btn = e.target.closest?.("[data-support-choice]");
-  if (!btn) return false;
-  const id = btn.dataset.supportChoice;
-  ctx.setPrefs({ supportOverride: SUPPORT_TIERS.some((s) => s.id === id) ? id : "" });
-  ctx.rerender().then(() => document.getElementById(btn.id)?.focus({ preventScroll: true }));
-  return true;
+  if (btn) {
+    const id = btn.dataset.supportChoice;
+    ctx.setPrefs({ supportOverride: SUPPORT_TIERS.some((s) => s.id === id) ? id : "" });
+    ctx.rerender().then(() => document.getElementById(btn.id)?.focus({ preventScroll: true }));
+    return true;
+  }
+  const stepBtn = e.target.closest?.("[data-wida-prev-step]");
+  if (stepBtn) {
+    const delta = Number(stepBtn.dataset.widaPrevStep) || 0;
+    const goal = loadTargetGoal() || { prevScore: 3.2, targetScore: 4.5 };
+    const nextPrev = Math.max(1.0, Math.min(5.5, Math.round((Number(goal.prevScore || 3.2) + delta) * 10) / 10));
+    saveTargetGoal({ ...goal, prevScore: nextPrev });
+    return ctx.rerender();
+  }
+  const targetBtn = e.target.closest?.("[data-wida-target-val]");
+  if (targetBtn) {
+    const nextTarget = Number(targetBtn.dataset.widaTargetVal) || 4.5;
+    const goal = loadTargetGoal() || { prevScore: 3.2, targetScore: 4.5 };
+    saveTargetGoal({ ...goal, targetScore: nextTarget });
+    return ctx.rerender();
+  }
+  return false;
 }

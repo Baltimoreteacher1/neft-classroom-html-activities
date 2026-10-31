@@ -68,3 +68,43 @@ export function modeBannerHTML(I, want, rec) {
     <button type="button" class="btn" data-switch-mode="${want}">${modePhrase(I, want, "label", "Restart in {m}", "Reiniciar en {m}")}</button>
   </div>`;
 }
+
+/**
+ * Princeton Review & CertFellow inspired test-taking strategies:
+ * Process of Elimination (POE), Distractor Traps, Audio Anticipation, and Pacing.
+ */
+export function testStrategiesHTML(I) {
+  return html`<div class="test-strategies-block">
+    <div class="strategy-grid">
+      <article class="strategy-card">
+        <h3><span class="strat-num" aria-hidden="true">1</span> ${I.T("Process of Elimination (POE)", "Proceso de descarte (POE)")}</h3>
+        <p class="fine">${I.T("Don't search for the right answer first — find what is definitely wrong and cross it off.", "No busques la respuesta correcta primero: encuentra lo que seguro está mal y táchalo.")}</p>
+        <ul class="strat-list">
+          <li><strong>${I.T("Absolute words trap:", "Trampa de palabras absolutas:")}</strong> ${I.T("Options with words like 'always', 'never', 'all', or 'completely' are usually incorrect traps.", "Opciones con 'siempre', 'nunca', 'todos' o 'completamente' suelen ser trampas.")}</li>
+          <li><strong>${I.T("Verbatim word match trap:", "Trampa de palabras idénticas:")}</strong> ${I.T("Distractors often copy exact words from the audio or passage, but change the true cause or meaning.", "Los distractores suelen copiar palabras exactas del texto o audio, pero alteran el sentido real.")}</li>
+          <li><strong>${I.T("Boost your odds:", "Mejora tus probabilidades:")}</strong> ${I.T("Eliminating just two wrong choices turns a 25% guess into a 50/50 decision.", "Descartar solo dos opciones incorrectas convierte una adivinanza del 25% en una decisión 50/50.")}</li>
+        </ul>
+      </article>
+
+      <article class="strategy-card">
+        <h3><span class="strat-num" aria-hidden="true">2</span> ${I.T("Audio Anticipation (Listening)", "Anticipación del audio (Escuchar)")}</h3>
+        <p class="fine">${I.T("In computer-based ACCESS, you cannot pause the audio. Prepare before you click play.", "En la prueba por computadora no puedes pausar el audio. Prepárate antes de escuchar.")}</p>
+        <ul class="strat-list">
+          <li><strong>${I.T("Read question stems first:", "Lee la pregunta primero:")}</strong> ${I.T("Look at the pictures and read what is asked before starting the audio clip.", "Mira las imágenes y lee lo que te piden antes de reproducir el audio.")}</li>
+          <li><strong>${I.T("Predict keywords:", "Predice palabras clave:")}</strong> ${I.T("Guess 2–3 words you expect to hear (e.g. 'experiment', 'temperature', 'results').", "Imagina 2–3 palabras que esperas oír (ej. 'experimento', 'temperatura', 'resultados').")}</li>
+          <li><strong>${I.T("Listen for signal transitions:", "Atiende a conectores clave:")}</strong> ${I.T("Words like 'however', 'because', 'therefore', and 'instead' signal the real answer.", "Palabras como 'sin embargo', 'porque', 'por lo tanto' señalan la respuesta real.")}</li>
+        </ul>
+      </article>
+
+      <article class="strategy-card">
+        <h3><span class="strat-num" aria-hidden="true">3</span> ${I.T("Pacing & Time Budgeting", "Control del tiempo y ritmo")}</h3>
+        <p class="fine">${I.T("Never get stuck on one single question. Keep a steady momentum.", "Nunca te estanques en una sola pregunta. Mantén un ritmo constante.")}</p>
+        <ul class="strat-list">
+          <li><strong>${I.T("Listening & Reading:", "Escuchar y leer:")}</strong> ${I.T("Spend about 1.5 to 2 minutes per item. If unsure, eliminate 2 choices, pick your best choice, and flag it.", "Dedica entre 1.5 y 2 minutos por pregunta. Si dudas, descarta 2 opciones, elige y márcala.")}</li>
+          <li><strong>${I.T("Speaking tasks:", "Tareas de hablar:")}</strong> ${I.T("Use all 30–45 planning seconds to organize 2 key details. Speak clearly at an even pace.", "Aprovecha los 30–45 segundos de preparación para planear 2 detalles. Habla con calma y claridad.")}</li>
+          <li><strong>${I.T("Writing tasks:", "Tareas de escribir:")}</strong> ${I.T("Budget: 3 minutes planning/outline, 10 minutes drafting with transition words, 2 minutes checking.", "Distribuye: 3 min de plan, 10 min redactando con conectores, 2 min para revisar.")}</li>
+        </ul>
+      </article>
+    </div>
+  </div>`;
+}

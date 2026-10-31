@@ -27,7 +27,7 @@ import {
 import { visualsHTML } from "../media.js";
 import { clear as clearTake, isRecording, stop as stopRecording, takesFor } from "../recorder.js";
 import { stop as stopSpeech } from "../speech.js";
-import { clearTestRecord, getStudentName, loadTestRecord, saveTestRecord } from "../store.js";
+import { clearTestRecord, getStudentName, loadTestRecord, saveErrorReflection, saveTestRecord } from "../store.js";
 import { ART, BASE, DOMAIN_META, announce, asList, html, icon, raw, toHtml } from "../util.js";
 import {
   applyRehearsal,
@@ -51,7 +51,7 @@ import {
   reviewScreenHTML,
   sectionsText,
 } from "./test-report.js";
-import { MODES, MODE_TEXT, gradesText, modeBannerHTML, modeOf, modePhrase, modePhraseS, otherMode, rich } from "./test-modes.js";
+import { MODES, MODE_TEXT, gradesText, modeBannerHTML, modeOf, modePhrase, modePhraseS, otherMode, rich, testStrategiesHTML } from "./test-modes.js";
 
 export { MODES, modeOf };
 
@@ -318,7 +318,8 @@ function inputFor(f) {
         ><textarea rows="8" data-test-note spellcheck="false" ${IGN}>${a || ""}</textarea>
       </label>`;
   }
-  return inputHTML(item, a);
+  const elim = T?.rec?.eliminated?.[item.id] || [];
+  return inputHTML(item, a, { eliminated: elim });
 }
 
 const answerKey = (item) => JSON.stringify(T.rec.answers[item.id] ?? null);
@@ -437,6 +438,20 @@ function runnerHTML(ctx) {
       <span style="width:${Math.round(((T.rec.index + 1) / T.flat.length) * 100)}%"></span>
     </div>
     ${rehearsalToolbarHTML({ compact: true })}
+    <div class="test-prep-bar" role="toolbar" aria-label="${I.S("Test tools", "Herramientas de examen")}">
+      <button type="button" class="btn small crossoff-toggle ${T.rec.crossOffMode ? "is-active" : ""}" data-crossoff-toggle aria-pressed="${Boolean(T.rec.crossOffMode)}" title="${I.S("Cross-off tool (eliminate choices)", "Herramienta tachar (descartar opciones)")}">
+        ${icon("x")}${I.T("Cross-off tool", "Tachar opciones")}
+      </button>
+      <button type="button" class="btn small strategy-toggle ${T.rec.showStrategy ? "is-active" : ""}" data-strategy-toggle aria-pressed="${Boolean(T.rec.showStrategy)}" title="${I.S("Test strategies & POE", "Estrategias de examen y descarte")}">
+        ${icon("bulb")}${I.T("Strategies & POE", "Estrategias y descarte")}
+      </button>
+    </div>
+    ${T.rec.crossOffMode ? html`<div class="crossoff-banner" role="status">
+      <span>${icon("x")}<strong>${I.T("Cross-off active:", "Modo tachar activo:")}</strong> ${I.T("Click any choice to eliminate or restore it. Click 'Cross-off tool' again to select your answer.", "Haz clic en una opción para tacharla o restaurarla. Haz clic de nuevo en 'Tachar opciones' para responder.")}</span>
+    </div>` : ""}
+    ${T.rec.showStrategy ? html`<div class="strategy-drawer" role="region" aria-label="${I.S("Test strategies", "Estrategias de examen")}">
+      ${testStrategiesHTML(I)}
+    </div>` : ""}
     <div class="test-stage">
       <section class="test-q ${hasPassage ? "has-passage" : ""} ${hasStimulus ? "has-stimulus" : ""}" aria-labelledby="qTitle">
         <div class="q-head">
@@ -526,7 +541,7 @@ function resultsHTML() {
         ><a class="ghost" href="${BASE}/tests">${I.T("All tests", "Todas las pruebas")}</a>
       </div>
     </section>
-    ${answerReviewHTML(I, T.flat, T.rec.answers)}`;
+    ${answerReviewHTML(I, T.flat, T.rec.answers, T.test.id)}`;
 }
 
 export async function render(ctx) {
@@ -643,8 +658,55 @@ export function onClick(e, ctx) {
   const t = e.target;
   const f = T.flat[T.rec.index];
   if (onRehearsalClick(e, ctx)) return true;
+  if (t.closest("[data-crossoff-toggle]")) {
+    T.rec.crossOffMode = !T.rec.crossOffMode;
+    announce(
+      I.S(
+        T.rec.crossOffMode
+          ? "Cross-off mode activated. Click choices to eliminate or restore them."
+          : "Cross-off mode deactivated.",
+        T.rec.crossOffMode
+          ? "Modo tachar activado. Haz clic en las opciones para tacharlas o restaurarlas."
+          : "Modo tachar desactivado.",
+      ),
+    );
+    persist();
+    return ctx.rerender();
+  }
+  if (t.closest("[data-strategy-toggle]")) {
+    T.rec.showStrategy = !T.rec.showStrategy;
+    persist();
+    return ctx.rerender();
+  }
+  const errBtn = t.closest("[data-error-tag]");
+  if (errBtn) {
+    const itemId = errBtn.closest("[data-error-item]")?.dataset.errorItem;
+    const tag = errBtn.dataset.errorTag;
+    if (itemId && tag && T?.test?.id) {
+      saveErrorReflection(T.test.id, itemId, tag);
+      announce(I.S("Error reflection saved.", "Reflexión de error guardada."));
+      return ctx.rerender();
+    }
+  }
   const choice = T.rec.phase === "running" && f && choiceTarget(e);
   if (choice) {
+    if (T.rec.crossOffMode) {
+      T.rec.eliminated = T.rec.eliminated || {};
+      const cur = new Set(T.rec.eliminated[f.item.id] || []);
+      const val = choice.value;
+      if (cur.has(val)) cur.delete(val);
+      else cur.add(val);
+      T.rec.eliminated[f.item.id] = [...cur];
+      announce(
+        I.S(
+          cur.has(val) ? `Choice ${val} eliminated.` : `Choice ${val} restored.`,
+          cur.has(val) ? `Opción ${val} tachada.` : `Opción ${val} restaurada.`,
+        ),
+      );
+      persist();
+      ctx.rerender();
+      return true;
+    }
     T.rec.answers[f.item.id] = reduceAnswer(f.item, T.rec.answers[f.item.id], choice);
     persist();
     ctx.rerender();
