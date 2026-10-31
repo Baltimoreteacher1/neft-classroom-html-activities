@@ -188,6 +188,8 @@ const els = {
 const state = {
   grade: GRADES.some((grade) => grade.grade === initialGrade) ? initialGrade : Number(readLocal(profileKey(`${SETTINGS_KEY}:grade`, activeProfile), 1)),
   gradeInUrl: GRADES.some((grade) => grade.grade === initialGrade),
+  // A bare /math/fluency-lab/ visit asks which grade to open; any deep link (grade, skill, view, start, assignment) skips that.
+  landing: !["grade", "skill", "view", "start"].some((key) => initialParams.has(key)) && !new URLSearchParams(location.hash.slice(1)).get("assignment"),
   strand: "All",
   skill: null,
   mixedPool: null,
@@ -288,9 +290,10 @@ function setUrl() {
 }
 
 function renderGradeTabs() {
+  const picked = (grade) => !state.landing && grade.grade === state.grade;
   els.gradeTabs.innerHTML = GRADES.map(
-    (grade) => `
-      <button class="grade-tab" role="tab" aria-selected="${grade.grade === state.grade}" tabindex="${grade.grade === state.grade ? 0 : -1}" aria-controls="library-view" data-grade="${grade.grade}" style="--grade:${grade.color}">
+    (grade, index) => `
+      <button class="grade-tab" role="tab" aria-selected="${picked(grade)}" tabindex="${picked(grade) || (state.landing && index === 0) ? 0 : -1}" aria-controls="library-view" data-grade="${grade.grade}" style="--grade:${grade.color}">
         <span>${t("Grade")}</span><strong>${grade.grade}</strong>
       </button>`,
   ).join("");
@@ -344,6 +347,24 @@ function filterSkillsBySearch() {
   }
 }
 
+function renderGradeChooser() {
+  els.dashboard.innerHTML = `
+    <div class="journey-heading"><div><p class="section-label">${escapeHtml(t("Math Fluency Lab"))}</p><h2>${escapeHtml(t("Choose your grade"))}</h2><p>${escapeHtml(t("Pick Kindergarten to Grade 8. You can change it any time."))}</p></div></div>
+    <div class="grade-chooser" role="group" aria-label="${escapeHtml(t("Grade level"))}">${GRADES.map((grade) => `<button type="button" class="grade-choice" data-pick-grade="${grade.grade}" style="--grade:${grade.color}"><strong>${escapeHtml(grade.label)}</strong><span>${escapeHtml(t("{n} skills", { n: grade.skills.length }))}</span></button>`).join("")}</div>`;
+}
+
+function pickGrade(grade) {
+  saveActiveSession();
+  state.session = null;
+  state.landing = false;
+  state.gradeInUrl = true;
+  state.grade = grade;
+  state.strand = "All";
+  saveSettings();
+  if (state.view === "games") openHubView("games");
+  else renderLibrary();
+}
+
 function renderLibrary() {
   saveActiveSession();
   cleanupVisual?.();
@@ -395,8 +416,11 @@ function renderLibrary() {
     <div><strong>${attempts ? Math.round((correct / attempts) * 100) : 0}%</strong><span>accuracy</span></div>`;
   renderOverallStats();
   renderDashboard();
+  const choosing = state.landing;
+  if (choosing) renderGradeChooser();
+  if (choosing) for (const part of [document.querySelector(".practice-subnav"), els.morePractice, els.trail]) if (part) part.hidden = true;
   setUrl();
-  document.title = state.gradeInUrl ? `${grade.label} Math Fluency Lab | EduWonderLab` : "Math Fluency Lab · Grades 1–8 | EduWonderLab";
+  document.title = !choosing && state.gradeInUrl ? `${grade.label} Math Fluency Lab | EduWonderLab` : "Math Fluency Lab · Grades 1–8 | EduWonderLab";
 }
 
 function skillPreviewSeed(skill) {
@@ -7267,6 +7291,7 @@ function applySettings() {
 
 function showArea(view) {
   state.view = view;
+  if (view !== "library") state.landing = false;
   const intro = {
     library: ["Your Math Journey", t("Your Math Journey"), "Choose a next step, explore a skill, or play with an idea. Your progress stays on this device.", t("Choose a next step, explore a skill, or play with an idea. Your progress stays on this device.")],
     workspace: ["Practice a skill", t("Practice a skill"), "Use a model, try a strategy, and revise your thinking as you go.", t("Use a model, try a strategy, and revise your thinking as you go.")],
@@ -8085,15 +8110,11 @@ function registerSharedSaveResume() {
 
 els.gradeTabs.addEventListener("click", (event) => {
   const button = event.target.closest("[data-grade]");
-  if (!button) return;
-  saveActiveSession();
-  state.session = null;
-  state.grade = Number(button.dataset.grade);
-  state.gradeInUrl = true;
-  state.strand = "All";
-  saveSettings();
-  if (state.view === "games") openHubView("games");
-  else renderLibrary();
+  if (button) pickGrade(Number(button.dataset.grade));
+});
+els.dashboard.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-pick-grade]");
+  if (button) pickGrade(Number(button.dataset.pickGrade));
 });
 
 els.strandFilters.addEventListener("click", (event) => {
@@ -8488,6 +8509,7 @@ els.feedback.addEventListener("fluency-fill-solved", (event) => handleStepPlayer
 
 document.querySelector("#brand-home")?.addEventListener("click", () => {
   state.gradeInUrl = false;
+  state.landing = true;
   renderLibrary();
 });
 
