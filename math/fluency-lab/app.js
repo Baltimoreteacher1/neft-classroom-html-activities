@@ -187,6 +187,7 @@ const els = {
 
 const state = {
   grade: GRADES.some((grade) => grade.grade === initialGrade) ? initialGrade : Number(readLocal(profileKey(`${SETTINGS_KEY}:grade`, activeProfile), 1)),
+  gradeInUrl: GRADES.some((grade) => grade.grade === initialGrade),
   strand: "All",
   skill: null,
   mixedPool: null,
@@ -279,10 +280,11 @@ function announce(message) {
 
 function setUrl() {
   const params = new URLSearchParams();
-  params.set("grade", state.grade);
+  if (state.gradeInUrl || (state.skill && state.view === "workspace")) params.set("grade", state.grade);
   if (state.skill && state.view === "workspace") params.set("skill", state.skill.id);
   if (!["library", "workspace"].includes(state.view)) params.set("view", state.view);
-  try { history.replaceState(null, "", `${location.pathname}?${params}${location.hash}`); } catch { /* A standalone file can still run when URL rewriting is unavailable. */ }
+  const query = params.toString();
+  try { history.replaceState(null, "", `${location.pathname}${query ? `?${query}` : ""}${location.hash}`); } catch { /* A standalone file can still run when URL rewriting is unavailable. */ }
 }
 
 function renderGradeTabs() {
@@ -394,7 +396,7 @@ function renderLibrary() {
   renderOverallStats();
   renderDashboard();
   setUrl();
-  document.title = `${grade.label} Math Fluency Lab | EduWonderLab`;
+  document.title = state.gradeInUrl ? `${grade.label} Math Fluency Lab | EduWonderLab` : "Math Fluency Lab · Grades 1–8 | EduWonderLab";
 }
 
 function skillPreviewSeed(skill) {
@@ -498,6 +500,7 @@ function openSkill(skillId, mode = "learn", targetGrade = null) {
   }
   if (targetGrade !== null && GRADES.some((g) => g.grade === targetGrade)) {
     state.grade = targetGrade;
+    state.gradeInUrl = true;
     saveSettings();
     renderGradeTabs();
   }
@@ -7977,7 +7980,7 @@ function launchAssignment(assignment) {
   if (!assignment) return;
   if (["en", "es"].includes(assignment.lang)) { setLang(assignment.lang, { persist: false }); translatePage(document); }
   saveActiveSession(); state.session = null;
-  state.assignment = assignment; state.grade = assignment.grade; saveSettings(); renderGradeTabs();
+  state.assignment = assignment; state.grade = assignment.grade; state.gradeInUrl = true; saveSettings(); renderGradeTabs();
   document.documentElement.style.setProperty("--grade", getGrade(state.grade).color);
   renderAssignmentBanner();
   if (assignment.keys.length) openPlanned("assignment", assignmentQueue(assignment));
@@ -8086,6 +8089,7 @@ els.gradeTabs.addEventListener("click", (event) => {
   saveActiveSession();
   state.session = null;
   state.grade = Number(button.dataset.grade);
+  state.gradeInUrl = true;
   state.strand = "All";
   saveSettings();
   if (state.view === "games") openHubView("games");
@@ -8258,7 +8262,7 @@ document.addEventListener("click", (event) => {
   const open = event.target.closest("[data-open-key]");
   if (open) {
     const skill = findSkill(open.dataset.openKey); if (!skill) return;
-    saveActiveSession(); state.session = null; state.grade = skill.grade; saveSettings(); renderGradeTabs();
+    saveActiveSession(); state.session = null; state.grade = skill.grade; state.gradeInUrl = true; saveSettings(); renderGradeTabs();
     openSkill(skill.id, open.dataset.openMode || "learn");
   }
   if (event.target.closest("[data-start-checkup]")) openPlanned("diagnostic", checkupPlan(state.grade));
@@ -8267,7 +8271,7 @@ document.addEventListener("click", (event) => {
   if (quickBoost) startQuickBoost(quickBoost.dataset.quickBoost);
   if (event.target.closest("[data-resume-practice]")) resumePractice();
   if (event.target.closest("[data-start-assignment]")) launchAssignment(state.assignment);
-  if (event.target.closest("[data-start-assignment-game]")) { state.autoGame = state.assignment.game; state.autoStop = state.assignment.stop; state.grade = state.assignment.grade; openHubView("games"); }
+  if (event.target.closest("[data-start-assignment-game]")) { state.autoGame = state.assignment.game; state.autoStop = state.assignment.stop; state.grade = state.assignment.grade; state.gradeInUrl = true; openHubView("games"); }
   if (event.target.closest("[data-print-report]")) printFamilyReport();
   const repair = event.target.closest("[data-repair-key]");
   if (repair) startRepair([repair.dataset.repairKey]);
@@ -8483,6 +8487,7 @@ els.learnPanel.addEventListener("input", (event) => handleModelInput(event.targe
 els.feedback.addEventListener("fluency-fill-solved", (event) => handleStepPlayerSolved(event.target));
 
 document.querySelector("#brand-home")?.addEventListener("click", () => {
+  state.gradeInUrl = false;
   renderLibrary();
 });
 
