@@ -130,6 +130,27 @@ for (const skill of ALL_SKILLS) {
   }
 }
 ok(prompted === ALL_SKILLS.length * 5, `prompted every skill and organizer (${prompted})`);
+for (const [id, phrase] of [
+  ["fraction-equiv", "digital mural"],
+  ["volume", "storage box"],
+  ["ratios", "drink mix"],
+  ["percent-change", "backpack"],
+  ["slope", "drone's altitude"],
+  ["systems", "temperature sensors"],
+]) {
+  const skill = ALL_SKILLS.find((entry) => entry.id === id);
+  const contextual = prompts.buildPrompt(
+    skill,
+    "test",
+    organizers.organizerById("test").prompt,
+    2,
+    seededRandom(42),
+  );
+  ok(
+    contextual.problem.toLowerCase().includes(phrase),
+    `${skill.grade}:${id} Writing Studio prompt uses its applied story`,
+  );
+}
 ok(
   prompts.skillById("4:multiply-2digit")?.grade === 4 && prompts.skillById("multiply-2digit"),
   "skills are found by key or id",

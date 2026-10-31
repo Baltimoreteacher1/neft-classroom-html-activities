@@ -3,6 +3,7 @@
 // to decide; the prompt never says which.
 import { ALL_SKILLS, generateProblem } from "./problem-bank.js";
 import { questionEs } from "./question-es.js";
+import { storyFor } from "./story-problems.js";
 
 const NAMES = ["Maya", "Omar", "Lena", "Diego", "Amina", "Theo"];
 const NUMBER = /^-?\d[\d,]*(?:\.\d+)?$/;
@@ -48,7 +49,8 @@ const classmate = (organizer, item, seed) => {
 
 // Returns { item, problem, claim, task } where task is { en, es } and claim is null unless the organizer shows one.
 export function buildPrompt(skill, organizer, tasks, seed = 0, rng = Math.random) {
-  const item = generateProblem(skill, rng);
+  const base = generateProblem(skill, rng);
+  const item = storyFor(base, rng, skill) || base;
   const claim =
     organizer === "cer" || organizer === "fix" ? classmate(organizer, item, seed) : null;
   const task = { ...tasks };

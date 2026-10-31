@@ -54,6 +54,7 @@ import { languageEvidence, loadJournal } from "./language-journal.js";
 import { setLanguageProfile } from "./language-settings.js";
 import { questionEs } from "./question-es.js";
 import { handleStepPlayerClick, handleStepPlayerSolved, lightStepPlayers, stepPlayer } from "./step-player.js";
+import { applyGradeExperience } from "./grade-experience.js";
 
 const STORAGE_KEY = "ewl-fluency-progress-v1";
 const SETTINGS_KEY = "ewl-fluency-settings-v1";
@@ -293,7 +294,7 @@ function renderGradeTabs() {
   const picked = (grade) => !state.landing && grade.grade === state.grade;
   els.gradeTabs.innerHTML = GRADES.map(
     (grade, index) => `
-      <button class="grade-tab" role="tab" aria-selected="${picked(grade)}" tabindex="${picked(grade) || (state.landing && index === 0) ? 0 : -1}" aria-controls="library-view" data-grade="${grade.grade}" style="--grade:${grade.color}">
+      <button class="grade-tab" role="tab" aria-selected="${picked(grade)}" tabindex="${picked(grade) || (state.landing && index === 0) ? 0 : -1}" aria-controls="library-view" data-grade="${grade.grade}">
         <span>${t("Grade")}</span><strong>${grade.grade}</strong>
       </button>`,
   ).join("");
@@ -376,7 +377,7 @@ function renderLibrary() {
   els.workspace.hidden = true;
   els.library.hidden = false;
   const grade = getGrade(state.grade);
-  document.documentElement.style.setProperty("--grade", grade.color);
+  applyGradeExperience(state.grade);
   state.subview = state.subview || "skills";
   setPracticeSubview(state.subview);
   cleanupTrail?.();
@@ -539,7 +540,7 @@ function openSkill(skillId, mode = "learn", targetGrade = null) {
   els.library.hidden = true;
   els.workspace.hidden = false;
   const grade = getGrade(state.grade);
-  document.documentElement.style.setProperty("--grade", grade.color);
+  applyGradeExperience(state.grade);
   els.workspaceGrade.textContent = grade.label;
   els.workspaceTitle.textContent = t(state.skill.title);
   els.workspaceStandard.textContent = `${state.skill.strand} · ${state.skill.standard}${state.skill.formerStandard ? ` (was ${state.skill.formerStandard})` : ""}${state.skill.standardNote ? ` (${state.skill.standardNote})` : ""}`;
@@ -558,6 +559,7 @@ function openMixed({ daily = false } = {}) {
   saveActiveSession();
   showArea("workspace");
   const grade = getGrade(state.grade);
+  applyGradeExperience(state.grade);
   state.skill = null;
   state.mixedPool = grade.skills;
   state.mode = daily ? "daily" : "mixed";
@@ -7399,6 +7401,7 @@ function renderDashboard() {
 function openHubView(view) {
   if (view === "library") { renderLibrary(); return; }
   saveActiveSession(); cleanupVisual?.(); cleanupVisual = null;
+  applyGradeExperience(state.grade);
   showArea(view);
   if (view === "path") renderPath();
   if (view === "notebook") renderNotebook();
@@ -8006,7 +8009,7 @@ function launchAssignment(assignment) {
   if (["en", "es"].includes(assignment.lang)) { setLang(assignment.lang, { persist: false }); translatePage(document); }
   saveActiveSession(); state.session = null;
   state.assignment = assignment; state.grade = assignment.grade; state.gradeInUrl = true; saveSettings(); renderGradeTabs();
-  document.documentElement.style.setProperty("--grade", getGrade(state.grade).color);
+  applyGradeExperience(state.grade);
   renderAssignmentBanner();
   if (assignment.keys.length) openPlanned("assignment", assignmentQueue(assignment));
   else if (assignment.game) { state.autoGame = assignment.game; state.autoStop = assignment.stop; openHubView("games"); }
@@ -8039,7 +8042,7 @@ function resumePractice(saved = loadJson(SESSION_KEY, null)) {
   state.session = { ...saved.session, rng: Math.random, problemSkills: [], finished: false };
   state.recentQuestions = saved.recentQuestions || [];
   showArea("workspace"); renderGradeTabs();
-  document.documentElement.style.setProperty("--grade", getGrade(state.grade).color);
+  applyGradeExperience(state.grade);
   els.workspaceGrade.textContent = gradeDisplay(state.grade);
   els.workspaceTitle.textContent = state.skill?.title || "Your saved practice";
   els.workspaceStandard.textContent = "Continue where you left off";
