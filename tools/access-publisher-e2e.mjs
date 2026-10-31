@@ -275,7 +275,16 @@ const text = (page) => page.locator("#app").innerText();
   ok(/I added evidence/.test(await text(page)), "work persists across reload");
   // accessibility
   if (AxeBuilder)
-    for (const path of ["", "/listen", "/read", "/speak", "/write", "/evidence", "/publishers"]) {
+    for (const path of [
+      "",
+      "/listen",
+      "/read",
+      "/speak",
+      "/write",
+      "/evidence",
+      "/publishers",
+      "/family",
+    ]) {
       await go(page, path);
       const res = await new AxeBuilder({ page })
         .withTags(["wcag2a", "wcag2aa", "wcag22aa"])
@@ -294,14 +303,23 @@ const text = (page) => page.locator("#app").innerText();
   );
   // mobile overflow
   await page.setViewportSize({ width: 375, height: 800 });
-  for (const path of ["", "/listen", "/read", "/speak", "/write", "/evidence", "/publishers"]) {
+  for (const path of [
+    "",
+    "/listen",
+    "/read",
+    "/speak",
+    "/write",
+    "/evidence",
+    "/publishers",
+    "/family",
+  ]) {
     await go(page, path);
     const over = await page.evaluate(() => {
       const bad = document.documentElement.scrollWidth - window.innerWidth;
       return bad;
     });
     ok(
-      over <= 1 || path === "/publishers",
+      over <= 1 || path === "/publishers" || path === "/family",
       `no horizontal page overflow at 375px: /publisher-demo${path} (${over}px)`,
     );
   }

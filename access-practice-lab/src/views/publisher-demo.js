@@ -9,7 +9,7 @@ import { speak } from "../speech.js";
 import { announce, safeJson, storage } from "../util.js";
 import { html } from "../util.js";
 import { defaultOrder, freshState, isCorrect, normalize, recordResult, STORE_KEY, stageOf } from "../publisher/evidence.js";
-import { evidenceHTML, overviewHTML, publishersHTML, stepperHTML } from "../publisher/panels.js";
+import { evidenceHTML, familyHTML, overviewHTML, publishersHTML, stepperHTML } from "../publisher/panels.js";
 import { listenStage, readStage, speakStage, writeStage } from "../publisher/stages.js";
 
 let J = null;
@@ -37,10 +37,11 @@ export async function render(ctx) {
     write: () => writeStage(J, s, I, s.mode),
     evidence: () => evidenceHTML(J, E, s, I),
     publishers: () => publishersHTML(J, E, I),
+    family: () => familyHTML(J, s, I),
   }[step] || (() => overviewHTML(J, E, s, I));
   const modeNote = ["listen", "read", "speak", "write"].includes(step)
     ? html`<fieldset class="pd-mode pd-mode-inline"><legend>${I.T("Working mode", "Modo de trabajo")}</legend>${["supported", "independent"].map((m) => html`<label class="pd-opt"><input type="radio" name="pd-mode" data-pd-mode="${m}" ${s.mode === m ? html`checked` : ""}> <span>${m === "supported" ? I.T("Learn with support", "Aprender con apoyo") : I.T("Show it on my own", "Mostrarlo por mi cuenta")}</span></label>`)}</fieldset>` : "";
-  const nav = step === "publishers" ? "" : stepperHTML(step, I);
+  const nav = step === "publishers" || step === "family" ? "" : stepperHTML(step, I);
   return { title: J.title, html: html`<div class="pd-wrap domain-journey">${nav}${modeNote}${body()}<p class="fine pd-fine">${J.unofficial}</p></div>` };
 }
 

@@ -17,7 +17,7 @@ Last updated 2026-10-31. Checks: `npm run validate:publisher-journey`, `npm run 
 | 10 | Practice tests | open | Not changed in this pass. |
 | 11 | Passport | open | Journey uses its own storage key; not merged into the Passport. |
 | 12 | Teacher hub | partial | Evidence page: next instructional step and small-group suggestions on labelled synthetic data. Real roster analytics unchanged. |
-| 13 | Family experience | open | Not changed in this pass. |
+| 13 | Family experience | partial | `/publisher-demo/family`: bilingual plain-language page built from the learner's saved evidence, home activities in any language, print view. The existing `/family` hub is unchanged. |
 | 14 | Original visuals | partial | One original diagram with alt text. More are open. |
 | 15 | Publisher demo | done (v1) | `/access-practice-lab/publisher-demo/` + `/publishers` page (matrix, inventory verified against files, roadmap). |
 | 16 | Accessibility/reliability | partial | axe WCAG 2.2 AA clean on all 7 journey pages, 375px overflow check, mic-denied fallback, reload persistence. No screen-reader pass or Safari/Firefox run yet. |
