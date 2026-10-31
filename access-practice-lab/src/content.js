@@ -108,3 +108,5 @@ export async function bandRows(band) {
         rows.push({ band, domain, level, id, title, type, skill, minutes });
   return rows;
 }
+export const loadPublisherJourney = () => getJson("publisher/journey.json");
+export const loadPublisherEvidence = () => getJson("publisher/demo-evidence.json");

@@ -1,0 +1,42 @@
+/* Publisher demonstration journey. Layout and variants only; tokens and shared components live in ds.css. */
+.pd-wrap { max-width: 62rem; margin-inline: auto; padding: var(--s-5) var(--gutter, 1rem) var(--s-8); }
+.pd-steps ol { display: flex; flex-wrap: wrap; gap: var(--s-2); list-style: none; padding: 0; margin: 0 0 var(--s-4); }
+.pd-steps a { display: inline-flex; align-items: center; gap: var(--s-2); min-height: 44px; padding: 0 var(--s-4); border: 1px solid var(--line-strong); border-radius: 999px; color: var(--ink); text-decoration: none; background: var(--surface); }
+.pd-steps a[aria-current="step"] { background: var(--brand); color: var(--on-brand); border-color: var(--brand); }
+.pd-n { display: inline-grid; place-items: center; width: 1.6rem; height: 1.6rem; border-radius: 50%; background: var(--brand-soft); color: var(--brand-ink); font-weight: 700; }
+.pd-steps a[aria-current="step"] .pd-n { background: var(--on-brand); color: var(--brand); }
+.pd-badge { display: block; padding: var(--s-3) var(--s-4); border-radius: var(--radius); border: 1px solid var(--line-strong); margin: var(--s-3) 0; }
+.pd-badge.is-independent { background: var(--surface-2); border-left: 6px solid var(--brand); }
+.pd-badge.is-supported { background: var(--hint-soft); border-left: 6px solid var(--accent); }
+.pd-badge-sm { display: inline-block; padding: 0 var(--s-3); border-radius: 999px; font-size: .875rem; border: 1px solid var(--line-strong); }
+.pd-badge-sm.is-independent { background: var(--brand-soft); color: var(--brand-ink); }
+.pd-badge-sm.is-supported { background: var(--hint-soft); color: var(--ink); }
+.pd-callout { padding: var(--s-3) var(--s-4); border-radius: var(--radius); background: var(--surface-2); border: 1px solid var(--line); }
+.pd-mode, .pd-options, .pd-order, .pd-notes, .pd-checks, .pd-evidence { border: 1px solid var(--line); border-radius: var(--radius); padding: var(--s-3) var(--s-4); margin: var(--s-4) 0; background: var(--surface); }
+.pd-mode-inline { display: flex; flex-wrap: wrap; gap: var(--s-4); }
+.pd-opt { display: flex; align-items: flex-start; gap: var(--s-3); min-height: 44px; padding: var(--s-2) 0; cursor: pointer; }
+.pd-opt input { width: 1.25rem; height: 1.25rem; margin-top: .2rem; flex: none; }
+.pd-order ol { padding-left: 1.25rem; }
+.pd-order li { display: flex; flex-wrap: wrap; gap: var(--s-2); align-items: center; padding: var(--s-2) 0; }
+.pd-order li span { flex: 1 1 14rem; }
+.pd-task { margin: var(--s-5) 0; padding-top: var(--s-4); border-top: 1px solid var(--line); }
+.pd-task-h { font-size: 1.05rem; color: var(--ink-2); }
+.pd-figure { margin: var(--s-4) 0; } .pd-figure img { width: 100%; height: auto; border-radius: var(--radius); border: 1px solid var(--line); background: var(--surface); }
+.pd-figure figcaption { color: var(--ink-2); font-size: .9rem; margin-top: var(--s-2); }
+.pd-para { line-height: 1.7; margin: var(--s-3) 0; } .pd-pn { color: var(--ink-3); font-weight: 700; margin-right: var(--s-2); }
+.pd-sent { font: inherit; text-align: left; background: transparent; border: 0; border-bottom: 2px dotted var(--line-strong); padding: 0; margin: 0; color: inherit; cursor: pointer; min-height: 0; }
+.pd-sent:hover { background: var(--brand-soft); }
+.pd-sent[aria-pressed="true"] { background: var(--hint-soft); border-bottom: 2px solid var(--accent); }
+.pd-table { width: 100%; border-collapse: collapse; margin: var(--s-4) 0; font-size: .95rem; }
+.pd-table caption { text-align: left; font-weight: 700; padding-bottom: var(--s-2); }
+.pd-table th, .pd-table td { border: 1px solid var(--line); padding: var(--s-2) var(--s-3); text-align: left; vertical-align: top; }
+.pd-table thead th { background: var(--surface-3); }
+.pd-scroll { overflow-x: auto; } .pd-scroll .pd-table { min-width: 70rem; }
+.pd-pair { margin: var(--s-4) 0; }
+.pd-compare-grid, .pd-cards { display: grid; gap: var(--s-4); grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr)); margin: var(--s-4) 0; }
+.pd-dl dt { font-weight: 700; margin-top: var(--s-2); } .pd-dl dd { margin: 0 0 var(--s-2); }
+.pd-pinned { margin: 0; min-height: 2rem; }
+.pd-take { margin: var(--s-3) 0; } .pd-saved { color: var(--ink-2); }
+@media (max-width: 640px) { .pd-steps a { padding: 0 var(--s-3); } }
+@media print { .pd-steps, .pd-mode, .topbar, footer, button { display: none !important; } }
+@media (prefers-reduced-motion: reduce) { .pd-wrap * { transition: none !important; animation: none !important; } }

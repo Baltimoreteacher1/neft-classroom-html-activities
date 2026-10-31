@@ -11,7 +11,7 @@
  * The block between the build markers is written by tools/sync-access-shell.mjs; do not edit it by hand.
  */
 /* build:begin */
-const BUILD_HASH = "1fbe34ccb6e4";
+const BUILD_HASH = "f01905739607";
 const PRECACHE_CORE = [
   "/access-practice-lab/library.css?v=159952795a3e",
   "/access-practice-lab/studio.css?v=28d71fd235dd",
@@ -20,6 +20,7 @@ const PRECACHE_CORE = [
   "/access-practice-lab/worlds.css?v=f1d3ed0a5626",
   "/access-practice-lab/classroom-studio.css?v=9668bf1c9d32",
   "/access-practice-lab/vocabulary.css?v=daf212f8cbdb",
+  "/access-practice-lab/publisher.css?v=67f6dac7bd48",
   "/access-practice-lab/rehearsal.css?v=42b55b2b213a",
   "/access-practice-lab/ds.css?v=35e7287f2016",
   "/access-practice-lab/home.css?v=24f72d64ede6",
@@ -38,7 +39,7 @@ const PRECACHE_CORE = [
   "/access-practice-lab/src/components.js?v=e82f534d71d7",
   "/access-practice-lab/src/content/vocabulary-items.js?v=8504c5643bba",
   "/access-practice-lab/src/content/world-missions.js?v=2ece6b5cb6f7",
-  "/access-practice-lab/src/content.js?v=7083f552e553",
+  "/access-practice-lab/src/content.js?v=1846b8661cbd",
   "/access-practice-lab/src/engagement.js?v=e69a60b25d4c",
   "/access-practice-lab/src/evidence-ui.js?v=92a03c56a063",
   "/access-practice-lab/src/family/coach.js?v=95a9e8a07209",
@@ -89,7 +90,7 @@ const PRECACHE_CORE = [
   "/access-practice-lab/src/lang/teacher.js?v=2a78245d948e",
   "/access-practice-lab/src/lang/text.js?v=391bde3f4bec",
   "/access-practice-lab/src/learning.js?v=8a99a6d8753a",
-  "/access-practice-lab/src/main.js?v=087467bcf6ac",
+  "/access-practice-lab/src/main.js?v=d775726b5823",
   "/access-practice-lab/src/media.js?v=4d0d596071cf",
   "/access-practice-lab/src/multilingual.js?v=d0b46fb38de3",
   "/access-practice-lab/src/nav.js?v=cfb885cd9325",
@@ -99,6 +100,9 @@ const PRECACHE_CORE = [
   "/access-practice-lab/src/postcards.js?v=dabbcbfda19c",
   "/access-practice-lab/src/practice-plan.js?v=e0ccb901e2cd",
   "/access-practice-lab/src/practice-report.js?v=afae890a5d67",
+  "/access-practice-lab/src/publisher/evidence.js?v=106a9f8a667e",
+  "/access-practice-lab/src/publisher/panels.js?v=75a00a6fbcf4",
+  "/access-practice-lab/src/publisher/stages.js?v=90cf778b89d0",
   "/access-practice-lab/src/reading-state.js?v=bf683a81a318",
   "/access-practice-lab/src/recorder.js?v=3621e4e1517d",
   "/access-practice-lab/src/shell.js?v=27d6b4bb9e22",
@@ -109,7 +113,7 @@ const PRECACHE_CORE = [
   "/access-practice-lab/src/sync.js?v=b3e398476cee",
   "/access-practice-lab/src/tour-dock.js?v=99483d90801c",
   "/access-practice-lab/src/util.js?v=0d14e06d110e",
-  "/access-practice-lab/src/views/activity.js?v=71592226e3f5",
+  "/access-practice-lab/src/views/activity.js?v=badd2490079d",
   "/access-practice-lab/src/views/classroom-data.js?v=de468c8a1192",
   "/access-practice-lab/src/views/classroom.js?v=9c4730c38e28",
   "/access-practice-lab/src/views/construction.js?v=d18d78bfd07d",
@@ -126,6 +130,7 @@ const PRECACHE_CORE = [
   "/access-practice-lab/src/views/missions.js?v=e5ea30e3834d",
   "/access-practice-lab/src/views/passport-work.js?v=b54559c3caaf",
   "/access-practice-lab/src/views/passport.js?v=1fd1154422fb",
+  "/access-practice-lab/src/views/publisher-demo.js?v=ab3bda4a84a1",
   "/access-practice-lab/src/views/reading-log.js?v=cae3a3952f2b",
   "/access-practice-lab/src/views/reading-room.js?v=54bbf05f30fd",
   "/access-practice-lab/src/views/retell.js?v=9024730511a3",
@@ -169,6 +174,8 @@ const PRECACHE_MORE = [
   "/access-practice-lab/content/missions/newsroom-debate.json",
   "/access-practice-lab/content/missions/space-colony.json",
   "/access-practice-lab/content/missions/watershed-mystery.json",
+  "/access-practice-lab/content/publisher/demo-evidence.json",
+  "/access-practice-lab/content/publisher/journey.json",
   "/access-practice-lab/content/reading-room/adventure-coverage.json",
   "/access-practice-lab/content/reading-room/adventures.json",
   "/access-practice-lab/content/reading-room/lessons.json",
@@ -299,6 +306,7 @@ const PRECACHE_MORE = [
   "/access-practice-lab/pictures/ds/test-intro.svg",
   "/access-practice-lab/pictures/lab-icons.svg",
   "/access-practice-lab/pictures/lab-investigation.svg",
+  "/access-practice-lab/pictures/publisher/rain-garden.svg",
   "/access-practice-lab/pictures/shape-circle.svg",
   "/access-practice-lab/pictures/shape-rectangle.svg",
   "/access-practice-lab/pictures/shape-triangle.svg",
