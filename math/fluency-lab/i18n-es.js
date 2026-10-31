@@ -20,6 +20,7 @@ export const ES = {
   "Not asked, because your harder answers already showed the idea: {skills}.": "No se preguntó, porque tus respuestas más difíciles ya mostraron la idea: {skills}.",
   "A short checkup suggests what to try next. It cannot prove mastery or determine a grade level.": "Una prueba corta sugiere qué probar después. No puede demostrar dominio ni determinar un nivel de grado.",
   "Family Math Tonight": "Matemáticas en familia esta noche",
+  "Show me how": "Muéstrame cómo",
   "Family start here: take the tour": "Familias, empiecen aquí: hagan el recorrido",
   "Number Quest": "Misión en la recta numérica",
   "Array Architect": "Arquitecto de arreglos",

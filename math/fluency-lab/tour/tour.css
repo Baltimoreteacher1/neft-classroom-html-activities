@@ -1,0 +1,411 @@
+@import "./tour-demos.css";
+/* Math Fluency Lab tour: spotlight, popover, help launcher, help bubbles and the first-visit offer.
+   Tokens follow publisher.css (navy, teal, amber, coral, paper). Text is at least 4.5:1, controls 3:1. */
+.tour-ui,
+.tour-pop,
+.tour-spot {
+  --tour-navy: var(--pub-navy, #17324d);
+  --tour-ink: var(--pub-ink, #24323f);
+  --tour-soft: #44535f;
+  --tour-teal: var(--pub-teal, #1fa6a2);
+  --tour-teal-ink: var(--pub-teal-ink, #0b6b68);
+  --tour-tint: var(--pub-teal-tint, #e3f4f3);
+  --tour-amber: var(--pub-amber, #f2c15b);
+  --tour-coral: var(--pub-coral-ink, #a3401f);
+  --tour-paper: var(--pub-paper, #f7f4ec);
+  --tour-rule: #7a8895;
+  --tour-serif: var(--pub-serif, Georgia, serif);
+}
+.tour-ui[hidden],
+.tour-pop[hidden],
+.tour-spot[hidden],
+.tour-menu[hidden],
+.tour-pop [hidden] {
+  display: none !important;
+}
+
+/* ---------- Shared controls ---------- */
+.tour-btn {
+  display: inline-flex;
+  min-width: 44px;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 1rem;
+  border: 2px solid var(--tour-navy);
+  border-radius: 12px;
+  background: #fff;
+  color: var(--tour-navy);
+  font: inherit;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.2;
+  cursor: pointer;
+}
+.tour-btn:hover {
+  background: var(--tour-tint);
+}
+.tour-next {
+  background: var(--tour-navy);
+  color: #fff;
+}
+.tour-next:hover {
+  background: #0f2438;
+}
+.tour-quiet,
+.tour-skip {
+  white-space: nowrap;
+  border-color: transparent;
+  background: transparent;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.tour-ui button:focus-visible,
+.tour-ui a:focus-visible,
+.tour-pop button:focus-visible,
+.tour-pop a:focus-visible,
+.tour-pop:focus-visible {
+  outline: 3px solid var(--tour-navy);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 2px #fff;
+}
+
+/* ---------- Spotlight ---------- */
+.tour-spot {
+  position: fixed;
+  z-index: 1000;
+  border-radius: 12px;
+  box-shadow:
+    0 0 0 3px #fff,
+    0 0 0 6px var(--tour-navy),
+    0 0 0 100vmax rgba(23, 50, 77, 0.5);
+  pointer-events: none;
+}
+.tour-spot::after {
+  position: absolute;
+  inset: -6px;
+  border: 3px solid var(--tour-amber);
+  border-radius: 16px;
+  content: "";
+  opacity: 0;
+}
+
+/* ---------- Popover ---------- */
+.tour-pop {
+  position: fixed;
+  z-index: 1001;
+  display: flex;
+  max-width: calc(100vw - 24px);
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--tour-rule);
+  border-top: 5px solid var(--tour-teal);
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 22px 50px -14px rgba(23, 50, 77, 0.55);
+  color: var(--tour-ink);
+  font-size: 1rem;
+  line-height: 1.5;
+}
+.tour-head {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.5rem 0.5rem 0 1rem;
+}
+.tour-step {
+  margin: 0 auto 0 0;
+  white-space: nowrap;
+  color: var(--tour-soft);
+  font-size: 1rem;
+  font-weight: 700;
+}
+.tour-pop[data-mode="bubble"] .tour-head {
+  justify-content: flex-end;
+}
+.tour-x {
+  padding: 0;
+  border-color: transparent;
+  border-radius: 50%;
+  background: transparent;
+}
+.tour-x svg {
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-width: 2.4;
+}
+.tour-progress {
+  height: 8px;
+  margin: 0.25rem 1rem 0;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #dfe5ea;
+}
+.tour-progress-fill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--tour-teal-ink);
+}
+.tour-scroll {
+  min-height: 0;
+  flex: 1 1 auto;
+  overflow-y: auto;
+  padding: 0.75rem 1rem 0.5rem;
+}
+.tour-title {
+  margin: 0 0 0.4rem;
+  color: var(--tour-navy);
+  font-family: var(--tour-serif);
+  font-size: 1.4rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+.tour-desc p {
+  margin: 0 0 0.6rem;
+}
+.tour-foot {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem 1rem;
+}
+.tour-foot .tour-btn {
+  min-height: 48px;
+  flex: 1 1 0;
+}
+.tour-foot .tour-next:only-child {
+  flex: 1 1 auto;
+}
+.tour-link {
+  display: inline-flex;
+  min-height: 48px;
+  align-items: center;
+  margin: 0.4rem 0 0.2rem;
+  padding: 0.4rem 1rem;
+  border-radius: 12px;
+  background: var(--tour-tint);
+  color: var(--tour-teal-ink);
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.tour-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* ---------- Launcher and menu ---------- */
+.tour-launcher {
+  position: fixed;
+  bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+  left: calc(12px + env(safe-area-inset-left, 0px));
+  z-index: 900;
+}
+/* On phones a long toast spans the bottom edge; lift the launcher above it while it shows. */
+@media (max-width: 640px) {
+  body:has(#toast.show) .tour-launcher {
+    bottom: calc(112px + env(safe-area-inset-bottom, 0px));
+  }
+}
+.tour-help-btn {
+  display: grid;
+  width: 48px;
+  height: 48px;
+  place-items: center;
+  border: 3px solid #fff;
+  border-radius: 50%;
+  background: var(--tour-navy);
+  box-shadow: 0 6px 16px -4px rgba(23, 50, 77, 0.6);
+  color: #fff;
+  font-family: var(--tour-serif);
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+}
+.tour-help-btn:hover {
+  background: #0f2438;
+}
+.tour-menu {
+  position: fixed;
+  z-index: 901;
+  display: flex;
+  width: min(320px, calc(100vw - 24px));
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px;
+  border: 1px solid var(--tour-rule);
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 18px 40px -12px rgba(23, 50, 77, 0.5);
+}
+.tour-menu-item {
+  display: flex;
+  min-height: 48px;
+  flex-direction: column;
+  justify-content: center;
+  padding: 6px 12px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--tour-navy);
+  font: inherit;
+  font-size: 1rem;
+  font-weight: 700;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+}
+.tour-menu-item:hover {
+  background: var(--tour-tint);
+}
+.tour-menu-item small {
+  color: var(--tour-soft);
+  font-size: 1rem;
+  font-weight: 400;
+}
+
+/* ---------- Help bubbles ---------- */
+.tour-bubble-btn {
+  display: inline-grid;
+  width: 44px;
+  height: 44px;
+  flex: none;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+}
+.tour-bubble-btn span {
+  display: grid;
+  width: 28px;
+  height: 28px;
+  place-items: center;
+  border: 2px solid var(--tour-navy);
+  border-radius: 50%;
+  background: #fff;
+  color: var(--tour-navy);
+  font-family: var(--tour-serif);
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1;
+}
+.tour-bubble-btn:hover span {
+  background: var(--tour-tint);
+}
+.intro-kicker > .tour-bubble-btn {
+  margin: -14px 0 -14px 0.35rem;
+  vertical-align: middle;
+}
+.grade-rail-heading:has(> .tour-bubble-btn) {
+  justify-content: flex-start;
+  gap: 0.25rem;
+}
+.grade-rail-heading > .tour-bubble-btn {
+  align-self: center;
+}
+#hub-tabs > .tour-bubble-btn {
+  margin-left: 0.25rem;
+  align-self: center;
+}
+
+/* ---------- Intro button and offer card ---------- */
+.tour-open-btn {
+  min-height: 44px;
+  padding: 0.5rem 0.25rem;
+  border: 2px solid transparent;
+  background: transparent;
+  color: var(--tour-navy, #17324d);
+  font: inherit;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+.tour-open-btn:focus-visible {
+  outline: 3px solid var(--tour-navy, #17324d);
+  outline-offset: 2px;
+}
+.tour-offer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem 1.5rem;
+  margin: 1rem 0;
+  padding: 1rem 1.25rem;
+  border: 1px solid #c4ced6;
+  border-left: 6px solid var(--tour-teal);
+  border-radius: 14px;
+  background: #fff;
+  color: var(--tour-ink);
+}
+.tour-offer-copy {
+  min-width: min(100%, 240px);
+  flex: 1 1 260px;
+}
+.tour-offer-title {
+  margin: 0 0 0.15rem;
+  color: var(--tour-navy);
+  font-family: var(--tour-serif);
+  font-size: 1.3rem;
+}
+.tour-offer-body {
+  margin: 0;
+}
+.tour-offer-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+@media (max-width: 480px) {
+  .tour-offer-actions .tour-btn {
+    flex: 1 1 100%;
+  }
+}
+
+/* ---------- Forced colors (Windows High Contrast) ---------- */
+@media (forced-colors: active) {
+  .tour-spot {
+    outline: 3px solid Highlight;
+    outline-offset: 4px;
+    box-shadow: none;
+  }
+  .tour-pop,
+  .tour-menu,
+  .tour-offer,
+  .tour-demo {
+    border: 2px solid CanvasText;
+  }
+  .tour-btn,
+  .tour-help-btn,
+  .tour-demo-toggle,
+  .tour-bubble-btn span {
+    border: 2px solid ButtonText;
+  }
+  .tour-next,
+  .tour-help-btn {
+    background: ButtonFace;
+    color: ButtonText;
+  }
+  .tour-progress {
+    border: 1px solid CanvasText;
+    background: Canvas;
+  }
+  .tour-progress-fill {
+    background: Highlight;
+  }
+  .tour-link {
+    border: 1px solid LinkText;
+    color: LinkText;
+  }
+}

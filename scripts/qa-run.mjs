@@ -187,6 +187,7 @@ const EXCLUSIVE = new Set([
   "validate:family-performance",
   "validate:fluency-family-browser",
   "validate:fluency-family-session",
+  "validate:family-expedition-browser",
   "validate:studio-enhancements-browser",
   "validate:studio-linked-models-browser",
   "validate:studio-pathways-browser",
@@ -821,11 +822,12 @@ const COVERAGE = [
     ],
   ],
   [
-    /^(math\/fluency-lab\/|docs\/fluency-family-implementation-matrix\.md$|docs\/family-homework-v3\/fluency-family-matrix\.md$|tools\/(validate-fluency-lab|package-fluency-desktop|verify-fluency-family-browser|verify-fluency-family-session|generate-guided-skill-index|fluency-family(?:-guided)?(?:\.test)?)\.mjs$)/,
+    /^(math\/fluency-lab\/|docs\/fluency-family-implementation-matrix\.md$|docs\/family-homework-v3\/fluency-family-matrix\.md$|tools\/(validate-fluency-lab|package-fluency-desktop|verify-fluency-family-browser|verify-fluency-family-session|verify-family-expedition-browser|generate-guided-skill-index|fluency-family(?:-guided)?(?:\.test)?)\.mjs$)/,
     [
       "validate:fluency",
       "validate:fluency-family-browser",
       "validate:fluency-family-session",
+      "validate:family-expedition-browser",
       "validate:static",
       "test",
     ],

@@ -10028,7 +10028,7 @@ const initialSkill = initialParams.get("skill");
 if (initialSkill && initialParams.get("view") !== "write") openSkill(initialSkill);
 renderProfiles();
 renderAssignmentBanner();
-if (["teacher", "games", "write"].includes(initialParams.get("view"))) { state.writeSkill = initialSkill; openHubView(initialParams.get("view")); }
+if (["teacher", "games", "write", "path", "notebook"].includes(initialParams.get("view"))) { state.writeSkill = initialSkill; openHubView(initialParams.get("view")); }
 // Family launch links enter the existing adaptive flows; no parallel practice engine is created.
 if (initialParams.get("start") === "daily") openPlanned("daily", dailyPlan(state.tutor, state.grade));
 if (initialParams.get("start") === "mission") openMission();

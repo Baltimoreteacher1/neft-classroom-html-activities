@@ -1,0 +1,361 @@
+/* Math Fluency Lab tour: guided practice demonstrations (inline SVG + CSS keyframes) and their forced-colors rules.
+   Loaded by tour.css. The resting state of each demo is its finished picture; motion is opt-in below. */
+.tour-demo,
+.tour-pop {
+  --tour-navy: var(--pub-navy, #17324d);
+  --tour-ink: var(--pub-ink, #24323f);
+  --tour-soft: #44535f;
+  --tour-teal: var(--pub-teal, #1fa6a2);
+  --tour-teal-ink: var(--pub-teal-ink, #0b6b68);
+  --tour-tint: var(--pub-teal-tint, #e3f4f3);
+  --tour-amber: var(--pub-amber, #f2c15b);
+  --tour-coral: var(--pub-coral-ink, #a3401f);
+  --tour-paper: var(--pub-paper, #f7f4ec);
+}
+/* ---------- Demonstrations ---------- */
+.tour-demo {
+  margin: 0.5rem 0;
+  padding: 0.6rem;
+  border: 1px solid #c4ced6;
+  border-radius: 12px;
+  background: var(--tour-paper);
+}
+.td-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.tour-demo-text {
+  margin: 0.4rem 0 0;
+  color: var(--tour-ink);
+  font-size: 1rem;
+}
+.tour-demo-toggle {
+  min-height: 44px;
+  margin-top: 0.4rem;
+  padding: 0.3rem 0.8rem;
+  border: 2px solid var(--tour-navy);
+  border-radius: 10px;
+  background: #fff;
+  color: var(--tour-navy);
+  font: inherit;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+.td-frame {
+  fill: #fff;
+  stroke: var(--tour-navy);
+  stroke-width: 2;
+}
+.td-cell {
+  fill: #eef2f5;
+  stroke: #7a8895;
+  stroke-width: 1;
+}
+.td-dot {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.td-a {
+  fill: var(--tour-teal-ink);
+}
+.td-b {
+  fill: var(--tour-amber);
+  stroke: var(--tour-navy);
+  stroke-width: 2;
+}
+.td-c {
+  fill: var(--tour-coral);
+}
+.td-label {
+  fill: var(--tour-navy);
+  font-size: 15px;
+  font-weight: 700;
+}
+.td-card {
+  fill: #fff;
+  stroke: #7a8895;
+  stroke-width: 1.5;
+}
+.td-card-x {
+  stroke: var(--tour-coral);
+}
+.td-card-v {
+  fill: var(--tour-tint);
+  stroke: var(--tour-teal-ink);
+}
+.td-rung {
+  fill: var(--tour-soft);
+  font-size: 14px;
+  font-weight: 700;
+}
+.td-line {
+  fill: var(--tour-ink);
+  font-size: 15px;
+  font-weight: 700;
+}
+.td-note {
+  fill: var(--tour-coral);
+  font-size: 14px;
+  font-weight: 700;
+}
+.td-mark {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2.4;
+}
+.td-mark-x {
+  stroke: var(--tour-coral);
+}
+.td-mark-v {
+  stroke: var(--tour-teal-ink);
+}
+.td-mark-i,
+.td-mark-r {
+  stroke: var(--tour-navy);
+}
+
+/* Motion is opt-in: the resting state of each demo is its finished picture. */
+@media (prefers-reduced-motion: no-preference) {
+  .tour-spot.is-pulsing::after {
+    animation: tour-pulse 1.4s ease-out 3;
+  }
+  .tour-pop {
+    animation: tour-in 0.2s ease-out;
+  }
+  .tour-demo:not(.is-paused) .td-a,
+  .tour-demo:not(.is-paused) .td-b,
+  .tour-demo:not(.is-paused) .td-c {
+    animation: 9s ease-in-out infinite both;
+    animation-delay: calc(-1.1s + var(--i, 0) * 70ms);
+  }
+  .tour-demo:not(.is-paused) .td-a {
+    animation-name: td-a;
+  }
+  .tour-demo:not(.is-paused) .td-b {
+    animation-name: td-b;
+  }
+  .tour-demo:not(.is-paused) .td-c {
+    animation-name: td-c;
+  }
+  .tour-demo:not(.is-paused) .td-lb {
+    animation: td-lb 9s ease-in-out -1.1s infinite both;
+  }
+  .tour-demo:not(.is-paused) .td-lc {
+    animation: td-lc 9s ease-in-out -1.1s infinite both;
+  }
+  .tour-demo:not(.is-paused) .td-eq {
+    animation: td-eq 9s ease-in-out -1.1s infinite both;
+  }
+  .tour-demo:not(.is-paused) .td-row {
+    animation: 10s ease-in-out -1s infinite both;
+  }
+  .tour-demo:not(.is-paused) .td-row0 {
+    animation-name: td-r0;
+  }
+  .tour-demo:not(.is-paused) .td-row1 {
+    animation-name: td-r1;
+  }
+  .tour-demo:not(.is-paused) .td-row2 {
+    animation-name: td-r2;
+  }
+  .tour-demo:not(.is-paused) .td-row3 {
+    animation-name: td-r3;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tour-demo-toggle {
+    display: none;
+  }
+}
+@keyframes tour-pulse {
+  from {
+    opacity: 0.9;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(1.12);
+  }
+}
+@keyframes tour-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+@keyframes td-a {
+  0%,
+  3% {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+  12%,
+  90% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+}
+@keyframes td-b {
+  0%,
+  28% {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+  36%,
+  90% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+}
+@keyframes td-c {
+  0%,
+  55% {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+  63%,
+  90% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+}
+@keyframes td-lb {
+  0%,
+  34% {
+    opacity: 0;
+  }
+  42%,
+  90% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes td-lc {
+  0%,
+  61% {
+    opacity: 0;
+  }
+  69%,
+  90% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes td-eq {
+  0%,
+  72% {
+    opacity: 0;
+  }
+  80%,
+  90% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes td-r0 {
+  0%,
+  3% {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  10%,
+  92% {
+    opacity: 1;
+    transform: none;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes td-r1 {
+  0%,
+  24% {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  31%,
+  92% {
+    opacity: 1;
+    transform: none;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes td-r2 {
+  0%,
+  46% {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  53%,
+  92% {
+    opacity: 1;
+    transform: none;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes td-r3 {
+  0%,
+  68% {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  75%,
+  92% {
+    opacity: 1;
+    transform: none;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+
+@media (forced-colors: active) {
+  .td-frame,
+  .td-cell,
+  .td-card {
+    fill: Canvas;
+    stroke: CanvasText;
+  }
+  .td-dot,
+  .td-a,
+  .td-b,
+  .td-c {
+    fill: Highlight;
+    stroke: CanvasText;
+  }
+  .td-label,
+  .td-rung,
+  .td-line,
+  .td-note {
+    fill: CanvasText;
+  }
+  .td-mark {
+    stroke: CanvasText;
+  }
+}

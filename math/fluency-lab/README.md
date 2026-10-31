@@ -96,3 +96,16 @@ The header has a Reading font switch (Lexend, more letter and line spacing) and 
 ## Answer-free steps and wrong-answer notes
 
 `step-leak.js` (`peekCap`) decides how many guided steps can show before one states the answer; "Show a step", the trail miss screen, Tricky Facts, Mystery Picture and the post-game review all use it, and `tools/fluency-audit-fixes.test.mjs` fails if any of the 88 skills leaks. A step that is only a list ("Factors of 48: 1, 2, 3…") counts as a search space, not an answer. When a problem has no safe step the hint shows instead. After a trail miss the learner sees the safe steps, then a fresh problem of the same kind returns as the "one more look". `mistake-notes.js` adds a one-line note on the likely slip (adding instead of subtracting, a reversed order, one group off, a place-value slip); it never contains a number. Mixed numbers ("1 5/12") are read as mixed numbers. A practice day counts for any finished practice set, trail round or game, and earned streak stickers stay earned (`bestStreak`).
+
+## Family Math Expedition and in-Lab tours
+
+`/math/fluency-lab/family-adventure/` (the URL the Lab's "Family start here" button already uses) is the **Family Math Expedition**: five bilingual stops (Welcome, Discover how math works, Learn together, Explore the Lab, Your first Family Math Night), a map for visiting stops in any order, resume and restart, optional read-aloud, and a printable quick-start guide. English, Español, or both.
+
+- **Stop 2** has seven hands-on models (ten-frame, number line, array and area model, fraction bars, base-ten blocks with decimals, ratio tape and table, slope graph) and one challenge per grade. A child builds the model, answers, then picks the reason. Each wrong answer names the misconception it comes from; hints come one at a time; a third miss shows a worked solution; "Try a fresh one" loads a parallel version. `family-adventure/math-items.js` holds the content and `math-items.test.mjs` recomputes every answer and checks both languages carry the same numbers.
+- **Stop 3** is a parent–child practice scene in three grade bands. Moving on needs the strongest response, and every other response explains why it helps less.
+- **Stop 4** pictures eight real Lab tools; each card links to the page it describes (`routes.js` is the only place links are built).
+- **Stop 5** builds a plan from the real Family Math games (`family/fm2`): grade, skill, and a 5-minute Quick Practice, 10-minute Math Together or 15-minute Deeper Thinking routine. "Start practicing now" opens `family/play.html` with the grade, skill, level, rounds and mode already set.
+- **State** lives in `ewl-fluency-family-expedition-v2` (grade, finished stops, challenge results, plan). The first adventure's `ewl-fluency-family-adventure-v1` is read once and kept. Nothing leaves the device.
+- **In-Lab tours** (`tour/`): a first-visit offer (never forced, never over practice), a "?" launcher, "Show me how", help bubbles, and separate student and family walkthroughs. `?tour=family` or `?tour=student` opens one directly.
+
+Verify with `npm run validate:family-expedition-browser` (every stop, grades 1–8, both languages, three viewports, axe) and `node math/fluency-lab/family-adventure/math-items.test.mjs`.

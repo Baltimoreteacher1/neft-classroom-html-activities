@@ -5,36 +5,46 @@
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <meta
       name="description"
-      content="A short, bilingual guide for families to the Math Fluency Lab: try one activity together, learn how to help, and set up a nightly routine. Guía breve en inglés y español."
+      content="A guided, bilingual expedition for families: meet the Math Fluency Lab, explore hands-on math models, practice helping without giving the answer, and start a Family Math Night. Expedición guiada en inglés y español."
     />
     <meta name="color-scheme" content="light" />
-    <meta name="theme-color" content="#f7f4ec" />
-    <title>Family Math Adventure | Aventura matemática en familia</title>
+    <meta name="theme-color" content="#17324d" />
+    <title>Family Math Expedition | Expedición matemática en familia</title>
     <link
       rel="icon"
       href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 36'%3E%3Crect width='36' height='36' rx='11' fill='%2317324d'/%3E%3Cpath d='m18 5 3.5 9.5L31 18l-9.5 3.5L18 31l-3.5-9.5L5 18l9.5-3.5Z' fill='%23f2c15b'/%3E%3C/svg%3E"
     />
-    <link rel="stylesheet" href="./adventure.css" />
+    <link rel="stylesheet" href="/assets/fonts/fraunces-87aa83.css" />
+    <link rel="stylesheet" href="/assets/fonts/atkinson-hyperlegible-nunito-76729d.css" />
+    <link rel="stylesheet" href="./expedition.css" />
+    <link rel="stylesheet" href="./models.css" />
+    <link rel="stylesheet" href="./stops.css" />
+    <script type="module" src="./main.js"></script>
   </head>
   <body>
-    <header>
-      <a class="brand" href="../" id="brand"></a>
-      <div class="head-actions">
+    <a class="skip" href="#content">Skip to the expedition · Ir a la expedición</a>
+    <header class="top">
+      <a class="brand" id="brand" href="../">← Math Fluency Lab</a>
+      <div class="top-actions">
         <div class="lang" role="group" aria-label="Language / Idioma" id="lang"></div>
-        <button type="button" id="resetBtn" hidden></button>
+        <button type="button" id="helpBtn" class="help-btn" aria-expanded="false" aria-controls="helpPanel">Help and map</button>
       </div>
+      <section id="helpPanel" class="help-panel" role="region" hidden></section>
     </header>
-    <div id="resetBar" class="confirm" role="alertdialog" aria-labelledby="resetMsg" hidden></div>
+    <nav id="route" class="route-nav" aria-label="Expedition map"></nav>
+    <div id="warn" class="banner" role="status" hidden></div>
+    <div id="resetBar" class="banner confirm" role="alertdialog" aria-labelledby="resetMsg" hidden></div>
+    <div id="live" class="sr-only" role="status" aria-live="polite"></div>
     <main id="content" tabindex="-1"></main>
-    <footer id="foot"></footer>
+    <footer id="foot" class="foot"></footer>
     <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+    <div id="printSheet" class="print-sheet"></div>
     <noscript
       ><p class="noscript">
-        Turn on JavaScript to use the Family Math Adventure, or go to
-        <a href="../family/">Family Math Tonight</a>. · Active JavaScript para usar la Aventura
+        Turn on JavaScript to use the Family Math Expedition, or go to
+        <a href="../family/">Family Math Tonight</a>. · Active JavaScript para usar la Expedición
         matemática en familia, o vaya a <a href="../family/">Matemáticas en familia esta noche</a>.
       </p></noscript
     >
-    <script type="module" src="./adventure.js"></script>
   </body>
 </html>

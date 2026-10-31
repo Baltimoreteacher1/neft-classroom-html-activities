@@ -3057,7 +3057,7 @@ export const ACTIVITIES = [
   },
   {
     path: "/math/fluency-lab/family-adventure/",
-    title: "Family Math Adventure | Aventura matemática en familia",
+    title: "Family Math Expedition | Expedición matemática en familia",
     category: "Math Tool",
     unit: null,
   },
