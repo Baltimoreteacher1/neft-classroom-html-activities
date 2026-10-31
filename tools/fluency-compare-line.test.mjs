@@ -99,3 +99,21 @@ assert.equal(
   false,
   "an unrelated product line gets no scale bars",
 );
+
+// The answer line is a scale picture only when the scale step above it is present.
+const scaleSteps = [
+  "The scale says 1 cm on paper is 4 m in real life.",
+  "The wall is 8 cm on paper. That is 8 groups of 1 cm.",
+  "Each group is 4 m. Multiply 8 × 4.",
+  "8 × 4 = 32 meters.",
+];
+const total = stepVisual("8 × 4 = 32 meters.", scaleSteps);
+assert.ok(
+  total.includes("tp-sb-bracket") && total.includes(">32 m<"),
+  "step 4 brackets the real-life bar with the total",
+);
+assert.equal(
+  stepVisual("8 × 4 = 32 meters.", ["Perimeter is the distance around."]).includes("tp-scale-bars"),
+  false,
+  "the same line in another skill gets no scale bars",
+);

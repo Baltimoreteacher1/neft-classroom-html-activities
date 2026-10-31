@@ -102,8 +102,6 @@ export const ES_LAB4_DASHBOARD = {
     "Termina una ronda del sendero para ganar tu primera calcomanía.",
   "{a} of {b} skills strong": "{a} de {b} habilidades sólidas",
   "Find your way": "Encuentra tu camino",
-  "Choose a grade": "Elige un grado",
-  Kindergarten: "Kínder",
   "Choose a strand in Grade {n}": "Elige un tema del grado {n}",
   "Your Grade {n} skill map": "Tu mapa de habilidades del grado {n}",
   "See how skills build on each other. Open any skill to learn or practice it.":

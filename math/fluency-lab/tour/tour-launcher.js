@@ -51,7 +51,7 @@ export function createLauncher({ getLang, actions, partialInfo }) {
     const width = menu.offsetWidth;
     const height = menu.offsetHeight;
     const left = Math.min(Math.max(MARGIN, rect.left), vw - width - MARGIN);
-    const preferAbove = trigger === button || rect.bottom + MENU_GAP + height > vh - MARGIN;
+    const preferAbove = rect.bottom + MENU_GAP + height > vh - MARGIN;
     const top = preferAbove ? rect.top - MENU_GAP - height : rect.bottom + MENU_GAP;
     menu.style.left = `${Math.round(left)}px`;
     menu.style.top = `${Math.round(Math.max(MARGIN, top))}px`;
@@ -195,9 +195,12 @@ export function createLauncher({ getLang, actions, partialInfo }) {
     if (on) closeMenu();
   }
 
-  // Right after the page header, so keyboard users reach it without tabbing through the whole page.
+  // In the header's controls, so it never floats over page content and keyboard users reach it
+  // without tabbing through the whole page. Pages without a header keep a fixed corner button.
+  const controls = document.querySelector(".site-header nav");
   const header = document.querySelector(".site-header");
-  if (header) header.after(root);
+  if (controls) controls.append(root);
+  else if (header) header.after(root);
   else document.body.append(root);
   return {
     render,

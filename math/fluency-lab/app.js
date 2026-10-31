@@ -7495,7 +7495,6 @@ function renderDashboard() {
     resume: hasSavedSession ? { title: saved.item?.skill?.title || t("your practice set"), answered: saved.session.answered } : null,
     completedToday: today,
     evidenceHtml: renderProgressEvidenceCard(calculateProgressEvidence()),
-    onGrade: (grade) => els.gradeTabs.querySelector(`[data-grade="${grade}"]`)?.click(),
     onStrand: (strand) => {
       els.strandFilters.querySelector(`[data-strand="${strand.replaceAll('"', '\\"')}"]`)?.click();
       els.morePractice?.scrollIntoView({ behavior: "smooth", block: "start" });

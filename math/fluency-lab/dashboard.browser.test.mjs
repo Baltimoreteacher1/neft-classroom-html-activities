@@ -257,8 +257,8 @@ try {
     await games.page.locator("#games-view").waitFor({ state: "visible" });
     await games.context.close();
     const library = await open({ seed });
-    // The grade and strand navigation drive the existing library.
-    await library.page.locator('[data-fl4-grade="6"]').click();
+    // The grade row at the top and the strand tiles drive the existing library.
+    await library.page.locator('#grade-tabs [data-grade="6"]').click();
     await library.page.locator("#grade-heading").filter({ hasText: "Grade 6" }).waitFor();
     assert.match(await library.page.locator(".fl4-hero [class*=overline]").first().innerText(), /Grade 6/i);
     await library.page.locator("[data-fl4-strand]").nth(1).click();

@@ -121,8 +121,8 @@ function compareLine(a, b) {
 
 // A scale drawing as two aligned bars: cells of 1 cm on paper over cells of k m in real life.
 // Stage 1 shows one cell of each, stage 2 the paper bar over an empty real bar, stage 3 both bars full
-// (the total is the learner's to find, so it is never drawn).
-function scaleBars(n, k, stage = 3) {
+// (the total is the learner's to find, so it is only drawn once the answer line shows it, as stage 4).
+function scaleBars(n, k, stage = 3, total = 0) {
   const count = stage === 1 ? 1 : n;
   const width = Math.min(56, 440 / count);
   const cell = (i, y, cls, label) =>
@@ -138,8 +138,15 @@ function scaleBars(n, k, stage = 3) {
       ? `1 cm on paper stands for ${k} m in real life.`
       : stage === 2
         ? `${n} cm on paper is ${n} groups of 1 cm.`
-        : `${n} cm on paper is ${n} groups. Each group stands for ${k} m.`;
-  return `<svg class="tp-line tp-scale-bars" viewBox="0 0 500 150" role="img" aria-label="${esc(label)}"><text class="tp-sb-caption" x="30" y="17">On paper (cm)</text>${paper}<text class="tp-sb-caption" x="30" y="92">In real life (m)</text>${real}</svg>`;
+        : stage === 3
+          ? `${n} cm on paper is ${n} groups. Each group stands for ${k} m.`
+          : `${n} groups of ${k} m make ${total} m in real life.`;
+  const end = 30 + n * width - 4;
+  const bracket =
+    stage === 4
+      ? `<path class="tp-sb-bracket" d="M30,148 v8 H${end} v-8"/><text class="tp-sb-total" x="${(30 + end) / 2}" y="180">${esc(`${total.toLocaleString("en-US")} m`)}</text>`
+      : "";
+  return `<svg class="tp-line tp-scale-bars" viewBox="0 0 500 ${stage === 4 ? 190 : 150}" role="img" aria-label="${esc(label)}"><text class="tp-sb-caption" x="30" y="17">On paper (cm)</text>${paper}<text class="tp-sb-caption" x="30" y="92">In real life (m)</text>${real}${bracket}</svg>`;
 }
 
 // Returns "" when the problem has no picture; callers then show only the one-sentence tip.
@@ -982,7 +989,7 @@ export function stepsBlock(steps, shown, { id, cap = steps.length } = {}) {
   const items = visible.map((line, i) => {
     const row = openFillRow(line, i, steps, id);
     const open = row !== null;
-    const html = open ? "" : stepVisual(line);
+    const html = open ? "" : stepVisual(line, steps);
     const same =
       html.replace(/>[^<]*</g, "><") === previous.replace(/>[^<]*</g, "><") &&
       html.includes("sv-array");
@@ -1127,7 +1134,7 @@ function compareBlocks(a, da, ua, b, db, ub) {
   return `<span class="sv sv-place sv-compare" aria-hidden="true">${row(a, da, ua)}${row(b, db, ub)}</span>`;
 }
 
-export function stepVisual(line) {
+export function stepVisual(line, steps = []) {
   // Drop thousands commas (not list commas) and lead-ins such as "So" or "Size:".
   const text = String(line)
     .replace(/(\d),(\d{3})/g, "$1$2")
@@ -1178,6 +1185,13 @@ export function stepVisual(line) {
   if (scaleOne) return scaleBars(1, Number(scaleOne[1]), 1);
   const scalePaper = text.match(/ is (\d+) cm on paper\. That is \1 groups of 1 cm$/);
   if (scalePaper) return scaleBars(Number(scalePaper[1]), 1, 2);
+  // "8 × 4 = 32 meters" is only a scale line when the scale step above it ("Each group is 4 m. Multiply 8 × 4") is there.
+  const scaleTotal = text.match(/^(\d+) × (\d+) = (\d+) meters$/);
+  if (
+    scaleTotal &&
+    steps.some((step) => step.startsWith(`Each group is ${scaleTotal[2]} m. Multiply ${scaleTotal[1]} × ${scaleTotal[2]}`))
+  )
+    return scaleBars(Number(scaleTotal[1]), Number(scaleTotal[2]), 4, Number(scaleTotal[3]));
   const scaleGroups = text.match(/^Each group is (\d+) m\. Multiply (\d+) × \1$/);
   if (scaleGroups) return scaleBars(Number(scaleGroups[2]), Number(scaleGroups[1]), 3);
   const order = text.match(/^(\d+(?:\.\d+)?) ([<>]) (\d+(?:\.\d+)?)$/);

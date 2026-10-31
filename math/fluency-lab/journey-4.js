@@ -6,7 +6,6 @@
 import {
   badgeArt,
   emptyStateArt,
-  gradeArt,
   headerArt,
   onboardingArt,
   strandArt,
@@ -20,7 +19,7 @@ import {
   upcomingReviews,
   weekdayName,
 } from "./recommendation-engine.js";
-import { progressByGrade, progressByStrand } from "./progress-summary.js";
+import { progressByStrand } from "./progress-summary.js";
 import { STICKERS, daysThisWeek, earnedIds, loadRewards, rankFor, summarize } from "./rewards.js";
 import { escapeHtml, masteryRing, recommendationCard, statePill } from "./skill-card.js";
 import { mountSkillMap } from "./skill-map.js";
@@ -162,16 +161,9 @@ function rewardsHtml(ctx) {
 }
 
 function navHtml(ctx) {
-  const grades = progressByGrade(ctx.tutor, ctx.now);
   const strands = progressByStrand(ctx.tutor, ctx.grade, ctx.now);
   const count = (row) => t("{a} of {b} skills strong", { a: row.strong, b: row.total });
   return `<section class="fl4-nav" aria-labelledby="fl4-nav-title"><h2 id="fl4-nav-title">${t("Find your way")}</h2>
-    <h3 class="fl4-subhead">${escapeHtml(t("Choose a grade"))}</h3><nav aria-label="${escapeHtml(t("Choose a grade"))}"><ul class="fl4-grades">${grades
-      .map(
-        (row) =>
-          `<li><button type="button" class="fl4-tile" data-fl4-grade="${row.grade}" aria-pressed="${row.grade === ctx.grade}"><span class="fl4-tile__art" aria-hidden="true">${gradeArt(row.grade, { decorative: true, size: 40, idPrefix: `ga${row.grade}` })}</span><span class="fl4-tile__name">${escapeHtml(row.grade === 0 ? t("Kindergarten") : t("Grade {n}", { n: row.grade }))}</span><span class="fl4-tile__count">${escapeHtml(count(row))}</span>${bar(row.strong, row.total, count(row))}</button></li>`,
-      )
-      .join("")}</ul></nav>
     <h3 class="fl4-subhead">${escapeHtml(t("Choose a strand in Grade {n}", { n: ctx.grade }))}</h3><nav aria-label="${escapeHtml(t("Choose a strand in Grade {n}", { n: ctx.grade }))}"><ul class="fl4-strands">${strands
       .map(
         (row) =>
@@ -188,7 +180,7 @@ function doorsHtml(ctx) {
 }
 
 // ctx: { tutor, grade, now, gradeLabel, profileName, strand, resume: {title, answered}|null, gradeSkillCount,
-//        evidenceHtml, onGrade(grade), onStrand(strand) }
+//        evidenceHtml, onStrand(strand) }
 export function mountDashboard(host, ctx) {
   const full = { now: Date.now(), strand: "All", evidenceHtml: "", ...ctx };
   full.hasAnyRecord = Object.values(full.tutor.records).some(
@@ -209,8 +201,6 @@ export function mountDashboard(host, ctx) {
     host.dataset.fl4Bound = "1";
     host.addEventListener("click", (event) => {
       const current = contexts.get(host);
-      const grade = event.target.closest("[data-fl4-grade]");
-      if (grade) current.onGrade?.(Number(grade.dataset.fl4Grade));
       const strand = event.target.closest("[data-fl4-strand]");
       if (strand) current.onStrand?.(strand.dataset.fl4Strand);
     });

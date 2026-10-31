@@ -207,10 +207,23 @@
   left: calc(12px + env(safe-area-inset-left, 0px));
   z-index: 900;
 }
-/* On phones a long toast spans the bottom edge; lift the launcher above it while it shows. */
+/* In the page header the launcher is one more control: inline on wide screens, top right beside the brand on phones. */
+.site-header .tour-launcher {
+  position: static;
+}
+.site-header .tour-help-btn {
+  width: 40px;
+  height: 40px;
+  font-size: 1.25rem;
+  box-shadow: none;
+}
 @media (max-width: 640px) {
-  body:has(#toast.show) .tour-launcher {
-    bottom: calc(112px + env(safe-area-inset-bottom, 0px));
+  .site-header .tour-launcher {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    bottom: auto;
+    left: auto;
   }
 }
 .tour-help-btn {
