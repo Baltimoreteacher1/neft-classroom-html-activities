@@ -42,6 +42,27 @@ for (const m of html.matchAll(/<script[^>]+src="\.\/([^"?]+)"/g)) {
   if (isTeacherSurface(`/math/fluency-lab/${m[1]}`))
     bad.push(`index.html loads ${m[1]} with a script tag`);
 }
+// A CSS @import of a refused name is dropped silently (the sheet answers 401), which strips the styling of every
+// rule inside it: on 2026-10-31 journey-4.css imported dashboard-nav.css and the streak, badges and doors went unstyled.
+const sheets = [];
+(function walkCss(dir) {
+  for (const name of readdirSync(dir)) {
+    const full = join(dir, name);
+    if (statSync(full).isDirectory()) walkCss(full);
+    else if (/\.css$/.test(name)) sheets.push(full);
+  }
+})(lab);
+for (const sheet of sheets) {
+  const sheetUrl = `/${relative(root, sheet).split("\\").join("/")}`;
+  if (isTeacherSurface(sheetUrl)) continue;
+  for (const m of readFileSync(sheet, "utf8").matchAll(
+    /@import\s+(?:url\()?["']?(\.{1,2}\/[^"')\s;]+)/g,
+  )) {
+    checked += 1;
+    const url = posix.normalize(posix.join(sheetUrl, "..", m[1]));
+    if (isTeacherSurface(url)) bad.push(`${relative(root, sheet)} @imports ${url}`);
+  }
+}
 assert.ok(checked > 200, `the scan looked at ${checked} imports, expected hundreds`);
 assert.deepEqual(
   bad,

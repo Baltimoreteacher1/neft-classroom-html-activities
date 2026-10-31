@@ -7,6 +7,8 @@ import { playSort } from "./sort-game.js";
 import { playMistake } from "./mistake-game.js";
 import { playMake } from "./make-game.js";
 import { playFamily } from "./family-game.js";
+import { playMake24 } from "./make24-game.js";
+import { playChallenge } from "./challenge-game.js";
 import { playBalance } from "./balance-game.js";
 import { playFlip } from "./flip-game.js";
 import { buddyPanel, buddySvg, moodFor, reactionFor } from "./buddy.js";
@@ -121,6 +123,21 @@ export const GAMES = [
     icon: "🧩",
     blurb: "Tap two tiles that make the target. Find every pair.",
     run: playMake,
+  },
+  {
+    id: "make24",
+    name: "Make 24",
+    icon: "🎴",
+    blurb: "Combine four numbers with + − × ÷ to make 24.",
+    grades: [3, 4, 5, 6, 7, 8],
+    run: playMake24,
+  },
+  {
+    id: "challenge",
+    name: "Class Code Challenge",
+    icon: "🔑",
+    blurb: "Enter a class code to get the same problems as your whole class.",
+    run: playChallenge,
   },
   {
     id: "family",

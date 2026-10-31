@@ -19,6 +19,8 @@ export const GAME_PHASES = Object.freeze({
   sort: { right: "correct", miss: "retry" },
   mistake: { right: "correct", miss: "retry", "right-after-miss": "assisted" },
   make: { right: "correct", miss: "retry" },
+  make24: { right: "correct", miss: "retry", "right-after-miss": "assisted", revealed: "revealed" },
+  challenge: { right: "correct", miss: "retry", "right-after-miss": "assisted", revealed: "revealed" },
   family: { right: "correct", miss: "retry" },
   balance: { right: "correct", miss: "retry", "right-after-miss": "assisted" },
   flip: { right: "correct", miss: "retry", "right-after-miss": "assisted" },

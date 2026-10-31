@@ -14,11 +14,13 @@ const { ES_WORLDS } = await import("../math/fluency-lab/i18n-es-worlds.js");
 const { ES_LAB4_ANIMATIONS } = await import("../math/fluency-lab/i18n-es-lab4-animations.js");
 const { ES_LAB4_LESSONS } = await import("../math/fluency-lab/i18n-es-lab4-lessons.js");
 const { ES_STUDIO } = await import("../math/fluency-lab/i18n-es-studio.js");
+const { ES_COMPETITOR } = await import("../math/fluency-lab/i18n-es-competitor.js");
 const ES = {
   ...ES_STUDIO,
   ...ES_BASE,
   ...ES_MODELS,
   ...ES_WORLDS,
+  ...ES_COMPETITOR,
   ...ES_LAB4_ANIMATIONS,
   ...ES_LAB4_LESSONS,
 };

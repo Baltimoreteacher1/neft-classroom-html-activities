@@ -684,3 +684,72 @@ body {
   min-block-size: 44px;
   border-radius: var(--fl-radius, 12px);
 }
+/* Game Room layout: one options bar and one card size, whatever icon style a game uses. */
+.gm-options {
+  align-items: end;
+  gap: var(--fl-s2, 0.75rem) var(--fl-s3, 1.25rem);
+  margin: var(--fl-s2, 0.75rem) 0 var(--fl-s3, 1.25rem);
+  padding: var(--fl-s3, 1rem);
+  border: 1px solid var(--fl-line, #d5d9de);
+  background: var(--fl-white, #fff);
+}
+.gm-options .gm-calm {
+  min-height: 44px;
+  padding: 0.4rem 0.9rem;
+  border: 1px solid var(--fl-line, #d5d9de);
+  border-radius: 999px;
+  background: var(--fl-paper, #fbf7ed);
+}
+.gm-options .gm-mastery-calm {
+  border-left: 1px solid var(--fl-line, #d5d9de) !important;
+  background: var(--fl-blue-soft, #e8f0f8);
+}
+.gm-menu {
+  grid-template-columns: repeat(auto-fill, minmax(min(220px, 100%), 1fr));
+  align-items: stretch;
+}
+.gm-menu .gm-game {
+  grid-template-rows: auto auto 1fr auto;
+  align-content: start;
+  min-height: 270px;
+  padding: var(--fl-s3, 1.1rem) var(--fl-s2, 0.9rem);
+  border-color: var(--fl-line, #d5d9de);
+  background: var(--fl-white, #fff);
+  overflow: hidden;
+}
+.gm-menu .gm-game .gm-icon {
+  display: grid;
+  width: 100%;
+  min-height: 112px;
+  place-items: center;
+  font-size: 3.4rem;
+  line-height: 1;
+}
+.gm-menu .gm-game .gm-icon svg {
+  width: min(100%, 170px);
+  height: 108px;
+}
+.gm-menu .gm-game b,
+.gm-menu .gm-game.gm-signature b,
+.gm-menu .gm-game.gm-classic b {
+  color: var(--fl-navy, #17324d);
+  font-size: 1.15rem;
+}
+.gm-menu .gm-game small {
+  max-width: 28ch;
+  color: var(--fl-ink-soft, #4a5a6a);
+}
+.gm-menu .gm-game .tr-stars {
+  align-self: end;
+}
+.gm-options .gm-stop {
+  flex: 1 1 200px;
+  min-width: 0;
+}
+.gm-options .gm-stop select {
+  width: 100%;
+  max-width: 100%;
+}
+.gm-options .gm-calm {
+  flex: 1 1 260px;
+}

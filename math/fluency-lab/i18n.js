@@ -4,9 +4,10 @@ import { ES as ES_BASE } from "./i18n-es.js";
 import { ES_MODELS } from "./i18n-es-models.js";
 import { ES_WORLDS } from "./i18n-es-worlds.js";
 import { ES_STUDIO } from "./i18n-es-studio.js";
+import { ES_COMPETITOR } from "./i18n-es-competitor.js";
 import { readLocal, writeLocal } from "./school-tools.js";
 
-const ES = { ...ES_STUDIO, ...ES_BASE, ...ES_MODELS, ...ES_WORLDS };
+const ES = { ...ES_STUDIO, ...ES_BASE, ...ES_MODELS, ...ES_WORLDS, ...ES_COMPETITOR };
 const KEY = "ewl-fluency-lang-v1";
 let lang = null;
 
