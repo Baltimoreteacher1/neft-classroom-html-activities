@@ -39,7 +39,9 @@ await server.listen();
 const base = `http://127.0.0.1:${server.httpServer.address().port}/math/fluency-lab/`;
 let browser;
 const problems = [];
-async function open({ width = 1280, height = 900, seed = null, query = "?grade=4" } = {}) {
+// hub: the grade page shows one section at a time; the structural checks below look at every section, so
+// they open it with hub "all" (no panel rule matches it). Pass hub: null to test the real one-at-a-time behaviour.
+async function open({ width = 1280, height = 900, seed = null, query = "?grade=4", hub = "all" } = {}) {
   const context = await browser.newContext({ viewport: { width, height } });
   if (seed)
     await context.addInitScript((data) => {
@@ -53,6 +55,7 @@ async function open({ width = 1280, height = 900, seed = null, query = "?grade=4
   page.on("pageerror", (error) => problems.push(`pageerror: ${error.message}`));
   page.on("console", (message) => { if (message.type() === "error") problems.push(`console: ${message.text()}`); });
   await page.goto(`${base}${query}`, { waitUntil: "networkidle" });
+  if (hub) await page.evaluate((value) => { document.querySelector("#library-view").dataset.hub = value; }, hub);
   return { page, context };
 }
 const shot = async (page, name, locator = null) => {
@@ -225,6 +228,31 @@ try {
     await context.close();
   }
 
+  // ---------- Grade hub: one section at a time ----------
+  {
+    const { page, context } = await open({ seed, hub: null });
+    const visible = (selector) => page.locator(selector).first().isVisible();
+    const expectOnly = async (tab, shown) => {
+      const all = { today: ".fl4-hero", skills: "#skill-grid", trail: "#trail-view", map: ".fl4-pathway", rewards: ".fl4-rewards" };
+      for (const [name, selector] of Object.entries(all)) assert.equal(await visible(selector), name === shown, `${tab}: ${name} section ${name === shown ? "is" : "is not"} shown`);
+    };
+    await expectOnly("default", "today");
+    for (const tab of ["skills", "trail", "map", "rewards", "today"]) {
+      await page.locator(`[data-hub-tab="${tab}"]`).click();
+      assert.equal(await page.locator(`[data-hub-tab="${tab}"]`).getAttribute("aria-selected"), "true");
+      await expectOnly(tab, tab);
+    }
+    await page.locator('[data-hub-tab="today"]').focus();
+    await page.keyboard.press("ArrowRight");
+    assert.equal(await page.evaluate(() => document.activeElement.dataset.hubTab), "skills", "arrow keys move between sections");
+    assert.equal(await page.evaluate(() => document.querySelector("#library-view").dataset.hub), "skills");
+    await page.locator("[data-fl4-strand]").nth(1).click();
+    assert.equal(await page.evaluate(() => document.querySelector("#library-view").dataset.hub), "skills", "choosing a strand keeps the Skills section open");
+    await page.reload({ waitUntil: "networkidle" });
+    assert.equal(await page.evaluate(() => document.querySelector("#library-view").dataset.hub), "skills", "the open section is remembered for this visit");
+    await context.close();
+  }
+
   // ---------- Español ----------
   {
     const { page, context } = await open({ seed });
@@ -259,8 +287,10 @@ try {
     const library = await open({ seed });
     // The grade row at the top and the strand tiles drive the existing library.
     await library.page.locator('#grade-tabs [data-grade="6"]').click();
-    await library.page.locator("#grade-heading").filter({ hasText: "Grade 6" }).waitFor();
     assert.match(await library.page.locator(".fl4-hero [class*=overline]").first().innerText(), /Grade 6/i);
+    // The grade page shows one section at a time; strands and the skill grid live on the Skills tab.
+    await library.page.locator('[data-hub-tab="skills"]').click();
+    await library.page.locator("#grade-heading").filter({ hasText: "Grade 6" }).waitFor();
     await library.page.locator("[data-fl4-strand]").nth(1).click();
     assert.equal(await library.page.locator("#strand-filters [aria-pressed='true']").count(), 1);
     assert.ok((await library.page.locator("#skill-grid .fl4-skill").count()) >= 1, "the library grid uses the new cards");

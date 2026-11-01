@@ -1,0 +1,301 @@
+/* Game Room grade bands and filters, Math Baseball, Guess the Number and Math Race. Imported by games.css. */
+
+/* Grade-band chip on every card, and the filter row */
+.gm-band {
+  display: inline-block;
+  padding: 0.1rem 0.6rem;
+  border: 1.5px solid var(--t-rule);
+  border-radius: 999px;
+  background: var(--t-page);
+  color: var(--t-ink);
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.gm-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0.6rem 0 0.2rem;
+}
+
+.gm-shown {
+  margin: 0 0 0.4rem;
+  color: var(--t-ink-soft);
+  font-size: 0.95rem;
+}
+
+.gm-filter {
+  min-height: 44px;
+  padding: 0.4rem 1rem;
+  border: 2px solid var(--t-rule);
+  border-radius: 999px;
+  background: var(--t-paper);
+  color: var(--t-ink);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.gm-filter[aria-pressed="true"] {
+  border-color: var(--t-focus);
+  background: var(--t-focus);
+  color: #fff;
+}
+
+.gm-filter:focus-visible,
+.bb-tier:focus-visible {
+  outline: 3px solid var(--t-focus);
+  outline-offset: 2px;
+}
+
+/* Math Baseball */
+.bb-field {
+  max-width: 420px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.bb-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.bb-grass {
+  fill: #dff3e1;
+}
+
+.bb-fence {
+  stroke: #2f7d4f;
+  stroke-width: 5;
+  stroke-linecap: round;
+}
+
+.bb-dirt {
+  fill: #ecd5a6;
+  stroke: #b58b4a;
+  stroke-width: 2;
+}
+
+.bb-mound {
+  fill: #d8bb84;
+}
+
+.bb-base {
+  fill: #fff;
+  stroke: #13233a;
+  stroke-width: 2;
+}
+
+.bb-base.on {
+  fill: var(--t-gold);
+}
+
+.bb-home {
+  fill: #fff;
+  stroke: #13233a;
+  stroke-width: 2;
+}
+
+.bb-tiers {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 0.6rem;
+}
+
+.bb-tier {
+  display: grid;
+  gap: 0.2rem;
+  min-height: 64px;
+  padding: 0.7rem;
+  border: 2px solid var(--t-rule);
+  border-radius: 14px;
+  background: var(--t-paper);
+  color: var(--t-ink);
+  font: inherit;
+  text-align: center;
+  cursor: pointer;
+}
+
+.bb-tier:hover {
+  border-color: var(--trail);
+}
+
+.bb-tier b {
+  font-size: 1.2rem;
+}
+
+.bb-tier small {
+  color: var(--t-ink-soft);
+}
+
+/* Guess the Number */
+.gn-line {
+  display: block;
+  width: 100%;
+  max-width: 560px;
+  height: auto;
+  margin: 0 auto;
+}
+
+.gn-track {
+  fill: #fff;
+  stroke: var(--t-ink);
+  stroke-width: 2;
+}
+
+.gn-band {
+  transition: transform 0.6s ease;
+}
+
+.gn-out {
+  fill: url(#gn-hatch);
+}
+
+.gn-live {
+  fill: rgba(30, 138, 90, 0.28);
+  stroke: var(--t-good);
+  stroke-width: 2;
+  vector-effect: non-scaling-stroke;
+}
+
+.gn-pin {
+  fill: var(--t-good);
+}
+
+.gn-mark {
+  fill: var(--t-ink);
+  stroke: #fff;
+  stroke-width: 1.5;
+}
+
+.gn-mid {
+  fill: var(--t-gold);
+  stroke: var(--t-ink);
+  stroke-width: 1.5;
+}
+
+.gn-end,
+.gn-last {
+  fill: var(--t-ink);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.gn-legend,
+.gn-left,
+.rc-pos {
+  margin: 0;
+  color: var(--t-ink-soft);
+  font-weight: 600;
+  text-align: center;
+}
+
+.gn-key {
+  display: inline-block;
+  width: 1.1rem;
+  height: 0.8rem;
+  margin: 0 0.3rem 0 0.8rem;
+  border: 2px solid var(--t-ink);
+  vertical-align: middle;
+}
+
+.gn-key-out {
+  background: repeating-linear-gradient(45deg, #e6ebf2 0 3px, #9aa8bb 3px 5px);
+}
+
+.gn-key-live {
+  border-color: var(--t-good);
+  background: rgba(30, 138, 90, 0.28);
+}
+
+.gn-form {
+  display: grid;
+  gap: 0.6rem;
+  justify-items: center;
+}
+
+.gn-history {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0;
+  padding: 0;
+  list-style-position: inside;
+}
+
+.gn-history li {
+  padding: 0.2rem 0.7rem;
+  border: 1.5px solid var(--t-rule);
+  border-radius: 999px;
+  background: var(--t-paper);
+}
+
+/* Math Race */
+.rc-track {
+  display: block;
+  width: 100%;
+  max-width: 640px;
+  height: auto;
+  margin: 0 auto;
+}
+
+.rc-lane {
+  fill: #e9edf3;
+  stroke: var(--t-rule);
+  stroke-width: 1.5;
+}
+
+.rc-tick {
+  stroke: #9aa8bb;
+  stroke-width: 1.5;
+  stroke-dasharray: 4 5;
+}
+
+.rc-name {
+  fill: var(--t-ink);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.rc-car {
+  transition: transform 0.7s ease-in-out;
+}
+
+.rc-rival {
+  transition-delay: 0.45s;
+}
+
+@media (max-width: 520px) {
+  .gm-filter {
+    flex: 1 1 40%;
+  }
+
+  .bb-tiers {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Reduced motion: the picture still updates, it just does not slide. */
+@media (prefers-reduced-motion: reduce) {
+  .gn-band,
+  .rc-car,
+  .rc-rival {
+    transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .gn-live,
+  .gm-filter[aria-pressed="true"] {
+    forced-color-adjust: none;
+    border-color: Highlight;
+    stroke: Highlight;
+  }
+
+  .gm-filter[aria-pressed="true"] {
+    background: Highlight;
+    color: HighlightText;
+  }
+}

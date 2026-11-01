@@ -184,6 +184,7 @@ export function mountWatch(ctx, root) {
   stage.addEventListener("keydown", onKey);
   q('[data-w="speed"]')?.addEventListener("change", (e) => (speed = Number(e.target.value)));
   show(0);
+  if (ctx.autoplay && !calm) play();
   return () => {
     stop();
     root.removeEventListener("click", onClick);

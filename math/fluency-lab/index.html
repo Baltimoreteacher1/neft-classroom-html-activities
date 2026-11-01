@@ -36,6 +36,7 @@
     <link rel="stylesheet" href="./ds4-screens.css" />
     <link rel="stylesheet" href="./tour/tour.css" />
     <link rel="stylesheet" href="./grade-experience.css" />
+    <link rel="stylesheet" href="./grade-hub.css" />
     <script type="module" src="./scratchpad-entry.js"></script>
     <script type="module" src="./tour/tour.js"></script>
     <script type="module" src="./app.js"></script>
@@ -111,7 +112,14 @@
         <div id="grade-tabs" class="grade-tabs" role="tablist" aria-label="Grade level"></div>
       </section>
 
-      <section id="library-view" class="library" aria-labelledby="page-title">
+      <section id="library-view" class="library" data-hub="today" aria-labelledby="page-title">
+        <nav id="grade-hub-tabs" class="gh-tabs" role="tablist" aria-label="Sections of this grade">
+          <button type="button" role="tab" class="gh-tab" data-hub-tab="today" aria-selected="true"><span aria-hidden="true">☀️</span> <span data-i18n>Today</span></button>
+          <button type="button" role="tab" class="gh-tab" data-hub-tab="skills" aria-selected="false" tabindex="-1"><span aria-hidden="true">📚</span> <span data-i18n>Skills</span></button>
+          <button type="button" role="tab" class="gh-tab" data-hub-tab="trail" aria-selected="false" tabindex="-1"><span aria-hidden="true">🗺️</span> <span data-i18n>Fact Trail</span></button>
+          <button type="button" role="tab" class="gh-tab" data-hub-tab="map" aria-selected="false" tabindex="-1"><span aria-hidden="true">🧭</span> <span data-i18n>Skill map</span></button>
+          <button type="button" role="tab" class="gh-tab" data-hub-tab="rewards" aria-selected="false" tabindex="-1"><span aria-hidden="true">🏅</span> <span data-i18n>Rewards</span></button>
+        </nav>
         <section id="personal-dashboard" class="personal-dashboard" aria-label="Your Math Journey"></section>
         <nav class="practice-subnav" aria-label="Practice view selection" role="tablist">
           <button type="button" id="subnav-skills" class="subnav-tab active" data-subview="skills" role="tab" aria-selected="true">
@@ -122,9 +130,9 @@
           </button>
         </nav>
 
-        <section id="trail-view" class="trail" aria-labelledby="trail-title" hidden></section>
+        <section id="trail-view" class="trail" data-hub-panel="trail" aria-labelledby="trail-title" hidden></section>
 
-        <div id="more-practice" class="more-practice">
+        <div id="more-practice" class="more-practice" data-hub-panel="skills">
           <div class="library-heading">
             <div>
               <h2 id="grade-heading">Grade 1</h2>

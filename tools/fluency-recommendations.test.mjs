@@ -479,6 +479,10 @@ for (const file of files) {
   for (const match of source.matchAll(/\bt\(\s*`((?:[^`\\]|\\.)*)`/g))
     if (!match[1].includes("${")) literals.add(match[1]);
 }
+// Static grade hub tabs are translated through data-i18n in index.html.
+const page = readFileSync(new URL("index.html", lab), "utf8");
+const hubTabs = page.match(/<nav id="grade-hub-tabs"[\s\S]*?<\/nav>/)?.[0] || "";
+for (const match of hubTabs.matchAll(/<span data-i18n>([^<]+)</g)) literals.add(match[1].trim());
 const holes = (text) =>
   [...text.matchAll(/\{(\w+)\}/g)]
     .map((m) => m[1])

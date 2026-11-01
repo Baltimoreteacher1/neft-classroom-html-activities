@@ -152,7 +152,7 @@ try {
   // ---- Trail round: a right answer shows the result and waits for Next; a miss shows the retry panel.
   for (const [name, width, height] of [["phone", 390, 844], ["desktop", 1280, 900]]) {
     const page = await open("?grade=3", { width, height });
-    await page.locator("#subnav-trail").click();
+    await page.locator("[data-hub-tab=\"trail\"]").click();
     await page.locator("[data-station], [data-card]").first().click();
     await page.locator("[data-start]").first().click();
     await page.locator("#tr-input").waitFor({ state: "visible" });

@@ -74,7 +74,8 @@ try {
 
   await page.goto(`${base}/math/fluency-lab/?grade=4&skill=multiply-1digit`, { waitUntil: "networkidle" });
   assert.equal(await page.locator("#workspace-title").innerText(), "Multiply a three-digit number by a one-digit number");
-  const multiplicationLesson = await page.locator("#learn-panel").innerText();
+  // textContent: the worked example sits in the collapsed "Show the steps in words" section beside the animated Studio.
+  const multiplicationLesson = await page.locator("#learn-panel").textContent();
   assert.match(multiplicationLesson, /three-digit number by a one-digit number/i);
   assert.match(multiplicationLesson, /\b\d{3} × [2-9] = \?/);
   assert.doesNotMatch(multiplicationLesson, /multiply by one digit/i);

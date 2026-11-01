@@ -73,6 +73,8 @@ export function mountStudio(host, { item, skill, context = "idea" }) {
     mission: {},
     lang: getLang,
     sim: SIMS[SIM_FOR[skill.id]] || null,
+    // The idea lesson starts playing by itself (Pause is always one tap away); a miss never moves under the feedback.
+    autoplay: context === "idea",
   };
   const pattern = recurringTag(past);
   const detective = detectiveFor(skill, ctx.seed);

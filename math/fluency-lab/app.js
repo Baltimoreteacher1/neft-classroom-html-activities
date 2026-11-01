@@ -70,7 +70,8 @@ import { setLanguageProfile } from "./language-settings.js";
 import { questionEs } from "./question-es.js";
 import { handleStepPlayerClick, handleStepPlayerSolved, lightStepPlayers, stepPlayer } from "./step-player.js";
 import { applyGradeExperience } from "./grade-experience.js";
-import { mountStudio, studioModeled } from "./studio/studio.js";
+import { initGradeHub } from "./grade-hub.js";
+import { mountStudio, studioAvailable, studioModeled } from "./studio/studio.js";
 
 // teacher-4.js is teacher-only, so the teacher-surface gate refuses it to an anonymous student. A static import of a
 // refused file stops this whole module; awaiting a guarded import instead leaves null for a student and the real
@@ -96,6 +97,7 @@ selectProfile(activeProfile);
 setLanguageProfile(activeProfile);
 let cleanupVisual = null;
 let cleanupVisualStudio = null;
+let cleanupLearnStudio = null;
 let cleanupTrail = null;
 let cleanupGames = null;
 let cleanupWriting = null;
@@ -339,7 +341,10 @@ const STRAND_ICONS = {
   Functions: "🔄", Systems: "🔗", Data: "📊"
 };
 
-function setPracticeSubview(subview) {
+// The grade page shows one section at a time (grade-hub.js). Skills and Fact Trail also drive the library subview.
+let gradeHub = initGradeHub(els.library, { onChange: (hub) => { if (hub === "skills" || hub === "trail") setPracticeSubview(hub, { syncHub: false }); } });
+function setPracticeSubview(subview, { syncHub = true } = {}) {
+  if (syncHub) gradeHub?.set(subview);
   state.subview = subview;
   const isSkills = subview === "skills";
   els.subnavSkills?.setAttribute("aria-selected", String(isSkills));
@@ -399,6 +404,8 @@ function renderLibrary() {
   cleanupVisual?.();
   cleanupVisualStudio?.();
   cleanupVisualStudio = null;
+  cleanupLearnStudio?.();
+  cleanupLearnStudio = null;
   showArea("library");
   state.skill = null;
   state.mixedPool = null;
@@ -408,8 +415,8 @@ function renderLibrary() {
   els.library.hidden = false;
   const grade = getGrade(state.grade);
   applyGradeExperience(state.grade);
-  state.subview = state.subview || "skills";
-  setPracticeSubview(state.subview);
+  state.subview = gradeHub?.current() === "trail" ? "trail" : "skills";
+  setPracticeSubview(state.subview, { syncHub: false });
   cleanupTrail?.();
   cleanupTrail = mountTrail(els.trail, {
     grade: state.grade,
@@ -419,7 +426,7 @@ function renderLibrary() {
     },
     onPlayGame: (game) => { state.autoGame = game; openHubView("games"); },
   });
-  els.gradeHeading.textContent = `More ${grade.label} practice`;
+  els.gradeHeading.textContent = t("{grade} skills", { grade: grade.label });
   els.gradePromise.textContent = grade.promise;
   const strandsCovered = [...new Set(grade.skills.map((skill) => skill.strand))];
   const scope = document.querySelector("#grade-scope");
@@ -449,7 +456,8 @@ function renderLibrary() {
   renderDashboard();
   const choosing = state.landing;
   if (choosing) renderGradeChooser();
-  if (choosing) for (const part of [document.querySelector(".practice-subnav"), els.morePractice, els.trail]) if (part) part.hidden = true;
+  if (choosing) for (const part of [document.querySelector(".practice-subnav"), document.querySelector("#grade-hub-tabs"), els.morePractice, els.trail]) if (part) part.hidden = true;
+  else document.querySelector("#grade-hub-tabs")?.removeAttribute("hidden");
   setUrl();
   document.title = !choosing && state.gradeInUrl ? `${grade.label} Math Fluency Lab | EduWonderLab` : "Math Fluency Lab · Grades 1–8 | EduWonderLab";
 }
@@ -620,9 +628,14 @@ function renderLearn() {
   const example = (draws.filter((item) => !trivial(item)).length ? draws.filter((item) => !trivial(item)) : draws).reduce((best, item) => (item.steps.length > best.steps.length ? item : best));
   state.learnExample = { item: example, shown: 1 };
   const picture = interactivePicture({ ...example.model, worked: true }) || trailPicture(example.model) || fractionPicture(example.question, { worked: true });
+  cleanupLearnStudio?.();
+  cleanupLearnStudio = null;
+  const animated = studioAvailable(example);
   els.learnPanel.innerHTML = `
     <div class="learn-simple" style="--trail:${getGrade(skill.grade).color}">
       <h3 class="tr-idea">${highlightVocab(escapeHtml(t(skill.learn.rule)))}</h3>
+      ${animated ? '<div class="sd-slot learn-studio" data-learn-studio></div>' : ""}
+      ${animated ? `<details class="learn-words-steps"><summary>${t("Show the steps in words")}</summary>` : '<div class="learn-words-steps">'}
       <div class="tr-lesson">
         <div class="tr-example">
           <p class="tr-example-fact${String(example.question).length > 40 ? " is-long" : ""}">${highlightVocab(mathText(example.question))}</p>
@@ -633,6 +646,7 @@ function renderLearn() {
           <div data-learn-steps data-total-steps="${example.steps.length}">${stepsBlock(example.steps, 1, { id: "learn-steps" })}</div>
         </div>
       </div>
+      ${animated ? "</details>" : "</div>"}
       <p class="learn-watch"><strong>Watch out:</strong> ${highlightVocab(escapeHtml(t(skill.learn.watch)))}</p>
       ${wordStripHtml(skill, { heading: t("Words to know") })}
       ${languagePromptHtml(skill, { heading: t("Pause, notice, and explain") })}
@@ -644,6 +658,8 @@ function renderLearn() {
         <button class="outline-action" data-write-about>${t("Write about it")}</button>
       </div>
     </div>`;
+  const studioSlot = els.learnPanel.querySelector("[data-learn-studio]");
+  if (studioSlot) cleanupLearnStudio = mountStudio(studioSlot, { item: example, skill, context: "idea" });
 }
 
 // fl4:lessons Learn It, Watch It, Try It, Explain It inside the Learn panel; its results are supported evidence only.
@@ -667,6 +683,10 @@ function setMode(mode) {
     tab.tabIndex = tab.dataset.mode === mode ? 0 : -1;
   });
   const isLearn = mode === "learn" || mode === "visual";
+  if (mode !== "learn") {
+    cleanupLearnStudio?.();
+    cleanupLearnStudio = null;
+  } else if (!cleanupLearnStudio && state.skill) renderLearn();
   els.visualPanel.hidden = mode !== "visual";
   els.learnPanel.hidden = !isLearn;
   els.drillPanel.hidden = isLearn;

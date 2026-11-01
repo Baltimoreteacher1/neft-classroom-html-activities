@@ -808,6 +808,7 @@ try {
     "student growth view has no serious or critical accessibility violations",
   );
   await studentPage.locator('[data-view="library"]').click();
+  await studentPage.locator('[data-hub-tab="skills"]').click();
   await studentPage.locator("#skill-grid .open-skill").first().click();
   const workspaceAxe = await new AxeBuilder({ page: studentPage }).analyze();
   assert.deepEqual(

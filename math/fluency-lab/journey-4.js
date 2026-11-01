@@ -55,7 +55,7 @@ function heroHtml(ctx, sections, target) {
     : skill
       ? `<p class="fl4-hero__skill">${escapeHtml(t(skill.title))}</p>${statePill(target.evidence.state)}<p class="fl4-hero__why">${escapeHtml(target.why)}</p>`
       : "";
-  return `<section class="fl4-hero journey-continue" aria-labelledby="fl4-hero-title" data-fresh="${fresh}">
+  return `<section class="fl4-hero journey-continue" data-hub-panel="today" aria-labelledby="fl4-hero-title" data-fresh="${fresh}">
     <div class="fl4-hero__art" aria-hidden="true">${fresh ? onboardingArt(1, { decorative: true, size: 160, idPrefix: "hero" }) : headerArt("dashboard", { decorative: true, size: 160, idPrefix: "hero" })}</div>
     <div class="fl4-hero__copy">
       <p class="fl4-overline">${escapeHtml(ctx.gradeLabel)} · ${escapeHtml(ctx.profileName)}</p>
@@ -71,7 +71,7 @@ function heroHtml(ctx, sections, target) {
 // Three plain steps for a learner with nothing recorded yet.
 function onboardingHtml() {
   const steps = [t("See the idea"), t("Try it with help"), t("Try it on your own")];
-  return `<ol class="fl4-steps" aria-label="${escapeHtml(t("How a skill works"))}">${steps
+  return `<ol class="fl4-steps" data-hub-panel="today" aria-label="${escapeHtml(t("How a skill works"))}">${steps
     .map(
       (text, index) =>
         `<li><span class="fl4-steps__art" aria-hidden="true">${onboardingArt(index + 1, { decorative: true, size: 56, idPrefix: `ob${index}` })}</span><span><b>${index + 1}</b> ${escapeHtml(text)}</span></li>`,
@@ -87,12 +87,12 @@ function reminderHtml(ctx) {
       due.length === 1
         ? t("{n} skill ready for a memory refresh.", { n: due.length })
         : t("{n} skills ready for a memory refresh.", { n: due.length });
-    return `<aside class="fl4-reminder" data-kind="due" aria-label="${escapeHtml(t("Review reminder"))}"><p><b>${escapeHtml(text)}</b></p>
+    return `<aside class="fl4-reminder" data-hub-panel="today" data-kind="due" aria-label="${escapeHtml(t("Review reminder"))}"><p><b>${escapeHtml(text)}</b></p>
       <button type="button" class="fl-btn fl-btn--ghost" data-open-key="${first.key}" data-open-mode="adaptive">${escapeHtml(t("Start with {skill}", { skill: t(first.skill.title) }))}</button></aside>`;
   }
   const next = upcomingReviews(ctx.tutor, ctx.grade, ctx.now)[0];
   if (!next) return "";
-  return `<aside class="fl4-reminder" data-kind="soon" aria-label="${escapeHtml(t("Review reminder"))}"><p>${escapeHtml(t("Next refresh: {skill}, {when}.", { skill: t(next.skill.title), when: futureText(next.days) }))}</p></aside>`;
+  return `<aside class="fl4-reminder" data-hub-panel="today" data-kind="soon" aria-label="${escapeHtml(t("Review reminder"))}"><p>${escapeHtml(t("Next refresh: {skill}, {when}.", { skill: t(next.skill.title), when: futureText(next.days) }))}</p></aside>`;
 }
 
 function planHtml(sections) {
@@ -100,7 +100,7 @@ function planHtml(sections) {
     (section) => section.items.length,
   );
   if (!shown.length) return "";
-  return `<section class="fl4-plan" aria-labelledby="fl4-plan-title"><h2 id="fl4-plan-title">${t("Your next steps")}</h2>
+  return `<section class="fl4-plan" data-hub-panel="today" aria-labelledby="fl4-plan-title"><h2 id="fl4-plan-title">${t("Your next steps")}</h2>
     ${shown
       .map(
         (
@@ -148,7 +148,7 @@ function rewardsHtml(ctx) {
   const toNext = rank.next
     ? t("{n} more to {rank}", { n: rank.next.at - rank.score, rank: rank.next.name })
     : t("Top rank");
-  return `<section class="fl4-rewards" aria-labelledby="fl4-rewards-title"><h2 id="fl4-rewards-title">${t("Your streak and badges")}</h2>
+  return `<section class="fl4-rewards" data-hub-panel="rewards" aria-labelledby="fl4-rewards-title"><h2 id="fl4-rewards-title">${t("Your streak and badges")}</h2>
     <div class="fl4-rewards__grid">
       <div class="fl4-panel"><p class="fl4-big">${summary.streak}</p><p class="fl4-big__label">${escapeHtml(streakText)}</p><p class="fl4-panel__note">${escapeHtml(todayText)}</p><ol class="fl4-week" aria-label="${escapeHtml(t("The last seven days"))}">${strip}</ol>
         ${summary.streak ? "" : `<div class="fl4-empty"><span aria-hidden="true">${emptyStateArt("streak", { decorative: true, size: 56, idPrefix: "streak" })}</span><p>${t("Practice today to start")}</p></div>`}</div>
@@ -163,7 +163,7 @@ function rewardsHtml(ctx) {
 function navHtml(ctx) {
   const strands = progressByStrand(ctx.tutor, ctx.grade, ctx.now);
   const count = (row) => t("{a} of {b} skills strong", { a: row.strong, b: row.total });
-  return `<section class="fl4-nav" aria-labelledby="fl4-nav-title"><h2 id="fl4-nav-title">${t("Find your way")}</h2>
+  return `<section class="fl4-nav" data-hub-panel="skills" aria-labelledby="fl4-nav-title"><h2 id="fl4-nav-title">${t("Find your way")}</h2>
     <h3 class="fl4-subhead">${escapeHtml(t("Choose a strand in Grade {n}", { n: ctx.grade }))}</h3><nav aria-label="${escapeHtml(t("Choose a strand in Grade {n}", { n: ctx.grade }))}"><ul class="fl4-strands">${strands
       .map(
         (row) =>
@@ -174,7 +174,7 @@ function navHtml(ctx) {
 
 function doorsHtml(ctx) {
   const count = ctx.gradeSkillCount;
-  return `<div class="fl4-doors">
+  return `<div class="fl4-doors" data-hub-panel="today">
     <button type="button" class="fl4-door journey-game" data-view="games"><span class="fl4-overline">${t("Untimed · think and play")}</span><strong>${t("Play a game")}</strong><span>${t("Build, compare, and solve with the Game Room activities.")}</span><span class="fl4-door__link">${t("Choose a game")} <span aria-hidden="true">→</span></span></button>
     <article class="fl4-door journey-explore"><span class="fl4-overline">${t("Grades 1–8 · many ways in")}</span><h3>${t("Explore skills")}</h3><p>${t("Browse the grade-level library by topic. Every skill includes a lesson, practice, and ways to check your thinking.")}</p><a class="fl4-door__link" href="#subnav-skills">${t("Browse {count} Grade {grade} skills", { count, grade: ctx.grade })} <span aria-hidden="true">→</span></a></article></div>`;
 }
@@ -190,8 +190,8 @@ export function mountDashboard(host, ctx) {
   const sections = recommend(full.tutor, full.grade, full.now);
   const target = continueTarget(sections);
   host.innerHTML = `<div class="fl4-home">${heroHtml(full, sections, target)}${reminderHtml(full)}${planHtml(sections)}${navHtml(full)}
-    <section class="fl4-pathway" aria-labelledby="fl4-map-title"><h2 id="fl4-map-title">${escapeHtml(t("Your Grade {n} skill map", { n: full.grade }))}</h2><p>${t("See how skills build on each other. Open any skill to learn or practice it.")}</p><div id="fl4-map-host"></div></section>
-    ${rewardsHtml(full)}${doorsHtml(full)}${full.evidenceHtml ? `<div class="journey-evidence">${full.evidenceHtml}</div>` : ""}</div>`;
+    <section class="fl4-pathway" data-hub-panel="map" aria-labelledby="fl4-map-title"><h2 id="fl4-map-title">${escapeHtml(t("Your Grade {n} skill map", { n: full.grade }))}</h2><p>${t("See how skills build on each other. Open any skill to learn or practice it.")}</p><div id="fl4-map-host"></div></section>
+    ${rewardsHtml(full)}${doorsHtml(full)}${full.evidenceHtml ? `<div class="journey-evidence" data-hub-panel="rewards">${full.evidenceHtml}</div>` : ""}</div>`;
   mountSkillMap(host.querySelector("#fl4-map-host"), {
     grade: full.grade,
     tutor: full.tutor,
