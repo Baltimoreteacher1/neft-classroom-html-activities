@@ -8661,6 +8661,80 @@ document.querySelector("#restore-preview").addEventListener("click", (event) => 
     pendingRestore = null; event.currentTarget.hidden = true; announce("Progress restored into the current learner profile.");
   }
 });
+function resetAllProgress() {
+  try {
+    const keysToRemove = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (!k) continue;
+      if (k.startsWith("ewl-fluency-") || k.startsWith("ewl-moby-") || k.startsWith("ewl-family-") || k.startsWith("ewl-fm2-") || k.startsWith("ewl-language-") || k.startsWith("ewl-writing-") || k.startsWith("ewl-studio-") || k.startsWith("ewl-talk-") || k.startsWith("ewl-mini-lesson-") || k.startsWith("ewl-detective-") || k.startsWith("ewl-personal-ghost-") || k.startsWith("eduwonder_")) {
+        // Retain sound and language choice preferences if present, or purge learner keys
+        if (k !== "ewl-fluency-lang-v1" && k !== "ewl-fluency-sound-v1") {
+          keysToRemove.push(k);
+        }
+      }
+    }
+    for (const k of keysToRemove) {
+      localStorage.removeItem(k);
+    }
+    sessionStorage.removeItem("ewl-fluency-tab-profile");
+  } catch {
+    /* storage access error */
+  }
+
+  state.session = null;
+  state.item = null;
+  state.progress = {};
+  state.tutor = emptyTutor();
+  state.settings = { largeText: false, focus: false, readingFont: false };
+  state.grade = 1;
+  saveProgress();
+  saveSettings();
+  applySettings();
+  renderProfiles();
+  renderLibrary();
+  announce(t("All progress has been reset. You are starting fresh!"));
+  if (els.toast) {
+    els.toast.textContent = t("All progress has been reset. You are starting fresh!");
+    els.toast.hidden = false;
+    setTimeout(() => { if (els.toast) els.toast.hidden = true; }, 3000);
+  }
+}
+
+const resetConfirmModal = document.querySelector("#reset-confirm-modal");
+const openResetModal = () => {
+  if (els.settingsPopover) {
+    els.settingsPopover.hidden = true;
+    els.settingsToggle?.setAttribute("aria-expanded", "false");
+  }
+  if (resetConfirmModal) {
+    resetConfirmModal.hidden = false;
+    document.querySelector("#reset-confirm-action")?.focus();
+  } else if (window.confirm(t("Start over and reset progress? This will erase all stars and practice records."))) {
+    resetAllProgress();
+  }
+};
+const closeResetModal = () => {
+  if (resetConfirmModal) resetConfirmModal.hidden = true;
+};
+
+document.querySelector("#reset-popover-btn")?.addEventListener("click", openResetModal);
+document.querySelector("#reset-data-tools-btn")?.addEventListener("click", openResetModal);
+document.querySelector("#reset-confirm-action")?.addEventListener("click", () => {
+  closeResetModal();
+  resetAllProgress();
+});
+document.querySelector("#reset-cancel-action")?.addEventListener("click", closeResetModal);
+document.querySelector("#reset-cancel-close")?.addEventListener("click", closeResetModal);
+resetConfirmModal?.addEventListener("click", (e) => {
+  if (e.target === resetConfirmModal) closeResetModal();
+});
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && resetConfirmModal && !resetConfirmModal.hidden) {
+    closeResetModal();
+  }
+});
+
 // A trail stop or game answer counts toward the matching skill, so the dashboard and the trail agree. Games are
 // untimed and offer no hints, so a first-try answer there is independent evidence, like one in practice.
 window.addEventListener("fluency-fact", ({ detail }) => {

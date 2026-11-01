@@ -1191,4 +1191,10 @@ Object.assign(ES, {
   "Flip": "Voltear",
   "Cancel": "Cancelar",
   "Check": "Comprobar",
+  "Start over (reset progress)": "Empezar de nuevo (reiniciar progreso)",
+  "Start over and reset progress?": "¿Empezar de nuevo y reiniciar el progreso?",
+  "Start over and reset progress? This will erase all stars and practice records.": "¿Empezar de nuevo y reiniciar el progreso? Esto borrará todas las estrellas y registros de práctica.",
+  "This will erase your stars, fact trail progress, streak, and saved records on this device. You will start fresh. This cannot be undone.": "Esto borrará tus estrellas, tu avance en el camino de operaciones, tu racha y los registros guardados en este dispositivo. Comenzarás desde el principio. Esto no se puede deshacer.",
+  "Yes, start over": "Sí, empezar de nuevo",
+  "All progress has been reset. You are starting fresh!": "Se ha reiniciado todo el progreso. ¡Comienzas desde el principio!",
 });
