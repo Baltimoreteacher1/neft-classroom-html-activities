@@ -2,6 +2,15 @@ import { crumbsHTML, setComponentsI18n } from "../components.js";
 import { BASE, esc, html, icon, raw, safeJson, storage } from "../util.js";
 import { i18nFor, makeI18n } from "../i18n.js";
 import { VOCABULARY_ITEMS } from "../content/vocabulary-items.js";
+import {
+  advanceSprint,
+  clockText,
+  closeSprint,
+  recordSprintAnswer,
+  sprintStatus,
+  sprintWordId,
+  startSprint,
+} from "../word-sprint.js";
 
 const KEY = "accessPracticeLab:v1:vocabulary-morphology";
 const day = () => Math.floor(Date.now() / 86400000);
@@ -19,6 +28,28 @@ const taskFor = (items, state) => {
   const idx = Math.max(0, Number(state.cursor || 0)) % pool.length;
   return pool[idx];
 };
+// While a Word Sprint runs, its word is the one on screen; otherwise the normal review order applies.
+const currentItem = (items, state, now) => {
+  if (sprintStatus(state.sprint, now) === "running") return items.find((row) => row.id === sprintWordId(state.sprint));
+  return taskFor(items, state);
+};
+let sprintTick = null;
+// Redraws only the clock each quarter second and re-renders once when time runs out. Stops when the clock leaves the page.
+function watchSprint(ctx, sprint) {
+  clearInterval(sprintTick);
+  if (sprintStatus(sprint, Date.now()) !== "running") return;
+  sprintTick = setInterval(() => {
+    const clock = document.querySelector("[data-vm-clock]");
+    if (!clock) return clearInterval(sprintTick);
+    const left = sprint.deadline - Date.now();
+    if (left <= 0) {
+      clearInterval(sprintTick);
+      ctx.rerender();
+      return;
+    }
+    clock.textContent = clockText(left);
+  }, 250);
+}
 
 // Chrome strings are localized through I (set at the top of render); words, meanings and contexts stay English.
 let I = makeI18n("en");
@@ -54,7 +85,11 @@ export async function render(ctx) {
   const items = VOCABULARY_ITEMS[band];
   const saved = readState();
   const state = saved[band] || {};
-  const item = taskFor(items, state);
+  const now = Date.now();
+  const sprint = state.sprint;
+  const sprintRunning = sprintStatus(sprint, now) === "running";
+  const item = currentItem(items, state, now);
+  watchSprint(ctx, sprint);
   const record = state.items?.[item.id] || {};
   const selected = Array.isArray(record.selected) ? record.selected : [];
   const checked = record.checked === true;
@@ -88,6 +123,7 @@ export async function render(ctx) {
           </div>
           <div class="vm-word-art" aria-hidden="true"><span class="vm-tile">${I.S("prefix", "prefijo")}</span><span class="vm-word-plus">+</span><span class="vm-tile tile-b">${I.S("root", "raíz")}</span><span class="vm-word-plus">+</span><span class="vm-tile tile-c">${I.S("suffix", "sufijo")}</span><span class="vm-art-caption">${I.S("parts → meaning → use", "partes → significado → uso")}</span></div>
         </header>
+        ${sprintBlock(sprint, now, state.sprintBest)}
 
         <section class="vm-workbench d-${item.domain.toLowerCase()}" aria-labelledby="vm-title">
           <div class="vm-progress-row"><span class="lx-pill">${icon(item.domain.toLowerCase())} ${I.T("Word investigation", "Investigación de palabras")}</span><span class="vm-step-detail">${item.focus} · ${item.keyUse} · ${I.T(item.domain, domEs)}</span></div>
@@ -104,14 +140,14 @@ export async function render(ctx) {
                 <div class="vm-target">${I.T("Meaning goal", "Meta de significado")} <span>${item.word.replace(/[a-z]/g, "•")}</span></div>
               </div>
               <fieldset class="vm-parts-field" ${checked ? "disabled" : ""}><legend>${I.T("Choose and arrange the word parts", "Elige y ordena las partes de la palabra")}</legend><div class="vm-parts-grid">${lettered}</div></fieldset>
-              <div class="vm-actions">${checked ? html`<button class="btn btn-primary btn-domain" type="button" data-vm-next>${correct ? I.T("Next word", "Siguiente palabra") : I.T("Try this word again", "Intenta esta palabra otra vez")} ${icon("arrow-right")}</button>` : html`<button class="btn btn-primary btn-domain" type="button" data-vm-check>${I.T("Check my word", "Revisar mi palabra")}</button><button class="btn" type="button" data-vm-clear>${I.T("Clear", "Borrar")}</button>`}</div>
+              <div class="vm-actions">${checked ? html`<button class="btn btn-primary btn-domain" type="button" data-vm-next>${correct || sprintRunning ? I.T("Next word", "Siguiente palabra") : I.T("Try this word again", "Intenta esta palabra otra vez")} ${icon("arrow-right")}</button>` : html`<button class="btn btn-primary btn-domain" type="button" data-vm-check>${I.T("Check my word", "Revisar mi palabra")}</button><button class="btn" type="button" data-vm-clear>${I.T("Clear", "Borrar")}</button>`}</div>
             </div>
           </div>
           ${
             checked
               ? correct
                 ? html`<div class="feedback is-right" role="status"><p class="fb-title">${icon("check")} ${I.T("That combination works.", "Esa combinación funciona.")}</p><p>${TH(`${esc(item.parts.join(" + "))} builds <strong>${esc(item.word)}</strong>. ${esc(meansEn)}. In this sentence, the word helps the reader understand the idea precisely.`, `${esc(item.parts.join(" + "))} forma <strong>${esc(item.word)}</strong>. ${esc(meansEs)}. En esta oración, la palabra ayuda al lector a entender la idea con precisión.`)}</p><p><b>${I.T(`Use it in ${item.domain}:`, `Úsala ${DOM_AL[item.domain]}:`)}</b> ${transferPrompt(item)}</p></div>`
-                : html`<div class="feedback is-hint" role="status"><p class="fb-title">${icon("bulb")} ${I.T("Check how each part changes the meaning.", "Observa cómo cada parte cambia el significado.")}</p><p>${I.T(`${quotedEn}. Try again by choosing only parts that create the target meaning. One mistake is useful information; it does not define your language ability.`, `${quotedEs}. Inténtalo de nuevo eligiendo solo las partes que crean el significado meta. Un error es información útil; no define tu capacidad con el idioma.`)}</p></div>`
+                : sprintRunning ? sprintMissFeedback(item, quotedEn, quotedEs) : html`<div class="feedback is-hint" role="status"><p class="fb-title">${icon("bulb")} ${I.T("Check how each part changes the meaning.", "Observa cómo cada parte cambia el significado.")}</p><p>${I.T(`${quotedEn}. Try again by choosing only parts that create the target meaning. One mistake is useful information; it does not define your language ability.`, `${quotedEs}. Inténtalo de nuevo eligiendo solo las partes que crean el significado meta. Un error es información útil; no define tu capacidad con el idioma.`)}</p></div>`
               : ""
           }
         </section>
@@ -121,6 +157,39 @@ export async function render(ctx) {
         <p class="vm-note">${I.T("This activity gives feedback on a specific word-building task. It does not estimate an ACCESS result or a WIDA proficiency level.", "Esta actividad da comentarios sobre una tarea específica de formar palabras. No estima un resultado de ACCESS ni un nivel de dominio de WIDA.")}</p>
       </div>`
   };
+}
+
+function sprintBlock(sprint, now, savedBest) {
+  const status = sprintStatus(sprint, now);
+  if (status === "running") {
+    return html`<section class="vm-sprint is-running" aria-label="${I.S("Word Sprint in progress", "Sprint de palabras en curso")}">
+      <p class="vm-sprint-line"><span class="vm-sprint-clock" data-vm-clock>${clockText(sprint.deadline - now)}</span> <b>${sprint.correct}</b> ${I.T("correct", "correctas")} · ${I.T(`${sprint.answered} answered`, `${sprint.answered} respondidas`)}</p>
+    </section>`;
+  }
+  const best = Math.max(savedBest || 0, status === "over" ? sprint.correct : 0);
+  const bestLine = best
+    ? I.T(`Your best on this device: ${best} correct in one sprint.`, `Tu mejor resultado en este dispositivo: ${best} correctas en un sprint.`)
+    : I.T("Your best score stays on this device.", "Tu mejor resultado se queda en este dispositivo.");
+  if (status === "over") {
+    return html`<section class="vm-sprint is-over" role="status" aria-labelledby="vm-sprint-title">
+      <h2 id="vm-sprint-title">${I.T("Time is up", "Se acabó el tiempo")}</h2>
+      <p>${I.T(`You built ${sprint.correct} of ${sprint.answered} words correctly in 60 seconds.`, `Formaste ${sprint.correct} de ${sprint.answered} palabras correctamente en 60 segundos.`)}</p>
+      <p class="fine">${bestLine}</p>
+      <div class="vm-actions"><button class="btn btn-primary btn-domain" type="button" data-vm-sprint-start>${I.T("Play again", "Jugar otra vez")} ${icon("arrow-right")}</button><button class="btn" type="button" data-vm-sprint-finish>${I.T("Done", "Listo")}</button></div>
+    </section>`;
+  }
+  return html`<section class="vm-sprint" aria-labelledby="vm-sprint-title">
+    <div>
+      <h2 id="vm-sprint-title">${I.T("Word Sprint", "Sprint de palabras")}</h2>
+      <p>${I.T("Build as many words as you can in 60 seconds. One try per word; a miss returns tomorrow. The timer keeps running if you leave this page.", "Forma tantas palabras como puedas en 60 segundos. Una oportunidad por palabra; un error vuelve mañana. El cronómetro sigue si sales de esta página.")}</p>
+      <p class="fine">${bestLine}</p>
+    </div>
+    <button class="btn btn-primary btn-domain" type="button" data-vm-sprint-start>${I.T("Start Word Sprint", "Empezar el sprint")} ${icon("arrow-right")}</button>
+  </section>`;
+}
+
+function sprintMissFeedback(item, quotedEn, quotedEs) {
+  return html`<div class="feedback is-hint" role="status"><p class="fb-title">${icon("bulb")} ${I.T("Not this one. Here is the answer.", "Esta no. Aquí está la respuesta.")}</p><p>${I.T(`The word is “${item.word}”. ${quotedEn}.`, `La palabra es “${item.word}”. ${quotedEs}.`)}</p></div>`;
 }
 
 function transferPrompt(item) {
@@ -141,9 +210,11 @@ export function onClick(event, ctx) {
   const band = bandKey(ctx.band);
   const items = VOCABULARY_ITEMS[band];
   const saved = readState();
-  const state = saved[band] || { cursor: 0, items: {} };
+  let state = saved[band] || { cursor: 0, items: {} };
   state.items ||= {};
-  const item = taskFor(items, state);
+  const now = Date.now();
+  const sprintRunning = sprintStatus(state.sprint, now) === "running";
+  const item = currentItem(items, state, now);
   const rec = state.items[item.id] || { selected: [] };
   if (button.hasAttribute("data-vm-part") && !rec.checked) {
     const part = button.dataset.vmPart;
@@ -166,15 +237,25 @@ export function onClick(event, ctx) {
     rec.due = day() + (correct ? (rec.streak === 1 ? 3 : 7) : 1);
     state.items[item.id] = rec;
     state.current = item.id;
+    if (sprintRunning) state.sprint = recordSprintAnswer(state.sprint, correct);
   } else if (button.hasAttribute("data-vm-next")) {
     // Leave the word ready for its next retrieval, then move on (a miss is offered again right away).
     const retry = rec.correct !== true;
     state.items[item.id] = { ...rec, selected: [], checked: false, correct: false };
-    if (retry) state.current = item.id;
+    if (sprintRunning) {
+      delete state.current;
+      state.sprint = advanceSprint(state.sprint);
+    } else if (retry) state.current = item.id;
     else {
       delete state.current;
       state.cursor = ((state.cursor || 0) + 1) % items.length;
     }
+  } else if (button.hasAttribute("data-vm-sprint-start")) {
+    state = closeSprint(state);
+    delete state.current;
+    state.sprint = startSprint(items, now);
+  } else if (button.hasAttribute("data-vm-sprint-finish")) {
+    state = closeSprint(state);
   } else if (button.hasAttribute("data-vm-hint")) {
     const panel = document.querySelector("[data-vm-hint-panel]");
     const open = button.getAttribute("aria-expanded") !== "true";

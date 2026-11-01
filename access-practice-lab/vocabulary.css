@@ -551,3 +551,52 @@
   padding: 0;
   list-style: none;
 }
+
+/* Word Sprint: a timed round over the same words. Results stay on this device. */
+.vm-sprint {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-3);
+  margin: 0 0 var(--s-4);
+  padding: clamp(1rem, 2.2vw, 1.35rem);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+}
+.vm-sprint h2 {
+  margin: 0 0 var(--s-2);
+  font-size: 1.3rem;
+}
+.vm-sprint p {
+  margin: 0 0 var(--s-2);
+  color: var(--ink-2);
+}
+.vm-sprint.is-running {
+  justify-content: flex-start;
+  padding-block: var(--s-3);
+}
+.vm-sprint-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--s-2) var(--s-3);
+  margin: 0;
+  color: var(--ink);
+}
+.vm-sprint-clock {
+  min-width: 3.5ch;
+  font-size: 1.6rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+}
+.vm-sprint.is-over {
+  display: block;
+}
+@media (max-width: 480px) {
+  .vm-sprint .btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
