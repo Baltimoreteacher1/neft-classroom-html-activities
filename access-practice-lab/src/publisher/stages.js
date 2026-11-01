@@ -55,6 +55,7 @@ export function listenStage(J, s, I, mode) {
   return html`<section aria-labelledby="pd-h"><h2 id="pd-h">${I.T("Listening", "Escuchar")}: ${L.title}</h2>${badge(I, mode)}
     <p>${L.context}</p><p><strong>${I.T("Your purpose:", "Tu propósito:")}</strong> ${L.purpose}</p>
     ${limited ? html`<p class="fine">${I.T("Test-like conditions: you can play the recording twice. Take notes while you listen.", "Condiciones tipo prueba: puedes reproducir la grabación dos veces. Toma notas mientras escuchas.")}</p>` : ""}
+    ${L.audio ? html`<p class="fine">${icon("info")} ${I.T(L.audio.label, L.audio.labelEs)}</p>` : ""}
     ${listenPlayerHTML("pd-listen", L.script, limited ? { maxPlays: L.maxPlays, played: Math.min(played, L.maxPlays), i18n: I, test: true } : { i18n: I })}
     ${mode === "supported" && played ? html`<div class="speed" role="group" aria-label="${I.S("Replay one part", "Repite una parte")}">${L.script.map((_, i) => html`<button type="button" class="speed-btn" data-pd-part="${i}">${icon("play")} ${I.T("Part", "Parte")} ${i + 1}</button>`)}</div>` : ""}
     <fieldset class="pd-notes"><legend>${I.T("My listening notes", "Mis notas de escucha")}</legend>${L.noteFields.map((f) => html`<label class="field"><span>${f}</span><textarea rows="2" data-pd-note="${f}">${s.listen.notes[f] || ""}</textarea></label>`)}</fieldset>
@@ -77,6 +78,7 @@ export function readStage(J, s, I, mode) {
     <article class="passage pd-passage" aria-label="${R.title}">${passageHTML(R, s, I, mode, true)}</article>
     <p class="fine">${I.T("To answer the evidence question, select the sentence that proves it. Selecting a sentence pins it.", "Para la pregunta de evidencia, selecciona la oración que lo demuestra. Al seleccionarla, queda fijada.")}</p>
     <table class="pd-table"><caption>${R.table.caption}</caption><thead><tr>${R.table.head.map((h) => html`<th scope="col">${h}</th>`)}</tr></thead><tbody>${R.table.rows.map((r) => html`<tr><th scope="row">${r[0]}</th>${r.slice(1).map((c) => html`<td>${c}</td>`)}</tr>`)}</tbody></table>
+    <figure class="pd-figure"><img src="${R.chart.src}" alt="${R.chart.alt}" width="720" height="360"><figcaption>${R.chart.caption}</figcaption></figure>
     <aside class="pd-pair panel" aria-label="${R.pair.title}"><h3>${R.pair.title}</h3><p>${R.pair.text}</p></aside>
     ${mode === "supported" ? vocabHTML(J, I) : ""}
     ${R.tasks.map((t) => taskBlock({ domain: "read", task: t, s, I, mode, reveal: done, body: (a, locked) => t.type === "evidence"
@@ -129,6 +131,7 @@ export function writeStage(J, s, I, mode) {
   const cmp = w.draft2.trim() && w.draft1.trim() ? compareDrafts(w.draft1, w.draft2, opts) : null;
   return html`<section aria-labelledby="pd-h"><h2 id="pd-h">${I.T("Writing", "Escribir")}: ${W.title}</h2>${badge(I, mode)}
     <p class="prompt-text">${W.prompt}</p>
+    ${mode === "supported" ? html`<figure class="pd-figure"><img src="${W.supportVisual.src}" alt="${W.supportVisual.alt}" width="720" height="360"><figcaption>${W.supportVisual.caption}</figcaption></figure>` : ""}
     ${mode === "supported" ? html`<section><h3>${I.T("Sentence frames", "Marcos de oraciones")}</h3><ul>${W.frames.map((f) => html`<li>${f}</li>`)}</ul><p class="fine">${I.T("Word bank:", "Banco de palabras:")} ${W.wordBank.join(", ")}</p></section>${vocabHTML(J, I)}` : ""}
     <label class="field"><span><strong>${I.T("First draft", "Primer borrador")}</strong></span><textarea rows="7" data-pd-draft="1" ${w.gotFeedback ? raw("readonly") : ""}>${w.draft1}</textarea></label>
     ${w.gotFeedback ? "" : html`<button type="button" class="btn btn-primary" data-pd-feedback ${w.draft1.trim().split(/\s+/).filter(Boolean).length >= 5 ? "" : raw("disabled")}>${I.T("Get feedback on my draft", "Obtener comentarios sobre mi borrador")}</button><p class="fine">${I.T("Feedback is rule-based, runs on this device, and points to your own words. It does not grade you and may miss things.", "Los comentarios se basan en reglas, se calculan en este dispositivo y señalan tus propias palabras. No te califican y pueden pasar cosas por alto.")}</p>`}

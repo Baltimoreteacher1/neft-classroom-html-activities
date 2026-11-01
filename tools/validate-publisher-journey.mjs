@@ -2,7 +2,7 @@
 import { strict as assert } from "node:assert";
 // Publisher journey gate: content contract, WIDA ids against the lab's own alignment index, honest claims,
 // inventory proof files exist, and the supported/independent evidence logic.
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -32,6 +32,20 @@ const visible = JSON.stringify([
     ...(t.items || []).map((i) => i.text),
   ]),
 ]);
+// Recorded audio: one file per script part, on disk, and honestly labelled as a computer voice.
+{
+  const a = J.listening.audio;
+  if (!a || a.voice !== "synthetic") fail("listening.audio must declare voice: synthetic");
+  else {
+    if (a.files.length !== J.listening.script.length)
+      fail("listening.audio needs one file per script part");
+    for (const f of a.files)
+      if (!existsSync(join(lab, f)) || statSync(join(lab, f)).size < 5000)
+        fail(`listening audio missing or empty: ${f}`);
+    if (!/computer-generated/i.test(a.label) || !/generada por computadora/i.test(a.labelEs))
+      fail("listening audio label must say the voice is computer-generated (EN and ES)");
+  }
+}
 for (const line of J.listening.script)
   for (const sentence of line.split(/(?<=\.)\s+/))
     if (sentence.length > 40 && visible.includes(sentence))
@@ -83,8 +97,20 @@ for (const r of E.roadmap)
   if (/verified|shipped|done/i.test(r.status)) fail(`roadmap item marked ${r.status}`);
 
 // Visual: diagram has title/desc and the journey alt text is substantive.
-const svg = readFileSync(join(lab, "pictures/publisher/rain-garden.svg"), "utf8");
-if (!/<title/.test(svg) || !/<desc/.test(svg)) fail("diagram missing title/desc");
+for (const f of readdirSync(join(lab, "pictures/publisher")).filter((n) => n.endsWith(".svg"))) {
+  const svg = readFileSync(join(lab, "pictures/publisher", f), "utf8");
+  if (!/<title/.test(svg) || !/<desc/.test(svg)) fail(`diagram missing title/desc: ${f}`);
+  if (/<script|href="http|url\(http/.test(svg)) fail(`diagram must be self-contained: ${f}`);
+  if (statSync(join(lab, "pictures/publisher", f)).size > 24000) fail(`diagram over 24 KB: ${f}`);
+}
+for (const v of [J.reading.visual, J.reading.chart, J.writing.supportVisual]) {
+  if (!existsSync(join(lab, v.src.replace("/access-practice-lab/", ""))))
+    fail(`picture missing: ${v.src}`);
+  if (!v.alt || v.alt.length < 40) fail(`picture needs real alt text: ${v.src}`);
+}
+const chartNums = [...J.reading.table.rows.flatMap((r) => r.slice(1))];
+for (const n of chartNums)
+  if (!J.reading.chart.alt.includes(n)) fail(`chart alt text omits table value ${n}`);
 if (J.reading.visual.alt.length < 80) fail("alt text too short for an instructional diagram");
 
 // Evidence logic: supported never reads as independent; first attempt stays first.

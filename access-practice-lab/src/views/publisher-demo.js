@@ -5,8 +5,8 @@ import { loadPublisherEvidence, loadPublisherJourney } from "../content.js";
 import { i18nFor } from "../i18n.js";
 import { takesFor } from "../recorder.js";
 import { summarizeEnvelope } from "../lang/audio.js";
-import { speak } from "../speech.js";
-import { announce, safeJson, storage } from "../util.js";
+import { playRecording, speak } from "../speech.js";
+import { announce, BASE, safeJson, storage } from "../util.js";
 import { html } from "../util.js";
 import { defaultOrder, freshState, isCorrect, normalize, recordResult, STORE_KEY, stageOf } from "../publisher/evidence.js";
 import { evidenceHTML, familyHTML, overviewHTML, publishersHTML, stepperHTML } from "../publisher/panels.js";
@@ -45,6 +45,9 @@ export async function render(ctx) {
   return { title: J.title, html: html`<div class="pd-wrap domain-journey">${nav}${modeNote}${body()}<p class="fine pd-fine">${J.unofficial}</p></div>` };
 }
 
+const recordingUrls = () => (J?.listening?.audio?.files || []).map((f) => `${BASE}/${f}`);
+export const recordingFor = (key) => (key === "pd-listen" ? recordingUrls() : null);
+
 export const canListen = (key) => key !== "pd-listen" || s.mode === "supported" || s.listen.plays < J.listening.maxPlays;
 export function onListen(key) {
   if (key !== "pd-listen") return;
@@ -65,6 +68,13 @@ export function onRecorded(key) {
   s.speak.measures.push({ ...m, segments: undefined });
   mark("speak");
   save();
+}
+
+async function replayPart(i) {
+  const url = recordingUrls()[i];
+  const rate = ctxRef.prefs.rate;
+  if (url && (await playRecording(url, { rate })) !== "failed") return;
+  speak(J.listening.script[i], { rate });
 }
 
 function check(domain, id) {
@@ -94,7 +104,7 @@ export function onClick(e) {
     if (d === "read" && taskOf(d, id).type === "evidence") s.read.pinned = "";
     save();
   } else if ((el = q("[data-pd-pin]"))) { s.read.pinned = el.dataset.pdPin; save(); announce("Sentence pinned.");
-  } else if ((el = q("[data-pd-part]"))) { speak(J.listening.script[Number(el.dataset.pdPart)], { rate: ctxRef.prefs.rate }); return true;
+  } else if ((el = q("[data-pd-part]"))) { replayPart(Number(el.dataset.pdPart)); return true;
   } else if (q("[data-pd-feedback]")) { s.write.gotFeedback = true; mark("write"); save();
   } else if (q("[data-pd-print]")) { window.print(); return true;
   } else if (q("[data-pd-reset]")) {

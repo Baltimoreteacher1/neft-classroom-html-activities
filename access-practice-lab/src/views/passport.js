@@ -15,7 +15,8 @@ import { buildShare, encodeShare } from "../lang/share.js";
 import { loadLedger } from "../lang/ledger.js";
 import { loadStudio } from "../lang/studio.js";
 import { downloadText } from "../studio-ui.js";
-import { bandDomains, bandRows } from "../content.js";
+import { bandDomains, bandRows, loadPublisherJourney } from "../content.js";
+import { journeyCardHTML } from "../publisher/passport-card.js";
 import { getEngagement, saveEngagement } from "../engagement.js";
 import {
   clearAll,
@@ -512,6 +513,7 @@ export async function render(ctx) {
         row.result.practiced !== false,
     )
     .sort((a, b) => b.result.date.localeCompare(a.result.date));
+  const journey = await loadPublisherJourney().catch(() => null);
   const days = practiceDays();
   const streak = weekStreak(days);
   const engagement = getEngagement(ctx.prefs);
@@ -614,6 +616,7 @@ export async function render(ctx) {
           </section>
           <div class="pass-side">
             ${calendarHTML(days)} ${continueHTML(saved, band)}
+            ${journeyCardHTML(journey, I)}
             ${howIWorkHTML(I, { entries: mine, records: saved })}
             <section class="pass-card" aria-labelledby="passRevise">
               <h2 id="passRevise">

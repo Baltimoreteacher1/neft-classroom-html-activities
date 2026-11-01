@@ -1437,3 +1437,14 @@ label:has(input:checked),
     padding-inline: 0.3rem;
   }
 }
+
+/* WebKit counted a <select>'s unclipped option text as page width, which widened /launch and /classroom past
+   a 375px screen. Let fields shrink and clip the text with an ellipsis. */
+.field {
+  min-width: 0;
+}
+select {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

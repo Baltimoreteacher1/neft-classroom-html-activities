@@ -9,7 +9,7 @@
 import { micDeniedMessage, notePlay, scripts, setComponentsI18n } from "./components.js";
 import { availableBands, loadIndex } from "./content.js";
 import * as rec from "./recorder.js";
-import { stop as stopSpeech, speak } from "./speech.js";
+import { playRecording, stop as stopSpeech, speak } from "./speech.js";
 import { getPrefs, setPrefs } from "./store.js";
 import { setStudioI18n as setEvidenceUiI18n } from "./evidence-ui.js";
 import { LANG_MODES, i18nFor } from "./i18n.js";
@@ -318,7 +318,9 @@ async function common(e) {
     player?.classList.add("is-playing");
     notePlay(key);
     app.view?.onListen?.(key);
-    const done = await speak(scripts.get(key) || [], { rate: app.prefs.rate });
+    const recorded = app.view?.recordingFor?.(key);
+    let done = recorded ? await playRecording(recorded, { rate: app.prefs.rate }) : "failed";
+    if (done === "failed") done = await speak(scripts.get(key) || [], { rate: app.prefs.rate });
     player?.classList.remove("is-playing");
     if (done && app.location === startedAt) render({ keepFocus: true });
     return true;

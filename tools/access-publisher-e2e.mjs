@@ -10,10 +10,11 @@ import http from "node:http";
 import { extname, join } from "node:path";
 import { REPO_ROOT } from "./lib/access-lab-content.mjs";
 
-let chromium;
+let engine;
+const ENGINE = process.env.E2E_BROWSER || "chromium";
 let AxeBuilder;
 try {
-  ({ chromium } = await import("playwright"));
+  engine = (await import("playwright"))[ENGINE];
 } catch {
   console.warn("access-publisher-e2e: SKIP — playwright missing");
   process.exit(process.env.CI ? 1 : 0);
@@ -29,6 +30,7 @@ const TYPES = {
   ".css": "text/css",
   ".json": "application/json",
   ".svg": "image/svg+xml",
+  ".mp3": "audio/mpeg",
 };
 const server = await new Promise((r) => {
   const s = http.createServer((req, res) => {
@@ -55,9 +57,18 @@ const ok = (c, m) => {
 };
 let browser;
 try {
-  browser = await chromium.launch({
-    args: ["--use-fake-device-for-media-stream", "--use-fake-ui-for-media-stream"],
-  });
+  browser = await engine.launch(
+    ENGINE === "chromium"
+      ? { args: ["--use-fake-device-for-media-stream", "--use-fake-ui-for-media-stream"] }
+      : ENGINE === "firefox"
+        ? {
+            firefoxUserPrefs: {
+              "media.navigator.streams.fake": true,
+              "media.navigator.permission.disabled": true,
+            },
+          }
+        : {},
+  );
 } catch (e) {
   console.warn(`access-publisher-e2e: SKIP — no browser (${e.message.split("\n")[0]})`);
   server.close();
@@ -71,24 +82,43 @@ const J = JSON.parse(
   ),
 );
 const problems = [];
-const noise = /web-vitals|Failed to load resource|ERR_ABORTED|speechSynthesis/i;
+const noise = /web-vitals|Failed to load resource|ERR_ABORTED|speechSynthesis|downloadable font/i;
 async function fresh(opts = {}) {
   const ctx = await browser.newContext({
     viewport: { width: 1200, height: 900 },
-    permissions: opts.deny ? [] : ["microphone"],
+    permissions: opts.deny || ENGINE === "firefox" ? [] : ["microphone"],
   });
   const page = await ctx.newPage();
   await page.addInitScript(() => {
     // deterministic speech: count utterances, finish immediately
     const spoken = (window.__spoken = []);
-    window.speechSynthesis.speak = (u) => {
-      spoken.push(u.text);
+    const played = (window.__played = []);
+    // Recordings: count each file started and finish at once, so play limits and replays are deterministic.
+    HTMLMediaElement.prototype.play = function play() {
+      played.push(this.src);
       setTimeout(() => {
-        u.onend?.({});
-        u.dispatchEvent(new Event("end"));
+        this.dispatchEvent(new Event("playing"));
+        this.dispatchEvent(new Event("ended"));
       }, 5);
+      return Promise.resolve();
     };
-    window.speechSynthesis.getVoices = () => [];
+    const fake = {
+      speak: (u) => {
+        spoken.push(u.text);
+        setTimeout(() => {
+          u.onend?.({});
+          u.dispatchEvent(new Event("end"));
+        }, 5);
+      },
+      getVoices: () => [],
+    };
+    // Patch the prototype: WebKit hands out a fresh speechSynthesis wrapper, so instance patches are lost.
+    for (const [k, v] of Object.entries(fake))
+      Object.defineProperty(SpeechSynthesis.prototype, k, {
+        value: v,
+        configurable: true,
+        writable: true,
+      });
   });
   page.on("pageerror", (e) => !noise.test(e.message) && problems.push(e.message));
   page.on(
@@ -174,8 +204,18 @@ const text = (page) => page.locator("#app").innerText();
   await page.locator("[data-listen='pd-listen']").click();
   await page.waitForSelector("[data-pd-part]");
   ok(true, "supported mode offers replay by part after the first play");
+  await page.waitForFunction(() => window.__played.length >= 4);
   await page.locator("[data-pd-part='2']").click();
-  ok((await page.evaluate(() => window.__spoken.length)) >= 2, "replay by part speaks that part");
+  ok(
+    (await page.evaluate(
+      () => window.__played.filter((u) => /rain-garden-2\.mp3/.test(u)).length,
+    )) >= 2,
+    "replay by part plays that recorded part",
+  );
+  ok(
+    (await page.evaluate(() => window.__spoken.length)) === 0,
+    "recorded audio is used instead of speech",
+  );
   await page.locator("fieldset.pd-order li").first().waitFor();
   // move to correct order: default d,c,b,a → b,c,a,d
   const order = async () => page.locator("fieldset.pd-order li span").allInnerTexts();
@@ -238,6 +278,16 @@ const text = (page) => page.locator("#app").innerText();
     await page.locator(`[data-pd-speakcheck='${c}']`).check();
   // Writing: draft → feedback → revise → compare
   await go(page, "/write");
+  ok(
+    (await page.locator("img[src*='rain-garden-steps']").count()) === 1,
+    "supported writing shows the steps picture",
+  );
+  await page.locator("[data-pd-mode='independent']").first().check();
+  ok(
+    (await page.locator("img[src*='rain-garden-steps']").count()) === 0,
+    "independent writing shows no support picture",
+  );
+  await page.locator("[data-pd-mode='supported']").first().check();
   await page.locator("[data-pd-draft='1']").fill(J.writing.firstDraftExample);
   await page.locator("[data-pd-feedback]").click();
   await page.waitForSelector("#pd-fb");
@@ -273,6 +323,13 @@ const text = (page) => page.locator("#app").innerText();
   // reload persistence
   await page.reload({ waitUntil: "networkidle" });
   ok(/I added evidence/.test(await text(page)), "work persists across reload");
+  await page.goto(`${origin}/access-practice-lab/passport`, { waitUntil: "networkidle" });
+  await page.waitForSelector("#app h1, #app h2");
+  const passport = await text(page);
+  ok(
+    /Connected journey/.test(passport) && /Writing: \d+ draft/.test(passport),
+    "Passport shows the journey with its stage",
+  );
   // accessibility
   if (AxeBuilder)
     for (const path of [
