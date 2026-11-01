@@ -84,6 +84,18 @@ Guided steps (Learn it, the step player, live help, and "Work it with me" in pra
 
 The picture beside the steps follows the active step (`step-model-link.js`, pinned by `tools/fluency-step-model-link.test.mjs`). In the area model, the split step marks the split, each partial-product step lights its own part with a "Step n of N" tag, finished parts get a check, and the adding step lights the total with arrows up from the parts. Tapping any step shows it in the picture. Other pictures are left alone.
 
+## Step lens: highlighted, tappable explanations
+
+Every worked explanation (Learn it, "Work it with me" in guided practice, and the step player in miss feedback and live help) runs through one layer, `step-lens.js` (styles in `step-lens.css`, tests in `tools/fluency-step-lens.test.mjs`). It only decorates text a surface has already shown, so the answer-free rules (`peekCap`, "Your turn" boxes) are untouched, and it never rewrites text.
+
+- **Highlighted parts**: numbers from the problem (blue, solid underline), numbers made along the way (amber, dotted underline) and moves (coral: the action word a step opens with, and + − × ÷ =). Colour is never the only cue, and every chip has a spoken label.
+- **Tap to trace**: tapping a number says where it came from (the problem, or "made in step 2", with a button that jumps there) and lights the same number in the problem line, the picture and every other step. Tapping a move says what it means. Arrow keys walk the chips; one chip per list is a tab stop.
+- **Show me**: All, Numbers or Moves dims the other kind, so a learner can read what is being DONE apart from what it is being done WITH. The choice is kept on the device.
+- **Path and Play**: a dot per open step jumps between steps (the picture follows, as when a step is tapped); Play walks them one by one (hidden under reduced motion).
+- **Predict the next move**: an optional toggle. "Next step" first asks which move comes next, with the right move among three. Only the move's NAME is ever stamped on the button (`data-next-move`, from `step-moves.js`), never a number or result; a wrong guess is not recorded and the step opens either way.
+
+`tools/fluency-step-lens.test.mjs` sweeps 576 generated problems across all 96 skills: the text is unchanged, no hidden step or result reaches the page, a second pass changes nothing, the right move is always among the three choices, and every move name has Spanish.
+
 ## Kindergarten to Grade 3 explanations
 
 Young learners get their own wording (`kid-steps.js`, applied in `problem-bank.js` before the older step writers): short sentences, no vocabulary words (addend, digit, quotient, interval, regroup), one idea per step, and number sentences wherever a picture can be drawn. `kid-learn.js` holds the "big idea" and "watch out" lines for every K-3 skill, in English and Español, from one table. Step pictures include a ten-frame ("Picture 10 boxes. 5 are full."), split bars ("Split 7 into 5 and 2."), tens-and-ones blocks, place-name boxes, and tens blocks for comparing numbers. A builder returns null for a shape it does not know and the skill's own steps stay. `tools/fluency-kid-steps.test.mjs` checks every K-3 draw for jargon, sentence length, true arithmetic, step count and answer-only-on-the-last-step.

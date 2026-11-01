@@ -42,6 +42,8 @@ import { renderNumberTalkBoard } from "./number-talk-board.js";
 import { mountWriting } from "./writing-studio.js";
 import { fractionPicture } from "./fraction-picture.js";
 import { initStepModelLink } from "./step-model-link.js";
+import { initStepLens } from "./step-lens.js";
+import { nextMoveOf } from "./step-moves.js";
 import { renderPrerequisiteMap } from "./prerequisite-map.js";
 import { mountDashboard } from "./journey-4.js"; // fl4:dashboard
 import { skillSignals } from "./recommendation-engine.js"; // fl4:dashboard
@@ -6673,6 +6675,7 @@ function renderGuidedCoach() {
     .join("");
   els.guidedStepCount.textContent = `${state.guidedStepsShown} of ${steps.length} steps open`;
   els.guidedNextStep.hidden = state.guidedStepsShown >= steps.length;
+  els.guidedNextStep.dataset.nextMove = nextMoveOf(allCopies, state.guidedStepsShown);
   els.guidedNextStep.disabled = stepWaiting(steps.map((entry) => entry.copy), state.guidedStepsShown, `coach:${state.item.question}`);
 }
 
@@ -10204,6 +10207,7 @@ if (document.readyState === "loading") {
   registerSharedSaveResume();
 }
 initStepModelLink([els.learnPanel, document.querySelector("#drill-panel")]);
+initStepLens();
 const initialSkill = initialParams.get("skill");
 if (initialSkill && initialParams.get("view") !== "write") openSkill(initialSkill);
 if (initialSkill && state.skill && miniLessonRequested(initialParams.toString())) openMiniLesson(); // fl4:lessons

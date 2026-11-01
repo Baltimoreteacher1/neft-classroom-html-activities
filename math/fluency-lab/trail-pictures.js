@@ -12,6 +12,7 @@ import { t } from "./i18n.js";
 import { columnSpec, verticalHtml } from "./vertical-columns.js";
 import { fillKey, isSolved, peekFill, register, splitFill, tryFill } from "./step-fill.js";
 import { whyFor } from "./step-whys.js";
+import { nextMoveOf } from "./step-moves.js";
 // Static, student-facing pictures for the Fact Trail. Each one is drawn from the problem's own
 // model data (built in problem-bank.js), so the picture always shows the numbers in the problem.
 const esc = (value) =>
@@ -1004,10 +1005,11 @@ export function stepsBlock(steps, shown, { id, cap = steps.length } = {}) {
     return `<li${i === visible.length - 1 ? ' class="latest"' : ""}><span class="tr-step-num">${i + 1}</span>${text}${same ? "" : html}${whyHtml}</li>`;
   });
   const more = shown < cap;
+  const nextMove = more ? nextMoveOf(steps, visible.length, cap) : "";
   // The next step builds on this one's result, so it waits until the number is typed (two misses also open it).
   const waiting = stepWaiting(steps, visible.length, id);
   return `<ol class="tr-steps" id="${id}">${items.join("")}</ol>
-    ${more ? `<button type="button" class="tr-step-next" data-step="${id}"${waiting ? ' disabled title="' + esc(t("Type the missing number first.")) + '"' : ""}>${t("Next step")}</button>` : ""}`;
+    ${more ? `<button type="button" class="tr-step-next" data-step="${id}"${nextMove ? ` data-next-move="${esc(nextMove)}"` : ""}${waiting ? ' disabled title="' + esc(t("Type the missing number first.")) + '"' : ""}>${t("Next step")}</button>` : ""}`;
 }
 
 // One shared listener: a typed number is checked as it is entered; Enter checks a short or wrong entry.

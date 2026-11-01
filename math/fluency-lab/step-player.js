@@ -57,7 +57,7 @@ function markNumbers(text, numbers) {
   const nodes = [];
   while (walker.nextNode()) nodes.push(walker.currentNode);
   for (const node of nodes) {
-    if (node.parentElement.closest("input, mark, .tr-step-badge")) continue;
+    if (node.parentElement.closest("input, mark, .tr-step-badge, .lens-n")) continue;
     const fragment = node.ownerDocument.createDocumentFragment();
     node.nodeValue.split(LIST_RUN).forEach((chunk, c) => {
       if (c % 2) return void fragment.append(chunk);
