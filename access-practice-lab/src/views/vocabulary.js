@@ -2,6 +2,7 @@ import { crumbsHTML, setComponentsI18n } from "../components.js";
 import { BASE, esc, html, icon, raw, safeJson, storage } from "../util.js";
 import { i18nFor, makeI18n } from "../i18n.js";
 import { VOCABULARY_ITEMS } from "../content/vocabulary-items.js";
+import { clearWeeklyGoal, GOAL_CHOICES, recordWeeklyCorrect, setWeeklyGoal, weeklyProgress } from "../word-goal.js";
 import {
   advanceSprint,
   clockText,
@@ -90,6 +91,7 @@ export async function render(ctx) {
   const sprintRunning = sprintStatus(sprint, now) === "running";
   const item = currentItem(items, state, now);
   watchSprint(ctx, sprint);
+  const weekly = weeklyProgress(state, new Date(now));
   const record = state.items?.[item.id] || {};
   const selected = Array.isArray(record.selected) ? record.selected : [];
   const checked = record.checked === true;
@@ -124,6 +126,7 @@ export async function render(ctx) {
           <div class="vm-word-art" aria-hidden="true"><span class="vm-tile">${I.S("prefix", "prefijo")}</span><span class="vm-word-plus">+</span><span class="vm-tile tile-b">${I.S("root", "raíz")}</span><span class="vm-word-plus">+</span><span class="vm-tile tile-c">${I.S("suffix", "sufijo")}</span><span class="vm-art-caption">${I.S("parts → meaning → use", "partes → significado → uso")}</span></div>
         </header>
         ${sprintBlock(sprint, now, state.sprintBest)}
+        ${goalBlock(weekly)}
 
         <section class="vm-workbench d-${item.domain.toLowerCase()}" aria-labelledby="vm-title">
           <div class="vm-progress-row"><span class="lx-pill">${icon(item.domain.toLowerCase())} ${I.T("Word investigation", "Investigación de palabras")}</span><span class="vm-step-detail">${item.focus} · ${item.keyUse} · ${I.T(item.domain, domEs)}</span></div>
@@ -188,6 +191,26 @@ function sprintBlock(sprint, now, savedBest) {
   </section>`;
 }
 
+function goalBlock(weekly) {
+  if (weekly.goal == null) {
+    return html`<section class="vm-goal" aria-labelledby="vm-goal-title">
+      <h2 id="vm-goal-title">${I.T("This week's word goal", "Meta de palabras de esta semana")}</h2>
+      <p>${I.T("Pick how many words you want to build correctly this week. Your progress stays on this device.", "Elige cuántas palabras quieres formar correctamente esta semana. Tu progreso se queda en este dispositivo.")}</p>
+      <div class="vm-goal-choices">${GOAL_CHOICES.map((n) => html`<button class="btn" type="button" data-vm-goal="${n}">${n} ${I.T("words", "palabras")}</button>`)}</div>
+    </section>`;
+  }
+  const count = Math.min(weekly.count, weekly.goal);
+  const done = weekly.count >= weekly.goal;
+  return html`<section class="vm-goal" aria-labelledby="vm-goal-title">
+    <div>
+      <h2 id="vm-goal-title">${I.T("This week's word goal", "Meta de palabras de esta semana")}</h2>
+      <p><b>${count}</b> ${I.T(`of ${weekly.goal} correct words`, `de ${weekly.goal} palabras correctas`)}${done ? html` · <span>${I.T("Goal reached this week.", "Meta cumplida esta semana.")}</span>` : ""}</p>
+      <progress max="${weekly.goal}" value="${count}" aria-label="${I.S("Words built this week", "Palabras formadas esta semana")}"></progress>
+    </div>
+    <button class="btn" type="button" data-vm-goal-change>${I.T("Change goal", "Cambiar meta")}</button>
+  </section>`;
+}
+
 function sprintMissFeedback(item, quotedEn, quotedEs) {
   return html`<div class="feedback is-hint" role="status"><p class="fb-title">${icon("bulb")} ${I.T("Not this one. Here is the answer.", "Esta no. Aquí está la respuesta.")}</p><p>${I.T(`The word is “${item.word}”. ${quotedEn}.`, `La palabra es “${item.word}”. ${quotedEs}.`)}</p></div>`;
 }
@@ -238,6 +261,7 @@ export function onClick(event, ctx) {
     state.items[item.id] = rec;
     state.current = item.id;
     if (sprintRunning) state.sprint = recordSprintAnswer(state.sprint, correct);
+    if (correct) state = recordWeeklyCorrect(state, new Date(now));
   } else if (button.hasAttribute("data-vm-next")) {
     // Leave the word ready for its next retrieval, then move on (a miss is offered again right away).
     const retry = rec.correct !== true;
@@ -250,6 +274,10 @@ export function onClick(event, ctx) {
       delete state.current;
       state.cursor = ((state.cursor || 0) + 1) % items.length;
     }
+  } else if (button.hasAttribute("data-vm-goal")) {
+    state = setWeeklyGoal(state, Number(button.dataset.vmGoal), new Date(now));
+  } else if (button.hasAttribute("data-vm-goal-change")) {
+    state = clearWeeklyGoal(state);
   } else if (button.hasAttribute("data-vm-sprint-start")) {
     state = closeSprint(state);
     delete state.current;

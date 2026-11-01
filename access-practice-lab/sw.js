@@ -11,7 +11,7 @@
  * The block between the build markers is written by tools/sync-access-shell.mjs; do not edit it by hand.
  */
 /* build:begin */
-const BUILD_HASH = "6f75b13f405d";
+const BUILD_HASH = "002fae1c31d4";
 const PRECACHE_CORE = [
   "/access-practice-lab/library.css?v=159952795a3e",
   "/access-practice-lab/studio.css?v=28d71fd235dd",
@@ -19,7 +19,7 @@ const PRECACHE_CORE = [
   "/access-practice-lab/diagnostic.css?v=9be5c7b346a7",
   "/access-practice-lab/worlds.css?v=f1d3ed0a5626",
   "/access-practice-lab/classroom-studio.css?v=9668bf1c9d32",
-  "/access-practice-lab/vocabulary.css?v=97a99c3e99b5",
+  "/access-practice-lab/vocabulary.css?v=b88a981f54fd",
   "/access-practice-lab/publisher.css?v=67f6dac7bd48",
   "/access-practice-lab/rehearsal.css?v=42b55b2b213a",
   "/access-practice-lab/ds.css?v=35e7287f2016",
@@ -143,10 +143,11 @@ const PRECACHE_CORE = [
   "/access-practice-lab/src/views/test.js?v=c297456902f8",
   "/access-practice-lab/src/views/tests.js?v=748d33f0c35f",
   "/access-practice-lab/src/views/tools.js?v=906833d0a863",
-  "/access-practice-lab/src/views/vocabulary.js?v=984c78fa6fe0",
+  "/access-practice-lab/src/views/vocabulary.js?v=a76d2d36e064",
   "/access-practice-lab/src/views/worlds.js?v=70dcf40edfef",
   "/access-practice-lab/src/views/write.js?v=cafcb3ad0da0",
   "/access-practice-lab/src/waveform.js?v=8805b0eed8a5",
+  "/access-practice-lab/src/word-goal.js?v=ad23f2359efe",
   "/access-practice-lab/src/word-sprint.js?v=0c6d39dc53a1",
 ];
 const PRECACHE_MORE = [
