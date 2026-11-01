@@ -14,13 +14,14 @@ const { ES_WORLDS } = await import("../math/fluency-lab/i18n-es-worlds.js");
 const { ES_LAB4_ANIMATIONS } = await import("../math/fluency-lab/i18n-es-lab4-animations.js");
 const { ES_LAB4_LESSONS } = await import("../math/fluency-lab/i18n-es-lab4-lessons.js");
 const { ES_STUDIO } = await import("../math/fluency-lab/i18n-es-studio.js");
-const { ES_COMPETITOR } = await import("../math/fluency-lab/i18n-es-competitor.js");
+const { ES_COMPETITOR, ES_SHOP_TEAMS } = await import("../math/fluency-lab/i18n-es-competitor.js");
 const ES = {
   ...ES_STUDIO,
   ...ES_BASE,
   ...ES_MODELS,
   ...ES_WORLDS,
   ...ES_COMPETITOR,
+  ...ES_SHOP_TEAMS,
   ...ES_LAB4_ANIMATIONS,
   ...ES_LAB4_LESSONS,
 };
@@ -32,6 +33,7 @@ const { GAMES_BY_ID_NAME } = await import("../math/fluency-lab/game-names.js");
 const { SCENES } = await import("../math/fluency-lab/scenes.js");
 const { PUZZLE_WORLDS, worldLevel } = await import("../math/fluency-lab/puzzle-worlds.js");
 const { ITEMS } = await import("../math/fluency-lab/buddy-items.js");
+const { TEAMS } = await import("../math/fluency-lab/team-relay-game.js");
 const { LEVELS, FUNCTIONS } = await import("../math/fluency-lab/language-frames.js");
 const { MOVE_FN, MOVE_LABELS, STAT_LABELS } = await import("../math/fluency-lab/language-card.js");
 
@@ -152,6 +154,7 @@ for (const key of [
   "Add two numbers whose sum is 10 or less.",
 ])
   keys.add(key);
+for (const team of TEAMS) keys.add(team.name);
 for (const item of ITEMS) {
   keys.add(item.name);
   keys.add(item.hint);

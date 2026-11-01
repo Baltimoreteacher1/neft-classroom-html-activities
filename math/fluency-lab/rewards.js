@@ -1,6 +1,6 @@
 // Sticker book, ranks, practice-day streak, and a small celebration. Local to this learner; nothing is sent anywhere.
 import { TRAILS, factStatus, loadTrail } from "./fact-trail.js";
-import { COLORS, ITEMS, SLOTS } from "./buddy-items.js";
+import { COLORS, ITEMS, SHOP, SHOP_IDS, SLOTS } from "./buddy-items.js";
 import { GAMES_BY_ID_NAME } from "./game-names.js";
 import { t } from "./i18n.js";
 import { chime } from "./sounds.js";
@@ -204,18 +204,25 @@ export function cleanRewards(saved = {}) {
   const best = saved.best || {};
   const strategies = {};
   for (const id of Object.keys(STRATEGIES)) if (num(saved.strategies?.[id])) strategies[id] = num(saved.strategies[id]);
+  const shop = Array.isArray(saved.shop) ? [...new Set(saved.shop.filter((id) => SHOP_IDS.includes(id)))] : [];
+  const earned = num(saved.coins?.earned);
+  const buddy = cleanBuddy(saved.buddy);
+  // A shop item only shows on the buddy when it is owned.
+  for (const slot of SLOTS) if (SHOP_IDS.includes(buddy[slot]) && !shop.includes(buddy[slot])) buddy[slot] = "";
   return {
+    coins: { earned, spent: Math.min(num(saved.coins?.spent), earned) },
+    shop,
     days: Array.isArray(saved.days)
       ? saved.days.filter((day) => /^\d{4}-\d{2}-\d{2}$/.test(day)).slice(-60)
       : [],
     plays: num(saved.plays),
-    best: { mathworldbuilder: num(best.mathworldbuilder), numberpuzzlestudio: num(best.numberpuzzlestudio), fluencyrally: num(best.fluencyrally), numberquest: num(best.numberquest), arrayarchitect: num(best.arrayarchitect), fractionforge: num(best.fractionforge), equationfactory: num(best.equationfactory), fractionbridge: num(best.fractionbridge), balancestation: num(best.balancestation), ratiocity: num(best.ratiocity), tenframefactory: num(best.tenframefactory), divisionharbor: num(best.divisionharbor), decimaldashboards: num(best.decimaldashboards), integerexpedition: num(best.integerexpedition), graphcity: num(best.graphcity), match: num(best.match), hunt: num(best.hunt), sort: num(best.sort), mistake: num(best.mistake), make: num(best.make), family: num(best.family), balance: num(best.balance), picture: num(best.picture), flip: num(best.flip), make24: num(best.make24), challenge: num(best.challenge) },
+    best: { mathworldbuilder: num(best.mathworldbuilder), numberpuzzlestudio: num(best.numberpuzzlestudio), fluencyrally: num(best.fluencyrally), numberquest: num(best.numberquest), arrayarchitect: num(best.arrayarchitect), fractionforge: num(best.fractionforge), equationfactory: num(best.equationfactory), fractionbridge: num(best.fractionbridge), balancestation: num(best.balancestation), ratiocity: num(best.ratiocity), tenframefactory: num(best.tenframefactory), divisionharbor: num(best.divisionharbor), decimaldashboards: num(best.decimaldashboards), integerexpedition: num(best.integerexpedition), graphcity: num(best.graphcity), match: num(best.match), hunt: num(best.hunt), sort: num(best.sort), mistake: num(best.mistake), make: num(best.make), family: num(best.family), balance: num(best.balance), picture: num(best.picture), flip: num(best.flip), make24: num(best.make24), challenge: num(best.challenge), teamrelay: num(best.teamrelay) },
     scenes: Array.isArray(saved.scenes) ? saved.scenes.filter((id) => SCENE_IDS.includes(id)) : [],
     seen: Array.isArray(saved.seen) ? saved.seen.filter((id) => STICKERS.some((sticker) => sticker.id === id)) : [],
     strategies,
     calm: saved.calm === true,
     masteryMode: saved.masteryMode === true,
-    buddy: cleanBuddy(saved.buddy),
+    buddy,
     goal: [2, 3, 4, 5].includes(saved.goal) ? saved.goal : 3,
     retired: num(saved.retired),
     bestStreak: num(saved.bestStreak),
@@ -260,9 +267,23 @@ export function noteToday(data) {
   if (daysThisWeek(data.days) >= data.goal && !data.goalWeeks.includes(week)) data.goalWeeks = [...data.goalWeeks, week].slice(-60);
 }
 
+// Coins: one per star earned in a game, spent in the Buddy shop. Stars reward thinking, never speed.
+export const coinBalance = (data) => data.coins.earned - data.coins.spent;
+
+// Buys a shop item when the learner can afford it and does not own it. Returns the item, or null.
+export function buyItem(data, id) {
+  const item = SHOP.find((entry) => entry.id === id);
+  if (!item || data.shop.includes(id) || coinBalance(data) < item.price) return null;
+  data.shop = [...data.shop, id];
+  data.coins = { ...data.coins, spent: data.coins.spent + item.price };
+  data.buddy = cleanBuddy({ ...data.buddy, [item.slot]: id });
+  return item;
+}
+
 export function recordGame(data, game, stars, scene = null) {
   noteToday(data);
   data.plays += 1;
+  data.coins = { ...data.coins, earned: Math.min(100000, data.coins.earned + Math.max(0, Math.floor(stars))) };
   data.best[game] = Math.max(data.best[game] || 0, stars);
   if (scene && stars >= 1 && !data.scenes.includes(scene)) data.scenes = [...data.scenes, scene];
 }
@@ -293,6 +314,7 @@ export function summarize(trail = loadTrail(), data = loadRewards()) {
     boss: Object.entries(trail.stations).filter(([id, entry]) => id.endsWith(":boss") && entry.stars >= 2).length,
     facts,
     plays: data.plays,
+    shop: data.shop,
     best: data.best,
     scenes: data.scenes.length,
     goalWeeks: data.goalWeeks.length,

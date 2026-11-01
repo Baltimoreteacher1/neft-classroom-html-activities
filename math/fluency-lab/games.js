@@ -9,6 +9,8 @@ import { playMake } from "./make-game.js";
 import { playFamily } from "./family-game.js";
 import { playMake24 } from "./make24-game.js";
 import { playChallenge } from "./challenge-game.js";
+import { playTeamRelay } from "./team-relay-game.js";
+import { shopPanel } from "./buddy-shop.js";
 import { playBalance } from "./balance-game.js";
 import { playFlip } from "./flip-game.js";
 import { buddyPanel, buddySvg, moodFor, reactionFor } from "./buddy.js";
@@ -16,6 +18,7 @@ import { cleanBuddy } from "./rewards.js";
 import { playPicture } from "./picture-game.js";
 import { SCENES, SCENE_IDS } from "./scenes.js";
 import {
+  buyItem,
   celebrate,
   claimNewStickers,
   dailyGame,
@@ -140,6 +143,13 @@ export const GAMES = [
     run: playChallenge,
   },
   {
+    id: "teamrelay",
+    name: "Team Relay",
+    icon: "🤝",
+    blurb: "Teams take turns on one problem each and earn the stars together.",
+    run: playTeamRelay,
+  },
+  {
     id: "family",
     name: "Fact Family Builder",
     icon: "👨‍👩‍👧",
@@ -230,10 +240,18 @@ export function mountGames(container, { grade, autostart = null, assignedStop = 
       <div class="gm-menu">${GAMES.filter((game) => !game.grades || game.grades.includes(grade)).map((game) => `<button type="button" class="gm-game${GAME_ICONS[game.id] ? ` gm-signature gm-${game.id}` : CLASSIC_GAME_ICONS[game.id] ? " gm-classic" : ""}${game.id === dailyGame(Date.now(), grade) ? " today" : ""}" data-game="${game.id}">${game.id === dailyGame(Date.now(), grade) ? `<em class="gm-today">${t("Today’s pick")}</em>` : ""}<span class="gm-icon" aria-hidden="true">${GAME_ICONS[game.id] || CLASSIC_GAME_ICONS[game.id] || esc(game.icon)}</span><b>${t(game.name)}</b><small>${t(game.blurb)}</small>${starRow(rewards.best[game.id] || 0)}</button>`).join("")}</div>
       <p class="gm-goal-progress" id="gm-goal-progress">${t("This week: {a} of {b} days", { a: Math.min(daysThisWeek(rewards.days), rewards.goal), b: rewards.goal })}</p>
       ${buddyPanel(rewards, summary)}
+      ${shopPanel(rewards)}
       <section class="gm-book" aria-labelledby="gm-book-title"><h3 id="gm-book-title">${t("My sticker book")}</h3>${stickerShelf(summary)}</section>`;
     container.onclick = (event) => {
       const button = event.target.closest("[data-game]");
       if (button) return start(button.dataset.game);
+      const buy = event.target.closest("[data-buy]");
+      if (buy) {
+        const data = loadRewards();
+        const item = buyItem(data, buy.dataset.buy);
+        if (item) saveRewards(data);
+        return renderMenu(item ? t("You bought {name}. Your buddy is wearing it!", { name: t(item.name) }) : t("Not enough coins yet. Play a game to earn more."));
+      }
       const swatch = event.target.closest("[data-buddy-color]");
       if (swatch) {
         const data = loadRewards();
@@ -335,6 +353,7 @@ export function mountGames(container, { grade, autostart = null, assignedStop = 
       saveTrail(trail);
     }
     const info = GAMES.find((entry) => entry.id === game);
+    const coinsEarned = Math.max(0, Math.floor(stars));
     if (rewards.masteryMode) {
       stars = Math.max(stars, 3);
       line = `${line} · ${t("Deep Thinker Mode: Solved with persistence & strategy! 🌟")}`;
@@ -348,6 +367,7 @@ export function mountGames(container, { grade, autostart = null, assignedStop = 
         ${rewards.masteryMode ? `<div class="gm-mastery-badge" style="background:#eff6ff; color:#1e40af; border:1.5px solid #bfdbfe; border-radius:8px; padding:6px 12px; margin:8px auto; max-width:400px; font-size:0.9rem"><span>🧠</span> <strong>${t("Deep Thinker Achievement")}</strong>: ${t("Mastery earned through strategy steps, not speed!")}</div>` : ""}
         <h2>${stars === 3 ? t("Amazing!") : stars === 2 ? t("Great game!") : t("Nice work!")}</h2>
         <p class="tr-score">${esc(t(info.name))}: ${esc(line)}</p>
+        ${coinsEarned ? `<p class="gm-coins" role="status"><span aria-hidden="true">🪙</span> ${t("+{n} coins for your Buddy shop", { n: coinsEarned })}</p>` : ""}
         ${languagePromptHtml({ grade, name: TRAILS[grade].focus }, { compact: true, heading: t("Tell someone how you knew") })}
         ${stickerToast(fresh)}
         ${reviewItems.length ? `<section class="gm-review"><h3>${t("Facts to look at again")}</h3><p>${t("Tap “Next step” to work through each one. Try to finish it before the last step.")}</p><div>${reviewItems.map((item, i) => `<article data-review="${i}">${reviewBody(item, `gm-review-${i}`, Math.max(1, peekCap(item)))}</article>`).join("")}</div></section>` : `<p class="tr-perfect">${t("No misses this game.")}</p>`}
