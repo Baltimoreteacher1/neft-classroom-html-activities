@@ -6,6 +6,7 @@ import { BASE, announce, html, icon } from "../util.js";
 const EPISODES = [
   {
     id: "rainy-route", title: "The Rainy Route", goal: "Explain a cause and choose a safe route",
+    keyUse: "Explain", vocabulary: ["forecast", "route", "supervise"], languageFocus: "because / until; compare two group plans",
     scene: "Nia, the Neighborhood Note-taker, is preparing a short update for the school community. An afternoon rainstorm changes the dismissal plan.",
     listen35: "Rain begins at 2:30. Bus riders wait in the gym. Walkers stay with their teacher in the main hall until the rain slows.",
     listen68: "The weather notice predicts rain at 2:30. Bus riders should wait in the gym. Walkers should remain with their teacher in the main hall until the rain slows.",
@@ -21,6 +22,7 @@ const EPISODES = [
   },
   {
     id: "garden-helpers", title: "The Garden Helpers", goal: "Support a claim with evidence",
+    keyUse: "Argue", vocabulary: ["seedling", "measure", "evidence"], languageFocus: "claim + source detail + because",
     scene: "Nia is helping the school garden team decide where to place seedlings and how to explain the choice.",
     listen35: "Plant the new seedlings before the sun is high. Water the shaded beans every other day. Do not water the dry tray; the class is measuring it.",
     listen68: "The garden team should water the new seedlings early. Shaded beans need water every other day. Leave the dry tray untouched because the class is measuring how dry it becomes.",
@@ -36,6 +38,7 @@ const EPISODES = [
   },
   {
     id: "library-cart", title: "The Library Cart", goal: "Retell events in order",
+    keyUse: "Narrate", vocabulary: ["sequence", "handle", "wobble"], languageFocus: "first / next / then; conditional if",
     scene: "Nia is writing a note about a library cart that needs to reach the reading circle before students arrive.",
     listen35: "First, put the picture books on the bottom shelf. Next, check the wheel by the handle. Then roll the cart slowly to the reading circle. Ask for help if the wheel sticks.",
     listen68: "Place the picture books on the lower shelf first. Check the wheel near the handle before moving. Roll the cart slowly to the reading circle, and ask for help if the wheel sticks.",
@@ -67,7 +70,7 @@ export function render(ctx) {
   const frame = band35 ? episode.frame35 : episode.frame68;
   const complete = state.step >= 4;
   return { title: episode.title, html: html`<nav class="crumbs" aria-label="Breadcrumb"><a href="${BASE}/?grades=${ctx.band}">Practice</a> / <a href="${BASE}/worlds?grades=${ctx.band}">Language Worlds</a> / ${episode.title}</nav>
-    <section class="story-hero panel"><p class="eyebrow">Language Worlds · A Neighborhood Notes episode</p><h1 tabindex="-1">${episode.title}</h1><p class="lead">${episode.goal}</p><p><strong>Nia, the Neighborhood Note-taker:</strong> ${episode.scene}</p><p class="fine">Grades ${ctx.band.replace("-", "–")} · Listen, read, decide, then speak or write. No timer.</p></section>
+    <section class="story-hero panel"><p class="eyebrow">Language Worlds · A Neighborhood Notes episode</p><h1 tabindex="-1">${episode.title}</h1><p class="lead">${episode.goal}</p><p><strong>Nia, the Neighborhood Note-taker:</strong> ${episode.scene}</p><p class="fine">Grades ${ctx.band.replace("-", "–")} · Listen, read, decide, then speak or write. No timer.</p><details class="story-learning-goal"><summary>What language will I practice?</summary><p><strong>Language goal:</strong> ${episode.goal} <span>· Key Language Use: ${episode.keyUse}</span></p><p><strong>Words:</strong> ${episode.vocabulary.join(", ")} <span>· Language pattern: ${episode.languageFocus}</span></p><p class="fine">Starting, Growing, and Expanding supports are practice choices, not WIDA proficiency scores. Your written response and self-check stay on this device.</p></details></section>
     <ol class="story-steps" aria-label="Episode progress">${["Listen", "Read", "Decide", "Explain"].map((name, i) => html`<li class="${state.step > i ? "is-done" : state.step === i ? "is-current" : ""}"><span>${i + 1}</span>${name}</li>`)}</ol>
     <div class="story-grid">
       <section class="panel story-task"><h2>1 · Listen</h2><p>Nia asks you to listen for the change and the reason.</p><button type="button" class="btn btn-primary" data-say="${listen}">${icon("volume")} Play the message</button><details><summary>Read the complete transcript</summary><p>${listen}</p></details><p class="fine">Accessible alternative: read the transcript, or ask someone to read it aloud.</p><button type="button" class="btn" data-story-heard>Continue after listening or reading</button></section>

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Browser walk of /access-practice-lab/publisher-demo: independent path (limited plays, no supports, feedback
+ * Browser walk of /access-practice-lab/publisher-demo and Neighborhood Notes stories: independent path (limited plays, no supports, feedback
  * after answers), supported path (frames, replay, transcript after answering, model only after a take),
  * Speaking with a fake microphone and with the microphone denied, Writing feedback → revision → compare,
  * Evidence + next step, publisher page, axe WCAG 2.2 AA, and 375px overflow. SKIP locally without a browser.
@@ -401,6 +401,56 @@ const text = (page) => page.locator("#app").innerText();
       /Self-check|rating sheet/i.test(await text(page)),
     "speaking still offers a partner/teacher route",
   );
+  await ctx.close();
+}
+
+// ── integrated Neighborhood Notes story path ─────────────────────────────────
+{
+  const { ctx, page } = await fresh();
+  await page.goto(`${origin}/access-practice-lab/stories/rainy-route?grades=3-5`, {
+    waitUntil: "networkidle",
+  });
+  await page.waitForSelector("#app h1");
+  ok(/The Rainy Route/.test(await text(page)), "story route opens for Grades 3–5");
+  await page.locator(".story-learning-goal summary").click();
+  ok(/Key Language Use: Explain/.test(await text(page)), "story exposes its Key Language Use");
+  ok(/forecast, route, supervise/.test(await text(page)), "story exposes its target vocabulary");
+  await page.locator("[data-story-heard]").click();
+  await page.locator("[data-story-read]").click();
+  await page.locator('[data-story-choice][value="0"]').check();
+  await page.locator("[data-story-check]").click();
+  ok(
+    /The sources support this choice/.test(await text(page)),
+    "story gives source-based choice feedback",
+  );
+  await page
+    .locator("[data-story-transfer-draft]")
+    .fill(
+      "The walkers stay inside because the rain has stopped, while bus riders wait for the delayed buses.",
+    );
+  await page.locator("[data-story-transfer]").click();
+  await page
+    .locator("[data-story-draft]")
+    .fill(
+      "The walkers stay in the main hall because the announcement says to wait with a teacher until the rain slows.",
+    );
+  await page.locator("[data-story-criteria]").first().check();
+  await page.locator("[data-story-criteria]").nth(1).check();
+  await page.locator("[data-story-criteria]").nth(2).check();
+  await page.locator("[data-story-finish]").click();
+  ok(/Episode finished/.test(await text(page)), "story saves a completed language response");
+  await page.reload({ waitUntil: "networkidle" });
+  ok(/Episode finished/.test(await text(page)), "story completion resumes after reload");
+  if (AxeBuilder) {
+    const res = await new AxeBuilder({ page }).analyze();
+    ok(
+      res.violations.length === 0,
+      `axe clean at /stories/rainy-route ${res.violations.map((v) => `${v.id}(${v.nodes.length})`).join(",")}`,
+    );
+  }
+  await page.setViewportSize({ width: 375, height: 800 });
+  const over = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
+  ok(over <= 1, `story fits mobile width without horizontal scroll (${over}px)`);
   await ctx.close();
 }
 
