@@ -12,6 +12,8 @@ import * as postcards from "../postcards.js";
 import { ACCESS_LAB_FLAGS } from "../lang/feature-flags.js";
 import { exportCodeWithPostcards, importPostcardsFromCode } from "../postcard-code.js";
 import { buildShare, encodeShare } from "../lang/share.js";
+import { loadGames } from "../games/state.js";
+import { GAME } from "../games/registry.js";
 import { loadLedger } from "../lang/ledger.js";
 import { loadStudio } from "../lang/studio.js";
 import { downloadText } from "../studio-ui.js";
@@ -516,6 +518,8 @@ export async function render(ctx) {
   const journey = await loadPublisherJourney().catch(() => null);
   const days = practiceDays();
   const streak = weekStreak(days);
+  const gameHistory = loadGames().history.filter((row) => row.band === band);
+
   const engagement = getEngagement(ctx.prefs);
   const ledger = loadLedger();
   const studio = loadStudio();
@@ -617,6 +621,7 @@ export async function render(ctx) {
           <div class="pass-side">
             ${calendarHTML(days)} ${continueHTML(saved, band)}
             ${journeyCardHTML(journey, I)}
+            <section class="pass-card" aria-labelledby="passGamesTitle"><h2 id="passGamesTitle">${icon("sparkle")} ${I.T("Language games", "Juegos de lenguaje")}</h2><p>${gameHistory.length ? I.T(`${gameHistory.length} game sessions saved on this device.`, `${gameHistory.length} sesiones de juego guardadas en este dispositivo.`) : I.T("Your game sessions will appear here after you play.", "Tus sesiones de juego aparecerán aquí después de jugar.")}</p>${gameHistory.length ? html`<ul class="pass-evlist">${gameHistory.slice(-3).reverse().map((row) => html`<li><strong>${GAME[row.game] ? I.T(GAME[row.game].title[0], GAME[row.game].title[1]) : row.game}</strong><span>${I.T(({A:"Starting",B:"Growing",C:"Expanding"})[row.support] || "Support mode", ({A:"Comenzando",B:"Creciendo",C:"Ampliando"})[row.support] || "Modo de apoyo")}</span></li>`)}</ul>` : ""}<a class="btn small" href="${BASE}/games?grades=${band}">${I.T("Open Language Game Studio", "Abrir el Estudio de juegos de lenguaje")}${icon("arrow-right")}</a></section>
             ${howIWorkHTML(I, { entries: mine, records: saved })}
             <section class="pass-card" aria-labelledby="passRevise">
               <h2 id="passRevise">
@@ -676,7 +681,7 @@ export async function render(ctx) {
         <section class="panel pass-share" aria-labelledby="shareTitle">
           <h2 id="shareTitle">${icon("mail")} ${I.T("Send my work to my teacher", "Enviar mi trabajo a mi docente")}</h2>
           <p>
-            ${I.T("Choose what to share. The code may contain your writing, speaking transcripts, mission and detective results, reading/listening practice results, and postcards you marked “Keep for my teacher.” It has no email, school ID or recordings. Only your alias is included. Keep the code private and give it only to your teacher.", "Elige qué compartir. El código puede incluir tu escritura, las transcripciones de lo que dijiste, los resultados de misiones y de detective, los resultados de práctica de lectura y escucha, y las postales que marcaste “Guardar para mi docente”. No incluye correo electrónico, identificación escolar ni grabaciones. Solo se incluye tu alias. Mantén el código en privado y dáselo solo a tu docente.")}
+            ${I.T("Choose what to share. The code may contain your writing, speaking transcripts, mission and detective results, reading/listening practice results, game session summaries (no answers), and postcards you marked “Keep for my teacher.” It has no email, school ID or recordings. Only your alias is included. Keep the code private and give it only to your teacher.", "Elige qué compartir. El código puede incluir tu escritura, las transcripciones de lo que dijiste, los resultados de misiones y de detective, los resultados de práctica de lectura y escucha, y las postales que marcaste “Guardar para mi docente”. No incluye correo electrónico, identificación escolar ni grabaciones. Solo se incluye tu alias. Mantén el código en privado y dáselo solo a tu docente.")}
           </p>
           <label class="field"
             ><span
@@ -697,6 +702,7 @@ export async function render(ctx) {
               ["missions", I.T("Mission results", "Resultados de misiones")],
               ["detective", I.T("Error Detective results", "Resultados de Detective de errores")],
               ["readingListening", I.T("Reading and listening practice results", "Resultados de práctica de lectura y escucha")],
+              ["games", I.T("Language Game Studio practice summary (no answers)", "Resumen de práctica del Estudio de juegos de lenguaje (sin respuestas)")],
             ].map(
               ([k, l]) =>
                 html`<label class="pass-check"

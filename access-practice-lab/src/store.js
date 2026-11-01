@@ -8,6 +8,7 @@
 // read transparently and new answers are written to `answers`.
 import { mergeLedgers } from "./lang/ledger.js";
 import { mergeStudio, validStudio } from "./lang/studio.js";
+import { mergeGames, validGames } from "./games/state.js";
 import { safeJson, storage, todayISO } from "./util.js";
 
 export const PREFIX = "accessPracticeLab:v1";
@@ -236,16 +237,17 @@ export function importProgressData(data) {
     const progress = isProgressKey(key);
     if (
       !progress &&
-      !/^(?:prefs|studentName|pathway|ledger|studio|readingRoom|test:[a-zA-Z0-9_-]+)$/.test(suffix)
+      !/^(?:prefs|studentName|pathway|ledger|studio|games|readingRoom|test:[a-zA-Z0-9_-]+)$/.test(suffix)
     )
       continue;
     const current = storage.get(key);
-    if (suffix === "ledger" || suffix === "studio" || suffix === "readingRoom") {
+    if (suffix === "ledger" || suffix === "studio" || suffix === "games" || suffix === "readingRoom") {
       const incoming = safeJson(value, null);
       if (
         !isObject(incoming) ||
         (suffix === "ledger" && !Array.isArray(incoming.entries)) ||
         (suffix === "studio" && !validStudio(incoming)) ||
+        (suffix === "games" && !validGames(incoming)) ||
         (suffix === "readingRoom" &&
           (incoming.schema !== 1 || !isObject(incoming.lessons) || !isObject(incoming.annotations) ||
             !Array.isArray(incoming.recent) || !Array.isArray(incoming.words) || !Array.isArray(incoming.bookmarks)))
@@ -261,6 +263,8 @@ export function importProgressData(data) {
         ? mergeLedgers({ entries: local.entries || [] }, incoming)
         : suffix === "studio"
           ? mergeStudio(local, incoming)
+          : suffix === "games"
+            ? mergeGames(local, incoming)
           : {
               ...incoming,
               ...local,

@@ -7,6 +7,7 @@ import { normalizeSure } from "./calibration.js";
 import { loadReadingState } from "../reading-state.js";
 import { loadLedger } from "./ledger.js";
 import { loadStudio } from "./studio.js";
+import { loadGames } from "../games/state.js";
 
 export const SHARE_PREFIX = "ACCESST1.";
 const b64 = (s) => btoa(unescape(encodeURIComponent(s)));
@@ -22,7 +23,7 @@ const cleanLog = (log) =>
 
 /** @param {{alias?:string, band?:string, include?:{writing?:boolean,speaking?:boolean,missions?:boolean,detective?:boolean,readingListening?:boolean}}} o */
 export function buildShare({ alias = "", band = "6-8", include = {}, postcards = [] } = {}, ledger = loadLedger(), studio = loadStudio(), records = allRecords()) {
-  const inc = { writing: true, speaking: true, missions: true, detective: true, readingListening: true, ...include };
+  const inc = { writing: true, speaking: true, missions: true, detective: true, readingListening: true, games: true, ...include };
   const keep = (obj, on) => (on ? obj : {});
   const speaking = Object.fromEntries(
     Object.entries(inc.speaking ? studio.speaking : {}).map(([id, s]) => [id, { stage: s.stage, used: s.used, takes: s.takes.map(({ id: tid, t, seconds, audio, transcript, selfReview, teacherReview, finished }) => ({ id: tid, t, seconds, audio, transcript, selfReview, teacherReview, finished })) }]),
@@ -43,6 +44,7 @@ export function buildShare({ alias = "", band = "6-8", include = {}, postcards =
     records: practice,
     readingLog: inc.readingListening ? cleanLog(loadReadingState().log) : [],
     postcards: postcards.slice(0, 6),
+    games: inc.games ? cleanGameSummary(loadGames(), band) : { history: [] },
     studio: { v: 1, writing: keep(studio.writing, inc.writing), speaking, missions: keep(studio.missions, inc.missions), detective: keep(studio.detective, inc.detective), portfolio: studio.portfolio },
   };
 }
@@ -107,6 +109,14 @@ export function normalize(o) {
     records,
     readingLog: cleanLog(o.readingLog),
     postcards,
+    games: cleanGameSummary(o.games, o.band),
     studio: { writing: isObj(s.writing) ? s.writing : {}, speaking: isObj(s.speaking) ? s.speaking : {}, missions: isObj(s.missions) ? s.missions : {}, detective: isObj(s.detective) ? s.detective : {} },
   };
+}
+
+
+/** Share only a factual list of completed game sessions. Learner answers and performance counts stay local. */
+function cleanGameSummary(source, band = "6-8") {
+  const rows = Array.isArray(source?.history) ? source.history : [];
+  return { history: rows.filter((r) => r && r.band === band && typeof r.game === "string" && typeof r.at === "string").slice(-50).map((r) => ({ game: r.game.slice(0, 60), band, at: r.at.slice(0, 40), support: ["A", "B", "C"].includes(r.support) ? r.support : "A" })) };
 }

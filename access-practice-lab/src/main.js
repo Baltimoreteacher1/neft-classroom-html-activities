@@ -44,6 +44,7 @@ import * as classroomView from "./views/classroom.js";
 import * as vocabularyView from "./views/vocabulary.js";
 import * as flashcardsView from "./views/flashcards.js";
 import * as readingRoomView from "./views/reading-room.js";
+import * as gamesView from "./views/games.js";
 import * as storiesView from "./views/stories.js";
 import * as ladderView from "./views/ladder.js";
 import * as puzzlesView from "./views/puzzles.js";
@@ -85,6 +86,7 @@ const VIEWS = {
   flashcards: flashcardsView,
   reading: readingRoomView,
   "reading-room": readingRoomView,
+  games: gamesView,
   "publisher-demo": publisherDemoView,
 };
 const DOMAINS = ["Listening", "Reading", "Speaking", "Writing", "Model-Test"];
@@ -105,7 +107,7 @@ export function parseRoute(pathname = location.pathname, search = location.searc
   if (a === "worlds") {
     return { ...r, view: "worlds", id: b || "", worldId: b || "", missionId: c || "", tab: q.get("tab") || "" };
   }
-  if (["tests", "family", "passport", "tools", "library", "missions", "mission", "conversation", "construction", "evidence", "growth", "speak", "write", "detective", "launch", "launch-studio", "teacher-launch", "classroom", "vocabulary", "flashcards", "stories", "ladder", "puzzles", "publisher-demo"].includes(a)) {
+  if (["tests", "family", "passport", "tools", "library", "missions", "mission", "conversation", "construction", "evidence", "growth", "speak", "write", "detective", "launch", "launch-studio", "teacher-launch", "classroom", "vocabulary", "flashcards", "stories", "ladder", "puzzles", "publisher-demo", "games"].includes(a)) {
     return { ...r, view: a, id: b || "", missionId: b || "", scenarioId: b || "", tab: q.get("tab") || "" };
   }
   if (a === "diagnostic") return { ...r, view: "diagnostic", domain: b || "" };
