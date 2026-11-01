@@ -20,6 +20,7 @@ import * as place from "./engine-place.js";
 import * as power from "./engine-power.js";
 import * as ratio from "./engine-ratio.js";
 import * as round from "./engine-round.js";
+import { questionEs } from "../question-es.js";
 import { peekCap } from "../step-leak.js";
 
 export const ENGINES = {
@@ -69,7 +70,14 @@ const stepsEngine = {
       return Object.assign(
         frame({
           id: `s${i}`,
-          cap: L(String(s), String(s)),
+          // The generated step text is English only (it comes from the lab's step writers). A Spanish reader is told so,
+          // and sees the question in Spanish where the lab has a rule for it, instead of silently getting English.
+          cap: L(
+            String(s),
+            i === 0
+              ? `Problema: ${questionEs(spec.item) ?? spec.item.question}. Los pasos de este problema están en inglés. Paso 1: ${s}`
+              : `(En inglés) ${s}`,
+          ),
           easy: null,
           eq: "",
           svg: svgWrap(body, alt.en, { h: 200 }),

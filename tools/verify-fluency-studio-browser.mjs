@@ -44,6 +44,90 @@ try {
     [7, "circle-area", ["watch", "build"]],
     [7, "probability", ["watch", "build"]],
   ];
+  // Every one of the 96 skills, once: mount the Studio, step Watch (answering each Predict question), open every tab
+  // and make one move in Build, Try, the simulator and the Detective. Firefox 159 and Safari 27.2 passed the same
+  // sweep by hand on 2026-10-31, so this is the part that keeps running.
+  {
+    const context = await browser.newContext({ viewport: { width: 1280, height: 900 } });
+    const page = await context.newPage();
+    const errors = [];
+    page.on("pageerror", (e) => errors.push(e.message));
+    await page.goto(`${base}/math/fluency-lab/?grade=3`, { waitUntil: "networkidle" });
+    const sweep = await page.evaluate(async () => {
+      const { ALL_SKILLS, generateProblem, seededRandom } = await import(
+        "/math/fluency-lab/problem-bank.js"
+      );
+      const { mountStudio } = await import("/math/fluency-lab/studio/studio.js");
+      const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+      const host = Object.assign(document.createElement("div"), { id: "sweep-host" });
+      document.body.append(host);
+      const failed = [];
+      let tabs = 0;
+      for (const skill of ALL_SKILLS) {
+        const el = document.createElement("div");
+        host.replaceChildren(el);
+        try {
+          const stop = mountStudio(el, {
+            item: generateProblem(skill, seededRandom(7)),
+            skill,
+            context: "idea",
+          });
+          if (!stop) throw new Error("no Studio");
+          await wait(4);
+          if (!el.querySelector(".sd-stage svg")) throw new Error("no drawing");
+          for (let k = 0; k < 14; k += 1) {
+            const next = el.querySelector('[data-w="next"]');
+            if (el.querySelector("[data-predict]:not([hidden])")) {
+              for (const b of el.querySelectorAll("[data-c]")) {
+                b.click();
+                if (el.querySelector('[data-w="go"]') || el.querySelector("[data-explain]")) break;
+              }
+              for (const b of el.querySelectorAll("[data-e]")) {
+                b.click();
+                if (el.querySelector('[data-w="go"]')) break;
+              }
+              el.querySelector('[data-w="go"]')?.click();
+              continue;
+            }
+            if (!next || next.disabled) break;
+            next.click();
+          }
+          for (const id of [...el.querySelectorAll("[data-tab]")].map((t) => t.dataset.tab)) {
+            el.querySelector(`[data-tab="${id}"]`).click();
+            await wait(3);
+            if (el.querySelector(`[data-tab="${id}"]`)?.getAttribute("aria-selected") !== "true")
+              throw new Error(`tab ${id} did not open`);
+            tabs += 1;
+            if (id === "build") el.querySelector("[data-controls] button")?.click();
+            if (id === "try") {
+              el.querySelector(".sd-input").value = "0";
+              el.querySelector("[data-form]").dispatchEvent(
+                new Event("submit", { cancelable: true, bubbles: true }),
+              );
+            }
+            if (id === "explore") {
+              const r = el.querySelector('input[type="range"]');
+              if (r) {
+                r.value = r.max;
+                r.dispatchEvent(new Event("input", { bubbles: true }));
+              }
+            }
+            if (id === "detective") el.querySelector("[data-pick]")?.click();
+            if (!el.querySelector("[data-panel] *")) throw new Error(`empty ${id} tab`);
+          }
+          stop();
+        } catch (e) {
+          failed.push(`${skill.grade}:${skill.id}: ${e.message}`);
+        }
+      }
+      return { total: ALL_SKILLS.length, failed, tabs };
+    });
+    note(sweep.total === 96, `sweep covered ${sweep.total} skills, expected 96`);
+    note(sweep.failed.length === 0, `sweep failures: ${sweep.failed.slice(0, 4).join(" | ")}`);
+    note(sweep.tabs > 300, `sweep opened only ${sweep.tabs} tabs`);
+    note(errors.length === 0, `sweep page errors: ${errors.slice(0, 2).join(" | ")}`);
+    await context.close();
+  }
   for (const [width, height, reduced] of [
     [390, 844, false],
     [1280, 800, false],
@@ -59,21 +143,24 @@ try {
     page.on("console", (m) => m.type() === "error" && errors.push(m.text()));
     for (const [grade, skill, tabs] of cases) {
       await page.goto(`${base}/math/fluency-lab/?grade=${grade}`, { waitUntil: "networkidle" });
-      await page.evaluate(() =>
-        document.querySelector('[data-view="library"], [data-open-library]')?.click(),
-      );
-      const opened = await page.evaluate(async (id) => {
-        const wait = (ms) => new Promise((r) => setTimeout(r, ms));
-        for (const b of [...document.querySelectorAll("button,a")].filter((x) =>
-          /Skill Library/i.test(x.textContent),
-        ))
-          b.click();
-        await wait(600);
-        const btn = document.querySelector(`[data-visual-skill="${id}"]`);
-        btn?.click();
-        await wait(1200);
-        return Boolean(document.querySelector("#visual-studio:not([hidden]) .sd-stage svg"));
-      }, skill);
+      const openLibrary = (id) =>
+        page.evaluate(async (id) => {
+          const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+          for (const b of [...document.querySelectorAll("button,a")].filter((x) =>
+            /Skill Library/i.test(x.textContent),
+          ))
+            b.click();
+          await wait(600);
+          const btn = document.querySelector(`[data-visual-skill="${id}"]`);
+          btn?.click();
+          await wait(1200);
+          return Boolean(document.querySelector("#visual-studio:not([hidden]) .sd-stage svg"));
+        }, id);
+      // The lab can reload once after first paint; if that lands mid-evaluate, load again and retry once.
+      const opened = await openLibrary(skill).catch(async () => {
+        await page.goto(`${base}/math/fluency-lab/?grade=${grade}`, { waitUntil: "networkidle" });
+        return openLibrary(skill);
+      });
       note(opened, `${skill} @${width}${reduced ? " reduced" : ""}: the Studio did not open`);
       if (!opened) continue;
       for (const tab of tabs) {

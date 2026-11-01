@@ -1430,6 +1430,16 @@ setLang("en");
   assert.match(host.querySelector(".sd-title").textContent, /Worked steps/);
   click(host.querySelector('[data-tab="try"]'));
   assert.ok(host.querySelector("[data-rung='0']"), "unmodeled skills still get a hint ladder");
+  click(host.querySelector('[data-tab="watch"]'));
+  setLang("es");
+  window.dispatchEvent(new window.Event("fluency-lang-changed"));
+  assert.match(
+    host.querySelector("[data-cap]").textContent,
+    /están en inglés/,
+    "a Spanish reader is told the generated steps are in English",
+  );
+  setLang("en");
+  window.dispatchEvent(new window.Event("fluency-lang-changed"));
   stop();
 }
 
