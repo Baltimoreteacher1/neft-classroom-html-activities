@@ -24,6 +24,7 @@ import { STICKERS, daysThisWeek, earnedIds, loadRewards, rankFor, summarize } fr
 import { escapeHtml, masteryRing, recommendationCard, statePill } from "./skill-card.js";
 import { mountSkillMap } from "./skill-map.js";
 import { localDay } from "./tutor-engine.js";
+import { mountMobyQuests, mountMobyFluency } from "./moby/moby-hub.js";
 
 const contexts = new WeakMap();
 
@@ -189,12 +190,24 @@ export function mountDashboard(host, ctx) {
   contexts.set(host, full);
   const sections = recommend(full.tutor, full.grade, full.now);
   const target = continueTarget(sections);
-  host.innerHTML = `<div class="fl4-home">${heroHtml(full, sections, target)}${reminderHtml(full)}${planHtml(sections)}${navHtml(full)}
+  host.innerHTML = `<div class="fl4-home">${heroHtml(full, sections, target)}${reminderHtml(full)}
+    <div id="fl4-moby-quests-host"></div>
+    <div id="fl4-moby-fluency-host"></div>
+    ${planHtml(sections)}${navHtml(full)}
     <section class="fl4-pathway" data-hub-panel="map" aria-labelledby="fl4-map-title"><h2 id="fl4-map-title">${escapeHtml(t("Your Grade {n} skill map", { n: full.grade }))}</h2><p>${t("See how skills build on each other. Open any skill to learn or practice it.")}</p><div id="fl4-map-host"></div></section>
     ${rewardsHtml(full)}${doorsHtml(full)}${full.evidenceHtml ? `<div class="journey-evidence" data-hub-panel="rewards">${full.evidenceHtml}</div>` : ""}</div>`;
   mountSkillMap(host.querySelector("#fl4-map-host"), {
     grade: full.grade,
     tutor: full.tutor,
+    now: full.now,
+  });
+  mountMobyQuests(host.querySelector("#fl4-moby-quests-host"), {
+    tutor: full.tutor,
+    grade: full.grade,
+    now: full.now,
+  });
+  mountMobyFluency(host.querySelector("#fl4-moby-fluency-host"), {
+    grade: full.grade,
     now: full.now,
   });
   if (!host.dataset.fl4Bound) {

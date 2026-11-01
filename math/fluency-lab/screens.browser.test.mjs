@@ -258,7 +258,7 @@ try {
         await page.locator(selector).evaluate((node, v) => { node.value = String(v); node.dispatchEvent(new Event("input", { bubbles: true })); }, value);
     };
     // The target is random and so is the starting board, so a miss is made on purpose: a board that cannot equal it.
-    await setBoard(1, target === 1 ? 2 : 1);
+    await setBoard(2, target === 4 ? 3 : 2);
     await page.locator("[data-check]").click();
     await expectRetry(page, "arrayarchitect");
     const rows = [2, 3, 4, 5, 6, 7, 8, 9, 10].find((count) => target % count === 0 && target / count <= 10);

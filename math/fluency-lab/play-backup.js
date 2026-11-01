@@ -6,10 +6,11 @@ import { getLevel, setLevel } from "./language-settings.js";
 import { cleanRewards, loadRewards, saveRewards } from "./rewards.js";
 import { cleanPieces, loadPieces, savePieces } from "./writing-store.js";
 import { cleanStudio, exportStudio, importStudio } from "./studio/adaptive.js";
+import { loadFacts, sanitizeFacts, saveFacts } from "./moby/fact-model.js"; // fl-moby:facts
 
 const count = (value, max = 100000) => (Number.isFinite(value) && value >= 0 ? Math.min(Math.floor(value), max) : 0);
 
-export const exportPlay = () => ({ trail: loadTrail(), rewards: loadRewards(), language: { journal: loadJournal(), level: getLevel() }, writing: loadPieces(), growth: loadGrowthLog(), studio: exportStudio() }); // fl4:teacher: the growth log travels in the backup
+export const exportPlay = () => ({ trail: loadTrail(), rewards: loadRewards(), language: { journal: loadJournal(), level: getLevel() }, writing: loadPieces(), growth: loadGrowthLog(), studio: exportStudio(), facts: loadFacts() }); // fl4:teacher: the growth log travels in the backup; fl-moby:facts: per-fact records travel too
 
 export function cleanPlay(value) {
   if (!value || typeof value !== "object") return null;
@@ -35,6 +36,8 @@ export function cleanPlay(value) {
     studio: value.studio && typeof value.studio === "object" ? cleanStudio(value.studio) : null,
     // A backup made before the growth log has none; a missing log leaves the learner's own log alone.
     growth: value.growth && typeof value.growth === "object" ? sanitizeGrowthLog(value.growth) : null, // fl4:teacher
+    // A backup made before the per-fact model has none; a missing record leaves the learner's own facts alone.
+    facts: value.facts && typeof value.facts === "object" ? sanitizeFacts(value.facts) : null, // fl-moby:facts
     language: value.language && typeof value.language === "object" ? { journal: cleanJournal(value.language.journal), level: [1, 2, 3, 4].includes(value.language.level) ? value.language.level : 2 } : null,
   };
 }
@@ -46,6 +49,7 @@ export function importPlay(clean) {
   if (clean.writing) savePieces(clean.writing);
   if (clean.growth) saveGrowthLog(clean.growth); // fl4:teacher
   if (clean.studio) importStudio(clean.studio);
+  if (clean.facts) saveFacts(clean.facts); // fl-moby:facts
   // A backup made before the language layer has no journal; leave the learner's own journal alone.
   if (!clean.language) return;
   saveJournal(clean.language.journal);

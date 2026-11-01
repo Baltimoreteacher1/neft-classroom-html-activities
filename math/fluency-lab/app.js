@@ -7201,6 +7201,7 @@ function feedbackContext() {
 }
 
 function showFeedback(title, copy, type, resultType = type, phase = null) {
+  FlowPacerEngine.clearHesitationMonitor();
   els.feedback.hidden = false;
   els.feedback.dataset.type = type;
   const view = phase ? feedbackView(phase, feedbackContext()) : null;
@@ -7556,6 +7557,14 @@ function openHubView(view) {
       mountPaperGames(host, { grade: studioGrade, stopsFor, onPrint: printHtml });
     },
   });
+  if (view === "teacher") {
+    import("./moby/moby-hub.js").then((hub) => {
+      hub.mountMobyTeacherPanel(document.querySelector("#moby-teacher-host"), {
+        tutor: state.tutor,
+        now: Date.now(),
+      });
+    }).catch(() => {});
+  }
   document.title = `${{ teacher: 'Teacher studio', path: 'My learning path', games: 'Game Room', write: 'Math Writing Studio' }[view] || 'Mistake notebook'} | Math Fluency Lab`;
   setUrl();
   document.querySelector(`#${view}-view`)?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -8860,7 +8869,10 @@ const FlowPacerEngine = {
       fluencyNextGenState.hesitationHandle = null;
     }
     const oldNudge = document.querySelector("#flow-dilation-nudge");
-    if (oldNudge) oldNudge.hidden = true;
+    if (oldNudge) {
+      oldNudge.hidden = true;
+      oldNudge.remove();
+    }
   },
   startProblemMonitor(item) {
     this.clearHesitationMonitor();
