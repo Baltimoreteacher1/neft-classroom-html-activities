@@ -72,8 +72,8 @@
 
   function render(mount, id, state) {
     var href = BOARD_URL + (id !== "main" ? "?board=" + encodeURIComponent(id) : "");
-    var badge = '<span class="cbs-badge">📋 ' + esc(sectionLabel(id)) + "</span>";
-    var cta = '<a class="cbs-cta" href="' + href + '">Open the Class Board →</a>';
+    var badge = '<span class="cbs-badge">' + esc(sectionLabel(id)) + "</span>";
+    var cta = '<a class="cbs-cta" href="' + href + '">Open the Class Board</a>';
     var body;
     if (state && (state.week || state.focus)) {
       var week = (state.week && state.week.label) || "This Week";
