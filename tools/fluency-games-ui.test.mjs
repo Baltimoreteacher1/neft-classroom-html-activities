@@ -90,8 +90,8 @@ await wait();
 assert.ok($(".gm-menu"), "The Game Room opens from ?view=games");
 assert.equal(
   $$("[data-game]").length,
-  23,
-  "Twenty-three games, including the four strategy games, Make 24, the Class Code Challenge and Team Relay, are offered to Grade 3",
+  24,
+  "Twenty-four games, including the four strategy games, Make 24, the Class Code Challenge, Team Relay and Spell Duel, are offered to Grade 3",
 );
 assert.ok($("#bd-view svg"), "The buddy panel shows a buddy");
 assert.match(

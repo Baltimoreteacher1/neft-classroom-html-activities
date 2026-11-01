@@ -15,6 +15,10 @@ const { ES_LAB4_ANIMATIONS } = await import("../math/fluency-lab/i18n-es-lab4-an
 const { ES_LAB4_LESSONS } = await import("../math/fluency-lab/i18n-es-lab4-lessons.js");
 const { ES_STUDIO } = await import("../math/fluency-lab/i18n-es-studio.js");
 const { ES_COMPETITOR, ES_SHOP_TEAMS } = await import("../math/fluency-lab/i18n-es-competitor.js");
+const { ES_DUEL } = await import("../math/fluency-lab/i18n-es-duel.js");
+const { PETS, PET_STAGES, QUESTS, SPELLS, ZONES } = await import(
+  "../math/fluency-lab/duel-data.js"
+);
 const ES = {
   ...ES_STUDIO,
   ...ES_BASE,
@@ -22,6 +26,7 @@ const ES = {
   ...ES_WORLDS,
   ...ES_COMPETITOR,
   ...ES_SHOP_TEAMS,
+  ...ES_DUEL,
   ...ES_LAB4_ANIMATIONS,
   ...ES_LAB4_LESSONS,
 };
@@ -125,6 +130,11 @@ for (const world of PUZZLE_WORLDS) {
     }
 }
 for (const scene of Object.values(SCENES)) keys.add(scene.title);
+// Spell Duel names are data passed to t() at render time.
+for (const zone of ZONES)
+  for (const name of [zone.name, ...zone.creatures.map((c) => c.name)]) keys.add(name);
+for (const entry of [...SPELLS, ...PETS, ...QUESTS]) keys.add(entry.name);
+for (const stage of PET_STAGES) keys.add(stage);
 for (let n = 1; n <= 8; n += 1) keys.add(`Grade ${n} skills`);
 keys.add("Trail stops");
 // These labels/prompts are selected from data at runtime rather than passed as

@@ -1425,4 +1425,102 @@
   margin: 0 0 0.8rem;
   padding: 0;
   border: 0;
+
+/* Spell Duel */
+.gm-duel section { margin: 1rem 0; }
+
+.gm-duel h3 { margin: 0 0 0.5rem; }
+
+.dl-gold {
+  margin-left: auto;
+  padding: 0.2rem 0.7rem;
+  border: 2px solid var(--t-rule);
+  border-radius: 999px;
+  background: var(--t-paper);
+  font-weight: 700;
+}
+
+.dl-creatures {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 0.7rem;
+  margin: 0.4rem 0 0.8rem;
+  padding: 0;
+  list-style: none;
+}
+
+.dl-creature,
+.dl-pet {
+  display: grid;
+  justify-items: center;
+  gap: 0.2rem;
+  width: 100%;
+  min-height: 44px;
+  padding: 0.8rem 0.5rem;
+  border: 2px solid var(--t-rule);
+  border-radius: 16px;
+  background: var(--t-paper);
+  color: var(--t-ink);
+  font: inherit;
+  cursor: pointer;
+}
+
+.dl-creature:hover:not(:disabled),
+.dl-pet:hover,
+.dl-pet[aria-pressed="true"] { border-color: var(--trail); }
+
+.dl-pet[aria-pressed="true"] { box-shadow: 0 0 0 2px var(--trail); }
+.dl-creature.done { background: color-mix(in srgb, var(--trail) 8%, var(--t-paper)); }
+.dl-creature:disabled { cursor: not-allowed; opacity: 0.6; }
+.dl-creature small, .dl-pet small { color: var(--t-ink-soft); }
+.dl-face { font-size: 2.2rem; line-height: 1; }
+.dl-face.big { font-size: 4.5rem; }
+
+.dl-quests ul { display: grid; gap: 0.5rem; margin: 0; padding: 0; list-style: none; }
+
+.dl-quests li {
+  display: grid;
+  grid-template-columns: 1fr minmax(80px, 140px) auto auto;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.5rem 0.8rem;
+  border: 1px solid var(--t-rule);
+  border-radius: 12px;
+}
+
+.dl-claimed { color: var(--t-ink-soft); font-weight: 700; }
+
+.dl-arena { display: grid; justify-items: center; gap: 0.4rem; margin: 0.6rem 0; }
+.dl-energy { width: min(100%, 22rem); height: 1.1rem; accent-color: var(--trail); }
+
+.dl-spells {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+  margin: 0.6rem 0;
+}
+
+.dl-spell {
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0.5rem 0.9rem;
+  border: 2px solid var(--t-rule);
+  border-radius: 999px;
+  background: var(--t-paper);
+  color: var(--t-ink);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.dl-spell[aria-pressed="true"] {
+  border-color: var(--trail);
+  background: var(--t-ink);
+  color: #fff;
+}
+
+@media (max-width: 520px) {
+  .dl-quests li { grid-template-columns: 1fr auto; }
+  .dl-quests progress { grid-column: 1 / -1; width: 100%; }
 }

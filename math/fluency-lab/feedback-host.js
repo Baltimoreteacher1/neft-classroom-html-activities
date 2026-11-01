@@ -22,6 +22,7 @@ export const GAME_PHASES = Object.freeze({
   make24: { right: "correct", miss: "retry", "right-after-miss": "assisted", revealed: "revealed" },
   teamrelay: { right: "correct", miss: "retry", "right-after-miss": "assisted", revealed: "revealed" },
   challenge: { right: "correct", miss: "retry", "right-after-miss": "assisted", revealed: "revealed" },
+  duel: { right: "correct", miss: "retry", "right-after-miss": "assisted", revealed: "revealed" },
   family: { right: "correct", miss: "retry" },
   balance: { right: "correct", miss: "retry", "right-after-miss": "assisted" },
   flip: { right: "correct", miss: "retry", "right-after-miss": "assisted" },

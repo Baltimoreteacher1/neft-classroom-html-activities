@@ -11,6 +11,7 @@ import { playMake24 } from "./make24-game.js";
 import { playChallenge } from "./challenge-game.js";
 import { playTeamRelay } from "./team-relay-game.js";
 import { shopPanel } from "./buddy-shop.js";
+import { playDuel } from "./duel-game.js";
 import { playBalance } from "./balance-game.js";
 import { playFlip } from "./flip-game.js";
 import { buddyPanel, buddySvg, moodFor, reactionFor } from "./buddy.js";
@@ -126,6 +127,13 @@ export const GAMES = [
     icon: "🧩",
     blurb: "Tap two tiles that make the target. Find every pair.",
     run: playMake,
+  },
+  {
+    id: "duel",
+    name: "Spell Duel",
+    icon: "🪄",
+    blurb: "Cast spells with right answers, calm creatures, earn gold, and hatch pets.",
+    run: playDuel,
   },
   {
     id: "make24",

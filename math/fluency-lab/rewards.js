@@ -1,6 +1,7 @@
 // Sticker book, ranks, practice-day streak, and a small celebration. Local to this learner; nothing is sent anywhere.
 import { TRAILS, factStatus, loadTrail } from "./fact-trail.js";
 import { COLORS, ITEMS, SHOP, SHOP_IDS, SLOTS } from "./buddy-items.js";
+import { CREATURES, cleanDuel } from "./duel-core.js";
 import { GAMES_BY_ID_NAME } from "./game-names.js";
 import { t } from "./i18n.js";
 import { chime } from "./sounds.js";
@@ -13,7 +14,7 @@ const KEY = "ewl-fluency-rewards-v1";
 const key = () => profileKey(KEY, profiles().active);
 const DAY_MS = 86400000;
 
-const GAME_IDS = ["mathworldbuilder", "numberpuzzlestudio", "fluencyrally", "numberquest", "arrayarchitect", "fractionforge", "equationfactory", "fractionbridge", "balancestation", "ratiocity", "tenframefactory", "divisionharbor", "decimaldashboards", "integerexpedition", "graphcity", "match", "hunt", "sort", "mistake", "make", "family", "balance", "picture", "flip"];
+const GAME_IDS = ["mathworldbuilder", "numberpuzzlestudio", "fluencyrally", "numberquest", "arrayarchitect", "fractionforge", "equationfactory", "fractionbridge", "balancestation", "ratiocity", "tenframefactory", "divisionharbor", "decimaldashboards", "integerexpedition", "graphcity", "match", "hunt", "sort", "mistake", "make", "family", "balance", "picture", "flip", "duel"];
 
 // One suggested game per day, the same all day for everyone on this device.
 // One suggested game per day; Fact Family Builder is a Grades 1-5 game, so it is skipped for older grades.
@@ -148,6 +149,27 @@ export const STICKERS = [
     test: (s) => s.best.balance >= 3,
   },
   {
+    id: "duel-first",
+    icon: "🪄",
+    name: "Spell Caster",
+    hint: "Calm a creature in Spell Duel",
+    test: (s) => s.duelWins >= 1,
+  },
+  {
+    id: "duel-pet",
+    icon: "🥚",
+    name: "Pet Friend",
+    hint: "Hatch a pet in Spell Duel",
+    test: (s) => s.duelPets >= 1,
+  },
+  {
+    id: "duel-boss",
+    icon: "🏰",
+    name: "Zone Keeper",
+    hint: "Calm a boss in Spell Duel",
+    test: (s) => s.duelBosses >= 1,
+  },
+  {
     id: "boss",
     icon: "👑",
     name: "Boss Beater",
@@ -216,7 +238,7 @@ export function cleanRewards(saved = {}) {
       ? saved.days.filter((day) => /^\d{4}-\d{2}-\d{2}$/.test(day)).slice(-60)
       : [],
     plays: num(saved.plays),
-    best: { mathworldbuilder: num(best.mathworldbuilder), numberpuzzlestudio: num(best.numberpuzzlestudio), fluencyrally: num(best.fluencyrally), numberquest: num(best.numberquest), arrayarchitect: num(best.arrayarchitect), fractionforge: num(best.fractionforge), equationfactory: num(best.equationfactory), fractionbridge: num(best.fractionbridge), balancestation: num(best.balancestation), ratiocity: num(best.ratiocity), tenframefactory: num(best.tenframefactory), divisionharbor: num(best.divisionharbor), decimaldashboards: num(best.decimaldashboards), integerexpedition: num(best.integerexpedition), graphcity: num(best.graphcity), match: num(best.match), hunt: num(best.hunt), sort: num(best.sort), mistake: num(best.mistake), make: num(best.make), family: num(best.family), balance: num(best.balance), picture: num(best.picture), flip: num(best.flip), make24: num(best.make24), challenge: num(best.challenge), teamrelay: num(best.teamrelay) },
+    best: { mathworldbuilder: num(best.mathworldbuilder), numberpuzzlestudio: num(best.numberpuzzlestudio), fluencyrally: num(best.fluencyrally), numberquest: num(best.numberquest), arrayarchitect: num(best.arrayarchitect), fractionforge: num(best.fractionforge), equationfactory: num(best.equationfactory), fractionbridge: num(best.fractionbridge), balancestation: num(best.balancestation), ratiocity: num(best.ratiocity), tenframefactory: num(best.tenframefactory), divisionharbor: num(best.divisionharbor), decimaldashboards: num(best.decimaldashboards), integerexpedition: num(best.integerexpedition), graphcity: num(best.graphcity), match: num(best.match), hunt: num(best.hunt), sort: num(best.sort), mistake: num(best.mistake), make: num(best.make), family: num(best.family), balance: num(best.balance), picture: num(best.picture), flip: num(best.flip), make24: num(best.make24), challenge: num(best.challenge), duel: num(best.duel), teamrelay: num(best.teamrelay) },
     scenes: Array.isArray(saved.scenes) ? saved.scenes.filter((id) => SCENE_IDS.includes(id)) : [],
     seen: Array.isArray(saved.seen) ? saved.seen.filter((id) => STICKERS.some((sticker) => sticker.id === id)) : [],
     strategies,
@@ -226,6 +248,7 @@ export function cleanRewards(saved = {}) {
     goal: [2, 3, 4, 5].includes(saved.goal) ? saved.goal : 3,
     retired: num(saved.retired),
     bestStreak: num(saved.bestStreak),
+    duel: cleanDuel(saved.duel),
     goalWeeks: Array.isArray(saved.goalWeeks) ? saved.goalWeeks.filter((day) => /^\d{4}-\d{2}-\d{2}$/.test(day)).slice(-60) : [],
   };
 }
@@ -317,6 +340,9 @@ export function summarize(trail = loadTrail(), data = loadRewards()) {
     shop: data.shop,
     best: data.best,
     scenes: data.scenes.length,
+    duelWins: data.duel.wins,
+    duelPets: Object.keys(data.duel.pets).length,
+    duelBosses: data.duel.beaten.filter((id) => CREATURES.find((creature) => creature.id === id)?.boss).length,
     goalWeeks: data.goalWeeks.length,
     retired: data.retired,
     strategyTotal: Object.values(data.strategies).reduce((sum, count) => sum + count, 0),
