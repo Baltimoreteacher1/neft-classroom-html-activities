@@ -39,6 +39,8 @@ export const loadAlignment = () => getJson("alignment-index.json");
 export const loadReadingRoomLessons = () => getJson("reading-room/lessons.json");
 export const loadReadingAdventures = () => getJson("reading-room/adventures.json");
 export const loadReadingStrategies = () => getJson("reading-room/strategy-lessons.json");
+export const loadLadder = () => getJson("ladder/passages.json");
+export const loadPuzzles = () => getJson("puzzles/puzzles.json");
 export const loadWorlds = () => getJson("worlds.json");
 export const loadPatterns = () => getJson("detective/patterns.json");
 export const loadGoalBank = () => getJson("goal-bank.json");

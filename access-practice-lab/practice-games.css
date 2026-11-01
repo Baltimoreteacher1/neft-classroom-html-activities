@@ -1,0 +1,325 @@
+/* ACCESS Practice Lab — Reading Ladder and Puzzle Den. The page takes the colour of its domain
+   (d-reading, d-writing); every colour cue is paired with text or an icon. */
+
+.gm-studio {
+  display: grid;
+  gap: var(--s-4);
+}
+.gm-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(0, 0.7fr);
+  align-items: center;
+  gap: var(--s-5);
+  padding: clamp(1.25rem, 3.5vw, 2.25rem);
+  border: 1px solid color-mix(in srgb, var(--room) 25%, var(--line));
+  border-radius: var(--r-xl);
+  background: var(--room-soft);
+}
+.gm-hero-play {
+  grid-template-columns: minmax(0, 1.5fr) minmax(0, 0.5fr);
+}
+.gm-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0 0 var(--s-3);
+  padding: 0.3rem 0.9rem 0.3rem 0.7rem;
+  border-radius: 999px;
+  background: #fff;
+  color: var(--room-ink);
+  font-weight: 700;
+  font-size: 0.9375rem;
+}
+.gm-step-card {
+  padding: var(--s-4);
+  border-radius: var(--radius);
+  background: #fff;
+  border: 1px solid var(--line);
+}
+.gm-step-now {
+  margin: 0 0 var(--s-2);
+  font-weight: 800;
+  font-size: 1.125rem;
+  color: var(--room-ink);
+}
+
+/* ladder rungs: highest step on top */
+.gm-rungs {
+  display: grid;
+  gap: 0.35rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.gm-rungs li {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-height: 2.25rem;
+  padding: 0.25rem 0.75rem;
+  border: 2px solid var(--line);
+  border-radius: 999px;
+  background: var(--bg);
+  color: var(--ink-2);
+}
+.gm-rungs li.is-reached {
+  border-color: color-mix(in srgb, var(--room) 45%, var(--line));
+}
+.gm-rungs li.is-here {
+  border-color: var(--room);
+  background: var(--room);
+  color: #fff;
+  font-weight: 700;
+}
+.gm-rung-n {
+  display: inline-grid;
+  place-items: center;
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 50%;
+  background: #fff;
+  color: var(--ink);
+  font-weight: 800;
+  font-size: 0.9rem;
+}
+.gm-rung-label {
+  font-size: 0.875rem;
+}
+
+.gm-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: var(--s-4);
+  align-items: start;
+}
+.gm-grid2 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  gap: var(--s-4);
+}
+.gm-text {
+  font-size: 1.1875rem;
+  line-height: 1.7;
+  max-width: 62ch;
+}
+.gm-question {
+  margin: 0 0 var(--s-4);
+  padding: var(--s-3) var(--s-4);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+}
+.gm-question legend {
+  padding: 0 0.4rem;
+  font-weight: 700;
+}
+.gm-kind {
+  display: inline-block;
+  margin-right: 0.35rem;
+  padding: 0.05rem 0.55rem;
+  border-radius: 999px;
+  background: var(--room-soft);
+  color: var(--room-ink);
+  font-size: 0.8125rem;
+  font-weight: 700;
+}
+.gm-choice {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  min-height: 2.75rem;
+  margin-top: 0.4rem;
+  padding: 0.5rem 0.75rem;
+  border: 2px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: #fff;
+  cursor: pointer;
+}
+.gm-choice input {
+  margin-top: 0.3rem;
+}
+.gm-choice:has(input:checked) {
+  border-color: var(--room);
+}
+.gm-choice.is-key {
+  border-color: #2f7d4f;
+  background: #eef8f1;
+}
+.gm-question.is-miss {
+  border-color: #b45309;
+}
+.gm-question.is-right {
+  border-color: #2f7d4f;
+}
+.gm-why {
+  margin: var(--s-3) 0 0;
+}
+.gm-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: var(--s-3);
+}
+.gm-recent {
+  margin: 0;
+  padding-left: 1.2rem;
+}
+.gm-note {
+  margin: 0;
+  color: var(--ink-3);
+  font-size: 0.9375rem;
+}
+
+/* Puzzle Den */
+.gm-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
+  gap: var(--s-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.gm-card {
+  display: grid;
+  gap: 0.25rem;
+  min-height: 4.25rem;
+  padding: var(--s-3) var(--s-4);
+  border: 2px solid var(--line);
+  border-radius: var(--radius);
+  background: #fff;
+  color: var(--ink);
+  text-decoration: none;
+}
+.gm-card:hover {
+  border-color: var(--room);
+}
+.gm-card.is-solved {
+  background: var(--room-soft);
+}
+.gm-card-title {
+  font-weight: 800;
+}
+.gm-card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--ink-2);
+  font-size: 0.9375rem;
+}
+.gm-stars {
+  display: inline-flex;
+  gap: 0.1rem;
+  vertical-align: middle;
+}
+.gm-star .ico {
+  width: 1.15rem;
+  height: 1.15rem;
+  fill: none;
+  stroke: var(--ink-3);
+}
+.gm-star.on .ico {
+  fill: #e0a21b;
+  stroke: #8a5a00;
+}
+.gm-sentence {
+  min-height: 3.25rem;
+  margin: 0 0 var(--s-3);
+  padding: var(--s-3) var(--s-4);
+  border: 2px dashed var(--line-strong);
+  border-radius: var(--radius-sm);
+  background: #fff;
+  font-size: 1.375rem;
+  font-weight: 700;
+}
+.gm-tiles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0 0 var(--s-3);
+}
+.gm-tile {
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  padding: 0.4rem 1rem;
+  border: 2px solid var(--room);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--room-ink);
+  font: inherit;
+  font-size: 1.125rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+.gm-tile.is-placed {
+  background: var(--room);
+  color: #fff;
+}
+.gm-tile:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+.gm-clues {
+  margin: 0 0 var(--s-3);
+  padding-left: 1.4rem;
+  font-size: 1.0625rem;
+  line-height: 1.6;
+}
+.gm-grid {
+  border-collapse: separate;
+  border-spacing: 0 0.5rem;
+}
+.gm-grid th {
+  padding-right: var(--s-4);
+  text-align: left;
+  font-size: 1.125rem;
+}
+.gm-grid select {
+  min-width: 11rem;
+  min-height: 2.75rem;
+  font: inherit;
+}
+.gm-odd {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  gap: var(--s-3);
+}
+.gm-odd-word {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-height: 3.25rem;
+  padding: 0.5rem 1rem;
+  border: 2px solid var(--line);
+  border-radius: var(--radius);
+  background: #fff;
+  font-size: 1.1875rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+.gm-odd-word.is-picked {
+  border-color: var(--room);
+  background: var(--room-soft);
+}
+.gm-pair {
+  display: inline-block;
+  margin: 0 0.4rem 0.4rem 0;
+  padding: 0.2rem 0.75rem;
+  border-radius: 999px;
+  background: #fff;
+  border: 1px solid var(--line);
+}
+.gm-hints ol {
+  margin: 0 0 var(--s-3);
+  padding-left: 1.4rem;
+}
+
+@media (max-width: 760px) {
+  .gm-hero,
+  .gm-hero-play,
+  .gm-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .gm-grid select {
+    min-width: 8.5rem;
+  }
+}

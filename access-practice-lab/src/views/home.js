@@ -315,6 +315,8 @@ export async function render(ctx) {
           ${studioLink("reading-room", "reading", I.T("Reading Room", "Sala de lectura"), I.T("Choose a text, annotate evidence, and keep your place.", "Elige un texto, anota la evidencia y guarda dónde ibas."))}
           ${studioLink("missions", "mission", I.T("Academic missions", "Misiones académicas"), I.T("Listen, read, decide, speak and write in one investigation.", "Escucha, lee, decide, habla y escribe en una sola investigación."))}
           ${studioLink("detective", "detective", I.T("Error Detective", "Detective de errores"), I.T("Find a pattern in your work and fix it for good.", "Encuentra un patrón en tu trabajo y corrígelo para siempre."))}
+          ${studioLink("ladder", "reading", I.T("Reading Ladder", "Escalera de lectura"), I.T("Short texts that step up or down as you read.", "Textos cortos que suben o bajan según tu lectura."))}
+          ${studioLink("puzzles", "grid", I.T("Puzzle Den", "Rincón de rompecabezas"), I.T("Build sentences, solve clues, find the odd word out.", "Forma oraciones, resuelve pistas y encuentra la palabra distinta."))}
           ${studioLink("vocabulary", "words", I.T("Word Builder", "Constructor de palabras"), I.T("Prefixes, roots, and academic words in context.", "Prefijos, raíces y palabras académicas en contexto."))}
         </div>
         ${kluHTML(I, ctx, band, rows, idx)}
