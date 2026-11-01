@@ -37,6 +37,11 @@ function copyStandaloneHtml() {
     // publishing infrastructure config on a student-facing domain. Nothing on the
     // site references /workers/, so skipping the whole directory is safe.
     "workers",
+    // Vite's publicDir already copies public/ to the dist root, so copying the
+    // directory again put 283 byte-identical files under /public/ and pushed the
+    // deployment past Cloudflare Pages' 20,000-file limit ("Pages only supports
+    // up to 20,000 files"), freezing production. Nothing references /public/.
+    "public",
   ]);
   const ROOT_FILES = ["_headers", "_redirects", "404.html", "robots.txt", "sitemap.xml"];
   // Keep dev artifacts out of the published site: nested .claude/.git/node_modules
