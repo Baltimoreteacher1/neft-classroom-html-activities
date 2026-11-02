@@ -32,38 +32,38 @@
     var s = document.createElement("style");
     s.id = STYLE_ID;
     s.textContent = [
-      ".pki-cf{--cf-ink:#12102b;--cf-violet:#7b3ff2;--cf-cyan:#12b5c9;--cf-green:#12a150;--cf-amber:#e08a00;font-family:inherit;color:var(--cf-ink)}",
+      ".pki-cf{--cf-ink:#17324D;--cf-accent:#17324D;--cf-cyan:#12b5c9;--cf-green:#12a150;--cf-amber:#e08a00;font-family:inherit;color:var(--cf-ink)}",
       ".pki-cf h4{margin:0 0 4px;font-size:18px;font-weight:800}",
-      ".pki-cf .cf-sub{margin:0 0 12px;font-size:13.5px;color:#5d5a76}",
+      ".pki-cf .cf-sub{margin:0 0 12px;font-size:13.5px;color:#17324D}",
       ".pki-cf .cf-rail{display:flex;gap:8px;margin:0 0 14px}",
-      ".pki-cf .cf-pip{flex:1;height:8px;border-radius:99px;background:#e8e4f5}",
+      ".pki-cf .cf-pip{flex:1;height:8px;border-radius:99px;background:#F7F4EC}",
       ".pki-cf .cf-pip.done{background:linear-gradient(90deg,var(--cf-green),#0c7c3d)}",
-      ".pki-cf .cf-pip.active{background:linear-gradient(90deg,var(--cf-violet),var(--cf-cyan))}",
-      ".pki-cf .cf-card{border:1px solid rgba(30,22,60,.14);border-radius:14px;padding:14px;background:linear-gradient(180deg,#1a1440,#120e2c);color:#e9e4ff}",
-      ".pki-cf .cf-stg{font-size:12px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:#b39bff}",
+      ".pki-cf .cf-pip.active{background:linear-gradient(90deg,var(--cf-accent),var(--cf-cyan))}",
+      ".pki-cf .cf-card{border:1px solid rgba(23, 50, 77, .14);border-radius:14px;padding:14px;background:linear-gradient(180deg,#17324D,#17324D);color:#F7F4EC}",
+      ".pki-cf .cf-stg{font-size:12px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:#17324D}",
       ".pki-cf .cf-emoji{font-size:26px}",
-      ".pki-cf .cf-expr{display:inline-block;margin:8px 0 2px;padding:6px 12px;border-radius:10px;background:#241a54;border:1px solid #3a2c78;font-size:20px;font-weight:800;color:#8fe6f2;font-variant-numeric:tabular-nums}",
-      ".pki-cf .cf-prompt{margin:6px 0 10px;font-size:15px;color:#efeaff}",
-      ".pki-cf .cf-prompt .es{display:block;color:#b0a6d6;font-style:italic;font-size:12.5px;margin-top:2px}",
+      ".pki-cf .cf-expr{display:inline-block;margin:8px 0 2px;padding:6px 12px;border-radius:10px;background:#17324D;border:1px solid #17324D;font-size:20px;font-weight:800;color:#8fe6f2;font-variant-numeric:tabular-nums}",
+      ".pki-cf .cf-prompt{margin:6px 0 10px;font-size:15px;color:#F7F4EC}",
+      ".pki-cf .cf-prompt .es{display:block;color:#17324D;font-style:italic;font-size:12.5px;margin-top:2px}",
       ".pki-cf .cf-opts{display:flex;flex-wrap:wrap;gap:8px}",
-      ".pki-cf .cf-opt{cursor:pointer;border:2px solid #3d3172;background:#1e1748;color:#efeaff;border-radius:10px;padding:10px 18px;font-size:17px;font-weight:800;font-variant-numeric:tabular-nums;transition:transform .08s,border-color .12s}",
+      ".pki-cf .cf-opt{cursor:pointer;border:2px solid #17324D;background:#17324D;color:#F7F4EC;border-radius:10px;padding:10px 18px;font-size:17px;font-weight:800;font-variant-numeric:tabular-nums;transition:transform .08s,border-color .12s}",
       ".pki-cf .cf-opt:hover{transform:translateY(-1px);border-color:var(--cf-cyan)}",
-      ".pki-cf .cf-opt:focus-visible{outline:3px solid rgba(123,63,242,.5);outline-offset:2px}",
+      ".pki-cf .cf-opt:focus-visible{outline:3px solid rgba(23, 50, 77, .5);outline-offset:2px}",
       ".pki-cf .cf-opt.wrong{border-color:#ff5a5a;animation:cfShake .3s}",
       ".pki-cf .cf-opt.hit{border-color:var(--cf-green);background:#123a24}",
       ".pki-cf .cf-opt:disabled{opacity:.5;cursor:default}",
       ".pki-cf .cf-msg{min-height:20px;margin:10px 0 0;font-size:13.5px;font-weight:700}",
       ".pki-cf .cf-msg.hint{color:#ffcf6b}.pki-cf .cf-msg.ok{color:#7ff0b0}",
       ".pki-cf .cf-tele{display:flex;gap:8px;margin:12px 0 0}",
-      ".pki-cf .cf-cell{flex:1;text-align:center;border:1px solid #ddd6ec;border-radius:10px;padding:8px 4px;font-size:11px;font-weight:700;color:#9a92b8;letter-spacing:.03em}",
-      ".pki-cf .cf-cell b{display:block;font-size:16px;color:#c6bce4;margin-top:2px}",
+      ".pki-cf .cf-cell{flex:1;text-align:center;border:1px solid #17324D;border-radius:10px;padding:8px 4px;font-size:11px;font-weight:700;color:#17324D;letter-spacing:.03em}",
+      ".pki-cf .cf-cell b{display:block;font-size:16px;color:#17324D;margin-top:2px}",
       ".pki-cf .cf-cell.on{border-color:var(--cf-green);color:var(--cf-green)}.pki-cf .cf-cell.on b{color:var(--cf-green)}",
       ".pki-cf .cf-done{text-align:center;padding:16px 12px}",
       ".pki-cf .cf-hi{display:inline-block;font-size:28px;font-weight:900;letter-spacing:.06em;color:#8fe6f2}",
-      ".pki-cf .cf-again{margin-top:14px;cursor:pointer;border:0;background:var(--cf-violet);color:#fff;font-weight:800;border-radius:10px;padding:9px 16px;font-size:14px}",
+      ".pki-cf .cf-again{margin-top:14px;cursor:pointer;border:0;background:var(--cf-accent);color:#fff;font-weight:800;border-radius:10px;padding:9px 16px;font-size:14px}",
       "@keyframes cfShake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}",
       "@media (prefers-reduced-motion:reduce){.pki-cf *{animation:none!important;transition:none!important}}",
-      "@media (prefers-color-scheme:dark){.pki-cf{--cf-ink:#eae6ff;color:var(--cf-ink)}.pki-cf .cf-sub{color:#b0a6d6}.pki-cf .cf-pip{background:#2a2450}.pki-cf .cf-cell{border-color:#3a3266;color:#a89ecf}.pki-cf .cf-cell b{color:#cdc3ef}}",
+      "@media (prefers-color-scheme:dark){.pki-cf{--cf-ink:#F7F4EC;color:var(--cf-ink)}.pki-cf .cf-sub{color:#17324D}.pki-cf .cf-pip{background:#17324D}.pki-cf .cf-cell{border-color:#17324D;color:#17324D}.pki-cf .cf-cell b{color:#17324D}}",
     ].join("\n");
     document.head.appendChild(s);
   }
@@ -235,7 +235,7 @@
         el.innerHTML =
           head +
           '<div class="cf-card cf-done"><div class="cf-hi">🏆 HIGH SCORE</div>' +
-          '<p style="margin:10px 0 0;color:#efeaff;font-weight:700">Engine tuned — every combo locked: <b>' +
+          '<p style="margin:10px 0 0;color:#F7F4EC;font-weight:700">Engine tuned — every combo locked: <b>' +
           esc(state.vals.join("  ·  ")) +
           "</b>. Ship it!</p></div>" +
           tele +

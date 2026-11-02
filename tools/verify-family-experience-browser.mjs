@@ -143,6 +143,17 @@ async function sweepPhone(browser, lesson) {
     };
   });
   if (!order.before) fail(where, "language picker does not come before the big idea");
+
+  // Every language button must show its whole label: a clipped "Bilingü…" is a family's only way to switch.
+  const clipped = await page.evaluate(() =>
+    [...document.querySelectorAll(".hw-hero .lang-toggle-btn")]
+      .filter(
+        (b) =>
+          b.scrollWidth > b.clientWidth + 1 || b.getBoundingClientRect().right > innerWidth + 1,
+      )
+      .map((b) => b.innerText.trim() || b.getAttribute("data-lang-mode")),
+  );
+  if (clipped.length) fail(where, `language button text clipped: ${clipped.join(", ")}`);
   if (order.top > 360)
     fail(
       where,
@@ -219,6 +230,7 @@ async function sweepPhone(browser, lesson) {
     const sections = window
       .activeCoreProblems()
       .filter((s) => s.dataset.problemType === "multiple-choice");
+    if (!sections.length) return { noMultipleChoice: true };
     const idx = (s) => parseInt(s.id.replace("problem_", ""), 10);
     const wrong = sections[0].querySelector(
       "input[type='radio']:not([value='" +
@@ -239,7 +251,9 @@ async function sweepPhone(browser, lesson) {
       evidence: window.__HW_INSTRUCTIONAL_EVIDENCE__,
     };
     const languageButton = document.querySelector(
-      "#problem_intelligence_" + idx(sections[0]) + " [onclick*=language-access]",
+      "#problem_intelligence_" +
+        idx(sections[0]) +
+        " [data-act=hwChooseHelp][data-args*=language-access]",
     );
     if (languageButton) languageButton.click();
     const spanishGuidance =
@@ -267,9 +281,17 @@ async function sweepPhone(browser, lesson) {
       available: sections.length,
     };
   });
+  if (run.noMultipleChoice) {
+    fail(
+      where,
+      "Check stop has no multiple-choice problem, so the wrong-answer behavior cannot be tested",
+    );
+    return;
+  }
   if (run.afterWrong.banner) fail(where, "a wrong answer showed the goal banner");
   // The goal is four on Keep Going and two on Quick Practice (the default), so read it from the route in effect.
-  const expectedText = `0 / ${run.afterWrong.goal}`;
+  // Before any solved problem the progress reads "Not started" (a wrong answer is not progress).
+  const expectedText = "Not started";
   if (run.afterWrong.text !== expectedText)
     fail(
       where,
@@ -339,6 +361,58 @@ async function sweepLanguages(browser, lesson) {
   await context.close();
 }
 
+// Learn is a run of cards and every stop has Back / Next: one thing on screen, one next action.
+async function sweepStops(browser, lesson) {
+  const context = await browser.newContext({
+    viewport: { width: 390, height: 844 },
+    isMobile: true,
+    hasTouch: true,
+  });
+  const { page } = await openPage(context, lesson);
+  const where = `${lesson} @390 stops`;
+  await page.evaluate(() => window.switchHomeworkTab("learn"));
+  const visibleCards = () => page.locator(".learn-card:not([hidden])").count();
+  const total = await page.locator(".learn-card").count();
+  if (total < 2) fail(where, `Learn has ${total} card(s); expected a run of cards`);
+  if ((await visibleCards()) !== 1) fail(where, "Learn shows more or fewer than one card");
+  if (!(await page.locator(".hw-stop-nav").isHidden()))
+    fail(where, "the stop bar competes with the card pager on Learn");
+  await page.locator(".learn-pager-next").click();
+  if ((await visibleCards()) !== 1) fail(where, "Next left more than one card showing");
+  // A link or chip that points into a hidden card opens that card.
+  await page.evaluate(() => window.setLearnCard(0));
+  const target = await page.evaluate(() => {
+    const el = document.getElementById("hw_learn_idea");
+    if (!el) return false;
+    window.revealLearnCardFor(el);
+    return !el.closest(".learn-card").hidden;
+  });
+  if (!target) fail(where, "a link into a hidden Learn card did not open it");
+  // The last Next leaves Learn for the next stop.
+  for (let i = 0; i < total + 1; i++) {
+    if ((await page.evaluate(() => document.body.dataset.activeTab)) !== "learn") break;
+    await page.locator(".learn-pager-next").click();
+  }
+  const stop = await page.evaluate(() => document.body.dataset.activeTab);
+  if (stop === "learn") fail(where, "the last Learn card's Next did not move to the next stop");
+  // Later stops have Back; it returns, and the progress reads Not started before any attempt.
+  if (await page.locator("#hw_stop_back").isHidden()) fail(where, `no Back button on ${stop}`);
+  await page.evaluate(() => window.switchHomeworkTab("check"));
+  const progress = await page.locator("#progress_text").textContent();
+  if (progress.trim() !== "Not started")
+    fail(where, `progress reads "${progress}" before any attempt`);
+  await page.locator("#hw_stop_back").click();
+  if ((await page.evaluate(() => document.body.dataset.activeTab)) === "check")
+    fail(where, "Back did not leave the Practice stop");
+  // The Learning-supports icon lives in the tracker row, not floating over the page.
+  const launcher = await page.evaluate(() => {
+    const el = document.querySelector(".ls-launcher");
+    return el ? getComputedStyle(el).position : "missing";
+  });
+  if (launcher === "fixed") fail(where, "the Learning-supports icon is still a fixed overlay");
+  await context.close();
+}
+
 async function sweepDesktop(browser, lesson) {
   const context = await browser.newContext({ viewport: { width: 1280, height: 800 } });
   const { page } = await openPage(context, lesson);
@@ -357,6 +431,55 @@ async function sweepDesktop(browser, lesson) {
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - innerWidth);
     if (overflow > 1) fail(`${lesson} @1280 ${tab}`, `horizontal scroll by ${overflow}px`);
   }
+
+  // Case File: spans both columns of the stop and uses both sides of its own card.
+  await page.evaluate(() => window.switchHomeworkTab("learn"));
+  await page.waitForTimeout(100);
+  const cf = await page.evaluate(() => {
+    const card = document.getElementById("hw_case");
+    if (!card) return null;
+    const box = (el) => el.getBoundingClientRect();
+    const left = card.querySelector(".cf-left");
+    const right = card.querySelector(".cf-right");
+    const panel = document.getElementById("hw_panel_learn");
+    return {
+      span: box(card).width / box(panel).width,
+      sideBySide: box(right).left > box(left).left + 120,
+      rightText: right.textContent.trim().length,
+      leftText: left.textContent.trim().length,
+    };
+  });
+  if (!cf) fail(`${lesson} @1280`, "Learn stop has no Case File");
+  else {
+    if (cf.span < 0.85)
+      fail(`${lesson} @1280`, `Case File spans only ${Math.round(cf.span * 100)}% of the stop`);
+    if (!cf.sideBySide) fail(`${lesson} @1280`, "Case File columns are not side by side");
+    if (!cf.rightText || !cf.leftText) fail(`${lesson} @1280`, "Case File has an empty side");
+  }
+
+  // The sidebar offers the Case File and jumps to it.
+  const caseBtn = page.locator("#hw_sub_learn .hw-sub-btn", { hasText: /Case File/ });
+  if ((await caseBtn.count()) !== 1) fail(`${lesson} @1280`, "sidebar has no Case File button");
+
+  // Click-to-enlarge: a graphic opens in the lightbox; Escape closes it and focus returns.
+  const gfx = page
+    .locator("#hw_case svg.cf-tag, #hw_case svg.cf-line, #hw_panel_learn .concept-visual-wrap svg")
+    .first();
+  if (await gfx.count()) {
+    // One idea at a time on every width: the Learn stop shows the card that holds the graphic only after the
+    // family reaches it (the design system's [hidden] rule always wins), so go to it the way the stepper does.
+    await gfx.evaluate((el) => window.revealLearnCardFor?.(el));
+    await gfx.scrollIntoViewIfNeeded();
+    await gfx.click();
+    const opened = await page.locator(".hw-lightbox-dialog[open]").count();
+    if (!opened) fail(`${lesson} @1280`, "clicking a graphic did not open the lightbox");
+    else {
+      await page.keyboard.press("Escape");
+      await page.waitForTimeout(50);
+      if (await page.locator(".hw-lightbox-dialog[open]").count())
+        fail(`${lesson} @1280`, "Escape did not close the lightbox");
+    }
+  }
   await context.close();
 }
 
@@ -364,6 +487,7 @@ try {
   for (const lesson of lessons) {
     await sweepPhone(browser, lesson);
     await sweepLanguages(browser, lesson);
+    await sweepStops(browser, lesson);
     await sweepDesktop(browser, lesson);
     process.stdout.write(`  ${lesson} ✓\n`);
   }

@@ -244,6 +244,8 @@ ok(
   warnings === 1 && full.skill("a-b", "c-d").plays === 2,
   "storage failure is reported once and play continues",
 );
+ok(!full.persistenceAvailable, "completion can report when storage only held the in-memory copy");
+ok(one.persistenceAvailable, "successful local storage is identified as persistent");
 // days, minutes, streak
 const day = 86_400_000;
 const now = Date.UTC(2026, 9, 26, 15);

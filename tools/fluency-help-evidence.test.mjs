@@ -92,10 +92,24 @@ assert.equal(
 );
 answerNow();
 assert.equal(withoutHelp(), 1, "a solver-assisted answer does not add to 'without help'");
-$("#next-problem").click();
+// The next problem is drawn at random, and only some add-large problems show a column board: click until one does.
+let cells = [];
+for (let attempt = 0; attempt < 30 && !cells.length; attempt += 1) {
+  $("#next-problem").click();
+  cells = [...win.document.querySelectorAll("#problem-visual-scaffold .vc-result")];
+}
+
+// The column board belongs to plain "a + b" problems; a three-number word problem has none, and the generator picks
+// either at random. Move on (answering, so nothing here counts as help) until the item is a plain sum or difference,
+// then check its board. Without this the test failed about one run in six on whichever item came up.
+const plainColumns = () => /^[\d,]+ [+−] [\d,]+ = \?$/.test(session().item.question);
+for (let skipped = 0; skipped < 60 && !plainColumns(); skipped += 1) {
+  answerNow();
+  $("#next-problem").click();
+}
+assert.ok(plainColumns(), "the sample reaches a plain column problem");
 
 // A missed column box in the model panel is help too (ones place, a digit that is certainly wrong).
-const cells = [...win.document.querySelectorAll("#problem-visual-scaffold .vc-result")];
 assert.ok(cells.length, "the model panel shows the column board for add-large");
 const ones = cells[cells.length - 1];
 const rightDigit = Number(String(session().item.answers[0]).slice(-1));

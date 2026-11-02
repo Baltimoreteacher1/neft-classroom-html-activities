@@ -111,6 +111,15 @@ check(
   scopeFor(["curriculum/plan-notes/plan-notes.js"])?.includes("validate:plan-notes"),
   "a plan-notes change must pull in validate:plan-notes — coverage that names the file but not the gate is how stale vocab shipped",
 );
+const readingContentScope = scopeFor(["tools/validate-reading-adventures.mjs"]);
+check(
+  Array.isArray(readingContentScope) &&
+    readingContentScope.includes("validate:access-lab") &&
+    readingContentScope.includes("test") &&
+    readingContentScope.includes("validate:js-syntax") &&
+    readingContentScope.includes("check"),
+  "the Reading Adventures and Strategy Academy content validator must run its Access Lab, unit, syntax, and static checks without escalating to the full repository gate",
+);
 /* package.json: scripts-only edits may skip the full gate; everything else may not. */
 const pj = (o) => JSON.stringify(o);
 const base = {
@@ -216,6 +225,11 @@ check(
   "a Project Studio edit must pull in validate:project-studio-browser",
 );
 check(
+  scopeFor(["tools/generate-project-studio.mjs"])?.includes("validate:project-studio-browser") &&
+    scopeFor(["tools/generate-project-studio.mjs"])?.includes("validate:unit-placement"),
+  "the Project Studio generator must pull in Studio and unit placement gates",
+);
+check(
   scopeFor(["curriculum/fluency/unit-1-workshop.html"])?.includes(
     "validate:fluency-workshops-browser",
   ),
@@ -226,6 +240,20 @@ check(
     "validate:learning-labs-browser",
   ),
   "a Learning Lab edit must pull in validate:learning-labs-browser",
+);
+check(
+  scopeFor(["tools/lib/fl4-family-fixtures.mjs"])?.includes("validate:fluency-family-browser") &&
+    scopeFor(["tools/lib/mini-lesson-solver.mjs"])?.includes("test"),
+  "Fluency Lab 4 helpers run their validators and dependent tests",
+);
+check(
+  scopeFor(["tools/lib/teacher-4-fixtures.mjs"])?.includes("validate:fluency-family-browser") &&
+    scopeFor(["tools/lib/teacher-4-fixtures.mjs"])?.includes("test"),
+  "teacher lab fixture changes run the relevant browser and unit tests",
+);
+check(
+  scopeFor(["data/test-writes-review.json"])?.includes("validate:test-writes"),
+  "test write review changes run their direct validator",
 );
 check(
   scopeFor(["families/unit-1-week-1.html"])?.includes("verify:families") &&

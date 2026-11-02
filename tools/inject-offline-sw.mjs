@@ -7,6 +7,8 @@
  *       -> registers /lessons/sw.js            (scope /lessons/)
  *   - math/games/practice-arcade/index.html
  *       -> registers /math/games/practice-arcade/sw.js
+ *   - math/fluency-lab/index.html
+ *       -> registers /math/fluency-lab/sw.js   (installable family app)
  *
  * Mirrors tools/inject-mobile-access.js: one sentinel-guarded block injected
  * before the REAL </body> (script-aware — vendored libs / print templates
@@ -78,6 +80,11 @@ function targets() {
     file: join(ROOT, "math", "games", "practice-arcade", "index.html"),
     swPath: "/math/games/practice-arcade/sw.js",
     scope: "/math/games/practice-arcade/",
+  });
+  list.push({
+    file: join(ROOT, "math", "fluency-lab", "index.html"),
+    swPath: "/math/fluency-lab/sw.js",
+    scope: "/math/fluency-lab/",
   });
   return list;
 }

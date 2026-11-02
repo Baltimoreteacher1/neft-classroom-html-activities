@@ -517,7 +517,7 @@ function renderLessonPage(lesson) {
           .join(
             "",
           )}</ul><p><strong>Watch for:</strong> ${esc(lesson.support.watchFor[0].en)}</p></div>
-        <div lang="es"><h3>Pregunte a su estudiante</h3><ul class="coach-list">${lesson.support.stuckTips.say
+        <div lang="es"><h3>Pregunten a su estudiante</h3><ul class="coach-list">${lesson.support.stuckTips.say
           .slice(0, 2)
           .map((item) => `<li>${esc(item.es)}</li>`)
           .join(

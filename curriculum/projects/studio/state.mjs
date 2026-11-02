@@ -21,6 +21,9 @@ export function fresh(project) {
     baseline: null,
     review: [false, false, false, false],
     supports: false,
+    role: "student",
+    lang: "en",
+    theme: "light",
   };
 }
 const short = (v, n = 6000) => (typeof v === "string" ? v.slice(0, n) : "");
@@ -45,6 +48,9 @@ export function clean(project, input) {
   out.evidence = out.evidence.map((_, i) => short(input.evidence?.[i]));
   out.review = out.review.map((_, i) => input.review?.[i] === true);
   out.supports = input.supports === true;
+  out.role = input.role === "teacher" ? "teacher" : "student";
+  out.lang = input.lang === "es" ? "es" : "en";
+  out.theme = input.theme === "dark" ? "dark" : "light";
   const m = model(project, out.design);
   for (const q of m.checks) {
     out.answers[q.id] = short(input.answers?.[q.id], 100);

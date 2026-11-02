@@ -871,6 +871,9 @@ const INDEXLESS_SECTIONS = new Set(["games", "activities", "practice"]);
 const TOP_META = {
   about: { s: "about", c: "Hub", a: "teacher" },
   "access-practice-lab": { s: "test-prep", c: "Practice", a: "student" },
+  "access-expedition": { s: "test-prep", c: "Tool", a: "teacher" },
+  "access-family-expedition": { s: "test-prep", c: "Practice", a: "family" },
+  "access-family-tour": { s: "test-prep", c: "Tool", a: "family" },
   "access-teacher": { s: "test-prep", c: "Tool", a: "teacher" },
   activities: { s: "activities", c: "Practice", a: "student" },
   "activity-studio": { s: "teacher-tools", c: "Tool", a: "teacher" },
@@ -887,6 +890,7 @@ const TOP_META = {
   directory: { s: "about", c: "Hub", a: "teacher" },
   "double-line-racer": { s: "arcade", c: "Game", a: "student" },
   "ecology-noam": { s: "personal", c: "Tool", a: "family" },
+  "family-app": { s: "math-tools", c: "Hub", a: "family" },
   "end-of-year": { s: "test-prep", c: "Practice", a: "student" },
   esol: { s: "reading", c: "Hub", a: "student" },
   "esol-reading-writing": { s: "reading", c: "Practice", a: "student" },

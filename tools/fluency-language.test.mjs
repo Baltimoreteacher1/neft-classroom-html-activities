@@ -165,6 +165,32 @@ for (const op of ["+", "−", "×", "÷"]) {
   }
 }
 
+// Applied story versions cover the eight grade experiences and preserve the generated math.
+for (const id of [
+  "add-10",
+  "facts-20",
+  "mul-0-5",
+  "fraction-equiv",
+  "volume",
+  "ratios",
+  "percent-change",
+  "slope",
+]) {
+  const skill = ALL_SKILLS.find((entry) => entry.id === id);
+  const base = generateProblem(skill, seededRandom(42));
+  const story = storyFor(base, seededRandom(42), skill);
+  ok(
+    story?.story && story.question !== base.question,
+    `${skill.grade}: ${id} gets an applied story`,
+  );
+  ok(story.answers[0] === base.answers[0], `${skill.grade}: ${id} keeps the exact answer`);
+  ok(
+    story.questionEs && digits(story.questionEs) === digits(story.question),
+    `${skill.grade}: ${id} keeps the same Spanish quantities`,
+  );
+  ok(!ENGLISH.test(story.questionEs), `${skill.grade}: ${id} story is fully translated`);
+}
+
 // 6. Journal: reading the writing, cleaning it, and an honest score.
 const idea = journal.analyze(
   "First I used the denominator, then I checked because the parts match.",

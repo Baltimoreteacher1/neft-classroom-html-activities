@@ -571,6 +571,18 @@ function showIdentityScreen(root, config) {
   // `si` still wins as the STUDENT ID: it is the stable roster key resume and
   // grade sync are built on, so editing the display name never orphans work.
   const launchParams = new URLSearchParams(window.location.search);
+  // Publisher/demo links skip the student identity gate with a clearly
+  // synthetic identity. Demo work is isolated under its own local student key.
+  if (launchParams.get("demo") === "1") {
+    const demoName = "Demo Student";
+    try {
+      window.NeftIdentity?.set({ name: demoName, section: "" });
+    } catch {
+      /* identity is an enhancement — never block a demo launch */
+    }
+    initMainApp(root, config, normalizeStudentId(demoName), demoName, "");
+    return;
+  }
   const lmsName = (launchParams.get("sn") || "").trim();
   const lmsId = (launchParams.get("si") || "").trim();
   const confirmName = Boolean(lmsName) && isScormLaunch();
@@ -687,6 +699,7 @@ function showIdentityScreen(root, config) {
           <label for="id-period">${stackHtml(t("period", "en"), t("period", "es"))}</label>
           <input id="id-period" type="text" placeholder="${t("periodPlaceholder")}" autocomplete="off" />
           <button id="id-start" class="identity-btn" disabled>${stackHtml(t("startActivity", "en"), t("startActivity", "es"))}</button>
+          <a class="identity-demo-link" href="?demo=1">Demo / Preview · Vista previa</a>
         </div>
         <div id="identity-teacher-slot"></div>
         ${saved.length ? `<div class="identity-saved" id="id-saved-list"></div>` : ""}

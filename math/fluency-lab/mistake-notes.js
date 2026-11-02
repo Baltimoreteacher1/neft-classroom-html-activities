@@ -15,11 +15,39 @@ const DETECTABLE_PATTERNS = {
   subtractedInsteadOfDividing: () => t("Subtracted instead of dividing"),
   multipliedInsteadOfDividing: () => t("Multiplied instead of dividing"),
   addedInsteadOfDividing: () => t("Added instead of dividing"),
+  addedDenominators: () => t("Added the denominators instead of finding equal-size parts"),
+  confusedGcfLcm: () => t("Found the least common multiple instead of the greatest common factor"),
+  swappedCoordinates: () => t("Swapped the x- and y-coordinates"),
 };
 
+const gcd = (a, b) => b ? gcd(b, a % b) : Math.abs(a);
+const lcm = (a, b) => Math.abs(a * b) / (gcd(a, b) || 1);
+
 export function classifyMistake(item, raw) {
+  const question = String(item?.expr || item?.question || "");
+  const submittedText = String(raw).trim().replaceAll("−", "-").replace(/\s+/g, "");
+  const fractionSum = question.match(/(-?\d+)\/(\d+)\s*\+\s*(-?\d+)\/(\d+)/);
+  if (fractionSum) {
+    const [, an, ad, bn, bd] = fractionSum.map(Number);
+    if (bd && submittedText === `${an + bn}/${ad + bd}` && !item.answers?.some((answer) => String(answer).replace(/\s+/g, "") === submittedText)) {
+      return { id: "addedDenominators", label: DETECTABLE_PATTERNS.addedDenominators() };
+    }
+  }
+  const pair = question.match(/(?:point\s*)?\(?\s*(-?\d+)\s*,\s*(-?\d+)\s*\)?/i);
+  if (pair && ["coordinate", "tuple", "text"].includes(item?.kind) && submittedText === `(${pair[2]},${pair[1]})`) {
+    return { id: "swappedCoordinates", label: DETECTABLE_PATTERNS.swappedCoordinates() };
+  }
+  const factorQuestion = question.match(/\b(?:greatest common factor|GCF|least common multiple|LCM)\b[^\d-]*(-?\d+)[^\d-]+(-?\d+)/i);
+  if (factorQuestion && item?.kind === "number") {
+    const [, left, right] = factorQuestion.map(Number);
+    const isGcf = /\b(?:greatest common factor|GCF)\b/i.test(question);
+    const distractor = isGcf ? lcm(left, right) : gcd(left, right);
+    if (Number(raw) === distractor && Number(raw) !== num(item.answers?.[0])) {
+      return { id: "confusedGcfLcm", label: DETECTABLE_PATTERNS.confusedGcfLcm() };
+    }
+  }
   if (item?.kind !== "number") return null;
-  const match = String(item.expr || item.question || "").match(ARITHMETIC);
+  const match = question.match(ARITHMETIC);
   const submitted = num(raw);
   const answer = num(item.answers?.[0]);
   if (!match || !Number.isFinite(submitted) || !Number.isFinite(answer) || submitted === answer) return null;

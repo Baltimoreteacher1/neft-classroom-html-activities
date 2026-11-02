@@ -7,7 +7,7 @@ import { answerText, check, makeRound, solve } from "./logic.js";
 import { SKILLS } from "./specs.js";
 import { mount } from "./ui.js";
 
-const icon = `<svg viewBox="0 0 48 48" aria-hidden="true" focusable="false"><rect x="3" y="10" width="19" height="27" rx="4" fill="#e7e3fb" stroke="#30265f" stroke-width="2.5" transform="rotate(-8 12 24)"/><rect x="26" y="10" width="19" height="27" rx="4" fill="#fbefcf" stroke="#30265f" stroke-width="2.5" transform="rotate(8 36 24)"/><text x="12" y="30" text-anchor="middle" font-size="16" font-weight="800" fill="#30265f" font-family="system-ui,sans-serif" transform="rotate(-8 12 24)">7</text><text x="36" y="30" text-anchor="middle" font-size="16" font-weight="800" fill="#30265f" font-family="system-ui,sans-serif" transform="rotate(8 36 24)">5</text><path d="M20 41h8" stroke="#5b49c9" stroke-width="3" stroke-linecap="round"/></svg>`;
+const icon = `<svg viewBox="0 0 48 48" aria-hidden="true" focusable="false"><rect x="3" y="10" width="19" height="27" rx="4" fill="#F7F4EC" stroke="#17324D" stroke-width="2.5" transform="rotate(-8 12 24)"/><rect x="26" y="10" width="19" height="27" rx="4" fill="#fbefcf" stroke="#17324D" stroke-width="2.5" transform="rotate(8 36 24)"/><text x="12" y="30" text-anchor="middle" font-size="16" font-weight="800" fill="#17324D" font-family="system-ui,sans-serif" transform="rotate(-8 12 24)">7</text><text x="36" y="30" text-anchor="middle" font-size="16" font-weight="800" fill="#17324D" font-family="system-ui,sans-serif" transform="rotate(8 36 24)">5</text><path d="M20 41h8" stroke="#1FA6A2" stroke-width="3" stroke-linecap="round"/></svg>`;
 
 export default {
   id: "family-math-duel",

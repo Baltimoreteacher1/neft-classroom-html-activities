@@ -47,7 +47,6 @@ export const ES_WORLDS = {
   "Check the order: multiply {factor} by {n}, then add {add}. Choose the matching route and enter its distance.": "Revisa el orden: multiplica {factor} por {n} y luego suma {add}. Elige la ruta correspondiente y escribe su distancia.",
   "{first} of {total} challenges solved independently on the first try; {revisions} revisions made": "Resolviste {first} de {total} retos de forma independiente al primer intento; hiciste {revisions} revisiones",
   "Next challenge": "Siguiente reto",
-  "Finish game": "Terminar juego",
   "Number Garden": "Jardín de números",
   "Ten-Frame Factory": "Fábrica de marcos de diez",
   "Division Harbor": "Puerto de división",

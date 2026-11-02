@@ -1010,13 +1010,13 @@ export const ACTIVITIES = [
   },
   {
     path: "/math/unit-1/projects/",
-    title: "Unit 1 Culminating Projects",
+    title: "Unit 6 Culminating Projects · Unit 1 projects",
     category: "Project",
     unit: 1,
   },
   {
     path: "/math/unit-10/projects/",
-    title: "Unit 10 Culminating Projects",
+    title: "Unit 5 Culminating Projects · Unit 10 projects",
     category: "Project",
     unit: 10,
   },
@@ -1040,13 +1040,13 @@ export const ACTIVITIES = [
   },
   {
     path: "/math/unit-5/projects/",
-    title: "Unit 5 Culminating Projects",
+    title: "Unit 5 Culminating Projects · Unit 5 projects",
     category: "Project",
     unit: 5,
   },
   {
     path: "/math/unit-6/projects/",
-    title: "Unit 6 Culminating Projects",
+    title: "Unit 6 Culminating Projects · Unit 6 projects",
     category: "Project",
     unit: 6,
   },
@@ -1640,6 +1640,12 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/curriculum/family-connections/weekly-sheet/",
+    title: "Weekly Family Practice",
+    category: "Activity",
+    unit: null,
+  },
+  {
     path: "/curriculum/fluency/teacher/",
     title: "Fluency & Readiness",
     category: "Activity",
@@ -2037,19 +2043,19 @@ export const ACTIVITIES = [
   },
   {
     path: "/math/unit-1/projects/version-a/",
-    title: "Block Party Planner — Unit 1 Culminating Project",
+    title: "Block Party Planner — Unit 6 Culminating Project",
     category: "Activity",
     unit: 1,
   },
   {
     path: "/math/unit-1/projects/version-b/",
-    title: "Build-a-Bot Budget Lab — Unit 1 Culminating Project",
+    title: "Build-a-Bot Budget Lab — Unit 6 Culminating Project",
     category: "Activity",
     unit: 1,
   },
   {
     path: "/math/unit-1/projects/version-c/",
-    title: "Deep Space Number Sense Expedition — Unit 1 Culminating Project",
+    title: "Deep Space Number Sense Expedition — Unit 6 Culminating Project",
     category: "Activity",
     unit: 1,
   },
@@ -2097,19 +2103,19 @@ export const ACTIVITIES = [
   },
   {
     path: "/math/unit-10/projects/version-a/",
-    title: "Package Design Challenge — Unit 10 Culminating Project",
+    title: "Package Design Challenge — Unit 5 Culminating Project",
     category: "Activity",
     unit: 10,
   },
   {
     path: "/math/unit-10/projects/version-b/",
-    title: "Aquarium Build Lab — Unit 10 Culminating Project",
+    title: "Aquarium Build Lab — Unit 5 Culminating Project",
     category: "Activity",
     unit: 10,
   },
   {
     path: "/math/unit-10/projects/version-c/",
-    title: "3D Geo-Architect Expedition — Unit 10 Culminating Project",
+    title: "3D Geo-Architect Expedition — Unit 5 Culminating Project",
     category: "Activity",
     unit: 10,
   },
@@ -2283,7 +2289,7 @@ export const ACTIVITIES = [
   },
   {
     path: "/math/unit-4/4-5-practice-studio/",
-    title: "Determine the Whole Given Part & Percent · Practice Studio (Grade 6)",
+    title: "Find the Whole with Ratio Tables · Practice Studio (Grade 6)",
     category: "Activity",
     unit: 4,
   },
@@ -3046,6 +3052,12 @@ export const ACTIVITIES = [
   {
     path: "/math/family/unit-9/",
     title: "Unit 9 Family Letter — Integers & the Coordinate Plane",
+    category: "Math Tool",
+    unit: null,
+  },
+  {
+    path: "/math/fluency-lab/family-adventure/",
+    title: "Family Math Expedition | Expedición matemática en familia",
     category: "Math Tool",
     unit: null,
   },
@@ -5265,6 +5277,12 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/curriculum/publisher-demo/",
+    title: "Publisher Demonstration",
+    category: "Hub",
+    unit: null,
+  },
+  {
     path: "/curriculum/ratio-quest/",
     title: "Ratio Quest: Meridian Market",
     category: "Hub",
@@ -5349,8 +5367,20 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/curriculum/unit-4-test-practice-challenge/",
+    title: "Unit 4 Test Practice · Challenge | Grade 6 Percents",
+    category: "Hub",
+    unit: null,
+  },
+  {
+    path: "/curriculum/unit-4-test-practice/",
+    title: "Unit 4 Test Practice | Grade 6 Percents",
+    category: "Hub",
+    unit: null,
+  },
+  {
     path: "/curriculum/unit-4-test-review/",
-    title: "Unit 4 Test Review | Grade 6 Family Homework",
+    title: "Unit 4 Test Review | Grade 6 Optional Family Practice",
     category: "Hub",
     unit: null,
   },
@@ -5400,6 +5430,12 @@ export const ACTIVITIES = [
   {
     path: "/families/",
     title: "Family Homework Hub",
+    category: "Hub",
+    unit: null,
+  },
+  {
+    path: "/family-app/",
+    title: "EduWonderLab Family",
     category: "Hub",
     unit: null,
   },
@@ -5506,6 +5542,18 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/access-expedition/",
+    title: "Side Quest: WonderLab | Explore the lab your way",
+    category: "Tool",
+    unit: null,
+  },
+  {
+    path: "/access-family-tour/",
+    title: "Family Expedition | Expedición familiar",
+    category: "Tool",
+    unit: null,
+  },
+  {
     path: "/access-guide/",
     title: "ACCESS Practice Lab · Quick Guide",
     category: "Tool",
@@ -5514,6 +5562,12 @@ export const ACTIVITIES = [
   {
     path: "/access-teacher/",
     title: "ACCESS Practice Lab — Teacher Hub",
+    category: "Tool",
+    unit: null,
+  },
+  {
+    path: "/access-teacher/flight-deck/",
+    title: "Grade 6 Teacher Flight Deck",
     category: "Tool",
     unit: null,
   },
@@ -6048,6 +6102,12 @@ export const ACTIVITIES = [
   {
     path: "/about/privacy-and-data/",
     title: "Privacy and Data Practices — Neft Classroom Platform",
+    category: "Practice",
+    unit: null,
+  },
+  {
+    path: "/access-family-expedition/",
+    title: "Family Adventure | Aventura familiar",
     category: "Practice",
     unit: null,
   },
@@ -7775,14 +7835,14 @@ export const LESSONS = [
     unit: 3,
     lesson: 6,
     title: "Ratio Reasoning: Convert Measurements within the Same System",
-    standard: "6.AT.3",
+    standard: "6.AT.3c",
   },
   {
     id: "3-7",
     unit: 3,
     lesson: 7,
     title: "Ratio Reasoning: Convert Measurements Between Systems",
-    standard: "6.AT.3",
+    standard: "6.AT.3c",
   },
   {
     id: "3-8",

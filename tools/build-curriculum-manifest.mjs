@@ -445,10 +445,9 @@ function buildLesson(id, cfg, familyTitlesEs, _launchManifest, scenes, labs, pac
   }
 
   // Standards
+  // ONE standard code per lesson: config.json `standard`, verbatim (docs/family-homework-v3/standards.md).
+  // A per-lesson override here printed "6.AT.3" for 3-6 and 3-7 on the hub while their pages and files said 6.AT.3c.
   let standardPrimary = cfg.standard || "6.EE.A.1";
-  if (id === "3-6" || id === "3-7") {
-    standardPrimary = "6.AT.3";
-  }
   const standards = [standardPrimary];
   if (Array.isArray(cfg.standards)) {
     for (const s of cfg.standards) {

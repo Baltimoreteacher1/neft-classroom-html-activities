@@ -424,7 +424,7 @@
       esc(title) +
       " — " +
       esc(languageText("My Portfolio", "Mi portafolio")) +
-      "</title><style>body{font:15px/1.5 system-ui,sans-serif;max-width:720px;margin:32px auto;padding:0 20px;color:#222}h1{color:#4a3fb0}h2{margin-top:26px;border-bottom:2px solid #eee;padding-bottom:4px}li{margin:6px 0}.meta{color:#666;font-size:13px}</style></head><body>";
+      "</title><style>body{font:15px/1.5 system-ui,sans-serif;max-width:720px;margin:32px auto;padding:0 20px;color:#222}h1{color:#17324D}h2{margin-top:26px;border-bottom:2px solid #eee;padding-bottom:4px}li{margin:6px 0}.meta{color:#666;font-size:13px}</style></head><body>";
     html += "<h1>" + esc(title) + "</h1>";
     html +=
       "<p class='meta'>" +

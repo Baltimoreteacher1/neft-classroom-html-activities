@@ -82,6 +82,13 @@ for (const v of ["6", "12"]) type(h.querySelector('[data-multiple-of="6"]'), v);
 ok(h.querySelector('[data-chip="12"].shared'), "lcm shared lights");
 // gcf
 h.innerHTML = m.interactivePicture({ type: "lists", a: 12, b: 18, find: "gcf" });
+h.querySelector('[data-factor-of="12"]').value = "1";
+tap('[data-add-factor="12"]');
+ok(h.querySelector('[data-chips="12"] [data-chip="1"]'), "gcf adds entered factor");
+ok(
+  !h.querySelector('[data-chips="12"] [data-chip="12"]'),
+  "gcf does not fill in partner factor automatically",
+);
 h.querySelector('[data-factor-of="12"]').value = "6";
 tap('[data-add-factor="12"]');
 h.querySelector('[data-factor-of="18"]').value = "6";

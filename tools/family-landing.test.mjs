@@ -23,6 +23,7 @@ import test from "node:test";
 import { fileURLToPath } from "node:url";
 import { JSDOM } from "jsdom";
 import { fold, TOPIC_LABELS, WEEK_HUB_HREF } from "../scripts/lib/family-landing.mjs";
+import { withPlainDefinitions } from "../scripts/lib/family-plain-definitions.mjs";
 import { SESSIONS } from "../scripts/lib/homework-session-flow.mjs";
 import { CORE_ID_RE, lessonPath, listLessonDirs } from "./lib/curriculum-source.mjs";
 
@@ -407,7 +408,8 @@ test("lesson family pages: one glossary, no generic Kitchen Table block, own mis
       assert.ok(!html.includes(dead), `${id}: "${dead}" is gone`);
     // Spanish term and both meanings sit in the same glossary entry.
     for (const [i, item] of [...doc.querySelectorAll("[data-glossary] .gloss-item")].entries()) {
-      const vocab = config.vocabulary.filter((v) => v.term)[i];
+      // the page shows the glossary's one Spanish term (data/family-glossary.json), not each lesson's own spelling
+      const vocab = withPlainDefinitions(config.vocabulary, id).filter((v) => v.term)[i];
       assert.equal(item.querySelector(".gloss-es")?.textContent, vocab.termEs, `${id}: ES term`);
       assert.equal(item.querySelectorAll("dd").length, 2, `${id}: meaning in both languages`);
     }

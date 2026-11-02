@@ -374,7 +374,7 @@ export class GraphView {
     const blobs = [
       { c: "rgba(88,182,255,0.16)", ox: 0.18, oy: 0.16, r: 0.62, sx: 0.05, sy: 0.07 },
       { c: "rgba(111,224,176,0.11)", ox: 0.84, oy: 0.78, r: 0.55, sx: -0.06, sy: 0.04 },
-      { c: "rgba(183,155,255,0.1)", ox: 0.62, oy: 0.12, r: 0.48, sx: 0.04, sy: -0.05 },
+      { c: "#F7F4EC", ox: 0.62, oy: 0.12, r: 0.48, sx: 0.04, sy: -0.05 },
     ];
     for (const b of blobs) {
       const cx = (b.ox + Math.sin(t * 0.06 + b.ox * 9) * b.sx) * this.w;

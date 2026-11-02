@@ -23,7 +23,7 @@ export const HOW_TO = {
     "Pulsa Comprobar. Cualquier camino al lote correcto sirve: × 6 es lo mismo que × 2 y luego × 3.",
   ],
 };
-export const ICON = `<svg viewBox="0 0 48 48" aria-hidden="true" focusable="false"><path d="M6 20h36a18 18 0 0 1-36 0z" fill="#fbefcf" stroke="#1f2740" stroke-width="3" stroke-linejoin="round"/><path d="M4 20h40" stroke="#1f2740" stroke-width="3" stroke-linecap="round"/><circle cx="17" cy="12" r="3.5" fill="#e7e3fb" stroke="#5b49c9" stroke-width="2"/><circle cx="27" cy="9" r="3.5" fill="#e7e3fb" stroke="#5b49c9" stroke-width="2"/><rect x="31" y="9" width="7" height="7" fill="#fde5df" stroke="#e0583f" stroke-width="2"/></svg>`;
+export const ICON = `<svg viewBox="0 0 48 48" aria-hidden="true" focusable="false"><path d="M6 20h36a18 18 0 0 1-36 0z" fill="#fbefcf" stroke="#1f2740" stroke-width="3" stroke-linejoin="round"/><path d="M4 20h40" stroke="#1f2740" stroke-width="3" stroke-linecap="round"/><circle cx="17" cy="12" r="3.5" fill="#F7F4EC" stroke="#1FA6A2" stroke-width="2"/><circle cx="27" cy="9" r="3.5" fill="#F7F4EC" stroke="#1FA6A2" stroke-width="2"/><rect x="31" y="9" width="7" height="7" fill="#fde5df" stroke="#e0583f" stroke-width="2"/></svg>`;
 
 export const SKILL_COPY = {
   "bowls-groups": [

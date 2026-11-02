@@ -16,7 +16,7 @@
         box-sizing: border-box;
       }
       body {
-        background: #1a1226;
+        background: #17324D;
         overflow: hidden;
         font-family: "Segoe UI", system-ui, sans-serif;
         touch-action: none;
@@ -29,7 +29,7 @@
         touch-action: none;
       }
       canvas:focus-visible {
-        outline: 3px solid #b06fd4;
+        outline: 3px solid #1FA6A2;
         outline-offset: 4px;
         border-radius: 8px;
       }
@@ -42,7 +42,7 @@
         z-index: 0;
         overflow: hidden;
         pointer-events: none;
-        background: radial-gradient(130% 90% at 50% 0%, #34204f 0%, #221636 55%, #140c20 100%);
+        background: radial-gradient(130% 90% at 50% 0%, #17324D 0%, #17324D 55%, #17324D 100%);
       }
       #ee-bg-layer {
         position: absolute;
@@ -53,7 +53,7 @@
       .ee-star {
         position: absolute;
         border-radius: 50%;
-        background: #e0c8ff;
+        background: #F7F4EC;
         opacity: 0.5;
         animation: eeTwinkle var(--tw, 3s) ease-in-out infinite;
       }
@@ -104,7 +104,7 @@
       window.addEventListener("load", function () {
         if (typeof Phaser === "undefined") {
           document.body.innerHTML =
-            '<div style="font:600 18px/1.5 system-ui,sans-serif;padding:2rem;max-width:32rem;margin:3rem auto;text-align:center;color:#e0c8ff">⚠️ This game needs an internet connection to load. Please check your connection and refresh the page.</div>';
+            '<div style="font:600 18px/1.5 system-ui,sans-serif;padding:2rem;max-width:32rem;margin:3rem auto;text-align:center;color:#F7F4EC">⚠️ This game needs an internet connection to load. Please check your connection and refresh the page.</div>';
         }
       });
     </script>
@@ -302,7 +302,7 @@
           musicStop() {},
         },
         theme: () => ({
-          accent: "#b06fd4",
+          accent: "#1FA6A2",
           accentN: 0xb06fd4,
           tileN: 0x3a2a58,
           botN: 0x221636,
@@ -533,7 +533,7 @@
         width: W,
         height: H,
         parent: document.body,
-        backgroundColor: "#221636",
+        backgroundColor: "#17324D",
         scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
         scene: [BootScene, TitleScene, LevelScene, VocabScene, GameScene, ResultScene],
       };
@@ -613,8 +613,8 @@
           .text(cx, 110, "EXPRESSION", {
             fontFamily: "Impact, sans-serif",
             fontSize: "58px",
-            color: "#b06fd4",
-            stroke: "#140c20",
+            color: "#1FA6A2",
+            stroke: "#17324D",
             strokeThickness: 6,
           })
           .setOrigin(0.5);
@@ -622,8 +622,8 @@
           .text(cx, 162, "EXPRESS", {
             fontFamily: "Impact, sans-serif",
             fontSize: "58px",
-            color: "#e0c8ff",
-            stroke: "#140c20",
+            color: "#F7F4EC",
+            stroke: "#17324D",
             strokeThickness: 6,
           })
           .setOrigin(0.5);
@@ -631,7 +631,7 @@
           .text(cx, 210, "Expression Assembler", {
             fontFamily: "Segoe UI, sans-serif",
             fontSize: "24px",
-            color: "#c8a0e0",
+            color: "#F7F4EC",
           })
           .setOrigin(0.5);
         this.add
@@ -642,7 +642,7 @@
             {
               fontFamily: "Segoe UI, sans-serif",
               fontSize: "16px",
-              color: "#e0d0f0",
+              color: "#F7F4EC",
               align: "center",
             },
           )
@@ -651,7 +651,7 @@
           .text(cx, 318, "6.AT.5 · 6.AT.6 · Unit 6 · Expressions, exponents, order of operations", {
             fontFamily: "Segoe UI, sans-serif",
             fontSize: "15px",
-            color: "#c2a8de",
+            color: "#F7F4EC",
           })
           .setOrigin(0.5);
 
@@ -718,8 +718,8 @@
           .text(cx, 70, "CHOOSE YOUR LEVEL", {
             fontFamily: "Impact, sans-serif",
             fontSize: "36px",
-            color: "#b06fd4",
-            stroke: "#140c20",
+            color: "#1FA6A2",
+            stroke: "#17324D",
             strokeThickness: 5,
           })
           .setOrigin(0.5);
@@ -727,7 +727,7 @@
           .text(cx, 116, "You can change this anytime.", {
             fontFamily: "Segoe UI, sans-serif",
             fontSize: "15px",
-            color: "#a080c0",
+            color: "#F2C15B",
           })
           .setOrigin(0.5);
 
@@ -755,7 +755,7 @@
             .text(cx - 230, d.y - 38, d.title, {
               fontFamily: "Impact, sans-serif",
               fontSize: "30px",
-              color: "#e0c8ff",
+              color: "#F7F4EC",
             })
             .setOrigin(0, 0.5);
           const st = this.add
@@ -763,14 +763,14 @@
               fontFamily: "Segoe UI, sans-serif",
               fontSize: "15px",
               fontStyle: "bold",
-              color: "#c8a0e0",
+              color: "#F7F4EC",
             })
             .setOrigin(0, 0.5);
           const bt = this.add
             .text(cx - 230, d.y + 30, d.body, {
               fontFamily: "Segoe UI, sans-serif",
               fontSize: "15px",
-              color: "#e0d0f0",
+              color: "#F7F4EC",
             })
             .setOrigin(0, 0.5);
           card.on("pointerover", () => {
@@ -830,12 +830,12 @@
           .text(cx, 552, "← Back", {
             fontFamily: "Segoe UI, sans-serif",
             fontSize: "17px",
-            color: "#c2a8de",
+            color: "#F7F4EC",
           })
           .setOrigin(0.5)
           .setInteractive({ useHandCursor: true });
-        back.on("pointerover", () => back.setColor("#b06fd4"));
-        back.on("pointerout", () => back.setColor("#a080c0"));
+        back.on("pointerover", () => back.setColor("#1FA6A2"));
+        back.on("pointerout", () => back.setColor("#F2C15B"));
         back.on("pointerdown", () => this.scene.start("Title"));
 
         this.refresh();
@@ -877,8 +877,8 @@
           .text(cx, 60, "WORDS TO KNOW FIRST", {
             fontFamily: "Impact, sans-serif",
             fontSize: "34px",
-            color: "#b06fd4",
-            stroke: "#140c20",
+            color: "#1FA6A2",
+            stroke: "#17324D",
             strokeThickness: 5,
           })
           .setOrigin(0.5);
@@ -890,7 +890,7 @@
             fontFamily: "Segoe UI, sans-serif",
             fontSize: "14px",
             fontStyle: "bold",
-            color: "#a080c0",
+            color: "#F2C15B",
           })
           .setOrigin(0.5);
         this.emojiText = this.add.text(cx, 232, "", { fontSize: "84px" }).setOrigin(0.5);
@@ -899,14 +899,14 @@
             fontFamily: "Segoe UI, sans-serif",
             fontSize: "30px",
             fontStyle: "bold",
-            color: "#e0c8ff",
+            color: "#F7F4EC",
           })
           .setOrigin(0.5);
         this.defText = this.add
           .text(cx, 388, "", {
             fontFamily: "Segoe UI, sans-serif",
             fontSize: "17px",
-            color: "#e0d0f0",
+            color: "#F7F4EC",
             align: "center",
             wordWrap: { width: 500 },
           })
@@ -936,7 +936,7 @@
             fontFamily: "Segoe UI, sans-serif",
             fontSize: "18px",
             fontStyle: "bold",
-            color: "#c8a0e0",
+            color: "#F7F4EC",
           })
           .setOrigin(0.5);
         backBtn.on("pointerover", () => backBtn.setFillStyle(0x54407a));
@@ -1026,7 +1026,7 @@
         };
         this.scoreText = this.add.text(16, 12, "Score: 0", {
           ...hudStyle,
-          color: "#c8a0e0",
+          color: "#F7F4EC",
         });
         this.streakText = this.add
           .text(W - 16, 12, "Streak: 0", { ...hudStyle, color: "#ffd24a" })
@@ -1035,7 +1035,7 @@
           .text(W - 16, 36, TRACK_LABEL[this.track], {
             ...hudStyle,
             fontSize: "15px",
-            color: "#e0d0f0",
+            color: "#F7F4EC",
           })
           .setOrigin(1, 0);
         this.progressText = this.add
@@ -1069,7 +1069,7 @@
           .text(W / 2, 72, "Build an expression that equals", {
             fontFamily: "Segoe UI, sans-serif",
             fontSize: "17px",
-            color: "#d2b8ee",
+            color: "#F7F4EC",
           })
           .setOrigin(0.5);
         this.goalText = this.add
@@ -1077,7 +1077,7 @@
             fontFamily: "Impact, sans-serif",
             fontSize: "52px",
             color: "#ffd24a",
-            stroke: "#140c20",
+            stroke: "#17324D",
             strokeThickness: 5,
           })
           .setOrigin(0.5);
@@ -1086,7 +1086,7 @@
             fontFamily: "Segoe UI, sans-serif",
             fontSize: "20px",
             fontStyle: "bold",
-            color: "#e0c8ff",
+            color: "#F7F4EC",
           })
           .setOrigin(0.5);
 
@@ -1108,7 +1108,7 @@
             fontSize: "16px",
             fontStyle: "bold",
             color: "#ffd24a",
-            stroke: "#140c20",
+            stroke: "#17324D",
             strokeThickness: 3,
             align: "center",
             wordWrap: { width: W - 80 },
@@ -1141,7 +1141,7 @@
             {
               fontFamily: "Segoe UI, sans-serif",
               fontSize: "15px",
-              color: "#c2a8de",
+              color: "#F7F4EC",
               align: "center",
               wordWrap: { width: W - 60 },
             },
@@ -1540,7 +1540,7 @@
         this.updateCoach(st);
         // Never a live value: the student evaluates. (Tier-2 help walks
         // through the build they LOCKED IN, inside the feedback line.)
-        this.readout.setColor("#e0d0f0");
+        this.readout.setColor("#F7F4EC");
         this.readout.setText(expr + "  = ?");
         srSay("Building: " + (expr.trim() ? expr : "empty") + ". Goal " + (this.problem ? this.problem.goal : "") + ".");
       };
@@ -1792,8 +1792,8 @@
           .text(cx, 70, "FULL STEAM AHEAD!", {
             fontFamily: "Impact, sans-serif",
             fontSize: "44px",
-            color: "#b06fd4",
-            stroke: "#140c20",
+            color: "#1FA6A2",
+            stroke: "#17324D",
             strokeThickness: 5,
           })
           .setOrigin(0.5);
@@ -1828,7 +1828,7 @@
               : "Practice next → keep your streak going with ♾️ Keep Playing.",
         ];
         this.summary = this.add
-          .text(cx, 290, lines.join("\n"), T(17, "#ece0fa", { align: "center", lineSpacing: 10, wordWrap: { width: W - 70 } }))
+          .text(cx, 290, lines.join("\n"), T(17, "#F7F4EC", { align: "center", lineSpacing: 10, wordWrap: { width: W - 70 } }))
           .setOrigin(0.5);
         // The controls panel reads bannerText: mirror the summary there so it
         // is readable at phone width and by screen readers.
@@ -1893,7 +1893,7 @@
         change.on("pointerover", () => change.setFillStyle(0x54407a));
         change.on("pointerout", () => change.setFillStyle(0x42305f));
         change.on("pointerdown", () => this.scene.start("Level"));
-        this.add.text(cx, 556, "Enter = Play again · Every round has new numbers.", T(15, "#c2a8de")).setOrigin(0.5);
+        this.add.text(cx, 556, "Enter = Play again · Every round has new numbers.", T(15, "#F7F4EC")).setOrigin(0.5);
       };
 
       // ── Launch ──

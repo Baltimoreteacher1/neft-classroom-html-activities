@@ -13,63 +13,14 @@
  *   7 integers, rational numbers, coordinate plane → coordinate plane
  */
 
+import { act, EL } from "./homework-actions.mjs";
+
 const esc = (s) =>
   String(s ?? "")
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;");
-
-const INK = "rgb(18,53,91)";
-const FAINT = "rgb(150,170,190)";
-
-const lines = (items) => items.join("");
-const line = (x1, y1, x2, y2, stroke, width) =>
-  `<line x1='${x1}' y1='${y1}' x2='${x2}' y2='${y2}' stroke='${stroke}' stroke-width='${width}' vector-effect='non-scaling-stroke'/>`;
-const svgUri = (viewBox, aspect, body) =>
-  `url("data:image/svg+xml,${encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' viewBox='${viewBox}' preserveAspectRatio='${aspect}'>${body}</svg>`)}")`;
-
-const doubleLine = svgUri(
-  "0 0 400 100",
-  "none",
-  lines([
-    line(10, 32, 390, 32, INK, 2.5),
-    line(10, 72, 390, 72, INK, 2.5),
-    ...Array.from({ length: 11 }, (_, i) => {
-      const x = 20 + i * 36;
-      return line(x, 24, x, 40, INK, 2) + line(x, 64, x, 80, INK, 2);
-    }),
-  ]),
-);
-
-const percentGrid = svgUri(
-  "0 0 100 100",
-  "xMidYMid meet",
-  lines(
-    Array.from({ length: 11 }, (_, i) => {
-      const edge = i === 0 || i === 10;
-      const stroke = edge ? INK : FAINT;
-      const width = edge ? 2.5 : 1;
-      return (
-        line(i * 10, 0, i * 10, 100, stroke, width) + line(0, i * 10, 100, i * 10, stroke, width)
-      );
-    }),
-  ),
-);
-
-const coordinatePlane = svgUri(
-  "0 0 200 200",
-  "xMidYMid meet",
-  lines([
-    ...Array.from({ length: 11 }, (_, i) =>
-      i === 5
-        ? ""
-        : line(i * 20, 0, i * 20, 200, FAINT, 1) + line(0, i * 20, 200, i * 20, FAINT, 1),
-    ),
-    line(100, 0, 100, 200, INK, 2.5),
-    line(0, 100, 200, 100, INK, 2.5),
-  ]),
-);
 
 /** Reveal unit → the stamp that unit's mathematics lives on. */
 export const SCRATCHPAD_STAMPS = {
@@ -80,7 +31,7 @@ export const SCRATCHPAD_STAMPS = {
 
 const stampButton = (stamp) =>
   stamp
-    ? `<button type="button" class="btn btn-sm btn-outline-secondary grid-btn" onclick="setScratchpadGrid('${stamp.key}', this)">${stamp.icon} <span class="lang-en">${esc(stamp.en)}</span><span class="lang-es" lang="es">${esc(stamp.es)}</span></button>`
+    ? `<button type="button" class="btn btn-sm btn-outline-secondary grid-btn" ${act("setScratchpadGrid", stamp.key, EL)}>${stamp.icon} <span class="lang-en">${esc(stamp.en)}</span><span class="lang-es" lang="es">${esc(stamp.es)}</span></button>`
     : "";
 
 export function renderScratchpadHtml(unit) {
@@ -94,21 +45,21 @@ export function renderScratchpadHtml(unit) {
         </div>
         <div class="scratchpad-tools">
           <div class="color-palette" role="radiogroup" aria-label="Drawing color">
-            <button type="button" class="color-dot is-active" data-color="#12355b" style="background:#12355b;" onclick="setScratchpadColor('#12355b', this)" aria-label="Navy pen"></button>
-            <button type="button" class="color-dot" data-color="#1fa6a2" style="background:#1fa6a2;" onclick="setScratchpadColor('#1fa6a2', this)" aria-label="Teal pen"></button>
-            <button type="button" class="color-dot" data-color="#d97706" style="background:#d97706;" onclick="setScratchpadColor('#d97706', this)" aria-label="Amber pen"></button>
-            <button type="button" class="color-dot" data-color="#d9795d" style="background:#d9795d;" onclick="setScratchpadColor('#d9795d', this)" aria-label="Coral pen"></button>
+            <button type="button" class="color-dot is-active u-pen-navy" data-color="#12355b" ${act("setScratchpadColor", "#12355b", EL)} aria-label="Navy pen"></button>
+            <button type="button" class="color-dot u-pen-teal" data-color="#1fa6a2" ${act("setScratchpadColor", "#1fa6a2", EL)} aria-label="Teal pen"></button>
+            <button type="button" class="color-dot u-pen-amber" data-color="#d97706" ${act("setScratchpadColor", "#d97706", EL)} aria-label="Amber pen"></button>
+            <button type="button" class="color-dot u-pen-coral" data-color="#d9795d" ${act("setScratchpadColor", "#d9795d", EL)} aria-label="Coral pen"></button>
           </div>
           <div class="grid-mode-group">
-            <button type="button" class="btn btn-sm btn-outline-secondary grid-btn is-active" onclick="setScratchpadGrid('blank', this)">📄 <span class="lang-en">Blank</span><span class="lang-es" lang="es">Blanco</span></button>
-            <button type="button" class="btn btn-sm btn-outline-secondary grid-btn" onclick="setScratchpadGrid('graph', this)">📐 <span class="lang-en">Grid</span><span class="lang-es" lang="es">Cuadrícula</span></button>
-            <button type="button" class="btn btn-sm btn-outline-secondary grid-btn" onclick="setScratchpadGrid('dots', this)">⚬ <span class="lang-en">Dots</span><span class="lang-es" lang="es">Puntos</span></button>
+            <button type="button" class="btn btn-sm btn-outline-secondary grid-btn is-active" ${act("setScratchpadGrid", "blank", EL)}>📄 <span class="lang-en">Blank</span><span class="lang-es" lang="es">Blanco</span></button>
+            <button type="button" class="btn btn-sm btn-outline-secondary grid-btn" ${act("setScratchpadGrid", "graph", EL)}>📐 <span class="lang-en">Grid</span><span class="lang-es" lang="es">Cuadrícula</span></button>
+            <button type="button" class="btn btn-sm btn-outline-secondary grid-btn" ${act("setScratchpadGrid", "dots", EL)}>⚬ <span class="lang-en">Dots</span><span class="lang-es" lang="es">Puntos</span></button>
             ${stampButton(stamp)}
           </div>
-          <button type="button" class="btn btn-sm btn-secondary tool-btn" id="scratchpad_eraser_btn" onclick="toggleScratchpadEraser()">🧹 <span class="lang-en">Eraser</span><span class="lang-es" lang="es">Borrador</span></button>
-          <button type="button" class="btn btn-sm btn-secondary tool-btn" onclick="clearScratchpad()">🗑️ <span class="lang-en">Clear</span><span class="lang-es" lang="es">Borrar</span></button>
-          <button type="button" class="btn btn-sm btn-secondary tool-btn scratchpad-expand-btn" id="scratchpad_expand_btn" aria-pressed="false" onclick="toggleScratchpadExpand()">⛶ <span class="lang-en scratchpad-expand-en">Full screen</span><span class="lang-es scratchpad-expand-es" lang="es">Pantalla completa</span></button>
-          <button type="button" class="scratchpad-close-btn" onclick="toggleScratchpad()" aria-label="Close scratchpad">✕</button>
+          <button type="button" class="btn btn-sm btn-secondary tool-btn" id="scratchpad_eraser_btn" ${act("toggleScratchpadEraser")}>🧹 <span class="lang-en">Eraser</span><span class="lang-es" lang="es">Borrador</span></button>
+          <button type="button" class="btn btn-sm btn-secondary tool-btn" ${act("clearScratchpad")}>🗑️ <span class="lang-en">Clear</span><span class="lang-es" lang="es">Borrar</span></button>
+          <button type="button" class="btn btn-sm btn-secondary tool-btn scratchpad-expand-btn" id="scratchpad_expand_btn" aria-pressed="false" ${act("toggleScratchpadExpand")}>⛶ <span class="lang-en scratchpad-expand-en">Full screen</span><span class="lang-es scratchpad-expand-es" lang="es">Pantalla completa</span></button>
+          <button type="button" class="scratchpad-close-btn" ${act("toggleScratchpad")} aria-label="Close scratchpad">✕</button>
         </div>
       </div>
       <div class="scratchpad-canvas-wrap">
@@ -117,28 +68,6 @@ export function renderScratchpadHtml(unit) {
       <p class="scratchpad-hint"><span class="lang-en">💡 Draw fraction bars, tape diagrams, equations, or line up decimals together!</span><span class="lang-es" lang="es">💡 ¡Dibujen barras de fracciones, modelos o alineen decimales juntos!</span></p>
     </div>`;
 }
-
-export const SCRATCHPAD_CSS = `
-.scratchpad-canvas { display: block; width: 100%; height: 220px; background: transparent; touch-action: none; }
-.scratchpad-canvas-wrap.scratchpad-bg-graph { background-color: #fff; background-image: linear-gradient(rgba(150,170,190,.55) 1px, transparent 1px), linear-gradient(90deg, rgba(150,170,190,.55) 1px, transparent 1px); background-size: 24px 24px; }
-.scratchpad-canvas-wrap.scratchpad-bg-dots { background: #fff radial-gradient(circle, rgba(18,53,91,.45) 1.5px, transparent 2px) 0 0 / 24px 24px; }
-.scratchpad-canvas-wrap.scratchpad-bg-doubleline { background: #fff ${doubleLine} center / 100% 100% no-repeat; }
-.scratchpad-canvas-wrap.scratchpad-bg-percent { background: #fff ${percentGrid} center / contain no-repeat; }
-.scratchpad-canvas-wrap.scratchpad-bg-plane { background: #fff ${coordinatePlane} center / contain no-repeat; }
-.grid-btn.is-active { background: var(--teal, #1fa6a2); border-color: var(--teal, #1fa6a2); color: #fff; }
-.scratchpad-expand-btn { min-height: 40px; }
-body.hw-scratchpad-open { overflow: hidden; }
-.interactive-scratchpad.is-expanded { position: fixed; inset: 0; z-index: 10000; display: flex; flex-direction: column; margin: 0; padding: 10px; border-radius: 0; overflow: auto; background: #fff; }
-.interactive-scratchpad.is-expanded .scratchpad-canvas-wrap { flex: 1 1 auto; min-height: 240px; }
-.interactive-scratchpad.is-expanded .scratchpad-canvas { height: 100%; }
-@media (max-width: 640px) {
-  .scratchpad-tools { gap: 6px; }
-  .scratchpad-tools .btn, .scratchpad-close-btn { min-height: 44px; }
-  .scratchpad-close-btn { min-width: 44px; font-size: 22px; }
-  .color-dot { width: 28px; height: 28px; }
-}
-@media print { .interactive-scratchpad { display: none !important; } }
-`;
 
 export const SCRATCHPAD_JS = `
 /* Family Math Scratchpad */

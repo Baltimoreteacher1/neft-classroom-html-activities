@@ -651,8 +651,8 @@ export function resolveLessonMisconception(config) {
   }
   if (text.includes("ratio") || text.includes("rate")) {
     return {
-      en: "Keep the order of quantities consistent! If the ratio compares apples to oranges (3:5), do not mix up the order when scaling up equivalent ratios.",
-      es: "¡Mantén constante el orden de las cantidades! Si la razón compara manzanas con naranjas (3:5), no confundas el orden al calcular razones equivalentes.",
+      en: "The order follows the words in the question. With 3 apples and 5 oranges, apples to oranges is 3:5; oranges to apples is 5:3. For apples to all 8 pieces, use 3:8.",
+      es: "El orden de la razón sigue las palabras de la pregunta. Con 3 manzanas y 5 naranjas, manzanas a naranjas es 3:5 y naranjas a manzanas es 5:3. Para manzanas al total de 8 piezas, escribe 3:8.",
     };
   }
   if (text.includes("fraction") && text.includes("divide")) {

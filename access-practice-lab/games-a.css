@@ -1,0 +1,36 @@
+/* Vocabulary Quest (flagship reference). */
+.vq-map { margin: 0 0 var(--s-3, .75rem); padding: .25rem .5rem; border-radius: var(--radius); background: var(--surface-2); border: 1px solid var(--line); }
+.vq-map svg { display: block; width: 100%; max-height: 5.5rem; }
+.vq-camp-h { margin: .25rem 0 .5rem; font-family: "Fraunces", Georgia, serif; font-size: 1.3rem; }
+.vq-board, .vq-meaning { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--s-4, 1rem); align-items: start; }
+.vq-pics, .vq-words, .vq-slots, .vq-cards { display: grid; gap: .6rem; margin: 0; padding: 0; list-style: none; }
+.vq-pics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.vq-pic { position: relative; display: grid; place-items: center; width: 100%; aspect-ratio: 1 / .85; padding: .5rem; background: #fff; border: 3px solid var(--line-strong); border-radius: var(--gs-r, 18px); cursor: pointer; transition: transform .12s, border-color .12s, box-shadow .12s; }
+.vq-pic:hover:not(:disabled) { transform: translateY(-2px); border-color: var(--gs-navy, #17324d); }
+.vq-pic.is-sel { border-color: var(--gs-gold, #f2c15b); box-shadow: 0 0 0 4px rgb(242 193 91 / 45%); transform: translateY(-2px); }
+.vq-pic.is-done { border-color: var(--right); background: var(--right-soft); cursor: default; }
+.vq-pic .gs-pic { width: 70%; max-height: 100%; }
+.vq-tick { position: absolute; top: .3rem; right: .35rem; display: grid; place-items: center; width: 1.6rem; height: 1.6rem; border-radius: 50%; background: var(--right); color: #fff; }
+.vq-tick .ico { width: 1rem; height: 1rem; }
+.vq-done-w { position: absolute; bottom: .25rem; left: 0; right: 0; text-align: center; font-weight: 800; font-size: .9375rem; color: var(--right); }
+.vq-wcard { display: flex; flex-wrap: wrap; align-items: center; gap: .4rem .6rem; padding: .4rem; border-radius: var(--radius-sm); background: #fff; border: 2px solid var(--line); }
+.vq-wcard.is-done { opacity: .55; }
+.vq-word { flex: 1 1 8rem; min-height: 3rem; padding: .5rem .9rem; font: inherit; font-size: 1.2rem; font-weight: 800; text-align: left; color: var(--ink); background: var(--surface-2); border: 2px solid var(--line-strong); border-radius: var(--radius-sm); cursor: pointer; }
+.vq-word:hover:not(:disabled) { border-color: var(--gs-navy, #17324d); background: var(--brand-soft); }
+.vq-word:disabled { cursor: not-allowed; color: var(--ink-3); }
+.vq-slot { display: grid; gap: .45rem; padding: .6rem .75rem; background: #fff; border: 2px solid var(--line-strong); border-radius: var(--radius-sm); }
+.vq-slot.is-done { border-color: var(--right); background: var(--right-soft); }
+.vq-slot-head { display: flex; flex-wrap: wrap; gap: .4rem .6rem; align-items: center; }
+.vq-slot-w { font-size: 1.25rem; font-weight: 800; }
+.vq-slot-pic { margin-left: auto; width: 3rem; }
+.vq-slot-empty { min-height: 3rem; padding: .5rem; font: inherit; color: var(--ink-3); background: var(--surface-2); border: 2px dashed var(--line-strong); border-radius: var(--radius-sm); cursor: pointer; }
+.vq-slot-def { display: flex; gap: .4rem; margin: 0; font-size: 1rem; }
+.vq-slot-def .ico { flex: none; color: var(--right); }
+.vq-card { width: 100%; min-height: 3.25rem; padding: .7rem .9rem; text-align: left; font: inherit; font-size: 1.0625rem; color: var(--ink); background: var(--gs-gold-soft, #fff3d0); border: 2px solid var(--gs-gold, #f2c15b); border-radius: var(--radius-sm); box-shadow: 0 2px 0 rgb(20 38 61 / 15%); }
+.vq-cards li { display: grid; gap: .25rem; }
+.vq-sentence { padding: .9rem 1rem; background: #fff; border: 2px solid var(--line); border-radius: var(--radius-sm); }
+.vq-gap { display: inline-block; min-width: 6.5rem; margin-inline: .15rem; padding: 0 .5rem; border-bottom: 4px solid var(--gs-navy, #17324d); background: var(--surface-2); text-align: center; font-weight: 800; }
+.vq-gap.is-filled { background: var(--brand-soft); }
+.vq-clue { background: #fff2b8; color: inherit; padding: 0 .15rem; border-radius: 3px; text-decoration: underline wavy var(--gs-coral, #f2765a); text-underline-offset: 3px; }
+.vq-bank { grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr)); }
+@media (max-width: 40rem) { .vq-board, .vq-meaning { grid-template-columns: minmax(0, 1fr); } }

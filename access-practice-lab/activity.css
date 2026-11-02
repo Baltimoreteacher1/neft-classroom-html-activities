@@ -47,6 +47,18 @@
   font-weight: 700;
   font-size: 0.9375rem;
 }
+.act-journey-label {
+  margin: 0;
+  color: var(--ink-2);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+.act-return {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0 0 0.75rem;
+}
 .act-step {
   display: inline-flex;
   align-items: center;
@@ -152,7 +164,7 @@
   letter-spacing: 0;
   color: var(--ink);
 }
-.workbook-heading > span {
+.workbook-heading > span[aria-hidden="true"] {
   display: grid;
   place-items: center;
   flex: none;
@@ -1359,4 +1371,49 @@ details.helpers[open] > summary {
   display: table;
   max-width: none;
   overflow: visible;
+}
+.practice-score {
+  margin-block: 1rem;
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--room);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--ink-2);
+}
+.practice-score h3 { margin: 0.15rem 0 0.4rem; color: var(--ink); }
+.practice-score .eyebrow { margin: 0; color: var(--room-ink); font-weight: 700; }
+.practice-score ul { display: grid; gap: 0.25rem; margin: 0.75rem 0; padding: 0; list-style: none; }
+.practice-score li { display: flex; gap: 0.55rem; align-items: flex-start; }
+.practice-score li.is-met > span { color: var(--right); font-weight: 800; }
+.practice-score li.is-next > span { color: var(--ink-3); }
+
+/* ── "How sure are you?" — optional, before Check ─────────────────────── */
+.sure-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-2);
+  margin: var(--s-3) 0;
+}
+.sure-label {
+  font-weight: 700;
+  color: var(--ink-2);
+}
+.sure-note {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--s-2);
+  margin: var(--s-3) 0 0;
+  padding: var(--s-2) var(--s-3);
+  border-inline-start: 4px solid var(--line-strong);
+  border-radius: var(--r-xs);
+  background: var(--surface-2);
+  color: var(--ink);
+}
+.sure-note.is-sure-wrong {
+  border-inline-start-color: var(--coral);
+}
+.sure-note.is-lucky {
+  border-inline-start-color: var(--accent);
 }

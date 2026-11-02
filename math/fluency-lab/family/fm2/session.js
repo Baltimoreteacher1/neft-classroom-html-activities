@@ -1,9 +1,11 @@
 // Plans a family session: 5, 10 or 15 minutes of activities picked from the learner's record, budgeted from each
 // game's honest seconds-per-round, plus a compact URL-safe code so a plan can be shared and reopened.
 // Deterministic: the seed only breaks ties between equally ranked candidates. @fm2 FM-003 FM-004 FM-005 FM-030
+import { STRAND_LABEL } from "./coach.js";
 import { covers } from "./inventory.js";
 import { candidates, sortCandidates } from "./recommend.js";
 import { seedFrom } from "./rng.js";
+import { topicOfSkill } from "./skill-notes.js";
 
 export const DUEL_ID = "family-math-duel";
 export const TRANSITION_SEC = 15;
@@ -132,14 +134,34 @@ const dayOf = (now) => {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 };
 
+// The distinct topics of a plan's activities, in the order they are played.
+export function missionTopics(activities, games) {
+  const keys = [];
+  for (const a of activities || []) {
+    const game = (games || []).find((x) => x.id === a.gameId);
+    const key = topicOfSkill(game, game?.skills.find((s) => s.id === a.skillId));
+    if (key && !keys.includes(key)) keys.push(key);
+  }
+  return keys;
+}
+
+const THEME_MAX = 3;
+// "Fractions", "Fractions · Money", "Fractions · Money · Patterns", then "· more". Topic names already contain "and",
+// so a separator reads more clearly than a conjunction.
+export function themeText(keys, lang = "en") {
+  const es = lang === "es";
+  const names = keys.slice(0, THEME_MAX).map((k) => (STRAND_LABEL[k] || { en: k, es: k })[es ? "es" : "en"]);
+  if (keys.length > THEME_MAX) names.push(es ? "más" : "more");
+  return names.join(" · ");
+}
+
 // The home page's "today" mission: a ten-minute session that is the same all day for the same learner and record.
+// Its theme names every activity in the plan, not just the main one.
 export function dailyMission({ grade, state, games, now = Date.now(), mode = "solo", seed } = {}) {
   const day = dayOf(now);
   const plan = planSession({ grade, minutes: 10, mode, state, games, now, seed: seed ?? seedFrom(day, grade, mode) });
-  const lead = plan.activities.find((a) => a.role === "main") || plan.activities[0];
-  const skill = (games || []).find((x) => x.id === lead?.gameId)?.skills.find((s) => s.id === lead.skillId);
-  const strand = skill?.strand || { en: "math", es: "matemáticas" };
-  return { ...plan, day, daily: true, title: { en: `Today's family math mission: ${strand.en}`, es: `Misión de matemáticas en familia de hoy: ${strand.es}` } };
+  const topics = missionTopics(plan.activities, games);
+  return { ...plan, day, daily: true, topics, title: { en: `Today's family math mission: ${themeText(topics, "en")}`, es: `Misión de matemáticas en familia de hoy: ${themeText(topics, "es")}` } };
 }
 
 // ---- sharing: "1~g3~m10~s~game_skill_level_rounds_role~...~r2" -------------------------------------------------

@@ -5,6 +5,9 @@
  * Problems, hints and coaching text are authored in data/family-word-problems/<id>.json; every
  * answer comes from answerFor()/solve() in family-word-problems.mjs, so nothing is typed twice.
  */
+
+import { revealUnitTitle } from "../homework-guided-notes.mjs";
+import { icon, renderIconSprite } from "./family-icons.mjs";
 import {
   amount,
   answerFor,
@@ -13,13 +16,9 @@ import {
   WORKSPACE_CAPTION,
   WORKSPACE_TIP,
 } from "./family-word-problems.mjs";
-import {
-  FAMILY_CSS,
-  FAMILY_JS,
-  LANGUAGE_BOOT,
-  LANGUAGE_SELECTOR,
-} from "./family-word-problems-client.mjs";
+import { FAMILY_CSS, FAMILY_JS, LANGUAGE_BOOT } from "./family-word-problems-client.mjs";
 import { stampForUnit, WORKSPACE_CSS, WORKSPACE_JS, workspaceHtml } from "./family-workspace.mjs";
+import { READER_BOOT_JS, renderHero, renderTopBar } from "./homework-hero.mjs";
 import { clientProblem, text } from "./word-problems-check.mjs";
 
 /** One sentence in both languages, in the markup the homework pages use for language mode. */
@@ -323,51 +322,40 @@ ${body}
 <meta name="robots" content="noindex" />
 <title>${esc(data.title.en)} · Family Math Studio</title>
 <!-- generated:family-word-problems lesson=${id} — regenerate: npm run generate-word-problems -->
-${chrome.fonts}
-<link rel="stylesheet" href="${chrome.base}">
-<style>
-${chrome.theme}
-</style>
-<link rel="stylesheet" href="${chrome.layer}">
+<script>${READER_BOOT_JS}</script>
+${chrome.designHead}
+<link rel="stylesheet" href="${chrome.legacy}">
 <style>${FAMILY_CSS}${WORKSPACE_CSS}</style>
 </head>
 <body data-family-style="${esc(chrome.bodyStyle)}">
 <script>
 ${LANGUAGE_BOOT}
 </script>
+${renderIconSprite()}
 <div id="wp-confetti" aria-hidden="true"></div>
 <div class="container" role="main">
-  <header class="hw-hero" aria-label="Family Math Studio">
-    <div class="hw-hero-glow" aria-hidden="true"></div>
-    <div class="hw-hero-body">
-      <div class="hw-hero-controls">
-        ${LANGUAGE_SELECTOR}
-      </div>
-      ${chrome.kicker}
-      <div class="hw-hero-head">
-        <span class="hw-hero-emoji" aria-hidden="true">🕹️</span>
-        <div class="hw-hero-titles">
-          <h1><span class="lang-en">Family Math Studio</span><span class="lang-es" lang="es">Estudio familiar de matemáticas</span></h1>
-          <p class="hw-hero-subtitle">${both({ en: "Optional & Ungraded Home Exploration", es: "Exploración opcional en casa, sin calificación" })}</p>
-        </div>
-      </div>
-      <p class="hw-hero-lesson">
-        <span class="hw-hero-lesson-title">${both(data.title)}</span>
-        <span class="hw-hero-lesson-meta">${both({ en: `Lesson ${data.lessonId} · Extra practice`, es: `Lección ${data.lessonId} · Práctica adicional` })}</span>
-      </p>
+  ${renderHero({
+    unit,
+    unitTitle: revealUnitTitle(unit),
+    title: data.title,
+    pageLabel: {
+      en: `Lesson ${data.lessonId} · Extra practice`,
+      es: `Lección ${data.lessonId} · Práctica adicional`,
+    },
+    topBar: renderTopBar({ full: false, initialLang: "bilingual" }),
+    extras: `
       <p class="hw-hero-bigidea" aria-label="Big idea">
-        <span class="hw-hero-bigidea-label hw-inline">${both({ en: "Big idea", es: "Idea principal" })}</span>
+        <span class="hw-hero-bigidea-label">${both({ en: "Big idea", es: "Idea principal" })}</span>
         ${both(data.keyIdea)}
       </p>
       <p class="hw-hero-lead">${both({ en: "Team up: one student and one grown-up. No grades. Any language.", es: "Trabajen en equipo: un estudiante y un adulto. Sin calificaciones. En cualquier idioma." })}</p>
-      <ul class="hw-tonight hw-inline" aria-label="At a glance">
-        <li><span aria-hidden="true">✏️</span> ${both({ en: "Pencil and paper", es: "Lápiz y papel" })}</li>
-        <li><span aria-hidden="true">🎯</span> <strong>${total}</strong> ${both({ en: "word problems", es: "problemas verbales" })}</li>
-        <li class="wp-stars"><span aria-hidden="true">⭐</span> <strong id="wp-stars">0</strong> / ${total} ${both({ en: "solved", es: "resueltos" })}</li>
+      <ul class="hw-tonight fm-cluster" aria-label="At a glance">
+        <li class="fm-chip">${icon("pencil", "sm")} <span>${both({ en: "Pencil and paper", es: "Lápiz y papel" })}</span></li>
+        <li class="fm-chip"><strong>${total}</strong> <span>${both({ en: "word problems", es: "problemas verbales" })}</span></li>
+        <li class="fm-chip wp-stars">${icon("star", "sm")} <span><strong id="wp-stars">0</strong> / ${total} ${both({ en: "solved", es: "resueltos" })}</span></li>
       </ul>
-      <div class="wp-meter" aria-hidden="true"><span id="wp-meter-fill"></span></div>
-    </div>
-  </header>
+      <div class="wp-meter" aria-hidden="true"><span id="wp-meter-fill"></span></div>`,
+  })}
   <div class="homework-tabs-shell" data-tab-count="${stops.length}">
     <div class="homework-tab-chrome">
       <nav class="homework-tab-bar" role="tablist" aria-label="Today's path" data-aria-en="Today's path" data-aria-es="Ruta de hoy">

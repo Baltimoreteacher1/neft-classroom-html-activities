@@ -30,23 +30,23 @@
     var s = document.createElement("style");
     s.id = STYLE_ID;
     s.textContent = [
-      ".pki-bpty{--bp-ink:#1c1830;--bp-pink:#e0407f;--bp-purple:#7b3fe4;--bp-gold:#d98a00;--bp-green:#12a150;font-family:inherit;color:var(--bp-ink)}",
+      ".pki-bpty{--bp-ink:#17324D;--bp-pink:#e0407f;--bp-accent:#17324D;--bp-gold:#d98a00;--bp-green:#12a150;font-family:inherit;color:var(--bp-ink)}",
       ".pki-bpty h4{margin:0 0 4px;font-size:18px;font-weight:800}",
-      ".pki-bpty .bp-sub{margin:0 0 12px;font-size:13.5px;color:#5a5470}",
+      ".pki-bpty .bp-sub{margin:0 0 12px;font-size:13.5px;color:#17324D}",
       ".pki-bpty .bp-rail{display:flex;gap:8px;margin:0 0 14px}",
-      ".pki-bpty .bp-pip{flex:1;height:8px;border-radius:99px;background:#ece7f5}",
+      ".pki-bpty .bp-pip{flex:1;height:8px;border-radius:99px;background:#F7F4EC}",
       ".pki-bpty .bp-pip.done{background:linear-gradient(90deg,var(--bp-green),#0c7c3d)}",
-      ".pki-bpty .bp-pip.active{background:linear-gradient(90deg,var(--bp-purple),var(--bp-pink))}",
-      ".pki-bpty .bp-card{border:1px solid rgba(28,24,48,.12);border-radius:14px;padding:14px;background:#fff}",
-      ".pki-bpty .bp-stageno{font-size:12px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--bp-purple)}",
+      ".pki-bpty .bp-pip.active{background:linear-gradient(90deg,var(--bp-accent),var(--bp-pink))}",
+      ".pki-bpty .bp-card{border:1px solid rgba(23, 50, 77, .12);border-radius:14px;padding:14px;background:#fff}",
+      ".pki-bpty .bp-stageno{font-size:12px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--bp-accent)}",
       ".pki-bpty .bp-prompt{margin:6px 0 8px;font-size:15px}",
-      ".pki-bpty .bp-prompt .es{display:block;color:#6b6480;font-style:italic;font-size:12.5px;margin-top:2px}",
+      ".pki-bpty .bp-prompt .es{display:block;color:#17324D;font-style:italic;font-size:12.5px;margin-top:2px}",
       ".pki-bpty .bp-viz{display:block;margin:2px auto 6px;max-width:100%;height:auto}",
-      ".pki-bpty .bp-ask{font-size:13px;font-weight:800;color:#3a3252;margin:6px 0 8px}",
+      ".pki-bpty .bp-ask{font-size:13px;font-weight:800;color:#17324D;margin:6px 0 8px}",
       ".pki-bpty .bp-opts{display:flex;flex-wrap:wrap;gap:8px}",
-      ".pki-bpty .bp-opt{flex:1;min-width:84px;cursor:pointer;border:2px solid #ddd5ec;background:#faf7ff;border-radius:11px;padding:12px 10px;font-size:17px;font-weight:800;color:var(--bp-ink);font-variant-numeric:tabular-nums;transition:transform .08s,border-color .12s}",
-      ".pki-bpty .bp-opt:hover{transform:translateY(-1px);border-color:var(--bp-purple)}",
-      ".pki-bpty .bp-opt:focus-visible{outline:3px solid rgba(123,63,228,.4);outline-offset:2px}",
+      ".pki-bpty .bp-opt{flex:1;min-width:84px;cursor:pointer;border:2px solid #17324D;background:#F7F4EC;border-radius:11px;padding:12px 10px;font-size:17px;font-weight:800;color:var(--bp-ink);font-variant-numeric:tabular-nums;transition:transform .08s,border-color .12s}",
+      ".pki-bpty .bp-opt:hover{transform:translateY(-1px);border-color:var(--bp-accent)}",
+      ".pki-bpty .bp-opt:focus-visible{outline:3px solid rgba(23, 50, 77, .4);outline-offset:2px}",
       ".pki-bpty .bp-opt.ok{border-color:var(--bp-green);background:rgba(18,161,80,.12);color:var(--bp-green)}",
       ".pki-bpty .bp-opt.wrong{border-color:var(--bp-pink);animation:bpShake .3s}",
       ".pki-bpty .bp-opt:disabled{cursor:default}",
@@ -54,16 +54,16 @@
       ".pki-bpty .bp-msg.hint{color:var(--bp-gold)}",
       ".pki-bpty .bp-msg.ok{color:var(--bp-green)}",
       ".pki-bpty .bp-check{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 0}",
-      ".pki-bpty .bp-chip{flex:1;min-width:110px;text-align:center;border:2px dashed #d3cbe6;border-radius:10px;padding:8px 6px;font-size:12.5px;font-weight:700;color:#9990b0;background:#faf7ff}",
+      ".pki-bpty .bp-chip{flex:1;min-width:110px;text-align:center;border:2px dashed #17324D;border-radius:10px;padding:8px 6px;font-size:12.5px;font-weight:700;color:#17324D;background:#F7F4EC}",
       ".pki-bpty .bp-chip.lit{border-style:solid;border-color:var(--bp-green);color:var(--bp-green);background:rgba(18,161,80,.08)}",
       ".pki-bpty .bp-done{text-align:center;padding:18px 12px}",
-      ".pki-bpty .bp-banner{display:inline-block;font-size:24px;font-weight:900;letter-spacing:.04em;background:linear-gradient(90deg,var(--bp-purple),var(--bp-pink));-webkit-background-clip:text;background-clip:text;color:transparent}",
-      ".pki-bpty .bp-again{margin-top:14px;cursor:pointer;border:0;background:var(--bp-purple);color:#fff;font-weight:800;border-radius:10px;padding:9px 16px;font-size:14px}",
+      ".pki-bpty .bp-banner{display:inline-block;font-size:24px;font-weight:900;letter-spacing:.04em;background:linear-gradient(90deg,var(--bp-accent),var(--bp-pink));-webkit-background-clip:text;background-clip:text;color:transparent}",
+      ".pki-bpty .bp-again{margin-top:14px;cursor:pointer;border:0;background:var(--bp-accent);color:#fff;font-weight:800;border-radius:10px;padding:9px 16px;font-size:14px}",
       "@keyframes bpShake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}",
       "@keyframes bpPop{0%{transform:scale(.6);opacity:0}100%{transform:scale(1);opacity:1}}",
       ".pki-bpty .bp-pop{animation:bpPop .4s}",
       "@media (prefers-reduced-motion:reduce){.pki-bpty *{animation:none!important;transition:none!important}}",
-      "@media (prefers-color-scheme:dark){.pki-bpty{color:#f0ecfa}.pki-bpty .bp-card{background:#211c33;border-color:rgba(255,255,255,.14)}.pki-bpty .bp-opt,.pki-bpty .bp-chip{background:#2b2440;border-color:#453c60;color:#f0ecfa}.pki-bpty .bp-sub,.pki-bpty .bp-prompt .es,.pki-bpty .bp-chip{color:#b7aecf}}",
+      "@media (prefers-color-scheme:dark){.pki-bpty{color:#F7F4EC}.pki-bpty .bp-card{background:#17324D;border-color:rgba(255,255,255,.14)}.pki-bpty .bp-opt,.pki-bpty .bp-chip{background:#17324D;border-color:#17324D;color:#F7F4EC}.pki-bpty .bp-sub,.pki-bpty .bp-prompt .es,.pki-bpty .bp-chip{color:#17324D}}",
     ].join("\n");
     document.head.appendChild(s);
   }
@@ -177,7 +177,7 @@
         head +
         'goodie bags visual">' +
         bag(58, st.a, "🍬") +
-        '<text x="119" y="52" text-anchor="middle" font-size="20" font-weight="800" fill="#9990b0">&amp;</text>' +
+        '<text x="119" y="52" text-anchor="middle" font-size="20" font-weight="800" fill="#17324D">&amp;</text>' +
         bag(180, st.b, "🎈") +
         "</svg>"
       );
@@ -186,7 +186,7 @@
       return (
         head +
         'entertainment timing visual">' +
-        loop(64, st.a, "🎧", "#7b3fe4") +
+        loop(64, st.a, "🎧", "#17324D") +
         loop(174, st.b, "🎮", "#d98a00") +
         "</svg>"
       );
@@ -198,7 +198,7 @@
       '<text x="119" y="48" text-anchor="middle" font-size="19" font-weight="800" fill="#0c7c3d" font-variant-numeric="tabular-nums">' +
       st.aDisp +
       "</text>" +
-      '<text x="119" y="66" text-anchor="middle" font-size="11.5" font-weight="700" fill="#5a5470">split among ' +
+      '<text x="119" y="66" text-anchor="middle" font-size="11.5" font-weight="700" fill="#17324D">split among ' +
       st.b +
       " guests</text>" +
       "</svg>"
@@ -241,7 +241,7 @@
       "</text>" +
       '<text x="' +
       cx +
-      '" y="86" text-anchor="middle" font-size="11" font-weight="700" fill="#5a5470">every ' +
+      '" y="86" text-anchor="middle" font-size="11" font-weight="700" fill="#17324D">every ' +
       mins +
       " min</text>"
     );
@@ -311,7 +311,7 @@
           head +
           '<div class="bp-card bp-done"><div class="bp-banner bp-pop">🎉 PARTY READY!</div>' +
           '<p style="margin:12px 0 0;font-weight:700">Every part of the plan is locked in — the block party is a go!' +
-          '<span style="display:block;color:#6b6480;font-style:italic;font-size:12.5px;margin-top:3px">¡Todo el plan está listo — la fiesta está lista!</span></p>' +
+          '<span style="display:block;color:#17324D;font-style:italic;font-size:12.5px;margin-top:3px">¡Todo el plan está listo — la fiesta está lista!</span></p>' +
           checklist(S) +
           '<button type="button" class="bp-again" data-again>Plan another party</button></div>';
         el.querySelector("[data-again]").addEventListener("click", function () {

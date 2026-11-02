@@ -254,6 +254,52 @@ export function speakDialogue(
   });
 }
 
+/**
+ * Play pre-recorded audio files in order, with a short pause between them. Resolves true when all finished,
+ * false when stopped, and "failed" when a file could not play before anything was heard (the caller can then
+ * fall back to speech). Shares `stop()` with speak().
+ */
+export function playRecording(urls, { rate = 1 } = {}) {
+  stop();
+  const list = (Array.isArray(urls) ? urls : [urls]).filter(Boolean);
+  if (!list.length || typeof Audio === "undefined") return Promise.resolve("failed");
+  const token = {};
+  current = token;
+  return new Promise((resolve) => {
+    let i = 0;
+    let heard = false;
+    let audio = null;
+    let settled = false;
+    const finish = (result) => {
+      if (settled) return;
+      settled = true;
+      if (current === token) current = null;
+      resolve(result);
+    };
+    token.finish = (completed) => {
+      audio?.pause();
+      finish(completed);
+    };
+    const fail = () => finish(heard ? false : "failed");
+    const next = () => {
+      if (current !== token) return finish(false);
+      if (i >= list.length) return finish(true);
+      audio = new Audio(list[i]);
+      audio.playbackRate = Math.min(Math.max(rate, 0.5), 1.5);
+      audio.onplaying = () => {
+        heard = true;
+      };
+      audio.onended = () => {
+        i++;
+        setTimeout(next, 280);
+      };
+      audio.onerror = fail;
+      audio.play().catch(fail);
+    };
+    next();
+  });
+}
+
 export function stop() {
   const previous = current;
   current = null;

@@ -60,9 +60,17 @@ const NAMED = [
   "mediumvioletred",
   "palevioletred",
 ];
-// A named colour is a VALUE only after `:`, `=`, `(` or `,` (optionally quoted). That is
-// why `badge-indigo` (a class name) and "an indigo-to-teal gradient" (prose) are not hits.
-const NAMED_VALUE = new RegExp(`[:=(,]\\s*["']?(${NAMED.join("|")})(?![\\w-])`, "gi");
+// Named CSS colors must follow a color-bearing declaration or SVG attribute. A
+// loose comma match flags ordinary item copy such as "pink circle, purple square".
+const COLOR_PROPERTY = `(?:color|background|background-color|border|border-color|outline|outline-color|fill|stroke|stop-color|box-shadow|text-shadow|--[\\w-]+)`;
+const NAMED_VALUE = new RegExp(
+  `(?:[;{,]\\s*|\\b)(?:["']?${COLOR_PROPERTY}["']?)\\s*[:=]\\s*["']?(${NAMED.join("|")})(?![\\w-])|\\b(?:fill|stroke|stop-color|bgcolor)\\s*=\\s*["'](${NAMED.join("|")})(?![\\w-])`,
+  "gi",
+);
+const NAMED_GRADIENT = new RegExp(
+  `(?:linear|radial|conic)-gradient\\([^)]*\\b(${NAMED.join("|")})(?![\\w-])`,
+  "gi",
+);
 
 export const forbiddenHsl = (h, s, l) => s > 0.15 && l > 0.03 && l < 0.97 && h >= 255 && h <= 335;
 
@@ -82,14 +90,20 @@ export function findForbiddenLiterals(src) {
   for (const m of text.matchAll(
     /#[0-9a-fA-F]{8}\b|#[0-9a-fA-F]{6}\b|#[0-9a-fA-F]{3}\b|rgba?\([^)]*\)/g,
   )) {
+    // Numeric case labels in authored lesson data (for example "Case #101")
+    // are not CSS colors. Keep matching #101 when it appears in a paint value.
+    if (/^#\d{3}$/.test(m[0]) && /\bcase\s+$/i.test(text.slice(Math.max(0, m.index - 20), m.index)))
+      continue;
     const c = parseColor(m[0]);
     if (c && isForbiddenHue(c)) hits.push({ line: at(m.index), text: m[0] });
   }
   for (const m of text.matchAll(/hsla?\(\s*([\d.]+)(?:deg)?[\s,]+([\d.]+)%[\s,]+([\d.]+)%/g)) {
     if (forbiddenHsl(+m[1], +m[2] / 100, +m[3] / 100)) hits.push({ line: at(m.index), text: m[0] });
   }
-  for (const m of text.matchAll(NAMED_VALUE))
-    hits.push({ line: at(m.index), text: m[0].replace(/^[:=(,]\s*/, "") });
+  for (const pattern of [NAMED_VALUE, NAMED_GRADIENT]) {
+    for (const m of text.matchAll(pattern))
+      hits.push({ line: at(m.index), text: m[1] || m[2] || m[0] });
+  }
   return hits;
 }
 

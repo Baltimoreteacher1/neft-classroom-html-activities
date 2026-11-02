@@ -69,15 +69,15 @@
       title: "Divide",
       def: "To split a number into equal parts or groups.",
       example: "12 ÷ 3 means sharing 12 items into 3 equal groups of 4.",
-      svg: `<svg viewBox="0 0 280 120" style="background:#FAF5FF; border-radius:12px; border:1px solid #E9D5FF; width:100%;">
-        <circle cx="50" cy="45" r="20" fill="#9333EA"/>
-        <circle cx="100" cy="45" r="20" fill="#9333EA"/>
-        <circle cx="150" cy="45" r="20" fill="#9333EA"/>
+      svg: `<svg viewBox="0 0 280 120" style="background:#F7F4EC; border-radius:12px; border:1px solid #17324D; width:100%;">
+        <circle cx="50" cy="45" r="20" fill="#17324D"/>
+        <circle cx="100" cy="45" r="20" fill="#17324D"/>
+        <circle cx="150" cy="45" r="20" fill="#17324D"/>
         <text x="50" y="50" text-anchor="middle" fill="#FFF" font-weight="900" font-size="14">4</text>
         <text x="100" y="50" text-anchor="middle" fill="#FFF" font-weight="900" font-size="14">4</text>
         <text x="150" y="50" text-anchor="middle" fill="#FFF" font-weight="900" font-size="14">4</text>
-        <text x="220" y="50" text-anchor="middle" fill="#7E22CE" font-weight="900" font-size="18">12 ÷ 3 = 4</text>
-        <text x="140" y="105" text-anchor="middle" fill="#6B21A8" font-weight="800" font-size="12">Split equally ➜ Quotient</text>
+        <text x="220" y="50" text-anchor="middle" fill="#17324D" font-weight="900" font-size="18">12 ÷ 3 = 4</text>
+        <text x="140" y="105" text-anchor="middle" fill="#17324D" font-weight="800" font-size="12">Split equally ➜ Quotient</text>
       </svg>`,
     },
     half: {
@@ -219,11 +219,11 @@
       title: "Volume",
       def: "The total 3D space occupied inside a 3D solid object (measured in cubic units).",
       example: "Volume of a prism = length × width × height (V = l × w × h).",
-      svg: `<svg viewBox="0 0 280 120" style="background:#FAF5FF; border-radius:12px; border:1px solid #E9D5FF; width:100%;">
-        <polygon points="60,80 180,80 220,40 100,40" fill="rgba(147,51,234,0.2)" stroke="#9333EA" stroke-width="2"/>
-        <polygon points="100,40 220,40 220,15 100,15" fill="rgba(147,51,234,0.3)" stroke="#9333EA" stroke-width="2"/>
-        <polygon points="60,80 100,40 100,15 60,55" fill="rgba(147,51,234,0.4)" stroke="#9333EA" stroke-width="2"/>
-        <text x="140" y="60" text-anchor="middle" fill="#6B21A8" font-weight="900" font-size="14">3D Cube Space (V = l · w · h)</text>
+      svg: `<svg viewBox="0 0 280 120" style="background:#F7F4EC; border-radius:12px; border:1px solid #17324D; width:100%;">
+        <polygon points="60,80 180,80 220,40 100,40" fill="rgba(23, 50, 77, 0.2)" stroke="#17324D" stroke-width="2"/>
+        <polygon points="100,40 220,40 220,15 100,15" fill="rgba(23, 50, 77, 0.3)" stroke="#17324D" stroke-width="2"/>
+        <polygon points="60,80 100,40 100,15 60,55" fill="rgba(23, 50, 77, 0.4)" stroke="#17324D" stroke-width="2"/>
+        <text x="140" y="60" text-anchor="middle" fill="#17324D" font-weight="900" font-size="14">3D Cube Space (V = l · w · h)</text>
       </svg>`,
     },
     fraction: {
@@ -283,10 +283,10 @@
       title: "Expression",
       def: "A mathematical phrase with numbers, variables, and operation symbols (no equals sign).",
       example: "3x + 7 is an algebraic expression.",
-      svg: `<svg viewBox="0 0 280 120" style="background:#FDF4FF; border-radius:12px; border:1px solid #F5D0FE; width:100%;">
-        <rect x="40" y="30" width="200" height="45" fill="#C026D3" rx="8"/>
+      svg: `<svg viewBox="0 0 280 120" style="background:#F7F4EC; border-radius:12px; border:1px solid #17324D; width:100%;">
+        <rect x="40" y="30" width="200" height="45" fill="#17324D" rx="8"/>
         <text x="140" y="58" text-anchor="middle" fill="#FFF" font-weight="900" font-size="20">3x + 7</text>
-        <text x="140" y="102" text-anchor="middle" fill="#86198F" font-weight="800" font-size="12">No equals sign (=)</text>
+        <text x="140" y="102" text-anchor="middle" fill="#17324D" font-weight="800" font-size="12">No equals sign (=)</text>
       </svg>`,
     },
     variable: {

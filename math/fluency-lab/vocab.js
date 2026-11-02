@@ -109,14 +109,14 @@ export const VOCAB_BILINGUAL_DB = {
     esDef: "Un número entero mayor que 1 que tiene exactamente dos factores: el 1 y él mismo.",
     example: "7 is prime because only 1 × 7 = 7. 2, 3, 5, 7, 11, 13, 17, 19 are prime numbers.",
     keywords: ["prime number", "prime numbers", "prime", "número primo", "números primos"],
-    svg: `<svg viewBox="0 0 320 110" style="background:#FAF5FF; border-radius:12px; border:1px solid #E9D5FF; width:100%; max-width:320px; margin:0 auto; display:block;" role="img" aria-label="Prime Number Model">
+    svg: `<svg viewBox="0 0 320 110" style="background:#F7F4EC; border-radius:12px; border:1px solid #F7F4EC; width:100%; max-width:320px; margin:0 auto; display:block;" role="img" aria-label="Prime Number Model">
       <g transform="translate(35, 30)">
-        <circle cx="10" cy="15" r="10" fill="#9333EA"/><circle cx="36" cy="15" r="10" fill="#9333EA"/><circle cx="62" cy="15" r="10" fill="#9333EA"/>
-        <circle cx="88" cy="15" r="10" fill="#9333EA"/><circle cx="114" cy="15" r="10" fill="#9333EA"/><circle cx="140" cy="15" r="10" fill="#9333EA"/><circle cx="166" cy="15" r="10" fill="#9333EA"/>
+        <circle cx="10" cy="15" r="10" fill="#1FA6A2"/><circle cx="36" cy="15" r="10" fill="#1FA6A2"/><circle cx="62" cy="15" r="10" fill="#1FA6A2"/>
+        <circle cx="88" cy="15" r="10" fill="#1FA6A2"/><circle cx="114" cy="15" r="10" fill="#1FA6A2"/><circle cx="140" cy="15" r="10" fill="#1FA6A2"/><circle cx="166" cy="15" r="10" fill="#1FA6A2"/>
       </g>
-      <text x="245" y="45" font-size="22" font-weight="900" fill="#7E22CE">7</text>
-      <text x="245" y="65" font-size="11" font-weight="700" fill="#6B21A8">Only 1 × 7</text>
-      <text x="160" y="95" text-anchor="middle" font-size="11" font-weight="800" fill="#6B21A8">Cannot be split into equal rows or grid</text>
+      <text x="245" y="45" font-size="22" font-weight="900" fill="#17324D">7</text>
+      <text x="245" y="65" font-size="11" font-weight="700" fill="#17324D">Only 1 × 7</text>
+      <text x="160" y="95" text-anchor="middle" font-size="11" font-weight="800" fill="#17324D">Cannot be split into equal rows or grid</text>
     </svg>`
   },
 
@@ -227,13 +227,13 @@ export const VOCAB_BILINGUAL_DB = {
     esDef: "Repartir o separar una cantidad en partes o grupos de igual tamaño.",
     example: "12 ÷ 3 means sharing 12 items equally among 3 groups; each group gets 4.",
     keywords: ["divide", "division", "dividing", "división", "dividir"],
-    svg: `<svg viewBox="0 0 320 110" style="background:#FAF5FF; border-radius:12px; border:1px solid #E9D5FF; width:100%; max-width:320px; margin:0 auto; display:block;" role="img" aria-label="Divide Equal Groups">
-      <circle cx="50" cy="45" r="22" fill="#9333EA"/><circle cx="120" cy="45" r="22" fill="#9333EA"/><circle cx="190" cy="45" r="22" fill="#9333EA"/>
+    svg: `<svg viewBox="0 0 320 110" style="background:#F7F4EC; border-radius:12px; border:1px solid #F7F4EC; width:100%; max-width:320px; margin:0 auto; display:block;" role="img" aria-label="Divide Equal Groups">
+      <circle cx="50" cy="45" r="22" fill="#1FA6A2"/><circle cx="120" cy="45" r="22" fill="#1FA6A2"/><circle cx="190" cy="45" r="22" fill="#1FA6A2"/>
       <text x="50" y="52" text-anchor="middle" fill="#FFF" font-weight="900" font-size="16">4</text>
       <text x="120" y="52" text-anchor="middle" fill="#FFF" font-weight="900" font-size="16">4</text>
       <text x="190" y="52" text-anchor="middle" fill="#FFF" font-weight="900" font-size="16">4</text>
-      <text x="260" y="52" text-anchor="middle" fill="#7E22CE" font-weight="900" font-size="15">12 ÷ 3 = 4</text>
-      <text x="160" y="95" text-anchor="middle" fill="#6B21A8" font-weight="800" font-size="11">Split into 3 equal groups</text>
+      <text x="260" y="52" text-anchor="middle" fill="#17324D" font-weight="900" font-size="15">12 ÷ 3 = 4</text>
+      <text x="160" y="95" text-anchor="middle" fill="#17324D" font-weight="800" font-size="11">Split into 3 equal groups</text>
     </svg>`
   },
 
@@ -353,17 +353,17 @@ export const VOCAB_BILINGUAL_DB = {
     esDef: "Dos números que están a la misma distancia de cero en la recta numérica, pero en lados contrarios.",
     example: "+5 and -5 are opposites; their sum is 0.",
     keywords: ["opposite", "opposites", "opposite numbers", "opuesto", "opuestos", "números opuestos"],
-    svg: `<svg viewBox="0 0 320 110" style="background:#FAF5FF; border-radius:12px; border:1px solid #E9D5FF; width:100%; max-width:320px; margin:0 auto; display:block;" role="img" aria-label="Opposite Numbers">
-      <line x1="30" y1="55" x2="290" y2="55" stroke="#7E22CE" stroke-width="3"/>
-      <circle cx="160" cy="55" r="5" fill="#7E22CE"/>
-      <text x="160" y="75" text-anchor="middle" font-size="12" font-weight="900" fill="#7E22CE">0</text>
+    svg: `<svg viewBox="0 0 320 110" style="background:#F7F4EC; border-radius:12px; border:1px solid #F7F4EC; width:100%; max-width:320px; margin:0 auto; display:block;" role="img" aria-label="Opposite Numbers">
+      <line x1="30" y1="55" x2="290" y2="55" stroke="#17324D" stroke-width="3"/>
+      <circle cx="160" cy="55" r="5" fill="#17324D"/>
+      <text x="160" y="75" text-anchor="middle" font-size="12" font-weight="900" fill="#17324D">0</text>
       <circle cx="60" cy="55" r="5" fill="#DC2626"/>
       <text x="60" y="75" text-anchor="middle" font-size="12" font-weight="900" fill="#DC2626">-4</text>
       <circle cx="260" cy="55" r="5" fill="#16A34A"/>
       <text x="260" y="75" text-anchor="middle" font-size="12" font-weight="900" fill="#16A34A">+4</text>
       <path d="M 60,45 Q 110,20 160,45" fill="none" stroke="#DC2626" stroke-width="2" stroke-dasharray="3"/>
       <path d="M 160,45 Q 210,20 260,45" fill="none" stroke="#16A34A" stroke-width="2" stroke-dasharray="3"/>
-      <text x="160" y="98" text-anchor="middle" font-size="11" font-weight="800" fill="#6B21A8">Same distance from zero ➜ -4 and +4</text>
+      <text x="160" y="98" text-anchor="middle" font-size="11" font-weight="800" fill="#17324D">Same distance from zero ➜ -4 and +4</text>
     </svg>`
   },
 
@@ -450,13 +450,13 @@ export const VOCAB_BILINGUAL_DB = {
     esDef: "La fracción invertida donde el numerador y denominador se intercambian; su producto es 1.",
     example: "The reciprocal of 2/3 is 3/2 (2/3 × 3/2 = 6/6 = 1).",
     keywords: ["reciprocal", "reciprocals", "recíproco", "recíprocos"],
-    svg: `<svg viewBox="0 0 320 110" style="background:#FAF5FF; border-radius:12px; border:1px solid #E9D5FF; width:100%; max-width:320px; margin:0 auto; display:block;" role="img" aria-label="Reciprocal Flip">
-      <rect x="50" y="25" width="60" height="55" rx="8" fill="#F3E8FF" stroke="#9333EA" stroke-width="2"/>
-      <text x="80" y="60" text-anchor="middle" font-size="22" font-weight="900" fill="#7E22CE">⅔</text>
-      <text x="155" y="58" text-anchor="middle" font-size="24" font-weight="900" fill="#9333EA">⇄</text>
-      <rect x="195" y="25" width="60" height="55" rx="8" fill="#F3E8FF" stroke="#9333EA" stroke-width="2"/>
-      <text x="225" y="60" text-anchor="middle" font-size="22" font-weight="900" fill="#7E22CE">³⁄₂</text>
-      <text x="160" y="98" text-anchor="middle" font-size="11" font-weight="800" fill="#6B21A8">Flip top &amp; bottom ➜ ⅔ × ³⁄₂ = 1</text>
+    svg: `<svg viewBox="0 0 320 110" style="background:#F7F4EC; border-radius:12px; border:1px solid #F7F4EC; width:100%; max-width:320px; margin:0 auto; display:block;" role="img" aria-label="Reciprocal Flip">
+      <rect x="50" y="25" width="60" height="55" rx="8" fill="#F7F4EC" stroke="#1FA6A2" stroke-width="2"/>
+      <text x="80" y="60" text-anchor="middle" font-size="22" font-weight="900" fill="#17324D">⅔</text>
+      <text x="155" y="58" text-anchor="middle" font-size="24" font-weight="900" fill="#1FA6A2">⇄</text>
+      <rect x="195" y="25" width="60" height="55" rx="8" fill="#F7F4EC" stroke="#1FA6A2" stroke-width="2"/>
+      <text x="225" y="60" text-anchor="middle" font-size="22" font-weight="900" fill="#17324D">³⁄₂</text>
+      <text x="160" y="98" text-anchor="middle" font-size="11" font-weight="800" fill="#17324D">Flip top &amp; bottom ➜ ⅔ × ³⁄₂ = 1</text>
     </svg>`
   },
 
@@ -575,12 +575,12 @@ export const VOCAB_BILINGUAL_DB = {
     esDef: "La cantidad de espacio tridimensional que ocupa un cuerpo sólido, medido en unidades cúbicas.",
     example: "A box with length 4, width 3, height 2 has volume = 4 × 3 × 2 = 24 cubic units.",
     keywords: ["volume", "volumen"],
-    svg: `<svg viewBox="0 0 320 115" style="background:#FAF5FF; border-radius:12px; border:1px solid #E9D5FF; width:100%; max-width:320px; margin:0 auto; display:block;" role="img" aria-label="Volume Prism">
-      <polygon points="60,45 120,25 180,45 120,65" fill="#D8B4FE" stroke="#7E22CE"/>
-      <polygon points="60,45 120,65 120,95 60,75" fill="#C084FC" stroke="#7E22CE"/>
-      <polygon points="120,65 180,45 180,75 120,95" fill="#A855F7" stroke="#7E22CE"/>
-      <text x="240" y="55" text-anchor="middle" font-size="13" font-weight="900" fill="#6B21A8">V = l × w × h</text>
-      <text x="240" y="75" text-anchor="middle" font-size="11" font-weight="700" fill="#7E22CE">cubic units</text>
+    svg: `<svg viewBox="0 0 320 115" style="background:#F7F4EC; border-radius:12px; border:1px solid #F7F4EC; width:100%; max-width:320px; margin:0 auto; display:block;" role="img" aria-label="Volume Prism">
+      <polygon points="60,45 120,25 180,45 120,65" fill="#F7F4EC" stroke="#17324D"/>
+      <polygon points="60,45 120,65 120,95 60,75" fill="#1FA6A2" stroke="#17324D"/>
+      <polygon points="120,65 180,45 180,75 120,95" fill="#1FA6A2" stroke="#17324D"/>
+      <text x="240" y="55" text-anchor="middle" font-size="13" font-weight="900" fill="#17324D">V = l × w × h</text>
+      <text x="240" y="75" text-anchor="middle" font-size="11" font-weight="700" fill="#17324D">cubic units</text>
     </svg>`
   }
 };

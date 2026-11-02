@@ -9,6 +9,8 @@
  * is shown to a family.
  */
 
+import { act } from "./homework-actions.mjs";
+
 export const SESSIONS = {
   1: {
     en: "Session 1: Concept Launch",
@@ -106,135 +108,10 @@ export function renderSessionBanner(lessonId, partner) {
   </nav>`;
 }
 
-export const SESSION_FLOW_CSS = `
-/* Session banner: where this night sits in a two-night lesson. */
-.hw-session-banner { margin: 14px 0 0; padding: 12px 14px; background: #fff; color: var(--ink, #21313f); border-radius: 14px; border: 2px solid var(--teal, #1fa6a2); box-shadow: 0 6px 18px rgba(8, 27, 46, .22); }
-.hw-session-steps { list-style: none; margin: 0; padding: 0; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-.hw-session-arrow { font-size: 18px; font-weight: 800; color: var(--teal-ink, #0c6f6b); }
-.hw-session-chip { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 8px 14px; border-radius: 999px; border: 2px solid #b8c7d6; background: #f3f7fa; color: var(--navy, #12355b); font-weight: 800; font-size: 15px; line-height: 1.25; text-decoration: none; }
-a.hw-session-chip:hover { border-color: var(--teal, #1fa6a2); background: var(--teal-light, #dff2ee); }
-a.hw-session-chip:focus-visible { outline: 3px solid var(--teal-ink, #0c6f6b); outline-offset: 2px; }
-.hw-session-step.is-current .hw-session-chip { background: var(--navy, #12355b); border-color: var(--navy, #12355b); color: #fff; }
-.hw-session-step.is-done .hw-session-chip { background: var(--success-bg, #e6f7ef); border-color: var(--success, #0f7c4a); color: #0b5a36; }
-.hw-session-mark { font-size: 16px; }
-.hw-session-sentence { margin: 10px 0 0; font-size: 15px; line-height: 1.5; }
-@media (max-width: 640px) {
-  .hw-session-steps { display: grid; grid-template-columns: 1fr auto 1fr; gap: 6px; }
-  .hw-session-chip { width: 100%; justify-content: center; padding: 8px 10px; font-size: 13px; border-radius: 14px; text-align: center; }
-  .hw-session-name { display: inline-flex; flex-direction: column; }
-  .hw-session-sentence { font-size: 14px; }
-}
-@media print { .hw-session-banner { display: none !important; } }
-
-/* "Coming up next" is a disclosure beside the switcher, not a paragraph under it. */
-.hw-session-more summary { display: inline-flex; align-items: center; min-height: 44px; padding: 0 6px; cursor: pointer; font-size: 15px; font-weight: 800; color: var(--navy, #12355b); }
-.hw-session-more summary { list-style: none; }
-.hw-session-more summary::-webkit-details-marker { display: none; }
-.hw-session-more summary::after { content: "▾"; margin-left: 8px; font-size: 14px; }
-.hw-session-more[open] summary::after { content: "▴"; }
-.hw-session-more .hw-session-sentence { margin: 0 0 6px; }
-@media (min-width: 641px) {
-  .hw-session-banner { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 16px; padding: 6px 12px; }
-  .hw-session-more { flex: 1 1 260px; }
-}
-
-/* The mission card is one line until a family opens it; its words are still in the page. */
-details.hw-experience-banner { display: block; padding: 0; }
-details.hw-experience-banner > summary { display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 6px 14px; cursor: pointer; list-style: none; }
-details.hw-experience-banner > summary::-webkit-details-marker { display: none; }
-details.hw-experience-banner > summary::after { content: "▾"; margin-left: auto; font-size: 16px; opacity: .8; }
-details.hw-experience-banner[open] > summary::after { content: "▴"; }
-details.hw-experience-banner .hw-experience-icon { font-size: 22px; }
-details.hw-experience-banner .hw-experience-title { font-size: 17px; }
-details.hw-experience-banner .hw-experience-description { margin: 0; padding: 0 14px 10px; }
-
-/* The route question is answered at a glance: the two choices and Start share
-   one row, and the "optional, no grades" promise sits under Start. */
-.hw-route-chooser .hw-route-note { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
-.hw-route-chooser > #hw_start_button { margin-top: 10px; }
-.hw-route-promise { margin: 10px 2px 0; font-size: 14px; line-height: 1.4; color: #334e68; }
-#hw_resume_note:empty { display: none; }
-
-/* Laptop and Chromebook: the first screen is the lesson, the big idea, the language,
-   the route and Start. Everything else follows. */
-@media (min-width: 900px) {
-  .hw-hero-body > .hw-hero-lesson { margin-top: 8px; padding-top: 8px; }
-  .hw-hero-body > .hw-hero-bigidea { margin-top: 10px; padding: 8px 14px; }
-  .hw-hero-body > .hw-tonight { order: 1; grid-column: 1; margin: 12px 0 0; }
-  .hw-hero-body > .hw-experience-banner { order: 2; grid-column: 2; margin: 12px 0 0; }
-  .hw-hero-body > .hw-hero-lead { order: 3; margin: 6px 0 0; font-size: 14px; }
-  .hw-hero-body > .hw-route-chooser { order: 4; margin-top: 12px; padding: 12px 14px; display: grid; grid-template-columns: minmax(150px, 230px) minmax(0, 1fr) auto; column-gap: 14px; row-gap: 0; align-items: center; }
-  .hw-hero-body > .hw-session-banner { order: 5; margin-top: 12px; }
-  .hw-hero-body > .hw-tools-menu { order: 6; }
-  .hw-route-chooser > .hw-route-heading { grid-column: 1; margin: 0; }
-  .hw-route-chooser > .hw-route-options { grid-column: 2; }
-  .hw-route-chooser > #hw_start_button { grid-column: 3; margin: 0; }
-  .hw-route-chooser > .hw-route-promise { grid-column: 1 / -1; margin: 8px 2px 0; }
-  .hw-route-chooser > #hw_resume_note { grid-column: 1 / -1; margin: 8px 2px 0; }
-  .hw-route-option .hw-route-copy small { display: block; }
-  .hw-route-option .hw-route-time { flex: 0 0 auto; min-width: 64px; white-space: nowrap; }
-  .hw-hero-body > .hw-hero-controls { justify-self: end; }
-}
-
-/* Hero subtitle and one-sentence big idea. */
-.hw-hero-subtitle { margin: 4px 0 0; font-size: 15px; font-weight: 700; letter-spacing: .02em; opacity: .92; }
-.hw-hero-bigidea { margin: 14px 0 0; padding: 12px 14px; border-left: 5px solid var(--amber, #f2c15b); background: rgba(255, 255, 255, .13); border-radius: 10px; font-size: 18px; line-height: 1.45; font-weight: 700; }
-.hw-hero-bigidea .hw-hero-bigidea-label { display: block; margin-bottom: 2px; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; opacity: .85; }
-.hw-hero-bigidea .lang-es { color: inherit; }
-.hw-tools-menu .hw-standard-details { margin: 10px 0 0; }
-
-/* Mobile first: big idea, route pills, then the lesson. The detail lives one tap away. */
-@media (max-width: 640px) {
-  .hw-hero-lead, .hw-experience-banner { display: none !important; }
-  .hw-hero-body { display: flex; flex-direction: column; }
-  .hw-hero-body > .hw-hero-kicker { order: 1; }
-  .hw-hero-body > .hw-hero-head { order: 2; }
-  .hw-hero-body > .hw-hero-lesson { order: 3; }
-  .hw-hero-body > .hw-hero-bigidea { order: 4; }
-  .hw-hero-body > .hw-route-chooser { order: 5; margin-top: 12px; padding: 12px; }
-  .hw-tonight { margin-top: 10px; }
-  .hw-hero-body > .hw-session-banner { order: 6; }
-  .hw-hero-body > .hw-hero-controls { order: 7; }
-  .hw-hero-body > .hw-tools-menu { order: 8; }
-  .hw-hero-bigidea { font-size: 16px; }
-  .hw-route-chooser .hw-route-heading { margin-bottom: 6px; }
-  .hw-route-options { display: grid !important; grid-template-columns: repeat(2, 1fr); gap: 6px; }
-  .hw-route-option { flex-direction: column; align-items: center; justify-content: flex-start; gap: 4px; min-height: 60px; padding: 8px 4px; text-align: center; }
-  .hw-route-option .hw-route-copy small { display: none; }
-  .hw-route-option .hw-route-copy strong { font-size: 13px; line-height: 1.2; }
-  /* The time sits on one line with its unit: "5–10 min", not a tall block. */
-  .hw-route-option .hw-route-time { flex: 0 0 auto; flex-direction: row; gap: 4px; min-height: 0; padding: 4px 10px; font-size: 16px; }
-  .hw-route-option .hw-route-time small { margin-top: 0; }
-  .hw-route-note { font-size: 13px; }
-}
-
-/* Quick route: one round of the huddle, the rest of the practice behind a disclosure. */
-.hw-quick-optional { margin: 14px 0; }
-.hw-quick-optional[hidden] { display: none; }
-.hw-quick-optional button { min-height: 48px; width: 100%; padding: 10px 16px; font: inherit; font-weight: 800; border-radius: 12px; border: 2px dashed var(--teal, #1fa6a2); background: #f0fdfa; color: var(--teal-ink, #0c6f6b); cursor: pointer; }
-.hw-quick-optional button:focus-visible { outline: 3px solid var(--teal-ink, #0c6f6b); outline-offset: 2px; }
-.cga-quick-note { display: none; margin: 10px 0 0; font-size: 14px; color: #7c2d12; }
-body[data-homework-route="quick"] #hw_cga .cga-round:not([data-cga-round="0"]), body[data-homework-route="quick"] #hw_cga .cga-next { display: none !important; }
-body[data-homework-route="quick"] #hw_cga .cga-quick-note { display: block; }
-
-/* Warm-up huddle: the Confused Grown-Up, offered right after Learn. */
-.hw-huddle { margin: 16px 0; border: 2px solid var(--amber, #f2c15b); border-radius: 16px; background: var(--amber-light, #fef7e0); }
-.hw-huddle > summary { display: flex; align-items: center; gap: 12px; min-height: 56px; padding: 12px 14px; cursor: pointer; list-style: none; }
-.hw-huddle > summary::-webkit-details-marker { display: none; }
-.hw-huddle > summary:focus-visible { outline: 3px solid var(--teal-ink, #0c6f6b); outline-offset: 2px; }
-.hw-huddle-icon { font-size: 28px; }
-.hw-huddle-text { flex: 1; display: grid; gap: 2px; }
-.hw-huddle-text small { font-size: 14px; color: var(--muted, #5f6f80); }
-.hw-huddle-chev { font-size: 18px; transition: transform .15s ease; }
-.hw-huddle[open] .hw-huddle-chev { transform: rotate(180deg); }
-.hw-huddle > .cga-card { margin: 0 12px 12px; }
-@media print { .hw-huddle { display: none; } }
-`;
-
 /** Quick-route disclosure for the problems the route set aside. */
 export function renderQuickOptional() {
   return `<div class="hw-quick-optional" id="hw_quick_optional" hidden>
-        <button type="button" id="hw_quick_optional_btn" aria-expanded="false" aria-controls="hw_panel_check" onclick="toggleQuickOptional()">
+        <button type="button" id="hw_quick_optional_btn" aria-expanded="false" aria-controls="hw_panel_check" ${act("toggleQuickOptional")}>
           <span class="lang-en"><span data-hw-quick-more-label>Show</span> <span data-hw-quick-more-count>4</span> more problems (optional)</span>
           <span class="lang-es" lang="es"><span data-hw-quick-more-label-es>Mostrar</span> <span data-hw-quick-more-count-es>4</span> problemas más (opcional)</span>
         </button>

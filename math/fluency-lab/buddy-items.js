@@ -3,9 +3,9 @@
 export const COLORS = {
   blue: "#4a90d9",
   green: "#3fa36b",
-  pink: "#e0679a",
+  pink: "#D0674F",
   orange: "#f08a3c",
-  purple: "#8a5cc8",
+  purple: "#1FA6A2",
   teal: "#2aa7a0",
 };
 
@@ -22,6 +22,19 @@ export const ITEMS = [
   { id: "wings", slot: "back", name: "Star wings", hint: "Collect 25 trail stars", unlock: { sticker: "stars-25" } },
   { id: "rocket", slot: "back", name: "Rocket pack", hint: "Practice 7 days in a row", unlock: { sticker: "days-7" } },
 ];
+
+// Bought with coins in the Buddy shop. Coins come from game stars (effort and thinking, never speed), so a shop
+// item is always earned too.
+export const SHOP = [
+  { id: "beanie", slot: "hat", name: "Warm beanie", price: 6 },
+  { id: "tophat", slot: "hat", name: "Top hat", price: 12 },
+  { id: "mustache", slot: "face", name: "Curly mustache", price: 8 },
+  { id: "starshades", slot: "face", name: "Star glasses", price: 12 },
+  { id: "backpack", slot: "back", name: "Explorer backpack", price: 6 },
+  { id: "bubbles", slot: "back", name: "Bubble trail", price: 10 },
+];
+export const SHOP_IDS = SHOP.map((item) => item.id);
+ITEMS.push(...SHOP.map((item) => ({ ...item, hint: "Buy it in the Buddy shop", unlock: { coins: item.price } })));
 
 export const SLOTS = ["hat", "face", "back"];
 export const ITEM_IDS = ITEMS.map((item) => item.id);

@@ -1,0 +1,228 @@
+/* Family Math pages added in Fluency Lab 4.0: home additions (grade chips, optional-practice note, grown-up guide, short
+   routines, topic cards, celebration links). Uses the fm2 tokens of the family pages; no violet, no emoji. */
+.hm4-chips {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(52px, 1fr));
+  gap: 8px;
+}
+.hm4-chip {
+  position: relative;
+  display: block;
+}
+.hm4-chip input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+.hm4-chip span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  border: 2px solid var(--fm-line);
+  border-radius: 14px;
+  background: #fff;
+  color: var(--fm-navy);
+  font: 800 1.1rem/1 var(--fm-font);
+  pointer-events: none;
+}
+.hm4-chip input:checked + span {
+  border-color: var(--fm-navy);
+  background: var(--fm-navy);
+  color: #fff;
+  box-shadow: inset 0 0 0 3px #fff, inset 0 0 0 5px var(--fm-navy);
+}
+.hm4-chip input:focus-visible + span {
+  box-shadow: var(--fm-focus);
+}
+.hm4-grade-now {
+  color: var(--fm-navy);
+}
+.hm4-optional {
+  margin: 12px 0 0;
+  padding: 10px 14px;
+  border-left: 4px solid var(--fm-accent);
+  border-radius: 0 12px 12px 0;
+  background: #e3f4f2;
+  color: var(--fm-navy);
+  font-size: 0.98rem;
+}
+.hm4-guide {
+  margin-top: 12px;
+  border: 1px solid var(--fm-line);
+  border-radius: 14px;
+  background: #fff;
+}
+.hm4-guide summary {
+  min-height: 48px;
+  padding: 12px 16px;
+  color: var(--fm-navy);
+  font-weight: 800;
+  cursor: pointer;
+}
+.hm4-guide ol {
+  margin: 0;
+  padding: 0 16px 14px 36px;
+  color: var(--fm-ink);
+  font-size: 0.98rem;
+}
+.hm4-guide li + li {
+  margin-top: 6px;
+}
+.hm4-routines,
+.hm4-topics {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.hm4-routines {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+.hm4-routine {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 18px;
+  border: 1px solid var(--fm-line);
+  border-radius: 18px;
+  background: #fff;
+}
+.hm4-routine-head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.hm4-art {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 72px;
+  height: 72px;
+  border-radius: 18px;
+  background: #e3f4f2;
+}
+.hm4-art svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.hm4-routine h3 {
+  margin: 0 0 4px;
+  color: var(--fm-navy);
+  font: 700 1.2rem/1.2 Georgia, serif;
+}
+.hm4-routine p {
+  margin: 0;
+  color: var(--fm-muted);
+  font-size: 0.96rem;
+}
+.hm4-min {
+  display: inline-block;
+  padding: 2px 10px;
+  border: 1.5px solid var(--fm-navy);
+  border-radius: 999px;
+  color: var(--fm-navy) !important;
+  font-size: 0.82rem !important;
+  font-weight: 800;
+}
+.hm4-go {
+  align-self: flex-start;
+  margin-top: auto;
+  text-align: center;
+}
+.hm4-topics {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 12px;
+}
+.hm4-topic {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  min-height: 72px;
+  padding: 10px 14px;
+  border: 1px solid var(--fm-line);
+  border-radius: 16px;
+  background: #fff;
+  color: var(--fm-ink);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.hm4-topic:hover {
+  border-color: var(--fm-navy);
+}
+.hm4-topic:focus-visible {
+  outline: none;
+  box-shadow: var(--fm-focus);
+}
+.hm4-topic .hm4-art {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+}
+.hm4-topic-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.hm4-topic-text b {
+  color: var(--fm-navy);
+  overflow-wrap: anywhere;
+}
+.hm4-topic-text small {
+  color: var(--fm-muted);
+  font-size: 0.88rem;
+}
+.hm4-celebrate {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-top: 16px;
+  padding: 16px 18px;
+  border: 1px solid var(--fm-line);
+  border-radius: 18px;
+  background: #fff;
+}
+.hm4-celebrate h3 {
+  margin: 0 0 2px;
+  color: var(--fm-navy);
+  font: 700 1.2rem/1.2 Georgia, serif;
+}
+.hm4-celebrate p {
+  margin: 0 0 10px;
+  color: var(--fm-muted);
+  font-size: 0.96rem;
+}
+.hm4-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+@media (max-width: 860px) {
+  .hm4-routines {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 520px) {
+  .hm4-celebrate {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+@media print {
+  #routines-region,
+  #topics-region,
+  .hm4-celebrate,
+  .hm4-guide,
+  .hm4-optional {
+    display: none !important;
+  }
+}

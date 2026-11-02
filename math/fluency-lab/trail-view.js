@@ -1,4 +1,5 @@
 // Fact Trail screens: trail map → strategy card → 10-problem round → stars. Untimed by design.
+import { feedbackAction, mountFeedback, phaseFor } from "./feedback-host.js";
 import { getGrade, seededRandom, validateAnswer } from "./problem-bank.js";
 import {
   BANDS,
@@ -43,7 +44,7 @@ export function mountTrail(container, { grade, onShowSkills, onPlayGame }) {
   let round = null;
   let cardState = null;
   const listeners = new container.ownerDocument.defaultView.AbortController();
-  let timer = null;
+  let panel = null; // the shared feedback panel inside the current problem
 
   container.style.setProperty("--trail", color);
   container.dataset.band = bandFor(grade);
@@ -86,7 +87,6 @@ export function mountTrail(container, { grade, onShowSkills, onPlayGame }) {
   }
 
   function renderMap() {
-    clearTimeout(timer);
     round = null;
     cardState = null;
     playing(false);
@@ -198,7 +198,7 @@ export function mountTrail(container, { grade, onShowSkills, onPlayGame }) {
         ${languagePromptHtml({ grade, name: entry.name }, { compact: true, heading: t("Talk about this strategy") })}
         <div class="tr-lesson">
           <div class="tr-example">
-            <p class="tr-example-fact">${mathText(example.question)}</p>
+            <p class="tr-example-fact${String(example.question).length > 40 ? " is-long" : ""}">${mathText(example.question)}</p>
             ${picture}
           </div>
           <div class="tr-guide">
@@ -239,6 +239,8 @@ export function mountTrail(container, { grade, onShowSkills, onPlayGame }) {
       phase: "ask",
       miss: false,
       missTries: 0,
+      settled: false,
+      fb: null,
       results: [],
     };
     renderProblem();
@@ -295,7 +297,7 @@ export function mountTrail(container, { grade, onShowSkills, onPlayGame }) {
             ${round.miss ? "" : liveModel(item)}
             ${
               round.miss
-                ? `<div class="tr-help"><p class="tr-miss-title">${esc(t(words.miss))}</p>${round.note ? `<p class="tr-mistake-note">${esc(round.note)}</p>` : ""}<div class="tr-help-body">${peekCap(item) > 0 ? stepsBlock(steps, peekCap(item), { id: "miss-steps" }) : `<p class="tr-tip">${mathText(item.hint)}</p>`}</div><p class="tr-retype">${esc(t(words.retype))}</p></div>`
+                ? `<div class="tr-help">${round.note ? `<p class="tr-mistake-note">${esc(round.note)}</p>` : ""}<div class="tr-help-body">${peekCap(item) > 0 ? stepsBlock(steps, peekCap(item), { id: "miss-steps" }) : `<p class="tr-tip">${mathText(item.hint)}</p>`}</div><p class="tr-retype">${esc(t(words.retype))}</p></div>`
                 : ""
             }
           </div>
@@ -309,26 +311,56 @@ export function mountTrail(container, { grade, onShowSkills, onPlayGame }) {
           </div>
         </div>
       </div>`;
+    panel = mountFeedback(container.querySelector(".tr-feedback"));
+    paintResult();
     const input = container.querySelector("#tr-input");
+    if (round.settled) return;
     if (!words.keypad || !window.matchMedia?.("(pointer: coarse)").matches) input.focus();
+  }
+
+  // Draws the stored feedback state. It is stored on the round so a redraw (opening the model) keeps the panel.
+  function paintResult() {
+    const { fb } = round;
+    if (!fb) return;
+    panel.show(fb.phase, fb.ctx, fb.message);
+    if (!round.settled) return;
+    container.querySelector(".tr-answer").classList.add("good");
+    for (const control of container.querySelectorAll("#tr-input, .tr-check, .tr-pad button")) control.disabled = true;
+    container.querySelector("[data-feedback-action='next']")?.focus();
+  }
+
+  function showResult(phase, ctx, message) {
+    round.fb = { phase, ctx, message };
+    paintResult();
+  }
+
+  function isLastProblem() {
+    return round.index + 1 >= round.queue.length;
+  }
+
+  // A correct answer waits for the learner: Next moves on, nothing advances by timer.
+  function settle(current, event, message) {
+    round.settled = true;
+    saveTrail(data);
+    showResult(phaseFor("trail", event), { expected: String(current.item.displayAnswer ?? current.item.answers?.[0] ?? ""), next: isLastProblem() ? t("See results") : t("Next") }, message);
   }
 
   function submit(value) {
     const current = round.queue[round.index];
-    const feedback = container.querySelector(".tr-feedback");
-    if (!String(value).trim()) return;
+    if (round.settled || !String(value).trim()) return;
     const correct = validateAnswer(value, current.item);
+    const word = t(words.right[round.index % words.right.length]);
     if (round.miss) {
       if (!correct) {
         round.missTries += 1;
-        feedback.textContent =
-          round.missTries < 2
-            ? t("Use the steps to find it, then try again.")
-            : t("Type {n} to keep going.", { n: current.item.displayAnswer });
+        showResult(
+          phaseFor("trail", "miss"),
+          { submitted: String(value).trim() },
+          round.missTries < 2 ? t("Use the steps to find it, then try again.") : t("Type {n} to keep going.", { n: current.item.displayAnswer }),
+        );
         return;
       }
-      round.miss = false;
-      advance();
+      settle(current, "right-after-miss", word);
       return;
     }
     if (correct) {
@@ -337,10 +369,7 @@ export function mountTrail(container, { grade, onShowSkills, onPlayGame }) {
         round.results.push("right");
         recordFact(data, current.item, true);
       }
-      feedback.textContent = t(words.right[round.index % words.right.length]);
-      feedback.className = "tr-feedback good";
-      container.querySelector(".tr-answer").classList.add("good");
-      timer = setTimeout(advance, 650);
+      settle(current, "right", word);
       return;
     }
     if (!current.review) {
@@ -356,11 +385,15 @@ export function mountTrail(container, { grade, onShowSkills, onPlayGame }) {
     round.note = likelyMistake(current.item, value);
     round.missTries = 0;
     round.peek = 0;
+    round.fb = { phase: phaseFor("trail", "miss"), ctx: { submitted: String(value).trim() }, message: t(words.miss) };
     saveTrail(data);
     renderProblem();
   }
 
   function advance() {
+    round.settled = false;
+    round.miss = false;
+    round.fb = null;
     round.index += 1;
     round.peek = 0;
     round.modelOpen = false;
@@ -399,6 +432,9 @@ export function mountTrail(container, { grade, onShowSkills, onPlayGame }) {
   }
 
   on("click", (event) => {
+    const action = feedbackAction(event);
+    if (action === "next" && round?.settled) return advance();
+    if (action === "try-again" && round && !round.settled) return container.querySelector("#tr-input")?.focus();
     const target = event.target.closest("button");
     if (!target || !container.contains(target)) return;
     if (handleModelTap(target)) return;
@@ -429,7 +465,7 @@ export function mountTrail(container, { grade, onShowSkills, onPlayGame }) {
       renderPeek();
     } else if (target.hasAttribute("data-read") && round) {
       speak(round.queue[round.index].item.question);
-    } else if (target.dataset.key) {
+    } else if (target.dataset.key && !round?.settled) {
       const input = container.querySelector("#tr-input");
       const key = target.dataset.key;
       input.value =
@@ -445,14 +481,12 @@ export function mountTrail(container, { grade, onShowSkills, onPlayGame }) {
   on("input", (event) => handleModelInput(event.target));
   on("submit", (event) => {
     event.preventDefault();
-    if (round && !container.querySelector(".tr-answer.good"))
-      submit(container.querySelector("#tr-input").value);
+    if (round && !round.settled) submit(container.querySelector("#tr-input").value);
   });
 
   renderMap();
   return () => {
     listeners.abort();
-    clearTimeout(timer);
     playing(false);
   };
 }

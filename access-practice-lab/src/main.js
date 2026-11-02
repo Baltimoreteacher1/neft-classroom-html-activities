@@ -6,11 +6,15 @@
 //   /access-practice-lab/test/<id>
 // New: /tests, /road[/<week>], /family, /passport, /play?ids=…, /tools, and
 // ?grades=3-5|6-8 on any URL.
-import { notePlay, scripts } from "./components.js";
+import { micDeniedMessage, notePlay, scripts, setComponentsI18n } from "./components.js";
 import { availableBands, loadIndex } from "./content.js";
 import * as rec from "./recorder.js";
-import { stop as stopSpeech, speak } from "./speech.js";
+import { playRecording, stop as stopSpeech, speak } from "./speech.js";
 import { getPrefs, setPrefs } from "./store.js";
+import { setStudioI18n as setEvidenceUiI18n } from "./evidence-ui.js";
+import { LANG_MODES, i18nFor } from "./i18n.js";
+import { setItemsI18n } from "./items.js";
+import { setStudioI18n as setStudioUiI18n } from "./studio-ui.js";
 import { mountShell } from "./shell.js";
 import { mountGloss } from "./glossary.js";
 import { registerSaveResume } from "./sync.js";
@@ -38,11 +42,21 @@ import * as launchStudioView from "./views/launch-studio.js";
 import * as worldsView from "./views/worlds.js";
 import * as classroomView from "./views/classroom.js";
 import * as vocabularyView from "./views/vocabulary.js";
+import * as flashcardsView from "./views/flashcards.js";
 import * as readingRoomView from "./views/reading-room.js";
+import * as gamesView from "./views/games.js";
+import * as storiesView from "./views/stories.js";
+import * as ladderView from "./views/ladder.js";
+import * as puzzlesView from "./views/puzzles.js";
+import * as publisherDemoView from "./views/publisher-demo.js";
 
 export const BUILD = "2026.10.25.1";
 const VIEWS = {
   home: homeView,
+  "session-done": homeView,
+  stories: storiesView,
+  ladder: ladderView,
+  puzzles: puzzlesView,
   library: libraryView,
   room: roomView,
   activity: activityView,
@@ -69,8 +83,11 @@ const VIEWS = {
   worlds: worldsView,
   classroom: classroomView,
   vocabulary: vocabularyView,
+  flashcards: flashcardsView,
   reading: readingRoomView,
   "reading-room": readingRoomView,
+  games: gamesView,
+  "publisher-demo": publisherDemoView,
 };
 const DOMAINS = ["Listening", "Reading", "Speaking", "Writing", "Model-Test"];
 
@@ -90,7 +107,7 @@ export function parseRoute(pathname = location.pathname, search = location.searc
   if (a === "worlds") {
     return { ...r, view: "worlds", id: b || "", worldId: b || "", missionId: c || "", tab: q.get("tab") || "" };
   }
-  if (["tests", "family", "passport", "tools", "library", "missions", "mission", "conversation", "construction", "evidence", "growth", "speak", "write", "detective", "launch", "launch-studio", "teacher-launch", "classroom", "vocabulary"].includes(a)) {
+  if (["tests", "family", "passport", "tools", "library", "missions", "mission", "conversation", "construction", "evidence", "growth", "speak", "write", "detective", "launch", "launch-studio", "teacher-launch", "classroom", "vocabulary", "flashcards", "stories", "ladder", "puzzles", "publisher-demo", "games"].includes(a)) {
     return { ...r, view: a, id: b || "", missionId: b || "", scenarioId: b || "", tab: q.get("tab") || "" };
   }
   if (a === "diagnostic") return { ...r, view: "diagnostic", domain: b || "" };
@@ -102,7 +119,9 @@ export function parseRoute(pathname = location.pathname, search = location.searc
       ids: (q.get("ids") || "").split(",").filter(Boolean),
       index: Number(q.get("i")) || 0,
       title: q.get("t") || "",
+      sessionId: q.get("sid") || "",
     };
+  if (a === "session-done") return { ...r, view: "session-done", sessionId: b || q.get("sid") || "" };
   if (!DOMAINS.includes(a)) return { ...r, notFound: true };
   if (a === "Model-Test") {
     const level = b && c ? `${b}-${c}` : "";
@@ -147,7 +166,10 @@ export const ctx = {
     if (!app.bands.includes(band) || band === app.band) return;
     app.band = band;
     app.prefs = setPrefs({ band });
-    announce(`Showing ${band.replace("-", "–")} practice.`);
+    {
+      const g = band.replace("-", "–");
+      announce(i18nFor(ctx).S(`Showing ${g} practice.`, `Mostrando la práctica de ${g}.`));
+    }
   },
 };
 
@@ -225,6 +247,12 @@ async function render({ keepFocus = false, scroll = false } = {}) {
   document.documentElement.style.setProperty("--lab-scale", String(app.prefs.textSize || 1));
   app.route = route;
   app.band = resolveBand(route);
+  // Shared builders (components, items, studio and evidence UI) read the language from here, once per render.
+  const I = i18nFor(ctx);
+  setComponentsI18n(I);
+  setItemsI18n(I);
+  setStudioUiI18n(I);
+  setEvidenceUiI18n(I);
   if (route.grades && route.grades === app.band && app.prefs.band !== app.band)
     app.prefs = setPrefs({ band: app.band });
   const view = VIEWS[route.view] || homeView;
@@ -280,7 +308,7 @@ async function common(e) {
   if (t.closest("[data-stop-audio]")) {
     stopSpeech();
     document.querySelectorAll(".listen-player.is-playing").forEach((el) => el.classList.remove("is-playing"));
-    announce("Audio stopped.");
+    announce(i18nFor(ctx).S("Audio stopped.", "Audio detenido."));
     return true;
   }
   const say = t.closest("[data-say]");
@@ -296,7 +324,9 @@ async function common(e) {
     player?.classList.add("is-playing");
     notePlay(key);
     app.view?.onListen?.(key);
-    const done = await speak(scripts.get(key) || [], { rate: app.prefs.rate });
+    const recorded = app.view?.recordingFor?.(key);
+    let done = recorded ? await playRecording(recorded, { rate: app.prefs.rate }) : "failed";
+    if (done === "failed") done = await speak(scripts.get(key) || [], { rate: app.prefs.rate });
     player?.classList.remove("is-playing");
     if (done && app.location === startedAt) render({ keepFocus: true });
     return true;
@@ -305,6 +335,25 @@ async function common(e) {
   if (rate) {
     ctx.setPrefs({ rate: Number(rate.dataset.rate) });
     render({ keepFocus: true });
+    return true;
+  }
+  const langBtn = t.closest("[data-lang-mode]");
+  if (langBtn) {
+    const mode = LANG_MODES.includes(langBtn.dataset.langMode) ? langBtn.dataset.langMode : "en";
+    ctx.setPrefs({ lang: mode, langChosen: true });
+    announce({ en: "Language: English.", es: "Idioma: español.", bi: "Language: English and Español. Idioma: inglés y español." }[mode]);
+    const fromPage = Boolean(langBtn.closest("#app"));
+    await render({ keepFocus: true });
+    // From the header, keep focus on the same control. From the page, a view may already have moved focus
+    // (the setup wizard moves it to the next question); otherwise return to the control that was used.
+    const stillLost = !document.activeElement || document.activeElement === document.body;
+    if (!fromPage) document.querySelector(`.lab-tools [data-lang-mode="${mode}"]`)?.focus({ preventScroll: true });
+    else if (stillLost) document.querySelector(`#app [data-lang-mode="${mode}"]`)?.focus({ preventScroll: true });
+    return true;
+  }
+  if (t.closest("[data-lang-keep]")) {
+    ctx.setPrefs({ langChosen: true });
+    document.getElementById("labLangBanner")?.remove();
     return true;
   }
   const band = t.closest("[data-set-band]");
@@ -329,7 +378,7 @@ async function common(e) {
         const ready = await rec.countdown(prep, {
           onTick: (n) => {
             const el = countdownEl();
-            if (el) el.textContent = n > 0 ? `Recording starts in ${n}…` : "";
+            if (el) el.textContent = n > 0 ? i18nFor(ctx).S(`Recording starts in ${n}…`, `La grabación empieza en ${n}…`) : "";
             if (n > 0) announce(String(n));
           },
         });
@@ -349,7 +398,7 @@ async function common(e) {
         onStop: async (_takes, { limited }) => {
           owner?.onRecorded?.(key, ctx);
           if (app.location !== startedAt) return;
-          if (limited) announce("Time is up. Your recording was saved.");
+          if (limited) announce(i18nFor(ctx).S("Time is up. Your recording was saved.", "Se acabó el tiempo. Se guardó tu grabación."));
           await render({ keepFocus: true });
           // Move to the next thing the learner does: type or review what they said.
           document.querySelector("[data-transcript], [data-rec-start]")?.focus({ preventScroll: false });
@@ -358,14 +407,14 @@ async function common(e) {
       if (recording && app.location === startedAt) {
         await render({ keepFocus: true });
         document.querySelector("[data-rec-stop]")?.focus();
-        announce("Recording. Press Stop when you are done.");
+        announce(i18nFor(ctx).S("Recording. Press Stop when you are done.", "Grabando. Pulsa Detener cuando termines."));
       } else {
         recStart.disabled = false;
       }
     } catch {
       recStart.disabled = false;
       if (app.location !== startedAt) return true;
-      const message = "The microphone is unavailable. Check browser permission and your microphone, or practice aloud with a partner. You can continue without recording.";
+      const message = micDeniedMessage(i18nFor(ctx));
       const status = document.querySelector(`[data-rec-error="${CSS.escape(key)}"]`);
       if (status) { status.textContent = message; status.hidden = false; }
       announce(message);
@@ -385,7 +434,7 @@ async function common(e) {
     );
     ctx.setPrefs({ textSize: next });
     document.documentElement.style.setProperty("--lab-scale", String(next));
-    announce(`Text size ${Math.round(next * 100)}%`);
+    announce(i18nFor(ctx).S(`Text size ${Math.round(next * 100)}%`, `Tamaño del texto ${Math.round(next * 100)}%`));
     return true;
   }
   return false;
@@ -438,7 +487,14 @@ window.addEventListener("pagehide", () => { app.view?.unmount?.(); stopSpeech();
 function watchNetwork() {
   const note = $("#labNet");
   const show = (offline) => {
-    if (note) note.hidden = !offline;
+    if (!note) return;
+    // The shell ships the English sentence; a family reading Spanish gets Spanish (or both) when it appears.
+    if (offline)
+      note.textContent = i18nFor(ctx).S(
+        "You are offline. Practice and saved work keep working. Sharing and the official WIDA demo need a connection.",
+        "No hay conexión. La práctica y el trabajo guardado siguen funcionando. Compartir y la demostración oficial de WIDA necesitan conexión.",
+      );
+    note.hidden = !offline;
   };
   window.addEventListener("online", () => show(false));
   window.addEventListener("offline", () => show(true));
@@ -469,5 +525,16 @@ async function boot() {
   document.documentElement.classList.add("lab-ready");
   watchNetwork();
   registerOffline();
+  mountTourGuide();
+}
+
+/** The Family Expedition guide panel loads only for families who opened a lab page from the tour. */
+function mountTourGuide() {
+  let saved = null;
+  try {
+    saved = sessionStorage.getItem("ewl-tour-dock");
+  } catch {}
+  if (!new URLSearchParams(location.search).has("tour") && saved === null) return;
+  import("./tour-dock.js").then((m) => m.mountTourDock()).catch(() => {});
 }
 boot();

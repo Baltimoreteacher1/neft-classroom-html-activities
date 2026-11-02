@@ -8,8 +8,17 @@ import {
   seededRandom,
   validateAnswer,
 } from "./problem-bank.js";
-import { adaptiveProblem, dailyPlan, diagnosticPlan, difficulty, emptyTutor, evidence, feedbackFor, findSkill, localDay, missionPlan, prerequisites, recommendations, recordAnswer, rememberMistake, sanitizeTutor, skillForItem, skillKey as tutorSkillKey } from "./tutor-engine.js";
-import { copiesTable, factorTreeSvg, keptPrimes, primeList } from "./factor-tree.js";
+import { FEEDBACK_PHASES, feedbackView, nextPhase } from "./feedback-machine.js";
+import { paintActions, paintFeedback } from "./feedback-panel.js";
+import { itemSignature } from "./mastery-model.js";
+import { adaptiveProblem, dailyPlan, emptyTutor, evidence, feedbackFor, findSkill, localDay, missionPlan, prerequisites, prerequisiteGraph, recommendations, recordAnswer, rememberMistake, sanitizeTutor, skillForItem, skillKey as tutorSkillKey } from "./tutor-engine.js";
+import { checkupPlan, checkupSummary, recordCheckupAnswer } from "./placement.js";
+import { adaptiveItem } from "./adaptive-item.js"; // fl4:adaptive
+import { alignTier, nextTier, tierToLevel } from "./difficulty-levels.js"; // fl4:adaptive
+import { checkupAdvice } from "./diagnostic-engine.js"; // fl4:adaptive
+import { consumeScaffold, planRescue, recordRescue, returnMessage, rescueQueue, rescueStep, startRescue } from "./rescue.js"; // fl4:adaptive
+import { openRescueDialog, rescueOfferElement, returnBanner } from "./rescue-ui.js"; // fl4:adaptive
+import { copiesTable, factorTreeSvg, keptPrimes, powerGroups, primeList, treeCaption } from "./factor-tree.js";
 import { mountVisualLesson, renderModel, renderInlineProblemModel } from "./visual-lab.js";
 import { skillIdForWorld } from "./puzzle-worlds.js";
 import { transferPrompt } from "./lesson-content.js";
@@ -27,7 +36,20 @@ import { mountTrail } from "./trail-view.js";
 import { GAMES, mountGames } from "./games.js";
 import { getLang, setLang, t, translatePage } from "./i18n.js";
 import { mistakeCategoryLabel } from "./mistake-notes.js";
+import { runFluencySelfTest } from "./fluency-diagnostics.js";
+import { decodeMasteryReceipt, makeMasteryReceipt } from "./mastery-receipts.js";
+import { renderNumberTalkBoard } from "./number-talk-board.js";
+import { mountWriting } from "./writing-studio.js";
+import { fractionPicture } from "./fraction-picture.js";
+import { initStepModelLink } from "./step-model-link.js";
+import { initStepLens } from "./step-lens.js";
+import { nextMoveOf } from "./step-moves.js";
+import { renderPrerequisiteMap } from "./prerequisite-map.js";
+import { mountDashboard } from "./journey-4.js"; // fl4:dashboard
+import { skillSignals } from "./recommendation-engine.js"; // fl4:dashboard
+import { libraryCard } from "./skill-card.js"; // fl4:dashboard
 import { factsReport, mountSnapshot } from "./class-snapshot.js";
+import { launchMiniLesson, miniLessonRequested } from "./lesson-4/launch.js"; // fl4:lessons
 import { whyFor } from "./step-whys.js";
 import { storyFor } from "./story-problems.js";
 import { loadRewards, noteToday, saveRewards } from "./rewards.js";
@@ -37,6 +59,7 @@ import { familySummaryDocument, familySummaryHtml } from "./family-page.js";
 import { mountPaperGames } from "./paper-games.js";
 import { stopOptions, stopsFor } from "./game-pool.js";
 import { cleanPlay, exportPlay, importPlay } from "./play-backup.js";
+import { recordGrowth } from "./growth-log.js"; // fl4:teacher
 import { decideInstruction, independentRecoveryCount, readInstructionalEvidence, recordInstructionalEvidence } from "../../engine/core/instructional-intelligence.js";
 import { VOCAB_BILINGUAL_DB, highlightVocab, initVocabSystem, openVocabModal } from "./vocab.js";
 import { canSpeak, speak, spoken, spokenEs } from "./speech.js";
@@ -46,11 +69,20 @@ import { languageEvidence, loadJournal } from "./language-journal.js";
 import { setLanguageProfile } from "./language-settings.js";
 import { questionEs } from "./question-es.js";
 import { handleStepPlayerClick, handleStepPlayerSolved, lightStepPlayers, stepPlayer } from "./step-player.js";
+import { applyGradeExperience } from "./grade-experience.js";
+import { initGradeHub } from "./grade-hub.js";
+import { mountStudio, studioAvailable, studioModeled } from "./studio/studio.js";
+
+// teacher-4.js is teacher-only, so the teacher-surface gate refuses it to an anonymous student. A static import of a
+// refused file stops this whole module; awaiting a guarded import instead leaves null for a student and the real
+// module, available synchronously, for a signed-in teacher.
+const fl4Teacher = await import("./teacher-4.js").catch(() => null);
 
 const STORAGE_KEY = "ewl-fluency-progress-v1";
 const SETTINGS_KEY = "ewl-fluency-settings-v1";
 const TUTOR_KEY = "ewl-fluency-tutor-v2";
 const SESSION_KEY = "ewl-fluency-session-v2";
+const BRIDGE_RETURN_KEY = "ewl-fluency-bridge-return-v1";
 const INTELLIGENCE_KEY = "ewl-fluency-instructional-evidence-v1";
 const STREAK_GOAL = 10;
 const initialParams = new URLSearchParams(location.search);
@@ -64,8 +96,11 @@ let activeProfile = Number.isInteger(requestedProfile) && requestedProfile >= 0 
 selectProfile(activeProfile);
 setLanguageProfile(activeProfile);
 let cleanupVisual = null;
+let cleanupVisualStudio = null;
+let cleanupLearnStudio = null;
 let cleanupTrail = null;
 let cleanupGames = null;
+let cleanupWriting = null;
 let pendingRestore = null;
 
 const els = {
@@ -106,6 +141,7 @@ const els = {
   progressBar: document.querySelector("#session-progress"),
   problemNumber: document.querySelector("#problem-number"),
   question: document.querySelector("#question"),
+  answerResultStatus: document.querySelector("#answer-result-status"),
   answerForm: document.querySelector("#answer-form"),
   answerInput: document.querySelector("#answer-input"),
   choiceAnswers: document.querySelector("#choice-answers"),
@@ -116,6 +152,10 @@ const els = {
   feedback: document.querySelector("#feedback"),
   languageSlot: document.querySelector("#language-slot"),
   feedbackTitle: document.querySelector("#feedback-title"),
+  feedbackIcon: document.querySelector("#feedback-icon"),
+  feedbackBadge: document.querySelector("#feedback-badge"),
+  feedbackAnswers: document.querySelector("#feedback-answers"),
+  feedbackActions: document.querySelector("#feedback-actions"),
   feedbackCopy: document.querySelector("#feedback-copy"),
   scratchpad: document.querySelector("#scratchpad"),
   summary: document.querySelector("#session-summary"),
@@ -141,8 +181,10 @@ const els = {
   path: document.querySelector("#path-view"),
   notebook: document.querySelector("#notebook-view"),
   games: document.querySelector("#games-view"),
+  write: document.querySelector("#write-view"),
   teacher: document.querySelector("#teacher-view"),
   teacherStudio: document.querySelector("#teacher-studio"),
+  teacher4: document.querySelector("#teacher-4"), // fl4:teacher
   insight: document.querySelector("#session-insight"),
   topic: document.querySelector("#problem-topic"),
   skip: document.querySelector("#skip-checkup"),
@@ -175,6 +217,9 @@ const els = {
 
 const state = {
   grade: GRADES.some((grade) => grade.grade === initialGrade) ? initialGrade : Number(readLocal(profileKey(`${SETTINGS_KEY}:grade`, activeProfile), 1)),
+  gradeInUrl: GRADES.some((grade) => grade.grade === initialGrade),
+  // A bare /math/fluency-lab/ visit asks which grade to open; any deep link (grade, skill, view, start, assignment) skips that.
+  landing: !["grade", "skill", "view", "start"].some((key) => initialParams.has(key)) && !new URLSearchParams(location.hash.slice(1)).get("assignment"),
   strand: "All",
   skill: null,
   mixedPool: null,
@@ -195,6 +240,9 @@ const state = {
   view: "library",
   assignment: decodeAssignment(new URLSearchParams(location.hash.slice(1)).get("assignment")),
   instructionalSignal: null,
+  activeBugHunt: null,
+  problemStartedAt: 0,
+  firstResponseMs: null,
 };
 const launchLang = initialParams.get("lang") || state.assignment?.lang;
 if (["en", "es"].includes(launchLang)) { setLang(launchLang, { persist: false }); translatePage(document); }
@@ -216,6 +264,7 @@ function loadJson(key, fallback) {
 function saveProgress() {
   writeLocal(profileKey(STORAGE_KEY, activeProfile), state.progress);
   writeLocal(profileKey(TUTOR_KEY, activeProfile), state.tutor);
+  recordGrowth(state.tutor); // fl4:teacher: one growth snapshot per skill per day
 }
 
 function saveSettings() {
@@ -264,16 +313,18 @@ function announce(message) {
 
 function setUrl() {
   const params = new URLSearchParams();
-  params.set("grade", state.grade);
+  if (state.gradeInUrl || (state.skill && state.view === "workspace")) params.set("grade", state.grade);
   if (state.skill && state.view === "workspace") params.set("skill", state.skill.id);
   if (!["library", "workspace"].includes(state.view)) params.set("view", state.view);
-  try { history.replaceState(null, "", `${location.pathname}?${params}${location.hash}`); } catch { /* A standalone file can still run when URL rewriting is unavailable. */ }
+  const query = params.toString();
+  try { history.replaceState(null, "", `${location.pathname}${query ? `?${query}` : ""}${location.hash}`); } catch { /* A standalone file can still run when URL rewriting is unavailable. */ }
 }
 
 function renderGradeTabs() {
+  const picked = (grade) => !state.landing && grade.grade === state.grade;
   els.gradeTabs.innerHTML = GRADES.map(
-    (grade) => `
-      <button class="grade-tab" role="tab" aria-selected="${grade.grade === state.grade}" tabindex="${grade.grade === state.grade ? 0 : -1}" aria-controls="library-view" data-grade="${grade.grade}" style="--grade:${grade.color}">
+    (grade, index) => `
+      <button class="grade-tab" role="tab" aria-selected="${picked(grade)}" tabindex="${picked(grade) || (state.landing && index === 0) ? 0 : -1}" aria-controls="library-view" data-grade="${grade.grade}">
         <span>${t("Grade")}</span><strong>${grade.grade}</strong>
       </button>`,
   ).join("");
@@ -290,7 +341,10 @@ const STRAND_ICONS = {
   Functions: "🔄", Systems: "🔗", Data: "📊"
 };
 
-function setPracticeSubview(subview) {
+// The grade page shows one section at a time (grade-hub.js). Skills and Fact Trail also drive the library subview.
+let gradeHub = initGradeHub(els.library, { onChange: (hub) => { if (hub === "skills" || hub === "trail") setPracticeSubview(hub, { syncHub: false }); } });
+function setPracticeSubview(subview, { syncHub = true } = {}) {
+  if (syncHub) gradeHub?.set(subview);
   state.subview = subview;
   const isSkills = subview === "skills";
   els.subnavSkills?.setAttribute("aria-selected", String(isSkills));
@@ -303,12 +357,12 @@ function setPracticeSubview(subview) {
 
 function filterSkillsBySearch() {
   const query = (els.skillSearchInput?.value || "").trim().toLowerCase();
-  const cards = els.skillGrid?.querySelectorAll(".skill-card") || [];
+  const cards = els.skillGrid?.querySelectorAll(".skill-card, .fl4-skill") || []; // fl4:dashboard
   let matches = 0;
   cards.forEach((card) => {
     const title = card.querySelector("h3")?.textContent.toLowerCase() || "";
-    const strand = card.querySelector(".strand-label")?.textContent.toLowerCase() || "";
-    const rule = card.querySelector("p")?.textContent.toLowerCase() || "";
+    const strand = card.querySelector(".strand-label, .fl4-strand")?.textContent.toLowerCase() || ""; // fl4:dashboard
+    const rule = card.querySelector(".fl4-rule, p")?.textContent.toLowerCase() || ""; // fl4:dashboard
     const match = !query || title.includes(query) || strand.includes(query) || rule.includes(query);
     card.style.display = match ? "" : "none";
     if (match) matches++;
@@ -327,9 +381,31 @@ function filterSkillsBySearch() {
   }
 }
 
+function renderGradeChooser() {
+  els.dashboard.innerHTML = `
+    <div class="journey-heading"><div><p class="section-label">${escapeHtml(t("Math Fluency Lab"))}</p><h2>${escapeHtml(t("Choose your grade"))}</h2><p>${escapeHtml(t("Pick Kindergarten to Grade 8. You can change it any time."))}</p></div></div>
+    <div class="grade-chooser" role="group" aria-label="${escapeHtml(t("Grade level"))}">${GRADES.map((grade) => `<button type="button" class="grade-choice" data-pick-grade="${grade.grade}" style="--grade:${grade.color}"><strong>${escapeHtml(grade.label)}</strong><span>${escapeHtml(t("{n} skills", { n: grade.skills.length }))}</span></button>`).join("")}</div>`;
+}
+
+function pickGrade(grade) {
+  saveActiveSession();
+  state.session = null;
+  state.landing = false;
+  state.gradeInUrl = true;
+  state.grade = grade;
+  state.strand = "All";
+  saveSettings();
+  if (state.view === "games") openHubView("games");
+  else renderLibrary();
+}
+
 function renderLibrary() {
   saveActiveSession();
   cleanupVisual?.();
+  cleanupVisualStudio?.();
+  cleanupVisualStudio = null;
+  cleanupLearnStudio?.();
+  cleanupLearnStudio = null;
   showArea("library");
   state.skill = null;
   state.mixedPool = null;
@@ -338,9 +414,9 @@ function renderLibrary() {
   els.workspace.hidden = true;
   els.library.hidden = false;
   const grade = getGrade(state.grade);
-  document.documentElement.style.setProperty("--grade", grade.color);
-  state.subview = state.subview || "skills";
-  setPracticeSubview(state.subview);
+  applyGradeExperience(state.grade);
+  state.subview = gradeHub?.current() === "trail" ? "trail" : "skills";
+  setPracticeSubview(state.subview, { syncHub: false });
   cleanupTrail?.();
   cleanupTrail = mountTrail(els.trail, {
     grade: state.grade,
@@ -350,7 +426,7 @@ function renderLibrary() {
     },
     onPlayGame: (game) => { state.autoGame = game; openHubView("games"); },
   });
-  els.gradeHeading.textContent = `More ${grade.label} practice`;
+  els.gradeHeading.textContent = t("{grade} skills", { grade: grade.label });
   els.gradePromise.textContent = grade.promise;
   const strandsCovered = [...new Set(grade.skills.map((skill) => skill.strand))];
   const scope = document.querySelector("#grade-scope");
@@ -378,8 +454,12 @@ function renderLibrary() {
     <div><strong>${attempts ? Math.round((correct / attempts) * 100) : 0}%</strong><span>accuracy</span></div>`;
   renderOverallStats();
   renderDashboard();
+  const choosing = state.landing;
+  if (choosing) renderGradeChooser();
+  if (choosing) for (const part of [document.querySelector(".practice-subnav"), document.querySelector("#grade-hub-tabs"), els.morePractice, els.trail]) if (part) part.hidden = true;
+  else document.querySelector("#grade-hub-tabs")?.removeAttribute("hidden");
   setUrl();
-  document.title = `${grade.label} Math Fluency Lab | EduWonderLab`;
+  document.title = !choosing && state.gradeInUrl ? `${grade.label} Math Fluency Lab | EduWonderLab` : "Math Fluency Lab · Grades 1–8 | EduWonderLab";
 }
 
 function skillPreviewSeed(skill) {
@@ -400,44 +480,16 @@ function displayRecommendationReason(reason) {
   return translated[reason] || reason;
 }
 
+// fl4:dashboard — the library card is built by skill-card.js (art, mastery ring, state word); the hooks the
+// library, search and tests rely on (.open-skill[data-skill], data-quick-skill, data-flashcard-skill, data-visual-skill) are kept.
 function renderSkillCard(skill, recommendation = null) {
-  const status = evidence(state.tutor, skill);
-  const level = status.secure ? 3 : status.independent >= 4 ? 2 : status.recent.length || status.lessonCompleted ? 1 : 0;
-  const label = ["New", "Practicing", "Getting strong", "I know it"][level];
-  const icon = STRAND_ICONS[skill.strand] || "✏️";
   const sample = generateProblem(skill, seededRandom(skillPreviewSeed(skill)));
   const foundations = prerequisites(skill).slice(0, 2);
   const nextSkills = ALL_SKILLS.filter((candidate) => candidate.grade <= skill.grade + 1 && prerequisites(candidate).some((foundation) => tutorSkillKey(foundation) === tutorSkillKey(skill))).slice(0, 2);
-  const quickIcon = '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M11.8 1.8 4.5 10h4.1l-.5 8.2 7.4-9h-4.2l.5-7.4Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>';
-  const cardsIcon = '<svg viewBox="0 0 20 20" aria-hidden="true"><rect x="6" y="3" width="10" height="13" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M4 6H3.5A1.5 1.5 0 0 0 2 7.5v9A1.5 1.5 0 0 0 3.5 18h8" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M9 7h4m-4 3h4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>';
-  const ideaIcon = '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M6.3 13.2a6 6 0 1 1 7.4 0c-.8.6-1.2 1.2-1.3 2H7.6c-.1-.8-.5-1.4-1.3-2Z" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M7.8 17h4.4m-3.7 1.5h3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>';
-  return `
-    <article class="skill-card" data-level="${level}">
-      <div class="skill-card-top">
-        <span class="strand-label"><span aria-hidden="true">${icon}</span> ${escapeHtml(skill.strand)}</span>
-        <span class="mastery-pill level-${level}">${label}</span>
-      </div>
-      <h3>${escapeHtml(skill.title)}</h3>
-      <p>${escapeHtml(skill.learn.rule)}</p>
-      ${recommendation ? `<p class="skill-recommendation"><strong>${t("Suggested for you")}</strong> · ${escapeHtml(displayRecommendationReason(recommendation.reason))}</p>` : ""}
-      <details class="skill-preview">
-        <summary>${t("Preview a sample question")}</summary>
-        <div class="skill-preview-content">
-          <p><strong>${skill.standardNote ? t("Extension reference") : t("Standard")}: ${escapeHtml(skill.standard)}</strong> · ${escapeHtml(skill.strand)}${skill.standardNote ? ` · ${escapeHtml(skill.standardNote)}` : ""}</p>
-          <p class="skill-preview-question">${escapeHtml(sample.question)}</p>
-          <details class="sample-answer"><summary>${t("Show sample answer")}</summary><p>${escapeHtml(sample.displayAnswer)}</p></details>
-          ${foundations.length || nextSkills.length ? `<div class="skill-connections">${foundations.length ? `<p><strong>${t("Builds on")}</strong> ${foundations.map((related) => escapeHtml(related.title)).join(" · ")}</p>` : ""}${nextSkills.length ? `<p><strong>${t("Can lead to")}</strong> ${nextSkills.map((related) => escapeHtml(related.title)).join(" · ")}</p>` : ""}</div>` : ""}
-        </div>
-      </details>
-      <div class="skill-card-actions">
-        <button class="open-skill primary-action" data-skill="${skill.id}">Practice &amp; Learn</button>
-        <div class="skill-action-row">
-          <button type="button" class="outline-action quick-drill-btn" data-quick-skill="${skill.id}">${quickIcon}<span>Quick 5</span></button>
-          <button type="button" class="outline-action flashcard-btn" data-flashcard-skill="${skill.id}">${cardsIcon}<span>Flashcards</span></button>
-          <button type="button" class="outline-action learn-btn" data-visual-skill="${skill.id}">${ideaIcon}<span>See idea</span></button>
-        </div>
-      </div>
-    </article>`;
+  return libraryCard(skill, skillSignals(state.tutor, skill), {
+    recommendation: recommendation ? displayRecommendationReason(recommendation.reason) : null,
+    preview: { question: sample.question, answer: sample.displayAnswer, foundations, next: nextSkills },
+  });
 }
 
 function renderOverallStats() {
@@ -459,7 +511,7 @@ function populateQuickSkillDropdown() {
       <optgroup label="${escapeHtml(grade.label)} (${escapeHtml(grade.focus)})">
         ${grade.skills.map((s) => `
           <option value="${grade.grade}:${s.id}">
-            ${escapeHtml(grade.label)} · ${escapeHtml(s.title)} (${escapeHtml(s.strand)})
+            ${escapeHtml(grade.label)} · ${escapeHtml(t(s.title))} (${escapeHtml(s.strand)})
           </option>
         `).join("")}
       </optgroup>
@@ -483,6 +535,7 @@ function openSkill(skillId, mode = "learn", targetGrade = null) {
   }
   if (targetGrade !== null && GRADES.some((g) => g.grade === targetGrade)) {
     state.grade = targetGrade;
+    state.gradeInUrl = true;
     saveSettings();
     renderGradeTabs();
   }
@@ -497,9 +550,9 @@ function openSkill(skillId, mode = "learn", targetGrade = null) {
   els.library.hidden = true;
   els.workspace.hidden = false;
   const grade = getGrade(state.grade);
-  document.documentElement.style.setProperty("--grade", grade.color);
+  applyGradeExperience(state.grade);
   els.workspaceGrade.textContent = grade.label;
-  els.workspaceTitle.textContent = state.skill.title;
+  els.workspaceTitle.textContent = t(state.skill.title);
   els.workspaceStandard.textContent = `${state.skill.strand} · ${state.skill.standard}${state.skill.formerStandard ? ` (was ${state.skill.formerStandard})` : ""}${state.skill.standardNote ? ` (${state.skill.standardNote})` : ""}`;
   renderMastery();
   renderModeTabs();
@@ -507,7 +560,7 @@ function openSkill(skillId, mode = "learn", targetGrade = null) {
   setMode(mode);
   setUrl();
   updateQuickSkillDropdown();
-  document.title = `${state.skill.title} | ${grade.label} Fluency Lab`;
+  document.title = `${t(state.skill.title)} | ${grade.label} Fluency Lab`;
   document.querySelector("#workspace-view").scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
@@ -516,6 +569,7 @@ function openMixed({ daily = false } = {}) {
   saveActiveSession();
   showArea("workspace");
   const grade = getGrade(state.grade);
+  applyGradeExperience(state.grade);
   state.skill = null;
   state.mixedPool = grade.skills;
   state.mode = daily ? "daily" : "mixed";
@@ -568,31 +622,55 @@ function renderModeTabs(mixed = false) {
 function renderLearn() {
   const skill = state.skill;
   const rng = seededRandom(skill.id.length * 97 + skill.grade * 13);
-  const example = Array.from({ length: 12 }, () => generateProblem(skill, rng)).reduce((best, item) => (item.steps.length > best.steps.length ? item : best));
+  const draws = Array.from({ length: 12 }, () => generateProblem(skill, rng));
+  // A worked example about zero ("10 + 0 = 10") shows nothing; prefer a draw with real numbers when there is one.
+  const trivial = (item) => String(item.displayAnswer) === "0" || /(^|[^\d.])0([^\d.]|$)|(^|[^\d.])1 ×|× 1([^\d.]|$)/.test(item.question);
+  const example = (draws.filter((item) => !trivial(item)).length ? draws.filter((item) => !trivial(item)) : draws).reduce((best, item) => (item.steps.length > best.steps.length ? item : best));
   state.learnExample = { item: example, shown: 1 };
-  const picture = interactivePicture(example.model) || trailPicture(example.model);
+  const picture = interactivePicture({ ...example.model, worked: true }) || trailPicture(example.model) || fractionPicture(example.question, { worked: true });
+  cleanupLearnStudio?.();
+  cleanupLearnStudio = null;
+  const animated = studioAvailable(example);
   els.learnPanel.innerHTML = `
     <div class="learn-simple" style="--trail:${getGrade(skill.grade).color}">
-      <h3 class="tr-idea">${highlightVocab(escapeHtml(skill.learn.rule))}</h3>
+      <h3 class="tr-idea">${highlightVocab(escapeHtml(t(skill.learn.rule)))}</h3>
+      ${animated ? '<div class="sd-slot learn-studio" data-learn-studio></div>' : ""}
+      ${animated ? `<details class="learn-words-steps"><summary>${t("Show the steps in words")}</summary>` : '<div class="learn-words-steps">'}
       <div class="tr-lesson">
         <div class="tr-example">
-          <p class="tr-example-fact">${highlightVocab(mathText(example.question))}</p>
+          <p class="tr-example-fact${String(example.question).length > 40 ? " is-long" : ""}">${highlightVocab(mathText(example.question))}</p>
           ${picture}
         </div>
         <div class="tr-guide">
           <p class="tr-guide-title">Watch me solve it</p>
-          <div data-learn-steps>${stepsBlock(example.steps, 1, { id: "learn-steps" })}</div>
+          <div data-learn-steps data-total-steps="${example.steps.length}">${stepsBlock(example.steps, 1, { id: "learn-steps" })}</div>
         </div>
       </div>
-      <p class="learn-watch"><strong>Watch out:</strong> ${highlightVocab(escapeHtml(skill.learn.watch))}</p>
+      ${animated ? "</details>" : "</div>"}
+      <p class="learn-watch"><strong>Watch out:</strong> ${highlightVocab(escapeHtml(t(skill.learn.watch)))}</p>
       ${wordStripHtml(skill, { heading: t("Words to know") })}
       ${languagePromptHtml(skill, { heading: t("Pause, notice, and explain") })}
       <div class="learn-actions">
         <button class="primary-action" data-start-guided>Try 5 with help</button>
         <button class="primary-action" data-start-independent>Practice 10</button>
+        <button class="outline-action" data-mini-lesson>${t("Mini-lesson")}</button>
         <button class="outline-action" data-start-visual>Build it step by step</button>
+        <button class="outline-action" data-write-about>${t("Write about it")}</button>
       </div>
     </div>`;
+  const studioSlot = els.learnPanel.querySelector("[data-learn-studio]");
+  if (studioSlot) cleanupLearnStudio = mountStudio(studioSlot, { item: example, skill, context: "idea" });
+}
+
+// fl4:lessons Learn It, Watch It, Try It, Explain It inside the Learn panel; its results are supported evidence only.
+function openMiniLesson() {
+  cleanupVisual?.();
+  cleanupVisual = launchMiniLesson({
+    host: els.learnPanel,
+    skill: state.skill,
+    restore: renderLearn,
+    onEvidence: ({ correct }) => { recordAnswer(state.tutor, state.skill, { correct, independent: false, level: 1 }); saveProgress(); renderMastery(); },
+  });
 }
 
 function setMode(mode) {
@@ -605,6 +683,10 @@ function setMode(mode) {
     tab.tabIndex = tab.dataset.mode === mode ? 0 : -1;
   });
   const isLearn = mode === "learn" || mode === "visual";
+  if (mode !== "learn") {
+    cleanupLearnStudio?.();
+    cleanupLearnStudio = null;
+  } else if (!cleanupLearnStudio && state.skill) renderLearn();
   els.visualPanel.hidden = mode !== "visual";
   els.learnPanel.hidden = !isLearn;
   els.drillPanel.hidden = isLearn;
@@ -612,6 +694,14 @@ function setMode(mode) {
     state.session = null;
     state.item = null;
     els.learnPanel.hidden = mode !== "learn";
+    const visualStudio = document.querySelector("#visual-studio");
+    if (visualStudio) {
+      cleanupVisualStudio?.();
+      cleanupVisualStudio = null;
+      visualStudio.replaceChildren();
+      visualStudio.hidden = mode !== "visual";
+      if (mode === "visual") cleanupVisualStudio = mountStudio(visualStudio, { item: generateProblem(state.skill), skill: state.skill, context: "idea" });
+    }
     if (mode === "visual") {
       cleanupVisual = mountVisualLesson(els.visualPanel, state.skill, {
         onComplete: () => {
@@ -682,7 +772,7 @@ function beginSession(mode, target, queue = null, options = {}) {
                   ? "Mixed review"
                   : "Practice 10";
   if (mode === "adaptive") els.sessionType.textContent = "Adaptive practice · 10";
-  if (mode === "diagnostic") els.sessionType.textContent = `Starting-point checkup · ${getGrade(state.grade).skills.length}`;
+  if (mode === "diagnostic") els.sessionType.textContent = t("Starting-point checkup");
   if (mode === "repair") els.sessionType.textContent = "Repair practice";
   if (mode === "assignment") els.sessionType.textContent = state.assignment.label;
   nextProblem();
@@ -701,19 +791,25 @@ function nextProblem(restoredItem = null) {
     finishSession();
     return;
   }
+  document.querySelector("[data-rescue-return]")?.remove(); // fl4:adaptive
   const skill = problemSkill();
   state.session.problemSkills.push(skill);
   const adapting = state.session.mode !== "diagnostic";
   const queueEntry = state.session.queue?.[state.session.answered];
   const missionIndependent = state.session.mode === "mission" && ["Starting point", "Try independently", "Transfer"].includes(queueEntry?.purpose);
   const repairIndependent = state.session.mode === "repair" && queueEntry?.independent === true;
-  const requestedLevel = adapting ? Math.max(missionIndependent || repairIndependent ? 1 : 0, difficulty(state.tutor, skill)) : 1;
-  const level = state.session.mode === "assignment" ? assignmentDifficultyLevel(state.assignment?.challenge, requestedLevel) : requestedLevel;
+  // fl4:adaptive five-tier difficulty: independent evidence picks the tier, a queue entry may pin one, and the tier maps onto the 0-2 generator levels.
+  let tier = adapting ? (queueEntry?.tier ?? nextTier(state.tutor.records[tutorSkillKey(skill)])) : 3;
+  if (missionIndependent || repairIndependent) tier = Math.max(tier, 3);
+  const requestedLevel = adapting ? tierToLevel(tier) : 1;
+  const level = state.session.mode === "assignment" ? assignmentDifficultyLevel(state.assignment?.challenge, requestedLevel, state.assignment?.tiers) : requestedLevel;
+  tier = alignTier(tier, level);
   if (restoredItem) state.item = restoredItem;
+  else if (queueEntry?.generated) state.item = { ...queueEntry.generated };
   else if (queueEntry?.original) state.item = { ...queueEntry.original };
   else {
     for (let attempt = 0; attempt < 20; attempt++) {
-      state.item = adaptiveProblem(skill, state.session.rng, level);
+      state.item = adaptiveItem(skill, state.session.rng, tier); // fl4:adaptive
       // About one problem in four is a story version of the same numbers, never in the checkup.
       if (state.session.storyMode || queueEntry?.transfer) state.item = storyFor(state.item, state.session.rng) || state.item;
       else if (state.session.mode !== "diagnostic" && level >= 1 && state.session.rng() < 0.25) state.item = storyFor(state.item, state.session.rng) || state.item;
@@ -725,19 +821,44 @@ function nextProblem(restoredItem = null) {
   state.itemAttempts = 0;
   state.itemDone = false;
   state.firstAnswerCorrect = null;
+  state.fbPhase = "idle";
+  state.lastSubmitted = "";
+  if (els.feedbackActions) els.feedbackActions.hidden = true;
+  if (els.answerResultStatus) {
+    els.answerResultStatus.hidden = true;
+    els.answerResultStatus.textContent = "";
+    delete els.answerResultStatus.dataset.type;
+  }
+  state.problemStartedAt = performance.now();
+  state.firstResponseMs = null;
   state.hintBeforeFirst = Boolean(queueEntry?.original);
   if (els.languageSlot) els.languageSlot.innerHTML = "";
   const missionSupport = state.session.mode === "mission" && queueEntry?.purpose === "Build with support";
-  state.initialSupport = state.session.mode === "guided" || missionSupport || Boolean(queueEntry?.original) || (adapting && level === 0 && !state.forceIndependentFirst && !missionIndependent && !repairIndependent) || (state.session.mode === "assignment" && state.assignment?.mode === "guided");
+  state.initialSupport = state.session.mode === "guided" || missionSupport || Boolean(queueEntry?.original) || Boolean(queueEntry?.forceGuided) || (adapting && level === 0 && tier <= 1 && !state.forceIndependentFirst && !missionIndependent && !repairIndependent) || (!restoredItem && consumeScaffold(state.session, tutorSkillKey(skill))) || (state.session.mode === "assignment" && state.assignment?.mode === "guided");
   state.forceIndependentFirst = false;
   state.guidedStepsShown = state.session.mode === "guided" ? 1 : 0;
   els.feedback.hidden = true;
+  clearStudio();
   els.nextButton.hidden = true;
   els.nextButton.textContent = "Next problem";
   els.hintButton.hidden = state.initialSupport || state.session.mode === "diagnostic";
   els.skip.hidden = state.session.mode !== "diagnostic";
   // A stretch problem (level 2) starts without the model; opening it before the first answer counts as help.
-  mountProblemModel(state.session.mode !== "diagnostic", true);
+  const visualType = state.item?.model?.type;
+  // Put essential spatial references directly beside the prompt so learners do not have to
+  // discover the model button first. Other models remain available on demand.
+  const showSpatialModel = ["coordinate", "numberline"].includes(visualType);
+  const hasVisual = Boolean(interactivePicture(state.item?.model) || renderInlineProblemModel(state.item?.skill, state.item));
+  const autoDock = window.matchMedia?.("(min-width: 1024px)").matches && hasVisual;
+  const visualWorkspace = document.querySelector("#practice-visual-workspace");
+  const dockButton = document.querySelector("#dock-visual-studio");
+  visualWorkspace?.classList.toggle("is-docked", Boolean(autoDock));
+  if (dockButton) {
+    dockButton.hidden = state.session.mode === "diagnostic" || !hasVisual;
+    dockButton.setAttribute("aria-pressed", String(Boolean(autoDock)));
+    dockButton.textContent = autoDock ? t("Undock Visual Studio") : t("Dock Visual Studio");
+  }
+  mountProblemModel(state.session.mode !== "diagnostic", !showSpatialModel && !autoDock);
   els.repair.hidden = !adapting;
   els.checkButton.hidden = false;
   els.answerInput.value = "";
@@ -746,7 +867,7 @@ function nextProblem(restoredItem = null) {
   formatProblemArena(state.item);
   els.topic.textContent = `${skill.title} · ${gradeDisplay(skill.grade)}`;
   document.querySelector("#problem-language-support").innerHTML = state.session.mode === "diagnostic" ? spanishPeekHtml(state.item) : problemSupportHtml(skill, state.item);
-  els.insight.textContent = state.session.mode === "diagnostic" ? "One sample per skill. Choose “I’m not sure yet” whenever you need to." : queueEntry?.reason ? `${queueEntry.purpose}. ${t("This skill was suggested because")}: ${displayRecommendationReason(queueEntry.reason)}.` : queueEntry?.purpose || (state.initialSupport ? "A smaller step with coaching. We’ll build back toward independent work." : adapting && level === 2 ? "Your recent answers were strong. Try this one independently, then explain a check." : adapting ? "Work at your pace. Help is here when you need it." : "");
+  els.insight.textContent = state.session.mode === "diagnostic" ? (queueEntry?.purpose === "Second look" ? t("One miss is not enough to decide, so here is a fresh one. Choose “I’m not sure yet” whenever you need to.") : queueEntry?.purpose === "Foundation check" ? t("A short look at an earlier idea this builds on. Choose “I’m not sure yet” whenever you need to.") : t("A miss gets a second look before it counts. Choose “I’m not sure yet” whenever you need to.")) : queueEntry?.reason ? `${queueEntry.purpose}. ${t("This skill was suggested because")}: ${displayRecommendationReason(queueEntry.reason)}.` : queueEntry?.purpose || (state.initialSupport ? "A smaller step with coaching. We’ll build back toward independent work." : adapting && level === 2 ? "Your recent answers were strong. Try this one independently, then explain a check." : adapting ? "Work at your pace. Help is here when you need it." : "");
   const activityEvidence = readInstructionalEvidence(instructionalEvidenceState).filter((entry) => entry.activity === tutorSkillKey(skill));
   const priorSupport = activityEvidence.some((entry) => entry.condition === "supported");
   const recoveredIndependently = priorSupport && independentRecoveryCount(activityEvidence, tutorSkillKey(skill)) > 0;
@@ -760,6 +881,7 @@ function nextProblem(restoredItem = null) {
   if (state.initialSupport) state.guidedStepsShown = 1;
   renderGuidedCoach();
   renderAnswerControl();
+  renderStrategyTagPicker();
   updateSessionHeader();
   state.isFixing = false;
   state.confidence = "certain";
@@ -1099,7 +1221,7 @@ function celebrateSparkles() {
   const container = document.createElement("div");
   container.className = "sparkle-container";
   container.setAttribute("aria-hidden", "true");
-  const colors = ["#fbbf24", "#3b82f6", "#10b981", "#ec4899", "#8b5cf6"];
+  const colors = ["#fbbf24", "#3b82f6", "#10b981", "#D0674F", "#1FA6A2"];
   for (let i = 0; i < 20; i++) {
     const sparkle = document.createElement("span");
     sparkle.className = "sparkle-particle";
@@ -1494,8 +1616,8 @@ function printDeskHelperStrips() {
               Keep both pans level!<br/>
               <span style="color:#78350f">Whatever you do to one side, you MUST do to both!</span>
             </div>
-            <div style="border:1px solid #cbd5e1; border-radius:6px; padding:4px; background:#fdf2f8">
-              <strong style="color:#be185d; font-size:8.5pt">🔄 Inverses</strong><br/>
+            <div style="border:1px solid #cbd5e1; border-radius:6px; padding:4px; background:#F7F4EC">
+              <strong style="color:#17324D; font-size:8.5pt">🔄 Inverses</strong><br/>
               + undoes −<br/>
               − undoes +<br/>
               × undoes ÷<br/>
@@ -4377,6 +4499,7 @@ const NUMBER_TALKS = [
   }
 ];
 
+let cleanupNumberTalkBoard = null;
 const NumberTalkRoutine = {
   activeGrade: 3,
   activeIndex: 0,
@@ -4389,6 +4512,9 @@ const NumberTalkRoutine = {
     this.activeGrade = Math.max(1, Math.min(8, Number(grade) || 3));
     this.activeIndex = 0;
     this.activePhase = "think";
+    this.lang = getLang() === "es" ? "es" : "en";
+    const langButton = document.querySelector("#nt-toggle-lang");
+    if (langButton) langButton.textContent = this.lang === "en" ? "🌐 Español" : "🌐 English";
     modal.hidden = false;
     document.body.classList.add("nt-modal-open");
     this.render();
@@ -4399,6 +4525,8 @@ const NumberTalkRoutine = {
     if (!modal) return;
     modal.hidden = true;
     document.body.classList.remove("nt-modal-open");
+    cleanupNumberTalkBoard?.();
+    cleanupNumberTalkBoard = null;
   },
 
   toggleLang() {
@@ -4493,6 +4621,20 @@ const NumberTalkRoutine = {
         </div>
       </div>
     `;
+    cleanupNumberTalkBoard?.();
+    cleanupNumberTalkBoard = null;
+    if (this.activePhase === "strategies") {
+      const boardHost = viewport.querySelector("#nt-strategy-board");
+      if (boardHost) {
+        const localizedTalk = {
+          ...talk,
+          problem: talk.problem,
+          teacherStems: talk.teacherStems,
+          models: talk.models || talk.visuals || {},
+        };
+        cleanupNumberTalkBoard = renderNumberTalkBoard(boardHost, localizedTalk, { language: this.lang });
+      }
+    }
   },
 
   renderPhaseBody(talk, isEs) {
@@ -4545,6 +4687,7 @@ const NumberTalkRoutine = {
               </div>
             `).join("")}
           </div>
+          <div id="nt-strategy-board" aria-label="${isEs ? "Pizarra visual de estrategias" : "Visual strategy board"}"></div>
         </div>
       `;
     }
@@ -4602,13 +4745,13 @@ function printNumberTalkRoutine(talk) {
         </div>
       </div>
 
-      <div style="border:1.5px solid #4f46e5; border-radius:8px; padding:0.12in; background:#f5f3ff">
-        <h3 style="margin:0 0 8px; font-size:11pt; color:#3730a3">🗣️ Phase 3: Strategy Showcase (Anticipated Approaches)</h3>
+      <div style="border:1.5px solid #17324D; border-radius:8px; padding:0.12in; background:#F7F4EC">
+        <h3 style="margin:0 0 8px; font-size:11pt; color:#17324D">🗣️ Phase 3: Strategy Showcase (Anticipated Approaches)</h3>
         <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:0.1in">
           ${talk.strategies.map((strat) => `
-            <div style="background:#ffffff; border:1px solid #c7d2fe; border-radius:6px; padding:0.08in">
-              <strong style="font-size:9.5pt; color:#1e1b4b">${escapeHtml(strat.student)}: ${escapeHtml(strat.name.en)}</strong>
-              <div style="font-family:monospace; font-weight:700; font-size:9pt; margin:4px 0; color:#4338ca">${escapeHtml(strat.steps)}</div>
+            <div style="background:#ffffff; border:1px solid #1FA6A2; border-radius:6px; padding:0.08in">
+              <strong style="font-size:9.5pt; color:#17324D">${escapeHtml(strat.student)}: ${escapeHtml(strat.name.en)}</strong>
+              <div style="font-family:monospace; font-weight:700; font-size:9pt; margin:4px 0; color:#17324D">${escapeHtml(strat.steps)}</div>
               <p style="margin:0; font-size:8pt; color:#475569">${escapeHtml(strat.explanation.en)}</p>
             </div>
           `).join("")}
@@ -5226,8 +5369,16 @@ const InteractiveSolver = {
             <span>3) ${t("Keep the most copies of each prime:")}</span>
             ${slots(kept, "keep", t("Kept prime"))}
           </div>
+          <div class="lcm-row lcm-powers" data-lcm-powers hidden>
+            <span>${t("Write repeats as exponents:")}</span>
+            <strong class="lcm-power-line">${powerGroups(kept).map(({ prime, count }) => (count > 1 ? `${prime}<sup>${count}</sup>` : prime)).join(" × ")}</strong>
+          </div>
           <div class="lcm-row" style="margin-top:0.5rem">
-            <span>4) ${t("Multiply the kept primes:")}</span>
+            <span>4) ${t("Work out each power:")}</span>
+            ${powerGroups(kept).map(({ prime, count, value }) => `<span class="lcm-power-item">${count > 1 ? `${prime}<sup>${count}</sup>` : prime} = <input type="text" class="lcm-prime-input" inputmode="numeric" data-target="${value}" data-group="value" style="width:56px" placeholder="?" aria-label="${t("the value of the power of {p}", { p: prime })}" /></span>`).join(" × ")}
+          </div>
+          <div class="lcm-row" style="margin-top:0.5rem">
+            <span>5) ${t("Multiply the powers:")}</span>
             <span>LCM(${a}, ${b}) = </span>
             <input type="text" class="lcm-prime-input" inputmode="numeric" data-target="${ans}" data-group="lcm-final" style="width:72px" placeholder="LCM" aria-label="LCM(${a}, ${b})" />
           </div>
@@ -5242,13 +5393,14 @@ const InteractiveSolver = {
       `;
 
       // Each group accepts its primes in any order: the next typed value is right if it is still unclaimed.
-      const claimed = { a: [], b: [], keep: [] };
-      const expected = { a: pa, b: pb, keep: kept };
+      const claimed = { a: [], b: [], keep: [], value: [] };
+      const expected = { a: pa, b: pb, keep: kept, value: powerGroups(kept).map(({ value }) => value) };
+      const powersLine = container.querySelector("[data-lcm-powers]");
       const guide = container.querySelector("[data-lcm-trees]");
       const showTrees = () => {
         if (claimed.a.length < pa.length || claimed.b.length < pb.length) return;
         guide.hidden = false;
-        guide.innerHTML = `<h4>${t("Your factor trees")}</h4><div class="ft-pair">${factorTreeSvg(a, { label: String(a) })}${factorTreeSvg(b, { label: String(b) })}</div>${copiesTable(a, b, { hideKeep: true })}`;
+        guide.innerHTML = `<h4>${t("Your factor trees")}</h4><div class="ft-pair">${factorTreeSvg(a, { label: treeCaption(a) })}${factorTreeSvg(b, { label: treeCaption(b) })}</div>${copiesTable(a, b, { hideKeep: true })}`;
       };
       container.querySelectorAll(".lcm-prime-input").forEach((inp) => {
         inp.addEventListener("input", () => {
@@ -5270,6 +5422,7 @@ const InteractiveSolver = {
             els.answerInput.value = String(ans);
             chime("good");
           } else showTrees();
+          if (group === "keep" && claimed.keep.length === kept.length) powersLine.hidden = false;
         });
       });
       return;
@@ -6410,6 +6563,7 @@ function renderStudentFriendlyExplanation(item, copy) {
     ? stepPlayer(item)
     : `<p class="student-expl-goal">${escapeHtml(copy)}</p>`;
 
+  const modeled = studioModeled(item);
   const toolCallout = suggestedTool
     ? `<div class="student-expl-tool-callout">
         <button type="button" class="expl-tool-launcher" data-open-tool="${suggestedTool}">
@@ -6418,18 +6572,22 @@ function renderStudentFriendlyExplanation(item, copy) {
       </div>`
     : "";
 
+  // For a problem the Studio models, the whole earlier explanation stays available but folded away: its goal and
+  // strategy text is generic (it reads any minus sign as integer subtraction, so "259 − 129" offered zero pairs).
+  const legacyBody = `
+      <p class="student-expl-goal"><strong>🎯 Goal:</strong> ${escapeHtml(goal)}</p>
+      ${visualWidget}
+      ${stepsList}
+      <div class="student-expl-tip"><strong>💡 Pro Tip:</strong> ${escapeHtml(tip)}</div>
+      ${toolCallout}
+      ${renderMultiStrategyComparison(item)}`;
   return `
     <div class="student-expl-card">
       <div class="student-expl-header">
         <span class="student-expl-badge">💡 Strategy &amp; Solution Guide</span>
         <button type="button" class="expl-speak-btn" data-speak-expl="true" aria-label="Listen to explanation">🔊 Listen</button>
       </div>
-      <p class="student-expl-goal"><strong>🎯 Goal:</strong> ${escapeHtml(goal)}</p>
-      ${visualWidget}
-      ${stepsList}
-      <div class="student-expl-tip"><strong>💡 Pro Tip:</strong> ${escapeHtml(tip)}</div>
-      ${toolCallout}
-      ${renderMultiStrategyComparison(item)}
+      ${modeled ? `<details class="sd-legacy"><summary>${escapeHtml(t("Show the earlier explanation"))}</summary>${legacyBody}</details>` : legacyBody}
     </div>
   `;
 }
@@ -6485,7 +6643,7 @@ function mountProblemModel(show, collapsed = true) {
     `;
     if (els.toggleProblemVisual) els.toggleProblemVisual.hidden = false;
   } else {
-    const picture = interactivePicture(state.item.model);
+    const picture = interactivePicture(state.item.model) || renderInlineProblemModel(state.item.skill, state.item) || fractionPicture(state.item.question);
     els.drillPanel.style.setProperty("--trail", getGrade(state.item.skill?.grade || state.grade).color);
     if (picture) {
       host.innerHTML = `<div class="tr-model">${picture}</div>`;
@@ -6537,6 +6695,7 @@ function renderGuidedCoach() {
     .join("");
   els.guidedStepCount.textContent = `${state.guidedStepsShown} of ${steps.length} steps open`;
   els.guidedNextStep.hidden = state.guidedStepsShown >= steps.length;
+  els.guidedNextStep.dataset.nextMove = nextMoveOf(allCopies, state.guidedStepsShown);
   els.guidedNextStep.disabled = stepWaiting(steps.map((entry) => entry.copy), state.guidedStepsShown, `coach:${state.item.question}`);
 }
 
@@ -6598,9 +6757,35 @@ function renderAnswerControl() {
   }
 }
 
+function renderStrategyTagPicker() {
+  els.answerForm?.querySelector("#strategy-tag-picker")?.remove();
+  if (!state.session || state.session.mode === "diagnostic" || state.session.mode === "flashcard") return;
+  const fieldset = document.createElement("fieldset");
+  fieldset.id = "strategy-tag-picker";
+  fieldset.className = "strategy-tag-picker";
+  // fl4:screens: layout lives in ds4-screens.css (.strategy-tag-picker), not inline.
+  const legend = document.createElement("legend");
+  legend.textContent = t("Strategies I used");
+  fieldset.append(legend);
+  for (const [tag, label] of [["visual", t("I used a visual")], ["decomposition", t("I broke numbers apart")], ["fact", t("I used a fact I know")]]) {
+    const wrapper = document.createElement("label");
+    const input = document.createElement("input");
+    input.type = "checkbox";
+    input.name = "strategyTag";
+    input.value = tag;
+    input.dataset.strategyTag = tag;
+    const copy = document.createElement("span");
+    copy.textContent = label;
+    wrapper.append(input, copy);
+    fieldset.append(wrapper);
+  }
+  els.answerForm?.append(fieldset);
+}
+
 function submitAnswer(value) {
   if (!state.item || !state.session || state.session.finished) return;
-  if (!String(value).trim()) { showFeedback("Enter an answer", "Type an answer before checking, or open a strategy hint.", "try"); return; }
+  if (!String(value).trim()) { showFeedback("Enter an answer", t("Type an answer before checking, or open a strategy hint."), "try", "try", "empty"); return; }
+  state.lastSubmitted = String(value).trim();
 
   if (state.isFixing) {
     const isFixed = validateAnswer(value, state.item);
@@ -6617,10 +6802,12 @@ function submitAnswer(value) {
         state.session.revised = (state.session.revised || 0) + 1;
         updateSessionHeader();
       }
-      showFeedback("Answer revised", t("Your revised answer is a useful step. It does not count as an independent check. Try the new problem next."), "try");
+      sendFeedback("revise-right");
+      showFeedback("Answer revised", t("Your revised answer is a useful step. It does not count as an independent check. Try the new problem next."), "try", "try", "revised");
       return;
     } else {
-      showFeedback("Keep trying!", "Almost! Review the steps above carefully and try one more time.", "try");
+      sendFeedback("revise-wrong");
+      showFeedback("Keep trying!", t("Almost! Review the steps above carefully and try one more time."), "try", "incorrect", "revealed");
       els.answerInput.select();
       return;
     }
@@ -6628,6 +6815,9 @@ function submitAnswer(value) {
 
   if (state.itemDone) return;
   state.itemAttempts += 1;
+  if (state.itemAttempts === 1) {
+    state.firstResponseMs = Math.max(0, performance.now() - state.problemStartedAt);
+  }
   const correct = validateAnswer(value, state.item);
   const responseInput = {
     activity: tutorSkillKey(state.item.skill),
@@ -6657,14 +6847,20 @@ function submitAnswer(value) {
   }
   if (state.initialSupport && state.itemAttempts < 3) {
     const nextStep = revealGuidedStep() || guidedStepContent().at(-1);
-    showFeedback("Let's use the next step", `${feedbackFor(state.item.skill, state.item, value)} ${nextStep.copy}`, "try");
+    showFeedback("Let's use the next step", `${feedbackFor(state.item.skill, state.item, value)} ${nextStep.copy}`, "try", "incorrect", sendFeedback(state.fbPhase === "idle" ? "wrong" : "wrong-again"));
     addInstructionalChoices();
     saveActiveSession();
     if (!state.item.choices) els.answerInput.select();
     return;
   }
   if (state.itemAttempts === 1) {
-    showFeedback("Try once more", feedbackFor(state.item.skill, state.item, value), "try");
+    const nudge = feedbackFor(state.item.skill, state.item, value);
+    const diagnostic = state.tutor.mistakes.find((entry) => entry.key === tutorSkillKey(state.item.skill) && entry.question === state.item.question && !entry.resolvedAt);
+    if (diagnostic?.misconceptionCode) {
+      const label = mistakeCategoryLabel(diagnostic.misconceptionCode);
+      if (label) showFeedback("Let’s check the idea", `${label}. ${nudge}`, "try", "incorrect", sendFeedback("wrong"));
+      else showFeedback("Try once more", nudge, "try", "incorrect", sendFeedback("wrong"));
+    } else showFeedback("Try once more", nudge, "try", "incorrect", sendFeedback("wrong"));
     addInstructionalChoices();
     els.repair.hidden = false;
     saveActiveSession();
@@ -6683,13 +6879,17 @@ function addInstructionalChoices() {
   els.feedbackCopy.append(choices);
 }
 
-function finalizeProblem(correct) {
+function finalizeProblem(correct, { unsure = false } = {}) {
   const session = state.session;
   if (!session || session.finished || state.itemDone) return;
   state.itemDone = true;
   InteractiveDrillToolbox.refresh();
   const queueEntry = session.queue?.[session.answered];
   const isRevision = session.mode === "repair" && Boolean(queueEntry?.original);
+  const itemSkillKey = tutorSkillKey(state.item.skill);
+  session.missesBySkill ||= {};
+  if (correct) session.missesBySkill[itemSkillKey] = 0;
+  else session.missesBySkill[itemSkillKey] = (session.missesBySkill[itemSkillKey] || 0) + 1;
   const firstCorrect = state.firstAnswerCorrect === true;
   session.answered += 1;
   if (correct) {
@@ -6719,7 +6919,9 @@ function finalizeProblem(correct) {
     } else {
       title = "Lightning Recall! 🦁⚡";
     }
-    showFeedback(title, copy, isRevision ? "try" : "correct");
+    const phase = isRevision ? "revised" : sendFeedback("right", { independent: !assisted });
+    showFeedback(title, copy, isRevision ? "try" : "correct", isRevision ? "try" : "correct", phase);
+    paintActions(els, []);
     if (els.fixAnswerBtn) els.fixAnswerBtn.hidden = true;
   } else {
     const lostStreak = session.mode === "streak" && session.streak > 0;
@@ -6738,7 +6940,8 @@ function finalizeProblem(correct) {
         ? "Incorrect — new streak starts now"
         : "Incorrect — review your thinking";
     }
-    showFeedback(title, copy, "incorrect");
+    showFeedback(title, copy, "incorrect", "incorrect", sendFeedback("wrong-final"));
+    paintActions(els, []);
     if (els.fixAnswerBtn && session.mode !== "streak" && session.mode !== "sprint") {
       els.fixAnswerBtn.hidden = false;
     }
@@ -6746,19 +6949,38 @@ function finalizeProblem(correct) {
   const independent = !state.initialSupport && !state.hintBeforeFirst;
   if (independent && firstCorrect) session.independentCorrect++;
   if (session.mode === "diagnostic") {
-    session.diagnosticResults[tutorSkillKey(state.item.skill)] = correct;
+    recordCheckupAnswer(session, tutorSkillKey(state.item.skill), correct, { unsure });
   } else {
     if (!isRevision) {
       updateSkillRecord(state.item.skill, state.initialSupport ? correct : correct && firstCorrect && independent, state.initialSupport ? "guided" : session.mode);
-      recordAnswer(state.tutor, state.item.skill, { correct: independent ? firstCorrect : correct, independent, level: state.item.level });
+      const strategyTags = [...document.querySelectorAll("#strategy-tag-picker [data-strategy-tag]:checked")].map((input) => input.dataset.strategyTag);
+      recordAnswer(state.tutor, state.item.skill, {
+        correct: independent ? firstCorrect : correct,
+        independent,
+        level: state.item.level,
+        tier: state.item.tier, // fl4:adaptive
+        strategyTags,
+        sig: itemSignature(state.item.question),
+        responseMs: state.firstResponseMs,
+        // Practice is untimed. This is a descriptive first-response sample, never a speed score.
+        calm: true,
+      });
     }
     if (session.mode === "repair" && independent && firstCorrect) {
       const key = tutorSkillKey(state.item.skill);
       const consecutive = (session.repairWins ||= {});
       consecutive[key] = (consecutive[key] || 0) + 1;
-      if (consecutive[key] >= 2) for (const entry of state.tutor.mistakes) if (entry.key === key && !entry.resolvedAt) entry.resolvedAt = Date.now();
+      if (consecutive[key] >= 2) {
+        const targetedId = session.queue?.find((entry) => entry.mistakeId)?.mistakeId;
+        for (const entry of state.tutor.mistakes) {
+          if (entry.key === key && !entry.resolvedAt && (!targetedId || entry.id === targetedId)) {
+            entry.resolvedAt = Date.now(); entry.repairStatus = "repaired";
+          }
+        }
+      }
     } else if (session.mode === "repair") { (session.repairWins ||= {})[tutorSkillKey(state.item.skill)] = 0; }
   }
+  if (session.rescue && !isRevision) session.rescue = rescueStep(session.rescue, { type: "answer", correct: independent ? firstCorrect : correct, independent }); // fl4:adaptive
   onFluencyProblemFinalized(correct && !isRevision, independent, firstCorrect, !isRevision);
   saveProgress();
   if (state.skill) renderMastery();
@@ -6769,9 +6991,40 @@ function finalizeProblem(correct) {
   els.hintButton.hidden = true;
   els.skip.hidden = true;
   els.nextButton.hidden = false;
+  els.nextButton.focus({ preventScroll: true }); // fl4:screens: Next is shown only now, so the focus move in settleOnFeedback never landed
+  state.settledAt = performance.now();
   els.nextButton.textContent = session.answered >= session.target || streakComplete(session) ? "Finish set" : "Next problem";
   updateSessionHeader();
   saveActiveSession();
+  // fl4:adaptive a rescue (mini-lesson, guided repair, independent check, return) replaces the plain boost when the evidence calls for it.
+  state.rescuePlan = !correct && session.mode !== "diagnostic" && !session.quickBoost ? planRescue(state.tutor, state.item.skill, { sessionCount: state.rescuesThisSession || 0 }) : null;
+  if (state.rescuePlan) els.feedbackCopy.append(rescueOfferElement(state.rescuePlan));
+  else if (!correct && session.missesBySkill[itemSkillKey] >= 2 && state.guidedStepsShown >= 3) {
+    const foundation = prerequisites(state.item.skill)[0];
+    if (foundation) {
+      const bridge = document.createElement("div");
+      bridge.className = "quick-boost-offer";
+      bridge.append(document.createTextNode(t("Two tough problems can be a sign to revisit a foundation. Try three calm problems, then return here.")));
+      const button = document.createElement("button");
+      button.type = "button"; button.className = "outline-action"; button.dataset.quickBoost = tutorSkillKey(foundation);
+      button.textContent = t("Quick Boost: Practice {skill} for 3 problems", { skill: foundation.title });
+      bridge.append(button);
+      els.feedbackCopy.append(bridge);
+    }
+  }
+}
+
+// The checkup's end-of-session paragraph: grouped by evidence, never a grade level or a score.
+function checkupCopy(found) {
+  const list = (titles) => (titles.length > 3 ? `${titles.slice(0, 3).join(", ")} ${t("and {n} more", { n: titles.length - 3 })}` : titles.join(", "));
+  const lines = [
+    found.solid.length && t("Solid today: {skills}.", { skills: list(found.solid) }),
+    found.secondLook.length && t("Right on the second look: {skills}.", { skills: list(found.secondLook) }),
+    found.gaps.length && t("Worth practicing: {skills}.", { skills: list(found.gaps) }),
+    found.unsure.length && t("Skipped for now: {skills}.", { skills: list(found.unsure) }),
+    found.inferred.length && t("Not asked, because your harder answers already showed the idea: {skills}.", { skills: list(found.inferred) }),
+  ].filter(Boolean);
+  return [...lines, t("A short checkup suggests what to try next. It cannot prove mastery or determine a grade level.")].join(" ");
 }
 
 function updateSkillRecord(skill, correct, mode) {
@@ -6877,10 +7130,10 @@ function renderTransferChallengeButton(item) {
       </button>
       <div class="transfer-challenge-card" id="transfer-challenge-card" hidden>
         <div style="display:flex; justify-content:space-between; align-items:center">
-          <span style="font-size:0.75rem; font-weight:800; color:#7c3aed; background:#ede9fe; padding:2px 8px; border-radius:9999px">${escapeHtml(challenge.title)}</span>
+          <span style="font-size:0.75rem; font-weight:800; color:#1FA6A2; background:#F7F4EC; padding:2px 8px; border-radius:9999px">${escapeHtml(challenge.title)}</span>
           <span style="font-size:0.75rem; font-weight:700; color:#6b7280">+15 Mastery XP</span>
         </div>
-        <p style="margin:4px 0 6px; font-weight:700; color:#1e1b4b; font-size:0.92rem">${escapeHtml(challenge.scenario)}</p>
+        <p style="margin:4px 0 6px; font-weight:700; color:#17324D; font-size:0.92rem">${escapeHtml(challenge.scenario)}</p>
         <div style="display:flex; flex-direction:column; gap:0.4rem">
           ${challenge.options.map((opt, idx) => `
             <button type="button" class="transfer-opt-btn" data-transfer-choice="${idx}" data-transfer-correct="${opt.correct}" style="text-align:left; font-size:0.85rem; padding:6px 10px; border-radius:6px; border:1px solid #cbd5e1; background:#ffffff; cursor:pointer">
@@ -6894,21 +7147,112 @@ function renderTransferChallengeButton(item) {
   `;
 }
 
-function showFeedback(title, copy, type) {
+// The Math Discovery Studio sits beside the feedback, not inside it: the feedback is a live region.
+let cleanupStudio = null;
+let mountedStudioItem = null;
+let mountedStudioSkill = null;
+function clearStudio() {
+  cleanupStudio?.();
+  cleanupStudio = null;
+  mountedStudioItem = null;
+  mountedStudioSkill = null;
+  const slot = document.querySelector("#studio-slot");
+  if (slot) slot.replaceChildren();
+}
+function showStudio(item, skill, context) {
+  const activeSkill = skill ?? (item ? skillForItem(state.grade, item) : null);
+  if (!item || !activeSkill) {
+    clearStudio();
+    return;
+  }
+  if (mountedStudioItem === item && mountedStudioSkill === activeSkill) return;
+  clearStudio();
+  const slot = document.querySelector("#studio-slot");
+  if (slot) {
+    cleanupStudio = mountStudio(slot, { item, skill: activeSkill, context });
+    mountedStudioItem = item;
+    mountedStudioSkill = activeSkill;
+  }
+}
+
+// What the learner typed or picked, and the plain-text answer key, for the feedback panel's answer lines.
+function expectedAnswerText(item = state.item) {
+  const answer = String(item?.answers?.[0] ?? "");
+  return item?.unit && answer && !answer.includes(item.unit) ? `${answer} ${item.unit}` : answer;
+}
+
+// Sends an event to the shared feedback machine and returns the phase the panel should show. A duplicate
+// submission is not accepted and leaves the phase where it was.
+function sendFeedback(event, options) {
+  const next = nextPhase(state.fbPhase || "idle", event, options);
+  if (next.accepted) state.fbPhase = next.phase;
+  return state.fbPhase;
+}
+
+function feedbackContext() {
+  const steps = guidedStepContent();
+  return {
+    submitted: state.lastSubmitted,
+    expected: expectedAnswerText(),
+    reveal: state.session?.mode !== "diagnostic",
+    hintAvailable: !els.hintButton.hidden,
+    stepsAvailable: steps.length > 0 && state.guidedStepsShown < steps.length,
+  };
+}
+
+function showFeedback(title, copy, type, resultType = type, phase = null) {
+  FlowPacerEngine.clearHesitationMonitor();
   els.feedback.hidden = false;
   els.feedback.dataset.type = type;
-  els.feedbackTitle.textContent = title;
-  if (type !== "correct" && state.item) {
+  const view = phase ? feedbackView(phase, feedbackContext()) : null;
+  if (view) paintFeedback(els, view);
+  else {
+    els.feedbackIcon.replaceChildren();
+    els.feedbackBadge.hidden = true;
+    els.feedbackAnswers.hidden = true;
+    delete els.feedback.dataset.tone;
+    delete els.feedback.dataset.phase;
+  }
+  const heading = view ? view.heading : title;
+  els.feedbackTitle.textContent = heading;
+  if (els.answerResultStatus) {
+    const assisted = resultType === "correct" && title === t("Good strategy work");
+    const result = resultType === "correct"
+      ? assisted ? `✓ ${t("Correct · with help")}` : `✓ ${t("Correct")}`
+      : resultType === "incorrect" ? `✕ ${t("Incorrect")}`
+      : title === "Enter an answer" ? t("Add an answer")
+      : title === t("Answer revised") ? t("Revised")
+      : t("Try again");
+    els.answerResultStatus.hidden = false;
+    els.answerResultStatus.dataset.type = resultType;
+    els.answerResultStatus.textContent = result;
+  }
+  if (type !== "correct" && state.item && state.session?.mode === "diagnostic") {
+    // A solution shown mid-checkup would turn the second look into a lesson. The miss is still saved for repair.
+    els.feedbackCopy.textContent = t("Thanks. A checkup only looks for what to practice next, so the solution is saved for later instead of shown now.");
+  } else if (type !== "correct" && state.item) {
     els.feedbackCopy.innerHTML = renderStudentFriendlyExplanation(state.item, copy);
     lightStepPlayers(els.feedbackCopy);
     wireExplanationWidgets(els.feedbackCopy, state.item);
+    showStudio(state.item, state.skill, "miss");
   } else if (type === "correct" && state.item) {
+    clearStudio();
     els.feedbackCopy.innerHTML = `<p>${escapeHtml(copy)}</p>${renderTransferChallengeButton(state.item)}`;
   } else {
     els.feedbackCopy.textContent = copy;
   }
   if (type === "correct" || type === "incorrect") renderLanguageSlot(type === "correct");
   if (type === "correct") chime("good");
+  if (view && phase !== "empty") settleOnFeedback(phase);
+}
+
+// The result must be on screen when it appears. A settled problem moves keyboard focus to Next, which ignores
+// clicks for a moment, so Enter pressed twice cannot skip the result.
+const prefersReducedMotion = () => Boolean(globalThis.matchMedia?.("(prefers-reduced-motion: reduce)").matches);
+
+function settleOnFeedback(phase) {
+  els.feedback.scrollIntoView?.({ block: "nearest", behavior: prefersReducedMotion() ? "auto" : "smooth" });
+  if (["correct", "assisted", "revealed", "revised"].includes(phase) && !els.nextButton.hidden) els.nextButton.focus({ preventScroll: true });
 }
 
 // The explain card sits beside the feedback, not inside it: the feedback is a live region, and a screen reader would
@@ -6952,11 +7296,26 @@ function renderStreakMeter() {
 function finishSession() {
   if (!state.session || state.session.finished) return;
   const session = state.session;
+  if (session.quickBoost) {
+    const savedPractice = loadJson(BRIDGE_RETURN_KEY, null);
+    writeLocal(profileKey(BRIDGE_RETURN_KEY, activeProfile), null);
+    if (savedPractice) {
+      const rescued = session.rescue; // fl4:adaptive
+      if (rescued) { recordRescue(state.tutor, rescued); saveProgress(); if (rescued.scaffold) savedPractice.session.rescueScaffold = rescued.scaffold; }
+      writeLocal(profileKey(SESSION_KEY, activeProfile), savedPractice);
+      state.session = null;
+      resumePractice(savedPractice);
+      if (rescued) { document.querySelector(".problem-stage").before(returnBanner(returnMessage(rescued))); announce(returnMessage(rescued)); return; } // fl4:adaptive
+      announce(t("Quick Boost complete. Your original problem set is ready to continue."));
+      return;
+    }
+  }
   session.finished = true;
   writeLocal(profileKey(SESSION_KEY, activeProfile), null);
   document.querySelector(".problem-stage").hidden = true;
   els.answerForm.hidden = true;
   els.feedback.hidden = true;
+  clearStudio();
   if (els.languageSlot) els.languageSlot.innerHTML = "";
   els.summary.hidden = false;
   const scoredAttempts = Math.max(0, session.answered - (session.revised || 0));
@@ -6996,9 +7355,9 @@ function finishSession() {
     renderMastery();
   }
   if (session.mode === "diagnostic") {
-    state.tutor.diagnostics[state.grade] = { at: Date.now(), results: session.diagnosticResults };
-    els.summaryTitle.textContent = "Your starting-point checkup";
-    els.summaryCopy.textContent = "These ten samples suggest what to try next. A single answer cannot prove mastery or determine a grade level.";
+    state.tutor.diagnostics[state.grade] = { at: Date.now(), results: session.diagnosticResults, foundations: session.checkup?.foundations || {} };
+    els.summaryTitle.textContent = t("Your starting-point checkup");
+    els.summaryCopy.textContent = checkupCopy(checkupSummary(session));
   }
   // Any finished practice set counts as a practice day, the same as a trail round or a game.
   if (session.answered > 0) {
@@ -7010,8 +7369,12 @@ function finishSession() {
   state.tutor.sessions = state.tutor.sessions.slice(-60);
   els.summaryStats.innerHTML = `<div><strong>${session.correct}</strong><span>solved</span></div><div><strong>${session.answered}</strong><span>completed</span></div><div><strong>${session.independentCorrect}</strong><span>without help on first try</span></div>${(session.revised || 0) ? `<div class="revised-stat"><strong>${session.revised}</strong><span>revised with support</span></div>` : ""}`;
   els.summaryStats.classList.toggle("has-revisions", (session.revised || 0) > 0);
+  const receiptHost = document.querySelector("#mastery-receipt");
+  receiptHost.hidden = session.mode !== "assignment";
+  if (!receiptHost.hidden) receiptHost.innerHTML = `<h4>${t("Your zero-PII mastery receipt")}</h4><p>${t("Choose the strategies you used. The code contains skill, accuracy, and strategy tags, never a name.")}</p><fieldset><legend>${t("Strategies I used")}</legend>${[["visual", "I used a visual"], ["decompose", "I broke numbers apart"], ["recall", "I recalled a fact"], ["symbolic", "I used symbols"]].map(([value, label]) => { const labels = { visual: t("I used a visual"), decompose: t("I broke numbers apart"), recall: t("I recalled a fact"), symbolic: t("I used symbols") }; return `<label><input type="checkbox" data-receipt-strategy value="${value}"/> ${labels[value] || label}</label>`; }).join("")}</fieldset><div class="button-row"><button class="primary-action" type="button" data-make-receipt>${t("Create mastery receipt")}</button><button class="outline-action" type="button" data-copy-receipt hidden>${t("Copy code")}</button><button class="outline-action" type="button" data-print-receipt hidden>${t("Print receipt")}</button></div><output id="mastery-receipt-code" class="mastery-receipt-code" aria-live="polite"></output>`;
   const next = recommendations(state.tutor, state.grade)[0];
-  const foundations = prerequisites(next.skill);
+  const checkupFoundations = session.mode === "diagnostic" ? checkupSummary(session).foundationGaps : [];
+  const foundations = checkupFoundations.length ? checkupFoundations : prerequisites(next.skill);
   const profileBrief = buildFluencyProfileSummary(session, accuracyPercent, next);
   els.summaryNext.innerHTML = `<h4>A useful next step</h4><p>${escapeHtml(next.reason)}: ${escapeHtml(next.skill.title)}.</p><div class="button-row"><button class="primary-action" data-open-key="${tutorSkillKey(next.skill)}" data-open-mode="visual">Explore the visual lesson</button><button class="outline-action" data-view="path">See my learning path</button></div><div class="drill-again-actions button-row" style="margin-top:0.75rem"><button class="outline-action" type="button" data-start-quick-drill>⚡ Drill 5 more</button><button class="outline-action flashcard-btn" type="button" data-start-flashcard-drill>🃏 Flashcards</button><button class="outline-action" type="button" data-start-streak-drill>🔥 10 in a row challenge</button><button class="outline-action" type="button" data-print-flashcards>🖨️ Print Flashcards</button><button class="outline-action" type="button" data-print-practice-sheet>🖨️ Practice Sheet</button><button class="outline-action" type="button" data-open-print-center>🖨️ Print Center</button>${streakComplete(session) || accuracyPercent === 100 ? `<button class="outline-action" type="button" data-print-cert>🏆 Print Certificate</button>` : ''}</div>${session.mode === 'diagnostic' && foundations.length ? `<p>Helpful foundation: <button class="text-action" data-open-key="${tutorSkillKey(foundations[0])}" data-open-mode="visual">${escapeHtml(foundations[0].title)} (Grade ${foundations[0].grade})</button></p>` : ''}${state.skill ? `<p class="teach-back-prompt">${escapeHtml(transferPrompt(state.skill))}</p>` : ''}${profileBrief}`;
   saveProgress(); renderOverallStats();
@@ -7075,11 +7438,13 @@ function applySettings() {
 
 function showArea(view) {
   state.view = view;
+  if (view !== "library") state.landing = false;
   const intro = {
     library: ["Your Math Journey", t("Your Math Journey"), "Choose a next step, explore a skill, or play with an idea. Your progress stays on this device.", t("Choose a next step, explore a skill, or play with an idea. Your progress stays on this device.")],
     workspace: ["Practice a skill", t("Practice a skill"), "Use a model, try a strategy, and revise your thinking as you go.", t("Use a model, try a strategy, and revise your thinking as you go.")],
     path: ["My progress", t("My progress"), "See what you have practiced and what is ready to revisit.", t("See what you have practiced and what is ready to revisit.")],
     notebook: ["Fix my mistakes", t("Fix my mistakes"), "Revisit mistakes and try a related problem independently.", t("Revisit mistakes and try a related problem independently.")],
+    write: ["Math Writing Studio", t("Math Writing Studio"), "Plan with an organizer, write a paragraph, and check it like a test.", t("Plan with an organizer, write a paragraph, and check it like a test.")],
     games: ["Play with math", t("Play with math"), "Play without a timer. Use models and explain your thinking.", t("Play without a timer. Use models and explain your thinking.")],
     teacher: ["Teacher resources", t("Teacher resources"), "Plan assignments, print materials, and project math talk tools.", t("Plan assignments, print materials, and project math talk tools.")],
   }[view];
@@ -7091,8 +7456,9 @@ function showArea(view) {
     description.dataset.i18nEn = intro[2];
     description.textContent = intro[3];
   }
-  for (const [name, element] of [["library", els.library], ["workspace", els.workspace], ["path", els.path], ["notebook", els.notebook], ["games", els.games], ["teacher", els.teacher]]) element.hidden = name !== view;
+  for (const [name, element] of [["library", els.library], ["workspace", els.workspace], ["path", els.path], ["notebook", els.notebook], ["games", els.games], ["write", els.write], ["teacher", els.teacher]]) element.hidden = name !== view;
   if (view !== "games") { cleanupGames?.(); cleanupGames = null; }
+  if (view !== "write") { cleanupWriting?.(); cleanupWriting = null; }
   document.body.classList.toggle("working-on-skill", view === "workspace");
   document.body.classList.toggle("teacher-resources", view === "teacher");
   document.querySelectorAll("#hub-tabs button").forEach((button) => {
@@ -7140,50 +7506,39 @@ function renderProgressEvidenceCard(progress) {
 }
 
 function renderDashboard() {
-  const ranked = recommendations(state.tutor, state.grade);
-  const next = ranked[0];
   const saved = loadJson(SESSION_KEY, null);
-  const today = state.tutor.sessions.filter((session) => localDay(session.at) === localDay()).reduce((sum, session) => sum + session.answered, 0);
-  const due = ranked.filter((entry) => entry.status.due).length;
-  const progress = calculateProgressEvidence();
   const hasSavedSession = saved?.version === 2 && saved.session && !saved.session.finished;
-  const skillStatus = next.status;
-  const progressValue = skillStatus.independent ? Math.round(skillStatus.ratio * 100) : 0;
-  const savedSkill = saved?.item?.skill?.title || "your practice set";
-  const completedToday = today === 1 ? t("{n} problem completed today", { n: today }) : t("{n} problems completed today", { n: today });
-  const refresh = due === 1 ? t("{n} skill ready for a memory refresh.", { n: due }) : t("{n} skills ready for a memory refresh.", { n: due });
-  els.dashboard.innerHTML = `
-    <div class="journey-heading">
-      <div><p class="section-label">${escapeHtml(gradeDisplay(state.grade))} · ${escapeHtml(PROFILE_NAMES[activeProfile])}</p><h2>${t("What would you like to do?")}</h2><p>${t("Pick up where you left off, play with a math idea, or choose something new.")}</p></div>
-      <button class="journey-checkup" type="button" data-start-checkup aria-label="${state.tutor.diagnostics[state.grade] ? t('Try the starting-point check again') : t('Find a starting point')}"><span class="journey-checkup-icon" aria-hidden="true">↗</span><span><strong>${state.tutor.diagnostics[state.grade] ? t('Check my starting point') : t('New here?')}</strong><small>${state.tutor.diagnostics[state.grade] ? t('Update your learning snapshot') : t('Find a comfortable place to begin')}</small></span></button>
-    </div>
-    <div class="journey-cards">
-      <article class="journey-card journey-continue">
-        <div class="journey-art journey-art-continue" aria-hidden="true"><svg viewBox="0 0 220 150" role="presentation"><path d="M25 120c38-8 43-72 88-62 29 7 38 40 82 18" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-dasharray="1 13"/><circle cx="35" cy="116" r="13"/><circle cx="111" cy="59" r="16"/><circle cx="186" cy="76" r="13"/><path d="m157 40 7 17 18-5-14 13 8 17-17-10-13 12 4-18-16-10 19 1z" fill="currentColor" opacity=".48"/></svg></div>
-        <div class="journey-card-copy"><p class="journey-overline">${hasSavedSession ? t('Ready when you are') : t('A good next step')}</p><h3>${t('Continue learning')}</h3><p class="journey-skill">${escapeHtml(hasSavedSession ? savedSkill : next.skill.title)}</p><p>${hasSavedSession ? t('{n} problems already completed. Your work is saved on this device.', { n: saved.session.answered }) : `${escapeHtml(displayRecommendationReason(next.reason))}. ${t('Begin with a visual lesson, then try it on your own.')}`}</p>
-          ${skillStatus.independent ? `<div class="journey-progress"><div><span>${t('Independent practice')}</span><strong>${progressValue}%</strong></div><progress max="100" value="${progressValue}" aria-label="${t('{percent}% independent accuracy for {skill}', { percent: progressValue, skill: escapeHtml(next.skill.title) })}">${progressValue}%</progress><small>${t('{n} independent attempts · {status}', { n: skillStatus.independent, status: escapeHtml(t(skillStatus.label)) })}</small></div>` : `<div class="journey-progress journey-progress-new"><span class="journey-progress-dot" aria-hidden="true"></span><span>${t('New skill · no score yet')}</span></div>`}
-          <div class="button-row journey-actions">${hasSavedSession ? `<button class="primary-action" data-resume-practice>${t('Continue my practice')} <span aria-hidden="true">→</span></button>` : `<button class="primary-action" data-open-key="${tutorSkillKey(next.skill)}" data-open-mode="visual">${t('Explore this skill')} <span aria-hidden="true">→</span></button><button class="journey-text-action" data-open-key="${tutorSkillKey(next.skill)}" data-open-mode="adaptive">${t('Practice independently')}</button>`}</div></div>
-      </article>
-      <button type="button" class="journey-card journey-game" data-view="games">
-        <span class="journey-card-art journey-art-game" aria-hidden="true"><svg viewBox="0 0 160 124" role="presentation"><path d="M34 75h92a15 15 0 0 1 14 20l-6 15a11 11 0 0 1-17 5l-16-13H59l-16 13a11 11 0 0 1-17-5l-6-15a15 15 0 0 1 14-20Z" fill="currentColor" opacity=".18" stroke="currentColor" stroke-width="4"/><path d="M43 87v15m-8-7h16m37-4h.1m15 12h.1" stroke="currentColor" stroke-width="5" stroke-linecap="round"/><path d="M66 56c0-12 9-22 21-22s21 10 21 22" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round"/><path d="m87 17 4 9 10 1-8 7 3 10-9-5-9 5 3-10-8-7 10-1z" fill="currentColor"/></svg></span>
-        <span class="journey-card-copy"><span class="journey-overline">${t('Untimed · think and play')}</span><strong class="journey-card-title">${t('Play a game')}</strong><span>${t('Build, compare, and solve with the Game Room activities.')}</span><span class="journey-card-link">${t('Choose a game')} <span aria-hidden="true">→</span></span></span>
-      </button>
-      <article class="journey-card journey-explore">
-        <span class="journey-card-art journey-art-explore" aria-hidden="true"><svg viewBox="0 0 160 124" role="presentation"><rect x="28" y="24" width="104" height="76" rx="12" fill="none" stroke="currentColor" stroke-width="4"/><path d="M54 24v76m26-76v76m26-76v76M28 49h104M28 75h104" stroke="currentColor" stroke-width="2" opacity=".5"/><path d="M45 64h12m16 19h12m16-39h12m14 37h8" stroke="currentColor" stroke-width="10" stroke-linecap="round"/><circle cx="51" cy="39" r="5" fill="currentColor"/></svg></span>
-        <div class="journey-card-copy"><p class="journey-overline">${t('Grades 1–8 · many ways in')}</p><h3>${t('Explore skills')}</h3><p>${t('Browse the grade-level library by topic. Every skill includes a lesson, practice, and ways to check your thinking.')}</p><a class="journey-card-link" href="#subnav-skills">${t('Browse {count} Grade {grade} skills', { count: getGrade(state.grade).skills.length, grade: state.grade })} <span aria-hidden="true">→</span></a></div>
-      </article>
-    </div>
-    <div class="journey-today"><span class="journey-today-icon" aria-hidden="true">✓</span><strong>${completedToday}</strong><span>${due ? refresh : t('A little practice over time helps ideas stick.')}</span><button type="button" data-start-daily>${t('Open today’s practice')} <span aria-hidden="true">→</span></button></div>
-    <div class="journey-evidence">${renderProgressEvidenceCard(progress)}</div>`;
+  const today = state.tutor.sessions.filter((session) => localDay(session.at) === localDay()).reduce((sum, session) => sum + session.answered, 0);
+  mountDashboard(els.dashboard, {
+    tutor: state.tutor,
+    grade: state.grade,
+    strand: state.strand,
+    gradeLabel: gradeDisplay(state.grade),
+    profileName: PROFILE_NAMES[activeProfile],
+    gradeSkillCount: getGrade(state.grade).skills.length,
+    resume: hasSavedSession ? { title: saved.item?.skill?.title || t("your practice set"), answered: saved.session.answered } : null,
+    completedToday: today,
+    evidenceHtml: renderProgressEvidenceCard(calculateProgressEvidence()),
+    onStrand: (strand) => {
+      els.strandFilters.querySelector(`[data-strand="${strand.replaceAll('"', '\\"')}"]`)?.click();
+      els.morePractice?.scrollIntoView({ behavior: "smooth", block: "start" });
+    },
+  });
 }
 
 function openHubView(view) {
   if (view === "library") { renderLibrary(); return; }
   saveActiveSession(); cleanupVisual?.(); cleanupVisual = null;
+  applyGradeExperience(state.grade);
   showArea(view);
   if (view === "path") renderPath();
   if (view === "notebook") renderNotebook();
   if (view === "games") { cleanupGames?.(); cleanupGames = mountGames(els.games, { grade: state.grade, autostart: state.autoGame, assignedStop: state.autoStop, onEvidence: recordPuzzleEvidence }); state.autoGame = null; state.autoStop = null; }
+  if (view === "write") { cleanupWriting?.(); cleanupWriting = mountWriting(els.write, { grade: state.grade, skillKey: state.writeSkill, onPrint: printHtml, announce }); state.writeSkill = null; }
+  if (view === "teacher") fl4Teacher?.mountTeacher4(els.teacher4, { // fl4:teacher
+    grade: state.grade, onLaunch: launchAssignment, onPrint: printHtml, announce,
+    profileRecords: () => profiles().ids.map((id) => ({ id, label: `Learner ${id + 1} · ${PROFILE_NAMES[id]}`, tutor: sanitizeTutor(readLocal(profileKey(TUTOR_KEY, id), emptyTutor())) })),
+  });
   if (view === "teacher") mountTeacherStudio(els.teacherStudio, {
     grade: state.grade,
     onLaunch: launchAssignment,
@@ -7202,7 +7557,15 @@ function openHubView(view) {
       mountPaperGames(host, { grade: studioGrade, stopsFor, onPrint: printHtml });
     },
   });
-  document.title = `${{ teacher: 'Teacher studio', path: 'My learning path', games: 'Game Room' }[view] || 'Mistake notebook'} | Math Fluency Lab`;
+  if (view === "teacher") {
+    import("./moby/moby-hub.js").then((hub) => {
+      hub.mountMobyTeacherPanel(document.querySelector("#moby-teacher-host"), {
+        tutor: state.tutor,
+        now: Date.now(),
+      });
+    }).catch(() => {});
+  }
+  document.title = `${{ teacher: 'Teacher studio', path: 'My learning path', games: 'Game Room', write: 'Math Writing Studio' }[view] || 'Mistake notebook'} | Math Fluency Lab`;
   setUrl();
   document.querySelector(`#${view}-view`)?.scrollIntoView({ behavior: "smooth", block: "start" });
 }
@@ -7218,6 +7581,25 @@ function recordPuzzleEvidence(entry) {
   }
 }
 
+function renderSkillFluencyMetrics(skill) {
+  const record = state.tutor.records[tutorSkillKey(skill)];
+  const metrics = record?.metrics || {};
+  const accuracy = metrics.accuracy || {};
+  const flexibility = metrics.strategyFlexibility || {};
+  const pace = metrics.pace || {};
+  const accuracyCopy = Number.isFinite(accuracy.percent)
+    ? t("{percent}% from {count} independent tries", { percent: accuracy.percent, count: accuracy.total })
+    : t("Not enough independent checks yet");
+  const strategyCount = Number.isFinite(flexibility.count) ? flexibility.count : new Set(record?.strategyTags || []).size;
+  const trendCopy = pace.trend === "more_time" ? t("Taking more time lately")
+    : pace.trend === "less_time" ? t("Taking less time lately")
+      : t("Taking about the same time lately");
+  const paceCopy = Number.isFinite(pace.medianResponseMs)
+    ? t("Typical calm thinking time: {time} seconds · {trend}", { time: Math.max(1, Math.round(pace.medianResponseMs / 1000)), trend: trendCopy })
+    : t("No calm response samples yet");
+  return `<div class="skill-fluency-metrics" aria-label="${t("Fluency measures")}"><p><strong>${t("Accuracy")}</strong> ${escapeHtml(accuracyCopy)}</p><p><strong>${t("Strategy flexibility")}</strong> ${t("{count} strategies explored", { count: strategyCount })}</p><p><strong>${t("Pace")}</strong> ${escapeHtml(paceCopy)} <span>${t("Time is a clue, not a score.")}</span></p></div>`;
+}
+
 function renderPath() {
   const ranked = recommendations(state.tutor, state.grade);
   const skills = getGrade(state.grade).skills;
@@ -7228,11 +7610,19 @@ function renderPath() {
   els.path.innerHTML = `<div class="section-heading"><div><p class="section-label">${escapeHtml(gradeDisplay(state.grade))} · ${escapeHtml(PROFILE_NAMES[activeProfile])}</p><h2>See what is growing.</h2><p>Independent first tries, coached practice, and learning over time tell different parts of the story.</p></div><button class="outline-action" data-print-report>Print family progress</button></div>
     <div class="learning-milestones"><div><strong>${explored}/${skills.length}</strong><span>visual lessons explored</span></div><div><strong>${remembered}/${skills.length}</strong><span>remembered independently</span></div><div><strong>${repaired}</strong><span>mistakes revisited successfully</span></div><div><strong>${new Set(sessions.map((session) => localDay(session.at))).size}</strong><span>practice days</span></div></div>
     <div class="path-explainer"><h3>What “remembered” means here</h3><p>At least eight recent independent checks, 85% correct, and successful practice on two different days. Coached examples and easier support problems help you learn; they do not establish independent mastery.</p></div>
+    <section id="prerequisite-constellation" aria-label="My learning path"></section>
     <div class="learning-map">${skills.map((skill) => {
       const status = evidence(state.tutor, skill); const foundation = prerequisites(skill)[0];
       const checkup = state.tutor.diagnostics[state.grade]?.results?.[tutorSkillKey(skill)];
-      return `<article class="path-skill ${status.secure ? 'secure' : ''}"><div><p class="section-label">${escapeHtml(skill.strand)}</p><h3>${escapeHtml(skill.title)}</h3><p class="path-status">${status.label}</p><p>${status.independent ? `${status.successes} of ${status.independent} recent independent checks correct` : 'No independent evidence yet'}${status.supportedTotal ? ` · ${status.supportedTotal} coached attempts` : ''}</p>${status.dueAt ? `<p>${status.due ? 'Ready to revisit' : `Next memory refresh: ${new Date(status.dueAt).toLocaleDateString()}`}</p>` : ''}${checkup !== undefined ? `<p class="small-copy">Starting-point sample: ${checkup ? 'solved' : 'worth exploring'}. More practice will tell us more.</p>` : ''}${foundation ? `<p class="foundation-link">Helpful foundation: <button class="text-action" data-open-key="${tutorSkillKey(foundation)}" data-open-mode="visual">${escapeHtml(foundation.title)}</button></p>` : ''}</div><div class="button-row"><button class="outline-action" data-open-key="${tutorSkillKey(skill)}" data-open-mode="visual">Visual lesson</button><button class="primary-action" data-open-key="${tutorSkillKey(skill)}" data-open-mode="adaptive">Practice</button></div></article>`;
+      return `<article class="path-skill ${status.secure ? 'secure' : ''}"><div><p class="section-label">${escapeHtml(skill.strand)}</p><h3>${escapeHtml(skill.title)}</h3><p class="path-status">${status.label}</p><p>${status.independent ? `${status.successes} of ${status.independent} recent independent checks correct` : 'No independent evidence yet'}${status.supportedTotal ? ` · ${status.supportedTotal} coached attempts` : ''}</p>${renderSkillFluencyMetrics(skill)}${status.dueAt ? `<p>${status.due ? 'Ready to revisit' : `Next memory refresh: ${new Date(status.dueAt).toLocaleDateString()}`}</p>` : ''}${checkup !== undefined ? `<p class="small-copy">Starting-point sample: ${checkup ? 'solved' : 'worth exploring'}. More practice will tell us more.</p>` : ''}${foundation ? `<p class="foundation-link">Helpful foundation: <button class="text-action" data-open-key="${tutorSkillKey(foundation)}" data-open-mode="visual">${escapeHtml(foundation.title)}</button></p>` : ''}</div><div class="button-row"><button class="outline-action" data-open-key="${tutorSkillKey(skill)}" data-open-mode="visual">Visual lesson</button><button class="primary-action" data-open-key="${tutorSkillKey(skill)}" data-open-mode="adaptive">Practice</button></div></article>`;
     }).join("")}</div>${journalHtml()}<section class="family-guide"><h3>For families: five useful minutes</h3><ol><li>Let your child choose one developing skill.</li><li>Ask, “What do you notice?” before giving a method.</li><li>Use the visual lesson together when a step feels unclear.</li><li>Let your child try a few fresh questions independently.</li><li>Ask, “How could you check that?” Celebrate a useful strategy or a repaired mistake.</li></ol><p>Fresh problems are generated each visit. A familiar topic can be practiced again tomorrow without repeating a fixed worksheet.</p></section>`;
+  const constellation = els.path.querySelector("#prerequisite-constellation");
+  if (constellation) renderPrerequisiteMap(constellation, {
+    skills: ALL_SKILLS.map((skill) => ({ ...skill, ...(prerequisiteGraph[tutorSkillKey(skill)] || { prerequisiteSkills: [], enrichmentSkills: [] }) })),
+    edges: prerequisiteGraph,
+    selectedGrade: state.grade,
+    language: getLang(),
+  });
 }
 
 const DETECTIVE_STORAGE_KEY = "ewl-detective-cases-v1";
@@ -7404,6 +7794,7 @@ function renderDetectiveSection(currentGrade) {
               </div>
               <div class="case-feedback" id="case-fb-${c.id}" hidden style="font-size:0.85rem; padding:6px 8px; border-radius:6px; font-weight:700"></div>
               <div class="case-actions" style="margin-top:0.5rem">
+                <button type="button" class="primary-action" data-featured-bug-hunt="${c.id}">${t("Start the 3-step Bug Hunt")}</button>
                 <button type="button" class="outline-action" data-open-tool="${c.tool}" style="font-size:0.8rem; padding:4px 8px">🛠️ Prove with ${c.toolName}</button>
               </div>
             </article>
@@ -7481,9 +7872,134 @@ function getCognitivePrescription(entry, skill) {
   };
 }
 
+function bugReasonFor(code, label = "") {
+  const reasons = {
+    addedDenominators: t("Denominators name equal-size units; make a common-size unit before combining the numerators."),
+    swappedCoordinates: t("Coordinates have an order: x tells left or right, then y tells up or down."),
+    confusedGcfLcm: t("A greatest common factor must divide both numbers; choose the greatest shared factor, not a shared multiple."),
+    addedFactors: t("Multiplication counts equal groups. Adding the factors does not count all the objects in those groups."),
+    oneGroupOff: t("Check both parts of multiplication: the number of groups and the amount in each group."),
+    reversedSubtraction: t("Subtraction order matters. Start with the first amount, then take away the second."),
+    addedInsteadOfSubtracting: t("The prompt asks for a difference. Adding combines amounts instead of comparing them."),
+    subtractInsteadOfAdding: t("Addition combines the amounts. Subtracting them leaves out part of the total."),
+    omittedAddend: t("Both addends contribute to the total. Include each amount once."),
+    subtractedInsteadOfDividing: t("Division asks how many equal groups fit, or how much belongs in each group."),
+    multipliedInsteadOfDividing: t("Division shares or measures equal groups; multiplying makes a different quantity."),
+    addedInsteadOfDividing: t("Division shares a total into equal groups; it does not combine the dividend and divisor."),
+  };
+  return reasons[code] || (label ? t("Check the meaning of the units and operation: {pattern}.", { pattern: label }) : t("Check whether each step keeps the quantities and operation in the problem's meaning."));
+}
+
+function bugReasonChoices(challenge) {
+  const correct = challenge.reason || bugReasonFor(challenge.code, challenge.label);
+  const distractors = [
+    t("This step is correct because the numbers look close to the estimate."),
+    t("The mistake is only in how the answer is written; the operation does not matter."),
+  ];
+  return [
+    { text: correct, correct: true },
+    ...distractors.filter((copy) => copy !== correct).map((text) => ({ text, correct: false })),
+  ];
+}
+
+function bugHuntDescriptor() {
+  const active = state.activeBugHunt;
+  if (!active) return null;
+  if (active.kind === "entry") {
+    const entry = state.tutor.mistakes.find((mistake) => mistake.id === active.id);
+    if (!entry) return null;
+    return {
+      kind: "entry", id: entry.id, source: entry,
+      prompt: entry.problemPrompt || entry.question,
+      studentAnswer: entry.studentInput || entry.submitted,
+      answer: entry.expectedAnswer || entry.original?.answers?.[0] || "",
+      code: entry.misconceptionCode || entry.category,
+      label: entry.misconceptionLabel || (entry.category ? mistakeCategoryLabel(entry.category) : ""),
+      name: findSkill(entry.key)?.title || t("Math skill"),
+    };
+  }
+  const featured = DETECTIVE_CASES.find((item) => item.id === active.id);
+  if (!featured) return null;
+  const code = featured.id.includes("fractions") ? "addedDenominators"
+    : featured.id.includes("integer-signs") ? "subtractInsteadOfAdding"
+      : featured.id.includes("order-operations") ? "addedFactors"
+        : featured.id.includes("decimal") ? "omittedAddend"
+          : featured.id.includes("mult-distributive") ? "oneGroupOff"
+            : featured.id.includes("algebra") ? "reversedSubtraction" : "";
+  return {
+    kind: "featured", id: featured.id, source: featured,
+    prompt: featured.problem, studentAnswer: featured.suspectAnswer,
+    answer: featured.correctAnswer, code, label: featured.misconception, reason: featured.why, name: featured.title,
+  };
+}
+
+function bugHuntSteps(challenge) {
+  const code = challenge.code;
+  let errorStep = t("Use {input} as the answer, then move on without checking what the operation means.", { input: challenge.studentAnswer });
+  if (code === "addedDenominators") errorStep = t("Add the top numbers and bottom numbers together to make {input}.", { input: challenge.studentAnswer });
+  else if (code === "swappedCoordinates") errorStep = t("Switch the x- and y-values, writing {input}.", { input: challenge.studentAnswer });
+  else if (code === "confusedGcfLcm") errorStep = t("Choose the least common multiple, {input}, for a greatest-common-factor question.", { input: challenge.studentAnswer });
+  else if (code === "addedFactors") errorStep = t("Add the factors instead of counting equal groups: {input}.", { input: challenge.studentAnswer });
+  else if (code === "reversedSubtraction") errorStep = t("Reverse the subtraction order to get {input}.", { input: challenge.studentAnswer });
+  else if (code === "addedInsteadOfSubtracting") errorStep = t("Add the amounts even though the question asks for a difference: {input}.", { input: challenge.studentAnswer });
+  else if (code === "subtractInsteadOfAdding") errorStep = t("Subtract the amounts instead of combining them: {input}.", { input: challenge.studentAnswer });
+  else if (code === "oneGroupOff") errorStep = t("Count one group too many or too few, giving {input}.", { input: challenge.studentAnswer });
+  return [
+    t("Read the problem: {prompt}", { prompt: challenge.prompt }),
+    errorStep,
+    t("Use that result as the final answer: {input}.", { input: challenge.studentAnswer }),
+  ];
+}
+
+function renderActiveBugHunt() {
+  const challenge = bugHuntDescriptor();
+  if (!challenge) { state.activeBugHunt = null; return ""; }
+  const active = state.activeBugHunt;
+  const steps = bugHuntSteps(challenge);
+  const solved = active.stage === "solved";
+  const reasonChoices = bugReasonChoices(challenge);
+  const status = active.message || (active.stage === "choose-step"
+    ? t("Choose the step where the student's reasoning first goes off track.")
+    : active.stage === "choose-reason"
+      ? t("Why does this step break the math?")
+      : active.stage === "answer"
+        ? t("Now enter the corrected answer.")
+        : t("Bug Crushed! You found the flawed step and repaired the result."));
+  return `<section class="bug-hunt-challenge" aria-labelledby="bug-hunt-title" style="margin:1.25rem 0;padding:1.25rem;border:2px solid #0f766e;border-radius:14px;background:#f0fdfa">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;flex-wrap:wrap"><div><p class="section-label">${t("ERROR ANALYSIS CHALLENGE")}</p><h3 id="bug-hunt-title">${escapeHtml(challenge.name)}</h3><p>${t("Problem: {prompt}", { prompt: challenge.prompt })}</p></div><button type="button" class="outline-action" data-close-bug-hunt>${t("Close challenge")}</button></div>
+    ${solved ? `<div class="mastery-pill" role="status" style="display:inline-flex;background:#dcfce7;color:#166534;padding:.65rem 1rem">🐞 ${t("Bug Crushed! Mastery badge earned")}</div>` : `<ol style="display:grid;gap:.55rem;padding-left:1.5rem">${steps.map((step, index) => `<li><button type="button" class="outline-action" data-bug-step="${index}" aria-pressed="${active.selectedStep === index}" ${active.stage !== "choose-step" ? "disabled" : ""} style="width:100%;text-align:left">${escapeHtml(step)}</button></li>`).join("")}</ol>
+    ${active.stage === "choose-reason" ? `<fieldset style="border:1px solid #99f6e4;border-radius:10px;padding:.8rem"><legend>${t("Choose why it is wrong")}</legend><div style="display:grid;gap:.5rem">${reasonChoices.map((choice, index) => `<button type="button" class="outline-action" data-bug-reason="${index}" style="text-align:left">${escapeHtml(choice.text)}</button>`).join("")}</div></fieldset>` : ""}
+    ${active.stage === "answer" ? `<form data-bug-answer-form style="display:flex;gap:.55rem;flex-wrap:wrap;align-items:end"><label style="display:grid;gap:.25rem;flex:1 1 15rem">${t("Corrected answer")}<input class="answer-input" name="answer" autocomplete="off" required></label><button class="primary-action" type="submit">${t("Check the repair")}</button></form>` : ""}`}
+    <p data-bug-hunt-status role="status" aria-live="polite" style="margin:.75rem 0 0">${escapeHtml(status)}</p>
+  </section>`;
+}
+
+function bugAnswerMatches(value, expected) {
+  const normalize = (text) => String(text).trim().replaceAll("−", "-").replace(/\s+/g, "").replace(/^([a-z])=/i, "").toLowerCase();
+  const entered = normalize(value);
+  const accepted = String(expected).split(/\s+or\s+|\s*\(or\s*/i).map((part) => normalize(part.replace(/[.)]+$/, "")));
+  if (accepted.includes(entered)) return true;
+  const numeric = (text) => {
+    if (/[<>≤≥]/.test(text)) return NaN;
+    const fraction = text.match(/^(-?\d+)\/(\d+)$/);
+    if (fraction && Number(fraction[2])) return Number(fraction[1]) / Number(fraction[2]);
+    return Number(text.replace(/[^\d.+-]/g, ""));
+  };
+  const number = numeric(entered);
+  return Number.isFinite(number) && accepted.some((part) => Math.abs(number - numeric(part)) < 1e-9);
+}
+
 function renderNotebook() {
   const entries = state.tutor.mistakes.filter((entry) => findSkill(entry.key)?.grade === state.grade);
   const open = entries.filter((entry) => !entry.resolvedAt);
+  const clusters = new Map();
+  for (const entry of entries) {
+    const code = entry.misconceptionCode || entry.category || "unclassified";
+    if (!clusters.has(code)) clusters.set(code, []);
+    clusters.get(code).push(entry);
+  }
+  const clusterLabel = (code, group) => group[0]?.misconceptionLabel || (code === "unclassified" ? t("Pattern not identified yet") : mistakeCategoryLabel(code) || t("Math reasoning pattern"));
+  const clusterCopy = (code, group) => bugReasonFor(code, group[0]?.misconceptionLabel || "");
   els.notebook.innerHTML = `
     <div class="garage-banner">
       <div>
@@ -7493,7 +8009,10 @@ function renderNotebook() {
       </div>
       ${open.length ? '<button class="primary-action" data-repair-all style="background:#f59e0b; color:#78350f; font-weight:900; border:none; padding:10px 16px; border-radius:8px; cursor:pointer">⚡ Tune Up All (' + open.length + ')</button>' : ''}
     </div>
-    ${entries.length ? `<div class="mistake-list">${entries.map((entry) => {
+    ${entries.length ? `<div class="mistake-clusters">${[...clusters.entries()].map(([code, group]) => `<section class="mistake-cluster" style="margin:1rem 0;padding:1rem;border:1px solid #cbd5e1;border-radius:12px;background:#f8fafc">
+      <div style="display:flex;justify-content:space-between;gap:.75rem;align-items:baseline;flex-wrap:wrap"><h3 style="margin:.1rem 0">${escapeHtml(clusterLabel(code, group))} <span class="mastery-pill">${group.length} ${t("items")}</span></h3><span>${open.filter((entry) => (entry.misconceptionCode || entry.category || "unclassified") === code).length} ${t("to repair")}</span></div>
+      <p>${escapeHtml(clusterCopy(code, group))}</p>
+      <div class="mistake-list">${group.map((entry) => {
       const skill = findSkill(entry.key);
       const isRepaired = !!entry.resolvedAt;
       const rx = getCognitivePrescription(entry, skill);
@@ -7508,7 +8027,7 @@ function renderNotebook() {
           <h3>${escapeHtml(skill.title)}</h3>
           <p class="mistake-question" style="font-size:1.4rem; font-weight:900; margin:8px 0">${escapeHtml(entry.question)}</p>
           <p>Your previous answer: <strong style="color:#dc2626">${escapeHtml(entry.submitted)}</strong></p>
-          <p class="mistake-pattern" role="status">${entry.category ? `${escapeHtml(t("Possible pattern"))}: <strong>${escapeHtml(mistakeCategoryLabel(entry.category))}</strong>` : escapeHtml(t("No specific pattern can be identified from one answer."))}</p>
+          <p class="mistake-pattern" role="status">${escapeHtml(t("Repair status: {status}", { status: entry.repairStatus === "in-progress" ? t("in progress") : isRepaired ? t("repaired") : t("ready") }))}</p>
 
           <!-- Targeted Cognitive Repair Prescription -->
           <div class="repair-prescription-card">
@@ -7526,13 +8045,15 @@ function renderNotebook() {
             <p style="margin:4px 0; color:#b45309"><strong>Watch Out:</strong> ${escapeHtml(skill.learn.watch)}</p>
           </details>
           <div class="button-row">
-            ${entry.original ? `<button class="outline-action" type="button" data-revise-entry="${escapeHtml(entry.id)}">${escapeHtml(t("Revise the original, then try two new problems"))}</button>` : ""}
+            <button class="outline-action" type="button" data-revise-entry="${escapeHtml(entry.id)}" ${isRepaired ? "disabled" : ""}>🛠️ ${t("Fix My Problem")}</button>
+            <button class="outline-action" type="button" data-open-bug-hunt="${escapeHtml(entry.id)}">🐞 ${t("Spot the Student's Mistake")}</button>
             <button class="outline-action rx-workout-btn" type="button" data-launch-workout="${rx.tool}" data-skill-key="${entry.key}">🏋️ Launch ${rx.toolName} Workout</button>
             <button class="outline-action" data-open-key="${entry.key}" data-open-mode="visual">🛠️ Visual Lesson</button>
             <button class="primary-action" data-repair-key="${entry.key}">⚡ Test Drive Fresh Problems</button>
           </div>
         </article>`;
-    }).join("")}</div>` : `
+      }).join("")}</div>
+    </section>`).join("")}</div>` : `
       <div class="empty-state" style="text-align:center; padding:3rem 1rem">
         <div style="font-size:3rem">🏎️💨</div>
         <h3>The Garage is Clean!</h3>
@@ -7541,7 +8062,18 @@ function renderNotebook() {
       </div>
     `}
     ${renderDetectiveSection(state.grade)}
+    ${renderActiveBugHunt()}
   `;
+}
+
+if (new URLSearchParams(location.search).get("diagnostics") === "1") {
+  const result = runFluencySelfTest();
+  const panel = document.createElement("section");
+  panel.className = "diagnostic-report";
+  panel.setAttribute("role", "status");
+  panel.setAttribute("aria-live", "polite");
+  panel.innerHTML = `<h2>Fluency Lab diagnostics</h2><p>${result.ok ? "All checks passed" : "Checks need attention"}: ${result.skills} skills · ${result.vectors} generated problems · ${result.svgChecks} SVG models</p>${result.errors.length ? `<ul>${result.errors.map((error) => `<li>${escapeHtml(error)}</li>`).join("")}</ul>` : ""}`;
+  document.querySelector("main")?.prepend(panel);
 }
 
 function openPlanned(mode, queue, options = {}) {
@@ -7551,7 +8083,7 @@ function openPlanned(mode, queue, options = {}) {
   els.workspaceGrade.textContent = gradeDisplay(state.grade);
   els.workspaceTitle.textContent = mode === "daily" ? "Today's 10, chosen for you" : mode === "mission" ? "A short learning mission" : mode === "diagnostic" ? "Find my starting point" : mode === "assignment" ? state.assignment.label : "Turn a mistake into a strategy";
   document.title = `${els.workspaceTitle.textContent} | Math Fluency Lab`;
-  els.workspaceStandard.textContent = mode === "diagnostic" ? `${getGrade(state.grade).skills.length} samples to help you choose your next step` : mode === "mission" ? "Start with your grade-level skill, visit a useful foundation, then return for a supported, independent, and transfer try." : "Fresh problems from your selected skills";
+  els.workspaceStandard.textContent = mode === "diagnostic" ? t("A short checkup that adjusts to your answers") : mode === "mission" ? "Start with your grade-level skill, visit a useful foundation, then return for a supported, independent, and transfer try." : "Fresh problems from your selected skills";
   els.masteryMeter.value = 0; els.masteryLabel.textContent = "Learning across skills";
   els.modeTabs.innerHTML = `<button role="tab" aria-selected="true" aria-controls="drill-panel">${mode === 'diagnostic' ? 'Checkup' : mode === 'daily' ? "Today's 10" : mode === 'mission' ? '5-step mission' : mode === 'assignment' ? 'Class practice' : 'Repair practice'}</button>`;
   beginSession(mode, queue.length, queue, options); setUrl();
@@ -7572,24 +8104,83 @@ function startRepair(keys) {
 
 function startRepairEntry(id) {
   const entry = state.tutor.mistakes.find((mistake) => mistake.id === id && !mistake.resolvedAt);
-  if (!entry || findSkill(entry.key)?.grade !== state.grade || !entry.original?.answers?.length) {
-    announce("This saved problem is not available to revise. Try a fresh repair set instead.");
+  const skill = entry && findSkill(entry.key);
+  if (!entry || skill?.grade !== state.grade) {
+    announce(t("This saved problem is not available to repair. Try a fresh repair set instead."));
     if (entry) startRepair([entry.key]);
     return;
   }
+  const seed = (Date.now() + [...String(entry.id)].reduce((sum, char) => sum + char.charCodeAt(0), 0)) >>> 0;
+  let freshProblem = adaptiveProblem(skill, seededRandom(seed), 0);
+  for (let attempt = 1; attempt <= 40 && freshProblem.question === entry.question; attempt += 1)
+    freshProblem = adaptiveProblem(skill, seededRandom((seed + attempt * 104729) >>> 0), 0);
+  entry.repairStatus = "in-progress";
+  saveProgress();
   openPlanned("repair", [
-    { key: entry.key, purpose: t("Revise the original problem with support"), original: entry.original },
+    { key: entry.key, purpose: t("Fix My Problem: new numbers, same skill"), generated: freshProblem, forceGuided: true, mistakeId: entry.id },
     { key: entry.key, purpose: t("Try a new related problem independently"), independent: true },
-    { key: entry.key, purpose: t("Try a new related problem independently"), independent: true },
+    { key: entry.key, purpose: t("Try one more related problem independently"), independent: true, mistakeId: entry.id },
   ]);
+}
+
+function startQuickBoost(foundationKey, rescue = null) {
+  const foundation = findSkill(foundationKey);
+  if (!foundation || foundation.grade < 1 || foundation.grade > 8 || !state.session || state.session.quickBoost) return;
+  saveActiveSession();
+  const savedPractice = loadJson(SESSION_KEY, null);
+  if (!savedPractice?.session || !savedPractice.item) return;
+  writeLocal(profileKey(BRIDGE_RETURN_KEY, activeProfile), savedPractice);
+  state.session = null;
+  state.grade = foundation.grade;
+  renderGradeTabs();
+  const queue = rescue ? rescueQueue(rescue) : Array.from({ length: 3 }, (_, index) => ({ // fl4:adaptive
+    key: foundationKey,
+    purpose: t("Quick Boost problem {n} of 3", { n: index + 1 }),
+    independent: true,
+  }));
+  openPlanned("repair", queue);
+  state.session.quickBoost = true;
+  if (rescue) state.session.rescue = rescue; // fl4:adaptive
+  saveActiveSession();
+  announce(rescue ? t("Three practice problems with help, then one on your own. Your original set will be ready when you finish.") : t("Three calm foundation problems. Your original set will be ready when you finish."));
+}
+
+// fl4:adaptive Rescue flow: the offer opens the mini-lesson; "Start practice" runs the guided repair and the
+// independent check as a boosted session; leaving or declining returns to the problem and is logged against the day's cap.
+function beginRescue(plan) {
+  if (!plan || !state.session || state.session.quickBoost) return;
+  const lesson = rescueStep(startRescue(plan), { type: "accept" });
+  state.rescuePlan = null;
+  const settle = (outcome) => { recordRescue(state.tutor, rescueStep(lesson, { type: outcome })); saveProgress(); };
+  openRescueDialog(plan, {
+    grade: state.grade,
+    lang: getLang(),
+    onEvidence: ({ correct, independent } = {}) => { recordAnswer(state.tutor, findSkill(plan.prereq), { correct: Boolean(correct), independent: Boolean(independent), tier: 2 }); saveProgress(); },
+    onStart: () => {
+      state.rescuesThisSession = (state.rescuesThisSession || 0) + 1;
+      const repair = rescueStep(lesson, { type: "lessonDone" });
+      recordRescue(state.tutor, { ...repair, outcome: "left" });
+      saveProgress();
+      startQuickBoost(plan.prereq, repair);
+    },
+    onLeave: () => { settle("leave"); announce(returnMessage({ outcome: "left", goal: plan.goal, prereq: plan.prereq })); els.answerInput?.focus(); },
+  });
+}
+function declineRescue() {
+  const plan = state.rescuePlan;
+  if (!plan) return;
+  recordRescue(state.tutor, rescueStep(startRescue(plan), { type: "decline" }));
+  saveProgress();
+  document.querySelector(".rescue-offer")?.remove();
+  state.rescuePlan = null;
 }
 
 function launchAssignment(assignment) {
   if (!assignment) return;
   if (["en", "es"].includes(assignment.lang)) { setLang(assignment.lang, { persist: false }); translatePage(document); }
   saveActiveSession(); state.session = null;
-  state.assignment = assignment; state.grade = assignment.grade; saveSettings(); renderGradeTabs();
-  document.documentElement.style.setProperty("--grade", getGrade(state.grade).color);
+  state.assignment = assignment; state.grade = assignment.grade; state.gradeInUrl = true; saveSettings(); renderGradeTabs();
+  applyGradeExperience(state.grade);
   renderAssignmentBanner();
   if (assignment.keys.length) openPlanned("assignment", assignmentQueue(assignment));
   else if (assignment.game) { state.autoGame = assignment.game; state.autoStop = assignment.stop; openHubView("games"); }
@@ -7599,7 +8190,7 @@ function renderAssignmentBanner() {
   const banner = document.querySelector("#assignment-banner"); banner.hidden = !state.assignment;
   if (!state.assignment) return;
   const assignment = state.assignment;
-  banner.innerHTML = `<div><p class="section-label">Your class practice</p><h2>${escapeHtml(assignment.label)}</h2><p>Grade ${assignment.grade}${assignment.keys.length ? ` · ${assignment.count} fresh questions · ${assignment.keys.map((key) => escapeHtml(findSkill(key).title)).join(', ')}` : ''}${assignment.game ? ` · Game: ${escapeHtml(GAMES.find((g) => g.id === assignment.game)?.name || '')}` : ''}</p></div>${assignment.keys.length ? '<button class="primary-action" data-start-assignment>Start class practice</button>' : ''}${assignment.game ? '<button class="primary-action" data-start-assignment-game>Play the assigned game</button>' : ''}`;
+  banner.innerHTML = `<div><p class="section-label">Your class practice</p><h2>${escapeHtml(assignment.label)}</h2><p>Grade ${assignment.grade}${assignment.keys.length ? ` · ${assignment.count} fresh questions · ${assignment.keys.map((key) => escapeHtml(findSkill(key).title)).join(', ')}` : ''}${assignment.game ? ` · Game: ${escapeHtml(GAMES.find((g) => g.id === assignment.game)?.name || '')}` : ''}${assignment.target ? ` · Goal: score ${assignment.target.score} on ${assignment.target.days} separate days` : ''}${assignment.due ? ` · Due ${escapeHtml(assignment.due)}` : ''}</p></div>${assignment.keys.length ? '<button class="primary-action" data-start-assignment>Start class practice</button>' : ''}${assignment.game ? '<button class="primary-action" data-start-assignment-game>Play the assigned game</button>' : ''}`; // fl4:teacher: goal and due date shown to the learner
 }
 
 function saveActiveSession() {
@@ -7608,21 +8199,21 @@ function saveActiveSession() {
   const snapshot = { version: 2, grade: state.grade, skillId: state.skill?.id || null, session, item: state.item, itemDone: state.itemDone,
     itemAttempts: state.itemAttempts, firstAnswerCorrect: state.firstAnswerCorrect, hintBeforeFirst: state.hintBeforeFirst, initialSupport: state.initialSupport,
     guidedStepsShown: state.guidedStepsShown, assignment: state.assignment, recentQuestions: state.recentQuestions,
-    feedback: els.feedback.hidden ? null : { title: els.feedbackTitle.textContent, copy: els.feedbackCopy.textContent, type: els.feedback.dataset.type } };
+    feedback: els.feedback.hidden ? null : { title: els.feedbackTitle.textContent, copy: els.feedbackCopy.textContent, type: els.feedback.dataset.type, phase: state.fbPhase || "idle", submitted: state.lastSubmitted || "" } };
   writeLocal(profileKey(SESSION_KEY, activeProfile), snapshot);
   saveProgress();
 }
 
 function resumePractice(saved = loadJson(SESSION_KEY, null)) {
   const allowed = ["practice", "guided", "adaptive", "streak", "daily", "mixed", "repair", "diagnostic", "assignment"];
-  if (!saved || saved.version !== 2 || !allowed.includes(saved.session?.mode) || !findSkill(`${saved.grade}:${saved.item?.skill?.id}`) || (saved.session.queue && saved.session.queue.some((entry) => !findSkill(entry.key)))) { announce("There is no saved practice to resume."); return; }
+  if (!saved || saved.version !== 2 || !allowed.includes(saved.session?.mode) || !findSkill(`${saved.item?.skill?.grade ?? saved.grade}:${saved.item?.skill?.id}`) || (saved.session.queue && saved.session.queue.some((entry) => !findSkill(entry.key)))) { announce("There is no saved practice to resume."); return; }
   cleanupVisual?.(); cleanupVisual = null;
   state.grade = saved.grade; state.skill = saved.skillId ? getSkill(saved.grade, saved.skillId) : null;
   state.mixedPool = getGrade(state.grade).skills; state.mode = saved.session.mode; state.assignment = saved.assignment || state.assignment;
   state.session = { ...saved.session, rng: Math.random, problemSkills: [], finished: false };
   state.recentQuestions = saved.recentQuestions || [];
   showArea("workspace"); renderGradeTabs();
-  document.documentElement.style.setProperty("--grade", getGrade(state.grade).color);
+  applyGradeExperience(state.grade);
   els.workspaceGrade.textContent = gradeDisplay(state.grade);
   els.workspaceTitle.textContent = state.skill?.title || "Your saved practice";
   els.workspaceStandard.textContent = "Continue where you left off";
@@ -7636,7 +8227,12 @@ function resumePractice(saved = loadJson(SESSION_KEY, null)) {
     state.itemAttempts = saved.itemAttempts || 0; state.firstAnswerCorrect = saved.firstAnswerCorrect; state.hintBeforeFirst = saved.hintBeforeFirst;
     state.initialSupport = saved.initialSupport; state.guidedStepsShown = saved.guidedStepsShown;
     renderGuidedCoach();
-    if (saved.feedback) showFeedback(saved.feedback.title, saved.feedback.copy, saved.feedback.type);
+    if (saved.feedback) {
+      const phase = FEEDBACK_PHASES.includes(saved.feedback.phase) && saved.feedback.phase !== "idle" ? saved.feedback.phase : null;
+      state.fbPhase = phase || "idle";
+      state.lastSubmitted = String(saved.feedback.submitted || "").slice(0, 120);
+      showFeedback(saved.feedback.title, saved.feedback.copy, saved.feedback.type, saved.feedback.type, phase);
+    }
     saveActiveSession();
   }
   setUrl(); announce("Your saved practice is ready.");
@@ -7693,14 +8289,11 @@ function registerSharedSaveResume() {
 
 els.gradeTabs.addEventListener("click", (event) => {
   const button = event.target.closest("[data-grade]");
-  if (!button) return;
-  saveActiveSession();
-  state.session = null;
-  state.grade = Number(button.dataset.grade);
-  state.strand = "All";
-  saveSettings();
-  if (state.view === "games") openHubView("games");
-  else renderLibrary();
+  if (button) pickGrade(Number(button.dataset.grade));
+});
+els.dashboard.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-pick-grade]");
+  if (button) pickGrade(Number(button.dataset.pickGrade));
 });
 
 els.strandFilters.addEventListener("click", (event) => {
@@ -7742,6 +8335,7 @@ els.learnPanel.addEventListener("click", (event) => {
     host.querySelector("[data-step]")?.focus();
     return;
   }
+  if (event.target.closest("[data-mini-lesson]")) return openMiniLesson(); // fl4:lessons
   if (event.target.closest("[data-start-visual]")) setMode("visual");
   if (event.target.closest("[data-start-guided]")) setMode("guided");
   if (event.target.closest("[data-start-independent]")) {
@@ -7753,6 +8347,48 @@ els.learnPanel.addEventListener("click", (event) => {
 els.answerForm.addEventListener("submit", (event) => {
   event.preventDefault();
   submitAnswer(els.answerInput.value);
+});
+
+const mathKeypad = document.querySelector("#math-keypad");
+let keypadSelection = { start: 0, end: 0 };
+const rememberKeypadSelection = () => {
+  if (!els.answerInput) return;
+  keypadSelection = { start: els.answerInput.selectionStart ?? els.answerInput.value.length, end: els.answerInput.selectionEnd ?? els.answerInput.value.length };
+};
+for (const eventName of ["click", "keyup", "select", "input", "mouseup"]) els.answerInput.addEventListener(eventName, rememberKeypadSelection);
+const keypadKeys = [..."1234567890".split(""), ".", "−", "+", "×", "÷", "=", "/", ":", "(", ")", "²", "³", "<", ">", "≤", "≥", "⌫", "Clear"];
+mathKeypad.innerHTML = keypadKeys.map((key) => {
+  const action = key === "⌫" ? "backspace" : key === "Clear" ? "clear" : "insert";
+  const label = key === "⌫" ? t("Backspace") : key === "Clear" ? t("Clear answer") : key;
+  return `<button type="button" class="math-key" data-math-action="${action}" data-math-key="${action === "insert" ? escapeHtml(key) : ""}" aria-label="${escapeHtml(label)}">${escapeHtml(key)}</button>`;
+}).join("");
+document.querySelector("#toggle-math-keypad").addEventListener("click", (event) => {
+  const button = event.currentTarget;
+  mathKeypad.hidden = !mathKeypad.hidden;
+  button.setAttribute("aria-expanded", String(!mathKeypad.hidden));
+  const labels = { show: t("Show math keypad"), hide: t("Hide math keypad") };
+  button.textContent = labels[mathKeypad.hidden ? "show" : "hide"];
+});
+mathKeypad.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-math-action]");
+  if (!button || els.answerInput.disabled) return;
+  const input = els.answerInput;
+  const start = Math.min(keypadSelection.start, input.value.length);
+  const end = Math.min(keypadSelection.end, input.value.length);
+  const action = button.dataset.mathAction;
+  if (action === "clear") { input.value = ""; keypadSelection = { start: 0, end: 0 }; }
+  else if (action === "backspace") {
+    const from = start === end && start > 0 ? start - 1 : start;
+    input.value = input.value.slice(0, from) + input.value.slice(end);
+    input.setSelectionRange(from, from);
+    keypadSelection = { start: from, end: from };
+  } else {
+    const value = button.dataset.mathKey;
+    input.value = input.value.slice(0, start) + value + input.value.slice(end);
+    input.setSelectionRange(start + value.length, start + value.length);
+    keypadSelection = { start: start + value.length, end: start + value.length };
+  }
+  input.dispatchEvent(new Event("input", { bubbles: true }));
 });
 
 els.choiceAnswers.addEventListener("click", (event) => {
@@ -7780,7 +8416,35 @@ els.hintButton.addEventListener("click", () => {
   saveActiveSession();
 });
 
-els.nextButton.addEventListener("click", nextProblem);
+// "Try again", "Show hint" and "See worked example" under a not-quite answer. Each reuses the control the page
+// already has, so there is one hint path and one steps path.
+els.feedbackActions.addEventListener("click", (event) => {
+  const id = event.target.closest("[data-feedback-action]")?.dataset.feedbackAction;
+  if (!id || !state.item || state.itemDone) return;
+  if (id === "try-again") {
+    (state.item.choices ? els.choiceAnswers.querySelector("button:not([disabled])") : els.answerInput)?.focus();
+    if (!state.item.choices) els.answerInput.select();
+    return;
+  }
+  if (id === "hint" && !els.hintButton.hidden) els.hintButton.click();
+  if (id === "worked") {
+    while (revealGuidedStep());
+    els.guidedSteps.scrollIntoView?.({ block: "center", behavior: prefersReducedMotion() ? "auto" : "smooth" });
+    announce(t("Worked example opened."));
+    saveActiveSession();
+  }
+  paintActions(els, feedbackView(state.fbPhase, feedbackContext())?.actions || []);
+});
+
+// Next takes the place of Check, so a double click (or a held Enter) on Check would otherwise skip the result it
+// just earned. Only real user input is held back: the second click of a double click, and a key press that lands
+// within SETTLE_MS of the result.
+const SETTLE_MS = 600;
+els.nextButton.addEventListener("click", (event) => {
+  const tooSoon = performance.now() - (state.settledAt || 0) < SETTLE_MS;
+  if (event.isTrusted && (event.detail > 1 || (event.detail === 0 && tooSoon))) return;
+  nextProblem();
+});
 els.guidedSteps.addEventListener("fluency-fill-solved", () => renderGuidedCoach());
 els.guidedNextStep.addEventListener("click", () => {
   const step = revealGuidedStep();
@@ -7796,7 +8460,7 @@ els.dailyButton.addEventListener("click", () => openMixed({ daily: true }));
 document.querySelector("#start-mission")?.addEventListener("click", openMission);
 els.mixedButton.addEventListener("click", () => openMixed());
 els.resetButton.addEventListener("click", () => {
-  if (state.mode === "diagnostic") { openPlanned("diagnostic", diagnosticPlan(state.grade)); return; }
+  if (state.mode === "diagnostic") { openPlanned("diagnostic", checkupPlan(state.grade)); return; }
   if (state.mode === "assignment") { launchAssignment(state.assignment); return; }
   if (state.skill) setMode(state.mode === "learn" ? "practice" : state.mode);
   else openMixed({ daily: state.mode === "daily" });
@@ -7820,29 +8484,102 @@ document.addEventListener("click", (event) => {
     });
     return;
   }
+  const writeAbout = event.target.closest("[data-write-about]");
+  if (writeAbout && state.skill) { state.writeSkill = `${state.skill.grade}:${state.skill.id}`; openHubView("write"); return; }
   const view = event.target.closest("[data-view]");
   if (view) openHubView(view.dataset.view);
   const open = event.target.closest("[data-open-key]");
   if (open) {
     const skill = findSkill(open.dataset.openKey); if (!skill) return;
-    saveActiveSession(); state.session = null; state.grade = skill.grade; saveSettings(); renderGradeTabs();
+    saveActiveSession(); state.session = null; state.grade = skill.grade; state.gradeInUrl = true; saveSettings(); renderGradeTabs();
     openSkill(skill.id, open.dataset.openMode || "learn");
   }
-  if (event.target.closest("[data-start-checkup]")) openPlanned("diagnostic", diagnosticPlan(state.grade));
+  if (event.target.closest("[data-start-checkup]")) openPlanned("diagnostic", checkupPlan(state.grade));
   if (event.target.closest("[data-start-daily]")) openPlanned("daily", dailyPlan(state.tutor, state.grade));
+  if (event.target.closest("[data-rescue=start]")) { beginRescue(state.rescuePlan); return; } // fl4:adaptive
+  if (event.target.closest("[data-rescue=decline]")) { declineRescue(); return; } // fl4:adaptive
+  const quickBoost = event.target.closest("[data-quick-boost]");
+  if (quickBoost) startQuickBoost(quickBoost.dataset.quickBoost);
   if (event.target.closest("[data-resume-practice]")) resumePractice();
   if (event.target.closest("[data-start-assignment]")) launchAssignment(state.assignment);
-  if (event.target.closest("[data-start-assignment-game]")) { state.autoGame = state.assignment.game; state.autoStop = state.assignment.stop; state.grade = state.assignment.grade; openHubView("games"); }
+  if (event.target.closest("[data-start-assignment-game]")) { state.autoGame = state.assignment.game; state.autoStop = state.assignment.stop; state.grade = state.assignment.grade; state.gradeInUrl = true; openHubView("games"); }
   if (event.target.closest("[data-print-report]")) printFamilyReport();
   const repair = event.target.closest("[data-repair-key]");
   if (repair) startRepair([repair.dataset.repairKey]);
   const revise = event.target.closest("[data-revise-entry]");
   if (revise) startRepairEntry(revise.dataset.reviseEntry);
   if (event.target.closest("[data-repair-all]")) startRepair(state.tutor.mistakes.filter((entry) => !entry.resolvedAt).map((entry) => entry.key));
+  const openEntryHunt = event.target.closest("[data-open-bug-hunt]");
+  const openFeaturedHunt = event.target.closest("[data-featured-bug-hunt]");
+  if (openEntryHunt || openFeaturedHunt) {
+    state.activeBugHunt = { kind: openEntryHunt ? "entry" : "featured", id: openEntryHunt?.dataset.openBugHunt || openFeaturedHunt.dataset.featuredBugHunt, stage: "choose-step" };
+    if (openEntryHunt) {
+      const mistake = state.tutor.mistakes.find((entry) => entry.id === state.activeBugHunt.id);
+      if (mistake && !mistake.resolvedAt) { mistake.repairStatus = "in-progress"; saveProgress(); }
+    }
+    renderNotebook();
+    document.querySelector(".bug-hunt-challenge")?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    return;
+  }
+  if (event.target.closest("[data-close-bug-hunt]")) { state.activeBugHunt = null; renderNotebook(); return; }
+  const bugStep = event.target.closest("[data-bug-step]");
+  if (bugStep && state.activeBugHunt?.stage === "choose-step") {
+    if (Number(bugStep.dataset.bugStep) === 1) {
+      state.activeBugHunt.selectedStep = 1;
+      state.activeBugHunt.stage = "choose-reason";
+      state.activeBugHunt.message = "";
+      renderNotebook();
+    } else {
+      const status = document.querySelector("[data-bug-hunt-status]");
+      if (status) status.textContent = t("That step still matches the prompt. Keep looking for the first broken idea.");
+      chime("bad");
+    }
+    return;
+  }
+  const bugReason = event.target.closest("[data-bug-reason]");
+  if (bugReason && state.activeBugHunt?.stage === "choose-reason") {
+    const challenge = bugHuntDescriptor();
+    const choice = challenge && bugReasonChoices(challenge)[Number(bugReason.dataset.bugReason)];
+    if (choice?.correct) {
+      state.activeBugHunt.stage = "answer";
+      state.activeBugHunt.message = t("Exactly. Now repair the result with the correct answer.");
+      renderNotebook();
+      document.querySelector("[data-bug-answer-form] input")?.focus();
+    } else {
+      const status = document.querySelector("[data-bug-hunt-status]");
+      if (status) status.textContent = t("That explanation does not match the error yet. Check the quantities and operation again.");
+      chime("bad");
+    }
+    return;
+  }
+});
+document.addEventListener("submit", (event) => {
+  const form = event.target.closest("[data-bug-answer-form]");
+  if (!form) return;
+  event.preventDefault();
+  const challenge = bugHuntDescriptor();
+  const input = form.elements.answer;
+  if (!challenge || !bugAnswerMatches(input.value, challenge.answer)) {
+    const status = document.querySelector("[data-bug-hunt-status]");
+    if (status) status.textContent = t("Not quite yet. Recheck the quantities and try the corrected answer again.");
+    chime("bad");
+    return;
+  }
+  state.activeBugHunt.stage = "solved";
+  state.activeBugHunt.message = t("Bug Crushed! You found the flawed step and repaired the result.");
+  if (challenge.kind === "entry") {
+    const entry = state.tutor.mistakes.find((mistake) => mistake.id === challenge.id);
+    if (entry) { entry.repairStatus = "repaired"; entry.resolvedAt ||= Date.now(); saveProgress(); }
+  } else {
+    saveSolvedDetectiveCase(challenge.id);
+  }
+  chime("streak");
+  announce(t("Bug Crushed! Mastery badge earned"));
+  renderNotebook();
 });
 els.skip.addEventListener("click", () => {
   if (!state.session || state.session.mode !== "diagnostic" || state.itemDone) return;
-  state.itemAttempts = 1; state.firstAnswerCorrect = false; finalizeProblem(false);
+  state.itemAttempts = 1; state.firstAnswerCorrect = false; finalizeProblem(false, { unsure: true });
 });
 document.querySelector("#open-visual-help").addEventListener("click", () => {
   if (!state.item) return;
@@ -7884,8 +8621,10 @@ document.querySelector("#scratchpad-backgrounds")?.addEventListener("click", (ev
 document.querySelector("#lang-toggle").addEventListener("click", () => {
   setLang(getLang() === "es" ? "en" : "es");
   applyLang();
+  window.dispatchEvent(new Event("fluency-lang-changed"));
   renderGradeTabs();
   if (state.view === "games") openHubView("games");
+  else if (state.view === "teacher") openHubView("teacher"); // fl4:teacher
   else if (state.view === "library") renderLibrary();
 });
 applyLang();
@@ -7922,6 +8661,80 @@ document.querySelector("#restore-preview").addEventListener("click", (event) => 
     pendingRestore = null; event.currentTarget.hidden = true; announce("Progress restored into the current learner profile.");
   }
 });
+function resetAllProgress() {
+  try {
+    const keysToRemove = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (!k) continue;
+      if (k.startsWith("ewl-fluency-") || k.startsWith("ewl-moby-") || k.startsWith("ewl-family-") || k.startsWith("ewl-fm2-") || k.startsWith("ewl-language-") || k.startsWith("ewl-writing-") || k.startsWith("ewl-studio-") || k.startsWith("ewl-talk-") || k.startsWith("ewl-mini-lesson-") || k.startsWith("ewl-detective-") || k.startsWith("ewl-personal-ghost-") || k.startsWith("eduwonder_")) {
+        // Retain sound and language choice preferences if present, or purge learner keys
+        if (k !== "ewl-fluency-lang-v1" && k !== "ewl-fluency-sound-v1") {
+          keysToRemove.push(k);
+        }
+      }
+    }
+    for (const k of keysToRemove) {
+      localStorage.removeItem(k);
+    }
+    sessionStorage.removeItem("ewl-fluency-tab-profile");
+  } catch {
+    /* storage access error */
+  }
+
+  state.session = null;
+  state.item = null;
+  state.progress = {};
+  state.tutor = emptyTutor();
+  state.settings = { largeText: false, focus: false, readingFont: false };
+  state.grade = 1;
+  saveProgress();
+  saveSettings();
+  applySettings();
+  renderProfiles();
+  renderLibrary();
+  announce(t("All progress has been reset. You are starting fresh!"));
+  if (els.toast) {
+    els.toast.textContent = t("All progress has been reset. You are starting fresh!");
+    els.toast.hidden = false;
+    setTimeout(() => { if (els.toast) els.toast.hidden = true; }, 3000);
+  }
+}
+
+const resetConfirmModal = document.querySelector("#reset-confirm-modal");
+const openResetModal = () => {
+  if (els.settingsPopover) {
+    els.settingsPopover.hidden = true;
+    els.settingsToggle?.setAttribute("aria-expanded", "false");
+  }
+  if (resetConfirmModal) {
+    resetConfirmModal.hidden = false;
+    document.querySelector("#reset-confirm-action")?.focus();
+  } else if (window.confirm(t("Start over and reset progress? This will erase all stars and practice records."))) {
+    resetAllProgress();
+  }
+};
+const closeResetModal = () => {
+  if (resetConfirmModal) resetConfirmModal.hidden = true;
+};
+
+document.querySelector("#reset-popover-btn")?.addEventListener("click", openResetModal);
+document.querySelector("#reset-data-tools-btn")?.addEventListener("click", openResetModal);
+document.querySelector("#reset-confirm-action")?.addEventListener("click", () => {
+  closeResetModal();
+  resetAllProgress();
+});
+document.querySelector("#reset-cancel-action")?.addEventListener("click", closeResetModal);
+document.querySelector("#reset-cancel-close")?.addEventListener("click", closeResetModal);
+resetConfirmModal?.addEventListener("click", (e) => {
+  if (e.target === resetConfirmModal) closeResetModal();
+});
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && resetConfirmModal && !resetConfirmModal.hidden) {
+    closeResetModal();
+  }
+});
+
 // A trail stop or game answer counts toward the matching skill, so the dashboard and the trail agree. Games are
 // untimed and offer no hints, so a first-try answer there is independent evidence, like one in practice.
 window.addEventListener("fluency-fact", ({ detail }) => {
@@ -7956,6 +8769,22 @@ els.toggleProblemVisual?.addEventListener("click", () => {
   }
   els.toggleProblemVisual.setAttribute("aria-expanded", String(!host.hidden));
   els.toggleProblemVisual.textContent = host.hidden ? "Show the model" : "Hide the model";
+  if (host.hidden) {
+    document.querySelector("#practice-visual-workspace")?.classList.remove("is-docked");
+    const dock = document.querySelector("#dock-visual-studio");
+    if (dock) { dock.setAttribute("aria-pressed", "false"); dock.textContent = t("Dock Visual Studio"); }
+  }
+});
+document.querySelector("#dock-visual-studio")?.addEventListener("click", (event) => {
+  const button = event.currentTarget;
+  const workspace = document.querySelector("#practice-visual-workspace");
+  const host = els.problemVisualScaffold;
+  if (!workspace || !host || !state.item) return;
+  const docked = button.getAttribute("aria-pressed") !== "true";
+  workspace.classList.toggle("is-docked", docked);
+  button.setAttribute("aria-pressed", String(docked));
+  button.textContent = t(docked ? "Undock Visual Studio" : "Dock Visual Studio");
+  if (docked && host.hidden) mountProblemModel(true, false);
 });
 els.problemVisualScaffold?.addEventListener("click", (event) => handleModelTap(event.target));
 els.problemVisualScaffold?.addEventListener("input", (event) => handleModelInput(event.target));
@@ -7965,6 +8794,8 @@ els.learnPanel.addEventListener("input", (event) => handleModelInput(event.targe
 els.feedback.addEventListener("fluency-fill-solved", (event) => handleStepPlayerSolved(event.target));
 
 document.querySelector("#brand-home")?.addEventListener("click", () => {
+  state.gradeInUrl = false;
+  state.landing = true;
   renderLibrary();
 });
 
@@ -8112,7 +8943,10 @@ const FlowPacerEngine = {
       fluencyNextGenState.hesitationHandle = null;
     }
     const oldNudge = document.querySelector("#flow-dilation-nudge");
-    if (oldNudge) oldNudge.hidden = true;
+    if (oldNudge) {
+      oldNudge.hidden = true;
+      oldNudge.remove();
+    }
   },
   startProblemMonitor(item) {
     this.clearHesitationMonitor();
@@ -8439,6 +9273,36 @@ if (drillToolbox) {
 }
 
 els.summary?.addEventListener("click", (event) => {
+  if (event.target.closest("[data-make-receipt]")) {
+    const skillKeys = state.assignment?.keys?.length ? state.assignment.keys : [state.skill ? skillKey() : `${state.grade}:${state.item?.skill?.id}`];
+    const strategyTags = [...document.querySelectorAll("[data-receipt-strategy]:checked")].map((input) => input.value);
+    const attempts = Math.max(0, (state.session?.answered || 0) - (state.session?.revised || 0));
+    const accuracy = attempts ? Math.round((state.session.correct / attempts) * 100) : 0;
+    try {
+      const code = makeMasteryReceipt({ skillKeys, accuracy, strategyTags });
+      document.querySelector("#mastery-receipt-code").textContent = code;
+      document.querySelector("[data-copy-receipt]").hidden = false;
+      document.querySelector("[data-print-receipt]").hidden = false;
+    } catch (error) { announce(error.message); }
+    return;
+  }
+  if (event.target.closest("[data-copy-receipt]")) {
+    const code = document.querySelector("#mastery-receipt-code")?.textContent;
+    if (code && navigator.clipboard?.writeText) navigator.clipboard.writeText(code).then(() => announce(t("Receipt copied"))).catch(() => announce(t("Select and copy the receipt code.")));
+    else if (code) {
+      const output = document.querySelector("#mastery-receipt-code");
+      const selection = window.getSelection(); const range = document.createRange();
+      range.selectNodeContents(output); selection.removeAllRanges(); selection.addRange(range);
+      announce(document.execCommand("copy") ? t("Receipt copied") : t("Select and copy the receipt code."));
+      selection.removeAllRanges();
+    }
+    return;
+  }
+  if (event.target.closest("[data-print-receipt]")) {
+    const code = document.querySelector("#mastery-receipt-code")?.textContent || "";
+    if (code) printHtml(`<article class="packet-page"><h1>EduWonderLab · Mastery Receipt</h1><p>${escapeHtml(code)}</p><p>${t("This code contains practice evidence only. It contains no learner name.")}</p></article>`);
+    return;
+  }
   if (event.target.closest("[data-start-quick-drill]")) {
     setMode("quick");
     return;
@@ -8467,6 +9331,24 @@ els.summary?.addEventListener("click", (event) => {
     TeacherPrintCenter.open();
     return;
   }
+});
+
+document.querySelector("#decode-receipts")?.addEventListener("click", () => {
+  const host = document.querySelector("#receipt-heatmap");
+  const lines = document.querySelector("#receipt-batch").value.split(/[\r\n,;]+/).map((line) => line.trim()).filter(Boolean);
+  const decoded = [];
+  let invalid = 0;
+  for (const line of lines) { try { decoded.push(decodeMasteryReceipt(line)); } catch { invalid += 1; } }
+  const rows = new Map();
+  for (const receipt of decoded) for (const key of receipt.skillKeys) {
+    const row = rows.get(key) || { count: 0, score: 0, strategies: new Set() };
+    row.count += 1; row.score += receipt.accuracy; receipt.strategyTags.forEach((tag) => row.strategies.add(tag)); rows.set(key, row);
+  }
+  const cells = [...rows.entries()].sort(([a], [b]) => a.localeCompare(b)).map(([key, row]) => {
+    const skill = findSkill(key); const average = Math.round(row.score / row.count);
+    return `<tr><th scope="row">${escapeHtml(skill?.title || key)} <small>Grade ${skill?.grade || "?"}</small></th><td>${row.count}</td><td><strong>${average}%</strong><progress max="100" value="${average}" aria-label="${average}% average accuracy"></progress></td><td>${escapeHtml([...row.strategies].sort().join(", ") || "—")}</td></tr>`;
+  }).join("");
+  host.innerHTML = `<p>${t("Decoded {valid} receipt(s); {invalid} unreadable.", { valid: decoded.length, invalid })}</p>${cells ? `<div class="receipt-table-wrap"><table><thead><tr><th scope="col">${t("Skill")}</th><th scope="col">${t("Receipts")}</th><th scope="col">${t("Average accuracy")}</th><th scope="col">${t("Strategies seen")}</th></tr></thead><tbody>${cells}</tbody></table></div>` : `<p>${t("Paste one or more valid receipt codes to build the class heatmap.")}</p>`}`;
 });
 
 // A finished column board (solver, model or drawer) copies the learner's own typed result into the answer box,
@@ -8866,7 +9748,7 @@ const TeacherPrintCenter = {
                 <option value="array">Roll &amp; Split Array · Distributive Property (Grades 1–3)</option>
               </select>
             </label>
-            <button type="button" class="tpt-print-action-btn" id="print-selected-partner-game" style="background:#4f46e5; border-color:#4338ca">🖨️ Print 2-Player Game Sheet (2 Pages)</button>
+            <button type="button" class="tpt-print-action-btn" id="print-selected-partner-game" style="background:#17324D; border-color:#17324D">🖨️ Print 2-Player Game Sheet (2 Pages)</button>
           </div>
           <div class="tpt-preview-mockup">
             <strong>Game Highlights:</strong>
@@ -8931,7 +9813,7 @@ const TeacherPrintCenter = {
             </div>
             <div style="display:flex; gap:0.5rem; flex-wrap:wrap">
               <button type="button" class="tpt-print-action-btn" data-tpt-print="passport">🖨️ Print Fluency Passport</button>
-              <button type="button" class="tpt-print-action-btn" data-tpt-print="brag" style="background:#7c3aed; border-color:#6d28d9">🖨️ Print Brag Tags (9-Up)</button>
+              <button type="button" class="tpt-print-action-btn" data-tpt-print="brag" style="background:#1FA6A2; border-color:#17324D">🖨️ Print Brag Tags (9-Up)</button>
             </div>
           </div>
           <div class="tpt-preview-mockup">
@@ -9073,7 +9955,7 @@ function handleExplanationInteraction(event) {
       if (captionEl) captionEl.innerHTML = `<strong>1. KEEP:</strong> Leave the first fraction exactly as it is!`;
     } else if (phase === "change") {
       const c = widget.querySelector('[data-kcf-card="change"]');
-      if (c) { c.style.transform = "scale(1.08)"; c.style.boxShadow = "0 0 0 3px #a855f7"; }
+      if (c) { c.style.transform = "scale(1.08)"; c.style.boxShadow = "0 0 0 3px #1FA6A2"; }
       if (captionEl) captionEl.innerHTML = `<strong>2. CHANGE:</strong> Change the division sign (÷) into a multiplication sign (×)!`;
     } else if (phase === "flip") {
       const c = widget.querySelector('[data-kcf-card="flip"]');
@@ -9430,15 +10312,18 @@ if (document.readyState === "loading") {
 } else {
   registerSharedSaveResume();
 }
+initStepModelLink([els.learnPanel, document.querySelector("#drill-panel")]);
+initStepLens();
 const initialSkill = initialParams.get("skill");
-if (initialSkill) openSkill(initialSkill);
+if (initialSkill && initialParams.get("view") !== "write") openSkill(initialSkill);
+if (initialSkill && state.skill && miniLessonRequested(initialParams.toString())) openMiniLesson(); // fl4:lessons
 renderProfiles();
 renderAssignmentBanner();
-if (["teacher", "games"].includes(initialParams.get("view"))) openHubView(initialParams.get("view"));
+if (["teacher", "games", "write", "path", "notebook"].includes(initialParams.get("view"))) { state.writeSkill = initialSkill; openHubView(initialParams.get("view")); }
 // Family launch links enter the existing adaptive flows; no parallel practice engine is created.
 if (initialParams.get("start") === "daily") openPlanned("daily", dailyPlan(state.tutor, state.grade));
 if (initialParams.get("start") === "mission") openMission();
-if (initialParams.get("start") === "checkup") openPlanned("diagnostic", diagnosticPlan(state.grade));
+if (initialParams.get("start") === "checkup") openPlanned("diagnostic", checkupPlan(state.grade));
 if (initialParams.get("start") === "realworld") openPlanned("daily", dailyPlan(state.tutor, state.grade), { storyMode: true });
 if (initialParams.get("start") === "practice" && initialSkill) {
   document.querySelector("[data-start-independent]")?.click();

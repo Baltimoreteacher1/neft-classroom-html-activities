@@ -103,25 +103,30 @@ test("every paired family page carries the banner, and the old pair note is gone
   assert.ok(pairs >= 70, `expected the 77 two-session lessons, found ${pairs}`);
 });
 
-test("the hero leads with Family Math Studio, the subtitle, and a one-sentence big idea", () => {
+test("the hero leads with the lesson as its one H1, the unit eyebrow, and a one-sentence big idea", () => {
   for (const id of ["4-4", "4-4-part2", "3-8", "3-8-part2"]) {
     const d = dom(id);
     assert.equal(d.querySelectorAll("h1").length, 1, id);
-    assert.equal(d.querySelector("h1 .lang-en").textContent, "Family Math Studio", id);
-    assert.equal(d.querySelector("h1 .lang-es").textContent, "Estudio familiar de matemáticas", id);
+    assert.equal(
+      d.querySelector("h1 .lang-en").textContent,
+      d.querySelector(".hw-hero-lesson-title .lang-en").textContent,
+      id,
+    );
+    assert.match(d.querySelector("h1 .lang-es").textContent, /\S/, id);
+    assert.match(d.querySelector(".hw-hero-kicker .lang-en").textContent, /^Unit \d+/, id);
     assert.match(
-      d.querySelector(".hw-hero-subtitle .lang-en").textContent,
-      /Optional & Ungraded Home Exploration/,
+      d.querySelector(".hw-route-promise .lang-en").textContent,
+      /Optional\. No grades\./,
       id,
     );
     assert.match(d.querySelector(".hw-hero-bigidea .lang-es:last-child").textContent, /\S/, id);
     const menu = d.querySelector(".hw-tools-menu");
     assert.equal(menu.open, false, id);
     assert.ok(
-      menu.querySelector("[onclick='toggleScratchpad()']"),
-      `${id} scratchpad opens from the tools menu`,
+      menu.querySelector("[data-act='toggleScratchpad']"),
+      `${id} scratchpad opens from the More sheet`,
     );
-    assert.ok(menu.querySelector(".hw-standard-details"), `${id} standard lives in the tools menu`);
+    assert.ok(menu.querySelector(".hw-standard-details"), `${id} standard lives in the More sheet`);
   }
 });
 

@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0f766e">
+<title>EduWonderLab Family</title>
+<meta name="description" content="Math and English practice for families. Matemáticas e inglés para familias.">
+<link rel="manifest" href="/family-app/manifest.webmanifest">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/family-app/icons/icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="EWL Family">
+<style>
+:root{--ink:#16232b;--muted:#4a5b66;--paper:#fffaf0;--navy:#12343b;--teal:#0f766e;--focus:#1d4ed8}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font:18px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding-bottom:env(safe-area-inset-bottom)}
+html[lang="en"] .es,html[lang="es"] .en{display:none}
+a:focus-visible,button:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.bar{background:var(--navy);padding:calc(10px + env(safe-area-inset-top)) 14px 10px;display:flex;gap:8px;justify-content:center}
+.bar button{flex:1;max-width:200px;min-height:48px;border:2px solid #fff;border-radius:12px;background:transparent;color:#fff;font:inherit;font-weight:800;cursor:pointer}
+.bar button[aria-pressed="true"]{background:#fff;color:var(--navy)}
+main{max-width:640px;margin:0 auto;padding:22px 16px 40px}
+h1{margin:0 0 6px;font-size:clamp(1.9rem,8vw,2.6rem);line-height:1.08;color:var(--navy)}
+.lede{margin:0 0 22px;color:var(--muted);font-size:1.1rem}
+.cards{list-style:none;margin:0;padding:0;display:grid;gap:14px}
+.card{display:grid;grid-template-columns:76px 1fr;gap:14px;align-items:center;min-height:104px;padding:14px 16px;border-radius:18px;background:#fff;border:2px solid #d6dee5;text-decoration:none;color:inherit;box-shadow:0 2px 0 #d6dee5}
+.card:active{transform:translateY(1px);box-shadow:none}
+.mark{width:76px;height:76px;border-radius:18px;display:grid;place-items:center;color:#fff;font:700 2rem Georgia,serif}
+.m1{background:#17345f}.m2{background:#1f766f}.m3{background:#b45309}
+.card strong{display:block;font-size:1.2rem;color:var(--navy)}
+.card span span,.card small{color:var(--muted);font-size:.95rem}
+.tip{margin:26px 0 0;padding:14px 16px;border-radius:14px;background:#e3f4f1;color:#0b5e57;font-size:.95rem}
+.tip[hidden]{display:none}
+</style>
+</head>
+<body>
+<div class="bar" role="group" aria-label="Language / Idioma">
+  <button type="button" data-lang="en" aria-pressed="true">English</button>
+  <button type="button" data-lang="es" aria-pressed="false">Español</button>
+</div>
+<main id="main">
+  <h1><span class="en">Practice at home</span><span class="es">Práctica en casa</span></h1>
+  <p class="lede"><span class="en">Pick one. No accounts, no grades. Works without Wi-Fi after your first visit.</span><span class="es">Elige una. Sin cuentas, sin calificaciones. Funciona sin Wi-Fi después de la primera visita.</span></p>
+  <ul class="cards">
+    <li><a class="card" href="/math/fluency-lab/"><span class="mark m1" aria-hidden="true">8×</span><span><strong><span class="en">Math Fluency Lab</span><span class="es">Laboratorio de fluidez</span></strong><small><span class="en">Quick math practice, grades 1–8.</span><span class="es">Práctica rápida de matemáticas, grados 1–8.</span></small></span></a></li>
+    <li><a class="card" href="/access-practice-lab/"><span class="mark m2" aria-hidden="true">A</span><span><strong><span class="en">English Practice Lab</span><span class="es">Práctica de inglés</span></strong><small><span class="en">Listening, reading, speaking, writing, grades 3–8.</span><span class="es">Escuchar, leer, hablar y escribir, grados 3–8.</span></small></span></a></li>
+    <li><a class="card" href="/curriculum/family-connections/"><span class="mark m3" aria-hidden="true">6</span><span><strong><span class="en">Homework &amp; Family Math</span><span class="es">Tarea y matemáticas en familia</span></strong><small><span class="en">This week’s Grade 6 homework, with answers to check together.</span><span class="es">La tarea de 6.º grado de esta semana, con respuestas para revisar juntos.</span></small></span></a></li>
+  </ul>
+  <p class="tip" id="install-tip" hidden>
+    <span class="en">Add this app to your home screen: tap Share, then “Add to Home Screen”.</span>
+    <span class="es">Agrega esta app a tu pantalla de inicio: toca Compartir y luego «Agregar a pantalla de inicio».</span>
+  </p>
+</main>
+<script>
+(function () {
+  var html = document.documentElement;
+  function setLang(l) {
+    html.lang = l;
+    document.querySelectorAll(".bar button").forEach(function (b) { b.setAttribute("aria-pressed", String(b.dataset.lang === l)); });
+    try { localStorage.setItem("ewl-family-lang", l); } catch (e) {}
+  }
+  var saved = "en";
+  try { saved = localStorage.getItem("ewl-family-lang") || ((navigator.language || "").slice(0, 2) === "es" ? "es" : "en"); } catch (e) {}
+  setLang(saved);
+  document.querySelector(".bar").addEventListener("click", function (e) { if (e.target.dataset.lang) setLang(e.target.dataset.lang); });
+  if (!window.matchMedia("(display-mode: standalone)").matches && !navigator.standalone) document.getElementById("install-tip").hidden = false;
+  if ("serviceWorker" in navigator && !navigator.webdriver) navigator.serviceWorker.register("/family-app/sw.js", { scope: "/family-app/" }).catch(function () {});
+})();
+</script>
+</body>
+</html>

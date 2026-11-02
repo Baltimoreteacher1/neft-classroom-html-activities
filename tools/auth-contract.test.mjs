@@ -144,11 +144,18 @@ test("shared assets, curriculum data and /api are never gated by the page rule",
     "/assets/curriculum-teacher-workflow.js",
     "/data/curriculum-manifest.json",
     "/api/pacing/day",
+    "/math/fluency-lab/family/fm2/skill-link.js",
     "/lessons/1-1/",
     "/curriculum/",
   ]) {
     assert.equal(isTeacherSurface(p), false, `${p} must stay open to students`);
   }
+});
+
+test("the family skill-link module is publicly loadable by the student route", async () => {
+  const path = "/math/fluency-lab/family/fm2/skill-link.js";
+  assert.equal(isTeacherSurface(path), false);
+  assert.equal((await call(path)).status, 200);
 });
 
 test("a gated path cannot be reached by respelling it", () => {

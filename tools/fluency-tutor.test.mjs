@@ -181,9 +181,9 @@ assert.equal(
   "A correct answer is never labeled a mistake pattern",
 );
 assert.equal(
-  classifyMistake({ kind: "fraction", question: "1/2 + 1/4", answers: ["3/4"] }, "2/6"),
-  null,
-  "Unmodeled final answers stay uncategorized",
+  classifyMistake({ kind: "fraction", question: "1/2 + 1/4", answers: ["3/4"] }, "2/6")?.id,
+  "addedDenominators",
+  "A direct denominator sum is tagged as a likely fraction misconception",
 );
 {
   const notebook = emptyTutor();

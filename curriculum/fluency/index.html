@@ -48,8 +48,8 @@
   --alert:         #b91c1c;
   --alert-soft:    #fff1f2;
 
-  --violet:        #6d28d9;
-  --violet-soft:   #f5f3ff;
+  --accent:        #126e6c;
+  --accent-soft:   #e1f5f3;
 
   --font-display: 'Fraunces', 'Iowan Old Style', Georgia, 'Times New Roman', serif;
   --font-body: 'Google Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
@@ -105,8 +105,8 @@
   --alert:         #f87171;
   --alert-soft:    #450a0a;
 
-  --violet:        #a78bfa;
-  --violet-soft:   #2e1065;
+  --accent:        #59c9c2;
+  --accent-soft:   #123c3b;
 
   --shadow-1: 0 1px 3px rgba(0, 0, 0, .45);
   --shadow-2: 0 4px 12px -2px rgba(0, 0, 0, .55);
@@ -441,7 +441,7 @@ select.select {
 .lesson-tags { display: flex; gap: 6px; flex-wrap: wrap; align-items: flex-start; }
 .std-chip {
   font-family: var(--font-mono); font-size: 11px; font-weight: 600;
-  background: var(--violet-soft); color: var(--violet); border: 1px solid transparent;
+  background: var(--accent-soft); color: var(--accent); border: 1px solid transparent;
   padding: 3px 8px; border-radius: 4px; cursor: help;
 }
 .spine-chip {
@@ -582,7 +582,7 @@ select.select {
 .reteach ol li { margin-bottom: 4px; }
 .reteach-time { font-size: 11px; font-weight: 800; color: var(--warn); text-transform: uppercase; letter-spacing: .06em; }
 .frame-box {
-  font-size: 13.5px; background: var(--violet-soft); border: 1px solid transparent; border-left: 3px solid var(--violet);
+  font-size: 13.5px; background: var(--accent-soft); border: 1px solid transparent; border-left: 3px solid var(--accent);
   border-radius: 0 var(--r-sm) var(--r-sm) 0; padding: 11px 14px; color: var(--ink-2); font-style: italic;
 }
 .vocab { display: flex; flex-wrap: wrap; gap: 7px; }
@@ -11473,7 +11473,7 @@ window.FluencyStudio = (() => {
       a.strokes.length
         ? `<svg viewBox="0 0 700 240" role="img" aria-label="Saved sketch" style="background:white;border:1px solid #abc;width:100%;max-height:240px">${a.strokes.map((st) => (st.points.length === 1 ? `<circle cx="${(st.points[0][0] * 700).toFixed(1)}" cy="${(st.points[0][1] * 240).toFixed(1)}" r="${st.tool === "eraser" ? 11 : 1.5}" fill="${st.tool === "eraser" ? "white" : "#075e60"}"/>` : `<polyline points="${st.points.map((pt) => `${(pt[0] * 700).toFixed(1)},${(pt[1] * 240).toFixed(1)}`).join(" ")}" fill="none" stroke="${st.tool === "eraser" ? "white" : "#075e60"}" stroke-width="${st.tool === "eraser" ? 22 : 3}" stroke-linecap="round" stroke-linejoin="round"/>`)).join("")}</svg>`
         : "";
-    const html = `<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>My Grade 6 practice · ${e(lessonId)}</title><style>body{font:17px/1.6 system-ui,sans-serif;max-width:800px;margin:32px auto;padding:0 24px;color:#152c40}h1{font:32px Georgia,serif}article{border-top:1px solid #bbc;padding:20px 0;break-inside:avoid}p{white-space:pre-wrap}small{color:#46596b}table{border-collapse:collapse;width:100%;margin:1em 0}th,td{border:1px solid #789;padding:10px;text-align:left}caption{text-align:left;font-weight:bold}@media print{body{margin:0}article{break-inside:avoid}}</style><h1>My Grade 6 practice</h1><p>Lesson ${e(l.id)}: ${e(l.title)}<br>${e(levels[level])}</p><p><small>This is a practice record. Checked answers, supported answers, and self-reviews are different kinds of evidence; this record is not a grade.</small></p>${items
+    const html = `<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>My Grade 6 practice · ${e(lessonId)}</title><style>body{font:17px/1.6 system-ui,sans-serif;max-width:800px;margin:32px auto;padding:0 24px;color:#152c40}h1{font:32px Georgia,serif}article{border-top:1px solid #17324D;padding:20px 0;break-inside:avoid}p{white-space:pre-wrap}small{color:#46596b}table{border-collapse:collapse;width:100%;margin:1em 0}th,td{border:1px solid #789;padding:10px;text-align:left}caption{text-align:left;font-weight:bold}@media print{body{margin:0}article{break-inside:avoid}}</style><h1>My Grade 6 practice</h1><p>Lesson ${e(l.id)}: ${e(l.title)}<br>${e(levels[level])}</p><p><small>This is a practice record. Checked answers, supported answers, and self-reviews are different kinds of evidence; this record is not a grade.</small></p>${items
       .map((p, i) => {
         const a = set.answers[i];
         return `<article><h2>${i + 1}. ${e(p.label)}</h2><p>${e(p.prompt)}</p><p><b>Status:</b> ${e(statusLabel[a.status])}</p>${ratioTablesMarkup(p, a, "saved")}<p><b>My response:</b> ${e(a.text || "Not entered")}</p>${a.reasoning ? `<p><b>My reasoning:</b> ${e(a.reasoning)}</p>` : ""}${a.reflection ? `<p><b>My reflection:</b> ${e(a.reflection)}</p>` : ""}${sketch(a)}</article>`;

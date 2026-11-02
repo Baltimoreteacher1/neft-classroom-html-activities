@@ -67,6 +67,36 @@ The check-in records only answer correctness and skill tags for its short, origi
    lab's practice rubrics are its own descriptors, organized by the three WIDA language dimensions (Discourse,
    Sentence, Word/Phrase) — never WIDA's rubric text.
 
+## Evidence tools (supports, goals, official results, families)
+
+Built on the same ledger, so none of them can claim more than was observed. All local to the device; the
+teacher's goals and typed official results live in the teacher's browser only.
+
+| Tool | Where | Source |
+| --- | --- | --- |
+| "How sure are you?" (optional, before Check) | Reading/Listening activities | `src/lang/calibration.js`, `views/activity.js` |
+| Spaced review of guessed answers | Journey / Keep it strong | `src/lang/adapt.js` (`dueForReview`), `skill-graph.js` (`selfSure`) |
+| Retell it (after a right Reading/Listening answer) | activity page | `src/views/retell.js` |
+| Supports and independence; gradual release | Passport "How I work", teacher sheet | `src/lang/supports-report.js`, `src/lang/fade.js` |
+| Family letter (EN / ES / both) | Passport | `src/lang/family-letter.js`, `views/passport-work.js` |
+| Word cards and partner talk | `/flashcards`, Families "More" | `src/lang/flashcards.js`, `views/flashcards.js` |
+| My reading log | Reading Room shelf; shared with the code | `src/reading-state.js`, `views/reading-log.js` |
+| Goal bank (50 goals, a try-tomorrow move each) | Teacher Hub student panel | `content/goal-bank.json`, `src/lang/goals.js` |
+| Official ACCESS results, typed by the teacher | Teacher Hub student panel | `src/lang/official-scores.js` |
+| Conference sheet | Teacher Hub "Print this student's sheet" | `access-teacher/evidence-extras.js` |
+| Check-in reminders (.ics, no student data) | Teacher Hub "Check-ins" | `src/lang/checkin-calendar.js` |
+
+Rules these keep, on top of the four above:
+
+1. **A rating never changes correctness.** "Guessing" on a right answer only brings it back for review; "Sure" on a wrong one is
+   flagged as a belief to revisit. Counts only; withheld under five ratings.
+2. **Goals are chosen by a teacher, never inferred.** Evidence for a goal is counts plus a status (not enough evidence yet /
+   building / shown on my own). `validateGoalBank` rejects level or score wording and any try-tomorrow move that needs prepared materials.
+3. **Official results are typed, validated (1.0-6.0, one decimal) and shown beside the practice evidence, never merged with it.** The
+   lab never computes, estimates or predicts one. A difference between two years is arithmetic on two reported levels.
+4. **No student data leaves the device.** The calendar file holds a title, dates and generic instructions. The reading log and its
+   notes are shared only inside the learner's own share code.
+
 ## Quality gates
 
 - `npm run validate:access-lab` — activity bank contract, studio content (`validate-access-studio.mjs`: schema,
@@ -76,7 +106,8 @@ The check-in records only answer correctness and skill tags for its short, origi
 - `npm run e2e:access-studio` — the studios in a real browser: fake microphone, independence integrity, share code →
   dashboard, axe WCAG 2.2 AA, 375px overflow.
 - `npm run audit:access-bank` — report on production vs selected-response share per room.
-- Unit tests: `tools/access-language-engine.test.mjs`, `tools/access-teacher-evidence.test.mjs`.
+- Unit tests: `tools/access-language-engine.test.mjs`, `tools/access-teacher-evidence.test.mjs`, `tools/access-calibration.test.mjs`,
+  `tools/access-evidence-tools.test.mjs`, `tools/access-student-tools.test.mjs`; browser: `npm run e2e:access-evidence`.
 
 ## Adding content
 

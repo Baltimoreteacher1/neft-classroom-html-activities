@@ -2,21 +2,24 @@ import { createLesson, transferPrompt } from "./lesson-content.js";
 import { validateAnswer } from "./problem-bank.js";
 import { columnSpec, verticalHtml } from "./vertical-columns.js";
 import { t } from "./i18n.js";
-import { copiesTable, factorTreeSvg } from "./factor-tree.js";
+import { copiesTable, factorTreeSvg, lcmMultiplyHtml, treeCaption } from "./factor-tree.js";
 
 const esc = (value) => String(value).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;");
-const svg = (body, label, viewBox = "0 0 540 240") => `<svg class="math-model-svg" viewBox="${viewBox}" role="img" aria-label="${esc(label)}">${body}</svg>`;
+const svg = (body, label, viewBox = "0 0 540 240") => {
+  const [, , width, height] = viewBox.split(/\s+/).map(Number);
+  return `<svg class="math-model-svg" width="${width}" height="${height}" viewBox="${viewBox}" role="img" aria-label="${esc(label)}">${body}</svg>`;
+};
 const text = (x, y, value, extra = "") => `<text x="${x}" y="${y}" text-anchor="middle" ${extra}>${esc(value)}</text>`;
 
 export function renderModel(model, { counters, counterPositions, partitions = 1, step = 0, selectedStrategy = "halves" } = {}) {
-  const caption = `<p class="model-caption">${esc(model.caption)}</p>`;
+  const caption = `<p class="model-caption">${esc(model.caption || `${model.type || "Math"} model`)}</p>`;
   if (model.type === "counters") {
     const filled = counters ?? model.filled;
     const isFilled = (i) => counterPositions ? counterPositions.has(i) : i < filled;
     return `${caption}<p>Tap a space to add or remove a counter. Keep the original ${model.filled} dark counters.</p><div class="counter-board counter-board-${esc(model.layout || "frame")}">${Array.from({ length: model.total }, (_, i) => `<button type="button" class="counter-cell ${isFilled(i) ? "filled" : ""} ${i < model.filled ? "fixed" : ""}" data-counter="${i}" aria-label="Space ${i + 1}${i < model.filled ? ', original counter' : ''}" aria-pressed="${isFilled(i)}" ${i < model.filled ? "disabled" : ""}><span aria-hidden="true">${isFilled(i) ? "●" : "○"}</span></button>`).join("")}</div><p class="model-count" aria-live="polite">${filled} counters · ${Math.max(0, filled - model.filled)} added</p>`;
   }
   if (model.type === "sequence") return `${caption}<ol class="pattern-sequence" aria-label="${esc(model.values.join(", "))}">${model.values.map((value) => `<li>${esc(value)}</li>`).join("")}</ol>`;
-  if (model.type === "dotpattern") return `${caption}<svg class="subitize-dots" viewBox="0 0 100 100" role="img" aria-label="${esc(model.pattern)}">${model.dots.map(([x, y]) => `<circle cx="${x}" cy="${y}" r="7"/>`).join("")}</svg>`;
+  if (model.type === "dotpattern") return `${caption}${svg(model.dots.map(([x, y]) => `<circle cx="${x}" cy="${y}" r="7"/>`).join(""), model.pattern, "0 0 100 100")}`;
   if (model.type === "vertical") {
     const spec = columnSpec(model.op, model.terms);
     return spec ? `${caption}${verticalHtml(spec)}` : caption;
@@ -36,6 +39,39 @@ export function renderModel(model, { counters, counterPositions, partitions = 1,
       return `<path class="jump-path ${i <= step ? 'active' : ''}" d="M${from},140 Q${(from + to) / 2},${25 + i * 15} ${to},140"/>${text((from + to) / 2, 58 + i * 15, `${jump >= 0 ? '+' : ''}${jump}`)}`;
     }).join("");
     return caption + svg(`<path d="M25,150 H515"/>${marks}${paths}`, `${model.caption}. Positions ${points.join(', ')}.`);
+  }
+  if (model.type === "number-line") {
+    const valueOf = (value) =>
+      typeof value === "number" ? value : Number(value?.n) / Number(value?.d);
+    const min = valueOf(model.min);
+    const max = valueOf(model.max);
+    const stepSize = valueOf(model.step);
+    if (![min, max, stepSize].every(Number.isFinite) || max <= min || stepSize <= 0) return caption;
+    const x = (n) => 45 + ((n - min) / (max - min)) * 450;
+    const tickCount = Math.min(60, Math.floor((max - min) / stepSize + 1e-8));
+    const ticks = Array.from({ length: tickCount + 1 }, (_, i) => min + i * stepSize);
+    const pointValues = new Set((model.points || []).map((point) => valueOf(point.value)));
+    const marks = ticks
+      .map((n) => `<path d="M${x(n)},145 v15"/>${pointValues.has(n) ? "" : text(x(n), 190, Number(n.toFixed(4)).toString())}`)
+      .join("");
+    const points = (model.points || [])
+      .map((point) => {
+        const value = valueOf(point.value);
+        if (!Number.isFinite(value) || value < min || value > max) return "";
+        const label = point.label?.toLowerCase() === "start" ? "Start" : point.label ? `Point ${point.label}` : "";
+        return `<circle class="plot-point" cx="${x(value)}" cy="142" r="8"/>${label ? text(x(value), 120, label, 'class="point-label"') : ""}`;
+      })
+      .join("");
+    return caption + svg(`<path d="M25,150 H515"/>${marks}${points}`, "Number line with marked points and labeled intervals.");
+  }
+  if (model.type === "blankNumberline") {
+    const { min, max, value } = model;
+    if (![min, max, value].every(Number.isFinite) || max <= min || value < min || value > max) return caption;
+    const x = (n) => 45 + ((n - min) / (max - min)) * 450;
+    const ticks = Array.from({ length: max - min + 1 }, (_, index) => min + index);
+    const marks = ticks.map((n) => `<path d="M${x(n)},145 v18"/>${n === value ? "" : text(x(n), 190, n.toLocaleString("en-US"))}`).join("");
+    const mark = `<circle class="plot-point" cx="${x(value)}" cy="142" r="9"/>`;
+    return caption + svg(`<path d="M25,150 H515"/>${marks}${mark}`, "A number line with labeled ticks and one marked point. Read the point's value.");
   }
   if (model.type === "place") return `${caption}<div class="place-model">${model.numbers.map((n) => `<div class="place-row" aria-label="${esc(n)}">${[...n].map((digit) => `<span class="${digit === '.' ? 'decimal-point' : ''}">${digit}</span>`).join("")}</div>`).join("")}</div>`;
   if (model.type === "unitMeasure") {
@@ -74,7 +110,13 @@ export function renderModel(model, { counters, counterPositions, partitions = 1,
   if (model.type === "partition" || model.type === "bars") return `${caption}<div class="partition-model">${model.labels.map((label, i) => `<div style="flex:${model.values[i] || 1}"><span>${esc(label)}</span></div>`).join("")}</div><p>Keep both parts. Each is divided by the same divisor.</p>`;
   // A practice item hides its own trees (the learner builds them); a lesson shows them as the worked model.
   if (model.type === "primeTrees" && model.practice) return "";
-  if (model.type === "primeTrees") return `${caption}<div class="ft-pair">${factorTreeSvg(model.a, { label: String(model.a) })}${factorTreeSvg(model.b, { label: String(model.b) })}</div>${copiesTable(model.a, model.b, { hideKeep: true })}`;
+  // Lesson steps: factor a (0), factor b (1), keep the larger counts as powers and multiply (2); step 3 is finished.
+  // Each tree gains its exponent form once the learner has typed that number's primes. The Power column and the
+  // multiplication appear only when the answer is in, because they spell out the answer.
+  if (model.type === "primeTrees") {
+    const label = (n, solvedAt) => (step >= solvedAt ? treeCaption(n) : String(n));
+    return `${caption}<div class="ft-pair">${factorTreeSvg(model.a, { label: label(model.a, 1) })}${factorTreeSvg(model.b, { label: label(model.b, 2) })}</div>${copiesTable(model.a, model.b, { hideKeep: step < 3 })}${step >= 3 ? lcmMultiplyHtml(model.a, model.b) : ""}`;
+  }
   if (model.type === "table") return `${caption}<table class="ratio-model"><thead><tr>${model.headers.map((label) => `<th scope="col">${esc(label)}</th>`).join("")}</tr></thead><tbody>${model.rows.map((row) => `<tr>${row.map((value) => `<td>${esc(value)}</td>`).join("")}</tr>`).join("")}</tbody></table>`;
   if (model.type === "equations") return `${caption}<ol class="balance-model">${model.lines.map((line, i) => `<li class="${i === step ? 'active' : ''}">${esc(line)}</li>`).join("")}</ol><div class="balance-base" aria-hidden="true">━━━━━━━━━ ▲ ━━━━━━━━━</div>`;
   if (model.type === "machine") return `${caption}<div class="function-machine"><span>Input<br><strong>${model.input}</strong></span><b aria-hidden="true">→</b><span>Multiply<br><strong>× ${model.multiplier}</strong></span><b aria-hidden="true">→</b><span>${model.factorCount === 3 ? "Again" : model.constant ? "Then add" : "Output"}<br><strong>${model.factorCount === 3 ? `× ${model.multiplier}` : model.constant ? `+ ${model.constant}` : "?"}</strong></span></div>`;
@@ -106,6 +148,9 @@ export function renderModel(model, { counters, counterPositions, partitions = 1,
 // The model travels with the problem (built where the numbers are chosen), so the picture always
 // shows exactly the quantities in the question. Problems without an exact model show none.
 export function renderInlineProblemModel(skill, item) {
+  if (item?.model?.graphic === "number-line") {
+    return renderModel({ type: "number-line", ...item.model.config, caption: "Number line" });
+  }
   if (item?.model) return renderModel(item.model, { counters: item.model.shown });
   const point = item?.question?.match(/\((-?\d+),\s*(-?\d+)\)/);
   if (point && ["coordinate", "transform", "numberPlane"].includes(skill?.generator)) {

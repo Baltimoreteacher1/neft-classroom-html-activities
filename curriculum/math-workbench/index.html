@@ -37,7 +37,7 @@
         --bg: #eef3f9;
         --cream: #fffaf0;
         --cream-line: #eadfc9;
-        --indigo: #25345d;
+        --navy: #25345d;
         --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06);
         --shadow: 0 6px 20px rgba(15, 23, 42, 0.1);
         --shadow-lg: 0 18px 50px rgba(15, 23, 42, 0.18);
@@ -187,7 +187,7 @@
         color: #fff;
       }
       .tbtn.premium {
-        background: linear-gradient(135deg, var(--indigo), var(--teal));
+        background: linear-gradient(135deg, var(--navy), var(--teal));
         border-color: transparent;
         color: #fff;
         box-shadow: 0 8px 22px rgba(32, 95, 166, 0.22);
@@ -996,7 +996,7 @@
         display: grid;
         place-items: center;
         color: #fff;
-        background: linear-gradient(135deg, var(--indigo), var(--green));
+        background: linear-gradient(135deg, var(--navy), var(--green));
         font-size: 1.35rem;
         box-shadow: var(--shadow-sm);
       }
@@ -3382,11 +3382,11 @@
       const ctx = canvas.getContext("2d");
       const emptyHint = $("#emptyHint");
 
-      const PEN_COLORS = ["#14223a", "#205fa6", "#2c7d6b", "#d97706", "#dc2626", "#7c3aed"];
+      const PEN_COLORS = ["#14223a", "#205fa6", "#2c7d6b", "#d97706", "#dc2626", "#17324D"];
       const PEN_SIZES = [2, 4, 7, 12];
       // Classic highlighter inks (bright, used at low alpha) — kept separate
       // from pen colors so "Mark" behaves like a real highlighter.
-      const HI_COLORS = ["#fde047", "#86efac", "#fca5e0", "#7dd3fc", "#fdba74", "#c4b5fd"];
+      const HI_COLORS = ["#fde047", "#86efac", "#F7F4EC", "#7dd3fc", "#fdba74", "#F7F4EC"];
 
       // `state` is the ACTIVE page; the notebook holds every page (tab). All
       // drawing/object code reads `state`, so switching tabs is just a reassign.
@@ -7715,7 +7715,7 @@
         trapezoid:
           '<svg viewBox="0 0 120 80" width="112" height="76"><polygon data-stroke points="34,16 86,16 110,66 10,66" fill="rgba(32,95,166,.08)" stroke="#205fa6" stroke-width="3" stroke-linejoin="round"/></svg>',
         rhombus:
-          '<svg viewBox="0 0 100 100" width="92" height="92"><polygon data-stroke points="50,10 90,50 50,90 10,50" fill="rgba(124,58,237,.08)" stroke="#205fa6" stroke-width="3" stroke-linejoin="round"/></svg>',
+          '<svg viewBox="0 0 100 100" width="92" height="92"><polygon data-stroke points="50,10 90,50 50,90 10,50" fill="#17324D" stroke="#205fa6" stroke-width="3" stroke-linejoin="round"/></svg>',
         pentagon:
           '<svg viewBox="0 0 100 100" width="92" height="92"><polygon data-stroke points="50,8 92,40 76,90 24,90 8,40" fill="rgba(32,95,166,.08)" stroke="#205fa6" stroke-width="3" stroke-linejoin="round"/></svg>',
         hexagon:
@@ -7760,7 +7760,7 @@
           '<svg viewBox="0 0 100 120" width="92" height="108"><defs><linearGradient id="wbCylBody" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="rgba(14,165,233,0.35)"/><stop offset="50%" stop-color="rgba(56,189,248,0.15)"/><stop offset="100%" stop-color="rgba(3,105,161,0.4)"/></linearGradient><linearGradient id="wbCylTop" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="rgba(186,230,253,0.5)"/><stop offset="100%" stop-color="rgba(56,189,248,0.2)"/></linearGradient></defs><g data-stroke stroke="#205fa6" stroke-width="2.5"><path d="M22 28 L22 92 A28 12 0 0 0 78 92 L78 28 Z" fill="url(#wbCylBody)"/><ellipse cx="50" cy="28" rx="28" ry="12" fill="url(#wbCylTop)"/><path d="M22 92 A28 12 0 0 1 78 92" fill="none" stroke-dasharray="4 4" opacity="0.6"/><path d="M22 92 A28 12 0 0 0 78 92" fill="none"/><line x1="50" y1="28" x2="50" y2="92" stroke="#205fa6" stroke-width="1.5" stroke-dasharray="3 3" opacity="0.7"/></g></svg>',
         cone: '<svg viewBox="0 0 100 120" width="92" height="108"><defs><linearGradient id="wbConeBody" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="rgba(245,158,11,0.35)"/><stop offset="40%" stop-color="rgba(251,191,36,0.15)"/><stop offset="100%" stop-color="rgba(180,83,9,0.4)"/></linearGradient></defs><g data-stroke stroke="#205fa6" stroke-width="2.5" stroke-linejoin="round"><path d="M50 16 L78 92 A28 12 0 0 1 22 92 Z" fill="url(#wbConeBody)"/><path d="M22 92 A28 12 0 0 1 78 92" fill="none" stroke-dasharray="4 4" opacity="0.6"/><path d="M22 92 A28 12 0 0 0 78 92" fill="none"/><line x1="50" y1="16" x2="50" y2="92" stroke="#205fa6" stroke-width="1.5" stroke-dasharray="3 3" opacity="0.7"/><circle cx="50" cy="16" r="2.5" fill="#205fa6"/></g></svg>',
         sphere:
-          '<svg viewBox="0 0 110 110" width="100" height="100"><defs><radialGradient id="wbSphBody" cx="35%" cy="35%" r="65%"><stop offset="0%" stop-color="rgba(196,181,253,0.5)"/><stop offset="50%" stop-color="rgba(139,92,246,0.25)"/><stop offset="100%" stop-color="rgba(91,33,182,0.45)"/></radialGradient></defs><g data-stroke stroke="#205fa6" stroke-width="2.5"><circle cx="55" cy="55" r="44" fill="url(#wbSphBody)"/><ellipse cx="55" cy="55" rx="44" ry="16" fill="none" stroke-width="1.8" stroke-dasharray="4 4" opacity="0.6"/><path d="M11 55 A44 16 0 0 0 99 55" fill="none" stroke-width="2"/><circle cx="55" cy="55" r="3" fill="#205fa6"/></g></svg>',
+          '<svg viewBox="0 0 110 110" width="100" height="100"><defs><radialGradient id="wbSphBody" cx="35%" cy="35%" r="65%"><stop offset="0%" stop-color="#F7F4EC"/><stop offset="50%" stop-color="#17324D"/><stop offset="100%" stop-color="#17324D"/></radialGradient></defs><g data-stroke stroke="#205fa6" stroke-width="2.5"><circle cx="55" cy="55" r="44" fill="url(#wbSphBody)"/><ellipse cx="55" cy="55" rx="44" ry="16" fill="none" stroke-width="1.8" stroke-dasharray="4 4" opacity="0.6"/><path d="M11 55 A44 16 0 0 0 99 55" fill="none" stroke-width="2"/><circle cx="55" cy="55" r="3" fill="#205fa6"/></g></svg>',
         sqpyramid:
           '<svg viewBox="0 0 120 110" width="110" height="100"><defs><linearGradient id="wbPyrLeft" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="rgba(245,158,11,0.4)"/><stop offset="100%" stop-color="rgba(180,83,9,0.2)"/></linearGradient><linearGradient id="wbPyrRight" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="rgba(251,191,36,0.35)"/><stop offset="100%" stop-color="rgba(217,119,6,0.15)"/></linearGradient></defs><g data-stroke stroke="#205fa6" stroke-width="2.5" stroke-linejoin="round"><line x1="20" y1="78" x2="60" y2="60" stroke="#205fa6" stroke-width="1.8" stroke-dasharray="4 4" opacity="0.6"/><line x1="100" y1="78" x2="60" y2="60" stroke="#205fa6" stroke-width="1.8" stroke-dasharray="4 4" opacity="0.6"/><line x1="60" y1="16" x2="60" y2="60" stroke="#205fa6" stroke-width="1.8" stroke-dasharray="4 4" opacity="0.6"/><polygon points="60,16 20,78 60,94" fill="url(#wbPyrLeft)"/><polygon points="60,16 60,94 100,78" fill="url(#wbPyrRight)"/><circle cx="60" cy="16" r="3" fill="#205fa6"/></g></svg>',
         triprism:
@@ -10032,7 +10032,7 @@
           'font-family:"Atkinson Hyperlegible","Nunito",sans-serif}' +
           ".live-panel[hidden]{display:none}" +
           ".live-head{display:flex;align-items:center;justify-content:space-between;padding:9px 12px;" +
-          "background:linear-gradient(135deg,#7c3aed,#2563eb);color:#fff}" +
+          "background:linear-gradient(135deg,#17324D,#2563eb);color:#fff}" +
           ".live-title{font-weight:900}" +
           ".live-x{border:none;background:rgba(255,255,255,.2);color:#fff;border-radius:7px;width:26px;height:26px;cursor:pointer;font-size:.85rem}" +
           ".live-body{padding:12px 14px 14px}" +
@@ -10040,8 +10040,8 @@
           ".live-sec{border:1px solid var(--line);border-radius:11px;padding:9px 10px;margin-bottom:10px}" +
           ".live-sec-t{font-size:.74rem;font-weight:900;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px}" +
           ".live-btn{width:100%;border:1.5px solid var(--line);background:#fff;border-radius:10px;padding:9px;" +
-          "font:inherit;font-weight:800;font-size:.85rem;color:var(--indigo);cursor:pointer;margin-top:6px}" +
-          ".live-btn.primary{color:#fff;border-color:transparent;background:linear-gradient(135deg,#7c3aed,#2563eb)}" +
+          "font:inherit;font-weight:800;font-size:.85rem;color:var(--navy);cursor:pointer;margin-top:6px}" +
+          ".live-btn.primary{color:#fff;border-color:transparent;background:linear-gradient(135deg,#17324D,#2563eb)}" +
           ".live-btn.danger{color:#b91c1c;border-color:#fecaca;background:#fef2f2}" +
           ".live-input{width:100%;box-sizing:border-box;border:1.5px solid var(--line);border-radius:9px;padding:8px;font:inherit;" +
           "font-weight:800;font-size:.9rem;margin-top:6px}" +
@@ -10053,10 +10053,10 @@
           ".live-count{margin:0 0 8px;font-weight:800;font-size:.82rem;color:#0f766e;text-align:center}" +
           ".live-note{margin:8px 0 0;font-size:.72rem;color:var(--muted);line-height:1.35}" +
           ".live-banner{position:fixed;top:0;left:50%;transform:translateX(-50%);z-index:10001;" +
-          "background:linear-gradient(135deg,#7c3aed,#2563eb);color:#fff;padding:7px 14px;border-radius:0 0 12px 12px;" +
+          "background:linear-gradient(135deg,#17324D,#2563eb);color:#fff;padding:7px 14px;border-radius:0 0 12px 12px;" +
           "font-weight:800;font-size:.82rem;box-shadow:0 8px 24px rgba(18,53,91,.3);display:flex;align-items:center;gap:10px}" +
           ".live-banner button{border:none;background:rgba(255,255,255,.25);color:#fff;border-radius:7px;padding:3px 10px;font-weight:800;cursor:pointer}" +
-          "#liveBtn.live-on{background:linear-gradient(135deg,#7c3aed,#2563eb);color:#fff}" +
+          "#liveBtn.live-on{background:linear-gradient(135deg,#17324D,#2563eb);color:#fff}" +
           "body.wb-following #workspace{pointer-events:none}" +
           "body.wb-following #rail{pointer-events:none;opacity:.5}" +
           "body.wb-following .topbar .tbtn:not(#liveBtn){pointer-events:none;opacity:.45}" +
@@ -10071,7 +10071,7 @@
           ".lg-empty{grid-column:1/-1;color:#e2e8f0;text-align:center;margin-top:40px;font-weight:700}" +
           ".lg-card{position:relative;border:2px solid transparent;background:#fff;border-radius:12px;padding:8px;cursor:pointer;text-align:left;" +
           "box-shadow:0 6px 18px rgba(0,0,0,.18);transition:transform .1s,border-color .1s}" +
-          ".lg-card:hover{transform:translateY(-2px);border-color:#7c3aed}" +
+          ".lg-card:hover{transform:translateY(-2px);border-color:#17324D}" +
           ".lg-thumb{aspect-ratio:4/3;background:#f1f5fb;border-radius:8px;overflow:hidden;display:grid;place-items:center}" +
           ".lg-thumb img{width:100%;height:100%;object-fit:contain;display:block}" +
           ".lg-name{font-weight:900;color:#14223a;font-size:.92rem;margin-top:6px}" +

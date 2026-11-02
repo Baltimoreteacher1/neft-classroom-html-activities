@@ -75,6 +75,37 @@ test("share: bundle carries an alias, never contact details, and round-trips thr
   assert.equal(samplesFor(back)[0].first, "My first draft about recycling.");
 });
 
+test("share: postcards require explicit input, and imported media is limited to safe JPEG data", () => {
+  const defaultShare = buildShare({ alias: "River", band: "6-8" });
+  assert.deepEqual(defaultShare.postcards, []);
+  const photo = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2Q==";
+  const bundle = buildShare({
+    alias: "River",
+    band: "6-8",
+    postcards: Array.from({ length: 7 }, (_, i) => ({
+      id: `p${i}`,
+      alt: "A plant near the window.",
+      image: photo,
+    })),
+  });
+  assert.equal(bundle.postcards.length, 6);
+  const imported = decodeShare(encodeShare(bundle));
+  assert.equal(imported.postcards.length, 6);
+  assert.equal(imported.postcards[0].alt, "A plant near the window.");
+  const unsafe = normalize({
+    ...bundle,
+    postcards: [
+      { alt: "unsafe", image: "data:text/html;base64,PHNjcmlwdD4=" },
+      { alt: "oversized", image: `data:image/jpeg;base64,${"A".repeat(610_000)}` },
+      { alt: "valid", image: photo },
+    ],
+  });
+  assert.deepEqual(
+    unsafe.postcards.map(({ alt }) => alt),
+    ["valid"],
+  );
+});
+
 test("share: reading/listening includes only answer outcome, skill tag, support and date", () => {
   const bundle = buildShare(
     { alias: "River", band: "6-8" },
@@ -134,6 +165,14 @@ test("share: the full ACCESS1 progress code is also readable by the teacher dash
   const s = decodeShare(code);
   assert.equal(s.ledger.entries.length, 1);
   assert.ok(Object.keys(s.studio.writing).includes("t"));
+  const photo = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2Q==";
+  const envelope = {
+    v: 1,
+    data: {},
+    postcards: [{ id: "p1", alt: "A plant by a window.", image: photo }],
+  };
+  const extended = `ACCESS1.${btoa(unescape(encodeURIComponent(JSON.stringify(envelope))))}`;
+  assert.equal(decodeShare(extended).postcards[0].alt, "A plant by a window.");
 });
 
 test("share: hostile or malformed input is rejected with a plain message, never executed", () => {

@@ -8,7 +8,7 @@ import { circle, label, line, PALETTE, rect, svg } from "./base.js";
 
 const INK = PALETTE.ink;
 const TONES = [
-  [PALETTE.violet, PALETTE.violetSoft],
+  [PALETTE.teal, PALETTE.tealSoft],
   [PALETTE.coral, PALETTE.coralSoft],
   [PALETTE.mint, PALETTE.mintSoft],
 ];
@@ -72,7 +72,7 @@ export function bowlsModel({ batch, rows, caption, aria, maxTiles = 12, perLine 
   }
   if (whole > maxTiles)
     body += label(W - 8, H - (caption ? 12 : 4), `+${whole - maxTiles}`, 15, INK, "end");
-  if (sum) body += label(W / 2, 96 * lineCount + 22, sum, 16, PALETTE.violet);
+  if (sum) body += label(W / 2, 96 * lineCount + 22, sum, 16, PALETTE.teal);
   if (caption) body += label(W / 2, H - 8, caption, 16);
   return svg(W, H, body, aria, `style="width:100%;max-width:${Math.max(240, Math.round(W * 1.6))}px"`);
 }
@@ -131,7 +131,7 @@ export function doubleNumberLine({ batch, topName, bottom, aria }) {
   marks.sort((a, b) => cmp(a.v, b.v));
   let body = line(x0, top, x1 + 8, top, INK, 3) + line(x0, bot, x1 + 8, bot, INK, 3);
   body +=
-    label(8, top - 14, topName, 14, PALETTE.violet, "start") +
+    label(8, top - 14, topName, 14, PALETTE.teal, "start") +
     label(8, bot - 18, bottom.name, 14, PALETTE.coral, "start");
   let lastX = -99;
   for (const m of marks) {
@@ -140,7 +140,7 @@ export function doubleNumberLine({ batch, topName, bottom, aria }) {
     body += `<line x1="${x}" y1="${top + 10}" x2="${x}" y2="${bot - 10}" stroke="${PALETTE.line}" stroke-width="2" stroke-dasharray="4 4"/>`;
     const crowded = x - lastX < 38;
     if (!crowded || m.own) {
-      body += label(x, top + 32, show(m.v), 19, PALETTE.violet);
+      body += label(x, top + 32, show(m.v), 19, PALETTE.teal);
       const text = m.v.n === 0 ? "0" : bottom.hide && m.own ? "?" : show(mul(bottom.per, m.v));
       body += label(x, bot + 30, text, 19, PALETTE.coral);
     }
@@ -197,15 +197,15 @@ export function coordGraph({
     `<text transform="translate(14 ${(T + H - B) / 2}) rotate(-90)" text-anchor="middle" font-size="16" font-weight="700" fill="${INK}" font-family="Atkinson Hyperlegible, system-ui, sans-serif">${escapeHtml(yName)}</text>`;
   if (showLine && k) {
     const endX = Math.min(xMax, yMax / num(k));
-    body += `<line x1="${px(0)}" y1="${py(0)}" x2="${px(endX)}" y2="${py(endX * num(k))}" stroke="${PALETTE.violet}" stroke-width="3" stroke-linecap="round"/>`;
+    body += `<line x1="${px(0)}" y1="${py(0)}" x2="${px(endX)}" y2="${py(endX * num(k))}" stroke="${PALETTE.teal}" stroke-width="3" stroke-linecap="round"/>`;
   }
   for (const p of points) {
     body += circle(
       px(p.x),
       py(p.y),
       6,
-      p.filled === false ? PALETTE.paper : PALETTE.violetSoft,
-      PALETTE.violet,
+      p.filled === false ? PALETTE.paper : PALETTE.tealSoft,
+      PALETTE.teal,
     );
     if (p.text) body += label(px(p.x) + 8, py(p.y) - 10, p.text, 16, INK, "start");
   }

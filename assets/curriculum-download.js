@@ -26,7 +26,7 @@ const MANIFEST_URL = "/data/curriculum-download-manifest.json";
 // is what a student opens first on a school Chromebook, so a teacher-only
 // downloader must cost that page nothing until a teacher actually opens it.
 // tools/validate-download-manifest.mjs pins this ?v= to the file's content hash.
-const STYLES_URL = "/assets/curriculum-download.css?v=8426118a";
+const STYLES_URL = "/assets/curriculum-download.css?v=b7a89926";
 const SELECTION_KEY = "nt-download-selection";
 const FETCH_CONCURRENCY = 4;
 // A stored zip is assembled in memory before it is handed to the browser, so the

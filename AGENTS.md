@@ -132,6 +132,15 @@ Preserve existing student-facing routes. This repo is live-classroom oriented: c
 - Verify no broken local links/assets, placeholder text in newly touched student pages, hidden answer keys, fake save/export features, or console-breaking scripts.
 - For Apps Script, verify valid platform APIs and provide run/setup instructions; do not create triggers or deploy scripts without approval.
 
+## EduWonderLab / ACCESS Practice Lab v3.0
+
+- New or changed student-facing surfaces use the shared navy `#17324D`, teal `#1FA6A2`, warm off-white `#F7F4EC`, amber `#F2C15B`, and body `#24323F` palette; coral may distinguish ACCESS speaking. Do not introduce purple, violet, or indigo.
+- `npm run validate:no-purple` checks changed production surfaces and image assets. The broader legacy inventory remains available as `npm run validate:no-purple -- --full`; treat that as a report while legacy pages are migrated, not as a reason to skip the changed-surface gate.
+- ACCESS Practice Lab is original WIDA-aligned practice, never an official test or score predictor. Keep the disclaimer, local-only learner identity/audio, no analytics, no student-facing initials/SPED labels, and exact-match self-hosted fonts.
+- For generator-owned pages, import maps, cache hashes, indexes, print packets, and artwork, change the source generator and regenerate. Do not hand-edit generated output.
+- Keep mobile targets at least 44px, preserve keyboard/focus/landmarks and reduced-motion behavior, and verify changed student flows in Chromium at phone and desktop sizes.
+- Avoid new teacher prep and physical manipulatives. Keep Save/Resume, Canvas/SCORM, route, and privacy contracts intact.
+
 ## When Unsure
 
 Inspect first, choose the smallest safe change, preserve route stability, verify, and report exactly what changed. If a change crosses repo/project boundaries, identify the active root before editing.

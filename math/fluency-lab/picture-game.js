@@ -1,5 +1,6 @@
 // Mystery Picture: solve a tile's problem to clear the fog from one piece of a hidden picture.
 // The learner types every answer. A step is available on request and never includes the answer.
+import { feedbackAction, feedbackNoteHtml, phaseFor } from "./feedback-host.js";
 import { validateAnswer } from "./problem-bank.js";
 import { SCENES } from "./scenes.js";
 import { gameProblems } from "./game-pool.js";
@@ -30,6 +31,8 @@ export function playPicture(host, { grade, stop, scene, calm, finish, onFact }) 
   let misses = 0;
   let peek = 0;
   let note = "";
+  let fb = null; // shared feedback panel state
+  let settled = null; // the tile just cleared, shown with its result until the learner taps Next
 
   const fog = (i) => {
     const done = cleared.has(i);
@@ -37,6 +40,8 @@ export function playPicture(host, { grade, stop, scene, calm, finish, onFact }) 
   };
 
   function panel() {
+    if (settled)
+      return `<div class="gm-ask-form"><p class="gm-q">${mathText(settled.question)}</p>${feedbackNoteHtml(esc(note), fb)}</div>`;
     if (active == null)
       return `<p class="gm-ask">${t("Pick a tile to clear the fog. {n} left.", { n: TILES - cleared.size })}</p>`;
     const item = items[active];
@@ -49,7 +54,7 @@ export function playPicture(host, { grade, stop, scene, calm, finish, onFact }) 
         <input id="gm-input" class="tr-input" inputmode="${grade >= 6 ? "text" : "numeric"}" spellcheck="false" aria-describedby="gm-q" />
         <button type="submit" class="tr-check">${t("Clear tile")}</button>
       </div>
-      <p class="gm-note">${esc(note)}</p>
+      ${feedbackNoteHtml(esc(note), fb)}
       ${misses ? `<p class="tr-tip">${mathText(item.hint)}</p>` : ""}
       ${peekCap(item) > 0 && peek ? stepsBlock(steps, peek, { id: "gm-steps", cap: peekCap(item) }) : ""}
       ${peekCap(item) > 0 && !peek ? `<button type="button" class="tr-tool" data-gm-peek>${t("Show a step")}</button>` : ""}
@@ -66,38 +71,31 @@ export function playPicture(host, { grade, stop, scene, calm, finish, onFact }) 
         </div>
         <div class="gm-side">${panel()}</div>
       </div></div>`;
-    host.querySelector("#gm-input")?.focus();
+    if (settled) host.querySelector("[data-gm-next]")?.focus();
+    else host.querySelector("#gm-input")?.focus();
     syncLive(host);
   }
 
   function submit(value) {
+    if (active == null || settled) return;
     const item = items[active];
     if (!String(value).trim()) return;
     if (validateAnswer(value, item)) {
-      if (!missedItems.has(active)) {
+      const first = !missedItems.has(active);
+      if (first) {
         firstTry.add(active);
         onFact?.(item, true);
       }
       cleared.add(active);
+      settled = item;
+      note = t("Tile cleared!");
+      fb = {
+        phase: phaseFor("picture", first ? "right" : "right-after-miss"),
+        ctx: { expected: String(item.displayAnswer ?? item.answers?.[0] ?? ""), next: cleared.size === TILES ? t("See results") : t("Next") },
+      };
       active = null;
       misses = 0;
       peek = 0;
-      note = "";
-      if (cleared.size === TILES) {
-        render();
-        timer = setTimeout(
-          () =>
-            finish({
-              game: "picture",
-              stars: pictureStars(firstTry.size, total),
-              scene,
-              missed: [...missedItems.values()],
-              line: t(art.title),
-            }),
-          1400,
-        );
-        return;
-      }
       render();
       return;
     }
@@ -107,16 +105,32 @@ export function playPicture(host, { grade, stop, scene, calm, finish, onFact }) 
     }
     misses += 1;
     note = t("Not yet. Look at the clue and try again.");
+    fb = { phase: phaseFor("picture", "miss"), ctx: { submitted: String(value).trim() } };
     const typed = host.querySelector("#gm-input").value;
     render();
     host.querySelector("#gm-input").value = typed;
   }
 
-  let timer = null;
+  function leaveResult() {
+    settled = null;
+    fb = null;
+    note = "";
+    if (cleared.size === TILES) {
+      return finish({ game: "picture", stars: pictureStars(firstTry.size, total), scene, missed: [...missedItems.values()], line: t(art.title) });
+    }
+    render();
+    host.querySelector(".gm-tile:not(.clear)")?.focus();
+  }
+
   host.onclick = (event) => {
+    const action = feedbackAction(event);
+    if (action === "next") return settled ? leaveResult() : undefined;
+    if (action === "try-again") return host.querySelector("#gm-input")?.focus();
     const tile = event.target.closest("[data-tile]");
     if (tile && !tile.disabled) {
       active = Number(tile.dataset.tile);
+      settled = null;
+      fb = null;
       misses = 0;
       peek = 0;
       note = "";
@@ -142,7 +156,6 @@ export function playPicture(host, { grade, stop, scene, calm, finish, onFact }) 
   };
   render();
   return () => {
-    clearTimeout(timer);
     host.onclick = null;
     host.onsubmit = null;
   };

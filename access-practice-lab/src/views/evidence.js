@@ -10,7 +10,10 @@ import {
   notebookListHTML,
   placeButtonsHTML,
   tagBarHTML,
+  tagLabels,
+  tagNameFor,
 } from "../evidence-ui.js";
+import { i18nFor, makeI18n } from "../i18n.js";
 import {
   clearNotebook,
   dataPoints,
@@ -25,7 +28,6 @@ import {
   removeItem,
   saveSynthesis,
   synthesisFeedback,
-  tagLabel,
 } from "../lang/evidence-notebook.js";
 import { chartHTML, tableHTML } from "../media.js";
 import { ART, BASE, announce, asList, html, icon, safeJson, storage } from "../util.js";
@@ -70,10 +72,11 @@ export const EVIDENCE_SETS = [
 
 // View state for this visit (pins, drafts and the chosen pair persist; selection and feedback do not).
 let picked = null; // { key: "<sourceId>|<idx or d<n>>", text, sourceId, kind, title }
-let lastPinned = "";
+let lastPinned = ""; // "" or [English, Español], so the note follows the language mode
 let feedback = null; // { pairId, text, result }
 let confirmClear = false;
 let pendingFocus = "";
+let I = makeI18n("en");
 
 const dpText = (set, dp) => `${set.title}: ${dp.label} — ${dp.value}`;
 const studio = () => safeJson(storage.get(EVIDENCE_KEY), {}) || {};
@@ -108,22 +111,20 @@ async function loadPair(pair) {
 
 function feedbackCardHTML(result) {
   return html`<div class="feedback is-hint" role="status">
-    <p class="fb-title">${icon("bulb")} What your synthesis shows</p>
+    <p class="fb-title">${icon("bulb")} ${I.T("What your synthesis shows", "Lo que muestra tu síntesis")}</p>
     <ul class="checks">
       ${result.criteria.map((c) =>
         c.met
           ? html`<li class="ok">
               ${icon("check")}
               <span><strong>${c.label}.</strong>
-              ${c.spans.length ? html`Found in your words: ${c.spans.map((s) => html`<q>${s.text}</q> `)}` : ""}</span>
+              ${c.spans.length ? html`${I.T("Found in your words:", "Encontrado en tus palabras:")} ${c.spans.map((s) => html`<q>${s.text}</q> `)}` : ""}</span>
             </li>`
-          : html`<li>${icon("arrow-right")} <span><strong>Not yet: ${c.label.toLowerCase()}.</strong> ${c.ask}</span></li>`,
+          : html`<li>${icon("arrow-right")} <span><strong>${I.T("Not yet:", "Todavía no:")} ${c.label.toLowerCase()}.</strong> ${c.ask}</span></li>`,
       )}
     </ul>
     <p class="fine">
-      These checks look for features in your own words: pinned evidence, source names, linking words
-      and numbers. They do not judge meaning and they are not a score or a level. Revise, then check
-      again.
+      ${I.T("These checks look for features in your own words: pinned evidence, source names, linking words and numbers. They do not judge meaning and they are not a score or a level. Revise, then check again.", "Estas revisiones buscan rasgos en tus propias palabras: evidencia fijada, nombres de las fuentes, palabras de enlace y números. No juzgan el significado y no son un puntaje ni un nivel. Revisa y vuelve a comprobar.")}
     </p>
   </div>`;
 }
@@ -138,11 +139,11 @@ function synthesisHTML(pair, src, nb, pairs) {
   const draft = nb.synth[pair.id] || "";
   return html`<article class="panel evidence-panel" aria-labelledby="synHeading">
     <header>
-      <p class="eyebrow">Multi-source synthesis · two sources, one topic</p>
-      <h2 id="synHeading">Synthesis matrix: ${src.textTitle}</h2>
+      <p class="eyebrow">${I.T("Multi-source synthesis · two sources, one topic", "Síntesis de varias fuentes · dos fuentes, un tema")}</p>
+      <h2 id="synHeading">${I.T("Synthesis matrix:", "Matriz de síntesis:")} ${src.textTitle}</h2>
       ${
         pairs.length > 1
-          ? html`<div class="speed" role="group" aria-label="Choose a source pair">
+          ? html`<div class="speed" role="group" aria-label="${I.S("Choose a source pair", "Elige un par de fuentes")}">
               ${pairs.map(
                 (p, i) =>
                   html`<button
@@ -151,53 +152,53 @@ function synthesisHTML(pair, src, nb, pairs) {
                     data-syn-pair="${i}"
                     aria-pressed="${String(p.id === pair.id)}"
                   >
-                    Pair ${i + 1}
+                    ${I.T(`Pair ${i + 1}`, `Par ${i + 1}`)}
                   </button>`,
               )}
             </div>`
           : ""
       }
-      <p class="ev-question"><strong>Question</strong>${pair.question}</p>
+      <p class="ev-question"><strong>${I.T("Question", "Pregunta")}</strong>${pair.question}</p>
       <ol class="ev-steps">
         <li>
-          <strong>Pin</strong>
-          Select sentences in the text and data points in the chart. Tag each one as a Claim,
-          Evidence, or an Example.
+          <strong>${I.T("Pin", "Fija")}</strong>
+          ${I.T("Select sentences in the text and data points in the chart. Tag each one as a Claim, Evidence, or an Example.", "Elige oraciones del texto y datos de la gráfica. Marca cada uno como Afirmación, Evidencia o Ejemplo.")}
         </li>
         <li>
-          <strong>Compare</strong>
-          Place each pin in the matrix: where do the sources agree, and what does each one add?
+          <strong>${I.T("Compare", "Compara")}</strong>
+          ${I.T("Place each pin in the matrix: where do the sources agree, and what does each one add?", "Coloca cada elemento fijado en la matriz: ¿en qué coinciden las fuentes y qué añade cada una?")}
         </li>
-        <li><strong>Write</strong> Write a short synthesis that uses your pins and names both sources.</li>
+        <li><strong>${I.T("Write", "Escribe")}</strong> ${I.T("Write a short synthesis that uses your pins and names both sources.", "Escribe una síntesis breve que use lo que fijaste y nombre las dos fuentes.")}</li>
       </ol>
     </header>
-    ${tagBarHTML(picked && (picked.sourceId === src.ids.text || picked.sourceId === src.ids.data) ? picked : null)}
-    ${lastPinned ? html`<p class="saved-note">${icon("pin")} ${lastPinned}</p>` : ""}
+    ${tagBarHTML(picked && (picked.sourceId === src.ids.text || picked.sourceId === src.ids.data) ? picked : null, { i18n: I })}
+    ${lastPinned ? html`<p class="saved-note">${icon("pin")} ${I.T(lastPinned[0], lastPinned[1])}</p>` : ""}
     <div class="evidence-grid">
       <section class="card ev-source" aria-labelledby="synText">
-        <p class="eyebrow">${icon("reading")} Source 1 · Text</p>
+        <p class="eyebrow">${icon("reading")} ${I.T("Source 1 · Text", "Fuente 1 · Texto")}</p>
         <h3 id="synText">${src.textTitle}</h3>
         <div class="passage">
           ${renderPassageSentences(src.paragraphs, { tagMode: true, pickKey: src.ids.text, picked: pickedIdx, pinned: pinnedIndex(nb, src.ids.text, sentences) })}
         </div>
       </section>
       <section class="card ev-source" aria-labelledby="synData">
-        <p class="eyebrow">${icon("growth")} Source 2 · Data</p>
+        <p class="eyebrow">${icon("growth")} ${I.T("Source 2 · Data", "Fuente 2 · Datos")}</p>
         <h3 id="synData">${src.dataTitle}</h3>
         ${asList(src.chart).map((c, i) => chartHTML(c, i))}${src.table ? tableHTML(src.table) : ""}
-        <h4>Pin a data point</h4>
+        <h4>${I.T("Pin a data point", "Fija un dato")}</h4>
         <ul class="chips ev-points" role="list">
           ${points.map((t, i) =>
             dataPickHTML(`${src.ids.data}|d${i}`, t, {
               picked: picked?.key === `${src.ids.data}|d${i}`,
               tag: dataItems.find((x) => x.text === t)?.tag,
+              i18n: I,
             }),
           )}
         </ul>
       </section>
     </div>
     <section aria-labelledby="synPins">
-      <h3 id="synPins">My pins for these sources</h3>
+      <h3 id="synPins">${I.T("My pins for these sources", "Lo que fijé de estas fuentes")}</h3>
       ${
         all.length
           ? html`<ul class="nb-items">
@@ -205,30 +206,29 @@ function synthesisHTML(pair, src, nb, pairs) {
                 (x) =>
                   html`<li class="card">
                     <p>
-                      <span class="badge">${tagLabel(x.tag)}</span> “${x.text}”
-                      <span class="fine">(${x.source.id === src.ids.text ? "text" : "data"})</span>
+                      <span class="badge">${tagNameFor(x.tag, I)}</span> “${x.text}”
+                      <span class="fine">(${x.source.id === src.ids.text ? I.T("text", "texto") : I.T("data", "datos")})</span>
                     </p>
-                    ${placeButtonsHTML(x)}
+                    ${placeButtonsHTML(x, { i18n: I })}
                   </li>`,
               )}
             </ul>`
-          : html`<p class="fine">No pins yet. Select a sentence or data point above.</p>`
+          : html`<p class="fine">${I.T("No pins yet. Select a sentence or data point above.", "Todavía no has fijado nada. Elige una oración o un dato arriba.")}</p>`
       }
-      ${matrixHTML(all, { textTitle: src.textTitle, dataTitle: src.dataTitle })}
+      ${matrixHTML(all, { textTitle: src.textTitle, dataTitle: src.dataTitle, i18n: I })}
     </section>
     <section aria-labelledby="synWrite">
-      <h3 id="synWrite">Write your synthesis</h3>
+      <h3 id="synWrite">${I.T("Write your synthesis", "Escribe tu síntesis")}</h3>
       <label class="field">
-        <span>In 2–4 sentences, answer the question using evidence from both sources.</span>
+        <span>${I.T("In 2–4 sentences, answer the question using evidence from both sources.", "En 2 a 4 oraciones, responde la pregunta con evidencia de las dos fuentes.")}</span>
         <textarea rows="5" data-syn-text="${pair.id}" spellcheck="false" data-nsr-ignore>
 ${draft}</textarea>
       </label>
       <p class="fine">
-        Your synthesis and pins stay in this browser. They are never sent anywhere or added to a
-        progress code.
+        ${I.T("Your synthesis and pins stay in this browser. They are never sent anywhere or added to a progress code.", "Tu síntesis y lo que fijaste se quedan en este navegador. Nunca se envían a ningún lugar ni se agregan a un código de progreso.")}
       </p>
       <div class="row-actions"><button type="button" class="btn btn-primary btn-domain" data-syn-check="${pair.id}">
-        Check my synthesis
+        ${I.T("Check my synthesis", "Revisar mi síntesis")}
       </button></div>
       ${feedback?.pairId === pair.id && feedback.text === draft ? feedbackCardHTML(feedback.result) : ""}
     </section>
@@ -237,22 +237,21 @@ ${draft}</textarea>
 
 function notebookHTML(nb) {
   return html`<article class="panel" id="notebook" aria-labelledby="nbHeading">
-    <h2 id="nbHeading">${icon("bookmark")} My Evidence Notebook</h2>
+    <h2 id="nbHeading">${icon("bookmark")} ${I.T("My Evidence Notebook", "Mi cuaderno de evidencias")}</h2>
     <p class="fine">
-      Pins from Reading activities and this studio. Saved only in this browser; clearing site data
-      removes them.
+      ${I.T("Pins from Reading activities and this studio. Saved only in this browser; clearing site data removes them.", "Lo que fijaste en actividades de Lectura y en este estudio. Se guarda solo en este navegador; si borras los datos del sitio, desaparece.")}
     </p>
-    ${notebookListHTML(nb.items, { empty: "Nothing pinned yet. In a Reading activity, turn on “Pin evidence”, or pin sentences above." })}
+    ${notebookListHTML(nb.items, { empty: I.T("Nothing pinned yet. In a Reading activity, turn on “Pin evidence”, or pin sentences above.", "Todavía no has fijado nada. En una actividad de Lectura, activa «Fijar evidencia» o fija oraciones arriba."), i18n: I })}
     ${
       nb.items.length
         ? confirmClear
-          ? html`<div class="row-actions" role="group" aria-label="Confirm clearing the notebook">
+          ? html`<div class="row-actions" role="group" aria-label="${I.S("Confirm clearing the notebook", "Confirma que quieres borrar el cuaderno")}">
               <button type="button" class="ghost danger" data-nb-clear-confirm>
-                Yes, remove every pin</button
-              ><button type="button" class="ghost" data-nb-clear-cancel>Keep my pins</button>
+                ${I.T("Yes, remove every pin", "Sí, quitar todo lo fijado")}</button
+              ><button type="button" class="ghost" data-nb-clear-cancel>${I.T("Keep my pins", "Conservar lo fijado")}</button>
             </div>`
           : html`<button type="button" class="ghost danger" data-nb-clear>
-              Clear my notebook
+              ${I.T("Clear my notebook", "Borrar mi cuaderno")}
             </button>`
         : ""
     }
@@ -260,6 +259,7 @@ function notebookHTML(nb) {
 }
 
 export async function render(ctx) {
+  I = i18nFor(ctx);
   const saved = studio();
   const evSet = EVIDENCE_SETS[saved.setIdx || 0] || EVIDENCE_SETS[0];
   const nb = loadNotebook(storage);
@@ -269,34 +269,33 @@ export async function render(ctx) {
   const src = pair ? await loadPair(pair).catch(() => null) : null;
 
   const breadcrumbs = [
-    ["Lab", `${BASE}/?grades=${ctx.band}`],
-    ["Evidence-to-Language Studio", null],
+    [I.S("Lab", "Laboratorio"), `${BASE}/?grades=${ctx.band}`],
+    [I.S("Evidence-to-Language Studio", "Estudio de evidencia a lenguaje"), null],
   ];
 
   return {
-    title: "Evidence-to-Language Studio",
+    title: I.S("Evidence-to-Language Studio", "Estudio de evidencia a lenguaje"),
     html: html`${crumbsHTML(breadcrumbs)}
       <div class="ev d-reading">
       <section class="lx-hero">
         <div>
-          <p class="eyebrow">${icon("evidence")} Data-to-Language Scaffold</p>
-          <h1 tabindex="-1">Evidence-to-Language Studio</h1>
+          <p class="eyebrow">${icon("evidence")} ${I.T("Data-to-Language Scaffold", "Apoyo de datos a lenguaje")}</p>
+          <h1 tabindex="-1">${I.T("Evidence-to-Language Studio", "Estudio de evidencia a lenguaje")}</h1>
           <p class="lead">
-            Pin evidence from a text and a chart, compare the two sources, and write an
-            evidence-based synthesis.
+            ${I.T("Pin evidence from a text and a chart, compare the two sources, and write an evidence-based synthesis.", "Fija evidencia de un texto y de una gráfica, compara las dos fuentes y escribe una síntesis basada en evidencia.")}
           </p>
         </div>
         <div class="lx-hero-art"><img src="${ART}/domain-reading.svg" alt="" width="480" height="360" /></div>
       </section>
 
-      ${src ? synthesisHTML(pair, src, nb, pairs) : pair ? html`<p class="panel" role="status">The sources for this synthesis could not load. Check your connection and try again.</p>` : ""}
+      ${src ? synthesisHTML(pair, src, nb, pairs) : pair ? html`<p class="panel" role="status">${I.T("The sources for this synthesis could not load. Check your connection and try again.", "No se pudieron cargar las fuentes de esta síntesis. Revisa tu conexión e inténtalo de nuevo.")}</p>` : ""}
       ${notebookHTML(nb)}
 
       <article class="panel evidence-panel" aria-labelledby="evSetHeading">
         <header>
           <p class="eyebrow">${evSet.domain} · ${evSet.type}</p>
           <h2 id="evSetHeading">${evSet.title}</h2>
-          <p>Select data points below to pin them as evidence in your Evidence Notebook.</p>
+          <p>${I.T("Select data points below to pin them as evidence in your Evidence Notebook.", "Elige los datos de abajo para fijarlos como evidencia en tu cuaderno de evidencias.")}</p>
         </header>
 
         <div class="evidence-grid">
@@ -311,45 +310,44 @@ export async function render(ctx) {
               <span class="badge">${dp.tag}</span>
               <h3>${dp.label}</h3>
               <p class="data-val">${dp.value}</p>
-              <span class="ev-pin-state">${icon(isPicked ? "check" : "pin")} ${isPicked ? "Pinned as evidence" : "Pin as evidence"}</span>
+              <span class="ev-pin-state">${icon(isPicked ? "check" : "pin")} ${isPicked ? I.T("Pinned as evidence", "Fijado como evidencia") : I.T("Pin as evidence", "Fijar como evidencia")}</span>
             </button>`;
           })}
         </div>
 
         <section class="notebook-section card">
-          <h3>${icon("writing")} Academic Explanation Construction</h3>
+          <h3>${icon("writing")} ${I.T("Academic Explanation Construction", "Construcción de explicaciones académicas")}</h3>
           <p class="fine">
-            Follow the 3-step scientific discourse model: Observation → Interpretation → Causal
-            Explanation.
+            ${I.T("Follow the 3-step scientific discourse model: Observation → Interpretation → Causal Explanation.", "Sigue el modelo de discurso científico en 3 pasos: Observación → Interpretación → Explicación causal.")}
           </p>
 
           <div class="step-card">
-            <p class="eyebrow"><span class="ev-num">1</span> Observation: what do the numbers show?</p>
+            <p class="eyebrow"><span class="ev-num">1</span> ${I.T("Observation: what do the numbers show?", "Observación: ¿qué muestran los números?")}</p>
             <p class="model-stem">${evSet.stems.observation}</p>
             <button type="button" class="btn ghost small" data-say="${evSet.stems.observation}">
-              ${icon("volume")} Hear observation aloud
+              ${icon("volume")} ${I.T("Hear observation aloud", "Escuchar la observación en voz alta")}
             </button>
           </div>
 
           <div class="step-card">
-            <p class="eyebrow"><span class="ev-num">2</span> Interpretation: why does this matter?</p>
+            <p class="eyebrow"><span class="ev-num">2</span> ${I.T("Interpretation: why does this matter?", "Interpretación: ¿por qué importa esto?")}</p>
             <p class="model-stem">${evSet.stems.interpretation}</p>
             <button type="button" class="btn ghost small" data-say="${evSet.stems.interpretation}">
-              ${icon("volume")} Hear interpretation aloud
+              ${icon("volume")} ${I.T("Hear interpretation aloud", "Escuchar la interpretación en voz alta")}
             </button>
           </div>
 
           <div class="step-card">
-            <p class="eyebrow"><span class="ev-num">3</span> Causal explanation: what is the overall consequence?</p>
+            <p class="eyebrow"><span class="ev-num">3</span> ${I.T("Causal explanation: what is the overall consequence?", "Explicación causal: ¿cuál es la consecuencia general?")}</p>
             <p class="model-stem">${evSet.stems.explanation}</p>
             <button type="button" class="btn ghost small" data-say="${evSet.stems.explanation}">
-              ${icon("volume")} Hear explanation aloud
+              ${icon("volume")} ${I.T("Hear explanation aloud", "Escuchar la explicación en voz alta")}
             </button>
           </div>
 
           <div class="row-actions">
             <button type="button" class="btn btn-secondary" data-evidence-next>
-              Next evidence investigation ${icon("arrow-right")}
+              ${I.T("Next evidence investigation", "Siguiente investigación de evidencia")} ${icon("arrow-right")}
             </button>
           </div>
         </section>
@@ -382,6 +380,7 @@ async function resolvePick(key, ctx) {
 }
 
 export function onEvidenceEvent(t, ctx) {
+  const L = i18nFor(ctx);
   const pick = t.closest("[data-nb-pick]");
   if (pick) {
     const key = pick.dataset.nbPick;
@@ -396,7 +395,7 @@ export function onEvidenceEvent(t, ctx) {
       lastPinned = "";
       if (p) {
         pendingFocus = "[data-nb-tag]";
-        announce("Selected. Choose Claim, Evidence, or Example.");
+        announce(L.S("Selected. Choose Claim, Evidence, or Example.", "Elegido. Elige Afirmación, Evidencia o Ejemplo."));
       }
       ctx.rerender();
     });
@@ -404,7 +403,7 @@ export function onEvidenceEvent(t, ctx) {
   }
   if (t.closest("[data-nb-unpick]")) {
     picked = null;
-    announce("Selection cleared.");
+    announce(L.S("Selection cleared.", "Selección borrada."));
     return true;
   }
   const tagBtn = t.closest("[data-nb-tag]");
@@ -416,14 +415,18 @@ export function onEvidenceEvent(t, ctx) {
       source: { id: picked.sourceId, kind: picked.kind, title: picked.title },
       pair: pair?.id,
     });
-    const label = tagLabel(tagBtn.dataset.nbTag);
+    const label = tagLabels(tagBtn.dataset.nbTag);
+    const volatile = storage.isVolatile;
     lastPinned =
       status === "full"
-        ? "Your notebook is full. Remove a pin below first."
+        ? ["Your notebook is full. Remove a pin below first.", "Tu cuaderno está lleno. Primero quita algo de lo fijado abajo."]
         : status === "unchanged"
-          ? `Already pinned as ${label}.`
-          : `Pinned as ${label}${storage.isVolatile ? " (this tab only: this device could not save)" : ""}.`;
-    announce(lastPinned);
+          ? [`Already pinned as ${label.en}.`, `Ya estaba fijado como ${label.es}.`]
+          : [
+              `Pinned as ${label.en}${volatile ? " (this tab only: this device could not save)" : ""}.`,
+              `Fijado como ${label.es}${volatile ? " (solo en esta pestaña: este dispositivo no pudo guardar)" : ""}.`,
+            ];
+    announce(L.S(lastPinned[0], lastPinned[1]));
     pendingFocus = `[data-nb-pick="${CSS.escape(picked.key)}"]`;
     picked = null;
     return true;
@@ -434,15 +437,15 @@ export function onEvidenceEvent(t, ctx) {
     const { item } = placeItem(storage, id, cell);
     announce(
       item?.cell
-        ? `Placed in the matrix: ${place.textContent.trim()}.`
-        : "Taken out of the matrix.",
+        ? L.S(`Placed in the matrix: ${place.textContent.trim()}.`, `Colocado en la matriz: ${place.textContent.trim()}.`)
+        : L.S("Taken out of the matrix.", "Quitado de la matriz."),
     );
     return true;
   }
   const remove = t.closest("[data-nb-remove]");
   if (remove) {
     const { item } = removeItem(storage, remove.dataset.nbRemove);
-    announce(item ? `Removed: ${item.text.slice(0, 60)}` : "Already removed.");
+    announce(item ? L.S(`Removed: ${item.text.slice(0, 60)}`, `Quitado: ${item.text.slice(0, 60)}`) : L.S("Already removed.", "Ya estaba quitado."));
     pendingFocus = "#nbHeading";
     return true;
   }
@@ -461,7 +464,7 @@ export function onEvidenceEvent(t, ctx) {
     confirmClear = false;
     feedback = null;
     lastPinned = "";
-    announce("Evidence Notebook cleared.");
+    announce(L.S("Evidence Notebook cleared.", "Cuaderno de evidencias borrado."));
     pendingFocus = "#nbHeading";
     return true;
   }
@@ -472,7 +475,7 @@ export function onEvidenceEvent(t, ctx) {
     storage.set(EVIDENCE_KEY, JSON.stringify(saved));
     picked = null;
     lastPinned = "";
-    announce("Source pair changed.");
+    announce(L.S("Source pair changed.", "Se cambió el par de fuentes."));
     return true;
   }
   const check = t.closest("[data-syn-check]");
@@ -482,7 +485,7 @@ export function onEvidenceEvent(t, ctx) {
     const nb = loadNotebook(storage);
     const text = nb.synth[pairId] || "";
     if (!pair || !text.trim()) {
-      announce("Write your synthesis first, then check it.");
+      announce(L.S("Write your synthesis first, then check it.", "Primero escribe tu síntesis y luego revísala."));
       return false;
     }
     loadPair(pair).then((src) => {
@@ -495,7 +498,7 @@ export function onEvidenceEvent(t, ctx) {
       });
       feedback = { pairId, text, result };
       pendingFocus = ".feedback";
-      announce("Synthesis checked. Read the feedback below your writing.");
+      announce(L.S("Synthesis checked. Read the feedback below your writing.", "Síntesis revisada. Lee los comentarios debajo de tu texto."));
       ctx.rerender();
     });
     return false;
@@ -520,8 +523,8 @@ export function onEvidenceEvent(t, ctx) {
       });
     announce(
       existing
-        ? "Removed from your Evidence Notebook."
-        : "Pinned as evidence in your Evidence Notebook.",
+        ? L.S("Removed from your Evidence Notebook.", "Quitado de tu cuaderno de evidencias.")
+        : L.S("Pinned as evidence in your Evidence Notebook.", "Fijado como evidencia en tu cuaderno de evidencias."),
     );
     return true;
   }
@@ -531,7 +534,7 @@ export function onEvidenceEvent(t, ctx) {
     const saved = studio();
     saved.setIdx = ((saved.setIdx || 0) + 1) % EVIDENCE_SETS.length;
     storage.set(EVIDENCE_KEY, JSON.stringify(saved));
-    announce("Next evidence set loaded.");
+    announce(L.S("Next evidence set loaded.", "Se cargó el siguiente conjunto de evidencias."));
     return true;
   }
 

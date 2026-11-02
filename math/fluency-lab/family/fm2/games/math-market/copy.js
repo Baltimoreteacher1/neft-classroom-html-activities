@@ -22,7 +22,7 @@ export const TOGETHER = T(
   "Take turns being the shopper and the cashier. The shopper builds the answer at the register; the cashier asks, \"How do you know the total is right?\" Then swap.",
   "Túrnense para ser el comprador y el cajero. El comprador arma la respuesta en la caja; el cajero pregunta: «¿Cómo sabes que el total es correcto?». Luego cambien.",
 );
-export const ICON = `<svg viewBox="0 0 48 48" aria-hidden="true" focusable="false"><rect x="6" y="20" width="36" height="20" rx="4" fill="#dff5ec" stroke="#1f2740" stroke-width="2.5"/><rect x="12" y="8" width="24" height="12" rx="3" fill="#fff" stroke="#1f2740" stroke-width="2.5"/><path d="M16 14h16" stroke="#5b49c9" stroke-width="3" stroke-linecap="round"/><circle cx="24" cy="30" r="6" fill="#fbefcf" stroke="#1f2740" stroke-width="2.5"/><path d="M24 27v6" stroke="#1f2740" stroke-width="2.5" stroke-linecap="round"/></svg>`;
+export const ICON = `<svg viewBox="0 0 48 48" aria-hidden="true" focusable="false"><rect x="6" y="20" width="36" height="20" rx="4" fill="#dff5ec" stroke="#1f2740" stroke-width="2.5"/><rect x="12" y="8" width="24" height="12" rx="3" fill="#fff" stroke="#1f2740" stroke-width="2.5"/><path d="M16 14h16" stroke="#1FA6A2" stroke-width="3" stroke-linecap="round"/><circle cx="24" cy="30" r="6" fill="#fbefcf" stroke="#1f2740" stroke-width="2.5"/><path d="M24 27v6" stroke="#1f2740" stroke-width="2.5" stroke-linecap="round"/></svg>`;
 
 const MONEY = T("Money", "Dinero");
 const PCT = T("Percent and rates", "Porcentaje y tasas");

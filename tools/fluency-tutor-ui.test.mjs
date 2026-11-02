@@ -203,6 +203,34 @@ assert.equal(
   "Switching profiles preserves previous progress",
 );
 
+click('[data-skill="division"]');
+click('[data-mode="practice"]');
+for (let problem = 0; problem < 2; problem += 1) {
+  for (let miss = 0; miss < 3; miss += 1) {
+    fill("#answer-input", -999);
+    submit("#answer-form");
+  }
+  if (problem === 0) click("#next-problem");
+}
+const boost = $("[data-quick-boost]");
+assert.ok(boost, "Two difficult problems after the scaffold offer a foundation boost");
+click("[data-quick-boost]");
+assert.equal(savedSession().session.quickBoost, true);
+assert.equal(savedSession().session.queue.length, 3);
+assert.ok(savedSession().session.queue.every((entry) => entry.key.startsWith("3:")));
+for (let problem = 0; problem < 3; problem += 1) {
+  solveCurrent();
+  click("#next-problem");
+}
+assert.equal(savedSession().grade, 4, "The boost restores the original grade");
+assert.equal(
+  savedSession().session.mode,
+  "practice",
+  "The original problem set resumes after the boost",
+);
+assert.equal(savedSession().session.answered, 2, "The learner's completed progress is preserved");
+click("#back-library");
+
 click('[data-view="teacher"]');
 fill("#assignment-label", "Division <Club>");
 fill("#assignment-count", "5");
@@ -249,40 +277,52 @@ assert.ok(
 );
 click(`[data-revise-entry="${savedMistake.id}"]`);
 assert.equal(
-  savedSession().item.question,
-  savedMistake.question,
-  "Repair begins with the original question",
+  savedSession().session.queue[0].forceGuided,
+  true,
+  "Repair starts with the three-step scaffold",
 );
-assert.equal(savedSession().session.queue[0].original.question, savedMistake.question);
+assert.ok(savedSession().session.queue[0].generated, "Repair stores a fresh generated problem");
+assert.notEqual(savedSession().item.question, savedMistake.question, "Repair uses fresh numbers");
 solveCurrent();
-assert.equal(savedSession().session.revised, 1, "The supported revision is recorded separately");
 assert.equal(
   savedSession().session.correct,
-  0,
-  "A supported revision does not inflate fresh-problem correctness",
+  1,
+  "The guided fresh-number repair is tracked as a supported solve",
 );
 assert.equal(
   savedSession().session.independentCorrect,
   0,
-  "A supported revision is not independent mastery evidence",
+  "Supported work is not independent mastery evidence",
 );
-assert.match($("#session-accuracy").textContent, /1 revised/);
+assert.match($("#session-accuracy").textContent, /1 solved/);
 click("#next-problem");
 for (let i = 0; i < 2; i++) {
   solveCurrent();
   click("#next-problem");
 }
-assert.match($("#summary-stats").textContent, /revised with support/);
+assert.match($("#summary-stats").textContent, /without help on first try/);
 assert.ok(
-  savedTutor()
-    .mistakes.filter((entry) => entry.key === "4:division")
-    .every((entry) => entry.resolvedAt),
-  "Fresh independent success repairs notebook entries",
+  savedTutor().mistakes.find((entry) => entry.id === savedMistake.id)?.resolvedAt,
+  "Fresh independent success repairs the targeted notebook entry",
 );
 click('[data-view="path"]');
 assert.equal(win.document.querySelectorAll(".path-skill").length, 11);
+assert.equal(
+  win.document.querySelectorAll("#prerequisite-constellation .ewl-prereq-map__node").length,
+  88,
+);
 assert.match($(".learning-milestones").textContent, /0\/11/);
 assert.match($("#path-view").textContent, /two different days/);
+$("#prerequisite-constellation [data-open-key='4:division']").dispatchEvent(
+  new win.MouseEvent("click", { bubbles: true }),
+);
+assert.equal(
+  $("#workspace-title").textContent,
+  "Whole-number division",
+  "Constellation nodes open their skill",
+);
+click("#back-library");
+click('[data-view="path"]');
 
 // Streak mode: untimed, 10 correct in a row, a miss restarts the count, no clock anywhere.
 click('[data-view="library"]');

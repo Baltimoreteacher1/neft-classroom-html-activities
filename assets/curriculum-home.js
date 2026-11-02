@@ -73,9 +73,10 @@
     const current =
       ordered.find((li) => li.dataset.start <= today && today <= li.dataset.end) ||
       ordered.find((li) => today < li.dataset.start);
-    // Finished units step back so the eye lands on what is current and next.
     ordered.forEach((li) => {
-      if (li.dataset.end < today) li.classList.add("is-done");
+      // Dates identify the current unit, but do not prove learner progress.
+      // Keep past units visually available; completion belongs to stored data.
+      li.classList.remove("is-done");
     });
     if (!current) return;
     const live = current.dataset.start <= today;
@@ -144,7 +145,6 @@
       li.style.flexGrow = String(u.days);
       li.style.setProperty("--tl-accent", `var(--unit-${u.number}, #5b6470)`);
       const live = u.start <= today && today <= u.end;
-      if (u.end < today) li.classList.add("is-done");
       if (live) {
         current = u;
         li.classList.add("is-current");

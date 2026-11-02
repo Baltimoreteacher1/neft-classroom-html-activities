@@ -1,6 +1,7 @@
 // Conversation Simulator: realistic multi-turn academic dialogue with peers and teachers.
 // Promotes academic clarification, argumentation, evidence presentation, and oral rehearsal.
 import { crumbsHTML, recorderHTML } from "../components.js";
+import { i18nFor, makeI18n } from "../i18n.js";
 import { isRecording } from "../recorder.js";
 import { ART, BASE, announce, html, icon, raw, safeJson, storage } from "../util.js";
 
@@ -129,6 +130,10 @@ const finished = new Set();
 const loadSaved = () => safeJson(storage.get(CONV_KEY), {}) || {};
 const scenarioOf = (id) => SCENARIOS.find((s) => s.id === id) || SCENARIOS[0];
 const LETTERS = "ABCDEFGH";
+let I = makeI18n("en");
+// Display names for the feedback quality labels in SCENARIOS (the data keeps the English value).
+const QUALITY_ES = { High: "Alta", "Needs Expansion": "Necesita ampliarse", Developing: "En desarrollo" };
+const quality = (q) => I.T(q, QUALITY_ES[q]);
 
 /** The speaker's role comes from the scenario's own roster, e.g. "Mateo (Lab Partner)". */
 function roleOf(scenario, speaker) {
@@ -139,7 +144,7 @@ function roleOf(scenario, speaker) {
 const initial = (speaker) => speaker.replace(/^(Ms|Mr|Mrs|Dr)\.?\s+/i, "").charAt(0).toUpperCase();
 
 function scenarioNav(scenario, band) {
-  return html`<nav class="cv-scenarios" aria-label="Choose a conversation scenario">
+  return html`<nav class="cv-scenarios" aria-label="${I.S("Choose a conversation scenario", "Elige una conversación")}">
     ${SCENARIOS.map(
       (s) =>
         html`<a class="cv-scn" href="${BASE}/conversation/${s.id}?grades=${band}" ${s.id === scenario.id ? raw('aria-current="page"') : ""}
@@ -151,7 +156,7 @@ function scenarioNav(scenario, band) {
 
 function turnTrack(scenario, turnIdx) {
   return html`<div class="cv-progress">
-    <p class="cv-progress-label">Turn ${turnIdx + 1} of ${scenario.turns.length}</p>
+    <p class="cv-progress-label">${I.T(`Turn ${turnIdx + 1} of ${scenario.turns.length}`, `Turno ${turnIdx + 1} de ${scenario.turns.length}`)}</p>
     <ol class="cv-turns" aria-hidden="true">
       ${scenario.turns.map((_, i) => html`<li class="${i < turnIdx ? "is-done" : ""} ${i === turnIdx ? "is-here" : ""}"></li>`)}
     </ol>
@@ -167,13 +172,13 @@ function optionHTML(opt, oIdx, chosen) {
       <span class="choice-letter">${LETTERS[oIdx]}</span>
       <span>${opt.text}</span>
     </label>
-    <button type="button" class="ghost small" data-say="${opt.text}">${icon("volume")} Rehearse aloud</button>
+    <button type="button" class="ghost small" data-say="${opt.text}">${icon("volume")} ${I.T("Rehearse aloud", "Ensayar en voz alta")}</button>
     ${
       picked
         ? html`<div class="feedback ${strong ? "is-right" : "is-hint"}" role="status">
-            <p class="fb-title">${icon(strong ? "check" : "bulb")} ${opt.academicQuality}</p>
+            <p class="fb-title">${icon(strong ? "check" : "bulb")} ${quality(opt.academicQuality)}</p>
             <p>${opt.feedback}</p>
-            <p class="fine">Feedback on this sample response. It is practice language, not a score.</p>
+            <p class="fine">${I.T("Feedback on this sample response. It is practice language, not a score.", "Comentarios sobre esta respuesta de ejemplo. Es lenguaje de práctica, no un puntaje.")}</p>
           </div>`
         : ""
     }
@@ -183,21 +188,21 @@ function optionHTML(opt, oIdx, chosen) {
 function summaryHTML(scenario, saved, band) {
   const others = SCENARIOS.filter((s) => s.id !== scenario.id);
   return html`<section class="cv-done panel" aria-labelledby="cvDoneTitle">
-    <p class="eyebrow">${icon("check")} Discussion finished</p>
-    <h2 id="cvDoneTitle" tabindex="-1">You rehearsed ${scenario.turns.length} turns of this conversation</h2>
-    <p class="lead">Review the responses you rehearsed. Say your favourite one aloud to a partner, then try the scenario again with a different choice.</p>
+    <p class="eyebrow">${icon("check")} ${I.T("Discussion finished", "Conversación terminada")}</p>
+    <h2 id="cvDoneTitle" tabindex="-1">${I.T(`You rehearsed ${scenario.turns.length} turns of this conversation`, `Ensayaste ${scenario.turns.length} turnos de esta conversación`)}</h2>
+    <p class="lead">${I.T("Review the responses you rehearsed. Say your favourite one aloud to a partner, then try the scenario again with a different choice.", "Repasa las respuestas que ensayaste. Di en voz alta tu favorita a un compañero y luego prueba la situación otra vez con otra opción.")}</p>
     <ol class="cv-recap">
       ${scenario.turns.map((turn, i) => {
         const opt = turn.options[saved[scenario.id]?.choices?.[i]];
         return html`<li>
           <p class="cv-recap-q"><strong>${turn.speaker}:</strong> ${turn.speech}</p>
-          ${opt ? html`<p class="cv-recap-a"><span class="lx-pill">${opt.academicQuality}</span> ${opt.text}</p>` : html`<p class="fine">No response chosen for this turn.</p>`}
+          ${opt ? html`<p class="cv-recap-a"><span class="lx-pill">${quality(opt.academicQuality)}</span> ${opt.text}</p>` : html`<p class="fine">${I.T("No response chosen for this turn.", "No elegiste ninguna respuesta en este turno.")}</p>`}
         </li>`;
       })}
     </ol>
     <div class="row-actions">
-      <button type="button" class="btn btn-primary btn-domain" data-conv-restart>${icon("retry")} Start this conversation again</button>
-      ${others.map((o) => html`<a class="btn" href="${BASE}/conversation/${o.id}?grades=${band}">Try: ${o.title}</a>`)}
+      <button type="button" class="btn btn-primary btn-domain" data-conv-restart>${icon("retry")} ${I.T("Start this conversation again", "Empezar esta conversación otra vez")}</button>
+      ${others.map((o) => html`<a class="btn" href="${BASE}/conversation/${o.id}?grades=${band}">${I.T("Try:", "Prueba:")} ${o.title}</a>`)}
     </div>
   </section>`;
 }
@@ -212,26 +217,26 @@ function turnHTML(scenario, turn, turnIdx, chosen) {
         <div class="cv-bubble">
           <p class="cv-who"><strong>${turn.speaker}</strong>${role ? html`<span>${role}</span>` : ""}</p>
           <p class="cv-speech">${turn.speech}</p>
-          <button type="button" class="btn ghost small" data-say="${turn.speech}">${icon("volume")} Hear ${turn.speaker} speak</button>
+          <button type="button" class="btn ghost small" data-say="${turn.speech}">${icon("volume")} ${I.T(`Hear ${turn.speaker} speak`, `Escuchar a ${turn.speaker}`)}</button>
         </div>
       </div>
 
       <section class="cv-reply panel" aria-labelledby="cvGoal">
-        <p class="eyebrow">Your speaking and argument goal</p>
+        <p class="eyebrow">${I.T("Your speaking and argument goal", "Tu meta para hablar y argumentar")}</p>
         <h2 id="cvGoal">${turn.studentGoal}</h2>
-        <p class="fine">Choose a response to rehearse. Each one shows feedback after you pick it.</p>
+        <p class="fine">${I.T("Choose a response to rehearse. Each one shows feedback after you pick it.", "Elige una respuesta para ensayar. Cada una muestra comentarios después de elegirla.")}</p>
         <div class="choices cv-options">${turn.options.map((opt, i) => optionHTML(opt, i, chosen))}</div>
 
         <div class="card cv-record">
-          <h3>${icon("record")} Optional oral rehearsal</h3>
-          <p class="fine">Record yourself speaking your response aloud before moving to the next conversation turn.</p>
+          <h3>${icon("record")} ${I.T("Optional oral rehearsal", "Ensayo oral opcional")}</h3>
+          <p class="fine">${I.T("Record yourself speaking your response aloud before moving to the next conversation turn.", "Grábate diciendo tu respuesta en voz alta antes de pasar al siguiente turno de la conversación.")}</p>
           ${recorderHTML(key, { recording: isRecording(key) })}
         </div>
 
         <div class="row-actions cv-nav">
-          ${turnIdx > 0 ? html`<button type="button" class="btn" data-conv-prev>${icon("arrow-left")} Previous turn</button>` : ""}
+          ${turnIdx > 0 ? html`<button type="button" class="btn" data-conv-prev>${icon("arrow-left")} ${I.T("Previous turn", "Turno anterior")}</button>` : ""}
           <button type="button" class="btn btn-primary btn-domain" data-conv-next>
-            ${last ? html`Finish discussion and review ${icon("check")}` : html`Next dialogue turn ${icon("arrow-right")}`}
+            ${last ? html`${I.T("Finish discussion and review", "Terminar la conversación y repasar")} ${icon("check")}` : html`${I.T("Next dialogue turn", "Siguiente turno")} ${icon("arrow-right")}`}
           </button>
         </div>
       </section>
@@ -239,6 +244,7 @@ function turnHTML(scenario, turn, turnIdx, chosen) {
 }
 
 export async function render(ctx) {
+  I = i18nFor(ctx);
   const scenario = scenarioOf(ctx.route.scenarioId || "ecosystem-debate");
   const saved = loadSaved();
   const turnIdx = Math.min(Math.max(0, saved[scenario.id]?.turn || 0), scenario.turns.length - 1);
@@ -246,14 +252,14 @@ export async function render(ctx) {
   const done = finished.has(scenario.id);
 
   return {
-    title: "Academic Conversation Simulator",
-    html: html`${crumbsHTML([["Lab", `${BASE}/?grades=${ctx.band}`], ["Conversation Simulator", null]])}
+    title: I.S("Academic Conversation Simulator", "Simulador de conversación académica"),
+    html: html`${crumbsHTML([[I.S("Lab", "Laboratorio"), `${BASE}/?grades=${ctx.band}`], [I.S("Conversation Simulator", "Simulador de conversación"), null]])}
       <div class="cv d-speaking">
         <section class="lx-hero">
           <div>
-            <p class="eyebrow">${icon("conversation")} Dialogue rehearsal · WIDA Key Language Uses</p>
+            <p class="eyebrow">${icon("conversation")} ${I.T("Dialogue rehearsal · WIDA Key Language Uses", "Ensayo de diálogo · Usos clave del lenguaje de WIDA")}</p>
             <h1 tabindex="-1">${scenario.title}</h1>
-            <p class="lead">Practice realistic academic discussions with peers and teachers. Rehearse claims, clarification, and argumentation.</p>
+            <p class="lead">${I.T("Practice realistic academic discussions with peers and teachers. Rehearse claims, clarification, and argumentation.", "Practica conversaciones académicas realistas con compañeros y maestros. Ensaya afirmaciones, aclaraciones y argumentos.")}</p>
           </div>
           <div class="lx-hero-art"><img src="${ART}/domain-speaking.svg" alt="" width="480" height="360" /></div>
         </section>
@@ -264,6 +270,7 @@ export async function render(ctx) {
 }
 
 export function onConversationEvent(t, ctx) {
+  const L = i18nFor(ctx);
   const sId = scenarioOf(ctx.route.scenarioId || "ecosystem-debate").id;
   const saved = loadSaved();
   saved[sId] = saved[sId] || { turn: 0, choices: {} };
@@ -273,7 +280,7 @@ export function onConversationEvent(t, ctx) {
   if (select) {
     saved[sId].choices[saved[sId].turn || 0] = Number(select.dataset.convSelect);
     save();
-    announce("Response selected.");
+    announce(L.S("Response selected.", "Respuesta elegida."));
     return true;
   }
 
@@ -283,10 +290,10 @@ export function onConversationEvent(t, ctx) {
     if (cur < scenario.turns.length - 1) {
       saved[sId].turn = cur + 1;
       save();
-      announce(`Continuing to turn ${cur + 2}`);
+      announce(L.S(`Continuing to turn ${cur + 2}`, `Pasando al turno ${cur + 2}`));
     } else {
       finished.add(sId);
-      announce("Discussion finished. Your recap is shown below.");
+      announce(L.S("Discussion finished. Your recap is shown below.", "Conversación terminada. Tu repaso aparece abajo."));
     }
     window.scrollTo({ top: 0 });
     return true;

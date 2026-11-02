@@ -46,6 +46,19 @@ try {
       const response = await page.goto(base + path, { waitUntil: "domcontentloaded" });
       assert.equal(response?.status(), 200, `${name} HTTP response`);
       await page.locator(marker).first().waitFor({ timeout: 15000 });
+      if (name === "homework") {
+        const pathNav = page.getByRole("navigation", { name: "Tonight's path" });
+        assert.equal(await pathNav.count(), 1, "homework steps remain a named navigation landmark");
+        assert.equal(await page.locator(".homework-tab-bar[role='tablist']").count(), 0);
+        const currentTab = page.locator(".homework-tab-btn[aria-current='step']");
+        const nextTab = page.locator(".homework-tab-btn:not([hidden])").nth(1);
+        const currentId = await currentTab.getAttribute("data-tab");
+        const nextId = await nextTab.getAttribute("data-tab");
+        await nextTab.click();
+        await page.locator(`#hw_panel_${nextId}`).waitFor({ state: "visible" });
+        assert.equal(await nextTab.getAttribute("aria-current"), "step");
+        assert.equal(await page.locator(`#hw_tab_${currentId}`).getAttribute("aria-current"), null);
+      }
       if (name.startsWith("worksheet")) {
         await page.locator("[data-worksheet-screen]").waitFor({ state: "attached" });
         assert.equal(await page.locator("[data-worksheet-screen]").getAttribute("media"), "all");

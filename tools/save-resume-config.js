@@ -51,6 +51,7 @@ export const SKIP_DIRS = new Set([
 // These get skipped to avoid showing a student "save your work" widget where it
 // makes no sense. Adjust here if a surface should be included.
 export const SKIP_TOPLEVEL = new Set([
+  "design", // design-system specimens and the art gallery: no student state to save
   "dashboard",
   "teacher-data-dashboard",
   "teacher-tools",
@@ -62,12 +63,17 @@ export const SKIP_TOPLEVEL = new Set([
   "assets",
   "docs",
   "curriculum", // curriculum hub/index pages, not activities
+  "design", // design-system specimen: a read-only reference page, no student work to save
   "families", // read-only family reference guides, not student work surfaces
+  "family-app", // installable family home screen: three links, no student work
   "about", // public about/impact/accessibility/privacy info pages — not activities
   "personal", // private (event planning, family pages) — not classroom activities
   "futures", // concept/demo/roadmap pages — not student activities
   "access-teacher", // teacher-facing surface
   "access-guide", // read-only practice guide, with no student work to save
+  "access-expedition", // teacher field-trip companion: links out to the lab, saves only its own route
+  "access-family-expedition", // bilingual family trail: links out to the lab, saves only its own place
+  "access-family-tour", // bilingual family site tour: links out to the lab, saves only its own place
   "work-coach", // stateless AI photo-coaching tool — no progress to save/resume
   "math-sims", // stateless physics sandboxes (slope/probability) — nothing to save
   "infinite-practice", // stateless AI practice generator — nothing to save
@@ -110,6 +116,10 @@ export const SKIP_FILE_RE =
 //   - math/student-board/index.html → the live Class Board (teacher-authored,
 //     student-visible display; its own state lives in D1 via /api/board, not in
 //     the generic student save/resume widget)
+//   - math/fluency-lab/family-adventure/ → a links-only family guide that saves its
+//     own place (language, grade, stars); the practice it opens carries its own save
+//   - Fluency Lab art/graphics galleries → read-only development previews with no
+//     student work to persist
 //   - today/index.html           → the daily front door: a nav screen that READS
 //     save/resume state (via /api/progress/mine) to decide what to link to. It
 //     holds no student work of its own, so a Save widget on it would offer to
@@ -118,4 +128,4 @@ export const SKIP_FILE_RE =
 // (The math/intervention/<topic>/ pages DO carry student self-assessment +
 // quiz state and are intentionally NOT excluded.)
 export const SKIP_PATH_RE =
-  /(^|\/)(?:teacher(\/|$)|living-school\/neft-city-|focus-school\/|shai-school\/|games-live\/|games\/3d\/|math\/(?:intervention|student-board)\/index\.html$|today\/index\.html$)/i;
+  /(^|\/)(?:teacher(\/|$)|living-school\/neft-city-|focus-school\/|shai-school\/|games-live\/|games\/3d\/|math\/(?:intervention|student-board)\/index\.html$|math\/fluency-lab\/(?:family-adventure\/index\.html|art\/contact-sheet\.html|graphics\/(?:gallery(?:-b)?\.html|animations\/gallery\.html))$|today\/index\.html$)/i;

@@ -3,9 +3,28 @@
 import { ES as ES_BASE } from "./i18n-es.js";
 import { ES_MODELS } from "./i18n-es-models.js";
 import { ES_WORLDS } from "./i18n-es-worlds.js";
+import { ES_STUDIO } from "./i18n-es-studio.js";
+import { ES_COMPETITOR, ES_SHOP_TEAMS } from "./i18n-es-competitor.js";
+import { ES_DUEL } from "./i18n-es-duel.js";
+import { ES_MOBY_FACTS } from "./moby/i18n-es-facts.js";
+import { ES_MOBY_QUESTS } from "./moby/i18n-es-quests.js";
+import { ES_MOBY_INTERVENTION } from "./moby/i18n-es-intervention.js";
+import { ES_MOBY_STRATEGIES } from "./moby/i18n-es-strategies.js";
 import { readLocal, writeLocal } from "./school-tools.js";
 
-const ES = { ...ES_BASE, ...ES_MODELS, ...ES_WORLDS };
+export const ES = {
+  ...ES_STUDIO,
+  ...ES_BASE,
+  ...ES_MODELS,
+  ...ES_WORLDS,
+  ...ES_COMPETITOR,
+  ...ES_SHOP_TEAMS,
+  ...ES_DUEL,
+  ...ES_MOBY_FACTS,
+  ...ES_MOBY_QUESTS,
+  ...ES_MOBY_INTERVENTION,
+  ...ES_MOBY_STRATEGIES,
+};
 const KEY = "ewl-fluency-lang-v1";
 let lang = null;
 

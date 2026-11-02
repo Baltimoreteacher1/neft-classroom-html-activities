@@ -22,6 +22,10 @@ export const loadIndex = () => getJson("index.json");
 export const loadShared = () => getJson("shared.json");
 export const loadRoad = () => getJson("road.json").catch(() => ({}));
 export const loadFamily = () => getJson("family.json").catch(() => null);
+export const loadFamilyCoach = () => getJson("family-coach.json").catch(() => null);
+export const loadFamilyHelp = () => getJson("family-help.json").catch(() => null);
+/** Spanish skill goals and directions by activity id (content/es-guide.json). */
+export const loadEsGuide = () => getJson("es-guide.json").then((d) => d.activities || {}).catch(() => ({}));
 export const loadGlossary = () => getJson("glossary.json").catch(() => null);
 export const loadStudioIndex = async () => (await loadIndex()).studio || { speaking: [], writing: [], missions: [], patterns: [] };
 export const loadSpeakingTasks = () => getJson("studio/speaking.json");
@@ -33,8 +37,13 @@ export const loadExemplars = async () => {
 export const loadBlueprint = () => getJson("blueprints.json");
 export const loadAlignment = () => getJson("alignment-index.json");
 export const loadReadingRoomLessons = () => getJson("reading-room/lessons.json");
+export const loadReadingAdventures = () => getJson("reading-room/adventures.json");
+export const loadReadingStrategies = () => getJson("reading-room/strategy-lessons.json");
+export const loadLadder = () => getJson("ladder/passages.json");
+export const loadPuzzles = () => getJson("puzzles/puzzles.json");
 export const loadWorlds = () => getJson("worlds.json");
 export const loadPatterns = () => getJson("detective/patterns.json");
+export const loadGoalBank = () => getJson("goal-bank.json");
 export const loadMission = (id) => getJson(`missions/${encodeURIComponent(id)}.json`);
 export const loadTest = (id) => getJson(`tests/${encodeURIComponent(id)}.json`);
 
@@ -101,3 +110,5 @@ export async function bandRows(band) {
         rows.push({ band, domain, level, id, title, type, skill, minutes });
   return rows;
 }
+export const loadPublisherJourney = () => getJson("publisher/journey.json");
+export const loadPublisherEvidence = () => getJson("publisher/demo-evidence.json");

@@ -13,6 +13,8 @@
  * paper sheet is built from the same function.
  */
 
+import { act } from "./homework-actions.mjs";
+
 const bi = (en, es) =>
   `<span class="lang-en">${en}</span><span class="lang-es" lang="es">${es}</span>`;
 
@@ -21,8 +23,8 @@ export function renderDominoDuo() {
   return `
         <div class="dom-duo" id="fam_dom_duo">
           <div class="dom-duo-actions">
-            <button type="button" class="btn btn-sm btn-secondary" id="fam_dom_duo_toggle" aria-pressed="false" aria-controls="fam_dom_duo_panel" onclick="toggleDominoDuo()">👥 ${bi("Two players: pass the phone", "Dos jugadores: pasen el teléfono")}</button>
-            <button type="button" class="btn btn-sm btn-secondary" onclick="printDominoSheet()">🖨️ ${bi("Print paper dominoes", "Imprimir dominós de papel")}</button>
+            <button type="button" class="btn btn-sm btn-secondary" id="fam_dom_duo_toggle" aria-pressed="false" aria-controls="fam_dom_duo_panel" ${act("toggleDominoDuo")}>👥 ${bi("Two players: pass the phone", "Dos jugadores: pasen el teléfono")}</button>
+            <button type="button" class="btn btn-sm btn-secondary" ${act("printDominoSheet")}>🖨️ ${bi("Print paper dominoes", "Imprimir dominós de papel")}</button>
           </div>
           <div class="dom-duo-panel" id="fam_dom_duo_panel" hidden>
             <p class="dom-duo-rule">${bi("A student and a grown-up share one chain. Take turns placing, and switch coach and player each time. There is no winner and no timer.", "Un estudiante y un adulto comparten una cadena. Colocan fichas por turnos y cambian de entrenador y jugador cada vez. No hay ganador ni cronómetro.")}</p>
@@ -38,34 +40,6 @@ export function renderDominoDuo() {
           </div>
         </div>`;
 }
-
-export const DOMINO_DUO_CSS = `
-.dom-duo { margin: 0 0 12px; }
-.dom-duo-actions { display: flex; flex-wrap: wrap; gap: 8px; }
-.dom-duo-actions .btn { min-height: 44px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; overflow-wrap: normal; word-break: normal; }
-.dom-duo-actions .btn[aria-pressed="true"] { background: var(--st-navy, #17324d); color: #fff; border-color: var(--st-navy, #17324d); }
-.dom-duo-panel { margin-top: 10px; padding: 12px 14px; border-radius: 12px; border: 2px solid var(--st-teal, #0f766e); background: #f0fdfa; }
-.dom-duo-panel[hidden] { display: none; }
-.dom-duo-rule { margin: 0 0 8px; font-size: 14px; line-height: 1.45; color: #334155; }
-.dom-duo-turn { margin: 0; font-size: 20px; font-weight: 800; line-height: 1.35; color: var(--st-navy, #17324d); }
-.dom-duo-coach { margin: 4px 0 0; font-size: 16px; line-height: 1.45; }
-.dom-duo-panel[data-turn="grownup"] { border-style: dashed; background: #fffaf0; border-color: #b45309; }
-.hw-domino-sheet { display: none; }
-@media print {
-  body.print-domino-sheet > *:not(.hw-domino-sheet) { display: none !important; }
-  body.print-domino-sheet .hw-domino-sheet { display: block !important; color: #000; font-size: 12pt; }
-  .hw-domino-sheet h2 { margin: 0 0 4pt; font-size: 18pt; }
-  .hw-domino-sheet ol { margin: 6pt 0 10pt; padding-left: 18pt; }
-  .hw-domino-sheet li { margin: 0 0 4pt; }
-  .hw-domino-sheet .dsheet-note { margin: 0 0 8pt; font-style: italic; }
-  .hw-domino-sheet .dsheet-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8mm 6mm; margin: 6pt 0 10pt; }
-  .hw-domino-sheet .dsheet-tile { position: relative; display: flex; min-height: 26mm; border: 2pt dashed #000; break-inside: avoid; }
-  .hw-domino-sheet .dsheet-half { flex: 1 1 50%; display: flex; align-items: center; justify-content: center; padding: 3mm; text-align: center; font-size: 15pt; font-weight: 700; overflow-wrap: anywhere; }
-  .hw-domino-sheet .dsheet-half + .dsheet-half { border-left: 2pt solid #000; }
-  .hw-domino-sheet .dsheet-start { position: absolute; top: -4.5mm; left: 3mm; padding: 0 2mm; background: #fff; font-size: 9pt; font-weight: 800; }
-  .hw-domino-sheet .dsheet-key { font-size: 10pt; break-inside: avoid; }
-}
-`;
 
 /* Plain JS in a template literal: no backslashes, so nothing is dropped. */
 export const DOMINO_DUO_JS = `

@@ -22,6 +22,7 @@ import { loadDraft, publishDraft, saveDraft } from "./shared/api-client.js";
 import { normalizeWelcome } from "./shared/family-welcome.js";
 import { readLanguageMode, resolveHubLanguage, writeLanguageMode } from "./shared/hub-language.js";
 import { PRODUCT_NAME } from "./shared/hub-routes.js";
+import { paintWeeklySheetLinks } from "./shared/weekly-sheet-links.js";
 import {
   addDays,
   familyLink,
@@ -269,6 +270,7 @@ function renderChrome() {
       ? "Choose the homework families will see each night."
       : "A few minutes of math at home. Optional. No grades.";
   if (!editRequested) document.title = `${PRODUCT_NAME[language]} · EduWonderLab`;
+  paintWeeklySheetLinks(byId("weekly-sheet-links"), language, editRequested);
   byId("class-label").textContent = editRequested
     ? es
       ? "Clase"

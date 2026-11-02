@@ -34,6 +34,7 @@ import { interactiveVisualHost } from "@eduwonderlab/engine/core/interactive-vis
 import { familyFieldProblems } from "./lib/family-content.mjs";
 import { FAMILY_LETTER_CSS, FAMILY_PAPER } from "./lib/family-paper-css.mjs";
 import { withPlainDefinitions } from "./lib/family-plain-definitions.mjs";
+import { lessonLabel, lessonStandard } from "./lib/lesson-identity.mjs";
 import { writeGenerated } from "./lib/preserve-injected.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -553,6 +554,22 @@ function wordProblemsLink(id) {
   return `<p class="more-practice"><a href="/lessons/${esc(id)}/family/word-problems/">More practice: ${esc(title.en)}</a> <span class="es-text" lang="es"><a href="/lessons/${esc(id)}/family/word-problems/">Más práctica: ${esc(title.es)}</a></span></p>`;
 }
 
+/**
+ * The Family Take-Home Sheet for this lesson (scripts/generate-family-takehome.mjs): the printable sheet, the grown-up
+ * answers page, and the editable Word file, in both languages. Skipped when the lesson has no sheet yet.
+ */
+function takeHomeLinks(id) {
+  const dir = join(lessonsDir, id, "downloads");
+  if (!existsSync(join(dir, `${id}-family-sheet.pdf`))) return "";
+  const a = (name, text) =>
+    `<a href="/lessons/${esc(id)}/downloads/${esc(id)}-${name}">${text}</a>`;
+  return `<section class="take-home" aria-labelledby="take-home-h">
+  <h2 id="take-home-h">Take-home sheet <span class="es">Hoja para llevar a casa</span></h2>
+  <p>${esc(lessonLabel(id, "en"))}: ${a("family-sheet.pdf", "Print the sheet (PDF)")} · ${a("family-guide.pdf", "Answers and talk notes (PDF)")} · ${a("family-sheet.docx", "Edit it (Word)")}</p>
+  <p class="es-text" lang="es">${esc(lessonLabel(id, "es"))}: ${a("family-sheet-es.pdf", "Imprimir la hoja (PDF)")} · ${a("family-guide-es.pdf", "Respuestas y notas para conversar (PDF)")} · ${a("family-sheet-es.docx", "Editarla (Word)")}</p>
+</section>`;
+}
+
 function familyPage(id, cfg, unit, lesson) {
   const problems0 = familyFieldProblems(cfg);
   if (problems0.length)
@@ -562,7 +579,8 @@ function familyPage(id, cfg, unit, lesson) {
   const corner = familyCorner(id);
   const example = workedExampleLines(cfg);
   const { directions, problems } = practiceProblems(cfg, 1);
-  const stdBadge = cfg.standard ? `<span class="std">Standard ${esc(cfg.standard)}</span>` : "";
+  // The one standard code (config.json `standard`) via the shared identity module: docs/family-homework-v3/standards.md
+  const stdBadge = `<span class="std">Standard ${esc(lessonStandard(id))}</span>`;
 
   // \`familyKeyIdea\` is the plain-language (grade-4 reading level) version a
   // family can use; the teacher key idea is the fallback, never the other way.
@@ -652,6 +670,7 @@ function familyPage(id, cfg, unit, lesson) {
   <p class="sub" style="margin-top:-6px;">Pick one question to talk about. You don't need to do them all!</p>
   ${practiceHtml}
   ${wordProblemsLink(id)}
+  ${takeHomeLinks(id)}
 </section>`,
     },
   ];

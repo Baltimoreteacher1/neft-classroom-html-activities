@@ -7,6 +7,15 @@ import { playSort } from "./sort-game.js";
 import { playMistake } from "./mistake-game.js";
 import { playMake } from "./make-game.js";
 import { playFamily } from "./family-game.js";
+import { playMake24 } from "./make24-game.js";
+import { playChallenge } from "./challenge-game.js";
+import { playTeamRelay } from "./team-relay-game.js";
+import { playBaseball } from "./baseball-game.js";
+import { playGuess } from "./guess-game.js";
+import { playRace } from "./race-game.js";
+import { bandLabel, filterRowHtml, matchesFilter, withCatalog } from "./game-catalog.js";
+import { shopPanel } from "./buddy-shop.js";
+import { playDuel } from "./duel-game.js";
 import { playBalance } from "./balance-game.js";
 import { playFlip } from "./flip-game.js";
 import { buddyPanel, buddySvg, moodFor, reactionFor } from "./buddy.js";
@@ -14,6 +23,7 @@ import { cleanBuddy } from "./rewards.js";
 import { playPicture } from "./picture-game.js";
 import { SCENES, SCENE_IDS } from "./scenes.js";
 import {
+  buyItem,
   celebrate,
   claimNewStickers,
   dailyGame,
@@ -33,6 +43,7 @@ import { languagePromptHtml } from "./language-bridge.js";
 import { playArrayArchitect, playFractionForge, playNumberQuest, SIGNATURE_GAME_ICONS } from "./signature-games.js";
 import { playPuzzleWorld, PUZZLE_WORLD_ICONS, PUZZLE_WORLDS } from "./puzzle-worlds.js";
 import { playFluencyRally, playMathWorldBuilder, playNumberPuzzleStudio } from "./publisher-games.js";
+import { playFactorFractionPath, playPersonalGhost, playStrategyMatch, playTargetHive } from "./strategy-games.js";
 import { CLASSIC_GAME_ICONS } from "./game-icons.js";
 
 const PUBLISHER_GAME_ICONS = {
@@ -42,10 +53,14 @@ const PUBLISHER_GAME_ICONS = {
 };
 const GAME_ICONS = { ...SIGNATURE_GAME_ICONS, ...PUZZLE_WORLD_ICONS, ...PUBLISHER_GAME_ICONS };
 
-export const GAMES = [
+const REGISTRY = [
   { id: "mathworldbuilder", name: "Math World Builder", icon: "", blurb: "Plan structures on a grid and balance floor area with building resources.", run: playMathWorldBuilder },
   { id: "numberpuzzlestudio", name: "Number Puzzle Studio", icon: "", blurb: "Compose numbers, find valid pairs, and compare flexible strategies.", run: playNumberPuzzleStudio },
   { id: "fluencyrally", name: "Fluency Rally", icon: "", blurb: "Choose a mathematical route and calculate each checkpoint at your pace.", run: playFluencyRally },
+  { id: "strategymatch", name: "Strategy Match", icon: "🧩", blurb: "Match an expression to a number line, array, or fraction model.", run: playStrategyMatch },
+  { id: "targethive", name: "Target Number Hive", icon: "🐝", blurb: "Build two different expressions that reach the same target.", run: playTargetHive },
+  { id: "factorfractionpath", name: "Factor & Fraction Path Builder", icon: "🧱", blurb: "Solve calm, untimed prompts to build a path one bridge at a time.", run: playFactorFractionPath },
+  { id: "ghostsprint", name: "Personal Ghost Sprint", icon: "👻", blurb: "Try a calm run against your own accuracy-adjusted best, with Zen mode available.", run: playPersonalGhost },
   {
     id: "numberquest",
     name: "Number Garden",
@@ -118,6 +133,56 @@ export const GAMES = [
     run: playMake,
   },
   {
+    id: "duel",
+    name: "Spell Duel",
+    icon: "🪄",
+    blurb: "Cast spells with right answers, calm creatures, earn gold, and hatch pets.",
+    run: playDuel,
+  },
+  {
+    id: "make24",
+    name: "Make 24",
+    icon: "🎴",
+    blurb: "Combine four numbers with + − × ÷ to make 24.",
+    grades: [3, 4, 5, 6, 7, 8],
+    run: playMake24,
+  },
+  {
+    id: "challenge",
+    name: "Class Code Challenge",
+    icon: "🔑",
+    blurb: "Enter a class code to get the same problems as your whole class.",
+    run: playChallenge,
+  },
+  {
+    id: "teamrelay",
+    name: "Team Relay",
+    icon: "🤝",
+    blurb: "Teams take turns on one problem each and earn the stars together.",
+    run: playTeamRelay,
+  },
+  {
+    id: "baseball",
+    name: "Math Baseball",
+    icon: "⚾",
+    blurb: "Pick a swing, answer to hit, and run the bases. Play alone or take turns with a friend.",
+    run: playBaseball,
+  },
+  {
+    id: "guess",
+    name: "Guess the Number",
+    icon: "🔢",
+    blurb: "Find the secret number. A number line shows what is still possible.",
+    run: playGuess,
+  },
+  {
+    id: "race",
+    name: "Math Race",
+    icon: "🏎️",
+    blurb: "Each right answer moves your car up. Beat the rival's set plan; there is no clock.",
+    run: playRace,
+  },
+  {
     id: "family",
     name: "Fact Family Builder",
     icon: "👨‍👩‍👧",
@@ -147,6 +212,8 @@ export const GAMES = [
     run: playPicture,
   },
 ];
+// Every card carries its grade band and filter tags (see game-catalog.js).
+export const GAMES = REGISTRY.map(withCatalog);
 const esc = (value) =>
   String(value)
     .replaceAll("&", "&amp;")
@@ -167,6 +234,7 @@ export function mountGames(container, { grade, autostart = null, assignedStop = 
   let stop =
     assignedStop && stops.some((entry) => entry.id === assignedStop) ? assignedStop : ALL_STOPS;
   let scenePick = "next";
+  let filter = "all";
   let stopGame = null;
   let reviewItems = [];
   container.style.setProperty("--trail", getGrade(grade).color);
@@ -176,6 +244,17 @@ export function mountGames(container, { grade, autostart = null, assignedStop = 
       ? scenePick
       : SCENE_IDS.find((id) => !rewards.scenes.includes(id)) ||
         SCENE_IDS[Math.floor(Math.random() * SCENE_IDS.length)];
+
+  const visibleGames = () => GAMES.filter((game) => (!game.grades || game.grades.includes(grade)) && matchesFilter(game, filter));
+  const shownText = () => (visibleGames().length === 1 ? t("Showing 1 game") : t("Showing {n} games", { n: visibleGames().length }));
+  const cardsHtml = (rewards) => {
+    const daily = dailyGame(Date.now(), grade);
+    return visibleGames()
+      .map(
+        (game) => `<button type="button" class="gm-game${GAME_ICONS[game.id] ? ` gm-signature gm-${game.id}` : CLASSIC_GAME_ICONS[game.id] ? " gm-classic" : ""}${game.id === daily ? " today" : ""}" data-game="${game.id}">${game.id === daily ? `<em class="gm-today">${t("Today’s pick")}</em>` : ""}<span class="gm-icon" aria-hidden="true">${GAME_ICONS[game.id] || CLASSIC_GAME_ICONS[game.id] || esc(game.icon)}</span><b>${t(game.name)}</b><small>${t(game.blurb)}</small><span class="gm-band">${esc(bandLabel(game.gradeBand))}</span>${starRow(rewards.best[game.id] || 0)}</button>`,
+      )
+      .join("");
+  };
 
   function renderMenu(notice = "") {
     stopGame?.();
@@ -205,13 +284,31 @@ export function mountGames(container, { grade, autostart = null, assignedStop = 
         <label class="gm-calm gm-mastery-calm"><input type="checkbox" id="gm-mastery"${rewards.masteryMode ? " checked" : ""} /> 🧠 ${t("Deep Thinker Mode")} <small>${t("Untimed mastery; hints and persistent solving earn full stars")}</small></label>
       </div>
       ${notice ? `<p class="gm-note" role="status">${esc(notice)}</p>` : ""}
-      <div class="gm-menu">${GAMES.filter((game) => !game.grades || game.grades.includes(grade)).map((game) => `<button type="button" class="gm-game${GAME_ICONS[game.id] ? ` gm-signature gm-${game.id}` : CLASSIC_GAME_ICONS[game.id] ? " gm-classic" : ""}${game.id === dailyGame(Date.now(), grade) ? " today" : ""}" data-game="${game.id}">${game.id === dailyGame(Date.now(), grade) ? `<em class="gm-today">${t("Today’s pick")}</em>` : ""}<span class="gm-icon" aria-hidden="true">${GAME_ICONS[game.id] || CLASSIC_GAME_ICONS[game.id] || esc(game.icon)}</span><b>${t(game.name)}</b><small>${t(game.blurb)}</small>${starRow(rewards.best[game.id] || 0)}</button>`).join("")}</div>
+      ${filterRowHtml(filter)}
+      <p class="gm-shown" id="gm-shown" role="status">${shownText()}</p>
+      <div class="gm-menu">${cardsHtml(rewards)}</div>
       <p class="gm-goal-progress" id="gm-goal-progress">${t("This week: {a} of {b} days", { a: Math.min(daysThisWeek(rewards.days), rewards.goal), b: rewards.goal })}</p>
       ${buddyPanel(rewards, summary)}
+      ${shopPanel(rewards)}
       <section class="gm-book" aria-labelledby="gm-book-title"><h3 id="gm-book-title">${t("My sticker book")}</h3>${stickerShelf(summary)}</section>`;
     container.onclick = (event) => {
       const button = event.target.closest("[data-game]");
       if (button) return start(button.dataset.game);
+      const chip = event.target.closest("[data-gm-filter]");
+      if (chip) {
+        filter = chip.dataset.gmFilter;
+        for (const other of container.querySelectorAll("[data-gm-filter]")) other.setAttribute("aria-pressed", String(other === chip));
+        container.querySelector(".gm-menu").innerHTML = cardsHtml(loadRewards());
+        container.querySelector("#gm-shown").textContent = shownText();
+        return;
+      }
+      const buy = event.target.closest("[data-buy]");
+      if (buy) {
+        const data = loadRewards();
+        const item = buyItem(data, buy.dataset.buy);
+        if (item) saveRewards(data);
+        return renderMenu(item ? t("You bought {name}. Your buddy is wearing it!", { name: t(item.name) }) : t("Not enough coins yet. Play a game to earn more."));
+      }
       const swatch = event.target.closest("[data-buddy-color]");
       if (swatch) {
         const data = loadRewards();
@@ -313,6 +410,7 @@ export function mountGames(container, { grade, autostart = null, assignedStop = 
       saveTrail(trail);
     }
     const info = GAMES.find((entry) => entry.id === game);
+    const coinsEarned = Math.max(0, Math.floor(stars));
     if (rewards.masteryMode) {
       stars = Math.max(stars, 3);
       line = `${line} · ${t("Deep Thinker Mode: Solved with persistence & strategy! 🌟")}`;
@@ -326,6 +424,7 @@ export function mountGames(container, { grade, autostart = null, assignedStop = 
         ${rewards.masteryMode ? `<div class="gm-mastery-badge" style="background:#eff6ff; color:#1e40af; border:1.5px solid #bfdbfe; border-radius:8px; padding:6px 12px; margin:8px auto; max-width:400px; font-size:0.9rem"><span>🧠</span> <strong>${t("Deep Thinker Achievement")}</strong>: ${t("Mastery earned through strategy steps, not speed!")}</div>` : ""}
         <h2>${stars === 3 ? t("Amazing!") : stars === 2 ? t("Great game!") : t("Nice work!")}</h2>
         <p class="tr-score">${esc(t(info.name))}: ${esc(line)}</p>
+        ${coinsEarned ? `<p class="gm-coins" role="status"><span aria-hidden="true">🪙</span> ${t("+{n} coins for your Buddy shop", { n: coinsEarned })}</p>` : ""}
         ${languagePromptHtml({ grade, name: TRAILS[grade].focus }, { compact: true, heading: t("Tell someone how you knew") })}
         ${stickerToast(fresh)}
         ${reviewItems.length ? `<section class="gm-review"><h3>${t("Facts to look at again")}</h3><p>${t("Tap “Next step” to work through each one. Try to finish it before the last step.")}</p><div>${reviewItems.map((item, i) => `<article data-review="${i}">${reviewBody(item, `gm-review-${i}`, Math.max(1, peekCap(item)))}</article>`).join("")}</div></section>` : `<p class="tr-perfect">${t("No misses this game.")}</p>`}

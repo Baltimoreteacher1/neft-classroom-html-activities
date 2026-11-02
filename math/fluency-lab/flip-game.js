@@ -1,6 +1,7 @@
 // Tricky Facts: flash cards built from facts and problems the learner missed lately. The learner types the answer;
 // a right answer retires the card, a wrong one shows steps up to (not including) the answer step, then they try again.
 import { clearMiss, loadTrail, recordFact, saveTrail } from "./fact-trail.js";
+import { feedbackAction, feedbackNoteHtml, phaseFor } from "./feedback-host.js";
 import { shuffle } from "./game-pool.js";
 import { t } from "./i18n.js";
 import { validateAnswer } from "./problem-bank.js";
@@ -30,8 +31,10 @@ export function playFlip(host, { grade, calm, finish }) {
   let peek = 0;
   let note = "";
   let firstTry = 0;
+  let fb = null; // shared feedback panel state
+  let solved = false;
+  let shown = "";
   const missed = [];
-  let timer = null;
 
   function render() {
     const card = deck[at];
@@ -39,12 +42,13 @@ export function playFlip(host, { grade, calm, finish }) {
     host.innerHTML = `<div class="gm-play gm-flip">
       <div class="gm-bar"><button type="button" class="tr-back" data-gm-menu>${t("← Games")}</button><b>${t("Tricky Facts")}</b><span>${t("Card {a} of {b}", { a: at + 1, b: deck.length })}</span></div>
       <form class="gm-ask-form" autocomplete="off"><p class="gm-q" id="gm-q">${mathText(card.question)}</p>${canSpeak() ? `<button type="button" class="tr-tool" data-gm-read>${t("Read to me")}</button>` : ""}
-        <div class="tr-answer"><label class="tr-sr" for="gm-input">${t("Your answer")}</label><input id="gm-input" class="tr-input" inputmode="${card.kind === "number" ? "decimal" : "text"}" spellcheck="false" aria-describedby="gm-q" /><button type="submit" class="tr-check">${t("Check")}</button></div>
-        ${steps.length && tries ? stepsBlock(steps, Math.max(1, peek), { id: "gm-steps", cap: peekCap(card) }) : ""}
-        ${steps.length > 0 && !tries ? `<button type="button" class="tr-tool" data-gm-peek>${t("Show a step")}</button>` : ""}
-        <button type="button" class="tr-link" data-skip>${t("Keep this card for later")}</button></form>
-      <p class="gm-note">${esc(note)}</p></div>`;
-    host.querySelector("#gm-input").focus();
+        <div class="tr-answer"><label class="tr-sr" for="gm-input">${t("Your answer")}</label><input id="gm-input" class="tr-input" inputmode="${card.kind === "number" ? "decimal" : "text"}" spellcheck="false" aria-describedby="gm-q" value="${esc(shown)}"${solved ? " disabled" : ""} /><button type="submit" class="tr-check"${solved ? " disabled" : ""}>${t("Check")}</button></div>
+        ${steps.length && tries && !solved ? stepsBlock(steps, Math.max(1, peek), { id: "gm-steps", cap: peekCap(card) }) : ""}
+        ${steps.length > 0 && !tries && !solved ? `<button type="button" class="tr-tool" data-gm-peek>${t("Show a step")}</button>` : ""}
+        ${solved ? "" : `<button type="button" class="tr-link" data-skip>${t("Keep this card for later")}</button>`}</form>
+      ${feedbackNoteHtml(esc(note), fb)}</div>`;
+    if (solved) host.querySelector("[data-gm-next]")?.focus();
+    else host.querySelector("#gm-input").focus();
     syncLive(host);
   }
 
@@ -53,8 +57,11 @@ export function playFlip(host, { grade, calm, finish }) {
     tries = 0;
     peek = 0;
     note = "";
+    fb = null;
+    solved = false;
+    shown = "";
     if (at >= deck.length) {
-      timer = setTimeout(() => finish({ game: "flip", stars: flipStars(firstTry, deck.length), missed, line: t("{a} of {b} on the first try", { a: firstTry, b: deck.length }) }), 500);
+      finish({ game: "flip", stars: flipStars(firstTry, deck.length), missed, line: t("{a} of {b} on the first try", { a: firstTry, b: deck.length }) });
       return;
     }
     render();
@@ -62,6 +69,7 @@ export function playFlip(host, { grade, calm, finish }) {
 
   host.onsubmit = (event) => {
     event.preventDefault();
+    if (solved) return;
     const card = deck[at];
     const typed = host.querySelector("#gm-input").value;
     if (!typed.trim()) return;
@@ -74,21 +82,29 @@ export function playFlip(host, { grade, calm, finish }) {
       rewards.retired += 1;
       noteToday(rewards);
       saveRewards(rewards);
-      if (tries === 0) firstTry += 1;
+      const first = tries === 0;
+      if (first) firstTry += 1;
       else missed.push(card);
       note = t("Got it! This card is retired.");
+      solved = true;
+      shown = typed;
+      fb = { phase: phaseFor("flip", first ? "right" : "right-after-miss"), ctx: { expected: String(card.displayAnswer ?? card.answers?.[0] ?? ""), next: at + 1 >= deck.length ? t("See results") : t("Next") } };
       render();
-      timer = setTimeout(next, 700);
       return;
     }
     tries += 1;
     peek = 1;
     note = t("Not yet. Look at the steps and try again.");
+    fb = { phase: phaseFor("flip", "miss"), ctx: { submitted: typed.trim() } };
     render();
     host.querySelector("#gm-input").value = typed;
   };
   host.onclick = (event) => {
+    const action = feedbackAction(event);
+    if (action === "next") return solved ? next() : undefined;
+    if (action === "try-again") return host.querySelector("#gm-input")?.focus();
     if (event.target.closest("[data-gm-read]")) return speak(deck[at].question);
+    if (solved) return;
     if (event.target.closest("[data-skip]")) {
       missed.push(deck[at]);
       return next();
@@ -104,7 +120,6 @@ export function playFlip(host, { grade, calm, finish }) {
   };
   render();
   return () => {
-    clearTimeout(timer);
     host.onclick = null;
     host.onsubmit = null;
   };

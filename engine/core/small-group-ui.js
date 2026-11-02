@@ -710,7 +710,7 @@ export function injectSmallGroupStyles(accent) {
     .btn.ghost:hover:not(:disabled){background:var(--sg-soft);color:var(--sg-ink);border-color:var(--sg)}
     .btn:disabled{cursor:default;color:var(--sg-muted);border-color:var(--sg-line);background:var(--sg-fill);box-shadow:none}
     .sg-pulse-btn,.sg-role-btn,.sg-match-btn{padding:10px 14px;border:2px solid var(--sg-line);color:var(--sg-text);background:var(--sg-card);font-weight:700;text-align:left}
-    .sg-pulse-btn:hover,.sg-role-btn:hover,.sg-match-btn:hover{border-color:var(--sg);box-shadow:0 6px 16px -9px color-mix(in srgb,var(--sg) 80%,transparent)}
+    .sg-pulse-btn:hover,.sg-role-btn:hover,.sg-match-btn:hover{border-color:var(--sg);box-shadow:var(--sg-shadow)}
     .sg-match-btn.correct{border-color:var(--sg-good);background:var(--sg-good-bg);color:var(--sg-good-ink);animation:sg-okpulse .5s ease}
     .sg-match-btn.wrong{border-color:var(--sg-bad);background:var(--sg-bad-bg);color:var(--sg-bad-ink);animation:sg-nudge .3s ease}
     .sg-match-btn:disabled{cursor:default;opacity:.7}
@@ -1035,7 +1035,7 @@ export function injectSmallGroupStyles(accent) {
       body::after{content:"";position:fixed;left:0;right:0;bottom:0;height:62px;background:var(--sg-card);border-top:1px solid var(--sg-line);z-index:880;pointer-events:none}
       #app{padding-right:58px}
       .sg-station-timer{top:auto!important;bottom:12px!important;left:8px!important;right:auto!important}
-      #nt-focus-fab{top:auto!important;bottom:9px!important;left:178px!important;right:auto!important;width:44px;min-width:44px;padding:0!important;justify-content:center}
+      #nt-focus-fab{top:auto!important;bottom:72px!important;left:12px!important;right:auto!important;width:44px;min-width:44px;padding:0!important;justify-content:center}
       #nt-focus-fab .nt-focus-label{display:none}
       #nsr-root{top:auto!important;bottom:16px!important;right:8px!important;left:auto!important}
       /* Passport and Save/Resume go icon-only in the bar; both keep their

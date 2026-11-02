@@ -186,6 +186,39 @@ assert.match(html, /window\.NeftSaveResumeConfig = \{ autoStart: false \}/);
 const gradeTabs = [...win.document.querySelectorAll("#grade-tabs [role=tab]")];
 assert.equal(gradeTabs.filter((tab) => tab.tabIndex === 0).length, 1);
 assert.ok(gradeTabs.every((tab) => tab.getAttribute("aria-controls") === "library-view"));
+assert.equal(win.location.search, "?grade=3", "explicit ?grade=3 stays in the URL");
+win.document.querySelector("#brand-home").click();
+assert.equal(win.location.search, "", "clicking brand home lands on clean /math/fluency-lab/ URL");
+assert.equal(
+  win.document.title,
+  "Math Fluency Lab · Grades 1–8 | EduWonderLab",
+  "clean /math/fluency-lab/ uses the hub title instead of a single grade",
+);
+assert.equal(
+  win.document.querySelectorAll("[data-pick-grade]").length,
+  9,
+  "bare landing offers Kindergarten to Grade 8",
+);
+assert.equal(
+  win.document.querySelectorAll('#grade-tabs [aria-selected="true"]').length,
+  0,
+  "no grade is pre-selected on the landing",
+);
+assert.equal(
+  win.document.querySelector("#more-practice").hidden,
+  true,
+  "the skill library waits for a grade",
+);
+win.document.querySelector('[data-pick-grade="4"]').click();
+assert.equal(win.location.search, "?grade=4", "picking a grade puts ?grade= in the URL");
+assert.match(win.document.querySelector("#grade-heading").textContent, /Grade 4/);
+assert.equal(
+  win.document.querySelector("#more-practice").hidden,
+  false,
+  "the skill library opens after the pick",
+);
+win.document.querySelector('#grade-tabs [data-grade="5"]').click();
+assert.equal(win.location.search, "?grade=5", "grade tabs still switch grades");
 
 win.close();
 // 8. No hint step before the last one states the answer, for any skill. Coincidences (an answer that equals a

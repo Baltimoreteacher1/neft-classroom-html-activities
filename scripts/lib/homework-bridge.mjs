@@ -13,6 +13,8 @@
  * tools/homework-bridge-card.test.mjs (spec: docs/specs/family-homework-bridge-card.md).
  */
 
+import { act } from "./homework-actions.mjs";
+
 export const BRIDGE_UNITS = ["4", "6"];
 
 export const BRIDGE_ROWS = [
@@ -70,7 +72,7 @@ export function bridgeSpeech(bridge, lang) {
  * button (the page's own speak function), passed in so this module stays
  * free of page code.
  */
-export function renderBridgeCard(bridge, listen) {
+export function renderBridgeCard(bridge) {
   if (!bridge) return "";
   const rows = BRIDGE_ROWS.map(
     (r) => `
@@ -88,23 +90,9 @@ export function renderBridgeCard(bridge, listen) {
           <summary><span aria-hidden="true">🌉</span> <span class="lang-en">Then vs. now: why class math may look different</span><span class="lang-es" lang="es">Antes y ahora: por qué las matemáticas de clase pueden verse distintas</span></summary>
           <ol class="bridge-rows">${rows}
           </ol>
-          <button type="button" class="btn-read-aloud bridge-listen" onclick="${listen}" aria-label="Listen to this card" data-aria-en="Listen to this card" data-aria-es="Escuchar esta tarjeta">🔊 <span class="lang-en">Listen</span><span class="lang-es" lang="es">Escuchar</span></button>
+          <button type="button" class="btn-read-aloud bridge-listen" ${act("speakHomeworkText", bridgeSpeech(bridge, "en"), bridgeSpeech(bridge, "es"))} aria-label="Listen to this card" data-aria-en="Listen to this card" data-aria-es="Escuchar esta tarjeta">🔊 <span class="lang-en">Listen</span><span class="lang-es" lang="es">Escuchar</span></button>
         </details>`;
 }
-
-export const BRIDGE_CSS = `
-.bridge-card { margin-top: 10px; border-top: 1.5px dashed #c9d8ea; padding-top: 8px; }
-.bridge-card > summary { cursor: pointer; min-height: 44px; display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 14.5px; color: var(--navy); }
-.bridge-card > summary:focus-visible { outline: 3px solid var(--teal-ink); outline-offset: 2px; border-radius: 6px; }
-.bridge-rows { list-style: none; margin: 6px 0 0; padding: 0; display: grid; gap: 10px; }
-.bridge-row { display: flex; gap: 10px; align-items: flex-start; padding: 10px 12px; border-radius: 10px; background: #fff; border: 1px solid #d7e2ed; }
-.bridge-row.bridge-class { border-color: var(--teal); background: #f1fbf9; }
-.bridge-icon { font-size: 22px; line-height: 1.2; }
-.bridge-label { display: block; font-size: 13px; letter-spacing: .02em; text-transform: uppercase; color: var(--teal-ink); }
-.bridge-row p { margin: 3px 0 0; font-size: 15.5px; line-height: 1.5; }
-.bridge-listen { margin-top: 10px; }
-@media print { .bridge-card:not([open]) > *:not(summary) { display: none; } }
-`;
 
 /* ───────────────────────── validation (used by the test) ───────────────────────── */
 

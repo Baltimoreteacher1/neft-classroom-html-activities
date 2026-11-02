@@ -1,5 +1,6 @@
 // Make It: tap two tiles that add (or multiply) to the target. Several pairs hide on each board, and a tile
 // can only be used once, so the learner has to think about which pair goes where.
+import { feedbackAction, feedbackNoteHtml, phaseFor } from "./feedback-host.js";
 import { shuffle } from "./game-pool.js";
 import { t } from "./i18n.js";
 import { syncLive } from "./speech.js";
@@ -43,7 +44,8 @@ export function playMake(host, { grade, calm, finish, onFact }) {
   let nope = null;
   let found = [];
   let wrong = 0;
-  let timer = null;
+  let settled = false;
+  let fb = null; // shared feedback panel state
 
   const anyLeft = () => {
     const free = board.tiles.map((value, i) => ({ value, i })).filter(({ i }) => !used.has(i));
@@ -56,7 +58,15 @@ export function playMake(host, { grade, calm, finish, onFact }) {
     chosen = null;
     nope = null;
     found = [];
+    settled = false;
+    fb = null;
     render();
+  }
+
+  function nextRound() {
+    round += 1;
+    if (round >= total) return finish({ game: "make", stars: makeStars(wrong), missed: [], line: wrong === 1 ? t("{n} wrong pair", { n: wrong }) : t("{n} wrong pairs", { n: wrong }) });
+    start();
   }
 
   function render(focus) {
@@ -64,18 +74,20 @@ export function playMake(host, { grade, calm, finish, onFact }) {
     host.innerHTML = `<div class="gm-play gm-make">
       <div class="gm-bar"><button type="button" class="tr-back" data-gm-menu>${t("← Games")}</button><b>${t("Make It")}</b><span>${t("Round {n} of {m}", { n: round + 1, m: total })}</span></div>
       <div class="gm-target"><span>${t("Tap two tiles that")} ${verb}</span><strong>${board.target}</strong></div>
-      <p class="gm-note">${nope ? t("Those two do not make the target. Try another pair.") : chosen == null ? t("Pick a tile.") : t("Now pick a partner.")}</p>
+      ${feedbackNoteHtml(settled ? t("{n} of {m} found", { n: found.length, m: found.length }) : nope ? t("Those two do not make the target. Try another pair.") : chosen == null ? t("Pick a tile.") : t("Now pick a partner."), fb)}
       <div class="gm-cards cols-4" role="group" aria-label="${t("Number tiles")}">${board.tiles.map((value, i) => `<button type="button" class="gm-card q${chosen === i ? " pick" : ""}${used.has(i) ? " done" : ""}${nope === i ? " nope" : ""}" data-m="${i}" aria-pressed="${chosen === i}" ${used.has(i) ? "disabled" : ""}><span>${value}</span></button>`).join("")}</div>
       ${found.length ? `<ul class="gm-pairs" aria-label="${t("Pairs you found")}">${found.map((pair) => `<li>${pair}</li>`).join("")}</ul>` : ""}</div>`;
-    if (focus != null) host.querySelector(`[data-m="${focus}"]`)?.focus();
+    if (settled) host.querySelector("[data-gm-next]")?.focus();
+    else if (focus != null) host.querySelector(`[data-m="${focus}"]`)?.focus();
     syncLive(host);
   }
 
   function pickTile(i) {
-    if (used.has(i)) return;
+    if (used.has(i) || settled) return;
     if (chosen == null) {
       chosen = i;
       nope = null;
+      fb = null;
       render(i);
       return;
     }
@@ -92,32 +104,35 @@ export function playMake(host, { grade, calm, finish, onFact }) {
       onFact?.(factItem, wrong === 0);
       chosen = null;
       nope = null;
+      settled = !anyLeft();
+      fb = {
+        phase: phaseFor("make", "right"),
+        ctx: { expected: found[found.length - 1], next: settled ? (round + 1 >= total ? t("See results") : t("Next round")) : undefined },
+      };
       render();
-      if (!anyLeft()) {
-        round += 1;
-        if (round >= total) timer = setTimeout(() => finish({ game: "make", stars: makeStars(wrong), missed: [], line: wrong === 1 ? t("{n} wrong pair", { n: wrong }) : t("{n} wrong pairs", { n: wrong }) }), 900);
-        else {
-          host.querySelector(".gm-note").innerHTML = `<button type="button" class="tr-go" data-gm-next>${t("Next round")}</button>`;
-          host.querySelector("[data-gm-next]").focus();
-        }
-      }
       return;
     }
     wrong += 1;
     nope = i;
+    fb = { phase: phaseFor("make", "miss"), ctx: { submitted: `${a} ${board.op} ${b}` } };
     onFact?.(factItem, false);
     chosen = null;
     render(i);
   }
 
   host.onclick = (event) => {
-    if (event.target.closest("[data-gm-next]")) return start();
+    const action = feedbackAction(event);
+    if (action === "next" && settled) return nextRound();
+    if (action === "try-again") {
+      fb = null;
+      nope = null;
+      return render();
+    }
     const tile = event.target.closest("[data-m]");
     if (tile) pickTile(Number(tile.dataset.m));
   };
   start();
   return () => {
-    clearTimeout(timer);
     host.onclick = null;
   };
 }

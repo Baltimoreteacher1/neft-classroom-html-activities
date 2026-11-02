@@ -27,10 +27,10 @@ export function machineSvg({ inText, outText, last, name }) {
   const gear = (x, y, r) =>
     `${circle(x, y, r, PALETTE.goldSoft)}${circle(x, y, r * 0.35, PALETTE.paper)}`;
   const body = [
-    rect(100, 20, 120, 100, PALETTE.violetSoft, PALETTE.violet, 14),
+    rect(100, 20, 120, 100, PALETTE.tealSoft, PALETTE.teal, 14),
     gear(134, 50, 15),
     gear(186, 50, 15),
-    label(160, 106, "?", 34, PALETTE.violet),
+    label(160, 106, "?", 34, PALETTE.teal),
     line(18, 70, 96, 70, PALETTE.ink, 3),
     `<path d="M88 62 L100 70 L88 78" fill="none" stroke="${PALETTE.ink}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>`,
     line(224, 70, 302, 70, PALETTE.ink, 3),
@@ -66,7 +66,7 @@ export function figureSvg({ a, b, n, name }) {
     for (let r = 0; r < a; r += 1) {
       const x = 6 + (col + c) * (tile + gap);
       const y = height - 6 - (r + 1) * (tile + gap) + gap;
-      cells.push(rect(x, y, tile, tile, PALETTE.violetSoft, PALETTE.violet, 3));
+      cells.push(rect(x, y, tile, tile, PALETTE.tealSoft, PALETTE.teal, 3));
     }
   }
   return svg(width, height, cells.join(""), name, `width="${Math.min(width, 330)}"`);

@@ -465,12 +465,16 @@ writeFileSync(
   )}\n`,
 );
 const jsString = (v) => JSON.stringify(v);
+const resourceEntry = ([key, value]) => {
+  if (key !== "siteTitle") return `      ${key}: ${jsString(value)},`;
+  const inline = `      siteTitle: { en: ${jsString(value.en)}, es: ${jsString(value.es)} },`;
+  return inline.length <= 100
+    ? inline
+    : `      siteTitle: {\n        en: ${jsString(value.en)},\n        es: ${jsString(value.es)},\n      },`;
+};
 const resourceSource = Object.values(resources)
   .map(
-    (r) =>
-      `    ${jsString(r.id)}: {\n${Object.entries(r)
-        .map(([k, v]) => `      ${k}: ${jsString(v)},`)
-        .join("\n")}\n    },`,
+    (r) => `    ${jsString(r.id)}: {\n${Object.entries(r).map(resourceEntry).join("\n")}\n    },`,
   )
   .join("\n");
 writeFileSync(

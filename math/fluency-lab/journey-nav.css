@@ -1,0 +1,307 @@
+/* Dashboard streak, badges, grade and strand navigation, doors and the library card. ds4.css tokens only. */
+.fl4-card,
+.fl4-skill {
+  display: grid;
+  align-content: start;
+  gap: var(--fl-s2);
+  min-inline-size: 0;
+  padding: var(--fl-s3);
+  border: 1px solid var(--fl-line);
+  border-radius: var(--fl-radius-lg);
+  background: var(--fl-white);
+  box-shadow: var(--fl-shadow-1);
+}
+/* Rewards. */
+.fl4-rewards,
+.fl4-nav,
+.fl4-pathway {
+  display: grid;
+  gap: var(--fl-s3);
+}
+.fl4-rewards__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr));
+  gap: var(--fl-s3);
+}
+.fl4-panel {
+  display: grid;
+  align-content: start;
+  gap: var(--fl-s1);
+  padding: var(--fl-s3);
+  border: 1px solid var(--fl-line);
+  border-radius: var(--fl-radius-lg);
+  background: var(--fl-white);
+}
+.fl4-big {
+  color: var(--fl-navy);
+  font: 600 3rem/1 var(--fl-font-head);
+}
+.fl4-big__label,
+.fl4-panel__note {
+  color: var(--fl-ink-soft);
+  font-size: 0.9375rem;
+}
+.fl4-panel__label {
+  color: var(--fl-ink-soft);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.fl4-panel__label--gap {
+  margin-block-start: var(--fl-s2);
+}
+.fl4-panel__value {
+  color: var(--fl-navy);
+  font-size: 1.125rem;
+  font-weight: 700;
+}
+.fl4-week {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--fl-s1);
+  margin: var(--fl-s2) 0 0;
+  padding: 0;
+  list-style: none;
+}
+.fl4-week li {
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  color: var(--fl-ink-soft);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+.fl4-dot {
+  display: grid;
+  place-items: center;
+  inline-size: 32px;
+  block-size: 32px;
+  border: 2px dashed var(--fl-ink-soft);
+  border-radius: 50%;
+  color: var(--fl-white);
+}
+.fl4-week li[data-on="true"] .fl4-dot {
+  border-style: solid;
+  border-color: var(--fl-teal-ink);
+  background: var(--fl-teal-ink);
+}
+.fl4-dot svg {
+  inline-size: 16px;
+  block-size: 16px;
+}
+.fl4-bar {
+  display: block;
+  inline-size: 100%;
+  block-size: 12px;
+  overflow: hidden;
+  border: 1px solid var(--fl-ink-soft);
+  border-radius: 6px;
+  background: var(--fl-paper);
+}
+.fl4-bar > span {
+  display: block;
+  inline-size: var(--p);
+  block-size: 100%;
+  border-radius: 5px;
+  background: var(--fl-teal-ink);
+}
+.fl4-empty {
+  display: flex;
+  align-items: center;
+  gap: var(--fl-s2);
+  color: var(--fl-ink-soft);
+}
+.fl4-empty svg {
+  inline-size: 56px;
+  block-size: 56px;
+}
+.fl4-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--fl-s3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.fl4-badges li {
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  inline-size: 88px;
+  text-align: center;
+  font-size: 0.8125rem;
+}
+/* Grade and strand navigation. */
+.fl4-home h3.fl4-subhead {
+  color: var(--fl-ink-soft);
+  font: 700 0.8125rem var(--fl-font-body);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.fl4-strands {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 124px), 1fr));
+  gap: var(--fl-s2);
+  margin: 0 0 var(--fl-s2);
+  padding: 0;
+  list-style: none;
+}
+.fl4-strands {
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 176px), 1fr));
+}
+.fl4-tile {
+  display: grid;
+  gap: 4px;
+  inline-size: 100%;
+  min-block-size: 44px;
+  padding: var(--fl-s2);
+  border: 1px solid var(--fl-line);
+  border-radius: var(--fl-radius);
+  background: var(--fl-white);
+  color: var(--fl-ink);
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+.fl4-tile:hover {
+  border-color: var(--fl-navy);
+}
+.fl4-tile[aria-pressed="true"] {
+  border: 2px solid var(--fl-navy);
+  padding: calc(var(--fl-s2) - 1px);
+  background: var(--fl-teal-soft);
+}
+.fl4-tile__art {
+  display: block;
+  inline-size: 40px;
+  block-size: 40px;
+}
+.fl4-tile__art svg {
+  inline-size: 100%;
+  block-size: 100%;
+}
+.fl4-tile__name {
+  color: var(--fl-navy);
+  font-size: 0.9375rem;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+.fl4-tile__count {
+  color: var(--fl-ink-soft);
+  font-size: 0.8125rem;
+}
+.fl4-pathway > p {
+  color: var(--fl-ink-soft);
+}
+/* Doors: games and the skill library. Legacy journey-* classes are hooks only. */
+.fl4-doors {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+  gap: var(--fl-s3);
+}
+.fl4-home .fl4-door {
+  display: grid;
+  align-content: start;
+  gap: var(--fl-s1);
+  min-height: 0;
+  padding: var(--fl-s4);
+  border: 1px solid var(--fl-line);
+  border-radius: var(--fl-radius-lg);
+  background: var(--fl-paper);
+  color: var(--fl-ink);
+  font: inherit;
+  text-align: start;
+  box-shadow: var(--fl-shadow-1);
+}
+.fl4-home button.fl4-door {
+  cursor: pointer;
+}
+.fl4-home .journey-explore.fl4-door {
+  background: var(--fl-blue-soft);
+}
+.fl4-door strong,
+.fl4-home .fl4-door h3 {
+  color: var(--fl-navy);
+  font: 600 1.5rem/1.2 var(--fl-font-head);
+}
+.fl4-door__link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--fl-s1);
+  min-block-size: 44px;
+  margin-block-start: var(--fl-s1);
+  color: var(--fl-navy);
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.fl4-home .journey-evidence {
+  margin: 0;
+}
+/* The library card: same family as the recommendation card. */
+#skill-grid.skill-grid {
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
+  gap: var(--fl-s3);
+}
+.fl4-skill .fl4-card__actions--library {
+  display: grid;
+  gap: var(--fl-s1);
+}
+.fl4-quick {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--fl-s1);
+}
+.fl4-quick .fl-btn {
+  padding-inline: var(--fl-s1);
+  font-size: 0.8125rem;
+}
+.fl4-quick svg {
+  inline-size: 16px;
+  block-size: 16px;
+}
+.fl4-suggest {
+  color: var(--fl-teal-ink);
+  font-size: 0.875rem;
+}
+.fl4-preview {
+  border-block-start: 1px solid var(--fl-line);
+  padding-block-start: var(--fl-s1);
+  font-size: 0.875rem;
+}
+.fl4-preview summary {
+  min-block-size: 32px;
+  color: var(--fl-navy);
+  font-weight: 600;
+  cursor: pointer;
+}
+.fl4-preview__body {
+  display: grid;
+  gap: var(--fl-s1);
+  padding-block: var(--fl-s1);
+}
+.fl4-preview__q {
+  font-weight: 700;
+}
+@media (forced-colors: active) {
+.fl4-bar > span {
+    background: Highlight;
+  }
+}
+
+/* Library cards in a row share a height, so the action buttons sit at the card's foot and line up across the row. */
+.fl4-skill {
+  display: flex;
+  flex-direction: column;
+}
+.fl4-skill > * {
+  flex: none;
+}
+.fl4-skill > .fl4-card__actions--library {
+  margin-top: auto;
+}
+/* The strand label and title carry browser-default margins; the grid gap already spaces them. */
+.fl4-card__id > * {
+  margin: 0;
+}

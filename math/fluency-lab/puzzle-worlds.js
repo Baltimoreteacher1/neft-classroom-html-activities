@@ -1,5 +1,6 @@
 // Math-native puzzle worlds. Level data, model rendering, and answer checks
 // share one small runner so visual state and mathematical state cannot drift.
+import { mountFeedback, phaseFor } from "./feedback-host.js";
 import { t } from "./i18n.js";
 import { getGrade } from "./problem-bank.js";
 
@@ -217,13 +218,35 @@ export function playPuzzleWorld(container, { grade, finish, gameId, onEvidence =
   const world = PUZZLE_WORLDS.find((entry) => entry.id === gameId);
   if (!world) return () => {};
   const total = 5;
-  const state = { round: 0, firstTry: 0, misses: 0, missed: false, hinted: false, locked: false, paused: false };
+  const state = { round: 0, firstTry: 0, misses: 0, missed: false, hinted: false, locked: false, ended: false, paused: false };
   let level;
-  let timer;
-  const feedback = (good, message) => {
-    const node = container.querySelector("[data-pw-feedback]");
-    node.dataset.state = good ? "right" : "retry";
-    node.textContent = message;
+  // What the learner built, in the stage's own notation. It is their entry, so it is shown as "Your answer" on a
+  // miss and as the verified answer once the model checks out.
+  const entryText = (v) => {
+    if (level.mode === "coordinate") return `(${v.x}, ${v.y})`;
+    if (level.mode === "harbor") return v.docks.join(" · ");
+    if (level.mode === "fraction-single") return `${v.numerator}/${v.denominator}`;
+    if (level.mode === "fraction-pair") return `${v.numerator1}/${v.denominator1} + ${v.numerator2}/${v.denominator2}`;
+    if (level.mode === "choice") return v.choice ? `${t(v.choice)}${world.id === "ratiocity" && level.model.kind === "percent" ? "%" : ""}` : "";
+    return String(v.answer ?? "").trim();
+  };
+  // One shared result panel. A solved stage waits for its Next button (no timer); a miss never states the answer.
+  let shown = null;
+  const feedback = (outcome, message, ctx = {}) => {
+    const copy = container.querySelector("[data-pw-feedback]");
+    copy.dataset.state = outcome === "right" ? "right" : "retry";
+    const panel = mountFeedback(copy, { onAction });
+    shown = { outcome, message, ctx, panel };
+    if (outcome === "right") {
+      panel.show(phaseFor("puzzleworld", state.missed || state.hinted ? "right-after-miss" : "right"), { ...ctx, next: state.round + 1 >= total ? t("See results") : t("Next round") }, message);
+      panel.el.querySelector("[data-feedback-action='next']")?.focus();
+    } else if (outcome === "empty") panel.show("empty", {}, message);
+    else panel.show(phaseFor("puzzleworld", "miss"), { ...ctx, hintAvailable: !state.hinted }, message);
+  };
+  const onAction = (action) => {
+    if (action === "next") next();
+    else if (action === "hint") { container.querySelector("[data-pw-hint]")?.click(); if (shown) feedback(shown.outcome, shown.message, shown.ctx); }
+    else if (action === "try-again") { shown?.panel.clear(); container.querySelector(".pw-controls input, .pw-controls button")?.focus(); }
   };
   const values = () => ({ answer: level?.mode === "tenframe" ? container.querySelectorAll("[data-frame-counter][aria-pressed=true]").length : container.querySelector("[name=pw-answer]")?.value, x: container.querySelector("[name=pw-x]")?.value, y: container.querySelector("[name=pw-y]")?.value, docks: Array.from(container.querySelectorAll("[name=pw-dock]"), (input) => input.value), choice: container.querySelector("[name=pw-choice]:checked")?.value, numerator: container.querySelector("[name=pw-num]")?.value, denominator: container.querySelector("[name=pw-den]")?.value, numerator1: container.querySelector("[name=pw-num1]")?.value, denominator1: container.querySelector("[name=pw-den1]")?.value, numerator2: container.querySelector("[name=pw-num2]")?.value, denominator2: container.querySelector("[name=pw-den2]")?.value });
   const updateLive = () => {
@@ -287,8 +310,10 @@ export function playPuzzleWorld(container, { grade, finish, gameId, onEvidence =
     container.innerHTML = `<header class="pw-head"><button type="button" class="tr-link" data-gm-menu>← ${t("Back to games")}</button><p class="section-label">${t("Puzzle world")} · ${esc(t(getGrade(grade).label))}</p><h2>${t(world.name)}</h2><p>${t("Stage {n} of {total}", { n: state.round + 1, total })} · ${t("No timer")}</p></header><section class="pw-scene pw-scene-${world.theme}" aria-label="${t(world.name)} puzzle"><p class="pw-prompt">${esc(level.prompt)}</p>${modelHtml(level)}<p class="pw-live" data-pw-live role="status" aria-live="polite">${t("Enter a value to test the model.")}</p><div class="pw-controls">${controls()}</div></section><p data-pw-feedback class="sig-feedback" role="status" aria-live="polite"></p><div class="sig-actions"><button type="button" class="outline-action" data-pw-hint>${t("Show a hint")}</button><button type="button" class="outline-action" data-pw-reset>${t("Reset this stage")}</button><button type="button" class="outline-action" data-pw-replay>${t("Replay model")}</button><button type="button" class="outline-action" data-pw-pause aria-pressed="false">${t("Pause motion")}</button><button type="button" class="primary-action" data-pw-check>${t("Test this model")}</button></div><p class="sig-hint" data-pw-hint-copy hidden>${esc(t(level.hint))}</p><p class="pw-reflect">${t("Predict, test, and revise. What relationship did your model show?")}</p>`;
   };
   const next = () => {
+    if (!state.locked || state.ended) return;
     state.round += 1;
     if (state.round >= total) {
+      state.ended = true;
       container.classList.remove("pw-playing", `pw-${world.theme}`);
       finish({ game: world.id, stars: state.firstTry === total ? 3 : state.firstTry >= 3 ? 2 : 1, missed: [], line: t("{first} of {total} stages solved independently on the first try; {revisions} revisions made", { first: state.firstTry, total, revisions: state.misses }) });
       return;
@@ -305,14 +330,13 @@ export function playPuzzleWorld(container, { grade, finish, gameId, onEvidence =
     const counter = event.target.closest("[data-frame-counter]");
     if (counter && !state.locked) { counter.setAttribute("aria-pressed", String(counter.getAttribute("aria-pressed") !== "true")); counter.textContent = counter.getAttribute("aria-pressed") === "true" ? "●" : "○"; updateLive(); return; }
     if (event.target.closest("[data-pw-hint]")) { container.querySelector("[data-pw-hint-copy]").hidden = !container.querySelector("[data-pw-hint-copy]").hidden; state.hinted = true; return; }
-    if (event.target.closest("[data-pw-reset]")) { state.locked = false; state.paused = false; render(); updateLive(); container.querySelector("input")?.focus(); return; }
+    if (event.target.closest("[data-pw-reset]")) { if (state.locked) return; state.locked = false; state.paused = false; render(); updateLive(); container.querySelector("input")?.focus(); return; }
     if (event.target.closest("[data-pw-replay]")) { const scene = container.querySelector(".pw-scene"); scene.classList.remove("pw-replay"); void scene.offsetWidth; scene.classList.add("pw-replay"); window.setTimeout(() => scene.classList.remove("pw-replay"), 900); return; }
     if (event.target.closest("[data-pw-pause]")) { state.paused = !state.paused; const button = container.querySelector("[data-pw-pause]"); button.setAttribute("aria-pressed", String(state.paused)); button.textContent = state.paused ? t("Resume motion") : t("Pause motion"); container.querySelector(".pw-scene").classList.toggle("pw-motion-paused", state.paused); return; }
     if (!event.target.closest("[data-pw-check]") || state.locked) return;
     if (validateWorldAnswer(world.id, level, values())) {
       state.firstTry += state.missed || state.hinted ? 0 : 1; state.locked = true; onEvidence({ worldId: world.id, grade, correct: true, independent: !state.missed && !state.hinted });
-      feedback(true, t("The model checks out. Your quantities satisfy the relationship."));
-      timer = window.setTimeout(next, 800);
+      feedback("right", t("The model checks out. Your quantities satisfy the relationship."), { expected: entryText(values()) });
     } else {
       state.misses += 1; state.missed = true;
       onEvidence({ worldId: world.id, grade, correct: false, independent: !state.hinted });
@@ -333,10 +357,13 @@ export function playPuzzleWorld(container, { grade, finish, gameId, onEvidence =
                     : world.id === "graphcity"
                       ? "Substitute x into the rule to find y, then check both coordinates."
                       : "That route does not return to the stated output. Check the inverse steps.";
-      feedback(false, t(repair));
+      const entry = values();
+      const ready = evaluateWorldBuild(world.id, level, entry);
+      if (ready.ready) feedback("miss", t(repair), { submitted: entryText(entry) });
+      else feedback("empty", ready.text);
     }
   };
-  return () => { window.clearTimeout(timer); container.onclick = null; container.oninput = null; container.onchange = null; container.onkeydown = null; container.classList.remove("pw-playing", `pw-${world.theme}`); };
+  return () => { container.onclick = null; container.oninput = null; container.onchange = null; container.onkeydown = null; container.classList.remove("pw-playing", `pw-${world.theme}`); };
 }
 
 export const PUZZLE_WORLD_ICONS = Object.fromEntries(PUZZLE_WORLDS.map((world) => [world.id, `<span class="pw-icon" aria-hidden="true">${world.icon}</span>`]));

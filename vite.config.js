@@ -37,6 +37,11 @@ function copyStandaloneHtml() {
     // publishing infrastructure config on a student-facing domain. Nothing on the
     // site references /workers/, so skipping the whole directory is safe.
     "workers",
+    // Vite's publicDir already copies public/ to the dist root, so copying the
+    // directory again put 283 byte-identical files under /public/ and pushed the
+    // deployment past Cloudflare Pages' 20,000-file limit ("Pages only supports
+    // up to 20,000 files"), freezing production. Nothing references /public/.
+    "public",
   ]);
   const ROOT_FILES = ["_headers", "_redirects", "404.html", "robots.txt", "sitemap.xml"];
   // Keep dev artifacts out of the published site: nested .claude/.git/node_modules
@@ -475,6 +480,7 @@ export default defineConfig({
           __dirname,
           "engine/core/instructional-intelligence.js",
         ),
+        "published-qr-mini": resolve(__dirname, "engine/core/qr-mini.js"),
         "class-investigation-engine": resolve(
           __dirname,
           "assets/class-investigation/engine-tools.js",
@@ -500,6 +506,9 @@ export default defineConfig({
           }
           if (chunk.name === "published-instructional-intelligence") {
             return "engine/core/instructional-intelligence.js";
+          }
+          if (chunk.name === "published-qr-mini") {
+            return "engine/core/qr-mini.js";
           }
           return chunk.name === "homework-lesson-models" || chunk.name === "nt-web-vitals"
             ? `assets/${chunk.name}.js`

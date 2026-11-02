@@ -29,13 +29,13 @@ The four language domains each own a colour and are always paired with an icon a
 
 | Domain    | Class         | Fill (white text on it) | Ink (text on white) | Tint               |
 | --------- | ------------- | ----------------------- | ------------------- | ------------------ |
-| Listening | `d-listening` | `--listening` #2563eb   | `--listening-ink`   | `--listening-soft` |
+| Listening | `d-listening` | `--listening` #17324d   | `--listening-ink`   | `--listening-soft` |
 | Reading   | `d-reading`   | `--reading` #0b7a75     | `--reading-ink`     | `--reading-soft`   |
-| Speaking  | `d-speaking`  | `--speaking` #7c3aed    | `--speaking-ink`    | `--speaking-soft`  |
+| Speaking  | `d-speaking`  | `--speaking` #c94f3b    | `--speaking-ink`    | `--speaking-soft`  |
 | Writing   | `d-writing`   | `--writing` #b45309     | `--writing-ink`     | `--writing-soft`   |
 
 Put the domain class on a container and use `--room`, `--room-ink`, `--room-soft`. Colour is never the only signal.
-Primary action blue is `--brand`; navy `--ink` is text and the footer; `--accent` amber and `--coral` are decoration only.
+Primary actions use navy `--brand`; navy `--ink` is text and the footer. Amber `--accent` and coral `--coral` mark emphasis and the speaking domain.
 
 ## Tokens (see `:root` in `ds.css`)
 

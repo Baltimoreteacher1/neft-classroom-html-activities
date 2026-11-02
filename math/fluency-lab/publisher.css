@@ -1,0 +1,54 @@
+/* Shared design tokens for the Fluency Lab's newer surfaces (explanation steps, Math Writing Studio).
+   Palette follows the repo rules: navy, teal, warm off-white, amber, coral. No violet, purple or indigo.
+   Each writing "job" owns one hue, used with its name so colour is never the only cue. */
+:root {
+  --pub-ink: #24323f;
+  --pub-ink-soft: #4d5d6b;
+  --pub-navy: #17324d;
+  --pub-teal: #1fa6a2;
+  --pub-teal-ink: #0b6b68;
+  --pub-teal-tint: #e3f4f3;
+  --pub-amber: #f2c15b;
+  --pub-amber-ink: #7a5200;
+  --pub-amber-tint: #fdf3d8;
+  --pub-coral: #d8613c;
+  --pub-coral-ink: #a3401f;
+  --pub-coral-tint: #fbe9e2;
+  --pub-blue: #2f6db0;
+  --pub-blue-ink: #1f5190;
+  --pub-blue-tint: #e5eef8;
+  --pub-navy-tint: #e4e9ef;
+  --pub-paper: #f7f4ec;
+  --pub-rule: #d6dde3;
+  --pub-serif: "Fraunces", "Iowan Old Style", Georgia, serif;
+  --pub-sans: "Lexend", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --pub-radius: 14px;
+  --pub-lift: 0 1px 0 rgba(23, 50, 77, 0.06), 0 8px 22px -12px rgba(23, 50, 77, 0.28);
+}
+
+/* A job's hue, ink (for text) and tint (for a wash). Set once per element; children read the variables. */
+[data-job="say"] {
+  --job: var(--pub-teal);
+  --job-ink: var(--pub-teal-ink);
+  --job-tint: var(--pub-teal-tint);
+}
+[data-job="show"] {
+  --job: var(--pub-blue);
+  --job-ink: var(--pub-blue-ink);
+  --job-tint: var(--pub-blue-tint);
+}
+[data-job="why"] {
+  --job: var(--pub-amber);
+  --job-ink: var(--pub-amber-ink);
+  --job-tint: var(--pub-amber-tint);
+}
+[data-job="check"] {
+  --job: var(--pub-coral);
+  --job-ink: var(--pub-coral-ink);
+  --job-tint: var(--pub-coral-tint);
+}
+[data-job="end"] {
+  --job: var(--pub-navy);
+  --job-ink: var(--pub-navy);
+  --job-tint: var(--pub-navy-tint);
+}

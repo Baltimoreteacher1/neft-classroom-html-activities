@@ -1,0 +1,94 @@
+/* Prerequisite rescue: the offer, the mini-lesson dialog and the return message. Tokens from ds4.css only. */
+.rescue-offer {
+  display: grid;
+  gap: var(--fl-s1, 8px);
+}
+.rescue-offer-actions,
+.rescue-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--fl-s1, 8px);
+}
+.rescue-offer button,
+.rescue-actions button {
+  min-block-size: 44px;
+}
+.rescue-dialog {
+  inline-size: min(40rem, calc(100vw - 2 * var(--fl-s2, 16px)));
+  max-block-size: calc(100dvh - 2 * var(--fl-s2, 16px));
+  overflow: auto;
+  padding: var(--fl-s3, 24px);
+  border: 2px solid var(--fl-navy, #17324d);
+  border-radius: var(--fl-radius-lg, 20px);
+  background: var(--fl-white, #fff);
+  color: var(--fl-ink, #24323f);
+  box-shadow: var(--fl-shadow-2, 0 4px 16px rgb(23 50 77 / 0.12));
+}
+.rescue-dialog::backdrop {
+  background: rgb(23 50 77 / 0.55);
+}
+.rescue-dialog h2 {
+  margin: 0 0 var(--fl-s1, 8px);
+  font-family: var(--fl-font-head, Georgia, serif);
+  color: var(--fl-navy, #17324d);
+}
+.rescue-dialog h2:focus-visible,
+.rescue-dialog button:focus-visible {
+  outline: none;
+  box-shadow: var(--fl-focus, 0 0 0 3px #fff, 0 0 0 6px #2c6fb0);
+}
+.rescue-steps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--fl-s1, 8px);
+  margin: var(--fl-s2, 16px) 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: rescue-step;
+}
+.rescue-steps li {
+  counter-increment: rescue-step;
+  padding: 4px var(--fl-s2, 16px);
+  border: 1px solid var(--fl-line, #d5d9de);
+  border-radius: 999px;
+  background: var(--fl-paper, #f7f4ec);
+  font-size: 0.9rem;
+}
+.rescue-steps li::before {
+  content: counter(rescue-step) ". ";
+  font-weight: 700;
+}
+.rescue-steps li[aria-current="step"] {
+  border: 2px solid var(--fl-teal-ink, #0e6b68);
+  background: var(--fl-teal-soft, #dff3f1);
+  font-weight: 700;
+}
+.rescue-lesson {
+  margin-block: var(--fl-s2, 16px);
+}
+.rescue-actions {
+  position: sticky;
+  inset-block-end: 0;
+  padding-block: var(--fl-s1, 8px);
+  background: var(--fl-white, #fff);
+}
+.rescue-return {
+  margin: 0 0 var(--fl-s2, 16px);
+  padding: var(--fl-s2, 16px);
+  border-inline-start: 6px solid var(--fl-teal-ink, #0e6b68);
+  border-radius: var(--fl-radius, 12px);
+  background: var(--fl-teal-soft, #dff3f1);
+  color: var(--fl-ink, #24323f);
+  font-weight: 600;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .rescue-dialog[open] {
+    animation: rescue-in 180ms var(--fl-ease, ease-out);
+  }
+  @keyframes rescue-in {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+  }
+}

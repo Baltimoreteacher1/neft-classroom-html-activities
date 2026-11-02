@@ -3917,15 +3917,17 @@ function buildLaunchProblemCard(config) {
   // are shown" — so without it there is nothing to solve. It REPLACES the
   // decorative theme art rather than joining it: two pictures above one problem
   // is a student asking which one to read.
-  if (cfg.problemImage) {
+  const problemSrc = cfg.problemImage || (cfg.figure && cfg.figure.url);
+  const problemAlt = cfg.problemImageAlt || (cfg.figure && cfg.figure.alt);
+  if (problemSrc) {
     const fig = document.createElement("figure");
     fig.className = "launch-problem-figure";
     const img = document.createElement("img");
     img.className = "launch-problem-img";
     img.setAttribute("loading", "lazy");
     img.setAttribute("decoding", "async");
-    img.src = String(cfg.problemImage);
-    img.alt = String(cfg.problemImageAlt || "Figure for this problem");
+    img.src = String(problemSrc);
+    img.alt = String(problemAlt || "Figure for this problem");
     fig.append(img);
     scenario.append(fig);
     attachImageZoom(img);

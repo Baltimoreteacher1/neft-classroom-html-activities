@@ -1,0 +1,755 @@
+/* Fluency Lab 4.0 screens layer. Loaded last: it unifies header, tabs, buttons, cards and feedback across every
+   screen using the ds4.css tokens. No violet, no emoji art, 44px targets, visible focus, reduced motion respected. */
+
+/* ---- Game and trail feedback host (feedback-host.js) ---- */
+.fb-host {
+  margin: var(--fl-s2, 16px) auto;
+  max-inline-size: 44rem;
+  text-align: start;
+  border-radius: var(--fl-radius, 12px);
+  background: var(--fl-white, #fff);
+  scroll-margin-block: var(--fl-s3, 24px);
+}
+.fb-host[data-tone="success"] {
+  background: var(--fl-success-soft, #e4f4ea);
+  border-color: var(--fl-success, #1b7a4b);
+  color: var(--fl-ink, #24323f);
+}
+.fb-host[data-tone="support"] {
+  background: var(--fl-warn-soft, #fff4e0);
+  border-color: var(--fl-warn, #b45309);
+  color: var(--fl-ink, #24323f);
+}
+.fb-host[hidden] {
+  display: none;
+}
+.fb-host .fb-title {
+  display: block;
+  font: 700 1.5rem/1.2 var(--fl-font-head, Georgia, serif);
+  color: var(--fl-navy, #17324d);
+}
+.fb-host .fb-copy,
+.fb-host .gm-note {
+  margin: var(--fl-s1, 8px) 0 0;
+  min-height: 0;
+  color: var(--fl-ink, #24323f);
+  font-size: 1.05rem;
+  text-align: start;
+}
+.fb-host .fb-copy:empty {
+  display: none;
+}
+.fb-host .fb-actions {
+  margin-top: var(--fl-s2, 16px);
+}
+.fb-host .fb-actions button {
+  min-block-size: 44px;
+  padding-inline: var(--fl-s3, 24px);
+}
+.fb-host[data-phase="correct"] .fb-icon,
+.fb-host[data-phase="assisted"] .fb-icon {
+  color: var(--fl-success, #1b7a4b);
+}
+.fb-host[data-tone="support"] .fb-icon {
+  color: var(--fl-warn, #b45309);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .fb-host[data-phase="correct"],
+  .fb-host[data-phase="assisted"] {
+    animation: fb-pop 280ms var(--fl-ease, ease-out);
+  }
+}
+
+/* ---- Token bridge: the older sheets read these names, so one set of values unifies every screen ---- */
+:root {
+  --ink: var(--fl-ink, #24323f);
+  --ink-soft: var(--fl-ink-soft, #52606d);
+  --paper: var(--fl-paper, #f7f4ec);
+  --navy: var(--fl-navy, #17324d);
+  --navy-dark: #10263b;
+  --blue-soft: var(--fl-blue-soft, #e3eef8);
+  --line: var(--fl-line, #d5d9de);
+  --line-strong: #8a99a8;
+  --good: var(--fl-success, #1b7a4b);
+  --good-soft: var(--fl-success-soft, #e4f4ea);
+  --warn: var(--fl-warn, #b45309);
+  --warn-soft: var(--fl-warn-soft, #fff4e0);
+  --bad: var(--fl-error, #b42318);
+  --bad-soft: var(--fl-error-soft, #fde8e7);
+  --radius: var(--fl-radius-lg, 20px);
+  --shadow: var(--fl-shadow-1);
+  --t-ink: var(--fl-navy, #17324d);
+  --t-ink-soft: var(--fl-ink-soft, #52606d);
+  --t-page: var(--fl-paper, #f7f4ec);
+  --t-rule: var(--fl-line, #d5d9de);
+  --t-good: var(--fl-success, #1b7a4b);
+  --t-good-soft: var(--fl-success-soft, #e4f4ea);
+  --t-practice: var(--fl-warn, #b45309);
+  --t-practice-soft: var(--fl-warn-soft, #fff4e0);
+  --t-focus: var(--fl-blue, #2c6fb0);
+  /* The page accent is teal on every screen; a grade keeps its own colour only on its grade tab. */
+  --grade: var(--fl-teal-ink, #0e6b68) !important;
+  font-family: var(--fl-font-body, "Lexend", system-ui, sans-serif);
+}
+html,
+body {
+  background: var(--fl-paper, #f7f4ec);
+  color: var(--fl-ink, #24323f);
+}
+body {
+  font-family: var(--fl-font-body, "Lexend", system-ui, sans-serif);
+}
+:focus-visible {
+  outline: 3px solid var(--fl-blue, #2c6fb0);
+  outline-offset: 3px;
+  box-shadow: 0 0 0 2px #fff;
+}
+
+/* ---- Practice workspace: Skill, Progress, Question, Model, Answer, Check, Feedback, Next ---- */
+.drill-panel {
+  max-width: 62rem;
+}
+.practice-progress {
+  position: sticky;
+  top: 0;
+  z-index: 6;
+  margin: 0 calc(var(--fl-s2, 16px) * -1) var(--fl-s2, 16px);
+  padding: var(--fl-s1, 8px) var(--fl-s2, 16px) 0;
+  border-bottom: 1px solid var(--fl-line, #d5d9de);
+  background: rgb(247 244 236 / 0.96);
+  backdrop-filter: blur(6px);
+}
+.practice-progress .session-header {
+  align-items: center;
+}
+.practice-progress .session-type {
+  font: 700 1.05rem/1.2 var(--fl-font-head, Georgia, serif);
+  color: var(--fl-navy, #17324d);
+}
+.practice-progress .session-header span {
+  color: var(--fl-ink-soft, #52606d);
+  font-size: 0.9rem;
+}
+.practice-progress .progress-track {
+  block-size: 10px;
+  margin: var(--fl-s1, 8px) 0;
+  border-radius: 999px;
+  background: var(--fl-paper-2, #efeadc);
+}
+.practice-progress .progress-track span {
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--fl-teal-ink, #0e6b68), var(--fl-teal, #1fa6a2));
+}
+@media (prefers-reduced-motion: reduce) {
+  .practice-progress .progress-track span {
+    transition: none;
+  }
+}
+.fluency-micro-hud {
+  margin: 0 0 var(--fl-s1, 8px);
+  padding: var(--fl-s1, 8px) var(--fl-s2, 16px);
+  border: 1px solid var(--fl-line, #d5d9de);
+  border-radius: var(--fl-radius, 12px);
+  background: var(--fl-white, #fff);
+  font-size: 0.82rem;
+}
+.problem-stage {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+.session-insight {
+  margin: 0 0 var(--fl-s2, 16px);
+  padding: var(--fl-s1, 8px) var(--fl-s2, 16px);
+  border: 0;
+  border-inline-start: 4px solid var(--fl-teal, #1fa6a2);
+  border-radius: var(--fl-radius, 12px);
+  background: var(--fl-teal-soft, #dff3f1);
+  color: var(--fl-ink, #24323f);
+  font-weight: 500;
+}
+.problem-stage .problem-meta {
+  margin: 0 0 var(--fl-s1, 8px);
+}
+.problem-meta #problem-number {
+  font: 700 0.95rem var(--fl-font-body, "Lexend", sans-serif);
+  color: var(--fl-teal-ink, #0e6b68);
+}
+
+/* The answer card is one grid: question, model, answer, feedback, then the quiet actions. */
+#practice-visual-workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas: "question" "visual" "answer" "feedback" "actions" "solver";
+  gap: var(--fl-s2, 16px);
+  padding: var(--fl-s3, 24px);
+  border: 1px solid var(--fl-line, #d5d9de);
+  border-radius: var(--fl-radius-lg, 20px);
+  background: var(--fl-white, #fff);
+  box-shadow: var(--fl-shadow-1);
+}
+#practice-visual-workspace .problem-arena {
+  display: contents;
+}
+#practice-visual-workspace .problem-question-zone {
+  grid-area: question;
+  text-align: center;
+}
+#practice-visual-workspace .problem-answer-zone {
+  grid-area: answer;
+}
+#practice-visual-workspace #problem-visual-scaffold {
+  grid-area: visual;
+  margin: 0;
+  min-inline-size: 0;
+}
+#practice-visual-workspace #problem-visual-scaffold:empty {
+  display: none;
+}
+#practice-visual-workspace #feedback {
+  grid-area: feedback;
+  margin: 0;
+}
+#practice-visual-workspace #language-slot {
+  grid-area: feedback;
+  align-self: end;
+}
+#practice-visual-workspace #language-slot:not(:empty) {
+  grid-area: auto;
+  grid-column: 1 / -1;
+}
+#practice-visual-workspace .problem-actions-bar {
+  grid-area: actions;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--fl-s1, 8px);
+  justify-content: center;
+  margin: 0;
+  padding-top: var(--fl-s2, 16px);
+  border-top: 1px solid var(--fl-line, #d5d9de);
+}
+#practice-visual-workspace #interactive-solver-workspace {
+  grid-area: solver;
+}
+#practice-visual-workspace.is-docked {
+  grid-template-columns: minmax(0, 1.3fr) minmax(16rem, 1fr);
+  grid-template-areas: "question visual" "answer visual" "feedback visual" "actions visual" "solver solver";
+  align-items: start;
+  gap: var(--fl-s2, 16px) var(--fl-s4, 32px);
+}
+@media (max-width: 780px) {
+  #practice-visual-workspace,
+  #practice-visual-workspace.is-docked {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: "question" "visual" "answer" "feedback" "actions" "solver";
+    padding: var(--fl-s2, 16px);
+  }
+}
+#practice-visual-workspace .question,
+#practice-visual-workspace .problem-question-zone .question {
+  margin: 0;
+  font: 700 var(--fl-math-size, 3rem) / 1.15 var(--fl-font-head, Georgia, serif) !important;
+  letter-spacing: -0.01em;
+  color: var(--fl-navy, #17324d);
+  font-variant-numeric: lining-nums tabular-nums;
+}
+#practice-visual-workspace .problem-question-zone .question.is-long {
+  font-size: clamp(1.7rem, 3.6vw, 2.5rem) !important;
+}
+#practice-visual-workspace .problem-question-zone .question.is-sentence {
+  font: 500 clamp(1.25rem, 2.2vw, 1.6rem) / 1.5 var(--fl-font-body, "Lexend", sans-serif) !important;
+  color: var(--fl-ink, #24323f) !important;
+  letter-spacing: 0 !important;
+  text-align: start;
+}
+.arena-eq-symbol {
+  color: var(--fl-teal-ink, #0e6b68);
+}
+#practice-visual-workspace .problem-topic {
+  margin: var(--fl-s1, 8px) 0 0 !important;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--fl-ink-soft, #52606d);
+}
+.question-feedback-row {
+  justify-content: center;
+}
+.answer-result-status {
+  align-self: center;
+}
+#practice-visual-workspace .problem-answer-zone form {
+  gap: var(--fl-s2, 16px);
+  align-items: center;
+}
+#practice-visual-workspace .answer-label {
+  font-weight: 600;
+  color: var(--fl-ink-soft, #52606d);
+}
+#practice-visual-workspace .answer-input-row {
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--fl-s1, 8px) var(--fl-s2, 16px);
+  inline-size: 100%;
+}
+#practice-visual-workspace .answer-input-row .answer-input {
+  inline-size: min(100%, 14rem) !important;
+  min-block-size: 64px !important;
+  border: 2px solid var(--fl-navy, #17324d);
+  border-radius: var(--fl-radius, 12px);
+  background: var(--fl-white, #fff);
+  font: 700 clamp(1.8rem, 3.2vw, 2.5rem) var(--fl-font-body, "Lexend", sans-serif) !important;
+}
+#practice-visual-workspace .answer-input-row .answer-input::placeholder {
+  font: 400 1rem var(--fl-font-body, "Lexend", sans-serif) !important;
+  color: var(--fl-ink-soft, #52606d) !important;
+}
+#practice-visual-workspace .answer-input-row .answer-input:focus {
+  border-color: var(--fl-blue, #2c6fb0);
+  box-shadow: var(--fl-focus);
+}
+#practice-visual-workspace .answer-input-row .primary-action,
+#practice-visual-workspace #next-problem {
+  min-block-size: 56px !important;
+  padding: 0 var(--fl-s4, 32px) !important;
+  border-radius: var(--fl-radius, 12px) !important;
+  font-size: 1.1rem !important;
+}
+.voice-answer-btn {
+  min-inline-size: 48px;
+  min-block-size: 48px;
+  border: 2px solid var(--fl-line, #d5d9de);
+  border-radius: var(--fl-radius, 12px);
+  background: var(--fl-white, #fff);
+}
+.fix-answer-btn {
+  background: var(--fl-blue, #2c6fb0) !important;
+  border-color: var(--fl-navy, #17324d) !important;
+  animation: none !important;
+}
+#practice-visual-workspace .choice-answers {
+  max-inline-size: 36rem;
+  margin-inline: auto;
+}
+#practice-visual-workspace .choice-answer {
+  min-block-size: 56px;
+  border: 2px solid var(--fl-line, #d5d9de);
+  border-radius: var(--fl-radius, 12px);
+  background: var(--fl-white, #fff);
+  color: var(--fl-navy, #17324d);
+  font: 700 1.25rem var(--fl-font-body, "Lexend", sans-serif);
+  transition: border-color 160ms var(--fl-ease, ease), background-color 160ms var(--fl-ease, ease);
+}
+#practice-visual-workspace .choice-answer:hover {
+  border-color: var(--fl-navy, #17324d);
+  background: var(--fl-blue-soft, #e3eef8);
+}
+/* Quiet secondary controls: the feeling chips and strategy tags support the answer, they do not compete with it. */
+.confidence-meter-row {
+  justify-content: center;
+  margin: 0;
+  gap: var(--fl-s1, 8px);
+}
+.conf-lead {
+  color: var(--fl-ink-soft, #52606d);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: none;
+}
+.conf-chip {
+  min-block-size: 44px;
+  padding: 4px var(--fl-s2, 16px);
+  border: 1.5px solid var(--fl-line, #d5d9de);
+  background: var(--fl-white, #fff);
+  color: var(--fl-ink, #24323f);
+  font-weight: 500;
+}
+.conf-chip.active {
+  border-color: var(--fl-navy, #17324d);
+  background: var(--fl-blue-soft, #e3eef8);
+  color: var(--fl-navy, #17324d);
+  box-shadow: none;
+}
+.strategy-tag-picker {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--fl-s1, 8px) var(--fl-s2, 16px);
+  inline-size: 100%;
+  margin: 0;
+  padding: var(--fl-s1, 8px) var(--fl-s2, 16px);
+  border: 1px solid var(--fl-line, #d5d9de);
+  border-radius: var(--fl-radius, 12px);
+  background: var(--fl-paper, #f7f4ec);
+  font-size: 0.9rem;
+}
+.strategy-tag-picker legend {
+  padding: 0 var(--fl-s1, 8px);
+  font-weight: 600;
+  color: var(--fl-ink-soft, #52606d);
+}
+.strategy-tag-picker label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--fl-s1, 8px);
+  min-block-size: 44px;
+  cursor: pointer;
+}
+.strategy-tag-picker input {
+  inline-size: 20px;
+  block-size: 20px;
+  accent-color: var(--fl-teal-ink, #0e6b68);
+}
+#practice-visual-workspace .math-keypad-toggle {
+  inline-size: auto;
+  align-self: center;
+  min-block-size: 44px;
+}
+/* The feedback panel sits right under the answer, wide enough that nothing overflows at 390px. */
+#practice-visual-workspace #feedback {
+  inline-size: 100%;
+  min-inline-size: 0;
+  overflow-wrap: anywhere;
+}
+#practice-visual-workspace #feedback #feedback-title {
+  font: 700 1.5rem/1.2 var(--fl-font-head, Georgia, serif);
+  color: var(--fl-navy, #17324d);
+}
+#practice-visual-workspace #feedback[data-tone="success"] {
+  background: var(--fl-success-soft, #e4f4ea);
+  color: var(--fl-ink, #24323f);
+}
+#practice-visual-workspace #feedback[data-tone="support"] {
+  background: var(--fl-warn-soft, #fff4e0);
+  color: var(--fl-ink, #24323f);
+}
+#practice-visual-workspace #feedback-copy {
+  margin: var(--fl-s1, 8px) 0 0;
+}
+#practice-visual-workspace #feedback .fb-actions {
+  margin-top: var(--fl-s2, 16px);
+}
+#practice-visual-workspace #next-problem:not([hidden]) {
+  margin-inline: auto;
+}
+@media (max-width: 520px) {
+  #practice-visual-workspace #feedback {
+    padding: var(--fl-s2, 16px);
+  }
+  #practice-visual-workspace #feedback .fb-actions button,
+  #practice-visual-workspace #feedback .fb-actions {
+    inline-size: 100%;
+  }
+  #practice-visual-workspace .problem-actions-bar .outline-action {
+    flex: 1 1 100%;
+  }
+}
+/* One accent for models and boards: the per-grade colour no longer tints the whole practice surface. */
+[style*="--trail"] {
+  --trail: var(--fl-blue, #2c6fb0) !important;
+}
+.strategy-tag-picker {
+  border: 0;
+  background: transparent;
+  padding: 0;
+}
+.strategy-tag-picker legend {
+  float: none;
+  inline-size: 100%;
+  padding: 0;
+  text-align: center;
+  font-size: 0.85rem;
+}
+/* Inside the feedback panel the explanation is flat: nested cards squeezed the steps into a one-word column. */
+#feedback-copy .student-expl-card,
+.fb-host .student-expl-card {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+#feedback-copy .step-player {
+  padding: var(--fl-s1, 8px);
+}
+#feedback-copy .tr-steps.tr-steps > li {
+  padding-inline: var(--fl-s1, 8px);
+  column-gap: var(--fl-s1, 8px);
+}
+.fb-answers dd {
+  min-inline-size: 0;
+  overflow-wrap: anywhere;
+}
+.feedback {
+  border-inline-start-width: 2px;
+  box-shadow: var(--fl-shadow-1);
+}
+.feedback[data-tone="support"] {
+  border-style: solid;
+  border-color: var(--fl-warn, #b45309);
+}
+.feedback[data-tone="success"],
+.feedback[data-tone="support"] {
+  border-width: 2px;
+}
+
+/* ---- One look for header, tabs, buttons and cards on every screen ---- */
+.site-header {
+  background: var(--fl-navy, #17324d);
+  color: var(--fl-white, #fff);
+  border-bottom: 3px solid var(--fl-teal, #1fa6a2);
+}
+.brand-button {
+  font-family: var(--fl-font-head, Georgia, serif);
+}
+.brand-mark {
+  border-color: var(--fl-teal, #1fa6a2);
+}
+.site-header .quiet-button,
+.site-header .profile-control select {
+  min-block-size: 44px;
+  border-radius: var(--fl-radius, 12px);
+}
+/* Tabs: hub areas, practice sub-views, practice modes and grades share one segmented-pill pattern. */
+.hub-tabs,
+.practice-subnav,
+.mode-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--fl-s1, 8px);
+  padding: var(--fl-s1, 8px);
+  border: 1px solid var(--fl-line, #d5d9de);
+  border-radius: var(--fl-radius-lg, 20px);
+  background: var(--fl-white, #fff);
+}
+.hub-tabs button,
+.subnav-tab,
+.mode-tabs button {
+  min-block-size: 44px;
+  padding: var(--fl-s1, 8px) var(--fl-s2, 16px);
+  border: 2px solid transparent;
+  border-radius: var(--fl-radius, 12px);
+  background: transparent;
+  color: var(--fl-navy, #17324d);
+  font: 600 0.95rem var(--fl-font-body, "Lexend", sans-serif);
+  transition: background-color 160ms var(--fl-ease, ease), color 160ms var(--fl-ease, ease), border-color 160ms var(--fl-ease, ease);
+}
+.hub-tabs button:hover,
+.subnav-tab:hover,
+.mode-tabs button:hover {
+  background: var(--fl-blue-soft, #e3eef8);
+}
+.hub-tabs button[aria-current],
+.subnav-tab.active,
+.mode-tabs button[aria-selected="true"] {
+  border-color: var(--fl-navy, #17324d);
+  background: var(--fl-navy, #17324d);
+  color: var(--fl-white, #fff);
+}
+.hub-tabs .teacher-tab {
+  margin-inline-start: auto;
+}
+@media (max-width: 640px) {
+  .hub-tabs {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .hub-tabs button {
+    padding-inline: var(--fl-s1, 8px);
+    font-size: 0.85rem;
+  }
+  .hub-tabs .teacher-tab {
+    margin-inline-start: 0;
+  }
+  .mode-tabs button {
+    flex: 1 1 calc(50% - 8px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hub-tabs button,
+  .subnav-tab,
+  .mode-tabs button {
+    transition: none;
+  }
+}
+/* Buttons: one primary (navy), one secondary (outline), same radius, height and focus. */
+.primary-action,
+.tr-go,
+.tr-check {
+  min-block-size: 44px;
+  border: 2px solid var(--fl-navy, #17324d);
+  border-radius: var(--fl-radius, 12px);
+  background: var(--fl-navy, #17324d);
+  color: var(--fl-white, #fff);
+  font-family: var(--fl-font-body, "Lexend", sans-serif);
+  transition: transform 160ms var(--fl-ease, ease), box-shadow 160ms var(--fl-ease, ease), background-color 160ms var(--fl-ease, ease);
+}
+.primary-action:hover,
+.tr-go:hover,
+.tr-check:hover {
+  background: var(--fl-navy-2, #244a6d);
+  transform: translateY(-1px);
+  box-shadow: var(--fl-shadow-2);
+}
+.outline-action,
+.back-button,
+.icon-button,
+.quiet-button {
+  min-block-size: 44px;
+  border: 2px solid var(--fl-line-strong, #8a99a8);
+  border-radius: var(--fl-radius, 12px);
+  background: var(--fl-white, #fff);
+  color: var(--fl-navy, #17324d);
+  font-family: var(--fl-font-body, "Lexend", sans-serif);
+  transition: background-color 160ms var(--fl-ease, ease), border-color 160ms var(--fl-ease, ease);
+}
+.outline-action:hover,
+.back-button:hover,
+.icon-button:hover {
+  border-color: var(--fl-navy, #17324d);
+  background: var(--fl-blue-soft, #e3eef8);
+}
+.site-header .quiet-button {
+  background: transparent;
+  color: var(--fl-white, #fff);
+  border-color: rgb(255 255 255 / 0.5);
+}
+@media (prefers-reduced-motion: reduce) {
+  .primary-action,
+  .tr-go,
+  .tr-check,
+  .outline-action {
+    transition: none;
+  }
+  .primary-action:hover,
+  .tr-go:hover,
+  .tr-check:hover {
+    transform: none;
+  }
+}
+/* Headings share the display face. */
+#main h1,
+#main h2,
+#main h3,
+.workspace-heading h2,
+.gm-head h2,
+.tr-done h2 {
+  font-family: var(--fl-font-head, Georgia, serif);
+  color: var(--fl-navy, #17324d);
+  letter-spacing: -0.01em;
+}
+/* Cards: skill cards, game tiles, trail panels and hub panels share radius, border and a quiet lift. */
+.skill-card,
+.gm-game,
+.gm-options,
+.hub-panel > section,
+.tr-card {
+  border-radius: var(--fl-radius-lg, 20px);
+}
+.gm-game {
+  border: 1px solid var(--fl-line, #d5d9de);
+  background: var(--fl-white, #fff);
+  box-shadow: var(--fl-shadow-1);
+  transition: transform 160ms var(--fl-ease, ease), box-shadow 160ms var(--fl-ease, ease);
+}
+.gm-game:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--fl-shadow-2);
+}
+.gm-game:focus-visible {
+  box-shadow: var(--fl-focus);
+}
+@media (prefers-reduced-motion: reduce) {
+  .gm-game,
+  .gm-game:hover {
+    transition: none;
+    transform: none;
+  }
+}
+/* Game boards and trail rounds: the same input, keypad and result language as practice. */
+.tr-input,
+.gm-ask-form input,
+.gm-input {
+  border: 2px solid var(--fl-navy, #17324d);
+  border-radius: var(--fl-radius, 12px);
+  font-family: var(--fl-font-body, "Lexend", sans-serif);
+}
+.tr-q,
+.gm-q {
+  font-family: var(--fl-font-head, Georgia, serif);
+  color: var(--fl-navy, #17324d);
+}
+.gm-card,
+.tr-key,
+.tr-pad button {
+  min-block-size: 44px;
+  border-radius: var(--fl-radius, 12px);
+}
+/* Game Room layout: one options bar and one card size, whatever icon style a game uses. */
+.gm-options {
+  align-items: end;
+  gap: var(--fl-s2, 0.75rem) var(--fl-s3, 1.25rem);
+  margin: var(--fl-s2, 0.75rem) 0 var(--fl-s3, 1.25rem);
+  padding: var(--fl-s3, 1rem);
+  border: 1px solid var(--fl-line, #d5d9de);
+  background: var(--fl-white, #fff);
+}
+.gm-options .gm-calm {
+  min-height: 44px;
+  padding: 0.4rem 0.9rem;
+  border: 1px solid var(--fl-line, #d5d9de);
+  border-radius: 999px;
+  background: var(--fl-paper, #fbf7ed);
+}
+.gm-options .gm-mastery-calm {
+  border-left: 1px solid var(--fl-line, #d5d9de) !important;
+  background: var(--fl-blue-soft, #e8f0f8);
+}
+.gm-menu {
+  grid-template-columns: repeat(auto-fill, minmax(min(220px, 100%), 1fr));
+  align-items: stretch;
+}
+.gm-menu .gm-game {
+  grid-template-rows: auto auto 1fr auto;
+  align-content: start;
+  min-height: 270px;
+  padding: var(--fl-s3, 1.1rem) var(--fl-s2, 0.9rem);
+  border-color: var(--fl-line, #d5d9de);
+  background: var(--fl-white, #fff);
+  overflow: hidden;
+}
+.gm-menu .gm-game .gm-icon {
+  display: grid;
+  width: 100%;
+  min-height: 112px;
+  place-items: center;
+  font-size: 3.4rem;
+  line-height: 1;
+}
+.gm-menu .gm-game .gm-icon svg {
+  width: min(100%, 170px);
+  height: 108px;
+}
+.gm-menu .gm-game b,
+.gm-menu .gm-game.gm-signature b,
+.gm-menu .gm-game.gm-classic b {
+  color: var(--fl-navy, #17324d);
+  font-size: 1.15rem;
+}
+.gm-menu .gm-game small {
+  max-width: 28ch;
+  color: var(--fl-ink-soft, #4a5a6a);
+}
+.gm-menu .gm-game .tr-stars {
+  align-self: end;
+}
+.gm-options .gm-stop {
+  flex: 1 1 200px;
+  min-width: 0;
+}
+.gm-options .gm-stop select {
+  width: 100%;
+  max-width: 100%;
+}
+.gm-options .gm-calm {
+  flex: 1 1 260px;
+}

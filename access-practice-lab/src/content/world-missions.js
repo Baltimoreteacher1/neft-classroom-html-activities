@@ -29,7 +29,7 @@ const defs = {
     ]
   },
   "conversation-quest": {
-    world: "Conversation Quest", domain: "Speaking", color: "#4f5a9b", mechanic: "dialogue",
+    world: "Conversation Quest", domain: "Speaking", color: "#17324d", mechanic: "dialogue",
     missions: [
       ["science-team","Explain the Mystery","Your science group sees droplets on the outside of a cold cup.","A teammate says, “The water must have leaked through the cup.” Help the group consider another explanation.","Which opening response moves the discussion toward evidence?",["“Let's check whether the cup is wet inside and compare it with the air around it.”","“That is silly. You are wrong.”","“Water is always cold.”"],0,"This response stays respectful and proposes an observation that can help test the idea.","A teammate shares a different observation. Respond by building on it and explaining your reasoning."],
       ["clarify-directions","Ask for Clarification","A partner gives a multi-step direction for a model.","Your partner says, “Put the wide piece beside the base, then attach the small one to the side.” You are not sure which side.","What is the clearest clarification question?",["“Do you mean the small piece goes on the left side of the wide piece?”","“I do not know.”","“Why is your model confusing?”"],0,"A specific question names the uncertain part and lets the partner confirm or correct it.","In a new conversation, ask a focused question about the one step you do not understand."],

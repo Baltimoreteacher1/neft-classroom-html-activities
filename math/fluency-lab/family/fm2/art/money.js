@@ -11,7 +11,7 @@ const COIN = {
 };
 const BILL = {
   100: { fill: PALETTE.mintSoft, stroke: "#13694a", text: "$1" },
-  500: { fill: PALETTE.violetSoft, stroke: "#30265f", text: "$5" },
+  500: { fill: PALETTE.tealSoft, stroke: "#17324D", text: "$5" },
   1000: { fill: PALETTE.goldSoft, stroke: "#7a520a", text: "$10" },
   2000: { fill: PALETTE.skySoft, stroke: "#1b4f8c", text: "$20" },
 };

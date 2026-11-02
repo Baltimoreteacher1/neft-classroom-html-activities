@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>Interactive graphics A | Fluency Lab 4.0</title>
+    <link rel="stylesheet" href="/assets/fonts/small-group.css" />
+    <link rel="stylesheet" href="/assets/fonts/fraunces-87aa83.css" />
+    <link rel="stylesheet" href="../ds4.css" />
+    <link rel="stylesheet" href="./graphics-a.css" />
+    <style>
+      body {
+        margin: 0;
+        background: var(--fl-paper);
+        color: var(--fl-ink);
+        font-family: var(--fl-font-body);
+      }
+      .gal-head {
+        padding: var(--fl-s3) var(--fl-s2);
+        background: var(--fl-navy);
+        color: #fff;
+      }
+      .gal-head h1 {
+        margin: 0 0 var(--fl-s1);
+        font: 600 1.75rem/1.2 var(--fl-font-head);
+      }
+      .gal-head p {
+        max-inline-size: 60ch;
+        margin: 0 0 var(--fl-s2);
+      }
+      .gal-bar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--fl-s1);
+        align-items: center;
+      }
+      .gal-bar a,
+      .gal-bar button {
+        display: inline-flex;
+        align-items: center;
+        min-block-size: 44px;
+        padding: 0 var(--fl-s2);
+        border: 2px solid #fff;
+        border-radius: var(--fl-radius);
+        background: transparent;
+        color: #fff;
+        font: 600 0.9375rem var(--fl-font-body);
+        text-decoration: none;
+        cursor: pointer;
+      }
+      .gal-bar button[aria-pressed="true"] {
+        background: #fff;
+        color: var(--fl-navy);
+      }
+      .gal-bar a:focus-visible,
+      .gal-bar button:focus-visible {
+        outline: 3px solid var(--fl-amber);
+        outline-offset: 2px;
+      }
+      main {
+        display: grid;
+        gap: var(--fl-s4);
+        max-inline-size: 1180px;
+        margin: 0 auto;
+        padding: var(--fl-s3) var(--fl-s2) var(--fl-s8);
+      }
+      .gal-section h2 {
+        margin: 0 0 var(--fl-s1);
+        color: var(--fl-navy);
+        font: 600 1.5rem/1.2 var(--fl-font-head);
+      }
+      .gal-section > p {
+        margin: 0 0 var(--fl-s2);
+        color: var(--fl-ink-soft);
+      }
+      .gal-grid {
+        display: grid;
+        gap: var(--fl-s2);
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 360px), 1fr));
+        align-items: start;
+      }
+      .gal-card h3 {
+        margin: 0 0 4px;
+        color: var(--fl-teal-ink);
+        font: 700 0.875rem var(--fl-font-body);
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+      .gal-prompt {
+        min-block-size: 2.8em;
+        margin: 0 0 var(--fl-s1);
+        color: var(--fl-ink);
+      }
+      .gal-card details {
+        margin-block-start: var(--fl-s1);
+        color: var(--fl-ink-soft);
+        font-size: 0.8125rem;
+      }
+      .gal-card pre {
+        margin: 4px 0 0;
+        overflow-x: auto;
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="gal-head">
+      <h1>Interactive graphics, set A</h1>
+      <p><a href="./gallery-b.html">Open interactive graphics B</a> · <a href="./animations/gallery.html">Open math animations</a></p>
+      <p>
+        Six exact, reusable math models. Each is shown in explore, build and check mode. Drag with a
+        mouse or finger, or use the keyboard: Tab to a handle, then arrow keys, Home, End, Page Up and
+        Page Down.
+      </p>
+      <nav class="gal-bar" aria-label="Graphics">
+        <span id="gal-links" class="gal-bar"></span>
+        <span class="gal-bar" role="group" aria-label="Language">
+          <button type="button" data-lang="en" aria-pressed="true">English</button>
+          <button type="button" data-lang="es" aria-pressed="false">Español</button>
+        </span>
+      </nav>
+    </header>
+    <main id="gallery"></main>
+    <script type="module" src="./gallery.js"></script>
+  </body>
+</html>

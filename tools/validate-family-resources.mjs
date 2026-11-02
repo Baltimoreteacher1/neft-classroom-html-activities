@@ -39,7 +39,7 @@ import { lessonPath, listLessonDirs } from "./lib/curriculum-source.mjs";
 import { checkResource, evaluateResources, MAX_AGE_DAYS } from "./lib/family-resources.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
-const todayArg = process.argv.find((a, i) => process.argv[i - 1] === "--today");
+const todayArg = process.argv.find((_a, i) => process.argv[i - 1] === "--today");
 const TODAY = todayArg || new Date().toISOString().slice(0, 10);
 
 const failures = [];

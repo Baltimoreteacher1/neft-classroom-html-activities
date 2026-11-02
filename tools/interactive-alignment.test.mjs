@@ -22,6 +22,7 @@
 import assert from "node:assert/strict";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { resolveLessonMisconception } from "@eduwonderlab/engine/core/lesson-tool-resolver.js";
 import {
   elementKey,
   extractElements,
@@ -51,6 +52,15 @@ async function t(name, fn) {
 
 const bareText = (id) => lessonText(withoutInteractives(byId.get(id).config));
 const bareNumbers = (id) => lessonNumbers(withoutInteractives(byId.get(id).config));
+
+await t("ratio misconception distinguishes part-to-part order from part-to-whole", () => {
+  const message = resolveLessonMisconception({ title: "Understand Ratios" });
+  assert.match(message.en, /apples to oranges is 3:5; oranges to apples is 5:3/i);
+  assert.match(message.en, /apples to all 8 pieces, use 3:8/i);
+  assert.match(message.es, /manzanas a naranjas es 3:5.*naranjas a manzanas es 5:3/i);
+  assert.match(message.es, /manzanas al total de 8 piezas.*3:8/i);
+  assert.doesNotMatch(message.en, /scaling up equivalent ratios/i);
+});
 
 /* ── The fleet is actually being read ──────────────────────────────────────── */
 

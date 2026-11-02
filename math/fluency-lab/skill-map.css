@@ -1,0 +1,247 @@
+/* Skill map: lanes, nodes, links and the stacked phone layout. ds4.css tokens only. */
+/* Skill map. */
+.fl4-map {
+  display: grid;
+  gap: var(--fl-s2);
+}
+.fl4-map__help {
+  color: var(--fl-ink-soft);
+  font-size: 0.9375rem;
+}
+.fl4-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--fl-s1) var(--fl-s3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+.fl4-legend li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--fl-ink-soft);
+}
+.fl4-legend li[data-state="learning"] {
+  color: var(--fl-warn);
+}
+.fl4-legend li[data-state="developing"] {
+  color: var(--fl-blue);
+}
+.fl4-legend li[data-state="proficient"] {
+  color: var(--fl-teal-ink);
+}
+.fl4-legend li[data-state="mastered"] {
+  color: var(--fl-success);
+}
+.fl4-map__scroll {
+  overflow-x: auto;
+  padding: 0 0 var(--fl-s2);
+  border: 1px solid var(--fl-line);
+  border-radius: var(--fl-radius-lg);
+  background: var(--fl-white);
+}
+.fl4-map__canvas {
+  position: relative;
+  inline-size: var(--w);
+  block-size: calc(var(--h) + 8px);
+  min-inline-size: 100%;
+}
+.fl4-map__heads span {
+  position: absolute;
+  inset-block-start: 8px;
+  inset-inline-start: var(--x);
+  color: var(--fl-ink-soft);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.fl4-map__edges {
+  position: absolute;
+  inset: 0;
+  inline-size: var(--w);
+  block-size: var(--h);
+  pointer-events: none;
+}
+.fl4-edge {
+  fill: none;
+  stroke: var(--fl-ink-soft);
+  stroke-width: 1.75;
+  stroke-dasharray: 6 5;
+}
+.fl4-edge[data-unlocked="true"] {
+  stroke: var(--fl-teal-ink);
+  stroke-width: 3;
+  stroke-dasharray: none;
+}
+.fl4-edge[data-active] {
+  stroke: var(--fl-navy);
+  stroke-width: 3.5;
+}
+.fl4-edge__head {
+  fill: var(--fl-ink-soft);
+}
+.fl4-lane {
+  position: absolute;
+  inset-inline: var(--fl-s1);
+  inset-block-start: var(--top);
+  block-size: var(--h);
+  border-radius: var(--fl-radius);
+  background: var(--fl-paper);
+}
+.fl4-home .fl4-lane__label {
+  position: absolute;
+  inset-inline-start: var(--fl-s2);
+  inset-block-start: var(--fl-s2);
+  inline-size: 100px;
+  font: 700 0.8125rem/1.3 var(--fl-font-body);
+  color: var(--fl-navy);
+  letter-spacing: 0;
+}
+.fl4-node {
+  position: absolute;
+  inset-inline-start: calc(var(--x) - 8px);
+  inset-block-start: calc(var(--y) - var(--top));
+  display: flex;
+  align-items: center;
+  gap: var(--fl-s1);
+  inline-size: 216px;
+  block-size: 76px;
+  padding: var(--fl-s1) var(--fl-s2) var(--fl-s1) var(--fl-s1);
+  border: 2px solid var(--fl-ink-soft);
+  border-radius: var(--fl-radius);
+  background: var(--fl-white);
+  color: var(--fl-ink);
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+.fl4-node[data-kind="before"],
+.fl4-node[data-kind="after"] {
+  background: var(--fl-paper-2);
+}
+.fl4-node[data-state="new"] {
+  border-style: dashed;
+}
+.fl4-node[data-state="learning"] {
+  border-style: dotted;
+  border-color: var(--fl-warn);
+}
+.fl4-node[data-state="developing"] {
+  border-color: var(--fl-blue);
+}
+.fl4-node[data-state="proficient"] {
+  border-width: 3px;
+  border-color: var(--fl-teal-ink);
+}
+.fl4-node[data-state="mastered"] {
+  border-style: double;
+  border-width: 5px;
+  border-color: var(--fl-success);
+}
+.fl4-node[data-related] {
+  background: var(--fl-blue-soft);
+}
+.fl4-node:hover {
+  box-shadow: var(--fl-shadow-2);
+}
+.fl4-node:focus-visible {
+  z-index: 2;
+  background: var(--fl-blue-soft);
+}
+.fl4-node__text {
+  display: grid;
+  gap: 2px;
+  min-inline-size: 0;
+}
+.fl4-node__grade {
+  color: var(--fl-ink-soft);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.fl4-node__title {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  color: var(--fl-navy);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  line-height: 1.25;
+}
+.fl4-node__state {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--fl-ink-soft);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+.fl4-node[data-state="learning"] .fl4-node__state,
+.fl4-node[data-state="learning"] .fl4-ring {
+  color: var(--fl-warn);
+}
+.fl4-node[data-state="developing"] .fl4-node__state,
+.fl4-node[data-state="developing"] .fl4-ring {
+  color: var(--fl-blue);
+}
+.fl4-node[data-state="proficient"] .fl4-node__state,
+.fl4-node[data-state="proficient"] .fl4-ring {
+  color: var(--fl-teal-ink);
+}
+.fl4-node[data-state="mastered"] .fl4-node__state,
+.fl4-node[data-state="mastered"] .fl4-ring {
+  color: var(--fl-success);
+}
+.fl4-node__rel {
+  display: none;
+}
+@media (max-width: 760px) {
+  .fl4-map__scroll {
+    overflow: visible;
+    padding: var(--fl-s1);
+  }
+  .fl4-map__canvas {
+    display: grid;
+    gap: var(--fl-s2);
+    inline-size: auto;
+    block-size: auto;
+  }
+  .fl4-map__heads,
+  .fl4-map__edges {
+    display: none;
+  }
+  .fl4-lane {
+    position: static;
+    display: grid;
+    gap: var(--fl-s1);
+    block-size: auto;
+    padding: var(--fl-s2);
+  }
+  .fl4-home .fl4-lane__label {
+    position: static;
+    inline-size: auto;
+    font-size: 1rem;
+  }
+  .fl4-node {
+    position: static;
+    inline-size: 100%;
+    block-size: auto;
+    min-block-size: 76px;
+  }
+  .fl4-node__rel {
+    display: block;
+    color: var(--fl-ink-soft);
+    font-size: 0.75rem;
+  }
+}
+@media (forced-colors: active) {
+  .fl4-node {
+    border: 2px solid CanvasText;
+  }
+}

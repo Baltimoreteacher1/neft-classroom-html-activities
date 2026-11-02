@@ -9,7 +9,7 @@
   const { h, svg } = MWB;
   const t = MWB.t;
 
-  const FACE_FILL = ["#cfe3f7", "#fde9b8", "#d1fae5", "#fbd5e5", "#e0d7fb", "#fee2c4"];
+  const FACE_FILL = ["#cfe3f7", "#fde9b8", "#d1fae5", "#F7F4EC", "#F7F4EC", "#fee2c4"];
 
   /* ======================= Nets ======================= */
   const NET_SHAPES = [
@@ -537,7 +537,7 @@
           }),
         );
       const layerFill = (k) =>
-        o.layers ? ["#cfe3f7", "#fde9b8", "#d1fae5", "#fbd5e5"][k % 4] : "#cfe3f7";
+        o.layers ? ["#cfe3f7", "#fde9b8", "#d1fae5", "#F7F4EC"][k % 4] : "#cfe3f7";
       // front-left face (y = nw), cube grid
       for (let i = 0; i < c.nl; i++)
         for (let k = 0; k < c.nh; k++)

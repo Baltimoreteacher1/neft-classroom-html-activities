@@ -40,6 +40,19 @@ const { ALL_SKILLS, generateProblem, seededRandom, validateAnswer } = await impo
   "../math/fluency-lab/problem-bank.js"
 );
 
+// Rare answers must not leave a board short: Kindergarten "Join groups" has six possible answers and 0 + 0 is
+// under 1% of draws, so a few hundred boards would come up one pair short when the builder gave up too early.
+{
+  let short = 0;
+  for (let board = 0; board < 600; board += 1)
+    if (gameProblems(0, "join-groups", 6, { distinctAnswers: true }).length < 6) short += 1;
+  assert.equal(
+    short,
+    0,
+    `${short} of 600 Kindergarten Join-groups Fact Match boards had fewer than 6 different-answer pairs`,
+  );
+}
+
 const failures = [];
 const check = (condition, message) => condition || failures.push(message);
 

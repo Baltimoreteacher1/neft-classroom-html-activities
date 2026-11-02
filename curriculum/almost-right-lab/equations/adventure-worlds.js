@@ -48,7 +48,7 @@
     <path d="M30 220 q8 -4 16 0 M200 226 q8 -4 16 0 M430 222 q8 -4 16 0" stroke="#c9a568" stroke-width="2" fill="none"/>
     ${b(0, 1, '<path d="M120 196 C116 176 104 168 108 152 M120 196 C124 172 136 166 132 148 M120 196 C120 180 120 170 120 160" stroke="#ff7a8a" stroke-width="6" stroke-linecap="round" fill="none"/>')}
     ${b(0, 2, '<path d="M300 193 C294 170 280 160 286 140 M300 193 C306 166 322 160 318 136 M300 193 C300 172 300 160 302 148" stroke="#ff9f5a" stroke-width="7" stroke-linecap="round" fill="none"/>')}
-    ${b(0, 3, '<path d="M470 190 C460 160 440 150 448 120 M470 190 C482 156 504 148 498 116 M470 190 C470 160 470 140 474 124 M470 170 C456 164 448 166 440 158" stroke="#ff6fb1" stroke-width="8" stroke-linecap="round" fill="none"/>')}
+    ${b(0, 3, '<path d="M470 190 C460 160 440 150 448 120 M470 190 C482 156 504 148 498 116 M470 190 C470 160 470 140 474 124 M470 170 C456 164 448 166 440 158" stroke="#f2765a" stroke-width="8" stroke-linecap="round" fill="none"/>')}
     ${b(1, 1, '<path d="M60 198 V150" stroke="#22566e" stroke-width="4"/><circle class="adv-glow" cx="60" cy="144" r="14" fill="#9ff3ff" opacity="0.35"/><circle cx="60" cy="144" r="7" fill="#d6fbff"/>')}
     ${b(1, 2, '<path d="M240 196 V146" stroke="#22566e" stroke-width="4"/><circle class="adv-glow" cx="240" cy="140" r="14" fill="#9ff3ff" opacity="0.35"/><circle cx="240" cy="140" r="7" fill="#d6fbff"/>')}
     ${b(1, 3, '<path d="M410 194 V142" stroke="#22566e" stroke-width="4"/><circle class="adv-glow" cx="410" cy="136" r="14" fill="#9ff3ff" opacity="0.35"/><circle cx="410" cy="136" r="7" fill="#d6fbff"/>')}
@@ -58,21 +58,21 @@
     <g transform="translate(600 190)"><ellipse cx="0" cy="0" rx="22" ry="6" fill="#c9a568"/><circle cx="-8" cy="-6" r="5" fill="#fffbe9"/><circle cx="3" cy="-7" r="5" fill="#fffbe9"/><circle cx="12" cy="-4" r="4" fill="#fffbe9"/></g>`;
 
   const works = `
-    <defs><linearGradient id="advSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3b3361"/><stop offset="1" stop-color="#6b5fa8"/></linearGradient></defs>
+    <defs><linearGradient id="advSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#17324d"/><stop offset="1" stop-color="#1fa6a2"/></linearGradient></defs>
     <rect width="640" height="240" fill="url(#advSky)"/>
-    <rect x="30" y="26" width="70" height="44" rx="4" fill="#8f86c9" opacity="0.5"/><rect x="290" y="26" width="70" height="44" rx="4" fill="#8f86c9" opacity="0.5"/><rect x="420" y="26" width="70" height="44" rx="4" fill="#8f86c9" opacity="0.5"/>
-    <path d="M0 190 H640 V240 H0Z" fill="#2a2445"/>
-    <path d="M0 190 H640" stroke="#a79bdc" stroke-width="3"/>
-    ${b(0, 1, gear(90, 140, 20, "#d8be5a", "#3b3361", "adv-spin"))}
-    ${b(0, 2, gear(138, 112, 28, "#c9a640", "#3b3361", "adv-spin-rev"))}
-    ${b(0, 3, gear(206, 132, 40, "#e0c46a", "#3b3361", "adv-spin"))}
-    ${b(1, 1, '<rect x="280" y="166" width="110" height="12" rx="6" fill="#544a86"/><circle cx="286" cy="172" r="6" fill="#a79bdc"/><circle cx="384" cy="172" r="6" fill="#a79bdc"/>')}
-    ${b(1, 2, '<rect x="384" y="166" width="110" height="12" rx="6" fill="#544a86"/><circle cx="488" cy="172" r="6" fill="#a79bdc"/><path d="M300 178 v12 M380 178 v12 M470 178 v12" stroke="#544a86" stroke-width="4"/>')}
+    <rect x="30" y="26" width="70" height="44" rx="4" fill="#1fa6a2" opacity="0.5"/><rect x="290" y="26" width="70" height="44" rx="4" fill="#1fa6a2" opacity="0.5"/><rect x="420" y="26" width="70" height="44" rx="4" fill="#1fa6a2" opacity="0.5"/>
+    <path d="M0 190 H640 V240 H0Z" fill="#17324d"/>
+    <path d="M0 190 H640" stroke="#f7f4ec" stroke-width="3"/>
+    ${b(0, 1, gear(90, 140, 20, "#d8be5a", "#17324d", "adv-spin"))}
+    ${b(0, 2, gear(138, 112, 28, "#c9a640", "#17324d", "adv-spin-rev"))}
+    ${b(0, 3, gear(206, 132, 40, "#e0c46a", "#17324d", "adv-spin"))}
+    ${b(1, 1, '<rect x="280" y="166" width="110" height="12" rx="6" fill="#1fa6a2"/><circle cx="286" cy="172" r="6" fill="#f7f4ec"/><circle cx="384" cy="172" r="6" fill="#f7f4ec"/>')}
+    ${b(1, 2, '<rect x="384" y="166" width="110" height="12" rx="6" fill="#1fa6a2"/><circle cx="488" cy="172" r="6" fill="#f7f4ec"/><path d="M300 178 v12 M380 178 v12 M470 178 v12" stroke="#1fa6a2" stroke-width="4"/>')}
     ${b(1, 3, '<g class="adv-slide"><rect x="296" y="148" width="18" height="18" rx="2" fill="#e05a2b"/><rect x="350" y="148" width="18" height="18" rx="2" fill="#2c7d6b"/><rect x="404" y="148" width="18" height="18" rx="2" fill="#205fa6"/></g>')}
-    ${b(2, 1, '<rect x="548" y="120" width="40" height="70" rx="6" fill="#544a86"/><circle cx="568" cy="150" r="10" fill="#a79bdc"/><path d="M562 150h12" stroke="#2a2445" stroke-width="3"/>')}
-    ${b(2, 2, '<rect x="558" y="64" width="20" height="58" fill="#7a6fb8"/><rect x="554" y="58" width="28" height="10" rx="2" fill="#a79bdc"/>')}
-    ${b(2, 3, '<g class="adv-puff" fill="#e9e5ff" opacity="0.85"><circle cx="568" cy="44" r="10"/><circle cx="582" cy="32" r="8"/><circle cx="596" cy="22" r="6"/></g>')}
-    <g transform="translate(612 190)"><rect x="-14" y="-34" width="28" height="34" rx="3" fill="#ffd166"/><path d="M-8 -22 h16 M-8 -14 h16" stroke="#8a6a12" stroke-width="2"/><path d="M0 -34 V-48" stroke="#2a2445" stroke-width="2"/><path class="adv-flag" d="M0 -48 L16 -43 L0 -38Z" fill="#e05a2b"/></g>`;
+    ${b(2, 1, '<rect x="548" y="120" width="40" height="70" rx="6" fill="#1fa6a2"/><circle cx="568" cy="150" r="10" fill="#f7f4ec"/><path d="M562 150h12" stroke="#17324d" stroke-width="3"/>')}
+    ${b(2, 2, '<rect x="558" y="64" width="20" height="58" fill="#1fa6a2"/><rect x="554" y="58" width="28" height="10" rx="2" fill="#f7f4ec"/>')}
+    ${b(2, 3, '<g class="adv-puff" fill="#f7f4ec" opacity="0.85"><circle cx="568" cy="44" r="10"/><circle cx="582" cy="32" r="8"/><circle cx="596" cy="22" r="6"/></g>')}
+    <g transform="translate(612 190)"><rect x="-14" y="-34" width="28" height="34" rx="3" fill="#ffd166"/><path d="M-8 -22 h16 M-8 -14 h16" stroke="#8a6a12" stroke-width="2"/><path d="M0 -34 V-48" stroke="#17324d" stroke-width="2"/><path class="adv-flag" d="M0 -48 L16 -43 L0 -38Z" fill="#e05a2b"/></g>`;
 
   const harbor = `
     <defs><linearGradient id="advSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffab7f"/><stop offset="1" stop-color="#ffe7c7"/></linearGradient></defs>
@@ -96,22 +96,22 @@
     <g transform="translate(606 204)"><rect x="-18" y="-22" width="16" height="16" fill="#b5643a"/><rect x="0" y="-22" width="16" height="16" fill="#c9824a"/><rect x="-9" y="-38" width="16" height="16" fill="#d29a5e"/></g>`;
 
   const storm = `
-    <defs><linearGradient id="advSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1d1640"/><stop offset="1" stop-color="#43347a"/></linearGradient></defs>
+    <defs><linearGradient id="advSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#17324d"/><stop offset="1" stop-color="#17324d"/></linearGradient></defs>
     <rect width="640" height="240" fill="url(#advSky)"/>
     <g fill="#fff" opacity="0.8"><circle cx="40" cy="30" r="1.5"/><circle cx="130" cy="50" r="1.2"/><circle cx="250" cy="22" r="1.6"/><circle cx="350" cy="44" r="1.2"/><circle cx="600" cy="30" r="1.4"/></g>
-    <g fill="#5d5194"><ellipse cx="420" cy="40" rx="60" ry="18"/><ellipse cx="470" cy="30" rx="40" ry="16"/><ellipse cx="170" cy="56" rx="50" ry="14"/></g>
+    <g fill="#1fa6a2"><ellipse cx="420" cy="40" rx="60" ry="18"/><ellipse cx="470" cy="30" rx="40" ry="16"/><ellipse cx="170" cy="56" rx="50" ry="14"/></g>
     <path class="adv-bolt" d="M440 52 L428 78 L440 78 L430 104" stroke="#ffe066" stroke-width="3" fill="none"/>
-    <path d="M0 200 Q320 150 640 200 L640 240 L0 240Z" fill="#2a2350"/>
-    <g transform="translate(500 170)"><rect x="-36" y="-28" width="72" height="28" rx="4" fill="#8f86c9"/><path d="M-36 -28 Q0 -62 36 -28Z" fill="#b3abe6"/><rect x="-8" y="-16" width="16" height="16" fill="#2a2350"/><circle cx="-22" cy="-14" r="4" fill="#ffe066"/><circle cx="22" cy="-14" r="4" fill="#ffe066"/></g>
+    <path d="M0 200 Q320 150 640 200 L640 240 L0 240Z" fill="#17324d"/>
+    <g transform="translate(500 170)"><rect x="-36" y="-28" width="72" height="28" rx="4" fill="#1fa6a2"/><path d="M-36 -28 Q0 -62 36 -28Z" fill="#f7f4ec"/><rect x="-8" y="-16" width="16" height="16" fill="#17324d"/><circle cx="-22" cy="-14" r="4" fill="#ffe066"/><circle cx="22" cy="-14" r="4" fill="#ffe066"/></g>
     ${b(0, 1, '<path d="M452 168 Q500 118 548 168" stroke="#7ef0ff" stroke-width="3" fill="none" opacity="0.8"/>')}
     ${b(0, 2, '<path d="M440 170 Q500 96 560 170" stroke="#7ef0ff" stroke-width="3" fill="none" opacity="0.8"/>')}
     ${b(0, 3, '<path class="adv-glow" d="M430 172 Q500 74 570 172Z" fill="#7ef0ff" opacity="0.22"/>')}
-    ${b(1, 1, '<rect x="64" y="160" width="32" height="26" rx="3" fill="#8f86c9"/>')}
-    ${b(1, 2, '<path d="M74 160 L80 96 L86 160Z" fill="#b3abe6"/><path d="M71 130 H89" stroke="#8f86c9" stroke-width="3"/>')}
-    ${b(1, 3, '<circle class="adv-glow" cx="80" cy="92" r="16" fill="#ff7ad9" opacity="0.4"/><circle cx="80" cy="92" r="7" fill="#ffc2ef"/>')}
+    ${b(1, 1, '<rect x="64" y="160" width="32" height="26" rx="3" fill="#1fa6a2"/>')}
+    ${b(1, 2, '<path d="M74 160 L80 96 L86 160Z" fill="#f7f4ec"/><path d="M71 130 H89" stroke="#1fa6a2" stroke-width="3"/>')}
+    ${b(1, 3, '<circle class="adv-glow" cx="80" cy="92" r="16" fill="#f2765a" opacity="0.4"/><circle cx="80" cy="92" r="7" fill="#f7f4ec"/>')}
     ${b(2, 1, '<rect x="212" y="150" width="54" height="20" rx="6" fill="#e05a2b"/><rect x="226" y="140" width="24" height="12" rx="3" fill="#ffb08a"/>')}
-    ${b(2, 2, '<circle cx="222" cy="172" r="7" fill="#1d1640"/><circle cx="256" cy="172" r="7" fill="#1d1640"/><path d="M258 150 V128" stroke="#e05a2b" stroke-width="2"/><circle cx="258" cy="126" r="3" fill="#ffe066"/>')}
-    ${b(2, 3, '<path d="M206 138 L236 132 L240 140 L210 146Z" fill="#7ef0ff"/><path d="M222 140 V150" stroke="#8f86c9" stroke-width="2"/>')}`;
+    ${b(2, 2, '<circle cx="222" cy="172" r="7" fill="#17324d"/><circle cx="256" cy="172" r="7" fill="#17324d"/><path d="M258 150 V128" stroke="#e05a2b" stroke-width="2"/><circle cx="258" cy="126" r="3" fill="#ffe066"/>')}
+    ${b(2, 3, '<path d="M206 138 L236 132 L240 140 L210 146Z" fill="#7ef0ff"/><path d="M222 140 V150" stroke="#1fa6a2" stroke-width="2"/>')}`;
 
   const SIX = (pts) => pts.map(([x, y]) => ({ x, y }));
 

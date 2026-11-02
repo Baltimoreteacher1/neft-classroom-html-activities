@@ -1,0 +1,770 @@
+/* Grade 6 curriculum: art-directed chapter pages, preserving all source links. */
+body.grade6-chapter-page,
+body.grade6-strand-page,
+body.grade6-overview-page {
+  --chapter-paper: #f6f4ed;
+  --chapter-ink: #17324d;
+  --chapter-muted: #526370;
+  --chapter-line: #d9ded8;
+  background: var(--chapter-paper);
+  color: var(--chapter-ink);
+}
+
+body.grade6-chapter-page .page-shell,
+body.grade6-strand-page .page-shell,
+body.grade6-overview-page .page-shell {
+  width: min(100% - 48px, 1120px);
+  padding: 32px 0 64px;
+  gap: clamp(36px, 5vw, 66px);
+}
+
+body.grade6-chapter-page .compact-hero,
+body.grade6-strand-page .compact-hero,
+body.grade6-overview-page .compact-hero {
+  position: relative;
+  isolation: isolate;
+  min-height: 310px;
+  grid-template-columns: minmax(0, 1fr) minmax(245px, 34%);
+  align-content: center;
+  align-items: center;
+  gap: 20px 44px;
+  overflow: hidden;
+  padding: clamp(32px, 5vw, 64px);
+  background: #fffefa;
+  border: 0;
+  border-bottom: 1px solid var(--chapter-line);
+  border-top: 5px solid var(--chapter-accent, #17766f);
+  border-radius: 2px;
+  box-shadow: 0 16px 38px rgb(23 50 77 / 7%);
+}
+
+body.grade6-chapter-page .compact-hero > :not(.chapter-art),
+body.grade6-strand-page .compact-hero > :not(.chapter-art),
+body.grade6-overview-page .compact-hero > * {
+  grid-column: 1;
+}
+
+body.grade6-chapter-page .hero .eyebrow,
+body.grade6-strand-page .hero .eyebrow,
+body.grade6-overview-page .hero .eyebrow {
+  color: #155954;
+  font-size: 0.8rem;
+  font-weight: 750;
+  letter-spacing: 0.035em;
+  text-transform: none;
+}
+
+body.grade6-chapter-page .hero h1,
+body.grade6-strand-page .hero h1,
+body.grade6-overview-page .hero h1 {
+  max-width: 18ch;
+  color: var(--chapter-ink);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(2.25rem, 5.3vw, 4rem);
+  font-weight: 500;
+  letter-spacing: -0.035em;
+  line-height: 1.04;
+  text-wrap: balance;
+}
+
+body.grade6-chapter-page .hero-copy,
+body.grade6-strand-page .hero-copy,
+body.grade6-overview-page .hero-copy {
+  max-width: 62ch;
+  color: var(--chapter-muted);
+  font-size: clamp(1.02rem, 1.55vw, 1.18rem);
+  line-height: 1.7;
+}
+
+body.grade6-chapter-page .chapter-art,
+body.grade6-strand-page .chapter-art {
+  grid-column: 2;
+  grid-row: 1 / span 6;
+  display: grid;
+  align-self: center;
+  place-items: center;
+  width: 100%;
+  max-width: 330px;
+  min-height: 195px;
+  margin: 0;
+  color: var(--chapter-accent, #17766f);
+}
+
+body.grade6-chapter-page .chapter-art svg,
+body.grade6-strand-page .chapter-art svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+body.grade6-chapter-page .breadcrumb,
+body.grade6-strand-page .breadcrumb {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  color: var(--chapter-muted);
+  font-size: 0.92rem;
+}
+
+body.grade6-chapter-page .breadcrumb a,
+body.grade6-strand-page .breadcrumb a {
+  color: #176c65;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+
+body.grade6-chapter-page main.page-shell > section:not(.hero),
+body.grade6-strand-page main.page-shell > section:not(.hero) {
+  scroll-margin-top: 24px;
+}
+
+body.grade6-chapter-page .section-heading,
+body.grade6-strand-page .section-heading,
+body.grade6-overview-page .section-heading {
+  position: relative;
+  margin-bottom: 22px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--chapter-line);
+}
+
+body.grade6-chapter-page .section-heading .eyebrow,
+body.grade6-strand-page .section-heading .eyebrow,
+body.grade6-overview-page .section-heading .eyebrow {
+  color: #17766f;
+  font-size: 0.83rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: none;
+}
+
+body.grade6-chapter-page .section-heading h2,
+body.grade6-strand-page .section-heading h2,
+body.grade6-overview-page .section-heading h2 {
+  color: var(--chapter-ink);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(1.7rem, 3vw, 2.35rem);
+  font-weight: 500;
+  letter-spacing: -0.025em;
+}
+
+body.grade6-chapter-page .section-heading > p:last-child,
+body.grade6-strand-page .section-heading > p:last-child,
+body.grade6-overview-page .section-heading > p:last-child {
+  max-width: 68ch;
+  color: var(--chapter-muted);
+  line-height: 1.65;
+}
+
+body.grade6-chapter-page .folder-index,
+body.grade6-chapter-page .folder-index-group,
+body.grade6-strand-page .folder-index,
+body.grade6-strand-page .folder-index-group {
+  gap: 0;
+}
+
+body.grade6-chapter-page .folder-index-group,
+body.grade6-strand-page .folder-index-group {
+  padding: clamp(20px, 3vw, 30px);
+  background: #fffefa;
+  border: 1px solid var(--chapter-line);
+  border-left: 4px solid var(--chapter-accent, #17766f);
+  border-radius: 2px;
+  box-shadow: 0 9px 24px rgb(23 50 77 / 4%);
+}
+
+body.grade6-chapter-page .folder-index-group > h3,
+body.grade6-strand-page .folder-index-group > h3 {
+  margin-bottom: 8px;
+  color: var(--chapter-ink);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(1.2rem, 2vw, 1.5rem);
+  font-weight: 500;
+}
+
+body.grade6-chapter-page .folder-index-group > p,
+body.grade6-strand-page .folder-index-group > p {
+  max-width: 70ch;
+  color: var(--chapter-muted);
+  line-height: 1.6;
+}
+
+body.grade6-chapter-page .folder-links,
+body.grade6-strand-page .folder-links {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 24px;
+  align-items: stretch;
+}
+
+body.grade6-chapter-page .folder-links > a,
+body.grade6-strand-page .folder-links > a {
+  min-width: 0;
+  min-height: 54px;
+  justify-content: flex-start;
+  padding: 10px 4px;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--chapter-line);
+  border-radius: 0;
+  color: var(--chapter-ink);
+  font-size: 0.98rem;
+  font-weight: 650;
+  line-height: 1.4;
+  text-decoration: none;
+  transition: color 140ms ease, border-color 140ms ease;
+}
+
+body.grade6-chapter-page .folder-links > a:hover,
+body.grade6-strand-page .folder-links > a:hover {
+  color: #0d7169;
+  border-bottom-color: var(--chapter-accent, #17766f);
+  outline: none;
+}
+
+body.grade6-chapter-page .folder-links > a:focus-visible,
+body.grade6-strand-page .folder-links > a:focus-visible {
+  border-radius: 2px;
+  outline: 3px solid #0d7169;
+  outline-offset: 3px;
+}
+
+body.grade6-chapter-page .folder-links > a[href*="/readiness/"],
+body.grade6-strand-page .folder-links > a[href*="/readiness/"] {
+  min-height: 44px;
+  padding-left: 15px;
+  color: #43515a !important;
+  font-size: 0.88rem;
+  font-weight: 550;
+}
+
+body.grade6-chapter-page .activity-grid,
+body.grade6-strand-page .activity-grid,
+body.grade6-overview-page .activity-grid,
+body.grade6-chapter-page .collection-grid,
+body.grade6-strand-page .collection-grid,
+body.grade6-overview-page .collection-grid {
+  gap: 16px;
+}
+
+body.grade6-chapter-page .activity-grid > .activity-card:only-child,
+body.grade6-strand-page .activity-grid > .activity-card:only-child {
+  grid-column: 1 / -1;
+  width: 100%;
+  max-width: 640px;
+}
+
+body.grade6-chapter-page .activity-card,
+body.grade6-chapter-page .collection-grid .activity-card,
+body.grade6-strand-page .activity-card,
+body.grade6-strand-page .collection-grid .activity-card,
+body.grade6-overview-page .activity-card {
+  position: relative;
+  min-height: 218px;
+  padding: 22px 23px 24px;
+  background: #fffefa;
+  border: 1px solid var(--chapter-line);
+  border-top: 3px solid var(--chapter-accent, #17766f);
+  border-radius: 2px;
+  box-shadow: none;
+  transition: border-color 140ms ease, background 140ms ease;
+}
+
+body.grade6-chapter-page .activity-card:hover,
+body.grade6-chapter-page .activity-card:focus-visible,
+body.grade6-strand-page .activity-card:hover,
+body.grade6-strand-page .activity-card:focus-visible,
+body.grade6-overview-page .activity-card:hover,
+body.grade6-overview-page .activity-card:focus-visible {
+  transform: none;
+  background: #fff;
+  border-color: var(--chapter-accent, #17766f);
+  box-shadow: 0 9px 22px rgb(23 50 77 / 7%);
+}
+
+body.grade6-chapter-page .activity-card h3,
+body.grade6-strand-page .activity-card h3,
+body.grade6-overview-page .activity-card h3 {
+  color: var(--chapter-ink);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.3rem;
+  font-weight: 500;
+  line-height: 1.24;
+}
+
+body.grade6-chapter-page .activity-card p,
+body.grade6-strand-page .activity-card p,
+body.grade6-overview-page .activity-card p {
+  color: var(--chapter-muted);
+  line-height: 1.6;
+}
+
+body.grade6-chapter-page .card-kicker,
+body.grade6-strand-page .card-kicker,
+body.grade6-overview-page .card-kicker {
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  color: #155954 !important;
+  font-size: 0.84rem;
+  font-weight: 700;
+}
+
+body.grade6-chapter-page .vso-progress,
+body.grade6-chapter-page #vsoNext,
+body.grade6-chapter-page #vsoStart {
+  color: #fff !important;
+}
+
+body.grade6-chapter-page .vso-progress {
+  color: #155954 !important;
+}
+
+body.grade6-chapter-page .vso-btn-prev,
+body.grade6-chapter-page .vso-btn-next,
+body.grade6-chapter-page .vso-btn-start {
+  background: #176c65 !important;
+}
+
+body.grade6-strand-page .gv-en {
+  background: #176c65 !important;
+  color: #fff !important;
+}
+
+body.grade6-chapter-page .button-link,
+body.grade6-strand-page .button-link,
+body.grade6-overview-page .button-link {
+  margin-top: auto;
+  min-height: 44px;
+  padding: 11px 0 0;
+  background: transparent;
+  border: 0;
+  color: #176c65;
+  justify-content: flex-start;
+  font-weight: 700;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+}
+
+body.grade6-chapter-page .button-link:hover,
+body.grade6-strand-page .button-link:hover,
+body.grade6-overview-page .button-link:hover {
+  background: transparent;
+  color: #0d514c;
+}
+
+body.grade6-chapter-page .notice,
+body.grade6-strand-page .notice,
+body.grade6-overview-page .notice {
+  padding: 14px 18px !important;
+  background: #f0eee5 !important;
+  border: 0 !important;
+  border-left: 3px solid #c79c39 !important;
+  border-radius: 2px;
+  color: var(--chapter-ink);
+  line-height: 1.7;
+}
+
+body.grade6-chapter-page .notice a,
+body.grade6-strand-page .notice a,
+body.grade6-overview-page .notice a {
+  color: #176c65 !important;
+  text-underline-offset: 3px;
+}
+
+body.grade6-strand-page .compact-hero {
+  --chapter-accent: #17766f;
+}
+
+body.grade6-strand-page .chapter-art {
+  min-height: 210px;
+}
+
+body.grade6-strand-page .hero-parallax-layer {
+  display: none;
+}
+
+body.grade6-overview-page .page-shell > .hero {
+  grid-template-columns: minmax(0, 1fr) minmax(220px, 28%);
+  min-height: 0;
+  align-content: center;
+  padding-block: clamp(34px, 4vw, 48px);
+  border-top-color: #17766f;
+}
+
+body.grade6-overview-page .page-shell > .hero > div:first-child {
+  grid-column: 1;
+}
+
+body.grade6-overview-page .page-shell > .hero .summary-card {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+body.grade6-overview-page .cbs {
+  padding: 20px 24px;
+  background: #17324d;
+  border: 0;
+  border-left: 4px solid #c79c39;
+  border-radius: 2px;
+  box-shadow: none;
+}
+
+body.grade6-overview-page .cbs::after {
+  display: none;
+}
+
+body.grade6-overview-page .cbs-badge {
+  padding: 5px 0;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  letter-spacing: 0.04em;
+}
+
+body.grade6-overview-page .cbs-week {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.55rem;
+  font-weight: 500;
+}
+
+body.grade6-overview-page .cbs-cta {
+  border-radius: 2px;
+  box-shadow: none;
+}
+
+body.grade6-chapter-page .nt-pe-bar,
+body.grade6-strand-page .nt-pe-bar,
+body.grade6-overview-page .nt-pe-bar {
+  position: static !important;
+  width: fit-content;
+  max-width: calc(100vw - 32px);
+  margin: 20px auto !important;
+  border-radius: 2px;
+  box-shadow: none !important;
+}
+
+body.grade6-overview-page .summary-card {
+  padding: 22px;
+  background: #f6f4ed;
+  border: 1px solid var(--chapter-line);
+  border-radius: 2px;
+  box-shadow: none;
+}
+
+body.grade6-overview-page .summary-card h2 {
+  color: var(--chapter-ink);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.6rem;
+  font-weight: 500;
+}
+
+body.grade6-overview-page .summary-list > div {
+  border-color: var(--chapter-line);
+}
+
+body.grade6-overview-page .hero-callouts {
+  display: grid;
+  gap: 8px;
+  margin: 18px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+body.grade6-overview-page .hero-callouts li strong {
+  display: block;
+  margin-bottom: 1px;
+  color: var(--chapter-ink);
+}
+
+body.grade6-overview-page .unit-card {
+  min-height: 310px;
+  padding: 23px;
+  border-top-width: 4px;
+  border-top-color: var(--unit-accent, #17766f);
+}
+
+body.grade6-overview-page .unit-card:nth-child(2) { --unit-accent: #316f62; }
+body.grade6-overview-page .unit-card:nth-child(3) { --unit-accent: #2f6fa3; }
+body.grade6-overview-page .unit-card:nth-child(4) { --unit-accent: #b5562b; }
+body.grade6-overview-page .unit-card:nth-child(5) { --unit-accent: #b3402a; }
+body.grade6-overview-page .unit-card:nth-child(6) { --unit-accent: #2f8a8a; }
+body.grade6-overview-page .unit-card:nth-child(7) { --unit-accent: #a8792a; }
+body.grade6-overview-page .unit-card:nth-child(8) { --unit-accent: #3f6db5; }
+body.grade6-overview-page .unit-card:nth-child(9) { --unit-accent: #a34a6b; }
+body.grade6-overview-page .unit-card:nth-child(10) { --unit-accent: #557a2f; }
+body.grade6-overview-page .unit-card:nth-child(11) { --unit-accent: #5b6470; }
+
+body.grade6-overview-page .unit-card .card-kicker {
+  color: #17324d;
+}
+
+body.grade6-overview-page .unit-card h3 {
+  font-size: 1.45rem;
+}
+
+body.grade6-overview-page .unit-card .unit-lessons {
+  margin-top: auto;
+  border-top: 1px solid var(--chapter-line);
+}
+
+body.grade6-overview-page .unit-card .unit-lessons > summary {
+  min-height: 48px;
+  align-content: center;
+  color: var(--chapter-ink);
+  cursor: pointer;
+  font-weight: 700;
+}
+
+body.grade6-overview-page .unit-card .unit-lessons .folder-links {
+  grid-template-columns: 1fr;
+  gap: 0;
+}
+
+body.grade6-overview-page .unit-card .unit-lessons .folder-links a,
+body.grade6-overview-page .unit-card .unit-footer a {
+  min-height: 42px;
+  font-size: 0.9rem;
+}
+
+body.grade6-overview-page .unit-card .unit-footer a {
+  color: #176c65;
+}
+
+body.grade6-unit-zero-page {
+  --chapter-accent: #2f6fa3;
+}
+
+body.grade6-unit-zero-page .wrap {
+  width: min(100% - 48px, 1120px);
+  max-width: 1120px;
+  padding: 32px 0 64px;
+}
+
+body.grade6-unit-zero-page .hero {
+  min-height: 280px;
+  padding: clamp(30px, 5vw, 56px);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(220px, 34%);
+  align-items: center;
+  gap: 14px 36px;
+  overflow: hidden;
+  background: #fffefa;
+  border: 0;
+  border-top: 5px solid var(--chapter-accent);
+  border-bottom: 1px solid var(--chapter-line);
+  border-radius: 2px;
+  box-shadow: 0 16px 38px rgb(23 50 77 / 7%);
+  color: var(--chapter-ink);
+}
+
+body.grade6-unit-zero-page .hero h1 {
+  grid-column: 1;
+  max-width: 17ch;
+  color: var(--chapter-ink);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(2.1rem, 4.8vw, 3.6rem);
+  font-weight: 500;
+  letter-spacing: -0.035em;
+  line-height: 1.05;
+}
+
+body.grade6-unit-zero-page .hero p {
+  grid-column: 1;
+  color: var(--chapter-muted);
+  font-size: 1.06rem;
+  line-height: 1.7;
+}
+
+body.grade6-unit-zero-page .chapter-art {
+  grid-column: 2;
+  grid-row: 1 / span 3;
+  align-self: center;
+  width: 100%;
+  max-width: 290px;
+  margin: 0;
+  color: var(--chapter-accent);
+}
+
+body.grade6-unit-zero-page a.back {
+  color: #155954;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+body.grade6-overview-page .site-footer {
+  color: #526370;
+}
+
+body.grade6-unit-zero-page .chapter-art svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+body.grade6-unit-zero-page .note {
+  padding: 16px 18px;
+  background: #f0eee5;
+  border: 0;
+  border-left: 3px solid #c79c39;
+  border-radius: 2px;
+  color: var(--chapter-ink);
+  font-size: 0.96rem;
+  line-height: 1.7;
+}
+
+body.grade6-unit-zero-page .grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px 20px;
+}
+
+body.grade6-unit-zero-page a.lcard {
+  min-height: 170px;
+  padding: 20px;
+  border: 1px solid var(--chapter-line);
+  border-top: 3px solid var(--chapter-accent);
+  border-radius: 2px;
+  box-shadow: none;
+}
+
+body.grade6-unit-zero-page a.lcard:hover,
+body.grade6-unit-zero-page a.lcard:focus-visible {
+  transform: none;
+  border-color: var(--chapter-accent);
+  box-shadow: 0 9px 22px rgb(23 50 77 / 7%);
+}
+
+body.grade6-unit-zero-page .le {
+  display: none;
+}
+
+body.grade6-unit-zero-page .lt {
+  color: var(--chapter-ink);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.18rem;
+}
+
+body.grade6-unit-zero-page .ls {
+  width: fit-content;
+  padding: 2px 0;
+  background: transparent;
+  color: #245c79;
+}
+
+body.grade6-unit-zero-page .lo {
+  color: var(--chapter-muted);
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+@media (max-width: 760px) {
+  body.grade6-chapter-page .page-shell,
+  body.grade6-strand-page .page-shell,
+  body.grade6-overview-page .page-shell {
+    width: min(100% - 28px, 1120px);
+    padding: 20px 0 44px;
+    gap: 36px;
+  }
+
+  body.grade6-unit-zero-page .wrap {
+    width: min(100% - 28px, 1120px);
+    padding: 20px 0 44px;
+  }
+
+  body.grade6-unit-zero-page .hero {
+    min-height: 0;
+    grid-template-columns: 1fr;
+    padding: 26px 24px 22px;
+  }
+
+  body.grade6-unit-zero-page .hero h1,
+  body.grade6-unit-zero-page .hero p {
+    grid-column: 1;
+  }
+
+  body.grade6-unit-zero-page .chapter-art {
+    grid-column: 1;
+    grid-row: auto;
+    width: min(100%, 230px);
+    justify-self: center;
+  }
+
+  body.grade6-unit-zero-page .grid {
+    grid-template-columns: 1fr;
+  }
+
+  body.grade6-chapter-page .compact-hero,
+  body.grade6-strand-page .compact-hero,
+  body.grade6-overview-page .compact-hero {
+    min-height: 0;
+    grid-template-columns: 1fr;
+    gap: 12px;
+    padding: 26px 24px 22px;
+  }
+
+  body.grade6-chapter-page .compact-hero > :not(.chapter-art),
+  body.grade6-strand-page .compact-hero > :not(.chapter-art),
+  body.grade6-overview-page .compact-hero > * {
+    grid-column: 1;
+  }
+
+  body.grade6-overview-page .page-shell > .hero .summary-card {
+    grid-column: 1;
+    grid-row: auto;
+  }
+
+  body.grade6-chapter-page .chapter-art,
+  body.grade6-strand-page .chapter-art {
+    grid-column: 1;
+    grid-row: auto;
+    width: min(100%, 260px);
+    min-height: auto;
+    justify-self: center;
+    margin-top: 4px;
+  }
+
+  body.grade6-chapter-page .folder-links,
+  body.grade6-strand-page .folder-links,
+  body.grade6-overview-page .folder-links {
+    grid-template-columns: 1fr;
+  }
+
+  body.grade6-chapter-page .folder-index-group,
+  body.grade6-strand-page .folder-index-group,
+  body.grade6-overview-page .folder-index-group {
+    padding: 19px 16px;
+  }
+
+  body.grade6-chapter-page .activity-grid,
+  body.grade6-strand-page .activity-grid,
+  body.grade6-overview-page .activity-grid,
+  body.grade6-chapter-page .collection-grid,
+  body.grade6-strand-page .collection-grid,
+  body.grade6-overview-page .collection-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (min-width: 761px) and (max-width: 980px) {
+  body.grade6-chapter-page .folder-links,
+  body.grade6-strand-page .folder-links,
+  body.grade6-overview-page .folder-links {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.grade6-chapter-page *,
+  body.grade6-strand-page * {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+  body.grade6-overview-page * {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}

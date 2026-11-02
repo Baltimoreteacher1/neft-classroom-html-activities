@@ -8,6 +8,7 @@
 // read transparently and new answers are written to `answers`.
 import { mergeLedgers } from "./lang/ledger.js";
 import { mergeStudio, validStudio } from "./lang/studio.js";
+import { mergeGames, validGames } from "./games/state.js";
 import { safeJson, storage, todayISO } from "./util.js";
 
 export const PREFIX = "accessPracticeLab:v1";
@@ -19,7 +20,9 @@ export const progressKey = (band, domain, level) =>
 export const testKey = (id) => `${PREFIX}:test:${id}`;
 
 // ── preferences ───────────────────────────────────────────────────────────────
-const DEFAULT_PREFS = { band: "", tiers: {}, rate: 0.9, textSize: 1, lang: "en", focus: "" };
+// `lang` is "en" | "es" | "bi" (src/i18n.js); `langChosen` records that a person picked one, so the
+// first-visit banner shows once. `family` is the Family Setup Wizard answers (src/family/setup.js, schema v1).
+const DEFAULT_PREFS = { band: "", tiers: {}, rate: 0.9, textSize: 1, lang: "en", langChosen: false, focus: "" };
 export function getPrefs() {
   const saved = safeJson(storage.get(PREFS_KEY), {}) || {};
   const prefs = { ...DEFAULT_PREFS, ...saved, tiers: { ...(saved.tiers || {}) } };
@@ -91,6 +94,25 @@ export function answerOf(record, id) {
 export const loadTestRecord = (id) => safeJson(storage.get(testKey(id)), {}) || {};
 export const saveTestRecord = (id, record) => storage.set(testKey(id), JSON.stringify(record));
 export const clearTestRecord = (id) => storage.remove(testKey(id));
+
+// ── test reflections & wida target goals ───────────────────────────────────────
+export const errorReflectionsKey = () => `${PREFIX}:errorReflections`;
+export const loadErrorReflections = () => safeJson(storage.get(errorReflectionsKey()), {}) || {};
+export const saveErrorReflection = (testId, itemId, reason) => {
+  const current = loadErrorReflections();
+  const testReflections = current[testId] || {};
+  testReflections[itemId] = reason;
+  current[testId] = testReflections;
+  storage.set(errorReflectionsKey(), JSON.stringify(current));
+  return current;
+};
+
+export const targetGoalKey = () => `${PREFIX}:widaTarget`;
+export const loadTargetGoal = () => safeJson(storage.get(targetGoalKey()), null);
+export const saveTargetGoal = (goal) => {
+  storage.set(targetGoalKey(), JSON.stringify(goal));
+  return goal;
+};
 
 // ── whole-device views (passport, export) ─────────────────────────────────────
 /** Every saved level record: [{band, domain, level, record}]. */
@@ -215,16 +237,17 @@ export function importProgressData(data) {
     const progress = isProgressKey(key);
     if (
       !progress &&
-      !/^(?:prefs|studentName|pathway|ledger|studio|readingRoom|test:[a-zA-Z0-9_-]+)$/.test(suffix)
+      !/^(?:prefs|studentName|pathway|ledger|studio|games|readingRoom|test:[a-zA-Z0-9_-]+)$/.test(suffix)
     )
       continue;
     const current = storage.get(key);
-    if (suffix === "ledger" || suffix === "studio" || suffix === "readingRoom") {
+    if (suffix === "ledger" || suffix === "studio" || suffix === "games" || suffix === "readingRoom") {
       const incoming = safeJson(value, null);
       if (
         !isObject(incoming) ||
         (suffix === "ledger" && !Array.isArray(incoming.entries)) ||
         (suffix === "studio" && !validStudio(incoming)) ||
+        (suffix === "games" && !validGames(incoming)) ||
         (suffix === "readingRoom" &&
           (incoming.schema !== 1 || !isObject(incoming.lessons) || !isObject(incoming.annotations) ||
             !Array.isArray(incoming.recent) || !Array.isArray(incoming.words) || !Array.isArray(incoming.bookmarks)))
@@ -240,6 +263,8 @@ export function importProgressData(data) {
         ? mergeLedgers({ entries: local.entries || [] }, incoming)
         : suffix === "studio"
           ? mergeStudio(local, incoming)
+          : suffix === "games"
+            ? mergeGames(local, incoming)
           : {
               ...incoming,
               ...local,

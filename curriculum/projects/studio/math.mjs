@@ -503,7 +503,7 @@ export function model(project, raw) {
       rule = `$${a} with ${b}% off, then ${c}% simulated tax`;
       decision =
         "Use the receipt and percent model to defend the offer; decide whether it fits the stated budget.";
-      visual = { type: "percent", values: [b, 100 - b], labels: ["Discount", "Remaining price"] };
+      visual = { type: "percent", values: [b, a, c, total], labels: ["Discount", "Remaining price"] };
       break;
     }
     case "area": {
@@ -562,7 +562,7 @@ export function model(project, raw) {
       rule = `Floor: ${a} × ${b} + ½ × ${c} × ${d}; storage: ${f} × ${g} × ${h}`;
       decision =
         "Defend the use of space and cost. Compare floor area, storage capacity and material area without mixing units.";
-      visual = { type: "area", values: [a, b, c, d], labels: [] };
+      visual = { type: "area", values: [a, b, c, d, f, g, h], labels: [] };
       break;
     }
     case "expressions": {
@@ -783,7 +783,9 @@ export function model(project, raw) {
       rule = `y = ${a}x + ${b}`;
       decision =
         "Name both variables, connect equation/table/graph, and explain whether the graph starts at the origin.";
-      visual = { type: "line", values: [a, b, c], labels: [] };
+      visual = project.id === "unit-9-b"
+        ? { type: "dual", values: [a, b, Math.max(1, a - 4), b + 8, Math.max(c, 8)], labels: [] }
+        : { type: "line", values: [a, b, c], labels: [] };
       break;
     }
     case "solids": {

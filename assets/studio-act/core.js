@@ -107,7 +107,7 @@
           const pts = marks
             .map(
               (v) =>
-                `<line x1="${px(v)}" y1="40" x2="${px(v)}" y2="52" stroke="var(--ink,#223)"/><text x="${px(v)}" y="70" text-anchor="middle" font-size="11">${v}</text>`,
+                `<line x1="${px(v)}" y1="40" x2="${px(v)}" y2="52" stroke="var(--ink,#17324D)"/><text x="${px(v)}" y="70" text-anchor="middle" font-size="11">${v}</text>`,
             )
             .join("");
           const picked = Number.isFinite(active) ? active : vals[0];
@@ -118,7 +118,7 @@
               ? ` · Order choices: farther from 0 = ${m.nums?.[current?.far0] ?? "—"}; farther right = ${m.nums?.[current?.right] ?? "—"}`
               : "";
           const ty = 82 - ((picked - lo) / (hi - lo || 1)) * 64;
-          linked.innerHTML = `<div style="display:grid;grid-template-columns:64px minmax(0,1fr);gap:8px;align-items:center"><svg viewBox="0 0 64 100" role="img" aria-label="Vertical thermometer or elevation scale at ${picked}"><path d="M29 18a8 8 0 0 1 16 0v53a14 14 0 1 1-16 0Z" fill="none" stroke="var(--brand,#365b7d)" stroke-width="3"/><line x1="37" y1="26" x2="37" y2="${ty}" stroke="var(--bad,#b42318)" stroke-width="5"/><circle cx="37" cy="80" r="9" fill="var(--bad,#b42318)"/><text x="4" y="${ty + 4}" font-size="10">${picked}</text></svg><svg viewBox="0 0 300 88" role="img" aria-label="Signed number line with opposite reflection and absolute value distance"><line x1="18" y1="46" x2="282" y2="46" stroke="var(--ink,#223)" stroke-width="2"/>${pts}<path d="M ${px(picked)} 34 Q ${px((picked + reflection) / 2)} 4 ${px(reflection)} 34" fill="none" stroke="var(--brand,#365b7d)" stroke-dasharray="5 3"/><circle cx="${px(picked)}" cy="46" r="5" fill="var(--bad,#b42318)"/><circle cx="${px(reflection)}" cy="46" r="5" fill="var(--ok,#347b50)"/></svg></div><figcaption class="u7-rat-readout" style="font-weight:700">n = ${picked}; −n = ${reflection}; |n| = ${Math.abs(picked)}${vals.length > 1 ? ` · Order: ${Math.min(...vals)} < ${Math.max(...vals)} · magnitudes: ${Math.abs(Math.min(...vals))}, ${Math.abs(Math.max(...vals))}` : ""}${selection}</figcaption>`;
+          linked.innerHTML = `<div style="display:grid;grid-template-columns:64px minmax(0,1fr);gap:8px;align-items:center"><svg viewBox="0 0 64 100" role="img" aria-label="Vertical thermometer or elevation scale at ${picked}"><path d="M29 18a8 8 0 0 1 16 0v53a14 14 0 1 1-16 0Z" fill="none" stroke="var(--brand,#365b7d)" stroke-width="3"/><line x1="37" y1="26" x2="37" y2="${ty}" stroke="var(--bad,#b42318)" stroke-width="5"/><circle cx="37" cy="80" r="9" fill="var(--bad,#b42318)"/><text x="4" y="${ty + 4}" font-size="10">${picked}</text></svg><svg viewBox="0 0 300 88" role="img" aria-label="Signed number line with opposite reflection and absolute value distance"><line x1="18" y1="46" x2="282" y2="46" stroke="var(--ink,#17324D)" stroke-width="2"/>${pts}<path d="M ${px(picked)} 34 Q ${px((picked + reflection) / 2)} 4 ${px(reflection)} 34" fill="none" stroke="var(--brand,#365b7d)" stroke-dasharray="5 3"/><circle cx="${px(picked)}" cy="46" r="5" fill="var(--bad,#b42318)"/><circle cx="${px(reflection)}" cy="46" r="5" fill="var(--ok,#347b50)"/></svg></div><figcaption class="u7-rat-readout" style="font-weight:700">n = ${picked}; −n = ${reflection}; |n| = ${Math.abs(picked)}${vals.length > 1 ? ` · Order: ${Math.min(...vals)} < ${Math.max(...vals)} · magnitudes: ${Math.abs(Math.min(...vals))}, ${Math.abs(Math.max(...vals))}` : ""}${selection}</figcaption>`;
           linked.setAttribute(
             "aria-label",
             `Signed number line at ${picked}; opposite ${reflection}; absolute value ${Math.abs(picked)}`,
@@ -193,7 +193,7 @@
             : current
               ? ` · Current build: ${Number(current.c) || 0} copies; tile-bank counts ${Array.isArray(current.m) ? current.m.join(", ") : "not placed"}`
               : "";
-          linked.innerHTML = `<div style="display:grid;grid-template-columns:minmax(110px,1fr) minmax(190px,2fr);gap:10px;align-items:center"><svg viewBox="0 0 140 100" role="img" aria-label="Algebra tiles showing x bars and unit tiles" style="width:100%;height:auto"><rect x="8" y="8" width="78" height="26" rx="3" fill="var(--brand-tint,#dbe8f3)" stroke="var(--brand,#365b7d)"/><text x="47" y="26" text-anchor="middle">x tiles</text><rect x="8" y="42" width="24" height="24" rx="3" fill="var(--sun-tint,#fff0c2)" stroke="var(--sun-deep,#bd8c13)"/><text x="20" y="59" text-anchor="middle">1</text><rect x="38" y="42" width="24" height="24" rx="3" fill="var(--sun-tint,#fff0c2)" stroke="var(--sun-deep,#bd8c13)"/><text x="50" y="59" text-anchor="middle">1</text><path d="M8 78h78" stroke="var(--ink,#223)" stroke-width="2"/><text x="47" y="94" text-anchor="middle">area = width × height</text></svg><div><strong>${left} = ${right}</strong><table style="width:100%;border-collapse:collapse;margin-top:6px"><thead><tr><th>Substitution</th><th>Factored</th><th>Expanded</th><th>Match</th></tr></thead><tbody>${rows}</tbody></table></div></div><figcaption>Both forms are evaluated at x = 1, 2, and 3 using the same expression coefficients.${liveTiles}</figcaption>`;
+          linked.innerHTML = `<div style="display:grid;grid-template-columns:minmax(110px,1fr) minmax(190px,2fr);gap:10px;align-items:center"><svg viewBox="0 0 140 100" role="img" aria-label="Algebra tiles showing x bars and unit tiles" style="width:100%;height:auto"><rect x="8" y="8" width="78" height="26" rx="3" fill="var(--brand-tint,#dbe8f3)" stroke="var(--brand,#365b7d)"/><text x="47" y="26" text-anchor="middle">x tiles</text><rect x="8" y="42" width="24" height="24" rx="3" fill="var(--sun-tint,#fff0c2)" stroke="var(--sun-deep,#bd8c13)"/><text x="20" y="59" text-anchor="middle">1</text><rect x="38" y="42" width="24" height="24" rx="3" fill="var(--sun-tint,#fff0c2)" stroke="var(--sun-deep,#bd8c13)"/><text x="50" y="59" text-anchor="middle">1</text><path d="M8 78h78" stroke="var(--ink,#17324D)" stroke-width="2"/><text x="47" y="94" text-anchor="middle">area = width × height</text></svg><div><strong>${left} = ${right}</strong><table style="width:100%;border-collapse:collapse;margin-top:6px"><thead><tr><th>Substitution</th><th>Factored</th><th>Expanded</th><th>Match</th></tr></thead><tbody>${rows}</tbody></table></div></div><figcaption>Both forms are evaluated at x = 1, 2, and 3 using the same expression coefficients.${liveTiles}</figcaption>`;
           linked.setAttribute(
             "aria-label",
             `Equivalent expressions ${left} and ${right}; substitution results at 1, 2 and 3`,
@@ -244,7 +244,7 @@
           const lhs = val(m.c) * x + val(m.k),
             rhs = val(m.e);
           const stepHtml = steps.map((s, i) => `<div>${i + 1}. ${s}</div>`).join("");
-          linked.innerHTML = `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:10px;align-items:center"><svg viewBox="0 0 190 105" role="img" aria-label="Pan balance showing equal sides after each operation" style="width:100%;height:auto"><path d="M95 25v57m-42 0h84m-60-3 18-35m60 35L113 44M44 44h40m22 0h40" fill="none" stroke="var(--brand,#365b7d)" stroke-width="4"/><path d="M45 44v16h38V44m24 0v16h38V44" fill="var(--brand-tint,#dbe8f3)" stroke="var(--brand,#365b7d)" stroke-width="2"/><text x="64" y="57" text-anchor="middle">x + ${fmt(Math.abs(k))}</text><text x="126" y="57" text-anchor="middle">${fmt(e)}</text></svg><svg viewBox="0 0 220 76" role="img" aria-label="Tape model decomposing the total into variable and constant parts" style="width:100%;height:auto"><rect x="8" y="18" width="${Math.max(30, 190 * Math.min(1, Math.abs(x) / (Math.abs(x) + Math.abs(k) + 1)))}" height="32" fill="var(--brand-tint,#dbe8f3)" stroke="var(--brand,#365b7d)"/><rect x="8" y="18" width="190" height="32" fill="none" stroke="var(--ink,#223)"/><text x="12" y="68">x = ${fmt(x)}; constant = ${fmt(k)}</text></svg></div><div class="u8-eq-steps" style="font-size:.95rem;line-height:1.5">${stepHtml}<strong>Check: ${fmt(lhs)} = ${fmt(rhs)} when x = ${fmt((val(m.e) - val(m.k)) / (val(m.c) || 1))}</strong></div>`;
+          linked.innerHTML = `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:10px;align-items:center"><svg viewBox="0 0 190 105" role="img" aria-label="Pan balance showing equal sides after each operation" style="width:100%;height:auto"><path d="M95 25v57m-42 0h84m-60-3 18-35m60 35L113 44M44 44h40m22 0h40" fill="none" stroke="var(--brand,#365b7d)" stroke-width="4"/><path d="M45 44v16h38V44m24 0v16h38V44" fill="var(--brand-tint,#dbe8f3)" stroke="var(--brand,#365b7d)" stroke-width="2"/><text x="64" y="57" text-anchor="middle">x + ${fmt(Math.abs(k))}</text><text x="126" y="57" text-anchor="middle">${fmt(e)}</text></svg><svg viewBox="0 0 220 76" role="img" aria-label="Tape model decomposing the total into variable and constant parts" style="width:100%;height:auto"><rect x="8" y="18" width="${Math.max(30, 190 * Math.min(1, Math.abs(x) / (Math.abs(x) + Math.abs(k) + 1)))}" height="32" fill="var(--brand-tint,#dbe8f3)" stroke="var(--brand,#365b7d)"/><rect x="8" y="18" width="190" height="32" fill="none" stroke="var(--ink,#17324D)"/><text x="12" y="68">x = ${fmt(x)}; constant = ${fmt(k)}</text></svg></div><div class="u8-eq-steps" style="font-size:.95rem;line-height:1.5">${stepHtml}<strong>Check: ${fmt(lhs)} = ${fmt(rhs)} when x = ${fmt((val(m.e) - val(m.k)) / (val(m.c) || 1))}</strong></div>`;
           linked.setAttribute(
             "aria-label",
             `Balance equation ${equation()}; inverse-operation steps ${ops.length}; solution check ${fmt(lhs)} equals ${fmt(rhs)}`,
@@ -286,7 +286,7 @@
                 `<span><b>${v}</b>: ${holds(v) ? "True" : "False"}${current?.m?.[i] === true ? " ✓" : current?.m?.[i] === false ? " ✗" : ""}</span>`,
             )
             .join(" · ");
-          linked.innerHTML = `<svg viewBox="0 0 300 78" role="img" aria-label="Number line ray for x ${op} ${n}"><line x1="18" y1="40" x2="282" y2="40" stroke="var(--ink,#223)" stroke-width="2"/><path d="M${right ? x(n) : 18} 40H${right ? 282 : x(n)}" stroke="var(--brand,#365b7d)" stroke-width="8"/><path d="M${right ? 274 : 18} 33l8 7-8 7" fill="none" stroke="var(--brand,#365b7d)" stroke-width="3"/><circle cx="${x(n)}" cy="40" r="7" fill="${strict ? "var(--surface,#fff)" : "var(--brand,#365b7d)"}" stroke="var(--brand,#365b7d)" stroke-width="3"/><text x="${x(n)}" y="68" text-anchor="middle">${n}</text></svg><strong class="u8-ineq-statement">x ${op} ${n}</strong><div class="u8-ineq-tests" style="display:flex;flex-wrap:wrap;gap:8px">${tests}</div>`;
+          linked.innerHTML = `<svg viewBox="0 0 300 78" role="img" aria-label="Number line ray for x ${op} ${n}"><line x1="18" y1="40" x2="282" y2="40" stroke="var(--ink,#17324D)" stroke-width="2"/><path d="M${right ? x(n) : 18} 40H${right ? 282 : x(n)}" stroke="var(--brand,#365b7d)" stroke-width="8"/><path d="M${right ? 274 : 18} 33l8 7-8 7" fill="none" stroke="var(--brand,#365b7d)" stroke-width="3"/><circle cx="${x(n)}" cy="40" r="7" fill="${strict ? "var(--surface,#fff)" : "var(--brand,#365b7d)"}" stroke="var(--brand,#365b7d)" stroke-width="3"/><text x="${x(n)}" y="68" text-anchor="middle">${n}</text></svg><strong class="u8-ineq-statement">x ${op} ${n}</strong><div class="u8-ineq-tests" style="display:flex;flex-wrap:wrap;gap:8px">${tests}</div>`;
           linked.setAttribute(
             "aria-label",
             `Inequality x ${op} ${n}. Test values ${vals.join(", ")}: ${vals.map((v) => `${v} ${holds(v) ? "true" : "false"}`).join("; ")}`,
@@ -502,7 +502,7 @@
             points.length > 1
               ? `Distance: |${points[1][0]} − ${points[0][0]}| = ${Math.abs(points[1][0] - points[0][0])} horizontally; |${points[1][1]} − ${points[0][1]}| = ${Math.abs(points[1][1] - points[0][1])} vertically.`
               : `Point sign pair: (${quadrant}); |x| = ${Math.abs(first[0])}, |y| = ${Math.abs(first[1])}.`;
-          linked.innerHTML = `<div style="display:grid;grid-template-columns:minmax(190px,1fr) minmax(220px,1.4fr);gap:8px;align-items:center"><svg viewBox="0 0 300 220" role="img" aria-label="Four-quadrant coordinate plane with projected points"><path d="M20 110H280M150 205V15" stroke="var(--ink,#223)" stroke-width="2"/><path d="M45 106v8m25-8v8m25-8v8m25-8v8m25-8v8m25-8v8m25-8v8m25-8v8m25-8v8M146 35h8m-8 25h8m-8 25h8m-8 25h8m-8 25h8m-8 25h8m-8 25h8" stroke="var(--border-strong,#879)"/>${dots}</svg><table style="width:100%;border-collapse:collapse"><thead><tr><th>Point</th><th>Quadrant</th><th>Reflect x</th><th>Reflect y</th></tr></thead><tbody>${table}</tbody></table></div><figcaption>${distance}</figcaption>`;
+          linked.innerHTML = `<div style="display:grid;grid-template-columns:minmax(190px,1fr) minmax(220px,1.4fr);gap:8px;align-items:center"><svg viewBox="0 0 300 220" role="img" aria-label="Four-quadrant coordinate plane with projected points"><path d="M20 110H280M150 205V15" stroke="var(--ink,#17324D)" stroke-width="2"/><path d="M45 106v8m25-8v8m25-8v8m25-8v8m25-8v8m25-8v8m25-8v8m25-8v8m25-8v8M146 35h8m-8 25h8m-8 25h8m-8 25h8m-8 25h8m-8 25h8m-8 25h8" stroke="var(--border-strong,#17324D)"/>${dots}</svg><table style="width:100%;border-collapse:collapse"><thead><tr><th>Point</th><th>Quadrant</th><th>Reflect x</th><th>Reflect y</th></tr></thead><tbody>${table}</tbody></table></div><figcaption>${distance}</figcaption>`;
           linked.setAttribute(
             "aria-label",
             `Coordinate plane with ${points.length} points, quadrant ${quadrant}. ${distance}`,
@@ -610,20 +610,20 @@
           const dots = vals
             .map(
               (v, i) =>
-                `<circle cx="${x(v)}" cy="${26 + (i % 3) * 12}" r="4" fill="var(--sun,#F0BD4F)" stroke="var(--ink,#223)"/>`,
+                `<circle cx="${x(v)}" cy="${26 + (i % 3) * 12}" r="4" fill="var(--sun,#F0BD4F)" stroke="var(--ink,#17324D)"/>`,
             )
             .join("");
           const marks = [...new Set(vals)]
             .map(
               (v) =>
-                `<line x1="${x(v)}" y1="62" x2="${x(v)}" y2="68" stroke="var(--ink,#223)"/><text x="${x(v)}" y="82" text-anchor="middle" font-size="10">${v}</text>`,
+                `<line x1="${x(v)}" y1="62" x2="${x(v)}" y2="68" stroke="var(--ink,#17324D)"/><text x="${x(v)}" y="82" text-anchor="middle" font-size="10">${v}</text>`,
             )
             .join("");
           const median =
             vals.length % 2
               ? vals[(vals.length - 1) / 2]
               : (vals[vals.length / 2 - 1] + vals[vals.length / 2]) / 2;
-          linked.innerHTML = `<svg viewBox="0 0 300 92" role="img" aria-label="Six simulated answers on a number line; repeated values stack and varied values spread" style="width:100%;height:auto"><line x1="12" y1="62" x2="288" y2="62" stroke="var(--ink,#223)" stroke-width="2"/>${dots}${marks}</svg><figcaption><strong>Six-answer data snapshot:</strong> n = ${vals.length} · min ${min} · median ${median} · mean ${Number(mean.toFixed(2))} · max ${max} · range ${max - min}. ${new Set(vals).size === 1 ? "All answers stack: no variability." : "Answers spread: the response varies."}</figcaption>`;
+          linked.innerHTML = `<svg viewBox="0 0 300 92" role="img" aria-label="Six simulated answers on a number line; repeated values stack and varied values spread" style="width:100%;height:auto"><line x1="12" y1="62" x2="288" y2="62" stroke="var(--ink,#17324D)" stroke-width="2"/>${dots}${marks}</svg><figcaption><strong>Six-answer data snapshot:</strong> n = ${vals.length} · min ${min} · median ${median} · mean ${Number(mean.toFixed(2))} · max ${max} · range ${max - min}. ${new Set(vals).size === 1 ? "All answers stack: no variability." : "Answers spread: the response varies."}</figcaption>`;
           linked.setAttribute(
             "aria-label",
             `Six answers: minimum ${min}, median ${median}, mean ${Number(mean.toFixed(2))}, maximum ${max}, range ${max - min}`,
@@ -677,7 +677,7 @@
             ? ` Selected interval: ${selectedBin.lo}–${selectedBin.hi}.`
             : "";
           const caption = `Total ${total}; middle rank ${rank}; median class ${medianBin?.lo}–${medianBin?.hi}; tally advanced through ${counted} of ${bins.length} intervals.${pickedText}`;
-          linked.innerHTML = `<svg viewBox="0 0 292 108" role="img" aria-label="Histogram with interval counts, cumulative tally, and median class ${medianBin?.lo} to ${medianBin?.hi}" style="width:100%;height:auto"><line x1="8" y1="72" x2="286" y2="72" stroke="var(--ink,#223)" stroke-width="2"/>${bars}</svg><figcaption><strong>Median-class check:</strong> ${caption} The median is the value at rank ${rank} in the ordered data; this histogram identifies its interval.</figcaption>`;
+          linked.innerHTML = `<svg viewBox="0 0 292 108" role="img" aria-label="Histogram with interval counts, cumulative tally, and median class ${medianBin?.lo} to ${medianBin?.hi}" style="width:100%;height:auto"><line x1="8" y1="72" x2="286" y2="72" stroke="var(--ink,#17324D)" stroke-width="2"/>${bars}</svg><figcaption><strong>Median-class check:</strong> ${caption} The median is the value at rank ${rank} in the ordered data; this histogram identifies its interval.</figcaption>`;
           linked.setAttribute("aria-label", caption);
           linked.dataset.counted = String(counted);
           linked.dataset.medianInterval = medianBin ? `${medianBin.lo}-${medianBin.hi}` : "";
@@ -712,7 +712,7 @@
               const row = Math.floor(i / 10),
                 col = i % 10;
               const fill = row < r && col < c ? "var(--brand,#365b7d)" : "var(--surface,#fff)";
-              return `<rect x="${12 + col * 14}" y="${8 + row * 14}" width="12" height="12" fill="${fill}" fill-opacity=".72" stroke="var(--border-strong,#879)"/>`;
+              return `<rect x="${12 + col * 14}" y="${8 + row * 14}" width="12" height="12" fill="${fill}" fill-opacity=".72" stroke="var(--border-strong,#17324D)"/>`;
             }).join("");
             const product = ((c * r) / 100).toFixed(2).replace(/0+$/, "").replace(/\\.$/, "");
             linked.innerHTML = `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,180px),1fr));gap:10px;align-items:center;min-width:0"><svg viewBox="0 0 164 154" role="img" aria-label="Hundredths grid with ${c} columns by ${r} rows shaded" style="width:100%;height:auto;min-width:0">${squares}<text x="82" y="151" text-anchor="middle">${c} × ${r} hundredths</text></svg><div style="min-width:0;overflow-wrap:anywhere"><strong>${m.expr}</strong><p>${c} × ${r} = ${c * r} hundredths</p></div></div><figcaption style="min-width:0;overflow-wrap:anywhere"><strong>Area product:</strong> ${c} × ${r} ÷ 100 = ${product}. The overlap count and decimal product use the same factors.</figcaption>`;

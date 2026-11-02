@@ -79,7 +79,7 @@ function day(/** @type {string} */ id, /** @type {any} */ w) {
   const r = w.radius;
   const sunL = sunLightness(h, s, a);
   return `body[data-world="${id}"] {
-  --brand: ${hsl(h, s, 30)}; --brand-dark: ${hsl(h, s * 0.6, 15)}; --brand-tint: ${hsl(h, s * 0.55, 93)}; --brand-line: ${hsl(h, s * 0.35, 78)};
+  --brand: ${hsl(h, s, 29)}; --brand-dark: ${hsl(h, s * 0.6, 15)}; --brand-tint: ${hsl(h, s * 0.55, 93)}; --brand-line: ${hsl(h, s * 0.35, 78)};
   --sun: ${hsl(a, SUN_SAT, sunL)}; --sun-deep: ${hsl(a, 58, 33)}; --sun-tint: ${hsl(a, 55, 93)}; --sun-ink: ${hsl(a, 55, 20)};
   --on-brand: #FFFFFF; --on-sun: ${hsl(h, s * 0.6, 15)};
   --paper: ${hsl(h, 30, 96)}; --well: ${hsl(h, 25, 91)}; --surface: #FFFFFF; --surface-soft: ${hsl(h, 35, 97.5)};

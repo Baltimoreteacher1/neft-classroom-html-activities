@@ -147,7 +147,13 @@ export function gameProblems(grade, stopId, count, { distinctAnswers = false, co
   };
   // Mixed play (every stop) brings back up to a third of the board from facts the learner missed.
   if (comeback && stopId === ALL_STOPS) for (const item of comebackItems(grade, Math.ceil(count / 3))) take(item);
-  for (let tries = 0; items.length < count && tries < 800; tries += 1) take(gameProblem(grade, stopId));
+  // A board that needs different answers has to keep looking: in a small pool some answers are rare draws (0 + 0 is
+  // under 1% of Kindergarten "Join groups"), and 800 tries left about 2% of those boards one pair short. Keep going
+  // while new answers are still turning up, and stop once 3,000 draws in a row find nothing new (the pool is spent).
+  const limit = distinctAnswers ? 8000 : 800;
+  let dry = 0;
+  for (let tries = 0; items.length < count && tries < limit && dry < 3000; tries += 1)
+    dry = take(gameProblem(grade, stopId)) ? 0 : dry + 1;
   return items;
 }
 

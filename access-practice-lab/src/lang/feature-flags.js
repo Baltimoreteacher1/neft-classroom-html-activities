@@ -10,4 +10,6 @@ export const ACCESS_LAB_FLAGS = Object.freeze({
   dynamicScaffoldingEnabled: false,
   externalAiEnabled: false,
   transcriptionEnabled: false,
+  // Local-only camera postcards are enabled: explicit capture, canvas re-encoding, 30-day local expiry and delete controls.
+  cameraPostcardsEnabled: true,
 });

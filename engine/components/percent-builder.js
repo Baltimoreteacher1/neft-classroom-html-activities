@@ -267,7 +267,7 @@ function injectStyles() {
   .pctlab-field input{width:92px;padding:8px 10px;font-size:1.1rem;font-weight:600;color:${C.ink};border:2px solid ${C.line};border-radius:10px;background:#fbfcfe;}
   .pctlab-field input:focus-visible{outline:3px solid ${C.accent};outline-offset:1px;border-color:${C.accent};}
   .pctlab-of{align-self:center;padding-bottom:9px;font-weight:600;color:${C.muted};font-size:.9rem;}
-  .pctlab-go{padding:9px 16px;font-size:.95rem;font-weight:700;color:#fff;background:linear-gradient(135deg,#4f46e5,#0e8a7d);border:0;border-radius:10px;cursor:pointer;}
+  .pctlab-go{padding:9px 16px;font-size:.95rem;font-weight:700;color:#fff;background:linear-gradient(135deg,#17324D,#0e8a7d);border:0;border-radius:10px;cursor:pointer;}
   .pctlab-go:hover{filter:brightness(1.08);}
   .pctlab-go:focus-visible,.pctlab-chip:focus-visible{outline:3px solid ${C.accent};outline-offset:2px;}
   .pctlab-presets{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0 0;}

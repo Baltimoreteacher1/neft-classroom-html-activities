@@ -14,6 +14,7 @@
     <link rel="stylesheet" href="./fm2/fm2.css" />
     <link rel="stylesheet" href="./fm2/page-kit.css" />
     <link rel="stylesheet" href="./fm2/home.css" />
+    <link rel="stylesheet" href="./family-4.css" />
     <script type="module" src="./home.js"></script>
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
@@ -77,25 +78,34 @@
       >
       <div id="error-region" data-testid="home-error" role="alert"></div>
       <div id="resume-region"></div>
+      <a class="hm-more-card hm-tour" id="tour-link" data-testid="tour-link" href="../family-adventure/"
+        ><strong data-t="tourTitle">New here? Take the 3-minute tour</strong
+        ><span data-t="tourText"
+          >Four short stops show you what this is and how to help. In English and Spanish.</span
+        ></a
+      >
 
       <section class="hm-region hm-hero" id="hero-region" aria-labelledby="welcome-title">
         <div class="hm-hero-copy">
-          <p class="hm-eyebrow" data-t="heroEyebrow">A LITTLE MATH, TOGETHER</p>
           <h1 id="welcome-title" data-t="heroTitle">Make room for a math moment.</h1>
           <p class="hm-hero-lead" data-t="heroLead">
-            Pick a grade and a length, then press Start. Each activity is a short game, with hints
-            whenever your learner wants one.
+            A few minutes of math, together. You don’t need to know every answer.
           </p>
-          <p class="hm-privacy" data-t="privacy">
-            Progress stays on this device. No account is needed.
-          </p>
-          <div class="hm-chips" aria-hidden="true">
-            <span>6 + 7</span><span>⅜</span><span>x = 4</span>
-          </div>
+          <p class="hm-privacy" data-t="privacy">Saved on this device. No account needed.</p>
+          <div id="optional-region"></div>
+          <div id="guide-region"></div>
         </div>
         <div class="hm-setup" id="setup" data-testid="setup">
           <p class="hm-loading" data-t="loading">Getting your games ready…</p>
         </div>
+      </section>
+
+      <section class="hm-region" id="routines-region" aria-labelledby="routines-title" data-testid="routines">
+        <div class="hm-head">
+          <h2 class="pk-h" id="routines-title" data-t="routinesTitle">Short routines</h2>
+          <p class="pk-lead" data-t="routinesLead">Pick one. Each starts in one tap and stays short. Choose what fits your evening.</p>
+        </div>
+        <div id="routines-body"></div>
       </section>
 
       <section
@@ -109,44 +119,6 @@
           <p class="pk-lead" id="mission-sub"></p>
         </div>
         <div id="mission-body"></div>
-      </section>
-
-      <section
-        class="hm-region"
-        id="progress-region"
-        aria-labelledby="progress-title"
-        data-testid="progress-strip"
-      >
-        <div class="hm-head">
-          <h2 class="pk-h" id="progress-title" data-t="progressTitle">Your progress</h2>
-        </div>
-        <div id="progress-body"></div>
-      </section>
-
-      <section
-        class="hm-region"
-        id="games-region"
-        aria-labelledby="games-title"
-        data-testid="games-shelf"
-      >
-        <div class="hm-head">
-          <h2 class="pk-h" id="games-title" data-t="shelfTitle">The ten games</h2>
-          <p class="pk-lead" data-t="shelfLead">Pick any game to play at your learner’s grade.</p>
-        </div>
-        <div id="games-body"></div>
-      </section>
-
-      <section
-        class="hm-region"
-        id="skills-region"
-        aria-labelledby="skills-title"
-        data-testid="skill-browser"
-      >
-        <div class="hm-head">
-          <h2 class="pk-h" id="skills-title" data-t="skillsTitle">Practice a skill</h2>
-          <p class="pk-lead" id="skills-sub"></p>
-        </div>
-        <div id="skills-body"></div>
       </section>
 
       <section
@@ -172,14 +144,51 @@
         </button>
       </section>
 
-      <section class="hm-region" id="rw-region" aria-labelledby="rw-title" data-testid="realworld">
-        <p class="pk-print-only" id="rw-print-title"></p>
+      <section
+        class="hm-region"
+        id="progress-region"
+        aria-labelledby="progress-title"
+        data-testid="progress-strip"
+      >
         <div class="hm-head">
-          <h2 class="pk-h" id="rw-title" data-t="rwTitle">Math at home</h2>
-          <p class="pk-lead" id="rw-sub"></p>
+          <h2 class="pk-h" id="progress-title" data-t="progressTitle">Your progress</h2>
         </div>
-        <div id="rw-body"></div>
+        <div id="progress-body"></div>
+        <div id="celebrate-body"></div>
       </section>
+
+      <section class="hm-region" id="topics-region" aria-labelledby="topics-title" data-testid="topics">
+        <div class="hm-head">
+          <h2 class="pk-h" id="topics-title" data-t="topicsTitle">Find a skill by topic</h2>
+          <p class="pk-lead" data-t="topicsLead">Tap a topic to see its skills for this grade.</p>
+        </div>
+        <div id="topics-body"></div>
+      </section>
+
+      <details class="hm-region hm-fold" id="skills-region" data-testid="skill-browser">
+        <summary data-fk="fold-skills">
+          <h2 class="pk-h" id="skills-title" data-t="skillsTitle">Pick a skill yourself</h2>
+        </summary>
+        <p class="pk-lead" id="skills-sub"></p>
+        <div id="skills-body"></div>
+      </details>
+
+      <details class="hm-region hm-fold" id="games-region" data-testid="games-shelf">
+        <summary data-fk="fold-games">
+          <h2 class="pk-h" id="games-title" data-t="shelfTitle">Explore other activities</h2>
+        </summary>
+        <p class="pk-lead" data-t="shelfLead">Pick any game to play at your learner’s grade.</p>
+        <div id="games-body"></div>
+      </details>
+
+      <details class="hm-region hm-fold" id="rw-region" data-testid="realworld">
+        <summary data-fk="fold-rw">
+          <h2 class="pk-h" id="rw-title" data-t="rwTitle">Math at home</h2>
+        </summary>
+        <p class="pk-print-only" id="rw-print-title"></p>
+        <p class="pk-lead" id="rw-sub"></p>
+        <div id="rw-body"></div>
+      </details>
 
       <section class="hm-region" id="more-region" aria-labelledby="more-title">
         <div class="hm-head">
@@ -193,7 +202,7 @@
             href="tonight.html?grade=1&amp;profile=0&amp;skill=add-10&amp;lang=en"
             ><strong data-t="tonightTitle">Tonight’s Math</strong
             ><span data-t="tonightText"
-              >A five-part guided path built from your learner’s saved practice.</span
+              >A separate five-part path from the Fluency Lab, built from your learner’s saved Fluency Lab practice.</span
             ></a
           >
           <a class="hm-more-card" id="lab-link" data-testid="lab-link" href="../"

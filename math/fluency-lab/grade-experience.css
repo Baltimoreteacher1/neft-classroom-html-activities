@@ -1,0 +1,229 @@
+/* Grade-experience system: shared interaction patterns, distinct visual identities. */
+:root {
+  --experience-wash: #e3f4f3;
+  --experience-ink: #17324d;
+  --experience-font: "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --experience-radius: 16px;
+  --experience-card-gap: 1rem;
+}
+
+html[data-grade-experience] {
+  font-family: var(--experience-font);
+  background: var(--experience-wash);
+}
+
+html[data-grade-experience] body {
+  background:
+    radial-gradient(ellipse at 5% 0%, color-mix(in srgb, var(--experience-wash) 72%, white), transparent 42rem),
+    var(--paper);
+}
+
+html[data-grade-experience] .site-header,
+html[data-grade-experience] .hub-tabs,
+html[data-grade-experience] .grade-rail,
+html[data-grade-experience] .practice-subnav {
+  border-radius: var(--experience-radius);
+}
+
+html[data-grade-experience] .journey-card,
+html[data-grade-experience] .skill-card,
+html[data-grade-experience] .daily-card,
+html[data-grade-experience] .workspace-heading,
+html[data-grade-experience] .wr-task,
+html[data-grade-experience] .wr-organizer,
+html[data-grade-experience] .visual-lesson-card {
+  border-radius: calc(var(--experience-radius) + 2px);
+}
+
+html[data-grade-experience] .journey-cards,
+html[data-grade-experience] .skill-grid { gap: var(--experience-card-gap); }
+
+body.teacher-resources #grade-experience-banner { display: none; }
+
+html[data-grade-experience] h1,
+html[data-grade-experience] h2,
+html[data-grade-experience] h3 {
+  font-family: var(--experience-font);
+}
+
+html[data-reading-band="emerging"] .grade-experience-copy > p:not(.grade-experience-kicker),
+html[data-reading-band="emerging"] .journey-card-copy > p,
+html[data-reading-band="emerging"] .skill-card p { line-height: 1.65; }
+html[data-writing-style="draw-label-one-sentence"] .workspace,
+html[data-writing-style="draw-label-one-sentence"] .wr-task { --radius: 22px; }
+html[data-primary-flow="one-task"] .workspace-heading { border-left: 5px solid var(--grade); }
+html[data-primary-flow="analytical-workspace"] .workspace-heading,
+html[data-primary-flow="modeling-studio"] .workspace-heading { border-top: 4px solid var(--grade); }
+
+.grade-experience-banner {
+  --experience-current: var(--grade, #1fa6a2);
+  display: grid;
+  grid-template-columns: minmax(140px, 210px) minmax(0, 1fr);
+  align-items: center;
+  gap: clamp(1rem, 3vw, 2.5rem);
+  margin: 0 0 1.4rem;
+  padding: clamp(1rem, 3vw, 2rem);
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--experience-current) 19%, white);
+  border-radius: calc(var(--experience-radius) + 10px);
+  background: linear-gradient(115deg, #fff 0%, var(--experience-wash) 100%);
+  box-shadow: 0 14px 34px rgba(23, 50, 77, .08);
+  animation: experience-arrive .42s ease-out both;
+}
+
+.grade-experience-art {
+  display: grid;
+  min-height: 142px;
+  place-items: center;
+  border-radius: var(--experience-radius);
+  background: color-mix(in srgb, var(--experience-wash) 54%, white);
+  color: var(--experience-ink);
+}
+
+.grade-experience-art svg {
+  width: min(100%, 176px);
+  height: auto;
+  overflow: visible;
+}
+
+.grade-experience-copy { max-width: 66ch; }
+.grade-experience-kicker {
+  margin: 0 0 .35rem;
+  color: var(--experience-current);
+  font-size: .79rem;
+  font-weight: 850;
+  letter-spacing: .105em;
+  line-height: 1.3;
+  text-transform: uppercase;
+}
+.grade-experience-copy h2 {
+  margin: 0;
+  color: var(--experience-ink);
+  font-size: clamp(1.55rem, 3vw, 2.3rem);
+  line-height: 1.12;
+}
+.grade-experience-copy > p:not(.grade-experience-kicker) {
+  max-width: 58ch;
+  margin: .55rem 0 .75rem;
+  color: #334552;
+  font-size: clamp(1rem, 1.5vw, 1.12rem);
+  line-height: 1.55;
+}
+.grade-experience-focus {
+  display: inline-flex;
+  align-items: center;
+  min-height: 38px;
+  padding: .35rem .72rem;
+  border: 1px solid color-mix(in srgb, var(--experience-current) 26%, white);
+  border-radius: 999px;
+  background: white;
+  color: var(--experience-ink);
+  font-size: .88rem;
+  font-weight: 720;
+  line-height: 1.35;
+}
+
+/* Grade 1: picture-book warmth, larger controls and a single-column learning path. */
+html[data-grade-experience="1"] body { background-color: #fff8f3; }
+html[data-grade-experience="1"] .grade-experience-banner { grid-template-columns: minmax(155px, 230px) minmax(0, 1fr); }
+html[data-grade-experience="1"] .grade-experience-art { min-height: 178px; border-radius: 30px 30px 16px 30px; }
+html[data-grade-experience="1"] .grade-experience-copy h2 { font-size: clamp(1.9rem, 4vw, 2.7rem); }
+html[data-grade-experience="1"] .journey-cards { grid-template-columns: 1fr; }
+html[data-grade-experience="1"] .journey-card { min-height: 170px; }
+html[data-grade-experience="1"] .journey-card:first-child { border: 2px solid #c94f64; box-shadow: 0 8px 0 #f6d8d6; }
+html[data-grade-experience="1"] .skill-grid { grid-template-columns: 1fr; }
+html[data-grade-experience="1"] .primary-action,
+html[data-grade-experience="1"] .outline-action,
+html[data-grade-experience="1"] .grade-tab,
+html[data-grade-experience="1"] .hub-tabs button { min-height: 50px; }
+html[data-grade-experience="1"] .grade-experience-art svg { animation: story-float 4s ease-in-out infinite; }
+
+/* Grade 2: warm workshop palette and tactile blocks. */
+html[data-grade-experience="2"] body { background-color: #fffaf0; }
+html[data-grade-experience="2"] .grade-experience-banner { border-bottom: 5px solid #f2c15b; }
+html[data-grade-experience="2"] .skill-card { box-shadow: 0 4px 0 #f3e3c5; }
+html[data-grade-experience="2"] .grade-experience-focus { border-radius: 10px; }
+
+/* Grade 3: discovery notes, dotted study-paper motif and arrays. */
+html[data-grade-experience="3"] body { background-color: #f8fbf4; }
+html[data-grade-experience="3"] .grade-experience-art { background-image: radial-gradient(#a7c89b 1px, transparent 1px); background-size: 13px 13px; }
+html[data-grade-experience="3"] .skill-card { border-top: 4px solid #8ab378; }
+html[data-grade-experience="3"] .grade-experience-focus { border-style: dashed; }
+
+/* Grade 4: neat investigator's notebook. */
+html[data-grade-experience="4"] .grade-experience-banner { border-left: 6px solid #247568; }
+html[data-grade-experience="4"] .grade-experience-copy h2 { letter-spacing: -.025em; }
+html[data-grade-experience="4"] .skill-card { box-shadow: 0 2px 0 rgba(36, 117, 104, .11); }
+
+/* Grade 5: modular design studio with grid and volume cues. */
+html[data-grade-experience="5"] .grade-experience-art { background-image: linear-gradient(rgba(50,108,158,.08) 1px, transparent 1px), linear-gradient(90deg, rgba(50,108,158,.08) 1px, transparent 1px); background-size: 18px 18px; }
+html[data-grade-experience="5"] .grade-experience-banner { box-shadow: 7px 7px 0 #d9e7f1; }
+html[data-grade-experience="5"] .skill-card { border-radius: 12px; }
+
+/* Grade 6: polished navy and teal lab bench. */
+html[data-grade-experience="6"] .grade-experience-banner { background: linear-gradient(112deg, #17324d, #20545d); border-color: #17324d; color: #fff; }
+html[data-grade-experience="6"] .grade-experience-copy h2,
+html[data-grade-experience="6"] .grade-experience-copy > p:not(.grade-experience-kicker) { color: #fff; }
+html[data-grade-experience="6"] .grade-experience-kicker { color: #8de0d4; }
+html[data-grade-experience="6"] .grade-experience-art { background: rgba(255,255,255,.1); color: #fff; }
+html[data-grade-experience="6"] .grade-experience-focus { border-color: #8de0d4; background: #e8fbf8; color: #17324d; }
+html[data-grade-experience="6"] .skill-card { border-top: 3px solid #1fa6a2; }
+
+/* Grade 7: strategy workspace with warm signal colors and sharper structure. */
+html[data-grade-experience="7"] .grade-experience-banner { grid-template-columns: minmax(125px, 180px) minmax(0, 1fr); border-radius: 10px; }
+html[data-grade-experience="7"] .grade-experience-art { border-radius: 8px; }
+html[data-grade-experience="7"] .skill-card { border-left: 4px solid #a64d35; border-radius: 10px; }
+html[data-grade-experience="7"] .filter-chip[aria-pressed="true"] { background: #a64d35; }
+
+/* Grade 8: calm mathematical modeling canvas with coordinate-line texture. */
+html[data-grade-experience="8"] .grade-experience-banner { grid-template-columns: minmax(120px, 170px) minmax(0, 1fr); border-radius: 10px; background: linear-gradient(135deg, #e8f0f4, #fff 68%); }
+html[data-grade-experience="8"] .grade-experience-art { background-image: linear-gradient(90deg, transparent 49.5%, rgba(36,85,115,.12) 50%, transparent 50.5%), linear-gradient(transparent 49.5%, rgba(36,85,115,.12) 50%, transparent 50.5%); background-size: 25px 25px; }
+html[data-grade-experience="8"] .skill-card { border-radius: 10px; box-shadow: 0 4px 16px rgba(23,50,77,.08); }
+html[data-grade-experience="8"] .workspace-heading { border-top: 4px solid #245573; }
+
+@keyframes experience-arrive { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes story-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+
+@media (max-width: 640px) {
+  .grade-experience-banner,
+  html[data-grade-experience="1"] .grade-experience-banner,
+  html[data-grade-experience="7"] .grade-experience-banner,
+  html[data-grade-experience="8"] .grade-experience-banner {
+    grid-template-columns: 86px minmax(0, 1fr);
+    gap: .85rem;
+    padding: 1rem;
+  }
+  .grade-experience-art,
+  html[data-grade-experience="1"] .grade-experience-art { min-height: 92px; }
+  .grade-experience-copy h2 { font-size: 1.35rem; }
+  .grade-experience-copy > p:not(.grade-experience-kicker) { font-size: .98rem; }
+  .grade-experience-focus { border-radius: 10px; font-size: .82rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .grade-experience-banner,
+  .grade-experience-art svg { animation: none !important; }
+}
+
+/* While a skill is open the grade world shrinks to a slim header, so the lesson starts higher on the screen.
+   The ID selector outranks the per-grade themes above. */
+html body.working-on-skill #grade-experience-banner .grade-experience-banner {
+  grid-template-columns: 56px minmax(0, 1fr);
+  align-items: center;
+  gap: 0.9rem;
+  padding: 0.6rem 1rem;
+}
+html body.working-on-skill #grade-experience-banner .grade-experience-art {
+  width: 56px;
+  min-height: 0;
+  height: 56px;
+  padding: 0;
+}
+html body.working-on-skill #grade-experience-banner .grade-experience-copy > p:not(.grade-experience-kicker),
+html body.working-on-skill #grade-experience-banner .grade-experience-focus {
+  display: none;
+}
+html body.working-on-skill #grade-experience-banner .grade-experience-copy h2 {
+  margin: 0;
+  font-size: 1.25rem;
+}

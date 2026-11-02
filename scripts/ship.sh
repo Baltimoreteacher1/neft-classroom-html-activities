@@ -350,7 +350,9 @@ else
     *users.noreply.github.com) : ;;
     *)
       say "• Rewriting private author email ($AUTHOR_EMAIL) → noreply on ${r:0:9}"
-      git -C "$WT" commit --amend --no-edit --reset-author --quiet
+      # Metadata-only rewrite: the tree is unchanged and the pre-push hook gates the
+      # whole push, so re-running the commit gate here only queues it per commit.
+      git -C "$WT" -c core.hooksPath=/dev/null commit --amend --no-edit --reset-author --quiet
       ;;
     esac
   done

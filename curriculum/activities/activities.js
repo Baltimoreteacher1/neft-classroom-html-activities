@@ -28,7 +28,15 @@
   function card(entry) {
     const anchor = document.createElement("a");
     anchor.className = "activity-card";
-    anchor.href = entry.path;
+    const isProject = entry.category === "Project";
+    anchor.href = isProject && entry.path === "/curriculum/projects/studio/"
+      ? `${entry.path}?from=activities${entry.unit ? `&unit=${entry.unit}` : ""}`
+      : entry.path;
+    if (isProject) anchor.addEventListener("click", () => {
+      try {
+        localStorage.setItem("ewl-project-studio-bridge", JSON.stringify({ title: entry.title, unit: entry.unit || null, path: entry.path, savedAt: Date.now() }));
+      } catch { /* URL routing still works when local storage is unavailable. */ }
+    });
     const title = document.createElement("strong");
     title.textContent = entry.title;
     const detail = document.createElement("span");

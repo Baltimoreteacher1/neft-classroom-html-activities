@@ -1,4 +1,11 @@
-import { chmodSync, copyFileSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import {
+  chmodSync,
+  copyFileSync,
+  mkdirSync,
+  readdirSync,
+  readFileSync,
+  writeFileSync,
+} from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { build } from "vite";
@@ -11,50 +18,11 @@ if (!destination || destination === root || destination === "/")
     "Pass a dedicated destination folder, for example: node tools/package-fluency-desktop.mjs '/path/Math Fluency Lab'",
   );
 mkdirSync(destination, { recursive: true });
-const files = [
-  "app.js",
-  "problem-bank.js",
-  "tutor-engine.js",
-  "lesson-content.js",
-  "visual-lab.js",
-  "school-tools.js",
-  "workbench.js",
-  "workbench-parse.js",
-  "workbench-state.js",
-  "fact-trail.js",
-  "trail-view.js",
-  "trail-pictures.js",
-  "games.js",
-  "puzzle-worlds.js",
-  "card-games.js",
-  "picture-game.js",
-  "game-pool.js",
-  "scenes.js",
-  "rewards.js",
-  "sort-game.js",
-  "strategies.js",
-  "speech.js",
-  "play-backup.js",
-  "class-snapshot.js",
-  "paper-games.js",
-  "mistake-game.js",
-  "family-page.js",
-  "game-names.js",
-  "i18n.js",
-  "i18n-es.js",
-  "make-game.js",
-  "family-game.js",
-  "balance-game.js",
-  "flip-game.js",
-  "buddy.js",
-  "buddy-items.js",
-  "step-builders.js",
-  "styles.css",
-  "tutor.css",
-  "trail.css",
-  "games.css",
-  "language.css",
-];
+// Every script and stylesheet in the lab folder ships; a hand-kept list had fallen behind the lab (the language
+// layer, the scratchpad, the writing studio and the new stylesheets were all missing from it).
+const files = readdirSync(source).filter(
+  (name) => /\.(js|css)$/.test(name) && !/\.test\.m?js$/.test(name) && name !== "sw.js",
+);
 for (const file of files) copyFileSync(join(source, file), join(destination, file));
 let html = readFileSync(join(source, "index.html"), "utf8")
   .replace(/\s*<!-- nsr-injected:begin[\s\S]*?<!-- nsr-injected:end -->/g, "")
@@ -75,14 +43,15 @@ const bundled = (Array.isArray(bundleResult) ? bundleResult : [bundleResult])
   .flatMap((result) => result.output)
   .find((output) => output.type === "chunk");
 if (!bundled) throw new Error("The standalone application bundle was not generated.");
-const css = ["styles.css", "tutor.css", "trail.css", "games.css", "language.css"]
-  .map((file) => readFileSync(join(source, file), "utf8"))
-  .join("\n");
+// The stylesheets index.html links from this folder, in the order the page loads them.
+const sheets = [
+  ...readFileSync(join(source, "index.html"), "utf8").matchAll(
+    /<link rel="stylesheet" href="\.\/([\w-]+\.css)"/g,
+  ),
+].map((match) => match[1]);
+const css = sheets.map((file) => readFileSync(join(source, file), "utf8")).join("\n");
 html = html
-  .replace(
-    /\s*<link rel="stylesheet" href="\.\/(?:styles|tutor|trail|games|language)\.css"\s*\/>/g,
-    "",
-  )
+  .replace(/\s*<link rel="stylesheet" href="\.\/[\w-]+\.css"\s*\/>/g, "")
   .replace(/\s*<script type="module" src="\.\/app\.js"><\/script>/, "")
   .replaceAll('href="./index.html"', 'href="./Math Fluency Lab.html"')
   .replace("</head>", `<style>${css}</style></head>`)

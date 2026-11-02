@@ -1,0 +1,84 @@
+/* Fluency Lab 4.0 design tokens. One source for every screen. 8px spacing, navy/teal/blue/warm-neutral palette,
+   no violet (validate:no-purple). Component sheets use these variables with the fallback values below. */
+:root {
+  --fl-navy: #17324d;
+  --fl-navy-2: #244a6d;
+  --fl-teal: #1fa6a2;
+  --fl-teal-ink: #0e6b68;
+  --fl-teal-soft: #dff3f1;
+  --fl-blue: #2c6fb0;
+  --fl-blue-soft: #e3eef8;
+  --fl-paper: #f7f4ec;
+  --fl-paper-2: #efeadc;
+  --fl-white: #fff;
+  --fl-ink: #24323f;
+  --fl-ink-soft: #52606d;
+  --fl-line: #d5d9de;
+  --fl-amber: #f2c15b;
+  --fl-amber-soft: #fff4e0;
+  --fl-coral: #d9533a;
+  --fl-success: #1b7a4b;
+  --fl-success-soft: #e4f4ea;
+  --fl-warn: #b45309;
+  --fl-warn-soft: #fff4e0;
+  --fl-error: #b42318;
+  --fl-error-soft: #fde8e7;
+  --fl-s1: 8px;
+  --fl-s2: 16px;
+  --fl-s3: 24px;
+  --fl-s4: 32px;
+  --fl-s5: 40px;
+  --fl-s6: 48px;
+  --fl-s8: 64px;
+  --fl-radius: 12px;
+  --fl-radius-lg: 20px;
+  --fl-shadow-1: 0 1px 2px rgb(23 50 77 / 0.08), 0 2px 8px rgb(23 50 77 / 0.06);
+  --fl-shadow-2: 0 4px 16px rgb(23 50 77 / 0.12);
+  --fl-font-head: "Fraunces", Georgia, serif;
+  --fl-font-body: "Lexend", system-ui, sans-serif;
+  --fl-math-size: clamp(2rem, 5vw, 3.25rem);
+  --fl-ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --fl-focus: 0 0 0 3px #fff, 0 0 0 6px var(--fl-blue);
+}
+.fl-card {
+  padding: var(--fl-s3);
+  border: 1px solid var(--fl-line);
+  border-radius: var(--fl-radius-lg);
+  background: var(--fl-white);
+  box-shadow: var(--fl-shadow-1);
+}
+.fl-btn {
+  min-block-size: 44px;
+  padding: var(--fl-s1) var(--fl-s3);
+  border: 2px solid var(--fl-navy);
+  border-radius: var(--fl-radius);
+  background: var(--fl-navy);
+  color: var(--fl-white);
+  font: 700 1rem var(--fl-font-body);
+  cursor: pointer;
+  transition: transform 160ms var(--fl-ease), box-shadow 160ms var(--fl-ease);
+}
+.fl-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--fl-shadow-2);
+}
+.fl-btn:focus-visible {
+  outline: none;
+  box-shadow: var(--fl-focus);
+}
+.fl-btn--ghost {
+  background: transparent;
+  color: var(--fl-navy);
+}
+.fl-btn--teal {
+  border-color: var(--fl-teal-ink);
+  background: var(--fl-teal-ink);
+}
+@media (prefers-reduced-motion: reduce) {
+  .fl-btn {
+    transition: none;
+  }
+  .fl-btn:hover {
+    transform: none;
+  }
+}

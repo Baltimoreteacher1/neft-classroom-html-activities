@@ -1,5 +1,6 @@
 // Answer Sort: tap a problem, then tap the bin its answer belongs in. Works for any whole-number stop.
-import { answerOf, cardText, gameProblems } from "./game-pool.js";
+import { feedbackAction, feedbackNoteHtml, phaseFor } from "./feedback-host.js";
+import { answerOf, answerText, cardText, gameProblems } from "./game-pool.js";
 
 const fmt = (n) => n.toLocaleString("en-US", { maximumFractionDigits: 6 });
 import { t } from "./i18n.js";
@@ -43,6 +44,7 @@ export function playSort(host, { grade, stop, calm, finish, onFact }) {
   let chosen = null;
   let wrong = 0;
   let nope = null;
+  let fb = null; // fl4:screens shared feedback panel state
   let timer = null;
   const left = () => cards.filter((item) => !placed.low.includes(item) && !placed.high.includes(item));
   const bin = (key, title) => `<button type="button" class="gm-bin" data-bin="${key}" ${chosen == null ? "disabled" : ""} aria-label="${title}${placed[key].length ? t(", {n} placed", { n: placed[key].length }) : ""}"><b>${title}</b><span>${placed[key].map((item) => mathText(cardText(item))).join(" · ")}</span></button>`;
@@ -50,7 +52,7 @@ export function playSort(host, { grade, stop, calm, finish, onFact }) {
   function render() {
     host.innerHTML = `<div class="gm-play gm-sort">
       <div class="gm-bar"><button type="button" class="tr-back" data-gm-menu>${t("← Games")}</button><b>${t("Answer Sort")}</b><span>${t("{a} of {b} sorted", { a: count - left().length, b: count })}</span></div>
-      <p class="gm-note">${nope ? t("Not that bin. Work it out again.") : chosen == null ? t("Pick a problem, then choose where its answer belongs.") : t("Where does its answer go?")}</p>
+      ${feedbackNoteHtml(nope ? t("Not that bin. Work it out again.") : chosen == null ? t("Pick a problem, then choose where its answer belongs.") : t("Where does its answer go?"), fb)}
       <div class="gm-cards cols-4" role="group" aria-label="${t("Problems to sort")}">${left().map((item, i) => `<button type="button" class="gm-card q${chosen === item ? " pick" : ""}${nope === item ? " nope" : ""}" data-s="${cards.indexOf(item)}" aria-pressed="${chosen === item}"><span>${mathText(cardText(item))}</span></button>`).join("")}</div>
       <div class="gm-bins">${bin("low", t("Less than {n}", { n: lineText }))}${bin("high", t("{n} or more", { n: lineText }))}</div></div>`;
     host.querySelector(chosen != null ? `[data-s="${cards.indexOf(chosen)}"]` : "[data-s]")?.focus();
@@ -64,6 +66,7 @@ export function playSort(host, { grade, stop, calm, finish, onFact }) {
     if (!right) {
       wrong += 1;
       nope = item;
+      fb = { phase: phaseFor("sort", "miss"), ctx: { submitted: `${cardText(item)} → ${key === "low" ? t("Less than {n}", { n: lineText }) : t("{n} or more", { n: lineText })}` } };
       missed.set(item.question, item);
       onFact?.(item, false);
       chosen = null;
@@ -71,6 +74,7 @@ export function playSort(host, { grade, stop, calm, finish, onFact }) {
       return;
     }
     placed[key].push(item);
+    fb = { phase: phaseFor("sort", "right"), ctx: { expected: `${cardText(item)} = ${answerText(item)}` } };
     onFact?.(item, !missed.has(item.question));
     chosen = null;
     render();
@@ -78,10 +82,16 @@ export function playSort(host, { grade, stop, calm, finish, onFact }) {
   }
 
   host.onclick = (event) => {
+    if (feedbackAction(event) === "try-again") {
+      fb = null;
+      nope = null;
+      return render();
+    }
     const card = event.target.closest("[data-s]");
     if (card) {
       chosen = cards[Number(card.dataset.s)];
       nope = null;
+      fb = null;
       render();
       return;
     }

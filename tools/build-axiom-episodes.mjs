@@ -244,9 +244,11 @@ function sectionSplit(file) {
   const engOpen = file.lastIndexOf("<script>", engIdx);
   const engClose = file.indexOf("</script>", engIdx) + "</script>".length;
   const engine = file.slice(engOpen, engClose);
-  for (const [k, v] of Object.entries({ head, defs, cover, hud, book, modals, engine }))
+  const bodyClose = file.lastIndexOf("</body>");
+  const tail = file.slice(engClose, bodyClose);
+  for (const [k, v] of Object.entries({ head, defs, cover, hud, book, modals, engine, tail }))
     if (!v || !v.trim()) throw new Error("section missing: " + k);
-  return { head, defs, cover, hud, book, modals, engine };
+  return { head, defs, cover, hud, book, modals, engine, tail };
 }
 
 function evalContent(file) {
@@ -300,7 +302,7 @@ function buildIntroPage(spec, vmeta) {
   <div style="text-align:center;margin-top:8px"><div class="kicker">EduWonderLab Presents</div>
   <h2 class="splashtitle" style="margin:8px 0">${spec.title.toUpperCase().replace("<EM>", "<em>").replace("</EM>", "</em>")}</h2>
   <div class="caption" style="display:inline-block">${spec.lessons} &mdash; part of the <b>${vmeta.title}</b> arc. ${spec.epcovers}. Read straight through: each reader gate coaches you with hints and a worked example, but never blocks the page.</div></div>
-  <div class="panel">${`<svg class="scene" viewBox="0 0 400 120" role="img" preserveAspectRatio="xMidYMid meet"><rect width="400" height="120" fill="#141031"/><g transform="translate(330,2) scale(.6)"><use href="#sym-vex"/></g>${lineup}</svg>`}
+  <div class="panel">${`<svg class="scene" viewBox="0 0 400 120" role="img" preserveAspectRatio="xMidYMid meet"><rect width="400" height="120" fill="#17324D"/><g transform="translate(330,2) scale(.6)"><use href="#sym-vex"/></g>${lineup}</svg>`}
     <div class="balloon vex" style="top:6px;left:10px;max-width:64%"><span class="who">VEX</span>Episode ${spec.ep}. Same crew, same city — one focused stretch of the case. Turn the page when you're ready.</div>
   </div>`,
   };
@@ -433,10 +435,6 @@ function rewriteModals(modals, spec) {
 }
 function rewriteHead(head, spec, vmeta) {
   let h = head;
-  // episodes are fully self-contained like the units 2–6 episodes: drop the
-  // volume's injected shared save/resume stylesheet (the Axiom engine has its
-  // own per-device storage; no orphan asset reference).
-  h = h.replace(/\s*<!-- nsr-injected:begin[\s\S]*?nsr-injected:end -->/g, "");
   const plain = spec.title.replace(/<\/?em>/g, "").replace(/&amp;/g, "&");
   h = h.replace(
     /<title>[\s\S]*?<\/title>/,
@@ -480,6 +478,7 @@ for (const spec of targets) {
     content +
     "</script>\n" +
     sec.engine +
+    sec.tail +
     "\n</body>\n</html>\n";
   const outPath = join(OUT, spec.file);
   writeFileSync(outPath, html);

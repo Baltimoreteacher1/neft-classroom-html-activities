@@ -15,7 +15,7 @@ export const DATA_URL = "/data/curriculum-nervous-system.json";
 export const DOMAIN_STYLE = {
   NOS: { glow: "#58b6ff", deep: "#123a68", ink: "#15487f" },
   AT: { glow: "#ffc46b", deep: "#5c3f0c", ink: "#845506" },
-  GR: { glow: "#b79bff", deep: "#3b2d72", ink: "#593cbd" },
+  GR: { glow: "#F7F4EC", deep: "#17324D", ink: "#17324D" },
   DS: { glow: "#6fe0b0", deep: "#14503d", ink: "#1c6b52" },
 };
 

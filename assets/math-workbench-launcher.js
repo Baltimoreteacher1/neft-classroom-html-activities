@@ -165,7 +165,7 @@
       "display:inline-flex;align-items:center;justify-content:center;gap:0;text-decoration:none;" +
       "width:38px;height:38px;padding:0;overflow:hidden;white-space:nowrap;" +
       "border-radius:999px;font:700 12px/1 system-ui,-apple-system,Segoe UI,sans-serif;" +
-      "color:#fff;background:linear-gradient(135deg,#4f46e5,#0e8a7d);" +
+      "color:#fff;background:linear-gradient(135deg,#17324D,#0e8a7d);" +
       "box-shadow:0 4px 16px rgba(0,0,0,.28);border:2px solid rgba(255,255,255,.85);" +
       "cursor:pointer;box-sizing:border-box;" +
       "transition:width .18s ease,gap .18s ease,padding .18s ease,transform .12s ease,box-shadow .12s ease;}" +

@@ -343,7 +343,9 @@ test("a denied camera keeps photo upload usable", async () => {
       value: "fixture.png",
     };
     w.uploadPhotoboothImage(input);
-    await new Promise((resolve) => setTimeout(resolve, 25));
+    for (let i = 0; i < 40 && d.getElementById("pb_captured_img").hidden; i++) {
+      await new Promise((resolve) => setTimeout(resolve, 25));
+    }
     assert.equal(d.getElementById("pb_captured_img").hidden, false);
     assert.equal(input.value, "");
   } finally {

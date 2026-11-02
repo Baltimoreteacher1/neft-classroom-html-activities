@@ -1,7 +1,10 @@
 import { detailSteps } from "./detail-steps.js";
+import { applyKidLearn } from "./kid-learn.js";
+import { kidSteps } from "./kid-steps.js";
 import { leakCap } from "./step-leak.js";
 import { workedSteps } from "./step-builders.js";
-import { countOf, factorText, keptPrimes, parsePrimes, primeList } from "./factor-tree.js";
+import { factorText, keptPrimes, multiplyText, parsePrimes, powerText, primeList } from "./factor-tree.js";
+import { checkEquivalent, looseNumberMatch } from "./problem-types/equivalence.js"; // fl4:generators
 
 const whole = new Intl.NumberFormat("en-US", { maximumFractionDigits: 6 });
 
@@ -56,13 +59,13 @@ function decimalDivisionSteps(dividend, divisor) {
   const shift = decimalPlaces(divisor);
   if (!shift) {
     return [
-      `The divisor ${divisor} is already a whole number, so no decimal point has to move. Set up long division and write the decimal point in the quotient straight above the one in ${dividend}${decimalPlaces(dividend) ? "" : ` (write ${dividend} as ${dividend}.0 to see it)`}.`,
-      "Divide one place at a time. If a remainder is left, bring down a zero and keep going.",
+      `The divisor ${divisor} is a whole number. Keep both numbers as they are. Put the decimal point in the answer straight above the one in ${dividend}.${decimalPlaces(dividend) ? "" : ` Write ${dividend} as ${dividend}.0 to see it.`}`,
+      "Divide one place at a time. If a remainder is left, bring down a zero.",
     ];
   }
   const factor = 10 ** shift;
   return [
-    `The divisor ${divisor} has ${plural(shift, "decimal place")}. Multiply both ${dividend} and ${divisor} by ${factor} so the divisor becomes a whole number. Doing the same thing to both numbers keeps the quotient the same.`,
+    `The divisor ${divisor} has ${plural(shift, "decimal place")}. Multiply ${dividend} and ${divisor} by ${factor} to make the divisor whole. Both change the same way, so the answer stays the same.`,
     `Now divide as whole numbers: ${decimalText(Number(dividend) * factor, 4)} ÷ ${decimalText(Number(divisor) * factor, 4)}.`,
   ];
 }
@@ -75,18 +78,18 @@ function signedFractionSteps(op, [n1, d1], [n2, d2], worked) {
     const flip = op === "div";
     const [mn, md] = flip ? [d2 * Math.sign(n2), Math.abs(n2)] : [n2, d2];
     return [
-      ...(flip ? [`Dividing by ${text(n2, d2)} is the same as multiplying by its reciprocal: ${text(n1, d1)} × ${text(mn, md)}.`] : []),
-      `Size first, ignoring the signs: multiply the tops (${Math.abs(n1)} × ${Math.abs(mn)}) and the bottoms (${d1} × ${md}), then simplify.`,
-      `Sign next: ${sameSign ? "the signs are the same, so the answer is positive" : "the signs are different, so the answer is negative"}.`,
+      ...(flip ? [`Change ÷ to × and flip the second fraction: ${text(n1, d1)} × ${text(mn, md)}.`] : []),
+      `Multiply across, ignoring the signs: ${Math.abs(n1)} × ${Math.abs(mn)} and ${d1} × ${md}. Then simplify.`,
+      `Now check the signs. ${sameSign ? "Same signs: the answer is positive" : "Different signs: the answer is negative"}.`,
       worked,
     ];
   }
   const second = op === "sub" ? [-n2, d2] : [n2, d2];
   const same = n1 < 0 === second[0] < 0;
   return [
-    ...(op === "sub" ? [`Subtracting ${text(n2, d2)} is the same as adding its opposite: ${text(n1, d1)} + ${text(second[0], second[1])}.`] : []),
-    `${same ? "Same signs: add the sizes and keep that sign" : "Different signs: subtract the smaller size from the larger and keep the sign of the larger"}.`,
-    `Rename both fractions with a common denominator (${lcm(d1, d2)}) so the pieces are the same size, then combine the tops.`,
+    ...(op === "sub" ? [`Change − to + and use the opposite of the second fraction: ${text(n1, d1)} + ${text(second[0], second[1])}.`] : []),
+    `${same ? "Same signs: add the sizes. Keep that sign" : "Different signs: subtract the smaller size from the larger. Keep the larger one's sign"}.`,
+    `Make both bottoms ${lcm(d1, d2)}, the common denominator. Then combine the tops.`,
     worked,
   ];
 }
@@ -115,21 +118,19 @@ export function primeFactors(n) {
 // the worked solution, the lesson and the workspace all teach one method.
 function lcmPrimeSteps(a, b, answer) {
   const [pa, pb] = [primeList(a), primeList(b)];
-  const line = (n, list) => (list.length === 1 ? `${n} is prime, so its prime factorization is just ${n}.` : `${n} = ${factorText(list)}.`);
-  const primes = [...new Set([...pa, ...pb])].sort((x, y) => x - y);
-  const counts = primes.map((p) => `${p}: ${countOf(pa, p)} in ${a}, ${countOf(pb, p)} in ${b}, keep ${Math.max(countOf(pa, p), countOf(pb, p))}`).join("; ");
+  const line = (n, list) => (list.length === 1 ? `${n} is prime, so it stays ${n}.` : `${n} = ${factorText(list)}.`);
   const kept = keptPrimes(a, b);
   return [
-    `Build a factor tree for ${a} and stop when every branch ends in a prime. ${line(a, pa)}`,
-    `Build a factor tree for ${b} the same way. ${line(b, pb)}`,
-    `For each prime, compare how many copies each number has and keep the larger count (${counts}). The primes you keep: ${factorText(kept)}.`,
-    `Multiply the kept primes: ${factorText(kept)} = ${answer}. Check that ${a} and ${b} both divide ${answer} evenly.`,
+    `Make a factor tree for ${a}. Split until every branch ends in a prime. ${line(a, pa)}`,
+    `Make a factor tree for ${b} too. ${line(b, pb)}`,
+    `Keep each prime the most times it shows up in either number. The primes you keep: ${factorText(kept)}, ${powerText(kept) === factorText(kept) ? "one copy of each" : `written with exponents as ${powerText(kept)}`}.`,
+    `Multiply the kept primes: ${multiplyText(kept)}. Check: ${a} and ${b} both divide ${answer} evenly.`,
   ];
 }
 
 function gcfLcmSteps(find, a, b, answer) {
   if (find === "gcf") {
-    return [`Find factor pairs for ${a}. Record the factors that divide it evenly.`, `Find factor pairs for ${b}. Record the factors that divide it evenly.`, "Compare the two factor lists. Which factors are shared?", `Choose the greatest shared factor: ${answer}. Check that it divides both numbers evenly.`];
+    return [`List the factor pairs of ${a}. A factor divides ${a} evenly.`, `List the factor pairs of ${b}.`, "Compare the two lists. Which factors are shared?", `The greatest shared factor is ${answer}. Check: it divides both numbers evenly.`];
   }
   return lcmPrimeSteps(a, b, answer);
 }
@@ -166,12 +167,12 @@ export function factSteps(op, a, b, answer, strategy) {
   if (op === "sub") {
     if (b === 0) return [`Take away 0. Nothing changes.`, `${a} − 0 = ${a}`];
     if (strategy === "countBack" || (a <= 20 && b <= 2)) return [`Start at ${a}.`, `Count back ${b}: ${Array.from({ length: b }, (_, i) => a - i - 1).join(", ")}`];
-    if (a <= 20) return [`${b} + ? = ${a}`, `Count up from ${b} to ${a}: ${Array.from({ length: a - b }, (_, i) => b + i + 1).join(", ")}`, `Count how many numbers you said. That count is the missing addend.`, `${b} + ${answer} = ${a}, so ${a} − ${b} = ${answer}`];
+    if (a <= 20) return [`${b} + ? = ${a}`, `Count up from ${b} to ${a}: ${Array.from({ length: a - b }, (_, i) => b + i + 1).join(", ")}`, `Count the numbers you said. That count is the missing addend.`, `${b} + ${answer} = ${a}, so ${a} − ${b} = ${answer}`];
     let at = a;
     return friendlyJumps(a, b, -1).map((jump) => `${fmt(at)} − ${fmt(-jump)} = ${fmt((at += jump))}`);
   }
   if (op === "mul") {
-    if (small === 0) return [`Zero groups, or nothing in each group, leaves nothing.`, `${a} × ${b} = 0`];
+    if (small === 0) return [`Zero groups, or zero in each group, makes zero.`, `${a} × ${b} = 0`];
     if (small === 1) return [`Multiplying by 1 keeps the other number the same.`, `${a} × ${b} = ${big}`];
     const zerosA = String(a).match(/0*$/)[0].length;
     const zerosB = String(b).match(/0*$/)[0].length;
@@ -201,10 +202,10 @@ export function factSteps(op, a, b, answer, strategy) {
   // quotient only appears in the last steps (the old first step, "16 × 20 = 320", already stated it).
   if (answer <= 12) {
     const multiples = Array.from({ length: answer }, (_, i) => fmt(b * (i + 1)));
-    return [`${b} × ? = ${fmt(a)}`, `Count by ${b}s until you reach ${fmt(a)}: ${multiples.join(", ")}`, `Count how many numbers you said. That count is the quotient.`, `${b} × ${answer} = ${fmt(a)}, so ${fmt(a)} ÷ ${b} = ${answer}`];
+    return [`${b} × ? = ${fmt(a)}`, `Count by ${b}s until you reach ${fmt(a)}: ${multiples.join(", ")}`, `Count the numbers you said. That count is the quotient.`, `${b} × ${answer} = ${fmt(a)}, so ${fmt(a)} ÷ ${b} = ${answer}`];
   }
   const tens = Math.floor(answer / 10) * 10;
-  if (answer % 10 === 0) return [`${b} × ? = ${fmt(a)}`, `Think of ${fmt(a)} as ${fmt(a / 10)} tens, and share the tens: ${fmt(a / 10)} ÷ ${b}.`, `${fmt(a / 10)} ÷ ${b} = ${answer / 10}, so ${answer / 10} tens, and ${fmt(a)} ÷ ${b} = ${fmt(answer)}`];
+  if (answer % 10 === 0) return [`${b} × ? = ${fmt(a)}`, `Think of ${fmt(a)} as ${fmt(a / 10)} tens. Share the tens: ${fmt(a / 10)} ÷ ${b}.`, `${fmt(a / 10)} ÷ ${b} = ${answer / 10}, so ${answer / 10} tens, and ${fmt(a)} ÷ ${b} = ${fmt(answer)}`];
   return [`${b} × ? = ${fmt(a)}`, `${b} × ${fmt(tens)} = ${fmt(b * tens)}`, `${b} × ${answer - tens} = ${fmt(b * (answer - tens))}`, `${fmt(tens)} + ${answer - tens} = ${fmt(answer)}`];
 }
 
@@ -587,7 +588,7 @@ const generators = {
     const scale = pick([2, 3, 4, 5].filter((n) => n <= (config.maxScale ?? 5)), rng);
     const drawing = randInt(2, config.maxDrawing ?? 8, rng);
     return problem(`A scale drawing uses 1 cm to represent ${scale} m. A wall is ${drawing} cm long in the drawing. How long is the real wall in meters?`, drawing * scale, {
-      hint: `Each drawing centimeter represents ${scale} meters. Multiply the drawing length by the scale amount.`,
+      hint: `Each 1 cm is ${scale} m. Multiply the drawing length by ${scale}.`,
       explanation: `${drawing} × ${scale} = ${drawing * scale} meters.`,
       unit: "m", model: { type: "table", headers: ["Drawing (cm)", "Real length (m)"], rows: [["1", String(scale)], [String(drawing), "?"]], caption: "Equivalent lengths" },
     });
@@ -654,7 +655,7 @@ const generators = {
         ? `A ribbon that is 1/${d} meter long is shared equally by ${whole} students. What length of ribbon does each student get?`
         : `A jug holds ${whole} liters. How many 1/${d}-liter servings can it fill?`;
       const answer = divideUnitByWhole ? `1/${d * whole}` : String(whole * d);
-      return problem(question, answer, { kind: divideUnitByWhole ? "fraction" : "number", unit: divideUnitByWhole ? "m" : "servings", hint: divideUnitByWhole ? `Share one ${d}th of a meter into ${whole} equal groups.` : `Count how many ${d}th-liter servings fit into ${whole} liters.`, explanation: divideUnitByWhole ? `1/${d} ÷ ${whole} = ${answer} meter for each student.` : `${whole} ÷ 1/${d} = ${answer} servings.` });
+      return problem(question, answer, { kind: divideUnitByWhole ? "fraction" : "number", unit: divideUnitByWhole ? "m" : "servings", hint: divideUnitByWhole ? `Cut 1/${d} meter into ${whole} equal pieces.` : `How many servings of 1/${d} liter fit in ${whole} liters?`, explanation: divideUnitByWhole ? `1/${d} ÷ ${whole} = ${answer} meter for each student.` : `${whole} ÷ 1/${d} = ${answer} servings.` });
     }
     const op = config.op || "add";
     const signed = Boolean(config.signed);
@@ -697,10 +698,10 @@ const generators = {
       steps: signed ? signedFractionSteps(op, [n1, d1], [n2, d2], `${n1}/${d1} ${symbol} ${second} = ${answer}.`) : undefined,
       hint:
         op === "add" || op === "sub"
-          ? "Rename the fractions with a common denominator before combining them."
+          ? "Make the bottoms the same first. Then add or subtract the tops."
           : op === "mul"
-            ? "Multiply numerators, multiply denominators, then simplify."
-            : "Keep the first fraction, multiply by the reciprocal of the second, then simplify.",
+            ? "Multiply the tops. Multiply the bottoms. Then simplify."
+            : "Keep the first fraction. Flip the second one and multiply.",
       explanation: `${n1}/${d1} ${symbol} ${second} = ${answer}.`,
     });
   },
@@ -712,7 +713,7 @@ const generators = {
     const wholeAmount = d * groups;
     const answer = n * groups;
     return problem(`What is ${n}/${d} of ${wholeAmount}?`, answer, {
-      hint: `First find 1/${d} of ${wholeAmount}, then take ${n} of those parts.`,
+      hint: `First find 1/${d} of ${wholeAmount}. Then take ${n} of those parts.`,
       explanation: `${wholeAmount} ÷ ${d} = ${groups}; ${groups} × ${n} = ${answer}.`,
     });
   },
@@ -725,7 +726,7 @@ const generators = {
     const digit = Number(n.toFixed(places).split(".")[1][place - 1]);
     const names = ["tenths", "hundredths", "thousandths"];
     return problem(`What digit is in the ${names[place - 1]} place of ${n.toFixed(places)}?`, digit, {
-      hint: "The first digit after the decimal is tenths, then hundredths, then thousandths.",
+      hint: "After the decimal point come tenths, hundredths, then thousandths.",
       explanation: `The digit in the ${names[place - 1]} place is ${digit}.`,
       model: { type: "placeChart", rows: [n.toFixed(places)] },
     });
@@ -764,12 +765,12 @@ const generators = {
     return problem(`${shownA} ${symbol} ${shownB} = ?`, shownAnswer, {
       hint:
         op === "add" || op === "sub"
-          ? "Line up the decimal points and work by place value."
+          ? "Line up the decimal points. Add or subtract each column."
           : op === "mul"
-            ? "Multiply as whole numbers, then place the decimal using the total decimal places."
+            ? "Multiply without the decimal points. Then count the decimal places."
             : Number.isInteger(b)
-              ? "Divide as usual and keep the decimal point in the quotient straight above the one in the dividend."
-              : "Make the divisor a whole number by moving both decimal points the same distance.",
+              ? "Divide as usual. Keep the decimal point straight above."
+              : "Move both decimal points right until the divisor is a whole number.",
       explanation: `${shownA} ${symbol} ${shownB} = ${shownAnswer}.`,
       steps: op === "div" ? [...decimalDivisionSteps(shownA, shownB), `${shownA} ${symbol} ${shownB} = ${shownAnswer}.`] : undefined,
       model:
@@ -803,9 +804,9 @@ const generators = {
       const yes = dividers.length > 0 && rng() < 0.5;
       const dividerMax = config.scaffolded ? 5 : 12;
       const f = yes ? pick(dividers, rng) : pick(Array.from({ length: dividerMax - 1 }, (_, i) => i + 2).filter((v) => n % v), rng);
-      return yesNo(`Is ${f} a factor of ${n}?`, yes, "A factor divides the number evenly, with no remainder.", yes ? `${n} ÷ ${f} = ${n / f} with nothing left over, so ${f} is a factor of ${n}.` : `${n} ÷ ${f} leaves a remainder of ${n % f}, so ${f} is not a factor of ${n}.`, [
-        `A factor of ${n} divides it evenly, with nothing left over. So check whether ${n} ÷ ${f} comes out even.`,
-        `Another way: count up by ${f}s toward ${n} and see whether you land exactly on it.`,
+      return yesNo(`Is ${f} a factor of ${n}?`, yes, "A factor divides the number with nothing left over.", yes ? `${n} ÷ ${f} = ${n / f} with nothing left over, so ${f} is a factor of ${n}.` : `${n} ÷ ${f} leaves a remainder of ${n % f}, so ${f} is not a factor of ${n}.`, [
+        `A factor divides ${n} evenly. Check: does ${n} ÷ ${f} come out even?`,
+        `Another way: count up by ${f}s. Do you land exactly on ${n}?`,
       ]);
     }
     if (form === "isMultiple") {
@@ -813,8 +814,8 @@ const generators = {
       const yes = rng() < 0.5;
       const n = f * randInt(2, Math.floor((config.scaffolded ? 30 : 100) / f), rng) + (yes ? 0 : randInt(1, f - 1, rng));
       return yesNo(`Is ${n} a multiple of ${f}?`, yes, `A multiple of ${f} is what you get counting by ${f}s.`, yes ? `${f} × ${n / f} = ${n}, so ${n} is a multiple of ${f}.` : `${n} is between ${f * Math.floor(n / f)} and ${f * Math.ceil(n / f)}, which are multiples of ${f}, so it is not one.`, [
-        `Multiples of ${f} come from counting by ${f}s: ${f}, ${2 * f}, ${3 * f}, and so on.`,
-        `Ask whether ${n} is on that list, or check whether ${n} ÷ ${f} comes out even.`,
+        `Count by ${f}s to list the multiples: ${f}, ${2 * f}, ${3 * f}, and so on.`,
+        `Is ${n} on that list? Or check whether ${n} ÷ ${f} comes out even.`,
       ]);
     }
     if (form === "nthMultiple") {
@@ -823,18 +824,18 @@ const generators = {
       return problem(`What is the ${ordinal(m)} multiple of ${f}?`, f * m, {
         hint: `Count by ${f}s, or multiply ${f} by ${m}.`,
         explanation: `The ${ordinal(m)} multiple of ${f} is ${f} × ${m} = ${f * m}.`,
-        steps: [`The first multiple of ${f} is ${f} × 1. Each new multiple adds one more group of ${f}.`, `The ${ordinal(m)} multiple is ${m} jumps of ${f}. Write that as ${f} × ${m}.`, `The ${ordinal(m)} multiple of ${f} is ${f} × ${m} = ${f * m}.`],
+        steps: [`The first multiple of ${f} is ${f} × 1. Each new multiple adds ${f} more.`, `The ${ordinal(m)} multiple is ${m} jumps of ${f}. Write that as ${f} × ${m}.`, `The ${ordinal(m)} multiple of ${f} is ${f} × ${m} = ${f * m}.`],
       });
     }
     if (form === "countFactors") {
       const n = pick([12, 16, 18, 20, 24, 28, 30, 32, 36, 40, 42, 45, 48, 50, 54, 56, 60, 64, 72, 80], rng);
       const all = factorsOf(n);
       return problem(`How many factors does ${n} have?`, all.length, {
-        hint: "List factor pairs: 1 × the number, then test 2, 3, 4, … for pairs that multiply to it.",
+        hint: `List the pairs that multiply to ${n}. Start with 1 × ${n}.`,
         explanation: `The factors of ${n} are ${all.join(", ")}, so it has ${all.length}.`,
         steps: [
-          `A factor pair multiplies to make ${n}. Start with 1 × ${n}, then test 2, 3, 4, … to see which numbers divide ${n} evenly.`,
-          "Stop when the pairs start to repeat. Count every number in the pairs, each only once.",
+          `A factor pair multiplies to make ${n}. Start with 1 × ${n}. Then test 2, 3, 4, … Which divide ${n} evenly?`,
+          "Stop when a pair repeats. Count each factor once.",
           `The factors of ${n} are ${all.join(", ")}, so it has ${all.length}.`,
         ],
       });
@@ -852,7 +853,7 @@ const generators = {
       explanation: prime ? `${n} has no factor besides 1 and ${n}, so it is prime.` : `${n} ÷ ${divider} = ${n / divider}, so ${n} has a factor besides 1 and itself and is composite.`,
       steps: [
         "A prime number has exactly two factors, 1 and itself. A composite number has more than two.",
-        `Test small numbers (2, 3, 5, 7) to see whether any of them divides ${n} evenly.`,
+        `Test 2, 3, 5, and 7. Does any of them divide ${n} evenly?`,
         prime ? `${n} has no factor besides 1 and ${n}, so it is prime.` : `${n} ÷ ${divider} = ${n / divider}, so ${n} has a factor besides 1 and itself and is composite.`,
       ],
     });
@@ -865,8 +866,8 @@ const generators = {
     const find = config.find || "gcf";
     const answer = find === "gcf" ? gcd(a, b) : lcm(a, b);
     return problem(`Find the ${find.toUpperCase()} of ${a} and ${b}.`, answer, {
-      hint: find === "gcf" ? "List factor pairs and find the greatest shared factor." : "Write each number as a product of primes with a factor tree, keep the most copies of each prime, then multiply.",
-      explanation: find === "gcf" ? `The GCF of ${a} and ${b} is ${answer}.` : `The LCM of ${a} and ${b} is ${answer}: keep ${factorText(keptPrimes(a, b))}, which multiply to ${answer}.`,
+      hint: find === "gcf" ? "List the factors of both numbers. Find the biggest one they share." : "Make a factor tree for each number. Keep the most copies of each prime, with exponents like 2². Then multiply.",
+      explanation: find === "gcf" ? `The GCF of ${a} and ${b} is ${answer}.` : `The LCM of ${a} and ${b} is ${answer}: keep ${powerText(keptPrimes(a, b))}, and ${multiplyText(keptPrimes(a, b))}.`,
       model: find === "gcf" ? { type: "lists", a, b, find } : { type: "primeTrees", a, b, find, practice: true },
       steps: gcfLcmSteps(find, a, b, answer),
     });
@@ -880,8 +881,8 @@ const generators = {
     const question = hideSecond ? `${a}:${b} = ${a * factor}:□` : `${a}:${b} = □:${b * factor}`;
     const answer = hideSecond ? b * factor : a * factor;
     return problem(question, answer, {
-      hint: `One quantity was multiplied by ${factor}. Use the same scale factor on the other quantity.`,
-      explanation: `${a}:${b} scaled by ×${factor} is ${a * factor}:${b * factor}.`,
+      hint: `One number was multiplied by ${factor}. Do the same to the other number.`,
+      explanation: `Multiply both parts by ${factor}: ${a}:${b} becomes ${a * factor}:${b * factor}.`,
       model: { type: "ratioTable", a, b, labels: ["First", "Second"] },
     });
   },
@@ -903,7 +904,7 @@ const generators = {
     const wholeAmount = baseUnit * randInt(2, config.maxMultiplier ?? 15, rng);
     const answer = (wholeAmount * percent) / 100;
     return problem(`What is ${percent}% of ${wholeAmount}?`, decimalText(answer, 2), {
-      hint: "Rewrite the percent as a fraction or decimal, then multiply.",
+      hint: "Write the percent as a fraction. Then multiply.",
       explanation: `${percent}% of ${wholeAmount} is ${answer}.`,
       model: { type: "percentBar", whole: wholeAmount, percent },
     });
@@ -920,7 +921,7 @@ const generators = {
       `${whole.format(original)} with a ${percent}% ${decrease ? "decrease" : "increase"} equals what?`,
       decimalText(answer, 2),
       {
-        hint: `Find ${percent}% of ${original}, then ${decrease ? "subtract" : "add"} that change.`,
+        hint: `Find ${percent}% of ${original}. Then ${decrease ? "subtract" : "add"} it.`,
         explanation: `${percent}% of ${original} is ${change}; the new amount is ${answer}.`,
         model: { type: "percentBar", whole: original, percent, change, decrease },
       },
@@ -939,15 +940,15 @@ const generators = {
     const answer = op === "add" ? a + b : op === "sub" ? a - b : op === "mul" ? a * b : a / b;
     const symbol = FACT_SYMBOL[op];
     return problem(`${a} ${symbol} ${b < 0 ? `(${b})` : b} = ?`, answer, {
-      hint: op === "add" || op === "sub" ? "Use a number line and pay attention to direction." : "Find the size first, then use the sign rules.",
+      hint: op === "add" || op === "sub" ? "Use a number line. Watch which way you move." : "Multiply the sizes first. Then choose the sign.",
       explanation: `${a} ${symbol} ${b < 0 ? `(${b})` : b} = ${answer}.`,
       steps:
         op === "mul" || op === "div"
           ? answer === 0
-            ? [`A zero is involved: ${op === "mul" ? "any number times 0 is 0" : "0 divided by any number is 0"}, so there is no sign to decide`, `${a} ${symbol} ${b < 0 ? `(${b})` : b} = ${answer}`]
-            : [`Size: ${op === "mul" ? "multiply" : "divide"} ${Math.abs(a)} ${symbol} ${Math.abs(b)} without the signs`, `Sign: ${(a < 0) === (b < 0) ? "same signs, so positive" : "different signs, so negative"}`, `${a} ${symbol} ${b < 0 ? `(${b})` : b} = ${answer}`]
+            ? [`One number is 0: ${op === "mul" ? "any number times 0 is 0" : "0 divided by any number is 0"}. There is no sign to choose`, `${a} ${symbol} ${b < 0 ? `(${b})` : b} = ${answer}`]
+            : [`${op === "mul" ? "Multiply" : "Divide"} the sizes: ${Math.abs(a)} ${symbol} ${Math.abs(b)}. Ignore the signs for now`, `Now check the signs. ${(a < 0) === (b < 0) ? "Same signs: the answer is positive" : "Different signs: the answer is negative"}`, `${a} ${symbol} ${b < 0 ? `(${b})` : b} = ${answer}`]
           : op === "sub"
-            ? [`Subtracting ${b} is adding ${-b}.`, `${a} + ${-b < 0 ? `(${-b})` : -b} = ${answer}`]
+            ? [`Subtracting ${b} is the same as adding ${-b}.`, `${a} + ${-b < 0 ? `(${-b})` : -b} = ${answer}`]
             : [`Start at ${a}. Move ${Math.abs(b)} ${b < 0 ? "left" : "right"}.`, `${a} + ${b < 0 ? `(${b})` : b} = ${answer}`],
       model:
         op === "mul" || op === "div"
@@ -959,7 +960,7 @@ const generators = {
   absolute(config, rng) {
     const n = randInt(config.min ?? -50, config.max ?? 50, rng);
     return problem(`|${n}| = ?`, Math.abs(n), {
-      hint: "Absolute value is distance from zero, so it is never negative.",
+      hint: "Absolute value is the distance from zero. Distance is never negative.",
       explanation: `${n} is ${Math.abs(n)} units from zero.`,
       model: n ? { type: "numberline", start: n, jumps: [-n], caption: `${n} to 0` } : null,
     });
@@ -973,8 +974,8 @@ const generators = {
     const grouped = rng() > 0.5;
     const answer = grouped ? (a + b) * c : a + b * c;
     return problem(grouped ? `(${a} + ${b}) × ${c} = ?` : `${a} + ${b} × ${c} = ?`, answer, {
-      hint: "Do grouping symbols first, then multiplication or division, then addition or subtraction.",
-      explanation: grouped ? `Add first: ${a + b} × ${c} = ${answer}.` : `Multiply first: ${a} + ${b * c} = ${answer}.`,
+      hint: "Do the parentheses first. Then multiply or divide. Then add or subtract.",
+      explanation: grouped ? `(${a} + ${b}) × ${c} = ${a + b} × ${c} = ${answer}.` : `${a} + ${b} × ${c} = ${a} + ${b * c} = ${answer}.`,
     });
   },
 
@@ -1006,7 +1007,7 @@ const generators = {
     const b = randInt(-maxConstant, maxConstant, rng);
     const answer = a * x + b;
     return problem(`Evaluate ${a}x ${b < 0 ? "−" : "+"} ${Math.abs(b)} when x = ${x}.`, answer, {
-      hint: `Replace x with ${x}, then multiply before adding or subtracting.`,
+      hint: `Write ${x} where x is. Multiply first. Then add or subtract.`,
       explanation: `${a}(${x}) ${b < 0 ? "−" : "+"} ${Math.abs(b)} = ${answer}.`,
     });
   },
@@ -1024,8 +1025,8 @@ const generators = {
         hint: `Undo ${form === "mul" ? "multiplying" : "dividing"} by ${k}: ${undo} both sides by ${k}.`,
         explanation: `The value x = ${x} makes both sides equal ${c}.`,
         steps: [
-          `The goal is to get x alone. Right now x is being ${verb} by ${k}.`,
-          `Undo it with the opposite operation: ${undo} both sides by ${k}. Doing the same thing to both sides keeps the equation balanced.`,
+          `Get x alone. Right now x is ${verb} by ${k}.`,
+          `Undo it: ${undo} both sides by ${k}. Both sides stay equal.`,
           `${form === "mul" ? `${c} ÷ ${k}` : `${c} × ${k}`} = ${x}, so x = ${x}.`,
         ],
       });
@@ -1061,7 +1062,7 @@ const generators = {
     const exponent = randInt(2, config.maxExponent ?? 4, rng);
     const answer = base ** exponent;
     return problem(`${base}^${exponent} = ?`, answer, {
-      hint: `Multiply ${base} by itself ${exponent} times.`,
+      hint: `Write ${base} ${exponent} times. Then multiply.`,
       explanation: `${base}^${exponent} = ${Array(exponent).fill(base).join(" × ")} = ${answer}.`,
       model: { type: "power", base, exponent },
     });
@@ -1084,7 +1085,7 @@ const generators = {
   squareRoot(config, rng) {
     const root = randInt(2, config.maxRoot ?? 20, rng);
     return problem(`√${root * root} = ?`, root, {
-      hint: "Find the positive number that multiplies by itself to make the radicand.",
+      hint: `Find the number that times itself makes ${root * root}.`,
       explanation: `${root} × ${root} = ${root * root}, so √${root * root} = ${root}.`,
       model: root <= 15 ? { type: "square", square: root * root } : null,
     });
@@ -1098,7 +1099,7 @@ const generators = {
     const x2 = x1 + run;
     const y2 = y1 + slope * run;
     return problem(`Find the slope through (${x1}, ${y1}) and (${x2}, ${y2}).`, slope, {
-      hint: "Slope = change in y ÷ change in x.",
+      hint: "Slope = rise ÷ run, or change in y ÷ change in x.",
       explanation: `(${y2} − ${y1}) ÷ (${x2} − ${x1}) = ${slope}.`,
         model: { type: "chain", picture: "grid", points: [[x1, y1, `(${x1}, ${y1})`], [x2, y2, `(${x2}, ${y2})`]], rise: [[x1, y1], [x2, y2]], prompt: "Count the rise (up or down) and the run (across). Slope = rise ÷ run.", rows: [{ text: "Rise (change in y):", expect: y2 - y1 }, { text: "Run (change in x):", expect: x2 - x1 }] },
     });
@@ -1110,7 +1111,7 @@ const generators = {
     const b = randInt(-(config.maxConstant ?? 8), config.maxConstant ?? 8, rng);
     const y = m * x + b;
     return problem(`If y = ${m}x ${b < 0 ? "−" : "+"} ${Math.abs(b)}, find y when x = ${x}.`, y, {
-      hint: `Substitute ${x} for x, multiply, then combine the constant.`,
+      hint: `Write ${x} where x is. Multiply first. Then add or subtract.`,
       explanation: `y = ${m}(${x}) ${b < 0 ? "−" : "+"} ${Math.abs(b)} = ${y}.`,
     });
   },
@@ -1121,7 +1122,7 @@ const generators = {
     const sum = x + y;
     const difference = x - y;
     return problem(`x + y = ${sum} and x − y = ${difference}. Find x.`, x, {
-      hint: "Add the equations. The y terms cancel, leaving 2x.",
+      hint: "Add the two equations. The y parts cancel, so only 2x is left.",
       explanation: `Adding gives 2x = ${sum + difference}, so x = ${x}.`,
         model: { type: "chain", prompt: "Add the two equations. The y terms cancel.", rows: [{ text: `(x + y) + (x − y) = ${sum} + ${difference}, so 2x =`, expect: sum + difference }] },
     });
@@ -1139,7 +1140,7 @@ const generators = {
       hint: "Read x first (left/right), then y (down/up).",
       explanation: `(${x}, ${y}) is in Quadrant ${answer}.`,
       model: { type: "coordinate", points: [[x, y]], caption: "Find the point: x tells left or right, y tells down or up" },
-      steps: [`x = ${x} is ${x > 0 ? "positive, so the point is right of" : "negative, so the point is left of"} the y-axis.`, `y = ${y} is ${y > 0 ? "positive, so the point is above" : "negative, so the point is below"} the x-axis.`, "The quadrants are numbered counterclockwise from the top right: right and up, left and up, left and down, right and down.", `(${x}, ${y}) is in Quadrant ${answer}.`],
+      steps: [`x = ${x} is ${x > 0 ? "positive, so the point is right of" : "negative, so the point is left of"} the y-axis.`, `y = ${y} is ${y > 0 ? "positive, so the point is above" : "negative, so the point is below"} the x-axis.`, "Number the quadrants in order: top right, top left, bottom left, bottom right.", `(${x}, ${y}) is in Quadrant ${answer}.`],
     });
   },
 
@@ -1151,7 +1152,7 @@ const generators = {
     return problem(`Reflect (${x}, ${y}) across the ${axis}.`, `(${result[0]},${result[1]})`, {
       kind: "text",
       displayAnswer: `(${result[0]}, ${result[1]})`,
-      hint: axis === "x-axis" ? "Keep x; change the sign of y." : axis === "y-axis" ? "Change the sign of x; keep y." : "Change both signs.",
+      hint: axis === "x-axis" ? "Keep x. Change y to its opposite." : axis === "y-axis" ? "Keep y. Change x to its opposite." : "Change both x and y to their opposites.",
       explanation: `The image is (${result[0]}, ${result[1]}).`,
         model: { type: "chain", picture: "grid", points: [[x, y, `(${x}, ${y})`]], prompt: `Reflect across the ${axis}. Find each new coordinate.`, rows: [{ text: "New x:", expect: result[0] }, { text: "New y:", expect: result[1] }] },
     });
@@ -1168,7 +1169,7 @@ const generators = {
       return problem(`Perimeter of a rectangle with length ${a} and width ${b}?`, 2 * (a + b), { hint: "Add all four sides, or use 2(length + width).", explanation: `2(${a} + ${b}) = ${2 * (a + b)} units.`, unit: "units", model: { type: "shape", shape: "rectangle", a, b, allSides: true, caption: `Rectangle ${a} by ${b}: add all four sides` } });
     if (shape === "triangleArea") {
       const base = a % 2 === 0 ? a : a + 1;
-      return problem(`Area of a triangle with base ${base} and height ${b}?`, (base * b) / 2, { hint: "Area = 1/2 × base × height.", explanation: `1/2 × ${base} × ${b} = ${(base * b) / 2} square units.`, unit: "square units", model: { type: "triangleArea", base, height: b, caption: "The perpendicular height meets the base at a right angle" } });
+      return problem(`Area of a triangle with base ${base} and height ${b}?`, (base * b) / 2, { hint: "Multiply base × height. Then take half.", explanation: `1/2 × ${base} × ${b} = ${(base * b) / 2} square units.`, unit: "square units", model: { type: "triangleArea", base, height: b, caption: "The perpendicular height meets the base at a right angle" } });
     }
     if (shape === "angleRelations") {
       const relation = pick(config.relations || ["supplementary", "complementary", "vertical"], rng);
@@ -1177,14 +1178,14 @@ const generators = {
       const answer = total === null ? known : total - known;
       const wording = relation === "complementary" ? "complementary" : relation === "supplementary" ? "supplementary" : "vertical";
       const question = relation === "vertical" ? `One of two vertical angles measures ${known}°. What is the measure of the other angle?` : `Two ${wording} angles include one angle that measures ${known}°. What is the other angle?`;
-      return problem(question, answer, { hint: relation === "complementary" ? "Complementary angles add to 90°." : relation === "supplementary" ? "Supplementary angles add to 180°." : "Vertical angles have equal measures.", explanation: relation === "vertical" ? `Vertical angles are equal, so the other angle is ${known}°.` : `${total}° − ${known}° = ${answer}°.`, unit: "°", model: { type: "anglePair", relation, known, caption: "Angle relationship (diagram not to scale)" } });
+      return problem(question, answer, { hint: relation === "complementary" ? "Complementary angles add to 90°." : relation === "supplementary" ? "Supplementary angles add to 180°." : "Vertical angles are equal.", explanation: relation === "vertical" ? `Vertical angles are equal, so the other angle is ${known}°.` : `${total}° − ${known}° = ${answer}°.`, unit: "°", model: { type: "anglePair", relation, known, caption: "Angle relationship (diagram not to scale)" } });
     }
     if (shape === "volume")
       return problem(`Volume of a rectangular prism: ${a} × ${b} × ${c}?`, a * b * c, { hint: "Volume = length × width × height.", explanation: `${a} × ${b} × ${c} = ${a * b * c} cubic units.`, model: c <= 12 ? { type: "layers", a, b, height: c } : null, unit: "cubic units" });
     if (shape === "circle") {
       const radius = randInt(1, config.maxRadius ?? 12, rng);
       const answer = radius * radius;
-      return problem(`A circle has radius ${radius}. What number multiplies π to give its area?`, answer, { hint: "Area = πr². Square the radius.", explanation: `r² = ${radius}² = ${answer}, so the area is ${answer}π.`, unit: "π square units", model: { type: "chain", picture: "circle", r: radius, prompt: "Area = π × r × r. Square the radius." } });
+      return problem(`A circle has radius ${radius}. What number multiplies π to give its area?`, answer, { hint: "Area = π × r × r. Square the radius first.", explanation: `r² = ${radius}² = ${answer}, so the area is ${answer}π.`, unit: "π square units", model: { type: "chain", picture: "circle", r: radius, prompt: "Area = π × r × r. Square the radius." } });
     }
     const leg = randInt(2, 12, rng);
     const target = config.target || 180;
@@ -1217,7 +1218,7 @@ const generators = {
       const d1 = randInt(1, config.scaffolded ? 2 : 5, rng);
       const d2 = randInt(1, config.scaffolded ? 2 : 5, rng);
       const values = [mean - d1, mean + d1, mean - d2, mean + d2];
-      return problem(`Find the mean: ${values.join(", ")}.`, mean, { hint: "Add the values, then divide by how many values there are.", explanation: `The sum is ${mean * 4}; ${mean * 4} ÷ 4 = ${mean}.`, steps: [`Add the values: ${values.join(" + ")} = ${mean * 4}.`, "There are 4 values, so share the sum equally among 4: divide by 4.", `${mean * 4} ÷ 4 = ${mean}.`] });
+      return problem(`Find the mean: ${values.join(", ")}.`, mean, { hint: "Add all the numbers. Then divide by how many there are.", explanation: `The sum is ${mean * 4}; ${mean * 4} ÷ 4 = ${mean}.`, steps: [`Add the values: ${values.join(" + ")} = ${mean * 4}.`, "There are 4 values. Divide the sum by 4.", `${mean * 4} ÷ 4 = ${mean}.`] });
     }
     if (type === "median") {
       // Shown unordered: putting the values in order is the first step of finding a median.
@@ -1226,11 +1227,11 @@ const generators = {
       const values = [...shown].sort((a, b) => a - b);
       const middle = values[Math.floor(values.length / 2)];
       const ordinal = values.length === 3 ? "2nd" : "3rd";
-      return problem(`Find the median: ${shown.join(", ")}.`, middle, { hint: "Put values in order and choose the middle one.", explanation: `${middle} is the middle value.`, steps: [`Put the values in order: ${values.join(", ")}.`, `There are ${values.length} values, so the middle one is the ${ordinal}.`, `The median is ${middle}.`] });
+      return problem(`Find the median: ${shown.join(", ")}.`, middle, { hint: "Put the numbers in order. Pick the middle one.", explanation: `${middle} is the middle value.`, steps: [`Put the values in order: ${values.join(", ")}.`, `There are ${values.length} values, so the middle one is the ${ordinal}.`, `The median is ${middle}.`] });
     }
     const values = Array.from({ length: config.scaffolded ? 3 : 5 }, () => randInt(1, config.scaffolded ? 10 : 40, rng));
     const answer = Math.max(...values) - Math.min(...values);
-    return problem(`Find the range: ${values.join(", ")}.`, answer, { hint: "Range = greatest value − least value.", explanation: `${Math.max(...values)} − ${Math.min(...values)} = ${answer}.`, steps: [`The greatest value is ${Math.max(...values)}.`, `The least value is ${Math.min(...values)}.`, `${Math.max(...values)} − ${Math.min(...values)} = ${answer}.`] });
+    return problem(`Find the range: ${values.join(", ")}.`, answer, { hint: "Range = biggest number − smallest number.", explanation: `${Math.max(...values)} − ${Math.min(...values)} = ${answer}.`, steps: [`The greatest value is ${Math.max(...values)}.`, `The least value is ${Math.min(...values)}.`, `${Math.max(...values)} − ${Math.min(...values)} = ${answer}.`] });
   },
 
   association(config, rng) {
@@ -1250,13 +1251,13 @@ const generators = {
       {
         kind: "choice",
         choices: ["positive", "negative", "none"],
-        hint: "Read the pairs from left to right. Notice whether y generally rises, generally falls, or has no steady direction as x increases.",
+        hint: "Read the pairs left to right. As x goes up, does y go up, down, or jump around?",
         explanation:
           type === "positive"
             ? "As x increases, y increases, so the association is positive."
             : type === "negative"
               ? "As x increases, y decreases, so the association is negative."
-              : "As x increases, y moves up and down without a steady direction, so there is no association.",
+              : "As x increases, y moves up and down with no steady direction. There is no association.",
         model: { type: "chain", picture: "scatter", xs: xValues, ys: yValues, prompt: "Read the points from left to right. Do they go up, go down, or neither?" },
       },
     );
@@ -1268,7 +1269,7 @@ const generators = {
     const answer = fractionText(favorable, total);
     return problem(`${favorable} of ${total} equal sections are winning sections. What is P(win)?`, answer, {
       kind: "fraction",
-      hint: "Probability = favorable outcomes ÷ total outcomes.",
+      hint: "Probability = wanted outcomes ÷ all outcomes.",
       explanation: `P(win) = ${favorable}/${total} = ${answer}.`,
         model: { type: "chain", picture: "spinner", total, favorable, prompt: "Count the winning (shaded) sections and all the sections." },
     });
@@ -1279,7 +1280,7 @@ const generators = {
     const b = randInt(2, config.maxPart ?? 12, rng);
     const factor = randInt(2, config.maxFactor ?? 9, rng);
     return problem(`${a}/${b} = x/${b * factor}. Find x.`, a * factor, {
-      hint: `The denominator was multiplied by ${factor}; multiply the numerator by ${factor}, too.`,
+      hint: `The bottom was multiplied by ${factor}. Multiply the top by ${factor} too.`,
       explanation: `x = ${a} × ${factor} = ${a * factor}.`,
     });
   },
@@ -1288,7 +1289,7 @@ const generators = {
     const triples = [[3, 4, 5], [5, 12, 13], [6, 8, 10], [8, 15, 17], [9, 12, 15]];
     const [a, b, c] = pick(config.scaffolded ? triples.slice(0, 2) : triples, rng);
     return problem(`A right triangle has legs ${a} and ${b}. Find the hypotenuse.`, c, {
-      hint: "Use a² + b² = c², then take the square root.",
+      hint: "Square both legs and add. Then take the square root.",
       explanation: `${a}² + ${b}² = ${a * a + b * b}; √${a * a + b * b} = ${c}.`,
         model: { type: "chain", picture: "triangle", a, b, prompt: "Square each leg, add, then find the square root.", rows: [{ text: `${a}² =`, expect: a * a }, { text: `${b}² =`, expect: b * b }, { text: `${a}² + ${b}² =`, expect: a * a + b * b }] },
     });
@@ -1330,14 +1331,14 @@ export const GRADES = [
     promise: "Build number sense and make addition and subtraction feel familiar.",
     skills: [
       S("count-patterns", "Count by 1s, 2s, 5s, and 10s", "Counting", "sequence", { steps: [1, 2, 5, 10], maxStart: 100 }, "1.NBT.A.1", L("A counting pattern changes by the same amount each time.", ["Say the numbers aloud.", "Notice what changes and what stays the same.", "Add the step one more time."], "35, 40, 45, 50 → 55", "Do not restart at 1; continue from the last number.")),
-      S("compare-100", "Compare numbers within 100", "Place value", "compare", { max: 100 }, "1.NBT.B.3", L("Compare tens first. Compare ones only when the tens match.", ["Find the tens digit.", "Choose the number with more tens.", "If tied, compare ones."], "47 > 39 because 4 tens is more than 3 tens.", "A longer-looking numeral is not automatically greater.")),
       S("tens-ones", "Tens and ones", "Place value", "placeValue", { min: 10, max: 120, places: [1, 10] }, "1.NBT.B.2", L("Two-digit numbers are made of tens and ones.", ["Read the number.", "Point to the tens and ones places.", "Name the digit or its value."], "63 has 6 tens and 3 ones.", "The digit 6 in 63 means 60, not 6.")),
-      S("add-10", "Addition facts within 10", "Addition", "fact", { op: "add", max: 10, maxResult: 10 }, "1.OA.C.6", L("Addition joins amounts.", ["Start with the larger addend.", "Count on the smaller addend.", "Check with a ten-frame or fingers."], "6 + 3 = 9", "Count on; do not recount the first group.")),
+      S("compare-100", "Compare numbers within 100", "Place value", "compare", { max: 100 }, "1.NBT.B.3", L("Compare tens first. Compare ones only when the tens match.", ["Find the tens digit.", "Choose the number with more tens.", "If tied, compare ones."], "47 > 39 because 4 tens is more than 3 tens.", "A longer-looking numeral is not automatically greater.")),
+      S("add-10", "Addition facts: sums of 10 or less", "Addition", "fact", { op: "add", max: 10, maxResult: 10 }, "1.OA.C.6", L("Add two numbers whose sum is 10 or less.", ["Start with the larger addend.", "Count on the smaller addend.", "Check with a ten-frame or fingers."], "6 + 3 = 9", "Count on; do not recount the first group.")),
       S("subtract-10", "Subtraction facts within 10", "Subtraction", "fact", { op: "sub", max: 10, maxResult: 10 }, "1.OA.C.6", L("Subtraction finds what remains or the difference.", ["Start at the whole.", "Take away or count up.", "Check by adding back."], "9 − 4 = 5 because 5 + 4 = 9.", "Keep track of how many you remove.")),
       S("make-10", "Make 10", "Addition", "makeTarget", { target: 10 }, "1.OA.B.4", L("Partners of 10 help with many later facts.", ["Picture a ten-frame.", "Count the filled spaces.", "Count the empty spaces."], "7 needs 3 more to make 10.", "The two partners must total exactly 10.")),
       S("add-20", "Addition facts within 20", "Addition", "fact", { op: "add", max: 10, maxResult: 20 }, "1.OA.C.6", L("Use known facts and make-ten strategies.", ["Break an addend to make 10.", "Add the leftover part.", "Check by counting on."], "8 + 6 = 8 + 2 + 4 = 14", "Do not lose the leftover part after making 10.")),
-      S("subtract-20", "Subtraction facts within 20", "Subtraction", "fact", { op: "sub", max: 10, maxResult: 20 }, "1.OA.C.6", L("Think of subtraction as take-away or a missing addend.", ["Ask what plus the smaller number makes the larger.", "Count up in useful jumps.", "Check with addition."], "14 − 8 = 6 because 8 + 6 = 14.", "The answer is the difference, not the number counted to.")),
       S("missing-addend", "Find the missing addend", "Addition", "missingAddend", { maxTotal: 20 }, "1.OA.D.8", L("A missing-addend equation asks for the unknown part.", ["Start at the known part.", "Count on to the total.", "The count-on amount is the missing part."], "7 + □ = 12, so □ = 5.", "Do not add the total and the known part.")),
+      S("subtract-20", "Subtraction facts within 20", "Subtraction", "fact", { op: "sub", max: 10, maxResult: 20 }, "1.OA.C.6", L("Think of subtraction as take-away or a missing addend.", ["Ask what plus the smaller number makes the larger.", "Count up in useful jumps.", "Check with addition."], "14 − 8 = 6 because 8 + 6 = 14.", "The answer is the difference, not the number counted to.")),
       S("time", "Tell time and find later times", "Measurement", "timeAdd", { elapsed: [30, 60] }, "1.MD.B.3", L("A clock groups 60 minutes into each hour.", ["Read the hour.", "Read the minutes.", "Add the elapsed minutes."], "30 minutes after 2:00 is 2:30.", "When minutes reach 60, move to the next hour.")),
       S("measure-length", "Measure length with equal units", "Measurement", "lengthMeasure", {}, "1.GR.A.2", L("Length measures how many equal units cover an object without gaps or overlaps.", ["Line up the object with the zero mark.", "Count the spaces between marks.", "Name the unit you used."], "A strip from 2 cm to 8 cm is 6 centimeters long.", "Count intervals, not ruler marks.")),
     ],
@@ -1392,7 +1393,7 @@ export const GRADES = [
       S("round-large", "Round multi-digit numbers", "Place value", "round", { places: [10, 100, 1000], max: 999999 }, "4.NBT.A.3", L("Round to the nearest named place using the next digit.", ["Underline the rounding place.", "Look one digit right.", "Round and replace later digits with zeros."], "48,729 rounds to 49,000 to the nearest thousand.", "Only one digit decides whether to round up or down.")),
       S("add-large", "Multi-digit addition", "Operations", "fact", { op: "add", min: 1000, max: 49999, maxResult: 99999 }, "4.NBT.B.4", L("The standard algorithm combines equal place values.", ["Align digits by place.", "Add from ones leftward.", "Regroup and estimate-check."], "23,487 + 5,906 = 29,393", "Commas do not determine alignment; place values do.")),
       S("subtract-large", "Multi-digit subtraction", "Operations", "fact", { op: "sub", min: 1000, max: 50000, maxResult: 99999 }, "4.NBT.B.4", L("Regroup one unit from the next place when needed.", ["Align place values.", "Regroup across zeros carefully.", "Subtract and check with addition."], "8,000 − 2,675 = 5,325", "When regrouping, reduce the place you borrowed from.")),
-      S("multiply-1digit", "Multiply by one digit", "Multiplication", "fact", { op: "mul", minA: 100, maxA: 999, minB: 2, maxB: 9 }, "4.NBT.B.5", L("Use place value and partial products.", ["Multiply each place by the one-digit factor.", "Regroup as needed.", "Add partial products or use the standard algorithm."], "326 × 4 = 1,304", "Regrouped tens must be added to the next partial product.")),
+      S("multiply-1digit", "Multiply a three-digit number by a one-digit number", "Multiplication", "fact", { op: "mul", minA: 100, maxA: 999, minB: 2, maxB: 9 }, "4.NBT.B.5", L("Use place value to multiply a three-digit number by a one-digit number.", ["Break the three-digit number into hundreds, tens, and ones.", "Multiply each part by the one-digit factor.", "Add the partial products and regroup if needed."], "326 × 4 = 1,304", "Regrouped tens must be added to the next partial product.")),
       S("multiply-2digit", "Multiply two-digit numbers", "Multiplication", "fact", { op: "mul", minA: 10, maxA: 99, minB: 10, maxB: 99 }, "4.NBT.B.5", L("Break one factor into tens and ones.", ["Multiply by the ones part.", "Multiply by the tens part.", "Add the partial products."], "23 × 14 = 23 × 10 + 23 × 4 = 322", "The tens partial product is ten times its digit product.")),
       S("division", "Whole-number division", "Division", "fact", { op: "div", minDivisor: 2, maxDivisor: 9, minQuotient: 10, maxQuotient: 99 }, "4.NBT.B.6", L("Division undoes multiplication.", ["Estimate the quotient.", "Use multiplication facts for each place.", "Multiply to check."], "384 ÷ 6 = 64 because 64 × 6 = 384.", "A quotient digit must match its place value.")),
       S("factors", "Factors and multiples", "Number theory", "factorMultiple", { max: 100 }, "4.OA.B.4", L("Factors divide a number evenly; multiples come from repeated multiplication.", ["List factor pairs, or check whether dividing leaves a remainder.", "Count by the number to list its multiples.", "A prime number has only two factors: 1 and itself."], "Factors of 12: 1, 2, 3, 4, 6, 12. Multiples of 4: 4, 8, 12, 16.", "A factor is not the same as a multiple.")),
@@ -1416,8 +1417,8 @@ export const GRADES = [
       S("fraction-add", "Add and subtract fractions", "Fractions", "fractionOp", { op: "addsub", maxDenominator: 12 }, "5.NF.A.1", L("Fractions can combine only after their parts are the same size.", ["Find a common denominator.", "Rename both fractions.", "Combine numerators and simplify."], "1/3 + 1/4 = 4/12 + 3/12 = 7/12", "Never add the denominators.")),
       S("fraction-mul", "Multiply fractions", "Fractions", "fractionOp", { op: "mul", maxDenominator: 12 }, "5.NF.B.4", L("Multiplying fractions finds a part of a part.", ["Multiply numerators.", "Multiply denominators.", "Simplify, or cross-cancel first."], "2/3 × 3/5 = 6/15 = 2/5", "Multiplication does not require common denominators.")),
       S("fraction-of", "Find a fraction of a whole", "Fractions", "fractionOf", { maxDenominator: 10 }, "5.NF.B.4", L("Find one equal part, then take the needed number of parts.", ["Divide the whole by the denominator.", "Multiply by the numerator.", "Check the answer is reasonable."], "3/4 of 20: 20 ÷ 4 × 3 = 15", "The denominator tells how many equal parts.")),
-      S("volume", "Rectangular prism volume", "Geometry", "geometry", { shape: "volume", max: 15 }, "5.MD.C.5", L("Volume counts unit cubes filling a solid.", ["Find the base area.", "Multiply by the height.", "Label cubic units."], "4 × 3 × 8 = 96 cubic units.", "Volume uses three dimensions and cubic units.")),
       S("unit-fraction-division", "Divide unit fractions and whole numbers", "Fractions", "fractionOp", { unitFractionDivision: true }, "5.NOS.D.16", L("Division can ask how many groups fit or how much is in each equal share.", ["Decide whether the question is sharing or measuring groups.", "Use a fraction model or multiplication relationship.", "Check by multiplying the quotient by the divisor."], "1/3 ÷ 2 = 1/6; 2 ÷ 1/3 = 6.", "These two expressions use the same numbers but ask different questions.")),
+      S("volume", "Rectangular prism volume", "Geometry", "geometry", { shape: "volume", max: 15 }, "5.MD.C.5", L("Volume counts unit cubes filling a solid.", ["Find the base area.", "Multiply by the height.", "Label cubic units."], "4 × 3 × 8 = 96 cubic units.", "Volume uses three dimensions and cubic units.")),
     ],
   },
   {
@@ -1441,26 +1442,26 @@ export const GRADES = [
   },
   {
     grade: 7,
-    color: "#6657b8",
+    color: "#17324D",
     label: "Grade 7",
     promise: "Build speed and precision with rational numbers, proportions, equations, and probability.",
     skills: [
       S("integer-add", "Add and subtract integers", "Rational numbers", "integerOp", { op: "addsub", min: -30, max: 30 }, "7.NS.A.1", L("Integer addition combines direction and distance.", ["Use a number line or sign strategy.", "Combine or compare absolute values.", "Keep the sign that matches the direction."], "−8 + 13 = 5", "Different signs mean find a difference, not always add absolute values.")),
       S("integer-mul", "Multiply and divide integers", "Rational numbers", "integerOp", { op: "muldiv", min: -12, max: 12 }, "7.NS.A.2", L("Multiply magnitudes, then determine the sign.", ["Multiply absolute values.", "Same signs give positive; different signs give negative.", "Check with a pattern."], "−6 × 4 = −24", "Sign rules come after finding the magnitude.")),
       S("fraction-ops", "Operations with rational numbers", "Rational numbers", "fractionOp", { op: "rational", signed: true, maxDenominator: 10 }, "7.NS.A.3", L("Rational-number operations follow fraction rules and integer sign rules.", ["Find common denominators for addition or subtraction.", "Apply signs carefully.", "Simplify the result."], "5/6 − 1/4 = 10/12 − 3/12 = 7/12", "Subtracting a negative changes the operation to addition.")),
-      S("proportions", "Solve proportions", "Proportions", "proportion", {}, "7.RP.A.2", L("A proportion states that two ratios are equal.", ["Find a scale factor or use cross products.", "Solve for the unknown.", "Check both ratios have the same value."], "3/4 = x/20, so x = 15.", "Match corresponding quantities in the same positions.")),
       S("unit-rate", "Unit rates with decimals", "Proportions", "unitRate", { decimals: true, maxCount: 15, maxRate: 99 }, "7.RP.A.1", L("Complex unit rates still mean an amount per one.", ["Write the two quantities as a quotient.", "Divide accurately.", "Label both units."], "$7.50 for 3 pounds is $2.50 per pound.", "Decide which quantity should be per one before dividing.")),
+      S("proportions", "Solve proportions", "Proportions", "proportion", {}, "7.RP.A.2", L("A proportion states that two ratios are equal.", ["Find a scale factor or use cross products.", "Solve for the unknown.", "Check both ratios have the same value."], "3/4 = x/20, so x = 15.", "Match corresponding quantities in the same positions.")),
       S("percent-change", "Discounts and percent change", "Percents", "percentChange", { type: "either" }, "7.RP.A.3", L("A percent change is a portion of the original amount.", ["Find the change amount.", "Add for increase or subtract for decrease.", "Check the direction of change."], "$80 with 25% off is $60.", "The final amount is not the same as the discount amount.")),
+      S("scale-drawing", "Use scale drawings", "Geometry", "scaleDrawing", {}, "7.GR.A.1", L("A scale factor relates a drawing length to a real length.", ["Read what one drawing unit represents.", "Match corresponding lengths.", "Multiply or divide by the scale factor."], "At 1 cm : 4 m, a 6 cm drawing length represents 24 m.", "Keep drawing units and real units in their correct columns.")),
       S("equations", "Two-step equations", "Equations", "solve", {}, "7.EE.B.4", L("Undo operations in reverse order while keeping the equation balanced.", ["Undo addition or subtraction.", "Undo multiplication or division.", "Substitute to verify."], "3x + 5 = 20 → 3x = 15 → x = 5", "Perform each inverse operation on both sides.")),
       S("inequalities", "Test inequality solutions", "Equations", "inequality", {}, "7.EE.B.4", L("A solution makes an inequality statement true.", ["Substitute the test value.", "Compare the two sides.", "Answer yes or no."], "8 is a solution to x > 5 because 8 > 5.", "The open side of the symbol faces the greater value.")),
       S("circle-area", "Circle area fluency", "Geometry", "geometry", { shape: "circle" }, "7.G.B.4", L("A circle's area is π times the square of its radius.", ["Identify the radius.", "Square the radius.", "Multiply by π or leave the answer in terms of π."], "r = 6 gives A = 36π.", "Square the radius, not πr.")),
       S("probability", "Probability and measures of center", "Statistics", "dataChance", { maxTotal: 24 }, "7.SP.C.7", L("Probability compares favorable outcomes with all possible outcomes.", ["Count favorable outcomes.", "Count total outcomes.", "Write and simplify the fraction."], "3 winning sections out of 8 gives P(win) = 3/8.", "The denominator counts all equally likely outcomes.")),
-      S("scale-drawing", "Use scale drawings", "Geometry", "scaleDrawing", {}, "7.GR.A.1", L("A scale factor relates a drawing length to a real length.", ["Read what one drawing unit represents.", "Match corresponding lengths.", "Multiply or divide by the scale factor."], "At 1 cm : 4 m, a 6 cm drawing length represents 24 m.", "Keep drawing units and real units in their correct columns.")),
     ],
   },
   {
     grade: 8,
-    color: "#88518e",
+    color: "#17324D",
     label: "Grade 8",
     promise: "Practice the essential moves behind exponents, linear relationships, systems, and geometry.",
     skills: [
@@ -1472,9 +1473,9 @@ export const GRADES = [
       S("functions", "Evaluate linear functions", "Functions", "functionRule", {}, "8.F.A.1", L("A function gives exactly one output for each input.", ["Substitute the input for x.", "Multiply by the rate of change.", "Add the starting value."], "For y = 3x + 2 and x = 4, y = 14.", "The input replaces x everywhere it appears.")),
       S("systems", "Solve simple systems", "Systems", "system", {}, "8.EE.C.8", L("A system solution makes both equations true.", ["Add or subtract equations to eliminate a variable.", "Solve the remaining equation.", "Substitute to find or check the other variable."], "x + y = 10 and x − y = 2 gives 2x = 12, so x = 6.", "A solution is an ordered pair, not two unrelated answers.")),
       S("angle-relations", "Solve angle relationship problems", "Geometry", "geometry", { shape: "angleRelations" }, "8.GR.A.1", L("Complementary angles total 90°, supplementary angles total 180°, and vertical angles are equal.", ["Name the relationship.", "Use its total or equality.", "Solve and check the angle measure."], "A supplementary angle paired with 65° measures 115°.", "Adjacent angles are not automatically complementary or supplementary.")),
-      S("transformations", "Coordinate reflections (extension)", "Geometry extension", "transform", {}, "8.G.A.3", L("A reflection flips a point across a line while keeping equal distance.", ["Identify the mirror line.", "Keep the coordinate parallel to the line.", "Change the sign of the perpendicular coordinate."], "Across the y-axis, (4, −2) becomes (−4, −2).", "This is an extension topic; Maryland places transformations in Integrated Algebra, not the 2025 Grade 8 standards.")),
       S("pythagorean", "Pythagorean theorem", "Geometry", "pythagorean", {}, "8.G.B.7", L("In a right triangle, the legs satisfy a² + b² = c².", ["Square both leg lengths.", "Add the squares.", "Take the square root for the hypotenuse."], "Legs 6 and 8 give c² = 36 + 64 = 100, so c = 10.", "The hypotenuse is opposite the right angle and is the longest side.")),
       S("association", "Identify bivariate association", "Data", "association", {}, "8.SP.A.1", L("Bivariate data show how two variables may change together.", ["Read each ordered pair from left to right.", "Track what y does as x increases.", "Classify the overall direction as positive, negative, or none."], "When x increases from 1 to 5 while y increases from 4 to 12, the association is positive.", "Association describes an overall pattern; it does not prove that one variable caused the other.")),
+      S("transformations", "Coordinate reflections (extension)", "Geometry extension", "transform", {}, "8.G.A.3", L("A reflection flips a point across a line while keeping equal distance.", ["Identify the mirror line.", "Keep the coordinate parallel to the line.", "Change the sign of the perpendicular coordinate."], "Across the y-axis, (4, −2) becomes (−4, −2).", "This is an extension topic; Maryland places transformations in Integrated Algebra, not the 2025 Grade 8 standards.")),
     ],
   },
 ];
@@ -1518,6 +1519,8 @@ for (const grade of GRADES) {
   }
 }
 
+for (const grade of GRADES) for (const skill of grade.skills) applyKidLearn(skill, grade.grade);
+
 export const ALL_SKILLS = GRADES.flatMap((grade) =>
   grade.skills.map((skill) => ({ ...skill, grade: grade.grade, gradeLabel: grade.label, color: grade.color })),
 );
@@ -1553,7 +1556,7 @@ function drawProblem(skill, generator, rng) {
   }
   // The trail and games record answers by generator, so the tutor can credit the matching skill.
   item.generator = skill.generator;
-  item.steps = detailSteps(item) || item.steps;
+  item.steps = kidSteps(item, skill) || detailSteps(item) || item.steps;
   // A generator with no authored steps would otherwise open "Watch me solve it" on the answer itself:
   // lead with the skill's own strategy lines and state the worked line last.
   if (item.steps.length < 2) item.steps = workedSteps(item) || [...(skill.learn?.steps || []), ...item.steps];
@@ -1598,19 +1601,20 @@ const parseFraction = (value) => {
 export function validateAnswer(value, item) {
   const submitted = compact(value).replaceAll("−", "-");
   if (!submitted) return false;
+  if (item.equiv) return checkEquivalent(value, item).ok; // fl4:generators: 4.0 items carry their own equivalence rules
   if (item.kind === "primes") {
     const got = parsePrimes(value);
     return Boolean(got) && item.answers.some((answer) => parsePrimes(answer)?.join(",") === got.join(","));
   }
   if (item.kind === "fraction") {
     const candidate = parseFraction(value);
-    return item.answers.some((answer) => Math.abs(candidate - parseFraction(answer)) < 1e-8);
+    return item.answers.some((answer) => Math.abs(candidate - parseFraction(answer)) < 1e-8) || looseNumberMatch(value, item); // fl4:generators
   }
   if (item.kind === "number") {
     const candidate = Number(submitted.replace(/,/g, ""));
-    return Number.isFinite(candidate) && item.answers.some((answer) => Math.abs(candidate - Number(compact(answer))) < 1e-8);
+    return (Number.isFinite(candidate) && item.answers.some((answer) => Math.abs(candidate - Number(compact(answer))) < 1e-8)) || looseNumberMatch(value, item); // fl4:generators
   }
-  return item.answers.some((answer) => compact(answer).replace(/\s+/g, "") === submitted);
+  return item.answers.some((answer) => compact(answer).replaceAll("−", "-") === submitted); // fl4:generators: a minus sign in a key matches a typed or tapped one
 }
 
 export function seededRandom(seed) {

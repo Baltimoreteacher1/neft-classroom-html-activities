@@ -1,5 +1,6 @@
 // Spot the Mistake: a worked solution has one wrong step, or a classmate's answer may be wrong. The learner finds
 // the error by checking the math, then types the correct result. Nothing is revealed until they have found it.
+import { feedbackAction, feedbackNoteHtml, phaseFor } from "./feedback-host.js";
 import { ALL_STOPS, gameProblem, shuffle } from "./game-pool.js";
 import { validateAnswer } from "./problem-bank.js";
 import { t } from "./i18n.js";
@@ -63,8 +64,10 @@ export function playMistake(host, { grade, stop, calm, finish, onFact }) {
   let phase = "find";
   let nope = null;
   let note = "";
+  let fb = null; // shared feedback panel state
+  let roundWrong = 0; // misses in this problem: a right answer after any of them is supported work
+  let stepWrong = 0; // misses in the current question (find, name, fix)
   const missed = new Map();
-  let timer = null;
   const current = () => rounds[at];
 
   function workBody(round) {
@@ -85,7 +88,7 @@ export function playMistake(host, { grade, stop, calm, finish, onFact }) {
     if (round.format === "work") return workBody(round);
     const head = `<p class="gm-q" id="gm-q">${mathText(round.item.question)}</p>${canSpeak() ? `<button type="button" class="tr-tool" data-gm-read>${t("Read to me")}</button>` : ""}`;
     if (round.format === "steps") {
-      const list = round.steps.map((text, i) => `<li><button type="button" class="gm-step${nope === i ? " nope" : ""}${phase === "fix" && i === round.bad ? " pick" : ""}" data-pick="${i}" ${phase === "fix" ? "disabled" : ""}><b>${i + 1}</b> ${mathText(text)}</button></li>`).join("");
+      const list = round.steps.map((text, i) => `<li><button type="button" class="gm-step${nope === i ? " nope" : ""}${phase !== "find" && i === round.bad ? " pick" : ""}" data-pick="${i}" ${phase !== "find" ? "disabled" : ""}><b>${i + 1}</b> ${mathText(text)}</button></li>`).join("");
       const fix = phase === "fix" ? `<form class="gm-fix"><label for="gm-fix-in">${t("You found it! What should step {n} say? Type its result.", { n: round.bad + 1 })}</label><div class="tr-answer"><input id="gm-fix-in" class="tr-input" inputmode="decimal" autocomplete="off" spellcheck="false" /><button type="submit" class="tr-check">${t("Check")}</button></div></form>` : "";
       return `${head}<p class="gm-ask">${t("One step has a mistake. Check each step, then tap the one that is wrong.")}</p><ol class="gm-steps">${list}</ol>${fix}`;
     }
@@ -96,8 +99,9 @@ export function playMistake(host, { grade, stop, calm, finish, onFact }) {
   }
 
   function render() {
-    host.innerHTML = `<div class="gm-play gm-mistake"><div class="gm-bar"><button type="button" class="tr-back" data-gm-menu>${t("← Games")}</button><b>${t("Spot the Mistake")}</b><span>${t("Problem {a} of {b}", { a: at + 1, b: total })}</span></div>${body()}<p class="gm-note">${esc(note)}</p></div>`;
-    (host.querySelector("#gm-fix-in") || host.querySelector(".gm-work-pick button"))?.focus();
+    host.innerHTML = `<div class="gm-play gm-mistake"><div class="gm-bar"><button type="button" class="tr-back" data-gm-menu>${t("← Games")}</button><b>${t("Spot the Mistake")}</b><span>${t("Problem {a} of {b}", { a: at + 1, b: total })}</span></div>${body()}${feedbackNoteHtml(esc(note), fb)}</div>`;
+    if (phase === "done") host.querySelector("[data-gm-next]")?.focus();
+    else (host.querySelector("#gm-fix-in") || host.querySelector(".gm-work-pick button"))?.focus();
     syncLive(host);
   }
 
@@ -106,17 +110,30 @@ export function playMistake(host, { grade, stop, calm, finish, onFact }) {
     phase = "find";
     nope = null;
     note = "";
-    if (at >= total) {
-      timer = setTimeout(() => finish({ game: "mistake", stars: mistakeStars(wrong), missed: [...missed.values()], line: wrong === 1 ? t("{n} wrong guess", { n: wrong }) : t("{n} wrong guesses", { n: wrong }) }), 600);
-      return;
-    }
+    fb = null;
+    roundWrong = 0;
+    stepWrong = 0;
+    if (at >= total) return finish({ game: "mistake", stars: mistakeStars(wrong), missed: [...missed.values()], line: wrong === 1 ? t("{n} wrong guess", { n: wrong }) : t("{n} wrong guesses", { n: wrong }) });
     render();
   }
 
-  const miss = (round) => {
+  // A wrong try: count it, and show the scaffold panel with what the learner tried (never the right answer).
+  const stumble = (submitted) => {
     wrong += 1;
+    roundWrong += 1;
+    stepWrong += 1;
+    fb = { phase: phaseFor("mistake", "miss"), ctx: { submitted } };
+  };
+  const miss = (round, submitted) => {
+    stumble(submitted);
     missed.set(round.item.question, round.item);
     onFact?.(round.item, false);
+  };
+
+  // The problem is solved: show the result with its Next button; nothing advances until it is pressed.
+  const settle = (expected) => {
+    phase = "done";
+    fb = { phase: phaseFor("mistake", roundWrong ? "right-after-miss" : "right"), ctx: { expected, next: at + 1 >= total ? t("See results") : t("Next round") } };
   };
 
   // "A student solved this" rounds: tap the first wrong step, name the slip, then pick the version that fixes it.
@@ -129,12 +146,14 @@ export function playMistake(host, { grade, stop, calm, finish, onFact }) {
     const fix = event.target.closest("[data-fix]");
     if (pick && phase === "find") {
       const i = Number(pick.dataset.pick);
+      fb = null;
       if (i === item.bad) {
         phase = "cause";
         nope = null;
         note = "";
+        stepWrong = 0;
       } else {
-        wrong += 1;
+        stumble(shownStep(item, item.steps[i], i));
         nope = i;
         note = i < item.bad ? t("That step is correct. Check the others.") : t("That step follows from the step above it. Look earlier.");
       }
@@ -143,19 +162,21 @@ export function playMistake(host, { grade, stop, calm, finish, onFact }) {
       if (slip.dataset.slip === item.slip) {
         phase = "fix";
         note = slipInfo(item.slip).note;
+        fb = { phase: phaseFor("mistake", stepWrong ? "right-after-miss" : "right"), ctx: { expected: slipInfo(item.slip).label } };
+        stepWrong = 0;
       } else {
-        wrong += 1;
+        stumble(slipInfo(slip.dataset.slip).label);
         note = t("Not quite. Look at step {n} again: what did the student do?", { n });
       }
       render();
     } else if (fix && phase === "fix") {
-      if (item.fixes[Number(fix.dataset.fix)] === item.fix) {
+      const tried = item.fixes[Number(fix.dataset.fix)];
+      if (tried === item.fix) {
         note = t("Yes! Mistake fixed.");
-        phase = "done";
+        settle(item.mode === "eq" ? item.fix : `= ${item.fix}`);
         render();
-        timer = setTimeout(advance, 800);
       } else {
-        wrong += 1;
+        stumble(item.mode === "eq" ? tried : `= ${tried}`);
         note = t("Not yet. Check that version against the step before it.");
         render();
       }
@@ -164,17 +185,28 @@ export function playMistake(host, { grade, stop, calm, finish, onFact }) {
 
   host.onclick = (event) => {
     const round = current();
+    const action = feedbackAction(event);
+    if (action === "next" && phase === "done") return advance();
+    if (action === "try-again") {
+      fb = null;
+      nope = null;
+      note = "";
+      return render();
+    }
     if (event.target.closest("[data-gm-read]")) return speak(round.format === "work" ? describeAsk(round.item) : round.item.question);
+    if (phase === "done") return;
     if (round.format === "work") return workClick(event, round);
     const pick = event.target.closest("[data-pick]");
     if (pick && phase === "find") {
       const i = Number(pick.dataset.pick);
+      fb = null;
       if (i === round.bad) {
         phase = "fix";
         nope = null;
         note = "";
+        stepWrong = 0;
       } else {
-        miss(round);
+        miss(round, round.steps[i]);
         nope = i;
         note = t("That step is correct. Check the others.");
       }
@@ -184,18 +216,20 @@ export function playMistake(host, { grade, stop, calm, finish, onFact }) {
     const claim = event.target.closest("[data-claim]");
     if (claim && phase === "find") {
       const saysWrong = claim.dataset.claim === "wrong";
+      fb = null;
       if (saysWrong === !round.right) {
         if (round.right) {
           note = t("Yes, Sam is right. Nice checking.");
           onFact?.(round.item, wrong === 0);
+          settle(pretty(round.shown));
           render();
-          timer = setTimeout(advance, 900);
           return;
         }
         phase = "fix";
         note = "";
+        stepWrong = 0;
       } else {
-        miss(round);
+        miss(round, saysWrong ? t("Sam is wrong") : t("Sam is right"));
         note = round.right ? t("Check again. Work the problem yourself before you decide.") : t("Work the problem yourself and compare with Sam's answer.");
       }
       render();
@@ -203,16 +237,17 @@ export function playMistake(host, { grade, stop, calm, finish, onFact }) {
   };
   host.onsubmit = (event) => {
     event.preventDefault();
+    if (phase !== "fix") return;
     const round = current();
     const typed = host.querySelector("#gm-fix-in").value;
     const right = round.format === "steps" ? Number.isFinite(num(typed)) && typed.trim() !== "" && same(num(typed), round.truth) : validateAnswer(typed, round.item);
     if (right) {
       note = t("Yes! Mistake fixed.");
       onFact?.(round.item, wrong === 0);
-      phase = "done";
+      settle(pretty(round.truth));
       render();
-      timer = setTimeout(advance, 800);
     } else {
+      stumble(typed.trim());
       note = t("Not yet. Work that step out again.");
       render();
       host.querySelector("#gm-fix-in").value = typed;
@@ -220,7 +255,6 @@ export function playMistake(host, { grade, stop, calm, finish, onFact }) {
   };
   render();
   return () => {
-    clearTimeout(timer);
     host.onclick = null;
     host.onsubmit = null;
   };

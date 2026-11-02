@@ -2,7 +2,7 @@
 // are always crisp, readable at any size, printable, and screen-reader friendly.
 import { BASE, asList, esc, html, raw } from "./util.js";
 
-const PALETTE = ["#1f766f", "#e07a5f", "#3d405b", "#81b29a", "#f2a541", "#6d597a"];
+const PALETTE = ["#1f766f", "#e07a5f", "#17324d", "#81b29a", "#f2a541", "#a43d30"];
 
 export function pictureHTML(pic, { size = "" } = {}) {
   if (!pic?.src) return "";

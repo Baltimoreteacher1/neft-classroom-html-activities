@@ -11,7 +11,25 @@ const dir = new URL("../math/fluency-lab/", import.meta.url);
 const { ES: ES_BASE } = await import("../math/fluency-lab/i18n-es.js");
 const { ES_MODELS } = await import("../math/fluency-lab/i18n-es-models.js");
 const { ES_WORLDS } = await import("../math/fluency-lab/i18n-es-worlds.js");
-const ES = { ...ES_BASE, ...ES_MODELS, ...ES_WORLDS };
+const { ES_LAB4_ANIMATIONS } = await import("../math/fluency-lab/i18n-es-lab4-animations.js");
+const { ES_LAB4_LESSONS } = await import("../math/fluency-lab/i18n-es-lab4-lessons.js");
+const { ES_STUDIO } = await import("../math/fluency-lab/i18n-es-studio.js");
+const { ES_COMPETITOR, ES_SHOP_TEAMS } = await import("../math/fluency-lab/i18n-es-competitor.js");
+const { ES_DUEL } = await import("../math/fluency-lab/i18n-es-duel.js");
+const { PETS, PET_STAGES, QUESTS, SPELLS, ZONES } = await import(
+  "../math/fluency-lab/duel-data.js"
+);
+const ES = {
+  ...ES_STUDIO,
+  ...ES_BASE,
+  ...ES_MODELS,
+  ...ES_WORLDS,
+  ...ES_COMPETITOR,
+  ...ES_SHOP_TEAMS,
+  ...ES_DUEL,
+  ...ES_LAB4_ANIMATIONS,
+  ...ES_LAB4_LESSONS,
+};
 const { setLang, t } = await import("../math/fluency-lab/i18n.js");
 const { TRAILS, BANDS } = await import("../math/fluency-lab/fact-trail.js");
 const { STRATEGIES, TIPS } = await import("../math/fluency-lab/strategies.js");
@@ -20,21 +38,53 @@ const { GAMES_BY_ID_NAME } = await import("../math/fluency-lab/game-names.js");
 const { SCENES } = await import("../math/fluency-lab/scenes.js");
 const { PUZZLE_WORLDS, worldLevel } = await import("../math/fluency-lab/puzzle-worlds.js");
 const { ITEMS } = await import("../math/fluency-lab/buddy-items.js");
+const { TEAMS } = await import("../math/fluency-lab/team-relay-game.js");
 const { LEVELS, FUNCTIONS } = await import("../math/fluency-lab/language-frames.js");
 const { MOVE_FN, MOVE_LABELS, STAT_LABELS } = await import("../math/fluency-lab/language-card.js");
 
+const { ALL_SKILLS } = await import("../math/fluency-lab/problem-bank.js");
+const { kidLearnFor } = await import("../math/fluency-lab/kid-learn.js");
+
 const failures = [];
 const keys = new Set();
-for (const file of readdirSync(dir).filter((f) => f.endsWith(".js") && !f.startsWith("i18n-es"))) {
-  const source = readFileSync(new URL(file, dir), "utf8");
-  for (const match of source.matchAll(/\bt\((?:"((?:[^"\\]|\\.)*)"|'((?:[^'\\]|\\.)*)')/g))
+// Animation and mini-lesson copy is stored as data and translated by key at render time.
+for (const key of [...Object.keys(ES_LAB4_ANIMATIONS), ...Object.keys(ES_LAB4_LESSONS)])
+  keys.add(key);
+// New Fluency Lab workstreams can own small subdirectories (for example interactive
+// graphics). Include their learner-facing t() strings so Spanish coverage is checked
+// before those modules are imported by the main app.
+function sourceFiles(folder) {
+  return readdirSync(folder, { withFileTypes: true }).flatMap((entry) => {
+    const path = `${folder}/${entry.name}`;
+    if (entry.isDirectory()) return sourceFiles(path);
+    return entry.isFile() && entry.name.endsWith(".js") && !entry.name.startsWith("i18n-es")
+      ? [path]
+      : [];
+  });
+}
+// The young-learner "big idea" and "watch out" lines pass through t() on the Learn page.
+for (const skill of ALL_SKILLS)
+  if (kidLearnFor(skill, skill.grade)) {
+    keys.add(skill.learn.rule);
+    keys.add(skill.learn.watch);
+  }
+const sources = [
+  ...readdirSync(dir)
+    .filter((f) => f.endsWith(".js") && !f.startsWith("i18n-es"))
+    .map((f) => new URL(f, dir)),
+  ...sourceFiles(new URL("graphics", dir).pathname),
+  ...sourceFiles(new URL("studio", dir).pathname),
+];
+for (const file of sources) {
+  const source = readFileSync(file, "utf8");
+  for (const match of source.matchAll(/\bt\(\s*(?:"((?:[^"\\]|\\.)*)"|'((?:[^'\\]|\\.)*)')/g))
     keys.add((match[1] ?? match[2]).replace(/\\["']/g, (escaped) => escaped.slice(1)));
-  for (const match of source.matchAll(/\bt\(`((?:[^`\\]|\\.)*)`/g))
+  for (const match of source.matchAll(/\bt\(\s*`((?:[^`\\]|\\.)*)`/g))
     if (!match[1].includes("${")) keys.add(match[1]);
-  if (file === "family-page.js")
+  if (String(file).endsWith("family-page.js"))
     for (const match of source.matchAll(/(?:add|mul): "((?:[^"\\]|\\.)*)"/g)) keys.add(match[1]);
   for (const match of source.matchAll(/(?:name|blurb): "((?:[^"\\]|\\.)*)"/g))
-    if (file === "games.js") keys.add(match[1]);
+    if (String(file).endsWith("games.js")) keys.add(match[1]);
 }
 for (const match of readFileSync(new URL("index.html", dir), "utf8").matchAll(
   /data-i18n[^>]*>([^<]+)</g,
@@ -80,11 +130,19 @@ for (const world of PUZZLE_WORLDS) {
     }
 }
 for (const scene of Object.values(SCENES)) keys.add(scene.title);
+// Spell Duel names are data passed to t() at render time.
+for (const zone of ZONES)
+  for (const name of [zone.name, ...zone.creatures.map((c) => c.name)]) keys.add(name);
+for (const entry of [...SPELLS, ...PETS, ...QUESTS]) keys.add(entry.name);
+for (const stage of PET_STAGES) keys.add(stage);
 for (let n = 1; n <= 8; n += 1) keys.add(`Grade ${n} skills`);
 keys.add("Trail stops");
 // These labels/prompts are selected from data at runtime rather than passed as
 // string literals directly to t(), so include them in the coverage inventory.
 for (const key of [
+  "count",
+  "overlap",
+  "connected",
   "Number Quest",
   "Array Architect",
   "Number Garden",
@@ -100,8 +158,13 @@ for (const key of [
   "The pans are not equal yet. Make the same change to both sides.",
   "The city quantities changed by different factors. Keep the ratio constant.",
   "That route does not return to the stated output. Check the inverse steps.",
+  "Multiply a three-digit number by a one-digit number",
+  "Use place value to multiply a three-digit number by a one-digit number.",
+  "Addition facts: sums of 10 or less",
+  "Add two numbers whose sum is 10 or less.",
 ])
   keys.add(key);
+for (const team of TEAMS) keys.add(team.name);
 for (const item of ITEMS) {
   keys.add(item.name);
   keys.add(item.hint);
@@ -144,7 +207,7 @@ setLang("en");
 if (t("Game Room") !== "Game Room") failures.push("English lookup failed.");
 
 if (failures.length) {
-  console.error(failures.slice(0, 40).join("\n"));
+  console.error(failures.join("\n"));
   console.error(`fluency-i18n: ${failures.length} problem(s)`);
   process.exit(1);
 }

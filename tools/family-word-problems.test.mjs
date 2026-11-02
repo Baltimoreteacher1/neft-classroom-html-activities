@@ -143,10 +143,19 @@ test("each page is dressed as its lesson's homework page", () => {
       "utf8",
     );
     const homework = readFileSync(lessonPath(s.lessonId, "homework.html"), "utf8");
-    assert.ok(homework.includes(chrome.layer), "homework still loads the layer it is dressed with");
-    for (const href of [chrome.base, chrome.layer])
-      assert.ok(html.includes(href), `${s.lessonId} word problems lose ${href}`);
-    assert.match(html, /<header class="hw-hero"/);
+    const links = [
+      ...chrome.designHead.split("\n"),
+      `<link rel="stylesheet" href="${chrome.legacy}">`,
+    ];
+    assert.ok(
+      chrome.designHead.includes("body.css?v=") && chrome.designHead.includes("homework-art-"),
+      "the design system's links (tokens, components, body, art palette) are lifted too",
+    );
+    for (const link of links) {
+      assert.ok(homework.includes(link), "homework still loads the sheets it is dressed with");
+      assert.ok(html.includes(link), `${s.lessonId} word problems lose ${link}`);
+    }
+    assert.match(html, /<header class="hw-hero fm-page"/);
     assert.match(html, /data-lang-mode="es"/);
     assert.match(html, /hw_lang_mode/, "shares the homework language choice");
     assert.match(html, /class="problem-section card/);

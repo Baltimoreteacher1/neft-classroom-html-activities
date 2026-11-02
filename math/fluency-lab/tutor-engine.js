@@ -1,3 +1,7 @@
+import { sanitizeAbility, updateAbility } from "./ability.js";
+import { isTier, levelToTier, tierToLevel } from "./difficulty-levels.js";
+import { sanitizeRescues } from "./rescue-history.js";
+import { REVIEW_LADDER, ladderIndex, masteryScore, masteryState, nextInterval } from "./mastery-model.js";
 import { classifyMistake, isKnownMistakeCategory, likelyMistake } from "./mistake-notes.js";
 import { ALL_SKILLS, GENERATOR_PARTS, baseGenerator, generateProblem, getGrade, opsOf, resolveOp, seededRandom } from "./problem-bank.js";
 
@@ -9,7 +13,46 @@ export const localDay = (time = Date.now()) => {
   const date = new Date(time);
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
 };
-export const emptyTutor = () => ({ version: 2, records: {}, mistakes: [], diagnostics: {}, sessions: [] });
+export const emptyTutor = () => ({ version: 2, records: {}, mistakes: [], diagnostics: {}, sessions: [], rescues: [] });
+
+const RECENT_WINDOW = 20;
+const MIN_CALM_RESPONSE_MS = 600;
+const MAX_CALM_RESPONSE_MS = 5 * 60 * 1000;
+const STRATEGIES = new Set(["visual", "decomposition", "fact", "mental", "symbolic"]);
+const normalizeStrategies = (value) => {
+  const values = Array.isArray(value) ? value : value == null ? [] : [value];
+  return [...new Set(values.map((entry) => String(entry).trim().toLowerCase()).filter((entry) => STRATEGIES.has(entry)))];
+};
+const median = (values) => {
+  if (!values.length) return null;
+  const sorted = [...values].sort((a, b) => a - b);
+  const middle = Math.floor(sorted.length / 2);
+  return sorted.length % 2 ? sorted[middle] : Math.round((sorted[middle - 1] + sorted[middle]) / 2);
+};
+function summarizeMetrics(record) {
+  const recent = Array.isArray(record.recent) ? record.recent : [];
+  const independent = recent.filter((entry) => entry.independent && entry.level >= 1);
+  const strategies = [...new Set([
+    ...(Array.isArray(record.strategyTags) ? record.strategyTags : []),
+    ...recent.flatMap((entry) => Array.isArray(entry.strategies) ? entry.strategies : []),
+  ].filter((entry) => STRATEGIES.has(entry)))];
+  const calmSamples = independent.filter((entry) => entry.paceEligible && Number.isFinite(entry.responseMs)).map((entry) => entry.responseMs);
+  const recentHalf = calmSamples.slice(-6);
+  const previousHalf = calmSamples.slice(-12, -6);
+  const currentMedian = median(recentHalf);
+  const previousMedian = median(previousHalf);
+  const change = previousMedian && currentMedian ? (currentMedian - previousMedian) / previousMedian : 0;
+  // Pace is descriptive, never a mastery score: taking more time is not labelled as failure.
+  const trend = previousHalf.length < 3 || recentHalf.length < 3 || Math.abs(change) < 0.15
+    ? "steady"
+    : change > 0 ? "more_time" : "less_time";
+  const correct = independent.filter((entry) => entry.correct).length;
+  return {
+    accuracy: { correct, total: independent.length, percent: independent.length ? Math.round((correct / independent.length) * 100) : null, window: RECENT_WINDOW },
+    strategyFlexibility: { strategies, count: strategies.length },
+    pace: { sampleCount: calmSamples.length, medianResponseMs: median(calmSamples), trend },
+  };
+}
 
 const FOUNDATIONS = {
   "1:add-20": ["1:make-10"], "1:subtract-20": ["1:missing-addend"],
@@ -68,13 +111,35 @@ export function skillForItem(grade, item) {
   return null;
 }
 
+// Authored edges only. The generator-based fallback in prerequisites() is good enough to suggest a foundation to
+// visit, but not to infer that a learner who passed one skill has also mastered another.
+export const explicitPrerequisites = (skill) => (FOUNDATIONS[skillKey(skill)] || []).map(findSkill).filter(Boolean);
+
 export function prerequisites(skill) {
-  const explicit = (FOUNDATIONS[skillKey(skill)] || []).map(findSkill).filter(Boolean);
+  const explicit = explicitPrerequisites(skill);
   if (explicit.length) return explicit;
   // A mixed skill ("add and subtract") builds on an earlier skill that practised either operation.
   const earlier = ALL_SKILLS.filter((candidate) => candidate.grade < skill.grade && baseGenerator(candidate) === baseGenerator(skill) && opsOf(candidate.config).some((op) => opsOf(skill.config).includes(op)));
   return earlier.length ? [earlier.at(-1)] : [];
 }
+
+// A detached graph keeps the shared curriculum catalog immutable while exposing
+// both directions for path maps, bridge practice, and enrichment recommendations.
+const graphNodes = Object.fromEntries(ALL_SKILLS.map((skill) => [skillKey(skill), {
+  prerequisiteSkills: prerequisites(skill).map(skillKey),
+  enrichmentSkills: [],
+}]));
+for (const [skill, edges] of Object.entries(graphNodes)) {
+  for (const prerequisite of edges.prerequisiteSkills) graphNodes[prerequisite]?.enrichmentSkills.push(skill);
+}
+export const prerequisiteGraph = Object.freeze(Object.fromEntries(Object.entries(graphNodes).map(([key, edges]) => [key, Object.freeze({
+  prerequisiteSkills: Object.freeze([...edges.prerequisiteSkills]),
+  enrichmentSkills: Object.freeze([...edges.enrichmentSkills].sort()),
+})])));
+export const withSkillEdges = (skill) => ({
+  ...skill,
+  ...(prerequisiteGraph[skillKey(skill)] || { prerequisiteSkills: [], enrichmentSkills: [] }),
+});
 
 export function evidence(tutor, skill, now = Date.now()) {
   const record = tutor.records[skillKey(skill)] || {};
@@ -91,7 +156,10 @@ export function evidence(tutor, skill, now = Date.now()) {
   if (record.lessonCompleted && !recent.length) label = "Lesson explored";
   if (recent.length) label = independent.length >= 4 && ratio >= 0.75 ? "Building confidence" : recent.some((entry) => !entry.independent) ? "Learning with support" : "Getting started";
   if (secure) label = due ? "Ready for a refresh" : "Remembered independently";
-  return { ...record, recent, independent: independent.length, successes, ratio, secure, due, label, score: independent.length ? Math.round(ratio * 100) : null };
+  // reviewStep is the rung (1-5) of the 1/3/7/14/30-day ladder the skill is waiting on; 0 means not on it yet.
+  const reviewDueAt = Number.isFinite(record.dueAt) ? record.dueAt : null;
+  const reviewStep = record.interval ? ladderIndex(record.interval) + 1 : 0; // fl4:adaptive
+  return { ...record, recent, independent: independent.length, successes, ratio, secure, due, label, reviewDueAt, reviewStep, score: masteryScore(record, now), state: masteryState(record, now) };
 }
 
 export function difficulty(tutor, skill) {
@@ -281,17 +349,31 @@ export function recordAnswer(tutor, skill, result, now = Date.now()) {
   const key = skillKey(skill);
   const record = tutor.records[key] || { recent: [], independentTotal: 0, supportedTotal: 0, interval: 0 };
   const independent = Boolean(result.independent);
-  record.recent = [...(record.recent || []), { correct: Boolean(result.correct), independent, level: result.level ?? 1, at: now }].slice(-20);
+  const tier = isTier(result.tier) ? result.tier : null; // fl4:adaptive
+  const level = [0, 1, 2].includes(result.level) ? result.level : tier ? tierToLevel(tier) : 1;
+  const strategies = normalizeStrategies(result.strategyTags ?? result.strategy);
+  const responseMs = Number(result.responseMs ?? result.responseTimeMs);
+  const paceEligible = independent && result.calm !== false && Number.isFinite(responseMs) && responseMs >= MIN_CALM_RESPONSE_MS && responseMs <= MAX_CALM_RESPONSE_MS;
+  record.strategyTags = [...new Set([...(record.strategyTags || []).filter((tag) => STRATEGIES.has(tag)), ...strategies])];
+  record.recent = [...(record.recent || []), {
+    correct: Boolean(result.correct), independent, level, at: now,
+    ...(tier ? { tier } : {}),
+    ...(strategies.length ? { strategies } : {}),
+    ...(Number.isFinite(responseMs) ? { responseMs, paceEligible } : {}),
+    ...(result.sig ? { sig: String(result.sig).slice(0, 24) } : {}),
+  }].slice(-RECENT_WINDOW);
+  record.metrics = summarizeMetrics(record);
+  record.ability = updateAbility(record.ability, { correct: Boolean(result.correct), independent, tier: tier ?? levelToTier(level) }, now); // fl4:adaptive
   if (independent) record.independentTotal = (record.independentTotal || 0) + 1;
   else record.supportedTotal = (record.supportedTotal || 0) + 1;
   const previousDay = record.lastSuccessfulDay;
   if (independent && result.correct && result.level !== 0) {
-    if (previousDay !== localDay(now)) record.interval = previousDay ? Math.min(14, Math.max(1, record.interval) * 2) : 1;
+    if (previousDay !== localDay(now)) record.interval = previousDay ? nextInterval(record.interval, { correct: true, independent: true, advance: true }) : REVIEW_LADDER[0];
     record.lastSuccessfulDay = localDay(now);
     record.dueAt = now + Math.max(1, record.interval) * DAY;
   } else {
     // An independent miss means the skill needs a short recheck; a hinted or easier-level success only halves the wait.
-    record.interval = independent || !result.correct ? 1 : Math.max(1, Math.floor((record.interval || 1) / 2));
+    record.interval = nextInterval(record.interval || 1, { correct: Boolean(result.correct) && !independent, independent: false });
     record.dueAt = now + record.interval * DAY;
   }
   record.lastAt = now;
@@ -312,7 +394,11 @@ export function rememberMistake(tutor, skill, item, submitted, now = Date.now())
   const category = classifyMistake(item, submitted);
   tutor.mistakes.unshift({ id: `${now}-${tutor.mistakes.length}`, key, question: item.question,
     submitted: String(submitted).slice(0, 120), explanation: item.explanation, hint: item.hint,
-    category: category?.id || null, original, at: now, resolvedAt: null });
+    category: category?.id || null, misconceptionCode: category?.id || null,
+    misconceptionLabel: category?.label || null, repairStatus: "open",
+    problemPrompt: String(item.question || "").slice(0, 500),
+    studentInput: String(submitted).slice(0, 120), expectedAnswer: String(item.answers?.[0] || "").slice(0, 120),
+    original, at: now, resolvedAt: null });
   tutor.mistakes = tutor.mistakes.slice(0, 60);
 }
 
@@ -378,7 +464,7 @@ export function recommendations(tutor, grade, now = Date.now()) {
     // A checkup miss is a starting point, not a verdict: it stops counting once independent practice shows the skill is working.
     const practiced = status.independent >= 3 && status.ratio >= 0.75;
     const diagnosticMiss = diagnostic[skillKey(skill)] === false && !practiced;
-    const priority = misses * 5 + (diagnosticMiss ? 10 : 0) + (status.due ? 8 : 0) + (status.recent.length && status.ratio < 0.75 ? 6 : 0) + (!status.recent.length ? 2 : 0);
+    const priority = misses * 5 + (diagnosticMiss ? 10 : 0) + (status.due ? 8 + Math.min(4, Math.floor((now - status.reviewDueAt) / DAY)) : 0) + (status.recent.length && status.ratio < 0.75 ? 6 : 0) + (!status.recent.length ? 2 : 0);
     const reason = misses ? "Revisit a tricky idea" : status.due ? "Time for a memory refresh" : diagnosticMiss ? "A useful next step from your checkup" : !status.recent.length ? "Explore something new" : status.secure ? "Keep this skill fresh" : "Build independent confidence";
     return { skill, status, reason, priority, index };
   }).sort((a, b) => b.priority - a.priority || a.index - b.index);
@@ -391,12 +477,15 @@ export function dailyPlan(tutor, grade, now = Date.now()) {
   const newSkill = ranked.find((entry) => !entry.status.recent.length && entry !== focus) || ranked[1];
   const daySeed = Number(localDay(now).replaceAll("-", "")) + grade * 997;
   const rng = seededRandom(daySeed);
+  // Reviews that the 1/3/7/14/30-day ladder says are due come first, most overdue first. // fl4:adaptive
+  const due = review.filter((entry) => entry.status.due).sort((a, b) => a.status.reviewDueAt - b.status.reviewDueAt);
   const reviewPool = review.length ? review : ranked.slice(1);
-  const refresh = Array.from({ length: 3 }, (_, i) => reviewPool[(Math.floor(rng() * reviewPool.length) + i) % reviewPool.length]);
+  const refresh = Array.from({ length: 3 }, (_, i) => due[i] || reviewPool[(Math.floor(rng() * reviewPool.length) + i) % reviewPool.length]);
   return [focus, refresh[0], focus, newSkill, refresh[1], focus, newSkill, refresh[2], focus, ranked[1]].map((entry, index) => ({
     key: skillKey(entry.skill),
     purpose: [0, 2, 5, 8].includes(index) ? "Build confidence" : [3, 6].includes(index) ? "Connect a new idea" : index === 9 ? "Finish independently" : "Remember it again",
     reason: entry.reason,
+    ...(entry.status.due ? { reviewDueAt: entry.status.reviewDueAt, reviewStep: entry.status.reviewStep } : {}),
   }));
 }
 
@@ -429,17 +518,41 @@ export function sanitizeTutor(value) {
   for (const skill of ALL_SKILLS) {
     const key = skillKey(skill); const record = value.records?.[key];
     if (!record || typeof record !== "object") continue;
+    const recent = (Array.isArray(record.recent) ? record.recent : []).filter((entry) => entry && Number.isFinite(entry.at) && typeof entry.correct === "boolean" && typeof entry.independent === "boolean").slice(-RECENT_WINDOW).map((entry) => {
+      const level = [0, 1, 2].includes(entry.level) ? entry.level : 1;
+      const tier = isTier(entry.tier) ? entry.tier : null; // fl4:adaptive
+      const responseMs = Number(entry.responseMs);
+      const validResponse = Number.isFinite(responseMs) && responseMs >= MIN_CALM_RESPONSE_MS && responseMs <= MAX_CALM_RESPONSE_MS;
+      const strategies = normalizeStrategies(entry.strategies);
+      return {
+        correct: entry.correct, independent: entry.independent, at: entry.at, level,
+        ...(tier ? { tier } : {}),
+        ...(strategies.length ? { strategies } : {}),
+        ...(typeof entry.sig === "string" && entry.sig ? { sig: entry.sig.slice(0, 24) } : {}),
+        ...(validResponse ? { responseMs, paceEligible: Boolean(entry.paceEligible && entry.independent && level >= 1) } : {}),
+      };
+    });
+    const strategyTags = normalizeStrategies(record.strategyTags);
     clean.records[key] = {
-      recent: (Array.isArray(record.recent) ? record.recent : []).filter((entry) => entry && Number.isFinite(entry.at) && typeof entry.correct === "boolean" && typeof entry.independent === "boolean").slice(-20).map((entry) => ({ correct: entry.correct, independent: entry.independent, at: entry.at, level: [0, 1, 2].includes(entry.level) ? entry.level : 1 })),
+      recent,
       independentTotal: Math.max(0, Number(record.independentTotal) || 0), supportedTotal: Math.max(0, Number(record.supportedTotal) || 0),
-      dueAt: Number.isFinite(record.dueAt) ? record.dueAt : null, interval: Math.min(14, Math.max(0, Number(record.interval) || 0)),
+      dueAt: Number.isFinite(record.dueAt) ? record.dueAt : null, interval: Math.min(REVIEW_LADDER.at(-1), Math.max(0, Number(record.interval) || 0)),
       lastAt: Number.isFinite(record.lastAt) ? record.lastAt : null, lastSuccessfulDay: String(record.lastSuccessfulDay || "").slice(0, 10), lessonCompleted: Boolean(record.lessonCompleted),
+      strategyTags: [...new Set([...strategyTags, ...recent.flatMap((entry) => entry.strategies || [])])],
+      metrics: summarizeMetrics({ recent, strategyTags }),
+      ...(sanitizeAbility(record.ability) ? { ability: sanitizeAbility(record.ability) } : {}), // fl4:adaptive
     };
   }
   clean.mistakes = (Array.isArray(value.mistakes) ? value.mistakes : []).filter((entry) => entry && findSkill(entry.key) && typeof entry.question === "string").slice(0, 60).map((entry, index) => ({
     id: String(entry.id || index).slice(0, 100), key: entry.key, question: entry.question.slice(0, 500), submitted: String(entry.submitted || "").slice(0, 120),
     explanation: String(entry.explanation || "").slice(0, 800), hint: String(entry.hint || "").slice(0, 800),
     category: isKnownMistakeCategory(entry.category) ? entry.category : null,
+    misconceptionCode: isKnownMistakeCategory(entry.misconceptionCode) ? entry.misconceptionCode : (isKnownMistakeCategory(entry.category) ? entry.category : null),
+    misconceptionLabel: typeof entry.misconceptionLabel === "string" ? entry.misconceptionLabel.slice(0, 160) : null,
+    repairStatus: entry.resolvedAt ? "repaired" : (entry.repairStatus === "in-progress" ? "in-progress" : "open"),
+    problemPrompt: String(entry.problemPrompt || entry.question).slice(0, 500),
+    studentInput: String(entry.studentInput || entry.submitted || "").slice(0, 120),
+    expectedAnswer: String(entry.expectedAnswer || entry.original?.answers?.[0] || "").slice(0, 120),
     original: entry.original && typeof entry.original === "object" && typeof entry.original.question === "string" && entry.original.question.length <= 500 && Array.isArray(entry.original.answers) && entry.original.answers.length > 0
       ? { question: entry.original.question, answers: entry.original.answers.slice(0, 8).map((answer) => String(answer).slice(0, 120)), kind: String(entry.original.kind || "number").slice(0, 30), ...(typeof entry.original.unit === "string" ? { unit: entry.original.unit.slice(0, 40) } : {}), ...(Array.isArray(entry.original.choices) ? { choices: entry.original.choices.slice(0, 12).map((choice) => String(choice).slice(0, 120)) } : {}) }
       : null,
@@ -447,8 +560,14 @@ export function sanitizeTutor(value) {
   }));
   for (let grade = 0; grade <= 8; grade++) {
     const diagnostic = value.diagnostics?.[grade];
-    if (diagnostic?.results && typeof diagnostic.results === "object") clean.diagnostics[grade] = { at: Number(diagnostic.at) || 0, results: Object.fromEntries(Object.entries(diagnostic.results).filter(([key, result]) => findSkill(key)?.grade === grade && typeof result === "boolean")) };
+    if (diagnostic?.results && typeof diagnostic.results === "object") clean.diagnostics[grade] = {
+      at: Number(diagnostic.at) || 0,
+      results: Object.fromEntries(Object.entries(diagnostic.results).filter(([key, result]) => findSkill(key)?.grade === grade && typeof result === "boolean")),
+      // Foundation probes reach into earlier grades, so they are keyed by any skill at or below this grade.
+      foundations: Object.fromEntries(Object.entries(diagnostic.foundations || {}).filter(([key, result]) => findSkill(key)?.grade <= grade && typeof result === "boolean")),
+    };
   }
+  clean.rescues = sanitizeRescues(value.rescues); // fl4:adaptive
   clean.sessions = (Array.isArray(value.sessions) ? value.sessions : []).filter((session) => session && Number.isFinite(session.at) && Number.isFinite(session.answered)).slice(-60).map((session) => ({ at: session.at, answered: Math.max(0, session.answered), correct: Math.max(0, Number(session.correct) || 0), grade: Math.min(8, Math.max(0, Number(session.grade) || 0)), mode: String(session.mode || "practice").slice(0, 30) }));
   return clean;
 }

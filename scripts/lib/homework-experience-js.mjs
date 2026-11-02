@@ -12,6 +12,22 @@ var HW_GOAL_QUICK = ${GOAL_QUICK};
 var HW_ROUTE_TIMES = ${JSON.stringify(ROUTE_TIMES)};
 var HW_ROUTE_DEFAULT = ${JSON.stringify(DEFAULT_ROUTE)};
 
+/* The Learning-supports icon lives in the stop tracker's utility row on every page, so
+   it never floats over the lesson text or the goal bar. */
+(function () {
+  var place = function () {
+    var util = document.getElementById('hw_utility_controls');
+    var launcher = document.querySelector('.ls-launcher');
+    if (!util || !launcher) return false;
+    if (launcher.parentElement !== util) util.appendChild(launcher);
+    return true;
+  };
+  if (place()) return;
+  var observer = new MutationObserver(function () { if (place()) observer.disconnect(); });
+  observer.observe(document.body, { childList: true, subtree: true });
+  setTimeout(function () { observer.disconnect(); }, 10000);
+})();
+
 function hwKey(name) { return 'hw_exp_' + (window.LESSON_ID || location.pathname) + '_' + name; }
 function hwGet(name) { try { return localStorage.getItem(hwKey(name)); } catch (e) { return null; } }
 /* Sign-off photos and voice notes (homework-guided-notes) are stored per lesson and are
@@ -161,7 +177,7 @@ function hwRenderGoal(celebrate) {
   var shown = Math.min(snap.done, snap.goal);
   var met = snap.done >= snap.goal;
   var text = document.getElementById('progress_text');
-  if (text) text.textContent = shown + ' / ' + snap.goal;
+  if (text) text.textContent = snap.done > 0 ? shown + ' / ' + snap.goal : (document.body.classList.contains('lang-mode-es') ? 'Sin empezar' : 'Not started');
   var bar = document.getElementById('progress_bar');
   if (bar) bar.style.width = (shown / snap.goal * 100) + '%';
   document.querySelectorAll('.hw-pips').forEach(function (el) { hwDrawPips(el, shown, snap.goal); });

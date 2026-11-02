@@ -1,0 +1,327 @@
+/* The step lens (step-lens.js): numbers and moves in a worked explanation are highlighted and can be tapped.
+   Blue = a number from the problem, amber = a number made along the way, coral = a move. Colour is never the only
+   cue: given numbers sit on a solid underline, made numbers on a dotted one, moves are bold, and every chip has a
+   spoken label. Tokens come from publisher.css. */
+.lens-n,
+.lens-op,
+.lens-act {
+  border-radius: 0.35em;
+  font-weight: 700;
+}
+
+.lens-n,
+.lens-op {
+  cursor: pointer;
+  padding: 0 0.22em;
+  transition:
+    background-color 0.15s ease,
+    box-shadow 0.15s ease,
+    opacity 0.15s ease;
+}
+
+.lens-given {
+  background: var(--pub-blue-tint, #e5eef8);
+  color: var(--pub-blue-ink, #1f5190);
+  box-shadow: inset 0 -2px 0 var(--pub-blue, #2f6db0);
+}
+
+.lens-made {
+  background: var(--pub-amber-tint, #fdf3d8);
+  color: var(--pub-amber-ink, #7a5200);
+  box-shadow: inset 0 -2px 0 var(--pub-amber, #f2c15b);
+  text-decoration: underline dotted;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.18em;
+}
+
+.lens-op {
+  background: var(--pub-coral-tint, #fbe9e2);
+  color: var(--pub-coral-ink, #a3401f);
+  font-size: 1.08em;
+}
+
+.lens-act {
+  color: var(--pub-coral-ink, #a3401f);
+  text-decoration: underline solid;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.2em;
+}
+
+/* Hover and keyboard focus preview the same number everywhere; a tap pins it. */
+.lens-hover,
+.lens-point {
+  outline: 3px solid var(--pub-navy, #17324d);
+  outline-offset: 1px;
+  background-color: #fff;
+}
+
+.lens-point {
+  box-shadow: 0 0 0 5px rgba(242, 193, 91, 0.7);
+  animation: lens-pulse 1.2s ease-in-out 2;
+}
+
+.tp-live .lens-hover,
+.tp-live .lens-point {
+  border-radius: 0.3em;
+}
+
+.lens-n:focus-visible,
+.lens-op:focus-visible,
+.lens-dot:focus-visible,
+.lens-mode:focus-visible,
+.lens-play:focus-visible,
+.lens-go:focus-visible {
+  outline: 3px solid var(--pub-navy, #17324d);
+  outline-offset: 2px;
+}
+
+@keyframes lens-pulse {
+  50% {
+    box-shadow: 0 0 0 9px rgba(242, 193, 91, 0.35);
+  }
+}
+
+/* "Numbers" dims the moves; "Moves" dims everything but the moves, so a learner can read what is being DONE
+   apart from what it is being done WITH. */
+[data-lens-view="numbers"] .lens-op,
+[data-lens-view="numbers"] .lens-act {
+  opacity: 0.35;
+}
+
+[data-lens-view="moves"] .tr-step-text,
+[data-lens-view="moves"] .guided-step-text {
+  color: var(--pub-ink-soft, #4d5d6b);
+}
+
+[data-lens-view="moves"] .lens-n {
+  opacity: 0.35;
+}
+
+[data-lens-view="moves"] .lens-op,
+[data-lens-view="moves"] .lens-act {
+  box-shadow: 0 0 0 2px var(--pub-coral, #d8613c);
+}
+
+/* The controls under the step list heading. */
+.lens-kit {
+  display: grid;
+  gap: 0.45rem;
+  margin: 0.4rem 0 0.7rem;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--pub-rule, #d6dde3);
+  border-radius: var(--pub-radius, 14px);
+  background: #fff;
+  font-family: var(--pub-sans, system-ui, sans-serif);
+  font-size: 0.9rem;
+}
+
+.lens-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.lens-label {
+  color: var(--pub-ink-soft, #4d5d6b);
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.lens-modes {
+  display: inline-flex;
+  overflow: hidden;
+  border: 1px solid var(--pub-navy, #17324d);
+  border-radius: 999px;
+}
+
+.lens-mode,
+.lens-play,
+.lens-go {
+  min-height: 2.75rem;
+  padding: 0.3rem 0.9rem;
+  border: 0;
+  background: #fff;
+  color: var(--pub-navy, #17324d);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.lens-mode[aria-pressed="true"] {
+  background: var(--pub-navy, #17324d);
+  color: #fff;
+}
+
+.lens-play {
+  border: 1px solid var(--pub-navy, #17324d);
+  border-radius: 999px;
+}
+
+.lens-go {
+  min-height: 2.75rem;
+  margin-left: 0.4rem;
+  border: 1px solid var(--pub-navy, #17324d);
+  border-radius: 999px;
+}
+
+.lens-predict-toggle {
+  min-height: 2.75rem;
+  padding: 0.3rem 0.9rem;
+  border: 1px solid var(--pub-navy, #17324d);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--pub-navy, #17324d);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.lens-predict-toggle[aria-pressed="true"] {
+  background: var(--pub-amber-tint, #fdf3d8);
+  box-shadow: 0 0 0 3px var(--pub-amber, #f2c15b);
+}
+
+.lens-predict-toggle:focus-visible,
+.lens-pick:focus-visible {
+  outline: 3px solid var(--pub-navy, #17324d);
+  outline-offset: 2px;
+}
+
+.lens-predict {
+  padding: 0.6rem 0.75rem;
+  border-radius: var(--pub-radius, 14px);
+  background: var(--pub-amber-tint, #fdf3d8);
+}
+
+.lens-ask {
+  margin: 0 0 0.4rem;
+  font-weight: 700;
+}
+
+.lens-picks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.lens-pick {
+  min-width: 5.5rem;
+  min-height: 2.75rem;
+  padding: 0.3rem 1rem;
+  border: 2px solid var(--pub-navy, #17324d);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--pub-navy, #17324d);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.lens-result {
+  margin: 0;
+  font-weight: 700;
+}
+
+.lens-result.is-right {
+  color: var(--pub-teal-ink, #0b6b68);
+}
+
+.lens-result.is-near {
+  color: var(--pub-amber-ink, #7a5200);
+}
+
+.lens-path {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.lens-dot {
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  border: 2px solid var(--pub-navy, #17324d);
+  border-radius: 50%;
+  background: #fff;
+  color: var(--pub-navy, #17324d);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.lens-dot.is-done {
+  background: var(--pub-teal-tint, #e3f4f3);
+  border-color: var(--pub-teal-ink, #0b6b68);
+  color: var(--pub-teal-ink, #0b6b68);
+}
+
+.lens-dot.is-active {
+  background: var(--pub-navy, #17324d);
+  color: #fff;
+}
+
+.lens-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 0.9rem;
+  margin: 0;
+  font-size: 0.82rem;
+}
+
+.lens-key {
+  padding: 0 0.4em;
+  cursor: default;
+}
+
+.lens-note {
+  margin: 0;
+  min-height: 1.5em;
+  color: var(--pub-ink, #24323f);
+  line-height: 1.45;
+}
+
+.lens-note .lens-n,
+.lens-note .lens-op {
+  cursor: default;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lens-point {
+    animation: none;
+  }
+
+  .lens-n,
+  .lens-op {
+    transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .lens-given,
+  .lens-made,
+  .lens-op {
+    border: 1px solid CanvasText;
+    background: Canvas;
+    color: CanvasText;
+  }
+
+  .lens-hover,
+  .lens-point {
+    outline: 3px solid Highlight;
+  }
+
+  .lens-mode[aria-pressed="true"],
+  .lens-dot.is-active {
+    background: Highlight;
+    color: HighlightText;
+  }
+}
+
+@media print {
+  .lens-kit {
+    display: none;
+  }
+}

@@ -112,26 +112,26 @@
 
   /* ----------------------------------------------------------- ink palettes */
   // Okabe-Ito: distinguishable under every common form of colour blindness.
-  const CB_PEN = ["#14223a", "#0072b2", "#e69f00", "#009e73", "#d55e00", "#cc79a7"];
-  const CB_HI = ["#f0e442", "#56b4e9", "#e69f00", "#009e73", "#cc79a7", "#d9d9d9"];
+  const CB_PEN = ["#14223a", "#0072b2", "#e69f00", "#009e73", "#d55e00", "#F2C15B"];
+  const CB_HI = ["#f0e442", "#56b4e9", "#e69f00", "#009e73", "#F2C15B", "#d9d9d9"];
   const NAMES = {
     "#14223a": "dark navy",
     "#205fa6": "blue",
     "#2c7d6b": "green",
     "#d97706": "orange",
     "#dc2626": "red",
-    "#7c3aed": "purple",
+    "#17324D": "purple",
     "#fde047": "yellow",
     "#86efac": "light green",
-    "#fca5e0": "pink",
+    "#F7F4EC": "pink",
     "#7dd3fc": "light blue",
     "#fdba74": "light orange",
-    "#c4b5fd": "lavender",
+    "#F7F4EC": "lavender",
     "#0072b2": "blue",
     "#e69f00": "orange",
     "#009e73": "bluish green",
     "#d55e00": "vermilion",
-    "#cc79a7": "reddish purple",
+    "#F2C15B": "reddish purple",
     "#f0e442": "yellow",
     "#56b4e9": "sky blue",
     "#d9d9d9": "gray",

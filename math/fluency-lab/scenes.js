@@ -4,7 +4,7 @@ const star = (x, y, r = 1.4) => `<circle cx="${x}" cy="${y}" r="${r}" fill="#fff
 export const SCENES = {
   rocket: {
     title: "Rocket to the Ringed Planet",
-    svg: `<defs><linearGradient id="sc-sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0d1b4c"/><stop offset="1" stop-color="#4b2a7b"/></linearGradient></defs>
+    svg: `<defs><linearGradient id="sc-sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0d1b4c"/><stop offset="1" stop-color="#17324D"/></linearGradient></defs>
       <rect width="120" height="90" fill="url(#sc-sky)"/>
       ${[
         [8, 8],
@@ -68,14 +68,14 @@ export const SCENES = {
   },
   city: {
     title: "Skyline at Night",
-    svg: `<defs><linearGradient id="sc-night" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1b1f4b"/><stop offset="1" stop-color="#7a4a9c"/></linearGradient></defs>
+    svg: `<defs><linearGradient id="sc-night" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#17324D"/><stop offset="1" stop-color="#1FA6A2"/></linearGradient></defs>
       <rect width="120" height="90" fill="url(#sc-night)"/>
-      <circle cx="96" cy="18" r="9" fill="#fff6c9"/><circle cx="101" cy="15" r="8" fill="#2a2d63"/>
+      <circle cx="96" cy="18" r="9" fill="#fff6c9"/><circle cx="101" cy="15" r="8" fill="#17324D"/>
       ${[[12, 10], [36, 22], [58, 8], [78, 30], [24, 38], [110, 40]].map(([x, y]) => star(x, y)).join("")}
-      <rect x="6" y="46" width="22" height="44" fill="#2d3561"/><rect x="32" y="30" width="20" height="60" fill="#3a4276"/><rect x="56" y="52" width="26" height="38" fill="#2d3561"/><rect x="86" y="38" width="22" height="52" fill="#3a4276"/>
-      <path d="M92 38l5-9 5 9z" fill="#3a4276"/>
+      <rect x="6" y="46" width="22" height="44" fill="#17324D"/><rect x="32" y="30" width="20" height="60" fill="#1FA6A2"/><rect x="56" y="52" width="26" height="38" fill="#17324D"/><rect x="86" y="38" width="22" height="52" fill="#1FA6A2"/>
+      <path d="M92 38l5-9 5 9z" fill="#1FA6A2"/>
       ${[[10, 52], [18, 52], [10, 62], [18, 62], [10, 72], [36, 36], [44, 36], [36, 48], [44, 60], [36, 72], [60, 58], [72, 58], [66, 70], [90, 44], [100, 44], [90, 58], [100, 70]].map(([x, y]) => `<rect x="${x}" y="${y}" width="5" height="6" fill="#ffd966"/>`).join("")}
-      <rect y="84" width="120" height="6" fill="#1a1d3f"/>`,
+      <rect y="84" width="120" height="6" fill="#17324D"/>`,
   },
   camp: {
     title: "Camping in the Mountains",

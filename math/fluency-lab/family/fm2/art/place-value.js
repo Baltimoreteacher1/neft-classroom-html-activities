@@ -3,7 +3,7 @@
 import { PALETTE, circle, label, line, rect, svg } from "./base.js";
 
 const DISC_COLORS = [
-  PALETTE.violet,
+  PALETTE.teal,
   PALETTE.sky,
   PALETTE.mint,
   PALETTE.gold,
@@ -11,7 +11,7 @@ const DISC_COLORS = [
   PALETTE.ink,
 ];
 const SOFT = {
-  [PALETTE.violet]: PALETTE.violetSoft,
+  [PALETTE.teal]: PALETTE.tealSoft,
   [PALETTE.sky]: PALETTE.skySoft,
   [PALETTE.mint]: PALETTE.mintSoft,
   [PALETTE.gold]: PALETTE.goldSoft,
@@ -33,7 +33,7 @@ const faceOf = (piece) =>
         : group(piece.value);
 const cellText = (x, y, text, size = 12, fill = PALETTE.ink) => label(x, y, text, size, fill);
 
-export const NB_ICON = `<svg viewBox="0 0 36 36" aria-hidden="true" focusable="false"><rect x="3" y="20" width="9" height="13" rx="2" fill="${PALETTE.sky}"/><rect x="14" y="12" width="9" height="21" rx="2" fill="${PALETTE.violet}"/><rect x="25" y="4" width="9" height="29" rx="2" fill="${PALETTE.mint}"/></svg>`;
+export const NB_ICON = `<svg viewBox="0 0 36 36" aria-hidden="true" focusable="false"><rect x="3" y="20" width="9" height="13" rx="2" fill="${PALETTE.sky}"/><rect x="14" y="12" width="9" height="21" rx="2" fill="${PALETTE.teal}"/><rect x="25" y="4" width="9" height="29" rx="2" fill="${PALETTE.mint}"/></svg>`;
 
 // ---------- one piece, drawn in a 56x56 box for the tray ----------
 function blockShape(kind, x, y, scale = 1) {
@@ -47,7 +47,7 @@ function blockShape(kind, x, y, scale = 1) {
           y,
           x + ((i + 1) * full) / 10,
           y + full,
-          PALETTE.violet,
+          PALETTE.teal,
           0.8,
         ) +
         line(
@@ -55,11 +55,11 @@ function blockShape(kind, x, y, scale = 1) {
           y + ((i + 1) * full) / 10,
           x + full,
           y + ((i + 1) * full) / 10,
-          PALETTE.violet,
+          PALETTE.teal,
           0.8,
         ),
     ).join("");
-    return rect(x, y, full, full, PALETTE.violetSoft, PALETTE.violet, 3) + cells;
+    return rect(x, y, full, full, PALETTE.tealSoft, PALETTE.teal, 3) + cells;
   }
   if (kind === "rod") {
     const w = full / 6;

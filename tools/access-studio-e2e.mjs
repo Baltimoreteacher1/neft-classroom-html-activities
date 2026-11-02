@@ -451,6 +451,18 @@ const code = await page.evaluate(async () => {
   };
   const bundle = m.buildShare({ alias: "River 7", band: "6-8" });
   bundle.records = records;
+  const postcardCanvas = document.createElement("canvas");
+  postcardCanvas.width = 1;
+  postcardCanvas.height = 1;
+  bundle.postcards = [
+    {
+      id: "shared-postcard",
+      created: "2026-10-29T12:00:00Z",
+      place: "Japan",
+      alt: "A plant beside a window.",
+      image: postcardCanvas.toDataURL("image/jpeg"),
+    },
+  ];
   const second = { ...bundle, alias: "Bay 2", created: new Date(Date.now() + 1000).toISOString() };
   return [m.encodeShare(bundle), m.encodeShare(second)];
 });
@@ -475,6 +487,12 @@ ok(
 );
 await page.locator('[data-student="Period 3|River 7|6-8"]').first().click();
 ok((await page.locator(".student-panel").count()) === 1, "student detail opens");
+ok(
+  (await page.locator(".student-panel .postcard-list img").count()) === 1 &&
+    (await page.locator(".student-panel .postcard-list img").getAttribute("alt")) ===
+      "A plant beside a window.",
+  "teacher can view an explicitly shared postcard with sentence alt text",
+);
 await page.locator('[data-tab="samples"]').click();
 ok((await bodyText()).includes("wrt-mulch-cer"), "teacher can read the learner's writing sample");
 await page.locator('[data-tab="scoring"]').click();
@@ -655,8 +673,8 @@ await go(`${BASE}/?grades=6-8`);
 const review = page.locator("section.review-due");
 ok(
   (await review.count()) === 1 &&
-    (await page.locator("#reviewTitle").innerText()).includes("Due for spaced review"),
-  "home shows 'Due for spaced review' when stored evidence makes an item due",
+    (await page.locator("#reviewTitle").innerText()).includes("Keep it strong"),
+  "home shows the Keep it strong review hub when stored evidence makes an item due",
 );
 const traces = await review.locator("li .fine").allInnerTexts();
 const seededTrace = traces.find((t) => /Error Detective/.test(t)) || "";

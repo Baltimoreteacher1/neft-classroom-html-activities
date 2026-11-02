@@ -71,7 +71,7 @@ const UI = {
   allUnits: { en: "All units", es: "Todas las unidades" },
   topic: { en: "Topic", es: "Tema" },
   allTopics: { en: "All topics", es: "Todos los temas" },
-  pick: { en: "Choose a unit", es: "Elija una unidad" },
+  pick: { en: "Choose a unit", es: "Elijan una unidad" },
   empty: {
     en: "No lessons match. Try a shorter word, or choose all units and topics.",
     es: "No hay lecciones que coincidan. Pruebe una palabra más corta o elija todas las unidades y temas.",

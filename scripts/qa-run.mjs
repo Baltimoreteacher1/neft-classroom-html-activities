@@ -110,6 +110,7 @@ const GATE = [
   "validate:practice",
   "validate:lesson-boot",
   "validate:palette",
+  "validate:no-purple",
   "validate:studio-guess-browser",
   "validate:studio-layout-browser",
   "validate:studio-answer-bias",
@@ -176,9 +177,17 @@ const EXCLUSIVE = new Set([
   "validate:fluency-workshops-browser",
   "validate:lesson-boot",
   "validate:palette",
+  "validate:no-purple",
   "validate:learning-labs-browser",
   "validate:family-experience-browser",
+  "validate:family-design-tokens",
+  "validate:family-visual",
+  "validate:family-body-tokens",
+  "validate:family-a11y",
+  "validate:family-performance",
   "validate:fluency-family-browser",
+  "validate:fluency-family-session",
+  "validate:family-expedition-browser",
   "validate:studio-enhancements-browser",
   "validate:studio-linked-models-browser",
   "validate:studio-pathways-browser",
@@ -215,6 +224,21 @@ const EXCLUSIVE = new Set([
 const UNIVERSAL = ["check"];
 const CARRIES_SCRIPT = /\.(js|mjs|cjs|html?)$/i;
 const COVERAGE = [
+  [
+    /^tools\/lib\/(?:fl4-family-fixtures|fl4-stubs)\.mjs$/,
+    ["validate:fluency", "validate:fluency-family-browser", "test", "check"],
+  ],
+  [/^tools\/lib\/mini-lesson-solver\.mjs$/, ["validate:fluency", "test", "check"]],
+  // Teacher Lab 4 browser fixtures feed synthetic backups to a temporary local browser session.
+  [
+    /^tools\/lib\/teacher-4-fixtures\.mjs$/,
+    ["validate:fluency-family-browser", "validate:js-syntax", "test", "check"],
+  ],
+  // Keep the reviewed write-safety registry under its direct validator as well as the data contracts.
+  [
+    /^data\/test-writes-review\.json$/,
+    ["validate:test-writes", "validate:data-contracts", "validate:nervous-system", "test"],
+  ],
   // COPY AND NOTATION — the render-time math formatter, the microcopy dictionary,
   // the two gates that hold them, their scanner and the logged config fixer. The
   // gates sweep all 84 configs and every engine string; `test` carries the
@@ -249,6 +273,22 @@ const COVERAGE = [
   [
     /^(sitemap\.xml|scripts\/(generate-sitemap\.mjs|lib\/sitemap\.mjs)|tools\/sitemap\.test\.mjs)$/,
     ["validate:static", "test"],
+  ],
+  // UNIT PROJECT PAGES — a post-test project page and the self-contained shared
+  // widget it loads (shared/bg-picker). Before this rule every edit to a page here
+  // escalated to the FULL gate. The pages are standalone HTML: structure, injected
+  // blocks and save/resume wiring are what an edit can break; the download manifest
+  // records their byte sizes and has its own rule.
+  [
+    /^(post-test\/unit\d+-[a-z0-9-]+\.html|shared\/bg-picker\/.*)$/,
+    [
+      "validate:static",
+      "validate:save-resume",
+      "validate:injection",
+      "validate:js-syntax",
+      "validate:shared-claims",
+      "check",
+    ],
   ],
   // NOTES PACKET PDFs — the print stylesheet, the PDF renderer and the 672
   // rendered binaries. `validate:notes-pdf-layout` is the only check that can see
@@ -295,7 +335,7 @@ const COVERAGE = [
   // answer-revealing visuals, on-screen listening scripts and "look at the
   // picture" with no picture, all of which shipped in the pre-2026-10 lab.
   [
-    /^(access-practice-lab\/|access-teacher\/|docs\/access-reading-room-2\/|tools\/(validate-access-lab|access-lab-index|access-lab-e2e|access-studio-e2e|generate-access-printables|gen-access-inventory|sync-access-shell|validate-reading-room|access-reading-room-e2e|expand-reading-room-library|author-reading-room-additions|author-reading-room-sustained-reads)\.mjs$|tools\/lib\/access-lab-content\.mjs$|tools\/(access-lab|access-skill-graph|access-teacher-evidence)[^/]*\.test\.mjs$)/,
+    /^(access-practice-lab\/|access-teacher\/|access-expedition\/|access-family-expedition\/|access-family-tour\/|docs\/access-reading-room-2\/|tools\/paper-passport\/|tools\/(validate-access-game-studio|access-game-studio-e2e|validate-access-lab|access-lab-index|access-lab-e2e|access-engagement-e2e|access-studio-e2e|access-publisher-e2e|access-lab-sweep|validate-publisher-journey|access-evidence-e2e|access-family-e2e|access-es-leak-scan|generate-access-printables|gen-access-inventory|sync-access-shell|validate-reading-room|validate-reading-adventures|access-reading-room-e2e|expand-reading-room-library|author-reading-room-additions|author-reading-room-sustained-reads)\.mjs$|tools\/lib\/access-lab-content\.mjs$|tools\/(access-lab|access-engagement|access-skill-graph|access-teacher-evidence|access-i18n|access-calibration|access-evidence-tools|access-student-tools|access-game-studio-contract)[^/]*\.test\.mjs$)/,
     ["validate:access-lab", "test", "validate:js-syntax", "check"],
   ],
 
@@ -343,11 +383,27 @@ const COVERAGE = [
     /^(data\/family-homework-notes\/|tools\/(validate-family-homework-content\.mjs|lib\/family-homework-content\.mjs)$|scripts\/homework-family-guidance\.mjs$)/,
     [
       "validate:family-homework-content",
+      "validate:family-v3",
       "validate:family-plain-definitions",
+      "validate:family-spanish",
       "validate:homework",
       "test",
       "check",
     ],
+  ],
+
+  // v3.0 lesson-keyed family content: the validators, the Learn-stop renderer, the model library and the docs that define them.
+  // The generated pages are checked for wrong-lesson content by validate:family-no-leakage.
+  [
+    /^(tools\/(validate-family-v3|validate-family-no-leakage|family-v3-packet|family-homework-scorecard|family-math-models\.test|homework-v3-learn\.test|homework-svg-models\.test)\.mjs$|tools\/lib\/family-v3\.mjs$|tools\/fixtures\/family-math-models-lessons\.json$|scripts\/(export-family-spanish-review\.mjs|lib\/homework-(v3-|center-css)[a-z-]*\.mjs)$|assets\/design\/family\/|docs\/(family-homework-v3\/|specs\/family-homework-v3\.md$))/,
+    ["validate:family-v3", "validate:family-no-leakage", "validate:homework", "test", "check"],
+  ],
+
+  // The Spanish of the family homework (docs/family-homework-v3/es-style-guide.md): the sidecars, the homework-*-spanish and
+  // family-*.json data, the glossary, and the generators' Spanish literals. The gate also reads every generated page.
+  [
+    /^(data\/(family-homework-notes\/|homework-[a-z-]*spanish\.json$|family-[a-z-]+(\.json$|\/)|homework-confused-grownup-tags\.json$)|docs\/family-homework-v3\/es-style-guide\.md$|tools\/(validate-family-spanish\.mjs|lib\/family-spanish\.mjs)$|scripts\/(homework-[a-z-]+|generate-homework-html|generate-word-problems|lib\/(homework|family)-[a-z0-9-]+)\.mjs$)/,
+    ["validate:family-spanish", "validate:homework", "test", "check"],
   ],
 
   // The "Learn more online" links on every family homework page: topics, verification record, renderer.
@@ -361,8 +417,14 @@ const COVERAGE = [
   // scripts/lib/family-plain-definitions.mjs applies it to the homework glossary and the family guides, and the
   // gate holds every vocabulary term to the rules (length, reading grade, no circular wording, numbers the lesson states).
   [
-    /^(data\/family-plain-definitions\.json|tools\/(validate-family-plain-definitions\.mjs|family-plain-definitions\.test\.mjs|lib\/family-plain-definitions\.mjs)|scripts\/lib\/family-plain-definitions\.mjs)$/,
-    ["validate:family-plain-definitions", "validate:homework", "test", "check"],
+    /^(data\/family-glossary\.json|tools\/(validate-family-plain-definitions\.mjs|family-plain-definitions\.test\.mjs|lib\/family-plain-definitions\.mjs)|scripts\/lib\/family-plain-definitions\.mjs)$/,
+    [
+      "validate:family-plain-definitions",
+      "validate:family-spanish",
+      "validate:homework",
+      "test",
+      "check",
+    ],
   ],
 
   // Generated per-lesson practice studios for Units 2-9 (/math/practice-studio/). The pages and the
@@ -540,6 +602,18 @@ const COVERAGE = [
   // The units page is the authority on which unit an End-of-Unit resource belongs
   // to, so an edit there must re-run the placement gate.
   [
+    /^tools\/generate-project-studio\.mjs$/,
+    [
+      "validate:project-studio-browser",
+      "validate:projects-publication",
+      "validate:projects-award",
+      "validate:solve-along",
+      "validate:projects-check",
+      "validate:injection",
+      "validate:unit-placement",
+    ],
+  ],
+  [
     /^(curriculum\/units\/index\.html|tools\/(validate-unit-resource-placement|unit-placement\.test|validate-curriculum-links)\.mjs|scripts\/lib\/download-taxonomy\.mjs)$/,
     [
       "validate:unit-placement",
@@ -646,6 +720,18 @@ const COVERAGE = [
   [/^lessons\/[^/]+\/reveal-assets\//, ["validate:reveal-assets"]],
   // the retention manifest is part of the same contract as the files it records
   [/^data\/reveal-assets-retained\.json$/, ["validate:reveal-assets"]],
+  // The Family Take-Home Sheet (PDF + Word, EN + ES) and the one-standard-code rule: generator, shared modules, the files, both gates.
+  [
+    /^(lessons\/[^/]+\/downloads\/[^/]+-family-(sheet|guide)(-es)?\.(pdf|docx)|scripts\/(generate-family-takehome\.mjs|lib\/(family-takehome-[a-z]+|qr-code|pdf-text-sizes|lesson-identity|homework-print-plan)\.mjs)|tools\/(validate-family-print|validate-family-standards|qr-code\.test)\.mjs|docs\/family-homework-v3\/standards\.md)$/,
+    [
+      "validate:family-print",
+      "validate:family-standards",
+      "validate:docx-a11y",
+      "validate:student-pdfs",
+      "test",
+      "check",
+    ],
+  ],
   // Student homework Word files: opened and read as XML (headings, alt text, title,
   // language, internal labels). Covers the generator, the publisher-file remediation
   // pass and the gate itself.
@@ -671,12 +757,14 @@ const COVERAGE = [
   [/^curriculum\/ai-hub\//, ["validate:ai-hub", "validate:hub", "audit:links"]],
   [/^curriculum\/forge\//, ["validate:forge"]],
   [/^curriculum\/showcase\//, ["validate:showcase"]],
+  [/^curriculum\/publisher-demo\//, ["validate:publisher-demo", "audit:links", "check"]],
+  [/^tools\/validate-publisher-demo\.mjs$/, ["validate:publisher-demo", "check"]],
   [/^curriculum\/class-boss\//, ["validate:class-boss"]],
   [/^curriculum\/teach-the-machine\//, ["validate:teach-machine"]],
   // The weekly hub (and its optional "A note from Mr. Neft" data): its own tests
   // drive the shipped page in jsdom, and the welcome gate holds the data file.
   [
-    /^(curriculum\/family-connections\/|data\/family-welcome\.json$|docs\/family-welcome-script\.md$|tools\/validate-family-welcome\.mjs$)/,
+    /^(curriculum\/family-connections\/|scripts\/generate-weekly-sheets\.mjs$|data\/family-welcome\.json$|docs\/family-welcome-script\.md$|tools\/validate-family-welcome\.mjs$)/,
     ["validate:family-broadcast", "validate:family-welcome", "test", "check"],
   ],
   [
@@ -705,6 +793,7 @@ const COVERAGE = [
       "validate:solve-along",
       "validate:projects-check",
       "validate:injection",
+      "validate:unit-placement",
     ],
   ],
   [
@@ -750,9 +839,23 @@ const COVERAGE = [
     ],
   ],
   [
-    /^(math\/fluency-lab\/|docs\/fluency-family-implementation-matrix\.md$|tools\/(validate-fluency-lab|package-fluency-desktop|verify-fluency-family-browser|fluency-family(?:\.test)?)\.mjs$)/,
-    ["validate:fluency", "validate:fluency-family-browser", "validate:static", "test"],
+    /^(math\/fluency-lab\/|docs\/fluency-family-implementation-matrix\.md$|docs\/family-homework-v3\/fluency-family-matrix\.md$|tools\/(validate-fluency-lab|package-fluency-desktop|verify-fluency-family-browser|verify-fluency-family-session|verify-family-expedition-browser|generate-guided-skill-index|fluency-family(?:-guided)?(?:\.test)?)\.mjs$)/,
+    [
+      "validate:fluency",
+      "validate:fluency-family-browser",
+      "validate:fluency-family-session",
+      "validate:family-expedition-browser",
+      "validate:static",
+      "test",
+    ],
   ],
+  // Family Math Studio v3 art kit: its builders, shared libs, gallery page and validator (the design tokens have their own rules).
+  [
+    /^(design\/family-system\/art\.html$|tools\/(build-family-(?:art|brand-icons)|validate-family-art|verify-family-art-browser)\.mjs$|tools\/lib\/family-art-[\w-]+\.mjs$)/,
+    ["validate:family-art", "validate:static", "test"],
+  ],
+  // The save/resume injector configuration decides which pages carry the engine.
+  [/^tools\/save-resume-config\.js$/, ["validate:save-resume", "validate:injection", "test"]],
   // Family Math 2.0 — requirement ledger and its suites (unit suites run inside `test`).
   [/^(docs\/family-math-2-|tools\/fm2\/)/, ["validate:fm2", "validate:static", "test"]],
   // MATH WORKBENCH — the student whiteboard. The static gate proves its promises in text
@@ -806,9 +909,20 @@ const COVERAGE = [
       "validate:html-experiences-browser",
     ],
   ],
+  // The family homework body sheet and the gate that holds it to the design tokens
+  [
+    /^(assets\/design\/family\/(body|tokens|family)\.css$|tools\/(validate-family-body-tokens\.mjs|lib\/family-design-(browser|checks)\.mjs|lib\/family-tokens\.mjs)$|scripts\/lib\/homework-(design-links|chrome)\.mjs$|scripts\/lib\/homework-legacy-shell\.css$)/,
+    [
+      "validate:family-body-tokens",
+      "validate:family-v3",
+      "validate:family-no-leakage",
+      "test",
+      "check",
+    ],
+  ],
   // Families hub, bilingual weekly homework pages, and guided notes
   [
-    /^(assets\/workspace\/|scripts\/lib\/family-workspace\.mjs$|tools\/family-workspace\.test\.mjs$|docs\/specs\/problem-workspace\.md$|families\/|assets\/(homework\/|family-paper\.css$|family-landing\.js$|learning-supports\/ls-supports\.css$)|data\/(family-game-pairs-es|family-landing-units)\.json$|data\/(?:family|student)-word-problems\/|lessons\/[^/]+\/(?:family|word-problems)\/|scripts\/(homework-[a-z-]+|lib\/homework-[a-z-]+|generate-homework|generate-homework-html|generate-family-pages|generate-lesson-support-pages|generate-family-week-notes|verify-family-pages|validate-homework-guided-notes|audit-homework-alignment)\.mjs$|scripts\/lib\/(family-landing|family-content|family-paper-css|family-word-problems|family-word-problems-page|family-word-problems-client|student-word-problems|student-word-problems-client|word-problems-check|word-problems-engine)\.mjs$|scripts\/generate-word-problems\.mjs$|tools\/(validate-family-exit-ticket|validate-family-games|verify-family-experience-browser|homework-experience\.test|family-landing\.test|family-paper\.test|family-word-problems\.test|student-word-problems\.test)\.mjs$|scripts\/generate-practice-workbook-index\.mjs$)/,
+    /^(assets\/workspace\/|scripts\/lib\/family-workspace\.mjs$|tools\/family-workspace\.test\.mjs$|docs\/specs\/problem-workspace\.md$|families\/|assets\/(homework\/|family-paper\.css$|family-landing\.js$|learning-supports\/ls-supports\.css$)|data\/(family-game-pairs-es|family-landing-units)\.json$|data\/(?:family|student)-word-problems\/|lessons\/[^/]+\/(?:family|word-problems)\/|scripts\/(homework-[a-z-]+|lib\/homework-[a-z0-9-]+|generate-homework|generate-homework-html|generate-family-pages|generate-lesson-support-pages|generate-family-week-notes|verify-family-pages|validate-homework-guided-notes|audit-homework-alignment)\.mjs$|scripts\/lib\/(family-landing|family-content|family-paper-css|family-word-problems|family-word-problems-page|family-word-problems-client|student-word-problems|student-word-problems-client|word-problems-check|word-problems-engine)\.mjs$|scripts\/generate-word-problems\.mjs$|tools\/(validate-family-exit-ticket|validate-family-games|verify-family-experience-browser|homework-experience\.test|family-landing\.test|family-paper\.test|family-word-problems\.test|student-word-problems\.test)\.mjs$|scripts\/generate-practice-workbook-index\.mjs$|scripts\/lib\/homework-actions\.runtime\.js$|data\/family-performance-budget\.json$|tools\/(verify-family-a11y|validate-family-performance)\.mjs$|tools\/lib\/family-(a11y|performance)[a-z-]*\.mjs$|tools\/(homework-a11y-markup|family-a11y-gate)\.test\.mjs$|docs\/family-homework-v3\/a11y-manual-checks\.md$)/,
     [
       "verify:families",
       "validate:homework",
@@ -816,20 +930,36 @@ const COVERAGE = [
       "validate:family-exit-ticket",
       "validate:family-games",
       "validate:family-experience-browser",
+      "validate:family-design-tokens",
+      "validate:family-visual",
+      "validate:family-body-tokens",
+      "validate:family-a11y",
+      "validate:family-performance",
       "validate:static",
       "audit:links",
       "test",
     ],
+  ],
+  // Family Math Studio design system, hero and visual gate (assets/design/family, hero modules, baselines)
+  [
+    /^(assets\/design\/family\/|design\/family-system\/|docs\/design\/family-|docs\/family-homework-v3\/(visual-baseline|design-system)\/|tools\/(validate-family-design-tokens|verify-family-visual|verify-family-design-system-browser)\.mjs$|tools\/lib\/family-(design|visual|tokens)[\w-]*\.mjs$|scripts\/lib\/(homework-hero|family-icons)\.mjs$|tools\/homework-hero\.test\.mjs$)/,
+    ["validate:family-design-tokens", "validate:family-visual", "test"],
   ],
   // Readiness & ESOL Reveal Math study guides
   [
     /^(scripts\/readiness\/|scripts\/generate-readiness-(html|docx)\.mjs$|esol\/reveal-math-guides\/|tools\/validate-lesson-labels\.mjs$)/,
     ["validate:lesson-labels", "validate:static", "audit:links", "test"],
   ],
+  // Curriculum discovery routes and their shared source palette
+  [
+    /^(curriculum\/(?:index\.html|units\/index\.html)|assets\/curriculum-system\.css|tools\/validate-no-purple(?:\.test)?\.mjs)$/,
+    ["validate:no-purple", "validate:hub", "validate:static", "test"],
+  ],
   // Curriculum hub shared styles and scripts
   [
     /^assets\/(curriculum-[^/]+\.(js|css)|pacing-[^/]+\.css)$/,
     [
+      "validate:no-purple",
       "validate:html-experiences-browser",
       "validate:hub",
       "validate:curriculum-top1",
@@ -858,6 +988,28 @@ const COVERAGE = [
     /^(tools\/[^/]+\.test\.mjs$|tests\/[^/]+\.spec\.ts$|scripts\/(qa-run\.mjs|lib\/(qa-lock|run-group)\.mjs|codex\/codex-verify\.sh)$|tools\/(run-tests|validate-js-syntax)\.mjs|tools\/lib\/test-(scope|trace-preload|trace-commands)\.mjs|data\/test-reads\.json$|\.githooks\/)/,
     ["test", "validate:gate-coverage", "validate:js-syntax"],
   ],
+  // Living Math Canvas / Math Reality Lab / Forge / Cockpit engine (assets/ewl/**,
+  // 77 files). Every browser-free behaviour has a dedicated tools/ewl-*.test.mjs
+  // (13 files, all traced by test-scope.mjs, so `test` runs only those that read
+  // a changed file). Previously uncovered: 112 path hits in the last 300 commits
+  // on main, ~27% of commits escalated to the FULL gate for it. validate:lesson-boot
+  // renders the lesson pages in a real browser, which is the check that sees a
+  // broken engine load on a live page.
+  [
+    /^assets\/ewl\//,
+    ["test", "validate:lesson-boot", "validate:static", "validate:js-syntax", "check"],
+  ],
+  // Graphic novels (graphic-novels/**). Their only validator, graphic-novels/_engine/validate.cjs,
+  // is not wired into any gate, so the checks that see these files are `test` (their
+  // _engine tests are discovered by run-tests), static links and syntax. 39 of the last 300
+  // commits on main touched this folder and escalated to the FULL gate for no check that reads it.
+  [/^graphic-novels\//, ["test", "validate:static", "validate:js-syntax", "check"]],
+  // Family app (family-app/**): a static PWA shell. Its behaviour is pinned by
+  // tools/family-app-pwa.test.mjs and tools/family-today.test.mjs (both traced by
+  // test-scope.mjs, so `test` runs only the ones that read a changed file). With no
+  // rule here every commit touching it escalated to the FULL gate, which takes the
+  // machine-wide gate lock and queues every other session's commit behind it.
+  [/^family-app\//, ["test", "validate:static", "validate:js-syntax", "check"]],
   [/^docs\/|\.md$/, []],
 ];
 
@@ -1359,7 +1511,13 @@ async function main() {
   const LOG_DIR = join(ROOT, ".qa-logs");
   mkdirSync(LOG_DIR, { recursive: true });
   const LOG = join(LOG_DIR, `qa-${new Date().toISOString().replace(/[:.]/g, "-")}.log`);
-  const logTo = (s) => appendFileSync(LOG, s);
+  const logTo = (s) => {
+    // Some checks clear scratch directories during cleanup. Recreate the log
+    // directory before each asynchronous result is appended so that cleanup
+    // cannot turn an otherwise completed gate into an ENOENT failure.
+    mkdirSync(LOG_DIR, { recursive: true });
+    appendFileSync(LOG, s);
+  };
   logTo(`${label}\n`);
 
   const results = new Map();
