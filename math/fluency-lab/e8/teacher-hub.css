@@ -1,0 +1,245 @@
+/* Teacher Hub mastery map. Colour is a hint only: every cell also has a symbol, a word and a distinct pattern. */
+.e8th {
+  margin: 1rem 0;
+  padding: 1rem 1.2rem;
+  background: var(--e8-surface, #fff);
+  border: 1px solid var(--e8-line, #c9d2da);
+  border-radius: 10px;
+  color: var(--e8-ink, #14212b);
+}
+.e8th h3,
+.e8th h4 {
+  margin: 0.2rem 0 0.5rem;
+}
+.e8th-note {
+  font-size: 0.9rem;
+  color: var(--e8-ink-soft, #44525e);
+}
+.e8th-controls,
+.e8th-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  align-items: end;
+  margin: 0.6rem 0;
+}
+.e8th-controls label,
+.e8th-form label {
+  display: grid;
+  gap: 0.2rem;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+.e8th-check {
+  display: flex !important;
+  grid-auto-flow: column;
+  align-items: center;
+  gap: 0.4rem !important;
+}
+.e8th select,
+.e8th input[type="number"] {
+  min-height: 44px;
+  padding: 0.3rem 0.5rem;
+  font: inherit;
+  border: 1px solid var(--e8-line, #8795a1);
+  border-radius: 6px;
+  background: #fff;
+  color: inherit;
+}
+.e8th-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1.2rem;
+  list-style: none;
+  padding: 0;
+  margin: 0.4rem 0;
+  font-size: 0.85rem;
+}
+.e8th-mark {
+  display: inline-grid;
+  place-items: center;
+  width: 1.6rem;
+  height: 1.6rem;
+  border: 1.5px solid currentColor;
+  border-radius: 4px;
+  font-weight: 800;
+}
+.e8th-scroll {
+  overflow: auto;
+  max-height: 70vh;
+  border: 1px solid var(--e8-line, #c9d2da);
+  border-radius: 8px;
+}
+.e8th-table {
+  border-collapse: separate;
+  border-spacing: 0;
+  min-width: 100%;
+}
+.e8th-table caption {
+  text-align: left;
+  padding: 0.4rem 0.6rem;
+  font-weight: 700;
+}
+.e8th-table th,
+.e8th-table td {
+  padding: 0.25rem;
+  border-bottom: 1px solid var(--e8-line, #dbe2e8);
+  text-align: left;
+  vertical-align: middle;
+}
+.e8th-table thead th {
+  position: sticky;
+  top: 0;
+  background: var(--e8-surface-sunk, #eef2f5);
+  z-index: 2;
+  font-size: 0.8rem;
+  max-width: 9rem;
+  min-width: 6.5rem;
+  vertical-align: bottom;
+}
+.e8th-table tbody th {
+  position: sticky;
+  left: 0;
+  background: var(--e8-surface, #fff);
+  z-index: 1;
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+.e8th-corner {
+  left: 0;
+  z-index: 3 !important;
+}
+.e8th-skill span {
+  display: block;
+  overflow-wrap: anywhere;
+}
+.e8th-flag {
+  outline: 2px solid var(--e8-ink, #14212b);
+  outline-offset: -2px;
+}
+.e8th-attn {
+  display: inline-block;
+  padding: 0 0.4rem;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+.e8th-cell {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.3rem;
+  align-items: center;
+  width: 100%;
+  min-height: 44px;
+  min-width: 6.2rem;
+  padding: 0.2rem 0.4rem;
+  font: inherit;
+  font-size: 0.8rem;
+  text-align: left;
+  color: var(--e8-ink, #14212b);
+  background-color: var(--e8-surface, #fff);
+  border: 1.5px solid var(--e8-ink, #14212b);
+  border-radius: 6px;
+  cursor: pointer;
+}
+.e8th-cell small {
+  grid-column: 2;
+  font-size: 0.7rem;
+}
+.e8th-cell:focus-visible,
+.e8th-scroll:focus-visible {
+  outline: 3px solid var(--e8-focus, #0b5d57);
+  outline-offset: 2px;
+}
+.e8th-word {
+  font-weight: 700;
+}
+.e8th-p-dots {
+  background-image: radial-gradient(currentColor 0.8px, transparent 0.9px);
+  background-size: 6px 6px;
+  background-color: var(--e8-surface, #fff);
+}
+.e8th-p-diagonal {
+  background-image: repeating-linear-gradient(
+    135deg,
+    rgba(20, 33, 43, 0.14) 0 2px,
+    transparent 2px 7px
+  );
+}
+.e8th-p-cross {
+  background-image:
+    repeating-linear-gradient(
+      45deg,
+      rgba(20, 33, 43, 0.14) 0 2px,
+      transparent 2px 7px
+    ),
+    repeating-linear-gradient(
+      135deg,
+      rgba(20, 33, 43, 0.14) 0 2px,
+      transparent 2px 7px
+    );
+}
+.e8th-p-solid {
+  background-image: linear-gradient(
+    rgba(27, 122, 75, 0.2),
+    rgba(27, 122, 75, 0.2)
+  );
+}
+.e8th-p-stripe {
+  background-image: repeating-linear-gradient(
+    0deg,
+    rgba(11, 93, 87, 0.22) 0 3px,
+    transparent 3px 7px
+  );
+}
+.e8th-detail {
+  min-height: 1.6rem;
+  margin: 0.6rem 0;
+}
+.e8th-reteach {
+  padding-left: 1.1rem;
+}
+.e8th-reteach li {
+  margin: 0.4rem 0;
+}
+.e8th-print {
+  margin-top: 1rem;
+  border-top: 1px solid var(--e8-line, #dbe2e8);
+  padding-top: 0.6rem;
+}
+.e8th-print summary {
+  font-weight: 800;
+  cursor: pointer;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+}
+.e8th-form {
+  display: grid;
+  gap: 0.7rem;
+  max-width: 34rem;
+}
+.e8th-form select[multiple] {
+  min-height: 9rem;
+}
+@media (max-width: 640px) {
+  .e8th {
+    padding: 0.8rem;
+  }
+  .e8th-table tbody th {
+    white-space: normal;
+    min-width: 5rem;
+  }
+}
+@media print {
+  .e8th-controls,
+  .e8th-print,
+  .e8th-row {
+    display: none;
+  }
+  .e8th-scroll {
+    max-height: none;
+    overflow: visible;
+  }
+}

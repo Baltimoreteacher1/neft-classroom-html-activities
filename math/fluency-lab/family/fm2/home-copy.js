@@ -150,6 +150,11 @@ export const COPY = {
     "A separate five-part path from the Fluency Lab, built from your learner’s saved Fluency Lab practice.",
     "Un camino aparte de cinco partes del laboratorio de fluidez, basado en la práctica guardada allí.",
   ),
+  studioTitle: c("Family Math Studio", "Estudio de matemáticas en familia"),
+  studioText: c(
+    "A short plan with nothing to buy: what to do together, what to ask, and a quick check that saved progress is healthy.",
+    "Un plan corto sin comprar nada: qué hacer juntos, qué preguntar y una revisión rápida de que el progreso guardado está sano.",
+  ),
   labTitle: c("The full Fluency Lab", "El laboratorio de fluidez completo"),
   labText: c(
     "Skills, games and tools from the whole Math Fluency Lab.",

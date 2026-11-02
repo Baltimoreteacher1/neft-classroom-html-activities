@@ -8,11 +8,16 @@ import { deviceLearner } from "./reports-rows.js";
 import { esc } from "./reports-export.js";
 import { mountAssignments } from "./teacher-4-assign.js";
 import { createClassState, mountInsights, mountReports } from "./teacher-4-class.js";
+import { mountAssessmentBuilder, mountLessonPlanner } from "./e8/assessment-ui.js";
+import { mountMasteryMap } from "./e8/teacher-hub-ui.js";
 
 const TABS = () => [
   { id: "assign", label: t("Assignments") },
   { id: "insights", label: t("Class insights") },
   { id: "reports", label: t("Reports and privacy") },
+  { id: "map", label: t("Mastery map") },
+  { id: "assess", label: t("Assessments") },
+  { id: "lesson", label: t("Lesson plan from my class") },
 ];
 
 // The opened class lives for this page visit, so switching language or tabs does not lose it. Reloading clears it.
@@ -51,6 +56,8 @@ export function mountTeacher4(
     }
     if (id === "assign") assign.refresh();
     if (id === "reports") reports.refresh();
+    if (id === "map") map.refresh();
+    if (id === "lesson") lessonPlan.refresh();
   };
 
   let prefill = () => {};
@@ -73,6 +80,18 @@ export function mountTeacher4(
     },
   });
   const reports = mountReports(panel("reports"), { klass, onPrint, announce });
+  const map = mountMasteryMap(panel("map"), {
+    klass,
+    grade,
+    onPrint,
+    announce,
+    onPlan: (plan) => {
+      show("assign");
+      prefill(plan);
+    },
+  });
+  mountAssessmentBuilder(panel("assess"), { klass, grade, onPrint, announce });
+  const lessonPlan = mountLessonPlanner(panel("lesson"), { klass, grade });
 
   const tablist = container.querySelector("[role=tablist]");
   tablist.addEventListener("click", (event) => {

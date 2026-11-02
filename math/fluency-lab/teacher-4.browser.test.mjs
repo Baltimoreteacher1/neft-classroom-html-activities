@@ -54,7 +54,7 @@ try {
 
   await page.goto(`${base}/math/fluency-lab/?view=teacher&grade=6`, { waitUntil: "networkidle" });
   await t4.locator(".t4").waitFor();
-  assert.equal(await page.locator("#teacher-4 [role=tab]").count(), 3);
+  assert.equal(await page.locator("#teacher-4 [role=tab]").count(), 6);
 
   // Tabs: roving tabindex and arrow keys.
   await page.locator("#t4-tab-assign").focus();
@@ -62,7 +62,7 @@ try {
   assert.equal(await page.evaluate(() => document.activeElement.id), "t4-tab-insights");
   assert.equal(await page.locator("#t4-panel-insights").isVisible(), true);
   await page.keyboard.press("End");
-  assert.equal(await page.evaluate(() => document.activeElement.id), "t4-tab-reports");
+  assert.equal(await page.evaluate(() => document.activeElement.id), "t4-tab-lesson", "End goes to the last of the six tabs");
   await page.keyboard.press("Home");
   assert.equal(await page.locator("#t4-panel-assign").isVisible(), true);
 

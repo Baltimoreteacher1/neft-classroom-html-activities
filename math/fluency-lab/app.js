@@ -77,6 +77,8 @@ import { e8Store } from "./e8/e8-local.js";
 import { addSkillEvent } from "./e8/e8-store.js";
 import { analyzeResponse, recordDiagnosis } from "./e8/misconception-engine.js";
 import { evidenceFor } from "./e8/mastery-evidence.js";
+import { mountItemPractice } from "./e8/item-practice-ui.js";
+import { stampBackup, verifyBackup } from "./e8/data-integrity.js";
 import { evidenceTableHtml, mountAdaptivePanel, mountRepairStudio } from "./e8/adaptive-ui.js";
 import { LESSON_SKILL } from "./e8/show-me-why.js";
 import { masteryStage } from "./learning-evidence.js";
@@ -7677,7 +7679,7 @@ function renderPath() {
   const repaired = state.tutor.mistakes.filter((entry) => entry.resolvedAt && findSkill(entry.key)?.grade === state.grade).length;
   els.path.innerHTML = `<div class="section-heading"><div><p class="section-label">${escapeHtml(gradeDisplay(state.grade))} · ${escapeHtml(PROFILE_NAMES[activeProfile])}</p><h2>See what is growing.</h2><p>Independent first tries, coached practice, and learning over time tell different parts of the story.</p></div><button class="outline-action" data-print-report>Print family progress</button></div>
     <div class="learning-milestones"><div><strong>${explored}/${skills.length}</strong><span>visual lessons explored</span></div><div><strong>${remembered}/${skills.length}</strong><span>remembered independently</span></div><div><strong>${repaired}</strong><span>mistakes revisited successfully</span></div><div><strong>${new Set(sessions.map((session) => localDay(session.at))).size}</strong><span>practice days</span></div></div>
-    <div id="e8-adaptive"></div><div id="e8-progress"></div><div class="path-explainer"><h3>What “remembered” means here</h3><p>At least eight recent independent checks, 85% correct, and successful practice on two different days. Coached examples and easier support problems help you learn; they do not establish independent mastery.</p></div>
+    <div id="e8-adaptive"></div><div id="e8-items"></div><div id="e8-progress"></div><div class="path-explainer"><h3>What “remembered” means here</h3><p>At least eight recent independent checks, 85% correct, and successful practice on two different days. Coached examples and easier support problems help you learn; they do not establish independent mastery.</p></div>
     <section id="prerequisite-constellation" aria-label="My learning path"></section>
     <div class="learning-map">${skills.map((skill) => {
       const status = evidence(state.tutor, skill); const foundation = prerequisites(skill)[0];
@@ -7687,6 +7689,8 @@ function renderPath() {
   const e8Progress = els.path.querySelector("#e8-progress");
   const e8Extras = e8Store.load().skills;
   if (e8Progress) e8Progress.innerHTML = renderProgressVisual(state.grade, skills.map((skill) => ({ title: skill.title, strand: skill.strand, state: evidenceFor(state.tutor.records[tutorSkillKey(skill)], e8Extras[tutorSkillKey(skill)] || {}).state }))) + evidenceTableHtml(state.tutor, e8Store, state.grade);
+  const e8Items = els.path.querySelector("#e8-items");
+  if (e8Items) mountItemPractice(e8Items, { grade: state.grade, profileKey: (key) => profileKey(key, activeProfile), onEvidence: recordPuzzleEvidence, announce });
   const e8Adaptive = els.path.querySelector("#e8-adaptive");
   if (e8Adaptive) mountAdaptivePanel(e8Adaptive, { grade: state.grade, tutor: state.tutor, store: e8Store, onRecord: () => saveProgress(), onRefresh: () => renderPath(), onOpenSkill: (key) => { const skill = findSkill(key); if (skill) openSkill(skill.id, "adaptive", skill.grade); }, onOpenModel: (model) => { state.labModel = model; openHubView("models"); } });
   const constellation = els.path.querySelector("#prerequisite-constellation");
@@ -8708,7 +8712,7 @@ document.querySelector("#lang-toggle").addEventListener("click", () => {
 applyLang();
 document.querySelector("#focus-mode").addEventListener("click", () => { state.settings.focus = !state.settings.focus; saveSettings(); applySettings(); });
 document.querySelector("#download-progress").addEventListener("click", () => {
-  saveActiveSession(); downloadFile(`fluency-${PROFILE_NAMES[activeProfile].toLowerCase()}-${localDay()}.json`, JSON.stringify({ ...makeBackup(state), play: exportPlay() }, null, 2));
+  saveActiveSession(); downloadFile(`fluency-${PROFILE_NAMES[activeProfile].toLowerCase()}-${localDay()}.json`, JSON.stringify(stampBackup({ ...makeBackup(state), play: exportPlay() }), null, 2));
 });
 document.querySelector("#reading-font").addEventListener("click", () => { state.settings.readingFont = !state.settings.readingFont; saveSettings(); applySettings(); });
 document.querySelector("#sound-toggle").addEventListener("click", () => { setSound(!soundOn()); applySettings(); });
@@ -8726,13 +8730,14 @@ document.querySelector("#restore-progress").addEventListener("change", async (ev
     pendingRestore = parseBackup(raw);
     pendingRestore.play = cleanPlay(raw.play);
     preview.innerHTML = `<p>Restore Grade ${pendingRestore.grade} progress with ${Object.keys(pendingRestore.tutor.records).length} practiced skills into <strong>${PROFILE_NAMES[activeProfile]}</strong>? A backup of this learner’s current progress will download first.</p><button class="primary-action" id="confirm-restore" type="button">Back up current progress and restore</button><button class="outline-action" id="cancel-restore" type="button">Cancel</button>`;
+    if (verifyBackup(raw).status === "changed") preview.insertAdjacentHTML("afterbegin", '<p role="alert"><strong>This file changed after it was saved.</strong> That is fine if you edited it on purpose, such as a teacher changing a label. If you did not, the file may be damaged, so check it before restoring.</p>');
   } catch (error) { pendingRestore = null; preview.textContent = error.message || "The backup could not be read. Your progress has not changed."; }
   event.target.value = "";
 });
 document.querySelector("#restore-preview").addEventListener("click", (event) => {
   if (event.target.id === "cancel-restore") { pendingRestore = null; event.currentTarget.hidden = true; }
   if (event.target.id === "confirm-restore" && pendingRestore) {
-    downloadFile(`fluency-before-restore-${localDay()}.json`, JSON.stringify({ ...makeBackup(state), play: exportPlay() }, null, 2));
+    downloadFile(`fluency-before-restore-${localDay()}.json`, JSON.stringify(stampBackup({ ...makeBackup(state), play: exportPlay() }), null, 2));
     state.session = null; state.item = null;
     state.progress = pendingRestore.progress; state.tutor = pendingRestore.tutor; state.settings = pendingRestore.settings; state.grade = pendingRestore.grade;
     writeLocal(profileKey(SESSION_KEY, activeProfile), null); importPlay(pendingRestore.play); saveProgress(); saveSettings(); applySettings(); renderLibrary();
