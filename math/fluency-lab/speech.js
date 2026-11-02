@@ -25,14 +25,21 @@ export const spokenEs = (text) =>
 
 export const canSpeak = () => "speechSynthesis" in window;
 
+let speechRate = 1.0;
+export const getSpeechRate = () => speechRate;
+export const setSpeechRate = (rate) => {
+  speechRate = Number(rate) || 1.0;
+};
+
 // `raw` reads ordinary words as they are: a definition such as "the symbol = means equal" must not become "es igual a".
-export function speak(text, lang = "en", { raw = false } = {}) {
+export function speak(text, lang = "en", { raw = false, rate = null } = {}) {
   if (!canSpeak()) return;
   speechSynthesis.cancel();
   const isEs = lang === "es";
   const processed = raw ? String(text || "") : isEs ? spokenEs(text) : spoken(text);
   const utterance = new SpeechSynthesisUtterance(processed);
-  utterance.lang = isEs ? "es-ES" : "en-US";
+  utterance.lang = isEs ? "es-MX" : "en-US";
+  utterance.rate = rate ?? getSpeechRate();
   speechSynthesis.speak(utterance);
 }
 

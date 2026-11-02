@@ -37,6 +37,7 @@
     <link rel="stylesheet" href="./tour/tour.css" />
     <link rel="stylesheet" href="./grade-experience.css" />
     <link rel="stylesheet" href="./grade-hub.css" />
+    <link rel="stylesheet" href="./cra-engine.css" />
     <script type="module" src="./scratchpad-entry.js"></script>
     <script type="module" src="./tour/tour.js"></script>
     <script type="module" src="./app.js"></script>
@@ -57,9 +58,15 @@
         <span class="brand-mark" aria-hidden="true">8×</span>
         <span><strong>Math Fluency Lab</strong><small>EduWonderLab</small></span>
       </button>
-      <nav aria-label="Page controls">
-        <label class="profile-control" for="profile-select">Learner<select id="profile-select"></select></label>
-        <button id="add-profile" class="quiet-button" type="button" data-i18n>Add learner</button>
+      <nav aria-label="Page controls" class="hud-topbar-controls">
+        <div class="hud-profile-capsule">
+          <label class="profile-control" for="profile-select">Learner<select id="profile-select"></select></label>
+          <span id="storage-status-badge" class="storage-status-badge" title="Saved locally on this device">● Local</span>
+          <button id="add-profile" class="quiet-button" type="button" data-i18n>Add learner</button>
+        </div>
+        <button id="cmd-palette-btn" class="quiet-button cmd-palette-btn" type="button" aria-haspopup="dialog" aria-label="Search skills and tools (Cmd+K)" title="Quick search (Cmd+K or /)">
+          <span aria-hidden="true">🔍</span> <span class="cmd-label"><kbd>⌘K</kbd></span>
+        </button>
         <div class="settings-menu-container">
           <button id="settings-toggle" class="quiet-button settings-btn" type="button" aria-expanded="false" aria-controls="header-settings-popover" aria-label="Display and sound settings">
             <span aria-hidden="true">⚙️</span> <span data-i18n>Settings</span>
@@ -77,6 +84,13 @@
               <button id="reading-font" class="quiet-button" type="button" aria-pressed="false">Reading font: Off</button>
               <button id="sound-toggle" class="quiet-button" type="button" aria-pressed="false">Sound: Off</button>
               <button id="reset-popover-btn" class="quiet-button reset-danger-btn" type="button" data-i18n>Start over (reset progress)</button>
+              <div class="setting-slider-row" style="display:flex; align-items:center; justify-content:space-between; padding:4px 8px; font-size:0.85rem">
+                <label for="master-volume-slider">Volume</label>
+                <input type="range" id="master-volume-slider" min="0" max="1" step="0.05" value="0.7" style="width:100px" aria-label="Master volume" />
+              </div>
+              <button id="speech-speed-toggle" class="quiet-button" type="button" aria-pressed="false">Voice speed: 1.0x</button>
+              <button id="contrast-toggle" class="quiet-button" type="button" aria-pressed="false">High contrast: Off</button>
+              <button id="reduced-motion-toggle" class="quiet-button" type="button" aria-pressed="false">Reduced motion: Off</button>
             </div>
           </div>
         </div>
@@ -194,7 +208,14 @@
           <h3 id="receipt-decoder-title" data-i18n>Mastery receipt decoder & class heatmap</h3>
           <p data-i18n>Paste zero-PII receipt codes, one per line, to see class skill patterns on this device.</p>
           <label for="receipt-batch"><span data-i18n>Receipt codes</span><textarea id="receipt-batch" rows="4" autocomplete="off" spellcheck="false"></textarea></label>
-          <button id="decode-receipts" class="outline-action" type="button" data-i18n>Decode receipts</button>
+          <div class="receipt-decoder-actions" style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-top:0.5rem">
+            <button id="decode-receipts" class="outline-action" type="button" data-i18n>Decode receipts</button>
+            <button id="scan-receipt-qr-btn" class="outline-action" type="button">📷 Scan QR with camera</button>
+          </div>
+          <div id="receipt-scanner-container" class="receipt-scanner-container" hidden style="margin-top:0.75rem; border-radius:8px; overflow:hidden; max-width:320px; background:#000; text-align:center">
+            <video id="receipt-scanner-video" playsinline muted style="width:100%; max-height:240px; display:block"></video>
+            <button id="close-receipt-scanner" type="button" class="quiet-button" style="color:#fff; padding:6px 12px">Close Camera</button>
+          </div>
           <div id="receipt-heatmap" aria-live="polite"></div>
         </section>
       </section>
@@ -386,6 +407,7 @@
             </div>
 
             <div id="interactive-solver-workspace" class="interactive-solver-workspace" hidden></div>
+            <div id="cra-visual-bridge" class="cra-visual-bridge" hidden></div>
             <div id="problem-visual-scaffold" class="problem-visual-scaffold"></div>
             </div>
             <section id="guided-coach" class="guided-coach" aria-labelledby="guided-coach-title" hidden>
@@ -623,6 +645,18 @@
         </div>
       </div>
     </div>
+
+    <!-- Command Palette (Cmd+K / Ctrl+K / /) -->
+    <dialog id="cra-command-palette" class="cra-command-palette-dialog" aria-label="Command palette and quick search">
+      <div class="cra-palette-card">
+        <div class="cra-palette-search-row">
+          <span aria-hidden="true">🔍</span>
+          <input type="search" id="cra-palette-input" placeholder="Search grades (K–8), strands, skills, or tools (e.g. 7×8, ten-frame, ratios)..." aria-label="Command search" autocomplete="off" />
+          <button type="button" id="close-palette-btn" class="quiet-button close-palette-btn" aria-label="Close command palette">✕</button>
+        </div>
+        <div id="cra-palette-results" class="cra-palette-results" role="listbox" aria-label="Search results"></div>
+      </div>
+    </dialog>
 
     <section id="print-sheet" class="print-sheet" aria-hidden="true"></section>
     <div id="toast" class="toast" role="status" aria-live="polite"></div>

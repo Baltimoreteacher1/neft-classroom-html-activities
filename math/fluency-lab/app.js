@@ -37,7 +37,8 @@ import { GAMES, mountGames } from "./games.js";
 import { getLang, setLang, t, translatePage } from "./i18n.js";
 import { mistakeCategoryLabel } from "./mistake-notes.js";
 import { runFluencySelfTest } from "./fluency-diagnostics.js";
-import { decodeMasteryReceipt, makeMasteryReceipt } from "./mastery-receipts.js";
+import { decodeMasteryReceipt, makeMasteryReceipt, classifyMisconception, aggregateClassHeatmap, makeReceiptQRSVG } from "./mastery-receipts.js";
+import { CRADecompositionEngine, parseProblemFact } from "./CRADecompositionEngine.js";
 import { renderNumberTalkBoard } from "./number-talk-board.js";
 import { mountWriting } from "./writing-studio.js";
 import { fractionPicture } from "./fraction-picture.js";
@@ -54,7 +55,7 @@ import { whyFor } from "./step-whys.js";
 import { storyFor } from "./story-problems.js";
 import { loadRewards, noteToday, saveRewards } from "./rewards.js";
 import { certificateHtml } from "./certificate.js";
-import { chime, setSound, soundOn } from "./sounds.js";
+import { chime, setSound, soundOn, setVolume, getVolume, playMarimbaTap } from "./sounds.js";
 import { familySummaryDocument, familySummaryHtml } from "./family-page.js";
 import { mountPaperGames } from "./paper-games.js";
 import { stopOptions, stopsFor } from "./game-pool.js";
@@ -62,7 +63,7 @@ import { cleanPlay, exportPlay, importPlay } from "./play-backup.js";
 import { recordGrowth } from "./growth-log.js"; // fl4:teacher
 import { decideInstruction, independentRecoveryCount, readInstructionalEvidence, recordInstructionalEvidence } from "../../engine/core/instructional-intelligence.js";
 import { VOCAB_BILINGUAL_DB, highlightVocab, initVocabSystem, openVocabModal } from "./vocab.js";
-import { canSpeak, speak, spoken, spokenEs } from "./speech.js";
+import { canSpeak, speak, spoken, spokenEs, setSpeechRate, getSpeechRate } from "./speech.js";
 import { languagePromptHtml } from "./language-bridge.js";
 import { captureDraft, explainCardHtml, initLanguage, journalHtml, journalPrintHtml, problemSupportHtml, restoreDraft, spanishPeekHtml, wordStripHtml } from "./language-card.js";
 import { languageEvidence, loadJournal } from "./language-journal.js";
@@ -111,6 +112,13 @@ const els = {
   settingsToggle: document.querySelector("#settings-toggle"),
   settingsPopover: document.querySelector("#header-settings-popover"),
   closeSettings: document.querySelector("#close-settings"),
+  craBridge: document.querySelector("#cra-visual-bridge"),
+  cmdPaletteBtn: document.querySelector("#cmd-palette-btn"),
+  masterVolumeSlider: document.querySelector("#master-volume-slider"),
+  speechSpeedToggle: document.querySelector("#speech-speed-toggle"),
+  contrastToggle: document.querySelector("#contrast-toggle"),
+  reducedMotionToggle: document.querySelector("#reduced-motion-toggle"),
+  scanReceiptQrBtn: document.querySelector("#scan-receipt-qr-btn"),
   trail: document.querySelector("#trail-view"),
   morePractice: document.querySelector("#more-practice"),
   gradeHeading: document.querySelector("#grade-heading"),
@@ -8936,12 +8944,65 @@ const SpacedZPDEngine = {
   },
 };
 
+let activeCRAEngine = null;
+
+function triggerCRAVisualBridge(triggerType = "hesitation") {
+  const bridgeHost = document.querySelector("#cra-visual-bridge");
+  if (!bridgeHost || !state.item || state.itemDone) return;
+  bridgeHost.hidden = false;
+
+  const fact = parseProblemFact(state.item);
+  if (!activeCRAEngine) {
+    activeCRAEngine = new CRADecompositionEngine({
+      container: bridgeHost,
+      locale: getLang() || "en",
+      onTransferReady: (ans) => {
+        if (els.answerInput && !els.answerInput.disabled) {
+          els.answerInput.value = ans;
+          els.answerInput.focus();
+        }
+      },
+    });
+  }
+  activeCRAEngine.mount(bridgeHost, fact, { mode: "interactive" });
+  fluencyNextGenState.decomposedOnCurrent = true;
+  if (triggerType === "hesitation") {
+    chime("hesitation");
+    announce(getLang() === "es" ? "Aquí tienes un modelo visual interactivo para ayudarte." : "Here is an interactive visual model to help you work through this.");
+  } else {
+    playMarimbaTap();
+  }
+}
+
+function clearCRAVisualBridge() {
+  const bridgeHost = document.querySelector("#cra-visual-bridge");
+  if (bridgeHost) {
+    bridgeHost.hidden = true;
+    bridgeHost.innerHTML = "";
+  }
+}
+
+function updateLeitnerBox(item, isFluent) {
+  if (!item || !item.question) return 1;
+  const key = `ewl_leitner_${item.skill?.id || "skill"}_${item.question}`;
+  let currentBox = 1;
+  try {
+    currentBox = Number(window.localStorage.getItem(key)) || 1;
+  } catch {}
+  const nextBox = isFluent ? Math.min(5, currentBox + 1) : 1;
+  try {
+    window.localStorage.setItem(key, String(nextBox));
+  } catch {}
+  return nextBox;
+}
+
 const FlowPacerEngine = {
   clearHesitationMonitor() {
     if (fluencyNextGenState.hesitationHandle) {
       window.clearTimeout(fluencyNextGenState.hesitationHandle);
       fluencyNextGenState.hesitationHandle = null;
     }
+    clearCRAVisualBridge();
     const oldNudge = document.querySelector("#flow-dilation-nudge");
     if (oldNudge) {
       oldNudge.hidden = true;
@@ -8951,12 +9012,13 @@ const FlowPacerEngine = {
   startProblemMonitor(item) {
     this.clearHesitationMonitor();
     fluencyNextGenState.problemShownAt = performance.now();
+    fluencyNextGenState.firstKeypressAt = 0;
     fluencyNextGenState.hesitatedOnCurrent = false;
     fluencyNextGenState.decomposedOnCurrent = false;
     fluencyNextGenState.hesitationHandle = window.setTimeout(() => {
-      if (state.itemDone || !state.session || state.session.finished) return;
+      if (state.itemDone || !state.session || state.session.finished || state.session.mode === "diagnostic") return;
       fluencyNextGenState.hesitatedOnCurrent = true;
-      chime("hesitation");
+      triggerCRAVisualBridge("hesitation");
       let nudge = document.querySelector("#flow-dilation-nudge");
       if (!nudge && els.drillPanel) {
         nudge = document.createElement("div");
@@ -8969,13 +9031,11 @@ const FlowPacerEngine = {
         nudge.hidden = false;
         nudge.textContent =
           item?.hint ||
-          "Anchor strategy: decompose into friendly 5s or 10s, or slice the visual model below.";
+          "Anchor strategy: decompose into friendly 5s or 10s, or use the interactive visual model below.";
       }
-    }, 2500);
+    }, 4000);
   },
 };
-
-
 
 const FluencyTelemetryHUD = {
   getStats() {
@@ -9035,7 +9095,7 @@ const FluencyTelemetryHUD = {
     drawer.innerHTML = `
       <strong>Multi-Dimensional Fluency Diagnostic HUD (Shift + F)</strong>
       <div class="fluency-telemetry-grid">
-        <div class="fluency-telemetry-cell"><strong>Automatic Recall Rate (ARR)</strong><div>${stats.arr}% (&lt;1.5s independent)</div></div>
+        <div class="fluency-telemetry-cell"><strong>Automatic Recall Rate (ARR)</strong><div>${stats.arr}% (&lt;1.8s independent)</div></div>
         <div class="fluency-telemetry-cell"><strong>Decomposition Efficiency (DE)</strong><div>${stats.de}% accuracy with split model</div></div>
         <div class="fluency-telemetry-cell"><strong>Slip Recovery Velocity (SRV)</strong><div>${stats.srv ? `${stats.srv} ms` : "No slips"}</div></div>
         <div class="fluency-telemetry-cell"><strong>Spaced ZPD Queue</strong><div>${(zpdStore.queue || []).length} facts scheduled</div></div>
@@ -9056,7 +9116,29 @@ function onFluencyProblemFinalized(correct, independent, firstCorrect, countAsEv
   const elapsedMs = Math.max(0, performance.now() - (fluencyNextGenState.problemShownAt || performance.now()));
   const m = fluencyNextGenState.metrics;
   if (countAsEvidence) m.totalSolved += 1;
-  if (correct && independent && firstCorrect && elapsedMs <= 1500) {
+
+  // Fluency Tier Classification
+  let fluencyTier = "RECOVERY_NEEDED";
+  if (correct) {
+    if (elapsedMs <= 1800) fluencyTier = "AUTOMATIC";
+    else if (elapsedMs <= 4000) fluencyTier = "STRATEGIC";
+    else fluencyTier = "HESITANT";
+  }
+
+  // Audio synthesis feedback
+  if (correct) {
+    if (fluencyTier === "AUTOMATIC") chime("automatic");
+    else if (fluencyTier === "STRATEGIC") chime("strategic");
+    else chime("good");
+  } else {
+    playMarimbaTap(); // Soft damped two-tone marimba wood tap
+    triggerCRAVisualBridge("error");
+  }
+
+  // Leitner 5-box Adaptive Schedule
+  updateLeitnerBox(state.item, correct && (fluencyTier === "AUTOMATIC" || fluencyTier === "STRATEGIC"));
+
+  if (correct && independent && firstCorrect && elapsedMs <= 1800) {
     m.automaticRecallCount += 1;
     m.badges.add("Automaticity Spark");
   }
@@ -9279,8 +9361,26 @@ els.summary?.addEventListener("click", (event) => {
     const attempts = Math.max(0, (state.session?.answered || 0) - (state.session?.revised || 0));
     const accuracy = attempts ? Math.round((state.session.correct / attempts) * 100) : 0;
     try {
-      const code = makeMasteryReceipt({ skillKeys, accuracy, strategyTags });
+      const latencies = state.session?.latencies || [];
+      const medianLatency = latencies.length ? latencies.sort((a, b) => a - b)[Math.floor(latencies.length / 2)] : 2200;
+      const code = makeMasteryReceipt({
+        skillKeys,
+        accuracy,
+        strategyTags: strategyTags.length ? strategyTags : ["cra", "visual"],
+        medianLatency,
+        errorTaxonomy: state.session?.misconceptions || [],
+        hintsUsed: state.session?.hintsUsed || 0,
+        version: 2,
+      });
       document.querySelector("#mastery-receipt-code").textContent = code;
+      let qrSlot = document.querySelector("#mastery-receipt-qr");
+      if (!qrSlot) {
+        qrSlot = document.createElement("div");
+        qrSlot.id = "mastery-receipt-qr";
+        qrSlot.style.cssText = "margin-top:0.75rem; display:flex; justify-content:center;";
+        document.querySelector("#mastery-receipt-code").insertAdjacentElement("afterend", qrSlot);
+      }
+      qrSlot.innerHTML = makeReceiptQRSVG(code, 160);
       document.querySelector("[data-copy-receipt]").hidden = false;
       document.querySelector("[data-print-receipt]").hidden = false;
     } catch (error) { announce(error.message); }
@@ -9300,7 +9400,7 @@ els.summary?.addEventListener("click", (event) => {
   }
   if (event.target.closest("[data-print-receipt]")) {
     const code = document.querySelector("#mastery-receipt-code")?.textContent || "";
-    if (code) printHtml(`<article class="packet-page"><h1>EduWonderLab · Mastery Receipt</h1><p>${escapeHtml(code)}</p><p>${t("This code contains practice evidence only. It contains no learner name.")}</p></article>`);
+    if (code) printHtml(`<article class="packet-page"><h1>EduWonderLab · Mastery Receipt</h1><p>${escapeHtml(code)}</p><div style="text-align:center;margin:1rem 0">${makeReceiptQRSVG(code, 180)}</div><p>${t("This code contains practice evidence only. It contains no learner name.")}</p></article>`);
     return;
   }
   if (event.target.closest("[data-start-quick-drill]")) {
@@ -9339,6 +9439,8 @@ document.querySelector("#decode-receipts")?.addEventListener("click", () => {
   const decoded = [];
   let invalid = 0;
   for (const line of lines) { try { decoded.push(decodeMasteryReceipt(line)); } catch { invalid += 1; } }
+  const heatmap = aggregateClassHeatmap(decoded);
+
   const rows = new Map();
   for (const receipt of decoded) for (const key of receipt.skillKeys) {
     const row = rows.get(key) || { count: 0, score: 0, strategies: new Set() };
@@ -9348,8 +9450,245 @@ document.querySelector("#decode-receipts")?.addEventListener("click", () => {
     const skill = findSkill(key); const average = Math.round(row.score / row.count);
     return `<tr><th scope="row">${escapeHtml(skill?.title || key)} <small>Grade ${skill?.grade || "?"}</small></th><td>${row.count}</td><td><strong>${average}%</strong><progress max="100" value="${average}" aria-label="${average}% average accuracy"></progress></td><td>${escapeHtml([...row.strategies].sort().join(", ") || "—")}</td></tr>`;
   }).join("");
-  host.innerHTML = `<p>${t("Decoded {valid} receipt(s); {invalid} unreadable.", { valid: decoded.length, invalid })}</p>${cells ? `<div class="receipt-table-wrap"><table><thead><tr><th scope="col">${t("Skill")}</th><th scope="col">${t("Receipts")}</th><th scope="col">${t("Average accuracy")}</th><th scope="col">${t("Strategies seen")}</th></tr></thead><tbody>${cells}</tbody></table></div>` : `<p>${t("Paste one or more valid receipt codes to build the class heatmap.")}</p>`}`;
+
+  // Misconceptions summary
+  const misEntries = Object.entries(heatmap.misconceptions);
+  const misHtml = misEntries.length
+    ? `<div style="margin-top:1rem; padding:0.75rem; background:#fff1f2; border:1px solid #fecdd3; border-radius:8px">
+        <h4 style="margin:0 0 0.5rem; color:#9f1239">⚠️ Misconception Clusters Detected</h4>
+        <ul style="margin:0; padding-left:1.25rem; font-size:0.9rem; color:#881337">
+          ${misEntries.map(([tax, count]) => `<li><strong>${tax.replaceAll("_", " ")}</strong>: ${count} student occurrence(s)</li>`).join("")}
+        </ul>
+      </div>`
+    : "";
+
+  // Small-group recommendations
+  const recHtml = heatmap.tierRecommendations.length
+    ? `<div style="margin-top:1rem; padding:0.75rem; background:#f0fdf4; border:1px solid #bbf7d0; border-radius:8px">
+        <h4 style="margin:0 0 0.5rem; color:#166534">🎯 Small-Group Intervention Recommendations</h4>
+        <ul style="margin:0; padding-left:1.25rem; font-size:0.9rem; color:#14532d">
+          ${heatmap.tierRecommendations.map((r) => `<li><strong>${r.tier}</strong> on <em>${r.skillId}</em>: ${r.reason}</li>`).join("")}
+        </ul>
+      </div>`
+    : "";
+
+  host.innerHTML = `<p>${t("Decoded {valid} receipt(s); {invalid} unreadable.", { valid: decoded.length, invalid })}</p>${cells ? `<div class="receipt-table-wrap"><table><thead><tr><th scope="col">${t("Skill")}</th><th scope="col">${t("Receipts")}</th><th scope="col">${t("Average accuracy")}</th><th scope="col">${t("Strategies seen")}</th></tr></thead><tbody>${cells}</tbody></table></div>${misHtml}${recHtml}` : `<p>${t("Paste one or more valid receipt codes to build the class heatmap.")}</p>`}`;
 });
+
+let activeMediaStream = null;
+function initTeacherCameraScanner() {
+  const scanBtn = document.querySelector("#scan-receipt-qr-btn");
+  const container = document.querySelector("#receipt-scanner-container");
+  const video = document.querySelector("#receipt-scanner-video");
+  const closeBtn = document.querySelector("#close-receipt-scanner");
+  if (!scanBtn || !container || !video) return;
+
+  const stopCamera = () => {
+    if (activeMediaStream) {
+      activeMediaStream.getTracks().forEach((track) => track.stop());
+      activeMediaStream = null;
+    }
+    container.hidden = true;
+  };
+
+  closeBtn?.addEventListener("click", stopCamera);
+
+  scanBtn.addEventListener("click", async () => {
+    if (!navigator.mediaDevices?.getUserMedia) {
+      announce("Camera scanning is not supported on this device/browser.");
+      return;
+    }
+    try {
+      container.hidden = false;
+      activeMediaStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+      video.srcObject = activeMediaStream;
+      await video.play();
+
+      let scanning = true;
+      const detector = window.BarcodeDetector ? new window.BarcodeDetector({ formats: ["qr_code"] }) : null;
+
+      const scanLoop = async () => {
+        if (!scanning || !activeMediaStream) return;
+        try {
+          if (detector) {
+            const codes = await detector.detect(video);
+            if (codes && codes.length > 0) {
+              const raw = codes[0].rawValue;
+              if (raw && raw.startsWith("EWL-")) {
+                const batchArea = document.querySelector("#receipt-batch");
+                if (batchArea) {
+                  batchArea.value = (batchArea.value ? `${batchArea.value}\n` : "") + raw;
+                  document.querySelector("#decode-receipts")?.click();
+                  chime("automatic");
+                  announce("Receipt scanned successfully!");
+                }
+                scanning = false;
+                stopCamera();
+                return;
+              }
+            }
+          }
+        } catch {
+          /* keep scanning */
+        }
+        if (scanning) requestAnimationFrame(scanLoop);
+      };
+      requestAnimationFrame(scanLoop);
+    } catch (err) {
+      announce("Could not access camera for receipt scanning.");
+      stopCamera();
+    }
+  });
+}
+
+function setGradeAndStrand(grade, strand) {
+  pickGrade(grade);
+  if (strand) {
+    state.strand = strand;
+    renderLibrary();
+  }
+}
+
+function initCommandPalette() {
+  const dialog = document.querySelector("#cra-command-palette");
+  const input = document.querySelector("#cra-palette-input");
+  const results = document.querySelector("#cra-palette-results");
+  const openBtn = document.querySelector("#cmd-palette-btn");
+  const closeBtn = document.querySelector("#close-palette-btn");
+  if (!dialog || !input || !results) return;
+
+  const catalog = [
+    { title: "Addition Strand", desc: "Grades K–3 facts, Make-Ten, sums to 20, 100, 1000", action: () => setGradeAndStrand(1, "addition") },
+    { title: "Subtraction Strand", desc: "Grades K–3 facts, count back through 10, multi-digit", action: () => setGradeAndStrand(1, "subtraction") },
+    { title: "Multiplication Strand", desc: "Grades 3–5 facts, area models, distributive property", action: () => setGradeAndStrand(3, "multiplication") },
+    { title: "Division Strand", desc: "Grades 3–5 facts, quotient partitioning, long division", action: () => setGradeAndStrand(3, "division") },
+    { title: "Fractions & Decimals Strand", desc: "Grades 3–6 equivalence, partition slicing, visual bars", action: () => setGradeAndStrand(4, "fractions") },
+    { title: "Integers Strand", desc: "Grades 6–8 two-color counters, zero pairs, number lines", action: () => setGradeAndStrand(7, "integers") },
+    { title: "Tool: Concrete Ten-Frame", desc: "Manipulative counter frames and Make-Ten bridges", action: () => { openSkill("add-facts-10", "visual", 1); } },
+    { title: "Tool: Open Number Line", desc: "Benchmark hops and landmark jumps", action: () => { openSkill("sub-within-20", "visual", 2); } },
+    { title: "Tool: Area Model (10x10 Grid)", desc: "Array multiplication and distributive partitioning", action: () => { openSkill("mul-6-9", "visual", 3); } },
+    { title: "Teacher Studio & Heatmap", desc: "Classroom analytics, camera receipt scanning, print center", action: () => openHubView("teacher") },
+    { title: "Fix My Mistakes Notebook", desc: "Review missed facts and misconception notes", action: () => openHubView("notebook") },
+    { title: "Game Room", desc: "Partner games, fact duels, flip cards", action: () => openHubView("games") },
+    { title: "Math Writing Studio", desc: "Sentence frames, graphic organizers, math journals", action: () => openHubView("write") },
+  ];
+
+  ALL_SKILLS.forEach((s) => {
+    catalog.push({
+      title: `${s.title} (${s.strand})`,
+      desc: `Grade ${s.grade} · CCSS ${s.standard}`,
+      action: () => openSkill(s.id, "learn", s.grade),
+    });
+  });
+
+  const renderResults = (query = "") => {
+    const q = query.toLowerCase().trim();
+    const filtered = q
+      ? catalog.filter((item) => item.title.toLowerCase().includes(q) || item.desc.toLowerCase().includes(q))
+      : catalog.slice(0, 12);
+
+    results.innerHTML = filtered.map((item, idx) => `
+      <div class="cra-palette-item ${idx === 0 ? "active" : ""}" data-idx="${idx}" tabindex="0" role="option">
+        <div>
+          <strong>${escapeHtml(item.title)}</strong>
+          <div style="font-size:0.8rem; color:var(--cra-muted)">${escapeHtml(item.desc)}</div>
+        </div>
+        <span class="cra-palette-item-strand">Jump →</span>
+      </div>
+    `).join("");
+
+    results.querySelectorAll(".cra-palette-item").forEach((el, idx) => {
+      el.addEventListener("click", () => {
+        filtered[idx]?.action();
+        dialog.close();
+      });
+    });
+  };
+
+  const openPalette = () => {
+    renderResults("");
+    input.value = "";
+    if (typeof dialog.showModal === "function") dialog.showModal();
+    else dialog.hidden = false;
+    input.focus();
+  };
+
+  openBtn?.addEventListener("click", openPalette);
+  closeBtn?.addEventListener("click", () => dialog.close());
+  input.addEventListener("input", (e) => renderResults(e.target.value));
+
+  window.addEventListener("keydown", (e) => {
+    if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+      e.preventDefault();
+      openPalette();
+    } else if (e.key === "/" && !["INPUT", "TEXTAREA", "SELECT"].includes(document.activeElement?.tagName)) {
+      e.preventDefault();
+      openPalette();
+    }
+  });
+}
+
+function initHUDControls() {
+  const vol = document.querySelector("#master-volume-slider");
+  if (vol) {
+    vol.value = getVolume();
+    vol.addEventListener("input", (e) => setVolume(e.target.value));
+  }
+
+  const speedBtn = document.querySelector("#speech-speed-toggle");
+  if (speedBtn) {
+    speedBtn.addEventListener("click", () => {
+      const current = getSpeechRate();
+      const next = current === 1.0 ? 0.75 : 1.0;
+      setSpeechRate(next);
+      speedBtn.textContent = `Voice speed: ${next}x`;
+      announce(`Voice speed set to ${next}x`);
+    });
+  }
+
+  const contrastBtn = document.querySelector("#contrast-toggle");
+  if (contrastBtn) {
+    contrastBtn.addEventListener("click", () => {
+      const on = document.body.dataset.highContrast === "true";
+      document.body.dataset.highContrast = String(!on);
+      contrastBtn.textContent = `High contrast: ${!on ? "On" : "Off"}`;
+      contrastBtn.setAttribute("aria-pressed", String(!on));
+    });
+  }
+
+  const motionBtn = document.querySelector("#reduced-motion-toggle");
+  if (motionBtn) {
+    motionBtn.addEventListener("click", () => {
+      const on = document.body.dataset.reducedMotion === "true";
+      document.body.dataset.reducedMotion = String(!on);
+      motionBtn.textContent = `Reduced motion: ${!on ? "On" : "Off"}`;
+      motionBtn.setAttribute("aria-pressed", String(!on));
+    });
+  }
+
+  // Virtual numpad thumb listener for keystroke latency timestamps
+  els.answerInput?.addEventListener("keydown", () => {
+    if (!state.firstKeypressTime) state.firstKeypressTime = performance.now();
+  });
+  document.querySelector("#math-keypad")?.addEventListener("click", () => {
+    if (!state.firstKeypressTime) state.firstKeypressTime = performance.now();
+  });
+}
+
+function handleDeepLinkAutoLauncher() {
+  try {
+    const hash = new URLSearchParams(window.location.hash.slice(1));
+    const search = new URLSearchParams(window.location.search);
+    const scaffold = hash.get("scaffold") || search.get("scaffold");
+    const craMode = hash.get("cra") || search.get("cra");
+
+    if (scaffold === "cra" || craMode === "1" || craMode === "true") {
+      setTimeout(() => triggerCRAVisualBridge("scaffold"), 150);
+    }
+  } catch {
+    /* safe deep link execution */
+  }
+}
 
 // A finished column board (solver, model or drawer) copies the learner's own typed result into the answer box,
 // but only for this problem's numbers and only when no digit was opened for them by repeated misses.
@@ -10319,6 +10658,10 @@ if (initialSkill && initialParams.get("view") !== "write") openSkill(initialSkil
 if (initialSkill && state.skill && miniLessonRequested(initialParams.toString())) openMiniLesson(); // fl4:lessons
 renderProfiles();
 renderAssignmentBanner();
+initCommandPalette();
+initHUDControls();
+initTeacherCameraScanner();
+handleDeepLinkAutoLauncher();
 if (["teacher", "games", "write", "path", "notebook"].includes(initialParams.get("view"))) { state.writeSkill = initialSkill; openHubView(initialParams.get("view")); }
 // Family launch links enter the existing adaptive flows; no parallel practice engine is created.
 if (initialParams.get("start") === "daily") openPlanned("daily", dailyPlan(state.tutor, state.grade));
