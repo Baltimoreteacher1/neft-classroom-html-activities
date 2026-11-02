@@ -56,6 +56,16 @@ export const TAGS = {
   baseball: ["facts", "twoplayer", "race"],
   guess: PUZZLE,
   race: ["facts", "race"],
+  e8numberquest: PUZZLE,
+  e8fractionfactory: PUZZLE,
+  e8multiplicationarena: FACTS,
+  e8decimaldash: FACTS,
+  e8ratioarchitect: PUZZLE,
+  e8equationbalance: PUZZLE,
+  e8graphexplorer: PUZZLE,
+  e8geometrybuilder: PUZZLE,
+  e8datadetective: PUZZLE,
+  e8strategytournament: PUZZLE,
 };
 
 export const FILTER_IDS = ["all", "facts", "puzzles", "twoplayer", "race"];

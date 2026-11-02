@@ -3,6 +3,7 @@ import { TRAILS, factStatus, loadTrail } from "./fact-trail.js";
 import { COLORS, ITEMS, SHOP, SHOP_IDS, SLOTS } from "./buddy-items.js";
 import { CREATURES, cleanDuel } from "./duel-core.js";
 import { GAMES_BY_ID_NAME } from "./game-names.js";
+import { E8_GAME_IDS } from "./e8/game-ids.js";
 import { t } from "./i18n.js";
 import { chime } from "./sounds.js";
 import { SCENE_IDS } from "./scenes.js";
@@ -238,7 +239,7 @@ export function cleanRewards(saved = {}) {
       ? saved.days.filter((day) => /^\d{4}-\d{2}-\d{2}$/.test(day)).slice(-60)
       : [],
     plays: num(saved.plays),
-    best: { mathworldbuilder: num(best.mathworldbuilder), numberpuzzlestudio: num(best.numberpuzzlestudio), fluencyrally: num(best.fluencyrally), numberquest: num(best.numberquest), arrayarchitect: num(best.arrayarchitect), fractionforge: num(best.fractionforge), equationfactory: num(best.equationfactory), fractionbridge: num(best.fractionbridge), balancestation: num(best.balancestation), ratiocity: num(best.ratiocity), tenframefactory: num(best.tenframefactory), divisionharbor: num(best.divisionharbor), decimaldashboards: num(best.decimaldashboards), integerexpedition: num(best.integerexpedition), graphcity: num(best.graphcity), match: num(best.match), hunt: num(best.hunt), sort: num(best.sort), mistake: num(best.mistake), make: num(best.make), family: num(best.family), balance: num(best.balance), picture: num(best.picture), flip: num(best.flip), make24: num(best.make24), challenge: num(best.challenge), duel: num(best.duel), teamrelay: num(best.teamrelay), baseball: num(best.baseball), guess: num(best.guess), race: num(best.race) },
+    best: { mathworldbuilder: num(best.mathworldbuilder), numberpuzzlestudio: num(best.numberpuzzlestudio), fluencyrally: num(best.fluencyrally), numberquest: num(best.numberquest), arrayarchitect: num(best.arrayarchitect), fractionforge: num(best.fractionforge), equationfactory: num(best.equationfactory), fractionbridge: num(best.fractionbridge), balancestation: num(best.balancestation), ratiocity: num(best.ratiocity), tenframefactory: num(best.tenframefactory), divisionharbor: num(best.divisionharbor), decimaldashboards: num(best.decimaldashboards), integerexpedition: num(best.integerexpedition), graphcity: num(best.graphcity), match: num(best.match), hunt: num(best.hunt), sort: num(best.sort), mistake: num(best.mistake), make: num(best.make), family: num(best.family), balance: num(best.balance), picture: num(best.picture), flip: num(best.flip), make24: num(best.make24), challenge: num(best.challenge), duel: num(best.duel), teamrelay: num(best.teamrelay), baseball: num(best.baseball), guess: num(best.guess), race: num(best.race), ...Object.fromEntries(E8_GAME_IDS.map((id) => [id, num(best[id])])) },
     scenes: Array.isArray(saved.scenes) ? saved.scenes.filter((id) => SCENE_IDS.includes(id)) : [],
     seen: Array.isArray(saved.seen) ? saved.seen.filter((id) => STICKERS.some((sticker) => sticker.id === id)) : [],
     strategies,

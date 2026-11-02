@@ -188,6 +188,12 @@ for (const label of [
 ])
   keys.add(label);
 keys.add("Grade");
+// Enterprise 8 game cards render title and blurb from the family definitions.
+const { listFamilies } = await import("../math/fluency-lab/e8/games.js");
+for (const family of listFamilies()) {
+  keys.add(family.title.en);
+  keys.add(family.blurb.en);
+}
 
 const holes = (text) =>
   [...text.matchAll(/\{(\w+)\}/g)]

@@ -29,7 +29,7 @@ function tableHtml(numeric) {
 }
 
 // ---------------------------------------------------------------- the model workspace (free play and lesson stages)
-class Workspace {
+export class Workspace {
   constructor(host, { onEvent } = {}) {
     this.host = host;
     this.onEvent = onEvent || (() => {});

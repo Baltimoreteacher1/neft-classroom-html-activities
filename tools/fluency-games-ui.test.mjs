@@ -88,10 +88,11 @@ const toMenu = async () => {
 
 await wait();
 assert.ok($(".gm-menu"), "The Game Room opens from ?view=games");
+const { familiesForGrade } = await import("../math/fluency-lab/e8/games.js");
 assert.equal(
   $$("[data-game]").length,
-  27,
-  "Twenty-seven games, including the four strategy games, Make 24, the Class Code Challenge, Team Relay, Spell Duel, Math Baseball, Guess the Number and Math Race, are offered to Grade 3",
+  27 + familiesForGrade(3).length,
+  "Twenty-seven classic games (including the four strategy games, Make 24, the Class Code Challenge, Team Relay, Spell Duel, Math Baseball, Guess the Number and Math Race) plus the Enterprise 8 families for Grade 3 are offered",
 );
 assert.ok($("#bd-view svg"), "The buddy panel shows a buddy");
 assert.match(

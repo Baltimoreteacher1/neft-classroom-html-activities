@@ -233,7 +233,17 @@ for (const id of [...OLD_IDS, "baseball", "guess", "race"])
     GAMES.some((game) => game.id === id),
     `${id} stays in the registry`,
   );
-assert.equal(GAMES.length, OLD_IDS.length + 3, "Only the three new games were added");
+const { E8_GAME_IDS } = await import("../math/fluency-lab/e8/game-ids.js");
+for (const id of E8_GAME_IDS)
+  assert.ok(
+    GAMES.some((game) => game.id === id),
+    `${id} (Enterprise 8) is in the registry`,
+  );
+assert.equal(
+  GAMES.length,
+  OLD_IDS.length + 3 + E8_GAME_IDS.length,
+  "Only the three arcade games and the Enterprise 8 families were added",
+);
 for (const game of GAMES) {
   assert.ok(
     game.tags.length && game.tags.every((tag) => FILTER_IDS.includes(tag) && tag !== "all"),
@@ -309,7 +319,13 @@ await wait();
 
 // Every card shows its grade band, and the filter row narrows the cards.
 const cards = $$("[data-game]");
-assert.equal(cards.length, 28, "Grade 4 is offered 28 games");
+const { familiesForGrade: e8Families } = await import("../math/fluency-lab/e8/games.js");
+const GRADE4_TOTAL = 28 + e8Families(4).length;
+assert.equal(
+  cards.length,
+  GRADE4_TOTAL,
+  "Grade 4 is offered the 28 classic games plus the Enterprise 8 families",
+);
 assert.ok(
   cards.every((card) => card.querySelector(".gm-band")?.textContent.trim()),
   "Every card has a grade-band chip",
@@ -336,7 +352,7 @@ assert.ok(!$("[data-game='match']"), "Race & sports hides fact-card games");
 click("[data-gm-filter='puzzles']");
 assert.ok($("[data-game='guess']") && $("[data-game='make24']") && !$("[data-game='baseball']"));
 click("[data-gm-filter='all']");
-assert.equal($$("[data-game]").length, 28, "All brings every card back");
+assert.equal($$("[data-game]").length, GRADE4_TOTAL, "All brings every card back");
 
 // Math Baseball with a friend
 click("[data-game='baseball']");

@@ -5,6 +5,7 @@ import { feedbackView } from "./feedback-machine.js";
 import { paintFeedback } from "./feedback-panel.js";
 import { t } from "./i18n.js";
 import { announce } from "./speech.js";
+import { E8_GAME_IDS } from "./e8/game-ids.js";
 
 const SETTLED = new Set(["correct", "assisted", "revealed", "revised"]);
 
@@ -41,6 +42,10 @@ export const GAME_PHASES = Object.freeze({
   targethive: { right: "correct", miss: "retry", "right-after-miss": "assisted" },
   factorfractionpath: { right: "correct", miss: "retry", "right-after-miss": "assisted" },
   ghostsprint: { right: "correct", miss: "retry", "right-after-miss": "assisted" },
+  // Enterprise 8 families: a first miss is a retry with a new problem on the same idea; right after a miss is supported.
+  ...Object.fromEntries(
+    E8_GAME_IDS.map((id) => [id, { right: "correct", miss: "retry", "right-after-miss": "assisted" }]),
+  ),
 });
 
 export function phaseFor(game, event) {

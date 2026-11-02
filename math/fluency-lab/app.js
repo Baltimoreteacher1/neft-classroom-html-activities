@@ -7630,6 +7630,15 @@ function recordLabEvidence(entry) {
 }
 
 function recordPuzzleEvidence(entry) {
+  // Enterprise 8 games name the exact skill they exercised.
+  if (entry.skillKey) {
+    const direct = findSkill(entry.skillKey);
+    if (direct) {
+      recordAnswer(state.tutor, direct, { correct: entry.correct, independent: entry.independent, level: entry.level ?? 1, sig: entry.sig });
+      saveProgress();
+    }
+    return;
+  }
   for (let grade = entry.grade; grade >= 0; grade -= 1) {
     const id = skillIdForWorld(entry.worldId, grade);
     const skill = id ? findSkill(`${grade}:${id}`) : null;

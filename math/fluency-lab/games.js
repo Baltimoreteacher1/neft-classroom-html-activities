@@ -36,6 +36,7 @@ import {
   stickerToast,
   summarize,
 } from "./rewards.js";
+import { E8_REGISTRY } from "./e8/game-room.js";
 import { t } from "./i18n.js";
 import { peekCap } from "./step-leak.js";
 import { mathText, stepsBlock } from "./trail-pictures.js";
@@ -211,6 +212,7 @@ const REGISTRY = [
     blurb: "Solve problems to clear the fog from a hidden picture.",
     run: playPicture,
   },
+  ...E8_REGISTRY,
 ];
 // Every card carries its grade band and filter tags (see game-catalog.js).
 export const GAMES = REGISTRY.map(withCatalog);
