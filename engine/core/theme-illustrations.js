@@ -22,7 +22,7 @@ const THEME_SVGS = {
     <ellipse cx="160" cy="100" rx="32" ry="12" fill="#fff" stroke="#d9795d" stroke-width="2"/>
     <rect x="90" y="140" width="50" height="32" rx="6" fill="#2a9d8f" opacity="0.85"/>
     <rect x="180" y="140" width="50" height="32" rx="6" fill="#e9c46a" opacity="0.9"/>
-    <text x="115" y="162" font-size="11" font-weight="700" fill="#fff" text-anchor="middle">2 cups</text>
+    <text x="115" y="162" font-size="11" font-weight="700" fill="#000" text-anchor="middle">2 cups</text>
     <text x="205" y="162" font-size="11" font-weight="700" fill="#264653" text-anchor="middle">3 cups</text>
   </svg>`,
 
@@ -63,7 +63,8 @@ const THEME_SVGS = {
     <rect x="190" y="110" width="30" height="50" fill="#d9795d" rx="3"/>
     <rect x="230" y="90" width="30" height="70" fill="#2a9d8f" rx="3"/>
     <circle cx="85" cy="70" r="16" fill="#0f7c4a"/>
-    <text x="85" y="75" font-size="12" font-weight="800" fill="#fff" text-anchor="middle">⚽</text>
+    <circle cx="85" cy="70" r="10" fill="#fff" stroke="#12355b" stroke-width="1.5"/>
+    <path d="M81 64 87 62 92 66 90 72 84 74 80 70Z M81 64 77 67 M92 66 96 64 M90 72 93 77 M84 74 83 80 M80 70 75 71" fill="none" stroke="#12355b" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
     <polyline points="60,155 100,140 140,120 180,100 220,115 260,95" fill="none" stroke="#12355b" stroke-width="2" stroke-dasharray="4"/>
   </svg>`,
 

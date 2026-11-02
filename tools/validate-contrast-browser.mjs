@@ -33,6 +33,15 @@ async function probe(page) {
     };
     for (const e of G.textEls()) {
       const s = getComputedStyle(e);
+      // Inline SVG text is painted against sibling vector shapes, not an
+      // ancestor background. The DOM probe cannot infer that backdrop safely.
+      if (e.namespaceURI === "http://www.w3.org/2000/svg" && e.localName === "text") {
+        bump(
+          res.text.unjudged,
+          e.closest('svg[aria-hidden="true"]') ? "decorative-svg" : "svg-text",
+        );
+        continue;
+      }
       if (e.closest(":disabled, [aria-disabled=true], fieldset:disabled")) {
         res.text.exempt++;
         continue;
