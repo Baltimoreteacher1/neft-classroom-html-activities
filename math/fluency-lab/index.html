@@ -193,7 +193,12 @@
       <section id="write-view" class="hub-panel wr-view" aria-label="Math Writing Studio" hidden></section>
       <section id="notebook-view" class="hub-panel" aria-label="Mistake notebook" hidden></section>
       <section id="teacher-view" class="hub-panel" aria-label="Teacher studio" hidden>
-        <div class="teacher-quick-tools" aria-label="Teacher resources">
+        <nav class="teacher-jump" aria-label="Jump to a teacher section">
+          <a href="#teacher-tools">Print &amp; projector tools</a>
+          <a href="#teacher-studio">Class studio</a>
+          <a href="#receipt-decoder">Receipt decoder</a>
+        </nav>
+        <div id="teacher-tools" class="teacher-quick-tools" aria-label="Teacher resources">
           <div><p class="section-label">EDUWONDERLAB · TEACHER RESOURCES</p><h2 data-i18n>Plan, print, and project</h2><p data-i18n>Classroom materials and math talk tools are gathered here, away from the student journey.</p></div>
           <div class="button-row">
             <button id="open-print-center" class="outline-action print-center-btn" type="button" data-i18n>Print Center</button>
@@ -204,7 +209,7 @@
         <div id="teacher-4"></div> <!-- fl4:teacher -->
         <div id="teacher-studio"></div>
         <div id="moby-teacher-host"></div>
-        <section class="receipt-decoder" aria-labelledby="receipt-decoder-title">
+        <section id="receipt-decoder" class="receipt-decoder" aria-labelledby="receipt-decoder-title">
           <h3 id="receipt-decoder-title" data-i18n>Mastery receipt decoder & class heatmap</h3>
           <p data-i18n>Paste zero-PII receipt codes, one per line, to see class skill patterns on this device.</p>
           <label for="receipt-batch"><span data-i18n>Receipt codes</span><textarea id="receipt-batch" rows="4" autocomplete="off" spellcheck="false"></textarea></label>
@@ -575,14 +580,20 @@
           <button type="button" class="tpt-modal-close-btn" data-close-print-center aria-label="Close Print Center">✕</button>
         </header>
 
+        <div class="tpt-filter-row" role="group" aria-label="Show printables for">
+          <button type="button" class="tpt-filter-chip active" data-tpt-filter="all" aria-pressed="true">All</button>
+          <button type="button" class="tpt-filter-chip" data-tpt-filter="student" aria-pressed="false">Student printables</button>
+          <button type="button" class="tpt-filter-chip" data-tpt-filter="teacher" aria-pressed="false">Teacher guides &amp; posters</button>
+          <button type="button" class="tpt-filter-chip" data-tpt-filter="family" aria-pressed="false">Family handouts</button>
+        </div>
         <nav class="tpt-modal-tabs" role="tablist" aria-label="Printable resource categories">
-          <button type="button" class="tpt-tab-btn active" data-tpt-tab="mats" role="tab" aria-selected="true">📝 Recording Mats</button>
-          <button type="button" class="tpt-tab-btn" data-tpt-tab="partner" role="tab" aria-selected="false">🎲 Partner Games</button>
-          <button type="button" class="tpt-tab-btn" data-tpt-tab="exits" role="tab" aria-selected="false">🎫 3-Tier Exit Tickets</button>
-          <button type="button" class="tpt-tab-btn" data-tpt-tab="anchors" role="tab" aria-selected="false">📌 Desk Helpers &amp; Posters</button>
-          <button type="button" class="tpt-tab-btn" data-tpt-tab="passports" role="tab" aria-selected="false">🎖️ Passports &amp; Badges</button>
-          <button type="button" class="tpt-tab-btn" data-tpt-tab="stations" role="tab" aria-selected="false">🎪 Stations &amp; Coaching</button>
-          <button type="button" class="tpt-tab-btn" data-tpt-tab="parents" role="tab" aria-selected="false">🏠 "Fridge Math" Guide</button>
+          <button type="button" class="tpt-tab-btn active" data-tpt-tab="mats" data-tpt-audience="student" role="tab" aria-selected="true">📝 Recording Mats <span class="tpt-audience-badge">Student print</span></button>
+          <button type="button" class="tpt-tab-btn" data-tpt-tab="partner" data-tpt-audience="student" role="tab" aria-selected="false">🎲 Partner Games <span class="tpt-audience-badge">Student print</span></button>
+          <button type="button" class="tpt-tab-btn" data-tpt-tab="exits" data-tpt-audience="student" role="tab" aria-selected="false">🎫 3-Tier Exit Tickets <span class="tpt-audience-badge">Student print</span></button>
+          <button type="button" class="tpt-tab-btn" data-tpt-tab="anchors" data-tpt-audience="teacher" role="tab" aria-selected="false">📌 Desk Helpers &amp; Posters <span class="tpt-audience-badge">Classroom</span></button>
+          <button type="button" class="tpt-tab-btn" data-tpt-tab="passports" data-tpt-audience="student" role="tab" aria-selected="false">🎖️ Passports &amp; Badges <span class="tpt-audience-badge">Student print</span></button>
+          <button type="button" class="tpt-tab-btn" data-tpt-tab="stations" data-tpt-audience="teacher" role="tab" aria-selected="false">🎪 Stations &amp; Coaching <span class="tpt-audience-badge">Teacher guide</span></button>
+          <button type="button" class="tpt-tab-btn" data-tpt-tab="parents" data-tpt-audience="family" role="tab" aria-selected="false">🏠 "Fridge Math" Guide <span class="tpt-audience-badge">Family</span></button>
         </nav>
 
         <div id="tpt-modal-viewport" class="tpt-modal-viewport">

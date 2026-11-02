@@ -10038,6 +10038,25 @@ const TeacherPrintCenter = {
     if (modal) modal.hidden = true;
   },
 
+  // Shows only the tabs for one audience. If the open tab is filtered out, the first visible tab opens.
+  setAudienceFilter(audience) {
+    document.querySelectorAll("[data-tpt-filter]").forEach((chip) => {
+      const on = chip.dataset.tptFilter === audience;
+      chip.classList.toggle("active", on);
+      chip.setAttribute("aria-pressed", on ? "true" : "false");
+    });
+    let firstVisible = null;
+    document.querySelectorAll("[data-tpt-tab]").forEach((tab) => {
+      const show = audience === "all" || tab.dataset.tptAudience === audience;
+      tab.hidden = !show;
+      if (show && !firstVisible) firstVisible = tab.dataset.tptTab;
+    });
+    if (firstVisible && !document.querySelector(`[data-tpt-tab="${this.activeTab}"]:not([hidden])`)) {
+      this.activeTab = firstVisible;
+      this.renderTab(firstVisible);
+    }
+  },
+
   renderTab(tab) {
     const viewport = document.querySelector("#tpt-modal-viewport");
     const tabs = document.querySelectorAll("[data-tpt-tab]");
@@ -10485,6 +10504,11 @@ document.addEventListener("click", (event) => {
   }
   if (event.target.closest("[data-close-print-center]")) {
     TeacherPrintCenter.close();
+    return;
+  }
+  const audienceChip = event.target.closest("[data-tpt-filter]");
+  if (audienceChip) {
+    TeacherPrintCenter.setAudienceFilter(audienceChip.dataset.tptFilter);
     return;
   }
   const tabBtn = event.target.closest("[data-tpt-tab]");
