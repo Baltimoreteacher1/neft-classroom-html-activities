@@ -6,11 +6,13 @@ import { getLevel, setLevel } from "./language-settings.js";
 import { cleanRewards, loadRewards, saveRewards } from "./rewards.js";
 import { cleanPieces, loadPieces, savePieces } from "./writing-store.js";
 import { cleanStudio, exportStudio, importStudio } from "./studio/adaptive.js";
+import { e8Store } from "./e8/e8-local.js";
+import { sanitizeE8 } from "./e8/e8-store.js";
 import { loadFacts, sanitizeFacts, saveFacts } from "./moby/fact-model.js"; // fl-moby:facts
 
 const count = (value, max = 100000) => (Number.isFinite(value) && value >= 0 ? Math.min(Math.floor(value), max) : 0);
 
-export const exportPlay = () => ({ trail: loadTrail(), rewards: loadRewards(), language: { journal: loadJournal(), level: getLevel() }, writing: loadPieces(), growth: loadGrowthLog(), studio: exportStudio(), facts: loadFacts() }); // fl4:teacher: the growth log travels in the backup; fl-moby:facts: per-fact records travel too
+export const exportPlay = () => ({ e8: e8Store.load(), trail: loadTrail(), rewards: loadRewards(), language: { journal: loadJournal(), level: getLevel() }, writing: loadPieces(), growth: loadGrowthLog(), studio: exportStudio(), facts: loadFacts() }); // fl4:teacher: the growth log travels in the backup; fl-moby:facts: per-fact records travel too
 
 export function cleanPlay(value) {
   if (!value || typeof value !== "object") return null;
@@ -30,6 +32,8 @@ export function cleanPlay(value) {
   return {
     trail: { stations, facts, recent: cleanRecent(value.trail?.recent) },
     rewards: cleanRewards(value.rewards || {}),
+    // A backup made before Enterprise 8 has none; a missing record leaves the learner's own alone.
+    e8: value.e8 && typeof value.e8 === "object" ? sanitizeE8(value.e8) : null,
     // A backup made before the writing studio has no folder; a missing list leaves the learner's folder alone.
     writing: Array.isArray(value.writing) ? cleanPieces(value.writing) : null,
     // A backup made before the Discovery Studio has none; a missing record leaves the learner's own alone.
@@ -47,6 +51,7 @@ export function importPlay(clean) {
   saveTrail(clean.trail);
   saveRewards(clean.rewards);
   if (clean.writing) savePieces(clean.writing);
+  if (clean.e8) e8Store.save(clean.e8);
   if (clean.growth) saveGrowthLog(clean.growth); // fl4:teacher
   if (clean.studio) importStudio(clean.studio);
   if (clean.facts) saveFacts(clean.facts); // fl-moby:facts
