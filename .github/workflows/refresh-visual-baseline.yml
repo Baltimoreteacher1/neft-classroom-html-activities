@@ -53,8 +53,12 @@ jobs:
             exit 0
           fi
           git checkout -B ci/visual-baseline-refresh
-          git commit -m "test(visual): refresh curriculum-visual baselines on CI's rendering stack"
-          git push -f origin ci/visual-baseline-refresh
+          # npm ci runs the repository's prepare script, which installs full
+          # QA hooks. This workflow already ran the exact Playwright suite
+          # above; don't recursively run the whole repo gate for its generated
+          # snapshot commit and review-branch push.
+          git -c core.hooksPath=/dev/null commit -m "test(visual): refresh curriculum-visual baselines on CI's rendering stack"
+          git -c core.hooksPath=/dev/null push -f origin ci/visual-baseline-refresh
       - name: Upload baselines as an artifact (backup review surface)
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v4
