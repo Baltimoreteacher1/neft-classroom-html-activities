@@ -49,7 +49,7 @@ export function mountMobyQuests(host, { tutor, grade, now = Date.now(), onOpenSk
           <h3 style="margin:0;font-size:1.1875rem;font-weight:700;color:#0f172a;">🎯 ${escapeHtml(t("Today's Learning Quests"))}</h3>
           <p style="margin:0.25rem 0 0;font-size:0.8125rem;color:#64748b;">${escapeHtml(t("Honest practice that rewards learning, revision, and understanding."))}</p>
         </div>
-        <span style="font-weight:600;font-size:0.875rem;color:#0369a1;">${goals.completed} / ${goals.total} ${escapeHtml(t("goals met"))}</span>
+        <span style="font-weight:600;font-size:0.875rem;color:#0369a1;">${goals.daily.filter((goal) => goal.done).length} / ${goals.daily.length} ${escapeHtml(t("goals met"))}</span>
       </div>
       <div class="mby-quest-list">${questCards}</div>
     </section>`;

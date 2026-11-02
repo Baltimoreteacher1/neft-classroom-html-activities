@@ -71,6 +71,8 @@ import { setLanguageProfile } from "./language-settings.js";
 import { questionEs } from "./question-es.js";
 import { handleStepPlayerClick, handleStepPlayerSolved, lightStepPlayers, stepPlayer } from "./step-player.js";
 import { applyGradeExperience } from "./grade-experience.js";
+import { renderProgressVisual } from "./e8/progress-visual.js";
+import { masteryStage } from "./learning-evidence.js";
 import { initGradeHub } from "./grade-hub.js";
 import { mountStudio, studioAvailable, studioModeled } from "./studio/studio.js";
 
@@ -7617,13 +7619,15 @@ function renderPath() {
   const repaired = state.tutor.mistakes.filter((entry) => entry.resolvedAt && findSkill(entry.key)?.grade === state.grade).length;
   els.path.innerHTML = `<div class="section-heading"><div><p class="section-label">${escapeHtml(gradeDisplay(state.grade))} · ${escapeHtml(PROFILE_NAMES[activeProfile])}</p><h2>See what is growing.</h2><p>Independent first tries, coached practice, and learning over time tell different parts of the story.</p></div><button class="outline-action" data-print-report>Print family progress</button></div>
     <div class="learning-milestones"><div><strong>${explored}/${skills.length}</strong><span>visual lessons explored</span></div><div><strong>${remembered}/${skills.length}</strong><span>remembered independently</span></div><div><strong>${repaired}</strong><span>mistakes revisited successfully</span></div><div><strong>${new Set(sessions.map((session) => localDay(session.at))).size}</strong><span>practice days</span></div></div>
-    <div class="path-explainer"><h3>What “remembered” means here</h3><p>At least eight recent independent checks, 85% correct, and successful practice on two different days. Coached examples and easier support problems help you learn; they do not establish independent mastery.</p></div>
+    <div id="e8-progress"></div><div class="path-explainer"><h3>What “remembered” means here</h3><p>At least eight recent independent checks, 85% correct, and successful practice on two different days. Coached examples and easier support problems help you learn; they do not establish independent mastery.</p></div>
     <section id="prerequisite-constellation" aria-label="My learning path"></section>
     <div class="learning-map">${skills.map((skill) => {
       const status = evidence(state.tutor, skill); const foundation = prerequisites(skill)[0];
       const checkup = state.tutor.diagnostics[state.grade]?.results?.[tutorSkillKey(skill)];
       return `<article class="path-skill ${status.secure ? 'secure' : ''}"><div><p class="section-label">${escapeHtml(skill.strand)}</p><h3>${escapeHtml(skill.title)}</h3><p class="path-status">${status.label}</p><p>${status.independent ? `${status.successes} of ${status.independent} recent independent checks correct` : 'No independent evidence yet'}${status.supportedTotal ? ` · ${status.supportedTotal} coached attempts` : ''}</p>${renderSkillFluencyMetrics(skill)}${status.dueAt ? `<p>${status.due ? 'Ready to revisit' : `Next memory refresh: ${new Date(status.dueAt).toLocaleDateString()}`}</p>` : ''}${checkup !== undefined ? `<p class="small-copy">Starting-point sample: ${checkup ? 'solved' : 'worth exploring'}. More practice will tell us more.</p>` : ''}${foundation ? `<p class="foundation-link">Helpful foundation: <button class="text-action" data-open-key="${tutorSkillKey(foundation)}" data-open-mode="visual">${escapeHtml(foundation.title)}</button></p>` : ''}</div><div class="button-row"><button class="outline-action" data-open-key="${tutorSkillKey(skill)}" data-open-mode="visual">Visual lesson</button><button class="primary-action" data-open-key="${tutorSkillKey(skill)}" data-open-mode="adaptive">Practice</button></div></article>`;
     }).join("")}</div>${journalHtml()}<section class="family-guide"><h3>For families: five useful minutes</h3><ol><li>Let your child choose one developing skill.</li><li>Ask, “What do you notice?” before giving a method.</li><li>Use the visual lesson together when a step feels unclear.</li><li>Let your child try a few fresh questions independently.</li><li>Ask, “How could you check that?” Celebrate a useful strategy or a repaired mistake.</li></ol><p>Fresh problems are generated each visit. A familiar topic can be practiced again tomorrow without repeating a fixed worksheet.</p></section>`;
+  const e8Progress = els.path.querySelector("#e8-progress");
+  if (e8Progress) e8Progress.innerHTML = renderProgressVisual(state.grade, skills.map((skill) => ({ title: skill.title, strand: skill.strand, stage: masteryStage(evidence(state.tutor, skill)) })));
   const constellation = els.path.querySelector("#prerequisite-constellation");
   if (constellation) renderPrerequisiteMap(constellation, {
     skills: ALL_SKILLS.map((skill) => ({ ...skill, ...(prerequisiteGraph[tutorSkillKey(skill)] || { prerequisiteSkills: [], enrichmentSkills: [] }) })),

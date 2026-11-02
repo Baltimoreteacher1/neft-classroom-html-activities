@@ -1,0 +1,544 @@
+/* Grade-adaptive system (Enterprise 8). Structure and presentation per grade; the engines underneath are shared.
+   Attributes come from e8/grade-system.js. Colours come from e8/tokens.generated.css and the grade accent. */
+
+html[data-grade-system] {
+  --gs-radius: 16px;
+  --gs-pad: 1rem;
+  --gs-gap: 1rem;
+  --gs-ink: var(--experience-ink, #17324d);
+  --gs-wash: var(--experience-wash, #e3f4f3);
+  --gs-accent: var(--grade, #1fa6a2);
+  font-size: calc(100% * var(--gs-scale, 1));
+}
+
+/* ---------- Response controls: target size follows the grade ---------- */
+html[data-grade-system]
+  #workspace-view
+  :is(
+    button,
+    .primary-action,
+    .outline-action,
+    input:not([type="checkbox"], [type="radio"]),
+    select
+  ),
+html[data-grade-system] #games-view :is(button, .primary-action, .outline-action) {
+  min-height: var(--gs-target, 44px);
+}
+html[data-gs-controls="jumbo"] #workspace-view :is(button, .primary-action, .outline-action) {
+  font-size: 1.15rem;
+  padding-inline: 1.4rem;
+}
+html[data-gs-controls="jumbo"] #workspace-view input:not([type="checkbox"], [type="radio"]) {
+  font-size: 1.5rem;
+}
+html[data-gs-controls="compact"] #workspace-view :is(button, .primary-action, .outline-action) {
+  font-size: 0.95rem;
+}
+
+/* ---------- Density ---------- */
+html[data-gs-density="airy"] {
+  --gs-pad: 1.4rem;
+  --gs-gap: 1.4rem;
+}
+html[data-gs-density="roomy"] {
+  --gs-pad: 1.15rem;
+  --gs-gap: 1.1rem;
+}
+html[data-gs-density="balanced"] {
+  --gs-pad: 1rem;
+  --gs-gap: 1rem;
+}
+html[data-gs-density="compact"] {
+  --gs-pad: 0.78rem;
+  --gs-gap: 0.7rem;
+}
+html[data-grade-system] :is(.skill-grid, .journey-cards) {
+  gap: var(--gs-gap);
+}
+
+/* ---------- Hero banner composition ---------- */
+html[data-grade-system][data-grade-system] .grade-experience-banner {
+  padding: calc(var(--gs-pad) * 1.3);
+  border-radius: calc(var(--gs-radius) + 8px);
+  animation-duration: var(--gs-motion-ms, 300ms);
+}
+html[data-grade-system][data-grade-system] .grade-experience-art {
+  background: transparent;
+  padding: 0;
+  min-height: 0;
+}
+html[data-grade-system][data-grade-system] .grade-experience-art svg {
+  width: 100%;
+  max-width: none;
+  border-radius: calc(var(--gs-radius) - 2px);
+  display: block;
+}
+
+/* Grade 1: storybook. A wide illustrated scene above centred, short, large text. */
+html[data-grade-system][data-gs-header="storybook"] .grade-experience-banner {
+  grid-template-columns: 1fr;
+  text-align: center;
+  border: 5px solid #f3c6cf;
+  --gs-radius: 34px;
+  background: linear-gradient(#fff8f1, #fff0e4);
+}
+html[data-grade-system][data-gs-header="storybook"] .grade-experience-art svg {
+  max-height: 250px;
+}
+html[data-grade-system][data-gs-header="storybook"] .grade-experience-copy {
+  margin-inline: auto;
+}
+html[data-grade-system][data-gs-header="storybook"] .grade-experience-copy h2 {
+  font-size: clamp(2.1rem, 5.4vw, 3.2rem);
+}
+html[data-grade-system][data-gs-header="storybook"] .grade-experience-focus {
+  background: #fff;
+  border: 3px solid #f3c6cf;
+  font-size: 1.05rem;
+}
+
+/* Grade 2: workshop. Block-striped edge, scene left, chunky text. */
+html[data-grade-system][data-gs-header="workshop"] .grade-experience-banner {
+  grid-template-columns: minmax(220px, 40%) 1fr;
+  --gs-radius: 22px;
+  border: 4px solid #e9c58a;
+  background: repeating-linear-gradient(90deg, #fff7e6 0 38px, #fff1d4 38px 40px);
+  box-shadow:
+    inset 12px 0 0 #f2c15b,
+    0 10px 26px rgba(112, 64, 15, 0.12);
+}
+html[data-grade-system][data-gs-header="workshop"] .grade-experience-copy h2 {
+  font-size: clamp(1.9rem, 4vw, 2.8rem);
+}
+
+/* Grade 3: studio. Dot-grid paper like an array. */
+html[data-grade-system][data-gs-header="studio"] .grade-experience-banner {
+  grid-template-columns: minmax(230px, 42%) 1fr;
+  --gs-radius: 18px;
+  border: 3px dashed #7fae80;
+  background:
+    radial-gradient(circle, #b9d6b8 1.6px, transparent 1.7px) 0 0 / 22px 22px,
+    #f6fbf2;
+}
+html[data-grade-system][data-gs-header="studio"] .grade-experience-copy {
+  background: #fffffff0;
+  padding: 0.9rem 1.1rem;
+  border-radius: 14px;
+}
+
+/* Grade 4: lab. Ruled notebook with a margin line. */
+html[data-grade-system][data-gs-header="lab"] .grade-experience-banner {
+  grid-template-columns: 1fr minmax(240px, 40%);
+  --gs-radius: 14px;
+  direction: rtl;
+  border: 2px solid #8bbcb2;
+  background: repeating-linear-gradient(#f7fbfa 0 31px, #cfe5e0 31px 32px);
+}
+html[data-grade-system][data-gs-header="lab"] .grade-experience-banner > * {
+  direction: ltr;
+}
+html[data-grade-system][data-gs-header="lab"] .grade-experience-copy {
+  border-left: 4px solid #d8613c;
+  padding-left: 1rem;
+}
+
+/* Grade 5: blueprint. Engineering-paper grid, square corners, mono kicker. */
+html[data-grade-system][data-gs-header="blueprint"] .grade-experience-banner {
+  grid-template-columns: 1fr minmax(240px, 40%);
+  --gs-radius: 6px;
+  border: 2px solid #21496a;
+  border-radius: 6px;
+  background:
+    linear-gradient(#bcd2e422 1px, transparent 1px) 0 0 / 24px 24px,
+    linear-gradient(90deg, #bcd2e422 1px, transparent 1px) 0 0 / 24px 24px,
+    #f1f7fb;
+  box-shadow: 6px 6px 0 #bcd2e4;
+}
+html[data-grade-system][data-gs-header="blueprint"] .grade-experience-art {
+  order: 2;
+}
+html[data-grade-system][data-gs-header="blueprint"] .grade-experience-kicker {
+  font-family: ui-monospace, Menlo, monospace;
+  letter-spacing: 0.06em;
+}
+
+/* Grade 6: reasoning lab. Flat panel with a three-part data strip. */
+html[data-grade-system][data-gs-header="reasoning-lab"] .grade-experience-banner {
+  grid-template-columns: minmax(250px, 38%) 1fr;
+  --gs-radius: 10px;
+  border: 1px solid #a9cfcc;
+  border-top: 6px solid var(--grade);
+  background: #fff;
+  box-shadow: none;
+}
+html[data-grade-system][data-gs-header="reasoning-lab"] .grade-experience-focus {
+  border-radius: 6px;
+  background: var(--gs-wash);
+}
+
+/* Grade 7: strategy desk. Compact horizontal bar, text first, thick terracotta rule. */
+html[data-grade-system][data-gs-header="strategy-desk"] .grade-experience-banner {
+  grid-template-columns: 1fr minmax(210px, 30%);
+  --gs-radius: 8px;
+  border: 0;
+  border-bottom: 5px solid var(--grade);
+  border-radius: 4px;
+  background: linear-gradient(90deg, #fff, #faeee8);
+  box-shadow: none;
+  padding-block: 0.7rem;
+}
+html[data-grade-system][data-gs-header="strategy-desk"] .grade-experience-art {
+  order: 2;
+}
+html[data-grade-system][data-gs-header="strategy-desk"] .grade-experience-art svg {
+  max-height: 130px;
+}
+html[data-grade-system][data-gs-header="strategy-desk"] .grade-experience-copy h2 {
+  font-size: clamp(1.4rem, 2.4vw, 1.9rem);
+  letter-spacing: -0.01em;
+}
+
+/* Grade 8: algebra workspace. Dark instrument band with a graph-paper scene. */
+html[data-grade-system][data-gs-header="algebra-workspace"] .grade-experience-banner {
+  grid-template-columns: 1fr minmax(260px, 40%);
+  --gs-radius: 4px;
+  border: 1px solid #2f5163;
+  border-radius: 4px;
+  background: #0f2430;
+  color: #eaf3f8;
+  box-shadow: none;
+  padding-block: 0.8rem;
+}
+html[data-grade-system][data-gs-header="algebra-workspace"] .grade-experience-art {
+  order: 2;
+}
+html[data-grade-system][data-gs-header="algebra-workspace"] .grade-experience-art svg {
+  max-height: 150px;
+  border: 1px solid #2f5163;
+}
+html[data-grade-system][data-gs-header="algebra-workspace"] #main .grade-experience-copy h2 {
+  color: #fff;
+  font-size: clamp(1.35rem, 2.3vw, 1.8rem);
+}
+html[data-grade-system][data-gs-header="algebra-workspace"] .grade-experience-copy > p:not(.grade-experience-kicker) {
+  color: #d6e5ee;
+}
+html[data-grade-system][data-gs-header="algebra-workspace"] .grade-experience-kicker {
+  color: #7fe0dc;
+  font-family: ui-monospace, Menlo, monospace;
+}
+html[data-grade-system][data-gs-header="algebra-workspace"] .grade-experience-focus {
+  background: #16303f;
+  color: #eaf3f8;
+  border-color: #2f5163;
+  border-radius: 2px;
+  font-family: ui-monospace, Menlo, monospace;
+}
+
+/* ---------- Hub tabs and the grade rail: navigation complexity ---------- */
+html[data-gs-nav="one-task"] .hub-tabs button,
+html[data-gs-nav="guided-steps"] .hub-tabs button {
+  min-height: 56px;
+  font-size: 1.1rem;
+  border-radius: 999px;
+  padding-inline: 1.3rem;
+}
+html[data-gs-nav="one-task"] .hub-tabs [data-view="write"],
+html[data-gs-nav="one-task"] .hub-tabs [data-view="path"] {
+  opacity: 1;
+}
+html[data-gs-nav="visual-discovery"] .hub-tabs button,
+html[data-gs-nav="investigate-compare"] .hub-tabs button {
+  min-height: 50px;
+  border-radius: 14px 14px 4px 4px;
+}
+html[data-gs-nav="analytical-workspace"] .hub-tabs button,
+html[data-gs-nav="strategy-workspace"] .hub-tabs button {
+  border-radius: 6px;
+}
+html[data-gs-nav="modeling-studio"] .hub-tabs {
+  background: #0f2430;
+  border-color: #2f5163;
+  border-radius: 4px;
+}
+html[data-gs-nav="modeling-studio"] .hub-tabs button {
+  border-radius: 2px;
+  color: #dcebf3;
+  font-family: ui-monospace, Menlo, monospace;
+  font-size: 0.88rem;
+}
+html[data-gs-nav="modeling-studio"] .hub-tabs button[aria-current="page"] {
+  background: #7fe0dc;
+  color: #0f2430;
+}
+html[data-gs-nav="modeling-studio"] .hub-tabs .teacher-tab {
+  color: #ffd48a;
+}
+
+html[data-gs-nav="one-task"] .grade-tabs .grade-tab,
+html[data-gs-nav="guided-steps"] .grade-tabs .grade-tab {
+  min-height: 76px;
+  border-radius: 24px;
+  border-width: 3px;
+  font-size: 1.15rem;
+}
+html[data-gs-nav="modeling-studio"] .grade-tabs .grade-tab,
+html[data-gs-nav="strategy-workspace"] .grade-tabs .grade-tab {
+  min-height: 48px;
+  border-radius: 3px;
+}
+
+/* ---------- Cards: one card language per grade family ---------- */
+html[data-gs-card="sticker"] :is(.skill-card, .journey-card, .daily-card) {
+  border: 4px solid color-mix(in srgb, var(--grade) 40%, white);
+  border-radius: 30px;
+  padding: calc(var(--gs-pad) * 1.15);
+  box-shadow: 0 6px 0 color-mix(in srgb, var(--grade) 28%, white);
+}
+html[data-gs-card="sticker"] .skill-card :is(h3, h4) {
+  font-size: 1.35rem;
+}
+html[data-gs-card="block-tab"] :is(.skill-card, .journey-card, .daily-card) {
+  border: 3px solid #e9c58a;
+  border-top: 14px solid #f2c15b;
+  border-radius: 16px;
+  padding: var(--gs-pad);
+}
+html[data-gs-card="dot-grid"] :is(.skill-card, .journey-card, .daily-card) {
+  border: 2px dashed #7fae80;
+  border-radius: 16px;
+  background:
+    radial-gradient(circle, #dbead8 1.2px, transparent 1.3px) 0 0 / 18px 18px,
+    #fff;
+}
+html[data-gs-card="notebook"] :is(.skill-card, .journey-card, .daily-card) {
+  border: 1px solid #8bbcb2;
+  border-left: 10px solid #d8613c;
+  border-radius: 6px 14px 14px 6px;
+  background: repeating-linear-gradient(#fff 0 27px, #e4f0ed 27px 28px);
+}
+html[data-gs-card="blueprint"] :is(.skill-card, .journey-card, .daily-card) {
+  border: 2px solid #21496a;
+  border-radius: 3px;
+  box-shadow: 4px 4px 0 #bcd2e4;
+}
+html[data-gs-card="panel"] :is(.skill-card, .journey-card, .daily-card) {
+  border: 1px solid #a9cfcc;
+  border-top: 4px solid var(--grade);
+  border-radius: 8px;
+  box-shadow: none;
+}
+html[data-gs-card="row"] :is(.skill-card, .journey-card, .daily-card) {
+  border: 0;
+  border-bottom: 1px solid #d9c3b8;
+  border-left: 5px solid var(--grade);
+  border-radius: 0;
+  box-shadow: none;
+  padding-block: calc(var(--gs-pad) * 0.8);
+}
+html[data-gs-card="row"] .skill-grid {
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr));
+}
+html[data-gs-card="ledger"] :is(.skill-card, .journey-card, .daily-card) {
+  border: 0;
+  border-bottom: 1px solid #9fb6c4;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  font-variant-numeric: tabular-nums;
+  padding-block: calc(var(--gs-pad) * 0.7);
+}
+html[data-gs-card="ledger"] .skill-grid {
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
+  gap: 0.2rem 1.4rem;
+}
+html[data-gs-type="grotesque-mono"] :is(.skill-card, .mastery-label, .workspace-standard) {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- Learning-path presentation ---------- */
+html[data-gs-path="stepping-stones"] .journey-cards {
+  counter-reset: gs-step;
+}
+html[data-gs-path="stepping-stones"] .journey-card {
+  position: relative;
+}
+html[data-gs-path="stepping-stones"] .journey-card::before {
+  counter-increment: gs-step;
+  content: counter(gs-step);
+  position: absolute;
+  top: -14px;
+  left: -10px;
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  background: var(--grade);
+  color: #fff;
+  font-weight: 900;
+  font-size: 1.2rem;
+  border-radius: 50%;
+  border: 3px solid #fff;
+}
+html[data-gs-path="numbered-route"] .journey-cards {
+  counter-reset: gs-step;
+}
+html[data-gs-path="numbered-route"] .journey-card::before {
+  counter-increment: gs-step;
+  content: "Step " counter(gs-step);
+  display: block;
+  font:
+    800 0.75rem ui-monospace,
+    Menlo,
+    monospace;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--experience-ink);
+  margin-bottom: 0.3rem;
+}
+html[data-gs-path="dependency-graph"] .journey-cards {
+  border-left: 2px solid #9fb6c4;
+  padding-left: 1rem;
+}
+html[data-gs-path="dependency-graph"] .journey-card {
+  position: relative;
+}
+html[data-gs-path="dependency-graph"] .journey-card::before {
+  content: "";
+  position: absolute;
+  left: -1.38rem;
+  top: 1.1rem;
+  width: 12px;
+  height: 12px;
+  background: var(--grade);
+  border-radius: 50%;
+}
+
+/* ---------- Feedback style ---------- */
+html[data-gs-feedback="friendly-burst"] .feedback {
+  border-radius: 28px;
+  padding: 1.2rem 1.4rem;
+  font-size: 1.2rem;
+  border-width: 4px;
+}
+html[data-gs-feedback="strategy-card"] .feedback {
+  border-radius: 14px;
+  border-left-width: 10px;
+}
+html[data-gs-feedback="model-and-reason"] .feedback {
+  border-radius: 4px;
+  border-top-width: 6px;
+}
+html[data-gs-feedback="diagnostic"] .feedback {
+  border-radius: 8px;
+  border-top-width: 4px;
+}
+html[data-gs-feedback="compare-strategies"] .feedback {
+  border-radius: 4px;
+  border-left-width: 5px;
+}
+html[data-gs-feedback="evidence"] .feedback {
+  border-radius: 2px;
+  border-width: 1px;
+  border-left-width: 4px;
+  font-family: ui-monospace, Menlo, monospace;
+  font-size: 0.95rem;
+}
+
+/* ---------- Motion: duration follows the grade; user preference always wins ---------- */
+@keyframes gs-pop {
+  from {
+    transform: scale(0.94);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+html[data-grade-system] .feedback {
+  animation: gs-pop var(--gs-motion-ms, 260ms) ease-out both;
+}
+html[data-gs-motion="bounce"] .feedback {
+  animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+html[data-gs-motion="minimal"] .feedback {
+  animation: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  html[data-grade-system] *,
+  html[data-grade-system] *::before,
+  html[data-grade-system] *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
+body[data-reduced-motion="true"] *,
+body[data-reduced-motion="true"] *::before,
+body[data-reduced-motion="true"] *::after {
+  animation: none !important;
+  transition: none !important;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 760px) {
+  html[data-grade-system] .grade-experience-banner {
+    grid-template-columns: 1fr !important;
+    direction: ltr;
+  }
+  html[data-grade-system][data-grade-system] .grade-experience-art {
+    order: 0 !important;
+  }
+  html[data-grade-system][data-grade-system] .grade-experience-art svg {
+    max-height: 190px !important;
+  }
+  html[data-grade-system][data-gs-header="storybook"] .grade-experience-banner {
+    border-width: 4px;
+  }
+}
+
+/* The hub already compacts the banner to a 72px strip; each grade restores the scene height its illustration needs. */
+html[data-grade-system][data-grade-system] .grade-experience-art { height: auto; }
+html[data-grade-system][data-grade-system] .grade-experience-art svg { height: auto; }
+html[data-gs-header="storybook"][data-grade-system] .grade-experience-art svg { max-height: 230px; }
+html[data-gs-header="workshop"][data-grade-system] .grade-experience-art svg,
+html[data-gs-header="studio"][data-grade-system] .grade-experience-art svg,
+html[data-gs-header="lab"][data-grade-system] .grade-experience-art svg { max-height: 170px; }
+html[data-gs-header="blueprint"][data-grade-system] .grade-experience-art svg,
+html[data-gs-header="reasoning-lab"][data-grade-system] .grade-experience-art svg { max-height: 150px; }
+html[data-gs-header="storybook"][data-grade-system] .grade-experience-focus,
+html[data-gs-header="workshop"][data-grade-system] .grade-experience-focus,
+html[data-gs-header="studio"][data-grade-system] .grade-experience-focus,
+html[data-gs-header="lab"][data-grade-system] .grade-experience-focus { display: inline-flex; }
+
+/* The primary Check button keeps its existing 56px floor and grows to the grade's target. */
+html[data-grade-system][data-grade-system] #workspace-view .answer-input-row .primary-action { min-height: max(56px, var(--gs-target, 44px)) !important; }
+
+/* Kicker text sits on tinted washes: use the grade's ink, not its accent, so it keeps 4.5:1. */
+html[data-grade-system][data-grade-system]:not([data-gs-header="algebra-workspace"]) .grade-experience-kicker { color: var(--experience-ink); }
+
+/* ---------- Practice surface and feedback: the problem card and its response follow the grade ---------- */
+html[data-grade-system] #main #question { font-size: calc(var(--fl-math-size, 2.4rem) * var(--gs-q-scale, 1)); }
+html[data-gs-type="round-large"] { --gs-q-scale: 1.18; }
+html[data-gs-type="grotesque-mono"] { --gs-q-scale: .86; }
+html[data-gs-type="grotesque-mono"] #main #question { font-family: ui-monospace, Menlo, "SF Mono", monospace; font-variant-numeric: tabular-nums; letter-spacing: -.01em; }
+
+html[data-gs-card="sticker"] .problem-stage { border: 4px solid color-mix(in srgb, var(--grade) 38%, white); border-radius: 32px; box-shadow: 0 8px 0 color-mix(in srgb, var(--grade) 24%, white); padding: 1.4rem; }
+html[data-gs-card="block-tab"] .problem-stage { border: 3px solid #e9c58a; border-top: 14px solid #f2c15b; border-radius: 16px; }
+html[data-gs-card="dot-grid"] .problem-stage { border: 2px dashed #7fae80; border-radius: 16px; background: radial-gradient(circle, #dbead8 1.2px, transparent 1.3px) 0 0 / 18px 18px, #fff; }
+html[data-gs-card="notebook"] .problem-stage { border: 1px solid #8bbcb2; border-left: 10px solid #d8613c; border-radius: 6px 14px 14px 6px; background: repeating-linear-gradient(#fff 0 31px, #e4f0ed 31px 32px); }
+html[data-gs-card="blueprint"] .problem-stage { border: 2px solid #21496a; border-radius: 3px; box-shadow: 5px 5px 0 #bcd2e4; }
+html[data-gs-card="panel"] .problem-stage { border: 1px solid #a9cfcc; border-top: 5px solid var(--grade); border-radius: 8px; }
+html[data-gs-card="row"] .problem-stage { border: 0; border-left: 6px solid var(--grade); border-bottom: 1px solid #d9c3b8; border-radius: 0; }
+html[data-gs-card="ledger"] .problem-stage { border: 1px solid #9fb6c4; border-top: 3px solid #245573; border-radius: 2px; background: #f9fcfd; }
+
+html[data-gs-feedback="friendly-burst"] #feedback { border-radius: 32px; border-width: 5px; padding: 1.4rem 1.6rem; font-size: 1.22rem; }
+html[data-gs-feedback="friendly-burst"] #feedback .fb-icon { transform: scale(1.35); margin-right: .6rem; }
+html[data-gs-feedback="friendly-burst"] #feedback .fb-actions :is(button, a) { font-size: 1.1rem; }
+html[data-gs-feedback="strategy-card"] #feedback { border-radius: 16px; border-left-width: 12px; padding: 1.1rem 1.3rem; }
+html[data-gs-feedback="model-and-reason"] #feedback { border-radius: 4px; border-width: 2px; border-top-width: 8px; box-shadow: 4px 4px 0 #bcd2e4; }
+html[data-gs-feedback="diagnostic"] #feedback { border-radius: 8px; border-width: 1px; border-top-width: 5px; box-shadow: none; }
+html[data-gs-feedback="compare-strategies"] #feedback { border-radius: 2px; border-width: 0; border-left-width: 6px; background: #fbf4ef; box-shadow: none; }
+html[data-gs-feedback="evidence"] #feedback { border-radius: 0; border-width: 1px; border-left-width: 4px; font-size: .93rem; background: #f4f8fa; box-shadow: none; }
+html[data-gs-feedback="evidence"] #feedback #feedback-title { font-family: ui-monospace, Menlo, monospace; text-transform: uppercase; letter-spacing: .05em; font-size: .85rem; }

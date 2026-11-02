@@ -1,6 +1,7 @@
 // One grade-experience registry drives the Lab's visual language and instructional voice.
 // The shared activity engines (skills, models, practice, writing and progress) remain common.
 import { getLang } from "./i18n.js";
+import { applyGradeSystem, gradeScene } from "./e8/grade-system.js";
 const PROFILES = {
   1: {
     id: "little-mathematicians", name: "Little Mathematicians", kicker: "A picture-book world for big ideas",
@@ -91,6 +92,7 @@ export function gradeExperience(grade) {
 export function applyGradeExperience(grade) {
   const profile = gradeExperience(grade);
   const root = document.documentElement;
+  applyGradeSystem(profile ? grade : null);
   const banner = document.querySelector("#grade-experience-banner");
   if (!profile) {
     root.removeAttribute("data-grade-experience");
@@ -124,7 +126,7 @@ export function gradeExperienceBanner(grade) {
   const isSpanish = getLang() === "es";
   const copy = isSpanish ? profile.es : profile;
   const label = isSpanish ? `Experiencia de aprendizaje de grado ${grade}` : `Grade ${grade} learning experience`;
-  return `<section class="grade-experience-banner" aria-label="${esc(label)}"><div class="grade-experience-art" aria-hidden="true"><svg viewBox="0 0 170 140" focusable="false">${profile.art}</svg></div><div class="grade-experience-copy"><p class="grade-experience-kicker">${esc(copy.kicker)}</p><h2>${esc(copy.name)}</h2><p>${esc(copy.invitation)}</p><span class="grade-experience-focus">${esc(copy.focus)}</span></div></section>`;
+  return `<section class="grade-experience-banner" aria-label="${esc(label)}"><div class="grade-experience-art" aria-hidden="true">${gradeScene(grade) || `<svg viewBox="0 0 170 140" focusable="false">${profile.art}</svg>`}</div><div class="grade-experience-copy"><p class="grade-experience-kicker">${esc(copy.kicker)}</p><h2>${esc(copy.name)}</h2><p>${esc(copy.invitation)}</p><span class="grade-experience-focus">${esc(copy.focus)}</span></div></section>`;
 }
 
 export const GRADE_EXPERIENCE_GRADES = Object.freeze(Object.keys(PROFILES).map(Number));

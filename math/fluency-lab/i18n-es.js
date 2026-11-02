@@ -1,6 +1,7 @@
 // Spanish for the learner-facing Game Room, trail, rewards and family summary. The English text is the key.
 // Math problems, skill titles, and worked-example steps are not translated here.
 import { ES_KID } from "./i18n-es-kid.js";
+import { ES_E8 } from "./i18n-es-e8.js";
 import { ES_LAB4 } from "./i18n-es-lab4.js";
 import { ES_LANGUAGE } from "./i18n-es-language.js";
 
@@ -1024,6 +1025,7 @@ Object.assign(ES, {
 Object.assign(ES, ES_LANGUAGE);
 Object.assign(ES, ES_KID);
 Object.assign(ES, ES_LAB4);
+Object.assign(ES, ES_E8);
 
 Object.assign(ES, {
   "{percent}% from {count} independent tries": "{percent}% en {count} intentos independientes",

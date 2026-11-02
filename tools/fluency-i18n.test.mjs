@@ -62,6 +62,9 @@ function sourceFiles(folder) {
       : [];
   });
 }
+// Enterprise 8 modules pass a few keys to t() by name; list them so their Spanish is checked.
+const { PROGRESS_I18N_KEYS } = await import("../math/fluency-lab/e8/progress-visual.js");
+for (const key of PROGRESS_I18N_KEYS) keys.add(key);
 // The young-learner "big idea" and "watch out" lines pass through t() on the Learn page.
 for (const skill of ALL_SKILLS)
   if (kidLearnFor(skill, skill.grade)) {
@@ -74,6 +77,7 @@ const sources = [
     .map((f) => new URL(f, dir)),
   ...sourceFiles(new URL("graphics", dir).pathname),
   ...sourceFiles(new URL("studio", dir).pathname),
+  ...sourceFiles(new URL("e8", dir).pathname),
 ];
 for (const file of sources) {
   const source = readFileSync(file, "utf8");
