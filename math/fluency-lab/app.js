@@ -72,6 +72,8 @@ import { questionEs } from "./question-es.js";
 import { handleStepPlayerClick, handleStepPlayerSolved, lightStepPlayers, stepPlayer } from "./step-player.js";
 import { applyGradeExperience } from "./grade-experience.js";
 import { renderProgressVisual } from "./e8/progress-visual.js";
+import { mountModelLab } from "./e8/model-lab.js";
+import { LESSON_SKILL } from "./e8/show-me-why.js";
 import { masteryStage } from "./learning-evidence.js";
 import { initGradeHub } from "./grade-hub.js";
 import { mountStudio, studioAvailable, studioModeled } from "./studio/studio.js";
@@ -103,6 +105,7 @@ let cleanupVisualStudio = null;
 let cleanupLearnStudio = null;
 let cleanupTrail = null;
 let cleanupGames = null;
+let cleanupModels = null;
 let cleanupWriting = null;
 let pendingRestore = null;
 
@@ -191,6 +194,7 @@ const els = {
   path: document.querySelector("#path-view"),
   notebook: document.querySelector("#notebook-view"),
   games: document.querySelector("#games-view"),
+  models: document.querySelector("#models-view"),
   write: document.querySelector("#write-view"),
   teacher: document.querySelector("#teacher-view"),
   teacherStudio: document.querySelector("#teacher-studio"),
@@ -7455,6 +7459,7 @@ function showArea(view) {
     path: ["My progress", t("My progress"), "See what you have practiced and what is ready to revisit.", t("See what you have practiced and what is ready to revisit.")],
     notebook: ["Fix my mistakes", t("Fix my mistakes"), "Revisit mistakes and try a related problem independently.", t("Revisit mistakes and try a related problem independently.")],
     write: ["Math Writing Studio", t("Math Writing Studio"), "Plan with an organizer, write a paragraph, and check it like a test.", t("Plan with an organizer, write a paragraph, and check it like a test.")],
+    models: ["Model Lab", t("Model Lab"), "Change a model and watch the picture, the words, the symbols and the numbers change together.", t("Change a model and watch the picture, the words, the symbols and the numbers change together.")],
     games: ["Play with math", t("Play with math"), "Play without a timer. Use models and explain your thinking.", t("Play without a timer. Use models and explain your thinking.")],
     teacher: ["Teacher resources", t("Teacher resources"), "Plan assignments, print materials, and project math talk tools.", t("Plan assignments, print materials, and project math talk tools.")],
   }[view];
@@ -7466,8 +7471,9 @@ function showArea(view) {
     description.dataset.i18nEn = intro[2];
     description.textContent = intro[3];
   }
-  for (const [name, element] of [["library", els.library], ["workspace", els.workspace], ["path", els.path], ["notebook", els.notebook], ["games", els.games], ["write", els.write], ["teacher", els.teacher]]) element.hidden = name !== view;
+  for (const [name, element] of [["library", els.library], ["workspace", els.workspace], ["path", els.path], ["notebook", els.notebook], ["games", els.games], ["models", els.models], ["write", els.write], ["teacher", els.teacher]]) element.hidden = name !== view;
   if (view !== "games") { cleanupGames?.(); cleanupGames = null; }
+  if (view !== "models") { cleanupModels?.(); cleanupModels = null; }
   if (view !== "write") { cleanupWriting?.(); cleanupWriting = null; }
   document.body.classList.toggle("working-on-skill", view === "workspace");
   document.body.classList.toggle("teacher-resources", view === "teacher");
@@ -7544,6 +7550,7 @@ function openHubView(view) {
   if (view === "path") renderPath();
   if (view === "notebook") renderNotebook();
   if (view === "games") { cleanupGames?.(); cleanupGames = mountGames(els.games, { grade: state.grade, autostart: state.autoGame, assignedStop: state.autoStop, onEvidence: recordPuzzleEvidence }); state.autoGame = null; state.autoStop = null; }
+  if (view === "models") { cleanupModels?.(); const lab = mountModelLab(els.models, { grade: state.grade, initialModel: state.labModel, onEvidence: recordLabEvidence }); cleanupModels = () => lab.destroy(); state.labModel = null; }
   if (view === "write") { cleanupWriting?.(); cleanupWriting = mountWriting(els.write, { grade: state.grade, skillKey: state.writeSkill, onPrint: printHtml, announce }); state.writeSkill = null; }
   if (view === "teacher") fl4Teacher?.mountTeacher4(els.teacher4, { // fl4:teacher
     grade: state.grade, onLaunch: launchAssignment, onPrint: printHtml, announce,
@@ -7575,9 +7582,25 @@ function openHubView(view) {
       });
     }).catch(() => {});
   }
-  document.title = `${{ teacher: 'Teacher studio', path: 'My learning path', games: 'Game Room', write: 'Math Writing Studio' }[view] || 'Mistake notebook'} | Math Fluency Lab`;
+  document.title = `${{ teacher: 'Teacher studio', path: 'My learning path', games: 'Game Room', models: 'Model Lab', write: 'Math Writing Studio' }[view] || 'Mistake notebook'} | Math Fluency Lab`;
   setUrl();
   document.querySelector(`#${view}-view`)?.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+// Evidence from the Model Lab goes through the same recorder as every other activity: support is never independent.
+function recordLabEvidence(entry) {
+  let skill = null;
+  let record = null;
+  if (entry.source === "guided-solver") {
+    skill = entry.skill;
+    record = { correct: entry.correct, independent: entry.independent, sig: itemSignature(entry.question) };
+  } else if (entry.lesson && entry.tried) {
+    skill = findSkill(LESSON_SKILL[entry.lesson] || "");
+    record = { correct: entry.tried.correct, independent: entry.independent, sig: itemSignature(`${entry.lesson}:${entry.seed}`) };
+  }
+  if (!skill || !record) return;
+  recordAnswer(state.tutor, skill, { ...record, level: record.independent ? 1 : 0 });
+  saveProgress();
 }
 
 function recordPuzzleEvidence(entry) {
@@ -10690,7 +10713,7 @@ initCommandPalette();
 initHUDControls();
 initTeacherCameraScanner();
 handleDeepLinkAutoLauncher();
-if (["teacher", "games", "write", "path", "notebook"].includes(initialParams.get("view"))) { state.writeSkill = initialSkill; openHubView(initialParams.get("view")); }
+if (["teacher", "games", "write", "path", "notebook", "models"].includes(initialParams.get("view"))) { state.writeSkill = initialSkill; state.labModel = initialParams.get("model"); openHubView(initialParams.get("view")); }
 // Family launch links enter the existing adaptive flows; no parallel practice engine is created.
 if (initialParams.get("start") === "daily") openPlanned("daily", dailyPlan(state.tutor, state.grade));
 if (initialParams.get("start") === "mission") openMission();
