@@ -96,7 +96,12 @@ test("a killed check is a TIMEOUT and a FAILURE, never a skip", () => {
 
 test("qa-run names every timed-out check and treats it as a failure", () => {
   const src = read("scripts/qa-run.mjs");
-  assert.match(src, /timeout: TIMEOUT_MS/, "the child process must actually be given a timeout");
+  assert.match(
+    src,
+    /const timeoutMs = TIMEOUT_MS \+ \(name === "test" \? TEST_LANE_WAIT_MS : 0\)/,
+    "a queued test must retain its full execution budget after the test-lane wait",
+  );
+  assert.match(src, /timeout: timeoutMs/, "the child process must actually be given its timeout");
   assert.match(
     src,
     /TIMED OUT \(killed, verified nothing\): \$\{timedOut\.join/,

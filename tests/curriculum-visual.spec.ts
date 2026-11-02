@@ -12,9 +12,9 @@ import { expect, type Page, test } from "@playwright/test";
  * PAINT failures. A test that only asks "is the node in the DOM?" is
  * structurally blind to all of them.
  *
- * These snapshots close that gap on the page students open first. They are
- * intentionally few and canonical: one per mode and per major view, full-page,
- * so a diff is meaningful rather than noisy.
+ * These snapshots close that gap on the teacher console people open first.
+ * They are intentionally few and canonical: one per major console view so a
+ * diff is meaningful rather than noisy.
  *
  * ALSO: these are the acceptance gate for turning curriculum/index.html into a
  * generated artifact. That refactor is only provably safe if the generated page
@@ -43,13 +43,20 @@ import { expect, type Page, test } from "@playwright/test";
 async function openConsole(page: Page) {
   await page.addInitScript(() => {
     try {
-      localStorage.setItem("neft_teacher_mode_v1", "1");
+      localStorage.setItem("nt-teacher-mode", "1");
     } catch {
       /* blocked storage is already a clean slate */
     }
   });
   await page.goto("/curriculum/");
   await page.waitForLoadState("networkidle").catch(() => {});
+}
+
+async function revealTeacherShortcuts(page: Page) {
+  const shortcuts = page.locator(".hub-quick-links");
+  if (!(await shortcuts.evaluate((node) => (node as HTMLDetailsElement).open))) {
+    await shortcuts.locator(":scope > summary").click();
+  }
 }
 
 /**
@@ -115,10 +122,9 @@ const SHOT = {
   // set. Observed exactly that within one day of setting it.
   //
   // A fixed 2,600px window holds everything these shots exist to protect: the
-  // header, the four workspace cards, the feature strip, class tools, the
-  // student-mode notice, search, the filter chips, and the top of the unit
-  // rail. That is where a failed stylesheet, a collapsed grid or a leaked
-  // teacher-only card shows up. What falls below the fold is lesson content,
+  // header, the teacher workflow cards, resource search, the resource results,
+  // and the course overview. That is where a failed stylesheet, a collapsed
+  // grid, or a missing teacher panel shows up. What falls below the fold is lesson content,
   // which is asserted behaviourally in curriculum-journey.spec.ts and by
   // validate:hub's structural counts.
   fullPage: true,
@@ -154,7 +160,8 @@ test.describe("curriculum hub — visual baselines", () => {
     await openConsole(page);
     await stabilize(page);
     await expect(page.locator("body")).toHaveClass(/teacher-mode/);
-    await expect(page.locator("#hub-mode-toggle")).toBeVisible();
+    // The curriculum console runs in teacher mode, but hides the mode switch.
+    await expect(page.locator("#hub-mode-toggle")).toBeHidden();
     await expect(page).toHaveScreenshot("hub-console-default.png", SHOT);
   });
 
@@ -185,6 +192,7 @@ test.describe("curriculum hub — visual baselines", () => {
 
   test("teacher mode, workflow open on Today's Teaching", async ({ page }) => {
     await openConsole(page);
+    await revealTeacherShortcuts(page);
     await page.locator("button[data-guide-teacher-view='today']").click();
     const workflow = page.locator("#curriculum-teacher-workflow");
     await expect(workflow).toBeVisible();
@@ -194,6 +202,7 @@ test.describe("curriculum hub — visual baselines", () => {
 
   test("teacher mode, plan the week", async ({ page }) => {
     await openConsole(page);
+    await revealTeacherShortcuts(page);
     await page.locator("button[data-guide-teacher-view='week']").click();
     await expect(page.locator("#curriculum-teacher-workflow")).toBeVisible();
     await stabilize(page);
@@ -206,8 +215,11 @@ test.describe("curriculum hub — visual baselines", () => {
     // page is password-gated, so a "switch to Student" control would only ever
     // strand a teacher on a hub where every panel had rendered nothing.
     await openConsole(page);
+    await revealTeacherShortcuts(page);
+    // The shared controls may exist for compatibility, but the console hides
+    // them so teachers cannot switch into the student hub from this page.
     for (const id of ["#hub-mode-toggle", "#hub-student-hint", "#hub-mode-banner"]) {
-      await expect(page.locator(id)).toHaveCount(0);
+      await expect(page.locator(id)).toBeHidden();
     }
     // Teacher actions are the opposite: on this page they must be reachable.
     const actions = await page.locator("[data-guide-teacher-view]").all();
@@ -216,20 +228,18 @@ test.describe("curriculum hub — visual baselines", () => {
       await expect(el).toBeVisible();
     }
     // The student equivalent is a link to a separate page, not a mode.
-    await expect(page.locator("#hub-student-picker-link")).toHaveAttribute(
-      "href",
-      "/curriculum/units/",
-    );
+    await expect(
+      page.locator('nav[aria-label="Curriculum navigation"] a[href="/curriculum/units/"]'),
+    ).toBeVisible();
   });
 
-  test("search results render and resolve", async ({ page }) => {
-    // Guards the lessonId-vs-id join: a broken join still renders a results
-    // container, so only the painted result rows prove the join works.
+  test("resource search results render and resolve", async ({ page }) => {
     await openConsole(page);
-    const search = page.locator("#hub-search, input[type='search']").first();
-    await search.fill("ratio");
-    await page.waitForTimeout(600); // debounce
+    const search = page.locator("#cr-search");
+    await expect(search).toBeVisible();
+    await search.fill("worksheets");
     await stabilize(page);
-    await expect(page).toHaveScreenshot("hub-search-ratio.png", SHOT);
+    await expect(page.locator("#cr-results li a").first()).toBeVisible();
+    await expect(page).toHaveScreenshot("hub-resource-search-worksheets.png", SHOT);
   });
 });

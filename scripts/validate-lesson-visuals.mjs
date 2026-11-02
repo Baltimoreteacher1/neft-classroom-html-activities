@@ -495,16 +495,16 @@ async function probeLesson(browser, id) {
               !!el.getClientRects().length &&
               !el.hasAttribute("disabled");
             const all = [...document.querySelectorAll(".vl-pace-all")].find(live);
-            if (all) return all.click(), true;
+            if (all) return (all.click(), true);
             const next = [...document.querySelectorAll(".vl-pace-next")].find(live);
-            if (next) return next.click(), true;
+            if (next) return (next.click(), true);
             // The paced lines live inside ONE step of the panel; the tool step
             // is only built once the panel is advanced to it. Own controls only
             // (.vl-*), never a generic "Next" that would drive the lesson.
             const step = [...document.querySelectorAll(".vl-next-btn, .vl-continue-btn")].find(
               live,
             );
-            if (step) return step.click(), true;
+            if (step) return (step.click(), true);
             return false;
           });
           if (!advanced) break;

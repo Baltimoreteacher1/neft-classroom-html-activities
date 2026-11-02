@@ -95,6 +95,10 @@ function classifyResult(err) {
  * police slowness, and a timeout tight enough to trip on a loaded laptop is a
  * flake that trains people to bypass it. Override with QA_TIMEOUT_MS. */
 const TIMEOUT_MS = Number(process.env.QA_TIMEOUT_MS || 15 * 60 * 1000);
+// The shared test-lane lock is acquired inside `npm run test`, so time spent
+// queued there counts against execGroup's timeout unless we account for it.
+// Keep the test's actual execution budget intact after the bounded lock wait.
+const TEST_LANE_WAIT_MS = Number(process.env.QA_LOCK_WAIT_MS) || 30 * 60 * 1000;
 
 const GATE = [
   "build",
@@ -1585,6 +1589,7 @@ async function main() {
 
   function runOne(name) {
     const driftBefore = name === "build" ? trackedDrift() : null;
+    const timeoutMs = TIMEOUT_MS + (name === "test" ? TEST_LANE_WAIT_MS : 0);
     return new Promise((resolve) => {
       const t0 = Date.now();
       execGroup(
@@ -1594,7 +1599,7 @@ async function main() {
           cwd: ROOT,
           env: testEnv(name, checks, testScopeFile, testScope),
           maxBuffer: 64 * 1024 * 1024,
-          timeout: TIMEOUT_MS,
+          timeout: timeoutMs,
         },
         (err, stdout, stderr) => {
           const secs = ((Date.now() - t0) / 1000).toFixed(1);
@@ -1610,7 +1615,7 @@ async function main() {
           if (name === "build" && ok) checkGeneratedFresh(driftBefore);
           logTo(`\n===== ${status} npm run ${name} (${secs}s) =====\n${stdout}\n${stderr}\n`);
           const note = timedOut
-            ? `  (KILLED after ${(TIMEOUT_MS / 1000).toFixed(0)}s — hung, not slow)`
+            ? `  (KILLED after ${(timeoutMs / 1000).toFixed(0)}s — hung, not slow)`
             : skipped
               ? "  (did not run)"
               : "";

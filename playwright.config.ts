@@ -6,9 +6,9 @@
  * `webServer` that builds + serves the static `dist/` output on port 4178 (the
  * reference lesson is at /math/unit-1/1-1-math-is-mine/).
  *
- * NOTE: `@playwright/test` must be installed (`npm i -D @playwright/test` +
- * `npx playwright install chromium`). It is the peer of the already-present
- * `@axe-core/playwright`; this config does not add it for you.
+ * `@playwright/test` and `@axe-core/playwright` are declared in package.json;
+ * run `npx playwright install chromium` after dependency updates to install the
+ * browser binary matching the pinned Playwright version.
  */
 import { defineConfig, devices } from "@playwright/test";
 
