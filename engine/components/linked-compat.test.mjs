@@ -81,7 +81,7 @@ test("tape diagram, model-less (ratio shape, then whole and parts)", async () =>
   states.push(whole.innerHTML);
   assert.equal(
     digest(states),
-    "9fe4ce969686 8affd456c530 8078a770072b 9fe4ce969686 056c45bc4919 d48d1c977375",
+    "33bc8ce075f5 b741db6e4b45 4b2f536b2a61 33bc8ce075f5 c53e5b9d42c1 19be46fe2681",
   );
   // One group is not a pattern: an authored single-group figure stays static,
   // while two groups is the smallest figure that gets the scaling control.
@@ -91,7 +91,7 @@ test("tape diagram, model-less (ratio shape, then whole and parts)", async () =>
   assert.equal(single.querySelector(".tdl-explore"), null);
   const pair = newHost();
   renderTapeDiagram(pair, { rows: [row("cars", 5, 5), row("riders", 20, 20)] });
-  assert.equal(digest([pair.innerHTML]), "93ef101c0530");
+  assert.equal(digest([pair.innerHTML]), "db63e7755277");
   assert.ok(pair.querySelector(".tdl-explore"));
 });
 
@@ -137,6 +137,6 @@ test("bar model, model-less (ratio path, then answer path)", async () => {
     answer: 7,
   });
   states.push(String(answerHandle), answer.innerHTML);
-  assert.equal(digest(states), "eb045d78d273 7fc38bfe6673 15ad18c374d9 eb045d78d273 4cef0c1227c1");
+  assert.equal(digest(states), "eb045d78d273 1a3483b95943 865720143171 eb045d78d273 d70d26604037");
   assert.equal(handle, undefined, "the model-less bar still returns nothing");
 });

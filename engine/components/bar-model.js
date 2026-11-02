@@ -6,6 +6,30 @@ import { fmt, percentOf } from "./linked-model.js";
 
 let BM_STYLE_INJECTED = false;
 
+function readableInk(background) {
+  const color = String(background).trim();
+  const hex = color.match(/^#([\da-f]{3}|[\da-f]{6})$/i)?.[1];
+  const rgb = color.match(/^rgba?\(\s*([\d.]+)[,\s]+([\d.]+)[,\s]+([\d.]+)/i);
+  let channels;
+  if (hex) {
+    const expanded = hex.length === 3 ? [...hex].map((digit) => digit + digit).join("") : hex;
+    channels = expanded.match(/[\da-f]{2}/gi)?.map((value) => Number.parseInt(value, 16));
+  } else if (rgb) {
+    channels = rgb.slice(1).map(Number);
+  }
+  if (!channels || channels.length < 3) return "#0d273d";
+  const [r, g, b] = channels;
+  const luminance = [r, g, b]
+    .map((value) => {
+      const channel = value / 255;
+      return channel <= 0.04045 ? channel / 12.92 : ((channel + 0.055) / 1.055) ** 2.4;
+    })
+    .reduce((sum, channel, index) => sum + channel * [0.2126, 0.7152, 0.0722][index], 0);
+  const whiteContrast = 1.05 / (luminance + 0.05);
+  const inkContrast = (luminance + 0.05) / (0.017 + 0.05);
+  return whiteContrast > inkContrast ? "#fff" : "#0d273d";
+}
+
 function injectBarModelStyle() {
   if (BM_STYLE_INJECTED) return;
   if (typeof document === "undefined") return;
@@ -137,7 +161,8 @@ export function renderBarModel(container, config) {
   const segBar = document.createElement("div");
   segBar.style.cssText = `display:flex; gap:${GAP}px; height:${BAR_H}px;`;
 
-  const colors = ["#1fa6a2", "#f2c15b", "#d9795d", "#2f80d1", "#0fa958", "#875f00"];
+  const colors = ["#1fa6a2", "#f2c15b", "#d9795d", "#1e5b96", "#0fa958", "#875f00"];
+  const textColors = ["#0d273d", "#0d273d", "#0d273d", "#fff", "#0d273d", "#fff"];
 
   bars.forEach((bar, i) => {
     const pct = (bar.value / totalValue) * 100;
@@ -149,6 +174,7 @@ export function renderBarModel(container, config) {
       display:grid; place-items:center; color:white; font-weight:700; font-size:0.88rem;
       position:relative; min-width:40px;
     `;
+    seg.style.color = textColors[i % textColors.length];
     // Left-to-right entrance stagger. Set AFTER cssText (which replaces the
     // whole inline style). Decorative; the class is removed before any reveal.
     seg.style.animationDelay = `${i * 70}ms`;
@@ -161,7 +187,7 @@ export function renderBarModel(container, config) {
     } else {
       seg.innerHTML = `
         <div style="text-align:center; line-height:1.2;">
-          <div style="font-size:0.72rem; opacity:0.85;">${bar.label || ""}</div>
+          <div style="font-size:0.72rem;">${bar.label || ""}</div>
           <div>${bar.value}</div>
         </div>
       `;
@@ -184,7 +210,7 @@ export function renderBarModel(container, config) {
     annotation.className = "bm-annotation bm-fade-in";
     annotation.style.cssText = `
       flex:${pct}; text-align:center; font-size:0.72rem; font-weight:600;
-      color:${colors[i % colors.length]}; border-top:2px solid ${colors[i % colors.length]};
+      color:#0d273d; border-top:2px solid ${colors[i % colors.length]};
       padding-top:2px; min-width:40px;
     `;
     // Fade in after the matching segment lands (cssText replaces inline style,
@@ -275,8 +301,8 @@ export function renderBarModel(container, config) {
           if (bars[i]?.editable) {
             seg.style.background = colors[i % colors.length];
             seg.style.border = "none";
-            seg.style.color = "white";
-            seg.innerHTML = `<div style="text-align:center; line-height:1.2;"><div style="font-size:0.72rem; opacity:0.85;">${bars[i].label || ""}</div><div>${bars[i].value}</div></div>`;
+            seg.style.color = textColors[i % textColors.length];
+            seg.innerHTML = `<div style="text-align:center; line-height:1.2;"><div style="font-size:0.72rem;">${bars[i].label || ""}</div><div>${bars[i].value}</div></div>`;
             // Drop the entrance animation class so bm-revealed's animation
             // wins the cascade and the pop actually plays.
             seg.classList.remove("bm-seg-in");
@@ -415,9 +441,10 @@ function renderRatioBarModel(container, config) {
       const pct = (Number(part.value || 0) / sum) * 100;
       const seg = document.createElement("div");
       seg.className = "bm-seg bm-seg-in";
+      const background = part.color || palette[i % palette.length];
       seg.style.cssText = `
-      flex:${pct}; background:${part.color || palette[i % palette.length]}; border-radius:var(--radius-sm);
-      display:grid; place-items:center; color:white; font-weight:700; font-size:0.82rem;
+      flex:${pct}; background:${background}; border-radius:var(--radius-sm);
+      display:grid; place-items:center; color:${readableInk(background)}; font-weight:700; font-size:0.82rem;
       position:relative; min-width:40px; text-align:center; line-height:1.15;
     `;
       // Entrance stagger — set after cssText (which replaces inline style).

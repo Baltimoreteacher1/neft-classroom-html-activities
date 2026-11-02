@@ -338,6 +338,7 @@ export function renderTapeDiagram(host, cfg) {
         for (let i = 0; i < exploreN; i += 1) {
           const cell = document.createElement("div");
           cell.className = "tdl-part";
+          if (PALETTE[i % PALETTE.length] === PALETTE[3]) cell.classList.add("tdl-part-dark");
           cell.style.flex = `${model.whole / exploreN / maxTotal} 1 0`;
           cell.style.background = PALETTE[i % PALETTE.length];
           const shown = Number.isInteger(unit) ? model.fmt(unit) : model.fmt(round2(unit));
@@ -393,6 +394,7 @@ export function renderTapeDiagram(host, cfg) {
         cell.className = `tdl-part${rowIsUnknown && !solved ? " tdl-part-unknown" : ""}`;
         const value = Number(p.value) || 1;
         const colour = p.fill || PALETTE[colorIx % PALETTE.length];
+        if (colour === PALETTE[3]) cell.classList.add("tdl-part-dark");
         colorIx += 1;
         const text = partLabel(rowIsUnknown, p);
         if (ratio) {
@@ -405,6 +407,7 @@ export function renderTapeDiagram(host, cfg) {
           cell.style.flex = "1 1 0";
           const fill = document.createElement("span");
           fill.className = "tdl-fill";
+          if (colour === PALETTE[3]) fill.classList.add("tdl-fill-dark");
           fill.style.width = `${(value / maxPart) * 100}%`;
           fill.style.background = colour;
           fill.textContent = String(text);
@@ -491,6 +494,8 @@ export function renderTapeDiagram(host, cfg) {
           cell.style.flex = "1 1 0";
           const fill = document.createElement("span");
           fill.className = "tdl-fill";
+          if (PALETTE[(ri * 2 + (i % 2)) % PALETTE.length] === PALETTE[3])
+            fill.classList.add("tdl-fill-dark");
           fill.style.width = `${(per / maxPart) * 100}%`;
           fill.style.background = PALETTE[(ri * 2 + (i % 2)) % PALETTE.length];
           fill.textContent = formatQty(per);
