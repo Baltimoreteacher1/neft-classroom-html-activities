@@ -85,6 +85,7 @@ import { masteryStage } from "./learning-evidence.js";
 import { initGradeHub } from "./grade-hub.js";
 import { markDestinations, renderSubnav } from "./hub-nav.js";
 import { renderPracticeHub } from "./practice-hub.js";
+import { mountRealityEntry } from "./reality/entry.js";
 import { mountStudio, studioAvailable, studioModeled } from "./studio/studio.js";
 
 // teacher-4.js is teacher-only, so the teacher-surface gate refuses it to an anonymous student. A static import of a
@@ -7534,6 +7535,7 @@ function renderProgressEvidenceCard(progress) {
 }
 
 function renderDashboard() {
+  mountRealityEntry(document.querySelector("#reality-feature"), state.grade, t);
   const saved = loadJson(SESSION_KEY, null);
   const hasSavedSession = saved?.version === 2 && saved.session && !saved.session.finished;
   const today = state.tutor.sessions.filter((session) => localDay(session.at) === localDay()).reduce((sum, session) => sum + session.answered, 0);
@@ -7558,7 +7560,7 @@ function renderPracticeView() {
   const saved = loadJson(SESSION_KEY, null);
   const resume = saved?.version === 2 && saved.session && !saved.session.finished ? { title: saved.item?.skill?.title || t("your practice set") } : null;
   const openMistakes = (state.tutor.mistakes || []).filter((entry) => findSkill(entry.key)?.grade === state.grade && !entry.resolvedAt).length;
-  renderPracticeHub(els.practice, { resume, openMistakes, t });
+  renderPracticeHub(els.practice, { resume, openMistakes, grade: state.grade, t });
 }
 
 function openHubView(view) {

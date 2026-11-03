@@ -12,6 +12,7 @@ import { ES_LAB4_LESSONS } from "./i18n-es-lab4-lessons.js";
 import { ES_LAB4_SCREENS } from "./i18n-es-lab4-screens.js";
 import { ES_LAB4_TEACHER } from "./i18n-es-lab4-educator.js";
 import { ES_LAB6_NAV } from "./i18n-es-lab6-nav.js";
+import { ES_REALITY } from "./i18n-es-lab7-reality.js";
 
 export const ES_LAB4 = {
   ...ES_LAB4_ADAPTIVE,
@@ -26,4 +27,5 @@ export const ES_LAB4 = {
   ...ES_LAB4_SCREENS,
   ...ES_LAB4_TEACHER,
   ...ES_LAB6_NAV,
+  ...ES_REALITY,
 };

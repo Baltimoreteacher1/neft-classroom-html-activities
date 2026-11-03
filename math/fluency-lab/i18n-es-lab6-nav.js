@@ -18,4 +18,11 @@ export const ES_LAB6_NAV = {
   "Nothing to fix right now.": "No hay nada que corregir ahora.",
   "Browse every skill for your grade.": "Mira todas las destrezas de tu grado.",
   "Pick one way to practice. Your answers decide what comes next.": "Elige una forma de practicar. Tus respuestas deciden qué sigue.",
+  "Math Reality": "Realidad matemática",
+  "Build a stadium, change it, and discover the math behind what happens.": "Construye un estadio, cámbialo y descubre las matemáticas detrás de lo que pasa.",
+  "Open Math Reality": "Abrir Realidad matemática",
+  "Continue your world": "Continuar tu mundo",
+  "Build another world": "Construir otro mundo",
+  "Build it in Math Reality": "Constrúyelo en Realidad matemática",
+  "Try the same ideas in a world you build.": "Prueba las mismas ideas en un mundo que construyes.",
 };

@@ -29,6 +29,15 @@ try {
   assert.deepEqual(tabs, ["Home", "Learn", "Practice", "Play", "My Growth", "For teachers"]);
   assert.deepEqual(await current(page), ["Home"]);
   assert.equal(await page.locator("#hub-subnav").isHidden(), true, "Home has no sub-navigation");
+  // Math Reality: a first-class link in the tab row, a featured card on Home, a card in Practice.
+  const reality = page.locator("#hub-tabs a.reality-tab");
+  assert.equal(await reality.innerText(), "Math Reality");
+  assert.match(await reality.getAttribute("href"), /^reality\/$/);
+  assert.equal(await page.locator("#reality-feature [data-reality-link]").getAttribute("href"), "reality/?grade=3");
+  assert.equal(await page.locator("#reality-feature [data-reality-link]").innerText(), "Open Math Reality");
+  await page.locator("#hub-tabs button[data-view]", { hasText: "Practice" }).click();
+  assert.equal(await page.locator('#practice-view a[href="reality/?grade=3"]').count(), 1, "Practice links to Math Reality");
+  await page.locator("#hub-tabs button[data-view]", { hasText: "Home" }).click();
 
   const areas = [
     ["Learn", "#models-view", ["Model Lab", "Writing Studio"]],

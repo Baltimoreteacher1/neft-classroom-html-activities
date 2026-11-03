@@ -1,5 +1,7 @@
 // Practice destination: one dominant next step, then the other ways to practice.
-export function renderPracticeHub(host, { resume, openMistakes, t }) {
+import { realityHref } from "./reality/entry.js";
+
+export function renderPracticeHub(host, { resume, openMistakes, grade, t }) {
   const card = (attr, title, body, primary) =>
     `<button type="button" class="${primary ? "primary-action" : "outline-action"} practice-hub-card" ${attr}><strong>${title}</strong><span>${body}</span></button>`;
   const daily = card("data-start-daily", t("Today's 10"), t("Ten questions picked from what you need next."), !resume);
@@ -14,5 +16,6 @@ export function renderPracticeHub(host, { resume, openMistakes, t }) {
     false,
   );
   const skills = card('data-view="library"', t("Choose a skill"), t("Browse every skill for your grade."), false);
-  host.innerHTML = `<h2 class="practice-hub-title">${t("Practice")}</h2><div class="practice-hub-grid">${resumeCard}${daily}${checkup}${mistakes}${skills}</div>`;
+  const reality = `<a class="outline-action practice-hub-card" href="${realityHref(grade)}"><strong>${t("Build it in Math Reality")}</strong><span>${t("Try the same ideas in a world you build.")}</span></a>`;
+  host.innerHTML = `<h2 class="practice-hub-title">${t("Practice")}</h2><div class="practice-hub-grid">${resumeCard}${daily}${checkup}${mistakes}${skills}${reality}</div>`;
 }

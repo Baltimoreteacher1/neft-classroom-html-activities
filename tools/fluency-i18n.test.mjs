@@ -65,6 +65,12 @@ function sourceFiles(folder) {
 // Enterprise 8 modules pass a few keys to t() by name; list them so their Spanish is checked.
 const { PROGRESS_I18N_KEYS } = await import("../math/fluency-lab/e8/progress-visual.js");
 for (const key of PROGRESS_I18N_KEYS) keys.add(key);
+// Math Reality passes mission text, step names and control labels to t() by variable; list them here.
+const { missionKeys } = await import("../math/fluency-lab/reality/stadium-missions.js");
+const { STEP_LABELS } = await import("../math/fluency-lab/reality/engine.js");
+const { CONTROL_LABELS } = await import("../math/fluency-lab/reality/controls.js");
+for (const key of [...missionKeys(), ...Object.values(STEP_LABELS), ...CONTROL_LABELS])
+  keys.add(key);
 // The young-learner "big idea" and "watch out" lines pass through t() on the Learn page.
 for (const skill of ALL_SKILLS)
   if (kidLearnFor(skill, skill.grade)) {
@@ -78,6 +84,7 @@ const sources = [
   ...sourceFiles(new URL("graphics", dir).pathname),
   ...sourceFiles(new URL("studio", dir).pathname),
   ...sourceFiles(new URL("e8", dir).pathname),
+  ...sourceFiles(new URL("reality", dir).pathname),
 ];
 for (const file of sources) {
   const source = readFileSync(file, "utf8");
