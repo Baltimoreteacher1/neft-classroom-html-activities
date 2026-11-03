@@ -90,7 +90,7 @@ export const STUDENT_STEPS = [
   },
   {
     id: "mistakes",
-    anchor: '#hub-tabs button[data-view="notebook"]',
+    anchor: '#hub-tabs button[data-view="practice"]',
     demo: "hints",
     en: {
       title: "Fix my mistakes",

@@ -83,6 +83,8 @@ import { evidenceTableHtml, mountAdaptivePanel, mountRepairStudio } from "./e8/a
 import { LESSON_SKILL } from "./e8/show-me-why.js";
 import { masteryStage } from "./learning-evidence.js";
 import { initGradeHub } from "./grade-hub.js";
+import { markDestinations, renderSubnav } from "./hub-nav.js";
+import { renderPracticeHub } from "./practice-hub.js";
 import { mountStudio, studioAvailable, studioModeled } from "./studio/studio.js";
 
 // teacher-4.js is teacher-only, so the teacher-surface gate refuses it to an anonymous student. A static import of a
@@ -200,6 +202,8 @@ const els = {
   dashboard: document.querySelector("#personal-dashboard"),
   path: document.querySelector("#path-view"),
   notebook: document.querySelector("#notebook-view"),
+  practice: document.querySelector("#practice-view"),
+  hubSubnav: document.querySelector("#hub-subnav"),
   games: document.querySelector("#games-view"),
   models: document.querySelector("#models-view"),
   write: document.querySelector("#write-view"),
@@ -7466,6 +7470,7 @@ function showArea(view) {
     library: ["Your Math Journey", t("Your Math Journey"), "Choose a next step, explore a skill, or play with an idea. Your progress stays on this device.", t("Choose a next step, explore a skill, or play with an idea. Your progress stays on this device.")],
     workspace: ["Practice a skill", t("Practice a skill"), "Use a model, try a strategy, and revise your thinking as you go.", t("Use a model, try a strategy, and revise your thinking as you go.")],
     path: ["My progress", t("My progress"), "See what you have practiced and what is ready to revisit.", t("See what you have practiced and what is ready to revisit.")],
+    practice: ["Practice", t("Practice"), "Pick one way to practice. Your answers decide what comes next.", t("Pick one way to practice. Your answers decide what comes next.")],
     notebook: ["Fix my mistakes", t("Fix my mistakes"), "Revisit mistakes and try a related problem independently.", t("Revisit mistakes and try a related problem independently.")],
     write: ["Math Writing Studio", t("Math Writing Studio"), "Plan with an organizer, write a paragraph, and check it like a test.", t("Plan with an organizer, write a paragraph, and check it like a test.")],
     models: ["Model Lab", t("Model Lab"), "Change a model and watch the picture, the words, the symbols and the numbers change together.", t("Change a model and watch the picture, the words, the symbols and the numbers change together.")],
@@ -7480,16 +7485,14 @@ function showArea(view) {
     description.dataset.i18nEn = intro[2];
     description.textContent = intro[3];
   }
-  for (const [name, element] of [["library", els.library], ["workspace", els.workspace], ["path", els.path], ["notebook", els.notebook], ["games", els.games], ["models", els.models], ["write", els.write], ["teacher", els.teacher]]) element.hidden = name !== view;
+  for (const [name, element] of [["library", els.library], ["workspace", els.workspace], ["path", els.path], ["notebook", els.notebook], ["practice", els.practice], ["games", els.games], ["models", els.models], ["write", els.write], ["teacher", els.teacher]]) element.hidden = name !== view;
   if (view !== "games") { cleanupGames?.(); cleanupGames = null; }
   if (view !== "models") { cleanupModels?.(); cleanupModels = null; }
   if (view !== "write") { cleanupWriting?.(); cleanupWriting = null; }
   document.body.classList.toggle("working-on-skill", view === "workspace");
   document.body.classList.toggle("teacher-resources", view === "teacher");
-  document.querySelectorAll("#hub-tabs button").forEach((button) => {
-    if (button.dataset.view === view || (view === "workspace" && button.dataset.view === "library")) button.setAttribute("aria-current", "page");
-    else button.removeAttribute("aria-current");
-  });
+  markDestinations(document.querySelector("#hub-tabs"), view);
+  renderSubnav(els.hubSubnav, view, t);
 }
 
 /* Progress cards report observations and denominators instead of inferred learner traits. */
@@ -7551,6 +7554,13 @@ function renderDashboard() {
   });
 }
 
+function renderPracticeView() {
+  const saved = loadJson(SESSION_KEY, null);
+  const resume = saved?.version === 2 && saved.session && !saved.session.finished ? { title: saved.item?.skill?.title || t("your practice set") } : null;
+  const openMistakes = (state.tutor.mistakes || []).filter((entry) => findSkill(entry.key)?.grade === state.grade && !entry.resolvedAt).length;
+  renderPracticeHub(els.practice, { resume, openMistakes, t });
+}
+
 function openHubView(view) {
   if (view === "library") { renderLibrary(); return; }
   saveActiveSession(); cleanupVisual?.(); cleanupVisual = null;
@@ -7558,6 +7568,7 @@ function openHubView(view) {
   showArea(view);
   if (view === "path") renderPath();
   if (view === "notebook") renderNotebook();
+  if (view === "practice") renderPracticeView();
   if (view === "games") { cleanupGames?.(); cleanupGames = mountGames(els.games, { grade: state.grade, autostart: state.autoGame, assignedStop: state.autoStop, onEvidence: recordPuzzleEvidence }); state.autoGame = null; state.autoStop = null; }
   if (view === "models") { cleanupModels?.(); const lab = mountModelLab(els.models, { grade: state.grade, initialModel: state.labModel, onEvidence: recordLabEvidence }); cleanupModels = () => lab.destroy(); state.labModel = null; }
   if (view === "write") { cleanupWriting?.(); cleanupWriting = mountWriting(els.write, { grade: state.grade, skillKey: state.writeSkill, onPrint: printHtml, announce }); state.writeSkill = null; }
@@ -10762,7 +10773,7 @@ initCommandPalette();
 initHUDControls();
 initTeacherCameraScanner();
 handleDeepLinkAutoLauncher();
-if (["teacher", "games", "write", "path", "notebook", "models"].includes(initialParams.get("view"))) { state.writeSkill = initialSkill; state.labModel = initialParams.get("model"); openHubView(initialParams.get("view")); }
+if (["teacher", "games", "write", "path", "notebook", "models", "practice"].includes(initialParams.get("view"))) { state.writeSkill = initialSkill; state.labModel = initialParams.get("model"); openHubView(initialParams.get("view")); }
 // Family launch links enter the existing adaptive flows; no parallel practice engine is created.
 if (initialParams.get("start") === "daily") openPlanned("daily", dailyPlan(state.tutor, state.grade));
 if (initialParams.get("start") === "mission") openMission();

@@ -131,7 +131,6 @@ export const ES_LANGUAGE = {
   "Test-style response": "Respuesta estilo examen",
   "This shows ideas your words already carry. It is not a grade.": "Esto muestra las ideas que ya tienen tus palabras. No es una calificación.",
   "Words to use": "Palabras para usar",
-  "Write": "Escribir",
   "Write about it": "Escribe sobre esto",
   "Write at least one part to save.": "Escribe al menos una parte para guardar.",
   "Write in": "Escribir en",

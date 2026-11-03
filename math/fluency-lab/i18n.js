@@ -39,8 +39,9 @@ export function setLang(next, { persist = true } = {}) {
   if (typeof document !== "undefined") document.documentElement.lang = lang;
 }
 
+// A key may end in " ##context" (e.g. "Play ##nav") so one English word can have two Spanish translations; English drops it.
 export function t(text, vars = null) {
-  const base = getLang() === "es" && ES[text] !== undefined ? ES[text] : text;
+  const base = getLang() === "es" && ES[text] !== undefined ? ES[text] : text.replace(/ ##\w+$/, "");
   return vars ? base.replace(/\{(\w+)\}/g, (match, name) => (name in vars ? String(vars[name]) : match)) : base;
 }
 

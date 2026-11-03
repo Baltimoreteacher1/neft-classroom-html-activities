@@ -94,6 +94,11 @@ for (const match of readFileSync(new URL("index.html", dir), "utf8").matchAll(
   /data-i18n[^>]*>([^<]+)</g,
 ))
   keys.add(match[1].trim());
+// A data-i18n-en attribute overrides the text as the key (context keys such as "Play ##nav").
+for (const match of readFileSync(new URL("index.html", dir), "utf8").matchAll(
+  /data-i18n-en="([^"]+)"/g,
+))
+  keys.add(match[1]);
 for (const grade of Object.values(TRAILS)) {
   keys.add(grade.focus);
   for (const stop of grade.stations) {

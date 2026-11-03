@@ -267,7 +267,8 @@ assert.equal(
 assert.equal(JSON.stringify(savedTutor().records), recordsBefore, "Checkups do not award mastery");
 assert.match($("#summary-title").textContent, /starting-point/);
 
-click('[data-view="notebook"]');
+click('#hub-tabs [data-view="practice"]');
+click('#hub-subnav [data-view="notebook"]');
 const savedMistake = savedTutor().mistakes.find(
   (entry) => entry.key === "4:division" && !entry.resolvedAt,
 );

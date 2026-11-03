@@ -551,13 +551,16 @@ body {
 @media (max-width: 640px) {
   .hub-tabs {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 4px;
   }
   .hub-tabs button {
-    padding-inline: var(--fl-s1, 8px);
-    font-size: 0.85rem;
+    padding-inline: 2px;
+    font-size: 0.78rem;
+    line-height: 1.15;
   }
   .hub-tabs .teacher-tab {
+    grid-column: 1 / 5;
     margin-inline-start: 0;
   }
   .mode-tabs button {
@@ -753,3 +756,39 @@ body {
 .gm-options .gm-calm {
   flex: 1 1 260px;
 }
+/* Secondary row under the five destinations (Learn and Practice only). */
+.hub-subnav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--fl-s1, 8px);
+  margin-block: calc(-1 * var(--fl-s1, 8px)) var(--fl-s2, 16px);
+  padding-inline: var(--fl-s1, 8px);
+}
+.hub-subnav[hidden] { display: none; }
+.hub-subnav button {
+  min-block-size: 44px;
+  padding: var(--fl-s1, 8px) var(--fl-s2, 16px);
+  border: 2px solid var(--fl-line, #d5d9de);
+  border-radius: var(--fl-radius, 12px);
+  background: var(--fl-white, #fff);
+  color: var(--fl-navy, #17324d);
+  font: 600 0.9rem var(--fl-font-body, "Lexend", sans-serif);
+}
+.hub-subnav button[aria-current] { border-color: var(--fl-navy, #17324d); background: var(--fl-blue-soft, #e3eef8); }
+.practice-hub-title { margin: 0 0 var(--fl-s2, 16px); font-family: var(--fl-font-head, "Fraunces", serif); color: var(--fl-navy, #17324d); }
+.practice-hub-grid {
+  display: grid;
+  gap: var(--fl-s2, 16px);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+}
+.practice-hub-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  min-block-size: 96px;
+  padding: var(--fl-s2, 16px);
+  text-align: start;
+}
+.practice-hub-card strong { font-size: 1.1rem; }
+.practice-hub-card span { font-weight: 400; font-size: 0.9rem; }

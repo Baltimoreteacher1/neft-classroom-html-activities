@@ -1,0 +1,21 @@
+// Spanish for the five student destinations and the Practice area. English text is the key; student lines use tú.
+export const ES_LAB6_NAV = {
+  Home: "Inicio",
+  Learn: "Aprender",
+  Practice: "Practicar",
+  "Play ##nav": "Jugar",
+  "My Growth": "Mi crecimiento",
+  "Start practicing": "Empezar a practicar",
+  "Writing Studio": "Estudio de escritura",
+  "Today's 10": "Los 10 de hoy",
+  "Keep going": "Sigue adelante",
+  "Quick check-up": "Chequeo rápido",
+  "Choose a skill": "Elige una destreza",
+  "Ten questions picked from what you need next.": "Diez preguntas elegidas según lo que necesitas ahora.",
+  "Pick up {title} where you left off.": "Continúa {title} donde lo dejaste.",
+  "A short set that shows what to practice next.": "Un conjunto corto que muestra qué practicar después.",
+  "{n} to look at again.": "{n} para revisar otra vez.",
+  "Nothing to fix right now.": "No hay nada que corregir ahora.",
+  "Browse every skill for your grade.": "Mira todas las destrezas de tu grado.",
+  "Pick one way to practice. Your answers decide what comes next.": "Elige una forma de practicar. Tus respuestas deciden qué sigue.",
+};
