@@ -2,12 +2,13 @@
 // item library, the lesson planner, printable sheets, the Family Math Studio page and the learner's "Real problems"
 // practice. Checks what a person sees and can do, in English and Spanish, at three widths, with axe.
 import assert from "node:assert/strict";
-import { mkdtempSync, writeFileSync } from "node:fs";
+import { mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import AxeBuilder from "@axe-core/playwright";
 import { chromium } from "@playwright/test";
 import { createServer } from "vite";
+import { selectItems } from "./item-engine.js";
 import { REPO_ROOT } from "../../../tools/lib/curriculum-source.mjs";
 import { DAY, NOW, answers, keyOf, tutorWith } from "../../../tools/lib/teacher-4-fixtures.mjs";
 
@@ -35,8 +36,22 @@ const classTutors = [
 const dir = mkdtempSync(join(tmpdir(), "e8-hub-"));
 const files = classTutors.map((tutor, i) => { const p = join(dir, `l${i}.json`); writeFileSync(p, JSON.stringify(backup(tutor))); return p; });
 
-async function open(url, { viewport = { width: 1280, height: 900 } } = {}) {
+// The Real problems set is chosen by the wall-clock MINUTE (item-practice-ui.js seeds selectItems with Date.now()/60000), and about
+// half of all minutes pick a type this driver cannot answer (match, sort, graph, model). The test pins the minute it runs in to
+// the first one whose set it can fully answer, so it no longer depends on when it happens to run.
+const DRIVEN = new Set(["mc", "multi", "error", "numberline", "numeric", "fraction", "equation", "expression", "application", "constructed", "explain"]);
+const grade5 = JSON.parse(readFileSync(join(REPO_ROOT, "math/fluency-lab/content/items/grade-5.json"), "utf8"));
+let pinnedMinute = 29_000_000;
+while (!selectItems(grade5, { mode: "exit", grade: 5, exclude: [], seed: pinnedMinute }).every((it) => DRIVEN.has(it.type))) pinnedMinute += 1;
+
+async function open(url, { viewport = { width: 1280, height: 900 }, pinMinute = null } = {}) {
   const ctx = await browser.newContext({ viewport, acceptDownloads: true });
+  if (pinMinute !== null)
+    await ctx.addInitScript((minute) => {
+      const real = Date.now.bind(Date);
+      const delta = minute * 60000 + 500 - real();
+      Date.now = () => real() + delta;
+    }, pinMinute);
   await ctx.addInitScript(() => { window.__printed = 0; window.print = () => { window.__printed += 1; }; });
   const page = await ctx.newPage();
   page.errors = [];
@@ -164,7 +179,7 @@ try {
 
   // ---------------------------------------------------------------- F. Real problems (learner)
   {
-    const page = await open(`${lab}?grade=5&view=path`);
+    const page = await open(`${lab}?grade=5&view=path`, { pinMinute: pinnedMinute });
     await page.locator("#e8-items [data-ip-set]").first().waitFor();
     const bank = await page.evaluate(async () => (await fetch("/math/fluency-lab/content/items/grade-5.json")).json());
     const byStem = new Map(bank.map((i) => [i.stem.en, i]));
