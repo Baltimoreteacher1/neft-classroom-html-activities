@@ -1,7 +1,7 @@
 // Spanish interface strings for the ACCESS enterprise surfaces. Keys are the exact English strings the UI builds.
 // Machine-assisted translation, written in plain "tú" Spanish for families and teachers (matching the rest of the lab);
 // not yet reviewed by a human translator. Practice content (passages, questions, choices, supports) is never translated.
-import { TEACHER_EXACT, TEACHER_PATTERNS } from "./es-teacher.js";
+import { TEACHER_EXACT, TEACHER_PATTERNS } from "./es-hub.js";
 import { P6_EXACT, P6_PATTERNS } from "./es-phase6.js";
 
 export const ES_EXACT = {

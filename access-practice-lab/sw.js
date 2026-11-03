@@ -11,7 +11,7 @@
  * The block between the build markers is written by tools/sync-access-shell.mjs; do not edit it by hand.
  */
 /* build:begin */
-const BUILD_HASH = "f407c1dee956";
+const BUILD_HASH = "3daea0332b72";
 const PRECACHE_CORE = [
   "/access-practice-lab/library.css?v=159952795a3e",
   "/access-practice-lab/studio.css?v=28d71fd235dd",
@@ -62,9 +62,9 @@ const PRECACHE_CORE = [
   "/access-practice-lab/src/acc/engine/toolbar.js?v=38c94e6b1e4f",
   "/access-practice-lab/src/acc/feedback/writing-feedback.js?v=9086dc501f5a",
   "/access-practice-lab/src/acc/i18n/I18nEngine.js?v=4656ac50f167",
+  "/access-practice-lab/src/acc/i18n/locales/es-hub.js?v=85f0ee7012fe",
   "/access-practice-lab/src/acc/i18n/locales/es-phase6.js?v=dfef04fcd571",
-  "/access-practice-lab/src/acc/i18n/locales/es-teacher.js?v=85f0ee7012fe",
-  "/access-practice-lab/src/acc/i18n/locales/es.js?v=4b7390ee5db3",
+  "/access-practice-lab/src/acc/i18n/locales/es.js?v=e00f120022e9",
   "/access-practice-lab/src/acc/review/feedback-ui.js?v=fa8f1bd2c120",
   "/access-practice-lab/src/acc/review/review.js?v=f2cc8ceadbfe",
   "/access-practice-lab/src/acc/routes.js?v=1b70b148edb3",

@@ -4,12 +4,13 @@
  * no unrelated EduWonderLab apps loaded into ACCESS pages. Pure file checks plus WCAG contrast arithmetic.
  */
 import assert from "node:assert/strict";
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 import test from "node:test";
 import { CHROME } from "../access-practice-lab/src/acc/copy.js";
 import { ACC_ROUTES, trail } from "../access-practice-lab/src/acc/routes.js";
 import { crumbsHTML, ecoBarHTML, footerHTML } from "../access-practice-lab/src/acc/shell.js";
+import { isTeacherSurface } from "../functions/_lib/teacher-surface.js";
 import { REPO_ROOT } from "./lib/access-lab-content.mjs";
 
 const read = (p) => readFileSync(join(REPO_ROOT, p), "utf8");
@@ -164,4 +165,28 @@ test("shell markup is accessible and states the practice-material disclaimer", (
     );
   }
   assert.match(read("access-practice-lab/src/nav.js"), /CHROME\.en\.disclaimer/);
+});
+
+// Production regression (2026-11-03): the student app imported locales/es-teacher.js, whose path contains "teacher", so the site's
+// teacher gate answered 401 and every page that loaded the Spanish dictionary rendered blank. Local servers have no gate, so no
+// browser test could see it. The real predicate is asked about every shipped file instead.
+test("no file the student Practice Lab loads is behind the teacher gate", () => {
+  const walk = (d) =>
+    readdirSync(d).flatMap((f) =>
+      statSync(join(d, f)).isDirectory() ? walk(join(d, f)) : [join(d, f)],
+    );
+  const allowed = new Set(["access-practice-lab/paper-passport/language-passport-teacher-key.pdf"]);
+  const gated = walk("access-practice-lab")
+    .filter((f) => !/\.(md|test\.mjs)$/.test(f) && isTeacherSurface(`/${f}`))
+    .filter((f) => !allowed.has(f));
+  assert.deepEqual(
+    gated,
+    [],
+    "rename these: the gate treats any path containing 'teacher' as teacher-only",
+  );
+  assert.equal(
+    isTeacherSurface("/access-practice-lab/src/acc/i18n/locales/es-teacher.js"),
+    true,
+    "the predicate still gates that name, which is why it was renamed",
+  );
 });
