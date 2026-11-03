@@ -65,6 +65,9 @@ function sourceFiles(folder) {
 // Enterprise 8 modules pass a few keys to t() by name; list them so their Spanish is checked.
 const { PROGRESS_I18N_KEYS } = await import("../math/fluency-lab/e8/progress-visual.js");
 for (const key of PROGRESS_I18N_KEYS) keys.add(key);
+// The studio home passes its headlines and landscape state words to t() by variable.
+const { ATELIER_I18N_KEYS } = await import("../math/fluency-lab/atelier/copy.js");
+for (const key of ATELIER_I18N_KEYS) keys.add(key);
 // Math Reality passes mission text, step names and control labels to t() by variable; list them here.
 const { missionKeys } = await import("../math/fluency-lab/reality/stadium-missions.js");
 const { STEP_LABELS } = await import("../math/fluency-lab/reality/engine.js");
@@ -85,6 +88,7 @@ const sources = [
   ...sourceFiles(new URL("studio", dir).pathname),
   ...sourceFiles(new URL("e8", dir).pathname),
   ...sourceFiles(new URL("reality", dir).pathname),
+  ...sourceFiles(new URL("atelier", dir).pathname),
 ];
 for (const file of sources) {
   const source = readFileSync(file, "utf8");

@@ -71,6 +71,7 @@ import { setLanguageProfile } from "./language-settings.js";
 import { questionEs } from "./question-es.js";
 import { handleStepPlayerClick, handleStepPlayerSolved, lightStepPlayers, stepPlayer } from "./step-player.js";
 import { applyGradeExperience } from "./grade-experience.js";
+import { mountAtelierHome } from "./atelier/home.js";
 import { renderProgressVisual } from "./e8/progress-visual.js";
 import { mountModelLab } from "./e8/model-lab.js";
 import { e8Store } from "./e8/e8-local.js";
@@ -440,7 +441,8 @@ function renderLibrary() {
   els.workspace.hidden = true;
   els.library.hidden = false;
   const grade = getGrade(state.grade);
-  applyGradeExperience(state.grade);
+  // The grade chooser belongs to no grade yet, so it takes the neutral type scale instead of Grade 1's.
+  applyGradeExperience(state.landing ? null : state.grade);
   state.subview = gradeHub?.current() === "trail" ? "trail" : "skills";
   setPracticeSubview(state.subview, { syncHub: false });
   cleanupTrail?.();
@@ -482,8 +484,9 @@ function renderLibrary() {
   renderDashboard();
   const choosing = state.landing;
   if (choosing) renderGradeChooser();
-  if (choosing) for (const part of [document.querySelector(".practice-subnav"), document.querySelector("#grade-hub-tabs"), els.morePractice, els.trail]) if (part) part.hidden = true;
-  else document.querySelector("#grade-hub-tabs")?.removeAttribute("hidden");
+  if (choosing) {
+    for (const part of [document.querySelector(".practice-subnav"), document.querySelector("#grade-hub-tabs"), els.morePractice, els.trail]) if (part) part.hidden = true;
+  } else document.querySelector("#grade-hub-tabs")?.removeAttribute("hidden");
   setUrl();
   document.title = !choosing && state.gradeInUrl ? `${grade.label} Math Fluency Lab | EduWonderLab` : "Math Fluency Lab · Grades 1–8 | EduWonderLab";
 }
@@ -7554,6 +7557,7 @@ function renderDashboard() {
       els.morePractice?.scrollIntoView({ behavior: "smooth", block: "start" });
     },
   });
+  mountAtelierHome({ grade: state.grade, gradeLabel: gradeDisplay(state.grade), tutor: state.tutor, landing: state.landing, hasRecords: Object.values(state.tutor.records).some((record) => record.recent?.length || record.lessonCompleted) });
 }
 
 function renderPracticeView() {

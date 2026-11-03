@@ -50,12 +50,14 @@ try {
       const attrs = await home.evaluate(() => ({ ...document.documentElement.dataset }));
       if (attrs.gradeSystem !== String(grade)) fail(`${tag}: data-grade-system is ${attrs.gradeSystem}`);
       if (attrs.gsHeader !== GRADE_SYSTEM[grade].header) fail(`${tag}: header ${attrs.gsHeader}`);
-      const banner = home.locator(".grade-experience-banner");
-      if (!(await banner.isVisible())) fail(`${tag}: banner missing`);
-      else if (!(await banner.locator("svg[role=img]").count())) fail(`${tag}: banner scene missing`);
+      // The grade home's identity is the studio hero: a kicker naming the grade and its interactive scene.
+      const hero = home.locator(".at-hero");
+      if (!(await hero.isVisible())) fail(`${tag}: hero missing`);
+      else if (!(await hero.locator(".at-sculpture svg[role=img]").count())) fail(`${tag}: hero scene missing`);
+      else if (!(await home.locator("#at-kicker").textContent()).includes(String(grade))) fail(`${tag}: hero does not name the grade`);
       if ((await overflow(home)) > 1) fail(`${tag}: horizontal overflow on home`);
       if (shots) await home.screenshot({ path: `${shots}/g${grade}-${name}-home.png` });
-      if (name === "desktop") await axe(home, `${tag} home`, ".grade-experience-banner, #hub-tabs, #grade-tabs");
+      if (name === "desktop") await axe(home, `${tag} home`, ".at-hero, #hub-tabs, #grade-tabs");
       if (home.errors.length) fail(`${tag}: page errors ${home.errors[0]}`);
       await home.context().close();
 

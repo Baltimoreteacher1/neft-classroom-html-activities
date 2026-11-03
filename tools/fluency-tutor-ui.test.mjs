@@ -20,6 +20,8 @@ for (const [key, value] of Object.entries({
 }))
   Object.defineProperty(globalThis, key, { value, configurable: true, writable: true });
 await import("../math/fluency-lab/app.js");
+const { HEADLINES, LANDING } = await import("../math/fluency-lab/atelier/copy.js");
+const { ES_ATELIER } = await import("../math/fluency-lab/i18n-es-lab8-atelier.js");
 const $ = (selector) => win.document.querySelector(selector);
 const click = (selector) => {
   assert.ok($(selector), `Missing ${selector}`);
@@ -45,9 +47,11 @@ const solveCurrent = () => {
 };
 
 click('[data-view="library"]');
-assert.equal(
-  $("#page-title").textContent,
-  "Your Math Journey",
+// The journey home leads with the studio hero: one of its grade-band headlines (atelier/copy.js).
+assert.ok(
+  [...Object.values(HEADLINES).map(([headline]) => headline), LANDING[0]].includes(
+    $("#page-title").textContent,
+  ),
   "The student route opens on the journey home",
 );
 assert.match($("#personal-dashboard").textContent, /Continue learning/);
@@ -83,9 +87,11 @@ assert.equal($("#studio-launch-nt"), null, "The Number Talk projector has one te
 click('[data-view="library"]');
 assert.ok(!win.document.body.classList.contains("teacher-resources"));
 click("#lang-toggle");
-assert.equal(
-  $("#page-title").textContent,
-  "Tu camino en matemáticas",
+assert.ok(
+  [
+    ...Object.values(HEADLINES).map(([headline]) => ES_ATELIER[headline]),
+    ES_ATELIER[LANDING[0]],
+  ].includes($("#page-title").textContent),
   "The journey home follows the language selection",
 );
 click("#lang-toggle");

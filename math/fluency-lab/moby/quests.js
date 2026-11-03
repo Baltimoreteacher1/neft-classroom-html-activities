@@ -373,6 +373,22 @@ export function goals(state, now = Date.now()) {
 export function dayQuests(state, tutor, grade, now = Date.now(), ctx = {}) {
   const next = clone(sanitizeQuests(state, ctx.learnerId));
   const day = localDay(now);
+  // A learner who switches grade before working on today's quests gets quests for the grade on screen; quests that
+  // already carry progress are kept so nothing earned is ever replaced.
+  const pinned = next.days[day];
+  const untouched = pinned?.quests.every(
+    (quest) =>
+      quest.status === "active" && Object.values(quest.progress).every((step) => !step.have),
+  );
+  if (
+    pinned &&
+    untouched &&
+    pinned.quests.some((quest) => quest.skillKey && findSkill(quest.skillKey)?.grade !== grade)
+  )
+    pinned.quests = buildQuests(tutor, grade, now, {
+      ...ctx,
+      learnerId: ctx.learnerId ?? next.learner,
+    });
   if (!next.days[day]) {
     const snapshot = daySnapshot(tutor, now);
     next.days[day] = {

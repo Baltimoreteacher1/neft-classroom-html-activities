@@ -173,7 +173,10 @@ export function createLauncher({ getLang, actions, partialInfo }) {
       const act = event.target.closest("[data-act]")?.dataset.act;
       if (act) handlers[act]?.(event.target.closest("[data-act]"));
     });
-    host.prepend(offer);
+    // After the studio hero, so offering the tour does not push the page's first screen down.
+    const hero = host.querySelector(":scope > .at-hero");
+    if (hero) hero.after(offer);
+    else host.prepend(offer);
     renderOffer();
   }
   const setOfferVisible = (visible) => {

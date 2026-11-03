@@ -1,0 +1,1291 @@
+/* EduWonderLab — The Living Mathematics Studio.
+   Loaded last on the Fluency Lab page. Four material families (Obsidian Blue, Porcelain & Glass, Kinetic Teal,
+   Copper) become semantic tokens; the shared --fl-* tokens are re-pointed at them so every existing screen
+   takes the same language. Violet is never used (validate:no-purple), so the brief's amethyst accent is carried
+   by copper alone. Grade bands (html[data-atelier-band]) change composition, density, type and motif. */
+
+/* Metric-matched fallbacks (measured against Fraunces 500 and Lexend 400/700 in Chromium): while the web fonts
+   load, text already occupies the space it will keep, so the font swap does not move the page. */
+@font-face {
+  font-family: "Fraunces Fallback";
+  src: local("Georgia"), local("Times New Roman"), local("Noto Serif");
+  size-adjust: 88.5%;
+  ascent-override: 110.7%;
+  descent-override: 29.4%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: "Lexend Fallback";
+  src: local("Arial"), local("Helvetica"), local("Liberation Sans"), local("Roboto");
+  size-adjust: 107.5%;
+  ascent-override: 93%;
+  descent-override: 23.3%;
+  line-gap-override: 0%;
+}
+
+:root {
+  /* materials */
+  --at-obsidian-0: #080f25;
+  --at-obsidian-1: #13294b;
+  --at-obsidian-2: #28447c;
+  --at-porcelain-0: #fdfbf5;
+  --at-porcelain-1: #f5f1e8;
+  --at-porcelain-2: #e9e2d5;
+  --at-glass: #c7d5de;
+  --at-teal-0: #053f48;
+  --at-teal-1: #087e88;
+  --at-teal-2: #85d8cb;
+  --at-teal-ink: #066a73; /* 5.3:1 on porcelain-1 */
+  --at-copper-0: #8e4f38;
+  --at-copper-1: #c97d5d;
+  --at-copper-2: #e6a688;
+  --at-copper-ink: #8a4a33; /* 5.9:1 on porcelain-1 */
+  /* semantic */
+  --at-bg: var(--at-porcelain-1);
+  --at-surface: var(--at-porcelain-0);
+  --at-ink: #14213a;
+  --at-ink-soft: #4a5568;
+  --at-rule: #ddd5c6;
+  --at-rule-strong: #b9ae9b;
+  --at-on-dark: #f4f1ea;
+  --at-on-dark-soft: #c9d3e0;
+  --at-success: #1b6e47;
+  --at-warn: #9a4b0b;
+  --at-focus: #2563c9;
+  /* type */
+  --at-display: "Fraunces", "Fraunces Fallback", Georgia, serif;
+  --at-ui: "Lexend", "Lexend Fallback", system-ui, sans-serif;
+  --at-step--1: clamp(0.84rem, 0.8rem + 0.15vw, 0.92rem);
+  --at-step-0: clamp(1rem, 0.96rem + 0.2vw, 1.1rem);
+  --at-step-1: clamp(1.2rem, 1.1rem + 0.45vw, 1.45rem);
+  --at-step-2: clamp(1.5rem, 1.3rem + 0.9vw, 2.05rem);
+  --at-step-hero: clamp(2.4rem, 1.4rem + 3.6vw, 4.6rem);
+  /* shape, depth, motion */
+  --at-radius: 18px;
+  --at-radius-sm: 12px;
+  --at-shadow-1: 0 1px 1px rgb(8 15 37 / 0.06), 0 2px 6px rgb(8 15 37 / 0.06);
+  --at-shadow-2: 0 1px 2px rgb(8 15 37 / 0.08), 0 10px 28px -8px rgb(8 15 37 / 0.22);
+  --at-shadow-3: 0 2px 4px rgb(8 15 37 / 0.1), 0 30px 60px -24px rgb(8 15 37 / 0.45);
+  --at-ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --at-fast: 140ms;
+  --at-med: 260ms;
+  --at-target: 44px;
+  --at-gap: clamp(1rem, 0.6rem + 1.6vw, 2rem);
+
+  /* the shared lab tokens take the studio's language */
+  --fl-navy: var(--at-obsidian-1);
+  --fl-navy-2: var(--at-obsidian-2);
+  --fl-teal: var(--at-teal-1);
+  --fl-teal-ink: var(--at-teal-ink);
+  --fl-paper: var(--at-porcelain-1);
+  --fl-paper-2: var(--at-porcelain-2);
+  --fl-ink: var(--at-ink);
+  --fl-ink-soft: var(--at-ink-soft);
+  --fl-line: var(--at-rule);
+  --fl-radius: var(--at-radius-sm);
+  --fl-radius-lg: var(--at-radius);
+  --fl-shadow-1: var(--at-shadow-1);
+  --fl-shadow-2: var(--at-shadow-2);
+  --fl-focus: 0 0 0 3px #fff, 0 0 0 6px var(--at-focus);
+  --fl-font-head: var(--at-display);
+  --fl-font-body: var(--at-ui);
+}
+
+/* Grade bands: one brand, four developmental registers. */
+:root[data-atelier-band="early"] {
+  --at-radius: 26px;
+  --at-radius-sm: 18px;
+  --at-target: 56px;
+  --at-step-hero: clamp(2.5rem, 1.6rem + 3.4vw, 4.4rem);
+  --at-step-0: clamp(1.08rem, 1rem + 0.3vw, 1.2rem);
+}
+:root[data-atelier-band="design"] {
+  --at-radius: 16px;
+  --at-radius-sm: 10px;
+}
+:root[data-atelier-band="analyze"] {
+  --at-radius: 12px;
+  --at-radius-sm: 8px;
+  --at-step-hero: clamp(2.2rem, 1.3rem + 3.2vw, 4.1rem);
+}
+
+html,
+body {
+  background: var(--at-bg);
+}
+body {
+  color: var(--at-ink);
+  font-feature-settings:
+    "tnum" 1,
+    "lnum" 1;
+}
+:focus-visible {
+  outline: 3px solid var(--at-focus);
+  outline-offset: 3px;
+}
+
+/* ---- Header: an obsidian instrument bar ---- */
+.site-header {
+  background:
+    radial-gradient(120% 220% at 0% 0%, rgb(133 216 203 / 0.12), transparent 42%),
+    linear-gradient(180deg, var(--at-obsidian-1), var(--at-obsidian-0));
+  border-bottom: 1px solid rgb(133 216 203 / 0.35);
+  box-shadow:
+    0 1px 0 rgb(8 15 37 / 0.6),
+    0 12px 30px -18px rgb(8 15 37 / 0.6);
+}
+.site-header .brand-mark {
+  border: 0;
+  background: linear-gradient(150deg, var(--at-teal-2), var(--at-teal-1) 55%, var(--at-teal-0));
+  color: var(--at-obsidian-0);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.45),
+    0 4px 12px -4px rgb(133 216 203 / 0.6);
+}
+.site-header .brand-button strong {
+  font-family: var(--at-display);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.site-header .quiet-button {
+  border-color: rgb(199 213 222 / 0.28);
+  background: rgb(255 255 255 / 0.04);
+}
+.site-header .profile-control select {
+  border-color: rgb(199 213 222 / 0.4);
+  background-color: var(--at-porcelain-0);
+  color: var(--at-ink);
+}
+.site-header .quiet-button:hover {
+  background: rgb(255 255 255 / 0.1);
+}
+
+/* ---- Hero ---- */
+#main > .intro.at-hero {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+  gap: clamp(1.25rem, 3vw, 3rem);
+  align-items: center;
+  margin: clamp(0.75rem, 2vw, 1.5rem) 0 var(--at-gap);
+  padding: clamp(1.75rem, 4vw, 3.5rem) clamp(1.25rem, 4vw, 3.5rem);
+  overflow: hidden;
+  border-radius: calc(var(--at-radius) + 10px);
+  background:
+    radial-gradient(70% 90% at 78% 30%, rgb(40 68 124 / 0.85), transparent 70%),
+    radial-gradient(50% 70% at 12% 100%, rgb(8 126 136 / 0.35), transparent 70%),
+    linear-gradient(160deg, var(--at-obsidian-1) 0%, var(--at-obsidian-0) 70%);
+  color: var(--at-on-dark);
+  box-shadow:
+    var(--at-shadow-3),
+    inset 0 1px 0 rgb(255 255 255 / 0.08);
+}
+/* fine measuring linework, faded toward the copy */
+#main > .intro.at-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    repeating-linear-gradient(90deg, rgb(199 213 222 / 0.07) 0 1px, transparent 1px 32px),
+    repeating-linear-gradient(0deg, rgb(199 213 222 / 0.07) 0 1px, transparent 1px 32px);
+  mask-image: radial-gradient(90% 100% at 75% 40%, #000 20%, transparent 75%);
+}
+#main > .intro.at-hero::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgb(133 216 203 / 0.5), transparent);
+}
+.at-hero .intro-copy {
+  min-width: 0;
+}
+#main > .at-hero .intro-kicker {
+  margin: 0 0 1rem;
+  color: var(--at-teal-2);
+  font: 600 var(--at-step--1) / 1.2 var(--at-ui);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+#main > .at-hero h1 {
+  max-width: 15ch;
+  margin: 0;
+  color: #fff;
+  font: 500 var(--at-step-hero) / 1.02 var(--at-display);
+  font-variation-settings: "opsz" 144;
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+}
+#main > .at-hero .intro-copy > p#intro-description {
+  max-width: 44ch;
+  margin: 1.1rem 0 0;
+  color: var(--at-on-dark-soft);
+  font-size: var(--at-step-1);
+  line-height: 1.5;
+  text-wrap: pretty;
+}
+.at-hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1rem;
+  align-items: center;
+  margin-top: 1.75rem;
+}
+.at-cta {
+  display: inline-flex;
+  gap: 0.6rem;
+  align-items: center;
+  min-height: calc(var(--at-target) + 8px);
+  padding: 0.7rem 1.5rem;
+  border: 0;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #f6c9ae, var(--at-copper-2) 60%, #d98e6c);
+  color: var(--at-obsidian-0);
+  font: 700 var(--at-step-0) / 1.1 var(--at-ui);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.55),
+    0 10px 24px -10px rgb(230 166 136 / 0.9);
+  cursor: pointer;
+  transition:
+    transform var(--at-fast) var(--at-ease),
+    box-shadow var(--at-fast) var(--at-ease);
+}
+.at-cta span {
+  transition: transform var(--at-fast) var(--at-ease);
+}
+.at-cta:hover {
+  transform: translateY(-1px);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.55),
+    0 16px 30px -12px rgb(230 166 136 / 0.95);
+}
+.at-cta:hover span {
+  transform: translateX(3px);
+}
+.at-cta:active {
+  transform: translateY(1px);
+}
+.at-cta:focus-visible,
+.at-cta-quiet:focus-visible,
+.at-hero .at-grownups a:focus-visible,
+.at-hero .at-grownups button:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 3px;
+}
+.at-cta-quiet {
+  min-height: var(--at-target);
+  padding: 0.6rem 1.1rem;
+  border: 1px solid rgb(199 213 222 / 0.4);
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.04);
+  color: var(--at-on-dark);
+  font: 600 var(--at-step--1) / 1.1 var(--at-ui);
+  cursor: pointer;
+}
+.at-cta-quiet:hover {
+  background: rgb(255 255 255 / 0.1);
+}
+.at-hero .overall-stats {
+  margin-top: 1.5rem;
+  color: var(--at-on-dark-soft);
+  font-size: var(--at-step--1);
+}
+.at-hero .overall-stats strong {
+  color: #fff;
+}
+.at-grownups {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1.25rem;
+  align-items: center;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgb(199 213 222 / 0.16);
+  font-size: var(--at-step--1);
+}
+.at-grownups__label {
+  color: var(--at-on-dark-soft);
+}
+#main .at-hero .at-grownups a,
+#main .at-hero .at-grownups button {
+  min-height: 0;
+  padding: 0.35rem 0;
+  border: 0;
+  background: none;
+  color: var(--at-teal-2);
+  font: 600 var(--at-step--1) / 1.4 var(--at-ui);
+  text-decoration: underline;
+  text-decoration-color: rgb(133 216 203 / 0.4);
+  text-underline-offset: 4px;
+  box-shadow: none;
+  cursor: pointer;
+}
+#main .at-hero .at-grownups a:hover,
+#main .at-hero .at-grownups button:hover {
+  color: #fff;
+}
+
+/* The sculpture lives on a glass stage with contact light underneath. */
+.at-hero__sculpture {
+  min-width: 0;
+}
+.at-sculpture {
+  margin: 0;
+}
+.at-stage {
+  position: relative;
+  border-radius: var(--at-radius);
+  background: linear-gradient(180deg, rgb(199 213 222 / 0.07), rgb(199 213 222 / 0.02));
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.08),
+    inset 0 0 0 1px rgb(199 213 222 / 0.12);
+}
+.at-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.at-eq {
+  fill: #fff;
+  font: 600 26px var(--at-display);
+  letter-spacing: 0.01em;
+}
+.at-row-label,
+.at-node-label,
+.at-tri-label {
+  fill: var(--at-on-dark-soft);
+  font: 600 14px var(--at-ui);
+}
+.at-row.is-hit .at-row-label {
+  fill: var(--at-teal-2);
+}
+.at-row:not(.is-hit) {
+  opacity: 0.62;
+}
+.at-row.is-source .at-row-label {
+  fill: #fff;
+}
+.at-measure {
+  stroke: var(--at-copper-2);
+  stroke-width: 2.5;
+  stroke-dasharray: 6 5;
+}
+.at-grid {
+  stroke: rgb(199 213 222 / 0.16);
+  stroke-width: 1;
+}
+.at-grid.is-axis {
+  stroke: rgb(199 213 222 / 0.55);
+  stroke-width: 1.6;
+}
+.at-ray {
+  stroke: var(--at-copper-2);
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+.at-line {
+  stroke: var(--at-teal-2);
+  stroke-width: 5;
+  stroke-linecap: round;
+}
+.at-tri {
+  fill: rgb(230 166 136 / 0.14);
+  stroke: var(--at-copper-2);
+  stroke-width: 2.5;
+  stroke-dasharray: 7 5;
+}
+.at-tri.is-second {
+  fill: rgb(133 216 203 / 0.1);
+}
+.at-tri-label {
+  fill: var(--at-copper-2);
+}
+.at-unit-point {
+  fill: var(--at-copper-2);
+  stroke: #fff;
+  stroke-width: 2;
+}
+.at-table-head {
+  fill: var(--at-teal-ink);
+  font: 700 16px var(--at-ui);
+}
+.at-table-cell {
+  fill: var(--at-ink);
+  font: 600 17px var(--at-ui);
+}
+.at-node-label {
+  font-size: 12px;
+}
+.at-counter {
+  transition: transform var(--at-med) var(--at-ease);
+  transition-delay: calc(var(--i, 0) * 18ms);
+}
+.at-node {
+  animation: at-rise var(--at-med) var(--at-ease) both;
+  animation-delay: calc(var(--i, 0) * 40ms);
+}
+@keyframes at-rise {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+.at-caption {
+  display: grid;
+  gap: 0.9rem;
+  margin-top: 1rem;
+}
+.at-words {
+  min-height: 3em;
+  margin: 0;
+  color: var(--at-on-dark);
+  font-size: var(--at-step-0);
+  line-height: 1.5;
+}
+.at-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem 1rem;
+  align-items: center;
+}
+.at-stepper {
+  display: inline-grid;
+  grid-template-columns: auto var(--at-target) minmax(3.2ch, auto) var(--at-target);
+  gap: 0.35rem;
+  align-items: center;
+  padding: 0.3rem 0.35rem 0.3rem 0.9rem;
+  border: 1px solid rgb(199 213 222 / 0.22);
+  border-radius: 999px;
+  background: rgb(8 15 37 / 0.45);
+}
+.at-stepper-label {
+  margin-right: 0.35rem;
+  color: var(--at-on-dark-soft);
+  font-size: var(--at-step--1);
+}
+.at-step {
+  width: var(--at-target);
+  height: var(--at-target);
+  border: 1px solid rgb(199 213 222 / 0.35);
+  border-radius: 50%;
+  background: linear-gradient(180deg, rgb(255 255 255 / 0.12), rgb(255 255 255 / 0.03));
+  color: #fff;
+  font: 600 1.25rem/1 var(--at-ui);
+  cursor: pointer;
+  transition:
+    background var(--at-fast) var(--at-ease),
+    transform var(--at-fast) var(--at-ease);
+}
+.at-step:hover {
+  background: rgb(133 216 203 / 0.22);
+}
+.at-step:active {
+  transform: scale(0.94);
+}
+.at-step:focus-visible,
+.at-act:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 2px;
+}
+.at-value {
+  color: #fff;
+  font: 700 var(--at-step-1) / 1 var(--at-ui);
+  text-align: center;
+}
+.at-act {
+  min-height: var(--at-target);
+  padding: 0.55rem 1.2rem;
+  border: 1px solid var(--at-teal-2);
+  border-radius: 999px;
+  background: rgb(133 216 203 / 0.14);
+  color: #fff;
+  font: 700 var(--at-step--1) / 1.1 var(--at-ui);
+  cursor: pointer;
+}
+
+/* Early band: a warm porcelain studio instead of the night sky — tactile and light. */
+:root[data-atelier-band="early"] #main > .intro.at-hero {
+  background:
+    radial-gradient(70% 90% at 80% 30%, #fff 0%, transparent 70%),
+    radial-gradient(60% 80% at 0% 100%, rgb(230 166 136 / 0.28), transparent 70%),
+    linear-gradient(165deg, var(--at-porcelain-0), var(--at-porcelain-2));
+  color: var(--at-ink);
+  box-shadow:
+    var(--at-shadow-2),
+    inset 0 0 0 1px var(--at-rule);
+}
+:root[data-atelier-band="early"] #main > .intro.at-hero::before {
+  background: radial-gradient(circle, rgb(19 41 75 / 0.12) 1.4px, transparent 1.6px) 0 0 / 28px 28px;
+}
+:root[data-atelier-band="early"] #main > .at-hero h1 {
+  color: var(--at-obsidian-1);
+}
+:root[data-atelier-band="early"] #main > .at-hero .intro-copy > p#intro-description,
+:root[data-atelier-band="early"] .at-hero .overall-stats,
+:root[data-atelier-band="early"] .at-grownups__label,
+:root[data-atelier-band="early"] .at-words,
+:root[data-atelier-band="early"] .at-stepper-label {
+  color: var(--at-ink-soft);
+}
+:root[data-atelier-band="early"] .at-hero .overall-stats strong,
+:root[data-atelier-band="early"] .at-value {
+  color: var(--at-ink);
+}
+:root[data-atelier-band="early"] .at-words {
+  color: var(--at-ink);
+  font-size: var(--at-step-1);
+}
+:root[data-atelier-band="early"] #main > .at-hero .intro-kicker {
+  color: var(--at-copper-ink);
+}
+:root[data-atelier-band="early"] #main .at-hero .at-grownups a,
+:root[data-atelier-band="early"] #main .at-hero .at-grownups button {
+  color: var(--at-teal-ink);
+}
+:root[data-atelier-band="early"] .at-grownups {
+  border-top-color: var(--at-rule);
+}
+:root[data-atelier-band="early"] .at-cta-quiet {
+  color: var(--at-ink);
+  border-color: var(--at-rule-strong);
+  background: #fff;
+}
+:root[data-atelier-band="early"] .at-stage {
+  background: rgb(255 255 255 / 0.55);
+  box-shadow: inset 0 0 0 1px var(--at-rule);
+}
+:root[data-atelier-band="early"] .at-stepper {
+  background: #fff;
+  border-color: var(--at-rule-strong);
+}
+:root[data-atelier-band="early"] .at-step {
+  color: var(--at-ink);
+  border-color: var(--at-rule-strong);
+  background: linear-gradient(180deg, #fff, var(--at-porcelain-2));
+}
+:root[data-atelier-band="early"] .at-act {
+  color: var(--at-teal-0);
+  border-color: var(--at-teal-1);
+  background: rgb(133 216 203 / 0.25);
+}
+:root[data-atelier-band="early"] .at-eq {
+  fill: var(--at-obsidian-1);
+  font-size: 34px;
+}
+:root[data-atelier-band="early"] .at-step:focus-visible,
+:root[data-atelier-band="early"] .at-act:focus-visible,
+:root[data-atelier-band="early"] .at-cta:focus-visible,
+:root[data-atelier-band="early"] .at-cta-quiet:focus-visible {
+  outline-color: var(--at-focus);
+}
+/* Analyze band: the deepest obsidian, a finer grid and a precise mono kicker. */
+:root[data-atelier-band="analyze"] #main > .intro.at-hero::before {
+  background:
+    repeating-linear-gradient(90deg, rgb(199 213 222 / 0.06) 0 1px, transparent 1px 16px),
+    repeating-linear-gradient(0deg, rgb(199 213 222 / 0.06) 0 1px, transparent 1px 16px);
+}
+:root[data-atelier-band="analyze"] #main > .at-hero .intro-kicker {
+  font-family: "DM Mono", ui-monospace, monospace;
+  letter-spacing: 0.08em;
+}
+/* Discover band: deep kinetic teal light. */
+:root[data-atelier-band="discover"] #main > .intro.at-hero {
+  background:
+    radial-gradient(70% 90% at 78% 30%, rgb(8 126 136 / 0.55), transparent 70%),
+    radial-gradient(50% 70% at 10% 100%, rgb(230 166 136 / 0.18), transparent 70%),
+    linear-gradient(160deg, var(--at-teal-0) 0%, var(--at-obsidian-0) 75%);
+}
+
+/* The hero replaces the per-view intro only on the grade home; elsewhere the intro stays compact. */
+body:not(:has(#library-view:not([hidden]))) #main > .intro.at-hero {
+  grid-template-columns: 1fr;
+  padding-block: clamp(1.25rem, 3vw, 2rem);
+}
+body:not(:has(#library-view:not([hidden]))) .at-hero__sculpture,
+body:not(:has(#library-view:not([hidden]))) .at-hero__actions,
+body:not(:has(#library-view:not([hidden]))) .at-grownups,
+body:not(:has(#library-view:not([hidden]))) .at-hero .overall-stats,
+body:not(:has(#library-view:not([hidden]))) #at-kicker {
+  display: none;
+}
+body:not(:has(#library-view:not([hidden]))) #main > .at-hero h1 {
+  max-width: none;
+  font-size: var(--at-step-2);
+}
+body:has(#library-view:not([hidden])) #grade-experience-banner {
+  display: none;
+}
+
+/* ---- Navigation, grade rail and section tabs ---- */
+#main .hub-tabs {
+  border: 1px solid var(--at-rule);
+  border-radius: 999px;
+  background: rgb(253 251 245 / 0.85);
+  box-shadow: var(--at-shadow-1);
+}
+#main .hub-tabs > button,
+#main .hub-tabs > a {
+  border-radius: 999px;
+}
+#main .hub-tabs > [aria-current="page"] {
+  background: var(--at-obsidian-1);
+  color: #fff;
+}
+.grade-rail-heading h2 {
+  font: 600 var(--at-step-0) / 1.2 var(--at-ui);
+  letter-spacing: 0.02em;
+}
+:root[data-atelier-landing] .grade-rail {
+  display: none;
+}
+#main .gh-tabs {
+  border-color: var(--at-rule);
+  border-radius: 999px;
+  background: rgb(253 251 245 / 0.92);
+  backdrop-filter: blur(8px);
+  box-shadow: var(--at-shadow-1);
+}
+#main .gh-tab {
+  border-radius: 999px;
+}
+#main .gh-tab[aria-selected="true"] {
+  background: var(--at-obsidian-1);
+  box-shadow: 0 4px 12px -4px rgb(8 15 37 / 0.5);
+}
+
+/* ---- Personal next step (the dashboard's hero becomes a quiet porcelain card) ---- */
+#main .fl4-home .fl4-hero {
+  border: 1px solid var(--at-rule);
+  border-radius: var(--at-radius);
+  background:
+    radial-gradient(60% 120% at 100% 0%, rgb(133 216 203 / 0.18), transparent 60%),
+    var(--at-surface);
+  color: var(--at-ink);
+  box-shadow: var(--at-shadow-2);
+}
+#main .fl4-home .fl4-hero h2 {
+  color: var(--at-obsidian-1);
+  font-family: var(--at-display);
+  font-weight: 500;
+}
+#main .fl4-home .fl4-hero .fl4-hero__kicker,
+#main .fl4-home .fl4-hero p {
+  color: var(--at-ink-soft);
+}
+#main .fl4-home .fl4-hero .fl4-hero__skill {
+  color: var(--at-ink);
+}
+#main .fl4-home .fl4-hero .fl-btn {
+  border-color: var(--at-obsidian-1);
+  background: transparent;
+  color: var(--at-obsidian-1);
+}
+#main .fl4-home .fl4-hero .fl-btn--hero {
+  background: var(--at-obsidian-1);
+  color: #fff;
+}
+#main .fl4-home .fl4-hero__art {
+  background: var(--at-porcelain-1);
+  box-shadow: inset 0 0 0 1px var(--at-rule);
+}
+
+/* ---- Section titles ---- */
+.at-home {
+  display: grid;
+  gap: var(--at-gap);
+  margin: var(--at-gap) 0;
+}
+.at-section-title {
+  margin: 0 0 0.35rem;
+  color: var(--at-obsidian-1);
+  font: 500 var(--at-step-2) / 1.15 var(--at-display);
+  letter-spacing: -0.015em;
+}
+
+/* ---- Portals: one large, two stacked — controlled asymmetry ---- */
+.at-portals__grid {
+  display: grid;
+  grid-template-columns: 1.25fr 1fr;
+  grid-template-rows: auto auto;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+.at-portal {
+  position: relative;
+  display: grid;
+  gap: 1rem;
+  align-content: start;
+  min-height: var(--at-target);
+  padding: 1.25rem;
+  overflow: hidden;
+  border: 1px solid var(--at-rule);
+  border-radius: var(--at-radius);
+  background: var(--at-surface);
+  color: var(--at-ink);
+  font: inherit;
+  text-align: start;
+  box-shadow: var(--at-shadow-1);
+  cursor: pointer;
+  transition:
+    transform var(--at-fast) var(--at-ease),
+    box-shadow var(--at-med) var(--at-ease),
+    border-color var(--at-fast) var(--at-ease);
+}
+.at-portal:hover {
+  transform: translateY(-2px);
+  border-color: var(--at-rule-strong);
+  box-shadow: var(--at-shadow-2);
+}
+.at-portal:active {
+  transform: translateY(0);
+}
+.at-portal:focus-visible {
+  outline: 3px solid var(--at-focus);
+  outline-offset: 3px;
+}
+.at-portal__art svg {
+  display: block;
+  width: 100%;
+  max-width: 320px;
+  height: auto;
+}
+.at-portal__copy {
+  display: grid;
+  gap: 0.35rem;
+}
+.at-portal__eyebrow {
+  color: var(--at-obsidian-1);
+  font: 500 var(--at-step-2) / 1.1 var(--at-display);
+}
+.at-portal__body {
+  max-width: 44ch;
+  color: var(--at-ink-soft);
+  font-size: var(--at-step-0);
+  line-height: 1.5;
+}
+.at-portal__status {
+  margin-top: 0.35rem;
+  color: var(--at-teal-ink);
+  font-weight: 700;
+}
+.at-portal--learn {
+  grid-row: span 2;
+  align-content: space-between;
+  background:
+    radial-gradient(80% 60% at 70% 20%, rgb(133 216 203 / 0.28), transparent 70%),
+    linear-gradient(180deg, var(--at-surface), var(--at-porcelain-1));
+}
+.at-portal--learn .at-portal__art {
+  display: grid;
+  place-items: center;
+  padding: 1rem 0;
+}
+.at-portal--learn .at-portal__art svg {
+  max-width: 420px;
+}
+.at-portal--practice,
+.at-portal--play {
+  grid-template-columns: minmax(140px, 0.9fr) 1.1fr;
+  align-items: center;
+}
+.at-portal--play {
+  background:
+    radial-gradient(70% 90% at 0% 100%, rgb(230 166 136 / 0.22), transparent 70%), var(--at-surface);
+}
+.at-portal--play .at-portal__status {
+  color: var(--at-copper-ink);
+}
+
+/* ---- Mastery landscape ---- */
+.at-land {
+  padding: clamp(1.25rem, 3vw, 2rem);
+  border: 1px solid var(--at-rule);
+  border-radius: var(--at-radius);
+  background:
+    linear-gradient(180deg, rgb(253 251 245 / 0.6), rgb(233 226 213 / 0.55)),
+    repeating-linear-gradient(0deg, rgb(19 41 75 / 0.035) 0 1px, transparent 1px 24px),
+    var(--at-surface);
+  box-shadow: var(--at-shadow-1);
+}
+.at-land__head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem 2rem;
+  justify-content: space-between;
+  align-items: end;
+}
+.at-land__head p {
+  max-width: 60ch;
+  margin: 0;
+  color: var(--at-ink-soft);
+}
+.at-land__legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.at-land__legend li {
+  display: inline-flex;
+  gap: 0.4rem;
+  align-items: center;
+  padding: 0.35rem 0.75rem;
+  border: 1px solid var(--at-rule);
+  border-radius: 999px;
+  background: var(--at-surface);
+  font-size: var(--at-step--1);
+}
+.at-land__legend strong {
+  font-variant-numeric: tabular-nums;
+}
+.at-land__why {
+  margin: 1rem 0 0;
+  padding: 0.75rem 1rem;
+  border-left: 3px solid var(--at-copper-1);
+  border-radius: 0 var(--at-radius-sm) var(--at-radius-sm) 0;
+  background: rgb(230 166 136 / 0.12);
+}
+.at-land__map {
+  position: relative;
+  margin-top: 1.25rem;
+}
+.at-land__terrain {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.at-contour {
+  fill: rgb(8 126 136 / 0.06);
+  stroke: rgb(8 126 136 / 0.32);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+.at-trail {
+  fill: none;
+  stroke: rgb(19 41 75 / 0.3);
+  stroke-width: 1.5;
+  stroke-dasharray: 3 5;
+  vector-effect: non-scaling-stroke;
+}
+.at-trail.is-walk {
+  stroke: rgb(19 41 75 / 0.38);
+  stroke-width: 2.5;
+  stroke-dasharray: 2 7;
+  stroke-linecap: round;
+}
+.at-trail.is-link {
+  stroke: rgb(8 126 136 / 0.18);
+}
+.at-trail.is-solid {
+  stroke: var(--at-teal-1);
+  stroke-dasharray: none;
+}
+.at-land__list {
+  position: relative;
+  height: 400px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.at-land__item {
+  position: absolute;
+  left: clamp(6.5rem, calc(8% + var(--x) * 84%), calc(100% - 6.5rem));
+  top: calc(12% + var(--y) * 76%);
+  width: max-content;
+  max-width: 12rem;
+  transform: translate(-50%, -50%);
+}
+.at-land__node {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.1rem 0.45rem;
+  align-items: center;
+  min-height: var(--at-target);
+  padding: 0.45rem 0.75rem;
+  border: 1px solid var(--at-rule-strong);
+  border-radius: var(--at-radius-sm);
+  background: var(--at-surface);
+  color: var(--at-ink);
+  font: 600 var(--at-step--1) / 1.25 var(--at-ui);
+  text-align: start;
+  box-shadow: var(--at-shadow-1);
+  cursor: pointer;
+  transition:
+    transform var(--at-fast) var(--at-ease),
+    box-shadow var(--at-fast) var(--at-ease);
+}
+.at-land__node:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--at-shadow-2);
+}
+.at-land__node:focus-visible {
+  outline: 3px solid var(--at-focus);
+  outline-offset: 2px;
+}
+.at-land__node svg {
+  grid-row: span 2;
+}
+.at-land__state {
+  color: var(--at-ink-soft);
+  font-weight: 500;
+  font-size: 0.8rem;
+}
+.at-land__node.is-new {
+  border-style: dashed;
+  background: rgb(253 251 245 / 0.92);
+}
+.at-land__node.is-developing svg {
+  color: var(--at-teal-1);
+}
+.at-land__node.is-secure {
+  border-color: var(--at-teal-1);
+  background: linear-gradient(180deg, #f0faf8, #e2f4f0);
+}
+.at-land__node.is-secure svg {
+  color: var(--at-teal-ink);
+}
+.at-land__node.is-revisiting {
+  border-color: var(--at-copper-1);
+  border-width: 2px;
+}
+.at-land__node.is-revisiting svg {
+  color: var(--at-copper-ink);
+}
+.at-land__node.is-focus {
+  border: 2px solid var(--at-obsidian-1);
+  box-shadow:
+    0 0 0 4px rgb(230 166 136 / 0.45),
+    var(--at-shadow-2);
+}
+.at-land__node.is-focus .at-land__state {
+  color: var(--at-copper-ink);
+  font-weight: 700;
+}
+
+/* ---- Supporting sections on the Today tab: one card language ---- */
+#main .mby-quests-section,
+#main .mby-fluency-section,
+#main .fl4-plan,
+#main .fl4-reminder,
+#main .reality-feature {
+  border-color: var(
+    --at-rule
+  ) !important; /* !important (documented): overrides moby-hub inline styles */
+  border-radius: var(--at-radius) !important;
+  background-color: var(--at-surface) !important;
+  box-shadow: var(--at-shadow-1);
+}
+#main .mby-quests-section h3,
+#main .mby-fluency-section h3 {
+  font-family: var(--at-display) !important;
+  font-weight: 500 !important;
+  color: var(--at-obsidian-1) !important;
+}
+#main .reality-feature {
+  background:
+    radial-gradient(70% 140% at 100% 50%, rgb(8 126 136 / 0.16), transparent 70%), var(--at-surface) !important;
+}
+#main .reality-feature h2 {
+  font-family: var(--at-display);
+  font-weight: 500;
+}
+
+/* Library cards and grade chooser pick up the material language. */
+#main .grade-choice,
+#main .skill-card,
+#main .fl4-card {
+  border-radius: var(--at-radius-sm);
+}
+#main .grade-chooser .grade-choice {
+  min-height: calc(var(--at-target) + 28px);
+  border: 1px solid var(--at-rule);
+  border-top: 4px solid var(--grade, var(--at-teal-1));
+  background: var(--at-surface);
+  box-shadow: var(--at-shadow-1);
+  transition:
+    transform var(--at-fast) var(--at-ease),
+    box-shadow var(--at-fast) var(--at-ease);
+}
+#main .grade-chooser .grade-choice:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--at-shadow-2);
+}
+#main .grade-chooser .grade-choice strong {
+  font-family: var(--at-display);
+  font-weight: 500;
+  font-size: 1.2rem;
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 960px) {
+  #main > .intro.at-hero {
+    grid-template-columns: 1fr;
+  }
+  .at-portals__grid {
+    grid-template-columns: 1fr;
+  }
+  .at-portal--learn {
+    grid-row: auto;
+  }
+}
+@media (max-width: 720px) {
+  .at-portal--practice,
+  .at-portal--play {
+    grid-template-columns: 1fr;
+  }
+  .at-portal__art svg {
+    max-width: 260px;
+  }
+}
+/* Below 960px the winding trail has no room for eleven labels; the landscape becomes an ordered list. */
+@media (max-width: 899px) {
+  .at-land__terrain {
+    display: none;
+  }
+  .at-land__list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr));
+    gap: 0.5rem;
+    height: auto;
+  }
+  .at-land__item {
+    position: static;
+    max-width: none;
+    width: auto;
+    transform: none;
+  }
+  .at-land__node {
+    width: 100%;
+  }
+  .at-stepper {
+    grid-template-columns: 1fr var(--at-target) minmax(3.2ch, auto) var(--at-target);
+    width: 100%;
+  }
+}
+
+/* ---- Motion and contrast preferences ---- */
+@media (prefers-reduced-motion: reduce) {
+  .at-counter,
+  .at-node,
+  .at-cta,
+  .at-cta span,
+  .at-portal,
+  .at-land__node,
+  .at-step {
+    animation: none !important; /* !important (documented): reduced motion must win over every animation */
+    transition: none !important;
+  }
+}
+body[data-reduced-motion="true"] .at-counter,
+body[data-reduced-motion="true"] .at-node,
+body[data-reduced-motion="true"] .at-cta,
+body[data-reduced-motion="true"] .at-portal,
+body[data-reduced-motion="true"] .at-land__node {
+  animation: none !important;
+  transition: none !important;
+}
+@media (forced-colors: active) {
+  #main > .intro.at-hero,
+  .at-portal,
+  .at-land,
+  .at-land__node,
+  .at-stepper,
+  .at-step,
+  .at-cta {
+    border: 1px solid CanvasText;
+    forced-color-adjust: auto;
+  }
+}
+@media print {
+  .at-hero__sculpture,
+  .at-portals,
+  .at-land {
+    display: none;
+  }
+}
+
+/* The recommendation cards give the title the full width; the ring sits beside the art. */
+#main .fl4-card__top {
+  grid-template-areas: "art ring" "id id";
+  grid-template-columns: 56px minmax(0, 1fr);
+}
+#main .fl4-card__top > .fl4-ring {
+  justify-self: end;
+}
+.at-eq.is-sub {
+  font-size: 22px;
+  fill: var(--at-teal-2);
+}
+:root[data-atelier-band="early"] .at-svg ellipse[filter] {
+  opacity: 0.16;
+}
+
+/* ---- Formatting repairs across the lab ---- */
+/* Game Room options: a grid keeps every select wide enough for its longest option. */
+#main .gm-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15.5rem), 1fr));
+  align-items: end;
+  border-radius: var(--at-radius);
+}
+/* Buddy panel: the controls column may shrink below its longest option, so nothing runs off a phone. */
+#main .bd-grid > :not(.bd-view) {
+  flex: 1 1 16rem;
+  min-width: 0;
+}
+#main .bd-slot select {
+  min-width: 0;
+  width: 100%;
+}
+#main .bd-colors {
+  flex-wrap: wrap;
+}
+/* Small labels stay at or above 12.8px. */
+#main .section-label,
+#main .gm-desc,
+#main .genome-badge {
+  font-size: max(0.8rem, 1em * 0.8);
+}
+/* Form rows in the teacher studio and print tools: columns wrap instead of running past the card. */
+#main .form-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
+  gap: 0.75rem 1rem;
+}
+#main .form-row > label,
+#main .form-row select,
+#main .form-row input:not([type="checkbox"]):not([type="radio"]) {
+  min-width: 0;
+  width: 100%;
+}
+#main .paper-games select {
+  min-height: var(--at-target);
+  padding: 0 0.75rem;
+  border: 1px solid var(--at-rule-strong);
+  border-radius: var(--at-radius-sm);
+  background-color: #fff;
+  color: var(--at-ink);
+  font: 600 var(--at-step--1) var(--at-ui);
+}
+/* The diagnostic toolkit's table scrolls inside its card on phones instead of running past it. */
+#main .mby-teacher-section {
+  overflow-x: auto;
+}
+/* The hero's words and actions are filled in once the learner's grade is known; reserve their room so the
+   first screen does not shift. */
+body:has(#library-view:not([hidden])) #main > .at-hero h1 {
+  min-height: 2.04em;
+}
+body:has(#library-view:not([hidden])) #main > .at-hero .intro-copy > p#intro-description {
+  min-height: 3em;
+}
+.at-hero__actions {
+  min-height: calc(var(--at-target) + 8px);
+}
+/* The tour offer sits in the page flow just after the hero. */
+#main > .tour-offer {
+  margin: 0 0 var(--at-gap);
+  border-radius: var(--at-radius);
+}
+@media (max-width: 600px) {
+  body:has(#library-view:not([hidden])) #main > .at-hero h1 {
+    min-height: 3.06em;
+  }
+  body:has(#library-view:not([hidden])) #main > .at-hero .intro-copy > p#intro-description {
+    min-height: 4.5em;
+  }
+}
+/* ---- Header: fewer visible words below desktop width, so the controls hold one row and never rewrap
+   when the tour button arrives. Every hidden word stays in the accessible name. ---- */
+.site-header .hud-topbar-controls {
+  flex-wrap: nowrap;
+}
+@media (max-width: 1199px) {
+  .site-header .profile-control {
+    display: inline-flex;
+    align-items: center;
+    font-size: 0;
+  }
+  .site-header .profile-control select {
+    font-size: 1rem;
+  }
+  .site-header .storage-status-badge,
+  .site-header .cmd-palette-btn .cmd-label {
+    display: none;
+  }
+  .site-header #settings-toggle [data-i18n] {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .site-header .cmd-palette-btn,
+  .site-header #settings-toggle {
+    min-width: 44px;
+    padding-inline: 0.6rem;
+  }
+}
+@media (max-width: 860px) {
+  .site-header .brand-button small {
+    display: none;
+  }
+}
+@media (max-width: 640px) {
+  .site-header {
+    flex-wrap: wrap;
+    row-gap: 0.5rem;
+  }
+  .site-header .hud-topbar-controls {
+    flex: 1 1 100%;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    min-height: 100px;
+    align-content: flex-start;
+  }
+}
+.site-header #add-profile {
+  white-space: nowrap;
+}
+/* The kicker is always one line, so changing its words never moves the headline. */
+#main > .at-hero .intro-kicker {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+/* Saved-progress line: room for its one line (two on a phone) before the numbers arrive. */
+.at-hero .overall-stats {
+  min-height: 1.6em;
+}
+@media (max-width: 600px) {
+  .at-hero .overall-stats {
+    min-height: 3.2em;
+  }
+  /* A grade page shows two stacked actions on a phone; reserve both rows. */
+  :root[data-at-pre-grade] .at-hero__actions {
+    min-height: calc(2 * 64px + 0.75rem);
+  }
+}
+/* Grade chooser: columns sized for the longest name ("Kindergarten") in the display face. */
+#main .grade-chooser {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 11.5rem), 1fr));
+  gap: 0.75rem;
+}
+#main .grade-chooser .grade-choice {
+  min-width: 0;
+}
+/* Area tabs keep studio ink on every grade (the analyze-band header rules assume a dark bar). */
+#main .hub-tabs > button:not([aria-current="page"]),
+#main .hub-tabs > a:not([aria-current="page"]) {
+  color: var(--at-ink);
+}
+#main .hub-tabs > .reality-tab:not([aria-current="page"]) {
+  color: var(--at-teal-ink);
+}
