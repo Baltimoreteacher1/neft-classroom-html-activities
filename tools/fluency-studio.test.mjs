@@ -257,13 +257,38 @@ function checkInvariants(id, spec, frames, rep, item) {
         spec.result % spec.a === 0 && spec.result % spec.b === 0,
         "the LCM is a multiple of both",
       );
-      const first = frames.at(-1).meta.first;
-      assert.equal(first, spec.result, "the first shared multiple is the LCM");
+      assert.equal(
+        frames.length,
+        4,
+        "LCM walkthrough has two trees, a prime-count table and a product",
+      );
+      assert.deepEqual(frames[0].meta.primes, spec.pa, "first tree ends in the prime factors of a");
+      assert.deepEqual(
+        frames[1].meta.primes,
+        spec.pb,
+        "second tree ends in the prime factors of b",
+      );
+      assert.deepEqual(
+        frames[2].meta.kept,
+        spec.kept,
+        "the keep step uses the greatest count of each prime",
+      );
+      assert.equal(
+        frames.at(-1).meta.result,
+        spec.result,
+        "the final prime product equals the LCM",
+      );
+      assert.equal(
+        frames.at(-1).meta.primesA.reduce((p, x) => p * x, 1),
+        spec.a,
+      );
+      assert.equal(
+        frames.at(-1).meta.primesB.reduce((p, x) => p * x, 1),
+        spec.b,
+      );
       assert.ok(
-        ![...Array(spec.result - 1).keys()].some(
-          (i) => i + 1 < spec.result && (i + 1) % spec.a === 0 && (i + 1) % spec.b === 0,
-        ),
-        "nothing smaller is a common multiple",
+        frames.every((f) => !/list multiples|multiples of/i.test(f.cap.en)),
+        "the LCM walkthrough does not teach by listing multiples",
       );
     }
   } else if (id === "graph") {
@@ -724,6 +749,19 @@ function solve(engineId, question) {
     8,
     "one number can be a multiple of the other",
   );
+  {
+    const { b, spec } = solve("factors", "Find the LCM of 12 and 18.");
+    let st = b.init(spec);
+    let view = b.render(st, spec);
+    assert.match(view.svg, />In 12</);
+    assert.match(view.svg, />In 18</);
+    const wrong = b.act(st, "keep", 1, spec);
+    assert.ok(!wrong.ok && wrong.state === st, "the Build activity refuses a smaller prime count");
+    st = b.act(st, "keep", 2, spec).state;
+    st = b.act(st, "keep", 2, spec).state;
+    assert.ok(b.done(st, spec), "keeping the greater count of each prime completes the Build");
+    assert.match(b.render(st, spec).status.en, /LCM\(12, 18\) = 36/);
+  }
   assert.equal(ENGINES.factors.parse("Find the GCF of 0 and 5."), null);
   const sl = solve("graph", "Find the slope through (1, 8) and (5, 20).");
   assert.equal(ENGINES.graph.answer(sl.spec), 3);

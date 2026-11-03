@@ -34,7 +34,7 @@ export const ENGINES = {
   digits: { id: "digits", label: L("Place-value columns", "Columnas de valor posicional"), ...digits },
   hops: { id: "hops", label: L("Number line hops", "Saltos en la recta"), ...hops },
   power: { id: "power", label: L("Powers and roots", "Potencias y raíces"), ...power },
-  factors: { id: "factors", label: L("Factor and multiple lists", "Listas de factores y múltiplos"), ...factors },
+  factors: { id: "factors", label: L("Factor strategies", "Estrategias de factores"), ...factors },
   graph: { id: "graph", label: L("Coordinate grid and machine", "Cuadrícula y máquina"), ...graph },
   early: { id: "early", label: L("Counters, clocks and coins", "Fichas, relojes y monedas"), ...early },
   expr: { id: "expr", label: L("Expressions, equations and data", "Expresiones, ecuaciones y datos"), ...expr },

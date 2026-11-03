@@ -652,11 +652,12 @@ function renderLearn() {
   cleanupLearnStudio?.();
   cleanupLearnStudio = null;
   const animated = studioAvailable(example);
+  const showLcmSteps = skill.grade === 6 && skill.id === "lcm";
   els.learnPanel.innerHTML = `
     <div class="learn-simple" style="--trail:${getGrade(skill.grade).color}">
       <h3 class="tr-idea">${highlightVocab(escapeHtml(t(skill.learn.rule)))}</h3>
       ${animated ? '<div class="sd-slot learn-studio" data-learn-studio></div>' : ""}
-      ${animated ? `<details class="learn-words-steps"><summary>${t("Show the steps in words")}</summary>` : '<div class="learn-words-steps">'}
+      ${animated ? `<details class="learn-words-steps"${showLcmSteps ? " open" : ""}><summary>${t("Show the steps in words")}</summary>` : '<div class="learn-words-steps">'}
       <div class="tr-lesson">
         <div class="tr-example">
           <p class="tr-example-fact${String(example.question).length > 40 ? " is-long" : ""}">${highlightVocab(mathText(example.question))}</p>
