@@ -25,8 +25,10 @@
 
 import { relative, sep } from "node:path";
 
+// Worker config (`wrangler.toml`) and database schemas (`*.sql`) inside app folders are infrastructure, not
+// pages: /lti-worker/wrangler.toml and /results-worker/migrations/0001_init.sql were publicly served.
 export const SKIP_COPY_RE =
-  /(^|[\\/])\.(claude|git|wrangler|ruff_cache)([\\/]|$)|(^|[\\/])(node_modules|_engine)([\\/]|$)|\.md$|\.(test|spec)\.(m?js|cjs|ts)$/i;
+  /(^|[\\/])\.(claude|git|wrangler|ruff_cache)([\\/]|$)|(^|[\\/])(node_modules|_engine)([\\/]|$)|\.md$|\.(test|spec)\.(m?js|cjs|ts)$|\.(toml|sql)$/i;
 
 /**
  * Build a cpSync filter rooted at `root`.

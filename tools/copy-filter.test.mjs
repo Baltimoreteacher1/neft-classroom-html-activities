@@ -53,6 +53,8 @@ for (const rel of [
   "engine/_engine/scratch.js",
   "docs/README.md",
   "activities/demo/NOTES.md",
+  "lti-worker/wrangler.toml",
+  "results-worker/migrations/0001_init.sql",
 ]) {
   assert.equal(
     plain(`/Users/x/repo/${rel}`),

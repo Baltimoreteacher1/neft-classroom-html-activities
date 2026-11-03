@@ -47,6 +47,10 @@ function copyStandaloneHtml() {
     // _lib/teacher-session.js) on the public site and counted them against the 20,000-file
     // limit. Nothing references /functions/.
     "functions",
+    // D1 migration schemas (/migrations/0001_student_progress.sql served 200) and TypeScript declarations
+    // are developer files; no page references them.
+    "migrations",
+    "types",
   ]);
   const ROOT_FILES = ["_headers", "_redirects", "404.html", "robots.txt", "sitemap.xml"];
   // Keep dev artifacts out of the published site: nested .claude/.git/node_modules
