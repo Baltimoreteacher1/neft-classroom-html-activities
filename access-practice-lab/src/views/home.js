@@ -458,6 +458,7 @@ export async function render(ctx) {
           ${studioLink("ladder", "reading", I.T("Reading Ladder", "Escalera de lectura"), I.T("Short texts that step up or down as you read.", "Textos cortos que suben o bajan según tu lectura."))}
           ${studioLink("puzzles", "grid", I.T("Puzzle Den", "Rincón de rompecabezas"), I.T("Build sentences, solve clues, find the odd word out.", "Forma oraciones, resuelve pistas y encuentra la palabra distinta."))}
           ${studioLink("vocabulary", "words", I.T("Word Builder", "Constructor de palabras"), I.T("Prefixes, roots, and academic words in context.", "Prefijos, raíces y palabras académicas en contexto."))}
+          ${studioLink("tests", "tests", I.T("Practice Tests", "Pruebas de práctica"), I.T("Full ACCESS-style practice sets and short mini checks.", "Pruebas de práctica estilo ACCESS y minipruebas cortas."))}
         </div>
         ${kluHTML(I, ctx, band, rows, idx)}
       </section>

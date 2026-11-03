@@ -315,7 +315,7 @@ function widaCalculatorHTML(I, band) {
     <header class="wida-calc-head">
       <span class="prog-tile">${icon("growth")}</span>
       <div>
-        <h2 id="widaCalcTitle">${I.T("WIDA Target & Reclassification Trajectory", "Metas WIDA y trayectoria de reclasificación")}</h2>
+        <h2 id="widaCalcTitle">${I.T("WIDA Target and Reclassification Trajectory", "Metas WIDA y trayectoria de reclasificación")}</h2>
         <p class="fine">${I.T("Based on WIDA growth trajectory models used in district EL systems (like Ellevation). Plan your target annual gains toward meeting state proficiency benchmarks.", "Basado en modelos de trayectoria de WIDA usados en plataformas distritales (como Ellevation). Planifica tus metas anuales hacia el dominio del idioma.")}</p>
       </div>
     </header>

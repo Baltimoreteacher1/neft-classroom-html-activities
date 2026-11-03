@@ -158,7 +158,7 @@ export async function render(ctx) {
             : ""
         }
         <section class="test-extra test-strategy-section" id="strategies">
-          <h2>${icon("bulb")}${I.T("Test-taking strategies & Process of Elimination", "Estrategias de examen y descarte")}</h2>
+          <h2>${icon("bulb")}${I.T("Test-taking strategies and Process of Elimination", "Estrategias de examen y descarte")}</h2>
           <p>${I.T("Key strategies used by top test-prep programs: learn how to eliminate distractor choices, pace yourself, and anticipate audio clues.", "Estrategias clave de preparación de exámenes: aprende a descartar opciones distractoras, controlar tu ritmo y anticipar pistas en el audio.")}</p>
           ${testStrategiesHTML(I)}
         </section>

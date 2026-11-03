@@ -46,7 +46,7 @@ async function selectedStation() {
 function stationPanel({ options, card }) {
   const groups = [["world", I.S("Language Worlds", "Mundos lingüísticos")], ["studio", I.S("Speaking and Writing Studios", "Estudios de expresión oral y escritura")], ["activity", I.S("Activities", "Actividades")]];
   return html`<section class="panel station-panel" aria-labelledby="station-title">
-    <h2 id="station-title">${I.T("Print Station Cards / Answer Key & Teacher Notes", "Imprimir tarjetas de estación / Claves y notas docentes")}</h2>
+    <h2 id="station-title">${I.T("Print Station Cards / Answer Key and Teacher Notes", "Imprimir tarjetas de estación / Claves y notas docentes")}</h2>
     <p>${I.T("Choose a World, a Studio task, or an Activity for a one-page station sheet: direct link, WIDA ELD standard, Key Language Use, look-fors, oral probing questions, and exemplar responses in the practice bands early / building / strong.", "Elija un Mundo, una tarea de Estudio o una Actividad para obtener una hoja de estación de una página: enlace directo, estándar WIDA ELD, uso clave del lenguaje, aspectos que observar, preguntas orales de sondeo y respuestas de ejemplo en las bandas de práctica inicial / en desarrollo / sólido. La hoja impresa está en inglés.")}</p>
     <label class="field station-pick">${I.T("Station item", "Elemento de estación")}<select data-station-field ${options.length ? "" : "disabled"}>${groups.map(([kind, label]) => {
       const list = options.filter((o) => o.kind === kind);

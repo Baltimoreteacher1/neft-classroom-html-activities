@@ -726,6 +726,30 @@
   display: grid;
   gap: var(--s-5);
 }
+.learn-page > .panel,
+.reality-page > .panel,
+.learn-page > .prog-hero,
+.reality-page > .prog-hero {
+  margin: 0;
+}
+.learn-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+  align-items: center;
+}
+.learn-frames-bar .cat-chip {
+  border-radius: var(--radius-sm);
+  text-align: left;
+  white-space: normal;
+  line-height: 1.35;
+  height: auto;
+  padding: 0.45rem 0.85rem;
+}
+.learn-frames-bar .cat-chip.is-word {
+  border-radius: 999px;
+  padding: 0.35rem 0.9rem;
+}
 .learn-hero-bar {
   margin-top: var(--s-4);
   display: flex;
@@ -988,6 +1012,15 @@
 }
 .reality-interest-bar {
   display: grid;
+  gap: var(--s-3);
+}
+.reality-interest-bar > .field {
+  margin: 0;
+  display: grid;
+  gap: var(--s-2);
+}
+.reality-interest-row {
+  display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   gap: var(--s-3);
   align-items: center;
@@ -1000,6 +1033,18 @@
   background: var(--surface);
   color: var(--ink);
   font: inherit;
+}
+.reality-clarify-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--s-3);
+  align-items: center;
+}
+.reality-clarify-row > .field {
+  margin: 0;
+}
+.learn-step-card .learn-steps-grid {
+  align-items: end;
 }
 .reality-coach-banner {
   padding: var(--s-3) var(--s-4);
@@ -1018,8 +1063,14 @@
   align-items: center;
   gap: var(--s-2);
 }
+@media (max-width: 1100px) {
+  .learn-step-card .learn-steps-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
 @media (max-width: 640px) {
-  .reality-interest-bar {
+  .reality-interest-row,
+  .reality-clarify-row {
     grid-template-columns: minmax(0, 1fr);
   }
 }

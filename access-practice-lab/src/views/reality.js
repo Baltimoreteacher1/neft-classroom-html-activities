@@ -293,7 +293,7 @@ function renderTeacherMissionBuilder(state, band, I) {
     <div class="learn-wb-head">
       <div>
         <p class="eyebrow">${icon("teacher")} ${T("Innovation 19 · No-Code Teacher Reality Mission Builder", "Innovación 19 · Constructor docente de misiones sin código")}</p>
-        <h2 id="teacherBuilderTitle">${T("Build, Validate & Preview a Language Reality Mission", "Construye, valida y previsualiza una misión de Realidad Lingüística")}</h2>
+        <h2 id="teacherBuilderTitle">${T("Build, Validate, and Preview a Language Reality Mission", "Construye, valida y previsualiza una misión de Realidad Lingüística")}</h2>
         <p class="fine">${T(
           "Configure a WIDA-aligned Reality Mission with original listening, reading evidence, target keywords, and communicative consequences. Saved missions immediately become playable in the selected world.",
           "Configura una misión alineada con WIDA con audio original, evidencia de lectura, palabras clave y consecuencias comunicativas.",
@@ -502,7 +502,7 @@ export async function render(ctx) {
         <div class="reality-interest-bar">
           <label class="field">
             <span><strong>${T("Or describe an adventure you want to try:", "O describe una aventura que quieras probar:")}</strong> ${T("(e.g., 'I want to investigate an ocean mystery' or 'I want to interview a soccer coach')", "(p. ej., 'I want to investigate an ocean mystery' o 'I want to interview a soccer coach')")}</span>
-            <div class="row-actions">
+            <div class="reality-interest-row">
               <input
                 type="text"
                 id="realityInterestInput"
@@ -619,8 +619,8 @@ export async function render(ctx) {
               ${icon("bulb")} ${T("Try sample question", "Probar pregunta de ejemplo")}
             </button>
           </div>
-          <div class="row-actions">
-            <label class="field" style="flex:1">
+          <div class="reality-clarify-row">
+            <label class="field">
               <span class="visually-hidden">${T("Your clarification question", "Tu pregunta de aclaración")}</span>
               <input
                 type="text"
