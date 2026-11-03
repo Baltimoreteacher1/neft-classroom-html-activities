@@ -191,6 +191,12 @@ export async function render(ctx) {
           <p class="lead">
             ${T("What your writing, speaking and missions show — and which kind of help you used. No scores: only evidence and next steps.", "Lo que muestran tu escritura, tu expresión oral y tus misiones, y qué tipo de ayuda usaste. Sin puntuaciones: solo evidencia y próximos pasos.")}
           </p>
+          <div class="row-actions grow-hub-links">
+            <a class="btn btn-primary" href="${BASE}/passport?grades=${band}">${icon("passport")} ${T("My Passport & Accomplishments", "Mi Pasaporte y logros")}</a>
+            <a class="btn" href="${BASE}/reality?grades=${band}">${icon("worlds")} ${T("Continue Your World", "Continuar tu mundo")}</a>
+            <a class="btn" href="${BASE}/passport?grades=${band}&portfolio=1">${icon("writing")} ${T("Draft History & Portfolio Export", "Historial de borradores y exportar portafolio")}</a>
+            <a class="btn" href="${BASE}/road?grades=${band}">${icon("road")} ${T("12-Week Road to ACCESS", "Camino de 12 semanas a ACCESS")}</a>
+          </div>
         </div>
         <div class="prog-hero-art"><img src="${ART}/progress-growth.svg" alt="" width="360" height="270" /></div>
       </section>

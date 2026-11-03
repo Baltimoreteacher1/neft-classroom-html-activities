@@ -91,6 +91,10 @@ const ROUTES = [
   "/family/understand?grades=3-5",
   "/assess?grades=3-5",
   "/family/save?grades=3-5",
+  "/learn?grades=3-5",
+  "/learn?grades=6-8",
+  "/reality?grades=3-5",
+  "/reality?grades=6-8",
 ];
 // English function words that essentially never appear in Spanish interface text.
 // Unicode letter boundaries avoid reading Spanish words such as "Noté" as

@@ -335,7 +335,7 @@ const COVERAGE = [
   // answer-revealing visuals, on-screen listening scripts and "look at the
   // picture" with no picture, all of which shipped in the pre-2026-10 lab.
   [
-    /^(access-practice-lab\/|access-teacher\/|access-expedition\/|access-family-expedition\/|access-family-tour\/|docs\/access-reading-room-2\/|tools\/paper-passport\/|tools\/(validate-access-game-studio|access-game-studio-e2e|validate-access-lab|access-lab-index|access-lab-e2e|access-engagement-e2e|access-studio-e2e|access-publisher-e2e|access-lab-sweep|validate-publisher-journey|access-evidence-e2e|access-family-e2e|access-es-leak-scan|generate-access-printables|gen-access-inventory|sync-access-shell|validate-reading-room|validate-reading-adventures|access-reading-room-e2e|expand-reading-room-library|author-reading-room-additions|author-reading-room-sustained-reads)\.mjs$|tools\/lib\/(access-lab-content|access-serve)\.mjs$|tools\/(access-acc-[a-z-]+\.(test\.)?mjs|validate-access-bank\.mjs)$|\.access_upgrade_(state\.json|checkpoint\.md)$|tools\/(access-lab|access-engagement|access-skill-graph|access-teacher-evidence|access-i18n|access-calibration|access-evidence-tools|access-student-tools|access-game-studio-contract)[^/]*\.test\.mjs$)/,
+    /^(access-practice-lab\/|access-teacher\/|access-expedition\/|access-family-expedition\/|access-family-tour\/|docs\/access-reading-room-2\/|tools\/paper-passport\/|tools\/(validate-access-game-studio|access-game-studio-e2e|validate-access-lab|access-lab-index|access-lab-e2e|access-engagement-e2e|access-studio-e2e|access-publisher-e2e|access-reality-e2e|access-lab-sweep|validate-publisher-journey|access-evidence-e2e|access-family-e2e|access-es-leak-scan|generate-access-printables|gen-access-inventory|sync-access-shell|validate-reading-room|validate-reading-adventures|access-reading-room-e2e|expand-reading-room-library|author-reading-room-additions|author-reading-room-sustained-reads)\.mjs$|tools\/lib\/(access-lab-content|access-serve)\.mjs$|tools\/(access-acc-[a-z-]+\.(test\.)?mjs|validate-access-bank\.mjs)$|\.access_upgrade_(state\.json|checkpoint\.md)$|tools\/(access-lab|access-engagement|access-skill-graph|access-teacher-evidence|access-i18n|access-calibration|access-evidence-tools|access-student-tools|access-game-studio-contract|access-reality)[^/]*\.test\.mjs$)/,
     ["validate:access-lab", "test", "validate:js-syntax", "check"],
   ],
 
@@ -1224,7 +1224,7 @@ const STUDIO_LESSON_PATH = [
 ];
 /** Inert for the studio sweeps: no studio page or verifier can load these. */
 const STUDIO_INERT =
-  /^(?:docs\/|access-practice-lab\/|scripts\/qa-run\.mjs$|tools\/(?:qa-run\.test|validate-reading-room|access-reading-room-e2e|expand-reading-room-library|author-reading-room-additions|author-reading-room-sustained-reads)\.mjs$)|\.md$/;
+  /^(?:docs\/|access-practice-lab\/|scripts\/qa-run\.mjs$|tools\/(?:qa-run\.test|validate-reading-room|access-reading-room-e2e|access-reality-e2e|access-reality\.test|access-es-leak-scan|expand-reading-room-library|author-reading-room-additions|author-reading-room-sustained-reads)\.mjs$)|\.md$/;
 
 /** Lesson ids whose studio pages a change set can affect, or null when it can affect all of them. */
 function studioLessonSubset(paths) {

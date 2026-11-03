@@ -9,12 +9,7 @@ export const LOGO = raw(
 );
 
 const PRACTICE_VIEWS = new Set([
-  "home",
   "session-done",
-  "stories",
-  "ladder",
-  "puzzles",
-  "games",
   "room",
   "activity",
   "play",
@@ -25,8 +20,6 @@ const PRACTICE_VIEWS = new Set([
   "speak",
   "write",
   "detective",
-  "growth",
-  "worlds",
   "classroom",
   "vocabulary",
   "flashcards",
@@ -35,40 +28,84 @@ const PRACTICE_VIEWS = new Set([
   "evidence",
   "reading",
   "reading-room",
+  "reading-log",
+  "stories",
+  "ladder",
+  "publisher-demo",
   "diagnostic",
   "launch",
   "launch-studio",
   "teacher-launch",
+  "tests",
+  "test",
+  "assess",
 ]);
 const ACTIVE = {
-  tests: "tests",
-  test: "tests",
-  assess: "tests",
-  passport: "passport",
+  home: "home",
+  learn: "learn",
+  library: "practice",
+  tests: "practice",
+  test: "practice",
+  assess: "practice",
+  diagnostic: "practice",
+  games: "play",
+  reality: "play",
+  worlds: "play",
+  puzzles: "play",
+  growth: "growth",
+  passport: "growth",
+  road: "growth",
   family: "family",
   tools: "help",
-  road: "journey",
-  growth: "review",
 };
 
-/** The six places a learner, family or teacher goes first. */
+/** Five primary student destinations (My Home | Learn | Practice | Play | My Growth) + secondary links. */
 export function primaryLinks(band, T) {
   const q = `?grades=${band}`;
   return [
-    { id: "practice", icon: "home", label: T("Practice", "Practicar"), href: `${BASE}/${q}`, low: true },
-    { id: "journey", icon: "road", label: T("Journey", "Recorrido"), href: `${BASE}/road${q}`, low: true },
-    { id: "review", icon: "growth", label: T("Keep it strong", "Repasar"), href: `${BASE}/growth${q}`, low: true },
+    {
+      id: "home",
+      icon: "home",
+      label: T("My Home", "Mi inicio · Practicar"),
+      href: `${BASE}/${q}`,
+    },
+    {
+      id: "learn",
+      icon: "bulb",
+      label: T("Learn", "Aprender"),
+      href: `${BASE}/learn${q}`,
+    },
+    {
+      id: "practice",
+      icon: "reading",
+      label: T("Practice", "Practicar"),
+      href: `${BASE}/library${q}`,
+    },
+    {
+      id: "play",
+      icon: "sparkle",
+      label: T("Play", "Jugar"),
+      href: `${BASE}/games${q}`,
+    },
+    {
+      id: "growth",
+      icon: "growth",
+      label: T("My Growth", "Mi crecimiento"),
+      href: `${BASE}/growth${q}`,
+    },
     {
       id: "passport",
       icon: "passport",
       label: T("My Passport", "Pasaporte"),
       href: `${BASE}/passport${q}`,
+      low: true,
     },
     {
       id: "family",
       icon: "families",
       label: T("Families", "Familias"),
       href: `${BASE}/family${q}`,
+      low: true,
     },
     {
       id: "family-adventure",
@@ -77,6 +114,7 @@ export function primaryLinks(band, T) {
       href: "/access-family-expedition/",
       pill: true,
       family: true,
+      low: true,
     },
     {
       id: "family-expedition",
@@ -85,12 +123,14 @@ export function primaryLinks(band, T) {
       href: "/access-family-tour/",
       pill: true,
       family: true,
+      low: true,
     },
     {
       id: "teacher",
       icon: "teacher",
       label: T("Teacher Hub", "Centro docente"),
       href: "/access-teacher/",
+      low: true,
     },
     {
       id: "teacher-expedition",
@@ -98,6 +138,7 @@ export function primaryLinks(band, T) {
       label: T("Teacher Expedition", "Expedición docente"),
       href: "/access-expedition/",
       pill: true,
+      low: true,
     },
     { id: "help", icon: "help", label: T("Help", "Ayuda"), href: `${BASE}/tools${q}`, low: true },
   ];
@@ -114,6 +155,7 @@ function menuGroups(band, T) {
     {
       title: T("Practice by skill", "Practicar por destreza"),
       items: [
+        link("bulb", T("Interactive Learn Hub", "Centro interactivo de aprendizaje"), "learn"),
         link("listening", T("Listening", "Escuchar"), "Listening"),
         link("reading", T("Reading", "Leer"), "Reading"),
         link("speaking", T("Speaking", "Hablar"), "Speaking"),
@@ -124,6 +166,7 @@ function menuGroups(band, T) {
     {
       title: T("Studios and missions", "Estudios y misiones"),
       items: [
+        link("worlds", T("Language Reality Engine", "Motor de Realidad Lingüística"), "reality"),
         link("speaking", T("Speaking Studio", "Estudio de expresión oral"), "speak"),
         link("writing", T("Writing Studio", "Estudio de escritura"), "write"),
         link("reading", T("Reading Room", "Sala de lectura"), "reading-room"),

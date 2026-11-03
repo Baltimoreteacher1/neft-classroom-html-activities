@@ -96,9 +96,119 @@ function reviewHTML(I, due, plan, band, ctx) {
   </section>`;
 }
 
+const KLU_TRY_DATA = {
+  Narrate: {
+    prompt: [
+      "Interactive Check · Spot the Narrate move: Which sentence sequences a turning point in an experience?",
+      "Comprobación interactiva · Detecta el recurso de Narrate: ¿Qué oración secuencia un momento clave en una experiencia?",
+    ],
+    options: [
+      {
+        id: "ok",
+        text: "At first the kayak drifted sideways, but suddenly we paddled together and reached the dock.",
+        ok: true,
+        why: [
+          "Yes! 'At first' and 'suddenly' sequence the events and show what changed.",
+          "¡Sí! 'At first' y 'suddenly' ordenan los eventos y muestran qué cambió.",
+        ],
+      },
+      {
+        id: "alt",
+        text: "Wetlands contain three main layers of aquatic plants and soil.",
+        ok: false,
+        why: [
+          "That sentence classifies parts of a topic (Inform). Look for time-order words like 'at first' and 'suddenly'.",
+          "Esa oración clasifica partes de un tema (Inform). Busca palabras de orden temporal como 'at first' y 'suddenly'.",
+        ],
+      },
+    ],
+  },
+  Inform: {
+    prompt: [
+      "Interactive Check · Spot the Inform move: Which sentence defines and classifies a topic with precise details?",
+      "Comprobación interactiva · Detecta el recurso de Inform: ¿Qué oración define y clasifica un tema con detalles precisos?",
+    ],
+    options: [
+      {
+        id: "ok",
+        text: "Pollinators include bees, butterflies, and hummingbirds that transfer pollen between flowers.",
+        ok: true,
+        why: [
+          "Yes! 'Include' and 'that transfer pollen' classify and define the group clearly.",
+          "¡Sí! 'Include' y 'that transfer pollen' clasifican y definen el grupo con claridad.",
+        ],
+      },
+      {
+        id: "alt",
+        text: "Yesterday I walked home in the rain after soccer practice.",
+        ok: false,
+        why: [
+          "That sentence tells a personal story (Narrate). Look for the sentence that classifies and defines a topic.",
+          "Esa oración cuenta una historia personal (Narrate). Busca la oración que clasifica y define un tema.",
+        ],
+      },
+    ],
+  },
+  Explain: {
+    prompt: [
+      "Interactive Check · Spot the Explain move: Which sentence shows how a cause leads to an effect?",
+      "Comprobación interactiva · Detecta el recurso de Explain: ¿Qué oración muestra cómo una causa produce un efecto?",
+    ],
+    options: [
+      {
+        id: "ok",
+        text: "Because tree roots hold the soil in place, heavy rain causes less erosion on the hillside.",
+        ok: true,
+        why: [
+          "Yes! 'Because' and 'causes' link the mechanism (roots holding soil) to the outcome (less erosion).",
+          "¡Sí! 'Because' y 'causes' conectan el mecanismo (raíces que sujetan el suelo) con el resultado (menos erosión).",
+        ],
+      },
+      {
+        id: "alt",
+        text: "Our school should open the library before first period.",
+        ok: false,
+        why: [
+          "That states a claim without explaining how a process works (Argue). Choose the sentence with 'because' and 'causes'.",
+          "Eso plantea una afirmación sin explicar cómo funciona un proceso (Argue). Elige la oración con 'because' y 'causes'.",
+        ],
+      },
+    ],
+  },
+  Argue: {
+    prompt: [
+      "Interactive Check · Spot the Argue move: Which sentence supports a claim with evidence and addresses another view?",
+      "Comprobación interactiva · Detecta el recurso de Argue: ¿Qué oración apoya una afirmación con evidencia y responde a otra postura?",
+    ],
+    options: [
+      {
+        id: "ok",
+        text: "Although plastic trays are cheap, the cafeteria should use washable trays because the audit showed 400 fewer trash bags per month.",
+        ok: true,
+        why: [
+          "Yes! 'Although' addresses a counterpoint, 'should' states the claim, and 'because the audit showed...' supplies evidence.",
+          "¡Sí! 'Although' aborda un contrapunto, 'should' expresa la afirmación y 'because the audit showed...' aporta evidencia.",
+        ],
+      },
+      {
+        id: "alt",
+        text: "First, rinse the tray with warm water and place it on the rack.",
+        ok: false,
+        why: [
+          "That gives procedural steps. Look for the sentence with a claim ('should'), evidence, and 'although'.",
+          "Eso da pasos de un procedimiento. Busca la oración con una afirmación ('should'), evidencia y 'although'.",
+        ],
+      },
+    ],
+  },
+};
+
 function kluHTML(I, ctx, band, rows, idx) {
   const klu = KEY_LANGUAGE_USES.includes(ctx.prefs.kluFocus) ? ctx.prefs.kluFocus : "";
   const ref = klu ? kluReference(klu, band) : null;
+  const kluTry = klu ? KLU_TRY_DATA[klu] : null;
+  const pickedTry = klu ? ctx.prefs.kluTry?.[klu] : "";
+  const pickedObj = kluTry?.options.find((o) => o.id === pickedTry);
   const studioTasks = [...(idx?.speaking || []).map((t) => ({ ...t, domain: "Speaking" })), ...(idx?.writing || []).map((t) => ({ ...t, domain: "Writing" }))].filter((t) => !t.band || t.band === band);
   const practice = (domain) => {
     if (domain === "Speaking" || domain === "Writing")
@@ -119,6 +229,13 @@ function kluHTML(I, ctx, band, rows, idx) {
         <div class="card"><h3>${I.T("Language functions", "Funciones del lenguaje")}</h3><ul>${ref.functions.map((m) => html`<li>${m}</li>`)}</ul></div>
         <div class="card"><h3>${I.T("Signal words", "Palabras señal")}</h3><p>${ref.signals.join(" · ")}</p></div>
       </div>
+      ${kluTry ? html`<div class="card klu-interactive" data-content>
+        <h3>${icon("bulb")} ${I.T(...kluTry.prompt)}</h3>
+        <div class="klu-try-options">
+          ${kluTry.options.map((opt) => html`<button type="button" class="btn small klu-try-btn ${pickedTry === opt.id ? (opt.ok ? "is-correct" : "is-try") : ""}" data-klu-try="${opt.id}" aria-pressed="${pickedTry === opt.id ? "true" : "false"}">${icon(pickedTry === opt.id ? (opt.ok ? "check" : "retry") : "chevron-right")} <span lang="en">${opt.text}</span></button>`)}
+        </div>
+        ${pickedObj ? html`<p class="fine klu-try-feedback" role="status"><strong>${pickedObj.ok ? I.T("Move spotted!", "¡Recurso detectado!") : I.T("Try the other sentence:", "Prueba la otra oración:")}</strong> ${I.T(...pickedObj.why)}</p>` : ""}
+      </div>` : ""}
       <div class="domain-grid">
         ${KLU_DOMAINS.map((d) => {
           const links = practice(d);
@@ -253,6 +370,23 @@ export async function render(ctx) {
           : ""
       }
 
+      <section class="panel band-identity-strip" aria-labelledby="bandIdentityTitle">
+        <div class="band-identity-art">
+          <img src="${ART}/${band === "3-5" ? "band-35-discovery.svg" : "band-68-studio.svg"}" width="320" height="220" alt="" loading="lazy" decoding="async" />
+        </div>
+        <div class="band-identity-copy">
+          <p class="eyebrow">${band === "3-5" ? I.T("Grades 3–5 · Visual Language Discovery", "Grados 3–5 · Descubrimiento visual del lenguaje") : I.T("Grades 6–8 · Academic Language Studio", "Grados 6–8 · Estudio de lenguaje académico")}</p>
+          <h2 id="bandIdentityTitle">${band === "3-5" ? I.T("Explore pictures, build sentences, and practice speaking step by step", "Explora imágenes, construye oraciones y practica hablar paso a paso") : I.T("Investigate academic sources, connect evidence, and refine your arguments", "Investiga fuentes académicas, conecta evidencia y perfecciona tus argumentos")}</h2>
+          <p class="fine">${band === "3-5" ? I.T("Use interactive lessons, visual sequence cards, spoken models, and playful missions designed for Grades 3–5.", "Usa lecciones interactivas, tarjetas de secuencia visual, modelos hablados y misiones diseñadas para los grados 3–5.") : I.T("Practice with interactive nonfiction, Claim-Evidence-Reasoning planners, and academic connectors designed for Grades 6–8.", "Practica con textos informativos interactivos, organizadores de afirmación-evidencia-razonamiento y conectores académicos para los grados 6–8.")}</p>
+          <div class="row-actions">
+            <a class="btn btn-primary" href="${BASE}/reality?grades=${band}">${icon("worlds")} ${I.T("Enter Language Reality", "Entrar a Realidad Lingüística")}${icon("arrow-right")}</a>
+            <a class="btn" href="${BASE}/learn?grades=${band}">${icon("bulb")} ${I.T("Open Interactive Learn Hub", "Abrir Centro interactivo de aprendizaje")}${icon("arrow-right")}</a>
+            <a class="btn" href="${BASE}/games?grades=${band}">${icon("sparkle")} ${I.T("Play Language Games", "Jugar juegos de lenguaje")}</a>
+            <a class="btn" href="${BASE}/growth?grades=${band}">${icon("growth")} ${I.T("View My Growth", "Ver mi crecimiento")}</a>
+          </div>
+        </div>
+      </section>
+
       <div class="home-today">
         <section class="session-plan panel" aria-labelledby="sessionTitle">
           <div class="plan-head">
@@ -313,6 +447,8 @@ export async function render(ctx) {
       <section class="more-ways" aria-labelledby="moreTitle">
         <div class="section-head"><h2 id="moreTitle">${I.T("More ways to practice", "Más formas de practicar")}</h2><p class="fine">${I.T("Do real language tasks, get specific feedback, revise, then try it on your own.", "Haz tareas de lenguaje reales, recibe comentarios específicos, revisa y luego inténtalo por tu cuenta.")}</p></div>
         <div class="studio-grid">
+          ${studioLink("reality", "worlds", I.T("Language Reality Engine", "Motor de Realidad Lingüística"), I.T("Live the story, use the language: Mystery Academy, Future City, Science Expedition.", "Vive la historia, usa el lenguaje: Academia de Misterios, Ciudad del Futuro, Expedición Científica."))}
+          ${studioLink("learn", "bulb", I.T("Interactive Learn Hub", "Centro interactivo de aprendizaje"), I.T("Active lessons: notice a language move, predict, respond, and apply.", "Lecciones activas: observa un recurso del lenguaje, predice, responde y aplica."))}
           ${studioLink("games", "sparkle", I.T("Language Game Studio", "Estudio de juegos de lenguaje"), I.T("Fifteen games for listening, reading, speaking and writing.", "Quince juegos para escuchar, leer, hablar y escribir."))}
           ${studioLink("speak", "speaking", I.T("Speaking Studio", "Estudio de expresión oral"), I.T("Plan, record, listen back, and say it better.", "Planea, graba, escucha y mejora lo que dices."))}
           ${studioLink("write", "writing", I.T("Writing Studio", "Estudio de escritura"), I.T("Use sources, draft, get feedback, revise.", "Usa fuentes, escribe un borrador, recibe comentarios y revisa."))}
@@ -378,6 +514,15 @@ export function onClick(e, ctx) {
       const reviewIds = start.dataset.sessionReviewIds.split(",").filter(Boolean);
       const session = startSession(ctx, ids.map((id) => ({ id })), Number(start.dataset.startMission), "Today's mission", reviewIds);
       ctx.navigate(sessionHref(session));
+    }
+    return true;
+  }
+  const tryBtn = e.target.closest?.("[data-klu-try]");
+  if (tryBtn) {
+    const klu = ctx.prefs.kluFocus;
+    if (klu) {
+      ctx.setPrefs({ kluTry: { ...(ctx.prefs.kluTry || {}), [klu]: tryBtn.dataset.kluTry } });
+      ctx.rerender({ keepFocus: true });
     }
     return true;
   }

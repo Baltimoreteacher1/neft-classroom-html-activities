@@ -422,6 +422,15 @@ export function modelLadderHTML(models, level, activity = {}, i18n = null) {
           </li>`,
       )}
     </ol>
+    <div class="model-borrow" role="group" aria-label="${L.S("Which technique will you borrow?", "¿Qué técnica vas a tomar prestada?")}">
+      <span class="fine"><strong>${L.T("Which technique will you borrow?", "¿Qué técnica vas a tomar prestada?")}</strong></span>
+      <div class="learn-chip-row">
+        <button type="button" class="cat-chip" data-model-borrow="main" aria-pressed="false">${icon("bulb")} ${L.T("Clear main idea starter", "Inicio claro de la idea principal")}</button>
+        <button type="button" class="cat-chip" data-model-borrow="detail" aria-pressed="false">${icon("search")} ${L.T("Specific detail from the task", "Detalle específico de la tarea")}</button>
+        <button type="button" class="cat-chip" data-model-borrow="connect" aria-pressed="false">${icon("writing")} ${L.T("Connecting word (because / so)", "Palabra conectora (because / so)")}</button>
+      </div>
+      <p class="fine model-borrow-status" role="status" hidden>${icon("check")} ${L.T("Technique chosen! Now use that move in your own words.", "¡Técnica elegida! Ahora usa ese recurso con tus propias palabras.")}</p>
+    </div>
   </details>`;
 }
 

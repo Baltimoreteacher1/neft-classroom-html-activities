@@ -262,7 +262,8 @@ function strategyLessonHTML(lesson, state) {
   };
   const completed = saved.independent?.checked && saved.independent?.correct;
   const independentReady = saved.guided?.checked && saved.guided?.correct;
-  const model = independentReady ? "" : `<section class="rr-strategy-stage"><h2>${T("1. Watch: a reader thinks aloud", "1. Observa: un lector piensa en voz alta")}</h2><blockquote><p>${esc(lesson.model.text)}</p><p><b>${T("Think-aloud:", "Pensamiento en voz alta:")}</b> ${esc(lesson.model.think)}</p></blockquote></section>`;
+  const noticedMove = saved.noticedMove === true;
+  const model = independentReady ? "" : `<section class="rr-strategy-stage"><h2>${T("1. Watch: a reader thinks aloud", "1. Observa: un lector piensa en voz alta")}</h2><blockquote><p>${esc(lesson.model.text)}</p><p><b>${T("Think-aloud:", "Pensamiento en voz alta:")}</b> ${esc(lesson.model.think)}</p></blockquote><div class="rr-notice-bar"><button type="button" class="btn small" data-rr-notice-move="strategy" aria-pressed="${String(noticedMove)}">${ic("check")} ${noticedMove ? T("Reader’s move noticed — ready for Step 2", "Paso del lector observado — listo para el Paso 2") : T("Spot the reader’s move in this think-aloud", "Identificar el paso del lector en este ejemplo")}</button>${noticedMove ? `<p class="rr-help" role="status">${T("You noticed how the reader connected a text clue to the strategy. Now try Step 2 together.", "Observaste cómo el lector conectó una pista del texto con la estrategia. Ahora intenten juntos el Paso 2.")}</p>` : ""}</div></section>`;
   const guided = independentReady ? "" : `<section class="rr-strategy-stage"><h2>${T("2. Practice together", "2. Practiquemos juntos")}</h2><p>${esc(lesson.guided.text)}</p>${renderQuestion("guided", lesson.guided)}</section>`;
   const transfer = independentReady
     ? `<section class="rr-strategy-stage"><h2>${T("3. Try independently: new passage", "3. Prueba por tu cuenta: pasaje nuevo")}</h2><p>${esc(lesson.independent.text)}</p>${renderQuestion("independent", lesson.independent)}<p class="rr-help">${T("This fresh passage is checked separately from guided practice. No hints are provided in this step.", "Este pasaje nuevo se revisa aparte de la práctica guiada. En este paso no hay pistas.")}</p></section>`
@@ -574,9 +575,10 @@ const MODE_NAMES = {
   together: ["Read together", "Leer juntos"],
 };
 
-function modeNoteHTML(l) {
+function modeNoteHTML(l, progress = {}) {
+  const noticed = progress.noticedLearnMove === true;
   if (activeMode === "learn")
-    return `<section class="rr-mode-note"><h2>${T("Model the reading move", "Modela el paso de lectura")}</h2><p>${esc(l.teacherGuide.miniLesson)}</p><p><b>${T("One possible response:", "Una respuesta posible:")}</b> ${esc(l.teacherGuide.modelResponse)}</p></section>`;
+    return `<section class="rr-mode-note"><h2>${T("Model the reading move", "Modela el paso de lectura")}</h2><p>${esc(l.teacherGuide.miniLesson)}</p><p><b>${T("One possible response:", "Una respuesta posible:")}</b> ${esc(l.teacherGuide.modelResponse)}</p><div class="rr-notice-bar"><button type="button" class="btn small" data-rr-notice-move="lesson" aria-pressed="${String(noticed)}">${ic("check")} ${noticed ? T("Reading move noticed — ready to apply", "Paso de lectura observado — listo para aplicar") : T("Check: I spotted the evidence move in this model", "Marcar: Identifiqué el uso de evidencia en este modelo")}</button></div></section>`;
   if (activeMode === "independent")
     return `<section class="rr-mode-note"><h2>${T("Independent challenge", "Desafío independiente")}</h2><p>${T("Use the passage and your own notes. Vocabulary previews, paragraph questions, and models are hidden. This records local practice evidence, not a proficiency score.", "Usa el pasaje y tus propias notas. Las vistas previas de vocabulario, las preguntas de los párrafos y los modelos están ocultos. Esto guarda evidencia local de práctica, no un puntaje de dominio.")}</p></section>`;
   return `<section class="rr-mode-note"><h2>${T("Practice with support", "Practica con apoyo")}</h2><p>${T("Use the vocabulary, paragraph questions, and notes as you reread. Revise after feedback.", "Usa el vocabulario, las preguntas de los párrafos y las notas mientras vuelves a leer. Corrige después de ver los comentarios.")}</p></section>`;
@@ -655,7 +657,7 @@ async function lessonHTML(ctx, l, state) {
   const links = `<div class="rr-actions">${relatedHref ? `<a href="${relatedHref}">${T("Related Reading practice", "Práctica de lectura relacionada")} →</a>` : ""}<a href="${BASE}/write?grades=${esc(ctx.band)}">${T("Write about a text", "Escribe sobre un texto")} →</a><a href="${BASE}/speak?grades=${esc(ctx.band)}">${T("Speak about a text", "Habla sobre un texto")} →</a><a href="${BASE}/vocabulary?grades=${esc(ctx.band)}">${T("Practice academic words", "Practica palabras académicas")} →</a></div>`;
   return `<section class="rr-shell rr-reader d-reading"><nav class="rr-back"><a href="${BASE}/reading-room">${ic("arrow-left")} ${T("Reading shelf", "Estante de lectura")}</a><span>${gradeLabel(l)} · ${esc(l.subject)} · ${l.minutes} min</span><button type="button" class="btn small" data-rr-bookmark="${esc(l.id)}">${ic("bookmark")} ${state.bookmarks.includes(l.id) ? T("Bookmarked", "Con marcador") : T("Bookmark", "Marcador")}</button></nav>
     <header class="rr-title"><p class="rr-eyebrow">${esc(l.genre)} · ${esc(l.keyUse)} · ${esc(l.eldStandard)}</p><h1>${esc(l.title)}</h1><p class="rr-lead">${esc(l.summary)}</p><div class="rr-objectives"><div><b>${T("Content goal", "Meta de contenido")}</b><span>${esc(l.objectives.content)}</span></div><div><b>${T("Language goal", "Meta de lenguaje")}</b><span>${esc(l.objectives.language)}</span></div></div><p class="rr-alignment">${ic("info")} <span>${esc(l.alignmentStatus)} ${TH("Independent editorial review is pending for this lesson package. This is original instructional practice, not an official WIDA assessment or score prediction. ", "La revisión editorial independiente de este paquete de lección está pendiente. Esta es práctica didáctica original, no una evaluación oficial de WIDA ni una predicción de puntajes. ")}<a href="https://wida.wisc.edu/assess/access/preparing-students" target="_blank" rel="noreferrer">${T("Official WIDA test familiarization resources", "Recursos oficiales de WIDA para familiarizarse con la prueba")}</a></span></p></header>
-    ${modeControls}${modeNoteHTML(l)}
+    ${modeControls}${modeNoteHTML(l, progress)}
     <div class="rr-layout"><section class="rr-text" aria-label="${A("Reading passage", "Pasaje de lectura")}">${displayControls(state)}<section class="rr-before"><h2>${T("Before you read", "Antes de leer")}</h2><p><b>${T("Essential question:", "Pregunta esencial:")}</b> ${esc(l.beforeReading.essentialQuestion)}</p><p>${esc(l.beforeReading.background)} ${esc(l.beforeReading.hook)}</p><p><b>${T("Read to find out:", "Lee para descubrir:")}</b> ${esc(l.beforeReading.purpose)}</p></section>${visualBlockHTML(l)}${activeMode === "independent" ? "" : vocabularyHTML(l)}<div class="rr-passage" style="--rr-font:${Number(state.settings.fontScale) || 1};--rr-leading:${Number(state.settings.lineSpacing) || 1.75}">${paragraphs}</div>${links}</section>${workspaceHTML(l, progress)}</div></section>`;
 }
 
@@ -794,6 +796,24 @@ function saveConference(el){const s=loadReadingState(),id=el.dataset.lesson;s.co
 function saveField(el){const s=loadReadingState(),id=el.dataset.rrLesson||el.dataset.rrReflection,key=Object.keys(s.lessons).find(k=>k.startsWith(`${id}@`))||`${id}@1.0.0`,p=s.lessons[key]||{};if(el.dataset.rrNote){p.notes={...(p.notes||{}),[el.dataset.rrNote]:el.value};}else p.reflection=el.value;s.lessons[key]=p;saveReadingState(s);}
 function saveAnswer(id,patch){const s=loadReadingState(),key=Object.keys(s.lessons).find(k=>k.startsWith(`${location.pathname.split("/").pop()}@`)),p=s.lessons[key]||{},a=p.answers||{};a[id]={...(a[id]||{}),...patch};p.answers=a;s.lessons[key]=p;saveReadingState(s);}
 export function onClick(e,ctx){I=i18nFor(ctx);if(readingLogClick(e,ctx,I))return true;const b=e.target.closest("button");if(!b)return false;const s=loadReadingState(),id=ctx.route.id,key=Object.keys(s.lessons).find(k=>k.startsWith(`${id}@`)),p=s.lessons[key]||{answers:{}};
+  if (b.dataset.rrNoticeMove) {
+    if (b.dataset.rrNoticeMove === "strategy" && id?.startsWith("strategy-")) {
+      const lessonId = id.slice("strategy-".length);
+      const saved = s.strategies[lessonId] || {};
+      saved.noticedMove = !saved.noticedMove;
+      s.strategies[lessonId] = saved;
+      saveReadingState(s);
+      ctx.rerender();
+      return true;
+    }
+    if (b.dataset.rrNoticeMove === "lesson" && key) {
+      p.noticedLearnMove = !p.noticedLearnMove;
+      s.lessons[key] = p;
+      saveReadingState(s);
+      ctx.rerender();
+      return true;
+    }
+  }
   if (b.dataset.strategyRetry) {
     const lessonId = id.slice("strategy-".length), saved = s.strategies[lessonId] || {};
     saved[b.dataset.strategyRetry] = { ...(saved[b.dataset.strategyRetry] || {}), checked: false };

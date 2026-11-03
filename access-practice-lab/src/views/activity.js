@@ -96,8 +96,29 @@ const gists = new Map(); // activity id → string[]
 let coachFeedback = null;
 // Listening Strategy Lab (Learn with help only): signal-word tags are UI state for this attempt.
 const listenTags = new Map(); // id → Set("part:index")
+const strategyPicks = new Map(); // id → chosen step id
+const modelBorrows = new Map(); // id → chosen technique id
 /** A diagnosed listening miss holds the answer back until the learner replays the targeted part. */
 const revealHeld = (c) => Boolean(c && !c.ok && c.reveal === "full" && c.diag && !c.replayed && canSpeak());
+
+const STRATEGY_STEPS = {
+  Listening: [
+    ["question", "1. Read the question first", "1. Leer la pregunta primero"],
+    ["signals", "2. Listen for signal words", "2. Escuchar las palabras señal"],
+  ],
+  Reading: [
+    ["question", "1. Read the question first", "1. Leer la pregunta primero"],
+    ["evidence", "2. Point to the proving sentence", "2. Señalar la oración que lo prueba"],
+  ],
+  Speaking: [
+    ["topic", "1. Name the main idea", "1. Nombrar la idea principal"],
+    ["detail", "2. Add a detail with because", "2. Agregar un detalle con because"],
+  ],
+  Writing: [
+    ["prompt", "1. Answer the prompt directly", "1. Responder directamente a la consigna"],
+    ["connect", "2. Connect ideas and check words", "2. Conectar ideas y revisar palabras"],
+  ],
+};
 
 async function resolve(ctx) {
   const r = ctx.route;
@@ -615,7 +636,7 @@ export async function render(ctx) {
           <label><input type="radio" name="practiceMode" value="supported" data-mode ${mode === "supported" ? raw("checked") : ""} data-nsr-ignore /> ${I.T("Learn with help", "Aprender con ayuda")}</label>
           <label><input type="radio" name="practiceMode" value="independent" data-mode ${mode === "independent" ? raw("checked") : ""} data-nsr-ignore /> ${I.T("Try independently", "Intentar solo o sola")}</label>
           <p class="fine">${mode === "independent" ? I.T("Vocabulary, models and hints stay closed until you review. Replay and directions remain available. This is classroom practice, not a test simulation.", "El vocabulario, los modelos y las pistas permanecen cerrados hasta que revises. Puedes volver a escuchar y ver las instrucciones. Es práctica de clase, no una simulación de examen.") : I.T("Strategies and examples are available below. Help and retries are saved as supported practice.", "Abajo hay estrategias y ejemplos. La ayuda y los reintentos se guardan como práctica con apoyo.")}</p></fieldset>
-        ${mode === "supported" ? html`<details class="strategy" data-help><summary>${I.T("First: try a strategy", "Primero: prueba una estrategia")}</summary><p>${learnCopy(strategyFor(cur.domain))}</p></details>${vocabHTML(a, shared, { focused: Boolean(checked.get(a.id) || writingChecks.get(a.id)) })}` : ""}
+        ${mode === "supported" ? html`<details class="strategy" data-help ${strategyPicks.has(a.id) ? raw("open") : ""}><summary>${I.T("First: try a strategy", "Primero: prueba una estrategia")}</summary><p>${learnCopy(strategyFor(cur.domain))}</p><div class="strategy-steps" role="group" aria-label="${I.S("Pick your first strategy move", "Elige tu primer paso de estrategia")}"><span class="fine"><strong>${I.T("Pick your first move:", "Elige tu primer paso:")}</strong></span><div class="learn-chip-row">${(STRATEGY_STEPS[cur.domain] || STRATEGY_STEPS.Reading).map(([sid, en, es]) => html`<button type="button" class="cat-chip ${strategyPicks.get(a.id) === sid ? "is-active" : ""}" data-strategy-step="${sid}" aria-pressed="${String(strategyPicks.get(a.id) === sid)}">${strategyPicks.get(a.id) === sid ? icon("check") : icon("bulb")} ${I.T(en, es)}</button>`)}</div>${strategyPicks.get(a.id) ? html`<p class="fine strategy-step-ok" role="status">${icon("check")} ${I.T("Strategy move active! Now apply it to your response below.", "¡Paso de estrategia activo! Ahora aplícalo en tu respuesta abajo.")}</p>` : ""}</div></details>${vocabHTML(a, shared, { focused: Boolean(checked.get(a.id) || writingChecks.get(a.id)) })}` : ""}
         ${!["constructed", "worksheet"].includes(a.type) && cur.record.results[a.id] ? html`<div class="fresh-attempt"><button type="button" class="btn" data-fresh-attempt>${I.T("Start a fresh independent attempt", "Empezar un intento nuevo e independiente")}</button><p class="fine">${I.T("Save a summary of this attempt and clear its selected answers. Earlier help stays in your history; this is another try at the same task.", "Guarda un resumen de este intento y borra las respuestas elegidas. La ayuda anterior queda en tu historial; es otro intento de la misma tarea.")}</p></div>` : ""}
         <p id="answerValidation" role="alert" ${validation ? "" : raw("hidden")}>${validation}</p>
         <section class="answer-zone" aria-label="${I.S("Your answer", "Tu respuesta")}">${answerZone(a)}</section>
@@ -875,6 +896,32 @@ export function onClick(e, ctx) {
     toggleRetellCheck(cur.record, a.id, retellBox.dataset.retellCheck);
     save();
     return;
+  }
+  const stratBtn = t.closest("[data-strategy-step]");
+  if (stratBtn) {
+    strategyPicks.set(a.id, stratBtn.dataset.strategyStep);
+    helpUsed.add(a.id);
+    cur.record.supportUsed ||= {};
+    cur.record.supportUsed[a.id] = true;
+    save();
+    ctx.rerender({ keepFocus: true });
+    return true;
+  }
+  const borrowBtn = t.closest("[data-model-borrow]");
+  if (borrowBtn) {
+    modelBorrows.set(a.id, borrowBtn.dataset.modelBorrow);
+    helpUsed.add(a.id);
+    cur.record.supportUsed ||= {};
+    cur.record.supportUsed[a.id] = true;
+    save();
+    for (const b of document.querySelectorAll("[data-model-borrow]")) {
+      const active = b.dataset.modelBorrow === borrowBtn.dataset.modelBorrow;
+      b.classList.toggle("is-active", active);
+      b.setAttribute("aria-pressed", String(active));
+    }
+    const statusEl = borrowBtn.closest(".ladder")?.querySelector(".model-borrow-status");
+    if (statusEl) statusEl.hidden = false;
+    return true;
   }
   const sureBtn = t.closest("[data-sure]");
   if (sureBtn) {
