@@ -51,6 +51,12 @@ const SKIP_TOPLEVEL = new Set([
   "personal",
   "futures",
   "access-teacher",
+  // The ACCESS ecosystem is a language-assessment practice platform. A math scratch-space launcher and formula
+  // pop-up have no place beside a WIDA-style test, so every ACCESS surface opts out.
+  "access-practice-lab",
+  "access-expedition",
+  "access-family-expedition",
+  "access-family-tour",
   // focus-school (Noam planner) offers the Workbench only inside its Academic
   // Help view, so it opts out of the global floating launcher.
   "focus-school",

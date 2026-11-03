@@ -1,5 +1,6 @@
 // Family home: language, three ways to start, three steps, four skills, a recommended session,
 // how to help, and a progress preview. One dominant action; everything else is quieter.
+import { journeyHTML } from "./journey.js";
 import { bandRows, loadEsGuide, loadFamilyHelp, loadRoad, loadShared } from "../content.js";
 import { langSwitchHTML } from "../i18n.js";
 import { allRecords } from "../store.js";
@@ -66,6 +67,7 @@ export async function render(ctx, I) {
   return {
     title: I.S("Families", "Familias"),
     html: html`${crumbs(I)}
+      ${journeyHTML(I, "welcome", band)}
       <section class="prog-hero fam-hero d-writing is-tint" aria-labelledby="famTitle">
         <div class="prog-hero-copy">
           <p class="eyebrow">${icon("families")} ${I.L("hub.eyebrow")}</p>

@@ -3,6 +3,7 @@
 // The grown-up checks the stop's box in the paper Trip Log. Progress lives on this device only.
 import { bandRows } from "../content.js";
 import { BASE, html, icon, todayISO } from "../util.js";
+import { journeyHTML } from "./journey.js";
 import { playlistHref, sessionMinutes } from "./plan.js";
 import { TRIP_STOPS, familyPatch, getFamily } from "./state.js";
 import { ACCESS_LAB_FLAGS } from "../lang/feature-flags.js";
@@ -70,6 +71,7 @@ export async function render(ctx, I) {
   return {
     title: I.LS("trip.title"),
     html: html`${crumbs(I, I.L("trip.title"))}
+      ${journeyHTML(I, "together", band)}
       <section class="fam-trip panel ${trip ? `d-${trip.skill.toLowerCase()}` : ""}" aria-labelledby="tripTitle">
         <p class="eyebrow">${trip ? skillIcon(trip.skill) : icon("road")} ${trip ? skillName(I, trip.skill) : I.L("nav.family.trip")}</p>
         <h1 id="tripTitle" tabindex="-1">${I.L("trip.title")}</h1>

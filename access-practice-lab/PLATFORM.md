@@ -124,3 +124,52 @@ Rules these keep, on top of the four above:
 - A pattern counts **once per piece of work, in its latest state**: fixed in the final version means no longer recurring.
 - A pattern is **mastered** only after independent transfer passes on at least two different days and prompts.
 - Mission choices (`byFlag`) change the later speaking/writing prompt, planner hints and revision question.
+
+## Enterprise layer (`src/acc/`, `acc.css`, `acc-engine.css`)
+
+One shared design and engine layer for every ACCESS route. Independent practice material: the footer and every results
+screen say it is not a WIDA or DRC assessment and produces no official score or level.
+
+| Part | Files | Rules it keeps |
+| --- | --- | --- |
+| Tokens and shell | `acc.css`, `src/acc/{routes,copy,shell}.js` | `--acc-*` palette is pinned by `tools/access-acc-foundation.test.mjs`; 48px targets; the four standalone pages (Teacher Hub, Family Expedition, Family Adventure, Side Quest) load the same tokens and the same header, breadcrumb and disclaimer. The Math Workbench and formula pop-up are not loaded on ACCESS pages. |
+| Assessment engine | `src/acc/engine/*`, `src/views/assess.js`, route `/assess` | One validated item schema (nine response types). Summative mode gives no hints and no feedback. Learning mode runs check, feedback, support ladder (1 clue, 2 language, 3 mentor model, unlocked in order), revise, fresh attempt. A success after support is recorded as supported, never independent. Speaking and writing are never auto-scored (`needs-review`). |
+| Toolbar | `engine/toolbar.js`, `tool-state.js`, `highlight-dom.js` | Highlighter wraps text nodes only; the line reader masks are `aria-hidden` and pointer-transparent; the magnifier scales the canvas font size so text reflows; a crossed-out choice stays a real, enabled control and the last choice cannot be crossed out. |
+| Audio | `src/acc/audio/*` | A person starts every permission request and every recording. The microphone check runs a real 3-second RMS calibration. The file type is whatever the browser produced (never relabelled WAV). A recording is written to IndexedDB and read back before it is called saved. Listening plays are counted in the saved session, so a refresh cannot grant extra plays; a failed play costs nothing. |
+| Storage | `src/acc/storage/*`, `engine/persist.js` | `ACCESS_Lab_DB` v1: `sessions`, `recordings`, `passport_progress`, `settings`. Each save writes a short localStorage buffer, commits to IndexedDB, then removes the buffer, so a refresh cannot lose the last answer. Records carry a random per-device learner id, never a name. Multi-row writes are one transaction. Import never overwrites. The learner can export, import and delete. If IndexedDB is unavailable the lab says nothing is being saved. No network calls, no sync, no analytics. |
+| Offline | `sw.js` (generated block) | The lab and its practice sets work offline once loaded. Driven browsers register the worker only with `?sw=1`. Reconnecting never claims anything was synchronised. |
+
+Checks: `node --test tools/access-acc-{foundation,engine,audio}.test.mjs`, `node tools/access-acc-{assess,audio,storage}-e2e.mjs`,
+`node tools/access-acc-visual.mjs` (screenshots at 1440, 768 and 390 plus axe, overflow and target size).
+
+### Teacher evidence, WIDA mapping, languages and the family journey (Phase 5)
+
+- **Teacher Hub panel** (`access-teacher/acc-evidence-panel.js`, section `#accEvidence`): Domain x Key Language Use x Academic Context matrix read from `passport_progress` on this device. A cell with fewer than three items says "not enough yet", a combination with no practice says "no evidence", and review-only items (speaking, writing) are never scored. Recommendations (`src/acc/analytics/evidence.js`) are rules over those counts and print the counts that triggered them. Several students are combined by importing the files they export; the panel says it is one device and not a roster.
+- **WIDA mapping** (`src/acc/wida/{catalog,framework}.js`): the one expectation catalog (also used by `tools/lib/access-lab-alignment.mjs`) and an inspectable Task -> Domain -> Key Language Use -> Context -> Expectation family -> Observable evidence -> Feedback -> Revision -> New attempt chain. A combination the framework lists is "explicit"; anything else is "supplementary". Grades 3-5 map to both WIDA clusters 2-3 and 4-5. Item-level Language Expectation wording is not reproduced and no code is invented.
+- **Learning brief**: one printable page per student with evidence dates, strengths, priorities, next activities, growth (only after three sittings) and the limits of the evidence. It states that it is not a WIDA/ACCESS score report, not a proficiency level and not an IEP or 504 document.
+- **Languages**: English and Spanish only. `src/acc/i18n/I18nEngine.js` translates interface text from `locales/es*.js`; authored content (passages, questions, choices, supports, student work) stays English and is tagged `lang="en"` inside a Spanish page. `tools/access-acc-i18n-scan.mjs` fails if any interface string on the covered screens is left in English. Spanish is machine-assisted and has not been reviewed by a human translator.
+- **Family journey**: `src/family/journey.js` (Welcome, Understand ACCESS, Choose a skill, Practice together, Review progress, Plan the next session) on the family pages, and `/family/understand` with read-aloud buttons and plain statements that practice is not the official test and does not predict a score.
+
+## Phase 6C-6E: rubrics, review, adaptive practice, teacher intelligence
+
+Everything below is practice feedback on one device. None of it is a WIDA or ACCESS score or level, and none of it is sent anywhere.
+
+**Evidence kinds** (shown on screen so nobody mistakes one for another)
+- *Auto-scored by answer key*: objective items only.
+- *Rule-based observation*: `src/acc/feedback/writing-feedback.js` counts words, sentences, linking words, numbers taken from the task's own data and copied runs of six words. It never judges meaning and says so.
+- *Teacher-reviewed*: a person rated a response against a rubric in the Hub.
+- *Not scored by the lab*: speaking and writing without a teacher review.
+
+**Rubrics** (`content/rubrics/speaking-practice.json`, `writing-practice.json`): seven or eight dimensions, four neutral ratings ("Not yet shown" to "Shows clearly"), written by EduWonderLab, not WIDA wording. Speaking names three things the lab never scores: pronunciation, speed and pauses, grammar accuracy.
+
+**Teacher review** (`access-teacher/acc-review-panel.js`, `src/acc/review/review.js`): a queue from the evidence rows with `status: needs-review`. The teacher plays the recording (from the local `recordings` store) or reads the text, rates every dimension, adds an optional note and chooses whether to show it to the student on this device. Saved under settings key `review.<learner>|<session>|<item>`. The student's chooser page shows shared feedback as strengths first and one next step, never a number.
+
+**Self-check**: in Learning mode the checklist on a speaking or writing item is tickable; ticks are saved in the session (`tools.selfCheck`) and travel into the evidence row as `selfChecked` / `selfTotal`.
+
+**Adaptive practice** (`src/acc/adapt/mastery.js`): a skill is *secure* only after independent first-try success on at least N different items on at least M different days at a teacher-set percentage (defaults 3, 2, 80). Supported success never counts. `fadeAdvice` looks at the last three responses; `nextStep` picks the weakest skill and offers unseen bank items, preferring a different parallel group. `meta.parallel` is computed by `tools/access-acc-bank-parallel.mjs` (54 groups), never typed. `assembleSet` builds `/assess/custom?ids=<set>:<item>,...` sets with namespaced stimulus ids.
+
+**Teacher intelligence** (`acc-insights-panel.js`, `acc-assign-panel.js`): per-skill progress, suggested next step, language-function strengths (reported after 3 objective items), revision and completion patterns, tagged first-choice misunderstandings, missing data. The assignment builder (domain, mixed, context, key language use, language function, whole-set simulation, supported practice) produces a link or a printed list; it delivers nothing.
+
+**Tests**: `tools/access-acc-{feedback,adapt,assign}.test.mjs`, `tools/access-acc-intel-e2e.mjs`. `npm run report:access-bank` writes `reports/access-bank-report.md`.
+
+**Limits to keep saying**: Spanish is machine-assisted and not human-reviewed; rubric text, item content, language-function names and misconception tags are English. No item has been human-reviewed. There is no backend, so review, mastery and assignments live on the device where they were made.

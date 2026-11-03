@@ -1,6 +1,7 @@
 // Lab chrome: brand mark, top navigation, "More" menu and footer. One place so the static shell in
 // index.html and the live (bilingual) chrome never describe different navigation.
 import { langSwitchHTML } from "./i18n.js";
+import { CHROME } from "./acc/copy.js";
 import { BASE, html, icon, raw } from "./util.js";
 
 export const LOGO = raw(
@@ -42,6 +43,7 @@ const PRACTICE_VIEWS = new Set([
 const ACTIVE = {
   tests: "tests",
   test: "tests",
+  assess: "tests",
   passport: "passport",
   family: "family",
   tools: "help",
@@ -140,6 +142,7 @@ function menuGroups(band, T) {
       title: T("Plan and review", "Planificar y repasar"),
       items: [
         link("tests", T("Practice tests", "Pruebas de práctica"), "tests"),
+        link("tests", T("Assessment simulator", "Simulador de evaluación"), "assess"),
         link("road", T("Road to ACCESS", "Camino a ACCESS"), "road"),
         link("growth", T("My growth", "Mi progreso"), "growth"),
         link("checkin", T("Skill check-in", "Chequeo de destrezas"), "diagnostic"),
@@ -244,6 +247,7 @@ export function footerHTML(ctx, I) {
         <a href="${BASE}/Speaking${q}">${T("Speaking", "Hablar")}</a>
         <a href="${BASE}/Writing${q}">${T("Writing", "Escribir")}</a>
         <a href="${BASE}/tests${q}">${T("Practice tests", "Pruebas de práctica")}</a>
+        <a href="${BASE}/assess${q}">${T("Assessment simulator", "Simulador de evaluación")}</a>
       </nav>
       <nav class="footer-links" aria-label="${S("More", "Más")}">
         <h2>${T("Support", "Apoyo")}</h2>
@@ -256,7 +260,8 @@ export function footerHTML(ctx, I) {
       </nav>
     </div>
     <p class="footer-legal">
-      ${T("Original classroom practice inspired by WIDA ACCESS. It is not an official WIDA test, score or placement.", "Práctica original de clase inspirada en WIDA ACCESS. No es una prueba, puntaje ni ubicación oficial de WIDA.")}
+      <strong>${T(CHROME.en.disclaimerLead, CHROME.es.disclaimerLead)}</strong>
+      ${T(CHROME.en.disclaimer, CHROME.es.disclaimer)}
     </p>
     <p class="footer-build" id="labBuild"></p>`;
 }

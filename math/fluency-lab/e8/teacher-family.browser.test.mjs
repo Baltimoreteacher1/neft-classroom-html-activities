@@ -185,6 +185,8 @@ try {
       else if (["numeric", "fraction", "equation", "expression", "application"].includes(it.type) && (it.answer?.value ?? null) !== null) await page.locator("#e8ip-ans").fill(it.answer.value);
       else if (it.type === "constructed" || it.type === "explain") await page.locator("#e8ip-text").fill("I checked it two ways.");
       await page.locator("[data-ip-check]").first().click();
+      // Wait for the result to render before deciding which branch applies; counting immediately raced under load.
+      await page.locator("[data-ip-next]").first().waitFor({ state: "attached", timeout: 3000 }).catch(() => {});
       if (await page.locator("[data-ip-next]").count()) await page.locator("[data-ip-next]").click();
       else {
         // an unsupported shape or a retry: give up through the retry limit
@@ -193,6 +195,10 @@ try {
       }
     }
     check(seenIds.length >= 1, "real problems: a quick check was answered");
+    // The summary renders after the last answer is stored; give it the same grace the Next button gets.
+    await page
+      .waitForFunction(() => /finished \d+ problems/.test(document.querySelector("#e8-items")?.innerText || ""), null, { timeout: 5000 })
+      .catch(() => {});
     check(/finished \d+ problems/.test(await page.locator("#e8-items").innerText()), "real problems: a finish summary appears");
     const rec = await page.evaluate(() => JSON.parse(localStorage.getItem("ewl-fluency-tutor-v2") || "null"));
     check(!rec || Object.keys(rec.records || {}).length >= 0, "real problems: tutor record stays readable");

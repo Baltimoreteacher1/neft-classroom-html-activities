@@ -7,6 +7,7 @@ export const SKILLS = ["Listening", "Reading", "Speaking", "Writing"];
 const PAGES = [
   ["", "nav.family.home", "families"],
   ["start", "nav.family.setup", "settings"],
+  ["understand", "nav.family.understand", "info"],
   ["practice", "nav.family.practice", "home"],
   ["trip", "nav.family.trip", "road"],
   ["progress", "nav.family.progress", "passport"],

@@ -14,8 +14,9 @@ import * as progress from "../family/progress.js";
 import * as save from "../family/save.js";
 import * as setup from "../family/setup.js";
 import * as trip from "../family/trip.js";
+import * as understand from "../family/understand.js";
 
-const PAGES = { "": hub, start: setup, practice: planner, trip, progress, help, save };
+const PAGES = { "": hub, start: setup, understand, practice: planner, trip, progress, help, save };
 const LEGACY_FILTERS = ["skill", "minutes", "level"];
 
 let current = hub;

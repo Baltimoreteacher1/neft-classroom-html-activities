@@ -542,6 +542,7 @@ export const STRINGS = {
   "nav.family.practice": s("Practice", "Practicar"),
   "nav.family.progress": s("Progress", "Progreso"),
   "nav.family.help": s("Help", "Ayuda"),
+  "nav.family.understand": s("Understand ACCESS", "Entender ACCESS"),
   "nav.family.save": s("Save", "Guardar"),
   "nav.family.label": s("Family pages", "Páginas para familias"),
   "crumb.lab": s("Lab", "Laboratorio"),

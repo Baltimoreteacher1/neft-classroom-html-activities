@@ -1,5 +1,6 @@
 // Practice planner: pick a time, then a kind of session. Also keeps the original activity finder
 // (skill / time / support filters) so existing /family?skill=…&minutes=… teacher links still work.
+import { journeyHTML } from "./journey.js";
 import { bandRows } from "../content.js";
 import { BASE, DOMAIN_META, TIERS, copyText, html, icon } from "../util.js";
 import { MINUTES, familyPatch, getFamily } from "./state.js";
@@ -63,6 +64,7 @@ export async function render(ctx, I) {
   return {
     title: I.LS("plan.title"),
     html: html`${crumbs(I, I.L("plan.title"))}
+      ${journeyHTML(I, "choose", band)}
       <section class="fam-plan panel" aria-labelledby="famPlanTitle">
         <h1 id="famPlanTitle" tabindex="-1">${I.L("plan.title")}</h1>
         <p class="lead">${I.L("plan.lead")}</p>

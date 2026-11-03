@@ -10,8 +10,11 @@
     <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
     <link rel="stylesheet" href="/assets/mobile-access.css" />
     <!-- mobile-access-injected:end -->
-  </head>
-  <body class="th-body">
+  <link rel="stylesheet" href="/access-practice-lab/acc.css">
+<link rel="stylesheet" href="/access-practice-lab/acc-engine.css">
+<script type="module" src="/access-practice-lab/src/acc/shell.js"></script>
+</head>
+  <body class="th-body" data-acc-section="teacher">
     <a class="th-skip" href="#hub">Skip to resources</a>
     <header class="lab-top no-print">
       <a class="lab-brand" href="/access-teacher/"
@@ -84,6 +87,11 @@
       <div class="th-jump-inner">
         <a href="#passportCheckins">Passport check-ins</a>
         <a href="#classEvidence">Class evidence</a>
+        <a href="#accEvidence">Language matrix</a>
+        <a href="#accReview">Review queue</a>
+        <a href="#accInsights">Learning insights</a>
+        <a href="#accAssign">Assignment builder</a>
+        <a href="#accContent">Content library</a>
         <a href="#activities">Activities</a>
         <a href="#weekly">Weekly links</a>
         <a href="#familyTrip">Family Trip</a>
@@ -95,6 +103,26 @@
     </nav>
     <section id="passportCheckins" class="th-sec lab-main" aria-labelledby="checkinsTitle"></section>
     <section id="classEvidence" class="lab-main" aria-label="Class language evidence"></section>
+    <section id="accReview" class="th-sec lab-main" aria-labelledby="accReviewTitle">
+      <h2 id="accReviewTitle" tabindex="-1">Speaking and writing review</h2>
+      <div id="accReviewBody"><p class="acc-hint">Loading responses waiting for review…</p></div>
+    </section>
+    <section id="accInsights" class="th-sec lab-main" aria-labelledby="accInsTitle">
+      <h2 id="accInsTitle" tabindex="-1">Learning insights and next steps</h2>
+      <div id="accInsightsBody"><p class="acc-hint">Loading insights from this device…</p></div>
+    </section>
+    <section id="accAssign" class="th-sec lab-main" aria-labelledby="accAssignTitle">
+      <h2 id="accAssignTitle" tabindex="-1">Assignment builder</h2>
+      <div id="accAssignBody"><p class="acc-hint">Loading the assignment builder…</p></div>
+    </section>
+    <section id="accContent" class="th-sec lab-main" aria-labelledby="accContentTitle">
+      <h2 id="accContentTitle" tabindex="-1">Content library and coverage</h2>
+      <div id="accContentBody"><p class="acc-hint">Loading the content library…</p></div>
+    </section>
+    <section id="accEvidence" class="th-sec lab-main" aria-labelledby="accEvTitle">
+      <h2 id="accEvTitle" tabindex="-1">Language evidence from the Assessment simulator</h2>
+      <div id="accEvidenceBody"><p class="acc-hint">Loading evidence from this device…</p></div>
+    </section>
     <main id="hub" class="lab-main" tabindex="-1">
       <div class="boot" role="status">
         <span class="boot-dot" aria-hidden="true"></span> Loading…
@@ -106,10 +134,16 @@
     <script type="module" src="/access-teacher/evidence.js?v=2026.10.23"></script>
     <script type="module" src="/access-teacher/passport-checkins.js?v=2026.10.29"></script>
     <script src="/assets/nt-usage.js" data-nt-usage="1" defer></script>
-    <script src="/assets/math-workbench-launcher.js" defer></script>
-    <script src="/assets/formula-popup.js" defer></script>
     <!-- nt-chrome-injected:begin (shared page chrome — tools/inject-nt-chrome.js) -->
     <script src="/assets/nt-chrome.js" defer></script>
     <!-- nt-chrome-injected:end -->
+  <script type="module">
+      import { mountEvidencePanel } from "/access-teacher/acc-evidence-panel.js";
+      mountEvidencePanel(document.getElementById("accEvidenceBody"));
+      import("/access-teacher/acc-review-panel.js").then((m) => m.mountReviewPanel(document.getElementById("accReviewBody")));
+      import("/access-teacher/acc-insights-panel.js").then((m) => m.mountInsightsPanel(document.getElementById("accInsightsBody")));
+      import("/access-teacher/acc-assign-panel.js").then((m) => m.mountAssignPanel(document.getElementById("accAssignBody")));
+      import("/access-teacher/acc-content-panel.js").then((m) => m.mountContentPanel(document.getElementById("accContentBody")));
+    </script>
   </body>
 </html>

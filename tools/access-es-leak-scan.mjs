@@ -88,6 +88,8 @@ const ROUTES = [
   "/family/practice?grades=3-5",
   "/family/progress?grades=3-5",
   "/family/help?grades=3-5",
+  "/family/understand?grades=3-5",
+  "/assess?grades=3-5",
   "/family/save?grades=3-5",
 ];
 // English function words that essentially never appear in Spanish interface text.

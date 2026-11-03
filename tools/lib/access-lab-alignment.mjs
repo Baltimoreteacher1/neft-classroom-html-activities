@@ -5,62 +5,17 @@ import { join, relative } from "node:path";
 import { allActivities, CONTENT_DIR } from "./access-lab-content.mjs";
 
 const DOMAINS = ["Listening", "Reading", "Speaking", "Writing"];
-const STANDARD_CODES = new Set(["ELD-SI", "ELD-LA", "ELD-MA", "ELD-SC", "ELD-SS"]);
-const WIDA_SOURCE = "https://wida.wisc.edu/teach/standards/eld";
-const EXPECTATION_CATALOG = [
-  ...["Narrate", "Inform", "Explain", "Argue"].map((use) => ({
-    id: `ELD-SI.K-3.${use}`,
-    gradeCluster: "2-3",
-    standard: "ELD-SI",
-    keyUse: use,
-    modes: ["Interpretive", "Expressive"],
-    source: WIDA_SOURCE,
-  })),
-  ...["Narrate", "Inform", "Explain", "Argue"].map((use) => ({
-    id: `ELD-SI.4-12.${use}`,
-    gradeClusters: ["4-5", "6-8"],
-    standard: "ELD-SI",
-    keyUse: use,
-    modes: ["Interpretive", "Expressive"],
-    source: WIDA_SOURCE,
-  })),
-  ...["2-3", "4-5", "6-8"].flatMap((gradeCluster) => {
-    const usesByStandard =
-      gradeCluster === "6-8"
-        ? {
-            "ELD-LA": ["Narrate", "Inform", "Argue"],
-            "ELD-MA": ["Explain", "Argue"],
-            "ELD-SC": ["Explain", "Argue"],
-            "ELD-SS": ["Explain", "Argue"],
-          }
-        : gradeCluster === "2-3"
-          ? {
-              "ELD-LA": ["Narrate", "Inform"],
-              "ELD-MA": ["Explain", "Argue"],
-              "ELD-SC": ["Explain", "Argue"],
-              "ELD-SS": ["Explain", "Argue"],
-            }
-          : {
-              "ELD-LA": ["Narrate", "Inform", "Argue"],
-              "ELD-MA": ["Explain", "Argue"],
-              "ELD-SC": ["Explain", "Argue"],
-              "ELD-SS": ["Explain", "Argue"],
-            };
-    return Object.entries(usesByStandard).flatMap(([standard, uses]) =>
-      uses.flatMap((keyUse) =>
-        ["Interpretive", "Expressive"].map((mode) => ({
-          id: `${standard}.${gradeCluster}.${keyUse}.${mode}`,
-          gradeCluster,
-          standard,
-          keyUse,
-          mode,
-          source: WIDA_SOURCE,
-        })),
-      ),
-    );
-  }),
-];
-export const WIDA_LANGUAGE_EXPECTATIONS = EXPECTATION_CATALOG;
+
+import {
+  STANDARD_CODES,
+  WIDA_LANGUAGE_EXPECTATIONS,
+  WIDA_SOURCE,
+} from "../../access-practice-lab/src/acc/wida/catalog.js";
+
+const EXPECTATION_CATALOG = WIDA_LANGUAGE_EXPECTATIONS;
+
+export { WIDA_LANGUAGE_EXPECTATIONS };
+
 const arrays = (value) =>
   Array.isArray(value) ? value.filter((x) => typeof x === "string" && x.trim()) : [];
 const strings = (...values) => [...new Set(values.flatMap(arrays))];

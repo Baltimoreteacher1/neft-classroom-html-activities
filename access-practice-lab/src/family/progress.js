@@ -1,5 +1,6 @@
 // Family progress: what was practiced, kept apart from how it went. Counts come from saved results;
 // nothing is graded here, and completion is never presented as mastery.
+import { journeyHTML } from "./journey.js";
 import { bandRows, loadEsGuide, loadRoad } from "../content.js";
 import { allRecords, getStudentName } from "../store.js";
 import { loadLedger } from "../lang/ledger.js";
@@ -85,6 +86,7 @@ export async function render(ctx, I) {
   return {
     title: I.LS("prog.title"),
     html: html`${crumbs(I, I.L("prog.title"))}
+      ${journeyHTML(I, "review", band)}
       <section class="prog-hero fam-hero d-reading is-tint" aria-labelledby="famProgTitle">
         <div class="prog-hero-copy">
           <p class="eyebrow">${icon("passport")} ${I.L("hub.eyebrow")}</p>

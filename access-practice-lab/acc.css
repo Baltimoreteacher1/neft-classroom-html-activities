@@ -1,0 +1,544 @@
+/* ACCESS ecosystem — enterprise design layer.
+   One token set (--acc-*) shared by every ACCESS route: the Practice Lab, the Teacher Hub, the Family
+   Expedition tour and the Side Quest expedition. Loaded AFTER ds.css on pages that have it; standalone pages
+   load it with the self-hosted fonts below. Components added by the assessment engine, audio engine, storage
+   status and reports live in acc-engine.css and only read these tokens.
+   Rules: text 4.5:1, non-text 3:1, targets 48px, visible focus, no motion beyond state changes. */
+
+@font-face {
+  font-family: "Atkinson Hyperlegible";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(/assets/fonts/atkinson-hyperlegible-0aa3443e.woff2) format("woff2");
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
+    U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "Atkinson Hyperlegible";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(/assets/fonts/atkinson-hyperlegible-ef295152.woff2) format("woff2");
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
+    U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "Fraunces";
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url(/assets/fonts/fraunces-175f6e93.woff2) format("woff2");
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
+    U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+:root {
+  /* core palette (the contract; tools/access-acc-foundation.test.mjs pins these values) */
+  --acc-slate: #0f172a;
+  --acc-canvas: #f8fafc;
+  --acc-border: #cbd5e1;
+  --acc-focus: #1d63ed;
+  --acc-success: #15803d;
+  --acc-error: #dc2626;
+  --acc-highlight-yellow: #fef08a;
+  --acc-highlight-blue: #bae6fd;
+  --acc-highlight-green: #bbf7d0;
+
+  /* surfaces */
+  --acc-surface: #ffffff;
+  --acc-surface-raised: #ffffff;
+  --acc-surface-sunken: #f1f5f9;
+  --acc-border-strong: #94a3b8; /* 2.56:1 on white: decoration only; control borders use --acc-control-border */
+  --acc-control-border: #64748b; /* 4.76:1 on white: meets 3:1 for UI components */
+
+  /* text */
+  --acc-text: var(--acc-slate);
+  --acc-text-muted: #475569; /* 7.58:1 on white */
+  --acc-text-subtle: #55657a; /* 5.9:1 on white, 5.5:1 on canvas */
+  --acc-text-inverse: #ffffff;
+  --acc-link: #1649b8;
+
+  /* controls */
+  --acc-primary: #17324d;
+  --acc-primary-hover: #0f2236;
+  --acc-on-primary: #ffffff;
+  --acc-disabled-bg: #e2e8f0;
+  --acc-disabled-text: #64748b;
+  --acc-target: 3rem; /* 48px minimum interactive target */
+  --acc-ring: 0 0 0 3px #fff, 0 0 0 6px var(--acc-focus);
+
+  /* feedback */
+  --acc-success-soft: #dcfce7;
+  --acc-error-soft: #fee2e2;
+  --acc-error-ink: #b91c1c; /* error text on the soft tint (5.4:1); --acc-error itself is for borders and text on white */
+  --acc-warn: #92400e;
+  --acc-warn-soft: #fef3c7;
+  --acc-info: #1649b8;
+  --acc-info-soft: #e0ecff;
+
+  /* domain identities (fill takes white text, ink takes white background) */
+  --acc-d-listening: #17324d;
+  --acc-d-listening-soft: #e7eef2;
+  --acc-d-reading: #126e6c;
+  --acc-d-reading-soft: #e1f5f3;
+  --acc-d-speaking: #b8432f;
+  --acc-d-speaking-soft: #fce9e4;
+  --acc-d-writing: #9a4508;
+  --acc-d-writing-soft: #fef1dc;
+
+  /* spacing, radius, elevation */
+  --acc-space-1: 0.25rem;
+  --acc-space-2: 0.5rem;
+  --acc-space-3: 0.75rem;
+  --acc-space-4: 1rem;
+  --acc-space-5: 1.5rem;
+  --acc-space-6: 2rem;
+  --acc-space-7: 3rem;
+  --acc-radius-sm: 8px;
+  --acc-radius: 12px;
+  --acc-radius-lg: 18px;
+  --acc-elev-1: 0 1px 2px rgb(15 23 42 / 8%), 0 2px 8px rgb(15 23 42 / 5%);
+  --acc-elev-2: 0 2px 4px rgb(15 23 42 / 8%), 0 12px 28px rgb(15 23 42 / 12%);
+  --acc-elev-3: 0 18px 48px rgb(15 23 42 / 24%);
+
+  /* type: Atkinson Hyperlegible for assessment content, Fraunces for editorial headings only */
+  --acc-font:
+    "Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans",
+    "Helvetica Neue", Arial, sans-serif;
+  --acc-font-display: "Fraunces", "Iowan Old Style", Georgia, "Times New Roman", serif;
+  --acc-measure: 68ch;
+  --acc-zoom: 1; /* assessment magnifier (set by ACCESS_Toolbar); reflows text, never transforms */
+}
+
+/* Bridge: the lab's older tokens (ds.css) resolve to the ecosystem palette, so every legacy screen
+   shares one canvas, ink, border and focus colour without being rewritten. */
+:root {
+  --bg: var(--acc-canvas);
+  --ink: var(--acc-slate);
+  --line: var(--acc-border);
+  --focus: var(--acc-focus);
+}
+
+/* ── standalone page base (pages that do not load ds.css) ─────────────────────── */
+.acc-page {
+  margin: 0;
+  background: var(--acc-canvas);
+  color: var(--acc-text);
+  font: 400 1.0625rem/1.6 var(--acc-font);
+  -webkit-font-smoothing: antialiased;
+}
+.acc-page h1,
+.acc-page h2 {
+  font-family: var(--acc-font-display);
+}
+
+/* ── focus, targets, motion ────────────────────────────────────────────────────── */
+:focus-visible {
+  outline: 3px solid var(--acc-focus);
+  outline-offset: 3px;
+  box-shadow: 0 0 0 6px #fff;
+}
+.acc-eco :focus-visible,
+.acc-footer :focus-visible {
+  box-shadow: none;
+}
+.btn,
+.ghost,
+.chip,
+.cat-chip,
+.btn.small {
+  min-height: var(--acc-target);
+}
+.acc-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--acc-space-2);
+  min-height: var(--acc-target);
+  min-width: var(--acc-target);
+  padding: 0.55rem 1.1rem;
+  border: 1.5px solid var(--acc-control-border);
+  border-radius: var(--acc-radius);
+  background: var(--acc-surface);
+  color: var(--acc-text);
+  font: 700 1rem/1.2 var(--acc-font);
+  text-decoration: none;
+  cursor: pointer;
+}
+.acc-btn:hover {
+  background: var(--acc-surface-sunken);
+}
+.acc-btn[aria-pressed="true"],
+.acc-btn.is-on {
+  background: var(--acc-primary);
+  border-color: var(--acc-primary);
+  color: var(--acc-on-primary);
+}
+.acc-btn.primary {
+  background: var(--acc-primary);
+  border-color: var(--acc-primary);
+  color: var(--acc-on-primary);
+}
+.acc-btn.primary:hover {
+  background: var(--acc-primary-hover);
+}
+.acc-btn:disabled,
+.acc-btn[aria-disabled="true"] {
+  background: var(--acc-disabled-bg);
+  border-color: var(--acc-border);
+  color: var(--acc-disabled-text);
+  cursor: not-allowed;
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ── ecosystem bar: one header across every ACCESS route ───────────────────────── */
+.acc-eco {
+  position: relative;
+  z-index: 40;
+  background: var(--acc-slate);
+  color: var(--acc-text-inverse);
+  font: 400 0.9375rem/1.3 var(--acc-font);
+}
+.acc-eco-inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--acc-space-1) var(--acc-space-4);
+  margin: 0 auto;
+  padding: var(--acc-space-1) clamp(1rem, 2.6vw, 2.4rem);
+}
+.acc-eco-brand {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--acc-target);
+  gap: var(--acc-space-2);
+  color: #fff;
+  font-weight: 700;
+  text-decoration: none;
+}
+.acc-eco-brand small {
+  font-weight: 400;
+  color: #cbd5e1;
+}
+.acc-eco-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--acc-space-1);
+  margin: 0 0 0 auto;
+  padding: 0;
+  list-style: none;
+}
+.acc-eco-nav a {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--acc-target);
+  padding: 0 var(--acc-space-3);
+  border-radius: var(--acc-radius-sm);
+  color: #e2e8f0;
+  text-decoration: none;
+}
+.acc-eco-nav a:hover {
+  background: rgb(255 255 255 / 12%);
+  color: #fff;
+}
+.acc-eco-nav a[aria-current="page"] {
+  background: #fff;
+  color: var(--acc-slate);
+  font-weight: 700;
+}
+.acc-eco :focus-visible {
+  outline-color: #9ec1ff;
+}
+.acc-crumbs-bar {
+  background: var(--acc-surface);
+  border-bottom: 1px solid var(--acc-border);
+}
+.acc-crumbs {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--acc-space-1) var(--acc-space-2);
+  margin: 0 auto;
+  padding: 0 clamp(1rem, 2.6vw, 2.4rem);
+  color: var(--acc-text-muted);
+  font-size: 0.9375rem;
+}
+.acc-crumbs a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  color: var(--acc-link);
+}
+.acc-crumbs [aria-current="page"] {
+  color: var(--acc-text);
+  font-weight: 700;
+}
+.acc-crumbs li {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--acc-space-2);
+  list-style: none;
+}
+.acc-crumbs li + li::before {
+  content: "/";
+  color: var(--acc-text-subtle);
+}
+.acc-crumbs ol {
+  display: contents;
+  margin: 0;
+  padding: 0;
+}
+
+/* ── footer + disclaimer: practice material, not an official assessment ───────── */
+.acc-footer {
+  margin-top: var(--acc-space-7);
+  background: var(--acc-slate);
+  color: #e2e8f0;
+  font-size: 0.9375rem;
+}
+.acc-footer-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--acc-space-5) var(--acc-space-4);
+  display: grid;
+  gap: var(--acc-space-4);
+}
+.acc-footer a {
+  color: #bfdbfe;
+}
+.acc-footer nav ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--acc-space-1) var(--acc-space-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.acc-footer nav a {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--acc-target);
+}
+.acc-disclaimer {
+  margin: 0;
+  max-width: var(--acc-measure);
+  color: #cbd5e1;
+}
+.acc-disclaimer strong {
+  color: #fff;
+}
+
+/* ── states: loading, empty, error, success ───────────────────────────────────── */
+.acc-state {
+  display: flex;
+  gap: var(--acc-space-3);
+  align-items: flex-start;
+  padding: var(--acc-space-4);
+  border: 1px solid var(--acc-border);
+  border-left-width: 5px;
+  border-radius: var(--acc-radius);
+  background: var(--acc-surface);
+  color: var(--acc-text);
+}
+.acc-state h2,
+.acc-state h3,
+.acc-state p {
+  margin: 0;
+}
+.acc-state p + p {
+  margin-top: var(--acc-space-1);
+}
+.acc-state.is-error {
+  border-left-color: var(--acc-error);
+  background: var(--acc-error-soft);
+}
+.acc-state.is-success {
+  border-left-color: var(--acc-success);
+  background: var(--acc-success-soft);
+}
+.acc-state.is-warn {
+  border-left-color: var(--acc-warn);
+  background: var(--acc-warn-soft);
+}
+.acc-state.is-info,
+.acc-state.is-loading,
+.acc-state.is-empty {
+  border-left-color: var(--acc-info);
+  background: var(--acc-info-soft);
+}
+.acc-skeleton {
+  display: block;
+  min-height: 1rem;
+  border-radius: var(--acc-radius-sm);
+  background: linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%);
+  background-size: 200% 100%;
+  animation: acc-shimmer 1.4s linear infinite;
+}
+@keyframes acc-shimmer {
+  to {
+    background-position: -200% 0;
+  }
+}
+.acc-visually-hidden {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media print {
+  .acc-eco,
+  .acc-crumbs-bar {
+    display: none;
+  }
+  .acc-footer {
+    background: none;
+    color: #000;
+  }
+  .acc-footer a,
+  .acc-disclaimer,
+  .acc-disclaimer strong {
+    color: #000;
+  }
+}
+
+
+/* ── standalone ACCESS pages share the ecosystem palette and face ──────────────────
+   The tour, Side Quest and Family Adventure pages carry their own inline palettes; body-level custom
+   properties win over their :root ones, so one block aligns all three without rewriting their markup. */
+body[data-acc-section] {
+  --navy: var(--acc-primary);
+  --ink: var(--acc-slate);
+  --muted: var(--acc-text-muted);
+  --line: var(--acc-border);
+  --paper: var(--acc-canvas);
+  --sky: var(--acc-canvas);
+  --card: var(--acc-surface);
+  --surface: var(--acc-surface);
+  --teal: var(--acc-d-reading);
+  --accent: var(--acc-link);
+  --blue: var(--acc-link);
+  --tint: var(--acc-info-soft);
+  --gold: #f2c15b;
+  font-family: var(--acc-font);
+}
+body[data-acc-section] h1,
+body[data-acc-section] h2 {
+  font-family: var(--acc-font-display);
+}
+body[data-acc-section] :focus-visible {
+  outline: 3px solid var(--acc-focus);
+  outline-offset: 3px;
+}
+body[data-acc-section] .acc-footer {
+  display: block;
+  padding: 0;
+  max-width: none;
+  font-size: 0.9375rem;
+}
+
+body[data-acc-section] {
+  margin: 0;
+}
+.lab-top .lab-brand {
+  min-height: var(--acc-target);
+}
+/* Phones: the ecosystem bar is one scrolling row of 48px links; the page's own header names the page. */
+@media (max-width: 640px) {
+  .acc-eco-brand {
+    display: none;
+  }
+  .acc-eco-inner {
+    padding-block: 0;
+  }
+  .acc-eco nav {
+    min-width: 0;
+    flex: 1;
+    overflow-x: auto;
+    scrollbar-width: thin;
+  }
+  .acc-eco-nav {
+    flex-wrap: nowrap;
+    margin: 0;
+    white-space: nowrap;
+  }
+}
+body[data-acc-section] a.brand {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--acc-target);
+}
+
+/* Lab chrome targets: 48px. */
+.lang-btn,
+.room-link,
+.footer-links a {
+  min-height: var(--acc-target);
+}
+.lang-btn {
+  min-width: var(--acc-target);
+}
+.footer-links a,
+.session-list a,
+.window-card a {
+  display: flex;
+  align-items: center;
+}
+.session-list a,
+.window-card a {
+  min-height: var(--acc-target);
+}
+.session-list li > span {
+  display: block;
+}
+.session-list li a,
+.room-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--acc-target);
+}
+.lab-top .lang-btn,
+.lang-switch .lang-btn {
+  min-width: var(--acc-target);
+  flex-shrink: 0;
+}
+.plan-dot + span > a {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--acc-target);
+}
+.fam-how {
+  min-height: var(--acc-target);
+}
+input[type="time"],
+input[type="date"],
+input[type="text"],
+input[type="search"],
+select {
+  min-height: var(--acc-target);
+}
+label:has(> input[type="checkbox"]),
+label:has(> input[type="radio"]) {
+  min-height: var(--acc-target);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--acc-space-2);
+}
