@@ -42,6 +42,11 @@ function copyStandaloneHtml() {
     // deployment past Cloudflare Pages' 20,000-file limit ("Pages only supports
     // up to 20,000 files"), freezing production. Nothing references /public/.
     "public",
+    // Pages Functions are deployed from the repo-root functions/ directory, never served
+    // from dist/. Copying them put 105 files (server source and its tests, including
+    // _lib/teacher-session.js) on the public site and counted them against the 20,000-file
+    // limit. Nothing references /functions/.
+    "functions",
   ]);
   const ROOT_FILES = ["_headers", "_redirects", "404.html", "robots.txt", "sitemap.xml"];
   // Keep dev artifacts out of the published site: nested .claude/.git/node_modules

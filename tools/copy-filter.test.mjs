@@ -89,6 +89,37 @@ for (const frag of ["claude", "node_modules", "_engine"]) {
   assert.ok(SKIP_COPY_RE.source.includes(frag), `SKIP_COPY_RE lost its "${frag}" branch`);
 }
 
+/* --- 7. Source stays off the public site, and counts against the 20,000-file limit -- */
+// Cloudflare Pages refuses a deployment over 20,000 files ("Pages only supports up to
+// 20,000 files"), which froze production on 2026-11-03 while 94 test files and the 105-file
+// functions/ directory were being published. Tests are never content...
+const repoFilter = makeCopyFilter("/repo");
+for (const rel of [
+  "assets/game-score.test.mjs",
+  "algebra-balance-scale/session.test.mjs",
+  "assets/class-investigation/client.test.js",
+  "math/x/spec-runner.spec.ts",
+]) {
+  assert.equal(
+    repoFilter(`/repo/${rel}`),
+    false,
+    `${rel} is a test file and must not be published`,
+  );
+}
+// ...but look-alike names are real content and must still ship.
+for (const rel of [
+  "assets/contest.js",
+  "assets/latest.mjs",
+  "assets/test-utils.js",
+  "math/games/testing-lab/index.html",
+  "assets/respect.js",
+  "curriculum/projects/studio/math.mjs",
+]) {
+  assert.equal(repoFilter(`/repo/${rel}`), true, `${rel} is content and must still be published`);
+}
+// The Functions source is deployed from functions/, never served from dist/.
+assert.match(vite, /"functions",/, "vite.config.js SKIP_DIRS must exclude functions/");
+
 console.log(
-  "Static-copy filter: rooted at the copy root, 6 cases + the .claude-worktree regression covered.",
+  "Static-copy filter: rooted at the copy root, 7 groups + the .claude-worktree regression covered.",
 );

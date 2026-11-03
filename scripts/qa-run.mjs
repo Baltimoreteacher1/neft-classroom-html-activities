@@ -525,6 +525,13 @@ const COVERAGE = [
       "check",
     ],
   ],
+  // What the static copy publishes decides how many files Cloudflare Pages is asked to deploy,
+  // and Pages refuses more than 20,000 ("Pages only supports up to 20,000 files in a deployment")
+  // at the LAST build step, after a green build. Tests pin the filter in both directions.
+  [
+    /^(vite\.config\.js|scripts\/lib\/copy-filter\.mjs|tools\/copy-filter\.test\.mjs)$/,
+    ["test", "validate:js-syntax", "check"],
+  ],
   // Shared interactive components + anything that ships CSS. `validate:css-integrity`
   // is the only check that can see the three ways malformed style reaches a
   // browser and is silently recovered from: a committed conflict marker, a file

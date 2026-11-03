@@ -8,6 +8,9 @@
 // path RELATIVE TO THE COPY ROOT, never to the absolute path, and that is the
 // kind of rule that only stays true if something tests it.
 //
+// Test files (`*.test.mjs`, `*.spec.ts`) are source, not content: 94 of them were published
+// beside the activities they test and counted against Cloudflare Pages' 20,000-file limit.
+//
 // The bug that put it here: `scripts/ship.sh` assembles its deploy worktree
 // under `.claude/worktrees/<name>/`. cpSync passes the filter absolute paths,
 // so every single file in that worktree matched the `/.claude/` branch of the
@@ -23,7 +26,7 @@
 import { relative, sep } from "node:path";
 
 export const SKIP_COPY_RE =
-  /(^|[\\/])\.(claude|git|wrangler|ruff_cache)([\\/]|$)|(^|[\\/])(node_modules|_engine)([\\/]|$)|\.md$/i;
+  /(^|[\\/])\.(claude|git|wrangler|ruff_cache)([\\/]|$)|(^|[\\/])(node_modules|_engine)([\\/]|$)|\.md$|\.(test|spec)\.(m?js|cjs|ts)$/i;
 
 /**
  * Build a cpSync filter rooted at `root`.
