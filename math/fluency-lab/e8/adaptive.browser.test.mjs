@@ -114,9 +114,14 @@ try {
     check((await repair.locator("[data-e8rs]").count()) >= 1, "repair studio should list the open mistake");
     await repair.locator("[data-e8rs]").first().click();
     const stage = repair.locator(".e8ap-stage");
+    // Wait for the question to render: under load the click returns before the stage has painted its text.
+    await stage.getByText(/\d+\/\d+ [+−-] \d+\/\d+ = \?/).first().waitFor({ timeout: 15000 });
     const reviewText = await stage.innerText();
     const qText = /(\d+\/\d+ [+−-] \d+\/\d+ = \?)/.exec(reviewText)?.[1] || "";
-    check(qText && !reviewText.includes(fractionAnswers(qText).right), "the review step must not reveal the answer");
+    // The answer may legitimately appear as an operand in the question or inside a longer fraction (11/12 contains 1/2),
+    // so look for it as a whole number or fraction in everything except the question, the "Step n / m" header and the learner's own line.
+    const answerToken = new RegExp(`(?<![\\d/])${fractionAnswers(qText || "1/2 + 1/2").right.replace("/", "\\/")}(?![\\d/])`);
+    check(qText && !answerToken.test(reviewText.replace(qText, "").replace(/Step \d+ \/ \d+/, "").replace(/You wrote:[^\n]*/, "")), `the review step must not reveal the answer (question "${qText}", answer ${fractionAnswers(qText || "1/2 + 1/2").right}, stage text: ${JSON.stringify(reviewText.slice(0, 400))})`);
     await stage.locator("[data-next]").click();
     await stage.locator("[data-id]").filter({ hasText: /numerators and the denominators|numeradores y denominadores/i }).first().click().catch(async () => { await stage.locator("[data-id]").first().click(); });
     check((await stage.locator("svg").count()) >= 1, "counterexample must show a model");
