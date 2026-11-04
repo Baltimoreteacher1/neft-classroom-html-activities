@@ -231,6 +231,8 @@ const EXCLUSIVE = new Set([
 const UNIVERSAL = ["check"];
 const CARRIES_SCRIPT = /\.(js|mjs|cjs|html?)$/i;
 const COVERAGE = [
+  // The Reality Lab: its unit and browser suites run inside validate:fluency, so its files are covered change-scoped.
+  [/^math\/fluency-lab\/reality\/lab\//, ["validate:fluency", "test", "check"]],
   [
     /^tools\/lib\/(?:fl4-family-fixtures|fl4-stubs)\.mjs$/,
     ["validate:fluency", "validate:fluency-family-browser", "test", "check"],

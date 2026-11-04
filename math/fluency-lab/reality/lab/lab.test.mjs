@@ -356,4 +356,48 @@ test("seeded generators are deterministic", () => {
   assert.ok(R(3, 4).eq(R(6, 8)));
 });
 
+
+// ---- the learning journey -------------------------------------------------------------------------------------------------
+const { directPrerequisites } = await import("../../e8/knowledge-graph.js");
+const { gradeOrder, journeyFor } = await import("./journey-map.js");
+test("every grade's journey respects its own prerequisites and places every skill once", () => {
+  for (let grade = 0; grade <= 8; grade++) {
+    const order = gradeOrder(grade);
+    const keys = order.map((s) => s.key);
+    assert.equal(new Set(keys).size, keys.length, `grade ${grade} lists a skill twice`);
+    const sameGrade = new Set(order.map((s) => s.key));
+    order.forEach((s, i) => {
+      for (const need of directPrerequisites(s.key)) {
+        if (!need.startsWith(`${grade}:`) || need === s.key) continue;
+        assert.ok(keys.indexOf(need) < i, `${s.key} comes before its prerequisite ${need} in grade ${grade}`);
+      }
+    });
+    assert.equal(sameGrade.size, order.length);
+  }
+});
+test("the journey recommends the first open skill, then advances after a finished experience", () => {
+  const empty = journeyFor(4, cleanLab({}));
+  assert.ok(empty.next, "a fresh grade has a next step");
+  assert.equal(empty.next.state, "ready");
+  assert.ok(empty.rows.some((r) => r.state === "exception"), "exceptions are shown, not hidden");
+  assert.equal(empty.complete, false);
+  // finish the first grade-4 experience with a real finished session, then the next step moves on
+  const first = empty.next;
+  const expId = first.expId;
+  const exp = experienceById(expId);
+  const finished = { ...newSession(exp, { seed: 3 }), done: true, step: exp.steps.length - 1 };
+  const after = journeyFor(4, cleanLab({ sessions: { [expId]: finished } }));
+  assert.equal(after.rows.find((r) => r.key === first.key).state, "done");
+  assert.notEqual(after.next?.key, first.key, "a finished skill is not recommended again");
+});
+test("a started experience is resumed before a new one is opened", () => {
+  const empty = journeyFor(6, cleanLab({}));
+  const first = empty.next;
+  const exp = experienceById(first.expId);
+  const started = { ...newSession(exp, { seed: 4 }), step: 1 };
+  const j = journeyFor(6, cleanLab({ sessions: { [first.expId]: started } }));
+  assert.equal(j.next.key, first.key, "the unfinished work comes back first");
+  assert.equal(j.next.state, "started");
+});
+
 if (!process.exitCode) console.log(`reality lab: ${count} checks passed`);
