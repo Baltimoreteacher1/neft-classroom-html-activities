@@ -230,9 +230,30 @@ for (const lesson of lessons) {
 }
 
 // ── End-of-unit culminating projects ────────────────────────────────────────
+// One per CURRENT unit. The route is the legacy hub whose content belongs to that unit
+// (data/project-registry.json `hubs[].currentUnit`), never `math/unit-<n>/` by name: the
+// legacy folder numbers were not renumbered with the Reveal TOC, so `unit-1` holds a
+// Unit 6 project and `unit-10` a Unit 5 one, and the old lookup sent those two picker rows
+// to the wrong unit's project. A unit with no legacy hub of its own (1 and 10) opens its
+// Project Studio mission, which exists for every unit. Ids stay `unit-<n>-project`.
+const projectRegistry = JSON.parse(
+  readFileSync(resolve(ROOT, "data", "project-registry.json"), "utf8"),
+);
+const hubRouteFor = (unit) =>
+  projectRegistry.hubs.find(
+    (hub) =>
+      hub.currentUnit === unit &&
+      hub.legacyFolder === `unit-${unit}` &&
+      existsSync(resolve(ROOT, "math", hub.legacyFolder, "projects", "index.html")),
+  )?.route;
+const studioRoute = (unit) => `/curriculum/projects/studio/?unit=${unit}`;
 const units = Array.from(new Set(lessons.map((lesson) => lesson.unit))).sort((a, b) => a - b);
 const endOfUnit = units
-  .filter((unit) => existsSync(resolve(ROOT, "math", `unit-${unit}`, "projects", "index.html")))
+  .filter(
+    (unit) =>
+      hubRouteFor(unit) ||
+      existsSync(resolve(ROOT, "curriculum", "projects", "studio", "index.html")),
+  )
   .map((unit) => ({
     id: `unit-${unit}-project`,
     kind: "endOfUnit",
@@ -246,7 +267,7 @@ const endOfUnit = units
     timeEstimate: "Multi-day",
     vocabulary: [],
     sentenceFrames: [],
-    resources: { lesson: `/math/unit-${unit}/projects/` },
+    resources: { lesson: hubRouteFor(unit) ?? studioRoute(unit) },
   }));
 
 // ── MSTAR-style unit practice tests (Form A / Form B) ───────────────────────

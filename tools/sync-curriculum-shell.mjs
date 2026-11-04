@@ -121,11 +121,20 @@ const pacingDays = baseline.days
   })
   .filter(([, unit]) => !NOT_SCHEDULED.has(unit));
 
+// Every unit carries its culminating project (data/curriculum-launch-manifest.json `endOfUnit`,
+// one row per unit; tools/unit-projects-membership.test.mjs keeps each row on its own unit).
+const launchManifest = JSON.parse(
+  readFileSync(resolve(REPO_ROOT, "data/curriculum-launch-manifest.json"), "utf8"),
+);
+const projectUnits = new Set(launchManifest.endOfUnit.map((row) => row.unit));
+const projectLabel = (unit) =>
+  projectUnits.has(unit) ? '<span class="course-unit-project">Includes a unit project</span>' : "";
+
 const overview = `<!-- course-overview:begin -->
 <section class="course-overview" id="course-overview" aria-labelledby="course-overview-title"><div class="course-overview__head"><h2 id="course-overview-title">Your Grade 6 course</h2><p>${manifest.units.length} units. ${manifest.lessons.length} lessons. Listed in the order your class learns them, with the dates for each. <span lang="es">Unidades en el orden en que tu clase las aprende, con sus fechas.</span></p></div><ol class="course-unit-list">${unitsInOrder
   .map(({ unit, name }) => {
     const dates = datesFor(unit);
-    return `<li data-unit="${unit}"${dates.attrs}><a href="/curriculum/units/#unit-${unit}"><span class="course-unit-number">Unit ${unit}</span><svg class="course-unit-art" viewBox="0 0 120 72" aria-hidden="true" focusable="false">${chapterArt[unit]}</svg><strong class="course-unit-title">${name}</strong><span class="course-unit-count">${manifest.lessons.filter((lesson) => lesson.unit === unit).length} lessons</span>${dates.label}</a></li>`;
+    return `<li data-unit="${unit}"${dates.attrs}><a href="/curriculum/units/#unit-${unit}"><span class="course-unit-number">Unit ${unit}</span><svg class="course-unit-art" viewBox="0 0 120 72" aria-hidden="true" focusable="false">${chapterArt[unit]}</svg><strong class="course-unit-title">${name}</strong><span class="course-unit-count">${manifest.lessons.filter((lesson) => lesson.unit === unit).length} lessons</span>${dates.label}${projectLabel(unit)}</a></li>`;
   })
   .join("")}</ol></section>
 <!-- course-overview:end -->

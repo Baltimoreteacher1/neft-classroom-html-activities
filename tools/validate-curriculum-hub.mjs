@@ -359,10 +359,22 @@ check(
         `${file} publishes "${m[1]} project sets" but ${projectSets.length} exist on disk`,
       );
     }
+    // "N projects" means a different thing on each page, and both are true: the gallery
+    // lists one card per Project Studio mission (data/project-registry.json), the portfolio
+    // counts the version pages that can hold saved work (on disk). Each page is held to its
+    // own source; "N project pages" is always the disk count.
+    const galleryPage = file === "curriculum/projects/index.html";
+    const registryProjects = JSON.parse(
+      readFileSync(resolve(ROOT, "data/project-registry.json"), "utf8"),
+    ).projects.length;
     for (const m of src.matchAll(/(\d+)\s+(?:flagship )?project(?:s| pages)/gi)) {
+      const pages = /pages$/i.test(m[0]);
+      const truth = galleryPage && !pages ? registryProjects : projectDirs.length;
+      const source =
+        galleryPage && !pages ? "Studio missions in the project registry" : "project pages on disk";
       check(
-        Number(m[1]) === projectDirs.length,
-        `${file} publishes "${m[1]} projects" but ${projectDirs.length} project pages exist on disk`,
+        Number(m[1]) === truth,
+        `${file} publishes "${m[1]} projects" but ${truth} ${source} exist`,
       );
     }
   }

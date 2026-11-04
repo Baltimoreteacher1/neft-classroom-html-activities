@@ -148,6 +148,9 @@ const NEEDS_DIST = new Set([
   "validate:fluency-family-browser",
   "validate:html-experiences-browser",
   "validate:hub",
+  "validate:resource-baseline",
+  "validate:dist-file-budget",
+  "validate:projects-registry",
   "validate:notebook",
   "validate:notebook-render",
   "validate:flow-walk",
@@ -174,6 +177,7 @@ const EXCLUSIVE = new Set([
   "validate:game-transformation-browser",
   "validate:html-experiences-browser",
   "validate:project-studio-browser",
+  "validate:projects-gallery-browser",
   "validate:fluency-workshops-browser",
   "validate:lesson-boot",
   "validate:palette",
@@ -197,6 +201,7 @@ const EXCLUSIVE = new Set([
   "validate:u4-whole-check-browser",
   "validate:u4-adaptive-browser",
   "validate:math-workbench-browser",
+  "validate:all-resources-browser",
   "smoke:injection",
   "validate:visibility",
   // `validate:flow-walk` joined them on 2026-08-28. It is the heaviest browser
@@ -525,12 +530,18 @@ const COVERAGE = [
       "check",
     ],
   ],
-  // What the static copy publishes decides how many files Cloudflare Pages is asked to deploy,
-  // and Pages refuses more than 20,000 ("Pages only supports up to 20,000 files in a deployment")
-  // at the LAST build step, after a green build. Tests pin the filter in both directions.
+  // Cloudflare Pages refuses a deployment over 20,000 files, at the LAST build step, so every push
+  // to main shows a red build and production silently stays on the old commit. The static copy
+  // (vite.config.js SKIP_DIRS, scripts/lib/copy-filter.mjs) is what decides how many files ship.
   [
-    /^(vite\.config\.js|scripts\/lib\/copy-filter\.mjs|tools\/copy-filter\.test\.mjs)$/,
-    ["test", "validate:js-syntax", "check"],
+    /^(vite\.config\.js|scripts\/lib\/copy-filter\.mjs|tools\/(copy-filter\.test|validate-dist-file-budget)\.mjs)$/,
+    ["validate:dist-file-budget", "test", "validate:js-syntax", "check"],
+  ],
+  // Zero-resource-loss baseline: every resource, tool page and hub link that
+  // resolved before a redesign must still resolve. Reads dist/, so NEEDS_DIST.
+  [
+    /^(curriculum\/(index|units\/index)\.html|data\/(curriculum-download-manifest|curriculum-resource-baseline)\.json|tools\/curriculum-resource-baseline\.mjs)$/,
+    ["validate:resource-baseline", "validate:downloads", "check"],
   ],
   // Shared interactive components + anything that ships CSS. `validate:css-integrity`
   // is the only check that can see the three ways malformed style reaches a
@@ -611,6 +622,8 @@ const COVERAGE = [
   [
     /^tools\/generate-project-studio\.mjs$/,
     [
+      "validate:projects-registry",
+      "validate:projects-gallery-browser",
       "validate:project-studio-browser",
       "validate:projects-publication",
       "validate:projects-award",
@@ -794,6 +807,8 @@ const COVERAGE = [
   [
     /^(curriculum\/projects\/studio\/|tools\/verify-project-studio-browser\.mjs$)/,
     [
+      "validate:projects-registry",
+      "validate:projects-gallery-browser",
       "validate:project-studio-browser",
       "validate:projects-publication",
       "validate:projects-award",
@@ -803,9 +818,25 @@ const COVERAGE = [
       "validate:unit-placement",
     ],
   ],
+  // PROJECTS GALLERY — /curriculum/projects/ and /math/projects/, generated from the registry
+  // (tools/generate-project-studio.mjs + tools/lib/projects-gallery*.mjs). The registry check
+  // reruns the generator and fails on drift; the browser gate drives both pages. Must precede
+  // the generic /^curriculum\/projects\// rule below.
+  [
+    /^(curriculum\/projects\/(index\.html|gallery\.(js|css))|math\/projects\/index\.html|tools\/(validate-projects-gallery-browser\.mjs|lib\/projects-gallery(-art)?\.mjs))$/,
+    [
+      "validate:projects-registry",
+      "validate:projects-gallery-browser",
+      "validate:js-syntax",
+      "validate:injection",
+      "validate:static",
+      "check",
+    ],
+  ],
   [
     /^curriculum\/projects\//,
     [
+      "validate:projects-registry",
       "validate:projects-publication",
       "validate:projects-award",
       "validate:solve-along",
@@ -819,6 +850,7 @@ const COVERAGE = [
   [
     /^math\/(?:pre-unit|unit-\d+|statistics)\/projects\//,
     [
+      "validate:projects-registry",
       "validate:projects-publication",
       "validate:projects-award",
       "validate:solve-along",
@@ -828,6 +860,23 @@ const COVERAGE = [
     ],
   ],
   [/^tools\/lib\/project-units\.mjs$/, ["validate:preunit-project", "validate:projects-check"]],
+  // PROJECTS REGISTRY — the registry, its zero-loss baseline inventory, the scanner and
+  // the gate. The gate re-scans every project page, so an edit to any of them re-runs it.
+  [
+    /^(tools\/(validate-projects-registry|build-projects-baseline-inventory)\.mjs|tools\/lib\/(project-registry|projects-inventory)\.mjs|data\/(project-registry|projects-baseline-inventory)\.json|docs\/specs\/projects-platform-audit\.md)$/,
+    [
+      "validate:projects-registry",
+      "validate:projects-gallery-browser",
+      "validate:gate-coverage",
+      "validate:js-syntax",
+      "check",
+    ],
+  ],
+  // The projects gallery and portfolio under math/projects/ (the unit pages are matched above).
+  [
+    /^math\/projects\//,
+    ["validate:projects-registry", "validate:save-resume", "validate:injection", "validate:static"],
+  ],
   [
     /^shared\/projects\//,
     ["validate:projects-check", "validate:projects-award", "validate:preunit-project"],
@@ -865,6 +914,14 @@ const COVERAGE = [
   [/^tools\/save-resume-config\.js$/, ["validate:save-resume", "validate:injection", "test"]],
   // Family Math 2.0 — requirement ledger and its suites (unit suites run inside `test`).
   [/^(docs\/family-math-2-|tools\/fm2\/)/, ["validate:fm2", "validate:static", "test"]],
+  // ALL RESOURCES — the complete directory. The static gate proves coverage (every manifest
+  // resource flattened, tools.json current, one icon family); the browser gate drives it as a
+  // teacher does. A tool page's own <title> feeds tools.json, so any curriculum/<tool>/index.html
+  // edit re-checks it. Must precede /^curriculum\/ below.
+  [
+    /^(curriculum\/all-resources\/|curriculum\/[^/]+\/index\.html$|scripts\/generate-all-resources-tools\.mjs$|tools\/validate-all-resources(-browser)?\.mjs$)/,
+    ["validate:all-resources", "validate:all-resources-browser", "validate:js-syntax", "check"],
+  ],
   // MATH WORKBENCH — the student whiteboard. The static gate proves its promises in text
   // (preset wording, Spanish coverage, no second Teacher PIN, offline precache, worked
   // arithmetic); the browser gate proves them where a student sees them (first-viewport

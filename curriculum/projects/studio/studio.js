@@ -2,6 +2,7 @@ import { PROJECTS, UNIT_NAMES, getProject, studioURL } from "./projects.mjs";
 import { FAMILY, fieldsFor, model, matches, format, workedExampleFor } from "./math.mjs";
 import { fresh, clean, keyFor, progress } from "./state.mjs";
 import { visualMarkup } from "./visuals.mjs";
+import { STUDIO_RUBRIC } from "./rubric.mjs";
 import {
   decideInstruction,
   readInstructionalEvidence,
@@ -148,7 +149,7 @@ function contextGoal() {
   return `${detail[2]}. Name your audience and how the values in your model will show success.`;
 }
 function teacherPanel() {
-  return `<section class="teacher-panel card" id="teacher-panel"><h2>Teacher &amp; publisher view</h2><p><strong>Standards:</strong> CCSS-M ${project.crosswalk.ccss.join(" · ")} · ${project.crosswalk.smp.join(" · ")} · course codes ${FAMILY[project.family].standards.join(" · ")} · DOK 3</p><h3>Analytic rubric · score each dimension 1–4</h3><div class="rubric-grid"><div><strong>Calculations</strong><p>1 incomplete · 2 emerging accuracy · 3 accurate with units · 4 accurate, checked and interpreted</p></div><div><strong>Visual representation</strong><p>1 absent · 2 partial labels · 3 matches quantities · 4 precise and explains structure</p></div><div><strong>Mathematical reasoning</strong><p>1 claim only · 2 some evidence · 3 evidence supports claim · 4 explains why and considers alternatives</p></div><div><strong>Revision &amp; limitation</strong><p>1 no comparison · 2 change named · 3 quantified tradeoff · 4 evaluates a meaningful limitation</p></div></div><h3>Misconceptions to notice</h3><ul>${project.misconceptions.map((item) => `<li>${esc(item)}</li>`).join("")}</ul><div class="actions">${action("exemplar", "Load Completed Exemplar Project", false)}${action("reset", "Reset to Blank Student Workspace")}</div></section>`;
+  return `<section class="teacher-panel card" id="teacher-panel"><h2>Teacher &amp; publisher view</h2><p><strong>Standards:</strong> CCSS-M ${project.crosswalk.ccss.join(" · ")} · ${project.crosswalk.smp.join(" · ")} · course codes ${FAMILY[project.family].standards.join(" · ")} · DOK 3</p><h3>Analytic rubric · score each dimension 1–4</h3><div class="rubric-grid">${STUDIO_RUBRIC.map((row) => `<div><strong>${esc(row.name)}</strong><p>${esc(row.levels)}</p></div>`).join("")}</div><h3>Misconceptions to notice</h3><ul>${project.misconceptions.map((item) => `<li>${esc(item)}</li>`).join("")}</ul><div class="actions">${action("exemplar", "Load Completed Exemplar Project", false)}${action("reset", "Reset to Blank Student Workspace")}</div></section>`;
 }
 function render(focus = false) {
   document.documentElement.dataset.theme = state.theme || "light";

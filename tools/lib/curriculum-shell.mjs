@@ -24,6 +24,7 @@ export const shellPages = new Map([
   ["curriculum/reality-lab/index.html", "practice"],
   ["curriculum/matrix/index.html", "units"],
   ["curriculum/family-connections/index.html", "families"],
+  ["curriculum/all-resources/index.html", ""],
 ]);
 /* On a phone the bar shows the first destinations inline and the rest behind a
  * native <details> "More" disclosure: keyboard- and screen-reader-operable with

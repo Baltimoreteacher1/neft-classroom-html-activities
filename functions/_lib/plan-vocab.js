@@ -5121,6 +5121,12 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/curriculum/all-resources/",
+    title: "All resources — EduWonderLab Grade 6 Math",
+    category: "Hub",
+    unit: null,
+  },
+  {
     path: "/curriculum/almost-right-lab/",
     title: "The Almost-Right Lab",
     category: "Hub",

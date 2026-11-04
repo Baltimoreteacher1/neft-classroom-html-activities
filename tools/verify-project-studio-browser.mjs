@@ -280,12 +280,12 @@ try {
   const gallery = await newPage({ viewport: { width: 390, height: 844 } });
   for (const route of ["/curriculum/projects/", "/math/projects/"]) {
     await gallery.goto(base + route);
-    await gallery.locator(".mission-card").first().waitFor();
-    assert.equal(await gallery.locator(".mission-card").count(), 30);
-    await gallery.locator("#unit-filter").selectOption("5");
-    assert.equal(await gallery.locator(".mission-card").count(), 6);
-    await gallery.locator("#search").fill("nonexistent");
-    assert.equal(await gallery.locator(".mission-card").count(), 0);
+    await gallery.locator(".pg-card").first().waitFor();
+    assert.equal(await gallery.locator(".pg-card:visible").count(), 30);
+    await gallery.locator("#pg-unit").selectOption("5");
+    assert.equal(await gallery.locator(".pg-card:visible").count(), 6);
+    await gallery.locator("#pg-search").fill("nonexistent");
+    assert.equal(await gallery.locator(".pg-card:visible").count(), 0);
     await audit(gallery, route + " filtered mobile");
   }
   await gallery.goto(base + "/curriculum/projects/studio/?project=missing");
