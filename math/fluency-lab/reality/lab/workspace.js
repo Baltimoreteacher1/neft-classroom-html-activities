@@ -114,7 +114,7 @@ const kindTab = (step) =>
 
 export function mountWorkspace(
   root,
-  { exp, grade, input = null, restart = false, skillKey = null, hubHref },
+  { exp, grade, input = null, restart = false, preview = false, skillKey = null, hubHref },
 ) {
   let lab = loadLab();
   let lang = getLang();
@@ -145,7 +145,7 @@ export function mountWorkspace(
 
   // ---- session ---------------------------------------------------------------------------------------------------
   const saved =
-    !restart && lab.sessions[exp.id] ? sanitizeSession(exp, lab.sessions[exp.id]) : null;
+    !restart && !preview && lab.sessions[exp.id] ? sanitizeSession(exp, lab.sessions[exp.id]) : null;
   let session =
     saved && !saved.done
       ? saved
@@ -161,6 +161,8 @@ export function mountWorkspace(
   if (resumed) feedback = { kind: "info", text: tx(UI.saved) };
 
   function persist(now = false) {
+    // A teacher preview is a look at the activity: it never writes to a learner's saved progress or recommended step.
+    if (preview) return;
     const write = () => {
       lab.sessions[exp.id] = session;
       lab.trails[exp.id] = { step: session.step, actions: store?.actions ?? [] };
@@ -315,7 +317,7 @@ export function mountWorkspace(
       const rec = session.transfer[step.id];
       transferFeedback = null;
       if (rec.ok) {
-        recordSkillEvidence(skillKey ?? exp.skills[0], {
+        if (!preview) recordSkillEvidence(skillKey ?? exp.skills[0], {
           ok: true,
           supported: !rec.independent,
           tag: session.errors[0],
@@ -351,7 +353,7 @@ export function mountWorkspace(
             );
         }
         transferFeedback = box;
-        recordSkillEvidence(skillKey ?? exp.skills[0], {
+        if (!preview) recordSkillEvidence(skillKey ?? exp.skills[0], {
           ok: false,
           supported: false,
           tag: detected?.tag,

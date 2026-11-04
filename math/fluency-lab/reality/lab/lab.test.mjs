@@ -418,4 +418,41 @@ test("every flagship has a bilingual family companion that points at real experi
   }
 });
 
+
+// ---- teacher view and spiral review -----------------------------------------------------------------------------------------------
+test("the teacher view's source data: every skill of every grade has a standard code", async () => {
+  const { gradeOrder } = await import("./journey-map.js");
+  const { skillNode } = await import("../../e8/knowledge-graph.js");
+  for (let grade = 0; grade <= 8; grade++) {
+    const order = gradeOrder(grade);
+    assert.ok(order.length > 0, `grade ${grade} has skills`);
+    for (const s of order) assert.ok(skillNode(s.key)?.standard, `${s.key} has a standard code`);
+  }
+});
+test("spiral review offers earlier prerequisites with experiences, finished ones first, never more than asked", async () => {
+  const { reviewFor, gradeOrder } = await import("./journey-map.js");
+  const { directPrerequisites: prereqs } = await import("../../e8/knowledge-graph.js");
+  let withReview = 0;
+  for (let grade = 1; grade <= 8; grade++)
+    for (const s of gradeOrder(grade)) {
+      const r = reviewFor(cleanLab({}), s.key, 2);
+      assert.ok(r.length <= 2);
+      for (const item of r) {
+        assert.ok(prereqs(s.key).includes(item.key), `${item.key} must be a prerequisite of ${s.key}`);
+        assert.ok(experienceById(item.expId), "a review always has something to open");
+      }
+      if (r.length) withReview++;
+    }
+  assert.ok(withReview >= 5, "review appears for a meaningful number of skills");
+  const key = "6:ratios";
+  const base = reviewFor(cleanLab({}), key, 5);
+  if (base.length > 1) {
+    const last = base.at(-1);
+    const exp = experienceById(last.expId);
+    const done = { ...newSession(exp, { seed: 2 }), done: true, step: exp.steps.length - 1 };
+    const after = reviewFor(cleanLab({ sessions: { [last.expId]: done } }), key, 5);
+    assert.equal(after[0].key, last.key, "the finished prerequisite moves to the front");
+  }
+});
+
 if (!process.exitCode) console.log(`reality lab: ${count} checks passed`);

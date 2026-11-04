@@ -1,7 +1,7 @@
 // The learning journey for one grade: its skills in prerequisite order, each skill's state from the learner's saved
 // Reality Lab sessions, and the one recommended next step. It reads the knowledge graph and the skill matrix; it authors
 // no mathematics and stores nothing of its own.
-import { directPrerequisites, skillsInGrade } from "../../e8/knowledge-graph.js";
+import { directPrerequisites, skillNode, skillsInGrade } from "../../e8/knowledge-graph.js";
 import { experienceForSkill, exceptionFor, experienceById } from "./catalog.js";
 import { sanitizeSession } from "./journey.js";
 
@@ -70,4 +70,21 @@ export function journeyFor(grade, lab) {
     next,
     complete: rows.length > 0 && rows.every((r) => r.state === "done" || r.state === "exception"),
   };
+}
+
+// Spiral review: up to two earlier skills the next step builds on, offered as a short warm-up. A prerequisite that has
+// an experience comes first, and one the learner already finished comes before one they have not (retrieval of what they
+// know is the point). The reason is always the graph edge itself: "this skill builds on that one". No mastery is guessed.
+export function reviewFor(lab, skillKey, limit = 2) {
+  const picks = [];
+  for (const key of directPrerequisites(skillKey)) {
+    const [grade, ...rest] = key.split(":");
+    const id = rest.join(":");
+    const expId = experienceForSkill(Number(grade), id);
+    if (!expId) continue;
+    const session = sessionFor(lab, expId);
+    picks.push({ key, title: skillNode(key)?.title ?? key, expId, finished: Boolean(session?.done), grade: Number(grade) });
+  }
+  picks.sort((a, b) => Number(b.finished) - Number(a.finished));
+  return picks.slice(0, limit);
 }

@@ -7,7 +7,7 @@ import { L, say } from "./kernel.js";
 import { loadLab } from "./store.js";
 import { SKILL_MATRIX } from "./skills.js";
 import { bandOf } from "./workspace.js";
-import { journeyFor } from "./journey-map.js";
+import { journeyFor, reviewFor } from "./journey-map.js";
 import { btn, h } from "./views/common.js";
 
 const UI = {
@@ -77,12 +77,14 @@ export function mountHub(root, { grade }) {
   };
   const pathList = h("ol", { class: "mr-path", "aria-label": tx(UI.path) }, ...journey.rows.map(pathRow));
   const next = journey.next;
+  const review = next ? reviewFor(lab, next.key) : [];
   const continueCard = next
     ? h("section", { class: "mr-journey", "aria-labelledby": "journey-h" },
         h("p", { class: "mr-eyebrow" }, tx(UI.journey)),
         h("h2", { id: "journey-h" }, next.title),
         h("p", { class: "mr-lead-small" }, next.state === "started" ? tx(UI.resume) : tx(UI.nextUp)),
-        h("a", { class: "mr-btn is-primary mr-continue-btn", href: href(next.expId, `&skill=${encodeURIComponent(next.key)}`) }, next.state === "started" ? tx(UI.cont) : tx(UI.start)))
+        h("a", { class: "mr-btn is-primary mr-continue-btn", href: href(next.expId, `&skill=${encodeURIComponent(next.key)}`) }, next.state === "started" ? tx(UI.cont) : tx(UI.start)),
+        review.length ? h("div", { class: "mr-review" }, h("p", { class: "mr-field-label" }, tx(UI.review)), h("ul", {}, ...review.map((r) => h("li", {}, h("span", {}, `${r.title} · ${tx(UI.because)}`), h("a", { class: "mr-btn is-quiet", href: `./?x=${encodeURIComponent(r.expId)}&grade=${r.grade}&skill=${encodeURIComponent(r.key)}` }, tx(UI.start)))))) : null)
     : h("section", { class: "mr-journey" }, h("p", { class: "mr-lead-small" }, tx(UI.allDone)));
   const innovSection = INNOVATIONS.map((inn) => {
       const list = forGrade.filter((e) => e.innovation === inn.id);

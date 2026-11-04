@@ -155,6 +155,35 @@ try {
     await shot(page, "family");
   }
 
+
+  // ---- teacher view and preview mode: nothing a teacher opens changes a learner's saved progress ---------------------------------------
+  {
+    const context = await browser.newContext({ viewport: { width: 1280, height: 900 } });
+    const page = await open("?teacher=1&grade=5", undefined, context);
+    assert.ok((await page.locator(".mr-t-table tbody tr").count()) >= 10, "every skill of the grade is a row");
+    assert.match(await page.locator(".mr-t-std").first().innerText(), /\d/, "a standard code is shown");
+    const before = await page.evaluate(() => localStorage.getItem("ewl-reality-lab-v1"));
+    await page.getByRole("link", { name: /Preview the activity: Add decimals/ }).click();
+    await page.waitForSelector(".mr-stage");
+    await page.locator('[data-key="probe-a"]').click().catch(() => {});
+    await page.waitForTimeout(400);
+    const after = await page.evaluate(() => localStorage.getItem("ewl-reality-lab-v1"));
+    assert.equal(after, before, "a preview writes nothing to the learner's saved progress");
+    await context.close();
+    // a student's browser is refused the teacher module: the page says what to do instead of showing nothing
+    const blocked = await browser.newContext({ viewport: { width: 1280, height: 900 } });
+    await blocked.route("**/reality/lab/teacher.js", (route) => route.fulfill({ status: 401, body: "Unauthorized" }));
+    const refused = await open("?teacher=1&grade=5", undefined, blocked);
+    assert.match(await refused.locator("h1").innerText(), /teacher sign-in/);
+    assert.ok(await refused.getByRole("link", { name: "Back to the Reality Lab" }).count());
+    await blocked.close();
+    // the browser logs the 401 we injected on purpose; that one line is the expected result, not a defect
+    for (let i = errors.length - 1; i >= 0; i--) if (/\(Unauthorized\)/.test(errors[i]) && errors[i].startsWith("?teacher=1&grade=5")) errors.splice(i, 1);
+    const t = await open("?teacher=1&grade=5");
+    const result = await new AxeBuilder({ page: t }).withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"]).analyze();
+    assert.deepEqual(result.violations.filter((v) => ["serious", "critical"].includes(v.impact)).map((v) => v.id), [], "teacher view axe");
+  }
+
   // ---- axe and overflow: three grade bands, phone and desktop ------------------------------------------------------------------
   for (const [query, label] of [["?x=studio:1:make-10&grade=1&skill=1:make-10&restart=1", "g1"], ["?x=fraction-transform&grade=4&restart=1", "g4"], ["?x=balance-equation&grade=8&restart=1", "g8"], ["?grade=2", "hub2"]]) {
     for (const [width, height] of [[390, 844], [1280, 900]]) {

@@ -27,7 +27,29 @@ if (restart) {
 }
 
 if (params.has("family")) mountFamily(root, { expId: params.get("family"), grade });
+else if (params.get("teacher") === "1") {
+  // A file named "teacher" is refused to anyone not signed in as a teacher, so it is loaded on demand and never statically.
+  const teacher = await import("./teacher.js").catch(() => null);
+  if (teacher) teacher.mountTeacher(root, { grade });
+  else {
+    document.title = "Teacher view | EduWonderLab Math Reality Lab";
+    root.className = "mr-app";
+    const h1 = document.createElement("h1");
+    h1.textContent = "The teacher view needs a teacher sign-in";
+    const p = document.createElement("p");
+    p.textContent = "Open the teacher tools and sign in, then come back to this page. Students can use every activity from the Reality Lab home.";
+    const a = document.createElement("a");
+    a.className = "mr-btn is-primary";
+    a.href = `./?grade=${grade}`;
+    a.textContent = "Back to the Reality Lab";
+    const wrap = document.createElement("main");
+    wrap.className = "mr-hub-main";
+    wrap.append(h1, p, a);
+    root.replaceChildren(wrap);
+  }
+}
 else if (exp) {
   const input = params.get("a") && params.get("b") && params.get("r") ? { a: params.get("a"), b: params.get("b"), response: params.get("r") } : null;
-  mountWorkspace(root, { exp, grade, input, restart, skillKey: skill && skill.includes(":") ? skill : null, hubHref: `./?grade=${grade}` });
+  mountWorkspace(root, { exp, grade, input, restart,
+    preview: params.get("preview") === "1", skillKey: skill && skill.includes(":") ? skill : null, hubHref: `./?grade=${grade}` });
 } else mountHub(root, { grade });
