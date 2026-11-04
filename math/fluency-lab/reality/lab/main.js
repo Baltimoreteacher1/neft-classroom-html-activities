@@ -2,6 +2,7 @@
 import { experienceById, experienceForSkill } from "./catalog.js";
 import { mountHub } from "./hub.js";
 import { loadGrade } from "../storage.js";
+import { mountFamily } from "./family.js";
 import { mountWorkspace } from "./workspace.js";
 
 const params = new URLSearchParams(location.search);
@@ -25,7 +26,8 @@ if (restart) {
   history.replaceState(null, "", `${location.pathname}${query ? `?${query}` : ""}${location.hash}`);
 }
 
-if (exp) {
+if (params.has("family")) mountFamily(root, { expId: params.get("family"), grade });
+else if (exp) {
   const input = params.get("a") && params.get("b") && params.get("r") ? { a: params.get("a"), b: params.get("b"), response: params.get("r") } : null;
   mountWorkspace(root, { exp, grade, input, restart, skillKey: skill && skill.includes(":") ? skill : null, hubHref: `./?grade=${grade}` });
 } else mountHub(root, { grade });

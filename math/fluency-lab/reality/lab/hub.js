@@ -19,6 +19,7 @@ const UI = {
   start: L("Open", "Abrir"),
   again: L("Open again", "Abrir otra vez"),
   more: L("More for other grades", "Más para otros grados"),
+  family: L("Family companions", "Guías para familias"),
   skills: L("Your skills in this grade", "Tus habilidades en este grado"),
   skillsLead: L("Every skill below opens a model, or says why not yet.", "Cada habilidad abre un modelo, o dice por qué todavía no."),
   openSkill: L("Build it", "Constrúyelo"),
@@ -100,7 +101,7 @@ export function mountHub(root, { grade }) {
     root.dataset.band = bandOf(grade);
     document.documentElement.dataset.band = bandOf(grade);
     root.replaceChildren(
-      h("header", { class: "mr-top" }, h("a", { class: "mr-back", href: "../../" }, `← ${tx(UI.back)}`), h("div", { class: "mr-title" }, h("h1", {}, tx(UI.title))), h("div", { class: "mr-top-tools" }, btn(lang === "es" ? "English" : "Español", () => { lang = lang === "es" ? "en" : "es"; setLang(lang); document.documentElement.lang = lang; render(); }, { cls: "is-quiet", key: "lang" }))),
+      h("header", { class: "mr-top" }, h("a", { class: "mr-back", href: "../../" }, `← ${tx(UI.back)}`), h("div", { class: "mr-title" }, h("h1", {}, tx(UI.title))), h("div", { class: "mr-top-tools" }, h("a", { class: "mr-btn is-quiet", href: `./?family=&grade=${grade}` }, tx(UI.family)), btn(lang === "es" ? "English" : "Español", () => { lang = lang === "es" ? "en" : "es"; setLang(lang); document.documentElement.lang = lang; render(); }, { cls: "is-quiet", key: "lang" }))),
       h("main", { class: "mr-hub-main", id: "mr-main" },
         h("section", { class: "mr-hero" },
           h("p", { class: "mr-eyebrow" }, tx(UI.innov)),

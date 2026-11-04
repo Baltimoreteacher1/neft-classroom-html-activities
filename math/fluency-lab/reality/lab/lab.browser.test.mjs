@@ -139,6 +139,22 @@ try {
     await click(page, "lang");
   }
 
+
+  // ---- family companion: all eight sections, Spanish, no sideways scroll ---------------------------------------------------------
+  {
+    const page = await open("?family=fraction-transform&grade=4");
+    for (const name of ["What we are learning", "Why it matters", "Try the model together", "Talk about it", "Practice together", "Watch for", "Try on their own", "What comes next"])
+      assert.ok(await page.getByRole("heading", { name }).count(), `section ${name}`);
+    assert.equal(await page.locator(".mr-fam-list li").count() >= 2, true);
+    await click(page, "lang");
+    assert.ok(await page.getByRole("heading", { name: "Lo que aprendemos" }).count(), "Spanish headings");
+    const result = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"]).analyze();
+    assert.deepEqual(result.violations.filter((v) => ["serious", "critical"].includes(v.impact)).map((v) => v.id), [], "family page axe");
+    const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+    assert.ok(overflow <= 1);
+    await shot(page, "family");
+  }
+
   // ---- axe and overflow: three grade bands, phone and desktop ------------------------------------------------------------------
   for (const [query, label] of [["?x=studio:1:make-10&grade=1&skill=1:make-10&restart=1", "g1"], ["?x=fraction-transform&grade=4&restart=1", "g4"], ["?x=balance-equation&grade=8&restart=1", "g8"], ["?grade=2", "hub2"]]) {
     for (const [width, height] of [[390, 844], [1280, 900]]) {

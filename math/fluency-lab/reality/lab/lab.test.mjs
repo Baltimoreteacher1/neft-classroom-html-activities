@@ -400,4 +400,22 @@ test("a started experience is resumed before a new one is opened", () => {
   assert.equal(j.next.state, "started");
 });
 
+
+// ---- family companions -----------------------------------------------------------------------------------------------------
+const { COMPANIONS } = await import("./companions.js");
+test("every flagship has a bilingual family companion that points at real experiences", () => {
+  for (const id of ["fraction-transform", "balance-equation", "discover-area", "xray-division", "mistake-decimal", "build-area-24", "recipe-scaling", "reverse-36"]) {
+    const c = COMPANIONS[id];
+    assert.ok(c, `${id} needs a companion`);
+    const texts = [c.goal, c.why, c.practice, c.watch, c.independent, ...c.talk];
+    assert.ok(c.talk.length >= 2 && c.talk.length <= 3, `${id}: two or three questions`);
+    for (const t of texts) {
+      assert.ok(t.en && t.es, `${id}: both languages`);
+      assert.notEqual(t.en, t.es, `${id}: Spanish is not a copy`);
+    }
+    assert.ok(experienceById(c.next), `${id}: next "${c.next}" must be an experience`);
+    assert.ok(experienceById(id), `${id} is an experience`);
+  }
+});
+
 if (!process.exitCode) console.log(`reality lab: ${count} checks passed`);
