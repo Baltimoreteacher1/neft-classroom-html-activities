@@ -1,0 +1,28 @@
+/* Practice gateways: each way to practise is an art-directed card with a small mathematical drawing, built from the
+   atelier tokens so every grade band restyles it (radius, scale, colour). Buttons and links keep their markup. */
+.practice-hub-grid { display: grid; gap: var(--at-gap, 1.25rem); grid-template-columns: repeat(auto-fill, minmax(min(100%, 250px), 1fr)); }
+.practice-hub-grid .practice-hub-card {
+  position: relative; display: grid; grid-template-columns: auto 1fr; align-content: start; align-items: start; gap: 4px 14px;
+  padding: 18px 18px 18px 16px; min-block-size: 112px; text-align: start; text-decoration: none; cursor: pointer;
+  background: var(--at-surface, #fdfbf5); color: var(--at-ink, #14213a); border: 1px solid var(--at-rule, #ddd5c6); border-radius: var(--at-radius, 18px);
+  box-shadow: 0 1px 1px rgb(8 15 37 / 0.05), 0 10px 24px -14px rgb(8 15 37 / 0.28);
+  transition: border-color var(--at-fast, 140ms), box-shadow var(--at-fast, 140ms);
+}
+.practice-hub-grid .practice-hub-card:hover { border-color: var(--at-teal-1, #087e88); box-shadow: 0 1px 1px rgb(8 15 37 / 0.06), 0 16px 30px -14px rgb(8 15 37 / 0.38); }
+.practice-hub-grid .practice-hub-card .ph-art { grid-row: 1 / span 2; display: grid; place-items: center; inline-size: 56px; block-size: 56px; border-radius: calc(var(--at-radius-sm, 12px) + 2px); background: var(--at-porcelain-2, #e9e2d5); }
+.practice-hub-grid .practice-hub-card .ph-art svg { inline-size: 44px; block-size: 44px; overflow: visible; }
+.practice-hub-grid .practice-hub-card strong { align-self: end; font: 600 var(--at-step-1, 1.2rem)/1.2 var(--at-display, "Fraunces", serif); color: inherit; text-decoration: none; }
+.practice-hub-grid .practice-hub-card span:not(.ph-art) { align-self: start; font: 400 var(--at-step--1, 0.9rem)/1.4 var(--at-ui, "Lexend", sans-serif); color: var(--at-ink-soft, #4a5568); text-decoration: none; }
+.practice-hub-grid .practice-hub-card:focus-visible { outline: none; box-shadow: var(--fl-focus, 0 0 0 3px #fff, 0 0 0 6px #2563c9); }
+/* the first card is the dominant next step: dark, dimensional, twice as wide when there is room */
+.practice-hub-grid .practice-hub-card.primary-action { background: linear-gradient(155deg, var(--at-obsidian-2, #28447c), var(--at-obsidian-1, #13294b) 60%, var(--at-obsidian-0, #080f25)); color: var(--at-on-dark, #f4f1ea); border-color: var(--at-obsidian-0, #080f25); box-shadow: 0 2px 4px rgb(8 15 37 / 0.2), 0 24px 40px -18px rgb(8 15 37 / 0.6); }
+.practice-hub-grid .practice-hub-card.primary-action span:not(.ph-art) { color: var(--at-on-dark-soft, #c9d3e0); }
+.practice-hub-grid .practice-hub-card.primary-action .ph-art { background: rgb(255 255 255 / 0.1); }
+@media (min-width: 700px) { .practice-hub-grid .practice-hub-card.primary-action { grid-column: span 2; } }
+/* drawing colours: teal and copper from the atelier palette, a pale outline, and the ink */
+.ph-a { fill: var(--at-teal-1, #087e88); } .ph-b { fill: var(--at-copper-1, #c97d5d); } .ph-off { opacity: 0.28; }
+.ph-a-s { fill: none; stroke: var(--at-teal-1, #087e88); stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; }
+.ph-l { fill: none; stroke: var(--at-ink, #14213a); stroke-width: 2.5; stroke-linecap: round; } .ph-l-f { fill: var(--at-glass, #c7d5de); }
+.ph-l-w { fill: none; stroke: #fdfbf5; stroke-width: 2; } .ph-l-w-f { fill: none; stroke: #fdfbf5; stroke-width: 2; }
+.primary-action .ph-a { fill: var(--at-teal-2, #85d8cb); } .primary-action .ph-a-s { stroke: var(--at-teal-2, #85d8cb); }
+@media (forced-colors: active) { .practice-hub-grid .practice-hub-card { border: 2px solid ButtonText; } }
