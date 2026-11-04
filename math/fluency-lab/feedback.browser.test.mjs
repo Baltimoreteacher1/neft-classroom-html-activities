@@ -40,8 +40,15 @@ try {
   assert.match(await result.innerText(), /Incorrect/);
   assert.equal(await result.getAttribute("data-type"), "incorrect");
   assert.equal(await page.locator("#feedback").getAttribute("data-type"), "try", "formative explanation remains in the retry state");
-  const questionBox = await question.boundingBox();
-  const resultBox = await result.boundingBox();
+  // Both boxes are read in one frame: two separate boundingBox() calls can straddle a scroll under load and report
+  // offsets from different scroll positions, which failed this assertion on untouched main about half the time.
+  const { questionBox, resultBox } = await page.evaluate(() => {
+    const box = (selector) => {
+      const { x, y } = document.querySelector(selector).getBoundingClientRect();
+      return { x, y };
+    };
+    return { questionBox: box("#question"), resultBox: box("#answer-result-status") };
+  });
   assert.ok(resultBox.x > questionBox.x, "the correctness label sits horizontally beside the question");
   assert.ok(Math.abs(resultBox.y - questionBox.y) < 100, "the correctness label stays aligned with the question");
   assert.equal(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth), 0);
