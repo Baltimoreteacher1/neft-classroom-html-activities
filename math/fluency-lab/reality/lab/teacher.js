@@ -6,7 +6,7 @@ import { getLang, setLang } from "../../i18n.js";
 import { dependentsOf, directPrerequisites, skillNode } from "../../e8/knowledge-graph.js";
 import { misconceptionsForSkill } from "../../e8/misconception-library.js";
 import { experienceById } from "./catalog.js";
-import { COMPANIONS } from "./companions.js";
+import { companionFor } from "./companion-for.js";
 import { gradeOrder, skillState } from "./journey-map.js";
 import { L, say } from "./kernel.js";
 import { SKILL_MATRIX } from "./skills.js";
@@ -49,7 +49,7 @@ export function mountTeacher(root, { grade }) {
     const leads = dependentsOf(key);
     const mis = misconceptionsForSkill(key).slice(0, 3);
     const exp = info.expId ? experienceById(info.expId) : null;
-    const companion = info.expId && COMPANIONS[info.expId];
+    const companion = info.expId && companionFor(info.expId);
     const list = (keys) => (keys.length ? h("ul", { class: "mr-t-list" }, ...keys.map((k) => h("li", {}, titleOf(k)))) : h("span", { class: "mr-t-none" }, tx(UI.none)));
     return h("tr", {},
       h("th", { scope: "row" }, skill.title),

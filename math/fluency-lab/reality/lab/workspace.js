@@ -2,7 +2,7 @@
 // reducer, the view, the coach panel and persistence together; the mathematics lives in models/ and journey.js.
 import { getLang, setLang } from "../../i18n.js";
 import { experienceForSkill } from "./catalog.js";
-import { COMPANIONS } from "./companions.js";
+import { companionFor } from "./companion-for.js";
 import {
   currentStep,
   evidenceOf,
@@ -450,7 +450,7 @@ export function mountWorkspace(
         "div",
         { class: "mr-top-tools" },
         h("a", { class: "mr-btn is-quiet", href: hubHref }, tx(UI.all)),
-        COMPANIONS[exp.id] ? h("a", { class: "mr-btn is-quiet", href: `./?family=${encodeURIComponent(exp.id)}&grade=${grade}` }, tx(UI.family)) : null,
+        companionFor(exp.id) ? h("a", { class: "mr-btn is-quiet", href: `./?family=${encodeURIComponent(exp.id)}&grade=${grade}` }, tx(UI.family)) : null,
         btn(
           tx(UI.focus),
           () => {

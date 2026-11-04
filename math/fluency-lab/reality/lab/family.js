@@ -2,6 +2,7 @@
 // companions.js and the experience catalog, shows English or Spanish, prints cleanly, and never shows an answer.
 import { getLang, setLang } from "../../i18n.js";
 import { experienceById } from "./catalog.js";
+import { companionFor, companionIdsForGrade, companionSkillTitle } from "./companion-for.js";
 import { COMPANIONS } from "./companions.js";
 import { L, say } from "./kernel.js";
 import { bandOf } from "./workspace.js";
@@ -42,17 +43,18 @@ export function mountFamily(root, { expId, grade }) {
     document.documentElement.lang = lang;
     const bar = h("header", { class: "mr-top" },
       h("a", { class: "mr-back", href: `./?grade=${grade}` }, `← ${tx(UI.back)}`),
-      h("div", { class: "mr-title" }, h("p", { class: "mr-eyebrow" }, tx(UI.title)), h("h1", {}, expId && experienceById(expId) ? tx(experienceById(expId).title) : tx(UI.title))),
+      h("div", { class: "mr-title" }, h("p", { class: "mr-eyebrow" }, tx(UI.title)), h("h1", {}, expId && experienceById(expId) ? (companionSkillTitle(expId) ?? tx(experienceById(expId).title)) : tx(UI.title))),
       h("div", { class: "mr-top-tools" },
         btn(lang === "es" ? "English" : "Español", () => { lang = lang === "es" ? "en" : "es"; setLang(lang); render(); }, { cls: "is-quiet", key: "lang" }),
         btn(tx(UI.print), () => window.print(), { cls: "is-quiet", key: "print" })));
-    const c = expId && COMPANIONS[expId];
+    const c = expId && companionFor(expId);
     if (!c) {
-      const items = Object.keys(COMPANIONS).map((id) => h("li", { class: "mr-card" }, h("h4", {}, tx(experienceById(id).title)), h("p", {}, tx(COMPANIONS[id].goal)), h("a", { class: "mr-btn is-primary", href: familyHref(id) }, tx(UI.open))));
+      const ids = [...new Set([...companionIdsForGrade(grade), ...Object.keys(COMPANIONS)])];
+      const items = ids.map((id) => h("li", { class: "mr-card" }, h("h4", {}, companionSkillTitle(id) ?? tx(experienceById(id).title)), h("p", {}, tx(companionFor(id).goal)), h("a", { class: "mr-btn is-primary", href: familyHref(id) }, tx(UI.open))));
       root.replaceChildren(bar, h("main", { class: "mr-hub-main", id: "mr-main" }, h("p", { class: "mr-lead" }, tx(UI.lead)), h("ul", { class: "mr-cards" }, ...items)));
       return;
     }
-    const nextExp = experienceById(c.next);
+    const nextExp = c.next ? experienceById(c.next) : null;
     root.replaceChildren(bar, h("main", { class: "mr-fam", id: "mr-main" },
       h("p", { class: "mr-lead-small" }, tx(UI.lead)),
       section("goal", UI.goal, h("p", { class: "mr-fam-big" }, tx(c.goal))),
@@ -62,7 +64,7 @@ export function mountFamily(root, { expId, grade }) {
       section("practice", UI.practice, h("p", {}, tx(c.practice))),
       section("watch", UI.watch, h("p", { class: "mr-fb is-info" }, tx(c.watch))),
       section("independent", UI.independent, h("p", {}, tx(c.independent))),
-      nextExp ? section("next", UI.next, h("p", {}, tx(nextExp.title)), h("a", { class: "mr-btn", href: COMPANIONS[c.next] ? familyHref(c.next) : labHref(c.next) }, tx(UI.open))) : null,
+      nextExp ? section("next", UI.next, h("p", {}, companionSkillTitle(c.next) ?? tx(nextExp.title)), h("a", { class: "mr-btn", href: companionFor(c.next) ? familyHref(c.next) : labHref(c.next) }, tx(UI.open))) : null,
       h("p", {}, h("a", { class: "mr-btn is-quiet", href: `./?family=&grade=${grade}` }, tx(UI.all)))));
   }
   render();

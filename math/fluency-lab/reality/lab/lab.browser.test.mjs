@@ -172,7 +172,7 @@ try {
     await context.close();
     // a student's browser is refused the teacher module: the page says what to do instead of showing nothing
     const blocked = await browser.newContext({ viewport: { width: 1280, height: 900 } });
-    await blocked.route("**/reality/lab/teacher.js", (route) => route.fulfill({ status: 401, body: "Unauthorized" }));
+    await blocked.route(/teacher\.js/, (route) => route.fulfill({ status: 401, body: "Unauthorized" }));
     const refused = await open("?teacher=1&grade=5", undefined, blocked);
     assert.match(await refused.locator("h1").innerText(), /teacher sign-in/);
     assert.ok(await refused.getByRole("link", { name: "Back to the Reality Lab" }).count());
@@ -182,6 +182,18 @@ try {
     const t = await open("?teacher=1&grade=5");
     const result = await new AxeBuilder({ page: t }).withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"]).analyze();
     assert.deepEqual(result.violations.filter((v) => ["serious", "critical"].includes(v.impact)).map((v) => v.id), [], "teacher view axe");
+  }
+
+
+  // ---- studio family companion and the grade's companion list --------------------------------------------------------------------
+  {
+    const list = await open("?family=&grade=3");
+    assert.ok((await list.locator(".mr-card").count()) >= 8, "the grade's skills and the flagships are listed");
+    const page = await open("?family=studio:3:mul-0-5&grade=3");
+    assert.match(await page.locator("h1").innerText(), /Multiplication facts/);
+    assert.ok((await page.locator(".mr-fam-list li").count()) >= 2);
+    const result = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"]).analyze();
+    assert.deepEqual(result.violations.filter((v) => ["serious", "critical"].includes(v.impact)).map((v) => v.id), [], "studio companion axe");
   }
 
   // ---- axe and overflow: three grade bands, phone and desktop ------------------------------------------------------------------

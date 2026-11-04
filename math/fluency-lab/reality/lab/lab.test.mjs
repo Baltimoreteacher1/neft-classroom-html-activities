@@ -455,4 +455,26 @@ test("spiral review offers earlier prerequisites with experiences, finished ones
   }
 });
 
+
+// ---- studio family companions ------------------------------------------------------------------------------------------------
+test("every studio skill has a bilingual family companion whose next step opens something real", async () => {
+  const { companionFor } = await import("./companion-for.js");
+  let studios = 0;
+  for (const [key, row] of Object.entries(SKILL_MATRIX)) {
+    if (row.kind !== "studio") continue;
+    studios++;
+    const c = companionFor(`studio:${key}`);
+    assert.ok(c, `${key} needs a companion`);
+    for (const x of [c.goal, c.why, c.practice, c.watch, c.independent, ...c.talk]) {
+      assert.ok(x.en && x.es, `${key}: both languages`);
+      assert.notEqual(x.en, x.es, `${key}: Spanish is not a copy`);
+    }
+    assert.ok(c.talk.length >= 2 && c.talk.length <= 3);
+    if (c.next) assert.ok(experienceById(c.next), `${key}: next ${c.next} must be an experience`);
+  }
+  assert.ok(studios >= 40, "all studio skills are covered");
+  assert.equal(companionFor("studio:nope"), null);
+  assert.ok(companionFor("fraction-transform"), "flagships still resolve");
+});
+
 if (!process.exitCode) console.log(`reality lab: ${count} checks passed`);
