@@ -344,3 +344,90 @@ body.curriculum-home.curriculum-product .course-unit-list li.is-done a {
     transition-duration: .01ms !important;
   }
 }
+
+/* ── Pathways band and domain row ───────────────────────────────────────
+   Three ways into the course (Learn, Practice, At Home) above the course
+   overview, with one mark per math domain. Tokens fall back to the locked
+   navy/teal palette. */
+body.curriculum-home.curriculum-product .curr-pathways {
+  max-width: 1120px;
+  margin: 28px auto 8px;
+  padding: 0 20px;
+}
+body.curriculum-home.curriculum-product .curr-pathways h2 {
+  margin: 0 0 14px;
+  font-size: 1.35rem;
+  color: var(--ds-surface-inverse, #17324d);
+}
+body.curriculum-home.curriculum-product .curr-pathways__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+body.curriculum-home.curriculum-product .curr-pathway {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-height: 44px;
+  padding: 16px 18px;
+  background: #fff;
+  border: 1px solid #cbd1d6;
+  border-top: 4px solid #1fa6a2;
+  border-radius: 10px;
+  color: #20252a;
+  text-decoration: none;
+}
+body.curriculum-home.curriculum-product .curr-pathway:hover,
+body.curriculum-home.curriculum-product .curr-pathway:focus-visible {
+  border-color: #17324d;
+  box-shadow: 0 6px 16px -10px rgba(23, 50, 77, 0.45);
+}
+body.curriculum-home.curriculum-product .curr-pathway__eyebrow {
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #0f6b69;
+}
+body.curriculum-home.curriculum-product .curr-pathway strong {
+  font-size: 1.1rem;
+  color: #17324d;
+}
+body.curriculum-home.curriculum-product .curr-pathway span:last-child {
+  font-size: 0.92rem;
+  color: #4b555d;
+}
+body.curriculum-home.curriculum-product .curr-domains {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+  margin: 16px 0 0;
+  padding: 0;
+  list-style: none;
+}
+body.curriculum-home.curriculum-product .curr-domains li {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 6px;
+  background: #fbfaf7;
+  border: 1px solid #e2e6e9;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #17324d;
+  text-align: center;
+}
+body.curriculum-home.curriculum-product .curr-domains img {
+  width: 56px;
+  height: 56px;
+}
+@media (max-width: 720px) {
+  body.curriculum-home.curriculum-product .curr-pathways__grid {
+    grid-template-columns: 1fr;
+  }
+  body.curriculum-home.curriculum-product .curr-domains {
+    grid-template-columns: repeat(auto-fit, minmax(96px, 1fr));
+  }
+}
