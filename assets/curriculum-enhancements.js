@@ -2502,7 +2502,14 @@
       injectReadinessLinks();
       refreshHub();
     });
-    loadSearchIndex();
+    // The search index only ranks lesson rows, and hubHasBrowser() is false on
+    // /curriculum/ (the units browser moved to /curriculum/units/, so
+    // unitsData is empty and filterUnitsData has nothing to rank). Fetching
+    // ~157 KB there bought nothing.
+    if (hubHasBrowser()) {
+      loadSearchIndex();
+      loadRealWorld();
+    }
 
     if (window.CurriculumProgressBridge) {
       window.CurriculumProgressBridge.pushAllLocal(progress, parseProgressKey);
@@ -2542,14 +2549,20 @@
     scheduleEnhance();
   }
 
-  ready(function () {
-    wireModeBanner();
-    waitForHubApi(0);
+  // The "Real-World Connection" snippets are written onto lesson cards, which
+  // exist only where hubHasBrowser() is true. Pages without a browser (the hub,
+  // lesson homework) used to fetch the file and discard it.
+  function loadRealWorld() {
     loadJson("/assets/curriculum-real-world.json").then(function (data) {
       realWorldMap = data || {};
       if (hubApi) {
         refreshHub();
       }
     });
+  }
+
+  ready(function () {
+    wireModeBanner();
+    waitForHubApi(0);
   });
 })();

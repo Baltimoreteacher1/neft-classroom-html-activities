@@ -22,6 +22,7 @@ export function registryCounts(reg = loadRegistry()) {
   return {
     missions: reg.projects.length,
     projectSets: reg.hubs.length,
+    units: new Set(reg.projects.map((p) => p.unit)).size,
     portfolioProjects: reg.projects.filter((p) => p.portfolio.listed).length,
     versionPages: reg.projects.filter((p) => p.files.page && p.hubUrl).length,
     byClassification: byClass,

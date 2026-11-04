@@ -46,9 +46,8 @@ Integration coverage over the 27 version pages + 2 standalone pages:
 - `window.print()` on 23 of 29; no print call on `pre-unit-a`, `unit-1-a/b/c`,
   `unit-10-c` and the older standalone World Architect copy (of those, only
   `unit-1-c` and `unit-10-c` also lack the report builder). Report builder on 24 of 29.
-- Portfolio page lists 27 projects; it is a THIRD hand-kept project list (inline
-  `UNITS` table) that labels folders by legacy number ("Unit 1" = the division
-  project, which is current Unit 6).
+- Portfolio page (Stage 3A): generated from the registry, lists all 30 projects by current unit; the
+  inline `UNITS` table and legacy folder labels are gone (`projects-completion-record.md`).
 
 ## Studio feedback (math.mjs)
 
@@ -100,8 +99,8 @@ no-op. The two galleries are generated from the registry by `tools/lib/projects-
   Studio is a separate model-and-report shell. Two save formats, two rubric forms.
 - No shared feedback engine across both: Studio's `math.mjs` and the legacy pages'
   `projects-check` (config-driven) never meet.
-- Portfolio reads only `nt-project-complete:v1`, written by legacy pages. A Studio
-  mission never writes a completion record or earns a certificate.
+- (Closed in Stage 3A) A Studio mission now writes `nt-project-complete:v1:<id>` on explicit
+  completion and the portfolio reads it; certificates need a valid record.
 - No registry-driven navigation: the portfolio table, hub cards, SCORM catalog and
   `PROJECTS` are four lists kept in step by hand. The registry is the first place
   they can be compared; this stage did not make them consume it.

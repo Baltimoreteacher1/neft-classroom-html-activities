@@ -14,3 +14,37 @@
 @media(prefers-reduced-motion:no-preference){button,a{transition:opacity 180ms ease,transform 180ms ease}button:hover,a.button:hover{transform:translateY(-1px)}}
 @media print{body #print-report{display:block!important;max-height:none;overflow:visible;white-space:normal;font-size:11pt}#print-report .model{background:white!important;break-inside:avoid}#print-report svg{max-width:100%;height:auto}#print-report h1,#print-report h2{break-after:avoid}}
 :root[data-theme="dark"]{color-scheme:dark;--ink:#edf4f1;--muted:#c1d0ca;--paper:#13232b;--card:#20343d;--line:#587078;--teal:#4aa99a;--lime:#294b43;--orange:#f08c68;--soft:#4b342f;--blue:#a9d7f1} :root[data-theme="dark"] input,:root[data-theme="dark"] textarea,:root[data-theme="dark"] select,:root[data-theme="dark"] .journey button,:root[data-theme="dark"] button.secondary{background:#233942;color:var(--ink);border-color:#81979c} :root[data-theme="dark"] .site-header{background:#20343d} :root[data-theme="dark"] .model{background:#fff;color:#142c3b} :root[data-theme="dark"] .chip{background:#20343d;color:var(--ink)}
+
+/* Workbench: live linked models, undo/redo, checkpoints (workbench.js) */
+.wb{margin:24px 0}.wb h3{margin-top:0}.wb h4{margin:0 0 6px}
+.wb-controls{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin:14px 0}
+.wb-field label,.wb-datum-label{display:block;font-size:.9rem;margin-bottom:4px}
+.stepper{display:flex;gap:6px;align-items:center}.stepper button{min-width:48px;justify-content:center;padding:6px 10px;font-size:1.1rem}.stepper input{width:100%;min-width:0;text-align:center}
+.wb-datum-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;grid-column:1/-1}
+.wb-models{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:16px;margin:16px 0}
+.wb-figure{margin:0;background:#fff;color:#142c3b;border:1px solid var(--line);border-radius:12px;padding:14px;min-width:0}
+.wb-figure table,.wb-figure th,.wb-figure td,.wb-figure summary{color:#142c3b;background:transparent}.wb-figure th,.wb-figure td{border-bottom-color:#c1cdc9;padding:8px}
+.wb-figure input{background:#fff;color:#142c3b}
+.wb-title{font-weight:700;margin-bottom:4px}.wb-caption{margin:6px 0 0;font-size:.9rem;color:#405764}
+.wb-svg{display:block;width:100%;max-width:560px;height:auto;margin:6px auto}
+.wb-slider{display:block;max-width:420px;margin:6px auto;border-radius:8px;cursor:pointer}.wb-slider:focus-visible{outline:3px solid #b53e20;outline-offset:3px}
+.wb-unknown{display:inline-block;min-width:1.2em;text-align:center;font-weight:700;color:#b53e20}
+.wb-undo{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:8px 0}
+.wb-frames{display:flex;flex-direction:column;gap:6px;margin:8px 0}.wb-frames button{justify-content:flex-start;text-align:left;height:auto;font-weight:400}
+.cp-list{padding-left:20px}.cp-list li{margin:12px 0}
+.wb-two{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+#wb-status:empty{display:none}
+.wb-builder{display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px 12px;align-items:center;margin:8px 0}
+.wb-details>summary{cursor:pointer;min-height:44px;display:flex;align-items:center;font-weight:700}
+.wb-verdict{font-weight:700}
+@media(max-width:700px){.wb-two{grid-template-columns:1fr}.wb-controls{grid-template-columns:1fr}.wb-datum-grid{grid-template-columns:1fr 1fr}.wb-figure{padding:10px}}
+.support>summary{min-height:44px;display:flex;align-items:center;cursor:pointer}
+.wb-figure select{background:#fff;color:#142c3b;border:1px solid #536e65;border-radius:8px;min-height:44px;padding:6px 10px;font:inherit;max-width:100%}
+.wb-verdicts{margin:6px 0}.wb-verdict.good{color:#14594f}.wb-verdict:not(.good){color:#8a2f17}
+.wb-unit-row{display:contents}
+.wb-mover{border:1px solid #c1cdc9;border-radius:10px;margin:0 0 8px;padding:6px 12px;display:flex;gap:16px;flex-wrap:wrap;color:#142c3b}.wb-mover legend{font-size:.9rem;padding:0 4px}
+.wb-radio{display:inline-flex;align-items:center;gap:8px;min-height:44px;cursor:pointer}.wb-radio input{width:22px;height:22px}
+.wb-plane,.wb-graph{max-width:460px;border:1px solid #c1cdc9;touch-action:manipulation}.wb-plane:focus-visible,.wb-graph:focus-visible{outline:3px solid #b53e20;outline-offset:3px}
+.wb-strands,.wb-ways{margin:8px 0;padding-left:20px;color:#142c3b}
+.wb-stack{grid-template-columns:minmax(0,1fr)}.wb-stack label{margin-top:6px}.wb-stack input,.wb-stack select{width:100%;box-sizing:border-box}.wb-wide{grid-column:1/-1}
+.wb-figure td.nw{white-space:nowrap}

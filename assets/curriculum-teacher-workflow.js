@@ -887,7 +887,41 @@
     stage.appendChild(readinessCard);
   }
 
+  // supports / workflow / uifr (~24 KB, three requests) only feed what the
+  // panel DRAWS, and the panel is drawn only for a teacher. A student's hub never
+  // needed them, so they are fetched the first time something has to draw.
+  var enrichment = null;
+  function loadEnrichment() {
+    if (!enrichment) {
+      enrichment = Promise.all([
+        getJson("/data/curriculum-supports.json").catch(function () {
+          return {};
+        }),
+        getJson("/data/curriculum-teacher-workflow.json").catch(function () {
+          return {};
+        }),
+        getJson("/data/curriculum-uifr-level4.json").catch(function () {
+          return {};
+        }),
+      ]).then(function (results) {
+        DATA.supports = results[0];
+        DATA.workflow = results[1];
+        DATA.uifr = results[2];
+      });
+    }
+    return enrichment;
+  }
+
+  /** Draws now when the enrichment is in; otherwise fetches it first. A hidden
+   * panel is not drawn at all: syncTeacherMode draws it the moment it is shown. */
   function renderPanel() {
+    if (!panel) return;
+    if (DATA.workflow) return drawPanel();
+    if (panel.hidden) return;
+    loadEnrichment().then(drawPanel);
+  }
+
+  function drawPanel() {
     if (!panel) return;
     var stage = panel.querySelector(".ctw-stage");
     panel.querySelectorAll("[data-ctw-view]").forEach(function (tab) {
@@ -987,32 +1021,29 @@
 
   function syncTeacherMode() {
     if (!panel) return;
-    panel.hidden = !document.body.classList.contains("teacher-mode");
-    if (!panel.hidden) renderPanel();
+    if (!document.body.classList.contains("teacher-mode")) {
+      panel.hidden = true;
+      return;
+    }
+    // Show the panel only once it can be drawn whole, so a teacher never sees an
+    // empty frame fill in underneath them.
+    if (!DATA.workflow) {
+      loadEnrichment().then(syncTeacherMode);
+      return;
+    }
+    panel.hidden = false;
+    drawPanel();
   }
 
   function init() {
-    // Only the launch manifest is required to build the panel; supports /
-    // workflow / uifr are enrichment, so a single missing/404 enrichment file
-    // must NOT take down the entire teacher planning UI (previously any one
-    // rejection killed the whole Promise.all and the panel silently vanished).
-    Promise.all([
-      getJson("/data/curriculum-launch-manifest.json"),
-      getJson("/data/curriculum-supports.json").catch(function () {
-        return {};
-      }),
-      getJson("/data/curriculum-teacher-workflow.json").catch(function () {
-        return {};
-      }),
-      getJson("/data/curriculum-uifr-level4.json").catch(function () {
-        return {};
-      }),
-    ])
-      .then(function (results) {
-        DATA.launch = results[0] || {};
-        DATA.supports = results[1];
-        DATA.workflow = results[2];
-        DATA.uifr = results[3];
+    // Only the launch manifest is needed to build the panel. supports / workflow /
+    // uifr are enrichment loaded by loadEnrichment() when something draws, and
+    // one missing enrichment file must NOT take down the teacher planning UI
+    // (previously any one rejection killed the whole Promise.all and the panel
+    // silently vanished) -- each is caught to {} there.
+    getJson("/data/curriculum-launch-manifest.json")
+      .then(function (launch) {
+        DATA.launch = launch || {};
         lessons = DATA.launch.lessons || [];
         // No lessons → nothing to plan against; bail before touching lessons[0].
         if (!lessons.length) return;

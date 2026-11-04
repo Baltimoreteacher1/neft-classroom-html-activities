@@ -211,6 +211,58 @@ await tick();
 assert.equal(launch.hasAttribute("download"), false);
 assert.equal(launch.target, "_blank");
 dom.window.close();
+
+// The manifest is ~1.2 MB and the hub has no lesson desk, so it must NOT be
+// fetched at boot: only when a same-site Reveal link exists or the desk shows a
+// lesson. A click that lands before it arrives is held, then replayed.
+{
+  const lazy = new JSDOM("<main></main>", {
+    url: "https://eduwonderlab.com/curriculum/",
+    runScripts: "outside-only",
+  });
+  const w = lazy.window;
+  let fetches = 0;
+  /** @type {(value: unknown) => void} */
+  let release = () => {};
+  w.fetch = () => {
+    fetches += 1;
+    return new Promise((resolve) => {
+      release = () => resolve({ ok: true, json: async () => manifest });
+    });
+  };
+  const wait = () => new Promise((resolve) => setTimeout(resolve, 10));
+  w.eval(source);
+  await wait();
+  const plain = w.document.createElement("a");
+  plain.href = "/lessons/3-4/";
+  w.document.body.appendChild(plain);
+  await wait();
+  assert.equal(fetches, 0, "no manifest fetch at boot or for an ordinary link");
+  const doc = manifest.documents.find((d) => d.url.startsWith("/lessons/3-4/downloads/reveal/"));
+  const link = w.document.createElement("a");
+  link.href = doc.url;
+  link.target = "_blank";
+  w.document.body.appendChild(link);
+  await wait();
+  assert.equal(fetches, 1, "a Reveal link triggers exactly one fetch");
+  const replays = [];
+  const original = w.HTMLAnchorElement.prototype.click;
+  w.HTMLAnchorElement.prototype.click = function () {
+    if (this !== link) replays.push({ href: this.getAttribute("href"), download: this.download });
+    else original.call(this);
+  };
+  const early = new w.MouseEvent("click", { bubbles: true, cancelable: true, button: 0 });
+  link.dispatchEvent(early);
+  assert.equal(early.defaultPrevented, true, "a click before the manifest is held");
+  release();
+  await wait();
+  assert.deepEqual(replays, [{ href: doc.url, download: doc.filename }]);
+  assert.equal(link.download, doc.filename, "the link itself gets its filename once loaded");
+  const late = new w.MouseEvent("click", { bubbles: true, cancelable: true, button: 0 });
+  link.dispatchEvent(late);
+  assert.equal(late.defaultPrevented, false, "after load a click is left alone");
+  lazy.window.close();
+}
 console.log(
   `Reveal downloads: all ${manifest.documents.length} files retain original bytes, filenames, lesson placement, and teacher access; lesson desk switches without stale links.`,
 );

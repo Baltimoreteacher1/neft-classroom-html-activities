@@ -51,7 +51,7 @@ import { dirname, join } from "node:path";
 import { isTeacherSurface } from "../functions/_lib/teacher-surface.js";
 import { assertNonEmpty } from "./lib/non-empty.mjs";
 import { loadRegistry, registryCounts } from "./lib/project-registry.mjs";
-import { portfolioUnits, ROOT, scanProjects, textOf } from "./lib/projects-inventory.mjs";
+import { portfolioRoutes, ROOT, scanProjects, textOf } from "./lib/projects-inventory.mjs";
 
 const CLASSES = ["flagship", "version", "stretch", "companion"];
 const RUBRIC_KINDS = ["in-page-table", "studio-teacher-mode", "none"];
@@ -150,10 +150,10 @@ export function publicNumbers(html) {
   return {
     descriptionMissions: n(/content="(\d+) Grade 6 design projects/)?.[0] ?? null,
     bodyMissions: n(/<strong>(\d+)<\/strong> projects ·/)?.[0] ?? null,
-    portfolioHeader: n(/(\d+) project sets, (\d+) projects/),
-    portfolioMeta: n(/(\d+) Grade 6 math project sets and (\d+) projects/),
+    portfolioHeader: n(/(\d+) projects in (\d+) units\./),
+    portfolioMeta: n(/across all (\d+) Grade 6 math projects in (\d+) units/),
     portfolioStatTotal: n(/id="stat-total">(\d+)</)?.[0] ?? null,
-    portfolioStatPages: n(/id="stat-pages">0 \/ (\d+)</)?.[0] ?? null,
+    portfolioStatUnits: n(/id="stat-unit-total">(\d+)</)?.[0] ?? null,
   };
 }
 
@@ -310,7 +310,7 @@ export function analyze(input) {
         add("PUBLIC", `${file}: card links to unregistered project "${id}"`);
   }
   const pf = publicNumbers(pages["math/projects/portfolio/index.html"]);
-  const want = [counts.projectSets, counts.portfolioProjects];
+  const want = [counts.portfolioProjects, counts.units];
   for (const [label, got] of [
     ["header", pf.portfolioHeader],
     ["meta description", pf.portfolioMeta],
@@ -318,23 +318,23 @@ export function analyze(input) {
     if (!got || got[0] !== want[0] || got[1] !== want[1])
       add(
         "PUBLIC",
-        `portfolio ${label} says ${got}, registry has ${want[0]} sets / ${want[1]} projects`,
+        `portfolio ${label} says ${got}, registry has ${want[0]} projects / ${want[1]} units`,
       );
   if (pf.portfolioStatTotal !== want[0])
     add(
       "PUBLIC",
-      `portfolio "Project sets" tile shows ${pf.portfolioStatTotal}, registry has ${want[0]}`,
+      `portfolio "Projects finished" tile totals ${pf.portfolioStatTotal}, registry has ${want[0]}`,
     );
-  if (pf.portfolioStatPages !== want[1])
+  if (pf.portfolioStatUnits !== want[1])
     add(
       "PUBLIC",
-      `portfolio "Projects finished" tile shows 0 / ${pf.portfolioStatPages}, registry has ${want[1]}`,
+      `portfolio "Units" tile totals ${pf.portfolioStatUnits}, registry has ${want[1]}`,
     );
   const listed = registry.projects.filter((p) => p.portfolio.listed).map((p) => p.launchUrl);
   if (!sameSet(listed, [...portfolioRoutes]))
     add(
       "PUBLIC",
-      "portfolio UNITS table lists different projects than the registry marks portfolio.listed",
+      "portfolio cards list different projects than the registry marks portfolio.listed",
     );
   return out;
 }
@@ -433,7 +433,7 @@ export function selfTest(base) {
       (i) => {
         i.pages["math/projects/portfolio/index.html"] = i.pages[
           "math/projects/portfolio/index.html"
-        ].replace('id="stat-pages">0 / 27<', 'id="stat-pages">0 / 23<');
+        ].replace('id="stat-total">30<', 'id="stat-total">23<');
       },
     ],
     [
@@ -521,7 +521,7 @@ async function gather() {
     scan,
     missions: PROJECTS.map(({ id, title, unit, family }) => ({ id, title, unit, family })),
     pages,
-    portfolioRoutes: new Set(portfolioUnits().flatMap((u) => u.projects.map((p) => p.path))),
+    portfolioRoutes: new Set(portfolioRoutes()),
   };
 }
 

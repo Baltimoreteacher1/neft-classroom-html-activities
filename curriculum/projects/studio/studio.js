@@ -3,6 +3,9 @@ import { FAMILY, fieldsFor, model, matches, format, workedExampleFor } from "./m
 import { fresh, clean, keyFor, progress } from "./state.mjs";
 import { visualMarkup } from "./visuals.mjs";
 import { STUDIO_RUBRIC } from "./rubric.mjs";
+import { diagnose, feedbackText, hasV2 } from "./feedback.mjs";
+import { attachExtras, checkpointReport, createWorkbench } from "./workbench.js";
+import { mountCompletion } from "./completion-ui.mjs";
 import {
   decideInstruction,
   readInstructionalEvidence,
@@ -21,6 +24,7 @@ const id = new URL(location.href).searchParams.get("project");
 const project = getProject(id);
 const stages = ["Choose", "Build", "Test", "Revise", "Publish"];
 let state,
+  workbench,
   storageOK = true,
   restoreMessage = "";
 const action = (name, label, secondary = true) =>
@@ -123,7 +127,8 @@ function load() {
     const raw = localStorage.getItem(keyFor(project.id));
     if (raw) {
       try {
-        state = clean(project, JSON.parse(raw));
+        const parsed = JSON.parse(raw);
+        state = attachExtras(project, clean(project, parsed), parsed);
         restoreMessage = "Your saved project is ready to continue.";
       } catch {
         restoreMessage =
@@ -157,6 +162,8 @@ function render(focus = false) {
   document.title = `${project.title} — Project Studio`;
   main.innerHTML = `<section class="hero"><div><p class="eyebrow">${project.unit ? `Unit ${project.unit} · ` : ""}${esc(UNIT_NAMES[project.unit])}</p><h1>${esc(project.title)}</h1><p class="lede">${esc(project.question)}</p><div class="meta"><span class="chip">${esc(FAMILY[project.family].label)}</span><span class="chip">${p.passed}/6 math checks</span>${project.crosswalk.ccss.map((code) => `<span class="chip standards-badge">CCSS-M ${esc(code)}</span>`).join("")}${project.crosswalk.smp.map((code) => `<span class="chip standards-badge">${esc(code)}</span>`).join("")}</div></div><aside class="hero-stamp"><strong>You are the designer.</strong><p>${esc(project.role)} Make a choice, test it and show why it works.</p></aside></section>${restoreMessage ? `<p class="notice" role="status">${esc(restoreMessage)}</p>` : ""}<div class="toolbar"><span id="save-status" class="save-status ${storageOK ? "" : "error"}" role="status">${storageOK ? "Work stays on this device. Use Download backup to move it." : "Device saving is unavailable. Download a backup to keep your work."}</span><div class="toolbar-actions">${action("backup", "Download backup")}${action("restore", "Restore backup")}${action("supports", state.supports ? "Hide starting points" : "Show starting points")}${action("language", state.lang === "es" ? "ES | EN" : "EN | ES")}${action("teacher", state.role === "teacher" ? "Student" : "Teacher")}${action("theme", state.theme === "dark" ? "Light" : "Dark")}</div></div><input id="import-file" hidden type="file" accept=".json,application/json" aria-label="Choose a project backup"><p id="file-status" role="status"></p><nav class="journey" aria-label="Project stages">${stages.map((s, i) => `<button type="button" data-stage="${i}" ${state.stage === i ? 'aria-current="step"' : ""}><span class="step-number">${i + 1}</span>${s}</button>`).join("")}</nav><div class="workspace"><section id="stage-panel" class="panel" aria-labelledby="stage-heading"><h2 id="stage-heading" tabindex="-1">${stageTitle()}</h2><div class="read-tools">${action("read", "Read directions aloud")}${action("stop-reading", "Stop reading")}</div>${stageContent()}<div class="stage-footer">${state.stage > 0 ? `<button class="secondary" type="button" data-stage="${state.stage - 1}">← ${stages[state.stage - 1]}</button>` : '<a href="/curriculum/projects/studio/">Choose another mission</a>'}${state.stage < 4 ? `<button type="button" data-stage="${state.stage + 1}">${stages[state.stage + 1]} →</button>` : ""}</div></section>${sidebar()}</div>${state.role === "teacher" ? teacherPanel() : ""}<details class="compact"><summary>Teacher notes and companion tools</summary><p><strong>Essential standards:</strong> ${FAMILY[project.family].standards.map(esc).join(" · ")}. CCSS-M: ${project.crosswalk.ccss.join(", ")} · ${project.crosswalk.smp.join(", ")}.</p><p>Assess calculations, representations, reasoning and revision separately. On-screen checks verify numeric work; review the explanations and generated SVG representation together. Provide manipulatives, read-aloud and oral rehearsal as needed; the same core evidence applies to every student.</p><p>Use the supplied fictional data and prices. Optional outside research is never required. The generated SVG representation is embedded in the downloadable report.</p>${project.classic ? `<p><a href="${project.classic}">Open companion tools or continue earlier saved work</a>. This link carries the mission context; local project data remains on this device.</p>` : ""}<p>No timer, ranking or automatic grade. Download and hand in your work using your teacher’s usual method.</p></details>`;
   bind();
+  workbench?.mount();
+  mountPublishCompletion(p);
   if (focus) {
     $("#stage-heading").focus();
     $("#stage-heading").scrollIntoView({ block: "start", behavior: "instant" });
@@ -229,7 +236,11 @@ function readiness(p) {
   if (!state.review.every(Boolean)) todo.push("finish your self-review");
   return `<p class="notice ${p.ready ? "good" : ""}" role="status">${p.ready ? "Ready for teacher review. Your calculations match; your teacher will review the reasoning and product." : `Draft: ${esc(todo.join("; "))}.`}</p>`;
 }
+function mountPublishCompletion(p) {
+  mountCompletion({ host: $("#stage-panel"), project, state, progress: p });
+}
 function updatePublish() {
+  mountPublishCompletion(progress(project, state));
   if ($("#readiness")) $("#readiness").innerHTML = readiness(progress(project, state));
   if ($("#report-preview")) $("#report-preview").textContent = report();
 }
@@ -297,6 +308,7 @@ function bind() {
       state.review[0] = false;
       save();
       if ($("[data-model-canvas]")) $("[data-model-canvas]").innerHTML = modelView(model(project, state.design));
+      workbench?.designTyped(el.dataset.design);
     }),
   );
   $("#design-form")?.addEventListener("submit", (e) => {
@@ -315,6 +327,7 @@ function bind() {
       $(`#card-${el.dataset.answer}`).classList.remove("passed");
       save();
       refreshMeter();
+      workbench?.checksChanged();
     }),
   );
   $("#stage-panel")?.addEventListener("click", (event) => {
@@ -340,13 +353,14 @@ function bind() {
       const feedback = $(`#feedback-${q.id}`);
       feedback.textContent = good
         ? `Matches this design. ${q.reason}`
-        : `Not yet. ${q.hint} Try again; your work stays here.`;
+        : `Not yet. ${hasV2(project) ? feedbackText(diagnose(project, state.design, q.id, state.answers[q.id])) : q.hint} Try again; your work stays here.`;
       feedback.className = `feedback ${good ? "correct" : "retry"}`;
       $(`#card-${q.id}`).classList.toggle("passed", good);
       const diagnosticPanel = $(`#diagnostic-${q.id}`);
       if (diagnosticPanel) diagnosticPanel.innerHTML = good ? "" : diagnostic(q.id);
       save();
       refreshMeter();
+      workbench?.checksChanged();
     }),
   );
   $("#import-file").addEventListener("change", importBackup);
@@ -493,7 +507,8 @@ async function importBackup(event) {
     return;
   }
   try {
-    const candidate = clean(project, JSON.parse(await file.text()));
+    const parsed = JSON.parse(await file.text());
+    const candidate = attachExtras(project, clean(project, parsed), parsed);
     const hasWork =
       state.vision.trim() ||
       Object.keys(state.answers).length ||
@@ -570,6 +585,7 @@ function report() {
     "",
     `MY RECOMMENDATION: ${state.claim || "[not yet written]"}`,
     "",
+    ...checkpointReport(project, state),
     "ATTACHMENTS: Add your labeled drawing, graph, table or physical-model photo using your teacher’s normal submission method.",
     "SELF-REVIEW: " + state.review.filter(Boolean).length + "/4 checked.",
     "Teacher reviews accuracy, representations, reasoning and revision. No automatic mastery score.",
@@ -586,6 +602,15 @@ else if (!project) {
     '<h1>Choose an available project</h1><p>This project link is not in the studio catalogue.</p><a class="button" href="/curriculum/projects/studio/">Browse all missions</a>';
 } else {
   load();
+  workbench = createWorkbench({
+    project,
+    getState: () => state,
+    save,
+    refreshSidebar: () => {
+      const canvas = $("[data-model-canvas]");
+      if (canvas) canvas.innerHTML = modelView(model(project, state.design));
+    },
+  });
   if (new URL(location.href).searchParams.get("exemplar") === "true") state.role = "teacher";
   render();
   if (new URL(location.href).searchParams.get("exemplar") === "true") doAction("exemplar");

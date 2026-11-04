@@ -70,9 +70,14 @@ const CHROMEBOOK_CPU_SLOWDOWN = 4;
 const BUDGET = {
   lcp: 4000, // ms — the number that decides whether a lesson starts
   domContentLoaded: 3000, // ms
-  transferKb: 900, // KB over the wire (document + subresources)
+  // Tightened 2026-11-03 after the deferral work (tools/verify-hub-performance-
+  // browser.mjs): measured 50 requests / ~751 KB local / 2,941 KB decoded, and
+  // production adds three Cloudflare-injected requests (RUM beacon, speculation
+  // rules, insights script) that no build controls. Lower these as the page
+  // improves; never raise them to make a run pass.
+  transferKb: 800, // KB over the wire (document + subresources)
   decodedKb: 3000, // KB the browser must parse — the main-thread driver
-  requests: 60,
+  requests: 56,
 };
 
 async function measure() {

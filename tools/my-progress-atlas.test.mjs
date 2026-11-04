@@ -987,6 +987,51 @@ const text = (el) => el.textContent.replace(/\s+/g, " ");
     );
   }
 
+  // the mini card's data (~140 KB) is fetched when the card nears view, not at boot
+  {
+    const w = new JSDOM("<body></body>", {
+      url: "https://eduwonderlab.com/curriculum/",
+      runScripts: "outside-only",
+      pretendToBeVisual: true,
+    }).window;
+    const urls = [];
+    w.fetch = async (url) => {
+      urls.push(url);
+      const body = readFileSync(new URL(`.${url.split("?")[0]}`, ROOT), "utf8");
+      return { ok: true, status: 200, json: async () => JSON.parse(body) };
+    };
+    /** @type {((entries: {isIntersecting: boolean}[]) => void)[]} */
+    const callbacks = [];
+    w.IntersectionObserver = class {
+      constructor(cb) {
+        callbacks.push(cb);
+      }
+      observe() {}
+      disconnect() {}
+    };
+    // The same scripts the dashboard page loads, in its order, without its own
+    // full Atlas, so nothing but the mini card can fetch.
+    const srcs = [
+      ...pages["/curriculum/my-progress/"].matchAll(
+        /<script src="\/assets\/my-progress\/([^"?]+)/g,
+      ),
+    ].map((m) => m[1]);
+    for (const f of srcs) w.eval(read(`assets/my-progress/${f}`));
+    const host = w.document.createElement("div");
+    w.document.body.append(host);
+    w.NTProgressAtlas.mountMini(host);
+    await new Promise((r) => setTimeout(r, 20));
+    eq(urls.length, 0, "mountMini() fetches nothing while the card is far from view");
+    ok(host.querySelector(".at-mini") === null, "and draws nothing yet");
+    callbacks[0]([{ isIntersecting: false }]);
+    await new Promise((r) => setTimeout(r, 20));
+    eq(urls.length, 0, "a non-intersecting report still fetches nothing");
+    callbacks[0]([{ isIntersecting: true }]);
+    await settle(w);
+    eq(urls.length, 3, "nearing view fetches the three data files once");
+    ok(/My Learning Atlas/.test(host.textContent), "and the card then renders as before");
+  }
+
   // a device with nothing saved still renders, and a storage failure cannot break the page
   {
     const dom = boot("/curriculum/my-progress/", {}, { now });

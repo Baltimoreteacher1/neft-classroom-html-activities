@@ -140,9 +140,20 @@ const studioLinks = (html) =>
     [...html.matchAll(/\/curriculum\/projects\/studio\/\?project=([a-z0-9-]+)/g)].map((m) => m[1]),
   );
 
+/** Scripts a page loads from its own folder (the portfolio's modules): print/export actions live there. */
+function ownScripts(file, html) {
+  const dir = `/${dirname(file)}/`;
+  return [...html.matchAll(/<script\b[^>]*\ssrc="([^"?]+)[^"]*"/g)]
+    .map((m) => m[1])
+    .filter((src) => src.startsWith(dir) && /\.m?js$/.test(src))
+    .map((src) => rd(src.slice(1)))
+    .join("\n");
+}
+
 /** Everything one page can tell us. Pure function of the page text + shared maps. */
 export function scanPage(file, ctx) {
   const html = rd(file);
+  const code = html + ownScripts(file, html);
   const assets = localAssets(html);
   const shared = assets.filter((a) => a.startsWith("/shared/projects/"));
   const layerKeys = sortedUnique(shared.flatMap((a) => ctx.layerKeys[a] || []));
@@ -183,8 +194,8 @@ export function scanPage(file, ctx) {
       certificate: shared.includes("/shared/projects/projects-award.js"),
     },
     exportPrint: {
-      printCall: /window\.print\(\)/.test(html),
-      reportBuilder: /\bbuildReport\b/.test(html),
+      printCall: /window\.print\(\)/.test(code),
+      reportBuilder: /\bbuildReport\b/.test(code),
     },
     canvas: {
       bridge: html.includes("canvas-bridge-injected:begin"),
@@ -210,12 +221,14 @@ function walkProjectPages() {
   return out;
 }
 
-/** The portfolio page's inline UNITS table, evaluated without running the page. */
-export function portfolioUnits() {
+/** The launch routes of the project cards printed on the portfolio page (read from its HTML, not its script). */
+export function portfolioRoutes() {
   const html = rd("math/projects/portfolio/index.html");
-  const m = html.match(/var UNITS = (\[[\s\S]*?\n\s*\]);/);
-  if (!m) throw new Error("portfolio page: inline UNITS table not found");
-  return Function(`"use strict"; return ${m[1]};`)();
+  const routes = [...html.matchAll(/<li class="pf-card"[^>]*\sdata-launch="([^"]+)"/g)].map((m) =>
+    m[1].replaceAll("&amp;", "&"),
+  );
+  if (!routes.length) throw new Error("portfolio page: no project cards found");
+  return routes;
 }
 
 /** Current unit of a legacy project folder (Studio missions are the evidence). */
@@ -233,8 +246,8 @@ export async function scanProjects() {
   const { model, FAMILY, WORKED_EXAMPLES } = await import(
     "../../curriculum/projects/studio/math.mjs"
   );
-  const units = portfolioUnits();
-  const portfolioRoutes = new Set(units.flatMap((u) => u.projects.map((p) => p.path)));
+  const portfolioRouteList = portfolioRoutes();
+  const portfolioRouteSet = new Set(portfolioRouteList);
   const catalog = JSON.parse(rd("tools/scorm/activity-catalog.json"));
   const scormCatalog = new Map(
     (catalog.activities || [])
@@ -244,7 +257,7 @@ export async function scanProjects() {
   const ctx = {
     layerKeys: layerKeyMap(),
     consumers: companionConsumers(),
-    portfolioRoutes,
+    portfolioRoutes: portfolioRouteSet,
     scormCatalog,
   };
 
@@ -317,9 +330,8 @@ export async function scanProjects() {
     pages: sorted(pages),
     surface: sorted(surface),
     portfolio: {
-      sets: units.length,
-      projects: units.reduce((n, u) => n + u.projects.length, 0),
-      routes: [...portfolioRoutes].sort(),
+      projects: portfolioRouteList.length,
+      routes: [...portfolioRouteSet].sort(),
     },
     layerKeys: ctx.layerKeys,
     consumers: ctx.consumers,

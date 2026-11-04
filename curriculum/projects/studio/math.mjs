@@ -33,6 +33,8 @@ const check = (id, prompt, answer, unit, hint, reason) => ({
   hint,
   reason,
 });
+/** Round half up to cents. The 12-digit trim removes float noise, so 6.165 rounds to 6.17 like a receipt does. */
+const toCents = (x) => Math.round(Number((x * 100).toPrecision(12))) / 100;
 const median = (a) =>
   a.length % 2 ? a[(a.length - 1) / 2] : (a[a.length / 2 - 1] + a[a.length / 2]) / 2;
 export const FAMILY = {
@@ -450,8 +452,8 @@ export function model(project, raw) {
     case "percent": {
       const discount = (a * b) / 100,
         sale = a - discount,
-        tax = Math.round(((sale * c) / 100 + Number.EPSILON) * 100) / 100,
-        total = Math.round((sale + tax + Number.EPSILON) * 100) / 100;
+        tax = toCents((sale * c) / 100),
+        total = toCents(sale + tax);
       q(
         "decimal",
         `Write ${b}% as a decimal.`,

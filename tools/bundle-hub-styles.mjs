@@ -24,12 +24,16 @@
  * its tags, so the concatenation occupies exactly the position of the run.
  *
  * WHAT IS DELIBERATELY EXCLUDED
- *   - Any sheet that starts with @import (curriculum-system.css). @import is
- *     only valid at the top of a stylesheet; concatenated mid-file it is
- *     ignored and the fonts it loads vanish.
- *   - Sheets outside /assets/ root (/assets/fonts/…). Relative url() values
- *     resolve against the sheet's own URL, so a bundle may only hold sheets
- *     that already live in the same directory it is written to.
+ *   - A sheet that starts with @import unless the import can be INLINED
+ *     (curriculum-system.css imports the Fraunces/Hanken font-face sheet, which
+ *     has only absolute url() values, so its text replaces the @import and the
+ *     serial two-request chain disappears). @import is only valid at the top of
+ *     a stylesheet; concatenated mid-file it would be ignored and the fonts it
+ *     loads would vanish, so any other @import keeps the sheet separate.
+ *   - Sheets outside /assets/ root with a url() resolved relative to the sheet
+ *     (/assets/fonts/…). A bundle is written to /assets/, so only a subdirectory
+ *     sheet whose url() values are all absolute may join one
+ *     (/assets/ewl/*.css, /assets/my-progress/*.css qualify).
  *   - Sheets with media= or non-stylesheet rel. Only plain <link rel="stylesheet">.
  *
  * Runs after `vite build` and tools/bundle-hub-scripts.mjs, before
@@ -48,14 +52,43 @@ const PAGES = ["curriculum/index.html", "curriculum/units/index.html"];
 const MARK = "curriculum-hub.styles.";
 
 const LINK_RE =
-  /<link\b(?=[^>]*\brel="stylesheet")(?![^>]*\bmedia=)[^>]*\bhref="(\/assets\/[^"/]+\.css)(?:\?[^"]*)?"[^>]*\/?>/g;
+  /<link\b(?=[^>]*\brel="stylesheet")(?![^>]*\bmedia=)[^>]*\bhref="(\/assets\/(?:[^"/?]+\/)*[^"/?]+\.css)(?:\?[^"]*)?"[^>]*\/?>/g;
 
-function bundleable(href, distPath) {
-  if (!existsSync(distPath)) return false;
-  const head = readFileSync(distPath, "utf8").slice(0, 400);
-  if (/^\s*(\/\*[\s\S]*?\*\/\s*)*@import\b/.test(head)) return false;
-  if (/^\s*(\/\*[\s\S]*?\*\/\s*)*@charset\b/.test(head)) return false;
-  return /^\/assets\/[^/]+\.css$/.test(href);
+const IMPORT_RE = /^\s*@import\s+url\(\s*["']?(\/assets\/[^"')?]+\.css)["']?\s*\)\s*;\s*/;
+
+/** True when every url() in the sheet is absolute, so it resolves the same
+ * wherever the sheet's text is placed. */
+function urlsAreAbsolute(css) {
+  return [...css.matchAll(/url\(\s*["']?([^"')]+)/g)].every(([, u]) =>
+    /^(\/|https?:|data:|#)/.test(u),
+  );
+}
+
+/**
+ * The sheet's text as it will be bundled, or null when it must stay its own
+ * request. A leading `@import url("/assets/….css")` is inlined (it is the same
+ * rules, one request instead of a serial chain), provided the imported sheet
+ * has only absolute url() values and no imports of its own.
+ */
+function bundledText(href, distPath) {
+  if (!existsSync(distPath)) return null;
+  let css = readFileSync(distPath, "utf8");
+  const lead = css.match(/^(\s*(?:\/\*[\s\S]*?\*\/\s*)*)/)[1];
+  const rest = css.slice(lead.length);
+  const imp = rest.match(IMPORT_RE);
+  if (imp) {
+    const target = join(DIST, imp[1].replace(/^\//, ""));
+    if (!existsSync(target)) return null;
+    const imported = readFileSync(target, "utf8");
+    if (/@import\b|@charset\b/.test(imported) || !urlsAreAbsolute(imported)) return null;
+    css = `${lead}/* ===== inlined @import ${imp[1]} ===== */\n${imported}\n${rest.slice(imp[0].length)}`;
+  }
+  if (/^\s*(\/\*[\s\S]*?\*\/\s*)*@(import|charset)\b/.test(css.slice(0, 400))) return null;
+  if (/^\/assets\/[^/]+\.css$/.test(href)) return css;
+  // A sheet in a subdirectory (/assets/ewl/…, /assets/my-progress/…) may only
+  // join a bundle written to /assets/ when none of its url() values is resolved
+  // relative to its own location.
+  return urlsAreAbsolute(css) ? css : null;
 }
 
 function bundlePage(rel) {
@@ -71,8 +104,13 @@ function bundlePage(rel) {
   }
 
   const tags = [...html.matchAll(LINK_RE)]
-    .map((m) => ({ text: m[0], href: m[1], index: m.index }))
-    .filter((t) => bundleable(t.href, join(DIST, t.href.replace(/^\//, ""))));
+    .map((m) => ({
+      text: m[0],
+      href: m[1],
+      index: m.index,
+      css: bundledText(m[1], join(DIST, m[1].replace(/^\//, ""))),
+    }))
+    .filter((t) => t.css !== null);
 
   // Group into runs separated by whitespace only.
   const runs = [];
@@ -94,10 +132,7 @@ function bundlePage(rel) {
   // Replace from the end so earlier indices stay valid.
   for (const run of runs.reverse()) {
     if (run.length < 2) continue;
-    const parts = run.map(
-      (t) =>
-        `/* ===== ${t.href} ===== */\n${readFileSync(join(DIST, t.href.replace(/^\//, "")), "utf8")}`,
-    );
+    const parts = run.map((t) => `/* ===== ${t.href} ===== */\n${t.css}`);
     const css = parts.join("\n");
     const hash = createHash("sha256").update(css).digest("hex").slice(0, 10);
     const name = `${MARK}${hash}.css`;

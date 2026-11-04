@@ -5,6 +5,7 @@ import { PROJECTS, studioURL, UNIT_NAMES } from "../curriculum/projects/studio/p
 import { writeGenerated } from "../scripts/lib/preserve-injected.mjs";
 import { withCurriculumShell } from "./lib/curriculum-shell.mjs";
 import { galleryPage } from "./lib/projects-gallery.mjs";
+import { portfolioPage } from "./lib/projects-portfolio.mjs";
 
 const esc = (s) =>
   String(s).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll('"', "&quot;");
@@ -13,6 +14,8 @@ for (const path of ["curriculum/projects/index.html", "math/projects/index.html"
   const html = galleryPage(path);
   writeGenerated(path, path.startsWith("curriculum/") ? withCurriculumShell(html, "") : html);
 }
+/** The portfolio is built from the same registry (tools/lib/projects-portfolio.mjs). */
+writeGenerated("math/projects/portfolio/index.html", portfolioPage());
 const css = "/curriculum/projects/studio/entry.css?v=20261007";
 const groups = new Map();
 for (const p of PROJECTS.filter((p) => p.classic)) {

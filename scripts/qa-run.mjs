@@ -178,6 +178,7 @@ const EXCLUSIVE = new Set([
   "validate:html-experiences-browser",
   "validate:project-studio-browser",
   "validate:projects-gallery-browser",
+  "validate:projects-portfolio-browser",
   "validate:fluency-workshops-browser",
   "validate:lesson-boot",
   "validate:palette",
@@ -806,10 +807,11 @@ const COVERAGE = [
   // surface so unrelated deploys do not pay ~90s for it. Must precede the
   // generic /^curriculum\/projects\// rule below.
   [
-    /^(curriculum\/projects\/studio\/|tools\/verify-project-studio-browser\.mjs$)/,
+    /^(curriculum\/projects\/studio\/|tools\/verify-project-studio-browser\.mjs$|tools\/lib\/project-studio-(?:oracle|probes-b)\.mjs$)/,
     [
       "validate:projects-registry",
       "validate:projects-gallery-browser",
+      "validate:projects-portfolio-browser",
       "validate:project-studio-browser",
       "validate:projects-publication",
       "validate:projects-award",
@@ -817,6 +819,24 @@ const COVERAGE = [
       "validate:projects-check",
       "validate:injection",
       "validate:unit-placement",
+    ],
+  ],
+  // PROJECTS PORTFOLIO — /math/projects/portfolio/ (generated from the registry by
+  // tools/lib/projects-portfolio.mjs) and the Studio completion record it reads. The registry
+  // check reruns the generator and fails on drift; the browser gate drives the page, the
+  // certificate and the Studio completion flow. (Edits to curriculum/projects/studio/completion*.mjs
+  // match the Studio rule above, which lists the portfolio gate too.) Must precede the generic
+  // /^math\/projects\// rule below.
+  [
+    /^(math\/projects\/portfolio\/|tools\/(validate-projects-portfolio-browser\.mjs|lib\/projects-portfolio(-seed)?\.mjs)|docs\/specs\/projects-completion-record\.md)/,
+    [
+      "validate:projects-registry",
+      "validate:projects-portfolio-browser",
+      "validate:save-resume",
+      "validate:js-syntax",
+      "validate:injection",
+      "validate:static",
+      "check",
     ],
   ],
   // PROJECTS GALLERY — /curriculum/projects/ and /math/projects/, generated from the registry
@@ -868,6 +888,7 @@ const COVERAGE = [
     [
       "validate:projects-registry",
       "validate:projects-gallery-browser",
+      "validate:projects-portfolio-browser",
       "validate:gate-coverage",
       "validate:js-syntax",
       "check",

@@ -1,0 +1,590 @@
+/* Project Portfolio (/math/projects/portfolio/). Generated markup: tools/lib/projects-portfolio.mjs.
+   Behaviour: portfolio.mjs. Unit colour comes from the --unit-N tokens with the same fallbacks
+   the gallery uses. Colour is never the only carrier of status: every status is also text. */
+.pf-body {
+  margin: 0;
+  background: #f7f5ee;
+  color: #142c3b;
+  font-family: "Atkinson Hyperlegible", system-ui, sans-serif;
+  font-size: 17px;
+  line-height: 1.55;
+}
+.pf-body :is(button, input) {
+  font-family: inherit;
+}
+.pf-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.pf-skip {
+  position: absolute;
+  left: 12px;
+  top: -80px;
+  z-index: 10;
+  background: #fff;
+  color: #142c3b;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-weight: 700;
+}
+.pf-skip:focus {
+  top: 12px;
+}
+.pf-sitebar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 20px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 20px;
+  background: #fff;
+  border-bottom: 1px solid #c1cdc9;
+}
+.pf-sitebar .brand {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  gap: 8px;
+  font-weight: 700;
+  color: #142c3b;
+  text-decoration: none;
+}
+.pf-sitebar .brand span {
+  font-weight: 400;
+  color: #405764;
+}
+.pf-sitebar nav {
+  display: flex;
+  gap: 18px;
+}
+.pf-sitebar nav a,
+.pf-nav a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: #124f7a;
+  font-weight: 700;
+}
+.pf {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 28px 20px 40px;
+}
+.pf a {
+  color: #124f7a;
+}
+.pf :is(a, button, input, summary):focus-visible,
+.pf-cert-dialog :is(button, a):focus-visible,
+.pf-nav a:focus-visible {
+  outline: 3px solid #124f7a;
+  outline-offset: 3px;
+}
+.pf-eyebrow {
+  margin: 0;
+  font-weight: 700;
+  color: #405764;
+}
+.pf-hero h1 {
+  margin: 4px 0 8px;
+  font-size: clamp(2rem, 5.4vw, 3.2rem);
+  line-height: 1.05;
+  text-wrap: balance;
+}
+.pf-lede {
+  max-width: 62ch;
+  margin: 0 0 18px;
+  color: #2c4352;
+}
+.pf-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 12px;
+  margin: 0 0 18px;
+  max-width: 820px;
+}
+.pf-stats > div {
+  background: #fff;
+  border: 1px solid #c1cdc9;
+  border-radius: 8px;
+  padding: 12px 16px;
+}
+.pf-stats dt {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #405764;
+}
+.pf-stats dd {
+  margin: 2px 0 0;
+  font-size: 1.7rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+.pf-stats [hidden] {
+  display: none;
+}
+.pf-note {
+  max-width: 62ch;
+  margin: 0 0 16px;
+  padding: 10px 14px;
+  background: #fff;
+  border-left: 6px solid #b53e20;
+  border-radius: 6px;
+}
+.pf-noscript {
+  margin: 0;
+}
+.pf-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px 24px;
+  align-items: flex-end;
+}
+.pf-name {
+  flex: 1 1 280px;
+  max-width: 420px;
+}
+.pf-name label {
+  display: block;
+  font-weight: 700;
+  font-size: 0.9rem;
+  margin-bottom: 4px;
+}
+.pf-name input {
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 44px;
+  padding: 8px 12px;
+  font-size: 1rem;
+  color: #142c3b;
+  background: #fff;
+  border: 2px solid #6b7f8a;
+  border-radius: 8px;
+}
+.pf-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  min-width: 44px;
+  padding: 8px 16px;
+  border: 2px solid #124f7a;
+  border-radius: 8px;
+  background: #fff;
+  color: #124f7a;
+  font-size: 0.95rem;
+  font-weight: 700;
+  line-height: 1.2;
+  text-decoration: none;
+  cursor: pointer;
+}
+.pf-btn:hover {
+  background: #e8f1f7;
+}
+.pf-primary {
+  background: #124f7a;
+  color: #fff;
+}
+.pf .pf-primary {
+  color: #fff;
+}
+.pf-primary:hover {
+  background: #0d3d5e;
+}
+.pf [hidden],
+.pf-cert-dialog [hidden] {
+  display: none !important;
+}
+.pf-empty {
+  margin: 24px 0 0;
+  max-width: 760px;
+  background: #fff;
+  border: 1px solid #c1cdc9;
+  border-left: 6px solid #11675d;
+  border-radius: 8px;
+  padding: 18px 22px;
+}
+.pf-empty h2 {
+  margin: 0 0 8px;
+  font-size: 1.25rem;
+}
+.pf-empty ol {
+  margin: 8px 0 0;
+  padding-left: 22px;
+}
+.pf-units {
+  list-style: none;
+  margin: 28px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 28px;
+}
+.pf-unit {
+  border-top: 5px solid var(--pf-unit);
+  padding-top: 10px;
+}
+.pf-unit-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 16px;
+}
+.pf-unit-head h2 {
+  margin: 0;
+  font-size: 1.35rem;
+}
+.pf-unit-meta {
+  margin: 0;
+  flex: 1;
+  color: #405764;
+  font-weight: 700;
+}
+.pf-cards {
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr));
+  gap: 14px;
+  align-items: start;
+}
+.pf-card {
+  background: #fff;
+  border: 1px solid #c1cdc9;
+  border-left: 6px solid var(--pf-unit);
+  border-radius: 8px;
+  padding: 14px 16px;
+}
+.pf-card[data-status="complete"] {
+  border-color: #11675d;
+  border-left-color: #11675d;
+}
+.pf-card-head h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  line-height: 1.25;
+}
+.pf-chips {
+  margin: 6px 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.pf-chip {
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 1px 8px;
+  border: 1px solid #a9b8b4;
+  border-radius: 999px;
+  color: #2c4352;
+}
+.pf-status {
+  display: inline-block;
+  margin: 10px 0 0;
+  padding: 2px 12px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+.pf-card[data-status="complete"] .pf-status {
+  background: #dff1e7;
+  color: #0b5a45;
+}
+.pf-card[data-status="in-progress"] .pf-status {
+  background: #e1edf6;
+  color: #0f4a73;
+}
+.pf-card[data-status="not-started"] .pf-status {
+  background: #eceeed;
+  color: #3b4f5b;
+}
+.pf-artifact {
+  margin-top: 10px;
+  font-size: 0.95rem;
+}
+.pf-artifact p {
+  margin: 4px 0;
+}
+.pf-artifact details {
+  margin-top: 8px;
+  border-top: 1px solid #dfe5e2;
+  padding-top: 6px;
+}
+.pf-artifact summary {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  font-weight: 700;
+  cursor: pointer;
+  color: #124f7a;
+}
+.pf-artifact dl {
+  margin: 4px 0 0;
+}
+.pf-artifact dt {
+  margin-top: 8px;
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: #405764;
+}
+.pf-artifact dd {
+  margin: 2px 0 0;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+.pf-artifact ul {
+  margin: 2px 0 0;
+  padding-left: 20px;
+}
+.pf-links {
+  margin: 12px 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.pf-nav {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0 20px 12px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 20px;
+}
+.pf-footer {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 8px 20px 40px;
+  color: #405764;
+  font-size: 0.9rem;
+}
+.pf-footer a {
+  color: #124f7a;
+}
+.pf-live {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+
+/* ---------- certificate ---------- */
+.pf-cert-dialog {
+  width: min(960px, calc(100vw - 24px));
+  max-height: calc(100vh - 24px);
+  padding: 0;
+  border: 0;
+  border-radius: 12px;
+  background: #f7f5ee;
+  color: #142c3b;
+  overflow: auto;
+}
+.pf-cert-dialog::backdrop {
+  background: rgb(20 44 59 / 0.72);
+}
+.pf-cert-wrap {
+  padding: 16px;
+}
+.pf-cert-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  padding: 14px 0 2px;
+}
+.pf-cert {
+  position: relative;
+  box-sizing: border-box;
+  background: #fffdf6;
+  border-radius: 6px;
+  aspect-ratio: 11 / 8.5;
+  min-height: 0;
+  padding: 7% 9%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+  container-type: inline-size;
+}
+.pf-cert-art {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.pf-cert-body {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.4cqw;
+}
+.pf-cert-kicker {
+  margin: 0;
+  font-size: max(0.75rem, 2.1cqw);
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #8a3216;
+}
+.pf-cert h2 {
+  margin: 0;
+  font-size: 4.4cqw;
+  line-height: 1.12;
+  text-wrap: balance;
+}
+.pf-cert-line {
+  margin: 0;
+  font-size: max(0.85rem, 2.3cqw);
+  color: #2c4352;
+}
+.pf-cert-name {
+  min-width: 46cqw;
+  margin: 0.4cqw 0 0;
+  padding: 0 2cqw 0.6cqw;
+  border-bottom: 0.25cqw solid #142c3b;
+  font-size: 4cqw;
+  font-weight: 700;
+  min-height: 5.6cqw;
+  overflow-wrap: anywhere;
+}
+.pf-cert-projects {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: max(0.9rem, 2.5cqw);
+  font-weight: 700;
+}
+.pf-cert-meta {
+  margin: 0.4cqw 0 0;
+  font-size: max(0.8rem, 1.9cqw);
+  color: #2c4352;
+}
+.pf-cert-foot {
+  margin: 0.6cqw 0 0;
+  font-size: max(0.8rem, 1.7cqw);
+  color: #405764;
+}
+.pf-cert-emblem {
+  display: none;
+  width: 56px;
+  height: 56px;
+}
+@media (max-width: 640px) {
+  .pf-cert {
+    aspect-ratio: auto;
+    padding: 36px 24px;
+    border: 3px solid #142c3b;
+    box-shadow:
+      inset 0 0 0 5px #fffdf6,
+      inset 0 0 0 7px #b53e20;
+  }
+  .pf-cert-art {
+    display: none;
+  }
+  .pf-cert-emblem {
+    display: block;
+  }
+  .pf-cert-kicker {
+    font-size: 0.8rem;
+  }
+  .pf-cert h2 {
+    font-size: 1.5rem;
+  }
+  .pf-cert-line,
+  .pf-cert-projects,
+  .pf-cert-meta,
+  .pf-cert-foot {
+    font-size: 0.95rem;
+  }
+  .pf-cert-name {
+    font-size: 1.5rem;
+    min-width: 12em;
+    min-height: 2.4rem;
+  }
+}
+
+@media (max-width: 520px) {
+  .pf {
+    padding: 20px 16px 32px;
+  }
+  .pf-sitebar {
+    padding: 8px 16px;
+  }
+  .pf-nav,
+  .pf-footer {
+    padding-inline: 16px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pf-btn {
+    transition: none;
+  }
+}
+@media (forced-colors: active) {
+  .pf-card,
+  .pf-btn,
+  .pf-status {
+    border: 1px solid CanvasText;
+  }
+}
+
+/* ---------- print ---------- */
+@media print {
+  .pf-body {
+    background: #fff;
+    font-size: 11pt;
+  }
+  .pf-sitebar,
+  .pf-skip,
+  .pf-nav,
+  .pf-tools .pf-primary,
+  .pf-links,
+  .pf-cert-btn,
+  .pf-noscript {
+    display: none !important;
+  }
+  .pf-name input {
+    border: 0;
+    border-bottom: 1px solid #000;
+    border-radius: 0;
+    padding: 0;
+  }
+  .pf-card,
+  .pf-unit {
+    break-inside: avoid;
+  }
+  .pf-cards {
+    grid-template-columns: 1fr 1fr;
+  }
+  .pf-artifact summary {
+    display: block;
+    min-height: 0;
+  }
+  /* A certificate prints alone, landscape, on one page. */
+  .pf-body.pf-printing-cert > :not(.pf-cert-dialog) {
+    display: none !important;
+  }
+  .pf-body.pf-printing-cert .pf-cert-dialog {
+    position: static;
+    display: block;
+    width: auto;
+    max-height: none;
+    overflow: visible;
+    background: #fff;
+  }
+  .pf-body.pf-printing-cert .pf-cert-wrap {
+    padding: 0;
+  }
+  .pf-body.pf-printing-cert .pf-cert-actions {
+    display: none;
+  }
+  .pf-body.pf-printing-cert .pf-cert {
+    width: 100%;
+    max-height: 7.6in;
+    break-inside: avoid;
+  }
+}

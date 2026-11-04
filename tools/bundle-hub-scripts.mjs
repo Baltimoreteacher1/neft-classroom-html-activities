@@ -102,6 +102,73 @@ const RUN = [
   "/assets/gradebook-embed.js",
 ];
 
+/* Further hub-only runs. Each is bundled separately because something that is
+ * NOT in the run sits on either side of it (an inline block, a site-wide
+ * asset, the defer bundle above), and each must be contiguous on the page with
+ * nothing but whitespace between its tags -- these are held to a stricter test
+ * than the main run, because a blocking script that moves past an inline
+ * script changes what that inline script sees.
+ *
+ *   head      four classic blocking <script src> tags (generated lesson maps).
+ *             They were four render-blocking round trips before first paint.
+ *   presets   two defer scripts that run before the main bundle.
+ *   pacing    three hub-only defer scripts separated only by inline blocks.
+ *   identity  the identity scripts, in the order the page comment requires
+ *             (shared-identity.js first).
+ *   tail      hub-only scripts that close the page. formula-popup.js is on 859
+ *             pages and stays separate for the cross-page cache hit.
+ *
+ * Every file here is referenced by the hub and at most one other page
+ * (checked by `rg -l`), so bundling costs no cross-page cache hit. */
+const EXTRA_RUNS = [
+  {
+    label: "head",
+    defer: false,
+    files: [
+      "/curriculum/lesson-context.js",
+      "/curriculum/lesson-bonus-activities.js",
+      "/curriculum/lesson-family-homework.js",
+      "/curriculum/lesson-mstar-worksheets.js",
+    ],
+  },
+  {
+    label: "presets",
+    defer: true,
+    files: ["/assets/math-workbench-presets.js", "/assets/project-readiness-pathways.js"],
+  },
+  {
+    label: "pacing",
+    defer: true,
+    // Inline blocks and one classic blocking script sit between these three, and
+    // that is safe: defer scripts all run after parsing, in document order, and
+    // no other defer script lies between them (checked below).
+    loose: true,
+    files: [
+      "/assets/nt-signal.js",
+      "/assets/curriculum-hub-pacing.js",
+      "/assets/curriculum-hub-options.js",
+    ],
+  },
+  {
+    label: "identity",
+    defer: true,
+    files: [
+      "/assets/shared-identity.js",
+      "/assets/curriculum-supports-identity.js",
+      "/assets/class-board-strip.js",
+    ],
+  },
+  {
+    label: "tail",
+    defer: true,
+    files: [
+      "/assets/practice-workbook-links.js",
+      "/assets/reveal-document-links.js",
+      "/assets/curriculum-hub-pedagogy.js",
+    ],
+  },
+];
+
 const fail = (m) => {
   console.error(`bundle-hub-scripts: ${m}`);
   process.exit(1);
@@ -110,72 +177,134 @@ const fail = (m) => {
 if (!existsSync(PAGE)) fail(`no ${PAGE} — run \`vite build\` first.`);
 let html = readFileSync(PAGE, "utf8");
 
-if (html.includes("curriculum-hub.bundle.")) {
-  console.log("bundle-hub-scripts: already bundled — nothing to do.");
-  process.exit(0);
-}
+const escapeRe = (text) => text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
 /* Locate each tag. Matching on src ignoring any ?v= stamp, since vite rewrites
  * those. A tag that is missing means the page changed shape; refuse rather than
  * bundle a partial run, because a partial run is the reordering hazard. */
-const tags = [];
-for (const src of RUN) {
-  const re = new RegExp(
-    `[ \\t]*<script\\b[^>]*\\bsrc="${src.replace(/[.*+?^${}()|[\\]\\\\]/g, "\\\\$&")}(?:\\?[^"]*)?"[^>]*></script>\\n?`,
-  );
-  const m = html.match(re);
-  if (!m)
-    fail(
-      `expected <script src="${src}"> on the hub and did not find it. The page changed shape — re-check the run before bundling.`,
+function locate(files) {
+  return files.map((src) => {
+    const re = new RegExp(
+      `[ \\t]*<script\\b[^>]*\\bsrc="${escapeRe(src)}(?:\\?[^"]*)?"[^>]*></script>\\n?`,
     );
-  tags.push({ src, text: m[0], index: m.index });
-}
-
-/* Assert the run really is contiguous IN THE PAGE and in the listed order.
- * Everything this tool is safe to do depends on that. */
-for (let i = 1; i < tags.length; i++) {
-  if (tags[i].index < tags[i - 1].index) {
-    fail(
-      `${tags[i].src} appears before ${tags[i - 1].src} on the page — the listed order is not the page order.`,
-    );
-  }
-}
-const first = tags[0];
-const last = tags[tags.length - 1];
-const between = html.slice(first.index, last.index + last.text.length);
-const strayDefer = [...between.matchAll(/<script\b([^>]*)\bsrc="([^"]+)"([^>]*)><\/script>/g)]
-  .filter(([, a, src, b]) => {
-    const attrs = `${a} ${b}`;
-    if (!attrs.includes("defer") || attrs.includes('type="module"')) return false;
-    return !RUN.some((r) => src.split("?")[0] === r);
-  })
-  .map((m) => m[2]);
-if (strayDefer.length) {
-  fail(
-    `a defer script that is not in the run sits inside it: ${strayDefer.join(", ")}. Bundling would move it. Update RUN deliberately or exclude it.`,
-  );
+    const m = html.match(re);
+    if (!m)
+      fail(
+        `expected <script src="${src}"> on the hub and did not find it. The page changed shape — re-check the run before bundling.`,
+      );
+    return { src, text: m[0], index: m.index };
+  });
 }
 
 /* Concatenate in execution order. `;` between files so a file ending in an
  * unterminated expression cannot swallow the next one. */
-const parts = [];
-for (const src of RUN) {
-  const p = join(DIST, src.replace(/^\//, ""));
-  if (!existsSync(p)) fail(`${src} is on the page but missing from dist/.`);
-  parts.push(`/* ===== ${src} ===== */\n${readFileSync(p, "utf8")}`);
+function concatenate(files) {
+  const parts = [];
+  for (const src of files) {
+    const p = join(DIST, src.replace(/^\//, ""));
+    if (!existsSync(p)) fail(`${src} is on the page but missing from dist/.`);
+    parts.push(`/* ===== ${src} ===== */\n${readFileSync(p, "utf8")}`);
+  }
+  return parts.join("\n;\n");
 }
-const bundle = parts.join("\n;\n");
-const hash = createHash("sha256").update(bundle).digest("hex").slice(0, 10);
-const name = `curriculum-hub.bundle.${hash}.js`;
-writeFileSync(join(DIST, "assets", name), bundle);
 
-/* Replace the first tag in place -- preserving the run's position in the defer
+/* Replace the first tag in place -- preserving the run's position in the
  * queue relative to every tag outside it -- and drop the rest. */
-html = html.replace(first.text, `    <script src="/assets/${name}" defer></script>\n`);
-for (const t of tags.slice(1)) html = html.replace(t.text, "");
-writeFileSync(PAGE, html);
+function writeRun(tags, prefix, bundle, defer) {
+  const hash = createHash("sha256").update(bundle).digest("hex").slice(0, 10);
+  const name = `${prefix}.${hash}.js`;
+  writeFileSync(join(DIST, "assets", name), bundle);
+  html = html.replace(
+    tags[0].text,
+    `    <script src="/assets/${name}"${defer ? " defer" : ""}></script>\n`,
+  );
+  for (const t of tags.slice(1)) html = html.replace(t.text, "");
+  return name;
+}
 
-const kb = (bundle.length / 1024).toFixed(0);
+/* Assert the run really is in the listed order IN THE PAGE. */
+function assertOrder(tags) {
+  for (let i = 1; i < tags.length; i++) {
+    if (tags[i].index < tags[i - 1].index) {
+      fail(
+        `${tags[i].src} appears before ${tags[i - 1].src} on the page — the listed order is not the page order.`,
+      );
+    }
+  }
+}
+
+let removedTotal = 0;
+const summaries = [];
+
+/* ---- the main defer run (non-contiguous allowed: inline blocks may sit between) */
+if (html.includes("curriculum-hub.bundle.")) {
+  summaries.push("main run already bundled");
+} else {
+  const tags = locate(RUN);
+  assertOrder(tags);
+  const first = tags[0];
+  const last = tags[tags.length - 1];
+  const between = html.slice(first.index, last.index + last.text.length);
+  const strayDefer = [...between.matchAll(/<script\b([^>]*)\bsrc="([^"]+)"([^>]*)><\/script>/g)]
+    .filter(([, a, src, b]) => {
+      const attrs = `${a} ${b}`;
+      if (!attrs.includes("defer") || attrs.includes('type="module"')) return false;
+      return !RUN.some((r) => src.split("?")[0] === r);
+    })
+    .map((m) => m[2]);
+  if (strayDefer.length) {
+    fail(
+      `a defer script that is not in the run sits inside it: ${strayDefer.join(", ")}. Bundling would move it. Update RUN deliberately or exclude it.`,
+    );
+  }
+  const bundle = concatenate(RUN);
+  const name = writeRun(tags, "curriculum-hub.bundle", bundle, true);
+  removedTotal += RUN.length - 1;
+  summaries.push(
+    `${RUN.length} scripts -> assets/${name} (${(bundle.length / 1024).toFixed(0)} KB)`,
+  );
+}
+
+/* ---- the extra runs: whitespace-only gaps, no exceptions */
+for (const run of EXTRA_RUNS) {
+  const marker = `curriculum-hub.${run.label}.`;
+  if (html.includes(`/assets/${marker}`)) {
+    summaries.push(`${run.label} run already bundled`);
+    continue;
+  }
+  const tags = locate(run.files);
+  assertOrder(tags);
+  if (run.loose) {
+    const span = html.slice(
+      tags[0].index,
+      tags[tags.length - 1].index + tags[tags.length - 1].text.length,
+    );
+    const stray = [...span.matchAll(/<script\b([^>]*)\bsrc="([^"]+)"([^>]*)><\/script>/g)]
+      .filter(
+        ([, a, src, b]) => `${a} ${b}`.includes("defer") && !run.files.includes(src.split("?")[0]),
+      )
+      .map((m) => m[2]);
+    if (stray.length)
+      fail(
+        `a defer script that is not in the "${run.label}" run sits inside it: ${stray.join(", ")}.`,
+      );
+  } else {
+    for (let i = 1; i < tags.length; i++) {
+      const prev = tags[i - 1];
+      const gap = html.slice(prev.index + prev.text.length, tags[i].index);
+      if (gap.trim() !== "")
+        fail(
+          `the "${run.label}" run is not contiguous: ${JSON.stringify(gap.trim().slice(0, 80))} sits between ${prev.src} and ${tags[i].src}. Bundling would reorder execution.`,
+        );
+    }
+  }
+  const bundle = concatenate(run.files);
+  const name = writeRun(tags, `curriculum-hub.${run.label}`, bundle, run.defer);
+  removedTotal += run.files.length - 1;
+  summaries.push(`${run.label}: ${run.files.length} -> assets/${name}`);
+}
+
+writeFileSync(PAGE, html);
 console.log(
-  `bundle-hub-scripts: ${RUN.length} scripts -> assets/${name} (${kb} KB); ${RUN.length - 1} fewer requests on /curriculum/.`,
+  `bundle-hub-scripts: ${summaries.join("; ")}; ${removedTotal} fewer requests on /curriculum/.`,
 );

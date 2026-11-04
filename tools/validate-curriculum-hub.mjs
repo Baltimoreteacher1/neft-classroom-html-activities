@@ -359,19 +359,36 @@ check(
         `${file} publishes "${m[1]} project sets" but ${projectSets.length} exist on disk`,
       );
     }
-    // "N projects" means a different thing on each page, and both are true: the gallery
-    // lists one card per Project Studio mission (data/project-registry.json), the portfolio
-    // counts the version pages that can hold saved work (on disk). Each page is held to its
-    // own source; "N project pages" is always the disk count.
-    const galleryPage = file === "curriculum/projects/index.html";
-    const registryProjects = JSON.parse(
-      readFileSync(resolve(ROOT, "data/project-registry.json"), "utf8"),
-    ).projects.length;
+    // "N projects" is held to the registry on both pages: the gallery lists one card per Project
+    // Studio mission and the portfolio (generated from the same registry) counts missions, in
+    // total and per unit. "N project pages" is always the version pages on disk.
+    const registry = JSON.parse(readFileSync(resolve(ROOT, "data/project-registry.json"), "utf8"));
+    const perUnit = new Map();
+    for (const p of registry.projects) perUnit.set(p.unit, (perUnit.get(p.unit) ?? 0) + 1);
+    // Portfolio unit heads read "Unit N · Title ... K projects": K is that unit's mission count.
+    const unitHeadCounts = new Map();
+    for (const m of src.matchAll(
+      /id="h-unit-(\d+)"[^>]*>[^<]*<\/h2>\s*(?:<[^>]+>\s*)*?(\d+)\s+projects?\b/gi,
+    )) {
+      unitHeadCounts.set(m[0], [Number(m[1]), Number(m[2])]);
+    }
+    for (const [, [unit, n]] of unitHeadCounts) {
+      check(
+        n === (perUnit.get(unit) ?? 0),
+        `${file} publishes "${n} projects" for unit ${unit} but ${perUnit.get(unit) ?? 0} Studio missions in the project registry exist`,
+      );
+    }
+    const perUnitTexts = new Set(
+      [...unitHeadCounts.keys()].map((k) => k.match(/(\d+)\s+projects?\b/i)[0]),
+    );
     for (const m of src.matchAll(/(\d+)\s+(?:flagship )?project(?:s| pages)/gi)) {
       const pages = /pages$/i.test(m[0]);
-      const truth = galleryPage && !pages ? registryProjects : projectDirs.length;
-      const source =
-        galleryPage && !pages ? "Studio missions in the project registry" : "project pages on disk";
+      if (!pages && perUnitTexts.has(m[0]) && file.includes("portfolio")) {
+        // checked above against its own unit; the same text also appears in other units' heads
+        continue;
+      }
+      const truth = pages ? projectDirs.length : registry.projects.length;
+      const source = pages ? "project pages on disk" : "Studio missions in the project registry";
       check(
         Number(m[1]) === truth,
         `${file} publishes "${m[1]} projects" but ${truth} ${source} exist`,

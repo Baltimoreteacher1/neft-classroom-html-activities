@@ -229,6 +229,12 @@
   }
 
   ready(function () {
+    // Chips are drawn on the browser's unit cards. The hub's unitsData is
+    // complete when curriculum-hub-search.js runs (it scrapes static markup), and
+    // on /curriculum/ it is empty -- the browser moved to /curriculum/units/ --
+    // so there is no card to decorate and the graph (~80 KB) would never be read.
+    var existing = window.CurriculumHub;
+    if (existing && existing.unitsData && !existing.unitsData.length) return;
     Promise.all([loadJson(GRAPH_URL), loadJson(MANIFEST_URL)])
       .then(function (results) {
         graph = results[0];

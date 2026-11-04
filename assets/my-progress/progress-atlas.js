@@ -30,6 +30,7 @@
   var esc = V.esc;
   var HREF = "/curriculum/my-progress/#learning-atlas";
   var NARROW = 720;
+  var MINI_LOAD_MARGIN = "800px 0px";
 
   var data = null;
   var loading = null;
@@ -485,8 +486,30 @@
       var snap = snapshot();
       if (snap) el.innerHTML = miniHtml(snap);
     }
-    load().then(draw, function () {});
     root.addEventListener("storage", draw);
+    // The card's data (standards graph, plain-language why, ~140 KB of retrieval
+    // questions) is only worth fetching once the card is about to be seen. On the
+    // hub it sits well below the first screen; the margin starts the request
+    // long before it scrolls in, so the card still arrives filled. Without
+    // IntersectionObserver (old browsers, jsdom) it loads straight away.
+    if (typeof root.IntersectionObserver !== "function") {
+      load().then(draw, function () {});
+      return;
+    }
+    var watcher = new root.IntersectionObserver(
+      function (entries) {
+        if (
+          !entries.some(function (e) {
+            return e.isIntersecting;
+          })
+        )
+          return;
+        watcher.disconnect();
+        load().then(draw, function () {});
+      },
+      { rootMargin: MINI_LOAD_MARGIN },
+    );
+    watcher.observe(el);
   }
 
   function restore(stores) {
