@@ -47,6 +47,24 @@ try {
       await page.context().close();
     }
   }
+  // Game Room option pills: the title of each stays on one line (it used to wrap to "Deep / Thinker / Mode")
+  for (const [width, height] of [[390, 844], [1280, 900]]) {
+    const page = await (await browser.newContext({ viewport: { width, height } })).newPage();
+    page.on("pageerror", (e) => errors.push(`pills: ${e.message}`));
+    await page.goto(`${base}?grade=4`, { waitUntil: "networkidle" });
+    await page.locator('#hub-tabs button[data-view="games"]').click();
+    await page.locator(".gm-calm").first().waitFor();
+    const lines = await page.evaluate(() => [...document.querySelectorAll(".gm-calm")].map((label) => {
+      const text = [...label.childNodes].find((n) => n.nodeType === 3 && /\S/.test(n.textContent));
+      const range = document.createRange();
+      range.selectNodeContents(text);
+      const rects = [...range.getClientRects()].filter((r) => r.width > 1);
+      return { title: text.textContent.trim(), lines: new Set(rects.map((r) => Math.round(r.top))).size };
+    }));
+    assert.ok(lines.length >= 2, "both pills are present");
+    for (const l of lines) assert.equal(l.lines, 1, `"${l.title}" wraps onto ${l.lines} lines at ${width}px`);
+    await page.context().close();
+  }
   assert.deepEqual(errors, [], "no console or page errors");
   console.log("gateways browser: every gateway has a drawing, no underlines, contracts intact, axe and overflow pass for grades 1, 4 and 8");
 } finally {
