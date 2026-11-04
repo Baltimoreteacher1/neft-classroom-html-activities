@@ -33,6 +33,10 @@ function copyStandaloneHtml() {
     // Generated QA output (screenshots, audit sheets). Nothing links into it, and
     // every file here counts toward Cloudflare Pages' 20,000-file deployment limit.
     "reports",
+    // Manual Canvas upload packages (gitignored build output, written by
+    // tools/scorm/build-all-scorm.mjs). Nothing on the site serves them; Canvas is not
+    // in use for these, per Joel (2026-11-04). Together they were 503 published files.
+    "scorm-packages",
     "night-shift",
     // Backend Worker sources are deployed with `wrangler deploy`, never served by
     // Pages. They were shipping to the public site: /workers/noam-school-cron.js
