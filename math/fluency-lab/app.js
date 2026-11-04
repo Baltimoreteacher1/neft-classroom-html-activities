@@ -7190,7 +7190,7 @@ function clearStudio() {
   const slot = document.querySelector("#studio-slot");
   if (slot) slot.replaceChildren();
 }
-function showStudio(item, skill, context) {
+function showStudio(item, skill, context, response = null) {
   const activeSkill = skill ?? (item ? skillForItem(state.grade, item) : null);
   if (!item || !activeSkill) {
     clearStudio();
@@ -7200,7 +7200,7 @@ function showStudio(item, skill, context) {
   clearStudio();
   const slot = document.querySelector("#studio-slot");
   if (slot) {
-    cleanupStudio = mountStudio(slot, { item, skill: activeSkill, context });
+    cleanupStudio = mountStudio(slot, { item, skill: activeSkill, context, response });
     mountedStudioItem = item;
     mountedStudioSkill = activeSkill;
   }
@@ -7265,7 +7265,7 @@ function showFeedback(title, copy, type, resultType = type, phase = null) {
     els.feedbackCopy.innerHTML = renderStudentFriendlyExplanation(state.item, copy);
     lightStepPlayers(els.feedbackCopy);
     wireExplanationWidgets(els.feedbackCopy, state.item);
-    showStudio(state.item, state.skill, "miss");
+    showStudio(state.item, state.skill, "miss", state.lastSubmitted);
   } else if (type === "correct" && state.item) {
     clearStudio();
     els.feedbackCopy.innerHTML = `<p>${escapeHtml(copy)}</p>${renderTransferChallengeButton(state.item)}`;

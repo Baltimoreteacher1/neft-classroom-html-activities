@@ -12,6 +12,7 @@ import { mountWatch } from "./panel-watch.js";
 import { SIMS } from "./sims.js";
 import { generateProblem, seededRandom } from "../problem-bank.js";
 import { getLang, t } from "../i18n.js";
+import { labHref } from "../reality/lab/lab-entry.js";
 
 const esc = (s) =>
   String(s)
@@ -50,7 +51,7 @@ let counter = 0;
 export const studioAvailable = (item) => Boolean(lessonFor(item));
 export const studioModeled = (item) => lessonFor(item)?.modeled === true;
 
-export function mountStudio(host, { item, skill, context = "idea" }) {
+export function mountStudio(host, { item, skill, context = "idea", response = null }) {
   let lesson = lessonFor(item);
   if (!lesson) return null;
   const id = ++counter;
@@ -111,6 +112,7 @@ export function mountStudio(host, { item, skill, context = "idea" }) {
         <button type="button" class="sd-chip" data-tool="rep" hidden></button>
         <button type="button" class="sd-chip" data-tool="example" data-t="Another example">${esc(t("Another example"))}</button>
         <button type="button" class="sd-chip" data-tool="lang"></button>
+        <a class="sd-chip sd-lab-link" data-lab-link hidden></a>
       </div>
       <div class="sd-tabs" role="tablist" data-tabs></div>
       <div class="sd-panel" data-panel role="tabpanel" tabindex="-1"></div>
@@ -118,6 +120,14 @@ export function mountStudio(host, { item, skill, context = "idea" }) {
       <p class="sd-badge" data-badge hidden></p>
     </section>`;
   const q = (s) => host.querySelector(s);
+  // A model for this skill in the Reality Lab; after a miss on decimal addition it opens on the learner's own answer.
+  const labLink = q("[data-lab-link]");
+  const labTarget = labHref(skill, item, context === "miss" ? response : null);
+  if (labLink && labTarget) {
+    labLink.href = labTarget;
+    labLink.hidden = false;
+    labLink.textContent = pick(L("Build it in the Reality Lab", "Constrúyelo en el Laboratorio de realidad"), getLang());
+  }
 
   ctx.say = (m) => {
     q("[data-live]").textContent = m;
@@ -167,6 +177,7 @@ export function mountStudio(host, { item, skill, context = "idea" }) {
 
   function chrome() {
     host.querySelectorAll("[data-t]").forEach((el) => (el.textContent = t(el.dataset.t)));
+    if (labLink && !labLink.hidden) labLink.textContent = pick(L("Build it in the Reality Lab", "Constrúyelo en el Laboratorio de realidad"), getLang());
     host.querySelectorAll("[data-ta]").forEach((el) => el.setAttribute("aria-label", t(el.dataset.ta)));
     q("[data-title]").textContent = `${pick(describe(ctx.lesson), getLang())} · ${skill.title}`;
     q("[data-tabs]").innerHTML = tabsList()

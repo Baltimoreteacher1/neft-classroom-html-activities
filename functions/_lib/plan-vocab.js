@@ -3074,6 +3074,12 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/math/fluency-lab/reality/lab/",
+    title: "Math Reality Lab | EduWonderLab Math Fluency Lab",
+    category: "Math Tool",
+    unit: null,
+  },
+  {
     path: "/math/fluency-lab/v7/",
     title: "Learn with a picture · Math Fluency Lab",
     category: "Math Tool",

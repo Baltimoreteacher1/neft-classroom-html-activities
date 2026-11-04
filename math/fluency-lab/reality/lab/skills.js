@@ -1,0 +1,208 @@
+// The skill-to-interaction matrix: for every one of the Fluency Lab's skills, which Reality Lab experience teaches it,
+// or why it does not have one yet. A skill is "journey" (a full experience), "studio" (a generated build, explain and
+// transfer on the right model) or "exception" (a reason, plus the existing Studio engine that still serves it).
+// Keys are "<grade>:<skill id>" because several skill ids repeat across grades (grade 0 is kindergarten).
+import { L } from "./kernel.js";
+
+const J = (id) => ({ kind: "journey", id });
+const S = (template, variant = {}) => ({ kind: "studio", template, variant });
+const X = (why) => ({ kind: "exception", why });
+
+const WHY = {
+  clock: L(
+    "Telling time needs a clock face and a timeline. The Studio already draws them for this skill.",
+    "Decir la hora necesita un reloj y una línea de tiempo. El Estudio ya los dibuja para esta habilidad.",
+  ),
+  money: L(
+    "Coins need money pictures. The Studio already draws them for this skill.",
+    "Las monedas necesitan imágenes de dinero. El Estudio ya las dibuja para esta habilidad.",
+  ),
+  data: L(
+    "Reading a display needs a chart. The Studio already draws it for this skill.",
+    "Leer una representación necesita una gráfica. El Estudio ya la dibuja para esta habilidad.",
+  ),
+  pattern: L(
+    "Repeating patterns need a strip of shapes the Reality Lab does not have. The Studio draws one.",
+    "Los patrones repetidos necesitan una tira de figuras que el Laboratorio de Realidad no tiene. El Estudio dibuja una.",
+  ),
+  compare: L(
+    "Comparing two numbers place by place uses the Studio's columns, which show both numbers at once.",
+    "Comparar dos números lugar por lugar usa las columnas del Estudio, que muestran ambos números a la vez.",
+  ),
+  large: L(
+    "Numbers this large need columns the Studio's place-value engine draws. The Reality Lab mat stops at the thousands.",
+    "Los números tan grandes necesitan columnas que el motor de valor posicional del Estudio dibuja. El tablero del Laboratorio llega hasta los millares.",
+  ),
+  partial: L(
+    "Multi-digit multiplication uses partial products in the Studio's area engine. The Reality Lab rectangle holds up to 12 by 12.",
+    "La multiplicación de varios dígitos usa productos parciales en el motor de área del Estudio. El rectángulo del Laboratorio llega hasta 12 por 12.",
+  ),
+  decimalMul: L(
+    "Decimal multiplication uses a hundredths grid the Studio already provides.",
+    "La multiplicación de decimales usa una cuadrícula de centésimos que el Estudio ya ofrece.",
+  ),
+  fracMul: L(
+    "Multiplying fractions uses an area grid of fractions the Studio already provides.",
+    "Multiplicar fracciones usa una cuadrícula de área con fracciones que el Estudio ya ofrece.",
+  ),
+  volume: L(
+    "Volume needs a three-dimensional prism. The Studio draws one; the Reality Lab has no 3D model yet.",
+    "El volumen necesita un prisma tridimensional. El Estudio dibuja uno; el Laboratorio aún no tiene modelo 3D.",
+  ),
+  factors: L(
+    "Greatest common factor and least common multiple use factor lists the Studio already provides.",
+    "El máximo común divisor y el mínimo común múltiplo usan listas de factores que el Estudio ya ofrece.",
+  ),
+  percent: L(
+    "Percent uses a percent bar and a hundredths grid the Studio already provides.",
+    "El porcentaje usa una barra de porcentaje y una cuadrícula de centésimos que el Estudio ya ofrece.",
+  ),
+  geometry: L(
+    "This geometry idea needs a figure the Reality Lab does not draw yet. The Studio draws it.",
+    "Esta idea de geometría necesita una figura que el Laboratorio aún no dibuja. El Estudio la dibuja.",
+  ),
+  power: L(
+    "Exponents and roots use repeated factors and squares the Studio already provides.",
+    "Los exponentes y las raíces usan factores repetidos y cuadrados que el Estudio ya ofrece.",
+  ),
+  intMul: L(
+    "Multiplying and dividing integers, including two negatives, uses the Studio's pattern model.",
+    "Multiplicar y dividir enteros, incluidos dos negativos, usa el modelo de patrones del Estudio.",
+  ),
+  inequality: L(
+    "Testing an inequality uses a number line with open and closed circles the Studio already provides.",
+    "Probar una desigualdad usa una recta numérica con círculos abiertos y cerrados que el Estudio ya ofrece.",
+  ),
+  systems: L(
+    "Systems of equations need two graphed lines at once. The Studio draws them.",
+    "Los sistemas de ecuaciones necesitan dos rectas graficadas a la vez. El Estudio las dibuja.",
+  ),
+  scale: L(
+    "Scale drawings and unit conversion use ratio tables the Studio already provides.",
+    "Los dibujos a escala y la conversión de unidades usan tablas de razones que el Estudio ya ofrece.",
+  ),
+  stats: L(
+    "Probability and statistics need data displays the Studio already provides.",
+    "La probabilidad y la estadística necesitan representaciones de datos que el Estudio ya ofrece.",
+  ),
+  transform: L(
+    "Reflections need a four-quadrant grid with a figure. The Studio draws it.",
+    "Las reflexiones necesitan una cuadrícula de cuatro cuadrantes con una figura. El Estudio la dibuja.",
+  ),
+  wholeDiv: L(
+    "Multi-digit division uses chunking in the Studio's long-division model.",
+    "La división de varios dígitos usa agrupación en el modelo de división larga del Estudio.",
+  ),
+  percentChange: L(
+    "Percent change uses a percent bar the Studio already provides.",
+    "El cambio porcentual usa una barra de porcentaje que el Estudio ya ofrece.",
+  ),
+};
+
+export const SKILL_MATRIX = {
+  // Kindergarten
+  "0:count-forward": S("hops", { step: 1 }),
+  "0:count-cardinality": S("tenframe", { mode: "count", max: 10 }),
+  "0:subitize": S("tenframe", { mode: "count", max: 5, top: 5 }),
+  "0:compare-20": S("tenframe", { mode: "more", max: 20 }),
+  "0:compose-10": S("tenframe", { mode: "make10" }),
+  "0:add-sub-5": S("tenframe", { mode: "sum", max: 5 }),
+  "0:story-add-sub-10": S("tenframe", { mode: "sum", max: 10 }),
+  "0:patterns": X(WHY.pattern),
+  // Grade 1
+  "1:count-patterns": S("hops", { step: 2, fromStart: true }),
+  "1:tens-ones": S("place", { mode: "build", set: "whole", digits: 2 }),
+  "1:compare-100": X(WHY.compare),
+  "1:add-10": S("tenframe", { mode: "sum", max: 10 }),
+  "1:subtract-10": S("tenframe", { mode: "sub", max: 10 }),
+  "1:make-10": S("tenframe", { mode: "make10" }),
+  "1:add-20": S("tenframe", { mode: "sum", max: 20 }),
+  "1:missing-addend": S("tenframe", { mode: "missing", max: 10 }),
+  "1:subtract-20": S("tenframe", { mode: "sub", max: 20 }),
+  "1:time": X(WHY.clock),
+  "1:measure-length": S("hops", { mode: "measure" }),
+  // Grade 2
+  "2:facts-20": S("tenframe", { mode: "sum", max: 20 }),
+  "2:sub-facts-20": S("tenframe", { mode: "sub", max: 20 }),
+  "2:place-1000": J("build-place-number"),
+  "2:compare-1000": X(WHY.compare),
+  "2:skip-count": S("hops", { step: 5 }),
+  "2:add-100": S("place", { mode: "add", set: "whole", digits: 2 }),
+  "2:subtract-100": S("place", { mode: "sub", set: "whole", digits: 2 }),
+  "2:add-1000": S("place", { mode: "add", set: "whole", digits: 3 }),
+  "2:even-odd": S("tenframe", { mode: "evenodd", max: 20 }),
+  "2:coins": X(WHY.money),
+  "2:interpret-data": X(WHY.data),
+  // Grade 3
+  "3:mul-0-5": S("area", { mode: "fact", min: 1, max: 5 }),
+  "3:mul-6-9": S("area", { mode: "fact", min: 6, max: 9 }),
+  "3:mul-10-12": X(WHY.partial),
+  "3:division-facts": S("area", { mode: "div", max: 9 }),
+  "3:add-sub-1000": S("place", { mode: "sub", set: "whole", digits: 3 }),
+  "3:round": S("hops", { mode: "round", unit: 10 }),
+  "3:fraction-equivalence": J("fraction-transform"),
+  "3:fraction-compare": S("fracadd", { mode: "compare" }),
+  "3:area": J("discover-area"),
+  "3:perimeter": J("build-area-24"),
+  "3:elapsed-time": X(WHY.clock),
+  // Grade 4
+  "4:place-million": X(WHY.large),
+  "4:round-large": X(WHY.large),
+  "4:add-large": S("place", { mode: "add", set: "whole4", digits: 4 }),
+  "4:subtract-large": S("place", { mode: "sub", set: "whole4", digits: 4 }),
+  "4:multiply-1digit": X(WHY.partial),
+  "4:multiply-2digit": X(WHY.partial),
+  "4:division": X(WHY.wholeDiv),
+  "4:factors": J("build-area-24"),
+  "4:fraction-equiv": J("fraction-transform"),
+  "4:fraction-compare": S("fracadd", { mode: "compare" }),
+  "4:unit-conversion": X(WHY.scale),
+  // Grade 5
+  "5:multiply-whole": X(WHY.partial),
+  "5:divide-whole": X(WHY.wholeDiv),
+  "5:decimal-place": J("build-decimal-fraction"),
+  "5:decimal-add": J("mistake-decimal"),
+  "5:decimal-sub": S("decimal", { mode: "sub" }),
+  "5:decimal-mul": X(WHY.decimalMul),
+  "5:fraction-add": S("fracadd", { mode: "add" }),
+  "5:fraction-mul": X(WHY.fracMul),
+  "5:fraction-of": X(WHY.fracMul),
+  "5:unit-fraction-division": J("xray-division"),
+  "5:volume": X(WHY.volume),
+  // Grade 6
+  "6:gcf": X(WHY.factors),
+  "6:lcm": X(WHY.factors),
+  "6:divide-fractions": J("xray-division"),
+  "6:decimal-ops": X(WHY.decimalMul),
+  "6:ratios": J("recipe-scaling"),
+  "6:unit-rates": J("recipe-scaling"),
+  "6:percent": X(WHY.percent),
+  "6:evaluate": J("reverse-36"),
+  "6:one-step": S("balance", { mode: "one" }),
+  "6:integers": S("graph", { mode: "point" }),
+  "6:triangle-area": X(WHY.geometry),
+  // Grade 7
+  "7:integer-add": S("chips", { mode: "add" }),
+  "7:integer-mul": X(WHY.intMul),
+  "7:fraction-ops": S("fracadd", { mode: "add" }),
+  "7:unit-rate": J("recipe-scaling"),
+  "7:proportions": J("recipe-scaling"),
+  "7:percent-change": X(WHY.percentChange),
+  "7:scale-drawing": X(WHY.scale),
+  "7:equations": S("balance", { mode: "two" }),
+  "7:inequalities": X(WHY.inequality),
+  "7:circle-area": X(WHY.geometry),
+  "7:probability": X(WHY.stats),
+  // Grade 8
+  "8:exponents": X(WHY.power),
+  "8:powers-ten": X(WHY.power),
+  "8:square-roots": X(WHY.power),
+  "8:linear-equations": S("balance", { mode: "both" }),
+  "8:slope": S("graph", { mode: "slope" }),
+  "8:functions": S("graph", { mode: "function" }),
+  "8:systems": X(WHY.systems),
+  "8:angle-relations": X(WHY.geometry),
+  "8:pythagorean": X(WHY.geometry),
+  "8:association": X(WHY.stats),
+  "8:transformations": X(WHY.transform),
+};

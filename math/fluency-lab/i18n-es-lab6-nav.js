@@ -25,4 +25,8 @@ export const ES_LAB6_NAV = {
   "Build another world": "Construir otro mundo",
   "Build it in Math Reality": "Constrúyelo en Realidad matemática",
   "Try the same ideas in a world you build.": "Prueba las mismas ideas en un mundo que construyes.",
+  "Reality Lab": "Laboratorio de realidad",
+  "Open the Reality Lab": "Abrir el Laboratorio de realidad",
+  "Build it with models": "Constrúyelo con modelos",
+  "Cut, balance, scale and repair: the math answers back.": "Corta, equilibra, escala y repara: las matemáticas responden.",
 };

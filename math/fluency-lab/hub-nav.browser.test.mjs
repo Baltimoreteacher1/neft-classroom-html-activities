@@ -35,8 +35,13 @@ try {
   assert.match(await reality.getAttribute("href"), /^reality\/$/);
   assert.equal(await page.locator("#reality-feature [data-reality-link]").getAttribute("href"), "reality/?grade=3");
   assert.equal(await page.locator("#reality-feature [data-reality-link]").innerText(), "Open Math Reality");
+  // Reality Lab: the model workspace has its own tab link, a Home link and a Practice card.
+  assert.equal(await page.locator("#hub-tabs a.lab-tab").innerText(), "Reality Lab");
+  assert.match(await page.locator("#hub-tabs a.lab-tab").getAttribute("href"), /^reality\/lab\/$/);
+  assert.equal(await page.locator("#reality-feature [data-lab-link]").innerText(), "Open the Reality Lab");
   await page.locator("#hub-tabs button[data-view]", { hasText: "Practice" }).click();
   assert.equal(await page.locator('#practice-view a[href="reality/?grade=3"]').count(), 1, "Practice links to Math Reality");
+  assert.equal(await page.locator('#practice-view a[href="reality/lab/?grade=3"]').count(), 1, "Practice links to the Reality Lab");
   await page.locator("#hub-tabs button[data-view]", { hasText: "Home" }).click();
 
   const areas = [
