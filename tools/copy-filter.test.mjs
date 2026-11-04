@@ -55,6 +55,7 @@ for (const rel of [
   "activities/demo/NOTES.md",
   "lti-worker/wrangler.toml",
   "results-worker/migrations/0001_init.sql",
+  "focus-school/sync-worker/src/sync-room.js",
 ]) {
   assert.equal(
     plain(`/Users/x/repo/${rel}`),

@@ -51,6 +51,11 @@ function copyStandaloneHtml() {
     // are developer files; no page references them.
     "migrations",
     "types",
+    // Cloudflare Worker projects deployed with `wrangler deploy`, like workers/ above. Their source
+    // (/lti-worker/src/worker.js, the Canvas LTI launch) was publicly served; no page references them.
+    "lti-worker",
+    "results-worker",
+    "workbench-live",
   ]);
   const ROOT_FILES = ["_headers", "_redirects", "404.html", "robots.txt", "sitemap.xml"];
   // Keep dev artifacts out of the published site: nested .claude/.git/node_modules
