@@ -16,6 +16,7 @@
     "Reasons below state what was observed, not what was assumed."
   ],
   "exempt": {
+    "tools/verify-fluency-v7-browser.mjs": "Chromium journeys for the 7.0 start panel and learning workspace (axe, 390/1280, Spanish, storage blocked, deep links, old saved progress); minutes of browser time, so it runs on demand and from qa:fast when math/fluency-lab/ changes, as validate:fluency-v7-browser. The engine half is tools/fluency-v7.test.mjs, which runs in npm test.",
     "tools/verify-fluency-studio-browser.mjs": "Chromium suite over the Discovery Studio (axe, keyboard, reduced motion); minutes long and needs a browser, so it runs on demand as validate:fluency-studio-browser before a Studio change ships, like the other Fluency Lab browser suites.",
     "scripts/audit-a11y.mjs": "ALREADY AUTOMATED against production: production-observability.yml runs `audit:a11y -- --base https://eduwonderlab.com`. Deliberately not a push gate — it needs a browser, took 47s and could not load 2 pages in a local run, and a11y findings need judgement rather than a threshold.",
     "scripts/audit-unit4-copyable-steps.mjs": "Needs a real browser (it opens ~170 problems across the ten Unit 4 studios), so on a machine without one it exits 3 (SKIP) and verifies nothing; the static half of the same contract — each page wired to U4Studio, meaning checks generated from the problem's own numbers — runs on every push in tools/unit4-studio.test.mjs. Run `npm run audit:copyable-steps` after editing a studio page's step markup.",
