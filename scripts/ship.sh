@@ -219,6 +219,21 @@ LOCK_DIR="$(git rev-parse --git-common-dir)/ship.lock"
 if ! mkdir "$LOCK_DIR" 2>/dev/null; then
   HOLDER="$(cat "$LOCK_DIR/pid" 2>/dev/null || true)"
   if [ -n "$HOLDER" ] && kill -0 "$HOLDER" 2>/dev/null; then
+    # Wait, then re-exec so origin/main and the cherry-pick are redone on the tip the other ship
+    # just produced (a ship that waited with its old pick would lose the push race). Bounded by
+    # SHIP_LOCK_WAIT_S (default 1 hour, 0 = fail at once); the budget carries across re-execs.
+    WAIT_S="${SHIP_LOCK_WAIT_S:-3600}"
+    if [ "$WAIT_S" -gt 0 ] 2>/dev/null; then
+      say "• another ship is running (pid $HOLDER); waiting up to ${WAIT_S}s for it, then re-picking onto the new origin/main"
+      WAIT_START="$(date +%s)"
+      while [ -d "$LOCK_DIR" ] && kill -0 "$(cat "$LOCK_DIR/pid" 2>/dev/null || echo 0)" 2>/dev/null; do
+        [ $(($(date +%s) - WAIT_START)) -lt "$WAIT_S" ] || fail "another ship still running after ${WAIT_S}s (pid $HOLDER). Re-run when it finishes — it moves origin/main."
+        sleep 2
+      done
+      REMAINING=$((WAIT_S - ($(date +%s) - WAIT_START)))
+      [ "$REMAINING" -gt 0 ] || REMAINING=1
+      SHIP_LOCK_WAIT_S="$REMAINING" exec bash "$0" "$@"
+    fi
     fail "another ship is running (pid $HOLDER). Wait for it, then re-run — it moves origin/main."
   fi
   say "• Taking over stale ship lock (pid ${HOLDER:-unknown} is gone)"

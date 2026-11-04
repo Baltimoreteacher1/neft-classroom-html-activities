@@ -27,7 +27,7 @@ import {
   statSync,
   writeFileSync,
 } from "node:fs";
-import { availableParallelism, setPriority, tmpdir } from "node:os";
+import { availableParallelism, loadavg, setPriority, tmpdir } from "node:os";
 import { basename, join, relative } from "node:path";
 import { pathToFileURL } from "node:url";
 import { acquireGateLock, TEST_LANE_DIR } from "../scripts/lib/qa-lock.mjs";
@@ -154,7 +154,11 @@ await acquireGateLock({
   log: console.log,
 });
 
-const JOBS = Math.max(1, Number(process.env.TEST_JOBS) || Math.min(8, availableParallelism() - 1));
+/* Pool size backs off with machine load: browser tests that win a race at 2 jobs lose it at 8 when
+ * other sessions already have the CPUs busy (load 58 on 10 cores was measured), and a failure from
+ * that reads as a regression. Idle machine: up to 8. Loaded: down to 2. TEST_JOBS overrides. */
+const idleCores = Math.floor(availableParallelism() - 1 - loadavg()[0] / 2);
+const JOBS = Math.max(1, Number(process.env.TEST_JOBS) || Math.max(2, Math.min(8, idleCores)));
 
 /**
  * Tests that must run ALONE, after the pool drains, because they write the real

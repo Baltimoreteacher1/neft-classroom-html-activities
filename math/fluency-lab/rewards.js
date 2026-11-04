@@ -15,7 +15,7 @@ const KEY = "ewl-fluency-rewards-v1";
 const key = () => profileKey(KEY, profiles().active);
 const DAY_MS = 86400000;
 
-const GAME_IDS = ["mathworldbuilder", "numberpuzzlestudio", "fluencyrally", "numberquest", "arrayarchitect", "fractionforge", "equationfactory", "fractionbridge", "balancestation", "ratiocity", "tenframefactory", "divisionharbor", "decimaldashboards", "integerexpedition", "graphcity", "match", "hunt", "sort", "mistake", "make", "family", "balance", "picture", "flip", "duel"];
+export const GAME_IDS = ["mathworldbuilder", "numberpuzzlestudio", "fluencyrally", "numberquest", "arrayarchitect", "fractionforge", "equationfactory", "fractionbridge", "balancestation", "ratiocity", "tenframefactory", "divisionharbor", "decimaldashboards", "integerexpedition", "graphcity", "match", "hunt", "sort", "mistake", "make", "family", "balance", "picture", "flip", "duel"];
 
 // One suggested game per day, the same all day for everyone on this device.
 // One suggested game per day; Fact Family Builder is a Grades 1-5 game, so it is skipped for older grades.

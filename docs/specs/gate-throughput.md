@@ -25,12 +25,13 @@ was measured on this machine on 2026-11-03 while ~8 sessions shared it.
 - **Batch.** Merge finished branches into one release instead of one gate pair each.
 - **Watch the Cloudflare build, not just the push.** A green push is not a deploy: see the 20,000-file limit below.
 
-## Needs a decision (changes what "passed" means for every session)
+## Decisions (made 2026-11-04, operator delegated them)
 
-1. **Scope a `package.json` change that only adds script entries** instead of running all 150 checks (`tools/lib/test-scope.mjs` treats any `package.json` edit as "everything").
-2. **Raise the lock wait above 30 minutes.** When a waiter gives up and runs unserialised, load climbs (58 observed) and every gate gets slower, which is the opposite of what the lock was built for.
-3. **Make the always-run Fluency browser tests load-tolerant** (they belong to that surface); at minimum stop them running for changes that cannot affect them.
-4. **Have `ship.sh` re-fetch and re-pick before pushing** so a moved `main` costs seconds, not a full gate.
+1. **Script-only `package.json` edits: no change.** `qa-run.mjs` already scopes an edit confined to `scripts` entries outside the build chain (`packageScriptsDelta`). The 2026-11-03 release ran everything because it added a step to the `validate` chain, which the gate treats as a gate change. Keeping that: a new gate is exactly the change that should run all of them once.
+2. **Lock wait raised from 30 to 90 minutes** (`QA_LOCK_WAIT_MS` still overrides). With ~8 sessions a gate waits 25-30 min, so 30 sat on the edge and waiters that gave up pushed load to 58. Pre-push still outranks other waiters.
+3. **Test pool backs off with load** instead of editing the Fluency tests: `tools/run-tests.mjs` sizes the pool as `cores - 1 - load/2`, clamped to 2-8 (`TEST_JOBS` overrides). The tests that flaked passed at 2 jobs; the flake was the machine, not the tests, so no test was weakened.
+4. **`ship.sh` waits for the ship lock and re-picks.** A second `ship` now waits (up to `SHIP_LOCK_WAIT_S`, default 3600, `0` = old fail-fast behaviour) and then re-runs from the fetch, so it cherry-picks onto the tip the first ship produced. It does **not** skip or reuse a gate across a moved `main`: the gate result belongs to the tree that was tested.
+5. **SCORM zips: both copies stay.** The Canvas page links `./packages/` (teacher-gated) and the hub links `/scorm-packages/` (public); removing either breaks a live URL, and `neft-pretest-quizzes.zip` exists only in the gated copy, so it cannot be moved to the public one. If headroom runs out, the lever is a Pages Function that serves the gated path from `/scorm-packages/` after the gate, keeping the URL and dropping ~500 files; do that only with a live gate smoke test.
 
 ## Cloudflare Pages limit
 

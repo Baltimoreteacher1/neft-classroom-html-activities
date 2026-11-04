@@ -10,7 +10,7 @@ Object.defineProperty(globalThis, "window", { configurable: true, value: globalT
 const { ALL_STOPS, answerOf, cardText, gameProblems, huntBoard, stopsFor } = await import(
   "../math/fluency-lab/game-pool.js"
 );
-const { STICKERS, dailyGame, earnedIds, rankFor, streakOf } = await import(
+const { GAME_IDS, STICKERS, dailyGame, earnedIds, rankFor, streakOf } = await import(
   "../math/fluency-lab/rewards.js"
 );
 const { comebackItems } = await import("../math/fluency-lab/game-pool.js");
@@ -639,12 +639,18 @@ check(
   earnedIds({ ...blank, rounds: 1, stars: 12 }).includes("stars-10"),
   "10 stars earns the 10 Stars sticker.",
 );
-check(
-  ["match", "hunt", "sort", "mistake", "make", "family", "balance", "picture"].includes(
-    dailyGame(),
-  ),
-  "dailyGame must name a real game.",
-);
+// The daily pick must always be a game the lab lists, on every day of a long run and for every grade
+// band (the suggestion rotates through the full list, so a hand-copied allowlist goes stale as games
+// are added and then fails only on the days the rotation reaches a newer game).
+for (const grade of [1, 3, 6]) {
+  for (let day = 0; day < 120; day += 1) {
+    const picked = dailyGame(Date.UTC(2026, 10, 4 + day, 12), grade);
+    check(
+      GAME_IDS.includes(picked),
+      `dailyGame must name a real game (grade ${grade}, day ${day}).`,
+    );
+  }
+}
 check(rankFor(blank).name === "Trail Starter", "Rank starts at Trail Starter.");
 
 const day = (offset) => {

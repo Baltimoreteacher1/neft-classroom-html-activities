@@ -643,7 +643,7 @@ export const UNIT_NAMES = [
   "Ratios & Rates",
   "Percents",
   "Area, Surface Area & Volume",
-  "Expressions & Number Sense",
+  "Expressions",
   "Integers & the Coordinate Plane",
   "Equations & Inequalities",
   "Two-Variable Relationships",

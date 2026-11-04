@@ -1,7 +1,12 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import { FAMILY, matches, model, number } from "../curriculum/projects/studio/math.mjs";
-import { getProject, PROJECTS, studioURL } from "../curriculum/projects/studio/projects.mjs";
+import {
+  getProject,
+  PROJECTS,
+  studioURL,
+  UNIT_NAMES,
+} from "../curriculum/projects/studio/projects.mjs";
 import { clean, fresh, progress } from "../curriculum/projects/studio/state.mjs";
 
 const expected = {
@@ -114,6 +119,16 @@ assert.equal(
   ).answer,
   52,
 );
+// Unit names are the course's own: the hub card, the gallery filter and the portfolio headings must
+// read exactly what data/curriculum-manifest.json calls each unit (the Studio once said "Expressions
+// & Number Sense" for the unit the hub calls "Expressions").
+{
+  const manifest = JSON.parse(fs.readFileSync("data/curriculum-manifest.json", "utf8"));
+  assert.equal(manifest.units.length, 10);
+  for (const unit of manifest.units) {
+    assert.equal(UNIT_NAMES[unit.number], unit.title.en, `Studio name for unit ${unit.number}`);
+  }
+}
 console.log(
   "PASS: 30 mission fixtures / 180 independently computed answers; current unit and standards coverage; boundary math; fraction parsing; state validation and stale-check rejection.",
 );

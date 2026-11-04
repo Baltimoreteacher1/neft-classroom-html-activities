@@ -110,7 +110,7 @@ export async function acquireGateLock({
   label,
   log = () => {},
   lockDir = LOCK_DIR,
-  waitMs = Number(process.env.QA_LOCK_WAIT_MS) || 30 * 60 * 1000,
+  waitMs = Number(process.env.QA_LOCK_WAIT_MS) || 90 * 60 * 1000,
   pollMs = 1500,
   graceMs = 5000,
   priority = 0,
