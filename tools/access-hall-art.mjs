@@ -61,7 +61,7 @@ const REGISTERS = {
 
 const f = (n) => Math.round(n * 10) / 10;
 const BOOKS = [
-  "#805395",
+  "#a24f72",
   "#D28B58",
   "#5A9481",
   "#15969A",
@@ -155,10 +155,10 @@ export function hallSVG(band) {
 <linearGradient id="floor" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${R.floorTop}"/><stop offset="1" stop-color="${R.floorBottom}"/></linearGradient>
 <radialGradient id="poolOcean"><stop offset="0" stop-color="#91E2D6" stop-opacity=".55"/><stop offset="1" stop-color="#15969A" stop-opacity="0"/></radialGradient>
 <radialGradient id="poolIvory"><stop offset="0" stop-color="#FFFDF8" stop-opacity=".5"/><stop offset="1" stop-color="#D5DCEB" stop-opacity="0"/></radialGradient>
-<radialGradient id="poolOrchid"><stop offset="0" stop-color="#DBA3B9" stop-opacity=".55"/><stop offset="1" stop-color="#805395" stop-opacity="0"/></radialGradient>
+<radialGradient id="poolRose"><stop offset="0" stop-color="#DBA3B9" stop-opacity=".55"/><stop offset="1" stop-color="#a24f72" stop-opacity="0"/></radialGradient>
 <radialGradient id="poolCopper"><stop offset="0" stop-color="#F5D6A8" stop-opacity=".6"/><stop offset="1" stop-color="#D28B58" stop-opacity="0"/></radialGradient>
 <linearGradient id="beamIvory" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFDF8" stop-opacity=".22"/><stop offset="1" stop-color="#FFFDF8" stop-opacity="0"/></linearGradient>
-<linearGradient id="beamOrchid" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#DBA3B9" stop-opacity=".34"/><stop offset="1" stop-color="#DBA3B9" stop-opacity=".02"/></linearGradient>
+<linearGradient id="beamRose" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#DBA3B9" stop-opacity=".34"/><stop offset="1" stop-color="#DBA3B9" stop-opacity=".02"/></linearGradient>
 <linearGradient id="beamCopper" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F5D6A8" stop-opacity=".7"/><stop offset="1" stop-color="#F5D6A8" stop-opacity="0"/></linearGradient>
 <radialGradient id="dome" cx=".5" cy=".85" r=".8"><stop offset="0" stop-color="#91E2D6" stop-opacity=".42"/><stop offset="1" stop-color="#15969A" stop-opacity=".08"/></radialGradient>
 <linearGradient id="desk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#A9562E"/><stop offset="1" stop-color="#5E2C17"/></linearGradient>
@@ -184,7 +184,7 @@ ${books(478, 240, 244, 1)}${books(478, 320, 244, 5)}${books(478, 400, 244, 9)}
 <g stroke="${R.rim}" stroke-width="1.5">${rows}</g>
 <ellipse cx="285" cy="610" rx="230" ry="62" fill="url(#poolOcean)"/>
 <ellipse cx="600" cy="520" rx="210" ry="44" fill="url(#poolIvory)"/>
-<ellipse cx="870" cy="620" rx="210" ry="58" fill="url(#poolOrchid)"/>
+<ellipse cx="870" cy="620" rx="210" ry="58" fill="url(#poolRose)"/>
 <ellipse cx="1040" cy="735" rx="230" ry="60" fill="url(#poolCopper)"/>
 <g>
 <rect x="566" y="420" width="68" height="84" rx="6" fill="#2C3D78"/><path d="M548 420H652L640 404H560Z" fill="#455A9A"/>
@@ -210,19 +210,19 @@ ${person({
   hair: "#2A1C14",
   extra: "",
 })}<path d="M128 466A22 22 0 0 1 172 466" fill="none" stroke="#075568" stroke-width="5"/><rect x="122" y="462" width="9" height="16" rx="4" fill="#075568"/><rect x="169" y="462" width="9" height="16" rx="4" fill="#075568"/>
-<path d="M840 0H900L990 610H750Z" fill="url(#beamOrchid)"/>
-<ellipse cx="870" cy="612" rx="130" ry="26" fill="#3C244D"/><ellipse cx="870" cy="604" rx="130" ry="26" fill="#805395"/><ellipse cx="870" cy="602" rx="112" ry="19" fill="#93659F" opacity=".7"/>
+<path d="M840 0H900L990 610H750Z" fill="url(#beamRose)"/>
+<ellipse cx="870" cy="612" rx="130" ry="26" fill="#4A1F35"/><ellipse cx="870" cy="604" rx="130" ry="26" fill="#a24f72"/><ellipse cx="870" cy="602" rx="112" ry="19" fill="#B06A87" opacity=".7"/>
 <g><path d="M842 604V520" stroke="#D5DCEB" stroke-width="4"/><path d="M826 604H858" stroke="#D5DCEB" stroke-width="4" stroke-linecap="round"/><rect x="834" y="494" width="16" height="30" rx="8" fill="#EFE9E4"/></g>
-${person({ x: 896, y: 440, s: 1.02, len: 162, skin: "#6E4630", shirt: "#3C244D", hair: "#120C0A" })}
+${person({ x: 896, y: 440, s: 1.02, len: 162, skin: "#6E4630", shirt: "#4A1F35", hair: "#120C0A" })}
 <path d="M872 520L854 506" stroke="#6E4630" stroke-width="12" stroke-linecap="round"/>
-<g><rect x="914" y="352" width="210" height="58" rx="18" fill="#FFFDF8"/><path d="M936 408L926 430L956 410Z" fill="#FFFDF8"/><text x="1019" y="388" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="20" fill="#3C244D">I noticed that…</text></g>
+<g><rect x="914" y="352" width="210" height="58" rx="18" fill="#FFFDF8"/><path d="M936 408L926 430L956 410Z" fill="#FFFDF8"/><text x="1019" y="388" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="20" fill="#4A1F35">I noticed that…</text></g>
 <g><path d="M960 760L1010 660H1200V760Z" fill="url(#desk)"/><path d="M1010 660H1200V676H1004Z" fill="#C06A3B"/></g>
 <path d="M1108 500L1156 474L1220 690H990Z" fill="url(#beamCopper)" opacity=".75"/>
 <g><path d="M1170 662V560L1130 470" fill="none" stroke="#3B2216" stroke-width="7" stroke-linecap="round"/><path d="M1100 490L1142 460L1162 484L1116 512Z" fill="#D28B58"/><circle cx="1132" cy="470" r="6" fill="#3B2216"/></g>
 <g transform="rotate(-7 1060 672)"><rect x="1018" y="642" width="96" height="62" rx="3" fill="#EFE9E4"/></g>
 <g transform="rotate(4 1085 680)"><rect x="1036" y="648" width="100" height="64" rx="3" fill="#FFFDF8"/><path d="M1048 664H1120M1048 676H1124M1048 688H1112M1048 700H1096" stroke="#D28B58" stroke-width="2.4" stroke-linecap="round"/></g>
 <path d="M1140 720L1176 672" stroke="#1D2B58" stroke-width="5" stroke-linecap="round"/><path d="M1176 672L1182 664" stroke="#D28B58" stroke-width="5" stroke-linecap="round"/>
-<g opacity=".95">${chip(392, 404, "First,", "#E2F3F0", "#075568")}${chip(500, 186, "evidence", "#FFFDF8", "#2F3F8C")}${chip(760, 300, "¿Por qué?", "#F5ECF6", "#693F7F", "es")}${chip(940, 640, "therefore", "#FBEFE3", "#884326")}</g>
+<g opacity=".95">${chip(392, 404, "First,", "#E2F3F0", "#075568")}${chip(500, 186, "evidence", "#FFFDF8", "#2A4386")}${chip(760, 300, "¿Por qué?", "#F8EBF0", "#7D3354", "es")}${chip(940, 640, "therefore", "#FBEFE3", "#884326")}</g>
 <g><ellipse cx="40" cy="640" rx="16" ry="70" fill="#162A2A" transform="rotate(-28 40 640)"/><ellipse cx="92" cy="628" rx="15" ry="74" fill="#1B3A36" transform="rotate(12 92 628)"/><ellipse cx="140" cy="676" rx="13" ry="58" fill="#162A2A" transform="rotate(38 140 676)"/><ellipse cx="18" cy="700" rx="13" ry="52" fill="#1B3A36" transform="rotate(-58 18 700)"/><ellipse cx="70" cy="598" rx="12" ry="60" fill="#264E48" transform="rotate(-4 70 598)"/><ellipse cx="118" cy="612" rx="11" ry="52" fill="#264E48" transform="rotate(26 118 612)"/><path d="M40 760C46 720 58 690 70 650M70 760C78 720 92 690 96 640M100 760C110 730 124 706 140 690" stroke="#264E48" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M0 760V735C40 728 140 728 180 735V760Z" fill="#080E25"/></g>
 </svg>
 `;
@@ -295,7 +295,7 @@ export function studioSVG(domain) {
 <rect x="8" y="8" width="464" height="344" rx="28" fill="url(#g)"/>
 <ellipse cx="240" cy="300" rx="170" ry="18" fill="#1D2B58" opacity=".12"/>
 <g transform="rotate(-3 240 180)"><path d="M240 92C200 76 140 74 92 84V286C140 276 200 278 240 294Z" fill="#EFE9E4"/><path d="M240 92C280 76 340 74 388 84V286C340 276 280 278 240 294Z" fill="#FFFDF8"/><path d="M240 92V294" stroke="#C9CFE0" stroke-width="2"/>
-<rect x="112" y="108" width="84" height="10" rx="3" fill="#34459A"/>
+<rect x="112" y="108" width="84" height="10" rx="3" fill="#2E4A94"/>
 <g fill="#C9CFE0">${[134, 152, 170, 188, 206, 224, 242].map((y, i) => `<rect x="112" y="${y}" width="${i % 3 === 2 ? 86 : 108}" height="6" rx="3"/>`).join("")}</g>
 <rect x="258" y="152" width="112" height="16" rx="4" fill="#F5D6A8"/>
 <g fill="#C9CFE0">${[110, 128, 158, 188, 206, 224, 242].map((y, i) => `<rect x="262" y="${y}" width="${i % 3 === 1 ? 84 : 104}" height="6" rx="3"/>`).join("")}</g><rect x="262" y="157" width="104" height="6" rx="3" fill="#884326" opacity=".55"/></g>
@@ -304,13 +304,13 @@ export function studioSVG(domain) {
 `;
   }
   if (domain === "speaking") {
-    return `${head}<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5D3A72"/><stop offset="1" stop-color="#3C244D"/></linearGradient><radialGradient id="l" cx=".7" cy=".15" r=".7"><stop offset="0" stop-color="#DBA3B9" stop-opacity=".45"/><stop offset="1" stop-color="#DBA3B9" stop-opacity="0"/></radialGradient></defs>
+    return `${head}<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6F2C4A"/><stop offset="1" stop-color="#4A1F35"/></linearGradient><radialGradient id="l" cx=".7" cy=".15" r=".7"><stop offset="0" stop-color="#DBA3B9" stop-opacity=".45"/><stop offset="1" stop-color="#DBA3B9" stop-opacity="0"/></radialGradient></defs>
 <rect x="8" y="8" width="464" height="344" rx="28" fill="url(#g)"/><rect x="8" y="8" width="464" height="344" rx="28" fill="url(#l)"/>
 <g fill="none" stroke="#DBA3B9"><circle cx="190" cy="190" r="118" stroke-opacity=".2" stroke-width="2"/><circle cx="190" cy="190" r="88" stroke-opacity=".4" stroke-width="2"/></g>
 <circle cx="190" cy="190" r="60" fill="#FFFDF8"/>
-<rect x="174" y="150" width="32" height="54" rx="16" fill="#805395"/><path d="M162 190a28 28 0 0 0 56 0" fill="none" stroke="#3C244D" stroke-width="6" stroke-linecap="round"/><path d="M190 218v14" stroke="#3C244D" stroke-width="6" stroke-linecap="round"/>
+<rect x="174" y="150" width="32" height="54" rx="16" fill="#a24f72"/><path d="M162 190a28 28 0 0 0 56 0" fill="none" stroke="#4A1F35" stroke-width="6" stroke-linecap="round"/><path d="M190 218v14" stroke="#4A1F35" stroke-width="6" stroke-linecap="round"/>
 <path d="M286 70H432A18 18 0 0 1 450 88V136A18 18 0 0 1 432 154H330L304 176L310 154H286A18 18 0 0 1 268 136V88A18 18 0 0 1 286 70Z" fill="#FFFDF8"/>
-<rect x="290" y="94" width="120" height="9" rx="4" fill="#805395"/><rect x="290" y="114" width="138" height="7" rx="3" fill="#DBA3B9"/><rect x="290" y="130" width="96" height="7" rx="3" fill="#DBA3B9"/>
+<rect x="290" y="94" width="120" height="9" rx="4" fill="#a24f72"/><rect x="290" y="114" width="138" height="7" rx="3" fill="#DBA3B9"/><rect x="290" y="130" width="96" height="7" rx="3" fill="#DBA3B9"/>
 </svg>
 `;
   }

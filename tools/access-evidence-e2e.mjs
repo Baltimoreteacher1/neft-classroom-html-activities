@@ -125,6 +125,8 @@ const NO_LEVEL_OR_SCORE =
 // ── Reading activity: "how sure are you" and retell ───────────────────────────
 const RECORD = "accessPracticeLab:v1:Reading:A";
 await go(`${BASE}/Reading/A/read-main-idea?grades=6-8`);
+// #app shows text before the activity mounts; under load the count ran before the chips existed.
+await page.waitForSelector(".sure-row [data-sure]", { timeout: 15000 }).catch(() => {});
 ok(
   (await page.locator(".sure-row [data-sure]").count()) === 3,
   "three optional confidence chips sit before Check",

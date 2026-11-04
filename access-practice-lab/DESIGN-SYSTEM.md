@@ -34,7 +34,7 @@ Six material families (tokens on `:root` in `ds.css`) are art-direction anchors,
 | Midnight Indigo | `--mi-950 … --mi-300` | brand atmosphere, the home hero, Language World bands, primary buttons |
 | Ivory & Pearl | `--ivory --pearl --pearl-blue` | reading surfaces, paper, preview cards |
 | Ocean Glass | `--ocean-900/600/200` | Listening · The Sound Studio |
-| Orchid & Amethyst | `--orchid-900/600/200` | Speaking · The Expression Studio |
+| Rose & Garnet | `--rose-900/600/200` | Speaking · The Expression Studio |
 | Burnished Copper | `--copper-900/500/200` | Writing · The Composition Studio |
 | Sage & Jade | `--sage-900/500/200` | growth, revision, feedback, the support choice |
 
@@ -46,8 +46,8 @@ The four language domains each own a colour and are always paired with an icon a
 | Domain    | Studio | Class         | Fill (white text on it) | Ink (text on white) | Glow (on midnight) |
 | --------- | ------ | ------------- | ----------------------- | ------------------- | ------------------ |
 | Listening | The Sound Studio | `d-listening` | `--listening` #075568 | `--listening-ink` | `--room-glow` #91e2d6 |
-| Reading   | The Reading Atelier | `d-reading`   | `--reading` #34459a | `--reading-ink` | #d5dceb |
-| Speaking  | The Expression Studio | `d-speaking`  | `--speaking` #7b4d91 | `--speaking-ink` | #dba3b9 |
+| Reading   | The Reading Atelier | `d-reading`   | `--reading` #2e4a94 | `--reading-ink` | #d5dceb |
+| Speaking  | The Expression Studio | `d-speaking`  | `--speaking` #8a3a5c | `--speaking-ink` | #dba3b9 |
 | Writing   | The Composition Studio | `d-writing`   | `--writing` #9a4a26 | `--writing-ink` | #f5d6a8 |
 
 Put the domain class on a container and use `--room`, `--room-ink`, `--room-soft`, `--room-glow`. Colour is never the

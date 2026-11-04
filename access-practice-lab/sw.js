@@ -11,7 +11,7 @@
  * The block between the build markers is written by tools/sync-access-shell.mjs; do not edit it by hand.
  */
 /* build:begin */
-const BUILD_HASH = "978c37ff2b4f";
+const BUILD_HASH = "466eae29506d";
 const PRECACHE_CORE = [
   "/access-practice-lab/library.css?v=159952795a3e",
   "/access-practice-lab/studio.css?v=28d71fd235dd",
@@ -23,22 +23,22 @@ const PRECACHE_CORE = [
   "/access-practice-lab/practice-games.css?v=afb7575317be",
   "/access-practice-lab/publisher.css?v=67f6dac7bd48",
   "/access-practice-lab/rehearsal.css?v=42b55b2b213a",
-  "/access-practice-lab/ds.css?v=2dc86c106a14",
-  "/access-practice-lab/home.css?v=c423de8d0c9b",
-  "/access-practice-lab/activity.css?v=198c202e2ad6",
-  "/access-practice-lab/room.css?v=dac91a7ccb82",
+  "/access-practice-lab/ds.css?v=afbc21f3b575",
+  "/access-practice-lab/home.css?v=6e41b83e053c",
+  "/access-practice-lab/activity.css?v=90c2552ac8ab",
+  "/access-practice-lab/room.css?v=59ccc2904c81",
   "/access-practice-lab/tests.css?v=b5ef1d0c1706",
   "/access-practice-lab/progress.css?v=4b84e5a0b6ee",
   "/access-practice-lab/family.css?v=ca95b46bd044",
   "/access-practice-lab/studios.css?v=840bd1593530",
-  "/access-practice-lab/exhibition.css?v=8ea14805b374",
+  "/access-practice-lab/exhibition.css?v=c971915e02d7",
   "/access-practice-lab/games.css?v=ab396e30ea71",
   "/access-practice-lab/games-a.css?v=42d862f4c51f",
   "/access-practice-lab/games-b.css?v=56a855f9b652",
   "/access-practice-lab/games-c.css?v=bd5b3382ea6f",
   "/access-practice-lab/games-d.css?v=4d7bfca0274b",
   "/access-practice-lab/labs.css?v=70e4170c8ffa",
-  "/access-practice-lab/acc.css?v=18f878a255c1",
+  "/access-practice-lab/acc.css?v=6d079e6a0e65",
   "/access-practice-lab/acc-engine.css?v=e504062aeb39",
   "/access-practice-lab/src/acc/adapt/assign.js?v=f2685971bc05",
   "/access-practice-lab/src/acc/adapt/mastery.js?v=6f68f26cce40",
@@ -165,7 +165,7 @@ const PRECACHE_CORE = [
   "/access-practice-lab/src/main.js?v=6f5371da5b67",
   "/access-practice-lab/src/media.js?v=4d0d596071cf",
   "/access-practice-lab/src/multilingual.js?v=d0b46fb38de3",
-  "/access-practice-lab/src/nav.js?v=f25a8e0b2308",
+  "/access-practice-lab/src/nav.js?v=42e6dc4da407",
   "/access-practice-lab/src/paper-passport.js?v=4e74d1041708",
   "/access-practice-lab/src/postcard-code.js?v=ef2881c1ee81",
   "/access-practice-lab/src/postcard-store.js?v=af17944635b2",

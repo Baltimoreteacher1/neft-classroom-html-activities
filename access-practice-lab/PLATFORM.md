@@ -34,7 +34,7 @@ plan, say or record, self-check, choose one improvement) → Writing (Argue / Ex
 learner's own sentences, revision compared with the earlier draft, then a new attempt on a transfer prompt with all help
 closed). State is one key, `accessPracticeLab:v1:exhibition`, so the Passport export carries it; recordings are never
 stored. Opening any help marks the work supported. Help items are written so they never state an answer
-(`tools/access-living-studio.test.mjs` enforces it). Checks: that test, `npm run e2e:access-living`,
+(`tools/access-living-studio.test.mjs` enforces it). Checks: that test, `node tools/access-living-studio-e2e.mjs`,
 `node tools/access-axe-sweep.mjs --width 375|1440`.
 
 ## The engine (`src/lang/`)
