@@ -284,7 +284,11 @@ const catalogHtml = catalogBody({ catalog, unitNames, lessonCount: covered.lengt
 writeFileSync(
   join(destination, "index.html"),
   withCurriculumShell(
-    page("Interactive Learning Labs", catalogHtml, `<link rel="stylesheet" href="/curriculum/learning-labs/shared/catalog.css" />`),
+    page(
+      "Interactive Learning Labs",
+      catalogHtml,
+      `<link rel="stylesheet" href="/curriculum/learning-labs/shared/catalog.css" />`,
+    ),
     "labs",
   ),
 );
