@@ -1,0 +1,874 @@
+/* Language World · The Science Exhibition (/exhibition). Each step wears its studio's material:
+   Listening = ocean glass, Reading = editorial paper, Speaking = orchid stage, Writing = copper
+   manuscript. Tokens come from ds.css; nothing here redefines a shared component. */
+
+.ex-eyebrow {
+  margin: 0 0 var(--s-2);
+  color: var(--room-ink, var(--ink-2));
+  font-size: 0.9375rem;
+  font-weight: 700;
+}
+
+/* ── hub ─────────────────────────────────────────────────────────────────── */
+.ex-hero {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  min-height: clamp(22rem, 46vw, 34rem);
+  align-items: end;
+  margin-top: var(--s-2);
+  border-radius: var(--r-xl);
+  overflow: hidden;
+  background: var(--mi-950);
+  box-shadow: var(--shadow-float);
+}
+.ex-hero-art {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 40%;
+}
+.ex-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(90deg, rgb(8 14 37 / 94%) 0%, rgb(8 14 37 / 78%) 42%, transparent 75%),
+    linear-gradient(0deg, rgb(8 14 37 / 70%), transparent 45%);
+}
+.ex-hero-copy {
+  max-width: 38rem;
+  padding: clamp(1.5rem, 4vw, 3rem);
+  color: #e6e9f4;
+}
+.ex-hero .ex-eyebrow {
+  color: var(--copper-200);
+}
+.ex-hero h1 {
+  margin: 0 0 var(--s-2);
+  color: var(--ivory);
+  font-size: clamp(2.2rem, 1.4rem + 2.8vw, 3.6rem);
+  line-height: 1.02;
+  letter-spacing: -0.03em;
+}
+.ex-setting {
+  margin: 0 0 var(--s-3);
+  color: var(--ocean-200);
+  font-weight: 700;
+}
+.ex-summary {
+  max-width: 50ch;
+  color: #d5dceb;
+}
+.ex-hero .btn-primary {
+  background: linear-gradient(180deg, var(--ivory), #efe6da);
+  border-color: transparent;
+  color: var(--mi-950);
+}
+.ex-hero .btn-primary:hover {
+  background: linear-gradient(180deg, #fff, var(--copper-200));
+  color: var(--mi-950);
+}
+.ex-ghost-light {
+  background: transparent;
+  border-color: rgb(255 255 255 / 35%);
+  color: var(--ivory);
+}
+.ex-ghost-light:hover {
+  background: rgb(255 255 255 / 10%);
+  color: #fff;
+}
+.ex-hero :focus-visible:not([tabindex="-1"]) {
+  outline-color: var(--ivory);
+  box-shadow: 0 0 0 6px rgb(8 14 37 / 85%);
+}
+.ex-hub-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+  gap: var(--s-5);
+  margin-top: var(--s-5);
+  align-items: start;
+}
+.ex-hub-grid .panel {
+  margin: 0;
+}
+.ex-hub-side {
+  display: grid;
+  gap: var(--s-4);
+}
+.ex-task-list {
+  display: grid;
+  gap: var(--s-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.ex-task-list li {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: var(--s-3);
+  padding: var(--s-3) 0;
+  border-top: 1px solid var(--line);
+}
+.ex-task-list li:first-child {
+  border-top: 0;
+}
+.ex-task-list p {
+  margin: 0.15rem 0 0.4rem;
+}
+.ex-task-dot {
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 14px;
+  background: var(--room);
+  color: #fff;
+  box-shadow: var(--edge-light-dark);
+}
+.ex-pill {
+  display: inline-flex;
+  padding: 0.1rem 0.6rem;
+  border-radius: 999px;
+  background: var(--room-soft);
+  color: var(--room-ink);
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+.ex-tip {
+  display: flex;
+  gap: 0.6rem;
+  margin: 0;
+  padding: var(--s-4);
+  border-radius: var(--radius);
+  background: var(--sage-200);
+  color: var(--sage-900);
+  font-weight: 700;
+}
+
+/* ── the four-step path ──────────────────────────────────────────────────── */
+.ex-path {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--s-2);
+  margin: var(--s-5) 0 0;
+  padding: 0;
+  list-style: none;
+}
+.ex-path-step a {
+  display: flex;
+  gap: 0.7rem;
+  align-items: center;
+  min-height: 3.5rem;
+  padding: 0.55rem 0.8rem;
+  border: 1.5px solid var(--line);
+  border-radius: 14px;
+  background: var(--surface);
+  color: var(--ink);
+  text-decoration: none;
+  transition:
+    border-color var(--dur-2) var(--ease-out),
+    box-shadow var(--dur-2) var(--ease-out);
+}
+.ex-path-step a:hover {
+  border-color: var(--room);
+}
+.ex-path-n {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  border: 2px solid var(--room);
+  color: var(--room-ink);
+  font-weight: 700;
+}
+.ex-path-step.is-done .ex-path-n {
+  background: var(--room);
+  color: #fff;
+}
+.ex-path-step.is-current a {
+  border-color: var(--room);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--room) 20%, transparent);
+}
+.ex-path-text {
+  display: grid;
+  line-height: 1.25;
+}
+.ex-path-text span {
+  color: var(--ink-3);
+  font-size: 0.875rem;
+}
+
+/* ── support choice (shared by the hub and every step) ───────────────────── */
+.ex-support {
+  margin: 0;
+  padding: var(--s-4);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+.ex-support legend {
+  padding: 0 0.25rem;
+  font-weight: 700;
+}
+.ex-support-options {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--s-2);
+  margin: var(--s-2) 0;
+}
+.ex-support-btn {
+  display: grid;
+  gap: 0.1rem;
+  min-height: var(--target);
+  padding: 0.5rem 0.7rem;
+  border: 1.5px solid var(--line-strong);
+  border-radius: 12px;
+  background: var(--surface);
+  color: var(--ink);
+  font: 400 0.9rem/1.3 var(--font);
+  text-align: start;
+  cursor: pointer;
+}
+.ex-support-btn strong {
+  font-size: 1rem;
+}
+.ex-support-btn span {
+  color: var(--ink-3);
+}
+.ex-support-btn[aria-pressed="true"] {
+  border-color: var(--sage-900);
+  background: var(--sage-200);
+  box-shadow: inset 0 0 0 1px var(--sage-900);
+}
+.ex-support-btn[aria-pressed="true"] span {
+  color: var(--sage-900);
+}
+.ex-support .fine {
+  margin: 0;
+}
+
+/* ── a step ──────────────────────────────────────────────────────────────── */
+.ex-step-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+  gap: var(--s-5);
+  align-items: end;
+}
+.ex-step-head h1 {
+  margin: 0;
+}
+.ex-klu {
+  display: inline-block;
+  margin-inline-start: 0.4rem;
+  padding: 0.1rem 0.7rem;
+  border-radius: 999px;
+  background: var(--room-soft);
+  color: var(--room-ink);
+  font: 700 1rem/1.6 var(--font);
+  letter-spacing: 0;
+  vertical-align: middle;
+}
+.ex-objective {
+  margin: var(--s-3) 0 0;
+  padding-inline-start: var(--s-3);
+  border-inline-start: 3px solid var(--room);
+}
+.ex-step-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(16rem, 21rem);
+  gap: var(--s-5);
+  margin-top: var(--s-5);
+  align-items: start;
+}
+.ex-step-main {
+  display: grid;
+  gap: var(--s-5);
+  min-width: 0;
+}
+.ex-step-foot {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--s-3);
+  margin-top: var(--s-6);
+  padding-top: var(--s-4);
+  border-top: 1px solid var(--line);
+}
+.ex-kicker {
+  margin: 0 0 var(--s-2);
+  font-weight: 700;
+  font-size: 0.9375rem;
+}
+
+/* questions and feedback */
+.ex-questions {
+  display: grid;
+  gap: var(--s-4);
+}
+.ex-q {
+  margin: 0;
+  padding: var(--s-4) var(--s-5);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+.ex-q.is-right {
+  border-color: color-mix(in srgb, var(--right) 45%, var(--line));
+}
+.ex-q legend {
+  float: left;
+  width: 100%;
+  margin-bottom: var(--s-3);
+  font-weight: 700;
+  font-size: 1.0625rem;
+}
+.ex-q legend + * {
+  clear: both;
+}
+.ex-q-n {
+  display: inline-grid;
+  place-items: center;
+  min-width: 1.8rem;
+  height: 1.8rem;
+  margin-inline-end: 0.4rem;
+  border-radius: 8px;
+  background: var(--room-soft);
+  color: var(--room-ink);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+.ex-options,
+.ex-sent-picks {
+  display: grid;
+  gap: var(--s-2);
+}
+.ex-option,
+.ex-sent-pick {
+  display: flex;
+  gap: 0.7rem;
+  align-items: center;
+  min-height: 3rem;
+  padding: 0.55rem 0.85rem;
+  border: 1.5px solid var(--line-strong);
+  border-radius: 12px;
+  background: #fff;
+  color: var(--ink);
+  font: 400 1.0625rem/1.4 var(--font);
+  text-align: start;
+  cursor: pointer;
+  transition:
+    border-color var(--dur-2) var(--ease-out),
+    background-color var(--dur-2) var(--ease-out),
+    transform var(--dur-1) var(--ease-press);
+}
+.ex-sent-pick {
+  font-size: 1rem;
+}
+.ex-option:hover:not([disabled]),
+.ex-sent-pick:hover:not([disabled]) {
+  border-color: var(--room);
+}
+.ex-option:active:not([disabled]),
+.ex-sent-pick:active:not([disabled]) {
+  transform: scale(0.99);
+}
+.ex-option[disabled],
+.ex-sent-pick[disabled] {
+  opacity: 0.55;
+  cursor: default;
+}
+.ex-option-mark {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 1.8rem;
+  height: 1.8rem;
+  border-radius: 50%;
+  border: 1.5px solid var(--line-strong);
+  font-weight: 700;
+  font-size: 0.875rem;
+}
+.ex-option.is-right,
+.ex-sent-pick.is-right {
+  border-color: var(--right);
+  background: var(--right-soft);
+}
+.ex-option.is-miss,
+.ex-sent-pick.is-miss {
+  border-color: var(--wrong);
+  background: var(--wrong-soft);
+}
+.ex-feedback {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  align-items: baseline;
+  min-height: 1.5rem;
+  margin: var(--s-3) 0 0;
+}
+.ex-q.is-right .ex-feedback {
+  color: var(--right);
+}
+.ex-q.is-try .ex-feedback {
+  color: var(--hint);
+}
+
+/* Listening · ocean glass stage */
+.ex-sound {
+  padding: clamp(1.1rem, 2.4vw, 1.75rem);
+  border-radius: var(--r-lg);
+  color: #e9f6f3;
+  background:
+    radial-gradient(70% 90% at 10% 0%, rgb(21 150 154 / 45%), transparent 60%),
+    repeating-linear-gradient(0deg, rgb(145 226 214 / 6%) 0 1px, transparent 1px 22px),
+    linear-gradient(155deg, #0b4b5b, #062c38 65%);
+  box-shadow: var(--shadow-lift), var(--edge-light-dark);
+}
+.ex-sound .ex-kicker {
+  color: var(--ocean-200);
+}
+.ex-sound-head p:last-child {
+  margin: 0 0 var(--s-4);
+}
+.ex-sound .listen-player {
+  border-color: rgb(145 226 214 / 35%);
+  background: rgb(255 253 248 / 96%);
+  color: var(--ink);
+}
+.ex-map {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--s-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.ex-map li {
+  padding: 0.55rem 0.7rem;
+  border: 1.5px dashed var(--line-strong);
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+.ex-lines {
+  display: grid;
+  gap: 0.2rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.ex-transcript p {
+  margin: 0 0 var(--s-2);
+}
+
+/* Reading · editorial paper */
+.ex-page {
+  position: relative;
+  padding: clamp(1.5rem, 3.6vw, 3rem) clamp(1.25rem, 4vw, 3.5rem);
+  border: 1px solid #e6dfd3;
+  border-radius: 6px 6px 6px 24px;
+  background: var(--grain), linear-gradient(180deg, var(--ivory), #f6f1e8);
+  box-shadow:
+    0 1px 0 #fff inset,
+    0 30px 50px -30px rgb(29 43 88 / 35%),
+    10px 10px 0 -4px #ece6dc;
+}
+.ex-page-kicker {
+  margin: 0 0 var(--s-2);
+  color: var(--reading-ink);
+  font-size: 0.9375rem;
+  font-weight: 700;
+}
+.ex-page h2 {
+  margin: 0 0 var(--s-4);
+  font-size: clamp(1.5rem, 1.2rem + 1.1vw, 2.1rem);
+}
+.ex-page-text {
+  max-width: 64ch;
+  margin: 0;
+  font-size: 1.1875rem;
+  line-height: 1.8;
+}
+body[data-lab-band="3-5"] .ex-page-text {
+  font-size: 1.3rem;
+  line-height: 1.85;
+}
+.ex-sent sup {
+  margin-inline-end: 0.2rem;
+  color: var(--reading-ink);
+  font-size: 0.7em;
+  font-weight: 700;
+}
+.ex-sent.is-evidence {
+  padding: 0.05em 0.15em;
+  border-radius: 4px;
+  background: linear-gradient(180deg, transparent 40%, var(--copper-200) 40%);
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+.ex-layers {
+  display: grid;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-radius: 10px;
+  overflow: hidden;
+}
+.ex-layers li {
+  padding: 0.55rem 0.8rem;
+  font-size: 0.95rem;
+}
+.ex-layers li:nth-child(1) {
+  background: #c9c0b2;
+}
+.ex-layers li:nth-child(2) {
+  background: #e3cfa9;
+}
+.ex-layers li:nth-child(3) {
+  background: #f1e4c8;
+}
+.ex-layers li:nth-child(4) {
+  background: var(--listening-soft);
+}
+
+/* Speaking · orchid stage */
+.ex-voice {
+  padding: clamp(1.25rem, 2.6vw, 2rem);
+  border-radius: var(--r-lg);
+  color: #f6eef7;
+  background:
+    radial-gradient(70% 90% at 90% 0%, rgb(219 163 185 / 35%), transparent 60%), var(--grain),
+    linear-gradient(160deg, #5d3a72, var(--orchid-900) 75%);
+  box-shadow: var(--shadow-lift), var(--edge-light-dark);
+}
+.ex-voice .ex-kicker {
+  color: var(--orchid-200);
+}
+.ex-voice-prompt {
+  margin: 0;
+  color: var(--ivory);
+  font: 500 clamp(1.25rem, 1.05rem + 0.7vw, 1.6rem) / 1.4 var(--font-display);
+}
+.ex-plan,
+.ex-say,
+.ex-self,
+.ex-draft,
+.ex-notes {
+  padding: var(--s-5);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+.ex-plan h2,
+.ex-say h2,
+.ex-self h2,
+.ex-draft h2,
+.ex-notes h2 {
+  margin: 0 0 var(--s-3);
+  font-size: 1.35rem;
+}
+.ex-plan-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--s-3);
+}
+.ex-checks {
+  display: grid;
+  gap: var(--s-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.ex-checks label {
+  display: flex;
+  gap: 0.6rem;
+  align-items: flex-start;
+  min-height: 2.75rem;
+  padding: 0.4rem 0;
+  cursor: pointer;
+}
+.ex-checks input {
+  width: 1.3rem;
+  height: 1.3rem;
+  margin-top: 0.15rem;
+  accent-color: var(--speaking);
+}
+.ex-revise {
+  margin-top: var(--s-4);
+  padding-top: var(--s-4);
+  border-top: 1px dashed var(--line-strong);
+}
+.ex-revise h3 {
+  margin: 0 0 var(--s-1);
+}
+.ex-model {
+  margin: 0 0 var(--s-2);
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+}
+
+/* Writing · copper manuscript */
+.ex-manuscript {
+  padding: clamp(1.25rem, 2.6vw, 2rem);
+  border: 1px solid #e7d2b6;
+  border-radius: var(--r-lg);
+  background: var(--grain), linear-gradient(180deg, #fcf5ea, #f4e5d1);
+}
+.ex-manuscript .ex-kicker {
+  color: var(--writing-ink);
+}
+.ex-manuscript-prompt {
+  margin: 0;
+  max-width: 68ch;
+  font: 500 clamp(1.1rem, 1rem + 0.4vw, 1.3rem) / 1.55 var(--font-display);
+}
+.ex-draft-head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--s-2);
+}
+.ex-paper {
+  display: block;
+  width: 100%;
+  min-height: 16rem;
+  padding: 0.9rem 1rem 0.9rem 3rem;
+  border: 1.5px solid #dcc6a8;
+  border-radius: 10px;
+  background:
+    linear-gradient(
+      90deg,
+      transparent 2.2rem,
+      rgb(210 139 88 / 55%) 2.2rem 2.3rem,
+      transparent 2.3rem
+    ),
+    repeating-linear-gradient(
+      180deg,
+      transparent 0 calc(2rem - 1px),
+      #ead9c2 calc(2rem - 1px) 2rem
+    ),
+    var(--ivory);
+  background-position: 0 0.9rem;
+  color: var(--ink);
+  font: 400 1.125rem/2rem var(--font);
+  resize: vertical;
+}
+.ex-paper:focus-visible {
+  border-color: var(--writing);
+}
+.ex-saved {
+  margin: var(--s-2) 0 0;
+}
+.ex-notes-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+  gap: var(--s-5);
+}
+.ex-notes h3 {
+  margin: 0 0 var(--s-2);
+  font-size: 1.05rem;
+}
+.ex-shows {
+  display: grid;
+  gap: var(--s-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.ex-shows li {
+  display: grid;
+  gap: 0.2rem;
+  padding-inline-start: var(--s-3);
+  border-inline-start: 3px solid var(--sage-500);
+}
+.ex-shows q {
+  color: var(--ink-2);
+  font-style: italic;
+}
+.ex-next {
+  padding: var(--s-4);
+  border-radius: var(--radius);
+  background: var(--writing-soft);
+}
+.ex-next p {
+  margin: 0 0 var(--s-2);
+}
+.ex-change {
+  display: flex;
+  gap: 0.5rem;
+  padding: var(--s-3) var(--s-4);
+  border-radius: 12px;
+  background: var(--sage-200);
+  color: var(--sage-900);
+  font-weight: 700;
+}
+.ex-history {
+  margin-top: var(--s-4);
+}
+.ex-paper-quote {
+  margin: var(--s-2) 0 0;
+  padding: var(--s-3) var(--s-4);
+  border-inline-start: 3px solid var(--line-strong);
+  background: var(--surface-2);
+  white-space: pre-wrap;
+}
+.ex-organizer {
+  display: grid;
+  gap: var(--s-2);
+}
+.ex-organizer textarea {
+  min-height: 3.5rem;
+}
+
+/* ── help rail ───────────────────────────────────────────────────────────── */
+.ex-help {
+  padding: var(--s-4);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--grain), var(--surface);
+  box-shadow: var(--shadow);
+}
+.ex-help h2 {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  margin: 0 0 var(--s-2);
+  font-size: 1.25rem;
+}
+.ex-help > .fine {
+  margin: 0 0 var(--s-3);
+}
+.ex-help-list {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.ex-help-list > li {
+  border-top: 1px solid var(--line);
+}
+.ex-help-toggle {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  width: 100%;
+  min-height: 3rem;
+  padding: 0.4rem 0.2rem;
+  border: 0;
+  background: none;
+  color: var(--ink);
+  font: 700 1rem var(--font);
+  text-align: start;
+  cursor: pointer;
+}
+.ex-help-toggle .ico {
+  color: var(--room-ink);
+}
+.ex-help-list > li.is-open .ex-help-toggle {
+  color: var(--room-ink);
+}
+.ex-help-body {
+  padding: 0 0 var(--s-3) 1.75rem;
+}
+.ex-frames {
+  display: grid;
+  gap: var(--s-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.ex-frames li {
+  padding: 0.45rem 0.7rem;
+  border-radius: 10px;
+  background: var(--room-soft);
+  font-family: var(--font-display);
+}
+.ex-words {
+  display: grid;
+  gap: var(--s-2);
+  margin: 0;
+}
+.ex-words dt {
+  font-weight: 700;
+}
+.ex-words dd {
+  display: grid;
+  gap: 0.1rem;
+  margin: 0;
+  font-size: 0.95rem;
+}
+.ex-bridge {
+  color: var(--room-ink);
+  font-weight: 700;
+}
+.ex-example {
+  color: var(--ink-3);
+  font-style: italic;
+}
+.ex-evidence {
+  margin: 0;
+  padding-inline-start: 1.1rem;
+}
+
+/* ── teacher notes ───────────────────────────────────────────────────────── */
+.ex-teacher-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.ex-teacher-table th,
+.ex-teacher-table td {
+  padding: 0.6rem 0.7rem;
+  border-bottom: 1px solid var(--line);
+  text-align: start;
+  vertical-align: top;
+}
+
+/* ── grade bands and widths ──────────────────────────────────────────────── */
+body[data-lab-band="3-5"] .ex-option,
+body[data-lab-band="3-5"] .ex-sent-pick {
+  min-height: 3.4rem;
+  font-size: 1.125rem;
+}
+@media (max-width: 980px) {
+  .ex-step-head,
+  .ex-hub-grid,
+  .ex-step-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .ex-notes-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@media (max-width: 640px) {
+  .ex-path {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .ex-plan-grid,
+  .ex-support-options {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .ex-hero::before {
+    background: linear-gradient(
+      0deg,
+      rgb(8 14 37 / 96%) 30%,
+      rgb(8 14 37 / 55%) 75%,
+      rgb(8 14 37 / 20%)
+    );
+  }
+  .ex-q {
+    padding: var(--s-4);
+  }
+  .ex-paper {
+    padding-left: 2.75rem;
+  }
+}

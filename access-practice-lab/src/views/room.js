@@ -10,6 +10,14 @@ import { ART, BASE, DOMAIN_META, TIERS, bandLabel, html, icon } from "../util.js
 import { tierFor } from "./home.js";
 import { GAMES } from "../games/registry.js";
 
+/** Each skill room is one of the four language studios (the same names as the home portals). */
+const STUDIO_NAME = {
+  Listening: ["The Sound Studio", "El estudio del sonido"],
+  Reading: ["The Reading Atelier", "El taller de lectura"],
+  Speaking: ["The Expression Studio", "El estudio de expresión"],
+  Writing: ["The Composition Studio", "El estudio de composición"],
+};
+
 const TYPE_LABEL = {
   multipleChoice: "Choose",
   multiSelect: "Choose all",
@@ -121,6 +129,7 @@ export async function render(ctx) {
       <section class="room-hero d-${domain.toLowerCase()}">
         <div class="room-hero-copy">
           <p class="eyebrow">${T(`${bandLabel(band)}${tier ? ` · ${tier.name} support` : ""}`, `${bandEs(band)}${tier ? ` · apoyo: ${tier.es}` : ""}`)}</p>
+          ${STUDIO_NAME[domain] ? html`<p class="room-studio">${T(...STUDIO_NAME[domain])}</p>` : ""}
           <h1 tabindex="-1">${T(meta.room, ROOM_ES[domain])}</h1>
           <p class="lead">${L.info?.headline || L.studentGoal || data.description}</p>
           ${domain !== "Model-Test" ? tierPickerHTML(domain, level, (k) => roomHref(domain, k)) : ""}

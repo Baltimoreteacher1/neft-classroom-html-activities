@@ -81,51 +81,76 @@
 :root {
   --lab-scale: 1;
 
+  /* ── material families: The Living Language Studio ──────────────────────
+     Art-direction anchors. Screens use the semantic tokens below; reach for a
+     material token only to paint an environment (hero, studio portal, art). */
+  --mi-950: #080e25; /* Midnight Indigo */
+  --mi-900: #121c3f;
+  --mi-800: #1d2b58;
+  --mi-600: #33447c;
+  --mi-500: #455a9a;
+  --mi-300: #9aa6d2;
+  --ivory: #fffdf8; /* Ivory & Pearl */
+  --pearl: #efe9e4;
+  --pearl-blue: #d5dceb;
+  --ocean-900: #075568; /* Ocean Glass — Listening */
+  --ocean-600: #15969a;
+  --ocean-200: #91e2d6;
+  --orchid-900: #3c244d; /* Orchid & Amethyst — Speaking */
+  --orchid-600: #805395;
+  --orchid-200: #dba3b9;
+  --copper-900: #884326; /* Burnished Copper — Writing */
+  --copper-500: #d28b58;
+  --copper-200: #f5d6a8;
+  --sage-900: #264e48; /* Sage & Jade — growth, revision, feedback */
+  --sage-500: #5a9481;
+  --sage-200: #d0e3cd;
+
   /* ink and surfaces */
-  --ink: #14263d;
-  --ink-2: #384a60;
-  --ink-3: #566a82;
-  --bg: #f5f8fc;
-  --surface: #ffffff;
-  --surface-2: #eef3fa;
-  --surface-3: #e2eaf5;
-  --line: #dbe3ee;
-  --line-strong: #b9c7d9;
+  --ink: #111a3b;
+  --ink-2: #3a4566;
+  --ink-3: #59637f;
+  --bg: #f8f5ef;
+  --surface: #fffdf8;
+  --surface-2: #f4efe8;
+  --surface-3: #ebe5dd;
+  --line: #e4ddd2;
+  --line-strong: #bdb4a6;
 
   /* action */
-  --brand: #17324d;
-  --brand-ink: #17324d;
-  --brand-deep: #17324d;
-  --brand-soft: #e7f0f0;
+  --brand: #1d2b58;
+  --brand-ink: #1d2b58;
+  --brand-deep: #080e25;
+  --brand-soft: #e9ebf5;
   --on-brand: #ffffff;
-  --accent: #f2c15b;
-  --coral: #f2765a;
+  --accent: #d28b58;
+  --coral: #dba3b9;
 
   /* language domains: fill (white text on it), ink (text on white), soft (tint) */
-  --listening: #17324d;
-  --listening-ink: #17324d;
-  --listening-soft: #e7eef2;
-  --reading: #126e6c;
-  --reading-ink: #126e6c;
-  --reading-soft: #e1f5f3;
-  --speaking: #c94f3b;
-  --speaking-ink: #a43d30;
-  --speaking-soft: #fce9e4;
-  --writing: #b45309;
-  --writing-ink: #9a4508;
-  --writing-soft: #fef1dc;
+  --listening: #075568;
+  --listening-ink: #075568;
+  --listening-soft: #e2f3f0;
+  --reading: #34459a;
+  --reading-ink: #2f3f8c;
+  --reading-soft: #eceef8;
+  --speaking: #7b4d91;
+  --speaking-ink: #693f7f;
+  --speaking-soft: #f5ecf6;
+  --writing: #9a4a26;
+  --writing-ink: #884326;
+  --writing-soft: #fbefe3;
   --room: var(--brand);
   --room-ink: var(--brand-ink);
   --room-soft: var(--brand-soft);
 
   /* feedback */
-  --right: #137336;
-  --right-soft: #e6f6ec;
-  --wrong: #b42318;
-  --wrong-soft: #fdecea;
-  --hint: #8a4a06;
-  --hint-soft: #fff4de;
-  --focus: #17324d;
+  --right: #276152;
+  --right-soft: #e7f1ea;
+  --wrong: #a8281d;
+  --wrong-soft: #fcece9;
+  --hint: #7f4314;
+  --hint-soft: #fbf0e0;
+  --focus: #1d2b58;
 
   /* shape and depth */
   --r-xs: 6px;
@@ -133,9 +158,27 @@
   --radius: 16px;
   --r-lg: 22px;
   --r-xl: 30px;
-  --shadow: 0 1px 2px rgb(20 38 61 / 6%), 0 4px 14px rgb(20 38 61 / 5%);
-  --shadow-lift: 0 2px 4px rgb(20 38 61 / 6%), 0 14px 32px rgb(20 38 61 / 12%);
-  --shadow-float: 0 18px 48px rgb(20 38 61 / 22%);
+  --target: 3rem;
+  --shadow:
+    0 1px 1px rgb(8 14 37 / 5%), 0 2px 6px rgb(8 14 37 / 5%), 0 10px 24px -12px rgb(8 14 37 / 14%);
+  --shadow-lift:
+    0 1px 2px rgb(8 14 37 / 6%), 0 8px 18px -6px rgb(8 14 37 / 14%),
+    0 28px 48px -24px rgb(29 43 88 / 28%);
+  --shadow-float: 0 24px 60px -18px rgb(8 14 37 / 38%), 0 6px 16px rgb(8 14 37 / 10%);
+  /* light: a soft top edge catches light on raised material; never a glow for its own sake */
+  --edge-light: inset 0 1px 0 rgb(255 255 255 / 70%);
+  --edge-light-dark: inset 0 1px 0 rgb(255 255 255 / 12%);
+  /* fine-grain paper texture, tiled under editorial surfaces */
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .07 0 0 0 0 .09 0 0 0 0 .2 0 0 0 .05 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+
+  /* motion: state changes, orientation and feedback only (see DESIGN-SYSTEM.md) */
+  --ease-out: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-press: cubic-bezier(0.3, 1.4, 0.6, 1);
+  --dur-1: 120ms;
+  --dur-2: 200ms;
+  --dur-3: 320ms;
+  --dur-4: 520ms;
 
   /* spacing */
   --s-1: 0.25rem;
@@ -161,24 +204,28 @@
   --room: var(--listening);
   --room-ink: var(--listening-ink);
   --room-soft: var(--listening-soft);
+  --room-glow: #91e2d6;
 }
 .d-reading,
 [data-domain="Reading"] {
   --room: var(--reading);
   --room-ink: var(--reading-ink);
   --room-soft: var(--reading-soft);
+  --room-glow: #d5dceb;
 }
 .d-speaking,
 [data-domain="Speaking"] {
   --room: var(--speaking);
   --room-ink: var(--speaking-ink);
   --room-soft: var(--speaking-soft);
+  --room-glow: #dba3b9;
 }
 .d-writing,
 [data-domain="Writing"] {
   --room: var(--writing);
   --room-ink: var(--writing-ink);
   --room-soft: var(--writing-soft);
+  --room-glow: #f5d6a8;
 }
 .d-model-test,
 [data-domain="Model-Test"] {
@@ -193,7 +240,10 @@ html {
   scroll-padding-top: 5rem;
 }
 body {
-  background: var(--bg);
+  background:
+    radial-gradient(1400px 700px at 100% 0%, rgb(213 220 235 / 45%), transparent 70%) no-repeat,
+    var(--grain),
+    var(--bg);
   color: var(--ink);
   font: 400 1.0625rem/1.6 var(--font);
   font-optical-sizing: auto;
@@ -249,7 +299,7 @@ a:hover {
   box-shadow: none;
 }
 ::selection {
-  background: #cfe0fd;
+  background: var(--pearl-blue);
 }
 .fine {
   font-size: 0.9375rem;
@@ -298,11 +348,11 @@ a:hover {
   gap: var(--s-4);
   min-height: 4.25rem;
   padding: 0.5rem clamp(1rem, 3vw, 2.25rem);
-  background: rgb(255 255 255 / 94%);
-  backdrop-filter: saturate(1.4) blur(10px);
+  background: rgb(255 253 248 / 88%);
+  backdrop-filter: saturate(1.3) blur(14px);
   color: var(--ink);
-  border-bottom: 1px solid var(--line);
-  box-shadow: none;
+  border-bottom: 1px solid rgb(29 43 88 / 10%);
+  box-shadow: 0 1px 0 rgb(255 255 255 / 80%) inset, 0 10px 30px -24px rgb(8 14 37 / 40%);
 }
 .lab-brand {
   display: flex;
@@ -519,7 +569,9 @@ a:hover {
 .boot {
   display: flex;
   gap: 0.6rem;
-  align-items: center;
+  align-items: flex-start;
+  /* Reserve the first screen while the app boots, so the footer is not on screen and then pushed away (CLS). */
+  min-height: 100vh;
   padding: 3rem 0;
   color: var(--ink-2);
 }
@@ -613,7 +665,7 @@ a:hover {
   align-items: center;
   justify-content: center;
   gap: 0.55rem;
-  min-height: 3rem;
+  min-height: var(--target);
   padding: 0.6rem 1.25rem;
   border-radius: 12px;
   border: 1.5px solid var(--line-strong);
@@ -623,39 +675,41 @@ a:hover {
   text-decoration: none;
   cursor: pointer;
   transition:
-    background-color 0.15s,
-    border-color 0.15s,
-    box-shadow 0.15s,
-    transform 0.1s;
+    background-color var(--dur-2) var(--ease-out),
+    border-color var(--dur-2) var(--ease-out),
+    box-shadow var(--dur-2) var(--ease-out),
+    transform var(--dur-1) var(--ease-press);
 }
 .btn:hover {
   border-color: var(--ink-3);
   background: var(--surface-2);
   color: var(--ink);
 }
-.btn:active {
-  transform: translateY(1px);
+.btn:active,
+.ghost:active {
+  transform: translateY(1px) scale(0.985);
 }
 .btn-primary {
-  background: var(--brand);
+  background: linear-gradient(180deg, var(--mi-600), var(--brand) 55%);
   border-color: var(--brand);
   color: var(--on-brand);
   box-shadow:
-    0 1px 0 rgb(255 255 255 / 25%) inset,
-    0 2px 6px rgb(37 99 235 / 28%);
+    var(--edge-light-dark),
+    0 1px 2px rgb(8 14 37 / 20%),
+    0 8px 18px -8px rgb(29 43 88 / 55%);
 }
 .btn-primary:hover {
-  background: var(--brand-ink);
-  border-color: var(--brand-ink);
+  background: linear-gradient(180deg, var(--mi-500), var(--mi-800) 60%);
+  border-color: var(--brand-deep);
   color: var(--on-brand);
 }
 .btn-secondary {
   background: var(--brand-soft);
-  border-color: #c4d7fb;
+  border-color: var(--pearl-blue);
   color: var(--brand-deep);
 }
 .btn-secondary:hover {
-  background: #d8e6fd;
+  background: var(--pearl-blue);
   border-color: var(--brand);
   color: var(--brand-deep);
 }
@@ -701,10 +755,26 @@ a:hover {
   font-weight: 700;
   line-height: 1.25;
 }
-.practice-status.is-in-progress { border-color: #9cb7e6; background: #edf3fd; color: #234d91; }
-.practice-status.is-practice-complete { border-color: #9acfc8; background: #e8f5f3; color: #125d58; }
-.practice-status.is-needs-review { border-color: #e4bf80; background: #fff5e5; color: #694309; }
-.practice-status.is-strong-practice { border-color: #a9caa9; background: #edf6ec; color: #275d2c; }
+.practice-status.is-in-progress {
+  border-color: #9cb7e6;
+  background: #edf3fd;
+  color: #234d91;
+}
+.practice-status.is-practice-complete {
+  border-color: #9acfc8;
+  background: #e8f5f3;
+  color: #125d58;
+}
+.practice-status.is-needs-review {
+  border-color: #e4bf80;
+  background: #fff5e5;
+  color: #694309;
+}
+.practice-status.is-strong-practice {
+  border-color: #a9caa9;
+  background: #edf6ec;
+  color: #275d2c;
+}
 .ghost.danger {
   color: var(--wrong);
 }
@@ -783,7 +853,7 @@ input:focus-visible,
 select:focus-visible,
 textarea:focus-visible {
   border-color: var(--brand);
-  outline: 3px solid rgb(37 99 235 / 28%);
+  outline: 3px solid rgb(69 90 154 / 35%);
   outline-offset: 0;
   box-shadow: none;
 }
@@ -1160,6 +1230,70 @@ details > summary + * {
     grid-template-columns: 1fr;
   }
 }
+/* ── grade-band identity ───────────────────────────────────────────────
+   One brand, two registers. Grades 3–5: warmer paper, rounder material, larger
+   targets. Grades 6–8: cooler editorial paper, tighter radii, denser type. */
+body[data-lab-band="3-5"] {
+  --bg: #fbf6ec;
+  --surface-2: #f7efe3;
+  --radius: 20px;
+  --r-lg: 26px;
+  --r-xl: 34px;
+  --target: 3.25rem;
+}
+body[data-lab-band="3-5"] .btn,
+body[data-lab-band="3-5"] .ghost {
+  border-radius: 16px;
+  font-size: 1.0625rem;
+}
+body[data-lab-band="6-8"] {
+  --bg: #f6f4ef;
+  --radius: 14px;
+  --r-lg: 18px;
+  --r-xl: 24px;
+}
+body[data-lab-band="6-8"] h1 {
+  letter-spacing: -0.026em;
+}
+
+/* ── navigation transition: the new screen settles in place (orientation, 240ms) ── */
+@keyframes lab-settle {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+#app.is-entering > * {
+  animation: lab-settle var(--dur-3) var(--ease-out) both;
+}
+
+/* ── assessment-style practice: quiet, focused, predictable ──────────────
+   Practice tests and the simulator drop the atmosphere: plain pearl paper, no
+   grain, no decorative depth, and a persistent mode label in the top bar. */
+body[data-lab-view="test"],
+body[data-lab-view="assess"] {
+  background: #f6f6f3;
+  --shadow: 0 1px 2px rgb(8 14 37 / 8%);
+  --shadow-lift: 0 1px 3px rgb(8 14 37 / 10%);
+}
+body[data-lab-view="test"] .lab-top,
+body[data-lab-view="assess"] .lab-top {
+  background: #fff;
+  backdrop-filter: none;
+}
+.mode-flag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.25rem 0.7rem;
+  border: 1.5px solid var(--ink-3);
+  border-radius: 999px;
+  color: var(--ink);
+  font-size: 0.875rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -1190,10 +1324,22 @@ body[data-lab-view] #nsr-workbench,
 body[data-lab-view] #mwb-launcher,
 body[data-lab-view] .mwb-launcher-nav,
 body[data-lab-view] .nt-chrome-dock,
-body[data-lab-view] .nt-chrome-footer { display: none !important; }
-body[data-lab-view] #nsr-panel { max-height: calc(100dvh - 24px); overflow-y: auto; }
-body[data-lab-view] #nsr-panel .nsr-foot { font-size: 1rem; }
-body[data-lab-view] { --bg: #f0f4f5; --line: #cbd6d8; --surface-2: #f3f6f6; --shadow: 0 2px 8px rgb(25 51 58 / 5%); }
+body[data-lab-view] .nt-chrome-footer {
+  display: none !important;
+}
+body[data-lab-view] #nsr-panel {
+  max-height: calc(100dvh - 24px);
+  overflow-y: auto;
+}
+body[data-lab-view] #nsr-panel .nsr-foot {
+  font-size: 1rem;
+}
+body[data-lab-view] {
+  --bg: #f0f4f5;
+  --line: #cbd6d8;
+  --surface-2: #f3f6f6;
+  --shadow: 0 2px 8px rgb(25 51 58 / 5%);
+}
 
 /* ── reset and utilities ───────────────────────────────────────────────── */
 *,
@@ -1336,6 +1482,12 @@ h1:focus {
 }
 .lab-tools .lang-switch {
   margin-inline: 0.4rem;
+}
+.lang-banner[hidden] {
+  display: none;
+}
+html.lab-lang-pending .lang-banner[hidden] {
+  display: flex;
 }
 .lang-banner {
   display: flex;

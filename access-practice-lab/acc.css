@@ -63,8 +63,8 @@
   --acc-link: #1649b8;
 
   /* controls */
-  --acc-primary: #17324d;
-  --acc-primary-hover: #0f2236;
+  --acc-primary: #1d2b58;
+  --acc-primary-hover: #080e25;
   --acc-on-primary: #ffffff;
   --acc-disabled-bg: #e2e8f0;
   --acc-disabled-text: #64748b;
@@ -81,14 +81,14 @@
   --acc-info-soft: #e0ecff;
 
   /* domain identities (fill takes white text, ink takes white background) */
-  --acc-d-listening: #17324d;
-  --acc-d-listening-soft: #e7eef2;
-  --acc-d-reading: #126e6c;
-  --acc-d-reading-soft: #e1f5f3;
-  --acc-d-speaking: #b8432f;
-  --acc-d-speaking-soft: #fce9e4;
-  --acc-d-writing: #9a4508;
-  --acc-d-writing-soft: #fef1dc;
+  --acc-d-listening: #075568;
+  --acc-d-listening-soft: #e2f3f0;
+  --acc-d-reading: #34459a;
+  --acc-d-reading-soft: #eceef8;
+  --acc-d-speaking: #7b4d91;
+  --acc-d-speaking-soft: #f5ecf6;
+  --acc-d-writing: #9a4a26;
+  --acc-d-writing-soft: #fbefe3;
 
   /* spacing, radius, elevation */
   --acc-space-1: 0.25rem;
@@ -538,6 +538,10 @@ select {
 label:has(> input[type="checkbox"]),
 label:has(> input[type="radio"]) {
   min-height: var(--acc-target);
+}
+/* Layout default only: zero specificity, so a component that lays out its own choice card (the test
+   mode cards, answer cards) keeps its grid instead of being forced into one inline row. */
+:where(label:has(> input[type="checkbox"]), label:has(> input[type="radio"])) {
   display: inline-flex;
   align-items: center;
   gap: var(--acc-space-2);

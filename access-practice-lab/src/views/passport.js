@@ -33,6 +33,7 @@ import { practiceSummary } from "../practice-report.js";
 import { journeyHTML, routeProgress } from "../journey.js";
 import { checkinHTML, onCheckinClick } from "../checkin-ui.js";
 import { familyLetterHTML, howIWorkHTML, onLetterClick } from "./passport-work.js";
+import { livingPortfolioHTML } from "./passport-living.js";
 import { paperPassportMenu } from "../paper-passport.js";
 import { getFamily, tripWeekStreak } from "../family/state.js";
 import { i18nFor, makeI18n } from "../i18n.js";
@@ -590,6 +591,8 @@ export async function render(ctx) {
             <li><span class="pass-stat-ico">${icon("clock")}</span><span class="pass-stat-label">${I.T("Practice days", "Días de práctica")}</span><strong class="pass-stat-value">${days.length}</strong><span class="pass-stat-note">${days.length ? I.T(`last ${formatDate(days[0])}`, `última: ${formatDate(days[0])}`) : I.T("none yet", "aún ninguno")}</span></li>
           </ul>
         </header>
+
+        ${livingPortfolioHTML(I, band)}
 
         <section>
           <section class="panel practice-report" aria-labelledby="practiceReportTitle">

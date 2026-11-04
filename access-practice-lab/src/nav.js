@@ -5,7 +5,7 @@ import { CHROME } from "./acc/copy.js";
 import { BASE, html, icon, raw } from "./util.js";
 
 export const LOGO = raw(
-  `<svg viewBox="0 0 40 40" aria-hidden="true" focusable="false"><rect x="2" y="2" width="17" height="17" rx="5.5" fill="#17324d"/><rect x="21" y="2" width="17" height="17" rx="5.5" fill="#1fa6a2"/><rect x="2" y="21" width="17" height="17" rx="5.5" fill="#c94f3b"/><rect x="21" y="21" width="17" height="17" rx="5.5" fill="#f2c15b"/><path d="M6.5 14.5v-2a4 4 0 0 1 8 0v2" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/><path d="M26 7.5h8M26 11h8M26 14.5h5" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/><rect x="8.3" y="25" width="4.4" height="7" rx="2.2" fill="#fff"/><path d="M26.5 33.5l7-7" stroke="#17324d" stroke-width="2.6" stroke-linecap="round"/></svg>`,
+  `<svg viewBox="0 0 40 40" aria-hidden="true" focusable="false"><rect x="2" y="2" width="17" height="17" rx="5.5" fill="#075568"/><rect x="21" y="2" width="17" height="17" rx="5.5" fill="#34459a"/><rect x="2" y="21" width="17" height="17" rx="5.5" fill="#7b4d91"/><rect x="21" y="21" width="17" height="17" rx="5.5" fill="#9a4a26"/><path d="M6.5 14.5v-2a4 4 0 0 1 8 0v2" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/><path d="M26 7.5h8M26 11h8M26 14.5h5" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/><rect x="8.3" y="25" width="4.4" height="7" rx="2.2" fill="#fff"/><path d="M26.5 33.5l7-7" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/></svg>`,
 );
 
 const PRACTICE_VIEWS = new Set([
@@ -51,6 +51,7 @@ const ACTIVE = {
   games: "play",
   reality: "play",
   worlds: "play",
+  exhibition: "play",
   puzzles: "play",
   growth: "growth",
   passport: "growth",
@@ -166,6 +167,7 @@ function menuGroups(band, T) {
     {
       title: T("Studios and missions", "Estudios y misiones"),
       items: [
+        link("worlds", T("Language World: Science Exhibition", "Mundo del lenguaje: Feria de ciencias"), "exhibition"),
         link("worlds", T("Language Reality Engine", "Motor de Realidad Lingüística"), "reality"),
         link("speaking", T("Speaking Studio", "Estudio de expresión oral"), "speak"),
         link("writing", T("Writing Studio", "Estudio de escritura"), "write"),
@@ -226,7 +228,9 @@ export function navHTML(ctx, I) {
       ${l.id === current ? raw('aria-current="page"') : ""}
       >${icon(l.icon)}<span>${l.label}</span></a
     >`;
+  const focused = view === "test" || view === "assess";
   return html`${primary.filter((l) => !l.pill).map(topLink)}${primary.filter((l) => l.pill).map(topLink)}
+    ${focused ? html`<span class="mode-flag">${icon("tests")}<span>${T("Focused practice mode", "Modo de práctica enfocada")}</span></span>` : ""}
     ${langSwitchHTML(I.mode)}
     <details class="lab-utilities">
       <summary>${icon("menu")}<span>${T("More", "Más")}</span></summary>

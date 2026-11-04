@@ -52,12 +52,14 @@ import * as publisherDemoView from "./views/publisher-demo.js";
 import * as assessView from "./views/assess.js";
 import * as learnView from "./views/learn.js";
 import * as realityView from "./views/reality.js";
+import * as exhibitionView from "./views/exhibition.js";
 
 export const BUILD = "2026.11.03.7";
 const VIEWS = {
   home: homeView,
   learn: learnView,
   reality: realityView,
+  exhibition: exhibitionView,
   "session-done": homeView,
   stories: storiesView,
   ladder: ladderView,
@@ -113,7 +115,7 @@ export function parseRoute(pathname = location.pathname, search = location.searc
   if (a === "worlds") {
     return { ...r, view: "worlds", id: b || "", worldId: b || "", missionId: c || "", tab: q.get("tab") || "" };
   }
-  if (["learn", "reality", "tests", "family", "passport", "tools", "library", "missions", "mission", "conversation", "construction", "evidence", "growth", "speak", "write", "detective", "launch", "launch-studio", "teacher-launch", "classroom", "vocabulary", "flashcards", "stories", "ladder", "puzzles", "publisher-demo", "games", "assess"].includes(a)) {
+  if (["learn", "reality", "exhibition", "tests", "family", "passport", "tools", "library", "missions", "mission", "conversation", "construction", "evidence", "growth", "speak", "write", "detective", "launch", "launch-studio", "teacher-launch", "classroom", "vocabulary", "flashcards", "stories", "ladder", "puzzles", "publisher-demo", "games", "assess"].includes(a)) {
     return { ...r, view: a, id: b || "", missionId: b || "", scenarioId: b || "", tab: q.get("tab") || "" };
   }
   if (a === "diagnostic") return { ...r, view: "diagnostic", domain: b || "" };
@@ -281,6 +283,14 @@ async function render({ keepFocus = false, scroll = false } = {}) {
   }
   if (token !== app.rendering) return;
   root.innerHTML = toHtml(out.html);
+  // Orientation on navigation only: the new screen settles in place (reduced motion turns this off).
+  if (routeChanged && app.rendered) {
+    root.classList.remove("is-entering");
+    void root.offsetWidth;
+    root.classList.add("is-entering");
+    root.addEventListener("animationend", () => root.classList.remove("is-entering"), { once: true });
+  }
+  app.rendered = true;
   // Shared links carry their grade context into a fresh browser.
   for (const link of root.querySelectorAll("a[href]")) {
     const url = new URL(link.href, location.href);

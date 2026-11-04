@@ -51,7 +51,7 @@ export async function mountEvidencePanel(root, doc = document) {
     const head = h(doc, "tr", {}, h(doc, "th", { scope: "col", text: "Domain · Key Language Use" }), ...CONTEXTS.map((c) => h(doc, "th", { scope: "col", text: c })));
     const body = [];
     for (const d of DOMAINS) for (const k of KLUS) body.push(h(doc, "tr", {}, h(doc, "th", { scope: "row", text: `${d} · ${k}` }), ...CONTEXTS.map((c) => { const cell = cells[`${d}|${k}|${c}`]; return h(doc, "td", { class: `acc-heat ${cellClass(cell)}`, "data-state": cell.state }, h(doc, "span", { text: cellText(cell) })); })));
-    return { cells, table: h(doc, "table", { class: "acc-table acc-matrix" }, h(doc, "caption", { text: "Practice evidence by domain, key language use and academic context. A percentage appears only after at least three items." }), h(doc, "thead", {}, head), h(doc, "tbody", {}, ...body)) };
+    return { cells, table: h(doc, "table", { class: "acc-table acc-matrix", tabindex: "0" }, h(doc, "caption", { text: "Practice evidence by domain, key language use and academic context. A percentage appears only after at least three items." }), h(doc, "thead", {}, head), h(doc, "tbody", {}, ...body)) };
   }
 
   function summaryText(cells) {

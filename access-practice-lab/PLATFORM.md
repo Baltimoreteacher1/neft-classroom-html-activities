@@ -18,12 +18,24 @@ show it independently → watch growth. Direct activity links and the quick-prac
 | Growth Map | `/growth` | `src/lang/ledger.js` profile |
 | Teacher dashboard | `/access-teacher/` (top panel) | `access-teacher/evidence.js`, `src/lang/teacher.js` |
 | Optional entry check-in | `/diagnostic[/<Listening|Reading|Speaking|Writing>]` | `src/views/diagnostic.js` |
+| Language World · Science Exhibition | `/exhibition`, `/exhibition/<listen|read|speak|write|teacher>` | `src/content/exhibition.js`, `src/lang/exhibition.js`, `src/views/exhibition*.js`, `exhibition.css` |
 | Language Worlds | `/worlds[/<signal-station|evidence-city|conversation-quest|storyworks>[/<mission>]]` | `content/worlds.json`, `src/content/world-missions.js`, `src/views/worlds.js`, `pictures/worlds/*.svg` |
 | Whole-Class Language Studio | `/classroom` | `src/views/classroom.js`, `src/views/classroom-data.js`, `classroom-studio.css` |
 | Word Builder · Vocabulary & Morphology | `/vocabulary` | `src/views/vocabulary.js`, `src/content/vocabulary-items.js`, `vocabulary.css` |
 | Teacher Launch Studio | `/launch-studio`, `/launch`, `/teacher-launch` | `src/views/launch-studio.js`, `launch-studio.css` |
 
 The check-in records only answer correctness and skill tags for its short, original Listening/Reading prompts; Speaking/Writing prompts save a reflection-completed flag but never retain the response or recording. It gives an instructional starting suggestion, not a proficiency result. Teacher launch URLs contain an existing activity ID and instructional settings, never learner data. Language Worlds feature eight consequential, visually complete missions per world per grade band with domain mechanics (dispatch, evidence, dialogue, publishing) and independent transfer, alongside field practice activities. Whole-Class Studio provides projector-ready routines with source card marking, non-drag sequence building, scaffold toggles, and sample models without storing student responses. Word Builder provides spaced-retrieval academic morphology practice (1-, 3-, 7-day intervals) grounded in WIDA ELD Standards Framework 2020 contexts.
+
+### Language World (the Science Exhibition)
+
+One original scenario per band (6–8 *The Clean Water Exhibition*, 3–5 *The Seed Science Fair*) carries four linked tasks:
+Listening (Inform) → Reading (Explain; selected evidence becomes the writing evidence bank) → Speaking (Explain / Narrate;
+plan, say or record, self-check, choose one improvement) → Writing (Argue / Explain; draft, rule-based feedback quoting the
+learner's own sentences, revision compared with the earlier draft, then a new attempt on a transfer prompt with all help
+closed). State is one key, `accessPracticeLab:v1:exhibition`, so the Passport export carries it; recordings are never
+stored. Opening any help marks the work supported. Help items are written so they never state an answer
+(`tools/access-living-studio.test.mjs` enforces it). Checks: that test, `npm run e2e:access-living`,
+`node tools/access-axe-sweep.mjs --width 375|1440`.
 
 ## The engine (`src/lang/`)
 

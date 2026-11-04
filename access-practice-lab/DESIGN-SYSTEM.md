@@ -9,7 +9,8 @@ rules (no invented proficiency, supports never contaminate independent results, 
 | File                                         | Owns                                                                                                                                                      |
 | -------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `ds.css`                                     | fonts, tokens, type, top bar, footer, buttons, panels, forms, disclosures, chips, bars, crumbs, toast, empty/skeleton                                     |
-| `home.css`                                   | home                                                                                                                                                      |
+| `home.css`                                   | home: exhibition hero (`.ll-hero`), next action, studio portals (`.ll-portal`), Language World band, Passport, quiet test entrance, library, doors |
+| `exhibition.css`                             | Language World (`/exhibition`): hub, four-step path, support choice, step studios, help rail, teacher notes                                         |
 | `room.css`                                   | a skill room (domain hero, support levels, activity list)                                                                                                 |
 | `activity.css`                               | the activity shell and every quick-practice item type, listening player, recorder, feedback                                                               |
 | `tests.css`                                  | practice tests: chooser, intro, question screens, review, results                                                                                         |
@@ -21,21 +22,43 @@ rules (no invented proficiency, supports never contaminate independent results, 
 `ds.css` loads before the screen sheets. Never redefine a token or a shared component inside a screen sheet;
 add a variant class instead. If you need a new shared token or component, add it to `ds.css`.
 
-## Identity
+## Identity — The Living Language Studio
 
-Editorial, calm, academic. Display type is Fraunces (headings `h1`, `h2`, big numerals); everything else is Atkinson
-Hyperlegible (chosen for legibility for multilingual learners). Both are self-hosted under `/assets/fonts/`.
+Editorial, dimensional, academic. Display type is Fraunces (headings `h1`, `h2`, big numerals); everything else is
+Atkinson Hyperlegible (chosen for legibility for multilingual learners). Both are self-hosted under `/assets/fonts/`.
+
+Six material families (tokens on `:root` in `ds.css`) are art-direction anchors, not gradients to spray around:
+
+| Material | Tokens | Used for |
+| --- | --- | --- |
+| Midnight Indigo | `--mi-950 … --mi-300` | brand atmosphere, the home hero, Language World bands, primary buttons |
+| Ivory & Pearl | `--ivory --pearl --pearl-blue` | reading surfaces, paper, preview cards |
+| Ocean Glass | `--ocean-900/600/200` | Listening · The Sound Studio |
+| Orchid & Amethyst | `--orchid-900/600/200` | Speaking · The Expression Studio |
+| Burnished Copper | `--copper-900/500/200` | Writing · The Composition Studio |
+| Sage & Jade | `--sage-900/500/200` | growth, revision, feedback, the support choice |
+
+Depth comes from layered light, not decoration: `--shadow / --shadow-lift / --shadow-float` (indigo-tinted, multi-layer),
+`--edge-light` (a lit top edge on raised material) and `--grain` (fine paper texture). Glass never sits under body text.
+
 The four language domains each own a colour and are always paired with an icon and a word:
 
-| Domain    | Class         | Fill (white text on it) | Ink (text on white) | Tint               |
-| --------- | ------------- | ----------------------- | ------------------- | ------------------ |
-| Listening | `d-listening` | `--listening` #17324d   | `--listening-ink`   | `--listening-soft` |
-| Reading   | `d-reading`   | `--reading` #0b7a75     | `--reading-ink`     | `--reading-soft`   |
-| Speaking  | `d-speaking`  | `--speaking` #c94f3b    | `--speaking-ink`    | `--speaking-soft`  |
-| Writing   | `d-writing`   | `--writing` #b45309     | `--writing-ink`     | `--writing-soft`   |
+| Domain    | Studio | Class         | Fill (white text on it) | Ink (text on white) | Glow (on midnight) |
+| --------- | ------ | ------------- | ----------------------- | ------------------- | ------------------ |
+| Listening | The Sound Studio | `d-listening` | `--listening` #075568 | `--listening-ink` | `--room-glow` #91e2d6 |
+| Reading   | The Reading Atelier | `d-reading`   | `--reading` #34459a | `--reading-ink` | #d5dceb |
+| Speaking  | The Expression Studio | `d-speaking`  | `--speaking` #7b4d91 | `--speaking-ink` | #dba3b9 |
+| Writing   | The Composition Studio | `d-writing`   | `--writing` #9a4a26 | `--writing-ink` | #f5d6a8 |
 
-Put the domain class on a container and use `--room`, `--room-ink`, `--room-soft`. Colour is never the only signal.
-Primary actions use navy `--brand`; navy `--ink` is text and the footer. Amber `--accent` and coral `--coral` mark emphasis and the speaking domain.
+Put the domain class on a container and use `--room`, `--room-ink`, `--room-soft`, `--room-glow`. Colour is never the
+only signal. Primary actions use midnight `--brand`; `--ink` is text. The content JSON `color` of each domain must
+equal its token (`tools/access-design-system.test.mjs`).
+
+**Grade bands** (`body[data-lab-band]`): Grades 3–5 get warmer paper, rounder material and 52px targets (`--target`);
+Grades 6–8 get cooler editorial paper, tighter radii and denser type. Same brand, visibly different register.
+
+**Learning vs assessment**: practice tests (`data-lab-view="test"`) and the simulator (`"assess"`) drop the atmosphere —
+plain paper, no grain, flat elevation — and the top bar shows a "Focused practice mode" label.
 
 ## Tokens (see `:root` in `ds.css`)
 
@@ -61,8 +84,9 @@ text and for control borders). `--ink-3` is the lightest allowed body-adjacent t
   keep a visible text label next to them.
 - Emoji that are part of _activity content_ (picture labels on answer choices, e.g. `.opt-visual`) are content, not
   chrome. Leave the content; the shell frames them in a consistent tile.
-- Illustrations are original SVG in `pictures/ds/` (`hero`, `domain-listening|reading|speaking|writing`, `empty`,
-  `complete`), navy outlines with flat domain-colour fills. New art must match: 3 px navy stroke, round joins,
+- Illustrations are original SVG in `pictures/ds/`. `hall-68.svg` / `hall-35.svg` (the exhibition hall) and the four
+  `domain-*.svg` studio pictures are generated by `node tools/access-hall-art.mjs` (`--check` in the tests) — edit the
+  script, never the files. Other art (`empty`, `complete`, …) predates the studio palette. New art must match: 3 px navy stroke, round joins,
   fills from the domain palette, small decorative dots/plus signs in `--accent` and navy. Reference with
   `${ART}/name.svg` (`ART` from `src/util.js`), `alt=""` when decorative.
 
@@ -74,8 +98,11 @@ leave room for the 68 px top bar. Respect `prefers-reduced-motion` (ds.css alrea
 
 ## Motion
 
-Only state changes animate: hover/press on controls, accordion chevron, progress bars, the listening bars while audio is
-playing, the recording dot while recording. No entrance animations, confetti or looping decoration.
+Tokens: `--ease-out --ease-in-out --ease-press`, `--dur-1` (120ms, press) … `--dur-4` (520ms). Motion only for state
+changes, orientation and feedback: hover/press on controls, the station pins and portals lifting on hover, the accordion
+chevron, progress bars, the listening bars while audio is playing, the recording dot while recording, and one 320ms
+"settle" when a new screen opens after navigation (`#app.is-entering`). No looping decoration, confetti or parallax.
+`prefers-reduced-motion` turns all of it off (ds.css).
 
 ## Rules a redesign must not break
 

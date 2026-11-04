@@ -74,7 +74,11 @@ function mountLangBanner(ctx) {
   const existing = document.getElementById("labLangBanner");
   const wanted = !ctx.prefs.langChosen && ctx.route?.view !== "family";
   if (!wanted) return existing?.remove();
-  if (existing) return;
+  // index.html ships the same banner (hidden) so a first visit shows it before the first paint.
+  if (existing) {
+    existing.hidden = false;
+    return;
+  }
   const banner = document.createElement("div");
   banner.id = "labLangBanner";
   banner.className = "lang-banner no-print";

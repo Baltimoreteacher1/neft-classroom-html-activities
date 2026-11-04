@@ -62,7 +62,7 @@ export async function mountContentPanel(root, doc = document) {
     return {
       gaps,
       total: rows.length,
-      table: h(doc, "table", { class: "acc-table acc-matrix" }, h(doc, "caption", { text: `Grades ${state.grade.replace("-", "–")}: items by domain, key language use and context (count · early/building/strong). “Framework” marks combinations the WIDA framework lists; “supplementary” is useful practice it does not list for that combination.` }), h(doc, "thead", {}, head), h(doc, "tbody", {}, ...body)),
+      table: h(doc, "table", { class: "acc-table acc-matrix", tabindex: "0" }, h(doc, "caption", { text: `Grades ${state.grade.replace("-", "–")}: items by domain, key language use and context (count · early/building/strong). “Framework” marks combinations the WIDA framework lists; “supplementary” is useful practice it does not list for that combination.` }), h(doc, "thead", {}, head), h(doc, "tbody", {}, ...body)),
     };
   }
 
