@@ -10,7 +10,7 @@ import { companionFor } from "./companion-for.js";
 import { gradeOrder, skillState } from "./journey-map.js";
 import { L, say } from "./kernel.js";
 import { SKILL_MATRIX } from "./skills.js";
-import { bandOf } from "./workspace.js";
+import { applyIdentity } from "./identity.js";
 import { btn, h } from "./views/common.js";
 
 const UI = {
@@ -65,8 +65,7 @@ export function mountTeacher(root, { grade }) {
 
   function render() {
     root.className = "mr-app mr-teacher";
-    root.dataset.band = "design";
-    document.documentElement.dataset.band = "design";
+    applyIdentity(root, grade);
     document.documentElement.lang = lang;
     const skills = gradeOrder(grade);
     const gradeLinks = h("div", { class: "mr-group", role: "group", "aria-label": tx(UI.grade) }, ...[0, 1, 2, 3, 4, 5, 6, 7, 8].map((g) => h("a", { class: `mr-btn mr-grade ${g === grade ? "is-primary" : ""}`, href: `./?teacher=1&grade=${g}`, "aria-current": g === grade ? "true" : null, "aria-label": `${tx(UI.grade)} ${g === 0 ? "K" : g}` }, g === 0 ? "K" : String(g))));

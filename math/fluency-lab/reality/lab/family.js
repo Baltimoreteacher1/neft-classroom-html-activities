@@ -5,7 +5,7 @@ import { experienceById } from "./catalog.js";
 import { companionFor, companionIdsForGrade, companionSkillTitle } from "./companion-for.js";
 import { COMPANIONS } from "./companions.js";
 import { L, say } from "./kernel.js";
-import { bandOf } from "./workspace.js";
+import { applyIdentity } from "./identity.js";
 import { btn, h } from "./views/common.js";
 
 const UI = {
@@ -38,8 +38,7 @@ export function mountFamily(root, { expId, grade }) {
   }
   function render() {
     root.className = "mr-app mr-family";
-    root.dataset.band = bandOf(grade);
-    document.documentElement.dataset.band = bandOf(grade);
+    applyIdentity(root, grade);
     document.documentElement.lang = lang;
     const bar = h("header", { class: "mr-top" },
       h("a", { class: "mr-back", href: `./?grade=${grade}` }, `← ${tx(UI.back)}`),

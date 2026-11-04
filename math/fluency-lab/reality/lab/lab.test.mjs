@@ -477,4 +477,38 @@ test("every studio skill has a bilingual family companion whose next step opens 
   assert.ok(companionFor("fraction-transform"), "flagships still resolve");
 });
 
+
+// ---- visual identity: the artwork is mathematically true, and the hero derives everything from two numbers ---------------------
+test("each grade's artwork shows a true relationship and the hero is derived from rows and columns", async () => {
+  const { artFacts } = await import("./art.js");
+  const { heroModel, heroLimits } = await import("./hero.js");
+  const { bandOf } = await import("./identity.js");
+  for (let g = 0; g <= 8; g++) assert.equal(artFacts(g).ok, true, `grade ${g}: ${artFacts(g).caption}`);
+  assert.equal(new Set([0, 1, 2, 3, 4, 5, 6, 7, 8].map((g) => artFacts(g).kind)).size, 9, "nine different pictures");
+  for (let rows = 1; rows <= 6; rows++)
+    for (let cols = 1; cols <= 8; cols++) {
+      const m = heroModel(rows, cols);
+      assert.equal(m.total, rows * cols);
+      assert.equal(m.stops.length, rows + 1);
+      assert.equal(m.stops.at(-1), m.total, "the last jump lands on the product");
+      assert.equal(m.stops.every((v, i) => v === i * cols), true, "every jump is one group long");
+      assert.equal(m.division.startsWith(`${m.total} ÷ ${cols}`), true);
+      assert.equal(m.repeated.split(" + ").length, rows);
+    }
+  assert.deepEqual(heroLimits(1), { rows: [1, 4], cols: [1, 5] });
+  assert.deepEqual([0, 2, 3, 5, 6, 8].map(bandOf), ["early", "early", "design", "design", "analyze", "analyze"]);
+});
+
+
+// ---- every UI string a view reads is defined ---------------------------------------------------------------------------------------
+test("no view reads a UI string it does not define (a missing key renders as blank text)", async () => {
+  const { readFileSync } = await import("node:fs");
+  for (const [file, name] of [["hub.js", "UI"], ["workspace.js", "UI"], ["family.js", "UI"], ["teacher.js", "UI"], ["panel.js", "T"], ["hero.js", "UI"]]) {
+    const src = readFileSync(new URL(file, import.meta.url), "utf8");
+    const used = new Set([...src.matchAll(new RegExp(`\\b${name}\\.(\\w+)`, "g"))].map((m) => m[1]));
+    const block = src.slice(src.indexOf(`const ${name} = {`));
+    for (const key of used) assert.ok(new RegExp(`\\b${key}:`).test(block), `${file}: ${name}.${key} is used but never defined`);
+  }
+});
+
 if (!process.exitCode) console.log(`reality lab: ${count} checks passed`);

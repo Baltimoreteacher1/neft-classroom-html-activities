@@ -6,7 +6,9 @@ import { EVIDENCE_TEXT, evidenceOf, sanitizeSession } from "./journey.js";
 import { L, say } from "./kernel.js";
 import { loadLab } from "./store.js";
 import { SKILL_MATRIX } from "./skills.js";
-import { bandOf } from "./workspace.js";
+import { drawArt } from "./art.js";
+import { mountHero } from "./hero.js";
+import { applyIdentity } from "./identity.js";
 import { journeyFor, reviewFor } from "./journey-map.js";
 import { btn, h } from "./views/common.js";
 
@@ -29,6 +31,8 @@ const UI = {
   kindergarten: L("K", "K"),
   stepOf: L("step", "paso"),
   pick: L("Choose your grade", "Elige tu grado"),
+  review: L("A quick warm-up first: ideas this step builds on", "Un calentamiento rápido: ideas en las que se apoya este paso"),
+  because: L("this step builds on it", "este paso se apoya en ella"),
   journey: L("Continue My Journey", "Continuar mi recorrido"),
   nextUp: L("Next up for this grade. Each step is a short model you build, explain and then do on your own.", "Lo siguiente en este grado. Cada paso es un modelo corto que construyes, explicas y luego haces tú solo."),
   resume: L("You started this one. Pick up where you left off.", "Empezaste esta. Continúa donde la dejaste."),
@@ -100,16 +104,19 @@ export function mountHub(root, { grade }) {
         id ? null : h("a", { class: "mr-btn is-quiet", href: `../../?grade=${s.grade}&skill=${encodeURIComponent(s.id)}` }, tx(UI.inLab)));
     });
     root.className = "mr-app mr-hub";
-    root.dataset.band = bandOf(grade);
-    document.documentElement.dataset.band = bandOf(grade);
+    applyIdentity(root, grade);
+    const heroHost = h("div", { class: "mr-hero-host" });
+    mountHero(heroHost, { grade, lang, tx });
     root.replaceChildren(
       h("header", { class: "mr-top" }, h("a", { class: "mr-back", href: "../../" }, `← ${tx(UI.back)}`), h("div", { class: "mr-title" }, h("h1", {}, tx(UI.title))), h("div", { class: "mr-top-tools" }, h("a", { class: "mr-btn is-quiet", href: `./?family=&grade=${grade}` }, tx(UI.family)), btn(lang === "es" ? "English" : "Español", () => { lang = lang === "es" ? "en" : "es"; setLang(lang); document.documentElement.lang = lang; render(); }, { cls: "is-quiet", key: "lang" }))),
       h("main", { class: "mr-hub-main", id: "mr-main" },
         h("section", { class: "mr-hero" },
+          h("figure", { class: "mr-grade-art" }, drawArt(grade)),
           h("p", { class: "mr-eyebrow" }, tx(UI.innov)),
           h("p", { class: "mr-lead" }, tx(UI.lead)),
           gradeBtns,
           last && lastSt && !lastSt.done ? h("a", { class: "mr-continue", href: `./?x=${encodeURIComponent(last.id)}&grade=${grade}` }, h("span", { class: "mr-continue-k" }, tx(UI.cont)), h("strong", {}, tx(last.title)), h("span", {}, `${tx(UI.stepOf)} ${lastSt.session.step + 1} / ${last.steps.length}`)) : null),
+        heroHost,
         continueCard,
         h("section", { class: "mr-path-wrap", "aria-labelledby": "path-h" }, h("h3", { id: "path-h" }, tx(UI.path)), h("p", { class: "mr-inno-line" }, tx(UI.pathLead)), pathList),
         ...innovSection,

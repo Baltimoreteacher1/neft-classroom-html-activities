@@ -196,6 +196,44 @@ try {
     assert.deepEqual(result.violations.filter((v) => ["serious", "critical"].includes(v.impact)).map((v) => v.id), [], "studio companion axe");
   }
 
+
+  // ---- nine grade identities: distinct, accessible, and the hero really is interactive ----------------------------------------------
+  {
+    const seen = new Map();
+    for (let g = 0; g <= 8; g++) {
+      for (const [width, height] of [[390, 844], [1280, 900]]) {
+        const page = await open(`?grade=${g}`, { width, height });
+        assert.equal(await page.evaluate(() => document.documentElement.dataset.grade), String(g));
+        const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+        assert.ok(overflow <= 1, `grade ${g} hub scrolls sideways by ${overflow}px at ${width}px`);
+        const result = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"]).analyze();
+        const bad = result.violations.filter((v) => ["serious", "critical"].includes(v.impact));
+        assert.deepEqual(bad.map((v) => `${v.id}: ${v.nodes[0]?.html.slice(0, 80)}`), [], `grade ${g} hub at ${width}px`);
+        // the spiral-review line always says why it is offered (a blank label here once shipped unnoticed)
+        for (const review of await page.locator(".mr-review").all()) assert.match(await review.innerText(), /builds on/i, `grade ${g} review text`);
+        if (width === 1280) {
+          const fp = await page.evaluate(() => {
+            const cs = getComputedStyle(document.querySelector(".mr-app"));
+            return [cs.backgroundColor, getComputedStyle(document.querySelector("h1")).fontFamily.split(",")[0], getComputedStyle(document.querySelector(".mr-btn")).borderRadius, document.querySelector(".mr-grade-art svg").getAttribute("aria-label")].join("|");
+          });
+          seen.set(g, fp);
+          await shot(page, `grade-${g}-hub`);
+          // the hero responds: more groups means a bigger product, everywhere on the page
+          const before = await page.locator(".mr-hero-svg").getAttribute("aria-label");
+          await page.locator('[data-key="hero-rows-plus"]').click();
+          const after = await page.locator(".mr-hero-svg").getAttribute("aria-label");
+          assert.notEqual(after, before, `grade ${g} hero updates`);
+          assert.match(after, /4 groups of 4 make 16/);
+        }
+      }
+      const work = await open(`?x=balance-equation&grade=${g}&restart=1`);
+      const wr = await new AxeBuilder({ page: work }).withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"]).analyze();
+      assert.deepEqual(wr.violations.filter((v) => ["serious", "critical"].includes(v.impact)).map((v) => `${v.id}: ${v.nodes[0]?.html.slice(0, 80)}`), [], `grade ${g} workspace`);
+    }
+    assert.equal(new Set(seen.values()).size, 9, "nine grades, nine different identities");
+    assert.equal(new Set([...seen.values()].map((v) => v.split("|")[0])).size >= 7, true, "colour differs by grade, not just by band");
+  }
+
   // ---- axe and overflow: three grade bands, phone and desktop ------------------------------------------------------------------
   for (const [query, label] of [["?x=studio:1:make-10&grade=1&skill=1:make-10&restart=1", "g1"], ["?x=fraction-transform&grade=4&restart=1", "g4"], ["?x=balance-equation&grade=8&restart=1", "g8"], ["?grade=2", "hub2"]]) {
     for (const [width, height] of [[390, 844], [1280, 900]]) {

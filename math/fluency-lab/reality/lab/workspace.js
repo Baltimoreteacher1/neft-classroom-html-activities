@@ -3,6 +3,7 @@
 import { getLang, setLang } from "../../i18n.js";
 import { experienceForSkill } from "./catalog.js";
 import { companionFor } from "./companion-for.js";
+import { applyIdentity, bandOf } from "./identity.js";
 import {
   currentStep,
   evidenceOf,
@@ -19,7 +20,6 @@ import { loadLab, nextSupport, recordSkillEvidence, writeLab } from "./store.js"
 import { btn, group, h } from "./views/common.js";
 import { VIEWS } from "./views/index.js";
 
-export const bandOf = (grade) => (grade <= 2 ? "early" : grade <= 5 ? "design" : "analyze");
 
 const UI = {
   back: L("Fluency Lab", "Laboratorio de fluidez"),
@@ -111,6 +111,8 @@ const kindTab = (step) =>
         : step.kind === "transfer"
           ? UI.tabs.prove
           : UI.tabs.look;
+
+export { bandOf };
 
 export function mountWorkspace(
   root,
@@ -666,9 +668,8 @@ export function mountWorkspace(
 
   function render(moveFocus = false) {
     const restore = captureFocus();
-    document.documentElement.dataset.band = bandOf(grade);
+    applyIdentity(root, grade);
     root.className = `mr-app ${focusMode ? "is-focus" : ""}`;
-    root.dataset.band = bandOf(grade);
     root.dataset.model = exp.model;
     root.replaceChildren(topBar(), session.done ? doneScreen() : stage(), live);
     restore();
