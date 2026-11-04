@@ -1,0 +1,484 @@
+/* Growth Mirror (Journey Improve step, Show summary, Passport evidence). Tokens from ds.css; nothing here redefines a
+   shared component. Growth material = Sage & Jade. Marks are never colour-only: added words are underlined, removed words
+   are struck through, the target is outlined, badges carry words. Mobile first (375px), 44px targets, no purple. */
+
+.mr {
+  display: grid;
+  gap: var(--s-4);
+  max-width: 72rem;
+  margin-inline: auto;
+}
+.mr-head h2 {
+  margin: 0 0 var(--s-2);
+}
+.mr-head .lead {
+  margin: 0;
+  max-width: var(--measure);
+}
+
+/* ── cards ───────────────────────────────────────────────────────────── */
+.mr-card {
+  min-width: 0;
+  margin: 0;
+  padding: clamp(1rem, 3vw, 1.5rem);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+.mr-card h3 {
+  margin: 0 0 var(--s-3);
+  font-size: 1.15rem;
+}
+fieldset.mr-card legend {
+  padding: 0 var(--s-2);
+}
+fieldset.mr-card legend h3 {
+  margin: 0;
+}
+.mr-quote {
+  margin: 0 0 var(--s-3);
+  padding: var(--s-3) var(--s-4);
+  background: var(--surface-2);
+  border-inline-start: 4px solid var(--sage-500);
+  border-radius: var(--radius-sm);
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  font-size: 1.0625rem;
+  line-height: 1.55;
+}
+.mr-mark {
+  padding: 0 0.15em;
+  background: var(--hint-soft);
+  color: var(--ink);
+  border-bottom: 3px double var(--hint);
+}
+
+/* ── the one target ───────────────────────────────────────────────────── */
+.mr-target {
+  padding: var(--s-3) var(--s-4);
+  background: var(--right-soft);
+  border: 2px solid var(--sage-500);
+  border-radius: var(--radius-sm);
+}
+.mr-target p {
+  margin: 0 0 var(--s-2);
+}
+.mr-target p:last-child {
+  margin-bottom: 0;
+}
+.mr-target-tag {
+  color: var(--sage-900);
+  font-size: 0.9375rem;
+  font-weight: 700;
+}
+.mr-target-label {
+  font-size: 1.2rem;
+}
+.mr-target-why span {
+  color: var(--ink-2);
+  font-weight: 700;
+}
+
+/* ── graduated help ───────────────────────────────────────────────────── */
+.mr-levels {
+  display: grid;
+  gap: var(--s-3);
+  margin: 0 0 var(--s-3);
+  padding: 0;
+  list-style: none;
+}
+.mr-level {
+  padding: var(--s-3) var(--s-4);
+  background: var(--hint-soft);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+}
+.mr-level p {
+  margin: 0 0 var(--s-2);
+}
+.mr-level p:last-child {
+  margin-bottom: 0;
+}
+.mr-level.is-model {
+  border: 2px dashed var(--hint);
+}
+.mr-help-text {
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+/* ── revise ───────────────────────────────────────────────────────────── */
+.mr-label {
+  display: block;
+  margin-bottom: var(--s-2);
+  font-weight: 700;
+}
+.mr-textarea {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 9rem;
+  padding: var(--s-3);
+  border: 2px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--ink);
+  font: 1.0625rem/1.55 var(--font);
+  resize: vertical;
+}
+.mr-textarea:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 6px #fff;
+}
+.mr-notice {
+  margin: var(--s-3) 0 0;
+  padding: 0;
+}
+.mr-notice:not(:empty) {
+  padding: var(--s-3) var(--s-4);
+  background: var(--hint-soft);
+  border-inline-start: 4px solid var(--hint);
+  border-radius: var(--radius-sm);
+}
+.mr-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-3);
+  margin-top: var(--s-4);
+}
+.mr .btn,
+.mr .ghost {
+  min-height: 2.75rem;
+}
+
+/* ── before / after: the centerpiece ──────────────────────────────────── */
+.mr-comparison {
+  border: 2px solid var(--sage-500);
+}
+.mr-compare {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--s-3);
+}
+.mr-col {
+  min-width: 0;
+  padding: var(--s-3) var(--s-4);
+  background: var(--surface-2);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+}
+.mr-col-after {
+  background: var(--right-soft);
+  border: 2px solid var(--sage-500);
+}
+.mr-col h4 {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-2);
+  margin: 0 0 var(--s-2);
+  font-size: 1rem;
+}
+.mr-col-tag {
+  padding: 0.1rem 0.6rem;
+  background: var(--ink);
+  color: var(--surface);
+  border-radius: 999px;
+  font-size: 0.875rem;
+}
+.mr-col-after .mr-col-tag {
+  background: var(--sage-900);
+}
+.mr-text {
+  margin: 0;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  font-size: 1.0625rem;
+  line-height: 1.7;
+}
+.mr-add {
+  padding: 0 0.1em;
+  background: var(--sage-200);
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-thickness: 3px;
+  text-underline-offset: 3px;
+}
+.mr-del {
+  background: var(--wrong-soft);
+  color: var(--ink);
+  text-decoration: line-through;
+  text-decoration-thickness: 2px;
+}
+.mr-legend {
+  margin: var(--s-2) 0 var(--s-3);
+}
+.mr-targetresult {
+  margin: var(--s-3) 0;
+  padding: var(--s-3) var(--s-4);
+  border-radius: var(--radius-sm);
+  font-weight: 700;
+}
+.mr-targetresult.is-found {
+  background: var(--right-soft);
+  border-inline-start: 4px solid var(--right);
+}
+.mr-targetresult.is-open {
+  background: var(--hint-soft);
+  border-inline-start: 4px solid var(--hint);
+}
+.mr-check {
+  margin: var(--s-2) 0;
+  font-weight: 600;
+}
+.mr-comparison h4 {
+  margin: var(--s-4) 0 var(--s-2);
+}
+.mr-changes {
+  display: grid;
+  gap: var(--s-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.mr-change {
+  display: grid;
+  gap: 0.15rem;
+  padding: var(--s-2) var(--s-3);
+  background: var(--surface-2);
+  border-inline-start: 4px solid var(--right);
+  border-radius: var(--radius-sm);
+}
+.mr-change.is-check {
+  border-inline-start: 4px dashed var(--hint);
+}
+.mr-fromto {
+  color: var(--ink-2);
+}
+.mr-span {
+  color: var(--ink);
+  font-style: italic;
+  overflow-wrap: anywhere;
+}
+
+/* ── why does this help ───────────────────────────────────────────────── */
+.mr-option {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--s-3);
+  min-height: 2.75rem;
+  margin-bottom: var(--s-2);
+  padding: var(--s-2) var(--s-3);
+  border: 1.5px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  cursor: pointer;
+}
+.mr-option:has(input:checked) {
+  background: var(--right-soft);
+  border: 2px solid var(--sage-500);
+}
+.mr-option input {
+  flex: none;
+  width: 1.5rem;
+  height: 1.5rem;
+  margin-top: 0.1rem;
+  accent-color: var(--sage-900);
+}
+.mr-option:has(input:focus-visible) {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+.mr-done {
+  display: grid;
+  gap: var(--s-2);
+  justify-items: start;
+}
+.mr-done [aria-disabled="true"] {
+  opacity: 0.6;
+}
+
+/* ── Before -> After -> On my own ─────────────────────────────────────── */
+.mr-journey h3 {
+  margin: 0 0 var(--s-3);
+}
+.mr-timeline {
+  display: grid;
+  gap: var(--s-4);
+  margin: 0 0 var(--s-4);
+  padding: 0;
+  list-style: none;
+}
+.mr-step {
+  position: relative;
+  min-width: 0;
+  padding: var(--s-4);
+  background: var(--surface);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+}
+.mr-step.is-independent {
+  border: 2px solid var(--right);
+  background: var(--right-soft);
+}
+.mr-step.is-pending {
+  border-style: dashed;
+}
+.mr-step h3 {
+  margin: var(--s-2) 0 var(--s-3);
+  font-size: 1.1rem;
+}
+.mr-badge {
+  display: inline-block;
+  padding: 0.15rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.875rem;
+  font-weight: 700;
+  background: var(--hint-soft);
+  color: var(--hint);
+  border: 1.5px solid var(--hint);
+}
+.mr-badge.is-independent,
+.mr-step.is-independent > .mr-badge {
+  background: var(--right-soft);
+  color: var(--right);
+  border-color: var(--right);
+}
+.mr-counts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+  margin: 0 0 var(--s-3);
+  padding: 0;
+  list-style: none;
+}
+.mr-counts li {
+  padding: 0.25rem 0.75rem;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  font-size: 0.9375rem;
+}
+.mr-counts b {
+  margin-inline-start: 0.25rem;
+}
+.mr-reasons {
+  margin: 0 0 var(--s-3);
+  padding-inline-start: 1.25rem;
+}
+.mr-next,
+.mr-whyline,
+.mr-targetline {
+  margin: var(--s-2) 0;
+}
+
+/* ── Passport: evidence + Before/After cards ──────────────────────────── */
+.mr-growth {
+  display: grid;
+  gap: var(--s-3);
+}
+.mr-growth h3 {
+  margin: var(--s-3) 0 0;
+}
+.mr-tally,
+.mr-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.mr-tally li {
+  flex: 1 1 12rem;
+  padding: var(--s-3) var(--s-4);
+  background: var(--surface);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+}
+.mr-tally b {
+  display: block;
+  font: 700 2rem/1 var(--font-display);
+}
+.mr-evidence-note {
+  margin: 0;
+  padding: var(--s-3) var(--s-4);
+  background: var(--surface-2);
+  border-inline-start: 4px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+}
+.mr-chip {
+  padding: 0.35rem 0.8rem;
+  background: var(--right-soft);
+  border: 1px solid var(--sage-500);
+  border-radius: 999px;
+}
+.mr-gcard {
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+.mr-gcard > summary {
+  display: grid;
+  gap: var(--s-1);
+  min-height: 2.75rem;
+  /* room on the right for the disclosure chevron, so it never sits on top of the status badge */
+  padding: var(--s-3) 2.75rem var(--s-3) var(--s-4);
+  cursor: pointer;
+}
+.mr-gtitle {
+  font-weight: 700;
+}
+.mr-gbody {
+  display: grid;
+  gap: var(--s-3);
+  padding: 0 var(--s-4) var(--s-4);
+}
+.mr-badge-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-2);
+  margin: 0;
+}
+
+@media (min-width: 40rem) {
+  .mr-compare {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--s-4);
+  }
+  .mr-timeline {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .mr-gcard > summary {
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1.5fr) auto;
+    align-items: center;
+    gap: var(--s-3);
+  }
+}
+
+@media (forced-colors: active) {
+  .mr-add {
+    text-decoration-thickness: 3px;
+    border-bottom: 2px solid Highlight;
+  }
+  .mr-del {
+    text-decoration: line-through;
+    border-bottom: 2px dashed GrayText;
+  }
+  .mr-mark {
+    outline: 2px solid Highlight;
+  }
+  .mr-target,
+  .mr-col-after,
+  .mr-comparison {
+    border: 2px solid CanvasText;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mr * {
+    transition: none !important;
+    animation: none !important;
+  }
+}

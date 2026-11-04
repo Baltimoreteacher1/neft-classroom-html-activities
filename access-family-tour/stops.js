@@ -220,6 +220,189 @@ export const STOPS = [
       "Las grabaciones de voz no se guardan. Desaparecen al cerrar la página.",
     ],
   },
+  // ── Learning Journey sequence (added after the original seven stops, so saved progress by stop number is unchanged) ──
+  // Six stops that follow the ACCESS Learning Journey: grade band, first mission, the six-step cycle, progress, supporting a
+  // revision, and continuing at home. `path` may carry its own query (family?mission=m01); stopUrl adds the rest.
+  {
+    id: "lj-grade",
+    color: "#264e48",
+    tint: "#e3efe4",
+    path: "journey",
+    name: ["Journey: choose a grade", "Recorrido: elijan el grado"],
+    title: ["Start with the right grade band.", "Empiecen con el grupo de grados correcto."],
+    what: [
+      "The Learning Journey is a path of 12 missions, each with six steps. Choose Grades 3–5 or Grades 6–8 first, so the language and the tasks fit your child.",
+      "El Recorrido de aprendizaje es un camino de 12 misiones, cada una con seis pasos. Primero elijan Grados 3–5 o Grados 6–8, para que el lenguaje y las tareas se ajusten a su hijo o hija.",
+    ],
+    steps: [
+      [
+        "Open the Journey page and find the grade switch near the top.",
+        "Abran la página del Recorrido y busquen el selector de grados cerca de la parte de arriba.",
+      ],
+      [
+        "Tap the grade band that matches your child.",
+        "Toquen el grupo de grados que corresponde a su hijo o hija.",
+      ],
+      [
+        "Read the one next step the Journey suggests. There is always one.",
+        "Lean el siguiente paso que sugiere el Recorrido. Siempre hay uno.",
+      ],
+    ],
+    tip: [
+      "You can change the grade band at any time. Each band keeps its own place.",
+      "Pueden cambiar el grupo de grados cuando quieran. Cada grupo guarda su propio avance.",
+    ],
+  },
+  {
+    id: "lj-begin",
+    color: "#264e48",
+    tint: "#e3efe4",
+    path: "journey/m01",
+    name: ["Journey: begin a mission", "Recorrido: empiecen una misión"],
+    title: ["Open a mission together.", "Abran una misión juntos."],
+    what: [
+      "Each mission page tells you the goal in plain words, the six steps, and the kind of language your child will practice. Mission 1 is My World, My Story.",
+      "Cada página de misión dice la meta en palabras sencillas, los seis pasos y el tipo de lenguaje que practicará su hijo o hija. La misión 1 es Mi mundo, mi historia.",
+    ],
+    steps: [
+      [
+        "Read the goal at the top of the mission.",
+        "Lean la meta que aparece arriba en la misión.",
+      ],
+      [
+        "Look at the six steps and see where your child is.",
+        "Miren los seis pasos y vean en cuál va su hijo o hija.",
+      ],
+      [
+        "Press the button to begin the first step, or to pick up where you left off.",
+        "Toquen el botón para empezar el primer paso o para continuar donde se quedaron.",
+      ],
+    ],
+    tip: [
+      "Nothing is graded. A step is never blocked, and there is always a next step.",
+      "Nada se califica. Ningún paso se bloquea y siempre hay un siguiente paso.",
+    ],
+  },
+  {
+    id: "lj-cycle",
+    color: "#264e48",
+    tint: "#e3efe4",
+    path: "journey/m01/discover",
+    name: ["Journey: the six steps", "Recorrido: los seis pasos"],
+    title: ["Discover, understand, build, communicate, improve, show.", "Descubrir, comprender, construir, comunicar, mejorar y mostrar."],
+    what: [
+      "Every mission follows the same six steps. Your child looks into a real situation, listens and reads, builds sentences, says or writes an answer, improves it, and then tries a new task alone.",
+      "Cada misión sigue los mismos seis pasos. Su hijo o hija investiga una situación real, escucha y lee, construye oraciones, dice o escribe una respuesta, la mejora y luego prueba una tarea nueva por su cuenta.",
+    ],
+    steps: [
+      [
+        "Open the first step, Discover, and look around the scene together.",
+        "Abran el primer paso, Descubre, y miren juntos la escena.",
+      ],
+      [
+        "Let your child lead. Ask what they notice before you explain anything.",
+        "Dejen que su hijo o hija lleve la iniciativa. Pregunten qué nota antes de explicar algo.",
+      ],
+      [
+        "Each step takes about 8 to 12 minutes. Stop at any step and come back later.",
+        "Cada paso toma entre 8 y 12 minutos. Pueden parar en cualquier paso y volver más tarde.",
+      ],
+    ],
+    tip: [
+      "Help is there when your child needs it. Using help is fine, and the Journey records it honestly.",
+      "La ayuda está ahí cuando su hijo o hija la necesite. Usar ayuda está bien, y el Recorrido lo registra con honestidad.",
+    ],
+  },
+  {
+    id: "lj-progress",
+    color: "#264e48",
+    tint: "#e3efe4",
+    path: "journey/map",
+    name: ["Journey: understand progress", "Recorrido: entiendan el progreso"],
+    title: ["See the whole path.", "Vean todo el camino."],
+    what: [
+      "The map shows four units and twelve missions, with the steps finished in each. It shows what has been practiced, not a score or a level.",
+      "El mapa muestra cuatro unidades y doce misiones, con los pasos terminados en cada una. Muestra lo que se ha practicado, no una puntuación ni un nivel.",
+    ],
+    steps: [
+      [
+        "Open the map and find the mission your child is on.",
+        "Abran el mapa y busquen la misión en la que va su hijo o hija.",
+      ],
+      [
+        "Notice which steps were done with help and which were done alone.",
+        "Fíjense en qué pasos se hicieron con ayuda y cuáles sin ayuda.",
+      ],
+      [
+        "Celebrate the finished steps, then choose the next one together.",
+        "Celebren los pasos terminados y elijan juntos el siguiente.",
+      ],
+    ],
+    tip: [
+      "Progress is saved on this device only. Use the same phone or computer each time.",
+      "El progreso se guarda solo en este dispositivo. Usen el mismo teléfono o computadora cada vez.",
+    ],
+  },
+  {
+    id: "lj-revise",
+    color: "#264e48",
+    tint: "#e3efe4",
+    path: "journey/m01/improve",
+    name: ["Journey: support a revision", "Recorrido: apoyen una revisión"],
+    title: ["Help your child make it stronger.", "Ayuden a su hijo o hija a mejorarlo."],
+    what: [
+      "In the Improve step your child changes one thing in their own answer and sees what changed. You can help by asking a question, not by giving the answer.",
+      "En el paso Mejora, su hijo o hija cambia una cosa en su propia respuesta y ve qué cambió. Ustedes pueden ayudar con una pregunta, no dando la respuesta.",
+    ],
+    steps: [
+      [
+        "Ask: “What is one more detail that would help me understand?”",
+        "Pregunten: «¿Qué otro detalle me ayudaría a entender?»",
+      ],
+      [
+        "Wait. Let your child decide what to add.",
+        "Esperen. Dejen que su hijo o hija decida qué añadir.",
+      ],
+      [
+        "Ask why the change helps. Any reason in any language is a good start.",
+        "Pregunten por qué ayuda el cambio. Cualquier razón, en cualquier idioma, es un buen comienzo.",
+      ],
+    ],
+    tip: [
+      "Praise the effort of revising. A second try is how writing and speaking get stronger.",
+      "Elogien el esfuerzo de revisar. Un segundo intento es como se fortalecen la escritura y el habla.",
+    ],
+  },
+  {
+    id: "lj-home",
+    color: "#264e48",
+    tint: "#e3efe4",
+    path: "family?mission=m01",
+    name: ["Journey: continue at home", "Recorrido: sigan en casa"],
+    title: ["Five minutes at the kitchen table.", "Cinco minutos en la mesa."],
+    what: [
+      "Every mission has a Family Companion: a short activity, one question to talk about, and sentence starters. It needs no materials or screens, and you can use any language you share.",
+      "Cada misión tiene una guía familiar: una actividad corta, una pregunta para conversar e inicios de oración. No necesita materiales ni pantallas, y pueden usar cualquier idioma que compartan.",
+    ],
+    steps: [
+      [
+        "Open the companion for your child’s mission and pick the grade band.",
+        "Abran la guía de la misión de su hijo o hija y elijan el grupo de grados.",
+      ],
+      [
+        "Try the five-minute activity and ask the one question.",
+        "Prueben la actividad de cinco minutos y hagan la pregunta.",
+      ],
+      [
+        "Press “Print this companion” if you would like a paper copy for the fridge.",
+        "Toquen «Imprimir esta guía» si quieren una copia en papel para el refri.",
+      ],
+    ],
+    tip: [
+      "You do not need to speak English at home. Talking about the ideas in any language helps.",
+      "No necesitan hablar inglés en casa. Hablar de las ideas en cualquier idioma ayuda.",
+    ],
+  },
 ];
 
 export const TOTAL = STOPS.length;
@@ -243,7 +426,7 @@ export const trText = (lang, [e, s]) => {
 
 /** Link into the lab for stop `i`. `tour=i` tells the lab to show the guide panel. */
 export const stopUrl = (i, band) =>
-  `${LAB}/${STOPS[i].path}?grades=${BANDS.includes(band) ? band : "3-5"}&tour=${i}`;
+  `${LAB}/${STOPS[i].path}${STOPS[i].path.includes("?") ? "&" : "?"}grades=${BANDS.includes(band) ? band : "3-5"}&tour=${i}`;
 
 /** The saved tour, validated, or null when no grade has been chosen yet. */
 export function loadState() {

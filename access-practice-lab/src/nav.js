@@ -42,6 +42,7 @@ const PRACTICE_VIEWS = new Set([
 ]);
 const ACTIVE = {
   home: "home",
+  journey: "journey",
   learn: "learn",
   library: "practice",
   tests: "practice",
@@ -64,6 +65,12 @@ const ACTIVE = {
 export function primaryLinks(band, T) {
   const q = `?grades=${band}`;
   return [
+    {
+      id: "journey",
+      icon: "road",
+      label: T("My Journey", "Mi viaje"),
+      href: `${BASE}/journey${q}`,
+    },
     {
       id: "home",
       icon: "home",
@@ -154,6 +161,13 @@ function menuGroups(band, T) {
   });
   return [
     {
+      title: T("My Learning Journey", "Mi viaje de aprendizaje"),
+      items: [
+        link("road", T("Continue my journey", "Continuar mi viaje"), "journey"),
+        link("flag", T("My Journey Map", "Mi mapa del viaje"), "journey/map"),
+      ],
+    },
+    {
       title: T("Practice by skill", "Practicar por destreza"),
       items: [
         link("bulb", T("Interactive Learn Hub", "Centro interactivo de aprendizaje"), "learn"),
@@ -207,6 +221,7 @@ function menuGroups(band, T) {
         link("flag", T("Teacher Expedition", "Expedición docente"), "/access-expedition/"),
         link("classroom", T("Whole-Class Studio", "Estudio para toda la clase"), "classroom"),
         link("launch", T("Launch Studio", "Estudio de lanzamiento"), "launch-studio"),
+        link("teacher", T("Journey teacher guide", "Guía docente del viaje"), "journey/guide"),
       ],
     },
   ];

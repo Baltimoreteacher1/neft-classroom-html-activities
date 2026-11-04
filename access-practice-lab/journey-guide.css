@@ -1,0 +1,408 @@
+/* ACCESS Learning Journey: the teacher mission guide (/journey/guide) and its Teacher Hub panel.
+   Tokens come from ds.css. Domain colors follow the lab palette (Speaking rose, Reading blue, Listening teal, Writing copper);
+   no purple, violet or magenta. File name avoids the word the site's auth gate reserves for teacher-only paths. */
+
+.jg {
+  display: grid;
+  gap: var(--s-5);
+  color: var(--ink);
+}
+.jg-page .jg-lede {
+  max-width: 68ch;
+  color: var(--ink-2);
+}
+.jg-toc {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2) var(--s-3);
+  margin: 0 0 var(--s-3);
+}
+.jg h2 {
+  margin: 0 0 var(--s-2);
+}
+.jg h3 {
+  margin: 0;
+}
+.jg-fine {
+  color: var(--ink-3);
+  font-size: 0.875rem;
+}
+
+/* limits + does-not boxes */
+.jg-limits,
+.jg-not,
+.jg-callout {
+  padding: var(--s-4);
+  border: 1px solid var(--line-strong);
+  border-inline-start: 4px solid var(--brand-deep);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+}
+.jg-limits p,
+.jg-callout {
+  margin: 0;
+}
+.jg-not ul {
+  margin: var(--s-2) 0 0;
+  padding-inline-start: 1.25rem;
+}
+.jg-not li + li {
+  margin-top: var(--s-2);
+}
+
+/* filters */
+.jg-filters {
+  display: grid;
+  gap: var(--s-3);
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  align-items: end;
+  padding: var(--s-4);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+.jg-field {
+  display: grid;
+  gap: var(--s-1);
+  font-weight: 600;
+}
+.jg-field select {
+  min-height: 44px;
+  padding: 0 var(--s-3);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+}
+.jg-filter-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+}
+.jg-count {
+  margin: 0;
+  font-weight: 600;
+}
+
+/* units and mission cards */
+.jg-list {
+  display: grid;
+  gap: var(--s-5);
+}
+.jg-unit {
+  display: grid;
+  gap: var(--s-4);
+}
+.jg-klu {
+  display: inline-block;
+  margin-inline-start: var(--s-2);
+  padding: 0 var(--s-3);
+  border-radius: 999px;
+  background: var(--brand-soft);
+  color: var(--brand-ink);
+  font-size: 0.8125rem;
+  vertical-align: middle;
+}
+.jg-mission {
+  display: grid;
+  gap: var(--s-3);
+  padding: var(--s-4);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  scroll-margin-top: 5rem;
+}
+.jg-mission:target {
+  border-color: var(--brand-deep);
+  box-shadow: var(--shadow-lift);
+}
+.jg-eyebrow {
+  margin: 0;
+  color: var(--ink-3);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.jg-mhead p {
+  margin: var(--s-1) 0 0;
+}
+.jg-h4,
+.jg-mission h4 {
+  margin: var(--s-2) 0 0;
+  font-size: 1rem;
+}
+.jg-goals,
+.jg-dims,
+.jg-dl,
+.jg-moves {
+  display: grid;
+  gap: var(--s-1) var(--s-4);
+  margin: 0;
+}
+.jg-goals dt,
+.jg-dims dt,
+.jg-dl dt,
+.jg-moves dt {
+  font-weight: 700;
+}
+.jg-goals dd,
+.jg-dims dd,
+.jg-dl dd,
+.jg-moves dd {
+  margin: 0 0 var(--s-2);
+}
+.jg-feat,
+.jg-rows,
+.jg-scaf,
+.jg-print {
+  margin: var(--s-1) 0;
+  padding-inline-start: 1.25rem;
+}
+.jg-feat {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+  padding: 0;
+  list-style: none;
+}
+.jg-feat li {
+  padding: 2px var(--s-3);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface-2);
+  font-size: 0.875rem;
+}
+.jg-sub {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: var(--s-2) var(--s-3);
+}
+.jg-sub > summary {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+/* steps */
+.jg-steps {
+  display: grid;
+  gap: var(--s-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.jg-step {
+  display: grid;
+  gap: var(--s-2);
+  padding: var(--s-3);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+}
+.jg-step p {
+  margin: 0;
+}
+.jg-stephead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-2) var(--s-3);
+}
+.jg-stephead h4 {
+  margin: 0;
+}
+.jg-stepn {
+  display: grid;
+  place-items: center;
+  inline-size: 1.75rem;
+  block-size: 1.75rem;
+  border-radius: 50%;
+  background: var(--brand-deep);
+  color: var(--on-brand);
+  font-weight: 700;
+  font-size: 0.875rem;
+}
+.jg-min {
+  color: var(--ink-3);
+  font-size: 0.875rem;
+}
+.jg-doms {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.jg-dom {
+  padding: 2px var(--s-3);
+  border-radius: 999px;
+  background: var(--surface-3);
+  color: var(--ink);
+  font-size: 0.8125rem;
+  font-weight: 700;
+}
+.jg-dom.d-listening {
+  background: var(--listening-soft);
+  color: var(--listening-ink);
+}
+.jg-dom.d-speaking {
+  background: var(--speaking-soft);
+  color: var(--speaking-ink);
+}
+.jg-dom.d-reading {
+  background: var(--reading-soft);
+  color: var(--reading-ink);
+}
+.jg-dom.d-writing {
+  background: var(--writing-soft);
+  color: var(--writing-ink);
+}
+.jg-linkrow,
+.jg-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-2);
+}
+.jg-linkrow .btn,
+.jg-foot .btn,
+.jg-print .btn,
+.jg-filters .btn {
+  min-height: 44px;
+}
+.jg-copied {
+  color: var(--right);
+  font-weight: 600;
+}
+.jg-fallback {
+  min-height: 44px;
+  inline-size: min(100%, 34rem);
+  padding: 0 var(--s-3);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  font: inherit;
+}
+.jg-verify {
+  display: grid;
+  gap: var(--s-2);
+  padding: var(--s-3);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+}
+.jg-verify h4,
+.jg-verify p {
+  margin: 0;
+}
+.jg-pack {
+  padding: var(--s-3);
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--radius-sm);
+}
+.jg-pack[hidden] {
+  display: none;
+}
+.jg-empty {
+  padding: var(--s-4);
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--radius-sm);
+}
+
+/* page sections */
+.jg-sec {
+  display: grid;
+  gap: var(--s-2);
+}
+.jg-days {
+  display: grid;
+  gap: var(--s-2);
+  margin: 0;
+  padding-inline-start: 0;
+  list-style: none;
+}
+.jg-days li {
+  padding: var(--s-3);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+}
+.jg-print {
+  display: grid;
+  gap: var(--s-3);
+  padding: 0;
+  list-style: none;
+}
+.jg-print li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-2);
+}
+.jg-print strong {
+  min-inline-size: 6rem;
+}
+
+@media (min-width: 48rem) {
+  .jg-goals,
+  .jg-dims,
+  .jg-dl,
+  .jg-moves {
+    grid-template-columns: minmax(9rem, 14rem) 1fr;
+  }
+  .jg-goals dd,
+  .jg-dims dd,
+  .jg-dl dd,
+  .jg-moves dd {
+    margin: 0;
+  }
+}
+
+@media print {
+  .jg-filters,
+  .jg-linkrow,
+  .jg-foot,
+  .jg-toc,
+  .no-print {
+    display: none !important;
+  }
+  .jg {
+    display: block;
+    color: #000;
+  }
+  .jg-mission,
+  .jg-step,
+  .jg-verify,
+  .jg-sub {
+    break-inside: avoid;
+    border-color: #999;
+    background: #fff;
+    box-shadow: none;
+  }
+  .jg-mission {
+    margin-block: 0 12pt;
+  }
+  .jg-unit > h2 {
+    break-after: avoid;
+  }
+  .jg-pack[hidden] {
+    display: none;
+  }
+  .jg-sub > summary {
+    min-height: 0;
+  }
+  .jg a {
+    color: #000;
+    text-decoration: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .jg * {
+    transition: none !important;
+    animation: none !important;
+  }
+}

@@ -117,6 +117,12 @@ export const SCREENS = [
   ["diagnostic-listening", "/access-practice-lab/diagnostic/Listening"],
   ["diagnostic-writing", "/access-practice-lab/diagnostic/Writing"],
   ["launch", "/access-practice-lab/launch-studio"],
+  ["journey", "/access-practice-lab/journey?grades=6-8"],
+  ["journey-35", "/access-practice-lab/journey?grades=3-5"],
+  ["journey-map", "/access-practice-lab/journey/map?grades=6-8"],
+  ["journey-mission", "/access-practice-lab/journey/m08?grades=6-8"],
+  ["journey-step", "/access-practice-lab/journey/m08/discover?grades=6-8"],
+  ["journey-guide", "/access-practice-lab/journey/guide?grades=6-8"],
   ["teacher-hub", "/access-teacher/"],
   ["not-found", "/access-practice-lab/NoSuchRoom"],
 ];

@@ -53,13 +53,15 @@ import * as assessView from "./views/assess.js";
 import * as learnView from "./views/learn.js";
 import * as realityView from "./views/reality.js";
 import * as exhibitionView from "./views/exhibition.js";
+import * as journeyView from "./views/journey.js";
 
-export const BUILD = "2026.11.03.7";
+export const BUILD = "2026.11.04.1";
 const VIEWS = {
   home: homeView,
   learn: learnView,
   reality: realityView,
   exhibition: exhibitionView,
+  journey: journeyView,
   "session-done": homeView,
   stories: storiesView,
   ladder: ladderView,
@@ -118,6 +120,7 @@ export function parseRoute(pathname = location.pathname, search = location.searc
   if (["learn", "reality", "exhibition", "tests", "family", "passport", "tools", "library", "missions", "mission", "conversation", "construction", "evidence", "growth", "speak", "write", "detective", "launch", "launch-studio", "teacher-launch", "classroom", "vocabulary", "flashcards", "stories", "ladder", "puzzles", "publisher-demo", "games", "assess"].includes(a)) {
     return { ...r, view: a, id: b || "", missionId: b || "", scenarioId: b || "", tab: q.get("tab") || "" };
   }
+  if (a === "journey") return { ...r, view: "journey", id: b || "", rest: parts.slice(1) };
   if (a === "diagnostic") return { ...r, view: "diagnostic", domain: b || "" };
   if (a === "road") return { ...r, view: "road", week: Number(b) || 0 };
   if (a === "play")

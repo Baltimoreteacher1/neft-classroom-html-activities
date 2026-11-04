@@ -1,0 +1,941 @@
+/* ACCESS Learning Journey — Language Construction (the BUILD step).
+   Layout and manipulatives only. Tokens, buttons and type come from ds.css. Mobile first: one column at 375px with
+   no horizontal scroll, 44px+ targets, visible focus. Motion only communicates structure (a tile settling into the
+   tray, the cause arrow drawing, a restructured sentence arriving); every animation animates FROM a state, so the
+   resting state is complete when reduced motion turns animation off (ds.css). No purple, violet or magenta. */
+
+.cn {
+  --cn-radius: var(--radius);
+  --cn-hot: 2.75rem;
+  --how: var(--listening-ink);
+  --how-soft: var(--listening-soft);
+  --cause: var(--writing-ink);
+  --cause-soft: var(--writing-soft);
+  --detail: var(--reading-ink);
+  --detail-soft: var(--reading-soft);
+  --part: var(--sage-900);
+  --part-soft: var(--sage-200);
+  display: grid;
+  gap: var(--s-4);
+  min-width: 0;
+  color: var(--ink);
+}
+.cn[data-band="3-5"] {
+  --cn-radius: var(--r-lg);
+  --cn-hot: 3.25rem;
+}
+.cn *,
+.cn *::before,
+.cn *::after {
+  box-sizing: border-box;
+}
+.cn h2,
+.cn h4 {
+  margin: 0;
+}
+.cn h2 {
+  font: 600 clamp(1.35rem, 5vw, 1.75rem) / 1.15 var(--font-display);
+  color: var(--ink);
+}
+.cn h4 {
+  font: 700 1.05rem/1.3 var(--font);
+}
+.cn p {
+  margin: 0;
+}
+.cn [lang="en"] {
+  overflow-wrap: anywhere;
+}
+.cn-t-how {
+  --tag: var(--how);
+  --tag-soft: var(--how-soft);
+}
+.cn-t-cause {
+  --tag: var(--cause);
+  --tag-soft: var(--cause-soft);
+}
+.cn-t-detail,
+.cn-t-source,
+.cn-t-bank {
+  --tag: var(--detail);
+  --tag-soft: var(--detail-soft);
+}
+.cn-t-part {
+  --tag: var(--part);
+  --tag-soft: var(--part-soft);
+}
+
+/* ── header: modules and the four parts of one module ─────────────────── */
+.cn-head {
+  display: grid;
+  gap: var(--s-3);
+}
+.cn-steps,
+.cn-phases {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.cn-steps li {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  min-height: 2.25rem;
+  padding: 0.15rem 0.85rem 0.15rem 0.2rem;
+  border: 1.5px solid var(--line-strong);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--ink-2);
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+.cn-steps li.is-here {
+  border-color: var(--room);
+  background: var(--room-soft);
+  color: var(--ink);
+}
+.cn-steps li.is-done {
+  border-color: var(--right);
+  background: var(--right-soft);
+  color: var(--right);
+}
+.cn-step-n {
+  display: inline-grid;
+  place-items: center;
+  width: 1.8rem;
+  height: 1.8rem;
+  border-radius: 50%;
+  background: var(--surface-3);
+  color: var(--ink);
+  font-size: 0.85rem;
+}
+.cn-step-n .ico {
+  width: 1rem;
+  height: 1rem;
+}
+.cn-steps li.is-here .cn-step-n {
+  background: var(--room);
+  color: #fff;
+}
+.cn-steps li.is-done .cn-step-n {
+  background: var(--right);
+  color: #fff;
+}
+.cn-phases li {
+  position: relative;
+  padding: 0.2rem 0.1rem 0.35rem;
+  border-bottom: 4px solid var(--line);
+  color: var(--ink-3);
+  font-weight: 700;
+  font-size: 0.9rem;
+  transition:
+    border-color var(--dur-3) var(--ease-out),
+    color var(--dur-3) var(--ease-out);
+}
+.cn-phases li {
+  flex: 1 1 4.5rem;
+  text-align: center;
+}
+.cn-phases li.is-done {
+  border-color: var(--sage-500);
+  color: var(--sage-900);
+}
+.cn-phases li.is-here {
+  border-color: var(--room);
+  color: var(--ink);
+}
+.cn-notice {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  padding: var(--s-2) var(--s-3);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  color: var(--ink-2);
+  font-weight: 700;
+}
+.cn-notice.is-transfer {
+  background: var(--room-soft);
+  color: var(--ink);
+  border: 1.5px solid color-mix(in srgb, var(--room) 28%, transparent);
+}
+.cn-body {
+  display: grid;
+  gap: var(--s-4);
+  min-width: 0;
+}
+.cn-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+.cn-actions:empty {
+  display: none;
+}
+.cn-intro {
+  font-size: 1.05rem;
+  color: var(--ink-2);
+  max-width: var(--measure);
+}
+.cn-goals {
+  display: grid;
+  gap: var(--s-2);
+  margin: 0;
+  padding-inline-start: 1.25rem;
+}
+.cn-label {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--ink-2);
+}
+
+/* ── chips: physical tiles you tap ───────────────────────────────────── */
+.cn-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+}
+.cn-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  min-height: var(--cn-hot);
+  padding: 0.3rem 1rem;
+  border: 1.5px solid var(--tag, var(--line-strong));
+  border-radius: calc(var(--cn-radius) * 0.7);
+  background: linear-gradient(180deg, var(--surface), var(--tag-soft, var(--surface-2)));
+  color: var(--ink);
+  font: 700 1rem/1.2 var(--font);
+  text-align: start;
+  cursor: pointer;
+  box-shadow:
+    var(--edge-light),
+    0 2px 0 color-mix(in srgb, var(--tag, var(--line-strong)) 55%, transparent),
+    0 8px 14px -10px rgb(8 14 37 / 45%);
+  transition:
+    transform var(--dur-1) var(--ease-press),
+    box-shadow var(--dur-2) var(--ease-out),
+    background-color var(--dur-2) var(--ease-out);
+}
+.cn-chip:hover {
+  transform: translateY(-1px);
+  box-shadow:
+    var(--edge-light),
+    0 3px 0 color-mix(in srgb, var(--tag, var(--line-strong)) 55%, transparent),
+    0 12px 18px -10px rgb(8 14 37 / 45%);
+}
+.cn-chip:active {
+  transform: translateY(2px);
+  box-shadow:
+    var(--edge-light),
+    0 0 0 color-mix(in srgb, var(--tag, var(--line-strong)) 55%, transparent);
+}
+.cn-chip[aria-pressed="true"] {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: #fff;
+  transform: translateY(2px);
+  box-shadow: inset 0 2px 6px rgb(0 0 0 / 35%);
+}
+.cn-chip[disabled] {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+}
+.cn-chip-n {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 1.7rem;
+  height: 1.7rem;
+  border-radius: 50%;
+  background: var(--tag);
+  color: #fff;
+  font-size: 0.85rem;
+}
+.cn-pair {
+  display: grid;
+  gap: var(--s-2);
+}
+.cn-pair .cn-chip {
+  justify-content: flex-start;
+  width: 100%;
+  font-weight: 400;
+  font-size: 1.05rem;
+}
+.cn-base {
+  font: 600 1.35rem/1.3 var(--font-display);
+}
+.cn-source {
+  display: grid;
+  gap: var(--s-2);
+}
+
+/* ── the sentence tray ─────────────────────────────────────────────── */
+.cn-tray-wrap {
+  display: grid;
+  gap: var(--s-2);
+}
+.cn-tray {
+  display: grid;
+  gap: var(--s-2);
+  padding: var(--s-3);
+  border: 2px dashed var(--line-strong);
+  border-radius: var(--cn-radius);
+  background: var(--surface-2);
+  box-shadow: inset 0 3px 8px rgb(8 14 37 / 9%);
+}
+.cn-input {
+  min-height: 5rem;
+  background: var(--surface);
+  font-size: 1.15rem;
+}
+.cn-input[readonly] {
+  background: var(--surface-3);
+  color: var(--ink-2);
+}
+.cn-tiles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  min-height: 1.75rem;
+}
+.cn-tile {
+  padding: 0.1rem 0.5rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--ink-2);
+  font-size: 0.95rem;
+  box-shadow: 0 1px 0 var(--line-strong);
+}
+.cn-tile.is-new {
+  border-color: var(--room);
+  background: var(--room-soft);
+  color: var(--ink);
+  font-weight: 700;
+  animation: cn-settle var(--dur-3) var(--ease-press);
+}
+.cn-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+}
+
+/* ── supports ─────────────────────────────────────────────────────── */
+.cn-supports {
+  display: grid;
+  gap: var(--s-3);
+}
+.cn-support {
+  border: 1.5px solid var(--line);
+  border-radius: var(--cn-radius);
+  background: var(--surface);
+  padding: var(--s-3) var(--s-4);
+}
+.cn-support summary {
+  min-height: var(--cn-hot);
+  display: flex;
+  align-items: center;
+  font-weight: 700;
+  cursor: pointer;
+}
+.cn-support ul {
+  display: grid;
+  gap: var(--s-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.cn-frames li {
+  padding: var(--s-2) var(--s-3);
+  border-inline-start: 4px solid var(--writing);
+  background: var(--writing-soft);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+.cn-bank li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-2);
+}
+.cn-bank-m {
+  color: var(--ink-2);
+}
+.cn-bank-es {
+  color: var(--ink-3);
+}
+.cn-shelf-group {
+  display: grid;
+  gap: var(--s-2);
+  margin-top: var(--s-3);
+}
+.cn-shelf-label {
+  font-weight: 700;
+  color: var(--tag);
+}
+.cn-help {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+}
+
+/* ── feedback, needs, what changed ───────────────────────────────── */
+.cn-result {
+  display: grid;
+  gap: var(--s-4);
+}
+.cn .feedback {
+  display: grid;
+  gap: var(--s-3);
+  padding: var(--s-3) var(--s-4);
+  border: 1.5px solid var(--line-strong);
+  border-radius: var(--cn-radius);
+  background: var(--surface);
+}
+.cn .feedback.is-right {
+  border-color: var(--right);
+  background: var(--right-soft);
+}
+.cn .feedback.is-hint {
+  border-color: var(--hint);
+  background: var(--hint-soft);
+}
+.cn .fb-title {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--s-2);
+  font-weight: 700;
+}
+.cn .fb-title .ico {
+  flex: none;
+  width: 1.25rem;
+  height: 1.25rem;
+  margin-top: 0.1rem;
+}
+.cn .feedback:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+.cn-needs,
+.cn-gaps,
+.cn-picks,
+.cn-order {
+  display: grid;
+  gap: var(--s-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.cn-needs li {
+  display: flex;
+  gap: var(--s-2);
+  align-items: flex-start;
+}
+.cn-mark {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 1.5rem;
+  height: 1.5rem;
+  border: 2px solid var(--line-strong);
+  border-radius: 50%;
+}
+.cn-needs li.is-met .cn-mark {
+  border-color: var(--right);
+  background: var(--right);
+  color: #fff;
+}
+.cn-mark .ico {
+  width: 0.9rem;
+  height: 0.9rem;
+}
+.cn-ev {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin-inline-start: var(--s-2);
+}
+.cn-quote {
+  padding: 0 0.4rem;
+  border-radius: 6px;
+  background: var(--surface);
+  border: 1px solid var(--line-strong);
+  font-weight: 700;
+  quotes: "\201C" "\201D";
+}
+.cn-next {
+  padding-top: var(--s-2);
+  border-top: 1px solid color-mix(in srgb, var(--hint) 30%, transparent);
+}
+
+.cn-changed,
+.cn-swap {
+  display: grid;
+  gap: var(--s-3);
+  padding: var(--s-4);
+  border: 1.5px solid color-mix(in srgb, var(--room) 28%, transparent);
+  border-radius: var(--cn-radius);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+.cn-line {
+  display: grid;
+  gap: 0.2rem;
+}
+.cn-line-k {
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: var(--ink-3);
+}
+.cn-before {
+  color: var(--ink-2);
+  font-size: 1.05rem;
+}
+.cn-after {
+  font-size: 1.2rem;
+  line-height: 2.6;
+  padding-top: 0.2rem;
+}
+mark.cn-new,
+mark.cn-clause {
+  position: relative;
+  padding: 0.05em 0.3em;
+  border-bottom: 3px solid var(--tag);
+  border-radius: 6px 6px 0 0;
+  background: var(--tag-soft);
+  color: var(--ink);
+  animation: cn-settle var(--dur-3) var(--ease-press);
+}
+mark.cn-clause-cause {
+  --tag: var(--cause);
+  --tag-soft: var(--cause-soft);
+}
+mark.cn-clause-effect {
+  --tag: var(--how);
+  --tag-soft: var(--how-soft);
+}
+mark.cn-pron {
+  --tag: var(--detail);
+  --tag-soft: var(--detail-soft);
+  position: relative;
+  padding: 0.05em 0.35em;
+  border-bottom: 3px solid var(--tag);
+  border-radius: 6px 6px 0 0;
+  background: var(--tag-soft);
+  color: var(--ink);
+  font-weight: 700;
+}
+.cn-tag {
+  position: absolute;
+  inset-block-start: -1.05em;
+  inset-inline-start: 0;
+  font: 700 0.62rem/1 var(--font);
+  color: var(--tag);
+  white-space: nowrap;
+}
+.cn-pick-q .cn-tag {
+  position: static;
+  margin-inline-end: 0.3rem;
+}
+.cn-legend {
+  display: grid;
+  gap: var(--s-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.cn-legend li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-2);
+}
+.cn-legend span {
+  color: var(--ink-2);
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+.cn-structure {
+  color: var(--ink-2);
+}
+
+/* ── the cause arrow ──────────────────────────────────────────────── */
+.cn-arrow {
+  display: grid;
+  gap: var(--s-2);
+  margin: 0;
+  padding: var(--s-3);
+  border-radius: var(--cn-radius);
+  background: var(--surface-2);
+}
+.cn-arrow-box {
+  display: grid;
+  gap: 0.25rem;
+  padding: var(--s-3);
+  border: 2px solid var(--tag);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  box-shadow:
+    var(--edge-light),
+    0 4px 0 color-mix(in srgb, var(--tag) 30%, transparent);
+}
+.cn-arrow-cause {
+  --tag: var(--cause);
+}
+.cn-arrow-effect {
+  --tag: var(--how);
+}
+.cn-arrow-tag {
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: var(--tag);
+}
+.cn-arrow-link {
+  display: grid;
+  justify-items: center;
+  gap: 0.15rem;
+  color: var(--ink-2);
+}
+.cn-arrow-word {
+  padding: 0 0.6rem;
+  border-radius: 999px;
+  background: var(--surface);
+  border: 1.5px solid var(--line-strong);
+  font-weight: 700;
+}
+.cn-arrow-link svg {
+  width: 5rem;
+  height: 1.5rem;
+  transform: rotate(90deg);
+  margin-block: 1.6rem;
+  overflow: visible;
+}
+.cn-arrow-line,
+.cn-arrow-head {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.cn-arrow-line {
+  stroke-dasharray: 104;
+  animation: cn-draw var(--dur-4) var(--ease-out);
+}
+.cn-arrow figcaption {
+  color: var(--ink-2);
+  font-size: 0.95rem;
+}
+
+/* ── connector lab ───────────────────────────────────────────────── */
+.cn-swap-out,
+.cn-compare,
+.cn-own {
+  display: grid;
+  gap: var(--s-2);
+}
+.cn-note {
+  padding: var(--s-2) var(--s-3);
+  border-inline-start: 4px solid var(--cause);
+  background: var(--cause-soft);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+.cn-muted {
+  color: var(--ink-2);
+}
+.cn-reveal {
+  animation: cn-arrive var(--dur-3) var(--ease-out);
+}
+
+/* ── selection modules ───────────────────────────────────────────── */
+.cn-module {
+  display: grid;
+  gap: var(--s-4);
+}
+.cn-gap,
+.cn-pick,
+.cn-word,
+.cn-unit {
+  display: grid;
+  gap: var(--s-3);
+  padding: var(--s-4);
+  border: 1.5px solid var(--line);
+  border-radius: var(--cn-radius);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+.cn-gap-sentence {
+  font-size: 1.15rem;
+  line-height: 1.7;
+}
+.cn-gap-slot {
+  display: inline-block;
+  min-width: 4.5rem;
+  padding: 0 0.5rem;
+  border-bottom: 3px solid var(--line-strong);
+  border-radius: 6px 6px 0 0;
+  background: var(--surface-2);
+  text-align: center;
+  font-weight: 700;
+}
+.cn-gap-slot.is-filled {
+  border-color: var(--room);
+  background: var(--room-soft);
+  animation: cn-settle var(--dur-3) var(--ease-press);
+}
+.cn-gap-fb,
+.cn-parts-fb li {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--s-2);
+  padding: var(--s-2) var(--s-3);
+  border-radius: var(--radius-sm);
+  background: var(--hint-soft);
+  color: var(--ink);
+}
+.cn-gap-fb.is-right,
+.cn-parts-fb li.is-right {
+  background: var(--right-soft);
+}
+.cn-gap-fb .ico,
+.cn-parts-fb .ico {
+  flex: none;
+  width: 1.2rem;
+  height: 1.2rem;
+  margin-top: 0.15rem;
+}
+.cn-parts-fb {
+  display: grid;
+  gap: var(--s-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.cn-text {
+  display: grid;
+  gap: var(--s-2);
+  padding: var(--s-4);
+  border-radius: var(--cn-radius);
+  background: var(--ivory);
+  border: 1.5px solid var(--line);
+  font-size: 1.15rem;
+  line-height: 2.3;
+}
+.cn-pick-q {
+  font-weight: 700;
+}
+
+/* morphology: a slot machine */
+.cn-word-h {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--s-3);
+}
+.cn-word-t {
+  font: 600 1.6rem/1.1 var(--font-display);
+}
+.cn-word-n {
+  color: var(--ink-3);
+  font-size: 0.9rem;
+  font-weight: 400;
+}
+.cn-ask,
+.cn-hint,
+.cn-q {
+  color: var(--ink-2);
+}
+.cn-reels {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-3);
+  padding: var(--s-3);
+  border-radius: var(--cn-radius);
+  background: var(--mi-900);
+  box-shadow:
+    inset 0 4px 10px rgb(0 0 0 / 45%),
+    var(--edge-light-dark);
+}
+.cn-reel {
+  display: grid;
+  gap: 0.3rem;
+  justify-items: center;
+}
+.cn-reel-l {
+  color: var(--pearl-blue);
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+.cn-slot {
+  display: grid;
+  place-items: center;
+  min-width: 5.5rem;
+  min-height: 3.5rem;
+  padding: 0 var(--s-3);
+  border: 2px solid var(--mi-300);
+  border-radius: 12px;
+  background: var(--ivory);
+  color: var(--ink);
+  font: 700 1.2rem/1 var(--font);
+  cursor: pointer;
+  box-shadow: inset 0 -4px 0 rgb(8 14 37 / 12%);
+  transition:
+    transform var(--dur-1) var(--ease-press),
+    border-color var(--dur-2) var(--ease-out);
+}
+.cn-slot:hover {
+  border-color: var(--copper-200);
+}
+.cn-slot.is-filled {
+  border-color: var(--copper-200);
+  animation: cn-settle var(--dur-3) var(--ease-press);
+}
+.cn-slot[disabled] {
+  cursor: default;
+}
+.cn-slot-empty {
+  color: var(--ink-3);
+  font-size: 1.4rem;
+}
+.cn-meaning {
+  display: grid;
+  gap: var(--s-2);
+}
+
+/* discourse: reorder with buttons */
+.cn-unit.is-check {
+  border-color: var(--hint);
+  background: var(--hint-soft);
+}
+.cn-unit-row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: var(--s-3);
+  align-items: center;
+}
+.cn-unit-n {
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background: var(--room);
+  color: #fff;
+  font-weight: 700;
+}
+.cn-unit-t {
+  font-size: 1.05rem;
+}
+.cn-move {
+  display: grid;
+  gap: 0.3rem;
+}
+.cn-btn-ico {
+  display: grid;
+  place-items: center;
+  width: var(--cn-hot);
+  height: var(--cn-hot);
+  border: 1.5px solid var(--line-strong);
+  border-radius: 12px;
+  background: var(--surface);
+  color: var(--ink);
+  cursor: pointer;
+  box-shadow:
+    var(--edge-light),
+    0 2px 0 var(--line-strong);
+  transition: transform var(--dur-1) var(--ease-press);
+}
+.cn-btn-ico:active {
+  transform: translateY(2px);
+  box-shadow: none;
+}
+.cn-btn-ico[disabled] {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.cn-chev {
+  width: 1.1rem;
+  height: 1.1rem;
+}
+.cn-conn {
+  display: grid;
+  gap: var(--s-2);
+  padding: var(--s-3);
+  border: 1.5px dashed var(--line-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+}
+.cn-conn-l {
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--ink-2);
+}
+
+/* ── finished ───────────────────────────────────────────────────── */
+.cn-finished {
+  display: grid;
+  gap: var(--s-3);
+  padding: var(--s-4);
+  border: 1.5px solid var(--right);
+  border-radius: var(--cn-radius);
+  background: var(--right-soft);
+}
+.cn-finished h2 {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+}
+.cn-steps-done li {
+  background: var(--surface);
+}
+.cn-tries {
+  color: var(--ink-2);
+  font-weight: 400;
+}
+
+/* ── wider screens: cause arrow runs left to right ──────────────── */
+@media (min-width: 40rem) {
+  .cn-arrow {
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    align-items: center;
+  }
+  .cn-arrow figcaption {
+    grid-column: 1 / -1;
+  }
+  .cn-arrow-link svg {
+    transform: none;
+    margin-block: 0;
+  }
+  .cn-pair {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@keyframes cn-settle {
+  from {
+    transform: translateY(-6px) scale(0.92);
+    opacity: 0.4;
+  }
+}
+@keyframes cn-draw {
+  from {
+    stroke-dashoffset: 104;
+  }
+}
+@keyframes cn-arrive {
+  from {
+    transform: translateY(8px);
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cn *,
+  .cn *::before,
+  .cn *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}

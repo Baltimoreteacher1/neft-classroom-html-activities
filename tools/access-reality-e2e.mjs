@@ -92,8 +92,19 @@ try {
 
   // 1. Home & 5-destination navigation + Grade-band strip + KLU interactive check
   await page.goto(`${origin}/access-practice-lab/?grades=3-5`, { waitUntil: "networkidle" });
-  const navCount = await page.locator("nav.lab-tools a.top-link:not([data-tier])").count();
-  ok(navCount === 5, `Home shows 5 primary student destinations (got ${navCount})`);
+  // The Learning Journey made "My Journey" the first primary destination (intended redesign), so the student
+  // nav is now six links: My Journey, then the five original destinations in their original order.
+  const navLinks = page.locator("nav.lab-tools a.top-link:not([data-tier])");
+  const navCount = await navLinks.count();
+  ok(navCount === 6, `Home shows 6 primary student destinations (got ${navCount})`);
+  const navHrefs = await navLinks.evaluateAll((els) =>
+    els.map((a) => new URL(a.href).pathname.replace(/^\/access-practice-lab\/?/, "")),
+  );
+  ok(
+    navHrefs[0] === "journey" &&
+      navHrefs.slice(1).join() === ["", "learn", "library", "games", "growth"].join(),
+    `Primary nav is My Journey, then Home, Learn, Practice, Play, My Growth (got ${navHrefs.join(", ")})`,
+  );
   ok(
     await page.locator(".band-identity-strip").isVisible(),
     "Home renders Grade-Band Identity Strip",

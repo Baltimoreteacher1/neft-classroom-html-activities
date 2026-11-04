@@ -148,10 +148,18 @@ try {
     .locator(".ll-portal")
     .evaluateAll((els) => els.map((e) => getComputedStyle(e).backgroundImage));
   ok(new Set(bgs).size === 4, "each portal has its own material, not one shared card style");
+  // The home leads with the Continue-My-Journey hero (intended redesign), so the first-viewport primary action
+  // is the journey hero's; "Start today's mission" moved under "Explore all activities" and must stay within
+  // two desktop screens of the top.
+  const journeyStart = await page.locator(".jr-cta .btn-primary").boundingBox();
+  ok(
+    journeyStart && journeyStart.y + journeyStart.height <= 900,
+    "Continue My Journey action is in the first desktop viewport",
+  );
   const start = await page.locator(".session-heading .btn-primary").boundingBox();
   ok(
-    start && start.y + start.height <= 900,
-    "Start today's mission is in the first desktop viewport",
+    start && start.y + start.height <= 1800,
+    "Start today's mission stays within two desktop screens of the top",
   );
   await page.locator('.ll-station[data-hero-station="Writing"]').click();
   await page.waitForSelector('.ll-stage[data-station="Writing"]');

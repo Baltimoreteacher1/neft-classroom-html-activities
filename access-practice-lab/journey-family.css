@@ -1,0 +1,289 @@
+/* ACCESS Learning Journey — family surfaces: the "Continue Family Practice" card on /family and the Family Mission
+   Companion at /family?mission=mNN. Text first: no images, no web fonts, nothing that blocks on a slow connection.
+   Tokens come from ds.css. Sage & Jade marks growth and revision; no purple, violet or magenta hues. */
+
+.jf-continue,
+.jf-companion {
+  --jf-accent: var(--sage-900);
+  --jf-tint: var(--sage-200);
+}
+.jf-continue {
+  margin: var(--s-4) 0 var(--s-6);
+  padding: var(--s-5);
+  border: 2px solid var(--jf-accent);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+.jf-continue > h2 {
+  margin: 0 0 var(--s-2);
+  overflow-wrap: anywhere;
+}
+.jf-learner {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-1) var(--s-3);
+  margin: var(--s-2) 0 var(--s-3);
+  padding: var(--s-2) var(--s-3);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  color: var(--ink-2);
+}
+.jf-learner strong {
+  color: var(--ink);
+}
+.jf-activity {
+  margin: var(--s-3) 0;
+  padding: var(--s-3);
+  border-left: 4px solid var(--jf-accent);
+  background: var(--surface-2);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+.jf-activity h3 {
+  margin: 0 0 var(--s-1);
+  font-size: 1rem;
+}
+.jf-activity p,
+.jf-activity ul {
+  margin: var(--s-1) 0;
+}
+.jf-activity ul {
+  padding-inline-start: 1.25rem;
+}
+
+/* Three short cards: one column on a phone, three from tablet up. */
+.jf-cards {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--s-3);
+  margin: var(--s-4) 0;
+}
+.jf-cards article {
+  padding: var(--s-3) var(--s-4);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+}
+.jf-cards h3 {
+  margin: 0 0 var(--s-1);
+  font-size: 1rem;
+  color: var(--jf-accent);
+}
+.jf-cards p {
+  margin: 0;
+}
+@media (min-width: 52rem) {
+  .jf-cards {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.jf-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-3);
+  margin: var(--s-4) 0;
+}
+.jf-actions .btn {
+  min-height: 2.75rem;
+  justify-content: center;
+}
+@media (max-width: 40rem) {
+  .jf-actions .btn {
+    width: 100%;
+  }
+}
+
+/* Mission picker: a numbered list of the twelve companions, one tap target per row. */
+.jf-picker {
+  margin: var(--s-4) 0;
+}
+.jf-picker > summary,
+.jf-picker > h2 {
+  min-height: 2.75rem;
+  cursor: pointer;
+  font-weight: 700;
+}
+.jf-picker > h2 {
+  font-size: 1.15rem;
+  cursor: default;
+}
+.jf-picker-list {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--s-2);
+  margin: var(--s-3) 0 0;
+  padding: 0;
+  list-style: none;
+}
+@media (min-width: 40rem) {
+  .jf-picker-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (min-width: 64rem) {
+  .jf-picker-list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+.jf-picker-list a {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  min-height: 2.75rem;
+  padding: var(--s-2) var(--s-3);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--ink);
+  font-weight: 700;
+  text-decoration: none;
+}
+.jf-picker-list a:hover {
+  background: var(--surface-2);
+}
+.jf-picker-list a[aria-current="page"] {
+  border-color: var(--jf-accent);
+  background: var(--jf-tint);
+}
+.jf-n {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background: var(--jf-accent);
+  color: #fff;
+  font-size: 0.9rem;
+}
+
+/* Companion detail page. One readable column; sections read aloud top to bottom. */
+.jf-companion {
+  max-width: 46rem;
+  margin-inline: auto;
+}
+.jf-head {
+  margin: var(--s-4) 0;
+}
+.jf-head h1 {
+  margin: var(--s-1) 0 var(--s-3);
+  overflow-wrap: anywhere;
+}
+.jf-childgoal {
+  margin: var(--s-3) 0;
+  color: var(--ink-2);
+}
+.jf-band {
+  margin: var(--s-3) 0 0;
+}
+.jf-section {
+  margin: var(--s-4) 0;
+  padding-top: var(--s-3);
+  border-top: 1px solid var(--line);
+}
+.jf-section h2 {
+  margin: 0 0 var(--s-2);
+  font-size: 1.15rem;
+  color: var(--jf-accent);
+}
+.jf-section p {
+  margin: var(--s-2) 0;
+  max-width: 62ch;
+}
+.jf-question {
+  padding: var(--s-3) var(--s-4);
+  border-left: 4px solid var(--jf-accent);
+  background: var(--surface-2);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  font-size: 1.15rem;
+}
+.jf-frames {
+  display: grid;
+  gap: var(--s-3);
+  margin: var(--s-3) 0;
+  padding: 0;
+  list-style: none;
+}
+.jf-frames li {
+  padding: var(--s-2) var(--s-3);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+}
+.jf-frame {
+  display: block;
+  font-weight: 700;
+  quotes: "\201C" "\201D";
+}
+.jf-meaning {
+  display: block;
+  margin-top: var(--s-1);
+  color: var(--ink-2);
+}
+.jf-pager {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--s-3);
+  margin: var(--s-4) 0;
+}
+.jf-pager a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  font-weight: 700;
+}
+.jf-note {
+  margin: var(--s-4) 0;
+  color: var(--ink-3);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .jf-continue *,
+  .jf-companion * {
+    scroll-behavior: auto;
+    transition: none;
+    animation: none;
+  }
+}
+
+/* Print: the companion alone, black on white, no controls, links shown as plain text. The family page's own print
+   rule hides everything but its weekly quest, so the companion has to opt back in with matching specificity. */
+@media print {
+  body[data-lab-view="family"] #app > .jf-companion.jf-companion {
+    display: block !important;
+    max-width: none;
+    margin: 0;
+    color: #000;
+  }
+  body[data-lab-view="family"] #app > .jf-continue.jf-continue {
+    display: none !important;
+  }
+  .jf-companion .no-print,
+  .jf-companion .fam-subnav,
+  .jf-companion .crumbs,
+  .jf-companion nav[aria-label] {
+    display: none !important;
+  }
+  .jf-companion .jf-section {
+    break-inside: avoid;
+    border-top-color: #999;
+  }
+  .jf-companion .jf-section h2,
+  .jf-companion .jf-meaning,
+  .jf-companion .jf-childgoal,
+  .jf-companion .jf-learner,
+  .jf-companion .jf-note {
+    color: #000;
+  }
+  .jf-companion .jf-question,
+  .jf-companion .jf-learner,
+  .jf-companion .jf-frames li {
+    background: none;
+    border-color: #666;
+  }
+  .jf-companion a {
+    color: #000;
+    text-decoration: none;
+  }
+}

@@ -72,6 +72,11 @@ const ROUTES = process.env.ROUTES
       "worlds",
       "publisher-demo",
       "publisher-demo/family",
+      "journey",
+      "journey/map",
+      "journey/m08",
+      "journey/m08/discover",
+      "journey/guide",
     ];
 const WIDTHS = process.env.WIDTHS ? process.env.WIDTHS.split(",").map(Number) : [375, 768, 1280];
 const noise = /web-vitals|Failed to load resource|ERR_ABORTED|speechSynthesis|downloadable font/i;

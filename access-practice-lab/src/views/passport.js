@@ -33,7 +33,7 @@ import { practiceSummary } from "../practice-report.js";
 import { journeyHTML, routeProgress } from "../journey.js";
 import { checkinHTML, onCheckinClick } from "../checkin-ui.js";
 import { familyLetterHTML, howIWorkHTML, onLetterClick } from "./passport-work.js";
-import { livingPortfolioHTML } from "./passport-living.js";
+import { journeyEvidenceHTML, livingPortfolioHTML } from "./passport-living.js";
 import { paperPassportMenu } from "../paper-passport.js";
 import { getFamily, tripWeekStreak } from "../family/state.js";
 import { i18nFor, makeI18n } from "../i18n.js";
@@ -593,6 +593,7 @@ export async function render(ctx) {
         </header>
 
         ${livingPortfolioHTML(I, band)}
+        ${await journeyEvidenceHTML(I, band, ledger)}
 
         <section>
           <section class="panel practice-report" aria-labelledby="practiceReportTitle">

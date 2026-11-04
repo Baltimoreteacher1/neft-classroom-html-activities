@@ -153,3 +153,27 @@ export function livingPortfolioHTML(I, band) {
   </section>`;
 }
 
+
+/**
+ * "My Journey evidence": Before/After cards and the supported-versus-independent tally from the Learning Journey.
+ * Empty (no markup at all) until the learner has started a mission, so the Passport is unchanged for everyone else.
+ * The Journey modules load on demand and any failure leaves the Passport as it was.
+ */
+export async function journeyEvidenceHTML(I, band, ledger) {
+  try {
+    const { loadJourney } = await import("../journey/state.js");
+    const state = loadJourney();
+    const missions = state?.bands?.[band]?.missions || {};
+    if (!Object.values(missions).some((m) => Object.keys(m?.steps || {}).length)) return "";
+    const { growthSectionHTML } = await import("../journey/ui/growth.js");
+    return html`<section class="lp lp-journey" id="journeyEvidence" aria-labelledby="lpJourneyTitle">
+      <div class="lp-head">
+        <p class="eyebrow">${I.T("Learning Journey", "Viaje de aprendizaje")}</p>
+        <h2 id="lpJourneyTitle">${I.T("My Journey evidence", "Evidencia de mi viaje")}</h2>
+      </div>
+      ${growthSectionHTML(I, state, ledger, band)}
+    </section>`;
+  } catch {
+    return "";
+  }
+}

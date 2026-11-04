@@ -1,0 +1,466 @@
+/* ACCESS Learning Journey: the step runner (/journey/<mission>/<step>).
+   Rail, header, support controls, word help and the step-complete panel. Tokens come from ds.css; shared
+   components (.btn, .panel, .fine, .eyebrow) are reused, never restyled. Engine screens have their own sheets. */
+
+.jr {
+  max-width: 62rem;
+  margin-inline: auto;
+}
+.jr :focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+/* ── quiet way out ───────────────────────────────────────────────────────── */
+.jr-quick {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-2) var(--s-3);
+  margin-block-start: var(--s-2);
+}
+.jr-quick .fine {
+  flex: 1 1 14rem;
+  margin: 0;
+}
+
+/* ── header ──────────────────────────────────────────────────────────────── */
+.jr-head {
+  margin-block: var(--s-3);
+}
+.jr-title {
+  display: grid;
+  gap: var(--s-1);
+  margin: 0 0 var(--s-3);
+  font-size: clamp(1.6rem, 1.2rem + 1.6vw, 2.4rem);
+  line-height: 1.1;
+  overflow-wrap: anywhere;
+}
+.jr-title-step {
+  font-family: var(--font);
+  font-size: 1.125rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  color: var(--ink-2);
+}
+.jr-goal {
+  margin: 0 0 var(--s-2);
+  max-width: var(--measure);
+}
+.jr-goal strong {
+  display: inline;
+  margin-inline-end: 0.4em;
+  color: var(--sage-900);
+}
+.jr-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-1) var(--s-2);
+  margin: 0;
+}
+
+/* ── six-step rail: icon + words, never colour alone ─────────────────────── */
+.jr-rail {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--s-2);
+  margin: 0 0 var(--s-3);
+  padding: 0;
+  list-style: none;
+}
+.jr-rail-step > a,
+.jr-rail-step > .jr-rail-locked {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-areas:
+    "ico label"
+    "ico state";
+  column-gap: var(--s-2);
+  align-items: center;
+  height: 100%;
+  min-height: 3.5rem;
+  padding: var(--s-2) var(--s-3);
+  border: 1.5px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--ink);
+  text-decoration: none;
+}
+.jr-rail-step > a:hover {
+  background: var(--surface-2);
+  border-color: var(--ink-3);
+}
+.jr-rail-locked {
+  border-style: dashed;
+  color: var(--ink-3);
+  background: transparent;
+}
+.jr-rail-ico {
+  grid-area: ico;
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  background: var(--brand-soft);
+  color: var(--brand-ink);
+}
+.jr-rail-label {
+  grid-area: label;
+  font-weight: 700;
+  line-height: 1.15;
+}
+.jr-rail-n {
+  display: inline-block;
+  min-width: 1.1em;
+  color: var(--ink-3);
+}
+.jr-rail-state {
+  grid-area: state;
+  font-size: 0.875rem;
+  color: var(--ink-2);
+}
+.jr-rail-step.is-done-supported > a,
+.jr-rail-step.is-done-independent > a {
+  background: var(--right-soft);
+  border-color: var(--sage-500);
+}
+.jr-rail-step.is-done-supported .jr-rail-ico,
+.jr-rail-step.is-done-independent .jr-rail-ico {
+  background: var(--sage-200);
+  color: var(--sage-900);
+}
+.jr-rail-step.is-current > a,
+.jr-rail-step.is-current > .jr-rail-locked {
+  border: 3px solid var(--brand);
+  padding: calc(var(--s-2) - 1.5px) calc(var(--s-3) - 1.5px);
+  box-shadow: var(--shadow);
+}
+
+/* ── notes ───────────────────────────────────────────────────────────────── */
+.jr-note {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-1) var(--s-2);
+  margin: var(--s-3) 0;
+  padding: var(--s-3);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+}
+.jr-note a {
+  font-weight: 700;
+  color: var(--brand-ink);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* ── support controls ────────────────────────────────────────────────────── */
+.jr-controls {
+  display: grid;
+  gap: var(--s-3);
+}
+.jr-support {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.jr-support legend {
+  padding: 0;
+  margin-block-end: var(--s-2);
+  font-weight: 700;
+}
+.jr-support-options {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--s-2);
+}
+.jr-support-btn {
+  display: grid;
+  gap: 0.15rem;
+  min-height: var(--target);
+  padding: var(--s-2) var(--s-2);
+  border: 1.5px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+.jr-support-btn span {
+  font-size: 0.875rem;
+  color: var(--ink-2);
+}
+.jr-support-btn:hover {
+  background: var(--surface-2);
+}
+.jr-support-btn[aria-pressed="true"] {
+  border: 3px solid var(--brand);
+  padding: calc(var(--s-2) - 1.5px);
+  background: var(--brand-soft);
+}
+.jr-support-fixed {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  margin: 0;
+}
+.jr-own-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  min-height: var(--target);
+  padding: var(--s-2) 0;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+.jr-own-btn .fine {
+  display: block;
+}
+.jr-own-track {
+  flex: none;
+  position: relative;
+  width: 3.25rem;
+  height: 1.9rem;
+  border: 2px solid var(--ink-3);
+  border-radius: 999px;
+  background: var(--surface-3);
+}
+.jr-own-track i {
+  position: absolute;
+  inset-block-start: 2px;
+  inset-inline-start: 2px;
+  width: 1.4rem;
+  height: 1.4rem;
+  border-radius: 50%;
+  background: var(--ink-3);
+  transition: inset-inline-start var(--dur-2) var(--ease-out);
+}
+.jr-own-btn[aria-checked="true"] .jr-own-track {
+  border-color: var(--sage-900);
+  background: var(--sage-200);
+}
+.jr-own-btn[aria-checked="true"] .jr-own-track i {
+  inset-inline-start: calc(100% - 1.4rem - 2px);
+  background: var(--sage-900);
+}
+.jr-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+}
+
+/* ── word help ───────────────────────────────────────────────────────────── */
+.jr-help h2 {
+  margin: 0 0 var(--s-2);
+  font-size: 1.25rem;
+}
+.jr-vocab {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+  gap: var(--s-3);
+  margin: var(--s-3) 0 0;
+}
+.jr-vocab dt {
+  font-weight: 700;
+}
+.jr-vocab dd {
+  margin: 0;
+}
+.jr-vocab-es {
+  color: var(--ink-2);
+  font-size: 0.9375rem;
+}
+
+/* ── stage ───────────────────────────────────────────────────────────────── */
+.jr-stage {
+  margin-block: var(--s-4);
+  min-width: 0;
+}
+.jr-engine {
+  min-width: 0;
+}
+.jr-part {
+  margin-block-end: var(--s-2);
+}
+
+/* ── step-complete panel ─────────────────────────────────────────────────── */
+.jr-done {
+  margin-block: var(--s-4);
+}
+.jr-done h2 {
+  margin: 0 0 var(--s-3);
+  font-size: clamp(1.4rem, 1.1rem + 1.2vw, 1.9rem);
+}
+.jr-facts {
+  display: grid;
+  gap: var(--s-2);
+  margin: 0 0 var(--s-4);
+  padding: 0;
+  list-style: none;
+}
+.jr-facts li {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--s-2);
+}
+.jr-facts .ico {
+  flex: none;
+  margin-block-start: 0.2em;
+  color: var(--right);
+}
+.jr-show-summary {
+  margin-block: var(--s-4);
+}
+.jr-mission-done {
+  margin-block: var(--s-4);
+  padding: var(--s-4);
+  border: 1.5px solid var(--sage-500);
+  border-radius: var(--radius);
+  background: var(--right-soft);
+}
+.jr-mission-done h3 {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  margin: 0 0 var(--s-2);
+  font-size: 1.2rem;
+  color: var(--sage-900);
+}
+.jr-mission-done p {
+  margin: 0 0 var(--s-2);
+}
+.jr-next {
+  display: grid;
+  gap: var(--s-3);
+  justify-items: start;
+  margin-block: var(--s-4);
+}
+.jr-next .btn-big {
+  max-width: 100%;
+  text-align: start;
+}
+.jr-reason {
+  margin: 0;
+  max-width: var(--measure);
+  font-size: 1.0625rem;
+}
+.jr-alts {
+  display: grid;
+  gap: var(--s-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.jr-alts li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-1) var(--s-3);
+}
+.jr-redo {
+  margin-block-start: var(--s-5);
+  padding-block-start: var(--s-4);
+  border-block-start: 1px solid var(--line);
+}
+.jr-redo p {
+  margin: 0 0 var(--s-2);
+}
+.jr-problem {
+  max-width: 40rem;
+  margin-inline: auto;
+}
+
+/* ── wider screens ───────────────────────────────────────────────────────── */
+@media (min-width: 40rem) {
+  .jr-rail {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+@media (min-width: 62rem) {
+  .jr-rail {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+  .jr-rail-step > a,
+  .jr-rail-step > .jr-rail-locked {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "ico"
+      "label"
+      "state";
+    justify-items: start;
+    row-gap: var(--s-1);
+  }
+  .jr-controls {
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+    align-items: start;
+  }
+  .jr-links {
+    grid-column: 2;
+  }
+  /* Six cells are narrow: the step number moves to a corner badge so "Communicate" never wraps under it. */
+  .jr-rail-step {
+    position: relative;
+  }
+  .jr-rail-n {
+    position: absolute;
+    inset-block-start: var(--s-2);
+    inset-inline-end: var(--s-2);
+    min-width: 0;
+    font-size: 0.8rem;
+  }
+}
+@media (max-width: 26rem) {
+  /* Three short buttons in one row: the step's own work should start on the first screen, not after a tall settings stack. */
+  .jr-support-options {
+    gap: var(--s-1);
+  }
+  .jr-support-btn {
+    padding-inline: var(--s-2);
+  }
+  .jr-support-btn strong {
+    font-size: 0.9rem;
+  }
+  .jr-support-btn span {
+    font-size: 0.75rem;
+    line-height: 1.2;
+  }
+}
+
+/* ── motion and contrast ─────────────────────────────────────────────────── */
+/* Reduced motion: ds.css already switches off every transition and animation globally; the only motion here is
+   the switch thumb, which that rule covers. */
+@media (forced-colors: active) {
+  .jr-rail-step > a,
+  .jr-rail-step > .jr-rail-locked,
+  .jr-support-btn,
+  .jr-own-track {
+    border-color: CanvasText;
+  }
+  .jr-support-btn[aria-pressed="true"],
+  .jr-rail-step.is-current > a {
+    outline: 3px solid Highlight;
+  }
+}
+
+/* Held engine: the learner reads the engine's last feedback, then finishes the step. */
+.jr-hold {
+  display: grid;
+  gap: var(--sp-3, 0.75rem);
+  justify-items: start;
+  margin-top: var(--sp-4, 1rem);
+  padding-top: var(--sp-4, 1rem);
+  border-top: 1px solid var(--line, #d8d2c4);
+}
+.jr-hold .fine {
+  margin: 0;
+  max-width: 60ch;
+}

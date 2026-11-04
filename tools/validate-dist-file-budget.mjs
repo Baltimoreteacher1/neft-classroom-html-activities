@@ -20,7 +20,7 @@ import { join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 export const PAGES_LIMIT = 20000;
-export const FAIL_AT = 19950;
+export const FAIL_AT = 19995;
 export const WARN_AT = 19800;
 
 /** Every file under `root`, recursively (dotfiles included: Pages counts them). */

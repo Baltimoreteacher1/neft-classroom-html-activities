@@ -1,0 +1,634 @@
+/* ACCESS Learning Journey — Living Language World (the DISCOVER scene).
+   Layout and scene styling only. Tokens, buttons, panels and type come from ds.css. Mobile first: one column at
+   375px with no horizontal scroll, 44px+ touch targets, visible focus, and motion only for a state change. */
+
+.sc {
+  --sc-radius: var(--radius);
+  --sc-gap: var(--s-4);
+  --sc-hot: 2.75rem;
+  display: grid;
+  gap: var(--sc-gap);
+  min-width: 0;
+  color: var(--ink);
+}
+.sc[data-band="3-5"] {
+  --sc-radius: var(--r-lg);
+  --sc-hot: 3.25rem;
+}
+.sc[data-band="6-8"] {
+  --sc-radius: var(--radius-sm);
+}
+.sc *,
+.sc *::before,
+.sc *::after {
+  box-sizing: border-box;
+}
+.sc h3 {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  margin: 0 0 var(--s-2);
+  font: 700 1.0625rem/1.3 var(--font);
+  letter-spacing: 0;
+}
+.sc .ico {
+  flex: none;
+  width: 1.15em;
+  height: 1.15em;
+}
+
+/* ── prompt and three-step tracker ─────────────────────────────────────── */
+.sc-head {
+  display: grid;
+  gap: var(--s-3);
+}
+.sc-prompt {
+  margin: 0;
+  max-width: var(--measure);
+  font: 600 1.25rem/1.35 var(--font-display);
+  text-wrap: balance;
+}
+.sc-steps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.sc-step {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  min-height: 2.25rem;
+  padding: 0.2rem 0.75rem 0.2rem 0.3rem;
+  border: 2px solid var(--line-strong);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--ink-2);
+  font-size: 0.9375rem;
+  font-weight: 700;
+}
+.sc-step-mark {
+  display: grid;
+  place-items: center;
+  width: 1.65rem;
+  height: 1.65rem;
+  border-radius: 50%;
+  background: var(--surface-3);
+  color: var(--ink);
+  font-size: 0.875rem;
+}
+.sc-step-count {
+  color: var(--ink-3);
+  font-weight: 400;
+}
+.sc-step.is-done {
+  border-color: var(--right);
+  background: var(--right-soft);
+  color: var(--right);
+}
+.sc-step.is-done .sc-step-mark {
+  background: var(--right);
+  color: var(--on-brand);
+}
+
+/* ── layout ────────────────────────────────────────────────────────────── */
+.sc-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--sc-gap);
+}
+.sc-world,
+.sc-side {
+  display: grid;
+  align-content: start;
+  gap: var(--sc-gap);
+  min-width: 0;
+}
+@media (min-width: 62rem) {
+  .sc-layout {
+    grid-template-columns: minmax(0, 1.7fr) minmax(18rem, 1fr);
+    align-items: start;
+  }
+}
+
+/* ── the stage: illustrated environment plus hotspots ──────────────────── */
+.sc-stage {
+  position: relative;
+  aspect-ratio: 5 / 3;
+  overflow: hidden;
+  border: 2px solid var(--line-strong);
+  border-radius: var(--sc-radius);
+  background: var(--surface-2);
+  box-shadow: var(--shadow);
+}
+.sc-stage .ea {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.sc-stage[data-pulse="1"] .ea {
+  animation: sc-settle var(--dur-4) var(--ease-out) both;
+}
+@keyframes sc-settle {
+  from {
+    opacity: 0.55;
+    transform: scale(1.025);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.sc-hot {
+  position: absolute;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--ink);
+  font: inherit;
+  cursor: pointer;
+  transform: translate(-50%, -50%);
+}
+.sc-hot-glyph {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: var(--sc-hot);
+  height: var(--sc-hot);
+  border: 3px solid var(--brand);
+  border-radius: 50%;
+  background: var(--ivory);
+  box-shadow: var(--shadow);
+  font-size: 1.35rem;
+  line-height: 1;
+  transition:
+    transform var(--dur-2) var(--ease-press),
+    box-shadow var(--dur-2) var(--ease-out);
+}
+.sc-hot-label {
+  max-width: 7rem;
+  padding: 0.1rem 0.5rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  line-height: 1.3;
+  text-align: center;
+}
+.sc-hot:hover .sc-hot-glyph {
+  transform: translateY(-2px) scale(1.06);
+  box-shadow: var(--shadow-lift);
+}
+.sc-hot:focus-visible {
+  outline: none;
+}
+.sc-hot:focus-visible .sc-hot-glyph {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+}
+.sc-hot.is-seen .sc-hot-glyph {
+  border-color: var(--right);
+}
+.sc-hot-check {
+  position: absolute;
+  right: -0.35rem;
+  bottom: -0.25rem;
+  display: grid;
+  place-items: center;
+  width: 1.2rem;
+  height: 1.2rem;
+  border-radius: 50%;
+  background: var(--right);
+  color: var(--on-brand);
+}
+.sc-hot-check .ico {
+  width: 0.8rem;
+  height: 0.8rem;
+}
+
+/* Small screens: glyph only on the picture (name still on the button); the list below carries the visible names. */
+@media (max-width: 39.99rem) {
+  .sc-hot-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    padding: 0;
+    border: 0;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+}
+.sc-looklist ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.sc-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  min-height: 2.75rem;
+  padding: 0.25rem 0.85rem;
+  border: 2px solid var(--line-strong);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--ink);
+  font: 700 0.9375rem/1.2 var(--font);
+  cursor: pointer;
+}
+.sc-chip:hover {
+  border-color: var(--brand);
+}
+.sc-chip.is-seen {
+  border-color: var(--right);
+  background: var(--right-soft);
+  color: var(--right);
+}
+@media (min-width: 40rem) {
+  .sc-looklist {
+    display: none;
+  }
+}
+
+/* ── what the scene shows now ──────────────────────────────────────────── */
+.sc-state {
+  --mood: var(--line-strong);
+  --mood-soft: var(--surface-2);
+  padding: var(--s-3) var(--s-4);
+  border: 2px solid var(--mood);
+  border-left-width: 8px;
+  border-radius: var(--sc-radius);
+  background: var(--mood-soft);
+}
+.sc-state[data-mood="good"] {
+  --mood: var(--right);
+  --mood-soft: var(--right-soft);
+}
+.sc-state[data-mood="warn"] {
+  --mood: var(--hint);
+  --mood-soft: var(--hint-soft);
+}
+.sc-state[data-mood="bad"] {
+  --mood: var(--wrong);
+  --mood-soft: var(--wrong-soft);
+}
+.sc-state-h {
+  color: var(--ink-2);
+  font-size: 0.9375rem;
+}
+.sc-state-mood {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  margin: 0;
+  color: var(--mood);
+}
+.sc-state[data-mood="neutral"] .sc-state-mood {
+  color: var(--ink-2);
+}
+.sc-state-text {
+  margin: var(--s-1) 0 0;
+  max-width: var(--measure);
+}
+
+/* ── controls: radio groups ────────────────────────────────────────────── */
+.sc-controls,
+.sc-book,
+.sc-explain,
+.sc-looklist {
+  padding: var(--s-4);
+  border: 1px solid var(--line);
+  border-radius: var(--sc-radius);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+.sc-ctrl {
+  min-width: 0;
+  margin: 0 0 var(--s-3);
+  padding: 0;
+  border: 0;
+}
+.sc-ctrl:last-child {
+  margin-bottom: 0;
+}
+.sc-ctrl legend {
+  padding: 0;
+  margin-bottom: var(--s-2);
+  color: var(--ink-2);
+  font-size: 0.9375rem;
+  font-weight: 700;
+}
+.sc-opts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+}
+.sc-opt {
+  position: relative;
+  display: block;
+  min-width: 0;
+}
+.sc-opt > span {
+  display: flex;
+  align-items: center;
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  padding: 0.4rem 1rem;
+  border: 2px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--ink);
+  font-weight: 700;
+  line-height: 1.25;
+  cursor: pointer;
+  transition:
+    background var(--dur-2) var(--ease-out),
+    border-color var(--dur-2) var(--ease-out);
+}
+.sc-opt:hover > span {
+  border-color: var(--brand);
+}
+.sc-opt input:checked + span {
+  border-color: var(--brand);
+  background: var(--brand);
+  color: var(--on-brand);
+}
+.sc-opt input:checked + span::before {
+  content: "\2713";
+  margin-right: 0.5rem;
+}
+.sc-opt input:focus-visible + span {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+}
+
+/* ── field notebook ────────────────────────────────────────────────────── */
+.sc-notes {
+  display: grid;
+  gap: var(--s-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.sc-note {
+  display: flex;
+  gap: var(--s-3);
+  padding: var(--s-2) var(--s-3);
+  border-left: 4px solid var(--sage-500);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+}
+.sc-note-glyph {
+  flex: none;
+  font-size: 1.4rem;
+  line-height: 1.3;
+}
+.sc-note p {
+  margin: 0.1rem 0 0;
+  overflow-wrap: anywhere;
+}
+.sc-empty {
+  margin: 0;
+  color: var(--ink-2);
+}
+
+/* ── explain: partner, support, text box ───────────────────────────────── */
+.sc-explain {
+  display: grid;
+  gap: var(--s-3);
+}
+.sc-explain > h3 {
+  margin: 0;
+}
+.sc-locked,
+.sc-own,
+.sc-finished {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--s-2);
+  margin: 0;
+  color: var(--ink-2);
+}
+.sc-finished {
+  padding: var(--s-3);
+  border-radius: var(--radius-sm);
+  background: var(--right-soft);
+  color: var(--right);
+  font-weight: 700;
+}
+.sc-talk {
+  display: grid;
+  gap: var(--s-3);
+  min-width: 0;
+}
+.sc-talk-prompt {
+  max-width: var(--measure);
+  font-weight: 700;
+}
+.sc-bubble {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--s-3);
+  max-width: var(--measure);
+}
+.sc-bubble-glyph {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  border: 2px solid var(--line-strong);
+  border-radius: 50%;
+  background: var(--sage-200);
+  font-size: 1.6rem;
+}
+.sc-bubble > div {
+  position: relative;
+  min-width: 0;
+  padding: var(--s-3) var(--s-4);
+  border: 2px solid var(--sage-500);
+  border-radius: var(--sc-radius);
+  background: var(--sage-200);
+}
+.sc-bubble > div::before {
+  content: "";
+  position: absolute;
+  top: 1rem;
+  left: -0.55rem;
+  width: 0.9rem;
+  height: 0.9rem;
+  border-bottom: 2px solid var(--sage-500);
+  border-left: 2px solid var(--sage-500);
+  background: var(--sage-200);
+  transform: rotate(45deg);
+}
+.sc-bubble-name {
+  margin: 0;
+  color: var(--sage-900);
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+.sc-bubble-text {
+  margin: 0.1rem 0 0;
+  overflow-wrap: anywhere;
+}
+.sc-reply {
+  display: grid;
+  gap: var(--s-2);
+}
+.sc-reply:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 4px;
+  border-radius: var(--sc-radius);
+}
+.sc-text {
+  display: block;
+  width: 100%;
+  min-height: 7rem;
+  padding: var(--s-3);
+  border: 2px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+  line-height: 1.5;
+  resize: vertical;
+}
+.sc-text:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+  border-color: var(--brand);
+}
+.sc-words {
+  margin: calc(var(--s-1) * -1) 0 0;
+  color: var(--ink-3);
+  font-size: 0.9375rem;
+}
+.sc-talk .btn {
+  justify-self: start;
+  min-height: 2.75rem;
+}
+.sc-talk .btn[disabled] {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+.sc-wrote {
+  padding: var(--s-3);
+  border-left: 4px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+}
+.sc-wrote p {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.sc-wrote-h {
+  color: var(--ink-3);
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+.sc-second {
+  display: grid;
+  gap: var(--s-2);
+}
+.sc-second label {
+  font-weight: 700;
+}
+
+/* supports: frames, word help, hint (never rendered "on my own") */
+.sc-help {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+}
+.sc-help > summary {
+  min-height: 2.75rem;
+  padding: 0.6rem var(--s-3);
+  font-weight: 700;
+  cursor: pointer;
+}
+.sc-help > :not(summary) {
+  margin: 0;
+  padding: 0 var(--s-3) var(--s-3);
+}
+.sc-frames,
+.sc-vocab {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+  list-style: none;
+}
+.sc-frame,
+.sc-word {
+  min-height: 2.75rem;
+  padding: 0.35rem 0.85rem;
+  border: 2px solid var(--pearl-blue);
+  border-radius: var(--radius-sm);
+  background: var(--brand-soft);
+  color: var(--brand-deep);
+  font: 400 0.9375rem/1.3 var(--font);
+  text-align: left;
+  cursor: pointer;
+}
+.sc-word {
+  border-radius: 999px;
+  font-weight: 700;
+}
+.sc-frame:hover,
+.sc-word:hover,
+.sc-word[aria-expanded="true"] {
+  border-color: var(--brand);
+}
+.sc-word[aria-expanded="true"] {
+  background: var(--brand);
+  color: var(--on-brand);
+}
+.sc-tip {
+  color: var(--ink-2);
+}
+.sc-gloss {
+  min-height: 0;
+}
+.sc-gloss p {
+  margin: 0 0 var(--s-1);
+}
+.sc-gloss p:first-child {
+  font-weight: 700;
+}
+
+.sc button:focus-visible,
+.sc summary:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sc-stage[data-pulse="1"] .ea {
+    animation: none;
+  }
+  .sc-hot-glyph,
+  .sc-opt > span {
+    transition: none;
+  }
+  .sc-hot:hover .sc-hot-glyph {
+    transform: none;
+  }
+}

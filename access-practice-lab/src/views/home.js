@@ -10,7 +10,6 @@ import {
   CORE_DOMAINS,
   DOMAIN_META,
   TIERS,
-  bandLabel,
   formatDate,
   html,
   icon,
@@ -33,6 +32,8 @@ import { i18nFor } from "../i18n.js";
 import { currentWeek } from "./road.js";
 import { daysThisWeek, finishSession, getEngagement, saveEngagement, sessionHref, startSession } from "../engagement.js";
 import { trimToMinutes } from "../family/plan.js";
+import { journeyHeroHTML } from "../journey/ui/pages-hero.js";
+import { loadJourneyData } from "../journey/ui/pages-shared.js";
 
 // Spanish for the plan's fixed status reasons, keyed like STATUS_REASON. Reasons composed from the
 // learner's own evidence (review items, task recommendations) come from the engine and stay English.
@@ -113,6 +114,7 @@ export async function render(ctx) {
   const settings = ctx.prefs.practicePlan || {};
   const records = new Map();
   const ledger = loadLedger();
+  const journey = loadJourneyData(band, { ledger });
   const bandRecords = allRecords().filter((r) => r.band === band);
   const review = {
     entries: ledger.entries.filter((e) => e.band === band),
@@ -166,13 +168,37 @@ export async function render(ctx) {
   const stepWord = { listen: ["Listen", "Escuchar"], read: ["Read", "Leer"], speak: ["Speak", "Hablar"], write: ["Write", "Escribir"] };
   const exStatus = (st) => (st === "done" ? I.T("done", "hecho") : st === "started" ? I.T("in progress", "en progreso") : I.T("not started", "sin empezar"));
 
+  const reviewPanel = due.length ? reviewHTML(I, due, plan, band, ctx) : html`<section class="panel review-due"><h2>${I.T("Keep it strong", "Mantenlo fuerte")}</h2><p class="fine">${I.T("Words and language patterns you practiced come back when they are ready for another look.", "Las palabras y los patrones que practicaste vuelven cuando es buen momento para repasarlos.")}</p><a class="btn" href="${BASE}/growth?grades=${band}">${I.T("Open review and growth", "Abrir repaso y progreso")}${icon("arrow-right")}</a></section>`;
+
   return {
     title: "",
-    html: html`<section class="ll-hero" aria-labelledby="homeTitle">
+    html: html`${journeyHeroHTML(I, band, journey.state, journey.recommendation, { headingId: "homeTitle", bandSwitch: bandSwitchHTML(band, ctx.bands) })}
+
+
+      ${familyMessage ? html`<aside class="student-family-note panel"><strong>${ctx.prefs.lang === "es" ? "Un mensaje de tu familia" : "A message from your family"}</strong><p lang="${ctx.prefs.lang === "es" ? "es" : "en"}">“${ctx.prefs.lang === "es" ? familyMessage[1] : familyMessage[0]}”</p>${ctx.prefs.lang === "bi" ? html`<p lang="es">“${familyMessage[1]}”</p>` : ""}</aside>` : ""}
+
+      ${
+        windowPhase
+          ? html`<aside class="window-card" aria-label="${I.S("ACCESS testing window", "Período de pruebas de ACCESS")}">
+              ${icon("calendar")}
+              <p><strong>${I.T(`${win.state} ACCESS testing: ${winRange}`, `Pruebas ACCESS de ${win.state}: ${winRange}`)}</strong>
+              <span>${I.T(`${windowPhase.phase === "upcoming" ? `${windowPhase.daysAway} days away` : windowPhase.phase === "starting" ? "Starts today" : "Testing is happening now"}. Your school chooses your testing days.`, `${windowPhase.phase === "upcoming" ? (windowPhase.daysAway === 1 ? "Falta 1 día" : `Faltan ${windowPhase.daysAway} días`) : windowPhase.phase === "starting" ? "Comienza hoy" : "Las pruebas están en curso ahora"}. Tu escuela elige los días de tus pruebas.`)}</span></p>
+              <a href="${win.source || "https://wida.wisc.edu/about/consortium/md"}">${I.T("Official testing window", "Período oficial de pruebas")}</a>
+            </aside>`
+          : ""
+      }
+
+      <section class="jr-explore" aria-labelledby="exploreTitle">
+        <div class="jr-explore-head">
+          <p class="ll-kicker">${I.T("Optional targeted practice", "Práctica opcional y específica")}</p>
+          <h2 id="exploreTitle">${I.T("Explore all activities", "Explora todas las actividades")}</h2>
+          <p class="fine">${I.T("Your journey above is the guided path. Here you can choose a skill, replay a studio, take a practice test or find any activity. Today’s mission and review come first.", "Tu viaje de arriba es el camino guiado. Aquí puedes elegir una destreza, volver a un estudio, hacer una prueba de práctica o buscar cualquier actividad. Primero van la misión de hoy y el repaso.")}</p>
+          <a class="btn" href="${BASE}/library?grades=${band}">${icon("library")} ${I.T("Open the activity library", "Abrir la biblioteca de actividades")}</a>
+        </div>
+      <section class="ll-hero" aria-labelledby="exploreHeroTitle">
         <div class="ll-hero-copy">
-          <p class="eyebrow">${I.T(`ACCESS Practice Lab · ${bandLabel(band)}`, `Laboratorio de práctica ACCESS · Grados ${band.replace("-", "–")}`)}</p>
-          ${bandSwitchHTML(band, ctx.bands)}
-          <h1 id="homeTitle" tabindex="-1">${band === "3-5" ? I.T("Explore a world where your words matter.", "Explora un mundo donde tus palabras importan.") : I.T("Step into a world built for your language.", "Entra a un mundo creado para tu lenguaje.")}</h1>
+          <p class="eyebrow">${I.T("Optional practice for today", "Práctica opcional para hoy")}</p>
+          <h2 id="exploreHeroTitle">${band === "3-5" ? I.T("Explore a world where your words matter.", "Explora un mundo donde tus palabras importan.") : I.T("Step into a world built for your language.", "Entra a un mundo creado para tu lenguaje.")}</h2>
           <p class="lead">${band === "3-5" ? I.T("Listen, read, speak and write at the Seed Science Fair and beyond. Choose your help. Try again any time.", "Escucha, lee, habla y escribe en la Feria de Ciencias y más. Elige tu ayuda. Intenta otra vez cuando quieras.") : I.T("Four studios and one living exhibition for listening, reading, speaking and writing. You choose the support; every try is saved on this device.", "Cuatro estudios y una exposición viva para escuchar, leer, hablar y escribir. Tú eliges el apoyo; cada intento se guarda en este dispositivo.")}</p>
           <div class="session-heading">
             ${resume ? html`<a class="btn btn-primary btn-big" href="${sessionHref(resume)}">${I.T("Resume today’s mission", "Retoma la misión de hoy")} · ${I.L("common.minutes", { n: resume.minutes })}${icon("arrow-right")}</a>` : ""}
@@ -188,19 +214,6 @@ export async function render(ctx) {
         </div>
         ${heroStageHTML(I, ctx, band, suggested)}
       </section>
-
-      ${familyMessage ? html`<aside class="student-family-note panel"><strong>${ctx.prefs.lang === "es" ? "Un mensaje de tu familia" : "A message from your family"}</strong><p lang="${ctx.prefs.lang === "es" ? "es" : "en"}">“${ctx.prefs.lang === "es" ? familyMessage[1] : familyMessage[0]}”</p>${ctx.prefs.lang === "bi" ? html`<p lang="es">“${familyMessage[1]}”</p>` : ""}</aside>` : ""}
-
-      ${
-        windowPhase
-          ? html`<aside class="window-card" aria-label="${I.S("ACCESS testing window", "Período de pruebas de ACCESS")}">
-              ${icon("calendar")}
-              <p><strong>${I.T(`${win.state} ACCESS testing: ${winRange}`, `Pruebas ACCESS de ${win.state}: ${winRange}`)}</strong>
-              <span>${I.T(`${windowPhase.phase === "upcoming" ? `${windowPhase.daysAway} days away` : windowPhase.phase === "starting" ? "Starts today" : "Testing is happening now"}. Your school chooses your testing days.`, `${windowPhase.phase === "upcoming" ? (windowPhase.daysAway === 1 ? "Falta 1 día" : `Faltan ${windowPhase.daysAway} días`) : windowPhase.phase === "starting" ? "Comienza hoy" : "Las pruebas están en curso ahora"}. Tu escuela elige los días de tus pruebas.`)}</span></p>
-              <a href="${win.source || "https://wida.wisc.edu/about/consortium/md"}">${I.T("Official testing window", "Período oficial de pruebas")}</a>
-            </aside>`
-          : ""
-      }
 
       <section class="ll-next" aria-labelledby="sessionTitle">
         <div class="session-plan">
@@ -219,6 +232,8 @@ export async function render(ctx) {
           <a class="progress-note" href="${BASE}/passport?grades=${band}">${icon("passport")}<span><strong>${stamps ? I.T(`${stamps} activit${stamps === 1 ? "y" : "ies"} finished`, `${stamps} ${stamps === 1 ? "actividad terminada" : "actividades terminadas"}`) : I.T("Your Passport is empty", "Tu Pasaporte está vacío")}</strong><span class="fine">${stamps ? I.T(`${streak ? `${streak}-week practice streak. ` : ""}See your saved work.`, `${streak ? `Racha de práctica de ${streak} ${streak === 1 ? "semana" : "semanas"}. ` : ""}Mira tu trabajo guardado.`) : I.T("Finish an activity and it is saved here, on this device.", "Termina una actividad y se guarda aquí, en este dispositivo.")}</span></span></a>
         </aside>
       </section>
+
+      <div class="jr-review-slot">${reviewPanel}</div>
 
       <section class="ll-studios" id="skills" aria-labelledby="roomsTitle">
         <div class="ll-section-head">
@@ -257,7 +272,6 @@ export async function render(ctx) {
             <span class="ll-door-go">${I.T("Open my Passport", "Abrir mi Pasaporte")}${icon("arrow-right")}</span>
           </a>
           <section class="panel weekly-goal" aria-labelledby="weeklyGoalTitle"><div><p class="ll-kicker">${I.T("Your pace · no pressure", "Tu ritmo · sin presión")}</p><h2 id="weeklyGoalTitle">${I.T(`${practicedThisWeek} of ${engagement.weeklyGoal} practice days this week`, `${practicedThisWeek} de ${engagement.weeklyGoal} días de práctica esta semana`)}</h2><p class="fine">${I.T(`A practice day counts when saved work is recorded on this device. Your ${streak ? `${streak}-week streak` : "practice history"} stays yours if you take a week off.`, `Un día de práctica cuenta cuando se guarda trabajo en este dispositivo. Tu ${streak ? `racha de ${streak} ${streak === 1 ? "semana" : "semanas"}` : "historial de práctica"} sigue siendo tuyo si descansas una semana.`)}</p></div><label class="field"><span>${I.T("Choose a weekly goal", "Elige una meta semanal")}</span><select data-weekly-goal>${[3, 4, 5, 7].map((n) => html`<option value="${n}" ${n === engagement.weeklyGoal ? raw("selected") : ""}>${I.T(`${n} days per week`, `${n} días por semana`)}</option>`)}</select></label>${practicedThisWeek >= engagement.weeklyGoal ? html`<p class="goal-done" role="status">${I.T("Weekly goal reached. Nice steady work!", "¡Meta semanal alcanzada! Buen trabajo constante.")}</p>` : ""}</section>
-          ${due.length ? reviewHTML(I, due, plan, band, ctx) : html`<section class="panel review-due"><h2>${I.T("Keep it strong", "Mantenlo fuerte")}</h2><p class="fine">${I.T("Words and language patterns you practiced come back when they are ready for another look.", "Las palabras y los patrones que practicaste vuelven cuando es buen momento para repasarlos.")}</p><a class="btn" href="${BASE}/growth?grades=${band}">${I.T("Open review and growth", "Abrir repaso y progreso")}${icon("arrow-right")}</a></section>`}
         </div>
         ${week ? html`<div class="road-strip"><div><p class="ll-kicker">${I.T(`Road to ACCESS · Week ${week.n} of 12`, `Camino a ACCESS · Semana ${week.n} de 12`)}</p><h3 id="roadStripTitle">${week.taskType}: ${week.theme}</h3><p class="fine">${week.focus}</p></div><a class="btn" href="${BASE}/road/${week.n}?grades=${band}">${I.T("Open this week", "Abrir esta semana")}${icon("arrow-right")}</a></div>` : ""}
       </section>
@@ -321,6 +335,7 @@ export async function render(ctx) {
           ${door("launch-studio", "launch", I.T("Launch Studio", "Estudio de lanzamiento"), I.T("QR codes and direct links.", "Códigos QR y enlaces directos."))}
           ${door("exhibition/teacher", "worlds", I.T("Language World teacher notes", "Notas docentes del Mundo del lenguaje"), I.T("Objectives, Key Language Uses, supports.", "Objetivos, usos clave del lenguaje y apoyos."))}
         </div>
+      </section>
       </section>`,
   };
 }

@@ -1,0 +1,639 @@
+/* ACCESS Learning Journey: Conversation Reality (converse) and Living Writing (compose).
+   Tokens come from ds.css. Speaking is Rose & Garnet (.d-speaking), Writing is Burnished Copper (.d-writing). No purple. */
+
+.jt {
+  display: grid;
+  gap: var(--s-4);
+  max-width: 62rem;
+  margin-inline: auto;
+  color: var(--ink);
+}
+.jt :focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+.jt button,
+.jt .btn {
+  min-height: 2.75rem;
+}
+.jt-head {
+  display: grid;
+  gap: var(--s-2);
+}
+.jt-kicker {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  margin: 0;
+  color: var(--room-ink);
+  font-weight: 700;
+}
+.jt-title {
+  margin: 0;
+  font-size: clamp(1.25rem, 4.5vw, 1.75rem);
+  font-weight: 500;
+}
+.jt-audience {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-2);
+  margin: 0;
+  padding: var(--s-2) var(--s-3);
+  border-radius: var(--radius-sm);
+  background: var(--room-soft);
+  color: var(--room-ink);
+}
+.jt-note {
+  display: flex;
+  gap: var(--s-2);
+  align-items: flex-start;
+  margin: 0;
+  color: var(--ink-2);
+  font-size: 0.95rem;
+}
+.jt-note .ico {
+  flex: none;
+  margin-top: 0.2rem;
+}
+.jt-label,
+.jt-step {
+  margin: 0;
+  font-weight: 700;
+  color: var(--room-ink);
+}
+
+/* ── partner ─────────────────────────────────────────────────────────────── */
+.jt-partner-card {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  padding: var(--s-3);
+  border: 1px solid color-mix(in srgb, var(--room) 28%, transparent);
+  border-radius: var(--radius);
+  background: var(--room-soft);
+}
+.jt-avatar {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 2px solid var(--room);
+  font-size: 1.35rem;
+  line-height: 1;
+}
+.jt-avatar-lg {
+  width: 3.25rem;
+  height: 3.25rem;
+  font-size: 1.75rem;
+}
+.jt-partner-name {
+  margin: 0;
+  font-weight: 700;
+}
+.jt-role {
+  font-weight: 400;
+  color: var(--ink-2);
+}
+.jt-honest {
+  margin: 0;
+  color: var(--room-ink);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+.jt-how {
+  font-size: 0.95rem;
+  color: var(--ink-2);
+}
+.jt-how p {
+  margin: var(--s-2) 0 0;
+}
+
+/* ── chat log ────────────────────────────────────────────────────────────── */
+.jt-log {
+  display: grid;
+  gap: var(--s-3);
+  align-content: start;
+  list-style: none;
+  margin: 0;
+  padding: var(--s-3);
+  max-height: min(60vh, 30rem);
+  overflow-y: auto;
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  background: var(--surface-2);
+}
+.jt-bubble {
+  display: flex;
+  gap: var(--s-2);
+  align-items: flex-end;
+  max-width: 92%;
+}
+.jt-bubble.jt-partner {
+  justify-self: start;
+}
+.jt-bubble.jt-me {
+  justify-self: end;
+  flex-direction: row-reverse;
+}
+.jt-bubble-body {
+  display: grid;
+  gap: 0.15rem;
+  min-width: 0;
+  padding: var(--s-2) var(--s-3);
+  border-radius: var(--radius);
+}
+.jt-partner .jt-bubble-body {
+  background: var(--surface);
+  border: 1px solid var(--line-strong);
+  border-bottom-left-radius: var(--r-xs);
+}
+.jt-me .jt-bubble-body {
+  background: var(--brand);
+  color: var(--on-brand);
+  border-bottom-right-radius: var(--r-xs);
+}
+.jt-partner.is-close .jt-bubble-body {
+  border-color: var(--right);
+  background: var(--right-soft);
+}
+.jt-partner.is-clarify .jt-bubble-body {
+  border-style: dashed;
+}
+.jt-who {
+  font-size: 0.85rem;
+  font-weight: 700;
+  opacity: 0.85;
+}
+.jt-tag {
+  margin-inline-start: var(--s-2);
+  padding: 0 var(--s-2);
+  border-radius: 999px;
+  background: var(--room-soft);
+  color: var(--room-ink);
+  font-weight: 700;
+}
+.jt-say {
+  margin: 0;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+.jt-earlier {
+  margin-top: var(--s-1);
+  font-size: 0.9rem;
+}
+.jt-earlier summary {
+  cursor: pointer;
+}
+.jt-earlier p {
+  margin: var(--s-1) 0 0;
+  opacity: 0.9;
+}
+.jt-turns {
+  margin: 0;
+  color: var(--ink-2);
+  font-size: 0.9rem;
+}
+
+/* ── composer, recorder, help ────────────────────────────────────────────── */
+.jt-composer,
+.jt-finish {
+  display: grid;
+  gap: var(--s-3);
+  padding: var(--s-4);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+.jt-input {
+  width: 100%;
+  min-height: 7rem;
+  padding: var(--s-3);
+  border: 2px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  background: var(--ivory);
+  color: var(--ink);
+  font: inherit;
+  line-height: 1.5;
+  resize: vertical;
+}
+.jt-input:focus-visible {
+  border-color: var(--room);
+}
+.jt-count {
+  margin: 0;
+  color: var(--ink-2);
+  font-size: 0.9rem;
+}
+.jt-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+}
+.jt-retry-note {
+  display: flex;
+  gap: var(--s-2);
+  align-items: center;
+  margin: 0;
+  padding: var(--s-2) var(--s-3);
+  border-radius: var(--radius-sm);
+  background: var(--hint-soft);
+  color: var(--hint);
+}
+.jt-done {
+  display: flex;
+  gap: var(--s-2);
+  align-items: center;
+  margin: 0;
+  color: var(--right);
+  font-weight: 700;
+}
+.jt-rec {
+  display: grid;
+  gap: var(--s-2);
+  padding: var(--s-3);
+  border: 1px solid color-mix(in srgb, var(--room) 28%, transparent);
+  border-radius: var(--radius);
+  background: var(--room-soft);
+}
+.jt-rec.is-live {
+  border-color: var(--room);
+}
+.jt-rec-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-3);
+}
+.jt-rec-btn {
+  border-color: var(--room);
+  background: var(--room);
+  color: var(--on-brand);
+}
+.jt-rec-btn.is-stop {
+  background: var(--wrong);
+  border-color: var(--wrong);
+}
+.jt-meter {
+  position: relative;
+  width: 7rem;
+  height: 0.6rem;
+  border-radius: 999px;
+  background: var(--surface-3);
+  overflow: hidden;
+}
+.jt-meter i {
+  display: block;
+  height: 100%;
+  width: calc(var(--lvl, 0) * 100%);
+  background: var(--room);
+  transition: width var(--dur-1) var(--ease-out);
+}
+.jt-time,
+.jt-rec-state {
+  font-size: 0.9rem;
+  color: var(--ink-2);
+}
+.jt-audio {
+  width: 100%;
+}
+.jt-rec-error {
+  margin: 0;
+  padding: var(--s-2) var(--s-3);
+  border-radius: var(--radius-sm);
+  background: var(--wrong-soft);
+  color: var(--wrong);
+}
+.jt-rec-error[hidden] {
+  display: none;
+}
+.jt-help {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  padding: var(--s-2) var(--s-3);
+}
+.jt-help summary {
+  min-height: 2.75rem;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-weight: 700;
+}
+.jt-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+  margin: var(--s-2) 0;
+}
+.jt-chip {
+  padding: var(--s-2) var(--s-3);
+  border: 1px solid var(--room);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--room-ink);
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+.jt-chip:hover {
+  background: var(--room-soft);
+}
+
+/* ── writing studio ──────────────────────────────────────────────────────── */
+.jt-studio {
+  display: grid;
+  gap: var(--s-4);
+}
+.jt-organizer {
+  padding: var(--s-3);
+  border: 1px solid color-mix(in srgb, var(--room) 28%, transparent);
+  border-radius: var(--radius);
+  background: var(--room-soft);
+}
+.jt-organizer h3,
+.jt-panel h3 {
+  margin: 0 0 var(--s-2);
+  font-size: 1.1rem;
+}
+.jt-boxes {
+  display: grid;
+  gap: var(--s-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: box;
+}
+.jt-box {
+  display: grid;
+  gap: 0.15rem;
+  width: 100%;
+  padding: var(--s-2) var(--s-3);
+  border: 2px solid var(--room);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+  text-align: start;
+  counter-increment: box;
+}
+button.jt-box {
+  cursor: pointer;
+}
+button.jt-box:hover {
+  background: var(--surface-2);
+}
+.jt-box.is-used {
+  background: var(--room-soft);
+  border-style: dashed;
+}
+.jt-box.is-static {
+  border-style: solid;
+  border-color: var(--line-strong);
+}
+.jt-box-label {
+  font-weight: 700;
+  color: var(--room-ink);
+}
+.jt-box-label::before {
+  content: counter(box) ". ";
+}
+.jt-box-ask {
+  font-size: 0.9rem;
+  color: var(--ink-2);
+}
+.jt-box-do {
+  display: flex;
+  align-items: center;
+  gap: var(--s-1);
+  font-size: 0.85rem;
+  color: var(--room-ink);
+}
+.jt-draft {
+  display: grid;
+  gap: var(--s-3);
+  align-content: start;
+}
+.jt-draft-box {
+  min-height: 12rem;
+}
+.jt-progress {
+  display: grid;
+  gap: var(--s-1);
+}
+.jt-bar {
+  display: block;
+  height: 0.5rem;
+  border-radius: 999px;
+  background: var(--surface-3);
+  overflow: hidden;
+}
+.jt-bar i {
+  display: block;
+  height: 100%;
+  width: var(--p, 0%);
+  background: var(--room);
+  transition: width var(--dur-2) var(--ease-out);
+}
+.jt-saved {
+  margin-inline-start: var(--s-2);
+  color: var(--right);
+}
+.jt-saved[hidden] {
+  visibility: hidden;
+}
+.jt-panels {
+  display: grid;
+  gap: var(--s-4);
+}
+.jt-panels:empty {
+  display: none;
+}
+.jt-panel {
+  display: grid;
+  gap: var(--s-3);
+  padding: var(--s-4);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+.jt-panel h4 {
+  margin: 0;
+}
+.jt-kinds {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+}
+.jt-kind {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  padding: var(--s-2) var(--s-3);
+  border: 2px solid var(--line-strong);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+  cursor: pointer;
+}
+.jt-kind[aria-pressed="true"] {
+  border-color: var(--room);
+  background: var(--room-soft);
+  font-weight: 700;
+}
+.jt-swatch {
+  width: 1rem;
+  height: 1rem;
+  border-radius: 0.2rem;
+  border-bottom: 3px solid var(--ink);
+}
+.jt-n {
+  min-width: 1.4rem;
+  padding: 0 0.3rem;
+  border-radius: 999px;
+  background: var(--surface-3);
+  text-align: center;
+  font-size: 0.85rem;
+}
+.jt-mirror {
+  min-height: 4rem;
+  max-height: 20rem;
+  overflow: auto;
+  padding: var(--s-3);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  background: var(--ivory);
+  line-height: 1.9;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.jt-empty {
+  color: var(--ink-3);
+}
+/* Each highlight differs by fill AND by underline style, so colour is never the only signal. */
+.jt-ov,
+.jt-chg {
+  padding: 0.05em 0.1em;
+  border-radius: 0.2em;
+  color: inherit;
+}
+.jt-ov-claim,
+.jt-kind-claim .jt-swatch {
+  background: var(--writing-soft);
+  border-bottom: 3px solid var(--writing);
+}
+.jt-ov-reason,
+.jt-kind-reason .jt-swatch {
+  background: var(--reading-soft);
+  border-bottom: 3px dashed var(--reading);
+}
+.jt-ov-evidence,
+.jt-kind-evidence .jt-swatch {
+  background: var(--right-soft);
+  border-bottom: 3px dotted var(--right);
+}
+.jt-ov-connector,
+.jt-kind-connector .jt-swatch {
+  background: var(--surface-3);
+  border-bottom: 3px double var(--ink);
+}
+.jt-ov-precise,
+.jt-kind-precise .jt-swatch {
+  background: var(--listening-soft);
+  border-bottom: 3px solid var(--listening);
+  font-weight: 700;
+}
+.jt-chg-add {
+  background: var(--right-soft);
+  border-bottom: 3px solid var(--right);
+}
+.jt-chg-del {
+  background: var(--hint-soft);
+  border-bottom: 3px dashed var(--hint);
+}
+.jt-shape {
+  margin: 0;
+  color: var(--ink-2);
+}
+.jt-map,
+.jt-why {
+  display: grid;
+  gap: var(--s-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.jt-map li,
+.jt-why li {
+  display: flex;
+  gap: var(--s-2);
+  align-items: flex-start;
+  padding: var(--s-2) var(--s-3);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+}
+.jt-map li .ico,
+.jt-why li .ico {
+  flex: none;
+  margin-top: 0.25rem;
+}
+.jt-map .is-present .ico,
+.jt-why .ico {
+  color: var(--right);
+}
+.jt-map .is-open .ico,
+.jt-why .is-check .ico {
+  color: var(--hint);
+}
+.jt-question {
+  margin: 0;
+  padding: var(--s-3);
+  border-left: 4px solid var(--room);
+  border-radius: var(--radius-sm);
+  background: var(--room-soft);
+  font-size: 1.1rem;
+}
+.jt-cols {
+  display: grid;
+  gap: var(--s-3);
+}
+.jt-col {
+  display: grid;
+  gap: var(--s-2);
+  min-width: 0;
+}
+
+@media (min-width: 48rem) {
+  .jt-studio {
+    grid-template-columns: minmax(0, 16rem) minmax(0, 1fr);
+  }
+  .jt-cols {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .jt-bubble {
+    max-width: 80%;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .jt *,
+  .jt *::before,
+  .jt *::after {
+    transition: none !important;
+    animation: none !important;
+    scroll-behavior: auto !important;
+  }
+}
+@media (forced-colors: active) {
+  .jt-ov,
+  .jt-chg,
+  .jt-kind[aria-pressed="true"],
+  .jt-box.is-used {
+    border: 2px solid CanvasText;
+  }
+}

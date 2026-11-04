@@ -30,6 +30,9 @@ function copyStandaloneHtml() {
     "scripts",
     "tools",
     "docs",
+    // Generated QA output (screenshots, audit sheets). Nothing links into it, and
+    // every file here counts toward Cloudflare Pages' 20,000-file deployment limit.
+    "reports",
     "night-shift",
     // Backend Worker sources are deployed with `wrangler deploy`, never served by
     // Pages. They were shipping to the public site: /workers/noam-school-cron.js

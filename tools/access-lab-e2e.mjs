@@ -106,10 +106,18 @@ try {
   await page.waitForFunction(() => document.body.dataset.labBand === "3-5");
   ok(/Grades 3–5/.test(await page.textContent(".eyebrow")), "band switch shows grades 3–5");
 
-  const startBounds = await page.locator(".session-heading .btn-primary").boundingBox();
+  // The home now leads with the Continue-My-Journey hero (intended redesign): ITS primary action is the one
+  // that must be in the first desktop viewport. The older "Start today's mission" action moved under
+  // "Explore all activities"; it must stay a visible primary button close to the top (two screens), not buried.
+  const startBounds = await page.locator(".jr-cta .btn-primary").boundingBox();
   ok(
     startBounds && startBounds.y + startBounds.height <= 900,
-    "start action appears in the initial desktop viewport",
+    "journey start action appears in the initial desktop viewport",
+  );
+  const missionBounds = await page.locator(".session-heading .btn-primary").boundingBox();
+  ok(
+    missionBounds && missionBounds.y + missionBounds.height <= 1800,
+    "start today's mission action stays within two desktop screens of the top",
   );
   // Guided sessions retain preferences and draft work across navigation/reload.
   await page.locator("#planOptions summary").click();
