@@ -6,6 +6,7 @@
 //   /access-practice-lab/test/<id>
 // New: /tests, /road[/<week>], /family, /passport, /play?ids=…, /tools, and
 // ?grades=3-5|6-8 on any URL.
+import { brandTitle } from "./brand.js";
 import { micDeniedMessage, notePlay, scripts, setComponentsI18n } from "./components.js";
 import { availableBands, loadIndex } from "./content.js";
 import * as rec from "./recorder.js";
@@ -55,6 +56,7 @@ import * as realityView from "./views/reality.js";
 import * as exhibitionView from "./views/exhibition.js";
 import * as journeyView from "./views/journey.js";
 import * as pathView from "./views/path.js";
+import * as moveView from "./views/move.js";
 import * as scaffoldView from "./views/scaffold.js";
 
 export const BUILD = "2026.11.04.1";
@@ -66,6 +68,7 @@ const VIEWS = {
   journey: journeyView,
   path: pathView,
   scaffold: scaffoldView,
+  move: moveView,
   "session-done": homeView,
   stories: storiesView,
   ladder: ladderView,
@@ -121,7 +124,7 @@ export function parseRoute(pathname = location.pathname, search = location.searc
   if (a === "worlds") {
     return { ...r, view: "worlds", id: b || "", worldId: b || "", missionId: c || "", tab: q.get("tab") || "" };
   }
-  if (["learn", "reality", "exhibition", "tests", "family", "passport", "tools", "library", "missions", "mission", "conversation", "construction", "evidence", "growth", "speak", "write", "detective", "launch", "launch-studio", "teacher-launch", "classroom", "vocabulary", "flashcards", "stories", "ladder", "puzzles", "publisher-demo", "games", "assess", "path", "scaffold"].includes(a)) {
+  if (["learn", "reality", "exhibition", "tests", "family", "passport", "tools", "library", "missions", "mission", "conversation", "construction", "evidence", "growth", "speak", "write", "detective", "launch", "launch-studio", "teacher-launch", "classroom", "vocabulary", "flashcards", "stories", "ladder", "puzzles", "publisher-demo", "games", "assess", "path", "scaffold", "move"].includes(a)) {
     return { ...r, view: a, id: b || "", missionId: b || "", scenarioId: b || "", tab: q.get("tab") || "" };
   }
   if (a === "journey") return { ...r, view: "journey", id: b || "", rest: parts.slice(1) };
@@ -307,7 +310,7 @@ async function render({ keepFocus = false, scroll = false } = {}) {
     if (mode && !url.searchParams.has("mode")) url.searchParams.set("mode", mode);
     link.href = url.pathname + url.search + url.hash;
   }
-  document.title = out.title ? `${out.title} · ACCESS Practice Lab` : "ACCESS Practice Lab";
+  document.title = brandTitle(out.title);
   document.body.dataset.labView = route.view;
   document.body.dataset.labBand = app.band;
   mountShell(ctx);

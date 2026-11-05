@@ -1,4 +1,5 @@
 // Lab-only shell: shared utilities stay reachable without floating over student work.
+import { BRAND, brandName, onLanguagePage } from "./brand.js";
 import { i18nFor, langSwitchHTML } from "./i18n.js";
 import { footerHTML, navHTML } from "./nav.js";
 import { toHtml, storage } from "./util.js";
@@ -113,7 +114,11 @@ export function mountShell(ctx) {
   document.querySelector(".crumbs")?.setAttribute("aria-label", T("Breadcrumb", "Ruta de navegación"));
   text(".skip-link", T("Skip to content", "Saltar al contenido"));
   // The wordmark is a name: bilingual mode keeps it short rather than printing both languages.
-  text(".lab-wordmark strong", I.bilingual ? "ACCESS Practice Lab" : T("ACCESS Practice Lab", "Laboratorio ACCESS"));
+  text(
+    ".lab-wordmark strong",
+    brandName(I.bilingual ? "ACCESS Practice Lab" : T("ACCESS Practice Lab", "Laboratorio ACCESS")),
+  );
+  if (onLanguagePage()) text(".lab-wordmark small", BRAND.poweredBy);
   // Plain-text swaps need their own language tag when Spanish sits on an English page.
   const tagEs = I.spanish && I.pageLang !== "es";
   for (const selector of [".skip-link", ".lab-wordmark strong"]) {

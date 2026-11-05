@@ -1,0 +1,120 @@
+// The Language Page (thelanguagepage.com) is the ACCESS Practice Lab served from this same Pages project and
+// codebase under its own hostname: one engine, one deploy, no second copy to drift. This module is the single
+// place that says which hostnames those are and which paths the lab host serves.
+//
+// Everything outside the lab's own surface (lessons, curriculum, teacher tools) lives on eduwonderlab.com, so
+// the lab host redirects it there instead of serving a duplicate of the whole site. The Teacher Hub keeps its
+// rosters and typed official scores in the teacher's browser on eduwonderlab.com, so it is NOT served here: a
+// second origin would show an empty hub and a second sign-in.
+//
+// Redirects the other way (eduwonderlab.com/access-practice-lab -> thelanguagepage.com) are deliberately not
+// here. Student progress lives in each origin's localStorage and does not cross origins, so the old origin must
+// keep serving the lab until students have moved their progress (docs/language-page-migration.md).
+
+export const LANGUAGE_PAGE_HOST = "thelanguagepage.com";
+export const LEGACY_HOST = "eduwonderlab.com";
+export const LAB_BASE = "/access-practice-lab";
+
+/** Paths the lab itself loads, measured against the live lab (shell, fonts, Save/Resume, ping, Cloudflare). */
+const LAB_PREFIXES = [`${LAB_BASE}/`, "/assets/", "/data/", "/shared/", "/cdn-cgi/"];
+const LAB_EXACT = new Set([LAB_BASE, "/family-app/home-link.js", "/api/signal", "/api/signal/"]);
+
+/** Public lab pages listed in the sitemap: clean URLs the SPA serves through the one rewrite rule. */
+export const SITEMAP_PATHS = [
+  `${LAB_BASE}/`,
+  `${LAB_BASE}/path`,
+  `${LAB_BASE}/scaffold`,
+  `${LAB_BASE}/learn`,
+  `${LAB_BASE}/passport`,
+  `${LAB_BASE}/growth`,
+  `${LAB_BASE}/speak`,
+  `${LAB_BASE}/write`,
+  `${LAB_BASE}/journey`,
+  `${LAB_BASE}/vocabulary`,
+  `${LAB_BASE}/reading-room`,
+  `${LAB_BASE}/worlds`,
+  `${LAB_BASE}/move`,
+];
+
+export const isLanguagePageHost = (hostname) =>
+  hostname === LANGUAGE_PAGE_HOST || hostname === `www.${LANGUAGE_PAGE_HOST}`;
+
+const servesOnLabHost = (pathname) => {
+  const p = pathname.toLowerCase();
+  return LAB_EXACT.has(p) || LAB_PREFIXES.some((prefix) => p.startsWith(prefix));
+};
+
+/**
+ * What the lab host should do with a request before the normal gate runs.
+ * Returns null for a host that is not the lab host, otherwise one of:
+ *   { kind: "redirect", status, location }   www -> apex, "/" -> the lab, everything else -> eduwonderlab.com
+ *   { kind: "robots" } | { kind: "sitemap" } generated per host (the static files name eduwonderlab.com)
+ *   { kind: "serve" }                        fall through to the lab
+ */
+export function languagePageRoute(url) {
+  if (!isLanguagePageHost(url.hostname)) return null;
+  // www and the apex are one site: a stored sign-in or bookmark must not split across them.
+  if (url.hostname !== LANGUAGE_PAGE_HOST) {
+    const target = new URL(url);
+    target.hostname = LANGUAGE_PAGE_HOST;
+    return { kind: "redirect", status: 308, location: target.toString() };
+  }
+  if (url.pathname === "/robots.txt") return { kind: "robots" };
+  if (url.pathname === "/sitemap.xml") return { kind: "sitemap" };
+  // Temporary on purpose: the landing page may become its own page later.
+  if (url.pathname === "/")
+    return { kind: "redirect", status: 302, location: `${url.origin}${LAB_BASE}/` };
+  if (servesOnLabHost(url.pathname)) return { kind: "serve" };
+  return {
+    kind: "redirect",
+    status: 308,
+    location: `https://${LEGACY_HOST}${url.pathname}${url.search}`,
+  };
+}
+
+/**
+ * The HTML the lab host serves names The Language Page for crawlers and link previews, not only after
+ * JavaScript runs: the shell is one file shared with eduwonderlab.com, so the rename happens on the way out.
+ */
+export const LAB_BRAND = { name: "The Language Page", poweredBy: "Powered by EduWonderLab" };
+
+export function brandLabHtml(html, pathname) {
+  const canonical = `https://${LANGUAGE_PAGE_HOST}${pathname}`;
+  return html
+    .replace(
+      "<title>ACCESS Practice Lab</title>",
+      `<title>${LAB_BRAND.name} · ACCESS Practice Lab</title>`,
+    )
+    .replace(
+      "<strong>ACCESS Practice Lab</strong><small>EduWonderLab</small>",
+      `<strong>${LAB_BRAND.name}</strong><small>${LAB_BRAND.poweredBy}</small>`,
+    )
+    .replace(
+      "</head>",
+      `<link rel="canonical" href="${canonical}" />\n<meta property="og:site_name" content="${LAB_BRAND.name}" />\n<meta property="og:url" content="${canonical}" />\n</head>`,
+    );
+}
+
+export async function brandLabResponse(response, url) {
+  if (!isLanguagePageHost(url.hostname) || !response.ok) return response;
+  if (!(response.headers.get("content-type") || "").includes("text/html")) return response;
+  const headers = new Headers(response.headers);
+  headers.delete("content-length");
+  headers.delete("etag");
+  return new Response(brandLabHtml(await response.text(), url.pathname), {
+    status: response.status,
+    statusText: response.statusText,
+    headers,
+  });
+}
+
+export function robotsTxt() {
+  return `User-agent: *\nAllow: /\n\nSitemap: https://${LANGUAGE_PAGE_HOST}/sitemap.xml\n`;
+}
+
+export function sitemapXml() {
+  const urls = SITEMAP_PATHS.map(
+    (path) => `  <url><loc>https://${LANGUAGE_PAGE_HOST}${path}</loc></url>`,
+  ).join("\n");
+  return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`;
+}

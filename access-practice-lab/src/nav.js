@@ -1,5 +1,6 @@
 // Lab chrome: brand mark, top navigation, "More" menu and footer. One place so the static shell in
 // index.html and the live (bilingual) chrome never describe different navigation.
+import { brandName } from "./brand.js";
 import { langSwitchHTML } from "./i18n.js";
 import { CHROME } from "./acc/copy.js";
 import { BASE, html, icon, raw } from "./util.js";
@@ -40,6 +41,7 @@ const PRACTICE_VIEWS = new Set([
   "test",
   "assess",
   "scaffold",
+  "move",
 ]);
 const ACTIVE = {
   home: "home",
@@ -58,6 +60,7 @@ const ACTIVE = {
   growth: "growth",
   path: "growth",
   passport: "growth",
+  move: "growth",
   road: "growth",
   family: "family",
   tools: "help",
@@ -301,7 +304,7 @@ export function footerHTML(ctx, I) {
   const q = `?grades=${band}`;
   return html`<div class="footer-grid">
       <div class="footer-brand">
-        <strong>${T("ACCESS Practice Lab", "Laboratorio de práctica ACCESS")}</strong>
+        <strong>${brandName(T("ACCESS Practice Lab", "Laboratorio de práctica ACCESS"))}</strong>
         <p>
           ${T("Classroom practice in listening, reading, speaking and writing for multilingual learners in grades 3–8, by EduWonderLab.", "Práctica de clase en comprensión auditiva, lectura, expresión oral y escritura para estudiantes multilingües de 3.º a 8.º grado, por EduWonderLab.")}
         </p>
@@ -318,6 +321,7 @@ export function footerHTML(ctx, I) {
       <nav class="footer-links" aria-label="${S("More", "Más")}">
         <h2>${T("Support", "Apoyo")}</h2>
         <a href="${BASE}/passport${q}">${T("My Passport", "Pasaporte")}</a>
+        <a href="${BASE}/move${q}">${T("Move my progress", "Mover mi progreso")}</a>
         <a href="${BASE}/family${q}">${T("Families", "Familias")}</a>
         <a href="/access-teacher/">${T("Teacher Hub", "Centro docente")}</a>
         <a href="${BASE}/tools${q}"

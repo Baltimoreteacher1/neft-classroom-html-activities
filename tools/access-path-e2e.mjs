@@ -189,6 +189,18 @@ try {
     (await page.locator(".pa-node-detail h3").innerText()).includes("Using evidence"),
     "a constellation node opens by keyboard",
   );
+  // The stylesheets must be linked from the shell: without path.css the edge layer is an in-flow SVG that
+  // resizes the graph that resizes it, and the page grows without bound (shipped once, 2026-11-05).
+  ok(
+    (await page.evaluate(() => getComputedStyle(document.querySelector(".pa-edges")).position)) ===
+      "absolute",
+    "path.css is linked and applied (the edge layer is positioned, not in flow)",
+  );
+  await page.waitForTimeout(600);
+  ok(
+    (await page.evaluate(() => document.documentElement.scrollHeight)) < 8000,
+    "the /path page height is bounded",
+  );
   await page.locator(".pa-outline summary").click();
   ok(
     (await page.locator("[data-node-list]").count()) === 11,

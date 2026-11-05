@@ -16,6 +16,12 @@
 // Teachers sign in with ANY username plus the shared password. This is a casual
 // gate to keep students/public out of teacher material, not strong security.
 
+import {
+  brandLabResponse,
+  languagePageRoute,
+  robotsTxt,
+  sitemapXml,
+} from "./_lib/language-page.js";
 import { EXACT, PREFIX } from "./_lib/redirect-map.js";
 import { hasValidSession, mintSessionCookie } from "./_lib/teacher-session.js";
 import { isTeacherSurface as isTeacherPath } from "./_lib/teacher-surface.js";
@@ -139,7 +145,13 @@ export function canonicalRedirect(url) {
   return target.toString();
 }
 
+/** The lab host's HTML is renamed on the way out; every other host's response passes through untouched. */
 export async function onRequest(context) {
+  const response = await handle(context);
+  return brandLabResponse(response, new URL(context.request.url));
+}
+
+async function handle(context) {
   const { request, env, next } = context;
   const password = env.SITE_PASSWORD;
 
@@ -152,6 +164,24 @@ export async function onRequest(context) {
     return new Response(null, {
       status: 308,
       headers: { Location: canonical, "Cache-Control": "no-store" },
+    });
+  }
+
+  // thelanguagepage.com serves only the ACCESS lab; see _lib/language-page.js. Any other host falls through.
+  const lab = languagePageRoute(url);
+  if (lab?.kind === "redirect") {
+    return new Response(null, {
+      status: lab.status,
+      headers: { Location: lab.location, "Cache-Control": "no-store" },
+    });
+  }
+  if (lab?.kind === "robots" || lab?.kind === "sitemap") {
+    const robots = lab.kind === "robots";
+    return new Response(robots ? robotsTxt() : sitemapXml(), {
+      headers: {
+        "Content-Type": robots ? "text/plain; charset=utf-8" : "application/xml; charset=utf-8",
+        "Cache-Control": "public, max-age=3600",
+      },
     });
   }
 
