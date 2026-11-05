@@ -243,6 +243,31 @@ export const STRINGS = {
   "prog.week.summary": s("This week: {days} practice days · skills practiced: {skills}", "Esta semana: {days} días de práctica · destrezas practicadas: {skills}"),
   "prog.week.none": s("none yet", "ninguna todavía"),
   "prog.practiced.heading": s("What we practiced", "Lo que practicamos"),
+  "prog.evidence.heading": s("Recent language practice", "Práctica reciente de lenguaje"),
+  "prog.evidence.note": s(
+    "A few recent practice events saved on this device. They describe the task and support used, not a score or a judgment about ability.",
+    "Algunas actividades recientes guardadas en este dispositivo. Describen la tarea y el apoyo usado, no un puntaje ni una evaluación de capacidad.",
+  ),
+  "prog.evidence.empty": s(
+    "No recent language-studio evidence is saved for this grade band yet.",
+    "Todavía no hay evidencia reciente del estudio de lenguaje guardada para estos grados.",
+  ),
+  "prog.evidence.independent": s(
+    "{date}: tried to {use} independently during {domain} practice.",
+    "{date}: intentó {use} sin ayuda durante la práctica de {domain}.",
+  ),
+  "prog.evidence.supported": s(
+    "{date}: practiced how to {use} with support in {domain}.",
+    "{date}: practicó cómo {use} con apoyo en {domain}.",
+  ),
+  "prog.evidence.revision": s(
+    "{date}: revised a response after feedback during {domain} practice.",
+    "{date}: revisó una respuesta después de recibir comentarios durante la práctica de {domain}.",
+  ),
+  "prog.evidence.transfer": s(
+    "{date}: tried to {use} in a new {domain} context.",
+    "{date}: intentó {use} en un contexto nuevo de {domain}.",
+  ),
   "prog.practiced.today": s("Most recent practice", "Práctica más reciente"),
   "prog.practiced.line": s(
     "On {date} your child practiced {skill} in a {domain} activity.",

@@ -8,6 +8,37 @@ import { todayISO } from "../util.js";
 const countable = (r) => r && !needsReview(r) && r.meaningful !== false && r.words !== 0 && r.practiced !== false;
 const dayOf = (iso) => (typeof iso === "string" ? iso.slice(0, 10) : "");
 
+const LANGUAGE_DOMAINS = new Set(CORE_DOMAINS);
+const KEY_USES = new Set(["Narrate", "Inform", "Explain", "Argue"]);
+
+/**
+ * Turn the local language-growth ledger into a small, privacy-minimized family view.
+ * It reports observable events only; raw responses, activity IDs, and heuristic measures
+ * are intentionally omitted.
+ */
+export function summarizeLanguageEvidence(entries, band) {
+  const evidence = (Array.isArray(entries) ? entries : [])
+    .filter((entry) =>
+      entry && entry.band === band && LANGUAGE_DOMAINS.has(entry.domain) &&
+      typeof entry.t === "string" && Number.isFinite(Date.parse(entry.t)),
+    )
+    .sort((a, b) => Date.parse(b.t) - Date.parse(a.t))
+    .slice(0, 4)
+    .map((entry) => ({
+      day: dayOf(entry.t),
+      domain: entry.domain,
+      use: KEY_USES.has(entry.use) ? entry.use : "",
+      event: entry.kind === "revision"
+        ? "revision"
+        : entry.kind === "transfer"
+          ? "transfer"
+          : entry.stage === "independent"
+            ? "independent"
+            : "supported",
+    }));
+  return evidence;
+}
+
 /**
  * @param entries  allRecords() output: [{ band, domain, level, record }]
  * @param rowsById Map of activity id -> row ({ title, skill, domain }) from the index, for naming

@@ -487,6 +487,133 @@ try {
     await page.context().close();
   }
 
+  // ── P: family progress uses only concise, local language evidence ─────────
+  {
+    const page = await newPage({ width: 375, height: 812 });
+    await page.addInitScript(() => {
+      const now = new Date().toISOString();
+      localStorage.setItem(
+        "accessPracticeLab:v1:prefs",
+        JSON.stringify({ lang: "en", langChosen: true, band: "6-8" }),
+      );
+      localStorage.setItem(
+        "accessPracticeLab:v1:ledger",
+        JSON.stringify({
+          v: 1,
+          entries: [
+            {
+              id: "fixture-1",
+              t: now,
+              src: "writing",
+              task: "private-task-id",
+              band: "6-8",
+              domain: "Writing",
+              use: "Explain",
+              stage: "supported",
+              kind: "revision",
+              supports: { frames: true },
+              response: "PRIVATE_RESPONSE_SENTINEL",
+            },
+            {
+              id: "fixture-2",
+              t: now,
+              src: "speaking",
+              task: "private-task-id",
+              band: "6-8",
+              domain: "Speaking",
+              use: "Explain",
+              stage: "independent",
+              kind: "first",
+              supports: {},
+            },
+            {
+              id: "fixture-3",
+              t: now,
+              src: "item",
+              task: "private-task-id",
+              band: "6-8",
+              domain: "Reading",
+              use: "Inform",
+              stage: "supported",
+              kind: "retry",
+              supports: { hint: true },
+            },
+            {
+              id: "fixture-4",
+              t: now,
+              src: "mission",
+              task: "private-task-id",
+              band: "6-8",
+              domain: "Listening",
+              use: "Narrate",
+              stage: "independent",
+              kind: "transfer",
+              supports: {},
+            },
+            {
+              id: "other-band",
+              t: now,
+              src: "writing",
+              task: "private-task-id",
+              band: "3-5",
+              domain: "Writing",
+              use: "Argue",
+              stage: "independent",
+              kind: "first",
+              supports: {},
+            },
+          ],
+        }),
+      );
+    });
+    await page.go(`${BASE}/family/progress?grades=6-8`);
+    const evidencePanel = page.locator('section[aria-labelledby="ppLanguageEvidence"]');
+    await page.waitForSelector('section[aria-labelledby="ppLanguageEvidence"] li');
+    let report = await evidencePanel.innerText();
+    ok(
+      /revised a response after feedback during writing practice/i.test(report),
+      "P: family report describes a writing revision after feedback",
+    );
+    ok(
+      /tried to explain an idea independently during speaking practice/i.test(report),
+      "P: family report distinguishes an independent speaking attempt",
+    );
+    ok(
+      /practiced how to share information with support in reading/i.test(report),
+      "P: family report describes supported receptive practice",
+    );
+    ok(
+      /tried to tell a sequence in a new listening context/i.test(report),
+      "P: family report describes transfer without a mastery claim",
+    );
+    ok(
+      !/PRIVATE_RESPONSE_SENTINEL|private-task-id|other-band/i.test(report),
+      "P: family report omits response text, task IDs, and other-grade evidence",
+    );
+    ok((await page.overflow()) <= 0, "P: family evidence fits a 375px phone");
+    await axe(page, "family language evidence (English)");
+    await page.locator('.lab-tools [data-lang-mode="es"]').click();
+    await page.waitForFunction(() => document.documentElement.lang === "es");
+    await page.waitForFunction(() =>
+      /revisó una respuesta/.test(
+        document.querySelector('section[aria-labelledby="ppLanguageEvidence"]')?.innerText || "",
+      ),
+    );
+    report = await evidencePanel.innerText();
+    ok(
+      /revisó una respuesta después de recibir comentarios durante la práctica de escritura/i.test(
+        report,
+      ),
+      "P: family evidence is localized in Spanish",
+    );
+    ok(
+      !/PRIVATE_RESPONSE_SENTINEL|private-task-id|independently/i.test(report),
+      "P: Spanish report also omits private evidence fields",
+    );
+    clean(page, "family language evidence");
+    await page.context().close();
+  }
+
   // ── E: phone, large text ──────────────────────────────────────────────────
   {
     const page = await newPage({ width: 320, height: 640 });

@@ -7,7 +7,7 @@ import { loadLedger } from "../lang/ledger.js";
 import { BASE, DOMAIN_META, html, icon, todayISO } from "../util.js";
 import { nextRecognition, recognition, weeklyChallenge } from "./engage.js";
 import { playlistHref, sessionOptions } from "./plan.js";
-import { summarize } from "./summary.js";
+import { summarize, summarizeLanguageEvidence } from "./summary.js";
 import { SKILLS, crumbs, longDate, skillArt, skillIcon, skillName, subnavHTML } from "./ui.js";
 
 function practicedLines(I, latest) {
@@ -64,12 +64,39 @@ function recognitionHTML(I, summary) {
     <p class="fine">${I.L("recog.note")}</p>`;
 }
 
+const USE_LABELS = {
+  Narrate: { en: "tell a sequence", es: "contar una secuencia" },
+  Inform: { en: "share information", es: "compartir información" },
+  Explain: { en: "explain an idea", es: "explicar una idea" },
+  Argue: { en: "support a position", es: "apoyar una postura" },
+};
+
+function languageEvidenceHTML(I, evidence) {
+  if (!evidence.length) return html`<p>${I.L("prog.evidence.empty")}</p>`;
+  const eventKey = {
+    independent: "prog.evidence.independent",
+    supported: "prog.evidence.supported",
+    revision: "prog.evidence.revision",
+    transfer: "prog.evidence.transfer",
+  };
+  return html`<p class="fine">${I.L("prog.evidence.note")}</p>
+    <ul class="fam-lines">${evidence.map((item) => {
+      const vars = {
+        date: { en: longDate({ spanish: false }, item.day), es: longDate({ spanish: true }, item.day) },
+        domain: { en: item.domain.toLowerCase(), es: spanishDomain(item.domain) },
+        use: USE_LABELS[item.use] || { en: "use language", es: "usar el lenguaje" },
+      };
+      return html`<li>${I.L(eventKey[item.event], vars)}</li>`;
+    })}</ul>`;
+}
+
 export async function render(ctx, I) {
   const band = ctx.band;
   const [es, road, ...rowLists] = await Promise.all([loadEsGuide(), loadRoad(), ...ctx.bands.map((b) => bandRows(b))]);
   const bandRowsNow = rowLists[ctx.bands.indexOf(band)] || [];
   const bandRecords = allRecords().filter((r) => r.band === band);
   const summary = summarize(bandRecords, new Map(bandRowsNow.map((r) => [r.id, r])), es);
+  const languageEvidence = summarizeLanguageEvidence(loadLedger().entries, band);
   const challenge = weeklyChallenge(road?.[band], bandRecords, todayISO());
   const justFinished = new URLSearchParams(location.search).get("done") === "1" && summary.latest;
   const alias = getStudentName();
@@ -104,6 +131,7 @@ export async function render(ctx, I) {
       ${justFinished ? html`<section class="panel fam-done" role="status" aria-labelledby="ppDone"><h2 id="ppDone">${icon("check")} ${I.L("session.done.heading")}</h2><p>${I.L("session.done.text")}</p></section>` : ""}
       <div class="fam-prog-grid">
         <section class="panel" aria-labelledby="pp1"><h2 id="pp1">${I.L("prog.practiced.heading")}</h2>${practicedLines(I, summary.latest)}</section>
+        <section class="panel" aria-labelledby="ppLanguageEvidence"><h2 id="ppLanguageEvidence">${I.L("prog.evidence.heading")}</h2>${languageEvidenceHTML(I, languageEvidence)}</section>
         <section class="panel" aria-labelledby="pp2"><h2 id="pp2">${I.L("prog.completed.heading")}</h2>
           <ul class="fam-mini-stats">
             <li><strong>${summary.completed}</strong><span>${I.L("prog.counts.completed")}</span></li>
