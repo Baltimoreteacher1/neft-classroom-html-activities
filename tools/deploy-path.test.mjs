@@ -26,9 +26,9 @@ const prePush = readFileSync(join(ROOT, ".githooks/pre-push"), "utf8");
 const ship = readFileSync(join(ROOT, "scripts/ship.sh"), "utf8");
 const pkg = JSON.parse(readFileSync(join(ROOT, "package.json"), "utf8"));
 
-test("pre-push runs qa:fast -- --push by default and supports qa:loop with QA_FULL=1", () => {
-  assert.match(prePush, /npm run qa:fast -- --push/);
-  assert.match(prePush, /npm run qa:loop/);
+test("pre-push is a deliberate pass-through (local push gate retired 2026-11-05; CI is the gate)", () => {
+  assert.match(prePush, /^exit 0$/m);
+  assert.doesNotMatch(prePush, /npm run qa:/);
 });
 
 test("ship.sh pushes through the pre-push hook rather than bypassing it", () => {

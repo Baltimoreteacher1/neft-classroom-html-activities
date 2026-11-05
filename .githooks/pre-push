@@ -1,32 +1,6 @@
 #!/usr/bin/env bash
-# Auto QA gate (canonical copy — version-controlled).
-# Runs the change-scoped EduWonderLab QA gate before every push (diffed against
-# origin/main...HEAD with default-deny escalation to the full gate). Set
-# QA_FULL=1 to force the full `npm run qa:loop` sweep unconditionally.
-#
-# Install / reinstall into the active hooks path with:  npm run qa:install-hooks
-# Emergency bypass (use sparingly):                      git push --no-verify
-set -uo pipefail
-
-ROOT="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
-cd "$ROOT" || exit 0
-
-if [[ "${QA_FULL:-0}" == "1" ]]; then
-  echo "[pre-push] QA_FULL=1 — running full QA loop before push (npm run qa:loop)..."
-  GATE_CMD=(npm run qa:loop)
-else
-  echo "[pre-push] Running change-scoped QA gate before push (npm run qa:fast -- --push)..."
-  GATE_CMD=(npm run qa:fast -- --push)
-fi
-
-if "${GATE_CMD[@]}"; then
-  echo "[pre-push] QA gate PASSED — allowing push."
-  exit 0
-else
-  echo "" >&2
-  echo "[pre-push] QA gate FAILED — push aborted." >&2
-  echo "  Fix the failing check(s) above, then push again." >&2
-  echo "  Pushing to main triggers a live Cloudflare deploy, so this gate is intentional." >&2
-  echo "  Emergency bypass (not recommended): git push --no-verify" >&2
-  exit 1
-fi
+# Pre-push gate: intentionally a pass-through.
+# Joel retired the local push-time QA gate on 2026-11-05. The full Pre-Deploy
+# Gate still runs in CI on every push, and the qa:fast / qa:loop scripts remain
+# available to run by hand. To restore the local gate, revert this file.
+exit 0
