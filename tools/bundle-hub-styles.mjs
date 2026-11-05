@@ -66,7 +66,7 @@ function urlsAreAbsolute(css) {
 
 /**
  * The sheet's text as it will be bundled, or null when it must stay its own
- * request. A leading `@import url("/assets/….css")` is inlined (it is the same
+ * request. Leading `@import url("/assets/….css")` rules are inlined (it is the same
  * rules, one request instead of a serial chain), provided the imported sheet
  * has only absolute url() values and no imports of its own.
  */
@@ -75,14 +75,20 @@ function bundledText(href, distPath) {
   let css = readFileSync(distPath, "utf8");
   const lead = css.match(/^(\s*(?:\/\*[\s\S]*?\*\/\s*)*)/)[1];
   const rest = css.slice(lead.length);
-  const imp = rest.match(IMPORT_RE);
-  if (imp) {
+  /* Every LEADING import is inlined, in order. Inlining only the first left the rest in
+   * the middle of the bundle, where @import is invalid and silently ignored: the design
+   * tokens (assets/dimension.css) never loaded on the hub pages. */
+  let tail = rest;
+  let inlined = "";
+  for (let imp = tail.match(IMPORT_RE); imp; imp = tail.match(IMPORT_RE)) {
     const target = join(DIST, imp[1].replace(/^\//, ""));
     if (!existsSync(target)) return null;
     const imported = readFileSync(target, "utf8");
     if (/@import\b|@charset\b/.test(imported) || !urlsAreAbsolute(imported)) return null;
-    css = `${lead}/* ===== inlined @import ${imp[1]} ===== */\n${imported}\n${rest.slice(imp[0].length)}`;
+    inlined += `/* ===== inlined @import ${imp[1]} ===== */\n${imported}\n`;
+    tail = tail.slice(imp[0].length);
   }
+  css = `${lead}${inlined}${tail}`;
   if (/^\s*(\/\*[\s\S]*?\*\/\s*)*@(import|charset)\b/.test(css.slice(0, 400))) return null;
   if (/^\/assets\/[^/]+\.css$/.test(href)) return css;
   // A sheet in a subdirectory (/assets/ewl/…, /assets/my-progress/…) may only
