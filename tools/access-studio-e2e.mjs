@@ -428,6 +428,66 @@ ok(
   (await page.locator("h1").innerText()).includes("Saving the School Garden"),
   "grade 3–5 garden mission opens from its deep link",
 );
+
+// A second original grade 3–5 mission uses the same connected listening → reading → decision
+// path. Check its authored evidence is reachable through the actual renderer, not only the JSON gate.
+const priorShadeTestState = await page.evaluate(
+  (keys) => Object.fromEntries(keys.map((k) => [k, localStorage.getItem(k)])),
+  [LEDGER, STUDIO],
+);
+await go(`${BASE}/missions/shade-for-outdoor-learning?grades=3-5`);
+ok(
+  (await page.locator("h1").innerText()).includes("Shade for Outdoor Learning") &&
+    (await page.locator(".mission-steps li").count()) >= 5,
+  "second grade 3–5 mission opens with its full learning path",
+);
+await page.locator('[data-q="shade-l-q1"][value="a"]').check();
+await page.locator('[data-check-q="shade-l-q1"]').click();
+for (const id of ["sh-cloth", "sh-week", "sh-open"])
+  await page.locator(`[data-ev="shade-l-ev"][value="${id}"]`).check();
+await page.locator('[data-check-ev="shade-l-ev"]').click();
+for (const [id, answer] of [
+  ["shade-r-q1", "a"],
+  ["shade-r-q2", "b"],
+  ["shade-r-q3", "a"],
+]) {
+  await page.locator(`[data-q="${id}"][value="${answer}"]`).check();
+  await page.locator(`[data-check-q="${id}"]`).click();
+}
+ok(
+  (await page.locator(".mission-phase h2").innerText()).includes("Choose a safe first test"),
+  "second grade 3–5 mission advances from listening evidence through reading",
+);
+await page.locator('[data-decision="choose"][value="bench"]').click();
+await page.locator('a[href*="speak/shade-speak-plan"]').click();
+ok(
+  (await page.locator("h1").innerText()).includes("Brief the courtyard team") &&
+    (await page.locator("body").innerText()).includes("26°C"),
+  "second grade 3–5 mission connects its decision to the speaking task and evidence",
+);
+await go(`${BASE}/missions/shade-for-outdoor-learning?phase=write&grades=3-5`);
+await page.locator('a[href*="write/shade-write-plan"]').click();
+ok(
+  (await page.locator("body").innerText()).includes(
+    "Recommend one safe first test for the courtyard",
+  ),
+  "second grade 3–5 mission opens its original writing application",
+);
+await go(`${BASE}/missions/shade-for-outdoor-learning?phase=transfer&grades=3-5`);
+await page.locator('a[href*="write/shade-transfer-playground"]').click();
+ok(
+  (await page.locator("body").innerText()).includes("Explain what the playground test suggests") &&
+    (await page.locator('.stage-picker input[value="independent"]').isChecked()),
+  "second grade 3–5 mission offers a fresh-context independent writing transfer",
+);
+await page.evaluate(
+  ({ keys, state }) =>
+    keys.forEach((k) =>
+      state[k] === null ? localStorage.removeItem(k) : localStorage.setItem(k, state[k]),
+    ),
+  { keys: [LEDGER, STUDIO], state: priorShadeTestState },
+);
+await go(`${BASE}/missions/saving-the-school-garden?grades=3-5`);
 await page.locator('[data-q="garden-l-q1"][value="a"]').check();
 await page.locator('[data-check-q="garden-l-q1"]').click();
 for (const id of ["g-leaves", "g-week", "g-flowers"])
@@ -1199,14 +1259,18 @@ await go(`${BASE}/missions`);
 await axeCheck("missions hub");
 await go(`${BASE}/missions?grades=3-5`);
 ok(
-  (await page.locator(".mission-card").count()) === 1 &&
-    (await bodyText()).includes("Saving the School Garden"),
-  "grade 3–5 mission hub lists its original connected mission",
+  (await page.locator(".mission-card").count()) === 2 &&
+    (await bodyText()).includes("Saving the School Garden") &&
+    (await bodyText()).includes("Shade for Outdoor Learning"),
+  "grade 3–5 mission hub lists both original connected missions",
 );
 await axeCheck("grade 3–5 mission hub");
 await go(`${BASE}/missions/saving-the-school-garden?phase=listen&grades=3-5`);
 await axeCheck("grade 3–5 mission phase");
 await capture("garden-mission-desktop.png");
+await go(`${BASE}/missions/shade-for-outdoor-learning?phase=listen&grades=3-5`);
+await axeCheck("grade 3–5 shade mission phase");
+await capture("shade-mission-desktop.png");
 await go(`${BASE}/missions/watershed-mystery`);
 await axeCheck("mission phase");
 await go(`${BASE}/growth`);
@@ -1248,6 +1312,7 @@ for (const p of [
   `${BASE}/detective`,
   `${BASE}/missions/watershed-mystery`,
   `${BASE}/missions/saving-the-school-garden?grades=3-5`,
+  `${BASE}/missions/shade-for-outdoor-learning?grades=3-5`,
   `${BASE}/growth`,
   `${BASE}/passport`,
   `${BASE}/diagnostic/Listening`,
@@ -1264,6 +1329,8 @@ for (const p of [
     await capture(`${p === `${BASE}/` ? "home" : p.slice(BASE.length + 1)}-mobile.png`);
   if (p.startsWith(`${BASE}/missions/saving-the-school-garden`))
     await capture("garden-mission-mobile.png");
+  if (p.startsWith(`${BASE}/missions/shade-for-outdoor-learning`))
+    await capture("shade-mission-mobile.png");
   const over = await page.evaluate(
     () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
   );

@@ -94,6 +94,12 @@ Human ESOL/science editorial review is still required. This single mission begin
 
 Implementation: `access-practice-lab/content/missions/saving-the-school-garden.json`, generated content indexes, `access-practice-lab/src/views/missions.js`, and `tools/access-studio-e2e.mjs` / `tools/access-alignment.test.mjs`.
 
+## Local increment: second original grade 3–5 Language Mission
+
+Added “Shade for Outdoor Learning,” an original science-context mission that connects listening to courtyard observations, reading a science note and temperature table, a constrained decision, a recorded explanation, a written recommendation, and a fresh playground transfer prompt. The mission uses the existing local mission state, studio, and Passport contracts; its transfer opens independently by default and remains overridable. The grade 3–5 mission hub now lists both original missions. Generated content indexes report eight missions total, including two for grades 3–5.
+
+Verification: the mission schema and answer/evidence rules pass `validate:access-studio`; `validate:access-lab`, `validate:access-quality`, and the generated index consistency check pass. The expanded studio browser suite completed the new mission path, including listening evidence, reading, decision, speaking and writing links, and independent transfer; its accessibility scan passed WCAG 2.2 AA and its 375px page had no horizontal overflow or browser errors. Screenshots are saved at `/tmp/access-practice-lab-visual-qa/shade-mission-desktop.png` and `shade-mission-mobile.png`. Human ESOL/science editorial review remains pending; automated validation does not establish full content quality or WIDA alignment. This increment is local and not yet deployed.
+
 ## This turn: mission-to-studio scaffold handoff
 
 | Feature | Existing implementation | Gap | Target behavior | Dependencies | Acceptance tests | Status |
