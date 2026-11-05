@@ -37,6 +37,8 @@ The live baseline already contains a guided six-step Learning Journey, the four-
 
 The current student/family local-first product is deployed and the scoped ACCESS release gate passes. The product is **not premium-ready** against the full master directive: authenticated teacher evidence loops, production identity and tenancy, paid entitlements and billing, complete cross-domain coverage, expert content review, and legal/privacy approval are outstanding. Keep paid offers and server-backed student workflows disabled. This audit did not publish a docs-only or no-op production release.
 
+The source-backed privacy readiness assessment is available at [Student data privacy review](</Users/joelneft/reports/Student data privacy review.md>). It identifies FERPA, COPPA, Maryland and BCPSS review gates; it is not a legal opinion or compliance certification.
+
 ## Product and release baseline
 
 - Repository: `neft-classroom-html-activities`, static HTML/ES modules, Vite, Cloudflare Pages (`dist`); production route is `/access-practice-lab/` and deep links are served by the Pages Function.
