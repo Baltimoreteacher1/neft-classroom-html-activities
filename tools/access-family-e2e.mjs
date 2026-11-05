@@ -502,6 +502,30 @@ try {
           v: 1,
           entries: [
             {
+              id: "growth-supported",
+              t: new Date(Date.now() - 7 * 86400000).toISOString(),
+              src: "writing",
+              task: "private-earlier-task",
+              band: "6-8",
+              domain: "Writing",
+              use: "Explain",
+              stage: "supported",
+              kind: "first",
+              supports: { frames: true },
+            },
+            {
+              id: "growth-independent",
+              t: new Date(Date.now() - 3600000).toISOString(),
+              src: "writing",
+              task: "private-later-task",
+              band: "6-8",
+              domain: "Writing",
+              use: "Explain",
+              stage: "independent",
+              kind: "first",
+              supports: {},
+            },
+            {
               id: "fixture-1",
               t: now,
               src: "writing",
@@ -595,6 +619,19 @@ try {
       /tried to tell a sequence in a new listening context/i.test(report),
       "P: family report describes transfer without a mastery claim",
     );
+    const growthPanel = page.locator('section[aria-labelledby="ppLanguageGrowth"]');
+    ok(
+      (await growthPanel.count()) === 1 &&
+        /practiced how to explain an idea in writing with support/i.test(
+          await growthPanel.innerText(),
+        ) &&
+        /tried it independently in a different activity/i.test(await growthPanel.innerText()),
+      "P: family growth narrative compares supported and later independent practice for the same function",
+    );
+    ok(
+      !/private-earlier-task|private-later-task/.test(await growthPanel.innerText()),
+      "P: family growth narrative omits activity identifiers",
+    );
     const nextCard = page.locator('section[aria-labelledby="pp5"]');
     const nextLink = nextCard.locator("a.btn-primary");
     ok(
@@ -625,6 +662,12 @@ try {
         report,
       ),
       "P: family evidence is localized in Spanish",
+    );
+    ok(
+      /practicó cómo explicar una idea en escritura con apoyo/i.test(
+        await growthPanel.innerText(),
+      ) && /lo intentó sin ayuda en otra actividad/i.test(await growthPanel.innerText()),
+      "P: family growth narrative is localized in Spanish",
     );
     ok(
       !/PRIVATE_RESPONSE_SENTINEL|private-task-id|independently/i.test(report),

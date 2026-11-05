@@ -268,6 +268,19 @@ export const STRINGS = {
     "{date}: tried to {use} in a new {domain} context.",
     "{date}: intentó {use} en un contexto nuevo de {domain}.",
   ),
+  "prog.growth.heading": s("A change we can see", "Un cambio que podemos observar"),
+  "prog.growth.note": s(
+    "These examples show how the practice changed. They do not tell us whether every response was correct.",
+    "Estos ejemplos muestran cómo cambió la práctica. No indican si todas las respuestas fueron correctas.",
+  ),
+  "prog.growth.independent": s(
+    "On {earlier}, your child practiced how to {use} in {domain} with support. On {later}, they tried it independently in a different activity.",
+    "El {earlier}, su hijo o hija practicó cómo {use} en {domain} con apoyo. El {later}, lo intentó sin ayuda en otra actividad.",
+  ),
+  "prog.growth.transfer": s(
+    "On {earlier}, your child practiced how to {use} in {domain} with support. On {later}, they tried it independently in a new context.",
+    "El {earlier}, su hijo o hija practicó cómo {use} en {domain} con apoyo. El {later}, lo intentó sin ayuda en un contexto nuevo.",
+  ),
   "prog.practiced.today": s("Most recent practice", "Práctica más reciente"),
   "prog.practiced.line": s(
     "On {date} your child practiced {skill} in a {domain} activity.",

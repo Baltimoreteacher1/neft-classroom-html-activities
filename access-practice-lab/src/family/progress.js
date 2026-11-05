@@ -8,6 +8,7 @@ import { BASE, DOMAIN_META, html, icon, todayISO } from "../util.js";
 import { nextRecognition, recognition, weeklyChallenge } from "./engage.js";
 import { playlistHref, sessionOptions } from "./plan.js";
 import { familyNextStep } from "./next-step.js";
+import { familyGrowthEvidence } from "./growth.js";
 import { summarize, summarizeLanguageEvidence } from "./summary.js";
 import { SKILLS, crumbs, longDate, skillArt, skillIcon, skillName, subnavHTML } from "./ui.js";
 
@@ -91,6 +92,20 @@ function languageEvidenceHTML(I, evidence) {
     })}</ul>`;
 }
 
+function growthEvidenceHTML(I, evidence) {
+  if (!evidence.length) return "";
+  return html`<section class="panel" aria-labelledby="ppLanguageGrowth">
+    <h2 id="ppLanguageGrowth">${I.L("prog.growth.heading")}</h2>
+    <p class="fine">${I.L("prog.growth.note")}</p>
+    <ul class="fam-lines">${evidence.map((item) => html`<li>${I.L(item.transfer ? "prog.growth.transfer" : "prog.growth.independent", {
+      domain: domainVars(item.domain),
+      use: USE_LABELS[item.use] || { en: "use language", es: "usar el lenguaje" },
+      earlier: { en: longDate({ spanish: false }, item.earlierDay), es: longDate({ spanish: true }, item.earlierDay) },
+      later: { en: longDate({ spanish: false }, item.laterDay), es: longDate({ spanish: true }, item.laterDay) },
+    })}</li>`)}</ul>
+  </section>`;
+}
+
 export async function render(ctx, I) {
   const band = ctx.band;
   const [es, road, ...rowLists] = await Promise.all([loadEsGuide(), loadRoad(), ...ctx.bands.map((b) => bandRows(b))]);
@@ -99,6 +114,7 @@ export async function render(ctx, I) {
   const summary = summarize(bandRecords, new Map(bandRowsNow.map((r) => [r.id, r])), es);
   const ledgerEntries = loadLedger().entries.filter((entry) => entry.band === band);
   const languageEvidence = summarizeLanguageEvidence(ledgerEntries, band);
+  const growthEvidence = familyGrowthEvidence(ledgerEntries, band);
   const nextStep = familyNextStep(bandRowsNow, ledgerEntries, band);
   const challenge = weeklyChallenge(road?.[band], bandRecords, todayISO());
   const justFinished = new URLSearchParams(location.search).get("done") === "1" && summary.latest;
@@ -135,6 +151,7 @@ export async function render(ctx, I) {
       <div class="fam-prog-grid">
         <section class="panel" aria-labelledby="pp1"><h2 id="pp1">${I.L("prog.practiced.heading")}</h2>${practicedLines(I, summary.latest)}</section>
         <section class="panel" aria-labelledby="ppLanguageEvidence"><h2 id="ppLanguageEvidence">${I.L("prog.evidence.heading")}</h2>${languageEvidenceHTML(I, languageEvidence)}</section>
+        ${growthEvidenceHTML(I, growthEvidence)}
         <section class="panel" aria-labelledby="pp2"><h2 id="pp2">${I.L("prog.completed.heading")}</h2>
           <ul class="fam-mini-stats">
             <li><strong>${summary.completed}</strong><span>${I.L("prog.counts.completed")}</span></li>
