@@ -257,6 +257,58 @@ ok(
   Boolean(spk[0]?.m?.spk) || take0.audio?.reason === "too-quiet",
   "speaking take carries on-device audio measures (or an honest quiet-mic result with the fake microphone)",
 );
+ok(
+  (await page.locator("[data-speaking-focus]").count()) > 0 &&
+    (await page.locator("[data-again]").isDisabled()),
+  "speaking feedback offers evidence-linked next-take focuses and requires a choice",
+);
+ok(
+  (await page.locator("[data-speaking-focus][data-focus-label-es]").count()) > 0 &&
+    (
+      await page
+        .locator("[data-speaking-focus][data-focus-label-es]")
+        .first()
+        .getAttribute("data-focus-label-es")
+    )?.length > 0,
+  "speaking next-take choices carry accessible Spanish labels",
+);
+const focusChoice = page.locator("[data-speaking-focus]").first();
+const focusId = await focusChoice.getAttribute("value");
+const focusLabel = await focusChoice.getAttribute("data-focus-label-en");
+await focusChoice.check();
+ok(
+  !(await page.locator("[data-again]").isDisabled()),
+  "choosing a focus enables a new speaking take",
+);
+await page.locator("[data-again]").click();
+await page.locator("[data-rec-start]").click();
+await page.waitForSelector("[data-rec-stop]");
+await page.waitForTimeout(1800);
+await page.locator("[data-rec-stop]").click();
+await page.waitForTimeout(100);
+await page
+  .locator("[data-transcript]")
+  .fill(
+    "First, the seeds were planted in cups. Then they were watered every day because water helps them grow. After ten days, one seedling grew taller, so the observations show that water supported plant growth.",
+  );
+await page.locator("[data-analyze]").click();
+await page.waitForSelector(".revision-coach-card");
+const speakingStateAfterRevision = Object.values((await store(STUDIO)).speaking)[0];
+const take1 = speakingStateAfterRevision.takes.at(-1);
+ok(
+  take1.focusId === focusId &&
+    take1.focusLabel?.[0] === focusLabel &&
+    (await page.locator(".compare-cell").count()) === 2 &&
+    (await page.locator(".compare").innerText()).includes(focusLabel) &&
+    !/undefineds/.test(await page.locator("#spk-coach").innerText()),
+  "new speaking take visibly retains the selected focus beside a playable comparison without false audio measures",
+);
+ledger = await store(LEDGER);
+const revisedSpeaking = ledger.entries.filter((e) => e.src === "speaking");
+ok(
+  revisedSpeaking.length === 2 && revisedSpeaking.at(-1).kind === "revision",
+  "the new recording and transcript create a fresh revision evidence event",
+);
 for (const c of ["lc", "vu", "lctl"])
   await page.locator(`input[data-rubric="${c}"][value="building"]`).check();
 await page.locator("[data-finish]").click();

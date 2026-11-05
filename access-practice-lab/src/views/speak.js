@@ -281,9 +281,10 @@ function takeRowHTML(t, i, task, state) {
   </li>`;
 }
 
-function compareHTML(takes) {
-  const cell = (label, labelEs, ariaEn, ariaEs, t, n) =>
-    html`<figure class="compare-cell">
+function compareHTML(takes, state) {
+  const cell = (label, labelEs, ariaEn, ariaEs, t, n) => {
+    const focusLabel = state.takes.find((saved) => saved.id === t.id)?.focusLabel;
+    return html`<figure class="compare-cell">
       <figcaption>${I.T(label, labelEs)} · ${t.seconds}s</figcaption>
       ${raw(waveformSVG(t.env))}<audio
         controls
@@ -292,7 +293,9 @@ function compareHTML(takes) {
         src="${t.url}"
       ></audio
       ><span class="fine">${I.T(`Try ${n}`, `Intento ${n}`)}</span>
+      ${focusLabel ? html`<p class="fine">${I.T("Focus for this try:", "Enfoque de este intento:")} ${I.T(focusLabel[0], focusLabel[1])}</p>` : ""}
     </figure>`;
+  };
   return html`<section class="compare" aria-label="${I.S("Compare your tries", "Compara tus intentos")}">
     <h4>${I.T("Compare your tries", "Compara tus intentos")}</h4>
     <p class="fine">
@@ -302,6 +305,63 @@ function compareHTML(takes) {
       ${cell("Oldest saved try", "Intento guardado más antiguo", "Play oldest saved try", "Reproducir el intento guardado más antiguo", takes[0], 1)}${cell("Latest try", "Último intento", "Play latest try", "Reproducir el último intento", takes.at(-1), takes.length)}
     </div>
   </section>`;
+}
+
+const FALLBACK_FOCI = {
+  retell: [["Make the order clear with a time word.", "Aclara el orden con una palabra de tiempo."], ["Add one detail that helps the listener picture the event.", "Agrega un detalle que ayude a imaginar el suceso."]],
+  describe: [["Add a precise detail about what you notice.", "Agrega un detalle preciso sobre lo que observas."], ["Organize details so a listener can follow.", "Ordena los detalles para que quien escucha pueda seguirlos."]],
+  compare: [["Name one specific similarity or difference.", "Nombra una semejanza o diferencia específica."], ["Connect both items in the same explanation.", "Conecta ambos elementos en la misma explicación."]],
+  explain: [["Connect a detail to your explanation.", "Conecta un detalle con tu explicación."], ["Add a reason that answers how or why.", "Agrega una razón que responda cómo o por qué."]],
+  argue: [["Connect evidence to your position.", "Conecta la evidencia con tu postura."], ["Explain why your reason supports your position.", "Explica por qué tu razón apoya tu postura."]],
+  discuss: [["Answer your partner's whole question.", "Responde toda la pregunta de tu compañero o compañera."], ["Add a detail or ask a useful follow-up.", "Agrega un detalle o haz una pregunta útil para continuar."]],
+};
+
+const FOCUS_ES = {
+  orient: ["Ubica la escena", "¿Dónde y cuándo sucede, y quién está presente?"],
+  sequence: ["Ordena los sucesos", "¿Qué palabra muestra lo que pasó primero, después y al final?"],
+  events: ["Cuenta lo que pasó", "¿Qué hicieron los personajes? Usa verbos de acción en pasado."],
+  response: ["Explica cómo terminó o qué significó", "¿Cómo terminó o qué aprendió o sintió el personaje?"],
+  topic: ["Nombra y define el tema", "¿Cuál es el tema y qué tipo de cosa es?"],
+  details: ["Agrega detalles específicos", "¿Qué dato, número o ejemplo ayudaría a imaginarlo?"],
+  organize: ["Agrupa ideas con palabras clave", "¿Cómo se conectan tus detalles? Agrega una palabra que lo indique."],
+  close: ["Cierra con la idea principal", "¿Qué es lo principal que quieres que recuerde quien escucha?"],
+  phenomenon: ["Nombra lo que explicas", "¿Qué pasó o cómo funciona?"],
+  cause: ["Conecta causa y efecto", "¿Qué lo causó y qué pasó por eso?"],
+  chain: ["Conecta varios pasos", "¿Qué pasó después de ese efecto? Agrega el siguiente paso."],
+  support: ["Apoya la explicación con datos", "¿Qué dato o fuente demuestra que es cierto?"],
+  develop: ["Desarrolla una idea", "¿Qué detalle, ejemplo o razón ayudaría a comprender mejor la idea?"],
+  "use-source": ["Usa evidencia de la fuente", "¿Qué dato o frase exacta demuestra tu punto?"],
+  "check-number": ["Comprueba un número con la fuente", "¿De dónde viene este número?"],
+  "link-ideas": ["Conecta tus ideas", "¿Las ideas muestran causa, contraste, adición o ejemplo?"],
+  combine: ["Combina dos ideas", "¿Qué palabra puede unir las ideas, como porque, aunque o pero?"],
+  "vary-openers": ["Varía cómo empiezan las oraciones", "¿Cómo podrías empezar con un tiempo, lugar o razón?"],
+  "precise-words": ["Elige una palabra más precisa", "¿Qué palabra expresa tu idea con mayor exactitud?"],
+  "try-bank": ["Prueba una palabra del banco", "¿Hay una palabra del banco que exprese tu idea con más exactitud?"],
+  claim: ["Presenta una postura clara", "¿Cuál es tu postura en una oración clara?"],
+  reason: ["Da una razón", "¿Por qué piensas eso?"],
+  evidence: ["Usa evidencia", "¿Qué dato o frase de la fuente apoya tu razón?"],
+  counter: ["Considera otra perspectiva", "¿Qué diría alguien que no está de acuerdo?"],
+  restate: ["Vuelve a la postura al terminar", "¿Cómo puedes terminar recordando tu postura?"],
+};
+
+function focusCopy(move) {
+  const id = move.id.startsWith("move-") ? move.id.slice(5) : move.id;
+  if (move.id.startsWith("fix-")) return { label: [move.title, "Revisa un patrón de oración"], prompt: [move.ask, "Lee esa parte en voz alta. ¿Qué palabra podrías cambiar para que la oración quede clara?"] };
+  const es = FOCUS_ES[id];
+  return { label: [move.title, es?.[0] || "Haz más clara la conexión entre tus ideas"], prompt: [move.ask, es?.[1] || "¿Qué cambio ayudaría a que quien escucha comprenda mejor tu idea?"] };
+}
+
+function nextTakeFocusOptions(task, analysis) {
+  const moves = (analysis.nextMoves || []).slice(0, 2).map((move) => ({
+    id: String(move.id),
+    ...focusCopy(move),
+  }));
+  if (moves.length) return moves;
+  return (FALLBACK_FOCI[task.taskType] || FALLBACK_FOCI.explain).map(([en, es], index) => ({
+    id: `focus-${task.taskType}-${index + 1}`,
+    label: [en, es],
+    prompt: [en, es],
+  }));
 }
 
 function recorderBlock(task, state) {
@@ -375,7 +435,7 @@ function recorderBlock(task, state) {
           </ol>`
         : ""
     }
-    ${takes.length > 1 ? compareHTML(takes) : ""}
+    ${takes.length > 1 ? compareHTML(takes, state) : ""}
   </section>`;
 }
 
@@ -442,6 +502,8 @@ function resultsHTML(task, state, take, prev) {
   const delta = prev?.transcript
     ? compareDrafts(prev.transcript, take.transcript, optsFor(task))
     : null;
+  const focusOptions = nextTakeFocusOptions(task, a);
+  const focusSelected = focusOptions.some((focus) => focus.id === state.nextTakeFocus);
   return html`<section class="panel" id="spk-coach">
       <h3><span class="step-badge">4</span> ${I.T("What your speaking shows", "Lo que muestra tu habla")}</h3>
       ${feedbackHTML(a, take.transcript, { patternHref: (id) => `${BASE}/detective/${id}?grades=${S.band}`, i18n: I })}
@@ -450,7 +512,7 @@ function resultsHTML(task, state, take, prev) {
           ? html`<div class="revision-coach-card card">
               <h4>${icon("growth")} ${I.T("Compared with your last try", "Comparado con tu último intento")}</h4>
               <ul>
-                ${delta.changes.map((c) => html`<li>${c.label}: ${c.from} → ${c.to} ${c.better ? icon("star") : ""}</li>`)}${delta.gainedMoves.map((m) => html`<li>${I.T(`New: ${m.toLowerCase()}`, `Nuevo: ${m.toLowerCase()}`)} ${icon("star")}</li>`)}${prev.audio && take.audio ? html`<li>${I.T(`Speaking time: ${prev.audio.speechSeconds}s → ${take.audio.speechSeconds}s`, `Tiempo hablando: ${prev.audio.speechSeconds}s → ${take.audio.speechSeconds}s`)}</li>` : ""}
+                ${delta.changes.map((c) => html`<li>${c.label}: ${c.from} → ${c.to} ${c.better ? icon("star") : ""}</li>`)}${delta.gainedMoves.map((m) => html`<li>${I.T(`New: ${m.toLowerCase()}`, `Nuevo: ${m.toLowerCase()}`)} ${icon("star")}</li>`)}${prev.audio?.ok && take.audio?.ok && Number.isFinite(prev.audio.speechSeconds) && Number.isFinite(take.audio.speechSeconds) ? html`<li>${I.T(`Speaking time: ${prev.audio.speechSeconds}s → ${take.audio.speechSeconds}s`, `Tiempo hablando: ${prev.audio.speechSeconds}s → ${take.audio.speechSeconds}s`)}</li>` : ""}
               </ul>
             </div>`
           : ""
@@ -458,6 +520,13 @@ function resultsHTML(task, state, take, prev) {
     </section>
     <section class="panel" id="spk-review">
       <h3><span class="step-badge">5</span> ${I.T("Review your speaking", "Revisa tu habla")}</h3>
+      <fieldset class="spk-next-focus">
+        <legend>${I.T("Choose one idea to try in your next recording", "Elige una idea para probar en tu próxima grabación")}</legend>
+        ${focusOptions.map((focus) => html`<label class="spk-focus-option">
+          <input type="radio" name="next-speaking-focus" data-speaking-focus="${focus.id}" data-focus-label-en="${focus.label[0]}" data-focus-label-es="${focus.label[1]}" value="${focus.id}" ${state.nextTakeFocus === focus.id ? raw("checked") : ""} />
+          <span><strong>${I.T(...focus.label)}</strong>${focus.prompt && focus.prompt[0] !== focus.label[0] ? html`<span class="fine">${I.T(...focus.prompt)}</span>` : ""}</span>
+        </label>`)}
+      </fieldset>
       ${rubricHTML(take.selfReview || emptyReview(), { modality: "speaking", prefix: `self-${take.id}`, i18n: I })}
       <div class="row-actions">
         <button
@@ -468,8 +537,8 @@ function resultsHTML(task, state, take, prev) {
         >
           ${I.T("Save my review", "Guardar mi revisión")}
         </button>
-        <button type="button" class="btn" data-again>
-          ${icon("retry")} ${I.T("Record again to improve", "Grabar otra vez para mejorar")}
+        <button type="button" class="btn" data-again ${focusSelected ? "" : raw("disabled")}>
+          ${icon("retry")} ${I.T("Record again to try this focus", "Grabar otra vez para probar este enfoque")}
         </button>
       </div>
       ${take.finished ? html`<p class="saved-note">${icon("check")} ${I.T("Saved. This is practice evidence, not a score.", "Guardado. Esto es evidencia de práctica, no un puntaje.")}</p>` : ""}
@@ -697,7 +766,14 @@ export async function onRecorded(key, ctx) {
   if (!t || S.state.takes.some((x) => x.id === t.id)) return;
   lockStage();
   const audio = t.env?.length ? summarizeEnvelope(t.env, t.fps) : null;
-  addTake(S.state, { id: t.id, seconds: t.seconds, audio, extra: {} });
+  addTake(S.state, {
+    id: t.id,
+    seconds: t.seconds,
+    audio,
+    extra: S.state.nextTakeFocus ? { focusId: S.state.nextTakeFocus, focusLabel: S.state.nextTakeFocusLabel } : {},
+  });
+  S.state.nextTakeFocus = "";
+  S.state.nextTakeFocusLabel = null;
   S.state.rehearsed = S.state.rehearsed || false;
   save();
   I = i18nFor(ctx);
@@ -766,6 +842,14 @@ export function onChange(e, ctx) {
       }
     }
     ctx.rerender();
+    return;
+  }
+  if (t.matches("[data-speaking-focus]")) {
+    S.state.nextTakeFocus = t.value;
+    S.state.nextTakeFocusLabel = [t.dataset.focusLabelEn || "", t.dataset.focusLabelEs || ""];
+    save();
+    const again = document.querySelector("[data-again]");
+    if (again) again.disabled = !document.querySelector("[data-speaking-focus]:checked");
   }
 }
 
@@ -830,12 +914,16 @@ export function onClick(e, ctx) {
   const t = e.target;
   if (t.closest("[data-manual-take]")) {
     lockStage();
+    const extra = S.state.nextTakeFocus ? { focusId: S.state.nextTakeFocus, focusLabel: S.state.nextTakeFocusLabel } : { manual: true };
+    extra.manual = true;
     addTake(S.state, {
       id: `m${Date.now().toString(36)}`,
       seconds: 0,
       audio: null,
-      extra: { manual: true },
+      extra,
     });
+    S.state.nextTakeFocus = "";
+    S.state.nextTakeFocusLabel = null;
     save();
     announce(I.S("Now type what you said.", "Ahora escribe lo que dijiste."));
     ctx.rerender();
