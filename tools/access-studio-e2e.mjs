@@ -532,6 +532,69 @@ ok(
     (await page.locator('.stage-picker input[value="independent"]').isChecked()),
   "second grade 3–5 mission offers a fresh-context independent writing transfer",
 );
+
+// The third grade 3–5 mission adds an original literacy/community context while using the
+// established evidence → decision → speaking/writing → fresh transfer contracts.
+const priorNookTestState = await page.evaluate(
+  (keys) => Object.fromEntries(keys.map((k) => [k, localStorage.getItem(k)])),
+  [LEDGER, STUDIO],
+);
+await go(`${BASE}/missions/welcoming-reading-nook?grades=3-5`);
+ok(
+  (await page.locator("h1").innerText()).includes("A Welcoming Reading Nook") &&
+    (await page.locator(".mission-steps li").count()) >= 5,
+  "third grade 3–5 mission opens with its full learning path",
+);
+await page.locator('[data-q="nook-l-q1"][value="a"]').check();
+await page.locator('[data-check-q="nook-l-q1"]').click();
+for (const id of ["nook-small", "nook-items", "nook-path"])
+  await page.locator(`[data-ev="nook-l-ev"][value="${id}"]`).check();
+await page.locator('[data-check-ev="nook-l-ev"]').click();
+for (const [id, answer] of [
+  ["nook-r-q1", "a"],
+  ["nook-r-q2", "b"],
+  ["nook-r-q3", "c"],
+]) {
+  await page.locator(`[data-q="${id}"][value="${answer}"]`).check();
+  await page.locator(`[data-check-q="${id}"]`).click();
+}
+if (await page.locator('[data-q="nook-r-q4"][value="a"]').isVisible()) {
+  await page.locator('[data-q="nook-r-q4"][value="a"]').check();
+  await page.locator('[data-check-q="nook-r-q4"]').click();
+}
+ok(
+  (await page.locator(".mission-phase h2").innerText()).includes(
+    "Choose a first reading-corner trial",
+  ),
+  "third grade 3–5 mission connects listening evidence and survey reading",
+);
+await page.locator('[data-decision="choose"][value="flexible"]').click();
+await page.locator('a[href*="speak/nook-speak-plan"]').click();
+ok(
+  (await page.locator("h1").innerText()).includes("Share the nook plan") &&
+    (await page.locator("body").innerText()).includes("11 students"),
+  "third grade 3–5 mission connects its decision to the speaking studio",
+);
+await go(`${BASE}/missions/welcoming-reading-nook?phase=write&grades=3-5`);
+await page.locator('a[href*="write/nook-write-recommendation"]').click();
+ok(
+  (await page.locator("body").innerText()).includes("Recommend a first setup for the reading nook"),
+  "third grade 3–5 mission opens its original writing application",
+);
+await go(`${BASE}/missions/welcoming-reading-nook?phase=transfer&grades=3-5`);
+await page.locator('a[href*="write/nook-transfer-community-center"]').click();
+ok(
+  (await page.locator("body").innerText()).includes("Plan a shared art table") &&
+    (await page.locator('.stage-picker input[value="independent"]').isChecked()),
+  "third grade 3–5 mission opens an independent new-context transfer",
+);
+await page.evaluate(
+  ({ keys, state }) =>
+    keys.forEach((k) =>
+      state[k] === null ? localStorage.removeItem(k) : localStorage.setItem(k, state[k]),
+    ),
+  { keys: [LEDGER, STUDIO], state: priorNookTestState },
+);
 await page.evaluate(
   ({ keys, state }) =>
     keys.forEach((k) =>
@@ -1311,10 +1374,11 @@ await go(`${BASE}/missions`);
 await axeCheck("missions hub");
 await go(`${BASE}/missions?grades=3-5`);
 ok(
-  (await page.locator(".mission-card").count()) === 2 &&
+  (await page.locator(".mission-card").count()) === 3 &&
     (await bodyText()).includes("Saving the School Garden") &&
-    (await bodyText()).includes("Shade for Outdoor Learning"),
-  "grade 3–5 mission hub lists both original connected missions",
+    (await bodyText()).includes("Shade for Outdoor Learning") &&
+    (await bodyText()).includes("A Welcoming Reading Nook"),
+  "grade 3–5 mission hub lists all three original connected missions",
 );
 await axeCheck("grade 3–5 mission hub");
 await go(`${BASE}/missions/saving-the-school-garden?phase=listen&grades=3-5`);
@@ -1323,6 +1387,9 @@ await capture("garden-mission-desktop.png");
 await go(`${BASE}/missions/shade-for-outdoor-learning?phase=listen&grades=3-5`);
 await axeCheck("grade 3–5 shade mission phase");
 await capture("shade-mission-desktop.png");
+await go(`${BASE}/missions/welcoming-reading-nook?phase=listen&grades=3-5`);
+await axeCheck("grade 3–5 reading nook mission phase");
+await capture("reading-nook-mission-desktop.png");
 await go(`${BASE}/missions/watershed-mystery`);
 await axeCheck("mission phase");
 await go(`${BASE}/growth`);
@@ -1365,6 +1432,7 @@ for (const p of [
   `${BASE}/missions/watershed-mystery`,
   `${BASE}/missions/saving-the-school-garden?grades=3-5`,
   `${BASE}/missions/shade-for-outdoor-learning?grades=3-5`,
+  `${BASE}/missions/welcoming-reading-nook?grades=3-5`,
   `${BASE}/growth`,
   `${BASE}/passport`,
   `${BASE}/diagnostic/Listening`,
@@ -1383,6 +1451,8 @@ for (const p of [
     await capture("garden-mission-mobile.png");
   if (p.startsWith(`${BASE}/missions/shade-for-outdoor-learning`))
     await capture("shade-mission-mobile.png");
+  if (p.startsWith(`${BASE}/missions/welcoming-reading-nook`))
+    await capture("reading-nook-mission-mobile.png");
   const over = await page.evaluate(
     () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
   );

@@ -128,6 +128,14 @@ const missions = existsSync(MISSION_DIR)
       .filter((f) => f.endsWith(".json"))
       .map((f) => [f, readJson(join(MISSION_DIR, f))])
   : [];
+for (const band of ["3-5", "6-8"]) {
+  const count = missions.filter(([, mission]) => mission.band === band).length;
+  if (count < (band === "3-5" ? 3 : 6))
+    fail(
+      `missions:coverage`,
+      `${band} needs at least ${band === "3-5" ? 3 : 6} original missions (found ${count})`,
+    );
+}
 
 const seen = new Map();
 function claimId(where, id) {
