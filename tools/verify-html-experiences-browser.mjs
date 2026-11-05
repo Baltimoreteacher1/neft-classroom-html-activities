@@ -58,6 +58,11 @@ try {
         await page.locator(`#hw_panel_${nextId}`).waitFor({ state: "visible" });
         assert.equal(await nextTab.getAttribute("aria-current"), "step");
         assert.equal(await page.locator(`#hw_tab_${currentId}`).getAttribute("aria-current"), null);
+        const selectedModelControl = page
+          .locator('.hw-mm-stage .fm-toggles .fm-btn[aria-pressed="true"]')
+          .first();
+        await selectedModelControl.waitFor({ state: "visible" });
+        await selectedModelControl.hover();
       }
       if (name.startsWith("worksheet")) {
         await page.locator("[data-worksheet-screen]").waitFor({ state: "attached" });

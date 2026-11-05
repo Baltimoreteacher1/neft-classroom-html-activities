@@ -180,4 +180,6 @@ The mission index and alignment inventory now include nine missions (six for gra
 
 Verification: production build passed with existing Vite classic-script/config-loader/large-chunk warnings. The mission content validator and generated-index freshness checks passed. The studio browser E2E passed the complete new mission path, including the evidence selection, decision, linked speech and writing tasks, and fresh independent transfer; axe WCAG 2.2 AA passed on the mission route and 375px had no horizontal overflow. The test also verified that an unlocked stretch question appears and does not block phase completion when hidden.
 
+The guarded release scan also exposed a low-contrast hover state in an existing interactive math model. The selected view now retains a high-contrast pressed treatment on hover, and the HTML experience browser test explicitly hovers a selected model control before its axe scan.
+
 This increment broadens grade 3–5 mission coverage and adds a literacy/community context. Human ESOL/editorial review remains pending, and this does not complete the broader adaptive platform requirements.
