@@ -2857,7 +2857,11 @@ function hwChooseHelp(idx, signal) {
 function hwGoToNextPractice(idx) {
   const current = document.getElementById("problem_" + idx);
   if (!current) return;
-  const all = [...document.querySelectorAll(".problem-section")];
+  const sections = [...document.querySelectorAll(".problem-section")];
+  const from = sections.indexOf(current);
+  // Look forward from this problem first, and offer problems already on screen before hidden ones.
+  const ordered = sections.slice(from + 1).concat(sections.slice(0, from));
+  const all = ordered.filter((item) => !item.hidden).concat(ordered.filter((item) => item.hidden));
   const available = all.filter((item) => item !== current && !item.classList.contains("correct") && !item.classList.contains("reviewed"));
   const sameType = available.filter((item) => item.dataset.problemType === current.dataset.problemType);
   const lane = document.getElementById("problem_intelligence_" + idx)?.dataset.nextLane;
@@ -2871,8 +2875,23 @@ function hwGoToNextPractice(idx) {
     document.querySelector('[data-tab-panel="play"] button, [data-tab-panel="play"] a')?.focus({ preventScroll: true });
     return;
   }
+  hwShowProblem(next);
+}
+
+/* Bring a problem on screen: its stop, the extended set or bonus practice if it lives there, and
+   the one-at-a-time stepper's current problem. Scrolling alone does nothing to a stepped-away problem. */
+function hwShowProblem(next) {
   const bonus = next.closest(".more-practice");
   if (bonus) bonus.open = true;
+  if (next.hidden) setHomeworkRoute("full", { silent: true, keepTab: true });
+  const stop = next.closest("[data-tab-panel]")?.dataset.tabPanel;
+  if (stop && document.body.dataset.activeTab !== stop) switchHomeworkTab(stop);
+  const box = next.parentElement;
+  const bar = box?.previousElementSibling;
+  if (bar?.classList.contains("hw-stepper-bar")) {
+    const items = [...box.querySelectorAll(":scope > .problem-section")];
+    bar.querySelectorAll(".hw-stepper-dot")[items.indexOf(next)]?.click();
+  }
   next.scrollIntoView({ behavior: "smooth", block: "start" });
   next.querySelector("input, select, button")?.focus({ preventScroll: true });
 }
