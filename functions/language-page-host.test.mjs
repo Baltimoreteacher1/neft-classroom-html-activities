@@ -16,6 +16,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { brandLabHtml, languagePageRoute, SITEMAP_PATHS } from "./_lib/language-page.js";
 import { onRequest } from "./_middleware.js";
+import { STUDIOS, studioPath } from "../access-practice-lab/src/studios.js";
 
 let passed = 0;
 const t = async (name, fn) => {
@@ -114,7 +115,10 @@ await t("robots.txt and sitemap.xml are generated for the lab host and name only
   const xml = await sitemap.res.text();
   const locs = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]);
   assert.equal(locs.length, SITEMAP_PATHS.length);
-  assert.ok(locs.every((l) => l.startsWith("https://thelanguagepage.com/access-practice-lab/")));
+  assert.ok(
+    locs.every((l) => l.startsWith("https://thelanguagepage.com/access-practice-lab/") || STUDIOS.some((s) => l === `https://thelanguagepage.com${studioPath(s.slug)}`)),
+  );
+  assert.ok(!locs.some((l) => l === "https://thelanguagepage.com/wida-access/" || l.includes("portfolio")));
 });
 
 await t("the middleware redirects a non-lab path on the lab host before any gate runs", async () => {
@@ -174,6 +178,53 @@ await t("the middleware brands lab HTML on the lab host only", async () => {
   assert.match(await run("https://thelanguagepage.com/access-practice-lab/"), /The Language Page/);
   const legacy = await run("https://eduwonderlab.com/access-practice-lab/");
   assert.equal(legacy, shell, "eduwonderlab.com gets the shell byte for byte");
+});
+
+await t("the WIDA practice studios are served on the lab host; the score dashboard and the gradebook are not", () => {
+  assert.equal(STUDIOS.length, 7);
+  for (const st of STUDIOS) {
+    assert.equal(at(`https://thelanguagepage.com${studioPath(st.slug)}`).kind, "serve", st.slug);
+    assert.ok(readFileSync(new URL(`..${studioPath(st.slug)}index.html`, import.meta.url)), st.slug);
+  }
+  for (const path of ["/wida-access/", "/wida-access", "/wida-access/portfolio/", "/wida-access/listening-v2/", "/wida-access/listening-evil/"]) {
+    const r = at(`https://thelanguagepage.com${path}`);
+    assert.equal(r.kind, "redirect", path);
+    assert.equal(r.location, `https://eduwonderlab.com${path}`, path);
+  }
+});
+
+await t("every studio page is re-dressed in the lab's chrome and keeps its own work and Save/Resume", () => {
+  for (const st of STUDIOS) {
+    const path = studioPath(st.slug);
+    const src = readFileSync(new URL(`..${path}index.html`, import.meta.url), "utf8");
+    const out = brandLabHtml(src, path);
+    assert.equal((out.match(/class="lp-top"/g) || []).length, 1, `${st.slug}: one lab top bar`);
+    assert.match(out, new RegExp(`<title>${st.title} · The Language Page</title>`), st.slug);
+    assert.match(out, new RegExp(`<link rel="canonical" href="https://thelanguagepage\\.com${path}" />`), st.slug);
+    assert.match(out, /href="\/access-practice-lab\/studio-chrome\.css"/, st.slug);
+    assert.doesNotMatch(out, /Neft Hub|WIDA Center/, `${st.slug}: old chrome gone`);
+    assert.doesNotMatch(out, /href="\/wida-access\/"|href="\/"/, `${st.slug}: no link to the dashboard or the site root`);
+    assert.doesNotMatch(out, /math-workbench-launcher|formula-popup|edupulse-/, `${st.slug}: no math tools or score bridge`);
+    assert.doesNotMatch(out, /class="top-nav"|class="breadcrumb"/, `${st.slug}: old header removed`);
+    assert.match(out, /save-resume-engine\.js/, `${st.slug}: Save/Resume kept`);
+    assert.ok(out.indexOf('class="lp-top"') > out.indexOf("<body"), `${st.slug}: chrome inside body`);
+    assert.ok(out.indexOf("lp-studio-theme") < out.indexOf("</head>"), `${st.slug}: theme in head`);
+  }
+});
+
+await t("eduwonderlab.com serves the studios byte for byte", async () => {
+  const path = studioPath(STUDIOS[0].slug);
+  const page = readFileSync(new URL(`..${path}index.html`, import.meta.url), "utf8");
+  const res = await onRequest({
+    request: new Request(`https://eduwonderlab.com${path}`),
+    env: {},
+    data: {},
+    next: async () => new Response(page, { headers: { "content-type": "text/html; charset=utf-8" } }),
+    functionPath: "",
+    params: {},
+    waitUntil() {},
+  });
+  assert.equal(await res.text(), page);
 });
 
 console.log(`language-page-host: ${passed} checks passed.`);

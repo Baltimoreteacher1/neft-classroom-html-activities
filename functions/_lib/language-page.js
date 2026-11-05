@@ -11,6 +11,9 @@
 // here. Student progress lives in each origin's localStorage and does not cross origins, so the old origin must
 // keep serving the lab until students have moved their progress (docs/language-page-migration.md).
 
+import { STUDIOS, studioFor, studioPath } from "../../access-practice-lab/src/studios.js";
+import { studioLabHtml } from "./language-page-studios.js";
+
 export const LANGUAGE_PAGE_HOST = "thelanguagepage.com";
 export const LEGACY_HOST = "eduwonderlab.com";
 export const LAB_BASE = "/access-practice-lab";
@@ -34,6 +37,9 @@ export const SITEMAP_PATHS = [
   `${LAB_BASE}/reading-room`,
   `${LAB_BASE}/worlds`,
   `${LAB_BASE}/move`,
+  // The WIDA ACCESS practice studios (access-practice-lab/src/studios.js); the school dashboard and the portfolio
+  // gradebook under /wida-access/ are not on this host.
+  ...STUDIOS.map((s) => studioPath(s.slug)),
 ];
 
 export const isLanguagePageHost = (hostname) =>
@@ -41,7 +47,9 @@ export const isLanguagePageHost = (hostname) =>
 
 const servesOnLabHost = (pathname) => {
   const p = pathname.toLowerCase();
-  return LAB_EXACT.has(p) || LAB_PREFIXES.some((prefix) => p.startsWith(prefix));
+  return (
+    LAB_EXACT.has(p) || LAB_PREFIXES.some((prefix) => p.startsWith(prefix)) || Boolean(studioFor(p))
+  );
 };
 
 /**
@@ -79,6 +87,8 @@ export function languagePageRoute(url) {
 export const LAB_BRAND = { name: "The Language Page", poweredBy: "Powered by EduWonderLab" };
 
 export function brandLabHtml(html, pathname) {
+  const studio = studioFor(pathname);
+  if (studio) return studioLabHtml(html, studio, pathname);
   const canonical = `https://${LANGUAGE_PAGE_HOST}${pathname}`;
   return html
     .replace(

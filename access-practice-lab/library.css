@@ -306,3 +306,65 @@
     max-height: none;
   }
 }
+
+/* Practice studios: the WIDA ACCESS studio pages, linked below the library. */
+.lib-page .lib-studios {
+  display: grid;
+  gap: var(--s-3);
+  margin-top: var(--s-6);
+  scroll-margin-top: 5.5rem;
+}
+.lib-page .lib-studios h2 {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+}
+.lib-page .lib-studios > p {
+  margin: 0;
+  max-width: 66ch;
+}
+.lib-page .lib-studio-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 17rem), 1fr));
+  gap: var(--s-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.lib-page .lib-studio {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: start;
+  gap: var(--s-3);
+  padding: var(--s-4);
+  border: 1px solid var(--line);
+  border-top: 5px solid var(--room, var(--brand-deep));
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+.lib-page .lib-studio p {
+  margin: 0.2rem 0 0;
+}
+.lib-page .lib-studio-title {
+  font-weight: 700;
+  font-size: 1.05rem;
+  line-height: 1.3;
+  color: var(--room-ink, var(--brand-deep));
+}
+/* The whole card is the target; the title link stays the accessible name. */
+.lib-page .lib-studio-title::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+}
+.lib-page .lib-studio:hover {
+  border-color: var(--room, var(--brand-deep));
+}
+.lib-page .lib-studio:focus-within {
+  outline: 3px solid var(--room, var(--brand-deep));
+  outline-offset: 2px;
+}

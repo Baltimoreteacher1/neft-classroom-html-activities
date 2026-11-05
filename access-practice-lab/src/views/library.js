@@ -5,6 +5,7 @@ import { bandRows } from "../content.js";
 import { estimateMinutes } from "../learning.js";
 import { activityStatus } from "../practice-plan.js";
 import { loadRecord } from "../store.js";
+import { STUDIOS, studioPath } from "../studios.js";
 import { i18nFor, makeI18n } from "../i18n.js";
 import { ART, BASE, CORE_DOMAINS, DOMAIN_META, TIERS, announce, bandLabel, html, icon, raw, toHtml } from "../util.js";
 import { activityHref } from "./room.js";
@@ -88,6 +89,23 @@ function resultHTML() {
     ${slice.pages > 1 ? html`<nav class="library-pagination" aria-label="${I.S("Activity result pages", "Páginas de resultados de actividades")}"><button type="button" class="btn" data-page="${page - 1}" ${page === 1 ? raw("disabled") : ""}>${icon("arrow-left")} ${I.T("Previous", "Anterior")}</button><span>${I.T(`Page ${page} of ${slice.pages}`, `Página ${page} de ${slice.pages}`)}</span><button type="button" class="btn" data-page="${page + 1}" ${page === slice.pages ? raw("disabled") : ""}>${I.T("Next", "Siguiente")} ${icon("arrow-right")}</button></nav>` : ""}`;
 }
 
+const cap = (w) => w.charAt(0).toUpperCase() + w.slice(1);
+
+/** The WIDA ACCESS practice studios: full standalone pages, so plain links rather than library items. */
+function studiosHTML() {
+  return html`<section class="lib-studios" id="studios" aria-labelledby="studiosTitle">
+    <h2 id="studiosTitle">${icon("sparkle")} ${I.T("Practice studios", "Estudios de práctica")}</h2>
+    <p class="fine">${I.T("Longer, test-style practice for each skill. Each studio opens as its own page and saves your work on this device.", "Práctica más larga, al estilo de la prueba, para cada destreza. Cada estudio se abre en su propia página, en inglés, y guarda tu trabajo en este dispositivo.")}</p>
+    <ul class="lib-studio-grid">${STUDIOS.map(
+      (st) => html`<li class="lib-studio d-${st.skill}">
+        <span class="prog-tile">${domainGlyph(cap(st.skill))}</span>
+        <div><a class="lib-studio-title" href="${studioPath(st.slug)}">${I.T(st.title, st.titleEs)}</a>
+        <p class="fine">${I.T(st.blurb, st.blurbEs)}</p></div>
+      </li>`,
+    )}</ul>
+  </section>`;
+}
+
 function setHTML() {
   const picked = selected.map((id) => rows.find((r) => r.id === id)).filter(Boolean);
   if (!picked.length) return html`<div class="library-set-empty"><h2 id="practiceSetTitle">${icon("list")} ${I.T("Build a practice set", "Crea un conjunto de práctica")}</h2><p class="fine">${I.T(`Use “Add” on any activity to combine up to ${LIMIT} into a shareable session.`, `Usa “Agregar” en cualquier actividad para combinar hasta ${LIMIT} en una sesión que se puede compartir.`)}</p></div>`;
@@ -148,7 +166,8 @@ export async function render(ctx) {
     </div><p class="fine">${bandLabel(band)} · ${I.T("Progress is for this browser. Support changes tasks and scaffolds: Starting uses words and short sentences; Growing connects ideas; Expanding adds details and explanations. These are not WIDA scores.", "El progreso es solo para este navegador. El apoyo cambia las tareas y los andamios: Comenzando usa palabras y oraciones cortas; Creciendo conecta ideas; Ampliando agrega detalles y explicaciones. No son puntajes de WIDA.")}</p>
     <div class="library-quick lib-quick" aria-label="${I.S("Quick activity searches", "Búsquedas rápidas de actividades")}"><span>${I.T("Start with:", "Empieza con:")}</span>${["garden", "evidence", "compare", "sequence"].map((topic) => html`<button type="button" class="cat-chip" data-quick-topic="${topic}">${icon("search")} ${topic}</button>`)}</div>
     <div id="libraryResults">${resultHTML()}</div></section>
-    </div></div>`,
+    </div>
+    ${studiosHTML()}</div>`,
   };
 }
 
