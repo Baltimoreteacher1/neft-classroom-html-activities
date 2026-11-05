@@ -29,13 +29,13 @@ export const BUBBLES = [
     en: {
       title: "Areas of the lab",
       body: [
-        "Home is where you start. Learn, Practice, Play and My Growth each open their own area. “For teachers” is for adults.",
+        "Home is where you choose a grade and a skill. My Learning shows your progress, practice and mistakes to fix. Explore has games, models and Math Reality. “For families” and “For teachers” are for adults.",
       ],
     },
     es: {
       title: "Áreas del laboratorio",
       body: [
-        "Inicio es donde empiezas. Aprender, Practicar, Jugar y Mi crecimiento abren cada uno su propia área. “Para docentes” es para los adultos.",
+        "En Inicio eliges un grado y una destreza. Mi aprendizaje muestra tu progreso, tu práctica y los errores para corregir. Explorar tiene juegos, modelos y Realidad matemática. “Para familias” y “Para docentes” son para los adultos.",
       ],
     },
   },

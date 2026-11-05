@@ -21,7 +21,7 @@ export const GAME_IDS = ["mathworldbuilder", "numberpuzzlestudio", "fluencyrally
 // One suggested game per day; Fact Family Builder is a Grades 1-5 game, so it is skipped for older grades.
 export const dailyGame = (time = Date.now(), grade = 1) => {
   const minGrade = { mathworldbuilder: 0, numberpuzzlestudio: 0, fluencyrally: 0, numberquest: 0, tenframefactory: 0, arrayarchitect: 3, fractionforge: 3, fractionbridge: 3, divisionharbor: 3, decimaldashboards: 5, balancestation: 6, ratiocity: 6, integerexpedition: 6, equationfactory: 6, graphcity: 7 };
-  const list = GAME_IDS.filter((id) => id !== "flip" && !(id === "family" && grade > 5) && grade >= (minGrade[id] || 1));
+  const list = GAME_IDS.filter((id) => id !== "flip" && !(id === "family" && grade > 5) && grade >= (minGrade[id] ?? 1));
   // Count local calendar days, so the pick changes at the learner's midnight and not at UTC midnight.
   const date = new Date(time);
   return list[Math.floor(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()) / DAY_MS) % list.length];

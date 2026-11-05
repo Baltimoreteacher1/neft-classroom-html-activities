@@ -191,11 +191,11 @@ win.document.querySelector("#brand-home").click();
 assert.equal(win.location.search, "", "clicking brand home lands on clean /math/fluency-lab/ URL");
 assert.equal(
   win.document.title,
-  "Math Fluency Lab · Grades 1–8 | EduWonderLab",
+  "Math Fluency Lab · Grades K–8 | EduWonderLab",
   "clean /math/fluency-lab/ uses the hub title instead of a single grade",
 );
 assert.equal(
-  win.document.querySelectorAll("[data-pick-grade]").length,
+  win.document.querySelectorAll("[data-ep-grade]").length,
   9,
   "bare landing offers Kindergarten to Grade 8",
 );
@@ -209,13 +209,27 @@ assert.equal(
   true,
   "the skill library waits for a grade",
 );
-win.document.querySelector('[data-pick-grade="4"]').click();
-assert.equal(win.location.search, "?grade=4", "picking a grade puts ?grade= in the URL");
+win.document.querySelector('[data-ep-grade="4"]').click();
+assert.equal(win.location.search, "", "choosing a grade stays on the front door");
+assert.ok(
+  win.document.querySelectorAll("[data-ep-topic]").length > 1,
+  "the grade's topics appear in place",
+);
+win.document.querySelector('[data-ep-topic="fractions"]').click();
+win.document.querySelector('[data-ep-skill="fraction-equiv"]').click();
+win.document.querySelector("[data-ep-start]").click();
+assert.equal(
+  win.location.search,
+  "?grade=4&skill=fraction-equiv",
+  "Start opens the skill's own link",
+);
+win.document.querySelector("#back-library").click();
+assert.equal(win.location.search, "?grade=4", "the grade page keeps ?grade= in the URL");
 assert.match(win.document.querySelector("#grade-heading").textContent, /Grade 4/);
 assert.equal(
   win.document.querySelector("#more-practice").hidden,
   false,
-  "the skill library opens after the pick",
+  "the grade page shows its skill library",
 );
 win.document.querySelector('#grade-tabs [data-grade="5"]').click();
 assert.equal(win.location.search, "?grade=5", "grade tabs still switch grades");

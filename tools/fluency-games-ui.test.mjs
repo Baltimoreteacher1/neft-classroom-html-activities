@@ -603,7 +603,11 @@ await wait();
 assert.equal(win.document.documentElement.lang, "es", "The page language becomes Spanish");
 assert.equal($("#lang-toggle").textContent, "English", "The toggle offers English once in Spanish");
 assert.match($(".gm-head h2").textContent, /Sala de juegos/, "The Game Room heading is Spanish");
-assert.match($('[data-view="games"]').textContent, /Jugar/, "The page tabs are Spanish");
+assert.match(
+  $('#hub-tabs [data-view="games"]').textContent,
+  /Explorar/,
+  "The page tabs are Spanish",
+);
 click('#grade-tabs [data-grade="2"]');
 await wait();
 click('[data-game="numberquest"]');

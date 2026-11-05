@@ -798,7 +798,7 @@ try {
     "settings-toggle",
     "Escape closes settings and restores keyboard focus",
   );
-  await studentPage.locator('[data-view="path"]').click();
+  await studentPage.locator('[data-dest="learning"]').click();
   const progressAxe = await new AxeBuilder({ page: studentPage }).analyze();
   assert.deepEqual(
     progressAxe.violations
@@ -807,9 +807,12 @@ try {
     [],
     "student growth view has no serious or critical accessibility violations",
   );
-  await studentPage.locator('[data-view="library"]').click();
-  await studentPage.locator('[data-hub-tab="skills"]').click();
-  await studentPage.locator("#skill-grid .open-skill").first().click();
+  await studentPage.locator('[data-dest="home"]').click();
+  // Home is Grade -> Topic -> Skill -> Start (data/product-decisions.json, fluency entry flow).
+  for (const step of ["[data-ep-grade]", "[data-ep-topic]", "[data-ep-skill]", "[data-ep-start]"]) {
+    await studentPage.locator(step).first().click();
+  }
+  await studentPage.locator("#workspace-view").waitFor({ state: "visible" });
   const workspaceAxe = await new AxeBuilder({ page: studentPage }).analyze();
   assert.deepEqual(
     workspaceAxe.violations

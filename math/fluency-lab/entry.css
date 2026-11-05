@@ -1,0 +1,429 @@
+/* Front door (Grade → Topic → Skill → Start) and the focused skill screen (breadcrumb, five stages, next action).
+   Uses the atelier tokens; teal marks the one primary action, copper the current step. No violet. */
+
+/* ---- Landing: the picker is the page, so the hero shrinks to a title ---- */
+:root[data-atelier-landing] #main > .intro.at-hero {
+  display: block;
+  margin-block: 0.75rem 0.5rem;
+  padding: 1.1rem clamp(1rem, 3vw, 2rem);
+}
+:root[data-atelier-landing] #main > .at-hero h1 {
+  max-width: none;
+  font-size: clamp(1.6rem, 1.3rem + 1.4vw, 2.3rem);
+}
+:root[data-atelier-landing] #main > .at-hero .intro-copy > p#intro-description {
+  margin-top: 0.4rem;
+  font-size: var(--at-step-0);
+}
+:root[data-atelier-landing] .at-hero__sculpture,
+:root[data-atelier-landing] .at-hero__actions,
+:root[data-atelier-landing] #overall-stats,
+:root[data-atelier-landing] #at-kicker,
+:root[data-atelier-landing] .tour-offer {
+  display: none;
+}
+:root[data-atelier-landing] .at-grownups {
+  margin-top: 0.6rem;
+}
+
+/* ---- Picker ---- */
+.ep {
+  display: grid;
+  gap: 1rem;
+  max-width: 56rem;
+  margin-inline: auto;
+}
+.ep h2,
+.ep h3 {
+  margin: 0;
+  color: var(--at-obsidian-1, #13294b);
+}
+.ep-resume {
+  display: grid;
+  gap: 0.5rem;
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--at-teal-1, #087e88);
+  border-inline-start-width: 6px;
+  border-radius: 14px;
+  background: var(--at-surface, #fdfbf5);
+}
+.ep-resume p {
+  margin: 0;
+  font-size: 1.1rem;
+}
+.ep-resume__where {
+  color: var(--at-ink-soft, #4a5568);
+}
+.ep-or {
+  margin: -0.25rem 0 0;
+  color: var(--at-ink-soft, #4a5568);
+}
+.ep-main {
+  display: grid;
+  gap: 0.9rem;
+}
+.ep-label {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 1.15rem;
+}
+.ep-num {
+  display: inline-grid;
+  place-items: center;
+  width: 1.8rem;
+  height: 1.8rem;
+  border-radius: 50%;
+  background: var(--at-obsidian-1, #13294b);
+  color: #fff;
+  font-size: 0.95rem;
+}
+.ep-grades {
+  display: grid;
+  grid-template-columns: repeat(9, minmax(0, 1fr));
+  gap: 0.5rem;
+}
+.ep-grade,
+.ep-choice {
+  min-height: 3.25rem;
+  border: 2px solid var(--at-rule-strong, #b9ae9b);
+  border-radius: 12px;
+  background: var(--at-surface, #fdfbf5);
+  color: var(--at-ink, #14213a);
+  font: 600 1.25rem / 1.2 inherit;
+  cursor: pointer;
+}
+.ep-grade[aria-pressed="true"],
+.ep-choice[aria-pressed="true"] {
+  border-color: var(--at-obsidian-1, #13294b);
+  background: var(--at-obsidian-1, #13294b);
+  color: #fff;
+}
+.ep-grade:hover,
+.ep-choice:hover {
+  border-color: var(--at-teal-1, #087e88);
+}
+.ep-topics,
+.ep-skills {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+  gap: 0.5rem;
+}
+.ep-choice {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.15rem;
+  padding: 0.6rem 0.9rem;
+  font-size: 1.05rem;
+  text-align: start;
+}
+.ep-choice small {
+  font-weight: 400;
+  font-size: 0.85rem;
+  opacity: 0.85;
+}
+.ep-btn {
+  min-height: 3.25rem;
+  padding: 0.6rem 1.6rem;
+  border: 2px solid transparent;
+  border-radius: 12px;
+  font: 700 1.15rem / 1.2 inherit;
+  cursor: pointer;
+}
+.ep-btn--primary {
+  background: var(--at-teal-ink, #066a73);
+  color: #fff;
+}
+.ep-btn--primary:hover {
+  background: var(--at-teal-0, #053f48);
+}
+.ep-start {
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1.25rem;
+  padding: 0.75rem 0;
+  background: linear-gradient(to top, var(--at-bg, #f5f1e8) 75%, transparent);
+}
+.ep-start[hidden] {
+  display: none;
+}
+.ep-trail {
+  flex: 1 1 14rem;
+  margin: 0;
+  font-weight: 600;
+  color: var(--at-obsidian-1, #13294b);
+}
+.ep-btn--start {
+  min-width: 12rem;
+  font-size: 1.35rem;
+}
+.ep :focus-visible,
+.skill-path :focus-visible,
+.stage-footer :focus-visible,
+.sp-grow :focus-visible {
+  outline: 3px solid var(--at-focus, #2563c9);
+  outline-offset: 2px;
+}
+@media (max-width: 640px) {
+  .ep-grades {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+  .ep-topics,
+  .ep-skills {
+    grid-template-columns: 1fr;
+  }
+  .ep-btn--start {
+    width: 100%;
+  }
+}
+
+/* ---- Focused skill screen ---- */
+.skill-path {
+  display: grid;
+  gap: 0.6rem;
+  margin-block: 0.25rem 0.75rem;
+}
+.sp-crumbs {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem 1rem;
+}
+.sp-crumbs ol {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.15rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-weight: 600;
+}
+.sp-crumbs li + li::before {
+  content: "›";
+  margin-inline: 0.4rem;
+  color: var(--at-ink-soft, #4a5568);
+}
+.sp-crumbs ol button,
+.sp-copy {
+  min-height: 2.75rem;
+  padding: 0.25rem 0.6rem;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--at-teal-ink, #066a73);
+  font: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+}
+.sp-copy {
+  margin-inline-start: auto;
+  font-size: 0.9rem;
+}
+.sp-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.9rem;
+}
+.sp-switch select {
+  min-height: 2.75rem;
+  max-width: 18rem;
+  border: 2px solid var(--at-rule-strong, #b9ae9b);
+  border-radius: 8px;
+  background: var(--at-surface, #fdfbf5);
+  color: var(--at-ink, #14213a);
+  font: inherit;
+}
+.sp-stages {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 0.35rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.sp-stages button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  width: 100%;
+  min-height: 2.9rem;
+  padding: 0.3rem 0.4rem;
+  border: 2px solid var(--at-rule-strong, #b9ae9b);
+  border-radius: 999px;
+  background: var(--at-surface, #fdfbf5);
+  color: var(--at-ink, #14213a);
+  font: 600 0.95rem / 1.1 inherit;
+  cursor: pointer;
+}
+.sp-stage__num {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 1.4rem;
+  height: 1.4rem;
+  border-radius: 50%;
+  background: var(--at-porcelain-2, #e9e2d5);
+  font-size: 0.8rem;
+}
+.sp-stages button[aria-current="step"] {
+  border-color: var(--at-obsidian-1, #13294b);
+  background: var(--at-obsidian-1, #13294b);
+  color: #fff;
+}
+.sp-stages button[aria-current="step"] .sp-stage__num {
+  background: var(--at-copper-2, #e6a688);
+  color: var(--at-ink, #14213a);
+}
+.sp-stages button[data-visited="true"] .sp-stage__num {
+  background: var(--at-teal-2, #85d8cb);
+}
+.sp-footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-block: 1rem;
+}
+.sp-footer .primary-action,
+.sp-footer .outline-action {
+  min-height: 3rem;
+}
+.sp-grow {
+  display: grid;
+  gap: 0.4rem;
+  padding: 1.25rem;
+  border: 1px solid var(--at-rule, #ddd5c6);
+  border-radius: 14px;
+  background: var(--at-surface, #fdfbf5);
+}
+.sp-grow h3,
+.sp-grow p {
+  margin: 0;
+}
+.sp-grow__state {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--at-obsidian-1, #13294b);
+}
+@media (max-width: 640px) {
+  .sp-stages button {
+    flex-direction: column;
+    gap: 0.1rem;
+    font-size: 0.8rem;
+  }
+  .sp-copy {
+    margin-inline-start: 0;
+  }
+  .sp-footer > * {
+    flex: 1 1 100%;
+  }
+}
+
+/* ---- Home | My Learning | Explore, with the adult links set apart ---- */
+.hub-tabs .hub-tabs__adults {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--fl-s1, 8px);
+  margin-inline-start: auto;
+}
+.hub-tabs .hub-tabs__adults > a,
+.hub-subnav a {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: 44px;
+  padding: var(--fl-s1, 8px) var(--fl-s2, 16px);
+  border: 2px solid transparent;
+  border-radius: var(--fl-radius, 12px);
+  color: var(--fl-navy, #17324d);
+  font: 600 0.95rem var(--fl-font-body, "Lexend", sans-serif);
+}
+.hub-subnav a {
+  border-color: var(--fl-teal-ink, #0e6b68);
+  background: var(--fl-teal-soft, #dff3f1);
+  color: var(--fl-teal-ink, #0e6b68);
+  font-size: 0.9rem;
+  text-decoration: none;
+}
+@media (max-width: 640px) {
+  #main .hub-tabs {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  #main .hub-tabs > button {
+    font-size: 0.9rem;
+  }
+  .hub-tabs .hub-tabs__adults {
+    grid-column: 1 / -1;
+    justify-content: center;
+    margin-inline-start: 0;
+  }
+}
+
+/* Under the five stages, the lab's practice styles are a quiet second row. */
+.skill-path + .mode-tabs {
+  padding: 4px;
+  border-style: dashed;
+}
+.skill-path + .mode-tabs button {
+  min-block-size: 44px;
+  font-size: 0.85rem;
+}
+.learn-actions--more .outline-action {
+  text-decoration: none;
+}
+
+/* Inside a skill the learning sequence comes first: the page hero and grade banner step aside
+   (the hero's h1 stays for screen readers), and the breadcrumb and stages sit at the top. */
+body.working-on-skill #main > .intro.at-hero {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+body.working-on-skill #grade-experience-banner {
+  display: none;
+}
+body.working-on-skill #workspace-view .back-button {
+  min-height: 44px;
+  margin-bottom: 0.25rem;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.9rem;
+}
+#workspace-view .skill-path + .workspace-heading {
+  margin-top: 0.25rem;
+}
+#workspace-view .skill-path + .workspace-heading h2 {
+  font-size: clamp(1.4rem, 2.6vw, 2rem);
+}
+@media (max-width: 640px) {
+  :root[data-atelier-landing] #main > .intro.at-hero {
+    padding: 0.8rem 1rem;
+  }
+  :root[data-atelier-landing] #main > .at-hero .intro-copy > p#intro-description {
+    display: none;
+  }
+  .hub-tabs .hub-tabs__adults {
+    grid-column: 1 / 3;
+  }
+  .sp-crumbs ol {
+    flex: 1 1 100%;
+  }
+  .sp-switch {
+    flex: 1 1 100%;
+  }
+  .sp-switch select {
+    flex: 1;
+    max-width: none;
+  }
+}

@@ -20,8 +20,8 @@ export const HEADLINES = {
 };
 
 export const LANDING = [
-  "Mathematics you can see, change and understand.",
-  "Grades K–8. Pick your grade and the studio rearranges itself around the ideas you are learning.",
+  "Math Fluency Lab",
+  "Kindergarten to Grade 8. Choose a grade and a skill, then start.",
 ];
 
 export const STATE_WORD = {

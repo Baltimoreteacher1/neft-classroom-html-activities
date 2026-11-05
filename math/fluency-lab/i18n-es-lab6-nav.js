@@ -4,7 +4,6 @@ export const ES_LAB6_NAV = {
   Learn: "Aprender",
   Practice: "Practicar",
   "Play ##nav": "Jugar",
-  "My Growth": "Mi crecimiento",
   "Start practicing": "Empezar a practicar",
   "Writing Studio": "Estudio de escritura",
   "Today's 10": "Los 10 de hoy",

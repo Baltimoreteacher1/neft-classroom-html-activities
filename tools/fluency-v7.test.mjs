@@ -19,7 +19,6 @@ import {
 } from "../math/fluency-lab/v7/concepts.js";
 import { evidenceFor, MIN_EVIDENCE, recommend } from "../math/fluency-lab/v7/learner.js";
 import { createCoach, LIMITS, validateReply } from "../math/fluency-lab/v7/provider.js";
-import { isLanding, targetFor } from "../math/fluency-lab/v7/shell.js";
 import { canReveal, leaksAnswer, MAX_LEVEL, nextMove } from "../math/fluency-lab/v7/tutor.js";
 
 let n = 0;
@@ -253,26 +252,5 @@ const mid = recommend({
   progress: { ...all, "4:fraction-equiv": { attempts: 10, correct: 7 } },
 });
 t(mid.intent === "practice" && mid.key === "4:fraction-equiv", "developing skill -> practice");
-
-// ---- shell: three choices become links the lab already understands
-t(
-  targetFor({ grade: 5, intent: "explore" }) === "./?grade=5&view=models",
-  "explore -> Model Lab deep link",
-);
-t(
-  /^\.\/\?grade=5&skill=[^&]+&start=practice$/.test(targetFor({ grade: 5, intent: "practice" })),
-  "practice -> existing practice deep link",
-);
-t(
-  /^\.\/v7\/\?grade=5&skill=/.test(targetFor({ grade: 5, intent: "learn" })),
-  "learn -> v7 workspace",
-);
-t(
-  isLanding({ search: "", hash: "" }) &&
-    !isLanding({ search: "?grade=3", hash: "" }) &&
-    !isLanding({ search: "?start=daily", hash: "" }) &&
-    !isLanding({ search: "", hash: "#assignment=abc" }),
-  "landing rule matches the lab's own",
-);
 
 console.log(`fluency-v7: ${n} checks passed`);

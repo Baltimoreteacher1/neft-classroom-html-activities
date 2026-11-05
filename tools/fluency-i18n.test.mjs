@@ -99,7 +99,8 @@ for (const file of sources) {
   if (String(file).endsWith("family-page.js"))
     for (const match of source.matchAll(/(?:add|mul): "((?:[^"\\]|\\.)*)"/g)) keys.add(match[1]);
   for (const match of source.matchAll(/(?:name|blurb): "((?:[^"\\]|\\.)*)"/g))
-    if (String(file).endsWith("games.js")) keys.add(match[1]);
+    if (String(file).endsWith("games.js") || String(file).endsWith("skill-path.js"))
+      keys.add(match[1]);
 }
 for (const match of readFileSync(new URL("index.html", dir), "utf8").matchAll(
   /data-i18n[^>]*>([^<]+)</g,

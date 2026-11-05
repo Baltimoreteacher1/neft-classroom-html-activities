@@ -1,5 +1,5 @@
 // EduWonderLab 7.0 journeys, driven in a real browser (npm run validate:fluency-v7-browser).
-// Start in three choices; every flagship (G2 arrays, G4 fractions, G6 ratios, G7 equations, G8 linear) loads a living
+// Grade, topic, skill, Start; every flagship (G2 arrays, G4 fractions, G6 ratios, G7 equations, G8 linear) loads a living
 // model; a wrong answer gets a coach move that never states the answer; a right answer is recorded additively; Spanish;
 // 390px and 1280px without sideways scroll; axe; deep links and old saved progress are untouched; storage blocked still works.
 // Screenshots go to $V7_SHOTS (default: a temp dir) for human review. A missing browser is a SKIP (exit 3; failure in CI).
@@ -109,24 +109,30 @@ async function axe(page, label) {
     problems.push(`${label}: axe ${bad.map((v) => `${v.id}(${v.nodes.length})`).join(", ")}`);
 }
 
-// 1. Start in three choices (grade, intent, Start), then arrive at real work.
+// 1. From the front door (grade, topic, skill, Start) to the skill's Learn stage, then into the v7 picture workspace.
 {
   const { ctx, page, errors } = await open({ width: 390, height: 844 });
   await page.goto(`${base}/math/fluency-lab/`);
-  await page.waitForSelector("#v7-start");
-  ok((await page.locator("#v7-start [data-grade]").count()) === 8, "eight grade choices");
-  await page.click('#v7-start [data-grade="4"]');
-  await page.click('#v7-start [data-intent="learn"]');
-  const go = page.locator("#v7-go");
-  ok(await go.isVisible(), "Start appears after two choices");
+  await page.waitForSelector(".ep");
+  ok((await page.locator("[data-ep-grade]").count()) === 9, "nine grade choices, K to 8");
+  await page.click('[data-ep-grade="4"]');
+  await page.click('[data-ep-topic="fractions"]');
+  await page.click('[data-ep-skill="fraction-equiv"]');
+  const go = page.locator("[data-ep-start]");
+  ok(await go.isVisible(), "Start appears after a skill is chosen");
   const box = await go.boundingBox();
   ok(box.height >= 44 && box.width >= 44, "Start is a 44px target");
   ok(await noSideways(page), "home has no horizontal scroll at 390");
   await page.screenshot({ path: join(SHOTS, "home-390.png") });
   await axe(page, "home");
   await go.click();
+  await page.waitForSelector("#workspace-view:not([hidden])");
+  await page.click('#learn-panel a[href^="./v7/"]');
   await page.waitForSelector("#v7-model svg, #v7-model .e8ml-visual", { timeout: 15000 });
-  ok(page.url().includes("/v7/?grade=4"), "Learn opens the v7 workspace");
+  ok(
+    page.url().includes("/v7/?grade=4&skill=fraction-equiv"),
+    "Learn opens the v7 workspace for the same skill",
+  );
   ok(
     errors.filter((e) => !buildTimeNoise(e)).length === 0,
     `home journey clean: ${errors.join("; ")}`,
@@ -134,7 +140,7 @@ async function axe(page, label) {
   await ctx.close();
 }
 
-// 2. Deep links keep working and do not show the v7 start panel; old saved progress is untouched by v7.
+// 2. Deep links keep working and skip the front door; old saved progress is untouched by v7.
 {
   const OLD = JSON.stringify({ "4:fraction-equiv": { attempts: 9, correct: 8 } });
   const { ctx, page, errors } = await open(
@@ -145,7 +151,7 @@ async function axe(page, label) {
   );
   await page.goto(`${base}/math/fluency-lab/?grade=4&skill=fraction-equiv`);
   await page.waitForSelector("#main");
-  ok((await page.locator("#v7-start").count()) === 0, "deep link skips the v7 start panel");
+  ok((await page.locator(".ep").count()) === 0, "deep link skips the front door");
   await page.goto(`${base}/math/fluency-lab/v7/?grade=4&skill=fraction-equiv`);
   await page.waitForSelector("#v7-model svg, #v7-model .e8ml-visual");
   const answer = await page.evaluate(() => window.__v7.item.answers[0]);

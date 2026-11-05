@@ -72,7 +72,7 @@ try {
   await spanishContext.addInitScript(() => localStorage.setItem("ewl-fluency-lang-v1", JSON.stringify("es")));
   const spanishPage = await spanishContext.newPage();
   await spanishPage.goto(`${base}/math/fluency-lab/?grade=1&skill=add-10`, { waitUntil: "networkidle" });
-  await spanishPage.getByRole("button", { name: "Practice 10" }).click();
+  await spanishPage.getByRole("button", { name: "Practicar 10" }).click();
   await spanishPage.locator("#answer-input").fill("999");
   await spanishPage.locator("#check-answer").click();
   await spanishPage.locator("#answer-result-status").waitFor({ state: "visible" });

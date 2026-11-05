@@ -995,32 +995,11 @@ body:has(#library-view:not([hidden])) #grade-experience-banner {
   font-weight: 500;
 }
 
-/* Library cards and grade chooser pick up the material language. */
-#main .grade-choice,
+/* Library cards pick up the material language. */
 #main .skill-card,
 #main .fl4-card {
   border-radius: var(--at-radius-sm);
 }
-#main .grade-chooser .grade-choice {
-  min-height: calc(var(--at-target) + 28px);
-  border: 1px solid var(--at-rule);
-  border-top: 4px solid var(--grade, var(--at-teal-1));
-  background: var(--at-surface);
-  box-shadow: var(--at-shadow-1);
-  transition:
-    transform var(--at-fast) var(--at-ease),
-    box-shadow var(--at-fast) var(--at-ease);
-}
-#main .grade-chooser .grade-choice:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--at-shadow-2);
-}
-#main .grade-chooser .grade-choice strong {
-  font-family: var(--at-display);
-  font-weight: 500;
-  font-size: 1.2rem;
-}
-
 /* ---- Responsive ---- */
 @media (max-width: 960px) {
   #main > .intro.at-hero {
@@ -1272,20 +1251,8 @@ body:has(#library-view:not([hidden])) #main > .at-hero .intro-copy > p#intro-des
     min-height: calc(2 * 64px + 0.75rem);
   }
 }
-/* Grade chooser: columns sized for the longest name ("Kindergarten") in the display face. */
-#main .grade-chooser {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 11.5rem), 1fr));
-  gap: 0.75rem;
-}
-#main .grade-chooser .grade-choice {
-  min-width: 0;
-}
 /* Area tabs keep studio ink on every grade (the analyze-band header rules assume a dark bar). */
 #main .hub-tabs > button:not([aria-current="page"]),
 #main .hub-tabs > a:not([aria-current="page"]) {
   color: var(--at-ink);
-}
-#main .hub-tabs > .reality-tab:not([aria-current="page"]) {
-  color: var(--at-teal-ink);
 }

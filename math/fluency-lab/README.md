@@ -1,6 +1,12 @@
 # Math Fluency Lab
 
-Grades 1–8, 88 focused skills. The curriculum hub links here under Featured Learning Resources.
+Kindergarten to Grade 8, 96 focused skills. The curriculum hub links here under Featured Learning Resources.
+
+## Front door and the skill screen
+
+The bare URL is one front door (`entry-picker.js`): choose a grade (K–8), a topic, a skill, then Start. Nothing has to be saved first; no account, checkup or profile is asked for. When this device has a last place (`ewl-fluency-last-v1`, per learner) or an unfinished practice set, a "Welcome back!" card with **Resume Learning** sits above the picker; otherwise it is not drawn at all. `skill-path.js` is the single map from the curriculum's strands to student topics (Grade → Domain → Topic → Skill); skill ids, grades and saved records are untouched, and `tools/fluency-skill-path.test.mjs` proves every one of the 96 skills sits under exactly one topic of its own grade.
+
+A started skill shows `Grade 3 › Multiplication › Multiplication facts ×0–5`, a sibling-skill switcher, **Copy link to this skill**, and five stages (`skill-stage.js`): **Learn** (the Learn panel), **Try It** (the hands-on Build it model; guided practice is one tap away), **Practice** (the adaptive set; leaving it for Learn and coming back resumes the same problem), **Play** (the Game Room mounted in the skill screen with this skill as the problem source) and **Grow** (the skill's evidence and the next skill). One primary next action sits under the work; Learn also offers **Go to Practice**. Links: `?grade=3&skill=mul-0-5` opens Learn, `&stage=try|practice|play|grow` opens that stage, and a refresh keeps it. Each skill's Learn stage also links the v7 picture workspace (`v7/?grade=&skill=`). Navigation is **Home | My Learning | Explore** (`hub-nav.js`), with For families and For teachers set apart. Browser test: `node math/fluency-lab/entry-flow.browser.test.mjs`.
 
 Students can explore three checked visual steps, complete a starting-point checkup, practice with adaptive support, revisit a personal daily mix, and repair mistakes with fresh problems. Each set generates new problems; the smallest fact domains intentionally revisit a finite set of facts.
 

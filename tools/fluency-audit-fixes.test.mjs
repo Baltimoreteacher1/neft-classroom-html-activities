@@ -118,6 +118,15 @@ assert.equal(
 const lateEvening = new Date(2026, 9, 12, 23, 30).getTime();
 const nextMorning = new Date(2026, 9, 13, 0, 30).getTime();
 assert.notEqual(dailyGame(lateEvening), dailyGame(nextMorning), "pick changes at local midnight");
+// Kindergarten has games of its own: a minimum grade of 0 must not fall back to Grade 1 and leave no game at all
+// (the empty pick threw while drawing the Kindergarten grade page).
+for (let day = 0; day < 40; day += 1) {
+  const kGame = dailyGame(new Date(2026, 10, 5 + day, 12).getTime(), 0);
+  assert.ok(
+    typeof kGame === "string" && kGame.length,
+    `Kindergarten has a daily game on day ${day}`,
+  );
+}
 assert.equal(
   dailyGame(new Date(2026, 9, 12, 0, 5).getTime()),
   dailyGame(lateEvening),

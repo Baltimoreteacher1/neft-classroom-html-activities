@@ -56,8 +56,7 @@ export function landscapeLayout(grade, tutor, now = Date.now()) {
 }
 
 const heroAction = (ctx, dashboard) => {
-  if (ctx.landing)
-    return `<button type="button" class="at-cta" data-at-choose>${escapeHtml(t("Choose your grade"))}<span aria-hidden="true">→</span></button>`;
+  if (ctx.landing) return "";
   const source = dashboard?.querySelector(
     ".fl4-hero [data-resume-practice], .fl4-hero [data-open-key]",
   );
@@ -210,11 +209,3 @@ export function mountAtelierHome(ctx) {
   if (anchor) anchor.after(wrap);
   else dashboard.prepend(wrap);
 }
-
-// The landing hero's "Choose your grade" moves focus to the first grade in the chooser.
-globalThis.document?.addEventListener("click", (event) => {
-  if (!event.target.closest("[data-at-choose]")) return;
-  const first = document.querySelector(".grade-chooser .grade-choice");
-  first?.scrollIntoView?.({ behavior: "smooth", block: "center" });
-  first?.focus({ preventScroll: true });
-});

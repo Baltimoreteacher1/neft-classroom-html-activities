@@ -27,6 +27,11 @@ const click = (selector) => {
   assert.ok($(selector), `Missing ${selector}`);
   $(selector).click();
 };
+// The learner's grade page is My Learning > My grade (Home is the grade-and-skill picker).
+const gradeHome = () => {
+  click('#hub-tabs [data-view="path"]');
+  click('#hub-subnav [data-view="library"]');
+};
 const fill = (selector, value) => {
   $(selector).value = String(value);
 };
@@ -46,7 +51,8 @@ const solveCurrent = () => {
   }
 };
 
-click('[data-view="library"]');
+// The learner's grade page is My Learning > My grade (Home is the grade-and-skill picker).
+gradeHome();
 // The journey home leads with the studio hero: one of its grade-band headlines (atelier/copy.js).
 assert.ok(
   [...Object.values(HEADLINES).map(([headline]) => headline), LANDING[0]].includes(
@@ -253,12 +259,12 @@ for (let i = 0; i < 5; i++) {
 }
 assert.equal($("#session-summary").hidden, false, "Assignments reach a real completion state");
 assert.equal(savedSession(), null, "Completed sessions do not remain resumable");
-click('[data-view="library"]');
+gradeHome();
 click('[data-skill="division"]');
 assert.equal($("label[for='mastery-meter']").textContent, "Recent independent accuracy");
 assert.match($("#mastery-label").textContent, /of \d+ recent checks correct/);
 
-click('[data-view="library"]');
+gradeHome();
 const recordsBefore = JSON.stringify(savedTutor().records);
 click("[data-start-checkup]");
 for (let i = 0; i < 11; i++) {
@@ -278,7 +284,8 @@ assert.equal(
 assert.equal(JSON.stringify(savedTutor().records), recordsBefore, "Checkups do not award mastery");
 assert.match($("#summary-title").textContent, /starting-point/);
 
-click('#hub-tabs [data-view="practice"]');
+click('#hub-tabs [data-view="path"]');
+click('#hub-subnav [data-view="practice"]');
 click('#hub-subnav [data-view="notebook"]');
 const savedMistake = savedTutor().mistakes.find(
   (entry) => entry.key === "4:division" && !entry.resolvedAt,
@@ -337,7 +344,7 @@ click("#back-library");
 click('[data-view="path"]');
 
 // Streak mode: untimed, 10 correct in a row, a miss restarts the count, no clock anywhere.
-click('[data-view="library"]');
+gradeHome();
 click('[data-skill="division"]');
 click('[data-mode="streak"]');
 assert.equal(savedSession().session.mode, "streak", "Streak sessions save and can resume");
@@ -379,7 +386,7 @@ assert.equal(
   "streakBest is stored",
 );
 
-click('[data-view="library"]');
+gradeHome();
 click("[data-start-daily]");
 assert.equal(savedSession().session.queue.length, 10);
 assert.ok(new Set(savedSession().session.queue.map((entry) => entry.key)).size >= 2);
@@ -404,7 +411,7 @@ fill(".solver-reference-chart [data-factor-of]", 1);
 $(".solver-reference-chart [data-add-factor]").click();
 assert.ok($(".solver-reference-chart [data-chips] b"), "Factor chart accepts and checks entries");
 
-click('[data-view="library"]');
+gradeHome();
 click("#lang-toggle");
 click('.open-skill[data-skill="lcm"]');
 click('[data-mode="practice"]');
@@ -447,7 +454,7 @@ for (const background of ["blank", "lined", "numberline", "coordinate"]) {
   );
   assert.equal($(`[data-scratchpad-bg="${background}"]`).getAttribute("aria-pressed"), "true");
 }
-click('[data-view="library"]');
+gradeHome();
 click("#lang-toggle");
 fill("#quick-skill-select", "4:multiply-2digit");
 $("#quick-skill-select").dispatchEvent(new win.Event("change", { bubbles: true }));

@@ -48,6 +48,9 @@ import { nextMoveOf } from "./step-moves.js";
 import { renderPrerequisiteMap } from "./prerequisite-map.js";
 import { mountDashboard } from "./journey-4.js"; // fl4:dashboard
 import { skillSignals } from "./recommendation-engine.js"; // fl4:dashboard
+import { mountEntryPicker } from "./entry-picker.js";
+import { growHtml, skillPathHtml, stageFooterHtml } from "./skill-stage.js";
+import { STAGE_MODE, isStage, nextSkillAfter, skillPath, stageLabel, stageOfMode, validLastVisit } from "./skill-path.js";
 import { libraryCard } from "./skill-card.js"; // fl4:dashboard
 import { factsReport, mountSnapshot } from "./class-snapshot.js";
 import { launchMiniLesson, miniLessonRequested } from "./lesson-4/launch.js"; // fl4:lessons
@@ -98,6 +101,7 @@ const STORAGE_KEY = "ewl-fluency-progress-v1";
 const SETTINGS_KEY = "ewl-fluency-settings-v1";
 const TUTOR_KEY = "ewl-fluency-tutor-v2";
 const SESSION_KEY = "ewl-fluency-session-v2";
+const LAST_KEY = "ewl-fluency-last-v1";
 const BRIDGE_RETURN_KEY = "ewl-fluency-bridge-return-v1";
 const INTELLIGENCE_KEY = "ewl-fluency-instructional-evidence-v1";
 const STREAK_GOAL = 10;
@@ -150,6 +154,10 @@ const els = {
   masteryMeter: document.querySelector("#mastery-meter"),
   masteryLabel: document.querySelector("#mastery-label"),
   modeTabs: document.querySelector("#mode-tabs"),
+  skillPath: document.querySelector("#skill-path"),
+  stageFooter: document.querySelector("#stage-footer"),
+  playPanel: document.querySelector("#play-panel"),
+  growPanel: document.querySelector("#grow-panel"),
   learnPanel: document.querySelector("#learn-panel"),
   drillPanel: document.querySelector("#drill-panel"),
   guidedCoach: document.querySelector("#guided-coach"),
@@ -265,6 +273,9 @@ const state = {
   forceIndependentFirst: false,
   recentQuestions: [],
   view: "library",
+  stage: "learn",
+  stagesVisited: new Set(),
+  pick: null,
   assignment: decodeAssignment(new URLSearchParams(location.hash.slice(1)).get("assignment")),
   instructionalSignal: null,
   activeBugHunt: null,
@@ -342,6 +353,7 @@ function setUrl() {
   const params = new URLSearchParams();
   if (state.gradeInUrl || (state.skill && state.view === "workspace")) params.set("grade", state.grade);
   if (state.skill && state.view === "workspace") params.set("skill", state.skill.id);
+  if (state.skill && state.view === "workspace" && state.stage !== "learn") params.set("stage", state.stage);
   if (!["library", "workspace"].includes(state.view)) params.set("view", state.view);
   const query = params.toString();
   try { history.replaceState(null, "", `${location.pathname}${query ? `?${query}` : ""}${location.hash}`); } catch { /* A standalone file can still run when URL rewriting is unavailable. */ }
@@ -408,10 +420,42 @@ function filterSkillsBySearch() {
   }
 }
 
-function renderGradeChooser() {
-  els.dashboard.innerHTML = `
-    <div class="journey-heading"><div><p class="section-label">${escapeHtml(t("Math Fluency Lab"))}</p><h2>${escapeHtml(t("Choose your grade"))}</h2><p>${escapeHtml(t("Pick Kindergarten to Grade 8. You can change it any time."))}</p></div></div>
-    <div class="grade-chooser" role="group" aria-label="${escapeHtml(t("Grade level"))}">${GRADES.map((grade) => `<button type="button" class="grade-choice" data-pick-grade="${grade.grade}" style="--grade:${grade.color}"><strong>${escapeHtml(grade.label)}</strong><span>${escapeHtml(t("{n} skills", { n: grade.skills.length }))}</span></button>`).join("")}</div>`;
+// The front door. Saved progress only adds the "Welcome back" card; the picker never needs it.
+let cleanupPicker = null;
+function pickerResume() {
+  const last = validLastVisit(loadJson(LAST_KEY, null));
+  const saved = loadJson(SESSION_KEY, null);
+  const session = saved?.version === 2 && saved.session && !saved.session.finished && saved.item?.skill && findSkill(`${saved.item.skill.grade ?? saved.grade}:${saved.item.skill.id}`) ? saved : null;
+  if (last && !(session && session.skillId === last.skillId && session.grade === last.grade && last.stage === "practice"))
+    return { title: t(last.skill.title), where: `· ${t(stageLabel(last.stage))}`, open: () => { openSkill(last.skillId, STAGE_MODE[last.stage] || "learn", last.grade); if (!STAGE_MODE[last.stage]) enterStage(last.stage); } };
+  if (!session) return null;
+  return { title: t(session.item.skill.title), where: `· ${t("Practice")}`, open: () => resumePractice(session) };
+}
+
+function renderEntry() {
+  cleanupPicker?.();
+  const resume = pickerResume();
+  const pick = state.pick || {};
+  state.pick = null;
+  cleanupPicker = mountEntryPicker(els.dashboard, {
+    grade: pick.grade ?? null,
+    topic: pick.topic ?? null,
+    resume: resume && { title: resume.title, where: resume.where },
+    onStart: (grade, skillId) => { state.landing = false; openSkill(skillId, "learn", grade); },
+    onResume: () => { state.landing = false; resume.open(); },
+  });
+}
+
+// Back to the picker with the grade (and topic) already chosen; nothing saved is lost.
+function openPicker(pick = {}) {
+  saveActiveSession();
+  state.session = null;
+  state.pick = pick;
+  state.landing = true;
+  state.gradeInUrl = false;
+  if (pick.grade != null) state.grade = pick.grade;
+  renderLibrary();
+  window.scrollTo?.(0, 0);
 }
 
 function pickGrade(grade) {
@@ -483,12 +527,12 @@ function renderLibrary() {
   renderOverallStats();
   renderDashboard();
   const choosing = state.landing;
-  if (choosing) renderGradeChooser();
+  if (choosing) renderEntry();
   if (choosing) {
     for (const part of [document.querySelector(".practice-subnav"), document.querySelector("#grade-hub-tabs"), els.morePractice, els.trail]) if (part) part.hidden = true;
   } else document.querySelector("#grade-hub-tabs")?.removeAttribute("hidden");
   setUrl();
-  document.title = !choosing && state.gradeInUrl ? `${grade.label} Math Fluency Lab | EduWonderLab` : "Math Fluency Lab · Grades 1–8 | EduWonderLab";
+  document.title = !choosing && state.gradeInUrl ? `${grade.label} Math Fluency Lab | EduWonderLab` : "Math Fluency Lab · Grades K–8 | EduWonderLab";
 }
 
 function skillPreviewSeed(skill) {
@@ -586,6 +630,7 @@ function openSkill(skillId, mode = "learn", targetGrade = null) {
   state.session = null;
   state.item = null;
   showArea("workspace");
+  if (state.skill?.id !== skillId || state.skill?.grade !== state.grade) state.stagesVisited = new Set();
   state.skill = getSkill(state.grade, skillId);
   if (!state.skill) return;
   state.mixedPool = null;
@@ -659,6 +704,7 @@ function renderModeTabs(mixed = false) {
             `<button role="tab" aria-selected="${mode === state.mode}" tabindex="${mode === state.mode ? 0 : -1}" aria-controls="${MODE_PANEL[mode]}" data-mode="${mode}">${label}</button>`,
         )
         .join("");
+  renderStageUi();
 }
 
 // Learn it: one sentence, one interactive model, and "Watch me solve it" steps revealed one tap at a time.
@@ -694,11 +740,12 @@ function renderLearn() {
       <p class="learn-watch"><strong>Watch out:</strong> ${highlightVocab(escapeHtml(t(skill.learn.watch)))}</p>
       ${wordStripHtml(skill, { heading: t("Words to know") })}
       ${languagePromptHtml(skill, { heading: t("Pause, notice, and explain") })}
-      <div class="learn-actions">
-        <button class="primary-action" data-start-guided>Try 5 with help</button>
-        <button class="primary-action" data-start-independent>Practice 10</button>
+      <div class="learn-actions learn-actions--more" role="group" aria-label="${escapeHtml(t("More ways to learn"))}">
         <button class="outline-action" data-mini-lesson>${t("Mini-lesson")}</button>
-        <button class="outline-action" data-start-visual>Build it step by step</button>
+        <a class="outline-action" href="./v7/?grade=${skill.grade}&amp;skill=${encodeURIComponent(skill.id)}">${t("See it in the picture workspace")}</a>
+        <button class="outline-action" data-start-guided>${t("Try 5 with help")}</button>
+        <button class="outline-action" data-start-visual>${t("Build it step by step")}</button>
+        <button class="outline-action" data-start-independent>${t("Practice 10")}</button>
         <button class="outline-action" data-write-about>${t("Write about it")}</button>
       </div>
     </div>`;
@@ -719,6 +766,7 @@ function openMiniLesson() {
 
 function setMode(mode) {
   saveActiveSession();
+  leaveExtraPanels();
   cleanupVisual?.();
   cleanupVisual = null;
   state.mode = mode;
@@ -763,6 +811,78 @@ function setMode(mode) {
   } else {
     beginSession(mode, mode === "streak" ? Infinity : mode === "quick" ? 5 : mode === "guided" ? 5 : 10);
   }
+  if (state.skill) setStage(stageOfMode(mode));
+}
+
+// ---- Learn → Try It → Practice → Play → Grow around one skill ----
+// Each stage opens the lab's own mode or panel; the bar, breadcrumb and next action never replace them.
+let playMounted = false;
+function leaveExtraPanels() {
+  if (playMounted) { cleanupGames?.(); cleanupGames = null; els.playPanel.replaceChildren(); playMounted = false; }
+  els.playPanel.hidden = true;
+  els.growPanel.hidden = true;
+  els.modeTabs.hidden = false;
+}
+
+const pausedPracticeFor = (skill) => {
+  const saved = loadJson(SESSION_KEY, null);
+  return saved?.version === 2 && saved.session && !saved.session.finished && saved.skillId === skill.id && saved.grade === skill.grade ? saved : null;
+};
+
+function rememberVisit() {
+  if (state.skill) writeLocal(profileKey(LAST_KEY, activeProfile), { grade: state.grade, skillId: state.skill.id, stage: state.stage, at: Date.now() });
+}
+
+function renderStageUi() {
+  const skill = state.view === "workspace" ? state.skill : null;
+  els.skillPath.innerHTML = skill ? skillPathHtml({ skill, stage: state.stage, visited: state.stagesVisited }) : "";
+  els.stageFooter.innerHTML = skill && state.stage !== "grow" ? stageFooterHtml({ stage: state.stage, pausedPractice: Boolean(pausedPracticeFor(skill)) }) : "";
+}
+
+function setStage(stage) {
+  state.stage = stage;
+  state.stagesVisited.add(stage);
+  rememberVisit();
+  renderStageUi();
+  setUrl();
+}
+
+function showPanelOnly(panel, stage) {
+  saveActiveSession();
+  leaveExtraPanels();
+  cleanupVisual?.();
+  cleanupVisual = null;
+  cleanupLearnStudio?.();
+  cleanupLearnStudio = null;
+  cleanupVisualStudio?.();
+  cleanupVisualStudio = null;
+  document.querySelector("#visual-studio")?.replaceChildren();
+  state.session = null;
+  state.item = null;
+  for (const hidden of [els.learnPanel, els.visualPanel, els.drillPanel, document.querySelector("#visual-studio")]) if (hidden) hidden.hidden = true;
+  els.modeTabs.hidden = true;
+  panel.hidden = false;
+  setStage(stage);
+}
+
+function openPlayStage() {
+  showPanelOnly(els.playPanel, "play");
+  cleanupGames = mountGames(els.playPanel, { grade: state.grade, assignedStop: `skill:${state.skill.id}`, onEvidence: recordPuzzleEvidence });
+  playMounted = true;
+}
+
+function openGrowStage() {
+  showPanelOnly(els.growPanel, "grow");
+  els.growPanel.innerHTML = growHtml({ skill: state.skill, status: evidence(state.tutor, state.skill), next: nextSkillAfter(state.skill) });
+}
+
+function enterStage(stage) {
+  if (!state.skill || !isStage(stage)) return;
+  if (stage === "practice" && state.stage === "practice" && state.session) return;
+  if (stage === "play") openPlayStage();
+  else if (stage === "grow") openGrowStage();
+  else if (stage === "practice" && pausedPracticeFor(state.skill)) resumePractice(pausedPracticeFor(state.skill));
+  else setMode(STAGE_MODE[stage]);
 }
 
 function createSession(mode, target, queue = null, options = {}) {
@@ -7512,8 +7632,8 @@ function showArea(view) {
   if (view !== "write") { cleanupWriting?.(); cleanupWriting = null; }
   document.body.classList.toggle("working-on-skill", view === "workspace");
   document.body.classList.toggle("teacher-resources", view === "teacher");
-  markDestinations(document.querySelector("#hub-tabs"), view);
-  renderSubnav(els.hubSubnav, view, t);
+  markDestinations(document.querySelector("#hub-tabs"), view, { landing: state.landing });
+  renderSubnav(els.hubSubnav, view, t, { landing: state.landing });
 }
 
 /* Progress cards report observations and denominators instead of inferred learner traits. */
@@ -8196,7 +8316,7 @@ if (new URLSearchParams(location.search).get("diagnostics") === "1") {
 function openPlanned(mode, queue, options = {}) {
   saveActiveSession(); cleanupVisual?.(); cleanupVisual = null;
   state.skill = null; state.mixedPool = queue.map((entry) => findSkill(entry.key)); state.mode = mode;
-  showArea("workspace");
+  showArea("workspace"); leaveExtraPanels(); renderStageUi();
   els.workspaceGrade.textContent = gradeDisplay(state.grade);
   els.workspaceTitle.textContent = mode === "daily" ? "Today's 10, chosen for you" : mode === "mission" ? "A short learning mission" : mode === "diagnostic" ? "Find my starting point" : mode === "assignment" ? state.assignment.label : "Turn a mistake into a strategy";
   document.title = `${els.workspaceTitle.textContent} | Math Fluency Lab`;
@@ -8324,6 +8444,7 @@ function saveActiveSession() {
 function resumePractice(saved = loadJson(SESSION_KEY, null)) {
   const allowed = ["practice", "guided", "adaptive", "streak", "daily", "mixed", "repair", "diagnostic", "assignment"];
   if (!saved || saved.version !== 2 || !allowed.includes(saved.session?.mode) || !findSkill(`${saved.item?.skill?.grade ?? saved.grade}:${saved.item?.skill?.id}`) || (saved.session.queue && saved.session.queue.some((entry) => !findSkill(entry.key)))) { announce("There is no saved practice to resume."); return; }
+  leaveExtraPanels();
   cleanupVisual?.(); cleanupVisual = null;
   state.grade = saved.grade; state.skill = saved.skillId ? getSkill(saved.grade, saved.skillId) : null;
   state.mixedPool = getGrade(state.grade).skills; state.mode = saved.session.mode; state.assignment = saved.assignment || state.assignment;
@@ -8352,7 +8473,8 @@ function resumePractice(saved = loadJson(SESSION_KEY, null)) {
     }
     saveActiveSession();
   }
-  setUrl(); announce("Your saved practice is ready.");
+  if (state.skill) setStage("practice"); else setUrl();
+  announce("Your saved practice is ready.");
 }
 
 function renderProfiles() {
@@ -8408,10 +8530,6 @@ els.gradeTabs.addEventListener("click", (event) => {
   const button = event.target.closest("[data-grade]");
   if (button) pickGrade(Number(button.dataset.grade));
 });
-els.dashboard.addEventListener("click", (event) => {
-  const button = event.target.closest("[data-pick-grade]");
-  if (button) pickGrade(Number(button.dataset.pickGrade));
-});
 
 els.strandFilters.addEventListener("click", (event) => {
   const button = event.target.closest("[data-strand]");
@@ -8441,6 +8559,27 @@ els.modeTabs.addEventListener("click", (event) => {
   const button = event.target.closest("[data-mode]");
   if (!button || !state.skill) return;
   setMode(button.dataset.mode);
+});
+
+// Stage bar, breadcrumb, next-action footer and the Grow panel: one listener for the whole skill screen.
+els.workspace.addEventListener("click", (event) => {
+  const stage = event.target.closest("[data-stage], [data-stage-go]");
+  if (stage) return enterStage(stage.dataset.stage || stage.dataset.stageGo);
+  const topic = event.target.closest("[data-sp-topic]");
+  if (topic) return openPicker({ grade: state.grade, topic: topic.dataset.spTopic });
+  if (event.target.closest("[data-sp-grade]")) return openPicker({ grade: state.grade });
+  const next = event.target.closest("[data-sp-next]");
+  if (next) return openSkill(next.dataset.spNext, "learn");
+  if (event.target.closest("[data-sp-copy]")) {
+    const link = `${location.origin}${location.pathname}${skillPath(state.grade, state.skill.id)}`;
+    const done = () => announce(t("Link copied. It opens this skill with nothing saved."));
+    if (navigator.clipboard?.writeText) navigator.clipboard.writeText(link).then(done, () => announce(link));
+    else announce(link);
+  }
+});
+els.workspace.addEventListener("change", (event) => {
+  const pick = event.target.closest("[data-sp-switch]");
+  if (pick) openSkill(pick.value, "learn");
 });
 
 els.learnPanel.addEventListener("click", (event) => {
@@ -8604,7 +8743,11 @@ document.addEventListener("click", (event) => {
   const writeAbout = event.target.closest("[data-write-about]");
   if (writeAbout && state.skill) { state.writeSkill = `${state.skill.grade}:${state.skill.id}`; openHubView("write"); return; }
   const view = event.target.closest("[data-view]");
-  if (view) openHubView(view.dataset.view);
+  if (view?.hasAttribute("data-home")) openPicker({});
+  else if (view) {
+    if (view.dataset.view === "library") state.landing = false;
+    openHubView(view.dataset.view);
+  }
   const open = event.target.closest("[data-open-key]");
   if (open) {
     const skill = findSkill(open.dataset.openKey); if (!skill) return;
@@ -8911,11 +9054,7 @@ els.solverWorkspace?.addEventListener("input", (event) => handleModelInput(event
 els.learnPanel.addEventListener("input", (event) => handleModelInput(event.target));
 els.feedback.addEventListener("fluency-fill-solved", (event) => handleStepPlayerSolved(event.target));
 
-document.querySelector("#brand-home")?.addEventListener("click", () => {
-  state.gradeInUrl = false;
-  state.landing = true;
-  renderLibrary();
-});
+document.querySelector("#brand-home")?.addEventListener("click", () => openPicker({}));
 
 els.quickSkillSelect?.addEventListener("change", (event) => {
   const val = event.target.value;
@@ -10789,6 +10928,7 @@ initStepModelLink([els.learnPanel, document.querySelector("#drill-panel")]);
 initStepLens();
 const initialSkill = initialParams.get("skill");
 if (initialSkill && initialParams.get("view") !== "write") openSkill(initialSkill);
+if (initialSkill && state.skill && isStage(initialParams.get("stage"))) enterStage(initialParams.get("stage"));
 if (initialSkill && state.skill && miniLessonRequested(initialParams.toString())) openMiniLesson(); // fl4:lessons
 renderProfiles();
 renderAssignmentBanner();

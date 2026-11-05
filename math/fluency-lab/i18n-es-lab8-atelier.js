@@ -1,6 +1,8 @@
 // Spanish for the Living Mathematics Studio home (atelier/): hero, sculpture, portals and mastery landscape.
 // English text is the key; student lines use tú, lines for adults use ustedes.
 export const ES_ATELIER = {
+  "Math Fluency Lab": "Laboratorio de fluidez matemática",
+  "Kindergarten to Grade 8. Choose a grade and a skill, then start.": "De kínder a 8.º grado. Elige un grado y una destreza, y empieza.",
   "Continue where I stopped": "Seguir donde me quedé",
   "Start my first lesson": "Empezar mi primera lección",
   "Continue with {skill}": "Continuar con {skill}",
@@ -71,8 +73,4 @@ export const ES_ATELIER = {
   "The structure behind every relationship.": "La estructura detrás de cada relación.",
   "Adjust a rate, read the slope and see why every part of a line agrees.":
     "Ajusta una tasa, lee la pendiente y descubre por qué cada parte de una recta concuerda.",
-  "Mathematics you can see, change and understand.":
-    "Matemáticas que puedes ver, cambiar y entender.",
-  "Grades K–8. Pick your grade and the studio rearranges itself around the ideas you are learning.":
-    "Grados K–8. Elige tu grado y el estudio se organiza alrededor de las ideas que estás aprendiendo.",
 };

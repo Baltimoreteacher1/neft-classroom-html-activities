@@ -76,33 +76,33 @@ export const STUDENT_STEPS = [
     id: "games",
     anchor: '#hub-tabs button[data-view="games"]',
     en: {
-      title: "Games",
+      title: "Explore",
       body: [
-        "Play math games with no timer. Use pictures and models to think about numbers in new ways.",
+        "Explore has math games with no timer, models and Math Reality. Use pictures and models to think about numbers in new ways.",
       ],
     },
     es: {
-      title: "Juegos",
+      title: "Explorar",
       body: [
-        "Juega juegos de matemáticas sin cronómetro. Usa dibujos y modelos para pensar en los números de nuevas maneras.",
+        "En Explorar hay juegos de matemáticas sin cronómetro, modelos y Realidad matemática. Usa dibujos y modelos para pensar en los números de nuevas maneras.",
       ],
     },
   },
   {
     id: "mistakes",
-    anchor: '#hub-tabs button[data-view="practice"]',
+    anchor: '#hub-tabs button[data-view="path"]',
     demo: "hints",
     en: {
       title: "Fix my mistakes",
       body: [
-        "Missed one? It is saved here, and you get a fresh, similar problem to try. Mistakes are clues.",
+        "Missed one? It is saved in My Learning, under Fix my mistakes, and you get a fresh, similar problem to try. Mistakes are clues.",
         "Get two new ones right in a row, on your own, and that mistake counts as fixed.",
       ],
     },
     es: {
       title: "Corregir mis errores",
       body: [
-        "¿Fallaste una? Se guarda aquí y recibes un problema nuevo y parecido para intentar. Los errores son pistas.",
+        "¿Fallaste una? Se guarda en Mi aprendizaje, en Corregir mis errores, y recibes un problema nuevo y parecido para intentar. Los errores son pistas.",
         "Si aciertas dos nuevos seguidos, por tu cuenta, ese error cuenta como corregido.",
       ],
     },
