@@ -11,7 +11,7 @@
  * The block between the build markers is written by tools/sync-access-shell.mjs; do not edit it by hand.
  */
 /* build:begin */
-const BUILD_HASH = "4ae090bf8c15";
+const BUILD_HASH = "e039ceaed097";
 const PRECACHE_CORE = [
   "/access-practice-lab/library.css?v=159952795a3e",
   "/access-practice-lab/studio.css?v=28d71fd235dd",
@@ -23,7 +23,7 @@ const PRECACHE_CORE = [
   "/access-practice-lab/practice-games.css?v=afb7575317be",
   "/access-practice-lab/publisher.css?v=67f6dac7bd48",
   "/access-practice-lab/rehearsal.css?v=42b55b2b213a",
-  "/access-practice-lab/ds.css?v=afbc21f3b575",
+  "/access-practice-lab/ds.css?v=d9b1d86bad80",
   "/access-practice-lab/home.css?v=6e41b83e053c",
   "/access-practice-lab/activity.css?v=90c2552ac8ab",
   "/access-practice-lab/room.css?v=59ccc2904c81",
