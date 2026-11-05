@@ -10,8 +10,11 @@ import { loadRecord } from "../store.js";
 import { BASE, DOMAIN_META, html, icon, safeJson, storage } from "../util.js";
 import { i18nFor, makeI18n } from "../i18n.js";
 import { activityHref } from "./room.js";
+import * as scienceLab from "./science-lab.js";
+import { scienceLabCardHTML } from "./science-lab-hub.js";
 
 const PROGRESS_KEY = "accessPracticeLab:v1:world-missions";
+const SCIENCE_LAB = "science-lab";
 let WORLDS = [];
 let I = makeI18n("en");
 
@@ -151,6 +154,7 @@ function hubHTML(ctx, index, progress) {
       </aside>
     </section>
     <nav class="world-grid" aria-label="${I.S("Choose a learning world", "Elige un mundo de aprendizaje")}">${WORLDS.map((w) => tile(w, band, progress))}</nav>
+    ${scienceLabCardHTML(I, band)}
     <section class="panel world-bridge">
       <h2>${I.T("Connected language missions", "Misiones de lenguaje conectadas")}</h2>
       <p>${I.T("Listen, read, collect evidence, discuss, and write through a complete investigation.", "Escucha, lee, reúne evidencia, conversa y escribe en una investigación completa.")}</p>
@@ -399,6 +403,7 @@ export async function render(ctx) {
   const band = ctx.band;
   const worldId = ctx.route.worldId || ctx.route.id || "";
   const missionId = ctx.route.missionId || "";
+  if (worldId === SCIENCE_LAB) return scienceLab.render(ctx);
   const world = WORLDS.find((w) => w.id === worldId);
   const index = await loadStudioIndex();
   const progress = loadMissionProgress();
@@ -417,7 +422,20 @@ export async function render(ctx) {
   return { title: `${world.name} · ${I.S("Language Worlds", "Mundos lingüísticos")}`, html: await worldHTML(ctx, world, index, loadStudio(), progress) };
 }
 
-export async function onClick(e, ctx) {
+// The Science Investigation Lab lives at /worlds/science-lab but is not a fifth world tile (content/worlds.json stays at four).
+const isScienceLab = (ctx) => ctx.route?.worldId === SCIENCE_LAB;
+export const onInput = (e, ctx) => (isScienceLab(ctx) ? scienceLab.onInput(e, ctx) : undefined);
+export const unmount = () => scienceLab.unmount();
+
+export function onClick(e, ctx) {
+  return isScienceLab(ctx) ? scienceLab.onClick(e, ctx) : onWorldClick(e, ctx);
+}
+
+export function onChange(e, ctx) {
+  return isScienceLab(ctx) ? scienceLab.onChange(e, ctx) : onWorldChange(e, ctx);
+}
+
+async function onWorldClick(e, ctx) {
   const button = e.target.closest("button");
   if (!button) return false;
   if (button.hasAttribute("data-say") || button.hasAttribute("data-stop-audio")) return false;
@@ -473,7 +491,7 @@ export async function onClick(e, ctx) {
   return false;
 }
 
-export async function onChange(e, ctx) {
+async function onWorldChange(e, ctx) {
   if (e.target.matches("[data-world-choice]")) {
     missionSession.selectedChoice = Number(e.target.value);
     missionSession.checked = false;

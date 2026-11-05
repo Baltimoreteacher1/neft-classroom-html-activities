@@ -228,6 +228,16 @@ function mergeRecord(local, incoming) {
   return merged;
 }
 
+/** Science Lab: per band and case, this device's work wins; the backup only fills cases this device has not started. */
+function mergeScienceLab(local, incoming) {
+  const bands = { ...(incoming.bands || {}) };
+  for (const [band, localBand] of Object.entries(local.bands || {})) {
+    const inBand = isObject(bands[band]) ? bands[band] : {};
+    bands[band] = { ...inBand, ...localBand, cases: { ...(inBand.cases || {}), ...(localBand?.cases || {}) } };
+  }
+  return { ...incoming, ...local, bands };
+}
+
 /** Shared by Passport and site Save/Resume. Validate before changing any storage. */
 export function importProgressData(data) {
   if (!isObject(data)) throw new Error("That backup does not contain valid progress.");
@@ -238,7 +248,7 @@ export function importProgressData(data) {
     const progress = isProgressKey(key);
     if (
       !progress &&
-      !/^(?:prefs|studentName|pathway|ledger|studio|games|journey|readingRoom|test:[a-zA-Z0-9_-]+)$/.test(suffix)
+      !/^(?:prefs|studentName|pathway|ledger|studio|games|journey|readingRoom|science-lab|test:[a-zA-Z0-9_-]+)$/.test(suffix)
     )
       continue;
     const current = storage.get(key);
@@ -279,6 +289,16 @@ export function importProgressData(data) {
               lessons: Object.fromEntries(Object.entries({ ...(incoming.lessons || {}), ...(local.lessons || {}) }).map(([id, state]) => [id, { ...state, ...(local.lessons?.[id] || {}) }])),
             };
       const merged = JSON.stringify(mergedData);
+      if (merged !== current) writes.push([key, merged]);
+      continue;
+    }
+    if (suffix === "science-lab") {
+      const incoming = safeJson(value, null);
+      if (!isObject(incoming) || incoming.v !== 1 || !isObject(incoming.bands))
+        throw new Error("That backup has an invalid Science Lab record. Nothing was loaded.");
+      const local = current === null ? null : safeJson(current, null);
+      if (current !== null && !isObject(local)) continue;
+      const merged = JSON.stringify(local ? mergeScienceLab(local, incoming) : incoming);
       if (merged !== current) writes.push([key, merged]);
       continue;
     }

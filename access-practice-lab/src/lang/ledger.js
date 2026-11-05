@@ -95,10 +95,13 @@ export function mergeLedgers(local, incoming) {
   return { v: 1, entries: merged.slice(-MAX_ENTRIES) };
 }
 
+/** Entry sources that carry a learner's own produced language (so word, error and fade summaries count them). */
+const PRODUCED_SRC = ["writing", "speaking", "mission", "science-lab"];
+
 /** The numeric value of one tracked feature for an entry (null = not applicable to that entry). */
 export function featureValue(entry, key) {
   const m = entry.m || {};
-  if (entry.src !== "writing" && entry.src !== "speaking" && entry.src !== "mission") return null;
+  if (!PRODUCED_SRC.includes(entry.src)) return null;
   if (!m.words) return null;
   switch (key) {
     case "words":
@@ -152,7 +155,7 @@ export const firstAttempts = (entries, f = () => true) =>
   entries.filter(
     (e) =>
       e.kind === "first" &&
-      ["writing", "speaking", "mission"].includes(e.src) &&
+      PRODUCED_SRC.includes(e.src) &&
       e.m?.words &&
       f(e),
   );
@@ -192,7 +195,7 @@ export function errorPatterns(entries, { recent = 12 } = {}) {
   // One piece of work counts once, in its latest state: a pattern fixed in the final version is no longer
   // "recurring", and revising a draft three times is not three drafts with the error.
   const latest = new Map();
-  for (const e of entries.filter((x) => ["writing", "speaking", "mission"].includes(x.src) && x.m?.errs)) {
+  for (const e of entries.filter((x) => PRODUCED_SRC.includes(x.src) && x.m?.errs)) {
     const key = `${e.src}:${e.task}`;
     latest.delete(key);
     latest.set(key, e);
@@ -392,7 +395,7 @@ export function patternReviewEvents(entries = []) {
   };
   for (const e of Array.isArray(entries) ? entries : []) {
     if (!e || !e.t) continue;
-    if (["writing", "speaking", "mission"].includes(e.src) && e.m?.words && e.m?.errs && typeof e.m.errs === "object") {
+    if (PRODUCED_SRC.includes(e.src) && e.m?.words && e.m?.errs && typeof e.m.errs === "object") {
       const independent = e.stage === "independent" && e.kind === "first";
       for (const id of out.keys())
         if (!(Number(e.m.errs[id]) > 0)) push(id, { t: e.t, independent, ok: true, entry: e });

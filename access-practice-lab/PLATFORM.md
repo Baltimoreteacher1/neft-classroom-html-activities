@@ -21,6 +21,7 @@ show it independently → watch growth. Direct activity links and the quick-prac
 | Teacher dashboard | `/access-teacher/` (top panel) | `access-teacher/evidence.js`, `src/lang/teacher.js` |
 | Optional entry check-in | `/diagnostic[/<Listening|Reading|Speaking|Writing>]` | `src/views/diagnostic.js` |
 | Language World · Science Exhibition | `/exhibition`, `/exhibition/<listen|read|speak|write|teacher>` | `src/content/exhibition.js`, `src/lang/exhibition.js`, `src/views/exhibition*.js`, `exhibition.css` |
+| Science Investigation Lab | `/worlds/science-lab`, `/worlds/science-lab/<notice|question|hypothesis|plan|collect|represent|claim|evidence|reasoning|revise|present|reflect|transfer>` (`?case=<id>`) | `src/content/science-lab*.js`, `src/lang/science-lab*.js`, `src/views/science-lab*.js`, `science-lab.css`; key `accessPracticeLab:v1:science-lab`; `tools/access-science-lab{,-e2e}.mjs` |
 | Language Worlds | `/worlds[/<signal-station|evidence-city|conversation-quest|storyworks>[/<mission>]]` | `content/worlds.json`, `src/content/world-missions.js`, `src/views/worlds.js`, `pictures/worlds/*.svg` |
 | Whole-Class Language Studio | `/classroom` | `src/views/classroom.js`, `src/views/classroom-data.js`, `classroom-studio.css` |
 | Word Builder · Vocabulary & Morphology | `/vocabulary` | `src/views/vocabulary.js`, `src/content/vocabulary-items.js`, `vocabulary.css` |

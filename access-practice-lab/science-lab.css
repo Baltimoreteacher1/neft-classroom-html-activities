@@ -1,0 +1,402 @@
+/* Science Investigation Lab (/worlds/science-lab). Layout and the few parts the Language World sheet does not have.
+   Tokens and shared components come from ds.css; the help rail, support choice, manuscript, notes and step frame
+   are exhibition.css (.ex-*). Nothing here redefines a token. */
+
+.sl-stage,
+.sl-hub,
+.sl-choose,
+.sl-hub-card {
+  --bi-es-color: currentColor;
+}
+.sl-choose {
+  max-width: 62rem;
+}
+.sl-hero .lead,
+.sl-choose .lead {
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+}
+.sl-hub-side {
+  display: grid;
+  gap: var(--s-3);
+  margin-top: var(--s-4);
+}
+.sl-transfer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-3);
+  align-items: center;
+  margin: var(--s-4) 0 0;
+}
+.sl-hub-card {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-4);
+  align-items: center;
+  justify-content: space-between;
+}
+.sl-hub-card > div {
+  flex: 1 1 22rem;
+  min-width: 0;
+}
+.sl-hub-card h2,
+.sl-hub-card p {
+  margin: 0 0 var(--s-2);
+}
+
+/* ── the twelve-step path ────────────────────────────────────────────────── */
+.sl-path {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 13rem), 1fr));
+  gap: var(--s-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.sl-path-step a {
+  display: flex;
+  gap: 0.7rem;
+  align-items: center;
+  min-height: var(--acc-target, 3rem);
+  padding: 0.45rem 0.8rem;
+  border: 1.5px solid var(--line);
+  border-radius: 14px;
+  background: var(--surface);
+  color: var(--ink);
+  text-decoration: none;
+}
+.sl-path-step a:hover {
+  border-color: var(--room, var(--brand));
+}
+.sl-path-step.is-current a {
+  border-color: var(--room, var(--brand));
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--room, var(--brand)) 20%, transparent);
+}
+.sl-path-step.is-done .ex-path-n {
+  background: var(--room, var(--brand));
+  color: #fff;
+}
+.sl-path-d {
+  margin-top: var(--s-4);
+  padding: var(--s-2) var(--s-3);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+.sl-path-d > summary {
+  min-height: var(--acc-target, 3rem);
+  display: flex;
+  align-items: center;
+  font-weight: 700;
+  cursor: pointer;
+}
+.sl-path-d nav {
+  padding: var(--s-2) 0 var(--s-3);
+}
+
+/* ── a stage ─────────────────────────────────────────────────────────────── */
+.sl-stage .ex-step-head {
+  align-items: start;
+}
+.sl-mode {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.2rem 0.6rem;
+  align-items: center;
+  margin: 0;
+  padding: var(--s-3) var(--s-4);
+  border-radius: var(--radius);
+  border: 1.5px solid var(--line-strong);
+  background: var(--surface);
+}
+.sl-mode .fine {
+  grid-column: 2;
+}
+.sl-mode.is-help {
+  border-color: var(--sage-900);
+  background: var(--sage-200);
+  color: var(--sage-900);
+}
+.sl-mode.is-help .fine {
+  color: var(--sage-900);
+}
+.sl-msg {
+  min-height: 1.5rem;
+  margin: var(--s-3) 0 0;
+  color: var(--ink);
+  font-weight: 700;
+}
+.sl-msg:empty {
+  min-height: 0;
+  margin: 0;
+}
+.sl-work h2,
+.sl-collect h2,
+.sl-build h2,
+.sl-preview h2,
+.sl-evidence h2 {
+  margin: 0 0 var(--s-3);
+  font-size: 1.35rem;
+}
+.sl-work,
+.sl-collect,
+.sl-build,
+.sl-preview,
+.sl-evidence {
+  margin: 0;
+}
+.sl-field textarea,
+.sl-field input {
+  width: 100%;
+  max-width: 100%;
+}
+.sl-field .fine {
+  font-weight: 400;
+}
+.sl-saved {
+  margin: var(--s-2) 0 0;
+}
+.sl-echo {
+  margin: 0 0 var(--s-4);
+  padding-inline-start: var(--s-3);
+  border-inline-start: 3px solid var(--room, var(--line-strong));
+}
+.sl-echo .ex-kicker {
+  margin-bottom: var(--s-1);
+}
+.sl-quote-block {
+  margin: 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.sl-list {
+  display: grid;
+  gap: var(--s-1);
+  margin: 0;
+  padding-inline-start: 1.2rem;
+}
+.sl-frame {
+  margin: 0;
+  padding: 0.45rem 0.7rem;
+  border-radius: 10px;
+  background: var(--room-soft);
+  font-family: var(--font-display);
+}
+
+/* ── choices ─────────────────────────────────────────────────────────────── */
+.sl-choice {
+  margin: 0 0 var(--s-4);
+  padding: var(--s-3) var(--s-4);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+.sl-choice legend {
+  padding: 0 0.25rem;
+  font-weight: 700;
+}
+.sl-radio,
+.sl-check {
+  display: flex;
+  gap: 0.6rem;
+  align-items: flex-start;
+  min-height: var(--acc-target, 3rem);
+  padding: 0.35rem 0;
+  cursor: pointer;
+  overflow-wrap: anywhere;
+}
+.sl-radio input,
+.sl-check input {
+  flex: none;
+  width: 1.4rem;
+  height: 1.4rem;
+  margin-top: 0.1rem;
+  accent-color: var(--room, var(--brand));
+}
+
+/* ── feedback: the learner's words, then a question ──────────────────────── */
+.sl-feedback h2 {
+  scroll-margin-top: 5rem;
+}
+.sl-feedback h3 {
+  margin: var(--s-3) 0 var(--s-2);
+}
+.sl-notes {
+  display: grid;
+  gap: var(--s-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.sl-notes li {
+  display: grid;
+  gap: 0.25rem;
+  padding-inline-start: var(--s-3);
+  border-inline-start: 3px solid var(--sage-500);
+}
+.sl-quote {
+  color: var(--ink-2);
+  font-style: italic;
+  overflow-wrap: anywhere;
+}
+.sl-ask {
+  margin: 0;
+  font-weight: 700;
+}
+.sl-counter {
+  margin: 0 0 var(--s-4);
+  padding: var(--s-3) var(--s-4);
+  border-radius: var(--radius);
+  background: var(--room-soft);
+}
+.sl-counter .ex-kicker {
+  display: flex;
+  gap: 0.4rem;
+}
+.sl-changes {
+  margin: var(--s-3) 0;
+}
+
+/* ── collecting and showing data ─────────────────────────────────────────── */
+.sl-datanote {
+  margin: 0 0 var(--s-3);
+  padding: var(--s-3) var(--s-4);
+  border-radius: var(--radius);
+  background: var(--surface-2);
+}
+.sl-datanote p {
+  margin: 0 0 var(--s-1);
+}
+.sl-runs {
+  display: grid;
+  gap: var(--s-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.sl-run {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: var(--s-1) var(--s-3);
+  align-items: center;
+  padding: var(--s-2) var(--s-3);
+  border: 1.5px solid var(--line);
+  border-radius: 12px;
+}
+.sl-run.is-done {
+  border-color: var(--sage-900);
+  background: var(--sage-200);
+}
+.sl-run-n {
+  font-weight: 700;
+}
+.sl-run-result {
+  display: inline-flex;
+  gap: 0.35rem;
+  align-items: center;
+  color: var(--sage-900);
+}
+.sl-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+.sl-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.sl-table caption {
+  padding: var(--s-2) var(--s-3);
+  font-weight: 700;
+  text-align: start;
+}
+.sl-table th,
+.sl-table td {
+  padding: 0.5rem 0.7rem;
+  border-top: 1px solid var(--line);
+  text-align: start;
+  vertical-align: top;
+  overflow-wrap: anywhere;
+}
+.sl-chart {
+  margin: 0;
+}
+.sl-chart figcaption {
+  margin-bottom: var(--s-2);
+  font-weight: 700;
+}
+.sl-bars {
+  display: grid;
+  gap: var(--s-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.sl-bars li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.2rem;
+}
+.sl-bar-track {
+  display: block;
+  height: 1.25rem;
+  border: 1.5px solid var(--line-strong);
+  border-radius: 6px;
+  background: var(--surface);
+}
+.sl-bar-track i {
+  display: block;
+  height: 100%;
+  border-radius: 4px;
+  background: repeating-linear-gradient(
+    135deg,
+    var(--room, var(--brand)) 0 8px,
+    var(--room-ink, var(--brand)) 8px 12px
+  );
+}
+.sl-bar-val {
+  font-weight: 700;
+}
+.sl-alt {
+  margin-top: var(--s-4);
+  padding: var(--s-3) var(--s-4);
+  border-radius: var(--radius);
+  background: var(--surface-2);
+}
+.sl-alt p {
+  margin: 0;
+}
+
+/* ── presenting ──────────────────────────────────────────────────────────── */
+.sl-recorder {
+  margin: 0 0 var(--s-4);
+}
+.sl-takes {
+  display: grid;
+  gap: var(--s-2);
+  margin: var(--s-3) 0 0;
+  padding: 0;
+  list-style: none;
+}
+.sl-takes audio {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+}
+
+/* ── widths and grade bands ──────────────────────────────────────────────── */
+body[data-lab-band="3-5"] .sl-radio,
+body[data-lab-band="3-5"] .sl-check {
+  min-height: var(--target, 3.25rem);
+  font-size: 1.125rem;
+}
+@media (max-width: 640px) {
+  .sl-run {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .sl-run .btn {
+    justify-self: start;
+  }
+  .sl-choice {
+    padding: var(--s-3);
+  }
+}
