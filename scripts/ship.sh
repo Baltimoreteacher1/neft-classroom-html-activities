@@ -11,8 +11,9 @@
 #      sessions, so main must be assembled by cherry-pick, not merge).
 #   3. Cherry-picks the requested SHAs; rewrites any private (non-noreply)
 #      author email so GitHub's GH007 push protection cannot reject the push.
-#   4. Pushes HEAD:main — the pre-push hook runs change-scoped QA first, and
-#      Cloudflare builds + promotes automatically (~1-3 min).
+#   4. Pushes HEAD:main — the pre-push hook is a pass-through (retired
+#      2026-11-05), CI runs the gate, and Cloudflare builds + promotes
+#      automatically (~1-3 min).
 #   5. Verifies the deploy actually went live by polling the public build
 #      stamp (/access-practice-lab/config.json) until it reports the pushed
 #      commit; on timeout it prints the CF-freeze remediation.
@@ -296,7 +297,7 @@ cleanup() {
 }
 trap cleanup EXIT
 
-# The pre-push QA loop builds from the worktree root; share node_modules.
+# Any QA run in this worktree builds from the worktree root; share node_modules.
 # Link entry by entry rather than the whole directory: @eduwonderlab/engine is a
 # workspace symlink to ../../engine, and a whole-directory link resolves it to
 # the CHECKOUT's engine/ — whatever branch that is — so a stale checkout fakes
@@ -365,8 +366,8 @@ else
     *users.noreply.github.com) : ;;
     *)
       say "• Rewriting private author email ($AUTHOR_EMAIL) → noreply on ${r:0:9}"
-      # Metadata-only rewrite: the tree is unchanged and the pre-push hook gates the
-      # whole push, so re-running the commit gate here only queues it per commit.
+      # Metadata-only rewrite: the tree is unchanged, so re-running the
+      # commit gate here would only queue it per commit.
       git -C "$WT" -c core.hooksPath=/dev/null commit --amend --no-edit --reset-author --quiet
       ;;
     esac
@@ -382,9 +383,9 @@ if [ "$DRY_RUN" = "1" ]; then
   exit 0
 fi
 
-# --- Push (pre-push hook runs the QA loop; CF Git integration deploys) -----------------
+# --- Push (pre-push hook is a pass-through; CF Git integration deploys) ----------------
 say ""
-say "Pushing ${NEW_SHA:0:9} → origin/main (pre-push QA loop runs first)..."
+say "Pushing ${NEW_SHA:0:9} → origin/main (no local QA gate; CI runs the Pre-Deploy Gate)..."
 export QA_PUSH=1
 # Prevent subshell or agent environments (e.g. QA_JOBS=1) from bottlenecking deployment concurrency
 if [ "${QA_JOBS:-8}" -lt 4 ]; then

@@ -28,7 +28,7 @@ Preserve existing student-facing routes. This repo is live-classroom oriented: c
 - Install dependencies only when explicitly approved: `npm install`
 - Dev server: `npm run dev`
 - Preview build: `npm run preview`
-- Change-scoped fast QA (preferred inner-loop & pre-push check): `npm run qa:fast`
+- Change-scoped fast QA (preferred inner-loop & pre-commit check): `npm run qa:fast`
 - Full parallel QA sweep (all 120+ checks): `npm run qa:loop`
 - Lint & format check (Biome): `npm run check`
 - Typecheck ratchet: `npm run typecheck`
@@ -48,8 +48,8 @@ Preserve existing student-facing routes. This repo is live-classroom oriented: c
 - Reveal Math validation: `npm run validate:reveal-math`
 - Deploy command: `ALLOW_DEPLOY=1 npm run ship -- <sha> [sha...]` — cherry-picks the
   named commits onto a clean detached worktree at `origin/main`, fixes private author
-  emails (GH007), pushes to `main` (`.githooks/pre-push` runs `npm run qa:fast -- --push`
-  by default, or `QA_FULL=1 npm run qa:loop` when forced), then polls the public
+  emails (GH007), pushes to `main` (`.githooks/pre-push` is a pass-through since 2026-11-05;
+  CI runs the Pre-Deploy Gate), then polls the public
   build stamp until production actually serves the new commit.
 - `npm run ship:verify` (read-only) polls the live build stamp; `ALLOW_DEPLOY=1 npm run
   ship:rebuild` pushes an empty commit to unfreeze a stuck Cloudflare Pages build.
@@ -68,7 +68,7 @@ Preserve existing student-facing routes. This repo is live-classroom oriented: c
 3. Identify whether the change belongs to standalone HTML, the Vite build, engine components, generated lesson assets, Cloudflare Functions, or Apps Script tools.
 4. Make the smallest complete change in the primary codepath.
 5. Avoid changing generated outputs unless the task is about generated artifacts or the repo's existing workflow requires it.
-6. Run the narrowest relevant verification first. For local work that is not immediately shipping, run `npm run qa:fast` (or `scripts/codex/codex-verify.sh`). When shipping, the `ship` pre-push hook runs `npm run qa:fast -- --push` on the assembled commit; do not repeat the same gate or run the serial `npm run validate` just before `ship`.
+6. Run the narrowest relevant verification first. For local work that is not immediately shipping, run `npm run qa:fast` (or `scripts/codex/codex-verify.sh`). When shipping, the `ship` pre-push hook no longer runs a gate (pass-through since 2026-11-05), so run `npm run qa:fast -- --push` yourself first if you want one; CI still runs the Pre-Deploy Gate.
 7. Review changed files before final response.
 
 ## Definition Of Done
@@ -126,7 +126,7 @@ Preserve existing student-facing routes. This repo is live-classroom oriented: c
 
 ## QA Expectations
 
-- Run `npm run qa:fast` (or `scripts/codex/codex-verify.sh`) after changes unless the immediately following guarded `ship` will run its pre-push gate on the same work.
+- Run `npm run qa:fast` (or `scripts/codex/codex-verify.sh`) after changes; `ship` no longer runs a pre-push gate.
 - Run `npm run build` when Vite/build behavior or `dist/`-dependent surfaces change and the selected QA gate does not already include `build`.
 - Reserve `npm run qa:loop` (or `QA_FULL=1 git push`) for when a full 120+ check sweep is explicitly needed.
 - Verify no broken local links/assets, placeholder text in newly touched student pages, hidden answer keys, fake save/export features, or console-breaking scripts.
