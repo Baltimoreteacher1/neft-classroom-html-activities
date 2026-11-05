@@ -4,6 +4,7 @@ import { crumbsHTML } from "../components.js";
 import { STAGE_META, STAGES, TRANSFER_STAGE } from "../content/science-lab.js";
 import { BASE, html, icon, raw } from "../util.js";
 import { statusOf, workKind } from "./science-lab-model.js";
+import { STAGE_ICONS } from "./science-lab-scene.js";
 
 export const labHref = (t, stage = "") =>
   `${BASE}/worlds/science-lab${stage ? `/${stage}` : ""}?case=${t.caseId}`;
@@ -37,51 +38,30 @@ export function crumbs(I, t, last) {
 }
 
 // ── help settings ────────────────────────────────────────────────────────────
+// A: starters, word help and questions start open; B: sentence starters start open; C: help starts closed.
+// B is the default; the learner can change it at any time from the small control in the header.
 const LEVELS = {
-  A: [
-    ["Lots of help", "Mucha ayuda"],
-    [
-      "Starters, word help and questions start open.",
-      "Los inicios, la ayuda con palabras y las preguntas empiezan abiertos.",
-    ],
-  ],
-  B: [
-    ["Some help", "Algo de ayuda"],
-    [
-      "Sentence starters start open. The rest is one tap away.",
-      "Los inicios de oración empiezan abiertos. Lo demás está a un toque.",
-    ],
-  ],
-  C: [
-    ["On my own", "Por mi cuenta"],
-    [
-      "Help starts closed. You can still open any help you need.",
-      "La ayuda empieza cerrada. Aún puedes abrir la ayuda que necesites.",
-    ],
-  ],
+  A: ["More", "Más"],
+  B: ["Some", "Algo"],
+  C: ["Less", "Menos"],
 };
 
-/** Chosen before anything else renders. `chosen` false = no button is pressed yet. */
-export function supportChooserHTML(I, level, chosen) {
-  return html`<fieldset class="ex-support sl-support">
-    <legend>${I.T("How much help do you want?", "¿Cuánta ayuda quieres?")}</legend>
-    <div class="ex-support-options">
+/** The always-visible help control: a three-way switch with one plain line under it. */
+export function helpLevelHTML(I, level) {
+  return html`<div class="sl-helpctl" role="group" aria-labelledby="slHelpCtl">
+    <span class="sl-helpctl-k" id="slHelpCtl">${icon("bulb")} ${I.T("Help", "Ayuda")}</span>
+    <span class="sl-seg">
       ${["A", "B", "C"].map(
         (l) =>
-          html`<button
-            type="button"
-            class="ex-support-btn"
-            data-sl-support="${l}"
-            aria-pressed="${chosen && l === level}"
-          >
-            <strong>${I.T(...LEVELS[l][0])}</strong><span>${I.T(...LEVELS[l][1])}</span>
+          html`<button type="button" class="sl-seg-btn" data-sl-support="${l}" aria-pressed="${l === level}">
+            ${I.T(...LEVELS[l])}
           </button>`,
       )}
-    </div>
-    <p class="fine">
-      ${I.T("This is a help setting for practice. You can change it at any time.", "Es un ajuste de ayuda para practicar. Puedes cambiarlo cuando quieras.")}
-    </p>
-  </fieldset>`;
+    </span>
+    <span class="fine sl-helpctl-line"
+      >${I.T("How much help is open when a step starts. Change it any time.", "Cuánta ayuda está abierta al empezar un paso. Cámbiala cuando quieras.")}</span
+    >
+  </div>`;
 }
 
 export function modePillHTML(I, cs, stage) {
@@ -93,9 +73,6 @@ export function modePillHTML(I, cs, stage) {
     ${icon(helped ? "bulb" : "flag")}
     <strong
       >${helped ? I.T("Working with help", "Trabajando con ayuda") : I.T("On my own", "Por mi cuenta")}</strong
-    >
-    <span class="fine"
-      >${helped ? I.T("Help is a normal part of learning. It is noted so you can see what helped.", "La ayuda es parte normal de aprender. Se anota para que veas qué te ayudó.") : I.T("Open any help you need. Opening help is noted.", "Abre la ayuda que necesites. Abrir ayuda queda anotado.")}</span
     >
   </p>`;
 }
@@ -111,6 +88,7 @@ export function pathHTML(I, t, cs, current = "", open = true) {
           <span class="ex-path-n" aria-hidden="true"
             >${status === "done" ? icon("check") : i + 1}</span
           >
+          <span class="sl-path-ico" aria-hidden="true">${icon(STAGE_ICONS[stage])}</span>
           <span class="ex-path-text"
             ><strong>${I.TO(STAGE_META[stage].title)}</strong
             ><span>${statusText(I, status)}</span></span
@@ -123,7 +101,7 @@ export function pathHTML(I, t, cs, current = "", open = true) {
     return html`<nav aria-label="${I.S("The twelve steps", "Los doce pasos")}">${list}</nav>`;
   return html`<details class="sl-path-d">
     <summary>
-      ${I.T(`Step ${index} of 12 · see all steps`, `Paso ${index} de 12 · ver todos los pasos`)}
+      ${index ? I.T(`Step ${index} of 12 · see all steps`, `Paso ${index} de 12 · ver todos los pasos`) : I.T("See all twelve steps", "Ver los doce pasos")}
     </summary>
     <nav aria-label="${I.S("The twelve steps", "Los doce pasos")}">${list}</nav>
   </details>`;
@@ -141,6 +119,12 @@ const openHelp = new Map();
 export function helpItems(caseDef, stage) {
   const items = (caseDef.help[stage] || []).map((h) => ({ id: h.id, kind: h.kind, text: h.text }));
   return [...items, { id: "vocab", kind: "vocab" }];
+}
+
+/** A new help level re-opens help from that level's defaults on every step of this case. */
+export function resetOpenHelp(t) {
+  for (const key of [...openHelp.keys()])
+    if (key.startsWith(`${t.band}:${t.caseId}:`)) openHelp.delete(key);
 }
 
 export function openSetFor(t, stage, level) {
@@ -304,7 +288,9 @@ export function stageShellHTML(I, t, cs, stage, { main, rail, foot = "" }) {
           ${transfer ? I.T("Use what you know on a new phenomenon, with all help closed.", "Usa lo que sabes en un fenómeno nuevo, con toda la ayuda cerrada.") : I.TO(meta.task)}
         </p>
       </div>
-      ${modePillHTML(I, cs, stage)}
+      <div class="sl-head-side">
+        ${transfer ? "" : helpLevelHTML(I, cs.support)} ${modePillHTML(I, cs, stage)}
+      </div>
     </header>
     ${pathHTML(I, t, cs, stage, false)}
     <p class="sl-msg" id="slMsg" role="status" aria-live="polite"></p>

@@ -1,7 +1,10 @@
 // Science Investigation Lab: the data stages (collect, represent, choose evidence). No timer, no randomness:
 // each test the learner runs reveals one fixed row of the case's classroom sample data.
 import { html, icon, raw } from "../util.js";
+import { evidencePickerHTML } from "./science-lab-argue.js";
 import { dataRows } from "./science-lab-model.js";
+import { barChartHTML, barNote, chartAxisMax, resultOrder } from "./science-lab-scene.js";
+import { orderListHTML, predictionOrder } from "./science-lab-steps.js";
 import { echoHTML, fieldHTML, labHref, savedNote } from "./science-lab-ui.js";
 
 const plain = (I) => (o) => (o ? I.S(o.en, o.es) : "");
@@ -35,45 +38,6 @@ const needRows = (I, t) =>
       >
     </p>
   </section>`;
-
-// ── collect ──────────────────────────────────────────────────────────────────
-export function collectHTML(I, t, cs) {
-  const ran = cs.stages.collect?.rows || [];
-  const rows = dataRows(t.caseDef);
-  const pick = plain(I);
-  return html`<section class="panel sl-collect" aria-labelledby="slCollectTitle">
-    <h2 id="slCollectTitle">${I.T("Run each test", "Haz cada prueba")}</h2>
-    ${dataNoteHTML(I, t.caseDef)}
-    <p class="fine" aria-live="polite">
-      ${I.T(`${ran.length} of ${rows.length} tests run`, `${ran.length} de ${rows.length} pruebas hechas`)}
-    </p>
-    <ol class="sl-runs">
-      ${rows.map((row, i) => {
-        const cond = rowLine(I, t.caseDef, row).split(" · ")[1];
-        const done = ran.includes(row.id);
-        const value = `${row.measures[t.caseDef.measure.id]} ${pick(t.caseDef.dataset.unit)}`;
-        return html`<li class="sl-run ${done ? "is-done" : ""}">
-          <span class="sl-run-n">${I.T(`Test ${i + 1}`, `Prueba ${i + 1}`)}</span>
-          <span class="sl-run-cond">${cond}</span>
-          ${
-            done
-              ? html`<strong class="sl-run-result" data-sl-result="${row.id}" tabindex="-1"
-                  >${icon("check")} ${value}</strong
-                >`
-              : html`<button
-                  type="button"
-                  class="btn small"
-                  data-sl-run="${row.id}"
-                  aria-label="${I.S(`Run test ${i + 1}: ${cond}`, `Hacer la prueba ${i + 1}: ${cond}`)}"
-                >
-                  ${I.T(`Run test ${i + 1}`, `Hacer prueba ${i + 1}`)}
-                </button>`
-          }
-        </li>`;
-      })}
-    </ol>
-  </section>`;
-}
 
 // ── represent ────────────────────────────────────────────────────────────────
 function tableHTML(I, caseDef, rows) {
@@ -110,33 +74,73 @@ function tableHTML(I, caseDef, rows) {
   </div>`;
 }
 
-function barsHTML(I, caseDef, rows) {
-  const mid = caseDef.measure.id;
-  const max = Math.max(...rows.map((r) => r.measures[mid]), 1);
-  const pick = plain(I);
-  const label = (r) => rowLine(I, caseDef, r).split(" · ").slice(0, 2).join(" · ");
-  const value = (r) => `${r.measures[mid]} ${pick(caseDef.dataset.unit)}`;
-  return html`<figure class="sl-chart">
-      <figcaption>${I.TO(caseDef.measure.label)}</figcaption>
-      <ul class="sl-bars" aria-label="${I.S("Bar chart", "Gráfica de barras")}">
-        ${rows.map(
-          (r) =>
-            html`<li>
-              <span class="sl-bar-label">${label(r)}</span>
-              <span class="sl-bar-track" aria-hidden="true"
-                ><i style="width:${Math.max(2, Math.round((r.measures[mid] / max) * 100))}%"></i
-              ></span>
-              <span class="sl-bar-val">${value(r)}</span>
-            </li>`,
-        )}
-      </ul>
-    </figure>
-    <div class="sl-alt">
-      <p class="ex-kicker">
-        ${I.T("Text version of the bar chart", "Versión en texto de la gráfica de barras")}
-      </p>
-      <p>${rows.map((r) => `${label(r)}: ${value(r)}.`).join(" ")}</p>
-    </div>`;
+/** The prediction order beside the order the collected results came out in (largest average first). */
+function ordersHTML(I, t, cs, rows) {
+  const cd = t.caseDef;
+  const pred = cs.stages.hypothesis?.order;
+  const result = resultOrder(cd, rows).map((x) => x.id);
+  const unit = cd.dataset.unit;
+  return html`<section class="panel sl-orders" aria-labelledby="slOrdersTitle">
+    <h2 id="slOrdersTitle">${I.T("Your prediction and your results", "Tu predicción y tus resultados")}</h2>
+    <p class="fine">${I.T(`Number 1 has the most ${unit.en}.`, `El número 1 tiene más ${unit.es}.`)}</p>
+    <div class="slx-orders">
+      <div>
+        <h3>${I.T("You predicted", "Predijiste")}</h3>
+        ${
+          pred
+            ? orderListHTML(I, cd, predictionOrder(cd, cs.stages.hypothesis))
+            : html`<p class="fine">
+                ${I.T("You did not put the cards in order on the Predict step.", "No ordenaste las tarjetas en el paso Predecir.")}
+              </p>`
+        }
+      </div>
+      <div>
+        <h3>${I.T("Your data shows", "Tus datos muestran")}</h3>
+        ${orderListHTML(I, cd, result, { cls: "is-result" })}
+      </div>
+    </div>
+    <p class="slx-steps">
+      ${I.T("Where are they the same? Where are they different?", "¿Dónde son iguales? ¿Dónde son diferentes?")}
+    </p>
+  </section>`;
+}
+
+/** The interactive chart: the learner types each bar's number; numbers close to the table snap to it. */
+export function barBuilderHTML(I, caseDef, rows, values) {
+  const all = dataRows(caseDef);
+  const max = chartAxisMax(caseDef, rows);
+  return html`<div class="slx-bar-build" data-slx-bars>
+    <div class="slx-chart-wrap" data-slx-chart-wrap>${barChartHTML(I, caseDef, rows, { values })}</div>
+    <ul class="sl-bars">
+      ${rows.map((r) => {
+        const n = all.findIndex((x) => x.id === r.id) + 1;
+        const v = values[r.id];
+        const note = barNote(I, caseDef, r, n, v);
+        return html`<li>
+          <label class="sl-bar-label" for="slb-${r.id}"
+            >${rowLine(I, caseDef, r).split(" · ").slice(0, 2).join(" · ")}</label
+          >
+          <span class="slx-bar-in">
+            <input
+              id="slb-${r.id}"
+              type="number"
+              min="0"
+              max="${max}"
+              step="1"
+              inputmode="numeric"
+              data-sl-bar="${r.id}"
+              value="${v ?? ""}"
+              aria-describedby="slb-${r.id}-note"
+            />
+            <span class="fine">${I.TO(caseDef.dataset.unit)}</span>
+          </span>
+          <span class="slx-bar-note is-${note.kind}" id="slb-${r.id}-note" data-slx-note="${r.id}"
+            >${note.text}</span
+          >
+        </li>`;
+      })}
+    </ul>
+  </div>`;
 }
 
 export function representHTML(I, t, cs) {
@@ -146,23 +150,36 @@ export function representHTML(I, t, cs) {
   const all = dataRows(t.caseDef).filter((r) => collected.includes(r.id));
   const format = rec.format === "bars" ? "bars" : "table";
   const chosen = all.filter((r) => (rec.rows || []).includes(r.id));
+  const shown = !chosen.length
+    ? html`<p class="fine">
+        ${I.T("Choose at least two results to see them here.", "Elige al menos dos resultados para verlos aquí.")}
+      </p>`
+    : format === "bars"
+      ? html`<p class="slx-steps">
+            ${I.T("Type each number from your table. Watch the bar grow.", "Escribe cada número de tu tabla. Mira cómo crece la barra.")}
+          </p>
+          ${barBuilderHTML(I, t.caseDef, chosen, rec.bars || {})}
+          <h3 class="slx-sub">${I.T("Your table", "Tu tabla")}</h3>
+          ${tableHTML(I, t.caseDef, chosen)}`
+      : tableHTML(I, t.caseDef, chosen);
   return html`<section class="panel sl-build" aria-labelledby="slBuildTitle">
       <h2 id="slBuildTitle">
         ${I.T("Build a table or a bar chart", "Construye una tabla o una gráfica de barras")}
       </h2>
-      <fieldset class="sl-choice">
+      <fieldset class="sl-choice slx-format">
         <legend>${I.T("What do you want to build?", "¿Qué quieres construir?")}</legend>
         ${["table", "bars"].map((f) => html`<label class="sl-radio"><input type="radio" name="slFormat" value="${f}" data-sl-format ${format === f ? raw("checked") : ""} /> ${f === "table" ? I.T("A table", "Una tabla") : I.T("A bar chart", "Una gráfica de barras")}</label>`)}
       </fieldset>
-      <fieldset class="sl-choice">
+      <fieldset class="sl-choice slx-rowpick">
         <legend>${I.T("Which results go in it?", "¿Qué resultados van en ella?")}</legend>
         ${all.map((r) => html`<label class="sl-check"><input type="checkbox" value="${r.id}" data-sl-evid="represent:rows:${r.id}" ${chosen.includes(r) ? raw("checked") : ""} /> ${rowLine(I, t.caseDef, r)}</label>`)}
       </fieldset>
     </section>
     <section class="panel sl-preview" aria-labelledby="slPreviewTitle">
       <h2 id="slPreviewTitle">${I.T("What you built", "Lo que construiste")}</h2>
-      ${chosen.length ? (format === "bars" ? barsHTML(I, t.caseDef, chosen) : tableHTML(I, t.caseDef, chosen)) : html`<p class="fine">${I.T("Choose at least two results to see them here.", "Elige al menos dos resultados para verlos aquí.")}</p>`}
+      ${shown}
     </section>
+    ${ordersHTML(I, t, cs, all)}
     <section class="panel">
       ${fieldHTML(I, { stage: "represent", name: "sentence", label: I.T("Write one sentence about what your table or chart shows.", "Escribe una oración sobre lo que muestra tu tabla o gráfica."), value: rec.sentence || "", rows: 3, required: true })}
       ${savedNote(I)}
@@ -170,16 +187,6 @@ export function representHTML(I, t, cs) {
 }
 
 // ── evidence ─────────────────────────────────────────────────────────────────
-/** Checkboxes for data rows; `where` = "<stage>:<key>" the chosen ids are saved under. */
-export function rowPickerHTML(I, caseDef, rows, where, chosen) {
-  return html`<fieldset class="sl-choice">
-    <legend>
-      ${I.T("Choose the tests that support your claim.", "Elige las pruebas que apoyan tu afirmación.")}
-    </legend>
-    ${rows.map((r) => html`<label class="sl-check"><input type="checkbox" value="${r.id}" data-sl-evid="${where}:${r.id}" ${chosen.includes(r.id) ? raw("checked") : ""} /> ${rowLine(I, caseDef, r)}</label>`)}
-  </fieldset>`;
-}
-
 export function evidenceHTML(I, t, cs) {
   const collected = cs.stages.collect?.rows || [];
   if (!collected.length) return needRows(I, t);
@@ -188,22 +195,12 @@ export function evidenceHTML(I, t, cs) {
   return html`<section class="panel sl-evidence" aria-labelledby="slEvTitle">
     <h2 id="slEvTitle">${I.T("Choose your evidence", "Elige tu evidencia")}</h2>
     ${echoHTML(I, I.T("Your claim", "Tu afirmación"), cs.stages.claim?.text)}
-    ${rowPickerHTML(I, t.caseDef, rows, "evidence:ids", chosen)}
-    <p class="fine" aria-live="polite">
+    <p class="slx-steps">
+      ${I.T("Choose the tests that support your claim: tap a bar or a row. It lights up in both places.", "Elige las pruebas que apoyan tu afirmación: toca una barra o una fila. Se ilumina en los dos lugares.")}
+    </p>
+    ${evidencePickerHTML(I, t.caseDef, rows, "evidence:ids", chosen)}
+    <p class="fine slx-ev-count" aria-live="polite">
       ${I.T(`${chosen.length} chosen`, `${chosen.length} elegidas`)}
     </p>
   </section>`;
-}
-
-/** Plain-text list of chosen rows, used to echo evidence back on later screens. */
-export function chosenRowsHTML(I, caseDef, ids) {
-  const rows = dataRows(caseDef).filter((r) => ids.includes(r.id));
-  return rows.length
-    ? html`<div class="sl-echo">
-        <p class="ex-kicker">${I.T("Your evidence", "Tu evidencia")}</p>
-        <ul class="sl-list">
-          ${rows.map((r) => html`<li>${rowLine(I, caseDef, r)}</li>`)}
-        </ul>
-      </div>`
-    : "";
 }

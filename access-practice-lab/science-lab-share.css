@@ -1,0 +1,346 @@
+/* Science Investigation Lab: the sharing stages (science-lab-share.js): Rio the lab partner, before and after,
+   the poster preview, the recap strip and the transfer scene. Tokens come from ds.css. No animation. */
+
+.slx-recap {
+  container-type: inline-size;
+}
+
+/* ── revise: the lab partner and before / after ──────────────────────────── */
+.slx-partner {
+  display: grid;
+  grid-template-columns: 6.5rem 1fr;
+  gap: var(--s-3);
+  align-items: center;
+  margin: 0 0 var(--s-4);
+  padding: 0;
+  border: 0;
+  background: none;
+}
+@container (min-width: 36rem) {
+  .slx-partner {
+    grid-template-columns: 9rem 1fr;
+  }
+}
+.slx-rio {
+  border: 2.5px solid var(--mi-800);
+  border-radius: var(--r-lg);
+}
+.slx-bubble {
+  position: relative;
+  padding: var(--s-3) var(--s-4);
+  border: 2.5px solid var(--mi-800);
+  border-radius: var(--r-lg);
+  background: var(--ivory);
+}
+.slx-bubble::before {
+  position: absolute;
+  top: 50%;
+  left: -0.75rem;
+  width: 1.2rem;
+  height: 1.2rem;
+  border-bottom: 2.5px solid var(--mi-800);
+  border-left: 2.5px solid var(--mi-800);
+  background: var(--ivory);
+  content: "";
+  transform: translateY(-50%) rotate(45deg);
+}
+.slx-bubble p {
+  margin: 0;
+}
+.slx-bubble .sl-ask {
+  margin-top: var(--s-2);
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+.slx-diff {
+  margin: 0 0 var(--s-4);
+}
+.slx-diff h3 {
+  margin: 0 0 var(--s-2);
+}
+.slx-diff-cols {
+  display: grid;
+  gap: var(--s-2);
+  align-items: stretch;
+}
+@container (min-width: 36rem) {
+  .slx-diff-cols {
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+  }
+}
+.slx-diff-col {
+  height: 100%;
+  padding: var(--s-3);
+  border: 1.5px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--surface-2);
+}
+.slx-diff-col.is-after {
+  border: 2px solid var(--mi-800);
+  background: var(--ivory);
+}
+.slx-diff-k {
+  margin: 0 0 0.25rem;
+  font-weight: 700;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.slx-diff-text {
+  margin: 0;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+.slx-diff-arrow {
+  justify-self: center;
+  color: var(--mi-800);
+}
+@container (max-width: 35.99rem) {
+  .slx-diff-arrow {
+    transform: rotate(90deg);
+  }
+}
+.slx-ins {
+  padding: 0 0.15em;
+  border-radius: 3px;
+  background: var(--sage-200);
+  color: var(--sage-900);
+  font-weight: 700;
+  text-decoration: underline 3px;
+  text-underline-offset: 3px;
+}
+.slx-del {
+  padding: 0 0.15em;
+  border-radius: 3px;
+  background: var(--copper-200);
+  color: var(--copper-900);
+  text-decoration: line-through 2px;
+}
+.slx-diff-key {
+  margin: var(--s-2) 0 0;
+}
+
+/* ── present: the poster ─────────────────────────────────────────────────── */
+.slx-poster {
+  margin: 0;
+}
+.slx-poster > figcaption {
+  margin-bottom: var(--s-2);
+}
+.slx-poster-sheet {
+  position: relative;
+  padding: var(--s-4);
+  border: 3px solid var(--mi-800);
+  border-radius: var(--r-lg);
+  background-color: #fbf7ec;
+  box-shadow: var(--shadow-lift);
+}
+.slx-poster-sheet::before {
+  position: absolute;
+  top: -0.7rem;
+  left: 50%;
+  width: 5rem;
+  height: 1.3rem;
+  border-radius: 3px;
+  background: color-mix(in srgb, var(--copper-200) 85%, transparent);
+  content: "";
+  transform: translateX(-50%) rotate(-2deg);
+}
+.slx-poster p {
+  margin: 0;
+}
+.slx-poster-top {
+  margin-bottom: var(--s-3);
+  padding-bottom: var(--s-3);
+  border-bottom: 2px dashed var(--line-strong);
+}
+.slx-poster-k {
+  margin: var(--s-3) 0 0.2rem !important;
+  color: var(--copper-900);
+  font-weight: 700;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.slx-poster-top .slx-poster-k {
+  margin-top: 0 !important;
+}
+.slx-poster-q {
+  font-family: var(--font-display);
+  font-size: clamp(1.3rem, 3.5cqi, 1.8rem);
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+.slx-poster-claim {
+  font-size: 1.2rem;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+.slx-poster-ev {
+  margin: 0;
+  padding-inline-start: 1.1rem;
+}
+.slx-poster-ev li + li {
+  margin-top: 0.25rem;
+}
+.slx-poster-missing {
+  color: var(--ink-2);
+  font-style: italic;
+}
+.slx-poster-body {
+  display: grid;
+  gap: var(--s-4);
+}
+.slx-poster-side {
+  display: grid;
+  gap: var(--s-3);
+  align-content: start;
+}
+@container (min-width: 40rem) {
+  .slx-poster-body {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* ── reflect: the recap strip ────────────────────────────────────────────── */
+.slx-recap-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 14rem), 1fr));
+  gap: var(--s-3);
+  margin: var(--s-3) 0 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: recap;
+}
+.slx-recap-card {
+  display: grid;
+  gap: var(--s-2);
+  align-content: start;
+  min-width: 0;
+  padding: var(--s-3);
+  border: 1.5px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--ivory);
+}
+.slx-recap-card p {
+  margin: 0;
+}
+.slx-recap-head {
+  display: flex;
+  gap: 0.45rem;
+  align-items: center;
+  font-weight: 700;
+}
+.slx-recap-head::before {
+  display: grid;
+  place-items: center;
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 50%;
+  background: var(--mi-800);
+  color: #fff;
+  font-size: 0.85rem;
+  content: counter(recap);
+  counter-increment: recap;
+}
+.slx-recap-ico {
+  display: inline-grid;
+  color: var(--mi-800);
+}
+.slx-recap-text {
+  overflow-wrap: anywhere;
+}
+.slx-recap-k {
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+.slx-recap-vs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--s-2);
+}
+.slx-mini-order {
+  display: grid;
+  gap: 0.25rem;
+  margin: 0.25rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+.slx-mini-order li {
+  display: flex;
+  gap: 0.3rem;
+  align-items: center;
+  font-size: 0.85rem;
+}
+.slx-mini-order .slx-icon {
+  flex: none;
+  width: 1.5rem;
+  height: 1.5rem;
+}
+.slx-mini-order .slx-rank {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 1.3rem;
+  height: 1.3rem;
+  border-radius: 50%;
+  background: var(--mi-800);
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+.slx-recap-vals {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.slx-recap-vals li {
+  padding: 0.1rem 0.5rem;
+  border: 1.5px solid var(--line-strong);
+  border-radius: 999px;
+  background: var(--surface-2);
+  font-size: 0.85rem;
+}
+.slx-recap-ev {
+  margin: 0;
+  padding-inline-start: 1.1rem;
+}
+.slx-recap-card .slx-chart {
+  margin: 0;
+}
+.slx-recap-card .slx-hero-svg {
+  border-width: 2px;
+  box-shadow: none;
+}
+
+/* ── transfer ────────────────────────────────────────────────────────────── */
+.slx-tf-scene {
+  margin: var(--s-2) 0 var(--s-3);
+}
+
+.slx-recap-vs > div,
+.slx-mini-order li span:last-child {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+@container (min-width: 30rem) {
+  .slx-recap-card[data-slx-recap="hypothesis"] {
+    grid-column: span 2;
+  }
+}
+@container (max-width: 34rem) {
+  .slx-partner {
+    grid-template-columns: 4.5rem 1fr;
+    align-items: start;
+  }
+  .slx-partner .ex-kicker {
+    font-size: 0.85rem;
+  }
+  .slx-bubble::before {
+    top: 2.25rem;
+  }
+}

@@ -6,8 +6,16 @@
 import { STAGE_META, STAGES, TRANSFER_STAGE } from "../content/science-lab.js";
 import { i18nFor } from "../i18n.js";
 import { announce, html } from "../util.js";
-import { collectHTML, evidenceHTML, representHTML } from "./science-lab-data.js";
-import { chooseScreenHTML, hubHTML } from "./science-lab-hub.js";
+import {
+  barChange,
+  barInput,
+  liveMirror,
+  refreshPlanPreview,
+  sceneClick,
+} from "./science-lab-actions.js";
+import { collectHTML } from "./science-lab-collect.js";
+import { evidenceHTML, representHTML } from "./science-lab-data.js";
+import { hubHTML } from "./science-lab-hub.js";
 import {
   chooseSupport,
   csOf,
@@ -27,7 +35,6 @@ import {
   claimHTML,
   hypothesisHTML,
   noticeHTML,
-  planHTML,
   questionHTML,
   reasoningHTML,
 } from "./science-lab-text.js";
@@ -38,9 +45,11 @@ import {
   helpRailHTML,
   labHref,
   openSetFor,
+  resetOpenHelp,
   stageShellHTML,
   stageTitle,
 } from "./science-lab-ui.js";
+import { planHTML } from "./science-lab-plan.js";
 import { presentHTML, reflectHTML, reviseHTML, transferHTML } from "./science-lab-work.js";
 
 
@@ -73,9 +82,10 @@ export async function render(ctx) {
   const t = targetOf(ctx);
   const stage = isStage(ctx.route.missionId) ? ctx.route.missionId : "";
   current = { t, stage };
+  // No gate: a learner who never picked a help level works at "Some" (B), saved so the engine labels it the same.
+  if (!hasChosen(csOf(t))) chooseSupport(t, "B");
   const cs = csOf(t);
   const title = I.S("Science Investigation Lab", "Laboratorio de investigación científica");
-  if (!hasChosen(cs)) return { title, html: chooseScreenHTML(I, t, cs, { hub: !stage }) };
   if (!stage) return { title, html: html`<div class="sl-hub">${hubHTML(I, t, cs)}</div>` };
   const main = STAGE_VIEWS[stage](I, t, cs);
   const rail =
@@ -111,8 +121,11 @@ function flush() {
 }
 
 export function onInput(e, ctx) {
-  if (!e.target.matches?.("[data-sl-field]")) return;
   const I = i18nFor(ctx);
+  if (barInput(e.target, I, targetOf(ctx))) return;
+  if (!e.target.matches?.("[data-sl-field]")) return;
+  liveMirror(e.target, I, targetOf(ctx));
+  if (e.target.id === "slf-plan-trials") refreshPlanPreview(I, targetOf(ctx));
   clearTimeout(draftTimer);
   draftTimer = setTimeout(() => {
     flush();
@@ -249,15 +262,23 @@ export function onClick(e, ctx) {
   if (!el) return false;
   const t = targetOf(ctx);
   if (el.dataset.slSupport) {
-    chooseSupport(t, el.dataset.slSupport);
-    ctx.rerender().then(() => focusEl("[data-sl-continue]") || focusEl("#slTitle"));
+    const level = el.dataset.slSupport;
+    flush();
+    chooseSupport(t, level);
+    resetOpenHelp(t);
+    const I = i18nFor(ctx);
+    ctx.rerender().then(() => {
+      focusEl(`[data-sl-support="${level}"]`);
+      say(I, "Help setting saved.", "Ajuste de ayuda guardado.");
+    });
     return true;
   }
+  if (sceneClick(el, ctx, i18nFor(ctx), t, flush)) return true;
   if (el.dataset.slHelp) return (toggleHelp(ctx, el.dataset.slHelp), true);
   if (el.dataset.slRun) {
     flush();
     const rows = recOf(t, "collect").rows || [];
-    patchStage(t, "collect", { rows: [...new Set([...rows, el.dataset.slRun])] });
+    patchStage(t, "collect", { rows: [...new Set([...rows, el.dataset.slRun])], last: el.dataset.slRun });
     ctx.rerender().then(() => focusEl(`[data-sl-result="${el.dataset.slRun}"]`));
     return true;
   }
@@ -274,6 +295,11 @@ export function onChange(e, ctx) {
     const ids = (kind) => picked.filter((r) => r.value === kind).map((r) => r.dataset.slVar);
     flush();
     patchStage(t, "plan", { changed: ids("change"), held: ids("held") });
+    refreshPlanPreview(i18nFor(ctx), t, { announce: true });
+    return true;
+  }
+  if (barChange(el, i18nFor(ctx), t)) {
+    if (current?.stage === "represent") flush();
     return true;
   }
   if (el.matches?.("[data-sl-format]")) {

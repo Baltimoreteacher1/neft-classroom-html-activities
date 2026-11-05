@@ -2,7 +2,8 @@
 import { reflectionPrompts } from "../lang/science-lab.js";
 import { canRecord, isRecording, takesFor } from "../recorder.js";
 import { html, icon, raw } from "../util.js";
-import { dataNoteHTML, rowPickerHTML } from "./science-lab-data.js";
+import { evidencePickerHTML } from "./science-lab-argue.js";
+import { dataNoteHTML } from "./science-lab-data.js";
 import {
   dataRows,
   inputOf,
@@ -11,6 +12,13 @@ import {
   runTransfer,
   workOf,
 } from "./science-lab-model.js";
+import {
+  diffPanelHTML,
+  partnerHTML,
+  posterHTML,
+  recapHTML,
+  transferSceneHTML,
+} from "./science-lab-share.js";
 import { echoHTML, feedbackHTML, fieldHTML, savedNote } from "./science-lab-ui.js";
 
 const panel = (id, title, body) =>
@@ -35,15 +43,13 @@ const SPAN = {
 /** The question someone who disagrees would ask: the first question the check raised on the earlier words. */
 function counterQuestionHTML(I, t, target, before) {
   const first = pairNotes(runCheck(target, before, t.caseDef))[0];
-  return html`<div class="sl-counter">
-    <p class="ex-kicker">
-      ${icon("bulb")}
-      ${I.T("A question from a reader who is not sure", "Una pregunta de un lector que no está seguro")}
-    </p>
-    <p class="sl-ask">
-      ${first ? I.T(first.en, first.es) : I.T("Someone disagrees with you. What in your data would you show them first?", "Alguien no está de acuerdo contigo. ¿Qué de tus datos le mostrarías primero?")}
-    </p>
-  </div>`;
+  return first
+    ? partnerHTML(I, first.en, first.es)
+    : partnerHTML(
+        I,
+        "Someone disagrees with you. What in your data would you show them first?",
+        "Alguien no está de acuerdo contigo. ¿Qué de tus datos le mostrarías primero?",
+      );
 }
 
 function revisionResultHTML(I, t, rec, cs) {
@@ -92,8 +98,8 @@ export function reviseHTML(I, t, cs) {
       ? panel(
           "slReviseWork",
           I.T("Earlier and new", "Antes y ahora"),
-          html`${echoHTML(I, I.T("Earlier", "Antes"), before.text)}
-            ${counterQuestionHTML(I, t, target, before)}
+          html`${counterQuestionHTML(I, t, target, before)}
+            ${diffPanelHTML(I, before.text, typeof rec.after === "string" ? rec.after : before.text)}
             ${fieldHTML(I, { stage: "revise", name: "after", label: I.T("Your new version", "Tu versión nueva"), hint: I.T("Change the words so they answer the question above.", "Cambia las palabras para que respondan la pregunta de arriba."), value: typeof rec.after === "string" ? rec.after : before.text, rows: 5, required: true })}
             ${savedNote(I)}
             <div class="row-actions">
@@ -159,7 +165,8 @@ function recorderHTML(I) {
 export function presentHTML(I, t, cs) {
   const rec = cs.stages.present || {};
   const outline = html`${echoHTML(I, I.T("My question", "Mi pregunta"), cs.stages.question?.text)}${echoHTML(I, I.T("My claim", "Mi afirmación"), cs.stages.claim?.text)}${echoHTML(I, I.T("My reasoning", "Mi razonamiento"), cs.stages.reasoning?.text)}`;
-  return html`${panel("slPresentNotes", I.T("Your notes to speak from", "Tus notas para hablar"), outline)}
+  return html`${panel("slPresentPoster", I.T("Your poster", "Tu cartel"), posterHTML(I, t, cs))}
+  ${panel("slPresentNotes", I.T("Your notes to speak from", "Tus notas para hablar"), outline)}
   ${panel(
     "slPresentTalk",
     I.T("Tell your investigation", "Cuenta tu investigación"),
@@ -172,11 +179,11 @@ export function presentHTML(I, t, cs) {
 // ── reflect ──────────────────────────────────────────────────────────────────
 export function reflectHTML(I, t, cs) {
   const answers = cs.stages.reflect?.answers || {};
-  return panel(
+  return html`${recapHTML(I, t, cs)}${panel(
     "slReflectTitle",
     I.T("Look back", "Mira atrás"),
     html`${reflectionPrompts(cs).map((p) => fieldHTML(I, { stage: "reflect", name: "answers", sub: p.id, label: I.TO(p.text), value: answers[p.id] || "", rows: 3 }))}${savedNote(I)}`,
-  );
+  )}`;
 }
 
 // ── transfer ─────────────────────────────────────────────────────────────────
@@ -226,10 +233,11 @@ export function transferHTML(I, t, cs) {
       <h2 id="slTfTitle" class="visually-hidden">
         ${I.T("Read the new situation", "Lee la situación nueva")}
       </h2>
+      ${transferSceneHTML(I, tc)}
       <p class="ex-manuscript-prompt">${I.TO(tc.phenomenon)}</p>
       <p>${I.TO(tc.prompt)}</p>
     </section>
-    ${panel("slTfData", I.T("The data", "Los datos"), html`${dataNoteHTML(I, tc)}${rowPickerHTML(I, tc, dataRows(tc), "transfer:evidenceIds", rec.evidenceIds || [])}`)}
+    ${panel("slTfData", I.T("The data", "Los datos"), html`${dataNoteHTML(I, tc)}<p class="slx-steps">${I.T("Choose the rows that support your claim: tap a bar or a row.", "Elige las filas que apoyan tu afirmación: toca una barra o una fila.")}</p>${evidencePickerHTML(I, tc, dataRows(tc), "transfer:evidenceIds", rec.evidenceIds || [], "slx-tf")}`)}
     ${panel(
       "slTfWrite",
       I.T("Your investigation", "Tu investigación"),

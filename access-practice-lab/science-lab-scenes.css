@@ -1,0 +1,393 @@
+/* Science Investigation Lab scenes: the illustrated, hands-on parts of each stage (science-lab-scene*.js).
+   Tokens come from ds.css. Motion is a CSS time-lapse of the experiment only, never a countdown; under
+   prefers-reduced-motion ds.css removes every animation and the start and end frames show side by side. */
+
+.slx-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.slx-p {
+  transform-box: fill-box;
+}
+
+/* ── the phenomenon scene and hotspots ───────────────────────────────────── */
+.slx-figure {
+  margin: 0;
+}
+.slx-stage {
+  position: relative;
+}
+.slx-hero-svg {
+  border: 3px solid var(--mi-800);
+  border-radius: var(--r-lg);
+  background: var(--ivory);
+  box-shadow: var(--shadow);
+}
+.slx-cap {
+  margin: var(--s-2) 0 0;
+  color: var(--ink-2);
+  font-size: 0.95rem;
+}
+.slx-spot {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  width: 2.9rem;
+  height: 2.9rem;
+  padding: 0;
+  border: 3px solid #fff;
+  border-radius: 50%;
+  background: var(--mi-800);
+  color: #fff;
+  font-weight: 700;
+  font-size: 1.1rem;
+  box-shadow: 0 3px 10px rgb(18 28 63 / 35%);
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+  transition: transform var(--dur-1, 120ms) var(--ease-press, ease-out);
+}
+.slx-spot:hover {
+  transform: translate(-50%, -50%) scale(1.08);
+}
+.slx-spot.is-on {
+  background: var(--copper-900);
+  box-shadow:
+    0 0 0 4px var(--copper-200),
+    0 3px 10px rgb(18 28 63 / 35%);
+}
+.slx-spot:focus-visible {
+  outline: 3px solid var(--mi-950);
+  outline-offset: 3px;
+}
+.slx-obs-wrap {
+  margin-top: var(--s-3);
+}
+.slx-obs {
+  display: grid;
+  gap: var(--s-2);
+  margin: 0;
+  padding: var(--s-3) var(--s-4);
+  border: 1.5px solid color-mix(in srgb, var(--room, var(--brand)) 28%, transparent);
+  border-radius: var(--radius);
+  background: var(--room-soft);
+}
+.slx-obs p {
+  margin: 0;
+}
+.slx-obs.is-empty {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  font-weight: 700;
+}
+.slx-obs .row-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+}
+.slx-added {
+  display: inline-flex;
+  gap: 0.35rem;
+  align-items: center;
+  min-height: 2.75rem;
+  margin: 0;
+  color: var(--sage-900);
+  font-weight: 700;
+}
+
+/* ── notice chips ────────────────────────────────────────────────────────── */
+.slx-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+  margin: 0 0 var(--s-2);
+  padding: 0;
+  list-style: none;
+}
+.slx-chip {
+  display: inline-flex;
+  gap: 0.25rem;
+  align-items: center;
+  max-width: 100%;
+  padding: 0.15rem 0.2rem 0.15rem 0.85rem;
+  border: 1.5px solid var(--sage-900);
+  border-radius: 999px;
+  background: var(--sage-200);
+  color: var(--sage-900);
+  font-weight: 700;
+}
+.slx-chip.is-w {
+  border-color: var(--copper-900);
+  background: var(--copper-200);
+  color: var(--copper-900);
+}
+.slx-chip span {
+  overflow-wrap: anywhere;
+}
+.slx-chip-x {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+.slx-chip-x:hover {
+  background: rgb(255 255 255 / 60%);
+}
+
+/* ── instruction lines, extra info ───────────────────────────────────────── */
+.slx-steps {
+  margin: 0 0 var(--s-3);
+  font-weight: 700;
+}
+.slx-more {
+  margin: 0 0 var(--s-3);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+.slx-more > summary {
+  display: flex;
+  align-items: center;
+  min-height: 2.75rem;
+  padding: 0 var(--s-3);
+  font-weight: 700;
+  cursor: pointer;
+}
+.slx-more > :not(summary) {
+  margin: 0 var(--s-3) var(--s-3);
+}
+.slx-sub {
+  margin: var(--s-4) 0 var(--s-2);
+  font-size: 1.1rem;
+}
+
+/* ── collect: tests on the bench ─────────────────────────────────────────── */
+.slx-count {
+  margin: 0 0 var(--s-3);
+  font-weight: 700;
+}
+.sl-runs {
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 11rem), 1fr));
+  gap: var(--s-3);
+}
+.sl-run {
+  display: grid;
+  grid-template-rows: auto auto 1fr auto;
+  gap: var(--s-1);
+  justify-items: center;
+  padding: var(--s-3);
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  text-align: center;
+}
+.sl-run.is-done {
+  border-color: var(--sage-900);
+  background: color-mix(in srgb, var(--sage-200) 40%, var(--surface));
+}
+.sl-run.is-last {
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--sage-500) 45%, transparent);
+}
+.sl-run-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  justify-content: center;
+  align-items: center;
+  margin: 0;
+}
+.sl-run-cond {
+  font-size: 0.95rem;
+  overflow-wrap: anywhere;
+}
+.slx-trial {
+  padding: 0 0.5rem;
+  border-radius: 999px;
+  background: var(--mi-800);
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+.slx-run-art {
+  width: 100%;
+  max-width: 10rem;
+}
+.slx-still {
+  display: none;
+}
+.slx-frame {
+  display: grid;
+  justify-items: center;
+}
+.slx-frame-tag {
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+.slx-arrow {
+  align-self: center;
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+.slx-a {
+  animation: slx-go calc(var(--slx-dur, 3s) * (1 - var(--d, 0))) var(--ease-in-out, ease-in-out)
+    calc(var(--slx-dur, 3s) * var(--d, 0)) both;
+}
+.slx-reveal {
+  animation: slx-show 0.45s var(--ease-out, ease-out) var(--slx-dur, 3s) both;
+}
+@keyframes slx-go {
+  from {
+    transform: var(--t0);
+    opacity: var(--o0);
+  }
+  to {
+    transform: var(--t);
+    opacity: var(--o);
+  }
+}
+@keyframes slx-show {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .slx-run-art.is-play {
+    max-width: 16rem;
+  }
+  .slx-run-art.is-play .slx-anim {
+    display: none;
+  }
+  .slx-run-art.is-play .slx-still {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    gap: var(--s-1);
+  }
+}
+.sl-run-result {
+  font-size: 1.15rem;
+}
+.slx-data tr.is-new {
+  background: var(--sage-200);
+}
+.slx-empty-table {
+  margin: 0 0 var(--s-2);
+}
+
+/* ── represent: chart builder and orders ─────────────────────────────────── */
+.slx-chart {
+  margin: 0 0 var(--s-3);
+}
+.slx-chart-title {
+  margin: 0 0 var(--s-2);
+  font-weight: 700;
+}
+.slx-chart-svg {
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--ivory);
+}
+.slx-bar {
+  transition:
+    height var(--dur-3, 320ms) var(--ease-out, ease-out),
+    y var(--dur-3, 320ms) var(--ease-out, ease-out);
+}
+.slx-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-1) var(--s-4);
+  margin: var(--s-2) 0 0;
+  padding: 0;
+  list-style: none;
+}
+.slx-legend li {
+  display: inline-flex;
+  gap: 0.4rem;
+  align-items: center;
+}
+.slx-legend svg {
+  width: 1.1rem;
+  height: 1.1rem;
+}
+.slx-bar-build .sl-bars li {
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.3rem var(--s-3);
+  align-items: center;
+  padding: var(--s-2) 0;
+  border-top: 1px solid var(--line);
+}
+.slx-bar-in {
+  display: inline-flex;
+  gap: 0.4rem;
+  align-items: center;
+}
+.slx-bar-in input {
+  width: 6.5rem;
+  min-height: 2.75rem;
+  font-size: 1.1rem;
+}
+.slx-bar-note {
+  grid-column: 1 / -1;
+  font-size: 0.95rem;
+}
+.slx-bar-note.is-match {
+  color: var(--right);
+  font-weight: 700;
+}
+.slx-bar-note.is-ask {
+  color: var(--hint);
+  font-weight: 700;
+}
+.slx-orders {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--s-4);
+}
+.slx-orders h3 {
+  margin: 0 0 var(--s-2);
+  font-size: 1.05rem;
+}
+.slx-rowpick {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 17rem), 1fr));
+  gap: 0 var(--s-3);
+}
+.slx-rowpick legend {
+  grid-column: 1 / -1;
+}
+
+/* ── narrow fixes ────────────────────────────────────────────────────────── */
+.slx-data th,
+.slx-data td,
+.sl-preview .sl-table th,
+.sl-preview .sl-table td {
+  overflow-wrap: normal;
+  white-space: nowrap;
+}
+.sl-run .btn {
+  white-space: nowrap;
+  padding-inline: 0.8rem;
+}
+.sl-run-n {
+  font-weight: 700;
+}
+.sl-stage .ex-step-main,
+.sl-stage .ex-step-main > .panel {
+  min-width: 0;
+}
+/* A shared narrow-screen rule turns tables into scroll boxes; the focusable wrapper is the scroll box here. */
+.sl-table-wrap > .sl-table {
+  display: table;
+  overflow: visible;
+}

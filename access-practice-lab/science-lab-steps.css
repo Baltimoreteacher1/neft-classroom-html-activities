@@ -1,0 +1,431 @@
+/* Science Investigation Lab: the hands-on step parts (question cards and slots, prediction order, plan builder),
+   the hub hero and trail, and the help switch. Scene drawing, motion, collect and the chart are science-lab-scenes.css. */
+
+/* ── question: cards and slots ───────────────────────────────────────────── */
+.slx-icon {
+  width: 3.5rem;
+  height: 3.5rem;
+  flex: none;
+}
+.slx-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr));
+  gap: var(--s-3);
+  margin-bottom: var(--s-4);
+}
+.slx-card {
+  display: grid;
+  justify-items: center;
+  gap: 0.3rem;
+  min-height: 2.75rem;
+  padding: var(--s-3);
+  border: 2px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+  text-align: center;
+  cursor: pointer;
+  box-shadow: var(--shadow);
+  transition:
+    transform var(--dur-1, 120ms) var(--ease-press, ease-out),
+    border-color var(--dur-1, 120ms);
+}
+.slx-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--room, var(--brand));
+}
+.slx-card[aria-pressed="true"] {
+  border-color: var(--room, var(--brand));
+  background: var(--room-soft);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--room, var(--brand)) 25%, transparent);
+}
+.slx-card .fine {
+  overflow-wrap: anywhere;
+}
+.slx-slots {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--s-3);
+}
+.slx-slot {
+  display: grid;
+  gap: 0.2rem;
+  min-height: 4.5rem;
+  padding: var(--s-3);
+  border: 2px dashed var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--surface-2);
+  color: var(--ink);
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+.slx-slot.is-full {
+  border-style: solid;
+  border-color: var(--sage-900);
+  background: var(--sage-200);
+}
+.slx-slot-k {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--ink-2);
+}
+.slx-slot-v {
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+.slx-skel {
+  margin: var(--s-4) 0 0;
+  padding: var(--s-3) var(--s-4);
+  border-radius: var(--radius);
+  background: var(--ivory);
+  border: 1.5px solid var(--line);
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  line-height: 1.6;
+}
+.slx-blank {
+  display: inline-block;
+  min-width: 3rem;
+  padding: 0 0.3rem;
+  border-bottom: 2px dashed var(--line-strong);
+}
+.slx-blank.is-filled {
+  border-bottom: 2px solid var(--sage-900);
+  border-radius: 6px 6px 0 0;
+  background: var(--sage-200);
+  color: var(--sage-900);
+  font-weight: 700;
+}
+
+/* ── hypothesis: order cards ─────────────────────────────────────────────── */
+.slx-order {
+  display: grid;
+  gap: var(--s-2);
+  margin: 0 0 var(--s-2);
+  padding: 0;
+  list-style: none;
+}
+.slx-order-item {
+  display: grid;
+  grid-template-columns: auto auto minmax(0, 1fr) auto;
+  gap: var(--s-3);
+  align-items: center;
+  padding: var(--s-2) var(--s-3);
+  border: 1.5px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+.slx-order-item .slx-icon {
+  width: 2.75rem;
+  height: 2.75rem;
+}
+.slx-rank {
+  display: grid;
+  place-items: center;
+  width: 2.2rem;
+  height: 2.2rem;
+  border-radius: 50%;
+  background: var(--mi-800);
+  color: #fff;
+  font-family: var(--font-display);
+  font-weight: 700;
+}
+.slx-order.is-result .slx-rank {
+  background: var(--sage-900);
+}
+.slx-moves {
+  display: inline-flex;
+  gap: var(--s-1);
+}
+.slx-move {
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border: 1.5px solid var(--line-strong);
+  border-radius: 12px;
+  background: var(--surface);
+  color: var(--ink);
+  cursor: pointer;
+}
+.slx-move .ico {
+  transform: rotate(90deg);
+}
+.slx-move:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+/* ── plan: builder and live preview ──────────────────────────────────────── */
+.slx-builder {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--s-4);
+}
+.slx-var-head {
+  display: flex;
+  gap: var(--s-3);
+  align-items: center;
+}
+.slx-var-head .fine {
+  margin: 0;
+}
+.slx-seg {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 var(--s-4);
+}
+.slx-var.is-change {
+  border-color: var(--copper-900);
+  background: color-mix(in srgb, var(--copper-200) 35%, transparent);
+}
+.slx-var.is-held {
+  border-color: var(--sage-900);
+  background: color-mix(in srgb, var(--sage-200) 45%, transparent);
+}
+.slx-trials input {
+  max-width: 8rem;
+  min-height: 2.75rem;
+}
+.slx-setup {
+  margin: 0;
+  padding: var(--s-3);
+  border: 3px solid var(--mi-800);
+  border-radius: var(--r-lg);
+  background: var(--ivory);
+  box-shadow: var(--shadow);
+}
+.slx-setup-head {
+  margin: 0 0 var(--s-2);
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+.slx-cols {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 8.5rem), 1fr));
+  gap: var(--s-2);
+}
+.slx-col {
+  display: grid;
+  align-content: start;
+  gap: var(--s-1);
+  padding: var(--s-2);
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+.slx-col-tag {
+  margin: 0;
+  font-weight: 700;
+  font-size: 0.95rem;
+  overflow-wrap: anywhere;
+}
+.slx-tag-k {
+  display: inline-block;
+  margin-inline-end: 0.25rem;
+  padding: 0 0.45rem;
+  border-radius: 999px;
+  background: var(--copper-900);
+  color: #fff;
+  font-size: 0.8rem;
+}
+.slx-cups {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.slx-cups .slx-unit {
+  width: min(7.5rem, 100%);
+  flex: 1 1 4.2rem;
+}
+.slx-kept {
+  display: grid;
+  gap: var(--s-1);
+  margin: var(--s-3) 0 0;
+  padding: 0;
+  list-style: none;
+}
+.slx-kept li {
+  display: flex;
+  gap: var(--s-2);
+  align-items: center;
+  padding: 0.3rem 0.6rem;
+  border-radius: 12px;
+  background: var(--surface-2);
+}
+.slx-kept li.is-held {
+  background: var(--sage-200);
+  color: var(--sage-900);
+}
+.slx-mini {
+  width: 2.25rem;
+  height: 2.25rem;
+  flex: none;
+}
+.slx-warn {
+  margin: var(--s-3) 0 0;
+  padding: var(--s-2) var(--s-3);
+  border-radius: 12px;
+  background: var(--hint-soft, #fbeedd);
+  color: var(--hint);
+  font-weight: 700;
+}
+
+/* ── hub ─────────────────────────────────────────────────────────────────── */
+.sl-hub .sl-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--s-4);
+  align-items: center;
+}
+.sl-hero h1 {
+  display: grid;
+  gap: var(--s-2);
+  margin: 0;
+}
+.sl-hero-kicker {
+  font-family: "Atkinson Hyperlegible", system-ui, sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--ink-2);
+}
+.sl-hero-q {
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 1.2rem + 2.2vw, 2.7rem);
+  line-height: 1.15;
+}
+.sl-hero-lead {
+  margin: var(--s-3) 0 var(--s-4);
+  font-size: 1.15rem;
+}
+.sl-hero .row-actions {
+  margin-bottom: var(--s-4);
+}
+.sl-finished {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  margin: 0;
+  font-weight: 700;
+}
+.sl-trail {
+  margin-top: var(--s-4);
+}
+.sl-hub-about {
+  margin-top: var(--s-4);
+}
+.sl-path-ico {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 10px;
+  background: var(--room-soft, var(--surface-2));
+  color: var(--room-ink, var(--brand));
+}
+.sl-trail .sl-path-step a {
+  min-height: 3.5rem;
+}
+
+/* ── help control in the header ──────────────────────────────────────────── */
+.sl-helpctl {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-1) var(--s-2);
+  align-items: center;
+}
+.sl-helpctl-k {
+  display: inline-flex;
+  gap: 0.3rem;
+  align-items: center;
+  font-weight: 700;
+}
+.sl-seg {
+  display: inline-flex;
+  padding: 3px;
+  border: 1.5px solid var(--line-strong);
+  border-radius: 999px;
+  background: var(--surface);
+}
+.sl-seg-btn {
+  min-width: 4.2rem;
+  min-height: 2.75rem;
+  padding: 0 0.9rem;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+.sl-seg-btn[aria-pressed="true"] {
+  background: var(--brand);
+  color: #fff;
+}
+.sl-seg-btn:focus-visible {
+  outline: 3px solid var(--mi-950);
+  outline-offset: 2px;
+}
+.sl-helpctl-line {
+  flex-basis: 100%;
+}
+.sl-head-side {
+  display: grid;
+  gap: var(--s-2);
+  justify-items: start;
+}
+.sl-head-side .sl-mode {
+  padding: var(--s-2) var(--s-3);
+}
+
+
+/* ── widths ──────────────────────────────────────────────────────────────── */
+@media (min-width: 860px) {
+  .sl-hub .sl-hero {
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  }
+}
+@media (min-width: 980px) {
+  .slx-builder {
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+    align-items: start;
+  }
+  .slx-builder-preview {
+    position: sticky;
+    top: 84px;
+  }
+}
+@media (max-width: 560px) {
+  .slx-slots,
+  .slx-orders {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .slx-spot {
+    width: 2.75rem;
+    height: 2.75rem;
+    font-size: 1rem;
+  }
+  .slx-order-item {
+    grid-template-columns: auto auto minmax(0, 1fr);
+  }
+  .slx-moves {
+    grid-column: 1 / -1;
+    justify-self: end;
+  }
+  .sl-runs {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .slx-skel {
+    font-size: 1.15rem;
+  }
+}
+body[data-lab-band="3-5"] .slx-card,
+body[data-lab-band="3-5"] .slx-slot {
+  font-size: 1.1rem;
+}
+

@@ -1,8 +1,10 @@
 #!/usr/bin/env node
 /**
- * Science Investigation Lab (/worlds/science-lab) in a real browser, at 375px and 1440px. A learner chooses
- * "On my own", completes all twelve stages and the independent transfer for the Grades 6-8 ice-cover case through
- * the UI (keyboard where it matters), and the run asserts: the support choice comes before anything else; feedback is
+ * Science Investigation Lab (/worlds/science-lab) in a real browser, at 375px and 1440px. A learner opens the hub
+ * (no gate: the scene, the question and Start come first, help defaults to "Some"), switches help to "Less" (C),
+ * completes all twelve stages and the independent transfer for the Grades 6-8 ice-cover case through the UI
+ * (keyboard where it matters), using the illustrated scenes (hotspots, cards, ordering, the live plan preview, the
+ * time-lapse runs, the bar builder), and the run asserts: feedback is
  * the learner's quoted words then a question; no score, percent, level or timer text anywhere; opening help marks
  * the stage as working with help; focus moves to the new heading on every stage change; reload resumes exactly; state
  * sits under the science-lab key; the ledger gains entries that hold no learner text; the Spanish toggle renders
@@ -244,37 +246,50 @@ async function runFlow(width) {
   const feedbackOf = () => page.locator("[data-sl-feedback]").innerText();
 
   try {
-    // ── the help choice comes first ─────────────────────────────────────────
+    // ── the hub opens straight onto the investigation (no help gate) ───────
     await go("/worlds/science-lab?grades=6-8");
     ok(
-      (await page.locator("h1").innerText()).includes("How do you want to work"),
-      `${tag} the first screen asks how much help`,
+      (await page.locator("h1").innerText()).includes("Which cover keeps ice frozen longest") &&
+        !/How do you want to work/.test(await appText()),
+      `${tag} the hub shows the question, with no help gate`,
     );
     ok(
-      (await page.locator("[data-sl-help], .ex-help, .sl-path").count()) === 0,
-      `${tag} no help and no path render before the choice`,
+      (await page.locator('.sl-hero svg[role="img"] title').count()) === 1 &&
+        ((await page.locator(".sl-hero .slx-cap").textContent()) || "").length > 40,
+      `${tag} the hub shows the scene with a title and a text equivalent`,
     );
     ok(
-      (await page.locator("[data-sl-support]").count()) === 3,
-      `${tag} three help choices (A, B, C)`,
+      /Start the investigation/.test(await page.locator("[data-sl-continue]").innerText()),
+      `${tag} one Start button`,
     );
     ok(
-      (await page.locator('[data-sl-support][aria-pressed="true"]').count()) === 0,
-      `${tag} nothing is pre-selected`,
+      (await page
+        .locator('[data-sl-support][aria-pressed="true"]')
+        .getAttribute("data-sl-support")) === "B" && (await lab())?.support === "B",
+      `${tag} the default help level is B (Some)`,
     );
-    await audit("help choice");
-    await axe("help choice");
-    // A stage URL asks first too.
+    await audit("hub (new)");
+    await axe("hub (new)");
+    // A stage link renders the stage immediately.
     await go(stageUrl("claim"));
     ok(
-      (await page.locator("[data-sl-support]").count()) === 3 &&
-        (await page.locator("#slf-claim-text").count()) === 0,
-      `${tag} a stage link also asks first and shows no work yet`,
+      (await page.locator("#slf-claim-text").count()) === 1 &&
+        (await page.locator("[data-sl-continue]").count()) === 0,
+      `${tag} a direct stage link renders the stage immediately`,
     );
+    await audit("direct stage link");
     await go("/worlds/science-lab");
     await page.locator('[data-sl-support="C"]').focus();
     await page.keyboard.press("Enter");
+    await page.waitForSelector('[data-sl-support="C"][aria-pressed="true"]');
+    await page.reload({ waitUntil: "load" });
     await page.waitForSelector("[data-sl-continue]");
+    ok(
+      (await page
+        .locator('[data-sl-support][aria-pressed="true"]')
+        .getAttribute("data-sl-support")) === "C",
+      `${tag} changing the help level persists across reload`,
+    );
 
     // ── hub ─────────────────────────────────────────────────────────────────
     ok((await page.locator(".sl-path-step").count()) === 12, `${tag} the hub lists twelve steps`);
@@ -310,6 +325,20 @@ async function runFlow(width) {
       /notice/i.test(await page.locator("#slMsg").innerText()) && /\/notice/.test(page.url()),
       `${tag} finishing with nothing written says what is missing and does not move`,
     );
+    ok(
+      (await page.locator('.sl-scene-panel svg[role="img"] title').count()) === 1 &&
+        ((await page.locator(".sl-scene-panel .slx-cap").textContent()) || "").length > 40,
+      `${tag} notice: the scene has a title and a text equivalent`,
+    );
+    await page.locator('[data-slx-look="puddle"]').click();
+    await page.waitForSelector('[data-slx-chip="n:puddle"]');
+    await page.locator('[data-slx-chip="n:puddle"]').click();
+    await page.waitForSelector(".slx-chip.is-n");
+    ok(
+      /puddle/.test(await page.locator(".slx-chip.is-n").innerText()) &&
+        (await lab())?.stages?.notice?.chips?.[0]?.h === "puddle",
+      `${tag} a hotspot adds an observation chip`,
+    );
     await fill("slf-notice-notice", SAY.notice);
     await fill("slf-notice-wonder", SAY.wonder);
     await audit("notice");
@@ -342,6 +371,18 @@ async function runFlow(width) {
     ok(
       /check/i.test(await page.locator("#slMsg").innerText()) && /\/question/.test(page.url()),
       `${tag} continuing before a check says to check first`,
+    );
+    await page.locator('[data-slx-pick="cover"]').click();
+    await page.locator('[data-slx-slot="change"]').click();
+    await page.locator('[data-slx-pick="measure"]').click();
+    await page.locator('[data-slx-slot="measure"]').click();
+    await page.waitForFunction(
+      () => document.querySelectorAll(".slx-blank.is-filled").length === 2,
+    );
+    ok(
+      JSON.stringify((await lab())?.stages?.question?.slots) ===
+        JSON.stringify({ change: "cover", measure: "measure" }),
+      `${tag} question cards fill the change and measure slots`,
     );
     await fill("slf-question-text", SAY.weak);
     await check("question");
@@ -377,16 +418,51 @@ async function runFlow(width) {
     await done("question", "/hypothesis");
 
     // ── hypothesis ──────────────────────────────────────────────────────────
+    await page.locator('[data-slx-move="wool:up"]').click();
+    await page.waitForFunction(() => document.activeElement?.dataset?.slxMove?.startsWith("wool:"));
+    await page.keyboard.press("Enter");
+    await page.waitForFunction(() =>
+      document.querySelector(".slx-order-item strong")?.textContent.includes("Wool"),
+    );
+    ok(
+      JSON.stringify((await lab())?.stages?.hypothesis?.order) ===
+        JSON.stringify(["wool", "foil", "paper"]),
+      `${tag} the prediction order is saved (keyboard works)`,
+    );
     await fill("slf-hypothesis-text", SAY.hypothesis);
     await check("hypothesis");
     await audit("hypothesis");
     await done("hypothesis", "/plan");
 
     // ── plan ────────────────────────────────────────────────────────────────
+    const preview = () => page.locator("[data-sl-preview] .slx-cap").textContent();
+    await page.locator('[data-sl-var="cover"][value="change"]').check();
+    await page.locator('[data-sl-var="layers"][value="held"]').check();
+    const byCover = await preview();
+    ok(
+      (await page.locator('[data-sl-preview] svg[role="img"] title').count()) >= 3 &&
+        /Aluminum foil/.test(byCover) &&
+        (await page.locator("[data-sl-preview] .slx-kept .is-held").count()) === 1,
+      `${tag} plan: the preview draws one group per cover, a title per cup and "kept the same"`,
+    );
+    await page.locator('[data-sl-var="layers"][value="change"]').check();
+    await page.locator('[data-sl-var="cover"][value="held"]').check();
+    const byLayers = await preview();
+    ok(
+      byLayers !== byCover &&
+        /3 layers/.test(byLayers) &&
+        (await page.locator("[data-sl-preview]").getAttribute("data-slx-cols")) === "2",
+      `${tag} plan: the preview changes when the changed variable changes`,
+    );
     await page.locator('[data-sl-var="cover"][value="change"]').check();
     await page.locator('[data-sl-var="layers"][value="held"]').check();
     await fill("slf-plan-measure", SAY.measure);
     await fill("slf-plan-trials", "3");
+    ok(
+      (await page.locator("[data-sl-preview] .slx-col").first().locator("svg.slx-unit").count()) ===
+        3,
+      `${tag} plan: three trials show as three repeated cups`,
+    );
     await fill("slf-plan-steps", SAY.steps);
     await check("plan");
     const plan = (await lab())?.stages?.plan;
@@ -401,8 +477,37 @@ async function runFlow(width) {
     // ── collect: run each test, reload keeps them ───────────────────────────
     const runs = await page.locator("[data-sl-run]").count();
     ok(runs === 8, `${tag} eight tests to run (${runs})`);
+    ok(
+      (await page.locator('.sl-run svg[role="img"] title').count()) === 8 &&
+        /Aluminum foil/.test((await page.locator(".sl-run svg desc").first().textContent()) || ""),
+      `${tag} collect: every test has a scene with a title and a text equivalent`,
+    );
     for (let i = 0; i < 3; i++) await page.locator("[data-sl-run]").first().click();
     await page.waitForFunction(() => document.querySelectorAll("[data-sl-result]").length === 3);
+    const tableRows = await page
+      .locator("[data-slx-row]")
+      .evaluateAll((trs) =>
+        trs.map((tr) => `${tr.dataset.slxRow}=${tr.lastElementChild.textContent.trim()}`),
+      );
+    ok(
+      JSON.stringify(tableRows) === JSON.stringify(["r1=34", "r2=41", "r3=43"]) &&
+        (await page.locator('[data-sl-result="r3"]').innerText()).includes("43 minutes") &&
+        (await page.locator('[data-sl-run="r4"]').count()) === 1,
+      `${tag} running a test reveals exactly that row's value and adds it to the table (${tableRows.join(" ")})`,
+    );
+    ok(
+      (await page.locator(".slx-run-art.is-play").count()) === 1 &&
+        (await page.locator(".slx-run-art.is-play .slx-still").isVisible()) &&
+        !(await page.locator(".slx-run-art.is-play .slx-anim").isVisible()) &&
+        (await page.evaluate(
+          () => document.getAnimations().filter((a) => a.playState === "running").length,
+        )) === 0,
+      `${tag} reduced motion: start and end frames side by side, no running animation`,
+    );
+    ok(
+      (await page.locator(".sl-run").nth(6).locator(".slx-trial").innerText()).includes("Trial 2"),
+      `${tag} a repeated set of conditions shows as trial 2`,
+    );
     ok(
       await page.evaluate(() => document.activeElement?.hasAttribute("data-sl-result")),
       `${tag} focus lands on the result just revealed`,
@@ -460,6 +565,35 @@ async function runFlow(width) {
       `${tag} the bar chart shows the chosen results`,
     );
     ok(
+      (await page.locator('.slx-chart svg[role="img"] title').count()) === 1 &&
+        (await page.locator(".slx-orders .slx-order").count()) === 2,
+      `${tag} represent: the chart scene has a title, and the prediction sits beside the results`,
+    );
+    const setBar = async (id, v) => {
+      await page.locator(`#slb-${id}`).fill(v);
+      await page.locator(`#slb-${id}`).press("Tab");
+      await page.waitForFunction(
+        (rid) =>
+          document.querySelector(`[data-slx-note="${rid}"]`)?.className.match(/is-(match|ask)/),
+        id,
+      );
+    };
+    await setBar("r1", "34");
+    await setBar("r3", "44");
+    await setBar("r5", "50");
+    const barOf = (id) => page.locator(`.slx-bar[data-row="${id}"]`).getAttribute("data-value");
+    ok(
+      (await barOf("r1")) === "34" && (await barOf("r3")) === "43",
+      `${tag} the chart bar for a row matches its dataset value (a close number snaps to it)`,
+    );
+    ok(
+      (await barOf("r5")) === "50" &&
+        (await page.locator('[data-slx-note="r5"]').innerText()).trim().endsWith("?") &&
+        JSON.stringify((await lab())?.stages?.represent?.bars) ===
+          JSON.stringify({ r1: 34, r3: 43, r5: 50 }),
+      `${tag} a bar that differs from the table is pointed out as a question, and bars are saved`,
+    );
+    ok(
       (await page.locator(".sl-alt").innerText()).includes("34 minutes"),
       `${tag} the bar chart has a text alternative with the values`,
     );
@@ -487,8 +621,32 @@ async function runFlow(width) {
       (await page.locator("#slf-claim-text").inputValue()) === SAY.claim,
       `${tag} typed words survive a reload`,
     );
+    ok(
+      (await page.locator('.slx-argue .slx-chart svg[role="img"] title').count()) === 1 &&
+        (await page.locator("[data-slx-bar^='claim:']").count()) === 3,
+      `${tag} claim: the learner's own chart stays visible with a tappable bar per result`,
+    );
+    await page.locator('[data-slx-bar="claim:r1"]').click();
+    await page.waitForFunction(
+      () =>
+        document.querySelector('[data-slx-bar="claim:r1"]')?.getAttribute("aria-pressed") ===
+        "true",
+    );
+    await page.locator('[data-slx-bar="claim:r5"]').focus();
+    await page.keyboard.press("Enter");
+    await page.waitForFunction(() => document.querySelectorAll(".slx-side").length === 2);
+    const sides = await page.locator(".slx-compare").innerText();
+    ok(
+      /Test 1/.test(sides) &&
+        /Test 5/.test(sides) &&
+        /34 minutes/.test(sides) &&
+        /71 minutes/.test(sides) &&
+        JSON.stringify((await lab())?.stages?.claim?.compare) === JSON.stringify(["r1", "r5"]),
+      `${tag} claim: tapping two bars (keyboard works) puts those tests into a comparison and saves it`,
+    );
     await check("claim");
     await audit("claim");
+    await axe("claim");
     await done("claim", "/evidence");
 
     // ── evidence ────────────────────────────────────────────────────────────
@@ -496,6 +654,28 @@ async function runFlow(width) {
     ok(
       /one test/i.test(await page.locator("#slMsg").innerText()),
       `${tag} evidence asks for at least one test`,
+    );
+    const evBar = (id) => page.locator(`[data-slx-bar="evid:evidence:ids:${id}"]`);
+    await evBar("r1").focus();
+    await page.keyboard.press("Enter");
+    await page.waitForSelector('tr[data-slx-evrow="r1"].is-picked');
+    ok(
+      (await evBar("r1").getAttribute("aria-pressed")) === "true" &&
+        (await page.locator('[data-sl-evid="evidence:ids:r1"]').isChecked()) &&
+        (await page.locator('.slx-evpick .slx-bar[data-row="r1"]').getAttribute("stroke-width")) ===
+          "5",
+      `${tag} evidence: tapping a bar (keyboard) highlights it in the chart and the table together`,
+    );
+    await page.locator('[data-sl-evid="evidence:ids:r5"]').check();
+    await page.waitForFunction(
+      () =>
+        document
+          .querySelector('[data-slx-bar="evid:evidence:ids:r5"]')
+          ?.getAttribute("aria-pressed") === "true",
+    );
+    ok(
+      (await page.locator('tr[data-slx-evrow="r5"]').getAttribute("class")).includes("is-picked"),
+      `${tag} evidence: choosing a table row highlights its bar on the chart`,
     );
     for (const id of ["r1", "r5", "r6"])
       await page.locator(`[data-sl-evid="evidence:ids:${id}"]`).check();
@@ -513,7 +693,19 @@ async function runFlow(width) {
       (await appText()).includes("Wool cloth kept the ice"),
       `${tag} reasoning shows the learner's own claim back`,
     );
+    const cer = page.locator(".slx-cer");
+    const vals = await page.locator(".slx-cer-val strong").allInnerTexts();
+    ok(
+      (await cer.locator("[data-slx-cer-claim]").innerText()).includes(SAY.claim) &&
+        JSON.stringify(vals) === JSON.stringify(["34", "71", "118"]) &&
+        (await page.locator(".slx-cer .slx-fan").count()) === 2,
+      `${tag} reasoning: the diagram holds the learner's claim and the chosen evidence values (${vals.join(", ")})`,
+    );
     await fill("slf-reasoning-text", SAY.reasoning);
+    ok(
+      (await page.locator("[data-slx-cer-reason]").innerText()).includes("118 minutes for wool"),
+      `${tag} reasoning: the diagram shows the learner's reasoning as they type`,
+    );
     await check("reasoning");
     await audit("reasoning");
     await axe("reasoning");
@@ -529,7 +721,16 @@ async function runFlow(width) {
       (await page.locator("#slf-revise-after").inputValue()) === SAY.claim,
       `${tag} the new version starts from the earlier words`,
     );
+    ok(
+      (await page.locator('.slx-partner svg[role="img"] title').count()) === 1,
+      `${tag} revise: an illustrated lab partner asks the counter-question`,
+    );
     await fill("slf-revise-after", SAY.revised);
+    ok(
+      /71 minutes/.test(await page.locator(".slx-diff .is-after .slx-ins").first().innerText()) &&
+        (await page.locator(".slx-diff .is-before").innerText()).includes("Wool cloth kept"),
+      `${tag} revise: before and after show the changed words highlighted`,
+    );
     await check("revise");
     ok(
       (await page.locator(".sl-changes").count()) === 1 &&
@@ -547,6 +748,12 @@ async function runFlow(width) {
         0,
       `${tag} recording is offered but optional`,
     );
+    ok(
+      (await page.locator("[data-slx-poster-claim]").innerText()).includes(SAY.claim) &&
+        (await page.locator('[data-slx-poster-chart] svg[role="img"] title').count()) === 1 &&
+        /71/.test(await page.locator(".slx-poster-ev").innerText()),
+      `${tag} present: the poster holds the learner's claim, chart and evidence`,
+    );
     await fill("slf-present-transcript", SAY.talk);
     await audit("present");
     await axe("present");
@@ -557,6 +764,14 @@ async function runFlow(width) {
     ok(
       /one question/i.test(await page.locator("#slMsg").innerText()),
       `${tag} reflect asks for at least one answer`,
+    );
+    const recap = page.locator(".slx-recap-strip");
+    ok(
+      (await recap.locator(".slx-recap-card").count()) >= 8 &&
+        (await recap.locator('[data-slx-recap="claim"]').innerText()).includes("Wool cloth kept") &&
+        (await recap.locator('[data-slx-recap="represent"] svg[role="img"]').count()) === 1 &&
+        (await recap.locator('[data-slx-recap="hypothesis"] .slx-mini-order').count()) === 2,
+      `${tag} reflect: the recap strip shows the learner's own chart, claim and prediction beside the result`,
     );
     await fill("slf-reflect-answers-hard", SAY.reflect);
     ok(
@@ -572,6 +787,13 @@ async function runFlow(width) {
       (await page.locator("[data-sl-help]").count()) === 0 &&
         (await page.locator('[data-sl-mode="independent"]').count()) === 1,
       `${tag} transfer: no help to open and marked on my own`,
+    );
+    ok(
+      (await page.locator('.slx-tf-scene svg[role="img"] title').count()) === 1 &&
+        /cocoa/i.test(await page.locator(".slx-tf-scene .slx-cap").innerText()) &&
+        (await page.locator('.slx-evpick svg.slx-chart-svg[role="img"]').count()) === 1 &&
+        (await page.locator("tr[data-slx-evrow]").count()) === 4,
+      `${tag} transfer: the new phenomenon's scene, chart and table are shown with help closed`,
     );
     for (const id of ["t1", "t3"])
       await page.locator(`[data-sl-evid="transfer:evidenceIds:${id}"]`).check();
@@ -691,8 +913,12 @@ async function runFlow(width) {
       );
       await go("/worlds/science-lab?grades=3-5");
       ok(
-        (await page.locator("[data-sl-support]").count()) === 3,
-        `${tag} the Grades 3-5 case asks for help first`,
+        (await page.locator("[data-sl-continue]").count()) === 1 &&
+          (await page.locator('.sl-hero svg[role="img"]').count()) === 1 &&
+          (await page
+            .locator('[data-sl-support][aria-pressed="true"]')
+            .getAttribute("data-sl-support")) === "B",
+        `${tag} the Grades 3-5 case opens on its scene and Start, help at B`,
       );
       await page.locator('[data-sl-support="A"]').click();
       await page.waitForSelector("[data-sl-continue]");
@@ -717,6 +943,28 @@ async function runFlow(width) {
         `${tag} /worlds keeps four world tiles and one lab card`,
       );
       await axe("Language Worlds with the lab card");
+
+      // ── with motion allowed, the latest run plays as a time-lapse ─────────
+      const saved = await page.evaluate(() => JSON.stringify(localStorage));
+      const moving = await browser.newContext({ viewport: { width, height: 900 } });
+      await moving.addInitScript((data) => {
+        if (!sessionStorage.getItem("sl-motion")) {
+          for (const [k, v] of Object.entries(JSON.parse(data))) localStorage.setItem(k, v);
+          sessionStorage.setItem("sl-motion", "1");
+        }
+      }, saved);
+      const mp = await moving.newPage();
+      await mp.goto(`${origin + LAB}/worlds/science-lab/collect?case=ice-cover&grades=6-8`, {
+        waitUntil: "load",
+      });
+      await mp.waitForSelector(".slx-run-art.is-play");
+      ok(
+        (await mp.evaluate(
+          () => document.getAnimations().filter((a) => a.playState === "running").length,
+        )) > 0 && (await mp.locator(".slx-run-art.is-play .slx-anim").isVisible()),
+        `${tag} with motion allowed, the latest run plays as a CSS time-lapse`,
+      );
+      await moving.close();
     }
     ok(
       errors.length === 0,
