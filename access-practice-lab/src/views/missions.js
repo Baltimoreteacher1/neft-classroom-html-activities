@@ -94,10 +94,10 @@ function hubHTML(ctx, index, studio) {
 
 const phaseTasks = (phase) =>
   (phase.tasks || []).filter((t) => t.kind !== "speak" && t.kind !== "write");
-const isDone = (ms, phase) =>
+const isDone = (ms, phase, entries = []) =>
   phase.skill === "Decision"
     ? Boolean(ms.decisions[phase.id])
-    : (phase.tasks || []).every((t) => taskDone(ms, t));
+    : visibleTasks(phase, entries).every((t) => taskDone(ms, t));
 function taskDone(ms, t) {
   if (t.kind === "question") return ms.answers[t.id]?.done || false;
   if (t.kind === "evidence") return Boolean(ms.answers[t.id]?.done);
@@ -105,8 +105,9 @@ function taskDone(ms, t) {
 }
 
 function visibleTasks(phase, ledger) {
+  const entries = Array.isArray(ledger) ? ledger : ledger?.entries || [];
   return (phase.tasks || []).filter(
-    (t) => t.tier !== "stretch" || showStretch(ledger.entries, t.skill),
+    (t) => t.tier !== "stretch" || showStretch(entries, t.skill),
   );
 }
 
@@ -288,7 +289,7 @@ export async function render(ctx) {
   }
   const phases = mission.phases;
   const requested = new URLSearchParams(location.search).get("phase");
-  const firstOpen = phases.findIndex((p) => !isDone(ms, p));
+  const firstOpen = phases.findIndex((p) => !isDone(ms, p, ledger.entries));
   const current = requested
     ? Math.max(
         0,
@@ -331,7 +332,7 @@ export async function render(ctx) {
       </section>
       <nav class="mission-steps" aria-label="${I.S("Mission phases", "Fases de la misión")}">
         <ol>
-          ${phases.map((p, i) => html`<li class="${i === current ? "is-current" : isDone(ms, p) ? "is-done" : ""}"><a ${i === current ? raw('aria-current="step"') : ""} href="${BASE}/missions/${mission.id}?phase=${p.id}&grades=${ctx.band}"><span class="step-n">${isDone(ms, p) && i !== current ? icon("check") : skillIcon(p.skill)}</span><span class="step-l">${skillT(p.skill)}${isDone(ms, p) && i !== current ? html`<span class="visually-hidden"> ${I.T("(done)", "(hecha)")}</span>` : ""}</span></a></li>`)}
+          ${phases.map((p, i) => html`<li class="${i === current ? "is-current" : isDone(ms, p, ledger.entries) ? "is-done" : ""}"><a ${i === current ? raw('aria-current="step"') : ""} href="${BASE}/missions/${mission.id}?phase=${p.id}&grades=${ctx.band}"><span class="step-n">${isDone(ms, p, ledger.entries) && i !== current ? icon("check") : skillIcon(p.skill)}</span><span class="step-l">${skillT(p.skill)}${isDone(ms, p, ledger.entries) && i !== current ? html`<span class="visually-hidden"> ${I.T("(done)", "(hecha)")}</span>` : ""}</span></a></li>`)}
         </ol>
       </nav>
       ${
@@ -355,7 +356,7 @@ export async function render(ctx) {
                   )}
                 </div>
                 ${phase.skill === "Decision" ? decisionHTML(phase, ms) : html`${visibleTasks(phase, ledger).map((t) => (t.kind === "question" ? questionHTML(t, ms, qTasks.indexOf(t) + 1, qTasks.length) : t.kind === "evidence" ? evidenceHTML(t, ms) : studioTaskHTML({ ...t, task: t.task || { id: t.taskRef, title: I.S("Speaking or writing task", "Tarea de hablar o escribir"), scenario: "", prompt: "" } }, ms, mission, ctx.band, sug?.stage)))}`}
-                ${isDone(ms, phase) && current < phases.length - 1 ? html`<a class="btn btn-primary btn-big next-phase" href="${BASE}/missions/${mission.id}?phase=${phases[current + 1].id}&grades=${ctx.band}">${I.T(`Next phase: ${phases[current + 1].skill}`, `Siguiente fase: ${SKILL_ES[phases[current + 1].skill] || phases[current + 1].skill}`)}${icon("arrow-right")}</a>` : ""}
+                ${isDone(ms, phase, ledger.entries) && current < phases.length - 1 ? html`<a class="btn btn-primary btn-big next-phase" href="${BASE}/missions/${mission.id}?phase=${phases[current + 1].id}&grades=${ctx.band}">${I.T(`Next phase: ${phases[current + 1].skill}`, `Siguiente fase: ${SKILL_ES[phases[current + 1].skill] || phases[current + 1].skill}`)}${icon("arrow-right")}</a>` : ""}
               </article>
               ${boardHTML(ms)}
             </div>`
@@ -367,9 +368,8 @@ export async function render(ctx) {
 
 function finishPhaseEntry() {
   const { mission, phase, ms, ledger } = M;
-  const qs = (phase.tasks || [])
-    .filter((t) => t.kind === "question")
-    .map((t) => ({
+  const questions = visibleTasks(phase, ledger.entries).filter((t) => t.kind === "question");
+  const qs = questions.map((t) => ({
       skill: t.skill,
       ok: Boolean(ms.answers[t.id]?.firstTry),
       distractor: ms.answers[t.id]?.firstWrong || null,
@@ -379,9 +379,7 @@ function finishPhaseEntry() {
   const supports = {
     transcript: Boolean(M.support.transcript),
     audio: Boolean(M.support.audio),
-    retry: qs.some(
-      (q, i) => ms.answers[phase.tasks.filter((t) => t.kind === "question")[i].id].tries > 1,
-    ),
+    retry: questions.some((q) => (ms.answers[q.id]?.tries || 0) > 1),
   };
   appendEntry(ledger, {
     src: "mission",
@@ -428,7 +426,7 @@ export function onClick(e, ctx) {
         I.S("Not yet. Reread the source and try again.", "Todavía no. Vuelve a leer la fuente e inténtalo de nuevo.");
     if (
       a.done &&
-      phase.tasks.filter((x) => x.kind === "question").every((x) => ms.answers[x.id]?.done) &&
+      visibleTasks(phase, M.ledger.entries).filter((x) => x.kind === "question").every((x) => ms.answers[x.id]?.done) &&
       !ms.phaseLogged?.[phase.id]
     ) {
       (ms.phaseLogged ||= {})[phase.id] = true;

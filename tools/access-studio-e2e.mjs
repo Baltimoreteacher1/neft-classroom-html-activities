@@ -10,10 +10,14 @@
  *   - nothing overflows horizontally at 375px
  * A missing browser is a SKIP locally and a FAIL in CI.
  */
-import { createReadStream, existsSync, mkdirSync, statSync } from "node:fs";
+import { createReadStream, existsSync, mkdirSync, readFileSync, statSync } from "node:fs";
 import http from "node:http";
 import { extname, join } from "node:path";
-import { REPO_ROOT } from "./lib/access-lab-content.mjs";
+import { CONTENT_DIR, REPO_ROOT } from "./lib/access-lab-content.mjs";
+
+const alignmentCounts = JSON.parse(
+  readFileSync(join(CONTENT_DIR, "alignment-index.json"), "utf8"),
+).counts;
 
 let chromium;
 let AxeBuilder;
@@ -413,6 +417,102 @@ ok(
   "mission support recommendation reaches writing's real stage picker",
 );
 
+// Fresh 3–5 learner: the hidden stretch item must not prevent the core mission from progressing.
+const priorGardenState = await page.evaluate(
+  (keys) => Object.fromEntries(keys.map((k) => [k, localStorage.getItem(k)])),
+  [LEDGER, STUDIO],
+);
+await page.evaluate((keys) => keys.forEach((k) => localStorage.removeItem(k)), [LEDGER, STUDIO]);
+await go(`${BASE}/missions/saving-the-school-garden?grades=3-5`);
+ok(
+  (await page.locator("h1").innerText()).includes("Saving the School Garden"),
+  "grade 3–5 garden mission opens from its deep link",
+);
+await page.locator('[data-q="garden-l-q1"][value="a"]').check();
+await page.locator('[data-check-q="garden-l-q1"]').click();
+for (const id of ["g-leaves", "g-week", "g-flowers"])
+  await page.locator(`[data-ev="garden-l-ev"][value="${id}"]`).check();
+await page.locator('[data-check-ev="garden-l-ev"]').click();
+ok(
+  (await page.locator(".mission-phase h2").innerText()).includes("Read the science"),
+  "listening response and evidence advance to reading",
+);
+ok(
+  (await page.locator('[data-q="garden-r-q3"]').count()) === 0,
+  "stretch question stays hidden without prior independent evidence",
+);
+for (const id of ["garden-r-q1", "garden-r-q2"]) {
+  await page.locator(`[data-q="${id}"][value="a"]`).check();
+  await page.locator(`[data-check-q="${id}"]`).click();
+}
+ok(
+  (await page.locator(".mission-phase h2").innerText()).includes("Choose a plan"),
+  "hidden stretch question does not block the core reading phase",
+);
+await page.locator('[data-decision="choose"][value="sunny"]').click();
+ok(
+  (await page.locator(".mission-phase h2").innerText()).includes("Explain your garden plan"),
+  "decision advances to the speaking application",
+);
+await page.locator('a[href*="speak/garden-speak-plan"]').click();
+await page.getByLabel("With frames and words").check();
+for (const [slot, text] of [
+  ["plan", "Cover two sunny beds"],
+  ["science", "Mulch slows evaporation"],
+  ["number", "78 mL compared with 54 mL"],
+])
+  await page.locator(`[data-plan="${slot}"]`).fill(text);
+await page.locator("[data-rec-start]").click();
+await page.waitForSelector("[data-rec-stop]");
+await page.waitForTimeout(2200);
+await page.locator("[data-rec-stop]").click();
+await page.waitForSelector("[data-transcript]");
+await page
+  .locator("[data-transcript]")
+  .fill(
+    "I recommend covering two sunny beds with dry leaves. Mulch slows evaporation. The leaves tray kept 78 milliliters, while the uncovered tray kept 54 milliliters.",
+  );
+await page.locator("[data-analyze]").click();
+await page.waitForSelector(".coach-card");
+for (const c of ["lc", "vu", "lctl"])
+  await page.locator(`input[data-rubric="${c}"][value="building"]`).check();
+await page.locator("[data-finish]").click();
+await go(`${BASE}/missions/saving-the-school-garden?phase=say&grades=3-5`);
+ok(
+  (await page.locator(".next-phase").count()) === 1,
+  "revised speaking evidence completes the mission's speaking step",
+);
+await page.locator(".next-phase").click();
+await page.locator('a[href*="write/garden-write-plan"]').click();
+await page.getByLabel("With frames and words").check();
+const gardenDraft =
+  "Dear Principal, I recommend putting dry leaves on two sunny beds first. The leaves tray had 78 mL of water left, while the uncovered tray had 54 mL. Mulch shades soil and slows evaporation, so more water may stay near the roots. The team can check the soil on Wednesday and record whether the covered beds are still damp.";
+await page.locator("[data-draft]").fill(gardenDraft);
+await page.locator("[data-feedback]").click();
+await page.waitForSelector(".coach-card");
+await page
+  .locator("[data-reflection]")
+  .fill("I added a test number and explained why mulch can help.");
+await page.locator("[data-finish]").click();
+await go(`${BASE}/missions/saving-the-school-garden?phase=write&grades=3-5`);
+ok(
+  (await page.locator(".next-phase").count()) === 0 &&
+    (await page.locator(".mission-steps li.is-done").count()) === 4,
+  "completed writing closes the final phase after listening, reading, decision and speaking",
+);
+await go(`${BASE}/missions/saving-the-school-garden?grades=3-5`);
+ok(
+  (await page.locator(".case-file").count()) === 1,
+  "completed grade 3–5 mission reaches its evidence debrief",
+);
+await page.evaluate(
+  (state) =>
+    Object.entries(state).forEach(([k, v]) =>
+      v === null ? localStorage.removeItem(k) : localStorage.setItem(k, v),
+    ),
+  priorGardenState,
+);
+
 // ── Passport share → Teacher dashboard ────────────────────────────────────────
 await go(`${BASE}/passport`);
 await page.locator("[data-share-alias]").fill("River 7");
@@ -545,8 +645,8 @@ ok(
 );
 const alignmentText = await page.locator("#classEvidence").innerText();
 ok(
-  alignmentText.includes("539") &&
-    alignmentText.includes("27") &&
+  alignmentText.includes(String(alignmentCounts.total)) &&
+    alignmentText.includes(String(alignmentCounts.suggestedExpectations)) &&
     alignmentText.includes("candidate mappings"),
   "blueprint tab loads the generated inventory and source-tag-based candidate mapping count",
 );
@@ -629,7 +729,9 @@ await page.reload({ waitUntil: "networkidle" });
 await page.locator('[data-tab="blueprint"]').click();
 await page.locator("[data-align-reset]").click();
 ok(
-  (await page.locator("#classEvidence").innerText()).includes("539 of 539 records"),
+  (await page.locator("#classEvidence").innerText()).includes(
+    `${alignmentCounts.total} of ${alignmentCounts.total} records`,
+  ),
   "teacher can reset alignment filters",
 );
 await axeCheck("teacher activity alignment matrix");
@@ -1052,6 +1154,16 @@ await go(`${BASE}/detective/sv-agree-3sg`);
 await axeCheck("detective case");
 await go(`${BASE}/missions`);
 await axeCheck("missions hub");
+await go(`${BASE}/missions?grades=3-5`);
+ok(
+  (await page.locator(".mission-card").count()) === 1 &&
+    (await bodyText()).includes("Saving the School Garden"),
+  "grade 3–5 mission hub lists its original connected mission",
+);
+await axeCheck("grade 3–5 mission hub");
+await go(`${BASE}/missions/saving-the-school-garden?phase=listen&grades=3-5`);
+await axeCheck("grade 3–5 mission phase");
+await capture("garden-mission-desktop.png");
 await go(`${BASE}/missions/watershed-mystery`);
 await axeCheck("mission phase");
 await go(`${BASE}/growth`);
@@ -1092,6 +1204,7 @@ for (const p of [
   `${BASE}/write/wrt-mulch-cer`,
   `${BASE}/detective`,
   `${BASE}/missions/watershed-mystery`,
+  `${BASE}/missions/saving-the-school-garden?grades=3-5`,
   `${BASE}/growth`,
   `${BASE}/passport`,
   `${BASE}/diagnostic/Listening`,
@@ -1106,6 +1219,8 @@ for (const p of [
   await go(p);
   if ([`${BASE}/`, `${BASE}/teacher-launch`, `${BASE}/worlds`].includes(p))
     await capture(`${p === `${BASE}/` ? "home" : p.slice(BASE.length + 1)}-mobile.png`);
+  if (p.startsWith(`${BASE}/missions/saving-the-school-garden`))
+    await capture("garden-mission-mobile.png");
   const over = await page.evaluate(
     () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
   );
