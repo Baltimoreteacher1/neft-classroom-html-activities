@@ -1,6 +1,6 @@
-/* Math Reality Lab. One layout, three grade registers: early (K-2) is warm, large and tactile; design (3-5) is a
-   structured studio; analyze (6-8) is a dark instrument panel with fine lines and monospaced numerals. Every drawing
-   reads its colours from the --mr-* tokens, so a band restyles the same SVG. */
+/* Math Reality Lab. One unified, high-clarity educational learning environment.
+   Clean, light, luminous canvas with pure white surfaces, crisp slate navy typography, and vibrant mathematical models.
+   All drawings read colors from --mr-* tokens, ensuring full visual harmony across Grades K-8. */
 *,
 *::before,
 *::after {
@@ -8,122 +8,148 @@
 }
 
 :root {
-  --mr-focus: #1d5fd1;
+  --mr-focus: #1d5fa8;
   --mr-radius: 14px;
   --mr-target: 44px;
   --mr-stroke: 2;
   --mr-display: "Fraunces", Georgia, serif;
   --mr-body: "Hanken Grotesk", system-ui, sans-serif;
   --mr-num: "Hanken Grotesk", system-ui, sans-serif;
-  --mr-bg: #f5f1e8;
-  --mr-surface: #fdfbf5;
-  --mr-surface-2: #efe9db;
-  --mr-ink: #14213a;
-  --mr-ink-soft: #4a5568;
-  --mr-line: #cfc5b0;
-  --mr-accent: #066a73;
+
+  /* Surfaces & canvas: clean, warm-neutral off-white canvas + pure crisp white surfaces */
+  --mr-bg: #f7f4ec;
+  --mr-surface: #ffffff;
+  --mr-surface-2: #eef3f7;
+  --mr-surface-sunk: #e3ebf2;
+
+  /* Ink & typography: rich slate navy (#17324d) and soft slate (#475a6e) */
+  --mr-ink: #17324d;
+  --mr-ink-soft: #475a6e;
+
+  /* Lines & dividers: clean subtle slate (#d7e2ed) and grid (#e2e8f0) */
+  --mr-line: #d7e2ed;
+  --mr-grid: #e2e8f0;
+  --mr-axis: #17324d;
+  --mr-stroke-c: #17324d;
+
+  /* Primary interactive accent: EduWonderLab Navy (#17324d) with crisp white text */
+  --mr-accent: #17324d;
   --mr-accent-ink: #ffffff;
-  --mr-accent-2: #8a4a33;
-  --mr-ok: #1b6e47;
-  --mr-warn: #9a4b0b;
-  --mr-ok-bg: #e4f3ea;
-  --mr-warn-bg: #fbeadb;
-  --mr-info-bg: #e5eef3;
-  --mr-shade: #087e88;
-  --mr-shade-2: #c97d5d;
-  --mr-part: #fdfbf5;
-  --mr-stroke-c: #14213a;
-  --mr-grid: #d9d0bd;
-  --mr-axis: #14213a;
-  --mr-a: #c93c2d;
-  --mr-b: #f0b429;
-  --mr-g1: #087e88;
-  --mr-g2: #c97d5d;
-  --mr-g3: #2f6fd0;
-  --mr-g4: #1b6e47;
-  --mr-g5: #b0561f;
-  --mr-g6: #0f8a9d;
-  --mr-pos: #c0392b;
-  --mr-neg: #1f5fbf;
-  --mr-beam: #14213a;
-  --mr-pan: #c9bfa8;
-  --mr-unit: #087e88;
-  --mr-xbag: #c97d5d;
+  --mr-accent-2: #d9533a;
+
+  /* States & alerts: accessible, high-contrast, vibrant */
+  --mr-ok: #0f7c4a;
+  --mr-ok-bg: #e6f7ef;
+  --mr-warn: #b45309;
+  --mr-warn-bg: #fff4e0;
+  --mr-info-bg: #e8f1fa;
+
+  /* Mathematical representations & manipulatives: vibrant, distinct, joyful */
+  --mr-shade: #1fa6a2;
+  --mr-shade-2: #2c6fb0;
+  --mr-part: #ffffff;
+  --mr-a: #d9533a;
+  --mr-b: #f2c15b;
+  --mr-g1: #1fa6a2;
+  --mr-g2: #d9533a;
+  --mr-g3: #2c6fb0;
+  --mr-g4: #1b7a4b;
+  --mr-g5: #c2652b;
+  --mr-g6: #0e7571;
+
+  /* Integer vector signs */
+  --mr-pos: #2c6fb0;
+  --mr-neg: #d9533a;
+
+  /* Balance scale */
+  --mr-beam: #24384d;
+  --mr-pan: #e9eff5;
+  --mr-unit: #1fa6a2;
+  --mr-xbag: #d9533a;
 }
 :root[data-band="early"] {
-  --mr-radius: 26px;
+  --mr-radius: 22px;
   --mr-target: 56px;
-  --mr-stroke: 3.5;
+  --mr-stroke: 3;
   --mr-display: "Fredoka", "Outfit", system-ui, sans-serif;
   --mr-body: "Outfit", system-ui, sans-serif;
   --mr-num: "Fredoka", "Outfit", sans-serif;
-  --mr-bg: #fff4dc;
-  --mr-surface: #fffdf6;
-  --mr-surface-2: #ffe9b8;
-  --mr-ink: #2b2118;
-  --mr-ink-soft: #5a4a3a;
-  --mr-line: #e5cd96;
-  --mr-accent: #0a7570;
-  --mr-accent-2: #b8480c;
-  --mr-shade: #1f9a8e;
-  --mr-shade-2: #f0b429;
-  --mr-part: #fffdf6;
-  --mr-stroke-c: #2b2118;
-  --mr-grid: #ecd9a8;
-  --mr-axis: #2b2118;
-  --mr-unit: #1f9a8e;
-  --mr-xbag: #e2691b;
-  --mr-pan: #e5cd96;
-  --mr-beam: #2b2118;
+
+  /* Gentle, friendly warm canvas, pure white surfaces, crisp slate text */
+  --mr-bg: #faf7f2;
+  --mr-surface: #ffffff;
+  --mr-surface-2: #f4eee6;
+  --mr-ink: #17324d;
+  --mr-ink-soft: #4a5d6e;
+  --mr-line: #e3ded5;
+  --mr-grid: #eae4da;
+  --mr-axis: #17324d;
+  --mr-stroke-c: #17324d;
+
+  --mr-accent: #17324d;
+  --mr-accent-ink: #ffffff;
+  --mr-accent-2: #d9533a;
+
+  --mr-shade: #1fa6a2;
+  --mr-shade-2: #f2c15b;
+  --mr-part: #ffffff;
+  --mr-unit: #1fa6a2;
+  --mr-xbag: #d9533a;
+  --mr-pan: #e9eff5;
+  --mr-beam: #24384d;
 }
 :root[data-band="analyze"] {
-  --mr-radius: 8px;
+  --mr-radius: 10px;
   --mr-stroke: 1.5;
   --mr-display: "Manrope", system-ui, sans-serif;
   --mr-body: "Manrope", system-ui, sans-serif;
   --mr-num: "IBM Plex Mono", ui-monospace, monospace;
-  --mr-bg: #0d1420;
-  --mr-surface: #141e2e;
-  --mr-surface-2: #1b2840;
-  --mr-ink: #e8eef7;
-  --mr-ink-soft: #a9b6ca;
-  --mr-line: #2b3b55;
-  --mr-accent: #4fd1c5;
-  --mr-accent-ink: #06222a;
-  --mr-accent-2: #f2a65e;
-  --mr-ok: #5fd39a;
-  --mr-warn: #f5b26b;
-  --mr-ok-bg: #123226;
-  --mr-warn-bg: #3a2814;
-  --mr-info-bg: #16283f;
-  --mr-focus: #8ec5ff;
-  --mr-shade: #2fb8ad;
-  --mr-shade-2: #f2a65e;
-  --mr-part: #172338;
-  --mr-stroke-c: #7f93b0;
-  --mr-grid: #24344d;
-  --mr-axis: #a9b6ca;
-  --mr-a: #ff7a66;
-  --mr-b: #f5c04d;
-  --mr-g1: #2fb8ad;
-  --mr-g2: #f2a65e;
-  --mr-g3: #6aa9ff;
-  --mr-g4: #5fd39a;
-  --mr-g5: #e8895a;
-  --mr-g6: #56c7e0;
-  --mr-pos: #ff8a78;
-  --mr-neg: #78b2ff;
-  --mr-beam: #a9b6ca;
-  --mr-pan: #34476a;
-  --mr-unit: #2fb8ad;
-  --mr-xbag: #f2a65e;
+
+  /* High-precision, luminous studio canvas with fine slate lines */
+  --mr-bg: #f5f7fa;
+  --mr-surface: #ffffff;
+  --mr-surface-2: #edf2f7;
+  --mr-surface-sunk: #e2e8f0;
+  --mr-ink: #0f1e2e;
+  --mr-ink-soft: #475a6e;
+  --mr-line: #d2dbe5;
+  --mr-grid: #e2e8f0;
+  --mr-axis: #0f1e2e;
+  --mr-stroke-c: #0f1e2e;
+
+  --mr-accent: #17324d;
+  --mr-accent-ink: #ffffff;
+  --mr-accent-2: #2c6fb0;
+
+  --mr-ok: #0f7c4a;
+  --mr-warn: #b45309;
+  --mr-ok-bg: #e6f7ef;
+  --mr-warn-bg: #fff4e0;
+  --mr-info-bg: #e8f1fa;
+  --mr-focus: #1d5fa8;
+
+  --mr-shade: #1fa6a2;
+  --mr-shade-2: #2c6fb0;
+  --mr-part: #ffffff;
+  --mr-a: #d9533a;
+  --mr-b: #f2c15b;
+  --mr-g1: #1fa6a2;
+  --mr-g2: #d9533a;
+  --mr-g3: #2c6fb0;
+  --mr-g4: #1b7a4b;
+  --mr-g5: #c2652b;
+  --mr-g6: #0e7571;
+
+  --mr-pos: #2c6fb0;
+  --mr-neg: #d9533a;
+  --mr-beam: #1a2a3a;
+  --mr-pan: #e5edf5;
+  --mr-unit: #1fa6a2;
+  --mr-xbag: #d9533a;
 }
 
 html {
   color-scheme: light;
-}
-html[data-band="analyze"] {
-  color-scheme: dark;
 }
 body {
   margin: 0;
@@ -402,7 +428,7 @@ select {
 .mr-rail li.is-done .mr-dot-n {
   background: var(--mr-ok);
   border-color: var(--mr-ok);
-  color: var(--mr-bg);
+  color: #ffffff;
 }
 .mr-dot-n {
   display: inline-grid;
@@ -428,11 +454,12 @@ select {
   border: 1px solid var(--mr-line);
   border-radius: var(--mr-radius);
   padding: clamp(12px, 2vw, 20px);
+  box-shadow: 0 1px 2px rgb(23 50 77 / 0.04), 0 4px 12px -2px rgb(23 50 77 / 0.06);
 }
 .mr-canvas {
   box-shadow:
-    0 1px 2px rgb(0 0 0 / 0.06),
-    0 12px 28px -14px rgb(0 0 0 / 0.25);
+    0 1px 3px rgb(23 50 77 / 0.06),
+    0 10px 24px -8px rgb(23 50 77 / 0.10);
 }
 .mr-kicker {
   margin: 0 0 4px;
@@ -724,9 +751,6 @@ select {
   opacity: 1;
   font-weight: 800;
 }
-:root[data-band="analyze"] .mr-part.is-on .mr-part-label {
-  fill: #04151a;
-}
 .mr-part:focus-visible,
 .mr-group-box:focus-visible,
 .mr-cell:focus-visible,
@@ -941,9 +965,6 @@ svg .mr-eq-line {
   font-size: 13px;
   font-weight: 800;
 }
-:root[data-band="analyze"] .mr-piece-t {
-  fill: #04151a;
-}
 .mr-side-label {
   font-size: 24px;
   font-weight: 800;
@@ -1019,9 +1040,6 @@ svg .mr-eq-line {
   fill: #fff;
   font-size: 20px;
   font-weight: 800;
-}
-:root[data-band="analyze"] .mr-chip-t {
-  fill: #04151a;
 }
 .mr-pair-link {
   stroke: var(--mr-ok);
@@ -1219,6 +1237,7 @@ svg .mr-eq-line {
   background: var(--mr-surface);
   border: 1px solid var(--mr-line);
   border-radius: var(--mr-radius);
+  box-shadow: 0 1px 3px rgb(23 50 77 / 0.05);
 }
 .mr-card h4 {
   margin: 0;
@@ -1255,6 +1274,7 @@ svg .mr-eq-line {
   background: var(--mr-surface);
   border: 1px solid var(--mr-line);
   border-radius: var(--mr-radius);
+  box-shadow: 0 1px 2px rgb(23 50 77 / 0.04);
 }
 .mr-skill-t {
   flex: 1 1 260px;
@@ -1343,11 +1363,11 @@ svg .mr-eq-line {
 .mr-review li { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 6px 12px; }
 
 /* ===== grade identities (K to 8) and the hero =====================================================================
-   Palette references: midnight #101C35, indigo #293E76, cobalt #4269DB, teal #098C93, ivory #F8F6F0, white #FFFEFC,
-   coral #D97251, green #32966E, amber #D7A346. Text and button fills use the darker "ink" tones so every pair is AA;
-   the lighter brand tones are used for drawing. No violet. Each grade changes colour, type, shape and density. */
+   Consistent EduWonderLab design tokens: Navy #17324d, Slate #475a6e, Teal #1fa6a2, Amber #f2c15b, Coral #d9533a, Blue #2c6fb0.
+   High-contrast, luminous, accessible AA everywhere. Pure white surfaces on gentle, luminous canvas.
+   Zero purple. Clean typography and age-appropriate tactile feel across every grade. */
 :root {
-  --mr-art-a: #098c93; --mr-art-b: #d97251; --mr-art-c: #d7a346; --mr-art-line: #101c35; --mr-art-cellfill: #fffefc;
+  --mr-art-a: #1fa6a2; --mr-art-b: #d9533a; --mr-art-c: #f2c15b; --mr-art-line: #17324d; --mr-art-cellfill: #ffffff;
 }
 .mr-art, .mr-hero-svg { display: block; inline-size: 100%; block-size: auto; }
 .mr-art-a { fill: var(--mr-art-a); } .mr-art-b { fill: var(--mr-art-b); } .mr-art-c { fill: var(--mr-art-c); }
@@ -1355,11 +1375,11 @@ svg .mr-eq-line {
 .mr-art-cell { fill: var(--mr-art-cellfill); stroke: var(--mr-line); stroke-width: 2; } .mr-art-frame { fill: none; stroke: var(--mr-art-line); stroke-width: 2; opacity: 0.45; }
 .mr-art-grid { stroke: var(--mr-grid); stroke-width: 1; } .mr-art-line { stroke: var(--mr-art-line); stroke-width: 3; }
 .mr-art-t { font: 700 15px var(--mr-num); fill: var(--mr-ink-soft); } .mr-art-eq { font: 700 26px var(--mr-num); fill: var(--mr-ink); }
-.mr-grade-art { margin: 0; padding: 14px; background: var(--mr-surface); border: 1px solid var(--mr-line); border-radius: var(--mr-radius); max-inline-size: 460px; }
+.mr-grade-art { margin: 0; padding: 14px; background: var(--mr-surface); border: 1px solid var(--mr-line); border-radius: var(--mr-radius); max-inline-size: 460px; box-shadow: 0 1px 3px rgb(23 50 77 / 0.05); }
 .mr-hero { display: grid; gap: 14px; grid-template-columns: minmax(0, 1fr); align-items: center; }
 @media (min-width: 900px) { .mr-hero { grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr); } .mr-grade-art { grid-column: 2; grid-row: 1 / span 4; justify-self: end; } }
 .mr-hero-host { max-inline-size: 1100px; }
-.mr-hero-model { display: grid; gap: 10px; padding: clamp(14px, 2.4vw, 26px); background: var(--mr-surface); border: 1px solid var(--mr-line); border-radius: var(--mr-radius); box-shadow: 0 1px 2px rgb(0 0 0 / 0.06), 0 22px 44px -22px rgb(0 0 0 / 0.3); }
+.mr-hero-model { display: grid; gap: 10px; padding: clamp(14px, 2.4vw, 26px); background: var(--mr-surface); border: 1px solid var(--mr-line); border-radius: var(--mr-radius); box-shadow: 0 1px 3px rgb(23 50 77 / 0.06), 0 10px 24px -8px rgb(23 50 77 / 0.10); }
 .mr-hero-h { margin: 0; font: 600 clamp(1.5rem, 1.1rem + 1.8vw, 2.5rem)/1.1 var(--mr-display); }
 .mr-hero-sub { margin: 0; color: var(--mr-ink-soft); max-inline-size: 62ch; }
 .mr-hero-controls { display: flex; flex-wrap: wrap; gap: 14px 28px; }
@@ -1369,48 +1389,41 @@ svg .mr-eq-line {
 .mr-hero-hop { fill: none; stroke-width: 4; stroke-linecap: round; transition: d 240ms; } .mr-hero-hop.is-a { stroke: var(--mr-art-a); } .mr-hero-hop.is-b { stroke: var(--mr-art-b); } .mr-hero-hop.is-c { stroke: var(--mr-art-c); }
 .mr-hero-eq { font: 700 28px var(--mr-num); fill: var(--mr-ink); } .mr-hero-eq2 { font: 700 20px var(--mr-num); fill: var(--mr-ink-soft); }
 
-/* K: The Number Discovery Garden: green and amber, enormous soft shapes */
-:root[data-grade="0"] { --mr-radius: 32px; --mr-target: 60px; --mr-stroke: 4; --mr-display: "Fredoka", "Outfit", sans-serif; --mr-body: "Outfit", sans-serif; --mr-num: "Fredoka", sans-serif;
-  --mr-bg: #f1f6e8; --mr-surface: #fffefc; --mr-surface-2: #e4efd2; --mr-ink: #1d2a1b; --mr-ink-soft: #46563f; --mr-line: #c9dcae; --mr-grid: #d8e6c2;
-  --mr-accent: #1f7350; --mr-accent-ink: #ffffff; --mr-accent-2: #8a6218; --mr-art-a: #32966e; --mr-art-b: #d7a346; --mr-art-c: #d97251; --mr-art-line: #1d2a1b; --mr-art-cellfill: #fffefc; }
-/* 1: The Number Playground: coral, amber and teal, bouncy */
-:root[data-grade="1"] { --mr-radius: 28px; --mr-target: 58px; --mr-stroke: 4; --mr-display: "Fredoka", "Outfit", sans-serif; --mr-body: "Outfit", sans-serif; --mr-num: "Fredoka", sans-serif;
-  --mr-bg: #fbf3e6; --mr-surface: #fffefc; --mr-surface-2: #fbe3cf; --mr-ink: #2b1d17; --mr-ink-soft: #5b4438; --mr-line: #efcdb4; --mr-grid: #f4dcc8;
-  --mr-accent: #a94a2c; --mr-accent-ink: #ffffff; --mr-accent-2: #066a73; --mr-art-a: #d97251; --mr-art-b: #098c93; --mr-art-c: #d7a346; --mr-art-line: #2b1d17; }
-/* 2: The Pattern Workshop: teal and amber, building-block structure */
-:root[data-grade="2"] { --mr-radius: 18px; --mr-target: 54px; --mr-display: "Fredoka", "Outfit", sans-serif; --mr-body: "Outfit", sans-serif; --mr-num: "Outfit", sans-serif;
-  --mr-bg: #f3f2e8; --mr-surface: #fffefc; --mr-surface-2: #e2ecde; --mr-ink: #14282a; --mr-ink-soft: #3f5558; --mr-line: #c8d9cf; --mr-grid: #d6e3d9;
-  --mr-accent: #066a73; --mr-accent-ink: #ffffff; --mr-accent-2: #8a6218; --mr-art-a: #098c93; --mr-art-b: #d7a346; --mr-art-c: #d97251; --mr-art-line: #14282a; }
-/* 3: The Multiplication Explorer: cobalt laboratory on cool ivory */
-:root[data-grade="3"] { --mr-radius: 16px; --mr-target: 50px; --mr-display: "Fraunces", Georgia, serif; --mr-body: "Hanken Grotesk", system-ui, sans-serif; --mr-num: "Hanken Grotesk", sans-serif;
-  --mr-bg: #eff3fa; --mr-surface: #fffefc; --mr-surface-2: #dde6f6; --mr-ink: #101c35; --mr-ink-soft: #3f4d6e; --mr-line: #c3d0ea; --mr-grid: #d3ddf0;
-  --mr-accent: #2f4fb8; --mr-accent-ink: #ffffff; --mr-accent-2: #8a6218; --mr-art-a: #4269db; --mr-art-b: #098c93; --mr-art-c: #d7a346; --mr-art-line: #101c35; }
-/* 4: The Mathematical Design Studio: indigo and coral, editorial */
-:root[data-grade="4"] { --mr-radius: 14px; --mr-target: 46px; --mr-display: "Fraunces", Georgia, serif; --mr-body: "Hanken Grotesk", system-ui, sans-serif; --mr-num: "Hanken Grotesk", sans-serif;
-  --mr-bg: #f8f6f0; --mr-surface: #fffefc; --mr-surface-2: #ece7da; --mr-ink: #101c35; --mr-ink-soft: #4a5368; --mr-line: #dad2bf; --mr-grid: #e6dfcf;
-  --mr-accent: #293e76; --mr-accent-ink: #ffffff; --mr-accent-2: #a94a2c; --mr-art-a: #293e76; --mr-art-b: #d97251; --mr-art-c: #098c93; --mr-art-line: #101c35; }
-/* 5: The Numbers and Systems Lab: teal instrument on cool paper, monospaced numerals */
+/* K: The Number Discovery Garden: warm gentle canvas, tactile round elements */
+:root[data-grade="0"] { --mr-radius: 24px; --mr-target: 58px; --mr-stroke: 3.5; --mr-display: "Fredoka", "Outfit", sans-serif; --mr-body: "Outfit", sans-serif; --mr-num: "Fredoka", sans-serif;
+  --mr-bg: #faf8f5; --mr-surface: #ffffff; --mr-surface-2: #f1ede4; --mr-ink: #17324d; --mr-ink-soft: #475a6e; --mr-line: #d7e2ed; --mr-grid: #e2e8f0;
+  --mr-accent: #17324d; --mr-accent-ink: #ffffff; --mr-accent-2: #d9533a; --mr-art-a: #1fa6a2; --mr-art-b: #f2c15b; --mr-art-c: #d9533a; --mr-art-line: #17324d; --mr-art-cellfill: #ffffff; }
+/* 1: The Number Playground: warm peach canvas, coral and teal */
+:root[data-grade="1"] { --mr-radius: 20px; --mr-target: 56px; --mr-stroke: 3; --mr-display: "Fredoka", "Outfit", sans-serif; --mr-body: "Outfit", sans-serif; --mr-num: "Fredoka", sans-serif;
+  --mr-bg: #faf7f2; --mr-surface: #ffffff; --mr-surface-2: #f4eee6; --mr-ink: #17324d; --mr-ink-soft: #475a6e; --mr-line: #d7e2ed; --mr-grid: #e2e8f0;
+  --mr-accent: #17324d; --mr-accent-ink: #ffffff; --mr-accent-2: #d9533a; --mr-art-a: #d9533a; --mr-art-b: #1fa6a2; --mr-art-c: #f2c15b; --mr-art-line: #17324d; --mr-art-cellfill: #ffffff; }
+/* 2: The Pattern Workshop: fresh mint-tinged canvas, teal and amber */
+:root[data-grade="2"] { --mr-radius: 16px; --mr-target: 52px; --mr-display: "Fredoka", "Outfit", sans-serif; --mr-body: "Outfit", sans-serif; --mr-num: "Outfit", sans-serif;
+  --mr-bg: #f8faf9; --mr-surface: #ffffff; --mr-surface-2: #ecf3f0; --mr-ink: #17324d; --mr-ink-soft: #475a6e; --mr-line: #d7e2ed; --mr-grid: #e2e8f0;
+  --mr-accent: #17324d; --mr-accent-ink: #ffffff; --mr-accent-2: #d9533a; --mr-art-a: #1fa6a2; --mr-art-b: #f2c15b; --mr-art-c: #d9533a; --mr-art-line: #17324d; --mr-art-cellfill: #ffffff; }
+/* 3: The Multiplication Explorer: cool sky canvas, cobalt and teal */
+:root[data-grade="3"] { --mr-radius: 14px; --mr-target: 48px; --mr-display: "Fraunces", Georgia, serif; --mr-body: "Hanken Grotesk", system-ui, sans-serif; --mr-num: "Hanken Grotesk", sans-serif;
+  --mr-bg: #f5f8fb; --mr-surface: #ffffff; --mr-surface-2: #e8f0f8; --mr-ink: #17324d; --mr-ink-soft: #475a6e; --mr-line: #d7e2ed; --mr-grid: #e2e8f0;
+  --mr-accent: #17324d; --mr-accent-ink: #ffffff; --mr-accent-2: #2c6fb0; --mr-art-a: #2c6fb0; --mr-art-b: #1fa6a2; --mr-art-c: #f2c15b; --mr-art-line: #17324d; --mr-art-cellfill: #ffffff; }
+/* 4: The Mathematical Design Studio: warm architectural ivory canvas */
+:root[data-grade="4"] { --mr-radius: 12px; --mr-target: 46px; --mr-display: "Fraunces", Georgia, serif; --mr-body: "Hanken Grotesk", system-ui, sans-serif; --mr-num: "Hanken Grotesk", sans-serif;
+  --mr-bg: #f7f5ef; --mr-surface: #ffffff; --mr-surface-2: #ede8dc; --mr-ink: #17324d; --mr-ink-soft: #475a6e; --mr-line: #d7e2ed; --mr-grid: #e2e8f0;
+  --mr-accent: #17324d; --mr-accent-ink: #ffffff; --mr-accent-2: #d9533a; --mr-art-a: #17324d; --mr-art-b: #d9533a; --mr-art-c: #1fa6a2; --mr-art-line: #17324d; --mr-art-cellfill: #ffffff; }
+/* 5: The Numbers and Systems Lab: crisp teal-gray canvas, precision instruments */
 :root[data-grade="5"] { --mr-radius: 10px; --mr-target: 44px; --mr-display: "Manrope", system-ui, sans-serif; --mr-body: "Manrope", system-ui, sans-serif; --mr-num: "IBM Plex Mono", ui-monospace, monospace;
-  --mr-bg: #edf3f3; --mr-surface: #fcfefd; --mr-surface-2: #d9e8e8; --mr-ink: #0e2a2e; --mr-ink-soft: #3b5559; --mr-line: #bcd3d4; --mr-grid: #cfe0e0;
-  --mr-accent: #066a73; --mr-accent-ink: #ffffff; --mr-accent-2: #2f4fb8; --mr-art-a: #098c93; --mr-art-b: #4269db; --mr-art-c: #d7a346; --mr-art-line: #0e2a2e; }
-/* 6: The Mathematical Discovery Institute: a printed publication in ivory and ink, with ruled sections */
-:root[data-grade="6"] { --mr-radius: 4px; --mr-target: 44px; --mr-stroke: 1.5; --mr-display: "Fraunces", Georgia, serif; --mr-body: "Hanken Grotesk", system-ui, sans-serif; --mr-num: "IBM Plex Mono", ui-monospace, monospace;
-  --mr-bg: #f8f6f0; --mr-surface: #fffefc; --mr-surface-2: #efeadc; --mr-ink: #101c35; --mr-ink-soft: #454d60; --mr-line: #c9c0a8; --mr-grid: #e2dac6;
-  --mr-accent: #101c35; --mr-accent-ink: #f8f6f0; --mr-accent-2: #a94a2c; --mr-ok: #1f7350; --mr-warn: #8a4a0b; --mr-ok-bg: #e4f3ea; --mr-warn-bg: #fbeadb; --mr-info-bg: #ece9de;
-  --mr-focus: #1d5fd1; --mr-art-a: #293e76; --mr-art-b: #d97251; --mr-art-c: #d7a346; --mr-art-line: #101c35; --mr-art-cellfill: #fffefc; }
+  --mr-bg: #f4f8f8; --mr-surface: #ffffff; --mr-surface-2: #e5f0f0; --mr-ink: #17324d; --mr-ink-soft: #475a6e; --mr-line: #d7e2ed; --mr-grid: #e2e8f0;
+  --mr-accent: #17324d; --mr-accent-ink: #ffffff; --mr-accent-2: #2c6fb0; --mr-art-a: #1fa6a2; --mr-art-b: #2c6fb0; --mr-art-c: #f2c15b; --mr-art-line: #17324d; --mr-art-cellfill: #ffffff; }
+/* 6: The Mathematical Discovery Institute: warm editorial canvas, serif headings */
+:root[data-grade="6"] { --mr-radius: 8px; --mr-target: 44px; --mr-stroke: 1.5; --mr-display: "Fraunces", Georgia, serif; --mr-body: "Hanken Grotesk", system-ui, sans-serif; --mr-num: "IBM Plex Mono", ui-monospace, monospace;
+  --mr-bg: #f7f5ef; --mr-surface: #ffffff; --mr-surface-2: #ede7da; --mr-ink: #17324d; --mr-ink-soft: #475a6e; --mr-line: #d7e2ed; --mr-grid: #e2e8f0;
+  --mr-accent: #17324d; --mr-accent-ink: #ffffff; --mr-accent-2: #d9533a; --mr-art-a: #17324d; --mr-art-b: #d9533a; --mr-art-c: #f2c15b; --mr-art-line: #17324d; --mr-art-cellfill: #ffffff; }
 :root[data-grade="6"] { color-scheme: light; }
-:root[data-grade="6"] .mr-top { border-block-end: 3px double var(--mr-ink); } :root[data-grade="6"] .mr-hero-h, :root[data-grade="6"] .mr-lead { letter-spacing: -0.01em; } :root[data-grade="6"] .mr-inno h3 { border-block-end: 1px solid var(--mr-ink); padding-block-end: 4px; }
-/* 7: The Relationships and Reasoning Studio: deep indigo, coral accents */
+/* 7: The Relationships and Reasoning Studio: cool luminous slate canvas */
 :root[data-grade="7"] { --mr-radius: 8px; --mr-target: 44px; --mr-stroke: 1.5; --mr-display: "Manrope", system-ui, sans-serif; --mr-body: "Manrope", system-ui, sans-serif; --mr-num: "IBM Plex Mono", ui-monospace, monospace;
-  --mr-bg: #121d3a; --mr-surface: #1a2850; --mr-surface-2: #223261; --mr-ink: #f1f3fa; --mr-ink-soft: #bcc6df; --mr-line: #34447a; --mr-grid: #2b3a6c;
-  --mr-accent: #f0a07f; --mr-accent-ink: #1b0f0a; --mr-accent-2: #8fa8f5; --mr-ok: #67d6a3; --mr-warn: #f6b46f; --mr-ok-bg: #12342b; --mr-warn-bg: #3d2a17; --mr-info-bg: #1d2c59;
-  --mr-focus: #9ec4ff; --mr-art-a: #f0a07f; --mr-art-b: #8fa8f5; --mr-art-c: #e8c46a; --mr-art-line: #bcc6df; --mr-art-cellfill: #1a2850; }
-/* 8: The Advanced Mathematics Observatory: midnight navy, teal glow on a fine grid */
-:root[data-grade="8"] { --mr-radius: 6px; --mr-target: 44px; --mr-stroke: 1.25; --mr-display: "Manrope", system-ui, sans-serif; --mr-body: "Manrope", system-ui, sans-serif; --mr-num: "IBM Plex Mono", ui-monospace, monospace;
-  --mr-bg: #0a1124; --mr-surface: #101c35; --mr-surface-2: #172647; --mr-ink: #e8eef7; --mr-ink-soft: #a9b8d0; --mr-line: #263a63; --mr-grid: #1c2c4e;
-  --mr-accent: #4fd1c5; --mr-accent-ink: #04222a; --mr-accent-2: #6a9bff; --mr-ok: #5fd39a; --mr-warn: #f2b06b; --mr-ok-bg: #0f3226; --mr-warn-bg: #36260f; --mr-info-bg: #14264a;
-  --mr-focus: #8ec5ff; --mr-art-a: #4fd1c5; --mr-art-b: #6a9bff; --mr-art-c: #f2b06b; --mr-art-line: #a9b8d0; --mr-art-cellfill: #101c35; }
-:root[data-grade="8"] .mr-app { background-image: linear-gradient(var(--mr-grid) 1px, transparent 1px), linear-gradient(90deg, var(--mr-grid) 1px, transparent 1px); background-size: 40px 40px; background-position: -1px -1px; }
-:root[data-grade="8"] .mr-hero-model { box-shadow: 0 0 0 1px var(--mr-line), 0 0 40px -12px rgb(79 209 197 / 0.35); }
-:root[data-grade="7"] .mr-hero-model { box-shadow: 0 0 0 1px var(--mr-line), 0 24px 48px -24px rgb(0 0 0 / 0.55); }
+  --mr-bg: #f5f7fb; --mr-surface: #ffffff; --mr-surface-2: #e7edf7; --mr-ink: #17324d; --mr-ink-soft: #475a6e; --mr-line: #d7e2ed; --mr-grid: #e2e8f0;
+  --mr-accent: #17324d; --mr-accent-ink: #ffffff; --mr-accent-2: #2c6fb0; --mr-art-a: #2c6fb0; --mr-art-b: #d9533a; --mr-art-c: #1fa6a2; --mr-art-line: #17324d; --mr-art-cellfill: #ffffff; }
+/* 8: The Advanced Mathematics Observatory: high-precision luminous studio */
+:root[data-grade="8"] { --mr-radius: 8px; --mr-target: 44px; --mr-stroke: 1.5; --mr-display: "Manrope", system-ui, sans-serif; --mr-body: "Manrope", system-ui, sans-serif; --mr-num: "IBM Plex Mono", ui-monospace, monospace;
+  --mr-bg: #f4f6fa; --mr-surface: #ffffff; --mr-surface-2: #e6ebf5; --mr-ink: #17324d; --mr-ink-soft: #475a6e; --mr-line: #d7e2ed; --mr-grid: #e2e8f0;
+  --mr-accent: #17324d; --mr-accent-ink: #ffffff; --mr-accent-2: #2c6fb0; --mr-art-a: #1fa6a2; --mr-art-b: #2c6fb0; --mr-art-c: #d9533a; --mr-art-line: #17324d; --mr-art-cellfill: #ffffff; }
 .mr-grade-art { inline-size: 100%; min-inline-size: min(100%, 340px); }
