@@ -154,7 +154,7 @@ function oracleOpenPick(round, ARR, seatSlots, avail, lax) {
   const pick = lax ? firstWorse(list) : list[0];
   return [pick.card, pick.slot];
 }
-function oraclePrivatePick(round, ARR, hand, lax) {
+function oraclePrivatePick(_round, ARR, hand, lax) {
   const list = ARR.filter((a) => a.slots.every((id) => hand.includes(id))).sort((a, b) => qcmp(a.d, b.d) || lexCmp(a.slots, b.slots));
   return (lax ? firstWorse(list) : list[0]).slots;
 }

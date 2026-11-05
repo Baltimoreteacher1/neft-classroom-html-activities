@@ -543,4 +543,21 @@
   .fp-nav--back {
     margin-block-start: var(--fm-space-4);
   }
+
+  /* ── Utility controls in the step rail ───────────────────────────────────
+     The Learning-supports launcher is forced to a 44px circle, but its text label was only
+     hidden below 640px, so on a desktop the label spilled over Stuck? and Save / Resume. The icon
+     stays; the name stays in the accessible name. */
+  .hw-utility-controls .ls-launcher {
+    overflow: hidden;
+  }
+  .hw-utility-controls .ls-launcher > span:not(:first-child) {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
 }
