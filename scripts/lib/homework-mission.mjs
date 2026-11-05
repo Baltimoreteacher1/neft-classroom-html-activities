@@ -181,6 +181,7 @@ export function renderReflect({ lessonId, next, prereq }) {
         ${next ? link(next.href, "➡️", `Next: ${next.en}`, `Siguiente: ${next.es}`, ` data-next-lesson="${esc(next.id)}"`) : ""}
         ${prereq ? link(prereq.href, "🧱", `Review: ${prereq.en}`, `Repasar: ${prereq.es}`, ` data-mission-prereq hidden`) : ""}
         ${lessonPage ? link(lessonPage, "📘", "Back to the lesson", "Volver a la lección") : ""}
+        ${link(`/curriculum/family-connections/math-studio/?lesson=${encodeURIComponent(lessonId)}`, "🧪", "Family Math Studio: build and test an idea", "Estudio familiar: crear y probar una idea")}
         ${link("/families/", "🏠", "Family resources", "Recursos para la familia")}
         <button type="button" class="fm-btn fm-btn--block hw-next-link" data-open-sheet="hw_explore_sheet" aria-haspopup="dialog"><span aria-hidden="true">✨</span> ${bi("Explore more", "Explorar más")}</button>
       </div>
