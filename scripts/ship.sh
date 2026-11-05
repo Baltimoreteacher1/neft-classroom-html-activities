@@ -385,6 +385,14 @@ fi
 # --- Push (pre-push hook runs the QA loop; CF Git integration deploys) -----------------
 say ""
 say "Pushing ${NEW_SHA:0:9} → origin/main (pre-push QA loop runs first)..."
+export QA_PUSH=1
+# Prevent subshell or agent environments (e.g. QA_JOBS=1) from bottlenecking deployment concurrency
+if [ "${QA_JOBS:-8}" -lt 4 ]; then
+  export QA_JOBS=8
+fi
+if [ "${TEST_JOBS:-8}" -lt 4 ]; then
+  export TEST_JOBS=8
+fi
 if ! git -C "$WT" push origin HEAD:main; then
   KEEP_WT=1
   fail "push failed (QA loop failure or remote rejection — see output above)"

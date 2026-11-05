@@ -148,10 +148,12 @@ const PRELOAD = pathToFileURL(join(ROOT, "tools/lib/test-trace-preload.mjs")).hr
  * `npm test`, `test:reads`) take no gate lock, so three or four sessions ran
  * their test phases together: load average 40-50 on 10 cores, every one of them
  * slower than if they had queued. They queue here instead, bounded and loud. */
+const isPush = process.env.QA_PUSH === "1" || process.argv.includes("--push");
 await acquireGateLock({
   label: `${basename(ROOT)} · tests`,
   lockDir: TEST_LANE_DIR,
   log: console.log,
+  priority: isPush ? 2 : 0,
 });
 
 /* Pool size backs off with machine load: browser tests that win a race at 2 jobs lose it at 8 when

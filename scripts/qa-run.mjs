@@ -1405,6 +1405,7 @@ function testEnv(name, checks, scopeFile = null, scope = {}) {
   // (tools/lib/test-scope.mjs). Standalone `npm test` and CI stay unscoped.
   return {
     ...env,
+    ...(PUSH_MODE ? { QA_PUSH: "1" } : {}),
     QA_TEST_VERIFY: "1",
     ...(checks.includes("build") ? { QA_BUILD_VERIFIED: "1" } : {}),
     ...(scopeFile ? { QA_TEST_SCOPE_FILES: scopeFile } : {}),
