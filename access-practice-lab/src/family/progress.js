@@ -7,6 +7,7 @@ import { loadLedger } from "../lang/ledger.js";
 import { BASE, DOMAIN_META, html, icon, todayISO } from "../util.js";
 import { nextRecognition, recognition, weeklyChallenge } from "./engage.js";
 import { playlistHref, sessionOptions } from "./plan.js";
+import { familyNextStep } from "./next-step.js";
 import { summarize, summarizeLanguageEvidence } from "./summary.js";
 import { SKILLS, crumbs, longDate, skillArt, skillIcon, skillName, subnavHTML } from "./ui.js";
 
@@ -96,7 +97,9 @@ export async function render(ctx, I) {
   const bandRowsNow = rowLists[ctx.bands.indexOf(band)] || [];
   const bandRecords = allRecords().filter((r) => r.band === band);
   const summary = summarize(bandRecords, new Map(bandRowsNow.map((r) => [r.id, r])), es);
-  const languageEvidence = summarizeLanguageEvidence(loadLedger().entries, band);
+  const ledgerEntries = loadLedger().entries.filter((entry) => entry.band === band);
+  const languageEvidence = summarizeLanguageEvidence(ledgerEntries, band);
+  const nextStep = familyNextStep(bandRowsNow, ledgerEntries, band);
   const challenge = weeklyChallenge(road?.[band], bandRecords, todayISO());
   const justFinished = new URLSearchParams(location.search).get("done") === "1" && summary.latest;
   const alias = getStudentName();
@@ -145,7 +148,13 @@ export async function render(ctx, I) {
         <section class="panel" aria-labelledby="pp4"><h2 id="pp4">${I.L("prog.improved.heading")}</h2>
           ${improved.length ? html`<ul class="fam-lines">${improved.map((l) => html`<li>${l}</li>`)}</ul>` : html`<p>${I.L("prog.improved.none")}</p>`}</section>
         <section class="panel" aria-labelledby="pp5"><h2 id="pp5">${I.L("prog.next.heading")}</h2>
-          ${next
+          ${nextStep
+            ? html`<p>${I.L(`prog.next.reason.${nextStep.reason}`, { use: USE_LABELS[nextStep.use] || { en: "use language", es: "usar el lenguaje" } })}</p>
+              <p><strong lang="en">${nextStep.task.title}</strong></p>
+              <p class="fine">${I.LS(`hub.skill.name.${nextStep.task.domain}`)} · ${I.L("common.minutes", { n: nextStep.task.minutes })}</p>
+              <a class="btn btn-primary no-print" href="${playlistHref([nextStep.task], I.LS("prog.next.start"), band)}">${I.L("prog.next.start")}${icon("arrow-right")}</a>
+              ${next ? html`<p class="fine">${I.L("prog.next.balance", { domain: { en: next.domain.toLowerCase(), es: spanishDomain(next.domain) } })}</p>` : ""}`
+            : next
             ? html`<p>${I.L(summary.nextKind === "try" ? "prog.next.try" : "prog.next.balance", { domain: { en: next.domain.toLowerCase(), es: spanishDomain(next.domain) } })}</p>
               <p>${I.L("prog.next.line", { domain: { en: next.domain.toLowerCase(), es: spanishDomain(next.domain) } })}</p>
               ${next.plan.length ? html`<a class="btn btn-primary no-print" href="${playlistHref(next.plan, `${next.domain} practice`, band)}">${I.L("prog.next.go")}${icon("arrow-right")}</a>` : ""}`

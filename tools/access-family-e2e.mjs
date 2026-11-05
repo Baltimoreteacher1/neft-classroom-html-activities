@@ -525,6 +525,15 @@ try {
               stage: "independent",
               kind: "first",
               supports: {},
+              m: {
+                words: 24,
+                link: 2,
+                cites: 1,
+                complex: 1,
+                academic: 1,
+                errs: {},
+                moves: { claim: 1 },
+              },
             },
             {
               id: "fixture-3",
@@ -586,6 +595,17 @@ try {
       /tried to tell a sequence in a new listening context/i.test(report),
       "P: family report describes transfer without a mastery claim",
     );
+    const nextCard = page.locator('section[aria-labelledby="pp5"]');
+    const nextLink = nextCard.locator("a.btn-primary");
+    ok(
+      (await nextLink.count()) === 1 && /\/play\?ids=/.test(await nextLink.getAttribute("href")),
+      "P: family next step links to a real activity selected from the shared language recommender",
+    );
+    ok(
+      /independently|starting-point check|recent practice/i.test(await nextCard.innerText()) &&
+        !/WIDA|ACCESS score|proficient/i.test(await nextCard.innerText()),
+      "P: family next-step reason is evidence-sensitive without an official-level or score claim",
+    );
     ok(
       !/PRIVATE_RESPONSE_SENTINEL|private-task-id|other-band/i.test(report),
       "P: family report omits response text, task IDs, and other-grade evidence",
@@ -609,6 +629,12 @@ try {
     ok(
       !/PRIVATE_RESPONSE_SENTINEL|private-task-id|independently/i.test(report),
       "P: Spanish report also omits private evidence fields",
+    );
+    const nextSpanish = await page.locator('section[aria-labelledby="pp5"]').innerText();
+    ok(
+      /Probar esta actividad/.test(nextSpanish) &&
+        !/This activity|independently|WIDA/i.test(nextSpanish),
+      "P: evidence-sensitive next-step action and reason are localized in Spanish",
     );
     clean(page, "family language evidence");
     await page.context().close();

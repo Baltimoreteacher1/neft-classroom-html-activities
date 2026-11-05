@@ -307,6 +307,35 @@ export const STRINGS = {
     "Todavía no hay suficiente práctica para mostrar mejoras. Solo informamos lo que muestra el trabajo guardado.",
   ),
   "prog.next.heading": s("What to practice next", "Qué practicar a continuación"),
+  "prog.next.start": s("Try this activity", "Probar esta actividad"),
+  "prog.next.reason.checkin": s(
+    "A recent starting-point check suggested more practice to {use}.",
+    "Una comprobación reciente del punto de partida sugirió practicar más para {use}.",
+  ),
+  "prog.next.reason.dimension": s(
+    "This activity gives your child another chance to use language from recent practice.",
+    "Esta actividad le da a su hijo o hija otra oportunidad para usar el lenguaje de la práctica reciente.",
+  ),
+  "prog.next.reason.pattern": s(
+    "This activity offers another chance to practice a sentence pattern from recent drafts.",
+    "Esta actividad ofrece otra oportunidad para practicar un patrón de oración de borradores recientes.",
+  ),
+  "prog.next.reason.keyUse": s(
+    "This activity offers a chance to {use} independently.",
+    "Esta actividad ofrece la oportunidad de {use} sin ayuda.",
+  ),
+  "prog.next.reason.world": s(
+    "Connect a completed language-world mission to a full academic-language task.",
+    "Conecten una misión de lenguaje terminada con una tarea completa de lenguaje académico.",
+  ),
+  "prog.next.reason.standard": s(
+    "This activity brings in a subject context not yet seen in recent practice.",
+    "Esta actividad presenta un contexto de materia que aún no aparece en la práctica reciente.",
+  ),
+  "prog.next.reason.new": s(
+    "This is a new activity to continue the language practice saved on this device.",
+    "Esta es una actividad nueva para continuar la práctica de lenguaje guardada en este dispositivo.",
+  ),
   "prog.next.try": s(
     "Try a {domain} activity. You have not tried this skill yet.",
     "Prueben una actividad de {domain}. Todavía no han probado esta destreza.",
