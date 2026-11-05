@@ -12,14 +12,14 @@ import assert from "node:assert/strict";
 import { existsSync, readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { skipExit } from "./lib/skip-exit.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const DIST = join(ROOT, "dist");
 const PAGES = ["curriculum/index.html", "curriculum/units/index.html"];
 
 if (!existsSync(join(DIST, "curriculum/index.html"))) {
-  console.log("SKIP hub-bundle-tokens: no dist/ (run npm run build)");
-  process.exit(0);
+  process.exit(skipExit("no dist/ (run npm run build)"));
 }
 
 /** The text of every local stylesheet a page links, in document order. */
@@ -42,12 +42,29 @@ for (const page of PAGES) {
   const sheets = linkedSheets(page);
   assert.ok(sheets.length > 0, `${page}: no local stylesheets found in dist`);
   for (const { href, css } of sheets)
-    assert.ok(!hasLateImport(css), `${page}: ${href} has an @import after its first rule (ignored by browsers)`);
+    assert.ok(
+      !hasLateImport(css),
+      `${page}: ${href} has an @import after its first rule (ignored by browsers)`,
+    );
   const all = sheets.map(({ css }) => css).join("\n");
-  assert.match(all, /--dm-night\s*:/, `${page}: the --dm-* design tokens are not in any stylesheet the page loads`);
-  assert.match(all, /--dm-art-practice\s*:/, `${page}: the page-stage artwork is not in any stylesheet the page loads`);
+  assert.match(
+    all,
+    /--dm-night\s*:/,
+    `${page}: the --dm-* design tokens are not in any stylesheet the page loads`,
+  );
+  assert.match(
+    all,
+    /--dm-art-practice\s*:/,
+    `${page}: the page-stage artwork is not in any stylesheet the page loads`,
+  );
 }
 
-assert.ok(hasLateImport('a{color:red}@import url("/x.css");'), "detector: a late @import is caught");
-assert.ok(!hasLateImport('@import url("/x.css");a{color:red}'), "detector: a leading @import is allowed");
+assert.ok(
+  hasLateImport('a{color:red}@import url("/x.css");'),
+  "detector: a late @import is caught",
+);
+assert.ok(
+  !hasLateImport('@import url("/x.css");a{color:red}'),
+  "detector: a leading @import is allowed",
+);
 console.log(`hub-bundle-tokens: ${PAGES.length} hub pages receive the design tokens`);

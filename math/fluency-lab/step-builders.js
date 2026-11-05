@@ -1,3 +1,5 @@
+import { divideSteps } from "./fraction-division-copy.js";
+
 // Guided steps for generators that only author a one-line explanation. Each builder reads the problem's
 // own question and returns the steps that come BEFORE the worked line; the worked line (which names the
 // answer) is always appended last, so "Watch me solve it" never opens on the answer.
@@ -177,11 +179,7 @@ const BUILDERS = [
   ],
   [
     /^(\d+)\/(\d+) ÷ (\d+)\/(\d+) = \?$/,
-    (a, b, c, d) => [
-      `To divide by a fraction, flip it and multiply.`,
-      `Flip ${c}/${d} to ${d}/${c}. That is the reciprocal.`,
-      `Multiply the tops. Multiply the bottoms. Then simplify.`,
-    ],
+    (a, b, c, d) => divideSteps(a, b, c, d),
   ],
   [
     /^What is (\d+)\/(\d+) of (\d+)\?$/,

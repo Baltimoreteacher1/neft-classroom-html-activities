@@ -1,3 +1,4 @@
+import { TUTOR_NOTE } from "./fraction-division-copy.js";
 import { sanitizeAbility, updateAbility } from "./ability.js";
 import { isTier, levelToTier, tierToLevel } from "./difficulty-levels.js";
 import { sanitizeRescues } from "./rescue-history.js";
@@ -432,7 +433,7 @@ export function feedbackFor(skill, item, raw) {
   const fracDiv = item.question.match(/^(\d+)\/(\d+) [÷/] (\d+)\/(\d+)/);
   if (fracDiv) {
     const [n1, d1, n2, d2] = [Number(fracDiv[1]), Number(fracDiv[2]), Number(fracDiv[3]), Number(fracDiv[4])];
-    if (String(raw).replaceAll(" ", "") === `${n1 * n2}/${d1 * d2}`) return "Division by a fraction multiplies by its reciprocal: keep the first fraction, change to multiply, and flip the second fraction.";
+    if (String(raw).replaceAll(" ", "") === `${n1 * n2}/${d1 * d2}`) return TUTOR_NOTE;
   }
   const integerSub = item.question.replaceAll(",", "").match(/^(-?\d+) [−\-] \((-?\d+)\) =/);
   if (integerSub) {

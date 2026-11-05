@@ -44,6 +44,15 @@ try {
     assert.match(await kicker(page), /Step 1 of 8/);
   }
 
+  // ---- a skill link opens its experience: grade 6 divide-fractions is the X-Ray bar, drawn before it is cut ---------------------
+  {
+    const page = await open("?grade=6&skill=6%3Adivide-fractions&restart=1");
+    await page.waitForSelector(".mr-stage");
+    assert.ok((await page.locator("svg.mr-svg .mr-cut").count()) >= 2, "the uncut dividend bar shows its cut marks");
+    assert.match(await page.locator("svg.mr-svg").first().getAttribute("aria-label"), /equal pieces/, "the bar is described");
+    await shot(page, "skill-divide-fractions");
+  }
+
   // ---- flagship 1 through real controls (mouse, then keyboard) -------------------------------------------------------------
   {
     const page = await open("?x=fraction-transform&grade=4&restart=1");

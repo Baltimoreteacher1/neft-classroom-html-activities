@@ -152,7 +152,8 @@ export const fracdivView = {
     for (let i = d.dividendCells; i < cells; i++) svg.append(s("rect", { x: BAR.x + i * cell, y: 40, width: cell, height: 66, class: "mr-part-rect", rx: 3 }));
     if (!state.split) {
       svg.append(text(320, 80, es ? "La barra aún no está cortada en piezas iguales" : "The bar is not cut into same-size pieces yet", "mr-whole-label"));
-      for (let i = 0; i <= state.a.d; i++) svg.append(s("line", { x1: BAR.x + (BAR.w * i) / state.a.d, y1: 36, x2: BAR.x + (BAR.w * i) / state.a.d, y2: 110, class: "mr-cut" }));
+      const dividendDen = Number(state.a.d); // Rational parts are BigInt; the SVG math is Number
+      for (let i = 0; i <= dividendDen; i++) svg.append(s("line", { x1: BAR.x + (BAR.w * i) / dividendDen, y1: 36, x2: BAR.x + (BAR.w * i) / dividendDen, y2: 110, class: "mr-cut" }));
     } else {
       if (xray) for (let i = 0; i < cells; i++) svg.append(text(BAR.x + i * cell + cell / 2, 78 + 5, `1/${d.unit}`, "mr-part-label is-xray"));
       d.groups.forEach((g, gi) => {

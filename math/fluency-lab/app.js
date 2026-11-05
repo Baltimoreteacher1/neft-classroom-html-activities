@@ -89,6 +89,7 @@ import { masteryStage } from "./learning-evidence.js";
 import { initGradeHub } from "./grade-hub.js";
 import { markDestinations, renderSubnav } from "./hub-nav.js";
 import { renderPracticeHub } from "./practice-hub.js";
+import { cardCaptions } from "./fraction-division-copy.js";
 import { mountRealityEntry } from "./reality/entry.js";
 import { mountStudio, studioAvailable, studioModeled } from "./studio/studio.js";
 
@@ -1773,10 +1774,9 @@ function printDeskHelperStrips() {
               <span style="color:#475569">Subtracting a negative is adding a positive!</span>
             </div>
             <div style="border:1px solid #cbd5e1; border-radius:6px; padding:4px; background:#f0fdf4">
-              <strong style="color:#15803d; font-size:8.5pt">🍕 Keep-Change-Flip</strong><br/>
-              Keep 1st fraction<br/>
-              Change ÷ to ×<br/>
-              Flip 2nd to reciprocal!
+              <strong style="color:#15803d; font-size:8.5pt">🍕 Divide by a Fraction</strong><br/>
+              How many fit? Multiply by the reciprocal:<br/>
+              Keep 1st · Change ÷ to × · Flip only the 2nd
             </div>
             <div style="border:1px solid #cbd5e1; border-radius:6px; padding:4px; background:#fffbeb">
               <strong style="color:#b45309; font-size:8.5pt">⚖️ Balance Rule</strong><br/>
@@ -1912,7 +1912,7 @@ function printBragTags() {
     { icon: "⚡", title: "Lightning Facts", desc: "Automatic fact recall!" },
     { icon: "🎯", title: "100% Accuracy", desc: "Flawless fluency check!" },
     { icon: "🪜", title: "Step-by-Step Solver", desc: "Shows strategic steps!" },
-    { icon: "🍕", title: "Fraction Flak", desc: "Conquered Keep-Change-Flip!" },
+    { icon: "🍕", title: "Fraction Flak", desc: "Mastered dividing by a fraction!" },
     { icon: "🧠", title: "Growth Mindset", desc: "Turned mistakes into insight!" },
     { icon: "🏆", title: "Fluency Champion", desc: "Gold standard mastery!" }
   ];
@@ -5650,17 +5650,17 @@ const InteractiveSolver = {
 
         container.innerHTML = `
           <div class="solver-header">
-            <strong>🍕 Interactive Fraction Division: Keep, Change, Flip!</strong>
-            <span class="solver-hint-tag">Type the flipped fraction</span>
+            <strong>🍕 Interactive Fraction Division: Multiply by the Reciprocal</strong>
+            <span class="solver-hint-tag">How many ${c}/${d}s fit in 1 whole? ${d}/${c} of them</span>
           </div>
           <div style="display:flex; flex-direction:column; gap:0.75rem; align-items:center; font-size:1.25rem; font-weight:800">
             <div style="display:flex; align-items:center; gap:0.6rem">
               <span>Keep: <strong>${a}/${b}</strong></span>
               <span>×</span>
-              <span>Flip: </span>
-              <input type="text" class="lcm-prime-input" data-frac-target="${d}" style="width:48px" placeholder="?" title="Flipped numerator" />
+              <span>Reciprocal of ${c}/${d}: </span>
+              <input type="text" class="lcm-prime-input" data-frac-target="${d}" style="width:48px" placeholder="?" title="Reciprocal numerator" />
               <span>/</span>
-              <input type="text" class="lcm-prime-input" data-frac-target="${c}" style="width:48px" placeholder="?" title="Flipped denominator" />
+              <input type="text" class="lcm-prime-input" data-frac-target="${c}" style="width:48px" placeholder="?" title="Reciprocal denominator" />
             </div>
             <div style="display:flex; align-items:center; gap:0.6rem">
               <span>Multiply: </span>
@@ -6341,7 +6341,7 @@ function renderStudentFriendlyExplanation(item, copy) {
   let suggestedTool = null;
   let toolLabel = "";
 
-  const divFrac = q.match(/(\d+)\/(\d+)\s*[÷/]\s*(\d+)/) || q.match(/(\d+)\/(\d+)\s*[÷/]\s*(\d+)\/(\d+)/);
+  const divFrac = q.match(/(\d+)\/(\d+)\s*[÷/]\s*(\d+)\/(\d+)/) || q.match(/(\d+)\/(\d+)\s*[÷/]\s*(\d+)/);
   const addSubFrac = q.match(/(\d+)\/(\d+)\s*([+−\-])\s*(\d+)\/(\d+)/);
   const mulMatch = q.match(/(\d+)\s*[×*]\s*(\d+)/) || (item.skill?.op === "mul" || item.skill?.strand === "Multiplication" ? q.match(/(\d+)[^\d]+(\d+)/) : null);
   const divMatch = q.match(/(\d+)\s*[÷/]\s*(\d+)/) || (item.skill?.op === "div" || item.skill?.strand === "Division" ? q.match(/(\d+)[^\d]+(\d+)/) : null);
@@ -6362,23 +6362,25 @@ function renderStudentFriendlyExplanation(item, copy) {
       c = Number(divFrac[3]);
       d = 1;
     }
-    goal = "Divide fractions using Keep, Change, Flip!";
-    tip = "Never divide fractions directly. Multiply by the reciprocal (the flip) of the second fraction!";
+    const kcfCaptions = cardCaptions(a, b, c, d);
+    goal = "Divide fractions by counting how many groups fit: multiply by the reciprocal!";
+    tip = "Dividing by a fraction asks how many groups fit in one whole. Multiply by the reciprocal of the second fraction, and flip only that one!";
     suggestedTool = "fractions";
     toolLabel = "Fraction Wall";
 
     visualWidget = `
-      <div class="expl-interactive-widget" data-widget-type="kcf">
+      <div class="expl-interactive-widget" data-widget-type="kcf" data-kcf-summary="${escapeHtml(kcfCaptions.summary)}" data-kcf-keep="${escapeHtml(kcfCaptions.keep)}" data-kcf-change="${escapeHtml(kcfCaptions.change)}" data-kcf-flip="${escapeHtml(kcfCaptions.flip)}" data-kcf-why="${escapeHtml(kcfCaptions.why)}" data-kcf-solve="${escapeHtml(kcfCaptions.solve)}">
         <div class="expl-widget-header">
-          <span class="expl-widget-title">🔄 Keep, Change, Flip Reciprocal Model</span>
+          <span class="expl-widget-title">🔄 Dividing by a Fraction: Multiply by the Reciprocal</span>
           <button type="button" class="expl-speak-btn" data-speak-expl="true" aria-label="Listen to explanation">🔊 Listen</button>
         </div>
         <div class="expl-nav-bar" role="tablist">
-          <button type="button" class="expl-step-pill is-active" data-expl-kcf="all">👀 All 3 Steps</button>
+          <button type="button" class="expl-step-pill is-active" data-expl-kcf="all">👀 All Steps</button>
           <button type="button" class="expl-step-pill" data-expl-kcf="keep">1. Keep ${a}/${b}</button>
           <button type="button" class="expl-step-pill" data-expl-kcf="change">2. Change ÷ to ×</button>
           <button type="button" class="expl-step-pill" data-expl-kcf="flip">3. Flip ${c}/${d} to ${d}/${c}</button>
           <button type="button" class="expl-step-pill" data-expl-kcf="solve">4. Multiply Across</button>
+          <button type="button" class="expl-step-pill" data-expl-kcf="why">💡 Why it works</button>
         </div>
         <div class="expl-visual-stage">
           <div class="expl-kcf-row">
@@ -6405,7 +6407,7 @@ function renderStudentFriendlyExplanation(item, copy) {
           </div>
         </div>
         <div class="expl-caption-box" role="status">
-          <strong>Keep, Change, Flip:</strong> Keep ${a}/${b}, change ÷ to ×, and flip ${c}/${d} to its reciprocal ${d}/${c}. Then multiply across: (${a} × ${d}) / (${b} × ${c}) = ${a * d}/${b * c}.
+          ${kcfCaptions.summary}
         </div>
       </div>
     `;
@@ -10559,17 +10561,21 @@ function handleExplanationInteraction(event) {
     if (phase === "keep") {
       const c = widget.querySelector('[data-kcf-card="keep"]');
       if (c) { c.style.transform = "scale(1.08)"; c.style.boxShadow = "0 0 0 3px #3b82f6"; }
-      if (captionEl) captionEl.innerHTML = `<strong>1. KEEP:</strong> Leave the first fraction exactly as it is!`;
+      if (captionEl) captionEl.innerHTML = widget.dataset.kcfKeep;
     } else if (phase === "change") {
       const c = widget.querySelector('[data-kcf-card="change"]');
       if (c) { c.style.transform = "scale(1.08)"; c.style.boxShadow = "0 0 0 3px #1FA6A2"; }
-      if (captionEl) captionEl.innerHTML = `<strong>2. CHANGE:</strong> Change the division sign (÷) into a multiplication sign (×)!`;
+      if (captionEl) captionEl.innerHTML = widget.dataset.kcfChange;
     } else if (phase === "flip") {
       const c = widget.querySelector('[data-kcf-card="flip"]');
       if (c) { c.style.transform = "scale(1.08) rotate(180deg)"; c.style.boxShadow = "0 0 0 3px #22c55e"; }
-      if (captionEl) captionEl.innerHTML = `<strong>3. FLIP:</strong> Flip the second fraction upside down to get its reciprocal!`;
-    } else {
-      if (captionEl) captionEl.innerHTML = `<strong>4. MULTIPLY:</strong> Multiply numerators straight across and denominators straight across!`;
+      if (captionEl) captionEl.innerHTML = widget.dataset.kcfFlip;
+    } else if (phase === "why") {
+      if (captionEl) captionEl.innerHTML = widget.dataset.kcfWhy;
+    } else if (phase === "solve") {
+      if (captionEl) captionEl.innerHTML = widget.dataset.kcfSolve;
+    } else if (captionEl) {
+      captionEl.innerHTML = widget.dataset.kcfSummary;
     }
     if (typeof chime === "function") chime("step");
     return true;

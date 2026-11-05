@@ -1,4 +1,5 @@
 import { detailSteps } from "./detail-steps.js";
+import { HINT as DIVIDE_FRACTIONS_HINT, LEARN_STEPS as DIVIDE_FRACTIONS_STEPS, MISTAKE as DIVIDE_FRACTIONS_MISTAKE, RULE as DIVIDE_FRACTIONS_RULE, SIGNED_STEP as DIVIDE_SIGNED_STEP } from "./fraction-division-copy.js";
 import { applyKidLearn } from "./kid-learn.js";
 import { kidSteps } from "./kid-steps.js";
 import { leakCap } from "./step-leak.js";
@@ -78,7 +79,7 @@ function signedFractionSteps(op, [n1, d1], [n2, d2], worked) {
     const flip = op === "div";
     const [mn, md] = flip ? [d2 * Math.sign(n2), Math.abs(n2)] : [n2, d2];
     return [
-      ...(flip ? [`Change ÷ to × and flip the second fraction: ${text(n1, d1)} × ${text(mn, md)}.`] : []),
+      ...(flip ? [DIVIDE_SIGNED_STEP(text(n1, d1), text(mn, md))] : []),
       `Multiply across, ignoring the signs: ${Math.abs(n1)} × ${Math.abs(mn)} and ${d1} × ${md}. Then simplify.`,
       `Now check the signs. ${sameSign ? "Same signs: the answer is positive" : "Different signs: the answer is negative"}.`,
       worked,
@@ -701,7 +702,7 @@ const generators = {
           ? "Make the bottoms the same first. Then add or subtract the tops."
           : op === "mul"
             ? "Multiply the tops. Multiply the bottoms. Then simplify."
-            : "Keep the first fraction. Flip the second one and multiply.",
+            : DIVIDE_FRACTIONS_HINT,
       explanation: `${n1}/${d1} ${symbol} ${second} = ${answer}.`,
     });
   },
@@ -1429,7 +1430,7 @@ export const GRADES = [
     skills: [
       S("gcf", "Greatest common factor", "Number system", "gcfLcm", { find: "gcf", max: 60 }, "6.NS.B.4", L("The GCF is the greatest factor shared by two numbers.", ["List factors or use prime factorization.", "Identify shared factors.", "Choose the greatest shared factor."], "GCF(24, 36) = 12", "Do not choose the greatest factor from only one number.")),
       S("lcm", "Least common multiple", "Number system", "gcfLcm", { find: "lcm", max: 24 }, "6.NS.B.4", L("The LCM is the smallest number that is a multiple of both numbers. Prime factor trees find it without long lists.", ["Build a factor tree for each number and write its prime factorization.", "For each prime, keep the larger number of copies found in either number.", "Multiply the kept primes. Check that both numbers divide the product."], "LCM(12, 18): 12 = 2 × 2 × 3 and 18 = 2 × 3 × 3. Keep 2, 2, 3, 3. 2 × 2 × 3 × 3 = 36", "Do not multiply every prime from both lists. A prime shared by both numbers is kept only as many times as the larger count.")),
-      S("divide-fractions", "Divide fractions", "Number system", "fractionOp", { op: "div", maxDenominator: 10 }, "6.NS.A.1", L("Dividing by a fraction is multiplying by its reciprocal.", ["Keep the first fraction.", "Change division to multiplication and flip the second fraction.", "Multiply and simplify."], "2/3 ÷ 4/5 = 2/3 × 5/4 = 5/6", "Flip only the divisor, not both fractions.")),
+      S("divide-fractions", "Divide fractions", "Number system", "fractionOp", { op: "div", maxDenominator: 10 }, "6.NS.A.1", L(DIVIDE_FRACTIONS_RULE, DIVIDE_FRACTIONS_STEPS, "2/3 ÷ 4/5 = 2/3 × 5/4 = 10/12 = 5/6. One whole holds 5/4 groups of 4/5.", DIVIDE_FRACTIONS_MISTAKE)),
       S("decimal-ops", "Multiply and divide decimals", "Number system", "decimalOp", { op: "muldiv", mixedDivision: true, maxDivisor: 9, maxQuotient: 60 }, "6.NS.B.3", L("Estimate, multiply, and place the decimal by value.", ["Estimate the size.", "Multiply as whole numbers.", "Place the decimal so the result matches the estimate."], "3.2 × 1.5 = 4.8", "A product can be smaller when a factor is less than 1.")),
       S("ratios", "Equivalent ratios", "Ratios", "ratio", { maxPart: 12, maxFactor: 9 }, "6.RP.A.1", L("Equivalent ratios scale both quantities by the same factor.", ["Find the scale factor.", "Multiply or divide both quantities.", "Check the comparison stayed the same."], "3:5 scaled by 4 is 12:20.", "Adding the same amount to both terms does not preserve the ratio.")),
       S("unit-rates", "Unit rates and unit conversions", "Ratios", "rateConversion", { maxCount: 12, maxRate: 25 }, "6.RP.A.2", L("A unit rate tells the amount for exactly one unit.", ["Write the rate as a division.", "Divide by the number of units.", "Label per 1."], "72 miles in 3 hours is 24 miles per hour.", "Keep units attached so the rate is not reversed.")),

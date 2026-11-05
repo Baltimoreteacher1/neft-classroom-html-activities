@@ -1,3 +1,5 @@
+import { divideSteps } from "./fraction-division-copy.js";
+
 // Number-specific guided steps that say WHAT to do and WHY, in plain words. They cover skills whose authored
 // steps were generic ("Find the scale factor.") or borrowed decimal wording for whole numbers. Each builder reads
 // the problem's own numbers and returns the steps that come BEFORE the worked line, which is appended last
@@ -80,7 +82,7 @@ const DETAIL = [
   }],
   [/^(\d+)\/(\d+) ([+−]) (\d+)\/(\d+) = \?$/, (a, b, op, c, d) => fractionAddSub(n(a), n(b), op, n(c), n(d))],
   [/^(\d+)\/(\d+) × (\d+)\/(\d+) = \?$/, (a, b, c, d) => [`Multiply the numerators (tops): ${a} × ${c}.`, `Multiply the denominators (bottoms): ${b} × ${d}.`, `Write the top product over the bottom product. Simplify if you can.`]],
-  [/^(\d+)\/(\d+) ÷ (\d+)\/(\d+) = \?$/, (a, b, c, d) => [`Keep the first fraction the same: ${a}/${b}.`, `Change ÷ to ×. Flip ${c}/${d} to ${d}/${c}, its reciprocal.`, `Multiply across: ${a} × ${d} and ${b} × ${c}. Then simplify.`]],
+  [/^(\d+)\/(\d+) ÷ (\d+)\/(\d+) = \?$/, (a, b, c, d) => divideSteps(a, b, c, d)],
   [/^What is (\d+)\/(\d+) of (\d+)\?$/, (a, b, w) => fractionOfWhole(a, b, w)],
   [/^(\d+)\/(\d+) ___ (\d+)\/(\d+)$/, (a, b, c, d) => [`The bottoms are different, so the pieces are different sizes.`, `Multiply each top by the other bottom: ${a} × ${d} and ${c} × ${b}.`, `The bigger product goes with the bigger fraction. Choose the symbol.`]],
   [/^(\d+)\/(\d+) = (\d+)\/□$/, (a, b, c) => (n(c) % n(a) === 0 ? [`Look at the tops: ${a} became ${c}. What times ${a} makes ${c}?`, `The top was multiplied by ${n(c) / n(a)}.`, `Multiply the bottom by ${n(c) / n(a)} too: ${b} × ${n(c) / n(a)}. The new fraction is equivalent, the same amount.`] : null)],
