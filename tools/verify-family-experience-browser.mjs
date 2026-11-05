@@ -373,7 +373,7 @@ async function sweepStops(browser, lesson) {
   });
   const { page } = await openPage(context, lesson);
   const where = `${lesson} @390 stops`;
-  const order = ["connect", "explore", "check", "talk", "apply", "done"];
+  const order = ["connect", "explore", "check", "improve", "done"];
   const tabs = await page.evaluate(() =>
     [...document.querySelectorAll(".homework-tab-btn")].map((b) => b.dataset.tab),
   );
@@ -386,10 +386,11 @@ async function sweepStops(browser, lesson) {
       () => [...document.querySelectorAll("[data-tab-panel]")].filter((p) => !p.hidden).length,
     );
     if (shown !== 1) fail(where, `${shown} stages show at once on ${id}`);
-    await page.locator(`#hw_panel_${id} .flow-next-btn`).click();
+    // One forward button, in the stop navigation; it names the next step.
+    await page.locator("#hw_stop_next").click();
   }
   const stop = await page.evaluate(() => document.body.dataset.activeTab);
-  if (stop !== "check") fail(where, `Continue from Explore landed on ${stop}, not check`);
+  if (stop !== "check") fail(where, `Next from Try Together landed on ${stop}, not check`);
   // Later stops have Back; it returns, and the progress reads Not started before any attempt.
   if (await page.locator("#hw_stop_back").isHidden()) fail(where, `no Back button on ${stop}`);
   await page.evaluate(() => window.switchHomeworkTab("check"));
@@ -454,12 +455,21 @@ async function sweepDesktop(browser, lesson) {
 
   // The sidebar is the six-stage mission: no second list of sections under Connect.
   const railStages = await page.locator(".homework-tab-bar .homework-tab-btn").count();
-  if (railStages !== 6) fail(`${lesson} @1280`, `sidebar lists ${railStages} stages, not 6`);
+  if (railStages !== 5) fail(`${lesson} @1280`, `sidebar lists ${railStages} steps, not 5`);
   if (await page.locator("#hw_sub_connect, #hw_sub_learn").count())
     fail(`${lesson} @1280`, "a second section list competes with the stage rail");
 
   // Click-to-enlarge: a graphic opens in the lightbox; Escape closes it and focus returns.
+  await page.evaluate(() => {
+    for (const d of document.querySelectorAll("#hw_panel_connect details.fp-optional"))
+      d.open = true;
+  });
   const caseGfx = page.locator("#hw_case svg.cf-tag, #hw_case svg.cf-line").first();
+  // The older big-idea picture sits in the optional "More ways to see it" fold; a family opens it first.
+  await page.evaluate(() => {
+    for (const d of document.querySelectorAll("#hw_panel_explore details.fp-optional"))
+      d.open = true;
+  });
   const exploreGfx = page.locator("#hw_panel_explore .concept-visual-wrap svg").first();
   const inCase = (await caseGfx.count()) > 0;
   const gfx = inCase ? caseGfx : exploreGfx;

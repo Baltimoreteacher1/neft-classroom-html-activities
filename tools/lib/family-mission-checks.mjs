@@ -88,14 +88,14 @@ export function countChecks(page, cfg = readRouteConfig(page)) {
         `Quick route renders ${quickShown} problem(s)`,
       ),
     );
-  if (!page.html.includes('id="hw_learn_idea"'))
+  if (!page.html.includes('id="hw_example_label"'))
     out.push(
       finding(
         "COUNT_QUICK_EXAMPLE",
         id,
         "learn",
         "",
-        "Quick route promises one example but the page has no worked example (#hw_learn_idea)",
+        "Look & Learn promises one worked example but the page has none (#hw_example_label)",
       ),
     );
   // The page opens on its default route, so the static goal must be that route's goal before any script runs.

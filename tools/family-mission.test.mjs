@@ -9,6 +9,7 @@ import { existsSync, readdirSync, readFileSync } from "node:fs";
 import test from "node:test";
 import { JSDOM } from "jsdom";
 import { createModel } from "../assets/family-mission/models/index.mjs";
+import { FLOW_JS } from "../scripts/lib/homework-flow-js.mjs";
 import {
   MISSION_PRACTICE_COUNT,
   MISSION_STAGES,
@@ -25,42 +26,53 @@ const ROOT = REPO_ROOT.replace(/\/$/, "");
 const ids = readdirSync(`${ROOT}/data/family-homework-notes`)
   .filter((f) => f.endsWith(".json"))
   .map((f) => f.slice(0, -5));
-const STAGES = ["connect", "explore", "check", "talk", "apply", "done"];
+const STAGES = ["connect", "explore", "check", "improve", "done"];
+const OPTIONAL = ["talk", "apply", "words", "play", "photobooth"];
+/** A lesson with at least two authored basic items gets A, B, C (the third is its own transfer problem when it has one). */
+const hasABC = (id) => {
+  const n = JSON.parse(readFileSync(`${ROOT}/data/family-homework-notes/${id}.json`, "utf8"));
+  return (n.basicPractice?.length ?? 0) >= 3;
+};
 const count = (html, re) => (html.match(re) ?? []).length;
 
-test("the six stages are defined once, in teaching order, with the optional stops outside them", () => {
+test("the five steps are defined once, in teaching order, with the optional stops outside them", () => {
   assert.deepEqual(
     MISSION_STAGES.map((s) => s.id),
     STAGES,
   );
   assert.deepEqual(
     MISSION_STAGES.map((s) => s.en),
-    ["Connect", "Explore", "Practice", "Talk Together", "Apply", "Reflect"],
+    ["Look & Learn", "Try Together", "Your Turn", "Check & Improve", "Finish"],
   );
   assert.deepEqual(
     OPTIONAL_STOPS.map((s) => s.id),
-    ["words", "play", "photobooth"],
+    ["talk", "apply", "words", "play", "photobooth"],
   );
   assert.equal(MISSION_PRACTICE_COUNT, 3);
   assert.equal(ROUTE_TIMES.quick, "5–10");
   assert.equal(ROUTE_TIMES.full, "15–25");
 });
 
-test("every family page is the same six-stage mission with one start, no depth selector and the extras behind Explore more", () => {
+test("every family page is the same five-step flow with one start, no depth selector and the extras behind Explore more", () => {
   assert.ok(ids.length >= 160, `only ${ids.length} pages`);
   const bad = [];
   for (const id of ids) {
     const html = readFileSync(lessonPath(id, "homework.html"), "utf8");
     const order = [...html.matchAll(/data-tab-panel="(\w+)"/g)].map((m) => m[1]);
     const checks = {
-      panels: order.join() === [...STAGES, "words", "play", "photobooth"].join(),
-      rail: count(html, /class="homework-tab-btn/g) === 6,
+      panels: order.join() === [...STAGES, ...OPTIONAL].join(),
+      rail: count(html, /class="homework-tab-btn/g) === 5,
       oneStart: count(html, /id="hw_start_button"/g) === 1,
       exploreMore: html.includes('id="hw_explore_sheet"') && html.includes("Explorar más"),
       noRoutes: !html.includes("data-route-mode"),
       noPathway: !html.includes("hw_pathway_bar") && !html.includes("hw-pathway-btn"),
       noPager: !html.includes("learn-pager") && !html.includes('class="learn-card"'),
       noteWonder: html.includes('id="hw_notice_wonder"'),
+      lookAndLearn: html.includes('id="hw_goal_label"') && html.includes('id="hw_example_label"'),
+      tryTogether: html.includes('id="hw_try_label"'),
+      improve: html.includes('id="hw_improve"') && html.includes("data-improve-empty"),
+      yourTurn: hasABC(id) ? ["A", "B", "C"].every((r) => html.includes(`data-role="${r}"`)) : true,
+      oneFamilyQuestion: html.includes('class="fp-family"'),
       copilot: html.includes('id="hw_copilot_learning"') && html.includes('id="hw_copilot_ask"'),
       talk: html.includes('id="hw_talk"'),
       reflect: html.includes('id="hw_reflect"') && html.includes('id="hw_mission_summary"'),
@@ -81,7 +93,7 @@ test("the default route shows exactly the problems it says: the stated count, th
   assert.match(text, new RegExp(`solve ${MISSION_PRACTICE_COUNT}`));
   assert.match(text, new RegExp(ROUTE_TIMES.quick));
   const html = readFileSync(lessonPath("4-1-part2", "homework.html"), "utf8");
-  assert.match(html, /Today's practice: <span data-hw-goal-count>3<\/span> problems/);
+  assert.match(html, /<span data-hw-goal-count>3<\/span> problems\./);
   assert.doesNotMatch(html, /Tonight's goal: any/);
   dom.window.close();
 });
@@ -182,13 +194,14 @@ test("the Reflect summary says only what happened: nothing before work, evidence
   w.document.addEventListener = () => {};
   w.LESSON_ID = "4-1";
   w.LESSON_TITLE = "Understand Percent";
-  w.eval(MISSION_JS);
+  w.eval(MISSION_JS + FLOW_JS);
   w.eval("var problemAttempts = {0: 2}; var revealForced = {};");
   w.hwMissionSummary();
   const text = w.document.getElementById("hw_mission_summary").textContent;
-  assert.match(text, /You solved 1 of 3 practice problems/);
-  assert.match(text, /hint or a second try/);
+  assert.match(text, /You practiced/);
+  assert.match(text, /You solved 1 of 3 problems/);
   assert.match(text, /changed an answer and got it right/);
+  assert.match(text, /without hints/);
   assert.doesNotMatch(text, /mastery|mastered|%|stars?\b/i);
   assert.equal(w.document.querySelector("[data-mission-evidence]").hidden, false);
   assert.equal(w.document.querySelector("[data-mission-prereq]").hidden, false);
@@ -200,7 +213,7 @@ test("the Reflect summary says only what happened: nothing before work, evidence
   ).window;
   empty.document.addEventListener = () => {};
   empty.LESSON_ID = "4-2";
-  empty.eval(MISSION_JS);
+  empty.eval(MISSION_JS + FLOW_JS);
   empty.eval("var problemAttempts = {}; var revealForced = {};");
   empty.hwMissionSummary();
   assert.equal(empty.document.querySelector("[data-mission-evidence]").hidden, true);

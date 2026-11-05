@@ -55,6 +55,13 @@ import {
   renderTonightStrip,
 } from "./lib/homework-experience.mjs";
 import {
+  backToPath,
+  finishQuestion,
+  renderLookAndLearn,
+  renderTryTogether,
+  renderYourTurnHead,
+} from "./lib/homework-flow.mjs";
+import {
   renderExperienceBadge,
   renderHero,
   renderMoreSheet,
@@ -69,6 +76,7 @@ import {
   renderNoticeWonder,
   renderReflect,
 } from "./lib/homework-mission.mjs";
+import { missionModelFor } from "./lib/homework-mission-models.mjs";
 import { renderPrintHead } from "./lib/homework-print.mjs";
 import { choiceFeedbackSpanish } from "./lib/homework-problems.mjs";
 import { renderScratchpadHtml } from "./lib/homework-scratchpad.mjs";
@@ -3031,7 +3039,7 @@ function renderUnit4FamilyBigIdeaVisual(config) {
         <strong class="u-ink-part">100% = ${esc(model.whole)}</strong>
       </div>
       <div class="family-whole-bar" aria-hidden="true">
-        ${Array.from({ length: 10 }, (_, i) => `<span class="${i < model.tenths ? "is-filled" : ""}" style="display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:${i < model.tenths ? "var(--fm-raised)" : "var(--fm-inverse)"};">$7</span>`).join("")}
+        ${Array.from({ length: 10 }, (_, i) => `<span class="${i < model.tenths ? "is-filled" : ""}">${i + 1}</span>`).join("")}
       </div>
       <div class="family-discount-labels" style="margin-top:6px;">
         <span class="u-ink-part">${bilingual(`6 blocks = ${model.part} (${model.percent})`, `6 bloques = ${model.part} (${model.percent})`)}</span>
@@ -8272,7 +8280,6 @@ export function renderLearnTab(
       </div>
     </div>`;
 
-  const learning = renderLearningTonight(config).replace(/<section[^>]*>|<\/section>/g, "");
   /* The grown-up's help is one co-pilot drawer on the Talk Together stop (homework-talk.mjs),
      built from this lesson's own sidecar fields. */
   const ask = familyGuidance(config).question;
@@ -8306,36 +8313,26 @@ export function renderLearnTab(
         <p class="hw-case-text"><span class="lang-en">${esc(caseText.en)}</span><span class="lang-es" lang="es">${esc(caseText.es)}</span></p>
       </section>`
     : "";
-  const next = (id) => `
-      <div class="tab-flow-nav">
-        <button type="button" class="btn btn-primary flow-next-btn" ${act("goNextHomeworkStop", id)}>
-          <span class="lang-en">Continue ➔</span>
-          <span class="lang-es" lang="es">Continuar ➔</span>
-        </button>
-      </div>`;
   const pieces = renderLearnPieces(config, config.lessonId || "");
-  /* STAGE 1: Connect. Why it matters, the case, one noticing prompt, the prerequisite check. */
+  /* STEP 1: Look & Learn. The goal, one worked example, the picture; notice/wonder and the prerequisite
+     check are optional folds, not part of the path. */
+  const hasModel = Boolean(missionModelFor(config));
   const connect = `
     <div ${tabPanelAttrs("connect")}>
-      ${caseFileHtml}
-      ${block("mission-block", learning)}
-      ${block("mission-block", spotlightHtml)}
-      ${renderNoticeWonder()}
-      ${renderConfidence("before")}
-      ${pieces.spiral}
-      ${next("connect")}
+      ${renderLookAndLearn(config, { modelHtml: pieces.model, wordsHtml: caseFileHtml, noticeHtml: renderNoticeWonder(), warmupHtml: `${renderConfidence("before")}${pieces.spiral}` })}
     </div>`;
-  /* STAGE 2: Explore. The lesson's model (interactive where the engine has one), the big idea. */
+  /* STEP 2: Try Together. One guided problem, the interactive model (the older visual lab only where
+     the engine has no model for the lesson), the lesson's tool, one optional family question. */
   const explore = `
     <div ${tabPanelAttrs("explore", true)}>
-      <div class="mission-block" id="hw_learn_try">${renderMissionModelHost(config)}${pieces.model}${visualLabHtml}</div>
-      ${block("learn-big-idea-block mission-block", `<div id="hw_learn_idea">${concept}</div>`)}
-      ${workbenchLaunchHtml}
-      ${workbenchHtml}
-      ${block("mission-block", powerUpHtml)}
-      ${next("explore")}
+      ${renderTryTogether(config, {
+        modelHtml: `<div class="mission-block fp-model" id="hw_learn_try">${renderMissionModelHost(config)}${hasModel ? "" : visualLabHtml}</div>`,
+        toolHtml: `${workbenchLaunchHtml}${workbenchHtml}`,
+        /* The lesson's older picture and big idea stay, one fold down: with an engine model they are a second way to see it. */
+        morePicturesHtml: `${hasModel ? visualLabHtml : ""}${block("learn-big-idea-block mission-block", `<div id="hw_learn_idea">${concept}</div>`)}`,
+      })}
     </div>`;
-  /* STAGE 4: Talk Together. One question, the grown-up co-pilot, the error to find. */
+  /* Optional: the grown-up talk guide. Reached from Explore more, never required. */
   const talk = `
     <div ${tabPanelAttrs("talk", true)}>
       ${renderTalkTogether(config, ask)}
@@ -8343,15 +8340,17 @@ export function renderLearnTab(
       ${misconceptionHtml}
       ${pieces.glitch}
       ${renderWarmupHuddle(confusedGrownUpCard(config))}
-      ${next("talk")}
+      ${backToPath}
     </div>`;
-  /* STAGE 5: Apply. A new situation, then the table prompt. */
+  /* Optional: a new challenge. Why it matters, the at-home case, the mystery, the skill power-up. */
   const apply = `
     <div ${tabPanelAttrs("apply", true)}>
-      ${pieces.apply}
+      ${block("mission-block", spotlightHtml)}
       ${block("mission-block", caseHtml)}
+      ${block("mission-block", powerUpHtml)}
+      ${config.yourTurnUsesTransfer ? "" : pieces.apply}
       ${renderMysteryChallenge(mystery)}
-      ${next("apply")}
+      ${backToPath}
     </div>`;
   return { connect, explore, talk, apply };
 }
@@ -8365,7 +8364,7 @@ export function renderWordsTab(vocabList, resolveVocabImage, vocabImageAlt) {
 }
 
 export function renderCheckTab(
-  quickCheckIntro,
+  _quickCheckIntro,
   warmupHtml,
   challengeHtml = "",
   moreHtml = "",
@@ -8373,26 +8372,19 @@ export function renderCheckTab(
   basicHtml = "",
   hasMystery = false,
 ) {
-  const intro = quickCheckIntro.replace(/<section[^>]*>|<\/section>/g, "");
-
   /* The goal is the number of problems that are actually here. It used to read
      "Complete 3 problems" beside six problems, under a status bar counting
      "0 / 6" — so a family could finish the stated goal and still be told they
      were half done. */
+  const goalCount = Math.min(MISSION_PRACTICE_COUNT, coreCount);
   const starsBar = `
-    <div class="hw-goal-card">
+    <div class="hw-goal-card fp-progress">
       ${renderGoalPips("")}
-      <p>
-        <span class="lang-en"><strong>Today's practice: <span data-hw-goal-count>${Math.min(MISSION_PRACTICE_COUNT, coreCount)}</span> problems.</strong> Use a hint whenever you want one. Stop any time. Your work saves itself.</span>
-        <span class="lang-es" lang="es"><strong>La práctica de hoy: <span data-hw-goal-count>${Math.min(MISSION_PRACTICE_COUNT, coreCount)}</span> problemas.</strong> Usen una pista cuando quieran. Pueden parar cuando quieran. El trabajo se guarda solo.</span>
+      <p class="fp-progress-text">
+        <span class="lang-en"><strong><span data-hw-goal-count>${goalCount}</span> problems.</strong> Hints are always okay.</span>
+        <span class="lang-es" lang="es"><strong><span data-hw-goal-count>${goalCount}</span> problemas.</strong> Las pistas siempre están bien.</span>
       </p>
       <span class="hw-bonus" data-hw-bonus hidden>+<span data-hw-bonus-count>0</span> <span class="lang-en">bonus</span><span class="lang-es" lang="es">extra</span></span>
-    </div>
-    <div class="stars-milestone-chips" aria-hidden="true">
-      ${basicHtml ? '<span class="star-chip">🧱 Basics</span>' : ""}
-      <span class="star-chip">🌱 Warm-Up ★</span>
-      <span class="star-chip">🚀 Level-Up ★★</span>
-      <span class="star-chip">🏆 Victory ★★★</span>
     </div>`;
 
   const streakBanner = `
@@ -8404,19 +8396,12 @@ export function renderCheckTab(
       </span>
     </div>`;
 
-  const scratchpadToggle = `
-    <div class="scratchpad-inline-toggle">
-      <button type="button" class="btn btn-sm btn-secondary scratchpad-toggle-btn" ${act("toggleScratchpad")}>
-        ✏️ <span class="lang-en">Open scratchpad</span><span class="lang-es" lang="es">Abrir pizarra</span>
-      </button>
-    </div>`;
-
   const goalReachedBanner = `
     <div class="goal-reached-banner" id="goal_reached_banner" role="status" hidden>
       <span class="goal-icon" aria-hidden="true">🌟</span>
       <div class="goal-text">
-        <strong><span class="lang-en">That's today's practice: done!</span><span class="lang-es" lang="es">¡Esa es la práctica de hoy: completa!</span></strong>
-        <p><span class="lang-en">Next, talk about it together. The extra practice stays here if you want more.</span><span class="lang-es" lang="es">Ahora conversen. La práctica extra sigue aquí si quieren más.</span></p>
+        <strong><span class="lang-en">Your Turn is done.</span><span class="lang-es" lang="es">Tu turno terminó.</span></strong>
+        <p><span class="lang-en">Next, see what your answers show and fix one.</span><span class="lang-es" lang="es">Ahora vean qué muestran sus respuestas y corrijan una.</span></p>
       </div>
       <div class="goal-actions">
         ${
@@ -8424,8 +8409,8 @@ export function renderCheckTab(
             ? `<button type="button" class="btn btn-sm btn-secondary hw-banner-mystery" hidden ${act("hwOpenMystery")}><span class="lang-en">🔓 Open the mystery challenge</span><span class="lang-es" lang="es">🔓 Abrir el reto misterioso</span></button>`
             : ""
         }
-        <button type="button" class="btn btn-sm btn-primary" ${act("switchHomeworkTab", "talk")}>
-          <span class="lang-en">Next: Talk Together ➔</span><span class="lang-es" lang="es">Siguiente: Conversen ➔</span>
+        <button type="button" class="btn btn-sm btn-primary" ${act("switchHomeworkTab", "improve")}>
+          <span class="lang-en">Next: Check &amp; Improve</span><span class="lang-es" lang="es">Siguiente: Revisa y mejora</span>
         </button>
       </div>
     </div>`;
@@ -8433,21 +8418,8 @@ export function renderCheckTab(
   const tierNo = (n) => (basicHtml ? n + 1 : n);
   const basicBlock = basicHtml
     ? `
-      <section class="practice-tier practice-tier-basic" aria-label="Basic practice">
-        <div class="practice-tier-head">
-          <span class="practice-tier-badge tier-basic">1</span>
-          <div class="practice-tier-titles">
-            <h3 class="practice-tier-title">
-              <span class="lang-en">🧱 Basic practice — build the skill</span>
-              <span class="lang-es" lang="es">🧱 Práctica básica — construyan la destreza</span>
-            </h3>
-            <p class="practice-tier-sub bilingual-block">
-              <span class="lang-en">Short, straightforward problems about tonight's skill. Do these first: quick reps make the harder ones easier.</span>
-              <span class="lang-es" lang="es">Problemas cortos y directos sobre la destreza de hoy. Háganlos primero: repetir lo básico facilita los más difíciles.</span>
-            </p>
-          </div>
-        </div>
-        <section class="problems-container" aria-label="Basic practice problems">${basicHtml}</section>
+      <section class="practice-tier practice-tier-basic fp-problems" aria-label="Your Turn problems" data-fp-problems>
+        <section class="problems-container" aria-label="Your Turn problems">${basicHtml}</section>
       </section>`
     : "";
 
@@ -8511,27 +8483,17 @@ export function renderCheckTab(
       </details>`
     : "";
 
-  const flowNext = `
-    <div class="tab-flow-nav">
-      <button type="button" class="btn btn-primary flow-next-btn" ${act("goNextHomeworkStop", "check")}>
-        <span class="lang-en">Continue ➔</span>
-        <span class="lang-es" lang="es">Continuar ➔</span>
-      </button>
-    </div>`;
-
   return `
     <div ${tabPanelAttrs("check", true)}>
-      ${intro}
+      ${renderYourTurnHead()}
       ${starsBar}
       ${streakBanner}
-      ${scratchpadToggle}
       ${goalReachedBanner}
       ${basicBlock}
       ${warmupBlock}
       ${challengeBlock}
       ${renderQuickOptional()}
       ${more}
-      ${flowNext}
     </div>`;
 }
 
@@ -8856,19 +8818,19 @@ export function renderProblemHintButton(_problem, _visual = "", coach = {}) {
     : "";
   const steps = [
     {
-      labelEn: "Ask — a question for the grown-up",
-      labelEs: "Pregunta — para el adulto",
+      labelEn: "Hint 1: think about it",
+      labelEs: "Pista 1: piensa",
       help: `<p class="lang-en">${esc(ask.en)}</p><p class="lang-es" lang="es">${esc(ask.es)}</p>`,
     },
     {
-      labelEn: "Show — the first step",
-      labelEs: "Muestra — el primer paso",
+      labelEn: "Hint 2: the first step",
+      labelEs: "Pista 2: el primer paso",
       help: `<p class="lang-en">${esc(show.en)}</p><p class="lang-es" lang="es">${esc(show.es)}</p>${visual}
               <button type="button" class="coach-scratchpad-btn" ${act("toggleScratchpad")}>✏️ <span class="lang-en">Try it on the scratchpad</span><span class="lang-es" lang="es">Pruébalo en la pizarra</span></button>`,
     },
     {
-      labelEn: "Explain — the worked answer",
-      labelEs: "Explica — la respuesta resuelta",
+      labelEn: "Hint 3: a worked answer",
+      labelEs: "Pista 3: una respuesta resuelta",
       locked: true,
       help: `<p class="lang-en">${esc(explain.en)}</p><p class="lang-es" lang="es">${esc(explain.es)}</p>`,
     },
@@ -8876,8 +8838,7 @@ export function renderProblemHintButton(_problem, _visual = "", coach = {}) {
   return `
     <details class="problem-coach-ladder" data-coach-levels>
       <summary>
-        <span>🪜 <span class="lang-en">Family Coach: Ask, Show, Explain</span><span class="lang-es" lang="es">Guía familiar: Pregunta, Muestra, Explica</span></span>
-        <small><span class="lang-en">Ask and Show anytime</span><span class="lang-es" lang="es">Pregunta y Muestra en cualquier momento</span></small>
+        <span><span class="lang-en">Need a hint?</span><span class="lang-es" lang="es">¿Quieres una pista?</span></span>
       </summary>
       <ol class="coach-ladder-list">${steps
         .map(
@@ -8887,7 +8848,7 @@ export function renderProblemHintButton(_problem, _visual = "", coach = {}) {
               <span class="coach-step-number">${index + 1}</span>
               <span class="lang-en">${esc(step.labelEn)}</span><span class="lang-es" lang="es">${esc(step.labelEs)}</span>
             </button>
-            ${step.locked ? `<small class="coach-explain-lock" data-coach-lock><span class="lang-en">Make one try first. Explain opens after your first answer.</span><span class="lang-es" lang="es">Hagan un intento primero. Explica se abre después de la primera respuesta.</span></small>` : ""}
+            ${step.locked ? `<small class="coach-explain-lock" data-coach-lock><span class="lang-en">Make one try first. Hint 3 opens after your first answer.</span><span class="lang-es" lang="es">Haz un intento primero. La pista 3 se abre después de tu primera respuesta.</span></small>` : ""}
             <div class="coach-step-help" hidden>${step.help}</div>
           </li>`,
         )
@@ -8946,7 +8907,8 @@ export function renderDoneTab(config = null, lessonId = "") {
     lessonId,
     next: nextFamilyPage(lessonId),
     prereq,
-  })}${inner}${renderFamilyConversationCard(config)}</div>`;
+    question: finishQuestion(config?.familyNotes),
+  })}<details class="fp-optional fp-celebrate"><summary><span class="lang-en">Certificate, photo, sign-off and badges (optional)</span><span class="lang-es" lang="es">Certificado, foto, firma e insignias (opcional)</span></summary>${inner}${renderFamilyConversationCard(config)}</details></div>`;
 }
 
 export function renderPhotoboothTab(config = null, lessonId = "") {
@@ -9259,7 +9221,6 @@ export function renderHomeworkTabs(panelsHtml, helpDrawerHtml = "", unit = null)
               data-aria-en="${esc(t.en)} — stop ${i + 1} of ${tabCount}" data-aria-es="${esc(t.es)} — parada ${i + 1} de ${tabCount}"
               data-tab="${t.id}" data-stop="${i + 1}" ${act("switchHomeworkTab", t.id)}>
               <span class="tab-step" aria-hidden="true">${i + 1}</span>
-              <span class="tab-icon" aria-hidden="true">${t.icon}</span>
               <span class="tab-label"><span class="tab-en">${t.en}</span><span class="tab-es" lang="es">${t.es}</span></span>
               <span class="tab-done" aria-hidden="true">✓</span>
             </button>`;
@@ -9795,8 +9756,8 @@ function initFamilyGames() {
    Each path is a complete, optional experience. Time values are estimates,
    never timers; the student and family can pause or stop at any point. */
 var HOMEWORK_ROUTES = {
-  quick: { tabs: ['connect', 'explore', 'check', 'talk', 'apply', 'done'], problemLimit: ${MISSION_PRACTICE_COUNT} },
-  full: { tabs: ['connect', 'explore', 'check', 'talk', 'apply', 'done'], problemLimit: 0 }
+  quick: { tabs: ['connect', 'explore', 'check', 'improve', 'done'], problemLimit: ${MISSION_PRACTICE_COUNT} },
+  full: { tabs: ['connect', 'explore', 'check', 'improve', 'done'], problemLimit: 0 }
 };
 /* One six-stage mission. The two routes differ only in how many practice problems the Practice
    stage shows: Today's mission (quick, the default) and Extended practice (full). Route ids are
@@ -10134,6 +10095,14 @@ function updateStopNav(tabId) {
   if (back) back.hidden = i <= 0;
   if (next) next.hidden = i < 0 || i >= tabs.length - 1;
   if (here && i >= 0) here.textContent = (i + 1) + ' / ' + tabs.length;
+  /* The one forward button names where it goes: "Next: Try Together". */
+  var nextTab = document.getElementById('hw_tab_' + tabs[i + 1]);
+  if (next && nextTab) {
+    var nEn = nextTab.querySelector('.tab-en'), nEs = nextTab.querySelector('.tab-es');
+    var spans = next.querySelectorAll('span');
+    if (spans[0] && nEn) spans[0].textContent = 'Next: ' + nEn.textContent;
+    if (spans[1] && nEs) spans[1].textContent = 'Siguiente: ' + nEs.textContent;
+  }
 }
 
 function switchHomeworkTab(tabId) {

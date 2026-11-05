@@ -65,6 +65,8 @@ import {
   renderGoalPips,
 } from "./lib/homework-experience.mjs";
 import { EXPERIENCE_JS } from "./lib/homework-experience-js.mjs";
+import { renderImprove } from "./lib/homework-flow.mjs";
+import { FLOW_JS } from "./lib/homework-flow-js.mjs";
 import { HERO_JS, READER_BOOT_JS } from "./lib/homework-hero.mjs";
 import { renderExploreMoreSheet } from "./lib/homework-mission.mjs";
 import { MISSION_JS } from "./lib/homework-mission-js.mjs";
@@ -99,6 +101,7 @@ import { renderPrintFooter, renderProblemAsk } from "./lib/homework-v3-learn.mjs
 import { V3_LEARN_JS } from "./lib/homework-v3-learn-assets.mjs";
 import { VOICE_JS } from "./lib/homework-voice.mjs";
 import { workedExampleFor } from "./lib/homework-worked-example.mjs";
+import { ROLE_LABELS, selectYourTurn } from "./lib/homework-your-turn.mjs";
 import { compareFamilyHomeworkIds, generatesFamilyHomework } from "./lib/lesson-scope.mjs";
 import { isGeneratedFresh, writeGenerated } from "./lib/preserve-injected.mjs";
 import { toHomeworkShape } from "./lib/review-lesson-shape.mjs";
@@ -438,41 +441,6 @@ function buildVocabGlossary(vocab, lessonId = "") {
   throw new Error("homework glossary: the lesson list is not head + shared entries");
 }
 
-const FAMILY_TIPS_BY_TYPE = {
-  "multiple-choice": {
-    en: "Read the question together, then let your student pick an answer before you discuss why.",
-    es: "Lean la pregunta juntos; dejen que su estudiante elija antes de hablar del porqué.",
-  },
-  "matching-game": {
-    en: "Say each term out loud, then talk through which match makes sense before choosing.",
-    es: "Digan cada término en voz alta y hablen de cuál pareja tiene sentido antes de elegir.",
-  },
-  "drag-sort": {
-    en: "On a phone, use Move to. On a computer, drag cards or tap a card then tap a column.",
-    es: "En el teléfono usen Mover a. En la computadora arrastren o toquen tarjeta y columna.",
-  },
-  "drag-order": {
-    en: "Use the ▲ ▼ buttons to reorder steps, or drag the row handles on a computer.",
-    es: "Usen ▲ ▼ para reordenar, o arrastren las filas en la computadora.",
-  },
-  "fill-table": {
-    en: "Encourage your student to show work on paper if a box feels tricky.",
-    es: "Animen a mostrar el trabajo en papel si una casilla se siente difícil.",
-  },
-  "error-analysis": {
-    en: "Read each step aloud and ask: does this step follow the math rules we learned?",
-    es: "Lean cada paso en voz alta y pregunten: ¿sigue las reglas que aprendimos?",
-  },
-  "open-response": {
-    en: "A complete sentence with math vocabulary is the goal — not a perfect paragraph.",
-    es: "Una oración completa con vocabulario matemático es la meta — no un párrafo perfecto.",
-  },
-};
-
-// The problem-type chip was the last English-only UI string on the Check tab
-// (the math stems themselves are still English — tracked separately). This is a
-// closed set of 6 values, so each gets a hand-written Spanish label rather than
-// a derived one.
 const PROBLEM_TYPE_LABELS = {
   "multiple-choice": { en: "MULTIPLE CHOICE", es: "OPCIÓN MÚLTIPLE" },
   "drag-sort": { en: "DRAG SORT", es: "CLASIFICAR ARRASTRANDO" },
@@ -490,16 +458,6 @@ function renderProblemTypeChip(displayType) {
   const label = PROBLEM_TYPE_LABELS[displayType];
   if (!label) return `<div class="problem-type-badge">${esc(fallback)}</div>`;
   return `<div class="problem-type-badge"><span class="lang-en">${esc(label.en)}</span><span class="lang-es" lang="es">${esc(label.es)}</span></div>`;
-}
-
-/* Each type's tip prints once per page. The same "Read the question
-   together…" line on every problem added ~900px to a phone's Check stop. */
-let familyTipsShown = new Set();
-function renderFamilyTip(typeKey) {
-  const tip = FAMILY_TIPS_BY_TYPE[typeKey] || FAMILY_TIPS_BY_TYPE["multiple-choice"];
-  if (familyTipsShown.has(tip)) return "";
-  familyTipsShown.add(tip);
-  return `<p class="family-problem-tip"><span class="lang-en">👪 ${esc(tip.en)}</span><span class="lang-es" lang="es">👪 ${esc(tip.es)}</span></p>`;
 }
 
 /* Bilingual problem text. Every other surface on the page uses the
@@ -840,7 +798,6 @@ function renderProblem(it, pIdx, topic = "fallback", opts = {}) {
       <div class="problem-body">
         <p class="problem-stem"${esMissing(stem, stemEs) ? ' data-es-missing="stem"' : ""}>${bi(stem, stemEs)}</p>
         ${visualWrap}
-        ${renderFamilyTip("multiple-choice")}
         <div class="mc-options" data-correct="${correctIdx}" data-explanation="${esc(explanation)}"${explanationEs ? ` data-explanation-es="${esc(explanationEs)}"` : ""} data-hints='${esc(JSON.stringify(it.hints || []))}' data-hints-es='${esc(JSON.stringify(it.hintsEs || []))}' data-choice-feedback='${esc(JSON.stringify(englishChoiceFeedback(it)))}' data-choice-feedback-es='${esc(JSON.stringify(spanishChoiceFeedback(it)))}' data-choice-evidence='${esc(JSON.stringify(it.choiceEvidence || []))}' data-topic="${esc(topic)}">
           ${shuffleSteps(
             choices.map((_, index) => index),
@@ -877,7 +834,6 @@ function renderProblem(it, pIdx, topic = "fallback", opts = {}) {
     content = `
       <div class="problem-body">
         <p class="problem-stem"${esMissing(label, labelEs) ? ' data-es-missing="stem"' : ""}>${bi(label, labelEs)}</p>
-        ${renderFamilyTip("matching-game")}
         <div class="matching-pairs">
           ${pairs
             .map(
@@ -903,7 +859,6 @@ function renderProblem(it, pIdx, topic = "fallback", opts = {}) {
     `;
   } else if (type === "drag-sort") {
     const norm = normalizeDragSort(it);
-    const familyTipKey = norm.kind === "order" ? "drag-order" : "drag-sort";
 
     if (norm.kind === "order") {
       problemSubtype = "drag-order";
@@ -911,7 +866,6 @@ function renderProblem(it, pIdx, topic = "fallback", opts = {}) {
       content = `
       <div class="problem-body">
         <p class="problem-stem"${esMissing(norm.label, norm.labelEs) ? ' data-es-missing="stem"' : ""}>${bi(norm.label, norm.labelEs)}</p>
-        ${renderFamilyTip(familyTipKey)}
         <div class="drag-order-workspace" id="dragorder_${pIdx}" data-correct-order='${esc(JSON.stringify(norm.correctOrder))}' data-initial-order='${esc(JSON.stringify(shuffledSteps))}'>
           <div class="drag-order-list" id="orderlist_${pIdx}">
             ${shuffledSteps
@@ -942,7 +896,6 @@ function renderProblem(it, pIdx, topic = "fallback", opts = {}) {
       content = `
       <div class="problem-body">
         <p class="problem-stem"${esMissing(norm.label, norm.labelEs) ? ' data-es-missing="stem"' : ""}>${bi(norm.label, norm.labelEs)}</p>
-        ${renderFamilyTip(familyTipKey)}
         ${
           norm.hints?.length
             ? `<div class="family-hint-box">${norm.hints.map((h, hIdx) => `<p>💡 ${bi(h, norm.hintsEs?.[hIdx])}</p>`).join("")}</div>`
@@ -1005,7 +958,6 @@ function renderProblem(it, pIdx, topic = "fallback", opts = {}) {
     content = `
       <div class="problem-body">
         <p class="problem-stem"${esMissing(label, labelEs) ? ' data-es-missing="stem"' : ""}>${bi(label, labelEs)}</p>
-        ${renderFamilyTip("fill-table")}
         <div class="table-responsive">
           <table class="fill-table">
             <thead>
@@ -1071,7 +1023,6 @@ function renderProblem(it, pIdx, topic = "fallback", opts = {}) {
           "Review the steps below. Identify which step contains the error, and explain why.",
           "Revisa los pasos de abajo. Identifica cuál paso tiene el error y explica por qué.",
         )}</p>
-        ${renderFamilyTip("error-analysis")}
 
         <div class="clipboard-box">
           <div class="clipboard-top"></div>
@@ -1130,7 +1081,6 @@ function renderProblem(it, pIdx, topic = "fallback", opts = {}) {
     content = `
       <div class="problem-body">
         <p class="problem-stem"${esMissing(prompt, promptEs) ? ' data-es-missing="stem"' : ""}>${bi(prompt, promptEs)}</p>
-        ${renderFamilyTip("open-response")}
 
         ${
           sentenceFrame
@@ -1181,11 +1131,11 @@ function renderProblem(it, pIdx, topic = "fallback", opts = {}) {
     visualSvg: visualSvg || "",
   };
   return `
-    <section class="problem-section card" id="problem_${pIdx}" data-problem-type="${type}" data-topic="${esc(it.topic || it.skill || it.standard || topic)}"${problemSubtype ? ` data-problem-subtype="${problemSubtype}"` : ""}>
+    <section class="problem-section card" id="problem_${pIdx}"${opts.role ? ` data-role="${opts.role}"` : ""} data-problem-type="${type}" data-topic="${esc(it.topic || it.skill || it.standard || topic)}"${problemSubtype ? ` data-problem-subtype="${problemSubtype}"` : ""}>
       <div class="problem-header-row">
-        <div class="problem-number-badge"><span class="lang-en">${esc(opts.badgeEn || "Quick Check")}</span><span class="lang-es" lang="es">${esc(opts.badgeEs || opts.badgeEn || "Quick Check")}</span> ${opts.num || pIdx + 1}</div>
+        <div class="problem-number-badge"${opts.role ? ` data-role="${opts.role}"` : ""}><span class="lang-en">${esc(opts.badgeEn || "Quick Check")}</span><span class="lang-es" lang="es">${esc(opts.badgeEs || opts.badgeEn || "Quick Check")}</span>${opts.num === "" ? "" : ` ${opts.num || pIdx + 1}`}</div>
         <button type="button" class="btn-listen-prob" ${act("hwSpeakProblem", pIdx)} title="Listen to question / Escuchar pregunta" aria-label="Listen to question">🔊 <span class="lang-en">Listen</span><span class="lang-es" lang="es">Escuchar</span></button>
-        ${typeChip}
+        ${opts.role ? "" : typeChip}
       </div>
       <div class="problem-hint-row">${renderProblemHintButton(it, SVG_GRID, coachLadder)}</div>
       ${content}
@@ -1298,7 +1248,6 @@ function sceneOf(lessonId, config) {
 }
 
 function generateHtml(lessonId, config) {
-  familyTipsShown = new Set();
   config.lessonId = config.lessonId || lessonId;
   config.id = config.id || lessonId;
   /* A `-part2` config titles itself "2.1 · Part II" — the label the lesson page
@@ -1322,9 +1271,16 @@ function generateHtml(lessonId, config) {
   /* Basic practice: a short run of plain skill reps authored for THIS lesson (sidecar "basicPractice"), shown before the
      warm-up. The warm-ups ask students to reason about the idea; a student who cannot yet do the basic move needs reps
      first. Kept in the same problem shape as config.practice, so scoring, coaching and the answer sheet are unchanged. */
-  const basic = (
+  const authoredBasic = (
     Array.isArray(config.familyNotes?.basicPractice) ? config.familyNotes.basicPractice : []
   ).filter(isPrintableProblem);
+  /* Your Turn: A understand it, B solve it, C use it (the lesson's own transfer problem), then the rest. */
+  const {
+    ordered: basic,
+    roles: yourTurnRoles,
+    transferUsed,
+  } = selectYourTurn(authoredBasic, config.familyNotes, config);
+  config.yourTurnUsesTransfer = transferUsed;
   const coreSelected = [...basic, ...warmup, ...challenge];
   const moreSelected = selectMorePracticeProblems(config.practice || {}, config, coreSelected);
   const topic = detectVisualTopic(config);
@@ -1342,9 +1298,10 @@ function generateHtml(lessonId, config) {
   const basicHtml = basic
     .map((p, idx) =>
       renderProblem(p, idx, topic, {
-        badgeEn: "Basic practice",
-        badgeEs: "Práctica básica",
-        num: idx + 1,
+        badgeEn: yourTurnRoles[idx] ? ROLE_LABELS[yourTurnRoles[idx]].en : "Practice",
+        badgeEs: yourTurnRoles[idx] ? ROLE_LABELS[yourTurnRoles[idx]].es : "Práctica",
+        role: yourTurnRoles[idx] || "",
+        num: "",
         unit: unitNum,
       }),
     )
@@ -1411,9 +1368,10 @@ function generateHtml(lessonId, config) {
       basicHtml,
       Boolean(mystery),
     ),
+    renderImprove(),
+    renderDoneTab(config, lessonId),
     mission.talk,
     mission.apply,
-    renderDoneTab(config, lessonId),
     renderWordsTab(vocab, resolveVocabImage, vocabImageAlt),
     renderPlayTabPanel(config, lessonId),
     renderPhotoboothTab(config, lessonId),
@@ -1583,7 +1541,6 @@ ${renderMathKeypad()}
      the bar used to read "Progress / Progreso:" on an all-English page. -->
 <div class="bottom-status-bar" data-status-for="check">
   <div class="status-bar-wrapper">
-    <button class="sound-toggle-btn" id="sound_toggle" ${act("toggleSound")} title="Toggle Sound Effects" aria-label="Toggle sound effects">🔊</button>
 
     <div class="score-progress-container">
       <div class="score-text">
@@ -1597,10 +1554,6 @@ ${renderMathKeypad()}
       </div>
     </div>
 
-    <div class="action-buttons">
-      <button class="btn btn-secondary hw-stack" ${act("resetWorksheet")}><span class="lang-en">Reset</span><span class="lang-es" lang="es">Reiniciar</span></button>
-      <button class="btn btn-primary hw-stack" ${act("checkWorksheet")}><span class="lang-en">Check All</span><span class="lang-es" lang="es">Revisar todo</span></button>
-    </div>
   </div>
 </div>
 
@@ -1631,6 +1584,7 @@ ${WORKSPACE_JS}
 ${SESSION_FLOW_JS}
 ${EXPERIENCE_JS}
 ${MISSION_JS}
+${FLOW_JS}
 ${CASE_FILE_JS}
 ${V3_LEARN_JS}
 ${HERO_JS}
@@ -3397,7 +3351,7 @@ function checkProblem(idx, options) {
         const expDiv = document.createElement("div");
         expDiv.className = "visual-explanation-card explanation-box";
         if (isProblemCorrect) {
-          let html = '<div class="exp-header"><span>✅ ' + pickLangText("Solved! How to understand it", "¡Resuelto! Por qué funciona") + '</span></div>';
+          let html = '<div class="exp-header"><span>✅ ' + pickLangText("Right. Why it works", "Correcto. Por qué funciona") + '</span></div>';
           const keyVisual = section.querySelector(".hw-answer-key-visual");
           if (keyVisual) {
             html += '<div class="exp-visual" style="margin:10px 0;">' + keyVisual.innerHTML + '</div>';
@@ -3418,9 +3372,9 @@ function checkProblem(idx, options) {
           if (tier === 1) {
             // Tier 1: Clarify & Trap
             expDiv.classList.add("is-nudge");
-            let html = '<div class="exp-header"><span>🤔 ' + pickLangText("Hint 1 of 3 — Spot the Trap", "Pista 1 de 3 — Identifica la trampa") + '</span></div>';
+            let html = '<div class="exp-header"><span>🤔 ' + pickLangText("Not yet: what that answer shows", "Todavía no: qué muestra esa respuesta") + '</span></div>';
             if (selectedFeedback) {
-              html += '<div class="exp-trap"><strong>⚠️ ' + pickLangText("Common Trap:", "Trampa común:") + '</strong> ' + selectedFeedback + '</div>';
+              html += '<div class="exp-trap"><strong>⚠️ ' + pickLangText("What happened:", "Qué pasó:") + '</strong> ' + selectedFeedback + '</div>';
             } else {
               html += '<div class="exp-trap"><strong>⚠️ ' + pickLangText("Clarify:", "Aclaración:") + '</strong> ' +
                 pickLangText("Check what quantity the question asks for and look at your units carefully.", "Revisa qué cantidad pide la pregunta y observa las unidades con atención.") + '</div>';
@@ -3438,7 +3392,7 @@ function checkProblem(idx, options) {
           } else if (tier === 2) {
             // Tier 2: Strategy Clue & Model
             expDiv.classList.add("is-nudge");
-            let html = '<div class="exp-header"><span>💡 ' + pickLangText("Hint 2 of 3 — Strategy & Math Clue", "Pista 2 de 3 — Estrategia y pista matemática") + '</span></div>';
+            let html = '<div class="exp-header"><span>💡 ' + pickLangText("Look again: a strategy clue", "Mira otra vez: una pista de estrategia") + '</span></div>';
             if (selectedFeedback) {
               html += '<div class="exp-trap"><strong>⚠️ ' + pickLangText("Remember:", "Recuerda:") + '</strong> ' + selectedFeedback + '</div>';
             }
@@ -3462,7 +3416,7 @@ function checkProblem(idx, options) {
             appendWorkedExample(expDiv);
           } else {
             // Tier 3: Full Step-by-Step Walkthrough
-            let html = '<div class="exp-header"><span>🔍 ' + pickLangText("Hint 3 of 3 — Step-by-Step Walkthrough", "Pista 3 de 3 — Repaso visual paso a paso") + '</span></div>';
+            let html = '<div class="exp-header"><span>🔍 ' + pickLangText("A worked example, step by step", "Un ejemplo resuelto, paso a paso") + '</span></div>';
             const keyVisual = section.querySelector(".hw-answer-key-visual");
             if (keyVisual) {
               html += '<div class="exp-visual" style="margin:10px 0;">' + keyVisual.innerHTML + '</div>';
@@ -3690,7 +3644,7 @@ function checkProblem(idx, options) {
       } else if (!revealIsDue(idx)) {
         const att = problemAttempts[idx] || 1;
         feedbackMessage = att === 1
-          ? pickLangText("Not quite — check Hint 1 above and give it another shot!", "Todavía no: lee la Pista 1 arriba e inténtalo de nuevo.")
+          ? pickLangText("Not yet. Read what happened above, then try again.", "Todavía no. Lee qué pasó arriba e inténtalo de nuevo.")
           : pickLangText("Still tricky — review Hint 2 above and test with Math Tools.", "Casi: revisa la Pista 2 arriba y prueba con las herramientas.");
       } else {
         feedbackMessage = pickLangText(

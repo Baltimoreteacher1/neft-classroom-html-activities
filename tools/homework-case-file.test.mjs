@@ -79,7 +79,7 @@ test("clues never repeat the lesson title or each other, but keep one-word terms
   );
 });
 
-test("all homework pages carry one bilingual Case File that opens the Learn stop", () => {
+test("all homework pages carry one bilingual Case File, offered as optional words to know inside Look & Learn", () => {
   assert.ok(lessonIds.length >= 160, `found ${lessonIds.length} homework pages`);
   const bad = [];
   for (const id of lessonIds) {
@@ -91,8 +91,12 @@ test("all homework pages carry one bilingual Case File that opens the Learn stop
       bad.push(`${id}: ${count} case files`);
       continue;
     }
-    if (!/data-tab-panel="connect"[^>]*>\s*<section class="cf"/.test(html))
-      bad.push(`${id}: case file is not first in Learn`);
+    if (
+      !/data-tab-panel="connect"[\s\S]*?<summary>[^<]*(?:<span[^>]*>[^<]*<\/span>)+<\/summary>\s*<section class="cf"/.test(
+        html,
+      )
+    )
+      bad.push(`${id}: case file is not the optional words fold in Look & Learn`);
     const card = new JSDOM(
       html.slice(start, html.indexOf("</section>", start) + 10),
     ).window.document.querySelector(".cf");

@@ -282,19 +282,19 @@ test("later sessions use their own concept models instead of inherited first-ses
   }
 });
 
-test("family homework is one six-stage mission with optional extras behind Explore more", () => {
+test("family homework is one five-step flow with optional extras behind Explore more", () => {
   for (const id of ["2-1", "3-3"]) {
     const page = readFileSync(lessonPath(id, "homework.html"), "utf8");
     const d = new JSDOM(page).window.document;
     assert.equal(d.querySelectorAll(".hw-route-option[data-route-mode]").length, 0, id);
     assert.deepEqual(
       [...d.querySelectorAll(".homework-tab-btn")].map((b) => b.dataset.tab),
-      ["connect", "explore", "check", "talk", "apply", "done"],
+      ["connect", "explore", "check", "improve", "done"],
       id,
     );
     const start = d.querySelector(".hw-mission-start").textContent;
     assert.match(start, /5–10/);
-    assert.match(start, /Start Today's Math/);
+    assert.match(start, /Start/);
     assert.match(start, /Explore more/);
     assert.match(d.querySelector("#hw_explore_sheet").textContent, /15–25/);
     assert.equal(d.querySelector("#hw_panel_together"), null, id);
@@ -302,7 +302,7 @@ test("family homework is one six-stage mission with optional extras behind Explo
     assert.doesNotMatch(d.body.textContent, /time remaining|tiempo restante/i, id);
     assert.deepEqual(
       [...d.querySelectorAll(".hw-optional-stops .homework-tab-extra")].map((b) => b.dataset.tab),
-      ["words", "play", "photobooth"],
+      ["talk", "apply", "words", "play", "photobooth"],
       id,
     );
     assert.ok(
@@ -454,7 +454,7 @@ test("statistical-question homework shows a concrete model and keeps reasons for
   dom.window.close();
 });
 
-test("Done shows every optional activity without a disclosure", () => {
+test("Finish keeps every optional activity together behind the one optional fold, never in the path", () => {
   const dom = runtime();
   const d = dom.window.document;
   const extras = d.querySelector(".homework-optional-extras");
@@ -468,7 +468,7 @@ test("Done shows every optional activity without a disclosure", () => {
   ]) {
     assert.ok(d.querySelector(selector).closest(".homework-optional-extras"), selector);
   }
-  assert.ok(!d.querySelector(".homework-message-action").closest("details"));
+  assert.ok(d.querySelector(".homework-message-action").closest("details.fp-celebrate"));
   assert.equal(d.querySelector(".homework-message-action a").href, "https://home.classdojo.com/");
   assert.match(d.querySelector("#hw_panel_done").textContent, /no adult signature is needed/);
   assert.equal(d.querySelector("#submit_signoff_btn").disabled, false);

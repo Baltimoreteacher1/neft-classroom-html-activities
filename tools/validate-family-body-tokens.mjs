@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// validate:family-body-tokens - the family homework BODY (Learn, Try, Play, Celebrate stops) draws
+// validate:family-body-tokens - the family homework BODY (Look & Learn, Try Together, Your Turn, Check & Improve, Finish and the optional stops) draws
 // with the design system and nothing else, measured on the page a family actually sees.
 //
 // Static: assets/design/family/body.css has no raw color, no font-family or font-size outside the
@@ -27,7 +27,7 @@ export const BODY_CSS = resolve(ROOT, "assets/design/family/body.css");
 export const MAX_BODY_LINES = 9000;
 export const MAX_ID_SELECTORS = 40;
 export const PILOT = ["1-1", "2-6", "3-4", "4-5", "6-13", "9-4"];
-const STOPS = ["learn", "words", "check", "play", "done"];
+const STOPS = ["connect", "explore", "check", "improve", "talk", "apply", "words", "play", "done"];
 const MIN_ELEMENTS = 150;
 
 /**

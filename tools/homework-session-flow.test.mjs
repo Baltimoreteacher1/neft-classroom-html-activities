@@ -116,7 +116,7 @@ test("the hero leads with the lesson as its one H1, the unit eyebrow, and a one-
     assert.match(d.querySelector(".hw-hero-kicker .lang-en").textContent, /^Unit \d+/, id);
     assert.match(
       d.querySelector(".hw-route-promise .lang-en").textContent,
-      /Optional\. No grades\./,
+      /Optional\. No grades, no account\./,
       id,
     );
     assert.match(d.querySelector(".hw-hero-bigidea .lang-es:last-child").textContent, /\S/, id);

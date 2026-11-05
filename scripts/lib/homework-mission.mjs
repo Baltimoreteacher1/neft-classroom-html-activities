@@ -1,18 +1,20 @@
 /**
  * Family Math Mission: the one path through a family homework page.
  *
- * Six stages, in this order, on every lesson: Connect -> Explore -> Practice -> Talk Together ->
- * Apply -> Reflect. Everything else the page offers (key words, games, the photobooth, the full
- * set of practice problems) is optional and lives behind "Explore more", never in the path.
+ * Five steps, in this order, on every lesson and session: Look & Learn -> Try Together -> Your Turn ->
+ * Check & Improve -> Finish. Everything else the page offers (the grown-up talk guide, a new
+ * challenge, key words, games, the photobooth, the full set of practice problems) is optional and
+ * lives behind "Explore more", never in the path.
  *
- * Stage ids double as panel ids (`hw_panel_<id>`). `check` and `done` keep their historical ids so
- * saved progress, deep links and the Check/Done machinery keep working; the family sees the stage
- * LABELS below. Route ids stay `quick` and `full` for the same reason (`?route=quick` links and
+ * Step ids double as panel ids (`hw_panel_<id>`). They keep the historical ids of the six-stage
+ * mission (`connect`, `explore`, `check`, `done`) so saved progress, deep links and the Check/Done
+ * machinery keep working; the family sees the step LABELS below. `improve` is the one new panel. Route ids stay `quick` and `full` for the same reason (`?route=quick` links and
  * QR codes already in the wild); their labels are "Today's mission" and "Extended practice".
  */
 
 import { icon } from "./family-icons.mjs";
 import { act } from "./homework-actions.mjs";
+import { stepHead } from "./homework-flow.mjs";
 import { missionModelFor } from "./homework-mission-models.mjs";
 import { LESSON_PAGE_IDS } from "./homework-sequence.mjs";
 
@@ -26,16 +28,31 @@ export const ROUTE_TIMES = { quick: "5–10", full: "15–25" };
 export const DEFAULT_ROUTE = "quick";
 
 export const MISSION_STAGES = [
-  { id: "connect", icon: "🔭", en: "Connect", es: "Conectar" },
-  { id: "explore", icon: "🧩", en: "Explore", es: "Explorar" },
-  { id: "check", icon: "✅", en: "Practice", es: "Practicar" },
-  { id: "talk", icon: "💬", en: "Talk Together", es: "Conversen" },
-  { id: "apply", icon: "🌎", en: "Apply", es: "Aplicar" },
-  { id: "done", icon: "🌱", en: "Reflect", es: "Reflexionar" },
+  { id: "connect", icon: "", en: "Look & Learn", es: "Mira y aprende" },
+  { id: "explore", icon: "", en: "Try Together", es: "Prueben juntos" },
+  { id: "check", icon: "", en: "Your Turn", es: "Tu turno" },
+  { id: "improve", icon: "", en: "Check & Improve", es: "Revisa y mejora" },
+  { id: "done", icon: "", en: "Finish", es: "Terminar" },
 ];
 
-/** Optional destinations: panels that exist but are not stages. */
+/** Optional destinations: panels that exist but are not steps. */
 export const OPTIONAL_STOPS = [
+  {
+    id: "talk",
+    icon: "💬",
+    en: "Family talk guide",
+    es: "Guía para conversar",
+    blurbEn: "Short prompts for a grown-up: what to ask, what to look for",
+    blurbEs: "Preguntas cortas para el adulto: qué preguntar y qué observar",
+  },
+  {
+    id: "apply",
+    icon: "🌎",
+    en: "A new challenge",
+    es: "Un nuevo reto",
+    blurbEn: "A fresh situation and a mystery to crack, if you want more",
+    blurbEs: "Una situación nueva y un misterio por resolver, si quieren más",
+  },
   {
     id: "words",
     icon: "📚",
@@ -81,14 +98,14 @@ const bi = (en, es) =>
 export function renderMissionStart() {
   return `
       <section class="hw-mission-start fm-hero__action" aria-labelledby="hw_mission_title">
-        <h2 id="hw_mission_title" class="fm-hero__q">${bi("Today's Family Math Mission", "La misión de matemáticas de hoy")}</h2>
+        <h2 id="hw_mission_title" class="fm-hero__q">${bi("Today's Family Practice", "La práctica familiar de hoy")}</h2>
         <p class="hw-mission-lead fm-hero__promise">${bi(
-          `Six short steps, about ${ROUTE_TIMES.quick} minutes. Look, play with the math, solve ${MISSION_PRACTICE_COUNT}, talk, try one new idea, and finish.`,
-          `Seis pasos cortos, unos ${ROUTE_TIMES.quick} minutos. Miren, jueguen con las matemáticas, resuelvan ${MISSION_PRACTICE_COUNT}, conversen, prueben una idea nueva y terminen.`,
+          `Five short steps, about ${ROUTE_TIMES.quick} minutes: look and learn, try one together, solve ${MISSION_PRACTICE_COUNT} on your own, check and improve, finish.`,
+          `Cinco pasos cortos, unos ${ROUTE_TIMES.quick} minutos: miren y aprendan, prueben uno juntos, resuelvan ${MISSION_PRACTICE_COUNT} solos, revisen y mejoren, y terminen.`,
         )}</p>
-        <button type="button" id="hw_start_button" class="fm-btn fm-btn--primary fm-btn--lg fm-btn--block" ${act("startHomework")}><span class="lang-en">Start Today's Math</span><span class="lang-es" lang="es">Empezar la matemática de hoy</span></button>
+        <button type="button" id="hw_start_button" class="fm-btn fm-btn--primary fm-btn--lg fm-btn--block" ${act("startHomework")}><span class="lang-en">Start</span><span class="lang-es" lang="es">Empezar</span></button>
         <button type="button" id="hw_explore_more_button" class="fm-btn fm-btn--block hw-explore-more-btn" data-open-sheet="hw_explore_sheet" aria-haspopup="dialog"><span class="lang-en">Explore more</span><span class="lang-es" lang="es">Explorar más</span></button>
-        <p class="hw-route-promise fm-hero__promise"><span class="lang-en">Optional. No grades. No account. Saved on this device.</span><span class="lang-es" lang="es">Opcional. Sin calificaciones. Sin cuenta. Se guarda en este dispositivo.</span></p>
+        <p class="hw-route-promise fm-hero__promise"><span class="lang-en">Optional. No grades, no account. Your place is saved on this device.</span><span class="lang-es" lang="es">Opcional. Sin calificaciones ni cuenta. Su avance se guarda en este dispositivo.</span></p>
         <p class="hw-route-note fm-sr" id="hw_route_note" aria-live="polite"></p>
         <p id="hw_resume_note" class="fm-hero__resume" role="status" aria-live="polite"></p>
       </section>`;
@@ -111,7 +128,7 @@ export function renderExploreMoreSheet() {
       <span class="fm-sheet__grab" aria-hidden="true"></span>
       <div class="fm-sheet__head"><h2 id="hw_explore_title" class="fm-card__title">${bi("Explore more", "Explorar más")}</h2><button type="button" class="fm-btn fm-btn--icon" data-close aria-label="Close" data-aria-en="Close" data-aria-es="Cerrar">${icon("close")}</button></div>
       <div class="fm-sheet__body">
-        <p class="hw-explore-lead">${bi("Everything here is optional. Today's mission is already enough.", "Todo esto es opcional. La misión de hoy ya es suficiente.")}</p>
+        <p class="hw-explore-lead">${bi("Everything here is optional. The five steps are already enough.", "Todo esto es opcional. Los cinco pasos ya son suficientes.")}</p>
         <ul class="hw-explore-list">
         ${row(act("chooseExtendedPractice"), "🏋️", "Extended practice", "Práctica extendida", `All the practice problems, about ${ROUTE_TIMES.full} minutes`, `Todos los problemas de práctica, unos ${ROUTE_TIMES.full} minutos`, " data-hw-extended-row")}
         ${stops}
@@ -157,34 +174,41 @@ export function renderMissionModelHost(config) {
 }
 
 /**
- * Reflect: the evidence summary (filled by the mission script from what the family actually did),
- * then where to go next: the next page in the real sequence, a prerequisite when support was used,
- * the unit's family hub, and "finish for tonight". Saved-on-device is stated, because it is true
- * and the teacher is not sent this.
+ * Finish (step 5): what was practiced, one strength and one next step (filled by the mission script
+ * from what the family actually did), one family question, then where to go next. Saved-on-device is
+ * stated, because it is true and the teacher is not sent this. Everything past the first row of
+ * actions is optional and folded.
  */
-export function renderReflect({ lessonId, next, prereq }) {
+export function renderReflect({ lessonId, next, prereq, question }) {
   /* The lesson page, only when it exists: a family is never sent to a 404. */
   const base = lessonId.replace(/-part2$/, "");
   const lessonPage = LESSON_PAGE_IDS.has(base) ? `/lessons/${base}/` : "";
-  const link = (href, ico, en, es, extra = "") =>
-    `<a class="fm-btn fm-btn--block hw-next-link" href="${esc(href)}"${extra}><span aria-hidden="true">${ico}</span> <span class="lang-en">${esc(en)}</span><span class="lang-es" lang="es">${esc(es)}</span></a>`;
+  const link = (href, en, es, cls = "", extra = "") =>
+    `<a class="fm-btn fm-btn--block hw-next-link${cls}" href="${esc(href)}"${extra}><span class="lang-en">${esc(en)}</span><span class="lang-es" lang="es">${esc(es)}</span></a>`;
+  const pairText = (p) => bi(p?.en, p?.es);
   return `
-    <section class="mission-block hw-reflect" id="hw_reflect" aria-labelledby="hw_reflect_title">
-      <div class="hw-evidence" data-mission-evidence hidden>
-        <h2 class="hw-reflect-title" id="hw_reflect_title">${bi("What happened today", "Lo que pasó hoy")}</h2>
+    <section class="mission-block hw-reflect fp-finish" id="hw_reflect" aria-labelledby="hw_reflect_title">
+      ${stepHead(5, "Finish", "Terminar", "Here is what tonight showed. Take one next step, or stop here.", "Esto es lo que mostró la práctica de hoy. Den un siguiente paso o paren aquí.")}
+      <div class="hw-evidence fp-card" data-mission-evidence hidden>
+        <h3 class="fp-label" id="hw_reflect_title">${bi("What happened today", "Lo que pasó hoy")}</h3>
         <div id="hw_mission_summary" class="hw-mission-summary" role="status" aria-live="polite"></div>
-        <p class="hw-saved-note">${bi("This is saved only on this device. Your teacher has not received it.", "Esto se guarda solo en este dispositivo. Su maestro o maestra no lo ha recibido.")}</p>
+        <p class="hw-saved-note">${bi("Saved only on this device. Your teacher has not received it.", "Se guarda solo en este dispositivo. Su maestro o maestra no lo ha recibido.")}</p>
       </div>
-      <h3 class="hw-next-title">${bi("What next?", "¿Y ahora qué?")}</h3>
-      <div class="hw-next-actions">
-        <button type="button" class="fm-btn fm-btn--block hw-next-link" ${act("switchHomeworkTab", "check")}><span aria-hidden="true">🔁</span> ${bi("Practice again", "Practicar otra vez")}</button>
-        ${next ? link(next.href, "➡️", `Next: ${next.en}`, `Siguiente: ${next.es}`, ` data-next-lesson="${esc(next.id)}"`) : ""}
-        ${prereq ? link(prereq.href, "🧱", `Review: ${prereq.en}`, `Repasar: ${prereq.es}`, ` data-mission-prereq hidden`) : ""}
-        ${lessonPage ? link(lessonPage, "📘", "Back to the lesson", "Volver a la lección") : ""}
-        ${link(`/curriculum/family-connections/math-studio/?lesson=${encodeURIComponent(lessonId)}`, "🧪", "Family Math Studio: build and test an idea", "Estudio familiar: crear y probar una idea")}
-        ${link("/families/", "🏠", "Family resources", "Recursos para la familia")}
-        <button type="button" class="fm-btn fm-btn--block hw-next-link" data-open-sheet="hw_explore_sheet" aria-haspopup="dialog"><span aria-hidden="true">✨</span> ${bi("Explore more", "Explorar más")}</button>
+      ${question?.en ? `<aside class="fp-family" aria-label="${esc("Family question")}"><p class="fp-label">${bi("Talk about it (optional)", "Conversen (opcional)")}</p><p>${pairText(question)}</p></aside>` : ""}
+      <div class="hw-next-actions fp-actions">
+        ${next ? link(next.href, `Next lesson: ${next.en}`, `Siguiente lección: ${next.es}`, " fm-btn--primary", ` data-next-lesson="${esc(next.id)}"`) : ""}
+        ${prereq ? link(prereq.href, `Review first: ${prereq.en}`, `Repasar primero: ${prereq.es}`, "", " data-mission-prereq hidden") : ""}
+        ${lessonPage ? link(lessonPage, "Back to the lesson", "Volver a la lección") : ""}
+        ${link("/families/", "All lessons", "Todas las lecciones")}
       </div>
-      <p class="hw-finish">${bi("Or finish for tonight. That is a good night of math.", "O terminen por hoy. Fue una buena noche de matemáticas.")}</p>
+      <details class="fp-optional fp-more">
+        <summary>${bi("More to do (optional)", "Más para hacer (opcional)")}</summary>
+        <div class="hw-next-actions fp-actions">
+          <button type="button" class="fm-btn fm-btn--block hw-next-link" ${act("switchHomeworkTab", "check")}>${bi("Practice again", "Practicar otra vez")}</button>
+          <button type="button" class="fm-btn fm-btn--block hw-next-link" data-open-sheet="hw_explore_sheet" aria-haspopup="dialog">${bi("Explore more", "Explorar más")}</button>
+          ${link(`/curriculum/family-connections/math-studio/?lesson=${encodeURIComponent(lessonId)}`, "Family Math Studio: build and test an idea", "Estudio familiar: crear y probar una idea")}
+          <button type="button" class="fm-btn fm-btn--block hw-next-link" ${act("resetWorksheet")}>${bi("Start this practice over", "Empezar esta práctica de nuevo")}</button>
+        </div>
+      </details>
     </section>`;
 }

@@ -16,7 +16,7 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const read = (rel) => readFileSync(join(ROOT, rel), "utf8");
 const stamp = (text) => createHash("sha256").update(text).digest("hex").slice(0, 10);
 
-export const DESIGN_SHEETS = ["tokens", "family", "body", "mission"];
+export const DESIGN_SHEETS = ["tokens", "family", "body", "mission", "flow"];
 
 export const DESIGN_CSS_LINKS = DESIGN_SHEETS.map((name) => {
   const file = `assets/design/family/${name}.css`;

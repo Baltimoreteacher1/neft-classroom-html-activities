@@ -562,8 +562,8 @@ function initFamilyGames() {
    Each path is a complete, optional experience. Time values are estimates,
    never timers; the student and family can pause or stop at any point. */
 var HOMEWORK_ROUTES = {
-  quick: { tabs: ['connect', 'explore', 'check', 'talk', 'apply', 'done'], problemLimit: 3 },
-  full: { tabs: ['connect', 'explore', 'check', 'talk', 'apply', 'done'], problemLimit: 0 }
+  quick: { tabs: ['connect', 'explore', 'check', 'improve', 'done'], problemLimit: 3 },
+  full: { tabs: ['connect', 'explore', 'check', 'improve', 'done'], problemLimit: 0 }
 };
 /* One six-stage mission. The two routes differ only in how many practice problems the Practice
    stage shows: Today's mission (quick, the default) and Extended practice (full). Route ids are
@@ -901,6 +901,14 @@ function updateStopNav(tabId) {
   if (back) back.hidden = i <= 0;
   if (next) next.hidden = i < 0 || i >= tabs.length - 1;
   if (here && i >= 0) here.textContent = (i + 1) + ' / ' + tabs.length;
+  /* The one forward button names where it goes: "Next: Try Together". */
+  var nextTab = document.getElementById('hw_tab_' + tabs[i + 1]);
+  if (next && nextTab) {
+    var nEn = nextTab.querySelector('.tab-en'), nEs = nextTab.querySelector('.tab-es');
+    var spans = next.querySelectorAll('span');
+    if (spans[0] && nEn) spans[0].textContent = 'Next: ' + nEn.textContent;
+    if (spans[1] && nEs) spans[1].textContent = 'Siguiente: ' + nEs.textContent;
+  }
 }
 
 function switchHomeworkTab(tabId) {
@@ -2670,7 +2678,7 @@ function initStudioStepper() {
     var next = document.createElement('button');
     next.type = 'button';
     next.innerHTML = '<span class="lang-en">Next</span><span class="lang-es" lang="es">Siguiente</span> →';
-    nav.appendChild(back);
+    /* Dots go back to any problem; the one button moves forward. Two Back/Next pairs on a step read as a loop. */
     nav.appendChild(next);
     var dotEls = items.map(function (_, i) {
       var d = document.createElement('button');
@@ -2696,7 +2704,7 @@ function initStudioStepper() {
         var done = it.classList.contains('correct') || it.classList.contains('reviewed');
         dotEls[i].hidden = it.hidden;
         dotEls[i].textContent = '';
-        dotEls[i].innerHTML = '<span class="hw-sr-only"><span class="lang-en">Problem </span><span class="lang-es" lang="es">Problema </span></span>' + (visible.indexOf(it) + 1);
+        dotEls[i].innerHTML = '<span class="hw-sr-only"><span class="lang-en">Problem </span><span class="lang-es" lang="es">Problema </span></span>' + (it.getAttribute('data-role') || (visible.indexOf(it) + 1));
         dotEls[i].classList.toggle('is-done', done);
         dotEls[i].classList.toggle('is-current', i === idx);
         dotEls[i].setAttribute('aria-current', i === idx ? 'step' : 'false');
@@ -2752,104 +2760,6 @@ function glueTermPunctuation() {
   });
 }
 
-function initStudioSubRail() {
-  var tabBtns = document.querySelectorAll('.homework-tab-btn');
-  if (!tabBtns.length) return;
-
-  tabBtns.forEach(function (btn) {
-    var tabId = btn.dataset.tab;
-    /* One mission rail. The only sub-list is the numbered problems under Practice. */
-    if (tabId !== 'check') return;
-    var rail = btn.nextElementSibling;
-    if (!rail || !rail.classList.contains('hw-sub-rail')) {
-      rail = document.createElement('div');
-      rail.className = 'hw-sub-rail';
-      rail.id = 'hw_sub_' + tabId;
-      btn.parentNode.insertBefore(rail, btn.nextSibling);
-    }
-
-    if (tabId === 'check') {
-      var coreBox = document.querySelector('#hw_panel_check .problems-container');
-      var dots = coreBox && coreBox.previousElementSibling && coreBox.previousElementSibling.classList.contains('hw-stepper-bar')
-        ? coreBox.previousElementSibling.querySelectorAll('.hw-stepper-dot')
-        : [];
-      var coreItems = coreBox ? coreBox.querySelectorAll(':scope > .problem-section') : [];
-      var items = [];
-
-      if (dots.length) {
-        dots.forEach(function (dot, i) {
-          items.push({
-            icon: '✏️',
-            en: 'Problem ' + (i + 1),
-            es: 'Problema ' + (i + 1),
-            action: function () {
-              if (document.body.dataset.activeTab !== 'check' && typeof switchHomeworkTab === 'function') {
-                switchHomeworkTab('check', { preventScroll: true });
-              }
-              dot.click();
-              var stepperBar = coreBox.previousElementSibling && coreBox.previousElementSibling.classList.contains('hw-stepper-bar')
-                ? coreBox.previousElementSibling
-                : null;
-              scrollStudioTo(stepperBar || coreItems[i] || coreBox);
-            }
-          });
-        });
-      } else if (coreItems.length) {
-        coreItems.forEach(function (p, i) {
-          items.push({
-            icon: '✏️',
-            en: 'Problem ' + (i + 1),
-            es: 'Problema ' + (i + 1),
-            action: function () {
-              if (document.body.dataset.activeTab !== 'check' && typeof switchHomeworkTab === 'function') {
-                switchHomeworkTab('check', { preventScroll: true });
-              }
-              scrollStudioTo(p);
-            }
-          });
-        });
-      }
-
-      rail.innerHTML = '';
-      items.forEach(function (item, idx) {
-        var sBtn = document.createElement('button');
-        sBtn.type = 'button';
-        sBtn.className = 'hw-sub-btn' + (idx === 0 ? ' is-active' : '');
-        sBtn.dataset.problemIdx = String(idx);
-        sBtn.innerHTML = '<span class="sub-icon" aria-hidden="true">' + item.icon + '</span><span class="sub-text"><span class="lang-en">' + item.en + '</span><span class="lang-es" lang="es">' + item.es + '</span></span>';
-        sBtn.addEventListener('click', function () {
-          rail.querySelectorAll('.hw-sub-btn').forEach(function (b) { b.classList.remove('is-active'); });
-          sBtn.classList.add('is-active');
-          item.action();
-        });
-        rail.appendChild(sBtn);
-      });
-
-      var extraContainers = document.querySelectorAll('#hw_panel_check .problems-container');
-      if (extraContainers.length > 1) {
-        var extraBtn = document.createElement('button');
-        extraBtn.type = 'button';
-        extraBtn.className = 'hw-sub-btn hw-sub-extra-btn';
-        extraBtn.innerHTML = '<span class="sub-icon" aria-hidden="true">⭐</span><span class="sub-text"><span class="lang-en">More Practice</span><span class="lang-es" lang="es">Más práctica</span></span>';
-        extraBtn.addEventListener('click', function () {
-          if (document.body.dataset.activeTab !== 'check' && typeof switchHomeworkTab === 'function') {
-            switchHomeworkTab('check', { preventScroll: true });
-          }
-          rail.querySelectorAll('.hw-sub-btn').forEach(function (b) { b.classList.remove('is-active'); });
-          extraBtn.classList.add('is-active');
-          var moreBox = extraContainers[1];
-          var moreDet = moreBox ? moreBox.closest('details') : null;
-          if (moreDet) moreDet.open = true;
-          var moreStepper = moreBox && moreBox.previousElementSibling && moreBox.previousElementSibling.classList.contains('hw-stepper-bar')
-            ? moreBox.previousElementSibling
-            : moreBox;
-          scrollStudioTo(moreStepper || moreBox);
-        });
-        rail.appendChild(extraBtn);
-      }
-    }
-  });
-}
 
 /* Install tab scrolling: clicking any tab button smoothly scrolls to the top of that panel */
 function installStudioTabScroll() {
@@ -3057,7 +2967,6 @@ function initHomeworkImageZoom() {
 function bootStudioSkin() {
   initStudioStepper();
   glueTermPunctuation();
-  initStudioSubRail();
   installStudioTabScroll();
   initHomeworkImageZoom();
 }
@@ -4713,6 +4622,7 @@ document.addEventListener('DOMContentLoaded', function () {
 window.addEventListener('load', function () { hwRestoreSolved(); hwRenderGoal(false); });
 
 
+/* hwFlowCoreSections, hwFlowRecordPick, hwFlowImprove: homework-flow-js.mjs, same page scope. */
 /* ── Family Math Mission ─────────────────────────────────────────────── */
 var HW_MISSION_MODEL_URL = '/assets/family-mission/models/index.mjs';
 var HW_MISSION_MODEL_CSS = '/assets/family-mission/models/models.css';
@@ -4812,7 +4722,8 @@ function hwMissionSnapshot() {
       done: !!(done || prev.done),
       wrong: Math.max(wrong, prev.wrong || 0),
       hints: Math.max(hints, prev.hints || 0),
-      shown: !!(shown || prev.shown)
+      shown: !!(shown || prev.shown),
+      picks: prev.picks || []
     };
   });
   hwMissionWrite('evidence', ev);
@@ -4855,51 +4766,55 @@ function missionFreshTry(idx) {
   setTimeout(function () { next.scrollIntoView({ block: 'start', behavior: 'auto' }); }, 60);
 }
 
-/* Reflect: a summary made only of what happened. No mastery percentage, no stars for clicking. */
+/* Finish: what was practiced, one strength (only when the family's own responses support it), one
+   next step. Made only of what happened: no mastery percentage, no stars for clicking. */
 function hwMissionSummary() {
   var host = document.getElementById('hw_mission_summary');
   if (!host) return;
   var ev = hwMissionSnapshot();
-  var ids = Object.keys(ev.problems || {});
+  var core = hwFlowCoreSections();
+  var coreIds = core.map(function (s) { return s.id.replace('problem_', ''); });
+  var ids = Object.keys(ev.problems || {}).filter(function (k) { return coreIds.indexOf(k) > -1; });
   var solved = ids.filter(function (k) { return ev.problems[k].done; });
   var clean = solved.filter(function (k) { var p = ev.problems[k]; return !p.wrong && !p.hints && !p.shown; });
   var supported = solved.filter(function (k) { var p = ev.problems[k]; return p.wrong || p.hints || p.shown; });
   var revised = solved.filter(function (k) { return ev.problems[k].wrong > 0; });
-  var total = document.querySelectorAll('.problem-section:not([hidden])').length;
-  /* Nothing to say yet means nothing is shown: no "0 finished" line before the family has done anything. */
+  var total = core.length;
   var wrap = host.closest('[data-mission-evidence]');
   if (wrap) wrap.hidden = !solved.length && !ev.modelMoves;
-  var en = [], es = [];
+  if (!solved.length && !ev.modelMoves) { host.innerHTML = ''; return; }
   var title = window.LESSON_TITLE || '';
   var titleEs = window.LESSON_TITLE_ES || title;
-  en.push('Today\'s math idea: ' + title + '.');
-  es.push('La idea de hoy: ' + titleEs + '.');
-  if (solved.length) {
-    en.push('You solved ' + solved.length + (total ? ' of ' + total : '') + ' practice problems.');
-    es.push('Resolvieron ' + solved.length + (total ? ' de ' + total : '') + ' problemas de práctica.');
-    if (clean.length) { en.push(clean.length + ' without any help.'); es.push(clean.length + ' sin ayuda.'); }
-    if (supported.length) { en.push(supported.length + ' with a hint or a second try. That is how learning works.'); es.push(supported.length + ' con una pista o un segundo intento. Así se aprende.'); }
-    if (revised.length) { en.push('You changed an answer and got it right.'); es.push('Cambiaron una respuesta y la corrigieron.'); }
+  var roleOf = function (k) { var s = document.getElementById('problem_' + k); return (s && s.getAttribute('data-role')) || ''; };
+  var rows = [];
+  rows.push(['You practiced', 'Practicaron', title + (solved.length ? '. You solved ' + solved.length + (total ? ' of ' + total : '') + ' problems.' : '.'), titleEs + (solved.length ? '. Resolvieron ' + solved.length + (total ? ' de ' + total : '') + ' problemas.' : '.')]);
+  if (clean.length) {
+    var named = clean.map(roleOf).filter(Boolean);
+    rows.push(['A strength', 'Una fortaleza', 'You solved ' + (named.length ? 'problem ' + named.join(', ') : clean.length + ' without help') + (named.length ? ' without a hint or a second try.' : '.'), 'Resolvieron ' + (named.length ? 'el problema ' + named.join(', ') : clean.length + ' sin ayuda') + (named.length ? ' sin pista ni segundo intento.' : '.')]);
+  } else if (revised.length) {
+    rows.push(['A strength', 'Una fortaleza', 'You changed an answer and got it right.', 'Cambiaron una respuesta y la corrigieron.']);
+  } else if (ev.modelMoves) {
+    rows.push(['A strength', 'Una fortaleza', 'You explored the model.', 'Exploraron el modelo.']);
   }
-  if (ev.modelMoves) { en.push('You explored the model.'); es.push('Exploraron el modelo.'); }
   var next;
-  if (!solved.length) next = null;
-  else if (supported.length) next = ['Next step: try one problem again tomorrow without hints.', 'Siguiente paso: mañana vuelvan a probar un problema sin pistas.'];
-  else if (total && solved.length < total) next = ['Next step: finish the rest of the practice, or stop here. Both are fine.', 'Siguiente paso: terminen el resto de la práctica o paren aquí. Ambas opciones están bien.'];
-  else next = ['Next step: try Explore more, or finish for tonight.', 'Siguiente paso: prueben Explorar más o terminen por hoy.'];
-  if (!next) { host.innerHTML = ''; return; }
-  host.innerHTML = '<ul class="hw-evidence-list"></ul><p class="hw-evidence-next"><strong></strong></p>';
-  var ul = host.querySelector('ul');
-  en.forEach(function (line, i) {
-    var li = document.createElement('li');
-    li.innerHTML = '<span class="lang-en"></span><span class="lang-es" lang="es"></span>';
-    li.querySelector('.lang-en').textContent = line;
-    li.querySelector('.lang-es').textContent = es[i];
-    ul.appendChild(li);
+  if (supported.length) next = ['Try one problem like this again tomorrow, without hints.', 'Mañana prueben otro problema como este, sin pistas.'];
+  else if (total && solved.length < total) next = ['Finish the rest of Your Turn, or stop here. Both are fine.', 'Terminen el resto de Tu turno o paren aquí. Ambas opciones están bien.'];
+  else next = ['Look for this idea in everyday life, or finish for tonight.', 'Busquen esta idea en la vida diaria o terminen por hoy.'];
+  rows.push(['Next step', 'Siguiente paso', next[0], next[1]]);
+  host.innerHTML = '<dl class="hw-evidence-list"></dl>';
+  var dl = host.querySelector('dl');
+  rows.forEach(function (r) {
+    var dt = document.createElement('dt');
+    dt.innerHTML = '<span class="lang-en"></span><span class="lang-es" lang="es"></span>';
+    dt.querySelector('.lang-en').textContent = r[0];
+    dt.querySelector('.lang-es').textContent = r[1];
+    var dd = document.createElement('dd');
+    dd.innerHTML = '<span class="lang-en"></span><span class="lang-es" lang="es"></span>';
+    dd.querySelector('.lang-en').textContent = r[2];
+    dd.querySelector('.lang-es').textContent = r[3];
+    dl.appendChild(dt);
+    dl.appendChild(dd);
   });
-  host.querySelector('strong').innerHTML = '<span class="lang-en"></span><span class="lang-es" lang="es"></span>';
-  host.querySelector('.lang-en').textContent = next[0];
-  host.querySelector('.lang-es').textContent = next[1];
   var pre = document.querySelector('[data-mission-prereq]');
   if (pre) pre.hidden = !supported.length;
 }
@@ -4911,6 +4826,7 @@ function hwMissionBoot() {
       var el = rec.target;
       if (el.classList && el.classList.contains('problem-section')) {
         hwMissionSnapshot();
+        if (el.classList.contains('incorrect')) hwFlowRecordPick(el);
         if (el.classList.contains('correct')) hwMissionOfferFreshTry(el);
       }
     });
@@ -4922,6 +4838,7 @@ function hwMissionBoot() {
   var tabWatch = new MutationObserver(function () {
     var tab = document.body.dataset.activeTab;
     if (tab === 'explore') hwMissionMountModel();
+    if (tab === 'improve') hwFlowImprove();
     if (tab === 'done') hwMissionSummary();
   });
   tabWatch.observe(document.body, { attributes: true, attributeFilter: ['data-active-tab'] });
@@ -4933,6 +4850,122 @@ function hwMissionBoot() {
 }
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', hwMissionBoot);
 else hwMissionBoot();
+
+
+/* ── Check & Improve ─────────────────────────────────────────────────── */
+function hwFlowCoreSections() {
+  return Array.prototype.filter.call(document.querySelectorAll('.problem-section'), function (s) {
+    return !s.closest('.more-practice') && !s.hidden;
+  }).slice(0, 3);
+}
+
+/* Remember what a wrong pick showed, in both languages, so Check & Improve can name it later. */
+function hwFlowRecordPick(section) {
+  var idx = section.id.replace('problem_', '');
+  var box = section.querySelector('.mc-options');
+  var sel = box && box.querySelector("input[type='radio']:checked");
+  if (!sel || sel.value === box.getAttribute('data-correct')) return;
+  var fb = [], fbEs = [];
+  try { fb = JSON.parse(box.dataset.choiceFeedback || '[]'); fbEs = JSON.parse(box.dataset.choiceFeedbackEs || '[]'); } catch (e) {}
+  var label = sel.closest('label');
+  var text = label && label.querySelector('.choice-text') ? label.querySelector('.choice-text').textContent.trim() : '';
+  var ev = hwMissionRead('evidence', { problems: {} });
+  ev.problems = ev.problems || {};
+  var p = ev.problems[idx] || {};
+  p.picks = (p.picks || []).filter(function (k) { return k.text !== text; });
+  p.picks.push({ text: text, en: fb[sel.value] || '', es: fbEs[sel.value] || fb[sel.value] || '' });
+  p.picks = p.picks.slice(-3);
+  ev.problems[idx] = p;
+  hwMissionWrite('evidence', ev);
+}
+
+function hwFlowEl(tag, cls, html) {
+  var el = document.createElement(tag);
+  if (cls) el.className = cls;
+  if (html != null) el.innerHTML = html;
+  return el;
+}
+function hwFlowBi(en, es) {
+  var wrap = document.createElement('span');
+  wrap.innerHTML = '<span class="lang-en"></span><span class="lang-es" lang="es"></span>';
+  wrap.querySelector('.lang-en').textContent = en;
+  wrap.querySelector('.lang-es').textContent = es || en;
+  return wrap.innerHTML;
+}
+
+function hwFlowImprove() {
+  var host = document.getElementById('hw_improve');
+  var empty = document.querySelector('[data-improve-empty]');
+  if (!host) return;
+  var ev = hwMissionSnapshot();
+  var sections = hwFlowCoreSections();
+  host.textContent = '';
+  var any = false;
+  sections.forEach(function (s) {
+    var idx = s.id.replace('problem_', '');
+    var p = (ev.problems || {})[idx] || {};
+    var done = s.classList.contains('correct') || s.classList.contains('reviewed') || p.done;
+    var tried = done || p.wrong > 0;
+    if (tried) any = true;
+    var supported = done && (p.wrong || p.hints || p.shown);
+    var role = s.getAttribute('data-role') || '';
+    var badge = s.querySelector('.problem-number-badge');
+    var box = s.querySelector('.mc-options');
+    var card = hwFlowEl('article', 'fp-review fp-review--' + (done ? (supported ? 'fixed' : 'clean') : (tried ? 'open' : 'new')));
+    card.setAttribute('data-for', idx);
+    var status = !tried ? ['Not tried yet', 'Todavía no lo intentas'] : !done ? ['Not yet', 'Todavía no'] : supported ? ['Fixed it', 'Lo corregiste'] : ['Got it', 'Lo lograste'];
+    var head = hwFlowEl('header', 'fp-review-head', '<h3 class="fp-review-title">' + (badge ? badge.innerHTML : '') + '</h3><p class="fp-chip">' + hwFlowBi(status[0], status[1]) + '</p>');
+    card.appendChild(head);
+    var stem = s.querySelector('.problem-stem');
+    if (stem) card.appendChild(hwFlowEl('p', 'fp-review-stem', stem.innerHTML));
+    var last = (p.picks || []).slice(-1)[0];
+    if (!done && last) {
+      card.appendChild(hwFlowEl('p', 'fp-review-note', '<strong>' + hwFlowBi('What happened', 'Qué pasó') + '</strong> ' + hwFlowBi(last.en, last.es)));
+    } else if (supported && last) {
+      card.appendChild(hwFlowEl('p', 'fp-review-note', '<strong>' + hwFlowBi('What your first try showed', 'Qué mostró tu primer intento') + '</strong> ' + hwFlowBi(last.en, last.es)));
+    }
+    if (tried && box && (box.dataset.explanation || box.dataset.explanationEs)) {
+      var why = hwFlowEl('div', 'fp-review-why', '<strong>' + hwFlowBi(supported || !done ? 'Worked reasoning' : 'Why it works', supported || !done ? 'Razonamiento resuelto' : 'Por qué funciona') + '</strong> ' + hwFlowBi(box.dataset.explanation || '', box.dataset.explanationEs || box.dataset.explanation || ''));
+      var visual = s.querySelector('.hw-answer-key-visual');
+      if (visual && (supported || !done)) why.appendChild(hwFlowEl('div', 'fp-review-visual', visual.innerHTML));
+      card.appendChild(why);
+    }
+    var actions = hwFlowEl('div', 'fp-review-actions');
+    var btn = function (act, label, cls) {
+      return '<button type="button" class="btn ' + cls + '" data-act="' + act + '" data-args="[&quot;' + idx + '&quot;]">' + label + '</button>';
+    };
+    if (!tried) actions.innerHTML = btn('hwFlowFix', hwFlowBi('Go to this problem', 'Ir a este problema'), 'btn-primary');
+    else if (!done) actions.innerHTML = btn('hwFlowFix', hwFlowBi('Fix my answer', 'Corregir mi respuesta'), 'btn-primary');
+    else if (supported) actions.innerHTML = btn('missionFreshTry', hwFlowBi('Try a fresh problem', 'Probar un problema nuevo'), 'btn-primary');
+    if (actions.innerHTML) card.appendChild(actions);
+    host.appendChild(card);
+  });
+  if (empty) empty.hidden = any;
+  host.hidden = !any;
+}
+
+/* Fix: back to the ORIGINAL problem, cleared, so the student corrects the answer they gave. */
+function hwFlowFix(idx) {
+  var s = document.getElementById('problem_' + idx);
+  if (!s) return;
+  switchHomeworkTab('check');
+  if (!s.classList.contains('correct')) {
+    s.querySelectorAll("input[type='radio']:checked").forEach(function (r) { r.checked = false; });
+    s.querySelectorAll('.mc-option-label').forEach(function (l) { l.classList.remove('is-incorrect'); });
+  }
+  var box = s.parentElement;
+  var bar = box && box.previousElementSibling;
+  if (bar && bar.classList.contains('hw-stepper-bar')) {
+    var items = Array.prototype.slice.call(box.querySelectorAll(':scope > .problem-section'));
+    var dot = bar.querySelectorAll('.hw-stepper-dot')[items.indexOf(s)];
+    if (dot) dot.click();
+  }
+  setTimeout(function () {
+    s.scrollIntoView({ block: 'start', behavior: 'auto' });
+    var first = s.querySelector("input[type='radio']");
+    if (first) first.focus({ preventScroll: true });
+  }, 60);
+}
 
 
 (function () {
@@ -7760,7 +7793,7 @@ function checkProblem(idx, options) {
         const expDiv = document.createElement("div");
         expDiv.className = "visual-explanation-card explanation-box";
         if (isProblemCorrect) {
-          let html = '<div class="exp-header"><span>✅ ' + pickLangText("Solved! How to understand it", "¡Resuelto! Por qué funciona") + '</span></div>';
+          let html = '<div class="exp-header"><span>✅ ' + pickLangText("Right. Why it works", "Correcto. Por qué funciona") + '</span></div>';
           const keyVisual = section.querySelector(".hw-answer-key-visual");
           if (keyVisual) {
             html += '<div class="exp-visual" style="margin:10px 0;">' + keyVisual.innerHTML + '</div>';
@@ -7781,9 +7814,9 @@ function checkProblem(idx, options) {
           if (tier === 1) {
             // Tier 1: Clarify & Trap
             expDiv.classList.add("is-nudge");
-            let html = '<div class="exp-header"><span>🤔 ' + pickLangText("Hint 1 of 3 — Spot the Trap", "Pista 1 de 3 — Identifica la trampa") + '</span></div>';
+            let html = '<div class="exp-header"><span>🤔 ' + pickLangText("Not yet: what that answer shows", "Todavía no: qué muestra esa respuesta") + '</span></div>';
             if (selectedFeedback) {
-              html += '<div class="exp-trap"><strong>⚠️ ' + pickLangText("Common Trap:", "Trampa común:") + '</strong> ' + selectedFeedback + '</div>';
+              html += '<div class="exp-trap"><strong>⚠️ ' + pickLangText("What happened:", "Qué pasó:") + '</strong> ' + selectedFeedback + '</div>';
             } else {
               html += '<div class="exp-trap"><strong>⚠️ ' + pickLangText("Clarify:", "Aclaración:") + '</strong> ' +
                 pickLangText("Check what quantity the question asks for and look at your units carefully.", "Revisa qué cantidad pide la pregunta y observa las unidades con atención.") + '</div>';
@@ -7801,7 +7834,7 @@ function checkProblem(idx, options) {
           } else if (tier === 2) {
             // Tier 2: Strategy Clue & Model
             expDiv.classList.add("is-nudge");
-            let html = '<div class="exp-header"><span>💡 ' + pickLangText("Hint 2 of 3 — Strategy & Math Clue", "Pista 2 de 3 — Estrategia y pista matemática") + '</span></div>';
+            let html = '<div class="exp-header"><span>💡 ' + pickLangText("Look again: a strategy clue", "Mira otra vez: una pista de estrategia") + '</span></div>';
             if (selectedFeedback) {
               html += '<div class="exp-trap"><strong>⚠️ ' + pickLangText("Remember:", "Recuerda:") + '</strong> ' + selectedFeedback + '</div>';
             }
@@ -7825,7 +7858,7 @@ function checkProblem(idx, options) {
             appendWorkedExample(expDiv);
           } else {
             // Tier 3: Full Step-by-Step Walkthrough
-            let html = '<div class="exp-header"><span>🔍 ' + pickLangText("Hint 3 of 3 — Step-by-Step Walkthrough", "Pista 3 de 3 — Repaso visual paso a paso") + '</span></div>';
+            let html = '<div class="exp-header"><span>🔍 ' + pickLangText("A worked example, step by step", "Un ejemplo resuelto, paso a paso") + '</span></div>';
             const keyVisual = section.querySelector(".hw-answer-key-visual");
             if (keyVisual) {
               html += '<div class="exp-visual" style="margin:10px 0;">' + keyVisual.innerHTML + '</div>';
@@ -8053,7 +8086,7 @@ function checkProblem(idx, options) {
       } else if (!revealIsDue(idx)) {
         const att = problemAttempts[idx] || 1;
         feedbackMessage = att === 1
-          ? pickLangText("Not quite — check Hint 1 above and give it another shot!", "Todavía no: lee la Pista 1 arriba e inténtalo de nuevo.")
+          ? pickLangText("Not yet. Read what happened above, then try again.", "Todavía no. Lee qué pasó arriba e inténtalo de nuevo.")
           : pickLangText("Still tricky — review Hint 2 above and test with Math Tools.", "Casi: revisa la Pista 2 arriba y prueba con las herramientas.");
       } else {
         feedbackMessage = pickLangText(

@@ -52,7 +52,7 @@ export function fixtureHtml(o = {}) {
   <section class="hw-mission-start">${bi(`Six short steps. Look, play with the math, solve ${o.claim ?? 3}, talk and finish.`, "Seis pasos cortos")}</section>
   ${(o.goals ?? [3, 3]).map((g) => `<span data-hw-goal-count>${g}</span>`).join("")}
   <span data-hw-goal-avail>${o.avail ?? n}</span>
-  ${o.noExample ? "" : '<div id="hw_learn_idea"></div>'}
+  ${o.noExample ? "" : '<p id="hw_example_label"></p>'}
   <div class="hw-dinner-visual-body">${o.dinner ?? bi("Percent means out of 100.", "Porcentaje significa de cada 100.")}</div>
   ${probs}
   ${(o.links ?? ["/lessons/4-1/homework.html"]).map((h) => `<a href="${h}">x</a>`).join("")}

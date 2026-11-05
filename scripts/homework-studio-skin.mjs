@@ -62,7 +62,7 @@ function initStudioStepper() {
     var next = document.createElement('button');
     next.type = 'button';
     next.innerHTML = '<span class="lang-en">Next</span><span class="lang-es" lang="es">Siguiente</span> →';
-    nav.appendChild(back);
+    /* Dots go back to any problem; the one button moves forward. Two Back/Next pairs on a step read as a loop. */
     nav.appendChild(next);
     var dotEls = items.map(function (_, i) {
       var d = document.createElement('button');
@@ -88,7 +88,7 @@ function initStudioStepper() {
         var done = it.classList.contains('correct') || it.classList.contains('reviewed');
         dotEls[i].hidden = it.hidden;
         dotEls[i].textContent = '';
-        dotEls[i].innerHTML = '<span class="hw-sr-only"><span class="lang-en">Problem </span><span class="lang-es" lang="es">Problema </span></span>' + (visible.indexOf(it) + 1);
+        dotEls[i].innerHTML = '<span class="hw-sr-only"><span class="lang-en">Problem </span><span class="lang-es" lang="es">Problema </span></span>' + (it.getAttribute('data-role') || (visible.indexOf(it) + 1));
         dotEls[i].classList.toggle('is-done', done);
         dotEls[i].classList.toggle('is-current', i === idx);
         dotEls[i].setAttribute('aria-current', i === idx ? 'step' : 'false');
@@ -144,104 +144,6 @@ function glueTermPunctuation() {
   });
 }
 
-function initStudioSubRail() {
-  var tabBtns = document.querySelectorAll('.homework-tab-btn');
-  if (!tabBtns.length) return;
-
-  tabBtns.forEach(function (btn) {
-    var tabId = btn.dataset.tab;
-    /* One mission rail. The only sub-list is the numbered problems under Practice. */
-    if (tabId !== 'check') return;
-    var rail = btn.nextElementSibling;
-    if (!rail || !rail.classList.contains('hw-sub-rail')) {
-      rail = document.createElement('div');
-      rail.className = 'hw-sub-rail';
-      rail.id = 'hw_sub_' + tabId;
-      btn.parentNode.insertBefore(rail, btn.nextSibling);
-    }
-
-    if (tabId === 'check') {
-      var coreBox = document.querySelector('#hw_panel_check .problems-container');
-      var dots = coreBox && coreBox.previousElementSibling && coreBox.previousElementSibling.classList.contains('hw-stepper-bar')
-        ? coreBox.previousElementSibling.querySelectorAll('.hw-stepper-dot')
-        : [];
-      var coreItems = coreBox ? coreBox.querySelectorAll(':scope > .problem-section') : [];
-      var items = [];
-
-      if (dots.length) {
-        dots.forEach(function (dot, i) {
-          items.push({
-            icon: '✏️',
-            en: 'Problem ' + (i + 1),
-            es: 'Problema ' + (i + 1),
-            action: function () {
-              if (document.body.dataset.activeTab !== 'check' && typeof switchHomeworkTab === 'function') {
-                switchHomeworkTab('check', { preventScroll: true });
-              }
-              dot.click();
-              var stepperBar = coreBox.previousElementSibling && coreBox.previousElementSibling.classList.contains('hw-stepper-bar')
-                ? coreBox.previousElementSibling
-                : null;
-              scrollStudioTo(stepperBar || coreItems[i] || coreBox);
-            }
-          });
-        });
-      } else if (coreItems.length) {
-        coreItems.forEach(function (p, i) {
-          items.push({
-            icon: '✏️',
-            en: 'Problem ' + (i + 1),
-            es: 'Problema ' + (i + 1),
-            action: function () {
-              if (document.body.dataset.activeTab !== 'check' && typeof switchHomeworkTab === 'function') {
-                switchHomeworkTab('check', { preventScroll: true });
-              }
-              scrollStudioTo(p);
-            }
-          });
-        });
-      }
-
-      rail.innerHTML = '';
-      items.forEach(function (item, idx) {
-        var sBtn = document.createElement('button');
-        sBtn.type = 'button';
-        sBtn.className = 'hw-sub-btn' + (idx === 0 ? ' is-active' : '');
-        sBtn.dataset.problemIdx = String(idx);
-        sBtn.innerHTML = '<span class="sub-icon" aria-hidden="true">' + item.icon + '</span><span class="sub-text"><span class="lang-en">' + item.en + '</span><span class="lang-es" lang="es">' + item.es + '</span></span>';
-        sBtn.addEventListener('click', function () {
-          rail.querySelectorAll('.hw-sub-btn').forEach(function (b) { b.classList.remove('is-active'); });
-          sBtn.classList.add('is-active');
-          item.action();
-        });
-        rail.appendChild(sBtn);
-      });
-
-      var extraContainers = document.querySelectorAll('#hw_panel_check .problems-container');
-      if (extraContainers.length > 1) {
-        var extraBtn = document.createElement('button');
-        extraBtn.type = 'button';
-        extraBtn.className = 'hw-sub-btn hw-sub-extra-btn';
-        extraBtn.innerHTML = '<span class="sub-icon" aria-hidden="true">⭐</span><span class="sub-text"><span class="lang-en">More Practice</span><span class="lang-es" lang="es">Más práctica</span></span>';
-        extraBtn.addEventListener('click', function () {
-          if (document.body.dataset.activeTab !== 'check' && typeof switchHomeworkTab === 'function') {
-            switchHomeworkTab('check', { preventScroll: true });
-          }
-          rail.querySelectorAll('.hw-sub-btn').forEach(function (b) { b.classList.remove('is-active'); });
-          extraBtn.classList.add('is-active');
-          var moreBox = extraContainers[1];
-          var moreDet = moreBox ? moreBox.closest('details') : null;
-          if (moreDet) moreDet.open = true;
-          var moreStepper = moreBox && moreBox.previousElementSibling && moreBox.previousElementSibling.classList.contains('hw-stepper-bar')
-            ? moreBox.previousElementSibling
-            : moreBox;
-          scrollStudioTo(moreStepper || moreBox);
-        });
-        rail.appendChild(extraBtn);
-      }
-    }
-  });
-}
 
 /* Install tab scrolling: clicking any tab button smoothly scrolls to the top of that panel */
 function installStudioTabScroll() {
@@ -449,7 +351,6 @@ function initHomeworkImageZoom() {
 function bootStudioSkin() {
   initStudioStepper();
   glueTermPunctuation();
-  initStudioSubRail();
   installStudioTabScroll();
   initHomeworkImageZoom();
 }

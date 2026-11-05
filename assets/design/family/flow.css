@@ -1,0 +1,546 @@
+/* ============================================================================
+   Family Practice: the five-step flow (Look & Learn, Try Together, Your Turn, Check & Improve,
+   Finish). One @layer patterns sheet on the design-system tokens, loaded after body.css and
+   mission.css so it is the last word on the surfaces it names. No raw colors, logical properties
+   only, no ID selectors. Gates: validate:family-design-tokens, validate:family-body-tokens.
+
+   Roles. Navy = structure and headings. Teal (accent-ink) = the primary action on every step.
+   Amber (highlight) = a learning highlight only: the goal, the worked example's rule, a hint.
+   Muted sunken surfaces = optional tools. Every treatment below is one of these.
+   ============================================================================ */
+@layer patterns {
+  /* ── Step rail: five numbered steps, the current one named ─────────────── */
+  @media (max-width: 859px) {
+    .homework-tab-bar {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: var(--fm-space-2);
+      padding-block: var(--fm-space-2);
+    }
+    .homework-tab-bar .homework-tab-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      gap: var(--fm-space-1);
+      min-block-size: 2.75rem;
+      padding: var(--fm-space-1);
+      background: transparent;
+      border: 0;
+      box-shadow: none;
+      color: var(--fm-text-muted);
+      text-align: center;
+    }
+  }
+  .homework-tab-bar .tab-step {
+    display: inline-grid;
+    place-items: center;
+    inline-size: 2rem;
+    block-size: 2rem;
+    border-radius: var(--fm-radius-pill);
+    border: 2px solid var(--fm-border-strong);
+    background: var(--fm-raised);
+    color: var(--fm-text);
+    font-family: var(--fm-font-display);
+    font-weight: var(--fm-fw-bold);
+    font-size: var(--fm-fs-sm);
+  }
+  .homework-tab-bar .tab-label {
+    font-size: var(--fm-fs-xs);
+    line-height: var(--fm-lh-ui);
+    font-weight: var(--fm-fw-semibold);
+  }
+  .homework-tab-bar .homework-tab-btn.is-active {
+    color: var(--fm-primary);
+    background: var(--fm-accent-tint);
+    border-color: var(--fm-accent-ink);
+  }
+  .homework-tab-bar .homework-tab-btn.is-active .tab-step {
+    background: var(--fm-accent-ink);
+    border-color: var(--fm-accent-ink);
+    color: var(--fm-on-primary);
+  }
+  .homework-tab-bar .homework-tab-btn.is-done .tab-step {
+    background: var(--fm-accent-tint);
+    border-color: var(--fm-accent-ink);
+    color: var(--fm-accent-ink);
+  }
+  @media (max-width: 40rem) {
+    .homework-tab-bar .homework-tab-btn:not(.is-active) .tab-label {
+      /* the current step is named; the others are numbers and still carry an accessible name */
+      position: absolute;
+      inline-size: 1px;
+      block-size: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+    }
+  }
+  .homework-tab-track {
+    block-size: 0.25rem;
+    border-radius: var(--fm-radius-pill);
+    background: var(--fm-sunken);
+  }
+  .homework-tab-track-fill {
+    background: var(--fm-accent-ink);
+  }
+
+  /* ── One heading band per step ─────────────────────────────────────────── */
+  .fp-head {
+    display: grid;
+    gap: var(--fm-space-1);
+    margin-block: var(--fm-space-3) var(--fm-space-4);
+  }
+  .fp-kicker {
+    margin: 0;
+    font-size: var(--fm-fs-xs);
+    font-weight: var(--fm-fw-bold);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--fm-accent-ink);
+  }
+  .fp-title {
+    margin: 0;
+    font-family: var(--fm-font-display);
+    font-size: var(--fm-fs-2xl);
+    line-height: var(--fm-lh-heading);
+    color: var(--fm-primary);
+  }
+  .fp-lead {
+    margin: 0;
+    color: var(--fm-text-muted);
+    font-size: var(--fm-fs-md);
+    max-inline-size: var(--fm-measure);
+  }
+
+  /* ── Cards: one border, one radius; the treatment says what the card is ── */
+  .fp-card,
+  .fp-family,
+  .fp-review,
+  .fp-optional {
+    margin-block: 0 var(--fm-space-4);
+    padding: var(--fm-space-4);
+    background: var(--fm-raised);
+    border: 1px solid var(--fm-border);
+    border-radius: var(--fm-radius-md);
+    box-shadow: none;
+  }
+  .fp-label {
+    margin: 0 0 var(--fm-space-2);
+    font-size: var(--fm-fs-xs);
+    font-weight: var(--fm-fw-bold);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--fm-text-muted);
+  }
+  /* Goal: the one amber highlight of step 1. */
+  .fp-goal {
+    background: var(--fm-highlight-tint);
+    border-color: var(--fm-highlight);
+  }
+  .fp-goal .fp-label {
+    color: var(--fm-highlight-ink);
+  }
+  .fp-goal-text {
+    margin: 0;
+    font-size: var(--fm-fs-xl);
+    font-family: var(--fm-font-display);
+    line-height: var(--fm-lh-heading);
+    color: var(--fm-text);
+  }
+  /* Worked example: numbered steps, the math readable at a glance. */
+  .fp-steps {
+    margin: 0;
+    padding-inline-start: 0;
+    list-style: none;
+    counter-reset: fp-step;
+    display: grid;
+    gap: var(--fm-space-3);
+  }
+  .fp-steps > li {
+    counter-increment: fp-step;
+    position: relative;
+    padding-inline-start: 2.5rem;
+    font-size: var(--fm-fs-lg);
+    line-height: var(--fm-lh-body);
+  }
+  .fp-steps > li::before {
+    content: counter(fp-step);
+    position: absolute;
+    inset-inline-start: 0;
+    inset-block-start: 0.1rem;
+    display: grid;
+    place-items: center;
+    inline-size: 1.75rem;
+    block-size: 1.75rem;
+    border-radius: var(--fm-radius-pill);
+    background: var(--fm-primary);
+    color: var(--fm-on-primary);
+    font-size: var(--fm-fs-sm);
+    font-weight: var(--fm-fw-bold);
+  }
+  .fp-steps p {
+    margin: 0;
+  }
+  .fp-why {
+    margin: var(--fm-space-4) 0 0;
+    padding-block-start: var(--fm-space-3);
+    border-block-start: 1px solid var(--fm-border);
+    font-size: var(--fm-fs-md);
+  }
+  /* Try Together: the problem the family does side by side. */
+  .fp-try {
+    border-color: var(--fm-accent-ink);
+    border-inline-start-width: 0.25rem;
+  }
+  .fp-try-scenario {
+    margin: 0 0 var(--fm-space-3);
+    font-size: var(--fm-fs-lg);
+    font-weight: var(--fm-fw-semibold);
+  }
+
+  /* ── Hint: ONE control, the same everywhere ────────────────────────────── */
+  .fp-hint,
+  .problem-coach-ladder {
+    margin-block-start: var(--fm-space-2);
+    border: 1px solid var(--fm-border);
+    border-radius: var(--fm-radius-sm);
+    background: var(--fm-highlight-tint);
+  }
+  .fp-hint > summary,
+  .problem-coach-ladder > summary {
+    display: flex;
+    align-items: center;
+    gap: var(--fm-space-2);
+    min-block-size: 2.75rem;
+    padding-inline: var(--fm-space-3);
+    cursor: pointer;
+    color: var(--fm-highlight-ink);
+    font-weight: var(--fm-fw-bold);
+    font-size: var(--fm-fs-sm);
+  }
+  .fp-hint > summary::before,
+  .problem-coach-ladder > summary::before {
+    content: "?";
+    display: inline-grid;
+    place-items: center;
+    inline-size: 1.5rem;
+    block-size: 1.5rem;
+    border-radius: var(--fm-radius-pill);
+    background: var(--fm-highlight);
+    color: var(--fm-on-highlight);
+    font-weight: var(--fm-fw-bold);
+  }
+  .fp-hint > p {
+    margin: 0;
+    padding: 0 var(--fm-space-3) var(--fm-space-3);
+    color: var(--fm-text);
+  }
+  .fp-hint--more {
+    margin: 0 var(--fm-space-3) var(--fm-space-3);
+    background: var(--fm-raised);
+  }
+
+  /* ── Family question: quiet, optional, set apart ───────────────────────── */
+  .fp-family {
+    background: var(--fm-sunken);
+    border-style: dashed;
+    color: var(--fm-text);
+  }
+  .fp-family p:last-child {
+    margin: 0;
+    font-size: var(--fm-fs-md);
+  }
+
+  /* ── Optional folds: notice/wonder, look-back, the celebrate extras ────── */
+  .fp-optional {
+    background: var(--fm-sunken);
+    padding: 0;
+  }
+  .fp-optional > summary {
+    display: flex;
+    align-items: center;
+    min-block-size: 2.75rem;
+    padding-inline: var(--fm-space-4);
+    cursor: pointer;
+    font-weight: var(--fm-fw-semibold);
+    color: var(--fm-text-muted);
+  }
+  .fp-optional[open] > summary {
+    border-block-end: 1px solid var(--fm-border);
+  }
+  .fp-optional > *:not(summary) {
+    margin: var(--fm-space-3) var(--fm-space-4) var(--fm-space-4);
+  }
+
+  /* ── The model picture and the interactive model: the figure is the star ── */
+  .hw-colearn-card,
+  .fp-model .hw-mission-model {
+    background: var(--fm-raised);
+    border: 1px solid var(--fm-border);
+    border-radius: var(--fm-radius-md);
+    box-shadow: none;
+    padding: var(--fm-space-4);
+    margin-block: 0 var(--fm-space-4);
+  }
+  .hw-colearn-title,
+  .hw-mm-title {
+    margin: 0 0 var(--fm-space-2);
+    font-size: var(--fm-fs-xs);
+    font-weight: var(--fm-fw-bold);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--fm-text-muted);
+  }
+
+  /* The model figures read their colours from --m-* with a hex fallback; map them onto the family tokens so
+     the picture is drawn with the same palette (and the same dark theme) as the page around it. */
+  .hw-colearn-svg-stage,
+  .concept-visual-wrap,
+  .fp-model {
+    --ink: var(--fm-text);
+    --art-card: var(--fm-raised);
+    --m-head: var(--fm-sunken);
+    --m-part: var(--fm-m-part-tint);
+    --m-part-ink: var(--fm-m-part);
+    --m-unknown: var(--fm-m-unknown-tint);
+    --m-unknown-ink: var(--fm-m-unknown-edge);
+    --m-answer: var(--fm-m-answer-tint);
+    --m-answer-ink: var(--fm-m-answer);
+    --m-error-ink: var(--fm-error-ink);
+  }
+
+  /* The ten-block whole bar: each block is numbered, filled blocks are the part. */
+  .big-idea .family-whole-bar span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--fm-fs-xs);
+    font-weight: var(--fm-fw-bold);
+    color: var(--fm-text);
+  }
+  .big-idea .family-whole-bar span.is-filled {
+    color: var(--fm-on-success);
+  }
+
+  /* ── Your Turn: the problem is the most prominent thing on the screen ──── */
+  .fp-progress {
+    display: flex;
+    align-items: center;
+    gap: var(--fm-space-3);
+    padding: var(--fm-space-2) var(--fm-space-3);
+    margin-block: 0 var(--fm-space-3);
+    background: var(--fm-sunken);
+    border: 0;
+    border-radius: var(--fm-radius-pill);
+  }
+  .fp-progress-text {
+    margin: 0;
+    font-size: var(--fm-fs-sm);
+    color: var(--fm-text-muted);
+  }
+  [data-fp-problems] .problem-section {
+    padding: var(--fm-space-4);
+    background: var(--fm-raised);
+    border: 1px solid var(--fm-border);
+    border-radius: var(--fm-radius-md);
+    box-shadow: none;
+  }
+  .problem-number-badge[data-role] {
+    display: inline-flex;
+    align-items: center;
+    padding: var(--fm-space-1) var(--fm-space-3);
+    border-radius: var(--fm-radius-pill);
+    background: var(--fm-accent-tint);
+    color: var(--fm-accent-ink);
+    font-size: var(--fm-fs-sm);
+    font-weight: var(--fm-fw-bold);
+  }
+  [data-fp-problems] .problem-stem {
+    font-size: var(--fm-fs-xl);
+    line-height: var(--fm-lh-heading);
+    color: var(--fm-text);
+  }
+  .hw-stepper-bar {
+    margin-block: 0 var(--fm-space-3);
+  }
+  .hw-stepper-dot {
+    display: inline-grid;
+    place-items: center;
+    min-inline-size: 2.75rem;
+    min-block-size: 2.75rem;
+    padding: 0;
+    border-radius: var(--fm-radius-pill);
+    font-family: var(--fm-font-display);
+    font-size: var(--fm-fs-md);
+    line-height: 1;
+    font-weight: var(--fm-fw-bold);
+  }
+  .mc-option-label {
+    min-block-size: 3rem;
+  }
+  /* Primary actions are teal on every step. */
+  .btn-primary,
+  .flow-next-btn,
+  .btn-check-one,
+  .hw-next-link.fm-btn--primary,
+  .hw-stop-next {
+    background: var(--fm-accent-ink);
+    border-color: var(--fm-accent-ink);
+    color: var(--fm-on-primary);
+    box-shadow: none;
+    min-block-size: 2.75rem;
+  }
+  .hw-next-link.fm-btn--primary .lang-en,
+  .hw-next-link.fm-btn--primary .lang-es {
+    color: inherit;
+  }
+  .btn-primary:hover,
+  .flow-next-btn:hover,
+  .btn-check-one:hover,
+  .hw-stop-next:hover {
+    background: var(--fm-primary);
+    border-color: var(--fm-primary);
+  }
+  /* The old fixed bottom bar is gone as a control surface: progress is in the step, not over it. */
+  .bottom-status-bar {
+    display: none;
+  }
+
+  /* ── Feedback: instructional, same shape for every answer ──────────────── */
+  .problem-section .explanation-box,
+  .problem-section .visual-explanation-card {
+    margin-block: var(--fm-space-3) 0;
+    padding: var(--fm-space-3) var(--fm-space-4);
+    background: var(--fm-info-tint);
+    border: 1px solid var(--fm-border);
+    border-inline-start: 0.25rem solid var(--fm-info-ink);
+    border-radius: var(--fm-radius-sm);
+    box-shadow: none;
+  }
+  .problem-section.correct .explanation-box,
+  .problem-section.correct .visual-explanation-card {
+    background: var(--fm-success-tint);
+    border-inline-start-color: var(--fm-success-ink);
+  }
+  .problem-section .exp-header {
+    font-weight: var(--fm-fw-bold);
+    color: var(--fm-primary);
+  }
+  .problem-section .exp-coach {
+    display: none;
+  }
+
+  /* ── Check & Improve ───────────────────────────────────────────────────── */
+  .fp-improve {
+    display: grid;
+    gap: var(--fm-space-3);
+  }
+  .fp-empty {
+    margin: 0 0 var(--fm-space-4);
+    padding: var(--fm-space-4);
+    background: var(--fm-sunken);
+    border-radius: var(--fm-radius-md);
+    color: var(--fm-text-muted);
+  }
+  .fp-review {
+    display: grid;
+    gap: var(--fm-space-2);
+    margin: 0;
+  }
+  .fp-review-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--fm-space-2);
+  }
+  .fp-review-title {
+    margin: 0;
+    font-size: var(--fm-fs-lg);
+    color: var(--fm-primary);
+  }
+  .fp-chip {
+    margin: 0;
+    padding: var(--fm-space-1) var(--fm-space-3);
+    border-radius: var(--fm-radius-pill);
+    background: var(--fm-sunken);
+    font-size: var(--fm-fs-sm);
+    font-weight: var(--fm-fw-bold);
+  }
+  .fp-review--clean .fp-chip {
+    background: var(--fm-success-tint);
+    color: var(--fm-success-ink);
+  }
+  .fp-review--fixed .fp-chip {
+    background: var(--fm-highlight-tint);
+    color: var(--fm-highlight-ink);
+  }
+  .fp-review--open .fp-chip {
+    background: var(--fm-info-tint);
+    color: var(--fm-info-ink);
+  }
+  .fp-review-stem,
+  .fp-review-note,
+  .fp-review-why {
+    margin: 0;
+    font-size: var(--fm-fs-md);
+  }
+  .fp-review-why {
+    padding: var(--fm-space-3);
+    background: var(--fm-sunken);
+    border-radius: var(--fm-radius-sm);
+  }
+  .fp-review-visual {
+    margin-block-start: var(--fm-space-2);
+    max-inline-size: 100%;
+  }
+  .fp-review-visual svg {
+    max-inline-size: 100%;
+    block-size: auto;
+  }
+  .fp-review-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--fm-space-2);
+  }
+
+  /* ── Finish ────────────────────────────────────────────────────────────── */
+  .hw-evidence-list {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    gap: var(--fm-space-2) var(--fm-space-4);
+    margin: 0;
+  }
+  .hw-evidence-list dt {
+    font-weight: var(--fm-fw-bold);
+    color: var(--fm-primary);
+  }
+  .hw-evidence-list dd {
+    margin: 0;
+  }
+  @media (max-width: 30rem) {
+    .hw-evidence-list {
+      grid-template-columns: 1fr;
+      gap: var(--fm-space-1);
+    }
+    .hw-evidence-list dd {
+      margin-block-end: var(--fm-space-2);
+    }
+  }
+  .fp-actions {
+    display: grid;
+    gap: var(--fm-space-2);
+    margin-block: var(--fm-space-4);
+  }
+  .fp-more > summary {
+    font-weight: var(--fm-fw-semibold);
+  }
+
+  /* ── Step navigation: one forward button that names where it goes ─────── */
+  .hw-stop-nav {
+    margin-block-start: var(--fm-space-4);
+  }
+  .fp-nav--back {
+    margin-block-start: var(--fm-space-4);
+  }
+}

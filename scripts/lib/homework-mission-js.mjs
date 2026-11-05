@@ -8,6 +8,7 @@
  * Everything stays on this device. Nothing here sends data anywhere.
  */
 export const MISSION_JS = `
+/* hwFlowCoreSections, hwFlowRecordPick, hwFlowImprove: homework-flow-js.mjs, same page scope. */
 /* ── Family Math Mission ─────────────────────────────────────────────── */
 var HW_MISSION_MODEL_URL = '/assets/family-mission/models/index.mjs';
 var HW_MISSION_MODEL_CSS = '/assets/family-mission/models/models.css';
@@ -107,7 +108,8 @@ function hwMissionSnapshot() {
       done: !!(done || prev.done),
       wrong: Math.max(wrong, prev.wrong || 0),
       hints: Math.max(hints, prev.hints || 0),
-      shown: !!(shown || prev.shown)
+      shown: !!(shown || prev.shown),
+      picks: prev.picks || []
     };
   });
   hwMissionWrite('evidence', ev);
@@ -150,51 +152,55 @@ function missionFreshTry(idx) {
   setTimeout(function () { next.scrollIntoView({ block: 'start', behavior: 'auto' }); }, 60);
 }
 
-/* Reflect: a summary made only of what happened. No mastery percentage, no stars for clicking. */
+/* Finish: what was practiced, one strength (only when the family's own responses support it), one
+   next step. Made only of what happened: no mastery percentage, no stars for clicking. */
 function hwMissionSummary() {
   var host = document.getElementById('hw_mission_summary');
   if (!host) return;
   var ev = hwMissionSnapshot();
-  var ids = Object.keys(ev.problems || {});
+  var core = hwFlowCoreSections();
+  var coreIds = core.map(function (s) { return s.id.replace('problem_', ''); });
+  var ids = Object.keys(ev.problems || {}).filter(function (k) { return coreIds.indexOf(k) > -1; });
   var solved = ids.filter(function (k) { return ev.problems[k].done; });
   var clean = solved.filter(function (k) { var p = ev.problems[k]; return !p.wrong && !p.hints && !p.shown; });
   var supported = solved.filter(function (k) { var p = ev.problems[k]; return p.wrong || p.hints || p.shown; });
   var revised = solved.filter(function (k) { return ev.problems[k].wrong > 0; });
-  var total = document.querySelectorAll('.problem-section:not([hidden])').length;
-  /* Nothing to say yet means nothing is shown: no "0 finished" line before the family has done anything. */
+  var total = core.length;
   var wrap = host.closest('[data-mission-evidence]');
   if (wrap) wrap.hidden = !solved.length && !ev.modelMoves;
-  var en = [], es = [];
+  if (!solved.length && !ev.modelMoves) { host.innerHTML = ''; return; }
   var title = window.LESSON_TITLE || '';
   var titleEs = window.LESSON_TITLE_ES || title;
-  en.push('Today\\'s math idea: ' + title + '.');
-  es.push('La idea de hoy: ' + titleEs + '.');
-  if (solved.length) {
-    en.push('You solved ' + solved.length + (total ? ' of ' + total : '') + ' practice problems.');
-    es.push('Resolvieron ' + solved.length + (total ? ' de ' + total : '') + ' problemas de práctica.');
-    if (clean.length) { en.push(clean.length + ' without any help.'); es.push(clean.length + ' sin ayuda.'); }
-    if (supported.length) { en.push(supported.length + ' with a hint or a second try. That is how learning works.'); es.push(supported.length + ' con una pista o un segundo intento. Así se aprende.'); }
-    if (revised.length) { en.push('You changed an answer and got it right.'); es.push('Cambiaron una respuesta y la corrigieron.'); }
+  var roleOf = function (k) { var s = document.getElementById('problem_' + k); return (s && s.getAttribute('data-role')) || ''; };
+  var rows = [];
+  rows.push(['You practiced', 'Practicaron', title + (solved.length ? '. You solved ' + solved.length + (total ? ' of ' + total : '') + ' problems.' : '.'), titleEs + (solved.length ? '. Resolvieron ' + solved.length + (total ? ' de ' + total : '') + ' problemas.' : '.')]);
+  if (clean.length) {
+    var named = clean.map(roleOf).filter(Boolean);
+    rows.push(['A strength', 'Una fortaleza', 'You solved ' + (named.length ? 'problem ' + named.join(', ') : clean.length + ' without help') + (named.length ? ' without a hint or a second try.' : '.'), 'Resolvieron ' + (named.length ? 'el problema ' + named.join(', ') : clean.length + ' sin ayuda') + (named.length ? ' sin pista ni segundo intento.' : '.')]);
+  } else if (revised.length) {
+    rows.push(['A strength', 'Una fortaleza', 'You changed an answer and got it right.', 'Cambiaron una respuesta y la corrigieron.']);
+  } else if (ev.modelMoves) {
+    rows.push(['A strength', 'Una fortaleza', 'You explored the model.', 'Exploraron el modelo.']);
   }
-  if (ev.modelMoves) { en.push('You explored the model.'); es.push('Exploraron el modelo.'); }
   var next;
-  if (!solved.length) next = null;
-  else if (supported.length) next = ['Next step: try one problem again tomorrow without hints.', 'Siguiente paso: mañana vuelvan a probar un problema sin pistas.'];
-  else if (total && solved.length < total) next = ['Next step: finish the rest of the practice, or stop here. Both are fine.', 'Siguiente paso: terminen el resto de la práctica o paren aquí. Ambas opciones están bien.'];
-  else next = ['Next step: try Explore more, or finish for tonight.', 'Siguiente paso: prueben Explorar más o terminen por hoy.'];
-  if (!next) { host.innerHTML = ''; return; }
-  host.innerHTML = '<ul class="hw-evidence-list"></ul><p class="hw-evidence-next"><strong></strong></p>';
-  var ul = host.querySelector('ul');
-  en.forEach(function (line, i) {
-    var li = document.createElement('li');
-    li.innerHTML = '<span class="lang-en"></span><span class="lang-es" lang="es"></span>';
-    li.querySelector('.lang-en').textContent = line;
-    li.querySelector('.lang-es').textContent = es[i];
-    ul.appendChild(li);
+  if (supported.length) next = ['Try one problem like this again tomorrow, without hints.', 'Mañana prueben otro problema como este, sin pistas.'];
+  else if (total && solved.length < total) next = ['Finish the rest of Your Turn, or stop here. Both are fine.', 'Terminen el resto de Tu turno o paren aquí. Ambas opciones están bien.'];
+  else next = ['Look for this idea in everyday life, or finish for tonight.', 'Busquen esta idea en la vida diaria o terminen por hoy.'];
+  rows.push(['Next step', 'Siguiente paso', next[0], next[1]]);
+  host.innerHTML = '<dl class="hw-evidence-list"></dl>';
+  var dl = host.querySelector('dl');
+  rows.forEach(function (r) {
+    var dt = document.createElement('dt');
+    dt.innerHTML = '<span class="lang-en"></span><span class="lang-es" lang="es"></span>';
+    dt.querySelector('.lang-en').textContent = r[0];
+    dt.querySelector('.lang-es').textContent = r[1];
+    var dd = document.createElement('dd');
+    dd.innerHTML = '<span class="lang-en"></span><span class="lang-es" lang="es"></span>';
+    dd.querySelector('.lang-en').textContent = r[2];
+    dd.querySelector('.lang-es').textContent = r[3];
+    dl.appendChild(dt);
+    dl.appendChild(dd);
   });
-  host.querySelector('strong').innerHTML = '<span class="lang-en"></span><span class="lang-es" lang="es"></span>';
-  host.querySelector('.lang-en').textContent = next[0];
-  host.querySelector('.lang-es').textContent = next[1];
   var pre = document.querySelector('[data-mission-prereq]');
   if (pre) pre.hidden = !supported.length;
 }
@@ -206,6 +212,7 @@ function hwMissionBoot() {
       var el = rec.target;
       if (el.classList && el.classList.contains('problem-section')) {
         hwMissionSnapshot();
+        if (el.classList.contains('incorrect')) hwFlowRecordPick(el);
         if (el.classList.contains('correct')) hwMissionOfferFreshTry(el);
       }
     });
@@ -217,6 +224,7 @@ function hwMissionBoot() {
   var tabWatch = new MutationObserver(function () {
     var tab = document.body.dataset.activeTab;
     if (tab === 'explore') hwMissionMountModel();
+    if (tab === 'improve') hwFlowImprove();
     if (tab === 'done') hwMissionSummary();
   });
   tabWatch.observe(document.body, { attributes: true, attributeFilter: ['data-active-tab'] });

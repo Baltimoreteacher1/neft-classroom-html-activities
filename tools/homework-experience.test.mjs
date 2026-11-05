@@ -264,10 +264,10 @@ test("every generated family page carries the experience layer and the one produ
         html.indexOf('class="hw-hero-controls"') <
         html.indexOf('class="fm-eyebrow hw-hero-kicker"'),
       startOrExplore:
-        html.includes("Start Today's Math") &&
+        html.includes('id="hw_start_button"') &&
         html.includes("Explorar más") &&
         html.includes('id="hw_explore_sheet"'),
-      sixStages: ["connect", "explore", "check", "talk", "apply", "done"].every((s) =>
+      fiveSteps: ["connect", "explore", "check", "improve", "done"].every((s) =>
         html.includes(`id="hw_panel_${s}"`),
       ),
     };
