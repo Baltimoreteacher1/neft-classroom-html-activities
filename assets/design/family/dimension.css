@@ -1,0 +1,222 @@
+/* Family Math Studio: the dimensional layer.
+ *
+ * The same physical idea as the curriculum hub (assets/dimension.css), expressed in this system's own tokens so the
+ * homework pages keep one token file and its caps. Surfaces are ceramic (the raised/float shadows in tokens.css now
+ * carry a lit top edge and a thickness lip), controls are keycaps (the Start button's lower edge is --fm-shadow-key),
+ * the hero is a stage with an isometric home on it, and progress is a physical meter. No new radii, no new shadow
+ * beyond --fm-shadow-key, no raw colours: everything reads a token. Screen only; the print sheet is untouched. */
+@layer patterns {
+  @media screen {
+    /* ── Isometric solids (class mode of tools/lib/iso.mjs), shaded from this system's tokens ── */
+    .fm-iso {
+      --tone-a-base: var(--unit-accent);
+      --tone-b-base: var(--fm-highlight);
+      --tone-c-base: var(--fm-inverse);
+      --tone-d-base: var(--fm-sunken);
+      --tone-e-base: var(--fm-accent);
+      display: block;
+      overflow: visible;
+    }
+    .fm-iso .s {
+      --base: var(--tone-a-base);
+    }
+    .fm-iso .s.b {
+      --base: var(--tone-b-base);
+    }
+    .fm-iso .s.c {
+      --base: var(--tone-c-base);
+    }
+    .fm-iso .s.d {
+      --base: var(--tone-d-base);
+    }
+    .fm-iso .s.e {
+      --base: var(--tone-e-base);
+    }
+    .fm-iso .s .t {
+      fill: color-mix(in srgb, var(--base) 56%, var(--fm-iso-top));
+      stroke: var(--fm-lit);
+      stroke-width: 0.6;
+      stroke-linejoin: round;
+    }
+    .fm-iso .s .l {
+      fill: var(--base);
+      stroke: var(--fm-lip);
+      stroke-width: 0.5;
+      stroke-linejoin: round;
+    }
+    .fm-iso .s .r {
+      fill: color-mix(in srgb, var(--base) 70%, var(--fm-iso-dark));
+      stroke: var(--fm-lip);
+      stroke-width: 0.5;
+      stroke-linejoin: round;
+    }
+    .fm-iso .s.flat {
+      fill: var(--base);
+    }
+    .fm-iso circle.t {
+      stroke: none;
+      fill: var(--fm-lit);
+    }
+    .fm-iso circle.l,
+    .fm-iso circle.r {
+      stroke: none;
+    }
+    .fm-iso .shade {
+      fill: var(--fm-iso-dark);
+      fill-opacity: var(--o, 0.08);
+    }
+    .fm-iso .grid polyline {
+      fill: none;
+      stroke: var(--fm-lip);
+      stroke-width: 0.45;
+    }
+    .fm-iso .lab {
+      fill: var(--fm-iso-dark);
+      font-weight: 700;
+    }
+
+    /* ── Hero: a stage with a window onto the home ── */
+    .fm-hero {
+      background-image: linear-gradient(180deg, var(--fm-lit), transparent 42%);
+      border: var(--fm-line) solid var(--fm-lip);
+      box-shadow: var(--fm-shadow-float);
+    }
+    .hw-hero .fm-hero__art {
+      min-block-size: 7rem;
+      border-radius: var(--fm-radius-md);
+      background-image: radial-gradient(60% 140% at 74% 55%, var(--fm-lit), transparent 70%);
+      box-shadow: var(--fm-shadow-press);
+    }
+    /* the flat unit scene becomes the back wall of the window; the home stands in front of it */
+    .hw-hero .fm-hero__art > svg:not(.fm-iso) {
+      opacity: 0.4;
+    }
+    .hw-hero .fm-hero__art > .fm-hero__home {
+      inset: auto;
+      inset-inline-end: 6%;
+      inset-block-end: 0;
+      inline-size: 11.5rem;
+      block-size: auto;
+    }
+    @media (min-width: 40rem) {
+      .hw-hero .fm-hero__art {
+        min-block-size: 9rem;
+      }
+      .hw-hero .fm-hero__art > .fm-hero__home {
+        inline-size: 15rem;
+      }
+    }
+    @media (min-width: 64rem) {
+      .hw-hero .fm-hero__art {
+        min-block-size: 11rem;
+      }
+      .hw-hero .fm-hero__art > .fm-hero__home {
+        inline-size: 18.5rem;
+      }
+    }
+    @media (max-width: 23.99rem) {
+      .hw-hero .fm-hero__art {
+        min-block-size: 3.5rem;
+      }
+      .hw-hero .fm-hero__art > .fm-hero__home {
+        inline-size: 6rem;
+      }
+    }
+    .hw-hero .fm-hero__title {
+      text-shadow: 0 1px 0 var(--fm-lit);
+    }
+
+    /* ── Cards, hook, routes: ceramic that rises on hover and settles on press ── */
+    .fm-hook,
+    .hw-mission-start {
+      box-shadow: var(--fm-shadow-raised);
+    }
+    .hw-mission-start {
+      padding: var(--fm-space-3) var(--fm-space-4);
+      border: var(--fm-line) solid var(--fm-lip);
+      border-radius: var(--fm-radius-md);
+      background: var(--fm-raised);
+    }
+    .fm-route {
+      box-shadow: var(--fm-shadow-raised);
+      transition:
+        transform var(--fm-dur-2) var(--fm-ease),
+        box-shadow var(--fm-dur-2) var(--fm-ease);
+    }
+    .fm-route:has(input:checked),
+    .fm-route[aria-pressed="true"] {
+      box-shadow: var(--fm-shadow-press);
+    }
+    @media (hover: hover) {
+      .fm-route:hover:not(:has(input:checked)) {
+        transform: translateY(-3px);
+        box-shadow: var(--fm-shadow-float);
+      }
+    }
+
+    /* ── Keycaps: a lit top, a lower edge, pressed down on :active ── */
+    .fm-btn {
+      background-image: linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--fm-lit) 45%, transparent),
+        transparent 46%
+      );
+    }
+    .fm-btn--icon,
+    .fm-seg > button {
+      background-image: none;
+    }
+    .fm-btn--primary {
+      box-shadow: var(--fm-shadow-key);
+    }
+    .fm-btn--primary:active {
+      transform: translateY(3px);
+      box-shadow: var(--fm-shadow-press);
+    }
+    .fm-btn--quiet {
+      background-image: none;
+      box-shadow: none;
+    }
+    .fm-btn--lg.fm-btn--primary {
+      border-color: var(--fm-key-edge);
+    }
+    .fm-seg {
+      box-shadow: var(--fm-shadow-inset);
+    }
+    .fm-seg > button[aria-pressed="true"] {
+      box-shadow: var(--fm-shadow-raised);
+    }
+
+    /* ── Progress as a physical meter: a recessed groove and a lit fill ── */
+    .progress-bar-outer {
+      block-size: 14px;
+      border-radius: var(--fm-radius-pill);
+      border-color: var(--fm-key-edge);
+      background: var(--fm-sunken);
+      box-shadow: var(--fm-shadow-inset);
+    }
+    .progress-bar-inner {
+      border-radius: var(--fm-radius-pill);
+      background-image: linear-gradient(180deg, var(--fm-lit), transparent 55%);
+      box-shadow: var(--fm-shadow-raised);
+    }
+    .hw-pip {
+      box-shadow: var(--fm-shadow-inset);
+    }
+    .hw-pip.is-on {
+      background-image: linear-gradient(180deg, var(--fm-lit), transparent 60%);
+      box-shadow: var(--fm-shadow-raised);
+    }
+    .fm-dot[data-state="done"],
+    .fm-dot[data-state="current"] {
+      box-shadow: var(--fm-shadow-raised);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .fm-route,
+    .fm-route:hover {
+      transform: none;
+      transition: none;
+    }
+  }
+}

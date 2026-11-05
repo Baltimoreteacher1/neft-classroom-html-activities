@@ -173,6 +173,13 @@
     --fm-shade-1: light-dark(rgb(23 50 77 / 0.1), rgb(0 0 0 / 0.45));
     --fm-shade-2: light-dark(rgb(23 50 77 / 0.07), rgb(0 0 0 / 0.3));
     --fm-shade-3: light-dark(rgb(23 50 77 / 0.28), rgb(0 0 0 / 0.6));
+    /* Material: the lit top edge and the thickness lip every raised surface carries, the darker lower edge of a keycap,
+       and the two ends the isometric home object is shaded between (dimension.css). Flat in high contrast. */
+    --fm-lit: light-dark(rgb(255 255 255 / 0.85), rgb(255 255 255 / 0.1));
+    --fm-lip: light-dark(rgb(23 50 77 / 0.1), rgb(0 0 0 / 0.4));
+    --fm-key-edge: light-dark(#0a1b2b, #123438);
+    --fm-iso-top: light-dark(#ffffff, #d8e6f0);
+    --fm-iso-dark: light-dark(#0d273d, #040c14);
 
     /* ── Unit palettes. Each unit: accent (graphic, >= 3:1), ink (text, >= 4.5), tint (band).
           Hues avoid violet/purple (255-335) by product rule. Hue never carries the unit alone:
@@ -274,8 +281,14 @@
     --fm-focus-offset: 2px;
 
     /* ── Elevation: one raised, one floating, one sheet, one inset, one pressed ── */
-    --fm-shadow-raised: 0 1px 2px var(--fm-shade-1), 0 2px 8px var(--fm-shade-2);
-    --fm-shadow-float: 0 8px 24px -8px var(--fm-shade-3);
+    --fm-shadow-raised:
+      inset 0 1px 0 var(--fm-lit), inset 0 -2px 0 var(--fm-lip), 0 1px 2px var(--fm-shade-1),
+      0 6px 14px -6px var(--fm-shade-2);
+    --fm-shadow-float:
+      inset 0 1px 0 var(--fm-lit), inset 0 -2px 0 var(--fm-lip), 0 2px 4px var(--fm-shade-1),
+      0 16px 28px -10px var(--fm-shade-3);
+    --fm-shadow-key:
+      inset 0 1px 0 var(--fm-lit), 0 3px 0 var(--fm-key-edge), 0 10px 14px -8px var(--fm-shade-3);
     --fm-shadow-sheet: 0 -8px 32px -8px var(--fm-shade-3);
     --fm-shadow-inset: inset 0 1px 2px var(--fm-shade-1);
     --fm-shadow-press: inset 0 2px 4px var(--fm-shade-3);
@@ -346,6 +359,9 @@
     --fm-shade-1: transparent;
     --fm-shade-2: transparent;
     --fm-shade-3: transparent;
+    --fm-lit: transparent;
+    --fm-lip: transparent;
+    --fm-key-edge: transparent;
     --fm-line: 2px;
     --unit-1-accent: #2b7a48;
     --unit-1-ink: #205a35;
@@ -417,6 +433,9 @@
       --fm-shade-1: transparent;
       --fm-shade-2: transparent;
       --fm-shade-3: transparent;
+      --fm-lit: transparent;
+      --fm-lip: transparent;
+      --fm-key-edge: transparent;
       --fm-line: 2px;
       --unit-1-accent: #2b7a48;
       --unit-1-ink: #205a35;

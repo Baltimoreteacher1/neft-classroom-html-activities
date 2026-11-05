@@ -63,7 +63,7 @@ if (passportHost) {
     a.style.setProperty('--accent', card.style.getPropertyValue('--accent'));
     a.setAttribute('aria-label', `${name}: ${got ? 'stamp earned' : 'stamp not yet earned'}`);
     a.title = name;
-    a.textContent = card.querySelector('.lab-card-icon').textContent;
+    a.textContent = card.querySelector('.lab-card-glyph').textContent;
     li.append(a); grid.append(li);
   }
   passportHost.before(section);
@@ -107,7 +107,7 @@ function tile(card) {
   a.className = 'spotlight-card'; a.href = card.querySelector('.card-link').href;
   a.style.setProperty('--accent', card.style.getPropertyValue('--accent'));
   a.innerHTML = `<span class="spotlight-icon" aria-hidden="true"></span><span class="spotlight-text"><strong></strong><span class="spotlight-lessons"></span><span class="spotlight-status"></span></span>`;
-  a.querySelector('.spotlight-icon').textContent = card.querySelector('.lab-card-icon').textContent;
+  a.querySelector('.spotlight-icon').textContent = card.querySelector('.lab-card-glyph').textContent;
   a.querySelector('strong').textContent = card.querySelector('.card-link').textContent;
   a.querySelector('.spotlight-lessons').textContent = card.querySelector('.lesson-label').textContent;
   a.querySelector('.spotlight-status').textContent = status;

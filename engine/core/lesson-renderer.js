@@ -3020,8 +3020,7 @@ export function renderWarmupPhase(el, state, ctx, config, opts = {}) {
 
   const card = document.createElement("div");
   card.className = "card card-warmup-phase";
-  card.style.cssText =
-    "margin: 16px 0 24px; border: 2px solid #0f6d78; border-radius: 16px; padding: 22px; background: #ffffff; box-shadow: 0 1px 2px rgba(18,53,91,0.05);";
+  card.style.cssText = "margin: 16px 0 24px; padding: 22px;";
 
   /*
    * Two kinds of warmup, because two situations are genuinely different.
@@ -6588,8 +6587,7 @@ function renderObjectivesReviewPhase(el, state, _ctx, config) {
 
   const card = document.createElement("div");
   card.className = "card card-objectives-review-phase";
-  card.style.cssText =
-    "margin: 16px 0 24px; border: 2px solid #0f6d78; border-radius: 16px; padding: 22px; background: #ffffff; box-shadow: 0 1px 2px rgba(18,53,91,0.05);";
+  card.style.cssText = "margin: 16px 0 24px; padding: 22px;";
 
   // Name the student in the goals themselves: "Samuel can now …" reads as
   // evidence of growth rather than as the same goal repeated. Falls back to the

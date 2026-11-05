@@ -17,6 +17,7 @@ import {
   loadLessonConfig,
   REPO_ROOT,
 } from "./lib/curriculum-source.mjs";
+import { labEmblem } from "./lib/iso-art.mjs";
 
 const destination = join(REPO_ROOT, "curriculum/learning-labs");
 const LEVELS = { support: "approaching", core: "onLevel", stretch: "extending" };
@@ -68,6 +69,7 @@ const version = createHash("sha256")
       "number-feedback.mjs",
       "nextgen.mjs",
       "lab.css",
+      "lab-dimension.css",
     ]
       .map((f) => readFileSync(join(destination, "shared", f)))
       .join(""),
@@ -75,7 +77,7 @@ const version = createHash("sha256")
   .digest("hex")
   .slice(0, 10);
 const page = (title, body, extra = "") => `<!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(title)} | EduWonderLab</title><meta name="description" content="Interactive Grade 6 mathematics: learn, investigate, practice at three levels, create, and play."><link rel="icon" href="/assets/favicon.svg"><link rel="stylesheet" href="/assets/fonts/hub-curriculum.css"><link rel="stylesheet" href="/curriculum/learning-labs/shared/lab.css?v=${version}">${extra}</head><body>${body}</body></html>\n`;
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(title)} | EduWonderLab</title><meta name="description" content="Interactive Grade 6 mathematics: learn, investigate, practice at three levels, create, and play."><link rel="icon" href="/assets/favicon.svg"><link rel="stylesheet" href="/assets/fonts/hub-curriculum.css"><link rel="stylesheet" href="/assets/curriculum-system.css"><link rel="stylesheet" href="/curriculum/learning-labs/shared/lab.css?v=${version}"><link rel="stylesheet" href="/curriculum/learning-labs/shared/lab-dimension.css?v=${version}">${extra}</head><body class="curriculum-product">${body}</body></html>\n`;
 
 function standalone(question) {
   return (
@@ -229,6 +231,7 @@ for (const blueprint of blueprints) {
     unit,
     unitName: unitNames[unit - 1],
     accent: palette[unit - 1],
+    emblem: labEmblem(blueprint.model.kind),
     lessons,
     vocabulary,
     practice,

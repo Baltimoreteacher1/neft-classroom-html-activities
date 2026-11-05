@@ -209,6 +209,57 @@
     </style>
   <link rel="stylesheet" href="/assets/curriculum-shell.css">
   <link rel="stylesheet" href="/assets/curriculum-system.css">
+  <link rel="stylesheet" href="/assets/dimension-surfaces.css">
+    <script>
+      /* Progressive disclosure for long lesson-resource groups. The first four
+         rows of a group stay in view; the rest move into a native <details>.
+         Nothing is removed or rewritten: every link stays in the page, and the
+         hub script that rebuilds the list is simply folded again afterwards. */
+      (function () {
+        var LIMIT = 4;
+        function fold(list) {
+          var rows = [].filter.call(list.children, function (n) {
+            return n.classList.contains("lesson-outline-item");
+          });
+          if (rows.length <= LIMIT + 1) return;
+          var rest = document.createElement("li");
+          rest.className = "lesson-outline-rest-item";
+          var d = document.createElement("details");
+          d.className = "lesson-outline-rest";
+          d.innerHTML =
+            '<summary><span class="more">Show more resources</span><span class="less">Show fewer</span></summary>';
+          var inner = document.createElement("ul");
+          inner.className = "lesson-outline-list";
+          rows.slice(LIMIT).forEach(function (row) {
+            inner.appendChild(row);
+          });
+          d.appendChild(inner);
+          rest.appendChild(d);
+          list.appendChild(rest);
+        }
+        function run(hub) {
+          hub
+            .querySelectorAll(".unit-card .lesson-outline-group > .lesson-outline-list")
+            .forEach(fold);
+        }
+        function start() {
+          var hub = document.getElementById("interactive-hub");
+          if (!hub || !window.MutationObserver) return;
+          var queued = false;
+          new MutationObserver(function () {
+            if (queued) return;
+            queued = true;
+            window.requestAnimationFrame(function () {
+              queued = false;
+              run(hub);
+            });
+          }).observe(hub, { childList: true, subtree: true });
+          run(hub);
+        }
+        if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", start);
+        else start();
+      })();
+    </script>
 <script type="module" src="/assets/learning-supports/ls-boot.js"></script>
 </head>
   <body class="light-theme curriculum-units-page has-curriculum-shell curriculum-product">

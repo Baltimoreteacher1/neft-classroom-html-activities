@@ -1,0 +1,542 @@
+/* Practice Studio, dimensional layer. Loaded after every other studio sheet (generated studios and the hand-built
+   Unit 4 pages), on top of assets/dimension.css for the shared --dm-* tokens.
+   Chrome gets depth: a lit instrument panel (header, progress gauge, bead trail), ceramic cards, keycap controls.
+   The maths stays flat: problem figures, answer inputs, tables, manipulatives and the workspace are not touched.
+   Every colour comes from the lesson world's own variables (--brand, --sun, --ok ...), so each of the ten worlds keeps
+   its identity in daylight and at night. Feedback is physical: a correct answer settles and takes a brass ring, a miss
+   is seated flat with a labelled edge. Nothing shakes, nothing floods red, nothing loops. */
+
+html body {
+  --sd-top: rgb(255 255 255 / 0.9);
+  --sd-lip: rgb(23 50 77 / 0.08);
+  --sd-shade: 13 39 61;
+  --sd-e1: var(--dm-e1);
+  --sd-e2: var(--dm-e2);
+  --sd-e3: var(--dm-e3);
+  --sd-ceramic: linear-gradient(
+    180deg,
+    var(--surface),
+    color-mix(in srgb, var(--surface) 93%, var(--sun))
+  );
+  --sd-glow:
+    0 0 0 3px var(--surface), 0 0 0 6px var(--sun),
+    0 0 0 10px color-mix(in srgb, var(--sun) 32%, transparent);
+}
+html body[data-theme="dark"] {
+  --sd-top: rgb(255 255 255 / 0.08);
+  --sd-lip: rgb(0 0 0 / 0.4);
+  --sd-shade: 0 0 0;
+  --sd-e1:
+    inset 0 1px 0 var(--sd-top), inset 0 -2px 0 var(--sd-lip), 0 1px 2px rgb(0 0 0 / 0.5),
+    0 6px 14px -6px rgb(0 0 0 / 0.6);
+  --sd-e2:
+    inset 0 1px 0 var(--sd-top), inset 0 -2px 0 var(--sd-lip), 0 2px 4px rgb(0 0 0 / 0.45),
+    0 16px 26px -10px rgb(0 0 0 / 0.7);
+  --sd-e3:
+    inset 0 1px 0 var(--sd-top), inset 0 -2px 0 var(--sd-lip), 0 4px 8px rgb(0 0 0 / 0.4),
+    0 30px 46px -16px rgb(0 0 0 / 0.8);
+  --sd-ceramic: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--surface) 94%, #fff),
+    var(--surface)
+  );
+}
+
+/* The desk under the cards: a lit drafting surface with a faint grid. Cards are opaque, so nothing reads over it. */
+html body {
+  background-color: var(--paper);
+  background-image:
+    radial-gradient(900px 420px at 6% -4%, color-mix(in srgb, var(--brand) 11%, transparent), transparent 64%),
+    radial-gradient(800px 420px at 100% 0, color-mix(in srgb, var(--sun) 16%, transparent), transparent 60%),
+    repeating-linear-gradient(0deg, rgb(var(--sd-shade) / 0.035) 0 1px, transparent 1px 36px),
+    repeating-linear-gradient(90deg, rgb(var(--sd-shade) / 0.035) 0 1px, transparent 1px 36px);
+}
+html body[data-theme="dark"] {
+  background-image:
+    radial-gradient(900px 420px at 6% -4%, color-mix(in srgb, var(--brand) 14%, transparent), transparent 64%),
+    radial-gradient(800px 420px at 100% 0, color-mix(in srgb, var(--sun) 9%, transparent), transparent 60%),
+    repeating-linear-gradient(0deg, rgb(255 255 255 / 0.028) 0 1px, transparent 1px 36px),
+    repeating-linear-gradient(90deg, rgb(255 255 255 / 0.028) 0 1px, transparent 1px 36px);
+}
+
+@keyframes sd-settle {
+  0% {
+    transform: translateY(-5px);
+  }
+  60% {
+    transform: translateY(1px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+/* ---- Header: a lit instrument panel ------------------------------------------------------------------------------ */
+html body :is(.app-header, [data-world] .app-header) {
+  position: relative;
+  background-color: var(--brand-dark);
+  background-image:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--brand-dark) 80%, #fff) 0,
+      var(--brand-dark) 58%,
+      color-mix(in srgb, var(--brand-dark) 82%, #000) 100%
+    );
+  padding-block: 10px;
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.16),
+    inset 0 -2px 0 rgb(0 0 0 / 0.32),
+    0 3px 0 color-mix(in srgb, var(--brand-dark) 55%, #000),
+    0 10px 18px -10px rgb(var(--sd-shade) / 0.6);
+}
+html body .app-header .brand-icon {
+  background: linear-gradient(180deg, color-mix(in srgb, var(--sun) 72%, #fff), var(--sun) 62%);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.85),
+    inset 0 -2px 0 rgb(0 0 0 / 0.12),
+    0 4px 0 var(--sun-deep),
+    0 10px 14px -6px rgb(0 0 0 / 0.55);
+}
+html body .app-header .brand-title {
+  text-shadow: 0 2px 0 rgb(0 0 0 / 0.28);
+}
+
+/* Level switcher: three keycaps in a recessed tray; the chosen key is pressed down and lit brass. */
+html body .header-actions .ewl-hud-path {
+  gap: 4px;
+  padding: 4px;
+  border: 0;
+  border-radius: 16px;
+  overflow: visible;
+  background: rgb(0 0 0 / 0.32);
+  box-shadow:
+    inset 0 2px 5px rgb(0 0 0 / 0.5),
+    0 1px 0 rgb(255 255 255 / 0.14);
+}
+html body .header-actions .ewl-hud-opt {
+  min-height: 44px;
+  padding: 4px 14px;
+  border: 0;
+  border-radius: 12px;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--brand-dark) 76%, #fff),
+    color-mix(in srgb, var(--brand-dark) 86%, #fff)
+  );
+  color: #fff;
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.22),
+    0 3px 0 rgb(0 0 0 / 0.5);
+  transition:
+    transform 0.12s var(--dm-ease),
+    box-shadow 0.12s var(--dm-ease);
+}
+html body .header-actions .ewl-hud-opt + .ewl-hud-opt {
+  border-left: 0;
+}
+html body .header-actions .ewl-hud-opt:hover {
+  transform: translateY(-1px);
+}
+html body .header-actions .ewl-hud-opt[aria-checked="true"] {
+  background: linear-gradient(180deg, color-mix(in srgb, var(--sun) 70%, #fff), var(--sun) 70%);
+  color: var(--brand-dark);
+  transform: translateY(2px);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.7),
+    0 1px 0 rgb(0 0 0 / 0.5),
+    0 0 0 2px color-mix(in srgb, var(--sun) 40%, transparent);
+}
+html body .header-actions :is(.top-btn, .score-pill) {
+  border: 0;
+  border-radius: 14px;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--brand-dark) 76%, #fff),
+    color-mix(in srgb, var(--brand-dark) 86%, #fff)
+  );
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.22),
+    0 3px 0 rgb(0 0 0 / 0.5);
+  transition:
+    transform 0.12s var(--dm-ease),
+    box-shadow 0.12s var(--dm-ease);
+}
+html body .header-actions .top-btn:hover {
+  transform: translateY(-1px);
+}
+html body .header-actions .top-btn:active {
+  transform: translateY(2px);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.22),
+    0 1px 0 rgb(0 0 0 / 0.5);
+}
+html body .header-actions .top-btn.stars-btn {
+  background: linear-gradient(180deg, color-mix(in srgb, var(--sun) 70%, #fff), var(--sun) 70%);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.7),
+    0 3px 0 var(--sun-deep);
+}
+
+/* The page progress gauge under the header: a recessed groove with a lit brass fill. */
+html body .focus-progress {
+  height: 8px;
+  background: color-mix(in srgb, var(--brand-dark) 70%, #000);
+  box-shadow: inset 0 2px 3px rgb(0 0 0 / 0.55);
+}
+html body .focus-progress-fill {
+  background: linear-gradient(180deg, color-mix(in srgb, var(--sun) 65%, #fff), var(--sun));
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.6),
+    0 0 0 1px rgb(0 0 0 / 0.2);
+}
+
+/* ---- Section trail: a rail with beads. Done = teal-green bead, here = brass-ringed brand bead. -------------------- */
+html body .tab-bar {
+  background: var(--sd-ceramic);
+  border-bottom: 1px solid var(--border);
+  box-shadow:
+    inset 0 1px 0 var(--sd-top),
+    inset 0 -2px 0 var(--sd-lip),
+    0 8px 16px -10px rgb(var(--sd-shade) / 0.35);
+}
+/* The gauge: one recessed rail along the foot of the trail whose lit fill follows --trail (set by the runtime). It is
+   the same in every chrome (trail, steps, cards) so a label never sits on top of a line. */
+html body .tab-bar .tab-list[class] { padding-bottom: 12px; }
+html body .tab-bar .tab-list[class]::before,
+html body .tab-bar .tab-list[class]::after {
+  display: block;
+  top: auto;
+  bottom: 2px;
+  left: 16px;
+  height: 6px;
+  border-radius: 999px;
+}
+html body .tab-bar .tab-list[class]::before {
+  right: 16px;
+  background: color-mix(in srgb, var(--well) 86%, #000);
+  box-shadow: inset 0 2px 3px rgb(var(--sd-shade) / 0.32), 0 1px 0 var(--sd-top);
+}
+html body .tab-bar .tab-list[class]::after {
+  width: calc((100% - 32px) * var(--trail));
+  background: linear-gradient(180deg, color-mix(in srgb, var(--sun) 70%, #fff), var(--sun));
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.6), 0 0 0 1px rgb(var(--sd-shade) / 0.18);
+}
+html body .tab-bar .tab-badge[class] {
+  border: 0;
+  background:
+    radial-gradient(circle at 32% 26%, rgb(255 255 255 / 0.9) 0, rgb(255 255 255 / 0) 40%),
+    linear-gradient(
+      160deg,
+      var(--surface-soft),
+      color-mix(in srgb, var(--border-strong) 38%, var(--surface))
+    );
+  color: var(--ink);
+  box-shadow:
+    inset -2px -3px 4px rgb(var(--sd-shade) / 0.18),
+    0 2px 0 color-mix(in srgb, var(--border-strong) 60%, transparent),
+    0 5px 7px -3px rgb(var(--sd-shade) / 0.4);
+}
+html body .tab-bar .tab-btn[aria-selected="true"] .tab-badge[class] {
+  background:
+    radial-gradient(circle at 32% 26%, rgb(255 255 255 / 0.42) 0, rgb(255 255 255 / 0) 36%),
+    linear-gradient(160deg, color-mix(in srgb, var(--brand) 88%, #fff), var(--brand));
+  color: var(--on-brand);
+  box-shadow:
+    inset -2px -3px 4px rgb(0 0 0 / 0.22),
+    0 0 0 3px var(--surface),
+    0 0 0 6px var(--sun),
+    0 7px 9px -3px rgb(var(--sd-shade) / 0.5);
+  transform: scale(1.06);
+}
+html body .tab-bar .tab-btn.tab-complete .tab-badge[class] {
+  background:
+    radial-gradient(circle at 32% 26%, rgb(255 255 255 / 0.5) 0, rgb(255 255 255 / 0) 38%),
+    linear-gradient(160deg, color-mix(in srgb, var(--ok) 85%, #fff), var(--ok));
+  color: var(--on-ok);
+  box-shadow:
+    inset -2px -3px 4px rgb(0 0 0 / 0.2),
+    0 5px 7px -3px rgb(var(--sd-shade) / 0.4);
+}
+html body .tab-bar .tab-btn.tab-complete[aria-selected="true"] .tab-badge[class] {
+  box-shadow:
+    inset -2px -3px 4px rgb(0 0 0 / 0.2),
+    0 0 0 3px var(--surface),
+    0 0 0 6px var(--sun),
+    0 7px 9px -3px rgb(var(--sd-shade) / 0.5);
+}
+html body.focus-layout .tab-bar .tab-btn[aria-selected="true"] {
+  border-bottom: 0;
+  border-radius: 12px;
+  background: linear-gradient(
+    180deg,
+    transparent,
+    color-mix(in srgb, var(--brand-tint) 70%, transparent)
+  );
+  box-shadow: inset 0 -3px 0 var(--sun-deep);
+}
+
+/* ---- Ceramic cards ------------------------------------------------------------------------------------------------ */
+html
+  body
+  :is(.stage-card, .topic-strip, .stepper-bar, .pathway-panel, .mission-card, .complete-banner) {
+  background: var(--sd-ceramic);
+  border: 1px solid var(--border);
+  box-shadow: var(--sd-e2);
+}
+html body .mission-card {
+  border-left: 10px solid var(--sun);
+}
+html body .topic-strip {
+  box-shadow: var(--sd-e1);
+}
+html body .topic-strip h2 {
+  letter-spacing: -0.01em;
+}
+html body .target-chip {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--brand-tint) 80%, #fff),
+    var(--brand-tint)
+  );
+  box-shadow: var(--sd-e1);
+}
+html body .chip {
+  box-shadow:
+    inset 0 1px 0 var(--sd-top),
+    0 2px 0 var(--brand-line);
+}
+html body .tool-btn {
+  background: linear-gradient(180deg, var(--surface), var(--surface-soft));
+  border-width: 1px 1px 3px;
+  box-shadow: inset 0 1px 0 var(--sd-top);
+  transition: transform 0.12s var(--dm-ease);
+}
+html body .tool-btn:active {
+  transform: translateY(2px);
+  border-bottom-width: 1px;
+  margin-bottom: 2px;
+}
+
+/* ---- Keycaps: a lit top, a darker lower edge, pressed on :active -------------------------------------------------- */
+html body .btn {
+  background: linear-gradient(
+    180deg,
+    var(--surface),
+    color-mix(in srgb, var(--surface) 86%, var(--brand-line))
+  );
+  box-shadow:
+    inset 0 1px 0 var(--sd-top),
+    0 8px 12px -8px rgb(var(--sd-shade) / 0.45);
+  transition:
+    transform 0.12s var(--dm-ease),
+    box-shadow 0.12s var(--dm-ease),
+    background 0.15s ease;
+}
+html body .btn:hover:not([disabled]) {
+  transform: translateY(-1px);
+}
+html body .btn:active:not([disabled]) {
+  transform: translateY(2px);
+  box-shadow: inset 0 1px 0 var(--sd-top);
+}
+html body .btn-primary {
+  background: linear-gradient(180deg, color-mix(in srgb, var(--brand) 90%, #fff), var(--brand));
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.3),
+    0 8px 12px -8px rgb(var(--sd-shade) / 0.6);
+}
+html body .btn-primary:hover:not([disabled]) {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--brand) 82%, #fff),
+    color-mix(in srgb, var(--brand) 92%, #000)
+  );
+}
+html body .btn-go {
+  background: linear-gradient(180deg, color-mix(in srgb, var(--sun) 66%, #fff), var(--sun) 72%);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.7),
+    0 8px 12px -8px rgb(var(--sd-shade) / 0.5);
+}
+html body .step-dot {
+  border-width: 1px 1px 3px;
+  background:
+    radial-gradient(circle at 32% 24%, rgb(255 255 255 / 0.7) 0, rgb(255 255 255 / 0) 45%),
+    linear-gradient(180deg, var(--surface), var(--surface-soft));
+  box-shadow: 0 3px 5px -2px rgb(var(--sd-shade) / 0.35);
+}
+html body .step-dot.active {
+  background:
+    radial-gradient(circle at 32% 24%, rgb(255 255 255 / 0.4) 0, rgb(255 255 255 / 0) 42%),
+    linear-gradient(180deg, color-mix(in srgb, var(--brand) 88%, #fff), var(--brand));
+  box-shadow:
+    0 0 0 3px var(--surface),
+    0 0 0 5px var(--sun),
+    0 5px 7px -2px rgb(var(--sd-shade) / 0.45);
+}
+html body .step-dot.solved {
+  box-shadow: inset 0 2px 3px rgb(var(--sd-shade) / 0.18);
+}
+html body .step-dot.solved.active {
+  box-shadow:
+    0 0 0 3px var(--surface),
+    0 0 0 5px var(--sun),
+    0 5px 7px -2px rgb(var(--sd-shade) / 0.45);
+}
+
+/* ---- Multiple choice: raised tiles that seat when answered ------------------------------------------------------- */
+html body .choice-btn {
+  background: linear-gradient(
+    180deg,
+    var(--surface),
+    color-mix(in srgb, var(--surface) 92%, var(--brand-line))
+  );
+  box-shadow:
+    inset 0 1px 0 var(--sd-top),
+    0 10px 14px -10px rgb(var(--sd-shade) / 0.4);
+  transition:
+    transform 0.14s var(--dm-ease),
+    box-shadow 0.14s var(--dm-ease),
+    background 0.15s ease;
+}
+html body .choice-btn:hover:not([disabled]) {
+  transform: translateY(-2px);
+  background: linear-gradient(180deg, var(--surface), var(--brand-tint));
+}
+html body .choice-btn.selected {
+  transform: translateY(2px);
+  border-bottom-width: 2px;
+  margin-bottom: 2px;
+  box-shadow: inset 0 2px 4px rgb(var(--sd-shade) / 0.18);
+}
+/* correct: the tile settles into place and takes a brass ring */
+html body .choice-btn.correct {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--ok-tint) 70%, var(--surface)),
+    var(--ok-tint)
+  );
+  border-bottom-width: 2px;
+  margin-bottom: 2px;
+  transform: translateY(2px);
+  box-shadow:
+    inset 0 2px 4px rgb(var(--sd-shade) / 0.12),
+    var(--sd-glow);
+  animation: sd-settle 0.32s var(--dm-ease);
+}
+/* a miss: seated flat and quiet, a labelled edge instead of a red flood; the mark still says which one it was */
+html body .choice-btn.wrong {
+  background: var(--surface-soft);
+  border-color: var(--border-strong);
+  border-left: 8px solid var(--bad);
+  color: var(--ink);
+  border-bottom-width: 2px;
+  margin-bottom: 2px;
+  transform: translateY(2px);
+  box-shadow: inset 0 2px 4px rgb(var(--sd-shade) / 0.16);
+}
+html body .num-input.ok {
+  box-shadow: var(--sd-glow);
+  animation: sd-settle 0.32s var(--dm-ease);
+}
+html body .num-input.err {
+  background: var(--surface-soft);
+  color: var(--ink);
+  border-color: var(--bad);
+  box-shadow: inset 0 2px 4px rgb(var(--sd-shade) / 0.18);
+}
+
+/* ---- Feedback and hints: slips on the bench ----------------------------------------------------------------------- */
+html body .feedback-box {
+  box-shadow: var(--sd-e1);
+}
+html body .feedback-box.ok {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--ok-tint) 70%, var(--surface)),
+    var(--ok-tint)
+  );
+  border-left: 8px solid var(--ok);
+}
+html body .feedback-box.warn {
+  background: var(--sd-ceramic);
+  border-left: 8px solid var(--sun-deep);
+  color: var(--ink);
+}
+html body .feedback-box.err {
+  background: var(--sd-ceramic);
+  border-left: 8px solid var(--bad);
+  color: var(--ink);
+}
+html body .feedback-box.show {
+  animation: sd-settle 0.3s var(--dm-ease);
+}
+html body .hint-list li {
+  padding-left: 0.2em;
+}
+html body .hint-list li::marker {
+  color: var(--sun-deep);
+  font-weight: 800;
+}
+html body :is(.hint-btn, .speak-btn) {
+  background: linear-gradient(180deg, var(--surface), var(--surface-soft));
+  border-width: 1px 1px 3px;
+  box-shadow: inset 0 1px 0 var(--sd-top);
+}
+
+/* ---- Footer: the base of the instrument ---------------------------------------------------------------------------- */
+html body .app-footer {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--brand-dark) 82%, #000),
+    var(--brand-dark)
+  );
+  box-shadow:
+    inset 0 3px 0 color-mix(in srgb, var(--brand-dark) 55%, #000),
+    inset 0 4px 0 rgb(255 255 255 / 0.07);
+}
+
+/* ---- Constraints -------------------------------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  html body :is(.choice-btn.correct, .num-input.ok, .feedback-box.show) {
+    animation: none;
+  }
+  html body :is(.btn, .choice-btn, .tool-btn, .ewl-hud-opt, .top-btn):hover {
+    transform: none;
+  }
+}
+@media (prefers-contrast: more), (forced-colors: active) {
+  html
+    body
+    :is(
+      .stage-card,
+      .topic-strip,
+      .stepper-bar,
+      .pathway-panel,
+      .mission-card,
+      .btn,
+      .choice-btn,
+      .tool-btn,
+      .step-dot,
+      .tab-bar,
+      .feedback-box
+    ) {
+    box-shadow: none;
+  }
+  html body .tab-bar .tab-badge[class] {
+    box-shadow: none;
+    border: 2px solid currentColor;
+  }
+}
+html body[data-theme="dark"] .app-header .brand-icon {
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.6),
+    0 4px 0 var(--sun-deep),
+    0 10px 14px -6px rgb(0 0 0 / 0.7);
+}
+@media print {
+  html body :is(.app-header, .tab-bar, .stage-card, .topic-strip, .btn, .choice-btn, .app-footer) {
+    box-shadow: none;
+    background-image: none;
+  }
+}

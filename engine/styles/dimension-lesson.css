@@ -1,0 +1,445 @@
+/* Dimensional chrome for the lesson shell (EduWonderLab dimensional design system,
+   docs/design/dimension-system.md).
+
+   Scope: the shell only. The rail, the lesson header, the entry cards, the phase
+   keycaps and the meters. Cards, callouts and buttons live in
+   dimension-lesson-content.css (both imported by engine/core/app.js). Nothing here touches a maths surface (equation
+   strips, tape diagrams, number lines, the Math Workbench, answer inputs): those
+   stay flat and high contrast.
+
+   Tokens: the shared `--dm-*` elevation and tone model comes from
+   assets/dimension.css (imported once, never copied). Colours inside the lesson come
+   from the engine's own `--ds-*` tokens (ds-tokens.generated.css). This file adds
+   only the per-unit hook (`--dl-unit`). Loaded after every skin layer, so it wins by
+   order and needs no !important. */
+@import url("../../assets/dimension.css");
+
+/* ---- Unit identity: the lesson's unit colour, set by createApp on <body> ---- */
+:root {
+  --dl-unit: var(--dm-teal);
+}
+body {
+  --tone-a-base: var(--dl-unit);
+}
+body[data-dm-unit="1"] {
+  --dl-unit: var(--unit-1);
+}
+body[data-dm-unit="2"] {
+  --dl-unit: var(--unit-2);
+}
+body[data-dm-unit="3"] {
+  --dl-unit: var(--unit-3);
+}
+body[data-dm-unit="4"] {
+  --dl-unit: var(--unit-4);
+}
+body[data-dm-unit="5"] {
+  --dl-unit: var(--unit-5);
+}
+body[data-dm-unit="6"] {
+  --dl-unit: var(--unit-6);
+}
+body[data-dm-unit="7"] {
+  --dl-unit: var(--unit-7);
+}
+/* Unit 8's hub colour is a rose at hue 338; its shaded isometric face lands at 327,
+   inside the forbidden magenta band (255-335) that validate:palette enforces on lessons.
+   Lessons warm it 30% toward unit 4's red, which keeps every face above 340. */
+body[data-dm-unit="8"] {
+  --dl-unit: color-mix(in srgb, var(--unit-8) 70%, var(--unit-4));
+}
+body[data-dm-unit="9"] {
+  --dl-unit: var(--unit-9);
+}
+body[data-dm-unit="10"] {
+  --dl-unit: var(--unit-10);
+}
+body.editorial {
+  /* On the navy rail the unit colour is lightened so the lip reads as a lit edge. */
+  --dl-rail: color-mix(in srgb, var(--dl-unit) 62%, #fff);
+  --dl-key-lip: rgb(13 39 61 / 0.38);
+  --dl-ease-settle: cubic-bezier(0.3, 1.5, 0.5, 1);
+}
+
+/* The emblem: a small solid sculpture of the unit, lit from the upper left. */
+.dl-emblem {
+  display: block;
+  flex: none;
+  pointer-events: none;
+}
+.dl-emblem svg,
+body.editorial .dl-emblem svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  background: none;
+  border-radius: 0;
+}
+
+/* The emblem's in-drawing labels ("x", "25%") are 1-2px decorative text inside an
+   aria-hidden drawing; at this size they fail the 13px floor, so the solids stand alone. */
+.dl-emblem .lab {
+  display: none;
+}
+
+/* ---- Rail: a lit navy bar that sits above the page ---- */
+body.editorial .app .sidebar {
+  background: linear-gradient(
+    180deg,
+    var(--dm-navy-2) 0%,
+    var(--dm-navy) 38%,
+    var(--dm-night) 100%
+  );
+  box-shadow:
+    inset 5px 0 0 var(--dl-rail),
+    inset -1px 0 0 rgb(255 255 255 / 0.08),
+    10px 0 24px -12px rgb(13 39 61 / 0.55);
+}
+body.editorial .sidebar-badge {
+  background: linear-gradient(180deg, #fff, var(--dm-paper-2));
+  box-shadow:
+    var(--dm-lit),
+    0 3px 0 var(--dl-rail),
+    0 6px 10px -4px rgb(0 0 0 / 0.45);
+}
+/* Recessed instrument panels cut into the rail. */
+body.editorial .sidebar :is(.student-info, .xp-container, .coins-container, .sidebar-progress) {
+  background: rgb(0 0 0 / 0.2);
+  border: 1px solid rgb(255 255 255 / 0.06);
+  box-shadow:
+    inset 0 2px 5px rgb(0 0 0 / 0.28),
+    0 1px 0 rgb(255 255 255 / 0.07);
+}
+
+/* ---- Meters: a physical gauge. Recessed channel, lit fill, tick marks. ---- */
+body.editorial .xp-bar-track {
+  position: relative;
+  height: 12px;
+  border-radius: 999px;
+  background: rgb(0 0 0 / 0.38);
+  box-shadow:
+    inset 0 2px 3px rgb(0 0 0 / 0.5),
+    0 1px 0 rgb(255 255 255 / 0.1);
+  overflow: hidden;
+}
+body.editorial .xp-bar-track::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    90deg,
+    transparent 0 calc(10% - 1px),
+    rgb(255 255 255 / 0.28) calc(10% - 1px) 10%
+  );
+}
+body.editorial .xp-bar-fill {
+  border-radius: 999px;
+  background-image: linear-gradient(
+    180deg,
+    rgb(255 255 255 / 0.45),
+    rgb(255 255 255 / 0) 55%,
+    rgb(0 0 0 / 0.2)
+  );
+  box-shadow: inset 0 -1px 0 rgb(0 0 0 / 0.25);
+}
+
+/* ---- Phase navigation: keycaps. Current is lit ceramic with a unit lip. ---- */
+body.editorial .sidebar .phase-btn {
+  background: linear-gradient(180deg, rgb(255 255 255 / 0.14), rgb(255 255 255 / 0.06));
+  border: 1px solid rgb(255 255 255 / 0.16);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.22),
+    0 3px 0 var(--dl-key-lip);
+  transition:
+    transform 0.14s var(--dm-ease),
+    box-shadow 0.14s var(--dm-ease),
+    background 0.14s var(--dm-ease);
+}
+body.editorial .sidebar .phase-btn:hover:not(.locked, .active) {
+  background: linear-gradient(180deg, rgb(255 255 255 / 0.22), rgb(255 255 255 / 0.1));
+  transform: translateY(-1px);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.28),
+    0 4px 0 var(--dl-key-lip);
+}
+body.editorial .sidebar .phase-btn:active:not(.locked) {
+  transform: translateY(2px);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.18),
+    0 1px 0 var(--dl-key-lip);
+}
+body.editorial .sidebar .phase-btn.completed {
+  background: linear-gradient(180deg, rgb(31 166 162 / 0.26), rgb(31 166 162 / 0.12));
+  border-color: rgb(31 166 162 / 0.5);
+}
+body.editorial
+  .sidebar
+  :is(.phase-btn.active, .phase-btn.active.completed, .phase-btn.phase-subtab.active) {
+  background: linear-gradient(180deg, #fff, var(--dm-paper));
+  box-shadow:
+    var(--dm-lit),
+    0 3px 0 var(--dl-rail),
+    0 8px 12px -6px rgb(0 0 0 / 0.5);
+}
+/* The number tile is a key too: raised until the phase is done, then it settles. */
+body.editorial .sidebar .phase-btn:not(.phase-subtab) .phase-num {
+  position: relative;
+  background-image: linear-gradient(180deg, rgb(255 255 255 / 0.3), rgb(255 255 255 / 0) 60%);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.3),
+    0 3px 0 rgb(0 0 0 / 0.32);
+  transform: translateY(-1px);
+  transition:
+    transform 0.26s var(--dl-ease-settle),
+    box-shadow 0.2s var(--dm-ease);
+}
+body.editorial .sidebar .phase-btn.completed:not(.phase-subtab) .phase-num {
+  transform: translateY(2px);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.2),
+    0 1px 0 rgb(0 0 0 / 0.32);
+}
+body.editorial .sidebar .phase-btn.completed:not(.phase-subtab) .phase-num::after {
+  content: "\2713";
+  position: absolute;
+  top: -6px;
+  right: -5px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 11px;
+  line-height: 1;
+  font-weight: 800;
+  color: #fff;
+  background: var(--ds-success);
+  box-shadow:
+    0 0 0 2px var(--dm-navy),
+    0 1px 2px rgb(0 0 0 / 0.4);
+}
+body.editorial .sidebar .phase-btn.active.completed:not(.phase-subtab) .phase-num::after {
+  box-shadow:
+    0 0 0 2px #fff,
+    0 1px 2px rgb(0 0 0 / 0.3);
+}
+
+/* ---- Lesson header: a ceramic plate with the unit's solid on a dark stage ---- */
+body.editorial.skin-warm-deck .lesson-hero {
+  border: 1px solid var(--dm-line);
+  border-top: 4px solid var(--dl-unit);
+  border-radius: var(--dm-radius);
+  box-shadow: var(--dm-e2);
+}
+body.editorial .lesson-hero-top {
+  align-items: center;
+  gap: var(--sp-5);
+}
+body.editorial .lesson-hero-top > div:not(.lesson-hero-badges) {
+  flex: 1 1 280px;
+}
+.dl-emblem--hero {
+  width: 200px;
+  padding: 12px 14px 8px;
+  border-radius: var(--dm-radius-sm);
+  background:
+    radial-gradient(60% 70% at 50% 48%, rgb(31 166 162 / 0.36), transparent 72%),
+    repeating-linear-gradient(0deg, transparent 0 15px, rgb(255 255 255 / 0.06) 15px 16px),
+    repeating-linear-gradient(90deg, transparent 0 15px, rgb(255 255 255 / 0.06) 15px 16px),
+    linear-gradient(180deg, var(--dm-navy-2), var(--dm-night));
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.18), inset 0 -3px 0 var(--dl-rail), 0 10px 18px -10px rgb(13 39 61 / 0.6);
+}
+.dl-emblem--hero svg {
+  filter: drop-shadow(0 8px 5px rgb(0 0 0 / 0.4));
+}
+/* The meta line was a teal pill in the warm skin and plain text elsewhere; with the
+   phase-dependent colour rules it measured 2.58:1 on the pill. One quiet label now. */
+body.editorial.skin-warm-deck .lesson-hero-meta {
+  background: none;
+  padding: 0;
+  color: var(--ds-text-muted);
+}
+body.editorial .lesson-hero-badge {
+  background: linear-gradient(180deg, #fff, var(--dm-paper));
+  border: 1px solid var(--dm-line);
+  box-shadow: var(--dm-lit), 0 2px 0 rgb(23 50 77 / 0.12);
+  color: var(--dm-text);
+}
+
+/* ---- Entry: the name card (identity gate) ---- */
+body.editorial .identity-card {
+  border-radius: var(--dm-radius);
+  border: 1px solid var(--dm-line);
+  border-top: 6px solid var(--dl-unit);
+  box-shadow: var(--dm-e3);
+}
+body.editorial .identity-hero {
+  isolation: isolate;
+}
+body.editorial .identity-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(60% 46% at 50% 38%, rgb(31 166 162 / 0.34), transparent 70%),
+    repeating-linear-gradient(0deg, transparent 0 21px, rgb(255 255 255 / 0.05) 21px 22px),
+    repeating-linear-gradient(90deg, transparent 0 21px, rgb(255 255 255 / 0.05) 21px 22px);
+}
+body.editorial.skin-warm-deck .identity-hero h1 {
+  color: #fff;
+}
+.dl-emblem--cover {
+  width: min(250px, 66%);
+  margin: var(--sp-2) auto var(--sp-3);
+  filter: drop-shadow(0 12px 8px rgb(0 0 0 / 0.38));
+}
+.identity-hero:has(.dl-emblem) .identity-emoji,
+.flagship-mission-card:has(.dl-emblem) .flagship-mission-emoji {
+  display: none;
+}
+/* design-system.css paints this pill with an undefined --gold, so it computed to no
+   background and its navy text vanished into the navy hero. A brass keycap instead. */
+body.editorial .identity-unit-badge {
+  background: linear-gradient(180deg, #f8dc9b, var(--dm-brass));
+  color: var(--dm-night);
+  box-shadow: var(--dm-lit), 0 3px 0 rgb(0 0 0 / 0.3);
+}
+.flagship-demo-link,
+.identity-demo-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--ds-target);
+}
+body.editorial .identity-time {
+  background: linear-gradient(180deg, rgb(255 255 255 / 0.16), rgb(255 255 255 / 0.08));
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.22),
+    0 2px 0 rgb(0 0 0 / 0.25);
+}
+
+/* ---- Entry: the mission briefing (flagship lessons) ---- */
+.flagship-mission-card {
+  border-top: 6px solid var(--dl-unit);
+  box-shadow:
+    var(--dm-e3),
+    0 0 0 1px rgb(255 255 255 / 0.12);
+}
+/* The stage: the dark hero of the system. A navy plate, a teal glow behind the solid,
+   and a receding graph floor, running edge to edge across the top of the card. */
+.dl-emblem--mission {
+  margin: calc(-1 * var(--sp-8)) calc(-1 * var(--sp-7)) var(--sp-5);
+  padding: var(--sp-5) var(--sp-5) var(--sp-4);
+  border-radius: calc(var(--dm-radius) - 6px) calc(var(--dm-radius) - 6px) 0 0;
+  background:
+    radial-gradient(58% 70% at 50% 46%, rgb(31 166 162 / 0.38), transparent 72%),
+    repeating-linear-gradient(0deg, transparent 0 21px, rgb(255 255 255 / 0.06) 21px 22px),
+    repeating-linear-gradient(90deg, transparent 0 21px, rgb(255 255 255 / 0.06) 21px 22px),
+    linear-gradient(180deg, var(--dm-navy-2), var(--dm-night));
+  box-shadow: inset 0 -3px 0 var(--dm-brass);
+}
+.dl-emblem--mission svg {
+  width: min(250px, 72%);
+  margin: 0 auto;
+  filter: drop-shadow(0 12px 8px rgb(0 0 0 / 0.4));
+}
+.flagship-mission-objective {
+  background: linear-gradient(180deg, var(--ds-tint-teal-8), var(--ds-tint-teal-16));
+  border-left: 4px solid var(--ds-accent-ink);
+  box-shadow:
+    var(--dm-lit),
+    inset 0 -2px 0 rgb(23 50 77 / 0.05);
+}
+/* The briefing shows before the lesson skin loads, so its button is a keycap on its own. */
+.flagship-mission-start {
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.32),
+    0 3px 0 color-mix(in srgb, var(--ds-accent-ink) 55%, #000),
+    0 8px 12px -6px rgb(13 39 61 / 0.4);
+  transition:
+    transform 0.14s var(--dm-ease),
+    box-shadow 0.14s var(--dm-ease);
+}
+.flagship-mission-start:hover {
+  transform: translateY(-1px);
+}
+.flagship-mission-start:active {
+  transform: translateY(2px);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.22), 0 1px 0 color-mix(in srgb, var(--ds-accent-ink) 55%, #000);
+}
+.flagship-finale-card {
+  border-top: 6px solid var(--dl-unit);
+  box-shadow: var(--dm-e3);
+}
+
+/* ---- Small screens: the header emblem steps down, the rail stays a plate ---- */
+@media (max-width: 768px) {
+  body.editorial .app .sidebar {
+    box-shadow:
+      inset 0 -4px 0 var(--dl-rail),
+      0 10px 18px -12px rgb(13 39 61 / 0.6);
+  }
+  body.editorial .sidebar .phase-btn {
+    min-height: var(--ds-target);
+  }
+  /* The rail's number tile was 38px inside a 28px grid column and overlapped its label. */
+  body.editorial .sidebar .phase-num {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    font-size: var(--fs-xs);
+  }
+  .dl-emblem--hero {
+    width: 128px;
+    padding: 8px 8px 4px;
+  }
+}
+
+/* ---- Motion, contrast, print ---- */
+@media (prefers-reduced-motion: reduce) {
+  body.editorial .sidebar :is(.phase-btn, .phase-num) {
+    transition: none;
+  }
+  body.editorial .sidebar .phase-btn:is(:hover, :active),
+  .flagship-mission-start:is(:hover, :active) {
+    transform: none;
+  }
+  .flagship-mission-start {
+    transition: none;
+  }
+}
+@media (prefers-contrast: more), (forced-colors: active) {
+  body.editorial
+    :is(.app .sidebar, .lesson-hero, .identity-card, .flagship-mission-card, .flagship-finale-card),
+  body.editorial
+    .sidebar
+    :is(.phase-btn, .phase-num, .student-info, .xp-container, .coins-container, .sidebar-progress),
+  body.editorial .lesson-hero-badge,
+  body.editorial .xp-bar-track {
+    box-shadow: none;
+  }
+  body.editorial .sidebar .phase-btn {
+    border: 2px solid currentColor;
+  }
+  body.editorial .xp-bar-track::after,
+  body.editorial .identity-hero::before {
+    display: none;
+  }
+  .dl-emblem svg,
+  .dl-emblem--cover,
+  .dl-emblem--mission svg {
+    filter: none;
+  }
+}
+@media print {
+  body.editorial.skin-warm-deck .lesson-hero,
+  body.editorial :is(.app .sidebar, .identity-card, .sidebar-badge) {
+    box-shadow: none;
+  }
+  .dl-emblem {
+    filter: none;
+  }
+}

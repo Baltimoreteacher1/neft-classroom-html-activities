@@ -11,7 +11,7 @@ theme (the browser substitutes the system palette), so it is verified in a brows
 
 - Color tokens: 93 in 8 families (amber, green, ink, navy, paper, red, teal, unit); cap 12 families per page.
 - Unit accents: 10 (accent, ink, tint each) and 10 motifs. One unit is active per page.
-- Font sizes: 8 (cap 8). Radii: 5 (cap 6). Shadows: 5 (cap 6).
+- Font sizes: 8 (cap 8). Radii: 5 (cap 6). Shadows: 6 (cap 6).
 - Motion: 3 durations, 2 easings.
 
 ## Brand alignment with engine/design/tokens.json

@@ -68,11 +68,17 @@ import "@engine/styles/notebook-checkpoint.css";
 // Both load LAST so they win by order over the skin layers above them.
 import "@engine/styles/ds-tokens.generated.css";
 import "@engine/styles/publisher-v2.css";
+// Dimensional chrome (ceramic surfaces, keycaps, unit emblems). Loads after every
+// skin layer so it wins by order; it styles chrome only, never the maths surface.
+import "@engine/styles/dimension-lesson.css";
+import "@engine/styles/dimension-lesson-content.css";
+import { emblemHtml, markLessonUnit } from "./lesson-dimension.js";
 
 export function createApp(config) {
   const root = document.getElementById("app");
   root.innerHTML = "";
   root.className = "app";
+  markLessonUnit(config);
 
   // Arrow / Page / Home / End keys scroll the lesson — including the Vocab,
   // Learn It and Guided Notes takeovers, which lock the document scroller and
@@ -678,6 +684,7 @@ function showIdentityScreen(root, config) {
       <div class="identity-hero lesson-cover-hero">
         <p class="identity-meta">Grade 6 Reveal Math · Unit ${config.unit} · Lesson ${config.lesson ?? ""}</p>
         <div class="identity-unit-badge">Unit ${config.unit}</div>
+        ${emblemHtml(config, "dl-emblem dl-emblem--cover")}
         <div class="identity-emoji" aria-hidden="true">${themeEmoji}</div>
         <h1 class="identity-title">${escHtml(config.title)}</h1>
         <p class="identity-sub">${escHtml(config.standard)}</p>
@@ -2777,6 +2784,7 @@ function buildLessonHero(config, _state, _phaseConfigs) {
   hero.setAttribute("aria-label", "Lesson overview");
   hero.innerHTML = `
     <div class="lesson-hero-top">
+      ${emblemHtml(config, "dl-emblem dl-emblem--hero")}
       <div>
         <h1 class="lesson-hero-title">${escHtml(config.title)}</h1>
         <div class="lesson-hero-meta">${escHtml(config.standard)} · Unit ${config.unit} · ${escHtml(lessonTimeEstimate(config))}</div>

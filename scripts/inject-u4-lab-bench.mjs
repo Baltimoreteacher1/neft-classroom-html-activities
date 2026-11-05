@@ -45,6 +45,8 @@ const CLARITY = ["assets/studio/clarity.css", "assets/studio/clarity.js"];
 const THINKING = "assets/u4-studio-thinking.js";
 const TYPE = "assets/u4-studio-type.js";
 const INVESTIGATION_STYLE = "assets/u4-adaptive-investigation.css";
+/** The dimensional layer, last in <head> so it wins over every studio sheet (shared tokens first). */
+const DIMENSION = ["assets/dimension.css", "assets/studio-dimension.css"];
 const INVESTIGATION_SCRIPT = "assets/u4-adaptive-investigation.js";
 const HEAD_BEGIN = "<!-- u4-clarity:begin (scripts/inject-u4-lab-bench.mjs) -->";
 const HEAD_BLOCK = /\n?[ \t]*<!-- u4-clarity:begin[\s\S]*?<!-- u4-clarity:end -->/g;
@@ -76,9 +78,10 @@ const THEME_BOOT =
 /** The shared clarity layer and the "My thinking" panel for <head>, stamped with a hash of their own files. */
 function headBlock(/** @type {string} */ slug) {
   const h = createHash("sha1");
-  for (const f of [...CLARITY, THINKING, TYPE, INVESTIGATION_STYLE]) h.update(read(f));
+  for (const f of [...CLARITY, THINKING, TYPE, INVESTIGATION_STYLE, ...DIMENSION])
+    h.update(read(f));
   const v = h.digest("hex").slice(0, 10);
-  return `\n  ${HEAD_BEGIN}\n  ${THEME_BOOT}\n  <link rel="stylesheet" href="/${CLARITY[0]}?v=${v}">\n  <link rel="stylesheet" href="/${INVESTIGATION_STYLE}?v=${v}">\n  <script src="/${CLARITY[1]}?v=${v}" defer></script>\n  <script type="application/json" id="u4-traps">${json(usedTraps(slug))}</script>\n  <script src="/${THINKING}?v=${v}" defer></script>\n  <script src="/${TYPE}?v=${v}" defer></script>\n  <!-- u4-clarity:end -->`;
+  return `\n  ${HEAD_BEGIN}\n  ${THEME_BOOT}\n  <link rel="stylesheet" href="/${CLARITY[0]}?v=${v}">\n  <link rel="stylesheet" href="/${INVESTIGATION_STYLE}?v=${v}">\n${DIMENSION.map((f) => `  <link rel="stylesheet" href="/${f}?v=${v}">\n`).join("")}  <script src="/${CLARITY[1]}?v=${v}" defer></script>\n  <script type="application/json" id="u4-traps">${json(usedTraps(slug))}</script>\n  <script src="/${THINKING}?v=${v}" defer></script>\n  <script src="/${TYPE}?v=${v}" defer></script>\n  <!-- u4-clarity:end -->`;
 }
 
 function stamps() {

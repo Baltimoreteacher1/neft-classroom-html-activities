@@ -19,6 +19,7 @@ import "./flagship.css";
 // The editorial design layer is now loaded engine-wide by createApp
 // (engine/styles/editorial.css); flagship inherits it like every lesson.
 import { stackHtml, t } from "../../core/i18n.js";
+import { emblemHtml, markLessonUnit } from "../../core/lesson-dimension.js";
 import { isToolsMode } from "../../core/tools-mode.js";
 
 // The engine runs THREE acts now (Warm-Up / Lesson / Exit Ticket), not the old
@@ -73,8 +74,10 @@ export function bootFlagship(config) {
   // phase by overriding config.explore.type (additive — only when provided).
   const mergedConfig = applySimulation(config, fl);
 
-  // Mark the body so flagship CSS scopes apply.
+  // Mark the body so flagship CSS scopes apply, and so the mission card (which
+  // shows before createApp runs) takes the lesson's unit colour.
   document.body.classList.add("flagship");
+  markLessonUnit(config);
 
   // Show the mission intro, then boot the underlying phase engine and attach
   // the narrative HUD that updates per scene.
@@ -182,6 +185,7 @@ function showMissionIntro(fl, config, onStart) {
   overlay.setAttribute("aria-label", "Mission briefing");
   overlay.innerHTML = `
     <div class="flagship-mission-card">
+      ${emblemHtml(config, "dl-emblem dl-emblem--mission")}
       <div class="flagship-mission-emoji">${config.themeEmoji || "🚀"}</div>
       <div class="flagship-mission-eyebrow">${esc(mission.eyebrow || "Mission Briefing")}</div>
       <h1 class="flagship-mission-title">${esc(mission.title || config.title)}</h1>

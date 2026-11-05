@@ -131,6 +131,8 @@ function assetPlan(/** @type {Map<string, string>} */ built) {
     "assets/studio/clarity.css",
     "assets/workspace/problem-workspace.css",
     "assets/studio-comfort.css",
+    "assets/dimension.css",
+    "assets/studio-dimension.css",
   ];
   const h = createHash("sha1");
   for (const f of [...styles, ...scripts, "assets/studio/finder.js"])

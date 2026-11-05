@@ -13,6 +13,7 @@
  * [data-persona-btn], [data-hw-tonight-time], #hw_text_link, #hw_email_link, #hw_offline_btn.
  */
 import { readFileSync } from "node:fs";
+import { familyHomeScene } from "../../tools/lib/iso-art.mjs";
 import { icon } from "./family-icons.mjs";
 import { act } from "./homework-actions.mjs";
 import { bi } from "./homework-v3-learn.mjs";
@@ -244,7 +245,7 @@ export function renderHero({
   topBar,
   sheet = "",
 }) {
-  const art = `<div class="fm-hero__art" aria-hidden="true">${unitScene(unit)}</div>`;
+  const art = `<div class="fm-hero__art" aria-hidden="true">${unitScene(unit)}${familyHomeScene(unit)}</div>`;
   const eyebrow = `<p class="fm-eyebrow hw-hero-kicker"><span class="fm-motif fm-motif--sm" aria-hidden="true"></span><span class="fm-eyebrow__text"><span class="lang-en">Unit ${esc(unit)}${unitTitle.en ? ` · ${esc(unitTitle.en)}` : ""}</span><span class="lang-es" lang="es">Unidad ${esc(unit)}${unitTitle.es ? ` · ${esc(unitTitle.es)}` : ""}</span></span></p>`;
   const h1 = `<h1 class="fm-hero__title hw-hero-lesson-title"><span class="lang-en">${esc(title.en)}</span><span class="lang-es" lang="es">${esc(title.es)}</span></h1>`;
   const meta = `<p class="fm-hero__meta hw-hero-lesson-meta"><span class="lang-en">${esc(pageLabel.en)}</span><span class="lang-es" lang="es">${esc(pageLabel.es)}</span></p>`;

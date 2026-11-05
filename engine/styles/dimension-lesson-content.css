@@ -1,0 +1,286 @@
+/* Dimensional chrome for lesson content: cards, callouts, section headers, step
+   keycaps and buttons. Imported by dimension-lesson.css, which documents the rules.
+
+   Depth is chrome only. This file never styles an equation strip, tape diagram,
+   number line, interactive visual, the Math Workbench, an answer choice or an
+   input: those keep their flat, high-contrast rendering. Elevation uses the shared
+   --dm-e1/e2/e3 tokens; colour comes from the engine's --ds-* tokens and the lesson's
+   unit colour (--dl-unit, set in dimension-lesson.css). */
+
+/* ---- Ceramic cards: lit top, thickness lip, a unit-coloured top edge ---- */
+body.editorial .phase .card:not(.card .card) {
+  border: 1px solid var(--dm-line);
+  border-top: 3px solid var(--dl-unit);
+  border-radius: var(--dm-radius);
+  box-shadow: var(--dm-e1);
+}
+body.editorial .phase .card:not(.card .card, .card-teal, .card-amber, .card-coral) {
+  background: linear-gradient(180deg, #fff 0%, var(--fl-page) 100%);
+}
+body.editorial .phase .card-teal:not(.card .card) {
+  border-top-color: var(--ds-accent-ink);
+}
+body.editorial .phase :is(.card-amber, .card-coral):not(.card .card) {
+  border-top-color: var(--ds-highlight-ink);
+}
+
+/* ---- Section header: a ceramic strip with the icon as a keycap ---- */
+body.editorial .section-header {
+  background: linear-gradient(180deg, #fff, var(--dm-paper));
+  border: 1px solid var(--dm-line);
+  border-left: 5px solid var(--dl-unit);
+  border-radius: var(--dm-radius);
+  box-shadow: var(--dm-e1);
+}
+body.editorial .section-icon {
+  background-image: linear-gradient(180deg, rgb(255 255 255 / 0.3), rgb(255 255 255 / 0) 60%);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.3),
+    0 3px 0 rgb(13 39 61 / 0.32);
+}
+
+/* The section icon lands once (motion.css) and then stays put: nothing loops. */
+@media (prefers-reduced-motion: no-preference) {
+  body.editorial .app .section-header .section-icon {
+    animation: motionIconLand 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  }
+}
+
+/* ---- Callouts: one elevation, a lit edge, the unit edge on the left ---- */
+body.editorial
+  :is(
+    .instruction-callout,
+    .launch-prelesson-hint,
+    .vl-formula-card,
+    .vl-example-card,
+    .vl-misconception-card,
+    .vl-tryit-card,
+    .vl-turntalk-card,
+    .nt-nb-copy-panel,
+    .flagship-scene-hud
+  ) {
+  border-radius: var(--dm-radius-sm);
+  box-shadow: var(--dm-e1);
+}
+body.editorial :is(.vl-formula-card, .vl-example-card, .nt-nb-copy-panel, .flagship-scene-hud) {
+  border-left: 5px solid var(--dl-unit);
+}
+
+/* ---- Learn It panel: the step surface is a ceramic layer, the tool block sits in a tray ---- */
+body.editorial .vl-step-body {
+  background: linear-gradient(180deg, #fff, var(--fl-page));
+  border: 1px solid var(--dm-line);
+  border-top: 3px solid var(--dl-unit);
+  border-radius: var(--dm-radius);
+  box-shadow: var(--dm-e1);
+}
+body.editorial :is(.vl-tool-block, .vl-check-reveal, .vl-confidence-widget, .lesson-course-nav, .phase-subcards-ribbon) {
+  box-shadow: var(--dm-e1);
+}
+body.editorial .lesson-course-nav {
+  border-radius: var(--dm-radius-sm);
+}
+body.editorial .vl-conf-btn {
+  box-shadow: var(--dm-lit), 0 3px 0 rgb(23 50 77 / 0.2);
+  transition:
+    transform 0.14s var(--dm-ease),
+    box-shadow 0.14s var(--dm-ease);
+}
+body.editorial .vl-conf-btn:active {
+  transform: translateY(2px);
+  box-shadow: var(--dm-lit), 0 1px 0 rgb(23 50 77 / 0.2);
+}
+
+/* ---- Step chips (Warm-Up, Math Notes, Objectives ...): keycaps ---- */
+body.editorial .act-step-chip {
+  box-shadow:
+    var(--dm-lit),
+    0 3px 0 rgb(23 50 77 / 0.2);
+  transition:
+    transform 0.14s var(--dm-ease),
+    box-shadow 0.14s var(--dm-ease);
+}
+body.editorial a.act-step-chip:hover,
+body.editorial button.act-step-chip:hover {
+  transform: translateY(-1px);
+  box-shadow:
+    var(--dm-lit),
+    0 4px 0 rgb(23 50 77 / 0.22);
+}
+body.editorial :is(a, button).act-step-chip:active {
+  transform: translateY(2px);
+  box-shadow:
+    var(--dm-lit),
+    0 1px 0 rgb(23 50 77 / 0.2);
+}
+body.editorial .act-step-chip.is-current {
+  box-shadow:
+    var(--dm-lit),
+    0 3px 0 var(--dl-unit);
+}
+body.editorial .act-step-chip.is-done {
+  box-shadow:
+    var(--dm-lit),
+    0 1px 0 rgb(23 50 77 / 0.2);
+  transform: translateY(2px);
+}
+body.editorial .act-step-num {
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.3),
+    0 2px 0 rgb(13 39 61 / 0.28);
+}
+
+/* ---- Buttons: keycaps. Lit top, a 3px lower edge, press down 2px. ---- */
+body.editorial.skin-warm-deck :is(.btn, .btn-primary, .btn-check, .btn-next) {
+  transition:
+    transform 0.14s var(--dm-ease),
+    box-shadow 0.14s var(--dm-ease),
+    background 0.14s var(--dm-ease);
+}
+body.editorial.skin-warm-deck :is(.btn-primary, .btn-check, .btn-next) {
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.32),
+    0 3px 0 color-mix(in srgb, var(--ds-accent-ink) 55%, #000),
+    0 8px 12px -6px rgb(13 39 61 / 0.4);
+}
+body.editorial.skin-warm-deck :is(.btn-primary, .btn-check, .btn-next):hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.36),
+    0 4px 0 color-mix(in srgb, var(--ds-accent-ink) 55%, #000),
+    0 12px 16px -8px rgb(13 39 61 / 0.45);
+}
+body.editorial.skin-warm-deck :is(.btn-primary, .btn-check, .btn-next):active:not(:disabled) {
+  transform: translateY(2px);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.22),
+    0 1px 0 color-mix(in srgb, var(--ds-accent-ink) 55%, #000);
+}
+body.editorial.skin-warm-deck .btn-primary:disabled {
+  box-shadow: none;
+}
+body.editorial.skin-warm-deck :is(.btn-secondary, .btn-outline) {
+  background: linear-gradient(180deg, #fff, var(--dm-paper));
+  box-shadow:
+    var(--dm-lit),
+    0 3px 0 rgb(23 50 77 / 0.2);
+}
+body.editorial.skin-warm-deck :is(.btn-secondary, .btn-outline):hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow:
+    var(--dm-lit),
+    0 4px 0 rgb(23 50 77 / 0.22);
+}
+body.editorial.skin-warm-deck :is(.btn-secondary, .btn-outline):active:not(:disabled) {
+  transform: translateY(2px);
+  box-shadow:
+    var(--dm-lit),
+    0 1px 0 rgb(23 50 77 / 0.2);
+}
+/* The fixed "Next" control: navy keycap with a unit lip. */
+body.editorial .nt-next-phase-btn {
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.22),
+    0 4px 0 var(--dm-night),
+    0 14px 22px -10px rgb(13 39 61 / 0.6);
+  transition:
+    transform 0.14s var(--dm-ease),
+    box-shadow 0.14s var(--dm-ease);
+}
+body.editorial .nt-next-phase-btn:hover {
+  transform: translateY(-1px);
+}
+body.editorial .nt-next-phase-btn:active {
+  transform: translateY(3px);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.18),
+    0 1px 0 var(--dm-night);
+}
+
+/* ---- Key Vocabulary hero: stays on the locked navy surface (set with !important
+   in assets/lesson-publisher-polish.css). Depth only, contrast unchanged. ---- */
+body.editorial .vl-hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border: 1px solid rgb(255 255 255 / 0.14);
+  border-bottom: 5px solid var(--dm-brass);
+  border-radius: var(--dm-radius);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.2),
+    0 2px 4px rgb(13 39 61 / 0.1),
+    0 24px 40px -16px rgb(13 39 61 / 0.5);
+}
+body.editorial .vl-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(55% 80% at 92% 12%, rgb(31 166 162 / 0.26), transparent 70%),
+    repeating-linear-gradient(0deg, transparent 0 21px, rgb(255 255 255 / 0.045) 21px 22px),
+    repeating-linear-gradient(90deg, transparent 0 21px, rgb(255 255 255 / 0.045) 21px 22px);
+}
+body.editorial .vl-hero :is(.vl-hero-badge, .vl-hero-speak-btn) {
+  backdrop-filter: none;
+}
+body.editorial .vl-hero-speak-btn {
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.28),
+    0 3px 0 rgb(0 0 0 / 0.3);
+}
+body.editorial .vl-hero-speak-btn:active {
+  transform: translateY(2px);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.2),
+    0 1px 0 rgb(0 0 0 / 0.3);
+}
+
+/* ---- Motion, contrast, print ---- */
+@media (prefers-reduced-motion: reduce) {
+  body.editorial :is(.act-step-chip, .btn, .nt-next-phase-btn, .vl-hero-speak-btn) {
+    transition: none;
+  }
+  body.editorial
+    :is(.act-step-chip, .btn, .nt-next-phase-btn, .vl-hero-speak-btn):is(:hover, :active) {
+    transform: none;
+  }
+}
+@media (prefers-contrast: more), (forced-colors: active) {
+  body.editorial .phase .card:not(.card .card),
+  body.editorial
+    :is(
+      .section-header,
+      .section-icon,
+      .act-step-chip,
+      .act-step-num,
+      .vl-hero,
+      .vl-hero-speak-btn
+    ),
+  body.editorial
+    :is(.instruction-callout, .launch-prelesson-hint, .vl-formula-card, .vl-example-card),
+  body.editorial
+    :is(
+      .vl-misconception-card,
+      .vl-tryit-card,
+      .vl-turntalk-card,
+      .nt-nb-copy-panel,
+      .flagship-scene-hud
+    ),
+  body.editorial.skin-warm-deck
+    :is(.btn, .btn-primary, .btn-check, .btn-next, .btn-secondary, .btn-outline),
+  body.editorial .nt-next-phase-btn {
+    box-shadow: none;
+  }
+  body.editorial .vl-hero::before {
+    display: none;
+  }
+}
+@media print {
+  body.editorial .phase .card:not(.card .card),
+  body.editorial :is(.section-header, .vl-hero),
+  body.editorial.skin-warm-deck :is(.btn, .btn-primary, .btn-secondary) {
+    box-shadow: none;
+  }
+}
