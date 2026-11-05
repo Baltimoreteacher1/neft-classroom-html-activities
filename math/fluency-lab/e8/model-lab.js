@@ -2,7 +2,8 @@
 // Guided Solver. Everything on screen is derived from one engine state; every control is a real <button>, and the
 // pictures also take pointer and (for many models) arrow-key input. Nothing here is timed.
 import { getLang } from "../i18n.js";
-import { MathVisualEngine, esc, seeded } from "./engine-core.js";
+import { MathVisualEngine, bi, esc, seeded } from "./engine-core.js";
+import { THREE_MODEL_IDS } from "./three/registry.js";
 import {
   GuidedSolver,
   buildPlan,
@@ -36,13 +37,122 @@ export class Workspace {
     this.engine = null;
     this.focusId = null;
     this.locked = false;
-    host.addEventListener("click", (event) => this.click(event));
-    host.addEventListener("keydown", (event) => this.key(event));
+    this.three = null;
+    this.threeModelId = "";
+    this.threeLoading = false;
+    this.threeToken = 0;
+    this.threeLang = "";
+    this.handleClick = (event) => this.click(event);
+    this.handleKey = (event) => this.key(event);
+    host.addEventListener("click", this.handleClick);
+    host.addEventListener("keydown", this.handleKey);
+  }
+
+  destroy() {
+    this.destroyThree();
+    this.host.removeEventListener("click", this.handleClick);
+    this.host.removeEventListener("keydown", this.handleKey);
+    this.host.replaceChildren();
   }
 
   show(engine) {
     this.engine = engine;
+    if (!engine) this.destroyThree();
     this.paint();
+  }
+
+  destroyThree() {
+    this.threeToken += 1;
+    this.threeLoading = false;
+    this.three?.destroy?.();
+    this.three = null;
+    this.threeModelId = "";
+    this.threeLang = "";
+  }
+
+  syncThree() {
+    const slot = this.host.querySelector(".e8ml-three-shell");
+    if (!slot || !this.engine) {
+      this.destroyThree();
+      return;
+    }
+    const modelId = slot.dataset.e8Three;
+    const language = getLang() === "es" ? "es" : "en";
+    const update = () => {
+      const engine = this.engine;
+      if (!engine || !this.three) return;
+      const description = engine.model.describe?.(engine.state, engine.params);
+      this.three.update({
+        state: engine.state,
+        params: engine.params,
+        derived: engine.model.derive(engine.state, engine.params),
+        description: pick(description),
+      });
+    };
+    if (this.three && this.threeModelId === modelId && this.threeLang === language) {
+      this.three.attach(slot);
+      update();
+      return;
+    }
+    if (this.threeModelId !== modelId || this.threeLang !== language) this.destroyThree();
+    if (this.threeLoading) return;
+    this.threeLoading = true;
+    this.threeModelId = modelId;
+    this.threeLang = language;
+    const token = ++this.threeToken;
+    import("./three/registry.js")
+      .then(({ mountThreeModel }) =>
+        mountThreeModel(modelId, slot, {
+          lang: language,
+          state: this.engine?.state,
+          params: this.engine?.params,
+          onAction: (action) => {
+            if (this.locked) {
+              this.afterMove({
+                ok: false,
+                reason: pick(
+                  bi(
+                    "This model is paused for this lesson step. Continue to the build step to make a change.",
+                    "Este modelo está en pausa durante este paso. Continúa al paso de construcción para cambiarlo.",
+                  ),
+                ),
+              });
+              return;
+            }
+            this.act(action);
+          },
+        }),
+      )
+      .then((view) => {
+        this.threeLoading = false;
+        if (token !== this.threeToken || this.threeModelId !== modelId) {
+          view?.destroy?.();
+          return;
+        }
+        if (!view) return this.fallbackThree(slot);
+        this.three = view;
+        const latestSlot = this.host.querySelector(".e8ml-three-shell");
+        if (latestSlot) this.three.attach(latestSlot);
+        update();
+      })
+      .catch(() => {
+        this.threeLoading = false;
+        if (token === this.threeToken) this.fallbackThree(this.host.querySelector(".e8ml-three-shell"));
+      });
+  }
+
+  fallbackThree(slot) {
+    if (!slot) return;
+    slot.dataset.renderer = "fallback";
+    slot.setAttribute("role", "status");
+    slot.textContent = pick(
+      bi(
+        "The 3D view is unavailable in this browser. Open the accessible 2D model below and keep working.",
+        "La vista 3D no está disponible en este navegador. Abre el modelo 2D accesible y continúa.",
+      ),
+    );
+    const fallback = slot.parentElement?.querySelector(".e8ml-2d-fallback");
+    if (fallback) fallback.open = true;
   }
 
   click(event) {
@@ -106,6 +216,7 @@ export class Workspace {
   paint() {
     const e = this.engine;
     if (!e) {
+      this.destroyThree();
       this.host.innerHTML = "";
       return;
     }
@@ -114,6 +225,10 @@ export class Workspace {
     const visualHadFocus = Boolean(active?.classList?.contains("e8ml-visual") && this.host.contains(active));
     const lang = getLang() === "es" ? "es" : "en";
     const variants = Object.values(views.variants).join("");
+    const threeEnabled = THREE_MODEL_IDS.includes(e.model.id);
+    const visual = threeEnabled
+      ? `<div class="e8ml-three-shell" data-e8-three="${esc(e.model.id)}"></div><details class="e8ml-2d-fallback"><summary>${esc(L("Use the accessible 2D model", "Usar el modelo 2D accesible"))}</summary><div class="e8ml-2d-model">${views.visual}${variants}</div></details>`
+      : `${views.visual}${variants}`;
     const controls = e
       .controls()
       .map(
@@ -123,7 +238,7 @@ export class Workspace {
       .join("");
     const problems = e.verify();
     this.host.innerHTML = `
-      <div class="e8ml-visual" tabindex="0" role="group" aria-label="${esc(pick(e.model.title))}. ${esc(pick(views.concrete))}">${views.visual}${variants}</div>
+      <div class="e8ml-visual" tabindex="0" role="group" aria-label="${esc(pick(e.model.title))}. ${esc(pick(views.concrete))}">${visual}</div>
       <div class="e8ml-linked" aria-label="${esc(L("Linked views", "Vistas conectadas"))}">
         <p class="e8ml-words"><span class="e8ml-tag">${esc(L("In words", "En palabras"))}</span> ${esc(pick(views.verbal))}</p>
         <p class="e8ml-symbols"><span class="e8ml-tag">${esc(L("In symbols", "En símbolos"))}</span> <span class="e8ml-eq">${esc(views.symbolic)}</span></p>
@@ -144,6 +259,7 @@ export class Workspace {
         )
       : null;
     if (target && !target.disabled) target.focus({ preventScroll: true });
+    this.syncThree();
   }
 }
 
@@ -390,6 +506,7 @@ export function mountModelLab(
     },
     destroy() {
       stopTimer();
+      workspace.destroy();
       container.innerHTML = "";
     },
   };

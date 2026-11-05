@@ -165,6 +165,7 @@ export function mountItemPractice(
 
   let workspace = null;
   function mountModel(it) {
+    workspace?.destroy();
     workspace = null;
     const holder = host.querySelector("[data-ip-model]");
     if (!holder) return;
@@ -418,6 +419,8 @@ export function mountItemPractice(
   menu();
   return {
     destroy: () => {
+      workspace?.destroy();
+      workspace = null;
       host.innerHTML = "";
     },
   };
