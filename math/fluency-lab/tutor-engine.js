@@ -4,6 +4,7 @@ import { sanitizeRescues } from "./rescue-history.js";
 import { REVIEW_LADDER, ladderIndex, masteryScore, masteryState, nextInterval } from "./mastery-model.js";
 import { classifyMistake, isKnownMistakeCategory, likelyMistake } from "./mistake-notes.js";
 import { ALL_SKILLS, GENERATOR_PARTS, baseGenerator, generateProblem, getGrade, opsOf, resolveOp, seededRandom } from "./problem-bank.js";
+import { storyFor } from "./story-problems.js";
 
 export const DAY = 86400000;
 const SPACING_MS = 18 * 3600 * 1000;
@@ -473,20 +474,83 @@ export function recommendations(tutor, grade, now = Date.now()) {
 export function dailyPlan(tutor, grade, now = Date.now()) {
   const ranked = recommendations(tutor, grade, now);
   const focus = ranked[0];
+  const byKey = new Map(ranked.map((entry) => [skillKey(entry.skill), entry]));
+  const relatedPrerequisites = prerequisites(focus.skill).map((skill) => byKey.get(skillKey(skill)) || ({
+    skill,
+    status: evidence(tutor, skill, now),
+    reason: "Strengthen an earlier idea this skill builds on.",
+  }));
+  const weak = (entry) => {
+    const unresolved = tutor.mistakes.some((mistake) => mistake.key === skillKey(entry.skill) && !mistake.resolvedAt);
+    const diagnosticMiss = tutor.diagnostics?.[entry.skill.grade]?.results?.[skillKey(entry.skill)] === false;
+    return unresolved || (entry.status.independent >= 2 && entry.status.ratio < 0.75) || diagnosticMiss;
+  };
+  const repair = relatedPrerequisites.filter(weak).sort((a, b) => a.status.ratio - b.status.ratio)[0]
+    || null;
   const review = ranked.filter((entry) => entry.status.recent.length && entry !== focus);
-  const newSkill = ranked.find((entry) => !entry.status.recent.length && entry !== focus) || ranked[1];
   const daySeed = Number(localDay(now).replaceAll("-", "")) + grade * 997;
   const rng = seededRandom(daySeed);
-  // Reviews that the 1/3/7/14/30-day ladder says are due come first, most overdue first. // fl4:adaptive
-  const due = review.filter((entry) => entry.status.due).sort((a, b) => a.status.reviewDueAt - b.status.reviewDueAt);
-  const reviewPool = review.length ? review : ranked.slice(1);
-  const refresh = Array.from({ length: 3 }, (_, i) => due[i] || reviewPool[(Math.floor(rng() * reviewPool.length) + i) % reviewPool.length]);
-  return [focus, refresh[0], focus, newSkill, refresh[1], focus, newSkill, refresh[2], focus, ranked[1]].map((entry, index) => ({
-    key: skillKey(entry.skill),
-    purpose: [0, 2, 5, 8].includes(index) ? "Build confidence" : [3, 6].includes(index) ? "Connect a new idea" : index === 9 ? "Finish independently" : "Remember it again",
-    reason: entry.reason,
-    ...(entry.status.due ? { reviewDueAt: entry.status.reviewDueAt, reviewStep: entry.status.reviewStep } : {}),
-  }));
+  const due = ranked.filter((entry) => entry.status.due).sort((a, b) => a.status.reviewDueAt - b.status.reviewDueAt);
+  const practiced = review.length ? review : ranked.filter((entry) => entry !== focus && entry.status.due);
+  let transferProblem = null;
+  for (let attempt = 0; attempt < 24 && !transferProblem; attempt += 1) {
+    const candidate = adaptiveProblem(focus.skill, rng, 3);
+    transferProblem = storyFor(candidate, rng, focus.skill);
+  }
+  const hasTransfer = Boolean(transferProblem);
+  const explore = repair ? null : ranked.find((entry) =>
+    entry !== focus && !entry.status.recent.length &&
+    prerequisites(entry.skill).every((prerequisite) => evidence(tutor, prerequisite, now).secure));
+
+  let targetSlots = repair ? 3 : 4;
+  const repairSlots = repair ? 3 : 0;
+  const retrievalSlots = practiced.length ? (repair ? 2 : 3) : 0;
+  targetSlots += Math.max(0, 10 - targetSlots - repairSlots - retrievalSlots - Number(hasTransfer) - Number(Boolean(explore)) - 1);
+  const dueWithoutFocus = due.filter((entry) => entry !== focus);
+  const refresh = Array.from({ length: retrievalSlots }, (_, i) => dueWithoutFocus[i] || practiced[(Math.floor(rng() * Math.max(1, practiced.length)) + i) % Math.max(1, practiced.length)] || focus);
+  // Transfer stays on the focus skill. A new skill is a separate exploration item, and it only opens
+  // when its recorded prerequisites are secure.
+  const stretch = focus.status.secure;
+  const independentClose = {
+    entry: focus,
+    category: stretch ? "stretch" : "independent",
+    purpose: "Finish independently",
+  };
+  const choices = [
+    ...Array.from({ length: targetSlots }, () => ({ entry: focus, category: "target", purpose: "Build confidence" })),
+    ...Array.from({ length: repairSlots }, () => ({ entry: repair, category: "repair", purpose: "Repair a foundation" })),
+    ...refresh.map((entry) => ({ entry, category: "retrieval", purpose: "Remember it again" })),
+    ...(hasTransfer ? [{ entry: focus, category: "transfer", purpose: "Apply it in a new context", transfer: true, generated: transferProblem }] : []),
+    ...(explore ? [{ entry: explore, category: "explore", purpose: "Explore something new" }] : []),
+    independentClose,
+  ];
+  // Keep the ten-item contract and include each due review when there is room, even when several skills are overdue.
+  for (const entry of due) {
+    if (choices.some((choice) => choice.entry === entry)) continue;
+    let replace = -1;
+    for (let index = choices.length - 1; index >= 0; index -= 1)
+      if (["stretch", "transfer", "explore"].includes(choices[index].category)) { replace = index; break; }
+    if (replace >= 0) choices[replace] = { entry, category: "retrieval", purpose: "Remember it again" };
+    else break;
+  }
+  const categoryIndex = {};
+  return choices.slice(0, 10).map(({ entry, category, purpose, transfer: isTransfer, generated }, index) => {
+    const ordinal = categoryIndex[category] || 0;
+    categoryIndex[category] = ordinal + 1;
+    const independent = category === "retrieval" || category === "transfer" || category === "independent" || category === "stretch" || (category === "target" && index >= 2) || (category === "repair" && ordinal >= 2);
+    return {
+      key: skillKey(entry.skill),
+      purpose,
+      category,
+      reason: category === "target" || category === "repair" || category === "explore" ? entry.reason : category === "retrieval" ? (entry.status.due ? "A spaced review is due." : "Bring a recent skill back to mind.") : category === "transfer" ? "Apply the same skill in a new context." : category === "stretch" ? "You have shown this skill independently; try a deeper problem." : "Try one independently to stretch your thinking.",
+      independent,
+      ...(category === "repair" ? { unlocks: skillKey(focus.skill) } : {}),
+      ...(isTransfer ? { transfer: true } : {}),
+      ...(generated ? { generated } : {}),
+      ...((category === "stretch" ? { tier: 4 } : independent ? { tier: 3 } : {})),
+      ...(entry.status.due ? { reviewDueAt: entry.status.reviewDueAt, reviewStep: entry.status.reviewStep } : {}),
+    };
+  });
 }
 
 // A short, grade-anchored sequence: check the selected skill, visit one relevant
@@ -565,6 +629,7 @@ export function sanitizeTutor(value) {
       results: Object.fromEntries(Object.entries(diagnostic.results).filter(([key, result]) => findSkill(key)?.grade === grade && typeof result === "boolean")),
       // Foundation probes reach into earlier grades, so they are keyed by any skill at or below this grade.
       foundations: Object.fromEntries(Object.entries(diagnostic.foundations || {}).filter(([key, result]) => findSkill(key)?.grade <= grade && typeof result === "boolean")),
+      unsure: [...new Set((Array.isArray(diagnostic.unsure) ? diagnostic.unsure : []).filter((key) => findSkill(key)?.grade <= grade))],
     };
   }
   clean.rescues = sanitizeRescues(value.rescues); // fl4:adaptive

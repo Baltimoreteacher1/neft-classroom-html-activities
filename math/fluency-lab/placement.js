@@ -87,7 +87,8 @@ export function recordCheckupAnswer(session, key, correct, { unsure = false } = 
 
   if (unsure) {
     checkup.unsure.push(key);
-    if (purpose !== PURPOSE.foundation) session.diagnosticResults[key] = false;
+    // A learner's uncertainty is useful context, but it is not a wrong answer or gap evidence.
+    delete session.diagnosticResults[key];
   } else if (purpose === PURPOSE.foundation) {
     checkup.foundations[key] = correct;
     if (!correct) probeFoundation(skill);

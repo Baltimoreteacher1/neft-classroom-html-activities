@@ -223,6 +223,13 @@ assert.equal(state(masteredStrand, "place-million"), "mastered");
   assert.equal(continueTarget(sections).skill.id, "place-million");
   assert.equal(continueTarget(sections).action.mode, "visual");
 }
+// A learner who chose "I'm not sure yet" gets a neutral next step, not a gap label.
+{
+  const uncertain = learner({
+    diagnostics: { 4: { at: NOW, results: {}, foundations: {}, unsure: ["4:division"] } },
+  });
+  assert.ok(!idsOf(recommend(uncertain, GRADE, NOW), "fixAGap").includes("division"));
+}
 {
   const sections = recommend(midGrade, GRADE, NOW);
   assert.deepEqual(

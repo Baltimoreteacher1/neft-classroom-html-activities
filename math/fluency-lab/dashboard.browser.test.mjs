@@ -96,6 +96,10 @@ try {
     assert.equal(await page.locator('#mode-tabs [data-mode="visual"]').getAttribute("aria-selected"), "true", "a new skill opens as a picture lesson");
     await page.locator("#back-library").click();
     await page.getByRole("heading", { name: "Welcome. Here is your first step." }).waitFor();
+    await page.locator("#daily-ten").click();
+    await page.locator("#workspace-view").waitFor({ state: "visible" });
+    assert.match(await page.locator("#session-type").innerText(), /Today’s 10|Today's 10/);
+    assert.match(await page.locator("#session-insight").innerText(), /Build confidence|Explore something new/);
     await context.close();
   }
 

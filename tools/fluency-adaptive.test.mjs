@@ -498,6 +498,106 @@ function practise(tutor, entry, answers, start) {
   );
 }
 
+// ---- adaptive WonderMix ----------------------------------------------------------------------------
+{
+  const fresh = emptyTutor();
+  const first = dailyPlan(fresh, 3, T0);
+  eq(first.length, 10, "WonderMix keeps the simple ten-problem student session");
+  eq(
+    first.map((entry) => entry.category),
+    dailyPlan(fresh, 3, T0).map((entry) => entry.category),
+    "same evidence and day produce a stable mix",
+  );
+  eq(
+    first.filter((entry) => entry.category === "target").length,
+    7,
+    "fresh learners get focused target practice without fabricated retrieval evidence",
+  );
+  eq(
+    first.filter((entry) => entry.category === "retrieval").length,
+    0,
+    "retrieval is omitted until the learner has something previously practiced",
+  );
+  eq(
+    first.filter((entry) =>
+      ["transfer", "stretch", "independent", "explore"].includes(entry.category),
+    ).length,
+    3,
+    "the session includes contextual transfer, prerequisite-ready exploration, and an independent application",
+  );
+  const firstTransfer = first.find((entry) => entry.category === "transfer");
+  ok(firstTransfer.transfer, "the transfer item is explicitly marked for contextual generation");
+  eq(firstTransfer.key, first[0].key, "transfer keeps the focus skill and changes its context");
+  ok(
+    firstTransfer.independent && firstTransfer.tier === 3,
+    "transfer is an independent grade-level check",
+  );
+  ok(
+    firstTransfer.generated?.story,
+    "the transfer task is a prepared contextual problem, not a renamed question",
+  );
+  ok(
+    first
+      .filter((entry) => entry.category === "target")
+      .slice(2)
+      .every((entry) => entry.tier === 3),
+    "later target questions fade support and request grade-level independent work",
+  );
+
+  const learner = emptyTutor();
+  learner.diagnostics[3] = { at: T0, results: { "3:area": false } };
+  for (const [index, sig] of ["base-miss-a", "base-miss-b"].entries())
+    recordAnswer(
+      learner,
+      findSkill("3:mul-0-5"),
+      { correct: false, independent: true, level: 1, sig },
+      T0 + index * 1000,
+    );
+  const adaptive = dailyPlan(learner, 3, T0 + DAY);
+  eq(
+    adaptive.filter((entry) => entry.category === "target").length,
+    4,
+    "a detected foundation need trims repeated target items and uses unsupported transfer time for the focus skill",
+  );
+  const repairs = adaptive.filter((entry) => entry.category === "repair");
+  eq(repairs.length, 3, "a probable prerequisite gap allocates three targeted repair problems");
+  ok(
+    repairs.every((entry) => entry.key === "3:mul-0-5"),
+    "repair problems target the evidenced multiplication prerequisite",
+  );
+  ok(
+    adaptive.filter((entry) => entry.category === "retrieval").length === 2,
+    "retrieval stays in the mix during prerequisite repair",
+  );
+  ok(repairs.at(-1).independent, "the final repair problem fades support for independent evidence");
+  ok(
+    adaptive.filter((entry) => entry.category === "retrieval").every((entry) => entry.independent),
+    "retrieval checks begin independently",
+  );
+
+  const crossGrade = emptyTutor();
+  crossGrade.diagnostics[4] = { at: T0, results: { "4:multiply-1digit": false } };
+  crossGrade.diagnostics[3] = { at: T0, results: { "3:mul-6-9": false } };
+  const crossGradePlan = dailyPlan(crossGrade, 4, T0 + DAY);
+  ok(
+    crossGradePlan.some((entry) => entry.category === "repair" && entry.key === "3:mul-6-9"),
+    "a prerequisite gap in an earlier grade automatically enters the learner's mix",
+  );
+  ok(
+    crossGradePlan
+      .filter((entry) => entry.category === "repair")
+      .every((entry) => entry.unlocks === "4:multiply-1digit"),
+    "a learner can see the grade-level skill the prerequisite repair supports",
+  );
+
+  const noStoryTransfer = dailyPlan(emptyTutor(), 0, T0);
+  eq(noStoryTransfer.length, 10, "a grade without a valid story variant still gets ten tasks");
+  ok(
+    noStoryTransfer.every((entry) => entry.category !== "transfer"),
+    "the plan does not label an unchanged problem as transfer",
+  );
+}
+
 // ---- saves --------------------------------------------------------------------------------------------------
 {
   const old = {

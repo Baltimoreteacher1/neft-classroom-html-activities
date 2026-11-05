@@ -267,8 +267,13 @@ for (let i = 0; i < 11; i++) {
 }
 assert.equal(
   Object.keys(savedTutor().diagnostics[4].results).length,
+  0,
+  "Uncertain checkup responses do not count as correct or incorrect evidence",
+);
+assert.equal(
+  savedTutor().diagnostics[4].unsure.length,
   11,
-  "Checkup records every skill once",
+  "Checkup stores uncertainty separately from evidence",
 );
 assert.equal(JSON.stringify(savedTutor().records), recordsBefore, "Checkups do not award mastery");
 assert.match($("#summary-title").textContent, /starting-point/);

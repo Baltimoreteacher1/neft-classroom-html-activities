@@ -505,6 +505,20 @@ function displayRecommendationReason(reason) {
     "Explore something new": t("Explore something new"),
     "Keep this skill fresh": t("Keep this skill fresh"),
     "Build independent confidence": t("Build independent confidence"),
+    "Build confidence": t("Build confidence"),
+    "Repair a foundation": t("Repair a foundation"),
+    "Remember it again": t("Remember it again"),
+    "Connect a new idea": t("Connect a new idea"),
+    "Apply it in a new context": t("Apply it in a new context"),
+    "Apply the same skill in a new context.": t("Apply the same skill in a new context."),
+    "It supports {skill}.": t("It supports {skill}."),
+    "Strengthen an earlier idea this skill builds on.": t("Strengthen an earlier idea this skill builds on."),
+    "You have shown this skill independently; try a deeper problem.": t("You have shown this skill independently; try a deeper problem."),
+    "Finish independently": t("Finish independently"),
+    "A spaced review is due.": t("A spaced review is due."),
+    "Bring a recent skill back to mind.": t("Bring a recent skill back to mind."),
+    "Connect this goal to a related idea.": t("Connect this goal to a related idea."),
+    "Try one independently to stretch your thinking.": t("Try one independently to stretch your thinking."),
   };
   return translated[reason] || reason;
 }
@@ -828,6 +842,7 @@ function nextProblem(restoredItem = null) {
   const queueEntry = state.session.queue?.[state.session.answered];
   const missionIndependent = state.session.mode === "mission" && ["Starting point", "Try independently", "Transfer"].includes(queueEntry?.purpose);
   const repairIndependent = state.session.mode === "repair" && queueEntry?.independent === true;
+  const plannedIndependent = adapting && queueEntry?.independent === true;
   // fl4:adaptive five-tier difficulty: independent evidence picks the tier, a queue entry may pin one, and the tier maps onto the 0-2 generator levels.
   let tier = adapting ? (queueEntry?.tier ?? nextTier(state.tutor.records[tutorSkillKey(skill)])) : 3;
   if (missionIndependent || repairIndependent) tier = Math.max(tier, 3);
@@ -841,7 +856,7 @@ function nextProblem(restoredItem = null) {
     for (let attempt = 0; attempt < 20; attempt++) {
       state.item = adaptiveItem(skill, state.session.rng, tier); // fl4:adaptive
       // About one problem in four is a story version of the same numbers, never in the checkup.
-      if (state.session.storyMode || queueEntry?.transfer) state.item = storyFor(state.item, state.session.rng) || state.item;
+      if (state.session.storyMode || queueEntry?.transfer) state.item = storyFor(state.item, state.session.rng, skill) || state.item;
       else if (state.session.mode !== "diagnostic" && level >= 1 && state.session.rng() < 0.25) state.item = storyFor(state.item, state.session.rng) || state.item;
       if (!state.recentQuestions.includes(state.item.question)) break;
     }
@@ -864,7 +879,7 @@ function nextProblem(restoredItem = null) {
   state.hintBeforeFirst = Boolean(queueEntry?.original);
   if (els.languageSlot) els.languageSlot.innerHTML = "";
   const missionSupport = state.session.mode === "mission" && queueEntry?.purpose === "Build with support";
-  state.initialSupport = state.session.mode === "guided" || missionSupport || Boolean(queueEntry?.original) || Boolean(queueEntry?.forceGuided) || (adapting && level === 0 && tier <= 1 && !state.forceIndependentFirst && !missionIndependent && !repairIndependent) || (!restoredItem && consumeScaffold(state.session, tutorSkillKey(skill))) || (state.session.mode === "assignment" && state.assignment?.mode === "guided");
+  state.initialSupport = state.session.mode === "guided" || missionSupport || Boolean(queueEntry?.original) || Boolean(queueEntry?.forceGuided) || (adapting && level === 0 && tier <= 1 && !state.forceIndependentFirst && !missionIndependent && !repairIndependent && !plannedIndependent) || (!plannedIndependent && !restoredItem && consumeScaffold(state.session, tutorSkillKey(skill))) || (state.session.mode === "assignment" && state.assignment?.mode === "guided");
   state.forceIndependentFirst = false;
   state.guidedStepsShown = state.session.mode === "guided" ? 1 : 0;
   els.feedback.hidden = true;
@@ -897,7 +912,9 @@ function nextProblem(restoredItem = null) {
   formatProblemArena(state.item);
   els.topic.textContent = `${skill.title} · ${gradeDisplay(skill.grade)}`;
   document.querySelector("#problem-language-support").innerHTML = state.session.mode === "diagnostic" ? spanishPeekHtml(state.item) : problemSupportHtml(skill, state.item);
-  els.insight.textContent = state.session.mode === "diagnostic" ? (queueEntry?.purpose === "Second look" ? t("One miss is not enough to decide, so here is a fresh one. Choose “I’m not sure yet” whenever you need to.") : queueEntry?.purpose === "Foundation check" ? t("A short look at an earlier idea this builds on. Choose “I’m not sure yet” whenever you need to.") : t("A miss gets a second look before it counts. Choose “I’m not sure yet” whenever you need to.")) : queueEntry?.reason ? `${queueEntry.purpose}. ${t("This skill was suggested because")}: ${displayRecommendationReason(queueEntry.reason)}.` : queueEntry?.purpose || (state.initialSupport ? "A smaller step with coaching. We’ll build back toward independent work." : adapting && level === 2 ? "Your recent answers were strong. Try this one independently, then explain a check." : adapting ? "Work at your pace. Help is here when you need it." : "");
+  const unlockSkill = queueEntry?.unlocks ? findSkill(queueEntry.unlocks) : null;
+  const relatedReason = unlockSkill ? ` ${t("It supports {skill}.", { skill: t(unlockSkill.title) })}` : "";
+  els.insight.textContent = state.session.mode === "diagnostic" ? (queueEntry?.purpose === "Second look" ? t("One miss is not enough to decide, so here is a fresh one. Choose “I’m not sure yet” whenever you need to.") : queueEntry?.purpose === "Foundation check" ? t("A short look at an earlier idea this builds on. Choose “I’m not sure yet” whenever you need to.") : t("A miss gets a second look before it counts. Choose “I’m not sure yet” whenever you need to.")) : queueEntry?.reason ? `${displayRecommendationReason(queueEntry.purpose || "Build confidence")}. ${t("This skill was suggested because")}: ${displayRecommendationReason(queueEntry.reason)}.${relatedReason}` : queueEntry?.purpose ? displayRecommendationReason(queueEntry.purpose) : (state.initialSupport ? "A smaller step with coaching. We’ll build back toward independent work." : adapting && level === 2 ? "Your recent answers were strong. Try this one independently, then explain a check." : adapting ? "Work at your pace. Help is here when you need it." : "");
   const activityEvidence = readInstructionalEvidence(instructionalEvidenceState).filter((entry) => entry.activity === tutorSkillKey(skill));
   const priorSupport = activityEvidence.some((entry) => entry.condition === "supported");
   const recoveredIndependently = priorSupport && independentRecoveryCount(activityEvidence, tutorSkillKey(skill)) > 0;
@@ -7386,7 +7403,7 @@ function finishSession() {
     renderMastery();
   }
   if (session.mode === "diagnostic") {
-    state.tutor.diagnostics[state.grade] = { at: Date.now(), results: session.diagnosticResults, foundations: session.checkup?.foundations || {} };
+    state.tutor.diagnostics[state.grade] = { at: Date.now(), results: session.diagnosticResults, foundations: session.checkup?.foundations || {}, unsure: session.checkup?.unsure || [] };
     els.summaryTitle.textContent = t("Your starting-point checkup");
     els.summaryCopy.textContent = checkupCopy(checkupSummary(session));
   }
@@ -8488,7 +8505,7 @@ mathKeypad.addEventListener("click", (event) => {
     input.setSelectionRange(start + value.length, start + value.length);
     keypadSelection = { start: start + value.length, end: start + value.length };
   }
-  input.dispatchEvent(new Event("input", { bubbles: true }));
+  input.dispatchEvent(new window.Event("input", { bubbles: true }));
 });
 
 els.choiceAnswers.addEventListener("click", (event) => {
@@ -8721,7 +8738,7 @@ document.querySelector("#scratchpad-backgrounds")?.addEventListener("click", (ev
 document.querySelector("#lang-toggle").addEventListener("click", () => {
   setLang(getLang() === "es" ? "en" : "es");
   applyLang();
-  window.dispatchEvent(new Event("fluency-lang-changed"));
+  window.dispatchEvent(new window.Event("fluency-lang-changed"));
   renderGradeTabs();
   if (state.view === "games") openHubView("games");
   else if (state.view === "teacher") openHubView("teacher"); // fl4:teacher
@@ -10060,12 +10077,12 @@ function initVoiceControl() {
             const qInp = els.tptQuickInput || document.querySelector("#tpt-quick-input");
             if (qInp) {
               qInp.value = parsed;
-              els.tptQuickForm?.dispatchEvent(new Event("submit", { cancelable: true, bubbles: true }));
+              els.tptQuickForm?.dispatchEvent(new window.Event("submit", { cancelable: true, bubbles: true }));
             }
           } else {
             if (els.answerInput) {
               els.answerInput.value = parsed;
-              els.answerForm?.dispatchEvent(new Event("submit", { cancelable: true, bubbles: true }));
+              els.answerForm?.dispatchEvent(new window.Event("submit", { cancelable: true, bubbles: true }));
             }
           }
         };

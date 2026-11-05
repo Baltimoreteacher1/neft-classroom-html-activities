@@ -68,9 +68,12 @@ assert.ok(shortened > 0, "a strong learner skips at least one prerequisite somew
   const { session, asked, summary } = run(6, strong, [unsureKey]);
   assert.equal(asked.filter((entry) => entry.key === unsureKey).length, 1, "asked once, not pushed with a second look");
   assert.ok(!asked.some((entry) => entry.purpose !== PURPOSE.initial));
-  assert.equal(session.diagnosticResults[unsureKey], false, "not credited as a pass");
+  assert.equal(Object.hasOwn(session.diagnosticResults, unsureKey), false, "uncertainty is not stored as a wrong answer");
+  assert.deepEqual(session.checkup.unsure, [unsureKey], "uncertainty remains separate diagnostic context");
   assert.deepEqual(summary.unsure, [findSkill(unsureKey).title]);
   assert.deepEqual(summary.gaps, [], "unsure is not a gap");
+  const stored = sanitizeTutor({ ...emptyTutor(), diagnostics: { 6: { at: 1, results: {}, foundations: {}, unsure: [unsureKey, "3:mul-0-5", "unknown"] } } });
+  assert.deepEqual(stored.diagnostics[6].unsure, [unsureKey, "3:mul-0-5"], "unsure context persists and accepts only known skills up to the learner grade");
 }
 
 // A real gap: two misses mark the skill, then exactly the authored foundation is probed. A passed foundation stops there.
