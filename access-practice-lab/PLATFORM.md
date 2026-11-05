@@ -16,6 +16,8 @@ show it independently → watch growth. Direct activity links and the quick-prac
 | Writing Studio | `/write`, `/write/<task>`, `/write?tab=portfolio` | `content/studio/writing.json`, `src/views/write.js` |
 | Language Error Detective | `/detective`, `/detective/<pattern>` | `content/detective/patterns.json`, `src/lang/errors.js` |
 | Growth Map | `/growth` | `src/lang/ledger.js` profile |
+| My Language Path (student home) | `/path` | `src/views/path.js`, `path-data.js`, `path.css`; engines `src/lang/{dna,constellation,readiness,mission}.js` |
+| Scaffold tools (Sentence Architecture, Evidence Builder, Language Upgrade Lab) | `/scaffold`, `/scaffold/<sentence-architecture|evidence-builder|language-upgrade>?item=<id>` | `src/content/scaffold-items.js`, `src/lang/scaffold-check.js`, `src/views/scaffold*.js` |
 | Teacher dashboard | `/access-teacher/` (top panel) | `access-teacher/evidence.js`, `src/lang/teacher.js` |
 | Optional entry check-in | `/diagnostic[/<Listening|Reading|Speaking|Writing>]` | `src/views/diagnostic.js` |
 | Language World · Science Exhibition | `/exhibition`, `/exhibition/<listen|read|speak|write|teacher>` | `src/content/exhibition.js`, `src/lang/exhibition.js`, `src/views/exhibition*.js`, `exhibition.css` |
@@ -25,6 +27,18 @@ show it independently → watch growth. Direct activity links and the quick-prac
 | Teacher Launch Studio | `/launch-studio`, `/launch`, `/teacher-launch` | `src/views/launch-studio.js`, `launch-studio.css` |
 
 The check-in records only answer correctness and skill tags for its short, original Listening/Reading prompts; Speaking/Writing prompts save a reflection-completed flag but never retain the response or recording. It gives an instructional starting suggestion, not a proficiency result. Teacher launch URLs contain an existing activity ID and instructional settings, never learner data. Language Worlds feature eight consequential, visually complete missions per world per grade band with domain mechanics (dispatch, evidence, dialogue, publishing) and independent transfer, alongside field practice activities. Whole-Class Studio provides projector-ready routines with source card marking, non-drag sequence building, scaffold toggles, and sample models without storing student responses. Word Builder provides spaced-retrieval academic morphology practice (1-, 3-, 7-day intervals) grounded in WIDA ELD Standards Framework 2020 contexts.
+
+### My Language Path and the scaffold tools
+
+`/path` shows the next mission (`chooseNextMission`), the Language DNA (practice evidence counts and the current support
+condition per domain), the Growth Constellation (node graph plus a list alternative), readiness recommendations and the
+last ledger entry. Official ACCESS results are typed in the teacher's browser against the teacher's roster, so the student
+device has none: the page says a teacher can add them and never derives a level, score or percentage (the engines'
+teacher-facing decision rules and the readiness criterion that names a percentage are not shown). The scaffold tools start
+at the DNA condition for Writing; the learner chooses that or "On my own" before anything renders, "Ask for more help"
+marks the attempt supported, and every changed check is a ledger entry (`src: "scaffold"`, first then revisions) with
+`analyze.js` features so it reaches the skill graph. Checks: `node --test tools/access-path.test.mjs`,
+`node tools/access-path-e2e.mjs`.
 
 ### Language World (the Science Exhibition)
 

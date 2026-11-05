@@ -5602,6 +5602,12 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/access-teacher/predictive/",
+    title: "Predictive Intelligence — ACCESS Teacher Hub",
+    category: "Tool",
+    unit: null,
+  },
+  {
     path: "/activity-studio/",
     title: "Neft Teacher Activity Studio",
     category: "Tool",

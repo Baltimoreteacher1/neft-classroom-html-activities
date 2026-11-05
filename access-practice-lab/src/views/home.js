@@ -173,6 +173,7 @@ export async function render(ctx) {
   return {
     title: "",
     html: html`${journeyHeroHTML(I, band, journey.state, journey.recommendation, { headingId: "homeTitle", bandSwitch: bandSwitchHTML(band, ctx.bands) })}
+      <a class="pa-home-link" data-path-link href="${BASE}/path?grades=${band}">${icon("growth")}<span><strong>${I.T("My Language Path", "Mi camino del lenguaje")}</strong><span class="fine">${I.T("My next mission, my Language DNA and how my skills connect.", "Mi próxima misión, mi ADN del lenguaje y cómo se conectan mis destrezas.")}</span></span>${icon("arrow-right")}</a>
 
 
       ${familyMessage ? html`<aside class="student-family-note panel"><strong>${ctx.prefs.lang === "es" ? "Un mensaje de tu familia" : "A message from your family"}</strong><p lang="${ctx.prefs.lang === "es" ? "es" : "en"}">“${ctx.prefs.lang === "es" ? familyMessage[1] : familyMessage[0]}”</p>${ctx.prefs.lang === "bi" ? html`<p lang="es">“${familyMessage[1]}”</p>` : ""}</aside>` : ""}

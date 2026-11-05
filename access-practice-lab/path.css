@@ -1,0 +1,312 @@
+/* My Language Path (/path); the scaffold tools have scaffold.css. Layout only; tokens and shared
+   components (.panel, .btn, .chip, .feedback) come from ds.css. Light theme only. */
+
+.pa-home-link {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  min-height: 3.5rem;
+  margin: var(--s-4) 0;
+  padding: var(--s-3) var(--s-4);
+  border: 2px solid var(--brand);
+  border-radius: var(--radius);
+  background: var(--brand-soft);
+  color: var(--ink);
+  text-decoration: none;
+}
+.pa-home-link > span {
+  display: grid;
+  flex: 1;
+  min-width: 0;
+}
+.pa-home-link:hover {
+  background: var(--surface);
+}
+
+.pa-head {
+  margin: var(--s-4) 0 var(--s-5);
+}
+.pa-head h1 {
+  margin: 0.2em 0;
+  overflow-wrap: anywhere;
+}
+.pa-top {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  gap: var(--s-4);
+  align-items: start;
+}
+.pa-top > .panel,
+.pa-dna,
+.pa-constellation,
+.pa-goal {
+  margin-bottom: var(--s-4);
+}
+
+.pa-mission {
+  border-top: 6px solid var(--room);
+}
+.pa-mission h2 {
+  margin-top: 0.2em;
+}
+.pa-facts {
+  display: grid;
+  gap: var(--s-2);
+  margin: var(--s-3) 0;
+}
+.pa-facts div {
+  display: grid;
+  grid-template-columns: minmax(0, 10rem) minmax(0, 1fr);
+  gap: var(--s-2);
+}
+.pa-facts dt {
+  font-weight: 700;
+  color: var(--ink-2);
+}
+.pa-facts dd {
+  margin: 0;
+}
+.pa-retrieval {
+  padding: var(--s-2) var(--s-3);
+  border-radius: var(--radius-sm);
+  background: var(--hint-soft);
+  color: var(--ink);
+}
+.pa-go {
+  margin: var(--s-2) 0;
+}
+.pa-why {
+  margin-top: var(--s-3);
+}
+.pa-why summary,
+.pa-outline summary {
+  min-height: var(--target);
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.pa-dna-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 15rem) minmax(0, 1fr);
+  gap: var(--s-4);
+  align-items: center;
+}
+.pa-dna-svg {
+  width: 100%;
+  max-width: 15rem;
+  height: auto;
+  justify-self: center;
+}
+.pa-petal {
+  fill: var(--room);
+  stroke: var(--room);
+  stroke-width: 2;
+  cursor: pointer;
+}
+.pa-petal.is-selected {
+  stroke: var(--ink);
+  stroke-width: 5;
+}
+.pa-dna-core {
+  fill: var(--surface);
+  stroke: var(--ink);
+  stroke-width: 2;
+}
+.pa-dna-buttons {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--s-2);
+}
+.pa-dna-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  min-height: var(--target);
+  padding: var(--s-2) var(--s-3);
+  border: 2px solid var(--room);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--room-ink);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+.pa-dna-btn[aria-pressed="true"] {
+  background: var(--room);
+  color: #fff;
+}
+.pa-dna-detail {
+  margin-top: var(--s-4);
+  padding: var(--s-3) var(--s-4);
+  border-radius: var(--radius);
+  background: var(--room-soft);
+  border: 1px solid color-mix(in srgb, var(--room) 28%, transparent);
+}
+.pa-dna-detail h3 {
+  margin-top: 0;
+}
+.pa-official {
+  font-weight: 700;
+}
+.pa-note {
+  margin-top: var(--s-3);
+}
+
+.pa-graph {
+  position: relative;
+  display: grid;
+  gap: var(--s-5);
+  padding: var(--s-3) 0;
+}
+.pa-edges {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: visible;
+}
+.pa-edges line {
+  stroke: var(--line-strong);
+  stroke-width: 2;
+}
+.pa-layer {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--s-3);
+}
+.pa-node {
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--s-1);
+  width: 9.5rem;
+  min-height: var(--target);
+  padding: var(--s-2);
+  border: 2px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.9rem;
+  line-height: 1.25;
+  text-align: center;
+  cursor: pointer;
+}
+.pa-node[aria-pressed="true"] {
+  border-color: var(--brand);
+  box-shadow: 0 0 0 3px var(--brand-soft);
+}
+.pa-glyph {
+  width: 2rem;
+  height: 2rem;
+}
+.pa-glyph-track {
+  fill: var(--surface);
+  stroke: var(--line-strong);
+  stroke-width: 3;
+}
+.pa-glyph-fill {
+  fill: none;
+  stroke: var(--sage-900);
+  stroke-width: 5;
+}
+.pa-node-detail {
+  margin: var(--s-4) 0;
+  padding: var(--s-3) var(--s-4);
+  border-radius: var(--radius);
+  background: var(--surface-2);
+}
+.pa-node-detail h3 {
+  margin-top: 0;
+}
+.pa-outline ul {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: var(--s-2);
+}
+.pa-outline-btn {
+  width: 100%;
+  min-height: var(--target);
+  padding: var(--s-2) var(--s-3);
+  text-align: left;
+  font: inherit;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--ink);
+  cursor: pointer;
+}
+.pa-outline-btn[aria-pressed="true"] {
+  border-color: var(--brand);
+  background: var(--brand-soft);
+}
+
+.pa-recs {
+  padding-left: 1.2rem;
+  display: grid;
+  gap: var(--s-4);
+}
+.pa-recs h3 {
+  margin: 0;
+}
+.pa-empty {
+  font-weight: 700;
+}
+.pa-tools {
+  margin: var(--s-5) 0;
+}
+.pa-tool-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--s-3);
+}
+.pa-tool {
+  display: flex;
+  gap: var(--s-3);
+  align-items: flex-start;
+  min-height: var(--target);
+  padding: var(--s-3) var(--s-4);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--ink);
+  text-decoration: none;
+}
+.pa-tool > span {
+  display: grid;
+  gap: var(--s-1);
+  min-width: 0;
+}
+.pa-tool:hover {
+  border-color: var(--brand);
+}
+.pa-disclaimer {
+  margin-top: var(--s-5);
+}
+
+@media (max-width: 860px) {
+  .pa-top {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .pa-tool-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@media (max-width: 640px) {
+  .pa-dna-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .pa-facts div {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+  .pa-node {
+    width: calc(50% - var(--s-3));
+  }
+}

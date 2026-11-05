@@ -54,6 +54,8 @@ import * as learnView from "./views/learn.js";
 import * as realityView from "./views/reality.js";
 import * as exhibitionView from "./views/exhibition.js";
 import * as journeyView from "./views/journey.js";
+import * as pathView from "./views/path.js";
+import * as scaffoldView from "./views/scaffold.js";
 
 export const BUILD = "2026.11.04.1";
 const VIEWS = {
@@ -62,6 +64,8 @@ const VIEWS = {
   reality: realityView,
   exhibition: exhibitionView,
   journey: journeyView,
+  path: pathView,
+  scaffold: scaffoldView,
   "session-done": homeView,
   stories: storiesView,
   ladder: ladderView,
@@ -117,7 +121,7 @@ export function parseRoute(pathname = location.pathname, search = location.searc
   if (a === "worlds") {
     return { ...r, view: "worlds", id: b || "", worldId: b || "", missionId: c || "", tab: q.get("tab") || "" };
   }
-  if (["learn", "reality", "exhibition", "tests", "family", "passport", "tools", "library", "missions", "mission", "conversation", "construction", "evidence", "growth", "speak", "write", "detective", "launch", "launch-studio", "teacher-launch", "classroom", "vocabulary", "flashcards", "stories", "ladder", "puzzles", "publisher-demo", "games", "assess"].includes(a)) {
+  if (["learn", "reality", "exhibition", "tests", "family", "passport", "tools", "library", "missions", "mission", "conversation", "construction", "evidence", "growth", "speak", "write", "detective", "launch", "launch-studio", "teacher-launch", "classroom", "vocabulary", "flashcards", "stories", "ladder", "puzzles", "publisher-demo", "games", "assess", "path", "scaffold"].includes(a)) {
     return { ...r, view: a, id: b || "", missionId: b || "", scenarioId: b || "", tab: q.get("tab") || "" };
   }
   if (a === "journey") return { ...r, view: "journey", id: b || "", rest: parts.slice(1) };

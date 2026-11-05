@@ -39,6 +39,7 @@ const PRACTICE_VIEWS = new Set([
   "tests",
   "test",
   "assess",
+  "scaffold",
 ]);
 const ACTIVE = {
   home: "home",
@@ -55,6 +56,7 @@ const ACTIVE = {
   exhibition: "play",
   puzzles: "play",
   growth: "growth",
+  path: "growth",
   passport: "growth",
   road: "growth",
   family: "family",
@@ -164,6 +166,8 @@ function menuGroups(band, T) {
       title: T("My Learning Journey", "Mi viaje de aprendizaje"),
       items: [
         link("road", T("Continue my journey", "Continuar mi viaje"), "journey"),
+        link("growth", T("My Language Path", "Mi camino del lenguaje"), "path"),
+        link("writing", T("Language builders", "Constructores de lenguaje"), "scaffold"),
         link("flag", T("My Journey Map", "Mi mapa del viaje"), "journey/map"),
       ],
     },

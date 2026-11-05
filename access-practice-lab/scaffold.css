@@ -1,0 +1,306 @@
+/* Scaffold tools (/scaffold/*): Sentence Architecture, Evidence Builder, Language Upgrade Lab. Layout only;
+   tokens and shared components come from ds.css; the chooser grid reuses .pa-tool from path.css. */
+.sc-target {
+  color: var(--ink-2);
+}
+.sc-start {
+  max-width: 46rem;
+}
+.sc-start-actions,
+.sc-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-3);
+  margin: var(--s-3) 0;
+}
+.sc-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-2);
+  padding: var(--s-2) var(--s-3);
+  margin-bottom: var(--s-3);
+  border-radius: var(--radius-sm);
+  background: var(--sage-200);
+  color: var(--ink);
+}
+.sc-bar p {
+  margin: 0;
+}
+.sc-model {
+  margin-bottom: var(--s-4);
+  padding: var(--s-3) var(--s-4);
+  border-left: 6px solid var(--sage-900);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+}
+.sc-model h3 {
+  margin-top: 0;
+}
+.sc-model-text {
+  font-weight: 700;
+}
+.sc-work {
+  display: grid;
+  gap: var(--s-3);
+}
+.sc-slots {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.sc-slot {
+  display: grid;
+  min-width: 7rem;
+  max-width: 100%;
+  min-height: 3.5rem;
+  padding: var(--s-2) var(--s-3);
+  border: 2px dashed var(--line-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  overflow-wrap: anywhere;
+}
+.sc-slot.is-filled {
+  border-style: solid;
+  border-color: var(--copper-900);
+  background: #fff8ef;
+}
+.sc-slot.is-target {
+  border-color: var(--brand);
+  box-shadow: 0 0 0 3px var(--brand-soft);
+}
+.sc-slot.is-flagged {
+  border-color: var(--wrong);
+}
+.sc-slot-label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--ink-2);
+}
+.sc-bank {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+}
+.sc-tile {
+  display: grid;
+  min-height: var(--target);
+  max-width: 100%;
+  padding: var(--s-2) var(--s-3);
+  border: 2px solid var(--copper-900);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+  text-align: left;
+  cursor: grab;
+  touch-action: none;
+  overflow-wrap: anywhere;
+}
+.sc-tile small {
+  font-size: 0.8rem;
+  color: var(--ink-2);
+}
+.sc-tile.is-connector {
+  border-color: var(--brand);
+}
+.sc-tile[aria-pressed="true"] {
+  background: var(--brand);
+  border-color: var(--brand);
+  color: #fff;
+}
+.sc-tile[aria-pressed="true"] small {
+  color: #fff;
+}
+.sc-tile.is-used {
+  opacity: 0.62;
+  border-style: dashed;
+}
+.sc-tile.is-dragging {
+  position: relative;
+  z-index: 5;
+  pointer-events: none;
+  box-shadow: var(--shadow-lift);
+}
+.sc-preview {
+  margin: 0;
+  padding: var(--s-2) var(--s-3);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+}
+.sc-claim,
+.sc-before {
+  margin: 0;
+  padding: var(--s-3);
+  border-radius: var(--radius-sm);
+  background: var(--brand-soft);
+}
+.sc-sub {
+  margin: var(--s-2) 0 0;
+  font-size: 1.05rem;
+}
+.sc-cards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--s-2);
+}
+.sc-card {
+  min-height: var(--target);
+  padding: var(--s-3);
+  border: 2px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.sc-card[aria-pressed="true"] {
+  border-color: var(--brand);
+  background: var(--brand-soft);
+}
+.sc-card.is-flagged {
+  border-color: var(--wrong);
+}
+.sc-chosen {
+  display: grid;
+  gap: var(--s-2);
+  padding-left: 1.4rem;
+  margin: 0;
+}
+.sc-chosen li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-2);
+}
+.sc-chosen li > span:first-child {
+  flex: 1 1 14rem;
+  min-width: 0;
+}
+.sc-order {
+  display: flex;
+  gap: var(--s-1);
+}
+.sc-order .btn {
+  min-width: var(--target);
+}
+.sc-order .flip {
+  transform: rotate(180deg);
+}
+.sc-connector-set {
+  display: grid;
+  gap: var(--s-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: var(--s-3);
+  margin: 0;
+}
+.sc-radio {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-2);
+  min-height: var(--target);
+  cursor: pointer;
+}
+.sc-radio input {
+  width: 1.4rem;
+  height: 1.4rem;
+}
+.sc-radio small {
+  flex-basis: 100%;
+  padding-left: 2rem;
+  color: var(--ink-2);
+}
+.sc-frame {
+  margin: 0;
+}
+.sc-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+  align-items: center;
+}
+.sc-label {
+  font-weight: 700;
+}
+.sc-text {
+  width: 100%;
+  min-height: 7rem;
+  padding: var(--s-3);
+  font: inherit;
+  border: 2px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--ink);
+  box-sizing: border-box;
+}
+.sc-compare {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--s-3);
+}
+.sc-compare > div {
+  padding: var(--s-3);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+}
+.sc-compare h3 {
+  margin: 0 0 var(--s-1);
+  font-size: 1rem;
+}
+.sc-checks {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: var(--s-1);
+}
+.sc-checks .is-ok {
+  color: var(--right);
+}
+.sc-checks .is-no {
+  color: var(--hint);
+}
+.sc-hint {
+  padding: var(--s-2) var(--s-3);
+  border-radius: var(--radius-sm);
+  background: var(--hint-soft);
+}
+.sc-history summary {
+  min-height: var(--target);
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+.sc-next {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-3);
+  margin-top: var(--s-3);
+}
+.sc-next p {
+  flex-basis: 100%;
+  margin: 0;
+}
+
+@media (max-width: 640px) {
+  .sc-cards,
+  .sc-compare {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .sc-slot {
+    min-width: 0;
+    flex: 1 1 8rem;
+  }
+}
