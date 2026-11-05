@@ -1634,6 +1634,12 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/curriculum/family-connections/math-studio/",
+    title: "Family Math Studio",
+    category: "Activity",
+    unit: null,
+  },
+  {
     path: "/curriculum/family-connections/meetings/",
     title: "Family meetings",
     category: "Activity",
@@ -5188,7 +5194,7 @@ export const ACTIVITIES = [
   },
   {
     path: "/curriculum/family-connections/",
-    title: "Family Math Studio",
+    title: "Family Math Studio · Family Connections",
     category: "Hub",
     unit: null,
   },

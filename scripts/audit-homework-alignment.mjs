@@ -159,10 +159,10 @@ const REQUIRED_MARKERS = [
   {
     id: "no-curriculum",
     test: (h) => {
-      // Allow the AI Learning Lab and the Weekly Practice Sheet. The general Math Workbench is
+      // Allow the AI Learning Lab, Weekly Practice Sheet, and Family Math Studio. The general Math Workbench is
       // intentionally excluded because this page embeds only its lesson-matched tool.
       const stripped = h.replace(
-        /\/curriculum\/(?:ai-hub|family-connections\/weekly-sheet)\/[^"'\s]*/gi,
+        /\/curriculum\/(?:ai-hub|family-connections\/(?:weekly-sheet|math-studio))\/[^"'\s]*/gi,
         "",
       );
       return (
