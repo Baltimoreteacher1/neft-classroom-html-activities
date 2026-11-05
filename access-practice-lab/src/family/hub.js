@@ -119,6 +119,7 @@ export async function render(ctx, I) {
         <h2 id="famRecoTitle">${I.L("hub.reco.heading")}</h2>
         ${reco.length
           ? html`<p class="fam-basis ${options.history ? "is-history" : "is-start"}">${I.L(options.history ? "hub.reco.basis.history" : "hub.reco.basis.start")}</p>
+            ${options.retrievalCount ? html`<p class="fine">${I.L("hub.reco.retrieval")}</p>` : ""}
             <ol class="plan-preview">
               ${reco.map((r) => html`<li><span class="plan-dot d-${r.domain.toLowerCase()}">${skillIcon(r.domain)}</span><span><span lang="en">${r.title}</span><span class="fine">${skillName(I, r.domain)} · ${I.L("common.minutes", { n: sessionMinutes([r]) })}</span></span></li>`)}
             </ol>

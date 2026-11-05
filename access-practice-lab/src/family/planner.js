@@ -10,8 +10,10 @@ import { SKILLS, crumbs, gradeSwitch, skillIcon, skillName, subnavHTML } from ".
 const query = () => new URLSearchParams(location.search);
 
 function sessionCard(I, { key, title, plan, band, basis, emptyKey, d }) {
+  const retrieval = plan.some((row) => row.status === "review");
   const body = plan.length
     ? html`<p class="fine">${I.L("plan.size", { n: plan.length, min: sessionMinutes(plan) })}${basis ? html` · ${I.L(basis)}` : ""}</p>
+        ${retrieval ? html`<p class="fine">${I.L("plan.retrieval")}</p>` : ""}
         <a class="btn btn-primary" href="${playlistHref(plan, I.LS(key), band)}">${I.L("plan.start")}${icon("arrow-right")}<span class="visually-hidden"> ${title}</span></a>`
     : html`<p class="fine">${I.L(emptyKey || "plan.none")}</p>`;
   return html`<li class="fam-session ${d ? `d-${d.toLowerCase()}` : ""}"><span class="fam-tile">${d ? skillIcon(d) : icon("star")}</span><div><h3>${title}</h3>${body}</div></li>`;

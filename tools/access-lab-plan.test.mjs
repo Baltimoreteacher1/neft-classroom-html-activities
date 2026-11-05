@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import { sessionOptions } from "../access-practice-lab/src/family/plan.js";
 import { estimateMinutes } from "../access-practice-lab/src/learning.js";
 import { activityStatus, buildPracticePlan } from "../access-practice-lab/src/practice-plan.js";
 import { CORE_DOMAINS } from "../access-practice-lab/src/util.js";
@@ -133,4 +134,46 @@ test("recommendations explain supported revisits and limit them to one per sessi
   assert.equal(plan.length, 4);
   assert.equal(plan.filter((row) => row.status === "revisit").length, 1);
   assert.match(plan[0].reason, /fresh answer independently/);
+});
+
+test("family recommendations include due skill retrieval from the learner's saved evidence", () => {
+  const now = Date.parse("2026-10-05T12:00:00.000Z");
+  const rows = CORE_DOMAINS.map((domain) => ({
+    band: "6-8",
+    domain,
+    level: "A",
+    id: `${domain}-activity`,
+    skill: "main-idea",
+    title: `${domain} practice`,
+    minutes: 6,
+  }));
+  const review = {
+    now,
+    entries: [],
+    records: {
+      "Listening:A": {
+        domain: "Listening",
+        results: {
+          "Listening-activity": {
+            ok: true,
+            skill: "main-idea",
+            supportUsed: false,
+            date: "2026-10-01T12:00:00.000Z",
+          },
+        },
+      },
+    },
+  };
+  const options = sessionOptions({
+    rows,
+    band: "6-8",
+    minutes: 5,
+    review,
+    recordFor: () => record(),
+  });
+
+  assert.equal(options.recommended[0].domain, "Listening");
+  assert.equal(options.recommended[0].status, "review");
+  assert.equal(options.retrievalCount, 1);
+  assert.match(options.recommended[0].reason, /You practiced .* on your own 4 days ago/);
 });

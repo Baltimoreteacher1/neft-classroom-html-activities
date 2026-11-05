@@ -91,6 +91,10 @@ export const STRINGS = {
     "A good place to start. Nothing is saved on this device yet, so this is a general starting point, not a measure of your child’s level.",
     "Un buen lugar para empezar. Aún no hay nada guardado en este dispositivo, así que es un punto de partida general, no una medida del nivel de su hijo o hija.",
   ),
+  "hub.reco.retrieval": s(
+    "This plan includes a quick check of a skill you practiced earlier.",
+    "Este plan incluye una comprobación breve de una destreza que practicaste antes.",
+  ),
   "hub.reco.start": s("Start this practice", "Empezar esta práctica"),
   "hub.reco.size": s("{n} activities · about {min} min", "{n} actividades · unos {min} min"),
   "hub.reco.empty": s(
@@ -194,6 +198,10 @@ export const STRINGS = {
   "plan.own": s("Choose my own activities", "Elegir mis propias actividades"),
   "plan.basis.history": s("Based on your saved practice", "Según su práctica guardada"),
   "plan.basis.start": s("General starting suggestion", "Sugerencia general para empezar"),
+  "plan.retrieval": s(
+    "Includes a quick check of a skill you practiced earlier.",
+    "Incluye una comprobación breve de una destreza que practicaste antes.",
+  ),
   "plan.size": s("{n} activities · about {min} min", "{n} actividades · unos {min} min"),
   "plan.start": s("Start", "Empezar"),
   "plan.none": s(

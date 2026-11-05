@@ -207,6 +207,57 @@ try {
     await page.context().close();
   }
 
+  // ── R: the family recommendation follows locally scheduled retrieval ─────
+  {
+    const page = await newPage({ width: 375 });
+    await page.go(`${BASE}/?grades=6-8`);
+    await page.evaluate(() => {
+      const prefix = "accessPracticeLab:v1";
+      const date = new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString();
+      localStorage.setItem(`${prefix}:prefs`, JSON.stringify({ lang: "es", langChosen: true }));
+      localStorage.setItem(
+        `${prefix}:Listening:A`,
+        JSON.stringify({
+          complete: [],
+          results: {
+            "local-retrieval-check": {
+              ok: true,
+              skill: "main-idea",
+              supportUsed: false,
+              sure: 2,
+              date,
+            },
+          },
+        }),
+      );
+    });
+    await page.go(`${BASE}/family?grades=6-8`);
+    ok(
+      (await page.text()).includes(
+        "Este plan incluye una comprobación breve de una destreza que practicaste antes.",
+      ),
+      "R: family recommendation explains due retrieval in Spanish using local evidence",
+    );
+    ok((await page.overflow()) <= 0, "R: personalized recommendation fits a 375px phone");
+    await axe(page, "family retrieval recommendation");
+    await page.shot("R-family-retrieval-375.png");
+    await page.evaluate(() => {
+      localStorage.setItem(
+        "accessPracticeLab:v1:prefs",
+        JSON.stringify({ lang: "en", langChosen: true }),
+      );
+    });
+    await page.go(`${BASE}/family?grades=6-8`);
+    ok(
+      (await page.text()).includes(
+        "This plan includes a quick check of a skill you practiced earlier.",
+      ),
+      "R: family recommendation explains due retrieval in English using local evidence",
+    );
+    clean(page, "family retrieval recommendation");
+    await page.context().close();
+  }
+
   // ── A: Spanish-speaking caregiver ─────────────────────────────────────────
   {
     const page = await newPage();

@@ -5,6 +5,7 @@
 import { estimateMinutes } from "../learning.js";
 import { buildPracticePlan } from "../practice-plan.js";
 import { allRecords, loadRecord } from "../store.js";
+import { loadLedger } from "../lang/ledger.js";
 import { BASE, CORE_DOMAINS } from "../util.js";
 
 export const DEFAULT_MINUTES = 10;
@@ -31,25 +32,41 @@ export function trimToMinutes(list, minutes) {
   return out;
 }
 
-const domainPlan = (rows, focus, tiers, recordFor) => buildPracticePlan(rows, { focus, count: 6, tiers }, recordFor);
+const domainPlan = (rows, focus, tiers, recordFor, review) =>
+  buildPracticePlan(rows, { focus, count: 6, tiers, ...(review ? { review } : {}) }, recordFor);
+
+/** Device-local evidence for the same due-review engine used by the learner home. */
+export function localReviewContext(band, now = Date.now()) {
+  const ledger = loadLedger();
+  const records = allRecords().filter((row) => row.band === band);
+  return {
+    entries: ledger.entries.filter((entry) => entry.band === band),
+    records: Object.fromEntries(
+      records.map((row) => [`${row.domain}:${row.level}`, { domain: row.domain, results: row.record.results }]),
+    ),
+    now,
+  };
+}
 
 /**
  * Every session choice the planner can offer, each a list of activity rows (possibly empty).
  * `recordFor(row)` returns a saved record; the default reads this device.
  */
-export function sessionOptions({ rows, band, minutes = 0, tiers = {}, recordFor = (r) => loadRecord(r.band, r.domain, r.level) }) {
-  const balanced = domainPlan(rows, "balanced", tiers, recordFor);
-  const byDomain = Object.fromEntries(CORE_DOMAINS.map((d) => [d, domainPlan(rows, d, tiers, recordFor)]));
+export function sessionOptions({ rows, band, minutes = 0, tiers = {}, review = localReviewContext(band), recordFor = (r) => loadRecord(r.band, r.domain, r.level) }) {
+  const balanced = domainPlan(rows, "balanced", tiers, recordFor, review);
+  const byDomain = Object.fromEntries(CORE_DOMAINS.map((d) => [d, domainPlan(rows, d, tiers, recordFor, review)]));
   const pool = CORE_DOMAINS.flatMap((d) => byDomain[d]);
   const firsts = CORE_DOMAINS.map((d) => byDomain[d][0]).filter(Boolean);
   const history = hasHistory(band);
+  const recommended = trimToMinutes(balanced, minutes);
   return {
     history,
-    recommended: trimToMinutes(balanced, minutes),
+    recommended,
     oneSkill: Object.fromEntries(CORE_DOMAINS.map((d) => [d, trimToMinutes(byDomain[d], minutes)])),
     allFour: firsts,
     continue: pool.filter((r) => r.status === "draft"),
     review: pool.filter((r) => ["retry", "revisit", "review"].includes(r.status)),
+    retrievalCount: recommended.filter((r) => r.status === "review").length,
   };
 }
 
