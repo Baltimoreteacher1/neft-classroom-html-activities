@@ -505,15 +505,13 @@ ok(
   (await page.locator(".mission-phase h2").innerText()).includes("new context") &&
     (
       await page.locator('a[href*="write/garden-transfer-shade-trial"]').getAttribute("href")
-    ).includes("suggestedStage=independent") &&
-    (
-      await page.locator('a[href*="write/garden-transfer-shade-trial"]').getAttribute("href")
     ).includes("transfer=1"),
   "mission labels its fresh writing task as a recommended independent transfer",
 );
 await page.locator('a[href*="write/garden-transfer-shade-trial"]').click();
 ok(
-  await page.locator('.stage-picker input[value="independent"]').isChecked(),
+  (await page.locator('.stage-picker input[value="independent"]').isChecked()) &&
+    (await page.locator(".stage-why").innerText()).includes("fresh context"),
   "transfer writing opens at independent support while preserving the learner override",
 );
 await page.getByLabel("With frames and words").check();

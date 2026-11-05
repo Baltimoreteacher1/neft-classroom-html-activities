@@ -146,7 +146,8 @@ function studioTaskHTML(t, ms, mission, band, suggestedStage = "") {
   const done = taskDone(ms, t);
   const route = t.kind === "speak" ? "speak" : "write";
   const transfer = Boolean(task.transfer);
-  const stageParam = ["guided", "supported", "independent"].includes(suggestedStage)
+  const stageParam =
+    !transfer && ["guided", "supported", "independent"].includes(suggestedStage)
     ? `&suggestedStage=${suggestedStage}`
     : "";
   const transferParam = transfer ? "&transfer=1" : "";
