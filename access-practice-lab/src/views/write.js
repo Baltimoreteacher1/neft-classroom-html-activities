@@ -72,7 +72,7 @@ async function findTask(id, from) {
     if (t)
       return {
         task: {
-          band: "6-8",
+          band: mission.band || t.band || "6-8",
           sources: mission.sources
             ? Object.values(mission.sources).filter((s) => s.kind !== "audio")
             : [],
@@ -336,6 +336,7 @@ export async function render(ctx) {
       ? requestedStage
       : "";
   const baseSuggestion = suggestStage(S.profile, task.keyUse);
+  const transferStage = Boolean(task.transfer && q.get("transfer") === "1");
   const sug = missionStage
     ? {
         stage: missionStage,
@@ -344,7 +345,15 @@ export async function render(ctx) {
           "Tu misión sugirió este apoyo inicial a partir de tu práctica anterior. Puedes elegir otra opción.",
         ),
       }
-    : baseSuggestion;
+    : transferStage
+      ? {
+          stage: "independent",
+          reason: I.S(
+            "This is a fresh context to show what you can do on your own. You can still choose more help.",
+            "Este es un contexto nuevo para mostrar lo que puedes hacer por tu cuenta. Aún puedes elegir más ayuda.",
+          ),
+        }
+      : baseSuggestion;
   S.stage = S.state.stage || chosen.get(task.id) || sug.stage;
   const text = S.state.draft ?? S.state.versions.at(-1)?.text ?? "";
   S.state.notes ||= "";
@@ -433,7 +442,7 @@ function feedback(ctx) {
   lockStage();
   S.state.attemptId ||= `a${Date.now().toString(36)}`;
   const first = !S.ledger.entries.some(
-    (x) => x.task === S.task.id && x.src === "writing" && x.kind === "first" && x.attempt === S.state.attemptId,
+    (x) => x.task === S.task.id && x.src === "writing" && ["first", "transfer"].includes(x.kind) && x.attempt === S.state.attemptId,
   );
   addVersion(S.state, text, first ? "draft" : "revision");
   S.state.analyzedText = text;
@@ -452,10 +461,10 @@ function feedback(ctx) {
     domain: "Writing",
     use: S.task.keyUse,
     stage: S.stage,
-    kind: first ? "first" : "revision",
+    kind: first ? (S.task.transfer ? "transfer" : "first") : "revision",
     attempt: S.state.attemptId,
     supports,
-    m: a.ledger,
+    m: { ...a.ledger, ...(S.task.transfer ? { transferAttempt: true, newContext: true } : {}) },
   });
   if (!first) award(ctx, `revision:${S.band}:${S.task.id}`, 3, "Thoughtful revision");
   if ((a.ledger?.cites || 0) >= 2) award(ctx, `evidence:${S.band}:${S.task.id}`, 3, "Evidence finder");

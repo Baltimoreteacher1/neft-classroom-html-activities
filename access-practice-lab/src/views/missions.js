@@ -145,17 +145,19 @@ function studioTaskHTML(t, ms, mission, band, suggestedStage = "") {
   const task = t.task;
   const done = taskDone(ms, t);
   const route = t.kind === "speak" ? "speak" : "write";
+  const transfer = Boolean(task.transfer);
   const stageParam = ["guided", "supported", "independent"].includes(suggestedStage)
     ? `&suggestedStage=${suggestedStage}`
     : "";
+  const transferParam = transfer ? "&transfer=1" : "";
   return html`<div class="studio-task card">
     <span class="st-ico">${icon(route === "speak" ? "speaking" : "writing")}</span>
     <div class="st-body">
-      <p class="eyebrow">${t.kind === "speak" ? I.T("Speaking Studio task", "Tarea del Estudio de expresión oral") : I.T("Writing Studio task", "Tarea del Estudio de escritura")}${done ? html` <span class="mode-pill is-done">${icon("check")} ${I.T("Done", "Hecho")}</span>` : ""}</p>
+      <p class="eyebrow">${transfer ? I.T("Independent transfer · new context", "Transferencia independiente · contexto nuevo") : t.kind === "speak" ? I.T("Speaking Studio task", "Tarea del Estudio de expresión oral") : I.T("Writing Studio task", "Tarea del Estudio de escritura")}${done ? html` <span class="mode-pill is-done">${icon("check")} ${I.T("Done", "Hecho")}</span>` : ""}</p>
       <h3>${task.title}</h3>
       <p>${task.scenario}</p>
       <p class="st-prompt">${task.prompt}</p>
-      <a class="btn ${done ? "" : "btn-primary"}" href="${BASE}/${route}/${task.id}?from=mission:${mission.id}&grades=${band}${stageParam}">${done ? I.T("Open again", "Abrir otra vez") : t.kind === "speak" ? I.T("Start speaking", "Empezar a hablar") : I.T("Start writing", "Empezar a escribir")}${icon("arrow-right")}</a>
+      <a class="btn ${done ? "" : "btn-primary"}" href="${BASE}/${route}/${task.id}?from=mission:${mission.id}&grades=${band}${stageParam}${transferParam}">${done ? I.T("Open again", "Abrir otra vez") : transfer ? I.T("Try the new context", "Prueba el nuevo contexto") : t.kind === "speak" ? I.T("Start speaking", "Empezar a hablar") : I.T("Start writing", "Empezar a escribir")}${icon("arrow-right")}</a>
     </div>
   </div>`;
 }
@@ -198,7 +200,8 @@ function debriefHTML(mission, ms, ledger, band, studio) {
   const qs = mine.flatMap((e) => e.m.questions || []);
   const first = qs.filter((q) => q.ok).length;
   const tasks = mission.phases.flatMap((p) => p.tasks || []).filter((t) => t.task);
-  const writing = tasks.find((t) => t.kind === "write");
+  const writing = tasks.find((t) => t.kind === "write" && !t.task.transfer);
+  const transfer = tasks.find((t) => t.kind === "write" && t.task.transfer);
   const w = writing ? studio.writing[writing.task.id] : null;
   const firstDraft = w?.versions?.[0];
   const finalDraft = w?.versions?.at(-1);
@@ -210,6 +213,11 @@ function debriefHTML(mission, ms, ledger, band, studio) {
         stage: "supported",
       })
     : null;
+  const transferState = transfer ? studio.writing[transfer.task.id] : null;
+  const transferDraft = transferState?.versions?.at(-1);
+  const transferEntry = [...ledger.entries].reverse().find(
+    (e) => e.src === "writing" && e.task === transfer?.task.id && e.kind === "transfer",
+  );
   return html`<section class="panel case-file">
     <header class="case-head">
       <span class="case-stamp">${icon("check")} ${I.T("Mission complete", "Misión completa")}</span>
@@ -245,6 +253,11 @@ function debriefHTML(mission, ms, ledger, band, studio) {
           ? html`<section class="case-growth"><h3>${I.T("Your writing", "Tu escritura")}</h3><p class="portfolio-response">${finalDraft?.text || ""}</p></section>`
           : ""
     }
+    ${transferDraft ? html`<section class="case-growth transfer-growth"><h3>${icon("arrow-right")} ${I.T("New-context transfer", "Transferencia a un contexto nuevo")}</h3>
+      <p class="fine">${transfer.task.title}: ${transfer.task.prompt}</p>
+      <p class="portfolio-response">${transferDraft.text}</p>
+      <p class="fine">${transferEntry?.stage === "independent" ? I.T("You completed this new-context attempt independently.", "Completaste este intento en un contexto nuevo de manera independiente.") : I.T("You completed this new-context attempt with support. It is recorded separately from independent evidence.", "Completaste este intento en un contexto nuevo con apoyo. Se registra por separado de la evidencia independiente.")}</p>
+    </section>` : ""}
     <section><h3>${icon("conversation")} ${I.T("Talk about it", "Habla sobre esto")}</h3>
       <ul>${(mission.debrief?.teacherQuestions || []).map((q) => html`<li>${q}</li>`)}</ul></section>
     <details class="fine">
@@ -303,8 +316,15 @@ export async function render(ctx) {
     save();
   }
   const phase = phases[current];
-  const sug =
-    phase && ["Speaking", "Writing"].includes(phase.skill)
+  const sug = phase?.transfer
+    ? {
+        stage: "independent",
+        reason: I.S(
+          "A new context checks whether you can use the language move without relying on the earlier model. You can choose more help.",
+          "Un contexto nuevo comprueba si puedes usar este recurso lingüístico sin depender del modelo anterior. Puedes elegir más ayuda.",
+        ),
+      }
+    : phase && ["Speaking", "Writing"].includes(phase.skill)
       ? missionSupport(ledger.entries, mission.keyUses[0])
       : null;
   M.phase = phase;
@@ -332,7 +352,7 @@ export async function render(ctx) {
       </section>
       <nav class="mission-steps" aria-label="${I.S("Mission phases", "Fases de la misión")}">
         <ol>
-          ${phases.map((p, i) => html`<li class="${i === current ? "is-current" : isDone(ms, p, ledger.entries) ? "is-done" : ""}"><a ${i === current ? raw('aria-current="step"') : ""} href="${BASE}/missions/${mission.id}?phase=${p.id}&grades=${ctx.band}"><span class="step-n">${isDone(ms, p, ledger.entries) && i !== current ? icon("check") : skillIcon(p.skill)}</span><span class="step-l">${skillT(p.skill)}${isDone(ms, p, ledger.entries) && i !== current ? html`<span class="visually-hidden"> ${I.T("(done)", "(hecha)")}</span>` : ""}</span></a></li>`)}
+          ${phases.map((p, i) => html`<li class="${i === current ? "is-current" : isDone(ms, p, ledger.entries) ? "is-done" : ""}"><a ${i === current ? raw('aria-current="step"') : ""} href="${BASE}/missions/${mission.id}?phase=${p.id}&grades=${ctx.band}"><span class="step-n">${isDone(ms, p, ledger.entries) && i !== current ? icon("check") : skillIcon(p.skill)}</span><span class="step-l">${p.transfer ? I.T("Transfer", "Transferencia") : skillT(p.skill)}${isDone(ms, p, ledger.entries) && i !== current ? html`<span class="visually-hidden"> ${I.T("(done)", "(hecha)")}</span>` : ""}</span></a></li>`)}
         </ol>
       </nav>
       ${
@@ -340,7 +360,7 @@ export async function render(ctx) {
           ? html`<div class="mission-layout ${ms.board.length ? "has-board" : ""}">
               <article class="activity mission-phase">
                 <header class="act-head">
-                  <p class="eyebrow">${skillIcon(phase.skill)} ${I.T(`Phase ${current + 1} of ${phases.length} · ${phase.skill}`, `Fase ${current + 1} de ${phases.length} · ${SKILL_ES[phase.skill] || phase.skill}`)}</p>
+                  <p class="eyebrow">${skillIcon(phase.skill)} ${phase.transfer ? I.T(`Phase ${current + 1} of ${phases.length} · Independent transfer`, `Fase ${current + 1} de ${phases.length} · Transferencia independiente`) : I.T(`Phase ${current + 1} of ${phases.length} · ${phase.skill}`, `Fase ${current + 1} de ${phases.length} · ${SKILL_ES[phase.skill] || phase.skill}`)}</p>
                   <h2 tabindex="-1">${phase.title}</h2>
                   <p class="phase-instr">${phase.instructions}</p>
                   ${sug ? html`<p class="fine sug">${icon("info")}<span>${I.T("Suggested help for this phase:", "Ayuda sugerida para esta fase:")} <strong>${stageName(sug.stage, I)}</strong> — ${sug.reason}</span></p>` : ""}
@@ -355,7 +375,7 @@ export async function render(ctx) {
                       }${src.kind === "audio" && !M.support.transcript ? html`<button type="button" class="ghost small" data-transcript="${sid}">${I.T("Can't listen? Show the transcript", "¿No puedes escuchar? Muestra la transcripción")} <span class="fine">${I.T("(saved as support)", "(se guarda como apoyo)")}</span></button>` : ""}</div>`,
                   )}
                 </div>
-                ${phase.skill === "Decision" ? decisionHTML(phase, ms) : html`${visibleTasks(phase, ledger).map((t) => (t.kind === "question" ? questionHTML(t, ms, qTasks.indexOf(t) + 1, qTasks.length) : t.kind === "evidence" ? evidenceHTML(t, ms) : studioTaskHTML({ ...t, task: t.task || { id: t.taskRef, title: I.S("Speaking or writing task", "Tarea de hablar o escribir"), scenario: "", prompt: "" } }, ms, mission, ctx.band, sug?.stage)))}`}
+                ${phase.skill === "Decision" ? decisionHTML(phase, ms) : html`${visibleTasks(phase, ledger).map((t) => (t.kind === "question" ? questionHTML(t, ms, qTasks.indexOf(t) + 1, qTasks.length) : t.kind === "evidence" ? evidenceHTML(t, ms) : studioTaskHTML({ ...t, task: t.task || { id: t.taskRef, title: I.S("Speaking or writing task", "Tarea de hablar o escribir"), scenario: "", prompt: "" } }, ms, mission, ctx.band, phase.transfer ? "independent" : sug?.stage)))}`}
                 ${isDone(ms, phase, ledger.entries) && current < phases.length - 1 ? html`<a class="btn btn-primary btn-big next-phase" href="${BASE}/missions/${mission.id}?phase=${phases[current + 1].id}&grades=${ctx.band}">${I.T(`Next phase: ${phases[current + 1].skill}`, `Siguiente fase: ${SKILL_ES[phases[current + 1].skill] || phases[current + 1].skill}`)}${icon("arrow-right")}</a>` : ""}
               </article>
               ${boardHTML(ms)}

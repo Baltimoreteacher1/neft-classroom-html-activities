@@ -496,14 +496,59 @@ await page
 await page.locator("[data-finish]").click();
 await go(`${BASE}/missions/saving-the-school-garden?phase=write&grades=3-5`);
 ok(
-  (await page.locator(".next-phase").count()) === 0 &&
+  (await page.locator(".next-phase").count()) === 1 &&
     (await page.locator(".mission-steps li.is-done").count()) === 4,
-  "completed writing closes the final phase after listening, reading, decision and speaking",
+  "completed writing unlocks the new-context transfer after the four integrated mission phases",
+);
+await page.locator(".next-phase").click();
+ok(
+  (await page.locator(".mission-phase h2").innerText()).includes("new context") &&
+    (
+      await page.locator('a[href*="write/garden-transfer-shade-trial"]').getAttribute("href")
+    ).includes("suggestedStage=independent") &&
+    (
+      await page.locator('a[href*="write/garden-transfer-shade-trial"]').getAttribute("href")
+    ).includes("transfer=1"),
+  "mission labels its fresh writing task as a recommended independent transfer",
+);
+await page.locator('a[href*="write/garden-transfer-shade-trial"]').click();
+ok(
+  await page.locator('.stage-picker input[value="independent"]').isChecked(),
+  "transfer writing opens at independent support while preserving the learner override",
+);
+await page.getByLabel("With frames and words").check();
+await page.locator('.stage-picker input[value="independent"]').check();
+ok(
+  await page.locator('.stage-picker input[value="independent"]').isChecked(),
+  "learner can choose more help and return to independent mode for transfer",
+);
+await axeCheck("new-context transfer writing");
+await page.setViewportSize({ width: 375, height: 812 });
+const transferOverflow = await page.evaluate(
+  () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+);
+ok(transferOverflow <= 1, "new-context transfer writing fits a 375px phone");
+await page.setViewportSize({ width: 1200, height: 900 });
+const transferDraft =
+  "The shade cloth tray had 136 mL left, while the uncovered tray had 91 mL. This suggests shade cloth may slow evaporation because more water remained after the warm afternoon. The test measured only water in two trays, not plant growth, and it was one trial. The team should repeat the test and check the soil near the plants.";
+await page.locator("[data-draft]").fill(transferDraft);
+await page.locator("[data-feedback]").click();
+await page.waitForSelector(".coach-card");
+await page
+  .locator("[data-reflection]")
+  .fill("I compared both trays and explained what this test cannot show.");
+await page.locator("[data-finish]").click();
+await go(`${BASE}/missions/saving-the-school-garden?phase=transfer&grades=3-5`);
+ok(
+  (await page.locator(".mission-phase .studio-task .mode-pill.is-done").count()) === 1,
+  "a fresh transfer attempt completes the mission's final phase",
 );
 await go(`${BASE}/missions/saving-the-school-garden?grades=3-5`);
 ok(
-  (await page.locator(".case-file").count()) === 1,
-  "completed grade 3–5 mission reaches its evidence debrief",
+  (await page.locator(".case-file").count()) === 1 &&
+    (await page.locator(".transfer-growth").innerText()).includes("independently") &&
+    (await page.locator(".transfer-growth").innerText()).includes("136 mL"),
+  "mission debrief preserves the new-context response and distinguishes independent transfer evidence",
 );
 await page.evaluate(
   (state) =>

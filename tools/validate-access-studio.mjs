@@ -268,6 +268,15 @@ export function sweepMission(file, m, speakIds, writeIds) {
   const skills = new Set(phases.map((p) => p.skill));
   for (const s of ["Listening", "Reading", "Speaking", "Writing", "Decision"])
     if (!skills.has(s)) fail(w, `needs a ${s} phase`);
+  const transfers = phases.filter((p) => p.transfer);
+  if (transfers.length !== 1 || phases.at(-1) !== transfers[0])
+    fail(w, "needs exactly one final transfer phase");
+  if (
+    transfers[0]?.skill !== "Writing" ||
+    asList(transfers[0]?.tasks).length !== 1 ||
+    transfers[0]?.tasks[0]?.task?.transfer !== true
+  )
+    fail(w, "final transfer phase needs one inline transfer writing task");
   let hasSynth = false;
   let hasInfer = false;
   let hasEvidence = false;

@@ -72,7 +72,7 @@ async function findTask(id, from) {
   if (from?.startsWith("mission:")) {
     const mission = await loadMission(from.slice(8)).catch(() => null);
     const t = mission?.phases.flatMap((p) => p.tasks || []).find((x) => x.task?.id === id)?.task;
-    if (t) return { task: { band: "6-8", ...t }, mission };
+    if (t) return { task: { band: mission.band || t.band || "6-8", ...t }, mission };
   }
   const t = (await loadSpeakingTasks()).tasks.find((x) => x.id === id);
   return t ? { task: t, mission: null } : null;
