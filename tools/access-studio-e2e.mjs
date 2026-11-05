@@ -1393,6 +1393,14 @@ await capture("reading-nook-mission-desktop.png");
 await go(`${BASE}/missions/watershed-mystery`);
 await axeCheck("mission phase");
 await go(`${BASE}/growth`);
+for (const summary of await page.locator(".grow-skill-domain > summary").all())
+  await summary.click();
+const skillMapText = await page.locator(".grow-skills").innerText();
+ok(
+  skillMapText.includes("Builds on: Identify a main idea") &&
+    skillMapText.includes("Try this language move in: State a clear idea, State a central idea"),
+  "growth map shows prerequisite links and cross-domain transfer paths",
+);
 await axeCheck("growth map");
 await go(`${BASE}/passport`);
 await axeCheck("passport");

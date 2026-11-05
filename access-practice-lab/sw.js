@@ -11,7 +11,7 @@
  * The block between the build markers is written by tools/sync-access-shell.mjs; do not edit it by hand.
  */
 /* build:begin */
-const BUILD_HASH = "7861100646f8";
+const BUILD_HASH = "f36f16e71fb9";
 const PRECACHE_CORE = [
   "/access-practice-lab/library.css?v=159952795a3e",
   "/access-practice-lab/studio.css?v=28d71fd235dd",
@@ -28,7 +28,7 @@ const PRECACHE_CORE = [
   "/access-practice-lab/activity.css?v=90c2552ac8ab",
   "/access-practice-lab/room.css?v=59ccc2904c81",
   "/access-practice-lab/tests.css?v=b5ef1d0c1706",
-  "/access-practice-lab/progress.css?v=4b84e5a0b6ee",
+  "/access-practice-lab/progress.css?v=acdd8a6096dc",
   "/access-practice-lab/family.css?v=ca95b46bd044",
   "/access-practice-lab/studios.css?v=546f075f2576",
   "/access-practice-lab/exhibition.css?v=c971915e02d7",
@@ -233,7 +233,7 @@ const PRECACHE_CORE = [
   "/access-practice-lab/src/lang/rubrics.js?v=5656db97483b",
   "/access-practice-lab/src/lang/scaffolds.js?v=18c8ecbb21fa",
   "/access-practice-lab/src/lang/share.js?v=df4576d0bf9e",
-  "/access-practice-lab/src/lang/skill-graph.js?v=220994c6238c",
+  "/access-practice-lab/src/lang/skill-graph.js?v=0e98cc7ed2ef",
   "/access-practice-lab/src/lang/studio.js?v=fe989ddb7881",
   "/access-practice-lab/src/lang/supports-report.js?v=fbdbce312880",
   "/access-practice-lab/src/lang/teacher.js?v=2a78245d948e",
@@ -279,7 +279,7 @@ const PRECACHE_CORE = [
   "/access-practice-lab/src/views/family.js?v=e41e97311698",
   "/access-practice-lab/src/views/flashcards.js?v=7cf03844a1fe",
   "/access-practice-lab/src/views/games.js?v=68b47d73c8af",
-  "/access-practice-lab/src/views/growth.js?v=a60a333bd888",
+  "/access-practice-lab/src/views/growth.js?v=be80ae744724",
   "/access-practice-lab/src/views/home-hero.js?v=750ba6449ef1",
   "/access-practice-lab/src/views/home-klu.js?v=c53238084ad7",
   "/access-practice-lab/src/views/home.js?v=cb2e2b0991b5",

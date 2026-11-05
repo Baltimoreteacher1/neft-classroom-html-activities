@@ -138,7 +138,12 @@ function skillGraphHTML(skillGraph, I) {
         <ul class="grow-skill-list">
           ${skills.map((s) => {
             const [word, ico, cls] = skillStatus(s.status);
-            return html`<li><strong>${s.name}</strong><span class="grow-status ${cls}">${icon(ico)} ${T(...word)}</span>${s.evidenceCount ? html`<span class="fine">${T(`${s.evidenceCount} evidence points`, `${s.evidenceCount} puntos de evidencia`)}</span>` : ""}</li>`;
+            const skillName = (id) => skillGraph.find((node) => node.id === id)?.name || id;
+            const connections = [];
+            if (s.buildsOn?.length) connections.push(T(`Builds on: ${s.buildsOn.map(skillName).join(", ")}`, `Se apoya en: ${s.buildsOn.map(skillName).join(", ")}`));
+            if (s.unlocks?.length) connections.push(T(`Can help with: ${s.unlocks.map(skillName).join(", ")}`, `Puede ayudar con: ${s.unlocks.map(skillName).join(", ")}`));
+            if (s.transfersTo?.length) connections.push(T(`Try this language move in: ${s.transfersTo.map(skillName).join(", ")}`, `Prueba este recurso de lenguaje en: ${s.transfersTo.map(skillName).join(", ")}`));
+            return html`<li><strong>${s.name}</strong><span class="grow-status ${cls}">${icon(ico)} ${T(...word)}</span>${s.evidenceCount ? html`<span class="fine">${T(`${s.evidenceCount} evidence points`, `${s.evidenceCount} puntos de evidencia`)}</span>` : ""}${connections.length ? html`<p class="grow-skill-links">${connections.join(" · ")}</p>` : ""}</li>`;
           })}
         </ul>
       </details>`;

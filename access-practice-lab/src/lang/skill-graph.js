@@ -35,10 +35,49 @@ const groups = {
   ],
 };
 
-export const SKILLS = Object.freeze(Object.entries(groups).flatMap(([domain, rows]) => rows.map(([code, name]) => ({
-  id: `${domain.toLowerCase()}.${code}`, code, domain, name, description: `Practice evidence for: ${name.toLowerCase()}.`, gradeBand: "3-8", parentSkillId: null, active: true,
-}))))
-;
+// These are instructional connections, not a single language-development ladder. `buildsOn`
+// records a useful prerequisite relationship within a modality; `transfersTo` makes explicit
+// where the same language move can be practiced in another modality. Neither edge implies a
+// placement, proficiency level, or that a learner must finish one node before exploring another.
+const BUILDS_ON = Object.freeze({
+  "listening.supporting-details": ["listening.main-idea"],
+  "listening.sequence": ["listening.supporting-details"],
+  "listening.cause-effect": ["listening.supporting-details"],
+  "reading.evidence": ["reading.literal-retrieval"],
+  "reading.explain-evidence": ["reading.evidence"],
+  "reading.synthesis": ["reading.compare-sources", "reading.main-detail"],
+  "speaking.details": ["speaking.clear-idea"],
+  "speaking.reasoning": ["speaking.clear-idea", "speaking.details"],
+  "speaking.organization": ["speaking.details", "speaking.reasoning"],
+  "speaking.cohesion": ["speaking.organization"],
+  "writing.evidence": ["writing.central-idea"],
+  "writing.explain-evidence": ["writing.evidence"],
+  "writing.organization": ["writing.central-idea", "writing.evidence"],
+  "writing.transitions": ["writing.organization"],
+});
+
+const TRANSFERS_TO = Object.freeze({
+  "listening.main-idea": ["speaking.clear-idea", "writing.central-idea"],
+  "listening.sequence": ["speaking.organization", "writing.organization"],
+  "listening.cause-effect": ["speaking.reasoning", "writing.explain-evidence"],
+  "reading.evidence": ["speaking.evidence", "writing.evidence"],
+  "reading.explain-evidence": ["speaking.reasoning", "writing.explain-evidence"],
+  "reading.compare-sources": ["speaking.organization", "writing.organization"],
+  "reading.vocabulary-context": ["speaking.vocabulary", "writing.vocabulary"],
+  "speaking.cohesion": ["writing.transitions"],
+  "writing.transitions": ["speaking.cohesion"],
+});
+
+export const SKILLS = Object.freeze(Object.entries(groups).flatMap(([domain, rows]) => rows.map(([code, name]) => {
+  const id = `${domain.toLowerCase()}.${code}`;
+  return {
+    id, code, domain, name, description: `Practice evidence for: ${name.toLowerCase()}.`, gradeBand: "3-8",
+    buildsOn: BUILDS_ON[id] || [],
+    unlocks: Object.entries(BUILDS_ON).filter(([, prerequisites]) => prerequisites.includes(id)).map(([next]) => next),
+    transfersTo: TRANSFERS_TO[id] || [],
+    active: true,
+  };
+})));
 
 const normalize = (v) => String(v || "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 const clamp = (x) => Math.max(0, Math.min(1, Number(x) || 0));

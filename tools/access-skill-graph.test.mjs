@@ -40,6 +40,44 @@ test("skill catalog covers four domains without official rubric or score labels"
   assert.doesNotMatch(JSON.stringify(SKILLS), /WIDA proficiency|ACCESS score/i);
 });
 
+test("skill graph exposes valid prerequisite and cross-domain transfer links without a cycle", () => {
+  const ids = new Set(SKILLS.map((skill) => skill.id));
+  for (const skill of SKILLS) {
+    for (const linked of [...skill.buildsOn, ...skill.unlocks, ...skill.transfersTo])
+      assert.ok(ids.has(linked), `${skill.id} links to a catalogued skill: ${linked}`);
+    for (const prerequisite of skill.buildsOn) {
+      const node = SKILLS.find((candidate) => candidate.id === prerequisite);
+      assert.ok(node.unlocks.includes(skill.id), `${prerequisite} unlocks ${skill.id}`);
+    }
+    assert.ok(
+      skill.transfersTo.every((linked) => !linked.startsWith(`${skill.domain.toLowerCase()}.`)),
+      `${skill.id} transfer links cross domains`,
+    );
+  }
+  const visiting = new Set();
+  const visited = new Set();
+  const visit = (id) => {
+    if (visiting.has(id)) throw new Error(`prerequisite cycle at ${id}`);
+    if (visited.has(id)) return;
+    visiting.add(id);
+    for (const prerequisite of SKILLS.find((skill) => skill.id === id).buildsOn)
+      visit(prerequisite);
+    visiting.delete(id);
+    visited.add(id);
+  };
+  for (const id of ids) visit(id);
+  assert.ok(
+    SKILLS.find((skill) => skill.id === "reading.explain-evidence").buildsOn.includes(
+      "reading.evidence",
+    ),
+  );
+  assert.ok(
+    SKILLS.find((skill) => skill.id === "reading.evidence").transfersTo.includes(
+      "writing.evidence",
+    ),
+  );
+});
+
 test("reading and listening outcomes retain evidence links and support status", () => {
   const rows = evidenceFromLedger([
     {
