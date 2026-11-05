@@ -393,6 +393,7 @@ const COVERAGE = [
     [
       "validate:family-homework-content",
       "validate:family-v3",
+      "validate:family-mission-content",
       "validate:family-plain-definitions",
       "validate:family-spanish",
       "validate:homework",
@@ -1004,6 +1005,7 @@ const COVERAGE = [
     [
       "validate:family-body-tokens",
       "validate:family-v3",
+      "validate:family-mission-content",
       "validate:family-no-leakage",
       "test",
       "check",
@@ -1011,7 +1013,7 @@ const COVERAGE = [
   ],
   // Families hub, bilingual weekly homework pages, and guided notes
   [
-    /^(assets\/workspace\/|scripts\/lib\/family-workspace\.mjs$|tools\/family-workspace\.test\.mjs$|docs\/specs\/problem-workspace\.md$|families\/|assets\/(homework\/|family-paper\.css$|family-landing\.js$|learning-supports\/ls-supports\.css$)|data\/(family-game-pairs-es|family-landing-units)\.json$|data\/(?:family|student)-word-problems\/|lessons\/[^/]+\/(?:family|word-problems)\/|scripts\/(homework-[a-z-]+|lib\/homework-[a-z0-9-]+|generate-homework|generate-homework-html|generate-family-pages|generate-lesson-support-pages|generate-family-week-notes|verify-family-pages|validate-homework-guided-notes|audit-homework-alignment)\.mjs$|scripts\/lib\/(family-landing|family-content|family-paper-css|family-word-problems|family-word-problems-page|family-word-problems-client|student-word-problems|student-word-problems-client|word-problems-check|word-problems-engine)\.mjs$|scripts\/generate-word-problems\.mjs$|tools\/(validate-family-exit-ticket|validate-family-games|verify-family-experience-browser|homework-experience\.test|family-landing\.test|family-paper\.test|family-word-problems\.test|student-word-problems\.test)\.mjs$|scripts\/generate-practice-workbook-index\.mjs$|scripts\/lib\/homework-actions\.runtime\.js$|data\/family-performance-budget\.json$|tools\/(verify-family-a11y|validate-family-performance)\.mjs$|tools\/lib\/family-(a11y|performance)[a-z-]*\.mjs$|tools\/(homework-a11y-markup|family-a11y-gate)\.test\.mjs$|docs\/family-homework-v3\/a11y-manual-checks\.md$)/,
+    /^(assets\/workspace\/|scripts\/lib\/family-workspace\.mjs$|tools\/family-workspace\.test\.mjs$|docs\/specs\/problem-workspace\.md$|families\/|assets\/(homework\/|family-mission\/|family-paper\.css$|family-landing\.js$|learning-supports\/ls-supports\.css$)|data\/(family-game-pairs-es|family-landing-units)\.json$|data\/(?:family|student)-word-problems\/|lessons\/[^/]+\/(?:family|word-problems)\/|scripts\/(homework-[a-z-]+|lib\/homework-[a-z0-9-]+|generate-homework|generate-homework-html|generate-family-pages|generate-lesson-support-pages|generate-family-week-notes|verify-family-pages|validate-homework-guided-notes|audit-homework-alignment)\.mjs$|scripts\/lib\/(family-landing|family-content|family-paper-css|family-word-problems|family-word-problems-page|family-word-problems-client|student-word-problems|student-word-problems-client|word-problems-check|word-problems-engine)\.mjs$|scripts\/generate-word-problems\.mjs$|tools\/(validate-family-exit-ticket|validate-family-games|verify-family-experience-browser|homework-experience\.test|family-landing\.test|family-paper\.test|family-word-problems\.test|student-word-problems\.test)\.mjs$|scripts\/generate-practice-workbook-index\.mjs$|scripts\/lib\/homework-actions\.runtime\.js$|data\/family-performance-budget\.json$|tools\/(verify-family-a11y|validate-family-performance)\.mjs$|tools\/lib\/family-(a11y|performance)[a-z-]*\.mjs$|tools\/(homework-a11y-markup|family-a11y-gate)\.test\.mjs$|docs\/family-homework-v3\/a11y-manual-checks\.md$)/,
     [
       "verify:families",
       "validate:homework",
@@ -1028,6 +1030,11 @@ const COVERAGE = [
       "audit:links",
       "test",
     ],
+  ],
+  // The Family Practice content gate (concept, count, bilingual, answer and link checks) and its inventory
+  [
+    /^(tools\/(validate-family-mission-content(\.test)?\.mjs|lib\/(family-mission-[\w-]+|mini-dom)\.mjs)|scripts\/build-family-mission-inventory\.mjs|docs\/family-mission\/|data\/family-mission-content-baseline\.json$)/,
+    ["validate:family-mission-content", "test", "check"],
   ],
   // Family Math Studio design system, hero and visual gate (assets/design/family, hero modules, baselines)
   [

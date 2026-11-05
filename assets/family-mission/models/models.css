@@ -1,0 +1,646 @@
+/* Family Mission interactive models (percent, ratio). Uses only the --fm-* tokens from
+   assets/design/family/tokens.css; load that file first. Shape, pattern and labels carry the
+   meaning as well as colour. Touch targets are 44px (--fm-target), text is 15px or larger, and the
+   layout holds at 320px with no horizontal scroll. */
+
+.fm-model {
+  display: grid;
+  gap: var(--fm-space-4);
+  max-width: var(--fm-card-max, 40rem);
+  min-width: 0;
+  margin-inline: auto;
+  padding: var(--fm-space-4);
+  color: var(--fm-text);
+  background: var(--fm-raised);
+  border: var(--fm-line) solid var(--fm-border);
+  border-radius: var(--fm-radius-md);
+  font-family: var(--fm-font-text);
+  font-size: var(--fm-fs-sm);
+  line-height: var(--fm-lh-ui);
+}
+.fm-model *,
+.fm-model *::before,
+.fm-model *::after {
+  box-sizing: border-box;
+}
+.fm-model [hidden] {
+  display: none !important;
+}
+.fm-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ── Text ── */
+.fm-prompt {
+  margin: 0;
+  font-family: var(--fm-font-display);
+  font-size: var(--fm-fs-lg);
+  font-weight: var(--fm-fw-bold);
+  line-height: var(--fm-lh-heading);
+}
+.fm-explain {
+  margin: 0;
+  padding: var(--fm-space-3);
+  background: var(--fm-accent-tint);
+  border-inline-start: 4px solid var(--fm-accent-ink);
+  border-radius: var(--fm-radius-sm);
+  font-size: var(--fm-fs-sm);
+  line-height: var(--fm-lh-body);
+  overflow-wrap: anywhere;
+}
+.fm-msg {
+  min-height: 0;
+  margin: 0;
+  color: var(--fm-highlight-ink);
+  font-weight: var(--fm-fw-semibold);
+}
+.fm-msg:empty {
+  display: none;
+}
+.fm-cap {
+  margin: var(--fm-space-1) 0 0;
+  color: var(--fm-text-muted);
+  font-size: var(--fm-fs-sm);
+  font-weight: var(--fm-fw-semibold);
+  text-align: center;
+}
+
+/* ── Views ── */
+.fm-view {
+  min-width: 0;
+  padding: var(--fm-space-3);
+  background: var(--fm-surface);
+  border: var(--fm-line) solid var(--fm-border);
+  border-radius: var(--fm-radius-sm);
+}
+.fm-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+.fm-svg-text {
+  fill: var(--fm-text);
+  font-family: var(--fm-font-text);
+  font-size: 15px;
+  font-weight: var(--fm-fw-semibold);
+}
+.fm-svg-muted {
+  fill: var(--fm-text-muted);
+}
+.fm-svg-strong {
+  fill: var(--fm-accent-ink);
+  font-weight: var(--fm-fw-bold);
+}
+
+/* Shaded part (accent-ink) over an unshaded sunken track with a strong edge. */
+.fm-fill {
+  fill: var(--fm-m-part);
+  stroke: var(--fm-raised);
+  stroke-width: 1;
+}
+.fm-fill-alt {
+  fill: var(--fm-accent);
+}
+.fm-tape-bg,
+.fm-grid-bg {
+  fill: var(--fm-sunken);
+}
+.fm-tape-ref,
+.fm-grid-edge {
+  fill: none;
+  stroke: var(--fm-border-strong);
+  stroke-width: 2;
+}
+.fm-tape-ref {
+  stroke: var(--fm-m-whole);
+  stroke-dasharray: 6 4;
+}
+.fm-grid-lines {
+  fill: none;
+  stroke: var(--fm-border-strong);
+  stroke-width: 0.6;
+  opacity: 0.55;
+}
+.fm-zoomcell {
+  fill: none;
+  stroke: var(--fm-m-unknown);
+  stroke-width: 2.5;
+}
+.fm-grids {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--fm-space-3);
+  justify-content: center;
+}
+.fm-grid-fig {
+  flex: 0 1 calc(33.333% - var(--fm-space-3));
+  min-width: 5.5rem;
+  max-width: 9rem;
+  margin: 0;
+}
+.fm-grid {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.fm-zoom {
+  margin-top: var(--fm-space-3);
+}
+.fm-zoom-svg {
+  display: block;
+  width: 100%;
+  max-width: 24rem;
+  height: auto;
+  margin-inline: auto;
+}
+.fm-axis {
+  stroke: var(--fm-text);
+  stroke-width: 2.5;
+}
+.fm-tick {
+  stroke: var(--fm-text-muted);
+  stroke-width: 1.5;
+}
+.fm-connector {
+  stroke: var(--fm-accent-ink);
+  stroke-width: 2;
+  stroke-dasharray: 4 3;
+}
+.fm-dot {
+  fill: var(--fm-accent-ink);
+  stroke: var(--fm-raised);
+  stroke-width: 2;
+}
+.fm-dot-row {
+  fill: var(--fm-m-unknown);
+  stroke: var(--fm-m-unknown-edge);
+}
+
+/* ── Handle: a 44px hit area, a knob, and a focus ring that does not rely on colour alone ── */
+.fm-handle {
+  cursor: grab;
+  outline: none;
+}
+.fm-handle.fm-dragging {
+  cursor: grabbing;
+}
+.fm-draggable {
+  touch-action: none;
+}
+.fm-hit {
+  fill: transparent;
+}
+.fm-knob {
+  fill: var(--fm-m-unknown-edge);
+  stroke: var(--fm-on-highlight);
+  stroke-width: 3;
+}
+.fm-ring {
+  fill: none;
+  stroke: var(--fm-focus);
+  stroke-width: var(--fm-focus-width);
+  opacity: 0;
+}
+.fm-handle:focus-visible .fm-ring {
+  opacity: 1;
+}
+.fm-handle:focus-visible .fm-hit {
+  stroke: var(--fm-focus-halo);
+  stroke-width: 2;
+}
+
+/* ── Controls ── */
+.fm-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--fm-space-2);
+}
+.fm-btn {
+  min-width: var(--fm-target);
+  min-height: var(--fm-target);
+  padding: var(--fm-space-2) var(--fm-space-3);
+  color: var(--fm-primary);
+  background: var(--fm-raised);
+  border: var(--fm-line-strong) solid var(--fm-border-strong);
+  border-radius: var(--fm-radius-sm);
+  font: inherit;
+  font-weight: var(--fm-fw-bold);
+  cursor: pointer;
+}
+.fm-btn:hover:not(:disabled) {
+  background: var(--fm-accent-tint);
+}
+.fm-btn[aria-pressed="true"] {
+  color: var(--fm-on-primary);
+  background: var(--fm-primary);
+  border-color: var(--fm-primary);
+}
+.fm-btn[aria-pressed="true"]::before {
+  content: "✓ ";
+}
+.fm-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+.fm-step {
+  padding-inline: var(--fm-space-3);
+  font-size: var(--fm-fs-lg);
+}
+.fm-btn:focus-visible,
+.fm-input:focus-visible {
+  outline: var(--fm-focus-width) solid var(--fm-focus);
+  outline-offset: var(--fm-focus-offset);
+  box-shadow: 0 0 0 calc(var(--fm-focus-width) + var(--fm-focus-offset)) var(--fm-focus-halo);
+}
+.fm-fields {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(8.5rem, 1fr));
+  gap: var(--fm-space-3);
+  align-items: end;
+  margin-bottom: var(--fm-space-3);
+}
+.fm-field {
+  display: grid;
+  gap: var(--fm-space-1);
+  min-width: 0;
+}
+.fm-label {
+  color: var(--fm-text-muted);
+  font-weight: var(--fm-fw-semibold);
+}
+.fm-input,
+.fm-value {
+  min-height: var(--fm-target);
+  width: 100%;
+  padding: var(--fm-space-2) var(--fm-space-3);
+  color: var(--fm-text);
+  background: var(--fm-raised);
+  border: var(--fm-line-strong) solid var(--fm-border-strong);
+  border-radius: var(--fm-radius-sm);
+  font: inherit;
+  font-size: var(--fm-fs-md);
+  font-weight: var(--fm-fw-bold);
+  overflow-wrap: anywhere;
+}
+.fm-value {
+  display: flex;
+  align-items: center;
+  background: var(--fm-sunken);
+}
+.fm-input[aria-invalid="true"] {
+  border-color: var(--fm-highlight-ink);
+  background: var(--fm-highlight-tint);
+}
+.fm-presets {
+  margin-bottom: var(--fm-space-2);
+}
+
+/* ── Ratio table ── */
+.fm-table-wrap {
+  max-width: 100%;
+  overflow-x: auto;
+}
+.fm-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.fm-table th,
+.fm-table td {
+  padding: var(--fm-space-2);
+  border-bottom: var(--fm-line) solid var(--fm-border);
+  text-align: start;
+  vertical-align: middle;
+}
+.fm-table th {
+  color: var(--fm-text-muted);
+  font-weight: var(--fm-fw-semibold);
+}
+.fm-table .fm-field .fm-label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+.fm-table .fm-input,
+.fm-table .fm-value {
+  min-width: 4.5rem;
+}
+.fm-num {
+  font-size: var(--fm-fs-md);
+  font-weight: var(--fm-fw-bold);
+}
+.fm-actions {
+  display: flex;
+  gap: var(--fm-space-1);
+}
+.fm-active td {
+  background: var(--fm-accent-tint);
+  box-shadow: inset 4px 0 0 var(--fm-accent-ink);
+}
+
+/* ── Motion: only models that opted in (motionOK()) animate, and never under reduced motion ── */
+.fm-anim .fm-fill,
+.fm-anim .fm-handle {
+  transition:
+    width var(--fm-dur-2) var(--fm-ease),
+    transform var(--fm-dur-2) var(--fm-ease);
+}
+.fm-anim .fm-dragging,
+.fm-anim .fm-dragging * {
+  transition: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .fm-model *,
+  .fm-model *::before,
+  .fm-model *::after {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+@media (forced-colors: active) {
+  .fm-fill {
+    fill: Highlight;
+  }
+  .fm-knob {
+    fill: ButtonText;
+  }
+  .fm-btn[aria-pressed="true"] {
+    outline: 3px solid Highlight;
+  }
+}
+@media (max-width: 22.5rem) {
+  .fm-model {
+    padding: var(--fm-space-2);
+  }
+  .fm-view {
+    padding: var(--fm-space-2);
+  }
+}
+
+/* ── Balance, number line, coordinate, data and geometry families ──
+   Same rule as above: only --fm-* tokens, and shape or pattern carries the meaning as well as colour. */
+
+.fm-sub {
+  margin: 0;
+  color: var(--fm-text-muted);
+  font-size: var(--fm-fs-sm);
+  font-weight: var(--fm-fw-semibold);
+}
+.fm-sym {
+  font-size: var(--fm-fs-xl);
+  font-weight: var(--fm-fw-bold);
+}
+.fm-readout {
+  margin: 0;
+  font-size: var(--fm-fs-md);
+  font-weight: var(--fm-fw-bold);
+  overflow-wrap: anywhere;
+}
+.fm-log,
+.fm-order {
+  display: grid;
+  gap: var(--fm-space-2);
+  margin: 0;
+  padding-inline-start: var(--fm-space-5);
+}
+.fm-order {
+  padding-inline-start: 0;
+  list-style: none;
+}
+.fm-order-item {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--fm-space-2);
+  align-items: center;
+  min-height: var(--fm-target);
+  padding: var(--fm-space-1) var(--fm-space-3);
+  background: var(--fm-raised);
+  border: var(--fm-line) solid var(--fm-border);
+  border-radius: var(--fm-radius-sm);
+}
+.fm-order-item .fm-num {
+  flex: 1;
+}
+.fm-stats th {
+  width: 40%;
+}
+
+/* Algebra tiles: x tiles are tall blocks, unit tiles are small squares, negative tiles are dashed
+   and hatched so sign never depends on colour. */
+.fm-tile {
+  stroke: var(--fm-text);
+  stroke-width: 1.5;
+}
+.fm-tile-x {
+  fill: var(--fm-m-part);
+}
+.fm-tile-u {
+  fill: var(--fm-m-unknown);
+}
+.fm-tile.fm-neg {
+  fill: var(--fm-sunken);
+  stroke: var(--fm-text);
+  stroke-dasharray: 4 3;
+}
+.fm-tile-label {
+  fill: var(--fm-on-primary);
+  font-size: 15px;
+}
+.fm-neg + .fm-tile-label {
+  fill: var(--fm-text);
+}
+.fm-beam-bar {
+  fill: var(--fm-text);
+}
+.fm-fulcrum {
+  fill: var(--fm-border-strong);
+  stroke: var(--fm-text);
+  stroke-width: 2;
+}
+.fm-tray {
+  fill: var(--fm-sunken);
+  stroke: var(--fm-border-strong);
+  stroke-width: 2;
+  stroke-dasharray: 6 4;
+}
+.fm-idle .fm-knob {
+  opacity: 0.55;
+}
+
+/* Number line and dot plot */
+.fm-shade,
+.fm-arrowhead {
+  stroke: var(--fm-m-part);
+  stroke-width: 8;
+  stroke-linecap: butt;
+}
+.fm-arrowhead {
+  fill: var(--fm-m-part);
+  stroke-width: 1;
+}
+.fm-end {
+  stroke: var(--fm-accent-ink);
+  stroke-width: 3;
+}
+.fm-end-open {
+  fill: var(--fm-raised);
+}
+.fm-end-closed {
+  fill: var(--fm-accent-ink);
+}
+.fm-handle .fm-end {
+  fill: var(--fm-accent-ink);
+}
+.fm-probe {
+  fill: var(--fm-highlight-tint);
+  stroke: var(--fm-highlight-ink);
+  stroke-width: 2.5;
+}
+.fm-probe-in {
+  fill: var(--fm-success);
+  stroke: var(--fm-success-ink);
+}
+.fm-arc {
+  fill: none;
+  stroke: var(--fm-accent-ink);
+  stroke-width: 2.5;
+  stroke-dasharray: 5 4;
+}
+.fm-on-dot {
+  fill: var(--fm-on-primary);
+  font-size: 15px;
+  pointer-events: none;
+}
+.fm-dot-data {
+  fill: var(--fm-m-part);
+  stroke: var(--fm-raised);
+  stroke-width: 1.5;
+  cursor: grab;
+  touch-action: none;
+}
+.fm-outlier {
+  fill: var(--fm-highlight);
+  stroke: var(--fm-highlight-ink);
+  stroke-width: 2;
+}
+.fm-median {
+  stroke: var(--fm-m-whole);
+  stroke-width: 2.5;
+  stroke-dasharray: 3 3;
+}
+.fm-mean {
+  fill: var(--fm-m-unknown);
+  stroke: var(--fm-m-unknown-edge);
+  stroke-width: 2;
+}
+
+/* Coordinate plane */
+.fm-plane {
+  max-width: 28rem;
+  margin-inline: auto;
+}
+.fm-grid-line {
+  stroke: var(--fm-border);
+  stroke-width: 1;
+}
+.fm-tick-label {
+  fill: var(--fm-text-muted);
+}
+.fm-mirror {
+  stroke: var(--fm-m-unknown-edge);
+  stroke-width: 4;
+  stroke-dasharray: 10 5;
+}
+.fm-bracket {
+  stroke: var(--fm-accent-ink);
+  stroke-width: 3;
+}
+.fm-ghost {
+  fill: var(--fm-raised);
+  stroke: var(--fm-m-unknown-edge);
+  stroke-width: 3;
+}
+
+/* Geometry */
+.fm-shape {
+  fill: var(--fm-m-part-tint);
+  stroke: var(--fm-m-part);
+  stroke-width: 3;
+  stroke-linejoin: round;
+}
+.fm-ghost-shape {
+  fill: none;
+  stroke: var(--fm-m-whole);
+  stroke-width: 2.5;
+  stroke-dasharray: 6 4;
+}
+.fm-height {
+  stroke: var(--fm-accent-ink);
+  stroke-width: 2.5;
+  stroke-dasharray: 5 4;
+}
+.fm-extend {
+  stroke-dasharray: 2 4;
+}
+.fm-right-angle {
+  fill: none;
+  stroke: var(--fm-accent-ink);
+  stroke-width: 2;
+}
+.fm-face {
+  stroke: var(--fm-text);
+  stroke-width: 2;
+  stroke-linejoin: round;
+}
+.fm-face-a {
+  fill: var(--fm-m-part-tint);
+}
+.fm-face-b {
+  fill: var(--fm-m-given-tint);
+}
+.fm-face-c {
+  fill: var(--fm-m-unknown-tint);
+}
+.fm-face-label {
+  font-size: 15px;
+}
+.fm-cube-line {
+  stroke: var(--fm-border-strong);
+  stroke-width: 0.8;
+  opacity: 0.7;
+}
+.fm-layer {
+  fill: var(--fm-m-part);
+  opacity: 0.45;
+}
+.fm-point-handle {
+  touch-action: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .fm-anim .fm-beam {
+    transition: transform var(--fm-dur-3) var(--fm-ease);
+  }
+}
+@media (forced-colors: active) {
+  .fm-end-closed,
+  .fm-dot-data,
+  .fm-tile-x {
+    fill: Highlight;
+  }
+  .fm-shape,
+  .fm-face {
+    stroke: CanvasText;
+  }
+}

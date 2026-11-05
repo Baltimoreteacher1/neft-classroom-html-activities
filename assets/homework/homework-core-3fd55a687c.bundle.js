@@ -562,12 +562,12 @@ function initFamilyGames() {
    Each path is a complete, optional experience. Time values are estimates,
    never timers; the student and family can pause or stop at any point. */
 var HOMEWORK_ROUTES = {
-  quick: { tabs: ['learn', 'check', 'done'], problemLimit: 2 },
-  full: { tabs: ['learn', 'words', 'check', 'play', 'done'], problemLimit: 0 }
+  quick: { tabs: ['connect', 'explore', 'check', 'talk', 'apply', 'done'], problemLimit: 3 },
+  full: { tabs: ['connect', 'explore', 'check', 'talk', 'apply', 'done'], problemLimit: 0 }
 };
-/* Two choices: Quick Practice (the default) and Keep Going, which carries the
-   old Learn & practice content and the old Full Studio content. Saved choices and
-   links from before the change keep working: "core" is now Keep Going. */
+/* One six-stage mission. The two routes differ only in how many practice problems the Practice
+   stage shows: Today's mission (quick, the default) and Extended practice (full). Route ids are
+   unchanged so ?route=quick links, QR codes and saved choices keep working; "core" is Extended. */
 var HOMEWORK_ROUTE_DEFAULT = 'quick';
 var HOMEWORK_ROUTE_ALIASES = { core: 'full' };
 
@@ -654,12 +654,13 @@ function setHomeworkRoute(mode, options) {
   }
   document.querySelectorAll('[data-hw-core-count]').forEach(function (el) { el.textContent = String(coreProblems.length); });
   if (typeof hwRenderGoal === 'function') hwRenderGoal(false);
+  (window.__hwStepperPaints || []).forEach(function (paint) { paint(); });
 
   var note = document.getElementById('hw_route_note');
   if (note) {
     var copy = {
-      quick: ['Quick Practice selected: one example and 2 problems. Stop whenever you need.', 'Práctica rápida seleccionada: un ejemplo y 2 problemas. Pueden parar cuando lo necesiten.'],
-      full: ['Keep Going selected: everything, plus one home mission and one game. Everything is optional.', 'Seguir practicando seleccionado: todo, más una misión en casa y un juego. Todo es opcional.']
+      quick: ["Today's mission: " + 3 + ' practice problems. Stop whenever you need.', 'Misión de hoy: ' + 3 + ' problemas de práctica. Pueden parar cuando lo necesiten.'],
+      full: ['Extended practice: every practice problem. Everything is optional.', 'Práctica extendida: todos los problemas. Todo es opcional.']
     }[mode];
     setBiText(note, copy[0], copy[1]);
   }
@@ -890,99 +891,6 @@ function hwStopStep(delta) {
   if (next) switchHomeworkTab(next);
 }
 
-/* Learn is a run of cards: one idea, one next action. The pager replaces the stop
-   bar while Learn is open; its last Next moves on to the next stop. */
-var learnCardIndex = 0;
-
-function learnCardList() {
-  var panel = document.querySelector('[data-tab-panel="learn"]');
-  if (!panel) return [];
-  return Array.from(panel.querySelectorAll(':scope > .learn-card')).filter(function (c) {
-    return (c.innerText || '').trim() !== '' || !!c.querySelector('svg, canvas, button, iframe, input');
-  });
-}
-
-function ensureLearnPager(panel) {
-  var pager = document.getElementById('hw_learn_pager');
-  if (pager || !panel) return pager;
-  pager = document.createElement('div');
-  pager.id = 'hw_learn_pager';
-  pager.className = 'learn-pager';
-  pager.innerHTML =
-    '<div class="learn-pager-dots" aria-hidden="true"></div>' +
-    '<p class="learn-pager-label" aria-live="polite"><span class="lang-en"></span><span class="lang-es" lang="es"></span></p>' +
-    '<div class="learn-pager-actions">' +
-    '<button type="button" class="btn btn-outline-primary learn-pager-back" data-act="learnStep" data-args="[-1]"><span class="lang-en">← Back</span><span class="lang-es" lang="es">← Atrás</span></button>' +
-    '<button type="button" class="btn btn-primary learn-pager-next" data-act="learnStep" data-args="[1]"><span class="lang-en">Next →</span><span class="lang-es" lang="es">Siguiente →</span></button>' +
-    '</div>';
-  panel.insertBefore(pager, panel.querySelector(':scope > .learn-card') || panel.firstChild);
-  /* Swipe left for the next card, right for the previous one (one listener, on the panel). */
-  var touchX = null, touchY = null;
-  panel.addEventListener('touchstart', function (e) { touchX = e.touches[0].clientX; touchY = e.touches[0].clientY; }, { passive: true });
-  panel.addEventListener('touchend', function (e) {
-    if (touchX === null || document.body.dataset.activeTab !== 'learn') return;
-    if (e.target.closest && e.target.closest('input, select, textarea, svg, canvas, .mathpad, [data-no-swipe]')) { touchX = null; return; }
-    var dx = e.changedTouches[0].clientX - touchX;
-    var dy = e.changedTouches[0].clientY - touchY;
-    touchX = null;
-    if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) learnStep(dx < 0 ? 1 : -1);
-  }, { passive: true });
-  return pager;
-}
-
-/* A link or chip that points into a card that is not showing opens that card first. */
-function revealLearnCardFor(el) {
-  var card = el && el.closest ? el.closest('.learn-card') : null;
-  if (!card || !card.hidden) return;
-  var index = learnCardList().indexOf(card);
-  if (index >= 0) setLearnCard(index, true);
-}
-
-document.addEventListener('click', function (e) {
-  var link = e.target.closest ? e.target.closest('a[href^="#"]') : null;
-  if (!link || link.getAttribute('href').length < 2) return;
-  var target = document.getElementById(link.getAttribute('href').slice(1));
-  if (target) revealLearnCardFor(target);
-}, true);
-
-function learnStep(delta) {
-  var cards = learnCardList();
-  if (!cards.length) return;
-  if (learnCardIndex + delta >= cards.length) {
-    if (typeof goNextHomeworkStop === 'function') goNextHomeworkStop('learn');
-    return;
-  }
-  setLearnCard(learnCardIndex + delta, true);
-}
-
-function setLearnCard(i, scroll) {
-  var panel = document.querySelector('[data-tab-panel="learn"]');
-  var cards = learnCardList();
-  if (!panel || !cards.length) return;
-  learnCardIndex = Math.max(0, Math.min(i, cards.length - 1));
-  var pager = ensureLearnPager(panel);
-  panel.querySelectorAll(':scope > .learn-card').forEach(function (c) { c.hidden = true; });
-  cards.forEach(function (c, k) { c.hidden = k !== learnCardIndex; });
-  panel.querySelectorAll('.learn-jump-row').forEach(function (n) { n.hidden = true; });
-  var card = cards[learnCardIndex];
-  var last = learnCardIndex >= cards.length - 1;
-  var dots = pager.querySelector('.learn-pager-dots');
-  dots.innerHTML = cards.map(function (c, k) { return '<span class="learn-pager-dot' + (k === learnCardIndex ? ' is-on' : (k < learnCardIndex ? ' is-done' : '')) + '"></span>'; }).join('');
-  var label = pager.querySelector('.learn-pager-label');
-  label.querySelector('.lang-en').textContent = 'Card ' + (learnCardIndex + 1) + ' of ' + cards.length + ' · ' + (card.dataset.cardEn || '');
-  label.querySelector('.lang-es').textContent = 'Tarjeta ' + (learnCardIndex + 1) + ' de ' + cards.length + ' · ' + (card.dataset.cardEs || '');
-  var backBtn = pager.querySelector('.learn-pager-back');
-  if (learnCardIndex === 0 && document.activeElement === backBtn) pager.querySelector('.learn-pager-next').focus();
-  backBtn.hidden = learnCardIndex === 0;
-  var next = pager.querySelector('.learn-pager-next');
-  next.querySelector('.lang-en').textContent = last ? 'Next stop →' : 'Next: ' + (cards[learnCardIndex + 1].dataset.cardEn || '') + ' →';
-  next.querySelector('.lang-es').textContent = last ? 'Siguiente parada →' : 'Siguiente: ' + (cards[learnCardIndex + 1].dataset.cardEs || '') + ' →';
-  var stopNav = document.querySelector('.hw-stop-nav');
-  if (stopNav) stopNav.hidden = true;
-  pager.hidden = false;
-  if (scroll && card && card.scrollIntoView) card.scrollIntoView({ block: 'start', behavior: (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) ? 'auto' : 'smooth' });
-}
-
 function updateStopNav(tabId) {
   var tabs = activeHomeworkRoute().tabs;
   var i = tabs.indexOf(tabId);
@@ -990,15 +898,10 @@ function updateStopNav(tabId) {
   var next = document.getElementById('hw_stop_next');
   var here = document.getElementById('hw_stop_here');
   var bar = document.querySelector('.hw-stop-nav');
-  if (bar) bar.hidden = tabId === 'learn' && learnCardList().length > 0;
   if (back) back.hidden = i <= 0;
   if (next) next.hidden = i < 0 || i >= tabs.length - 1;
   if (here && i >= 0) here.textContent = (i + 1) + ' / ' + tabs.length;
 }
-
-document.addEventListener('DOMContentLoaded', function () {
-  if (document.body.dataset.activeTab === 'learn') setLearnCard(0);
-});
 
 function switchHomeworkTab(tabId) {
   const leaving = document.body.dataset.activeTab;
@@ -1033,7 +936,6 @@ function switchHomeworkTab(tabId) {
   });
   document.body.dataset.activeTab = tabId;
   updateStopNav(tabId);
-  if (tabId === 'learn') setLearnCard(learnCardIndex);
   // Practice is inside the Check panel. Recalculate only after that panel is
   // visible so route-aware scoring sees the two or six active core problems
   // instead of treating every problem as hidden behind its tab panel.
@@ -1319,7 +1221,7 @@ function copyHomeworkLink() {
 }
 
 function startHomework() {
-  var last = document.body.dataset.activeTab || 'learn';
+  var last = document.body.dataset.activeTab || 'connect';
   switchHomeworkTab(last);
   var panel = document.getElementById('hw_panel_' + last);
   if (!panel) return;
@@ -1676,19 +1578,19 @@ function initHomeworkPage() {
     // The photobooth is a tool beside Done, never a place to resume: a family that last used it
     // had finished, so they continue at Done.
     let last = localStorage.getItem(lastTabStorageKey());
-    if (last === 'photobooth') last = 'done';
+    if (last === 'photobooth' || last === 'words' || last === 'play') last = 'done';
     const lastBtn = last ? document.getElementById('hw_tab_' + last) : null;
     if (lastBtn && !lastBtn.hidden) {
       switchHomeworkTab(last);
       setBiText(document.getElementById('hw_resume_note'), 'Welcome back. Your saved plan and answers are on this device. Continue at ' + lastBtn.querySelector('.tab-en').textContent + '.', 'Bienvenidos de nuevo. Su plan y sus respuestas están guardados en este dispositivo. Continúen en ' + lastBtn.querySelector('.tab-es').textContent + '.');
     }
-    else switchHomeworkTab('learn');
+    else switchHomeworkTab('connect');
   } catch(e) {}
   setTimeout(function () { hwTabsBooted = true; }, 0);
   restoreParentSignoff();
   initHomeworkShareLinks();
   var start = document.getElementById('hw_start_button');
-  if (start && document.body.dataset.activeTab !== 'learn') setBiText(start, 'Continue this path', 'Continuar esta ruta');
+  if (start && document.body.dataset.activeTab !== 'connect') setBiText(start, 'Continue this path', 'Continuar esta ruta');
   restoreFamilyMission();
   initHomeworkVocabPopups();
   // Family games initialize when Play is opened.
@@ -2724,7 +2626,6 @@ window.addEventListener("afterprint", function () {
 /* Helper: smooth scroll to element accounting for sticky rail and display:contents */
 function scrollStudioTo(el) {
   if (!el) return;
-  if (typeof revealLearnCardFor === 'function') revealLearnCardFor(el);
   var node = el;
   while (node && window.getComputedStyle(node).display === 'contents') {
     node = node.firstElementChild;
@@ -2783,16 +2684,25 @@ function initStudioStepper() {
     bar.appendChild(dots);
     bar.appendChild(nav);
     box.parentNode.insertBefore(bar, box);
+    /* Today's mission shows three problems and the rest stay hidden: the stepper counts and steps
+       over the ones that are on screen, so the dots always match the goal a family reads. */
+    var shown = function () { return items.filter(function (it) { return !it.hidden; }); };
     function paint() {
+      var visible = shown();
+      if (items[idx] && items[idx].hidden && visible.length) idx = items.indexOf(visible[0]);
+      var pos = visible.indexOf(items[idx]);
       items.forEach(function (it, i) {
         it.classList.toggle('is-step-current', i === idx);
         var done = it.classList.contains('correct') || it.classList.contains('reviewed');
+        dotEls[i].hidden = it.hidden;
+        dotEls[i].textContent = '';
+        dotEls[i].innerHTML = '<span class="hw-sr-only"><span class="lang-en">Problem </span><span class="lang-es" lang="es">Problema </span></span>' + (visible.indexOf(it) + 1);
         dotEls[i].classList.toggle('is-done', done);
         dotEls[i].classList.toggle('is-current', i === idx);
         dotEls[i].setAttribute('aria-current', i === idx ? 'step' : 'false');
       });
-      back.disabled = idx === 0;
-      next.disabled = idx === items.length - 1;
+      back.disabled = pos <= 0;
+      next.disabled = pos >= visible.length - 1;
 
       // Keep rail sub-buttons in sync with stepper index
       var checkRail = document.getElementById('hw_sub_check');
@@ -2801,16 +2711,23 @@ function initStudioStepper() {
         subBtns.forEach(function (b, bIdx) {
           var active = bIdx === idx;
           b.classList.toggle('is-active', active);
+          b.hidden = !!(items[bIdx] && items[bIdx].hidden);
           if (active) b.setAttribute('aria-current', 'step');
           else b.removeAttribute('aria-current');
         });
       }
     }
     function show(i) { idx = Math.max(0, Math.min(items.length - 1, i)); paint(); }
-    back.addEventListener('click', function () { show(idx - 1); });
-    next.addEventListener('click', function () { show(idx + 1); });
+    function step(delta) {
+      var visible = shown();
+      var target = visible[visible.indexOf(items[idx]) + delta];
+      if (target) show(items.indexOf(target));
+    }
+    back.addEventListener('click', function () { step(-1); });
+    next.addEventListener('click', function () { step(1); });
     var mo = new MutationObserver(paint);
-    items.forEach(function (it) { mo.observe(it, { attributes: true, attributeFilter: ['class'] }); });
+    items.forEach(function (it) { mo.observe(it, { attributes: true, attributeFilter: ['class', 'hidden'] }); });
+    window.__hwStepperPaints = (window.__hwStepperPaints || []).concat([paint]);
     show(0);
   });
 }
@@ -2835,39 +2752,14 @@ function glueTermPunctuation() {
   });
 }
 
-var STUDIO_SUB_CONFIGS = {
-  learn: [
-    { id: 'case', icon: '🕵️', en: 'Case File', es: 'Expediente', sel: '#hw_case' },
-    { id: 'talk', icon: '💬', en: '60-Sec Talk', es: 'Charla 60s', sel: '#hw_dinner_talk, .hw-dinner-talk, .dinner-talk-card' },
-    { id: 'mystery', icon: '🔍', en: 'Mystery', es: 'Misterio', sel: '#hw_mystery, .hw-mystery' },
-    { id: 'idea', icon: '💡', en: 'Big Idea', es: 'Idea principal', sel: '#hw_learn_idea .family-big-idea-piece, #hw_learn_idea > .section-title, #hw_learn_idea, .big-idea, .key-idea-banner' },
-    { id: 'try', icon: '👆', en: 'Interactive Model', es: 'Modelo interactivo', sel: '#hw_learn_try, .family-visual-lab, .interactive-visual-host' },
-    { id: 'quick', icon: '❓', en: 'Try Question', es: 'Pregunta rápida', sel: '#hw_learn_quick, .learn-quick-check' },
-    { id: 'huddle', icon: '🎭', en: 'Warm-up Huddle', es: 'Calentamiento', sel: '#hw_huddle, .hw-huddle' }
-  ],
-  words: [
-    { id: 'cards', icon: '📚', en: 'Flashcards', es: 'Tarjetas', sel: '.vocab-container, .vocab-card-grid' },
-    { id: 'quiz', icon: '❓', en: 'Word Quiz', es: 'Prueba de palabras', sel: '#vocab_quiz, .vocab-quiz' },
-    { id: 'match', icon: '🎯', en: 'Match Game', es: 'Juego de unir', sel: '#vocab_match_shell, .vocab-game-shell' }
-  ],
-  play: [
-    { id: 'activity', icon: '🏡', en: 'Family Activity', es: 'Actividad familiar', sel: '.fam-act-corner, .fam-act-card' },
-    { id: 'game', icon: '🎮', en: 'Math Games', es: 'Juegos familiares', sel: '#fam_game_break, .fam-game-card, .domino-game-wrap' }
-  ],
-  done: [
-    { id: 'teach', icon: '🗣️', en: 'Teach It Back', es: 'Enséñalo tú', sel: '.hw-teach' },
-    { id: 'confidence', icon: '🌱', en: 'Confidence Check', es: 'Confianza', sel: '#hw_conf_after, .hw-confidence' },
-    { id: 'summary', icon: '📊', en: "Tonight Summary", es: 'Resumen', sel: '#hw_done_summary, .done-summary' },
-    { id: 'signoff', icon: '✍️', en: 'Family Sign-off', es: 'Firma familiar', sel: '#parent_signoff_section, .parent-signoff-card, .hw-share, .homework-message-action' }
-  ]
-};
-
 function initStudioSubRail() {
   var tabBtns = document.querySelectorAll('.homework-tab-btn');
   if (!tabBtns.length) return;
 
   tabBtns.forEach(function (btn) {
     var tabId = btn.dataset.tab;
+    /* One mission rail. The only sub-list is the numbered problems under Practice. */
+    if (tabId !== 'check') return;
     var rail = btn.nextElementSibling;
     if (!rail || !rail.classList.contains('hw-sub-rail')) {
       rail = document.createElement('div');
@@ -2955,33 +2847,6 @@ function initStudioSubRail() {
         });
         rail.appendChild(extraBtn);
       }
-    } else if (STUDIO_SUB_CONFIGS[tabId]) {
-      var cfg = STUDIO_SUB_CONFIGS[tabId];
-      var panel = document.getElementById('hw_panel_' + tabId);
-      var validItems = [];
-      if (panel) {
-        cfg.forEach(function (c) {
-          var el = panel.querySelector(c.sel);
-          if (el) validItems.push({ c: c, el: el });
-        });
-      }
-      rail.innerHTML = '';
-      validItems.forEach(function (v, idx) {
-        var sBtn = document.createElement('button');
-        sBtn.type = 'button';
-        sBtn.className = 'hw-sub-btn' + (idx === 0 ? ' is-active' : '');
-        sBtn.dataset.subId = v.c.id;
-        sBtn.innerHTML = '<span class="sub-icon" aria-hidden="true">' + v.c.icon + '</span><span class="sub-text"><span class="lang-en">' + v.c.en + '</span><span class="lang-es" lang="es">' + v.c.es + '</span></span>';
-        sBtn.addEventListener('click', function () {
-          if (document.body.dataset.activeTab !== tabId && typeof switchHomeworkTab === 'function') {
-            switchHomeworkTab(tabId, { preventScroll: true });
-          }
-          rail.querySelectorAll('.hw-sub-btn').forEach(function (b) { b.classList.remove('is-active'); });
-          sBtn.classList.add('is-active');
-          scrollStudioTo(v.el);
-        });
-        rail.appendChild(sBtn);
-      });
     }
   });
 }
@@ -3016,68 +2881,6 @@ function installStudioTabScroll() {
   }
 }
 
-/* Install scroll-spy: update active sub-button as student scrolls through sections */
-function installStudioScrollSpy() {
-  if (window.__studioScrollSpyInstalled) return;
-  window.__studioScrollSpyInstalled = true;
-
-  var ticking = false;
-  window.addEventListener('scroll', function () {
-    if (!ticking) {
-      window.requestAnimationFrame(function () {
-        updateActiveSubButton();
-        ticking = false;
-      });
-      ticking = true;
-    }
-  }, { passive: true });
-
-  function updateActiveSubButton() {
-    var tabId = document.body.dataset.activeTab;
-    if (!tabId || tabId === 'check') return;
-    var rail = document.getElementById('hw_sub_' + tabId);
-    if (!rail) return;
-    var subBtns = Array.from(rail.querySelectorAll('.hw-sub-btn'));
-    if (!subBtns.length) return;
-
-    var panel = document.getElementById('hw_panel_' + tabId);
-    if (!panel || panel.hidden) return;
-
-    var targets = [];
-    subBtns.forEach(function (btn) {
-      var subId = btn.dataset.subId;
-      var cfg = STUDIO_SUB_CONFIGS[tabId] && STUDIO_SUB_CONFIGS[tabId].find(function (c) { return c.id === subId; });
-      if (cfg) {
-        var el = panel.querySelector(cfg.sel);
-        if (el) {
-          while (el && window.getComputedStyle(el).display === 'contents') {
-            el = el.firstElementChild;
-          }
-          if (el) targets.push({ btn: btn, el: el });
-        }
-      }
-    });
-
-    if (!targets.length) return;
-
-    var currentBtn = targets[0].btn;
-    for (var i = 0; i < targets.length; i++) {
-      var top = targets[i].el.getBoundingClientRect().top;
-      if (top <= 140) {
-        currentBtn = targets[i].btn;
-      } else {
-        break;
-      }
-    }
-
-    subBtns.forEach(function (b) {
-      var active = b === currentBtn;
-      b.classList.toggle('is-active', active);
-      if (active) b.setAttribute('aria-current', 'location');
-      else b.removeAttribute('aria-current');
-    });
-  }
-}
 
 function initHomeworkImageZoom() {
   if (window.__hwImageZoomInitialized) return;
@@ -3256,7 +3059,6 @@ function bootStudioSkin() {
   glueTermPunctuation();
   initStudioSubRail();
   installStudioTabScroll();
-  installStudioScrollSpy();
   initHomeworkImageZoom();
 }
 
@@ -4497,9 +4299,7 @@ function toggleQuickOptional() {
 
 
 /* ── Family experience: goal, mystery, confidence, share, dialogs ─────────── */
-var HW_GOAL_TARGET = 4;
-var HW_GOAL_QUICK = 2;
-var HW_ROUTE_TIMES = {"quick":"5–10","full":"20–30"};
+var HW_ROUTE_TIMES = {"quick":"5–10","full":"15–25"};
 var HW_ROUTE_DEFAULT = "quick";
 
 /* The Learning-supports icon lives in the stop tracker's utility row on every page, so
@@ -4602,18 +4402,18 @@ function activeCoreProblems() {
   });
 }
 
-/* Tonight's goal. One definition of "done": solved, or a written answer compared
-   with the key. The goal is four problems (two on Quick) out of the dozen on the
-   page, so it is reachable in a busy evening and the rest is honest bonus. */
+/* Today's practice. One definition of "done": solved, or a written answer compared with the
+   key. The goal is every problem the active route shows (three in today's mission, all of them
+   in extended practice), so the number a family reads is the number on the screen. */
 function hwGoalSnapshot() {
   var problems = activeCoreProblems();
   var done = problems.filter(function (section) {
     return section.classList.contains('correct') || section.classList.contains('reviewed');
   }).length;
   var route = typeof activeHomeworkRoute === 'function' ? activeHomeworkRoute() : { problemLimit: 0 };
-  var cap = route.problemLimit > 0 ? HW_GOAL_QUICK : HW_GOAL_TARGET;
   var available = problems.length;
-  return { done: done, goal: Math.max(1, Math.min(cap, available || cap)), available: available };
+  var goal = route.problemLimit > 0 ? Math.min(route.problemLimit, available || route.problemLimit) : available;
+  return { done: done, goal: Math.max(1, goal), available: available };
 }
 
 function hwDrawPips(el, shown, goal) {
@@ -4764,7 +4564,7 @@ function hwRenderConfidence() {
 
 function hwRenderTonight() {
   var mode = document.body.dataset.homeworkRoute || HW_ROUTE_DEFAULT;
-  var time = HW_ROUTE_TIMES[mode] || HW_ROUTE_TIMES.full;
+  var time = HW_ROUTE_TIMES[mode] || HW_ROUTE_TIMES.quick;
   document.querySelectorAll('[data-hw-tonight-time]').forEach(function (el) { el.textContent = time; });
 }
 
@@ -4871,45 +4671,6 @@ function hwWrapLanguage() {
   setLanguageMode.hwWrapped = true;
 }
 
-/* V3.0 Student-Controlled Adaptive Pathways ("express", "standard", "foundation").
-   Switching pathways never clears entered answers and synchronizes with the route mode. */
-function hwSetPathway(pathway, silent) {
-  var valid = pathway === 'express' || pathway === 'foundation' ? pathway : 'standard';
-  hwSet('pathway', valid);
-  document.body.dataset.hwPathway = valid;
-  document.querySelectorAll('.hw-pathway-btn[data-pathway]').forEach(function (btn) {
-    var active = btn.getAttribute('data-pathway') === valid;
-    btn.classList.toggle('is-active', active);
-    btn.setAttribute('aria-pressed', active ? 'true' : 'false');
-  });
-  var bridge = document.getElementById('hw_foundation_bridge');
-  if (bridge) bridge.hidden = valid !== 'foundation';
-  if (!silent && typeof setHomeworkRoute === 'function') {
-    if (valid === 'express') {
-      setHomeworkRoute('quick', { silent: true, keepTab: true });
-      hwToast("I've Got This mode: 2 quick checks + mystery challenge unlocked!", 'Modo «¡Ya lo domino!»: 2 preguntas rápidas + reto misterioso listo.');
-    } else if (valid === 'standard') {
-      setHomeworkRoute('full', { silent: true, keepTab: true });
-      hwToast('Just Right companion mode active. Your work is saved.', 'Modo «A mi medida» activo. Tus respuestas están guardadas.');
-    } else if (valid === 'foundation') {
-      setHomeworkRoute('full', { silent: true, keepTab: true });
-      hwToast('Visual Bridge opened below — explore the model first!', 'Puente visual abierto abajo — ¡explora primero el modelo!');
-    }
-    hwRenderGoal(false);
-  }
-}
-window.hwSetPathway = hwSetPathway;
-
-function hwRestorePathway() {
-  var saved = hwGet('pathway');
-  if (saved === 'express' || saved === 'standard' || saved === 'foundation') {
-    hwSetPathway(saved, true);
-  } else {
-    var route = document.body.dataset.homeworkRoute || HW_ROUTE_DEFAULT;
-    hwSetPathway(route === 'quick' ? 'express' : 'standard', true);
-  }
-}
-
 /* V3.0 Quick-Tap Sentence Starters for "My Math Voice" reflection fields. */
 function hwInsertVoiceChip(btn) {
   if (!btn) return;
@@ -4943,7 +4704,6 @@ document.addEventListener('DOMContentLoaded', function () {
   hwRestoreSolved();
   hwWrapLanguage();
   hwRenderTonight();
-  hwRestorePathway();
   hwRenderConfidence();
   hwRenderNights();
   setTimeout(function () { hwRenderGoal(false); }, 0);
@@ -4951,6 +4711,228 @@ document.addEventListener('DOMContentLoaded', function () {
     .observe(document.body, { attributes: true, attributeFilter: ['data-homework-route'] });
 });
 window.addEventListener('load', function () { hwRestoreSolved(); hwRenderGoal(false); });
+
+
+/* ── Family Math Mission ─────────────────────────────────────────────── */
+var HW_MISSION_MODEL_URL = '/assets/family-mission/models/index.mjs';
+var HW_MISSION_MODEL_CSS = '/assets/family-mission/models/models.css';
+var hwMissionModel = null;
+var hwMissionModelLoading = false;
+
+function hwMissionKey(name) { return 'hw_mission_' + name + '_' + (window.LESSON_ID || location.pathname); }
+function hwMissionRead(name, fallback) {
+  try { var raw = localStorage.getItem(hwMissionKey(name)); return raw ? JSON.parse(raw) : fallback; } catch (e) { return fallback; }
+}
+function hwMissionWrite(name, value) {
+  try { localStorage.setItem(hwMissionKey(name), JSON.stringify(value)); } catch (e) {}
+}
+function hwMissionLang() { return document.body.classList.contains('lang-mode-es') ? 'es' : 'en'; }
+function hwMissionBi(en, es) { return document.body.classList.contains('lang-mode-es') ? es : en; }
+
+/* Explore more sheet actions. The sheet is a <dialog>; closing it first returns focus to its opener. */
+function hwCloseSheet() {
+  var d = document.getElementById('hw_explore_sheet');
+  if (d && d.open) d.close();
+}
+function openOptionalStop(id) {
+  hwCloseSheet();
+  switchHomeworkTab(id);
+}
+function chooseExtendedPractice() {
+  hwCloseSheet();
+  setHomeworkRoute('full', { keepTab: true });
+  switchHomeworkTab('check');
+}
+
+/* Notice and wonder: saved as the family types, restored on reload. */
+function hwMissionNotes() {
+  var saved = hwMissionRead('notes', {});
+  document.querySelectorAll('[data-mission-note]').forEach(function (box) {
+    var id = box.getAttribute('data-mission-note');
+    if (saved[id]) box.value = saved[id];
+    box.addEventListener('input', function () {
+      var cur = hwMissionRead('notes', {});
+      cur[id] = box.value.slice(0, 280);
+      hwMissionWrite('notes', cur);
+    });
+  });
+}
+
+/* Explore: the interactive model loads the first time the stage opens. */
+function hwMissionMountModel() {
+  var host = document.getElementById('hw_mission_model');
+  if (!host || hwMissionModel || hwMissionModelLoading) return;
+  var stage = host.querySelector('[data-mission-stage]');
+  var status = host.querySelector('[data-mission-status]');
+  var config;
+  try { config = JSON.parse(host.getAttribute('data-config') || '{}'); } catch (e) { return; }
+  hwMissionModelLoading = true;
+  if (!document.querySelector('link[data-mission-models]')) {
+    var css = document.createElement('link');
+    css.rel = 'stylesheet';
+    css.href = HW_MISSION_MODEL_CSS;
+    css.setAttribute('data-mission-models', '');
+    document.head.appendChild(css);
+  }
+  import(HW_MISSION_MODEL_URL).then(function (mod) {
+    var model = mod.mountModel(stage, host.getAttribute('data-family'), config, {
+      lang: hwMissionLang(),
+      onChange: function (state, note) {
+        hwMissionWrite('model', model.serialize());
+        var ev = hwMissionRead('evidence', {});
+        ev.modelMoves = (ev.modelMoves || 0) + 1;
+        hwMissionWrite('evidence', ev);
+        if (status && note) status.textContent = note;
+      }
+    });
+    var saved = null;
+    try { saved = localStorage.getItem(hwMissionKey('model')); } catch (e) {}
+    if (saved) { try { model.restore(JSON.parse(saved)); } catch (e) {} }
+    hwMissionModel = model;
+  }).catch(function () {
+    /* The static picture and labs still teach; say so quietly instead of leaving a blank box. */
+    if (stage) stage.textContent = hwMissionBi('The interactive model did not load. The picture above still works.', 'El modelo interactivo no cargó. El dibujo de arriba sí funciona.');
+  }).then(function () { hwMissionModelLoading = false; });
+}
+
+/* Evidence: what the family actually did on each practice problem, kept on this device. */
+function hwMissionSnapshot() {
+  var ev = hwMissionRead('evidence', {});
+  ev.problems = ev.problems || {};
+  document.querySelectorAll('.problem-section').forEach(function (section) {
+    if (section.closest('.more-practice')) return;
+    var idx = section.id.replace('problem_', '');
+    var done = section.classList.contains('correct') || section.classList.contains('reviewed');
+    var wrong = typeof problemAttempts === 'object' ? (problemAttempts[idx] || 0) : 0;
+    var hints = section.querySelectorAll('.coach-ladder-step.is-revealed').length;
+    var shown = typeof revealForced === 'object' && revealForced[idx] === true;
+    var prev = ev.problems[idx] || {};
+    if (!done && !wrong && !hints && !prev.done) return;
+    ev.problems[idx] = {
+      done: !!(done || prev.done),
+      wrong: Math.max(wrong, prev.wrong || 0),
+      hints: Math.max(hints, prev.hints || 0),
+      shown: !!(shown || prev.shown)
+    };
+  });
+  hwMissionWrite('evidence', ev);
+  return ev;
+}
+
+function hwMissionOfferFreshTry(section) {
+  if (section.querySelector('.hw-fresh-try')) return;
+  var idx = section.id.replace('problem_', '');
+  var ev = hwMissionRead('evidence', { problems: {} });
+  var p = (ev.problems || {})[idx] || {};
+  if (!(p.wrong > 0 || p.shown)) return;
+  var box = document.createElement('div');
+  box.className = 'hw-fresh-try';
+  box.setAttribute('role', 'status');
+  box.innerHTML = '<p><strong><span class="lang-en">You fixed it. Now try a fresh problem to see if it sticks.</span><span class="lang-es" lang="es">Lo corrigieron. Ahora prueben un problema nuevo para ver si se les queda.</span></strong></p>' +
+    '<button type="button" class="btn btn-sm btn-primary" data-act="missionFreshTry" data-args="[' + JSON.stringify(idx) + ']"><span class="lang-en">Try a fresh problem</span><span class="lang-es" lang="es">Probar un problema nuevo</span></button>';
+  var anchor = section.querySelector('.explanation-box, .visual-explanation-card') || section.querySelector('.problem-body') || section;
+  anchor.insertAdjacentElement('afterend', box);
+}
+
+/* A fresh problem is the next unsolved problem of this lesson. Today's mission shows three, so
+   the extended set opens if the next one is not on screen. Authored items only, never invented. */
+function missionFreshTry(idx) {
+  var all = Array.prototype.filter.call(document.querySelectorAll('.problem-section'), function (s) { return !s.closest('.more-practice'); });
+  var cur = document.getElementById('problem_' + idx);
+  var from = all.indexOf(cur);
+  var open = function (s) { return !s.classList.contains('correct') && !s.classList.contains('reviewed'); };
+  var next = all.slice(from + 1).filter(open)[0] || all.filter(function (s) { return s !== cur && open(s); })[0];
+  if (!next) { hwToast('No fresh problems left tonight. Great work!', 'No quedan problemas nuevos hoy. ¡Buen trabajo!', 5000); return; }
+  if (next.hidden || next.closest('[hidden]')) setHomeworkRoute('full', { silent: true, keepTab: true });
+  switchHomeworkTab('check');
+  var box = next.parentElement;
+  var bar = box && box.previousElementSibling;
+  if (bar && bar.classList.contains('hw-stepper-bar')) {
+    var items = Array.prototype.slice.call(box.querySelectorAll(':scope > .problem-section'));
+    var dot = bar.querySelectorAll('.hw-stepper-dot')[items.indexOf(next)];
+    if (dot) dot.click();
+  }
+  setTimeout(function () { next.scrollIntoView({ block: 'start', behavior: 'auto' }); }, 60);
+}
+
+/* Reflect: a summary made only of what happened. No mastery percentage, no stars for clicking. */
+function hwMissionSummary() {
+  var host = document.getElementById('hw_mission_summary');
+  if (!host) return;
+  var ev = hwMissionSnapshot();
+  var ids = Object.keys(ev.problems || {});
+  var solved = ids.filter(function (k) { return ev.problems[k].done; });
+  var clean = solved.filter(function (k) { var p = ev.problems[k]; return !p.wrong && !p.hints && !p.shown; });
+  var supported = solved.filter(function (k) { var p = ev.problems[k]; return p.wrong || p.hints || p.shown; });
+  var revised = solved.filter(function (k) { return ev.problems[k].wrong > 0; });
+  var total = document.querySelectorAll('.problem-section:not([hidden])').length;
+  /* Nothing to say yet means nothing is shown: no "0 finished" line before the family has done anything. */
+  var wrap = host.closest('[data-mission-evidence]');
+  if (wrap) wrap.hidden = !solved.length && !ev.modelMoves;
+  var en = [], es = [];
+  var title = window.LESSON_TITLE || '';
+  var titleEs = window.LESSON_TITLE_ES || title;
+  en.push('Today\'s math idea: ' + title + '.');
+  es.push('La idea de hoy: ' + titleEs + '.');
+  if (solved.length) {
+    en.push('You solved ' + solved.length + (total ? ' of ' + total : '') + ' practice problems.');
+    es.push('Resolvieron ' + solved.length + (total ? ' de ' + total : '') + ' problemas de práctica.');
+    if (clean.length) { en.push(clean.length + ' without any help.'); es.push(clean.length + ' sin ayuda.'); }
+    if (supported.length) { en.push(supported.length + ' with a hint or a second try. That is how learning works.'); es.push(supported.length + ' con una pista o un segundo intento. Así se aprende.'); }
+    if (revised.length) { en.push('You changed an answer and got it right.'); es.push('Cambiaron una respuesta y la corrigieron.'); }
+  }
+  if (ev.modelMoves) { en.push('You explored the model.'); es.push('Exploraron el modelo.'); }
+  var next;
+  if (!solved.length) next = null;
+  else if (supported.length) next = ['Next step: try one problem again tomorrow without hints.', 'Siguiente paso: mañana vuelvan a probar un problema sin pistas.'];
+  else if (total && solved.length < total) next = ['Next step: finish the rest of the practice, or stop here. Both are fine.', 'Siguiente paso: terminen el resto de la práctica o paren aquí. Ambas opciones están bien.'];
+  else next = ['Next step: try Explore more, or finish for tonight.', 'Siguiente paso: prueben Explorar más o terminen por hoy.'];
+  if (!next) { host.innerHTML = ''; return; }
+  host.innerHTML = '<ul class="hw-evidence-list"></ul><p class="hw-evidence-next"><strong></strong></p>';
+  var ul = host.querySelector('ul');
+  en.forEach(function (line, i) {
+    var li = document.createElement('li');
+    li.innerHTML = '<span class="lang-en"></span><span class="lang-es" lang="es"></span>';
+    li.querySelector('.lang-en').textContent = line;
+    li.querySelector('.lang-es').textContent = es[i];
+    ul.appendChild(li);
+  });
+  host.querySelector('strong').innerHTML = '<span class="lang-en"></span><span class="lang-es" lang="es"></span>';
+  host.querySelector('.lang-en').textContent = next[0];
+  host.querySelector('.lang-es').textContent = next[1];
+  var pre = document.querySelector('[data-mission-prereq]');
+  if (pre) pre.hidden = !supported.length;
+}
+
+function hwMissionBoot() {
+  hwMissionNotes();
+  var observer = new MutationObserver(function (list) {
+    list.forEach(function (rec) {
+      var el = rec.target;
+      if (el.classList && el.classList.contains('problem-section')) {
+        hwMissionSnapshot();
+        if (el.classList.contains('correct')) hwMissionOfferFreshTry(el);
+      }
+    });
+  });
+  document.querySelectorAll('.problem-section').forEach(function (s) { observer.observe(s, { attributes: true, attributeFilter: ['class'] }); });
+  document.addEventListener('click', function (e) {
+    if (e.target.closest && e.target.closest('.coach-ladder-step button')) setTimeout(hwMissionSnapshot, 0);
+  });
+  var tabWatch = new MutationObserver(function () {
+    var tab = document.body.dataset.activeTab;
+    if (tab === 'explore') hwMissionMountModel();
+    if (tab === 'done') hwMissionSummary();
+  });
+  tabWatch.observe(document.body, { attributes: true, attributeFilter: ['data-active-tab'] });
+  var langWatch = new MutationObserver(function () {
+    if (hwMissionModel && hwMissionModel.setLang) hwMissionModel.setLang(hwMissionLang());
+  });
+  langWatch.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+  if (document.body.dataset.activeTab === 'explore') hwMissionMountModel();
+}
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', hwMissionBoot);
+else hwMissionBoot();
 
 
 (function () {
@@ -7480,7 +7462,7 @@ function spinMathTalkPrompt() {
 
 // In-Page Workbench Tools
 function openWorkbench(tool) {
-  if (typeof switchHomeworkTab === "function") switchHomeworkTab("learn");
+  if (typeof switchHomeworkTab === "function") switchHomeworkTab("connect");
   const drawer = document.querySelector(".workbench-drawer");
   if (!drawer) return;
   if (drawer) {
@@ -7718,6 +7700,16 @@ function checkProblem(idx, options) {
       const selected = container.querySelector("input[type='radio']:checked");
       const correctIdx = container.dataset.correct;
       const explanation = pickLangText(container.dataset.explanation, container.dataset.explanationEs);
+      let ownHints = [];
+      let ownHintsEs = [];
+      try {
+        ownHints = JSON.parse(container.dataset.hints || "[]");
+        ownHintsEs = JSON.parse(container.dataset.hintsEs || "[]");
+      } catch (e) {
+        ownHints = [];
+        ownHintsEs = [];
+      }
+      const ownHint = (n) => pickLangText(ownHints[n] || "", ownHintsEs[n] || ownHints[n] || "");
       let choiceFeedback = [];
       let choiceFeedbackEs = [];
       try {
@@ -7813,15 +7805,17 @@ function checkProblem(idx, options) {
             if (selectedFeedback) {
               html += '<div class="exp-trap"><strong>⚠️ ' + pickLangText("Remember:", "Recuerda:") + '</strong> ' + selectedFeedback + '</div>';
             }
+            /* The clue is THIS problem's own second hint. The neutral line below is only for an item
+               an author left without hints; it names no operation or concept. */
             html += '<div class="exp-why"><strong>🎯 ' + pickLangText("Strategy Clue:", "Pista de estrategia:") + '</strong> ' +
-              pickLangText(
-                'Look at the relationship between the quantities. Can you write a fraction or divide Top ÷ Bottom to test the numbers?',
-                'Observa la relación entre las cantidades. ¿Puedes escribir una fracción o dividir Arriba ÷ Abajo para probar los números?'
-              ) + '</div>';
+              (ownHint(1) || ownHint(0) || pickLangText(
+                'Draw or model the situation. What does each number in the problem stand for?',
+                'Dibuja o modela la situación. ¿Qué representa cada número del problema?'
+              )) + '</div>';
             html += '<div class="exp-coach"><strong>💬 ' + pickLangText("Parent Coach Tip:", "Consejo para el tutor:") + '</strong> ' +
               pickLangText(
-                'Ask: <em>“Which number goes on top, and which goes on bottom?”</em> or use the Math Tools workbench below.',
-                'Pregunta: <em>“¿Qué número va arriba y cuál va abajo?”</em> o usa las herramientas de matemáticas abajo.'
+                'Ask: <em>“What does each number in the problem stand for? What is the question asking for?”</em>',
+                'Pregunta: <em>“¿Qué representa cada número del problema? ¿Qué se pide encontrar?”</em>'
               ) + '</div>';
             html += '<div class="exp-retry" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px;">' +
               '<button type="button" class="btn btn-sm btn-secondary hw-reveal-btn" data-act="forceReveal" data-args="[' + idx + ']">' +

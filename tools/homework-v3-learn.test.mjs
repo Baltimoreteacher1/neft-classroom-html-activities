@@ -3,7 +3,7 @@ import { readFileSync } from "node:fs";
 import test from "node:test";
 import { JSDOM } from "jsdom";
 import {
-  renderLearnModules,
+  renderLearnPieces,
   renderPrintFooter,
   renderProblemAsk,
   v3Of,
@@ -47,19 +47,22 @@ const cfg = (id, notes) => ({
 test("a lesson with no v3 block fails the build; there is no unit-level fallback", () => {
   assert.throws(() => v3Of({ familyNotes: {} }, "4-5"), /no "v3" block/);
   assert.throws(
-    () => renderLearnModules({ lessonId: "4-5", familyNotes: {} }, "4-5"),
+    () => renderLearnPieces({ lessonId: "4-5", familyNotes: {} }, "4-5"),
     /no "v3" block/,
   );
 });
 
-test("Learn modules come from the lesson's own v3 block; the glitch shows on Part 2 only", () => {
-  const base = renderLearnModules(cfg("10-4", { v3: v3() }), "10-4");
-  const part2 = renderLearnModules(cfg("10-4-part2", { v3: v3() }), "10-4-part2");
-  assert.match(base, /id="hw_kitchen_table_prompt"/);
-  assert.match(base, /Talk at the table\./);
-  assert.doesNotMatch(base, /id="hw_spot_the_glitch"/);
-  assert.match(part2, /id="hw_spot_the_glitch"/);
-  assert.doesNotMatch(base + part2, /smoothie|berries|Jordan|Ratio Tape|onclick=/);
+test("Mission pieces come from the lesson's own v3 block; the glitch shows on Part 2 only", () => {
+  const base = renderLearnPieces(cfg("10-4", { v3: v3() }), "10-4");
+  const part2 = renderLearnPieces(cfg("10-4-part2", { v3: v3() }), "10-4-part2");
+  assert.match(base.apply, /id="hw_kitchen_table_prompt"/);
+  assert.match(base.apply, /Talk at the table\./);
+  assert.equal(base.glitch, "");
+  assert.match(part2.glitch, /id="hw_spot_the_glitch"/);
+  assert.doesNotMatch(
+    Object.values(base).join("") + Object.values(part2).join(""),
+    /smoothie|berries|Jordan|Ratio Tape|onclick=/,
+  );
 });
 
 test("the per-problem ask renders only when the problem authored one; the print footer uses this lesson's questions", () => {

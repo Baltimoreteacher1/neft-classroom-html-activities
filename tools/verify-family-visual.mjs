@@ -100,7 +100,7 @@ const MEASURE = () => {
   };
   const samples = [];
   const sel =
-    "#hw_start_button, .hw-hero .fm-chip, .hw-hero .fm-xp-badge, .hw-route-option .fm-route__title strong, .hw-hero .fm-eyebrow__text > span, .hw-hero .fm-hero__title > span, .hw-hero .fm-hook__kicker span, .hw-hero .fm-hook__text > span, .hw-hero-lesson-meta > span, .hw-hero .fm-seg > button, .hw-hero .fm-hero__q > span";
+    "#hw_start_button, .hw-hero .fm-chip, .hw-hero .fm-xp-badge, .hw-explore-more-btn, .hw-hero .fm-eyebrow__text > span, .hw-hero .fm-hero__title > span, .hw-hero .fm-hook__kicker span, .hw-hero .fm-hook__text > span, .hw-hero-lesson-meta > span, .hw-hero .fm-seg > button, .hw-hero .fm-hero__q > span";
   for (const el of document.querySelectorAll(sel)) {
     if (!vis(el) || !shown(el)) continue;
     const c = getComputedStyle(el);
@@ -176,6 +176,7 @@ const MEASURE = () => {
     startBottom: rect(start).bottom,
     heroHeight: rect(hero).h,
     h1Count: document.querySelectorAll("h1").length,
+    missionStart: document.querySelectorAll(".hw-mission-start").length,
     routeCards: document.querySelectorAll(".hw-route-option[data-route-mode]").length,
     hook: document.querySelector(".hw-hook")?.dataset.variant ?? null,
     art: !!hero.querySelector(".fm-hero__art svg"),
@@ -237,7 +238,11 @@ async function runContext({ width, height, lang, theme, label, forced = false })
       continue;
     }
     if (m.h1Count !== 1) fail(where, `${m.h1Count} h1 elements (needs exactly one)`);
-    if (m.routeCards !== 2) fail(where, `${m.routeCards} route cards (needs two)`);
+    if (m.missionStart !== 1 || m.routeCards !== 0)
+      fail(
+        where,
+        `${m.missionStart} mission start(s) and ${m.routeCards} route cards (needs one and none)`,
+      );
     if (!m.hook) fail(where, "no hook card");
     if (!m.art) fail(where, "no unit art band");
     if (lang !== "bilingual" && m.scrollWidth > m.innerWidth)

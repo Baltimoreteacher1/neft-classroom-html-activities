@@ -47,13 +47,26 @@ export function workedExampleFor(config, problems = []) {
   });
   if (echoes) return null;
   if (!belongsToLesson(config, iDo.title, lines)) return null;
+  /* A title that names another concept ("How to divide with fractions" over percent lines on 4-1 Part 2)
+     is dropped; the family still gets the lines, which passed the check above. */
+  const words = (t) =>
+    new Set(
+      String(t)
+        .toLowerCase()
+        .match(/[a-z]{4,}/g)
+        ?.map((w) => w.slice(0, 5)) || [],
+    );
+  const lessonWords = words(
+    `${config.title || ""} ${config.familyNotes?.sessionTitle || ""} ${lines.join(" ")}`,
+  );
+  const titleFits = [...words(iDo.title || "")].some((w) => lessonWords.has(w));
   const linesEs =
     Array.isArray(iDo.linesEs) && iDo.linesEs.length === lines.length
       ? iDo.linesEs.map(String)
       : null;
   return {
-    title: String(iDo.title || ""),
-    titleEs: iDo.titleEs ? String(iDo.titleEs) : "",
+    title: titleFits ? String(iDo.title || "") : "",
+    titleEs: titleFits && iDo.titleEs ? String(iDo.titleEs) : "",
     lines,
     linesEs,
   };

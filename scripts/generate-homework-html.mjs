@@ -59,13 +59,15 @@ import { CONFUSED_GROWNUP_JS } from "./lib/homework-confused-grownup.mjs";
 import { LEGACY_SHELL_CSS } from "./lib/homework-design-links.mjs";
 import { DOMINO_DUO_JS } from "./lib/homework-domino-duo.mjs";
 import {
-  GOAL_TARGET,
+  MISSION_PRACTICE_COUNT,
   pickMystery,
   renderExperienceDialogs,
   renderGoalPips,
 } from "./lib/homework-experience.mjs";
 import { EXPERIENCE_JS } from "./lib/homework-experience-js.mjs";
 import { HERO_JS, READER_BOOT_JS } from "./lib/homework-hero.mjs";
+import { renderExploreMoreSheet } from "./lib/homework-mission.mjs";
+import { MISSION_JS } from "./lib/homework-mission-js.mjs";
 import { applyPracticeReview, loadPracticeReview } from "./lib/homework-practice-review.mjs";
 import { PRINT_JS } from "./lib/homework-print.mjs";
 import {
@@ -75,6 +77,7 @@ import {
 } from "./lib/homework-print-plan.mjs";
 import {
   answerKeyLines,
+  englishChoiceFeedback,
   familyCoachLevels,
   matchingPairs,
   normalizeDragSort,
@@ -838,7 +841,7 @@ function renderProblem(it, pIdx, topic = "fallback", opts = {}) {
         <p class="problem-stem"${esMissing(stem, stemEs) ? ' data-es-missing="stem"' : ""}>${bi(stem, stemEs)}</p>
         ${visualWrap}
         ${renderFamilyTip("multiple-choice")}
-        <div class="mc-options" data-correct="${correctIdx}" data-explanation="${esc(explanation)}"${explanationEs ? ` data-explanation-es="${esc(explanationEs)}"` : ""} data-choice-feedback='${esc(JSON.stringify(it.choiceFeedback || []))}' data-choice-feedback-es='${esc(JSON.stringify(spanishChoiceFeedback(it)))}' data-choice-evidence='${esc(JSON.stringify(it.choiceEvidence || []))}' data-topic="${esc(topic)}">
+        <div class="mc-options" data-correct="${correctIdx}" data-explanation="${esc(explanation)}"${explanationEs ? ` data-explanation-es="${esc(explanationEs)}"` : ""} data-hints='${esc(JSON.stringify(it.hints || []))}' data-hints-es='${esc(JSON.stringify(it.hintsEs || []))}' data-choice-feedback='${esc(JSON.stringify(englishChoiceFeedback(it)))}' data-choice-feedback-es='${esc(JSON.stringify(spanishChoiceFeedback(it)))}' data-choice-evidence='${esc(JSON.stringify(it.choiceEvidence || []))}' data-topic="${esc(topic)}">
           ${shuffleSteps(
             choices.map((_, index) => index),
             [],
@@ -1389,15 +1392,16 @@ function generateHtml(lessonId, config) {
     scene: sceneOf(lessonId, config),
     vocab,
   });
+  const mission = renderLearnTab(
+    config,
+    renderVisualMathLab(topic, config, lessonModel),
+    renderWorkbenchTools(config),
+    mystery,
+    caseFileHtml,
+  );
   const tabPanels = [
-    renderLearnTab(
-      config,
-      renderVisualMathLab(topic, config, lessonModel),
-      renderWorkbenchTools(config),
-      mystery,
-      caseFileHtml,
-    ),
-    renderWordsTab(vocab, resolveVocabImage, vocabImageAlt),
+    mission.connect,
+    mission.explore,
     renderCheckTab(
       quickCheckIntroHtml,
       warmupHtml,
@@ -1407,8 +1411,11 @@ function generateHtml(lessonId, config) {
       basicHtml,
       Boolean(mystery),
     ),
-    renderPlayTabPanel(config, lessonId),
+    mission.talk,
+    mission.apply,
     renderDoneTab(config, lessonId),
+    renderWordsTab(vocab, resolveVocabImage, vocabImageAlt),
+    renderPlayTabPanel(config, lessonId),
     renderPhotoboothTab(config, lessonId),
   ].join("\n");
 
@@ -1563,6 +1570,7 @@ ${printPlanSheetsHtml}
 
 ${helpModalHtml}
 ${renderExperienceDialogs()}
+${renderExploreMoreSheet()}
 ${answerSheetHtml}
 
 ${renderMathKeypad()}
@@ -1580,7 +1588,7 @@ ${renderMathKeypad()}
     <div class="score-progress-container">
       <div class="score-text">
         <span class="hw-stack hw-goal-label"><span class="lang-en">Tonight's goal</span><span class="lang-es" lang="es">Meta de hoy</span></span>
-        <span id="progress_text" role="status">0 / ${Math.min(GOAL_TARGET, coreSelected.length)}</span>
+        <span id="progress_text" role="status">0 / ${Math.min(MISSION_PRACTICE_COUNT, coreSelected.length)}</span>
         ${renderGoalPips("hw-pips-bar")}
         <span class="hw-bonus" data-hw-bonus hidden>+<span data-hw-bonus-count>0</span> <span class="lang-en">bonus</span><span class="lang-es" lang="es">extra</span></span>
       </div>
@@ -1622,6 +1630,7 @@ ${SCRATCHPAD_JS}
 ${WORKSPACE_JS}
 ${SESSION_FLOW_JS}
 ${EXPERIENCE_JS}
+${MISSION_JS}
 ${CASE_FILE_JS}
 ${V3_LEARN_JS}
 ${HERO_JS}
@@ -3090,7 +3099,7 @@ function spinMathTalkPrompt() {
 
 // In-Page Workbench Tools
 function openWorkbench(tool) {
-  if (typeof switchHomeworkTab === "function") switchHomeworkTab("learn");
+  if (typeof switchHomeworkTab === "function") switchHomeworkTab("connect");
   const drawer = document.querySelector(".workbench-drawer");
   if (!drawer) return;
   if (drawer) {
@@ -3328,6 +3337,16 @@ function checkProblem(idx, options) {
       const selected = container.querySelector("input[type='radio']:checked");
       const correctIdx = container.dataset.correct;
       const explanation = pickLangText(container.dataset.explanation, container.dataset.explanationEs);
+      let ownHints = [];
+      let ownHintsEs = [];
+      try {
+        ownHints = JSON.parse(container.dataset.hints || "[]");
+        ownHintsEs = JSON.parse(container.dataset.hintsEs || "[]");
+      } catch (e) {
+        ownHints = [];
+        ownHintsEs = [];
+      }
+      const ownHint = (n) => pickLangText(ownHints[n] || "", ownHintsEs[n] || ownHints[n] || "");
       let choiceFeedback = [];
       let choiceFeedbackEs = [];
       try {
@@ -3423,15 +3442,17 @@ function checkProblem(idx, options) {
             if (selectedFeedback) {
               html += '<div class="exp-trap"><strong>⚠️ ' + pickLangText("Remember:", "Recuerda:") + '</strong> ' + selectedFeedback + '</div>';
             }
+            /* The clue is THIS problem's own second hint. The neutral line below is only for an item
+               an author left without hints; it names no operation or concept. */
             html += '<div class="exp-why"><strong>🎯 ' + pickLangText("Strategy Clue:", "Pista de estrategia:") + '</strong> ' +
-              pickLangText(
-                'Look at the relationship between the quantities. Can you write a fraction or divide Top ÷ Bottom to test the numbers?',
-                'Observa la relación entre las cantidades. ¿Puedes escribir una fracción o dividir Arriba ÷ Abajo para probar los números?'
-              ) + '</div>';
+              (ownHint(1) || ownHint(0) || pickLangText(
+                'Draw or model the situation. What does each number in the problem stand for?',
+                'Dibuja o modela la situación. ¿Qué representa cada número del problema?'
+              )) + '</div>';
             html += '<div class="exp-coach"><strong>💬 ' + pickLangText("Parent Coach Tip:", "Consejo para el tutor:") + '</strong> ' +
               pickLangText(
-                'Ask: <em>“Which number goes on top, and which goes on bottom?”</em> or use the Math Tools workbench below.',
-                'Pregunta: <em>“¿Qué número va arriba y cuál va abajo?”</em> o usa las herramientas de matemáticas abajo.'
+                'Ask: <em>“What does each number in the problem stand for? What is the question asking for?”</em>',
+                'Pregunta: <em>“¿Qué representa cada número del problema? ¿Qué se pide encontrar?”</em>'
               ) + '</div>';
             html += '<div class="exp-retry" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px;">' +
               '<button type="button" class="btn btn-sm btn-secondary hw-reveal-btn" data-act="forceReveal" data-args="[' + idx + ']">' +

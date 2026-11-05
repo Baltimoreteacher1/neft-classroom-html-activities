@@ -1,0 +1,229 @@
+/* ============================================================================
+   Family Math Mission: the six-stage path (Connect, Explore, Practice, Talk Together, Apply,
+   Reflect), the Explore more sheet, the caregiver co-pilot, the interactive model host and the
+   Reflect summary. One @layer patterns sheet on the design-system tokens; no raw colors, logical
+   properties only, no ID selectors. Gate: npm run validate:family-design-tokens.
+   ============================================================================ */
+@layer patterns {
+  /* !important (documented [hidden]): a problem the mission does not show has no dot and no rail button; a component display rule must not bring it back. */
+  .hw-stepper-dot[hidden],
+  .hw-sub-btn[hidden] {
+    display: none !important;
+  }
+
+  /* One mission, one rail: the optional stops exist for the Explore more sheet only. */
+  .hw-optional-stops {
+    display: none;
+  }
+
+  /* Hero: one primary action, one quiet secondary. */
+  .hw-mission-start {
+    display: grid;
+    gap: var(--fm-space-3);
+    align-content: start;
+  }
+  .hw-mission-lead {
+    margin: 0;
+    max-inline-size: var(--fm-measure);
+  }
+  .hw-explore-more-btn {
+    min-block-size: var(--fm-target-min);
+  }
+
+  /* Stage blocks: spacing and a calm card, one idea each. */
+  .mission-block {
+    background: var(--fm-surface);
+    border: 1px solid var(--fm-border);
+    border-radius: var(--fm-radius-lg);
+    padding: var(--fm-space-5);
+    margin-block-end: var(--fm-space-4);
+  }
+  .mission-block > :first-child {
+    margin-block-start: 0;
+  }
+  .mission-block > :last-child {
+    margin-block-end: 0;
+  }
+
+  /* Connect: notice and wonder */
+  .hw-nw-field {
+    display: grid;
+    gap: var(--fm-space-2);
+    margin-block-start: var(--fm-space-3);
+  }
+  .hw-nw-label {
+    font-weight: var(--fm-fw-semibold);
+  }
+  .hw-nw-field textarea {
+    inline-size: 100%;
+    min-block-size: calc(var(--fm-target-min) * 1.5);
+    padding: var(--fm-space-3);
+    font: inherit;
+    color: var(--fm-text);
+    background: var(--fm-sunken);
+    border: 1px solid var(--fm-border-strong);
+    border-radius: var(--fm-radius-md);
+    resize: vertical;
+  }
+
+  /* Explore: the model host */
+  .hw-mission-model {
+    background: var(--fm-surface);
+    border: 1px solid var(--fm-border);
+    border-radius: var(--fm-radius-lg);
+    padding: var(--fm-space-4);
+    margin-block-end: var(--fm-space-4);
+  }
+  .hw-mm-title {
+    font-size: var(--fm-fs-xl);
+    margin-block: 0 var(--fm-space-2);
+  }
+  .hw-mm-lead {
+    margin-block: 0 var(--fm-space-3);
+  }
+  .hw-mm-stage {
+    min-block-size: calc(var(--fm-target-min) * 4);
+    max-inline-size: 100%;
+    overflow-x: clip;
+  }
+  .hw-mm-status {
+    margin-block: var(--fm-space-2) 0;
+    color: var(--fm-text-muted);
+    font-size: var(--fm-fs-sm);
+  }
+
+  /* Talk Together */
+  .hw-talk-title {
+    font-size: var(--fm-fs-xl);
+    margin-block: 0 var(--fm-space-3);
+  }
+  .hw-talk-q {
+    font-size: var(--fm-fs-xl);
+    font-weight: var(--fm-fw-semibold);
+    margin-block: 0 var(--fm-space-3);
+  }
+  .hw-talk-frame,
+  .hw-talk-strong,
+  .hw-talk-solo {
+    margin-block: var(--fm-space-3) 0;
+    font-size: var(--fm-fs-md);
+    line-height: var(--fm-lh-body);
+  }
+  .hw-talk-solo {
+    color: var(--fm-text-muted);
+  }
+
+  /* Caregiver co-pilot: a drawer of short answers, two open */
+  .hw-copilot {
+    background: var(--fm-info-tint);
+    border: 1px solid var(--fm-border);
+    border-radius: var(--fm-radius-lg);
+    padding: var(--fm-space-4);
+    margin-block-end: var(--fm-space-4);
+  }
+  .hw-copilot-title {
+    font-size: var(--fm-fs-lg);
+    margin-block: 0 var(--fm-space-3);
+  }
+  .hw-copilot-item {
+    border-block-start: 1px solid var(--fm-border);
+  }
+  .hw-copilot-item summary {
+    cursor: pointer;
+    min-block-size: var(--fm-target-min);
+    display: flex;
+    align-items: center;
+    font-weight: var(--fm-fw-semibold);
+  }
+  .hw-copilot-body {
+    padding-block-end: var(--fm-space-3);
+  }
+  .hw-copilot-body ul {
+    margin: 0;
+    padding-inline-start: var(--fm-space-5);
+  }
+
+  /* Practice: a fresh try after a supported correction */
+  .hw-fresh-try {
+    display: grid;
+    gap: var(--fm-space-2);
+    justify-items: start;
+    margin-block-start: var(--fm-space-3);
+    padding: var(--fm-space-3) var(--fm-space-4);
+    background: var(--fm-success-tint);
+    color: var(--fm-success-ink);
+    border: 1px solid var(--fm-success);
+    border-radius: var(--fm-radius-md);
+  }
+  .hw-fresh-try p {
+    margin: 0;
+  }
+
+  /* Reflect: evidence and what next */
+  .hw-evidence-list {
+    margin: 0 0 var(--fm-space-3);
+    padding-inline-start: var(--fm-space-5);
+  }
+  .hw-evidence-next {
+    margin-block: 0 var(--fm-space-3);
+  }
+  .hw-saved-note {
+    color: var(--fm-text-muted);
+    font-size: var(--fm-fs-sm);
+  }
+  .hw-next-actions {
+    display: grid;
+    gap: var(--fm-space-2);
+  }
+  .hw-next-link {
+    justify-content: flex-start;
+    text-align: start;
+    min-block-size: var(--fm-target-min);
+  }
+  .hw-finish {
+    margin-block: var(--fm-space-3) 0;
+    color: var(--fm-text-muted);
+  }
+
+  /* Explore more sheet */
+  .hw-explore-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--fm-space-2);
+  }
+  .hw-explore-row {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--fm-space-3);
+    align-items: center;
+    text-align: start;
+    min-block-size: calc(var(--fm-target-min) * 1.4);
+  }
+  .hw-explore-copy {
+    display: grid;
+    gap: var(--fm-space-1);
+  }
+  .hw-explore-copy small {
+    color: var(--fm-text-muted);
+    font-size: var(--fm-fs-sm);
+  }
+  .hw-explore-lead {
+    margin-block: 0 var(--fm-space-3);
+  }
+
+  /* The six-stage rail: on a phone only the current stage keeps its words. */
+  @media (max-width: 640px) {
+    .homework-tab-bar .homework-tab-btn:not(.is-active) .tab-label {
+      display: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hw-mission-model * {
+      transition: none;
+      animation: none;
+    }
+  }
+}

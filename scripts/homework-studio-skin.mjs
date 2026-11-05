@@ -18,7 +18,6 @@ export const STUDIO_SKIN_JS = `
 /* Helper: smooth scroll to element accounting for sticky rail and display:contents */
 function scrollStudioTo(el) {
   if (!el) return;
-  if (typeof revealLearnCardFor === 'function') revealLearnCardFor(el);
   var node = el;
   while (node && window.getComputedStyle(node).display === 'contents') {
     node = node.firstElementChild;
@@ -77,16 +76,25 @@ function initStudioStepper() {
     bar.appendChild(dots);
     bar.appendChild(nav);
     box.parentNode.insertBefore(bar, box);
+    /* Today's mission shows three problems and the rest stay hidden: the stepper counts and steps
+       over the ones that are on screen, so the dots always match the goal a family reads. */
+    var shown = function () { return items.filter(function (it) { return !it.hidden; }); };
     function paint() {
+      var visible = shown();
+      if (items[idx] && items[idx].hidden && visible.length) idx = items.indexOf(visible[0]);
+      var pos = visible.indexOf(items[idx]);
       items.forEach(function (it, i) {
         it.classList.toggle('is-step-current', i === idx);
         var done = it.classList.contains('correct') || it.classList.contains('reviewed');
+        dotEls[i].hidden = it.hidden;
+        dotEls[i].textContent = '';
+        dotEls[i].innerHTML = '<span class="hw-sr-only"><span class="lang-en">Problem </span><span class="lang-es" lang="es">Problema </span></span>' + (visible.indexOf(it) + 1);
         dotEls[i].classList.toggle('is-done', done);
         dotEls[i].classList.toggle('is-current', i === idx);
         dotEls[i].setAttribute('aria-current', i === idx ? 'step' : 'false');
       });
-      back.disabled = idx === 0;
-      next.disabled = idx === items.length - 1;
+      back.disabled = pos <= 0;
+      next.disabled = pos >= visible.length - 1;
 
       // Keep rail sub-buttons in sync with stepper index
       var checkRail = document.getElementById('hw_sub_check');
@@ -95,16 +103,23 @@ function initStudioStepper() {
         subBtns.forEach(function (b, bIdx) {
           var active = bIdx === idx;
           b.classList.toggle('is-active', active);
+          b.hidden = !!(items[bIdx] && items[bIdx].hidden);
           if (active) b.setAttribute('aria-current', 'step');
           else b.removeAttribute('aria-current');
         });
       }
     }
     function show(i) { idx = Math.max(0, Math.min(items.length - 1, i)); paint(); }
-    back.addEventListener('click', function () { show(idx - 1); });
-    next.addEventListener('click', function () { show(idx + 1); });
+    function step(delta) {
+      var visible = shown();
+      var target = visible[visible.indexOf(items[idx]) + delta];
+      if (target) show(items.indexOf(target));
+    }
+    back.addEventListener('click', function () { step(-1); });
+    next.addEventListener('click', function () { step(1); });
     var mo = new MutationObserver(paint);
-    items.forEach(function (it) { mo.observe(it, { attributes: true, attributeFilter: ['class'] }); });
+    items.forEach(function (it) { mo.observe(it, { attributes: true, attributeFilter: ['class', 'hidden'] }); });
+    window.__hwStepperPaints = (window.__hwStepperPaints || []).concat([paint]);
     show(0);
   });
 }
@@ -129,39 +144,14 @@ function glueTermPunctuation() {
   });
 }
 
-var STUDIO_SUB_CONFIGS = {
-  learn: [
-    { id: 'case', icon: '🕵️', en: 'Case File', es: 'Expediente', sel: '#hw_case' },
-    { id: 'talk', icon: '💬', en: '60-Sec Talk', es: 'Charla 60s', sel: '#hw_dinner_talk, .hw-dinner-talk, .dinner-talk-card' },
-    { id: 'mystery', icon: '🔍', en: 'Mystery', es: 'Misterio', sel: '#hw_mystery, .hw-mystery' },
-    { id: 'idea', icon: '💡', en: 'Big Idea', es: 'Idea principal', sel: '#hw_learn_idea .family-big-idea-piece, #hw_learn_idea > .section-title, #hw_learn_idea, .big-idea, .key-idea-banner' },
-    { id: 'try', icon: '👆', en: 'Interactive Model', es: 'Modelo interactivo', sel: '#hw_learn_try, .family-visual-lab, .interactive-visual-host' },
-    { id: 'quick', icon: '❓', en: 'Try Question', es: 'Pregunta rápida', sel: '#hw_learn_quick, .learn-quick-check' },
-    { id: 'huddle', icon: '🎭', en: 'Warm-up Huddle', es: 'Calentamiento', sel: '#hw_huddle, .hw-huddle' }
-  ],
-  words: [
-    { id: 'cards', icon: '📚', en: 'Flashcards', es: 'Tarjetas', sel: '.vocab-container, .vocab-card-grid' },
-    { id: 'quiz', icon: '❓', en: 'Word Quiz', es: 'Prueba de palabras', sel: '#vocab_quiz, .vocab-quiz' },
-    { id: 'match', icon: '🎯', en: 'Match Game', es: 'Juego de unir', sel: '#vocab_match_shell, .vocab-game-shell' }
-  ],
-  play: [
-    { id: 'activity', icon: '🏡', en: 'Family Activity', es: 'Actividad familiar', sel: '.fam-act-corner, .fam-act-card' },
-    { id: 'game', icon: '🎮', en: 'Math Games', es: 'Juegos familiares', sel: '#fam_game_break, .fam-game-card, .domino-game-wrap' }
-  ],
-  done: [
-    { id: 'teach', icon: '🗣️', en: 'Teach It Back', es: 'Enséñalo tú', sel: '.hw-teach' },
-    { id: 'confidence', icon: '🌱', en: 'Confidence Check', es: 'Confianza', sel: '#hw_conf_after, .hw-confidence' },
-    { id: 'summary', icon: '📊', en: "Tonight Summary", es: 'Resumen', sel: '#hw_done_summary, .done-summary' },
-    { id: 'signoff', icon: '✍️', en: 'Family Sign-off', es: 'Firma familiar', sel: '#parent_signoff_section, .parent-signoff-card, .hw-share, .homework-message-action' }
-  ]
-};
-
 function initStudioSubRail() {
   var tabBtns = document.querySelectorAll('.homework-tab-btn');
   if (!tabBtns.length) return;
 
   tabBtns.forEach(function (btn) {
     var tabId = btn.dataset.tab;
+    /* One mission rail. The only sub-list is the numbered problems under Practice. */
+    if (tabId !== 'check') return;
     var rail = btn.nextElementSibling;
     if (!rail || !rail.classList.contains('hw-sub-rail')) {
       rail = document.createElement('div');
@@ -249,33 +239,6 @@ function initStudioSubRail() {
         });
         rail.appendChild(extraBtn);
       }
-    } else if (STUDIO_SUB_CONFIGS[tabId]) {
-      var cfg = STUDIO_SUB_CONFIGS[tabId];
-      var panel = document.getElementById('hw_panel_' + tabId);
-      var validItems = [];
-      if (panel) {
-        cfg.forEach(function (c) {
-          var el = panel.querySelector(c.sel);
-          if (el) validItems.push({ c: c, el: el });
-        });
-      }
-      rail.innerHTML = '';
-      validItems.forEach(function (v, idx) {
-        var sBtn = document.createElement('button');
-        sBtn.type = 'button';
-        sBtn.className = 'hw-sub-btn' + (idx === 0 ? ' is-active' : '');
-        sBtn.dataset.subId = v.c.id;
-        sBtn.innerHTML = '<span class="sub-icon" aria-hidden="true">' + v.c.icon + '</span><span class="sub-text"><span class="lang-en">' + v.c.en + '</span><span class="lang-es" lang="es">' + v.c.es + '</span></span>';
-        sBtn.addEventListener('click', function () {
-          if (document.body.dataset.activeTab !== tabId && typeof switchHomeworkTab === 'function') {
-            switchHomeworkTab(tabId, { preventScroll: true });
-          }
-          rail.querySelectorAll('.hw-sub-btn').forEach(function (b) { b.classList.remove('is-active'); });
-          sBtn.classList.add('is-active');
-          scrollStudioTo(v.el);
-        });
-        rail.appendChild(sBtn);
-      });
     }
   });
 }
@@ -310,68 +273,6 @@ function installStudioTabScroll() {
   }
 }
 
-/* Install scroll-spy: update active sub-button as student scrolls through sections */
-function installStudioScrollSpy() {
-  if (window.__studioScrollSpyInstalled) return;
-  window.__studioScrollSpyInstalled = true;
-
-  var ticking = false;
-  window.addEventListener('scroll', function () {
-    if (!ticking) {
-      window.requestAnimationFrame(function () {
-        updateActiveSubButton();
-        ticking = false;
-      });
-      ticking = true;
-    }
-  }, { passive: true });
-
-  function updateActiveSubButton() {
-    var tabId = document.body.dataset.activeTab;
-    if (!tabId || tabId === 'check') return;
-    var rail = document.getElementById('hw_sub_' + tabId);
-    if (!rail) return;
-    var subBtns = Array.from(rail.querySelectorAll('.hw-sub-btn'));
-    if (!subBtns.length) return;
-
-    var panel = document.getElementById('hw_panel_' + tabId);
-    if (!panel || panel.hidden) return;
-
-    var targets = [];
-    subBtns.forEach(function (btn) {
-      var subId = btn.dataset.subId;
-      var cfg = STUDIO_SUB_CONFIGS[tabId] && STUDIO_SUB_CONFIGS[tabId].find(function (c) { return c.id === subId; });
-      if (cfg) {
-        var el = panel.querySelector(cfg.sel);
-        if (el) {
-          while (el && window.getComputedStyle(el).display === 'contents') {
-            el = el.firstElementChild;
-          }
-          if (el) targets.push({ btn: btn, el: el });
-        }
-      }
-    });
-
-    if (!targets.length) return;
-
-    var currentBtn = targets[0].btn;
-    for (var i = 0; i < targets.length; i++) {
-      var top = targets[i].el.getBoundingClientRect().top;
-      if (top <= 140) {
-        currentBtn = targets[i].btn;
-      } else {
-        break;
-      }
-    }
-
-    subBtns.forEach(function (b) {
-      var active = b === currentBtn;
-      b.classList.toggle('is-active', active);
-      if (active) b.setAttribute('aria-current', 'location');
-      else b.removeAttribute('aria-current');
-    });
-  }
-}
 
 function initHomeworkImageZoom() {
   if (window.__hwImageZoomInitialized) return;
@@ -550,7 +451,6 @@ function bootStudioSkin() {
   glueTermPunctuation();
   initStudioSubRail();
   installStudioTabScroll();
-  installStudioScrollSpy();
   initHomeworkImageZoom();
 }
 

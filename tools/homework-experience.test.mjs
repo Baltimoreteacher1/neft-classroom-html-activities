@@ -3,28 +3,22 @@ import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import test from "node:test";
 import { JSDOM } from "jsdom";
+import { FAMILY_GAME_BANKS, HOMEWORK_TABS_JS } from "../scripts/homework-guided-notes.mjs";
 import {
-  FAMILY_GAME_BANKS,
-  HOMEWORK_TABS_JS,
-  renderQuickPlan,
-} from "../scripts/homework-guided-notes.mjs";
-import {
-  GOAL_QUICK,
-  GOAL_TARGET,
+  MISSION_PRACTICE_COUNT,
   pickMystery,
   renderConfidence,
-  renderDinnerTalkCard,
   renderExperienceDialogs,
   renderFamilyNights,
   renderGoalPips,
   renderMiniConceptSvg,
   renderMysteryChallenge,
   renderShareWin,
-  renderStudentPathwayBar,
   renderTeachBack,
   renderTonightStrip,
 } from "../scripts/lib/homework-experience.mjs";
 import { EXPERIENCE_JS } from "../scripts/lib/homework-experience-js.mjs";
+import { renderMissionStart } from "../scripts/lib/homework-mission.mjs";
 import { lessonPath, REPO_ROOT } from "./lib/curriculum-source.mjs";
 
 const ROOT = REPO_ROOT.replace(/\/$/, "");
@@ -36,7 +30,7 @@ function page({ query = "", reducedMotion = false, storage = {}, restored = true
     (_, i) =>
       `<section class="problem-section" id="problem_${i}" data-problem-type="multiple-choice"></section>`,
   ).join("");
-  const markup = `${renderQuickPlan()}${renderTonightStrip()}${renderDinnerTalkCard({ en: "Why does doubling the recipe keep the flavor the same?", es: "¿Por qué duplicar la receta mantiene el mismo sabor?" }, "ratios")}${renderStudentPathwayBar("ratios")}${renderConfidence("before")}${renderMysteryChallenge({ index: 11, stemEn: "What is 10% of 80?", stemEs: "¿Cuánto es el 10% de 80?" })}
+  const markup = `${renderMissionStart()}${renderTonightStrip()}${renderConfidence("before")}${renderMysteryChallenge({ index: 11, stemEn: "What is 10% of 80?", stemEs: "¿Cuánto es el 10% de 80?" })}
     <div data-tab-panel="check">${problems}</div>
     <div id="goal_reached_banner" hidden><button class="hw-banner-mystery" hidden></button></div>
     <span id="progress_text"></span><div id="progress_bar"></div><span id="tab_badge_check"></span>
@@ -68,22 +62,22 @@ function page({ query = "", reducedMotion = false, storage = {}, restored = true
   return w;
 }
 
-test("the goal is four problems, two on Quick, and never zero", () => {
+test("the goal is every problem the route shows (three in today's mission) and never zero", () => {
   const w = page();
   w.document.body.dataset.homeworkRoute = "full";
-  assert.deepEqual({ ...w.hwGoalSnapshot() }, { done: 0, goal: GOAL_TARGET, available: 12 });
+  assert.deepEqual({ ...w.hwGoalSnapshot() }, { done: 0, goal: 12, available: 12 });
   w.document.body.dataset.homeworkRoute = "core";
-  assert.equal(w.hwGoalSnapshot().goal, GOAL_TARGET);
+  assert.equal(w.hwGoalSnapshot().goal, 12);
   w.document.body.dataset.homeworkRoute = "quick";
-  assert.equal(w.hwGoalSnapshot().goal, GOAL_QUICK);
-  assert.ok(w.activeHomeworkRoute().problemLimit === 2);
+  assert.equal(w.hwGoalSnapshot().goal, MISSION_PRACTICE_COUNT);
+  assert.equal(w.activeHomeworkRoute().problemLimit, MISSION_PRACTICE_COUNT);
 });
 
 test("a wrong answer is not progress and nothing celebrates before the goal", () => {
   // The shipped page showed "That's tonight's goal — done!" after one WRONG answer: its goal
   // was the route's problemLimit, which is 0 on two of the three routes, and 0 >= 0.
   const w = page();
-  w.document.body.dataset.homeworkRoute = "full"; // Keep Going: goal of four
+  w.document.body.dataset.homeworkRoute = "full"; // Extended practice: goal is every problem
   w.document.getElementById("problem_0").classList.add("incorrect");
   w.hwRenderGoal(true);
   // Before any solved problem the progress reads "Not started", never "0 / 4".
@@ -95,26 +89,23 @@ test("a wrong answer is not progress and nothing celebrates before the goal", ()
 
 test("pips, meter and mystery lock follow solved problems and open at the goal", () => {
   const w = page();
-  w.document.body.dataset.homeworkRoute = "full"; // Keep Going: goal of four
+  w.document.body.dataset.homeworkRoute = "full"; // Extended practice: goal is every problem
   w.solve(3);
-  assert.equal(w.document.getElementById("progress_text").textContent, "3 / 4");
+  assert.equal(w.document.getElementById("progress_text").textContent, "3 / 12");
   assert.equal(w.document.querySelectorAll(".hw-pips")[0].querySelectorAll(".is-on").length, 3);
   assert.equal(w.document.getElementById("hw_mystery").classList.contains("is-unlocked"), false);
-  w.solve(4);
-  assert.equal(w.document.getElementById("progress_text").textContent, "4 / 4");
+  w.solve(12);
+  assert.equal(w.document.getElementById("progress_text").textContent, "12 / 12");
   assert.equal(w.document.getElementById("goal_reached_banner").hidden, false);
   assert.equal(w.document.getElementById("hw_mystery").classList.contains("is-unlocked"), true);
   assert.equal(w.document.getElementById("hw_mystery_open").hidden, false);
-  assert.equal(w.eval("bursts"), 1);
-  w.solve(6);
-  assert.equal(w.document.getElementById("progress_text").textContent, "4 / 4");
-  assert.equal(w.eval("bursts"), 1, "bonus problems do not celebrate again");
+  assert.equal(w.eval("bursts"), 1, "the goal celebrates once");
 });
 
 test("solved problems come back after a reload, without a second fanfare", () => {
   const first = page();
-  first.document.body.dataset.homeworkRoute = "full"; // Keep Going: goal of four
-  first.solve(4);
+  first.document.body.dataset.homeworkRoute = "full"; // Extended practice: goal is every problem
+  first.solve(12);
   const saved = {
     [first.eval("hwKey('solved')")]: first.localStorage.getItem(first.eval("hwKey('solved')")),
     [first.eval("hwKey('goal_met')")]: first.localStorage.getItem(first.eval("hwKey('goal_met')")),
@@ -124,7 +115,7 @@ test("solved problems come back after a reload, without a second fanfare", () =>
   again.document.body.dataset.homeworkRoute = "full";
   again.hwRestoreSolved();
   again.hwRenderGoal(false);
-  assert.equal(again.document.getElementById("progress_text").textContent, "4 / 4");
+  assert.equal(again.document.getElementById("progress_text").textContent, "12 / 12");
   assert.equal(again.document.getElementById("hw_mystery").classList.contains("is-unlocked"), true);
   assert.equal(again.eval("bursts"), 0);
   assert.equal(again.eval("fanfares"), 0);
@@ -272,7 +263,13 @@ test("every generated family page carries the experience layer and the one produ
       langFirst:
         html.indexOf('class="hw-hero-controls"') <
         html.indexOf('class="fm-eyebrow hw-hero-kicker"'),
-      keepGoing: html.includes("Keep Going") && html.includes("Seguir practicando"),
+      startOrExplore:
+        html.includes("Start Today's Math") &&
+        html.includes("Explorar más") &&
+        html.includes('id="hw_explore_sheet"'),
+      sixStages: ["connect", "explore", "check", "talk", "apply", "done"].every((s) =>
+        html.includes(`id="hw_panel_${s}"`),
+      ),
     };
     for (const [name, ok] of Object.entries(checks)) if (!ok) missing.push(`${id}:${name}`);
   }
@@ -350,13 +347,13 @@ test("the goal records tonight once, and a restore never records a night", () =>
 
 test("the goal reads the same from every tab: a hidden panel does not make the page look empty", () => {
   const w = page();
-  w.document.body.dataset.homeworkRoute = "full"; // Keep Going: goal of four
+  w.document.body.dataset.homeworkRoute = "full"; // Extended practice: goal is every problem
   w.solve(3);
   const panel = w.document.querySelector("[data-tab-panel='check']");
   panel.hidden = true; // the family is on Learn or Done
-  assert.deepEqual({ ...w.hwGoalSnapshot() }, { done: 3, goal: GOAL_TARGET, available: 12 });
+  assert.deepEqual({ ...w.hwGoalSnapshot() }, { done: 3, goal: 12, available: 12 });
   w.hwRenderGoal(false);
-  assert.equal(w.document.getElementById("progress_text").textContent, `3 / ${GOAL_TARGET}`);
+  assert.equal(w.document.getElementById("progress_text").textContent, "3 / 12");
   // a problem inside a hidden tier (the route's unused tier) still does not count
   const tier = w.document.createElement("div");
   tier.hidden = true;
@@ -368,7 +365,7 @@ test("the goal reads the same from every tab: a hidden panel does not make the p
 test("finishing on Full, then opening Quick, does not celebrate again and still records the night once", () => {
   const w = page();
   w.document.body.dataset.homeworkRoute = "full";
-  w.solve(GOAL_TARGET);
+  w.solve(12);
   const nights = JSON.parse(w.localStorage.getItem("hw_family_nights_v1"));
   assert.equal(nights.length, 1);
   w.document.body.dataset.homeworkRoute = "quick";
@@ -380,10 +377,10 @@ test("finishing on Full, then opening Quick, does not celebrate again and still 
 test("the mystery button in the goal banner is hidden on Quick, where the mystery problem is not shown", () => {
   const w = page();
   w.document.body.dataset.homeworkRoute = "quick";
-  w.solve(GOAL_QUICK);
+  w.solve(MISSION_PRACTICE_COUNT);
   assert.equal(w.document.querySelector(".hw-banner-mystery").hidden, true);
   w.document.body.dataset.homeworkRoute = "full";
-  w.solve(GOAL_TARGET);
+  w.solve(12);
   assert.equal(w.document.querySelector(".hw-banner-mystery").hidden, false);
 });
 
@@ -428,32 +425,19 @@ test("another script resetting <html lang> to en does not undo Spanish mode", as
   );
 });
 
-test("V3.0 Family Learning Companion: 60-Second Dinner Talk, Adaptive Pathways, and My Math Voice chips work in EN and ES", () => {
+test("My Math Voice chips work in EN and ES and the old depth selector is gone", () => {
   const w = page();
-  const dinner = w.document.getElementById("hw_dinner_talk");
-  assert.ok(dinner, "60-second dinner talk card renders");
-  assert.match(dinner.textContent, /Tonight's 60-Second Math Talk/);
-  assert.match(dinner.textContent, /Charla Matemática de 60 Segundos/);
-  assert.ok(
-    dinner.querySelector("svg.hw-mini-model-svg"),
-    "expandable inline SVG model is present",
+  assert.equal(
+    w.document.getElementById("hw_dinner_talk"),
+    null,
+    "the 60-second talk is the Talk Together stage now",
   );
 
-  const pathwayBar = w.document.getElementById("hw_pathway_bar");
-  assert.ok(pathwayBar, "student pathway bar renders");
-  const buttons = [...pathwayBar.querySelectorAll(".hw-pathway-btn[data-pathway]")];
-  assert.deepEqual(
-    buttons.map((b) => b.dataset.pathway),
-    ["express", "standard", "foundation"],
+  assert.equal(
+    w.document.getElementById("hw_pathway_bar"),
+    null,
+    "the depth selector is gone: one path, not two",
   );
-  const bridge = w.document.getElementById("hw_foundation_bridge");
-  assert.equal(bridge.hidden, true);
-  w.hwSetPathway("foundation");
-  assert.equal(bridge.hidden, false);
-  assert.equal(w.localStorage.getItem("hw_exp_4-3_pathway"), "foundation");
-  w.hwSetPathway("express");
-  assert.equal(bridge.hidden, true);
-  assert.equal(w.document.body.dataset.hwPathway, "express");
 
   // Quick-tap sentence starter chips append in active language
   const box = w.document.createElement("textarea");

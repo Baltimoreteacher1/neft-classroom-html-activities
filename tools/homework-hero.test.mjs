@@ -36,7 +36,7 @@ test("every v3.hook.style has a design-system hook variant and an icon the sprit
   assert.throws(() => renderHookCard({ style: "nope", en: "x", es: "y" }), /unknown v3.hook.style/);
 });
 
-test("all 166 generated pages carry one H1, a hook card in the lesson's style, two routes and one Start", () => {
+test("all 166 generated pages carry one H1, a hook card in the lesson's style, one mission start and one Start", () => {
   // String checks, not a DOM per page: a JSDOM over 166 half-megabyte pages in one loop runs out of memory.
   assert.ok(ids.length >= 160);
   const count = (html, re) => (html.match(re) ?? []).length;
@@ -52,11 +52,14 @@ test("all 166 generated pages carry one H1, a hook card in the lesson's style, t
         `<div class="fm-hook hw-hook" data-variant="${HOOK_VARIANTS[hook.style].variant}">`,
       ),
       hookText: html.includes(`<span class="lang-en">${esc(hook.en)}</span>`),
-      routes: count(html, /class="hw-route-option fm-route[^"]*" data-route-mode=/g) === 2,
+      missionStart:
+        count(html, /class="hw-mission-start /g) === 1 &&
+        count(html, /data-open-sheet="hw_explore_sheet"/g) >= 1 &&
+        count(html, /data-route-mode=/g) === 0,
       start: count(html, /id="hw_start_button"/g) === 1,
       artBand: html.includes('<div class="fm-hero__art" aria-hidden="true"><svg'),
       sprite: count(html, /<svg[^>]*class="fm-sprite"/g) === 1,
-      tokens: ["tokens", "family", "body"].every((n) =>
+      tokens: ["tokens", "family", "body", "mission"].every((n) =>
         new RegExp(`/assets/design/family/${n}\\.css\\?v=[0-9a-f]{10}"`).test(html),
       ),
       art: /homework-art-[0-9a-f]{10}\.css/.test(html),

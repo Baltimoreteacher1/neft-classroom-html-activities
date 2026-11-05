@@ -45,16 +45,12 @@ import { bridgeOf, renderBridgeCard } from "./lib/homework-bridge.mjs";
 import { confusedRoundsFor, renderConfusedGrownUp } from "./lib/homework-confused-grownup.mjs";
 import { renderDominoDuo } from "./lib/homework-domino-duo.mjs";
 import {
-  GOAL_TARGET,
-  ROUTE_TIMES,
   renderConfidence,
-  renderDinnerTalkCard,
   renderFamilyNights,
   renderGoalPips,
   renderMiniConceptSvg,
   renderMysteryChallenge,
   renderShareWin,
-  renderStudentPathwayBar,
   renderTeachBack,
   renderTonightStrip,
 } from "./lib/homework-experience.mjs";
@@ -64,9 +60,19 @@ import {
   renderMoreSheet,
   renderTopBar,
 } from "./lib/homework-hero.mjs";
+import {
+  MISSION_PRACTICE_COUNT,
+  MISSION_STAGES,
+  OPTIONAL_STOPS,
+  renderMissionModelHost,
+  renderMissionStart,
+  renderNoticeWonder,
+  renderReflect,
+} from "./lib/homework-mission.mjs";
 import { renderPrintHead } from "./lib/homework-print.mjs";
 import { choiceFeedbackSpanish } from "./lib/homework-problems.mjs";
 import { renderScratchpadHtml } from "./lib/homework-scratchpad.mjs";
+import { FAMILY_SEQUENCE, nextFamilyPage, nextFamilyTitle } from "./lib/homework-sequence.mjs";
 import {
   renderQuickOptional,
   renderSessionBanner,
@@ -74,7 +80,8 @@ import {
   SESSIONS,
   sessionOf,
 } from "./lib/homework-session-flow.mjs";
-import { renderLearnModules, v3Of } from "./lib/homework-v3-learn.mjs";
+import { renderCaregiverCopilot, renderTalkTogether } from "./lib/homework-talk.mjs";
+import { renderLearnPieces, v3Of } from "./lib/homework-v3-learn.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const _root = join(__dirname, "..");
@@ -2923,7 +2930,7 @@ export function renderWelcomeBanner(config, lessonId) {
           es: `${familyTitlesEs[lessonId] || title}. ${v3Of(config, lessonId).hook.es}`,
         },
       }),
-      routes: renderQuickPlan(),
+      routes: renderMissionStart(),
       extras: `
         ${renderSessionBanner(lessonId, partner)}
         <p class="hw-hero-bigidea" aria-label="Big idea">
@@ -2954,84 +2961,6 @@ function sessionPartner(lessonId) {
 }
 
 /* The start panel: two route cards and one Start button, the hero's action column. */
-export function renderQuickPlan() {
-  const route = (mode, active, nameEn, nameEs, descEn, descEs) => `
-          <button type="button" class="hw-route-option fm-route${active ? " is-active" : ""}" data-route-mode="${mode}" aria-pressed="${active}" ${act("setHomeworkRoute", mode)}>
-            <span class="fm-route__title hw-route-copy"><strong><span class="lang-en">${nameEn}</span><span class="lang-es" lang="es">${nameEs}</span></strong></span>
-            <span class="fm-chip fm-chip--accent hw-route-time">${ROUTE_TIMES[mode]} <small>min</small></span>
-            <span class="fm-route__desc"><span class="lang-en">${descEn}</span><span class="lang-es" lang="es">${descEs}</span></span>
-          </button>`;
-  return `
-      <section class="hw-route-chooser fm-hero__action" aria-labelledby="hw_route_title">
-        <h2 id="hw_route_title" class="fm-hero__q"><span class="lang-en">How much time do you have tonight?</span><span class="lang-es" lang="es">¿Cuánto tiempo tienen esta noche?</span></h2>
-        <div class="hw-route-options fm-routes" role="group" aria-label="How much time do you have tonight?" data-aria-en="How much time do you have tonight?" data-aria-es="¿Cuánto tiempo tienen esta noche?">${route("quick", true, "Quick Practice", "Práctica rápida", "One example and 2 problems.", "Un ejemplo y 2 problemas.")}${route("full", false, "Keep Going", "Seguir practicando", "Key words, every problem, a game and a home mission.", "Palabras clave, todos los problemas, un juego y una misión en casa.")}
-        </div>
-        <button type="button" id="hw_start_button" class="fm-btn fm-btn--primary fm-btn--lg fm-btn--block" ${act("startHomework")}><span class="lang-en">Start tonight's math</span><span class="lang-es" lang="es">Empezar la matemática de hoy</span></button>
-        <p class="hw-route-promise fm-hero__promise"><span class="lang-en">Optional. No grades. Your choice is saved here.</span><span class="lang-es" lang="es">Opcional. Sin calificaciones. Su elección se guarda aquí.</span></p>
-        <p class="hw-route-note fm-sr" id="hw_route_note" aria-live="polite">
-          <span class="lang-en">Quick Practice selected: one example and 2 problems. Stop whenever you need.</span>
-          <span class="lang-es" lang="es">Práctica rápida seleccionada: un ejemplo y 2 problemas. Pueden parar cuando lo necesiten.</span>
-        </p>
-        <p id="hw_resume_note" class="fm-hero__resume" role="status" aria-live="polite"></p>
-      </section>`;
-}
-
-export function renderLearningTonight(config) {
-  const { en, es } = learningTonight(config);
-  const vocab = (config.vocabulary || []).slice(0, 3);
-  const wordsEn = vocab
-    .map((v) => v.term)
-    .filter(Boolean)
-    .join(", ");
-  const wordsEs = vocab
-    .map((v) => v.termEs || v.term)
-    .filter(Boolean)
-    .join(", ");
-
-  return `
-    <section class="guided-section card section-learn" aria-label="What we are learning tonight">
-      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:12px;">
-        <h2 class="section-title" style="margin:0;">📖 <span class="lang-en">What we're learning tonight</span><span class="lang-es" lang="es">Qué aprendemos hoy</span></h2>
-        <button type="button" class="btn-read-aloud" ${act("speakHomeworkText", en, es)} title="Listen / Escuchar" aria-label="Listen to summary">🔊 <span class="lang-en">Listen</span><span class="lang-es" lang="es">Escuchar</span></button>
-      </div>
-      <div class="bilingual-grid">
-        <div class="bilingual-col lang-en">
-          <span class="lang-label">English</span>
-          <p class="learning-big">${esc(completeSentence(en.charAt(0).toUpperCase() + en.slice(1)))}</p>
-          ${wordsEn ? renderVocabularyChips(vocab, "en") : ""}
-        </div>
-        <div class="bilingual-col lang-es" lang="es">
-          <span class="lang-label">Español</span>
-          <p class="learning-big">${esc(completeSentence(es))}</p>
-          ${wordsEs ? renderVocabularyChips(vocab, "es") : ""}
-        </div>
-      </div>
-    </section>`;
-}
-
-/* The grown-up's version, first thing on the page: one question that helps
-   and one thing not to say. The full coaching lived only in "If your student
-   gets stuck", a collapsed panel near the bottom of the Learn stop. */
-function renderParentQuickCard(config) {
-  const tips = stuckTips(config) || {};
-  const ask = familyGuidance(config).question;
-  const avoid = tips.dontSay?.[0];
-  const bridge = bridgeOf(config.familyNotes);
-  if (!ask && !avoid && !bridge) return "";
-  const row = (icon, labelEn, labelEs, tip) =>
-    tip
-      ? `<li><span aria-hidden="true">${icon}</span> <strong><span class="lang-en">${labelEn}</span><span class="lang-es" lang="es">${labelEs}</span></strong> <span class="lang-en">${esc(tip.en)}</span><span class="lang-es" lang="es">${esc(tip.es || tip.en)}</span></li>`
-      : "";
-  return `
-      <div class="parent-quick-card">
-        <p class="parent-quick-title"><span class="lang-en">For the grown-up helping tonight</span><span class="lang-es" lang="es">Para el adulto que ayuda hoy</span></p>
-        <ul>
-          ${row("💬", "If they get stuck, ask:", "Si se atora, pregunten:", ask)}
-          ${row("🚫", "Try not to say:", "Eviten decir:", avoid)}
-        </ul>${bridge ? renderBridgeCard(bridge) : ""}
-      </div>`;
-}
-
 function renderUnit4FamilyBigIdeaVisual(config) {
   const model = config.familyBigIdeaVisual;
   if (!model) return "";
@@ -3146,6 +3075,39 @@ function renderUnit4FamilyBigIdeaVisual(config) {
   }
 
   return "";
+}
+
+export function renderLearningTonight(config) {
+  const { en, es } = learningTonight(config);
+  const vocab = (config.vocabulary || []).slice(0, 3);
+  const wordsEn = vocab
+    .map((v) => v.term)
+    .filter(Boolean)
+    .join(", ");
+  const wordsEs = vocab
+    .map((v) => v.termEs || v.term)
+    .filter(Boolean)
+    .join(", ");
+
+  return `
+    <section class="guided-section card section-learn" aria-label="What we are learning tonight">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:12px;">
+        <h2 class="section-title" style="margin:0;">📖 <span class="lang-en">What we're learning tonight</span><span class="lang-es" lang="es">Qué aprendemos hoy</span></h2>
+        <button type="button" class="btn-read-aloud" ${act("speakHomeworkText", en, es)} title="Listen / Escuchar" aria-label="Listen to summary">🔊 <span class="lang-en">Listen</span><span class="lang-es" lang="es">Escuchar</span></button>
+      </div>
+      <div class="bilingual-grid">
+        <div class="bilingual-col lang-en">
+          <span class="lang-label">English</span>
+          <p class="learning-big">${esc(completeSentence(en.charAt(0).toUpperCase() + en.slice(1)))}</p>
+          ${wordsEn ? renderVocabularyChips(vocab, "en") : ""}
+        </div>
+        <div class="bilingual-col lang-es" lang="es">
+          <span class="lang-label">Español</span>
+          <p class="learning-big">${esc(completeSentence(es))}</p>
+          ${wordsEs ? renderVocabularyChips(vocab, "es") : ""}
+        </div>
+      </div>
+    </section>`;
 }
 
 export function renderConceptExplainer(config) {
@@ -8246,7 +8208,6 @@ export function renderLearnTab(
   mystery = null,
   caseFileHtml = "",
 ) {
-  const learning = renderLearningTonight(config).replace(/<section[^>]*>|<\/section>/g, "");
   let concept = renderConceptExplainer(config).replace(/<section[^>]*>|<\/section>/g, "");
   const keyEn = keyIdea(config);
   const keyEs = keyIdeaEs(config);
@@ -8311,30 +8272,11 @@ export function renderLearnTab(
       </div>
     </div>`;
 
-  /* One drawer for the grown-up: the question to ask and the thing not to say stay
-     visible in the summary line; the bridge from "how you learned it", why this
-     matters and the common trap are one tap away. They used to be three separate
-     blocks in three places on this stop. */
+  const learning = renderLearningTonight(config).replace(/<section[^>]*>|<\/section>/g, "");
+  /* The grown-up's help is one co-pilot drawer on the Talk Together stop (homework-talk.mjs),
+     built from this lesson's own sidecar fields. */
   const ask = familyGuidance(config).question;
-  const askPreview = ask
-    ? `<span class="lang-en">Ask: ${esc(ask.en)}</span><span class="lang-es" lang="es">Pregunta: ${esc(ask.es || ask.en)}</span>`
-    : `<span class="lang-en">Questions to ask, what to avoid, and why this matters.</span><span class="lang-es" lang="es">Preguntas para hacer, qué evitar y por qué importa.</span>`;
-  const parentDrawerHtml = `
-    <details class="hw-grownup" id="hw_grownup">
-      <summary>
-        <span class="hw-grownup-icon" aria-hidden="true">👪</span>
-        <span class="hw-grownup-text hw-stack">
-          <strong class="hw-stack"><span class="lang-en">For the grown-up · 1 minute</span><span class="lang-es" lang="es">Para el adulto · 1 minuto</span></strong>
-          <small class="hw-stack">${askPreview}</small>
-        </span>
-        <span class="hw-grownup-chev" aria-hidden="true">▾</span>
-      </summary>
-      <div class="hw-grownup-body">
-        ${renderParentQuickCard(config)}
-        ${spotlightHtml}
-        ${misconceptionHtml}
-      </div>
-    </details>`;
+  const copilotHtml = renderCaregiverCopilot(config, ask);
 
   const workbenchLaunchHtml = workbench
     ? `<div class="workbench-quick-launch card-ish learn-extended-block">
@@ -8352,54 +8294,66 @@ export function renderLearnTab(
       </div>`
     : "";
 
-  const bridge = bridgeOf(config?.familyNotes);
-  /* The case opens Learn: one short story the tap-to-build model below will solve. A
-     lesson may author its own `caseFile` in its sidecar; otherwise its corner mission is
-     the case. Nothing is invented here. */
+  /* One short story the tap-to-build model solves. A lesson may author its own `caseFile` in its
+     sidecar; otherwise its corner mission is the case. Nothing is invented here. */
   const caseText = config.familyNotes?.caseFile?.en
     ? config.familyNotes.caseFile
     : familyGuidance(config).mission;
-  /* One card per Learn block. The pager shows one card at a time (see initLearnCards);
-     an empty block is dropped, so a card never shows a blank page. */
-  const learnCard = (en, es, inner) =>
-    `<section class="learn-card" data-card-en="${esc(en)}" data-card-es="${esc(es)}" >${inner}</section>`;
+  const block = (cls, inner) => (inner.trim() ? `<div class="${cls}">${inner}</div>` : "");
   const caseHtml = caseText?.en
     ? `<section class="hw-case" aria-labelledby="hw_case_kicker">
-        <p class="hw-case-kicker" id="hw_case_kicker"><span class="lang-en">Tonight's case</span><span class="lang-es" lang="es">Caso de hoy</span></p>
+        <p class="hw-case-kicker" id="hw_case_kicker"><span class="lang-en">Try it at home</span><span class="lang-es" lang="es">Pruébenlo en casa</span></p>
         <p class="hw-case-text"><span class="lang-en">${esc(caseText.en)}</span><span class="lang-es" lang="es">${esc(caseText.es)}</span></p>
       </section>`
     : "";
-  const planHtml = `${renderDinnerTalkCard(ask, topic)}
-      ${renderStudentPathwayBar(topic, bridge)}
-      ${renderConfidence("before")}
-      ${renderMysteryChallenge(mystery)}`;
-  const toolsHtml = `${workbenchLaunchHtml}
-${workbenchHtml}
-      <div class="learn-extended-block" id="hw_learn_quick">${parentDrawerHtml}${powerUpHtml}${renderLearnModules(config, config.lessonId || "")}</div>
-${renderWarmupHuddle(confusedGrownUpCard(config))}
-      <p class="tab-help-row learn-extended-block">${helpButton("💡 Need more help? / ¿Más ayuda?", { titleEn: "The big idea", titleEs: "La idea principal", en: keyEn, es: keyEs })}</p>`;
-  return `
-    <div ${tabPanelAttrs("learn")}>
-      ${caseFileHtml}
-      <nav class="learn-jump-row" aria-label="On this page / En esta página">
-        <a href="#hw_dinner_talk"><span class="lang-en">60-Sec Talk</span><span class="lang-es" lang="es">Charla 60 s</span></a>
-        <a href="#hw_learn_idea"><span class="lang-en">Big idea</span><span class="lang-es" lang="es">Idea principal</span></a>
-        ${visualLabHtml.trim() ? '<a href="#hw_learn_try"><span class="lang-en">Touch &amp; try</span><span class="lang-es" lang="es">Toca y prueba</span></a>' : ""}
-        <a href="#hw_learn_quick"><span class="lang-en">Quick question</span><span class="lang-es" lang="es">Pregunta rápida</span></a>
-      </nav>
-      ${learnCard("What we're learning", "Qué aprendemos", `<div class="learn-summary-block">${learning}</div>`)}
-      ${learnCard("Tonight's case", "Caso de hoy", caseHtml)}
-      ${learnCard("Build it", "Constrúyelo", `<div class="learn-extended-block" id="hw_learn_try">${visualLabHtml}</div>`)}
-      ${learnCard("Tonight's plan", "Plan de hoy", planHtml)}
-      ${learnCard("Big idea", "Idea principal", `<div class="learn-big-idea-block" id="hw_learn_idea">${concept}</div>`)}
-      ${learnCard("Tools and quick question", "Herramientas y pregunta rápida", toolsHtml)}
+  const next = (id) => `
       <div class="tab-flow-nav">
-        <button type="button" class="btn btn-primary flow-next-btn" ${act("goNextHomeworkStop", "learn")}>
+        <button type="button" class="btn btn-primary flow-next-btn" ${act("goNextHomeworkStop", id)}>
           <span class="lang-en">Continue ➔</span>
           <span class="lang-es" lang="es">Continuar ➔</span>
         </button>
-      </div>
+      </div>`;
+  const pieces = renderLearnPieces(config, config.lessonId || "");
+  /* STAGE 1: Connect. Why it matters, the case, one noticing prompt, the prerequisite check. */
+  const connect = `
+    <div ${tabPanelAttrs("connect")}>
+      ${caseFileHtml}
+      ${block("mission-block", learning)}
+      ${block("mission-block", spotlightHtml)}
+      ${renderNoticeWonder()}
+      ${renderConfidence("before")}
+      ${pieces.spiral}
+      ${next("connect")}
     </div>`;
+  /* STAGE 2: Explore. The lesson's model (interactive where the engine has one), the big idea. */
+  const explore = `
+    <div ${tabPanelAttrs("explore", true)}>
+      <div class="mission-block" id="hw_learn_try">${renderMissionModelHost(config)}${pieces.model}${visualLabHtml}</div>
+      ${block("learn-big-idea-block mission-block", `<div id="hw_learn_idea">${concept}</div>`)}
+      ${workbenchLaunchHtml}
+      ${workbenchHtml}
+      ${block("mission-block", powerUpHtml)}
+      ${next("explore")}
+    </div>`;
+  /* STAGE 4: Talk Together. One question, the grown-up co-pilot, the error to find. */
+  const talk = `
+    <div ${tabPanelAttrs("talk", true)}>
+      ${renderTalkTogether(config, ask)}
+      ${copilotHtml}
+      ${misconceptionHtml}
+      ${pieces.glitch}
+      ${renderWarmupHuddle(confusedGrownUpCard(config))}
+      ${next("talk")}
+    </div>`;
+  /* STAGE 5: Apply. A new situation, then the table prompt. */
+  const apply = `
+    <div ${tabPanelAttrs("apply", true)}>
+      ${pieces.apply}
+      ${block("mission-block", caseHtml)}
+      ${renderMysteryChallenge(mystery)}
+      ${next("apply")}
+    </div>`;
+  return { connect, explore, talk, apply };
 }
 
 export function renderWordsTab(vocabList, resolveVocabImage, vocabImageAlt) {
@@ -8429,8 +8383,8 @@ export function renderCheckTab(
     <div class="hw-goal-card">
       ${renderGoalPips("")}
       <p>
-        <span class="lang-en"><strong>Tonight's goal: any <span data-hw-goal-count>${Math.min(GOAL_TARGET, coreCount)}</span> problems.</strong> There are <span data-hw-goal-avail>${coreCount}</span> here, so pick the ones you like. Stop any time. Your work saves itself.</span>
-        <span class="lang-es" lang="es"><strong>La meta de hoy: cualquier <span data-hw-goal-count>${Math.min(GOAL_TARGET, coreCount)}</span> problemas.</strong> Aquí hay <span data-hw-goal-avail>${coreCount}</span>, así que escojan los que prefieran. Pueden parar cuando quieran. El trabajo se guarda solo.</span>
+        <span class="lang-en"><strong>Today's practice: <span data-hw-goal-count>${Math.min(MISSION_PRACTICE_COUNT, coreCount)}</span> problems.</strong> Use a hint whenever you want one. Stop any time. Your work saves itself.</span>
+        <span class="lang-es" lang="es"><strong>La práctica de hoy: <span data-hw-goal-count>${Math.min(MISSION_PRACTICE_COUNT, coreCount)}</span> problemas.</strong> Usen una pista cuando quieran. Pueden parar cuando quieran. El trabajo se guarda solo.</span>
       </p>
       <span class="hw-bonus" data-hw-bonus hidden>+<span data-hw-bonus-count>0</span> <span class="lang-en">bonus</span><span class="lang-es" lang="es">extra</span></span>
     </div>
@@ -8461,12 +8415,8 @@ export function renderCheckTab(
     <div class="goal-reached-banner" id="goal_reached_banner" role="status" hidden>
       <span class="goal-icon" aria-hidden="true">🌟</span>
       <div class="goal-text">
-        <strong><span class="lang-en">That's tonight's goal — done!</span><span class="lang-es" lang="es">¡Esa es la meta de hoy: completa!</span></strong>
-        <p>${
-          moreHtml
-            ? `<span class="lang-en">Great work. Keep going with the extra practice if you want more, or head to <strong>Done</strong> to finish or choose optional extras.</span><span class="lang-es" lang="es">Buen trabajo. Sigan con la práctica extra si quieren más, o vayan a <strong>Listo</strong> para terminar o elegir extras opcionales.</span>`
-            : `<span class="lang-en">Great work. Head to <strong>Done</strong> to finish or choose optional extras.</span><span class="lang-es" lang="es">Buen trabajo. Vayan a <strong>Listo</strong> para terminar o elegir extras opcionales.</span>`
-        }</p>
+        <strong><span class="lang-en">That's today's practice: done!</span><span class="lang-es" lang="es">¡Esa es la práctica de hoy: completa!</span></strong>
+        <p><span class="lang-en">Next, talk about it together. The extra practice stays here if you want more.</span><span class="lang-es" lang="es">Ahora conversen. La práctica extra sigue aquí si quieren más.</span></p>
       </div>
       <div class="goal-actions">
         ${
@@ -8474,8 +8424,8 @@ export function renderCheckTab(
             ? `<button type="button" class="btn btn-sm btn-secondary hw-banner-mystery" hidden ${act("hwOpenMystery")}><span class="lang-en">🔓 Open the mystery challenge</span><span class="lang-es" lang="es">🔓 Abrir el reto misterioso</span></button>`
             : ""
         }
-        <button type="button" class="btn btn-sm btn-primary" ${act("switchHomeworkTab", "done")}>
-          <span class="lang-en">Teach it back, then claim your certificate ➔</span><span class="lang-es" lang="es">Enséñalo y reclama tu certificado ➔</span>
+        <button type="button" class="btn btn-sm btn-primary" ${act("switchHomeworkTab", "talk")}>
+          <span class="lang-en">Next: Talk Together ➔</span><span class="lang-es" lang="es">Siguiente: Conversen ➔</span>
         </button>
       </div>
     </div>`;
@@ -8982,7 +8932,21 @@ export function renderDoneTab(config = null, lessonId = "") {
   const inner = renderCelebration(config, lessonId)
     .replace(/^\s*<section[^>]*>/, "")
     .replace(/<\/section>\s*$/, "");
-  return `<div ${tabPanelAttrs("done", true)}>${inner}${renderFamilyConversationCard(config)}</div>`;
+  const spiral = config?.familyNotes?.v3?.spiral || [];
+  const from = spiral
+    .map((sp) => sp.from)
+    .find((id) => FAMILY_SEQUENCE.includes(id) && id !== lessonId.replace(/-part2$/, ""));
+  const prereq = from
+    ? {
+        href: `/lessons/${from}/homework.html`,
+        ...nextFamilyTitle(from),
+      }
+    : null;
+  return `<div ${tabPanelAttrs("done", true)}>${renderReflect({
+    lessonId,
+    next: nextFamilyPage(lessonId),
+    prereq,
+  })}${inner}${renderFamilyConversationCard(config)}</div>`;
 }
 
 export function renderPhotoboothTab(config = null, lessonId = "") {
@@ -9148,7 +9112,8 @@ export function renderRefrigeratorSheet(config = {}, lessonId = "") {
   const keyEn = keyIdea(config);
   const keyEs = keyIdeaEs(config);
   const topic = detectVisualTopic(config);
-  const miniVisual = renderMiniConceptSvg(topic);
+  /* A percent lesson is mapped to the ratio strand; its printed picture must be a percent one, not a recipe. */
+  const miniVisual = renderMiniConceptSvg(ratioFocus(config) === "percent" ? "percent" : topic);
   const dinnerQ = familyGuidance(config).question;
   const dinnerEn = dinnerQ?.en || "How does the visual model show why your answer makes sense?";
   const dinnerEs =
@@ -9261,13 +9226,7 @@ export function renderRefrigeratorSheet(config = {}, lessonId = "") {
  * mean six things worth doing, the tab bar IS the rail, and `min` is the
  * single source of truth for how long tonight takes.
  */
-const HOMEWORK_TABS = [
-  { id: "learn", icon: "📖", en: "Learn", es: "Aprender" },
-  { id: "words", icon: "📚", en: "Words", es: "Palabras" },
-  { id: "check", icon: "✅", en: "Practice", es: "Práctica" },
-  { id: "play", icon: "🎮", en: "Play", es: "Jugar" },
-  { id: "done", icon: "🎉", en: "Celebrate", es: "Celebrar" },
-];
+const HOMEWORK_TABS = MISSION_STAGES;
 
 /**
  * Stops that are NOT part of tonight's path.
@@ -9280,17 +9239,7 @@ const HOMEWORK_TABS = [
  * keeps its place beside Done and loses its number, its minutes and its claim
  * on the progress track.
  */
-const HOMEWORK_EXTRA_TABS = [
-  {
-    id: "photobooth",
-    icon: "📸",
-    en: "Photobooth",
-    es: "Fotos",
-    blurbEn: "Optional — snap a picture of tonight's math work",
-    blurbEs: "Opcional: toma una foto del trabajo de matemáticas de hoy",
-    ariaEn: "Photobooth — optional. Take a picture of your math work with fun frames and stickers.",
-  },
-];
+const HOMEWORK_EXTRA_TABS = OPTIONAL_STOPS;
 
 export const HOMEWORK_STOP_COUNT = HOMEWORK_TABS.length;
 
@@ -9317,7 +9266,7 @@ export function renderHomeworkTabs(panelsHtml, helpDrawerHtml = "", unit = null)
   const extraBtn = (t) => `
             <button type="button" id="hw_tab_${t.id}" class="homework-tab-extra"
               aria-controls="hw_panel_${t.id}"
-              aria-label="${esc(t.ariaEn)}" title="${esc(t.ariaEn)}"
+              aria-label="${esc(t.en)}" title="${esc(t.blurbEn)}"
               data-tab="${t.id}" ${act("switchHomeworkTab", t.id)}>
               <span class="tab-icon" aria-hidden="true">${t.icon}</span>
               <span class="tab-label"><span class="tab-en">${t.en}</span><span class="tab-es" lang="es">${t.es}</span></span>
@@ -9331,8 +9280,8 @@ export function renderHomeworkTabs(panelsHtml, helpDrawerHtml = "", unit = null)
         </div>
         <nav class="homework-tab-bar" aria-label="Tonight's path" data-aria-en="Tonight's path" data-aria-es="Ruta de hoy">
           ${HOMEWORK_TABS.map(tabBtn).join("")}
-          ${HOMEWORK_EXTRA_TABS.map(extraBtn).join("")}
         </nav>
+        <div class="hw-optional-stops" hidden>${HOMEWORK_EXTRA_TABS.map(extraBtn).join("")}</div>
         <div class="homework-tab-track" aria-hidden="true"><span class="homework-tab-track-fill" id="hw_tab_track_fill"></span></div>
       </div>
       <div class="homework-tab-panels" id="hw_tab_panels">
@@ -9846,12 +9795,12 @@ function initFamilyGames() {
    Each path is a complete, optional experience. Time values are estimates,
    never timers; the student and family can pause or stop at any point. */
 var HOMEWORK_ROUTES = {
-  quick: { tabs: ['learn', 'check', 'done'], problemLimit: 2 },
-  full: { tabs: ['learn', 'words', 'check', 'play', 'done'], problemLimit: 0 }
+  quick: { tabs: ['connect', 'explore', 'check', 'talk', 'apply', 'done'], problemLimit: ${MISSION_PRACTICE_COUNT} },
+  full: { tabs: ['connect', 'explore', 'check', 'talk', 'apply', 'done'], problemLimit: 0 }
 };
-/* Two choices: Quick Practice (the default) and Keep Going, which carries the
-   old Learn & practice content and the old Full Studio content. Saved choices and
-   links from before the change keep working: "core" is now Keep Going. */
+/* One six-stage mission. The two routes differ only in how many practice problems the Practice
+   stage shows: Today's mission (quick, the default) and Extended practice (full). Route ids are
+   unchanged so ?route=quick links, QR codes and saved choices keep working; "core" is Extended. */
 var HOMEWORK_ROUTE_DEFAULT = 'quick';
 var HOMEWORK_ROUTE_ALIASES = { core: 'full' };
 
@@ -9938,12 +9887,13 @@ function setHomeworkRoute(mode, options) {
   }
   document.querySelectorAll('[data-hw-core-count]').forEach(function (el) { el.textContent = String(coreProblems.length); });
   if (typeof hwRenderGoal === 'function') hwRenderGoal(false);
+  (window.__hwStepperPaints || []).forEach(function (paint) { paint(); });
 
   var note = document.getElementById('hw_route_note');
   if (note) {
     var copy = {
-      quick: ['Quick Practice selected: one example and 2 problems. Stop whenever you need.', 'Práctica rápida seleccionada: un ejemplo y 2 problemas. Pueden parar cuando lo necesiten.'],
-      full: ['Keep Going selected: everything, plus one home mission and one game. Everything is optional.', 'Seguir practicando seleccionado: todo, más una misión en casa y un juego. Todo es opcional.']
+      quick: ["Today's mission: " + ${MISSION_PRACTICE_COUNT} + ' practice problems. Stop whenever you need.', 'Misión de hoy: ' + ${MISSION_PRACTICE_COUNT} + ' problemas de práctica. Pueden parar cuando lo necesiten.'],
+      full: ['Extended practice: every practice problem. Everything is optional.', 'Práctica extendida: todos los problemas. Todo es opcional.']
     }[mode];
     setBiText(note, copy[0], copy[1]);
   }
@@ -10174,99 +10124,6 @@ function hwStopStep(delta) {
   if (next) switchHomeworkTab(next);
 }
 
-/* Learn is a run of cards: one idea, one next action. The pager replaces the stop
-   bar while Learn is open; its last Next moves on to the next stop. */
-var learnCardIndex = 0;
-
-function learnCardList() {
-  var panel = document.querySelector('[data-tab-panel="learn"]');
-  if (!panel) return [];
-  return Array.from(panel.querySelectorAll(':scope > .learn-card')).filter(function (c) {
-    return (c.innerText || '').trim() !== '' || !!c.querySelector('svg, canvas, button, iframe, input');
-  });
-}
-
-function ensureLearnPager(panel) {
-  var pager = document.getElementById('hw_learn_pager');
-  if (pager || !panel) return pager;
-  pager = document.createElement('div');
-  pager.id = 'hw_learn_pager';
-  pager.className = 'learn-pager';
-  pager.innerHTML =
-    '<div class="learn-pager-dots" aria-hidden="true"></div>' +
-    '<p class="learn-pager-label" aria-live="polite"><span class="lang-en"></span><span class="lang-es" lang="es"></span></p>' +
-    '<div class="learn-pager-actions">' +
-    '<button type="button" class="btn btn-outline-primary learn-pager-back" data-act="learnStep" data-args="[-1]"><span class="lang-en">← Back</span><span class="lang-es" lang="es">← Atrás</span></button>' +
-    '<button type="button" class="btn btn-primary learn-pager-next" data-act="learnStep" data-args="[1]"><span class="lang-en">Next →</span><span class="lang-es" lang="es">Siguiente →</span></button>' +
-    '</div>';
-  panel.insertBefore(pager, panel.querySelector(':scope > .learn-card') || panel.firstChild);
-  /* Swipe left for the next card, right for the previous one (one listener, on the panel). */
-  var touchX = null, touchY = null;
-  panel.addEventListener('touchstart', function (e) { touchX = e.touches[0].clientX; touchY = e.touches[0].clientY; }, { passive: true });
-  panel.addEventListener('touchend', function (e) {
-    if (touchX === null || document.body.dataset.activeTab !== 'learn') return;
-    if (e.target.closest && e.target.closest('input, select, textarea, svg, canvas, .mathpad, [data-no-swipe]')) { touchX = null; return; }
-    var dx = e.changedTouches[0].clientX - touchX;
-    var dy = e.changedTouches[0].clientY - touchY;
-    touchX = null;
-    if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) learnStep(dx < 0 ? 1 : -1);
-  }, { passive: true });
-  return pager;
-}
-
-/* A link or chip that points into a card that is not showing opens that card first. */
-function revealLearnCardFor(el) {
-  var card = el && el.closest ? el.closest('.learn-card') : null;
-  if (!card || !card.hidden) return;
-  var index = learnCardList().indexOf(card);
-  if (index >= 0) setLearnCard(index, true);
-}
-
-document.addEventListener('click', function (e) {
-  var link = e.target.closest ? e.target.closest('a[href^="#"]') : null;
-  if (!link || link.getAttribute('href').length < 2) return;
-  var target = document.getElementById(link.getAttribute('href').slice(1));
-  if (target) revealLearnCardFor(target);
-}, true);
-
-function learnStep(delta) {
-  var cards = learnCardList();
-  if (!cards.length) return;
-  if (learnCardIndex + delta >= cards.length) {
-    if (typeof goNextHomeworkStop === 'function') goNextHomeworkStop('learn');
-    return;
-  }
-  setLearnCard(learnCardIndex + delta, true);
-}
-
-function setLearnCard(i, scroll) {
-  var panel = document.querySelector('[data-tab-panel="learn"]');
-  var cards = learnCardList();
-  if (!panel || !cards.length) return;
-  learnCardIndex = Math.max(0, Math.min(i, cards.length - 1));
-  var pager = ensureLearnPager(panel);
-  panel.querySelectorAll(':scope > .learn-card').forEach(function (c) { c.hidden = true; });
-  cards.forEach(function (c, k) { c.hidden = k !== learnCardIndex; });
-  panel.querySelectorAll('.learn-jump-row').forEach(function (n) { n.hidden = true; });
-  var card = cards[learnCardIndex];
-  var last = learnCardIndex >= cards.length - 1;
-  var dots = pager.querySelector('.learn-pager-dots');
-  dots.innerHTML = cards.map(function (c, k) { return '<span class="learn-pager-dot' + (k === learnCardIndex ? ' is-on' : (k < learnCardIndex ? ' is-done' : '')) + '"></span>'; }).join('');
-  var label = pager.querySelector('.learn-pager-label');
-  label.querySelector('.lang-en').textContent = 'Card ' + (learnCardIndex + 1) + ' of ' + cards.length + ' · ' + (card.dataset.cardEn || '');
-  label.querySelector('.lang-es').textContent = 'Tarjeta ' + (learnCardIndex + 1) + ' de ' + cards.length + ' · ' + (card.dataset.cardEs || '');
-  var backBtn = pager.querySelector('.learn-pager-back');
-  if (learnCardIndex === 0 && document.activeElement === backBtn) pager.querySelector('.learn-pager-next').focus();
-  backBtn.hidden = learnCardIndex === 0;
-  var next = pager.querySelector('.learn-pager-next');
-  next.querySelector('.lang-en').textContent = last ? 'Next stop →' : 'Next: ' + (cards[learnCardIndex + 1].dataset.cardEn || '') + ' →';
-  next.querySelector('.lang-es').textContent = last ? 'Siguiente parada →' : 'Siguiente: ' + (cards[learnCardIndex + 1].dataset.cardEs || '') + ' →';
-  var stopNav = document.querySelector('.hw-stop-nav');
-  if (stopNav) stopNav.hidden = true;
-  pager.hidden = false;
-  if (scroll && card && card.scrollIntoView) card.scrollIntoView({ block: 'start', behavior: (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) ? 'auto' : 'smooth' });
-}
-
 function updateStopNav(tabId) {
   var tabs = activeHomeworkRoute().tabs;
   var i = tabs.indexOf(tabId);
@@ -10274,15 +10131,10 @@ function updateStopNav(tabId) {
   var next = document.getElementById('hw_stop_next');
   var here = document.getElementById('hw_stop_here');
   var bar = document.querySelector('.hw-stop-nav');
-  if (bar) bar.hidden = tabId === 'learn' && learnCardList().length > 0;
   if (back) back.hidden = i <= 0;
   if (next) next.hidden = i < 0 || i >= tabs.length - 1;
   if (here && i >= 0) here.textContent = (i + 1) + ' / ' + tabs.length;
 }
-
-document.addEventListener('DOMContentLoaded', function () {
-  if (document.body.dataset.activeTab === 'learn') setLearnCard(0);
-});
 
 function switchHomeworkTab(tabId) {
   const leaving = document.body.dataset.activeTab;
@@ -10317,7 +10169,6 @@ function switchHomeworkTab(tabId) {
   });
   document.body.dataset.activeTab = tabId;
   updateStopNav(tabId);
-  if (tabId === 'learn') setLearnCard(learnCardIndex);
   // Practice is inside the Check panel. Recalculate only after that panel is
   // visible so route-aware scoring sees the two or six active core problems
   // instead of treating every problem as hidden behind its tab panel.
@@ -10603,7 +10454,7 @@ function copyHomeworkLink() {
 }
 
 function startHomework() {
-  var last = document.body.dataset.activeTab || 'learn';
+  var last = document.body.dataset.activeTab || 'connect';
   switchHomeworkTab(last);
   var panel = document.getElementById('hw_panel_' + last);
   if (!panel) return;
@@ -10960,19 +10811,19 @@ function initHomeworkPage() {
     // The photobooth is a tool beside Done, never a place to resume: a family that last used it
     // had finished, so they continue at Done.
     let last = localStorage.getItem(lastTabStorageKey());
-    if (last === 'photobooth') last = 'done';
+    if (last === 'photobooth' || last === 'words' || last === 'play') last = 'done';
     const lastBtn = last ? document.getElementById('hw_tab_' + last) : null;
     if (lastBtn && !lastBtn.hidden) {
       switchHomeworkTab(last);
       setBiText(document.getElementById('hw_resume_note'), 'Welcome back. Your saved plan and answers are on this device. Continue at ' + lastBtn.querySelector('.tab-en').textContent + '.', 'Bienvenidos de nuevo. Su plan y sus respuestas están guardados en este dispositivo. Continúen en ' + lastBtn.querySelector('.tab-es').textContent + '.');
     }
-    else switchHomeworkTab('learn');
+    else switchHomeworkTab('connect');
   } catch(e) {}
   setTimeout(function () { hwTabsBooted = true; }, 0);
   restoreParentSignoff();
   initHomeworkShareLinks();
   var start = document.getElementById('hw_start_button');
-  if (start && document.body.dataset.activeTab !== 'learn') setBiText(start, 'Continue this path', 'Continuar esta ruta');
+  if (start && document.body.dataset.activeTab !== 'connect') setBiText(start, 'Continue this path', 'Continuar esta ruta');
   restoreFamilyMission();
   initHomeworkVocabPopups();
   // Family games initialize when Play is opened.

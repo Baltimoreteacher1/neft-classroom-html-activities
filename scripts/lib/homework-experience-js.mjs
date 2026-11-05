@@ -3,12 +3,10 @@
  * Inlined into the shared homework bundle. Written in the same plain ES5 style as
  * the rest of the shared script so it parses on every phone a family might own.
  */
-import { DEFAULT_ROUTE, GOAL_QUICK, GOAL_TARGET, ROUTE_TIMES } from "./homework-experience.mjs";
+import { DEFAULT_ROUTE, ROUTE_TIMES } from "./homework-experience.mjs";
 
 export const EXPERIENCE_JS = `
 /* ── Family experience: goal, mystery, confidence, share, dialogs ─────────── */
-var HW_GOAL_TARGET = ${GOAL_TARGET};
-var HW_GOAL_QUICK = ${GOAL_QUICK};
 var HW_ROUTE_TIMES = ${JSON.stringify(ROUTE_TIMES)};
 var HW_ROUTE_DEFAULT = ${JSON.stringify(DEFAULT_ROUTE)};
 
@@ -112,18 +110,18 @@ function activeCoreProblems() {
   });
 }
 
-/* Tonight's goal. One definition of "done": solved, or a written answer compared
-   with the key. The goal is four problems (two on Quick) out of the dozen on the
-   page, so it is reachable in a busy evening and the rest is honest bonus. */
+/* Today's practice. One definition of "done": solved, or a written answer compared with the
+   key. The goal is every problem the active route shows (three in today's mission, all of them
+   in extended practice), so the number a family reads is the number on the screen. */
 function hwGoalSnapshot() {
   var problems = activeCoreProblems();
   var done = problems.filter(function (section) {
     return section.classList.contains('correct') || section.classList.contains('reviewed');
   }).length;
   var route = typeof activeHomeworkRoute === 'function' ? activeHomeworkRoute() : { problemLimit: 0 };
-  var cap = route.problemLimit > 0 ? HW_GOAL_QUICK : HW_GOAL_TARGET;
   var available = problems.length;
-  return { done: done, goal: Math.max(1, Math.min(cap, available || cap)), available: available };
+  var goal = route.problemLimit > 0 ? Math.min(route.problemLimit, available || route.problemLimit) : available;
+  return { done: done, goal: Math.max(1, goal), available: available };
 }
 
 function hwDrawPips(el, shown, goal) {
@@ -274,7 +272,7 @@ function hwRenderConfidence() {
 
 function hwRenderTonight() {
   var mode = document.body.dataset.homeworkRoute || HW_ROUTE_DEFAULT;
-  var time = HW_ROUTE_TIMES[mode] || HW_ROUTE_TIMES.full;
+  var time = HW_ROUTE_TIMES[mode] || HW_ROUTE_TIMES.quick;
   document.querySelectorAll('[data-hw-tonight-time]').forEach(function (el) { el.textContent = time; });
 }
 
@@ -381,45 +379,6 @@ function hwWrapLanguage() {
   setLanguageMode.hwWrapped = true;
 }
 
-/* V3.0 Student-Controlled Adaptive Pathways ("express", "standard", "foundation").
-   Switching pathways never clears entered answers and synchronizes with the route mode. */
-function hwSetPathway(pathway, silent) {
-  var valid = pathway === 'express' || pathway === 'foundation' ? pathway : 'standard';
-  hwSet('pathway', valid);
-  document.body.dataset.hwPathway = valid;
-  document.querySelectorAll('.hw-pathway-btn[data-pathway]').forEach(function (btn) {
-    var active = btn.getAttribute('data-pathway') === valid;
-    btn.classList.toggle('is-active', active);
-    btn.setAttribute('aria-pressed', active ? 'true' : 'false');
-  });
-  var bridge = document.getElementById('hw_foundation_bridge');
-  if (bridge) bridge.hidden = valid !== 'foundation';
-  if (!silent && typeof setHomeworkRoute === 'function') {
-    if (valid === 'express') {
-      setHomeworkRoute('quick', { silent: true, keepTab: true });
-      hwToast("I've Got This mode: 2 quick checks + mystery challenge unlocked!", 'Modo «¡Ya lo domino!»: 2 preguntas rápidas + reto misterioso listo.');
-    } else if (valid === 'standard') {
-      setHomeworkRoute('full', { silent: true, keepTab: true });
-      hwToast('Just Right companion mode active. Your work is saved.', 'Modo «A mi medida» activo. Tus respuestas están guardadas.');
-    } else if (valid === 'foundation') {
-      setHomeworkRoute('full', { silent: true, keepTab: true });
-      hwToast('Visual Bridge opened below — explore the model first!', 'Puente visual abierto abajo — ¡explora primero el modelo!');
-    }
-    hwRenderGoal(false);
-  }
-}
-window.hwSetPathway = hwSetPathway;
-
-function hwRestorePathway() {
-  var saved = hwGet('pathway');
-  if (saved === 'express' || saved === 'standard' || saved === 'foundation') {
-    hwSetPathway(saved, true);
-  } else {
-    var route = document.body.dataset.homeworkRoute || HW_ROUTE_DEFAULT;
-    hwSetPathway(route === 'quick' ? 'express' : 'standard', true);
-  }
-}
-
 /* V3.0 Quick-Tap Sentence Starters for "My Math Voice" reflection fields. */
 function hwInsertVoiceChip(btn) {
   if (!btn) return;
@@ -453,7 +412,6 @@ document.addEventListener('DOMContentLoaded', function () {
   hwRestoreSolved();
   hwWrapLanguage();
   hwRenderTonight();
-  hwRestorePathway();
   hwRenderConfidence();
   hwRenderNights();
   setTimeout(function () { hwRenderGoal(false); }, 0);

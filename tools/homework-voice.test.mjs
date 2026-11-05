@@ -3,7 +3,17 @@ import test from "node:test";
 import { homeworkDom, tick } from "./lib/homework-page-dom.mjs";
 
 const PAGES = ["4-3", "6-1-part2"];
-const STOPS = ["learn", "words", "check", "play", "done", "photobooth"];
+const STOPS = [
+  "connect",
+  "explore",
+  "check",
+  "talk",
+  "apply",
+  "done",
+  "words",
+  "play",
+  "photobooth",
+];
 const wc = (t) => t.trim().split(/\s+/).length;
 
 async function read(w, d, spoken, stop) {

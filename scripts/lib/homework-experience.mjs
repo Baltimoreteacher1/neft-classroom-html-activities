@@ -15,14 +15,10 @@
 
 import { act } from "./homework-actions.mjs";
 
-export const GOAL_TARGET = 4;
-export const GOAL_QUICK = 2;
+import { DEFAULT_ROUTE, MISSION_PRACTICE_COUNT, ROUTE_TIMES } from "./homework-mission.mjs";
 
-/** Route times, one source for the strip, the route chooser and the hub. */
-export const ROUTE_TIMES = { quick: "5–10", full: "20–30" };
-
-/** The route a first visit lands on. Keep in step with HOMEWORK_ROUTE_DEFAULT in homework-guided-notes.mjs. */
-export const DEFAULT_ROUTE = "quick";
+/** Re-exported so one module answers "how many problems is tonight's mission". */
+export { DEFAULT_ROUTE, MISSION_PRACTICE_COUNT, ROUTE_TIMES };
 
 import { icon } from "./family-icons.mjs";
 
@@ -78,8 +74,8 @@ export function renderMysteryChallenge(mystery) {
           <h3 id="hw_mystery_title">${bi("Can you crack this before tonight is over?", "¿Puedes resolver esto antes de terminar hoy?")}</h3>
           ${stem}
           <p class="hw-mystery-status" id="hw_mystery_status" role="status" aria-live="polite">
-            <span class="lang-en">Locked. Finish <span data-hw-goal-count>${GOAL_TARGET}</span> problems and it opens.</span>
-            <span class="lang-es" lang="es">Bloqueado. Termina <span data-hw-goal-count>${GOAL_TARGET}</span> problemas y se abre.</span>
+            <span class="lang-en">Locked. Finish <span data-hw-goal-count>${MISSION_PRACTICE_COUNT}</span> problems and it opens.</span>
+            <span class="lang-es" lang="es">Bloqueado. Termina <span data-hw-goal-count>${MISSION_PRACTICE_COUNT}</span> problemas y se abre.</span>
           </p>
           <button type="button" class="hw-mystery-open" id="hw_mystery_open" hidden ${act("hwOpenMystery")}>
             ${bi("Open the mystery challenge ➔", "Abrir el reto misterioso ➔")}
@@ -189,7 +185,7 @@ export function renderTonightStrip() {
         <ul class="hw-tonight fm-cluster" aria-label="Tonight at a glance">
           <li class="fm-chip"><strong><span data-hw-tonight-time>${ROUTE_TIMES[DEFAULT_ROUTE]}</span> min</strong></li>
           <li class="fm-chip">${icon("pencil", "sm")} <span>${bi("Pencil and paper", "Lápiz y papel")}</span></li>
-          <li class="fm-chip">${icon("star", "sm")} <span>${bi("Goal:", "Meta:")} <strong><span data-hw-goal-count>${GOAL_TARGET}</span> ${bi("problems", "problemas")}</strong></span></li>
+          <li class="fm-chip">${icon("star", "sm")} <span>${bi("Goal:", "Meta:")} <strong><span data-hw-goal-count>${MISSION_PRACTICE_COUNT}</span> ${bi("problems", "problemas")}</strong></span></li>
         </ul>`;
 }
 
@@ -315,99 +311,4 @@ export function renderMiniConceptSvg(topic = "general") {
     en: "Drawing a quick picture or bar model shows how the parts connect to the whole before you calculate.",
     es: "Dibujar un esquema rápido o modelo de barras muestra cómo se conectan las partes con el total antes de calcular.",
   };
-}
-
-/**
- * V3.0 Feature A: The 60-Second Family Dinner Conversation Card ("La Pregunta de la Noche").
- */
-export function renderDinnerTalkCard(question, topic = "general") {
-  const qEn =
-    question?.en ||
-    "How does the picture or diagram on this page show why your answer makes sense?";
-  const qEs =
-    question?.es ||
-    "¿Cómo muestra el dibujo o diagrama de esta página por qué tiene sentido tu respuesta?";
-  const model = renderMiniConceptSvg(topic);
-  const speakEn = `Tonight's 60-Second Math Talk. Ask your child: ${qEn}`;
-  const speakEs = `Charla matemática de 60 segundos. Pregúntale a tu hijo o hija: ${qEs}`;
-  return `
-      <section class="hw-dinner-talk" id="hw_dinner_talk" data-no-vocab data-no-listen aria-labelledby="hw_dinner_talk_title">
-        <div class="hw-dinner-head">
-          <div>
-            <p class="hw-eyebrow hw-inline">🍽️ ${bi("La Pregunta de la Noche · 60-Second Dinner Talk", "La Pregunta de la Noche · Charla de 60 Segundos")}</p>
-            <h3 id="hw_dinner_talk_title">${bi("Tonight's 60-Second Math Talk", "Charla Matemática de 60 Segundos")}</h3>
-          </div>
-          <button type="button" class="btn-read-aloud hw-listen" data-speak-en="${esc(speakEn)}" data-speak-es="${esc(speakEs)}" aria-label="Listen to tonight's dinner question" data-aria-en="Listen to tonight's dinner question" data-aria-es="Escuchar la pregunta de la noche">🔊 ${bi("Listen", "Escuchar")}</button>
-        </div>
-        <p class="hw-dinner-prompt">
-          <span class="lang-en"><strong>Ask at dinner or bedtime:</strong> “${esc(qEn)}”</span>
-          <span class="lang-es" lang="es"><strong>Pregunta en la cena o antes de dormir:</strong> «${esc(qEs)}»</span>
-        </p>
-        <p class="hw-dinner-reassure">
-          ${bi(
-            "No pen or paper needed — just listen to how your student explains their thinking in any language.",
-            "No necesitan papel ni lápiz: solo escuchen cómo su estudiante explica su razonamiento en cualquier idioma.",
-          )}
-        </p>
-        <details class="hw-dinner-visual">
-          <summary>
-            <span>🔍 ${bi("See the 30-second visual explainer (plain everyday terms)", "Ver el modelo visual en 30 segundos (en palabras sencillas)")}</span>
-          </summary>
-          <div class="hw-dinner-visual-body">
-            ${model.svg}
-            <p class="hw-dinner-visual-copy">${bi(model.en, model.es)}</p>
-          </div>
-        </details>
-      </section>`;
-}
-
-/**
- * V3.0 Feature B: Student-Controlled Routing & Adaptive Pathways.
- * Preserves existing route chooser buttons while giving students an explicit
- * 3-pathway selector ("I've Got This", "Just Right", "Boost My Foundation").
- */
-export function renderStudentPathwayBar(topic = "general", bridge = null) {
-  const model = renderMiniConceptSvg(topic);
-  const bridgeNoteEn = bridge?.class?.en
-    ? `${bridge.class.en} ${bridge.why?.en || ""}`.trim()
-    : model.en;
-  const bridgeNoteEs = bridge?.class?.es
-    ? `${bridge.class.es} ${bridge.why?.es || ""}`.trim()
-    : model.es;
-  return `
-      <section class="hw-pathway-bar" id="hw_pathway_bar" data-no-vocab data-no-listen aria-labelledby="hw_pathway_title">
-        <div class="hw-pathway-header">
-          <p class="hw-eyebrow hw-inline">🧭 ${bi("Student-Owned Learning Path", "Ruta elegida por el estudiante")}</p>
-          <h3 id="hw_pathway_title">${bi("Choose your depth for tonight (switch anytime, zero work lost)", "Elige tu nivel de profundidad para hoy (cambia cuando quieras sin perder tus respuestas)")}</h3>
-        </div>
-        <div class="hw-pathway-grid" role="group" aria-labelledby="hw_pathway_title">
-          <button type="button" class="hw-pathway-btn" data-pathway="express" aria-pressed="false" ${act("hwSetPathway", "express")}>
-            <span class="hw-pathway-icon" aria-hidden="true">⚡</span>
-            <strong class="hw-stack">${bi("I've Got This", "¡Ya lo domino!")}</strong>
-            <span class="hw-pathway-desc hw-stack">${bi("Express & Challenge: 2 quick checks → family puzzle", "Rápido y reto: 2 preguntas rápidas → acertijo familiar")}</span>
-          </button>
-          <button type="button" class="hw-pathway-btn is-active" data-pathway="standard" aria-pressed="true" ${act("hwSetPathway", "standard")}>
-            <span class="hw-pathway-icon" aria-hidden="true">🎯</span>
-            <strong class="hw-stack">${bi("Just Right", "A mi medida")}</strong>
-            <span class="hw-pathway-desc hw-stack">${bi("Standard Companion: Model → Practice with hints → Family Talk", "Estándar: Modelo → Práctica con pistas → Charla familiar")}</span>
-          </button>
-          <button type="button" class="hw-pathway-btn" data-pathway="foundation" aria-pressed="false" ${act("hwSetPathway", "foundation")}>
-            <span class="hw-pathway-icon" aria-hidden="true">🧱</span>
-            <strong class="hw-stack">${bi("Boost My Foundation", "Reforzar mi base")}</strong>
-            <span class="hw-pathway-desc hw-stack">${bi("Visual Bridge: Open the prerequisite visual model first", "Puente visual: Abre primero el modelo visual paso a paso")}</span>
-          </button>
-        </div>
-        <div class="hw-foundation-bridge" id="hw_foundation_bridge" hidden>
-          <div class="hw-foundation-head">
-            <strong>🧱 ${bi("Visual Prerequisite Bridge", "Puente Visual de Base")}</strong>
-            <span class="hw-foundation-tag">${bi("Step-by-step visual foundation", "Base visual paso a paso")}</span>
-          </div>
-          ${model.svg}
-          <p class="hw-foundation-copy">${bi(bridgeNoteEn, bridgeNoteEs)}</p>
-          <div class="hw-foundation-actions">
-            <a class="btn btn-sm btn-secondary" href="#hw_learn_idea">${bi("1. Walk through the worked model ↓", "1. Ver el modelo resuelto paso a paso ↓")}</a>
-            <button type="button" class="btn btn-sm btn-primary" ${act("switchHomeworkTab", "check")}>${bi("2. Try Warm-Up Question 1 with hints ➔", "2. Probar la Pregunta 1 de calentamiento con pistas ➔")}</button>
-          </div>
-        </div>
-      </section>`;
 }

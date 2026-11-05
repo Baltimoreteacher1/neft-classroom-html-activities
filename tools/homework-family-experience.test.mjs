@@ -16,7 +16,6 @@ import {
   renderDoneTab,
   renderHomeworkTabs,
   renderPlayTabPanel,
-  renderQuickPlan,
   renderRefrigeratorSheet,
   renderWelcomeBanner,
   resolveKitchenTableActivity,
@@ -24,6 +23,7 @@ import {
 import { renderVisualMathLab, VISUAL_LABS_JS } from "../scripts/homework-visual-labs.mjs";
 import { renderExperienceDialogs } from "../scripts/lib/homework-experience.mjs";
 import { EXPERIENCE_JS } from "../scripts/lib/homework-experience-js.mjs";
+import { MISSION_PRACTICE_COUNT, renderMissionStart } from "../scripts/lib/homework-mission.mjs";
 import { lessonPath, loadLessonConfig } from "./lib/curriculum-source.mjs";
 
 const config = loadLessonConfig;
@@ -79,9 +79,9 @@ test("interactive model feedback and accessible names include accurate Spanish",
 });
 function runtime(query = "") {
   const markup =
-    renderQuickPlan() +
+    renderMissionStart() +
     renderHomeworkTabs(
-      '<div data-tab-panel="learn"></div><div class="practice-tier-warmup">' +
+      '<div data-tab-panel="connect"></div><div class="practice-tier-warmup">' +
         '<section class="problem-section"></section>'.repeat(4) +
         '</div><div class="practice-tier-challenge"></div>' +
         renderDoneTab(config("3-2"), "3-2"),
@@ -121,7 +121,7 @@ test("share links retain the selected route and language without sharing local p
   assert.equal(shared.searchParams.get("route"), "quick");
   assert.equal(shared.searchParams.get("lang"), "es");
   assert.equal(shared.searchParams.get("section"), "class-1");
-  assert.equal(w.activeHomeworkRoute().problemLimit, 2);
+  assert.equal(w.activeHomeworkRoute().problemLimit, MISSION_PRACTICE_COUNT);
   assert.equal(w.localStorage.getItem("hw_route_3-2"), "quick");
   for (const key of [
     "answers",
@@ -163,7 +163,11 @@ test("Quick Practice is the default, migrates the old automatic paths, and retai
   const w = dom.window;
   w.restoreHomeworkRoute();
   assert.equal(w.document.body.dataset.homeworkRoute, "quick");
-  assert.equal(w.document.getElementById("hw_tab_play").hidden, true);
+  assert.equal(
+    w.document.getElementById("hw_tab_play").closest(".hw-optional-stops").hidden,
+    true,
+    "games live behind Explore more",
+  );
   assert.equal(w.document.getElementById("hw_tab_photobooth").hidden, false);
   // Earlier defaults were written without a choice: "core" and "full" both fall back to Quick.
   w.localStorage.setItem("hw_route_3-2", "core");
@@ -278,25 +282,29 @@ test("later sessions use their own concept models instead of inherited first-ses
   }
 });
 
-test("family homework offers three real practice paths without a Together stop", () => {
+test("family homework is one six-stage mission with optional extras behind Explore more", () => {
   for (const id of ["2-1", "3-3"]) {
     const page = readFileSync(lessonPath(id, "homework.html"), "utf8");
     const d = new JSDOM(page).window.document;
-    assert.equal(d.querySelectorAll(".hw-route-option[data-route-mode]").length, 2, id);
+    assert.equal(d.querySelectorAll(".hw-route-option[data-route-mode]").length, 0, id);
     assert.deepEqual(
-      [...d.querySelectorAll(".hw-route-option[data-route-mode]")].map((b) => b.dataset.routeMode),
-      ["quick", "full"],
+      [...d.querySelectorAll(".homework-tab-btn")].map((b) => b.dataset.tab),
+      ["connect", "explore", "check", "talk", "apply", "done"],
       id,
     );
-    assert.match(d.querySelector(".hw-route-chooser").textContent, /5–10/);
-    assert.match(d.querySelector(".hw-route-chooser").textContent, /20–30/);
-    assert.match(d.querySelector(".hw-route-chooser").textContent, /Quick Practice/);
-    assert.match(d.querySelector(".hw-route-chooser").textContent, /Keep Going/);
-    assert.equal(d.querySelectorAll(".homework-tab-btn").length, 5, id);
+    const start = d.querySelector(".hw-mission-start").textContent;
+    assert.match(start, /5–10/);
+    assert.match(start, /Start Today's Math/);
+    assert.match(start, /Explore more/);
+    assert.match(d.querySelector("#hw_explore_sheet").textContent, /15–25/);
     assert.equal(d.querySelector("#hw_panel_together"), null, id);
     assert.equal(d.querySelectorAll("#hw_time_remaining").length, 0, id);
     assert.doesNotMatch(d.body.textContent, /time remaining|tiempo restante/i, id);
-    assert.doesNotMatch(d.querySelector(".homework-tab-bar").textContent, /together|juntos/i, id);
+    assert.deepEqual(
+      [...d.querySelectorAll(".hw-optional-stops .homework-tab-extra")].map((b) => b.dataset.tab),
+      ["words", "play", "photobooth"],
+      id,
+    );
     assert.ok(
       d.querySelector(".hw-session-banner a[href*='-part2/homework.html']"),
       `${id} links to its Part 2 family page`,
@@ -596,7 +604,7 @@ test("Unit 4 family pages keep the tab route while rotating their visual experie
     if (!tabIds) tabIds = currentTabIds;
     else assert.deepEqual(currentTabIds, tabIds, `${id} changed the tab navigation`);
     assert.ok(d.querySelector('[data-tab-panel="check"]'), `${id} lost core practice`);
-    assert.ok(d.querySelector('[data-tab-panel="learn"]'), `${id} lost the family learning panel`);
+    assert.ok(d.querySelector('[data-tab-panel="explore"]'), `${id} lost the explore panel`);
     dom.window.close();
   }
 

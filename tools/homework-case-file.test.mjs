@@ -91,7 +91,7 @@ test("all homework pages carry one bilingual Case File that opens the Learn stop
       bad.push(`${id}: ${count} case files`);
       continue;
     }
-    if (!/data-tab-panel="learn"[^>]*>\s*<section class="cf"/.test(html))
+    if (!/data-tab-panel="connect"[^>]*>\s*<section class="cf"/.test(html))
       bad.push(`${id}: case file is not first in Learn`);
     const card = new JSDOM(
       html.slice(start, html.indexOf("</section>", start) + 10),
@@ -125,9 +125,11 @@ test("all homework pages carry one bilingual Case File that opens the Learn stop
   assert.deepEqual(bad, []);
 });
 
-test("the sidebar offers the Case File and the lesson's own sections, and the lightbox covers its graphics", () => {
+test("the sidebar is the six-stage mission with no second list of sections, and the lightbox covers the Case File graphics", () => {
   const skin = readFileSync(join(ROOT, "scripts/homework-studio-skin.mjs"), "utf8");
-  for (const id of ["case", "mystery", "huddle"]) assert.match(skin, new RegExp(`id: '${id}'`));
+  for (const id of ["case", "mystery", "huddle"])
+    assert.doesNotMatch(skin, new RegExp(`id: '${id}'`), `${id} is not a competing sub-list`);
+  assert.doesNotMatch(skin, /STUDIO_SUB_CONFIGS/);
   assert.match(
     skin,
     /svg\.cf-tag, svg\.cf-line/,

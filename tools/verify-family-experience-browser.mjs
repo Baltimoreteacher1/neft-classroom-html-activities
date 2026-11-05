@@ -160,16 +160,19 @@ async function sweepPhone(browser, lesson) {
       `language picker starts ${Math.round(order.top)}px down; must be on the first screen`,
     );
 
-  // Start state: goal is four of N, never a celebration before work.
+  // Start state: the goal is the problems the route shows (3 in today's mission), never a celebration before work.
   const start = await page.evaluate(() => ({
     snap: window.hwGoalSnapshot(),
     banner: !document.getElementById("goal_reached_banner").hidden,
     mystery: !!document.getElementById("hw_mystery"),
     time: document.querySelector("[data-hw-tonight-time]")?.textContent,
   }));
-  // Quick Practice (the default) has a goal of two; Keep Going has four.
-  if (start.snap.goal !== 4 && start.snap.goal !== 2 && start.snap.goal !== start.snap.available)
-    fail(where, `goal is ${start.snap.goal}, not 2 or 4`);
+  // Today's mission (the default) shows three problems, and the goal is exactly what is on screen.
+  if (start.snap.goal !== Math.min(3, start.snap.available))
+    fail(
+      where,
+      `goal is ${start.snap.goal}, not the ${Math.min(3, start.snap.available)} on screen`,
+    );
   if (start.banner) fail(where, "goal banner is showing before any work");
   if (!start.mystery) fail(where, "no mystery challenge card");
   const startTop = await page.evaluate(
@@ -177,10 +180,10 @@ async function sweepPhone(browser, lesson) {
   );
   if (startTop > 1500)
     fail(where, `the Start button is ${Math.round(startTop)}px down; keep it within two screens`);
-  // The default route is Quick Practice (5–10 min). Keep Going is 20–30 min.
+  // The default route is today's mission (5–10 min). Extended practice is 15–25 min.
   if (start.time !== "5–10") fail(where, `default route time reads ${start.time}`);
 
-  for (const tab of ["learn", "words", "check", "play", "done"]) {
+  for (const tab of ["connect", "explore", "check", "talk", "apply", "done", "words", "play"]) {
     await page.evaluate((t) => window.switchHomeworkTab(t), tab);
     await page.waitForTimeout(120);
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - innerWidth);
@@ -261,7 +264,7 @@ async function sweepPhone(browser, lesson) {
         "#problem_intelligence_" + idx(sections[0]) + " [data-intelligence-guidance] .lang-es",
       )?.textContent || "";
     const steps = [];
-    for (let i = 0; i < 4 && i < sections.length; i++) {
+    for (let i = 0; i < 3 && i < sections.length; i++) {
       const s = sections[i];
       s.querySelector(
         "input[type='radio'][value='" + s.querySelector(".mc-options").dataset.correct + "']",
@@ -309,9 +312,9 @@ async function sweepPhone(browser, lesson) {
     fail(where, "the language-access action did not expose the Spanish guidance");
   if (!run.spanishMode)
     fail(where, "the language-access action did not switch the existing language picker");
-  if (run.available >= 4) {
-    if (run.steps.at(-1) !== "4 / 4") fail(where, `four right answers read ${run.steps.at(-1)}`);
-    if (!run.banner) fail(where, "goal banner did not appear at four");
+  if (run.available >= 3) {
+    if (run.steps.at(-1) !== "3 / 3") fail(where, `three right answers read ${run.steps.at(-1)}`);
+    if (!run.banner) fail(where, "goal banner did not appear at three");
     if (!run.unlocked) fail(where, "mystery challenge did not unlock");
     // It survives a reload and does not celebrate twice.
     await page.reload({ waitUntil: "load" });
@@ -322,9 +325,9 @@ async function sweepPhone(browser, lesson) {
       toast: !document.getElementById("hw_toast").hidden,
       evidenceCount: window.__HW_INSTRUCTIONAL_EVIDENCE__?.events?.length || 0,
     }));
-    if (again.text !== "4 / 4") fail(where, `after reload progress reads ${again.text}`);
+    if (again.text !== "3 / 3") fail(where, `after reload progress reads ${again.text}`);
     if (again.toast) fail(where, "goal celebrated again after reload");
-    if (again.evidenceCount < 5)
+    if (again.evidenceCount < 4)
       fail(where, "categorical math evidence did not survive save/resume");
     if (!/new problem/i.test(run.transferText))
       fail(where, "an independent success after support did not route to transfer feedback");
@@ -352,16 +355,16 @@ async function sweepLanguages(browser, lesson) {
   const { page } = await openPage(context, lesson, "?lang=es");
   if ((await page.evaluate(() => document.documentElement.lang)) !== "es")
     fail(`${lesson} ?lang=es`, "page did not open in Spanish");
-  await page.evaluate(() => window.switchHomeworkTab("learn"));
+  await page.evaluate(() => window.switchHomeworkTab("connect"));
   const small = await page.evaluate(`(${SMALL_TEXT})()`);
   if (small.length) fail(`${lesson} es`, `text under 13px: ${small.join("; ")}`);
   const quick = await openPage(context, lesson, "?route=quick");
   const goal = await quick.page.evaluate(() => window.hwGoalSnapshot().goal);
-  if (goal !== 2) fail(`${lesson} quick`, `Quick goal is ${goal}, not 2`);
+  if (goal !== 3) fail(`${lesson} quick`, `Today's mission goal is ${goal}, not 3`);
   await context.close();
 }
 
-// Learn is a run of cards and every stop has Back / Next: one thing on screen, one next action.
+// The mission is one path: every stage has one next action, and Continue moves exactly one stage.
 async function sweepStops(browser, lesson) {
   const context = await browser.newContext({
     viewport: { width: 390, height: 844 },
@@ -370,31 +373,23 @@ async function sweepStops(browser, lesson) {
   });
   const { page } = await openPage(context, lesson);
   const where = `${lesson} @390 stops`;
-  await page.evaluate(() => window.switchHomeworkTab("learn"));
-  const visibleCards = () => page.locator(".learn-card:not([hidden])").count();
-  const total = await page.locator(".learn-card").count();
-  if (total < 2) fail(where, `Learn has ${total} card(s); expected a run of cards`);
-  if ((await visibleCards()) !== 1) fail(where, "Learn shows more or fewer than one card");
-  if (!(await page.locator(".hw-stop-nav").isHidden()))
-    fail(where, "the stop bar competes with the card pager on Learn");
-  await page.locator(".learn-pager-next").click();
-  if ((await visibleCards()) !== 1) fail(where, "Next left more than one card showing");
-  // A link or chip that points into a hidden card opens that card.
-  await page.evaluate(() => window.setLearnCard(0));
-  const target = await page.evaluate(() => {
-    const el = document.getElementById("hw_learn_idea");
-    if (!el) return false;
-    window.revealLearnCardFor(el);
-    return !el.closest(".learn-card").hidden;
-  });
-  if (!target) fail(where, "a link into a hidden Learn card did not open it");
-  // The last Next leaves Learn for the next stop.
-  for (let i = 0; i < total + 1; i++) {
-    if ((await page.evaluate(() => document.body.dataset.activeTab)) !== "learn") break;
-    await page.locator(".learn-pager-next").click();
+  const order = ["connect", "explore", "check", "talk", "apply", "done"];
+  const tabs = await page.evaluate(() =>
+    [...document.querySelectorAll(".homework-tab-btn")].map((b) => b.dataset.tab),
+  );
+  if (tabs.join() !== order.join()) fail(where, `stage rail reads ${tabs.join()}`);
+  await page.evaluate(() => window.switchHomeworkTab("connect"));
+  for (const id of ["connect", "explore"]) {
+    const here = await page.evaluate(() => document.body.dataset.activeTab);
+    if (here !== id) fail(where, `expected ${id}, on ${here}`);
+    const shown = await page.evaluate(
+      () => [...document.querySelectorAll("[data-tab-panel]")].filter((p) => !p.hidden).length,
+    );
+    if (shown !== 1) fail(where, `${shown} stages show at once on ${id}`);
+    await page.locator(`#hw_panel_${id} .flow-next-btn`).click();
   }
   const stop = await page.evaluate(() => document.body.dataset.activeTab);
-  if (stop === "learn") fail(where, "the last Learn card's Next did not move to the next stop");
+  if (stop !== "check") fail(where, `Continue from Explore landed on ${stop}, not check`);
   // Later stops have Back; it returns, and the progress reads Not started before any attempt.
   if (await page.locator("#hw_stop_back").isHidden()) fail(where, `no Back button on ${stop}`);
   await page.evaluate(() => window.switchHomeworkTab("check"));
@@ -425,7 +420,7 @@ async function sweepDesktop(browser, lesson) {
       `${lesson} @1280`,
       `the Start button ends ${Math.round(startBottom)}px down; keep it within 700px`,
     );
-  for (const tab of ["learn", "check", "done"]) {
+  for (const tab of ["connect", "check", "done"]) {
     await page.evaluate((t) => window.switchHomeworkTab(t), tab);
     await page.waitForTimeout(100);
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - innerWidth);
@@ -433,7 +428,7 @@ async function sweepDesktop(browser, lesson) {
   }
 
   // Case File: spans both columns of the stop and uses both sides of its own card.
-  await page.evaluate(() => window.switchHomeworkTab("learn"));
+  await page.evaluate(() => window.switchHomeworkTab("connect"));
   await page.waitForTimeout(100);
   const cf = await page.evaluate(() => {
     const card = document.getElementById("hw_case");
@@ -441,7 +436,7 @@ async function sweepDesktop(browser, lesson) {
     const box = (el) => el.getBoundingClientRect();
     const left = card.querySelector(".cf-left");
     const right = card.querySelector(".cf-right");
-    const panel = document.getElementById("hw_panel_learn");
+    const panel = document.getElementById("hw_panel_connect");
     return {
       span: box(card).width / box(panel).width,
       sideBySide: box(right).left > box(left).left + 120,
@@ -449,7 +444,7 @@ async function sweepDesktop(browser, lesson) {
       leftText: left.textContent.trim().length,
     };
   });
-  if (!cf) fail(`${lesson} @1280`, "Learn stop has no Case File");
+  if (!cf) fail(`${lesson} @1280`, "Connect stop has no Case File");
   else {
     if (cf.span < 0.85)
       fail(`${lesson} @1280`, `Case File spans only ${Math.round(cf.span * 100)}% of the stop`);
@@ -457,18 +452,19 @@ async function sweepDesktop(browser, lesson) {
     if (!cf.rightText || !cf.leftText) fail(`${lesson} @1280`, "Case File has an empty side");
   }
 
-  // The sidebar offers the Case File and jumps to it.
-  const caseBtn = page.locator("#hw_sub_learn .hw-sub-btn", { hasText: /Case File/ });
-  if ((await caseBtn.count()) !== 1) fail(`${lesson} @1280`, "sidebar has no Case File button");
+  // The sidebar is the six-stage mission: no second list of sections under Connect.
+  const railStages = await page.locator(".homework-tab-bar .homework-tab-btn").count();
+  if (railStages !== 6) fail(`${lesson} @1280`, `sidebar lists ${railStages} stages, not 6`);
+  if (await page.locator("#hw_sub_connect, #hw_sub_learn").count())
+    fail(`${lesson} @1280`, "a second section list competes with the stage rail");
 
   // Click-to-enlarge: a graphic opens in the lightbox; Escape closes it and focus returns.
-  const gfx = page
-    .locator("#hw_case svg.cf-tag, #hw_case svg.cf-line, #hw_panel_learn .concept-visual-wrap svg")
-    .first();
+  const caseGfx = page.locator("#hw_case svg.cf-tag, #hw_case svg.cf-line").first();
+  const exploreGfx = page.locator("#hw_panel_explore .concept-visual-wrap svg").first();
+  const inCase = (await caseGfx.count()) > 0;
+  const gfx = inCase ? caseGfx : exploreGfx;
   if (await gfx.count()) {
-    // One idea at a time on every width: the Learn stop shows the card that holds the graphic only after the
-    // family reaches it (the design system's [hidden] rule always wins), so go to it the way the stepper does.
-    await gfx.evaluate((el) => window.revealLearnCardFor?.(el));
+    await page.evaluate((id) => window.switchHomeworkTab(id), inCase ? "connect" : "explore");
     await gfx.scrollIntoViewIfNeeded();
     await gfx.click();
     const opened = await page.locator(".hw-lightbox-dialog[open]").count();
@@ -502,5 +498,5 @@ if (problems.length) {
   process.exit(1);
 }
 console.log(
-  `\nPASS verify-family-experience-browser: ${lessons.length} lesson(s), phone + Spanish + Quick + desktop`,
+  `\nPASS verify-family-experience-browser: ${lessons.length} lesson(s), phone + Spanish + mission + desktop`,
 );

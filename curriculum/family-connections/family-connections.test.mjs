@@ -237,9 +237,9 @@ test("each posted night offers Family Math Studio first and the two shorter rout
     );
     assert.match(links[0].textContent, /^Start Family Math Studio · 5–10 min/);
     assert.ok(links[0].classList.contains("route-primary"));
-    assert.match(links[0].textContent, /Quick Practice route · recommended/);
+    assert.match(links[0].textContent, /Today's mission route · recommended/);
     assert.equal(card.querySelector(".route-short-label").textContent, "More time tonight?");
-    assert.deepEqual(links.slice(1).map((a) => a.textContent), ["Keep Going · 20–30 min"]);
+    assert.deepEqual(links.slice(1).map((a) => a.textContent), ["Extended practice · 15–25 min"]);
     renderHomeworkHub(root, snapshot, lessonList, "all-families", "es", NOW);
     const spanish = [...root.querySelectorAll(".homework-card a")];
     assert.deepEqual(spanish.map((a) => a.getAttribute("href")), [
@@ -247,9 +247,9 @@ test("each posted night offers Family Math Studio first and the two shorter rout
       "/lessons/3-2/homework.html?route=full&lang=es&section=all-families",
     ]);
     assert.match(spanish[0].textContent, /^Empezar el Estudio familiar de matemáticas · 5–10 min/);
-    assert.match(spanish[0].textContent, /Ruta: Práctica rápida · recomendada/);
+    assert.match(spanish[0].textContent, /Ruta: Misión de hoy · recomendada/);
     assert.equal(root.querySelector(".route-short-label").textContent, "¿Más tiempo esta noche?");
-    assert.deepEqual(spanish.slice(1).map((a) => a.textContent), ["Seguir practicando · 20–30 min"]);
+    assert.deepEqual(spanish.slice(1).map((a) => a.textContent), ["Práctica extendida · 15–25 min"]);
     // A family that never chose a language gets links that leave the choice to the lesson page.
     renderHomeworkHub(root, snapshot, lessonList, "all-families", "en", { ...NOW, linkLang: "" });
     assert.ok([...root.querySelectorAll(".homework-card a")].every((a) => !a.getAttribute("href").includes("lang=")));
@@ -261,7 +261,7 @@ test("the recommended-route sentence names Family Math Studio (5–10 min) and n
     renderHomeworkHub(root, week([["Monday", "3-2"]]), lessonList, "all-families", "en", NOW);
     assert.equal(
       root.querySelector(".route-recommendation").textContent,
-      "Family Math Studio (5–10 min) is the recommended route. Keep Going is for nights with more time.",
+      "Family Math Studio (5–10 min) is the recommended route. Extended practice is for nights with more time.",
     );
     renderHomeworkHub(root, week([["Monday", "3-2"]]), lessonList, "all-families", "es", NOW);
     assert.match(root.querySelector(".route-recommendation").textContent, /^El Estudio familiar de matemáticas \(5–10 min\) es la ruta recomendada\./);
@@ -272,7 +272,7 @@ test("the recommended-route sentence names Family Math Studio (5–10 min) and n
   });
 });
 
-test("Joel's 2026-10-26 decision holds on the hub: Quick Practice is the default and primary route", async () => {
+test("Joel's 2026-10-26 decision holds on the hub: Today's mission is the default and primary route", async () => {
   const decisions = JSON.parse(await readFile(new URL("../../data/product-decisions.json", import.meta.url), "utf8"));
   const decision = decisions.decisions.find((entry) => entry.id === "family-homework-route-choices");
   assert.match(decision.decision, /Quick Practice is the default path/);
@@ -283,10 +283,10 @@ test("Joel's 2026-10-26 decision holds on the hub: Quick Practice is the default
   // The hub and the lesson page name the default route the same way.
   const { DEFAULT_ROUTE: LESSON_DEFAULT_ROUTE } = await import("../../scripts/lib/homework-experience.mjs");
   assert.equal(DEFAULT_ROUTE, LESSON_DEFAULT_ROUTE);
-  assert.equal(ROUTES.quick.label.en, "Quick Practice");
-  assert.equal(ROUTES.quick.label.es, "Práctica rápida");
-  assert.equal(ROUTES.full.label.en, "Keep Going");
-  assert.equal(ROUTES.full.label.es, "Seguir practicando");
+  assert.equal(ROUTES.quick.label.en, "Today's mission");
+  assert.equal(ROUTES.quick.label.es, "Misión de hoy");
+  assert.equal(ROUTES.full.label.en, "Extended practice");
+  assert.equal(ROUTES.full.label.es, "Práctica extendida");
   const sources = await Promise.all(
     ["shared/homework-hub.js", "shared/hub-panels.js", "shared/hub-routes.js", "family-app.js", "index.html"].map((file) =>
       readFile(new URL(`./${file}`, import.meta.url), "utf8"),
@@ -298,9 +298,10 @@ test("Joel's 2026-10-26 decision holds on the hub: Quick Practice is the default
 
 test("the hub's route words and times are the lesson page's", async () => {
   const generator = await readFile(new URL("../../scripts/homework-guided-notes.mjs", import.meta.url), "utf8");
-  const { ROUTE_TIMES } = await import("../../scripts/lib/homework-experience.mjs");
+  const { ROUTE_TIMES } = await import("../../scripts/lib/homework-mission.mjs");
   for (const [route, { minutes }] of Object.entries(ROUTES)) {
-    assert.ok(generator.includes(`route("${route}"`), `the lesson page has a ${route} route`);
+    // The page keeps both route ids (links, QR codes, saved choices); the routes table lives in the shared runtime.
+    assert.match(generator, new RegExp(`${route}: \\{ tabs:`), `the lesson page has a ${route} route`);
     assert.equal(ROUTE_TIMES[route], minutes, `${route} time range`);
   }
   const hero = await readFile(new URL("../../scripts/lib/homework-hero.mjs", import.meta.url), "utf8");

@@ -6,13 +6,13 @@
  * scripts/lib/homework-session-flow.mjs):
  *
  *   - two optional routes, `?route=quick|full`, each with a time RANGE
- *     (never a countdown). Quick Practice is the default and the recommended
+ *     (never a countdown). Today's mission is the default and the recommended
  *     route (data/product-decisions.json, family-homework-route-choices, Joel,
- *     2026-10-26); Keep Going carries every item;
+ *     2026-10-26); Extended practice carries every item (data/product-decisions.json, family-homework-mission, 2026-11-04);
  *   - the product is "Family Math Studio" / "Estudio familiar de matemáticas";
- *     its routes are "Quick Practice" and "Keep Going", so the page name and a
+ *     its routes are "Today's mission" and "Extended practice", so the page name and a
  *     route name are never the same word;
- *   - `?route=core` (the retired third route) opens Keep Going, as on the page;
+ *   - `?route=core` (the retired third route) opens Extended practice, as on the page;
  *   - a lesson taught over two nights is "Session 1: Concept Launch", then
  *     "Session 2: Compare & Apply". `-part2` stays the URL word and is never
  *     shown to a family.
@@ -29,11 +29,11 @@ export const PRODUCT_NAME = Object.freeze({
 export const ROUTES = Object.freeze({
   quick: Object.freeze({
     minutes: "5–10",
-    label: { en: "Quick Practice", es: "Práctica rápida" },
+    label: { en: "Today's mission", es: "Misión de hoy" },
   }),
   full: Object.freeze({
-    minutes: "20–30",
-    label: { en: "Keep Going", es: "Seguir practicando" },
+    minutes: "15–25",
+    label: { en: "Extended practice", es: "Práctica extendida" },
   }),
 });
 export const DEFAULT_ROUTE = "quick";

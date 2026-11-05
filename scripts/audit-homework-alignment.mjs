@@ -43,7 +43,7 @@ const REQUIRED_MARKERS = [
     // reachability instead of tab-ness.
     id: "all-tabs",
     test: (h) =>
-      ["learn", "words", "check", "play", "done"].every((t) =>
+      ["connect", "explore", "check", "talk", "apply", "done", "words", "play"].every((t) =>
         h.includes(`data-tab-panel="${t}"`),
       ) &&
       !h.includes('data-tab-panel="help"') &&
@@ -106,16 +106,21 @@ const REQUIRED_MARKERS = [
     test: (h) => h.includes("help_modal_overlay") && h.includes("openHelpModalFromBtn"),
   },
   {
-    id: "family-route",
+    id: "family-mission",
     test: (h) =>
-      // Decision "family-homework-route-choices" in data/product-decisions.json, as amended
-      // for the two-choice landing: Quick Practice and Keep Going, with real stop/problem behavior.
-      /class="hw-route-chooser[\s"]/.test(h) &&
-      ["quick", "full"].every((mode) => h.includes(`data-route-mode="${mode}"`)) &&
+      // Decision "family-homework-mission" in data/product-decisions.json: one six-stage mission,
+      // Today's mission by default, extended practice and the extras behind Explore more.
+      /class="hw-mission-start[\s"]/.test(h) &&
+      !/<button[^>]*data-route-mode=/.test(h) &&
+      h.includes('id="hw_explore_sheet"') &&
+      ["connect", "explore", "check", "talk", "apply", "done"].every((t) =>
+        h.includes(`id="hw_tab_${t}"`),
+      ) &&
       h.includes("setHomeworkRoute") &&
       h.includes("restoreHomeworkRoute") &&
       h.includes("goNextHomeworkStop"),
   },
+
   {
     id: "lesson-skill-model",
     test: (h, config) => {

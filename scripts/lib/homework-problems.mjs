@@ -204,6 +204,17 @@ export function familyCoachLevels(item, topic = "") {
   };
 }
 
+/** English twin of spanishChoiceFeedback: a family reading English gets the same note after a wrong pick. */
+export function englishChoiceFeedback(item) {
+  return (item.choices || []).map(
+    (_, index) =>
+      item.choiceFeedback?.[index] ||
+      (index === (item.correctIndex ?? 0)
+        ? `Correct. ${item.explanation || "Explain how you know."}`
+        : `Check your choice. ${item.hints?.[0] || item.explanation || "Reread the question and check the data and units."}`),
+  );
+}
+
 export function spanishChoiceFeedback(item) {
   return (item.choices || []).map(
     (_, index) =>

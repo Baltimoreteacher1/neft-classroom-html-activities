@@ -130,10 +130,10 @@ test("the hero leads with the lesson as its one H1, the unit eyebrow, and a one-
   }
 });
 
-test("the Confused Grown-Up is an optional warm-up after Learn, once, and not repeated at Play", () => {
+test("the Confused Grown-Up is an optional warm-up in Talk Together, once, and not repeated at Play", () => {
   for (const id of ["4-4", "4-4-part2", "3-8", "3-8-part2"]) {
     const d = dom(id);
-    const huddle = d.querySelector("#hw_panel_learn details.hw-huddle");
+    const huddle = d.querySelector("#hw_panel_talk details.hw-huddle");
     if (!huddle) {
       assert.equal(d.querySelector("#hw_cga"), null, `${id} has no card, so no stray card`);
       continue;

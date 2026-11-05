@@ -128,24 +128,36 @@ function renderKitchenTable(k) {
       </div>`;
 }
 
-/** Model stage and the stretch suite (transfer, glitch on Part 2, spiral, kitchen table). */
-export function renderLearnModules(config, lessonId) {
+/**
+ * The lesson's authored v3 pieces, one per Mission stage: the model picture (Explore), the
+ * prerequisite check (Connect), the error analysis (Talk Together) and the transfer problem and
+ * table prompt (Apply). Each piece is "" when the lesson authored none.
+ */
+export function renderLearnPieces(config, lessonId) {
   const v3 = v3Of(config, lessonId);
   const part2 = isPart2Lesson(lessonId);
-  const suite = [
-    part2 ? renderGlitch(v3.glitch) : "",
-    renderTransfer(v3.transfer),
-    renderSpiral(v3.spiral),
-    renderKitchenTable(v3.kitchenTable),
-  ]
-    .filter(Boolean)
-    .join("");
-  return `
-    ${renderModelStage(v3, lessonId)}
-    <section class="hw-colearn-card card-ish hw-part2-suite${part2 ? " is-part2-primary" : ""}" id="hw_part2_deepening_suite" data-colearn-section="part2-suite" aria-labelledby="hw_stretch_title">
-      <h3 class="hw-colearn-title" id="hw_stretch_title">${bi("Stretch and connect", "Ve más allá y conecta")}</h3>
-      ${suite}
-    </section>`;
+  const card = (id, title, inner) =>
+    inner
+      ? `
+    <section class="hw-colearn-card card-ish hw-part2-suite${part2 ? " is-part2-primary" : ""}" id="${id}" data-colearn-section="${id}" aria-labelledby="${id}_title">
+      <h3 class="hw-colearn-title" id="${id}_title">${title}</h3>
+      ${inner}
+    </section>`
+      : "";
+  return {
+    model: renderModelStage(v3, lessonId),
+    spiral: card("hw_part2_remember", bi("Remember", "Recuerda"), renderSpiral(v3.spiral)),
+    glitch: card(
+      "hw_part2_error",
+      bi("Find the mistake", "Encuentra el error"),
+      part2 ? renderGlitch(v3.glitch) : "",
+    ),
+    apply: card(
+      "hw_part2_deepening_suite",
+      bi("A new situation", "Una situación nueva"),
+      renderTransfer(v3.transfer) + renderKitchenTable(v3.kitchenTable),
+    ),
+  };
 }
 
 /** Per-problem "ask" line for the grown-up. Nothing when the problem authored none. */
