@@ -8,7 +8,7 @@ import { safeJson, storage } from "../util.js";
 import { DETECTORS } from "./errors.js";
 import { KEY_LANGUAGE_USES } from "./klu.js";
 import { buildProfile, dayNumber, focusAreas, patternReviewEvents, reviewSchedule, supportsUsed } from "./ledger.js";
-import { SKILLS, evidenceFromLedger, evidenceFromPracticeRecords } from "./skill-graph.js";
+import { buildSkillGraph, SKILLS, evidenceFromLedger, evidenceFromPracticeRecords } from "./skill-graph.js";
 
 export { KEY_LANGUAGE_USES };
 export const DIAGNOSTIC_KEY = "accessPracticeLab:v1:diagnostic";
@@ -37,6 +37,14 @@ const WORLD_NAME = { "signal-station": "Signal Station", "evidence-city": "Evide
 // Check-in skill tags → the Key Language Use (or dimension) that practices the same move.
 const CHECKIN_KLU = { sequence: "Narrate", "main-idea": "Inform", "cause-effect": "Explain", evidence: "Argue" };
 const CHECKIN_LABEL = { sequence: "the order of events", "main-idea": "main ideas", "cause-effect": "cause and effect", evidence: "finding evidence" };
+// Broad, inspectable task-to-skill associations used only for next-practice ranking. A task may
+// provide `skillId` to name a more specific focus; these defaults never produce a level or score.
+const TASK_SKILL = Object.freeze({
+  Narrate: { Listening: "listening.sequence", Reading: "reading.sequence", Speaking: "speaking.organization", Writing: "writing.organization" },
+  Inform: { Listening: "listening.main-idea", Reading: "reading.main-detail", Speaking: "speaking.clear-idea", Writing: "writing.central-idea" },
+  Explain: { Listening: "listening.cause-effect", Reading: "reading.explain-evidence", Speaking: "speaking.reasoning", Writing: "writing.explain-evidence" },
+  Argue: { Listening: "listening.supporting-details", Reading: "reading.evidence", Speaking: "speaking.evidence", Writing: "writing.evidence" },
+});
 const isObj = (v) => v !== null && typeof v === "object" && !Array.isArray(v);
 
 /** The WIDA ELD Standard code for a task: its own `standards`, else read from its content area. */
@@ -112,6 +120,9 @@ export function recommendTasks(tasks, entries, { n = 3, band = null, signals = n
   const list = Array.isArray(tasks) ? tasks : [];
   const log = Array.isArray(entries) ? entries : [];
   const profile = buildProfile(log, { band });
+  const graphEntries = log.filter((e) => !band || e.band === band);
+  const skillGraph = buildSkillGraph(graphEntries);
+  const skillById = new Map(skillGraph.map((skill) => [skill.id, skill]));
   const sig = signals || loadAdaptSignals(band);
   const tried = new Set(log.map((e) => e.task));
   const triedStandards = new Set(list.filter((t) => tried.has(t.id)).map(standardFor));
@@ -125,6 +136,9 @@ export function recommendTasks(tasks, entries, { n = 3, band = null, signals = n
       score += pts;
       factors.push({ factor, points: pts, text });
     };
+    const domain = taskDomain(t);
+    const taskSkillId = SKILLS.some((s) => s.id === t.skillId) ? t.skillId : TASK_SKILL[t.keyUse]?.[domain];
+    const taskSkill = taskSkillId ? skillById.get(taskSkillId) : null;
     if (!tried.has(t.id)) add(10, "new", "new to you");
     if (KEY_LANGUAGE_USES.includes(t.keyUse) && u.independent === 0)
       add(6, "keyUse", `you have not done a ${t.keyUse} task on your own yet`);
@@ -141,6 +155,22 @@ export function recommendTasks(tasks, entries, { n = 3, band = null, signals = n
     const world = Object.entries(WORLD_DOMAIN).find(([id, d]) => d === taskDomain(t) && sig.worlds?.[id]);
     if (world && u.independent === 0)
       add(2, "world", `you finished ${sig.worlds[world[0]]} ${WORLD_NAME[world[0]]} transfer mission${sig.worlds[world[0]] === 1 ? "" : "s"} — use that skill in a full task`);
+    if (taskSkill) {
+      // Missing evidence is not a diagnosed gap. A prerequisite boost requires repeated evidence
+      // on both the prerequisite and a downstream skill, with the prerequisite still developing.
+      for (const downstream of skillGraph) {
+        if (downstream.evidenceCount < 3 || !["supported", "developing"].includes(downstream.status)) continue;
+        if (!downstream.buildsOn.includes(taskSkill.id) || taskSkill.evidenceCount < 3 || taskSkill.status === "demonstrated") continue;
+        const wording = taskSkill.status === "supported"
+          ? `your saved practice shows ${taskSkill.name} with support, but not enough independent examples yet`
+          : `your recent practice is still building ${taskSkill.name}`;
+        add(8, "prerequisite", `${wording}; strengthen it before ${downstream.name.toLowerCase()}`);
+      }
+      for (const source of skillGraph) {
+        if (source.status !== "demonstrated" || !source.transfersTo.includes(taskSkill.id)) continue;
+        add(5, "transfer", `you showed ${source.name.toLowerCase()} independently; try this language move in ${taskSkill.domain}`);
+      }
+    }
     const shown = factors.filter((f) => f.factor !== "new").map((f) => f.text);
     const reason = [factors.some((f) => f.factor === "new") ? "New to you" : "", ...shown].filter(Boolean).join("; ") || "More practice of a task you have tried";
     return { task: t, score, why: reason, reason, factors, order };

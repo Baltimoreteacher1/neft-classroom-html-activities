@@ -643,6 +643,80 @@ test("recommendations: every result carries an observable reason from standards,
     assert.equal(SCORE_CLAIM.test(r.reason), false);
 });
 
+test("recommendations: repeated supported evidence can route to a linked prerequisite", () => {
+  const entries = ["a", "b", "c"].map((id, index) => ({
+    id,
+    task: `speaking-${id}`,
+    band: "6-8",
+    t: `2026-11-0${index + 1}T12:00:00Z`,
+    domain: "Speaking",
+    kind: "first",
+    stage: "supported",
+    supports: { bank: true },
+    m: {
+      words: 28,
+      cites: 0,
+      academic: 0,
+      complex: 0,
+      link: 0,
+      moves: { idea: 1, detail: 0, reason: 0 },
+    },
+  }));
+  const tasks = [
+    { id: "reasoning", keyUse: "Explain", taskType: "explain", contentArea: "Science" },
+    { id: "clear-idea", keyUse: "Inform", taskType: "describe", contentArea: "Science" },
+  ];
+  const recs = recommendTasks(tasks, entries, { band: "6-8", n: 2, signals: noSignals });
+  assert.equal(recs[0].task.id, "clear-idea");
+  assert.ok(recs[0].factors.some((f) => f.factor === "prerequisite"));
+  assert.match(recs[0].reason, /shows State a clear idea with support/);
+  assert.match(recs[0].reason, /before explain reasoning/);
+});
+
+test("recommendations: independent receptive evidence creates a cross-domain transfer suggestion", () => {
+  const entries = [
+    {
+      id: "read-1",
+      task: "read-1",
+      band: "6-8",
+      t: "2026-11-01T12:00:00Z",
+      domain: "Reading",
+      kind: "first",
+      stage: "independent",
+      supports: {},
+      m: {
+        questions: [
+          { skill: "evidence", ok: true },
+          { skill: "evidence", ok: true },
+        ],
+      },
+    },
+    {
+      id: "read-2",
+      task: "read-2",
+      band: "6-8",
+      t: "2026-11-02T12:00:00Z",
+      domain: "Reading",
+      kind: "first",
+      stage: "independent",
+      supports: {},
+      m: { questions: [{ skill: "evidence", ok: true }] },
+    },
+  ];
+  const tasks = [
+    { id: "write-explain", keyUse: "Explain", form: "cer", contentArea: "Science" },
+    { id: "write-evidence", keyUse: "Argue", form: "argument", contentArea: "Science" },
+  ];
+  const recs = recommendTasks(tasks, entries, { band: "6-8", n: 2, signals: noSignals });
+  assert.equal(recs[0].task.id, "write-evidence");
+  assert.ok(recs[0].factors.some((f) => f.factor === "transfer"));
+  assert.match(recs[0].reason, /showed locate relevant evidence independently/);
+  assert.match(recs[0].reason, /try this language move in Writing/);
+  const otherBandOnly = entries.map((entry) => ({ ...entry, band: "3-5" }));
+  const isolated = recommendTasks(tasks, otherBandOnly, { band: "6-8", n: 2, signals: noSignals });
+  assert.ok(isolated.every((row) => row.factors.every((factor) => factor.factor !== "transfer")));
+});
+
 test("adapt signals: missing or corrupt storage gives empty evidence", () => {
   assert.deepEqual(
     loadAdaptSignals("6-8", () => null),

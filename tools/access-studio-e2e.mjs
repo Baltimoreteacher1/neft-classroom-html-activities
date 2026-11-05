@@ -1466,6 +1466,53 @@ for (const p of [
   );
   ok(over <= 1, `no horizontal overflow at 375px: ${p}`);
 }
+
+// Evidence on a downstream speaking move and a supported prerequisite must change Home's real
+// recommendation. This is synthetic local test evidence; it never leaves this browser context.
+await page.evaluate(
+  ({ ledgerKey, studioKey }) => {
+    const entries = ["a", "b", "c"].map((id, index) => ({
+      id: `synthetic-${id}`,
+      t: `2026-11-0${index + 1}T12:00:00Z`,
+      src: "speaking",
+      task: `synthetic-speaking-${id}`,
+      band: "6-8",
+      domain: "Speaking",
+      use: "Explain",
+      stage: "supported",
+      kind: "first",
+      supports: { bank: true },
+      m: {
+        words: 28,
+        cites: 0,
+        academic: 0,
+        complex: 0,
+        link: 0,
+        moves: { idea: 1, detail: 0, reason: 0 },
+      },
+    }));
+    localStorage.setItem(ledgerKey, JSON.stringify({ v: 1, entries }));
+    localStorage.setItem(
+      studioKey,
+      JSON.stringify({
+        v: 1,
+        writing: {},
+        speaking: {},
+        missions: {},
+        detective: {},
+        portfolio: { picks: [] },
+      }),
+    );
+  },
+  { ledgerKey: LEDGER, studioKey: STUDIO },
+);
+await go(`${BASE}/?grades=6-8`);
+const nextSuggestion = await page.locator(".next-step").innerText();
+ok(
+  nextSuggestion.includes("your saved practice shows State a clear idea with support") &&
+    nextSuggestion.includes("before explain reasoning"),
+  "Home recommends a demonstrated prerequisite and explains its link to the learner's next skill",
+);
 ok(
   problems.length === 0,
   `no page errors${problems.length ? `: ${problems.slice(0, 3).join(" | ")}` : ""}`,
