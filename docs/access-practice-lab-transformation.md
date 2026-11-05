@@ -1,12 +1,12 @@
 # ACCESS Practice Lab transformation ledger
 
-Updated 2026-11-05 after guarded production code release `d8b43e741b`; the release ledger was subsequently shipped through a docs-only follow-up. This ledger tracks the full publisher-grade specification; related screens alone do not meet acceptance. The release adds a grade 3–5 mission and mission-progress fix described below. Production family accounts, district tenancy, remote student storage, cloud transcription, billing and external AI remain unavailable and disabled.
+Updated 2026-11-05 after code commit `b0156aba15`; this increment has passed QA and is pending guarded production deployment. The latest verified production code release is `d8b43e741b`; the release ledger was subsequently shipped through a docs-only follow-up. This ledger tracks the full publisher-grade specification; related screens alone do not meet acceptance. Production family accounts, district tenancy, remote student storage, cloud transcription, billing and external AI remain unavailable and disabled.
 
 ## Product audit — 2026-11-04; release verification — 2026-11-05
 
 ### Before / after snapshot
 
-The live product contains a guided six-step Learning Journey, the four-domain Living Language Studio, local check-in and recommendations, speaking and writing studios, connected Language Worlds, Reading Room lessons and stories, the Passport, family companion pages, and teacher-local evidence review. This release adds a grade 3–5 mission and a mission progression fix.
+The live product contains a guided six-step Learning Journey, the four-domain Living Language Studio, local check-in and recommendations, speaking and writing studios, connected Language Worlds, Reading Room lessons and stories, the Passport, family companion pages, and teacher-local evidence review. The latest production release adds a grade 3–5 mission and a mission progression fix. The next increment (commit `b0156aba15`, pending deployment) adds independent new-context writing transfer to all seven missions.
 
 | Area | Preserve / improve / integrate / replace / retire | Current implementation and evidence | Remaining acceptance |
 |---|---|---|---|
@@ -128,3 +128,13 @@ Added 26 original strategy lessons across four strands and both supported grade 
 ## Next work
 
 Continue the remaining PARTIAL and NOT STARTED workstreams in the matrices, keeping the app local-first and preserving current routes and progress contracts. Keep cloud AI/transcription, class sync and sensitive teacher-record workflows disabled until their documented prerequisites are satisfied. The full specifications are not complete even though this release is deployed and verified.
+
+## In-progress increment: independent transfer across Language Missions
+
+Every existing mission now ends with an original, new-context writing task. The task starts with the independent support setting, but students can select more help. Earlier mission decisions carry into the transfer prompt through the existing `byFlag` contract. The writing studio records the first transfer response as `kind: "transfer"` with the selected support stage, then saves the attempt through its existing mission and Passport state. The mission debrief preserves the core first/current draft comparison and separately shows the new-context response and whether it was independent or supported.
+
+Coverage includes all seven missions and both existing grade bands. Content is original EduWonderLab practice. It does not reproduce WIDA materials or claim a WIDA level or ACCESS score. Save/resume uses existing local storage keys with new task IDs; no student work, audio, or identity is sent to a server.
+
+Verification for this increment: `validate:access-lab` passed, including all seven mission schemas and the new garden mission journey; the mission browser journey verified independent default, support override, transfer evidence, mission completion and debrief. The transfer-writing view passed axe WCAG 2.2 AA and 375px reflow. Full ACCESS family, publisher, reading, evidence and game suites passed; `npm run check`, changed-surface no-purple and production build passed. The commit hook then passed the complete repository gate, 150/150, including `validate:access-lab` and `validate:fluency`. The build emits existing Vite native-config, external classic-script and large-chunk warnings. Guarded production deployment is pending.
+
+This closes one mission-to-transfer gap only. The master transformation remains partial; reviewed content, authenticated teacher/family workflows, remote data services, legal review and remaining matrix items are still outstanding.
