@@ -25,6 +25,7 @@ import { mountAlgebraTilesLab } from "./algebra-tiles-lab.js";
 import { mountDilationTransformLab } from "./dilation-transform-lab.js";
 import { mountProofWithoutWords } from "./proof-without-words.js";
 import { mountTrigWaveStudio } from "./trig-wave-studio.js";
+import { mountKCFLab } from "./keep-change-flip-lab.js";
 import { renderChallengeBanner, checkAndTriggerReward } from "./challenge-engine.js";
 
 const clamp = (n, lo, hi) => Math.max(lo, Math.min(hi, n));
@@ -210,6 +211,7 @@ export function createDrillToolbox({ getState, longDivision }) {
       if (this.activeTool === "dilation") mountDilationTransformLab(container);
       if (this.activeTool === "proofWords") mountProofWithoutWords(container);
       if (this.activeTool === "trigWave") mountTrigWaveStudio(container);
+      if (this.activeTool === "kcfLab") mountKCFLab(container);
     },
 
     wire(container) {

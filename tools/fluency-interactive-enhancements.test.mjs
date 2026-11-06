@@ -406,4 +406,46 @@ console.log("✓ Math Tool Drawer integration verified.");
 }
 console.log("✓ Challenge Quests & Interactive Math Universe Hub verified.");
 
+// 9. Keep-Change-Flip (KCF) Studio & Vertical Fractions
+{
+  const { renderKCFStudio, verticalFracHtml } = await import(
+    "../math/fluency-lab/keep-change-flip-lab.js"
+  );
+  const { formatVerticalFractions, mathText } = await import(
+    "../math/fluency-lab/trail-pictures.js"
+  );
+  const { drawerSeed } = await import("../math/fluency-lab/problem-numbers.js");
+
+  const vFrac = verticalFracHtml(3, 4);
+  assert.ok(vFrac.includes('class="v-frac"'), "Vertical fraction has v-frac class");
+  assert.ok(vFrac.includes('class="v-num">3<'), "Vertical fraction has numerator");
+  assert.ok(vFrac.includes('class="v-den">4<'), "Vertical fraction has denominator");
+
+  const formatted = formatVerticalFractions(mathText("2/3 ÷ 4/5 = ?"));
+  assert.ok(
+    formatted.includes(
+      '<span class="v-frac"><span class="v-num">2</span><span class="v-den">3</span></span>',
+    ),
+    "formatVerticalFractions formats first fraction vertically",
+  );
+  assert.ok(
+    formatted.includes(
+      '<span class="v-frac"><span class="v-num">4</span><span class="v-den">5</span></span>',
+    ),
+    "formatVerticalFractions formats second fraction vertically",
+  );
+
+  const kcfHtml = renderKCFStudio({ a: 2, b: 3, c: 4, d: 5 });
+  assert.ok(kcfHtml.includes("Dividing Fractions: Keep · Change · Flip"), "Renders KCF title");
+  assert.ok(kcfHtml.includes("card-keep"), "Has KEEP step card");
+  assert.ok(kcfHtml.includes("card-change"), "Has CHANGE step card");
+  assert.ok(kcfHtml.includes("card-flip"), "Has FLIP step card");
+  assert.ok(kcfHtml.includes("Visual Measurement Model"), "Has visual measurement model");
+
+  const seed = drawerSeed({ question: "2/3 ÷ 4/5 = ?" });
+  assert.strictEqual(seed.tool, "kcfLab", "Fraction division auto-selects kcfLab tool");
+  assert.deepStrictEqual(seed.kcfLab, { a: 2, b: 3, c: 4, d: 5 }, "Seeds exact problem fractions");
+}
+console.log("✓ Keep-Change-Flip (KCF) Studio & Vertical Fractions verified.");
+
 console.log("\nALL INTERACTIVE ENHANCEMENTS & MODELS VERIFIED SUCCESSFULLY! 🎉✨");

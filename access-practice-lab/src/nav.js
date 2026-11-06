@@ -80,6 +80,9 @@ const ACTIVE = {
   path: "growth",
   passport: "growth",
   move: "growth",
+  "science-of-reading": "sor",
+  sor: "sor",
+  "language-studios": "studios",
   family: "family",
   tools: "help",
 };
@@ -146,6 +149,8 @@ function menuGroups(band, T) {
     {
       title: T("Studios and missions", "Estudios y misiones"),
       items: [
+        link("reading", T("Science of Reading Studio", "Estudio de la ciencia de la lectura"), "science-of-reading"),
+        link("sparkle", T("Interactive Language Studios", "Estudios interactivos de lenguaje"), "language-studios"),
         link("worlds", T("Language World: Science Exhibition", "Mundo del lenguaje: Feria de ciencias"), "exhibition"),
         link("worlds", T("Language Reality Engine", "Motor de Realidad Lingüística"), "reality"),
         link("speaking", T("Speaking Studio", "Estudio de expresión oral"), "speak"),
@@ -209,7 +214,8 @@ export function navHTML(ctx, I) {
       >${icon(l.icon)}<span>${l.label}</span></a
     >`;
   const focused = view === "test" || view === "assess";
-  return html`${primary.filter((l) => !l.pill).map(topLink)}${primary.filter((l) => l.pill).map(topLink)}
+  const sorLink = html`<a class="top-link top-sor-link" href="${BASE}/science-of-reading?grades=${band}" ${view === "science-of-reading" || view === "sor" ? raw('aria-current="page"') : ""}><span>📖 ${T("Science of Reading", "Ciencia de la lectura")}</span></a>`;
+  return html`${primary.filter((l) => !l.pill).map(topLink)}${sorLink}${primary.filter((l) => l.pill).map(topLink)}
     ${focused ? html`<span class="mode-flag">${icon("tests")}<span>${T("Focused practice mode", "Modo de práctica enfocada")}</span></span>` : ""}
     ${langSwitchHTML(I.mode)}
     <details class="lab-utilities">

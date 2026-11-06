@@ -23,6 +23,7 @@ import { renderAlgebraTilesLab } from "./algebra-tiles-lab.js";
 import { renderDilationTransformLab } from "./dilation-transform-lab.js";
 import { renderProofWithoutWords } from "./proof-without-words.js";
 import { renderTrigWaveStudio } from "./trig-wave-studio.js";
+import { renderKCFStudio } from "./keep-change-flip-lab.js";
 
 const esc = (value) =>
   String(value)
@@ -75,6 +76,7 @@ export const defaults = () => ({
   dilation: { shapeKey: "triangle", k: 1.5, showRays: true },
   proofWords: { theorem: "parallelogram", progress: 0 },
   trigWave: { angle: 45 },
+  kcfLab: { a: 2, b: 3, c: 4, d: 5 },
 });
 
 // Plain number line for placing a number: click a tick or type a number. No jumps, no hop sizes.
@@ -477,6 +479,7 @@ export function renderTool(name, s, ctx) {
     dilation: (st) => renderDilationTransformLab(st.dilation),
     proofWords: (st) => renderProofWithoutWords(st.proofWords),
     trigWave: (st) => renderTrigWaveStudio(st.trigWave),
+    kcfLab: (st) => renderKCFStudio(st.kcfLab || { a: 2, b: 3, c: 4, d: 5 }),
   };
   if (name === "longdivision") return longdivision(s, ctx);
   return tools[name]?.(s, ctx) ?? "";

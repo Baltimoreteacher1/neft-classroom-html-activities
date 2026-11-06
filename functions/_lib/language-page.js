@@ -46,6 +46,8 @@ export const SITEMAP_PATHS = [
   `${LAB_BASE}/reading-room`,
   `${LAB_BASE}/worlds`,
   `${LAB_BASE}/move`,
+  `${LAB_BASE}/science-of-reading`,
+  `${LAB_BASE}/language-studios`,
   // The WIDA ACCESS practice studios (access-practice-lab/src/studios.js); the school dashboard and the portfolio
   // gradebook under /wida-access/ are not on this host.
   ...STUDIOS.map((s) => studioPath(s.slug)),

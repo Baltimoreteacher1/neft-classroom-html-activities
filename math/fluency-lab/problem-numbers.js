@@ -244,6 +244,11 @@ export function drawerSeed(item) {
     if (f.d <= 12) seed.pizza = { slices: f.d, shaded: Math.min(f.d, Math.max(0, f.n)) };
     seed.tool = p.op === "+" || p.op === "-" ? "pizza" : "fractions";
     if (!f || (g && p.op === "*")) seed.tool = "fractions";
+    if (p.op === "÷" && f && g) {
+      seed.tool = "kcfLab";
+      seed.kcfLab = { a: f.n, b: f.d, c: g.n, d: g.d };
+      seed.tools = ["kcfLab", "fractions", "tape"];
+    }
   }
   if (p.kind === "fractionOf") {
     seed.denominators = [p.fraction.d].filter((d) => d <= 16);

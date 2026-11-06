@@ -34,6 +34,7 @@ function chromeHtml(studio) {
   const nav = [
     ["My Home", `${LAB_BASE}/`],
     ["Learn", `${LAB_BASE}/learn`],
+    ["Science of Reading", `${LAB_BASE}/science-of-reading`],
     ["Practice", `${LAB_BASE}/library`],
     ["Play", `${LAB_BASE}/games`],
     ["My Growth", `${LAB_BASE}/growth`],

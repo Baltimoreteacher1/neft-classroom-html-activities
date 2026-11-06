@@ -1,0 +1,805 @@
+/* Science of Reading (SoR) Interactive Studio — EduWonderLab / The Language Page
+   Design System tokens & responsive styling for Scarborough's Rope, Vowel Valley,
+   Orthographic Mapping Elkonin Sound Boxes, and 6 Syllable Types Chopper. */
+
+.sor-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1.5rem 1rem 4rem;
+  color: var(--ink, #111a3b);
+}
+
+.sor-header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 2px solid var(--surface-2, #f4efe8);
+}
+
+.sor-title-wrap h1 {
+  font-family: "Fraunces", Georgia, serif;
+  font-size: 2.25rem;
+  font-weight: 700;
+  color: var(--ocean-900, #075568);
+  margin: 0 0 0.5rem;
+  letter-spacing: -0.02em;
+}
+
+.sor-lead {
+  font-size: 1.125rem;
+  color: var(--ink-2, #3a4566);
+  max-width: 680px;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.sor-evidence-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: linear-gradient(135deg, #e2f3f0, #d5dceb);
+  border: 1px solid var(--ocean-600, #15969a);
+  padding: 0.625rem 1rem;
+  border-radius: 9999px;
+  font-weight: 700;
+  font-size: 0.875rem;
+  color: var(--ocean-900, #075568);
+  box-shadow: 0 2px 8px rgba(7, 85, 104, 0.08);
+}
+
+/* Nav Tabs */
+.sor-nav-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+  background: var(--surface-2, #f4efe8);
+  padding: 0.375rem;
+  border-radius: 14px;
+}
+
+.sor-tab-btn {
+  flex: 1 1 auto;
+  min-width: 140px;
+  padding: 0.75rem 1rem;
+  border: none;
+  background: transparent;
+  color: var(--ink-2, #3a4566);
+  font-family: inherit;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.sor-tab-btn:hover {
+  background: rgba(255, 255, 255, 0.6);
+  color: var(--ocean-900, #075568);
+}
+
+.sor-tab-btn.active {
+  background: var(--surface, #fffdf8);
+  color: var(--ocean-900, #075568);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+/* Panel Sections */
+.sor-panel-section {
+  background: var(--surface, #fffdf8);
+  border: 1px solid var(--surface-2, #f4efe8);
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 0 4px 16px rgba(18, 28, 63, 0.04);
+}
+
+.sor-rope-banner,
+.sor-soundwall-intro {
+  margin-bottom: 1.5rem;
+}
+
+.sor-rope-banner h3,
+.sor-soundwall-intro h3 {
+  font-family: "Fraunces", Georgia, serif;
+  font-size: 1.5rem;
+  color: var(--mi-900, #121c3f);
+  margin: 0 0 0.5rem;
+}
+
+.sor-rope-banner p,
+.sor-soundwall-intro p {
+  color: var(--ink-2, #3a4566);
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* Interactive Rope Braiding Control */
+.sor-braid-control {
+  background: linear-gradient(135deg, #f8f5ef, #e2f3f0);
+  border: 1px solid #cce5e1;
+  border-radius: 12px;
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.sor-braid-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--ocean-900, #075568);
+}
+
+.sor-braid-slider {
+  width: 100%;
+  accent-color: var(--ocean-600, #15969a);
+  cursor: pointer;
+  height: 8px;
+}
+
+.sor-braid-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8125rem;
+  color: var(--ink-3, #59637f);
+  font-weight: 600;
+}
+
+/* Rope SVG */
+.sor-rope-svg-wrap {
+  width: 100%;
+  overflow-x: auto;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 1rem;
+  margin-bottom: 2rem;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.03);
+}
+
+.sor-rope-svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 0 auto;
+}
+
+/* Strands Comparison Grid */
+.sor-strands-comparison-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.sor-strand-column {
+  border-radius: 12px;
+  padding: 1.5rem;
+  border: 2px solid transparent;
+}
+
+.sor-strand-column.lang-comp {
+  background: #eff6ff;
+  border-color: #93c5fd;
+}
+
+.sor-strand-column.word-rec {
+  background: #ecfdf5;
+  border-color: #6ee7b7;
+}
+
+.sor-strand-column h4 {
+  margin: 0 0 1rem;
+  font-size: 1.25rem;
+  font-family: "Fraunces", Georgia, serif;
+}
+
+.sor-strand-column.lang-comp h4 {
+  color: #1e40af;
+}
+
+.sor-strand-column.word-rec h4 {
+  color: #065f46;
+}
+
+.sor-strand-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+}
+
+.strand-card {
+  background: #ffffff;
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  border-left: 4px solid var(--ocean-600, #15969a);
+}
+
+.strand-card strong {
+  display: block;
+  font-size: 1rem;
+  margin-bottom: 0.25rem;
+  color: var(--ink, #111a3b);
+}
+
+.strand-card p {
+  font-size: 0.875rem;
+  color: var(--ink-2, #3a4566);
+  margin: 0 0 0.5rem;
+  line-height: 1.4;
+}
+
+.strand-card small {
+  display: block;
+  font-size: 0.8125rem;
+  color: var(--ocean-900, #075568);
+  background: #f0fdfa;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+}
+
+/* --- Vowel Valley & Sound Wall --- */
+.sor-section-header {
+  font-family: "Fraunces", Georgia, serif;
+  font-size: 1.25rem;
+  color: var(--ocean-900, #075568);
+  margin: 1.5rem 0 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.sor-vowel-valley-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 0.875rem;
+  margin-bottom: 2rem;
+}
+
+.vowel-card {
+  background: #ffffff;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 0.875rem 0.5rem;
+  text-align: center;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+}
+
+.vowel-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--ocean-600, #15969a);
+  box-shadow: 0 6px 12px rgba(7, 85, 104, 0.1);
+}
+
+.phoneme-symbol {
+  font-size: 1.625rem;
+  font-weight: 800;
+  color: var(--ocean-900, #075568);
+  font-family: "Fraunces", Georgia, serif;
+}
+
+.vowel-mouth-shape {
+  width: 44px;
+  height: 32px;
+  margin: 0.25rem 0;
+}
+
+.mouth-contour {
+  stroke: #475569;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+}
+
+.mouth-open {
+  fill: #fee2e2;
+  stroke: #ef4444;
+  stroke-width: 2;
+}
+
+.mouth-round {
+  fill: #fef3c7;
+  stroke: #f59e0b;
+  stroke-width: 2.5;
+}
+
+.mouth-smile {
+  stroke: #0284c7;
+  stroke-width: 3;
+}
+
+.vowel-keyword {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--ink, #111a3b);
+  margin-top: 0.125rem;
+}
+
+.vowel-position {
+  font-size: 0.6875rem;
+  color: var(--ink-3, #59637f);
+  margin-top: 0.25rem;
+  line-height: 1.2;
+}
+
+.sor-audio-btn {
+  margin-top: 0.5rem;
+  background: var(--surface-2, #f4efe8);
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  padding: 0.25rem 0.625rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--ocean-900, #075568);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.sor-audio-btn:hover {
+  background: var(--ocean-900, #075568);
+  color: #ffffff;
+}
+
+/* Consonant Grid */
+.sor-consonants-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.25rem;
+}
+
+.consonant-manner-card {
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  padding: 1.25rem;
+}
+
+.consonant-manner-card h5 {
+  margin: 0 0 0.25rem;
+  font-size: 1.0625rem;
+  color: var(--mi-900, #121c3f);
+}
+
+.consonant-manner-card p {
+  font-size: 0.8125rem;
+  color: var(--ink-3, #59637f);
+  margin: 0 0 0.875rem;
+}
+
+.consonant-pairs-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.consonant-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+}
+
+.consonant-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-weight: 700;
+}
+
+.badge-unvoiced {
+  color: #475569;
+}
+
+.badge-voiced {
+  color: #0369a1;
+}
+
+/* --- Orthographic Mapping Studio --- */
+.sor-mapping-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.75rem;
+  align-items: center;
+}
+
+.word-picker-btn {
+  background: #ffffff;
+  border: 1.5px solid #d1d5db;
+  border-radius: 8px;
+  padding: 0.5rem 0.875rem;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--ink, #111a3b);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.word-picker-btn:hover {
+  border-color: var(--ocean-600, #15969a);
+  color: var(--ocean-900, #075568);
+}
+
+.word-picker-btn.active {
+  background: var(--ocean-900, #075568);
+  color: #ffffff;
+  border-color: var(--ocean-900, #075568);
+}
+
+.word-picker-btn.is-heart {
+  border-color: #f43f5e;
+}
+
+.word-picker-btn.is-heart.active {
+  background: #e11d48;
+  border-color: #e11d48;
+}
+
+.sor-mapping-workbench {
+  background: linear-gradient(180deg, #f0fdf4 0%, #ffffff 100%);
+  border: 2px solid #86efac;
+  border-radius: 16px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.workbench-word-hero {
+  font-size: 2.25rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  color: var(--ink, #111a3b);
+  margin-bottom: 0.5rem;
+  font-family: "Fraunces", Georgia, serif;
+}
+
+.workbench-instruction {
+  font-size: 1rem;
+  color: var(--ink-2, #3a4566);
+  margin-bottom: 2rem;
+}
+
+/* Elkonin Sound Boxes */
+.elkonin-boxes-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 1.25rem;
+  margin: 1.5rem 0 2rem;
+  flex-wrap: wrap;
+}
+
+.elkonin-box-unit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.sound-chip {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  box-shadow: 0 4px 8px rgba(16, 185, 129, 0.3);
+  cursor: pointer;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.sound-chip:hover {
+  transform: translateY(-4px) scale(1.05);
+}
+
+.elkonin-box {
+  width: 90px;
+  height: 90px;
+  border: 3px solid #059669;
+  background: #ffffff;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+.elkonin-box.has-heart {
+  border-color: #e11d48;
+  background: #fff1f2;
+}
+
+.heart-marker {
+  position: absolute;
+  top: -14px;
+  right: -8px;
+  font-size: 1.5rem;
+  filter: drop-shadow(0 2px 4px rgba(225, 29, 72, 0.3));
+}
+
+.grapheme-letter {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--ink, #111a3b);
+  font-family: "Fraunces", Georgia, serif;
+}
+
+.phoneme-tag {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: #059669;
+  margin-top: 0.25rem;
+}
+
+.elkonin-box.has-heart .phoneme-tag {
+  color: #e11d48;
+}
+
+.heart-explanation {
+  background: #ffe4e6;
+  border: 1px solid #fecdd3;
+  border-radius: 8px;
+  padding: 0.875rem 1.25rem;
+  margin: 1.5rem auto 0;
+  max-width: 600px;
+  font-size: 0.9375rem;
+  color: #9f1239;
+  font-weight: 600;
+}
+
+/* --- 6 Syllable Types --- */
+.sor-syllables-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
+}
+
+.syllable-card {
+  background: #ffffff;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1.5rem;
+  transition: all 0.2s ease;
+}
+
+.syllable-card:hover {
+  border-color: var(--ocean-600, #15969a);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+}
+
+.syllable-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.syllable-type-badge {
+  font-size: 0.75rem;
+  font-weight: 800;
+  padding: 0.25rem 0.625rem;
+  border-radius: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.syllable-card h4 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-family: "Fraunces", Georgia, serif;
+  color: var(--ink, #111a3b);
+}
+
+.syllable-rule {
+  font-size: 0.875rem;
+  color: var(--ink-2, #3a4566);
+  line-height: 1.45;
+  margin: 0.5rem 0 1rem;
+}
+
+.syllable-examples-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.syllable-chip {
+  background: var(--surface-2, #f4efe8);
+  border-radius: 6px;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--ocean-900, #075568);
+}
+
+/* Syllable Division Chopper */
+.sor-chopper-box {
+  background: linear-gradient(135deg, #fef3c7, #fef9c3);
+  border: 2px solid #fde047;
+  border-radius: 16px;
+  padding: 2rem;
+  text-align: center;
+  margin-top: 2rem;
+}
+
+.chopper-word-display {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 1.5rem 0;
+  font-size: 2.25rem;
+  font-weight: 800;
+  font-family: "Fraunces", Georgia, serif;
+}
+
+.chop-letter-block {
+  padding: 0.25rem 0.5rem;
+  background: #ffffff;
+  border: 2px solid #cbd5e1;
+  border-radius: 8px;
+}
+
+.chop-cut-button {
+  background: #f59e0b;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  width: 36px;
+  height: 36px;
+  font-size: 1.125rem;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.chop-cut-button:hover {
+  background: #d97706;
+  transform: scale(1.15);
+}
+
+.chopper-feedback {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-top: 1rem;
+  min-height: 1.5rem;
+}
+
+/* --- Morphology Matrix --- */
+.sor-morphology-studio {
+  background: #fdfcf9;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 2rem;
+  margin-top: 2rem;
+}
+
+.morph-generator-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.morph-column h5 {
+  font-family: "Fraunces", Georgia, serif;
+  font-size: 1.125rem;
+  color: var(--ocean-900, #075568);
+  margin: 0 0 0.75rem;
+}
+
+.morph-item-btn {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 0.625rem 0.875rem;
+  margin-bottom: 0.5rem;
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 0.9375rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.morph-item-btn:hover {
+  border-color: var(--ocean-600, #15969a);
+  background: #f0fdfa;
+}
+
+.morph-item-btn.active {
+  background: var(--ocean-900, #075568);
+  color: #ffffff;
+  border-color: var(--ocean-900, #075568);
+}
+
+.morph-item-btn small {
+  display: block;
+  font-size: 0.75rem;
+  opacity: 0.8;
+  margin-top: 0.125rem;
+}
+
+.morph-result-banner {
+  background: #ecfdf5;
+  border: 2px solid #a7f3d0;
+  border-radius: 12px;
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.morph-constructed-word {
+  font-size: 2rem;
+  font-weight: 800;
+  font-family: "Fraunces", Georgia, serif;
+  color: #065f46;
+  margin-bottom: 0.5rem;
+}
+
+.morph-constructed-def {
+  font-size: 1rem;
+  color: #047857;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.morph-cognate-bridge {
+  display: inline-block;
+  margin-top: 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+  background: #ffffff;
+  padding: 0.375rem 0.875rem;
+  border-radius: 20px;
+  color: #065f46;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
+
+@media (max-width: 768px) {
+  .sor-header {
+    flex-direction: column;
+  }
+  .sor-nav-tabs {
+    flex-direction: column;
+  }
+  .sor-panel-section {
+    padding: 1.25rem;
+  }
+  .elkonin-box {
+    width: 72px;
+    height: 72px;
+  }
+  .grapheme-letter {
+    font-size: 1.5rem;
+  }
+}

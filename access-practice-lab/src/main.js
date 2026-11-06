@@ -66,8 +66,11 @@ const VIEW_LOADERS = {
   games: () => import("./views/games.js"),
   "publisher-demo": () => import("./views/publisher-demo.js"),
   assess: () => import("./views/assess.js"),
+  "science-of-reading": () => import("./views/science-of-reading.js"),
+  "language-studios": () => import("./views/language-studios.js"),
 };
 const VIEW_ALIASES = {
+  sor: "science-of-reading",
   "session-done": "home",
   play: "activity",
   mission: "missions",
@@ -111,7 +114,7 @@ export function parseRoute(pathname = location.pathname, search = location.searc
   if (a === "worlds") {
     return { ...r, view: "worlds", id: b || "", worldId: b || "", missionId: c || "", tab: q.get("tab") || "" };
   }
-  if (["learn", "reality", "exhibition", "tests", "family", "passport", "tools", "library", "missions", "mission", "conversation", "construction", "evidence", "growth", "speak", "write", "detective", "launch", "launch-studio", "teacher-launch", "classroom", "vocabulary", "flashcards", "stories", "ladder", "puzzles", "publisher-demo", "games", "assess", "path", "scaffold", "move"].includes(a)) {
+  if (["learn", "reality", "exhibition", "tests", "family", "passport", "tools", "library", "missions", "mission", "conversation", "construction", "evidence", "growth", "speak", "write", "detective", "launch", "launch-studio", "teacher-launch", "classroom", "vocabulary", "flashcards", "stories", "ladder", "puzzles", "publisher-demo", "games", "assess", "path", "scaffold", "move", "science-of-reading", "language-studios", "sor"].includes(a)) {
     return { ...r, view: a, id: b || "", missionId: b || "", scenarioId: b || "", tab: q.get("tab") || "" };
   }
   if (a === "journey") return { ...r, view: "journey", id: b || "", rest: parts.slice(1) };

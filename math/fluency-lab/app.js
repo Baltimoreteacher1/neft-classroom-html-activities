@@ -22,7 +22,7 @@ import { copiesTable, factorTreeSvg, keptPrimes, powerGroups, primeList, treeCap
 import { mountVisualLesson, renderModel, renderInlineProblemModel } from "./visual-lab.js";
 import { skillIdForWorld } from "./puzzle-worlds.js";
 import { transferPrompt } from "./lesson-content.js";
-import { handleModelInput, handleModelTap, interactivePicture, mathText, openFillRow, stepPhaseBadge, stepVisual, stepWaiting, stepsBlock, trailPicture } from "./trail-pictures.js";
+import { formatVerticalFractions, handleModelInput, handleModelTap, interactivePicture, mathText, openFillRow, stepPhaseBadge, stepVisual, stepWaiting, stepsBlock, trailPicture } from "./trail-pictures.js";
 import { PROFILE_NAMES, assignmentDifficultyLevel, assignmentQueue, cleanProgress, decodeAssignment, downloadFile, makeBackup, mountTeacherStudio, parseBackup, profileKey, profiles, progressReport, readLocal, selectProfile, writeLocal } from "./school-tools.js";
 import { mountWorkbench } from "./workbench.js";
 import { createWorkbenchState } from "./workbench-state.js";
@@ -103,6 +103,7 @@ import { renderTriangleShear, mountTriangleShear } from "./triangle-shear.js";
 import { renderBase10Regrouping, mountBase10Regrouping } from "./base10-regrouping.js";
 import { renderRatioScaler, mountRatioScaler } from "./ratio-scaler.js";
 import { renderUniverseHub, mountUniverseHub } from "./interactive-universe.js";
+import { renderKCFStudio, mountKCFLab } from "./keep-change-flip-lab.js";
 
 // teacher-4.js is teacher-only, so the teacher-surface gate refuses it to an anonymous student. A static import of a
 // refused file stops this whole module; awaiting a guarded import instead leaves null for a student and the real
@@ -733,9 +734,25 @@ function renderLearn() {
   cleanupLearnStudio = null;
   const animated = studioAvailable(example);
   const showLcmSteps = skill.grade === 6 && skill.id === "lcm";
+  const isFractionDivision = skill.id === "divide-fractions" || skill.id === "unit-fraction-division" || (/÷/.test(example.question) && /\//.test(example.question));
+  let kcfFracData = { a: 2, b: 3, c: 4, d: 5 };
+  if (isFractionDivision) {
+    const divMatch = String(example.question).match(/(\d+)\/(\d+)\s*÷\s*(\d+)\/(\d+)/);
+    const unitMatch1 = String(example.question).match(/(\d+)\/(\d+)\s*÷\s*(\d+)/);
+    const unitMatch2 = String(example.question).match(/(\d+)\s*÷\s*(\d+)\/(\d+)/);
+    if (divMatch) {
+      kcfFracData = { a: Number(divMatch[1]), b: Number(divMatch[2]), c: Number(divMatch[3]), d: Number(divMatch[4]) };
+    } else if (unitMatch1) {
+      kcfFracData = { a: Number(unitMatch1[1]), b: Number(unitMatch1[2]), c: Number(unitMatch1[3]), d: 1 };
+    } else if (unitMatch2) {
+      kcfFracData = { a: Number(unitMatch2[1]), b: 1, c: Number(unitMatch2[2]), d: Number(unitMatch2[3]) };
+    }
+  }
+
   els.learnPanel.innerHTML = `
     <div class="learn-simple" style="--trail:${getGrade(skill.grade).color}">
       <h3 class="tr-idea">${highlightVocab(escapeHtml(t(skill.learn.rule)))}</h3>
+      ${isFractionDivision ? `<div class="kcf-interactive-mount-slot" data-kcf-slot>${renderKCFStudio(kcfFracData)}</div>` : ""}
       ${animated ? '<div class="sd-slot learn-studio" data-learn-studio></div>' : ""}
       ${animated ? `<details class="learn-words-steps"${showLcmSteps ? " open" : ""}><summary>${t("Show the steps in words")}</summary>` : '<div class="learn-words-steps">'}
       <div class="tr-lesson">
@@ -763,6 +780,8 @@ function renderLearn() {
     </div>`;
   const studioSlot = els.learnPanel.querySelector("[data-learn-studio]");
   if (studioSlot) cleanupLearnStudio = mountStudio(studioSlot, { item: example, skill, context: "idea" });
+  const kcfSlot = els.learnPanel.querySelector("[data-kcf-slot]");
+  if (kcfSlot) mountKCFLab(kcfSlot);
 }
 
 // fl4:lessons Learn It, Watch It, Try It, Explain It inside the Learn panel; its results are supported evidence only.
@@ -1206,9 +1225,9 @@ function formatProblemArena(item) {
     els.question.classList.add("is-comparison");
     const m = rawQ.match(/^(.+?)\s*(?:_{2,}|□|\[\s*\])\s*(.+?)$/);
     if (m) {
-      els.question.innerHTML = `<span class="arena-comp-num">${mathText(m[1].trim())}</span> <span class="arena-comp-blank" aria-label="blank">?</span> <span class="arena-comp-num">${mathText(m[2].replace(/[=?]/g, "").trim())}</span>`;
+      els.question.innerHTML = `<span class="arena-comp-num">${formatVerticalFractions(mathText(m[1].trim()))}</span> <span class="arena-comp-blank" aria-label="blank">?</span> <span class="arena-comp-num">${formatVerticalFractions(mathText(m[2].replace(/[=?]/g, "").trim()))}</span>`;
     } else {
-      els.question.innerHTML = highlightVocab(mathText(rawQ));
+      els.question.innerHTML = formatVerticalFractions(highlightVocab(mathText(rawQ)));
     }
   } else if (isPureEquation) {
     if (arena) arena.classList.add("has-equation");
@@ -1216,11 +1235,11 @@ function formatProblemArena(item) {
     // "5,337 + 90,679 = ?" has a space between the equals sign and the question mark; strip both.
     const expr = rawQ.replace(/(?:\s*[=?_]+)+\s*$/, "").trim();
     if (expr.length >= 13) els.question.classList.add("is-long");
-    els.question.innerHTML = `${mathText(expr)} <span class="arena-eq-symbol">=</span>`;
+    els.question.innerHTML = `${formatVerticalFractions(mathText(expr))} <span class="arena-eq-symbol">=</span>`;
   } else {
     if (arena) arena.classList.add("has-sentence");
     els.question.classList.add("is-sentence");
-    els.question.innerHTML = highlightVocab(mathText(rawQ));
+    els.question.innerHTML = formatVerticalFractions(highlightVocab(mathText(rawQ)));
   }
 
   const unitEl = els.answerUnit || document.querySelector("#answer-unit");

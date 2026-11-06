@@ -961,6 +961,10 @@ export function handleModelTap(target) {
 // Exponents print as superscripts; everything else stays plain text.
 export const mathText = (text) => esc(text).replace(/\^(-?\d+)/g, "<sup>$1</sup>");
 
+// Format horizontal fractions (e.g. 2/3) as vertical stacked fractions with numerator and denominator.
+export const formatVerticalFractions = (text) =>
+  String(text).replace(/(^|[^\w/])(\d{1,3})\/(\d{1,3})(?=[^\w/]|$)/g, '$1<span class="v-frac"><span class="v-num">$2</span><span class="v-den">$3</span></span>');
+
 // Super-simple guided steps: one short number sentence at a time, revealed by tapping "Next step".
 // The "Your turn" row for a step that ends in a partial result, or null when the step is plain text or solved.
 export function openFillRow(line, i, steps, id) {
