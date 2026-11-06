@@ -17,9 +17,18 @@ import { studioLabHtml } from "./language-page-studios.js";
 export const LANGUAGE_PAGE_HOST = "thelanguagepage.com";
 export const LEGACY_HOST = "eduwonderlab.com";
 export const LAB_BASE = "/access-practice-lab";
+/** The Language Page adventures app: a static export mounted here (tools/sync-static-apps.mjs). */
+export const ADVENTURES_BASE = "/language-adventures";
 
 /** Paths the lab itself loads, measured against the live lab (shell, fonts, Save/Resume, ping, Cloudflare). */
-const LAB_PREFIXES = [`${LAB_BASE}/`, "/assets/", "/data/", "/shared/", "/cdn-cgi/"];
+const LAB_PREFIXES = [
+  `${LAB_BASE}/`,
+  `${ADVENTURES_BASE}/`,
+  "/assets/",
+  "/data/",
+  "/shared/",
+  "/cdn-cgi/",
+];
 const LAB_EXACT = new Set([LAB_BASE, "/family-app/home-link.js", "/api/signal", "/api/signal/"]);
 
 /** Public lab pages listed in the sitemap: clean URLs the SPA serves through the one rewrite rule. */

@@ -86,6 +86,13 @@ await t("everything the lab loads is served on the lab host", () => {
     assert.equal(at(`https://thelanguagepage.com${path}`).kind, "serve", path);
 });
 
+await t("the Language adventures app is served on the lab host, and a look-alike prefix is not", () => {
+  for (const path of ["/language-adventures/", "/language-adventures/adventures/", "/language-adventures/_next/static/a.js"])
+    assert.equal(at(`https://thelanguagepage.com${path}`).kind, "serve", path);
+  for (const path of ["/language-adventures", "/language-adventures-evil/"])
+    assert.equal(at(`https://thelanguagepage.com${path}`).kind, "redirect", path);
+});
+
 await t("everything else goes to eduwonderlab.com, so the lab host is not a second copy of the site", () => {
   for (const path of [
     "/lessons/5-6/",
