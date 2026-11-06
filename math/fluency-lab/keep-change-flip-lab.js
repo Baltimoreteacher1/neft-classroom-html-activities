@@ -106,7 +106,7 @@ export function renderKCFStudio({
           </div>
         </div>
         <p class="kcf-subtitle">
-          Grounded in the question: <em>"How many groups of ${verticalFracHtml(c, d)} fit into ${verticalFracHtml(a, b)}?"</em>
+          Grounded in the question: <em>"How many groups of ${verticalFracHtml(c, d)} fit into ${verticalFracHtml(a, b)}?"</em> &nbsp;—&nbsp;
           Type your own numbers directly into the fractions below to explore!
         </p>
       </div>
@@ -115,43 +115,36 @@ export function renderKCFStudio({
       <div class="kcf-problem-hero" aria-label="Interactive Fraction Equation">
         <div class="kcf-hero-equation">
           <!-- First Fraction (Dividend) -->
-          <div class="kcf-interactive-fraction-box" title="Dividend (Tap or type to change)">
-            <div class="kcf-input-stepper">
-              <button type="button" class="kcf-step-arrow up" data-step-field="a" data-step-dir="1" aria-label="Increase numerator">▲</button>
-              <input type="number" min="1" max="24" value="${a}" class="kcf-hero-in kcf-in-num" id="kcfInHeroA" aria-label="Dividend numerator" />
-              <button type="button" class="kcf-step-arrow down" data-step-field="a" data-step-dir="-1" aria-label="Decrease numerator">▼</button>
-            </div>
+          <div class="kcf-interactive-fraction-box" title="Dividend: Click to type custom number">
+            <input type="number" min="1" max="24" value="${a}" class="kcf-hero-in kcf-in-num" id="kcfInHeroA" aria-label="Dividend numerator" />
             <span class="kcf-hero-bar"></span>
-            <div class="kcf-input-stepper">
-              <button type="button" class="kcf-step-arrow up" data-step-field="b" data-step-dir="1" aria-label="Increase denominator">▲</button>
-              <input type="number" min="1" max="24" value="${b}" class="kcf-hero-in kcf-in-den" id="kcfInHeroB" aria-label="Dividend denominator" />
-              <button type="button" class="kcf-step-arrow down" data-step-field="b" data-step-dir="-1" aria-label="Decrease denominator">▼</button>
-            </div>
+            <input type="number" min="1" max="24" value="${b}" class="kcf-hero-in kcf-in-den" id="kcfInHeroB" aria-label="Dividend denominator" />
           </div>
 
           <span class="kcf-hero-op">÷</span>
 
           <!-- Second Fraction (Divisor) -->
-          <div class="kcf-interactive-fraction-box" title="Divisor (Tap or type to change)">
-            <div class="kcf-input-stepper">
-              <button type="button" class="kcf-step-arrow up" data-step-field="c" data-step-dir="1" aria-label="Increase numerator">▲</button>
-              <input type="number" min="1" max="24" value="${c}" class="kcf-hero-in kcf-in-num" id="kcfInHeroC" aria-label="Divisor numerator" />
-              <button type="button" class="kcf-step-arrow down" data-step-field="c" data-step-dir="-1" aria-label="Decrease numerator">▼</button>
-            </div>
+          <div class="kcf-interactive-fraction-box" title="Divisor: Click to type custom number">
+            <input type="number" min="1" max="24" value="${c}" class="kcf-hero-in kcf-in-num" id="kcfInHeroC" aria-label="Divisor numerator" />
             <span class="kcf-hero-bar"></span>
-            <div class="kcf-input-stepper">
-              <button type="button" class="kcf-step-arrow up" data-step-field="d" data-step-dir="1" aria-label="Increase denominator">▲</button>
-              <input type="number" min="1" max="24" value="${d}" class="kcf-hero-in kcf-in-den" id="kcfInHeroD" aria-label="Divisor denominator" />
-              <button type="button" class="kcf-step-arrow down" data-step-field="d" data-step-dir="-1" aria-label="Decrease denominator">▼</button>
-            </div>
+            <input type="number" min="1" max="24" value="${d}" class="kcf-hero-in kcf-in-den" id="kcfInHeroD" aria-label="Divisor denominator" />
           </div>
 
           <span class="kcf-hero-op">=</span>
 
           <span class="kcf-hero-result" id="kcfHeroResultDisplay">${mixedText}</span>
         </div>
-        <div class="kcf-hero-caption">
-          💡 <em>Tip: Put in any numbers above to see all visual models update live!</em>
+        
+        <!-- Curriculum Presets Row directly under hero -->
+        <div class="kcf-hero-presets-row">
+          <span class="kcf-presets-label">Quick Presets:</span>
+          <div class="kcf-preset-chips">
+            ${KCF_PRESETS.map((p) => `
+              <button type="button" class="kcf-preset-btn ${p.a === a && p.b === b && p.c === c && p.d === d ? "is-selected" : ""}" data-preset-a="${p.a}" data-preset-b="${p.b}" data-preset-c="${p.c}" data-preset-d="${p.d}">
+                ${p.label}
+              </button>
+            `).join("")}
+          </div>
         </div>
       </div>
 
@@ -525,36 +518,6 @@ export function renderKCFStudio({
         </div>
       </div>
 
-      <!-- Quick Preset Picker & Custom Sandbox Footer -->
-      <div class="kcf-sandbox-footer">
-        <div class="kcf-presets-row">
-          <span class="kcf-sb-label">Curriculum Presets:</span>
-          <div class="kcf-preset-chips">
-            ${KCF_PRESETS.map((p) => `
-              <button type="button" class="kcf-preset-btn ${p.a === a && p.b === b && p.c === c && p.d === d ? "is-selected" : ""}" data-preset-a="${p.a}" data-preset-b="${p.b}" data-preset-c="${p.c}" data-preset-d="${p.d}">
-                ${p.label}
-              </button>
-            `).join("")}
-          </div>
-        </div>
-
-        <div class="kcf-custom-row">
-          <span class="kcf-sb-label">Try Any Custom Fractions:</span>
-          <div class="kcf-sb-inputs">
-            <div class="kcf-input-frac">
-              <input type="number" min="1" max="24" value="${a}" class="kcf-num-in" id="kcfInA" aria-label="First numerator"/>
-              <span class="kcf-frac-slash">/</span>
-              <input type="number" min="1" max="24" value="${b}" class="kcf-num-in" id="kcfInB" aria-label="First denominator"/>
-            </div>
-            <span class="kcf-sb-op">÷</span>
-            <div class="kcf-input-frac">
-              <input type="number" min="1" max="24" value="${c}" class="kcf-num-in" id="kcfInC" aria-label="Second numerator"/>
-              <span class="kcf-frac-slash">/</span>
-              <input type="number" min="1" max="24" value="${d}" class="kcf-num-in" id="kcfInD" aria-label="Second denominator"/>
-            </div>
-            <button type="button" class="kcf-recalc-btn" id="kcfRecalcBtn">Update Interactive Models</button>
-          </div>
-        </div>
       </div>
     </div>
   `;

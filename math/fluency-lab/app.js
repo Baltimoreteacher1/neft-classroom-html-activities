@@ -753,8 +753,9 @@ function renderLearn() {
     <div class="learn-simple" style="--trail:${getGrade(skill.grade).color}">
       <h3 class="tr-idea">${highlightVocab(escapeHtml(t(skill.learn.rule)))}</h3>
       ${isFractionDivision ? `<div class="kcf-interactive-mount-slot" data-kcf-slot>${renderKCFStudio(kcfFracData)}</div>` : ""}
-      ${animated ? '<div class="sd-slot learn-studio" data-learn-studio></div>' : ""}
-      ${animated ? `<details class="learn-words-steps"${showLcmSteps ? " open" : ""}><summary>${t("Show the steps in words")}</summary>` : '<div class="learn-words-steps">'}
+      ${!isFractionDivision && animated ? '<div class="sd-slot learn-studio" data-learn-studio></div>' : ""}
+      ${!isFractionDivision ? (animated ? `<details class="learn-words-steps"${showLcmSteps ? " open" : ""}><summary>${t("Show the steps in words")}</summary>` : '<div class="learn-words-steps">') : ""}
+      ${!isFractionDivision ? `
       <div class="tr-lesson">
         <div class="tr-example">
           <p class="tr-example-fact${String(example.question).length > 40 ? " is-long" : ""}">${highlightVocab(mathText(example.question))}</p>
@@ -764,8 +765,8 @@ function renderLearn() {
           <p class="tr-guide-title">Watch me solve it</p>
           <div data-learn-steps data-total-steps="${example.steps.length}">${stepsBlock(example.steps, 1, { id: "learn-steps" })}</div>
         </div>
-      </div>
-      ${animated ? "</details>" : "</div>"}
+      </div>` : ""}
+      ${!isFractionDivision ? (animated ? "</details>" : "</div>") : ""}
       <p class="learn-watch"><strong>Watch out:</strong> ${highlightVocab(escapeHtml(t(skill.learn.watch)))}</p>
       ${wordStripHtml(skill, { heading: t("Words to know") })}
       ${languagePromptHtml(skill, { heading: t("Pause, notice, and explain") })}
@@ -779,7 +780,7 @@ function renderLearn() {
       </div>
     </div>`;
   const studioSlot = els.learnPanel.querySelector("[data-learn-studio]");
-  if (studioSlot) cleanupLearnStudio = mountStudio(studioSlot, { item: example, skill, context: "idea" });
+  if (studioSlot && !isFractionDivision) cleanupLearnStudio = mountStudio(studioSlot, { item: example, skill, context: "idea" });
   const kcfSlot = els.learnPanel.querySelector("[data-kcf-slot]");
   if (kcfSlot) mountKCFLab(kcfSlot);
 }
