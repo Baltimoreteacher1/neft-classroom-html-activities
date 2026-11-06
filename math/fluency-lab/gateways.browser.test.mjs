@@ -23,8 +23,7 @@ try {
       page.on("pageerror", (e) => errors.push(`g${grade}: ${e.message}`));
       page.on("console", (m) => m.type() === "error" && errors.push(`g${grade}: ${m.text()}`));
       await page.goto(`${base}?grade=${grade}`, { waitUntil: "networkidle" });
-      await page.locator('#hub-tabs button[data-view="path"]').click();
-      await page.locator('#hub-subnav button[data-view="practice"]').click();
+      await page.locator('#hub-tabs button[data-view="practice"]').click();
       await page.locator(".practice-hub-card").first().waitFor();
       const cards = await page.locator(".practice-hub-card").count();
       assert.ok(cards >= 6, `grade ${grade}: ${cards} gateways`);

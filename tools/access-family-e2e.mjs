@@ -155,13 +155,14 @@ try {
       (await page.locator("h1").first().innerText()).includes("Practiquemos inglés juntos"),
       "L: Español headline after switching",
     );
-    // The Learning Journey put "Mi viaje" first in the primary nav (intended redesign); the original first
-    // destination, "Practicar", is still there, so check the whole nav reads Spanish rather than slot 1.
+    // The simplified learner navigation keeps the same four destinations in every language.
     const topLinks = await page
       .locator("nav.lab-tools a.top-link:not([data-tier])")
       .allInnerTexts();
     ok(
-      topLinks[0].includes("Mi viaje") && topLinks.some((t) => t.includes("Practicar")),
+      ["Continuar", "Practicar", "Crear y explorar", "Mi crecimiento"].every((label, index) =>
+        topLinks[index]?.includes(label),
+      ),
       `L: header nav is Spanish (${topLinks.map((t) => t.trim()).join(" | ")})`,
     );
     ok(((await page.prefs()) || {}).lang === "es", "L: choice persisted to prefs");

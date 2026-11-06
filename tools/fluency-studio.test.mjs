@@ -1385,7 +1385,10 @@ setLang("en");
   // Try: hint ladder is sequential and marks the answer as supported.
   click(host.querySelector('[data-tab="try"]'));
   const rung = (n) => host.querySelector(`[data-rung="${n}"]`);
-  assert.ok(rung(0) && rung(1).disabled && rung(2).disabled, "hints open one rung at a time");
+  assert.ok(
+    rung(0) && rung(1).disabled && rung(2).disabled && rung(3).disabled && rung(4).disabled,
+    "hints open one rung at a time",
+  );
   click(rung(0));
   assert.ok(
     rung(1) && !rung(1).disabled && rung(2).disabled,
@@ -1393,10 +1396,23 @@ setLang("en");
   );
   click(rung(1));
   click(rung(2));
-  assert.ok(host.querySelectorAll(".sd-rung.on").length === 3, "all three rungs show");
+  click(rung(3));
+  assert.equal(host.querySelectorAll(".sd-rung.on").length, 4, "four strategy rungs show");
+  assert.equal(rung(4).disabled, true, "the full explanation stays locked before two attempts");
   const problem = host.querySelector("[data-problem]").textContent;
   const [A, , B] = problem.replaceAll(",", "").match(/\S+/g);
   const input = host.querySelector(".sd-input");
+  input.value = String(Number(A) + Number(B) + 1);
+  host
+    .querySelector("[data-form]")
+    .dispatchEvent(new dom.window.Event("submit", { bubbles: true, cancelable: true }));
+  input.value = String(Number(A) + Number(B) + 2);
+  host
+    .querySelector("[data-form]")
+    .dispatchEvent(new dom.window.Event("submit", { bubbles: true, cancelable: true }));
+  assert.equal(rung(4).disabled, false, "the explanation unlocks after two attempts");
+  click(rung(4));
+  assert.equal(host.querySelectorAll(".sd-rung.on").length, 5, "all five ladder stages show");
   input.value = String(Number(A) + Number(B));
   host
     .querySelector("[data-form]")

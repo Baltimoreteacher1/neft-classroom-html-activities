@@ -42,11 +42,11 @@ assert.equal(
   "html data-build-stamp normalized",
 );
 
-// Service-worker per-build cache epoch normalized (any nested sw.js).
+// Namespaced service-worker per-build cache epoch normalized (any nested sw.js).
 assert.equal(
-  normalizeContent("lessons/sw.js", 'const CACHE = "nt-cache-1788604263222";'),
-  normalizeContent("lessons/sw.js", 'const CACHE = "nt-cache-1788699999999";'),
-  "nt-cache epoch normalized",
+  normalizeContent("lessons/sw.js", 'const CACHE = "nt-lessons-v3-1788604263222";'),
+  normalizeContent("lessons/sw.js", 'const CACHE = "nt-lessons-v3-1788699999999";'),
+  "namespaced cache epoch normalized",
 );
 
 // Asset cache-buster query stamps normalized in HTML.

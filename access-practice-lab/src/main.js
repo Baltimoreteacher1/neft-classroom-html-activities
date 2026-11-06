@@ -20,92 +20,79 @@ import { mountShell } from "./shell.js";
 import { mountGloss } from "./glossary.js";
 import { registerSaveResume } from "./sync.js";
 import { $, ART, BASE, announce, bandOfId, copyText, toHtml } from "./util.js";
-import * as activityView from "./views/activity.js";
-import * as familyView from "./views/family.js";
 import * as homeView from "./views/home.js";
-import * as libraryView from "./views/library.js";
-import * as passportView from "./views/passport.js";
-import * as roadView from "./views/road.js";
-import * as roomView from "./views/room.js";
-import * as testView from "./views/test.js";
-import * as testsView from "./views/tests.js";
-import * as toolsView from "./views/tools.js";
-import * as missionsView from "./views/missions.js";
-import * as conversationView from "./views/conversation.js";
-import * as constructionView from "./views/construction.js";
-import * as evidenceView from "./views/evidence.js";
-import * as growthView from "./views/growth.js";
-import * as speakView from "./views/speak.js";
-import * as writeView from "./views/write.js";
-import * as detectiveView from "./views/detective.js";
-import * as diagnosticView from "./views/diagnostic.js";
-import * as launchStudioView from "./views/launch-studio.js";
-import * as worldsView from "./views/worlds.js";
-import * as classroomView from "./views/classroom.js";
-import * as vocabularyView from "./views/vocabulary.js";
-import * as flashcardsView from "./views/flashcards.js";
-import * as readingRoomView from "./views/reading-room.js";
-import * as gamesView from "./views/games.js";
-import * as storiesView from "./views/stories.js";
-import * as ladderView from "./views/ladder.js";
-import * as puzzlesView from "./views/puzzles.js";
-import * as publisherDemoView from "./views/publisher-demo.js";
-import * as assessView from "./views/assess.js";
-import * as learnView from "./views/learn.js";
-import * as realityView from "./views/reality.js";
-import * as exhibitionView from "./views/exhibition.js";
-import * as journeyView from "./views/journey.js";
-import * as pathView from "./views/path.js";
-import * as moveView from "./views/move.js";
-import * as scaffoldView from "./views/scaffold.js";
 
 export const BUILD = "2026.11.04.1";
-const VIEWS = {
-  home: homeView,
-  learn: learnView,
-  reality: realityView,
-  exhibition: exhibitionView,
-  journey: journeyView,
-  path: pathView,
-  scaffold: scaffoldView,
-  move: moveView,
-  "session-done": homeView,
-  stories: storiesView,
-  ladder: ladderView,
-  puzzles: puzzlesView,
-  library: libraryView,
-  room: roomView,
-  activity: activityView,
-  play: activityView,
-  test: testView,
-  tests: testsView,
-  road: roadView,
-  family: familyView,
-  passport: passportView,
-  tools: toolsView,
-  missions: missionsView,
-  mission: missionsView,
-  conversation: conversationView,
-  construction: constructionView,
-  evidence: evidenceView,
-  growth: growthView,
-  speak: speakView,
-  write: writeView,
-  detective: detectiveView,
-  diagnostic: diagnosticView,
-  launch: launchStudioView,
-  "launch-studio": launchStudioView,
-  "teacher-launch": launchStudioView,
-  worlds: worldsView,
-  classroom: classroomView,
-  vocabulary: vocabularyView,
-  flashcards: flashcardsView,
-  reading: readingRoomView,
-  "reading-room": readingRoomView,
-  games: gamesView,
-  "publisher-demo": publisherDemoView,
-  assess: assessView,
+// The home route is the only view in the entry module's static dependency graph. Every secondary route is a
+// literal dynamic import so the browser can fetch the learner's chosen destination instead of the entire lab.
+// tools/sync-access-shell.mjs versions every literal import and preloads only the static chain; its service worker
+// saves the remaining modules in the background so a completed first online visit still prepares the full lab for
+// offline use. Aliases intentionally share one loader/cache entry.
+const VIEW_LOADERS = {
+  learn: () => import("./views/learn.js"),
+  reality: () => import("./views/reality.js"),
+  exhibition: () => import("./views/exhibition.js"),
+  journey: () => import("./views/journey.js"),
+  path: () => import("./views/path.js"),
+  scaffold: () => import("./views/scaffold.js"),
+  move: () => import("./views/move.js"),
+  stories: () => import("./views/stories.js"),
+  ladder: () => import("./views/ladder.js"),
+  puzzles: () => import("./views/puzzles.js"),
+  library: () => import("./views/library.js"),
+  room: () => import("./views/room.js"),
+  activity: () => import("./views/activity.js"),
+  test: () => import("./views/test.js"),
+  tests: () => import("./views/tests.js"),
+  road: () => import("./views/road.js"),
+  family: () => import("./views/family.js"),
+  passport: () => import("./views/passport.js"),
+  tools: () => import("./views/tools.js"),
+  missions: () => import("./views/missions.js"),
+  conversation: () => import("./views/conversation.js"),
+  construction: () => import("./views/construction.js"),
+  evidence: () => import("./views/evidence.js"),
+  growth: () => import("./views/growth.js"),
+  speak: () => import("./views/speak.js"),
+  write: () => import("./views/write.js"),
+  detective: () => import("./views/detective.js"),
+  diagnostic: () => import("./views/diagnostic.js"),
+  launch: () => import("./views/launch-studio.js"),
+  worlds: () => import("./views/worlds.js"),
+  classroom: () => import("./views/classroom.js"),
+  vocabulary: () => import("./views/vocabulary.js"),
+  flashcards: () => import("./views/flashcards.js"),
+  reading: () => import("./views/reading-room.js"),
+  games: () => import("./views/games.js"),
+  "publisher-demo": () => import("./views/publisher-demo.js"),
+  assess: () => import("./views/assess.js"),
 };
+const VIEW_ALIASES = {
+  "session-done": "home",
+  play: "activity",
+  mission: "missions",
+  "launch-studio": "launch",
+  "teacher-launch": "launch",
+  "reading-room": "reading",
+};
+const viewCache = new Map([["home", homeView]]);
+
+export async function loadView(viewName) {
+  const key = VIEW_ALIASES[viewName] || viewName;
+  if (viewCache.has(key)) return viewCache.get(key);
+  const loader = VIEW_LOADERS[key];
+  if (!loader) return homeView;
+  const pending = loader();
+  viewCache.set(key, pending);
+  try {
+    const view = await pending;
+    viewCache.set(key, view);
+    return view;
+  } catch (error) {
+    viewCache.delete(key);
+    throw error;
+  }
+}
 const DOMAINS = ["Listening", "Reading", "Speaking", "Writing", "Model-Test"];
 
 export function parseRoute(pathname = location.pathname, search = location.search) {
@@ -273,19 +260,30 @@ async function render({ keepFocus = false, scroll = false } = {}) {
   setEvidenceUiI18n(I);
   if (route.grades && route.grades === app.band && app.prefs.band !== app.band)
     app.prefs = setPrefs({ band: app.band });
-  const view = VIEWS[route.view] || homeView;
-  if (view !== app.view) {
-    stopSpeech();
-    rec.stop();
-  }
-  app.view = view;
   const root = $("#app");
+  // A lazy route can take more than one frame on a cold cache. Remove the previous screen
+  // immediately so assistive technology and automation never mistake stale content for the
+  // destination, and expose a small, deterministic loading state until the view is ready.
+  if (routeChanged && app.rendered) {
+    root.setAttribute("aria-busy", "true");
+    root.innerHTML = `<div class="panel route-loading" role="status"><p>${i18nFor(ctx).S("Loading…", "Cargando…")}</p></div>`;
+  }
   const fk = keepFocus ? focusKey(document.activeElement) : null;
   let out;
+  let view;
   try {
+    view = await loadView(route.view);
+    if (token !== app.rendering) return;
+    if (view !== app.view) {
+      stopSpeech();
+      rec.stop();
+    }
+    app.view = view;
     out = await view.render(ctx);
   } catch (error) {
     console.error("[access-lab]", error);
+    view = homeView;
+    app.view = view;
     out = {
       title: "Something went wrong",
       html: `<section class="panel error-panel empty-state"><img src="${ART}/empty.svg" width="480" height="300" alt="" /><h1>We could not load this page.</h1><p>Check your internet connection, then try again.</p><p><a class="btn btn-primary" href="${BASE}/">Go to the lab home</a></p></section>`,
@@ -293,6 +291,7 @@ async function render({ keepFocus = false, scroll = false } = {}) {
   }
   if (token !== app.rendering) return;
   root.innerHTML = toHtml(out.html);
+  root.removeAttribute("aria-busy");
   // Orientation on navigation only: the new screen settles in place (reduced motion turns this off).
   if (routeChanged && app.rendered) {
     root.classList.remove("is-entering");
@@ -531,8 +530,26 @@ function watchNetwork() {
 function registerOffline() {
   if (!("serviceWorker" in navigator)) return;
   if (navigator.webdriver && !/[?&]sw=1\b/.test(location.search)) return;
-  const register = () =>
-    navigator.serviceWorker.register(`${BASE}/sw.js`, { scope: `${BASE}/` }).catch(() => {});
+  const register = async () => {
+    try {
+      await navigator.serviceWorker.register(`${BASE}/sw.js`, { scope: `${BASE}/` });
+      await navigator.serviceWorker.ready;
+      let sent = false;
+      const warm = () => {
+        if (sent || !navigator.serviceWorker.controller) return;
+        sent = true;
+        navigator.serviceWorker.controller.postMessage({ type: "prepare-offline" });
+      };
+      const schedule = () =>
+        "requestIdleCallback" in window
+          ? window.requestIdleCallback(warm, { timeout: 5000 })
+          : window.setTimeout(warm, 1200);
+      schedule();
+      navigator.serviceWorker.addEventListener("controllerchange", schedule, { once: true });
+    } catch {
+      // The online app remains fully usable when service workers are blocked.
+    }
+  };
   if (document.readyState === "complete") register();
   else window.addEventListener("load", register, { once: true });
 }

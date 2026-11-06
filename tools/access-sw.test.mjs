@@ -6,6 +6,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
 import vm from "node:vm";
+import { JSDOM } from "jsdom";
 
 const lab = new URL("../access-practice-lab/", import.meta.url);
 const swSource = readFileSync(new URL("sw.js", lab), "utf8");
@@ -26,9 +27,14 @@ class FakeCache {
 function load({ online = true, responses = {} } = {}) {
   const stores = new Map();
   const fetched = [];
+  class ServiceWorkerRequest extends Request {
+    constructor(input, init) {
+      super(typeof input === "string" ? new URL(input, ORIGIN) : input, init);
+    }
+  }
   const sandbox = {
     URL,
-    Request,
+    Request: ServiceWorkerRequest,
     Response,
     Headers,
     Promise,
@@ -158,7 +164,7 @@ test("old caches go, but the previous build stays for tabs opened before a deplo
 
 const parseList = (text) => JSON.parse(text.replace(/,\s*\]/, "]"));
 
-test("the precache list is exactly the shell's hashed stylesheets and modules, plus the content", () => {
+test("the critical cache contains only first-route assets and the background set completes offline coverage", () => {
   const index = readFileSync(new URL("index.html", lab), "utf8");
   const core = parseList(swSource.match(/const PRECACHE_CORE = (\[[\s\S]*?\]);/)[1]);
   const more = parseList(swSource.match(/const PRECACHE_MORE = (\[[\s\S]*?\]);/)[1]);
@@ -166,11 +172,60 @@ test("the precache list is exactly the shell's hashed stylesheets and modules, p
     ...index.matchAll(/href="(\/access-practice-lab\/[\w.-]+\.css\?v=[0-9a-f]{12})"/g),
   ].map((m) => m[1]);
   const map = JSON.parse(index.match(/<script type="importmap">([\s\S]*?)<\/script>/)[1]).imports;
-  assert.deepEqual([...core].sort(), [...sheets, ...Object.values(map)].sort());
+  const shell = new JSDOM(index).window.document;
+  const criticalSheets = [
+    ...shell.querySelectorAll('link[rel="stylesheet"][data-lab-critical]'),
+  ].map((link) => link.getAttribute("href"));
+  const criticalModules = [
+    ...shell.querySelectorAll('link[rel="modulepreload"]'),
+    ...shell.querySelectorAll('script[type="module"][src]'),
+  ].map((node) => node.getAttribute("href") || node.getAttribute("src"));
+  assert.deepEqual([...core].sort(), [...criticalSheets, ...criticalModules].sort());
+  assert.ok(
+    core.length < sheets.length + Object.keys(map).length / 2,
+    "critical install is materially smaller than the full lab",
+  );
+  assert.equal(
+    core.some((url) => url.includes("/views/games.js")),
+    false,
+    "secondary views stay off the critical path",
+  );
+  for (const url of sheets.filter((item) => !criticalSheets.includes(item)))
+    assert.ok(more.includes(url), `${url}: background stylesheet`);
+  for (const url of Object.values(map).filter((item) => !criticalModules.includes(item)))
+    assert.ok(more.includes(url), `${url}: background module`);
+  assert.equal(
+    core.some((url) => more.includes(url)),
+    false,
+    "critical and background assets do not overlap",
+  );
   assert.ok(more.includes("/access-practice-lab/content/index.json"));
-  assert.ok(more.every((u) => /\.(json|svg)$/.test(u)));
+  assert.ok(more.some((u) => /\/pictures\/.+\.svg$/.test(u)));
   assert.match(swSource, /const BUILD_HASH = "[0-9a-f]{12}"/);
   assert.match(index, /<link rel="manifest" href="\/access-practice-lab\/manifest\.json"/);
+});
+
+test("install fetches only critical assets; the explicit idle warm-up fetches secondary routes", async () => {
+  const { sw, fetched } = load({
+    responses: {
+      "/access-practice-lab/app-shell": {
+        body: "<!doctype html>shell",
+        headers: { "content-type": "text/html" },
+      },
+    },
+  });
+  await sw.precache();
+  assert.equal(
+    fetched.some((url) => url.includes("/views/games.js")),
+    false,
+  );
+  const criticalCount = fetched.length;
+  await sw.warmOffline();
+  assert.ok(fetched.length > criticalCount);
+  assert.ok(
+    fetched.some((url) => url.includes("/views/games.js")),
+    "secondary game route warms for later offline use",
+  );
 });
 
 test("the manifest is installable: scope, start URL, and real icon files", async () => {

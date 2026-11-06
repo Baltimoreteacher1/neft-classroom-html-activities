@@ -96,7 +96,7 @@ export const ES = {
   "Play a game": "Juega",
   "Build, compare, and solve with the Game Room activities.": "Construye, compara y resuelve en los juegos de matemáticas.",
   "Choose a game": "Elige un juego",
-  "Grades 1–8 · many ways in": "Grados 1–8 · muchas maneras de aprender",
+  "Kindergarten–Grade 8 · many ways in": "Kínder–8.º grado · muchas maneras de aprender",
   "Explore skills": "Explora las habilidades",
   "Browse the grade-level library by topic. Every skill includes a lesson, practice, and ways to check your thinking.": "Explora la biblioteca de tu grado por tema. Cada habilidad incluye una lección, práctica y maneras de comprobar tu razonamiento.",
   "Browse {count} Grade {grade} skills": "Explora {count} habilidades de grado {grade}",

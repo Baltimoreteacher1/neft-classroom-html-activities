@@ -395,18 +395,18 @@ test("lab home: one h1 in the journey hero, the old hero demoted, every test-use
   }
 });
 
-test("navigation: My Journey is the first primary link, active on journey views, menu entries exist", async () => {
+test("navigation: four learner destinations keep the journey and adult tools in the menu", async () => {
   const { primaryLinks, navHTML } = await import("../access-practice-lab/src/nav.js");
   const T = (en) => en;
   const links = primaryLinks("6-8", T);
-  assert.equal(links[0].id, "journey");
+  assert.deepEqual(links.map((link) => link.id), ["continue", "practice", "explore", "growth"]);
+  assert.equal(links[0].id, "continue");
   assert.equal(links[0].icon, "road");
-  assert.equal(links[1].id, "home");
-  assert.match(links[0].href, /\/journey\?grades=6-8$/);
+  assert.match(links[0].href, /\/access-practice-lab\/\?grades=6-8$/);
   const I = makeI18n("en", "en");
   const nav = dom(navHTML({ band: "6-8", route: { view: "journey" } }, I));
   const current = nav.querySelector('a[aria-current="page"]');
-  assert.match(current.textContent, /My Journey/);
+  assert.match(current.textContent, /Continue/);
   const menu = all(nav, ".lab-utilities-body a").map((a) => [
     a.textContent.trim(),
     a.getAttribute("href"),
@@ -414,10 +414,10 @@ test("navigation: My Journey is the first primary link, active on journey views,
   assert.ok(menu.some(([t, h]) => /My Journey Map/.test(t) && h.includes("/journey/map")));
   assert.ok(menu.some(([t, h]) => /Journey teacher guide/.test(t) && h.includes("/journey/guide")));
   const home = dom(navHTML({ band: "6-8", route: { view: "home" } }, I));
-  assert.match(home.querySelector('a[aria-current="page"]').textContent, /My Home/);
+  assert.match(home.querySelector('a[aria-current="page"]').textContent, /Continue/);
   const main = await read("src/main.js");
-  assert.match(main, /import \* as journeyView from "\.\/views\/journey\.js"/);
-  assert.match(main, /journey: journeyView/);
+  assert.doesNotMatch(main, /import \* as journeyView/);
+  assert.match(main, /journey: \(\) => import\("\.\/views\/journey\.js"\)/);
   assert.match(
     main,
     /a === "journey"\) return \{ \.\.\.r, view: "journey", id: b \|\| "", rest: parts\.slice\(1\)/,

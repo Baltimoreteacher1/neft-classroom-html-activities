@@ -1,4 +1,4 @@
-// The three student destinations (Home, My Learning, Explore) plus the adult links: labels, grouping,
+// The four student destinations (Today, Practice, Explore, My Growth) plus the adult links: labels, grouping,
 // sub-navigation, old ?view= links, Spanish, target size.
 import assert from "node:assert/strict";
 import { mkdirSync } from "node:fs";
@@ -27,30 +27,32 @@ try {
 
   const page = await open({ width: 1280, height: 900 });
   const tabs = await page.locator("#hub-tabs button[data-view]").allInnerTexts();
-  assert.deepEqual(tabs, ["Home", "My Learning", "Explore", "For teachers"]);
+  assert.deepEqual(tabs, ["Today", "Practice", "Explore", "My Growth", "For teachers"]);
   assert.equal(await page.locator("#hub-tabs a.family-tab").getAttribute("href"), "./family/", "families have their own link");
-  // A ?grade= link opens the learner's grade page, which lives under My Learning.
-  assert.deepEqual(await current(page), ["My Learning"]);
-  assert.deepEqual(await sub(page), ["My progress", "My grade", "Practice", "Fix my mistakes"]);
-  // Math Reality: a featured card on the grade page, links in Explore and in Practice.
+  // A ?grade= link opens the learner's recommended Today page.
+  assert.deepEqual(await current(page), ["Today"]);
+  assert.equal(await page.locator("#hub-subnav").isHidden(), true, "Today has no competing sub-navigation");
+  // Math Reality: a featured card on Today, links in Explore and in Practice.
   assert.equal(await page.locator("#reality-feature [data-reality-link]").getAttribute("href"), "reality/?grade=3");
   assert.equal(await page.locator("#reality-feature [data-reality-link]").innerText(), "Open Math Reality");
   assert.equal(await page.locator("#reality-feature [data-lab-link]").innerText(), "Open the Reality Lab");
-  await page.locator("#hub-subnav button", { hasText: "Practice" }).click();
+  await page.locator("#hub-tabs button", { hasText: "Practice" }).click();
   assert.equal(await page.locator('#practice-view a[href="reality/?grade=3"]').count(), 1, "Practice links to Math Reality");
   assert.equal(await page.locator('#practice-view a[href="reality/lab/?grade=3"]').count(), 1, "Practice links to the Reality Lab");
-  assert.deepEqual(await current(page), ["My Learning"]);
+  assert.deepEqual(await current(page), ["Practice"]);
+  assert.deepEqual(await sub(page), ["Practice", "Fix my mistakes"]);
 
-  // Home is the grade-and-skill picker and has no sub-navigation.
+  // Today is the grade-and-skill picker at the bare URL and has no sub-navigation.
   await page.locator("#hub-tabs button[data-home]").click();
   await page.locator(".ep").waitFor({ state: "visible" });
-  assert.deepEqual(await current(page), ["Home"]);
-  assert.equal(await page.locator("#hub-subnav").isHidden(), true, "Home has no sub-navigation");
-  assert.equal(new URL(page.url()).search, "", "Home is the bare URL");
+  assert.deepEqual(await current(page), ["Today"]);
+  assert.equal(await page.locator("#hub-subnav").isHidden(), true, "Today has no sub-navigation");
+  assert.equal(new URL(page.url()).search, "", "Today is the bare URL");
 
   const areas = [
-    ["My Learning", "#path-view", ["My progress", "My grade", "Practice", "Fix my mistakes"]],
+    ["Practice", "#practice-view", ["Practice", "Fix my mistakes"]],
     ["Explore", "#games-view", ["Games", "Model Lab", "Writing Studio", "Math Reality", "Reality Lab"]],
+    ["My Growth", "#path-view", []],
   ];
   for (const [name, section, expected] of areas) {
     await page.locator("#hub-tabs button", { hasText: name }).first().click();
@@ -58,6 +60,7 @@ try {
     assert.deepEqual(await current(page), [name], `${name} is the only current destination`);
     assert.deepEqual(await page.locator("#hub-subnav > *").allInnerTexts(), expected, `${name} sub-navigation`);
   }
+  await page.locator("#hub-tabs button", { hasText: "Explore" }).click();
   assert.match(await page.locator("#hub-subnav a", { hasText: "Math Reality" }).getAttribute("href"), /^reality\/$/);
   assert.match(await page.locator("#hub-subnav a", { hasText: "Reality Lab" }).getAttribute("href"), /^reality\/lab\/$/);
 
@@ -65,13 +68,13 @@ try {
   await page.locator("#hub-subnav button", { hasText: "Writing Studio" }).click();
   await page.locator("#write-view").waitFor({ state: "visible" });
   assert.deepEqual(await current(page), ["Explore"]);
-  await page.locator("#hub-tabs button", { hasText: "My Learning" }).click();
+  await page.locator("#hub-tabs button", { hasText: "Practice" }).click();
   await page.locator("#hub-subnav button", { hasText: "Fix my mistakes" }).click();
   await page.locator("#notebook-view").waitFor({ state: "visible" });
-  assert.deepEqual(await current(page), ["My Learning"]);
+  assert.deepEqual(await current(page), ["Practice"]);
 
   // Practice: one dominant action; Today's 10 starts a real session.
-  await page.locator("#hub-subnav button", { hasText: "Practice" }).click();
+  await page.locator("#hub-tabs button", { hasText: "Practice" }).click();
   assert.equal(await page.locator("#practice-view .primary-action").count(), 1, "one primary action");
   await page.locator("#practice-view [data-start-daily]").click();
   await page.locator("#answer-input").waitFor({ state: "visible" });
@@ -86,7 +89,7 @@ try {
   if (shots) await phone.screenshot({ path: `${shots}/home-390.png` });
 
   // Old direct links still land in the right place and highlight the right destination.
-  for (const [view, destination] of [["notebook", "My Learning"], ["write", "Explore"], ["models", "Explore"], ["games", "Explore"], ["path", "My Learning"], ["practice", "My Learning"]]) {
+  for (const [view, destination] of [["notebook", "Practice"], ["write", "Explore"], ["models", "Explore"], ["games", "Explore"], ["path", "My Growth"], ["practice", "Practice"]]) {
     const linked = await open({ width: 1280, height: 900 }, `?grade=3&profile=0&view=${view}`);
     assert.deepEqual(await current(linked), [destination], `?view=${view}`);
     await linked.close();
@@ -94,14 +97,14 @@ try {
 
   // Spanish names.
   const es = await open({ width: 1280, height: 900 }, "?grade=3&profile=0", "es");
-  assert.deepEqual(await es.locator("#hub-tabs button[data-view]").allInnerTexts(), ["Inicio", "Mi aprendizaje", "Explorar", "Para docentes"]);
+  assert.deepEqual(await es.locator("#hub-tabs button[data-view]").allInnerTexts(), ["Hoy", "Practicar", "Explorar", "Mi progreso", "Para docentes"]);
   assert.equal(await es.locator("#hub-tabs a.family-tab").innerText(), "Para familias");
   if (shots) {
     await page.screenshot({ path: `${shots}/practice-1280.png` });
     await es.screenshot({ path: `${shots}/home-es-1280.png` });
   }
   assert.deepEqual(errors, [], "no page errors");
-  console.log("hub-nav.browser: three destinations, sub-navigation, old links, Spanish, phone targets pass");
+  console.log("hub-nav.browser: four destinations, sub-navigation, old links, Spanish, phone targets pass");
 } finally {
   await browser?.close();
   await server.close();

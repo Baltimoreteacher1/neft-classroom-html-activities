@@ -1,17 +1,15 @@
-// Three student destinations over the existing views: Home (choose a grade and skill, then the skill itself),
-// My Learning (progress, practice, mistakes to fix, the grade's own page) and Explore (games, models, writing,
-// Math Reality). Views and ?view= links are unchanged; this file only decides which destination a view belongs
-// to and what its sub-navigation is. Teachers and families have their own links beside the three.
+// Four student destinations over the existing views: Today (the recommended grade journey), Practice (the
+// adaptive set and mistake repair), Explore (games, models, writing and Math Reality) and My Growth (the evidence
+// path). Views and ?view= links are unchanged. Teachers and families remain separate adult links.
 export const DESTINATIONS = [
-  { id: "home", view: "library", views: ["workspace"] },
-  { id: "learning", view: "path", views: ["path", "practice", "notebook"] },
+  { id: "today", view: "library", views: ["library", "workspace"] },
+  { id: "practice", view: "practice", views: ["practice", "notebook"] },
   { id: "explore", view: "games", views: ["games", "models", "write"] },
+  { id: "growth", view: "path", views: ["path"] },
 ];
 
 const SUBNAV = {
-  learning: [
-    { view: "path", label: (t) => t("My progress") },
-    { view: "library", label: (t) => t("My grade") },
+  practice: [
     { view: "practice", label: (t) => t("Practice") },
     { view: "notebook", label: (t) => t("Fix my mistakes") },
   ],
@@ -24,9 +22,7 @@ const SUBNAV = {
   ],
 };
 
-// The library view is Home while it shows the grade-and-skill picker, and the learner's grade page otherwise.
-export function destinationFor(view, { landing = false } = {}) {
-  if (view === "library") return landing ? "home" : "learning";
+export function destinationFor(view) {
   return DESTINATIONS.find((destination) => destination.views.includes(view))?.id || null;
 }
 

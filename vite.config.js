@@ -439,7 +439,9 @@ function copyStandaloneHtml() {
         );
       }
 
-      // Post-build: auto-bust cache for all service workers in dist/
+      // Post-build: auto-bust every service worker without erasing its product namespace. Replacing all names
+      // with one `nt-cache-*` value made Fluency Lab's `fluency-off-*` cleanup miss its own production caches and
+      // also let unrelated workers collide on the same origin.
       const buildTimestamp = Date.now();
       function bustSwCaches(dir) {
         if (!existsSync(dir)) return;
@@ -450,8 +452,8 @@ function copyStandaloneHtml() {
           } else if (entry.isFile() && entry.name === "sw.js") {
             let content = readFileSync(full, "utf8");
             content = content.replace(
-              /const CACHE = "[^"]*";/g,
-              `const CACHE = "nt-cache-${buildTimestamp}";`,
+              /const CACHE = "([^"]*)";/g,
+              (_match, namespace) => `const CACHE = "${namespace}-${buildTimestamp}";`,
             );
             writeFileSync(full, content);
           }

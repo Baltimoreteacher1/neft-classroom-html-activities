@@ -229,6 +229,7 @@ await page.waitForFunction(
 ok((await page.locator(".fc-roles dt").count()) === 2, "partner talk gives each partner a role");
 await page.locator("a.cat-chip", { hasText: "Listening" }).first().click();
 await page.waitForFunction(() => location.search.includes("domain=Listening"));
+await page.locator(".fc-term, .fc-card h2").first().waitFor();
 ok((await page.locator(".fc-term, .fc-card h2").count()) >= 1, "another skill's deck loads");
 await overflowAt375("word cards");
 await go(`${BASE}/family?grades=6-8`);

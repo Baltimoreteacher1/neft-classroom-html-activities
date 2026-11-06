@@ -1,6 +1,5 @@
-// Spanish for the five student destinations and the Practice area. English text is the key; student lines use tú.
+// Spanish for the learner destinations and the Practice area. English text is the key; student lines use tú.
 export const ES_LAB6_NAV = {
-  Home: "Inicio",
   Learn: "Aprender",
   Practice: "Practicar",
   "Play ##nav": "Jugar",

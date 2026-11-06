@@ -519,6 +519,9 @@ ok(
 );
 await go(`${BASE}/missions/shade-for-outdoor-learning?phase=write&grades=3-5`);
 await page.locator('a[href*="write/shade-write-plan"]').click();
+await page.waitForFunction(() =>
+  document.body.innerText.includes("Recommend one safe first test for the courtyard"),
+);
 ok(
   (await page.locator("body").innerText()).includes(
     "Recommend one safe first test for the courtyard",
@@ -527,6 +530,9 @@ ok(
 );
 await go(`${BASE}/missions/shade-for-outdoor-learning?phase=transfer&grades=3-5`);
 await page.locator('a[href*="write/shade-transfer-playground"]').click();
+await page.waitForFunction(() =>
+  document.body.innerText.includes("Explain what the playground test suggests"),
+);
 ok(
   (await page.locator("body").innerText()).includes("Explain what the playground test suggests") &&
     (await page.locator('.stage-picker input[value="independent"]').isChecked()),
@@ -577,12 +583,16 @@ ok(
 );
 await go(`${BASE}/missions/welcoming-reading-nook?phase=write&grades=3-5`);
 await page.locator('a[href*="write/nook-write-recommendation"]').click();
+await page.waitForFunction(() =>
+  document.body.innerText.includes("Recommend a first setup for the reading nook"),
+);
 ok(
   (await page.locator("body").innerText()).includes("Recommend a first setup for the reading nook"),
   "third grade 3–5 mission opens its original writing application",
 );
 await go(`${BASE}/missions/welcoming-reading-nook?phase=transfer&grades=3-5`);
 await page.locator('a[href*="write/nook-transfer-community-center"]').click();
+await page.waitForFunction(() => document.body.innerText.includes("Plan a shared art table"));
 ok(
   (await page.locator("body").innerText()).includes("Plan a shared art table") &&
     (await page.locator('.stage-picker input[value="independent"]').isChecked()),

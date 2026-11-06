@@ -43,8 +43,8 @@ const NORMALIZATIONS = [
   ],
   [
     (p) => p.endsWith("sw.js"),
-    (text) => text.replace(/nt-cache-\d+/g, "nt-cache-"),
-    "service-worker cache name embeds a per-build epoch (M0 probe: sw.js x10)",
+    (text) => text.replace(/(const CACHE = "[^"]+?)-\d{13}";/g, '$1-";'),
+    "namespaced service-worker cache name embeds a per-build epoch (M0 probe: sw.js x10)",
   ],
   [
     (p) => p.endsWith(".html"),

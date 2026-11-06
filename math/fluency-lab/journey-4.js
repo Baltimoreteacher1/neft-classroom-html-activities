@@ -177,7 +177,7 @@ function doorsHtml(ctx) {
   const count = ctx.gradeSkillCount;
   return `<div class="fl4-doors" data-hub-panel="today">
     <button type="button" class="fl4-door journey-game" data-view="games"><span class="fl4-overline">${t("Untimed · think and play")}</span><strong>${t("Play a game")}</strong><span>${t("Build, compare, and solve with the Game Room activities.")}</span><span class="fl4-door__link">${t("Choose a game")} <span aria-hidden="true">→</span></span></button>
-    <article class="fl4-door journey-explore"><span class="fl4-overline">${t("Grades 1–8 · many ways in")}</span><h3>${t("Explore skills")}</h3><p>${t("Browse the grade-level library by topic. Every skill includes a lesson, practice, and ways to check your thinking.")}</p><a class="fl4-door__link" href="#subnav-skills">${t("Browse {count} Grade {grade} skills", { count, grade: ctx.grade })} <span aria-hidden="true">→</span></a></article></div>`;
+    <article class="fl4-door journey-explore"><span class="fl4-overline">${t("Kindergarten–Grade 8 · many ways in")}</span><h3>${t("Explore skills")}</h3><p>${t("Browse the grade-level library by topic. Every skill includes a lesson, practice, and ways to check your thinking.")}</p><a class="fl4-door__link" href="#subnav-skills">${t("Browse {count} Grade {grade} skills", { count, grade: ctx.grade })} <span aria-hidden="true">→</span></a></article></div>`;
 }
 
 // ctx: { tutor, grade, now, gradeLabel, profileName, strand, resume: {title, answered}|null, gradeSkillCount,

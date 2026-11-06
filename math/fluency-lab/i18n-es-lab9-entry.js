@@ -1,5 +1,5 @@
 // Spanish for the front door (grade, topic, skill, Start), the five-stage skill screen and the
-// Home / My Learning / Explore navigation. English text is the key; student lines use tú.
+// Today / Practice / Explore / My Growth navigation. English text is the key; student lines use tú.
 export const ES_ENTRY = {
   "Welcome back!": "¡Qué bueno verte otra vez!",
   "Continue:": "Continuar:",
@@ -58,7 +58,7 @@ export const ES_ENTRY = {
   "Try 5 with help": "Intenta 5 con ayuda",
   "Build it step by step": "Constrúyelo paso a paso",
   "Practice 10": "Practicar 10",
-  "My Learning": "Mi aprendizaje",
+  "My Growth": "Mi progreso",
   "For families": "Para familias",
   Games: "Juegos",
 };

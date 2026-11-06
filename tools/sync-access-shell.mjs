@@ -11,8 +11,8 @@
  *     `immutable` caching (the Pages Function) and kept offline (sw.js), so a version string that is not a content
  *     hash would pin a stale file for a year. Relative module imports resolve through the import map, so a cached
  *     dependency can never mix with a newer entry point.
- *  3. The entry module's static import chain is announced with <link rel="modulepreload"> so the browser fetches the
- *     whole chain in parallel instead of discovering it one import at a time.
+ *  3. Only the entry module's static import chain is announced with <link rel="modulepreload">. Route views use
+ *     literal dynamic imports and are cached after the first meaningful paint, not pulled onto the critical path.
  *  4. access-practice-lab/sw.js gets its build hash and precache lists between its `build:` markers.
  *
  * Runs as part of `npm run build`; commit the result (tools/build-injectors-idempotent.test.mjs checks it is stable).
@@ -98,15 +98,26 @@ let index = original.includes("<!-- lab-modules:begin -->")
 index = index.replace(entryPattern, `<script type="module" src="${imports[entryUrl]}"></script>`);
 
 // ── stylesheet versions ───────────────────────────────────────────────────────
+const criticalSheetPaths = new Set(
+  [...original.matchAll(/<link\b[^>]*data-lab-critical[^>]*>/g)]
+    .map(
+      ([tag]) =>
+        tag.match(/href="(\/access-practice-lab\/[A-Za-z0-9._-]+\.css)(?:\?v=[^"]*)?"/)?.[1],
+    )
+    .filter(Boolean),
+);
 const sheets = [];
+const criticalSheets = [];
 index = index.replace(
   /href="(\/access-practice-lab\/[A-Za-z0-9._-]+\.css)(?:\?v=[^"]*)?"/g,
   (_, href) => {
     const versioned = `${href}?v=${sha(readFileSync(join(dir, href.slice(`${BASE}/`.length))))}`;
     sheets.push(versioned);
+    if (criticalSheetPaths.has(href)) criticalSheets.push(versioned);
     return `href="${versioned}"`;
   },
 );
+if (!criticalSheets.length) throw new Error("ACCESS shell has no data-lab-critical stylesheets.");
 
 if (index !== original) {
   writeFileSync(indexPath, index);
@@ -130,8 +141,16 @@ const content = walk(join(dir, "content"), (n) => n.endsWith(".json")).map(
 const pictures = walk(join(dir, "pictures"), (n) => n.endsWith(".svg")).map(
   (f) => `${BASE}/pictures/${f}`,
 );
-const core = [...sheets, ...Object.values(imports)];
-const more = [...content, ...pictures];
+const staticUrls = staticChain(entryUrl);
+const staticModules = new Set(staticUrls.map((url) => imports[url]));
+const criticalStyles = new Set(criticalSheets);
+const core = [...criticalSheets, ...staticModules];
+const more = [
+  ...sheets.filter((url) => !criticalStyles.has(url)),
+  ...Object.values(imports).filter((url) => !staticModules.has(url)),
+  ...content,
+  ...pictures,
+];
 const buildHash = sha(
   index,
   ...[...content, ...pictures].map((u) => readFileSync(join(dir, u.slice(`${BASE}/`.length)))),
@@ -145,6 +164,6 @@ const nextSw = sw.replace(/\/\* build:begin \*\/[\s\S]*?\/\* build:end \*\//, ()
 if (nextSw !== sw) {
   writeFileSync(swPath, nextSw);
   console.log(
-    `sync-access-shell: sw.js build ${buildHash} (${core.length} core, ${more.length} content files).`,
+    `sync-access-shell: sw.js build ${buildHash} (${core.length} critical, ${more.length} background assets).`,
   );
 } else console.log("sync-access-shell: sw.js already current.");

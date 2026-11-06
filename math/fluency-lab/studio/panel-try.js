@@ -1,5 +1,6 @@
-// Try: a fresh problem like the one just seen, solved by the learner. The hint ladder has three rungs (a clue,
-// a picture, a guided first step). Using any rung makes the answer "with help", which never counts as
+// Try: a fresh problem like the one just seen, solved by the learner. The strategy ladder moves through attention,
+// relationship, representation, a guided first step and—only after two attempts—an explanation. Using any rung makes
+// the answer "with help", which never counts as
 // independent: the learner is asked for a new problem on their own. Nothing here changes the lab's mastery
 // evidence; it only feeds the local Studio record that decides how much support to offer next.
 import { pick } from "./core.js";
@@ -46,19 +47,39 @@ export function mountTry(ctx, root) {
         <button type="submit" class="sd-btn sd-primary" ${solved ? "disabled" : ""}>${esc(t("Check"))}</button>
       </form>
       <p class="sd-feedback" data-feedback role="status" aria-live="polite"></p>
-      <div class="sd-ladder" data-ladder>${helpOpen && !solved ? ladder(hints) : !solved ? `<button type="button" class="sd-btn sd-ghost" data-help>${esc(t("I want a hint"))}</button>` : ""}</div>
+      <div class="sd-ladder" data-ladder>${helpOpen && !solved ? ladder(hintStages(hints)) : !solved ? `<button type="button" class="sd-btn sd-ghost" data-help>${esc(t("I want a hint"))}</button>` : ""}</div>
       <div class="sd-actions" data-actions></div>`;
     root.querySelector("input")?.focus();
   }
 
-  function ladder(hints) {
-    const names = [t("Hint 1: a clue"), t("Hint 2: a picture"), t("Hint 3: a first step")];
-    return `<p class="sd-ladder-title">${esc(t("Need help? Go one step at a time."))}</p><ol class="sd-rungs">${names.map((n, k) => {
+  function hintStages(hints) {
+    const picture = hints.find((hint) => hint.frame) || hints[1] || hints[0];
+    return [
+      { name: t("Hint 1: notice"), ...hints[0] },
+      { name: t("Hint 2: a relationship"), ...(hints[1] || hints[0]) },
+      {
+        name: t("Hint 3: a representation"),
+        text: t("Open the model and connect the quantities to the picture."),
+        frame: picture?.frame,
+        model: true,
+      },
+      { name: t("Hint 4: a first step"), ...(hints[2] || hints.at(-1) || hints[0]) },
+      {
+        name: t("Hint 5: explain and reconnect"),
+        text: item.explanation || t("Use the model and the relationship together, then try a new problem on your own."),
+        final: true,
+      },
+    ];
+  }
+
+  function ladder(stages) {
+    return `<p class="sd-ladder-title">${esc(t("Need help? Go one step at a time."))}</p><ol class="sd-rungs">${stages.map((h, k) => {
       if (k < rungs) {
-        const h = hints[k];
-        return `<li class="sd-rung on"><strong>${esc(n)}</strong><p>${esc(pick(h.text, ctx.lang()))}</p>${h.frame ? `<div class="sd-mini" aria-hidden="false">${h.frame.svg}</div>` : ""}${k === 2 ? `<p class="sd-cont">${esc(t("Now you take it from here."))}</p>` : ""}</li>`;
+        return `<li class="sd-rung on"><strong>${esc(h.name)}</strong><p>${esc(pick(h.text, ctx.lang()))}</p>${h.frame ? `<div class="sd-mini" aria-hidden="false">${h.frame.svg}</div>` : ""}${h.model ? `<button type="button" class="sd-btn" data-show>${esc(t("Open this problem in the model"))}</button>` : ""}${k === 3 ? `<p class="sd-cont">${esc(t("Now you take it from here."))}</p>` : ""}</li>`;
       }
-      return `<li class="sd-rung"><button type="button" class="sd-btn" data-rung="${k}" ${k > rungs ? "disabled" : ""}>${esc(n)}</button></li>`;
+      const locked = k > rungs || (stages[k].final && attempts < 2);
+      const why = stages[k].final && attempts < 2 ? ` <span>${esc(t("Try twice before opening the full explanation."))}</span>` : "";
+      return `<li class="sd-rung"><button type="button" class="sd-btn" data-rung="${k}" ${locked ? "disabled" : ""}>${esc(stages[k].name)}${why}</button></li>`;
     }).join("")}</ol>`;
   }
 
@@ -93,7 +114,10 @@ export function mountTry(ctx, root) {
     ctx.refreshRail();
     if (independentMode) {
       independentMode = false;
-      root.querySelector("[data-ladder]").innerHTML = ladder(lesson ? lesson.engine.hints(lesson.spec) : []);
+      root.querySelector("[data-ladder]").innerHTML = ladder(hintStages(lesson ? lesson.engine.hints(lesson.spec) : []));
+    } else if (root.querySelector("[data-ladder] .sd-rung")) {
+      // Re-render after each attempt so the final explanation unlocks exactly after the second try.
+      root.querySelector("[data-ladder]").innerHTML = ladder(hintStages(lesson ? lesson.engine.hints(lesson.spec) : []));
     }
     root.querySelector("input").select();
   }
@@ -106,13 +130,13 @@ export function mountTry(ctx, root) {
     const rung = e.target.closest("[data-rung]");
     if (rung) {
       rungs = Math.max(rungs, Number(rung.dataset.rung) + 1);
-      const hints = lesson.engine.hints(lesson.spec);
-      root.querySelector("[data-ladder]").innerHTML = ladder(hints);
-      ctx.say(pick(hints[rungs - 1].text, ctx.lang()));
+      const stages = hintStages(lesson.engine.hints(lesson.spec));
+      root.querySelector("[data-ladder]").innerHTML = ladder(stages);
+      ctx.say(pick(stages[rungs - 1].text, ctx.lang()));
       return;
     }
     if (e.target.closest("[data-help]")) {
-      root.querySelector("[data-ladder]").innerHTML = ladder(lesson.engine.hints(lesson.spec));
+      root.querySelector("[data-ladder]").innerHTML = ladder(hintStages(lesson.engine.hints(lesson.spec)));
       return;
     }
     const nw = e.target.closest("[data-new]");
