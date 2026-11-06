@@ -14,6 +14,13 @@ const PLACES = [
 ];
 const num = (text) => String(text).replaceAll(",", "");
 const sign = (n) => (n < 0 ? "−" : "+");
+const gcd = (a, b) => {
+  let x = Math.abs(a);
+  let y = Math.abs(b);
+  while (y) [x, y] = [y, x % y];
+  return x || 1;
+};
+const lcm = (a, b) => Math.abs(a * b) / gcd(a, b) || 1;
 
 function comparePlaces(a, b) {
   const [x, y] = [num(a), num(b)];
@@ -161,21 +168,91 @@ const BUILDERS = [
   ],
   [
     /^(\d+)\/(\d+) ([+−]) (\d+)\/(\d+) = \?$/,
-    (a, b, op, c, d) =>
-      b === d
-        ? [
-            `The bottoms are the same, so ${op === "+" ? "add" : "subtract"} the tops.`,
-            `Keep ${b} on the bottom.`,
-          ]
-        : [
-            `The bottoms are different. Find a common denominator, a bottom both share.`,
-            `Change both fractions to that bottom.`,
-            `Then ${op === "+" ? "add" : "subtract"} the tops. Simplify if you can.`,
-          ],
+    (a, b, op, c, d) => {
+      a = Number(a);
+      b = Number(b);
+      c = Number(c);
+      d = Number(d);
+      if (b === d) {
+        const resNum = op === "+" ? a + c : a - c;
+        const g = gcd(Math.abs(resNum), b);
+        const simpN = resNum / g;
+        const simpD = b / g;
+        const steps = [
+          `The denominators match (${b}), so ${op === "+" ? "add" : "subtract"} the tops: ${a} ${op} ${c} = ${resNum}.`,
+          `Keep the denominator: raw result = ${resNum}/${b}.`,
+        ];
+        if (g > 1) {
+          steps.push(`Find the common factor to reduce: GCF = ${g}.`);
+          steps.push(`Divide top and bottom by ${g}: (${resNum} ÷ ${g}) / (${b} ÷ ${g}) = ${simpN}/${simpD}.`);
+        }
+        if (simpN > simpD && simpD > 1) {
+          const w = Math.floor(simpN / simpD);
+          const r = simpN % simpD;
+          steps.push(`Convert improper fraction to mixed number: ${simpN} ÷ ${simpD} = ${w} ${r}/${simpD}.`);
+        }
+        return steps;
+      }
+      const common = lcm(b, d);
+      const mult1 = common / b;
+      const mult2 = common / d;
+      const eqA = a * mult1;
+      const eqC = c * mult2;
+      const resNum = op === "+" ? eqA + eqC : eqA - eqC;
+      const g = gcd(Math.abs(resNum), common);
+      const simpN = resNum / g;
+      const simpD = common / g;
+      const steps = [
+        `Find the least common denominator of ${b} and ${d}: LCD = ${common}.`,
+        `Rewrite first fraction: ${a}/${b} = ${eqA}/${common}.`,
+        `Rewrite second fraction: ${c}/${d} = ${eqC}/${common}.`,
+        `${op === "+" ? "Add" : "Subtract"} the numerators: ${eqA} ${op} ${eqC} = ${resNum}.`,
+        `Raw unreduced result = ${resNum}/${common}.`,
+      ];
+      if (g > 1) {
+        steps.push(`Find the common factor to reduce: GCF = ${g}.`);
+        steps.push(`Divide top and bottom by ${g}: (${resNum} ÷ ${g}) / (${common} ÷ ${g}) = ${simpN}/${simpD}.`);
+      } else {
+        steps.push(`${resNum}/${common} is already in simplest form (GCF = 1).`);
+      }
+      if (simpN > simpD && simpD > 1) {
+        const w = Math.floor(simpN / simpD);
+        const r = simpN % simpD;
+        steps.push(`Convert improper fraction to mixed number: ${simpN} ÷ ${simpD} = ${w} ${r}/${simpD}.`);
+      }
+      return steps;
+    },
   ],
   [
     /^(\d+)\/(\d+) × (\d+)\/(\d+) = \?$/,
-    () => [`Multiply the tops together.`, `Multiply the bottoms together.`, `Simplify if you can.`],
+    (a, b, c, d) => {
+      a = Number(a);
+      b = Number(b);
+      c = Number(c);
+      d = Number(d);
+      const top = a * c;
+      const bot = b * d;
+      const g = gcd(top, bot);
+      const simpT = top / g;
+      const simpB = bot / g;
+      const steps = [
+        `Multiply the numerators across: ${a} × ${c} = ${top}.`,
+        `Multiply the denominators across: ${b} × ${d} = ${bot}.`,
+        `Raw unreduced product = ${top}/${bot}.`,
+      ];
+      if (g > 1) {
+        steps.push(`Find the common factor to reduce: GCF = ${g}.`);
+        steps.push(`Divide top and bottom by ${g}: (${top} ÷ ${g}) / (${bot} ÷ ${g}) = ${simpT}/${simpB}.`);
+      } else {
+        steps.push(`${top}/${bot} is already in simplest form (GCF = 1).`);
+      }
+      if (simpT > simpB && simpB > 1) {
+        const w = Math.floor(simpT / simpB);
+        const r = simpT % simpB;
+        steps.push(`Convert improper fraction to mixed number: ${simpT} ÷ ${simpB} = ${w} ${r}/${simpB}.`);
+      }
+      return steps;
+    },
   ],
   [
     /^(\d+)\/(\d+) ÷ (\d+)\/(\d+) = \?$/,
@@ -183,40 +260,69 @@ const BUILDERS = [
   ],
   [
     /^What is (\d+)\/(\d+) of (\d+)\?$/,
-    (n, d, w) => [
-      `The bottom number ${d} says: split ${w} into ${d} equal groups.`,
-      `Find the size of one group.`,
-      `The top number ${n} says: take ${n} of those groups.`,
-    ],
+    (n, d, w) => {
+      n = Number(n);
+      d = Number(d);
+      w = Number(w);
+      const oneGroup = w / d;
+      const total = oneGroup * n;
+      return [
+        `Split ${w} into ${d} equal parts: ${w} ÷ ${d} = ${oneGroup}.`,
+        `Take ${n} of those parts: ${n} × ${oneGroup} = ${total}.`,
+      ];
+    },
   ],
   [
     /^(\d+):(\d+) = (\d+):□$/,
-    (a, b, c) => [
-      `What times ${a} makes ${c}?`,
-      `Multiply ${b} by that same number.`,
-    ],
+    (a, b, c) => {
+      a = Number(a);
+      b = Number(b);
+      c = Number(c);
+      const factor = c / a;
+      return [
+        `Find the scale factor: ${c} ÷ ${a} = ${factor}.`,
+        `Multiply ${b} by that same factor: ${b} × ${factor} = ${b * factor}.`,
+      ];
+    },
   ],
   [
     /^(\d+):(\d+) = □:(\d+)$/,
-    (a, b, d) => [
-      `What times ${b} makes ${d}?`,
-      `Multiply ${a} by that same number.`,
-    ],
+    (a, b, d) => {
+      a = Number(a);
+      b = Number(b);
+      d = Number(d);
+      const factor = d / b;
+      return [
+        `Find the scale factor: ${d} ÷ ${b} = ${factor}.`,
+        `Multiply ${a} by that same factor: ${a} × ${factor} = ${a * factor}.`,
+      ];
+    },
   ],
   [
     /^([\d.]+) for (\d+) items\. How much for 1 item\?$/,
-    (total, n) => [
-      `A unit rate is the amount for 1 item.`,
-      `Share ${total} equally among ${n} items: ${total} ÷ ${n}.`,
-    ],
+    (total, n) => {
+      const t = Number(total);
+      const count = Number(n);
+      const unit = Number((t / count).toFixed(2));
+      return [
+        `A unit rate is the amount for 1 item.`,
+        `Share ${total} equally among ${n} items: ${total} ÷ ${n} = ${unit}.`,
+      ];
+    },
   ],
   [
     /^What is (\d+)% of (\d+)\?$/,
-    (p, w) => [
-      `${p}% means ${p} out of every 100.`,
-      `Write it as ${p}/100. Or use 10% or 50% as a shortcut.`,
-      `Multiply that by ${w}.`,
-    ],
+    (p, w) => {
+      p = Number(p);
+      w = Number(w);
+      const unit100 = w / 100;
+      const ans = (p * w) / 100;
+      return [
+        `${p}% means ${p} out of 100: write as ${p}/100.`,
+        `Find 1% of ${w}: ${w} ÷ 100 = ${unit100}.`,
+        `Multiply by ${p}: ${p} × ${unit100} = ${ans}.`,
+      ];
+    },
   ],
   [
     /^(\d+) with a (\d+)% (increase|decrease) equals what\?$/,
@@ -234,12 +340,23 @@ const BUILDERS = [
   ],
   [
     /^(?:(\d+))?x ([+−]) (\d+) = (-?\d+)\. Find x\.$/,
-    (k, op, c) => [
-      `Get x alone. First undo the ${op === "+" ? "adding" : "subtracting"}: ${op === "+" ? "subtract" : "add"} ${c} on both sides.`,
-      k
-        ? `Then undo the multiplying: divide both sides by ${k}.`
-        : `Do the same thing to both sides.`,
-    ],
+    (k, op, c, d) => {
+      const kNum = k ? Number(k) : 1;
+      const cNum = Number(c);
+      const dNum = Number(d);
+      const rem = op === "+" ? dNum - cNum : dNum + cNum;
+      const ans = rem / kNum;
+      if (kNum === 1) {
+        return [
+          `Undo ${op === "+" ? "addition" : "subtraction"} of ${c} on both sides.`,
+          `Calculate: x = ${ans}.`,
+        ];
+      }
+      return [
+        `First undo ${op === "+" ? "adding" : "subtracting"} ${c}: ${kNum}x = ${rem}.`,
+        `Then divide both sides by ${kNum}: x = ${ans}.`,
+      ];
+    },
   ],
   [
     /^\|(-?\d+)\| = \?$/,

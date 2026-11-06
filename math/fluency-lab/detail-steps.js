@@ -50,13 +50,102 @@ function decimalStep(textA, op, textB) {
 }
 
 function fractionAddSub(a, b, op, c, d) {
+  a = Number(a);
+  b = Number(b);
+  c = Number(c);
+  d = Number(d);
+  if (b === d) {
+    const resNum = op === "+" ? a + c : a - c;
+    const g = gcd(Math.abs(resNum), b);
+    const simpN = resNum / g;
+    const simpD = b / g;
+    const steps = [
+      `The denominators match (${b}), so ${op === "+" ? "add" : "subtract"} the tops: ${a} ${op} ${c} = ${resNum}.`,
+      `Keep the denominator: raw result = ${resNum}/${b}.`,
+    ];
+    if (g > 1) {
+      steps.push(`Find the common factor to reduce: GCF = ${g}.`);
+      steps.push(`Divide top and bottom by ${g}: (${resNum} ÷ ${g}) / (${b} ÷ ${g}) = ${simpN}/${simpD}.`);
+    } else {
+      steps.push(`${resNum}/${b} is already in simplest form (GCF = 1).`);
+    }
+    if (simpN > simpD && simpD > 1) {
+      const w = Math.floor(simpN / simpD);
+      const r = simpN % simpD;
+      steps.push(`Convert improper fraction to mixed number: ${simpN} ÷ ${simpD} = ${w} ${r}/${simpD}.`);
+    }
+    return ending(steps);
+  }
   const common = lcm(b, d);
-  const verb = op === "+" ? "Add" : "Subtract";
-  if (b === d) return [`The denominator (bottom number) is ${b} in both. The pieces match.`, `${verb} the tops: ${a} ${op} ${c}. Keep ${b} on the bottom.`, `Simplify if you can. Divide top and bottom by the same number.`];
-  return [`The bottoms are different: ${b} and ${d}. Change both to the common denominator, ${common}.`, `Multiply top and bottom by the same number. ${a}/${b} = ${(a * common) / b}/${common}. ${c}/${d} = ${(c * common) / d}/${common}.`, `${verb} the new tops: ${(a * common) / b} ${op} ${(c * common) / d}. Keep ${common} on the bottom. Then simplify.`];
+  const mult1 = common / b;
+  const mult2 = common / d;
+  const eqA = a * mult1;
+  const eqC = c * mult2;
+  const resNum = op === "+" ? eqA + eqC : eqA - eqC;
+  const g = gcd(Math.abs(resNum), common);
+  const simpN = resNum / g;
+  const simpD = common / g;
+  const steps = [
+    `Find the least common denominator: LCD = ${common}.`,
+    `Rewrite first fraction: ${a}/${b} = ${eqA}/${common}.`,
+    `Rewrite second fraction: ${c}/${d} = ${eqC}/${common}.`,
+    `${op === "+" ? "Add" : "Subtract"} the numerators: ${eqA} ${op} ${eqC} = ${resNum}.`,
+    `Raw unreduced result = ${resNum}/${common}.`,
+  ];
+  if (g > 1) {
+    steps.push(`Find the common factor to reduce: GCF = ${g}.`);
+    steps.push(`Divide top and bottom by ${g}: (${resNum} ÷ ${g}) / (${common} ÷ ${g}) = ${simpN}/${simpD}.`);
+  } else {
+    steps.push(`${resNum}/${common} is already in simplest form (GCF = 1).`);
+  }
+  if (simpN > simpD && simpD > 1) {
+    const w = Math.floor(simpN / simpD);
+    const r = simpN % simpD;
+    steps.push(`Convert improper fraction to mixed number: ${simpN} ÷ ${simpD} = ${w} ${r}/${simpD}.`);
+  }
+  return ending(steps);
 }
 
-const fractionOfWhole = (a, b, w) => [`Split ${w} into ${b} equal groups: ${w} ÷ ${b}.`, `One group is 1/${b} of ${w}.`, `Now take ${a} of those groups. Multiply ${a} × the size of one group.`];
+function fractionMul(a, b, c, d) {
+  a = Number(a);
+  b = Number(b);
+  c = Number(c);
+  d = Number(d);
+  const top = a * c;
+  const bot = b * d;
+  const g = gcd(top, bot);
+  const simpT = top / g;
+  const simpB = bot / g;
+  const steps = [
+    `Multiply the numerators across: ${a} × ${c} = ${top}.`,
+    `Multiply the denominators across: ${b} × ${d} = ${bot}.`,
+    `Raw unreduced product = ${top}/${bot}.`,
+  ];
+  if (g > 1) {
+    steps.push(`Find the common factor to reduce: GCF = ${g}.`);
+    steps.push(`Divide top and bottom by ${g}: (${top} ÷ ${g}) / (${bot} ÷ ${g}) = ${simpT}/${simpB}.`);
+  } else {
+    steps.push(`${top}/${bot} is already in simplest form (GCF = 1).`);
+  }
+  if (simpT > simpB && simpB > 1) {
+    const w = Math.floor(simpT / simpB);
+    const r = simpT % simpB;
+    steps.push(`Convert improper fraction to mixed number: ${simpT} ÷ ${simpB} = ${w} ${r}/${simpB}.`);
+  }
+  return ending(steps);
+}
+
+function fractionOfWhole(a, b, w) {
+  a = Number(a);
+  b = Number(b);
+  w = Number(w);
+  const oneGroup = w / b;
+  const total = oneGroup * a;
+  return ending([
+    `Split ${w} into ${b} equal parts: ${w} ÷ ${b} = ${oneGroup}.`,
+    `Take ${a} of those parts: ${a} × ${oneGroup} = ${total}.`,
+  ]);
+}
 
 const SQUARES = Array.from({ length: 21 }, (_, i) => i * i);
 const signWord = (value) => (value < 0 ? "negative" : "positive");
@@ -80,9 +169,9 @@ const DETAIL = [
     }
     return ending([`Split ${fmt(y)} into ${fmt(tens)} + ${y % 10}.`, `${fmt(tens)} × ${fmt(x)} = ${fmt(tens * x)}`, `${y % 10} × ${fmt(x)} = ${fmt((y % 10) * x)}`, `Add the two parts: ${fmt(tens * x)} + ${fmt((y % 10) * x)} = ${fmt(x * y)}`]);
   }],
-  [/^(\d+)\/(\d+) ([+−]) (\d+)\/(\d+) = \?$/, (a, b, op, c, d) => fractionAddSub(n(a), n(b), op, n(c), n(d))],
-  [/^(\d+)\/(\d+) × (\d+)\/(\d+) = \?$/, (a, b, c, d) => [`Multiply the numerators (tops): ${a} × ${c}.`, `Multiply the denominators (bottoms): ${b} × ${d}.`, `Write the top product over the bottom product. Simplify if you can.`]],
-  [/^(\d+)\/(\d+) ÷ (\d+)\/(\d+) = \?$/, (a, b, c, d) => divideSteps(a, b, c, d)],
+  [/^(\d+)\/(\d+) ([+−]) (\d+)\/(\d+) = \?$/, (a, b, op, c, d) => fractionAddSub(a, b, op, c, d)],
+  [/^(\d+)\/(\d+) × (\d+)\/(\d+) = \?$/, (a, b, c, d) => fractionMul(a, b, c, d)],
+  [/^(\d+)\/(\d+) ÷ (\d+)\/(\d+) = \?$/, (a, b, c, d) => ending(divideSteps(a, b, c, d))],
   [/^What is (\d+)\/(\d+) of (\d+)\?$/, (a, b, w) => fractionOfWhole(a, b, w)],
   [/^(\d+)\/(\d+) ___ (\d+)\/(\d+)$/, (a, b, c, d) => [`The bottoms are different, so the pieces are different sizes.`, `Multiply each top by the other bottom: ${a} × ${d} and ${c} × ${b}.`, `The bigger product goes with the bigger fraction. Choose the symbol.`]],
   [/^(\d+)\/(\d+) = (\d+)\/□$/, (a, b, c) => (n(c) % n(a) === 0 ? [`Look at the tops: ${a} became ${c}. What times ${a} makes ${c}?`, `The top was multiplied by ${n(c) / n(a)}.`, `Multiply the bottom by ${n(c) / n(a)} too: ${b} × ${n(c) / n(a)}. The new fraction is equivalent, the same amount.`] : null)],
@@ -101,8 +190,18 @@ const DETAIL = [
   [/^(\d+) quarters \+ (\d+) dimes \+ (\d+) nickels \+ (\d+) pennies/, (q, d, k, p) => [`Coin values: quarter 25¢, dime 10¢, nickel 5¢, penny 1¢.`, `Find each group: ${q} × 25¢, ${d} × 10¢, ${k} × 5¢, ${p} × 1¢.`, `Add the four amounts.`]],
   [/^Evaluate (\d*)x ([+−]) (\d+) when x = (-?\d+)\.$/, (c, op, k, v) => [`Write ${v} where x is: ${c || 1}(${v}) ${op} ${k}. ${c || 1}(${v}) means ${c || 1} × (${v}).`, `Multiply first, before you ${op === "+" ? "add" : "subtract"}: ${c || 1} × (${v}).`, `Then ${op === "+" ? "add" : "subtract"} ${k}.`]],
   [/^If y = (-?\d*)x ([+−]) (\d+), find y when x = (-?\d+)\.$/, (c, op, k, v) => [`Write ${v} where x is: y = ${c || 1}(${v}) ${op} ${k}.`, `Multiply first, before you ${op === "+" ? "add" : "subtract"}: ${c || 1} × (${v}).`, `Then ${op === "+" ? "add" : "subtract"} ${k} to get y.`]],
-  [/^x ([+−]) (\d+) = (-?\d+)\. Find x\.$/, (op, k, r) => [`Get x alone. Right now ${k} is ${op === "+" ? "added to" : "taken from"} x.`, `Undo it: ${op === "+" ? "subtract" : "add"} ${k} on both sides. Both sides stay equal.`, `Work out ${r} ${op === "+" ? "−" : "+"} ${k} to find x.`]],
-  [/^(\d+)x ([+−]) (\d+) = (-?\d+)\. Find x\.$/, (c, op, k, r) => [`Get x alone. First undo the ${op === "+" ? "adding" : "subtracting"}: ${op === "+" ? "subtract" : "add"} ${k} on both sides.`, `Work out ${r} ${op === "+" ? "−" : "+"} ${k}. Now only ${c}x is left.`, `${c}x means ${c} times x. Divide both sides by ${c}.`]],
+  [/^x ([+−]) (\d+) = (-?\d+)\. Find x\.$/, (op, k, r) => ending([
+    `Get x alone. Undo ${op === "+" ? "addition" : "subtraction"} of ${k}: ${op === "+" ? "subtract" : "add"} ${k} on both sides.`,
+    `Calculate the result: x = ${op === "+" ? n(r) - n(k) : n(r) + n(k)}.`,
+  ])],
+  [/^(\d+)x ([+−]) (\d+) = (-?\d+)\. Find x\.$/, (c, op, k, r) => {
+    const rem = op === "+" ? n(r) - n(k) : n(r) + n(k);
+    const ans = rem / n(c);
+    return ending([
+      `First undo ${op === "+" ? "adding" : "subtracting"} ${k}: ${c}x = ${rem}.`,
+      `Then divide both sides by ${c}: x = ${ans}.`,
+    ]);
+  }],
   [/^(-?\d+) × \((-?\d+)\) = \?$|^(-?\d+) × (-?\d+) = \?$/, (...m) => {
     const [a, b] = m[0] !== undefined ? [n(m[0]), n(m[1])] : [n(m[2]), n(m[3])];
     const same = (a < 0) === (b < 0);
@@ -118,8 +217,26 @@ const DETAIL = [
   }],
   [/^x \+ y = (-?\d+) and x − y = (-?\d+)\. Find x\.$/, (s, d) => [`Add the two equations: (x + y) + (x − y) and ${s} + (${d}).`, `The y and −y cancel each other out. Only 2x is left.`, `Divide both sides by 2 to find x. 2x means 2 times x.`]],
   [/^Find the slope through \((-?\d+), (-?\d+)\) and \((-?\d+), (-?\d+)\)\.$/, (x1, y1, x2, y2) => [`Slope tells how steep a line is. Slope = rise ÷ run.`, `Rise is the change in y (up or down): ${y2} − (${y1}).`, `Run is the change in x (across): ${x2} − (${x1}). Then divide rise ÷ run.`]],
-  [/^What is (\d+)% of (\d+)\?$/, (p, w) => [`Percent means "out of 100", so ${p}% is ${p}/100.`, `"Of" means multiply: ${p}/100 × ${w}.`, n(p) === 10 ? `Shortcut: 10% is one tenth, so 10% of ${w} is ${w} ÷ 10.` : n(p) % 10 === 0 ? `Shortcut: 10% of ${w} is ${w} ÷ 10. Use it to build ${p}%.` : `Shortcut: 1% is ${w} ÷ 100. Multiply that by ${p}.`]],
-  [/^(\d[\d,.]*) for (\d+) items\. How much for 1 item\?$/, (total, items) => [`A unit rate is the amount for 1 item.`, `Share ${total} equally among ${items} items: ${total} ÷ ${items}.`, `One share is the amount for 1 item.`]],
+  [/^What is (\d+)% of (\d+)\?$/, (p, w) => {
+    const pNum = n(p);
+    const wNum = n(w);
+    const unit100 = wNum / 100;
+    const ans = (pNum * wNum) / 100;
+    return ending([
+      `${pNum}% means ${pNum} out of 100: write as ${pNum}/100.`,
+      `Find 1% of ${wNum}: ${wNum} ÷ 100 = ${unit100}.`,
+      `Multiply by ${pNum}: ${pNum} × ${unit100} = ${ans}.`,
+    ]);
+  }],
+  [/^(\d[\d,.]*) for (\d+) items\. How much for 1 item\?$/, (total, items) => {
+    const tNum = n(total);
+    const iNum = n(items);
+    const unitRate = Number((tNum / iNum).toFixed(2));
+    return ending([
+      `A unit rate is the amount for 1 item.`,
+      `Share ${total} equally among ${items} items: ${total} ÷ ${items} = ${unitRate}.`,
+    ]);
+  }],
   [/^(\d+) of (\d+) equal sections are winning sections\./, (a, b) => [`Probability = wanted outcomes out of all outcomes.`, `Wanted: ${a} winning sections. All: ${b} sections.`, `Write wanted over all as a fraction. Simplify if you can.`]],
   [/^A right triangle has legs (\d+) and (\d+)\./, (a, b) => [`In a right triangle, a² + b² = c². The legs are a and b. The hypotenuse c is the longest side.`, `Square each leg: ${a} × ${a} and ${b} × ${b}.`, `Add the two squares. Then take the square root to find c.`]],
   [/^(\d+)\^(\d+) = \?$/, (base, exp) => [`The exponent ${exp} says to write ${base} ${exp} times, with × between.`, `Write it out: ${Array(Math.min(n(exp), 6)).fill(base).join(" × ")}${n(exp) > 6 ? " …" : ""}.`, `Multiply two at a time, from left to right.`]],

@@ -1,7 +1,7 @@
-// "Your turn" steps: a guided step that ends in a partial result ("34 + 50 = 84") asks the learner to type that
-// number before it is shown. The result is kept here, never in the page, and a step opens by itself after
+// "Your turn" steps: a guided step that ends in a partial result ("34 + 50 = 84" or "2 × 5 = 10" or "raw product = 10/12") asks the learner to type that
+// number or fraction before it is shown. The result is kept here, never in the page, and a step opens by itself after
 // two wrong tries so nobody is stuck.
-const FILL = /^(.*\d.*\S) = (-?[\d,]*\.?\d+)$/;
+const FILL = /^(.*\d.*\S) = (-?[\d,]*\.?\d+(?:\/\d+)?)$/;
 const solved = new Set();
 const pending = new Map();
 const wrong = new Map();
@@ -19,8 +19,15 @@ export const isSolved = (key) => solved.has(key);
 export const register = (key, result) => pending.set(key, result);
 export const normalize = (value) => String(value).replace(/[,\s]/g, "").replace("−", "-");
 
-const matches = (value, expected) =>
-  normalize(value) === normalize(expected) || (value.trim() !== "" && Number(normalize(value)) === Number(normalize(expected)));
+const matches = (value, expected) => {
+  const normV = normalize(value);
+  const normE = normalize(expected);
+  if (normV === normE) return true;
+  if (value.trim() !== "" && !normE.includes("/") && !normV.includes("/")) {
+    return Number(normV) === Number(normE);
+  }
+  return false;
+};
 
 // True when the typed value is already right (no state change), so a correct entry can open the step at once.
 export const peekFill = (key, value) => pending.has(key) && matches(value, pending.get(key));
