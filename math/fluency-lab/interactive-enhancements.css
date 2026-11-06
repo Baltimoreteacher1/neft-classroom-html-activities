@@ -1,0 +1,911 @@
+/* Interactive Enhancements (Stages 1-4)
+   Styles for Glitch Hunter, Strategy Selector, Confidence Gauge, and Speech Reasoning Sparkles */
+
+/* 1. Glitch Hunter (Bug Hunt) */
+.glitch-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-left: 6px solid #f59e0b;
+  border-radius: 10px;
+  padding: 1rem 1.15rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+  font-family: var(--pub-sans, system-ui, sans-serif);
+}
+
+.glitch-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.glitch-tag {
+  font-size: 0.8rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #b45309;
+}
+
+.glitch-title {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.glitch-sub {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #475569;
+  line-height: 1.4;
+}
+
+.glitch-steps-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.glitch-step-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.65rem 0.85rem;
+  background: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.glitch-step-item:hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+}
+
+.glitch-step-item.is-flagged {
+  border-color: #f59e0b;
+  background: #fffbeb;
+}
+
+.glitch-step-item.glitch-correct {
+  border-color: #10b981;
+  background: #ecfdf5;
+}
+
+.glitch-step-badge {
+  font-size: 0.75rem;
+  font-weight: 800;
+  background: #e2e8f0;
+  color: #334155;
+  padding: 0.15rem 0.45rem;
+  border-radius: 4px;
+}
+
+.glitch-step-text {
+  flex: 1;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.glitch-flag-btn {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #64748b;
+  background: #ffffff;
+  padding: 0.2rem 0.5rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+}
+
+.glitch-step-item.is-flagged .glitch-flag-btn {
+  background: #f59e0b;
+  color: #ffffff;
+  border-color: #d97706;
+}
+
+.glitch-diagnosis-box,
+.glitch-repair-box {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  background: #f8fafc;
+  border: 1px dashed #cbd5e1;
+  border-radius: 8px;
+}
+
+.glitch-box-title {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.glitch-chips-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.glitch-chip {
+  text-align: left;
+  padding: 0.5rem 0.75rem;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #334155;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.glitch-chip:hover {
+  background: #f1f5f9;
+}
+
+.glitch-chip.is-selected {
+  border-color: #3b82f6;
+  background: #eff6ff;
+  color: #1e40af;
+}
+
+.glitch-chip.chip-correct {
+  border-color: #10b981;
+  background: #ecfdf5;
+  color: #065f46;
+}
+
+.glitch-repair-input-row {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.glitch-repair-input {
+  flex: 1;
+  padding: 0.45rem 0.75rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
+.glitch-repair-submit {
+  padding: 0.45rem 0.95rem;
+  background: #10b981;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.glitch-feedback-banner {
+  padding: 0.6rem 0.85rem;
+  border-radius: 6px;
+  font-size: 0.88rem;
+  line-height: 1.4;
+}
+
+.glitch-feedback-banner.success {
+  background: #ecfdf5;
+  color: #065f46;
+  border: 1px solid #a7f3d0;
+}
+
+.glitch-feedback-banner.warning {
+  background: #fffbeb;
+  color: #92400e;
+  border: 1px solid #fde68a;
+}
+
+.glitch-feedback-banner.resolved {
+  background: #eff6ff;
+  color: #1e40af;
+  border: 1px solid #bfdbfe;
+}
+
+/* 2. Strategy Selector */
+.strategy-selector-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  padding: 0.85rem;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+}
+
+.strategy-selector-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  font-size: 0.88rem;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.strategy-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.65rem;
+}
+
+.strat-choice-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  padding: 0.75rem;
+  background: #ffffff;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.strat-choice-card:hover {
+  border-color: #cbd5e1;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.strat-choice-card.is-active {
+  border-color: #2563eb;
+  background: #eff6ff;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+}
+
+.strat-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.strat-badge {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #475569;
+}
+
+.strat-recommended-tag {
+  font-size: 0.72rem;
+  font-weight: 800;
+  background: #fef3c7;
+  color: #92400e;
+  padding: 0.1rem 0.4rem;
+  border-radius: 4px;
+}
+
+.strat-title {
+  font-size: 0.92rem;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.strat-choice-card.is-active .strat-title {
+  color: #1e40af;
+}
+
+.strat-desc {
+  margin: 0;
+  font-size: 0.8rem;
+  color: #475569;
+  line-height: 1.35;
+}
+
+/* 3. Metacognitive Confidence Gauge */
+.confidence-gauge-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  margin-top: 0.5rem;
+}
+
+.conf-gauge-title {
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: #334155;
+}
+
+.conf-gauge-row {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.conf-gauge-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.65rem;
+  background: #ffffff;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 6px;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.15s ease;
+}
+
+.conf-gauge-btn:hover {
+  background: #f1f5f9;
+}
+
+.conf-gauge-btn.is-active {
+  border-color: #10b981;
+  background: #ecfdf5;
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+}
+
+.conf-emoji {
+  font-size: 1.25rem;
+}
+
+.conf-label {
+  display: flex;
+  flex-direction: column;
+}
+
+.conf-label strong {
+  font-size: 0.82rem;
+  color: #0f172a;
+}
+
+.conf-label small {
+  font-size: 0.72rem;
+  color: #64748b;
+}
+
+/* 4. Reasoning Sparkles */
+.math-sparkle-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.2rem 0.5rem;
+  background: #f0fdf4;
+  border: 1px solid #86efac;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #166534;
+  animation: sparklePop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes sparklePop {
+  0% { transform: scale(0.6); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+
+/* 5. Coordinate Explorer */
+.coord-explorer-wrap,
+.triangle-shear-wrap,
+.base10-mat-wrap,
+.ratio-scaler-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 0.85rem;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  font-family: var(--pub-sans, system-ui, sans-serif);
+}
+
+.coord-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.coord-title {
+  font-size: 0.92rem;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.coord-badges {
+  display: flex;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+}
+
+.coord-badge {
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.coord-badge.point-a { background: #dbeafe; color: #1e40af; }
+.coord-badge.point-b { background: #d1fae5; color: #065f46; }
+.coord-badge.slope-badge { background: #e0e7ff; color: #3730a3; }
+.coord-badge.dist-badge { background: #fef3c7; color: #92400e; }
+
+.coord-stage-box {
+  width: 100%;
+  height: 280px;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.coord-svg {
+  width: 100%;
+  height: 100%;
+}
+
+.coord-controls-row {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.coord-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.75rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  background: #ffffff;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #334155;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.coord-btn:hover {
+  background: #f1f5f9;
+  border-color: #94a3b8;
+}
+
+.coord-btn.is-highlighted {
+  background: #fef3c7;
+  border-color: #f59e0b;
+  color: #92400e;
+  animation: pulseHighlight 1s infinite alternate;
+}
+
+@keyframes pulseHighlight {
+  0% { transform: scale(1); }
+  100% { transform: scale(1.02); }
+}
+
+/* 6. Triangle Shear Slider */
+.tri-shear-slider-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.tri-shear-slider {
+  flex: 1;
+  height: 6px;
+  border-radius: 3px;
+  accent-color: #f59e0b;
+  cursor: pointer;
+}
+
+/* 7. Base-10 Regrouping Mat */
+.pv-columns-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.65rem;
+}
+
+.pv-col {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  background: #ffffff;
+  overflow: hidden;
+}
+
+.pv-col.pv-needs-group {
+  border-color: #f59e0b;
+  box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.2);
+}
+
+.pv-col-header {
+  padding: 0.35rem 0.5rem;
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-align: center;
+  color: #ffffff;
+}
+
+.pv-col-header.hundreds { background: #3b82f6; }
+.pv-col-header.tens { background: #10b981; }
+.pv-col-header.ones { background: #f59e0b; }
+
+.pv-disks-box {
+  min-height: 110px;
+  padding: 0.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  align-content: flex-start;
+  background: #fafafa;
+}
+
+.pv-disk {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-size: 0.65rem;
+  font-weight: 800;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+  animation: diskDrop 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes diskDrop {
+  0% { transform: scale(0.3); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.pv-col-actions {
+  display: flex;
+  border-top: 1px solid #e2e8f0;
+}
+
+.pv-mini-btn {
+  flex: 1;
+  padding: 0.3rem 0;
+  border: none;
+  background: transparent;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #475569;
+  cursor: pointer;
+}
+
+.pv-mini-btn:hover { background: #f1f5f9; color: #0f172a; }
+.pv-mini-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+/* 8. Ratio Scaler */
+.ratio-display-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+  gap: 0.85rem;
+}
+
+@media (max-width: 640px) {
+  .ratio-display-grid { grid-template-columns: 1fr; }
+}
+
+.ratio-tapes-column {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.ratio-tape-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.ratio-tape-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #334155;
+}
+
+.ratio-tape-track {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  padding: 0.25rem;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  min-height: 32px;
+}
+
+.ratio-tape-block {
+  width: 22px;
+  height: 24px;
+  border: 1.5px solid;
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: #334155;
+}
+
+.ratio-table-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.ratio-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.78rem;
+  text-align: center;
+}
+
+.ratio-table th {
+  background: #f1f5f9;
+  padding: 0.3rem 0.4rem;
+  border: 1px solid #cbd5e1;
+  font-weight: 800;
+  color: #334155;
+}
+
+.ratio-table td {
+  padding: 0.3rem 0.4rem;
+  border: 1px solid #cbd5e1;
+  font-variant-numeric: tabular-nums;
+}
+
+.ratio-row-current {
+  background: #f0fdf4;
+  font-weight: 800;
+  color: #15803d;
+}
+
+
+/* 9. Angle Protractor Studio */
+.angle-protractor-wrap,
+.prime-lab-wrap,
+.prob-sandbox-wrap,
+.net-folder-wrap,
+.function-machine-wrap,
+.unit-rate-wrap,
+.circle-lab-wrap,
+.pythagoras-lab-wrap,
+.box-plot-wrap,
+.integer-vector-wrap,
+.algebra-tiles-wrap,
+.dilation-lab-wrap,
+.proof-words-wrap,
+.trig-wave-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 0.85rem;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  font-family: var(--pub-sans, system-ui, sans-serif);
+}
+
+.coord-point-handle {
+  cursor: grab;
+  transition: transform 0.1s ease;
+}
+
+.coord-point-handle:hover {
+  transform: scale(1.2);
+}
+
+/* 10. Probability Spinner & Stats */
+.prob-stage-grid {
+  display: grid;
+  grid-template-columns: 200px minmax(0, 1fr);
+  gap: 1rem;
+  align-items: center;
+}
+
+@media (max-width: 640px) {
+  .prob-stage-grid { grid-template-columns: 1fr; }
+}
+
+.prob-spinner-box {
+  width: 200px;
+  height: 200px;
+  margin: 0 auto;
+}
+
+.prob-stats-column {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.prob-stat-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  padding: 0.4rem 0.6rem;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+}
+
+.prob-stat-label {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+}
+
+.prob-color-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.prob-stat-bar-track {
+  height: 8px;
+  background: #f1f5f9;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.prob-stat-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.prob-stat-values {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+}
+
+/* 11. Function Machine Box */
+.func-machine-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 0.5rem;
+}
+
+.func-machine-box svg {
+  width: 100%;
+  max-width: 240px;
+}
+
+/* 12. Algebra Tiles Mat & Interactive Balancer */
+.algebra-mat-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  gap: 0.75rem;
+  align-items: center;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+@media (max-width: 640px) {
+  .algebra-mat-grid { grid-template-columns: 1fr; }
+}
+
+.algebra-mat-side {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  background: #f8fafc;
+  border: 1px dashed #cbd5e1;
+  border-radius: 6px;
+  padding: 0.75rem;
+  min-height: 120px;
+}
+
+.algebra-mat-label {
+  font-size: 0.85rem;
+  color: #334155;
+}
+
+.algebra-mat-divider {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+}
+
+.algebra-equals-sign {
+  font-size: 1.75rem;
+  font-weight: 900;
+  color: #1e293b;
+}
+
+.algebra-scale-fulcrum {
+  font-size: 0.9rem;
+  color: #64748b;
+}
+
+.tiles-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.tiles-row-x, .tiles-row-c {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.tile-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 54px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 800;
+  cursor: default;
+  user-select: none;
+}
+
+.tile-x-pos {
+  background: #10b981;
+  color: #ffffff;
+  border: 1px solid #047857;
+}
+
+.tile-x-neg {
+  background: #ef4444;
+  color: #ffffff;
+  border: 1px solid #b91c1c;
+}
+
+.tile-unit {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  cursor: default;
+  user-select: none;
+}
+
+.tile-1-pos {
+  background: #fbbf24;
+  color: #78350f;
+  border: 1px solid #d97706;
+}
+
+.tile-1-neg {
+  background: #f87171;
+  color: #7f1d1d;
+  border: 1px solid #dc2626;
+}
+
+.algebra-action-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  padding: 0.5rem;
+  background: #f1f5f9;
+  border-radius: 6px;
+}
+

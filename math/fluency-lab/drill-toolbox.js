@@ -6,6 +6,25 @@ import { defaults, renderTool } from "./drill-tools.js";
 import { t } from "./i18n.js";
 import { answerStillHidden } from "./live-help.js";
 import { drawerSeed } from "./problem-numbers.js";
+import { mountFractionSlicer, mountScrubbableAreaModel } from "./explorable-manipulatives.js";
+import { mountCoordinateExplorer } from "./coordinate-explorer.js";
+import { mountTriangleShear } from "./triangle-shear.js";
+import { mountBase10Regrouping } from "./base10-regrouping.js";
+import { mountRatioScaler } from "./ratio-scaler.js";
+import { mountAngleProtractor } from "./angle-protractor.js";
+import { mountPrimeFactorLab } from "./prime-factor-lab.js";
+import { mountProbabilitySandbox } from "./probability-sandbox.js";
+import { mountNet3DFolder } from "./net-3d-folder.js";
+import { mountFunctionMachine } from "./function-machine.js";
+import { mountUnitRateComparator } from "./unit-rate-comparator.js";
+import { mountCirclePiLab } from "./circle-pi-lab.js";
+import { mountPythagorasLab } from "./pythagoras-lab.js";
+import { mountBoxWhiskerPlot } from "./box-whisker-plot.js";
+import { mountIntegerVectorHops } from "./integer-vector-hops.js";
+import { mountAlgebraTilesLab } from "./algebra-tiles-lab.js";
+import { mountDilationTransformLab } from "./dilation-transform-lab.js";
+import { mountProofWithoutWords } from "./proof-without-words.js";
+import { mountTrigWaveStudio } from "./trig-wave-studio.js";
 
 const clamp = (n, lo, hi) => Math.max(lo, Math.min(hi, n));
 const esc = (value) =>
@@ -169,6 +188,26 @@ export function createDrillToolbox({ getState, longDivision }) {
         longDivision.wireEvents(container, this.s.div.dividend, this.s.div.divisor, null, {
           hideAnswer: locked,
         });
+      if (this.activeTool === "slicer") mountFractionSlicer(container);
+      if (this.activeTool === "areaScrubber") mountScrubbableAreaModel(container);
+      if (this.activeTool === "coord") mountCoordinateExplorer(container);
+      if (this.activeTool === "triShear") mountTriangleShear(container);
+      if (this.activeTool === "pvMat") mountBase10Regrouping(container);
+      if (this.activeTool === "ratioScale") mountRatioScaler(container);
+      if (this.activeTool === "angle") mountAngleProtractor(container);
+      if (this.activeTool === "primeLab") mountPrimeFactorLab(container);
+      if (this.activeTool === "probSpinner") mountProbabilitySandbox(container);
+      if (this.activeTool === "net3d") mountNet3DFolder(container);
+      if (this.activeTool === "funcMach") mountFunctionMachine(container);
+      if (this.activeTool === "rateComp") mountUnitRateComparator(container);
+      if (this.activeTool === "circlePi") mountCirclePiLab(container);
+      if (this.activeTool === "pythagoras") mountPythagorasLab(container);
+      if (this.activeTool === "boxPlot") mountBoxWhiskerPlot(container);
+      if (this.activeTool === "intVector") mountIntegerVectorHops(container);
+      if (this.activeTool === "algebraTiles") mountAlgebraTilesLab(container);
+      if (this.activeTool === "dilation") mountDilationTransformLab(container);
+      if (this.activeTool === "proofWords") mountProofWithoutWords(container);
+      if (this.activeTool === "trigWave") mountTrigWaveStudio(container);
     },
 
     wire(container) {

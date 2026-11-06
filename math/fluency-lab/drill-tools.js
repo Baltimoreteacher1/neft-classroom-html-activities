@@ -4,6 +4,25 @@
 // unit rate or solved value that the learner has not worked out. Free play ("Try your own numbers") is unlocked.
 import { t } from "./i18n.js";
 import { columnSpec, verticalHtml } from "./vertical-columns.js";
+import { renderFractionSlicer, renderScrubbableAreaModel } from "./explorable-manipulatives.js";
+import { renderCoordinateExplorer } from "./coordinate-explorer.js";
+import { renderTriangleShear } from "./triangle-shear.js";
+import { renderBase10Regrouping } from "./base10-regrouping.js";
+import { renderRatioScaler } from "./ratio-scaler.js";
+import { renderAngleProtractor } from "./angle-protractor.js";
+import { renderPrimeFactorLab } from "./prime-factor-lab.js";
+import { renderProbabilitySandbox } from "./probability-sandbox.js";
+import { renderNet3DFolder } from "./net-3d-folder.js";
+import { renderFunctionMachine } from "./function-machine.js";
+import { renderUnitRateComparator } from "./unit-rate-comparator.js";
+import { renderCirclePiLab } from "./circle-pi-lab.js";
+import { renderPythagorasLab } from "./pythagoras-lab.js";
+import { renderBoxWhiskerPlot } from "./box-whisker-plot.js";
+import { renderIntegerVectorHops } from "./integer-vector-hops.js";
+import { renderAlgebraTilesLab } from "./algebra-tiles-lab.js";
+import { renderDilationTransformLab } from "./dilation-transform-lab.js";
+import { renderProofWithoutWords } from "./proof-without-words.js";
+import { renderTrigWaveStudio } from "./trig-wave-studio.js";
 
 const esc = (value) =>
   String(value)
@@ -37,6 +56,25 @@ export const defaults = () => ({
   },
   div: { dividend: 432, divisor: 12 },
   denominators: [],
+  slicer: { a: 1, b: 2, k: 1 },
+  coord: { p1: { x: 3, y: 4 }, p2: { x: -2, y: -1 } },
+  triShear: { base: 12, height: 8, shearX: 6 },
+  pvMat: { hundreds: 1, tens: 4, ones: 12 },
+  ratioScale: { a: 3, b: 5, multiplier: 2 },
+  angle: { angle: 45, mode: "single" },
+  primeLab: { targetNum: 36, numA: 24, numB: 36, tab: "tree" },
+  probSpinner: { spins: 0, counts: { red: 0, blue: 0, green: 0 } },
+  net3d: { l: 4, w: 3, h: 2, foldPercent: 35 },
+  funcMach: { m: 3, b: -2, currentInput: 3 },
+  rateComp: { itemA: { name: "Package A", quantity: 16, cost: 4.00, unit: "oz" }, itemB: { name: "Package B", quantity: 24, cost: 5.40, unit: "oz" } },
+  circlePi: { radius: 4, mode: "unroll", unrollProgress: 0, wedgeCount: 16 },
+  pythagoras: { a: 3, b: 4, showSquares: true },
+  boxPlot: { data: [12, 14, 15, 18, 19, 20, 22, 25, 28, 30, 32] },
+  intVector: { a: -3, op: "-", b: -5 },
+  algebraTiles: { leftX: 2, leftConst: 3, rightX: 0, rightConst: 11, step: 0 },
+  dilation: { shapeKey: "triangle", k: 1.5, showRays: true },
+  proofWords: { theorem: "parallelogram", progress: 0 },
+  trigWave: { angle: 45 },
 });
 
 // Plain number line for placing a number: click a tick or type a number. No jumps, no hop sizes.
@@ -419,6 +457,26 @@ export function renderTool(name, s, ctx) {
     pizza,
     splitter,
     tape,
+    slicer: (st) => renderFractionSlicer(st.slicer?.a || 1, st.slicer?.b || 2, st.slicer?.k || 1),
+    areaScrubber: (st) => renderScrubbableAreaModel(st.mult?.row || 6, st.mult?.col || 14),
+    coord: (st) => renderCoordinateExplorer(st.coord),
+    triShear: (st) => renderTriangleShear(st.triShear),
+    pvMat: (st) => renderBase10Regrouping(st.pvMat),
+    ratioScale: (st) => renderRatioScaler(st.ratioScale),
+    angle: (st) => renderAngleProtractor(st.angle),
+    primeLab: (st) => renderPrimeFactorLab(st.primeLab),
+    probSpinner: (st) => renderProbabilitySandbox(st.probSpinner),
+    net3d: (st) => renderNet3DFolder(st.net3d),
+    funcMach: (st) => renderFunctionMachine(st.funcMach),
+    rateComp: (st) => renderUnitRateComparator(st.rateComp),
+    circlePi: (st) => renderCirclePiLab(st.circlePi),
+    pythagoras: (st) => renderPythagorasLab(st.pythagoras),
+    boxPlot: (st) => renderBoxWhiskerPlot(st.boxPlot),
+    intVector: (st) => renderIntegerVectorHops(st.intVector),
+    algebraTiles: (st) => renderAlgebraTilesLab(st.algebraTiles),
+    dilation: (st) => renderDilationTransformLab(st.dilation),
+    proofWords: (st) => renderProofWithoutWords(st.proofWords),
+    trigWave: (st) => renderTrigWaveStudio(st.trigWave),
   };
   if (name === "longdivision") return longdivision(s, ctx);
   return tools[name]?.(s, ctx) ?? "";

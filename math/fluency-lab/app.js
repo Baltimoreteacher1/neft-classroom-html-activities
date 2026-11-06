@@ -92,6 +92,16 @@ import { renderPracticeHub } from "./practice-hub.js";
 import { cardCaptions } from "./fraction-division-copy.js";
 import { mountRealityEntry } from "./reality/entry.js";
 import { mountStudio, studioAvailable, studioModeled } from "./studio/studio.js";
+import { renderFractionSlicer, mountFractionSlicer, renderScrubbableAreaModel, mountScrubbableAreaModel, renderPhysicsBalance, mountPhysicsBalance } from "./explorable-manipulatives.js";
+import { GLITCH_CATALOG, renderGlitchHuntCard, mountGlitchHunt } from "./glitch-hunter.js";
+import { getAvailableStrategies, renderStrategySelector, mountStrategySelector } from "./strategy-paths.js";
+import { playConsonantHarmony, playTensionInterval, playResolutionSequence, playStepChime } from "./harmonic-audio.js";
+import { SpeechReasoningEngine, renderConfidenceGauge, mountConfidenceGauge } from "./speech-sparkles.js";
+import { renderWonderCityStudio, mountWonderCityStudio } from "./wonder-city.js";
+import { renderCoordinateExplorer, mountCoordinateExplorer } from "./coordinate-explorer.js";
+import { renderTriangleShear, mountTriangleShear } from "./triangle-shear.js";
+import { renderBase10Regrouping, mountBase10Regrouping } from "./base10-regrouping.js";
+import { renderRatioScaler, mountRatioScaler } from "./ratio-scaler.js";
 
 // teacher-4.js is teacher-only, so the teacher-surface gate refuses it to an anonymous student. A static import of a
 // refused file stops this whole module; awaiting a guarded import instead leaves null for a student and the real
@@ -6456,6 +6466,7 @@ function renderStudentFriendlyExplanation(item, copy) {
         <div class="expl-caption-box" role="status">
           <strong>Equal Slices:</strong> We cut both bars so all slices are equal ${commonDen}ths! Now combine the top slices: ${eq1} ${op} ${eq2} = ${resNum}/${commonDen} = ${escapeHtml(item.displayAnswer)}.
         </div>
+        ${renderFractionSlicer(a, b, m1)}
       </div>
     `;
   } else if (divMatch) {
@@ -6533,6 +6544,7 @@ function renderStudentFriendlyExplanation(item, copy) {
         <div class="expl-caption-box" role="status">
           <strong>Friendly Split:</strong> Think of ${big} as (${s1} + ${s2})! ${small} × ${s1} = ${p1}, and ${small} × ${s2} = ${p2}. Add them together: ${p1} + ${p2} = ${total}!
         </div>
+        ${renderScrubbableAreaModel(small, big, s1)}
       </div>
     `;
   } else if (intMatch && (q.includes("-") || q.includes("−") || q.includes("negative") || q.includes("integer"))) {
@@ -6612,6 +6624,7 @@ function renderStudentFriendlyExplanation(item, copy) {
         <div class="expl-caption-box" role="status">
           <strong>Keep Balanced:</strong> Whatever you remove from the left pan, remove the exact same amount from the right pan to keep the scale level!
         </div>
+        ${renderPhysicsBalance({ coeff: 2, constant: 6, rightTotal: 14 })}
       </div>
     `;
   } else if (isPercent || /ratio|rate|per hour/i.test(q)) {
@@ -6775,6 +6788,22 @@ function wireExplanationWidgets(root, item) {
       }
     }
   }
+  mountFractionSlicer(root, () => {
+    if (soundOn()) playConsonantHarmony();
+  });
+  mountScrubbableAreaModel(root, () => {
+    if (soundOn()) playStepChime(2);
+  });
+  mountPhysicsBalance(root, (bal) => {
+    if (soundOn()) {
+      if (bal.leftRemoved === bal.rightRemoved) playConsonantHarmony();
+      else playTensionInterval();
+    }
+  });
+  mountCoordinateExplorer(root);
+  mountTriangleShear(root);
+  mountBase10Regrouping(root);
+  mountRatioScaler(root);
 }
 
 // Every practice problem carries its own model: the interactive picture of these numbers, or,
@@ -6928,7 +6957,23 @@ function renderAnswerControl() {
 
 function renderStrategyTagPicker() {
   els.answerForm?.querySelector("#strategy-tag-picker")?.remove();
+  els.answerForm?.querySelector(".strategy-selector-panel")?.remove();
+  els.answerForm?.querySelector(".confidence-gauge-wrap")?.remove();
   if (!state.session || state.session.mode === "diagnostic" || state.session.mode === "flashcard") return;
+
+  // Branching Strategy Selector if problem supports multiple paths
+  if (state.item) {
+    const strategies = getAvailableStrategies(state.item);
+    if (strategies.length > 0) {
+      const stratWrap = document.createElement("div");
+      stratWrap.innerHTML = renderStrategySelector(strategies);
+      els.answerForm?.prepend(stratWrap);
+      mountStrategySelector(stratWrap, () => {
+        if (soundOn()) playStepChime(1);
+      });
+    }
+  }
+
   const fieldset = document.createElement("fieldset");
   fieldset.id = "strategy-tag-picker";
   fieldset.className = "strategy-tag-picker";
@@ -6949,6 +6994,15 @@ function renderStrategyTagPicker() {
     fieldset.append(wrapper);
   }
   els.answerForm?.append(fieldset);
+
+  // Metacognitive Confidence Gauge
+  const confWrap = document.createElement("div");
+  confWrap.innerHTML = renderConfidenceGauge();
+  els.answerForm?.append(confWrap);
+  mountConfidenceGauge(confWrap, (level) => {
+    state.confidenceLevel = level;
+    if (soundOn()) playStepChime(2);
+  });
 }
 
 function submitAnswer(value) {
@@ -7715,7 +7769,18 @@ function openHubView(view) {
   if (view === "notebook") renderNotebook();
   if (view === "practice") renderPracticeView();
   if (view === "games") { cleanupGames?.(); cleanupGames = mountGames(els.games, { grade: state.grade, autostart: state.autoGame, assignedStop: state.autoStop, onEvidence: recordPuzzleEvidence }); state.autoGame = null; state.autoStop = null; }
-  if (view === "models") { cleanupModels?.(); const lab = mountModelLab(els.models, { grade: state.grade, initialModel: state.labModel, onEvidence: recordLabEvidence }); cleanupModels = () => lab.destroy(); state.labModel = null; }
+  if (view === "models") {
+    cleanupModels?.();
+    const lab = mountModelLab(els.models, { grade: state.grade, initialModel: state.labModel, onEvidence: recordLabEvidence });
+    const cityHost = document.createElement("div");
+    cityHost.className = "wonder-city-mount-area";
+    cityHost.style.marginTop = "1.5rem";
+    cityHost.innerHTML = renderWonderCityStudio();
+    els.models.appendChild(cityHost);
+    mountWonderCityStudio(cityHost);
+    cleanupModels = () => lab.destroy();
+    state.labModel = null;
+  }
   if (view === "write") { cleanupWriting?.(); cleanupWriting = mountWriting(els.write, { grade: state.grade, skillKey: state.writeSkill, onPrint: printHtml, announce }); state.writeSkill = null; }
   if (view === "teacher") fl4Teacher?.mountTeacher4(els.teacher4, { // fl4:teacher
     grade: state.grade, onLaunch: launchAssignment, onPrint: printHtml, announce,
