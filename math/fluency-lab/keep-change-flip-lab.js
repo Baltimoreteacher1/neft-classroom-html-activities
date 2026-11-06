@@ -40,11 +40,67 @@ export const KCF_PRESETS = [
   { label: "7/4 ÷ 1/2 (Improper Fractions)", a: 7, b: 4, c: 1, d: 2 },
 ];
 
+export function renderMixedFractionBarsSvg(simpNum, simpDen) {
+  const whole = Math.floor(simpNum / simpDen);
+  const rem = simpNum % simpDen;
+  const numBars = Math.ceil(simpNum / simpDen);
+
+  const svgWidth = 640;
+  const barHeight = 26;
+  const barGap = 14;
+  const svgHeight = 24 + numBars * (barHeight + barGap);
+  const startX = 145;
+  const barWidth = 475;
+  const segWidth = barWidth / simpDen;
+
+  let barsHtml = "";
+  let partsCounted = 0;
+
+  for (let bIdx = 0; bIdx < numBars; bIdx++) {
+    const isFullWhole = bIdx < whole;
+    const y = 10 + bIdx * (barHeight + barGap);
+    const label = isFullWhole
+      ? `Whole ${bIdx + 1} (${simpDen}/${simpDen})`
+      : `Leftover (${rem}/${simpDen})`;
+
+    barsHtml += `
+      <text x="10" y="${y + 18}" font-size="12" font-weight="800" fill="${isFullWhole ? "#047857" : "#b45309"}">${label}</text>
+      <rect x="${startX}" y="${y}" width="${barWidth}" height="${barHeight}" rx="4" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/>
+    `;
+
+    for (let sIdx = 0; sIdx < simpDen; sIdx++) {
+      const segX = startX + sIdx * segWidth;
+      const isFilled = partsCounted < simpNum;
+      partsCounted++;
+
+      if (isFilled) {
+        const fillCol = isFullWhole ? "#10b981" : "#f59e0b";
+        barsHtml += `
+          <rect x="${segX}" y="${y}" width="${segWidth}" height="${barHeight}" fill="${fillCol}" stroke="#ffffff" stroke-width="1"/>
+          <text x="${segX + segWidth / 2}" y="${y + 17}" text-anchor="middle" font-size="10" font-weight="700" fill="#ffffff">1/${simpDen}</text>
+        `;
+      } else {
+        barsHtml += `
+          <rect x="${segX}" y="${y}" width="${segWidth}" height="${barHeight}" fill="none" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="3,3"/>
+          <text x="${segX + segWidth / 2}" y="${y + 17}" text-anchor="middle" font-size="10" font-weight="600" fill="#94a3b8">1/${simpDen}</text>
+        `;
+      }
+    }
+  }
+
+  return `
+    <svg class="kcf-mixed-bars-svg" viewBox="0 0 ${svgWidth} ${svgHeight}" role="img" aria-label="Fraction bar visual model showing ${simpNum} parts of size 1/${simpDen}">
+      ${barsHtml}
+    </svg>
+  `;
+}
+
 export function renderKCFStudio({
   a = 2,
   b = 3,
   c = 4,
   d = 5,
+  opMode = "div", // "div" | "mult"
   activeTab = "measure",
   studioMode = "explore", // "explore" | "practice"
   measureStep = null,
@@ -72,25 +128,26 @@ export function renderKCFStudio({
   const gBD = gcd(b, d);
   const canCrossCancel = gAC > 1 || gBD > 1;
 
-  // Quotient representation
-  let mixedText = "";
+  // Fraction representation (DO NOT automatically convert to mixed number)
+  let resFractionText = "";
   if (simpDen === 1) {
-    mixedText = `<strong class="kcf-res-val">${simpNum}</strong>`;
-  } else if (simpNum > simpDen) {
-    const whole = Math.floor(simpNum / simpDen);
-    const rem = simpNum % simpDen;
-    mixedText = `<strong class="kcf-res-val">${whole}</strong> ${verticalFracHtml(rem, simpDen, "kcf-mixed-frac")}`;
+    resFractionText = `<strong class="kcf-res-val">${simpNum}</strong>`;
   } else {
-    mixedText = verticalFracHtml(simpNum, simpDen, "kcf-mixed-frac");
+    resFractionText = verticalFracHtml(simpNum, simpDen, "kcf-hero-frac-res");
   }
+  const isImproper = simpNum > simpDen && simpDen > 1;
 
   // Quotitive serving count
   const fullServings = Math.floor(num1Common / num2Common);
   const remainderUnits = num1Common % num2Common;
   const activeMeasureStep = measureStep != null ? measureStep : fullServings;
 
+  const subtitleHtml = opMode === "mult"
+    ? `Keep first fraction (${verticalFracHtml(a, b)}) · <strong>Change ÷ to ×</strong> · <strong>Flip second fraction into reciprocal (${verticalFracHtml(d, c)})</strong>. Now multiply straight across!`
+    : `Grounded in the question: <em>"How many groups of ${verticalFracHtml(c, d)} fit into ${verticalFracHtml(a, b)}?"</em> &nbsp;—&nbsp; Click <strong>÷</strong> or the Change button to switch to multiplication!`;
+
   return `
-    <div class="kcf-studio-container" data-kcf-a="${a}" data-kcf-b="${b}" data-kcf-c="${c}" data-kcf-d="${d}" data-kcf-tab="${activeTab}" data-kcf-mode="${studioMode}">
+    <div class="kcf-studio-container" data-kcf-a="${a}" data-kcf-b="${b}" data-kcf-c="${c}" data-kcf-d="${d}" data-kcf-op="${opMode}" data-kcf-tab="${activeTab}" data-kcf-mode="${studioMode}">
       <!-- Header Bar & Mode Toggle -->
       <div class="kcf-header">
         <div class="kcf-title-row">
@@ -106,8 +163,7 @@ export function renderKCFStudio({
           </div>
         </div>
         <p class="kcf-subtitle">
-          Grounded in the question: <em>"How many groups of ${verticalFracHtml(c, d)} fit into ${verticalFracHtml(a, b)}?"</em> &nbsp;—&nbsp;
-          Type your own numbers directly into the fractions below to explore!
+          ${subtitleHtml}
         </p>
       </div>
 
@@ -121,18 +177,37 @@ export function renderKCFStudio({
             <input type="number" min="1" max="24" value="${b}" class="kcf-hero-in kcf-in-den" id="kcfInHeroB" aria-label="Dividend denominator" />
           </div>
 
-          <span class="kcf-hero-op">÷</span>
+          <!-- Operation Toggle Button: Click to Change Division to Multiplication -->
+          <button type="button" class="kcf-hero-op-btn ${opMode === "mult" ? "is-mult" : "is-div"}" id="kcfHeroOpToggle" title="Click to Change Operation: ${opMode === "div" ? "Change ÷ to × (Keep Change Flip)" : "Switch back to ÷"}" aria-label="Change Operation">
+            ${opMode === "mult" ? "×" : "÷"}
+          </button>
 
-          <!-- Second Fraction (Divisor) -->
+          <!-- Second Fraction: Divisor in ÷ mode, Flipped Reciprocal in × mode -->
+          ${opMode === "mult" ? `
+          <div class="kcf-interactive-fraction-box is-flipped" title="Reciprocal (Flipped Divisor): Click to type custom number">
+            <span class="kcf-reciprocal-tag">Reciprocal (Flipped)</span>
+            <input type="number" min="1" max="24" value="${d}" class="kcf-hero-in kcf-in-num" id="kcfInHeroD" aria-label="Reciprocal numerator" />
+            <span class="kcf-hero-bar"></span>
+            <input type="number" min="1" max="24" value="${c}" class="kcf-hero-in kcf-in-den" id="kcfInHeroC" aria-label="Reciprocal denominator" />
+          </div>
+          ` : `
           <div class="kcf-interactive-fraction-box" title="Divisor: Click to type custom number">
             <input type="number" min="1" max="24" value="${c}" class="kcf-hero-in kcf-in-num" id="kcfInHeroC" aria-label="Divisor numerator" />
             <span class="kcf-hero-bar"></span>
             <input type="number" min="1" max="24" value="${d}" class="kcf-hero-in kcf-in-den" id="kcfInHeroD" aria-label="Divisor denominator" />
           </div>
+          `}
 
           <span class="kcf-hero-op">=</span>
 
-          <span class="kcf-hero-result" id="kcfHeroResultDisplay">${mixedText}</span>
+          <span class="kcf-hero-result" id="kcfHeroResultDisplay">${resFractionText}</span>
+        </div>
+
+        <!-- Operation Toggle Action Button -->
+        <div class="kcf-op-switch-container">
+          <button type="button" class="kcf-op-switch-btn ${opMode === "mult" ? "is-mult" : ""}" id="kcfOpSwitchAction" title="Toggle Operation">
+            ${opMode === "div" ? "⚡ Change ÷ to × (Flip Divisor into Reciprocal)" : "↩️ Switch back to ÷ (Original Division)"}
+          </button>
         </div>
         
         <!-- Curriculum Presets Row directly under hero -->
@@ -146,6 +221,65 @@ export function renderKCFStudio({
             `).join("")}
           </div>
         </div>
+
+        <!-- Guided Mixed Number Conversion Studio (No Auto-Conversion) -->
+        ${isImproper ? `
+        <div class="kcf-mixed-converter-section" id="kcfMixedConverterSection">
+          <div class="kcf-converter-card">
+            <div class="kcf-converter-header">
+              <span class="kcf-converter-tag">Guided Step</span>
+              <h5>Convert Improper Fraction to Mixed Number (Your Turn)</h5>
+              <span class="kcf-improper-badge">${verticalFracHtml(simpNum, simpDen)} &gt; 1</span>
+            </div>
+            
+            <p class="kcf-converter-hint">
+              <strong>Your Turn:</strong> The fraction <strong>${simpNum}/${simpDen}</strong> has a numerator greater than its denominator. 
+              Divide <strong>${simpNum}</strong> by <strong>${simpDen}</strong>: how many complete wholes fit, and what fraction is left over?
+            </p>
+
+            <div class="kcf-converter-interactive-grid">
+              <!-- Interactive Visual Model: Fraction Strip Bars -->
+              <div class="kcf-converter-model-stage">
+                <div class="kcf-converter-model-label">Interactive Visual Model (${simpNum} parts of size 1/${simpDen}):</div>
+                ${renderMixedFractionBarsSvg(simpNum, simpDen)}
+              </div>
+
+              <!-- Guided Input Spaces -->
+              <div class="kcf-converter-inputs-col">
+                <div class="kcf-conv-row">
+                  <div class="kcf-conv-box whole-box">
+                    <label for="kcfConvInWhole">Whole Number</label>
+                    <input type="number" min="0" max="99" class="kcf-conv-num-in" id="kcfConvInWhole" placeholder="?" data-target="${Math.floor(simpNum / simpDen)}" aria-label="Whole number part" />
+                  </div>
+
+                  <span class="kcf-conv-plus">+</span>
+
+                  <div class="kcf-conv-box frac-box">
+                    <label>Fraction Part</label>
+                    <div class="kcf-conv-vertical-frac">
+                      <input type="number" min="0" max="99" class="kcf-conv-num-in num" id="kcfConvInRemNum" placeholder="?" data-target="${simpNum % simpDen}" aria-label="Remainder numerator" />
+                      <span class="kcf-conv-frac-line"></span>
+                      <input type="number" min="1" max="99" class="kcf-conv-num-in den" id="kcfConvInRemDen" value="${simpDen}" readonly aria-label="Denominator" />
+                    </div>
+                  </div>
+
+                  <span class="kcf-conv-eq">=</span>
+
+                  <div class="kcf-conv-result-preview" id="kcfConvResultPreview">
+                    <span class="kcf-preview-placeholder">?</span>
+                  </div>
+                </div>
+
+                <div class="kcf-conv-btn-row">
+                  <button type="button" class="kcf-conv-check-btn" id="kcfConvCheckBtn">Check My Mixed Number</button>
+                </div>
+
+                <div class="kcf-conv-feedback" id="kcfConvFeedback" role="status" aria-live="polite"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        ` : ""}
       </div>
 
       <!-- ========================================================================= -->
@@ -214,7 +348,7 @@ export function renderKCFStudio({
               </div>
               <div class="kcf-step-pill-row highlight">
                 <span class="kcf-math-tag">3. Direct Division</span>
-                <p>Since the pieces are the same size, divide the numerators directly: <strong>${num1Common} ÷ ${num2Common} = ${verticalFracHtml(num1Common, num2Common)} = ${mixedText}</strong> servings!</p>
+                <p>Since the pieces are the same size, divide the numerators directly: <strong>${num1Common} ÷ ${num2Common} = ${verticalFracHtml(num1Common, num2Common)} = ${resFractionText}</strong> servings!</p>
               </div>
             </div>
           </div>
@@ -399,7 +533,7 @@ export function renderKCFStudio({
                   ${verticalFracHtml(simpNum, simpDen, "kcf-reduced")}
                 ` : ""}
                 <span class="kcf-calc-op">=</span>
-                <span class="kcf-final-badge">${mixedText}</span>
+                <span class="kcf-final-badge">${resFractionText}</span>
               </div>
             </div>
           </div>
@@ -511,6 +645,30 @@ export function renderKCFStudio({
               </div>
               <button type="button" class="kcf-check-solve-btn" id="kcfCheckSolveAllBtn">Check My Work</button>
             </div>
+            ${isImproper ? `
+            <div class="kcf-solve-step5-row" id="kcfSolveStep5Row">
+              <h6>Step 5: Convert Improper Fraction to a Mixed Number (Your Turn)</h6>
+              <p class="kcf-solve-subhint">Divide ${simpNum} by ${simpDen}: How many wholes fit, and what fraction is leftover?</p>
+              <div class="kcf-step5-inputs-box">
+                <div class="kcf-solve-term">
+                  <label>Whole Number:</label>
+                  <input type="number" min="0" max="99" class="kcf-solve-input-small" id="kcfSolveStep5Whole" placeholder="?" data-target="${Math.floor(simpNum / simpDen)}" aria-label="Whole number" />
+                </div>
+                <span class="kcf-solve-plus">+</span>
+                <div class="kcf-solve-term">
+                  <label>Remainder Num:</label>
+                  <input type="number" min="0" max="99" class="kcf-solve-input-small" id="kcfSolveStep5Rem" placeholder="?" data-target="${simpNum % simpDen}" aria-label="Remainder numerator" />
+                </div>
+                <span class="kcf-solve-slash">/</span>
+                <div class="kcf-solve-term">
+                  <label>Denominator:</label>
+                  <input type="number" class="kcf-solve-input-small" id="kcfSolveStep5Den" value="${simpDen}" readonly aria-label="Denominator" />
+                </div>
+                <button type="button" class="kcf-check-solve-btn" id="kcfCheckStep5Btn">Check Mixed Number</button>
+              </div>
+              <span class="kcf-feedback-msg" id="kcfFeedbackStep5"></span>
+            </div>
+            ` : ""}
             <div class="kcf-solve-celebration is-hidden" id="kcfSolveCelebration">
               🎉 <strong>Outstanding job!</strong> You executed Keep · Change · Flip flawlessly!
             </div>
@@ -648,6 +806,7 @@ export function mountKCFLab(container, options = {}) {
       b: Number(el?.dataset.kcfB || 3),
       c: Number(el?.dataset.kcfC || 4),
       d: Number(el?.dataset.kcfD || 5),
+      opMode: el?.dataset.kcfOp || "div",
       activeTab: el?.dataset.kcfTab || "measure",
       studioMode: el?.dataset.kcfMode || "explore",
     };
@@ -659,6 +818,48 @@ export function mountKCFLab(container, options = {}) {
     container.innerHTML = renderKCFStudio(merged);
     mountKCFLab(container, options);
   };
+
+  // Operation Switcher (Change ÷ to × / Keep Change Flip)
+  const handleOpToggle = () => {
+    const vals = getVals();
+    const nextOp = vals.opMode === "mult" ? "div" : "mult";
+    updateAll({ opMode: nextOp });
+  };
+  container.querySelector("#kcfHeroOpToggle")?.addEventListener("click", handleOpToggle);
+  container.querySelector("#kcfOpSwitchAction")?.addEventListener("click", handleOpToggle);
+
+  // Guided Mixed Number Conversion Checker (Explorer Mode)
+  const checkConv = () => {
+    const inWhole = container.querySelector("#kcfConvInWhole");
+    const inRemNum = container.querySelector("#kcfConvInRemNum");
+    const fb = container.querySelector("#kcfConvFeedback");
+    const preview = container.querySelector("#kcfConvResultPreview");
+    if (!inWhole || !inRemNum || !fb) return;
+
+    const valWhole = Number(inWhole.value);
+    const valRem = Number(inRemNum.value);
+    const targetWhole = Number(inWhole.dataset.target);
+    const targetRem = Number(inRemNum.dataset.target);
+    const den = container.querySelector("#kcfConvInRemDen")?.value || 1;
+
+    if (inWhole.value.trim() === "" || inRemNum.value.trim() === "") {
+      fb.className = "kcf-conv-feedback is-error";
+      fb.innerHTML = "Please enter both the whole number and the leftover numerator.";
+      return;
+    }
+
+    if (valWhole === targetWhole && valRem === targetRem) {
+      fb.className = "kcf-conv-feedback is-correct";
+      fb.innerHTML = `🎉 Correct! You converted it perfectly: <strong>${targetWhole} ${targetRem}/${den}</strong>!`;
+      if (preview) {
+        preview.innerHTML = `<strong class="kcf-res-val">${targetWhole}</strong> ${verticalFracHtml(targetRem, den, "kcf-mixed-frac")}`;
+      }
+    } else {
+      fb.className = "kcf-conv-feedback is-error";
+      fb.innerHTML = `Not quite: whole is <strong>${targetWhole}</strong> and remainder is <strong>${targetRem}</strong>. Try again!`;
+    }
+  };
+  container.querySelector("#kcfConvCheckBtn")?.addEventListener("click", checkConv);
 
   // Studio Mode Toggle ("explore" vs "practice")
   container.querySelectorAll("[data-kcf-mode-set]").forEach((btn) => {
@@ -962,11 +1163,48 @@ export function mountKCFLab(container, options = {}) {
       inFinal?.classList.toggle("is-correct", finalCorrect);
 
       if (numCorrect && denCorrect && finalCorrect) {
-        celebration?.classList.remove("is-hidden");
-        celebration?.classList.add("is-animated");
+        const step5Whole = container.querySelector("#kcfSolveStep5Whole");
+        if (step5Whole) {
+          checkStep5();
+        } else {
+          celebration?.classList.remove("is-hidden");
+          celebration?.classList.add("is-animated");
+        }
       }
     });
   }
+
+  // Practice Mode: Check Step 5 Mixed Conversion
+  const checkStep5 = () => {
+    const inWhole = container.querySelector("#kcfSolveStep5Whole");
+    const inRem = container.querySelector("#kcfSolveStep5Rem");
+    const fb = container.querySelector("#kcfFeedbackStep5");
+    const celebration = container.querySelector("#kcfSolveCelebration");
+    if (!inWhole || !inRem || !fb) return;
+
+    const valWhole = Number(inWhole.value);
+    const valRem = Number(inRem.value);
+    const targetWhole = Number(inWhole.dataset.target);
+    const targetRem = Number(inRem.dataset.target);
+    const den = container.querySelector("#kcfSolveStep5Den")?.value || 1;
+
+    if (inWhole.value.trim() === "" || inRem.value.trim() === "") {
+      fb.className = "kcf-feedback-msg is-error";
+      fb.innerHTML = "Please enter both whole number and remainder.";
+      return;
+    }
+
+    if (valWhole === targetWhole && valRem === targetRem) {
+      fb.className = "kcf-feedback-msg is-correct";
+      fb.innerHTML = `🎉 Correct! Mixed number is <strong>${targetWhole} ${targetRem}/${den}</strong>!`;
+      celebration?.classList.remove("is-hidden");
+      celebration?.classList.add("is-animated");
+    } else {
+      fb.className = "kcf-feedback-msg is-error";
+      fb.innerHTML = `Not quite: Whole is <strong>${targetWhole}</strong>, remainder is <strong>${targetRem}</strong>.`;
+    }
+  };
+  container.querySelector("#kcfCheckStep5Btn")?.addEventListener("click", checkStep5);
 
   // Try New Practice Problem
   const newProblemBtn = container.querySelector("#kcfNewPracticeProblemBtn");
