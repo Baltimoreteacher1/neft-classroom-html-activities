@@ -5764,6 +5764,24 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/lumen-harbor/",
+    title: "Lumen Harbor Graphic Novels",
+    category: "Tool",
+    unit: null,
+  },
+  {
+    path: "/lumen-harbor/404/",
+    title: "Lumen Harbor Graphic Novels · 404",
+    category: "Tool",
+    unit: null,
+  },
+  {
+    path: "/lumen-harbor/curriculum/",
+    title: "Lumen Harbor Graphic Novels · Curriculum",
+    category: "Tool",
+    unit: null,
+  },
+  {
     path: "/math/",
     title: "Math Section",
     category: "Tool",

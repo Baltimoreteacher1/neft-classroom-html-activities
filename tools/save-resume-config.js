@@ -71,6 +71,7 @@ export const SKIP_TOPLEVEL = new Set([
   "futures", // concept/demo/roadmap pages — not student activities
   "access-teacher", // teacher-facing surface
   "access-guide", // read-only practice guide, with no student work to save
+  "lumen-harbor", // generated static export of a separate app: keeps its own chapter progress (lumen-harbor-progress-v2), anonymous, in this browser
   "access-expedition", // teacher field-trip companion: links out to the lab, saves only its own route
   "access-family-expedition", // bilingual family trail: links out to the lab, saves only its own place
   "access-family-tour", // bilingual family site tour: links out to the lab, saves only its own place

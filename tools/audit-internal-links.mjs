@@ -108,6 +108,12 @@ for (const file of htmlFiles) {
     )
       continue;
     url = url.split("#")[0].split("?")[0];
+    // A link is an encoded URL, a file is a name: /x/%5BchapterId%5D/ is the folder [chapterId].
+    try {
+      url = decodeURI(url);
+    } catch {
+      /* a malformed escape stays as written and is reported unresolved */
+    }
     if (!url || seen.has(url)) continue;
     seen.add(url);
     if (BUILT_ASSETS.has(url)) continue; // resolved by vite build, absent from source
