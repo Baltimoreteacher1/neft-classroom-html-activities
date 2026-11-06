@@ -106,6 +106,9 @@ export async function onRequest(context) {
   const url = new URL(request.url);
   const target = url.searchParams.get("activity") || url.searchParams.get("url") || "";
   const title = url.searchParams.get("title") || "";
+  // Optional explicit package id (slugged in buildScormFiles). The Canvas packages page
+  // names its own packages ("homework-1-1"), and an LMS keys content by manifest id.
+  const id = url.searchParams.get("id") || "";
   const codes = url.searchParams.get("mode") === "codes" || url.searchParams.get("codes") === "1";
   // Optional: bake selected learning supports (+ language) into the package so a
   // teacher can post a personalized version for specific students. Values are
@@ -122,6 +125,7 @@ export async function onRequest(context) {
     pkg = buildScormFiles({
       target,
       title,
+      id,
       codes,
       supports,
       lang,

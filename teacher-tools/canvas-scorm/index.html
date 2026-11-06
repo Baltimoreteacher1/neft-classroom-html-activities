@@ -226,13 +226,13 @@
             return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c];
           });
         };
-        var dl = function (file, name, meta) {
+        var dl = function (href, name, meta) {
           return (
             '<div class="row"><span class="name">' +
             esc(name) +
             (meta ? ' <span class="meta">· ' + esc(meta) + "</span>" : "") +
-            '</span><a class="dl" download href="./packages/' +
-            encodeURIComponent(file) +
+            '</span><a class="dl" download href="' +
+            esc(href) +
             '">⬇ Download SCORM</a></div>'
           );
         };
@@ -251,7 +251,7 @@
               html += '<div class="unit-h">Unit ' + esc(u) + "</div>";
               byUnit[u].forEach(function (l) {
                 html += dl(
-                  l.file,
+                  l.href,
                   l.title,
                   "Lesson " + l.id + (l.flagship ? " · flagship" : ""),
                 );
@@ -264,7 +264,7 @@
           var html = '<div class="unit-h">Standalone activities</div>';
           data.activities.forEach(function (a) {
             html += dl(
-              a.file,
+              a.href,
               a.title,
               a.grade === "score" ? "scored" : "completion credit",
             );
@@ -286,7 +286,7 @@
             .forEach(function (u) {
               html += '<div class="unit-h">Unit ' + esc(u) + "</div>";
               byUnit[u].forEach(function (h) {
-                html += dl(h.file, h.title, "completion credit");
+                html += dl(h.href, h.title, "completion credit");
               });
             });
           list.className = "";
@@ -304,7 +304,7 @@
             "gradebook). Quizzes arrive unpublished, in a “Pre-Tests” " +
             "assignment group.</p>";
           data.quizzes.forEach(function (q) {
-            html += dl(q.file, q.title, "QTI import");
+            html += dl(q.href, q.title, "QTI import");
           });
           list.className = "";
           list.innerHTML = html;
