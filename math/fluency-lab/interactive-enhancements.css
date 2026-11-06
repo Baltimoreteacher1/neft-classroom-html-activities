@@ -956,16 +956,16 @@
    ========================================================================== */
 .kcf-studio-container {
   background: #ffffff;
-  border: 2px solid #e2e8f0;
-  border-radius: 16px;
+  border: 2px solid #cbd5e1;
+  border-radius: 18px;
   padding: 1.75rem;
   margin: 1.5rem 0;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-  font-family: var(--pub-sans, system-ui, sans-serif);
+  box-shadow: 0 6px 24px rgba(15, 23, 42, 0.08);
+  font-family: var(--pub-sans, system-ui, -apple-system, sans-serif);
 }
 
 .kcf-header {
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.25rem;
   border-bottom: 1px solid #f1f5f9;
   padding-bottom: 1rem;
 }
@@ -973,6 +973,7 @@
 .kcf-title-row {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 0.75rem;
   margin-bottom: 0.5rem;
 }
@@ -982,38 +983,50 @@
   color: #1d4ed8;
   font-size: 0.8125rem;
   font-weight: 800;
-  padding: 0.25rem 0.625rem;
+  padding: 0.3rem 0.75rem;
   border-radius: 9999px;
   border: 1px solid #bfdbfe;
+  letter-spacing: 0.02em;
 }
 
 .kcf-header h4 {
   margin: 0;
-  font-size: 1.35rem;
-  font-weight: 800;
+  font-size: 1.45rem;
+  font-weight: 900;
   color: #0f172a;
 }
 
 .kcf-subtitle {
   margin: 0;
-  font-size: 1rem;
-  color: #475569;
-  line-height: 1.5;
+  font-size: 1.05rem;
+  color: #334155;
+  line-height: 1.6;
 }
 
+/* Problem Hero Banner */
 .kcf-problem-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, #f8fafc, #f0fdf4);
+  border: 2px solid #93c5fd;
+  border-radius: 16px;
+  margin-bottom: 1.5rem;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.02);
+}
+
+.kcf-hero-equation {
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-wrap: wrap;
   gap: 1.25rem;
-  padding: 1.5rem;
-  background: linear-gradient(135deg, #f8fafc, #eff6ff);
-  border: 2px solid #bfdbfe;
-  border-radius: 14px;
   font-size: 2.25rem;
-  font-weight: 800;
+  font-weight: 900;
   color: #0f172a;
-  margin-bottom: 1.75rem;
 }
 
 .kcf-hero-frac {
@@ -1026,20 +1039,355 @@
   font-size: 2rem;
 }
 
-.kcf-hero-target {
+.kcf-hero-result {
+  color: #15803d;
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  width: 54px;
-  height: 54px;
-  background: #ffffff;
-  border: 2px dashed #3b82f6;
-  border-radius: 10px;
-  color: #2563eb;
-  font-size: 1.75rem;
+  gap: 0.35rem;
 }
 
-/* 3 Stage Cards */
+.kcf-res-val {
+  font-size: 2.5rem;
+  color: #15803d;
+}
+
+.kcf-hero-caption {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #475569;
+}
+
+/* Tab Navigation */
+.kcf-model-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 2px solid #e2e8f0;
+  padding-bottom: 0.5rem;
+}
+
+.kcf-tab-btn {
+  background: #f8fafc;
+  border: 1.5px solid #cbd5e1;
+  color: #475569;
+  font-size: 0.9375rem;
+  font-weight: 800;
+  padding: 0.65rem 1.15rem;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.kcf-tab-btn:hover {
+  background: #eff6ff;
+  color: #1d4ed8;
+  border-color: #93c5fd;
+}
+
+.kcf-tab-btn.is-active {
+  background: #2563eb;
+  color: #ffffff;
+  border-color: #1d4ed8;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.28);
+}
+
+/* Tab Panels */
+.kcf-tab-panel {
+  display: none;
+}
+
+.kcf-tab-panel.is-active {
+  display: block;
+  animation: kcfFadeIn 0.25s ease-out;
+}
+
+@keyframes kcfFadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.kcf-panel-card {
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.kcf-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.kcf-card-header h5 {
+  margin: 0 0 0.35rem 0;
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.kcf-card-sub {
+  margin: 0;
+  font-size: 0.95rem;
+  color: #475569;
+  line-height: 1.5;
+  max-width: 650px;
+}
+
+.kcf-toggle-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.kcf-tool-btn {
+  background: #f8fafc;
+  border: 1.5px solid #cbd5e1;
+  color: #1e293b;
+  font-size: 0.875rem;
+  font-weight: 800;
+  padding: 0.55rem 0.95rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.kcf-tool-btn:hover {
+  background: #e2e8f0;
+}
+
+.kcf-tool-btn.primary {
+  background: #2563eb;
+  color: #ffffff;
+  border-color: #1d4ed8;
+}
+
+.kcf-tool-btn.primary:hover {
+  background: #1d4ed8;
+}
+
+.kcf-tool-btn.warning {
+  background: #fef3c7;
+  color: #b45309;
+  border-color: #fde68a;
+}
+
+.kcf-tool-btn.warning:hover {
+  background: #fde68a;
+}
+
+/* Measurement Tape Model SVG */
+.kcf-svg-tape-stage {
+  background: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1rem;
+  overflow-x: auto;
+  margin-bottom: 1.25rem;
+}
+
+.kcf-svg-tape {
+  display: block;
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+  height: auto;
+}
+
+.kcf-measure-walkthrough {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1rem;
+}
+
+.kcf-step-pill-row {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 0.85rem 1rem;
+}
+
+.kcf-step-pill-row.highlight {
+  background: #f0fdf4;
+  border-color: #86efac;
+}
+
+.kcf-step-pill-row p {
+  margin: 0.4rem 0 0;
+  font-size: 0.9375rem;
+  color: #1e293b;
+  line-height: 1.5;
+}
+
+.kcf-math-tag {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: #2563eb;
+  background: #eff6ff;
+  border-radius: 4px;
+  padding: 0.15rem 0.45rem;
+}
+
+.kcf-step-pill-row.highlight .kcf-math-tag {
+  color: #15803d;
+  background: #dcfce7;
+}
+
+/* Complex Fraction Proof Visualizer */
+.kcf-proof-stage {
+  padding: 0.5rem 0;
+}
+
+.kcf-complex-frac-box {
+  background: #f8fafc;
+  border: 2px solid #bfdbfe;
+  border-radius: 14px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.kcf-complex-title {
+  font-size: 0.9375rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: #1e40af;
+  margin-bottom: 1rem;
+}
+
+.kcf-complex-equation {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+}
+
+.kcf-stacked-fraction-unit {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0.65rem 1rem;
+  background: #ffffff;
+  border: 2px solid #cbd5e1;
+  border-radius: 12px;
+  font-size: 1.75rem;
+  font-weight: 800;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.kcf-stacked-fraction-unit.is-highlighted {
+  border-color: #3b82f6;
+  background: #eff6ff;
+  box-shadow: 0 4px 14px rgba(59, 130, 246, 0.15);
+}
+
+.kcf-stacked-fraction-unit.is-popping {
+  transform: scale(1.08);
+}
+
+.kcf-c-num, .kcf-c-den {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.kcf-c-bar {
+  display: block;
+  width: 100%;
+  height: 3px;
+  background: #0f172a;
+  margin: 0.45rem 0;
+  border-radius: 2px;
+}
+
+.kcf-op-symbol {
+  color: #2563eb;
+  font-size: 1.35rem;
+}
+
+.kcf-recip-badge {
+  background: #fef3c7;
+  border: 1.5px solid #f59e0b;
+  border-radius: 6px;
+  padding: 0.15rem 0.4rem;
+  color: #b45309;
+}
+
+.kcf-one-badge {
+  color: #15803d;
+  font-size: 2rem;
+}
+
+.kcf-proof-arrow {
+  font-size: 1.75rem;
+  font-weight: 900;
+  color: #64748b;
+}
+
+.kcf-proof-final {
+  background: #dcfce7;
+  border: 2px solid #22c55e;
+  border-radius: 12px;
+  padding: 0.75rem 1.25rem;
+  font-size: 1.75rem;
+  font-weight: 900;
+  color: #15803d;
+}
+
+.kcf-proof-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+}
+
+.kcf-proof-card {
+  background: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1.15rem;
+}
+
+.kcf-proof-card.highlight {
+  background: #f0fdf4;
+  border-color: #86efac;
+}
+
+.kcf-proof-step-num {
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: #2563eb;
+  text-transform: uppercase;
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+.kcf-proof-card strong {
+  display: block;
+  font-size: 1.05rem;
+  color: #0f172a;
+  margin-bottom: 0.4rem;
+}
+
+.kcf-proof-card p {
+  margin: 0;
+  font-size: 0.875rem;
+  color: #475569;
+  line-height: 1.5;
+}
+
+/* 3-Stage Stepper Cards */
 .kcf-stages-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -1073,8 +1421,8 @@
 }
 
 .kcf-stage-card.is-active {
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.35), 0 8px 16px rgba(0, 0, 0, 0.08);
-  transform: translateY(-3px);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.25), 0 8px 16px rgba(0, 0, 0, 0.06);
+  transform: translateY(-2px);
   background: #fafcff;
 }
 
@@ -1118,7 +1466,6 @@
 
 .kcf-stage-card.is-active .kcf-operator-display {
   color: #16a34a;
-  transform: rotate(45deg);
 }
 
 .kcf-flip-wrapper {
@@ -1131,7 +1478,6 @@
 }
 
 .kcf-stage-card.is-active .kcf-flip-inner {
-  transform: rotateX(360deg);
   color: #059669;
 }
 
@@ -1172,13 +1518,55 @@
   border-color: #16a34a;
 }
 
+/* Cross-Cancel Box */
+.kcf-cross-cancel-box {
+  background: #fffbeb;
+  border: 1.5px solid #fde68a;
+  border-radius: 10px;
+  padding: 0.85rem 1.25rem;
+  margin-bottom: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.kcf-cross-cancel-box.is-hidden {
+  display: none;
+}
+
+.kcf-cancel-badge {
+  background: #f59e0b;
+  color: #ffffff;
+  font-size: 0.75rem;
+  font-weight: 800;
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+
+.kcf-cancel-content {
+  font-size: 0.9375rem;
+  color: #78350f;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.kcf-cancel-factor {
+  background: #fef3c7;
+  border: 1px solid #fcd34d;
+  padding: 0.2rem 0.5rem;
+  border-radius: 6px;
+  font-weight: 700;
+}
+
 /* Solution Banner */
 .kcf-solution-banner {
   background: #f0fdf4;
   border: 2px solid #86efac;
   border-radius: 14px;
   padding: 1.5rem;
-  margin-bottom: 1.75rem;
   text-align: center;
 }
 
@@ -1198,162 +1586,181 @@
   font-size: 1.75rem;
   font-weight: 800;
   color: #065f46;
-  gap: 0.25rem;
-  margin-bottom: 0.75rem;
+  gap: 0.4rem;
 }
 
-.kcf-mixed-badge {
-  font-size: 1.125rem;
-  color: #047857;
-  font-weight: 700;
-  margin-left: 0.5rem;
+.kcf-calc-op {
+  color: #15803d;
+  font-size: 1.6rem;
+  margin: 0 0.15rem;
 }
 
-.kcf-reciprocal-note {
-  font-size: 0.875rem;
-  color: #065f46;
-  background: #ffffff;
-  border: 1px solid #bbf7d0;
-  border-radius: 8px;
-  padding: 0.5rem 1rem;
-  display: inline-block;
-}
-
-/* Visual Measurement Tape */
-.kcf-visual-tape-section {
-  background: #fafafa;
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
-  padding: 1.25rem;
-  margin-bottom: 1.5rem;
-}
-
-.kcf-tape-header {
-  display: flex;
-  justify-content: space-between;
+.kcf-stacked-calc {
+  display: inline-flex;
+  flex-direction: column;
   align-items: center;
-  margin-bottom: 1rem;
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #065f46;
 }
 
-.kcf-tape-header h5 {
-  margin: 0;
+.kcf-calc-line {
+  display: block;
+  width: 100%;
+  height: 2px;
+  background: #065f46;
+  margin: 0.15rem 0;
+}
+
+.kcf-reduced-tag {
+  font-size: 0.75rem;
+  font-weight: 800;
+  background: #dcfce7;
+  color: #15803d;
+  border-radius: 4px;
+  padding: 0.2rem 0.45rem;
+}
+
+.kcf-final-badge {
+  background: #ffffff;
+  border: 2px solid #16a34a;
+  border-radius: 10px;
+  padding: 0.25rem 0.75rem;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* 2D Area Model */
+.kcf-grid-area-stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 1rem 0;
+}
+
+.kcf-svg-grid {
+  max-width: 420px;
+  width: 100%;
+  height: auto;
+}
+
+.kcf-area-caption {
   font-size: 1rem;
-  color: #1e293b;
+  color: #334155;
+  line-height: 1.5;
+  text-align: center;
+  max-width: 600px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  padding: 0.85rem 1.25rem;
+  border-radius: 10px;
 }
 
-.kcf-tape-action-btn {
+/* Presets & Custom Sandbox Footer */
+.kcf-sandbox-footer {
+  background: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.kcf-presets-row, .kcf-custom-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.kcf-sb-label {
+  font-size: 0.875rem;
+  font-weight: 800;
+  color: #334155;
+  min-width: 160px;
+}
+
+.kcf-preset-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.kcf-preset-btn {
   background: #ffffff;
   border: 1px solid #cbd5e1;
-  border-radius: 6px;
-  padding: 0.35rem 0.75rem;
+  color: #334155;
   font-size: 0.8125rem;
   font-weight: 700;
+  padding: 0.35rem 0.65rem;
+  border-radius: 6px;
   cursor: pointer;
   transition: all 0.15s ease;
 }
 
-.kcf-tape-action-btn:hover {
-  background: #2563eb;
+.kcf-preset-btn:hover {
+  background: #eff6ff;
+  color: #1d4ed8;
+  border-color: #93c5fd;
+}
+
+.kcf-preset-btn.is-selected {
+  background: #1d4ed8;
   color: #ffffff;
-}
-
-.kcf-tape-viewport {
-  padding: 0.5rem 0;
-}
-
-.kcf-tape-label {
-  font-size: 0.8125rem;
-  font-weight: 700;
-  color: #475569;
-  margin-bottom: 0.5rem;
-}
-
-.kcf-bar-track {
-  display: grid;
-  grid-template-columns: repeat(var(--total-parts, 4), 1fr);
-  gap: 3px;
-  height: 48px;
-  background: #e2e8f0;
-  border: 2px solid #cbd5e1;
-  border-radius: 8px;
-  overflow: hidden;
-  padding: 2px;
-  margin-bottom: 0.75rem;
-}
-
-.kcf-bar-cell {
-  background: #ffffff;
-  border-radius: 4px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.75rem;
-  font-weight: 700;
-  color: #94a3b8;
-  transition: all 0.3s ease;
-}
-
-.kcf-bar-cell.is-filled {
-  background: linear-gradient(135deg, #3b82f6, #2563eb);
-  color: #ffffff;
-}
-
-.kcf-bar-cell.is-measured {
-  background: linear-gradient(135deg, #10b981, #059669);
-  transform: scale(0.95);
-}
-
-.kcf-measurement-readout {
-  font-size: 0.875rem;
-  color: #334155;
-  line-height: 1.4;
-}
-
-/* Custom Fraction Sandbox */
-.kcf-sandbox-bar {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.75rem;
-  padding: 0.875rem 1.25rem;
-  background: #f8fafc;
-  border-radius: 10px;
-  border: 1px solid #e2e8f0;
-}
-
-.kcf-sb-label {
-  font-weight: 700;
-  font-size: 0.875rem;
-  color: #475569;
+  border-color: #1d4ed8;
 }
 
 .kcf-sb-inputs {
   display: flex;
   align-items: center;
-  gap: 0.375rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.kcf-input-frac {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  background: #ffffff;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 0.25rem 0.5rem;
 }
 
 .kcf-num-in {
-  width: 48px;
-  height: 36px;
+  width: 46px;
+  height: 34px;
   text-align: center;
-  font-size: 1rem;
+  font-size: 1.05rem;
   font-weight: 800;
-  border: 1.5px solid #cbd5e1;
-  border-radius: 6px;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+  color: #0f172a;
+}
+
+.kcf-frac-slash {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #64748b;
+}
+
+.kcf-sb-op {
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: #2563eb;
 }
 
 .kcf-recalc-btn {
   background: #2563eb;
   color: #ffffff;
   border: none;
-  border-radius: 6px;
-  padding: 0.5rem 0.875rem;
-  font-size: 0.8125rem;
-  font-weight: 700;
+  border-radius: 8px;
+  padding: 0.6rem 1.1rem;
+  font-size: 0.875rem;
+  font-weight: 800;
   cursor: pointer;
-  margin-left: 0.5rem;
   transition: background 0.15s ease;
 }
 

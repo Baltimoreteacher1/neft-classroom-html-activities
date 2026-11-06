@@ -103,7 +103,7 @@ import { renderTriangleShear, mountTriangleShear } from "./triangle-shear.js";
 import { renderBase10Regrouping, mountBase10Regrouping } from "./base10-regrouping.js";
 import { renderRatioScaler, mountRatioScaler } from "./ratio-scaler.js";
 import { renderUniverseHub, mountUniverseHub } from "./interactive-universe.js";
-import { renderKCFStudio, mountKCFLab } from "./keep-change-flip-lab.js";
+import { renderKCFStudio, mountKCFLab, verticalFracHtml } from "./keep-change-flip-lab.js";
 
 // teacher-4.js is teacher-only, so the teacher-surface gate refuses it to an anonymous student. A static import of a
 // refused file stops this whole module; awaiting a guarded import instead leaves null for a student and the real
@@ -5671,40 +5671,18 @@ const InteractiveSolver = {
       const d = Number(fracMatch[5]);
 
       if (op === "÷") {
-        const top = a * d;
-        const bot = b * c;
-        const divGcd = gcd(top, bot);
-        const simpTop = top / divGcd;
-        const simpBot = bot / divGcd;
-        const finalAns = simpBot === 1 ? String(simpTop) : `${simpTop}/${simpBot}`;
-
         container.innerHTML = `
           <div class="solver-header">
-            <strong>🍕 Interactive Fraction Division: Multiply by the Reciprocal</strong>
-            <span class="solver-hint-tag">How many ${c}/${d}s fit in 1 whole? ${d}/${c} of them</span>
+            <strong>🍕 Interactive Fraction Division Studio</strong>
+            <span class="solver-hint-tag">Keep · Change · Flip with Visual Measurement &amp; Multiplicative Inverse</span>
           </div>
-          <div style="display:flex; flex-direction:column; gap:0.75rem; align-items:center; font-size:1.25rem; font-weight:800">
-            <div style="display:flex; align-items:center; gap:0.6rem">
-              <span>Keep: <strong>${a}/${b}</strong></span>
-              <span>×</span>
-              <span>Reciprocal of ${c}/${d}: </span>
-              <input type="text" class="lcm-prime-input" data-frac-target="${d}" style="width:48px" placeholder="?" title="Reciprocal numerator" />
-              <span>/</span>
-              <input type="text" class="lcm-prime-input" data-frac-target="${c}" style="width:48px" placeholder="?" title="Reciprocal denominator" />
-            </div>
-            <div style="display:flex; align-items:center; gap:0.6rem">
-              <span>Multiply: </span>
-              <span>(${a} × ${d}) / (${b} × ${c}) = </span>
-              <input type="text" class="lcm-prime-input" data-frac-target="${top}" style="width:58px" placeholder="?" />
-              <span>/</span>
-              <input type="text" class="lcm-prime-input" data-frac-target="${bot}" style="width:58px" placeholder="?" />
-            </div>
-            <div style="display:flex; align-items:center; gap:0.6rem">
-              <span>Simplified Final Answer: </span>
-              <input type="text" class="lcm-prime-input" data-frac-target="${finalAns}" style="width:84px" placeholder="?" />
-            </div>
+          <div class="solver-kcf-mount-point">
+            ${renderKCFStudio({ a, b, c, d })}
           </div>
         `;
+        const mountSlot = container.querySelector(".solver-kcf-mount-point");
+        if (mountSlot) mountKCFLab(mountSlot);
+        return;
       } else {
         const top = a * c;
         const bot = b * d;
@@ -6416,7 +6394,7 @@ function renderStudentFriendlyExplanation(item, copy) {
           <div class="expl-kcf-row">
             <div class="expl-kcf-card card-keep" data-kcf-card="keep">
               <span class="expl-kcf-label">KEEP</span>
-              <span class="expl-kcf-val">${a}/${b}</span>
+              <span class="expl-kcf-val">${verticalFracHtml(a, b)}</span>
               <span class="expl-kcf-sub">First fraction</span>
             </div>
             <div class="expl-kcf-card card-change" data-kcf-card="change">
@@ -6426,12 +6404,12 @@ function renderStudentFriendlyExplanation(item, copy) {
             </div>
             <div class="expl-kcf-card card-flip" data-kcf-card="flip">
               <span class="expl-kcf-label">FLIP</span>
-              <span class="expl-kcf-val">${d}/${c}</span>
+              <span class="expl-kcf-val">${verticalFracHtml(d, c)}</span>
               <span class="expl-kcf-sub">🔄 Reciprocal</span>
             </div>
             <div class="expl-kcf-card" style="background:#f8fafc; border:2px dashed #cbd5e1" data-kcf-card="result">
               <span class="expl-kcf-label">RESULT</span>
-              <span class="expl-kcf-val" style="color:#0369a1">${escapeHtml(item.displayAnswer)}</span>
+              <span class="expl-kcf-val" style="color:#0369a1">${formatVerticalFractions(escapeHtml(item.displayAnswer))}</span>
               <span class="expl-kcf-sub">(${a}×${d})/(${b}×${c})</span>
             </div>
           </div>

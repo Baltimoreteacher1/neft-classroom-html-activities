@@ -1,13 +1,11 @@
 // Keep-Change-Flip (KCF) Interactive Fraction Division Studio
-// Grounded in conceptual fraction division: "How many groups fit?"
-// Demonstrates why dividing by a fraction is identical to multiplying by its reciprocal.
-// Features:
-//   1. Textbook vertical fractions throughout.
-//   2. Interactive 3-card transformation: KEEP, CHANGE, FLIP.
-//   3. 3D card flip animation for reciprocal inversion.
-//   4. Visual measurement tape model showing groups of c/d fitting into a/b.
-//   5. Live interactive simplifier with greatest common factor (GCF) and mixed number conversion.
-//   6. "Try your own fractions" sandbox with instant recalculation.
+// Authoritative mathematical models grounded in CCSS 6.NS.A.1, NCTM, and Singapore Math:
+//   1. Quotitive / Measurement Division with Common Denominator Subdivision Strip Model
+//   2. The Multiplicative Inverse Algebraic Proof (Complex Fraction Transformation)
+//   3. Interactive Keep · Change · Flip Stepper with 3D Reciprocal Flip
+//   4. Interactive Cross-Cancellation Workbench (simplifying before multiplying)
+//   5. 2D Area Model (Unit Square Partitioning)
+//   6. Authentic Vertical Stacked Fractions across every visual surface
 
 const esc = (value) =>
   String(value)
@@ -16,164 +14,509 @@ const esc = (value) =>
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;");
 
-const gcd = (a, b) => (b ? gcd(b, a % b) : Math.abs(a));
+const gcd = (a, b) => {
+  let x = Math.abs(a);
+  let y = Math.abs(b);
+  while (y) [x, y] = [y, x % y];
+  return x || 1;
+};
 
-export function verticalFracHtml(num, den) {
-  return `<span class="v-frac"><span class="v-num">${esc(num)}</span><span class="v-den">${esc(den)}</span></span>`;
+const lcm = (a, b) => (Math.abs(a * b) / gcd(a, b)) || 1;
+
+export function verticalFracHtml(num, den, extraClass = "") {
+  const cls = extraClass ? `v-frac ${extraClass}` : "v-frac";
+  return `<span class="${cls}"><span class="v-num">${esc(num)}</span><span class="v-den">${esc(den)}</span></span>`;
 }
 
-export function renderKCFStudio({ a = 2, b = 3, c = 4, d = 5 } = {}) {
+// Curriculum-aligned presets for exploration
+export const KCF_PRESETS = [
+  { label: "2/3 ÷ 4/5 (Proper Fractions)", a: 2, b: 3, c: 4, d: 5 },
+  { label: "3/4 ÷ 1/8 (Unit Fraction Divisor)", a: 3, b: 4, c: 1, d: 8 },
+  { label: "5/6 ÷ 1/3 (Clean Measurement)", a: 5, b: 6, c: 1, d: 3 },
+  { label: "3 ÷ 2/5 (Whole ÷ Fraction)", a: 3, b: 1, c: 2, d: 5 },
+  { label: "4/5 ÷ 2 (Fraction ÷ Whole)", a: 4, b: 5, c: 2, d: 1 },
+  { label: "7/4 ÷ 1/2 (Improper Fractions)", a: 7, b: 4, c: 1, d: 2 },
+];
+
+export function renderKCFStudio({ a = 2, b = 3, c = 4, d = 5, activeTab = "measure" } = {}) {
+  // Normalize values
+  a = Math.max(1, Math.min(24, Math.round(Number(a) || 2)));
+  b = Math.max(1, Math.min(24, Math.round(Number(b) || 3)));
+  c = Math.max(1, Math.min(24, Math.round(Number(c) || 4)));
+  d = Math.max(1, Math.min(24, Math.round(Number(d) || 5)));
+
+  // Common Denominator Math (Measurement model)
+  const commonDen = lcm(b, d);
+  const num1Common = a * (commonDen / b);
+  const num2Common = c * (commonDen / d);
+
+  // Keep Change Flip Multiplication
   const prodNum = a * d;
   const prodDen = b * c;
   const g = gcd(prodNum, prodDen);
   const simpNum = prodNum / g;
   const simpDen = prodDen / g;
 
+  // Cross-canceling checks
+  const gAC = gcd(a, c);
+  const gBD = gcd(b, d);
+  const canCrossCancel = gAC > 1 || gBD > 1;
+
+  // Quotient representation
   let mixedText = "";
   if (simpDen === 1) {
-    mixedText = `${simpNum}`;
+    mixedText = `<strong class="kcf-res-val">${simpNum}</strong>`;
   } else if (simpNum > simpDen) {
     const whole = Math.floor(simpNum / simpDen);
     const rem = simpNum % simpDen;
-    mixedText = `${whole} ${verticalFracHtml(rem, simpDen)}`;
+    mixedText = `<strong class="kcf-res-val">${whole}</strong> ${verticalFracHtml(rem, simpDen, "kcf-mixed-frac")}`;
+  } else {
+    mixedText = verticalFracHtml(simpNum, simpDen, "kcf-mixed-frac");
   }
 
+  // Quotitive serving count
+  const fullServings = Math.floor(num1Common / num2Common);
+  const remainderUnits = num1Common % num2Common;
+
   return `
-    <div class="kcf-studio-container" data-kcf-a="${a}" data-kcf-b="${b}" data-kcf-c="${c}" data-kcf-d="${d}">
+    <div class="kcf-studio-container" data-kcf-a="${a}" data-kcf-b="${b}" data-kcf-c="${c}" data-kcf-d="${d}" data-kcf-tab="${activeTab}">
+      <!-- Header Bar -->
       <div class="kcf-header">
         <div class="kcf-title-row">
-          <span class="kcf-badge">🔄 Strategy Studio</span>
+          <span class="kcf-badge">🔄 Concept &amp; Strategy Studio</span>
           <h4>Dividing Fractions: Keep · Change · Flip</h4>
         </div>
         <p class="kcf-subtitle">
-          Dividing by a fraction asks: <em>"How many groups of ${verticalFracHtml(c, d)} fit in ${verticalFracHtml(a, b)}?"</em> Multiplying by the reciprocal gives the exact same result!
+          Grounded in the question: <em>"How many groups of ${verticalFracHtml(c, d)} fit into ${verticalFracHtml(a, b)}?"</em>
+          Learn the real mathematical reason why dividing by a fraction is multiplying by its multiplicative inverse.
         </p>
       </div>
 
-      <!-- Problem Hero -->
-      <div class="kcf-problem-hero">
-        <span class="kcf-hero-frac">${verticalFracHtml(a, b)}</span>
-        <span class="kcf-hero-op">÷</span>
-        <span class="kcf-hero-frac">${verticalFracHtml(c, d)}</span>
-        <span class="kcf-hero-op">=</span>
-        <span class="kcf-hero-target">?</span>
+      <!-- Problem Hero Banner with Vertical Fractions -->
+      <div class="kcf-problem-hero" aria-label="${a}/${b} divided by ${c}/${d}">
+        <div class="kcf-hero-equation">
+          <span class="kcf-hero-frac">${verticalFracHtml(a, b)}</span>
+          <span class="kcf-hero-op">÷</span>
+          <span class="kcf-hero-frac">${verticalFracHtml(c, d)}</span>
+          <span class="kcf-hero-op">=</span>
+          <span class="kcf-hero-result">${mixedText}</span>
+        </div>
+        <div class="kcf-hero-caption">
+          Dividing asks: <strong>“How many ${c}/${d}-sized servings fit inside ${a}/${b}?”</strong>
+        </div>
       </div>
 
-      <!-- Interactive 3-Stage Cards -->
-      <div class="kcf-stages-grid">
-        <!-- 1. KEEP -->
-        <div class="kcf-stage-card card-keep" id="kcfCardKeep">
-          <div class="kcf-card-top">
-            <span class="kcf-stage-pill">Step 1</span>
-            <strong>KEEP</strong>
-          </div>
-          <div class="kcf-fraction-display">
-            ${verticalFracHtml(a, b)}
-          </div>
-          <p class="kcf-card-desc">The first fraction stays exactly the same.</p>
-          <button type="button" class="kcf-action-btn" data-kcf-action="keep">
-            <span class="kcf-btn-icon">🔒</span> Keep It
-          </button>
-        </div>
+      <!-- Navigation Tabs: Mathematical Models -->
+      <div class="kcf-model-tabs" role="tablist">
+        <button type="button" class="kcf-tab-btn ${activeTab === "measure" ? "is-active" : ""}" data-kcf-tab-nav="measure">
+          📏 Visual Measurement Model
+        </button>
+        <button type="button" class="kcf-tab-btn ${activeTab === "proof" ? "is-active" : ""}" data-kcf-tab-nav="proof">
+          ⚖️ Why KCF Works (Inverse Proof)
+        </button>
+        <button type="button" class="kcf-tab-btn ${activeTab === "stepper" ? "is-active" : ""}" data-kcf-tab-nav="stepper">
+          🔄 Keep · Change · Flip Stepper
+        </button>
+        <button type="button" class="kcf-tab-btn ${activeTab === "grid" ? "is-active" : ""}" data-kcf-tab-nav="grid">
+          🔲 2D Area Model
+        </button>
+      </div>
 
-        <!-- 2. CHANGE -->
-        <div class="kcf-stage-card card-change" id="kcfCardChange">
-          <div class="kcf-card-top">
-            <span class="kcf-stage-pill">Step 2</span>
-            <strong>CHANGE</strong>
-          </div>
-          <div class="kcf-operator-display" id="kcfOpDisplay">
-            ÷
-          </div>
-          <p class="kcf-card-desc">Change division (÷) into multiplication (×).</p>
-          <button type="button" class="kcf-action-btn" data-kcf-action="change">
-            <span class="kcf-btn-icon">⚡</span> Change to ×
-          </button>
-        </div>
-
-        <!-- 3. FLIP -->
-        <div class="kcf-stage-card card-flip" id="kcfCardFlip">
-          <div class="kcf-card-top">
-            <span class="kcf-stage-pill">Step 3</span>
-            <strong>FLIP</strong>
-          </div>
-          <div class="kcf-flip-wrapper">
-            <div class="kcf-fraction-display kcf-flip-inner" id="kcfFlipDisplay">
-              ${verticalFracHtml(c, d)}
+      <!-- MODEL 1: Visual Measurement Tape & Common Denominator Model -->
+      <div class="kcf-tab-panel ${activeTab === "measure" ? "is-active" : ""}" id="kcfPanelMeasure">
+        <div class="kcf-panel-card">
+          <div class="kcf-card-header">
+            <div>
+              <h5>Quotitive Measurement: Dividing Equal-Sized Pieces</h5>
+              <p class="kcf-card-sub">
+                To count how many ${c}/${d}s fit in ${a}/${b}, rename both fractions using their <strong>common denominator (${commonDen})</strong> so all pieces are identical in size!
+              </p>
+            </div>
+            <div class="kcf-toggle-group">
+              <button type="button" class="kcf-tool-btn" id="kcfToggleCommonGrid" data-active="true">
+                ✨ Common Denominator Grid (${commonDen}ths)
+              </button>
+              <button type="button" class="kcf-tool-btn primary" id="kcfStepMeasureBtn">
+                ▶️ Step-by-Step Measure Fit
+              </button>
             </div>
           </div>
-          <p class="kcf-card-desc">Flip the second fraction to its <strong>reciprocal</strong>.</p>
-          <button type="button" class="kcf-action-btn" data-kcf-action="flip">
-            <span class="kcf-btn-icon">🔃</span> Flip to Reciprocal
-          </button>
+
+          <!-- Dynamic SVG Measurement Tape -->
+          <div class="kcf-svg-tape-stage" id="kcfSvgTapeStage">
+            ${renderTapeSvg({ a, b, c, d, commonDen, num1Common, num2Common, fullServings, remainderUnits, step: 0 })}
+          </div>
+
+          <!-- Measurement Conceptual Walkthrough -->
+          <div class="kcf-measure-walkthrough" id="kcfMeasureWalkthrough">
+            <div class="kcf-step-pill-row">
+              <span class="kcf-math-tag">1. Dividend Amount</span>
+              <p>You have <strong>${verticalFracHtml(a, b)}</strong> = <strong>${verticalFracHtml(num1Common, commonDen)}</strong> of a whole (${num1Common} pieces of size <sup>1</sup>/<sub>${commonDen}</sub>).</p>
+            </div>
+            <div class="kcf-step-pill-row">
+              <span class="kcf-math-tag">2. Serving Size</span>
+              <p>One full serving requires <strong>${verticalFracHtml(c, d)}</strong> = <strong>${verticalFracHtml(num2Common, commonDen)}</strong> (${num2Common} pieces of size <sup>1</sup>/<sub>${commonDen}</sub>).</p>
+            </div>
+            <div class="kcf-step-pill-row highlight">
+              <span class="kcf-math-tag">3. Direct Division</span>
+              <p>Since the pieces are the same size, divide the numerators directly: <strong>${num1Common} ÷ ${num2Common} = ${verticalFracHtml(num1Common, num2Common)} = ${mixedText}</strong> servings!</p>
+            </div>
+          </div>
         </div>
       </div>
 
-      <!-- Multiplied Across Calculation Banner -->
-      <div class="kcf-solution-banner" id="kcfSolutionBanner">
-        <div class="kcf-sol-title">4. Multiply Straight Across</div>
-        <div class="kcf-sol-equation">
-          ${verticalFracHtml(a, b)}
-          <span style="margin: 0 0.5rem; font-size:1.5rem">×</span>
-          <span class="kcf-flipped-frac">${verticalFracHtml(d, c)}</span>
-          <span style="margin: 0 0.5rem; font-size:1.5rem">=</span>
-          <span class="v-frac" style="font-size:1.2em">
-            <span class="v-num">${a} × ${d}</span>
-            <span class="v-den">${b} × ${c}</span>
-          </span>
-          <span style="margin: 0 0.5rem; font-size:1.5rem">=</span>
-          <span class="kcf-result-frac">${verticalFracHtml(prodNum, prodDen)}</span>
-          ${g > 1 ? `
-            <span style="margin: 0 0.5rem; font-size:1.5rem">=</span>
-            <span class="kcf-simplified-frac">${verticalFracHtml(simpNum, simpDen)}</span>
-          ` : ""}
-          ${mixedText && mixedText !== `${simpNum}` && mixedText !== `${prodNum}` ? `
-            <span class="kcf-mixed-badge">(or ${mixedText})</span>
-          ` : ""}
-        </div>
-        <div class="kcf-reciprocal-note">
-          💡 <strong>Reciprocal Check:</strong> ${verticalFracHtml(c, d)} × ${verticalFracHtml(d, c)} = ${c * d}/${c * d} = 1. A number times its reciprocal always equals 1!
-        </div>
-      </div>
+      <!-- MODEL 2: The Multiplicative Inverse Algebraic Proof -->
+      <div class="kcf-tab-panel ${activeTab === "proof" ? "is-active" : ""}" id="kcfPanelProof">
+        <div class="kcf-panel-card">
+          <div class="kcf-card-header">
+            <div>
+              <h5>Why Keep · Change · Flip Works: The Multiplicative Inverse</h5>
+              <p class="kcf-card-sub">
+                Division by a fraction is fundamentally multiplication by its reciprocal. Observe the algebraic transformation that makes the denominator equal to 1.
+              </p>
+            </div>
+            <button type="button" class="kcf-tool-btn primary" id="kcfAnimateProofBtn">
+              ⚡ Transform Complex Fraction
+            </button>
+          </div>
 
-      <!-- Conceptual Visual Measurement Tape Model -->
-      <div class="kcf-visual-tape-section">
-        <div class="kcf-tape-header">
-          <h5>📏 Visual Measurement Model: Why Keep-Change-Flip Works</h5>
-          <button type="button" class="kcf-tape-action-btn" data-kcf-measure-step>
-            ▶️ Animate Measuring Servings
-          </button>
-        </div>
-        <div class="kcf-tape-viewport">
-          <div class="kcf-tape-label">Dividend: <strong>${a}/${b} of a whole</strong></div>
-          <div class="kcf-bar-track" style="--total-parts: ${b}">
-            ${Array.from({ length: b }, (_, i) => `
-              <div class="kcf-bar-cell ${i < a ? "is-filled" : ""}">
-                ${i < a ? `<span>1/${b}</span>` : ""}
+          <!-- Complex Fraction Transformer Visualizer -->
+          <div class="kcf-proof-stage" id="kcfProofStage">
+            <div class="kcf-complex-frac-box">
+              <div class="kcf-complex-title">Complex Fraction Representation:</div>
+              <div class="kcf-complex-equation">
+                <!-- Left: a/b over c/d -->
+                <div class="kcf-stacked-fraction-unit">
+                  <span class="kcf-c-num">${verticalFracHtml(a, b)}</span>
+                  <span class="kcf-c-bar"></span>
+                  <span class="kcf-c-den">${verticalFracHtml(c, d)}</span>
+                </div>
+
+                <span class="kcf-proof-arrow">➔</span>
+
+                <!-- Middle: Multiply by Reciprocal on Top and Bottom -->
+                <div class="kcf-stacked-fraction-unit is-highlighted" id="kcfProofMid">
+                  <span class="kcf-c-num">${verticalFracHtml(a, b)} <strong class="kcf-op-symbol">×</strong> <span class="kcf-recip-badge">${verticalFracHtml(d, c)}</span></span>
+                  <span class="kcf-c-bar"></span>
+                  <span class="kcf-c-den">${verticalFracHtml(c, d)} <strong class="kcf-op-symbol">×</strong> <span class="kcf-recip-badge">${verticalFracHtml(d, c)}</span></span>
+                </div>
+
+                <span class="kcf-proof-arrow">➔</span>
+
+                <!-- Right: Denominator Becomes 1 -->
+                <div class="kcf-stacked-fraction-unit" id="kcfProofEnd">
+                  <span class="kcf-c-num">${verticalFracHtml(a, b)} <strong class="kcf-op-symbol">×</strong> ${verticalFracHtml(d, c)}</span>
+                  <span class="kcf-c-bar"></span>
+                  <span class="kcf-c-den"><strong class="kcf-one-badge">1</strong></span>
+                </div>
+
+                <span class="kcf-proof-arrow">=</span>
+
+                <div class="kcf-proof-final">
+                  <span class="kcf-final-eq">${verticalFracHtml(a, b)} × ${verticalFracHtml(d, c)}</span>
+                </div>
               </div>
+            </div>
+
+            <!-- Proof Conceptual Breakdown -->
+            <div class="kcf-proof-cards-grid">
+              <div class="kcf-proof-card">
+                <span class="kcf-proof-step-num">Step 1</span>
+                <strong>Division is a Fraction</strong>
+                <p>Any division <em>X ÷ Y</em> can be written as <sup>X</sup>/<sub>Y</sub>. So ${a}/${b} ÷ ${c}/${d} is simply a complex fraction.</p>
+              </div>
+              <div class="kcf-proof-card">
+                <span class="kcf-proof-step-num">Step 2</span>
+                <strong>The Multiplicative Inverse</strong>
+                <p>Multiplying a fraction by its reciprocal always equals 1: <strong>${verticalFracHtml(c, d)} × ${verticalFracHtml(d, c)} = <sup>${c * d}</sup>/<sub>${c * d}</sub> = 1</strong>.</p>
+              </div>
+              <div class="kcf-proof-card">
+                <span class="kcf-proof-step-num">Step 3</span>
+                <strong>Multiply Top and Bottom</strong>
+                <p>To keep the value unchanged (multiplying by 1), multiply both numerator and denominator by the reciprocal <strong>${verticalFracHtml(d, c)}</strong>.</p>
+              </div>
+              <div class="kcf-proof-card highlight">
+                <span class="kcf-proof-step-num">Step 4</span>
+                <strong>Keep · Change · Flip!</strong>
+                <p>The denominator collapses to 1! Leaving: <strong>${verticalFracHtml(a, b)} × ${verticalFracHtml(d, c)}</strong>. KCF is proven!</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MODEL 3: Keep Change Flip Stepper & Cross-Cancellation -->
+      <div class="kcf-tab-panel ${activeTab === "stepper" ? "is-active" : ""}" id="kcfPanelStepper">
+        <div class="kcf-panel-card">
+          <div class="kcf-card-header">
+            <div>
+              <h5>Interactive Keep · Change · Flip Workflow</h5>
+              <p class="kcf-card-sub">
+                Follow the 3 tactical moves: Keep the dividend, change the operator, and flip the divisor to its reciprocal.
+              </p>
+            </div>
+            ${canCrossCancel ? `
+              <button type="button" class="kcf-tool-btn warning" id="kcfCrossCancelBtn" data-canceled="false">
+                ✂️ Cross-Cancel Shared Factors
+              </button>
+            ` : ""}
+          </div>
+
+          <!-- Interactive 3-Stage Cards -->
+          <div class="kcf-stages-grid">
+            <!-- 1. KEEP -->
+            <div class="kcf-stage-card card-keep is-active" id="kcfCardKeep">
+              <div class="kcf-card-top">
+                <span class="kcf-stage-pill">Step 1</span>
+                <strong>KEEP</strong>
+              </div>
+              <div class="kcf-fraction-display">
+                ${verticalFracHtml(a, b)}
+              </div>
+              <p class="kcf-card-desc">The dividend stays exactly the same amount.</p>
+              <button type="button" class="kcf-action-btn" data-kcf-action="keep">
+                <span class="kcf-btn-icon">🔒</span> Kept
+              </button>
+            </div>
+
+            <!-- 2. CHANGE -->
+            <div class="kcf-stage-card card-change is-active" id="kcfCardChange">
+              <div class="kcf-card-top">
+                <span class="kcf-stage-pill">Step 2</span>
+                <strong>CHANGE</strong>
+              </div>
+              <div class="kcf-operator-display" id="kcfOpDisplay">
+                ×
+              </div>
+              <p class="kcf-card-desc">Change division (÷) into multiplication (×).</p>
+              <button type="button" class="kcf-action-btn" data-kcf-action="change">
+                <span class="kcf-btn-icon">⚡</span> Changed to ×
+              </button>
+            </div>
+
+            <!-- 3. FLIP -->
+            <div class="kcf-stage-card card-flip is-active" id="kcfCardFlip">
+              <div class="kcf-card-top">
+                <span class="kcf-stage-pill">Step 3</span>
+                <strong>FLIP</strong>
+              </div>
+              <div class="kcf-flip-wrapper">
+                <div class="kcf-fraction-display kcf-flip-inner" id="kcfFlipDisplay">
+                  ${verticalFracHtml(d, c)}
+                </div>
+              </div>
+              <p class="kcf-card-desc">Flip only the divisor into its <strong>reciprocal</strong>.</p>
+              <button type="button" class="kcf-action-btn" data-kcf-action="flip">
+                <span class="kcf-btn-icon">🔃</span> Flipped (${c}/${d} ➔ ${d}/${c})
+              </button>
+            </div>
+          </div>
+
+          <!-- Cross-Cancellation Callout (if factors exist) -->
+          <div class="kcf-cross-cancel-box ${canCrossCancel ? "" : "is-hidden"}" id="kcfCrossCancelBox">
+            <span class="kcf-cancel-badge">💡 Smart Math Strategy</span>
+            <div class="kcf-cancel-content">
+              <strong>Simplify before multiplying:</strong>
+              ${gAC > 1 ? `<span class="kcf-cancel-factor">Divide ${a} and ${c} by their GCF (${gAC}): ${a} ➔ ${a / gAC}, ${c} ➔ ${c / gAC}</span>` : ""}
+              ${gBD > 1 ? `<span class="kcf-cancel-factor">Divide ${b} and ${d} by their GCF (${gBD}): ${b} ➔ ${b / gBD}, ${d} ➔ ${d / gBD}</span>` : ""}
+            </div>
+          </div>
+
+          <!-- Multiply Across Calculation Banner -->
+          <div class="kcf-solution-banner" id="kcfSolutionBanner">
+            <div class="kcf-sol-title">Step 4: Multiply Numerators and Denominators Straight Across</div>
+            <div class="kcf-sol-equation">
+              ${verticalFracHtml(a, b)}
+              <span class="kcf-calc-op">×</span>
+              ${verticalFracHtml(d, c)}
+              <span class="kcf-calc-op">=</span>
+              <span class="kcf-stacked-calc">
+                <span class="kcf-calc-top">${a} × ${d}</span>
+                <span class="kcf-calc-line"></span>
+                <span class="kcf-calc-bot">${b} × ${c}</span>
+              </span>
+              <span class="kcf-calc-op">=</span>
+              ${verticalFracHtml(prodNum, prodDen, "kcf-unreduced")}
+              ${g > 1 ? `
+                <span class="kcf-calc-op">=</span>
+                <span class="kcf-reduced-tag">Divide by GCF (${g})</span>
+                <span class="kcf-calc-op">=</span>
+                ${verticalFracHtml(simpNum, simpDen, "kcf-reduced")}
+              ` : ""}
+              <span class="kcf-calc-op">=</span>
+              <span class="kcf-final-badge">${mixedText}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MODEL 4: 2D Area Model (Unit Square Partitioning) -->
+      <div class="kcf-tab-panel ${activeTab === "grid" ? "is-active" : ""}" id="kcfPanelGrid">
+        <div class="kcf-panel-card">
+          <div class="kcf-card-header">
+            <div>
+              <h5>2D Area Model: Comparing Dimensions</h5>
+              <p class="kcf-card-sub">
+                A unit square of 1 whole subdivided into ${b} columns and ${d} rows creates ${b * d} unit grid cells.
+              </p>
+            </div>
+          </div>
+          <div class="kcf-grid-area-stage">
+            ${renderAreaGridSvg({ a, b, c, d })}
+            <div class="kcf-area-caption">
+              The dividend covers <strong>${a} of ${b} columns</strong> (${a * d} of ${b * d} cells). Each divisor serving takes <strong>${c} of ${d} rows</strong> (${b * c} of ${b * d} cells). The ratio of areas is <strong>${a * d} : ${b * c} = ${simpNum}/${simpDen}</strong>!
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Preset Picker & Custom Sandbox -->
+      <div class="kcf-sandbox-footer">
+        <div class="kcf-presets-row">
+          <span class="kcf-sb-label">Curriculum Presets:</span>
+          <div class="kcf-preset-chips">
+            ${KCF_PRESETS.map((p) => `
+              <button type="button" class="kcf-preset-btn ${p.a === a && p.b === b && p.c === c && p.d === d ? "is-selected" : ""}" data-preset-a="${p.a}" data-preset-b="${p.b}" data-preset-c="${p.c}" data-preset-d="${p.d}">
+                ${p.label}
+              </button>
             `).join("")}
           </div>
-          <div class="kcf-measurement-readout" id="kcfMeasurementReadout">
-            A whole holds ${b} parts. Exactly <strong>${simpNum}${simpDen > 1 ? `/${simpDen}` : ""}</strong> groups of size ${c}/${d} fit inside ${a}/${b}.
-          </div>
         </div>
-      </div>
 
-      <!-- Custom Fraction Tester -->
-      <div class="kcf-sandbox-bar">
-        <span class="kcf-sb-label">Try custom fractions:</span>
-        <div class="kcf-sb-inputs">
-          <input type="number" min="1" max="12" value="${a}" class="kcf-num-in" id="kcfInA" aria-label="First numerator"/>
-          <span>/</span>
-          <input type="number" min="1" max="12" value="${b}" class="kcf-num-in" id="kcfInB" aria-label="First denominator"/>
-          <span style="font-weight:800; font-size:1.25rem">÷</span>
-          <input type="number" min="1" max="12" value="${c}" class="kcf-num-in" id="kcfInC" aria-label="Second numerator"/>
-          <span>/</span>
-          <input type="number" min="1" max="12" value="${d}" class="kcf-num-in" id="kcfInD" aria-label="Second denominator"/>
-          <button type="button" class="kcf-recalc-btn" id="kcfRecalcBtn">Update Model</button>
+        <div class="kcf-custom-row">
+          <span class="kcf-sb-label">Try Any Custom Fractions:</span>
+          <div class="kcf-sb-inputs">
+            <div class="kcf-input-frac">
+              <input type="number" min="1" max="24" value="${a}" class="kcf-num-in" id="kcfInA" aria-label="First numerator"/>
+              <span class="kcf-frac-slash">/</span>
+              <input type="number" min="1" max="24" value="${b}" class="kcf-num-in" id="kcfInB" aria-label="First denominator"/>
+            </div>
+            <span class="kcf-sb-op">÷</span>
+            <div class="kcf-input-frac">
+              <input type="number" min="1" max="24" value="${c}" class="kcf-num-in" id="kcfInC" aria-label="Second numerator"/>
+              <span class="kcf-frac-slash">/</span>
+              <input type="number" min="1" max="24" value="${d}" class="kcf-num-in" id="kcfInD" aria-label="Second denominator"/>
+            </div>
+            <button type="button" class="kcf-recalc-btn" id="kcfRecalcBtn">Update Interactive Models</button>
+          </div>
         </div>
       </div>
     </div>
+  `;
+}
+
+// Render the high-precision SVG measurement tape
+function renderTapeSvg({ a, b, c, d, commonDen, num1Common, num2Common, fullServings, remainderUnits, step = 0 }) {
+  const maxWhole = Math.max(1, Math.ceil(a / b), Math.ceil(c / d));
+  const totalSub = maxWhole * commonDen;
+  const svgWidth = 680;
+  const startX = 60;
+  const trackWidth = 580;
+  const unitPx = trackWidth / totalSub;
+
+  const dividendPx = num1Common * unitPx;
+  const divisorPx = num2Common * unitPx;
+
+  // Servings arcs
+  const activeStep = step || fullServings;
+  let servingsArcs = "";
+  for (let s = 0; s < activeStep; s++) {
+    const sStart = startX + s * divisorPx;
+    const sEnd = Math.min(startX + dividendPx, sStart + divisorPx);
+    const midX = (sStart + sEnd) / 2;
+    servingsArcs += `
+      <path d="M ${sStart},105 Q ${midX},75 ${sEnd},105" fill="none" stroke="#2563eb" stroke-width="3" stroke-linecap="round"/>
+      <circle cx="${midX}" cy="82" r="10" fill="#2563eb"/>
+      <text x="${midX}" y="86" text-anchor="middle" font-size="11" font-weight="900" fill="#ffffff">${s + 1}</text>
+    `;
+  }
+
+  // Ticks for wholes and common units
+  let ticksHtml = "";
+  for (let i = 0; i <= totalSub; i++) {
+    const x = startX + i * unitPx;
+    const isWhole = i % commonDen === 0;
+    const wholeVal = i / commonDen;
+    ticksHtml += `
+      <line x1="${x}" y1="120" x2="${x}" y2="${isWhole ? 145 : 132}" stroke="${isWhole ? "#0f172a" : "#94a3b8"}" stroke-width="${isWhole ? 2.5 : 1}"/>
+      ${isWhole ? `<text x="${x}" y="162" text-anchor="middle" font-size="13" font-weight="800" fill="#0f172a">${wholeVal}</text>` : ""}
+    `;
+  }
+
+  return `
+    <svg class="kcf-svg-tape" viewBox="0 0 ${svgWidth} 190" aria-label="Measurement Tape Visual Model">
+      <defs>
+        <linearGradient id="kcfGradDividend" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#0284c7"/>
+          <stop offset="100%" stop-color="#0ea5e9"/>
+        </linearGradient>
+        <linearGradient id="kcfGradDivisor" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#f59e0b"/>
+          <stop offset="100%" stop-color="#fbbf24"/>
+        </linearGradient>
+        <pattern id="kcfRemainderStripes" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+          <line x1="0" y1="0" x2="0" y2="8" stroke="#ef4444" stroke-width="3" />
+        </pattern>
+      </defs>
+
+      <!-- Label Row -->
+      <text x="${startX}" y="25" font-size="12" font-weight="800" fill="#0369a1">Dividend Amount: ${a}/${b} (${num1Common} of ${commonDen} parts)</text>
+      <text x="${startX}" y="180" font-size="12" font-weight="800" fill="#b45309">Divisor Serving: ${c}/${d} (${num2Common} of ${commonDen} parts)</text>
+
+      <!-- Dividend Bar (Top) -->
+      <rect x="${startX}" y="34" width="${trackWidth}" height="28" rx="4" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.5"/>
+      <rect x="${startX}" y="34" width="${dividendPx}" height="28" rx="4" fill="url(#kcfGradDividend)"/>
+
+      <!-- Remainder Stripe Overlay on Dividend Bar (if any) -->
+      ${remainderUnits > 0 && activeStep >= fullServings ? `
+        <rect x="${startX + fullServings * divisorPx}" y="34" width="${remainderUnits * unitPx}" height="28" fill="url(#kcfRemainderStripes)" opacity="0.8"/>
+      ` : ""}
+
+      <!-- Number Line Ruler (Middle) -->
+      <line x1="${startX}" y1="120" x2="${startX + trackWidth}" y2="120" stroke="#64748b" stroke-width="2"/>
+      ${ticksHtml}
+
+      <!-- Measurement Arcs -->
+      ${servingsArcs}
+
+      <!-- Serving Unit Indicators (Bottom) -->
+      <rect x="${startX}" y="125" width="${divisorPx}" height="14" rx="3" fill="url(#kcfGradDivisor)"/>
+    </svg>
+  `;
+}
+
+// Render the 2D Area Grid
+function renderAreaGridSvg({ a, b, c, d }) {
+  const cellSize = 32;
+  const width = b * cellSize;
+  const height = d * cellSize;
+  const svgWidth = Math.max(340, width + 80);
+  const svgHeight = Math.max(240, height + 60);
+
+  let cells = "";
+  for (let r = 0; r < d; r++) {
+    for (let col = 0; col < b; col++) {
+      const isDividendCol = col < a;
+      const isDivisorRow = r < c;
+      let fill = "#f8fafc";
+      if (isDividendCol && isDivisorRow) fill = "#818cf8"; // Overlap
+      else if (isDividendCol) fill = "#bae6fd"; // Dividend column
+      else if (isDivisorRow) fill = "#fde68a"; // Divisor row
+
+      cells += `
+        <rect x="${40 + col * cellSize}" y="${30 + r * cellSize}" width="${cellSize}" height="${cellSize}" fill="${fill}" stroke="#cbd5e1" stroke-width="1"/>
+      `;
+    }
+  }
+
+  return `
+    <svg class="kcf-svg-grid" viewBox="0 0 ${svgWidth} ${svgHeight}">
+      ${cells}
+      <!-- Column Header -->
+      <text x="${40 + width / 2}" y="20" text-anchor="middle" font-size="12" font-weight="800" fill="#0284c7">Dividend: ${a}/${b} Columns</text>
+      <!-- Row Header -->
+      <text x="25" y="${30 + height / 2}" text-anchor="middle" font-size="12" font-weight="800" fill="#d97706" transform="rotate(-90 25 ${30 + height / 2})">Divisor: ${c}/${d} Rows</text>
+    </svg>
   `;
 }
 
@@ -187,21 +530,36 @@ export function mountKCFLab(container, options = {}) {
       b: Number(el?.dataset.kcfB || 3),
       c: Number(el?.dataset.kcfC || 4),
       d: Number(el?.dataset.kcfD || 5),
+      activeTab: el?.dataset.kcfTab || "measure",
     };
   };
 
-  // KEEP Button
+  // Tab Navigation Switching
+  container.querySelectorAll("[data-kcf-tab-nav]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const tabName = btn.dataset.kcfTabNav;
+      container.querySelectorAll("[data-kcf-tab-nav]").forEach((b) => b.classList.toggle("is-active", b === btn));
+      container.querySelectorAll(".kcf-tab-panel").forEach((p) => {
+        const matches = p.id === `kcfPanel${tabName.charAt(0).toUpperCase() + tabName.slice(1)}`;
+        p.classList.toggle("is-active", matches);
+      });
+      const el = container.querySelector(".kcf-studio-container");
+      if (el) el.dataset.kcfTab = tabName;
+    });
+  });
+
+  // KEEP Action
   container.querySelectorAll("[data-kcf-action='keep']").forEach((btn) => {
     btn.addEventListener("click", () => {
       const card = container.querySelector("#kcfCardKeep");
       card?.classList.toggle("is-active");
       btn.innerHTML = card?.classList.contains("is-active")
-        ? '<span class="kcf-btn-icon">✅</span> Kept!'
-        : '<span class="kcf-btn-icon">🔒</span> Keep It';
+        ? '<span class="kcf-btn-icon">🔒</span> Kept'
+        : '<span class="kcf-btn-icon">🔓</span> Keep It';
     });
   });
 
-  // CHANGE Button
+  // CHANGE Action
   container.querySelectorAll("[data-kcf-action='change']").forEach((btn) => {
     btn.addEventListener("click", () => {
       const card = container.querySelector("#kcfCardChange");
@@ -209,15 +567,15 @@ export function mountKCFLab(container, options = {}) {
       card?.classList.toggle("is-active");
       if (card?.classList.contains("is-active")) {
         if (opDisplay) opDisplay.textContent = "×";
-        btn.innerHTML = '<span class="kcf-btn-icon">✅</span> Changed to ×!';
+        btn.innerHTML = '<span class="kcf-btn-icon">⚡</span> Changed to ×';
       } else {
         if (opDisplay) opDisplay.textContent = "÷";
-        btn.innerHTML = '<span class="kcf-btn-icon">⚡</span> Change to ×';
+        btn.innerHTML = '<span class="kcf-btn-icon">÷</span> Change to ×';
       }
     });
   });
 
-  // FLIP Button
+  // FLIP Action
   container.querySelectorAll("[data-kcf-action='flip']").forEach((btn) => {
     btn.addEventListener("click", () => {
       const card = container.querySelector("#kcfCardFlip");
@@ -226,7 +584,7 @@ export function mountKCFLab(container, options = {}) {
       card?.classList.toggle("is-active");
       if (card?.classList.contains("is-active")) {
         if (flipDisplay) flipDisplay.innerHTML = verticalFracHtml(d, c);
-        btn.innerHTML = '<span class="kcf-btn-icon">✅</span> Flipped to Reciprocal!';
+        btn.innerHTML = `<span class="kcf-btn-icon">🔃</span> Flipped (${c}/${d} ➔ ${d}/${c})`;
       } else {
         if (flipDisplay) flipDisplay.innerHTML = verticalFracHtml(c, d);
         btn.innerHTML = '<span class="kcf-btn-icon">🔃</span> Flip to Reciprocal';
@@ -234,16 +592,71 @@ export function mountKCFLab(container, options = {}) {
     });
   });
 
-  // Animate Measuring Servings
-  container.querySelectorAll("[data-kcf-measure-step]").forEach((btn) => {
+  // Cross-Cancel Button
+  const crossCancelBtn = container.querySelector("#kcfCrossCancelBtn");
+  if (crossCancelBtn) {
+    crossCancelBtn.addEventListener("click", () => {
+      const isCanceled = crossCancelBtn.dataset.canceled === "true";
+      crossCancelBtn.dataset.canceled = String(!isCanceled);
+      const cancelBox = container.querySelector("#kcfCrossCancelBox");
+      if (cancelBox) cancelBox.classList.toggle("is-active", !isCanceled);
+      crossCancelBtn.textContent = !isCanceled ? "✅ Factors Simplified!" : "✂️ Cross-Cancel Shared Factors";
+    });
+  }
+
+  // Step-by-Step Measure Fit Button
+  let currentMeasureStep = 0;
+  const measureStepBtn = container.querySelector("#kcfStepMeasureBtn");
+  if (measureStepBtn) {
+    measureStepBtn.addEventListener("click", () => {
+      const { a, b, c, d } = getVals();
+      const commonDen = lcm(b, d);
+      const num1Common = a * (commonDen / b);
+      const num2Common = c * (commonDen / d);
+      const fullServings = Math.floor(num1Common / num2Common);
+      const remainderUnits = num1Common % num2Common;
+
+      currentMeasureStep = (currentMeasureStep + 1) % (fullServings + 2);
+      const stage = container.querySelector("#kcfSvgTapeStage");
+      if (stage) {
+        stage.innerHTML = renderTapeSvg({
+          a, b, c, d,
+          commonDen, num1Common, num2Common,
+          fullServings, remainderUnits,
+          step: currentMeasureStep,
+        });
+      }
+      measureStepBtn.textContent = currentMeasureStep === 0
+        ? "▶️ Step-by-Step Measure Fit"
+        : `▶️ Serving ${currentMeasureStep} of ${fullServings}`;
+    });
+  }
+
+  // Complex Fraction Transform Animation Button
+  const animateProofBtn = container.querySelector("#kcfAnimateProofBtn");
+  if (animateProofBtn) {
+    animateProofBtn.addEventListener("click", () => {
+      const mid = container.querySelector("#kcfProofMid");
+      const end = container.querySelector("#kcfProofEnd");
+      mid?.classList.add("is-popping");
+      setTimeout(() => {
+        mid?.classList.remove("is-popping");
+        end?.classList.add("is-popping");
+        setTimeout(() => end?.classList.remove("is-popping"), 600);
+      }, 500);
+    });
+  }
+
+  // Preset Buttons
+  container.querySelectorAll("[data-preset-a]").forEach((btn) => {
     btn.addEventListener("click", () => {
-      const cells = container.querySelectorAll(".kcf-bar-cell.is-filled");
-      cells.forEach((cell, i) => {
-        setTimeout(() => {
-          cell.classList.add("is-measured");
-          setTimeout(() => cell.classList.remove("is-measured"), 1200);
-        }, i * 180);
-      });
+      const a = Number(btn.dataset.presetA);
+      const b = Number(btn.dataset.presetB);
+      const c = Number(btn.dataset.presetC);
+      const d = Number(btn.dataset.presetD);
+      const activeTab = getVals().activeTab;
+      container.innerHTML = renderKCFStudio({ a, b, c, d, activeTab });
+      mountKCFLab(container, options);
     });
   });
 
@@ -255,7 +668,8 @@ export function mountKCFLab(container, options = {}) {
       const inB = Number(container.querySelector("#kcfInB")?.value || 3);
       const inC = Number(container.querySelector("#kcfInC")?.value || 4);
       const inD = Number(container.querySelector("#kcfInD")?.value || 5);
-      container.innerHTML = renderKCFStudio({ a: inA, b: inB, c: inC, d: inD });
+      const activeTab = getVals().activeTab;
+      container.innerHTML = renderKCFStudio({ a: inA, b: inB, c: inC, d: inD, activeTab });
       mountKCFLab(container, options);
     });
   }

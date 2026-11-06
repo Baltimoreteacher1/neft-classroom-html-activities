@@ -198,7 +198,57 @@ export function createLesson(skill, variant = 0) {
     }
     const op = config.op;
     if (op === "mul") return lesson("Take a part of a part", "Shade 2 of 3 columns, then take 3 of 4 rows of the shaded part. The overlap is the product.", { type: "fractionGrid", cols: 3, rows: 4, selectedCols: 2, selectedRows: 3, caption: "2/3 × 3/4" }, [step("How many equal cells make the whole grid?", 12, "Multiply rows by columns.", "3 × 4 = 12 cells."), step("How many cells are in the overlap?", 6, "Count the cells in both selected rows and columns.", "2 × 3 = 6 overlapping cells."), step("What fraction of the whole is the overlap?", "1/2", "Use overlap cells over total cells; simplify if you can.", "6/12 = 1/2.", "fraction")]);
-    if (op === "div") return lesson("Count how many fractional groups fit", "Division can ask how many groups of the divisor fit in the first amount.", { type: "fractions", fractions: [[3, 4], [1, 8]], caption: "3/4 ÷ 1/8" }, [step("Rename 3/4 in eighths. What is the numerator?", 6, "Split every fourth in two.", "3/4 = 6/8."), step("How many groups of 1/8 fit inside 6/8?", 6, "Count the eighth-sized groups.", "Six groups fit."), step("Check: 6 × 1/8 = what fraction?", "3/4", "Multiply 6 by 1/8.", "6/8 = 3/4, so the quotient is 6.", "fraction")]);
+    if (op === "div") {
+      const examples = [
+        {
+          a: 3, b: 4, c: 1, d: 8,
+          steps: [
+            step("Rename 3/4 in eighths. What is the numerator?", 6, "Split every fourth in two: 3 × 2.", "3/4 = 6/8."),
+            step("How many groups of 1/8 fit inside 6/8?", 6, "Count the eighth-sized groups: 6 ÷ 1 = 6.", "Six groups fit."),
+            step("Check with Keep-Change-Flip: 3/4 × 8/1 = what whole number?", 6, "Multiply 3 × 8 = 24, divided by 4 = 6.", "24/4 = 6, so the quotient is 6."),
+          ],
+        },
+        {
+          a: 2, b: 3, c: 1, d: 6,
+          steps: [
+            step("Rename 2/3 in sixths. What is the numerator?", 4, "Multiply top and bottom by 2.", "2/3 = 4/6."),
+            step("How many groups of 1/6 fit inside 4/6?", 4, "Count the sixth-sized groups: 4 ÷ 1 = 4.", "Four groups fit."),
+            step("Check with Keep-Change-Flip: 2/3 × 6/1 = what whole number?", 4, "Multiply 2 × 6 = 12, divided by 3 = 4.", "12/3 = 4, so the quotient is 4."),
+          ],
+        },
+        {
+          a: 5, b: 6, c: 1, d: 3,
+          steps: [
+            step("Rename 1/3 in sixths. What is the numerator?", 2, "Multiply top and bottom by 2.", "1/3 = 2/6."),
+            step("How many groups of 2/6 fit inside 5/6? Divide 5 ÷ 2.", "5/2", "Divide the counts directly: 5 ÷ 2.", "5/2 = 2 1/2 groups fit.", "fraction"),
+            step("Check with Keep-Change-Flip: 5/6 × 3/1 = what fraction?", "5/2", "Multiply 5 × 3 = 15, over 6; simplify 15/6 = 5/2.", "15/6 = 5/2, which is 2 1/2.", "fraction"),
+          ],
+        },
+        {
+          a: 1, b: 2, c: 1, d: 8,
+          steps: [
+            step("Rename 1/2 in eighths. What is the numerator?", 4, "Split each half into four parts: 1 × 4.", "1/2 = 4/8."),
+            step("How many groups of 1/8 fit inside 4/8?", 4, "Count the eighth-sized groups: 4 ÷ 1 = 4.", "Four groups fit."),
+            step("Check with Keep-Change-Flip: 1/2 × 8/1 = what whole number?", 4, "Multiply 1 × 8 = 8, divided by 2 = 4.", "8/2 = 4, so the quotient is 4."),
+          ],
+        },
+        {
+          a: 3, b: 5, c: 3, d: 10,
+          steps: [
+            step("Rename 3/5 in tenths. What is the numerator?", 6, "Multiply top and bottom by 2.", "3/5 = 6/10."),
+            step("How many groups of 3/10 fit inside 6/10?", 2, "Divide 6 by 3: 6 ÷ 3 = 2.", "6 ÷ 3 = 2 groups fit."),
+            step("Check with Keep-Change-Flip: 3/5 × 10/3 = what whole number?", 2, "Multiply (3 × 10) / (5 × 3) = 30/15 = 2.", "30/15 = 2, so the quotient is 2."),
+          ],
+        },
+      ];
+      const ex = examples[k % examples.length];
+      return lesson(
+        "Count how many fractional groups fit",
+        "Division asks how many groups of the divisor fit in the first amount. Use common denominators or Keep-Change-Flip (multiplying by the reciprocal).",
+        { type: "fractions", fractions: [[ex.a, ex.b], [ex.c, ex.d]], caption: `${ex.a}/${ex.b} ÷ ${ex.c}/${ex.d}` },
+        ex.steps,
+      );
+    }
     const subtract = op === "sub";
     return lesson(subtract ? "Subtract equal-sized pieces" : "Combine equal-sized pieces", "Rename both fractions so each piece has the same size.", { type: "fractions", fractions: subtract ? [[3, 4], [1, 3]] : [[1, 3], [1, 4]], caption: subtract ? "3/4 − 1/3" : "1/3 + 1/4" }, [step(subtract ? "Rename 3/4 in twelfths. What is the numerator?" : "Rename 1/3 in twelfths. What is the numerator?", subtract ? 9 : 4, "Multiply both parts of the fraction by the same factor.", subtract ? "3/4 = 9/12." : "1/3 = 4/12."), step(subtract ? "Rename 1/3 in twelfths. What is the numerator?" : "Rename 1/4 in twelfths. What is the numerator?", subtract ? 4 : 3, "Use a denominator of 12.", subtract ? "1/3 = 4/12." : "1/4 = 3/12."), step(subtract ? "Find 3/4 − 1/3." : "Find 1/3 + 1/4.", subtract ? "5/12" : "7/12", "Combine the numerators; keep the size of the pieces.", subtract ? "9/12 − 4/12 = 5/12." : "4/12 + 3/12 = 7/12.", "fraction")]);
   }
