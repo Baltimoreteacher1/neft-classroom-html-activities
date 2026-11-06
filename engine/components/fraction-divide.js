@@ -215,7 +215,7 @@ function mountFractionDivide(host, cfg = {}) {
 
   wrap.innerHTML =
     `<div class="fdiv-title">${esc(title)}</div>` +
-    `<div class="fdiv-hint">${labT("fraction-divide.hint", "Keep–Change–Flip: keep the first fraction, change ÷ to ×, and flip the divisor. Type each answer as a fraction or mixed number.")}</div>` +
+    `<div class="fdiv-hint">${labT("fraction-divide.hint", "Dividing by a fraction asks how many groups fit, so multiply by the reciprocal. Keep–Change–Flip is the memory aid: keep the first fraction, change ÷ to ×, and flip the divisor. Type each answer as a fraction or mixed number.")}</div>` +
     `<div class="fdiv-problem" aria-hidden="true">${esc(dividendStr)} ÷ ${esc(divisorStr)}</div>` +
     `<div class="fdiv-steps">` +
     // Step 1 (conditional) — get both operands into fraction form
@@ -229,8 +229,8 @@ function mountFractionDivide(host, cfg = {}) {
       : "") +
     // Step 2 — keep change flip (reciprocal)
     `<div class="fdiv-step" data-step="2"${aNeeds || bNeeds ? " hidden" : ""}>` +
-    `<div class="fdiv-step-num">${labT("fraction-divide.step-2-title", "Step 2 · Keep · Change · Flip")}</div>` +
-    `<div class="fdiv-prompt">${labT("fraction-divide.step-2-prompt", "Change ÷ to ×, then <strong>flip the divisor</strong>. Write the divisor's reciprocal:")}</div>` +
+    `<div class="fdiv-step-num">${labT("fraction-divide.step-2-title", "Step 2 · Reciprocal (Keep · Change · Flip)")}</div>` +
+    `<div class="fdiv-prompt">${labT("fraction-divide.step-2-prompt", "One whole holds as many groups as the divisor's reciprocal. Change ÷ to ×, then <strong>flip only the divisor</strong>. Write its reciprocal:")}</div>` +
     `<div class="fdiv-row"><span class="fdiv-op">×</span><input class="fdiv-inp" data-k="recip" type="text" inputmode="numeric" aria-label="${labT("fraction-divide.recip-aria", "reciprocal of the divisor")}" placeholder="a/b"><button type="button" class="fdiv-btn fdiv-btn-check" data-check="2">${labT("fraction-divide.check", "Check")}</button></div>` +
     `<div class="fdiv-status" data-status="2" role="status" aria-live="polite"></div>` +
     `</div>` +
@@ -310,7 +310,11 @@ function mountFractionDivide(host, cfg = {}) {
       if (msg) messages.push(msg);
     }
     if (!messages.length) {
-      setStatus(1, labT("fraction-divide.yes-flip", "Yes — now keep, change, flip."), true);
+      setStatus(
+        1,
+        labT("fraction-divide.yes-flip", "Yes — now find the reciprocal: keep, change, flip."),
+        true,
+      );
       reveal(2);
     } else {
       setStatus(
@@ -330,11 +334,15 @@ function mountFractionDivide(host, cfg = {}) {
     if (okLoose) {
       setStatus(
         2,
-        labT("fraction-divide.right-flip", "Right — flip {div} to {rn}/{rd}. Now multiply.", {
-          div: esc(divisorStr),
-          rn: recip.n,
-          rd: recip.d,
-        }),
+        labT(
+          "fraction-divide.right-flip",
+          "Right — the reciprocal of {div} is {rn}/{rd}. Now multiply.",
+          {
+            div: esc(divisorStr),
+            rn: recip.n,
+            rd: recip.d,
+          },
+        ),
         true,
       );
       reveal(3);
@@ -402,7 +410,11 @@ function mountFractionDivide(host, cfg = {}) {
     reveal(2);
     inp("recip").value = `${recip.n}/${recip.d}`;
     mark(inp("recip"), true);
-    setStatus(2, labT("fraction-divide.kcf-done", "Keep · Change · Flip."), true);
+    setStatus(
+      2,
+      labT("fraction-divide.kcf-done", "Keep · Change · Flip: multiply by the reciprocal."),
+      true,
+    );
     reveal(3);
     inp("answer").value = fracToString(answer);
     mark(inp("answer"), true);

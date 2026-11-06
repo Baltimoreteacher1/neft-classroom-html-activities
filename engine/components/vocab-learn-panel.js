@@ -184,14 +184,16 @@ function resolveTryItChallenge(config) {
       questionEs: "Al calcular 3/4 ÷ 1/2, ¿cuál es el primer paso?",
       options: [
         {
-          text: "Multiply 3/4 by 2/1 (Keep, Change, Flip)",
+          text: "Multiply 3/4 by 2/1, the reciprocal of 1/2",
           correct: true,
-          explain: "Correct! Flip 1/2 into 2/1 and multiply: 3/4 × 2/1 = 6/4 = 1 1/2!",
+          explain:
+            "Correct! One whole holds 2/1 groups of 1/2, so multiply by 2/1: 3/4 × 2/1 = 6/4 = 1 1/2!",
         },
         {
           text: "Divide 3 by 1 and 4 by 2 directly",
           correct: false,
-          explain: "Incorrect: Remember the rule: Keep, Change, Flip!",
+          explain:
+            "Incorrect: dividing by a fraction means multiplying by its reciprocal (Keep, Change, Flip).",
         },
         {
           text: "Flip 3/4 into 4/3",

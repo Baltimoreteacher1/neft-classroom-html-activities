@@ -120,11 +120,14 @@ export const LAB_STRINGS = {
     "Todavía no — invertir una fracción intercambia el numerador y el denominador.",
   ],
   "fraction-divide.hint": [
-    "Keep–Change–Flip: keep the first fraction, change ÷ to ×, and flip the divisor. Type each answer as a fraction or mixed number.",
-    "Mantén–Cambia–Invierte: mantén la primera fracción, cambia ÷ por × e invierte el divisor. Escribe cada respuesta como fracción o número mixto.",
+    "Dividing by a fraction asks how many groups fit, so multiply by the reciprocal. Keep–Change–Flip is the memory aid: keep the first fraction, change ÷ to ×, and flip the divisor. Type each answer as a fraction or mixed number.",
+    "Dividir entre una fracción pregunta cuántos grupos caben, así que se multiplica por el recíproco. Mantén–Cambia–Invierte es la regla para recordarlo: mantén la primera fracción, cambia ÷ por × e invierte el divisor. Escribe cada respuesta como fracción o número mixto.",
   ],
   "fraction-divide.improper-ready": ["Improper fractions ready.", "Fracciones impropias listas."],
-  "fraction-divide.kcf-done": ["Keep · Change · Flip.", "Mantén · Cambia · Invierte."],
+  "fraction-divide.kcf-done": [
+    "Keep · Change · Flip: multiply by the reciprocal.",
+    "Mantén · Cambia · Invierte: multiplica por el recíproco.",
+  ],
   "fraction-divide.mixed-aria": ["{str} as an improper fraction", "{str} como fracción impropia"],
   "fraction-divide.mixed-hint": [
     "{str} is a mixed number — rewrite it as an improper fraction.",
@@ -143,8 +146,8 @@ export const LAB_STRINGS = {
   "fraction-divide.pick-problem": ["Pick a problem", "Elige un problema"],
   "fraction-divide.recip-aria": ["reciprocal of the divisor", "recíproco del divisor"],
   "fraction-divide.right-flip": [
-    "Right — flip {div} to {rn}/{rd}. Now multiply.",
-    "Correcto — invierte {div} y queda {rn}/{rd}. Ahora multiplica.",
+    "Right — the reciprocal of {div} is {rn}/{rd}. Now multiply.",
+    "Correcto — el recíproco de {div} es {rn}/{rd}. Ahora multiplica.",
   ],
   "fraction-divide.show-me": ["Show me", "Muéstrame"],
   "fraction-divide.simplify-more": [
@@ -156,12 +159,12 @@ export const LAB_STRINGS = {
     "Paso 1 · Fracciones en ambos lados",
   ],
   "fraction-divide.step-2-prompt": [
-    "Change ÷ to ×, then <strong>flip the divisor</strong>. Write the divisor's reciprocal:",
-    "Cambia ÷ por ×, luego <strong>invierte el divisor</strong>. Escribe el recíproco del divisor:",
+    "One whole holds as many groups as the divisor's reciprocal. Change ÷ to ×, then <strong>flip only the divisor</strong>. Write its reciprocal:",
+    "Un entero contiene tantos grupos como el recíproco del divisor. Cambia ÷ por ×, luego <strong>invierte solo el divisor</strong>. Escribe su recíproco:",
   ],
   "fraction-divide.step-2-title": [
-    "Step 2 · Keep · Change · Flip",
-    "Paso 2 · Mantén · Cambia · Invierte",
+    "Step 2 · Reciprocal (Keep · Change · Flip)",
+    "Paso 2 · Recíproco (Mantén · Cambia · Invierte)",
   ],
   "fraction-divide.step-3-prompt": [
     "Multiply across, then simplify to lowest terms (use a mixed number if it's more than 1):",
@@ -186,8 +189,8 @@ export const LAB_STRINGS = {
     "{str} va sobre 1 — prueba con {str}/1.",
   ],
   "fraction-divide.yes-flip": [
-    "Yes — now keep, change, flip.",
-    "Sí — ahora mantén, cambia, invierte.",
+    "Yes — now find the reciprocal: keep, change, flip.",
+    "Sí — ahora halla el recíproco: mantén, cambia, invierte.",
   ],
   // area-morph
   "area-morph.blank": ["blank", "espacio en blanco"],

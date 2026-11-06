@@ -550,9 +550,9 @@ export const MATH_GLOSSARY = [
     term: "keep-change-flip",
     termEs: "mantén-cambia-invierte",
     definition:
-      "A way to remember dividing by a fraction: keep the first fraction, change ÷ to ×, and flip the second fraction.",
+      "A memory aid for dividing by a fraction. Dividing asks how many groups fit, and one whole holds the reciprocal's worth, so: keep the first fraction, change ÷ to ×, and flip only the second fraction.",
     definitionEs:
-      "Una forma de recordar cómo dividir entre una fracción: mantén la primera fracción, cambia ÷ por ×, e invierte la segunda fracción.",
+      "Una regla para recordar cómo dividir entre una fracción. Dividir pregunta cuántos grupos caben, y un entero contiene tantos como el recíproco, así que: mantén la primera fracción, cambia ÷ por × e invierte solo la segunda fracción.",
     visual: "3/4 ÷ 2/5 becomes 3/4 × 5/2.",
   },
   {

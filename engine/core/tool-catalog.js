@@ -189,9 +189,9 @@ export const TOOL_CATALOG = {
     name: "Divide Fractions Lab",
     nameEs: "Laboratorio de dividir fracciones",
     purpose:
-      "Work a fraction division one stage at a time: put whole numbers over 1 (and rewrite any mixed number as an improper fraction), Keep–Change–Flip, then multiply and simplify.",
+      "Work a fraction division one stage at a time: put whole numbers over 1 (and rewrite any mixed number as an improper fraction), find the reciprocal of the divisor (Keep–Change–Flip) because dividing asks how many groups fit, then multiply and simplify.",
     purposeEs:
-      "Trabaja una división de fracciones por etapas: pon los números enteros sobre 1 (y reescribe cualquier número mixto como fracción impropia), Conserva–Cambia–Voltea, y luego multiplica y simplifica.",
+      "Trabaja una división de fracciones por etapas: pon los números enteros sobre 1 (y reescribe cualquier número mixto como fracción impropia), halla el recíproco del divisor (Conserva–Cambia–Voltea) porque dividir pregunta cuántos grupos caben, y luego multiplica y simplifica.",
     howTo: [
       "If a number is whole, put a 1 under it. If it's a mixed number, rewrite it as an improper fraction.",
       "Keep the first fraction, change ÷ to ×, and flip the second.",

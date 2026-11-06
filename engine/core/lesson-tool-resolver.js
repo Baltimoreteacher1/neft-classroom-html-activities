@@ -92,7 +92,7 @@ export function resolveInteractiveToolForLesson(config) {
       kind: "fraction-divide",
       dividend: "3/4",
       divisor: "1/2",
-      label: "Interactive Fraction Division: Keep, Change, Flip!",
+      label: "Interactive Fraction Division: Multiply by the Reciprocal",
     };
   }
   // 6.NOS.2 — Long Division
@@ -471,7 +471,7 @@ export function resolveInteractiveToolForLesson(config) {
       kind: "fraction-divide",
       dividend: "3/4",
       divisor: "1/2",
-      label: "Interactive Fraction Division: Keep, Change, Flip!",
+      label: "Interactive Fraction Division: Multiply by the Reciprocal",
     };
   }
   if (wb("long division|partial quotients?")) {
@@ -657,8 +657,8 @@ export function resolveLessonMisconception(config) {
   }
   if (text.includes("fraction") && text.includes("divide")) {
     return {
-      en: "Remember to Keep the first fraction, Change division to multiplication, and Flip the second fraction (reciprocal)! Do not flip the first fraction.",
-      es: "¡Recuerda Mantener la primera fracción, Cambiar división a multiplicación y Voltear la segunda fracción! No voltees la primera fracción.",
+      en: "Dividing by a fraction asks how many groups fit, so multiply by the reciprocal: Keep the first fraction, Change ÷ to ×, and Flip only the second fraction. Do not flip the first fraction.",
+      es: "Dividir entre una fracción pregunta cuántos grupos caben, así que se multiplica por el recíproco: Mantén la primera fracción, Cambia ÷ por × e Invierte solo la segunda fracción. No inviertas la primera fracción.",
     };
   }
   if (text.includes("decimal")) {

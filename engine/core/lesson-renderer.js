@@ -420,9 +420,9 @@ function buildVisual(v) {
       // improper fractions, then keep–change–flip, multiply and simplify.
       return interactiveVisualHost(v, {
         ariaLabel:
-          "Divide fractions lab. Put whole numbers over 1, rewrite mixed numbers as improper fractions, then keep change flip, multiply and simplify.",
+          "Divide fractions lab. Put whole numbers over 1, rewrite mixed numbers as improper fractions, then find the divisor's reciprocal (keep, change, flip), multiply and simplify.",
         fallback:
-          "Divide-fractions workspace. Turn on JavaScript to keep, change, flip, and simplify.",
+          "Divide-fractions workspace. Turn on JavaScript to find the reciprocal, multiply, and simplify.",
       });
     }
     case "algebra-expand": {
