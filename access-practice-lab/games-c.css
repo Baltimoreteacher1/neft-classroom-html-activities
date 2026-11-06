@@ -1,1 +1,77 @@
 /* ACCESS Practice Lab — Language Game Studio game styles (games-c). */
+
+/* Read-Along Theater: playbill, stage, coach, script page, feeling cards, curtain call. */
+.rat { display: grid; gap: var(--s-3, .75rem); }
+.rat-bill { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .5rem .75rem; }
+.rat-bill-t { display: flex; align-items: center; gap: .4rem; margin: 0; font-family: "Fraunces", Georgia, serif; font-size: 1.2rem; font-weight: 700; }
+.rat-bill-t .ico { color: var(--goldDk, #d99a22); }
+.rat-stickers { display: flex; gap: .4rem; margin: 0; padding: 0; list-style: none; }
+.rat-sticker { display: grid; place-items: center; width: 2.4rem; height: 2.4rem; border-radius: 50%; border: 2px dashed var(--line-strong); background: #fff; color: var(--ink-3); font-weight: 800; }
+.rat-sticker.is-now { border-style: solid; border-color: var(--gs-navy, #17324d); color: var(--gs-navy, #17324d); }
+.rat-sticker.is-s3 { background: var(--gs-gold, #f2c15b); border: 2px solid var(--goldDk, #d99a22); color: var(--gs-navy, #17324d); }
+.rat-sticker.is-s2 { background: var(--gs-teal, #1fa6a2); border: 2px solid #126e6c; color: #fff; }
+.rat-sticker.is-s1 { background: var(--gs-sand, #f6e9cc); border: 2px solid var(--line-strong); color: var(--gs-navy, #17324d); }
+.rat-streak { display: inline-flex; align-items: center; gap: .3rem; margin: 0; padding: .2rem .7rem; border-radius: 999px; background: #fff9e6; border: 2px solid var(--gs-gold, #f2c15b); font-weight: 800; font-size: .9rem; }
+.rat-stage { margin: 0; border-radius: var(--gs-r, 18px); overflow: hidden; border: var(--gs-line); box-shadow: var(--gs-shadow); background: #14263d; }
+.rat-stage svg { display: block; width: 100%; height: auto; max-height: 15rem; }
+.rat-curtain { transition: d .5s ease; }
+.rat-stage.is-right .rat-actor.is-cheer { animation: rat-hop .5s ease-out 2; transform-box: fill-box; }
+.rat-stage.is-miss { animation: rat-wobble .35s ease-in-out; }
+.rat-stage.is-flip { animation: rat-flip .45s ease-out; }
+.rat-burst path { transform-box: fill-box; transform-origin: center; animation: gs-sparkle .9s ease-out both; }
+.rat-coach { display: flex; align-items: flex-end; gap: .5rem; }
+.rat-coach .gs-mascot { flex: none; width: 56px !important; }
+.rat-bubble { position: relative; margin: 0; padding: .6rem .85rem; border-radius: var(--radius-sm); background: #fff; border: 2px solid var(--gs-navy, #17324d); font-weight: 700; }
+.rat-bubble::before { content: ""; position: absolute; left: -9px; bottom: 12px; width: 14px; height: 14px; background: #fff; border-left: 2px solid var(--gs-navy, #17324d); border-bottom: 2px solid var(--gs-navy, #17324d); transform: rotate(45deg); }
+.rat-page { display: grid; gap: .5rem; padding: var(--gs-pad, 1rem); border-radius: var(--gs-r, 18px); background: #fff; border: var(--gs-line); box-shadow: var(--gs-shadow); }
+.rat-page-h { margin: 0; font-family: "Fraunces", Georgia, serif; font-size: 1.3rem; }
+.rat-page-h:focus-visible { outline: 3px solid var(--gs-teal, #1fa6a2); outline-offset: 3px; }
+.rat-lines { display: grid; gap: .45rem; margin: 0; padding: 0; list-style: none; }
+.rat-row { display: flex; flex-wrap: wrap; align-items: center; gap: .35rem .5rem; }
+.rat-row.is-cue { padding: .25rem; border-radius: var(--radius-sm); background: #fff9e6; }
+.rat-line, .rat-pick { display: flex; align-items: flex-start; gap: .5rem; flex: 1 1 16rem; min-width: 0; min-height: 2.75rem; padding: .55rem .8rem; text-align: left; font: inherit; font-size: clamp(1.05rem, 2.2vw, 1.2rem); line-height: 1.5; color: var(--ink); background: var(--gs-paper, #fbf4e2); border: 2px solid var(--line-strong); border-radius: var(--radius-sm); cursor: pointer; }
+.rat-line .ico { flex: none; width: 1.15rem; height: 1.15rem; margin-top: .3rem; color: var(--gs-navy, #17324d); }
+.rat-line.is-heard { border-color: var(--gs-teal, #1fa6a2); }
+.rat-line.is-heard .ico { color: #126e6c; }
+.rat-line:hover, .rat-pick:hover:not(:disabled) { border-color: var(--gs-navy, #17324d); }
+.rat-pick.is-sel { border-color: var(--gs-navy, #17324d); background: var(--brand-soft); box-shadow: inset 0 0 0 1px var(--gs-navy, #17324d); }
+.rat-pick.is-right { border-color: var(--right); background: var(--right-soft); }
+.rat-pick:disabled { cursor: default; }
+.rat-line:focus-visible, .rat-pick:focus-visible, .rat-card:focus-visible, .rat-drop:focus-visible { outline: 3px solid var(--gs-teal, #1fa6a2); outline-offset: 2px; }
+.rat-gap { display: inline-block; min-width: 4.5em; padding: 0 .35rem; border-bottom: 3px solid var(--gs-navy, #17324d); background: #fff; color: var(--ink); font-weight: 800; text-align: center; }
+.rat-gap.is-filled { background: var(--brand-soft); }
+.rat-task { display: grid; gap: .25rem; padding-top: .5rem; border-top: 2px dashed var(--line-strong); }
+.rat-task .gs-prompt { display: flex; gap: .4rem; align-items: flex-start; }
+.rat-task .gs-prompt .ico { flex: none; margin-top: .25rem; color: var(--goldDk, #d99a22); }
+.rat-props { grid-template-columns: repeat(auto-fit, minmax(min(100%, 9rem), 1fr)); }
+.rat-prop { display: grid; gap: .25rem; justify-items: start; font-weight: 700; }
+.rat-mood { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--s-3, .75rem); align-items: start; }
+.rat-cards, .rat-castlist { display: grid; gap: .5rem; margin: 0; padding: 0; list-style: none; }
+.rat-card { display: grid; gap: .2rem; justify-items: start; width: 100%; min-height: 2.9rem; padding: .55rem .8rem; font: inherit; font-weight: 800; color: var(--gs-navy, #17324d); background: #fff9e6; border: 2px solid var(--gs-gold, #f2c15b); border-radius: 999px; }
+.rat-card[aria-pressed="true"] { background: var(--gs-gold, #f2c15b); }
+.rat-card.is-used { opacity: .45; text-decoration: line-through; }
+.rat-cast { display: grid; gap: .35rem; padding: .55rem .7rem; border-radius: var(--radius-sm); border: 2px solid var(--line-strong); border-left-width: 8px; background: #fff; }
+.rat-cast.is-coral { border-left-color: var(--gs-coral, #f2765a); }
+.rat-cast.is-teal { border-left-color: var(--gs-teal, #1fa6a2); }
+.rat-cast.is-gold { border-left-color: var(--gs-gold, #f2c15b); }
+.rat-cast-n { font-weight: 800; }
+.rat-cast-f { display: inline-flex; align-items: center; gap: .3rem; font-weight: 800; color: var(--right); }
+.rat-drop { min-height: 2.75rem; padding: .4rem .7rem; font: inherit; color: var(--ink-2); background: var(--surface-2); border: 2px dashed var(--line-strong); border-radius: var(--radius-sm); cursor: pointer; }
+.rat-drop[aria-disabled="true"] { cursor: default; }
+.rat-slot { margin: 0; padding: 0; border: 0; }
+.rat-slot legend { padding: 0; font-weight: 800; color: var(--reading-ink, var(--ink)); }
+.rat-slot .gs-choices { margin: .35rem 0 .5rem; }
+.rat-slot .gs-choice { display: grid; gap: .2rem; }
+.rat-said { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; margin: 0; padding: .6rem .8rem; border-radius: var(--radius-sm); background: var(--gs-paper, #fbf4e2); font-size: 1.0625rem; }
+.rat-score { padding: .75rem .9rem; border-radius: var(--radius-sm); background: #fff9e6; border: 2px solid var(--gs-gold, #f2c15b); }
+.rat-score h3 { display: flex; align-items: center; gap: .4rem; margin: 0 0 .4rem; font-size: 1.15rem; }
+.rat-score ul { display: grid; gap: .35rem; margin: 0; padding: 0; list-style: none; }
+.rat-stars { display: inline-flex; gap: .15rem; color: var(--goldDk, #d99a22); }
+.rat-star { display: inline-flex; opacity: .3; }
+.rat-star.is-on { opacity: 1; }
+.rat-star .ico { width: 1.2rem; height: 1.2rem; }
+@keyframes rat-hop { 0%, 100% { translate: 0 0; } 40% { translate: 0 -10px; } }
+@keyframes rat-wobble { 0%, 100% { transform: none; } 30% { transform: translateX(-5px); } 70% { transform: translateX(5px); } }
+@keyframes rat-flip { from { transform: perspective(900px) rotateY(-14deg); opacity: .4; } to { transform: none; opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .rat *, .rat-stage { animation: none !important; transition: none !important; } }
+@media (max-width: 40rem) { .rat-mood { grid-template-columns: minmax(0, 1fr); } .rat-line, .rat-pick { flex-basis: 100%; } }

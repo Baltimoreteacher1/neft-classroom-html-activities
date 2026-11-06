@@ -52,7 +52,18 @@ for (const game of GAMES) {
     }
   }
 }
-const css = ["games.css", "games-a.css", "games-b.css", "games-c.css", "games-d.css"]
+const css = [
+  "games.css",
+  "games-a.css",
+  "games-b.css",
+  "games-c.css",
+  "games-d.css",
+  "games-e.css",
+  "games-f.css",
+  "games-g.css",
+  "games-h.css",
+  "games-i.css",
+]
   .map((f) => fs.readFileSync(path.join(root, f), "utf8"))
   .join("\n")
   .replace(/\/\*[\s\S]*?\*\//g, "");

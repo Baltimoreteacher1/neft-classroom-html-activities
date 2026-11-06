@@ -214,7 +214,7 @@ export function navHTML(ctx, I) {
       >${icon(l.icon)}<span>${l.label}</span></a
     >`;
   const focused = view === "test" || view === "assess";
-  const sorLink = html`<a class="top-link top-sor-link" href="${BASE}/science-of-reading?grades=${band}" ${view === "science-of-reading" || view === "sor" ? raw('aria-current="page"') : ""}><span>📖 ${T("Science of Reading", "Ciencia de la lectura")}</span></a>`;
+  const sorLink = html`<a class="top-link top-sor-link" href="${BASE}/science-of-reading?grades=${band}" ${view === "science-of-reading" || view === "sor" ? raw('aria-current="page"') : ""}><span>${icon("reading")} ${T("Science of Reading", "Ciencia de la lectura")}</span></a>`;
   return html`${primary.filter((l) => !l.pill).map(topLink)}${sorLink}${primary.filter((l) => l.pill).map(topLink)}
     ${focused ? html`<span class="mode-flag">${icon("tests")}<span>${T("Focused practice mode", "Modo de práctica enfocada")}</span></span>` : ""}
     ${langSwitchHTML(I.mode)}

@@ -1,4 +1,4 @@
-// The 15 games of the Language Game Studio. Each row is what the hub, the Passport, pathways and the
+// The 18 games of the Language Game Studio. Each row is what the hub, the Passport, pathways and the
 // teacher view need to know without loading the game: its language objective, skill, WIDA 2020 Key
 // Language Use, grade-band objectives and which module and content file drive it.
 //
@@ -99,6 +99,24 @@ export const GAMES = [
     title: ["Academic Language Escape Room", "Sala de escape de lenguaje académico"], tag: ["Four rooms, four subjects: listen, read evidence, explain aloud and write to unlock each door.", "Cuatro salas, cuatro materias: escucha, lee evidencia, explica en voz alta y escribe para abrir cada puerta."],
     obj: { "3-5": ["I can listen, read for evidence, talk and write to solve a science or social studies mission.", "Puedo escuchar, leer para buscar evidencia, hablar y escribir para resolver una misión de ciencias o estudios sociales."], "6-8": ["I can combine listening, reading evidence, spoken explanation and written argument to complete a multi-step academic mission.", "Puedo combinar la escucha, la lectura de evidencia, la explicación oral y el argumento escrito para completar una misión académica de varios pasos."] },
     minutes: 10, difficulty: 3, home: false, art: "escape", module: "escape-room", mechanic: "locked-rooms",
+  },
+  {
+    id: "word-jeopardy", n: 16, inspired: "jeopardy", flagship: true, skill: "Integrated", skills: ["Reading", "Listening", "Speaking"], klu: ["Inform", "Explain"],
+    title: ["Word Jeopardy", "Jeopardy de palabras"], tag: ["Pick a category and a point value, answer the clue and risk a wager on the Daily Double.", "Elige una categoría y un valor, responde la pista y apuesta en el Doble Diario."],
+    obj: { "3-5": ["I can read a clue, choose the word or answer that fits, and tell why.", "Puedo leer una pista, elegir la palabra o respuesta que encaja y decir por qué."], "6-8": ["I can use academic vocabulary, grammar and text clues to answer across categories and justify my answer.", "Puedo usar vocabulario académico, gramática y pistas del texto para responder en distintas categorías y justificar mi respuesta."] },
+    minutes: 12, difficulty: 2, home: true, art: "jeopardy", module: "word-jeopardy", mechanic: "quiz-board",
+  },
+  {
+    id: "match-mania", n: 17, inspired: "abcya", skill: "Reading", skills: ["Reading", "Listening"], klu: ["Inform"],
+    title: ["Match Mania", "Manía de parejas"], tag: ["Flip cards to find pairs: word and picture, word and meaning, word and sentence.", "Voltea tarjetas para hallar parejas: palabra e imagen, palabra y significado, palabra y oración."],
+    obj: { "3-5": ["I can match a word to its picture or meaning and say the pair out loud.", "Puedo unir una palabra con su imagen o su significado y decir la pareja en voz alta."], "6-8": ["I can match academic words to definitions, synonyms and context sentences.", "Puedo unir palabras académicas con definiciones, sinónimos y oraciones de contexto."] },
+    minutes: 8, difficulty: 1, home: true, art: "memory", module: "match-mania", mechanic: "memory-pairs",
+  },
+  {
+    id: "mystery-word", n: 18, inspired: "wordle", skill: "Writing", skills: ["Writing", "Reading"], klu: ["Inform"],
+    title: ["Mystery Word", "Palabra misteriosa"], tag: ["Use clues and letter feedback to crack the mystery word in six guesses.", "Usa pistas y las señales de las letras para descubrir la palabra misteriosa en seis intentos."],
+    obj: { "3-5": ["I can use a meaning clue and letter patterns to spell a school word.", "Puedo usar una pista de significado y patrones de letras para deletrear una palabra escolar."], "6-8": ["I can use morphology, spelling patterns and context to work out an academic word.", "Puedo usar la morfología, los patrones de ortografía y el contexto para descubrir una palabra académica."] },
+    minutes: 8, difficulty: 2, home: true, art: "mystery", module: "mystery-word", mechanic: "letter-feedback",
   },
 ];
 

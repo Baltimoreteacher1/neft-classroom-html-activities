@@ -1,0 +1,90 @@
+/* ACCESS Practice Lab — Language Game Studio game styles (games-h). */
+
+/* Match Mania: a flip-card pairs board. Cards are buttons; the flip is a one-shot CSS animation picked by game
+   state (mm-flip / mm-flipback), so there is no clock in the logic. Motion stops under prefers-reduced-motion. */
+.mm{display:grid;gap:.8rem}
+.mm-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:.5rem}
+.mm-level{margin:0;font-size:.95rem;color:#17324d}
+.mm-shelf{display:flex;gap:.4rem;margin:0;padding:0;list-style:none}
+.mm-shelf li{width:2.6rem;height:2.6rem;border-radius:50%;opacity:.35;filter:grayscale(1)}
+.mm-shelf li.is-got{opacity:1;filter:none}
+.mm-shelf li.is-now{opacity:.7;outline:3px dashed #d99a22;outline-offset:2px}
+.mm-sticker{display:block;width:100%;height:auto}
+.mm-guide{display:grid;grid-template-columns:auto minmax(0,1fr);gap:.6rem;align-items:center}
+.mm-mascot{width:76px;filter:drop-shadow(0 3px 4px rgb(20 38 61 / 22%))}
+.mm-guide.is-cheer .mm-mascot{animation:mm-hop .5s ease-out}
+.mm-bubble{position:relative;margin:0;padding:.65rem .9rem;border:2px solid #17324d;border-radius:14px;background:#fffdf8;color:#14263d;font-size:1rem;line-height:1.4}
+.mm-counts{display:flex;flex-wrap:wrap;gap:.4rem;margin:0;padding:0;list-style:none}
+.mm-counts li{display:inline-flex;align-items:center;gap:.35rem;padding:.25rem .65rem;border-radius:999px;background:#e5f5f1;color:#0e4f4b;font-size:.875rem}
+.mm-counts .mm-combo{background:#f2c15b;color:#17324d;font-weight:800;animation:mm-pop .4s ease-out}
+.mm-grid{display:grid;grid-template-columns:repeat(var(--mm-cols,3),minmax(0,1fr));grid-auto-rows:1fr;gap:.55rem;margin:0;padding:0;list-style:none;perspective:900px}
+.mm-grid li{display:contents}
+.mm-card{position:relative;display:block;width:100%;min-width:44px;min-height:6.4rem;padding:0;border:3px solid #126e6c;border-radius:14px;background:#1fa6a2;color:#14263d;font:inherit;cursor:pointer;transform-style:preserve-3d}
+.mm-grid.is-text .mm-card{min-height:7.2rem}
+.mm-card:focus-visible{outline:4px solid #f2c15b;outline-offset:3px}
+.mm-card.is-down:hover{transform:translateY(-3px);box-shadow:0 6px 12px rgb(20 38 61 / 22%)}
+.mm-inner{display:grid;height:100%;min-height:inherit}
+.mm-cover{display:grid;place-items:center;position:relative}
+.mm-back-art{width:58%;max-width:64px;height:auto}
+.mm-num{position:absolute;top:.3rem;left:.45rem;font-size:.75rem;font-weight:800;color:#fff}
+.mm-face{display:grid;place-content:center;justify-items:center;gap:.2rem;padding:.45rem;border-radius:11px;background:#fff;text-align:center;overflow-wrap:anywhere;hyphens:auto}
+.mm-card.is-up,.mm-card.is-hint,.mm-card.is-found{background:#fff}
+.mm-card.is-up{border-color:#17324d}
+.mm-card.is-hint{border:3px dashed #d99a22;box-shadow:0 0 0 4px #fdf3da}
+.mm-card.is-miss{border-color:#a54332;background:#fff0e8}
+.mm-card.is-miss .mm-face{background:#fff0e8;animation:mm-shake .4s ease-out .25s}
+.mm-card.is-found{border-color:#167c75;cursor:default}
+.mm-card.is-found .mm-face{background:#e5f5f1}
+.mm-word{font-size:clamp(1rem,3.6vw,1.3rem);font-weight:800;color:#14263d}
+.mm-es{font-size:.85rem;color:#126e6c}
+.mm-text{font-size:clamp(.85rem,2.4vw,.95rem);line-height:1.3;color:#14263d}
+.mm-blank{display:inline-block;min-width:2.6em;border-bottom:3px solid #126e6c;color:transparent}
+.mm-pic svg{width:64px;height:64px}
+.mm-tick{position:absolute;top:.25rem;right:.3rem;display:grid;place-items:center;width:1.4rem;height:1.4rem;border-radius:50%;background:#167c75;color:#fff}
+.mm-tick .ico{width:.9rem;height:.9rem}
+.mm-flip .mm-inner{animation:mm-turn .38s ease-out}
+.mm-flipback .mm-inner{animation:mm-turn-back .38s ease-out}
+.mm-glow{animation:mm-glow 1.1s ease-out}
+.mm-tools{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center}
+.mm-tools .btn{min-height:44px}
+.mm-found{display:grid;gap:.4rem;padding:.8rem 1rem;border:2px solid #167c75;border-radius:14px;background:#e5f5f1;animation:mm-pop .45s ease-out}
+.mm-found-word{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center}
+.mm-found-word strong{font-size:1.4rem;color:#0e4f4b}
+.mm-found-means,.mm-use{margin:0}
+.mm-use-l{display:inline-flex;align-items:center;gap:.25rem;font-weight:800;color:#c94f3b}
+.mm-use-row{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center}
+.mm-cleared{display:grid;justify-items:center;gap:.5rem;padding:1rem;border-radius:16px;background:#fdf3da;text-align:center}
+.mm-cleared h2{margin:0}
+.mm-cleared .mm-found{justify-self:stretch;text-align:left}
+.mm-sticker.is-new{width:7rem;animation:mm-sticker .7s cubic-bezier(.2,1.4,.4,1)}
+.mm-stars{display:inline-flex;gap:.2rem;vertical-align:middle}
+.mm-star{width:1.9rem;height:1.9rem;fill:#e4ddd2;stroke:#6d7e90;stroke-width:1}
+.mm-star.is-on{fill:#f2c15b;stroke:#d99a22}
+.mm-recap{display:grid;gap:.8rem}
+.mm-recap h2{margin:0}
+.mm-total{margin:0;font-weight:800;color:#0e4f4b}
+.mm-recap-l{padding:.7rem .9rem;border:2px solid #e4ddd2;border-radius:14px;background:#fffdf8}
+.mm-recap-l h3{display:flex;flex-wrap:wrap;align-items:center;gap:.5rem;margin:0 0 .4rem;font-size:1.05rem}
+.mm-recap-l h3 .mm-sticker{width:2rem}
+.mm-recap-l h3 .mm-star{width:1.2rem;height:1.2rem}
+.mm-recap-l ul{display:grid;gap:.5rem;margin:0;padding:0;list-style:none}
+.mm-recap-l li{display:grid;gap:.2rem;padding-top:.4rem;border-top:1px solid #e4ddd2}
+.mm-recap-w{display:flex;flex-wrap:wrap;gap:.45rem;align-items:center}
+.mm-recap-u{color:#14263d}
+@keyframes mm-turn{from{transform:rotateY(90deg)}to{transform:rotateY(0)}}
+@keyframes mm-turn-back{from{transform:rotateY(-90deg)}to{transform:rotateY(0)}}
+@keyframes mm-shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+@keyframes mm-glow{0%{box-shadow:0 0 0 0 rgb(242 193 91 / 90%)}60%{box-shadow:0 0 0 10px rgb(242 193 91 / 0%)}100%{box-shadow:none}}
+@keyframes mm-pop{from{transform:scale(.92);opacity:.4}to{transform:scale(1);opacity:1}}
+@keyframes mm-hop{0%,100%{transform:translateY(0)}40%{transform:translateY(-10px)}}
+@keyframes mm-sticker{from{transform:scale(.2) rotate(-25deg);opacity:0}to{transform:scale(1) rotate(0);opacity:1}}
+@media (max-width:600px){
+  .mm-grid{grid-template-columns:repeat(min(var(--mm-cols,3),3),minmax(0,1fr))}
+  .mm-grid.is-text{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .mm-card{min-height:5.6rem}
+  .mm-mascot{width:60px}
+}
+@media (prefers-reduced-motion:reduce){
+  .mm *,.mm-card{animation:none!important;transition:none!important}
+  .mm-card.is-down:hover{transform:none}
+}

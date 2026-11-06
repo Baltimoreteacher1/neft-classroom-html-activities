@@ -1,0 +1,86 @@
+/* ACCESS Practice Lab — Language Game Studio game styles (games-i). */
+/* Mystery Word: a detective case card, a six-row guess board and an ABC keyboard. Tiles carry a shape as well as a
+   color (check = right spot, arrows = another spot, dash = not in the word). The flip runs once on the newest row
+   and stops under prefers-reduced-motion. */
+.mw-desk{display:grid;gap:.8rem;--mw-g:#2b7447;--mw-y:#f2c15b;--mw-x:#5b6b7c;--mw-ink:#17324d}
+.mw-top{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:.5rem}
+.mw-stickers{display:flex;gap:.4rem;margin:0;padding:0;list-style:none}
+.mw-sticker svg{width:2.6rem;height:2.6rem;display:block}
+.mw-sticker circle{fill:#fbf4e2;stroke:#9aa9b8;stroke-width:2;stroke-dasharray:4 3}
+.mw-sticker text{fill:#6d7e90;font-family:inherit}
+.mw-sticker.is-now circle{stroke:var(--mw-ink);stroke-dasharray:none}
+.mw-sticker.is-now text{fill:var(--mw-ink)}
+.mw-sticker.is-won circle{fill:var(--mw-y);stroke:#d99a22;stroke-dasharray:none}
+.mw-sticker.is-won path{fill:#fff;stroke:var(--mw-ink);stroke-width:1.4}
+.mw-sticker.is-won{animation:mw-pop .5s cubic-bezier(.3,1.6,.5,1)}
+.mw-sticker.is-learned circle{fill:#e5f5f1;stroke:#167c75;stroke-dasharray:none}
+.mw-sticker.is-learned{color:#167c75}
+.mw-case{display:grid;gap:.7rem;padding:.9rem 1rem;border-radius:var(--gs-r,18px);background:#fffdf6;border:var(--gs-line,2px solid #17324d);box-shadow:var(--gs-shadow,none);position:relative}
+.mw-case::before{content:"";position:absolute;top:-.6rem;left:1.2rem;width:5.5rem;height:.9rem;border-radius:6px 6px 0 0;background:#f6e9cc;border:inherit;border-bottom:0}
+.mw-case-head{display:grid;gap:.15rem}
+.mw-case-n{display:inline-flex;align-items:center;gap:.35rem;font-size:.78rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:#126e6c}
+.mw-case-title{margin:0;font-size:clamp(1.15rem,3vw,1.5rem);color:var(--mw-ink)}
+.mw-case-title:focus-visible{outline:3px solid #f2c15b;outline-offset:3px;border-radius:6px}
+.mw-case-body{display:grid;gap:.75rem}
+.mw-case-body.has-pic{grid-template-columns:5.5rem minmax(0,1fr);align-items:start}
+.mw-pic{padding:.4rem;border-radius:14px;background:#dff4f3;border:2px solid #17324d}
+.mw-pic .gs-pic{width:100%;height:auto;display:block}
+.mw-clues{display:grid;gap:.5rem;min-width:0}
+.mw-clue,.mw-context,.mw-mean{margin:0;line-height:1.5;overflow-wrap:anywhere}
+.mw-clue{font-size:1.08rem;font-weight:700;color:var(--mw-ink)}
+.mw-tag{display:inline-block;margin-right:.35rem;padding:.05rem .5rem;border-radius:999px;background:#f6e9cc;color:var(--mw-ink);font-size:.74rem;font-weight:800;letter-spacing:.03em;text-transform:uppercase;vertical-align:.1em}
+.mw-blank{display:inline-block;width:4.5rem;height:1.1em;margin:0 .2rem;vertical-align:-.2em;border-bottom:3px dashed #d99a22;background:#fff7df;border-radius:3px}
+.mw-context-es{display:block;margin-top:.25rem;color:var(--ink-2,#3a4d60);font-size:.95rem}
+.mw-length{display:flex;flex-wrap:wrap;align-items:center;gap:.4rem}
+.mw-slots{display:flex;gap:.25rem;margin:0;padding:0;list-style:none}
+.mw-slot{display:grid;place-items:center;width:1.7rem;height:1.9rem;border-bottom:3px solid var(--mw-ink);font-weight:800;color:var(--mw-ink)}
+.mw-slot.is-known{background:#fff7df;border-radius:4px 4px 0 0}
+.mw-legend{display:flex;flex-wrap:wrap;gap:.35rem .9rem;margin:0;padding:0;list-style:none;font-size:.88rem;color:var(--ink-2,#3a4d60)}
+.mw-legend li{display:inline-flex;align-items:center;gap:.35rem}
+.mw-chip{display:inline-grid;place-items:center;width:1.5rem;height:1.5rem;border-radius:5px;color:#fff}
+.mw-chip.is-g{background:var(--mw-g)}.mw-chip.is-y{background:var(--mw-y);color:var(--mw-ink)}.mw-chip.is-x{background:var(--mw-x)}
+.mw-glyph{width:.95rem;height:.95rem;flex:none}
+.mw-board,.mw-tiles{margin:0;padding:0;list-style:none}
+.mw-board{display:grid;gap:.35rem;justify-self:center;width:min(100%,30rem)}
+.mw-tiles{display:grid;grid-template-columns:repeat(var(--n),minmax(0,1fr));gap:.35rem}
+.mw-tile{position:relative;display:grid;place-items:center;aspect-ratio:1;max-height:3.6rem;border-radius:8px;border:2px solid #c9d2db;background:#fff;color:var(--mw-ink);font-size:clamp(1.05rem,4.6vw,1.65rem);font-weight:800;text-transform:uppercase}
+.mw-tile .mw-glyph{position:absolute;right:.15rem;bottom:.15rem;width:.8rem;height:.8rem}
+.mw-row.is-now .mw-tile{border-color:#9aa9b8}
+.mw-tile.is-typed{border-color:var(--mw-ink);animation:mw-pop .15s ease-out}
+.mw-row.is-now .mw-tile.is-next{border-color:#1fa6a2;box-shadow:inset 0 -4px 0 #1fa6a2}
+.mw-tile.is-g{background:var(--mw-g);border-color:var(--mw-g);color:#fff}
+.mw-tile.is-y{background:var(--mw-y);border-color:#d99a22;color:var(--mw-ink)}
+.mw-tile.is-x{background:var(--mw-x);border-color:var(--mw-x);color:#fff}
+.mw-row.is-fresh .mw-tile{animation:mw-flip .5s ease-in-out both;animation-delay:calc(var(--d) * 110ms)}
+.mw-row.is-shake .mw-tiles{animation:mw-shake .35s}
+.mw-status{margin:0;min-height:1.5em;padding:.45rem .8rem;border-radius:12px;background:#eef6f5;color:var(--mw-ink);font-weight:700;text-align:center}
+.mw-status.is-warn{background:#fff0e8;color:#7a2e1f}
+.mw-keys{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:.35rem;width:min(100%,40rem);justify-self:center}
+.mw-key{display:inline-flex;align-items:center;justify-content:center;gap:.15rem;min-height:48px;min-width:44px;padding:0 .2rem;border-radius:10px;border:2px solid var(--mw-ink);background:#fff;color:var(--mw-ink);font:inherit;font-size:1.1rem;font-weight:800;cursor:pointer;box-shadow:0 3px 0 var(--mw-ink);touch-action:manipulation}
+.mw-key:hover{background:#fbf4e2}
+.mw-key:active{transform:translateY(2px);box-shadow:0 1px 0 var(--mw-ink)}
+.mw-key:focus-visible{outline:4px solid #1fa6a2;outline-offset:2px}
+.mw-key.is-wide{grid-column:span 2;font-size:.9rem;line-height:1.1;text-align:center}
+.mw-key.is-enter{background:#1fa6a2;border-color:#126e6c;color:#fff;box-shadow:0 3px 0 #126e6c}
+.mw-key.is-enter:hover{background:#178c88}
+.mw-key.is-g{background:var(--mw-g);border-color:var(--mw-g);color:#fff}
+.mw-key.is-y{background:var(--mw-y);border-color:#d99a22}
+.mw-key.is-x{background:#dfe5ea;border-color:#9aa9b8;color:#45566a;box-shadow:0 3px 0 #9aa9b8}
+.mw-tip{margin:0;text-align:center}
+.mw-study{display:grid;gap:.6rem;padding:.9rem 1rem;border-radius:var(--gs-r,18px);background:#f2faf8;border:2px solid #167c75}
+.mw-study-head{display:flex;flex-wrap:wrap;align-items:center;gap:.5rem .8rem}
+.mw-word{margin:0;font-size:clamp(1.5rem,5vw,2.1rem);font-weight:800;letter-spacing:.08em;color:var(--mw-ink)}
+.mw-parts{display:flex;flex-wrap:wrap;gap:.5rem;margin:0;padding:0;list-style:none}
+.mw-parts li{display:grid;gap:.15rem;padding:.4rem .6rem;border-radius:10px;background:#fff;border:2px dashed #1fa6a2;max-width:100%}
+.mw-part{font-size:1.15rem;font-weight:800;letter-spacing:.06em;color:#126e6c}
+.mw-part-m{font-size:.88rem;color:var(--ink-2,#3a4d60)}
+.mw-stars{display:inline-flex;gap:.1rem}
+.mw-stars svg{width:1.6rem;height:1.6rem;fill:#e3e8ed;stroke:#6d7e90;stroke-width:1.2}
+.mw-stars svg.is-on{fill:#f2c15b;stroke:#b8800f}
+.mw-older .mw-case::before{display:none}
+.mw-older .mw-key{border-radius:8px;box-shadow:0 2px 0 var(--mw-ink)}
+@media(min-width:640px){.mw-keys{grid-template-columns:repeat(10,minmax(0,1fr))}.mw-case-body.has-pic{grid-template-columns:7rem minmax(0,1fr)}}
+@keyframes mw-flip{0%{transform:rotateX(0)}50%{transform:rotateX(90deg)}100%{transform:rotateX(0)}}
+@keyframes mw-pop{0%{transform:scale(.88)}100%{transform:scale(1)}}
+@keyframes mw-shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+@media(prefers-reduced-motion:reduce){.mw-desk *{animation:none!important;transition:none!important}}

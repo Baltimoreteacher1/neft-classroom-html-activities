@@ -8,7 +8,10 @@
 //   - Morphology & Multilingual Cognate Bridges for English Learners
 
 import { crumbsHTML } from "../components.js";
-import { BASE, esc, html, icon } from "../util.js";
+import { BASE, ICONS, esc, html, icon } from "../util.js";
+
+// Plain-string icon for the template-string markup in this file.
+const ico = (name) => `<svg class="ico" aria-hidden="true" focusable="false"><use href="${ICONS}#${name}"></use></svg>`;
 
 // --- 1. The Simple View of Reading (SVR) Models ---
 export const SVR_PROFILES = [
@@ -414,18 +417,18 @@ export async function render(ctx = {}) {
           </p>
         </div>
         <div class="sor-evidence-badge">
-          <span>🧠 Grounded in Cognitive &amp; Linguistic Science</span>
+          <span>${ico("sparkle")} Grounded in Cognitive &amp; Linguistic Science</span>
         </div>
       </div>
 
       <!-- Navigation Tabs -->
       <div class="sor-nav-tabs" role="tablist">
-        <button type="button" class="sor-tab-btn ${currentTab === "rope" ? "active" : ""}" data-sor-tab="rope">🪢 Reading Rope Explorer</button>
-        <button type="button" class="sor-tab-btn ${currentTab === "svr" ? "active" : ""}" data-sor-tab="svr">📐 Simple View of Reading</button>
-        <button type="button" class="sor-tab-btn ${currentTab === "soundwall" ? "active" : ""}" data-sor-tab="soundwall">🗣️ Sound Wall &amp; Vowel Valley</button>
-        <button type="button" class="sor-tab-btn ${currentTab === "mapping" ? "active" : ""}" data-sor-tab="mapping">🟩 Orthographic Mapping &amp; Heart Words</button>
-        <button type="button" class="sor-tab-btn ${currentTab === "syllables" ? "active" : ""}" data-sor-tab="syllables">🧩 6 Syllables &amp; Division Chopper</button>
-        <button type="button" class="sor-tab-btn ${currentTab === "morphology" ? "active" : ""}" data-sor-tab="morphology">🌱 Morphology &amp; Cognate Matrix</button>
+        <button type="button" class="sor-tab-btn ${currentTab === "rope" ? "active" : ""}" data-sor-tab="rope">${ico("road")} Reading Rope Explorer</button>
+        <button type="button" class="sor-tab-btn ${currentTab === "svr" ? "active" : ""}" data-sor-tab="svr">${ico("construction")} Simple View of Reading</button>
+        <button type="button" class="sor-tab-btn ${currentTab === "soundwall" ? "active" : ""}" data-sor-tab="soundwall">${ico("speaking")} Sound Wall &amp; Vowel Valley</button>
+        <button type="button" class="sor-tab-btn ${currentTab === "mapping" ? "active" : ""}" data-sor-tab="mapping">${ico("grid")} Orthographic Mapping &amp; Heart Words</button>
+        <button type="button" class="sor-tab-btn ${currentTab === "syllables" ? "active" : ""}" data-sor-tab="syllables">${ico("words")} 6 Syllables &amp; Division Chopper</button>
+        <button type="button" class="sor-tab-btn ${currentTab === "morphology" ? "active" : ""}" data-sor-tab="morphology">${ico("growth")} Morphology &amp; Cognate Matrix</button>
       </div>
 
       <!-- Main Stage Body -->
@@ -465,7 +468,7 @@ export async function render(ctx = {}) {
                     <div class="strand-card">
                       <strong>${esc(s.name)}</strong>
                       <p>${esc(s.desc)}</p>
-                      <small>💡 Classroom Action: ${esc(s.examples)}</small>
+                      <small>${ico("bulb")} Classroom Action: ${esc(s.examples)}</small>
                     </div>
                   `).join("")}
                 </div>
@@ -477,7 +480,7 @@ export async function render(ctx = {}) {
                     <div class="strand-card">
                       <strong>${esc(s.name)}</strong>
                       <p>${esc(s.desc)}</p>
-                      <small>💡 Classroom Action: ${esc(s.examples)}</small>
+                      <small>${ico("bulb")} Classroom Action: ${esc(s.examples)}</small>
                     </div>
                   `).join("")}
                 </div>
@@ -558,7 +561,7 @@ export async function render(ctx = {}) {
                   ${renderMouthShapeSvg(v.shape)}
                   <strong class="vowel-keyword">${esc(v.example)}</strong>
                   <span class="vowel-position">${esc(v.mouth)}</span>
-                  <button type="button" class="sor-audio-btn" data-say="${esc(v.example)}">🔊 Hear</button>
+                  <button type="button" class="sor-audio-btn" data-say="${esc(v.example)}">${ico("volume")} Hear</button>
                 </div>
               `).join("")}
             </div>
@@ -596,7 +599,7 @@ export async function render(ctx = {}) {
               <span style="font-weight:700;font-size:0.875rem">Select Word:</span>
               ${Object.keys(MAPPING_WORDS).map((k) => `
                 <button type="button" class="word-picker-btn ${k === state.mappedWord ? "active" : ""} ${MAPPING_WORDS[k].hearts.length ? "is-heart" : ""}" data-sor-map-word="${k}">
-                  ${k} ${MAPPING_WORDS[k].hearts.length ? "❤️" : ""}
+                  ${k} ${MAPPING_WORDS[k].hearts.length ? ico("bookmark") : ""}
                 </button>
               `).join("")}
             </div>
@@ -618,7 +621,7 @@ export async function render(ctx = {}) {
                         <span>●</span>
                       </div>
                       <div class="elkonin-box ${isHeart ? "has-heart" : ""}">
-                        ${isHeart ? `<span class="heart-marker" title="Learn this part by heart!">❤️</span>` : ""}
+                        ${isHeart ? `<span class="heart-marker" title="Learn this part by heart!">${ico("bookmark")}</span>` : ""}
                         <span class="grapheme-letter">${esc(letter)}</span>
                         <span class="phoneme-tag">${esc(snd)}</span>
                       </div>
@@ -629,7 +632,7 @@ export async function render(ctx = {}) {
 
               ${mappedObj.heartNote ? `
                 <div class="heart-explanation">
-                  💡 <strong>Orthographic Mapping Insight:</strong> ${esc(mappedObj.heartNote)}
+                  ${ico("bulb")} <strong>Orthographic Mapping Insight:</strong> ${esc(mappedObj.heartNote)}
                 </div>
               ` : ""}
             </div>
@@ -663,30 +666,30 @@ export async function render(ctx = {}) {
             <div class="sor-chopper-box">
               <h4 style="margin:0 0 0.5rem;font-size:1.25rem;font-family:'Fraunces',Georgia,serif;color:#854d0e">Syllable Division Chopper</h4>
               <p style="margin:0 0 1rem;font-size:0.9375rem;color:#713f12">
-                Click the scissors ✂️ where the word should be divided into syllables.
+                Click the scissors ${ico("tools")} where the word should be divided into syllables.
               </p>
 
               <div class="chopper-word-display">
                 ${currentChop.word.split("").map((letter, idx) => `
                   <span class="chop-letter-block">${esc(letter)}</span>
                   ${idx < currentChop.word.length - 1 ? `
-                    <button type="button" class="chop-cut-button" data-chop-cut="${idx + 1}" title="Cut here">✂️</button>
+                    <button type="button" class="chop-cut-button" data-chop-cut="${idx + 1}" title="Cut here">${ico("tools")}</button>
                   ` : ""}
                 `).join("")}
               </div>
 
               <div class="chopper-feedback" id="chopFeedback">
                 ${state.chopperResult === "correct" ? `
-                  <span style="color:#065f46">✅ Perfect cut! <strong>${esc(currentChop.parts.join(" · "))}</strong>. Rule: ${esc(currentChop.rule)} (${esc(currentChop.explain)})</span>
+                  <span style="color:#065f46">${ico("check")} Perfect cut! <strong>${esc(currentChop.parts.join(" · "))}</strong>. Rule: ${esc(currentChop.rule)} (${esc(currentChop.explain)})</span>
                 ` : state.chopperResult === "wrong" ? `
-                  <span style="color:#b91c1c">❌ Try again! Hint: Look at the vowels and consonants between them.</span>
+                  <span style="color:#b91c1c">${ico("x")} Try again! Hint: Look at the vowels and consonants between them.</span>
                 ` : `
                   <span style="color:#854d0e">Where should you cut <strong>${esc(currentChop.word)}</strong>?</span>
                 `}
               </div>
 
               <div style="margin-top:1.25rem">
-                <button type="button" class="btn small" id="nextChopWord" style="background:#d97706;color:#ffffff;border:none">Next Word ➔</button>
+                <button type="button" class="btn small" id="nextChopWord" style="background:#d97706;color:#ffffff;border:none">Next Word ${ico("arrow-right")}</button>
               </div>
             </div>
           </div>
@@ -739,7 +742,7 @@ export async function render(ctx = {}) {
                   <strong>Definition:</strong> The ${esc(suffixObj.meaning)} ${esc(prefixObj.meaning)} ${esc(rootObj.meaning)}.
                 </div>
                 <div class="morph-cognate-bridge">
-                  🌎 <strong>Spanish Cognate Bridge:</strong> <em>${esc(rootObj.cognate)}</em>
+                  ${ico("language")} <strong>Spanish Cognate Bridge:</strong> <em>${esc(rootObj.cognate)}</em>
                 </div>
               </div>
             </div>

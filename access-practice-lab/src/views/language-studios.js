@@ -7,7 +7,10 @@
 //   5. Spot the Syntax Glitch (Error analysis bug-hunt cards)
 
 import { crumbsHTML } from "../components.js";
-import { BASE, esc, html, icon } from "../util.js";
+import { BASE, ICONS, esc, html, icon } from "../util.js";
+
+// Plain-string icon for the template-string markup in this file.
+const ico = (name) => `<svg class="ico" aria-hidden="true" focusable="false"><use href="${ICONS}#${name}"></use></svg>`;
 
 // --- 1. WIDA Academic Discourse Scenarios ---
 export const WIDA_DISCOURSE_DATA = {
@@ -306,17 +309,17 @@ export async function render(ctx = {}) {
           </p>
         </div>
         <div class="ls-badge">
-          <span>🌟 Academic English Mastery</span>
+          <span>${ico("star")} Academic English Mastery</span>
         </div>
       </div>
 
       <!-- Navigation Tabs -->
       <div class="ls-nav-tabs" role="tablist">
-        <button type="button" class="ls-tab-btn ${currentTab === "wida" ? "active" : ""}" data-ls-tab="wida">📊 WIDA Discourse Slider</button>
-        <button type="button" class="ls-tab-btn ${currentTab === "syntax" ? "active" : ""}" data-ls-tab="syntax">✂️ Syntax Clause Slicer</button>
-        <button type="button" class="ls-tab-btn ${currentTab === "wheel" ? "active" : ""}" data-ls-tab="wheel">🎡 Morphology &amp; Cognate Wheel</button>
-        <button type="button" class="ls-tab-btn ${currentTab === "cohesion" ? "active" : ""}" data-ls-tab="cohesion">⚖️ Cohesion &amp; Logic Balancer</button>
-        <button type="button" class="ls-tab-btn ${currentTab === "glitch" ? "active" : ""}" data-ls-tab="glitch">🐛 Spot the Syntax Glitch</button>
+        <button type="button" class="ls-tab-btn ${currentTab === "wida" ? "active" : ""}" data-ls-tab="wida">${ico("growth")} WIDA Discourse Slider</button>
+        <button type="button" class="ls-tab-btn ${currentTab === "syntax" ? "active" : ""}" data-ls-tab="syntax">${ico("tools")} Syntax Clause Slicer</button>
+        <button type="button" class="ls-tab-btn ${currentTab === "wheel" ? "active" : ""}" data-ls-tab="wheel">${ico("grid")} Morphology &amp; Cognate Wheel</button>
+        <button type="button" class="ls-tab-btn ${currentTab === "cohesion" ? "active" : ""}" data-ls-tab="cohesion">${ico("conversation")} Cohesion &amp; Logic Balancer</button>
+        <button type="button" class="ls-tab-btn ${currentTab === "glitch" ? "active" : ""}" data-ls-tab="glitch">${ico("detective")} Spot the Syntax Glitch</button>
       </div>
 
       <!-- Studio Stage Body -->
@@ -335,9 +338,9 @@ export async function render(ctx = {}) {
                 <div>
                   <span style="font-weight:700;font-size:0.875rem;margin-right:0.5rem">Academic Domain:</span>
                   <div class="wida-domain-tabs">
-                    <button type="button" class="wida-domain-btn ${state.widaDomain === "science" ? "active" : ""}" data-wida-dom="science">🔬 Science</button>
-                    <button type="button" class="wida-domain-btn ${state.widaDomain === "socialStudies" ? "active" : ""}" data-wida-dom="socialStudies">🏛️ Social Studies</button>
-                    <button type="button" class="wida-domain-btn ${state.widaDomain === "math" ? "active" : ""}" data-wida-dom="math">📐 Mathematics</button>
+                    <button type="button" class="wida-domain-btn ${state.widaDomain === "science" ? "active" : ""}" data-wida-dom="science">${ico("evidence")} Science</button>
+                    <button type="button" class="wida-domain-btn ${state.widaDomain === "socialStudies" ? "active" : ""}" data-wida-dom="socialStudies">${ico("library")} Social Studies</button>
+                    <button type="button" class="wida-domain-btn ${state.widaDomain === "math" ? "active" : ""}" data-wida-dom="math">${ico("construction")} Mathematics</button>
                   </div>
                 </div>
                 <div>
@@ -402,7 +405,7 @@ export async function render(ctx = {}) {
                   `).join("")}
                 </div>
                 <button type="button" class="syntax-swap-btn" id="swapClausesBtn">
-                  🔄 Swap Clause Order
+                  ${ico("retry")} Swap Clause Order
                 </button>
               </div>
 
@@ -433,9 +436,9 @@ export async function render(ctx = {}) {
 
               <div class="comma-rule-explainer">
                 ${state.clauseDepFirst ? `
-                  💡 <strong>Rule in Action:</strong> When a dependent/subordinate clause comes <em>first</em>, it functions as an introductory adverbial element and <strong>requires a comma</strong> before the main independent clause.
+                  ${ico("bulb")} <strong>Rule in Action:</strong> When a dependent/subordinate clause comes <em>first</em>, it functions as an introductory adverbial element and <strong>requires a comma</strong> before the main independent clause.
                 ` : `
-                  💡 <strong>Rule in Action:</strong> When the independent clause comes <em>first</em> followed by the dependent clause, <strong>no comma is needed</strong> because the conjunction smoothly bridges the thought!
+                  ${ico("bulb")} <strong>Rule in Action:</strong> When the independent clause comes <em>first</em> followed by the dependent clause, <strong>no comma is needed</strong> because the conjunction smoothly bridges the thought!
                 `}
               </div>
             </div>
@@ -487,7 +490,7 @@ export async function render(ctx = {}) {
                   <strong>Literally:</strong> The ${esc(sObj.meaning)} ${esc(pObj.meaning)} ${esc(rObj.meaning)}.
                 </div>
                 <div class="cognate-highlight-pill">
-                  🌎 <strong>Spanish Cognate:</strong> <em>${esc(rObj.spanish)}</em>
+                  ${ico("language")} <strong>Spanish Cognate:</strong> <em>${esc(rObj.spanish)}</em>
                 </div>
               </div>
             </div>
@@ -505,7 +508,7 @@ export async function render(ctx = {}) {
             <div class="cohesion-balancer-stage">
               <div style="margin-bottom:1rem;display:flex;justify-content:space-between;align-items:center">
                 <strong>Passage Context: ${esc(cohObj.context)}</strong>
-                <button type="button" class="btn small ghost" id="nextCohBtn">Next Passage ➔</button>
+                <button type="button" class="btn small ghost" id="nextCohBtn">Next Passage ${ico("arrow-right")}</button>
               </div>
 
               <div class="connector-bank-row">
@@ -528,9 +531,9 @@ export async function render(ctx = {}) {
               ${state.cohSelected ? `
                 <div style="margin-top:1.25rem;padding:1rem;border-radius:8px;background:${state.cohSelected === cohObj.targetConnector ? '#ecfdf5;border:1.5px solid #6ee7b7' : '#fef2f2;border:1.5px solid #fecaca'}">
                   ${state.cohSelected === cohObj.targetConnector ? `
-                    <span style="color:#065f46;font-weight:700">✅ Cohesion Balanced! ${esc(cohObj.correctExplain)}</span>
+                    <span style="color:#065f46;font-weight:700">${ico("check")} Cohesion Balanced! ${esc(cohObj.correctExplain)}</span>
                   ` : `
-                    <span style="color:#991b1b;font-weight:700">❌ Check the relationship! Is this passage contrasting an obstacle or stating a cause? Try another connector.</span>
+                    <span style="color:#991b1b;font-weight:700">${ico("x")} Check the relationship! Is this passage contrasting an obstacle or stating a cause? Try another connector.</span>
                   `}
                 </div>
               ` : ""}
@@ -559,7 +562,7 @@ export async function render(ctx = {}) {
                     <div class="glitch-sentence-box">
                       ${esc(g.sentence.replace(/\[(.*?)\]/, ''))}
                       <span class="glitch-word-target" data-glitch-target="${g.id}">
-                        ${esc(g.glitchPart)} 🔍
+                        ${esc(g.glitchPart)} ${ico("search")}
                       </span>
                       ${esc(g.sentence.split(']')[1] || '')}
                     </div>
@@ -567,13 +570,13 @@ export async function render(ctx = {}) {
                     ${isOpen ? `
                       <div class="glitch-solution">
                         <div style="margin-bottom:0.5rem;font-weight:800;color:#065f46">
-                          ✨ Revision: <span style="text-decoration:underline">${esc(g.replacement)}</span>
+                          ${ico("sparkle")} Revision: <span style="text-decoration:underline">${esc(g.replacement)}</span>
                         </div>
                         <p style="margin:0;line-height:1.4">${esc(g.rule)}</p>
                       </div>
                     ` : `
                       <button type="button" class="btn small ghost" data-glitch-target="${g.id}" style="width:100%">
-                        Inspect Glitch &amp; Fix ➔
+                        Inspect Glitch &amp; Fix ${ico("arrow-right")}
                       </button>
                     `}
                   </div>

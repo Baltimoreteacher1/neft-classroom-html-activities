@@ -444,20 +444,35 @@ console.log("✓ Challenge Quests & Interactive Math Universe Hub verified.");
   assert.ok(kcfHtml.includes('id="kcfHeroOpToggle"'), "Has operation toggle button");
 
   // Verify reducible fraction displays unreduced raw product (10/12) and does not auto-reduce
-  assert.ok(kcfHtml.includes('<span class="v-num">10</span><span class="v-den">12</span>'), "Hero result displays unreduced raw product 10/12");
+  assert.ok(
+    kcfHtml.includes('<span class="v-num">10</span><span class="v-den">12</span>'),
+    "Hero result displays unreduced raw product 10/12",
+  );
   assert.ok(kcfHtml.includes("Needs Reducing"), "Shows Needs Reducing indicator pill");
   assert.ok(kcfHtml.includes("kcfReductionSection"), "Includes guided fraction reduction section");
 
   // Verify operation change from division to multiplication
   const kcfMultHtml = renderKCFStudio({ a: 2, b: 3, c: 4, d: 5, opMode: "mult" });
   assert.ok(kcfMultHtml.includes("is-mult"), "Renders in multiplication mode");
-  assert.ok(kcfMultHtml.includes("Reciprocal (Flipped)"), "Shows flipped reciprocal in multiplication mode");
+  assert.ok(
+    kcfMultHtml.includes("Reciprocal (Flipped)"),
+    "Shows flipped reciprocal in multiplication mode",
+  );
 
   // Verify improper fraction (e.g. 7/4 ÷ 1/2 = 7/2) does NOT auto-convert to mixed number
   const kcfImproperHtml = renderKCFStudio({ a: 7, b: 4, c: 1, d: 2 });
-  assert.ok(!kcfImproperHtml.includes('<strong class="kcf-res-val">3</strong>'), "Does not auto-convert improper fraction to mixed number in hero result");
-  assert.ok(kcfImproperHtml.includes("kcfMixedConverterSection"), "Includes guided mixed number conversion section");
-  assert.ok(kcfImproperHtml.includes("kcf-mixed-bars-svg"), "Includes interactive fraction bars SVG model");
+  assert.ok(
+    !kcfImproperHtml.includes('<strong class="kcf-res-val">3</strong>'),
+    "Does not auto-convert improper fraction to mixed number in hero result",
+  );
+  assert.ok(
+    kcfImproperHtml.includes("kcfMixedConverterSection"),
+    "Includes guided mixed number conversion section",
+  );
+  assert.ok(
+    kcfImproperHtml.includes("kcf-mixed-bars-svg"),
+    "Includes interactive fraction bars SVG model",
+  );
 
   const seed = drawerSeed({ question: "2/3 ÷ 4/5 = ?" });
   assert.strictEqual(seed.tool, "kcfLab", "Fraction division auto-selects kcfLab tool");
