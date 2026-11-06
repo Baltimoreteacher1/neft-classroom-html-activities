@@ -45,10 +45,19 @@ export function renderFractionSlicer(a, b, k = 1) {
 
   return `
     <div class="expl-slicer-wrap" data-slicer-root="true" data-num="${a}" data-den="${b}" data-mult="${mult}">
-      <div class="expl-slicer-controls">
-        <span class="expl-slicer-label">✂️ Interactive Fraction Slicer:</span>
-        <div class="expl-slicer-pills" role="group" aria-label="Slice multiplier">
-          ${pills}
+      <div class="expl-slicer-top-bar">
+        <div class="expl-inputs-bar">
+          <label>Fraction to slice:</label>
+          <input type="number" min="1" max="12" value="${a}" class="expl-num-in" data-slicer-in="a" aria-label="Numerator" />
+          <span>/</span>
+          <input type="number" min="1" max="12" value="${b}" class="expl-num-in" data-slicer-in="b" aria-label="Denominator" />
+          <button type="button" class="expl-update-btn" data-slicer-update="true">Apply</button>
+        </div>
+        <div class="expl-slicer-controls">
+          <span class="expl-slicer-label">✂️ Slices:</span>
+          <div class="expl-slicer-pills" role="group" aria-label="Slice multiplier">
+            ${pills}
+          </div>
         </div>
       </div>
       <div class="expl-slicer-bar-track" role="img" aria-label="${newNum} out of ${newDen} parts shaded (${a}/${b} partitioned by ${mult})">
@@ -86,6 +95,16 @@ export function mountFractionSlicer(container, onSliceChange) {
       if (onSliceChange) onSliceChange(factor, a * factor, b * factor);
     });
   });
+
+  const updateFraction = () => {
+    const inA = Number(root.querySelector("[data-slicer-in='a']")?.value || a);
+    const inB = Number(root.querySelector("[data-slicer-in='b']")?.value || b);
+    const mult = Number(root.dataset.mult) || 1;
+    root.outerHTML = renderFractionSlicer(inA, inB, mult);
+    const updated = container.querySelector("[data-slicer-root]") || container;
+    mountFractionSlicer(updated, onSliceChange);
+  };
+  root.querySelector("[data-slicer-update]")?.addEventListener("click", updateFraction);
 }
 
 /**
@@ -117,6 +136,13 @@ export function renderScrubbableAreaModel(small, big, split1 = null) {
       <div class="expl-scrubber-header">
         <span class="expl-scrubber-title">📦 Scrubbable Area Model: ${small} × ${big}</span>
         <span class="expl-scrubber-split-indicator">Split ${big} = <strong>${s1}</strong> + <strong>${s2}</strong></span>
+      </div>
+      <div class="expl-inputs-bar">
+        <label>Dimensions:</label>
+        <input type="number" min="2" max="30" value="${small}" class="expl-num-in" data-area-in="small" aria-label="Height"/>
+        <span>×</span>
+        <input type="number" min="3" max="50" value="${big}" class="expl-num-in" data-area-in="big" aria-label="Width"/>
+        <button type="button" class="expl-update-btn" data-area-update="true">Apply</button>
       </div>
       <div class="expl-scrubber-slider-row">
         <label for="expl-area-slider" style="font-size:0.8rem; font-weight:700; color:#475569">Divider:</label>
@@ -166,6 +192,16 @@ export function mountScrubbableAreaModel(container, onSplitChange) {
     mountScrubbableAreaModel(updated, onSplitChange);
     if (onSplitChange) onSplitChange(s1, big - s1);
   });
+
+  const updateArea = () => {
+    const inSmall = Number(root.querySelector("[data-area-in='small']")?.value || small);
+    const inBig = Number(root.querySelector("[data-area-in='big']")?.value || big);
+    const html = renderScrubbableAreaModel(inSmall, inBig);
+    root.outerHTML = html;
+    const updated = container.querySelector("[data-scrubber-root]") || container;
+    mountScrubbableAreaModel(updated, onSplitChange);
+  };
+  root.querySelector("[data-area-update]")?.addEventListener("click", updateArea);
 }
 
 /**
@@ -209,6 +245,16 @@ export function renderPhysicsBalance(state = {}) {
         <span class="expl-bal-status-alert ${isBalanced ? "balanced" : "unbalanced"}">
           ${isBalanced ? "✅ Perfectly Balanced (Equal Sides)" : "⚠️ Unbalanced! Operations must match on both sides."}
         </span>
+      </div>
+
+      <div class="expl-inputs-bar">
+        <label>Set Equation:</label>
+        <input type="number" min="1" max="10" value="${coeff}" class="expl-num-in" data-bal-in="coeff" aria-label="Coefficient" />
+        <span>x +</span>
+        <input type="number" min="0" max="25" value="${constant}" class="expl-num-in" data-bal-in="constant" aria-label="Constant" />
+        <span>=</span>
+        <input type="number" min="1" max="60" value="${rightTotal}" class="expl-num-in" data-bal-in="right" aria-label="Right total" />
+        <button type="button" class="expl-update-btn" data-bal-update="true">Balance</button>
       </div>
 
       <div style="position:relative; width:100%; height:120px; overflow:hidden">
@@ -286,4 +332,14 @@ export function mountPhysicsBalance(container, onBalanceChange) {
       if (onBalanceChange) onBalanceChange(state);
     });
   });
+
+  const updateBalance = () => {
+    const inCoeff = Number(root.querySelector("[data-bal-in='coeff']")?.value || coeff);
+    const inConst = Number(root.querySelector("[data-bal-in='constant']")?.value || constant);
+    const inRight = Number(root.querySelector("[data-bal-in='right']")?.value || rightTotal);
+    root.outerHTML = renderPhysicsBalance({ coeff: inCoeff, constant: inConst, rightTotal: inRight });
+    const updated = container.querySelector("[data-balance-root]") || container;
+    mountPhysicsBalance(updated, onBalanceChange);
+  };
+  root.querySelector("[data-bal-update]")?.addEventListener("click", updateBalance);
 }

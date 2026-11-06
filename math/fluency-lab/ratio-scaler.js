@@ -65,6 +65,14 @@ export function renderRatioScaler(state = {}) {
         </div>
       </div>
 
+      <div class="expl-inputs-bar">
+        <label>Base Ratio:</label>
+        <input type="number" min="1" max="15" value="${a}" class="expl-num-in" data-ratio-in="a" aria-label="Part A"/>
+        <span>:</span>
+        <input type="number" min="1" max="15" value="${b}" class="expl-num-in" data-ratio-in="b" aria-label="Part B"/>
+        <button type="button" class="expl-update-btn" data-ratio-update="true">Apply Ratio</button>
+      </div>
+
       <div class="expl-slicer-controls">
         <span class="expl-slicer-label">Multiplier Factor:</span>
         <div class="expl-slicer-pills" role="group" aria-label="Scale multiplier">
@@ -132,5 +140,15 @@ export function mountRatioScaler(container, onChange) {
       mountRatioScaler(updated, onChange);
       if (onChange) onChange({ a, b, multiplier: mult });
     });
+  });
+
+  root.querySelector("[data-ratio-update]")?.addEventListener("click", () => {
+    const inA = Number(root.querySelector("[data-ratio-in='a']")?.value || a);
+    const inB = Number(root.querySelector("[data-ratio-in='b']")?.value || b);
+    const mult = Number(root.dataset.mult) || 1;
+    root.outerHTML = renderRatioScaler({ a: inA, b: inB, labelA, labelB, multiplier: mult });
+    const updated = container.querySelector("[data-ratio-root]") || container;
+    mountRatioScaler(updated, onChange);
+    if (onChange) onChange({ a: inA, b: inB, multiplier: mult });
   });
 }

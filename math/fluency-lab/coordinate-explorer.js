@@ -100,6 +100,19 @@ export function renderCoordinateExplorer(state = {}) {
         </svg>
       </div>
 
+      <div class="expl-inputs-bar">
+        <span>A: (</span>
+        <input type="number" min="-9" max="9" value="${p1.x}" class="expl-num-in" data-coord-in="x1" aria-label="Point A X"/>
+        <span>,</span>
+        <input type="number" min="-9" max="9" value="${p1.y}" class="expl-num-in" data-coord-in="y1" aria-label="Point A Y"/>
+        <span>) &nbsp; B: (</span>
+        <input type="number" min="-9" max="9" value="${p2.x}" class="expl-num-in" data-coord-in="x2" aria-label="Point B X"/>
+        <span>,</span>
+        <input type="number" min="-9" max="9" value="${p2.y}" class="expl-num-in" data-coord-in="y2" aria-label="Point B Y"/>
+        <span>)</span>
+        <button type="button" class="expl-update-btn" data-coord-update="true">Plot</button>
+      </div>
+
       <div class="coord-controls-row">
         <button type="button" class="coord-btn" data-coord-act="reflect-x">🪞 Reflect A over X-Axis</button>
         <button type="button" class="coord-btn" data-coord-act="reflect-y">🪞 Reflect A over Y-Axis</button>
@@ -136,6 +149,19 @@ export function mountCoordinateExplorer(container, onChange) {
   root.querySelector('[data-coord-act="reset"]')?.addEventListener("click", () => {
     p1 = { x: 3, y: 4 };
     p2 = { x: -2, y: -1 };
+    root.outerHTML = renderCoordinateExplorer({ p1, p2 });
+    const updated = container.querySelector("[data-coord-root]") || container;
+    mountCoordinateExplorer(updated, onChange);
+    if (onChange) onChange({ p1, p2 });
+  });
+
+  root.querySelector('[data-coord-update]')?.addEventListener("click", () => {
+    const x1 = Number(root.querySelector("[data-coord-in='x1']")?.value || p1.x);
+    const y1 = Number(root.querySelector("[data-coord-in='y1']")?.value || p1.y);
+    const x2 = Number(root.querySelector("[data-coord-in='x2']")?.value || p2.x);
+    const y2 = Number(root.querySelector("[data-coord-in='y2']")?.value || p2.y);
+    p1 = { x: x1, y: y1 };
+    p2 = { x: x2, y: y2 };
     root.outerHTML = renderCoordinateExplorer({ p1, p2 });
     const updated = container.querySelector("[data-coord-root]") || container;
     mountCoordinateExplorer(updated, onChange);

@@ -1,6 +1,60 @@
 /* Interactive Enhancements (Stages 1-4)
    Styles for Glitch Hunter, Strategy Selector, Confidence Gauge, and Speech Reasoning Sparkles */
 
+/* Universal Explorable Model Input Bars */
+.expl-inputs-bar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 0.45rem 0.75rem;
+  margin-bottom: 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #334155;
+}
+
+.expl-num-in {
+  width: 44px;
+  height: 32px;
+  font-size: 0.9375rem;
+  font-weight: 800;
+  color: #0f172a;
+  text-align: center;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 6px;
+  background: #ffffff;
+}
+
+.expl-update-btn {
+  background: #2563eb;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  padding: 0.4rem 0.75rem;
+  cursor: pointer;
+  margin-left: 0.25rem;
+  transition: background 0.15s ease;
+}
+
+.expl-update-btn:hover {
+  background: #1d4ed8;
+}
+
+.expl-slicer-top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
 /* 1. Glitch Hunter (Bug Hunt) */
 .glitch-card {
   display: flex;
@@ -1766,6 +1820,360 @@
 
 .kcf-recalc-btn:hover {
   background: #1d4ed8;
+}
+
+/* Mode Toggle (Concept Explorer vs Put In Numbers) */
+.kcf-mode-toggle {
+  display: inline-flex;
+  background: #f1f5f9;
+  padding: 0.25rem;
+  border-radius: 10px;
+  margin-left: auto;
+  gap: 0.25rem;
+}
+
+.kcf-mode-btn {
+  background: transparent;
+  border: none;
+  font-size: 0.8125rem;
+  font-weight: 800;
+  color: #475569;
+  padding: 0.4rem 0.85rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.kcf-mode-btn.is-active {
+  background: #ffffff;
+  color: #1e293b;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+/* Interactive Direct-Input Fraction Box in Hero Equation */
+.kcf-interactive-fraction-box {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  background: #ffffff;
+  border: 2px solid #93c5fd;
+  border-radius: 12px;
+  padding: 0.4rem 0.6rem;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.12);
+  transition: border-color 0.2s ease;
+}
+
+.kcf-interactive-fraction-box:focus-within {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+}
+
+.kcf-input-stepper {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.kcf-step-arrow {
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  color: #475569;
+  font-size: 0.65rem;
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.1s ease;
+}
+
+.kcf-step-arrow:hover {
+  background: #2563eb;
+  color: #ffffff;
+  border-color: #2563eb;
+}
+
+.kcf-hero-in {
+  width: 52px;
+  height: 36px;
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: #0f172a;
+  text-align: center;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 6px;
+  background: #f8fafc;
+  transition: all 0.15s ease;
+}
+
+.kcf-hero-in:focus {
+  background: #ffffff;
+  border-color: #2563eb;
+  outline: none;
+}
+
+.kcf-hero-bar {
+  display: block;
+  width: 100%;
+  height: 3px;
+  background: #0f172a;
+  margin: 0.25rem 0;
+  border-radius: 2px;
+}
+
+/* Slider Controller Row */
+.kcf-slider-controller-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  padding: 0.65rem 1rem;
+  border-radius: 8px;
+}
+
+.kcf-tape-slider {
+  flex: 1;
+  min-width: 180px;
+  cursor: pointer;
+}
+
+.kcf-serving-scrub-val {
+  font-size: 0.875rem;
+  font-weight: 800;
+  color: #2563eb;
+  min-width: 160px;
+}
+
+/* Practice View ("Put in Numbers & Solve") */
+.kcf-view-container.is-hidden {
+  display: none;
+}
+
+.kcf-view-container.is-visible {
+  display: block;
+  animation: kcfFadeIn 0.25s ease-out;
+}
+
+.kcf-practice-card {
+  background: #ffffff;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 14px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.kcf-practice-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.kcf-practice-stages-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.kcf-solve-prompt {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #475569;
+  margin: 0 0 0.5rem 0;
+}
+
+.kcf-solve-frac-inputs {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0.5rem 0;
+}
+
+.kcf-solve-input {
+  width: 58px;
+  height: 42px;
+  font-size: 1.45rem;
+  font-weight: 900;
+  text-align: center;
+  border: 2px solid #cbd5e1;
+  border-radius: 8px;
+  background: #f8fafc;
+  color: #0f172a;
+  transition: all 0.2s ease;
+}
+
+.kcf-solve-input:focus {
+  border-color: #2563eb;
+  background: #ffffff;
+  outline: none;
+}
+
+.kcf-solve-input.is-correct {
+  border-color: #16a34a;
+  background: #f0fdf4;
+  color: #15803d;
+}
+
+.kcf-solve-line {
+  display: block;
+  width: 100%;
+  height: 3px;
+  background: #0f172a;
+  margin: 0.35rem 0;
+  border-radius: 2px;
+}
+
+.kcf-op-choices {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  margin: 0.5rem 0;
+}
+
+.kcf-op-btn {
+  width: 44px;
+  height: 44px;
+  font-size: 1.5rem;
+  font-weight: 900;
+  border: 2px solid #cbd5e1;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #0f172a;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.kcf-op-btn:hover {
+  background: #eff6ff;
+  border-color: #2563eb;
+  color: #2563eb;
+}
+
+.kcf-op-btn.is-selected {
+  background: #16a34a;
+  border-color: #16a34a;
+  color: #ffffff;
+}
+
+.kcf-feedback-msg {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  min-height: 24px;
+  display: block;
+  margin-top: 0.4rem;
+}
+
+.kcf-feedback-msg.is-correct {
+  color: #15803d;
+}
+
+.kcf-feedback-msg.is-error {
+  color: #dc2626;
+}
+
+/* Multiply Across Workout */
+.kcf-solve-workout-banner {
+  background: #f8fafc;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1.25rem;
+  text-align: center;
+}
+
+.kcf-solve-workout-banner h6 {
+  margin: 0 0 0.85rem 0;
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.kcf-solve-mult-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.kcf-solve-term {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.kcf-solve-term label {
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: #475569;
+}
+
+.kcf-solve-input-small {
+  width: 65px;
+  height: 38px;
+  text-align: center;
+  font-size: 1.25rem;
+  font-weight: 800;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 6px;
+}
+
+.kcf-solve-input-final {
+  width: 95px;
+  height: 38px;
+  text-align: center;
+  font-size: 1.25rem;
+  font-weight: 800;
+  border: 2px solid #2563eb;
+  border-radius: 6px;
+  background: #eff6ff;
+  color: #1e40af;
+}
+
+.kcf-solve-slash, .kcf-solve-arrow {
+  font-size: 1.75rem;
+  font-weight: 900;
+  color: #64748b;
+  margin-top: 1rem;
+}
+
+.kcf-check-solve-btn {
+  background: #16a34a;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.65rem 1.25rem;
+  font-size: 0.9375rem;
+  font-weight: 800;
+  cursor: pointer;
+  margin-top: 1rem;
+  transition: background 0.15s ease;
+}
+
+.kcf-check-solve-btn:hover {
+  background: #15803d;
+}
+
+.kcf-solve-celebration {
+  margin-top: 1rem;
+  padding: 0.75rem 1.25rem;
+  background: #dcfce7;
+  border: 1.5px solid #86efac;
+  border-radius: 8px;
+  color: #15803d;
+  font-size: 1.05rem;
+}
+
+.kcf-solve-celebration.is-hidden {
+  display: none;
 }
 
 
