@@ -399,7 +399,10 @@ test("navigation: four learner destinations keep the journey and adult tools in 
   const { primaryLinks, navHTML } = await import("../access-practice-lab/src/nav.js");
   const T = (en) => en;
   const links = primaryLinks("6-8", T);
-  assert.deepEqual(links.map((link) => link.id), ["continue", "practice", "explore", "growth"]);
+  assert.deepEqual(
+    links.map((link) => link.id),
+    ["continue", "practice", "explore", "growth"],
+  );
   assert.equal(links[0].id, "continue");
   assert.equal(links[0].icon, "road");
   assert.match(links[0].href, /\/access-practice-lab\/\?grades=6-8$/);
