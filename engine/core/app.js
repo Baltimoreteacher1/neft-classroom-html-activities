@@ -24,6 +24,7 @@ import {
   underlineVocabTerms,
   wireObjectiveTermPopups,
 } from "./lesson-renderer.js";
+import { LUMEN_HARBOR_CHAPTER_BY_LESSON, LUMEN_HARBOR_ROOT } from "./lumen-harbor-chapters.js";
 import { augmentVocabWithGlossary } from "./math-glossary.js";
 import {
   announceBlocked,
@@ -985,7 +986,23 @@ function subtabsFor(config, index) {
     !!pr &&
     ["onLevel", "approaching", "extending"].some((k) => Array.isArray(pr[k]) && pr[k].length > 0);
   if (!hasPractice) out = out.filter((t) => !t || t.jump !== "practice");
-  return out;
+  // Units 2-9: one door to the single Lumen Harbor chapter that covers this lesson. A surface that
+  // declares its own `phaseSubtabs` (Part 2) owns its rail and gets no extra chip.
+  const novel = !override && index === 1 ? lumenHarborChip(config) : null;
+  return novel ? [...out, novel] : out;
+}
+
+/** Side-rail link to the graphic-novel chapter for this lesson (or null outside Units 2-9). */
+function lumenHarborChip(config) {
+  const lesson = /^\d+-\d+/.exec(String(config?.lessonId ?? ""))?.[0];
+  const chapter = lesson ? LUMEN_HARBOR_CHAPTER_BY_LESSON[lesson] : null;
+  if (!chapter) return null;
+  return {
+    href: `${LUMEN_HARBOR_ROOT}/read/${chapter}/`,
+    newWindow: true,
+    icon: "📖",
+    label: "Read the graphic novel",
+  };
 }
 
 /** The href a subtab chip points at, resolved against the current lesson URL. */
