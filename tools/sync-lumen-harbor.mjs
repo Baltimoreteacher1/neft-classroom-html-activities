@@ -59,21 +59,28 @@ export function chaptersModule({ lessonToChapter }) {
 
 /** The legacy entry points: Level 1 is Supported Explorer, Level 2 is Independent Investigator. */
 export function routeRedirects({ unitChapters }) {
+  // With and without the trailing slash: a native rule is the only kind that keeps `?path=`.
   return UNITS.flatMap((n) =>
-    [1, 2].map((level) => ({
-      source: `/novels/unit/${n}/level/${level}`,
-      destination: chapterUrl(unitChapters.get(n)[0].id, PATHWAY[level]),
-      status: 301,
-    })),
+    [1, 2].flatMap((level) =>
+      [`/novels/unit/${n}/level/${level}`, `/novels/unit/${n}/level/${level}/`].map((source) => ({
+        source,
+        destination: chapterUrl(unitChapters.get(n)[0].id, PATHWAY[level]),
+        status: 301,
+      })),
+    ),
   );
 }
 
 /** data/routes.json owns every redirect (tools/generate-route-files.mjs emits _redirects from it). */
 export function withRoutes(text, entries) {
   const registry = JSON.parse(text);
+  // First, not last: Cloudflare honours only the first 100 `_redirects` rules, and only a native rule keeps
+  // the `?path=` in its destination (the 404 fallback in functions/_middleware.js replaces it with the
+  // request's own query). The rules this pushes past 100 are old paths that 404, so the fallback answers
+  // them identically.
   registry.redirects = [
-    ...registry.redirects.filter((r) => !r.source.startsWith("/novels/unit/")),
     ...entries,
+    ...registry.redirects.filter((r) => !r.source.startsWith("/novels/unit/")),
   ];
   return `${JSON.stringify(registry, null, 2)}\n`;
 }
