@@ -1,7 +1,7 @@
 // "Your turn" steps: a guided step that ends in a partial result ("34 + 50 = 84" or "2 × 5 = 10" or "raw product = 10/12") asks the learner to type that
 // number or fraction before it is shown. The result is kept here, never in the page, and a step opens by itself after
 // two wrong tries so nobody is stuck.
-const FILL = /^(.*\d.*\S) = (-?[\d,]*\.?\d+(?:\/\d+)?)$/;
+const FILL = /^(.*\S) = (-?[\d,]*\.?\d+(?:\s+\d+\/\d+|\/\d+)?)\.?$/;
 const solved = new Set();
 const pending = new Map();
 const wrong = new Map();
@@ -17,12 +17,18 @@ export function splitFill(line, index, steps) {
 
 export const isSolved = (key) => solved.has(key);
 export const register = (key, result) => pending.set(key, result);
-export const normalize = (value) => String(value).replace(/[,\s]/g, "").replace("−", "-");
+export const normalize = (value) =>
+  String(value)
+    .trim()
+    .replace(/,/g, "")
+    .replace(/\s+/g, " ")
+    .replace("−", "-");
 
 const matches = (value, expected) => {
   const normV = normalize(value);
   const normE = normalize(expected);
   if (normV === normE) return true;
+  if (normV.replace(/\s/g, "") === normE.replace(/\s/g, "")) return true;
   if (value.trim() !== "" && !normE.includes("/") && !normV.includes("/")) {
     return Number(normV) === Number(normE);
   }

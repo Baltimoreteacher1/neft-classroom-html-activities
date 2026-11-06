@@ -5690,26 +5690,75 @@ const InteractiveSolver = {
         const g = gcd(top, bot);
         const simpTop = top / g;
         const simpBot = bot / g;
-        const finalAns = simpBot === 1 ? String(simpTop) : `${simpTop}/${simpBot}`;
+        const canReduce = g > 1;
+        const isImproper = simpTop > simpBot && simpBot > 1;
+        const wholePart = Math.floor(simpTop / simpBot);
+        const remPart = simpTop % simpBot;
+        const rawFrac = `${top}/${bot}`;
+        const simpFrac = simpBot === 1 ? String(simpTop) : `${simpTop}/${simpBot}`;
+        const mixedFrac = `${wholePart} ${remPart}/${simpBot}`;
 
         container.innerHTML = `
           <div class="solver-header">
             <strong>🍕 Interactive Fraction Multiplication: Straight Across!</strong>
-            <span class="solver-hint-tag">Top × Top, Bottom × Bottom</span>
+            <span class="solver-hint-tag">Step-by-Step Guided Workspace</span>
           </div>
-          <div style="display:flex; flex-direction:column; gap:0.75rem; align-items:center; font-size:1.25rem; font-weight:800">
-            <div style="display:flex; align-items:center; gap:0.6rem">
-              <span>Multiply Numerators: ${a} × ${c} = </span>
-              <input type="text" class="lcm-prime-input" data-frac-target="${top}" style="width:58px" placeholder="?" />
+          <div class="solver-fraction-steps" style="display:flex; flex-direction:column; gap:0.9rem; align-items:stretch; max-width:620px; margin:0 auto">
+            <div class="solver-step-card" style="background:#f8fafc; border:1.5px solid #e2e8f0; border-radius:10px; padding:0.85rem 1rem">
+              <strong style="color:#0284c7; font-size:0.9rem">Step 1: Multiply Numerators Straight Across</strong>
+              <div style="display:flex; align-items:center; gap:0.6rem; margin-top:0.35rem; font-size:1.15rem; font-weight:800">
+                <span>${a} × ${c} = </span>
+                <input type="text" class="lcm-prime-input" data-frac-target="${top}" style="width:64px; text-align:center" placeholder="?" />
+              </div>
             </div>
-            <div style="display:flex; align-items:center; gap:0.6rem">
-              <span>Multiply Denominators: ${b} × ${d} = </span>
-              <input type="text" class="lcm-prime-input" data-frac-target="${bot}" style="width:58px" placeholder="?" />
+
+            <div class="solver-step-card" style="background:#f8fafc; border:1.5px solid #e2e8f0; border-radius:10px; padding:0.85rem 1rem">
+              <strong style="color:#0284c7; font-size:0.9rem">Step 2: Multiply Denominators Straight Across</strong>
+              <div style="display:flex; align-items:center; gap:0.6rem; margin-top:0.35rem; font-size:1.15rem; font-weight:800">
+                <span>${b} × ${d} = </span>
+                <input type="text" class="lcm-prime-input" data-frac-target="${bot}" style="width:64px; text-align:center" placeholder="?" />
+              </div>
             </div>
-            <div style="display:flex; align-items:center; gap:0.6rem">
-              <span>Simplified Final Answer: </span>
-              <input type="text" class="lcm-prime-input" data-frac-target="${finalAns}" style="width:84px" placeholder="?" />
+
+            <div class="solver-step-card" style="background:#f8fafc; border:1.5px solid #e2e8f0; border-radius:10px; padding:0.85rem 1rem">
+              <strong style="color:#0284c7; font-size:0.9rem">Step 3: Raw Unreduced Product</strong>
+              <div style="display:flex; align-items:center; gap:0.6rem; margin-top:0.35rem; font-size:1.15rem; font-weight:800">
+                <span>Raw Fraction = </span>
+                <input type="text" class="lcm-prime-input" data-frac-target="${rawFrac}" style="width:84px; text-align:center" placeholder="top/bot" />
+              </div>
             </div>
+
+            ${canReduce ? `
+            <div class="solver-step-card" style="background:#fff7ed; border:1.5px solid #fed7aa; border-radius:10px; padding:0.85rem 1rem">
+              <strong style="color:#ea580c; font-size:0.9rem">Step 4: Reduce to Simplest Form (Your Turn)</strong>
+              <p style="font-size:0.875rem; color:#64748b; margin:0.25rem 0 0.5rem">Find the greatest common factor (GCF) dividing both ${top} and ${bot}:</p>
+              <div style="display:flex; align-items:center; gap:0.6rem; font-size:1.1rem; font-weight:800; flex-wrap:wrap">
+                <span>Common Factor (÷): </span>
+                <input type="text" class="lcm-prime-input" data-frac-target="${g}" style="width:58px; text-align:center" placeholder="÷ ?" />
+                <span>➔ Simplified Fraction = </span>
+                <input type="text" class="lcm-prime-input" data-frac-target="${simpFrac}" style="width:84px; text-align:center" placeholder="?" />
+              </div>
+            </div>
+            ` : `
+            <div style="padding:0.5rem 0.85rem; background:#ecfdf5; border:1px solid #a7f3d0; border-radius:8px; font-size:0.875rem; color:#065f46">
+              ✅ <strong>${rawFrac}</strong> is already in simplest form (GCF = 1).
+            </div>
+            `}
+
+            ${isImproper ? `
+            <div class="solver-step-card" style="background:#f0fdf4; border:1.5px solid #bbf7d0; border-radius:10px; padding:0.85rem 1rem">
+              <strong style="color:#16a34a; font-size:0.9rem">Step ${canReduce ? "5" : "4"}: Convert Improper Fraction to Mixed Number (Your Turn)</strong>
+              <p style="font-size:0.875rem; color:#64748b; margin:0.25rem 0 0.5rem">Divide ${simpTop} ÷ ${simpBot}: How many wholes, and what is the remainder?</p>
+              <div style="display:flex; align-items:center; gap:0.6rem; font-size:1.1rem; font-weight:800; flex-wrap:wrap">
+                <span>Whole: </span>
+                <input type="text" class="lcm-prime-input" data-frac-target="${wholePart}" style="width:54px; text-align:center" placeholder="whole" />
+                <span>Remainder: </span>
+                <input type="text" class="lcm-prime-input" data-frac-target="${remPart}/${simpBot}" style="width:70px; text-align:center" placeholder="rem/den" />
+                <span>➔ Mixed Number = </span>
+                <input type="text" class="lcm-prime-input" data-frac-target="${mixedFrac}" style="width:96px; text-align:center" placeholder="w r/d" />
+              </div>
+            </div>
+            ` : ""}
           </div>
         `;
       }
