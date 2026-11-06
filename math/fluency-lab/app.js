@@ -102,6 +102,7 @@ import { renderCoordinateExplorer, mountCoordinateExplorer } from "./coordinate-
 import { renderTriangleShear, mountTriangleShear } from "./triangle-shear.js";
 import { renderBase10Regrouping, mountBase10Regrouping } from "./base10-regrouping.js";
 import { renderRatioScaler, mountRatioScaler } from "./ratio-scaler.js";
+import { renderUniverseHub, mountUniverseHub } from "./interactive-universe.js";
 
 // teacher-4.js is teacher-only, so the teacher-surface gate refuses it to an anonymous student. A static import of a
 // refused file stops this whole module; awaiting a guarded import instead leaves null for a student and the real
@@ -7772,6 +7773,15 @@ function openHubView(view) {
   if (view === "models") {
     cleanupModels?.();
     const lab = mountModelLab(els.models, { grade: state.grade, initialModel: state.labModel, onEvidence: recordLabEvidence });
+    
+    // Grand Interactive Math Universe Hub
+    const universeHost = document.createElement("div");
+    universeHost.className = "universe-hub-mount-area";
+    universeHost.style.marginTop = "1.5rem";
+    universeHost.innerHTML = renderUniverseHub();
+    els.models.appendChild(universeHost);
+    mountUniverseHub(universeHost);
+
     const cityHost = document.createElement("div");
     cityHost.className = "wonder-city-mount-area";
     cityHost.style.marginTop = "1.5rem";

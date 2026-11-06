@@ -25,6 +25,7 @@ import { mountAlgebraTilesLab } from "./algebra-tiles-lab.js";
 import { mountDilationTransformLab } from "./dilation-transform-lab.js";
 import { mountProofWithoutWords } from "./proof-without-words.js";
 import { mountTrigWaveStudio } from "./trig-wave-studio.js";
+import { renderChallengeBanner, checkAndTriggerReward } from "./challenge-engine.js";
 
 const clamp = (n, lo, hi) => Math.max(lo, Math.min(hi, n));
 const esc = (value) =>
@@ -183,7 +184,8 @@ export function createDrillToolbox({ getState, longDivision }) {
         longDivisionHtml: (dividend, divisor, hide) =>
           longDivision.renderHtml(dividend, divisor, { isSolver: false, hideAnswer: hide }),
       });
-      container.innerHTML = this.bar() + html;
+      const quest = renderChallengeBanner(this.activeTool, this.s[this.activeTool] || {});
+      container.innerHTML = this.bar() + quest + html;
       if (this.activeTool === "longdivision")
         longDivision.wireEvents(container, this.s.div.dividend, this.s.div.divisor, null, {
           hideAnswer: locked,
@@ -212,6 +214,9 @@ export function createDrillToolbox({ getState, longDivision }) {
 
     wire(container) {
       if (!container) return;
+      container.addEventListener("input", () => {
+        checkAndTriggerReward(container, this.activeTool, this.s[this.activeTool] || {});
+      });
       container.addEventListener("click", (event) => {
         const hit = (selector) => event.target.closest(selector);
         const s = this.s;

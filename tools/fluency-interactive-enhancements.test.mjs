@@ -9,6 +9,7 @@ import {
   compute5NumberSummary,
   renderBoxWhiskerPlot,
 } from "../math/fluency-lab/box-whisker-plot.js";
+import { CHALLENGE_CATALOG, renderChallengeBanner } from "../math/fluency-lab/challenge-engine.js";
 import { computeCircleMetrics, renderCirclePiLab } from "../math/fluency-lab/circle-pi-lab.js";
 import { renderCoordinateExplorer } from "../math/fluency-lab/coordinate-explorer.js";
 import {
@@ -28,6 +29,7 @@ import {
   evaluateIntegerOperation,
   renderIntegerVectorHops,
 } from "../math/fluency-lab/integer-vector-hops.js";
+import { renderUniverseHub, UNIVERSE_MODELS } from "../math/fluency-lab/interactive-universe.js";
 import { renderNet3DFolder } from "../math/fluency-lab/net-3d-folder.js";
 import {
   computeGcfLcm,
@@ -374,5 +376,34 @@ console.log(
   assert.ok(trigToolHtml.includes("trig-wave-wrap"), "Drawer renders trig wave tool");
 }
 console.log("✓ Math Tool Drawer integration verified.");
+
+// 8. Challenge Quests & Interactive Math Universe Hub
+{
+  assert.ok(CHALLENGE_CATALOG.angle.length >= 1, "Angle challenges exist");
+  assert.ok(CHALLENGE_CATALOG.pythagoras.length >= 1, "Pythagoras challenges exist");
+  assert.ok(CHALLENGE_CATALOG.dilation.length >= 1, "Dilation challenges exist");
+
+  const activeBanner = renderChallengeBanner("angle", { angle: 45 });
+  assert.ok(activeBanner.includes("Active Quest"), "Unsolved challenge shows Active Quest");
+  assert.ok(activeBanner.includes("Target: 120° Obtuse Angle"), "Shows challenge title");
+
+  const solvedBanner = renderChallengeBanner("angle", { angle: 120 });
+  assert.ok(solvedBanner.includes("is-quest-solved"), "Solved challenge has is-quest-solved class");
+  assert.ok(solvedBanner.includes("SOLVED!"), "Solved challenge displays SOLVED badge");
+
+  assert.ok(UNIVERSE_MODELS.length >= 16, "Universe catalog has all 16+ models");
+  const univHtml = renderUniverseHub({ activeCategory: "all", activeModelKey: "algebraTiles" });
+  assert.ok(univHtml.includes("EduWonderLab Math Universe"), "Renders Universe Hub title");
+  assert.ok(univHtml.includes("Interactive Manipulatives"), "Renders manipulative count");
+  assert.ok(univHtml.includes("universe-stage-grid"), "Renders stage grid");
+  assert.ok(univHtml.includes("algebra-tiles-wrap"), "Renders active model on playground");
+
+  const geomUnivHtml = renderUniverseHub({
+    activeCategory: "geometry",
+    activeModelKey: "pythagoras",
+  });
+  assert.ok(geomUnivHtml.includes("pythagoras-lab-wrap"), "Renders filtered geometry model");
+}
+console.log("✓ Challenge Quests & Interactive Math Universe Hub verified.");
 
 console.log("\nALL INTERACTIVE ENHANCEMENTS & MODELS VERIFIED SUCCESSFULLY! 🎉✨");
