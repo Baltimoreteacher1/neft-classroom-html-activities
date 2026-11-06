@@ -443,6 +443,11 @@ console.log("✓ Challenge Quests & Interactive Math Universe Hub verified.");
   assert.ok(kcfHtml.includes("Visual Measurement Model"), "Has visual measurement model");
   assert.ok(kcfHtml.includes('id="kcfHeroOpToggle"'), "Has operation toggle button");
 
+  // Verify reducible fraction displays unreduced raw product (10/12) and does not auto-reduce
+  assert.ok(kcfHtml.includes('<span class="v-num">10</span><span class="v-den">12</span>'), "Hero result displays unreduced raw product 10/12");
+  assert.ok(kcfHtml.includes("Needs Reducing"), "Shows Needs Reducing indicator pill");
+  assert.ok(kcfHtml.includes("kcfReductionSection"), "Includes guided fraction reduction section");
+
   // Verify operation change from division to multiplication
   const kcfMultHtml = renderKCFStudio({ a: 2, b: 3, c: 4, d: 5, opMode: "mult" });
   assert.ok(kcfMultHtml.includes("is-mult"), "Renders in multiplication mode");

@@ -128,13 +128,9 @@ export function renderKCFStudio({
   const gBD = gcd(b, d);
   const canCrossCancel = gAC > 1 || gBD > 1;
 
-  // Fraction representation (DO NOT automatically convert to mixed number)
-  let resFractionText = "";
-  if (simpDen === 1) {
-    resFractionText = `<strong class="kcf-res-val">${simpNum}</strong>`;
-  } else {
-    resFractionText = verticalFracHtml(simpNum, simpDen, "kcf-hero-frac-res");
-  }
+  // Raw product representation (DO NOT automatically reduce or convert to mixed number)
+  const rawProductHtml = verticalFracHtml(prodNum, prodDen, "kcf-hero-frac-raw");
+  const canReduce = g > 1;
   const isImproper = simpNum > simpDen && simpDen > 1;
 
   // Quotitive serving count
@@ -200,7 +196,10 @@ export function renderKCFStudio({
 
           <span class="kcf-hero-op">=</span>
 
-          <span class="kcf-hero-result" id="kcfHeroResultDisplay">${resFractionText}</span>
+          <span class="kcf-hero-result" id="kcfHeroResultDisplay">
+            ${rawProductHtml}
+            ${canReduce ? '<span class="kcf-reducible-pill" title="This fraction can be reduced!">Needs Reducing</span>' : ""}
+          </span>
         </div>
 
         <!-- Operation Toggle Action Button -->
@@ -222,6 +221,50 @@ export function renderKCFStudio({
           </div>
         </div>
 
+        <!-- Guided Fraction Reduction Studio (No Auto-Reducing) -->
+        ${canReduce ? `
+        <div class="kcf-reduction-section" id="kcfReductionSection">
+          <div class="kcf-reduction-card">
+            <div class="kcf-card-top">
+              <span class="kcf-stage-pill orange">Guided Step</span>
+              <h5>Reduce ${verticalFracHtml(prodNum, prodDen)} to Simplest Form (Your Turn)</h5>
+              <span class="kcf-badge-sub">Divide by Common Factor</span>
+            </div>
+            
+            <p class="kcf-reduction-hint">
+              <strong>Your Turn:</strong> Both <strong>${prodNum}</strong> and <strong>${prodDen}</strong> share a common factor. 
+              Find the number that divides evenly into both, then calculate the simplified numerator and denominator:
+            </p>
+
+            <div class="kcf-reduction-row">
+              <div class="kcf-reduce-term">
+                <span class="kcf-term-label">Divide both by:</span>
+                <input type="number" min="2" max="50" class="kcf-conv-num-in gcf-in" id="kcfInGcf" placeholder="÷ ?" data-target="${g}" aria-label="Common factor" />
+              </div>
+
+              <span class="kcf-conv-arrow">➔</span>
+
+              <div class="kcf-reduce-term">
+                <span class="kcf-term-label">Simplified Fraction:</span>
+                <div class="kcf-conv-vertical-frac">
+                  <input type="number" min="1" max="99" class="kcf-conv-num-in num" id="kcfInSimpNum" placeholder="?" data-target="${simpNum}" aria-label="Simplified numerator" />
+                  <span class="kcf-conv-frac-line"></span>
+                  <input type="number" min="1" max="99" class="kcf-conv-num-in den" id="kcfInSimpDen" placeholder="?" data-target="${simpDen}" aria-label="Simplified denominator" />
+                </div>
+              </div>
+
+              <button type="button" class="kcf-conv-check-btn" id="kcfCheckReduceBtn">Check Simplification</button>
+            </div>
+
+            <div class="kcf-conv-feedback" id="kcfReduceFeedback" role="status" aria-live="polite"></div>
+          </div>
+        </div>
+        ` : `
+        <div class="kcf-already-simplified-banner">
+          <span>✅ <strong>${verticalFracHtml(prodNum, prodDen)}</strong> is already in simplest form (greatest common factor is 1).</span>
+        </div>
+        `}
+
         <!-- Guided Mixed Number Conversion Studio (No Auto-Conversion) -->
         ${isImproper ? `
         <div class="kcf-mixed-converter-section" id="kcfMixedConverterSection">
@@ -229,11 +272,11 @@ export function renderKCFStudio({
             <div class="kcf-converter-header">
               <span class="kcf-converter-tag">Guided Step</span>
               <h5>Convert Improper Fraction to Mixed Number (Your Turn)</h5>
-              <span class="kcf-improper-badge">${verticalFracHtml(simpNum, simpDen)} &gt; 1</span>
+              <span class="kcf-improper-badge">${verticalFracHtml(canReduce ? prodNum : simpNum, canReduce ? prodDen : simpDen)} &gt; 1</span>
             </div>
             
             <p class="kcf-converter-hint">
-              <strong>Your Turn:</strong> The fraction <strong>${simpNum}/${simpDen}</strong> has a numerator greater than its denominator. 
+              <strong>Your Turn:</strong> The fraction has a numerator greater than its denominator. 
               Divide <strong>${simpNum}</strong> by <strong>${simpDen}</strong>: how many complete wholes fit, and what fraction is left over?
             </p>
 
@@ -348,7 +391,7 @@ export function renderKCFStudio({
               </div>
               <div class="kcf-step-pill-row highlight">
                 <span class="kcf-math-tag">3. Direct Division</span>
-                <p>Since the pieces are the same size, divide the numerators directly: <strong>${num1Common} ÷ ${num2Common} = ${verticalFracHtml(num1Common, num2Common)} = ${resFractionText}</strong> servings!</p>
+                <p>Since the pieces are the same size, divide the numerators directly: <strong>${num1Common} ÷ ${num2Common} = ${verticalFracHtml(num1Common, num2Common)} = ${rawProductHtml}</strong> servings!</p>
               </div>
             </div>
           </div>
@@ -533,7 +576,7 @@ export function renderKCFStudio({
                   ${verticalFracHtml(simpNum, simpDen, "kcf-reduced")}
                 ` : ""}
                 <span class="kcf-calc-op">=</span>
-                <span class="kcf-final-badge">${resFractionText}</span>
+                <span class="kcf-final-badge">${rawProductHtml}</span>
               </div>
             </div>
           </div>
@@ -627,27 +670,55 @@ export function renderKCFStudio({
 
           <!-- Step 4: Multiply Across Workout Banner -->
           <div class="kcf-solve-workout-banner" id="kcfSolveWorkoutBanner">
-            <h6>Step 4: Multiply Straight Across</h6>
+            <h6>Step 4: Multiply Straight Across (Raw Product)</h6>
             <div class="kcf-solve-mult-row">
               <div class="kcf-solve-term">
                 <label>Top (${a} × ${d}):</label>
-                <input type="number" class="kcf-solve-input-small" id="kcfSolveInProdNum" placeholder="?" data-target="${prodNum}" />
+                <input type="number" class="kcf-solve-input-small" id="kcfSolveInProdNum" placeholder="?" data-target="${prodNum}" aria-label="Raw numerator" />
               </div>
               <span class="kcf-solve-slash">/</span>
               <div class="kcf-solve-term">
                 <label>Bottom (${b} × ${c}):</label>
-                <input type="number" class="kcf-solve-input-small" id="kcfSolveInProdDen" placeholder="?" data-target="${prodDen}" />
+                <input type="number" class="kcf-solve-input-small" id="kcfSolveInProdDen" placeholder="?" data-target="${prodDen}" aria-label="Raw denominator" />
               </div>
-              <span class="kcf-solve-arrow">➔</span>
-              <div class="kcf-solve-term">
-                <label>Simplified Final Answer:</label>
-                <input type="text" class="kcf-solve-input-final" id="kcfSolveInFinal" placeholder="${simpDen === 1 ? simpNum : `${simpNum}/${simpDen}`}" data-target-num="${simpNum}" data-target-den="${simpDen}" />
-              </div>
-              <button type="button" class="kcf-check-solve-btn" id="kcfCheckSolveAllBtn">Check My Work</button>
+              <button type="button" class="kcf-check-solve-btn" id="kcfCheckSolveRawBtn">Check Raw Product</button>
             </div>
+            <span class="kcf-feedback-msg" id="kcfFeedbackRaw"></span>
+
+            <!-- Step 5: Reduce / Simplify (if canReduce) -->
+            ${canReduce ? `
+            <div class="kcf-solve-step-reduce" id="kcfSolveStepReduce">
+              <h6>Step 5: Reduce to Simplest Form (Your Turn)</h6>
+              <p class="kcf-solve-subhint">Find the common factor that divides both ${prodNum} and ${prodDen}:</p>
+              <div class="kcf-reduce-inputs-box">
+                <div class="kcf-solve-term">
+                  <label>Common Factor:</label>
+                  <input type="number" class="kcf-solve-input-small" id="kcfSolveInGcf" placeholder="÷ ?" data-target="${g}" aria-label="Common factor" />
+                </div>
+                <span class="kcf-conv-arrow">➔</span>
+                <div class="kcf-solve-term">
+                  <label>Simplified Top:</label>
+                  <input type="number" class="kcf-solve-input-small" id="kcfSolveInSimpNum" placeholder="?" data-target="${simpNum}" aria-label="Simplified numerator" />
+                </div>
+                <span class="kcf-solve-slash">/</span>
+                <div class="kcf-solve-term">
+                  <label>Simplified Bottom:</label>
+                  <input type="number" class="kcf-solve-input-small" id="kcfSolveInSimpDen" placeholder="?" data-target="${simpDen}" aria-label="Simplified denominator" />
+                </div>
+                <button type="button" class="kcf-check-solve-btn" id="kcfCheckReduceSolveBtn">Check Simplification</button>
+              </div>
+              <span class="kcf-feedback-msg" id="kcfFeedbackReduce"></span>
+            </div>
+            ` : `
+            <div class="kcf-already-simplified-banner">
+              <span>✅ <strong>${prodNum}/${prodDen}</strong> is already in simplest form (greatest common factor is 1).</span>
+            </div>
+            `}
+
+            <!-- Step 6 (or 5 if already simplified): Convert to Mixed Number (if isImproper) -->
             ${isImproper ? `
             <div class="kcf-solve-step5-row" id="kcfSolveStep5Row">
-              <h6>Step 5: Convert Improper Fraction to a Mixed Number (Your Turn)</h6>
+              <h6>${canReduce ? "Step 6" : "Step 5"}: Convert Improper Fraction to a Mixed Number (Your Turn)</h6>
               <p class="kcf-solve-subhint">Divide ${simpNum} by ${simpDen}: How many wholes fit, and what fraction is leftover?</p>
               <div class="kcf-step5-inputs-box">
                 <div class="kcf-solve-term">
@@ -669,8 +740,9 @@ export function renderKCFStudio({
               <span class="kcf-feedback-msg" id="kcfFeedbackStep5"></span>
             </div>
             ` : ""}
+
             <div class="kcf-solve-celebration is-hidden" id="kcfSolveCelebration">
-              🎉 <strong>Outstanding job!</strong> You executed Keep · Change · Flip flawlessly!
+              🎉 <strong>Outstanding job!</strong> You executed Keep · Change · Flip with all steps verified!
             </div>
           </div>
         </div>
@@ -860,6 +932,42 @@ export function mountKCFLab(container, options = {}) {
     }
   };
   container.querySelector("#kcfConvCheckBtn")?.addEventListener("click", checkConv);
+
+  // Guided Fraction Reduction Checker (Explorer Mode)
+  const checkExplorerReduce = () => {
+    const inGcf = container.querySelector("#kcfInGcf");
+    const inSimpNum = container.querySelector("#kcfInSimpNum");
+    const inSimpDen = container.querySelector("#kcfInSimpDen");
+    const fb = container.querySelector("#kcfReduceFeedback");
+    if (!inGcf || !inSimpNum || !inSimpDen || !fb) return;
+
+    const valGcf = Number(inGcf.value);
+    const valNum = Number(inSimpNum.value);
+    const valDen = Number(inSimpDen.value);
+
+    const targetGcf = Number(inGcf.dataset.target);
+    const targetNum = Number(inSimpNum.dataset.target);
+    const targetDen = Number(inSimpDen.dataset.target);
+
+    if (!inGcf.value.trim() || !inSimpNum.value.trim() || !inSimpDen.value.trim()) {
+      fb.className = "kcf-conv-feedback is-error";
+      fb.innerHTML = "Please enter the common factor and the simplified fraction.";
+      return;
+    }
+
+    if (valGcf === targetGcf && valNum === targetNum && valDen === targetDen) {
+      fb.className = "kcf-conv-feedback is-correct";
+      fb.innerHTML = `🎉 Correct! Dividing by ${targetGcf} simplifies to <strong>${targetNum}/${targetDen}</strong>!`;
+      const heroRes = container.querySelector("#kcfHeroResultDisplay");
+      if (heroRes) {
+        heroRes.innerHTML = `${verticalFracHtml(targetNum, targetDen, "kcf-hero-frac-res")} <span class="kcf-reciprocal-tag">Simplified</span>`;
+      }
+    } else {
+      fb.className = "kcf-conv-feedback is-error";
+      fb.innerHTML = `Not quite: common factor is <strong>${targetGcf}</strong>, giving simplified fraction <strong>${targetNum}/${targetDen}</strong>.`;
+    }
+  };
+  container.querySelector("#kcfCheckReduceBtn")?.addEventListener("click", checkExplorerReduce);
 
   // Studio Mode Toggle ("explore" vs "practice")
   container.querySelectorAll("[data-kcf-mode-set]").forEach((btn) => {
@@ -1131,48 +1239,72 @@ export function mountKCFLab(container, options = {}) {
   container.querySelector("#kcfSolveInFlipD")?.addEventListener("input", checkFlip);
   container.querySelector("#kcfSolveInFlipC")?.addEventListener("input", checkFlip);
 
-  // Practice Mode: Check Multiply All
-  const checkWorkoutBtn = container.querySelector("#kcfCheckSolveAllBtn");
-  if (checkWorkoutBtn) {
-    checkWorkoutBtn.addEventListener("click", () => {
-      checkKeep();
-      checkFlip();
-      const inNum = container.querySelector("#kcfSolveInProdNum");
-      const inDen = container.querySelector("#kcfSolveInProdDen");
-      const inFinal = container.querySelector("#kcfSolveInFinal");
-      const celebration = container.querySelector("#kcfSolveCelebration");
+  // Practice Mode: Check Step 4 Raw Product
+  const checkRawSolve = () => {
+    const inNum = container.querySelector("#kcfSolveInProdNum");
+    const inDen = container.querySelector("#kcfSolveInProdDen");
+    const fb = container.querySelector("#kcfFeedbackRaw");
+    const celebration = container.querySelector("#kcfSolveCelebration");
+    if (!inNum || !inDen) return;
 
-      const numCorrect = Number(inNum?.value) === Number(inNum?.dataset.target);
-      const denCorrect = Number(inDen?.value) === Number(inDen?.dataset.target);
+    const numCorrect = Number(inNum.value) === Number(inNum.dataset.target);
+    const denCorrect = Number(inDen.value) === Number(inDen.dataset.target);
 
-      const targetSimpNum = Number(inFinal?.dataset.targetNum);
-      const targetSimpDen = Number(inFinal?.dataset.targetDen);
-      const finalVal = inFinal?.value?.trim() || "";
-      let finalCorrect = false;
+    inNum.classList.toggle("is-correct", numCorrect);
+    inDen.classList.toggle("is-correct", denCorrect);
 
-      if (targetSimpDen === 1) {
-        finalCorrect = finalVal === String(targetSimpNum);
-      } else {
-        finalCorrect = finalVal === `${targetSimpNum}/${targetSimpDen}` ||
-          finalVal === `${targetSimpNum} / ${targetSimpDen}` ||
-          finalVal === `${Math.floor(targetSimpNum / targetSimpDen)} ${targetSimpNum % targetSimpDen}/${targetSimpDen}`;
+    if (numCorrect && denCorrect) {
+      if (fb) {
+        fb.className = "kcf-feedback-msg is-correct";
+        fb.innerHTML = `✅ Correct! Raw product is ${inNum.value}/${inDen.value}.`;
       }
-
-      inNum?.classList.toggle("is-correct", numCorrect);
-      inDen?.classList.toggle("is-correct", denCorrect);
-      inFinal?.classList.toggle("is-correct", finalCorrect);
-
-      if (numCorrect && denCorrect && finalCorrect) {
-        const step5Whole = container.querySelector("#kcfSolveStep5Whole");
-        if (step5Whole) {
-          checkStep5();
-        } else {
-          celebration?.classList.remove("is-hidden");
-          celebration?.classList.add("is-animated");
-        }
+      if (!container.querySelector("#kcfSolveStepReduce") && !container.querySelector("#kcfSolveStep5Row")) {
+        celebration?.classList.remove("is-hidden");
+        celebration?.classList.add("is-animated");
       }
-    });
-  }
+    } else if (inNum.value && inDen.value) {
+      if (fb) {
+        fb.className = "kcf-feedback-msg is-error";
+        fb.innerHTML = `Multiply top by top (${inNum.dataset.target}) and bottom by bottom (${inDen.dataset.target}).`;
+      }
+    }
+  };
+  container.querySelector("#kcfCheckSolveRawBtn")?.addEventListener("click", checkRawSolve);
+
+  // Practice Mode: Check Step 5 Simplification
+  const checkReduceSolve = () => {
+    const inGcf = container.querySelector("#kcfSolveInGcf");
+    const inNum = container.querySelector("#kcfSolveInSimpNum");
+    const inDen = container.querySelector("#kcfSolveInSimpDen");
+    const fb = container.querySelector("#kcfFeedbackReduce");
+    const celebration = container.querySelector("#kcfSolveCelebration");
+    if (!inGcf || !inNum || !inDen) return;
+
+    const gcfCorrect = Number(inGcf.value) === Number(inGcf.dataset.target);
+    const numCorrect = Number(inNum.value) === Number(inNum.dataset.target);
+    const denCorrect = Number(inDen.value) === Number(inDen.dataset.target);
+
+    inGcf.classList.toggle("is-correct", gcfCorrect);
+    inNum.classList.toggle("is-correct", numCorrect);
+    inDen.classList.toggle("is-correct", denCorrect);
+
+    if (gcfCorrect && numCorrect && denCorrect) {
+      if (fb) {
+        fb.className = "kcf-feedback-msg is-correct";
+        fb.innerHTML = `✅ Correctly simplified to ${inNum.value}/${inDen.value}!`;
+      }
+      if (!container.querySelector("#kcfSolveStep5Row")) {
+        celebration?.classList.remove("is-hidden");
+        celebration?.classList.add("is-animated");
+      }
+    } else if (inGcf.value || inNum.value || inDen.value) {
+      if (fb) {
+        fb.className = "kcf-feedback-msg is-error";
+        fb.innerHTML = `Divide top and bottom by common factor ${inGcf.dataset.target} to get ${inNum.dataset.target}/${inDen.dataset.target}.`;
+      }
+    }
+  };
+  container.querySelector("#kcfCheckReduceSolveBtn")?.addEventListener("click", checkReduceSolve);
 
   // Practice Mode: Check Step 5 Mixed Conversion
   const checkStep5 = () => {
