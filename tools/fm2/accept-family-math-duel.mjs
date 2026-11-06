@@ -551,7 +551,6 @@ for (const [width, lang] of [[1440, "en"], [768, "en"], [375, "en"], [375, "es"]
   const seed = findSeed("g6-order-of-ops", 3, 6, (r) => r.variant === "open");
   const page = await open(context, { grade: 6, skill: "g6-order-of-ops", level: 3, seed, lang, mode: "together" });
   const rec = await solutionOf(page);
-  const round = await roundOf(page);
   for (const m of rec.moves.slice(0, 4)) await placeMove(page, m, "click");
   await page.screenshot({ path: `${SHOTS}/table-${width}-${lang}.png`, fullPage: true });
   await context.close();

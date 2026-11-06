@@ -39,7 +39,6 @@ import {
   translateFamilyText,
   translateLanguageObjective,
 } from "./homework-spanish.mjs";
-import { getUnitTheme } from "./homework-themes.mjs";
 import { act, actOn, EL, EV, VALUE } from "./lib/homework-actions.mjs";
 import { bridgeOf, renderBridgeCard } from "./lib/homework-bridge.mjs";
 import { confusedRoundsFor, renderConfusedGrownUp } from "./lib/homework-confused-grownup.mjs";
@@ -2898,9 +2897,7 @@ export function revealUnitTitle(unit) {
 
 export function renderWelcomeBanner(config, lessonId) {
   const unit = config.unit || 1;
-  const theme = getUnitTheme(unit);
   const unitTitle = revealUnitTitle(unit);
-  const themeEmoji = config.themeEmoji || theme.emoji || "🏠";
   const title = config.familyNotes?.sessionTitle || config.title || "Tonight's Lesson";
   const standard = config.standard || "";
   const experience = config.familyNotes?.experience;

@@ -181,7 +181,7 @@
       // series[who + "," + when] = { vals, lo, hi, step }: what six askings of that exact question return
       const series = /** @type {any} */ ({});
       sc.who.forEach((w, wi) =>
-        sc.when.forEach((n, ni) => {
+        sc.when.forEach((_n, ni) => {
           const scale = w.kind === "together" ? PEOPLE : 1;
           const ax = raw.step * scale;
           const vals = varies({ who: sc.who, when: sc.when }, wi, ni)

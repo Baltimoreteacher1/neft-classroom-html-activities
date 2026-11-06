@@ -404,6 +404,7 @@ for (const family of listFamilies()) {
     while (res.status === "incorrect") res = r.submit(answerFor(r));
     r.next();
   }
+  assert.ok(seenFree > 0, "the session never offered a free-text reasoning prompt");
   assert.ok(r.reasoning.length >= 1 && r.status === "complete");
 }
 

@@ -530,22 +530,6 @@ function glossary(v) {
     .join("")}</dl>`;
 }
 
-/** The lesson's own mission and conversation question, in both languages. */
-function missionSection(corner) {
-  if (!corner) return "";
-  const pair = (p) => `<p>${esc(p.en)}</p><p class="es-text" lang="es">${esc(p.es)}</p>`;
-  return `
-<section class="section-mission" data-mission>
-  <h2>Try at home <span class="es">Para hacer en casa</span></h2>
-  <div class="callout">${pair(corner.mission)}</div>
-  ${
-    corner.question?.en && corner.question.es
-      ? `<p><strong>Talk about it:</strong></p>${pair(corner.question)}`
-      : ""
-  }
-</section>`;
-}
-
 /** A lesson with an authored word-problem set links to it from its family guide. */
 function wordProblemsLink(id) {
   const file = join(DATA_DIR, "family-word-problems", `${id}.json`);

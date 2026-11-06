@@ -185,7 +185,7 @@
         tray.append(b);
         return b;
       });
-      const binBtns = M.bins.map((/** @type {any} */ bn, /** @type {number} */ j) => {
+      const binBtns = M.bins.map((/** @type {any} */ _bn, /** @type {number} */ j) => {
         const b = A.el("button", "u2-opt", "", { type: "button" });
         b.style.cssText =
           "display:flex;justify-content:space-between;align-items:center;gap:10px;width:100%";

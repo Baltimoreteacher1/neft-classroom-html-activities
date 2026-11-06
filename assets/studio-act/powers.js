@@ -454,7 +454,7 @@ body.show-es .sa-es,.sa-root[data-es="1"] .sa-es{display:block}
       const exponent = builds ? st.n : st.e;
       const tilesHtml = Array.from(
         { length: Math.min(exponent, 12) },
-        (_, i) =>
+        () =>
           `<span style="display:inline-grid;place-items:center;min-width:34px;min-height:34px;margin:3px;padding:4px;border:2px solid var(--brand,#2C4A68);border-radius:8px;background:var(--sun,#F0BD4F);font-weight:800">${base}</span>`,
       ).join("");
       let product = 1;

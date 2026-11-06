@@ -46,7 +46,7 @@ const root = {
     setProperty: (name, value) => styles.set(name, value),
     removeProperty: (name) => styles.delete(name),
   },
-  removeAttribute: (name) => {
+  removeAttribute: (_name) => {
     delete root.dataset.gradeExperience;
   },
 };

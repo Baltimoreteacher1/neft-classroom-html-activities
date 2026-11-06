@@ -41,7 +41,7 @@ const fake = {
   secPerRound: 30,
   cssHref: "game.css",
   skills,
-  makeRound: (skillId, level, rng) => {
+  makeRound: (_skillId, _level, rng) => {
     const a = Math.floor(rng() * 9) + 1;
     const b = Math.floor(rng() * 9) + 1;
     return { a, b, prompt: { en: `${a} + ${b}?`, es: `¿${a} + ${b}?` } };
@@ -50,7 +50,7 @@ const fake = {
     r === round.a + round.b
       ? { correct: true, feedback: { en: "Yes.", es: "Sí." } }
       : { correct: false, feedback: { en: "Add again.", es: "Suma otra vez." } },
-  hint: (round, tier) => ({ en: `hint tier ${tier}`, es: `pista nivel ${tier}` }),
+  hint: (_round, tier) => ({ en: `hint tier ${tier}`, es: `pista nivel ${tier}` }),
   solve: (round) => round.a + round.b,
   answerText: (round) => String(round.a + round.b),
   mount(root, _ctx) {
@@ -252,7 +252,7 @@ ok(root.innerHTML === "" && !window.__fm2, "destroy cleans up");
 const store3 = makeStore();
 const neutralGame = {
   ...fake,
-  check: (round, r) =>
+  check: (_round, r) =>
     r === "ok"
       ? { correct: true, feedback: { en: "ok", es: "ok" } }
       : { correct: false, neutral: true, feedback: { en: "flip back", es: "voltea" } },
@@ -273,7 +273,6 @@ ok(
   window.__fm2.tools.attempts === 0 && q("[data-fm2-showme]").hidden,
   "neutral misses do not count toward Show me",
 );
-let locks = 0;
 click("[data-fm2-hint]");
 click("[data-fm2-hint]");
 click("[data-fm2-hint]");

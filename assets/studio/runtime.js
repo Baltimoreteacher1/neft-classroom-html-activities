@@ -198,28 +198,6 @@
   }
 
   /* ---- a pause with no clock: after a miss the student picks one thing to do before the next try ------------ */
-  const _HOLD_ALLOW =
-    ".hold-chips,[data-hint],[data-tutor],[data-conf],.tool-btn,.next-btn,[data-example],[data-read],[data-reroll],.repair-btn,[data-prove],.item-workspace";
-  const holdLive = (/** @type {HTMLElement} */ host) =>
-    host.dataset.hold === "1" && !!host.querySelector(".hold-chips");
-  function releaseHold(/** @type {HTMLElement} */ host, /** @type {string} */ reason) {
-    delete host.dataset.hold;
-    host.querySelector(".hold-chips")?.remove();
-    const focusOn = (/** @type {string} */ sel) => {
-      const n = /** @type {HTMLElement|null} */ (host.querySelector(sel));
-      if (!n) return false;
-      if (!n.hasAttribute("tabindex") && !/^(BUTTON|INPUT|SELECT|TEXTAREA|A)$/.test(n.tagName))
-        n.setAttribute("tabindex", "-1");
-      n.focus({ preventScroll: false });
-      return true;
-    };
-    if (reason === "hint")
-      /** @type {HTMLElement|null} */ (host.querySelector("[data-hint]"))?.click();
-    else if (reason === "model") focusOn(".act-host, .lab-host, svg, .viz");
-    else if (reason === "check") focusOn(".item-workspace button, .item-workspace textarea");
-    else focusOn(".item-q");
-    say("Try again when you are ready.");
-  }
   function installHold(/** @type {HTMLElement} */ _host) {
     // No-op: no blocking pause before retry
   }

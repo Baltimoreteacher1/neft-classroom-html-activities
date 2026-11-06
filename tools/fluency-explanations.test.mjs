@@ -24,7 +24,6 @@ for (const [key, value] of Object.entries({
 await import("../math/fluency-lab/app.js");
 
 const $ = (selector) => win.document.querySelector(selector);
-const $$ = (selector) => [...win.document.querySelectorAll(selector)];
 
 // Switch to practice mode
 $('[data-mode="practice"]').click();
@@ -136,7 +135,6 @@ for (const skill of ALL_SKILLS) {
     // Set item on state
     win.document.querySelector("#feedback-copy").innerHTML = "";
     // Trigger feedback with item
-    const html = win.document.querySelector("#feedback-copy");
     // Directly invoke renderStudentFriendlyExplanation logic via click/showFeedback or direct render
     const testCard = win.document.createElement("div");
     testCard.innerHTML = `<div class="student-expl-card">

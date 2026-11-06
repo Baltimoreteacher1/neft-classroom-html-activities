@@ -594,9 +594,6 @@ export function buildSections(
   }));
   const mastery = [...connected, ...convert(exit, left), ...(ld.mastery || [])];
 
-  const fresh = Array.isArray(ld.fresh)
-    ? { items: ld.fresh }
-    : { items: Array.from({ length: ld.fresh.slots }, () => ({ k: "pool" })), pool: ld.fresh.pool };
   const climb = Array.isArray(ld.challenge.climb)
     ? { items: ld.challenge.climb }
     : {

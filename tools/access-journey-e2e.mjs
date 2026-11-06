@@ -80,7 +80,7 @@ const stepRecord = async (page, band, mission, step) =>
   (await readJourney(page))?.bands?.[band]?.missions?.[mission]?.steps?.[step];
 
 /** The engine work for each step, read from the pack. */
-function drivers(page, pack, mission) {
+function drivers(page, pack, _mission) {
   const comm = (task) =>
     task.kind === "converse" ? D.driveConverse(page, task) : D.driveCompose(page, task);
   return {

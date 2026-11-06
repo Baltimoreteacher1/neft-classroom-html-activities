@@ -412,7 +412,7 @@
     const L = (/** @type {string} */ en, /** @type {string} */ es) => (api.es?.() ? es : en);
     const counts = o.counts.slice();
     const wrap = A.el("div", "u2-bars");
-    const refs = o.labels.map((lab, i) => {
+    const refs = o.labels.map((lab) => {
       const cw = A.el("div", "u2-colwrap");
       const col = A.el("div", "u2-col", "", {
         role: o.ro ? "img" : "slider",

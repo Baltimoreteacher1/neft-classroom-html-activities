@@ -32,7 +32,7 @@ export function seedJourney({ band, steps = [], support = "A", cursor = null, as
 }
 
 /** Steps 1..n of a mission finished with support, plausible results included. */
-export function missionSteps(m, band, upTo, { at, commKind = "converse", commText } = {}) {
+export function missionSteps(m, _band, upTo, { at, commKind = "converse", commText } = {}) {
   const order = ["discover", "understand", "build", "communicate", "improve", "show"];
   const text =
     commText ||

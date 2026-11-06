@@ -28,7 +28,7 @@ import { RESOURCES_PATH } from "./homework-external-resources.mjs";
 const args = process.argv.slice(2);
 const DRY = args.includes("--dry-run");
 const PRUNE = args.includes("--prune");
-const onlyArg = args.find((a, i) => args[i - 1] === "--only");
+const onlyArg = args.find((_a, i) => args[i - 1] === "--only");
 const ONLY = onlyArg ? new Set(onlyArg.split(",")) : null;
 
 const NOT_FOUND = /page not found|página no encontrada|no encontramos|oops|¡ups/i;

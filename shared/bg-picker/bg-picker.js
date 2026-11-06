@@ -123,14 +123,14 @@
         page: /^#[0-9a-f]{6}$/i.test(s.page) ? s.page : null,
         header: /^#[0-9a-f]{6}$/i.test(s.header) ? s.header : null,
       };
-    } catch (e) {
+    } catch (_e) {
       return { page: null, header: null };
     }
   }
   function save(state) {
     try {
       localStorage.setItem(STORE_KEY, JSON.stringify(state));
-    } catch (e) {
+    } catch (_e) {
       /* private mode / blocked storage: colors still apply for this visit */
     }
   }

@@ -194,7 +194,7 @@ function hero(sc) {
     tone: "a",
   }));
   stack(sc, steps);
-  steps.forEach((s, i) => sc.sphere({ x: 1.75, y: s.y + 0.5, z: 0.12 + s.h, r: 0.3, tone: "b" }));
+  steps.forEach((s) => sc.sphere({ x: 1.75, y: s.y + 0.5, z: 0.12 + s.h, r: 0.3, tone: "b" }));
 
   /* Geometry: a cylinder and a cube to give the group scale. */
   sc.cyl({ x: 4.4, y: 7.4, z: 0.12, r: 0.8, h: 1.7, tone: "c" });

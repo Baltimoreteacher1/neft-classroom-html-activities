@@ -7,7 +7,8 @@
  * dark-on-light text fell back to the inherited near-white. Source checks and the dev server
  * (which resolves imports itself) both passed. This reads what a visitor's browser receives.
  *
- * Needs `npm run build`; without dist/ it reports SKIP and exits 0 like the other dist readers. */
+ * Reads dist/, so it runs in `validate:hub` (NEEDS_DIST in scripts/qa-run.mjs builds first), not in
+ * `npm test`, which CI runs before the build. Without dist/ it reports SKIP via skipExit(). */
 import assert from "node:assert/strict";
 import { existsSync, readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";

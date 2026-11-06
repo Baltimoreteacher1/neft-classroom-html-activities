@@ -604,7 +604,7 @@ const sup = (c, at, extra = {}) => ({ c, i: false, at, ...extra });
 }
 
 // ------------------------------------------------------------------ D. adaptive selection for six learner profiles
-const build = (specs, extra = {}) => {
+const build = (specs, _extra = {}) => {
   const tutor = emptyTutor();
   for (const [key, steps] of Object.entries(specs)) {
     steps.forEach((s, i) =>
