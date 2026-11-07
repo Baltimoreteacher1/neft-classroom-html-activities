@@ -41,6 +41,15 @@ test("Science of Reading data structures and contracts", () => {
       `${item.word} answer index is valid`,
     );
   }
+  for (const band of ["3-5", "6-8"]) {
+    assert.ok(sor.TEXT_CLUE_CHALLENGE[band].length >= 3, `${band} has a text-clue round`);
+    for (const question of sor.TEXT_CLUE_CHALLENGE[band]) {
+      assert.ok(
+        question.answer >= 0 && question.answer < question.choices.length,
+        `Text answer index is valid for ${band}`,
+      );
+    }
+  }
 });
 
 test("Science of Reading render contract", async () => {
@@ -48,10 +57,13 @@ test("Science of Reading render contract", async () => {
   assert.strictEqual(out.title, "Science of Reading Studio");
   const markup = toHtml(out.html);
   assert.ok(markup.length > 500);
-  assert.ok(markup.includes("Word parts unlock meaning"));
   assert.ok(markup.includes("Word-Part Detective"));
   assert.ok(markup.includes("sor-nav-tabs"));
   assert.ok(markup.includes("Reading Rope"));
+  assert.ok(markup.includes("Science of Reading Studio"));
+  assert.ok(markup.includes("READY-TO-TEACH"));
+  assert.ok(markup.includes("sor-grade-switch"));
+  assert.ok(markup.includes("Text-Clue Challenge"));
 });
 
 test("Language Studios data structures and contracts", () => {

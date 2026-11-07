@@ -7,8 +7,12 @@
 //   - CLOVER 6 Syllable Types & Syllable Division Rules
 //   - Morphology & Multilingual Cognate Bridges for English Learners
 
-import { crumbsHTML } from "../components.js";
-import { BASE, esc, html, icon } from "../util.js";
+import { BASE, esc, icon as rawIcon, raw } from "../util.js";
+
+const icon = (name) => {
+  const marked = rawIcon(name);
+  return marked[Object.getOwnPropertySymbols(marked)[0]];
+};
 
 // --- 1. The Simple View of Reading (SVR) Models ---
 export const SVR_PROFILES = [
@@ -324,21 +328,47 @@ export const MORPH_SUFFIXES = [
   { aff: "-ure", meaning: "act, result, or process", pos: "noun" },
 ];
 
+export const WORD_PART_CHALLENGE = [
+  { word: "transport", parts: "trans- + port", question: "What does transport most nearly mean?", choices: ["carry across", "carry out", "able to be carried", "carry into"], answer: 0, feedback: "trans- means across, and port means carry. Transport is to carry something across or from one place to another." },
+  { word: "import", parts: "im- + port", question: "If port means carry, what does import mean?", choices: ["carry out", "carry into", "carry across", "carry again"], answer: 1, feedback: "im- can mean in or into. Import means to bring or carry goods into a place." },
+  { word: "export", parts: "ex- + port", question: "Which meaning fits export?", choices: ["carry into", "carry across", "carry out", "able to be carried"], answer: 2, feedback: "ex- means out. Export means to send or carry goods out to another place." },
+  { word: "portable", parts: "port + -able", question: "What does the suffix -able help portable mean?", choices: ["able to be carried", "carried out", "carry into", "carry across"], answer: 0, feedback: "-able means able to be. Portable means able to be carried." },
+  { word: "transatlantic", parts: "trans- + Atlantic", question: "In transatlantic travel, what does trans- tell you?", choices: ["under the ocean", "across the Atlantic", "back to the Atlantic", "near the Atlantic"], answer: 1, feedback: "trans- means across. Transatlantic travel crosses the Atlantic Ocean." },
+];
+
+export const TEXT_CLUE_CHALLENGE = {
+  "3-5": [
+    { question: "What moves through a port?", choices: ["cargo", "vowels", "maps", "syllables"], answer: 0, feedback: "The passage says a port helps transport cargo from one place to another." },
+    { question: "What does portable mean?", choices: ["able to be carried", "too large to move", "sent out of a country", "made of metal"], answer: 0, feedback: "The suffix -able means able to be. Portable means able to be carried." },
+    { question: "Which word means to bring goods into a country?", choices: ["import", "export", "transport", "portable"], answer: 0, feedback: "The passage says businesses import goods when they bring products into a country." },
+  ],
+  "6-8": [
+  { question: "What does a port help transport?", choices: ["cargo", "vowels", "maps", "passengers only"], answer: 0, feedback: "The passage says a port helps transport cargo from one place to another." },
+  { question: "Why are some cargo containers portable?", choices: ["They can be carried between ships and trucks", "They are too large to move", "They stay at one port", "They contain maps"], answer: 0, feedback: "The text says portable containers move between ships and trucks. The suffix -able means able to be." },
+  { question: "Which pair shows opposite directions?", choices: ["import and export", "ships and trucks", "cargo and containers", "place and country"], answer: 0, feedback: "The passage explains that import brings products into a country, while export sends them out." },
+  ],
+};
+
 // In-memory view state
 let state = {
-  tab: "rope", // "rope", "svr", "soundwall", "mapping", "syllables", "morphology"
+  tab: "lesson",
+  wordGameIndex: 0,
+  wordGameCorrect: 0,
+  wordGameChoice: null,
+  activePractice: "words",
+  textGameIndex: 0,
+  textGameCorrect: 0,
+  textGameChoice: null,
   braidTightness: 75,
   mappedWord: "said",
   chopperIdx: 0,
   chopperGuess: null,
   chopperResult: null,
-  morphPrefix: 5, // con-
-  morphRoot: 0,   // struct
-  morphSuffix: 0, // -tion
   svrD: 75,
   svrLC: 80,
   svrActiveProfile: "typical",
 };
+let lastGradeBand = null;
 
 // --- SVG Rendering for Scarborough's Rope ---
 // Clean, professional layout where text labels NEVER overlap the Bezier ribbon curves!
@@ -441,53 +471,123 @@ function renderMouthShapeSvg(shape) {
 
 export async function render(ctx = {}) {
   const currentTab = state.tab;
+  const requestedBand = ctx.band || new URLSearchParams(globalThis.location?.search || "").get("grades");
+  const gradeBand = requestedBand === "3-5" ? "3-5" : "6-8";
+  if (lastGradeBand && lastGradeBand !== gradeBand) {
+    state.wordGameIndex = state.textGameIndex = 0;
+    state.wordGameCorrect = state.textGameCorrect = 0;
+    state.wordGameChoice = state.textGameChoice = null;
+  }
+  lastGradeBand = gradeBand;
+  const gradeLabel = gradeBand === "3-5" ? "Grades 3–5" : "Grades 6–8";
+  const wordQuiz = gradeBand === "3-5" ? WORD_PART_CHALLENGE.slice(0, 4) : WORD_PART_CHALLENGE;
+  const wordQuizTitle = gradeBand === "3-5" ? "Big-Word Breaker" : "Word-Part Detective";
+  const lessonTitle = gradeBand === "3-5" ? "Break big words into meaningful parts" : "Use word parts to unlock academic meaning";
   const mappedObj = MAPPING_WORDS[state.mappedWord] || MAPPING_WORDS.said;
   const currentChop = CHOPPER_WORDS[state.chopperIdx];
 
   // SVR Calculated Product
   const svrProduct = Math.round((state.svrD / 100) * (state.svrLC / 100) * 100);
-
-  // Constructed Word
-  const prefixObj = MORPH_PREFIXES[state.morphPrefix];
-  const rootObj = MORPH_ROOTS[state.morphRoot];
-  const suffixObj = MORPH_SUFFIXES[state.morphSuffix];
-  const rawPrefix = prefixObj.aff.replace(/[\/-].*$/, "");
-  const rawRoot = rootObj.root.split(" ")[0];
-  const rawSuffix = suffixObj.aff.replace(/^[-\/]/, "").split(" ")[0];
-  const constructedWord = `${rawPrefix}${rawRoot}${rawSuffix}`;
+  const activeQuiz = state.activePractice === "words" ? wordQuiz : TEXT_CLUE_CHALLENGE[gradeBand];
+  const activeQuizIndex = state.activePractice === "words" ? state.wordGameIndex : state.textGameIndex;
+  const activeQuizChoice = state.activePractice === "words" ? state.wordGameChoice : state.textGameChoice;
+  const activeQuizCorrect = state.activePractice === "words" ? state.wordGameCorrect : state.textGameCorrect;
+  const activeQuestion = activeQuiz[activeQuizIndex];
+  const activeIsCorrect = activeQuizChoice === activeQuestion?.answer;
 
   const htmlContent = `
     <div class="sor-container">
-      ${crumbsHTML([
-        ["The Language Page", `${BASE}/`],
-        ["Science of Reading Studio"],
-      ])}
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="${BASE}/">The Language Page</a><span aria-hidden="true">›</span><span aria-current="page">Science of Reading Studio</span></nav>
 
       <div class="sor-header">
         <div class="sor-title-wrap">
-          <div class="sor-kicker">${icon("reading")} Cognitive Science in the Classroom</div>
-          <h1>Science of Reading Research &amp; Practice Studio</h1>
+          <div class="sor-kicker">${icon("reading")} ${gradeLabel} · Learn, practice, and teach</div>
+          <h1>Science of Reading Studio</h1>
           <p class="sor-lead">
-            Empowering teachers and multilingual learners with evidence-based cognitive frameworks: Scarborough's Reading Rope, Speech-to-Print Sound Walls, Orthographic Mapping with Heart Words, and CLOVER Syllable Division.
+            Explicit word study, meaningful reading, and short practice games built around how reading works. Start with a ready-to-use lesson, then explore the tools behind it.
           </p>
         </div>
         <div class="sor-evidence-badge">
-          ${icon("bulb")} <span>Grounded in Cognitive &amp; Linguistic Science</span>
+          ${icon("bulb")} <span>Teach it · Try it · Use it in text</span>
         </div>
       </div>
 
       <!-- Navigation Tabs -->
-      <div class="sor-nav-tabs" role="tablist">
-        <button type="button" class="sor-tab-btn ${currentTab === "rope" ? "active" : ""}" data-sor-tab="rope">${icon("growth")} <span>Reading Rope</span></button>
-        <button type="button" class="sor-tab-btn ${currentTab === "svr" ? "active" : ""}" data-sor-tab="svr">${icon("evidence")} <span>Simple View (SVR)</span></button>
-        <button type="button" class="sor-tab-btn ${currentTab === "soundwall" ? "active" : ""}" data-sor-tab="soundwall">${icon("speaking")} <span>Sound Wall</span></button>
-        <button type="button" class="sor-tab-btn ${currentTab === "mapping" ? "active" : ""}" data-sor-tab="mapping">${icon("star")} <span>Heart Words</span></button>
-        <button type="button" class="sor-tab-btn ${currentTab === "syllables" ? "active" : ""}" data-sor-tab="syllables">${icon("construction")} <span>6 Syllables</span></button>
-        <button type="button" class="sor-tab-btn ${currentTab === "morphology" ? "active" : ""}" data-sor-tab="morphology">${icon("words")} <span>Morphology</span></button>
+      <div class="sor-nav-tabs" role="tablist" aria-label="Science of Reading tools">
+        <button type="button" role="tab" id="sor-tab-lesson" aria-controls="sor-panel" aria-selected="${currentTab === "lesson"}" tabindex="${currentTab === "lesson" ? 0 : -1}" class="sor-tab-btn ${currentTab === "lesson" ? "active" : ""}" data-sor-tab="lesson">${icon("sparkle")} <span>Lessons &amp; Games</span></button>
+        <button type="button" role="tab" id="sor-tab-syllables" aria-controls="sor-panel" aria-selected="${currentTab === "syllables"}" tabindex="${currentTab === "syllables" ? 0 : -1}" class="sor-tab-btn ${currentTab === "syllables" ? "active" : ""}" data-sor-tab="syllables">${icon("construction")} <span>Syllable Lab</span></button>
+        <button type="button" role="tab" id="sor-tab-mapping" aria-controls="sor-panel" aria-selected="${currentTab === "mapping"}" tabindex="${currentTab === "mapping" ? 0 : -1}" class="sor-tab-btn ${currentTab === "mapping" ? "active" : ""}" data-sor-tab="mapping">${icon("star")} <span>Sound-to-Print</span></button>
+        <button type="button" role="tab" id="sor-tab-soundwall" aria-controls="sor-panel" aria-selected="${currentTab === "soundwall"}" tabindex="${currentTab === "soundwall" ? 0 : -1}" class="sor-tab-btn ${currentTab === "soundwall" ? "active" : ""}" data-sor-tab="soundwall">${icon("speaking")} <span>Sound Wall</span></button>
+        <button type="button" role="tab" id="sor-tab-morphology" aria-controls="sor-panel" aria-selected="${currentTab === "morphology"}" tabindex="${currentTab === "morphology" ? 0 : -1}" class="sor-tab-btn ${currentTab === "morphology" ? "active" : ""}" data-sor-tab="morphology">${icon("words")} <span>Word Parts</span></button>
+        <button type="button" role="tab" id="sor-tab-rope" aria-controls="sor-panel" aria-selected="${currentTab === "rope"}" tabindex="${currentTab === "rope" ? 0 : -1}" class="sor-tab-btn ${currentTab === "rope" ? "active" : ""}" data-sor-tab="rope">${icon("growth")} <span>Reading Rope</span></button>
+        <button type="button" role="tab" id="sor-tab-svr" aria-controls="sor-panel" aria-selected="${currentTab === "svr"}" tabindex="${currentTab === "svr" ? 0 : -1}" class="sor-tab-btn ${currentTab === "svr" ? "active" : ""}" data-sor-tab="svr">${icon("evidence")} <span>Reading Equation</span></button>
       </div>
 
       <!-- Main Stage Body -->
-      <div class="sor-stage-body">
+      <div class="sor-stage-body" role="tabpanel" id="sor-panel" aria-labelledby="sor-tab-${currentTab}" tabindex="0">
+
+        ${currentTab === "lesson" ? `
+          <section class="sor-panel-section sor-lesson-panel" aria-labelledby="sor-lesson-title">
+            <div class="sor-grade-switch" aria-label="Choose grade band">
+              <span>Grade band</span>
+              <a href="${BASE}/science-of-reading?grades=3-5" class="${gradeBand === "3-5" ? "active" : ""}" ${gradeBand === "3-5" ? 'aria-current="page"' : ""}>Grades 3–5</a>
+              <a href="${BASE}/science-of-reading?grades=6-8" class="${gradeBand === "6-8" ? "active" : ""}" ${gradeBand === "6-8" ? 'aria-current="page"' : ""}>Grades 6–8</a>
+            </div>
+            <div class="sor-lesson-heading">
+              <div><span class="sor-kicker">READY-TO-TEACH · 15 MINUTES · ${gradeLabel.toUpperCase()}</span><h2 id="sor-lesson-title">${lessonTitle}</h2>
+                <p>Explicitly teach a useful word part, model how to read it, and apply it in a short informational passage.</p></div>
+              <div class="sor-lesson-meta"><span>Focus: decoding + morphology</span><span>Connect the word, its parts, and its meaning in text</span></div>
+            </div>
+            <div class="sor-lesson-grid">
+              <article class="sor-lesson-step"><span class="sor-step-number">1</span><div><h3>Connect · 2 minutes</h3>
+                <p>Ask: “What travels through a port?” Invite students to connect <em>port</em> to <em>portable</em> or <em>transport</em>.</p>
+                <div class="sor-teacher-move"><strong>Say:</strong> “A port is a place where goods are carried from one kind of transportation to another.”</div></div></article>
+              <article class="sor-lesson-step"><span class="sor-step-number">2</span><div><h3>Model · 4 minutes</h3>
+                <p>Write <strong>transport</strong>. Read the parts: <strong>trans-</strong> (across) + <strong>port</strong> (carry). Blend the parts, read the whole word, then explain how the parts help.</p>
+                <div class="sor-word-build"><span>trans-</span><b>+</b><span>port</span><b>→</b><strong>transport</strong></div>
+                <p class="sor-teacher-note">Use the routine: see the parts → say the parts → blend the whole word → connect its parts to meaning.</p></div></article>
+              <article class="sor-lesson-step"><span class="sor-step-number">3</span><div><h3>Read together · 5 minutes</h3>
+                <p class="sor-passage">Ports connect ships, trucks, and trains. Businesses <strong>import</strong> goods when they bring products into a country. They <strong>export</strong> goods when they send products out. A port helps <strong>transport</strong> cargo from one place to another. Some cargo travels in <strong>portable</strong> containers that move between ships and trucks.</p>
+                <div class="sor-word-clues"><span><b>im-</b> = into</span><span><b>ex-</b> = out</span><span><b>trans-</b> = across</span><span><b>-able</b> = able to be</span></div>
+                <p class="sor-teacher-note">Read once for meaning. Reread and pause at punctuation. Students echo-read a sentence, then explain a bold word using its parts.</p></div></article>
+              <article class="sor-lesson-step"><span class="sor-step-number">4</span><div><h3>Explain · 4 minutes</h3>
+                <p>How do <em>import</em> and <em>export</em> describe opposite directions? Point to a sentence clue before answering.</p>
+                <div class="sor-sentence-frame"><strong>Talk or write:</strong> “I know ___ means ___ because the word part ___ means ___.”</div></div></article>
+            </div>
+
+            <div class="sor-practice-zone" aria-labelledby="sor-game-title">
+              <div class="sor-practice-top"><div><span class="sor-kicker">PRACTICE ARCADE · NO LOGIN</span><h2 id="sor-game-title">Play, get feedback, and try again</h2>
+                <p>Choose a quick practice game. Your work stays in this browser tab.</p></div>
+                <button type="button" class="sor-secondary-button" id="resetPracticeGame">Start this game over</button></div>
+              <div class="sor-game-modes" role="group" aria-label="Choose a practice activity">
+                <button type="button" class="${state.activePractice === "words" ? "active" : ""}" data-sor-practice="words" aria-pressed="${state.activePractice === "words"}">${icon("words")} ${wordQuizTitle}<small>Decode and build words</small></button>
+                <button type="button" class="${state.activePractice === "text" ? "active" : ""}" data-sor-practice="text" aria-pressed="${state.activePractice === "text"}">${icon("reading")} Text-Clue Challenge<small>Find evidence and explain</small></button>
+              </div>
+              ${activeQuizIndex >= activeQuiz.length ? `
+                <div class="sor-game-complete" role="status"><span class="sor-complete-mark">${icon("check")}</span><div><h3>Round complete</h3><p>You answered <strong>${activeQuizCorrect} of ${activeQuiz.length}</strong> correctly on the first try. Switch games or replay to build accuracy.</p></div></div>
+              ` : `
+                <div class="sor-game-card">
+                  <div class="sor-game-progress"><span>Question ${activeQuizIndex + 1} of ${activeQuiz.length}</span><span>${activeQuizCorrect} correct first try</span></div>
+                  <div class="sor-progress-track" role="progressbar" aria-label="Activity progress" aria-valuemin="0" aria-valuemax="${activeQuiz.length}" aria-valuenow="${activeQuizIndex}"><span style="width:${activeQuizIndex / activeQuiz.length * 100}%"></span></div>
+                  ${state.activePractice === "words" ? `<div class="sor-game-wordline"><strong>${esc(activeQuestion.word)}</strong><span>${esc(activeQuestion.parts)}</span></div>` : `<div class="sor-game-wordline"><strong>Read · Think · Prove</strong><span>Use the passage above</span></div>`}
+                  <h3 class="sor-game-question">${esc(activeQuestion.question)}</h3>
+                  <div class="sor-answer-grid">${activeQuestion.choices.map((choice, index) => `<button type="button" class="sor-answer ${activeQuizChoice === index ? (activeIsCorrect ? "is-correct" : "is-wrong") : ""} ${activeQuizChoice !== null && index === activeQuestion.answer ? "show-correct" : ""}" data-practice-answer="${index}" ${activeQuizChoice !== null ? "disabled" : ""}>${esc(choice)}</button>`).join("")}</div>
+                  ${activeQuizChoice !== null ? `<div class="sor-answer-feedback ${activeIsCorrect ? "positive" : "coaching"}" role="status"><strong>${activeIsCorrect ? "That fits." : "Let’s look at the clue."}</strong> ${esc(activeQuestion.feedback)}<button type="button" class="sor-primary-button" id="nextPracticeQuestion">${activeQuizIndex === activeQuiz.length - 1 ? "See results" : "Next question"} ${icon("arrow-right")}</button></div>` : `<p class="sor-game-hint">${state.activePractice === "words" ? `Hint: Start with <strong>${esc(activeQuestion.parts.split(" + ").slice(-1)[0])}</strong>, then use the prefix or suffix.` : "Hint: Reread the passage and point to the sentence that supports your answer."}</p>`}
+                </div>
+              `}
+              <p class="sor-privacy-note">No student name, recording, or response is collected or sent.</p>
+            </div>
+            <div class="sor-activity-library" aria-labelledby="sor-more-activities">
+              <div class="sor-section-banner"><h3 id="sor-more-activities">More Science of Reading activities</h3><p>Practice the same skills in a different way. Each activity has a clear model, try-it turn, and feedback.</p></div>
+              <div class="sor-activity-cards">
+                <button type="button" data-sor-tab="syllables"><span class="sor-activity-icon">${icon("construction")}</span><strong>Syllable Chopper</strong><small>Divide longer words. Test a cut and see the syllable rule.</small><span>Open Syllable Lab →</span></button>
+                <button type="button" data-sor-tab="mapping"><span class="sor-activity-icon">${icon("star")}</span><strong>Sound-to-Print Mapper</strong><small>Match phonemes to graphemes and notice the heart part.</small><span>Open mapping →</span></button>
+                <button type="button" data-sor-tab="soundwall"><span class="sor-activity-icon">${icon("speaking")}</span><strong>Sound Wall Explorer</strong><small>Compare mouth positions and hear example words.</small><span>Open Sound Wall →</span></button>
+                <button type="button" data-sor-tab="rope"><span class="sor-activity-icon">${icon("growth")}</span><strong>Reading Rope Model</strong><small>Adjust strands and see how word reading and language work together.</small><span>Open Reading Rope →</span></button>
+              </div>
+            </div>
+          </section>
+        ` : ""}
         
         <!-- 1. Reading Rope Tab -->
         ${currentTab === "rope" ? `
@@ -781,57 +881,22 @@ export async function render(ctx = {}) {
           </div>
         ` : ""}
 
-        <!-- 6. Morphology & Multilingual Cognate Matrix Tab -->
+        <!-- Word families show accurate morpheme combinations. -->
         ${currentTab === "morphology" ? `
           <div class="sor-panel-section">
             <div class="sor-section-banner">
-              <h3>Morphology &amp; Multilingual Cognate Matrix</h3>
-              <p>Morphemes are the smallest units of meaning in a language. Because over 60% of academic English words share Greek and Latin root ancestors, morphology is the most powerful linguistic bridge connecting Spanish and heritage language cognates to academic English.</p>
+              <h3>Word Parts in Real Academic Words</h3>
+              <p>A morpheme is a meaningful word part. Study a word family to see how the same root and affixes contribute meaning across words. Not every prefix, root, and suffix can be freely combined.</p>
             </div>
-
-            <div class="sor-morphology-studio">
-              <div class="morph-generator-grid">
-                <div class="morph-column">
-                  <h5>Prefixes (Initial Morpheme)</h5>
-                  ${MORPH_PREFIXES.map((p, idx) => `
-                    <button type="button" class="morph-item-btn ${idx === state.morphPrefix ? "active" : ""}" data-morph-p="${idx}">
-                      <strong>${esc(p.aff)}</strong>
-                      <small>Meaning: ${esc(p.meaning)}</small>
-                    </button>
-                  `).join("")}
-                </div>
-
-                <div class="morph-column">
-                  <h5>Base Roots (Latin / Greek Ancestor)</h5>
-                  ${MORPH_ROOTS.map((r, idx) => `
-                    <button type="button" class="morph-item-btn ${idx === state.morphRoot ? "active" : ""}" data-morph-r="${idx}">
-                      <strong>${esc(r.root)}</strong> (${esc(r.origin)})
-                      <small>Meaning: ${esc(r.meaning)}</small>
-                    </button>
-                  `).join("")}
-                </div>
-
-                <div class="morph-column">
-                  <h5>Suffixes (Grammatical Category)</h5>
-                  ${MORPH_SUFFIXES.map((s, idx) => `
-                    <button type="button" class="morph-item-btn ${idx === state.morphSuffix ? "active" : ""}" data-morph-s="${idx}">
-                      <strong>${esc(s.aff)}</strong>
-                      <small>${esc(s.meaning)} (${esc(s.pos)})</small>
-                    </button>
-                  `).join("")}
-                </div>
-              </div>
-
-              <div class="morph-result-banner">
-                <div class="morph-constructed-word">${esc(constructedWord)}</div>
-                <div class="morph-constructed-def">
-                  <strong>Literal Morphemic Meaning:</strong> The ${esc(suffixObj.meaning)} ${esc(prefixObj.meaning)} ${esc(rootObj.meaning)}.
-                </div>
-                <div class="morph-cognate-bridge">
-                  ${icon("language")} <span><strong>Spanish Cognate Bridge:</strong> <em>${esc(rootObj.cognate)}</em></span>
-                </div>
-              </div>
+            <div class="sor-morph-family" aria-label="Words built from the Latin root port, meaning carry">
+              <div class="sor-morph-root"><span>LATIN ROOT</span><strong>port</strong><em>carry</em></div>
+              <article class="sor-morph-word"><strong><span>trans-</span> + port</strong><h4>transport</h4><p>carry across or from place to place</p></article>
+              <article class="sor-morph-word"><strong><span>im-</span> + port</strong><h4>import</h4><p>bring goods into a place</p></article>
+              <article class="sor-morph-word"><strong><span>ex-</span> + port</strong><h4>export</h4><p>send goods out to another place</p></article>
+              <article class="sor-morph-word"><strong>port + <span>-able</span></strong><h4>portable</h4><p>able to be carried</p></article>
             </div>
+            <div class="sor-cognate-note"><strong>Language connection:</strong> Spanish <em>transportar</em> and English <em>transport</em> share a related word part and meaning. Compare spelling and meaning, then check that the meaning fits the sentence.</div>
+            <div class="sor-extension-row"><strong>Try the word family:</strong><span>Write a sentence that makes one word’s meaning clear.</span><span class="sor-sentence-frame"><strong>Frame:</strong> “The ___ was portable because ___.”</span></div>
           </div>
         ` : ""}
 
@@ -841,7 +906,7 @@ export async function render(ctx = {}) {
 
   return {
     title: "Science of Reading Studio",
-    html: htmlContent,
+    html: raw(htmlContent),
   };
 }
 
@@ -854,6 +919,53 @@ export function mount(root, ctx) {
       state.tab = btn.dataset.sorTab;
       ctx.rerender();
     });
+  });
+
+  const tabs = [...root.querySelectorAll('[role="tab"][data-sor-tab]')];
+  tabs.forEach((tab) => tab.addEventListener("keydown", (event) => {
+    const index = tabs.indexOf(tab);
+    let next = index;
+    if (event.key === "ArrowRight" || event.key === "ArrowDown") next = (index + 1) % tabs.length;
+    else if (event.key === "ArrowLeft" || event.key === "ArrowUp") next = (index - 1 + tabs.length) % tabs.length;
+    else if (event.key === "Home") next = 0;
+    else if (event.key === "End") next = tabs.length - 1;
+    else return;
+    event.preventDefault();
+    state.tab = tabs[next].dataset.sorTab;
+    ctx.rerender();
+    requestAnimationFrame(() => root.querySelector(`#sor-tab-${state.tab}`)?.focus());
+  }));
+
+  const resetPractice = (mode = state.activePractice) => {
+    if (mode === "words") {
+      state.wordGameIndex = 0; state.wordGameCorrect = 0; state.wordGameChoice = null;
+    } else {
+      state.textGameIndex = 0; state.textGameCorrect = 0; state.textGameChoice = null;
+    }
+  };
+  root.querySelectorAll("[data-sor-practice]").forEach((button) => button.addEventListener("click", () => {
+    state.activePractice = button.dataset.sorPractice;
+    ctx.rerender();
+  }));
+  root.querySelectorAll("[data-practice-answer]").forEach((button) => button.addEventListener("click", () => {
+    const isWords = state.activePractice === "words";
+    const index = isWords ? state.wordGameIndex : state.textGameIndex;
+    const band = lastGradeBand || "6-8";
+    const quiz = isWords ? (band === "3-5" ? WORD_PART_CHALLENGE.slice(0, 4) : WORD_PART_CHALLENGE) : TEXT_CLUE_CHALLENGE[band];
+    const question = quiz[index];
+    if (!question) return;
+    const answer = Number(button.dataset.practiceAnswer);
+    if (isWords) { state.wordGameChoice = answer; if (answer === question.answer) state.wordGameCorrect++; }
+    else { state.textGameChoice = answer; if (answer === question.answer) state.textGameCorrect++; }
+    ctx.rerender();
+  }));
+  root.querySelector("#nextPracticeQuestion")?.addEventListener("click", () => {
+    if (state.activePractice === "words") { state.wordGameIndex++; state.wordGameChoice = null; }
+    else { state.textGameIndex++; state.textGameChoice = null; }
+    ctx.rerender();
+  });
+  root.querySelector("#resetPracticeGame")?.addEventListener("click", () => {
+    resetPractice(); ctx.rerender();
   });
 
   // Reading Rope slider
@@ -968,23 +1080,4 @@ export function mount(root, ctx) {
     });
   }
 
-  // Morphology Buttons
-  root.querySelectorAll("[data-morph-p]").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      state.morphPrefix = Number(btn.dataset.morphP);
-      ctx.rerender();
-    });
-  });
-  root.querySelectorAll("[data-morph-r]").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      state.morphRoot = Number(btn.dataset.morphR);
-      ctx.rerender();
-    });
-  });
-  root.querySelectorAll("[data-morph-s]").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      state.morphSuffix = Number(btn.dataset.morphS);
-      ctx.rerender();
-    });
-  });
 }
