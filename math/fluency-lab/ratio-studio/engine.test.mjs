@@ -16,3 +16,24 @@ test('zero quantities do not create false equivalence through cross multiplicati
 test('zero scale factor is rejected because it collapses both ratio terms to an undefined 0:0',()=>{assert.throws(()=>createState({a:2,b:3,factor:0}),/Scale factor must be positive/)});
 
 test('comparison choices preserve order and distinguish part-to-whole',()=>{const initial=createState({a:2,b:3,factor:4}),d=derive(initial);assert.deepEqual([d.activeComparison.first,d.activeComparison.second,format(d.activeComparison.left),format(d.activeComparison.right)],['Red','Blue','8','12']);const h=history(initial);h.dispatch({type:'comparison',value:'first-to-whole'});assert.deepEqual([derive(h.state).activeComparison.first,derive(h.state).activeComparison.second,format(derive(h.state).activeComparison.left),format(derive(h.state).activeComparison.right)],['Red','total','8','20']);h.dispatch({type:'comparison',value:'reverse-part-to-part'});assert.deepEqual([derive(h.state).activeComparison.first,derive(h.state).activeComparison.second,format(derive(h.state).activeComparison.left),format(derive(h.state).activeComparison.right)],['Blue','Red','12','8']);assert.throws(()=>createState({comparison:'unknown'}),/comparison/)});
+
+test('student-created paired points stay exact and synchronize table, number lines, and graph',()=>{
+  const initial=createState({a:2,b:3,pointFactors:[1,2,3,4,'5/2']});
+  const fractional=derive(initial);
+  assert.deepEqual(fractional.rows.map(r=>[format(r.factor),format(r.a),format(r.b)]),[
+    ['1','2','3'],['2','4','6'],['5/2','5','15/2'],['3','6','9'],['4','8','12'],
+  ]);
+  assert.deepEqual(fractional.points.find(p=>format(p.factor)==='5/2') && [format(fractional.points[2].x),format(fractional.points[2].y)],['5','15/2']);
+  const h=history();h.dispatch({type:'add-point',factor:'5'});
+  const d=derive(h.state);
+  assert.equal(format(h.state.factor),'5');
+  assert.deepEqual(d.rows.at(-1) && [format(d.rows.at(-1).factor),format(d.rows.at(-1).a),format(d.rows.at(-1).b)],['5','10','15']);
+  assert.equal(format(d.graph.axisMax),'15');
+  assert.deepEqual([d.points.at(-1).positionX,d.points.at(-1).positionY],[10/15,1]);
+  assert.throws(()=>h.dispatch({type:'add-point',factor:'5'}),/already has a paired point/);
+  h.undo();assert.equal(derive(h.state).rows.length,4);
+  h.redo();assert.equal(derive(h.state).rows.length,5);
+  const legacy=JSON.parse(history().serialize());delete legacy.states[0].pointFactors;
+  assert.deepEqual(restore(JSON.stringify(legacy)).state.pointFactors.map(format),['1','2','3','4']);
+  assert.throws(()=>createState({pointFactors:[1,2,3,4,5,6,7,8,9,10,11,12,13]}),/up to 12/);
+});

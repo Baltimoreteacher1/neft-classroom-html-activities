@@ -9,6 +9,7 @@ const compare = (a, b) => {
   const right = BigInt(b.n) * BigInt(a.d);
   return left < right ? -1 : left > right ? 1 : 0;
 };
+const DEFAULT_POINT_FACTORS = Object.freeze([1, 2, 3, 4].map((value) => rational(value)));
 export const COMPARISON_TYPES = Object.freeze(['part-to-part','reverse-part-to-part','first-to-whole','second-to-whole']);
 export function rational(value) {
   if (typeof value === 'object' && value && 'n' in value && 'd' in value) {
@@ -38,14 +39,27 @@ export function createState(input = {}) {
   if (a.n === '0' && b.n === '0') throw new RangeError('At least one quantity must be positive');
   const factor = rational(input.factor ?? 1);
   if (factor.n === '0') throw new RangeError('Scale factor must be positive');
+  const rawPointFactors = input.pointFactors ?? DEFAULT_POINT_FACTORS;
+  if (!Array.isArray(rawPointFactors)) throw new RangeError('Paired points must be a list');
+  const pointFactors = rawPointFactors.map((value) => rational(value));
+  for (const pointFactor of pointFactors) {
+    if (pointFactor.n === '0' || !Number.isFinite(valueOf(pointFactor)) || valueOf(pointFactor) > 1000)
+      throw new RangeError('A paired-point factor must be positive and at most 1000');
+  }
+  const uniquePointFactors = new Map(pointFactors.map((value) => [`${value.n}/${value.d}`, value]));
+  if (uniquePointFactors.size > 12) throw new RangeError('Use up to 12 paired points');
+  const sortedPointFactors = [...uniquePointFactors.values()].sort(compare);
+  if (!sortedPointFactors.some((value) => value.n === '1' && value.d === '1'))
+    throw new RangeError('Keep the original relationship as a paired point');
   const comparison=input.comparison || 'part-to-part';
   if(!COMPARISON_TYPES.includes(comparison))throw new RangeError('Choose a supported ratio comparison');
-  return {version:1, a,b, labelA:boundedLabel(input.labelA,'Red',24),labelB:boundedLabel(input.labelB,'Blue',24),unitA:boundedLabel(input.unitA,'counters',16),unitB:boundedLabel(input.unitB,'counters',16), factor, comparison};
+  return {version:1, a,b, labelA:boundedLabel(input.labelA,'Red',24),labelB:boundedLabel(input.labelB,'Blue',24),unitA:boundedLabel(input.unitA,'counters',16),unitB:boundedLabel(input.unitB,'counters',16), factor, pointFactors:sortedPointFactors, comparison};
 }
 export function derive(s) {
   const a=multiply(s.a,s.factor), b=multiply(s.b,s.factor), total=add(a,b);
-  const rows=[1,2,3,4].map(k=>({factor:k,a:multiply(s.a,rational(k)),b:multiply(s.b,rational(k))}));
-  const graphAxisMax=compare(rows[3].a,rows[3].b)>=0?rows[3].a:rows[3].b;
+  const rows=s.pointFactors.map(k=>({factor:k,a:multiply(s.a,k),b:multiply(s.b,k)}));
+  const last=rows.at(-1);
+  const graphAxisMax=compare(last.a,last.b)>=0?last.a:last.b;
   const graphTicks=[0,1,2,3,4].map(i=>multiply(graphAxisMax,rational({n:String(i),d:'4'})));
   const comparisons=[
     {id:'part-to-part',name:'First to second',first:s.labelA,second:s.labelB,left:a,right:b,kind:'part-to-part'},
@@ -54,12 +68,20 @@ export function derive(s) {
     {id:'second-to-whole',name:'Second part to total',first:s.labelB,second:'total',left:b,right:total,kind:'part-to-whole'},
   ];
   const axisMaxValue=valueOf(graphAxisMax);
-  return {a,b,total,reverse:[b,a],partWhole:[a,total],comparisons,activeComparison:comparisons.find(c=>c.id===s.comparison),rows,graph:{axisMax:graphAxisMax,ticks:graphTicks,isFunction:s.a.n!=='0'},points:rows.map(r=>({x:r.a,y:r.b,position:r.factor/4,positionX:valueOf(r.a)/axisMaxValue,positionY:valueOf(r.b)/axisMaxValue})),unitRate:a.n==='0'?null:divide(b,a),equivalent:equivalent(s.a,s.b,a,b)};
+  const maxFactor=valueOf(last.factor);
+  return {a,b,total,reverse:[b,a],partWhole:[a,total],comparisons,activeComparison:comparisons.find(c=>c.id===s.comparison),rows,graph:{axisMax:graphAxisMax,ticks:graphTicks,isFunction:s.a.n!=='0'},points:rows.map(r=>({factor:r.factor,x:r.a,y:r.b,position:valueOf(r.factor)/maxFactor,positionX:valueOf(r.a)/axisMaxValue,positionY:valueOf(r.b)/axisMaxValue})),unitRate:a.n==='0'?null:divide(b,a),equivalent:equivalent(s.a,s.b,a,b)};
 }
 export function transition(s, action) {
   switch(action.type) {
     case 'set': return createState({...s,[action.field]:action.value});
     case 'scale': return createState({...s,factor:action.factor});
+    case 'add-point': {
+      const pointFactor = rational(action.factor);
+      if (pointFactor.n === '0') throw new RangeError('A paired-point factor must be positive');
+      if (s.pointFactors.some((value) => compare(value, pointFactor) === 0))
+        throw new RangeError('That factor already has a paired point');
+      return createState({...s,factor:pointFactor,pointFactors:[...s.pointFactors,pointFactor]});
+    }
     case 'comparison': return createState({...s,comparison:action.value});
     case 'reset': return createState();
     default: throw new RangeError('Unknown action');
