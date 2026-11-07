@@ -1,6 +1,6 @@
 // Language Studios — The Language Page / EduWonderLab
 // Cutting-edge interactive manipulatives for English Learners (ELs) and Academic Language Acquisition:
-//   1. WIDA Academic Discourse Level Slider (Levels 1–5: Entering to Bridging across Science, Social Studies, Math)
+//   1. Classroom language-sample lens across science, social studies, and mathematics
 //   2. Dynamic Syntax Clause Slicer & Connector (Independent vs Dependent with auto-comma logic)
 //   3. Concentric Morphology & Multilingual Cognate Wheel (Prefix-Root-Suffix with Spanish bridges)
 //   4. Discourse Cohesion & Logic Balancer (Claim vs Evidence vs Reasoning CER with connector vault)
@@ -23,137 +23,143 @@ const ico = (name) => `<svg class="ico" aria-hidden="true" focusable="false"><us
 // --- 1. WIDA Academic Discourse Scenarios ---
 export const WIDA_DISCOURSE_DATA = {
   science: {
-    domain: "Science: Energy & Ecosystems",
+    domain: "Science: Energy in a Food Web",
+    concept: "Plants use sunlight to make food. Animals get some of that stored energy by eating plants.",
+    prompt: "Explain how energy moves from plants to animals.",
     levels: [
       {
         level: 1,
-        title: "Level 1: Entering",
-        passage: "Sun. Plant make food. Animal eat plant.",
-        wordLevel: "Single words & everyday nouns (sun, plant, animal).",
-        sentenceLevel: "Short repetitive phrase fragments.",
-        discourseLevel: "No transitional connectors.",
+        title: "Sample A",
+        passage: "Plants use sunlight to make food. Animals eat plants. Energy moves from plants to animals.",
+        wordLevel: "Everyday words name the same science idea.",
+        sentenceLevel: "Complete, short sentences make each step clear.",
+        discourseLevel: "Repeated words connect the steps in the explanation.",
       },
       {
         level: 2,
-        title: "Level 2: Emerging",
-        passage: "Plants get sunlight and they make food. Then rabbits eat the green plants.",
-        wordLevel: "Basic sequential vocabulary (then, green).",
-        sentenceLevel: "Compound sentences joined by 'and', 'then'.",
-        discourseLevel: "Beginning chronological linkage.",
+        title: "Sample B",
+        passage: "Plants use sunlight to make food, and rabbits get energy when they eat the plants.",
+        wordLevel: "Familiar content words name the organisms and energy.",
+        sentenceLevel: "A joined sentence links two related ideas.",
+        discourseLevel: "The word “when” links the animal’s action to its energy source.",
       },
       {
         level: 3,
-        title: "Level 3: Developing",
-        passage: "Because plants absorb radiant sunlight through their leaves, they produce glucose for energy. Primary consumers like rabbits rely directly on these producers for survival.",
-        wordLevel: "Tier 2 & 3 academic terminology (absorb, radiant, glucose, consumers).",
-        sentenceLevel: "Complex sentences with subordinate clauses ('Because plants absorb...').",
-        discourseLevel: "Cause-and-effect relationship established across sentences.",
+        title: "Sample C",
+        passage: "Because plants store energy from sunlight in the food they make, rabbits get some of that energy by eating plants.",
+        wordLevel: "The precise verb “store” describes what happens to energy.",
+        sentenceLevel: "A “because” clause gives a reason for the result.",
+        discourseLevel: "The phrase “that energy” connects the two parts of the explanation.",
       },
       {
         level: 4,
-        title: "Level 4: Expanding",
-        passage: "During the process of photosynthesis, autotrophs convert solar energy into chemical bonds within glucose molecules. Consequently, any disruption to the producer population immediately destabilizes higher trophic levels in the food web.",
-        wordLevel: "Specialized disciplinary technical terms (autotrophs, trophic levels).",
-        sentenceLevel: "Fronted prepositional phrases, passive voice, nominalized clauses.",
-        discourseLevel: "Cohesive discourse markers ('Consequently', 'any disruption...').",
+        title: "Sample D",
+        passage: "Plants capture sunlight during photosynthesis and store some of its energy in food. As a result, animals that eat plants can use that stored energy.",
+        wordLevel: "The science term “photosynthesis” names the process.",
+        sentenceLevel: "A relative clause identifies which animals the sentence describes.",
+        discourseLevel: "“As a result” makes the cause-and-effect link explicit.",
       },
       {
         level: 5,
-        title: "Level 5: Bridging",
-        passage: "Photosynthetic energy transduction serves as the thermodynamic foundation of terrestrial ecosystems. Consequently, thermodynamic efficiency dictates that only approximately ten percent of energy transfers between successive trophic tiers, inevitably constraining apex predator biomass.",
-        wordLevel: "Dense, abstract academic nominalizations (transduction, thermodynamic efficiency).",
-        sentenceLevel: "Syntactically dense embedded clauses with parenthetical precision.",
-        discourseLevel: "Sustained, nuanced disciplinary argumentation with modal nuance.",
+        title: "Sample E",
+        passage: "Through photosynthesis, plants transform sunlight into stored chemical energy; that energy becomes available to animals when they consume plants.",
+        wordLevel: "A concise technical term names the process precisely.",
+        sentenceLevel: "A semicolon joins two closely related independent clauses.",
+        discourseLevel: "The explanation states the process and then traces its consequence.",
       },
     ],
   },
   socialStudies: {
-    domain: "Social Studies: Democratic Governance",
+    domain: "Social Studies: A Community Decision",
+    concept: "Residents share evidence about a road. Their city council uses that evidence when it chooses a repair plan.",
+    prompt: "Explain how residents’ evidence can shape the council’s decision.",
     levels: [
       {
         level: 1,
-        title: "Level 1: Entering",
-        passage: "People vote. Leader make law.",
-        wordLevel: "Basic content words (people, vote, law).",
-        sentenceLevel: "Simple Subject-Verb-Object.",
-        discourseLevel: "Isolated statements.",
+        title: "Sample A",
+        passage: "Residents share facts about the road. The council uses the facts to choose a repair.",
+        wordLevel: "Everyday words name the people, evidence, and decision.",
+        sentenceLevel: "Complete sentences state who acts and what they do.",
+        discourseLevel: "Repeated words connect the evidence to the decision.",
       },
       {
         level: 2,
-        title: "Level 2: Emerging",
-        passage: "Citizens vote for leaders so the leaders can write fair rules for the city.",
-        wordLevel: "High-frequency civic words (citizens, rules, fair).",
-        sentenceLevel: "Compound sentences with 'so'.",
-        discourseLevel: "Simple purpose connection.",
+        title: "Sample B",
+        passage: "Residents share facts about the road, so the council can use them to choose a repair.",
+        wordLevel: "“Residents” and “council” identify the people in the process.",
+        sentenceLevel: "The connector “so” links the evidence to its purpose.",
+        discourseLevel: "The pronoun “them” refers back to the facts.",
       },
       {
         level: 3,
-        title: "Level 3: Developing",
-        passage: "When citizens participate in democratic elections, they select representatives who draft legislation. This system ensures that governmental power remains accountable to the public.",
-        wordLevel: "Civic terminology (participate, representatives, legislation, accountable).",
-        sentenceLevel: "Complex sentences with relative clauses ('who draft legislation').",
-        discourseLevel: "Referential cohesion ('This system ensures...').",
+        title: "Sample C",
+        passage: "Because residents provide evidence about the road, the council can compare the problems before selecting a repair plan.",
+        wordLevel: "“Evidence” and “compare” describe the decision-making work.",
+        sentenceLevel: "A “because” clause explains why the council can compare plans.",
+        discourseLevel: "The sentence connects residents’ information to the council’s choice.",
       },
       {
         level: 4,
-        title: "Level 4: Expanding",
-        passage: "By exercising their constitutional franchise through secret ballots, electorates delegate authority to legislative bodies. Consequently, institutional legitimacy depends entirely on transparent election protocols and equal voting access.",
-        wordLevel: "Formal legal and political terms (constitutional franchise, electorates).",
-        sentenceLevel: "Participial phrases ('By exercising...'), abstract passive constructions.",
-        discourseLevel: "Analytical cause-consequence linking ('Consequently, institutional legitimacy...').",
+        title: "Sample D",
+        passage: "Residents document the road’s condition; the council evaluates that evidence alongside cost and safety before choosing a repair.",
+        wordLevel: "“Document” and “evaluates” describe precise civic actions.",
+        sentenceLevel: "A semicolon connects the evidence-gathering step to the decision step.",
+        discourseLevel: "The sentence names multiple criteria used in the decision.",
       },
       {
         level: 5,
-        title: "Level 5: Bridging",
-        passage: "The deliberate decentralization of governmental authority into tripartite branches serves as a constitutional safeguard against tyranny. Furthermore, robust civic participation and the enfranchisement of marginalized constituencies remain indispensable prerequisites for sustaining democratic pluralism.",
-        wordLevel: "Abstract academic phrasing (decentralization, tripartite branches, enfranchisement).",
-        sentenceLevel: "Highly structured multi-clausal periods with parallel noun phrases.",
-        discourseLevel: "Sophisticated ideological argumentation and cohesive rhetorical balance.",
+        title: "Sample E",
+        passage: "By documenting road conditions and weighing safety against cost, the council can justify its repair choice with evidence residents can review.",
+        wordLevel: "Precise verbs summarize how evidence informs public decisions.",
+        sentenceLevel: "An opening phrase names the criteria before the main claim.",
+        discourseLevel: "The explanation connects evidence, decision-making, and public accountability.",
       },
     ],
   },
   math: {
-    domain: "Math: Proportional Reasoning",
+    domain: "Math: Interpreting Data",
+    concept: "In the data set 2, 4, 4, 10, the mean is 5 and the median is 4. The value 10 raises the mean more than it changes the median.",
+    prompt: "Explain how the value 10 affects the mean and the median.",
     levels: [
       {
         level: 1,
-        title: "Level 1: Entering",
-        passage: "2 cups flour. 1 cup sugar. More flour.",
-        wordLevel: "Concrete measurement units and quantities.",
-        sentenceLevel: "Phrasal fragments without verbs.",
-        discourseLevel: "No relational connective.",
+        title: "Sample A",
+        passage: "The data are 2, 4, 4, and 10. The mean is 5. The median is 4.",
+        wordLevel: "The values and math terms are named directly.",
+        sentenceLevel: "Complete short sentences state each result.",
+        discourseLevel: "The data values keep the explanation focused on one idea.",
       },
       {
         level: 2,
-        title: "Level 2: Emerging",
-        passage: "You need two cups of flour for every one cup of sugar to make the recipe.",
-        wordLevel: "Relational words ('for every').",
-        sentenceLevel: "Prepositional phrases.",
-        discourseLevel: "Direct one-to-one correspondence.",
+        title: "Sample B",
+        passage: "The value 10 is far from the other data values, so it raises the mean to 5.",
+        wordLevel: "“Far from” describes how 10 compares with the other values.",
+        sentenceLevel: "The word “so” links the value to its effect.",
+        discourseLevel: "The sentence identifies a cause and a result.",
       },
       {
         level: 3,
-        title: "Level 3: Developing",
-        passage: "The ratio of flour to sugar is 2:1, which means the amount of flour is always double the amount of sugar. If you triple the batch, you must multiply both quantities by three to maintain proportionality.",
-        wordLevel: "Mathematical terms (ratio, double, batch, proportionality).",
-        sentenceLevel: "Non-defining relative clauses ('which means...') and conditional structures ('If you triple...').",
-        discourseLevel: "Logical deduction and invariance reasoning.",
+        title: "Sample C",
+        passage: "The value 10 pulls the mean up to 5 because the mean uses every value, while the median remains 4.",
+        wordLevel: "“Pulls up” describes how a large value affects the mean.",
+        sentenceLevel: "A reason clause and “while” compare the two measures.",
+        discourseLevel: "The explanation distinguishes how mean and median respond.",
       },
       {
         level: 4,
-        title: "Level 4: Expanding",
-        passage: "Because the relationship between flour and sugar exhibits a constant rate of change, the unit rate equals 2 cups of flour per cup of sugar. Graphing this linear function yields a line passing through the origin with a slope of k = 2.",
-        wordLevel: "Function terminology (constant rate of change, unit rate, linear function, slope).",
-        sentenceLevel: "Causal subordinate clause with coordinate predicate.",
-        discourseLevel: "Multi-modal cross-representation (tabular to algebraic to graphical).",
+        title: "Sample D",
+        passage: "Because the mean includes every value, the outlying 10 raises it to 5; the median stays 4 because it depends on the middle position.",
+        wordLevel: "“Outlying” and “middle position” name the relevant statistical ideas.",
+        sentenceLevel: "Two reason clauses explain the different effects.",
+        discourseLevel: "The sentence compares both measures using the same data.",
       },
       {
         level: 5,
-        title: "Level 5: Bridging",
-        passage: "The constant of proportionality, k = 2, defines the invariant multiplicative relationship y = kx between the independent and dependent variables. Hence, scalar transformations preserve the geometric colinearity of the coordinates on the Cartesian plane.",
-        wordLevel: "Formal mathematical abstraction (constant of proportionality, invariant, scalar).",
-        sentenceLevel: "Syntactically dense appositive and modifying clauses.",
-        discourseLevel: "Rigorous formal mathematical proof and deductive synthesis.",
+        title: "Sample E",
+        passage: "Although the value 10 increases the mean to 5, it leaves the median at 4 because the median depends on the center of the ordered data, not the size of every value.",
+        wordLevel: "“Although” and “ordered data” make the contrast and method precise.",
+        sentenceLevel: "A contrast clause sets up the explanation.",
+        discourseLevel: "The response justifies why the two measures react differently.",
       },
     ],
   },
@@ -389,14 +395,14 @@ export async function render(ctx = {}) {
           </p>
         </div>
         <div class="ls-badge">
-          <span>${ico("star")} Academic English Mastery</span>
+          <span>${ico("star")} Language learning · no proficiency score</span>
         </div>
       </div>
 
       <!-- Navigation Tabs -->
       <div class="ls-nav-tabs" role="tablist">
         ${bridge ? `<button type="button" class="ls-tab-btn ${currentTab === "math-bridge" ? "active" : ""}" data-ls-tab="math-bridge">${ico("construction")} ${I.T("Math explanation", "Explicación matemática")}</button>` : ""}
-        <button type="button" class="ls-tab-btn ${currentTab === "wida" ? "active" : ""}" data-ls-tab="wida">${ico("growth")} WIDA Discourse Slider</button>
+        <button type="button" class="ls-tab-btn ${currentTab === "wida" ? "active" : ""}" data-ls-tab="wida">${ico("growth")} Language Sample Lens</button>
         <button type="button" class="ls-tab-btn ${currentTab === "syntax" ? "active" : ""}" data-ls-tab="syntax">${ico("tools")} Syntax Clause Slicer</button>
         <button type="button" class="ls-tab-btn ${currentTab === "wheel" ? "active" : ""}" data-ls-tab="wheel">${ico("grid")} Morphology &amp; Cognate Wheel</button>
         <button type="button" class="ls-tab-btn ${currentTab === "cohesion" ? "active" : ""}" data-ls-tab="cohesion">${ico("conversation")} Cohesion &amp; Logic Balancer</button>
@@ -407,18 +413,18 @@ export async function render(ctx = {}) {
       <div class="ls-stage-body">
         ${currentTab === "math-bridge" && bridge ? ratioBridgePanel(bridge, I, language) : ""}
         
-        <!-- 1. WIDA Discourse Slider Studio -->
+        <!-- 1. Compare language samples without treating them as assessment evidence. -->
         ${currentTab === "wida" ? `
           <div class="ls-panel-section">
             <div class="ls-section-banner">
-              <h3>WIDA Academic Discourse Level Slider (Levels 1–5)</h3>
-              <p>Observe how academic expression dynamically scales from single words to compound sentences, to cohesive paragraphs with nominalization, passive voice, and technical register across disciplines.</p>
+              <h3>Compare classroom language samples</h3>
+              <p>Explore different ways to express the same content idea. These short examples can prompt discussion about language choices; they are not WIDA descriptors, a placement tool, or a proficiency score.</p>
             </div>
 
             <div class="wida-slider-card">
               <div class="wida-controls-row">
                 <div>
-                  <span style="font-weight:700;font-size:0.875rem;margin-right:0.5rem">Academic Domain:</span>
+                  <span style="font-weight:700;font-size:0.875rem;margin-right:0.5rem">Content area:</span>
                   <div class="wida-domain-tabs">
                     <button type="button" class="wida-domain-btn ${state.widaDomain === "science" ? "active" : ""}" data-wida-dom="science">${ico("evidence")} Science</button>
                     <button type="button" class="wida-domain-btn ${state.widaDomain === "socialStudies" ? "active" : ""}" data-wida-dom="socialStudies">${ico("library")} Social Studies</button>
@@ -426,25 +432,26 @@ export async function render(ctx = {}) {
                   </div>
                 </div>
                 <div>
-                  <span style="font-weight:700;font-size:0.9375rem;color:#1e40af">Current: <strong>Level ${state.widaLevel} (${currentWidaLevelData.title.split(": ")[1]})</strong></span>
+                  <span style="font-weight:700;font-size:0.9375rem;color:#1e40af">Sample ${String.fromCharCode(64 + state.widaLevel)}</span>
                 </div>
               </div>
 
               <!-- Slider Range -->
               <div class="wida-range-wrap">
-                <input type="range" min="1" max="5" value="${state.widaLevel}" class="wida-range-slider" id="widaLevelSlider" aria-label="WIDA Proficiency Level"/>
+                <input type="range" min="1" max="5" value="${state.widaLevel}" class="wida-range-slider" id="widaLevelSlider" aria-label="Choose a classroom language sample" aria-describedby="wida-sample-note"/>
                 <div class="wida-level-ticks">
-                  <span>Level 1: Entering</span>
-                  <span>Level 2: Emerging</span>
-                  <span>Level 3: Developing</span>
-                  <span>Level 4: Expanding</span>
-                  <span>Level 5: Bridging</span>
+                  <span>Sample A</span>
+                  <span>Sample B</span>
+                  <span>Sample C</span>
+                  <span>Sample D</span>
+                  <span>Sample E</span>
                 </div>
               </div>
 
               <!-- Output Display -->
               <div class="wida-output-display">
-                <span class="wida-level-badge">${esc(currentWidaLevelData.title)} · ${esc(widaCurrentData.domain)}</span>
+                <span class="wida-level-badge">Illustrative sample · ${esc(widaCurrentData.domain)}</span>
+                <div class="wida-concept"><strong>Shared content idea</strong><p>${esc(widaCurrentData.concept)}</p><strong>Explain</strong><p>${esc(widaCurrentData.prompt)}</p></div>
                 <div class="wida-passage-text">
                   “${esc(currentWidaLevelData.passage)}”
                 </div>
@@ -463,6 +470,7 @@ export async function render(ctx = {}) {
                     <p>${esc(currentWidaLevelData.discourseLevel)}</p>
                   </div>
                 </div>
+                <p id="wida-sample-note" class="fine">The same topic remains in view as the language sample changes. A single writing sample cannot identify a learner’s proficiency or predict an official assessment result.</p>
               </div>
             </div>
           </div>

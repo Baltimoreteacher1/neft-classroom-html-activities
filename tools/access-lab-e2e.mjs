@@ -764,6 +764,39 @@ try {
     "restoring an opted-in ACCESS1 backup restores the postcard sharing choice",
   );
 
+  await go("/language-studios");
+  ok(
+    await page.getByRole("heading", { name: "Compare classroom language samples" }).isVisible(),
+    "Language Sample Lens presents classroom examples instead of a proficiency slider",
+  );
+  ok(
+    /not WIDA descriptors, a placement tool, or a proficiency score/i.test(await page.locator(".ls-stage-body").innerText()),
+    "the sample lens states its limits clearly",
+  );
+  const conceptBefore = await page.locator(".wida-concept").innerText();
+  await page.locator("#widaLevelSlider").evaluate((el) => {
+    el.value = "5";
+    el.dispatchEvent(new Event("input", { bubbles: true }));
+  });
+  ok(
+    /Through photosynthesis/.test(await page.locator(".wida-passage-text").innerText()) &&
+      (await page.locator(".wida-concept").innerText()) === conceptBefore,
+    "changing the sample keeps the science concept and explanation task fixed",
+  );
+  await page.locator('[data-wida-dom="math"]').click();
+  ok(
+    /Math: Interpreting Data/i.test(await page.locator(".wida-output-display").innerText()) &&
+      /mean is 5.*median is 4/s.test(await page.locator(".wida-concept").innerText()),
+    "the mathematics sample uses a coherent data interpretation task",
+  );
+  await page.locator('[data-wida-dom="socialStudies"]').click();
+  await page.setViewportSize({ width: 390, height: 844 });
+  ok(
+    !(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)),
+    "the sample lens fits a phone viewport without horizontal overflow",
+  );
+  await page.setViewportSize({ width: 1366, height: 900 });
+
   const bridgeQuery = new URLSearchParams({
     schema: "edu-wonderlab.math-language/1",
     task: "ratio-equivalence",

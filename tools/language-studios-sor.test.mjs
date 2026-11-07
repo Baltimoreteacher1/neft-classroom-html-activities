@@ -79,6 +79,13 @@ test("Language Studios data structures and contracts", () => {
     ls.WIDA_DISCOURSE_DATA.math.levels.length === 5,
     "Math has all 5 WIDA discourse levels",
   );
+  for (const scenario of Object.values(ls.WIDA_DISCOURSE_DATA)) {
+    assert.ok(scenario.concept && scenario.prompt, `${scenario.domain} keeps one content idea and task across samples`);
+    assert.ok(scenario.levels.every((sample) => sample.passage && sample.wordLevel && sample.sentenceLevel && sample.discourseLevel));
+  }
+  assert.match(ls.WIDA_DISCOURSE_DATA.science.levels[0].passage, /Animals eat plants/);
+  assert.doesNotMatch(ls.WIDA_DISCOURSE_DATA.science.levels[0].passage, /Animal eat plant/);
+  assert.match(ls.WIDA_DISCOURSE_DATA.math.levels[4].passage, /mean to 5.*median at 4/);
   assert.ok(ls.SYNTAX_CLAUSES.length >= 3, "Clause slicer has sample prompts");
   assert.ok(ls.WHEEL_DATA.prefixes.length >= 5, "Morphology wheel has prefixes");
   assert.ok(
@@ -94,8 +101,10 @@ test("Language Studios render contract", async () => {
   assert.strictEqual(out.title, "Language Studios");
   const markup = toHtml(out.html);
   assert.ok(markup.length > 500);
-  assert.ok(markup.includes("WIDA Academic Discourse Level Slider"));
-  assert.ok(markup.includes("Academic English Mastery"));
+  assert.ok(markup.includes("Compare classroom language samples"));
+  assert.ok(markup.includes("not WIDA descriptors, a placement tool, or a proficiency score"));
+  assert.ok(markup.includes("The same topic remains in view as the language sample changes"));
+  assert.ok(markup.includes("Language learning · no proficiency score"));
   assert.ok(markup.includes("wida-range-slider"));
 });
 
