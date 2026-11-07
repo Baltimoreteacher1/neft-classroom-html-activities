@@ -12,6 +12,7 @@ import { i18nFor, makeI18n } from "../i18n.js";
 import { activityHref } from "./room.js";
 import * as scienceLab from "./science-lab.js";
 import { scienceLabCardHTML } from "./science-lab-hub.js";
+import { connectedWorldHTML, connectedWorldsHTML } from "../journey/worlds-portal.js";
 
 const PROGRESS_KEY = "accessPracticeLab:v1:world-missions";
 const SCIENCE_LAB = "science-lab";
@@ -143,8 +144,8 @@ function hubHTML(ctx, index, progress) {
     <section class="wd-hero">
       <div class="wd-hero-copy">
         <p class="eyebrow">${icon("worlds")} ${I.T(`Explore · Grades ${band.replace("-", "–")}`, `Explorar · Grados ${band.replace("-", "–")}`)}</p>
-        <h1 tabindex="-1">${I.T("Four worlds. Consequential missions.", "Cuatro mundos. Misiones con consecuencias.")}</h1>
-        <p class="lead">${I.T("Step into consequential language environments. Each world tests your communication in context with original missions and independent transfer.", "Entra a entornos de lenguaje con consecuencias. Cada mundo pone a prueba tu comunicación en contexto con misiones originales y transferencia independiente.")}</p>
+        <h1 tabindex="-1">${I.T("Explore language worlds. Follow your growth.", "Explora mundos de lenguaje. Sigue tu crecimiento.")}</h1>
+        <p class="lead">${I.T("Start a connected mission in a place where language matters. Explore, listen, read, build, communicate, revise, and apply what you learned.", "Comienza una misión conectada en un lugar donde importa el lenguaje. Explora, escucha, lee, construye, comunica, revisa y aplica lo aprendido.")}</p>
         <p class="wd-hero-count">${I.T(`${done} of ${total} missions completed on this device`, `${done} de ${total} misiones completadas en este dispositivo`)}</p>
         <p class="wd-note">${icon("lock")} ${I.T("Private to this browser. These original learning simulations develop academic language; they do not calculate or predict official WIDA scores.", "Privado en este navegador. Estas simulaciones de aprendizaje originales desarrollan el lenguaje académico; no calculan ni predicen puntajes oficiales de WIDA.")}</p>
       </div>
@@ -153,7 +154,9 @@ function hubHTML(ctx, index, progress) {
         <ol>${HOW_IT_WORKS.map(([title, body, titleEs, bodyEs]) => html`<li><strong>${I.T(title, titleEs)}</strong><span>${I.T(body, bodyEs)}</span></li>`)}</ol>
       </aside>
     </section>
-    <nav class="world-grid" aria-label="${I.S("Choose a learning world", "Elige un mundo de aprendizaje")}">${WORLDS.map((w) => tile(w, band, progress))}</nav>
+    ${connectedWorldsHTML(I, band)}
+    <section class="cw-classic" aria-labelledby="cw-classic-title"><h2 id="cw-classic-title">${I.T("More domain worlds", "Más mundos por destreza")}</h2><p>${I.T("Try focused listening, reading, speaking, and writing scenarios.", "Prueba situaciones enfocadas de comprensión auditiva, lectura, expresión oral y escritura.")}</p>
+    <nav class="world-grid" aria-label="${I.S("Choose a domain world", "Elige un mundo por destreza")}">${WORLDS.map((w) => tile(w, band, progress))}</nav></section>
     ${scienceLabCardHTML(I, band)}
     <section class="panel world-bridge">
       <h2>${I.T("Connected language missions", "Misiones de lenguaje conectadas")}</h2>
@@ -403,6 +406,10 @@ export async function render(ctx) {
   const band = ctx.band;
   const worldId = ctx.route.worldId || ctx.route.id || "";
   const missionId = ctx.route.missionId || "";
+  if (worldId === "connected" && missionId) {
+    const page = connectedWorldHTML(I, band, missionId);
+    if (page) return page;
+  }
   if (worldId === SCIENCE_LAB) return scienceLab.render(ctx);
   const world = WORLDS.find((w) => w.id === worldId);
   const index = await loadStudioIndex();

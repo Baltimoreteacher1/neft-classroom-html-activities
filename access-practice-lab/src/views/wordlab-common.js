@@ -22,11 +22,12 @@ export const WL_DEFAULT = {
   cog: { done: {} },
   fam: { done: {} },
   det: { done: {} },
+  network: {},
   ev: {},
 };
 export const wlState = () => {
   const s = loadState(WL_KEY, WL_DEFAULT);
-  for (const k of ["garden", "frayer", "build", "cog", "fam", "det", "ev"])
+  for (const k of ["garden", "frayer", "build", "cog", "fam", "det", "network", "ev"])
     if (!s[k] || typeof s[k] !== "object") s[k] = structuredClone(WL_DEFAULT[k]);
   return s;
 };

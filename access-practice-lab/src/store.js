@@ -10,6 +10,7 @@ import { mergeLedgers } from "./lang/ledger.js";
 import { mergeStudio, validStudio } from "./lang/studio.js";
 import { mergeGames, validGames } from "./games/state.js";
 import { mergeJourney, validJourney } from "./journey/state.js";
+import { cleanProgress as cleanVocabularyProgress } from "./vocab-curriculum/model.js";
 import { safeJson, storage, todayISO } from "./util.js";
 
 export const PREFIX = "accessPracticeLab:v1";
@@ -251,10 +252,33 @@ export function importProgressData(data) {
     const progress = isProgressKey(key);
     if (
       !progress &&
-      !/^(?:prefs|studentName|pathway|ledger|studio|games|journey|readingRoom|science-lab|units|craft|test:[a-zA-Z0-9_-]+)$/.test(suffix)
+      !/^(?:prefs|studentName|pathway|ledger|studio|games|journey|readingRoom|science-lab|units|craft|sor|subjectReading|vocabCurriculum|test:[a-zA-Z0-9_-]+)$/.test(suffix)
     )
       continue;
     const current = storage.get(key);
+    if (suffix === "sor" || suffix === "subjectReading" || suffix === "vocabCurriculum") {
+      const incoming = safeJson(value, null);
+      const collection = suffix === "subjectReading" ? "readings" : "lessons";
+      if (!isObject(incoming) || (suffix !== "sor" && incoming.v !== 1) ||
+          (suffix !== "sor" && !isObject(incoming[collection])) ||
+          (suffix === "sor" && Object.values(incoming).some((row) => !isObject(row) && row !== 1)))
+        throw new Error("That backup has an invalid literacy record. Nothing was loaded.");
+      const local = current === null ? null : safeJson(current, null);
+      if (current !== null && !isObject(local)) continue;
+      let merged;
+      if (suffix === "vocabCurriculum") {
+        const old = cleanVocabularyProgress(local);
+        const fresh = cleanVocabularyProgress(incoming);
+        merged = cleanVocabularyProgress({ v: 1, lessons: { ...fresh.lessons, ...old.lessons } });
+      } else if (suffix === "subjectReading") {
+        merged = { v: 1, readings: { ...incoming.readings, ...(local?.readings || {}) } };
+      } else {
+        merged = { ...incoming, ...(local || {}) };
+      }
+      const serialized = JSON.stringify(merged);
+      if (serialized !== current) writes.push([key, serialized]);
+      continue;
+    }
     if (suffix === "ledger" || suffix === "studio" || suffix === "games" || suffix === "journey" || suffix === "readingRoom") {
       const incoming = safeJson(value, null);
       if (

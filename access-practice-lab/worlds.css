@@ -696,3 +696,34 @@
     max-width: 36rem;
   }
 }
+/* Connected worlds reuse the Journey's scene art and six-step progress state. */
+.cw-section { margin: 2rem 0 2.5rem; }
+.cw-heading { max-width: 60rem; margin-bottom: 1.2rem; }
+.cw-heading h2, .cw-classic h2 { margin: .2rem 0 .5rem; }
+.cw-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(min(100%,19rem),1fr)); gap: 1rem; }
+.cw-card { display: flex; flex-direction: column; overflow: hidden; border: 1px solid #b9d6d1; border-radius: 1.25rem; background: #fffdf8; color: #17324d; text-decoration: none; box-shadow: 0 6px 18px #17324d12; transition: transform .18s ease, box-shadow .18s ease; }
+.cw-card:hover { transform: translateY(-3px); box-shadow: 0 12px 25px #17324d22; }
+.cw-card:focus-visible, .cw-steps a:focus-visible, .cw-back:focus-visible { outline: 3px solid #1fa6a2; outline-offset: 3px; }
+.cw-art { display: block; height: 11rem; overflow: hidden; background: #dfede8; }
+.cw-art svg { width: 100%; height: 100%; object-fit: cover; }
+.cw-copy { display: grid; gap: .45rem; padding: 1rem 1.1rem .4rem; flex: 1; }
+.cw-copy strong { font-size: 1.25rem; }
+.cw-copy span { line-height: 1.45; color: #324657; }
+.cw-copy small { color: #075568; font-weight: 700; }
+.cw-enter { display: flex; align-items: center; gap: .4rem; padding: .75rem 1.1rem 1rem; color: #075568; font-weight: 800; }
+.cw-classic { margin: 2rem 0; }
+.cw-detail { max-width: 76rem; margin: 0 auto; padding: 1rem; }
+.cw-back { display: inline-flex; align-items: center; gap: .35rem; min-height: 44px; margin-bottom: 1rem; color: #075568; font-weight: 700; }
+.cw-detail-grid { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1.1fr); gap: 1.5rem; align-items: center; margin-bottom: 2rem; }
+.cw-detail-copy h1 { margin: .25rem 0 1rem; }
+.cw-detail-art { border-radius: 1.4rem; overflow: hidden; box-shadow: 0 16px 32px #17324d24; }
+.cw-detail-art svg { width: 100%; height: auto; display: block; }
+.cw-steps { list-style: none; padding: 0; display: grid; gap: .55rem; }
+.cw-steps a { display: flex; align-items: center; gap: 1rem; min-height: 64px; padding: .6rem .85rem; border: 1px solid #c8dedb; border-radius: .8rem; background: #fff; color: #17324d; text-decoration: none; }
+.cw-steps a:hover { background: #eff8f5; }
+.cw-steps a span:nth-child(2) { flex: 1; display: grid; gap: .15rem; }
+.cw-steps small { font-size: .9rem; color: #3e5363; }
+.cw-step-num { display: grid; place-items: center; width: 2.2rem; height: 2.2rem; flex: none; border-radius: 50%; background: #d9ede8; font-weight: 800; }
+.cw-step-status { color: #075568; font-weight: 800; }
+@media (max-width: 760px) { .cw-detail-grid { grid-template-columns: 1fr; } .cw-detail-art { order: -1; } }
+@media (prefers-reduced-motion: reduce) { .cw-card { transition: none; } .cw-card:hover { transform: none; } }

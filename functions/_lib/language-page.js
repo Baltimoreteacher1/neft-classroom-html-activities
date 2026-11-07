@@ -73,6 +73,10 @@ export const SITEMAP_PATHS = [
   `${LAB_BASE}/class`,
   `${LAB_BASE}/move`,
   `${LAB_BASE}/science-of-reading`,
+  `${LAB_BASE}/science-of-reading/path`,
+  `${LAB_BASE}/science-of-reading/subject-reading`,
+  `${LAB_BASE}/vocabulary/mastery`,
+  `${LAB_BASE}/vocab-curriculum`,
   `${LAB_BASE}/language-studios`,
   // Kindergarten, Grade 1 and Grades 2–3 home (access-practice-lab/src/views/early-hub.js).
   `${LAB_BASE}/early`,

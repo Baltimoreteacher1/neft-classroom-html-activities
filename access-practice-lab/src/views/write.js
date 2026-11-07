@@ -67,6 +67,15 @@ const FORM_ES = {
 };
 const formName = (f) => (FORM[f] ? I.T(FORM[f], FORM_ES[f]) : "");
 
+/** Choose a fresh prompt that practices the same language use in another topic. */
+export function nextWritingTransfer(tasks, current, studio, band) {
+  const available = tasks.filter((t) =>
+    t.id !== current.id && t.band === band && t.keyUse === current.keyUse &&
+    !studio.writing[t.id]?.versions?.length,
+  );
+  return available.find((t) => t.contentArea !== current.contentArea) || available[0] || null;
+}
+
 async function findTask(id, from) {
   if (from?.startsWith("mission:")) {
     const mission = await loadMission(from.slice(8)).catch(() => null);
@@ -338,7 +347,17 @@ export async function render(ctx) {
       ? requestedStage
       : "";
   const baseSuggestion = suggestStage(S.profile, task.keyUse);
-  const transferStage = Boolean(task.transfer && q.get("transfer") === "1");
+  const sourceId = q.get("fromWriting");
+  const source = sourceId && (await loadWritingTasks()).tasks.find((t) => t.id === sourceId);
+  const sourceWork = source && S.studio.writing[source.id];
+  const linkedTransfer = Boolean(
+    q.get("transfer") === "1" && source && source.id !== task.id &&
+    source.keyUse === task.keyUse && sourceWork?.finishedAt &&
+    sourceWork.versions?.length >= 2,
+  );
+  const transferStage = Boolean(task.transfer || linkedTransfer);
+  S.transferFrom = linkedTransfer ? source.id : "";
+  S.isTransfer = transferStage;
   const sug = missionStage
     ? {
         stage: missionStage,
@@ -362,6 +381,9 @@ export async function render(ctx) {
   const analyzed = S.state.analyzedText === text && text;
   const a = analyzed ? analyzeResponse(text, optsFor(task)) : null;
   const goalMin = task.expected.minWords;
+  const nextTransfer = S.state.finishedAt && S.state.versions.length >= 2
+    ? nextWritingTransfer((await loadWritingTasks()).tasks, task, S.studio, ctx.band)
+    : null;
   return {
     title: task.title,
     html: html`${crumbsHTML([[I.S("Lab", "Laboratorio"), `${BASE}/?grades=${ctx.band}`], mission ? [mission.title, `${BASE}/missions/${mission.id}?grades=${ctx.band}`] : [I.S("Writing Studio", "Estudio de escritura"), `${BASE}/write?grades=${ctx.band}`], [task.title, null]])}
@@ -418,6 +440,8 @@ ${text}</textarea></label>
                   <label class="field"><span>${I.T("What did you improve, and why?", "¿Qué mejoraste y por qué?")}</span><textarea rows="3" data-reflection ${IGN}>${S.state.reflection}</textarea></label>
                   <div class="row-actions"><button type="button" class="btn btn-primary" data-finish ${wordCount(S.state.reflection) >= 5 ? "" : raw("disabled")}>${icon("bookmark")} ${I.T("Save to my portfolio", "Guardar en mi portafolio")}</button></div>
                   ${S.state.finishedAt ? html`<p class="saved-note">${icon("check")} <span>${I.T("Saved to your portfolio.", "Guardado en tu portafolio.")} <a href="${BASE}/write?tab=portfolio&grades=${ctx.band}">${I.T("See my portfolio", "Ver mi portafolio")}</a></span></p>` : ""}
+                  ${S.state.finishedAt && S.state.versions.length < 2 ? html`<p class="fine">${I.T("Next, change one part of your draft and request feedback again. Compare your versions before trying a new topic.", "Después, cambia una parte de tu borrador y pide comentarios otra vez. Compara tus versiones antes de probar un tema nuevo.")}</p>` : ""}
+                  ${nextTransfer ? html`<div class="next-application"><h4>${I.T("Apply it in a new context", "Aplícalo en un nuevo contexto")}</h4><p>${I.T("Use the same language move with new sources. Your first response there will be recorded as a transfer attempt, with your chosen supports noted separately.", "Usa la misma estrategia de lenguaje con nuevas fuentes. Tu primera respuesta allí se guardará como un intento de transferencia, con los apoyos elegidos registrados por separado.")}</p><a class="btn btn-primary" href="${BASE}/write/${nextTransfer.id}?grades=${ctx.band}&transfer=1&fromWriting=${task.id}">${I.T(`Try: ${nextTransfer.title}`, `Prueba: ${nextTransfer.title}`)} ${icon("arrow-right")}</a></div>` : ""}
                 </section>
                 ${S.state.finishedAt ? await exemplarsHTML(task) : ""}`
             : ""
@@ -464,10 +488,10 @@ function feedback(ctx) {
     domain: "Writing",
     use: S.task.keyUse,
     stage: S.stage,
-    kind: first ? (S.task.transfer ? "transfer" : "first") : "revision",
+    kind: first ? (S.isTransfer ? "transfer" : "first") : "revision",
     attempt: S.state.attemptId,
     supports,
-    m: { ...a.ledger, ...(S.task.transfer ? { transferAttempt: true, newContext: true } : {}) },
+    m: { ...a.ledger, ...(S.isTransfer ? { transferAttempt: true, newContext: true, ...(S.transferFrom ? { transferFrom: S.transferFrom } : {}) } : {}) },
   });
   if (!first) award(ctx, `revision:${S.band}:${S.task.id}`, 3, "Thoughtful revision");
   if ((a.ledger?.cites || 0) >= 2) award(ctx, `evidence:${S.band}:${S.task.id}`, 3, "Evidence finder");

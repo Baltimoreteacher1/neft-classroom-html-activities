@@ -8,6 +8,7 @@
 //   - Morphology & Multilingual Cognate Bridges for English Learners
 
 import { BASE, esc, icon as rawIcon, raw } from "../util.js";
+import { readingLessonHTML, readingPathHTML, mountReadingLesson } from "../sor/player.js";
 
 const icon = (name) => {
   const marked = rawIcon(name);
@@ -470,6 +471,8 @@ function renderMouthShapeSvg(shape) {
 }
 
 export async function render(ctx = {}) {
+  if (ctx.route?.id === "path") return readingPathHTML(ctx);
+  if (ctx.route?.id === "lesson") return readingLessonHTML(ctx, ctx.route.lessonId) || readingPathHTML(ctx);
   const currentTab = state.tab;
   const requestedBand = ctx.band || new URLSearchParams(globalThis.location?.search || "").get("grades");
   const gradeBand = requestedBand === "3-5" ? "3-5" : "6-8";
@@ -506,6 +509,7 @@ export async function render(ctx = {}) {
           <p class="sor-lead">
             Explicit word study, meaningful reading, and short practice games built around how reading works. Start with a ready-to-use lesson, then explore the tools behind it.
           </p>
+          <a class="sor-primary-button" href="${BASE}/science-of-reading/path?grades=${gradeBand}">Start a connected reading lesson ${icon("arrow-right")}</a>
         </div>
         <div class="sor-evidence-badge">
           ${icon("bulb")} <span>Teach it · Try it · Use it in text</span>
@@ -912,6 +916,8 @@ export async function render(ctx = {}) {
 
 export function mount(root, ctx) {
   if (!root) return;
+  if (ctx.route?.id === "lesson") return mountReadingLesson(root, ctx);
+  if (ctx.route?.id === "path") return;
 
   // Tab switching
   root.querySelectorAll("[data-sor-tab]").forEach((btn) => {

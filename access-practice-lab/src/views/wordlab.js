@@ -3,7 +3,7 @@
 // Everything runs on this device. Nothing is timed and nothing is scored; evidence goes to the shared ledger as counts.
 import { setComponentsI18n } from "../components.js";
 import {
-  MODES,
+  MODES as BASE_MODES,
   SUBJECTS,
   STAGES,
   STAGE_COPY,
@@ -40,9 +40,20 @@ import {
   wordCardHTML,
 } from "./wordlab-common.js";
 import { build, cognates, detective, families, frayer } from "./wordlab-play.js";
+import { network } from "./wordlab-network.js";
 import { heroArt } from "./studio-art.js";
 
+const MODES = ["network", ...BASE_MODES];
+
 const ACTS = {
+  network: {
+    ico: "words",
+    en: "Semantic Network",
+    es: "Red semántica",
+    dEn: "Connect ideas in context, explain a relationship, revise, and apply it in a new situation.",
+    dEs: "Conecta ideas en contexto, explica una relación, revisa y aplícala en otra situación.",
+    mod: network,
+  },
   build: {
     ico: "construction",
     en: "Morpheme Builder",
@@ -462,9 +473,11 @@ export function onChange(e, ctx) {
     return;
   }
   if (current.mode === "frayer") frayer.change(e, ctx, st, current.id);
+  if (current.mode === "network") network.change(e, ctx, st);
 }
 export function onInput(e, ctx) {
   if (current.mode === "frayer") frayer.input(e, ctx, wlState(), current.id);
+  if (current.mode === "network") network.input(e, ctx, wlState());
 }
 export function mount(root, ctx) {
   useDrag(root, {

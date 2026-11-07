@@ -494,6 +494,96 @@ test("the Teacher Hub panel mounts the same missions and adds teacher packets", 
   );
 });
 
+test("Teacher Hub journey evidence counts only real local actions and distinguishes independent transfer", async () => {
+  const src = (
+    await readFile(join(REPO_ROOT, "access-teacher/journey-panel.js"), "utf8")
+  ).replaceAll("/access-practice-lab/", `${pathToFileURL(LAB).href}/`);
+  const panel = await import(`data:text/javascript;base64,${Buffer.from(src).toString("base64")}`);
+  const { completeStep, emptyState } = await lab("src/journey/state.js");
+  const I = makeI18n("en", "en");
+  const empty = parse(
+    toHtml(
+      panel.journeyEvidenceHTML(I, {
+        state: emptyState(),
+        ledger: { v: 1, entries: [] },
+        band: "6-8",
+      }),
+    ),
+  );
+  assert.match(empty.body.textContent, /No Journey evidence has been saved/);
+  assert.doesNotMatch(
+    empty.body.textContent,
+    /\b(?:mastery|proficiency score|predicted ACCESS)\b/i,
+  );
+
+  const state = completeStep(emptyState(), "6-8", "m09", "discover", {
+    independent: false,
+    now: "2026-11-07T10:00:00Z",
+  });
+  const ledger = {
+    v: 1,
+    entries: [
+      {
+        src: "mission",
+        task: "m09.discover",
+        band: "6-8",
+        domain: "Reading",
+        kind: "first",
+        stage: "supported",
+        t: "2026-11-07T10:00:00Z",
+      },
+      {
+        src: "mission",
+        task: "m09.improve",
+        band: "6-8",
+        domain: "Writing",
+        kind: "revision",
+        stage: "supported",
+        t: "2026-11-07T10:02:00Z",
+      },
+      {
+        src: "mission",
+        task: "m09.show",
+        band: "6-8",
+        domain: "Writing",
+        kind: "transfer",
+        stage: "independent",
+        t: "2026-11-07T10:03:00Z",
+      },
+      {
+        src: "mission",
+        task: "m09.show",
+        band: "6-8",
+        domain: "Writing",
+        kind: "transfer",
+        stage: "supported",
+        t: "2026-11-07T10:03:30Z",
+      },
+      {
+        src: "mission",
+        task: "m09.show",
+        band: "3-5",
+        domain: "Writing",
+        kind: "transfer",
+        stage: "independent",
+        t: "2026-11-07T10:04:00Z",
+      },
+    ],
+  };
+  const doc = parse(toHtml(panel.journeyEvidenceHTML(I, { state, ledger, band: "6-8" })));
+  const rows = all(doc, "[data-journey-evidence] tbody tr");
+  const reading = rows.find((r) => r.querySelector("th").textContent === "Reading");
+  const writing = rows.find((r) => r.querySelector("th").textContent === "Writing");
+  assert.match(reading.textContent, /1 \(0 independent\)/);
+  assert.deepEqual(
+    all(writing, "td").map((cell) => cell.textContent.trim()),
+    ["0 (0 independent)", "1", "1"],
+  );
+  assert.match(doc.body.textContent, /Solve the Mystery/);
+  assert.match(doc.body.textContent, /1 \/ 6 steps done; 4 recorded responses/);
+  assert.ok(doc.querySelector("a[href*='assigned=1']"));
+});
+
 test("print rules give a clean one-column guide and the stylesheet stays off purple", async () => {
   const css = await readFile(join(LAB, "journey-guide.css"), "utf8");
   assert.match(css, /@media print/);
