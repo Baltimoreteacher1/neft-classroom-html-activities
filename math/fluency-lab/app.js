@@ -766,7 +766,7 @@ function renderLearn() {
   const animated = studioAvailable(example);
   const ratioStudioLink = skill.grade === 6 && skill.id === "ratios" && example.model?.type === "ratioTable"
     ? (() => {
-        const params = new URLSearchParams({ a: String(example.model.a), b: String(example.model.b), labelA: example.model.labels?.[0] || "First", labelB: example.model.labels?.[1] || "Second" });
+        const params = new URLSearchParams({ a: String(example.model.a), b: String(example.model.b), labelA: example.model.labels?.[0] || "First", labelB: example.model.labels?.[1] || "Second", profile: String(activeProfile) });
         return `<a class="outline-action" href="./ratio-studio/?${params.toString().replaceAll("&", "&amp;")}">Explore this ratio in Ratio Studio</a>`;
       })()
     : "";
