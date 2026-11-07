@@ -21,6 +21,8 @@ async function getJson(path) {
 }
 
 export const loadIndex = () => getJson("index.json");
+/** Daily warm-up sets: "early" holds tiers K-1 and 2-3, "upper" holds 3-5 and 6-8 (60 days each). */
+export const loadWarmup = (file) => getJson(`warmup-${file === "early" ? "early" : "upper"}.json`);
 export const loadShared = () => getJson("shared.json");
 export const loadRoad = () => getJson("road.json").catch(() => ({}));
 export const loadFamily = () => getJson("family.json").catch(() => null);
@@ -29,6 +31,8 @@ export const loadFamilyHelp = () => getJson("family-help.json").catch(() => null
 /** Spanish skill goals and directions by activity id (content/es-guide.json). */
 export const loadEsGuide = () => getJson("es-guide.json").then((d) => d.activities || {}).catch(() => ({}));
 export const loadGlossary = () => getJson("glossary.json").catch(() => null);
+/** Skill mini-lessons for the lesson frame (content/lesson-learn.json). A failed load leaves the frame without them. */
+export const loadLessonLearn = () => getJson("lesson-learn.json").catch(() => null);
 export const loadStudioIndex = async () => (await loadIndex()).studio || { speaking: [], writing: [], missions: [], patterns: [] };
 export const loadSpeakingTasks = () => getJson("studio/speaking.json");
 export const loadWritingTasks = () => getJson("studio/writing.json");
@@ -116,5 +120,7 @@ export async function bandRows(band) {
         rows.push({ band, domain, level, id, title, type, skill, minutes, grades });
   return rows;
 }
+/** Thematic units for a band ("6-8" or "3-5"): content/units/g<band>.json. */
+export const loadUnits = (band) => getJson(`units/g${band}.json`).catch(() => null);
 export const loadPublisherJourney = () => getJson("publisher/journey.json");
 export const loadPublisherEvidence = () => getJson("publisher/demo-evidence.json");

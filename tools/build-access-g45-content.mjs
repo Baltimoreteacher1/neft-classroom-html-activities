@@ -223,9 +223,18 @@ function expandItem(spec, domain) {
   return a;
 }
 
-async function loadSpecs(domain) {
-  const url = new URL(`./access-early-content/g45-${domain.toLowerCase()}.mjs`, import.meta.url);
-  return existsSync(url) ? (await import(url)).default : [];
+// Specs live in g45-<domain>.mjs (the first depth pass) and g45-<domain>-2.mjs (the publisher content pass).
+const SPEC_PARTS = ["", "-2"];
+export async function loadSpecs(domain) {
+  const out = [];
+  for (const part of SPEC_PARTS) {
+    const url = new URL(
+      `./access-early-content/g45-${domain.toLowerCase()}${part}.mjs`,
+      import.meta.url,
+    );
+    if (existsSync(url)) out.push(...(await import(url)).default);
+  }
+  return out;
 }
 
 /** Merge the specs of one domain into its parsed file. Returns the new data. */
@@ -281,8 +290,14 @@ async function allSpecs() {
   for (const d of DOMAINS) out.push(...(await loadSpecs(d)));
   return out;
 }
-const loadEs = async () =>
-  (await import(new URL("./access-early-content/g45-es.mjs", import.meta.url))).default;
+export const loadEs = async () => {
+  const out = {};
+  for (const part of SPEC_PARTS) {
+    const url = new URL(`./access-early-content/g45-es${part}.mjs`, import.meta.url);
+    if (existsSync(url)) Object.assign(out, (await import(url)).default);
+  }
+  return out;
+};
 const guideText = (data) => JSON.stringify(data, null, 1);
 function indentOf(text) {
   for (const ind of [1, 2])

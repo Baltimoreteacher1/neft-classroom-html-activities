@@ -14,11 +14,30 @@ import { join } from "node:path";
 import { BAND_INFO } from "../access-practice-lab/src/bands.js";
 import { CONTENT_DIR } from "./lib/access-lab-content.mjs";
 
+// Each band's specs live in the first pass (k.mjs ...) and the publisher content pass (k-2.mjs ...); the builder
+// merges their activities per domain and takes level goals from whichever file defines them.
 const SPEC_BANDS = {
-  K: "./access-early-content/k.mjs",
-  1: "./access-early-content/g1.mjs",
-  "2-3": "./access-early-content/g23.mjs",
+  K: ["./access-early-content/k.mjs", "./access-early-content/k-2.mjs"],
+  1: ["./access-early-content/g1.mjs", "./access-early-content/g1-2.mjs"],
+  "2-3": ["./access-early-content/g23.mjs", "./access-early-content/g23-2.mjs"],
 };
+
+/** The merged specs of one band: { domains: { <Domain>: { description, goals, activities } } }. */
+export async function loadBandSpecs(band) {
+  const out = { domains: {} };
+  for (const path of SPEC_BANDS[band]) {
+    const url = new URL(path, import.meta.url);
+    if (!existsSync(url)) continue;
+    const part = (await import(url)).default;
+    for (const [domain, def] of Object.entries(part.domains)) {
+      const into = (out.domains[domain] ||= { goals: {}, activities: [] });
+      into.description ||= def.description;
+      Object.assign(into.goals, def.goals || {});
+      into.activities.push(...def.activities);
+    }
+  }
+  return out;
+}
 
 const DOMAIN_META = {
   Listening: { color: "#075568", icon: "Listen" },
@@ -192,9 +211,8 @@ export function buildBand(band, specs) {
 /** Built K–3 files that differ from what the specs produce now (paths relative to content/). */
 export async function staleEarlyFiles() {
   const out = [];
-  for (const [band, specPath] of Object.entries(SPEC_BANDS)) {
-    if (!existsSync(new URL(specPath, import.meta.url))) continue;
-    const specs = (await import(new URL(specPath, import.meta.url))).default;
+  for (const band of Object.keys(SPEC_BANDS)) {
+    const specs = await loadBandSpecs(band);
     for (const [domain, data] of Object.entries(buildBand(band, specs))) {
       const file = join(CONTENT_DIR, `g${band}`, `${domain}.json`);
       const now = existsSync(file) ? readFileSync(file, "utf8") : "";
@@ -207,10 +225,9 @@ export async function staleEarlyFiles() {
 async function main() {
   const check = process.argv.includes("--check");
   let stale = 0;
-  for (const [band, specPath] of Object.entries(SPEC_BANDS)) {
+  for (const band of Object.keys(SPEC_BANDS)) {
     if (!BAND_INFO[band]) throw new Error(`unknown band ${band}`);
-    if (!existsSync(new URL(specPath, import.meta.url))) continue;
-    const specs = (await import(new URL(specPath, import.meta.url))).default;
+    const specs = await loadBandSpecs(band);
     const dir = join(CONTENT_DIR, `g${band}`);
     for (const [domain, data] of Object.entries(buildBand(band, specs))) {
       const file = join(dir, `${domain}.json`);

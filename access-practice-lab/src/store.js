@@ -251,7 +251,7 @@ export function importProgressData(data) {
     const progress = isProgressKey(key);
     if (
       !progress &&
-      !/^(?:prefs|studentName|pathway|ledger|studio|games|journey|readingRoom|science-lab|test:[a-zA-Z0-9_-]+)$/.test(suffix)
+      !/^(?:prefs|studentName|pathway|ledger|studio|games|journey|readingRoom|science-lab|units|craft|test:[a-zA-Z0-9_-]+)$/.test(suffix)
     )
       continue;
     const current = storage.get(key);
@@ -292,6 +292,17 @@ export function importProgressData(data) {
               lessons: Object.fromEntries(Object.entries({ ...(incoming.lessons || {}), ...(local.lessons || {}) }).map(([id, state]) => [id, { ...state, ...(local.lessons?.[id] || {}) }])),
             };
       const merged = JSON.stringify(mergedData);
+      if (merged !== current) writes.push([key, merged]);
+      continue;
+    }
+    if (suffix === "units") {
+      // Thematic units: per unit, this device's work wins; the backup only fills units this device has not started.
+      const incoming = safeJson(value, null);
+      if (!isObject(incoming) || incoming.v !== 1 || !isObject(incoming.units))
+        throw new Error("That backup has an invalid Units record. Nothing was loaded.");
+      const local = current === null ? null : safeJson(current, null);
+      if (current !== null && !isObject(local)) continue;
+      const merged = JSON.stringify(local ? { ...incoming, ...local, units: { ...incoming.units, ...(local.units || {}) } } : incoming);
       if (merged !== current) writes.push([key, merged]);
       continue;
     }

@@ -23,6 +23,10 @@ export const EARLY_VIEWS = new Set([
   "launch-studio",
   "teacher-launch",
   "session-done",
+  "warmup",
+  "search",
+  "portfolio",
+  "collection",
 ]);
 
 export function earlyGateHTML(ctx, I) {

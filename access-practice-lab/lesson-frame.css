@@ -1,0 +1,625 @@
+/* ACCESS Practice Lab — the lesson frame (src/lesson-frame.js, src/lesson-learn.js).
+   Lesson header, four-step arc, skill mini-lesson with worked model and diagram, passage typography and pen marks,
+   calm feedback, reflection and next step, and the printed lesson sheet.
+   Only design-system tokens (ds.css). Sizes are rem so 140% text and the Spanish/bilingual pairs reflow, never clip. */
+
+/* ── step rail ─────────────────────────────────────────────────────────── */
+.lf-rail {
+  margin: var(--s-3) 0 var(--s-4);
+}
+.lf-rail-count {
+  margin: 0 0 var(--s-2);
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--room-ink);
+}
+.lf-arc {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(7.5rem, 1fr));
+  gap: var(--s-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.lf-arc-btn {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-areas: "n t" "n s";
+  align-items: center;
+  column-gap: var(--s-2);
+  width: 100%;
+  min-height: var(--target);
+  padding: var(--s-2) var(--s-3);
+  border: 1.5px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+  overflow-wrap: anywhere;
+}
+.lf-arc-btn:disabled {
+  cursor: default;
+}
+.lf-arc-n {
+  grid-area: n;
+  display: inline-grid;
+  place-items: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 50%;
+  border: 2px solid var(--line-strong);
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+.lf-arc-n .ico {
+  width: 1rem;
+  height: 1rem;
+}
+.lf-arc-t {
+  grid-area: t;
+  font-weight: 700;
+  line-height: 1.2;
+}
+.lf-arc-s {
+  grid-area: s;
+  font-size: 0.8125rem;
+  line-height: 1.25;
+  color: var(--ink-2);
+}
+.lf-arc-step.is-current .lf-arc-btn {
+  border-color: var(--room);
+  background: var(--room-soft);
+}
+.lf-arc-step.is-current .lf-arc-n {
+  border-color: var(--room);
+  background: var(--room);
+  color: var(--on-brand);
+}
+.lf-arc-step.is-done .lf-arc-n {
+  border-color: var(--right);
+  background: var(--right);
+  color: var(--on-brand);
+}
+.lf-arc-step.is-skipped .lf-arc-btn {
+  border-style: dashed;
+  color: var(--ink-2);
+}
+.lf-arc-bar {
+  height: 0.4rem;
+  margin-top: var(--s-3);
+  border-radius: 999px;
+  background: var(--surface-3);
+  overflow: hidden;
+}
+.lf-arc-bar i {
+  display: block;
+  height: 100%;
+  background: var(--room);
+  transition: width var(--dur-3) var(--ease-out);
+}
+
+/* ── goal, chips ───────────────────────────────────────────────────────── */
+.lf-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+  margin: var(--s-2) 0 var(--s-3);
+}
+.lf-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.2rem 0.75rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  background: var(--surface);
+  font-size: 0.9375rem;
+  line-height: 1.35;
+}
+.lf-chip--skill {
+  border-color: var(--room);
+  background: var(--room-soft);
+  color: var(--room-ink);
+  font-weight: 700;
+}
+.lf-chip-k {
+  font-weight: 400;
+}
+.lf-goal {
+  margin: 0 0 var(--s-4);
+  padding: var(--s-3) var(--s-4);
+  border-inline-start: 4px solid var(--room);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  background: var(--surface-2);
+}
+.lf-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0 0 var(--s-1);
+  font: 700 0.9375rem/1.3 var(--font);
+  color: var(--room-ink);
+}
+.lf-goal-text {
+  margin: 0;
+  font: 600 clamp(1.15rem, 1.05rem + 0.5vw, 1.4rem) / 1.35 var(--font-display);
+}
+.lf-focus {
+  margin: var(--s-2) 0 0;
+  font-size: 0.9375rem;
+  color: var(--ink-2);
+}
+.lf-word-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+  gap: var(--s-3);
+  margin: 0;
+  padding: 0 var(--s-4) var(--s-4);
+  list-style: none;
+}
+.lf-word-list p {
+  margin: 0;
+}
+.lf-word-def,
+.lf-word-es {
+  font-size: 0.9375rem;
+  color: var(--ink-2);
+}
+
+/* ── skill lesson (Learn) ──────────────────────────────────────────────── */
+.lf-learn {
+  margin: 0 0 var(--s-5);
+  padding: var(--s-4);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+.lf-learn-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--s-3);
+}
+.lf-learn-head h2 {
+  margin: 0 0 var(--s-1);
+  font-size: clamp(1.3rem, 1.15rem + 0.7vw, 1.7rem);
+}
+.lf-can {
+  margin: 0;
+  color: var(--ink-2);
+}
+.lf-learn-body {
+  margin-top: var(--s-4);
+  padding-top: var(--s-4);
+  border-top: 1px solid var(--line);
+}
+.lf-learn-body[hidden] {
+  display: none;
+}
+.lf-learn-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 19rem), 1fr));
+  gap: var(--s-5);
+}
+.lf-learn-grid h3 {
+  margin: 0 0 var(--s-2);
+}
+.lf-moves {
+  margin: 0 0 var(--s-3);
+  padding-inline-start: 1.5rem;
+}
+.lf-moves li {
+  margin-bottom: var(--s-2);
+  padding-inline-start: 0.25rem;
+}
+.lf-moves li::marker {
+  font-weight: 700;
+  color: var(--room-ink);
+}
+.lf-slip {
+  display: flex;
+  gap: var(--s-2);
+  align-items: flex-start;
+  margin: 0;
+  padding: var(--s-3);
+  border-radius: var(--radius-sm);
+  background: var(--hint-soft);
+  color: var(--hint);
+}
+.lf-slip .ico {
+  flex: none;
+  margin-top: 0.2rem;
+}
+.lf-learn-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-3);
+  margin-top: var(--s-4);
+}
+.lf-learn-foot .fine {
+  margin: 0;
+  max-width: 44ch;
+}
+
+/* worked model: every part is named in words, never by color alone */
+.lf-model {
+  padding: var(--s-3) var(--s-4);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+}
+.lf-model-text,
+.lf-model-lines {
+  margin: 0 0 var(--s-3);
+  padding: 0;
+  list-style: none;
+  font-size: 1.1875rem;
+  line-height: 2.5;
+}
+.lf-model-lines li {
+  line-height: 2.5;
+}
+.lf-mark {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  vertical-align: top;
+  padding: 0 0.3rem 0.1rem;
+  border-bottom: 3px solid var(--room);
+  border-radius: var(--r-xs) var(--r-xs) 0 0;
+  background: var(--room-soft);
+  line-height: 1.5;
+}
+.lf-mark-text {
+  line-height: 1.5;
+}
+.lf-mark-label {
+  font: 700 0.8125rem/1.2 var(--font);
+  color: var(--ink-2);
+}
+.lf-mark[data-tone="2"] {
+  border-bottom-style: dashed;
+  border-bottom-color: var(--hint);
+  background: var(--hint-soft);
+}
+.lf-mark[data-tone="3"] {
+  border-bottom-style: dotted;
+  border-bottom-color: var(--right);
+  background: var(--right-soft);
+}
+.lf-mark[data-tone="4"] {
+  border-bottom-style: double;
+  border-bottom-color: var(--brand);
+  background: var(--brand-soft);
+}
+.lf-model-result,
+.lf-model-think {
+  margin: 0 0 var(--s-2);
+  font-size: 0.9375rem;
+}
+.lf-figure {
+  margin: var(--s-3) 0 0;
+}
+.lf-figure figcaption {
+  margin-top: var(--s-2);
+  font-size: 0.9375rem;
+  color: var(--ink-2);
+  text-align: center;
+}
+.lf-dg {
+  display: block;
+  width: 100%;
+  max-width: 22rem;
+  height: auto;
+  margin: 0 auto;
+}
+.lf-dg-node {
+  fill: var(--surface);
+  stroke: var(--line-strong);
+  stroke-width: 1.5;
+}
+.lf-dg-node.is-goal,
+.lf-dg-node.is-key {
+  fill: var(--room-soft);
+  stroke: var(--room);
+}
+.lf-dg-text {
+  fill: var(--ink);
+  font: 400 15px var(--font);
+}
+.lf-dg-text.is-small {
+  font-size: 13px;
+}
+.lf-dg-text.is-both {
+  font-weight: 700;
+}
+.lf-dg-badge {
+  fill: var(--room);
+}
+.lf-dg-num {
+  fill: var(--on-brand);
+  font: 700 13px var(--font);
+}
+.lf-dg-arrow {
+  fill: none;
+  stroke: var(--ink-3);
+  stroke-width: 2;
+}
+.lf-dg-head {
+  fill: var(--ink-3);
+}
+.lf-dg-circle {
+  stroke-width: 2;
+  fill-opacity: 0.75;
+}
+.lf-dg-circle.is-a {
+  fill: var(--room-soft);
+  stroke: var(--room);
+}
+.lf-dg-circle.is-b {
+  fill: var(--hint-soft);
+  stroke: var(--hint);
+}
+
+/* ── reading passage ───────────────────────────────────────────────────── */
+.activity .passage.lf-passage {
+  max-width: 62ch;
+  padding: var(--s-2) 0 var(--s-2) var(--s-4);
+  font-size: 1.25rem;
+  line-height: 1.85;
+  counter-reset: lf-para;
+}
+.activity .passage.lf-passage h3 {
+  margin: 0 0 var(--s-3);
+  font-size: 1.6rem;
+}
+.activity .passage.lf-passage > p:not(.gist-prompt) {
+  position: relative;
+  margin: 0 0 var(--s-3);
+  padding-inline-start: 1.9rem;
+  counter-increment: lf-para;
+}
+.activity .passage.lf-passage > p:not(.gist-prompt)::before {
+  content: "¶" counter(lf-para);
+  position: absolute;
+  inset-inline-start: 0;
+  top: 0.32em;
+  width: 1.6rem;
+  font: 700 0.8125rem/1.6 var(--font);
+  color: var(--ink-3);
+  text-align: start;
+}
+.lf-annotate {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-2);
+  margin: var(--s-2) 0;
+}
+.lf-annotate-k {
+  font-size: 0.9375rem;
+  font-weight: 700;
+}
+.lf-annotate-hint {
+  flex-basis: 100%;
+  margin: 0;
+}
+.lf-passage [data-mark="highlight"] {
+  background: color-mix(in srgb, var(--accent) 38%, var(--surface));
+  box-decoration-break: clone;
+}
+.lf-passage [data-mark="underline"] {
+  text-decoration: underline 3px var(--room);
+  text-underline-offset: 0.22em;
+}
+.lf-passage [data-mark="question"] {
+  border-bottom: 2px dotted var(--wrong);
+}
+.lf-passage [data-mark="question"]::after {
+  content: " ?";
+  font-weight: 700;
+  color: var(--wrong);
+}
+.lab-picture figcaption {
+  margin-top: var(--s-2);
+  font-size: 0.9375rem;
+  color: var(--ink-2);
+}
+
+/* ── feedback, reflection, next step ───────────────────────────────────── */
+.lf-fb {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+  gap: var(--s-3);
+  margin: var(--s-2) 0 var(--s-3);
+}
+.lf-fb-part {
+  padding: var(--s-3);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--ink);
+}
+.lf-fb-part h3 {
+  margin: 0 0 var(--s-1);
+  font-size: 0.9375rem;
+  color: var(--ink-2);
+}
+.lf-fb-part p {
+  margin: 0;
+}
+.lf-fb-model {
+  grid-column: 1 / -1;
+  margin: 0;
+}
+.lf-after {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+  gap: var(--s-4);
+  margin-top: var(--s-5);
+}
+.lf-reflect,
+.lf-next {
+  padding: var(--s-4);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+.lf-next {
+  border-color: var(--room);
+  background: var(--room-soft);
+}
+.lf-reflect h3,
+.lf-next h3 {
+  margin: 0 0 var(--s-2);
+}
+.lf-next p {
+  margin: 0 0 var(--s-3);
+}
+
+/* ── print: the lesson as a sheet ──────────────────────────────────────── */
+.lf-print-head,
+.lf-print-foot {
+  display: none;
+}
+@media print {
+  .lf-print-head,
+  .lf-print-foot {
+    display: block;
+  }
+  .lf-print-name {
+    margin: 0 0 0.5rem;
+    font-size: 11pt;
+  }
+  .lf-print-title {
+    margin: 0 0 0.5rem;
+    font: 700 16pt/1.2 var(--font-display);
+  }
+  .lf-print-foot {
+    margin-top: 1rem;
+    padding-top: 0.4rem;
+    border-top: 1px solid #999;
+    font-size: 9pt;
+  }
+  .lf-rail,
+  .lf-after,
+  .lf-annotate,
+  .lf-learn-toggle,
+  .lf-learn-foot,
+  .lf-fb-model,
+  .act-return,
+  .strategy,
+  .es-preview {
+    display: none !important;
+  }
+  .lf-learn-body[hidden] {
+    display: block;
+  }
+  .lf-learn,
+  .lf-goal,
+  .lf-model,
+  .lf-fb-part {
+    break-inside: avoid;
+    box-shadow: none;
+  }
+  .lf-learn {
+    border: 1px solid #999;
+  }
+  .lf-word-list {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .activity .passage.lf-passage {
+    font-size: 12pt;
+    line-height: 1.7;
+  }
+  .lf-passage [data-mark="highlight"] {
+    background: none;
+    border-bottom: 2px solid #000;
+  }
+  .lf-dg-node {
+    fill: #fff;
+    stroke: #000;
+  }
+  .lf-dg-text {
+    fill: #000;
+  }
+  .answer-zone textarea {
+    min-height: 9rem;
+    border: 1px solid #000;
+  }
+}
+
+/* ── contrast and motion ───────────────────────────────────────────────── */
+@media (forced-colors: active) {
+  .lf-arc-btn,
+  .lf-chip,
+  .lf-goal,
+  .lf-learn,
+  .lf-model,
+  .lf-fb-part,
+  .lf-reflect,
+  .lf-next {
+    border: 1px solid CanvasText;
+    background: Canvas;
+    color: CanvasText;
+  }
+  .lf-arc-step.is-current .lf-arc-btn {
+    border: 3px solid Highlight;
+  }
+  .lf-arc-n {
+    border-color: CanvasText;
+    background: Canvas;
+    color: CanvasText;
+  }
+  .lf-arc-step.is-current .lf-arc-n,
+  .lf-arc-step.is-done .lf-arc-n {
+    border-color: Highlight;
+    background: Highlight;
+    color: HighlightText;
+  }
+  .lf-arc-bar {
+    border: 1px solid CanvasText;
+    background: Canvas;
+  }
+  .lf-arc-bar i {
+    background: Highlight;
+  }
+  .lf-mark {
+    border-bottom-color: CanvasText;
+    background: Canvas;
+  }
+  .lf-passage [data-mark] {
+    background: Canvas;
+    outline: 2px solid Highlight;
+    color: CanvasText;
+  }
+  .lf-dg-node,
+  .lf-dg-circle {
+    fill: Canvas;
+    stroke: CanvasText;
+  }
+  .lf-dg-text,
+  .lf-dg-head {
+    fill: CanvasText;
+  }
+  .lf-dg-arrow {
+    stroke: CanvasText;
+  }
+  .lf-dg-badge {
+    fill: Highlight;
+  }
+  .lf-dg-num {
+    fill: HighlightText;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .lf-arc-bar i {
+    transition: none;
+  }
+}

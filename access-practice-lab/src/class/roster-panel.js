@@ -8,9 +8,9 @@ import { createTeacherClient } from "../../../shared/class-platform/client.js";
 import { goalProgress, joinUrl } from "../../../shared/class-platform/contract.js";
 import { qrSvg } from "../../../shared/qr/qr-code.mjs";
 import { BAND_INFO, CONTENT_BANDS } from "../bands.js";
-import { findActivity, loadIndex } from "../content.js";
+import { findActivity, loadIndex, loadUnits } from "../content.js";
 import { BASE, safeJson } from "../util.js";
-import { ASSIGN_DOMAINS, assignableActivities, assignmentBandText, assignmentLabel, toAssignment } from "./assign.js";
+import { ASSIGN_DOMAINS, UNITS_ASSIGN, assignableActivities, assignableUnitStops, assignmentBandText, assignmentLabel, toAssignment } from "./assign.js";
 import { el, errorText, toBase64 } from "./dom.js";
 import { itemsFor, loadQuizKey } from "./quiz-key.js";
 
@@ -183,11 +183,11 @@ export function mountClassPanel(root, { S = (en) => en, fetchImpl = (...a) => fe
       const index = await loadIndex();
       const band = el("select", { "aria-label": S("Grade band", "Grupo de grados") }, CONTENT_BANDS.map((b) => el("option", { value: b }, S(BAND_INFO[b].label, BAND_INFO[b].labelEs))));
       band.value = "6-8";
-      const domain = el("select", { "aria-label": S("Skill", "Destreza") }, ASSIGN_DOMAINS.map((d) => el("option", { value: d }, d)));
+      const domain = el("select", { "aria-label": S("Skill", "Destreza") }, [...ASSIGN_DOMAINS, UNITS_ASSIGN].map((d) => el("option", { value: d }, d === UNITS_ASSIGN ? S("Units", "Unidades") : d)));
       const pick = el("select", { "aria-label": S("Activity", "Actividad") });
       let rows = [];
-      const fill = () => {
-        rows = assignableActivities(index, band.value, domain.value);
+      const fill = async () => {
+        rows = domain.value === UNITS_ASSIGN ? assignableUnitStops((await loadUnits(band.value))?.units, band.value) : assignableActivities(index, band.value, domain.value);
         pick.replaceChildren(...(rows.length ? rows.map((r, n) => el("option", { value: String(n) }, assignmentLabel(S, r))) : [el("option", { value: "" }, S("No activities for that choice", "No hay actividades para esa opción"))]));
       };
       band.onchange = domain.onchange = fill;

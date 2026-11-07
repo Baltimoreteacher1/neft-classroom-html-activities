@@ -161,9 +161,14 @@ export function testingWindowPhase(win, today = todayISO()) {
   return { phase: daysAway === 0 ? "starting" : "open", daysAway: 0 };
 }
 
-/** Announce a short status message to screen readers and the toast area. */
+/**
+ * The one way to tell the learner something short: a screen-reader announcement (#labLive) and a toast (#labToast).
+ * `tone` is "info" (default), "success" or "warn". The toast stays while the pointer or keyboard focus is on it, so
+ * nobody has to race to read it, and it has a close button. Messages never carry scores or deadlines.
+ */
 let toastTimer = 0;
-export function announce(message) {
+let toastWired = false;
+export function announce(message, { tone = "info" } = {}) {
   const live = document.getElementById("labLive");
   if (live) {
     // Clear first: assistive tech ignores a repeated identical string ("Not yet." twice in a row).
@@ -174,13 +179,35 @@ export function announce(message) {
   }
   const toast = document.getElementById("labToast");
   if (!toast) return;
-  toast.textContent = message;
-  toast.hidden = false;
-  clearTimeout(toastTimer);
   // Long messages (a microphone error) need time to be read.
-  toastTimer = setTimeout(() => {
+  const hide = () => {
     toast.hidden = true;
-  }, Math.max(2600, 70 * String(message).length));
+  };
+  const arm = () => {
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(hide, Math.max(2600, 70 * String(toast.textContent).length));
+  };
+  toast.innerHTML = "";
+  const text = document.createElement("span");
+  text.className = "toast-msg";
+  text.textContent = message;
+  const close = document.createElement("button");
+  close.type = "button";
+  close.className = "toast-close";
+  close.textContent = "×";
+  close.setAttribute("aria-label", toast.dataset.closeLabel || "Close");
+  close.addEventListener("click", hide);
+  toast.append(text, close);
+  toast.dataset.tone = tone;
+  toast.hidden = false;
+  if (!toastWired) {
+    toastWired = true;
+    toast.addEventListener("mouseenter", () => clearTimeout(toastTimer));
+    toast.addEventListener("focusin", () => clearTimeout(toastTimer));
+    toast.addEventListener("mouseleave", arm);
+    toast.addEventListener("focusout", arm);
+  }
+  arm();
 }
 
 export async function copyText(text) {

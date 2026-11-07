@@ -19,6 +19,7 @@ import { loadStudio } from "../lang/studio.js";
 import { downloadText } from "../studio-ui.js";
 import { bandDomains, bandRows, loadPublisherJourney } from "../content.js";
 import { journeyCardHTML } from "../publisher/passport-card.js";
+import { unitsPassportHTML } from "./units-passport.js";
 import { getEngagement, saveEngagement } from "../engagement.js";
 import {
   clearAll,
@@ -546,6 +547,7 @@ export async function render(ctx) {
     (row) => row.record.attemptHistory?.[row.id]?.length,
   ).length;
   const kept = await audioStore.list();
+  const unitsHTML = await unitsPassportHTML(I);
   const postcardsHTML = ACCESS_LAB_FLAGS.cameraPostcardsEnabled ? await postcards.albumHTML(I) : "";
   const list = badges(stats, streak, days, extra);
   const routes = routeProgress(saved);
@@ -625,6 +627,7 @@ export async function render(ctx) {
           <div class="pass-side">
             ${calendarHTML(days)} ${continueHTML(saved, band)}
             ${journeyCardHTML(journey, I)}
+            ${unitsHTML}
             <section class="pass-card" aria-labelledby="passGamesTitle"><h2 id="passGamesTitle">${icon("sparkle")} ${I.T("Language games", "Juegos de lenguaje")}</h2><p>${gameHistory.length ? I.T(`${gameHistory.length} game sessions saved on this device.`, `${gameHistory.length} sesiones de juego guardadas en este dispositivo.`) : I.T("Your game sessions will appear here after you play.", "Tus sesiones de juego aparecerán aquí después de jugar.")}</p>${gameHistory.length ? html`<ul class="pass-evlist">${gameHistory.slice(-3).reverse().map((row) => html`<li><strong>${GAME[row.game] ? I.T(GAME[row.game].title[0], GAME[row.game].title[1]) : row.game}</strong><span>${I.T(({A:"Starting",B:"Growing",C:"Expanding"})[row.support] || "Support mode", ({A:"Comenzando",B:"Creciendo",C:"Ampliando"})[row.support] || "Modo de apoyo")}</span></li>`)}</ul>` : ""}<a class="btn small" href="${BASE}/games?grades=${band}">${I.T("Open Language Game Studio", "Abrir el Estudio de juegos de lenguaje")}${icon("arrow-right")}</a></section>
             ${howIWorkHTML(I, { entries: mine, records: saved })}
             <section class="pass-card" aria-labelledby="passRevise">

@@ -336,7 +336,7 @@ test("home: the 6-8 picker shows the focus with counts; other bands do not; next
     buttons.find((b) => b.getAttribute("aria-pressed") === "true").dataset.gradeFocus,
     "7",
   );
-  assert.match(buttons[0].textContent, /\b357\b/);
+  assert.match(buttons[0].textContent, new RegExp(`\\b${six8.length}\\b`));
   assert.equal(
     doc.querySelectorAll(".lph-ruler [data-grade-pick]").length,
     5,

@@ -2,6 +2,7 @@
 import { BRAND, brandName, onLanguagePage } from "./brand.js";
 import { i18nFor, langSwitchHTML } from "./i18n.js";
 import { footerHTML, navHTML } from "./nav.js";
+import { installSearch, searchButtonHTML, searchFormHTML } from "./search-chrome.js";
 import { toHtml, storage } from "./util.js";
 
 let I = i18nFor({ prefs: {}, route: {} });
@@ -104,6 +105,10 @@ export function mountShell(ctx) {
     nav.setAttribute("aria-label", T("Lab navigation", "Navegación del laboratorio"));
     nav.innerHTML = toHtml(navHTML(ctx, I));
     nav.querySelector("details").open = Boolean(wasOpen);
+    // Site search: a header button (palette) and a search box at the top of the More menu (results page).
+    nav.querySelector(".lab-utilities")?.insertAdjacentHTML("beforebegin", toHtml(searchButtonHTML(I)));
+    nav.querySelector(".lab-utilities-body")?.insertAdjacentHTML("afterbegin", toHtml(searchFormHTML(I)));
+    installSearch(ctx);
     nav.querySelector("[data-lab-save]").addEventListener("click", () => {
       const engine = window.NeftSaveResume;
       if (!engine?.open) { nav.querySelector("[data-save-unavailable]").hidden = false; return; }
@@ -113,6 +118,8 @@ export function mountShell(ctx) {
   }
   document.querySelector(".crumbs")?.setAttribute("aria-label", T("Breadcrumb", "Ruta de navegación"));
   text(".skip-link", T("Skip to content", "Saltar al contenido"));
+  const toastNode = document.getElementById("labToast");
+  if (toastNode) toastNode.dataset.closeLabel = I.S("Close message", "Cerrar mensaje");
   // The wordmark is a name: bilingual mode keeps it short rather than printing both languages.
   text(
     ".lab-wordmark strong",

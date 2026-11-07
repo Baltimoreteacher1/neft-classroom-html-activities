@@ -506,10 +506,16 @@ function conferenceHTML(lessons, state) {
 
 // ── a lesson ────────────────────────────────────────────────────────────────────────────────────────────────────────
 
-const feedbackBox = (answer, okText, tryText, rationale) =>
+const feedbackBox = (answer, okText, tryText, rationale, note = "") =>
   answer?.checked
-    ? `<div role="status" class="feedback ${answer.correct ? "is-right" : "is-hint"}"><p class="fb-title">${ic(answer.correct ? "check" : "bulb")} ${answer.correct ? okText : tryText}</p><p>${esc(rationale)}</p></div>`
+    ? `<div role="status" class="feedback ${answer.correct ? "is-right" : "is-hint"}"><p class="fb-title">${ic(answer.correct ? "check" : "bulb")} ${answer.correct ? okText : tryText}</p><p>${esc(rationale)}</p>${!answer.correct && note ? `<p class="rr-why"><b>${T("Why that choice does not fit:", "Por qué esa opción no encaja:")}</b> ${esc(note)}</p>` : ""}</div>`
     : "";
+/** The author's note on each wrong choice a learner picked (choices may carry `why`). */
+const whyNote = (a, ans) =>
+  (ans?.value ? [ans.value] : ans?.values || [])
+    .map((id) => a.choices?.find((c) => c.id === id)?.why)
+    .filter(Boolean)
+    .join(" ");
 const checkButton = (id, label) =>
   `<button type="button" class="btn btn-primary btn-domain small" data-rr-check="${esc(id)}">${label}</button>`;
 const optionLabel = (input, text) =>
@@ -518,9 +524,9 @@ const optionLabel = (input, text) =>
 function activityHTML(a, progress) {
   const ans = progress.answers?.[a.id];
   if (a.type === "choice" || a.type === "connector")
-    return `<fieldset class="rr-question"><legend>${esc(a.prompt)}</legend>${a.sentence ? `<p class="rr-sentence">${esc(a.sentence.replace("___", "_____"))}</p>` : ""}${a.choices.map((c) => optionLabel(`<input type="radio" name="rr-${esc(a.id)}" data-rr-answer="${esc(a.id)}" value="${esc(c.id)}" ${ans?.value === c.id ? "checked" : ""}>`, esc(c.text))).join("")}${checkButton(a.id, T("Check answer", "Revisar la respuesta"))}${feedbackBox(ans, T("That answer is supported.", "Esa respuesta tiene apoyo."), T("Look again at the text, then revise.", "Vuelve a mirar el texto y luego corrige."), a.rationale)}</fieldset>`;
+    return `<fieldset class="rr-question"><legend>${esc(a.prompt)}</legend>${a.sentence ? `<p class="rr-sentence">${esc(a.sentence.replace("___", "_____"))}</p>` : ""}${a.choices.map((c) => optionLabel(`<input type="radio" name="rr-${esc(a.id)}" data-rr-answer="${esc(a.id)}" value="${esc(c.id)}" ${ans?.value === c.id ? "checked" : ""}>`, esc(c.text))).join("")}${checkButton(a.id, T("Check answer", "Revisar la respuesta"))}${feedbackBox(ans, T("That answer is supported.", "Esa respuesta tiene apoyo."), T("Look again at the text, then revise.", "Vuelve a mirar el texto y luego corrige."), a.rationale, whyNote(a, ans))}</fieldset>`;
   if (a.type === "multi" || a.type === "hotText")
-    return `<fieldset class="rr-question"><legend>${esc(a.prompt)}</legend>${a.choices.map((c) => optionLabel(`<input type="checkbox" data-rr-multi="${esc(a.id)}" value="${esc(c.id)}" ${ans?.values?.includes(c.id) ? "checked" : ""}>`, esc(c.text))).join("")}${checkButton(a.id, T("Check selection", "Revisar la selección"))}${feedbackBox(ans, T("Your selection matches the source key.", "Tu selección coincide con la clave."), T("Compare the selected text with the task purpose, then revise.", "Compara el texto elegido con el propósito de la tarea y luego corrige."), a.rationale)}</fieldset>`;
+    return `<fieldset class="rr-question"><legend>${esc(a.prompt)}</legend>${a.choices.map((c) => optionLabel(`<input type="checkbox" data-rr-multi="${esc(a.id)}" value="${esc(c.id)}" ${ans?.values?.includes(c.id) ? "checked" : ""}>`, esc(c.text))).join("")}${checkButton(a.id, T("Check selection", "Revisar la selección"))}${feedbackBox(ans, T("Your selection matches the source key.", "Tu selección coincide con la clave."), T("Compare the selected text with the task purpose, then revise.", "Compara el texto elegido con el propósito de la tarea y luego corrige."), a.rationale, whyNote(a, ans))}</fieldset>`;
   if (a.type === "cloze")
     return `<fieldset class="rr-question"><legend>${esc(a.prompt)}</legend><p class="rr-cloze">${a.segments.map((seg) => (seg.blank ? `<label class="rr-inline-cloze"><span class="visually-hidden">${T("Choose a word", "Elige una palabra")}</span><select data-rr-cloze="${esc(a.id)}" data-blank="${esc(seg.blank.id)}" aria-label="${A(`Word for blank ${seg.blank.id}`, `Palabra para el espacio ${seg.blank.id}`)}"><option value="">${A("Choose a word", "Elige una palabra")}</option>${seg.blank.options.map((v) => `<option value="${esc(v)}" ${ans?.values?.[seg.blank.id] === v ? "selected" : ""}>${esc(v)}</option>`).join("")}</select></label>` : esc(seg.text))).join("")}</p>${checkButton(a.id, T("Check words", "Revisar las palabras"))}${feedbackBox(ans, T("The words fit the context.", "Las palabras encajan en el contexto."), T("Reread the full sentence and revise the word choice.", "Vuelve a leer la oración completa y corrige la palabra."), a.rationale)}</fieldset>`;
   if (a.type === "short")

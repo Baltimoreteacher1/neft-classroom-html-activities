@@ -15,6 +15,7 @@ export function pictureHTML(pic, { size = "" } = {}) {
       width="640"
       height="400"
     />
+    ${pic.caption || pic.alt ? html`<figcaption aria-hidden="true">${pic.caption || pic.alt}</figcaption>` : ""}
   </figure>`;
 }
 

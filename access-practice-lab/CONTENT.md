@@ -109,7 +109,7 @@ lists (skill rooms, activity library, home "Next activity"); it never locks an a
 opens. `content/index.json` carries the tag as a sixth entry on an activity's row and `gradeBands[6-8].gradeFocus`
 (choices with counts); both are generated.
 
-**How the tags were decided (2026-11-06).** Every one of the 357 grades 6-8 activities was read in a condensed listing (type, skill, title, vocabulary, the
+**How the tags were decided (2026-11-06).** Every one of the 357 grades 6-8 activities that existed then was read in a condensed listing (type, skill, title, vocabulary, the
 opening of its heard or read text, prompt and task). Length and density were measured (words, Flesch-Kincaid estimate, share of words with three
 or more syllables) as aids, never as the decision. The rule:
 

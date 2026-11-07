@@ -58,6 +58,31 @@ export const HOME_CARDS = [
     ],
   },
 
+  {
+    id: "daily-warmup",
+    group: "start",
+    href: "warmup",
+    icon: "sparkle",
+    title: ["Daily Language Warm-Up", "Calentamiento diario de lenguaje"],
+    text: ["A new word, a short listen, one sentence and one rehearsal.", "Una palabra nueva, una escucha corta, una oración y un ensayo."],
+  },
+  {
+    id: "search-lab",
+    group: "start",
+    href: "search",
+    icon: "search",
+    title: ["Search the lab", "Buscar en el laboratorio"],
+    text: ["Find activities, lessons and learning tools.", "Encuentra actividades, lecciones y herramientas de aprendizaje."],
+  },
+  {
+    id: "portfolio",
+    group: "start",
+    href: "portfolio",
+    icon: "passport",
+    title: ["My portfolio and showcase", "Mi portafolio y muestra"],
+    text: ["Save and revisit the work I want to keep.", "Guarda y vuelve a ver el trabajo que quiero conservar."],
+  },
+
   // ── explore: more ways to practice ─────────────────────────────────────────
   {
     id: "exhibition",
@@ -263,6 +288,31 @@ export const HOME_CARDS = [
     ],
   },
 
+  {
+    id: "units",
+    group: "explore",
+    featured: true,
+    href: "units",
+    icon: "road",
+    title: ["Thematic Units", "Unidades temáticas"],
+    text: ["Big themes with five lessons and a project.", "Grandes temas con cinco lecciones y un proyecto."],
+  },
+  {
+    id: "argument-arena",
+    group: "explore",
+    featured: true,
+    href: "arena",
+    icon: "conversation",
+    title: ["Argument Arena", "Arena de argumentos"],
+    text: ["Read evidence, build an argument and answer another point of view.", "Lee evidencia, construye un argumento y responde a otro punto de vista."],
+  },
+  { id: "mentor-texts", group: "explore", href: "mentor", icon: "reading", title: ["Mentor Text Explorer", "Explorador de textos modelo"], text: ["Find the moves authors make, keep them in a toolbox, then try them.", "Encuentra los recursos de los autores, guárdalos y luego pruébalos."] },
+  { id: "sentence-lab", group: "explore", href: "sentences", icon: "writing", title: ["Sentence Lab", "Laboratorio de oraciones"], text: ["Build, join and fix sentences with a live sentence machine.", "Construye, une y corrige oraciones con una máquina de oraciones."] },
+  { id: "word-lab", group: "explore", href: "wordlab", icon: "words", title: ["Word Lab", "Laboratorio de palabras"], text: ["Build words from parts, find Spanish twins and grow your word garden.", "Construye palabras con sus partes, encuentra gemelas en español y haz crecer tu jardín de palabras."] },
+  { id: "real-life-scenarios", group: "explore", href: "scenarios", icon: "conversation", title: ["Real-Life Scenarios", "Escenas de la vida real"], text: ["Choose what to say in everyday conversations.", "Elige qué decir en conversaciones cotidianas."] },
+  { id: "newsroom", group: "explore", href: "newsroom", icon: "launch", title: ["Newsroom", "Sala de redacción"], text: ["Plan, write, record and print your own front page.", "Planea, escribe, graba e imprime tu propia portada."] },
+  { id: "collection", group: "explore", href: "collection", icon: "medal", title: ["My collection book", "Mi libro de colección"], text: ["Revisit the milestones and keepsakes from my practice.", "Vuelve a ver los logros y recuerdos de mi práctica."] },
+
   // ── teach ──────────────────────────────────────────────────────────────────
   {
     id: "teacher-hub",
@@ -272,6 +322,14 @@ export const HOME_CARDS = [
     icon: "teacher",
     title: ["Teacher Hub", "Centro docente"],
     text: ["Class evidence, rubrics and review.", "Evidencia de la clase, rúbricas y revisión."],
+  },
+  {
+    id: "units-plan",
+    group: "teach",
+    href: "units",
+    icon: "calendar",
+    title: ["Unit pacing and packets", "Ritmo y paquetes de unidades"],
+    text: ["Pacing guides, printable packets and class assignments.", "Guías de ritmo, paquetes imprimibles y tareas de clase."],
   },
   {
     id: "assign",
@@ -493,6 +551,22 @@ export const HOME_CARDS = [
       "A plain-language guide, in English and Spanish.",
       "Una guía en lenguaje sencillo, en inglés y español.",
     ],
+  },
+  {
+    id: "family-units",
+    group: "family",
+    href: "units",
+    icon: "families",
+    title: ["Unit letters for families", "Cartas de unidad para las familias"],
+    text: ["See what your child is learning, in English and Spanish.", "Mira lo que aprende tu hijo, en inglés y español."],
+  },
+  {
+    id: "family-portfolio",
+    group: "family",
+    href: "portfolio?view=family",
+    icon: "families",
+    title: ["Share my portfolio with family", "Compartir mi portafolio con la familia"],
+    text: ["Show selected work in a family-friendly view.", "Muestra el trabajo elegido en una vista para la familia."],
   },
   {
     id: "family-understand",

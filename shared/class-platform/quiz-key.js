@@ -55,11 +55,23 @@ export default {
    "level": "C",
    "answer": "d"
   },
+  "g1-r-a-wash-hands": {
+   "band": "1",
+   "domain": "Reading",
+   "level": "A",
+   "answer": "a"
+  },
   "g1-r-a-word-dog": {
    "band": "1",
    "domain": "Reading",
    "level": "A",
    "answer": "a"
+  },
+  "g1-r-a-word-fish": {
+   "band": "1",
+   "domain": "Reading",
+   "level": "A",
+   "answer": "b"
   },
   "g1-r-a-word-hat": {
    "band": "1",
@@ -73,17 +85,41 @@ export default {
    "level": "A",
    "answer": "a"
   },
+  "g1-r-b-apples-left": {
+   "band": "1",
+   "domain": "Reading",
+   "level": "B",
+   "answer": "a"
+  },
   "g1-r-b-cat-mat": {
    "band": "1",
    "domain": "Reading",
    "level": "B",
    "answer": "a"
   },
+  "g1-r-b-moon-night": {
+   "band": "1",
+   "domain": "Reading",
+   "level": "B",
+   "answer": "c"
+  },
   "g1-r-b-sam-rain": {
    "band": "1",
    "domain": "Reading",
    "level": "B",
    "answer": "a"
+  },
+  "g1-r-c-leaves-job": {
+   "band": "1",
+   "domain": "Reading",
+   "level": "C",
+   "answer": "b"
+  },
+  "g1-r-c-new-friend": {
+   "band": "1",
+   "domain": "Reading",
+   "level": "C",
+   "answer": "c"
   },
   "g23-r-a-bus-yellow": {
    "band": "2-3",
@@ -97,6 +133,24 @@ export default {
    "level": "A",
    "answer": "a"
   },
+  "g23-r-a-cow-barn": {
+   "band": "2-3",
+   "domain": "Reading",
+   "level": "A",
+   "answer": "c"
+  },
+  "g23-r-a-measure-ruler": {
+   "band": "2-3",
+   "domain": "Reading",
+   "level": "A",
+   "answer": "a"
+  },
+  "g23-r-a-pond-duck": {
+   "band": "2-3",
+   "domain": "Reading",
+   "level": "A",
+   "answer": "b"
+  },
   "g23-r-a-rain-boots": {
    "band": "2-3",
    "domain": "Reading",
@@ -108,6 +162,12 @@ export default {
    "domain": "Reading",
    "level": "A",
    "answer": "b"
+  },
+  "g23-r-b-doctor-helpers": {
+   "band": "2-3",
+   "domain": "Reading",
+   "level": "B",
+   "answer": "c"
   },
   "g23-r-b-garden-job": {
    "band": "2-3",
@@ -127,7 +187,19 @@ export default {
    "level": "B",
    "answer": "a"
   },
+  "g23-r-b-moon-light": {
+   "band": "2-3",
+   "domain": "Reading",
+   "level": "B",
+   "answer": "a"
+  },
   "g23-r-b-puddle-jump": {
+   "band": "2-3",
+   "domain": "Reading",
+   "level": "B",
+   "answer": "b"
+  },
+  "g23-r-b-wash-steps": {
    "band": "2-3",
    "domain": "Reading",
    "level": "B",
@@ -139,11 +211,23 @@ export default {
    "level": "C",
    "answer": "a"
   },
+  "g23-r-c-cookies-more": {
+   "band": "2-3",
+   "domain": "Reading",
+   "level": "C",
+   "answer": "b"
+  },
   "g23-r-c-garden-main": {
    "band": "2-3",
    "domain": "Reading",
    "level": "C",
    "answer": "a"
+  },
+  "g23-r-c-three-states": {
+   "band": "2-3",
+   "domain": "Reading",
+   "level": "C",
+   "answer": "c"
   },
   "g35-r-a-new-bike": {
    "band": "3-5",
@@ -181,6 +265,48 @@ export default {
    "level": "C",
    "answer": "a"
   },
+  "g35-r2-a-puddle-poem": {
+   "band": "3-5",
+   "domain": "Reading",
+   "level": "A",
+   "answer": "a"
+  },
+  "g35-r2-a-rain-why": {
+   "band": "3-5",
+   "domain": "Reading",
+   "level": "A",
+   "answer": "d"
+  },
+  "g35-r2-a-wash-time": {
+   "band": "3-5",
+   "domain": "Reading",
+   "level": "A",
+   "answer": "d"
+  },
+  "g35-r2-b-matter-main": {
+   "band": "3-5",
+   "domain": "Reading",
+   "level": "B",
+   "answer": "a"
+  },
+  "g35-r2-b-mei-butterflies": {
+   "band": "3-5",
+   "domain": "Reading",
+   "level": "B",
+   "answer": "a"
+  },
+  "gk-r-a-sound-b": {
+   "band": "K",
+   "domain": "Reading",
+   "level": "A",
+   "answer": "a"
+  },
+  "gk-r-a-sound-f": {
+   "band": "K",
+   "domain": "Reading",
+   "level": "A",
+   "answer": "b"
+  },
   "gk-r-a-sound-m": {
    "band": "K",
    "domain": "Reading",
@@ -192,6 +318,24 @@ export default {
    "domain": "Reading",
    "level": "A",
    "answer": "a"
+  },
+  "gk-r-b-ends-t": {
+   "band": "K",
+   "domain": "Reading",
+   "level": "B",
+   "answer": "b"
+  },
+  "gk-r-b-i-see-fish": {
+   "band": "K",
+   "domain": "Reading",
+   "level": "B",
+   "answer": "c"
+  },
+  "gk-r-b-shape-circle": {
+   "band": "K",
+   "domain": "Reading",
+   "level": "B",
+   "answer": "c"
   },
   "read-author-purpose": {
    "band": "6-8",

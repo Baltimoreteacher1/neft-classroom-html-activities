@@ -64,6 +64,25 @@ for (const rel of [
   );
 }
 
+// Build/review data is retained in source but not published when no shipped
+// runtime references it. Runtime manifests remain included.
+for (const rel of [
+  "data/auth-baseline.json",
+  "data/es-translations/hints-01.json",
+  "data/audit/studio-audit/report.json",
+  "blood-on-the-river/art/botr/ch01-scene-01.jpg",
+]) {
+  assert.equal(plain(`/Users/x/repo/${rel}`), false, `${rel} is build-only or a duplicate asset`);
+}
+for (const rel of [
+  "data/catalog.json",
+  "data/curriculum-launch-manifest.json",
+  "blood-on-the-river/art/botr/ch01-scene-01.webp",
+  "blood-on-the-river/images/chapter-1/scene-01.png",
+]) {
+  assert.equal(plain(`/Users/x/repo/${rel}`), true, `${rel} is required runtime content`);
+}
+
 /* --- 3. Paths outside the copy root are refused, not silently relativised --- */
 assert.equal(
   plain("/Users/x/other/assets/app.js"),

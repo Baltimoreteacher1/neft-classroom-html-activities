@@ -126,7 +126,11 @@ test("registry: unique ids, known groups, both languages, real icons, routes tha
       assert.notEqual(pair[0], pair[1], `${c.id}: Spanish is not the English`);
     }
     assert.ok(icons.has(c.icon), `${c.id}: icon ${c.icon}`);
-    const [path, hash] = c.href.split("#");
+    const [pathWithQuery, hash] = c.href.split("#");
+    const [path, query] = pathWithQuery.split("?");
+    // Query strings configure a valid route (for example a family view or a
+    // selected early-reading scene); route existence is checked by pathname.
+    if (query) assert.ok(query.trim(), `${c.id}: route query is not empty`);
     if (path.startsWith("/")) {
       const file = new URL(`.${path}${path.endsWith("/") ? "index.html" : ""}`, ROOT);
       assert.ok(existsSync(file), `${c.id}: ${path} exists`);

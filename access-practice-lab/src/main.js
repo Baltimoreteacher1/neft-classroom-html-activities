@@ -60,6 +60,12 @@ const VIEW_LOADERS = {
   growth: () => import("./views/growth.js"),
   speak: () => import("./views/speak.js"),
   voice: () => import("./views/voice.js"),
+  arena: () => import("./views/arena.js"),
+  mentor: () => import("./views/mentor.js"),
+  sentences: () => import("./views/sentences.js"),
+  wordlab: () => import("./views/wordlab.js"),
+  scenarios: () => import("./views/scenarios.js"),
+  newsroom: () => import("./views/newsroom.js"),
   write: () => import("./views/write.js"),
   detective: () => import("./views/detective.js"),
   diagnostic: () => import("./views/diagnostic.js"),
@@ -78,6 +84,11 @@ const VIEW_LOADERS = {
   "class-quiz": () => import("./views/class-quiz.js"),
   "class-teacher": () => import("./views/class-roster.js"),
   early: () => import("./views/early-hub.js"),
+  units: () => import("./views/units.js"),
+  warmup: () => import("./views/warmup.js"),
+  search: () => import("./views/search.js"),
+  portfolio: () => import("./views/portfolio.js"),
+  collection: () => import("./views/collection.js"),
 };
 const VIEW_ALIASES = {
   sor: "science-of-reading",
@@ -129,7 +140,18 @@ export function parseRoute(pathname = location.pathname, search = location.searc
   }
   if (a === "class")
     return { ...r, view: b === "quiz" ? "class-quiz" : b === "teacher" ? "class-teacher" : "class", id: b || "" };
+  if (a === "arena") return { ...r, view: "arena", id: b || "" };
+  if (a === "mentor") return { ...r, view: "mentor", id: b || "", sub: c || "" };
+  if (a === "sentences") return { ...r, view: "sentences", id: b || "", sub: c || "" };
   if (a === "voice") return { ...r, view: "voice", id: b || "", sub: c || "", tab: q.get("tab") || "" };
+  if (a === "wordlab") return { ...r, view: "wordlab", id: b || "", sub: c || "" };
+  if (a === "scenarios") return { ...r, view: "scenarios", id: b || "" };
+  if (a === "newsroom") return { ...r, view: "newsroom", id: b || "", tab: q.get("step") || "" };
+  if (a === "warmup") return { ...r, view: "warmup", id: b || "", date: q.get("date") || "" };
+  if (a === "search") return { ...r, view: "search", id: b || "", q: q.get("q") || "", kind: q.get("kind") || "", all: q.get("all") || "" };
+  if (a === "portfolio") return { ...r, view: "portfolio", id: b || "", mode: q.get("view") || "" };
+  if (a === "collection") return { ...r, view: "collection", id: b || "" };
+  if (a === "units") return { ...r, view: "units", id: b || "", sub: c || "", tab: q.get("tab") || "" };
   if (a === "journey") return { ...r, view: "journey", id: b || "", rest: parts.slice(1) };
   if (a === "diagnostic") return { ...r, view: "diagnostic", domain: b || "" };
   if (a === "road") return { ...r, view: "road", week: Number(b) || 0 };

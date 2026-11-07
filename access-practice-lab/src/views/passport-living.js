@@ -143,6 +143,11 @@ export function livingPortfolioHTML(I, band) {
       <h3>${icon("flag")} ${I.T("Suggested next", "Siguiente sugerido")}</h3>
       ${tip ? html`<p><a href="${BASE}/exhibition/${tip.step}?grades=${band}">${I.T(`Language World · ${STEP[tip.step][0]}`, `Mundo del lenguaje · ${STEP[tip.step][1]}`)}</a> — ${tip.reason === "transfer" ? I.T("you revised with support; a new attempt on your own shows what you can do now.", "revisaste con apoyo; un nuevo intento por tu cuenta muestra lo que puedes hacer ahora.") : I.T(`it is the first of the four steps you have not finished (${p.done} of 4 done).`, `es el primero de los cuatro pasos que no has terminado (${p.done} de 4 hechos).`)}</p>` : html`<p>${I.T("You finished all four Language World steps, including a new attempt on your own.", "Terminaste los cuatro pasos del Mundo del lenguaje, incluido un nuevo intento por tu cuenta.")}</p>`}
       <p class="fine">
+        <a href="${BASE}/portfolio?grades=${band}">${I.T("Open my portfolio and showcase", "Abrir mi portafolio y muestra")}</a>
+        ·
+        <a href="${BASE}/collection?grades=${band}">${I.T("My collection book", "Mi libro de colección")}</a>
+      </p>
+      <p class="fine">
         <a href="#backupTitle"
           >${I.T("Back up or move your work", "Respaldar o mover tu trabajo")}</a
         >

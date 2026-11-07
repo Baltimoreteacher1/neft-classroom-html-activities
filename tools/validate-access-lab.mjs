@@ -25,6 +25,7 @@ import {
 } from "../access-practice-lab/src/grade-focus.js";
 import { staleEarlyFiles } from "./build-access-early-content.mjs";
 import { staleG45Files } from "./build-access-g45-content.mjs";
+import { staleG68Files } from "./build-access-g68-content.mjs";
 import { earlyProblems } from "./lib/access-early-rules.mjs";
 import {
   allActivities,
@@ -392,6 +393,10 @@ for (const stale of await staleEarlyFiles())
 // The grades 4-5 added activities are built from tools/access-early-content/g45-*.mjs into content/g3-5/*.json.
 for (const stale of await staleG45Files())
   err(stale, "stale — run `node tools/build-access-g45-content.mjs`");
+
+// The grades 6-8 publisher pass is built from tools/access-g68-content/*.mjs into content/g6-8/*.json and the Reading Room.
+for (const stale of await staleG68Files())
+  err(stale, "stale — run `node tools/build-access-g68-content.mjs`");
 
 const index = JSON.stringify(buildIndex(), null, 1);
 let committed = "";

@@ -5483,7 +5483,7 @@ export const ACTIVITIES = [
   },
   {
     path: "/math/fluency-lab/",
-    title: "Math Fluency Lab · Grades 1–8",
+    title: "Math Fluency Lab · Kindergarten–Grade 8",
     category: "Hub",
     unit: null,
   },

@@ -1149,13 +1149,11 @@ function renderActiveScene(s, chapterNum) {
   
   // Per-scene art resolution order (first that loads wins):
   //   1. Accurate per-scene illustration:  art/botr/ch{NN}-scene-{nn}.webp  (NN = zero-padded chapter)
-  //   2. Colocated raster fallback:         art/botr/ch{NN}-scene-{nn}.jpg
-  //   3. Legacy per-scene raster:           images/chapter-{N}/scene-{nn}.png
-  //   4. Procedural SVG placeholder (always available; used as the initial src)
+  //   2. Legacy per-scene raster:           images/chapter-{N}/scene-{nn}.png
+  //   3. Procedural SVG placeholder (always available; used as the initial src)
   // s.n is already zero-padded ("01".."09"); chapter is zero-padded for the webp convention.
   const chNN = String(chapterNum).padStart(2, "0");
   const webpPath = `/blood-on-the-river/art/botr/ch${chNN}-scene-${s.n}.webp`;
-  const jpgPath = `/blood-on-the-river/art/botr/ch${chNN}-scene-${s.n}.jpg`;
   const pngPath = `/blood-on-the-river/images/chapter-${chapterNum}/scene-${s.n}.png`;
   const svgDataUri = getSceneSvgDataUri(s, chapterNum);
 
@@ -1172,7 +1170,7 @@ function renderActiveScene(s, chapterNum) {
       probe.onerror = () => tryLoad(candidates, i + 1);
       probe.src = candidates[i];
     };
-    tryLoad([webpPath, jpgPath, pngPath], 0);
+    tryLoad([webpPath, pngPath], 0);
   }, 50);
 
   return `

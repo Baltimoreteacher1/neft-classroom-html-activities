@@ -53,6 +53,12 @@ const origin = `http://localhost:${server.address().port}`;
 const BASE = "/access-practice-lab";
 const ROUTES = [
   "/",
+  "/warmup?grades=6-8",
+  "/warmup?grades=3-5",
+  "/search?q=word&grades=6-8",
+  "/portfolio?grades=6-8",
+  "/portfolio?grades=6-8&view=family",
+  "/collection?grades=6-8",
   "/?grades=3-5",
   "/Listening/A?grades=6-8",
   "/Reading/A?grades=6-8",
@@ -96,6 +102,12 @@ const ROUTES = [
   "/learn?grades=6-8",
   "/reality?grades=3-5",
   "/reality?grades=6-8",
+  "/units?grades=6-8",
+  "/units/energy-inventions?grades=6-8",
+  "/units/energy-inventions?grades=6-8&tab=plan",
+  "/units/energy-inventions/2?grades=6-8",
+  "/units/energy-inventions/task?grades=6-8",
+  "/units/growing-things/1?grades=3-5",
 ];
 // English function words that essentially never appear in Spanish interface text.
 // Unicode letter boundaries avoid reading Spanish words such as "Noté" as

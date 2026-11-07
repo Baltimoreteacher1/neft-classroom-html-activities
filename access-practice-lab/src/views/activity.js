@@ -15,7 +15,7 @@ import {
 } from "../components.js";
 import * as early from "../early/player.js";
 import { CONTENT_BANDS } from "../bands.js";
-import { findActivity, loadDomain, loadEsGuide, loadFamilyCoach, loadGlossary, loadShared, ordered } from "../content.js";
+import { findActivity, loadDomain, loadEsGuide, loadFamilyCoach, loadGlossary, loadLessonLearn, loadShared, ordered } from "../content.js";
 import { buildCoaching } from "../family/coach.js";
 import { copilotHTML } from "../family/copilot.js";
 import { getFamily } from "../family/state.js";
@@ -78,6 +78,27 @@ import {
 import { activityHref, roomHref } from "./room.js";
 import { COUNTRIES, stopSlices } from "../journey.js";
 import { esPreviewHTML } from "./es-preview.js";
+import { familyFor, learnPanelHTML } from "../lesson-learn.js";
+import {
+  MARKS,
+  annotateBarHTML,
+  arcState,
+  feedbackBodyHTML,
+  goalHTML,
+  keyWordsHTML,
+  keyWords,
+  loadFrame,
+  minutesOf,
+  nextStepHTML,
+  partialCredit,
+  printFootHTML,
+  printHeadHTML,
+  railHTML,
+  reflectionHTML,
+  saveFrame,
+  seenKey,
+  wellOnMiss,
+} from "../lesson-frame.js";
 
 const IGN = raw("data-nsr-ignore");
 // Transient per-visit check state: id → { ok, attempt, reveal }
@@ -100,6 +121,14 @@ let pinMode = false;
 let picked = null;
 const gists = new Map(); // activity id → string[]
 let coachFeedback = null;
+// Lesson frame: per-skill mini-lessons (content/lesson-learn.json), what was seen/what helped (one small key),
+// whether the Learn panel is open this visit, and the pen tool and marks on a Reading passage (visit only).
+let lessonLearn = null;
+let curFamily = null; // the skill family of the open activity (null until the data loads)
+let frame = { seen: {}, reflect: {} };
+const learnOpen = new Map(); // seenKey → boolean, once the learner opens or closes the panel this visit
+let markTool = "";
+const marks = new Map(); // activity id → Map(sentence index → tool)
 // Listening Strategy Lab (Learn with help only): signal-word tags are UI state for this attempt.
 const listenTags = new Map(); // id → Set("part:index")
 const strategyPicks = new Map(); // id → chosen step id
@@ -235,7 +264,8 @@ function stimulusHTML(a, ctx) {
           cognates: mode === "supported",
         })}
         ${evidencePinHTML(a)}
-        <article class="passage" data-reading-passage="${a.id}">
+        ${pinMode ? "" : annotateBarHTML(I, { tool: markTool, count: marks.get(a.id)?.size || 0 })}
+        <article class="passage lf-passage" data-reading-passage="${a.id}">
           ${a.passageTitle ? html`<h3>${a.passageTitle}</h3>` : ""}
           ${renderPassageSentences(asList(a.passage), {
             showCognates: mode === "supported" && showCognates,
@@ -299,16 +329,27 @@ function feedbackHTML(a) {
   return html`${feedbackBody(a)}${sureNoteHTML(checked.get(a.id))}`;
 }
 
+/** Explain the wrong option a learner chose when the authored item provides a diagnosis. */
+function pickedNote(a) {
+  const picked = answerOf(cur.record, a.id);
+  const ids = Array.isArray(picked) ? picked : picked ? [picked] : [];
+  const notes = ids.map((id) => a.distractorFeedback?.[id]).filter(Boolean);
+  return notes.length
+    ? html`<p class="fb-why"><strong>${I.T("Why that choice does not fit:", "Por qué esa opción no encaja:")}</strong> ${notes.join(" ")}</p>`
+    : "";
+}
+
 function feedbackBody(a) {
   const c = checked.get(a.id);
   if (!c) return "";
   if (c.ok)
     return html`<div class="feedback is-right" role="status">
       <p class="fb-title">${icon("check")} ${c.attempt === 1 ? I.T("Correct!", "¡Correcto!") : I.T("You got it!", "¡Lo lograste!")}</p>
-      ${a.correct ? html`<p>${a.correct}</p>` : ""}
-      ${cur.domain === "Reading" ? html`<p class="fb-extra">${lookBack()}</p>` : ""}
-      ${a.extension ? html`<p class="fb-extra"><strong>${I.T("Go further:", "Ve más allá:")}</strong> ${a.extension}</p>` : ""}
-      ${cur.domain === "Speaking" ? html`<p class="fb-extra"><strong>${I.T("Now say it:", "Ahora dilo:")}</strong> ${I.T("record yourself saying the best answer.", "graba tu voz diciendo la mejor respuesta.")}</p>` : ""}
+      ${feedbackBodyHTML(I, {
+        well: a.correct || I.T("Your answer matches the task.", "Tu respuesta coincide con la tarea."),
+        next: cur.domain === "Speaking" ? html`<strong>${I.T("Now say it:", "Ahora dilo:")}</strong> ${I.T("record yourself saying the best answer.", "graba tu voz diciendo la mejor respuesta.")}` : a.extension ? html`<strong>${I.T("Go further:", "Ve más allá:")}</strong> ${a.extension}` : cur.domain === "Reading" ? lookBack() : "",
+        canModel: Boolean(curFamily) && mode === "supported",
+      })}
     </div>`;
   if (c.diag && mode === "supported" && (c.reveal !== "full" || revealHeld(c)))
     return listeningTrapHTML(c.diag, { held: revealHeld(c), hint: a.hint });
@@ -316,14 +357,19 @@ function feedbackBody(a) {
     return html`<div class="feedback is-shown" role="status">
       <p class="fb-title">${icon("info")} ${I.T("Here is the answer", "Aquí está la respuesta")}</p>
       <p><strong>${correctAnswerText(a)}</strong></p>
-      ${a.support ? html`<p>${a.support}</p>` : ""}
-      ${cur.domain === "Reading" ? html`<p>${lookBack()}</p>` : ""}
+      ${pickedNote(a)}
+      ${feedbackBodyHTML(I, { well: wellOnMiss(I, partialCredit(a, answerOf(cur.record, a.id))), next: a.support || (cur.domain === "Reading" ? lookBack() : ""), canModel: Boolean(curFamily) })}
       <button type="button" class="btn" data-retry>${I.T("Try it again", "Inténtalo otra vez")}</button>
     </div>`;
   return html`<div class="feedback is-hint" role="status">
     <p class="fb-title">${icon("retry")} ${I.T("Not yet — try again", "Todavía no — inténtalo otra vez")}</p>
-    ${a.hint && mode === "supported" ? html`<p>${a.hint}</p>` : html`<p>${I.T("Review the task, then try again. Switch to Learn with help for a clue.", "Revisa la tarea y vuelve a intentarlo. Cambia a Aprender con ayuda para ver una pista.")}</p>`}
-    ${cur.domain === "Reading" ? html`<p>${lookBack()}</p>` : ""}
+    ${mode === "supported" ? pickedNote(a) : ""}
+    ${feedbackBodyHTML(I, {
+      well: wellOnMiss(I, partialCredit(a, answerOf(cur.record, a.id))),
+      next: a.hint && mode === "supported" ? a.hint : I.T("Review the task, then try again. Switch to Learn with help for a clue.", "Revisa la tarea y vuelve a intentarlo. Cambia a Aprender con ayuda para ver una pista."),
+      canModel: Boolean(curFamily) && mode === "supported",
+    })}
+    ${cur.domain === "Reading" ? html`<p class="fine">${lookBack()}</p>` : ""}
     <button type="button" class="btn" data-retry>${I.T("Try again", "Intentar de nuevo")}</button>
   </div>`;
 }
@@ -527,27 +573,89 @@ function directionsBlocks(a, es) {
   return I.spanish ? html`${spanish}${english}` : html`${english}${spanish}`;
 }
 
-function navHTML() {
+/** Where Previous, Next and the last-step button go (playlist or room list, honoring the grade focus). */
+function navLinks() {
   if (cur.playlist) {
     const { ids, index, title } = cur.playlist;
     const at = (i) =>
       `${BASE}/play?ids=${ids.join(",")}&i=${i}&grades=${cur.band}&mode=${mode}${title ? `&t=${encodeURIComponent(title)}` : ""}${cur.playlist.sessionId ? `&sid=${encodeURIComponent(cur.playlist.sessionId)}` : ""}`;
-    return html`<nav class="act-nav" aria-label="${I.S("Playlist", "Lista de actividades")}">
-      ${index > 0 ? html`<a class="btn" href="${at(index - 1)}">${icon("arrow-left")} ${I.T("Previous", "Anterior")}</a>` : html`<span></span>`}
-      <span class="act-count">${I.T(`${index + 1} of ${ids.length}`, `${index + 1} de ${ids.length}`)}</span>
-      ${index < ids.length - 1 ? html`<a class="btn btn-primary" href="${at(index + 1)}">${I.T("Next", "Siguiente")} ${icon("arrow-right")}</a>` : html`<a class="btn btn-primary" href="${cur.playlist.sessionId ? `${BASE}/session-done/${encodeURIComponent(cur.playlist.sessionId)}?grades=${cur.band}` : `${BASE}/family/progress?done=1&grades=${cur.band}`}">${I.T("Finish", "Terminar")} ${icon("check")}</a>`}
-    </nav>`;
+    return {
+      prev: index > 0 ? at(index - 1) : "",
+      next: index < ids.length - 1 ? at(index + 1) : "",
+      end: cur.playlist.sessionId ? `${BASE}/session-done/${encodeURIComponent(cur.playlist.sessionId)}?grades=${cur.band}` : `${BASE}/family/progress?done=1&grades=${cur.band}`,
+      count: I.T(`${index + 1} of ${ids.length}`, `${index + 1} de ${ids.length}`),
+      playlist: true,
+    };
   }
   // With a grade focus, Previous / Next skip activities written for other grades (the open one always counts).
   const shown = byGradeFocus(cur.list, cur.gradeFocus, (a) => (a.id === cur.activity.id ? undefined : a.grades));
   const at = shown.indexOf(cur.activity);
   const prev = shown[at - 1];
   const next = shown[at + 1];
-  return html`<nav class="act-nav" aria-label="${I.S("Activities", "Actividades")}">
-    ${prev ? html`<a class="btn" href="${activityHref(cur.domain, cur.level, prev.id)}">${icon("arrow-left")} ${I.T("Previous", "Anterior")}</a>` : html`<span></span>`}
-    <span class="act-count">${I.T(`${at + 1} of ${shown.length}`, `${at + 1} de ${shown.length}`)}</span>
-    ${next ? html`<a class="btn btn-primary" href="${activityHref(cur.domain, cur.level, next.id)}">${I.T("Next", "Siguiente")} ${icon("arrow-right")}</a>` : html`<a class="btn btn-primary" href="${roomHref(cur.domain, cur.level)}">${I.T("Back to the room", "Volver a la sala")} ${icon("check")}</a>`}
+  return {
+    prev: prev ? activityHref(cur.domain, cur.level, prev.id) : "",
+    next: next ? activityHref(cur.domain, cur.level, next.id) : "",
+    end: roomHref(cur.domain, cur.level),
+    count: I.T(`${at + 1} of ${shown.length}`, `${at + 1} de ${shown.length}`),
+  };
+}
+
+function navHTML() {
+  const l = navLinks();
+  const label = cur.playlist ? I.S("Playlist", "Lista de actividades") : I.S("Activities", "Actividades");
+  return html`<nav class="act-nav" aria-label="${label}">
+    ${l.prev ? html`<a class="btn" href="${l.prev}">${icon("arrow-left")} ${I.T("Previous", "Anterior")}</a>` : html`<span></span>`}
+    <span class="act-count">${l.count}</span>
+    ${l.next ? html`<a class="btn btn-primary" href="${l.next}">${I.T("Next", "Siguiente")} ${icon("arrow-right")}</a>` : l.playlist ? html`<a class="btn btn-primary" href="${l.end}">${I.T("Finish", "Terminar")} ${icon("check")}</a>` : html`<a class="btn btn-primary" href="${l.end}">${I.T("Back to the room", "Volver a la sala")} ${icon("check")}</a>`}
   </nav>`;
+}
+
+/** The same link in "on my own" mode, for the next-best-step card. */
+function independentLink(href) {
+  if (!href) return "";
+  const u = new URL(href, "https://lab.invalid");
+  u.searchParams.set("mode", "independent");
+  u.searchParams.set("grades", cur.band);
+  return u.pathname + u.search;
+}
+
+/** Everything the lesson frame adds around the task, derived from the activity plus its skill family. */
+function lessonFrameView(a, es, meta, tier, done) {
+  curFamily = familyFor(lessonLearn, cur.domain, a.skill);
+  const key = curFamily ? seenKey(cur.band, cur.domain, curFamily.id) : "";
+  const c = checked.get(a.id);
+  const attempted = Boolean(c || writingChecks.get(a.id) || cur.record.results[a.id]);
+  const finished = done || Boolean(c && !c.ok && c.reveal === "full");
+  const supportUsed = helpUsed.has(a.id) || Boolean(cur.record.supportUsed?.[a.id]);
+  const learnSeen = Boolean(key && frame.seen[key]);
+  const open = mode === "supported" && Boolean(curFamily) && (learnOpen.has(key) ? learnOpen.get(key) : !learnSeen && !attempted);
+  const arc = arcState({ mode, warmDone: supportUsed, learnSeen, attempted, done: finished, reflected: Boolean(frame.reflect[a.id]) });
+  const links = navLinks();
+  const words = mode === "supported" ? keyWords(a) : [];
+  const model = {
+    skill: { en: a.skill || a.title, es: es.skill || a.skill || a.title },
+    domainIcon: meta.icon,
+    domainName: I.T(meta.name, meta.es),
+    tierName: tier ? I.T(tier.name, tier.es) : cur.level,
+    minutes: minutesOf(a),
+    can: curFamily?.can || null,
+    focus: asList(a.wida).slice(0, 2),
+  };
+  return {
+    rail: railHTML(I, arc, { learnAvailable: mode === "supported" && Boolean(curFamily) }),
+    goal: goalHTML(I, model),
+    words: keyWordsHTML(I, words, { open: Boolean(c || writingChecks.get(a.id)) }),
+    hasWords: words.length > 0,
+    learn: mode === "supported" ? learnPanelHTML(I, curFamily, { open, first: !learnSeen }) : "",
+    after: finished
+      ? html`<section class="lf-after" aria-label="${I.S("After the activity", "Después de la actividad")}">
+          ${reflectionHTML(I, { mode, picked: frame.reflect[a.id]?.id || "" })}
+          ${nextStepHTML(I, { ok: done, supportUsed, mode, nextHref: links.next, independentHref: independentLink(links.next), roomHref: links.end, hasLearn: mode === "supported" && Boolean(curFamily) })}
+        </section>`
+      : "",
+    printHead: printHeadHTML(I, a.title),
+    printFoot: printFootHTML(I),
+  };
 }
 
 let I = makeI18n("en");
@@ -562,7 +670,9 @@ export async function render(ctx) {
   const found = await resolve(snapshot);
   const shared = await loadShared().catch(() => null);
   glossary = await loadGlossary();
-  const [coachData, esGuide] = await Promise.all([loadFamilyCoach(), loadEsGuide()]);
+  const [coachData, esGuide, learnData] = await Promise.all([loadFamilyCoach(), loadEsGuide(), loadLessonLearn()]);
+  lessonLearn = learnData;
+  frame = loadFrame(storage);
   if (generation !== renderGeneration) return { title: "", html: "" };
   loading = false;
   if (!found?.activity)
@@ -607,6 +717,7 @@ export async function render(ctx) {
   const journeyStops = stopSlices(cur.list.length);
   const journeyStop = Math.max(1, journeyStops.findIndex(([from, to]) => cur.index >= from && cur.index < to) + 1);
   const country = COUNTRIES[cur.domain]?.[cur.level];
+  const lf = lessonFrameView(a, es, meta, tier, done);
   return {
     title: a.title,
     html: html`${crumbsHTML([
@@ -615,6 +726,7 @@ export async function render(ctx) {
         [a.title, null],
       ])}
       <article class="activity d-${cur.domain.toLowerCase()}">
+        ${lf.printHead}
         <header class="act-head">
           <div class="act-bar">
             <p class="act-context">
@@ -623,17 +735,22 @@ export async function render(ctx) {
             ${country ? html`<p class="act-journey-label">${I.T(`${country[0]} · stop ${journeyStop} of ${journeyStops.length}`, `${country[1]} · parada ${journeyStop} de ${journeyStops.length}`)}</p>` : ""}
             <p class="act-step"><span>${I.T(`Activity ${step.n} of ${step.total}`, `Actividad ${step.n} de ${step.total}`)}</span><span class="bar" aria-hidden="true"><i style="width:${Math.round((step.n / step.total) * 100)}%"></i></span></p>
           </div>
+          ${lf.rail}
           <h1 tabindex="-1">
             ${a.title}${done ? html` <span class="done-badge">${icon("check")} ${I.T("Done", "Hecho")}</span>` : ""}
           </h1>
+          ${lf.goal}
           <nav class="act-return" aria-label="${I.S("Return to practice", "Volver a la práctica")}">
             <a class="btn small" href="${roomHref(cur.domain, cur.level)}">${I.T("Back to activity list", "Volver a la lista de actividades")}</a>
             <a class="btn small" href="${BASE}/passport?grades=${cur.band}">${I.T("My Passport", "Mi Pasaporte")}</a>
             ${cur.band !== "6-8" && CONTENT_BANDS.includes(cur.band) && early.EARLY_TYPES.has(a.type) ? html`<button type="button" class="btn small" data-early-on aria-pressed="false">${I.T("Audio-first mode: off", "Modo de audio primero: desactivado")}</button>` : ""}
+            <button type="button" class="btn small" data-print>${icon("print")} ${I.T("Print lesson sheet", "Imprimir la hoja de la lección")}</button>
           </nav>
           ${directionsBlocks(a, es)}
           ${mode === "supported" ? esPreviewHTML(I, a, cur.domain, es) : ""}
+          ${lf.words}
         </header>
+        ${lf.learn}
         ${familyOf(ctx).who === "independent" ? "" : copilotHTML(I, buildCoaching(a, cur.domain, coachData, es))}
         <div class="activity-workspace">
         <section class="stimulus ${hasPassage ? "has-passage" : ""}" aria-labelledby="sourceHeading"><h2 id="sourceHeading" class="workbook-heading"><span aria-hidden="true">1</span> ${listening ? I.T("Listen and notice", "Escucha y observa") : cur.domain === "Reading" ? I.T("Read and notice", "Lee y observa") : I.T("Look and plan", "Mira y planifica")}</h2>${stimulusHTML(a, ctx)}</section>
@@ -650,13 +767,15 @@ export async function render(ctx) {
           <label><input type="radio" name="practiceMode" value="supported" data-mode ${mode === "supported" ? raw("checked") : ""} data-nsr-ignore /> ${I.T("Learn with help", "Aprender con ayuda")}</label>
           <label><input type="radio" name="practiceMode" value="independent" data-mode ${mode === "independent" ? raw("checked") : ""} data-nsr-ignore /> ${I.T("Try independently", "Intentar solo o sola")}</label>
           <p class="fine">${mode === "independent" ? I.T("Vocabulary, models and hints stay closed until you review. Replay and directions remain available. This is classroom practice, not a test simulation.", "El vocabulario, los modelos y las pistas permanecen cerrados hasta que revises. Puedes volver a escuchar y ver las instrucciones. Es práctica de clase, no una simulación de examen.") : I.T("Strategies and examples are available below. Help and retries are saved as supported practice.", "Abajo hay estrategias y ejemplos. La ayuda y los reintentos se guardan como práctica con apoyo.")}</p></fieldset>
-        ${mode === "supported" ? html`<details class="strategy" data-help ${strategyPicks.has(a.id) ? raw("open") : ""}><summary>${I.T("First: try a strategy", "Primero: prueba una estrategia")}</summary><p>${learnCopy(strategyFor(cur.domain))}</p><div class="strategy-steps" role="group" aria-label="${I.S("Pick your first strategy move", "Elige tu primer paso de estrategia")}"><span class="fine"><strong>${I.T("Pick your first move:", "Elige tu primer paso:")}</strong></span><div class="learn-chip-row">${(STRATEGY_STEPS[cur.domain] || STRATEGY_STEPS.Reading).map(([sid, en, es]) => html`<button type="button" class="cat-chip ${strategyPicks.get(a.id) === sid ? "is-active" : ""}" data-strategy-step="${sid}" aria-pressed="${String(strategyPicks.get(a.id) === sid)}">${strategyPicks.get(a.id) === sid ? icon("check") : icon("bulb")} ${I.T(en, es)}</button>`)}</div>${strategyPicks.get(a.id) ? html`<p class="fine strategy-step-ok" role="status">${icon("check")} ${I.T("Strategy move active! Now apply it to your response below.", "¡Paso de estrategia activo! Ahora aplícalo en tu respuesta abajo.")}</p>` : ""}</div></details>${vocabHTML(a, shared, { focused: Boolean(checked.get(a.id) || writingChecks.get(a.id)) })}` : ""}
+        ${mode === "supported" ? html`<details class="strategy" data-help ${strategyPicks.has(a.id) ? raw("open") : ""}><summary>${I.T("First: try a strategy", "Primero: prueba una estrategia")}</summary><p>${learnCopy(strategyFor(cur.domain))}</p><div class="strategy-steps" role="group" aria-label="${I.S("Pick your first strategy move", "Elige tu primer paso de estrategia")}"><span class="fine"><strong>${I.T("Pick your first move:", "Elige tu primer paso:")}</strong></span><div class="learn-chip-row">${(STRATEGY_STEPS[cur.domain] || STRATEGY_STEPS.Reading).map(([sid, en, es]) => html`<button type="button" class="cat-chip ${strategyPicks.get(a.id) === sid ? "is-active" : ""}" data-strategy-step="${sid}" aria-pressed="${String(strategyPicks.get(a.id) === sid)}">${strategyPicks.get(a.id) === sid ? icon("check") : icon("bulb")} ${I.T(en, es)}</button>`)}</div>${strategyPicks.get(a.id) ? html`<p class="fine strategy-step-ok" role="status">${icon("check")} ${I.T("Strategy move active! Now apply it to your response below.", "¡Paso de estrategia activo! Ahora aplícalo en tu respuesta abajo.")}</p>` : ""}</div></details>${vocabHTML(a, shared, { focused: Boolean(checked.get(a.id) || writingChecks.get(a.id)), terms: !lf.hasWords })}` : ""}
         ${!["constructed", "worksheet"].includes(a.type) && cur.record.results[a.id] ? html`<div class="fresh-attempt"><button type="button" class="btn" data-fresh-attempt>${I.T("Start a fresh independent attempt", "Empezar un intento nuevo e independiente")}</button><p class="fine">${I.T("Save a summary of this attempt and clear its selected answers. Earlier help stays in your history; this is another try at the same task.", "Guarda un resumen de este intento y borra las respuestas elegidas. La ayuda anterior queda en tu historial; es otro intento de la misma tarea.")}</p></div>` : ""}
         <p id="answerValidation" role="alert" ${validation ? "" : raw("hidden")}>${validation}</p>
         <section class="answer-zone" aria-label="${I.S("Your answer", "Tu respuesta")}">${answerZone(a)}</section>
         </div></div>
+        ${lf.after}
         <p class="save-explainer">${I.T("Writing and checklists save on this browser. Audio does not.", "La escritura y las listas se guardan en este navegador. El audio no.")} <a href="${BASE}/family/save">${I.T("Save & continue later", "Guardar y continuar después")}</a></p>
       </article>
+      ${lf.printFoot}
       ${cur.record.results[a.id] ? html`<p class="practice-evidence"><strong>${I.T("Practice evidence:", "Evidencia de práctica:")}</strong> ${learnCopy(evidenceLabel(cur.record.results[a.id]))}. ${I.T("This is not a proficiency score.", "Esto no es una calificación del dominio del inglés.")}</p>` : ""}
       ${navHTML()}`,
   };
@@ -673,6 +792,7 @@ function check(a, ctx) {
   const I = i18nFor(ctx);
   const answer = answerOf(cur.record, a.id) ?? seedAnswer(a);
   if (!isAnswered(a, answer)) return;
+  markLearnSeen();
   if (answer !== undefined && answerOf(cur.record, a.id) === undefined)
     cur.record.answers[a.id] = answer;
   const attempt = (cur.record.attempts[a.id] || 0) + 1;
@@ -762,6 +882,108 @@ function onListeningLabClick(t, a, ctx) {
   return false;
 }
 
+// ── lesson frame interactions ─────────────────────────────────────────────────
+const learnKey = () => (curFamily ? seenKey(cur.band, cur.domain, curFamily.id) : "");
+/** Showing the skill lesson to a learner who then answers counts as seen on this device. */
+function markLearnSeen() {
+  const key = learnKey();
+  if (!key || frame.seen[key]) return;
+  frame.seen[key] = new Date().toISOString();
+  saveFrame(storage, frame);
+}
+const reduceMotion = () => window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+/** Bring a part of the page into view and move focus there (a non-interactive target takes tabindex -1). */
+function goTo(selector, { focus = true } = {}) {
+  const el = document.querySelector(selector);
+  if (!el) return;
+  el.scrollIntoView({ behavior: reduceMotion() ? "auto" : "smooth", block: "start" });
+  if (!focus) return;
+  if (!el.matches("button, input, select, textarea, a[href]")) el.tabIndex = -1;
+  el.focus({ preventScroll: true });
+}
+const firstAnswerControl = () => document.querySelector(".answer-zone input, .answer-zone textarea, .answer-zone button:not([disabled])");
+
+/** Stamps the learner's pen marks onto the freshly rendered passage. */
+function applyMarks(root) {
+  const map = marks.get(cur.activity.id);
+  for (const el of root.querySelectorAll("[data-reading-passage] .reading-sentence")) {
+    const idx = el.dataset.sentIdx ?? el.dataset.nbPick?.split("|").pop();
+    const tool = map?.get(Number(idx));
+    if (tool) el.dataset.mark = tool;
+    else delete el.dataset.mark;
+  }
+}
+
+/** Lesson-frame controls. Returns true when it handled the click. */
+function onFrameClick(t, a, ctx) {
+  const key = learnKey();
+  const attempted = Boolean(checked.get(a.id) || writingChecks.get(a.id) || cur.record.results[a.id]);
+  const open = (next, { focusModel = false } = {}) => {
+    // Re-opening a lesson the learner has already seen (or opening it after trying) is help; the first showing is instruction.
+    if (next && (frame.seen[key] || attempted)) noteHelp(a.id);
+    learnOpen.set(key, next);
+    Promise.resolve(ctx.rerender({ keepFocus: true })).then(() => goTo(focusModel ? ".lf-learn-model" : "#lf-learn-title"));
+  };
+  const go = t.closest("[data-frame-go]");
+  if (go) {
+    const step = go.dataset.frameGo;
+    if (step === "learn") {
+      if (mode === "supported" && curFamily) return (open(true), true);
+    } else goTo(step === "warm" ? (document.querySelector("#lf-goal-h") ? "#lf-goal-h" : ".act-head h1") : step === "try" ? ".answer-zone" : document.querySelector("#lf-reflect") ? "#lf-reflect" : ".answer-zone");
+    if (step === "try") firstAnswerControl()?.focus({ preventScroll: true });
+    return true;
+  }
+  if (t.closest("[data-frame-learn-toggle]")) return (open(document.querySelector("#lf-learn-body")?.hidden !== false), true);
+  if (t.closest("[data-frame-learn-open]")) return (open(true), true);
+  if (t.closest("[data-frame-model]")) return (open(true, { focusModel: true }), true);
+  if (t.closest("[data-frame-ready]")) {
+    markLearnSeen();
+    learnOpen.set(key, false);
+    Promise.resolve(ctx.rerender({ keepFocus: true })).then(() => {
+      goTo(".answer-zone", { focus: false });
+      firstAnswerControl()?.focus({ preventScroll: true });
+    });
+    return true;
+  }
+  const helped = t.closest("[data-frame-helped]");
+  if (helped) {
+    const id = helped.dataset.frameHelped;
+    if (frame.reflect[a.id]?.id === id) delete frame.reflect[a.id];
+    else frame.reflect[a.id] = { id, date: new Date().toISOString() };
+    saveFrame(storage, frame);
+    ctx.rerender({ keepFocus: true });
+    return true;
+  }
+  const tool = t.closest("[data-frame-mark]");
+  if (tool) {
+    markTool = markTool === tool.dataset.frameMark ? "" : tool.dataset.frameMark;
+    ctx.rerender({ keepFocus: true });
+    return true;
+  }
+  if (t.closest("[data-frame-clear-marks]")) {
+    marks.delete(a.id);
+    announce(I.S("Marks cleared.", "Marcas borradas."));
+    ctx.rerender({ keepFocus: true });
+    return true;
+  }
+  const sentence = markTool && !pinMode ? t.closest("[data-reading-passage] .reading-sentence") : null;
+  if (sentence) {
+    const idx = Number(sentence.dataset.sentIdx);
+    const map = marks.get(a.id) || new Map();
+    if (map.get(idx) === markTool) map.delete(idx);
+    else map.set(idx, markTool);
+    marks.set(a.id, map);
+    if (map.has(idx)) sentence.dataset.mark = markTool;
+    else delete sentence.dataset.mark;
+    const clear = document.querySelector("[data-frame-clear-marks]");
+    if (clear) clear.disabled = map.size === 0;
+    const label = MARKS.find((m) => m[0] === markTool);
+    announce(map.has(idx) ? I.S(`${label[1]} added.`, `${label[2]}: añadido.`) : I.S("Mark removed.", "Marca quitada."));
+    return true;
+  }
+  return false;
+}
+
 export function onClick(e, ctx) {
   if (!cur || loading) return;
   if (earlyActive) return early.onClick(e, ctx, i18nFor(ctx), cur, save);
@@ -773,6 +995,7 @@ export function onClick(e, ctx) {
   const I = i18nFor(ctx);
   const a = cur.activity;
   const t = e.target;
+  if (onFrameClick(t, a, ctx)) return true;
 
   // Tap-a-word help (passage and question words, or the Word help list)
   const gloss = t.closest("[data-gloss]");
@@ -981,6 +1204,7 @@ export function onClick(e, ctx) {
       return;
     }
     validation = "";
+    markLearnSeen();
     cur.record.drafts[a.id] ||= { first: text };
     const result = analyzeResponse(text, coachOptions(a));
     result.practice = writingPracticeScore(result, { level: cur.level, bankAvailable: wordBank(a).length > 0 });
@@ -1007,6 +1231,7 @@ export function onClick(e, ctx) {
     const practiced = takesFor(a.id).length > 0 || cur.record.practiced[a.id];
     if (!practiced) { validation = I.S("Record your answer or practice aloud with a partner first.", "Primero graba tu respuesta o practica en voz alta con un compañero."); ctx.rerender(); return; }
     validation = "";
+    markLearnSeen();
     cur.record.results[a.id] = {
       meaningful: true,
       evidence: takesFor(a.id).length ? "recorded" : "speaking",
@@ -1140,6 +1365,7 @@ export function onKey(e) {
 export function mount(root, ctx) {
   if (earlyActive) return early.mount(root, ctx, i18nFor(ctx), cur);
   const owner = cur;
+  applyMarks(root);
   for (const details of root.querySelectorAll(".helpers, .strategy, .ladder, .transcript, .writing-starters")) {
     details.addEventListener("toggle", () => {
       if (details.open && details.isConnected && cur === owner) {
@@ -1157,5 +1383,6 @@ export function unmount() {
   renderGeneration++;
   loading = true;
   coachFeedback = null;
+  markTool = "";
   stopSpeech();
 }

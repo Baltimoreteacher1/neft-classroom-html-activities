@@ -1,12 +1,16 @@
 // Grades 4-5 depth pass: the added 3-5 activities are built from specs, current on disk, and keep the lab's rules.
 import assert from "node:assert/strict";
 import test from "node:test";
-import { mergeDomain, STRAND_SUFFIX, staleG45Files } from "./build-access-g45-content.mjs";
+import {
+  loadSpecs,
+  mergeDomain,
+  STRAND_SUFFIX,
+  staleG45Files,
+} from "./build-access-g45-content.mjs";
 import { allActivities, CORE_DOMAINS, LEVEL_KEYS, loadBand } from "./lib/access-lab-content.mjs";
 
 const specs = {};
-for (const d of CORE_DOMAINS)
-  specs[d] = (await import(`./access-early-content/g45-${d.toLowerCase()}.mjs`)).default;
+for (const d of CORE_DOMAINS) specs[d] = await loadSpecs(d);
 const added = (d) => specs[d].map((s) => `g35-${s.id}`);
 const bank = new Map(
   allActivities()

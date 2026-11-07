@@ -1,0 +1,224 @@
+/* Mathematics field-guide finish: a calmer hierarchy on top of the Lab's existing identity. */
+
+:root {
+  --finish-copper: #c97d5d;
+  --finish-copper-light: #e6a688;
+  --finish-rule: #cfc4b1;
+  --finish-ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+html {
+  scroll-padding-block-start: 1rem;
+}
+
+/* The brand and illustration read as one deliberate cover, without a floating-card shadow. */
+#main > .intro.at-hero {
+  margin-block: 1rem clamp(1.5rem, 3vw, 2.5rem);
+  border: 1px solid rgb(133 216 203 / 0.24);
+  border-block-end: 3px solid var(--finish-copper);
+  border-radius: 16px;
+  background: var(--at-obsidian-1);
+  box-shadow: 0 1px 0 rgb(8 15 37 / 0.4);
+}
+
+#main > .intro.at-hero::before {
+  opacity: 0.7;
+}
+
+#main > .intro.at-hero::after {
+  display: none;
+}
+
+#main > .at-hero .intro-kicker {
+  color: var(--finish-copper-light);
+  letter-spacing: 0.16em;
+}
+
+#main > .at-hero h1 {
+  max-width: 13ch;
+  line-height: 1.04;
+  letter-spacing: -0.035em;
+}
+
+#main > .at-hero .intro-copy > p#intro-description {
+  max-width: 39ch;
+  line-height: 1.58;
+}
+
+/* Keep the original math sculpture, but let its geometry breathe beyond a glass tile. */
+#main > .at-hero .at-stage {
+  border-radius: 10px;
+  background: transparent;
+  box-shadow: none;
+}
+
+#main .at-hero .at-cta {
+  border: 1px solid rgb(255 255 255 / 0.44);
+  border-radius: 10px;
+  background: var(--finish-copper-light);
+  color: var(--at-obsidian-0);
+  box-shadow: 0 2px 0 rgb(8 15 37 / 0.24);
+}
+
+#main .at-hero .at-cta:hover {
+  background: #f0b99f;
+  box-shadow: 0 4px 0 rgb(8 15 37 / 0.24);
+}
+
+#main .at-hero .at-cta-quiet {
+  border-radius: 10px;
+}
+
+/* Navigation uses measured corners and a clear selected surface instead of nested pills. */
+#main .hub-tabs {
+  gap: 0.35rem;
+  padding: 0.35rem;
+  border: 1px solid var(--finish-rule);
+  border-radius: 12px;
+  background: var(--at-surface);
+  box-shadow: none;
+}
+
+#main .hub-tabs > button,
+#main .hub-tabs > a {
+  min-height: 48px;
+  border-radius: 8px;
+  transition:
+    background-color 180ms var(--finish-ease),
+    color 180ms var(--finish-ease),
+    box-shadow 180ms var(--finish-ease);
+}
+
+#main .hub-tabs > [aria-current="page"] {
+  background: var(--at-obsidian-1);
+  box-shadow: inset 0 -3px 0 var(--finish-copper-light);
+  color: var(--at-on-dark);
+}
+
+#main .gh-tabs {
+  border-color: var(--finish-rule);
+  border-radius: 12px;
+  background: var(--at-surface);
+  box-shadow: 0 2px 8px rgb(8 15 37 / 0.07);
+  backdrop-filter: none;
+}
+
+#main .gh-tab {
+  border-radius: 8px;
+  transition:
+    background-color 180ms var(--finish-ease),
+    color 180ms var(--finish-ease),
+    box-shadow 180ms var(--finish-ease);
+}
+
+#main .gh-tab[aria-selected="true"] {
+  background: var(--at-obsidian-1);
+  box-shadow: inset 0 -3px 0 var(--finish-copper-light);
+  color: var(--at-on-dark);
+}
+
+/* Grade tabs keep their own grade stripe; selection adds shape and a second cue, not a jump. */
+#main .grade-rail {
+  padding: 1.1rem 1.25rem 0;
+  border: 1px solid var(--finish-rule);
+  border-block-start: 3px solid var(--at-obsidian-1);
+  border-radius: 12px;
+  background: var(--at-surface);
+  box-shadow: 0 3px 12px rgb(8 15 37 / 0.06);
+}
+
+#main .grade-tabs {
+  gap: 0.45rem;
+}
+
+#main .grade-tab {
+  min-height: 70px;
+  border-radius: 8px 8px 4px 4px;
+  transition:
+    background-color 180ms var(--finish-ease),
+    color 180ms var(--finish-ease),
+    box-shadow 180ms var(--finish-ease);
+}
+
+#main .grade-tab:hover {
+  background: var(--at-porcelain-2);
+}
+
+#main .grade-tab[aria-selected="true"] {
+  background: var(--at-obsidian-1);
+  box-shadow: inset 0 -3px 0 var(--finish-copper-light);
+  color: var(--at-on-dark);
+  transform: none;
+}
+
+#main .library-heading h2,
+#main .workspace-heading h2 {
+  font-family: var(--at-display);
+  font-weight: 500;
+  letter-spacing: -0.025em;
+}
+
+#main .section-label,
+#main .plain-label {
+  color: var(--at-copper-ink);
+  letter-spacing: 0.035em;
+}
+
+.site-header .cmd-palette-btn,
+.site-header .settings-btn,
+.site-header #close-settings {
+  border-radius: 9px;
+}
+
+.site-header .cmd-palette-btn > svg,
+.site-header .settings-btn > svg,
+.site-header #close-settings > svg,
+#hub-tabs .fl-icon {
+  display: inline-block;
+  width: 1.1em;
+  height: 1.1em;
+  flex: 0 0 auto;
+  vertical-align: -0.18em;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+}
+
+@media (max-width: 640px) {
+  #main > .intro.at-hero {
+    margin-block-start: 0.5rem;
+    padding: 1.35rem 1rem;
+    border-radius: 12px;
+  }
+
+  #main > .at-hero h1 {
+    max-width: 12ch;
+    font-size: clamp(2.25rem, 11vw, 3.5rem);
+  }
+
+  #main .grade-rail {
+    padding: 0.9rem 0.65rem 0;
+  }
+
+  #main .grade-tab {
+    min-height: 64px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #main .hub-tabs > button,
+  #main .hub-tabs > a,
+  #main .gh-tab,
+  #main .grade-tab {
+    transition: none;
+  }
+}
+
+body[data-reduced-motion="true"] #main .hub-tabs > button,
+body[data-reduced-motion="true"] #main .hub-tabs > a,
+body[data-reduced-motion="true"] #main .gh-tab,
+body[data-reduced-motion="true"] #main .grade-tab {
+  transition: none;
+}

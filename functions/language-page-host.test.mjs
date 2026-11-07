@@ -135,7 +135,9 @@ await t("robots.txt and sitemap.xml are generated for the lab host and name only
   assert.ok(
     locs.every((l) => l.startsWith("https://thelanguagepage.com/access-practice-lab/") || STUDIOS.some((s) => l === `https://thelanguagepage.com${studioPath(s.slug)}`)),
   );
-  assert.ok(!locs.some((l) => l === "https://thelanguagepage.com/wida-access/" || l.includes("portfolio")));
+  assert.ok(!locs.some((l) => l === "https://thelanguagepage.com/wida-access/"));
+  assert.ok(locs.includes("https://thelanguagepage.com/access-practice-lab/portfolio"));
+  assert.ok(!locs.some((l) => l.includes("portfolio?")), "stateful family view is not a separate sitemap URL");
 });
 
 await t("the middleware redirects a non-lab path on the lab host before any gate runs", async () => {

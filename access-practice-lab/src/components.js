@@ -457,9 +457,9 @@ export const speakingChecksHTML = (saved, { i18n = null } = {}) => {
   return selfCheckHTML(SPEAKING_CHECKS, saved, { title: L.T("Speaking checklist", "Lista de control para hablar"), i18n: L });
 };
 
-export function vocabHTML(activity, shared, { focused = true, i18n = null } = {}) {
+export function vocabHTML(activity, shared, { focused = true, terms: showTerms = true, i18n = null } = {}) {
   const L = i18n || I;
-  const terms = activity.vocabulary || [];
+  const terms = showTerms ? activity.vocabulary || [] : [];
   const frames = focused || activity.type === "constructed" ? activity.frames || [] : [];
   const focus = focused ? activity.listenFor || activity.readFor || activity.sayFor || activity.writeFor || [] : [];
   if (!terms.length && !frames.length && !focus.length) return "";

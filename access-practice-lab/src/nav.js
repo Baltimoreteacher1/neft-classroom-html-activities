@@ -172,6 +172,9 @@ function menuGroups(band, T) {
         link("growth", T("My Language Path", "Mi camino del lenguaje"), "path"),
         link("writing", T("Language builders", "Constructores de lenguaje"), "scaffold"),
         link("flag", T("My Journey Map", "Mi mapa del viaje"), "journey/map"),
+        link("sparkle", T("Daily Language Warm-Up", "Calentamiento diario de lenguaje"), "warmup"),
+        link("passport", T("My portfolio", "Mi portafolio"), "portfolio"),
+        link("medal", T("My collection book", "Mi libro de colección"), "collection"),
       ],
     },
     {
@@ -190,6 +193,13 @@ function menuGroups(band, T) {
       items: [
         link("reading", T("Science of Reading Studio", "Estudio de la ciencia de la lectura"), "science-of-reading"),
         link("sparkle", T("Interactive Language Studios", "Estudios interactivos de lenguaje"), "language-studios"),
+        link("road", T("Thematic Units", "Unidades temáticas"), "units"),
+        link("conversation", T("Argument Arena", "Arena de argumentos"), "arena"),
+        link("reading", T("Mentor Text Explorer", "Explorador de textos modelo"), "mentor"),
+        link("writing", T("Sentence Lab", "Laboratorio de oraciones"), "sentences"),
+        link("words", T("Word Lab", "Laboratorio de palabras"), "wordlab"),
+        link("conversation", T("Real-Life Scenarios", "Escenas de la vida real"), "scenarios"),
+        link("launch", T("Newsroom", "Sala de redacción"), "newsroom"),
         link("worlds", T("Language World: Science Exhibition", "Mundo del lenguaje: Feria de ciencias"), "exhibition"),
         link("worlds", T("Language Reality Engine", "Motor de Realidad Lingüística"), "reality"),
         link("speaking", T("Speaking Studio", "Estudio de expresión oral"), "speak"),

@@ -96,7 +96,7 @@ export function mergeLedgers(local, incoming) {
 }
 
 /** Entry sources that carry a learner's own produced language (so word, error and fade summaries count them). */
-const PRODUCED_SRC = ["writing", "speaking", "mission", "science-lab"];
+const PRODUCED_SRC = ["writing", "speaking", "mission", "science-lab", "arena"];
 
 /** The numeric value of one tracked feature for an entry (null = not applicable to that entry). */
 export function featureValue(entry, key) {
