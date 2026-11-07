@@ -296,7 +296,7 @@ test("voice notes: the learner sends a recording, the teacher answers, the learn
 test("teacher panel: create a class with the teacher key, see the roster and the quiz and voice sections", async () => {
   document.body.innerHTML = '<div id="p"></div>';
   const panel = mountClassPanel(document.querySelector("#p"), {
-    S: (en, es) => es,
+    S: (_en, es) => es,
     fetchImpl: serverFetch,
     origin: "https://thelanguagepage.test",
   });

@@ -8,10 +8,10 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { renderModel } from "../../assets/design/family/art/math-models.mjs";
+import { qrSvg } from "../../shared/qr/qr-code.mjs";
 import { REPO_ROOT } from "../../tools/lib/curriculum-source.mjs";
 import { accentFor, pdfPageCss, SHEET_CSS } from "./family-takehome-css.mjs";
 import { SHEET_UI } from "./family-takehome-data.mjs";
-import { qrSvg } from "../../shared/qr/qr-code.mjs";
 
 export const esc = (s) =>
   String(s ?? "")

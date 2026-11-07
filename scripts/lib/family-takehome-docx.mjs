@@ -25,9 +25,9 @@ import {
   TextRun,
 } from "docx";
 import { renderModel } from "../../assets/design/family/art/math-models.mjs";
+import { qrSvg } from "../../shared/qr/qr-code.mjs";
 import { accentFor } from "./family-takehome-css.mjs";
 import { SHEET_UI } from "./family-takehome-data.mjs";
-import { qrSvg } from "../../shared/qr/qr-code.mjs";
 
 const FONT = "Arial";
 const DOC_LANG = { en: "en-US", es: "es-US" };
