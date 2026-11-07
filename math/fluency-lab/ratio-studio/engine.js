@@ -1,0 +1,50 @@
+// Ratio quantities are nonnegative exact rationals. A pair always has an explicit order.
+const gcd = (a, b) => b === 0n ? a : gcd(b, a % b);
+export function rational(value) {
+  if (typeof value === 'object' && value && 'n' in value && 'd' in value) {
+    const n = BigInt(value.n), d = BigInt(value.d);
+    if (d <= 0n || n < 0n) throw new RangeError('Quantity must be nonnegative');
+    const g = gcd(n, d); return { n: String(n / g), d: String(d / g) };
+  }
+  const s = String(value).trim();
+  if (!/^(?:\d+(?:\.\d+)?|\d+\/\d+)$/.test(s)) throw new RangeError('Enter a nonnegative number or fraction');
+  if (s.includes('/')) { const [a,b] = s.split('/'); return rational({n:a,d:b}); }
+  const [whole, decimal = ''] = s.split('.');
+  return rational({ n: BigInt(whole + decimal), d: 10n ** BigInt(decimal.length) });
+}
+export const valueOf = q => Number(q.n) / Number(q.d);
+export const format = q => q.d === '1' ? q.n : `${q.n}/${q.d}`;
+export function multiply(a,b) { return rational({n: BigInt(a.n)*BigInt(b.n),d:BigInt(a.d)*BigInt(b.d)}); }
+export function add(a,b) { return rational({n:BigInt(a.n)*BigInt(b.d)+BigInt(b.n)*BigInt(a.d),d:BigInt(a.d)*BigInt(b.d)}); }
+export function divide(a,b) { if (b.n === '0') throw new RangeError('Cannot divide by zero'); return rational({n:BigInt(a.n)*BigInt(b.d),d:BigInt(a.d)*BigInt(b.n)}); }
+export function equivalent(a,b,c,d) { return BigInt(a.n)*BigInt(d.n)*BigInt(b.d)*BigInt(c.d) === BigInt(c.n)*BigInt(b.n)*BigInt(d.d)*BigInt(a.d); }
+export function createState(input = {}) {
+  const a = rational(input.a ?? 2), b = rational(input.b ?? 3);
+  if (a.n === '0' && b.n === '0') throw new RangeError('At least one quantity must be positive');
+  return {version:1, a,b, labelA:input.labelA || 'Red',labelB:input.labelB || 'Blue',unitA:input.unitA || 'counters',unitB:input.unitB || 'counters', factor:rational(input.factor ?? 1), comparison:input.comparison || 'part-to-part'};
+}
+export function derive(s) {
+  const a=multiply(s.a,s.factor), b=multiply(s.b,s.factor), total=add(a,b);
+  const rows=[1,2,3,4].map(k=>({factor:k,a:multiply(s.a,rational(k)),b:multiply(s.b,rational(k))}));
+  return {a,b,total,reverse:[b,a],partWhole:[a,total],rows,points:rows.map(r=>({x:r.a,y:r.b,position:valueOf(r.a)/Math.max(1,valueOf(rows[3].a))})),unitRate:a.n==='0'?null:divide(b,a),equivalent:equivalent(s.a,s.b,a,b)};
+}
+export function transition(s, action) {
+  switch(action.type) {
+    case 'set': return createState({...s,[action.field]:action.value});
+    case 'scale': return createState({...s,factor:action.factor});
+    case 'comparison': return {...s,comparison:action.value};
+    case 'reset': return createState();
+    default: throw new RangeError('Unknown action');
+  }
+}
+export function history(initial=createState()) {
+  let states=[initial], index=0;
+  return {get state(){return states[index]},get canUndo(){return index>0},get canRedo(){return index<states.length-1},dispatch(action){states=states.slice(0,index+1);states.push(transition(states[index],action));index++;return states[index]},undo(){index=Math.max(0,index-1);return states[index]},redo(){index=Math.min(states.length-1,index+1);return states[index]},serialize(){return JSON.stringify({version:1,states,index})}};
+}
+export function restore(json) {
+  const data=JSON.parse(json); if(data.version!==1 || !Array.isArray(data.states) || !data.states.length || data.states.length>200) throw new RangeError('Invalid saved studio');
+  const validated=data.states.map(s=>createState(s));
+  // Return a snapshot controller with exact replay of saved states.
+  let index=Math.max(0,Math.min(validated.length-1,Number(data.index)||0));
+  return {get state(){return validated[index]},get canUndo(){return index>0},get canRedo(){return index<validated.length-1},dispatch(action){validated.splice(index+1);validated.push(transition(validated[index],action));index++;return validated[index]},undo(){index=Math.max(0,index-1);return validated[index]},redo(){index=Math.min(validated.length-1,index+1);return validated[index]},serialize(){return JSON.stringify({version:1,states:validated,index})}};
+}

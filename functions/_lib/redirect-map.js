@@ -7,6 +7,8 @@
 
 /** path -> [destination, status] */
 export const EXACT = {
+  "/math/fluencylab": ["/math/fluency-lab/", 301],
+  "/math/fluencylab/": ["/math/fluency-lab/", 301],
   "/novels/unit/2/level/1": ["/lumen-harbor/read/u2-headline/?path=supported", 301],
   "/novels/unit/2/level/1/": ["/lumen-harbor/read/u2-headline/?path=supported", 301],
   "/novels/unit/2/level/2": ["/lumen-harbor/read/u2-headline/?path=independent", 301],
@@ -536,6 +538,7 @@ export const EXACT = {
 
 /** [prefix, destination, status, destinationTakesSplat] */
 export const PREFIX = [
+  ["/math/fluencylab/", "/math/fluency-lab/:splat", 301, true],
   ["/lessons/1-1-flagship/", "/lessons/6-13/", 301, false],
   ["/lessons/2-1-flagship/", "/lessons/6-1/", 301, false],
   ["/lessons/3-1-flagship/", "/lessons/3-1/", 301, false],

@@ -56,7 +56,7 @@ export function renderRatioScaler(state = {}) {
 
   return `
     <div class="ratio-scaler-wrap" data-ratio-root="true" data-a="${a}" data-b="${b}" data-mult="${mult}" data-la="${esc(labelA)}" data-lb="${esc(labelB)}">
-      <div class="coord-header">
+      <div class="coord-header"><a href="/math/fluency-lab/ratio-studio/?a=${encodeURIComponent(a)}&amp;b=${encodeURIComponent(b)}&amp;labelA=${encodeURIComponent(labelA)}&amp;labelB=${encodeURIComponent(labelB)}">Build and test ratios in Ratio Studio →</a>
         <span class="coord-title">📊 Proportional Tape Diagram &amp; Ratio Scaler</span>
         <div class="coord-badges">
           <span class="coord-badge" style="background:#eff6ff; color:#1e40af">Base Ratio: ${a} : ${b}</span>

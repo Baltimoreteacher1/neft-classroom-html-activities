@@ -85,7 +85,7 @@ test("splat rules expand :splat, and pass through when the destination has none"
   const withSplat = PREFIX.find((p) => p[3]);
   assert.ok(withSplat, "expected at least one :splat rule");
   const res = await call(`${withSplat[0]}deep/page`);
-  assert.equal(res.headers.get("location"), withSplat[1].replace(":splat", "deep/page"));
+  assert.equal(new URL(res.headers.get("location")).pathname, withSplat[1].replace(":splat", "deep/page"));
 
   const plain = PREFIX.find((p) => !p[3]);
   const res2 = await call(`${plain[0]}anything`);

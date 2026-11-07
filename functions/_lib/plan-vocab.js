@@ -3074,6 +3074,12 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/math/fluency-lab/ratio-studio/",
+    title: "Ratio Studio · Math Fluency Lab",
+    category: "Math Tool",
+    unit: null,
+  },
+  {
     path: "/math/fluency-lab/reality/",
     title: "Math Reality | EduWonderLab Math Fluency Lab",
     category: "Math Tool",
