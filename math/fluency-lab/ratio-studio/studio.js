@@ -1,8 +1,18 @@
 import {createState,derive,history,restore,rational,valueOf,format,equivalent} from './engine.js';
 import {VOCAB_BILINGUAL_DB} from '../vocab.js';
 const $=id=>document.getElementById(id), esc=s=>String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
-const key='fluencyRatioStudio:v1'; let h;
-try { const q=new URLSearchParams(location.search); h=q.has('a')&&q.has('b')?history(createState({a:q.get('a'),b:q.get('b'),labelA:q.get('labelA')||'First',labelB:q.get('labelB')||'Second'})):restore(localStorage.getItem(key)); } catch { h=history(createState()); }
+const baseKey='fluencyRatioStudio:v1'; let h, initialState, key=baseKey;
+try {
+  const q=new URLSearchParams(location.search);
+  if(q.has('a')&&q.has('b')) {
+    initialState=createState({a:q.get('a'),b:q.get('b'),labelA:q.get('labelA')||'First',labelB:q.get('labelB')||'Second'});
+    key=`${baseKey}:${encodeURIComponent([format(initialState.a),format(initialState.b),initialState.labelA,initialState.labelB].join('|'))}`;
+    try { h=restore(localStorage.getItem(key)); } catch { h=history(initialState); }
+  } else {
+    initialState=createState();
+    try { h=restore(localStorage.getItem(key)); } catch { h=history(initialState); }
+  }
+} catch { initialState=createState(); h=history(initialState); }
 function save(){try{localStorage.setItem(key,h.serialize())}catch{$('error').textContent='This device could not save progress. Your current work remains available until you leave.'}}
 function model(){const s=h.state,d=derive(s),a=valueOf(d.a),b=valueOf(d.b), max=Math.max(a,b,1), width=340, height=240, dots=d.points.map(p=>`<circle cx="${38+Math.min(1,valueOf(p.x)/Math.max(1,valueOf(d.rows[3].a)))*260}" cy="${200-Math.min(1,valueOf(p.y)/Math.max(1,valueOf(d.rows[3].b)))*160}" r="6" fill="#d04738"/>`).join('');
  const counter=(q,color,label)=>Number.isInteger(valueOf(q))&&valueOf(q)<=24?`<div class="counters" aria-label="${esc(label)}: ${format(q)} counters">${Array.from({length:valueOf(q)},()=>`<span style="--counter:${color}"></span>`).join('')}</div>`:`<strong>${format(q)} ${esc(label)}</strong>`;
@@ -12,7 +22,7 @@ function model(){const s=h.state,d=derive(s),a=valueOf(d.a),b=valueOf(d.b), max=
 function act(action){try{h.dispatch(action);$('error').textContent='';model();save()}catch(e){$('error').textContent=e.message}}
 for(const [id,field] of [['amount-a','a'],['amount-b','b'],['factor','factor'],['label-a','labelA'],['label-b','labelB']]) $(id).addEventListener('change',e=>act(field==='factor'?{type:'scale',factor:e.target.value}:{type:'set',field,value:e.target.value}));
 document.querySelectorAll('[data-change]').forEach(btn=>btn.addEventListener('click',()=>{const [field,delta]=btn.dataset.change.split(':');const next=valueOf(h.state[field])+Number(delta);if(next>=0)act({type:'set',field,value:String(next)})}));
-$('undo').onclick=()=>{h.undo();model();save()};$('redo').onclick=()=>{h.redo();model();save()};$('reset').onclick=()=>{h=history(createState());model();save()};
+$('undo').onclick=()=>{h.undo();model();save()};$('redo').onclick=()=>{h.redo();model();save()};$('reset').onclick=()=>{h=history(initialState);model();save()};
 document.querySelectorAll('[data-predict]').forEach(b=>b.onclick=()=>{$('prediction').textContent=b.dataset.predict==='no'?'Correct. 2:3 and 4:5 are different: doubling 2 gives 4, but doubling 3 gives 6.':'Test it: 2×2=4, but 3×2=6. Changing only one part changes the relationship. Revise your prediction.'});
 $('check-row').onclick=()=>{try{const f=rational($('row-factor').value),a=rational($('row-a').value),b=rational($('row-b').value),expected=derive(createState({...h.state,factor:f}));const correct=equivalent(a,rational(1),expected.a,rational(1))&&equivalent(b,rational(1),expected.b,rational(1));$('row-feedback').textContent=correct?`Yes. (${format(a)}, ${format(b)}) belongs in the table and on the same line through the origin. Both quantities use factor ${format(f)}.`:`Compare both quantities with the starting pair. For factor ${format(f)}, the first should be ${format(expected.a)} and the second should be ${format(expected.b)}. Revise your row.`}catch(e){$('row-feedback').textContent=e.message}};
 $('check-reason').onclick=()=>{const t=$('reason').value.trim();$('reason-feedback').textContent=t.length<25?'Explain which quantities changed and whether the same factor applies to both. You can revise your explanation.':/both|each|same|factor|multiply|scale/i.test(t)?'Your explanation identifies scaling. Check that you name the factor and the two quantities; then try the new problem.':'Use the table to compare the two quantities. Did both change by the same factor? Revise your explanation.'};
