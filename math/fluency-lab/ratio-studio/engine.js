@@ -1,5 +1,6 @@
 // Ratio quantities are nonnegative exact rationals. A pair always has an explicit order.
 const gcd = (a, b) => b === 0n ? a : gcd(b, a % b);
+export const COMPARISON_TYPES = Object.freeze(['part-to-part','reverse-part-to-part','first-to-whole','second-to-whole']);
 export function rational(value) {
   if (typeof value === 'object' && value && 'n' in value && 'd' in value) {
     const n = BigInt(value.n), d = BigInt(value.d);
@@ -26,18 +27,26 @@ export function equivalent(a,b,c,d) {
 export function createState(input = {}) {
   const a = rational(input.a ?? 2), b = rational(input.b ?? 3);
   if (a.n === '0' && b.n === '0') throw new RangeError('At least one quantity must be positive');
-  return {version:1, a,b, labelA:input.labelA || 'Red',labelB:input.labelB || 'Blue',unitA:input.unitA || 'counters',unitB:input.unitB || 'counters', factor:rational(input.factor ?? 1), comparison:input.comparison || 'part-to-part'};
+  const comparison=input.comparison || 'part-to-part';
+  if(!COMPARISON_TYPES.includes(comparison))throw new RangeError('Choose a supported ratio comparison');
+  return {version:1, a,b, labelA:input.labelA || 'Red',labelB:input.labelB || 'Blue',unitA:input.unitA || 'counters',unitB:input.unitB || 'counters', factor:rational(input.factor ?? 1), comparison};
 }
 export function derive(s) {
   const a=multiply(s.a,s.factor), b=multiply(s.b,s.factor), total=add(a,b);
   const rows=[1,2,3,4].map(k=>({factor:k,a:multiply(s.a,rational(k)),b:multiply(s.b,rational(k))}));
-  return {a,b,total,reverse:[b,a],partWhole:[a,total],rows,points:rows.map(r=>({x:r.a,y:r.b,position:valueOf(r.a)/Math.max(1,valueOf(rows[3].a))})),unitRate:a.n==='0'?null:divide(b,a),equivalent:equivalent(s.a,s.b,a,b)};
+  const comparisons=[
+    {id:'part-to-part',name:'First to second',first:s.labelA,second:s.labelB,left:a,right:b,kind:'part-to-part'},
+    {id:'reverse-part-to-part',name:'Reverse the order',first:s.labelB,second:s.labelA,left:b,right:a,kind:'part-to-part'},
+    {id:'first-to-whole',name:'First part to total',first:s.labelA,second:'total',left:a,right:total,kind:'part-to-whole'},
+    {id:'second-to-whole',name:'Second part to total',first:s.labelB,second:'total',left:b,right:total,kind:'part-to-whole'},
+  ];
+  return {a,b,total,reverse:[b,a],partWhole:[a,total],comparisons,activeComparison:comparisons.find(c=>c.id===s.comparison),rows,points:rows.map(r=>({x:r.a,y:r.b,position:valueOf(r.a)/Math.max(1,valueOf(rows[3].a))})),unitRate:a.n==='0'?null:divide(b,a),equivalent:equivalent(s.a,s.b,a,b)};
 }
 export function transition(s, action) {
   switch(action.type) {
     case 'set': return createState({...s,[action.field]:action.value});
     case 'scale': return createState({...s,factor:action.factor});
-    case 'comparison': return {...s,comparison:action.value};
+    case 'comparison': return createState({...s,comparison:action.value});
     case 'reset': return createState();
     default: throw new RangeError('Unknown action');
   }
