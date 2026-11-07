@@ -41,14 +41,14 @@ export function recentRoom(band, domains, focus = "") {
   if (!best) return null;
   const rows = (domains[best.domain].levels[best.level]?.activities || []).filter((r) => inGradeFocus(r[5], focus));
   const done = new Set(loadRecord(band, best.domain, best.level).complete);
-  return { domain: best.domain, level: best.level, next: rows.find((r) => !done.has(r[0])) };
+  return { domain: best.domain, level: best.level, next: rows.find((r) => !done.has(r[0])), t: best.t };
 }
 
 /**
- * What "Continue" means right now, most specific first: an unfinished session, an open studio mission, a journey
- * already under way, the skill room practiced last, then the first journey step for a new learner.
+ * What "Continue" means: resume an unfinished session, then return to the most recently saved unfinished work
+ * across the learning systems; otherwise use the skill room or first journey step.
  */
-export function continueTarget(I, { band, resume, openMission, journey, recent }) {
+export function continueTarget(I, { band, resume, openMission, journey, recent, moduleResume }) {
   if (resume)
     return {
       kind: "session",
@@ -61,28 +61,58 @@ export function continueTarget(I, { band, resume, openMission, journey, recent }
       href: sessionHref(resume),
       minutes: resume.minutes,
     };
-  if (openMission)
-    return {
-      kind: "mission",
-      title: I.T("Continue your mission", "Continúa tu misión"),
-      why: I.T(
-        "Pick up the studio mission you started.",
-        "Sigue con la misión del estudio que empezaste.",
-      ),
-      cta: I.T("Continue the mission", "Continuar la misión"),
-      href: `${BASE}/missions/${openMission}?grades=${band}`,
-    };
   const rec = journey?.recommendation;
+  const mission = typeof openMission === "string" ? { id: openMission } : openMission;
+  const activeChoices = [];
+  if (mission?.id)
+    activeChoices.push({
+      kind: "mission",
+      time: Date.parse(mission.updatedAt || mission.started || "") || 0,
+      rank: 4,
+      target: {
+        kind: "mission",
+        title: I.T("Continue your mission", "Continúa tu misión"),
+        why: I.T("Pick up the studio mission you started.", "Sigue con la misión del estudio que empezaste."),
+        cta: I.T("Continue the mission", "Continuar la misión"),
+        href: `${BASE}/missions/${mission.id}?grades=${band}`,
+      },
+    });
   if (rec && MISSIONS[rec.mission] && rec.kind !== "start")
-    return {
+    activeChoices.push({
       kind: "journey",
-      title: headline(I, rec),
-      why: tx(I, rec.reason),
-      cta: ctaLabel(I, rec),
-      href: stepHref(band, rec.mission, rec.step),
-      minutes: stepInfo(rec.step).minutes,
-    };
-  if (recent) {
+      time: Date.parse(journey?.updatedAt || "") || 0,
+      rank: 3,
+      target: {
+        kind: "journey",
+        title: headline(I, rec),
+        why: tx(I, rec.reason),
+        cta: ctaLabel(I, rec),
+        href: stepHref(band, rec.mission, rec.step),
+        minutes: stepInfo(rec.step).minutes,
+      },
+    });
+  if (moduleResume?.href)
+    activeChoices.push({
+      kind: "resume",
+      time: Date.parse(moduleResume.updatedAt || "") || 0,
+      rank: 2,
+      target: {
+        kind: "resume",
+        title: I.T(
+          ({ phonics: "Continue your decoding lesson", vocabulary: "Continue your vocabulary lesson", "subject-reading": "Continue your reading investigation", "reading-room": "Continue your reading", writing: "Continue your writing", speaking: "Continue your speaking practice" })[moduleResume.system] || "Continue learning",
+          ({ phonics: "Continúa tu lección de decodificación", vocabulary: "Continúa tu lección de vocabulario", "subject-reading": "Continúa tu investigación de lectura", "reading-room": "Continúa tu lectura", writing: "Continúa tu escritura", speaking: "Continúa tu práctica oral" })[moduleResume.system] || "Continúa aprendiendo",
+        ),
+        why: I.T("Your place is saved on this device.", "Tu lugar está guardado en este dispositivo."),
+        cta: I.T("Continue", "Continuar"),
+        href: moduleResume.href,
+      },
+    });
+  if (recent?.domain)
+    activeChoices.push({ kind: "room", time: recent.t || 0, rank: 1, target: null });
+  activeChoices.sort((a, b) => (b.time - a.time) || (b.rank - a.rank));
+  const best = activeChoices[0];
+  if (best && best.kind !== "room") return best.target;
+  if (best?.kind === "room") {
     const meta = DOMAIN_META[recent.domain];
     const roomHref = `${BASE}/${recent.domain}/${recent.level}?grades=${band}`;
     return {
@@ -91,7 +121,7 @@ export function continueTarget(I, { band, resume, openMission, journey, recent }
       why: recent.next
         ? html`${I.T("Next:", "Siguiente:")} <span lang="en">${recent.next[1]}</span>`
         : I.T("You finished this level. Choose another one.", "Terminaste este nivel. Elige otro."),
-      cta: recent.next ? I.T("Continue", "Continuar") : I.T("Choose a level", "Elegir un nivel"),
+      cta: recent.next ? I.T("Continue", "Continuar") : I.T("Choose a level", "Elegir una destreza"),
       href: recent.next
         ? `${BASE}/${recent.domain}/${recent.level}/${recent.next[0]}?grades=${band}`
         : roomHref,

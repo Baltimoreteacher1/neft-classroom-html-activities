@@ -18,13 +18,14 @@ const clean = (raw) => ({
   attempts: Number.isInteger(raw?.attempts) ? Math.max(0, Math.min(raw.attempts, 99)) : 0,
   help: Boolean(raw?.help),
   doneAt: typeof raw?.doneAt === "string" ? raw.doneAt : "",
+  updatedAt: typeof raw?.updatedAt === "string" && Number.isFinite(Date.parse(raw.updatedAt)) ? raw.updatedAt : "",
 });
 export const loadReadingState = () => safeJson(storage.get(KEY), {}) || {};
 const save = (all) => storage.set(KEY, JSON.stringify(all));
 const stateFor = (all, id) => clean(all[id]);
 const update = (id, patch) => {
   const all = loadReadingState();
-  all[id] = { ...stateFor(all, id), ...patch };
+  all[id] = { ...stateFor(all, id), ...patch, updatedAt: new Date().toISOString() };
   save(all);
   return all[id];
 };

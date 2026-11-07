@@ -117,6 +117,17 @@ try {
     startBounds && startBounds.y + startBounds.height <= 900,
     "Continue action appears in the initial desktop viewport",
   );
+  await page.evaluate(() => localStorage.setItem("accessPracticeLab:v1:vocabCurriculum", JSON.stringify({
+    v: 1,
+    lessons: { "g4-use-evidence": { stage: "context", draft: "Evidence shows", updatedAt: "2026-11-06T10:00:00.000Z" } },
+  })));
+  await go("/?grades=3-5");
+  ok(
+    (await page.locator(".lph [data-continue]").getAttribute("href")) === "/access-practice-lab/vocab-curriculum/g4-use-evidence?grades=3-5",
+    "Continue resumes a saved vocabulary investigation",
+  );
+  await page.evaluate(() => localStorage.removeItem("accessPracticeLab:v1:vocabCurriculum"));
+  await go("/?grades=3-5");
   const missionBounds = await page.locator(".session-heading .btn-primary").boundingBox();
   ok(
     missionBounds && missionBounds.y + missionBounds.height <= 1800,

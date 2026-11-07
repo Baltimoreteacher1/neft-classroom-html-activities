@@ -44,6 +44,7 @@ import { domT, nextActivity, planOptionsHTML, portalHTML, reasonT, tierFor } fro
 export { nextActivity, tierFor };
 import { cardHref, continueTarget, pickBand, recentRoom, startHTML } from "./home-start.js";
 import { loadJourneyData } from "../journey/ui/pages-shared.js";
+import { latestModuleResume } from "../home-resume.js";
 
 const reviewHref = (item, plan, band, ctx) => {
   const row = plan.find((r) => r.review?.key === item.key);
@@ -107,6 +108,10 @@ export async function render(ctx) {
   const records = new Map();
   const ledger = loadLedger();
   const journey = loadJourneyData(band, { ledger });
+  const journeyStep = journey.recommendation?.kind === "continue"
+    ? journey.state?.bands?.[band]?.missions?.[journey.recommendation.mission]?.steps?.[journey.recommendation.step]
+    : null;
+  journey.updatedAt = journeyStep?.lastAt || journeyStep?.doneAt || "";
   const bandRecords = allRecords().filter((r) => r.band === band);
   const review = {
     entries: ledger.entries.filter((e) => e.band === band),
@@ -154,8 +159,11 @@ export async function render(ctx) {
   const familyMessage = familyMessages[engagement.encouragement];
   const win = shared.testWindow;
   const studio = loadStudio();
-  const open = Object.entries(studio.missions).find(([, m]) => m.started && !m.done);
   const idx = await loadStudioIndex().catch(() => null);
+  const open = Object.entries(studio.missions)
+    .filter(([, m]) => m.started && !m.done)
+    .sort(([, a], [, b]) => (Date.parse(b.updatedAt || b.started || "") || 0) - (Date.parse(a.updatedAt || a.started || "") || 0))[0];
+  const moduleResume = latestModuleResume({ band, studio, index: idx || {} });
   let next = null;
   if (open)
     next = {
@@ -190,9 +198,10 @@ export async function render(ctx) {
   const target = continueTarget(I, {
     band,
     resume,
-    openMission: open?.[0] || "",
+    openMission: open ? { id: open[0], started: open[1].started, updatedAt: open[1].updatedAt } : null,
     journey,
     recent: recentRoom(band, domains, activeGradeFocus(ctx.prefs, band)),
+    moduleResume,
   });
 
   const card = (c) =>

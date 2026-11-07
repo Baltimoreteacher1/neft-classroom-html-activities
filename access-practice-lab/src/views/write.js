@@ -35,7 +35,10 @@ let S = null;
 let I = makeI18n("en"); // set at the top of render(); helpers and handlers below read it
 const bandEs = (band) => `Grados ${band.replace("-", "–")}`;
 const chosen = new Map(); // task id → stage picked before the first attempt
-const save = () => saveStudio(S.studio);
+const save = () => {
+  if (S?.state) S.state.updatedAt = new Date().toISOString();
+  return saveStudio(S.studio);
+};
 const FOCUS_OF = {
   "use-source": "evidence",
   "check-number": "evidence",

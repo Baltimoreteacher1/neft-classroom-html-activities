@@ -54,7 +54,10 @@ const LETTERS = "ABCDEFGH";
 // Stored messages from earlier versions began with a check mark character; the icon replaces it.
 const plainMsg = (m) => String(m || "").replace(/^\u2713\s*/, "");
 let M = null;
-const save = () => saveStudio(M.studio);
+const save = () => {
+  if (M?.ms && M.ms.started && !M.ms.done) M.ms.updatedAt = new Date().toISOString();
+  return saveStudio(M.studio);
+};
 
 function hubHTML(ctx, index, studio) {
   const list = index.missions.filter((m) => m.band === ctx.band || m.band === "Both" || !m.band);

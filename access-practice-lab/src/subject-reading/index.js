@@ -24,6 +24,7 @@ export function loadSubjectReading(read = (key) => storage.get(key)) {
       feedback: isObj(value.feedback) ? value.feedback : null,
       completedAt: limit(value.completedAt, 40),
       startedAt: limit(value.startedAt, 40),
+      updatedAt: limit(value.updatedAt, 40),
     };
   }
   return { v: 1, readings };
@@ -128,7 +129,8 @@ export function onInput(event, ctx) {
   if (event.target.matches("[data-sr-draft]") && !record.feedback) record.draft = limit(event.target.value);
   else if (event.target.matches("[data-sr-revision]") && record.feedback && !record.completedAt) record.revised = limit(event.target.value);
   else return false;
-  record.startedAt ||= new Date().toISOString();
+    record.startedAt ||= new Date().toISOString();
+    record.updatedAt = new Date().toISOString();
   saveSubjectReading(state);
   return true;
 }
@@ -161,6 +163,7 @@ export function onClick(event, ctx) {
     if (review.ready) record.completedAt = new Date().toISOString();
   } else return false;
   record.startedAt ||= new Date().toISOString();
+  record.updatedAt = new Date().toISOString();
   saveSubjectReading(state);
   ctx.rerender();
   return true;

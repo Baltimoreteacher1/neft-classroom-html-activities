@@ -64,7 +64,10 @@ let speechRate = 0.9;
 const studioModel = (task) => (task?.stages?.guided?.model ? { name: "", line: task.stages.guided.model, partial: false } : null);
 const feedbackProvider = new LocalFeedbackProvider();
 
-const save = () => saveStudio(S.studio);
+const save = () => {
+  if (S?.state) S.state.updatedAt = new Date().toISOString();
+  return saveStudio(S.studio);
+};
 const TYPES = {
   retell: [["Retell", "Volver a contar"], "replay", ["Tell what happened, in order.", "Cuenta lo que pasó, en orden."]],
   describe: [["Describe", "Describir"], "search", ["Say what you see in data, pictures or places.", "Di lo que ves en datos, imágenes o lugares."]],

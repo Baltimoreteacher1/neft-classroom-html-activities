@@ -15,6 +15,7 @@ const { HOME_CARDS, HOME_GROUPS, cardsFor } = await import(
 );
 const { makeI18n } = await import("../access-practice-lab/src/i18n.js");
 const { toHtml } = await import("../access-practice-lab/src/util.js");
+const { latestModuleResume } = await import("../access-practice-lab/src/home-resume.js");
 
 const SHIPPED = ["3-5", "6-8"];
 const dom = (markup) => new JSDOM(`<body>${toHtml(markup)}</body>`).window.document;
@@ -347,6 +348,18 @@ test("Continue: unfinished session, open mission, journey under way, last room, 
     "session",
   );
   assert.equal(pick({ openMission: "m1", journey: { recommendation: rec }, recent }), "mission");
+  assert.equal(
+    pick({
+      openMission: { id: "m1", started: "2026-10-01T10:00:00Z", updatedAt: "2026-10-01T10:00:00Z" },
+      moduleResume: {
+        system: "vocabulary",
+        href: "/access-practice-lab/vocab-curriculum/g6-evaluate-sources?grades=6-8",
+        updatedAt: "2026-11-01T10:00:00Z",
+      },
+    }),
+    "resume",
+    "newer saved work in another learning system wins over an older open mission",
+  );
   assert.equal(pick({ journey: { recommendation: rec }, recent }), "journey");
   assert.equal(pick({ journey: { recommendation: { ...rec, kind: "start" } }, recent }), "room");
   const room = start.continueTarget(I, { band: "6-8", recent });
@@ -358,6 +371,88 @@ test("Continue: unfinished session, open mission, journey under way, last room, 
   assert.equal(fresh.kind, "start");
   assert.match(fresh.href, /\/journey\/m01\/discover/);
   assert.equal(start.continueTarget(I, { band: "6-8" }).href, "#skills");
+});
+
+test("cross-system Continue returns the newest unfinished lesson without mixing progress formats", () => {
+  const records = new Map([
+    [
+      "accessPracticeLab:v1:sor",
+      JSON.stringify({
+        "short-vowels": { phase: "read", choice: "map", updatedAt: "2026-11-01T10:00:00.000Z" },
+        "finished-pattern": {
+          phase: "complete",
+          doneAt: "2026-11-02T10:00:00.000Z",
+          choice: "ship",
+        },
+      }),
+    ],
+    [
+      "accessPracticeLab:v1:vocabCurriculum",
+      JSON.stringify({
+        v: 1,
+        lessons: {
+          "g6-evaluate-sources": {
+            stage: "passage",
+            draft: "The source shows",
+            updatedAt: "2026-11-03T10:00:00.000Z",
+          },
+          "g4-use-evidence": {
+            stage: "application",
+            draft: "Another band",
+            updatedAt: "2026-11-04T10:00:00.000Z",
+          },
+          "g8-synthesize-claims": {
+            stage: "transfer",
+            completed: true,
+            draft: "Finished",
+            updatedAt: "2026-11-05T10:00:00.000Z",
+          },
+        },
+      }),
+    ],
+    [
+      "accessPracticeLab:v1:subjectReading",
+      JSON.stringify({
+        v: 1,
+        readings: {
+          "ecosystems-change": {
+            startedAt: "2026-11-06T10:00:00.000Z",
+            updatedAt: "2026-11-06T10:00:00.000Z",
+            draft: "Evidence suggests",
+          },
+        },
+      }),
+    ],
+  ]);
+  const resume = latestModuleResume({ band: "6-8", read: (key) => records.get(key) || null });
+  assert.equal(resume.system, "subject-reading");
+  assert.equal(resume.id, "ecosystems-change");
+  assert.equal(resume.href, "/access-practice-lab/subject-reading/ecosystems-change?grades=6-8");
+});
+
+test("the rendered home Continue button opens a saved vocabulary investigation", async () => {
+  localStorage.clear();
+  localStorage.setItem(
+    "accessPracticeLab:v1:vocabCurriculum",
+    JSON.stringify({
+      v: 1,
+      lessons: {
+        "g6-evaluate-sources": {
+          stage: "context",
+          draft: "The evidence shows",
+          updatedAt: "2026-11-06T10:00:00.000Z",
+        },
+      },
+    }),
+  );
+  const doc = await renderHome("6-8", "en");
+  const continueLink = doc.querySelector(".lph-continue [data-continue]");
+  assert.equal(
+    continueLink.getAttribute("href"),
+    "/access-practice-lab/vocab-curriculum/g6-evaluate-sources?grades=6-8",
+  );
+  assert.match(doc.querySelector(".lph-continue h2").textContent, /vocabulary lesson/i);
+  localStorage.clear();
 });
 
 test("Continue reads the last skill room practiced on this device", async () => {
