@@ -3,11 +3,12 @@
 // the answer "with help", which never counts as
 // independent: the learner is asked for a new problem on their own. Nothing here changes the lab's mastery
 // evidence; it only feeds the local Studio record that decides how much support to offer next.
-import { pick } from "./core.js";
+import { L, pick } from "./core.js";
 import { diagnose, lessonFor } from "./engines.js";
 import { record } from "./adaptive.js";
 import { generateProblem, seededRandom, validateAnswer } from "../problem-bank.js";
 import { t } from "../i18n.js";
+import { createRatioExplanationUrl } from "../../../shared/math-language-bridge/v1.js";
 
 const esc = (s) => String(s).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;");
 
@@ -102,7 +103,17 @@ export function mountTry(ctx, root) {
       root.querySelector("[data-ladder]").innerHTML = "";
       root.querySelector("input").disabled = true;
       root.querySelector('[data-form] button').disabled = true;
-      root.querySelector("[data-actions]").innerHTML = `<button type="button" class="sd-btn sd-primary" data-new="${supported ? "independent" : "more"}">${esc(supported ? t("Try a new one on my own") : t("Another one"))}</button>`;
+      const next = `<button type="button" class="sd-btn sd-primary" data-new="${supported ? "independent" : "more"}">${esc(supported ? t("Try a new one on my own") : t("Another one"))}</button>`;
+      const base = lesson?.spec?.kind === "ratio" ? lesson.spec.base : null;
+      const grade = Number(ctx.skill.grade) || 6;
+      const bridgeUrl =
+        Array.isArray(base) && base.length === 2 && base.every((n) => Number.isInteger(n) && n >= 1 && n <= 12) && grade >= 6 && grade <= 8
+          ? createRatioExplanationUrl({ first: base[0], second: base[1], grade })
+          : null;
+      const bridge = bridgeUrl
+        ? `<div class="sd-math-language-bridge"><a class="sd-btn" href="${bridgeUrl}">${esc(pick(L("Explain this ratio in The Language Page", "Explica esta razón en The Language Page"), ctx.lang()))}</a><p>${esc(pick(L("Only the ratio quantities and grade travel with this optional link. Your name, response, and progress stay here.", "Este enlace opcional solo comparte las cantidades de la razón y el grado. Tu nombre, respuesta y progreso se quedan aquí."), ctx.lang()))}</p></div>`
+        : "";
+      root.querySelector("[data-actions]").innerHTML = `${next}${bridge}`;
       ctx.refreshRail();
       return;
     }

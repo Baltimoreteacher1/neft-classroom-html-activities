@@ -7,7 +7,15 @@
 //   5. Spot the Syntax Glitch (Error analysis bug-hunt cards)
 
 import { crumbsHTML } from "../components.js";
-import { BASE, ICONS, esc, html, icon } from "../util.js";
+import { BASE, ICONS, esc, html, icon, raw, toHtml } from "../util.js";
+import { i18nFor } from "../i18n.js";
+import { dictationControlsHTML, toggleDictation } from "../dictation-ui.js";
+import {
+  analyzeRatioExplanation,
+  checkRatioTransfer,
+  ratioTransferBase,
+  supportForLevel,
+} from "../studios/math-reasoning-bridge.js";
 
 // Plain-string icon for the template-string markup in this file.
 const ico = (name) => `<svg class="ico" aria-hidden="true" focusable="false"><use href="${ICONS}#${name}"></use></svg>`;
@@ -274,10 +282,82 @@ let state = {
   cohIdx: 0,
   cohSelected: null,
   glitchActiveId: null,
+  bridgeKey: "",
+  bridgeStep: "draft",
+  bridgeSupport: 3,
+  bridgeTransferCorrect: false,
+  bridgeDraft: "",
+  bridgeRevision: "",
+  bridgeTransfer: "",
+  bridgeTransferExplain: "",
+  bridgeTransferFeedback: "",
 };
 
+function ratioBridgePanel(bridge, I, language) {
+  const firstx3 = bridge.first * 3;
+  const secondx3 = bridge.second * 3;
+  const [transferFirst, transferSecond] = ratioTransferBase(bridge);
+  const support = supportForLevel(state.bridgeSupport, language);
+  const bank = support?.bank?.map((word) => `<span>${esc(word)}</span>`).join("") || "";
+  const features = (response) => {
+    const result = analyzeRatioExplanation(response);
+    const items = [
+      [result.evidence.namesBoth, I.T("Names both quantities", "Nombra las dos cantidades")],
+      [result.evidence.usesRatioWord, I.T("Uses ratio language", "Usa lenguaje de razones")],
+      [result.evidence.connectsReason, I.T("Connects ideas with a reason", "Conecta las ideas con una razón")],
+    ];
+    return `<p class="mlb-feedback">${I.T(result.feedback.en, result.feedback.es)}</p><ul class="mlb-evidence">${items.map(([yes, label]) => `<li class="${yes ? "is-present" : "is-next"}"><span aria-hidden="true">${yes ? "✓" : "○"}</span> ${label}</li>`).join("")}</ul>`;
+  };
+  const table = `<table class="mlb-ratio-table"><caption>${I.T("One ratio, scaled equally", "Una razón, escalada por igual")}</caption><thead><tr><th scope="col">${I.T("Model", "Modelo")}</th><th scope="col">${I.T("Group A", "Grupo A")}</th><th scope="col">${I.T("Group B", "Grupo B")}</th></tr></thead><tbody><tr><th scope="row">${I.T("Starting ratio", "Razón inicial")}</th><td>${bridge.first}</td><td>${bridge.second}</td></tr><tr><th scope="row">${I.T("Multiply both by 3", "Multiplica ambos por 3")}</th><td>${firstx3}</td><td>${secondx3}</td></tr></tbody></table>`;
+  const common = `<div class="mlb-model">${table}<p>${I.T("Compare the two rows. What changed in each group? What stayed the same in the relationship?", "Compara las dos filas. ¿Qué cambió en cada grupo? ¿Qué se mantuvo igual en la relación?")}</p></div><aside class="mlb-separate"><strong>${I.T("Two kinds of evidence stay separate", "Dos tipos de evidencia se mantienen separados")}</strong><p>${I.T("The ratio model shows the math. Your response is used only for language feedback. No audio is recorded, and no name, response, or progress is sent back to Math Fluency Lab.", "El modelo muestra las matemáticas. Tu respuesta se usa solo para recibir comentarios sobre el lenguaje. No se graba audio ni se envían nombres, respuestas o progreso a Math Fluency Lab.")}</p></aside>`;
+
+  if (state.bridgeStep === "draft") {
+    return `<section class="ls-panel-section mlb-panel"><div class="ls-section-banner"><h2>${I.T("Explain the ratio", "Explica la razón")}</h2><p>${I.T(`Why do ${bridge.first}:${bridge.second} and ${firstx3}:${secondx3} describe the same relationship? Say your idea aloud first, or type it below.`, `¿Por qué ${bridge.first}:${bridge.second} y ${firstx3}:${secondx3} describen la misma relación? Di tu idea en voz alta o escríbela abajo.`)}</p></div>${common}<label class="mlb-support"><span>${I.T("Choose language support for this task (not a proficiency score)", "Elige el apoyo lingüístico para esta tarea (no es una puntuación de dominio)")}</span><select data-bridge-support aria-label="${esc(I.S("Language support for this task", "Apoyo lingüístico para esta tarea"))}"><option value="2" ${state.bridgeSupport === 2 ? "selected" : ""}>${I.T("More support", "Más apoyo")}</option><option value="3" ${state.bridgeSupport === 3 ? "selected" : ""}>${I.T("Some support", "Algo de apoyo")}</option><option value="5" ${state.bridgeSupport === 5 ? "selected" : ""}>${I.T("Few supports", "Poco apoyo")}</option></select></label>${support ? `<div class="mlb-scaffold"><strong>${I.T("Useful words", "Palabras útiles")}</strong><div class="mlb-word-bank">${bank}</div><p><strong>${I.T("Sentence starter", "Inicio de oración")}</strong> ${esc(support.frame)}</p></div>` : ""}<form data-bridge-draft><label for="mlb-draft">${I.T("Your explanation", "Tu explicación")}</label>${toHtml(dictationControlsHTML("mlb-draft", I, { label: I.T("Say it: words appear here", "Dilo: las palabras aparecen aquí") }))}<textarea id="mlb-draft" name="response" maxlength="1200" rows="4" required>${esc(state.bridgeDraft)}</textarea><button type="submit" class="btn primary">${I.T("Get language feedback", "Recibir comentarios sobre el lenguaje")}</button></form></section>`;
+  }
+
+  if (state.bridgeStep === "revision") {
+    const reduced = state.bridgeSupport <= 2 ? `<div class="mlb-scaffold"><strong>${I.T("Word bank (the sentence frame is faded)", "Banco de palabras (se quitó el inicio de oración)")}</strong><div class="mlb-word-bank">${bank}</div></div>` : "";
+    return `<section class="ls-panel-section mlb-panel"><div class="ls-section-banner"><h2>${I.T("Improve your explanation", "Mejora tu explicación")}</h2><p>${I.T("Use the evidence below to revise one part. The sentence starter is now removed.", "Usa la evidencia para revisar una parte. Ahora se quitó el inicio de oración.")}</p></div>${common}<div class="mlb-original"><strong>${I.T("First explanation", "Primera explicación")}</strong><p>${esc(state.bridgeDraft)}</p>${features(state.bridgeDraft)}</div>${reduced}<form data-bridge-revision><label for="mlb-revision">${I.T("Your revision", "Tu revisión")}</label><textarea id="mlb-revision" maxlength="1200" rows="4" required>${esc(state.bridgeRevision)}</textarea><button type="submit" class="btn primary">${I.T("Continue to a new problem", "Continuar con un problema nuevo")}</button></form></section>`;
+  }
+
+  if (state.bridgeStep === "transfer") {
+    return `<section class="ls-panel-section mlb-panel"><div class="ls-section-banner"><h2>${I.T("Prove it with a new ratio", "Demuéstralo con una razón nueva")}</h2><p>${I.T(`A new problem starts with ${transferFirst}:${transferSecond}. Make an equivalent ratio using 4 groups. Enter the two quantities as A:B.`, `Un problema nuevo comienza con ${transferFirst}:${transferSecond}. Crea una razón equivalente con 4 grupos. Escribe las cantidades como A:B.`)}</p></div><div class="mlb-transfer-model"><p>${I.T("Starting relationship", "Relación inicial")}: <strong>${transferFirst}:${transferSecond}</strong></p><p>${I.T("Your new pair", "Tu nuevo par")}: <strong>${state.bridgeTransfer ? esc(state.bridgeTransfer) : "? : ?"}</strong></p></div>${state.bridgeTransferFeedback ? `<p class="mlb-feedback" role="status">${esc(state.bridgeTransferFeedback)}</p>` : ""}<form data-bridge-transfer><label for="mlb-transfer">${I.T("Equivalent pair", "Par equivalente")}</label><input id="mlb-transfer" value="${esc(state.bridgeTransfer)}" inputmode="text" autocomplete="off" aria-describedby="mlb-transfer-help" required/><small id="mlb-transfer-help">${I.T("Use a colon, for example 12:20.", "Usa dos puntos, por ejemplo 12:20.")}</small><button type="submit" class="btn primary">${I.T("Check the math", "Revisar las matemáticas")}</button></form>${state.bridgeTransferCorrect ? `<div class="mlb-transfer-success"><p role="status">${I.T("The pair is equivalent. Now explain the new example independently.", "El par es equivalente. Ahora explica el ejemplo nuevo por tu cuenta.")}</p><form data-bridge-transfer-explain><label for="mlb-transfer-explain">${I.T("Explain in your own words (no sentence starter)", "Explica con tus propias palabras (sin inicio de oración)")}</label>${toHtml(dictationControlsHTML("mlb-transfer-explain", I, { label: I.T("Say your independent explanation", "Di tu explicación independiente") }))}<textarea id="mlb-transfer-explain" maxlength="1200" rows="3" required>${esc(state.bridgeTransferExplain)}</textarea><button type="submit" class="btn primary">${I.T("Finish the investigation", "Terminar la investigación")}</button></form></div>` : ""}</section>`;
+  }
+
+  return `<section class="ls-panel-section mlb-panel"><div class="ls-section-banner"><h2>${I.T("Investigation complete", "Investigación completa")}</h2><p>${I.T("You revised an explanation and completed a new ratio problem independently.", "Revisaste una explicación y resolviste un problema nuevo de razones por tu cuenta.")}</p></div>${common}<div class="mlb-comparison"><article><h3>${I.T("First", "Primera")}</h3><p>${esc(state.bridgeDraft)}</p></article><article><h3>${I.T("Revised", "Revisada")}</h3><p>${esc(state.bridgeRevision)}</p></article><article><h3>${I.T("Independent transfer", "Transferencia independiente")}</h3><p>${esc(state.bridgeTransferExplain)}</p></article></div><h3>${I.T("Language evidence", "Evidencia del lenguaje")}</h3>${features(state.bridgeTransferExplain)}<p class="mlb-caution">${I.T("These observations describe words in this response only. They are not an official WIDA score or a measure of math achievement.", "Estas observaciones describen solo las palabras de esta respuesta. No son una puntuación oficial de WIDA ni una medida de logro matemático.")}</p><button type="button" class="btn ghost" data-bridge-reset>${I.T("Try another ratio", "Probar otra razón")}</button></section>`;
+}
+
 export async function render(ctx = {}) {
+  const bridge = ctx.route?.mathBridge || null;
+  const bridgeKey = bridge ? `${bridge.schema}:${bridge.grade}:${bridge.first}:${bridge.second}` : "";
+  if (bridgeKey && bridgeKey !== state.bridgeKey) {
+    Object.assign(state, {
+      bridgeKey,
+      tab: "math-bridge",
+      bridgeStep: "draft",
+      bridgeTransferCorrect: false,
+      bridgeDraft: "",
+      bridgeRevision: "",
+      bridgeTransfer: "",
+      bridgeTransferExplain: "",
+      bridgeTransferFeedback: "",
+    });
+  } else if (!bridgeKey && state.bridgeKey) {
+    Object.assign(state, {
+      bridgeKey: "",
+      tab: state.tab === "math-bridge" ? "wida" : state.tab,
+      bridgeStep: "draft",
+      bridgeTransferCorrect: false,
+      bridgeDraft: "",
+      bridgeRevision: "",
+      bridgeTransfer: "",
+      bridgeTransferExplain: "",
+      bridgeTransferFeedback: "",
+    });
+  }
   const currentTab = state.tab;
+  const I = i18nFor(ctx);
+  const language = ctx.prefs?.lang === "es" ? "es" : "en";
   const widaCurrentData = WIDA_DISCOURSE_DATA[state.widaDomain] || WIDA_DISCOURSE_DATA.science;
   const currentWidaLevelData = widaCurrentData.levels[state.widaLevel - 1] || widaCurrentData.levels[2];
   const clauseObj = SYNTAX_CLAUSES[state.activeClauseIdx];
@@ -315,6 +395,7 @@ export async function render(ctx = {}) {
 
       <!-- Navigation Tabs -->
       <div class="ls-nav-tabs" role="tablist">
+        ${bridge ? `<button type="button" class="ls-tab-btn ${currentTab === "math-bridge" ? "active" : ""}" data-ls-tab="math-bridge">${ico("construction")} ${I.T("Math explanation", "Explicación matemática")}</button>` : ""}
         <button type="button" class="ls-tab-btn ${currentTab === "wida" ? "active" : ""}" data-ls-tab="wida">${ico("growth")} WIDA Discourse Slider</button>
         <button type="button" class="ls-tab-btn ${currentTab === "syntax" ? "active" : ""}" data-ls-tab="syntax">${ico("tools")} Syntax Clause Slicer</button>
         <button type="button" class="ls-tab-btn ${currentTab === "wheel" ? "active" : ""}" data-ls-tab="wheel">${ico("grid")} Morphology &amp; Cognate Wheel</button>
@@ -324,6 +405,7 @@ export async function render(ctx = {}) {
 
       <!-- Studio Stage Body -->
       <div class="ls-stage-body">
+        ${currentTab === "math-bridge" && bridge ? ratioBridgePanel(bridge, I, language) : ""}
         
         <!-- 1. WIDA Discourse Slider Studio -->
         ${currentTab === "wida" ? `
@@ -592,12 +674,86 @@ export async function render(ctx = {}) {
 
   return {
     title: "Language Studios",
-    html: htmlContent,
+    html: raw(htmlContent),
   };
 }
 
 export function mount(root, ctx) {
   if (!root) return;
+
+  const bridge = ctx.route?.mathBridge || null;
+  const I = i18nFor(ctx);
+
+  root.querySelectorAll("[data-dictate^='mlb-']").forEach((button) => {
+    button.addEventListener("click", async () => {
+      const id = button.dataset.dictate;
+      const fieldId = id === "mlb-draft" ? "#mlb-draft" : "#mlb-transfer-explain";
+      const handled = await toggleDictation(id, {
+        I,
+        lang: ctx.prefs?.lang === "es" ? "es-ES" : "en-US",
+        onText: (text) => {
+          const field = root.querySelector(fieldId);
+          if (!field) return;
+          field.value = text;
+          if (id === "mlb-draft") state.bridgeDraft = text;
+          else state.bridgeTransferExplain = text;
+        },
+        onDone: (text) => {
+          if (id === "mlb-draft") state.bridgeDraft = text;
+          else state.bridgeTransferExplain = text;
+        },
+      });
+      if (handled) ctx.rerender();
+    });
+  });
+
+  root.querySelector("[data-bridge-support]")?.addEventListener("change", (event) => {
+    state.bridgeSupport = Number(event.target.value);
+    ctx.rerender();
+  });
+  root.querySelector("[data-bridge-draft]")?.addEventListener("submit", (event) => {
+    event.preventDefault();
+    state.bridgeDraft = root.querySelector("#mlb-draft")?.value.trim() || "";
+    if (!state.bridgeDraft) return;
+    state.bridgeStep = "revision";
+    ctx.rerender();
+  });
+  root.querySelector("[data-bridge-revision]")?.addEventListener("submit", (event) => {
+    event.preventDefault();
+    state.bridgeRevision = root.querySelector("#mlb-revision")?.value.trim() || "";
+    if (!state.bridgeRevision) return;
+    state.bridgeStep = "transfer";
+    ctx.rerender();
+  });
+  root.querySelector("[data-bridge-transfer]")?.addEventListener("submit", (event) => {
+    event.preventDefault();
+    state.bridgeTransfer = root.querySelector("#mlb-transfer")?.value.trim() || "";
+    if (!bridge) return;
+    state.bridgeTransferCorrect = checkRatioTransfer(bridge, state.bridgeTransfer);
+    state.bridgeTransferFeedback = state.bridgeTransferCorrect
+      ? i18nFor(ctx).S("Correct: both quantities were multiplied by 4.", "Correcto: ambas cantidades se multiplicaron por 4.")
+      : i18nFor(ctx).S("Check the factor. Both quantities must be multiplied by 4.", "Revisa el factor. Ambas cantidades deben multiplicarse por 4.");
+    ctx.rerender();
+  });
+  root.querySelector("[data-bridge-transfer-explain]")?.addEventListener("submit", (event) => {
+    event.preventDefault();
+    state.bridgeTransferExplain = root.querySelector("#mlb-transfer-explain")?.value.trim() || "";
+    if (!state.bridgeTransferExplain) return;
+    state.bridgeStep = "complete";
+    ctx.rerender();
+  });
+  root.querySelector("[data-bridge-reset]")?.addEventListener("click", () => {
+    Object.assign(state, {
+      bridgeStep: "draft",
+      bridgeTransferCorrect: false,
+      bridgeDraft: "",
+      bridgeRevision: "",
+      bridgeTransfer: "",
+      bridgeTransferExplain: "",
+      bridgeTransferFeedback: "",
+    });
+    ctx.rerender();
+  });
 
   // Tabs
   root.querySelectorAll("[data-ls-tab]").forEach((btn) => {

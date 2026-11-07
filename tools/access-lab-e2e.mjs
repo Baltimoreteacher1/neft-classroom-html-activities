@@ -764,6 +764,56 @@ try {
     "restoring an opted-in ACCESS1 backup restores the postcard sharing choice",
   );
 
+  const bridgeQuery = new URLSearchParams({
+    schema: "edu-wonderlab.math-language/1",
+    task: "ratio-equivalence",
+    grade: "6",
+    first: "2",
+    second: "3",
+  });
+  await go(`/language-studios?${bridgeQuery}`);
+  ok(
+    await page.getByRole("heading", { name: "Explain the ratio" }).isVisible(),
+    "Math Fluency ratio context opens the Language Page explanation journey",
+  );
+  ok(
+    await page.locator('[data-dictate="mlb-draft"]').isVisible(),
+    "ratio explanation offers optional spoken response",
+  );
+  await page.fill(
+    "#mlb-draft",
+    "Both quantities were multiplied by three, so the ratio stays equivalent.",
+  );
+  await page.click('[data-bridge-draft] button[type="submit"]');
+  ok(
+    await page.getByRole("heading", { name: "Improve your explanation" }).isVisible(),
+    "first response receives a revision step",
+  );
+  await page.fill(
+    "#mlb-revision",
+    "Both quantities use the same factor, so their ratio remains equivalent.",
+  );
+  await page.click('[data-bridge-revision] button[type="submit"]');
+  ok(
+    await page.getByRole("heading", { name: "Prove it with a new ratio" }).isVisible(),
+    "revision leads to an independent ratio problem",
+  );
+  await page.fill("#mlb-transfer", "12:20");
+  await page.click('[data-bridge-transfer] button[type="submit"]');
+  ok(
+    await page.locator("[data-bridge-transfer-explain]").isVisible(),
+    "transfer ratio is validated before independent explanation",
+  );
+  await page.fill(
+    "#mlb-transfer-explain",
+    "Both parts were multiplied by four because the same relationship stays equivalent.",
+  );
+  await page.click('[data-bridge-transfer-explain] button[type="submit"]');
+  ok(
+    await page.getByRole("heading", { name: "Investigation complete" }).isVisible(),
+    "complete math-language revision and transfer journey",
+  );
+
   // Phone width: no horizontal scroll on the busiest pages
   await page.setViewportSize({ width: 375, height: 800 });
   await page.evaluate(() => {

@@ -23,6 +23,7 @@ import { setStudioI18n as setStudioUiI18n } from "./studio-ui.js";
 import { mountShell } from "./shell.js";
 import { mountGloss } from "./glossary.js";
 import { registerSaveResume } from "./sync.js";
+import { readMathLanguageBridge } from "../../shared/math-language-bridge/v1.js";
 import { $, ART, BASE, announce, bandOfId, copyText, storage, toHtml } from "./util.js";
 import * as homeView from "./views/home.js";
 
@@ -138,6 +139,8 @@ export function parseRoute(pathname = location.pathname, search = location.searc
   if (a === "worlds") {
     return { ...r, view: "worlds", id: b || "", worldId: b || "", missionId: c || "", tab: q.get("tab") || "" };
   }
+  if (a === "language-studios")
+    return { ...r, view: a, id: b || "", mathBridge: readMathLanguageBridge(search) };
   if (a === "science-of-reading" && b === "lesson")
     return { ...r, view: a, id: "lesson", lessonId: c || "" };
   if (a === "science-of-reading" && b === "subject-reading")
