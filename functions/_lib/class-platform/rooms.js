@@ -37,7 +37,7 @@ import {
   validateAnswer,
 } from "../../../math/fluency-lab/problem-bank.js";
 import { cleanText, isRoomId, LIMITS } from "../../../shared/class-platform/contract.js";
-import quizKey from "../../../shared/class-platform/quiz-key.json" with { type: "json" };
+import quizKey from "../../../shared/class-platform/quiz-key.js";
 import { clientIp, createRateLimiter, tooManyRequests } from "../http.js";
 import { parseJson, ROOM_TTL_MS, randomHex, studentFromRequest, teacherRole } from "./store.js";
 

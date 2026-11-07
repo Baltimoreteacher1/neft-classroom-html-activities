@@ -10,7 +10,7 @@ import test from "node:test";
 import { fileURLToPath } from "node:url";
 
 import { ALL_SKILLS, generateProblem, seededRandom } from "../../../math/fluency-lab/problem-bank.js";
-import quizKey from "../../../shared/class-platform/quiz-key.json" with { type: "json" };
+import quizKey from "../../../shared/class-platform/quiz-key.js";
 import { goalProgress, validateAlias, validateSummary } from "../../../shared/class-platform/contract.js";
 import { onRequest, SCHEMA } from "./[[path]].js";
 
