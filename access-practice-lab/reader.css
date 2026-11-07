@@ -1,0 +1,718 @@
+/* Immersive Reader Studio — EduWonderLab / The Language Page
+   A research-backed reading environment for multilingual learners.
+   Uses tokens from ds.css. High contrast, WCAG 2.2 AA compliant. */
+
+.reader-studio {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-5);
+  max-width: 58rem;
+  margin: 0 auto;
+  padding: var(--s-3) 0 var(--s-7);
+}
+
+.reader-header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-4);
+  padding-bottom: var(--s-3);
+  border-bottom: 2px solid var(--line);
+}
+
+.reader-kicker {
+  margin: 0 0 0.25rem;
+  color: var(--reading-ink, #2a4386);
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.reader-header h1 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 4vw, 2.4rem);
+  color: var(--ink);
+  line-height: 1.15;
+}
+
+.reader-lead {
+  margin: 0.35rem 0 0;
+  color: var(--ink-2);
+  font-size: 1.05rem;
+  max-width: 52ch;
+  line-height: 1.5;
+}
+
+/* Tabs */
+.reader-tabs {
+  display: flex;
+  gap: 0.5rem;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 0.25rem;
+  overflow-x: auto;
+}
+
+.reader-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: 2.75rem;
+  padding: 0.45rem 1rem;
+  border: 0;
+  border-bottom: 3px solid transparent;
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+  background: transparent;
+  color: var(--ink-2);
+  font: 600 0.95rem/1 var(--font);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.reader-tab:hover {
+  background: var(--surface-2);
+  color: var(--ink);
+}
+
+.reader-tab.active {
+  border-bottom-color: var(--reading-ink, #2a4386);
+  color: var(--reading-ink, #2a4386);
+  background: var(--surface-2);
+  font-weight: 700;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.25rem;
+  height: 1.25rem;
+  padding: 0 0.35rem;
+  border-radius: 999px;
+  background: var(--line);
+  color: var(--ink);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.badge-due {
+  background: var(--brand);
+  color: #fff;
+}
+
+/* Toolbar */
+.reader-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem var(--s-4);
+  padding: var(--s-3) var(--s-4);
+  background: var(--surface);
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.toolbar-group {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.toolbar-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--ink-3);
+  margin-right: 0.2rem;
+}
+
+.playback-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.rehearse-btn.active-rehearse {
+  background: var(--wrong-soft);
+  border-color: var(--wrong);
+  color: var(--wrong);
+  animation: pulse-red 1.5s infinite;
+}
+
+@keyframes pulse-red {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(168, 40, 29, 0.4); }
+  50% { box-shadow: 0 0 0 6px rgba(168, 40, 29, 0); }
+}
+
+.chip {
+  padding: 0.3rem 0.65rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--ink);
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.chip.active-chip {
+  background: var(--brand);
+  border-color: var(--brand);
+  color: #fff;
+  font-weight: 700;
+}
+
+.toggle-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.65rem;
+  border: 1.5px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface-2);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  user-select: none;
+}
+
+.toggle-pill input {
+  accent-color: var(--reading-ink, #2a4386);
+}
+
+.toggle-pill.active-toggle {
+  border-color: var(--reading-ink, #2a4386);
+  background: var(--reading-soft, #eceef8);
+}
+
+/* Sample Bar */
+.reader-sample-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: -0.25rem;
+}
+
+.sample-prompt {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--ink-3);
+}
+
+.sample-chip {
+  padding: 0.3rem 0.8rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--ink-2);
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.sample-chip:hover {
+  background: var(--surface-2);
+  color: var(--ink);
+}
+
+.sample-chip.current-sample {
+  border-color: var(--reading-ink, #2a4386);
+  background: var(--reading-soft, #eceef8);
+  color: var(--reading-ink, #2a4386);
+  font-weight: 700;
+}
+
+/* Paste Drawer */
+.reader-paste-drawer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-3);
+  padding: var(--s-4);
+  background: var(--surface-2);
+  border: 1.5px solid var(--line-strong);
+  border-radius: var(--radius);
+}
+
+.reader-paste-drawer textarea {
+  width: 100%;
+  padding: var(--s-3);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  font: 1rem/1.5 var(--font);
+  color: var(--ink);
+}
+
+.drawer-actions {
+  display: flex;
+  gap: var(--s-2);
+}
+
+/* Reading Surface */
+.reader-surface {
+  padding: clamp(var(--s-4), 5vw, var(--s-6));
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  min-height: 20rem;
+  font-family: var(--font);
+  font-size: calc(1.35rem * var(--lab-scale, 1));
+  line-height: 2.1;
+  color: var(--ink);
+}
+
+.reader-paragraph {
+  margin-bottom: 1.75em;
+}
+
+.reader-sentence {
+  display: inline;
+  transition: opacity 0.25s ease, background-color 0.25s ease;
+  padding: 0.15em 0;
+  border-radius: 4px;
+}
+
+/* Spotlight Mode: dims sentences when another is active */
+.has-spotlight .reader-sentence {
+  opacity: 0.65;
+}
+
+.has-spotlight .reader-sentence.is-focused-sentence {
+  opacity: 1;
+  background-color: rgb(46 74 148 / 9%);
+  box-shadow: 0 0 0 3px rgb(46 74 148 / 9%);
+}
+
+/* Words */
+.reader-word {
+  display: inline;
+  padding: 0.05em 0.15em;
+  margin: 0 -0.05em;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.12s ease;
+}
+
+.reader-word:hover {
+  background: var(--reading-soft, #eceef8);
+  color: var(--reading-ink, #2a4386);
+  outline: 1px dashed var(--reading-ink, #2a4386);
+}
+
+.reader-word.is-spoken-word {
+  background: #fde047 !important;
+  color: #111a3b !important;
+  font-weight: 700;
+  box-shadow: 0 0 0 2px #eab308;
+}
+
+/* Dictation states */
+.reader-word.spoken-read {
+  background: var(--right-soft, #e7f1ea);
+  color: var(--right, #276152);
+  border-bottom: 2px solid var(--right);
+}
+
+.reader-word.spoken-retry {
+  background: var(--hint-soft, #fbf0e0);
+  color: var(--hint, #7f4314);
+  border-bottom: 2px dashed var(--hint);
+}
+
+/* Phrasing Chunks */
+.has-chunks .chunk-divider {
+  display: inline-block;
+  margin: 0 0.45em;
+  color: var(--reading-ink, #2a4386);
+  font-weight: 700;
+  opacity: 0.65;
+}
+
+.chunk-divider {
+  display: none;
+}
+
+/* Dictation Banner */
+.dictation-banner {
+  padding: var(--s-3) var(--s-4);
+  border-radius: var(--radius);
+  background: var(--surface-2);
+  border-left: 5px solid var(--right);
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-2);
+}
+
+.dictation-stats p {
+  margin: 0.2rem 0 0;
+  font-size: 0.9rem;
+  color: var(--ink-2);
+}
+
+.dictation-practice-words {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.9rem;
+}
+
+.retry-chip {
+  background: var(--hint-soft);
+  border-color: var(--hint);
+  color: var(--hint);
+  font-weight: 600;
+}
+
+/* Word Inspector Card & Modal */
+.word-inspector-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 950;
+  display: grid;
+  place-items: center;
+  padding: var(--s-4);
+  background: rgb(8 14 37 / 50%);
+  backdrop-filter: blur(4px);
+}
+
+.word-inspector-card {
+  width: min(28rem, 100%);
+  padding: var(--s-5);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: var(--shadow-float);
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-4);
+}
+
+.inspector-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.inspector-word-group h2 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  line-height: 1.1;
+}
+
+.part-of-speech {
+  display: inline-block;
+  margin-top: 0.2rem;
+  font-size: 0.82rem;
+  font-style: italic;
+  color: var(--ink-3);
+}
+
+.btn-close-inspector {
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 50%;
+  background: var(--surface-2);
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.inspector-pronounce {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+}
+
+.syllables-count {
+  font-size: 0.9rem;
+  color: var(--ink-3);
+  font-weight: 600;
+}
+
+.inspector-definitions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-3);
+}
+
+.def-block {
+  padding: var(--s-3);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+}
+
+.def-label {
+  display: block;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ink-3);
+  margin-bottom: 0.2rem;
+}
+
+.def-block p {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.45;
+}
+
+.cognate-badge {
+  padding: var(--s-2) var(--s-3);
+  border-radius: var(--radius-sm);
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
+.cog-true {
+  background: var(--right-soft);
+  color: var(--right);
+}
+
+.cog-false {
+  background: var(--wrong-soft);
+  color: var(--wrong);
+}
+
+.inspector-actions .btn {
+  width: 100%;
+}
+
+/* Word Bank & Flashcards */
+.wordbank-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-5);
+}
+
+.flashcard-arena {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--s-3);
+  padding: var(--s-5);
+  border-radius: var(--radius);
+  background: var(--surface);
+  border: 1.5px solid var(--line);
+  box-shadow: var(--shadow);
+}
+
+.flashcard-kicker {
+  margin: 0;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--ink-3);
+  text-transform: uppercase;
+}
+
+.flashcard-card {
+  width: min(30rem, 100%);
+  min-height: 14rem;
+  padding: var(--s-5);
+  border: 2px solid var(--line-strong);
+  border-radius: var(--r-lg);
+  background: var(--surface-2);
+  display: grid;
+  place-items: center;
+  text-align: center;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.flashcard-card:hover {
+  box-shadow: var(--shadow-lift);
+}
+
+.flashcard-word {
+  margin: 0.5rem 0;
+  font-family: var(--font-display);
+  font-size: 2.2rem;
+  color: var(--ink);
+}
+
+.flashcard-box-tag {
+  display: inline-block;
+  padding: 0.2rem 0.5rem;
+  border-radius: 999px;
+  background: var(--line);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.flashcard-hint {
+  margin: 0.5rem 0 1rem;
+  font-size: 0.9rem;
+  color: var(--ink-3);
+}
+
+.flashcard-back {
+  display: none;
+  text-align: left;
+}
+
+.flashcard-card.flipped .flashcard-front {
+  display: none;
+}
+
+.flashcard-card.flipped .flashcard-back {
+  display: block;
+}
+
+.flashcard-controls {
+  display: flex;
+  gap: var(--s-3);
+  width: min(30rem, 100%);
+}
+
+.flashcard-controls .btn {
+  flex: 1;
+}
+
+.saved-words-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding: 0;
+  margin: var(--s-3) 0 0;
+  list-style: none;
+}
+
+.saved-word-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--s-3) var(--s-4);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+}
+
+.sw-main strong {
+  font-size: 1.05rem;
+}
+
+.sw-es {
+  color: var(--reading-ink);
+  font-weight: 600;
+  margin-left: 0.4rem;
+}
+
+.sw-def {
+  color: var(--ink-2);
+  margin-left: 0.5rem;
+}
+
+.sw-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.box-badge {
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 0.2rem 0.5rem;
+  background: var(--surface-2);
+  border-radius: 6px;
+  color: var(--ink-3);
+}
+
+.btn-icon {
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border: 0;
+  background: transparent;
+  color: var(--ink-2);
+  cursor: pointer;
+  border-radius: 50%;
+}
+
+.btn-icon:hover {
+  background: var(--surface-2);
+  color: var(--ink);
+}
+
+.delete-word:hover {
+  color: var(--wrong);
+}
+
+/* Insights Tab */
+.insights-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+  gap: var(--s-4);
+  margin: var(--s-4) 0;
+}
+
+.stat-card {
+  padding: var(--s-4);
+  border-radius: var(--radius);
+  background: var(--surface);
+  border: 1.5px solid var(--line);
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.stat-num {
+  font-family: var(--font-display);
+  font-size: 2.4rem;
+  color: var(--reading-ink, #2a4386);
+  font-weight: 700;
+  line-height: 1;
+}
+
+.stat-label {
+  font-size: 0.92rem;
+  color: var(--ink-2);
+  font-weight: 600;
+}
+
+.academic-tag-cloud {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: var(--s-3);
+}
+
+.academic-chip {
+  padding: 0.4rem 0.8rem;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.1rem;
+  cursor: pointer;
+}
+
+.academic-chip:hover {
+  background: var(--reading-soft);
+  border-color: var(--reading-ink);
+}
+
+@media (max-width: 640px) {
+  .reader-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .toolbar-group {
+    justify-content: space-between;
+  }
+  .flashcard-controls {
+    flex-direction: column;
+  }
+}

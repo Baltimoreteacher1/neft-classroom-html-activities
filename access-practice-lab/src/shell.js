@@ -1,7 +1,9 @@
 // Lab-only shell: shared utilities stay reachable without floating over student work.
 import { BRAND, brandName, onLanguagePage } from "./brand.js";
 import { i18nFor, langSwitchHTML } from "./i18n.js";
+import { comfortButtonHTML, installComfort } from "./comfort.js";
 import { footerHTML, navHTML } from "./nav.js";
+import { installShortcuts } from "./shortcuts.js";
 import { installSearch, searchButtonHTML, searchFormHTML } from "./search-chrome.js";
 import { toHtml, storage } from "./util.js";
 
@@ -107,6 +109,9 @@ export function mountShell(ctx) {
     nav.querySelector("details").open = Boolean(wasOpen);
     // Site search: a header button (palette) and a search box at the top of the More menu (results page).
     nav.querySelector(".lab-utilities")?.insertAdjacentHTML("beforebegin", toHtml(searchButtonHTML(I)));
+    nav.querySelector(".lab-utilities")?.insertAdjacentHTML("beforebegin", toHtml(comfortButtonHTML(I)));
+    installComfort(ctx, I);
+    installShortcuts(ctx, I);
     nav.querySelector(".lab-utilities-body")?.insertAdjacentHTML("afterbegin", toHtml(searchFormHTML(I)));
     installSearch(ctx);
     nav.querySelector("[data-lab-save]").addEventListener("click", () => {

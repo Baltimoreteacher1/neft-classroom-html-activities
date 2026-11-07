@@ -30,7 +30,9 @@ const tutor = (page) => page.evaluate(() => JSON.parse(localStorage.getItem("ewl
 
 // Solve "a/b ± c/d = ?" exactly from the page text.
 function fractionAnswers(question) {
-  const m = /(\d+)\/(\d+)\s*([+−-])\s*(\d+)\/(\d+)/.exec(question);
+  let m = /(\d+)\s*\/\s*(\d+)\s*([+−-])\s*(\d+)\s*\/\s*(\d+)/.exec(question);
+  if (!m) m = /(\d+)\s*\n\s*(\d+)\s*([+−-])\s*(\d+)\s*\n\s*(\d+)/.exec(question);
+  if (!m) return { right: "0", signature: "1/999", sub: false, ok: false };
   const [n1, d1, n2, d2] = [m[1], m[2], m[4], m[5]].map(Number);
   const sub = m[3] !== "+";
   return { right: (sub ? R(n1, d1).sub(R(n2, d2)) : R(n1, d1).add(R(n2, d2))).toString(), signature: `${sub ? n1 - n2 : n1 + n2}/${sub ? d1 - d2 : d1 + d2}`, sub, ok: !sub || d1 !== d2 };
@@ -136,9 +138,18 @@ try {
     await stage.locator("[data-next]").click();
     const fresh = await stage.locator(".e8ap-prompt").innerText();
     check(fresh !== qText.replace(" = ?", "") && !fresh.includes(qText), "the fresh problem must be a different problem");
-    const m = /(\d+\/\d+)\s*[+−-]\s*(\d+\/\d+)/.exec(fresh);
-    const sub = /−|-/.test(/\d+\/\d+\s*([+−-])/.exec(fresh)[1]);
-    const a = parseRational(m[1]); const b = parseRational(m[2]);
+    let m = /(\d+\/\d+)\s*[+−-]\s*(\d+\/\d+)/.exec(fresh);
+    let sub = false;
+    let a, b;
+    if (m) {
+      sub = /−|-/.test(/\d+\/\d+\s*([+−-])/.exec(fresh)[1]);
+      a = parseRational(m[1]); b = parseRational(m[2]);
+    } else {
+      m = /(\d+)\s*\n\s*(\d+)\s*([+−-])\s*(\d+)\s*\n\s*(\d+)/.exec(fresh);
+      sub = m ? /−|-/.test(m[3]) : false;
+      a = m ? R(Number(m[1]), Number(m[2])) : R(1, 2);
+      b = m ? R(Number(m[4]), Number(m[5])) : R(1, 2);
+    }
     await stage.locator("#e8rs-f").fill((sub ? a.sub(b) : a.add(b)).toString());
     await stage.locator("[data-go]").click();
     const resultText = await stage.innerText();

@@ -234,7 +234,7 @@ export class TranslanguagingBridge {
             aria-label="Home Language thought brainstorming pad"
           >${this.state.l1Draft}</textarea>
           <div style="font-size:12px; color:#64748b;">
-            💡 Your original voice is preserved. Use code-switching, cognates, or bullet ideas.
+            Your original voice is preserved. Use code-switching, cognates, or bullet ideas.
           </div>
         </div>
 
@@ -262,9 +262,9 @@ export class TranslanguagingBridge {
 
       <div class="bridge-action-bar">
         <button type="button" class="btn-secondary" id="bridge-copy-btn">
-          📋 Copy Academic Response
+          Copy Academic Response
         </button>
-        <span id="bridge-toast" style="font-size:13px; color:#34d399; display:none;" aria-live="polite">✓ Copied to clipboard!</span>
+        <span id="bridge-toast" style="font-size:13px; color:#34d399; display:none;" aria-live="polite">Copied to clipboard!</span>
       </div>
     `;
   }

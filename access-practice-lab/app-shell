@@ -10,6 +10,15 @@
         if (!JSON.parse(localStorage.getItem("accessPracticeLab:v1:prefs") || "{}").langChosen && !/\/family\/?$/.test(location.pathname))
           document.documentElement.classList.add("lab-lang-pending");
       } catch (e) {}
+      // Reading comfort (src/comfort.js): apply the saved theme and spacing before the first paint, so there is no flash.
+      try {
+        var c = JSON.parse(localStorage.getItem("accessPracticeLab:v1:comfort") || "{}") || {};
+        var d = document.documentElement.dataset;
+        if (["paper", "calm", "contrast"].indexOf(c.theme) > -1) d.comfortTheme = c.theme;
+        if (["roomy", "airy"].indexOf(c.lh) > -1) d.comfortLh = c.lh;
+        if (["roomy", "airy"].indexOf(c.ls) > -1) d.comfortLs = c.ls;
+        if (c.calm === true) d.comfortMotion = "calm";
+      } catch (e) {}
     </script>
     <meta
       name="description"
@@ -87,6 +96,8 @@
     <link rel="stylesheet" data-lab-critical href="/access-practice-lab/studios.css?v=1e0aed4fc0a6" />
     <link rel="stylesheet" href="/access-practice-lab/units.css?v=d6528dce25e0" />
     <link rel="stylesheet" href="/access-practice-lab/language-studios.css?v=11518b4c9ed2" />
+    <link rel="stylesheet" href="/access-practice-lab/comfort.css?v=5e5c2cf66911" />
+    <link rel="stylesheet" href="/access-practice-lab/reader.css?v=ab192bd27e31" />
     <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
     <link rel="stylesheet" href="/assets/mobile-access.css" />
     <!-- mobile-access-injected:end -->
@@ -186,6 +197,7 @@
           "/access-practice-lab/src/class/quiz-key.js": "/access-practice-lab/src/class/quiz-key.js?v=13bb7f30d02c",
           "/access-practice-lab/src/class/roster-panel.js": "/access-practice-lab/src/class/roster-panel.js?v=3597ce7ef87c",
           "/access-practice-lab/src/class/voice.js": "/access-practice-lab/src/class/voice.js?v=cf59c94c6fa6",
+          "/access-practice-lab/src/comfort.js": "/access-practice-lab/src/comfort.js?v=750da0271342",
           "/access-practice-lab/src/components.js": "/access-practice-lab/src/components.js?v=40d21034ef29",
           "/access-practice-lab/src/content/craft-arena.js": "/access-practice-lab/src/content/craft-arena.js?v=84f50263ffb1",
           "/access-practice-lab/src/content/craft-mentor.js": "/access-practice-lab/src/content/craft-mentor.js?v=76e6de1e59a5",
@@ -208,6 +220,7 @@
           "/access-practice-lab/src/content/journey/m11.js": "/access-practice-lab/src/content/journey/m11.js?v=a3aea1a7c2c4",
           "/access-practice-lab/src/content/journey/m12.js": "/access-practice-lab/src/content/journey/m12.js?v=ca6753b349a2",
           "/access-practice-lab/src/content/newsroom.js": "/access-practice-lab/src/content/newsroom.js?v=ed5aec2ddef5",
+          "/access-practice-lab/src/content/reader-samples.js": "/access-practice-lab/src/content/reader-samples.js?v=7cc57504e1a0",
           "/access-practice-lab/src/content/scaffold-evidence-items.js": "/access-practice-lab/src/content/scaffold-evidence-items.js?v=bb185fd6fbe8",
           "/access-practice-lab/src/content/scaffold-items.js": "/access-practice-lab/src/content/scaffold-items.js?v=e5f09ec74848",
           "/access-practice-lab/src/content/scaffold-sentence-items.js": "/access-practice-lab/src/content/scaffold-sentence-items.js?v=0e10c0647fc2",
@@ -298,7 +311,7 @@
           "/access-practice-lab/src/grade-focus-ui.js": "/access-practice-lab/src/grade-focus-ui.js?v=dcd2c7ac5ef0",
           "/access-practice-lab/src/grade-focus.js": "/access-practice-lab/src/grade-focus.js?v=196386259195",
           "/access-practice-lab/src/grade.js": "/access-practice-lab/src/grade.js?v=632a26ffc0a8",
-          "/access-practice-lab/src/home-registry.js": "/access-practice-lab/src/home-registry.js?v=1a89df9e1b87",
+          "/access-practice-lab/src/home-registry.js": "/access-practice-lab/src/home-registry.js?v=a0ccc7733372",
           "/access-practice-lab/src/i18n.js": "/access-practice-lab/src/i18n.js?v=1b7b3f2b1314",
           "/access-practice-lab/src/items.js": "/access-practice-lab/src/items.js?v=6d49bdf03b5c",
           "/access-practice-lab/src/journey/curriculum.js": "/access-practice-lab/src/journey/curriculum.js?v=a74df9d5029e",
@@ -389,6 +402,7 @@
           "/access-practice-lab/src/lang/portfolio.js": "/access-practice-lab/src/lang/portfolio.js?v=66ad1bcfe140",
           "/access-practice-lab/src/lang/providers.js": "/access-practice-lab/src/lang/providers.js?v=03dd3b9732ad",
           "/access-practice-lab/src/lang/purpose.js": "/access-practice-lab/src/lang/purpose.js?v=4a86ba5123ec",
+          "/access-practice-lab/src/lang/reader.js": "/access-practice-lab/src/lang/reader.js?v=017842d19ea2",
           "/access-practice-lab/src/lang/readiness.js": "/access-practice-lab/src/lang/readiness.js?v=ea8f0aa9261d",
           "/access-practice-lab/src/lang/rubrics.js": "/access-practice-lab/src/lang/rubrics.js?v=5656db97483b",
           "/access-practice-lab/src/lang/scaffold-check.js": "/access-practice-lab/src/lang/scaffold-check.js?v=f3cd548204a5",
@@ -415,7 +429,7 @@
           "/access-practice-lab/src/learning.js": "/access-practice-lab/src/learning.js?v=8a99a6d8753a",
           "/access-practice-lab/src/lesson-frame.js": "/access-practice-lab/src/lesson-frame.js?v=7903f71ff917",
           "/access-practice-lab/src/lesson-learn.js": "/access-practice-lab/src/lesson-learn.js?v=d13e36fc0611",
-          "/access-practice-lab/src/main.js": "/access-practice-lab/src/main.js?v=385eeb90a7ff",
+          "/access-practice-lab/src/main.js": "/access-practice-lab/src/main.js?v=970812d66c0c",
           "/access-practice-lab/src/media.js": "/access-practice-lab/src/media.js?v=e07e40185c5c",
           "/access-practice-lab/src/model-student-ui.js": "/access-practice-lab/src/model-student-ui.js?v=76254ce9288d",
           "/access-practice-lab/src/multilingual.js": "/access-practice-lab/src/multilingual.js?v=d0b46fb38de3",
@@ -442,15 +456,16 @@
           "/access-practice-lab/src/search-chrome.js": "/access-practice-lab/src/search-chrome.js?v=ffcacd1358b9",
           "/access-practice-lab/src/search-data.js": "/access-practice-lab/src/search-data.js?v=f5effe965b1b",
           "/access-practice-lab/src/search-palette.js": "/access-practice-lab/src/search-palette.js?v=f838f9300fdc",
-          "/access-practice-lab/src/shell.js": "/access-practice-lab/src/shell.js?v=5d7e16ed4805",
+          "/access-practice-lab/src/shell.js": "/access-practice-lab/src/shell.js?v=1f7c7ce971c5",
+          "/access-practice-lab/src/shortcuts.js": "/access-practice-lab/src/shortcuts.js?v=49268f7986a0",
           "/access-practice-lab/src/speech.js": "/access-practice-lab/src/speech.js?v=a1aae369c580",
           "/access-practice-lab/src/store.js": "/access-practice-lab/src/store.js?v=f5caceae4df6",
           "/access-practice-lab/src/strings.js": "/access-practice-lab/src/strings.js?v=b2c3430b7e54",
           "/access-practice-lab/src/stt.js": "/access-practice-lab/src/stt.js?v=2ac7de58914c",
           "/access-practice-lab/src/studio-ui.js": "/access-practice-lab/src/studio-ui.js?v=1a18494fd564",
-          "/access-practice-lab/src/studios/discourse-architect.js": "/access-practice-lab/src/studios/discourse-architect.js?v=1a7ba0f2ec8c",
-          "/access-practice-lab/src/studios/speaking-sparring.js": "/access-practice-lab/src/studios/speaking-sparring.js?v=1198ad719ed4",
-          "/access-practice-lab/src/studios/translanguaging-bridge.js": "/access-practice-lab/src/studios/translanguaging-bridge.js?v=055b80760cd7",
+          "/access-practice-lab/src/studios/discourse-architect.js": "/access-practice-lab/src/studios/discourse-architect.js?v=f8dbb5153e04",
+          "/access-practice-lab/src/studios/speaking-sparring.js": "/access-practice-lab/src/studios/speaking-sparring.js?v=1d79358e4728",
+          "/access-practice-lab/src/studios/translanguaging-bridge.js": "/access-practice-lab/src/studios/translanguaging-bridge.js?v=b152257a32d8",
           "/access-practice-lab/src/studios.js": "/access-practice-lab/src/studios.js?v=b4a26b4e766f",
           "/access-practice-lab/src/sync.js": "/access-practice-lab/src/sync.js?v=b3e398476cee",
           "/access-practice-lab/src/tour-dock.js": "/access-practice-lab/src/tour-dock.js?v=99483d90801c",
@@ -509,6 +524,7 @@
           "/access-practice-lab/src/views/portfolio.js": "/access-practice-lab/src/views/portfolio.js?v=f6a78f8d2462",
           "/access-practice-lab/src/views/publisher-demo.js": "/access-practice-lab/src/views/publisher-demo.js?v=0765e82772fc",
           "/access-practice-lab/src/views/puzzles.js": "/access-practice-lab/src/views/puzzles.js?v=dbe7c9724593",
+          "/access-practice-lab/src/views/reader.js": "/access-practice-lab/src/views/reader.js?v=ec394bc82c29",
           "/access-practice-lab/src/views/reading-log.js": "/access-practice-lab/src/views/reading-log.js?v=cae3a3952f2b",
           "/access-practice-lab/src/views/reading-room.js": "/access-practice-lab/src/views/reading-room.js?v=51b0c192baae",
           "/access-practice-lab/src/views/reality.js": "/access-practice-lab/src/views/reality.js?v=50bb09216bdc",
@@ -620,9 +636,11 @@
     <link rel="modulepreload" href="/access-practice-lab/src/studio-ui.js?v=1a18494fd564" />
     <link rel="modulepreload" href="/access-practice-lab/src/lang/rubrics.js?v=5656db97483b" />
     <link rel="modulepreload" href="/access-practice-lab/src/lang/scaffolds.js?v=18c8ecbb21fa" />
-    <link rel="modulepreload" href="/access-practice-lab/src/shell.js?v=5d7e16ed4805" />
+    <link rel="modulepreload" href="/access-practice-lab/src/shell.js?v=1f7c7ce971c5" />
+    <link rel="modulepreload" href="/access-practice-lab/src/comfort.js?v=750da0271342" />
     <link rel="modulepreload" href="/access-practice-lab/src/nav.js?v=a93489cef60b" />
     <link rel="modulepreload" href="/access-practice-lab/src/acc/copy.js?v=d583283367c3" />
+    <link rel="modulepreload" href="/access-practice-lab/src/shortcuts.js?v=49268f7986a0" />
     <link rel="modulepreload" href="/access-practice-lab/src/search-chrome.js?v=ffcacd1358b9" />
     <link rel="modulepreload" href="/access-practice-lab/src/sync.js?v=b3e398476cee" />
     <link rel="modulepreload" href="/access-practice-lab/src/views/home.js?v=722983c95da5" />
@@ -642,7 +660,7 @@
     <link rel="modulepreload" href="/access-practice-lab/src/engagement.js?v=6b7a0c435f9a" />
     <link rel="modulepreload" href="/access-practice-lab/src/lang/unlocks.js?v=dbfd283714f1" />
     <link rel="modulepreload" href="/access-practice-lab/src/family/plan.js?v=fe5c5c1669b6" />
-    <link rel="modulepreload" href="/access-practice-lab/src/home-registry.js?v=1a89df9e1b87" />
+    <link rel="modulepreload" href="/access-practice-lab/src/home-registry.js?v=a0ccc7733372" />
     <link rel="modulepreload" href="/access-practice-lab/src/views/home-panels.js?v=4da141951ca0" />
     <link rel="modulepreload" href="/access-practice-lab/src/practice-report.js?v=afae890a5d67" />
     <link rel="modulepreload" href="/access-practice-lab/src/views/home-start.js?v=82dd3ecdd55b" />
@@ -652,7 +670,7 @@
     <link rel="modulepreload" href="/access-practice-lab/src/journey/resources.js?v=01acc935e878" />
     <link rel="modulepreload" href="/access-practice-lab/src/journey/resources-data.js?v=5658b3709ec3" />
     <!-- lab-preload:end -->
-    <script type="module" src="/access-practice-lab/src/main.js?v=385eeb90a7ff"></script>
+    <script type="module" src="/access-practice-lab/src/main.js?v=970812d66c0c"></script>
     <!-- mwb-injected:begin (Math Workbench launcher — tools/inject-math-workbench.js) -->
 
     <!-- mwb-injected:end -->

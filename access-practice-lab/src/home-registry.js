@@ -151,6 +151,18 @@ export const HOME_CARDS = [
     ],
   },
   {
+    id: "reader",
+    group: "explore",
+    featured: true,
+    href: "reader",
+    icon: "reading",
+    title: ["Immersive Reader", "Lector inmersivo"],
+    text: [
+      "Guided read-aloud, spoken practice, dictionary and word bank.",
+      "Lectura guiada, práctica oral, diccionario y banco de palabras.",
+    ],
+  },
+  {
     id: "reading-room",
     group: "explore",
     featured: true,

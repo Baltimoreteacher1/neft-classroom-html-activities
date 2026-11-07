@@ -272,7 +272,7 @@ export class DiscourseArchitect {
       html += `
         <span class="syntactic-token token-concession" role="button" tabindex="0">
           ${this.state.concession}
-          <button type="button" class="token-remove-btn" data-remove="concession" aria-label="Remove transition" style="background:none;border:none;color:#fce7f3;cursor:pointer;font-weight:bold;margin-left:4px;">✕</button>
+          <button type="button" class="token-remove-btn" data-remove="concession" aria-label="Remove transition" style="background:none;border:none;color:#fce7f3;cursor:pointer;font-weight:bold;margin-left:4px;">&times;</button>
         </span>
       `;
     }
@@ -281,7 +281,7 @@ export class DiscourseArchitect {
       html += `
         <span class="syntactic-token token-subordinator" role="button" tabindex="0">
           ${this.state.subordinator}
-          <button type="button" class="token-remove-btn" data-remove="subordinator" aria-label="Remove subordinator" style="background:none;border:none;color:#f3e8ff;cursor:pointer;font-weight:bold;margin-left:4px;">✕</button>
+          <button type="button" class="token-remove-btn" data-remove="subordinator" aria-label="Remove subordinator" style="background:none;border:none;color:#f3e8ff;cursor:pointer;font-weight:bold;margin-left:4px;">&times;</button>
         </span>
       `;
     }
@@ -302,7 +302,7 @@ export class DiscourseArchitect {
       html += `
         <span class="syntactic-token token-elaboration" role="button" tabindex="0">
           ${this.state.elaboration}
-          <button type="button" class="token-remove-btn" data-remove="elaboration" aria-label="Remove elaboration" style="background:none;border:none;color:#fef3c7;cursor:pointer;font-weight:bold;margin-left:4px;">✕</button>
+          <button type="button" class="token-remove-btn" data-remove="elaboration" aria-label="Remove elaboration" style="background:none;border:none;color:#fef3c7;cursor:pointer;font-weight:bold;margin-left:4px;">&times;</button>
         </span>
       `;
     }
@@ -313,7 +313,7 @@ export class DiscourseArchitect {
         html += `
           <span class="syntactic-token token-kernel" role="button" tabindex="0">
             ${this.state.companionClause}
-            <button type="button" class="token-remove-btn" data-remove="companion" aria-label="Remove companion clause" style="background:none;border:none;color:#dbeafe;cursor:pointer;font-weight:bold;margin-left:4px;">✕</button>
+            <button type="button" class="token-remove-btn" data-remove="companion" aria-label="Remove companion clause" style="background:none;border:none;color:#dbeafe;cursor:pointer;font-weight:bold;margin-left:4px;">&times;</button>
           </span>
         `;
       } else {

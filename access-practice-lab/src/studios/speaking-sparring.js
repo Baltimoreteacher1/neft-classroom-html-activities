@@ -85,7 +85,7 @@ export class SpeakingSparringPartner {
           <p class="spar-subtitle">Grade 6 Academic Speaking Rehearsal: 3-Beat Pacing & Acoustic Telemetry.</p>
         </div>
         <button type="button" class="btn-playback" id="play-peer-prompt-btn">
-          🔊 Hear Peer Partner (Marcus)
+          Hear Peer Partner (Marcus)
         </button>
       </div>
 
@@ -193,14 +193,14 @@ export class SpeakingSparringPartner {
           <div class="spar-controls">
             <div class="recording-action-row">
               <button type="button" class="btn-record" id="spar-record-btn" aria-label="Record academic speaking response">
-                <span id="record-icon" aria-hidden="true">🔴</span>
+                <span id="record-icon" class="rec-dot" aria-hidden="true"></span>
                 <span id="record-label">Start 45s Sparring Turn</span>
               </button>
               <button type="button" class="btn-playback" id="review-recording-btn" disabled aria-label="Review voice recording">
-                ▶ Listen to Take
+                Listen to Take
               </button>
               <button type="button" class="btn-playback" id="rerecord-btn" style="display:none;" aria-label="One-click re-record">
-                🔄 Re-record
+                Re-record
               </button>
             </div>
 
@@ -501,7 +501,7 @@ export class SpeakingSparringPartner {
         listEl.innerHTML = '<span style="font-size:12px; color:#64748b;">No milestones vocalized yet.</span>';
       } else {
         listEl.innerHTML = this.state.detectedTokens.map(tok => `
-          <span class="marker-pill">✓ "${tok}"</span>
+          <span class="marker-pill">"${tok}"</span>
         `).join("");
       }
     }
