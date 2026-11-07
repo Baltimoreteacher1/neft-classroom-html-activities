@@ -8,9 +8,11 @@
 // ?grades=3-5|6-8 on any URL.
 import { brandTitle } from "./brand.js";
 import { micDeniedMessage, notePlay, scripts, setComponentsI18n } from "./components.js";
+import { EARLY_VIEWS, earlyGateHTML } from "./early/gate.js";
+import { isEarlyBand, normalizeBand } from "./bands.js";
 import { availableBands, loadIndex } from "./content.js";
 import * as rec from "./recorder.js";
-import { playRecording, stop as stopSpeech, speak } from "./speech.js";
+import { playRecording, speak, speakSpanish, stop as stopSpeech } from "./speech.js";
 import { getPrefs, setPrefs } from "./store.js";
 import { setStudioI18n as setEvidenceUiI18n } from "./evidence-ui.js";
 import { LANG_MODES, i18nFor } from "./i18n.js";
@@ -19,7 +21,7 @@ import { setStudioI18n as setStudioUiI18n } from "./studio-ui.js";
 import { mountShell } from "./shell.js";
 import { mountGloss } from "./glossary.js";
 import { registerSaveResume } from "./sync.js";
-import { $, ART, BASE, announce, bandOfId, copyText, toHtml } from "./util.js";
+import { $, ART, BASE, announce, bandOfId, copyText, storage, toHtml } from "./util.js";
 import * as homeView from "./views/home.js";
 
 export const BUILD = "2026.11.04.1";
@@ -38,6 +40,7 @@ const VIEW_LOADERS = {
   move: () => import("./views/move.js"),
   stories: () => import("./views/stories.js"),
   ladder: () => import("./views/ladder.js"),
+  grammar: () => import("./views/grammar.js"),
   puzzles: () => import("./views/puzzles.js"),
   library: () => import("./views/library.js"),
   room: () => import("./views/room.js"),
@@ -54,6 +57,7 @@ const VIEW_LOADERS = {
   evidence: () => import("./views/evidence.js"),
   growth: () => import("./views/growth.js"),
   speak: () => import("./views/speak.js"),
+  voice: () => import("./views/voice.js"),
   write: () => import("./views/write.js"),
   detective: () => import("./views/detective.js"),
   diagnostic: () => import("./views/diagnostic.js"),
@@ -68,6 +72,10 @@ const VIEW_LOADERS = {
   assess: () => import("./views/assess.js"),
   "science-of-reading": () => import("./views/science-of-reading.js"),
   "language-studios": () => import("./views/language-studios.js"),
+  class: () => import("./views/class.js"),
+  "class-quiz": () => import("./views/class-quiz.js"),
+  "class-teacher": () => import("./views/class-roster.js"),
+  early: () => import("./views/early-hub.js"),
 };
 const VIEW_ALIASES = {
   sor: "science-of-reading",
@@ -114,9 +122,12 @@ export function parseRoute(pathname = location.pathname, search = location.searc
   if (a === "worlds") {
     return { ...r, view: "worlds", id: b || "", worldId: b || "", missionId: c || "", tab: q.get("tab") || "" };
   }
-  if (["learn", "reality", "exhibition", "tests", "family", "passport", "tools", "library", "missions", "mission", "conversation", "construction", "evidence", "growth", "speak", "write", "detective", "launch", "launch-studio", "teacher-launch", "classroom", "vocabulary", "flashcards", "stories", "ladder", "puzzles", "publisher-demo", "games", "assess", "path", "scaffold", "move", "science-of-reading", "language-studios", "sor"].includes(a)) {
+  if (["learn", "reality", "exhibition", "tests", "family", "passport", "tools", "library", "missions", "mission", "conversation", "construction", "evidence", "growth", "speak", "write", "detective", "launch", "launch-studio", "teacher-launch", "classroom", "vocabulary", "flashcards", "stories", "ladder", "puzzles", "publisher-demo", "games", "assess", "path", "scaffold", "move", "science-of-reading", "language-studios", "sor", "early", "grammar"].includes(a)) {
     return { ...r, view: a, id: b || "", missionId: b || "", scenarioId: b || "", tab: q.get("tab") || "" };
   }
+  if (a === "class")
+    return { ...r, view: b === "quiz" ? "class-quiz" : b === "teacher" ? "class-teacher" : "class", id: b || "" };
+  if (a === "voice") return { ...r, view: "voice", id: b || "", sub: c || "", tab: q.get("tab") || "" };
   if (a === "journey") return { ...r, view: "journey", id: b || "", rest: parts.slice(1) };
   if (a === "diagnostic") return { ...r, view: "diagnostic", domain: b || "" };
   if (a === "road") return { ...r, view: "road", week: Number(b) || 0 };
@@ -182,7 +193,8 @@ export const ctx = {
 };
 
 function resolveBand(route) {
-  if (route.grades && app.bands.includes(route.grades)) return route.grades;
+  const asked = normalizeBand(route.grades);
+  if (asked && app.bands.includes(asked)) return asked;
   if (route.view === "activity" && route.id && !/^\d+$/.test(route.id)) return bandOfId(route.id);
   if (route.domain === "Model-Test") return "6-8";
   if (app.prefs.band && app.bands.includes(app.prefs.band)) return app.prefs.band;
@@ -261,7 +273,7 @@ async function render({ keepFocus = false, scroll = false } = {}) {
   setItemsI18n(I);
   setStudioUiI18n(I);
   setEvidenceUiI18n(I);
-  if (route.grades && route.grades === app.band && app.prefs.band !== app.band)
+  if (route.grades && normalizeBand(route.grades) === app.band && app.prefs.band !== app.band)
     app.prefs = setPrefs({ band: app.band });
   const root = $("#app");
   // A lazy route can take more than one frame on a cold cache. Remove the previous screen
@@ -275,7 +287,10 @@ async function render({ keepFocus = false, scroll = false } = {}) {
   let out;
   let view;
   try {
-    view = await loadView(route.view);
+    // Grades K-3 have their own home and player; rooms built for grades 3-8 say so instead of showing older
+    // children's content under a K-3 label (src/early/gate.js).
+    const gated = isEarlyBand(app.band) && !EARLY_VIEWS.has(route.view);
+    view = gated ? { render: (c) => earlyGateHTML(c, i18nFor(c)) } : await loadView(isEarlyBand(app.band) && (route.view === "home" || (route.view === "family" && !route.id)) ? "early" : route.view);
     if (token !== app.rendering) return;
     if (view !== app.view) {
       stopSpeech();
@@ -342,7 +357,13 @@ async function common(e) {
   const say = t.closest("[data-say]");
   if (say) return (speak(say.dataset.say, { rate: app.prefs.rate, voiceURI: app.prefs.readingVoice }), true);
   const sayEs = t.closest("[data-say-es]");
-  if (sayEs) return (speak(sayEs.dataset.sayEs, { lang: "es-US", rate: 0.9 }), true);
+  if (sayEs) {
+    speakSpanish(sayEs.dataset.sayEs, { rate: 0.9 }).then((r) => {
+      if (r === "no-voice")
+        announce(i18nFor(ctx).S("This device has no Spanish voice. Read the Spanish on the screen.", "Este dispositivo no tiene una voz en español. Lee el español en la pantalla."));
+    });
+    return true;
+  }
   const listen = t.closest("[data-listen]");
   if (listen) {
     const key = listen.dataset.listen;
@@ -564,6 +585,8 @@ async function boot() {
     app.bands = await availableBands();
   } catch {}
   mountGloss();
+  // A learner who joined a class on this device keeps syncing from any page; everyone else loads nothing.
+  if (storage.get("accessPracticeLabClass:v1:link")) import("./class/link.js").then((m) => m.bootClassSync()).catch(() => {});
   registerSaveResume(() => render({ keepFocus: true }));
   const stamp = $("#labBuild");
   if (stamp) stamp.textContent = stamp.dataset.build = `ACCESS Practice Lab · build ${BUILD}`;

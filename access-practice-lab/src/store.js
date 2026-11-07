@@ -16,8 +16,10 @@ export const PREFIX = "accessPracticeLab:v1";
 const PREFS_KEY = `${PREFIX}:prefs`;
 const LEGACY_MAPS = ["selected", "multi", "cloze", "hot", "order", "sortAnswers"];
 
+// Grades 6-8 keep the original unprefixed keys; every other band is stored under g<band> (g3-5, g2-3, g1, gK).
 export const progressKey = (band, domain, level) =>
-  band === "3-5" ? `${PREFIX}:g3-5:${domain}:${level}` : `${PREFIX}:${domain}:${level}`;
+  band === "6-8" || !band ? `${PREFIX}:${domain}:${level}` : `${PREFIX}:g${band}:${domain}:${level}`;
+const BAND_KEY = /^g(K|1|2-3|3-5)$/;
 export const testKey = (id) => `${PREFIX}:test:${id}`;
 
 // ── preferences ───────────────────────────────────────────────────────────────
@@ -123,8 +125,9 @@ export function allRecords() {
     if (!key.startsWith(`${PREFIX}:`)) continue;
     const rest = key.slice(PREFIX.length + 1).split(":");
     let band = "6-8";
-    if (rest[0] === "g3-5") {
-      band = "3-5";
+    const tagged = BAND_KEY.exec(rest[0]);
+    if (tagged) {
+      band = tagged[1];
       rest.shift();
     }
     if (
@@ -200,7 +203,7 @@ const RECORD_MAPS = [
 ];
 const isObject = (value) => value !== null && typeof value === "object" && !Array.isArray(value);
 const isProgressKey = (key) =>
-  /^(?:g3-5:)?(?:Listening|Reading|Speaking|Writing|Model-Test):[ABC]$/.test(
+  /^(?:g(?:K|1|2-3|3-5):)?(?:Listening|Reading|Speaking|Writing|Model-Test):[ABC]$/.test(
     key.slice(PREFIX.length + 1),
   );
 

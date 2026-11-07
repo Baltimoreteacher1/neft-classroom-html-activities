@@ -10,6 +10,7 @@ import { INLINE_BTN } from "./evidence-ui.js";
 import { i18nFor, makeI18n } from "./i18n.js";
 import { splitSentences, tagLabel } from "./lang/evidence-notebook.js";
 import { LISTEN_NOTE_FIELDS, listeningSegments, signalParts } from "./learning.js";
+import { bandLabelEs } from "./bands.js";
 import { BASE, DOMAIN_META, LEVEL_KEYS, TIERS, asList, bandLabel, html, icon, raw } from "./util.js";
 
 const IGN = raw("data-nsr-ignore");
@@ -536,7 +537,7 @@ export function bandSwitchHTML(band, bands, { i18n = null } = {}) {
   const L = i18n || I;
   if (bands.length < 2) return "";
   return html`<div class="band-switch" role="group" aria-label="${L.S("Grade band", "Grupo de grados")}">
-    ${bands.map((b) => html`<button type="button" class="band-btn" data-set-band="${b}" aria-pressed="${b === band}">${L.T(bandLabel(b), `Grados ${b.replace("-", "–")}`)}</button>`)}
+    ${bands.map((b) => html`<button type="button" class="band-btn" data-set-band="${b}" aria-pressed="${b === band}">${L.T(bandLabel(b), bandLabelEs(b))}</button>`)}
   </div>`;
 }
 

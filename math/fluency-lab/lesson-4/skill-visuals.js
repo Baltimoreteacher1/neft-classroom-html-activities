@@ -2,6 +2,9 @@
 // (ANIMATION_KINDS) each of the 96 skills uses in its mini-lesson, and why. "-" means none, and the reason says what
 // the lesson shows instead (the exact model already drawn by visual-lab.js / trail-pictures.js, or a step-through).
 // Row: grade:id | graphic | animation | reason
+import { STRAND_SKILLS } from "../strand-skills.js";
+
+const STRAND_ROWS = STRAND_SKILLS.map((d) => `${d.grade}:${d.id}|${d.visual.join("|")}`).join("\n");
 const ROWS = `
 0:count-forward|number-line|-|Counting on is moving one step along a line.
 0:count-cardinality|-|-|Counters on a ten-frame show one-to-one counting exactly; a line would hide it.
@@ -77,6 +80,15 @@ const ROWS = `
 6:one-step|-|-|The balanced-equation steps are shown as a step-through; no balance in the graphic set.
 6:integers|number-line|-|Absolute value is distance from zero; quadrants use the plane in the step-through.
 6:triangle-area|geometry|area-decomposition|A triangle is half of a rectangle.
+6:multi-digit-division|area-model|-|Division finds the missing side of a rectangle.
+6:order-rational|number-line|-|Numbers further left on the line are less.
+6:percent-whole|double-number-line|-|The part sits at its percent; 100 percent is the whole.
+6:equivalent-expressions|area-model|-|An area model splits a product into parts that add up.
+6:write-inequalities|number-line|-|The shaded part of the line shows every solution.
+6:data-displays|stats-display|-|Dots and bars show how many values are at each number or interval.
+6:center-spread|stats-display|-|The center and the spread are marked on the data display.
+6:surface-area-nets|solids-nets|-|The net lays every face flat so each one is counted once.
+6:volume-fractional|solids-nets|-|Layers of unit cubes fill the prism, including fractional cubes.
 7:integer-add|number-line|-|The sign is the direction and the number is the distance.
 7:integer-mul|number-line|-|Repeated hops in a direction show the sign.
 7:fraction-ops|number-line|-|Rational numbers are points on a line.
@@ -102,7 +114,8 @@ const ROWS = `
 `;
 
 export const SKILL_VISUALS = Object.fromEntries(
-  ROWS.trim()
+  `${ROWS.trim()}\n${STRAND_ROWS}`
+    .trim()
     .split("\n")
     .map((row) => {
       const [key, graphic, animation, reason] = row.split("|");

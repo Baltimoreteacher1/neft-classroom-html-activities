@@ -4,8 +4,9 @@
 import { crumbsHTML, setComponentsI18n } from "../components.js";
 import { award } from "../engagement.js";
 import { i18nFor, makeI18n } from "../i18n.js";
-import { loadLadder } from "../content.js";
+import { loadGlossary, loadLadder, loadLadderLevels } from "../content.js";
 import {
+  HISTORY_LIMIT,
   LADDER_STEPS,
   finishRound,
   ladderSummary,
@@ -15,6 +16,28 @@ import {
   startStep,
   stepMove,
 } from "../ladder.js";
+import { newPlacement, normalizePlacement, recordProbe } from "../ladder-placement.js";
+import {
+  controlsFromUrl,
+  KNOWN_KEY,
+  normalizeControls,
+  normalizeKnown,
+  spanishOf,
+  TEACHER_KEY,
+  textAt,
+  toggleKnown,
+} from "../ladder-tools.js";
+import {
+  knownCountHTML,
+  levelSwitchHTML,
+  placementBannerHTML,
+  placementIntroHTML,
+  placementResultHTML,
+  spanishParallelHTML,
+  tappableTextHTML,
+  wordCardHTML,
+  wordListHTML,
+} from "./ladder-tools.js";
 import { BASE, announce, html, icon, safeJson, storage, todayISO } from "../util.js";
 
 const KEY = "accessPracticeLab:v1:reading-ladder";
@@ -33,6 +56,15 @@ const KIND_ES = {
 let I = makeI18n("en");
 // The router calls onClick synchronously, so the passages loaded by render stay here for the handlers.
 let DATA = null;
+let LEVELED = {};
+let GLOSSARY = null;
+let tapped = ""; // the word whose card is open, for this visit only
+const PLACE_KEY = "accessPracticeLab:v1:reading-ladder-placement";
+const loadKnown = () => normalizeKnown(safeJson(storage.get(KNOWN_KEY), []));
+const loadControls = () => normalizeControls(safeJson(storage.get(TEACHER_KEY), {}));
+const loadPlacement = (band) => normalizePlacement(safeJson(storage.get(PLACE_KEY), {})?.[band]);
+const savePlacement = (band, value) =>
+  storage.set(PLACE_KEY, JSON.stringify({ ...(safeJson(storage.get(PLACE_KEY), {}) || {}), [band]: value }));
 
 function load(band) {
   return normalizeLadder(readAll()[band], startStep(band));
@@ -158,8 +190,19 @@ export async function render(ctx) {
   I = i18nFor(ctx);
   setComponentsI18n(I);
   const band = bandKey(ctx.band);
-  const data = await loadLadder();
+  const [data, leveled, glossary] = await Promise.all([loadLadder(), loadLadderLevels().catch(() => ({})), loadGlossary()]);
   DATA = data;
+  LEVELED = leveled;
+  GLOSSARY = glossary;
+  const fromUrl = controlsFromUrl(location.search, loadControls());
+  if (fromUrl) {
+    storage.set(TEACHER_KEY, JSON.stringify(fromUrl));
+    announce(fromUrl.ladderSpanish ? I.S("Spanish version turned on for this device.", "Versión en español activada en este dispositivo.") : I.S("Spanish version turned off for this device.", "Versión en español desactivada en este dispositivo."));
+  }
+  const controls = loadControls();
+  const known = loadKnown();
+  const placement = loadPlacement(band);
+  const placing = placement?.active === true;
   let state = load(band);
   if (!currentPassage(data, state)) {
     state = openRound(data, state);
@@ -168,6 +211,9 @@ export async function render(ctx) {
   const passage = currentPassage(data, state);
   const checked = state.open?.checked === true;
   const picks = state.open?.picks || [];
+  const level = placing ? "on" : state.open?.level || "on";
+  const shown = textAt(passage, leveled, level);
+  const justPlaced = placement && !placing && placement.result && state.open?.placed === true;
   const bandLabel =
     band === "3-5" ? I.T("Grades 3–5", "Grados 3–5") : I.T("Grades 6–8", "Grados 6–8");
   return {
@@ -203,14 +249,16 @@ export async function render(ctx) {
               ${passage.topic} · ${I.T(`Step ${passage.step}`, `Peldaño ${passage.step}`)}
             </p>
             <h2 id="ldTitle">${passage.title}</h2>
-            <p class="gm-text">${passage.text}</p>
-            <button type="button" class="ghost small" data-say="${passage.text}">
+            ${placing ? placementBannerHTML(I, placement) : levelSwitchHTML(I, level)}
+            <p class="gm-text" lang="en">${placing ? shown : tappableTextHTML(shown, known)}</p>
+            <button type="button" class="ghost small" data-say="${shown}">
               ${icon("volume")} ${I.T("Read this aloud", "Leer en voz alta")}
             </button>
+            ${placing ? "" : html`${knownCountHTML(I, shown, known)}${wordCardHTML(I, tapped, glossary, known)}${wordListHTML(I, shown)}${controls.ladderSpanish ? spanishParallelHTML(I, spanishOf(passage, leveled), false) : ""}`}
           </section>
           <section class="panel gm-questions" aria-label="${I.S("Questions", "Preguntas")}">
             ${passage.questions.map((q, i) => questionHTML(q, i, picks, checked))}
-            ${checked ? resultHTML(state, passage, band) : html`<div class="gm-actions"><button class="btn btn-primary" type="button" data-ld-check>${I.T("Check my answers", "Revisar mis respuestas")}</button></div>`}
+            ${checked ? (justPlaced ? placementResultHTML(I, placement, band) : resultHTML(state, passage, band)) : html`<div class="gm-actions"><button class="btn btn-primary" type="button" data-ld-check>${I.T("Check my answers", "Revisar mis respuestas")}</button></div>`}
           </section>
         </div>
         <div class="gm-grid2">
@@ -230,6 +278,7 @@ export async function render(ctx) {
               ${I.T("Start at this step", "Empezar en este peldaño")}
             </button>
           </section>
+          ${placing ? "" : placementIntroHTML(I)}
         </div>
         <p class="gm-note">
           ${I.T("Your rounds are saved on this device only. Nothing here is a score, a proficiency level or a prediction of any test result.", "Tus rondas se guardan solo en este dispositivo. Nada aquí es una calificación, un nivel de dominio ni una predicción del resultado de una prueba.")}
@@ -249,13 +298,82 @@ export function onChange(event, ctx) {
   save(band, { ...state, open: { ...state.open, picks } });
 }
 
+/** Reading tools: tap a word, mark it known, change the text version, open the Spanish version. */
+function onToolClick(event, ctx, band) {
+  const t = event.target;
+  const markHelp = () => {
+    const state = load(band);
+    if (state.open && !state.open.checked) save(band, { ...state, open: { ...state.open, help: true } });
+  };
+  if (t.closest?.("[data-ld-spanish] summary")) {
+    markHelp();
+    return false; // let the <details> open
+  }
+  const known = t.closest?.("[data-lw-known]");
+  if (known) {
+    const next = toggleKnown(loadKnown(), known.dataset.lwKnown);
+    storage.set(KNOWN_KEY, JSON.stringify(next));
+    ctx.rerender();
+    return true;
+  }
+  const word = t.closest?.("[data-lw]");
+  if (word) {
+    tapped = word.dataset.lw;
+    markHelp();
+    ctx.rerender();
+    return true;
+  }
+  const level = t.closest?.("[data-ld-level]");
+  if (level) {
+    const state = load(band);
+    if (!state.open || state.open.checked) return true;
+    const l = level.dataset.ldLevel;
+    save(band, { ...state, open: { ...state.open, level: l, help: state.open.help || l !== "on" } });
+    ctx.rerender();
+    return true;
+  }
+  return null;
+}
+
 export function onClick(event, ctx) {
-  const button = event.target.closest("button");
-  if (!button || !DATA) return false;
+  if (!DATA) return false;
   const band = bandKey(ctx.band);
+  const tool = onToolClick(event, ctx, band);
+  if (tool !== null) return tool;
+  const button = event.target.closest("button");
+  if (!button) return false;
   const data = DATA;
   let state = load(band);
   const passage = currentPassage(data, state);
+  const placement = loadPlacement(band);
+  if (button.hasAttribute("data-ld-place-start")) {
+    const fresh = newPlacement(band);
+    savePlacement(band, fresh);
+    tapped = "";
+    save(band, openRound(data, { ...state, step: fresh.step, open: null }));
+    ctx.rerender();
+    return true;
+  }
+  if (button.hasAttribute("data-ld-check") && passage && placement?.active && !state.open.checked) {
+    const picks = passage.questions.map((_, i) => state.open.picks[i] ?? null);
+    if (picks.some((p) => p === null)) {
+      announce(I.S("Answer all three questions, then check.", "Responde las tres preguntas y luego revisa."));
+      return true;
+    }
+    const row = finishRound(state, passage, picks, todayISO()).history.at(-1);
+    const next = recordProbe(placement, { id: passage.id, correct: row.correct, total: row.total });
+    savePlacement(band, next);
+    state = { ...state, history: [...state.history, row].slice(-HISTORY_LIMIT) };
+    if (next.result) {
+      state = { ...state, step: next.result, best: Math.max(state.best, next.result), open: { id: passage.id, picks, checked: true, placed: true } };
+    } else {
+      state = openRound(data, { ...state, step: next.step, open: null });
+      announce(I.S("Next text.", "Siguiente texto."));
+    }
+    save(band, state);
+    ctx.rerender();
+    return true;
+  }
   if (button.hasAttribute("data-ld-check") && passage && !state.open.checked) {
     const picks = passage.questions.map((_, i) => state.open.picks[i] ?? null);
     if (picks.some((p) => p === null)) {
@@ -267,7 +385,7 @@ export function onClick(event, ctx) {
       );
       return true;
     }
-    state = finishRound(state, passage, picks, todayISO());
+    state = finishRound(state, passage, picks, todayISO(), { help: state.open.help === true });
     state = { ...state, open: { id: passage.id, picks, checked: true } };
     const row = state.history.at(-1);
     if (row.correct > 0)
@@ -278,10 +396,12 @@ export function onClick(event, ctx) {
         "Reading Ladder round",
       );
   } else if (button.hasAttribute("data-ld-next")) {
+    tapped = "";
     state = openRound(data, { ...state, open: null });
   } else if (button.hasAttribute("data-ld-go")) {
     const step = Number(document.querySelector("[data-ld-step]")?.value);
     if (!(step >= 1 && step <= LADDER_STEPS)) return true;
+    if (placement?.active) savePlacement(band, { ...placement, active: false });
     state = openRound(data, { ...state, step, open: null });
   } else return false;
   save(band, state);

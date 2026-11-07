@@ -1,9 +1,11 @@
 // Fluency Lab 4.0 illustration library: every SVG is well-formed, accessible, palette-only, self-contained,
 // id-safe, small, distinct where it must be, and translated. Run: node tools/fluency-art.test.mjs
+
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { JSDOM } from "jsdom";
 import { contrast, parseColor, toHsl } from "./lib/color-math.mjs";
+import { TOTAL_SKILLS } from "./lib/fluency-skill-count.mjs";
 
 Object.defineProperty(globalThis, "localStorage", {
   configurable: true,
@@ -241,7 +243,11 @@ check(
 );
 
 // 2. Skills: every one of the 96 gets valid art, one motif per strand family, grade accent differs.
-check("skills", ALL_SKILLS.length === 96, `expected 96 skills, found ${ALL_SKILLS.length}`);
+check(
+  "skills",
+  ALL_SKILLS.length === TOTAL_SKILLS,
+  `expected ${TOTAL_SKILLS} skills, found ${ALL_SKILLS.length}`,
+);
 const strands = [...new Set(ALL_SKILLS.map((s) => s.strand))];
 for (const strand of strands)
   check("strand map", STRAND_MOTIF[strand], `strand "${strand}" has no illustration`);

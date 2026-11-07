@@ -12,7 +12,7 @@ const ART = {
   reality: '<svg viewBox="0 0 48 48"><rect class="ph-a" x="5" y="11" width="38" height="26" rx="3"/><path class="ph-l-w" d="M24 11v26M5 24h38"/><circle class="ph-l-w-f" cx="24" cy="24" r="5"/></svg>',
 };
 
-export function renderPracticeHub(host, { resume, openMistakes, grade, t }) {
+export function renderPracticeHub(host, { resume, openMistakes, grade, t, extraHtml = "" }) {
   const art = (kind) => `<i class="ph-art" aria-hidden="true">${ART[kind]}</i>`;
   const card = (attr, title, body, primary, kind) =>
     `<button type="button" class="${primary ? "primary-action" : "outline-action"} practice-hub-card" data-gateway="${kind}" ${attr}>${art(kind)}<strong>${title}</strong><span>${body}</span></button>`;
@@ -33,5 +33,5 @@ export function renderPracticeHub(host, { resume, openMistakes, grade, t }) {
   const skills = card('data-view="library"', t("Choose a skill"), t("Browse every skill for your grade."), false, "skills");
   const reality = link(realityHref(grade), t("Build it in Math Reality"), t("Try the same ideas in a world you build."), "reality");
   const lab = link(labHome(grade), t("Build it with models"), t("Cut, balance, scale and repair: the math answers back."), "lab");
-  host.innerHTML = `<h2 class="practice-hub-title">${t("Practice")}</h2><div class="practice-hub-grid">${resumeCard}${daily}${checkup}${mistakes}${skills}${lab}${reality}</div>`;
+  host.innerHTML = `<h2 class="practice-hub-title">${t("Practice")}</h2><div class="practice-hub-grid">${resumeCard}${daily}${checkup}${mistakes}${skills}${lab}${reality}</div>${extraHtml}`;
 }

@@ -6,8 +6,10 @@
 //   3. each drawer tool, drawn locked, never prints the answer; the multiplication algorithm board and the
 //      sharing (division) picture hold no answer; the help shown before an answer is earned is capped;
 //   4. the app wiring that routes the learner's help and the drawer through those modules is still in place.
+
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
+import { TOTAL_SKILLS } from "./lib/fluency-skill-count.mjs";
 
 Object.defineProperty(globalThis, "localStorage", {
   configurable: true,
@@ -32,10 +34,32 @@ const sample = (skill, count, seed) => {
   const rng = seededRandom(seed);
   return Array.from({ length: count }, () => generateProblem(skill, rng));
 };
-const items = ALL_SKILLS.flatMap((skill, i) =>
-  sample(skill, 18, 1000 + i * 7).map((item) => ({ skill, item })),
-);
-assert.equal(ALL_SKILLS.length, 96, "96 skills including Kindergarten");
+// The sample is pinned per skill by its position among the ORIGINAL skills: strand skills (strand-skills.js and the nine
+// Grade 6 additions) draw from a separate seed range, so adding a skill never reshuffles the other skills' draws.
+const { STRAND_SKILLS, strandKey } = await import(`${lab}strand-skills.js`);
+const ADDED = new Set([
+  ...STRAND_SKILLS.map(strandKey),
+  ...[
+    "multi-digit-division",
+    "order-rational",
+    "percent-whole",
+    "equivalent-expressions",
+    "write-inequalities",
+    "data-displays",
+    "center-spread",
+    "surface-area-nets",
+    "volume-fractional",
+  ].map((id) => `6:${id}`),
+]);
+let originalIndex = 0;
+let addedIndex = 0;
+const items = ALL_SKILLS.flatMap((skill) => {
+  const seed = ADDED.has(`${skill.grade}:${skill.id}`)
+    ? 5000 + addedIndex++ * 7
+    : 1000 + originalIndex++ * 7;
+  return sample(skill, 18, seed).map((item) => ({ skill, item }));
+});
+assert.equal(ALL_SKILLS.length, TOTAL_SKILLS, `${TOTAL_SKILLS} skills including Kindergarten`);
 
 // 0. Known shapes: the numbers come out as written, story wording reads through `expr`.
 const known = [
@@ -141,10 +165,11 @@ assert.deepEqual(
   [],
   `Common arithmetic skills whose numbers could not be read: ${[...misses].join(", ")}`,
 );
-assert.ok(
-  readCount > items.length * 0.6,
-  `numbers read for ${readCount} of ${items.length} problems`,
-);
+// Strand skills (strands-*.js) draw their own picture in the Learn lesson and the step lens; they have no drawer
+// model to seed, so the 60% floor is measured over the original skills, as it was before the strands existed.
+const { STRANDS } = await import(`${lab}strands-index.js`);
+const original = items.filter(({ skill }) => !STRANDS[skill.generator]).length;
+assert.ok(readCount > original * 0.6, `numbers read for ${readCount} of ${original} problems`);
 
 // 1b. Story versions read to the same numbers as the plain problem.
 let stories = 0;

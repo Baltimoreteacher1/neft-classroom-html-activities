@@ -25,7 +25,11 @@ async function open(url, viewport, extra = {}) {
   const page = await context.newPage();
   page.errors = [];
   page.on("pageerror", (error) => page.errors.push(error.message));
-  await context.addInitScript(() => localStorage.setItem("ewl-fluency-tour-seen", "1"));
+  await context.addInitScript(() => {
+    localStorage.setItem("ewl-fluency-tour-seen", "1");
+    // This test types answers; listening mode (on by default for Kindergarten to Grade 2) has its own tests.
+    localStorage.setItem("ewl-fluency-settings-v1", JSON.stringify({ audioFirst: "off" }));
+  });
   await page.goto(url, { waitUntil: "networkidle" });
   await page.waitForTimeout(300);
   return page;

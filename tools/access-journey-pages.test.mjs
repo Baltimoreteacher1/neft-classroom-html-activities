@@ -307,7 +307,7 @@ test("Spanish mode: every pair has natural Spanish and no English interface text
     assert.ok(bi.includes(en) && bi.includes(es), `bilingual: both "${en}" and "${es}"`);
 });
 
-test("lab home: one h1 in the journey hero, the old hero demoted, every test-used element kept, order is journey first", async () => {
+test("lab home: one h1 in the start screen, the journey offered as Continue, every test-used element kept, start first", async () => {
   const dummy = new JSDOM("<main id='app'></main><div id='labLive'></div>", {
     url: "https://lab.test/access-practice-lab/",
   });
@@ -337,16 +337,17 @@ test("lab home: one h1 in the journey hero, the old hero demoted, every test-use
     const out = await home.render(ctx);
     const doc = dom(out.html);
     assert.equal(all(doc, "h1").length, 1, "exactly one h1 on home");
-    assert.equal(all(doc, ".ll-hero h1").length, 1, ".ll-hero h1 (living-studio e2e)");
     const h1 = doc.querySelector("h1");
     assert.equal(h1.id, "homeTitle");
-    assert.ok(h1.closest(".jr-hero"), "the journey hero owns the page h1");
-    assert.match(h1.textContent, /Start My Learning Journey/);
+    assert.ok(h1.closest(".lph"), "the start screen owns the page h1");
     assert.match(
-      doc.querySelector(".eyebrow").textContent,
-      new RegExp(`Grades ${band.replace("-", "–")}`),
+      doc.getElementById("lphContinueTitle").textContent,
+      /Start My Learning Journey/,
+      "a new learner is offered the first journey step",
     );
-    assert.equal(all(doc, "[data-set-band]").length, 2, "band switch kept, once");
+    assert.match(doc.querySelector("[data-continue]").getAttribute("href"), /\/journey\/m01\//);
+    assert.equal(all(doc, "[data-grade-pick]").length, 5, "grade ruler: K, 1, 2-3, 4-5, 6-8");
+    assert.equal(all(doc, '[data-grade-pick][aria-pressed="true"]').length, 1);
     assert.equal(all(doc, ".room-tile").length, 4);
     assert.equal(all(doc, ".room-tile.ll-portal").length, 4);
     assert.equal(all(doc, ".session-heading .btn-primary").length, 1);
@@ -368,11 +369,11 @@ test("lab home: one h1 in the journey hero, the old hero demoted, every test-use
       assert.ok(doc.querySelector(sel), `kept ${sel}`);
     const order = [
       "homeTitle",
-      "exploreTitle",
       "exploreHeroTitle",
       "sessionTitle",
       "reviewTitle|.review-due",
       "roomsTitle",
+      "exploreTitle",
       "growthTitle",
       "testsTitle",
       "moreTitle",
@@ -391,7 +392,7 @@ test("lab home: one h1 in the journey hero, the old hero demoted, every test-use
     );
     assert.equal(doc.getElementById("exploreHeroTitle").tagName, "H2");
     assert.match(doc.getElementById("exploreTitle").textContent, /Explore all activities/);
-    assert.ok(doc.querySelector('.jr-explore-head a[href*="/library"]'));
+    assert.ok(doc.querySelector('.lph-explore a[href*="/library"]'));
   }
 });
 

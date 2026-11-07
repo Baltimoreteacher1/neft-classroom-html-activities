@@ -9,6 +9,8 @@ import {
   sanitizeGrowthLog,
 } from "./growth-log.js";
 import { DAY, emptyTutor, findSkill, evidence, sanitizeTutor } from "./tutor-engine.js";
+import { sanitizeFacts } from "./moby/fact-model.js";
+import { cleanGreenDays } from "./green-light.js";
 
 export const RULES = Object.freeze({
   minIndependent: 2, // independent checks before a skill counts as evidence of a gap
@@ -52,16 +54,21 @@ export function parseLearnerFile(value, index = 0) {
     label: label || `Learner ${index + 1}`,
     tutor: sanitizeTutor(value.tutor),
     growth: sanitizeGrowthLog(value.play?.growth),
+    // fl-teacher: per-fact records (automaticity) and Green Light days travel in the same file; older files have none.
+    facts: sanitizeFacts(value.play?.facts),
+    greenDays: cleanGreenDays(value.play?.rewards?.greenDays),
     exportedAt: Number.isFinite(exported) ? exported : null,
     grade: Number.isInteger(value.grade) ? value.grade : null,
   };
 }
 
-export const deviceLearner = ({ id, label, tutor, growth }) => ({
+export const deviceLearner = ({ id, label, tutor, growth, facts, greenDays }) => ({
   id: `device-${id}`,
   label,
   tutor: sanitizeTutor(tutor || emptyTutor()),
   growth: sanitizeGrowthLog(growth),
+  facts: sanitizeFacts(facts),
+  greenDays: cleanGreenDays(greenDays),
   exportedAt: null,
   grade: null,
 });

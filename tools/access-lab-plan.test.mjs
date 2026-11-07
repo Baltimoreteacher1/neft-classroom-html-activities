@@ -97,8 +97,11 @@ test("every shipping band supports all planner choices without crossing bands", 
         l.activities.map(([id, title]) => ({ band, domain, level, id, title })),
       ),
     );
+    // Early bands ship fewer support levels (K: A; Grade 1: A, B); the home offers only the levels a band has.
+    const shipped = ["A", "B", "C"].filter((l) => actual.some((r) => r.level === l));
+    assert.ok(shipped.includes("A"), `${band} ships Starting support`);
     for (const focus of ["balanced", ...CORE_DOMAINS])
-      for (const level of ["A", "B", "C"]) {
+      for (const level of shipped) {
         const plan = buildPracticePlan(actual, { focus, level, count: 6 }, () => record());
         assert.ok(plan.length > 0, `${band} ${focus} ${level}`);
         assert.ok(plan.every((r) => r.band === band && r.level === level));

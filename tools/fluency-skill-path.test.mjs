@@ -1,5 +1,6 @@
 // Grade → Topic → Skill hierarchy audit and the five-stage path. Every skill must be reachable, exactly once,
 // under one consistent topic name, and no skill id, grade or URL may change.
+
 import assert from "node:assert/strict";
 import { ALL_SKILLS, GRADES } from "../math/fluency-lab/problem-bank.js";
 import {
@@ -15,8 +16,9 @@ import {
   topicsFor,
   validLastVisit,
 } from "../math/fluency-lab/skill-path.js";
+import { TOTAL_SKILLS } from "./lib/fluency-skill-count.mjs";
 
-assert.equal(ALL_SKILLS.length, 96, "the lab still has 96 skills");
+assert.equal(ALL_SKILLS.length, TOTAL_SKILLS, `the lab still has ${TOTAL_SKILLS} skills`);
 
 // Every skill belongs to exactly one topic of its own grade, and every topic names a real domain.
 const domains = new Set(DOMAINS.map((domain) => domain.id));

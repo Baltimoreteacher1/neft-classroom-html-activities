@@ -19,6 +19,7 @@ export const SPECS = {
     x: range(2, 9),
     y: { pool: [10, 20, 30, 40, 50, 60, 70, 80, 90] },
   },
+  "4:mul-11-12": { op: "mul", shape: "fact", x: { pool: [11, 12] }, y: range(2, 12) },
   "3:division-facts": { op: "div", shape: "fact", x: range(2, 9), y: range(2, 9) },
   "4:multiply-1digit": { op: "mul", shape: "big", x: range(100, 999), y: range(2, 9) },
   "4:multiply-2digit": { op: "mul", shape: "big", x: range(10, 99), y: range(10, 99) },
@@ -32,6 +33,7 @@ export const SPECS = {
     cap: 4800,
     twoDigit: true,
   },
+  "6:multi-digit-division": { op: "div", shape: "big", x: range(101, 999), y: range(11, 48), cap: 48000, twoDigit: true },
 };
 
 export const digitsOf = (n) => String(n).split("").reverse().map(Number);

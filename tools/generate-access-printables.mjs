@@ -18,7 +18,7 @@
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { Packer } from "docx";
-import { BANDS, loadBand, REPO_ROOT } from "./lib/access-lab-content.mjs";
+import { loadBand, PACKET_BANDS, REPO_ROOT } from "./lib/access-lab-content.mjs";
 import { packetDocx } from "./lib/access-packet-docx.mjs";
 import { packetHTML } from "./lib/access-packet-html.mjs";
 
@@ -33,7 +33,7 @@ mkdirSync(studentDir, { recursive: true });
 mkdirSync(teacherDir, { recursive: true });
 const manifest = [];
 let packets = 0;
-for (const band of BANDS) {
+for (const band of PACKET_BANDS) {
   for (const { domain, data } of loadBand(band)) {
     for (const [level, L] of Object.entries(data.levels || {})) {
       if (!(L.activities || []).length) continue;

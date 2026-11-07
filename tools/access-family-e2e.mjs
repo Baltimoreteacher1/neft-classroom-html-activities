@@ -36,6 +36,7 @@ try {
 const TYPES = {
   ".html": "text/html; charset=utf-8",
   ".js": "text/javascript",
+  ".mjs": "text/javascript",
   ".css": "text/css",
   ".json": "application/json",
   ".svg": "image/svg+xml",
@@ -890,26 +891,22 @@ try {
     await page.context().close();
   }
 
-  // ── Grade-band choices on the student home ────────────────────────────────
+  // ── Grade-band choices on the student home (the grade ruler, 2026-11-06) ──
   {
     const page = await newPage({ width: 375 });
     await page.go(`${BASE}/?grades=3-5`);
     ok(
-      (await page.locator('[data-set-band="3-5"]').count()) === 1,
-      "Home: Grades 3–5 button is available",
+      (await page.locator(".lph [data-grade-pick]").count()) === 5,
+      "Home: the grade ruler offers K, 1, 2–3, 4–5 and 6–8",
     );
     ok(
-      (await page.locator('[data-set-band="6-8"]').count()) === 1,
-      "Home: Grades 6–8 button is available",
-    );
-    ok(
-      (await page.locator('[data-set-band="3-5"]').getAttribute("aria-pressed")) === "true",
+      (await page.locator('[data-grade-pick="4-5"]').getAttribute("aria-pressed")) === "true",
       "Home: selected grade band is clear",
     );
-    await page.locator('[data-set-band="6-8"]').click();
+    await page.locator('[data-grade-pick="6-8"]').click();
     await page.waitForFunction(() => new URLSearchParams(location.search).get("grades") === "6-8");
     ok(
-      (await page.locator('[data-set-band="6-8"]').getAttribute("aria-pressed")) === "true",
+      (await page.locator('[data-grade-pick="6-8"]').getAttribute("aria-pressed")) === "true",
       "Home: grade band switches and updates selected state",
     );
     ok(

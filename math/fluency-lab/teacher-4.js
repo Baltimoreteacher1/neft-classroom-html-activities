@@ -3,6 +3,9 @@
 // Privacy: learner data is read only after the teacher chooses files (or this device's profiles), stays in memory,
 // and is saved only on an explicit button press. Nothing is sent anywhere.
 import { loadGrowthLog } from "./growth-log.js";
+import { FACTS_KEY } from "./moby/fact-model.js";
+import { REWARDS_KEY } from "./rewards.js";
+import { profileKey, readLocal } from "./school-tools.js";
 import { t } from "./i18n.js";
 import { deviceLearner } from "./reports-rows.js";
 import { esc } from "./reports-export.js";
@@ -10,6 +13,7 @@ import { mountAssignments } from "./teacher-4-assign.js";
 import { createClassState, mountInsights, mountReports } from "./teacher-4-class.js";
 import { mountAssessmentBuilder, mountLessonPlanner } from "./e8/assessment-ui.js";
 import { mountMasteryMap } from "./e8/teacher-hub-ui.js";
+import { mountClassTools } from "./teacher-class-tools.js";
 
 const TABS = () => [
   { id: "assign", label: t("Assignments") },
@@ -18,6 +22,7 @@ const TABS = () => [
   { id: "map", label: t("Mastery map") },
   { id: "assess", label: t("Assessments") },
   { id: "lesson", label: t("Lesson plan from my class") },
+  { id: "tools", label: t("Class tools") }, // fl-teacher
 ];
 
 // The opened class lives for this page visit, so switching language or tabs does not lose it. Reloading clears it.
@@ -35,6 +40,8 @@ export function mountTeacher4(
         label: record.label,
         tutor: record.tutor,
         growth: loadGrowthLog(record.id),
+        facts: readLocal(profileKey(FACTS_KEY, record.id), null),
+        greenDays: readLocal(profileKey(REWARDS_KEY, record.id), {})?.greenDays,
       }),
     );
   const klass = (sharedClass ??= createClassState({ deviceLearners: () => currentDevice() }));
@@ -92,6 +99,7 @@ export function mountTeacher4(
   });
   mountAssessmentBuilder(panel("assess"), { klass, grade, onPrint, announce });
   const lessonPlan = mountLessonPlanner(panel("lesson"), { klass, grade });
+  mountClassTools(panel("tools"), { grade, onPrint, announce });
 
   const tablist = container.querySelector("[role=tablist]");
   tablist.addEventListener("click", (event) => {

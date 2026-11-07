@@ -32,11 +32,14 @@ export function evaluateTarget(assignment, tutor, { now = Date.now(), since = 0 
     const score = skill && record?.recent?.length ? evidence(tutor, skill, now).score : null;
     const days = independentDays(record, since);
     const practiced = (record?.recent || []).some((entry) => entry.at >= since);
+    const exampleViews = (record?.recent || []).filter(
+      (entry) => entry.ex === 1 && entry.at >= since,
+    ).length;
     const met = Boolean(target) && score !== null && score >= target.score && days >= target.days;
     const progress = target
       ? Math.min(1, ((score ?? 0) / target.score + Math.min(days, target.days) / target.days) / 2)
       : 0;
-    return { key, score, days, practiced, met, progress };
+    return { key, score, days, practiced, met, progress, exampleViews };
   });
   return {
     rows,

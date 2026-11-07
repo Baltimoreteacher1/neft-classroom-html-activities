@@ -1,6 +1,7 @@
 // Personalized daily fluency session: which facts to practice today and why, built only from the learner's own
 // counted evidence. Pure (no DOM, no clock, randomness only through the injected rng). No view lives here.
 import { factSteps } from "../problem-bank.js";
+import { hint68, parts68 } from "./fact-keys-68.js";
 import {
   FACT_THRESHOLDS,
   dayOf,
@@ -99,6 +100,29 @@ const STEP_STRATEGY = { doubles: "doubles", "near-doubles": "near", "make-ten": 
 // A question in the exact format existing items use ("a ○ b = ?"), so chartKey, validateAnswer and the answer
 // checkers all work. Addition and multiplication randomly show either order of the same fact.
 export function makeFactItem(key, rng = Math.random) {
+  const p68 = parts68(key);
+  if (p68) {
+    // Grade 6-8 facts: the question is fixed, every accepted form of the answer is listed, the hint names a rule.
+    const hint = hint68(key);
+    return {
+      key,
+      family: key,
+      question: p68.question,
+      ...(p68.template ? { questionTemplate: p68.template, questionVars: p68.vars } : {}),
+      answers: p68.accept,
+      displayAnswer: p68.answer,
+      kind: "text",
+      choices: null,
+      unit: "",
+      model: null,
+      strategy: null,
+      hint: hint.text,
+      hintTemplate: hint.template,
+      hintVars: hint.vars,
+      steps: [],
+      explanation: `${p68.question.replace("?", p68.answer)}`,
+    };
+  }
   const parts = factParts(key);
   if (!parts) return null;
   let { a, b } = parts;
@@ -193,7 +217,7 @@ export function buildFactSession({
     if (used.has(seed)) continue;
     learn.push({ key: take(seed), kind: "new" });
     added += 1;
-    for (const partner of familyOf(seed).keys) {
+    for (const partner of familyOf(seed)?.keys || []) {
       if (added >= newCap) break;
       if (
         partner !== seed &&

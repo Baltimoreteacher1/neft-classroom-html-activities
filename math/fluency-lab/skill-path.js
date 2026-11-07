@@ -77,6 +77,8 @@ const SKILL_TOPIC = {
   "6:lcm": "factors-multiples",
   "6:divide-fractions": "fractions",
   "6:decimal-ops": "decimals",
+  "6:multi-digit-division": "division",
+  "6:order-rational": "integers-rational",
 };
 
 export const skillKey = (skill) => `${skill.grade}:${skill.id}`;

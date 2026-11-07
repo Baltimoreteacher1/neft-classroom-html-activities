@@ -1,0 +1,298 @@
+/* Lab home start screen (src/views/home-start.js): grade ruler, language, Continue, the four skills, and one door
+   each for teachers and families. Tokens only (ds.css). The ruler is the one distinctive element: each grade group
+   is as wide as the grades it covers, on a K-8 scale. */
+
+.lph {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+  grid-template-areas:
+    "intro student"
+    "lang student"
+    "doors student";
+  grid-template-rows: auto auto 1fr;
+  gap: var(--s-5) clamp(1.25rem, 3.5vw, 3rem);
+  align-items: start;
+  margin-top: var(--s-2);
+  padding: clamp(1.1rem, 3vw, 2.5rem);
+  border: 1px solid var(--line);
+  border-radius: var(--r-xl);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+.lph-intro {
+  grid-area: intro;
+}
+.lph-student {
+  grid-area: student;
+}
+.lph-lang {
+  grid-area: lang;
+  margin-top: 0;
+}
+.lph-doors {
+  grid-area: doors;
+}
+.lph h1 {
+  margin: 0 0 var(--s-3);
+  max-width: 20ch;
+  font: 600 clamp(2rem, 1.3rem + 2.6vw, 3.25rem) / 1.05 var(--font-display);
+  letter-spacing: -0.025em;
+  color: var(--ink);
+}
+.lph-lead {
+  max-width: 46ch;
+  margin: 0 0 var(--s-5);
+  color: var(--ink-2);
+  font-size: 1.125rem;
+  line-height: 1.5;
+}
+.lph-setting {
+  margin-top: var(--s-4);
+}
+.lph-label {
+  margin: 0 0 var(--s-2);
+  color: var(--ink-2);
+  font: 700 0.9375rem/1.3 var(--font);
+}
+
+/* ── grade ruler ─────────────────────────────────────────────────────────── */
+.lph-ruler {
+  position: relative;
+  display: flex;
+  max-width: 34rem;
+  padding-top: 0.6rem;
+}
+.lph-ruler::before {
+  /* the K-8 scale: nine grades, one tick each */
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 0.45rem;
+  border-top: 2px solid var(--line-strong);
+  background: repeating-linear-gradient(90deg, var(--line-strong) 0 2px, transparent 2px calc(100% / 9));
+}
+.lph-step {
+  flex: var(--span) 1 0;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  min-width: 0;
+  min-height: 3.5rem;
+  margin-inline-start: -1.5px;
+  padding: 0.3rem 0.25rem;
+  border: 1.5px solid var(--line-strong);
+  background: var(--surface);
+  color: var(--ink);
+  font: 700 1.125rem/1.1 var(--font);
+  cursor: pointer;
+}
+.lph-step:first-child {
+  margin-inline-start: 0;
+  border-start-start-radius: var(--radius-sm);
+  border-end-start-radius: var(--radius-sm);
+}
+.lph-step:last-child {
+  border-start-end-radius: var(--radius-sm);
+  border-end-end-radius: var(--radius-sm);
+}
+.lph-step:hover {
+  background: var(--surface-2);
+}
+.lph-step.is-soon {
+  border-style: dashed;
+  color: var(--ink-3);
+}
+.lph-step-soon {
+  font-size: 0.8125rem;
+  font-weight: 400;
+  white-space: nowrap;
+}
+.lph-step[aria-pressed="true"] {
+  position: relative;
+  z-index: 1;
+  border-style: solid;
+  border-color: var(--brand);
+  background: var(--brand);
+  color: var(--on-brand);
+}
+.lph-step:focus-visible {
+  position: relative;
+  z-index: 2;
+}
+.lph-note {
+  min-height: 1.4em;
+  max-width: 46ch;
+  margin: var(--s-2) 0 0;
+}
+
+/* ── Continue and the four skills ────────────────────────────────────────── */
+.lph-student {
+  display: grid;
+  gap: var(--s-4);
+}
+.lph-continue {
+  padding: clamp(1rem, 2.4vw, 1.6rem);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  background: var(--bg);
+}
+.lph-continue h2 {
+  margin: 0 0 var(--s-2);
+  font: 600 clamp(1.35rem, 1.1rem + 0.9vw, 1.75rem) / 1.15 var(--font-display);
+}
+.lph-why {
+  margin: 0 0 var(--s-4);
+  color: var(--ink-2);
+}
+.lph-go {
+  width: 100%;
+  justify-content: center;
+}
+.lph-time {
+  margin: var(--s-2) 0 0;
+}
+.lph-quick {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-1) var(--s-4);
+  margin: var(--s-3) 0 0;
+  padding: var(--s-3) 0 0;
+  border-top: 1px solid var(--line);
+  list-style: none;
+}
+.lph-quick a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 3rem;
+  color: var(--brand-ink);
+  font-weight: 700;
+}
+.lph-skills {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--s-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.lph-skill {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  min-height: 3.75rem;
+  padding: 0.6rem 1rem;
+  border-radius: var(--radius);
+  background: var(--room);
+  color: #fff;
+  font-size: 1.125rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+.lph-skill:hover {
+  color: #fff;
+  filter: brightness(1.12);
+}
+.lph-skill .ico {
+  flex: none;
+  width: 1.5rem;
+  height: 1.5rem;
+}
+.lph-skill:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+}
+
+/* ── teacher and family doors ────────────────────────────────────────────── */
+.lph-doors {
+  display: grid;
+  gap: var(--s-3);
+  padding-top: var(--s-4);
+  border-top: 1px solid var(--line);
+}
+.lph-door {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: var(--s-3);
+  align-items: center;
+}
+.lph-door h2 {
+  margin: 0;
+  font: 700 1.125rem/1.2 var(--font);
+}
+.lph-door .fine {
+  margin: 0.15rem 0 0;
+}
+.lph-door-ic {
+  display: grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  background: var(--brand-soft);
+  color: var(--brand-ink);
+}
+.lph-door.is-family .lph-door-ic {
+  background: var(--writing-soft);
+  color: var(--writing-ink);
+}
+
+/* ── explore: featured cards, then the rest behind one disclosure ───────── */
+.lph-more {
+  margin-top: var(--s-3);
+}
+.lph-more > summary {
+  display: inline-flex;
+  align-items: center;
+  min-height: 3rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+.lph-more[open] > summary {
+  margin-bottom: var(--s-3);
+}
+.lph-explore > p:last-child {
+  margin-top: var(--s-4);
+}
+
+@media (max-width: 899px) {
+  .lph {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "intro"
+      "student"
+      "lang"
+      "doors";
+    grid-template-rows: none;
+  }
+}
+@media (max-width: 599px) {
+  /* Narrow screens: every grade group keeps a 48px target, so the segments stop being to scale; drop the scale. */
+  .lph-ruler {
+    padding-top: 0;
+  }
+  .lph-ruler::before {
+    display: none;
+  }
+  .lph-step {
+    flex-basis: 3rem;
+    min-width: 3rem;
+    font-size: 1rem;
+  }
+  .lph-step-soon {
+    font-size: 0.75rem;
+  }
+}
+@media (max-width: 479px) {
+  .lph-door {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+  .lph-door > .btn {
+    grid-column: 1 / -1;
+    justify-content: center;
+  }
+  .lph-skill {
+    padding-inline: 0.75rem;
+    font-size: 1rem;
+  }
+}

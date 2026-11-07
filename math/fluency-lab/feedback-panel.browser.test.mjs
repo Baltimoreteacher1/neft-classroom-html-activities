@@ -15,7 +15,9 @@ try {
   const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
   const errors = [];
   page.on("pageerror", (error) => errors.push(error.message));
+  // These tests drive the typed answer box; listening mode (on by default for Kindergarten to Grade 2) has its own tests.
   await page.addInitScript(() => {
+    localStorage.setItem("ewl-fluency-settings-v1", JSON.stringify({ audioFirst: "off" }));
     Math.random = () => 0.5;
     const now = Date.now();
     localStorage.setItem("ewl-fluency-tutor-v2", JSON.stringify({

@@ -1,0 +1,593 @@
+/* K–3 bands: the early learners' home (/early), the audio-first player and its pages.
+   Uses the lab's tokens (ds.css / acc.css); every control the child touches is at least 64px. */
+
+.early-home,
+.early-player {
+  max-width: 72rem;
+  margin-inline: auto;
+}
+/* .btn (ds.css) loads later; the doubled class keeps the 64px child-size target. */
+.early-big,
+.btn.early-big {
+  min-height: 4rem;
+  min-width: 4rem;
+  font-size: 1.15rem;
+  padding-inline: 1.25rem;
+  border-radius: var(--radius, 14px);
+}
+.early-honest {
+  margin-block: 1.5rem 0.5rem;
+}
+
+/* Home */
+.early-hero {
+  display: grid;
+  grid-template-columns: minmax(6rem, 9rem) 1fr;
+  gap: 1.5rem;
+  align-items: start;
+}
+.early-hero-guide svg {
+  width: 100%;
+  height: auto;
+}
+.early-setting {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+.early-section {
+  margin-top: 2rem;
+}
+.early-skills,
+.early-extras {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr));
+}
+.early-skill {
+  border: 1px solid var(--line, #d6dbe0);
+  border-top: 6px solid var(--acc-d-listening, #075568);
+  border-radius: var(--radius, 14px);
+  padding: 1rem;
+  background: var(--acc-surface, #fff);
+}
+.early-skill.d-reading {
+  border-top-color: var(--acc-d-reading, #2e4a94);
+}
+.early-skill.d-speaking {
+  border-top-color: var(--acc-d-speaking, #8a3a5c);
+}
+.early-skill.d-writing {
+  border-top-color: var(--acc-d-writing, #9a4a26);
+}
+.early-skill h3 {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  margin: 0 0 0.25rem;
+}
+.early-levels {
+  list-style: none;
+  padding: 0;
+  margin: 0.75rem 0;
+  display: grid;
+  gap: 0.5rem;
+}
+.early-levels .btn {
+  width: 100%;
+  justify-content: space-between;
+}
+.early-count {
+  font-size: 0.9rem;
+  font-weight: 400;
+}
+.early-all {
+  display: inline-block;
+  min-height: 2.75rem;
+  padding-block: 0.6rem;
+}
+.early-extra {
+  display: grid;
+  gap: 0.35rem;
+  min-height: 7rem;
+  padding: 1rem;
+  border: 1px solid var(--line, #d6dbe0);
+  border-radius: var(--radius, 14px);
+  background: var(--acc-surface, #fff);
+  color: inherit;
+  text-decoration: none;
+}
+.early-extra:hover,
+.early-extra:focus-visible {
+  border-color: var(--brand, #075568);
+}
+.early-extra strong {
+  font-size: 1.1rem;
+}
+
+/* Player */
+.early-head h1 {
+  font-size: clamp(1.6rem, 4vw, 2.3rem);
+}
+.early-context {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  margin: 0;
+}
+.early-switch,
+.early-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+}
+.early-guide {
+  display: grid;
+  grid-template-columns: 6rem 1fr;
+  gap: 1rem;
+  align-items: center;
+  margin-block: 1rem;
+  padding: 1rem;
+  border-radius: var(--radius, 14px);
+  background: var(--acc-info-soft, #e2f3f0);
+}
+.early-guide .early-replay {
+  grid-column: 1 / -1;
+  justify-self: start;
+}
+.early-guide-art {
+  width: 6rem;
+  height: 6rem;
+}
+.early-bubble {
+  background: var(--acc-surface, #fff);
+  border-radius: var(--radius, 14px);
+  padding: 0.75rem 1rem;
+  font-size: 1.2rem;
+}
+.early-bubble p {
+  margin: 0;
+}
+.early-guide-name {
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .early-guide-art.is-talking .early-guide-mouth {
+    animation: early-talk 0.35s ease-in-out infinite alternate;
+    transform-origin: 60px 86px;
+  }
+}
+@keyframes early-talk {
+  to {
+    transform: scaleY(1.8);
+  }
+}
+.early-scene {
+  margin: 0 0 1rem;
+}
+.early-scene svg,
+.early-paper svg {
+  width: 100%;
+  max-width: 40rem;
+  height: auto;
+  border-radius: var(--radius, 14px);
+  display: block;
+}
+.early-prompt {
+  font-size: 1.35rem;
+  font-weight: 600;
+}
+.early-passage {
+  display: grid;
+  gap: 0.5rem;
+  margin-block: 1rem;
+}
+.early-sentence {
+  text-align: start;
+  font-size: 1.35rem;
+  line-height: 1.5;
+  min-height: 3.5rem;
+  padding: 0.5rem 0.9rem;
+  border: 1px solid var(--line, #d6dbe0);
+  border-radius: var(--radius-sm, 10px);
+  background: var(--acc-surface, #fff);
+  color: inherit;
+  cursor: pointer;
+}
+.early-choices {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 11rem), 1fr));
+  margin-block: 1rem;
+}
+.early-choices.has-scenes {
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr));
+}
+.early-choices .early-note {
+  grid-column: 1 / -1;
+  margin: 0;
+}
+.early-choice {
+  position: relative;
+}
+.early-pick {
+  width: 100%;
+  min-height: 9rem;
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  gap: 0.4rem;
+  padding: 0.75rem 0.75rem 1rem;
+  border: 3px solid var(--line-strong, #9aa3ad);
+  border-radius: var(--radius, 14px);
+  background: var(--acc-surface, #fff);
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+.early-pick[aria-pressed="true"] {
+  border-color: var(--brand, #075568);
+  background: var(--brand-soft, #e2f3f0);
+  box-shadow: 0 0 0 3px var(--brand, #075568) inset;
+}
+.early-pick svg {
+  width: 100%;
+  height: auto;
+}
+.early-emoji {
+  font-size: 3.5rem;
+  line-height: 1;
+}
+.early-choice-text {
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+.early-order-n {
+  position: absolute;
+  inset-block-start: 0.5rem;
+  inset-inline-start: 0.5rem;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--brand, #075568);
+  color: var(--on-brand, #fff);
+  font-weight: 700;
+}
+.early-hear {
+  position: absolute;
+  inset-block-start: 0.4rem;
+  inset-inline-end: 0.4rem;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  border: 2px solid var(--line-strong, #9aa3ad);
+  background: var(--acc-surface, #fff);
+  display: inline-grid;
+  place-items: center;
+  cursor: pointer;
+  color: inherit;
+}
+.early-frame .early-hear,
+.early-word .early-hear {
+  position: static;
+}
+.early-frame {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  font-size: 1.25rem;
+}
+.early-feedback {
+  display: flex;
+  gap: 0.75rem;
+  align-items: start;
+  padding: 1rem;
+  border-radius: var(--radius, 14px);
+  font-size: 1.15rem;
+}
+.early-feedback p {
+  margin: 0;
+}
+.early-feedback.is-right {
+  background: var(--acc-success-soft, #e3f4e6);
+}
+.early-feedback.is-again {
+  background: var(--acc-info-soft, #e2f3f0);
+}
+.early-talk {
+  margin-block: 1.5rem;
+  padding: 1rem;
+  border: 1px solid var(--line, #d6dbe0);
+  border-radius: var(--radius, 14px);
+}
+.early-model {
+  margin-block: 0.75rem;
+}
+.early-chip {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  background: var(--acc-surface-sunken, #f1f3f5);
+}
+
+/* Paper writing page: hidden on screen, the only thing printed while .early-printing is set. */
+.early-paper {
+  display: none;
+}
+.early-paper-line {
+  height: 3.2rem;
+  border-bottom: 2px solid #333;
+  background: linear-gradient(
+    #0000 calc(50% - 1px),
+    #9aa3ad calc(50% - 1px),
+    #9aa3ad calc(50% + 1px),
+    #0000 calc(50% + 1px)
+  );
+  background-size: 100% 100%;
+  margin-bottom: 0.6rem;
+}
+@media print {
+  html.early-printing body * {
+    visibility: hidden;
+  }
+  html.early-printing .early-paper,
+  html.early-printing .early-paper * {
+    visibility: visible;
+  }
+  html.early-printing .early-paper {
+    display: block;
+    position: absolute;
+    inset: 0;
+    padding: 0.5in;
+    font-size: 16pt;
+    color: #000;
+  }
+  html.early-printing .early-paper svg {
+    max-width: 5.5in;
+  }
+}
+
+@media (max-width: 40rem) {
+  .early-hero {
+    grid-template-columns: 1fr;
+  }
+  .early-hero-guide {
+    max-width: 6rem;
+  }
+  .early-guide {
+    grid-template-columns: 4.5rem 1fr;
+  }
+  .early-guide-art {
+    width: 4.5rem;
+    height: 4.5rem;
+  }
+}
+
+/* Story Time (Kindergarten) */
+.early-story-text {
+  font-size: 1.5rem;
+  line-height: 1.55;
+  max-width: 40rem;
+}
+.early-story-text.is-es {
+  color: var(--bi-es-color, var(--ink-2, #3d4756));
+}
+.early-story.is-class .early-story-text {
+  font-size: clamp(1.8rem, 3.2vw, 2.6rem);
+}
+.early-story.is-class .early-scene svg {
+  max-width: 56rem;
+}
+.early-adult {
+  margin-block: 1rem;
+  padding: 1rem;
+  border-inline-start: 6px solid var(--acc-d-speaking, #8a3a5c);
+  border-radius: var(--radius-sm, 10px);
+  background: var(--acc-surface-sunken, #f6f7f8);
+}
+.early-adult h2 {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  font-size: 1.1rem;
+  margin: 0 0 0.5rem;
+}
+.early-ask {
+  font-size: 1.3rem;
+  font-weight: 600;
+}
+.early-listen summary {
+  min-height: 2.75rem;
+  cursor: pointer;
+}
+.early-retell {
+  list-style: decimal inside;
+  padding: 0;
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 14rem), 1fr));
+}
+.early-story-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: center;
+  justify-content: space-between;
+  margin-block: 1.5rem;
+}
+
+/* Sound Builder */
+.early-garden {
+  list-style: none;
+  padding: 0;
+  margin: 1rem 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.early-garden li {
+  width: 3.5rem;
+  height: 3.5rem;
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius-sm, 10px);
+  background: #e9dcc8;
+  font-size: 1.8rem;
+  position: relative;
+}
+.early-garden li.is-grown {
+  background: var(--acc-success-soft, #e3f4e6);
+}
+.early-garden small {
+  position: absolute;
+  inset-block-end: -0.2rem;
+  inset-inline-end: -0.2rem;
+  font-size: 1rem;
+}
+.early-ph-pic {
+  font-size: 5rem;
+  margin: 0;
+  line-height: 1.1;
+}
+.early-ph-slots,
+.early-ph-tiles {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-block: 1rem;
+}
+.early-ph-slots li {
+  width: 5rem;
+  height: 5rem;
+  display: grid;
+  place-items: center;
+  border: 3px dashed var(--line-strong, #9aa3ad);
+  border-radius: var(--radius, 14px);
+  position: relative;
+}
+.early-ph-slots li.is-next {
+  border-color: var(--brand, #075568);
+  border-style: solid;
+}
+.early-ph-slots li.is-filled {
+  border-style: solid;
+  background: var(--brand-soft, #e2f3f0);
+}
+.early-ph-slots .early-hear {
+  position: static;
+}
+.early-ph-letter,
+.early-ph-tile {
+  font-size: 2rem;
+  font-weight: 700;
+  font-family: var(--font, system-ui);
+}
+.early-ph-tile {
+  min-width: 4.5rem;
+  min-height: 4.5rem;
+  border-radius: var(--radius, 14px);
+  border: 3px solid var(--line-strong, #9aa3ad);
+  background: var(--acc-surface, #fff);
+  color: inherit;
+  cursor: pointer;
+}
+.early-ph-tile:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+/* Picture word cards */
+.early-decks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+.early-cards {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 10rem), 1fr));
+}
+.early-word {
+  position: relative;
+}
+.early-card {
+  width: 100%;
+  min-height: 9rem;
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  gap: 0.25rem;
+  border: 2px solid var(--line, #d6dbe0);
+  border-radius: var(--radius, 14px);
+  background: var(--acc-surface, #fff);
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+.early-word.is-said .early-card {
+  border-color: var(--acc-success, #2f7d3a);
+}
+.early-card-en {
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+.early-card-es {
+  color: var(--bi-es-color, var(--ink-2, #3d4756));
+}
+.early-star {
+  position: absolute;
+  inset-block-start: 0.4rem;
+  inset-inline-end: 0.4rem;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 50%;
+  border: 2px solid var(--line-strong, #9aa3ad);
+  background: var(--acc-surface, #fff);
+  color: inherit;
+  cursor: pointer;
+}
+.early-star[aria-pressed="true"] {
+  background: #f7c948;
+}
+
+/* Family time */
+.early-fam-list {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 20rem), 1fr));
+}
+.early-fam {
+  border: 1px solid var(--line, #d6dbe0);
+  border-radius: var(--radius, 14px);
+  padding: 1rem;
+  background: var(--acc-surface, #fff);
+}
+.early-fam h2 {
+  font-size: 1.2rem;
+  margin-top: 0;
+}
+@media print {
+  html:not(.early-printing) .early-fam-list {
+    display: block;
+  }
+  html:not(.early-printing) .early-fam {
+    break-inside: avoid;
+    margin-bottom: 0.5rem;
+  }
+}

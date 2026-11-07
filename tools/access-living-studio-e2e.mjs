@@ -34,6 +34,7 @@ try {
 const TYPES = {
   ".html": "text/html; charset=utf-8",
   ".js": "text/javascript",
+  ".mjs": "text/javascript",
   ".css": "text/css",
   ".json": "application/json",
   ".svg": "image/svg+xml",
@@ -135,8 +136,8 @@ try {
   // ── home ────────────────────────────────────────────────────────────────
   await go("/?grades=6-8");
   ok(
-    (await page.locator(".ll-hero h1").count()) === 1,
-    "home renders the exhibition hero with one h1",
+    (await page.locator(".lph h1").count()) === 1 && (await page.locator("h1").count()) === 1,
+    "home renders the start screen with one h1",
   );
   ok((await page.locator(".room-tile.ll-portal").count()) === 4, "home shows four studio portals");
   const studios = await page.locator(".ll-portal-studio").allInnerTexts();
@@ -148,13 +149,12 @@ try {
     .locator(".ll-portal")
     .evaluateAll((els) => els.map((e) => getComputedStyle(e).backgroundImage));
   ok(new Set(bgs).size === 4, "each portal has its own material, not one shared card style");
-  // The home leads with the Continue-My-Journey hero (intended redesign), so the first-viewport primary action
-  // is the journey hero's; "Start today's mission" moved under "Explore all activities" and must stay within
-  // two desktop screens of the top.
-  const journeyStart = await page.locator(".jr-cta .btn-primary").boundingBox();
+  // The home leads with the start screen (2026-11-06 redesign): the Continue card's primary action is in the first
+  // desktop viewport, and "Start today's mission" follows in the exhibition session within two desktop screens.
+  const journeyStart = await page.locator(".lph [data-continue]").boundingBox();
   ok(
     journeyStart && journeyStart.y + journeyStart.height <= 900,
-    "Continue My Journey action is in the first desktop viewport",
+    "the Continue action is in the first desktop viewport",
   );
   const start = await page.locator(".session-heading .btn-primary").boundingBox();
   ok(

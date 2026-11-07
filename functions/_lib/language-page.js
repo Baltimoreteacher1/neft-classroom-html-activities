@@ -3,9 +3,11 @@
 // place that says which hostnames those are and which paths the lab host serves.
 //
 // Everything outside the lab's own surface (lessons, curriculum, teacher tools) lives on eduwonderlab.com, so
-// the lab host redirects it there instead of serving a duplicate of the whole site. The Teacher Hub keeps its
-// rosters and typed official scores in the teacher's browser on eduwonderlab.com, so it is NOT served here: a
-// second origin would show an empty hub and a second sign-in.
+// the lab host redirects it there instead of serving a duplicate of the whole site. The Teacher Hub (/access-teacher/)
+// IS served here, behind the same teacher gate, so a teacher can run a class on thelanguagepage.com: its Class panel is
+// backed by /api/class, which lives on this origin next to the students' progress. Its browser-local panels (rosters
+// and typed scores) are per origin, as before. The Hub's math Flight Deck and the score predictor stay on
+// eduwonderlab.com.
 //
 // Redirects the other way (eduwonderlab.com/access-practice-lab -> thelanguagepage.com) are deliberately not
 // here. Student progress lives in each origin's localStorage and does not cross origins, so the old origin must
@@ -28,8 +30,17 @@ const LAB_PREFIXES = [
   "/data/",
   "/shared/",
   "/cdn-cgi/",
+  // The class platform (functions/api/class, docs/class-platform.md): class sync, live quiz and voice notes
+  // must answer on the lab's own origin, because lab progress lives in that origin's storage.
+  "/api/class/",
 ];
 const LAB_EXACT = new Set([LAB_BASE, "/family-app/home-link.js", "/api/signal", "/api/signal/"]);
+/** The Teacher Hub, minus the two surfaces that are not language practice. */
+export const HUB_BASE = "/access-teacher";
+const HUB_EXCLUDED = [`${HUB_BASE}/predictive`, `${HUB_BASE}/flight-deck`];
+const isHubPath = (p) =>
+  (p === HUB_BASE || p.startsWith(`${HUB_BASE}/`)) &&
+  !HUB_EXCLUDED.some((x) => p === x || p.startsWith(`${x}/`));
 
 /** Public lab pages listed in the sitemap: clean URLs the SPA serves through the one rewrite rule. */
 export const SITEMAP_PATHS = [
@@ -40,14 +51,19 @@ export const SITEMAP_PATHS = [
   `${LAB_BASE}/passport`,
   `${LAB_BASE}/growth`,
   `${LAB_BASE}/speak`,
+  `${LAB_BASE}/voice`,
   `${LAB_BASE}/write`,
   `${LAB_BASE}/journey`,
   `${LAB_BASE}/vocabulary`,
+  `${LAB_BASE}/grammar`,
   `${LAB_BASE}/reading-room`,
   `${LAB_BASE}/worlds`,
+  `${LAB_BASE}/class`,
   `${LAB_BASE}/move`,
   `${LAB_BASE}/science-of-reading`,
   `${LAB_BASE}/language-studios`,
+  // Kindergarten, Grade 1 and Grades 2–3 home (access-practice-lab/src/views/early-hub.js).
+  `${LAB_BASE}/early`,
   // The WIDA ACCESS practice studios (access-practice-lab/src/studios.js); the school dashboard and the portfolio
   // gradebook under /wida-access/ are not on this host.
   ...STUDIOS.map((s) => studioPath(s.slug)),
@@ -59,7 +75,10 @@ export const isLanguagePageHost = (hostname) =>
 const servesOnLabHost = (pathname) => {
   const p = pathname.toLowerCase();
   return (
-    LAB_EXACT.has(p) || LAB_PREFIXES.some((prefix) => p.startsWith(prefix)) || Boolean(studioFor(p))
+    LAB_EXACT.has(p) ||
+    LAB_PREFIXES.some((prefix) => p.startsWith(prefix)) ||
+    isHubPath(p) ||
+    Boolean(studioFor(p))
   );
 };
 

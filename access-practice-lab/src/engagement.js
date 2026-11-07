@@ -1,6 +1,7 @@
 // Shared learner engagement state. Preferences keep this in the existing ACCESS backup/resume
 // boundary; the actual practice record and review ledger remain the source for learning evidence.
 import { practiceDays } from "./store.js";
+import { cleanLook } from "./lang/unlocks.js";
 import { todayISO } from "./util.js";
 
 const GOALS = [3, 4, 5, 7];
@@ -19,6 +20,7 @@ export const getEngagement = (prefs = {}) => {
     questWeek: typeof e.questWeek === "string" ? e.questWeek : "",
     questDone: e.questDone === true,
     cosmetic: ["trail-glow", "map-pin", "word-wings"].includes(e.cosmetic) ? e.cosmetic : "",
+    look: cleanLook(e.look),
     stories: clean(e.stories),
     reminder: {
       days: Array.isArray(e.reminder?.days) ? e.reminder.days.filter((d) => Number.isInteger(d) && d >= 0 && d <= 6) : [],

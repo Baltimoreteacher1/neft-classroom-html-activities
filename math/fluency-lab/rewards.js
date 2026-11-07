@@ -1,5 +1,6 @@
 // Sticker book, ranks, practice-day streak, and a small celebration. Local to this learner; nothing is sent anywhere.
 import { TRAILS, factStatus, loadTrail } from "./fact-trail.js";
+import { cleanGreenDays } from "./green-light.js";
 import { COLORS, ITEMS, SHOP, SHOP_IDS, SLOTS } from "./buddy-items.js";
 import { CREATURES, cleanDuel } from "./duel-core.js";
 import { GAMES_BY_ID_NAME } from "./game-names.js";
@@ -11,7 +12,8 @@ import { STRATEGIES } from "./strategies.js";
 import { localDay } from "./tutor-engine.js";
 import { profileKey, profiles, readLocal, writeLocal } from "./school-tools.js";
 
-const KEY = "ewl-fluency-rewards-v1";
+export const REWARDS_KEY = "ewl-fluency-rewards-v1";
+const KEY = REWARDS_KEY;
 const key = () => profileKey(KEY, profiles().active);
 const DAY_MS = 86400000;
 
@@ -239,7 +241,7 @@ export function cleanRewards(saved = {}) {
       ? saved.days.filter((day) => /^\d{4}-\d{2}-\d{2}$/.test(day)).slice(-60)
       : [],
     plays: num(saved.plays),
-    best: { mathworldbuilder: num(best.mathworldbuilder), numberpuzzlestudio: num(best.numberpuzzlestudio), fluencyrally: num(best.fluencyrally), numberquest: num(best.numberquest), arrayarchitect: num(best.arrayarchitect), fractionforge: num(best.fractionforge), equationfactory: num(best.equationfactory), fractionbridge: num(best.fractionbridge), balancestation: num(best.balancestation), ratiocity: num(best.ratiocity), tenframefactory: num(best.tenframefactory), divisionharbor: num(best.divisionharbor), decimaldashboards: num(best.decimaldashboards), integerexpedition: num(best.integerexpedition), graphcity: num(best.graphcity), match: num(best.match), hunt: num(best.hunt), sort: num(best.sort), mistake: num(best.mistake), make: num(best.make), family: num(best.family), balance: num(best.balance), picture: num(best.picture), flip: num(best.flip), make24: num(best.make24), challenge: num(best.challenge), duel: num(best.duel), teamrelay: num(best.teamrelay), baseball: num(best.baseball), guess: num(best.guess), race: num(best.race), ...Object.fromEntries(E8_GAME_IDS.map((id) => [id, num(best[id])])) },
+    best: { mathworldbuilder: num(best.mathworldbuilder), numberpuzzlestudio: num(best.numberpuzzlestudio), fluencyrally: num(best.fluencyrally), numberquest: num(best.numberquest), arrayarchitect: num(best.arrayarchitect), fractionforge: num(best.fractionforge), equationfactory: num(best.equationfactory), fractionbridge: num(best.fractionbridge), balancestation: num(best.balancestation), ratiocity: num(best.ratiocity), tenframefactory: num(best.tenframefactory), divisionharbor: num(best.divisionharbor), decimaldashboards: num(best.decimaldashboards), integerexpedition: num(best.integerexpedition), graphcity: num(best.graphcity), match: num(best.match), hunt: num(best.hunt), sort: num(best.sort), mistake: num(best.mistake), make: num(best.make), family: num(best.family), balance: num(best.balance), picture: num(best.picture), flip: num(best.flip), make24: num(best.make24), challenge: num(best.challenge), duel: num(best.duel), teamrelay: num(best.teamrelay), baseball: num(best.baseball), guess: num(best.guess), hiding: num(best.hiding), race: num(best.race), ...Object.fromEntries(E8_GAME_IDS.map((id) => [id, num(best[id])])) },
     scenes: Array.isArray(saved.scenes) ? saved.scenes.filter((id) => SCENE_IDS.includes(id)) : [],
     seen: Array.isArray(saved.seen) ? saved.seen.filter((id) => STICKERS.some((sticker) => sticker.id === id)) : [],
     strategies,
@@ -250,6 +252,7 @@ export function cleanRewards(saved = {}) {
     retired: num(saved.retired),
     bestStreak: num(saved.bestStreak),
     duel: cleanDuel(saved.duel),
+    greenDays: cleanGreenDays(saved.greenDays), // fl-teacher: Daily Green Light days
     goalWeeks: Array.isArray(saved.goalWeeks) ? saved.goalWeeks.filter((day) => /^\d{4}-\d{2}-\d{2}$/.test(day)).slice(-60) : [],
   };
 }

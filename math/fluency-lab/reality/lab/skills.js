@@ -9,6 +9,10 @@ const S = (template, variant = {}) => ({ kind: "studio", template, variant });
 const X = (why) => ({ kind: "exception", why });
 
 const WHY = {
+  newStrand: L(
+    "This skill is taught by the Fluency Lab's own graded answers and mini-lesson. A Reality Lab journey has not been built for it yet.",
+    "Esta habilidad se enseña con las respuestas calificadas y la minilección del Fluency Lab. Todavía no hay un recorrido del Laboratorio de Realidad para ella.",
+  ),
   clock: L(
     "Telling time needs a clock face and a timeline. The Studio already draws them for this skill.",
     "Decir la hora necesita un reloj y una línea de tiempo. El Estudio ya los dibuja para esta habilidad.",
@@ -205,4 +209,37 @@ export const SKILL_MATRIX = {
   "8:pythagorean": X(WHY.geometry),
   "8:association": X(WHY.stats),
   "8:transformations": X(WHY.transform),
+  // Skills added by the 2026 strand expansion
+  "0:hidden-parts": X(WHY.newStrand),
+  "1:shapes-2d3d": X(WHY.newStrand),
+  "1:equal-shares": X(WHY.newStrand),
+  "2:doubles-near": X(WHY.newStrand),
+  "2:arrays": X(WHY.newStrand),
+  "2:time-five": X(WHY.newStrand),
+  "2:mental-tens": X(WHY.newStrand),
+  "3:fraction-line": X(WHY.newStrand),
+  "3:scaled-graphs": X(WHY.newStrand),
+  "4:mul-11-12": X(WHY.newStrand),
+  "4:line-plots": X(WHY.newStrand),
+  "4:mixed-numbers": X(WHY.newStrand),
+  "4:angle-measure": X(WHY.newStrand),
+  "5:coordinate-plane": X(WHY.newStrand),
+  "5:order-ops": X(WHY.newStrand),
+  "6:multi-digit-division": X(WHY.newStrand),
+  "6:order-rational": X(WHY.newStrand),
+  "6:percent-whole": X(WHY.newStrand),
+  "6:equivalent-expressions": X(WHY.newStrand),
+  "6:write-inequalities": X(WHY.newStrand),
+  "6:data-displays": X(WHY.newStrand),
+  "6:center-spread": X(WHY.newStrand),
+  "6:surface-area-nets": X(WHY.newStrand),
+  "6:volume-fractional": X(WHY.newStrand),
+  "7:like-terms": X(WHY.newStrand),
+  "7:circumference": X(WHY.newStrand),
+  "7:angle-facts": X(WHY.newStrand),
+  "7:sampling": X(WHY.newStrand),
+  "8:scientific-ops": X(WHY.newStrand),
+  "8:volume-round": X(WHY.newStrand),
+  "8:transformations-move": X(WHY.newStrand),
+  "8:compare-functions": X(WHY.newStrand),
 };

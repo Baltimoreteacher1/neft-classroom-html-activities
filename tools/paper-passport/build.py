@@ -66,7 +66,7 @@ COUNTRIES = read_countries()
 def lab_qr():
     root = HERE.parents[1]
     svg = subprocess.run(
-        ["node", "--input-type=module", "-e", "import { qrSvg } from './scripts/lib/qr-code.mjs'; process.stdout.write(qrSvg('https://eduwonderlab.com/access-practice-lab/', {px: 96, label: 'Open ACCESS Practice Lab'}));"],
+        ["node", "--input-type=module", "-e", "import { qrSvg } from './shared/qr/qr-code.mjs'; process.stdout.write(qrSvg('https://eduwonderlab.com/access-practice-lab/', {px: 96, label: 'Open ACCESS Practice Lab'}));"],
         cwd=root, check=True, capture_output=True, text=True,
     ).stdout
     return "data:image/svg+xml;base64," + base64.b64encode(svg.encode("utf-8")).decode("ascii")

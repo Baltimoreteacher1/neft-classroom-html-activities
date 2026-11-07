@@ -6,6 +6,11 @@ import { leakCap } from "./step-leak.js";
 import { workedSteps } from "./step-builders.js";
 import { factorText, keptPrimes, multiplyText, parsePrimes, powerText, primeList } from "./factor-tree.js";
 import { checkEquivalent, looseNumberMatch } from "./problem-types/equivalence.js"; // fl4:generators
+import { checkResponse } from "./response-check.js";
+import { problem } from "./problem-item.js";
+import { checkTypedForm } from "./typed-answers.js";
+import { STRANDS } from "./strands-index.js";
+import { STRAND_SKILLS } from "./strand-skills.js";
 
 const whole = new Intl.NumberFormat("en-US", { maximumFractionDigits: 6 });
 
@@ -36,21 +41,6 @@ const timeText = (minutes) => {
   return `${hour}:${String(normalized % 60).padStart(2, "0")}`;
 };
 
-function problem(question, answer, options = {}) {
-  const answers = Array.isArray(answer) ? answer.map(String) : [String(answer)];
-  return {
-    question,
-    answers,
-    displayAnswer: options.displayAnswer || answers[0],
-    hint: options.hint || "Name the operation, then solve one careful step.",
-    explanation: options.explanation || `The answer is ${options.displayAnswer || answers[0]}.`,
-    kind: options.kind || "number",
-    choices: options.choices || null,
-    unit: options.unit || "",
-    model: options.model || null,
-    steps: options.steps || [options.explanation || `The answer is ${options.displayAnswer || answers[0]}.`],
-  };
-}
 
 const plural = (count, word) => `${count} ${word}${count === 1 ? "" : "s"}`;
 const decimalPlaces = (text) => (String(text).split(".")[1] || "").length;
@@ -290,6 +280,7 @@ const counterSet = (config, rng, focus) => {
 };
 
 const generators = {
+  ...STRANDS,
   countSet(config, rng) {
     return counterSet(config, rng, "countSet");
   },
@@ -1439,6 +1430,15 @@ export const GRADES = [
       S("one-step", "Solve one-step equations", "Equations", "solve", { oneStep: true, nonNegative: true }, "6.EE.B.7", L("An equation stays balanced when the same operation is used on both sides.", ["Identify the operation on x.", "Use its inverse on both sides.", "Substitute to check."], "x + 7 = 19, so x = 12.", "The goal is to isolate the variable, not move symbols without meaning.")),
       S("integers", "Absolute value and the coordinate plane", "Number system", "numberPlane", { min: -100, max: 100 }, "6.NS.C.7", L("Absolute value is a number's distance from zero.", ["Locate the number relative to zero.", "Count the distance.", "Write the distance as nonnegative."], "|−18| = 18", "Absolute value is not the same as making every number positive in an equation.")),
       S("triangle-area", "Find area of triangles and polygons", "Geometry", "geometry", { shape: "triangleArea", max: 18 }, "6.GR.A.1", L("A triangle's area is half the area of a matching rectangle.", ["Identify a base and its perpendicular height.", "Multiply base × height.", "Take half and label square units."], "A triangle with base 8 and height 5 has area 20 square units.", "The height must meet the base at a right angle.")),
+      S("multi-digit-division", "Divide multi-digit numbers", "Number system", "fact", { op: "div", minDivisor: 11, maxDivisor: 48, minQuotient: 101, maxQuotient: 999 }, "6.NS.B.2", L("Long division repeats one cycle: divide, multiply, subtract, bring down.", ["Estimate how many times the divisor fits into the first digits.", "Multiply, subtract, and bring down the next digit.", "Repeat until every digit is used, then check with multiplication."], "4,056 ÷ 24 = 169 because 169 × 24 = 4,056.", "Each quotient digit sits above the last digit you divided into.")),
+      S("order-rational", "Order rational numbers", "Number system", "orderRational", {}, "6.NS.C.7", L("On a number line, numbers increase from left to right, so a negative number farther from zero is less.", ["Place each number on a number line or compare it with zero.", "Compare negatives by distance from zero: farther is less.", "Write the numbers from least to greatest."], "−2.5 < −3/4 < 1/2 < 0.75", "−3 is less than −1 even though 3 is greater than 1.")),
+      S("percent-whole", "Find the whole from a percent", "Ratios", "percentWhole", {}, "6.RP.A.3", L("If a part is a known percent of a whole, the whole is 100%.", ["Write what you know: the part and its percent.", "Find the amount for an easy percent, such as 1%, 10% or 25%.", "Build up to 100% to get the whole."], "15 is 25% of 60 because 25% is 1/4 and 15 × 4 = 60.", "The part is not the whole: multiply up to 100%, do not take the percent of the part.")),
+      S("equivalent-expressions", "Write equivalent expressions", "Expressions", "equivalentExpression", {}, "6.EE.A.3", L("Equivalent expressions have the same value for every value of the variable.", ["Use the distributive property to remove or add parentheses.", "Combine like terms: add the coefficients of the same variable part.", "Check by substituting a value for the variable into both expressions."], "3(x + 4) + 2x = 3x + 12 + 2x = 5x + 12", "Multiply every term inside the parentheses, not only the first one.")),
+      S("write-inequalities", "Write and graph inequalities", "Equations", "writeInequality", {}, "6.EE.B.8", L("An inequality like x > c or x ≤ c describes every value that makes a statement true.", ["Find the boundary number.", "Decide whether the boundary is included (≥ or ≤) or not (> or <).", "Decide whether the true values are greater or less, then graph them."], "At least 48 means h ≥ 48: a closed circle at 48, shaded to the right.", "\"At least\" includes the number itself, so it uses ≥, not >.")),
+      S("data-displays", "Dot plots, histograms and box plots", "Statistics", "dataDisplays", {}, "6.SP.B.4", L("A data display shows how the values of a data set are spread out.", ["A dot plot puts one dot above the number for each value.", "A histogram counts the values in equal intervals.", "A box plot shows the minimum, Q1, median, Q3 and maximum."], "Data 2, 3, 3, 5: the dot plot has one dot at 2, two at 3 and one at 5.", "A histogram bar counts values in an interval; it does not show single values.")),
+      S("center-spread", "Mean, median, MAD and IQR", "Statistics", "centerSpread", {}, "6.SP.B.5", L("A measure of center sums up a data set with one number; a measure of spread tells how much the values vary.", ["Mean: add the values and divide by how many there are. Median: the middle value in order.", "MAD: the average distance of the values from the mean.", "IQR: Q3 − Q1, the spread of the middle half of the data."], "Data 4, 6, 8, 10: mean 7, median 7, MAD 2.", "Put the data in order before finding the median or the quartiles.")),
+      S("surface-area-nets", "Surface area from nets", "Geometry", "surfaceAreaNet", {}, "6.G.A.4", L("A net unfolds a solid into flat faces; the surface area is the total area of the faces.", ["Name each face in the net and its shape.", "Find the area of each face.", "Add all the face areas and label square units."], "A 2 × 3 × 4 prism: 2 × (6 + 8 + 12) = 52 square units.", "Count every face once: a rectangular prism has six faces, in three matching pairs.")),
+      S("volume-fractional", "Volume with fractional edges", "Geometry", "volumeFractional", {}, "6.G.A.2", L("The volume of a rectangular prism is length × width × height, even when the edges are fractions.", ["Write each mixed number as a fraction.", "Multiply the three edge lengths (or base area × height).", "Simplify and label cubic units."], "1 1/2 × 2 × 1/2 = 3/2 × 2 × 1/2 = 3/2 = 1 1/2 cubic feet.", "Multiply all three edges; do not add them.")),
     ],
   },
   {
@@ -1481,6 +1481,12 @@ export const GRADES = [
   },
 ];
 
+// Strand skills (strand-skills.js) join their grade after the hand-written ones.
+for (const d of STRAND_SKILLS)
+  GRADES.find((grade) => grade.grade === d.grade).skills.push(
+    S(d.id, d.title, d.strand, d.generator, d.config || {}, d.standard, L(...d.learn)),
+  );
+
 for (const grade of GRADES) for (const skill of grade.skills) skill.grade = grade.grade;
 
 // Maryland re-coded every grade for SY 2026-27 (2025 MCCRS, adopted July 2025). Each 2010 code maps to the 2025
@@ -1501,13 +1507,15 @@ const MCCRS_2025 = {
   "5.NF.A.1": "5.NOS.8", "5.NF.B.4": "5.NOS.11", "5.MD.C.5": "5.GR.5",
   "6.NS.A.1": "6.NOS.1", "6.NS.B.3": "6.NOS.3", "6.NS.B.4": "6.NOS.4", "6.NS.C.7": "6.NOS.8", "6.RP.A.1": "6.AT.1",
   "6.RP.A.2": "6.AT.2", "6.RP.A.3": "6.AT.3", "6.EE.A.2": "6.AT.6", "6.EE.B.7": "6.AT.8",
+  "6.NS.B.2": "6.NOS.2", "6.EE.A.3": "6.AT.7", "6.EE.B.8": "6.AT.9", "6.SP.B.4": "6.DS.5", "6.SP.B.5": "6.DS.6c",
+  "6.G.A.4": "6.GR.4", "6.G.A.2": "6.GR.2",
   "7.NS.A.1": "7.NOS.1", "7.NS.A.2": "7.NOS.2", "7.NS.A.3": "7.NOS.2", "7.RP.A.1": "7.AT.1", "7.RP.A.3": "7.AT.4",
   "7.G.B.4": "7.GR.3", "7.SP.C.7": "7.DS.6",
   "8.EE.A.1": "8.NOS.3", "8.EE.A.3": "8.NOS.5", "8.NS.A.2": "8.NOS.2", "8.EE.C.7": "8.AT.3", "8.EE.B.6": "8.AT.2",
   "8.F.A.1": "8.AT.6", "8.EE.C.8": "8.AT.5", "8.G.B.7": "8.GR.5", "8.SP.A.1": "8.DS.2",
 };
 // One 2010 code split into two 2025 standards; each skill takes the one it practises.
-const MCCRS_BY_SKILL = { "7:proportions": "7.AT.2", "7:equations": "7.AT.8", "7:inequalities": "7.AT.9" };
+const MCCRS_BY_SKILL = { "6:percent-whole": "6.AT.4", "7:proportions": "7.AT.2", "7:equations": "7.AT.8", "7:inequalities": "7.AT.9" };
 // 8.G.A.3 has no 2025 Grade 8 standard: MSDE moved transformations to Integrated Algebra 1 and 2.
 const MCCRS_NOTES = { "8.G.A.3": "not in the 2025 Grade 8 standards; moved to Integrated Algebra" };
 for (const grade of GRADES) {
@@ -1602,6 +1610,9 @@ const parseFraction = (value) => {
 export function validateAnswer(value, item) {
   const submitted = compact(value).replaceAll("−", "-");
   if (!submitted) return false;
+  if (item.response) return checkResponse(value, item).ok;
+  const typedForm = checkTypedForm(value, item);
+  if (typedForm !== null) return typedForm;
   if (item.equiv) return checkEquivalent(value, item).ok; // fl4:generators: 4.0 items carry their own equivalence rules
   if (item.kind === "primes") {
     const got = parsePrimes(value);

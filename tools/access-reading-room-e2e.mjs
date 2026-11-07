@@ -43,6 +43,7 @@ const server = http.createServer((req, res) => {
       {
         ".html": "text/html",
         ".js": "text/javascript",
+        ".mjs": "text/javascript",
         ".css": "text/css",
         ".json": "application/json",
       }[extname(f)] || "application/octet-stream",

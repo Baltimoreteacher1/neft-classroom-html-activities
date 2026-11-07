@@ -11,9 +11,28 @@ export const refreshVoices = () => {
   return voices;
 };
 
+/**
+ * Whether this device can read Spanish aloud: "ready" (a Spanish voice exists), "none" (voices are loaded and
+ * none is Spanish, so an English voice would mispronounce it) or "unknown" (no voice list yet).
+ */
+export function spanishVoiceStatus(list = voices) {
+  if (!list?.length) return "unknown";
+  return list.some((v) => v.lang?.toLowerCase().startsWith("es")) ? "ready" : "none";
+}
+
+/** Marks the page when no Spanish voice exists, so Spanish audio buttons step aside (see acc.css). */
+function markSpanishVoice() {
+  if (typeof document === "undefined") return;
+  document.documentElement?.toggleAttribute?.("data-no-es-voice", spanishVoiceStatus() === "none");
+}
+
 if (typeof window !== "undefined" && "speechSynthesis" in window) {
   refreshVoices();
-  window.speechSynthesis.addEventListener?.("voiceschanged", refreshVoices);
+  markSpanishVoice();
+  window.speechSynthesis.addEventListener?.("voiceschanged", () => {
+    refreshVoices();
+    markSpanishVoice();
+  });
 }
 
 const QUALITY = /natural|neural|google|enhanced|premium|samantha|aria|jenny/i;
@@ -311,3 +330,13 @@ export function stop() {
 }
 
 export const isSpeaking = () => current !== null;
+
+/**
+ * Spanish (es-US first, then es-MX, es-419, es-ES) for vocabulary previews. Resolves "no-voice" without speaking
+ * when the device has voices but none is Spanish, so the caller can say so instead of mispronouncing it.
+ */
+export function speakSpanish(text, { rate = 0.9 } = {}) {
+  if (!voices.length) refreshVoices();
+  if (spanishVoiceStatus() === "none") return Promise.resolve("no-voice");
+  return speak(text, { lang: "es-US", rate });
+}

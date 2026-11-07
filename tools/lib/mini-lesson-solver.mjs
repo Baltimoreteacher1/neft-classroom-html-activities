@@ -2,6 +2,7 @@
 // (scripts/lib/rational.mjs). It never calls a generator: it reads the question text and recomputes the answer.
 // solve(question) -> exact Rat, a string (choices, digits, times), or null when the shape is not covered.
 import { evaluateExpression, Rat } from "../../scripts/lib/rational.mjs";
+import { solveStrand } from "./strand-solver.mjs";
 
 const val = (text) => evaluateExpression(String(text));
 const pad = (n) => String(n).padStart(2, "0");
@@ -252,6 +253,8 @@ const FORMS = [
 
 export function solve(question) {
   const text = String(question).trim();
+  const strand = solveStrand(text);
+  if (strand !== null && strand !== undefined) return strand;
   for (const [pattern, run] of FORMS) {
     const match = text.match(pattern);
     if (match) return run(...match.slice(1));

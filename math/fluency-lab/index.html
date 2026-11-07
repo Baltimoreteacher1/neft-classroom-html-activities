@@ -30,11 +30,14 @@
     <link rel="stylesheet" href="./explain.css" />
     <link rel="stylesheet" href="./step-lens.css" />
     <link rel="stylesheet" href="./feedback.css" />
+<link rel="stylesheet" href="./response-widgets.css" />
+    <link rel="stylesheet" href="./audio-first.css" />
     <link rel="stylesheet" href="./studio/studio.css" />
     <link rel="stylesheet" href="./writing.css" />
     <link rel="stylesheet" href="./journey-4.css" /> <!-- fl4:dashboard -->
     <link rel="stylesheet" href="./mini-lesson.css" /> <!-- fl4:lessons -->
     <link rel="stylesheet" href="./teacher-4.css" /> <!-- fl4:teacher -->
+    <link rel="stylesheet" href="./fl-class-tools.css" /> <!-- fl-teacher -->
     <link rel="stylesheet" href="./ds4-screens.css" />
     <link rel="stylesheet" href="./v7/v7.css" />
     <link rel="stylesheet" href="./tour/tour.css" />
@@ -55,6 +58,7 @@
     <link rel="stylesheet" href="./explorable-manipulatives.css" />
     <link rel="stylesheet" href="./interactive-enhancements.css" />
     <link rel="stylesheet" href="./interactive-universe.css" />
+    <link rel="stylesheet" href="./class-link.css" />
     <link rel="stylesheet" href="./wonder-city.css" />
     <script>
       // A grade named in the URL sets its type scale before first paint, so the page does not grow once the app
@@ -112,6 +116,7 @@
               </button>
               <button id="focus-mode" class="quiet-button" type="button" aria-pressed="false">Focus view</button>
               <button id="reading-font" class="quiet-button" type="button" aria-pressed="false">Reading font: Off</button>
+              <button id="audio-first-toggle" class="quiet-button" type="button" aria-pressed="false" hidden>Listening help: Off</button>
               <button id="sound-toggle" class="quiet-button" type="button" aria-pressed="false">Sound: Off</button>
               <button id="reset-popover-btn" class="quiet-button reset-danger-btn" type="button" data-i18n>Start over (reset progress)</button>
               <div class="setting-slider-row" style="display:flex; align-items:center; justify-content:space-between; padding:4px 8px; font-size:0.85rem">
@@ -179,6 +184,7 @@
           <a class="primary-action" data-reality-link href="reality/" data-i18n>Open Math Reality</a>
           <a class="outline-action" data-lab-link href="reality/lab/" data-i18n>Open the Reality Lab</a>
         </aside>
+        <aside id="class-link" class="class-link" data-hub-panel="today" aria-labelledby="class-link-title" hidden></aside>
         <nav class="practice-subnav" aria-label="Practice view selection" role="tablist">
           <button type="button" id="subnav-skills" class="subnav-tab active" data-subview="skills" role="tab" aria-selected="true">
             <span aria-hidden="true">📚</span> <span data-i18n>Skill Library</span>
@@ -249,6 +255,7 @@
             <button id="open-print-center" class="outline-action print-center-btn" type="button" data-i18n>Print Center</button>
             <button id="open-word-wall-btn" class="outline-action word-wall-btn" type="button" title="Interactive Math Word Wall" data-i18n>Word Wall</button>
             <button id="open-number-talk-btn" class="outline-action number-talk-btn" type="button" title="Classroom Number Talk Projector" data-i18n>Number Talk</button>
+            <a class="outline-action" href="class/teacher.html" data-i18n>Live class dashboard</a>
           </div>
         </div>
         <div id="teacher-4"></div> <!-- fl4:teacher -->
@@ -413,6 +420,7 @@
                     <button type="button" class="conf-chip" data-conf="thinking" aria-pressed="false" title="Working through the strategy">🦊 Thinking</button>
                     <button type="button" class="conf-chip" data-conf="curious" aria-pressed="false" title="Exploring / Wondering">🦉 Curious</button>
                   </div>
+                  <div id="response-widget" class="response-widget" hidden></div>
                   <label class="answer-label" for="answer-input">Your answer</label>
                   <div class="answer-input-row">
                     <input

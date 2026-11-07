@@ -4,7 +4,7 @@ import { languageExpectation, languagePrintPrompt } from "./language-bridge.js";
 import { languagePackHtml } from "./language-pack.js";
 import { familySessionShare } from "./family/family-planner.js";
 import { mountTeacherEvidenceDashboard } from "./learning-evidence.js";
-import { qrSvg } from "../../engine/core/qr-mini.js";
+import { MAX_BYTES, qrSvg } from "../../shared/qr/qr-code.mjs"; // the verified encoder: qr-mini does not decode
 import { cleanExt, decodeExt, decodeShortCode, encodeExt, isShortCode } from "./assignment-codec.js"; // fl4:teacher
 
 export const escapeHtml = (value) => String(value).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#039;");
@@ -122,7 +122,6 @@ export function decodeAssignment(token) {
 }
 
 const LAB_ASSIGNMENT_URL = "https://eduwonderlab.com/math/fluency-lab/";
-const QR_TEXT_CAPACITY = 134;
 export function assignmentUrl(value) {
   const assignment = validateAssignment(value);
   if (!assignment) return null;
@@ -133,9 +132,8 @@ export function assignmentUrl(value) {
 }
 export function localQrMarkup(value, { label = "Fluency Lab assignment QR code", size = 180 } = {}) {
   const href = typeof value === "string" ? value : assignmentUrl(value);
-  if (!href || href.length > QR_TEXT_CAPACITY) return null;
-  const svg = qrSvg(href, { size, margin: 6, fg: "#17345f", bg: "#fff" });
-  return svg.replace("<svg ", `<svg role="img" aria-label="${escapeHtml(label)}" `);
+  if (!href || new TextEncoder().encode(href).length > MAX_BYTES) return null;
+  return qrSvg(href, { px: size, label });
 }
 function qrPanel(value, { label, lang = "en", size = 180 } = {}) {
   const qr = localQrMarkup(value, { label, size });

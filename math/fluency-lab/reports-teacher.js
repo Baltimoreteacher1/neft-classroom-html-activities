@@ -17,6 +17,7 @@ import {
 import { growthTrend } from "./reports-trends.js";
 import { reteachTip } from "./reteach-table.js";
 import { t } from "./i18n.js";
+import { rankTroubleSpots } from "./trouble-spots.js";
 
 export { deviceLearner, parseLearnerFile, RULES, skillRows } from "./reports-rows.js";
 export { compareSnapshotSets, growthTrend, snapshotMetrics } from "./reports-trends.js";
@@ -244,6 +245,7 @@ export function analyzeClass(learnersInput, { grade = null, now = Date.now() } =
     learners: summaries,
     skills: stats,
     troubleSpots: troubleSpots(stats, misconceptions),
+    troubleRanked: rankTroubleSpots(learners, { now, grade }), // fl-teacher: 3 misses of one item type
     misconceptions,
     groups,
     individual,

@@ -29,6 +29,8 @@ function additionAnswer(question) {
 async function open(url, viewport = { width: 1280, height: 900 }, options = {}) {
   const context = await browser.newContext({ viewport, ...options });
   const page = await context.newPage();
+  // These tests drive the typed answer box; listening mode (on by default for Kindergarten to Grade 2) has its own tests.
+  await page.addInitScript(() => localStorage.setItem("ewl-fluency-settings-v1", JSON.stringify({ audioFirst: "off" })));
   if (new URLSearchParams(url.split("?")[1] || "").has("test-tier3")) {
     await page.addInitScript(() => {
       Math.random = () => 0.5;

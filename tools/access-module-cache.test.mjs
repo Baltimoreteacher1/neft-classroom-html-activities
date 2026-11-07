@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
-import { readdirSync, readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
 import { JSDOM } from "jsdom";
@@ -81,6 +81,15 @@ test("relative dependency URLs resolve through the map to a single versioned mod
     for (const specifier of specifiers.filter((value) => value.startsWith("."))) {
       const importer = new URL(imports[prefix + file], origin);
       const normalized = new URL(specifier, importer);
+      // /shared/ modules (the class-platform client and the QR encoder) are one implementation used by both apps.
+      // They sit outside the versioned lab map and are served with Pages' default revalidating cache headers.
+      if (normalized.pathname.startsWith("/shared/")) {
+        assert.ok(
+          existsSync(fileURLToPath(new URL(`../${normalized.pathname.slice(1)}`, import.meta.url))),
+          `${file}: ${specifier} must exist on disk`,
+        );
+        continue;
+      }
       assert.ok(
         normalized.pathname.startsWith(prefix),
         `${file}: dependency leaves the mapped lab modules`,

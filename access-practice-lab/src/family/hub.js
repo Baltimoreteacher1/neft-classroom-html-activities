@@ -148,6 +148,8 @@ export async function render(ctx, I) {
           <li><a href="${BASE}/flashcards?grades=${band}">${icon("words")} ${I.L("hub.more.cards")}</a></li>
           <li><a href="${setupHref}">${icon("settings")} ${I.L("hub.more.setup")}</a></li>
           <li><a href="${BASE}/family/practice?grades=${band}#finder">${icon("library")} ${I.L("hub.more.choose")}</a></li>
+          <li><a href="${BASE}/early/family?grades=1">${icon("families")} ${I.T("Younger children (K–Grade 2): family talk-and-play", "Niños más pequeños (kínder a 2.º): hablar y jugar en familia")}</a></li>
+          <li><a href="${BASE}/early/story?grades=K">${icon("reading")} ${I.T("Kindergarten Story Time (read together)", "Hora del cuento de kínder (lean juntos)")}</a></li>
         </ul>
         <p class="fine">${I.L("hub.disclaimer")}</p>
       </section>`,

@@ -36,6 +36,7 @@ try {
 const TYPES = {
   ".html": "text/html; charset=utf-8",
   ".js": "text/javascript",
+  ".mjs": "text/javascript",
   ".css": "text/css",
   ".json": "application/json",
   ".svg": "image/svg+xml",
@@ -142,7 +143,10 @@ try {
 
   // ── lab home links the path ───────────────────────────────────────────────
   await go("/?grades=6-8");
-  ok((await page.locator("[data-path-link]").count()) === 1, "lab home links My Language Path");
+  ok(
+    (await page.locator('.lph [data-home-card="path"]').count()) === 1,
+    "lab home links My Language Path",
+  );
   ok(
     /\/path\b/.test((await page.locator(".lab-utilities").innerHTML()) || ""),
     "the More menu links My Language Path",

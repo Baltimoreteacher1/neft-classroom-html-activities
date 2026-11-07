@@ -65,6 +65,9 @@ function sourceFiles(folder) {
 // Enterprise 8 modules pass a few keys to t() by name; list them so their Spanish is checked.
 const { PROGRESS_I18N_KEYS } = await import("../math/fluency-lab/e8/progress-visual.js");
 for (const key of PROGRESS_I18N_KEYS) keys.add(key);
+// Built answers pass their nudges and part names to t() by variable.
+const { RESPONSE_I18N_KEYS } = await import("../math/fluency-lab/response-check.js");
+for (const key of RESPONSE_I18N_KEYS) keys.add(key);
 // The studio home passes its headlines and landscape state words to t() by variable.
 const { ATELIER_I18N_KEYS } = await import("../math/fluency-lab/atelier/copy.js");
 for (const key of ATELIER_I18N_KEYS) keys.add(key);
@@ -80,7 +83,25 @@ for (const skill of ALL_SKILLS)
     keys.add(skill.learn.rule);
     keys.add(skill.learn.watch);
   }
+// Teacher, family and fact-fluency tools: the fact session views in moby/ and the labels, rules, hints and question
+// templates they pass to t() by variable.
+const { AUTO_LABELS, AUTO_RULES, HOW_LABELS } = await import(
+  "../math/fluency-lab/moby/fact-automaticity.js"
+);
+const { HINTS_68, QUESTION_TEMPLATES_68 } = await import(
+  "../math/fluency-lab/moby/fact-keys-68.js"
+);
+for (const key of [
+  ...Object.values(AUTO_LABELS),
+  ...Object.values(AUTO_RULES),
+  ...Object.values(HOW_LABELS),
+  ...HINTS_68,
+  ...QUESTION_TEMPLATES_68,
+])
+  keys.add(key);
 const sources = [
+  new URL("moby/fact-practice.js", dir),
+  new URL("moby/moby-hub.js", dir),
   ...readdirSync(dir)
     .filter((f) => f.endsWith(".js") && !f.startsWith("i18n-es"))
     .map((f) => new URL(f, dir)),
@@ -89,6 +110,7 @@ const sources = [
   ...sourceFiles(new URL("e8", dir).pathname),
   ...sourceFiles(new URL("reality", dir).pathname),
   ...sourceFiles(new URL("atelier", dir).pathname),
+  ...sourceFiles(new URL("class", dir).pathname),
 ];
 for (const file of sources) {
   const source = readFileSync(file, "utf8");
@@ -102,10 +124,12 @@ for (const file of sources) {
     if (String(file).endsWith("games.js") || String(file).endsWith("skill-path.js"))
       keys.add(match[1]);
 }
-for (const match of readFileSync(new URL("index.html", dir), "utf8").matchAll(
-  /data-i18n[^>]*>([^<]+)</g,
-))
-  keys.add(match[1].trim());
+for (const page of ["index.html", "class/teacher.html", "class/live.html", "class/family.html"])
+  for (const match of readFileSync(new URL(page, dir), "utf8").matchAll(/data-i18n[^>]*>([^<]+)</g))
+    keys.add(match[1].trim());
+// The class platform passes its error lines and room states to t() by variable.
+const { CLASS_I18N_KEYS } = await import("../math/fluency-lab/class-link-view.js");
+for (const key of CLASS_I18N_KEYS) keys.add(key);
 // A data-i18n-en attribute overrides the text as the key (context keys such as "Play ##nav").
 for (const match of readFileSync(new URL("index.html", dir), "utf8").matchAll(
   /data-i18n-en="([^"]+)"/g,

@@ -1,6 +1,7 @@
 // One recommended strategy per fact, from a FIXED vocabulary (the lessons for these ids are authored elsewhere),
 // plus a hint built from the fact's own numbers. Pure and deterministic.
 import { familyOf, isTrackedKey, parseKey } from "./fact-keys.js";
+import { hint68 } from "./fact-keys-68.js";
 
 
 export const STRATEGY_IDS = Object.freeze([
@@ -124,7 +125,7 @@ export const HINT_TEMPLATES = Object.freeze({
 
 export function strategyHint(key) {
   const strategy = strategyFor(key);
-  if (!strategy) return null;
+  if (!strategy) return hint68(key); // Grade 6-8 facts name a rule instead (fact-keys-68.js)
   const { x, y } = parseKey(key);
   const op = parseKey(key).op;
   let id;

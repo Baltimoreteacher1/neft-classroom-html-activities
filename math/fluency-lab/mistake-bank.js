@@ -6,6 +6,7 @@
 import { ALL_SKILLS, getGrade, getSkill, seededRandom } from "./problem-bank.js";
 import { t } from "./i18n.js";
 import { TEMPLATES } from "./mistake-templates.js";
+import { STRAND_SKILLS } from "./strand-skills.js";
 
 export const FAMILIES = [
   "whole",
@@ -92,6 +93,16 @@ const BY_GENERATOR = {
   slope: () => ["slope"],
   association: () => ["slope"],
   geometry: (skill) => SHAPES[skill.config.shape] || ["perimeter"],
+  // strand skills (strands-*.js) borrow the closest worked-solution chain: the slips named there are real for them.
+  ...Object.fromEntries(STRAND_SKILLS.filter((d) => d.mistake).map((d) => [d.generator, () => [d.mistake]])),
+  orderRational: () => ["intAddSub"],
+  percentWhole: () => ["percentOf"],
+  equivalentExpression: () => ["solveDistribute"],
+  writeInequality: () => ["inequality"],
+  dataDisplays: () => ["tallyTotal"],
+  centerSpread: () => ["meanDistinct", "medianMiddles"],
+  surfaceAreaNet: () => ["perimeter"],
+  volumeFractional: () => ["volume"],
 };
 
 export function templatesFor(skill, rng = () => 0) {
@@ -209,6 +220,9 @@ export function describeAsk(item) {
       }),
     circle: () =>
       t("Find the area of a circle with radius {a}. Leave π in your answer.", { a: m.r }),
+    mean: () => t("Find the mean of {list}.", { list: m.values.join(", ") }),
+    median: () => t("The two middle values of an ordered list are {a} and {b}. Find the median.", { a: m.a, b: m.b }),
+    tally: () => t("A frequency table has these counts: {list}. How many values are there in all?", { list: m.counts.join(", ") }),
   };
   return by[m.kind]();
 }

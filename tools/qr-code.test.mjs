@@ -9,7 +9,7 @@ import assert from "node:assert/strict";
 import { readdirSync } from "node:fs";
 import { join } from "node:path";
 import { interactiveUrl } from "../scripts/lib/lesson-identity.mjs";
-import { MAX_BYTES, qrModules, qrSvg } from "../scripts/lib/qr-code.mjs";
+import { MAX_BYTES, qrModules, qrSvg } from "../shared/qr/qr-code.mjs";
 import { REPO_ROOT } from "./lib/curriculum-source.mjs";
 
 const VERSION_CAPACITY = { 21: [19, 7], 25: [34, 10], 29: [55, 15], 33: [80, 20], 37: [108, 26] };

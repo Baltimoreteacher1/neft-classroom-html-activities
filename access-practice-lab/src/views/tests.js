@@ -5,6 +5,7 @@ import { loadIndex, loadShared } from "../content.js";
 import { loadTestRecord } from "../store.js";
 import { i18nFor } from "../i18n.js";
 import { ART, BASE, CORE_DOMAINS, html, icon } from "../util.js";
+import { benchmarkPanelHTML, onBenchmarkClick } from "./benchmark-panel.js";
 import { domainChipHTML, domainName } from "./test-report.js";
 import { gradesText, modeText, rich, testStrategiesHTML } from "./test-modes.js";
 
@@ -144,6 +145,7 @@ export async function render(ctx) {
             )
           : html`<p class="panel">${I.T(`Practice tests for Grades ${ctx.band.replace("-", "–")} are coming soon.`, `Las pruebas de práctica de los grados ${ctx.band.replace("-", "–")} llegarán pronto.`)}</p>`
       }
+      ${benchmarkPanelHTML(I, ctx.band)}
       <div class="test-extras">
         ${
           ctx.band === "6-8"
@@ -186,4 +188,8 @@ export async function render(ctx) {
       </div>
     </div>`,
   };
+}
+
+export function onClick(event, ctx) {
+  return onBenchmarkClick(event, ctx, i18nFor(ctx));
 }

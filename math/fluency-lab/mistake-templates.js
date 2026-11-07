@@ -9,8 +9,9 @@
 // re-derives every claim above with exact arithmetic.
 
 import { ALGEBRA } from "./mistake-templates-algebra.js";
+import { DATA } from "./mistake-templates-data.js";
 import { FRACTIONS } from "./mistake-templates-fractions.js";
 import { RATIO } from "./mistake-templates-ratio.js";
 import { WHOLE } from "./mistake-templates-whole.js";
 
-export const TEMPLATES = { ...WHOLE, ...FRACTIONS, ...RATIO, ...ALGEBRA };
+export const TEMPLATES = { ...WHOLE, ...FRACTIONS, ...RATIO, ...ALGEBRA, ...DATA };

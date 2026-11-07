@@ -1,0 +1,522 @@
+/* Teacher, family and fact-fluency tools (accommodations, action plan, fact introductions, Green Light, Questions
+   Log, Unit Check, boards, warm-ups, story of the day, letters). Tokens come from ds4.css; no violet.
+   44px targets, visible focus, reduced motion respected. */
+.fl-access-calc {
+  margin-block-start: var(--fl-s2, 12px);
+  border: 1px solid var(--fl-line, #d5d9de);
+  border-radius: var(--fl-radius, 12px);
+  background: var(--fl-white, #fff);
+  padding: var(--fl-s2, 12px);
+  max-inline-size: 22rem;
+}
+.fl-access-calc summary {
+  min-block-size: 44px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--fl-navy, #17324d);
+}
+.fl-access-calc-note {
+  margin: 0 0 var(--fl-s1, 8px);
+  color: var(--fl-ink-soft, #4a5866);
+  font-size: 0.95rem;
+}
+.fl-access-calc-screen input {
+  inline-size: 100%;
+  min-block-size: 44px;
+  font-size: 1.15rem;
+  padding-inline: 10px;
+  border: 1px solid #66737f;
+  border-radius: 8px;
+}
+.fl-access-calc-out {
+  display: block;
+  min-block-size: 1.6em;
+  margin-block: 6px;
+  font-weight: 700;
+  color: var(--fl-navy, #17324d);
+}
+.fl-access-calc-keys {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+}
+.fl-access-calc-keys button,
+.fl-tt-btn {
+  min-block-size: 44px;
+  min-inline-size: 44px;
+  border: 1px solid #66737f;
+  border-radius: 8px;
+  background: var(--fl-paper, #f7f4ec);
+  color: var(--fl-ink, #24323f);
+  font: inherit;
+  font-size: 1.05rem;
+  cursor: pointer;
+}
+.fl-access-calc-keys button:focus-visible,
+.fl-access-calc summary:focus-visible,
+.fl-tt-btn:focus-visible,
+.fl-tt-panel :is(button, a, input, select, summary):focus-visible {
+  outline: 3px solid var(--fl-blue, #2c6fb0);
+  outline-offset: 2px;
+}
+.fl-access-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 6px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.fl-access-chips li {
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: var(--fl-teal-soft, #dff3f1);
+  color: var(--fl-teal-ink, #0e5f5b);
+  font-size: 0.9rem;
+}
+.fl-tt-panel {
+  display: grid;
+  gap: var(--fl-s2, 12px);
+  margin-block: var(--fl-s3, 24px);
+  padding: clamp(16px, 3vw, 28px);
+  border: 1px solid var(--fl-line, #d5d9de);
+  border-radius: var(--fl-radius-lg, 20px);
+  background: var(--fl-paper, #f7f4ec);
+  color: var(--fl-ink, #24323f);
+  font-family: var(--fl-font-body, "Lexend", system-ui, sans-serif);
+  overflow-wrap: anywhere;
+}
+.fl-tt-panel h2,
+.fl-tt-panel h3 {
+  margin: 0;
+  color: var(--fl-navy, #17324d);
+  font-family: var(--fl-font-head, "Fraunces", Georgia, serif);
+}
+.fl-tt-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--fl-s1, 8px);
+  align-items: center;
+}
+.fl-tt-btn--primary {
+  background: var(--fl-teal-ink, #0e5f5b);
+  border-color: var(--fl-teal-ink, #0e5f5b);
+  color: #fff;
+  padding-inline: 16px;
+}
+.fl-tt-btn {
+  padding-inline: 14px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .fl-tt-panel *,
+  .fl-access-calc * {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+.fl-green-light {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 4px 10px;
+  align-items: center;
+  margin-block: 8px;
+  padding: 10px 12px;
+  border: 1px solid var(--fl-line, #d5d9de);
+  border-radius: var(--fl-radius, 12px);
+  background: var(--fl-white, #fff);
+}
+.fl-green-light p {
+  margin: 0;
+}
+.fl-green-light small {
+  display: block;
+  color: var(--fl-ink-soft, #4a5866);
+}
+.fl-green-light progress {
+  grid-column: 1 / -1;
+  inline-size: 100%;
+  block-size: 12px;
+}
+.fl-green-dot {
+  inline-size: 18px;
+  block-size: 18px;
+  border-radius: 50%;
+  border: 2px solid #66737f;
+  background: #f2c94c;
+}
+.fl-green-light.is-green .fl-green-dot {
+  background: #2e8b57;
+}
+.fl-fact-card {
+  padding: 16px;
+  border: 1px solid var(--fl-line, #d5d9de);
+  border-radius: var(--fl-radius, 12px);
+  background: var(--fl-paper, #f7f4ec);
+  text-align: center;
+}
+.fl-fact-card h4 {
+  margin: 4px 0 8px;
+  color: var(--fl-navy, #17324d);
+}
+.fl-fact-card :is(button, input):focus-visible {
+  outline: 3px solid var(--fl-blue, #2c6fb0);
+  outline-offset: 2px;
+}
+.fl-fact-phase {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--fl-ink-soft, #4a5866);
+}
+.fl-fact-question {
+  margin: 10px 0;
+  font-size: clamp(1.6rem, 5vw, 2.2rem);
+  font-weight: 700;
+  color: var(--fl-navy, #17324d);
+}
+.fl-fact-family {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px 18px;
+  margin: 0 0 10px;
+  padding: 0;
+  list-style: none;
+  font-size: 1.3rem;
+  font-weight: 600;
+}
+.fl-fact-card .fl-tt-row {
+  justify-content: center;
+}
+.fl-fact-input {
+  inline-size: 7rem;
+  min-block-size: 48px;
+  font-size: 1.4rem;
+  text-align: center;
+  border: 2px solid #66737f;
+  border-radius: 8px;
+}
+.fl-fact-plan-note {
+  margin: 0 0 8px;
+  font-weight: 600;
+  color: var(--fl-teal-ink, #0e5f5b);
+}
+.fl-tt-table-wrap {
+  overflow-x: auto;
+}
+.fl-tt-table {
+  inline-size: 100%;
+  border-collapse: collapse;
+}
+.fl-tt-table :is(th, td) {
+  padding: 8px;
+  border-block-end: 1px solid var(--fl-line, #d5d9de);
+  text-align: start;
+  vertical-align: top;
+}
+
+/* Teacher's video links in the Learn panel */
+.learn-video {
+  max-inline-size: 60ch;
+  margin: 1rem auto 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--fl-s2, 12px);
+  align-items: center;
+}
+.learn-video .outline-action {
+  min-block-size: 44px;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Printouts: family letter, home-access cards, class fact poster (shown inside #print-sheet) */
+@page fl-poster {
+  size: landscape;
+  margin: 0.4in;
+}
+.print-sheet .fl-letter {
+  break-after: page;
+  font-size: 11.5pt;
+  line-height: 1.38;
+}
+.print-sheet .fl-letter h1 {
+  font-size: 20pt;
+}
+.print-sheet .fl-letter h2 {
+  font-size: 13pt;
+  margin: 0.14in 0 0.04in;
+}
+.print-sheet .fl-letter ol,
+.print-sheet .fl-letter ul {
+  display: block;
+  margin: 0;
+  padding-left: 0.28in;
+}
+.print-sheet .fl-letter li {
+  min-height: 0;
+  font-size: inherit;
+  margin-bottom: 0.03in;
+}
+.print-sheet .fl-letter-cols {
+  display: flex;
+  gap: 0.3in;
+  align-items: flex-start;
+}
+.print-sheet .fl-letter-cols > section:first-child {
+  flex: 1;
+}
+.print-sheet .fl-letter-qr {
+  text-align: center;
+  max-width: 2.1in;
+}
+.print-sheet .fl-letter-url,
+.print-sheet .fl-card-body .fl-letter-url {
+  font-size: 8.5pt;
+  word-break: break-all;
+  margin: 0.04in 0 0;
+}
+.print-sheet .fl-letter-sign {
+  margin-top: 0.3in;
+  border-top: 1px solid #111;
+  padding-top: 0.05in;
+  max-width: 3.6in;
+}
+.print-sheet .fl-card-sheet {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0;
+  break-after: page;
+}
+.print-sheet .fl-card {
+  border: 1px dashed #555;
+  padding: 0.12in 0.14in;
+  min-height: 2.3in;
+  break-inside: avoid;
+  font-size: 9.5pt;
+}
+.print-sheet .fl-card-title {
+  font-weight: 700;
+  margin: 0 0 0.06in;
+}
+.print-sheet .fl-card-body {
+  display: flex;
+  gap: 0.12in;
+  align-items: center;
+}
+.print-sheet .fl-card-body .fluency-local-qr {
+  flex: none;
+}
+.print-sheet .fl-card-name {
+  margin: 0.08in 0 0;
+}
+.print-sheet .fl-poster {
+  page: fl-poster;
+  break-after: page;
+}
+.print-sheet .fl-poster header p {
+  margin: 0;
+  font-size: 11pt;
+}
+.print-sheet .fl-poster h1 {
+  font-size: 24pt;
+}
+.print-sheet .fl-poster-bands {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.16in;
+  align-items: flex-start;
+  margin-top: 0.1in;
+}
+.print-sheet .fl-poster-band h2 {
+  font-size: 12pt;
+  margin: 0 0 0.04in;
+}
+.print-sheet .fl-poster-grid {
+  border-collapse: collapse;
+}
+.print-sheet .fl-poster-grid td {
+  border: 1px solid #555;
+  font-size: 6.5pt;
+  padding: 1px 2px;
+  text-align: center;
+  min-width: 0.34in;
+  height: 0.17in;
+}
+.print-sheet .fl-poster-grid td.is-empty {
+  background: #ddd;
+}
+.print-sheet .fl-poster-group {
+  margin: 0;
+  max-width: 3.5in;
+}
+.print-sheet .fl-poster-boxes {
+  display: flex;
+  gap: 0.1in;
+  margin-top: 0.08in;
+}
+.print-sheet .fl-poster-boxes span {
+  display: block;
+  width: 0.7in;
+  height: 0.7in;
+  border: 2px solid #111;
+}
+.print-sheet .fl-poster footer {
+  display: flex;
+  gap: 0.15in;
+  align-items: center;
+  margin-top: 0.12in;
+}
+
+/* Unit Check section of the Practice hub */
+.unit-check {
+  margin-block-start: var(--fl-s4, 24px);
+}
+.unit-check-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+  gap: var(--fl-s2, 12px);
+  list-style: none;
+  margin: var(--fl-s2, 12px) 0 0;
+  padding: 0;
+}
+.unit-check-grid .practice-hub-card {
+  inline-size: 100%;
+  min-block-size: 44px;
+}
+.unit-check-grid [aria-disabled="true"] {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+/* Printouts: unit warm-ups (Pair Compare, Mix and Match) */
+.print-sheet .fl-warmup {
+  break-after: page;
+  font-size: 12pt;
+}
+.print-sheet .fl-warmup-steps {
+  display: block;
+  padding-left: 0.28in;
+  margin: 0.1in 0;
+}
+.print-sheet .fl-warmup-steps li {
+  min-height: 0;
+  font-size: inherit;
+}
+.print-sheet .fl-warmup-pairs {
+  border-collapse: collapse;
+  inline-size: 100%;
+}
+.print-sheet .fl-warmup-pairs td {
+  inline-size: 50%;
+  border: 1px solid #555;
+  padding: 0.1in;
+  vertical-align: top;
+  height: 1.35in;
+}
+.print-sheet .fl-warmup-cards {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+}
+.print-sheet .fl-warmup-card {
+  border: 1px dashed #555;
+  padding: 0.12in;
+  min-height: 1.7in;
+  break-inside: avoid;
+}
+.print-sheet .fl-warmup-card p {
+  margin: 0.06in 0 0;
+  font-size: 14pt;
+}
+.print-sheet .fl-warmup-key {
+  break-before: page;
+}
+.print-sheet .fl-warmup-key ul {
+  display: block;
+  list-style: none;
+  padding: 0;
+}
+.print-sheet .fl-warmup-key li {
+  min-height: 0;
+  font-size: 12pt;
+}
+
+/* Team Relay: student-written problems */
+.sp-write,
+.sp-deck {
+  margin-block-start: var(--fl-s3, 16px);
+}
+.sp-write summary,
+.sp-deck summary {
+  min-block-size: 44px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-weight: 600;
+}
+.sp-write textarea,
+.sp-deck textarea,
+.sp-write input:not([type="checkbox"]) {
+  inline-size: 100%;
+  min-block-size: 44px;
+}
+.sp-error {
+  color: #8a1c1c;
+  margin: 0;
+}
+.sp-list {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: var(--fl-s2, 12px);
+}
+.sp-list li {
+  border: 1px solid var(--fl-line, #d5d9de);
+  border-radius: var(--fl-radius, 12px);
+  padding: var(--fl-s2, 12px);
+}
+.sp-list label {
+  min-block-size: 44px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Lighthouse Campaign in the Practice hub */
+.campaign {
+  margin-block-start: var(--fl-s4, 24px);
+}
+.cg-list {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: var(--fl-s2, 12px);
+}
+.cg-chapter {
+  border: 1px solid var(--fl-line, #d5d9de);
+  border-radius: var(--fl-radius, 12px);
+  padding: var(--fl-s2, 12px);
+}
+.cg-chapter[data-status="later"] {
+  opacity: 0.7;
+}
+.cg-chapter[data-status="done"] {
+  border-inline-start: 6px solid var(--fl-teal, #1d7a6f);
+}
+.cg-chapter h4 {
+  margin: 0 0 4px;
+}
+.cg-meta {
+  margin: 0 0 8px;
+  font-size: 0.9rem;
+}
+.cg-steps a,
+.cg-steps button {
+  min-block-size: 44px;
+  display: inline-flex;
+  align-items: center;
+}
+.cg-beat {
+  font-style: italic;
+}

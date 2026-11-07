@@ -23,6 +23,8 @@ try {
 const errors = [];
 const context = async (viewport = { width: 1280, height: 900 }, init = null) => {
   const ctx = await browser.newContext({ viewport });
+  // These tests type answers; listening mode (on by default for Kindergarten to Grade 2) has its own tests.
+  await ctx.addInitScript(() => localStorage.setItem("ewl-fluency-settings-v1", JSON.stringify({ audioFirst: "off" })));
   if (init) await ctx.addInitScript(init);
   return ctx;
 };

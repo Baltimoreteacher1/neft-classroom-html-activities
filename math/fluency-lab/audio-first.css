@@ -1,0 +1,80 @@
+/* Audio-first (pre-reader) mode: audio-first-view.js. Drawn with the lab's --fl-* tokens. Every control is at least
+   64px, focus uses --fl-focus, state is never colour alone, and motion stops under prefers-reduced-motion. */
+.af-guide { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: var(--fl-s2, 16px); margin-block-end: var(--fl-s2, 16px); padding: 12px 16px; border: 2px solid var(--fl-line, #d5d9de); border-radius: var(--fl-radius, 12px); background: var(--fl-teal-soft, #dff3f1); }
+.af-guide[hidden] { display: none; }
+.af-buddy { inline-size: 72px; block-size: 72px; }
+.af-buddy .bd-svg { display: block; inline-size: 100%; block-size: 100%; }
+.af-guide.is-speaking .af-buddy { animation: af-talk 0.5s ease-in-out infinite alternate; }
+@keyframes af-talk { to { transform: translateY(-4px) rotate(-3deg); } }
+.af-bubble { display: grid; gap: 4px; min-inline-size: 0; }
+.af-line { margin: 0; font: 700 1.2rem var(--fl-font-body, system-ui); color: var(--fl-ink, #24323f); overflow-wrap: anywhere; }
+.af-note { margin: 0; font-weight: 600; color: var(--fl-ink, #24323f); }
+.af-note:empty { display: none; }
+.af-buttons { display: grid; gap: 8px; justify-items: stretch; }
+.af-replay, .af-other, .af-hear, .af-zero, .af-key { min-block-size: 64px !important; min-inline-size: 64px; border: 3px solid var(--fl-ink, #24323f); border-radius: var(--fl-radius, 12px); background: var(--fl-white, #fff); color: var(--fl-ink, #24323f); font: 800 1.1rem var(--fl-font-body, system-ui); cursor: pointer; }
+.af-replay::before { content: "🔊 "; }
+.af-hear { font-size: 1.7rem; }
+.af-other { min-block-size: 44px !important; font-size: 0.95rem; font-weight: 700; border-width: 2px; }
+.af-replay:focus-visible, .af-other:focus-visible, .af-hear:focus-visible, .af-zero:focus-visible, .af-key:focus-visible, .af-tile:focus-visible { outline: none; box-shadow: var(--fl-focus, 0 0 0 3px #fff, 0 0 0 6px #2c6fb0); }
+body.af-silent .af-replay, body.af-silent .af-other, body.af-silent .af-hear { display: none; }
+body.af-silent .af-guide { grid-template-columns: auto 1fr; }
+
+/* Answer choices: a picture, the word and a speaker button, in a grid of big targets. */
+.af-choices { display: grid; grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr)); gap: var(--fl-s2, 16px); }
+.af-choice { display: grid; grid-template-columns: 1fr auto; align-items: stretch; gap: 8px; border-radius: var(--fl-radius, 12px); }
+.af-choice.is-speaking { outline: 4px dashed var(--fl-teal-ink, #0e6b68); outline-offset: 3px; }
+body.af-silent .af-choice { grid-template-columns: 1fr; }
+body.audio-first #choice-answers .af-tile, body.audio-first .af-tile { display: grid; justify-items: center; align-content: center; gap: 6px; min-block-size: 64px; padding: 10px 12px; border: 3px solid var(--fl-ink, #24323f); border-radius: var(--fl-radius, 12px); background: var(--fl-white, #fff); color: var(--fl-ink, #24323f); font: 800 1.35rem var(--fl-font-body, system-ui); text-align: center; cursor: pointer; }
+body.audio-first #choice-answers .af-tile { min-block-size: 64px !important; }
+body.audio-first .af-tile:hover { background: var(--fl-teal-soft, #dff3f1); }
+.af-symbol .af-label { font-size: 2.4rem; line-height: 1; }
+.af-pic svg { display: block; inline-size: 4.5rem; block-size: auto; max-block-size: 4.5rem; fill: var(--fl-coral, #d9533a); stroke: var(--fl-ink, #24323f); stroke-width: 2; }
+.af-pic .af-dots { inline-size: 5.5rem; }
+.af-pairs text { fill: var(--fl-ink, #24323f); stroke: none; }
+.af-emoji { font-size: 3rem; line-height: 1; }
+
+/* Counted and keyed answers reuse the response widgets, enlarged to 64px. */
+.af-answer { gap: var(--fl-s2, 16px); }
+.af-zero-row { display: flex; }
+.af-zero[aria-pressed="true"] { background: var(--fl-teal-soft, #dff3f1); }
+.af-zero[aria-pressed="true"]::before { content: "✓ "; }
+body.audio-first .af-answer .rw-frame { grid-template-columns: repeat(5, minmax(0, 64px)); }
+body.audio-first .af-answer .rw-cell { block-size: 64px; min-inline-size: 0; }
+body.audio-first .af-answer .rw-cell[aria-pressed="true"] .rw-counter { inline-size: 44px; block-size: 44px; }
+body.audio-first .af-answer .rw-step { min-block-size: 64px !important; min-inline-size: 64px; font-size: 1.6rem; }
+body.audio-first .af-answer .rw-count { font-size: 1.6rem; }
+body.audio-first .af-answer .rw-readout { font-size: 1.15rem; }
+.af-keypad { display: grid; grid-template-columns: repeat(3, minmax(64px, 5rem)); gap: 10px; }
+.af-key { font-size: 1.8rem; }
+.af-keyreadout { margin: 8px 0 0; font: 700 1.2rem var(--fl-font-body, system-ui); }
+
+/* The practice screen for pre-readers: the question is large, the reading-heavy extras step aside, Check is a big button. */
+body.audio-first .problem-question-zone .question { font-size: clamp(2.2rem, 7vw, 3.4rem); }
+body.audio-first #confidence-meter-row, body.audio-first #toggle-math-keypad, body.audio-first #math-keypad, body.audio-first .strategy-selector-panel, body.audio-first #strategy-tag-picker, body.audio-first .confidence-gauge-wrap { display: none; }
+body.audio-first #practice-visual-workspace #check-answer, body.audio-first #practice-visual-workspace #next-problem { min-block-size: 64px !important; min-inline-size: 64px; font-size: 1.3rem !important; }
+body.audio-first #check-answer::before { content: "✓ "; }
+body.audio-first .answer-input-row { gap: 12px; }
+body.audio-first .fb-actions button { min-block-size: 64px !important; }
+
+/* Game Room note: games keep their boards, so this says what listening help does and does not cover. */
+.af-game-banner { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-block-end: var(--fl-s2, 16px); padding: 12px 16px; border: 2px solid var(--fl-line, #d5d9de); border-radius: var(--fl-radius, 12px); background: var(--fl-teal-soft, #dff3f1); }
+.af-game-banner[hidden] { display: none; }
+.af-game-note { margin: 0; flex: 1 1 14rem; font-weight: 600; }
+
+@media (max-width: 520px) {
+  .af-guide { grid-template-columns: auto 1fr; }
+  .af-buttons { grid-column: 1 / -1; grid-template-columns: 1fr 1fr; }
+  .af-buddy { inline-size: 56px; block-size: 56px; }
+  .af-choices { grid-template-columns: 1fr 1fr; }
+  /* A ten-frame row is five 64px boxes (about 326px with its border): give the answer card the room it needs. */
+  html body.audio-first .workspace { padding-inline: 2px; }
+  html body.audio-first .problem-stage { padding-inline: 2px; }
+  html body.audio-first #practice-visual-workspace { padding-inline: 0; }
+  html body.audio-first .problem-arena { padding-inline: 0; }
+  body.audio-first .af-answer .rw-frames { justify-content: center; gap: 12px; }
+}
+@media (prefers-reduced-motion: reduce) { .af-guide.is-speaking .af-buddy { animation: none; } }
+@media (forced-colors: active) {
+  .af-choice.is-speaking { outline-color: Highlight; }
+  .af-zero[aria-pressed="true"] { border-color: Highlight; }
+}

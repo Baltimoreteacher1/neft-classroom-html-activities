@@ -1,11 +1,13 @@
 // The Math Discovery Studio in a real browser: axe (WCAG 2 A/AA and 2.2 AA) on every tab at phone and desktop width,
 // a keyboard-only walk (Tab reaches the controls, arrow keys step the model), no sideways scroll, 44px targets on the
 // controls a learner touches, reduced motion honoured, and a clean console. Serves the source tree with Vite.
+
 import assert from "node:assert/strict";
 import AxeBuilder from "@axe-core/playwright";
 import { chromium } from "playwright";
 import { createServer } from "vite";
 import { REPO_ROOT } from "./lib/curriculum-source.mjs";
+import { TOTAL_SKILLS } from "./lib/fluency-skill-count.mjs";
 
 const server = await createServer({
   root: REPO_ROOT,
@@ -122,7 +124,10 @@ try {
       }
       return { total: ALL_SKILLS.length, failed, tabs };
     });
-    note(sweep.total === 96, `sweep covered ${sweep.total} skills, expected 96`);
+    note(
+      sweep.total === TOTAL_SKILLS,
+      `sweep covered ${sweep.total} skills, expected ${TOTAL_SKILLS}`,
+    );
     note(sweep.failed.length === 0, `sweep failures: ${sweep.failed.slice(0, 4).join(" | ")}`);
     note(sweep.tabs > 300, `sweep opened only ${sweep.tabs} tabs`);
     note(errors.length === 0, `sweep page errors: ${errors.slice(0, 2).join(" | ")}`);

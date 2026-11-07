@@ -1,5 +1,6 @@
 // Lab chrome: brand mark, top navigation, "More" menu and footer. One place so the static shell in
 // index.html and the live (bilingual) chrome never describe different navigation.
+import { isEarlyBand } from "./bands.js";
 import { brandName } from "./brand.js";
 import { langSwitchHTML } from "./i18n.js";
 import { CHROME } from "./acc/copy.js";
@@ -19,6 +20,7 @@ const PRACTICE_VIEWS = new Set([
   "missions",
   "mission",
   "speak",
+  "voice",
   "write",
   "detective",
   "classroom",
@@ -32,6 +34,7 @@ const PRACTICE_VIEWS = new Set([
   "reading-log",
   "stories",
   "ladder",
+  "grammar",
   "publisher-demo",
   "diagnostic",
   "launch",
@@ -44,6 +47,7 @@ const PRACTICE_VIEWS = new Set([
   "move",
 ]);
 const ACTIVE = {
+  early: "continue",
   home: "continue",
   journey: "continue",
   mission: "continue",
@@ -57,9 +61,12 @@ const ACTIVE = {
   tests: "practice",
   test: "practice",
   assess: "practice",
+  class: "practice",
+  "class-quiz": "practice",
   diagnostic: "practice",
   road: "practice",
   speak: "practice",
+  voice: "practice",
   write: "practice",
   detective: "practice",
   scaffold: "practice",
@@ -90,6 +97,13 @@ const ACTIVE = {
 /** Four primary learner destinations; family, teacher and specialist rooms live in the More menu. */
 export function primaryLinks(band, T) {
   const q = `?grades=${band}`;
+  // K–3 bands: the early home is "Continue", and growth is the Passport (the growth map reads grades 3–8 work).
+  if (isEarlyBand(band))
+    return [
+      { id: "continue", icon: "road", label: T("My practice", "Mi práctica"), href: `${BASE}/early${q}` },
+      { id: "practice", icon: "reading", label: T("Practice", "Practicar"), href: `${BASE}/library${q}` },
+      { id: "growth", icon: "passport", label: T("My Passport", "Mi Pasaporte"), href: `${BASE}/passport${q}` },
+    ];
   return [
     {
       id: "continue",
@@ -125,6 +139,28 @@ function menuGroups(band, T) {
     label,
     href: path.startsWith("/") && !path.startsWith(BASE) ? path : `${BASE}/${path}${q}`,
   });
+  if (isEarlyBand(band))
+    return [
+      {
+        title: T("My practice", "Mi práctica"),
+        items: [
+          link("home", T("Early learners home", "Página de primeros grados"), "early"),
+          link("listening", T("Listening", "Escuchar"), "Listening"),
+          link("reading", T("Reading", "Leer"), "Reading"),
+          link("speaking", T("Speaking", "Hablar"), "Speaking"),
+          link("writing", T("Writing", "Escribir"), "Writing"),
+          link("library", T("Find an activity", "Buscar una actividad"), "library"),
+        ],
+      },
+      {
+        title: T("Families and teachers", "Familias y docentes"),
+        items: [
+          link("families", T("Families", "Familias"), "family"),
+          link("passport", T("My Passport", "Mi Pasaporte"), "passport"),
+          link("teacher", T("Teacher Hub", "Centro docente"), "/access-teacher/"),
+        ],
+      },
+    ];
   return [
     {
       title: T("My Learning Journey", "Mi viaje de aprendizaje"),
@@ -154,6 +190,7 @@ function menuGroups(band, T) {
         link("worlds", T("Language World: Science Exhibition", "Mundo del lenguaje: Feria de ciencias"), "exhibition"),
         link("worlds", T("Language Reality Engine", "Motor de Realidad Lingüística"), "reality"),
         link("speaking", T("Speaking Studio", "Estudio de expresión oral"), "speak"),
+        link("listening", T("Voice Lab", "Laboratorio de voz"), "voice"),
         link("writing", T("Writing Studio", "Estudio de escritura"), "write"),
         link("reading", T("Reading Room", "Sala de lectura"), "reading-room"),
         link("mission", T("Academic missions", "Misiones académicas"), "missions"),
@@ -165,6 +202,7 @@ function menuGroups(band, T) {
         link("words", T("Word Builder", "Constructor de palabras"), "vocabulary"),
         link("words", T("Word cards and partner talk", "Tarjetas de palabras y conversación en pareja"), "flashcards"),
         link("detective", T("Error Detective", "Detective de errores"), "detective"),
+        link("detective", T("Grammar check-in and packs", "Chequeo y paquetes de gramática"), "grammar"),
       ],
     },
     {
@@ -174,6 +212,8 @@ function menuGroups(band, T) {
         link("tests", T("Assessment simulator", "Simulador de evaluación"), "assess"),
         link("road", T("Road to ACCESS", "Camino a ACCESS"), "road"),
         link("growth", T("My growth", "Mi progreso"), "growth"),
+        link("classroom", T("My class", "Mi clase"), "class"),
+        link("classroom", T("Live class quiz", "Cuestionario de clase en vivo"), "class/quiz"),
         link("checkin", T("Skill check-in", "Chequeo de destrezas"), "diagnostic"),
         link(
           "conversation",
@@ -190,8 +230,10 @@ function menuGroups(band, T) {
         link("teacher", T("Teacher Hub", "Centro docente"), "/access-teacher/"),
         link("flag", T("Teacher Expedition", "Expedición docente"), "/access-expedition/"),
         link("classroom", T("Whole-Class Studio", "Estudio para toda la clase"), "classroom"),
+        link("teacher", T("Class teacher view", "Vista de la clase para el maestro"), "class/teacher"),
         link("launch", T("Launch Studio", "Estudio de lanzamiento"), "launch-studio"),
         link("teacher", T("Journey teacher guide", "Guía docente del viaje"), "journey/guide"),
+        { icon: "reading", label: T("K–3 practice and Story Time", "Práctica de kínder a 3.º y Hora del cuento"), href: `${BASE}/early?grades=K` },
       ],
     },
   ];
@@ -270,7 +312,7 @@ export function footerHTML(ctx, I) {
       <div class="footer-brand">
         <strong>${brandName(T("ACCESS Practice Lab", "Laboratorio de práctica ACCESS"))}</strong>
         <p>
-          ${T("Classroom practice in listening, reading, speaking and writing for multilingual learners in grades 3–8, by EduWonderLab.", "Práctica de clase en comprensión auditiva, lectura, expresión oral y escritura para estudiantes multilingües de 3.º a 8.º grado, por EduWonderLab.")}
+          ${T("Classroom practice in listening, reading, speaking and writing for multilingual learners from kindergarten to grade 8, by EduWonderLab.", "Práctica de clase en comprensión auditiva, lectura, expresión oral y escritura para estudiantes multilingües de kínder a 8.º grado, por EduWonderLab.")}
         </p>
       </div>
       <nav class="footer-links" aria-label="${S("Practice", "Práctica")}">

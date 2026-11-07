@@ -24,6 +24,7 @@ export const GAME_PHASES = Object.freeze({
   teamrelay: { right: "correct", miss: "retry", "right-after-miss": "assisted", revealed: "revealed" },
   baseball: { right: "correct", miss: "retry", "right-after-miss": "assisted", revealed: "revealed" },
   guess: { right: "correct", miss: "retry" },
+  hiding: { right: "correct", miss: "retry", "right-after-miss": "assisted" },
   race: { right: "correct", miss: "retry", "right-after-miss": "assisted", revealed: "revealed" },
   challenge: { right: "correct", miss: "retry", "right-after-miss": "assisted", revealed: "revealed" },
   duel: { right: "correct", miss: "retry", "right-after-miss": "assisted", revealed: "revealed" },

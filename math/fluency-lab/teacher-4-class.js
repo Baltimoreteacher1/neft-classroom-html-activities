@@ -10,12 +10,16 @@ import {
   strandsHtml,
   summaryHtml,
   troubleHtml,
+  troubleRankHtml,
   trendsHtml,
 } from "./teacher-4-views.js";
+import { factsClassHtml } from "./teacher-tools-views.js";
 import { t } from "./i18n.js";
 import { downloadFile, readLocal, writeLocal } from "./school-tools.js";
 import { findSkill, localDay, sanitizeTutor } from "./tutor-engine.js";
 import { sanitizeGrowthLog } from "./growth-log.js";
+import { sanitizeFacts } from "./moby/fact-model.js";
+import { cleanGreenDays } from "./green-light.js";
 
 const SAVED_KEY = "ewl-fluency-teacher-class-v1";
 const MAX_FILE = 2_000_000;
@@ -32,6 +36,8 @@ const savedClass = () => {
         label: String(item.label || `Learner ${index + 1}`).slice(0, 40),
         tutor: sanitizeTutor(item.tutor),
         growth: sanitizeGrowthLog(item.growth),
+        facts: sanitizeFacts(item.facts),
+        greenDays: cleanGreenDays(item.greenDays),
         exportedAt: Number(item.exportedAt) || null,
         grade: null,
       })),
@@ -126,10 +132,12 @@ export function createClassState({ deviceLearners }) {
       return writeLocal(SAVED_KEY, {
         version: 1,
         savedAt: Date.now(),
-        learners: set.learners.map(({ label, tutor, growth, exportedAt }) => ({
+        learners: set.learners.map(({ label, tutor, growth, facts, greenDays, exportedAt }) => ({
           label,
           tutor,
           growth,
+          facts,
+          greenDays,
           exportedAt,
         })),
       });
@@ -209,12 +217,28 @@ export function mountInsights(host, { klass, onPlan, announce }) {
               troubleHtml(analysis),
             ),
             section(
+              "t4-h-spots",
+              t("Trouble spots, ranked"),
+              t(
+                "A learner has a trouble spot after missing the same kind of item three times on their own in the last four weeks. Spots shared by the most learners come first.",
+              ),
+              troubleRankHtml(analysis),
+            ),
+            section(
               "t4-h-patterns",
               t("Answer patterns to reteach"),
               t(
                 "Counts of saved wrong answers that match a named pattern. A match is a pointer, not a diagnosis.",
               ),
               patternsHtml(analysis),
+            ),
+            section(
+              "t4-h-facts",
+              t("Fact automaticity and Green Light days"),
+              t(
+                "From each learner's fact practice: first-try answers on their own across separate days, plus their own note on how they got it. No clock is used.",
+              ),
+              factsClassHtml(klass.learners()),
             ),
             section(
               "t4-h-groups",
@@ -304,6 +328,7 @@ export function mountInsights(host, { klass, onPlan, announce }) {
       const analysis = klass.analysis();
       const source = {
         trouble: analysis.troubleSpots,
+        spot: analysis.troubleRanked,
         pattern: analysis.misconceptions.byPattern,
         group: analysis.groups,
         individual: analysis.individual,

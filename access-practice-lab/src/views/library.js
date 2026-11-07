@@ -6,6 +6,7 @@ import { estimateMinutes } from "../learning.js";
 import { activityStatus } from "../practice-plan.js";
 import { loadRecord } from "../store.js";
 import { STUDIOS, studioPath } from "../studios.js";
+import { VOICE_GROUPS } from "./voice-common.js";
 import { i18nFor, makeI18n } from "../i18n.js";
 import { ART, BASE, CORE_DOMAINS, DOMAIN_META, TIERS, announce, bandLabel, html, icon, raw, toHtml } from "../util.js";
 import { activityHref } from "./room.js";
@@ -106,6 +107,21 @@ function studiosHTML() {
   </section>`;
 }
 
+/** The Voice Lab (/voice): speaking and listening workouts inside the lab, listed by group. */
+function voiceLabHTML(band) {
+  return html`<section class="lib-studios lib-voice" id="voice-lab" aria-labelledby="voiceLabTitle">
+    <h2 id="voiceLabTitle">${icon("speaking")} ${I.T("Voice Lab: speaking and listening workouts", "Laboratorio de voz: ejercicios para hablar y escuchar")}</h2>
+    <p class="fine">${I.T("Hear a model, say it yourself and compare. Nothing is timed.", "Escucha un modelo, dilo tú y compara. Nada tiene tiempo límite.")} <a href="${BASE}/voice?grades=${band}">${I.T("Open the Voice Lab", "Abrir el Laboratorio de voz")}</a></p>
+    <ul class="lib-studio-grid">${VOICE_GROUPS.map(
+      (g) => html`<li class="lib-studio d-${g.skill}">
+        <span class="prog-tile">${domainGlyph(cap(g.skill))}</span>
+        <div><a class="lib-studio-title" href="${BASE}/voice?grades=${band}#${g.anchor}">${I.T(g.title, g.titleEs)}</a>
+        <p class="fine">${I.T(g.blurb, g.blurbEs)}</p></div>
+      </li>`,
+    )}</ul>
+  </section>`;
+}
+
 function setHTML() {
   const picked = selected.map((id) => rows.find((r) => r.id === id)).filter(Boolean);
   if (!picked.length) return html`<div class="library-set-empty"><h2 id="practiceSetTitle">${icon("list")} ${I.T("Build a practice set", "Crea un conjunto de práctica")}</h2><p class="fine">${I.T(`Use “Add” on any activity to combine up to ${LIMIT} into a shareable session.`, `Usa “Agregar” en cualquier actividad para combinar hasta ${LIMIT} en una sesión que se puede compartir.`)}</p></div>`;
@@ -167,7 +183,7 @@ export async function render(ctx) {
     <div class="library-quick lib-quick" aria-label="${I.S("Quick activity searches", "Búsquedas rápidas de actividades")}"><span>${I.T("Start with:", "Empieza con:")}</span>${["garden", "evidence", "compare", "sequence"].map((topic) => html`<button type="button" class="cat-chip" data-quick-topic="${topic}">${icon("search")} ${topic}</button>`)}</div>
     <div id="libraryResults">${resultHTML()}</div></section>
     </div>
-    ${studiosHTML()}</div>`,
+    ${voiceLabHTML(band)}${studiosHTML()}</div>`,
   };
 }
 

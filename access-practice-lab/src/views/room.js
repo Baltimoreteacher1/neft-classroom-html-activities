@@ -8,6 +8,7 @@ import { loadRecord } from "../store.js";
 import { i18nFor } from "../i18n.js";
 import { ART, BASE, DOMAIN_META, TIERS, bandLabel, html, icon } from "../util.js";
 import { tierFor } from "./home.js";
+import { bandLabelEs, isEarlyBand } from "../bands.js";
 import { GAMES } from "../games/registry.js";
 
 /** Each skill room is one of the four language studios (the same names as the home portals). */
@@ -47,7 +48,7 @@ export const ROOM_ES = {
   Writing: "Práctica de escribir",
   "Model-Test": "Preguntas de prueba modelo",
 };
-const bandEs = (band) => `Grados ${band.replace("-", "–")}`;
+const bandEs = (band) => bandLabelEs(band);
 
 export function activityHref(domain, level, id) {
   if (domain === "Model-Test") {
@@ -103,7 +104,8 @@ export async function render(ctx) {
     cats.push({ id: "more", title: "More practice", es: "Más práctica", activityIds: extra.map((a) => a.id) });
 
   const packetBase = `${band === "3-5" ? "g3-5-" : ""}${domain}-${level}`.replace(/\s+/g, "");
-  const skillGames = GAMES.filter((game) => game.skills.includes(domain)).slice(0, 3);
+  // K–3 bands print their writing from each activity and have their own games on the early home.
+  const skillGames = isEarlyBand(band) ? [] : GAMES.filter((game) => game.skills.includes(domain)).slice(0, 3);
 
   const row = (a) => {
     const savedStatus = activityStatus(record, a.id);
@@ -180,11 +182,11 @@ export async function render(ctx) {
           <p class="fine">${T("Search every activity and choose your own set.", "Busca entre todas las actividades y elige tu propio conjunto.")}</p>
           <a class="btn" href="${BASE}/library?grades=${band}&domain=${domain}&level=${level}">${T("Search activities", "Buscar actividades")}${icon("arrow-right")}</a>
         </section>
-        <section class="aside-card packet-downloads" aria-labelledby="packetHeading">
+        ${isEarlyBand(band) ? "" : html`        <section class="aside-card packet-downloads" aria-labelledby="packetHeading">
           <h2 id="packetHeading">${icon("print")} ${T("Take this practice to paper", "Lleva esta práctica al papel")}</h2>
           <p class="fine">${T(`Illustrated activities, clear directions, and room to respond. Student edition · ${bandLabel(band)}.`, `Actividades ilustradas, instrucciones claras y espacio para responder. Edición para estudiantes · ${bandEs(band)}.`)}</p>
           <div class="row-actions"><a class="btn" href="${BASE}/printables/${packetBase}.html">${T("Preview & print", "Vista previa e imprimir")}</a><a class="btn" href="${BASE}/printables/${packetBase}.docx" download>${T("Download Word packet", "Descargar paquete en Word")}</a></div>
-        </section>
+        </section>`}
       </aside>
       </div>
       ${skillGames.length ? html`<section class="room-games" aria-labelledby="roomGamesTitle"><h2 id="roomGamesTitle">${T(`Games for ${domain}`, `Juegos para ${ROOM_ES[domain] || meta.room}`)}</h2><p>${T("Practice this skill with a short language game.", "Practica esta destreza con un juego breve de lenguaje.")}</p><div class="room-games-list">${skillGames.map((game) => html`<a class="btn" href="${BASE}/games/${game.id}?grades=${band}">${T(game.title[0], game.title[1])}${icon("arrow-right")}</a>`)}</div></section>` : ""}`,

@@ -60,8 +60,7 @@ export const slug = (v) =>
     .replace(/^-|-$/g, "");
 
 /** Grades 3–5 ids carry the g35- prefix, so a shared link always resolves its band. */
-export const bandOfId = (id) => (String(id).startsWith("g35") ? "3-5" : "6-8");
-export const bandLabel = (band) => `Grades ${band.replace("-", "–")}`;
+export { bandLabel, bandOfId } from "./bands.js";
 
 export function safeJson(text, fallback) {
   try {
@@ -83,8 +82,21 @@ function storageWarning() {
       : "This device could not save your latest work. It is kept only in this tab. Export a Passport code before closing or reloading.";
   }
 }
+// Listeners told after every write or removal, so an opt-in feature (the class link) can notice local progress
+// changing without every call site knowing about it. A listener that throws never breaks a save.
+const writeListeners = new Set();
+const notifyWrite = (key) => {
+  for (const fn of writeListeners)
+    try {
+      fn(key);
+    } catch {}
+};
 /** localStorage with explicit session fallback (private mode, blocked storage, quota). */
 export const storage = {
+  subscribe(fn) {
+    writeListeners.add(fn);
+    return () => writeListeners.delete(fn);
+  },
   get isVolatile() { return volatile.size > 0; },
   refreshWarning: storageWarning,
   get(key) {
@@ -100,10 +112,12 @@ export const storage = {
       localStorage.setItem(key, value);
       volatile.delete(key);
       storageWarning();
+      notifyWrite(key);
       return true;
     } catch {
       volatile.set(key, value);
       storageWarning();
+      notifyWrite(key);
       return false;
     }
   },
@@ -113,6 +127,7 @@ export const storage = {
       volatile.delete(key);
     } catch { volatile.set(key, null); }
     storageWarning();
+    notifyWrite(key);
   },
   keys() {
     try {

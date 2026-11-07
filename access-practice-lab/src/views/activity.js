@@ -13,6 +13,8 @@ import {
   transcriptHTML,
   vocabHTML,
 } from "../components.js";
+import * as early from "../early/player.js";
+import { CONTENT_BANDS } from "../bands.js";
 import { findActivity, loadDomain, loadEsGuide, loadFamilyCoach, loadGlossary, loadShared, ordered } from "../content.js";
 import { buildCoaching } from "../family/coach.js";
 import { copilotHTML } from "../family/copilot.js";
@@ -73,6 +75,7 @@ import {
 } from "../util.js";
 import { activityHref, roomHref } from "./room.js";
 import { COUNTRIES, stopSlices } from "../journey.js";
+import { esPreviewHTML } from "./es-preview.js";
 
 const IGN = raw("data-nsr-ignore");
 // Transient per-visit check state: id → { ok, attempt, reveal }
@@ -86,6 +89,7 @@ let mode = "supported";
 let validation = "";
 let renderGeneration = 0;
 let loading = false;
+let earlyActive = false; // the audio-first player owns this activity (src/early/player.js)
 let cur = null; // { band, domain, level, activity, list, index, record, playlist }
 let showCognates = false;
 // Evidence Notebook on a Reading passage: pin mode turns sentences into select buttons; `picked` is the
@@ -586,6 +590,8 @@ export async function render(ctx) {
   const a = cur.activity;
   const es = esGuide[a.id] || {};
   mode = requestedMode === "independent" ? "independent" : "supported";
+  earlyActive = early.usesAudioFirst(ctx.prefs, cur.band, a, location.search);
+  if (earlyActive) return early.render(ctx, I, cur, { nav: navHTML() });
   const meta = DOMAIN_META[cur.domain] || DOMAIN_META.Listening;
   const tier = TIERS[cur.level];
   const done = cur.record.complete.includes(a.id);
@@ -617,8 +623,10 @@ export async function render(ctx) {
           <nav class="act-return" aria-label="${I.S("Return to practice", "Volver a la práctica")}">
             <a class="btn small" href="${roomHref(cur.domain, cur.level)}">${I.T("Back to activity list", "Volver a la lista de actividades")}</a>
             <a class="btn small" href="${BASE}/passport?grades=${cur.band}">${I.T("My Passport", "Mi Pasaporte")}</a>
+            ${cur.band !== "6-8" && CONTENT_BANDS.includes(cur.band) && early.EARLY_TYPES.has(a.type) ? html`<button type="button" class="btn small" data-early-on aria-pressed="false">${I.T("Audio-first mode: off", "Modo de audio primero: desactivado")}</button>` : ""}
           </nav>
           ${directionsBlocks(a, es)}
+          ${mode === "supported" ? esPreviewHTML(I, a, cur.domain, es) : ""}
         </header>
         ${familyOf(ctx).who === "independent" ? "" : copilotHTML(I, buildCoaching(a, cur.domain, coachData, es))}
         <div class="activity-workspace">
@@ -750,6 +758,12 @@ function onListeningLabClick(t, a, ctx) {
 
 export function onClick(e, ctx) {
   if (!cur || loading) return;
+  if (earlyActive) return early.onClick(e, ctx, i18nFor(ctx), cur, save);
+  if (e.target.closest("[data-early-on]")) {
+    ctx.setPrefs({ audioFirst: { ...(ctx.prefs.audioFirst || {}), [cur.band]: true } });
+    ctx.rerender();
+    return true;
+  }
   const I = i18nFor(ctx);
   const a = cur.activity;
   const t = e.target;
@@ -1117,7 +1131,8 @@ export function onKey(e) {
   }
 }
 
-export function mount(root) {
+export function mount(root, ctx) {
+  if (earlyActive) return early.mount(root, ctx, i18nFor(ctx), cur);
   const owner = cur;
   for (const details of root.querySelectorAll(".helpers, .strategy, .ladder, .transcript, .writing-starters")) {
     details.addEventListener("toggle", () => {
@@ -1132,6 +1147,7 @@ export function mount(root) {
 }
 
 export function unmount() {
+  early.unmount();
   renderGeneration++;
   loading = true;
   coachFeedback = null;

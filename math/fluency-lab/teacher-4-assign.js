@@ -1,5 +1,6 @@
 // Teacher tools 4.0, Assignments tab: build a differentiated assignment (support level, difficulty tiers, problem
 // count, mastery target, deadline), share it as a link, short link or QR, and manage the list made on this device.
+import { accessSummary, cleanAccess } from "./accommodations.js";
 import { encodeShortCode } from "./assignment-codec.js";
 import {
   addAssignment,
@@ -44,6 +45,9 @@ const blank = (grade) => ({
   score: 80,
   days: 2,
   due: "",
+  access: {},
+  audioFirst: false,
+  example: "",
 });
 
 export const shortLink = (assignment) => {
@@ -68,6 +72,9 @@ const draftOf = (entry) => ({
   score: entry.assignment.target?.score ?? 80,
   days: entry.assignment.target?.days ?? 2,
   due: entry.assignment.due || "",
+  access: { ...(entry.assignment.access || {}) },
+  audioFirst: entry.assignment.audioFirst === true,
+  example: entry.assignment.example || "",
 });
 
 export function assignmentFromDraft(draft) {
@@ -84,6 +91,9 @@ export function assignmentFromDraft(draft) {
     ...(full ? {} : { tiers: [draft.tierLow, draft.tierHigh] }),
     ...(draft.target ? { target: { score: draft.score, days: draft.days } } : {}),
     ...(draft.due ? { due: draft.due } : {}),
+    ...(cleanAccess(draft.access) ? { access: cleanAccess(draft.access) } : {}),
+    ...(draft.audioFirst ? { audioFirst: true } : {}),
+    ...(draft.example ? { example: draft.example } : {}),
   });
 }
 
@@ -112,9 +122,31 @@ function formHtml(draft, error) {
         <label>${esc(t("on this many separate days"))}<input name="days" type="number" min="1" max="10" value="${draft.days}" ${draft.target ? "" : "disabled"}></label></div>
       <p class="t4-hint">${esc(t("Only first-try answers at grade level or above count. Hints and picture-first work do not."))}</p>
       <label>${esc(t("Due date (optional)"))}<input name="due" type="date" min="${localDay()}" value="${esc(draft.due)}"></label></fieldset>
+    ${accessFieldset(draft.access || {})}
+    ${supportFieldset(draft)}
     <p class="t4-error" role="alert">${esc(error)}</p>
     <div class="t4-actions"><button type="submit" class="fl-btn fl-btn--teal">${esc(draft.id ? t("Update assignment") : t("Save assignment"))}</button>${draft.id ? `<button type="button" class="fl-btn fl-btn--ghost" data-t4-cancel>${esc(t("Cancel"))}</button>` : ""}</div>
   </form>`;
+}
+
+// The accommodation profile travels in the link and applies only while the learner works on this assignment.
+function accessFieldset(access) {
+  const box = (name, label) =>
+    `<label class="t4-check"><input type="checkbox" name="${name}" ${access[name.slice(7)] ? "checked" : ""}><span>${esc(label)}</span></label>`;
+  return `<fieldset class="t4-target" data-t4-access><legend>${esc(t("Accommodations for this assignment"))}</legend>
+      ${box("access-read", t("Read each problem aloud"))}${box("access-es", t("Show each problem in Spanish too"))}${box("access-focus", t("Focus view"))}${box("access-calc", t("Calculator available"))}
+      <label>${esc(t("Answer choices on multiple-choice problems"))}<select name="access-mc"><option value="">${esc(t("All choices"))}</option><option value="3" ${access.mc === 3 ? "selected" : ""}>3</option><option value="2" ${access.mc === 2 ? "selected" : ""}>2</option></select></label>
+      <p class="t4-hint">${esc(t("These apply only during this assignment and never change how answers are checked. An assignment with accommodations is shared by link, not class code."))}</p></fieldset>`;
+}
+
+// Audio-first and the worked-example policy travel in the link, like the accommodation profile.
+function supportFieldset(draft) {
+  const option = (value, label) =>
+    `<option value="${value}" ${draft.example === value ? "selected" : ""}>${esc(label)}</option>`;
+  return `<fieldset class="t4-target" data-t4-support><legend>${esc(t("Listening and worked examples"))}</legend>
+      <label class="t4-check"><input type="checkbox" name="audioFirst" ${draft.audioFirst ? "checked" : ""}><span>${esc(t("Audio first: each problem is read aloud before the learner answers"))}</span></label>
+      <label>${esc(t("Worked example"))}<select name="example">${option("", t("Offered when a learner needs support"))}${option("after", t("Only after a learner's first answer"))}${option("hide", t("Never offered"))}</select></label>
+      <p class="t4-hint">${esc(t("Reports show how many answers came after a learner opened a worked example. Audio first and example settings are shared by link, not class code."))}</p></fieldset>`;
 }
 
 function shareHtml(entry) {
@@ -148,6 +180,10 @@ function summaryLine(assignment) {
   ];
   if (assignment.tiers)
     bits.push(t("Tiers {a} to {b}", { a: assignment.tiers[0], b: assignment.tiers[1] }));
+  bits.push(...accessSummary(assignment.access));
+  if (assignment.audioFirst) bits.push(t("Audio first"));
+  if (assignment.example)
+    bits.push(assignment.example === "hide" ? t("No worked example") : t("Example after first answer"));
   if (assignment.target)
     bits.push(
       t("Target: score {score}, {days} days", {
@@ -175,7 +211,11 @@ function progressHtml(entry, learners, now) {
   const since = new Date(entry.createdAt).setHours(0, 0, 0, 0);
   const status = classStatus(entry.assignment, learners, { now, since });
   const words = statusWord();
-  const key = (row) => row.rows.map((r) => `${r.score ?? "-"}/${r.days}`).join(", ");
+  const key = (row) => {
+    const views = row.rows.reduce((sum, r) => sum + r.exampleViews, 0);
+    const base = row.rows.map((r) => `${r.score ?? "-"}/${r.days}`).join(", ");
+    return views ? `${base} · ${t("Opened a worked example on {n} answers", { n: views })}` : base;
+  };
   return `<p>${esc(t("{met} met, {progress} in progress, {none} not started, {late} overdue.", { met: status.counts.met, progress: status.counts["in-progress"], none: status.counts["not-started"], late: status.counts.overdue }))}</p>
     <table class="t4-table"><caption class="t4-sr">${esc(t("Progress on this assignment"))}</caption><thead><tr><th scope="col">${esc(t("Learner"))}</th><th scope="col">${esc(t("Status"))}</th><th scope="col">${esc(t("Score / independent days per skill"))}</th></tr></thead><tbody>${status.rows.map((row) => `<tr><th scope="row">${esc(row.label)}</th><td><span class="t4-chip t4-chip--${row.status}">${esc(words[row.status])}</span></td><td>${esc(key(row))}</td></tr>`).join("")}</tbody></table>`;
 }
@@ -235,6 +275,15 @@ export function mountAssignments(
       score: number("score", 80),
       days: number("days", 2),
       due: String(data.get("due") ?? ""),
+      audioFirst: data.get("audioFirst") === "on",
+      example: ["after", "hide"].includes(String(data.get("example"))) ? String(data.get("example")) : "",
+      access: {
+        read: data.get("access-read") === "on",
+        es: data.get("access-es") === "on",
+        focus: data.get("access-focus") === "on",
+        calc: data.get("access-calc") === "on",
+        ...(["2", "3"].includes(String(data.get("access-mc"))) ? { mc: Number(data.get("access-mc")) } : {}),
+      },
     };
   };
   // Another part of the studio can load a suggested practice plan (for example "Add to assignment" on a reteach card).

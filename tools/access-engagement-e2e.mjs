@@ -21,6 +21,7 @@ mkdirSync(shots, { recursive: true });
 const types = {
   ".html": "text/html; charset=utf-8",
   ".js": "text/javascript",
+  ".mjs": "text/javascript",
   ".css": "text/css",
   ".json": "application/json",
   ".svg": "image/svg+xml",
@@ -92,7 +93,7 @@ try {
     "starting a mission saves a resumable session with selected activities",
   );
   await go("/?grades=6-8");
-  const resume = page.getByRole("link", { name: /Resume today’s mission/ });
+  const resume = page.getByRole("link", { name: /Resume today’s mission/ }).first();
   check(await resume.isVisible(), "returning learner sees a distinct resume action");
   await resume.click();
   url = new URL(page.url());

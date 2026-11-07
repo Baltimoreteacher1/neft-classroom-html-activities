@@ -434,6 +434,9 @@ for (let grade = 0; grade <= 8; grade += 1) {
   );
   domain.keys.forEach((key) => allDomainKeys.add(key));
 }
+// Basic facts (add/sub/mul/div). Grade 6-8 facts have no family or fixed-vocabulary strategy; their rules are
+// checked in tools/fluency-fact-tools.test.mjs.
+const basicDomainKeys = [...allDomainKeys].filter((key) => M.parseKey(key));
 check(
   M.gradeFactDomain(0).keys.every((key) => {
     const p = M.parseKey(key);
@@ -466,10 +469,12 @@ check(
 );
 check(
   M.gradeFactDomain(5).newKeys.length === 0 &&
-    M.gradeFactDomain(8).keys.length === M.gradeFactDomain(5).keys.length,
-  "Grade 5 maintains; Grades 6-8 use Grade 5's set.",
+    M.gradeFactDomain(5).keys.every((key) => M.gradeFactDomain(8).has(key)) &&
+    M.gradeFactDomain(8).newKeys.every((key) => !M.parseKey(key)),
+  "Grade 5 maintains; Grades 6-8 keep Grade 5's set and add only their own Grade 6-8 facts (fact-keys-68.js).",
 );
-for (const key of allDomainKeys) {
+for (const key of basicDomainKeys) {
+  // Grade 6-8 facts have no fact family; they are checked in tools/fluency-fact-tools.test.mjs.
   const family = M.familyOf(key);
   check(
     family &&
@@ -613,7 +618,7 @@ check(
 
 // ---------- strategies ----------
 const used = new Set();
-for (const key of allDomainKeys) {
+for (const key of basicDomainKeys) {
   const strategy = M.strategyFor(key);
   check(
     M.STRATEGY_IDS.includes(strategy),
@@ -997,8 +1002,16 @@ for (let grade = 0; grade <= 8; grade += 1) {
           ),
           `${label}: items come from the grade's domain (stretch from the next).`,
         );
+        // Grade 6-8 facts (fact-keys-68.js) name a rule instead of a fixed-vocabulary strategy and are not "a ○ b".
+        const basicItems = session.items.filter((item) => M.parseKey(item.key));
         check(
-          session.items.every(
+          session.items
+            .filter((item) => !M.parseKey(item.key))
+            .every((item) => item.hint && item.why && item.answers.length && item.question.length),
+          `${label}: Grade 6-8 fact items carry a rule hint, a reason and answers.`,
+        );
+        check(
+          basicItems.every(
             (item) =>
               M.STRATEGY_IDS.includes(item.strategy) &&
               item.hint &&
@@ -1009,7 +1022,7 @@ for (let grade = 0; grade <= 8; grade += 1) {
           `${label}: every item has a strategy, hint, reason and phase.`,
         );
         check(
-          session.items.every(
+          basicItems.every(
             (item) =>
               chartKey(item) !== null &&
               validateAnswer(item.answers[0], item) &&
@@ -1021,12 +1034,12 @@ for (let grade = 0; grade <= 8; grade += 1) {
           `${label}: items use the exact existing item format (chartKey, validateAnswer).`,
         );
         check(
-          session.items.every(
+          basicItems.every(
             (item) => !/^(?!.*)/.test(item.question) && /^\d+ [+−×÷] \d+ = \?$/.test(item.question),
           ),
           `${label}: questions read "a ○ b = ?".`,
         );
-        const learn = session.items.filter((item) => item.phase === "learn");
+        const learn = basicItems.filter((item) => item.phase === "learn");
         check(
           learn.every((item) => item.strategyFirst && item.strategy),
           `${label}: learn items show the strategy first.`,

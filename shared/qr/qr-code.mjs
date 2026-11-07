@@ -4,7 +4,7 @@
  *
  * Why not `engine/core/qr-mini.js`: its masks and format bits were never checked against a decoder; its output
  * does not decode (verified with CoreImage's QR detector, 2026-10-28). This one is verified the same way in
- * `scripts/lib/qr-code.test.mjs` by an independent read path and, on a Mac, by CoreImage across every lesson URL.
+ * `tools/qr-code.test.mjs` by an independent read path and, on a Mac, by CoreImage across every lesson URL.
  */
 
 // version -> { data codewords, ec codewords }, all single-block at level L
@@ -50,7 +50,7 @@ function rsRemainder(data, ecLen) {
 }
 
 function codewords(text, version) {
-  const bytes = [...Buffer.from(text, "utf8")];
+  const bytes = [...new TextEncoder().encode(text)];
   const { data, ec } = VERSIONS[version];
   const bits = [];
   const put = (value, count) => {
@@ -197,7 +197,7 @@ function penalty(m) {
 
 /** Module matrix (true = dark, no quiet zone) for `text`. Throws when it does not fit version 5. */
 export function qrModules(text) {
-  const need = Buffer.byteLength(text, "utf8");
+  const need = new TextEncoder().encode(text).length;
   const version = [1, 2, 3, 4, 5].find((v) => need <= VERSIONS[v].data - 2);
   if (!version) throw new Error(`qr-code: ${need} bytes does not fit (max ${MAX_BYTES})`);
   const size = 17 + 4 * version;

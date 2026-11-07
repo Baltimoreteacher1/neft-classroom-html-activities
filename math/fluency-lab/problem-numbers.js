@@ -143,6 +143,12 @@ function parseSubstitution(t) {
 export function extractProblem(item) {
   const t = bareText(item);
   if (!t) return null;
+  // A list to put in order is not an operation: reading "-1 1/2, 0.75" as a fraction sum would seed a wrong model.
+  if (/^order from least to greatest/i.test(t)) return null;
+  // Edges written as mixed numbers ("7 1/2 ft long"): the model would show an improper numerator nobody wrote.
+  if (/^a rectangular prism is .+ ft long/i.test(t)) return null;
+  // Converting between a mixed number and an improper fraction: the improper numerator is the answer, not a given.
+  if (/^write .+ as (an improper fraction|a mixed number)/i.test(t)) return null;
   const gl = t.match(
     new RegExp(
       `\\b(gcf|gcd|lcm|greatest common factor|least common multiple)\\b[^\\d]*(\\d+)\\s*(?:and|,)\\s*(\\d+)`,

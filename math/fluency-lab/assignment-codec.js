@@ -1,7 +1,9 @@
-// Assignment extensions (difficulty tier range, mastery target, deadline) and the short class code.
+// Assignment extensions (difficulty tier range, mastery target, deadline, accommodations, audio-first, worked-example
+// policy) and the short class code.
 // Everything is carried in the link or code itself: there is no central database to look an assignment up in.
 // Old links never carry these fields and keep decoding exactly as before.
 import { ALL_SKILLS } from "./problem-bank.js";
+import { cleanAccess, decodeAccess, encodeAccess } from "./accommodations.js";
 
 export const TIER_MIN = 1;
 export const TIER_MAX = 5;
@@ -11,6 +13,9 @@ export const TARGET_DAYS_MAX = 10;
 const COUNTS = [5, 10, 15, 20];
 const CHALLENGES = ["adaptive", "building", "grade-stretch"];
 const LANGS = [undefined, "en", "es"];
+// Worked-example policy: undefined keeps the lab's own rules (steps open for a learner who needs support),
+// "after" offers the worked example only once a first answer is in, "hide" never offers one.
+export const EXAMPLE_POLICIES = Object.freeze(["after", "hide"]);
 const EPOCH = Date.UTC(2024, 0, 1);
 const DAY_MS = 86400000;
 
@@ -44,6 +49,10 @@ export function cleanExt(value) {
     out.target = { score, days };
   const due = cleanDue(value?.due);
   if (due) out.due = due;
+  const access = cleanAccess(value?.access);
+  if (access) out.access = access;
+  if (value?.audioFirst === true) out.audioFirst = true;
+  if (EXAMPLE_POLICIES.includes(value?.example)) out.example = value.example;
   return out;
 }
 
@@ -54,6 +63,9 @@ export function encodeExt(assignment) {
     ext.tiers ? `t${ext.tiers[0]}-${ext.tiers[1]}` : "",
     ext.target ? `m${ext.target.score}x${ext.target.days}` : "",
     ext.due ? `d${ext.due.replaceAll("-", "")}` : "",
+    encodeAccess(ext.access),
+    ext.audioFirst ? "u" : "",
+    ext.example ? `w${ext.example[0]}` : "",
   ]
     .filter(Boolean)
     .join(".");
@@ -68,6 +80,10 @@ export function decodeExt(text) {
       raw.target = { score: Number(match[1]), days: Number(match[2]) };
     else if ((match = /^d(\d{4})(\d{2})(\d{2})$/.exec(part)))
       raw.due = `${match[1]}-${match[2]}-${match[3]}`;
+    else if (/^a[rsfc23]*$/.test(part)) raw.access = decodeAccess(part);
+    else if (part === "u") raw.audioFirst = true;
+    else if ((match = /^w([ah])$/.exec(part)))
+      raw.example = EXAMPLE_POLICIES.find((policy) => policy[0] === match[1]);
   }
   return cleanExt(raw);
 }
@@ -103,8 +119,8 @@ const checksum = (bits) => {
   return sum;
 };
 
-// Returns null when the assignment cannot be carried in a code (a game, a family session, an unknown skill, or
-// two skills of one grade that share a fingerprint). Callers then offer the link only.
+// Returns null when the assignment cannot be carried in a code (a game, a family session, an unknown skill, an
+// accommodation profile, audio-first or a worked-example policy, or two skills of one grade that share a fingerprint). Callers then offer the link only.
 export function encodeShortCode(assignment) {
   const ext = cleanExt(assignment);
   const keys = assignment?.keys || [];
@@ -114,6 +130,9 @@ export function encodeShortCode(assignment) {
   const known = gradeSkills(grade);
   if (
     assignment?.game ||
+    ext.access ||
+    ext.audioFirst ||
+    ext.example ||
     !keys.length ||
     keys.length > 10 ||
     countIndex < 0 ||

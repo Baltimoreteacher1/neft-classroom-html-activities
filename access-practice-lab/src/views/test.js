@@ -25,6 +25,9 @@ import {
   WEIGHTS,
 } from "../lang/composite.js";
 import { visualsHTML } from "../media.js";
+import { summarizeEnvelope } from "../lang/audio.js";
+import { findModelStudent, takeSpeechSeconds } from "../lang/model-student.js";
+import { lengthMeterHTML, modelStudentHTML, playModelStudent } from "../model-student-ui.js";
 import { clear as clearTake, isRecording, stop as stopRecording, takesFor } from "../recorder.js";
 import { stop as stopSpeech } from "../speech.js";
 import { clearTestRecord, getStudentName, loadTestRecord, saveErrorReflection, saveTestRecord } from "../store.js";
@@ -59,6 +62,7 @@ const IGN = raw("data-nsr-ignore");
 let T = null; // { test, flat, rec }
 let timerId = 0;
 let renderGeneration = 0;
+let speechRate = 0.9; // the learner's read-aloud rate, refreshed from ctx.prefs on render and click
 let I = makeI18n("en"); // set from the ctx at the top of render() and of the click handler
 
 const rules = () => MODES[modeOf(T.rec)];
@@ -284,8 +288,11 @@ function inputFor(f) {
   const a = T.rec.answers[item.id];
   const key = `${T.test.id}:${item.id}`;
   if (item.type === "constructed") {
-    if (section.domain === "Speaking")
-      return html`${recorderHTML(key, { prompt: item.prompt, recording: isRecording(key) })}<label
+    if (section.domain === "Speaking") {
+      const model = findModelStudent(item);
+      const last = takesFor(key).at(-1);
+      const meter = model && last && !isRecording(key) ? lengthMeterHTML(key, model, takeSpeechSeconds(last, summarizeEnvelope), I, { rate: speechRate }) : "";
+      return html`${modelStudentHTML(key, model, I)}${recorderHTML(key, { prompt: item.prompt, recording: isRecording(key) })}${meter}<label
           class="field"
           ><span>${I.T("Planning notes (optional)", "Notas de planificación (opcional)")}</span
           ><textarea rows="3" data-test-note ${IGN}>${a || ""}</textarea></label
@@ -304,6 +311,7 @@ function inputFor(f) {
             "Las notas de planificación no cuentan como respuesta oral. Las grabaciones se quedan en esta pestaña; pide a tu docente que las escuche antes de cerrarla o recargarla.",
           )}
         </p>`;
+    }
     return html`${
         rules().wordBank && item.wordBank?.length
           ? html`<div class="support-zone is-bank">
@@ -546,6 +554,7 @@ function resultsHTML() {
 
 export async function render(ctx) {
   I = i18nFor(ctx);
+  speechRate = ctx.prefs?.rate || 0.9;
   setComponentsI18n(I);
   setItemsI18n(I);
   const generation = ++renderGeneration;
@@ -655,7 +664,14 @@ async function go(ctx, patch) {
 export function onClick(e, ctx) {
   if (!T) return;
   I = i18nFor(ctx);
+  speechRate = ctx.prefs?.rate || 0.9;
   const t = e.target;
+  const modelBtn = t.closest("[data-model-student]");
+  if (modelBtn) {
+    const f = T.flat.find((x) => `${T.test.id}:${x.item.id}` === modelBtn.dataset.modelStudent);
+    if (f) playModelStudent(modelBtn.dataset.modelStudent, findModelStudent(f.item), { rate: speechRate, I, rerender: () => ctx.rerender() });
+    return true;
+  }
   const f = T.flat[T.rec.index];
   if (onRehearsalClick(e, ctx)) return true;
   if (t.closest("[data-crossoff-toggle]")) {

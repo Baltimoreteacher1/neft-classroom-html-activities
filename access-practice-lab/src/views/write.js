@@ -7,8 +7,10 @@ import { i18nFor, makeI18n } from "../i18n.js";
 import { loadExemplars, loadMission, loadStudioIndex, loadWritingTasks } from "../content.js";
 import { recommendTasks } from "../lang/adapt.js";
 import { analyzeResponse, compareDrafts } from "../lang/analyze.js";
+import { askSecondLook } from "../class/ai-feedback.js";
 import { appendEntry, buildProfile, loadLedger, saveLedger, suggestStage } from "../lang/ledger.js";
 import { addVersion, choiceEffects, loadStudio, missionState, saveStudio, writingState } from "../lang/studio.js";
+import { evidenceSentencesHTML, onEvidenceClick } from "./evidence-sentences.js";
 import { speak, stop as stopSpeech } from "../speech.js";
 import { diffWords, sentences as splitSentences } from "../lang/text.js";
 import {
@@ -25,7 +27,7 @@ import {
   taskCardHTML,
   trackDisclosures,
 } from "../studio-ui.js";
-import { ART, BASE, announce, html, icon, raw, wordCount } from "../util.js";
+import { ART, BASE, announce, esc, html, icon, raw, wordCount } from "../util.js";
 import { award } from "../engagement.js";
 
 const IGN = raw("data-nsr-ignore");
@@ -387,6 +389,7 @@ export async function render(ctx) {
                 ${task.organizer.map((slot, i) => html`<label class="field slot"><span><b class="slot-n">${i + 1}</b>${slot.label}</span><textarea rows="2" data-org="${slot.id}" ${S.stage === "independent" ? "" : html`placeholder="${S.fx.hints[slot.id] || slot.hint}"`} ${IGN}>${S.state.organizer[slot.id] || ""}</textarea></label>`)}
               </div>
             </section>
+            ${await evidenceSentencesHTML(I, task, { independent: S.stage === "independent" })}
           </div>
           <div class="studio-col">
 
@@ -407,7 +410,7 @@ ${text}</textarea></label>
           a
             ? html`<section class="panel" id="wrt-feedback">
                   <h3><span class="step-badge">4</span> ${I.T("What your writing shows", "Lo que muestra tu escritura")}</h3>
-                  ${feedbackHTML(a, text, { patternHref: (pid) => `${BASE}/detective/${pid}?grades=${ctx.band}` })}${revisionPromptsHTML(task, a)}${S.fx.revise.length ? html`<div class="revise-prompts"><h4>${icon("mission")} ${I.T("From your mission choice", "De tu elección en la misión")}</h4><ul>${S.fx.revise.map((q) => html`<li>${q}</li>`)}</ul></div>` : ""}${versionsHTML(S.state)}
+                  ${feedbackHTML(a, text, { patternHref: (pid) => `${BASE}/detective/${pid}?grades=${ctx.band}` })}<div class="second-look" data-second-look-box><button type="button" class="btn small" data-second-look>${icon("sparkle")} ${I.T("Ask for a second look", "Pedir una segunda revisión")}</button><p class="fine">${I.T("Optional. An AI helper sorts your writing into the same coach categories. It only picks from the coach's own notes and does not write for you. Your draft is sent to it only when you press the button.", "Opcional. Un asistente de IA clasifica tu escritura en las mismas categorías del coach. Solo elige entre las notas del propio coach y no escribe por ti. Tu borrador solo se le envía cuando presionas el botón.")}</p><div data-second-look-out aria-live="polite"></div></div>${revisionPromptsHTML(task, a)}${S.fx.revise.length ? html`<div class="revise-prompts"><h4>${icon("mission")} ${I.T("From your mission choice", "De tu elección en la misión")}</h4><ul>${S.fx.revise.map((q) => html`<li>${q}</li>`)}</ul></div>` : ""}${versionsHTML(S.state)}
                   <p class="fine revise-line">${icon("retry")}<span>${I.mode === "en" ? html`Now revise: change your draft, then press <strong>Get feedback</strong> again to see what changed.` : I.T("Now revise: change your draft, then press Get feedback again to see what changed.", "Ahora revisa: cambia tu borrador y luego presiona Obtener comentarios otra vez para ver qué cambió.")}</span><button type="button" class="btn small" data-revise>${I.T("Back to my draft", "Volver a mi borrador")}</button></p>
                 </section>
                 <section class="panel" id="wrt-finish">
@@ -525,8 +528,16 @@ export function onClick(e, ctx) {
     return true;
   }
   if (!S.task) return false;
+  if (onEvidenceClick(e, S.task)) {
+    ctx.rerender();
+    return true;
+  }
   if (t.closest("[data-feedback]")) {
     feedback(ctx);
+    return true;
+  }
+  if (t.closest("[data-second-look]")) {
+    secondLook(ctx, t.closest("[data-second-look-box]"));
     return true;
   }
   const pickEv = t.closest("[data-pick-evidence]");
@@ -609,4 +620,28 @@ export function mount(root) {
 }
 export function unmount() {
   stopSpeech();
+}
+
+// The optional AI second look: authored coach categories chosen by a model, shown in the lab's own words.
+async function secondLook(ctx, box) {
+  const out = box?.querySelector("[data-second-look-out]");
+  const button = box?.querySelector("[data-second-look]");
+  if (!out || !button) return;
+  const draft = S.state.analyzedText || "";
+  button.disabled = true;
+  out.textContent = I.S("Looking…", "Revisando…");
+  const res = await askSecondLook(draft, S.task.keyUse);
+  button.disabled = false;
+  if (!res.ok) {
+    out.textContent = res.offline
+      ? I.S("The AI helper is not available right now. The coach notes above are still your feedback.", "El asistente de IA no está disponible ahora. Las notas del coach de arriba siguen siendo tu comentario.")
+      : I.S("Write a little more, then try again.", "Escribe un poco más y vuelve a intentarlo.");
+    return;
+  }
+  const items = [];
+  if (res.move) items.push(`<li><strong>${esc(res.move.label)}</strong> <span class="fine">${esc(res.move.ask)}</span></li>`);
+  for (const p of res.patterns)
+    items.push(`<li>${esc(I.S("Check this pattern:", "Revisa este patrón:"))} <a href="${BASE}/detective/${esc(p.id)}?grades=${esc(ctx.band)}">${esc(p.name)}</a></li>`);
+  out.innerHTML = `<h4>${esc(I.S("A second look suggests", "Una segunda revisión sugiere"))}</h4><ul>${items.join("")}</ul>`;
+  announce(I.S("Second look ready.", "Segunda revisión lista."));
 }

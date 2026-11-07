@@ -7,6 +7,8 @@ import { loadMission, loadStudioIndex } from "../content.js";
 import { missionSupport, showStretch } from "../lang/adapt.js";
 import { appendEntry, loadLedger, saveLedger } from "../lang/ledger.js";
 import { loadStudio, missionState, saveStudio } from "../lang/studio.js";
+import { getEngagement, saveEngagement } from "../engagement.js";
+import { avatarPanelHTML } from "./avatar-panel.js";
 import { compareDrafts } from "../lang/analyze.js";
 import { diffWords } from "../lang/text.js";
 import { speak, speakDialogue, stop as stopSpeech } from "../speech.js";
@@ -87,6 +89,7 @@ function hubHTML(ctx, index, studio) {
           </div></section>`
         : html`<section class="panel empty-state"><img src="${ART}/empty.svg" alt="" width="480" height="300" /><h2>${I.T("No missions for this grade band yet", "Todavía no hay misiones para este grupo de grados")}</h2><p>${I.T("Switch grade band from the menu to see the missions that are ready.", "Cambia el grupo de grados en el menú para ver las misiones que están listas.")}</p></section>`
     }
+    ${avatarPanelHTML(I, studio, getEngagement(ctx.prefs).look)}
     <p class="disclaimer">
       ${I.T("Missions are classroom practice, not WIDA assessment simulations. What you do alone and what you do with help are recorded separately.", "Las misiones son práctica de clase, no simulaciones de evaluaciones de WIDA. Lo que haces por tu cuenta y lo que haces con ayuda se registra por separado.")}
     </p>`;
@@ -416,7 +419,20 @@ function finishPhaseEntry() {
   saveLedger(ledger);
 }
 
+/** Choosing an unlocked explorer piece or world scene on the missions hub. */
+function onAvatarClick(e, ctx) {
+  const b = e.target.closest?.("[data-avatar-item], [data-avatar-scene]");
+  if (!b || b.disabled) return false;
+  const look = { ...getEngagement(ctx.prefs).look };
+  if (b.dataset.avatarItem) look.item = look.item === b.dataset.avatarItem ? "" : b.dataset.avatarItem;
+  if (b.dataset.avatarScene) look.scene = look.scene === b.dataset.avatarScene ? "" : b.dataset.avatarScene;
+  saveEngagement(ctx, { look });
+  ctx.rerender();
+  return true;
+}
+
 export function onClick(e, ctx) {
+  if (onAvatarClick(e, ctx)) return true;
   if (!M?.phase) return false;
   const I = i18nFor(ctx);
   const t = e.target;

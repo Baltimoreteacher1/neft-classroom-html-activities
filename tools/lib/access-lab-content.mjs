@@ -9,7 +9,18 @@ import { fileURLToPath } from "node:url";
 export const REPO_ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 export const LAB_DIR = join(REPO_ROOT, "access-practice-lab");
 export const CONTENT_DIR = join(LAB_DIR, "content");
-export const BANDS = ["3-5", "6-8"];
+
+import {
+  CONTENT_BANDS,
+  EARLY_BANDS,
+  gradeBandsIndex,
+} from "../../access-practice-lab/src/bands.js";
+
+/** Content bands, youngest first (access-practice-lab/src/bands.js is the one list). */
+export const BANDS = CONTENT_BANDS;
+export { EARLY_BANDS };
+/** Bands that get printable packets. K–3 writing is printed from each activity's own paper page instead. */
+export const PACKET_BANDS = ["3-5", "6-8"];
 export const CORE_DOMAINS = ["Listening", "Speaking", "Reading", "Writing"];
 export const LEVEL_KEYS = ["A", "B", "C"];
 export const ITEM_TYPES = [
@@ -125,6 +136,8 @@ export function buildIndex(root = CONTENT_DIR) {
       };
     if (Object.keys(domains).length) index.bands[band] = { domains };
   }
+  // The homepage grade-band picker (K, 1, 2-3, 4-5, 6-8): only bands that ship content.
+  index.gradeBands = gradeBandsIndex(Object.keys(index.bands));
   for (const { data: t } of loadTests(root)) {
     const sections = t.sections || [];
     index.tests.push({

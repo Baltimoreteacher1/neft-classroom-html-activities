@@ -12,9 +12,11 @@ import { playChallenge } from "./challenge-game.js";
 import { playTeamRelay } from "./team-relay-game.js";
 import { playBaseball } from "./baseball-game.js";
 import { playGuess } from "./guess-game.js";
+import { playHiding } from "./hiding-game.js";
 import { playRace } from "./race-game.js";
 import { bandLabel, filterRowHtml, matchesFilter, withCatalog } from "./game-catalog.js";
 import { shopPanel } from "./buddy-shop.js";
+import { currentGreenLight, noteGreenDay } from "./green-light.js"; // fl-teacher
 import { playDuel } from "./duel-game.js";
 import { playBalance } from "./balance-game.js";
 import { playFlip } from "./flip-game.js";
@@ -177,6 +179,14 @@ const REGISTRY = [
     run: playGuess,
   },
   {
+    id: "hiding",
+    name: "How Many Are Hiding?",
+    icon: "🍃",
+    blurb: "Some counters show and a leaf hides the rest. Work out the hidden part and grow Pip’s garden.",
+    grades: [0, 1, 2],
+    run: playHiding,
+  },
+  {
     id: "race",
     name: "Math Race",
     icon: "🏎️",
@@ -264,6 +274,8 @@ export function mountGames(container, { grade, autostart = null, assignedStop = 
     container.onclick = null;
     document.body.classList.remove("trail-playing");
     const rewards = loadRewards();
+    const light = currentGreenLight(); // fl-teacher: Daily Green Light
+    if (noteGreenDay(rewards, light)) saveRewards(rewards);
     const summary = summarize(loadTrail(), rewards);
     const rank = rankFor(summary);
     container.innerHTML = `
@@ -291,7 +303,7 @@ export function mountGames(container, { grade, autostart = null, assignedStop = 
       <div class="gm-menu">${cardsHtml(rewards)}</div>
       <p class="gm-goal-progress" id="gm-goal-progress">${t("This week: {a} of {b} days", { a: Math.min(daysThisWeek(rewards.days), rewards.goal), b: rewards.goal })}</p>
       ${buddyPanel(rewards, summary)}
-      ${shopPanel(rewards)}
+      ${shopPanel(rewards, light)}
       <section class="gm-book" aria-labelledby="gm-book-title"><h3 id="gm-book-title">${t("My sticker book")}</h3>${stickerShelf(summary)}</section>`;
     container.onclick = (event) => {
       const button = event.target.closest("[data-game]");
@@ -306,6 +318,7 @@ export function mountGames(container, { grade, autostart = null, assignedStop = 
       }
       const buy = event.target.closest("[data-buy]");
       if (buy) {
+        if (!currentGreenLight().green) return renderMenu(t("The Buddy shop opens after today's Green Light."));
         const data = loadRewards();
         const item = buyItem(data, buy.dataset.buy);
         if (item) saveRewards(data);

@@ -171,4 +171,16 @@ export const ES_MOBY_FACTS = {
   "Facts you kept after time away: {n}": "Operaciones que recordaste después de un tiempo: {n}",
   "Facts worth another look: {n}": "Operaciones que vale la pena volver a mirar: {n}",
   "Answers where you used a strategy: {n}": "Respuestas en las que usaste una estrategia: {n}",
+  // Grade 6-8 fact bands (fact-keys-68.js)
+  "Fraction, decimal and percent benchmarks": "Fracciones, decimales y porcentajes de referencia",
+  "Divisibility rules": "Reglas de divisibilidad",
+  "Greatest common factor": "Máximo común divisor",
+  "Least common multiple": "Mínimo común múltiplo",
+  "Perfect squares": "Cuadrados perfectos",
+  "Unit rates": "Tasas unitarias",
+  "Add integers": "Suma enteros",
+  "Subtract integers": "Resta enteros",
+  "Multiply integers": "Multiplica enteros",
+  "Divide integers": "Divide enteros",
+  "Perfect cubes": "Cubos perfectos",
 };

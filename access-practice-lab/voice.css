@@ -1,0 +1,287 @@
+/* ACCESS Practice Lab — speaking and listening practice: the model student, the length meter and the Voice Lab
+   (/voice). Built on ds.css tokens; see DESIGN-SYSTEM.md. No timers, no speed displays. */
+
+/* ── model student ─────────────────────────────────────────────────────── */
+.model-student {
+  display: flex;
+  gap: var(--s-3);
+  align-items: flex-start;
+  margin: 0 0 var(--s-4);
+  padding: var(--s-3) var(--s-4);
+  border: 1px solid var(--line);
+  border-inline-start: 4px solid var(--speaking);
+  border-radius: var(--radius);
+  background: var(--speaking-soft);
+  color: var(--ink);
+}
+.ms-avatar {
+  display: grid;
+  flex: none;
+  place-items: center;
+  inline-size: 2.75rem;
+  block-size: 2.75rem;
+  border-radius: 50%;
+  background: var(--speaking);
+  color: var(--on-brand);
+  font: 700 1.25rem/1 var(--font-display);
+}
+.ms-body {
+  min-inline-size: 0;
+}
+.ms-kicker {
+  margin: 0;
+  color: var(--speaking-ink);
+  font-weight: 600;
+}
+.ms-line {
+  margin: var(--s-1) 0 var(--s-2);
+  font-size: 1.0625rem;
+}
+.ms-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+}
+.ms-turn {
+  margin: var(--s-2) 0 0;
+  color: var(--speaking-ink);
+  font-weight: 600;
+}
+.ms-turn:empty {
+  display: none;
+}
+
+/* ── length meter (length only, shown after a recording) ───────────────── */
+.len-meter {
+  margin: var(--s-3) 0;
+  padding: var(--s-3) var(--s-4);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+.len-meter figcaption {
+  margin-block-end: var(--s-2);
+  font-weight: 700;
+}
+.len-row {
+  display: grid;
+  grid-template-columns: minmax(4.5rem, 7rem) 1fr auto;
+  gap: var(--s-2);
+  align-items: center;
+  margin-block: var(--s-1);
+}
+.len-name {
+  overflow-wrap: anywhere;
+}
+.len-track {
+  display: block;
+  block-size: 0.875rem;
+  border-radius: 999px;
+  background: var(--surface-3);
+  overflow: hidden;
+}
+.len-bar {
+  display: block;
+  block-size: 100%;
+  border-radius: 999px;
+}
+.len-bar.is-model {
+  background: var(--ink-3);
+}
+.len-bar.is-you {
+  background: var(--speaking);
+}
+.len-val {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.len-advice {
+  margin: var(--s-2) 0 var(--s-1);
+  font-weight: 600;
+}
+.len-meter.is-short .len-advice {
+  color: var(--hint);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .len-bar {
+    transition: inline-size var(--dur-3) var(--ease-out);
+  }
+}
+@media (forced-colors: active) {
+  .len-bar {
+    background: CanvasText;
+  }
+  .len-track {
+    border: 1px solid CanvasText;
+  }
+}
+
+/* ── Voice Lab pages ───────────────────────────────────────────────────── */
+.voice-scene {
+  margin: 0 0 var(--s-4);
+}
+.voice-scene img {
+  display: block;
+  inline-size: 100%;
+  max-inline-size: 36rem;
+  block-size: auto;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+.voice-steps {
+  display: grid;
+  gap: var(--s-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.voice-step h2 {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+  align-items: center;
+  margin-block-start: 0;
+}
+.voice-step.is-done {
+  border-color: var(--right);
+}
+.voice-prompt {
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+.voice-frame {
+  font-style: italic;
+}
+.voice-modes {
+  display: grid;
+  gap: var(--s-2);
+  margin: var(--s-3) 0;
+  padding: var(--s-3);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+.voice-modes label {
+  display: flex;
+  gap: var(--s-2);
+  align-items: flex-start;
+  min-block-size: 2.75rem;
+}
+.voice-done {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-4);
+  align-items: center;
+}
+.voice-card .task-desc {
+  color: var(--ink-2);
+}
+
+/* ── Sound Bridge ──────────────────────────────────────────────────────── */
+.sb-bridge {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin: var(--s-3) 0 var(--s-1);
+  padding: var(--s-3);
+  border-radius: var(--radius);
+  background: var(--listening-soft);
+  overflow: hidden;
+}
+.sb-bank {
+  flex: none;
+  inline-size: 1.5rem;
+  block-size: 2.5rem;
+  border-radius: var(--radius-sm);
+  background: var(--sage-500);
+}
+.sb-plank {
+  flex: 1 1 0;
+  min-inline-size: 0;
+  block-size: 1rem;
+  border: 2px dashed var(--listening);
+  border-radius: var(--r-xs);
+}
+.sb-plank.is-laid {
+  border-style: solid;
+  border-color: var(--copper-900);
+  background: var(--copper-500);
+}
+.sb-count {
+  font-weight: 700;
+}
+.sb-stones {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+  gap: var(--s-3);
+  margin-block-start: var(--s-3);
+}
+.sb-stone {
+  display: grid;
+  gap: var(--s-1);
+  min-block-size: 5rem;
+  padding: var(--s-3);
+  border: 2px solid var(--listening);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+  text-align: center;
+  cursor: pointer;
+}
+.sb-stone strong {
+  font-size: 1.5rem;
+}
+.sb-stone:hover,
+.sb-stone:focus-visible {
+  background: var(--listening-soft);
+}
+.sb-stone:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+@media (forced-colors: active) {
+  .sb-plank.is-laid {
+    background: CanvasText;
+  }
+}
+
+/* ── Keyboarding (accuracy only) ───────────────────────────────────────── */
+.kb-target {
+  margin: 0 0 var(--s-2);
+  padding: var(--s-2) var(--s-3);
+  border-radius: var(--radius-sm);
+  background: var(--writing-soft);
+  font-size: 1.125rem;
+}
+.kb-input {
+  inline-size: 100%;
+  font-size: 1.125rem;
+}
+
+/* ── Oral reading ──────────────────────────────────────────────────────── */
+.rd-passage {
+  font-size: 1.25rem;
+  line-height: 1.9;
+  max-inline-size: var(--measure, 40rem);
+}
+.rd-word {
+  padding: 0 0.1em;
+  border-radius: var(--r-xs);
+}
+.rd-word.is-read {
+  background: var(--right-soft);
+  box-shadow: inset 0 -2px 0 var(--right);
+}
+.rd-word.is-skipped {
+  text-decoration: underline dotted var(--ink-3);
+}
+.rd-count {
+  font-weight: 700;
+}
+@media (forced-colors: active) {
+  .rd-word.is-read {
+    background: Highlight;
+    color: HighlightText;
+  }
+}

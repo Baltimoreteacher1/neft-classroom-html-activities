@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="/access-practice-lab/ds.css" />
     <link rel="stylesheet" href="/access-teacher/teacher.css" />
     <link rel="stylesheet" href="/access-practice-lab/journey-guide.css" />
+    <link rel="stylesheet" href="/access-practice-lab/class.css" />
     <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
     <link rel="stylesheet" href="/assets/mobile-access.css" />
     <!-- mobile-access-injected:end -->
@@ -93,10 +94,13 @@
     </div>
     <nav class="th-jump no-print" aria-label="On this page">
       <div class="th-jump-inner">
+        <a href="#liveClass">Live class</a>
         <a href="#passportCheckins">Passport check-ins</a>
         <a href="#classEvidence">Class evidence</a>
         <a href="#accEvidence">Language matrix</a>
         <a href="#accReview">Review queue</a>
+        <a href="#speakingGroups">Speaking groups</a>
+        <a href="#ladderControls">Reading Ladder Spanish</a>
         <a href="#accInsights">Learning insights</a>
         <a href="#accAssign">Assignment builder</a>
         <a href="#journeyGuide">Journey mission guide</a>
@@ -110,8 +114,14 @@
         <a href="#guide">Guide</a>
       </div>
     </nav>
+    <section id="liveClass" class="th-sec lab-main" aria-labelledby="liveClassTitle">
+      <h2 id="liveClassTitle" tabindex="-1">Live class: join code, assignments, quiz and voice notes</h2>
+      <div id="liveClassBody"><p class="acc-hint">Loading the class panel…</p></div>
+    </section>
     <section id="passportCheckins" class="th-sec lab-main" aria-labelledby="checkinsTitle"></section>
     <section id="classEvidence" class="lab-main" aria-label="Class language evidence"></section>
+    <section id="speakingGroups" class="th-sec lab-main" aria-labelledby="speakingGroupsTitle"></section>
+    <section id="ladderControls" class="th-sec lab-main" aria-labelledby="ladderControlsTitle"></section>
     <section id="accReview" class="th-sec lab-main" aria-labelledby="accReviewTitle">
       <h2 id="accReviewTitle" tabindex="-1">Speaking and writing review</h2>
       <div id="accReviewBody"><p class="acc-hint">Loading responses waiting for review…</p></div>
@@ -146,6 +156,7 @@
     <script type="module" src="/access-teacher/teacher.js?v=2026.10.01"></script>
     <script type="module" src="/access-teacher/evidence.js?v=2026.10.23"></script>
     <script type="module" src="/access-teacher/passport-checkins.js?v=2026.10.29"></script>
+    <script type="module" src="/access-teacher/speaking-groups.js?v=2026.11.06"></script>
     <script src="/assets/nt-usage.js" data-nt-usage="1" defer></script>
     <!-- nt-chrome-injected:begin (shared page chrome — tools/inject-nt-chrome.js) -->
     <script src="/assets/nt-chrome.js" defer></script>
@@ -156,6 +167,7 @@
       import("/access-teacher/acc-review-panel.js").then((m) => m.mountReviewPanel(document.getElementById("accReviewBody")));
       import("/access-teacher/acc-insights-panel.js").then((m) => m.mountInsightsPanel(document.getElementById("accInsightsBody")));
       import("/access-teacher/acc-assign-panel.js").then((m) => m.mountAssignPanel(document.getElementById("accAssignBody")));
+      import("/access-teacher/class-panel.js").then((m) => m.mountLiveClassPanel(document.getElementById("liveClassBody")));
       import("/access-teacher/journey-panel.js").then((m) => m.mountJourneyPanel(document.getElementById("journeyGuideBody")));
       import("/access-teacher/acc-content-panel.js").then((m) => m.mountContentPanel(document.getElementById("accContentBody")));
     </script>

@@ -1,7 +1,8 @@
 // Speaking Studio: authentic spoken production — plan, rehearse, record, listen back, review, re-record.
 // Speaking ability is shown by speaking: every task here ends in a recording, never a multiple-choice
-// answer. The lab cannot hear words, so the learner types what they said; the Language Coach works from
-// that transcript, and from the loudness envelope for time speaking and pauses (all on this device).
+// answer. Speech recognition (src/stt.js: on-device first, then the browser's standard service, then typing)
+// fills an editable transcript; the Language Coach works from that transcript, and from the loudness envelope for
+// time speaking and pauses (on this device).
 import { crumbsHTML, setComponentsI18n } from "../components.js";
 import { i18nFor, makeI18n } from "../i18n.js";
 import { loadMission, loadSpeakingTasks, loadStudioIndex } from "../content.js";
@@ -27,6 +28,9 @@ import * as audioStore from "../audio-store.js";
 import { canRecord, isRecording, takesFor } from "../recorder.js";
 import { canSpeak, speak, speakDialogue, stop as stopSpeech } from "../speech.js";
 import { waveformSVG } from "../waveform.js";
+import { lengthMeterHTML, playModelStudent } from "../model-student-ui.js";
+import { autoDictationReady, cancelDictation, dictating, dictationControlsHTML, toggleDictation } from "../dictation-ui.js";
+import { canDictate } from "../stt.js";
 import {
   chartHTML,
   chooserHeroHTML,
@@ -43,7 +47,10 @@ import {
   taskCardHTML,
   trackDisclosures,
 } from "../studio-ui.js";
-import { ART, BASE, announce, html, icon, raw, wordCount } from "../util.js";
+import { ART, BASE, announce, html, icon, raw, storage, wordCount } from "../util.js";
+
+// Present only after a learner joins a class (class/link.js); the class code is never loaded for anyone else.
+const CLASS_LINK_KEY = "accessPracticeLabClass:v1:link";
 
 const IGN = raw("data-nsr-ignore");
 let S = null;
@@ -52,6 +59,9 @@ const chosen = new Map(); // task id → stage picked before the first attempt
 let kept = new Map(); // take id → object URL for recordings kept on this device
 let timing = { prep: 0, max: 0 }; // optional preparation countdown and response limit (this tab only)
 let stopScope = null;
+let speechRate = 0.9;
+/** The studio task's model answer as an unnamed model for the length meter (it is a support, never shown "On my own"). */
+const studioModel = (task) => (task?.stages?.guided?.model ? { name: "", line: task.stages.guided.model, partial: false } : null);
 const feedbackProvider = new LocalFeedbackProvider();
 
 const save = () => saveStudio(S.studio);
@@ -158,6 +168,7 @@ async function chooserHTML(ctx, index, entries) {
           </section>`
     }
     <p class="no-print">
+      <a class="btn" href="${BASE}/voice?grades=${band}">${icon("listening")} ${I.T("Voice Lab: ladders, retells and sound games", "Laboratorio de voz: escaleras, relatos y juegos de sonidos")}</a>
       <a class="btn" href="${BASE}/printables/studio-speaking" target="_blank" rel="noopener"
         >${icon("print")} ${I.T("Print speaking task cards", "Imprimir tarjetas de tareas de expresión oral")}</a
       >
@@ -271,7 +282,7 @@ function takeRowHTML(t, i, task, state) {
     ${raw(waveformSVG(t.env))}
     <audio controls preload="none" aria-label="${I.S(`Play recording ${i + 1}`, `Reproducir la grabación ${i + 1}`)}" src="${t.url}"></audio>
     <div class="take-actions">
-      ${audioStore.available() ? html`<button type="button" class="ghost small" data-keep="${t.id}">${isKept ? html`${icon("check")} ${I.T("Kept for my teacher", "Guardada para mi docente")}` : I.T("Keep for my teacher", "Guardar para mi docente")}</button>` : ""}<a
+      ${audioStore.available() ? html`<button type="button" class="ghost small" data-keep="${t.id}">${isKept ? html`${icon("check")} ${I.T("Kept for my teacher", "Guardada para mi docente")}` : I.T("Keep for my teacher", "Guardar para mi docente")}</button>` : ""}${storage.get(CLASS_LINK_KEY) ? html`<button type="button" class="ghost small" data-send-teacher="${t.id}">${I.T("Send to my teacher", "Enviar a mi docente")}</button>` : ""}<a
         class="ghost small"
         href="${t.url}"
         download="speaking-${task.id}-${i + 1}.${t.extension}"
@@ -464,7 +475,9 @@ function analysisHTML(task, state, take) {
   if (!take) return "";
   const sum = take.audio;
   return html`<section class="panel transcript-panel" id="spk-type">
-    <h3><span class="step-badge">3</span> ${I.T("Listen back, then type what you said", "Escúchate y luego escribe lo que dijiste")}</h3>
+    <h3><span class="step-badge">3</span> ${canDictate() ? I.T("Listen back, then check your words", "Escúchate y revisa tus palabras") : I.T("Listen back, then type what you said", "Escúchate y luego escribe lo que dijiste")}</h3>
+    ${take.transcriptSource?.startsWith("speech") ? html`<p class="fine">${icon("info")} ${I.T("These words came from speech recognition. Fix any word it heard wrong, but keep your own mistakes: the Language Coach needs your real words.", "Estas palabras vienen del reconocimiento de voz. Corrige las palabras que oyó mal, pero deja tus propios errores: el Language Coach necesita tus palabras reales.")}</p>` : ""}
+    ${dictationControlsHTML(`spk:${task.id}`, I, { label: I.T("Say it again: the words appear here", "Dilo otra vez: las palabras aparecen aquí") })}
     <p class="fine">
       ${I.T(`${take.manual ? "Type what you said." : "Listen to your take. Then type what you said."} Type it exactly as you said it, including mistakes — the Language Coach can only look at the words you type, so a "cleaned-up" version would hide what to work on. It cannot hear your voice.`, `${take.manual ? "Escribe lo que dijiste." : "Escucha tu grabación. Luego escribe lo que dijiste."} Escríbelo exactamente como lo dijiste, con los errores incluidos — el Language Coach solo puede ver las palabras que escribes, así que una versión «arreglada» ocultaría lo que hay que trabajar. No puede oír tu voz.`)}
     </p>
@@ -475,6 +488,7 @@ function analysisHTML(task, state, take) {
           </ul>`
         : ""
     }
+    ${!take.manual ? lengthMeterHTML(`studio:${task.id}`, studioModel(task), take.audio?.ok ? take.audio.speechSeconds : take.seconds, I, { rate: speechRate }) : ""}
     ${transcriptCheck(take)}
     <label class="field paper"
       ><span class="paper-head"
@@ -624,6 +638,7 @@ function stepsFor(state) {
 
 export async function render(ctx) {
   I = i18nFor(ctx);
+  speechRate = ctx.prefs?.rate || 0.9;
   setComponentsI18n(I);
   const query = new URLSearchParams(location.search);
   const index = await loadStudioIndex();
@@ -776,6 +791,7 @@ export async function onRecorded(key, ctx) {
   S.state.nextTakeFocusLabel = null;
   S.state.rehearsed = S.state.rehearsed || false;
   save();
+  if (dictating(`rec:${key}`)) toggleDictation(`rec:${key}`, { I });
   I = i18nFor(ctx);
   announce(I.S("Recording saved on this device. Listen back, then type what you said.", "Grabación guardada en este dispositivo. Escúchate y luego escribe lo que dijiste."));
   void ctx;
@@ -912,6 +928,42 @@ export function onClick(e, ctx) {
   if (!S?.task) return false;
   I = i18nFor(ctx);
   const t = e.target;
+  // While a take records, recognize the words too, so the learner checks words instead of typing them.
+  if (t.closest("[data-rec-start]") && autoDictationReady() && !dictating(`rec:${S.task.id}`)) {
+    const task = S.task;
+    toggleDictation(`rec:${task.id}`, {
+      I,
+      onDone: (text, mode) => {
+        const take = S?.task?.id === task.id ? S.state.takes.at(-1) : null;
+        if (!take || take.transcript || !text) return;
+        take.transcript = text;
+        take.transcriptSource = `speech-${mode}`;
+        save();
+        ctx.rerender();
+      },
+    });
+    return false; // the shell starts the recording
+  }
+  const dict = t.closest("[data-dictate]");
+  if (dict) {
+    const take = S.state.takes.at(-1);
+    toggleDictation(dict.dataset.dictate, {
+      I,
+      onText: (text) => {
+        const box = document.querySelector("[data-transcript]");
+        if (box) box.value = text;
+      },
+      onDone: (text, mode) => {
+        if (take && text) {
+          take.transcript = text;
+          take.transcriptSource = `speech-${mode}`;
+          save();
+        }
+        ctx.rerender();
+      },
+    }).then(() => ctx.rerender());
+    return true;
+  }
   if (t.closest("[data-manual-take]")) {
     lockStage();
     const extra = S.state.nextTakeFocus ? { focusId: S.state.nextTakeFocus, focusLabel: S.state.nextTakeFocusLabel } : { manual: true };
@@ -943,12 +995,28 @@ export function onClick(e, ctx) {
   if (t.closest("[data-play-model]")) {
     S.state.used.model = true;
     save();
-    speak(S.task.stages.guided.model, { rate: ctx.prefs.rate });
+    playModelStudent(`studio:${S.task.id}`, studioModel(S.task), { rate: ctx.prefs.rate, I });
     return true;
   }
   const turn = t.closest("[data-play-turn]");
   if (turn) {
     speak(S.task.turns[Number(turn.dataset.playTurn)].say, { rate: ctx.prefs.rate });
+    return true;
+  }
+  const send = t.closest("[data-send-teacher]");
+  if (send) {
+    const take = takesFor(S.task.id).find((x) => x.id === send.dataset.sendTeacher);
+    send.disabled = true;
+    import("../class/voice.js")
+      .then(async (voice) => {
+        const link = (await import("../class/link.js")).loadLink();
+        const res = take && link ? await voice.sendTake(link, { blob: take.blob, type: take.blob.type, label: S.task.title }) : { ok: false };
+        announce(res.ok ? I.S("Sent to your teacher. Look in My class for their voice note.", "Enviada a tu docente. Busca su nota de voz en Mi clase.") : I.S("Could not send the recording. It is still on this device. Try again later.", "No se pudo enviar la grabación. Sigue en este dispositivo. Inténtalo de nuevo más tarde."));
+      })
+      .catch(() => announce(I.S("Could not send the recording.", "No se pudo enviar la grabación.")))
+      .finally(() => {
+        send.disabled = false;
+      });
     return true;
   }
   const keep = t.closest("[data-keep]");
@@ -1065,6 +1133,7 @@ export function mount(root) {
   stopScope = wireScope(root);
 }
 export function unmount() {
+  cancelDictation();
   stopScope?.();
   stopScope = null;
   stopSpeech();

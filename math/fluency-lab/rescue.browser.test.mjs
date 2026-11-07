@@ -40,6 +40,10 @@ async function missProblem(page) {
     if (await page.locator("#answer-input").isVisible()) {
       await page.locator("#answer-input").fill("999999");
       await page.locator("#check-answer").click();
+    } else if (await page.locator("#response-widget").count()) {
+      // A built answer keeps its value in the hidden answer field; a wrong value there is a wrong try.
+      await page.locator("#answer-input").evaluate((input) => (input.value = "999999"));
+      await page.locator("#check-answer").click();
     } else await page.locator("#choice-answers button:not([disabled])").last().click();
   }
   await page.locator("#next-problem").waitFor({ state: "visible" });
@@ -48,7 +52,11 @@ async function missProblem(page) {
 async function solve(page) {
   const item = (await sessionOf(page)).item;
   if (item.choices) await page.locator(`#choice-answers [data-answer="${item.answers[0]}"]`).click();
-  else {
+  else if (item.response) {
+    // A built answer (response-widgets.js) writes its value into the hidden answer field; do the same, then Check.
+    await page.locator("#answer-input").evaluate((input, value) => (input.value = value), String(item.answers[0]));
+    await page.locator("#check-answer").click();
+  } else {
     await page.locator("#answer-input").fill(String(item.answers[0]));
     await page.locator("#check-answer").click();
   }

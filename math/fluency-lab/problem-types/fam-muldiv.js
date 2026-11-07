@@ -3,8 +3,8 @@ import { array } from "./models.js";
 import { Q } from "./rational.js";
 
 const KEYS = [
-  "3:mul-0-5", "3:mul-6-9", "3:mul-10-12", "3:division-facts", "4:multiply-1digit",
-  "4:multiply-2digit", "4:division", "5:multiply-whole", "5:divide-whole",
+  "3:mul-0-5", "3:mul-6-9", "3:mul-10-12", "3:division-facts", "4:mul-11-12", "4:multiply-1digit",
+  "4:multiply-2digit", "4:division", "5:multiply-whole", "5:divide-whole", "6:multi-digit-division",
 ];
 const specs = Object.fromEntries(KEYS.map((key) => {
   const [grade, id] = key.split(":");

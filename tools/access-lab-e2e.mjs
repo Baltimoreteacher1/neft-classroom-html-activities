@@ -29,6 +29,7 @@ try {
 const TYPES = {
   ".html": "text/html; charset=utf-8",
   ".js": "text/javascript",
+  ".mjs": "text/javascript",
   ".css": "text/css",
   ".json": "application/json",
   ".svg": "image/svg+xml",
@@ -102,17 +103,19 @@ try {
   // Home
   await go("/");
   ok((await page.locator(".room-tile").count()) === 4, "home shows four skill rooms");
-  await page.click('[data-set-band="3-5"]');
+  await page.click('[data-grade-pick="4-5"]');
   await page.waitForFunction(() => document.body.dataset.labBand === "3-5");
-  ok(/Grades 3–5/.test(await page.textContent(".eyebrow")), "band switch shows grades 3–5");
+  ok(
+    /Grades 3–5/.test(await page.textContent(".lph-note")),
+    "grade ruler shows grades 3–5 practice",
+  );
 
-  // The home now leads with the Continue-My-Journey hero (intended redesign): ITS primary action is the one
-  // that must be in the first desktop viewport. The older "Start today's mission" action moved under
-  // "Explore all activities"; it must stay a visible primary button close to the top (two screens), not buried.
-  const startBounds = await page.locator(".jr-cta .btn-primary").boundingBox();
+  // The home leads with the start screen (2026-11-06 redesign): the Continue card's primary action must be in the
+  // first desktop viewport, and "Start today's mission" a visible primary button within two screens.
+  const startBounds = await page.locator(".lph [data-continue]").boundingBox();
   ok(
     startBounds && startBounds.y + startBounds.height <= 900,
-    "journey start action appears in the initial desktop viewport",
+    "Continue action appears in the initial desktop viewport",
   );
   const missionBounds = await page.locator(".session-heading .btn-primary").boundingBox();
   ok(
@@ -570,7 +573,8 @@ try {
     await go(p);
     ok((await page.locator(".error-panel").count()) === 0, `${p} renders`);
   }
-  await page.click('[data-set-band="6-8"]').catch(() => {});
+  await go("/");
+  await page.click('[data-grade-pick="6-8"]').catch(() => {});
 
   // Camera postcards: completed Family Trip only; exercise the accessible no-camera path and explicit share opt-in.
   await page.evaluate(async () => {

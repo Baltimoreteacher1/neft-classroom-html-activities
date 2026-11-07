@@ -11,6 +11,7 @@ show it independently → watch growth. Direct activity links and the quick-prac
 
 | Surface | Route | Source |
 | --- | --- | --- |
+| Lab home (start screen) | `/` (thelanguagepage.com `/` → `/access-practice-lab/`) | `src/views/home.js`, `src/views/home-start.js`, `home-start.css`; grade ruler `src/grade-bands.js`; every explore/teacher/family card `src/home-registry.js` (a new feature is one entry); `tools/access-home-start.test.mjs` |
 | Academic missions | `/missions`, `/missions/<id>` | `content/missions/*.json`, `src/views/missions.js` |
 | Speaking Studio | `/speak`, `/speak/<task>` | `content/studio/speaking.json`, `src/views/speak.js` |
 | Writing Studio | `/write`, `/write/<task>`, `/write?tab=portfolio` | `content/studio/writing.json`, `src/views/write.js` |
@@ -26,6 +27,7 @@ show it independently → watch growth. Direct activity links and the quick-prac
 | Whole-Class Language Studio | `/classroom` | `src/views/classroom.js`, `src/views/classroom-data.js`, `classroom-studio.css` |
 | Word Builder · Vocabulary & Morphology | `/vocabulary` | `src/views/vocabulary.js`, `src/content/vocabulary-items.js`, `vocabulary.css` |
 | Teacher Launch Studio | `/launch-studio`, `/launch`, `/teacher-launch` | `src/views/launch-studio.js`, `launch-studio.css` |
+| Voice Lab (picture speaking ladders, listen/read-then-retell, Sound Bridge minimal pairs, shadowing, keyboarding) | `/voice`, `/voice/<ladder|retell|sounds|shadow|keys>/<id>` | `src/content/voice-lab.js`, `src/views/voice*.js`, `src/lang/{model-student,sound-bridge,keyboarding}.js`, `voice.css`; key `accessPracticeLab:v1:voice`; `tools/access-lab-voice{,-views}.test.mjs` |
 
 The check-in records only answer correctness and skill tags for its short, original Listening/Reading prompts; Speaking/Writing prompts save a reflection-completed flag but never retain the response or recording. It gives an instructional starting suggestion, not a proficiency result. Teacher launch URLs contain an existing activity ID and instructional settings, never learner data. Language Worlds feature eight consequential, visually complete missions per world per grade band with domain mechanics (dispatch, evidence, dialogue, publishing) and independent transfer, alongside field practice activities. Whole-Class Studio provides projector-ready routines with source card marking, non-drag sequence building, scaffold toggles, and sample models without storing student responses. Word Builder provides spaced-retrieval academic morphology practice (1-, 3-, 7-day intervals) grounded in WIDA ELD Standards Framework 2020 contexts.
 
@@ -84,7 +86,13 @@ stored. Opening any help marks the work supported. Help items are written so the
 2. **Scaffolds cannot contaminate independent results.** "On my own" renders no frames, bank, model or Spanish
    bridges; feedback appears only after a submission; the ledger stage becomes *supported* if any support was
    opened. A revision after feedback is a *revision*, never a first attempt.
-3. **Privacy and retention.** Everything runs on the device. No student text or audio is sent anywhere. Recordings live in memory
+3. **Privacy and retention.** Everything runs on the device. No student text or audio is sent anywhere, with one
+   exception decided by Joel on 2026-11-06 (privacy concern waived for speech recognition): speaking tasks may turn the
+   learner's voice into words with the browser's `SpeechRecognition` (`src/stt.js`). The lab asks for on-device
+   recognition first (`processLocally = true` when `SpeechRecognition.available()` reports the language is on the
+   device), falls back to the browser's standard recognition (which can use the browser maker's speech service), and
+   always keeps typing. Recognized words land in an editable box and are treated like typed words; the lab itself never
+   uploads audio. Recordings live in memory
    unless the learner presses "Keep for my teacher" (IndexedDB, deletable in Passport). A share code carries an
    alias, never contact details, and never audio. Kept recordings expire after 30 days. The teacher roster lives in the
    teacher's browser only (sections, per-student removal, "Remove everything" also clears saved scores, a visible

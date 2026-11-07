@@ -1,0 +1,22 @@
+// Spanish for the statistics worked-solution slips and problem sentences (mistake-templates-data.js, mistake-notes.js).
+export const ES_MISTAKE_DATA = {
+  "Divided by the number of different values": "Dividió entre la cantidad de valores diferentes",
+  "The mean uses every value in the list, repeats too. Divide the total by how many values there are.": "La media usa todos los valores de la lista, también los repetidos. Divide el total entre la cantidad de valores.",
+  "Gave the total as the mean": "Dio el total como la media",
+  "The total is only the first step. The mean shares the total equally, so divide by how many values there are.": "El total es solo el primer paso. La media reparte el total en partes iguales, así que divide entre la cantidad de valores.",
+  "Used the middle value instead of sharing equally": "Usó el valor del medio en lugar de repartir en partes iguales",
+  "The mean is the equal share of all the values. The middle value is the median.": "La media es el reparto igual de todos los valores. El valor del medio es la mediana.",
+  "Added the two middle numbers and stopped": "Sumó los dos números del medio y se detuvo",
+  "With two middle numbers, the median is halfway between them. After adding, divide by 2.": "Con dos números en el medio, la mediana está a la mitad entre ellos. Después de sumar, divide entre 2.",
+  "Used only one of the middle numbers": "Usó solo uno de los números del medio",
+  "With two middle numbers, the median is halfway between them, not one of them.": "Con dos números en el medio, la mediana está a la mitad entre ellos, no es uno de ellos.",
+  "Left a count out of the total": "Dejó fuera un conteo del total",
+  "Every row of the table counts some of the values. Add the count from every row.": "Cada fila de la tabla cuenta algunos de los valores. Suma el conteo de cada fila.",
+  "Counted the rows instead of adding the counts": "Contó las filas en lugar de sumar los conteos",
+  "The number of rows tells how many kinds there are. The total adds up the counts in the rows.": "La cantidad de filas dice cuántas clases hay. El total suma los conteos de las filas.",
+  "Counted a group two times": "Contó un grupo dos veces",
+  "Each count belongs to one row. Add each count one time.": "Cada conteo pertenece a una fila. Suma cada conteo una sola vez.",
+  "Find the mean of {list}.": "Halla la media de {list}.",
+  "The two middle values of an ordered list are {a} and {b}. Find the median.": "Los dos valores del medio de una lista ordenada son {a} y {b}. Halla la mediana.",
+  "A frequency table has these counts: {list}. How many values are there in all?": "Una tabla de frecuencias tiene estos conteos: {list}. ¿Cuántos valores hay en total?",
+};

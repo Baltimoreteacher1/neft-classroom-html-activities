@@ -1,6 +1,7 @@
 // Language Growth Map: what the learner's own work shows, by WIDA language dimension, with the
 // supports they used kept visibly separate. Every number comes from the evidence ledger; nothing is
 // estimated from how many activities were finished, and nothing here is combined into one number or turned into a percentage of "development".
+import { shieldsHTML } from "./shields.js";
 import { crumbsHTML, domainGlyph } from "../components.js";
 import {
   focusAreas,
@@ -205,6 +206,7 @@ export async function render(ctx) {
         </div>
         <div class="prog-hero-art"><img src="${ART}/progress-growth.svg" alt="" width="360" height="270" /></div>
       </section>
+      ${shieldsHTML(I, entries, records, { large: band === "3-5" })}
       <section class="panel" aria-labelledby="growEvidence">
         <h2 id="growEvidence">${T("Your evidence so far", "Tu evidencia hasta ahora")}</h2>
         <ul class="pass-stats grow-stats">

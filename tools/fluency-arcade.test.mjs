@@ -228,7 +228,7 @@ const OLD_IDS =
   "mathworldbuilder numberpuzzlestudio fluencyrally strategymatch targethive factorfractionpath ghostsprint numberquest arrayarchitect fractionforge balancestation equationfactory ratiocity fractionbridge tenframefactory divisionharbor decimaldashboards integerexpedition graphcity match hunt sort mistake make duel make24 challenge teamrelay family balance flip picture".split(
     " ",
   );
-for (const id of [...OLD_IDS, "baseball", "guess", "race"])
+for (const id of [...OLD_IDS, "baseball", "guess", "race", "hiding"])
   assert.ok(
     GAMES.some((game) => game.id === id),
     `${id} stays in the registry`,
@@ -241,8 +241,8 @@ for (const id of E8_GAME_IDS)
   );
 assert.equal(
   GAMES.length,
-  OLD_IDS.length + 3 + E8_GAME_IDS.length,
-  "Only the three arcade games and the Enterprise 8 families were added",
+  OLD_IDS.length + 4 + E8_GAME_IDS.length,
+  "Only the three arcade games, How Many Are Hiding? and the Enterprise 8 families were added",
 );
 for (const game of GAMES) {
   assert.ok(

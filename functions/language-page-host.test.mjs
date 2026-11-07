@@ -81,6 +81,8 @@ await t("everything the lab loads is served on the lab host", () => {
     "/data/anything.json",
     "/family-app/home-link.js",
     "/api/signal",
+    "/api/class/join",
+    "/api/class/room/state",
     "/cdn-cgi/scripts/x.js",
   ])
     assert.equal(at(`https://thelanguagepage.com${path}`).kind, "serve", path);
@@ -98,8 +100,9 @@ await t("everything else goes to eduwonderlab.com, so the lab host is not a seco
     "/lessons/5-6/",
     "/curriculum/units/",
     "/teacher-tools/",
-    "/access-teacher/",
     "/access-teacher/predictive/",
+    "/access-teacher/flight-deck/",
+    "/access-teacher-evil/",
     "/api/pacing/days",
     "/family-app/",
     "/access-practice-lab-evil/",
@@ -109,6 +112,13 @@ await t("everything else goes to eduwonderlab.com, so the lab host is not a seco
     assert.equal(r.status, 308, path);
     assert.equal(r.location, `https://eduwonderlab.com${path}?q=1`, path);
   }
+});
+
+await t("the Teacher Hub is served on the lab host (behind the teacher gate); the predictor and Flight Deck are not", async () => {
+  for (const path of ["/access-teacher/", "/access-teacher", "/access-teacher/teacher.js", "/access-teacher/class-panel.js"])
+    assert.equal(at(`https://thelanguagepage.com${path}`).kind, "serve", path);
+  const gated = await answer("https://thelanguagepage.com/access-teacher/", { SITE_PASSWORD: "x" });
+  assert.equal(gated.res.status, 401, "the same teacher gate answers on the lab host");
 });
 
 await t("robots.txt and sitemap.xml are generated for the lab host and name only that host", async () => {

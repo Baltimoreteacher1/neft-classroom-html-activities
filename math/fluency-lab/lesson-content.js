@@ -1,6 +1,7 @@
 import { baseGenerator } from "./problem-bank.js";
 import { countOf, factorText, keptPrimes, multiplyText, primeList } from "./factor-tree.js";
 import { t } from "./i18n.js";
+import { STRAND_LESSONS } from "./lesson-content-strands.js";
 
 const step = (prompt, answer, hint, explanation, kind = "number", choices = null) => ({ prompt, answers: [String(answer)], kind, choices, hint, explanation });
 const lesson = (title, idea, model, steps) => ({ title, idea, model, steps });
@@ -348,6 +349,7 @@ export function createLesson(skill, variant = 0) {
     if (shape === "perimeter") return lesson("Walk around the boundary", "Perimeter measures the whole distance around a shape.", { type: "shape", shape: "rectangle", a, b, caption: "Add all four side lengths" }, [step(`What is the length of the two ${a}-unit sides together?`, 2 * a, "Add the two opposite sides.", `${a} + ${a} = ${2 * a}.`), step(`What is the length of the two ${b}-unit sides together?`, 2 * b, "Include both remaining sides.", `${b} + ${b} = ${2 * b}.`), step("What is the perimeter?", 2 * (a + b), "Combine both pairs of sides.", `The perimeter is ${2 * (a + b)} units.`)]);
     return lesson("Cover a rectangle with unit squares", "Area counts the squares inside the boundary.", { type: "array", a, b, split: a, caption: `${a} by ${b} rectangle` }, [step("How many squares are in one row?", b, "Count across the row.", `There are ${b} squares per row.`), step("How many rows are there?", a, "Count down the side.", `There are ${a} rows.`), step("What is the area?", a * b, "Multiply rows by squares in a row.", `The area is ${a * b} square units.`)]);
   }
+  if (STRAND_LESSONS[gen]) return STRAND_LESSONS[gen](k);
   throw new Error(`Missing visual lesson for ${gen}`);
 }
 

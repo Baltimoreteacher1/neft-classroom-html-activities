@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#17345f" />
+    <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
+    <meta name="description" content="Fluency Lab class dashboard: class code and QR, who needs help now, the class goal, and live untimed sessions, games and workspaces." />
+    <meta name="robots" content="noindex" />
+    <title>Class Dashboard · Math Fluency Lab | EduWonderLab</title>
+    <link rel="stylesheet" href="/assets/fonts/small-group.css" />
+    <link rel="stylesheet" href="../ds4.css" />
+    <link rel="stylesheet" href="../styles.css" />
+    <link rel="stylesheet" href="../class-link.css" />
+    <script type="module" src="./teacher.js"></script>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
+  <!-- nsr-injected:end -->
+</head>
+  <body class="class-page">
+    <a class="skip-link" href="#class-teacher" data-i18n>Skip to the class dashboard</a>
+    <header class="class-page-top">
+      <a class="outline-action" href="../?view=teacher" data-i18n>Back to the Fluency Lab teacher studio</a>
+      <button id="ct-lang" class="outline-action" type="button">English / Español</button>
+    </header>
+    <main id="class-teacher" class="class-link">
+      <p class="section-label">EDUWONDERLAB · MATH FLUENCY LAB</p>
+      <h1 data-i18n>Class dashboard</h1>
+      <p data-i18n>Students join with a class code or QR and a nickname. Nothing here is timed. Classes unused for 120 days are deleted.</p>
+      <p id="ct-live" role="status" class="cl-status"></p>
+      <section aria-labelledby="ct-saved-title">
+        <h2 id="ct-saved-title" data-i18n>My classes on this device</h2>
+        <ul id="ct-saved"></ul>
+      </section>
+      <section aria-labelledby="ct-signin-title">
+        <h2 id="ct-signin-title" data-i18n>Open a class</h2>
+        <form id="ct-signin">
+          <label><span data-i18n>Class code</span><input id="ct-code" name="code" autocomplete="off" maxlength="8" required /></label>
+          <label><span data-i18n>Teacher passcode</span><input id="ct-pass" name="studentKey" autocomplete="off" maxlength="10" required /></label>
+          <button class="primary-action" type="submit" data-i18n>Open class</button>
+        </form>
+      </section>
+      <section aria-labelledby="ct-create-title">
+        <h2 id="ct-create-title" data-i18n>Create a class</h2>
+        <form id="ct-create">
+          <label><span data-i18n>Class name</span><input id="ct-new-title" maxlength="40" required /></label>
+          <label><span data-i18n>Teacher key</span><input id="ct-site-key" type="password" autocomplete="current-password" required /></label>
+          <button class="primary-action" type="submit" data-i18n>Create class</button>
+        </form>
+      </section>
+      <section id="ct-dashboard" hidden aria-labelledby="ct-title">
+        <h2 id="ct-title"></h2>
+        <div id="ct-join"></div>
+        <h3 data-i18n>Who needs help now</h3>
+        <ul id="ct-help" aria-live="polite"></ul>
+        <h3 data-i18n>Class goal</h3>
+        <p id="ct-goal-now"></p>
+        <form id="ct-goal">
+          <label><span data-i18n>Goal name</span><input id="ct-goal-label" maxlength="60" /></label>
+          <label><span data-i18n>Skills mastered on our own, all together</span><input id="ct-goal-target" type="number" min="1" max="100000" value="30" required /></label>
+          <button class="outline-action" type="submit" data-i18n>Save the class goal</button>
+        </form>
+        <h3 data-i18n>Live rooms</h3>
+        <div class="cl-row">
+          <label><span data-i18n>Grade</span><select id="ct-room-grade"><option value="0">K</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6" selected>6</option><option value="7">7</option><option value="8">8</option></select></label>
+          <label><span data-i18n>Skill</span><select id="ct-room-skill"></select></label>
+          <label><span data-i18n>Problems</span><input id="ct-room-count" type="number" min="1" max="60" value="8" /></label>
+          <label><span data-i18n>Teams (game)</span><input id="ct-room-teams" type="number" min="1" max="4" value="2" /></label>
+        </div>
+        <div class="cl-row">
+          <button class="primary-action" type="button" data-room="session" data-i18n>Start a live session</button>
+          <button class="primary-action" type="button" data-room="game" data-i18n>Start a class game</button>
+          <button class="primary-action" type="button" data-room="workspace" data-i18n>Open live workspaces</button>
+        </div>
+        <section id="ct-room" hidden aria-labelledby="ct-room-title">
+          <h3 id="ct-room-title" data-i18n>Live room</h3>
+          <p id="ct-room-state" role="status"></p>
+          <p id="ct-room-problem" class="live-question"></p>
+          <div class="cl-row">
+            <button class="outline-action" type="button" data-control="live" data-i18n>Go live</button>
+            <button class="outline-action" type="button" data-control="paused" data-i18n>Pause</button>
+            <button class="outline-action" type="button" data-control="prev" data-i18n>Previous problem</button>
+            <button class="outline-action" type="button" data-control="next" data-i18n>Next problem</button>
+            <button class="outline-action" type="button" data-control="reveal" data-i18n>Show or hide class answers</button>
+            <button class="outline-action" type="button" data-control="snapshot" data-i18n>Save a snapshot</button>
+            <button class="outline-action" type="button" data-control="ended" data-i18n>End the room</button>
+          </div>
+          <p id="ct-room-score"></p>
+          <ul id="ct-room-wall" aria-label="Class answers"></ul>
+          <div id="ct-room-work"></div>
+        </section>
+        <h3 data-i18n>Students</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th scope="col" data-i18n>Nickname</th><th scope="col" data-i18n>Last seen</th><th scope="col" data-i18n>Working on</th><th scope="col" data-i18n>Skills mastered</th><th scope="col" data-i18n>Days this week</th><th scope="col" data-i18n>Actions</th></tr></thead>
+            <tbody id="ct-roster"></tbody>
+          </table>
+        </div>
+        <button id="ct-delete" class="outline-action" type="button" data-i18n>Delete this class</button>
+      </section>
+    </main>
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
+  <!-- nsr-injected:end -->
+  </body>
+</html>

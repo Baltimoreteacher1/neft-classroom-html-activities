@@ -1,6 +1,7 @@
 // Model Lab (Enterprise 8): the learner-facing screen for the MathVisualEngine, the Show Me Why lessons and the
 // Guided Solver. Everything on screen is derived from one engine state; every control is a real <button>, and the
 // pictures also take pointer and (for many models) arrow-key input. Nothing here is timed.
+import { boardUrl, movesFromEngine, replayMoves } from "../board-link.js"; // fl-teacher: shareable boards
 import { getLang } from "../i18n.js";
 import { MathVisualEngine, bi, esc, seeded } from "./engine-core.js";
 import { THREE_MODEL_IDS } from "./three/registry.js";
@@ -314,7 +315,7 @@ function lessonStepHtml(run) {
 // ---------------------------------------------------------------- the lab
 export function mountModelLab(
   container,
-  { grade = 3, onEvidence = () => {}, initialModel = null } = {},
+  { grade = 3, onEvidence = () => {}, initialModel = null, initialBoard = null } = {},
 ) {
   const lang = () => (getLang() === "es" ? "es" : "en");
   const state = {
@@ -323,6 +324,7 @@ export function mountModelLab(
     run: null,
     timer: null,
     seed: 1,
+    board: null,
   };
   const ids = () => {
     const forGrade = modelsForGrade(state.grade);
@@ -335,6 +337,7 @@ export function mountModelLab(
       <div class="e8ml-picker" role="group" aria-label="${esc(L("Choose a model", "Elige un modelo"))}"></div>
       <div class="e8ml-lessonbar"></div>
       <div class="e8ml-workspace"></div>
+      <div class="e8ml-share"><button type="button" class="e8ml-btn" data-board-share>${esc(L("Share this board", "Compartir este tablero"))}</button><input class="e8ml-text" readonly hidden data-board-link aria-label="${esc(L("Link to this board", "Enlace a este tablero"))}"><span class="e8ml-note" role="status" data-board-status></span></div>
       <section class="e8ml-lesson" aria-label="${esc(L("Show me why", "Muéstrame por qué"))}" hidden></section>
       <section class="e8ml-solver" aria-label="${esc(L("Guided solver", "Solucionador guiado"))}"></section>
     </section>`;
@@ -353,7 +356,9 @@ export function mountModelLab(
       state.grade,
     );
     workspace.locked = false;
-    workspace.show(new MathVisualEngine(id, params));
+    const engine = new MathVisualEngine(id, params);
+    state.board = { engine, model: id, seed: state.seed, grade: state.grade };
+    workspace.show(engine);
     lessonPanel.hidden = true;
     paintPicker();
     paintLessonBar();
@@ -493,11 +498,51 @@ export function mountModelLab(
   const solverHost = container.querySelector(".e8ml-solver");
   mountSolver(solverHost, { grade: state.grade, onEvidence });
 
+  const shareBoard = async () => {
+    const status = container.querySelector("[data-board-status]");
+    const field = container.querySelector("[data-board-link]");
+    const board = state.board;
+    const moves = board && workspace.engine === board.engine ? movesFromEngine(board.engine) : null;
+    const href = moves && boardUrl({ model: board.model, seed: board.seed, grade: board.grade, moves });
+    if (!href) {
+      status.textContent = L(
+        "This board is too long to share, or a lesson step is open. Start over or close the lesson step.",
+        "Este tablero es demasiado largo para compartir, o hay un paso de lección abierto. Empieza de nuevo o cierra el paso de la lección.",
+      );
+      return;
+    }
+    field.value = href;
+    field.hidden = false;
+    try {
+      await navigator.clipboard.writeText(href);
+      status.textContent = L("Link copied.", "Enlace copiado.");
+    } catch {
+      field.select();
+      status.textContent = L("Select the link and copy it.", "Selecciona el enlace y cópialo.");
+    }
+  };
+  container.__boardHandler && container.removeEventListener("click", container.__boardHandler);
+  container.__boardHandler = (event) => {
+    if (event.target.closest("[data-board-share]")) shareBoard();
+  };
+  container.addEventListener("click", container.__boardHandler);
+
+  const homeGrade = state.grade;
+  if (initialBoard) state.grade = initialBoard.grade;
+  const wanted = initialBoard && ids().some((m) => m.id === initialBoard.model) ? initialBoard : null;
+  if (wanted) state.seed = wanted.seed;
+  else state.grade = homeGrade;
   select(
-    initialModel && ids().some((m) => m.id === initialModel)
-      ? initialModel
-      : ids()[0].id,
+    wanted
+      ? wanted.model
+      : initialModel && ids().some((m) => m.id === initialModel)
+        ? initialModel
+        : ids()[0].id,
   );
+  if (wanted) {
+    replayMoves(workspace.engine, wanted.moves);
+    workspace.show(workspace.engine);
+  }
   return {
     setGrade(g) {
       state.grade = Number(g) || state.grade;

@@ -159,6 +159,39 @@ await wait();
 click("[data-gm-menu]");
 await wait();
 assert.match($(".shop-balance").textContent, /20 coins/);
+// The Daily Green Light opens the shop: before it, nothing can be bought even with coins.
+assert.ok(
+  $$("[data-buy]").every((button) => button.disabled),
+  "The shop waits for today's Green Light",
+);
+click('[data-buy="tophat"]');
+await wait();
+assert.equal(JSON.parse(win.localStorage.getItem("ewl-fluency-rewards-v1")).shop.length, 0);
+const nowMs = Date.now();
+win.localStorage.setItem(
+  "ewl-fluency-tutor-v2",
+  JSON.stringify({
+    version: 2,
+    records: {
+      "1:add-10": {
+        recent: Array.from({ length: 10 }, (_, i) => ({
+          correct: true,
+          independent: true,
+          level: 1,
+          at: nowMs - i,
+        })),
+      },
+    },
+    mistakes: [],
+    diagnostics: {},
+    sessions: [],
+  }),
+);
+click('[data-game="teamrelay"]');
+await wait();
+click("[data-gm-menu]");
+await wait();
+assert.match($(".fl-green-light").textContent, /Green Light!/);
 click('[data-buy="tophat"]');
 await wait();
 assert.match($(".gm-note").textContent, /You bought Top hat/);

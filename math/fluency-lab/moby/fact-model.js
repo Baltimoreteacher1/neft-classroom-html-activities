@@ -6,12 +6,14 @@ import { REVIEW_LADDER, ladderIndex, nextInterval } from "../mastery-model.js";
 import { profileKey } from "../family/fm2/profile-key.js";
 import { profiles, readLocal, writeLocal } from "../school-tools.js";
 import { familyOf, isTrackedKey, keyFromItem, makeKey } from "./fact-keys.js";
+import { bands68 } from "./fact-keys-68.js";
 import { STRATEGY_IDS, factRank, strategyFor } from "./fact-strategies.js";
 
 export * from "./fact-keys.js";
 export * from "./fact-strategies.js";
 
 export const FACTS_KEY = "ewl-fluency-moby-facts-v1";
+const HOW_IDS = ["knew", "strategy", "counted"]; // fact-automaticity.js HOW_IDS (kept here to avoid an import cycle)
 export const DAY_MS = 86400000;
 
 
@@ -174,13 +176,20 @@ const DOMAIN_BANDS = {
   ],
 };
 const domainCache = new Map();
+// A Grade 6-8 band is a list of facts; the progress grid shows it as one column.
+const listBandGrid = (band) =>
+  Object.freeze({ ...band, rows: band.keys.map((_, index) => index), cols: [0], cell: (row) => band.keys[row] });
 
 // The facts a grade owns. Grades 4-5 keep every earlier fact in play ("maintain"); Grades 6-8 use Grade 5's set.
 export function gradeFactDomain(grade) {
   const g = Math.min(8, Math.max(0, Math.floor(Number(grade)) || 0));
-  const id = Math.min(g, 5);
+  const id = g;
   if (!domainCache.has(id)) {
-    const bands = DOMAIN_BANDS[id]();
+    // Grades 6-8 keep Grade 5's set (maintained) and add their own facts (fact-keys-68.js).
+    const bands =
+      id <= 5
+        ? DOMAIN_BANDS[id]()
+        : [...bands68(id).map(listBandGrid), ...DOMAIN_BANDS[5]().map((band) => ({ ...band, maintain: true }))];
     const keys = sortKeys(new Set(bands.flatMap((band) => band.keys)));
     const newKeys = sortKeys(
       new Set(bands.filter((band) => !band.maintain).flatMap((band) => band.keys)),
@@ -387,6 +396,8 @@ function applyAttempt(record, input, now) {
     ...(ms !== null ? { ms } : {}),
     strategy: STRATEGY_IDS.includes(input.strategy) ? input.strategy : null,
     mode: timed ? "timed" : "untimed",
+    // The learner's own one-tap note after a right first try (fact-automaticity.js). Never a time.
+    ...(independent && correct && HOW_IDS.includes(input.how) ? { how: input.how } : {}),
   });
   rec.recent = rec.recent.slice(-FACT_THRESHOLDS.ringSize);
   rec.attempts += 1;
@@ -546,6 +557,9 @@ function cleanEntry(entry) {
     ...(ms !== null ? { ms } : {}),
     strategy: STRATEGY_IDS.includes(entry.strategy) ? entry.strategy : null,
     mode: timed ? "timed" : "untimed",
+    ...(HOW_IDS.includes(entry.how) && entry.correct === true && entry.firstTry !== false && entry.supported !== true
+      ? { how: entry.how }
+      : {}),
   };
 }
 function cleanRecord(value) {

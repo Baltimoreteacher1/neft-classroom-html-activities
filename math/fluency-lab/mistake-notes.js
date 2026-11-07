@@ -133,6 +133,14 @@ const SLIPS = {
   "exp-slip": () => ({ label: t("Multiplied the base by the exponent"), note: t("An exponent counts how many times the base is used as a factor. It is not a multiplier.") }),
   "sq-sum": () => ({ label: t("Squared the sum"), note: t("Square each number first, then add. The square of a sum is a different number.") }),
   "dropped-side": () => ({ label: t("Left out a side"), note: t("A perimeter adds every side. Count each side once.") }),
+  "mean-distinct": () => ({ label: t("Divided by the number of different values"), note: t("The mean uses every value in the list, repeats too. Divide the total by how many values there are.") }),
+  "mean-total": () => ({ label: t("Gave the total as the mean"), note: t("The total is only the first step. The mean shares the total equally, so divide by how many values there are.") }),
+  "mean-middle": () => ({ label: t("Used the middle value instead of sharing equally"), note: t("The mean is the equal share of all the values. The middle value is the median.") }),
+  "median-no-divide": () => ({ label: t("Added the two middle numbers and stopped"), note: t("With two middle numbers, the median is halfway between them. After adding, divide by 2.") }),
+  "median-lower": () => ({ label: t("Used only one of the middle numbers"), note: t("With two middle numbers, the median is halfway between them, not one of them.") }),
+  "tally-left-out": () => ({ label: t("Left a count out of the total"), note: t("Every row of the table counts some of the values. Add the count from every row.") }),
+  "tally-rows": () => ({ label: t("Counted the rows instead of adding the counts"), note: t("The number of rows tells how many kinds there are. The total adds up the counts in the rows.") }),
+  "tally-twice": () => ({ label: t("Counted a group two times"), note: t("Each count belongs to one row. Add each count one time.") }),
   "r-doubled": () => ({ label: t("Doubled the radius instead of squaring it"), note: t("A radius squared means radius times radius, not radius times two.") }),
 };
 

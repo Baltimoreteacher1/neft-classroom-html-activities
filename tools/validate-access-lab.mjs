@@ -16,6 +16,9 @@
  */
 import { existsSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
+import { BAND_INFO, EARLY_BANDS } from "../access-practice-lab/src/bands.js";
+import { staleEarlyFiles } from "./build-access-early-content.mjs";
+import { earlyProblems } from "./lib/access-early-rules.mjs";
 import {
   allActivities,
   BANDS,
@@ -51,11 +54,12 @@ function instructionText(a) {
 export function missingVisual(a) {
   const t = instructionText(a);
   const out = [];
-  const hasPicture = Boolean(a.picture);
+  // `scene` is a picture the app draws (access-practice-lab/src/early/scenes.js); the sweep checks the id exists.
+  const hasPicture = Boolean(a.picture || a.scene);
   const hasChart = asList(a.chart).length > 0;
   if (a.type !== "worksheet" && PICTURE_WORDS.test(t) && !hasPicture && !hasChart)
     out.push("picture");
-  if (WHICH_PICTURE.test(t) && !(a.options || []).every((o) => o.picture || o.visual))
+  if (WHICH_PICTURE.test(t) && !(a.options || []).every((o) => o.picture || o.visual || o.scene))
     out.push("picture for every answer choice");
   if (CHART_WORDS.test(t) && !hasChart && !hasPicture && !a.table) out.push("chart");
   if (TABLE_WORDS.test(t) && !a.table && !hasPicture) out.push("table");
@@ -231,8 +235,15 @@ function checkItem(where, a, { domain, isTest }) {
 function checkActivity(where, a, domain, band) {
   for (const f of ["id", "title", "skill", "time", "type", "directions"])
     if (!a[f]) err(where, `missing ${f}`);
-  if (band === "3-5" && !String(a.id).startsWith("g35-"))
-    err(where, "grades 3–5 ids must start with g35-");
+  const prefix = BAND_INFO[band]?.idPrefix;
+  if (prefix && !String(a.id).startsWith(prefix))
+    err(where, `${band} ids must start with ${prefix}`);
+  if (
+    !prefix &&
+    Object.values(BAND_INFO).some((b) => b.idPrefix && String(a.id).startsWith(b.idPrefix))
+  )
+    err(where, "grades 6–8 ids must not use another band's prefix");
+  if (EARLY_BANDS.includes(band)) checkEarly(where, a, domain);
   if (!/^[a-z0-9][a-z0-9-]*$/.test(a.id || "")) err(where, `id "${a.id}" is not kebab-case`);
   if (a.type !== "worksheet") {
     // All interactive activities share the same response, feedback, support, and teacher-use contract.
@@ -260,7 +271,31 @@ function checkActivity(where, a, domain, band) {
   checkItem(where, a, { domain, isTest: false });
 }
 
+function checkEarly(where, a, domain) {
+  for (const p of earlyProblems(a, domain)) err(where, p);
+}
+
 selfTest();
+if (
+  !earlyProblems({ type: "multipleChoice", options: [{ id: "a", text: "x" }] }, "Listening").length
+)
+  throw new Error("validate-access-lab self-test: early pictureless choice not detected");
+if (
+  earlyProblems(
+    {
+      type: "multipleChoice",
+      directionsEs: "x",
+      prompt: "p",
+      promptEs: "p",
+      scene: "garden",
+      options: [{ id: "a", visual: "🍎" }],
+    },
+    "Listening",
+  ).length
+)
+  throw new Error("validate-access-lab self-test: clean early item flagged");
+if (!earlyProblems({ type: "constructed", directionsEs: "x" }, "Speaking").length)
+  throw new Error("validate-access-lab self-test: missing model student not detected");
 
 const seen = new Map();
 const idOwner = (id, where) => {
@@ -331,6 +366,10 @@ if (road) {
     }
   }
 }
+
+// K–3 content files are built from tools/access-early-content/*.mjs; a hand edit or a stale build fails here.
+for (const stale of await staleEarlyFiles())
+  err(stale, "stale — run `node tools/build-access-early-content.mjs`");
 
 const index = JSON.stringify(buildIndex(), null, 1);
 let committed = "";

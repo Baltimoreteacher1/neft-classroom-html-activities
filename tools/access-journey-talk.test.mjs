@@ -657,7 +657,7 @@ domTest(
       const t = await mounted(ui, { task: speak, band: "6-8", support: "B" });
       assert.equal(t.q("[data-jt-rec-start]"), null);
       assert.match(t.root.textContent, /This browser cannot record/);
-      assert.match(t.root.textContent, /does not turn your voice into text/);
+      assert.match(t.root.textContent, /cannot turn your voice into text/);
       assert.match(t.root.textContent, /Type what you said/);
       assert.equal(t.q("[data-jt-send]").disabled, true, "the transcript is required");
       t.type("#jt-input", "The trucks compacted the soil so water pooled around the roots.");

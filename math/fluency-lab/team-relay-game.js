@@ -5,6 +5,7 @@ import { feedbackAction, feedbackNoteHtml, phaseFor } from "./feedback-host.js";
 import { answerText, gameProblems } from "./game-pool.js";
 import { t } from "./i18n.js";
 import { validateAnswer } from "./problem-bank.js";
+import { addCodes, approvedCards, arithmeticCheck, decodeStudentProblem, encodeStudentProblem, loadDeck, saveDeck } from "./student-problems.js";
 import { canSpeak, speak, syncLive } from "./speech.js";
 import { peekCap } from "./step-leak.js";
 import { mathText, stepsBlock } from "./trail-pictures.js";
@@ -22,7 +23,14 @@ const esc = (value) => String(value).replaceAll("&", "&amp;").replaceAll("<", "&
 export const teamForTurn = (turn, teams) => turn % teams;
 export const starsFor = (firstTry, total) => (firstTry === total ? 3 : firstTry * 2 >= total ? 2 : 1);
 
+const CHECK_LABEL = () => ({
+  ok: t("The answer matches the math."),
+  mismatch: t("The answer does not match the math. Check it before approving."),
+  unchecked: t("Read it and solve it yourself before approving."),
+});
+
 export function playTeamRelay(host, { grade, stop, calm, finish }) {
+  let studentDeck = loadDeck();
   const perTeam = calm ? 3 : 4;
   let teams = 0;
   let deck = [];
@@ -42,14 +50,47 @@ export function playTeamRelay(host, { grade, stop, calm, finish }) {
       <p class="gm-ask">${t("Teams take turns on one problem each. Talk it over as a team, then type one answer. Everyone helps, and the whole class earns the stars together. There is no timer.")}</p>
       <form class="gm-ask-form" data-team-form><fieldset class="team-choice"><legend>${t("How many teams?")}</legend>
         ${[2, 3, 4].map((n) => `<label class="gm-calm"><input type="radio" name="teams" value="${n}"${n === 2 ? " checked" : ""} /> ${t("{n} teams", { n })}</label>`).join("")}</fieldset>
-        <button type="submit" class="tr-check">${t("Start")}</button></form></div>`;
+        <button type="submit" class="tr-check">${t("Start")}</button></form>
+      ${studentWriteHtml()}${studentDeckHtml()}</div>`;
     host.querySelector("input[name='teams']")?.focus();
     syncLive(host);
   }
 
+  // A student writes a problem and gets a code to hand to the teacher; nothing leaves the device.
+  const studentWriteHtml = () => `<details class="sp-write"><summary>${t("Write a problem for the class")}</summary>
+      <form class="gm-ask-form" data-sp-write novalidate><label>${t("Your problem")}<textarea name="question" rows="3" maxlength="160" required></textarea></label>
+        <label>${t("Its answer")}<input name="answer" maxlength="24" autocomplete="off" required></label>
+        <p class="sp-error" role="alert" data-sp-error></p>
+        <button type="submit" class="tr-check">${t("Make my code")}</button>
+        <label class="sp-code" hidden>${t("Give this code to your teacher")}<input readonly data-sp-code></label></form></details>`;
+  // The teacher pastes codes here and approves each problem; only approved ones can enter the deck.
+  const studentDeckHtml = () => `<details class="sp-deck"><summary>${t("Student problems (the teacher approves each one)")}</summary>
+      <form class="gm-ask-form" data-sp-add novalidate><label>${t("Paste student codes, one per line")}<textarea name="codes" rows="3"></textarea></label>
+        <button type="submit" class="tr-check">${t("Add codes")}</button></form>
+      <p class="sp-note" role="status" data-sp-note></p><ul class="sp-list" data-sp-list>${studentListHtml()}</ul></details>`;
+  function studentListHtml() {
+    const labels = CHECK_LABEL();
+    return studentDeck
+      .map((entry, index) => {
+        const problem = decodeStudentProblem(entry.code);
+        return `<li><label><input type="checkbox" data-sp-approve="${index}"${entry.approved ? " checked" : ""}> ${t("Approve")}</label>
+          <p><b>${esc(problem.question)}</b></p><p>${t("Answer: {answer}", { answer: esc(problem.answer) })}</p><p class="sp-check">${esc(labels[arithmeticCheck(problem)])}</p>
+          <button type="button" class="tr-tool" data-sp-remove="${index}">${t("Remove")}</button></li>`;
+      })
+      .join("");
+  }
+  const paintStudentDeck = (note = "") => {
+    const list = host.querySelector("[data-sp-list]");
+    if (list) list.innerHTML = studentListHtml();
+    const out = host.querySelector("[data-sp-note]");
+    if (out) out.textContent = note || t("{n} approved problems will be used first.", { n: studentDeck.filter((entry) => entry.approved).length });
+  };
+
   function begin(count) {
     teams = count;
-    deck = gameProblems(grade, stop, count * perTeam);
+    const total = count * perTeam;
+    const own = approvedCards(studentDeck).slice(0, total);
+    deck = [...own, ...gameProblems(grade, stop, total - own.length)];
     if (deck.length < count) throw new Error("Not enough problems for Team Relay");
     points = Array(count).fill(0);
     turn = 0;
@@ -96,6 +137,26 @@ export function playTeamRelay(host, { grade, stop, calm, finish }) {
 
   host.onsubmit = (event) => {
     event.preventDefault();
+    if (event.target.matches("[data-sp-write]")) {
+      const data = new FormData(event.target);
+      const code = encodeStudentProblem({ question: data.get("question"), answer: data.get("answer") });
+      const error = host.querySelector("[data-sp-error]");
+      const field = host.querySelector("[data-sp-code]");
+      error.textContent = code ? "" : t("Write a problem of at least 8 characters and its answer.");
+      field.closest("label").hidden = !code;
+      if (code) {
+        field.value = code;
+        field.select();
+      }
+      return;
+    }
+    if (event.target.matches("[data-sp-add]")) {
+      const result = addCodes(studentDeck, new FormData(event.target).get("codes"));
+      studentDeck = result.deck;
+      saveDeck(studentDeck);
+      event.target.reset();
+      return paintStudentDeck(t("{added} added, {skipped} skipped. Approve the ones you want.", { added: result.added, skipped: result.skipped }));
+    }
     if (event.target.matches("[data-team-form]")) {
       const count = Number(host.querySelector("input[name='teams']:checked")?.value);
       return count >= 2 && count <= 4 ? begin(count) : undefined;
@@ -130,7 +191,20 @@ export function playTeamRelay(host, { grade, stop, calm, finish }) {
     renderTurn();
   };
 
+  host.onchange = (event) => {
+    const box = event.target.closest("[data-sp-approve]");
+    if (!box) return;
+    studentDeck[Number(box.dataset.spApprove)].approved = box.checked;
+    saveDeck(studentDeck);
+    paintStudentDeck();
+  };
   host.onclick = (event) => {
+    const remove = event.target.closest("[data-sp-remove]");
+    if (remove) {
+      studentDeck.splice(Number(remove.dataset.spRemove), 1);
+      saveDeck(studentDeck);
+      return paintStudentDeck();
+    }
     const action = feedbackAction(event);
     if (action === "next" && solved) return advance();
     if (action === "try-again") {
@@ -145,8 +219,10 @@ export function playTeamRelay(host, { grade, stop, calm, finish }) {
     }
   };
   renderSetup();
+  paintStudentDeck();
   return () => {
     host.onclick = null;
     host.onsubmit = null;
+    host.onchange = null;
   };
 }

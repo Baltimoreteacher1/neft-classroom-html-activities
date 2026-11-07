@@ -2,8 +2,10 @@
 // order, every worked example and practice answer is recomputed by an independent solver, no hint or early step
 // states an answer, every learner-facing string has Spanish, and the visuals table covers every skill.
 // Run: node tools/fluency-mini-lessons.test.mjs
+
 import assert from "node:assert/strict";
 import { readdirSync, readFileSync } from "node:fs";
+import { TOTAL_SKILLS } from "./lib/fluency-skill-count.mjs";
 
 const store = new Map();
 Object.defineProperty(globalThis, "localStorage", {
@@ -42,7 +44,7 @@ const ok = (condition, message) => {
 };
 
 // 1. Four steps in order, at every support level, for all 96 skills.
-ok(ALL_SKILLS.length === 96, `96 skills (found ${ALL_SKILLS.length})`);
+ok(ALL_SKILLS.length === TOTAL_SKILLS, `${TOTAL_SKILLS} skills (found ${ALL_SKILLS.length})`);
 const lessons = [];
 for (const skill of ALL_SKILLS)
   for (const level of [1, 2, 3, 4]) {

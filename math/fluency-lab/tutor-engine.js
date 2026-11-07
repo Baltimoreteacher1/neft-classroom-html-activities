@@ -1,4 +1,5 @@
 import { TUTOR_NOTE } from "./fraction-division-copy.js";
+import { cleanResponse } from "./response-check.js";
 import { sanitizeAbility, updateAbility } from "./ability.js";
 import { isTier, levelToTier, tierToLevel } from "./difficulty-levels.js";
 import { sanitizeRescues } from "./rescue-history.js";
@@ -363,6 +364,7 @@ export function recordAnswer(tutor, skill, result, now = Date.now()) {
     ...(strategies.length ? { strategies } : {}),
     ...(Number.isFinite(responseMs) ? { responseMs, paceEligible } : {}),
     ...(result.sig ? { sig: String(result.sig).slice(0, 24) } : {}),
+    ...(result.viewedExample ? { ex: 1 } : {}),
   }].slice(-RECENT_WINDOW);
   record.metrics = summarizeMetrics(record);
   record.ability = updateAbility(record.ability, { correct: Boolean(result.correct), independent, tier: tier ?? levelToTier(level) }, now); // fl4:adaptive
@@ -382,6 +384,12 @@ export function recordAnswer(tutor, skill, result, now = Date.now()) {
   tutor.records[key] = record;
 }
 
+// A worked example opened after the answer was recorded still belongs to that answer: flag the latest entry.
+export function markExampleViewed(tutor, skill) {
+  const recent = tutor.records[skillKey(skill)]?.recent;
+  if (recent?.length) recent[recent.length - 1].ex = 1;
+}
+
 export function rememberMistake(tutor, skill, item, submitted, now = Date.now()) {
   const key = skillKey(skill);
   const existing = tutor.mistakes.find((entry) => entry.key === key && entry.question === item.question && !entry.resolvedAt);
@@ -392,6 +400,7 @@ export function rememberMistake(tutor, skill, item, submitted, now = Date.now())
     kind: String(item.kind || "number").slice(0, 30),
     ...(typeof item.unit === "string" ? { unit: item.unit.slice(0, 40) } : {}),
     ...(Array.isArray(item.choices) ? { choices: item.choices.slice(0, 12).map((choice) => String(choice).slice(0, 120)) } : {}),
+    ...(cleanResponse(item.response) ? { response: cleanResponse(item.response) } : {}),
   };
   const category = classifyMistake(item, submitted);
   tutor.mistakes.unshift({ id: `${now}-${tutor.mistakes.length}`, key, question: item.question,
@@ -594,6 +603,7 @@ export function sanitizeTutor(value) {
         ...(tier ? { tier } : {}),
         ...(strategies.length ? { strategies } : {}),
         ...(typeof entry.sig === "string" && entry.sig ? { sig: entry.sig.slice(0, 24) } : {}),
+        ...(entry.ex === 1 ? { ex: 1 } : {}),
         ...(validResponse ? { responseMs, paceEligible: Boolean(entry.paceEligible && entry.independent && level >= 1) } : {}),
       };
     });
@@ -619,7 +629,7 @@ export function sanitizeTutor(value) {
     studentInput: String(entry.studentInput || entry.submitted || "").slice(0, 120),
     expectedAnswer: String(entry.expectedAnswer || entry.original?.answers?.[0] || "").slice(0, 120),
     original: entry.original && typeof entry.original === "object" && typeof entry.original.question === "string" && entry.original.question.length <= 500 && Array.isArray(entry.original.answers) && entry.original.answers.length > 0
-      ? { question: entry.original.question, answers: entry.original.answers.slice(0, 8).map((answer) => String(answer).slice(0, 120)), kind: String(entry.original.kind || "number").slice(0, 30), ...(typeof entry.original.unit === "string" ? { unit: entry.original.unit.slice(0, 40) } : {}), ...(Array.isArray(entry.original.choices) ? { choices: entry.original.choices.slice(0, 12).map((choice) => String(choice).slice(0, 120)) } : {}) }
+      ? { question: entry.original.question, answers: entry.original.answers.slice(0, 8).map((answer) => String(answer).slice(0, 120)), kind: String(entry.original.kind || "number").slice(0, 30), ...(typeof entry.original.unit === "string" ? { unit: entry.original.unit.slice(0, 40) } : {}), ...(Array.isArray(entry.original.choices) ? { choices: entry.original.choices.slice(0, 12).map((choice) => String(choice).slice(0, 120)) } : {}), ...(cleanResponse(entry.original.response) ? { response: cleanResponse(entry.original.response) } : {}) }
       : null,
     at: Number(entry.at) || 0, resolvedAt: Number(entry.resolvedAt) || null,
   }));

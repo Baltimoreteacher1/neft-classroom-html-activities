@@ -1,5 +1,7 @@
 // Fact keys for the Moby fact model: parsing, the tracked fact universe, and fact families.
 // add:3:8, sub:11:3, mul:6:7, div:42:6. Pure; no storage, no clock.
+import { isTracked68 } from "./fact-keys-68.js";
+
 export const SYMBOL = { add: "+", sub: "−", mul: "×", div: "÷" };
 
 
@@ -13,9 +15,11 @@ const tens = (n) => n >= 10 && n % 10 === 0;
 
 // The facts this model tracks: within-20 add/subtract, multiples of ten within 100, and times/division to 12 x 12.
 // add/mul keys are commutative (smaller factor first); sub is minuend:subtrahend; div is dividend:divisor.
+// Grade 6-8 facts (integers, benchmarks, squares and cubes, divisibility, GCF/LCM, unit rates) are tracked too;
+// see fact-keys-68.js.
 export function isTrackedKey(key) {
   const p = parseKey(key);
-  if (!p) return false;
+  if (!p) return isTracked68(key);
   const { op, x, y } = p;
   if (op === "add") return x <= y && (x + y <= 20 || (tens(x) && tens(y) && x + y <= 100));
   if (op === "sub") return y <= x && (x <= 20 || (tens(x) && tens(y) && y <= x - 10 && x <= 100));

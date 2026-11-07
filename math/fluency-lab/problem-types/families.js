@@ -17,6 +17,7 @@ import { family as numtheory } from "./fam-numtheory.js";
 import { family as placeRound } from "./fam-place-round.js";
 import { family as powersSlope } from "./fam-powers-slope.js";
 import { family as ratioPercent } from "./fam-ratio-percent.js";
+import { family as strands } from "./fam-strands.js";
 import { family as wholeAddSub } from "./fam-whole-addsub.js";
 
 export const FAMILIES = [
@@ -35,4 +36,5 @@ export const FAMILIES = [
   integers,
   algebra,
   powersSlope,
+  strands,
 ];

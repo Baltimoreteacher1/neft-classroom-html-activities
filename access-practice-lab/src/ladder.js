@@ -44,6 +44,7 @@ export function normalizeLadder(raw, fallbackStep = 2) {
       correct: Math.min(row.correct, row.total),
       total: row.total,
       day: typeof row.day === "string" ? row.day : "",
+      ...(row.help === true ? { help: true } : {}),
     }))
     .slice(-HISTORY_LIMIT);
   return {
@@ -58,6 +59,9 @@ export function normalizeLadder(raw, fallbackStep = 2) {
               ? value.open.picks.map((p) => (Number.isInteger(p) ? p : null)).slice(0, 8)
               : [],
             checked: value.open.checked === true,
+            level: ["easier", "on", "richer"].includes(value.open.level) ? value.open.level : "on",
+            help: value.open.help === true,
+            placed: value.open.placed === true,
           }
         : null,
   };
@@ -77,14 +81,14 @@ export function pickPassage(passages, step, history, random = Math.random) {
 export const scoreRound = (passage, picks) =>
   passage.questions.filter((q, i) => picks[i] === q.answer).length;
 
-/** Ends a round: records it, moves the step, and keeps the highest step reached. */
-export function finishRound(state, passage, picks, day) {
+/** Ends a round: records it (with `help` when a reading tool was used), moves the step, keeps the highest step. */
+export function finishRound(state, passage, picks, day, { help = false } = {}) {
   const correct = scoreRound(passage, picks);
   const total = passage.questions.length;
   const step = nextStep(passage.step, correct, total);
   const history = [
     ...state.history,
-    { id: passage.id, step: passage.step, correct, total, day },
+    { id: passage.id, step: passage.step, correct, total, day, ...(help ? { help: true } : {}) },
   ].slice(-HISTORY_LIMIT);
   return { ...state, step, best: Math.max(state.best, step), history, open: null };
 }

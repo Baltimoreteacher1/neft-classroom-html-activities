@@ -187,8 +187,8 @@ export function heroStageHTML(I, ctx, band, suggested) {
         width="1200"
         height="760"
         alt="${I.S("An exhibition hall with four lit stations: a sound dome for listening, a reading atelier, a speaking stage and a writing desk.", "Una sala de exposición con cuatro estaciones iluminadas: una cúpula de sonido para escuchar, un taller de lectura, un escenario para hablar y una mesa para escribir.")}"
+        loading="lazy"
         decoding="async"
-        fetchpriority="high"
       />
       ${ORDER.map((d) => html`<button type="button" class="ll-pin d-${d.toLowerCase()} ${d === station ? "is-active" : ""}" style="--x:${STATIONS[d].x}%;--y:${STATIONS[d].y}%" data-hero-station="${d}" tabindex="-1" aria-hidden="true"><span></span></button>`)}
     </figure>

@@ -12,7 +12,9 @@ try {
   const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
   const errors = [];
   page.on("pageerror", (error) => errors.push(error.message));
+  // These tests drive the typed answer box; listening mode (on by default for Kindergarten to Grade 2) has its own tests.
   await page.addInitScript(() => {
+    localStorage.setItem("ewl-fluency-settings-v1", JSON.stringify({ audioFirst: "off" }));
     Math.random = () => 0.5;
     const now = Date.now();
     localStorage.setItem("ewl-fluency-tutor-v2", JSON.stringify({
@@ -69,7 +71,10 @@ try {
   assert.equal(await result.getAttribute("data-type"), "correct");
 
   const spanishContext = await browser.newContext({ viewport: { width: 1280, height: 900 } });
-  await spanishContext.addInitScript(() => localStorage.setItem("ewl-fluency-lang-v1", JSON.stringify("es")));
+  await spanishContext.addInitScript(() => {
+    localStorage.setItem("ewl-fluency-lang-v1", JSON.stringify("es"));
+    localStorage.setItem("ewl-fluency-settings-v1", JSON.stringify({ audioFirst: "off" }));
+  });
   const spanishPage = await spanishContext.newPage();
   await spanishPage.goto(`${base}/math/fluency-lab/?grade=1&skill=add-10`, { waitUntil: "networkidle" });
   await spanishPage.getByRole("button", { name: "Practicar 10" }).click();

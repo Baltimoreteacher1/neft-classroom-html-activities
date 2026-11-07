@@ -83,6 +83,15 @@ function expectedFromMeta(m) {
       return r(m.a * m.a + m.b * m.b);
     case "chance":
       return r(m.n1 + m.n2, m.d);
+    case "mean":
+      return r(
+        m.values.reduce((a, b) => a + b, 0),
+        m.values.length,
+      );
+    case "median":
+      return r(m.a + m.b, 2);
+    case "tally":
+      return r(m.counts.reduce((a, b) => a + b, 0));
     case "ratio":
       return r(m.a, m.b);
     case "equalFrac":

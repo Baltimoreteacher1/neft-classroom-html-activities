@@ -13,6 +13,9 @@ import {
 } from "../../recorder.js";
 import { esc, html, icon, raw, toHtml, wordCount } from "../../util.js";
 import * as E from "../engines/converse.js";
+import { autoDictationReady, dictating, dictationControlsHTML, toggleDictation } from "../../dictation-ui.js";
+import { canSpeak, speak as sayAloud } from "../../speech.js";
+import { canDictate } from "../../stt.js";
 
 const SPEAK_MIN_WORDS = 2;
 const recorderKey = (env) => `journey:${env.missionId}:${env.step}:converse`;
@@ -161,10 +164,19 @@ function composer(task, env, data, st, I) {
       speak
         ? html`<p class="jt-step">${I.T("1. Say it out loud", "1. Dilo en voz alta")}</p>
             ${canRec ? recorderPanel(env, data, I) : noRecordingNote(data, I)}
-            <p class="jt-step">${I.T("2. Type what you said", "2. Escribe lo que dijiste")}</p>
-            <p class="jt-note">
-              ${I.T("This lab does not turn your voice into text. You type the words, so your accent never changes what the practice partner reads.", "Este laboratorio no convierte tu voz en texto. Tú escribes las palabras, así que tu acento nunca cambia lo que lee el compañero de práctica.")}
-            </p>`
+            ${
+              canDictate()
+                ? html`<p class="jt-step">${I.T("2. Check the words you said", "2. Revisa las palabras que dijiste")}</p>
+                    <p class="jt-note">${I.T("Press the button and say your reply: the words appear in the box. Fix any word it heard wrong, or type it yourself.", "Presiona el botón y di tu respuesta: las palabras aparecen en el cuadro. Corrige las palabras que oyó mal o escríbelas tú.")}</p>
+                    ${dictationControlsHTML("jt-conv", I)}`
+                : html`<p class="jt-step">${I.T("2. Type what you said", "2. Escribe lo que dijiste")}</p>
+                    <p class="jt-note">${I.T("This browser cannot turn your voice into text. Type the words you said.", "Este navegador no puede convertir tu voz en texto. Escribe las palabras que dijiste.")}</p>`
+            }
+            ${
+              canSpeak()
+                ? html`<label class="jt-note jt-voice-toggle"><input type="checkbox" data-jt-voice ${data.voiceReplies === false ? "" : raw("checked")} /> ${I.T("Hear my partner's replies out loud", "Escuchar en voz alta las respuestas de mi compañero")}</label>`
+                : ""
+            }`
         : ""
     }
     <label class="jt-label" for="jt-input">${label}</label>
@@ -344,6 +356,27 @@ export function mountTask(root, task, env) {
     clearTakes(key);
     save({ state: r.state, draft: "", retrying: false, micMessage: "" });
     paint(r.state.ended ? "[data-jt-finish]" : "#jt-input");
+    // Voice partner: in a speaking task the partner's reply is also said aloud (the learner can turn it off).
+    const answer = r.state.turns.at(-1);
+    if (task.mode === "speak" && data.voiceReplies !== false && answer?.who === "partner" && answer.text && canSpeak())
+      sayAloud(answer.text, { rate: env.prefs?.rate || 0.9, persona: "student" });
+  }
+  /** Recognized speech goes into the reply box, which stays editable. */
+  function dictate(id) {
+    const fill = (text) => {
+      const box = root.querySelector("[data-jt-input]");
+      if (box && text) box.value = text;
+      if (text) setDraft(text);
+    };
+    toggleDictation(id, {
+      I,
+      onText: fill,
+      onDone: (text) => {
+        fill(text);
+        if (text) save({ draft: text });
+        paint("#jt-input");
+      },
+    }).then(() => paint());
   }
   function retry() {
     const last = E.learnerTurns(st()).at(-1);
@@ -440,13 +473,23 @@ export function mountTask(root, task, env) {
     save({ draft: box.value });
   };
 
+  root.addEventListener("change", (e) => {
+    if (e.target.matches?.("[data-jt-voice]")) save({ voiceReplies: e.target.checked });
+  });
   root.addEventListener("click", (e) => {
     const t = e.target.closest?.("button");
     if (!t || !root.contains(t)) return;
     if (t.hasAttribute("data-jt-retry")) return retry();
     if (t.hasAttribute("data-jt-finish")) return finish();
-    if (t.hasAttribute("data-jt-rec-start")) return void startRec();
-    if (t.hasAttribute("data-jt-rec-stop")) return void stopRecording();
+    if (t.hasAttribute("data-jt-rec-start")) {
+      if (autoDictationReady() && !dictating("jt-conv")) dictate("jt-conv");
+      return void startRec();
+    }
+    if (t.hasAttribute("data-jt-rec-stop")) {
+      if (dictating("jt-conv")) dictate("jt-conv");
+      return void stopRecording();
+    }
+    if (t.hasAttribute("data-dictate")) return dictate(t.dataset.dictate);
     if (t.hasAttribute("data-jt-insert")) {
       help(t.dataset.jtHelpId);
       insertAtCaret(t.dataset.jtInsert);

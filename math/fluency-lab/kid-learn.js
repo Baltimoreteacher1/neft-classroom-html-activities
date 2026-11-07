@@ -2,6 +2,8 @@
 // Grades 4 to 8 rows are keyed "grade:id" because ids repeat across grades; K-3 rows may use a bare id.
 // One row per skill: id|idea|watch out, each "English~Español". They replace the skill's own wording at load, and
 // the Spanish is merged into the page dictionary (i18n-es-kid.js), so the table is the single source for both.
+import { STRAND_SKILLS } from "./strand-skills.js";
+
 const ROWS = `
 count-forward|Numbers go in order. Each next number is one more.~Los números van en orden. Cada número siguiente es uno más.|Keep going from the number you see. Do not start over at 1.~Sigue desde el número que ves. No empieces otra vez en 1.
 count-cardinality|Count each thing one time. The last number tells how many.~Cuenta cada cosa una vez. El último número dice cuántas hay.|Do not count a thing twice. Do not skip one.~No cuentes una cosa dos veces. No te saltes ninguna.
@@ -77,6 +79,15 @@ elapsed-time|Elapsed time is how much time passes from the start to the end.~El 
 6:one-step|Keep the equation balanced: do the same thing to both sides.~Mantén la ecuación en equilibrio: haz lo mismo en los dos lados.|Get the variable alone. Use the opposite operation.~Deja la variable sola. Usa la operación opuesta.
 6:integers|Absolute value is the distance from zero. Distance is never negative.~El valor absoluto es la distancia a cero. Una distancia nunca es negativa.|Work inside the bars first. Do not just drop negative signs.~Resuelve primero lo que está entre las barras. No quites los signos negativos sin más.
 6:triangle-area|A triangle is half of a rectangle with the same base and height.~Un triángulo es la mitad de un rectángulo con la misma base y altura.|The height must make a right angle with the base.~La altura debe formar un ángulo recto con la base.
+6:multi-digit-division|Long division repeats one cycle: divide, multiply, subtract, bring down.~La división larga repite un ciclo: dividir, multiplicar, restar y bajar.|Check: the answer times the divisor must give the dividend.~Comprueba: la respuesta por el divisor debe dar el dividendo.
+6:order-rational|On a number line, numbers grow from left to right. A negative farther from zero is less.~En una recta numérica, los números crecen de izquierda a derecha. Un negativo más lejos del cero es menor.|−3 is less than −1, even though 3 is more than 1.~−3 es menor que −1, aunque 3 es mayor que 1.
+6:percent-whole|If you know a part and its percent, build up to 100 percent to find the whole.~Si conoces una parte y su porcentaje, sube hasta el 100 por ciento para hallar el total.|The part is not the whole. Do not take the percent of the part.~La parte no es el total. No saques el porcentaje de la parte.
+6:equivalent-expressions|Equivalent expressions have the same value for every number you put in for the variable.~Las expresiones equivalentes tienen el mismo valor para cualquier número que pongas en lugar de la variable.|Multiply every term inside the parentheses, not just the first one.~Multiplica cada término dentro del paréntesis, no solo el primero.
+6:write-inequalities|An inequality describes every number that makes a statement true.~Una desigualdad describe todos los números que hacen verdadero un enunciado.|At least includes the number itself, so it uses ≥.~Por lo menos incluye el número mismo, así que usa ≥.
+6:data-displays|A data display shows how the values are spread out.~Una gráfica de datos muestra cómo se reparten los valores.|A histogram bar counts an interval, not single values.~Una barra de un histograma cuenta un intervalo, no valores sueltos.
+6:center-spread|A center sums up the data with one number. Spread tells how much the values vary.~Un centro resume los datos con un número. La dispersión dice cuánto varían los valores.|Put the data in order before you find the median or quartiles.~Ordena los datos antes de hallar la mediana o los cuartiles.
+6:surface-area-nets|A net unfolds a solid into flat faces. Surface area is the area of all the faces.~Una red despliega un cuerpo en caras planas. El área total es el área de todas las caras.|Count every face once. A rectangular prism has six faces.~Cuenta cada cara una vez. Un prisma rectangular tiene seis caras.
+6:volume-fractional|Volume is length times width times height, even when the edges are fractions.~El volumen es largo por ancho por alto, aun cuando las aristas sean fracciones.|Multiply all three edges. Do not add them.~Multiplica las tres aristas. No las sumes.
 7:integer-add|Think of a number line: the sign shows direction, the number shows distance.~Piensa en una recta numérica: el signo da la dirección y el número da la distancia.|With different signs, find the difference. Do not just add.~Con signos distintos, halla la diferencia. No sumes sin pensar.
 7:integer-mul|Multiply the numbers first. Then decide if the answer is positive or negative.~Primero multiplica los números. Luego decide si la respuesta es positiva o negativa.|Same signs give positive. Different signs give negative.~Signos iguales dan positivo. Signos distintos dan negativo.
 7:fraction-ops|Rational numbers can be positive or negative fractions. Use fraction rules and sign rules.~Los números racionales pueden ser fracciones positivas o negativas. Usa las reglas de fracciones y de signos.|Subtracting a negative is the same as adding a positive.~Restar un negativo es lo mismo que sumar un positivo.
@@ -106,8 +117,12 @@ const pair = (text) => {
   return { en: en.trim(), es: es.trim() };
 };
 
+const STRAND_ROWS = STRAND_SKILLS.map(
+  (d) => `${d.grade}:${d.id}|${d.kid[0]}~${d.kid[1]}|${d.kid[2]}~${d.kid[3]}`,
+).join("\n");
+
 export const KID_LEARN = Object.fromEntries(
-  ROWS.trim()
+  `${ROWS.trim()}\n${STRAND_ROWS}`.trim()
     .split("\n")
     .map((row) => {
       const [id, idea, watch] = row.split("|");

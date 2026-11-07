@@ -344,7 +344,7 @@ const COVERAGE = [
   // answer-revealing visuals, on-screen listening scripts and "look at the
   // picture" with no picture, all of which shipped in the pre-2026-10 lab.
   [
-    /^(access-practice-lab\/|access-teacher\/|access-expedition\/|access-family-expedition\/|access-family-tour\/|docs\/access-reading-room-2\/|tools\/paper-passport\/|tools\/(validate-access-game-studio|access-game-studio-e2e|access-living-studio-e2e|access-move-e2e|access-move|access-path-e2e|access-axe-sweep|access-hall-art|access-visual-qa|validate-access-lab|access-lab-index|access-lab-e2e|access-engagement-e2e|access-studio-e2e|access-publisher-e2e|access-reality-e2e|access-lab-sweep|validate-publisher-journey|access-evidence-e2e|access-predictive-e2e|access-family-e2e|access-journey-e2e|access-journey-routes-e2e|gen-journey-inventory|access-es-leak-scan|generate-access-printables|gen-access-inventory|sync-access-shell|validate-reading-room|validate-reading-adventures|access-reading-room-e2e|expand-reading-room-library|author-reading-room-additions|author-reading-room-sustained-reads)\.mjs$|tools\/lib\/(access-lab-content|access-serve|journey-routes|journey-inventory-rows)\.mjs$|tools\/(access-acc-[a-z-]+\.(test\.)?mjs|validate-access-bank\.mjs)$|\.access_upgrade_(state\.json|checkpoint\.md)$|tools\/(access-lab|access-living-studio|access-path|access-move|access-design-system|access-engagement|access-skill-graph|access-teacher-evidence|access-i18n|access-calibration|access-evidence-tools|access-student-tools|access-game-studio-contract|access-reality|access-journey|access-predict)[^/]*\.test\.mjs$)/,
+    /^(access-practice-lab\/|access-teacher\/|access-expedition\/|access-family-expedition\/|access-family-tour\/|docs\/access-reading-room-2\/|tools\/paper-passport\/|tools\/(validate-access-game-studio|access-game-studio-e2e|access-living-studio-e2e|access-move-e2e|access-move|access-path-e2e|access-axe-sweep|access-hall-art|access-visual-qa|validate-access-lab|access-lab-index|access-lab-e2e|access-engagement-e2e|access-studio-e2e|access-publisher-e2e|access-reality-e2e|access-lab-sweep|validate-publisher-journey|access-evidence-e2e|access-predictive-e2e|access-family-e2e|access-journey-e2e|access-journey-routes-e2e|gen-journey-inventory|access-es-leak-scan|generate-access-printables|gen-access-inventory|sync-access-shell|validate-reading-room|validate-reading-adventures|access-reading-room-e2e|expand-reading-room-library|author-reading-room-additions|author-reading-room-sustained-reads)\.mjs$|tools\/lib\/(access-lab-content|access-early-rules|access-serve|journey-routes|journey-inventory-rows)\.mjs$|tools\/access-early-content\/[a-z0-9-]+\.mjs$|tools\/build-access-early-content\.mjs$|tools\/access-early-[a-z-]+\.test\.mjs$|tools\/(access-acc-[a-z-]+\.(test\.)?mjs|validate-access-bank\.mjs)$|\.access_upgrade_(state\.json|checkpoint\.md)$|tools\/(access-lab|access-living-studio|access-path|access-move|access-design-system|access-engagement|access-skill-graph|access-teacher-evidence|access-i18n|access-calibration|access-evidence-tools|access-student-tools|access-game-studio-contract|access-reality|access-journey|access-predict)[^/]*\.test\.mjs$)/,
     ["validate:access-lab", "test", "validate:js-syntax", "check"],
   ],
 
@@ -747,7 +747,7 @@ const COVERAGE = [
   [/^data\/reveal-assets-retained\.json$/, ["validate:reveal-assets"]],
   // The Family Take-Home Sheet (PDF + Word, EN + ES) and the one-standard-code rule: generator, shared modules, the files, both gates.
   [
-    /^(lessons\/[^/]+\/downloads\/[^/]+-family-(sheet|guide)(-es)?\.(pdf|docx)|scripts\/(generate-family-takehome\.mjs|lib\/(family-takehome-[a-z]+|qr-code|pdf-text-sizes|lesson-identity|homework-print-plan)\.mjs)|tools\/(validate-family-print|validate-family-standards|qr-code\.test)\.mjs|docs\/family-homework-v3\/standards\.md)$/,
+    /^(lessons\/[^/]+\/downloads\/[^/]+-family-(sheet|guide)(-es)?\.(pdf|docx)|scripts\/(generate-family-takehome\.mjs|lib\/(family-takehome-[a-z]+|pdf-text-sizes|lesson-identity|homework-print-plan)\.mjs)|shared\/qr\/qr-code\.mjs|tools\/(validate-family-print|validate-family-standards|qr-code\.test)\.mjs|docs\/family-homework-v3\/standards\.md)$/,
     [
       "validate:family-print",
       "validate:family-standards",
@@ -799,6 +799,12 @@ const COVERAGE = [
   [/^algebra-balance-scale\//, ["validate:game-rules", "test"]],
   [
     /^(assets\/(my-progress|learning-supports|class-investigation|family-share|family-engagement)\/|functions\/api\/(class-data|family-engagement))/,
+    ["test"],
+  ],
+  // The class platform (docs/class-platform.md): its endpoint tests run the real
+  // Function over node:sqlite; the migration is pinned to SCHEMA by that test.
+  [
+    /^(functions\/(api\/class\/|_lib\/class-platform\/|_lib\/model-call\.js$)|shared\/class-platform\/|migrations\/0011_class_platform\.sql$|docs\/class-platform\.md$)/,
     ["test"],
   ],
   [

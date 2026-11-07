@@ -1,5 +1,6 @@
 // EduWonderLab 7.0 engine tests (npm test): concept registry, Socratic coach ladder, provider boundary, learner model.
 // This is also the versioned tutoring evaluation suite: every skill x many seeds, plus adversarial learner input.
+
 import assert from "node:assert/strict";
 import { getModel, MathVisualEngine, seeded } from "../math/fluency-lab/e8/engine-core.js";
 import {
@@ -20,6 +21,7 @@ import {
 import { evidenceFor, MIN_EVIDENCE, recommend } from "../math/fluency-lab/v7/learner.js";
 import { createCoach, LIMITS, validateReply } from "../math/fluency-lab/v7/provider.js";
 import { canReveal, leaksAnswer, MAX_LEVEL, nextMove } from "../math/fluency-lab/v7/tutor.js";
+import { TOTAL_SKILLS } from "./lib/fluency-skill-count.mjs";
 
 let n = 0;
 const t = (cond, msg) => {
@@ -28,7 +30,7 @@ const t = (cond, msg) => {
 };
 
 // ---- concepts
-t(ALL_SKILLS.length === 96, "96 skills");
+t(ALL_SKILLS.length === TOTAL_SKILLS, `${TOTAL_SKILLS} skills`);
 t(coverage().length === 8 && coverage().every((g) => g.skills > 0), "all 8 grades covered");
 for (let g = 1; g <= 8; g += 1)
   t(

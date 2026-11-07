@@ -2,7 +2,9 @@
 // fetched lazily (a student opening one Speaking activity downloads one domain
 // file, not 1 MB of everything) and revalidated on each load (`no-cache`), so a
 // deploy is picked up immediately without a hard refresh.
+import { CONTENT_BANDS } from "./bands.js";
 import { BASE, bandOfId } from "./util.js";
+import { CONTENT_BAND_ORDER } from "./grade-bands.js";
 
 const cache = new Map();
 
@@ -40,6 +42,9 @@ export const loadReadingRoomLessons = () => getJson("reading-room/lessons.json")
 export const loadReadingAdventures = () => getJson("reading-room/adventures.json");
 export const loadReadingStrategies = () => getJson("reading-room/strategy-lessons.json");
 export const loadLadder = () => getJson("ladder/passages.json");
+export const loadGrammar = () => getJson("grammar/packs.json");
+export const loadLadderLevels = () => getJson("ladder/leveled.json").then((d) => d.passages || {});
+export const getEvidenceSentences = () => getJson("studio/evidence-sentences.json");
 export const loadPuzzles = () => getJson("puzzles/puzzles.json");
 export const loadWorlds = () => getJson("worlds.json");
 export const loadPatterns = () => getJson("detective/patterns.json");
@@ -69,10 +74,11 @@ export async function loadDomain(band, domain) {
   return data;
 }
 
-/** Bands that actually ship content, in display order. */
+/** Bands that actually ship content, youngest first (the order lives in grade-bands.js). */
 export async function availableBands() {
   const index = await loadIndex();
-  return ["3-5", "6-8"].filter((b) => index.bands[b]);
+  return CONTENT_BANDS.filter((b) => index.bands[b]);
+  return CONTENT_BAND_ORDER.filter((b) => index.bands[b]);
 }
 
 /** Domains for a band from the index (no domain fetch). */

@@ -10,6 +10,7 @@ import { familyLaunch, familySessionLaunch } from "./family-planner.js";
 import { missionItems } from "./fm2/mission.js";
 import { topicOfSkill } from "./fm2/skill-notes.js";
 import { skillsFor } from "./fm2/inventory.js";
+import { renderStory, storyIntro } from "./story-of-day.js"; // fl-teacher: story of the day
 import {
   activeProfile,
   addLearner,
@@ -469,6 +470,9 @@ function draw() {
   const coach = coachHtml(info);
   $("#coach-sub").textContent = coach.sub;
   paint($("#coach-body"), coach.html);
+  $("#story-title").textContent = storyIntro(lang).title; // fl-teacher
+  $("#story-sub").textContent = storyIntro(lang).lead;
+  renderStory($("#story-body"), { grade: S.grade, lang });
   $("#print-coach").hidden = !info.plan && !info.recs.length;
   paint($("#rw-body"), realworldHtml());
   $("#tonight-link").href = familySessionLaunch({

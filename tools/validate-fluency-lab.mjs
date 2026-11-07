@@ -8,6 +8,7 @@ import {
   seededRandom,
   validateAnswer,
 } from "../math/fluency-lab/problem-bank.js";
+import { SKILLS_PER_GRADE, TOTAL_SKILLS } from "./lib/fluency-skill-count.mjs";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const html = readFileSync(resolve(root, "math/fluency-lab/index.html"), "utf8");
@@ -25,11 +26,14 @@ check(
   GRADES.map((grade) => grade.grade).join(",") === "0,1,2,3,4,5,6,7,8",
   "Grades must run consecutively from Kindergarten (0) through 8.",
 );
-check(ALL_SKILLS.length === 96, `Expected 96 skills; found ${ALL_SKILLS.length}.`);
+check(
+  ALL_SKILLS.length === TOTAL_SKILLS,
+  `Expected ${TOTAL_SKILLS} skills; found ${ALL_SKILLS.length}.`,
+);
 
 for (const grade of GRADES) {
   check(
-    grade.skills.length === (grade.grade === 0 ? 8 : 11),
+    grade.skills.length === SKILLS_PER_GRADE[grade.grade],
     `${grade.label} has an unexpected skill count.`,
   );
   const ids = new Set(grade.skills.map((skill) => skill.id));
@@ -65,7 +69,10 @@ for (const grade of GRADES) {
         `${grade.label}/${skill.id} generated no answer.`,
       );
       check(
-        ["number", "fraction", "text", "choice"].includes(item.kind),
+        // expression / inequality / order are typed forms checked by typed-answers.js
+        ["number", "fraction", "text", "choice", "expression", "inequality", "order"].includes(
+          item.kind,
+        ),
         `${grade.label}/${skill.id} generated unsupported kind ${item.kind}.`,
       );
       check(

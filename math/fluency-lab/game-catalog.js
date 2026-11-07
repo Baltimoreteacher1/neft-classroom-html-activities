@@ -55,6 +55,7 @@ export const TAGS = {
   picture: FACTS,
   baseball: ["facts", "twoplayer", "race"],
   guess: PUZZLE,
+  hiding: PUZZLE,
   race: ["facts", "race"],
   e8numberquest: PUZZLE,
   e8fractionfactory: PUZZLE,

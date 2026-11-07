@@ -4,7 +4,10 @@ import { t } from "../i18n.js";
 import { findSkill, skillKey, localDay } from "../tutor-engine.js";
 import { loadQuests, saveQuests, emptyQuests, dayQuests, progressQuest, supportiveRetry } from "./quests.js";
 import { loadFacts, saveFacts, emptyFacts, factStatus, gradeFactDomain, progressMap, isDifficult } from "./fact-model.js";
-import { buildFactSession, finishSession } from "./fact-session.js";
+import { buildFactSession } from "./fact-session.js";
+import { loadFactPlan } from "./fact-plan.js";
+import { applyFactPlan, mountFactPractice } from "./fact-practice.js";
+import { SYMBOL } from "./fact-keys.js";
 import { loadInterventions, saveInterventions, emptyInterventions, startIntervention, nextItems, recordResult, summarizeForTeacher, describeStage, retentionDue } from "./intervention-engine.js";
 import { mountStrategyTheater } from "./strategy-theater.js";
 import { STRATEGY_IDS, strategyFor } from "./fact-strategies.js";
@@ -56,10 +59,8 @@ export function mountMobyQuests(host, { tutor, grade, now = Date.now(), onOpenSk
 }
 
 // 2. Fact Fluency Practice & Strategy Theater Widget
-export function mountMobyFluency(host, { grade, now = Date.now(), onDoneSession }) {
+export function mountMobyFluency(host, { grade, now = Date.now(), onDoneSession, onAnswer }) {
   if (!host) return;
-  const store = loadFacts();
-  const domain = gradeFactDomain(grade);
 
   host.innerHTML = `
     <section class="mby-fluency-section" aria-label="${escapeHtml(t("Adaptive Fact Fluency"))}" style="margin:1.5rem 0;padding:1.25rem;background:#ffffff;border-radius:12px;border:1px solid #cbd5e1;">
@@ -84,63 +85,30 @@ export function mountMobyFluency(host, { grade, now = Date.now(), onDoneSession 
     </section>`;
 
   const subHost = host.querySelector("#mby-fluency-host");
+  // fl-teacher: a teacher's fact plan (fact-plan.js) narrows the operations and sets the number of problems.
+  const plan = loadFactPlan();
+  if (plan)
+    subHost.insertAdjacentHTML(
+      "beforebegin",
+      `<p class="fl-fact-plan-note" role="note">${escapeHtml(t("Your teacher's fact plan: {n} problems a session.", { n: plan.count || "—" }))}${plan.ops.length ? ` ${escapeHtml(t("Facts:"))} ${plan.ops.map((op) => SYMBOL[op]).join(" ")}` : ""}</p>`,
+    );
 
   host.querySelectorAll("[data-moby-start]").forEach((btn) => {
     btn.addEventListener("click", () => {
-      const minutes = Number(btn.dataset.mobyStart) || 5;
-      subHost.innerHTML = `<div style="padding:1rem;text-align:center;color:#0369a1;font-weight:600;">${escapeHtml(t("Building your personalized session..."))}</div>`;
-      const session = buildFactSession({ store, grade, minutes, mode: "untimed", now });
-      renderSession(subHost, session, store, now, onDoneSession);
+      const minutes = plan ? 15 : Number(btn.dataset.mobyStart) || 5;
+      const startedAt = Date.now();
+      const session = buildFactSession({ store: loadFacts(), grade, minutes, mode: "untimed", now: startedAt });
+      session.items = applyFactPlan(session.items, plan);
+      // fl-teacher: introduce-then-practice and the one-tap "how did you get it" note (fact-practice.js).
+      mountFactPractice(subHost, session, {
+        store: loadFacts(),
+        save: saveFacts,
+        now: () => Date.now(),
+        onAnswer,
+        onDone: (receipt) => onDoneSession?.(receipt),
+      });
     });
   });
-}
-
-function renderSession(host, session, store, now, onDone) {
-  let currentIndex = 0;
-  const items = session.items;
-
-  const showItem = () => {
-    if (currentIndex >= items.length) {
-      const receipt = finishSession(store, items.map((it) => ({ key: it.key, correct: true, firstTry: true, supported: false })), now);
-      saveFacts(store);
-      host.innerHTML = `
-        <div style="padding:1.5rem;text-align:center;background:#ecfdf5;border:1px solid #10b981;border-radius:8px;">
-          <h4 style="margin:0 0 0.5rem;font-size:1.25rem;color:#065f46;">🎉 ${escapeHtml(t("Practice Routine Complete!"))}</h4>
-          <p style="margin:0;font-size:0.9375rem;color:#047857;">${escapeHtml(session.summary)}</p>
-        </div>`;
-      onDone?.(receipt);
-      return;
-    }
-
-    const item = items[currentIndex];
-    host.innerHTML = `
-      <div style="padding:1.25rem;background:#f8fafc;border:1px solid #cbd5e1;border-radius:8px;text-align:center;">
-        <span style="font-size:0.8125rem;font-weight:600;color:#64748b;text-transform:uppercase;">${escapeHtml(item.phase)} • ${currentIndex + 1} / ${items.length}</span>
-        <div style="font-size:2rem;font-weight:700;color:#0f172a;margin:0.75rem 0;">${escapeHtml(item.question)}</div>
-        <p style="font-size:0.875rem;color:#475569;margin-bottom:1rem;">💡 ${escapeHtml(item.why)}</p>
-        <div style="display:flex;justify-content:center;gap:0.5rem;">
-          <input type="text" id="mby-fact-input" style="width:100px;height:48px;font-size:1.5rem;text-align:center;border:2px solid #94a3b8;border-radius:6px;" autofocus autocomplete="off" />
-          <button type="button" id="mby-fact-submit" class="mby-btn mby-btn-primary" style="min-height:48px;padding:0 1.25rem;font-weight:600;border-radius:6px;cursor:pointer;">${escapeHtml(t("Submit"))}</button>
-        </div>
-      </div>`;
-
-    const inp = host.querySelector("#mby-fact-input");
-    const sub = host.querySelector("#mby-fact-submit");
-    const checkAns = () => {
-      const val = inp.value.trim();
-      if (!val) return;
-      if (item.answers.includes(val)) {
-        currentIndex += 1;
-        showItem();
-      } else {
-        inp.select();
-      }
-    };
-    sub.addEventListener("click", checkAns);
-    inp.addEventListener("keydown", (e) => { if (e.key === "Enter") checkAns(); });
-  };
-
-  showItem();
 }
 
 // 3. Teacher Diagnostic & Intervention Grouping Widget

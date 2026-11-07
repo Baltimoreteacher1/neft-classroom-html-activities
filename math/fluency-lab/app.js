@@ -11,9 +11,13 @@ import {
 import { FEEDBACK_PHASES, feedbackView, nextPhase } from "./feedback-machine.js";
 import { paintActions, paintFeedback } from "./feedback-panel.js";
 import { itemSignature } from "./mastery-model.js";
-import { adaptiveProblem, dailyPlan, emptyTutor, evidence, feedbackFor, findSkill, localDay, missionPlan, prerequisites, prerequisiteGraph, recommendations, recordAnswer, rememberMistake, sanitizeTutor, skillForItem, skillKey as tutorSkillKey } from "./tutor-engine.js";
+import { adaptiveProblem, dailyPlan, emptyTutor, evidence, feedbackFor, findSkill, localDay, missionPlan, prerequisites, prerequisiteGraph, recommendations, markExampleViewed, recordAnswer, rememberMistake, sanitizeTutor, skillForItem, skillKey as tutorSkillKey } from "./tutor-engine.js";
 import { checkupPlan, checkupSummary, recordCheckupAnswer } from "./placement.js";
-import { adaptiveItem } from "./adaptive-item.js"; // fl4:adaptive
+import { adaptiveItem, builtAnswerItem } from "./adaptive-item.js"; // fl4:adaptive
+import { mountResponse } from "./response-widgets.js";
+import { answerPlan, audioFirstActive, audioFirstOffered, cleanAudioFirst, cleanSettings } from "./audio-first-core.js";
+import { audioFirstOn, configureAudioFirst, mountCountedAnswer, presentProblem, renderChoiceTiles, speakFeedback, syncGameBanner, syncGuide } from "./audio-first-view.js";
+import { checkResponse } from "./response-check.js";
 import { alignTier, nextTier, tierToLevel } from "./difficulty-levels.js"; // fl4:adaptive
 import { checkupAdvice } from "./diagnostic-engine.js"; // fl4:adaptive
 import { consumeScaffold, planRescue, recordRescue, returnMessage, rescueQueue, rescueStep, startRescue } from "./rescue.js"; // fl4:adaptive
@@ -24,6 +28,7 @@ import { skillIdForWorld } from "./puzzle-worlds.js";
 import { transferPrompt } from "./lesson-content.js";
 import { formatVerticalFractions, handleModelInput, handleModelTap, interactivePicture, mathText, openFillRow, stepPhaseBadge, stepVisual, stepWaiting, stepsBlock, trailPicture } from "./trail-pictures.js";
 import { PROFILE_NAMES, assignmentDifficultyLevel, assignmentQueue, cleanProgress, decodeAssignment, downloadFile, makeBackup, mountTeacherStudio, parseBackup, profileKey, profiles, progressReport, readLocal, selectProfile, writeLocal } from "./school-tools.js";
+import { boardFromHash } from "./board-link.js"; // fl-teacher: shareable boards
 import { mountWorkbench } from "./workbench.js";
 import { createWorkbenchState } from "./workbench-state.js";
 import { answerStillHidden, liveHelpHtml } from "./live-help.js";
@@ -71,7 +76,12 @@ import { languagePromptHtml } from "./language-bridge.js";
 import { captureDraft, explainCardHtml, initLanguage, journalHtml, journalPrintHtml, problemSupportHtml, restoreDraft, spanishPeekHtml, wordStripHtml } from "./language-card.js";
 import { languageEvidence, loadJournal } from "./language-journal.js";
 import { setLanguageProfile } from "./language-settings.js";
-import { questionEs } from "./question-es.js";
+import { choicesEs, questionEs } from "./question-es.js";
+import { accessSummary, activeAccess, mountCalculator, trimChoices } from "./accommodations.js"; // fl-teacher:access
+import { acceptFactPlanFromHash } from "./moby/fact-plan.js"; // fl-teacher:facts
+import { acceptVideosFromHash, videoSlotHtml } from "./skill-videos.js"; // fl-teacher:video
+import { freshWorksheet, questionsLog, questionsLogHtml, worksheetHtml } from "./questions-log.js"; // fl-teacher:log
+import { actionPlanHtml } from "./action-plan.js"; // fl-teacher:plan
 import { handleStepPlayerClick, handleStepPlayerSolved, lightStepPlayers, stepPlayer } from "./step-player.js";
 import { applyGradeExperience } from "./grade-experience.js";
 import { mountAtelierHome } from "./atelier/home.js";
@@ -83,12 +93,18 @@ import { analyzeResponse, recordDiagnosis } from "./e8/misconception-engine.js";
 import { evidenceFor } from "./e8/mastery-evidence.js";
 import { mountItemPractice } from "./e8/item-practice-ui.js";
 import { stampBackup, verifyBackup } from "./e8/data-integrity.js";
+import { chooseHint } from "./ai-hint.js";
+import { fluencySummary } from "./class-link.js";
+import { mountClassLink } from "./class-link-view.js";
+import { loadInterventions } from "./moby/intervention-engine.js";
 import { evidenceTableHtml, mountAdaptivePanel, mountRepairStudio } from "./e8/adaptive-ui.js";
 import { LESSON_SKILL } from "./e8/show-me-why.js";
 import { masteryStage } from "./learning-evidence.js";
 import { initGradeHub } from "./grade-hub.js";
 import { markDestinations, renderSubnav } from "./hub-nav.js";
 import { renderPracticeHub } from "./practice-hub.js";
+import { campaignPanelHtml } from "./campaign.js"; // fl-teacher:campaign
+import { saveUnitCheckResult, startUnitCheck, unitCheckById, unitCheckGrade, unitCheckPanelHtml, unitCheckQueue, unitCheckSkillTitle } from "./unit-check.js"; // fl-teacher:unit-check
 import { cardCaptions } from "./fraction-division-copy.js";
 import { mountRealityEntry } from "./reality/entry.js";
 import { mountStudio, studioAvailable, studioModeled } from "./studio/studio.js";
@@ -263,6 +279,15 @@ const els = {
   tptLeitnerBadge: document.querySelector("#tpt-leitner-badge"),
 };
 
+// Pre-reader (listening) mode: on by default for Kindergarten to Grade 2, a switch for Grade 3, or on for an assignment that asks for it.
+configureAudioFirst({
+  active: () => audioFirstActive({ setting: state.settings?.audioFirst, grade: state.grade, assignment: state.assignment }),
+  buddyLook: () => loadRewards().buddy,
+  questionEs,
+  choicesEs,
+  format: mathText,
+});
+
 const state = {
   grade: GRADES.some((grade) => grade.grade === initialGrade) ? initialGrade : Number(readLocal(profileKey(`${SETTINGS_KEY}:grade`, activeProfile), 1)),
   gradeInUrl: GRADES.some((grade) => grade.grade === initialGrade),
@@ -276,8 +301,10 @@ const state = {
   item: null,
   itemAttempts: 0,
   guidedStepsShown: 0,
+exampleViewed: false,
+exampleOpen: false,
   progress: cleanProgress(loadJson(STORAGE_KEY, {})),
-  settings: loadJson(SETTINGS_KEY, { largeText: false }),
+  settings: cleanSettings(loadJson(SETTINGS_KEY, { largeText: false })),
   tutor: sanitizeTutor(loadJson(TUTOR_KEY, emptyTutor())),
   itemDone: false,
   firstAnswerCorrect: null,
@@ -295,6 +322,8 @@ const state = {
   problemStartedAt: 0,
   firstResponseMs: null,
 };
+acceptVideosFromHash(location.hash); // fl-teacher: a #videos= link saves the teacher's skill videos on this device
+acceptFactPlanFromHash(location.hash); // fl-teacher: a teacher's #factplan= link saves the plan for this learner
 const launchLang = initialParams.get("lang") || state.assignment?.lang;
 if (["en", "es"].includes(launchLang)) { setLang(launchLang, { persist: false }); translatePage(document); }
 const gradeDisplay = (grade) => getGrade(grade).label;
@@ -312,10 +341,12 @@ function loadJson(key, fallback) {
   return readLocal(profileKey(key, activeProfile), fallback) || fallback;
 }
 
+let classSync = null; // class platform sync (class-link.js); null until the class card mounts
 function saveProgress() {
   writeLocal(profileKey(STORAGE_KEY, activeProfile), state.progress);
   writeLocal(profileKey(TUTOR_KEY, activeProfile), state.tutor);
   recordGrowth(state.tutor); // fl4:teacher: one growth snapshot per skill per day
+  classSync?.markDirty();
 }
 
 function saveSettings() {
@@ -767,6 +798,7 @@ function renderLearn() {
         </div>
       </div>` : ""}
       ${!isFractionDivision ? (animated ? "</details>" : "</div>") : ""}
+      ${videoSlotHtml(tutorSkillKey(skill))}
       <p class="learn-watch"><strong>Watch out:</strong> ${highlightVocab(escapeHtml(t(skill.learn.watch)))}</p>
       ${wordStripHtml(skill, { heading: t("Words to know") })}
       ${languagePromptHtml(skill, { heading: t("Pause, notice, and explain") })}
@@ -934,6 +966,7 @@ function createSession(mode, target, queue = null, options = {}) {
     independentCorrect: 0,
     diagnosticResults: {},
     storyMode: Boolean(options.storyMode),
+    ...(options.unitId ? { unitId: options.unitId, unitResults: {} } : {}), // fl-teacher:unit-check
     finished: false,
   };
 }
@@ -951,6 +984,7 @@ function beginSession(mode, target, queue = null, options = {}) {
   els.answerForm.hidden = false;
   els.independentPractice.hidden = true;
   els.resetButton.textContent = mode === "guided" ? "Try another guided set" : "Start another set";
+  els.resetButton.hidden = mode === "unit"; // fl-teacher:unit-check: one check per unit per day
   els.sessionType.textContent =
     mode === "streak"
       ? "Streak · 10 in a row"
@@ -960,7 +994,9 @@ function beginSession(mode, target, queue = null, options = {}) {
           ? "🃏 Flashcard Drill · 10 Cards"
           : mode === "guided"
             ? "Guided practice · 5"
-            : mode === "daily"
+            : mode === "unit"
+              ? "Unit Check"
+              : mode === "daily"
               ? "Today's 10"
               : mode === "mission"
                 ? "5-step learning mission"
@@ -1006,15 +1042,19 @@ function nextProblem(restoredItem = null) {
   else if (queueEntry?.original) state.item = { ...queueEntry.original };
   else {
     for (let attempt = 0; attempt < 20; attempt++) {
-      state.item = adaptiveItem(skill, state.session.rng, tier); // fl4:adaptive
-      // About one problem in four is a story version of the same numbers, never in the checkup.
-      if (state.session.storyMode || queueEntry?.transfer) state.item = storyFor(state.item, state.session.rng, skill) || state.item;
-      else if (state.session.mode !== "diagnostic" && level >= 1 && state.session.rng() < 0.25) state.item = storyFor(state.item, state.session.rng) || state.item;
+      // Built answers (plot, place, shade, fill) mix into practice; the checkup and flash cards stay typed.
+      const built = !["diagnostic", "flashcard"].includes(state.session.mode) && !state.session.storyMode && !queueEntry?.transfer ? builtAnswerItem(skill, state.session.rng, tier) : null;
+      state.item = built || adaptiveItem(skill, state.session.rng, tier); // fl4:adaptive
+      // About one problem in four is a story version of the same numbers, never in the checkup. A built answer keeps its own stem.
+      if (!built && (state.session.storyMode || queueEntry?.transfer)) state.item = storyFor(state.item, state.session.rng, skill) || state.item;
+      else if (!built && state.session.mode !== "diagnostic" && level >= 1 && state.session.rng() < 0.25) state.item = storyFor(state.item, state.session.rng) || state.item;
       if (!state.recentQuestions.includes(state.item.question)) break;
     }
     state.recentQuestions = [...state.recentQuestions, state.item.question].slice(-8);
   }
   state.item.skill = skill;
+  const access = activeAccess(state.assignment, state.session.mode); // fl-teacher:access: fewer choices, never a different answer
+  if (access?.mc && state.item.choices && !restoredItem) state.item.choices = trimChoices(state.item.choices, (choice) => validateAnswer(choice, state.item), access.mc, state.session.rng);
   state.itemAttempts = 0;
   state.itemDone = false;
   state.firstAnswerCorrect = null;
@@ -1032,6 +1072,7 @@ function nextProblem(restoredItem = null) {
   if (els.languageSlot) els.languageSlot.innerHTML = "";
   const missionSupport = state.session.mode === "mission" && queueEntry?.purpose === "Build with support";
   state.initialSupport = state.session.mode === "guided" || missionSupport || Boolean(queueEntry?.original) || Boolean(queueEntry?.forceGuided) || (adapting && level === 0 && tier <= 1 && !state.forceIndependentFirst && !missionIndependent && !repairIndependent && !plannedIndependent) || (!plannedIndependent && !restoredItem && consumeScaffold(state.session, tutorSkillKey(skill))) || (state.session.mode === "assignment" && state.assignment?.mode === "guided");
+  if (examplePolicy()) state.initialSupport = false; // fl-teacher:example: the assignment decides when a worked example is offered
   state.forceIndependentFirst = false;
   state.guidedStepsShown = state.session.mode === "guided" ? 1 : 0;
   els.feedback.hidden = true;
@@ -1064,6 +1105,7 @@ function nextProblem(restoredItem = null) {
   formatProblemArena(state.item);
   els.topic.textContent = `${skill.title} · ${gradeDisplay(skill.grade)}`;
   document.querySelector("#problem-language-support").innerHTML = state.session.mode === "diagnostic" ? spanishPeekHtml(state.item) : problemSupportHtml(skill, state.item);
+  if (access?.es) document.querySelector("#problem-language-support .lang-peek")?.setAttribute("open", ""); // fl-teacher:access
   const unlockSkill = queueEntry?.unlocks ? findSkill(queueEntry.unlocks) : null;
   const relatedReason = unlockSkill ? ` ${t("It supports {skill}.", { skill: t(unlockSkill.title) })}` : "";
   els.insight.textContent = state.session.mode === "diagnostic" ? (queueEntry?.purpose === "Second look" ? t("One miss is not enough to decide, so here is a fresh one. Choose “I’m not sure yet” whenever you need to.") : queueEntry?.purpose === "Foundation check" ? t("A short look at an earlier idea this builds on. Choose “I’m not sure yet” whenever you need to.") : t("A miss gets a second look before it counts. Choose “I’m not sure yet” whenever you need to.")) : queueEntry?.reason ? `${displayRecommendationReason(queueEntry.purpose || "Build confidence")}. ${t("This skill was suggested because")}: ${displayRecommendationReason(queueEntry.reason)}.${relatedReason}` : queueEntry?.purpose ? displayRecommendationReason(queueEntry.purpose) : (state.initialSupport ? "A smaller step with coaching. We’ll build back toward independent work." : adapting && level === 2 ? "Your recent answers were strong. Try this one independently, then explain a check." : adapting ? "Work at your pace. Help is here when you need it." : "");
@@ -1078,8 +1120,12 @@ function nextProblem(restoredItem = null) {
   }
   els.guidedCoach.hidden = !state.initialSupport;
   if (state.initialSupport) state.guidedStepsShown = 1;
+  state.exampleOpen = false;
+  state.exampleViewed = state.initialSupport; // fl-teacher:example: steps open from the start count as a viewed example
   renderGuidedCoach();
   renderAnswerControl();
+  // Pre-reader mode reads the question and choices; flash cards keep their own card and typed answer.
+  presentProblem(state.item, state.session.mode === "flashcard" ? { kind: "typed" } : answerPlan(state.item));
   renderStrategyTagPicker();
   updateSessionHeader();
   state.isFixing = false;
@@ -1091,7 +1137,7 @@ function nextProblem(restoredItem = null) {
   });
   if (els.fixAnswerBtn) els.fixAnswerBtn.hidden = true;
   if (els.checkButton) {
-    els.checkButton.hidden = false;
+    els.checkButton.hidden = audioFirstOn() && Boolean(state.item.choices); // pre-reader mode: a tapped choice is the answer, nothing else to press
     els.checkButton.textContent = "Check";
   }
   if (els.toggleSolver) {
@@ -1135,11 +1181,24 @@ function nextProblem(restoredItem = null) {
     els.answerForm.hidden = false;
   }
   onFluencyProblemPresented();
+  applyAccessProfile(access); // fl-teacher:access
   saveActiveSession();
   if (isFlashcard) {
     (els.tptQuickInput || document.querySelector("#tpt-quick-input"))?.focus();
-  } else if (state.item.choices) els.choiceAnswers.querySelector("button")?.focus();
+  } else if (state.item.response) document.querySelector("#response-widget [tabindex='0'], #response-widget button")?.focus();
+  else if (state.item.choices) els.choiceAnswers.querySelector("button")?.focus();
   else els.answerInput.focus();
+}
+
+// fl-teacher:access: the assignment's accommodation profile (read-aloud, Focus view, calculator) for this problem.
+// Nothing here is saved to the learner's own settings.
+let unmountAccessCalc = () => {};
+function applyAccessProfile(access) {
+  state.accessFocus = Boolean(access?.focus);
+  document.body.classList.toggle("focus-mode", Boolean(state.settings.focus || state.accessFocus));
+  unmountAccessCalc();
+  unmountAccessCalc = access?.calc ? mountCalculator(els.answerForm?.parentElement) : () => {};
+  if (access?.read && state.item) speakProblem(state.lang === "es" ? "es" : "en");
 }
 
 function formatFlashcardDisplay(item) {
@@ -6915,7 +6974,7 @@ function guidedStepContent() {
 }
 
 function renderGuidedCoach() {
-  if (!state.initialSupport || !state.item) return;
+  if ((!state.initialSupport && !state.exampleOpen) || !state.item) return;
   const steps = guidedStepContent();
   const allCopies = steps.map((entry) => entry.copy);
   els.guidedSteps.innerHTML = steps
@@ -6945,10 +7004,23 @@ function renderGuidedCoach() {
   els.guidedNextStep.disabled = stepWaiting(steps.map((entry) => entry.copy), state.guidedStepsShown, `coach:${state.item.question}`);
 }
 
+// An assignment may offer a worked example only after the first answer ("after") or never ("hide").
+const examplePolicy = () => (state.session?.mode === "assignment" ? state.assignment?.example || null : null);
+
+// Opening a worked example is recorded on the answer it belongs to, so a report can show how often it was used.
+function noteExampleViewed() {
+  state.exampleViewed = true;
+  if (state.itemAttempts > 0 && state.item?.skill) {
+    markExampleViewed(state.tutor, state.item.skill);
+    saveProgress();
+  }
+}
+
 function revealGuidedStep() {
   const steps = guidedStepContent();
-  if (!steps.length || state.guidedStepsShown >= steps.length) return null;
+  if (examplePolicy() === "hide" || !steps.length || state.guidedStepsShown >= steps.length) return null;
   state.guidedStepsShown += 1;
+  noteExampleViewed();
   renderGuidedCoach();
   return steps[state.guidedStepsShown - 1];
 }
@@ -6957,6 +7029,36 @@ function renderAnswerControl() {
   const item = state.item;
   if (!item) return;
   const answerLabel = document.querySelector(".answer-label");
+  const responseHost = document.querySelector("#response-widget");
+  state.responseWidget?.destroy();
+  state.responseWidget = null;
+  const plan = audioFirstOn() ? answerPlan(item) : null; // pre-reader mode: tap, count or key the answer (audio-first-core.js)
+  if (els.voiceAnswerBtn) els.voiceAnswerBtn.hidden = Boolean(item.response) || Boolean(plan);
+
+  if (item.response && responseHost) {
+    // A built answer: the control writes its value into the answer field, so Check and every rule after it
+    // (attempts, evidence, repair) work exactly as for a typed answer.
+    els.choiceAnswers.hidden = true;
+    els.choiceAnswers.innerHTML = "";
+    els.answerInput.hidden = true;
+    els.answerInput.removeAttribute("required");
+    if (answerLabel) answerLabel.hidden = true;
+    state.responseWidget = mountResponse(responseHost, item, { onChange: (value) => (els.answerInput.value = value) });
+    els.checkButton.hidden = false;
+    return;
+  }
+
+  if (plan && ["tenFrame", "baseTen", "keypad"].includes(plan.kind) && responseHost) {
+    // The counted or keyed answer writes the same text a typed answer would, so Check and everything after it are unchanged.
+    els.choiceAnswers.hidden = true;
+    els.choiceAnswers.innerHTML = "";
+    els.answerInput.hidden = true;
+    els.answerInput.removeAttribute("required");
+    if (answerLabel) answerLabel.hidden = true;
+    state.responseWidget = mountCountedAnswer(responseHost, plan, { onChange: (value) => (els.answerInput.value = value) });
+    els.checkButton.hidden = false;
+    return;
+  }
 
   if (item.choices) {
     els.answerInput.hidden = true;
@@ -6965,7 +7067,9 @@ function renderAnswerControl() {
     els.choiceAnswers.hidden = false;
 
     const isComp = item.choices.length === 3 && item.choices.includes("<") && item.choices.includes(">");
-    if (isComp) {
+    if (plan) {
+      renderChoiceTiles(els.choiceAnswers, item);
+    } else if (isComp) {
       els.choiceAnswers.className = "choice-answers choice-comparison-group";
       els.choiceAnswers.innerHTML = item.choices
         .map((c) => `<button type="button" class="choice-answer choice-comp-btn" data-answer="${escapeHtml(c)}" aria-label="Compare ${c}">${escapeHtml(c)}</button>`)
@@ -6997,8 +7101,8 @@ function renderAnswerControl() {
     }
     els.choiceAnswers.hidden = true;
     els.choiceAnswers.innerHTML = "";
-    els.answerInput.inputMode = item.kind === "text" ? "text" : "decimal";
-    els.answerInput.placeholder = item.kind === "fraction" ? "Example: 3/4" : "Type your answer";
+    els.answerInput.inputMode = ["number", "fraction"].includes(item.kind) ? "decimal" : "text";
+    els.answerInput.placeholder = item.kind === "fraction" ? "Example: 3/4" : item.kind === "inequality" ? "Example: x ≥ 5" : item.kind === "order" ? "Example: −2, 1/2, 3" : item.kind === "expression" ? "Example: 3x + 6" : "Type your answer";
     els.checkButton.hidden = false;
   }
 }
@@ -7053,9 +7157,16 @@ function renderStrategyTagPicker() {
   });
 }
 
+// What to look at again after a miss: a built answer names the part to check (never the answer itself).
+function missNudge(item, value) {
+  if (!item.response) return feedbackFor(item.skill, item, value);
+  const verdict = checkResponse(value, item);
+  return t(verdict.nudge, verdict.vars || null);
+}
+
 function submitAnswer(value) {
   if (!state.item || !state.session || state.session.finished) return;
-  if (!String(value).trim()) { showFeedback("Enter an answer", t("Type an answer before checking, or open a strategy hint."), "try", "try", "empty"); return; }
+  if (!String(value).trim()) { showFeedback("Enter an answer", state.item.response ? t(checkResponse("", state.item).nudge) : audioFirstOn() ? t("Tap or build your answer first, then press the check button.") : t("Type an answer before checking, or open a strategy hint."), "try", "try", "empty"); return; }
   state.lastSubmitted = String(value).trim();
 
   if (state.isFixing) {
@@ -7090,6 +7201,8 @@ function submitAnswer(value) {
     state.firstResponseMs = Math.max(0, performance.now() - state.problemStartedAt);
   }
   const correct = validateAnswer(value, state.item);
+  // Line-by-line work: after Check, each written line shows whether it follows from the line above.
+  state.responseWidget?.showVerdict?.(checkResponse(value, state.item));
   const responseInput = {
     activity: tutorSkillKey(state.item.skill),
     itemId: `${state.session.id}:${state.session.answered}`,
@@ -7119,14 +7232,14 @@ function submitAnswer(value) {
   }
   if (state.initialSupport && state.itemAttempts < 3) {
     const nextStep = revealGuidedStep() || guidedStepContent().at(-1);
-    showFeedback("Let's use the next step", `${feedbackFor(state.item.skill, state.item, value)} ${nextStep.copy}`, "try", "incorrect", sendFeedback(state.fbPhase === "idle" ? "wrong" : "wrong-again"));
+    showFeedback("Let's use the next step", `${missNudge(state.item, value)} ${nextStep.copy}`, "try", "incorrect", sendFeedback(state.fbPhase === "idle" ? "wrong" : "wrong-again"));
     addInstructionalChoices();
     saveActiveSession();
     if (!state.item.choices) els.answerInput.select();
     return;
   }
   if (state.itemAttempts === 1) {
-    const nudge = feedbackFor(state.item.skill, state.item, value);
+    const nudge = missNudge(state.item, value);
     const diagnostic = state.tutor.mistakes.find((entry) => entry.key === tutorSkillKey(state.item.skill) && entry.question === state.item.question && !entry.resolvedAt);
     if (diagnostic?.misconceptionCode) {
       const label = mistakeCategoryLabel(diagnostic.misconceptionCode);
@@ -7232,11 +7345,17 @@ function finalizeProblem(correct, { unsure = false } = {}) {
         level: state.item.level,
         tier: state.item.tier, // fl4:adaptive
         strategyTags,
+        viewedExample: state.exampleViewed,
         sig: itemSignature(state.item.question),
         responseMs: state.firstResponseMs,
         // Practice is untimed. This is a descriptive first-response sample, never a speed score.
         calm: true,
       });
+    }
+    if (session.unitId && !isRevision) {
+      const tally = (session.unitResults[tutorSkillKey(state.item.skill)] ||= { right: 0, total: 0 }); // fl-teacher:unit-check
+      tally.total += 1;
+      if (independent && firstCorrect) tally.right += 1;
     }
     if (session.mode === "repair" && independent && firstCorrect) {
       const key = tutorSkillKey(state.item.skill);
@@ -7258,7 +7377,7 @@ function finalizeProblem(correct, { unsure = false } = {}) {
   if (state.skill) renderMastery();
   renderOverallStats();
   els.answerInput.disabled = true;
-  els.choiceAnswers.querySelectorAll("button").forEach((button) => (button.disabled = true));
+  els.choiceAnswers.querySelectorAll("button:not([data-af-hear])").forEach((button) => (button.disabled = true));
   els.checkButton.hidden = true;
   els.hintButton.hidden = true;
   els.skip.hidden = true;
@@ -7468,7 +7587,7 @@ function feedbackContext() {
     expected: expectedAnswerText(),
     reveal: state.session?.mode !== "diagnostic",
     hintAvailable: !els.hintButton.hidden,
-    stepsAvailable: steps.length > 0 && state.guidedStepsShown < steps.length,
+    stepsAvailable: examplePolicy() !== "hide" && steps.length > 0 && state.guidedStepsShown < steps.length,
   };
 }
 
@@ -7477,8 +7596,10 @@ function showFeedback(title, copy, type, resultType = type, phase = null) {
   els.feedback.hidden = false;
   els.feedback.dataset.type = type;
   const view = phase ? feedbackView(phase, feedbackContext()) : null;
-  if (view) paintFeedback(els, view);
-  else {
+  if (view) {
+    paintFeedback(els, view);
+    speakFeedback(view);
+  } else {
     els.feedbackIcon.replaceChildren();
     els.feedbackBadge.hidden = true;
     els.feedbackAnswers.hidden = true;
@@ -7567,6 +7688,7 @@ function renderStreakMeter() {
 
 function finishSession() {
   if (!state.session || state.session.finished) return;
+  applyAccessProfile(null); // fl-teacher:access: the profile ends with the assignment's practice
   const session = state.session;
   if (session.quickBoost) {
     const savedPractice = loadJson(BRIDGE_RETURN_KEY, null);
@@ -7631,6 +7753,16 @@ function finishSession() {
     els.summaryTitle.textContent = t("Your starting-point checkup");
     els.summaryCopy.textContent = checkupCopy(checkupSummary(session));
   }
+  if (session.mode === "unit" && session.unitId) {
+    const saved = saveUnitCheckResult(session.unitId, session.unitResults);
+    const unit = unitCheckById(session.unitId);
+    if (saved && unit) {
+      const rows = saved.outcome.rows;
+      els.summaryTitle.textContent = t("Unit {n} Check", { n: unit.unit });
+      els.summaryCopy.textContent = t("{done} of {total} skills confirmed. A skill that is not confirmed yet is not a failure: practise it and check again tomorrow.", { done: saved.outcome.confirmed.length, total: rows.length });
+      session.unitSummary = rows;
+    }
+  }
   // Any finished practice set counts as a practice day, the same as a trail round or a game.
   if (session.answered > 0) {
     const rewards = loadRewards();
@@ -7641,6 +7773,7 @@ function finishSession() {
   state.tutor.sessions = state.tutor.sessions.slice(-60);
   els.summaryStats.innerHTML = `<div><strong>${session.correct}</strong><span>solved</span></div><div><strong>${session.answered}</strong><span>completed</span></div><div><strong>${session.independentCorrect}</strong><span>without help on first try</span></div>${(session.revised || 0) ? `<div class="revised-stat"><strong>${session.revised}</strong><span>revised with support</span></div>` : ""}`;
   els.summaryStats.classList.toggle("has-revisions", (session.revised || 0) > 0);
+  if (session.unitSummary) els.summaryStats.innerHTML = session.unitSummary.map((row) => `<div data-unit-skill="${escapeHtml(row.key)}" data-confirmed="${row.confirmed}"><strong>${row.right}/${row.total}</strong><span>${escapeHtml(unitCheckSkillTitle(row.key))}: ${escapeHtml(row.confirmed ? t("Confirmed") : t("Not confirmed yet"))}</span></div>`).join("");
   const receiptHost = document.querySelector("#mastery-receipt");
   receiptHost.hidden = session.mode !== "assignment";
   if (!receiptHost.hidden) receiptHost.innerHTML = `<h4>${t("Your zero-PII mastery receipt")}</h4><p>${t("Choose the strategies you used. The code contains skill, accuracy, and strategy tags, never a name.")}</p><fieldset><legend>${t("Strategies I used")}</legend>${[["visual", "I used a visual"], ["decompose", "I broke numbers apart"], ["recall", "I recalled a fact"], ["symbolic", "I used symbols"]].map(([value, label]) => { const labels = { visual: t("I used a visual"), decompose: t("I broke numbers apart"), recall: t("I recalled a fact"), symbolic: t("I used symbols") }; return `<label><input type="checkbox" data-receipt-strategy value="${value}"/> ${labels[value] || label}</label>`; }).join("")}</fieldset><div class="button-row"><button class="primary-action" type="button" data-make-receipt>${t("Create mastery receipt")}</button><button class="outline-action" type="button" data-copy-receipt hidden>${t("Copy code")}</button><button class="outline-action" type="button" data-print-receipt hidden>${t("Print receipt")}</button></div><output id="mastery-receipt-code" class="mastery-receipt-code" aria-live="polite"></output>`;
@@ -7648,7 +7781,7 @@ function finishSession() {
   const checkupFoundations = session.mode === "diagnostic" ? checkupSummary(session).foundationGaps : [];
   const foundations = checkupFoundations.length ? checkupFoundations : prerequisites(next.skill);
   const profileBrief = buildFluencyProfileSummary(session, accuracyPercent, next);
-  els.summaryNext.innerHTML = `<h4>A useful next step</h4><p>${escapeHtml(next.reason)}: ${escapeHtml(next.skill.title)}.</p><div class="button-row"><button class="primary-action" data-open-key="${tutorSkillKey(next.skill)}" data-open-mode="visual">Explore the visual lesson</button><button class="outline-action" data-view="path">See my learning path</button></div><div class="drill-again-actions button-row" style="margin-top:0.75rem"><button class="outline-action" type="button" data-start-quick-drill>⚡ Drill 5 more</button><button class="outline-action flashcard-btn" type="button" data-start-flashcard-drill>🃏 Flashcards</button><button class="outline-action" type="button" data-start-streak-drill>🔥 10 in a row challenge</button><button class="outline-action" type="button" data-print-flashcards>🖨️ Print Flashcards</button><button class="outline-action" type="button" data-print-practice-sheet>🖨️ Practice Sheet</button><button class="outline-action" type="button" data-open-print-center>🖨️ Print Center</button>${streakComplete(session) || accuracyPercent === 100 ? `<button class="outline-action" type="button" data-print-cert>🏆 Print Certificate</button>` : ''}</div>${session.mode === 'diagnostic' && foundations.length ? `<p>Helpful foundation: <button class="text-action" data-open-key="${tutorSkillKey(foundations[0])}" data-open-mode="visual">${escapeHtml(foundations[0].title)} (Grade ${foundations[0].grade})</button></p>` : ''}${state.skill ? `<p class="teach-back-prompt">${escapeHtml(transferPrompt(state.skill))}</p>` : ''}${profileBrief}`;
+  els.summaryNext.innerHTML = `<h4>A useful next step</h4><p>${escapeHtml(next.reason)}: ${escapeHtml(next.skill.title)}.</p><div class="button-row"><button class="primary-action" data-open-key="${tutorSkillKey(next.skill)}" data-open-mode="visual">Explore the visual lesson</button><button class="outline-action" data-view="path">See my learning path</button></div><div class="drill-again-actions button-row" style="margin-top:0.75rem"><button class="outline-action" type="button" data-start-quick-drill>⚡ Drill 5 more</button><button class="outline-action flashcard-btn" type="button" data-start-flashcard-drill>🃏 Flashcards</button><button class="outline-action" type="button" data-start-streak-drill>🔥 10 in a row challenge</button><button class="outline-action" type="button" data-print-flashcards>🖨️ Print Flashcards</button><button class="outline-action" type="button" data-print-practice-sheet>🖨️ Practice Sheet</button>${session.mode === "diagnostic" ? `<button class="outline-action" type="button" data-print-action-plan>${escapeHtml(t("Print my action plan"))}</button>` : ""}<button class="outline-action" type="button" data-open-print-center>🖨️ Print Center</button>${streakComplete(session) || accuracyPercent === 100 ? `<button class="outline-action" type="button" data-print-cert>🏆 Print Certificate</button>` : ''}</div>${session.mode === 'diagnostic' && foundations.length ? `<p>Helpful foundation: <button class="text-action" data-open-key="${tutorSkillKey(foundations[0])}" data-open-mode="visual">${escapeHtml(foundations[0].title)} (Grade ${foundations[0].grade})</button></p>` : ''}${state.skill ? `<p class="teach-back-prompt">${escapeHtml(transferPrompt(state.skill))}</p>` : ''}${profileBrief}`;
   saveProgress(); renderOverallStats();
   announce("Practice saved for this learner on this device.");
 }
@@ -7697,12 +7830,21 @@ function applySettings() {
   document.documentElement.classList.toggle("large-text", state.settings.largeText);
   els.textSizeButton.setAttribute("aria-pressed", String(state.settings.largeText));
   els.textSizeButton.textContent = state.settings.largeText ? "Text size: Large" : "Text size: Standard";
-  document.body.classList.toggle("focus-mode", Boolean(state.settings.focus));
+  document.body.classList.toggle("focus-mode", Boolean(state.settings.focus || state.accessFocus)); // fl-teacher:access
   document.querySelector("#focus-mode").setAttribute("aria-pressed", String(Boolean(state.settings.focus)));
   document.documentElement.classList.toggle("reading-font", Boolean(state.settings.readingFont));
   const font = document.querySelector("#reading-font");
   font.setAttribute("aria-pressed", String(Boolean(state.settings.readingFont)));
   font.textContent = state.settings.readingFont ? t("Reading font: On") : t("Reading font: Off");
+  const listen = document.querySelector("#audio-first-toggle");
+  if (listen) {
+    // Offered for Kindergarten to Grade 3 (and when a teacher's assignment turns it on); other grades never see it.
+    listen.hidden = !audioFirstOffered(state.grade);
+    listen.setAttribute("aria-pressed", String(audioFirstOn()));
+    listen.textContent = audioFirstOn() ? t("Listening help: On") : t("Listening help: Off");
+  }
+  syncGuide();
+  syncGameBanner();
   const sound = document.querySelector("#sound-toggle");
   sound.setAttribute("aria-pressed", String(soundOn()));
   sound.textContent = soundOn() ? t("Sound: On") : t("Sound: Off");
@@ -7805,7 +7947,7 @@ function renderPracticeView() {
   const saved = loadJson(SESSION_KEY, null);
   const resume = saved?.version === 2 && saved.session && !saved.session.finished ? { title: saved.item?.skill?.title || t("your practice set") } : null;
   const openMistakes = (state.tutor.mistakes || []).filter((entry) => findSkill(entry.key)?.grade === state.grade && !entry.resolvedAt).length;
-  renderPracticeHub(els.practice, { resume, openMistakes, grade: state.grade, t });
+  renderPracticeHub(els.practice, { resume, openMistakes, grade: state.grade, t, extraHtml: campaignPanelHtml({ grade: state.grade, lang: getLang(), t, skillTitle: unitCheckSkillTitle }) + unitCheckPanelHtml({ grade: state.grade, lang: getLang(), t }) });
 }
 
 function openHubView(view) {
@@ -7819,7 +7961,7 @@ function openHubView(view) {
   if (view === "games") { cleanupGames?.(); cleanupGames = mountGames(els.games, { grade: state.grade, autostart: state.autoGame, assignedStop: state.autoStop, onEvidence: recordPuzzleEvidence }); state.autoGame = null; state.autoStop = null; }
   if (view === "models") {
     cleanupModels?.();
-    const lab = mountModelLab(els.models, { grade: state.grade, initialModel: state.labModel, onEvidence: recordLabEvidence });
+    const lab = mountModelLab(els.models, { grade: state.grade, initialModel: state.labModel, initialBoard: state.labBoard, onEvidence: recordLabEvidence });
     
     // Grand Interactive Math Universe Hub
     const universeHost = document.createElement("div");
@@ -7837,6 +7979,7 @@ function openHubView(view) {
     mountWonderCityStudio(cityHost);
     cleanupModels = () => lab.destroy();
     state.labModel = null;
+    state.labBoard = null;
   }
   if (view === "write") { cleanupWriting?.(); cleanupWriting = mountWriting(els.write, { grade: state.grade, skillKey: state.writeSkill, onPrint: printHtml, announce }); state.writeSkill = null; }
   if (view === "teacher") fl4Teacher?.mountTeacher4(els.teacher4, { // fl4:teacher
@@ -8347,6 +8490,9 @@ function bugAnswerMatches(value, expected) {
 
 function renderNotebook() {
   renderNotebookBase();
+  // fl-teacher: Questions Log (every saved miss with the learner's own answer) and a fresh parallel worksheet.
+  const logEntries = questionsLog(state.tutor);
+  els.notebook.insertAdjacentHTML("beforeend", `<section class="fl-tt-panel" aria-labelledby="fl-qlog-title"><h2 id="fl-qlog-title">${escapeHtml(t("My Questions Log"))}</h2><p>${escapeHtml(t("Every question you missed, with the answer you gave. Print fresh problems on the same skills to practise them again."))}</p>${logEntries.length ? `<div class="fl-tt-row"><button type="button" class="fl-tt-btn fl-tt-btn--primary" data-print-misses>${escapeHtml(t("Print my misses as a fresh worksheet"))}</button></div>` : ""}${questionsLogHtml(logEntries)}</section>`);
   els.notebook.insertAdjacentHTML("afterbegin", '<div id="e8-repair"></div>');
   mountRepairStudio(els.notebook.querySelector("#e8-repair"), { grade: state.grade, tutor: state.tutor, store: e8Store, onRecord: () => saveProgress() });
 }
@@ -8442,11 +8588,11 @@ function openPlanned(mode, queue, options = {}) {
   state.skill = null; state.mixedPool = queue.map((entry) => findSkill(entry.key)); state.mode = mode;
   showArea("workspace"); leaveExtraPanels(); renderStageUi();
   els.workspaceGrade.textContent = gradeDisplay(state.grade);
-  els.workspaceTitle.textContent = mode === "daily" ? "Today's 10, chosen for you" : mode === "mission" ? "A short learning mission" : mode === "diagnostic" ? "Find my starting point" : mode === "assignment" ? state.assignment.label : "Turn a mistake into a strategy";
+  els.workspaceTitle.textContent = mode === "unit" ? t("Unit {n} Check", { n: unitCheckById(options.unitId)?.unit }) : mode === "daily" ? "Today's 10, chosen for you" : mode === "mission" ? "A short learning mission" : mode === "diagnostic" ? "Find my starting point" : mode === "assignment" ? state.assignment.label : "Turn a mistake into a strategy";
   document.title = `${els.workspaceTitle.textContent} | Math Fluency Lab`;
   els.workspaceStandard.textContent = mode === "diagnostic" ? t("A short checkup that adjusts to your answers") : mode === "mission" ? "Start with your grade-level skill, visit a useful foundation, then return for a supported, independent, and transfer try." : "Fresh problems from your selected skills";
   els.masteryMeter.value = 0; els.masteryLabel.textContent = "Learning across skills";
-  els.modeTabs.innerHTML = `<button role="tab" aria-selected="true" aria-controls="drill-panel">${mode === 'diagnostic' ? 'Checkup' : mode === 'daily' ? "Today's 10" : mode === 'mission' ? '5-step mission' : mode === 'assignment' ? 'Class practice' : 'Repair practice'}</button>`;
+  els.modeTabs.innerHTML = `<button role="tab" aria-selected="true" aria-controls="drill-panel">${mode === 'diagnostic' ? 'Checkup' : mode === 'daily' ? "Today's 10" : mode === 'mission' ? '5-step mission' : mode === 'assignment' ? 'Class practice' : mode === 'unit' ? 'Unit Check' : 'Repair practice'}</button>`;
   beginSession(mode, queue.length, queue, options); setUrl();
   els.workspace.scrollIntoView({ behavior: "smooth", block: "start" });
 }
@@ -8454,6 +8600,17 @@ function openPlanned(mode, queue, options = {}) {
 function openMission() {
   const queue = missionPlan(state.tutor, state.grade);
   if (queue.length) openPlanned("mission", queue);
+}
+
+function beginUnitCheck(id) {
+  const unit = unitCheckById(id);
+  if (!unit) return;
+  if (!startUnitCheck(id)) {
+    announce(t("Checked today. Practise, then try again tomorrow."));
+    return;
+  }
+  state.grade = unitCheckGrade;
+  openPlanned("unit", unitCheckQueue(unit), { unitId: id });
 }
 
 function startRepair(keys) {
@@ -8551,7 +8708,7 @@ function renderAssignmentBanner() {
   const banner = document.querySelector("#assignment-banner"); banner.hidden = !state.assignment;
   if (!state.assignment) return;
   const assignment = state.assignment;
-  banner.innerHTML = `<div><p class="section-label">Your class practice</p><h2>${escapeHtml(assignment.label)}</h2><p>Grade ${assignment.grade}${assignment.keys.length ? ` · ${assignment.count} fresh questions · ${assignment.keys.map((key) => escapeHtml(findSkill(key).title)).join(', ')}` : ''}${assignment.game ? ` · Game: ${escapeHtml(GAMES.find((g) => g.id === assignment.game)?.name || '')}` : ''}${assignment.target ? ` · Goal: score ${assignment.target.score} on ${assignment.target.days} separate days` : ''}${assignment.due ? ` · Due ${escapeHtml(assignment.due)}` : ''}</p></div>${assignment.keys.length ? '<button class="primary-action" data-start-assignment>Start class practice</button>' : ''}${assignment.game ? '<button class="primary-action" data-start-assignment-game>Play the assigned game</button>' : ''}`; // fl4:teacher: goal and due date shown to the learner
+  banner.innerHTML = `<div><p class="section-label">Your class practice</p><h2>${escapeHtml(assignment.label)}</h2><p>Grade ${assignment.grade}${assignment.keys.length ? ` · ${assignment.count} fresh questions · ${assignment.keys.map((key) => escapeHtml(findSkill(key).title)).join(', ')}` : ''}${assignment.game ? ` · Game: ${escapeHtml(GAMES.find((g) => g.id === assignment.game)?.name || '')}` : ''}${assignment.target ? ` · Goal: score ${assignment.target.score} on ${assignment.target.days} separate days` : ''}${assignment.due ? ` · Due ${escapeHtml(assignment.due)}` : ''}</p>${accessSummary(assignment.access).length ? `<ul class="fl-access-chips" aria-label="${escapeHtml(t("Set by your teacher"))}">${accessSummary(assignment.access).map((word) => `<li>${escapeHtml(word)}</li>`).join("")}</ul>` : ""}</div>${assignment.keys.length ? '<button class="primary-action" data-start-assignment>Start class practice</button>' : ''}${assignment.game ? '<button class="primary-action" data-start-assignment-game>Play the assigned game</button>' : ''}`; // fl4:teacher: goal and due date shown to the learner
 }
 
 function saveActiveSession() {
@@ -8566,7 +8723,7 @@ function saveActiveSession() {
 }
 
 function resumePractice(saved = loadJson(SESSION_KEY, null)) {
-  const allowed = ["practice", "guided", "adaptive", "streak", "daily", "mixed", "repair", "diagnostic", "assignment"];
+  const allowed = ["practice", "guided", "adaptive", "streak", "daily", "mixed", "repair", "diagnostic", "assignment", "unit"];
   if (!saved || saved.version !== 2 || !allowed.includes(saved.session?.mode) || !findSkill(`${saved.item?.skill?.grade ?? saved.grade}:${saved.item?.skill?.id}`) || (saved.session.queue && saved.session.queue.some((entry) => !findSkill(entry.key)))) { announce("There is no saved practice to resume."); return; }
   leaveExtraPanels();
   cleanupVisual?.(); cleanupVisual = null;
@@ -8611,7 +8768,7 @@ function switchProfile(id) {
   saveActiveSession(); saveSettings(); selectProfile(id); activeProfile = id; setLanguageProfile(id);
   state.session = null; state.item = null;
   state.progress = cleanProgress(loadJson(STORAGE_KEY, {})); state.tutor = sanitizeTutor(loadJson(TUTOR_KEY, emptyTutor()));
-  state.settings = loadJson(SETTINGS_KEY, { largeText: false }); state.grade = Number(loadJson(`${SETTINGS_KEY}:grade`, 1));
+  state.settings = cleanSettings(loadJson(SETTINGS_KEY, { largeText: false })); state.grade = Number(loadJson(`${SETTINGS_KEY}:grade`, 1));
   if (!GRADES.some((grade) => grade.grade === state.grade)) state.grade = 1;
   pendingRestore = null; document.querySelector("#restore-preview").hidden = true;
   renderProfiles(); applySettings(); renderLibrary(); announce(`${PROFILE_NAMES[id]} is ready. Progress is separate for each learner.`);
@@ -8640,7 +8797,7 @@ function registerSharedSaveResume() {
     if (Number.isInteger(saved.profile) && profiles().ids.includes(saved.profile) && saved.profile !== activeProfile) switchProfile(saved.profile);
     if (saved.progress && typeof saved.progress === "object") state.progress = cleanProgress(saved.progress);
     if (saved.tutor) state.tutor = sanitizeTutor(saved.tutor);
-    if (saved.settings && typeof saved.settings === "object") state.settings = saved.settings;
+    if (saved.settings && typeof saved.settings === "object") state.settings = cleanSettings(saved.settings);
     if (GRADES.some((grade) => grade.grade === Number(saved.grade))) state.grade = Number(saved.grade);
     saveProgress();
     saveSettings();
@@ -8789,10 +8946,14 @@ els.feedback.addEventListener("click", (event) => {
   if (choices) choices.innerHTML = `<p role="status">${prompts[state.instructionalSignal]}</p>`;
 });
 
-els.hintButton.addEventListener("click", () => {
+els.hintButton.addEventListener("click", async () => {
   if (state.itemAttempts === 0) state.hintBeforeFirst = true;
-  showFeedback("Strategy hint", state.item.hint, "hint");
   els.hintButton.hidden = true;
+  // After a wrong try, an AI helper may pick which of this skill's own authored hints fits best (ai-hint.js);
+  // with no model, a slow reply or a leak check failure it is the authored strategy hint, as always.
+  const item = state.item;
+  const picked = state.itemAttempts > 0 ? await chooseHint(item, state.lastSubmitted) : null;
+  if (state.item === item) showFeedback("Strategy hint", picked || item.hint, "hint");
   saveActiveSession();
 });
 
@@ -8808,6 +8969,8 @@ els.feedbackActions.addEventListener("click", (event) => {
   }
   if (id === "hint" && !els.hintButton.hidden) els.hintButton.click();
   if (id === "worked") {
+    state.exampleOpen = true; // the worked example is offered after an answer even when the item began independent
+    els.guidedCoach.hidden = false;
     while (revealGuidedStep());
     els.guidedSteps.scrollIntoView?.({ block: "center", behavior: prefersReducedMotion() ? "auto" : "smooth" });
     announce(t("Worked example opened."));
@@ -8880,6 +9043,8 @@ document.addEventListener("click", (event) => {
   }
   if (event.target.closest("[data-start-checkup]")) openPlanned("diagnostic", checkupPlan(state.grade));
   if (event.target.closest("[data-start-daily]")) openPlanned("daily", dailyPlan(state.tutor, state.grade));
+  const unitButton = event.target.closest("[data-start-unit]");
+  if (unitButton) beginUnitCheck(unitButton.dataset.startUnit);
   if (event.target.closest("[data-rescue=start]")) { beginRescue(state.rescuePlan); return; } // fl4:adaptive
   if (event.target.closest("[data-rescue=decline]")) { declineRescue(); return; } // fl4:adaptive
   const quickBoost = event.target.closest("[data-quick-boost]");
@@ -9006,15 +9171,41 @@ document.querySelector("#lang-toggle").addEventListener("click", () => {
   setLang(getLang() === "es" ? "en" : "es");
   applyLang();
   window.dispatchEvent(new window.Event("fluency-lang-changed"));
+  if (audioFirstOn() && state.item && state.session && !state.itemDone) renderAnswerControl();
   renderGradeTabs();
   if (state.view === "games") openHubView("games");
   else if (state.view === "teacher") openHubView("teacher"); // fl4:teacher
   else if (state.view === "library") renderLibrary();
 });
 applyLang();
+// Class platform (#21): opt-in join + cloud sync. The class copy is the same backup a learner can download, and it
+// is restored through the same cleaners as a backup file (parseBackup + cleanPlay + importPlay).
+classSync = mountClassLink(document.querySelector("#class-link"), {
+  getBackup: () => stampBackup({ ...makeBackup(state), play: exportPlay() }),
+  getSummary: () => fluencySummary({ tutor: state.tutor, grade: state.grade, interventions: loadInterventions(), activeSkill: state.skill ? tutorSkillKey(state.skill) : null }),
+  hasLocalProgress: () => Object.keys(state.tutor?.records || {}).length > 0,
+  downloadCurrent: () => downloadFile(`fluency-before-class-copy-${localDay()}.json`, JSON.stringify(stampBackup({ ...makeBackup(state), play: exportPlay() }), null, 2)),
+  applyBackup: (raw) => {
+    const clean = parseBackup(raw);
+    state.session = null; state.item = null;
+    state.progress = clean.progress; state.tutor = clean.tutor; state.settings = clean.settings; state.grade = clean.grade;
+    writeLocal(profileKey(SESSION_KEY, activeProfile), null); importPlay(cleanPlay(raw.play));
+    writeLocal(profileKey(STORAGE_KEY, activeProfile), state.progress); writeLocal(profileKey(TUTOR_KEY, activeProfile), state.tutor);
+    saveSettings(); applySettings(); renderLibrary();
+  },
+  announce,
+});
 document.querySelector("#focus-mode").addEventListener("click", () => { state.settings.focus = !state.settings.focus; saveSettings(); applySettings(); });
 document.querySelector("#download-progress").addEventListener("click", () => {
   saveActiveSession(); downloadFile(`fluency-${PROFILE_NAMES[activeProfile].toLowerCase()}-${localDay()}.json`, JSON.stringify(stampBackup({ ...makeBackup(state), play: exportPlay() }), null, 2));
+});
+document.querySelector("#audio-first-toggle")?.addEventListener("click", () => {
+  state.settings.audioFirst = audioFirstOn() ? "off" : "on";
+  saveSettings();
+  applySettings();
+  if (!state.item || !state.session || state.itemDone) return;
+  renderAnswerControl();
+  presentProblem(state.item, answerPlan(state.item));
 });
 document.querySelector("#reading-font").addEventListener("click", () => { state.settings.readingFont = !state.settings.readingFont; saveSettings(); applySettings(); });
 document.querySelector("#sound-toggle").addEventListener("click", () => { setSound(!soundOn()); applySettings(); });
@@ -9041,7 +9232,7 @@ document.querySelector("#restore-preview").addEventListener("click", (event) => 
   if (event.target.id === "confirm-restore" && pendingRestore) {
     downloadFile(`fluency-before-restore-${localDay()}.json`, JSON.stringify(stampBackup({ ...makeBackup(state), play: exportPlay() }), null, 2));
     state.session = null; state.item = null;
-    state.progress = pendingRestore.progress; state.tutor = pendingRestore.tutor; state.settings = pendingRestore.settings; state.grade = pendingRestore.grade;
+    state.progress = pendingRestore.progress; state.tutor = pendingRestore.tutor; state.settings = cleanSettings(pendingRestore.settings); state.grade = pendingRestore.grade;
     writeLocal(profileKey(SESSION_KEY, activeProfile), null); importPlay(pendingRestore.play); saveProgress(); saveSettings(); applySettings(); renderLibrary();
     pendingRestore = null; event.currentTarget.hidden = true; announce("Progress restored into the current learner profile.");
   }
@@ -9071,7 +9262,7 @@ function resetAllProgress() {
   state.item = null;
   state.progress = {};
   state.tutor = emptyTutor();
-  state.settings = { largeText: false, focus: false, readingFont: false };
+  state.settings = cleanSettings({ largeText: false, focus: false, readingFont: false });
   state.grade = 1;
   saveProgress();
   saveSettings();
@@ -9727,6 +9918,11 @@ if (drillToolbox) {
   });
 }
 
+els.notebook?.addEventListener("click", (event) => { // fl-teacher: Questions Log worksheet
+  if (!event.target.closest("[data-print-misses]")) return;
+  const seed = Date.now() % 100000;
+  printHtml(worksheetHtml(freshWorksheet(questionsLog(state.tutor), seed), { seed }));
+});
 els.summary?.addEventListener("click", (event) => {
   if (event.target.closest("[data-make-receipt]")) {
     const skillKeys = state.assignment?.keys?.length ? state.assignment.keys : [state.skill ? skillKey() : `${state.grade}:${state.item?.skill?.id}`];
@@ -9796,6 +9992,14 @@ els.summary?.addEventListener("click", (event) => {
     printPracticeSheet();
     return;
   }
+  // fl-teacher: the checkup's action plan (no grade level or score) and the Questions Log worksheet.
+  if (event.target.closest("[data-print-action-plan]") && state.session?.mode === "diagnostic") {
+    const summary = checkupSummary(state.session);
+    const next = [...summary.foundationGaps, ...recommendations(state.tutor, state.grade).map((entry) => entry.skill)];
+    printHtml(actionPlanHtml(summary, next, { lang: state.lang === "es" ? "es" : "en", date: localDay() }));
+    return;
+  }
+
   if (event.target.closest("[data-print-cert]")) {
     printMasteryCertificate();
     return;
@@ -11064,7 +11268,7 @@ initCommandPalette();
 initHUDControls();
 initTeacherCameraScanner();
 handleDeepLinkAutoLauncher();
-if (["teacher", "games", "write", "path", "notebook", "models", "practice"].includes(initialParams.get("view"))) { state.writeSkill = initialSkill; state.labModel = initialParams.get("model"); openHubView(initialParams.get("view")); }
+if (["teacher", "games", "write", "path", "notebook", "models", "practice"].includes(initialParams.get("view"))) { state.writeSkill = initialSkill; state.labModel = initialParams.get("model"); state.labBoard = boardFromHash(location.hash); openHubView(initialParams.get("view")); }
 // Family launch links enter the existing adaptive flows; no parallel practice engine is created.
 if (initialParams.get("start") === "daily") openPlanned("daily", dailyPlan(state.tutor, state.grade));
 if (initialParams.get("start") === "mission") openMission();

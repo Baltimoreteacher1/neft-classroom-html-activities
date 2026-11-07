@@ -1,0 +1,783 @@
+{
+  "schema": 1,
+  "note": "Original grammar check-in and numbered practice packs. Each item: three sentences, one correct. Correct sentences must pass the pack's errors.js detectors and, where a detector exists, the wrong sentences it names must trip it (tools/access-grammar.test.mjs). Practice, not a level.",
+  "packs": [
+    {
+      "n": 1,
+      "id": "articles",
+      "title": {
+        "en": "Articles: a, an, the",
+        "es": "Artículos: a, an, the"
+      },
+      "rule": {
+        "en": "Use 'an' before a vowel sound and 'a' before a consonant sound. Use 'the' for one thing both people already know.",
+        "es": "Usa 'an' antes de un sonido de vocal y 'a' antes de un sonido de consonante. Usa 'the' para algo que las dos personas ya conocen."
+      },
+      "detectors": [
+        "article-a-an"
+      ],
+      "diagnostic": [
+        {
+          "choices": [
+            "She ate an apple at lunch.",
+            "She ate a apple at lunch.",
+            "She ate apple an at lunch."
+          ],
+          "answer": 0,
+          "trips": [
+            1
+          ]
+        },
+        {
+          "choices": [
+            "We waited a hour for the bus.",
+            "We waited an hour for the bus.",
+            "We waited hour for the bus."
+          ],
+          "answer": 1,
+          "trips": [
+            0
+          ]
+        }
+      ],
+      "practice": [
+        {
+          "choices": [
+            "It was a interesting idea.",
+            "It was an interesting idea.",
+            "It was interesting a idea."
+          ],
+          "answer": 1,
+          "trips": [
+            0,
+            2
+          ],
+          "why": {
+            "en": "'Interesting' starts with a vowel sound, so use 'an'.",
+            "es": "'Interesting' empieza con sonido de vocal, así que se usa 'an'."
+          }
+        },
+        {
+          "choices": [
+            "My cousin is an university student.",
+            "My cousin is university a student.",
+            "My cousin is a university student."
+          ],
+          "answer": 2,
+          "trips": [
+            0
+          ],
+          "why": {
+            "en": "'University' starts with a 'you' sound, a consonant sound, so use 'a'.",
+            "es": "'University' empieza con el sonido 'yu', que es de consonante, así que se usa 'a'."
+          }
+        },
+        {
+          "choices": [
+            "I saw a elephant at the zoo.",
+            "I saw an elephant at the zoo.",
+            "I saw elephant an at the zoo."
+          ],
+          "answer": 1,
+          "trips": [
+            0
+          ],
+          "why": {
+            "en": "'Elephant' starts with a vowel sound, so use 'an'.",
+            "es": "'Elephant' empieza con sonido de vocal, así que se usa 'an'."
+          }
+        },
+        {
+          "choices": [
+            "Please close the door behind you.",
+            "Please close a door behind you.",
+            "Please close door behind you."
+          ],
+          "answer": 0,
+          "trips": [],
+          "why": {
+            "en": "Both people know which door, so use 'the'.",
+            "es": "Las dos personas saben de qué puerta se habla, así que se usa 'the'."
+          }
+        },
+        {
+          "choices": [
+            "He wants to be a engineer.",
+            "He wants to be engineer.",
+            "He wants to be an engineer."
+          ],
+          "answer": 2,
+          "trips": [
+            0
+          ],
+          "why": {
+            "en": "A job after 'be' needs an article, and 'engineer' starts with a vowel sound.",
+            "es": "Una profesión después de 'be' necesita artículo, y 'engineer' empieza con sonido de vocal."
+          }
+        }
+      ]
+    },
+    {
+      "n": 2,
+      "id": "plurals",
+      "title": {
+        "en": "Plurals: one and more than one",
+        "es": "Plurales: uno y más de uno"
+      },
+      "rule": {
+        "en": "After a number bigger than one, a countable noun takes -s or -es. Adjectives never take -s.",
+        "es": "Después de un número mayor que uno, un sustantivo contable lleva -s o -es. Los adjetivos nunca llevan -s."
+      },
+      "detectors": [
+        "plural-after-number",
+        "adjective-agreement",
+        "much-many"
+      ],
+      "diagnostic": [
+        {
+          "choices": [
+            "I have three book in my bag.",
+            "I have three books in my bag.",
+            "I have three bookes in my bag."
+          ],
+          "answer": 1,
+          "trips": [
+            0
+          ]
+        },
+        {
+          "choices": [
+            "They are importants rules.",
+            "They are rules importants.",
+            "They are important rules."
+          ],
+          "answer": 2,
+          "trips": [
+            0
+          ]
+        }
+      ],
+      "practice": [
+        {
+          "choices": [
+            "We planted two tree near the school.",
+            "We planted two trees near the school.",
+            "We planted two treees near the school."
+          ],
+          "answer": 1,
+          "trips": [
+            0
+          ],
+          "why": {
+            "en": "'Two' means more than one, so 'tree' becomes 'trees'.",
+            "es": "'Two' significa más de uno, así que 'tree' cambia a 'trees'."
+          }
+        },
+        {
+          "choices": [
+            "The class has five boxes of markers.",
+            "The class has five box of markers.",
+            "The class has five boxs of markers."
+          ],
+          "answer": 0,
+          "trips": [
+            1
+          ],
+          "why": {
+            "en": "Nouns ending in -x add -es: box, boxes.",
+            "es": "Los sustantivos que terminan en -x agregan -es: box, boxes."
+          }
+        },
+        {
+          "choices": [
+            "Those are differents plants.",
+            "Those are different plants.",
+            "Those are plants differents."
+          ],
+          "answer": 1,
+          "trips": [
+            0
+          ],
+          "why": {
+            "en": "Adjectives like 'different' stay the same with plural nouns.",
+            "es": "Los adjetivos como 'different' no cambian con sustantivos en plural."
+          }
+        },
+        {
+          "choices": [
+            "How much students are in the club?",
+            "How many student are in the club?",
+            "How many students are in the club?"
+          ],
+          "answer": 2,
+          "trips": [
+            0,
+            1
+          ],
+          "why": {
+            "en": "Use 'many' with nouns you can count, and the noun is plural.",
+            "es": "Usa 'many' con sustantivos que se pueden contar, y el sustantivo va en plural."
+          }
+        },
+        {
+          "choices": [
+            "The farm has four horses.",
+            "The farm has four horse.",
+            "The farm has four horsies."
+          ],
+          "answer": 0,
+          "trips": [],
+          "why": {
+            "en": "'Four' is more than one, so add -s: horses.",
+            "es": "'Four' es más de uno, así que se agrega -s: horses."
+          }
+        }
+      ]
+    },
+    {
+      "n": 3,
+      "id": "possessives",
+      "title": {
+        "en": "Possessives: whose is it?",
+        "es": "Posesivos: ¿de quién es?"
+      },
+      "rule": {
+        "en": "Add 's to show that something belongs to a person: Ana's book. Use his, her, their before the thing, not after.",
+        "es": "Agrega 's para mostrar que algo pertenece a una persona: Ana's book. Usa his, her, their antes de la cosa, no después."
+      },
+      "detectors": [],
+      "diagnostic": [
+        {
+          "choices": [
+            "The book of Maria is on the desk.",
+            "Maria's book is on the desk.",
+            "Marias book is on the desk."
+          ],
+          "answer": 1,
+          "trips": []
+        },
+        {
+          "choices": [
+            "The students opened their notebooks.",
+            "The students opened the notebooks of them.",
+            "The students opened they notebooks."
+          ],
+          "answer": 0,
+          "trips": []
+        }
+      ],
+      "practice": [
+        {
+          "choices": [
+            "My brother's bike is blue.",
+            "The bike of my brother is blue.",
+            "My brothers bike is blue."
+          ],
+          "answer": 0,
+          "trips": [],
+          "why": {
+            "en": "One brother owns the bike, so write brother's.",
+            "es": "Un hermano es dueño de la bicicleta, así que se escribe brother's."
+          }
+        },
+        {
+          "choices": [
+            "She forgot she lunch at home.",
+            "She forgot her lunch at home.",
+            "She forgot the lunch of her at home."
+          ],
+          "answer": 1,
+          "trips": [],
+          "why": {
+            "en": "Use 'her' before the thing a girl or woman owns.",
+            "es": "Usa 'her' antes de lo que pertenece a una niña o mujer."
+          }
+        },
+        {
+          "choices": [
+            "The dog wagged it's tail.",
+            "The dog wagged the tail of it.",
+            "The dog wagged its tail."
+          ],
+          "answer": 2,
+          "trips": [],
+          "why": {
+            "en": "'Its' shows belonging. 'It's' means 'it is'.",
+            "es": "'Its' muestra pertenencia. 'It's' significa 'it is'."
+          }
+        },
+        {
+          "choices": [
+            "The teacher's desk is by the window.",
+            "The desk of the teacher is by the window.",
+            "The teachers desk is by the window."
+          ],
+          "answer": 0,
+          "trips": [],
+          "why": {
+            "en": "One teacher owns the desk: teacher's desk.",
+            "es": "Una maestra es dueña del escritorio: teacher's desk."
+          }
+        },
+        {
+          "choices": [
+            "Our team won the game.",
+            "Us team won the game.",
+            "The team of us won the game."
+          ],
+          "answer": 0,
+          "trips": [],
+          "why": {
+            "en": "Use 'our' before something that belongs to us.",
+            "es": "Usa 'our' antes de algo que nos pertenece."
+          }
+        }
+      ]
+    },
+    {
+      "n": 4,
+      "id": "pronouns",
+      "title": {
+        "en": "Pronouns: he, she, it, they",
+        "es": "Pronombres: he, she, it, they"
+      },
+      "rule": {
+        "en": "A pronoun replaces a noun. Use he for a boy or man, she for a girl or woman, it for a thing, they for more than one. English sentences need the subject pronoun.",
+        "es": "Un pronombre reemplaza a un sustantivo. Usa he para un niño u hombre, she para una niña o mujer, it para una cosa, they para más de uno. Las oraciones en inglés necesitan el pronombre sujeto."
+      },
+      "detectors": [
+        "missing-expletive"
+      ],
+      "diagnostic": [
+        {
+          "choices": [
+            "My sister is tall. He plays basketball.",
+            "My sister is tall. She plays basketball.",
+            "My sister is tall. Plays basketball."
+          ],
+          "answer": 1,
+          "trips": []
+        },
+        {
+          "choices": [
+            "Is raining today.",
+            "It is raining today.",
+            "Raining today is."
+          ],
+          "answer": 1,
+          "trips": [
+            0
+          ]
+        }
+      ],
+      "practice": [
+        {
+          "choices": [
+            "The plants need water. It are dry.",
+            "The plants need water. They are dry.",
+            "The plants need water. Are dry."
+          ],
+          "answer": 1,
+          "trips": [],
+          "why": {
+            "en": "'Plants' is more than one, so use 'they'.",
+            "es": "'Plants' es más de uno, así que se usa 'they'."
+          }
+        },
+        {
+          "choices": [
+            "Mr. Lee is my coach. She is kind.",
+            "Mr. Lee is my coach. It is kind.",
+            "Mr. Lee is my coach. He is kind."
+          ],
+          "answer": 2,
+          "trips": [],
+          "why": {
+            "en": "'Mr.' names a man, so use 'he'.",
+            "es": "'Mr.' nombra a un hombre, así que se usa 'he'."
+          }
+        },
+        {
+          "choices": [
+            "Is important to drink water.",
+            "It is important to drink water.",
+            "Important is to drink water."
+          ],
+          "answer": 1,
+          "trips": [
+            0
+          ],
+          "why": {
+            "en": "English needs a subject. Start with 'It is'.",
+            "es": "El inglés necesita un sujeto. Empieza con 'It is'."
+          }
+        },
+        {
+          "choices": [
+            "Me and Sam went to the library.",
+            "Sam and I went to the library.",
+            "Sam and me went to the library."
+          ],
+          "answer": 1,
+          "trips": [],
+          "why": {
+            "en": "Before the verb, use 'I', and name the other person first.",
+            "es": "Antes del verbo usa 'I', y nombra primero a la otra persona."
+          }
+        },
+        {
+          "choices": [
+            "The teacher gave the paper to her.",
+            "The teacher gave the paper to she.",
+            "The teacher gave the paper to hers."
+          ],
+          "answer": 0,
+          "trips": [],
+          "why": {
+            "en": "After 'to', use 'her'.",
+            "es": "Después de 'to', se usa 'her'."
+          }
+        }
+      ]
+    },
+    {
+      "n": 5,
+      "id": "prepositions",
+      "title": {
+        "en": "Prepositions: in, on, at",
+        "es": "Preposiciones: in, on, at"
+      },
+      "rule": {
+        "en": "Use 'on' for days and dates, 'in' for months and years, and 'at' for clock times.",
+        "es": "Usa 'on' para días y fechas, 'in' para meses y años, y 'at' para la hora."
+      },
+      "detectors": [
+        "preposition-choice"
+      ],
+      "diagnostic": [
+        {
+          "choices": [
+            "The test is in Monday.",
+            "The test is on Monday.",
+            "The test is at Monday."
+          ],
+          "answer": 1,
+          "trips": [
+            0
+          ]
+        },
+        {
+          "choices": [
+            "School starts at 8 o'clock.",
+            "School starts in 8 o'clock.",
+            "School starts on 8 o'clock."
+          ],
+          "answer": 0,
+          "trips": []
+        }
+      ],
+      "practice": [
+        {
+          "choices": [
+            "My birthday is in May.",
+            "My birthday is on May.",
+            "My birthday is at May."
+          ],
+          "answer": 0,
+          "trips": [],
+          "why": {
+            "en": "Use 'in' with months.",
+            "es": "Usa 'in' con los meses."
+          }
+        },
+        {
+          "choices": [
+            "We have art in Friday.",
+            "We have art at Friday.",
+            "We have art on Friday."
+          ],
+          "answer": 2,
+          "trips": [
+            0
+          ],
+          "why": {
+            "en": "Use 'on' with days of the week.",
+            "es": "Usa 'on' con los días de la semana."
+          }
+        },
+        {
+          "choices": [
+            "Lunch is at noon.",
+            "Lunch is in noon.",
+            "Lunch is on noon."
+          ],
+          "answer": 0,
+          "trips": [],
+          "why": {
+            "en": "Use 'at' with a time of day like noon.",
+            "es": "Usa 'at' con una hora del día como noon."
+          }
+        },
+        {
+          "choices": [
+            "She was born on 2013.",
+            "She was born in 2013.",
+            "She was born at 2013."
+          ],
+          "answer": 1,
+          "trips": [],
+          "why": {
+            "en": "Use 'in' with years.",
+            "es": "Usa 'in' con los años."
+          }
+        },
+        {
+          "choices": [
+            "The game is on Saturday.",
+            "The game is in Saturday.",
+            "The game is at Saturday."
+          ],
+          "answer": 0,
+          "trips": [
+            1
+          ],
+          "why": {
+            "en": "Use 'on' with days of the week.",
+            "es": "Usa 'on' con los días de la semana."
+          }
+        }
+      ]
+    },
+    {
+      "n": 6,
+      "id": "negation",
+      "title": {
+        "en": "Negation: saying no",
+        "es": "Negación: decir que no"
+      },
+      "rule": {
+        "en": "Use don't, doesn't or didn't before the base verb. Use only one negative word in one idea.",
+        "es": "Usa don't, doesn't o didn't antes del verbo base. Usa solo una palabra negativa en una idea."
+      },
+      "detectors": [
+        "double-negative",
+        "do-support"
+      ],
+      "diagnostic": [
+        {
+          "choices": [
+            "He no likes soccer.",
+            "He doesn't like soccer.",
+            "He doesn't likes soccer."
+          ],
+          "answer": 1,
+          "trips": [
+            2
+          ]
+        },
+        {
+          "choices": [
+            "I don't have no homework.",
+            "I don't have any homework.",
+            "I no have homework."
+          ],
+          "answer": 1,
+          "trips": [
+            0
+          ]
+        }
+      ],
+      "practice": [
+        {
+          "choices": [
+            "She didn't went to the park.",
+            "She didn't go to the park.",
+            "She no went to the park."
+          ],
+          "answer": 1,
+          "trips": [
+            0
+          ],
+          "why": {
+            "en": "After 'didn't', use the base verb: go.",
+            "es": "Después de 'didn't', usa el verbo base: go."
+          }
+        },
+        {
+          "choices": [
+            "We don't need nothing else.",
+            "We don't need anything else.",
+            "We no need anything else."
+          ],
+          "answer": 1,
+          "trips": [
+            0
+          ],
+          "why": {
+            "en": "'Don't' is already the negative, so use 'anything'.",
+            "es": "'Don't' ya es la negación, así que se usa 'anything'."
+          }
+        },
+        {
+          "choices": [
+            "My cat doesn't eat fish.",
+            "My cat don't eat fish.",
+            "My cat doesn't eats fish."
+          ],
+          "answer": 0,
+          "trips": [
+            2
+          ],
+          "why": {
+            "en": "With he, she or it, use 'doesn't' and the base verb.",
+            "es": "Con he, she o it, usa 'doesn't' y el verbo base."
+          }
+        },
+        {
+          "choices": [
+            "They can't find nobody.",
+            "They can't find anybody.",
+            "They no can find anybody."
+          ],
+          "answer": 1,
+          "trips": [
+            0
+          ],
+          "why": {
+            "en": "'Can't' is already negative, so use 'anybody'.",
+            "es": "'Can't' ya es negativo, así que se usa 'anybody'."
+          }
+        },
+        {
+          "choices": [
+            "I didn't saw the movie.",
+            "I no saw the movie.",
+            "I didn't see the movie."
+          ],
+          "answer": 2,
+          "trips": [
+            0
+          ],
+          "why": {
+            "en": "After 'didn't', use the base verb: see.",
+            "es": "Después de 'didn't', usa el verbo base: see."
+          }
+        }
+      ]
+    },
+    {
+      "n": 7,
+      "id": "questions",
+      "title": {
+        "en": "Questions: word order",
+        "es": "Preguntas: orden de las palabras"
+      },
+      "rule": {
+        "en": "In a question, the helping verb (do, does, did, is, are, can) comes before the subject.",
+        "es": "En una pregunta, el verbo auxiliar (do, does, did, is, are, can) va antes del sujeto."
+      },
+      "detectors": [
+        "question-order",
+        "do-support"
+      ],
+      "diagnostic": [
+        {
+          "choices": [
+            "Where you live?",
+            "Where do you live?",
+            "Where you do live?"
+          ],
+          "answer": 1,
+          "trips": [
+            0,
+            2
+          ]
+        },
+        {
+          "choices": [
+            "Does she plays the piano?",
+            "She does play the piano?",
+            "Does she play the piano?"
+          ],
+          "answer": 2,
+          "trips": [
+            0
+          ]
+        }
+      ],
+      "practice": [
+        {
+          "choices": [
+            "What time the bus comes?",
+            "What time does the bus come?",
+            "What time does the bus comes?"
+          ],
+          "answer": 1,
+          "trips": [],
+          "why": {
+            "en": "Put 'does' before the subject and use the base verb.",
+            "es": "Pon 'does' antes del sujeto y usa el verbo base."
+          }
+        },
+        {
+          "choices": [
+            "Why is the sky blue?",
+            "Why the sky is blue?",
+            "Why blue is the sky?"
+          ],
+          "answer": 0,
+          "trips": [
+            1
+          ],
+          "why": {
+            "en": "'Is' comes before the subject 'the sky'.",
+            "es": "'Is' va antes del sujeto 'the sky'."
+          }
+        },
+        {
+          "choices": [
+            "Did you finished the project?",
+            "Did you finish the project?",
+            "You did finish the project?"
+          ],
+          "answer": 1,
+          "trips": [
+            0
+          ],
+          "why": {
+            "en": "After 'did', use the base verb: finish.",
+            "es": "Después de 'did', usa el verbo base: finish."
+          }
+        },
+        {
+          "choices": [
+            "Can you help me?",
+            "You can help me?",
+            "Can help you me?"
+          ],
+          "answer": 0,
+          "trips": [],
+          "why": {
+            "en": "'Can' comes before the subject in a question.",
+            "es": "'Can' va antes del sujeto en una pregunta."
+          }
+        },
+        {
+          "choices": [
+            "How many pages you read?",
+            "How many pages did you read?",
+            "How many pages did you readed?"
+          ],
+          "answer": 1,
+          "trips": [
+            2
+          ],
+          "why": {
+            "en": "Add 'did' before 'you' and keep the base verb.",
+            "es": "Agrega 'did' antes de 'you' y deja el verbo base."
+          }
+        }
+      ]
+    }
+  ]
+}

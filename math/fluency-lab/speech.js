@@ -63,7 +63,14 @@ export function announce(text) {
 }
 
 // Announce the visible hint line of a game after it re-renders.
+// Audio-first mode listens here: every game already reports its message through syncLive, so one listener covers them all.
+let gameListener = null;
+export const onGameMessage = (listener) => {
+  gameListener = listener;
+};
 export const syncLive = (host) => {
   const heading = host.querySelector("[data-fb-host] [data-fb-title]")?.textContent;
-  announce([heading, host.querySelector(".gm-note")?.textContent].filter(Boolean).join(". "));
+  const text = [heading, host.querySelector(".gm-note")?.textContent].filter(Boolean).join(". ");
+  announce(text);
+  gameListener?.(text);
 }; // fl4:screens: a settled result announces its heading before the note

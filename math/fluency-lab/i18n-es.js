@@ -4,6 +4,11 @@ import { ES_KID } from "./i18n-es-kid.js";
 import { ES_E8 } from "./i18n-es-e8.js";
 import { ES_LAB4 } from "./i18n-es-lab4.js";
 import { ES_LANGUAGE } from "./i18n-es-language.js";
+import { ES_ITEMS } from "./i18n-es-items.js";
+import { ES_HIDING } from "./i18n-es-hiding.js";
+import { ES_MISTAKE_DATA } from "./i18n-es-mistake-data.js";
+import { ES_AUDIO_FIRST } from "./i18n-es-audio-first.js";
+import { ES_CLASS_TOOLS } from "./i18n-es-class-tools.js";
 
 export const ES = {
   "Thanks. A checkup only looks for what to practice next, so the solution is saved for later instead of shown now.": "Gracias. Una prueba solo busca qué practicar después, así que la solución se guarda para más tarde en lugar de mostrarse ahora.",
@@ -1019,6 +1024,11 @@ Object.assign(ES, {
 });
 
 Object.assign(ES, ES_LANGUAGE);
+Object.assign(ES, ES_ITEMS);
+Object.assign(ES, ES_HIDING);
+Object.assign(ES, ES_MISTAKE_DATA);
+Object.assign(ES, ES_AUDIO_FIRST);
+Object.assign(ES, ES_CLASS_TOOLS);
 Object.assign(ES, ES_KID);
 Object.assign(ES, ES_LAB4);
 Object.assign(ES, ES_E8);

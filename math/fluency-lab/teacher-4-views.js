@@ -2,6 +2,7 @@
 // Every finding shows an "Observed" line (counts of saved answers) and a "Possible reason (inferred)" line.
 import { esc } from "./reports-export.js";
 import { t } from "./i18n.js";
+import { mistakeCategoryLabel } from "./mistake-notes.js";
 
 const findingLines = (item) =>
   `<p class="t4-obs"><b>${esc(t("Observed:"))}</b> ${esc(item.observed.text)}</p><p class="t4-inf"><b>${esc(t("Possible reason (inferred):"))}</b> ${esc(item.inferred.text)}</p>`;
@@ -34,6 +35,25 @@ export function troubleHtml(analysis) {
         `<article class="t4-card"><header><h4>${esc(spot.skill.title)}</h4><span class="t4-tag">${esc(t("{low} of {checked} learners", { low: spot.lowLearners, checked: spot.checkedLearners }))}</span></header>${findingLines(spot)}${lessonHtml(spot.intervention)}${planButton("trouble", index)}</article>`,
     )
     .join("");
+}
+
+// fl-teacher: the trouble-spot rule (3 misses of the same item type), ranked by learners who share it.
+export function troubleRankHtml(analysis) {
+  const list = analysis.troubleRanked || [];
+  if (!list.length)
+    return `<p class="t4-empty">${esc(t("No learner has missed the same kind of item three times in the last four weeks."))}</p>`;
+  const typeName = (spot) =>
+    spot.category ? mistakeCategoryLabel(spot.category) || spot.category : t("Any item in this skill");
+  return `<ol class="t4-plain t4-rank">${list
+    .slice(0, 12)
+    .map(
+      (spot, index) =>
+        `<li><article class="t4-card"><header><h4>${esc(spot.skill.title)}</h4><span class="t4-tag">${esc(typeName(spot))}</span></header>
+      <p>${esc(t("{n} learners · {misses} misses in all", { n: spot.learners.length, misses: spot.misses }))}${spot.open ? "" : ` · ${esc(t("All repaired"))}`}</p>
+      <p class="t4-hint">${spot.learners.map((name) => `<span class="t4-chip">${esc(name)}</span>`).join(" ")}</p>
+      ${spot.intervention.reteach ? `<p><b>${esc(t("Teaching move:"))}</b> ${esc(spot.intervention.reteach)}</p>` : ""}${planButton("spot", index)}</article></li>`,
+    )
+    .join("")}</ol>`;
 }
 
 export function patternsHtml(analysis) {

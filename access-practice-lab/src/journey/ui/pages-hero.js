@@ -37,7 +37,7 @@ const ACTION = {
   "journey-complete": ["Try again", "Intentar otra vez"],
 };
 
-function headline(I, rec) {
+export function headline(I, rec) {
   const n = missionNumber(rec.mission);
   const t = MISSIONS[rec.mission].title;
   if (rec.kind === "start")
@@ -51,7 +51,7 @@ function headline(I, rec) {
   return I.T(`Continue Mission ${n}: ${t[0]}`, `Continúa la misión ${n}: ${t[1]}`);
 }
 
-function ctaLabel(I, rec) {
+export function ctaLabel(I, rec) {
   const step = stepInfo(rec.step);
   if (rec.kind === "start")
     return I.T(

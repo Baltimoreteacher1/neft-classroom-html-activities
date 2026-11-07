@@ -7,7 +7,10 @@
 //   MOVE_ROWS   family|did or check|English phrase|frase en español
 // "did" phrases finish "I ..." in English and stand as a first-person verb phrase in Español.
 
+import { STRAND_SKILLS } from "./strand-skills.js";
+
 const TERM_ROWS = [
+  "divisor|divisor|divisor|The number you divide by.|El número entre el que se divide.|1",
   "number|number|número|A word or symbol that tells how many or how much.|Una palabra o símbolo que dice cuántos o cuánto hay.|1",
   "count|count|contar|Say numbers in order to find how many.|Decir los números en orden para saber cuántos hay.|0",
   "pattern|pattern|patrón|Something that repeats or changes in a way you can predict.|Algo que se repite o cambia de una manera que se puede predecir.|1",
@@ -123,6 +126,20 @@ const TERM_ROWS = [
   "triangle|triangle|triángulo|A polygon with three sides.|Un polígono con tres lados.|1",
   "data|data|datos|Information collected and organized to answer questions.|Información que se recopila y organiza para responder preguntas.|0",
   "table|table|tabla|A display that organizes information in rows and columns.|Una presentación que organiza información en filas y columnas.|1",
+  "number-line|number line|recta numérica|A line with numbers placed in order at equal spaces.|Una recta con números colocados en orden a distancias iguales.|0",
+  "rational-number|rational number|número racional|A number that can be written as a fraction, including negatives and decimals.|Un número que se puede escribir como fracción, incluidos los negativos y los decimales.|0",
+  "whole-amount|whole|cantidad total|The full amount: one hundred percent.|La cantidad completa: el cien por ciento.|0",
+  "distributive|distributive property|propiedad distributiva|Multiplying a sum by a number is the same as multiplying each part and adding.|Multiplicar una suma por un número es lo mismo que multiplicar cada parte y sumar.|0",
+  "like-terms|like terms|términos semejantes|Terms with the same variable part, which can be added together.|Términos con la misma parte variable, que se pueden sumar.|0",
+  "dot-plot|dot plot|diagrama de puntos|A display with one dot above a number line for each data value.|Una gráfica con un punto sobre una recta numérica por cada dato.|0",
+  "histogram|histogram|histograma|A bar graph that counts data values in equal intervals.|Una gráfica de barras que cuenta datos en intervalos iguales.|1",
+  "box-plot|box plot|diagrama de caja|A display of the minimum, quartiles, median and maximum of a data set.|Una gráfica del mínimo, los cuartiles, la mediana y el máximo de un conjunto de datos.|0",
+  "quartile|quartile|cuartil|A value that marks off a quarter of the ordered data.|Un valor que separa una cuarta parte de los datos ordenados.|1",
+  "spread|spread|dispersión|How far apart the data values are from each other or from the center.|Qué tan separados están los datos entre sí o del centro.|0",
+  "net|net|red|A flat pattern that folds up into a solid figure.|Un patrón plano que se dobla para formar un cuerpo geométrico.|0",
+  "surface-area|surface area|área total|The total area of all the faces of a solid figure.|El área de todas las caras de un cuerpo geométrico sumadas.|0",
+  "face|face|cara|A flat surface of a solid figure.|Una superficie plana de un cuerpo geométrico.|0",
+  "prism|prism|prisma|A solid with two matching bases joined by rectangles.|Un cuerpo con dos bases iguales unidas por rectángulos.|1",
 ];
 
 const SKILL_ROWS = [
@@ -199,6 +216,7 @@ const SKILL_ROWS = [
   "one-step|algebra|equation,variable,solve,inverse-operation",
   "integers|integer|absolute-value,coordinate-plane,quadrant,origin",
   "triangle-area|measure|area,triangle,length,unit",
+  "multi-digit-division|muldiv|divide,divisor,quotient,remainder",
   "integer-add|integer|integer,positive,negative,zero-pair",
   "integer-mul|integer|integer,positive,negative,product",
   "fraction-ops|fraction|fraction,common-denominator,reciprocal,simplify",
@@ -221,6 +239,14 @@ const SKILL_ROWS = [
   "scale-drawing|measure|scale,ratio,length,unit",
   "pythagorean|measure|hypotenuse,leg,square-root",
   "association|data|association,scatter-plot,trend",
+  "order-rational|integer|rational-number,number-line,negative,compare",
+  "percent-whole|ratio|percent,whole-amount,per",
+  "equivalent-expressions|algebra|expression,distributive,like-terms,equivalent",
+  "write-inequalities|algebra|inequality,variable,solution,number-line",
+  "data-displays|data|dot-plot,histogram,box-plot,data",
+  "center-spread|data|mean,median,quartile,spread",
+  "surface-area-nets|measure|net,surface-area,face,prism",
+  "volume-fractional|measure|volume,prism,fraction,unit",
 ];
 
 const MOVE_ROWS = [
@@ -324,6 +350,12 @@ const MOVE_ROWS = [
 
 const FALLBACK = { family: "number", terms: ["number", "compare", "estimate"] };
 const norm = (value) => String(value || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+
+// Strand skills (strand-skills.js) bring their own word cards and skill row.
+for (const d of STRAND_SKILLS) {
+  TERM_ROWS.push(...(d.newTerms || []));
+  SKILL_ROWS.push(`${d.id}|${d.family}|${d.terms.join(",")}`);
+}
 
 const TERMS = new Map();
 for (const row of TERM_ROWS) {
