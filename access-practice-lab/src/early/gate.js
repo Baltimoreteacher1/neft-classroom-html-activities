@@ -16,6 +16,12 @@ export const EARLY_VIEWS = new Set([
   "tools",
   "move",
   "family",
+  "class",
+  "class-quiz",
+  "class-teacher",
+  "launch",
+  "launch-studio",
+  "teacher-launch",
   "session-done",
 ]);
 

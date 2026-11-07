@@ -1,294 +1,311 @@
-// Auto-generated module for broad runtime compatibility (Cloudflare Pages, esbuild, Node.js)
-export const quizKey = {
-  items: {
-    "68c-r-bus-seat-inference": {
-      band: "6-8",
-      domain: "Reading",
-      level: "C",
-      answer: "c",
-    },
-    "68c-r-erie-canal-two-texts": {
-      band: "6-8",
-      domain: "Reading",
-      level: "C",
-      answer: "d",
-    },
-    "68c-r-ocean-plastic-craft": {
-      band: "6-8",
-      domain: "Reading",
-      level: "C",
-      answer: "c",
-    },
-    "68c-r-scarce-water-vocab": {
-      band: "6-8",
-      domain: "Reading",
-      level: "C",
-      answer: "b",
-    },
-    "68c-r-two-views-homework": {
-      band: "6-8",
-      domain: "Reading",
-      level: "C",
-      answer: "a",
-    },
-    "68c-w-best-evidence-heat": {
-      band: "6-8",
-      domain: "Writing",
-      level: "C",
-      answer: "a",
-    },
-    "68c-w-combine-sentences": {
-      band: "6-8",
-      domain: "Writing",
-      level: "C",
-      answer: "d",
-    },
-    "68c-w-precise-vocabulary": {
-      band: "6-8",
-      domain: "Writing",
-      level: "C",
-      answer: "b",
-    },
-    "68c-w-recycling-revision": {
-      band: "6-8",
-      domain: "Writing",
-      level: "C",
-      answer: "d",
-    },
-    "g1-r-a-word-dog": {
-      band: "1",
-      domain: "Reading",
-      level: "A",
-      answer: "a",
-    },
-    "g1-r-a-word-hat": {
-      band: "1",
-      domain: "Reading",
-      level: "A",
-      answer: "a",
-    },
-    "g1-r-a-word-sun": {
-      band: "1",
-      domain: "Reading",
-      level: "A",
-      answer: "a",
-    },
-    "g1-r-b-cat-mat": {
-      band: "1",
-      domain: "Reading",
-      level: "B",
-      answer: "a",
-    },
-    "g1-r-b-sam-rain": {
-      band: "1",
-      domain: "Reading",
-      level: "B",
-      answer: "a",
-    },
-    "g23-r-a-bus-yellow": {
-      band: "2-3",
-      domain: "Reading",
-      level: "A",
-      answer: "a",
-    },
-    "g23-r-a-cat-under": {
-      band: "2-3",
-      domain: "Reading",
-      level: "A",
-      answer: "a",
-    },
-    "g23-r-a-rain-boots": {
-      band: "2-3",
-      domain: "Reading",
-      level: "A",
-      answer: "b",
-    },
-    "g23-r-a-red-apple": {
-      band: "2-3",
-      domain: "Reading",
-      level: "A",
-      answer: "b",
-    },
-    "g23-r-b-garden-job": {
-      band: "2-3",
-      domain: "Reading",
-      level: "B",
-      answer: "b",
-    },
-    "g23-r-b-library-card": {
-      band: "2-3",
-      domain: "Reading",
-      level: "B",
-      answer: "a",
-    },
-    "g23-r-b-market-money": {
-      band: "2-3",
-      domain: "Reading",
-      level: "B",
-      answer: "a",
-    },
-    "g23-r-b-puddle-jump": {
-      band: "2-3",
-      domain: "Reading",
-      level: "B",
-      answer: "b",
-    },
-    "g23-r-c-bus-late": {
-      band: "2-3",
-      domain: "Reading",
-      level: "C",
-      answer: "a",
-    },
-    "g23-r-c-garden-main": {
-      band: "2-3",
-      domain: "Reading",
-      level: "C",
-      answer: "a",
-    },
-    "g35-r-b-market-day": {
-      band: "3-5",
-      domain: "Reading",
-      level: "B",
-      answer: "b",
-    },
-    "g35-r-c-abuelo-garden": {
-      band: "3-5",
-      domain: "Reading",
-      level: "C",
-      answer: "d",
-    },
-    "g35-r-c-new-student": {
-      band: "3-5",
-      domain: "Reading",
-      level: "C",
-      answer: "a",
-    },
-    "gk-r-a-sound-m": {
-      band: "K",
-      domain: "Reading",
-      level: "A",
-      answer: "b",
-    },
-    "gk-r-a-sound-s": {
-      band: "K",
-      domain: "Reading",
-      level: "A",
-      answer: "a",
-    },
-    "read-author-purpose": {
-      band: "6-8",
-      domain: "Reading",
-      level: "A",
-      answer: "a",
-    },
-    "read-best-evidence": {
-      band: "6-8",
-      domain: "Reading",
-      level: "B",
-      answer: "a",
-    },
-    "read-cause-effect": {
-      band: "6-8",
-      domain: "Reading",
-      level: "B",
-      answer: "a",
-    },
-    "read-compare-two-details": {
-      band: "6-8",
-      domain: "Reading",
-      level: "A",
-      answer: "a",
-    },
-    "read-infer-meaning": {
-      band: "6-8",
-      domain: "Reading",
-      level: "B",
-      answer: "a",
-    },
-    "read-main-idea": {
-      band: "6-8",
-      domain: "Reading",
-      level: "A",
-      answer: "a",
-    },
-    "read-summarize": {
-      band: "6-8",
-      domain: "Reading",
-      level: "B",
-      answer: "a",
-    },
-    "read-supporting-detail": {
-      band: "6-8",
-      domain: "Reading",
-      level: "A",
-      answer: "a",
-    },
-    "read-text-structure": {
-      band: "6-8",
-      domain: "Reading",
-      level: "B",
-      answer: "a",
-    },
-    "read-vocab-in-context": {
-      band: "6-8",
-      domain: "Reading",
-      level: "A",
-      answer: "a",
-    },
-    "rv5-info-volcano-3": {
-      band: "6-8",
-      domain: "Reading",
-      level: "B",
-      answer: "a",
-    },
-    "rv5-mc-authors-purpose": {
-      band: "6-8",
-      domain: "Reading",
-      level: "B",
-      answer: "a",
-    },
-    "rv5-school-garden-3": {
-      band: "6-8",
-      domain: "Reading",
-      level: "A",
-      answer: "a",
-    },
-    "rv5-vocab-context-recycle": {
-      band: "6-8",
-      domain: "Reading",
-      level: "A",
-      answer: "a",
-    },
-    "speak-compare-choices": {
-      band: "6-8",
-      domain: "Speaking",
-      level: "B",
-      answer: "a",
-    },
-    "speak-one-sentence": {
-      band: "6-8",
-      domain: "Speaking",
-      level: "A",
-      answer: "a",
-    },
-    "v10-r-a-main-idea": {
-      band: "6-8",
-      domain: "Reading",
-      level: "A",
-      answer: "a",
-    },
-    "v7-read-a-class-pet": {
-      band: "6-8",
-      domain: "Reading",
-      level: "A",
-      answer: "a",
-    },
-    "write-evidence-sentence": {
-      band: "6-8",
-      domain: "Writing",
-      level: "A",
-      answer: "a",
-    },
+// Generated by tools/access-lab-index.mjs from the lab item bank. Do not edit.
+export default {
+ "items": {
+  "68c-r-bus-seat-inference": {
+   "band": "6-8",
+   "domain": "Reading",
+   "level": "C",
+   "answer": "c"
   },
+  "68c-r-erie-canal-two-texts": {
+   "band": "6-8",
+   "domain": "Reading",
+   "level": "C",
+   "answer": "d"
+  },
+  "68c-r-ocean-plastic-craft": {
+   "band": "6-8",
+   "domain": "Reading",
+   "level": "C",
+   "answer": "c"
+  },
+  "68c-r-scarce-water-vocab": {
+   "band": "6-8",
+   "domain": "Reading",
+   "level": "C",
+   "answer": "b"
+  },
+  "68c-r-two-views-homework": {
+   "band": "6-8",
+   "domain": "Reading",
+   "level": "C",
+   "answer": "a"
+  },
+  "68c-w-best-evidence-heat": {
+   "band": "6-8",
+   "domain": "Writing",
+   "level": "C",
+   "answer": "a"
+  },
+  "68c-w-combine-sentences": {
+   "band": "6-8",
+   "domain": "Writing",
+   "level": "C",
+   "answer": "d"
+  },
+  "68c-w-precise-vocabulary": {
+   "band": "6-8",
+   "domain": "Writing",
+   "level": "C",
+   "answer": "b"
+  },
+  "68c-w-recycling-revision": {
+   "band": "6-8",
+   "domain": "Writing",
+   "level": "C",
+   "answer": "d"
+  },
+  "g1-r-a-word-dog": {
+   "band": "1",
+   "domain": "Reading",
+   "level": "A",
+   "answer": "a"
+  },
+  "g1-r-a-word-hat": {
+   "band": "1",
+   "domain": "Reading",
+   "level": "A",
+   "answer": "a"
+  },
+  "g1-r-a-word-sun": {
+   "band": "1",
+   "domain": "Reading",
+   "level": "A",
+   "answer": "a"
+  },
+  "g1-r-b-cat-mat": {
+   "band": "1",
+   "domain": "Reading",
+   "level": "B",
+   "answer": "a"
+  },
+  "g1-r-b-sam-rain": {
+   "band": "1",
+   "domain": "Reading",
+   "level": "B",
+   "answer": "a"
+  },
+  "g23-r-a-bus-yellow": {
+   "band": "2-3",
+   "domain": "Reading",
+   "level": "A",
+   "answer": "a"
+  },
+  "g23-r-a-cat-under": {
+   "band": "2-3",
+   "domain": "Reading",
+   "level": "A",
+   "answer": "a"
+  },
+  "g23-r-a-rain-boots": {
+   "band": "2-3",
+   "domain": "Reading",
+   "level": "A",
+   "answer": "b"
+  },
+  "g23-r-a-red-apple": {
+   "band": "2-3",
+   "domain": "Reading",
+   "level": "A",
+   "answer": "b"
+  },
+  "g23-r-b-garden-job": {
+   "band": "2-3",
+   "domain": "Reading",
+   "level": "B",
+   "answer": "b"
+  },
+  "g23-r-b-library-card": {
+   "band": "2-3",
+   "domain": "Reading",
+   "level": "B",
+   "answer": "a"
+  },
+  "g23-r-b-market-money": {
+   "band": "2-3",
+   "domain": "Reading",
+   "level": "B",
+   "answer": "a"
+  },
+  "g23-r-b-puddle-jump": {
+   "band": "2-3",
+   "domain": "Reading",
+   "level": "B",
+   "answer": "b"
+  },
+  "g23-r-c-bus-late": {
+   "band": "2-3",
+   "domain": "Reading",
+   "level": "C",
+   "answer": "a"
+  },
+  "g23-r-c-garden-main": {
+   "band": "2-3",
+   "domain": "Reading",
+   "level": "C",
+   "answer": "a"
+  },
+  "g35-r-a-new-bike": {
+   "band": "3-5",
+   "domain": "Reading",
+   "level": "A",
+   "answer": "a"
+  },
+  "g35-r-b-context-scarce": {
+   "band": "3-5",
+   "domain": "Reading",
+   "level": "B",
+   "answer": "c"
+  },
+  "g35-r-b-market-day": {
+   "band": "3-5",
+   "domain": "Reading",
+   "level": "B",
+   "answer": "b"
+  },
+  "g35-r-c-abuelo-garden": {
+   "band": "3-5",
+   "domain": "Reading",
+   "level": "C",
+   "answer": "d"
+  },
+  "g35-r-c-main-idea-bridge": {
+   "band": "3-5",
+   "domain": "Reading",
+   "level": "C",
+   "answer": "b"
+  },
+  "g35-r-c-new-student": {
+   "band": "3-5",
+   "domain": "Reading",
+   "level": "C",
+   "answer": "a"
+  },
+  "gk-r-a-sound-m": {
+   "band": "K",
+   "domain": "Reading",
+   "level": "A",
+   "answer": "b"
+  },
+  "gk-r-a-sound-s": {
+   "band": "K",
+   "domain": "Reading",
+   "level": "A",
+   "answer": "a"
+  },
+  "read-author-purpose": {
+   "band": "6-8",
+   "domain": "Reading",
+   "level": "A",
+   "answer": "a"
+  },
+  "read-best-evidence": {
+   "band": "6-8",
+   "domain": "Reading",
+   "level": "B",
+   "answer": "a"
+  },
+  "read-cause-effect": {
+   "band": "6-8",
+   "domain": "Reading",
+   "level": "B",
+   "answer": "a"
+  },
+  "read-compare-two-details": {
+   "band": "6-8",
+   "domain": "Reading",
+   "level": "A",
+   "answer": "a"
+  },
+  "read-infer-meaning": {
+   "band": "6-8",
+   "domain": "Reading",
+   "level": "B",
+   "answer": "a"
+  },
+  "read-main-idea": {
+   "band": "6-8",
+   "domain": "Reading",
+   "level": "A",
+   "answer": "a"
+  },
+  "read-summarize": {
+   "band": "6-8",
+   "domain": "Reading",
+   "level": "B",
+   "answer": "a"
+  },
+  "read-supporting-detail": {
+   "band": "6-8",
+   "domain": "Reading",
+   "level": "A",
+   "answer": "a"
+  },
+  "read-text-structure": {
+   "band": "6-8",
+   "domain": "Reading",
+   "level": "B",
+   "answer": "a"
+  },
+  "read-vocab-in-context": {
+   "band": "6-8",
+   "domain": "Reading",
+   "level": "A",
+   "answer": "a"
+  },
+  "rv5-info-volcano-3": {
+   "band": "6-8",
+   "domain": "Reading",
+   "level": "B",
+   "answer": "a"
+  },
+  "rv5-mc-authors-purpose": {
+   "band": "6-8",
+   "domain": "Reading",
+   "level": "B",
+   "answer": "a"
+  },
+  "rv5-school-garden-3": {
+   "band": "6-8",
+   "domain": "Reading",
+   "level": "A",
+   "answer": "a"
+  },
+  "rv5-vocab-context-recycle": {
+   "band": "6-8",
+   "domain": "Reading",
+   "level": "A",
+   "answer": "a"
+  },
+  "speak-compare-choices": {
+   "band": "6-8",
+   "domain": "Speaking",
+   "level": "B",
+   "answer": "a"
+  },
+  "speak-one-sentence": {
+   "band": "6-8",
+   "domain": "Speaking",
+   "level": "A",
+   "answer": "a"
+  },
+  "v10-r-a-main-idea": {
+   "band": "6-8",
+   "domain": "Reading",
+   "level": "A",
+   "answer": "a"
+  },
+  "v7-read-a-class-pet": {
+   "band": "6-8",
+   "domain": "Reading",
+   "level": "A",
+   "answer": "a"
+  },
+  "write-evidence-sentence": {
+   "band": "6-8",
+   "domain": "Writing",
+   "level": "A",
+   "answer": "a"
+  }
+ }
 };
-export default quizKey;

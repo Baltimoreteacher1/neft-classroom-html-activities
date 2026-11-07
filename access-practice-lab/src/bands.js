@@ -10,6 +10,7 @@
 //   - a PICKER band is what a person chooses: K, 1, 2-3, 4-5, 6-8. "4-5" opens the "3-5" content (grade 3 now has
 //     its own 2-3 band, whose content is written for grades 2 and 3).
 // Pure data and functions, no DOM: Node tools import it.
+import { FOCUS_BAND, GRADE_FOCUS, gradeFocusCounts } from "./grade-focus.js";
 
 /** Content bands in display order (youngest first). */
 export const CONTENT_BANDS = ["K", "1", "2-3", "3-5", "6-8"];
@@ -85,6 +86,9 @@ const PICKER_TO_CONTENT = {
 /** A ?grades= value (picker or content id) as a content band, or "" when it names no band. */
 export const normalizeBand = (value) => PICKER_TO_CONTENT[String(value ?? "").trim()] || "";
 
+/** A band written in a share code, check-in or assignment: any picker or content id, else `fallback`. */
+export const codeBand = (value, fallback = "6-8") => normalizeBand(value) || fallback;
+
 export const isEarlyBand = (band) => EARLY_BANDS.includes(band);
 
 /** Content band of an activity id, from its prefix. 6-8 ids carry no prefix. */
@@ -97,6 +101,10 @@ export function bandOfId(id) {
   // Older grades 3–5 ids were written "g35…" without the dash in a few shared links.
   return s.startsWith("g35") ? "3-5" : "6-8";
 }
+
+/** Every content band as [value, label] for a grade-band <select>; `es` picks the Spanish label. */
+export const bandOptions = (es = false) =>
+  CONTENT_BANDS.map((b) => [b, es ? BAND_INFO[b].labelEs : BAND_INFO[b].label]);
 
 export const bandLabel = (band) =>
   BAND_INFO[band]?.label || `Grades ${String(band).replace("-", "–")}`;
@@ -113,8 +121,12 @@ export function audioFirstOn(prefs, band) {
   return Boolean(BAND_INFO[band]?.audioFirst);
 }
 
-/** The homepage picker list written into content/index.json (`gradeBands`). */
-export function gradeBandsIndex(contentBandsWithContent) {
+/**
+ * The homepage picker list written into content/index.json (`gradeBands`). `focusTags` is one entry per 6-8
+ * activity (its `grades` list or undefined); it makes the 6-8 entry carry `gradeFocus`, the Grade 6 / 7 / 8
+ * choices the picker shows under the band with how many activities each one lists.
+ */
+export function gradeBandsIndex(contentBandsWithContent, focusTags = []) {
   return CONTENT_BANDS.filter((b) => contentBandsWithContent.includes(b)).map((band) => {
     const info = BAND_INFO[band];
     return {
@@ -127,6 +139,17 @@ export function gradeBandsIndex(contentBandsWithContent) {
       entry: isEarlyBand(band)
         ? `/access-practice-lab/early?grades=${info.picker}`
         : `/access-practice-lab/?grades=${info.picker}`,
+      ...(band === FOCUS_BAND && focusTags.length ? { gradeFocus: focusIndex(focusTags) } : {}),
     };
   });
+}
+
+function focusIndex(focusTags) {
+  const counts = gradeFocusCounts(focusTags);
+  return GRADE_FOCUS.map((f) => ({
+    id: f.id,
+    label: f.label[0],
+    labelEs: f.label[1],
+    count: counts[f.id || "all"],
+  }));
 }

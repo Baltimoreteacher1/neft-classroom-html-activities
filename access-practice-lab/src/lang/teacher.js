@@ -3,6 +3,7 @@
 // stated rules, not a model, and say what evidence produced them.
 import { FEATURES, buildProfile, focusAreas, firstAttempts, featureValue, MIN_POINTS } from "./ledger.js";
 import { WORLD_MISSIONS } from "../content/world-missions.js";
+import { codeBand, isEarlyBand } from "../bands.js";
 import { BASE, asList, html, toHtml } from "../util.js";
 import { PRACTICE_BANDS } from "./rubrics.js";
 
@@ -222,7 +223,7 @@ export function needEvidence(student, need) {
 
 /** Matching studio tasks, alternating writing and speaking so a group can practise both. */
 function tasksFor(need, tasks, band, limit = 3) {
-  const match = tasks.filter((t) => t.keyUse === need.use && (t.band || "6-8") === band);
+  const match = tasks.filter((t) => t.keyUse === need.use && codeBand(t.band) === band);
   const w = match.filter((t) => t.modality !== "speaking");
   const sp = match.filter((t) => t.modality === "speaking");
   const mixed = [];
@@ -247,7 +248,7 @@ export function conferencePlans(students, tasks = [], { minSize = 2, maxSize = 6
         continue;
       }
       if (ev.notMet < minMissed) continue;
-      const band = s.band === "3-5" ? "3-5" : "6-8";
+      const band = codeBand(s.band);
       if (!byBand.has(band)) byBand.set(band, []);
       byBand.get(band).push({ alias: s.alias, section: s.section || "", why: `${ev.notMet} of ${ev.total} ${need.use} first attempts did not yet ${need.target}.` });
     }
@@ -293,7 +294,7 @@ export function supportGaps(students, tasks = []) {
       if (ind.n === 0) status = "untested";
       else if (ind.met / ind.n <= supRate - 1 / 3) status = "gap";
       if (!status) continue;
-      const band = s.band === "3-5" ? "3-5" : "6-8";
+      const band = codeBand(s.band);
       out.push({
         alias: s.alias,
         section: s.section || "",
@@ -360,7 +361,7 @@ export function demoClass() {
 
 export const QR_NOTE =
   "No QR code: this lab has no verified QR encoder, so the direct link is printed in full instead.";
-const bandOf = (b) => (b === "3-5" ? "3-5" : "6-8");
+const bandOf = (b) => codeBand(b);
 const activityPath = (domain, level, id) =>
   domain === "Model-Test"
     ? `${BASE}/Model-Test/${level.split("-").slice(0, 2).join("-")}/${level.split("-")[2]}/${id}`
@@ -370,7 +371,7 @@ const activityPath = (domain, level, id) =>
 export function stationOptions({ band = "6-8", worlds = [], speaking = [], writing = [], activities = [] } = {}) {
   const b = bandOf(band);
   return [
-    ...worlds.map((w) => ({ kind: "world", id: w.id, label: `World · ${w.name}` })),
+    ...(isEarlyBand(b) ? [] : worlds).map((w) => ({ kind: "world", id: w.id, label: `World · ${w.name}` })),
     ...speaking.filter((t) => bandOf(t.band) === b).map((t) => ({ kind: "studio", id: t.id, label: `Speaking Studio · ${t.title}` })),
     ...writing.filter((t) => bandOf(t.band) === b).map((t) => ({ kind: "studio", id: t.id, label: `Writing Studio · ${t.title}` })),
     ...activities.filter((r) => bandOf(r.band) === b).map((r) => ({ kind: "activity", id: r.id, label: `Activity · ${r.title} · ${r.domain}` })),

@@ -5,9 +5,20 @@ const D = { Listening: "Comprensión auditiva", Reading: "Lectura", Speaking: "E
 const K = { Narrate: "Narrar", Inform: "Informar", Explain: "Explicar", Argue: "Argumentar" };
 const C = { Mathematics: "Matemáticas", Science: "Ciencias", "Social Studies": "Estudios sociales", "Language Arts": "Artes del lenguaje", "Social and Instructional": "Social e instruccional" };
 const skill = (d, k, c) => `${D[d]} · ${K[k]} · ${C[c] || c}`;
+const EARLY_ES = { Kindergarten: "Kínder", "Grade 1": "1.º grado", "Grades 2–3": "Grados 2–3" };
 const n1 = (n, one, many) => (Number(n) === 1 ? one : many);
 
 export const P6_EXACT = {
+  // K-3 audio-first activities in the Hub panels
+  Kindergarten: "Kínder",
+  "Grade 1": "1.º grado",
+  "Grades 2–3": "Grados 2–3",
+  "Kindergarten to grade 3 practice is audio-first lab activities, not assessment-engine sets, so it appears in the share-code student dashboard and in Passport check-ins instead.": "La práctica de Kínder a 3.er grado son actividades del laboratorio con audio primero, no conjuntos del motor de evaluación, por eso aparece en el tablero de estudiantes por código y en los registros del Pasaporte.",
+  "All grade bands": "Todos los grupos de grados",
+  Skill: "Destreza",
+  Activity: "Actividad",
+  "Open activity": "Abrir actividad",
+  "No activities for this skill.": "No hay actividades para esta destreza.",
   // review
   "Speaking and writing review": "Revisión de expresión oral y escritura",
   "Loading responses waiting for review…": "Cargando las respuestas que esperan revisión…",
@@ -107,6 +118,9 @@ export const P6_EXACT = {
 
 const word = (n) => n1(n, "palabra", "palabras");
 export const P6_PATTERNS = [
+  [/^(Kindergarten|Grade 1|Grades 2–3) practice is audio-first: learners hear each question and every choice\. It is made of lab activities, not assessment-engine sets, so it is listed here from the activity index\.( Kindergarten is adult-hosted\.)?$/, (b, host) => `La práctica de ${EARLY_ES[b]} es con audio primero: los estudiantes escuchan cada pregunta y cada opción. Se compone de actividades del laboratorio, no de conjuntos del motor de evaluación, por eso se lista aquí desde el índice de actividades.${host ? " Kínder lo dirige un adulto." : ""}`],
+  [/^(Kindergarten|Grade 1|Grades 2–3) · (audio-first · )?Level ([ABC]) · (Listening|Reading|Speaking|Writing)$/, (b, audio, lv, d) => `${EARLY_ES[b]} · ${audio ? "con audio primero · " : ""}Nivel ${lv} · ${D[d]}`],
+  [/^(Kindergarten|Grade 1|Grades 2–3): (\d+) (Listening|Reading|Speaking|Writing) (activity|activities)\.$/, (b, n, d) => `${EARLY_ES[b]}: ${n} ${n1(n, "actividad", "actividades")} de ${D[d].toLowerCase()}.`],
   [/^Show (reviewed|waiting) \((\d+)\)$/, (w, n) => `Mostrar ${w === "reviewed" ? "revisadas" : "en espera"} (${n})`],
   [/^(Speaking|Writing) · (.+) · (\d{1,2}\/\d{1,2}\/\d{4})$/, (d, set, date) => `${D[d]} · ${set} · ${date}`],
   [/^(Speaking|Writing) practice · reviewed (.+)$/, (d, date) => `Práctica de ${d === "Speaking" ? "expresión oral" : "escritura"} · revisada el ${date}`],

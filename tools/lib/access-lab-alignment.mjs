@@ -36,7 +36,19 @@ export function suggestLanguageFunction(text, keyUse = "") {
   return "";
 }
 
+// WIDA grade-level clusters the local bands map onto. The expectation catalog covers clusters 2-3, 4-5 and 6-8 only,
+// so Kindergarten and Grade 1 name no candidate cluster: the lab never invents a mapping the catalog cannot support.
+const BAND_CLUSTERS = {
+  K: { candidates: [], status: "cluster-not-in-catalog" },
+  1: { candidates: [], status: "cluster-not-in-catalog" },
+  "2-3": { candidates: ["2-3"], status: "band-match" },
+  "3-5": { candidates: ["2-3", "4-5"], status: "ambiguous-until-learner-grade-is-known" },
+  "6-8": { candidates: ["6-8"], status: "band-match" },
+};
+
 function clustersFor(band) {
+  if (band === "2-3") return { candidates: ["2-3"], basis: "local-band-match" };
+  if (band === "K" || band === "1") return { candidates: [], basis: "wida-cluster-not-in-catalog" };
   if (band === "6-8") return { candidates: ["6-8"], basis: "local-band-match" };
   if (band === "3-5")
     return { candidates: ["2-3", "4-5"], basis: "local-band-spans-two-WIDA-clusters" };
@@ -324,17 +336,19 @@ export function buildAlignmentIndex(root = CONTENT_DIR) {
     framework: "WIDA ELD Standards Framework, 2020 Edition",
     provenance:
       "Generated from author-entered local practice metadata. Suggested functions are search aids only. No generated record is an official or verified WIDA crosswalk.",
-    localBandMapping: {
-      "3-5": {
-        gradeClusterCandidates: ["2-3", "4-5"],
-        status: "ambiguous-until-learner-grade-is-known",
-      },
-      "6-8": { gradeClusterCandidates: ["6-8"], status: "band-match" },
-    },
+    localBandMapping: Object.fromEntries(
+      Object.entries(BAND_CLUSTERS).map(([band, m]) => [
+        band,
+        { gradeClusterCandidates: m.candidates, status: m.status },
+      ]),
+    ),
     expectationCatalog: EXPECTATION_CATALOG,
     counts,
     byGradeBand: Object.fromEntries(
-      ["3-5", "6-8", "Integrated"].map((band) => [band, count((r) => r.localGradeBand === band)]),
+      [...Object.keys(BAND_CLUSTERS), "Integrated"].map((band) => [
+        band,
+        count((r) => r.localGradeBand === band),
+      ]),
     ),
     byDomain: Object.fromEntries(
       DOMAINS.map((domain) => [domain, count((r) => r.domains.includes(domain))]),

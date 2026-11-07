@@ -2,6 +2,7 @@
 // (access-practice-lab/src/lang/speaking-groups.js), and the Reading Ladder Spanish-version control links.
 // Reads the roster this hub already keeps on this teacher device; writes nothing.
 import { langMode, makeI18n } from "/access-practice-lab/src/i18n.js";
+import { bandLabel, bandLabelEs } from "/access-practice-lab/src/bands.js";
 import { suggestGroups } from "/access-practice-lab/src/lang/speaking-groups.js";
 import { html, icon, toHtml } from "/access-practice-lab/src/util.js";
 
@@ -34,7 +35,7 @@ export function speakingGroupsHTML(I, students) {
             ${groups.map(
               (g, i) =>
                 html`<article class="hub-card speaking-group" data-speaking-group="${g.need}">
-                  <h3>${I.T(`Group ${i + 1}`, `Grupo ${i + 1}`)}: ${I.TO(g.routine.title)}</h3>
+                  <h3>${I.T(`Group ${i + 1}`, `Grupo ${i + 1}`)}: ${I.TO(g.routine.title)} <span class="fine" data-group-band>· ${I.T(bandLabel(g.band), bandLabelEs(g.band))}</span></h3>
                   <p><strong>${g.members.map((m) => m.alias).join(", ")}</strong></p>
                   <p class="fine">${I.TO(g.routine.why)}</p>
                   <ul class="fine">

@@ -5,6 +5,7 @@ import { classInfo, joinClass } from "../../../shared/class-platform/client.js";
 import { normalizeCode } from "../../../shared/class-platform/contract.js";
 import { crumbsHTML } from "../components.js";
 import { api, languageSummary, leaveClass, loadLink, saveLink, setAssignments, startSync } from "../class/link.js";
+import { assignmentBandText } from "../class/assign.js";
 import { el, errorText, statusText } from "../class/dom.js";
 import { i18nFor } from "../i18n.js";
 import { BASE, html } from "../util.js";
@@ -127,6 +128,7 @@ export function mount(root, ctx) {
                 "li",
                 {},
                 el("a", { href: a.path }, a.title || a.id),
+                el("span", { class: "fine" }, ` · ${assignmentBandText(S, a.path)}`),
                 a.due ? el("span", { class: "fine" }, ` · ${S("due", "para el")} ${a.due}`) : null,
                 el("span", { class: done.has(a.id) ? "cls-done" : "cls-todo" }, ` ${done.has(a.id) ? S("Done", "Hecho") : S("To do", "Por hacer")}`),
               ),

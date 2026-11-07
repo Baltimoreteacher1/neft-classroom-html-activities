@@ -1,7 +1,9 @@
 // Search the lightweight index, then build a shareable practice playlist.
 // Links contain content IDs only; answers and student names never leave the device.
 import { bandSwitchHTML, crumbsHTML, domainGlyph } from "../components.js";
-import { bandRows } from "../content.js";
+import { bandRows, loadIndex } from "../content.js";
+import { activeGradeFocus, gradesLabel, inGradeFocus } from "../grade-focus.js";
+import { gradeFocusHTML } from "../grade-focus-ui.js";
 import { estimateMinutes } from "../learning.js";
 import { activityStatus } from "../practice-plan.js";
 import { loadRecord } from "../store.js";
@@ -21,19 +23,22 @@ let rows = [];
 let selected = [];
 let band = "";
 let filters = {};
+// Grades 6-8 only: "6", "7", "8" or "" (all). Read from the saved preference at the top of render().
+let gradeFocus = "";
 // Set at the top of render(); the helpers below build markup for that render.
 let I = makeI18n("en");
 const dom = (d) => I.T(d, DOMAIN_META[d]?.es);
 const tier = (k) => (TIERS[k] ? I.T(TIERS[k].name, TIERS[k].es) : k);
 const plural = (n, one, many) => (n === 1 ? one : many);
 
-export function filterActivities(items, { q = "", domain = "", level = "", status = "" } = {}) {
+export function filterActivities(items, { q = "", domain = "", level = "", status = "", gradeFocus = "" } = {}) {
   const words = q.trim().toLocaleLowerCase().split(/\s+/).filter(Boolean);
   return items.filter(
     (r) =>
       (!domain || r.domain === domain) &&
       (!level || r.level === level) &&
       (!status || r.status === status) &&
+      inGradeFocus(r.grades, gradeFocus) &&
       words.every((word) =>
         `${r.title} ${r.skill || ""} ${r.domain}`.toLocaleLowerCase().includes(word),
       ),
@@ -68,7 +73,7 @@ function itemHTML(r) {
   return html`<li class="library-item lib-item d-${r.domain.toLowerCase()}">
     <span class="prog-tile">${domainGlyph(r.domain)}</span>
     <div class="lib-item-body">
-      <p class="lib-meta">${dom(r.domain)} · ${tier(r.level)}</p>
+      <p class="lib-meta">${dom(r.domain)} · ${tier(r.level)}${gradesLabel(r.grades) ? html` · ${I.T(...gradesLabel(r.grades))}` : ""}</p>
       <a class="library-title" href="${activityHref(r.domain, r.level, r.id)}?grades=${band}">${r.title}</a>
       <p class="fine">${r.skill || I.T("Language practice", "Práctica de lenguaje")} · ${I.T(`about ${estimateMinutes([r])} minutes`, `unos ${estimateMinutes([r])} minutos`)}</p>
       <span class="lib-status is-${r.status}">${icon(STATUS_ICON[r.status])} ${I.T(STATUS[r.status], STATUS_ES[r.status])}</span>
@@ -78,7 +83,7 @@ function itemHTML(r) {
 }
 
 function resultHTML() {
-  const matches = filterActivities(rows, filters);
+  const matches = filterActivities(rows, { ...filters, gradeFocus });
   const slice = pageActivities(matches, page);
   page = slice.page;
   return html`<div class="lib-count-row"><h2 class="library-count" id="libraryResultTitle" tabindex="-1">${I.T("Activities", "Actividades")}</h2><p role="status">${I.T(`${matches.length} ${plural(matches.length, "activity", "activities")} found${matches.length ? ` · showing ${(page - 1) * PAGE_SIZE + 1}–${Math.min(page * PAGE_SIZE, matches.length)}` : ""}`, `${matches.length} ${plural(matches.length, "actividad encontrada", "actividades encontradas")}${matches.length ? ` · mostrando ${(page - 1) * PAGE_SIZE + 1}–${Math.min(page * PAGE_SIZE, matches.length)}` : ""}`)}</p></div>
@@ -148,6 +153,9 @@ export async function render(ctx) {
   if (!TIERS[filters.level]) filters.level = "";
   if (!STATUS[filters.status]) filters.status = "";
   const records = new Map();
+  gradeFocus = activeGradeFocus(ctx.prefs, band);
+  const focusCounts =
+    band === "6-8" ? (await loadIndex()).gradeBands?.find((g) => g.contentBand === "6-8")?.gradeFocus : null;
   rows = (await bandRows(band))
     .filter((r) => CORE_DOMAINS.includes(r.domain))
     .map((r) => {
@@ -174,7 +182,7 @@ export async function render(ctx) {
     <header class="prog-hero lib-hero"><div class="prog-hero-copy"><p class="eyebrow">${icon("library")} ${I.T("Find a task · Build a practice set", "Encuentra una tarea · Crea un conjunto de práctica")}</p><h1 tabindex="-1">${I.T("Activity library", "Biblioteca de actividades")}</h1><p class="lead">${I.T("Search by topic or skill. Pick a task to open it, or combine up to 12 into one shareable session.", "Busca por tema o destreza. Elige una tarea para abrirla o combina hasta 12 en una sesión que se puede compartir.")}</p>${bandSwitchHTML(band, ctx.bands)}</div></header>
     <div class="lib-layout">
     <aside class="library-set lib-set" aria-labelledby="practiceSetTitle" id="practiceSet">${setHTML()}</aside>
-    <section class="lib-main" aria-label="${I.S("Find activities", "Buscar actividades")}"><div class="library-filters lib-filters">
+    <section class="lib-main" aria-label="${I.S("Find activities", "Buscar actividades")}">${band === "6-8" ? gradeFocusHTML(I, gradeFocus, { labelId: "libGradeFocus", counts: focusCounts }) : ""}<div class="library-filters lib-filters">
       <label class="field library-search"><span>${I.T("Search topics or skills", "Buscar temas o destrezas")}</span><input type="search" id="librarySearch" maxlength="120" value="${filters.q}" placeholder="${I.S("Try garden, evidence, compare…", "Prueba con garden, evidence, compare…")}" aria-controls="libraryResults" data-nsr-ignore /></label>
       <label class="field"><span>${I.T("Skill", "Destreza")}</span><select id="libraryDomain" data-library-filter="domain" data-nsr-ignore>${options([["", I.S("All four skills", "Las cuatro destrezas")], ...CORE_DOMAINS.map((d) => [d, I.S(d, DOMAIN_META[d]?.es)])], filters.domain)}</select></label>
       <label class="field"><span>${I.T("Support", "Apoyo")}</span><select id="libraryLevel" data-library-filter="level" data-nsr-ignore>${options([["", I.S("All support choices", "Todas las opciones de apoyo")], ...Object.entries(TIERS).map(([k, t]) => [k, I.S(t.name, t.es)])], filters.level)}</select></label>

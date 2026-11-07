@@ -10,6 +10,8 @@ import { brandTitle } from "./brand.js";
 import { micDeniedMessage, notePlay, scripts, setComponentsI18n } from "./components.js";
 import { EARLY_VIEWS, earlyGateHTML } from "./early/gate.js";
 import { isEarlyBand, normalizeBand } from "./bands.js";
+import { namesGradeFocus, normalizeGradeFocus } from "./grade-focus.js";
+import { announceGradeFocus } from "./grade-focus-ui.js";
 import { availableBands, loadIndex } from "./content.js";
 import * as rec from "./recorder.js";
 import { playRecording, speak, speakSpanish, stop as stopSpeech } from "./speech.js";
@@ -113,7 +115,7 @@ export function parseRoute(pathname = location.pathname, search = location.searc
     .filter(Boolean)
     .map(decodeURIComponent);
   const q = new URLSearchParams(search);
-  const r = { view: "home", grades: q.get("grades") || "" };
+  const r = { view: "home", grades: q.get("grades") || "", ...(q.has("gradeFocus") ? { gradeFocus: q.get("gradeFocus") } : {}) };
   const [a, b, c, d] = parts;
   if (!a) return r;
   if (a === "reading" || a === "reading-room")
@@ -222,6 +224,7 @@ function focusKey(el) {
     "data-rec-stop",
     "data-rate",
     "data-set-band",
+    "data-grade-focus",
     "data-lang",
     "data-selfcheck",
     "data-tab-key",
@@ -275,6 +278,9 @@ async function render({ keepFocus = false, scroll = false } = {}) {
   setEvidenceUiI18n(I);
   if (route.grades && normalizeBand(route.grades) === app.band && app.prefs.band !== app.band)
     app.prefs = setPrefs({ band: app.band });
+  // A shared link may name a grade focus (?gradeFocus=7, or =all); it is remembered like ?grades=.
+  if (namesGradeFocus(route.gradeFocus) && normalizeGradeFocus(route.gradeFocus) !== app.prefs.gradeFocus)
+    app.prefs = setPrefs({ gradeFocus: normalizeGradeFocus(route.gradeFocus) });
   const root = $("#app");
   // A lazy route can take more than one frame on a cold cache. Remove the previous screen
   // immediately so assistive technology and automation never mistake stale content for the
@@ -403,6 +409,19 @@ async function common(e) {
   if (t.closest("[data-lang-keep]")) {
     ctx.setPrefs({ langChosen: true });
     document.getElementById("labLangBanner")?.remove();
+    return true;
+  }
+  const gradeFocus = t.closest("[data-grade-focus]");
+  if (gradeFocus) {
+    const next = normalizeGradeFocus(gradeFocus.dataset.gradeFocus);
+    ctx.setPrefs({ gradeFocus: next });
+    const url = new URL(location.href);
+    if (url.searchParams.has("gradeFocus")) {
+      url.searchParams.set("gradeFocus", next || "all");
+      history.replaceState({}, "", url.pathname + url.search + url.hash);
+    }
+    announce(announceGradeFocus(i18nFor(ctx), next));
+    ctx.rerender();
     return true;
   }
   const band = t.closest("[data-set-band]");

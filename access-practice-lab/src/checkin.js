@@ -2,12 +2,12 @@
 // A check-in is a link, not an upload. It carries a nickname, a date and, per country, which stops are done.
 // No answers, writing, audio, email or school ID. The Teacher Hub reads it from the URL fragment in the
 // browser, so the server never receives it. It is a progress note, never a score or a level.
+import { codeBand } from "./bands.js";
 import { COUNTRIES } from "./journey.js";
 import { CORE_DOMAINS, LEVEL_KEYS, storage } from "./util.js";
 
 export const CHECKIN_PARAM = "checkin";
 const SENT_KEY = "accessPracticeLab:v1:checkinSent";
-const BANDS = ["3-5", "6-8"];
 const MAX_ALIAS = 40;
 const MAX_CODE = 4000;
 
@@ -57,7 +57,7 @@ export function buildCheckin({ alias, band, date, routes }) {
     v: 1,
     kind: "checkin",
     a: cleanAlias(alias),
-    b: band,
+    b: codeBand(band),
     t: date,
     r: routes
       .filter((r) => r.stopsDone > 0)
@@ -90,7 +90,7 @@ export function decodeCheckin(text) {
   if (
     o?.v !== 1 ||
     o.kind !== "checkin" ||
-    !BANDS.includes(o.b) ||
+    !codeBand(o.b, "") ||
     !/^\d{4}-\d{2}-\d{2}$/.test(o.t) ||
     !Array.isArray(o.r) ||
     o.r.length > 12
@@ -111,7 +111,7 @@ export function decodeCheckin(text) {
     seen.add(routeKey(r.d, r.l));
     routes.push({ domain: r.d, level: r.l, stops: [...r.s].map((c) => c === "1") });
   }
-  return { alias, band: o.b, date: o.t, routes };
+  return { alias, band: codeBand(o.b), date: o.t, routes };
 }
 
 /** "Japan 5 of 12 stops" for a route row, in the reader's language. */

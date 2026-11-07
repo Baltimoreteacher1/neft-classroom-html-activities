@@ -3,6 +3,8 @@
 //   four skills one tap away. Teachers and families: one door each, to their own section further down.
 // Cards outside these panels come from home-registry.js.
 import { GRADE_PICKS, bandName, pickerState, resolvePick } from "../grade-bands.js";
+import { activeGradeFocus, inGradeFocus } from "../grade-focus.js";
+import { gradeFocusHTML } from "../grade-focus-ui.js";
 import { cardsFor } from "../home-registry.js";
 import { langSwitchHTML } from "../i18n.js";
 import { MISSIONS, stepInfo } from "../journey/curriculum.js";
@@ -23,11 +25,11 @@ const SKILL_ES = {
 export const cardHref = (card, band) => {
   if (card.href.startsWith("/")) return card.href;
   const [path, hash] = card.href.split("#");
-  return `${BASE}/${path}?grades=${band}${hash ? `#${hash}` : ""}`;
+  return `${BASE}/${path}${path.includes("?") ? "&" : "?"}grades=${band}${hash ? `#${hash}` : ""}`;
 };
 
 /** The most recently practiced skill room on this device for the band, with its next unfinished activity, or null. */
-export function recentRoom(band, domains) {
+export function recentRoom(band, domains, focus = "") {
   let best = null;
   for (const d of CORE_DOMAINS) {
     for (const level of Object.keys(domains[d]?.levels || {})) {
@@ -38,7 +40,7 @@ export function recentRoom(band, domains) {
     }
   }
   if (!best) return null;
-  const rows = domains[best.domain].levels[best.level]?.activities || [];
+  const rows = (domains[best.domain].levels[best.level]?.activities || []).filter((r) => inGradeFocus(r[5], focus));
   const done = new Set(loadRecord(band, best.domain, best.level).complete);
   return { domain: best.domain, level: best.level, next: rows.find((r) => !done.has(r[0])) };
 }
@@ -118,7 +120,7 @@ export function continueTarget(I, { band, resume, openMission, journey, recent }
   };
 }
 
-function rulerHTML(I, ctx, band, available) {
+function rulerHTML(I, ctx, band, available, focusCounts) {
   const picks = pickerState(band, ctx.prefs.gradePick, available);
   const chosen = picks.find((p) => p.chosen);
   const own = chosen && chosen.serves === band && chosen.ready && chosen.content[0] === band;
@@ -152,6 +154,7 @@ function rulerHTML(I, ctx, band, available) {
       )}
     </div>
     <p class="lph-note fine" aria-live="polite">${note}</p>
+    ${band === "6-8" ? gradeFocusHTML(I, activeGradeFocus(ctx.prefs, band), { labelId: "lphGradeFocus", counts: focusCounts }) : ""}
   </div>`;
 }
 
@@ -203,7 +206,7 @@ function doorHTML(I, { id, ic, who, text, cta, href }) {
 
 /** The start screen. `data` carries what home.js already loaded so nothing is read twice. */
 export function startHTML(I, ctx, data) {
-  const { band, available, domains, tierFor, target } = data;
+  const { band, available, focusCounts, domains, tierFor, target } = data;
   return html`<section class="lph" aria-labelledby="homeTitle">
     <div class="lph-intro">
       <h1 id="homeTitle" tabindex="-1">
@@ -212,7 +215,7 @@ export function startHTML(I, ctx, data) {
       <p class="lph-lead">
         ${I.T("Listening, reading, speaking and writing for multilingual learners. No timers. Your work saves on this device.", "Escuchar, leer, hablar y escribir para estudiantes multilingües. Sin cronómetros. Tu trabajo se guarda en este dispositivo.")}
       </p>
-      ${rulerHTML(I, ctx, band, available)}
+      ${rulerHTML(I, ctx, band, available, focusCounts)}
     </div>
     <div class="lph-student">
       ${continueHTML(I, target, band)}

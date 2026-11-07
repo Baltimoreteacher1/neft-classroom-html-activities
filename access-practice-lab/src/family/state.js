@@ -1,12 +1,13 @@
 // Family Setup answers, kept in the lab's existing preferences record (accessPracticeLab:v1:prefs.family).
-// Schema v1:  { v: 1, grade: "3-5" | "6-8" | "", who: "together" | "independent" | "", minutes: 0 | 5 | 10 | 15,
+// Schema v1:  { v: 1, grade: "K" | "1" | "2-3" | "3-5" | "6-8" | "", who: "together" | "independent" | "", minutes: 0 | 5 | 10 | 15,
 //               done: boolean, skipped: boolean,
 //               trip: null | { skill, stop: 0-6 stops finished, ids: activity ids of the current stop } }
 // Nothing here identifies a child: no name, birthday or email is ever asked for.
+import { CONTENT_BANDS } from "../bands.js";
 import { CORE_DOMAINS } from "../util.js";
 
 export const FAMILY_SCHEMA = 1;
-export const GRADES = ["3-5", "6-8"];
+export const GRADES = CONTENT_BANDS;
 export const WHO = ["together", "independent"];
 export const MINUTES = [5, 10, 15];
 export const TRIP_STOPS = 6;

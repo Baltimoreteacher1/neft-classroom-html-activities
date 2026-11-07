@@ -936,6 +936,31 @@ async function runFlow(width) {
       await axe("Grades 3-5 notice");
       const soil = (await lsGet(STATE_KEY))?.bands?.["3-5"]?.cases?.["soil-sprout"];
       ok(soil?.support === "A", `${tag} the Grades 3-5 state is saved under its own case`);
+      // The second Grades 3-5 investigation: the hub offers both cases and the new one opens on its own scene.
+      await go("/worlds/science-lab?grades=3-5");
+      ok(
+        (await page.locator("[data-sl-cases] a").count()) === 2,
+        `${tag} the Grades 3-5 hub offers both investigations`,
+      );
+      await page.locator('[data-sl-cases] a[href*="case=ramp-roll"]').click();
+      await page.waitForFunction(() =>
+        /toy car/i.test(document.querySelector(".sl-hero-q")?.textContent || ""),
+      );
+      ok(
+        (
+          await page.locator('[data-sl-cases] a[aria-current="true"]').getAttribute("href")
+        ).includes("ramp-roll") && (await page.locator('.sl-hero svg[role="img"]').count()) === 1,
+        `${tag} the ramp case opens on its own scene and marks itself as current`,
+      );
+      await audit("Grades 3-5 ramp hub");
+      await axe("Grades 3-5 ramp hub");
+      await go("/worlds/science-lab/notice?case=ramp-roll&grades=3-5");
+      await page.waitForSelector(".slx-spot");
+      ok(
+        (await page.locator(".slx-spot").count()) >= 3,
+        `${tag} the ramp scene has hotspots on its parts`,
+      );
+      await axe("Grades 3-5 ramp notice");
       // The Language Worlds page keeps four tiles and links to the lab with a card that is not a tile.
       await go("/worlds?grades=6-8");
       ok(

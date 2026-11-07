@@ -3,6 +3,7 @@
 // Scope is stated on screen: one device, no roster, no school system. Several students can be combined by importing
 // the files they export; nothing is uploaded anywhere.
 import { h } from "/access-practice-lab/src/acc/engine/dom.js";
+import { bandOptions } from "/access-practice-lab/src/bands.js";
 import { buildMatrix, CONTEXTS, DOMAINS, KLUS, learningBrief, MIN_EVIDENCE, recommend, rollup } from "/access-practice-lab/src/acc/analytics/evidence.js";
 import { I18nEngine, localeFor, storedMode } from "/access-practice-lab/src/acc/i18n/I18nEngine.js";
 import { openStorage } from "/access-practice-lab/src/acc/storage/access-db.js";
@@ -33,7 +34,7 @@ export async function mountEvidencePanel(root, doc = document) {
       sel.addEventListener("change", () => ((state[key] = sel.value), draw()));
       return h(doc, "label", { class: "acc-field", for: id }, h(doc, "span", { text: labelText }), sel);
     };
-    const bar = h(doc, "div", { class: "acc-filters" }, select("evLearner", "Student", [["all", "All students on this device"], ...learners.map((l) => [l, label(l)])], "learner"), select("evGrade", "Grade band", [["all", "Both"], ["3-5", "Grades 3–5"], ["6-8", "Grades 6–8"]], "grade"), select("evMode", "Mode", [["all", "Both"], ["summative", "Test simulation"], ["formative", "Learning mode"]], "mode"));
+    const bar = h(doc, "div", { class: "acc-filters" }, select("evLearner", "Student", [["all", "All students on this device"], ...learners.map((l) => [l, label(l)])], "learner"), select("evGrade", "Grade band", [["all", "All grade bands"], ...bandOptions()], "grade"), select("evMode", "Mode", [["all", "Both"], ["summative", "Test simulation"], ["formative", "Learning mode"]], "mode"));
     if (state.learner !== "all") {
       const input = h(doc, "input", { type: "text", id: "evAlias", class: "acc-input", maxlength: "24", value: state.aliases[state.learner] || "", placeholder: "Initials or class alias" });
       input.addEventListener("change", async () => {
@@ -67,7 +68,7 @@ export async function mountEvidencePanel(root, doc = document) {
     const sittings = new Set(rows.map((r) => r.sessionId)).size;
     const alignHost = h(doc, "div", { class: "acc-align-host" });
     root.replaceChildren(
-      h(doc, "div", { class: "acc-state is-info", role: "note" }, h(doc, "p", { text: "This view shows practice done in this browser only. It is not a class roster and is not connected to a school system. To combine students, each student exports their practice data and you import the files here." })),
+      h(doc, "div", { class: "acc-state is-info", role: "note" }, h(doc, "p", { text: "This view shows practice done in this browser only. It is not a class roster and is not connected to a school system. To combine students, each student exports their practice data and you import the files here." }), h(doc, "p", { "data-early-note": "", text: "Kindergarten to grade 3 practice is audio-first lab activities, not assessment-engine sets, so it appears in the share-code student dashboard and in Passport check-ins instead." })),
       h(doc, "div", { class: "acc-actions no-print" }, importControl(), h(doc, "button", { type: "button", class: "acc-btn", "data-act": "print-brief", disabled: !rows.length, text: "Print learning brief" })),
       controls(),
       rows.length ? h(doc, "p", { class: "acc-hint", text: `${rows.length} item responses from ${sittings} ${sittings === 1 ? "sitting" : "sittings"}. Fewer than ${MIN_EVIDENCE} items in a cell is shown as “not enough yet”, never as a percentage.` }) : h(doc, "div", { class: "acc-state is-empty" }, h(doc, "p", { text: "No practice evidence on this device yet. Students practice in the Assessment simulator; their results appear here after they submit a sitting." }), h(doc, "p", { text: "Evidence that was practiced on another device appears here after you import that student’s exported file." })),

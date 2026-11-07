@@ -4,6 +4,7 @@
 import {
   BENCHMARK_KEY,
   benchmarkGrowth,
+  hasBenchmarkForms,
   normalizeSnapshots,
   saveWindow,
   saveableWindows,
@@ -41,6 +42,7 @@ function cellText(I, cell) {
 }
 
 export function benchmarkPanelHTML(I, band) {
+  if (!hasBenchmarkForms(band)) return "";
   const snapshots = loadSnapshots();
   const growth = benchmarkGrowth(band, snapshots);
   const pending = saveableWindows(band, snapshots, loadTestRecord);

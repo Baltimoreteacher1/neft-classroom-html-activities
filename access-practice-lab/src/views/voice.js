@@ -97,7 +97,7 @@ function hubHTML(ctx, I) {
       done: (v.shadow?.[s.id] || []).length ? I.S(`${v.shadow[s.id].length} of ${s.lines.length}`, `${v.shadow[s.id].length} de ${s.lines.length}`) : "",
     }),
   );
-  const keys = KEY_FRAMES.map((s) =>
+  const keys = forBand(KEY_FRAMES, band).map((s) =>
     voiceCardHTML({
       href: voiceHref(`keys/${s.id}`, band),
       title: I.T(s.title, s.titleEs),

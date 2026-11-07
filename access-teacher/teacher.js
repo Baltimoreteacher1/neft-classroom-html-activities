@@ -8,6 +8,8 @@ import {
   loadRoad,
   loadShared,
 } from "/access-practice-lab/src/content.js";
+import { BAND_INFO, CONTENT_BANDS, bandOptions, isEarlyBand } from "/access-practice-lab/src/bands.js";
+import { assignmentPath } from "/access-practice-lab/src/class/assign.js";
 import { correctAnswerText } from "/access-practice-lab/src/grade.js";
 import {
   BASE,
@@ -59,7 +61,7 @@ const abs = (p) => new URL(p, location.origin).href;
 const actUrl = (r) =>
   r.domain === "Model-Test"
     ? `${BASE}/Model-Test/${r.level.replace(/-([A-C])$/, "/$1")}/${r.id}`
-    : `${BASE}/${r.domain}/${r.level}/${r.id}`;
+    : assignmentPath(r.band, r.domain, r.level, r.id);
 const packetBase = (band, domain, level) =>
   band === "6-8" ? `${domain}-${level}` : `g3-5-${domain}-${level}`;
 const playUrl = () =>
@@ -118,7 +120,8 @@ async function render() {
     loadRoad(),
     loadShared().catch(() => ({})),
   ]);
-  const bands = Object.keys(index.bands);
+  const bands = CONTENT_BANDS.filter((b) => index.bands[b]);
+  const early = isEarlyBand(S.band);
   const q = S.q.toLowerCase();
   const shown = rows.filter(
     (r) =>
@@ -138,12 +141,13 @@ async function render() {
   const weeks = road?.[S.band]?.weeks || [];
   const levelsOf = (d) => Object.keys(index.bands[S.band].domains[d].levels);
   const forms = S.band === "6-8" ? Object.entries(shared.officialForms || {}) : [];
-  const packetCount = domains.reduce((n, d) => n + levelsOf(d).length, 0);
+  // Printable packets are built for grades 3-5 and 6-8 only; K-3 activities print from their own paper page.
+  const packetCount = early ? 0 : domains.reduce((n, d) => n + levelsOf(d).length, 0);
   const cats = [
     ["#activities", "list", "Activities", rows.length, "Search, answer keys, playlist builder", "both"],
     ["#weekly", "road", "Road to ACCESS", weeks.length, "One link per week", "student"],
-    ["#tests", "tests", "Practice tests", tests.length, "Full tests and short minis", "student"],
-    ["#printables", "print", "Printable packets", packetCount, "Student and teacher PDFs and Word files", "both"],
+    ...(early ? [] : [["#tests", "tests", "Practice tests", tests.length, "Full tests and short minis", "student"]]),
+    ...(early ? [] : [["#printables", "print", "Printable packets", packetCount, "Student and teacher PDFs and Word files", "both"]]),
     ...(forms.length ? [["#forms", "evidence", "Google Forms", forms.length, "Grades 6–8 response forms", "both"]] : []),
     ["#guide", "bulb", "How to use it", GUIDE.length + 1, "Station ideas and routines", "teacher"],
   ];
@@ -158,7 +162,7 @@ async function render() {
       <header class="th-sec-head"><div><h2 id="familyTripTitle">Assign a Family Trip</h2>
         <p class="fine">Choose a grade band and skill, then copy a student-facing link. Progress stays on the family’s device.</p></div>${TAG_STUDENT}</header>
       <div class="th-trip-link">
-        <label class="field"><span>Grade band</span><select data-trip-grade><option value="3-5" ${S.tripGrade === "3-5" ? "selected" : ""}>Grades 3–5</option><option value="6-8" ${S.tripGrade === "6-8" ? "selected" : ""}>Grades 6–8</option></select></label>
+        <label class="field"><span>Grade band</span><select data-trip-grade>${bandOptions().map(([value, label]) => html`<option value="${value}" ${S.tripGrade === value ? "selected" : ""}>${label}</option>`)}</select></label>
         <label class="field"><span>Skill</span><select data-trip-skill>${["Listening", "Speaking", "Reading", "Writing"].map((d) => html`<option value="${d}" ${S.tripSkill === d ? "selected" : ""}>${d}</option>`)}</select></label>
         <button type="button" class="btn btn-primary" data-trip-copy>Copy Family Trip link</button>
         <a class="btn small" data-trip-open href="${BASE}/family/trip?grades=${S.tripGrade}&skill=${S.tripSkill}">Open link</a>
@@ -175,6 +179,7 @@ async function render() {
             Tick activities to build a playlist. Students open one link and work through them in order.
             Tap “Key” for answers, scripts and sample answers.
           </p>
+          ${early ? html`<p class="fine th-early-note" data-early-note>${BAND_INFO[S.band].label}: audio-first. Learners hear each question and every choice, replays never hide a choice, and a success after a miss is recorded as supported.${BAND_INFO[S.band].hostedByAdult ? " Kindergarten is adult-hosted: a grown-up reads along." : ""} Class assignments and links name this grade band.</p>` : ""}
         </div>
         <div class="th-band">
           <span class="th-band-label" id="bandLabel">Grade band</span>
@@ -228,7 +233,7 @@ async function render() {
                     <td class="t-title">
                       <a href="${actUrl(r)}" target="_blank" rel="noopener">${r.title}</a>
                       <div class="t-meta">
-                        <span class="th-dom">${icon(DOMAIN_META[r.domain]?.icon || "star")} ${r.domain}</span> · ${TYPE_LABEL[r.type] || r.type}
+                        <span class="th-dom">${icon(DOMAIN_META[r.domain]?.icon || "star")} ${r.domain}</span> · ${TYPE_LABEL[r.type] || r.type}${early ? html` · <span class="th-chip" data-band-chip>${BAND_INFO[r.band]?.label}</span> <span class="th-chip is-audio">Audio-first</span>` : ""}
                       </div>
                     </td>
                     <td class="col-skill t-meta">${r.skill}</td>
@@ -277,7 +282,7 @@ async function render() {
         : ""
     }
 
-    <section class="th-sec" id="tests" aria-labelledby="testsTitle">
+    ${early ? "" : html`<section class="th-sec" id="tests" aria-labelledby="testsTitle">
       <header class="th-sec-head"><div><h2 id="testsTitle">Practice tests</h2></div>${TAG_STUDENT}</header>
       <div class="th-grid">
         ${tests.map(
@@ -328,7 +333,11 @@ async function render() {
       <p class="th-drive">
         <a class="btn" href="${DRIVE_FOLDER}" target="_blank" rel="noopener">${icon("external")} Teacher packets folder in Google Drive</a>
       </p>
-    </section>
+    </section>`}
+    ${early ? html`<section class="th-sec" id="printables" aria-labelledby="printTitle">
+      <header class="th-sec-head"><div><h2 id="printTitle">Printing for ${BAND_INFO[S.band].label}</h2>
+      <p class="fine">Packets are built for grades 3–5 and 6–8. Every ${BAND_INFO[S.band].label} activity prints from its own paper page: open the activity above and use its print button. There are no practice tests for this band.</p></div></header>
+    </section>` : ""}
 
     ${
       forms.length

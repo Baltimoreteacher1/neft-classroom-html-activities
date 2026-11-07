@@ -1,6 +1,7 @@
 // Teacher Hub: Passport check-ins. A student or family sends a link; opening it adds the student here.
 // Everything is read in this browser from the URL fragment (the server never sees it) and kept in this
 // browser's storage. The paper passport stays the authoritative record: this list only says who to stamp.
+import { bandLabel } from "/access-practice-lab/src/bands.js";
 import { CHECKIN_PARAM, decodeCheckin } from "/access-practice-lab/src/checkin.js";
 import { ROSTER_KEY, addCheckin, markStamped, needsStamp, removeStudent, sanitizeRoster, waiting } from "/access-practice-lab/src/checkin-roster.js";
 import { COUNTRIES } from "/access-practice-lab/src/journey.js";
@@ -54,7 +55,7 @@ function importText(text) {
 
 function stampListText() {
   return waiting(roster)
-    .map(([, s]) => `${s.alias} (grades ${s.band}): ${needsStamp(s).map(lineFor).join("; ")}`)
+    .map(([, s]) => `${s.alias} (${bandLabel(s.band)}): ${needsStamp(s).map(lineFor).join("; ")}`)
     .join("\n");
 }
 
@@ -72,14 +73,14 @@ function render() {
     <p class="fine" role="status" data-checkin-note>${notice}</p>
     ${queue.length
       ? html`<div class="lab-table-wrap"><table class="hub-table"><thead><tr><th scope="col">Student</th><th scope="col">Stamp these</th><th scope="col">Last check-in</th><th scope="col">Actions</th></tr></thead><tbody>
-          ${queue.map(([id, s]) => html`<tr><th scope="row">${s.alias}<span class="fine"> · grades ${s.band}</span></th>
+          ${queue.map(([id, s]) => html`<tr><th scope="row">${s.alias}<span class="fine"> · ${bandLabel(s.band)}</span></th>
             <td><ul>${needsStamp(s).map((r) => html`<li>${lineFor(r)}</li>`)}</ul></td><td>${s.date}</td>
             <td class="row-actions"><button type="button" class="btn small btn-primary" data-checkin-stamped="${id}">Mark stamped</button>
             <button type="button" class="ghost danger small" data-checkin-remove="${id}">Remove</button></td></tr>`)}
         </tbody></table></div>`
       : html`<p>${all.length ? "Everyone is stamped up to their latest check-in." : "No check-ins yet. When a student sends one, it appears here."}</p>`}
     ${all.length > queue.length
-      ? html`<details><summary>Stamped students (${all.length - queue.length})</summary><ul>${all.filter(([, s]) => !needsStamp(s).length).map(([id, s]) => html`<li>${s.alias} · grades ${s.band} · ${s.date} <button type="button" class="ghost danger small" data-checkin-remove="${id}">Remove</button></li>`)}</ul></details>`
+      ? html`<details><summary>Stamped students (${all.length - queue.length})</summary><ul>${all.filter(([, s]) => !needsStamp(s).length).map(([id, s]) => html`<li>${s.alias} · ${bandLabel(s.band)} · ${s.date} <button type="button" class="ghost danger small" data-checkin-remove="${id}">Remove</button></li>`)}</ul></details>`
       : ""}
     <p class="fine">A check-in is a note from the student's device, not proof. Stamp after you have seen the work.</p>`);
 }

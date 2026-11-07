@@ -14,6 +14,11 @@ content/
   family.json                Family Corner copy (English + Spanish)
   g6-8/<Domain>.json         Listening | Speaking | Reading | Writing | Model-Test
   g3-5/<Domain>.json         Listening | Speaking | Reading | Writing
+                             hand-authored, plus the grades 4-5 depth pass: activities whose ids are in
+                             tools/access-early-content/g45-<domain>.mjs are BUILT by
+                             `node tools/build-access-g45-content.mjs` (never edit those by hand; their Spanish goal
+                             and directions come from g45-es.mjs and land in es-guide.json). Strands ending in
+                             `-g45` list them.
   tests/<test-id>.json       one practice test per file
 pictures/<name>.svg          scene illustrations referenced by `picture.src`
 ```
@@ -93,6 +98,37 @@ record the verified grade cluster, ELD Standard(s), Key Language Use,
 communication mode, and Language Expectation in teacher-facing metadata. A
 Key Language Use or domain tag alone is not a full Language Expectation
 alignment. Do not invent expectation codes or proficiency-descriptor mappings.
+
+### Grade tags for 6-8 (enforced)
+
+Grades 6-8 are one band (`g6-8/`, ids with no prefix, progress keys unchanged). An activity may carry
+`"grades": ["7", "8"]` and `"gradesWhy": "<code>"`. No tag means the activity works for every grade in the band.
+`gradesWhy` is one of the codes in `src/grade-focus.js` (`GRADE_REASONS`), and the code decides the grades, so the
+two cannot disagree (`validate-access-lab.mjs` fails otherwise). A tag only changes what the Grade focus filter
+lists (skill rooms, activity library, home "Next activity"); it never locks an activity, and a direct link always
+opens. `content/index.json` carries the tag as a sixth entry on an activity's row and `gradeBands[6-8].gradeFocus`
+(choices with counts); both are generated.
+
+**How the tags were decided (2026-11-06).** Every one of the 357 grades 6-8 activities was read in a condensed listing (type, skill, title, vocabulary, the
+opening of its heard or read text, prompt and task). Length and density were measured (words, Flesch-Kincaid estimate, share of words with three
+or more syllables) as aids, never as the decision. The rule:
+
+| Reason code | Grades | Used when |
+| --- | --- | --- |
+| `g6-topic` | 6 | The content is anchored in a grade 6 topic (ratios and unit rates, mean and median, ancient Egypt, Mesopotamia, Athens and Sparta, the Silk Road, rock types) and the text and task are not above grade 6 load. |
+| `g67-load` / `g67-task` | 6, 7 | Reading or listening with more text (about 150+ words) or a dense text than a plain recognition task, or a grade 6 topic with an analytic task. `-task` is the speaking and writing form: explain a process or data, compare, summarize, write a claim with evidence or a short narrative, revise for precision. |
+| `g78-topic` | 7, 8 | Anchored in grade 7-8 content: percent discounts, branches of government, the American Revolution, the Industrial era, civil rights history, the Erie Canal. |
+| `g78-load` / `g78-task` | 7, 8 | An analytic task (evaluate how strong evidence is, find a counterclaim, compare two speakers or sources, judge purpose or point of view, valid inferences) on 100+ words of dense text, or a text at about grade 9 reading level. `-task` is the production form: argue with data, counterclaim and rebuttal, synthesize two sources, a multi-paragraph plan. |
+| `g8-stretch` | 8 | The same analytic demands on 200+ words at about grade 9 or above with the densest vocabulary (author's craft, two perspectives, supported inferences in a history text). Never used for speaking or writing. |
+
+Left untagged: every Level A activity (everyday school language, the support choice is the difficulty), model-test
+items and test-taking strategy work, printable worksheets that are pure practice, short or plain-language items at
+any level, and the other speaking, writing and sequencing tasks that a grade 6 and a grade 8 learner at the same
+support choice would do the same way. Social studies placement follows the common sequence (grade 6 ancient world;
+grades 7-8 civics and U.S. history); if your district differs, change the tag and its code together.
+
+Guard rails: each room keeps at least 8 activities for every focus; Level A, model-test and other bands carry no
+tags; `tools/access-grade-focus.test.mjs` checks all of it.
 
 ### Pictures, charts, tables (enforced)
 

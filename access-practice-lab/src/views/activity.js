@@ -48,6 +48,7 @@ import {
 } from "../learning.js";
 import { choiceTarget, inputHTML, reduceAnswer, seedAnswer, setItemsI18n } from "../items.js";
 import { visualsHTML } from "../media.js";
+import { keyWarmupHTML } from "./key-warmup.js";
 import { isRecording, takesFor } from "../recorder.js";
 import { answerOf, loadRecord, saveRecord } from "../store.js";
 import { invalidateActivity, startIndependentAttempt, updateActivityAnswer } from "../attempts.js";
@@ -56,6 +57,7 @@ import { appendEntry, loadLedger, saveLedger } from "../lang/ledger.js";
 import { SURE, normalizeSure, sureFlag } from "../lang/calibration.js";
 import { retellHTML, toggleRetellCheck } from "./retell.js";
 import { feedbackHTML as coachCardHTML } from "../studio-ui.js";
+import { activeGradeFocus, byGradeFocus } from "../grade-focus.js";
 import { dataPoints, itemsFrom, loadNotebook, passageSentences, pinItem, pinnedIndex, tagLabel } from "../lang/evidence-notebook.js";
 import { dataPickHTML, organizerHTML, tagBarHTML } from "../evidence-ui.js";
 import { canSpeak, speak, stop as stopSpeech } from "../speech.js";
@@ -405,6 +407,7 @@ function writingHTML(a) {
         : ""
     }
     ${mode === "supported" && (bank.length || (a.frames || []).length) ? raw("</details>") : ""}
+    ${keyWarmupHTML(I, cur.band, cur.level)}
     <label class="field">
       <span>${a.responseLabel || I.T("Your writing", "Tu escritura")}</span>
       <textarea
@@ -535,11 +538,14 @@ function navHTML() {
       ${index < ids.length - 1 ? html`<a class="btn btn-primary" href="${at(index + 1)}">${I.T("Next", "Siguiente")} ${icon("arrow-right")}</a>` : html`<a class="btn btn-primary" href="${cur.playlist.sessionId ? `${BASE}/session-done/${encodeURIComponent(cur.playlist.sessionId)}?grades=${cur.band}` : `${BASE}/family/progress?done=1&grades=${cur.band}`}">${I.T("Finish", "Terminar")} ${icon("check")}</a>`}
     </nav>`;
   }
-  const prev = cur.list[cur.index - 1];
-  const next = cur.list[cur.index + 1];
+  // With a grade focus, Previous / Next skip activities written for other grades (the open one always counts).
+  const shown = byGradeFocus(cur.list, cur.gradeFocus, (a) => (a.id === cur.activity.id ? undefined : a.grades));
+  const at = shown.indexOf(cur.activity);
+  const prev = shown[at - 1];
+  const next = shown[at + 1];
   return html`<nav class="act-nav" aria-label="${I.S("Activities", "Actividades")}">
     ${prev ? html`<a class="btn" href="${activityHref(cur.domain, cur.level, prev.id)}">${icon("arrow-left")} ${I.T("Previous", "Anterior")}</a>` : html`<span></span>`}
-    <span class="act-count">${I.T(`${cur.index + 1} of ${cur.list.length}`, `${cur.index + 1} de ${cur.list.length}`)}</span>
+    <span class="act-count">${I.T(`${at + 1} of ${shown.length}`, `${at + 1} de ${shown.length}`)}</span>
     ${next ? html`<a class="btn btn-primary" href="${activityHref(cur.domain, cur.level, next.id)}">${I.T("Next", "Siguiente")} ${icon("arrow-right")}</a>` : html`<a class="btn btn-primary" href="${roomHref(cur.domain, cur.level)}">${I.T("Back to the room", "Volver a la sala")} ${icon("check")}</a>`}
   </nav>`;
 }
@@ -575,7 +581,7 @@ export async function render(ctx) {
       saveEngagement(ctx, { activeSession: { ...engagement.activeSession, index: snapshot.route.index } });
   }
   const sameActivity = cur?.activity?.id === found.activity.id;
-  cur = { ...found, record: loadRecord(found.band, found.domain, found.level) };
+  cur = { ...found, record: loadRecord(found.band, found.domain, found.level), gradeFocus: activeGradeFocus(ctx.prefs, found.band) };
   if (!sameActivity) {
     checked.clear();
     writingChecks.clear();

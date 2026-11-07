@@ -2,11 +2,13 @@
 // and each learner answers once. Untimed accuracy rounds: nothing counts down, nothing is ranked, no points are taken
 // away. The server judges each answer, so this page only reports which option was chosen.
 import { crumbsHTML } from "../components.js";
+import { isEarlyBand } from "../bands.js";
 import { findActivity } from "../content.js";
 import { api, loadLink } from "../class/link.js";
 import { el, errorText } from "../class/dom.js";
 import { loadQuizKey } from "../class/quiz-key.js";
 import { i18nFor } from "../i18n.js";
+import { canSpeak, speak } from "../speech.js";
 import { BASE, html } from "../util.js";
 
 const POLL_MS = 3000;
@@ -87,6 +89,11 @@ export function mount(root, ctx) {
           showResult(res.correct === true);
         } else fb.textContent = S("Your first answer already counts for this question.", "Tu primera respuesta ya cuenta para esta pregunta.");
       });
+    // Audio-first bands (K, 1, 2-3) hear the question and the choices; reading is never required to answer.
+    const listen =
+      meta && isEarlyBand(meta.band) && canSpeak()
+        ? el("button", { type: "button", class: "btn", "data-cls-listen": true, onclick: () => speak([item.prompt, ...item.options.map((o) => o.text)], { lang: "en-US", rate: 0.85 }) }, S("Listen to the question", "Escuchar la pregunta"))
+        : null;
     const accuracy = el("p", { class: "fine", "data-cls-progress": true }, S(`${state.answered} of ${state.students} classmates have answered. The class has ${state.classScore ?? 0} right answers so far.`, `${state.answered} de ${state.students} compañeros han respondido. La clase lleva ${state.classScore ?? 0} respuestas correctas.`));
     say(
       el(
@@ -95,6 +102,7 @@ export function mount(root, ctx) {
         el("p", { class: "fine" }, S(`Question ${state.item + 1} of ${state.config.count}`, `Pregunta ${state.item + 1} de ${state.config.count}`)),
         item.passage ? el("blockquote", { lang: "en" }, item.passageTitle ? el("strong", {}, item.passageTitle, el("br")) : null, item.passage) : null,
         el("h2", { lang: "en" }, item.prompt),
+        listen,
         el("div", { class: "cls-options", role: "group", "aria-label": S("Choose one answer", "Elige una respuesta") }, buttons),
         fb,
         accuracy,

@@ -4,6 +4,8 @@
 // lists are marked "framework"; the rest are supplementary practice. A framework combination with no items is a gap.
 import { h } from "/access-practice-lab/src/acc/engine/dom.js";
 import { I18nEngine } from "/access-practice-lab/src/acc/i18n/I18nEngine.js";
+import { bandOptions } from "/access-practice-lab/src/bands.js";
+import { earlyBrowse, isEarlyBand, loadLabIndex } from "./early-activities.js";
 import { mapItem } from "/access-practice-lab/src/acc/wida/framework.js";
 
 const DOMAINS = ["Listening", "Reading", "Speaking", "Writing"];
@@ -21,8 +23,9 @@ export async function mountContentPanel(root, doc = document) {
     root.replaceChildren(h(doc, "p", { class: "acc-state is-error", role: "alert", text: "The content library could not be loaded." }));
     return;
   }
+  const labIndex = await loadLabIndex().catch(() => null);
   const items = index.sets.flatMap((s) => s.items.map((i) => ({ ...i, setId: s.id, setTitle: s.title, grade: s.grade, domain: s.domain, minutes: s.minutes })));
-  const state = { grade: "3-5", band: "all", domain: "all", klu: "all", context: "all", demand: "all", fn: "all", explicitOnly: false, shown: PAGE, open: null };
+  const state = { grade: "3-5", band: "all", domain: "all", klu: "all", context: "all", demand: "all", fn: "all", explicitOnly: false, shown: PAGE, open: null, earlyDomain: "Reading" };
   const functions = [...new Set(items.flatMap((i) => i.functions))].sort();
   const setCache = new Map();
 
@@ -95,7 +98,16 @@ export async function mountContentPanel(root, doc = document) {
     host.replaceChildren(box);
   }
 
+  const gradeChoices = () => bandOptions().filter(([b]) => labIndex || !isEarlyBand(b));
+  function drawEarly() {
+    root.replaceChildren(
+      h(doc, "div", { class: "acc-filters" }, sel("cGrade", "Grade band", gradeChoices(), "grade")),
+      earlyBrowse(doc, labIndex, state.grade, state.earlyDomain, (d) => ((state.earlyDomain = d), draw())),
+    );
+  }
+
   function draw() {
+    if (isEarlyBand(state.grade)) return drawEarly();
     const cov = coverage();
     const found = matches();
     const framework = items.filter((i) => i.grade === state.grade && i.explicit).length;
@@ -117,7 +129,7 @@ export async function mountContentPanel(root, doc = document) {
     root.replaceChildren(
       h(doc, "p", { class: "acc-hint", text: `${index.sets.length} practice sets · ${items.length} items · independent practice material; not WIDA or DRC content. Automated checks only: no item has had human review.` }),
       h(doc, "div", { class: "acc-filters" },
-        sel("cGrade", "Grade band", [["3-5", "Grades 3–5"], ["6-8", "Grades 6–8"]], "grade"),
+        sel("cGrade", "Grade band", gradeChoices(), "grade"),
         sel("cBand", "Practice band", [...all("All"), ...BANDS.map((b) => [b, b])], "band"),
         sel("cDomain", "Domain", [...all("All"), ...DOMAINS.map((d) => [d, d])], "domain"),
         sel("cKlu", "Key Language Use", [...all("All"), ...KLUS.map((k) => [k, k])], "klu"),

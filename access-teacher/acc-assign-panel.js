@@ -3,6 +3,8 @@
 import { h } from "/access-practice-lab/src/acc/engine/dom.js";
 import { I18nEngine } from "/access-practice-lab/src/acc/i18n/I18nEngine.js";
 import { assignmentLink, KINDS, selectItems, validateSpec } from "/access-practice-lab/src/acc/adapt/assign.js";
+import { bandOptions } from "/access-practice-lab/src/bands.js";
+import { earlyAssign, isEarlyBand, loadLabIndex } from "./early-activities.js";
 import { openStorage } from "/access-practice-lab/src/acc/storage/access-db.js";
 
 const BASE = "/access-practice-lab";
@@ -19,9 +21,11 @@ export async function mountAssignPanel(root, doc = document) {
     root.replaceChildren(h(doc, "p", { class: "acc-state is-error", role: "alert", text: "The item bank could not be loaded." }));
     return;
   }
+  // K, 1 and 2-3 are audio-first lab activities, listed from the lab's activity index (early-activities.js).
+  const labIndex = await loadLabIndex().catch(() => null);
   const bank = index.sets.flatMap((s) => s.items.map((i) => ({ ...i, setId: s.id, grade: s.grade, domain: s.domain })));
   const fns = [...new Set(bank.flatMap((i) => i.functions || []))].sort();
-  const state = { kind: "domain", grade: "3-5", domain: "Reading", context: "Science", klu: "Explain", fn: fns[0] || "", setId: index.sets[0].id, count: 8, includeProductive: false, title: "" };
+  const state = { kind: "domain", grade: "3-5", domain: "Reading", context: "Science", klu: "Explain", fn: fns[0] || "", setId: index.sets[0].id, count: 8, includeProductive: false, title: "", earlyDomain: "Reading", earlyPick: 0 };
   let saved = (await store.settings.get("assignments", [])) || [];
 
   const sel = (id, label, opts, key) => {
@@ -31,9 +35,27 @@ export async function mountAssignPanel(root, doc = document) {
     return h(doc, "label", { class: "acc-field", for: id }, h(doc, "span", { text: label }), s);
   };
 
+  const gradeChoices = () => bandOptions().filter(([b]) => labIndex || !isEarlyBand(b));
+  async function saveAssignment(title, link, count) {
+    saved = [{ id: Date.now().toString(36), title: title || "Practice assignment", link, count, savedAt: Date.now() }, ...saved].slice(0, 30);
+    await store.settings.set("assignments", saved);
+  }
+  const savedList = () => (saved.length ? h(doc, "div", {}, h(doc, "h3", { text: "Saved assignments" }), h(doc, "ul", { id: "asSaved" }, ...saved.map((a) => h(doc, "li", {}, h(doc, "a", { href: a.link, text: a.title, "data-i18n-skip": "" }), ` · ${new Date(a.savedAt).toLocaleDateString()}`)))) : h(doc, "span"));
+
+  function drawEarly() {
+    const status = h(doc, "p", { class: "acc-hint", role: "status", id: "asStatus" });
+    root.replaceChildren(
+      h(doc, "div", { class: "acc-filters" }, sel("asGrade", "Grade band", gradeChoices(), "grade")),
+      ...earlyAssign(doc, labIndex, state.grade, state, { draw, status, save: async (a) => { await saveAssignment(a.title, a.link, a.count); status.textContent = "Saved on this device."; draw(); } }),
+      status,
+      savedList(),
+    );
+  }
+
   function draw() {
+    if (isEarlyBand(state.grade)) return drawEarly();
     const need = KINDS[state.kind].needs;
-    const fields = [sel("asKind", "Assignment type", Object.entries(KINDS).map(([k, v]) => [k, v.label]), "kind"), sel("asGrade", "Grade band", [["3-5", "Grades 3–5"], ["6-8", "Grades 6–8"]], "grade")];
+    const fields = [sel("asKind", "Assignment type", Object.entries(KINDS).map(([k, v]) => [k, v.label]), "kind"), sel("asGrade", "Grade band", gradeChoices(), "grade")];
     if (need.includes("domain")) fields.push(sel("asDomain", "Domain", DOMAINS.map((d) => [d, d]), "domain"));
     if (need.includes("context")) fields.push(sel("asContext", "Academic context", CONTEXTS.map((d) => [d, d]), "context"));
     if (need.includes("klu")) fields.push(sel("asKlu", "Key language use", KLUS.map((d) => [d, d]), "klu"));
@@ -58,7 +80,7 @@ export async function mountAssignPanel(root, doc = document) {
     const copy = h(doc, "button", { type: "button", class: "acc-btn primary", "data-act": "copy-assign", disabled: !link, text: "Copy student link" });
     copy.addEventListener("click", async () => { try { await navigator.clipboard.writeText(link); status.textContent = "Link copied. Share it however you share class links."; } catch { status.textContent = link; } });
     const save = h(doc, "button", { type: "button", class: "acc-btn", "data-act": "save-assign", disabled: !link, text: "Save on this device" });
-    save.addEventListener("click", async () => { saved = [{ id: Date.now().toString(36), title: state.title || "Practice assignment", link, count: picks.length || null, savedAt: Date.now() }, ...saved].slice(0, 30); await store.settings.set("assignments", saved); status.textContent = "Saved on this device."; draw(); });
+    save.addEventListener("click", async () => { await saveAssignment(state.title, link, picks.length || null); status.textContent = "Saved on this device."; draw(); });
     const print = h(doc, "button", { type: "button", class: "acc-btn", "data-act": "print-assign", disabled: !picks.length, text: "Print the question list" });
     print.addEventListener("click", () => window.print());
     root.replaceChildren(
@@ -67,7 +89,7 @@ export async function mountAssignPanel(root, doc = document) {
       v.ok ? h(doc, "p", { class: "acc-hint", id: "asCountMsg", text: spec.kind === "simulation" ? "The whole set will be taken as a test simulation." : picks.length < spec.count ? `Only ${picks.length} matching ${picks.length === 1 ? "question exists" : "questions exist"} for these choices.` : `${picks.length} questions chosen across the matching sets.` }) : h(doc, "p", { class: "acc-state is-error", role: "alert", text: v.errors.join(" ") }),
       preview,
       h(doc, "div", { class: "acc-actions no-print" }, copy, save, print), status,
-      saved.length ? h(doc, "div", {}, h(doc, "h3", { text: "Saved assignments" }), h(doc, "ul", { id: "asSaved" }, ...saved.map((a) => h(doc, "li", {}, h(doc, "a", { href: a.link, text: a.title, "data-i18n-skip": "" }), ` · ${new Date(a.savedAt).toLocaleDateString()}`)))) : h(doc, "span"));
+      savedList());
   }
   draw();
   new I18nEngine({ root: root.closest("section") || root }).start();

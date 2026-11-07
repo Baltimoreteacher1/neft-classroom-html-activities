@@ -3,6 +3,7 @@
 // (LMS, email, USB), exactly like the existing ACCESS1 progress code, which the reader also accepts.
 // Only an alias is included; there is no email, no school ID, no device ID.
 import { PREFIX, allRecords } from "../store.js";
+import { CONTENT_BANDS, codeBand } from "../bands.js";
 import { normalizeSure } from "./calibration.js";
 import { loadReadingState } from "../reading-state.js";
 import { loadLedger } from "./ledger.js";
@@ -10,6 +11,9 @@ import { loadStudio } from "./studio.js";
 import { loadGames } from "../games/state.js";
 
 export const SHARE_PREFIX = "ACCESST1.";
+/** Saved-level key in a share code: grades 6-8 are unprefixed (older codes), every other band is `g<band>:`. */
+const recordKey = (band, domain, level) => `${band === "6-8" ? "" : `g${band}:`}${domain}:${level}`;
+const RECORD_KEY = /^(?:g(K|1|2-3|3-5):)?(?:Listening|Reading):[ABC]$/;
 const b64 = (s) => btoa(unescape(encodeURIComponent(s)));
 const unb64 = (s) => decodeURIComponent(escape(atob(s)));
 const isObj = (v) => v && typeof v === "object" && !Array.isArray(v);
@@ -23,6 +27,7 @@ const cleanLog = (log) =>
 
 /** @param {{alias?:string, band?:string, include?:{writing?:boolean,speaking?:boolean,missions?:boolean,detective?:boolean,readingListening?:boolean}}} o */
 export function buildShare({ alias = "", band = "6-8", include = {}, postcards = [] } = {}, ledger = loadLedger(), studio = loadStudio(), records = allRecords()) {
+  band = codeBand(band);
   const inc = { writing: true, speaking: true, missions: true, detective: true, readingListening: true, games: true, ...include };
   const keep = (obj, on) => (on ? obj : {});
   const speaking = Object.fromEntries(
@@ -32,7 +37,7 @@ export function buildShare({ alias = "", band = "6-8", include = {}, postcards =
   if (inc.readingListening) for (const row of records) {
     if (row.band !== band || !["Listening", "Reading"].includes(row.domain)) continue;
     const results = Object.fromEntries(Object.entries(row.record?.results || {}).filter(([, r]) => typeof r?.ok === "boolean" && r.meaningful !== false).map(([id, r]) => [id, { skill: String(r.skill || "").slice(0, 80), ok: r.ok, supportUsed: Boolean(r.supportUsed), ...(normalizeSure(r.sure) ? { sure: normalizeSure(r.sure) } : {}), date: String(r.date || "").slice(0, 40) }]));
-    if (Object.keys(results).length) practice[`${row.band === "3-5" ? "g3-5:" : ""}${row.domain}:${row.level}`] = { band: row.band, domain: row.domain, level: row.level, results };
+    if (Object.keys(results).length) practice[recordKey(row.band, row.domain, row.level)] = { band: row.band, domain: row.domain, level: row.level, results };
   }
   return {
     v: 1,
@@ -79,7 +84,14 @@ function fromProgressCode(parsed) {
       return null;
     }
   };
-  return { v: 1, kind: "share", postcards: Array.isArray(parsed.postcards) ? parsed.postcards : [], alias: String(d[`${PREFIX}:studentName`] || "").slice(0, 40) || "Student", band: "6-8", created: "", ledger: j("ledger") || { entries: [] }, studio: j("studio") || {}, records: Object.fromEntries(Object.entries(d).filter(([k]) => /:(Listening|Reading|Speaking|Writing|Model-Test):[ABC]$/.test(k)).map(([k, v]) => [k.slice(PREFIX.length + 1), safe(v)])) };
+  const records = Object.fromEntries(Object.entries(d).filter(([k]) => /:(Listening|Reading|Speaking|Writing|Model-Test):[ABC]$/.test(k)).map(([k, v]) => [k.slice(PREFIX.length + 1), safe(v)]));
+  return { v: 1, kind: "share", postcards: Array.isArray(parsed.postcards) ? parsed.postcards : [], alias: String(d[`${PREFIX}:studentName`] || "").slice(0, 40) || "Student", band: bandOfRecords(records), created: "", ledger: j("ledger") || { entries: [] }, studio: j("studio") || {}, records };
+}
+/** A progress code names no band: take the band that holds most saved levels (grades 6-8 on a tie or none). */
+function bandOfRecords(records) {
+  const counts = Object.fromEntries(CONTENT_BANDS.map((b) => [b, 0]));
+  for (const key of Object.keys(records)) counts[RECORD_KEY.exec(key)?.[1] || "6-8"]++;
+  return CONTENT_BANDS.reduce((best, b) => (counts[b] > counts[best] ? b : best), "6-8");
 }
 const safe = (v) => {
   try {
@@ -96,20 +108,21 @@ export function normalize(o) {
   const postcards = Array.isArray(o.postcards) ? o.postcards.slice(0, 6).filter((p) => isObj(p) && typeof p.image === "string" && p.image.length <= 610_000 && /^data:image\/jpeg;base64,[A-Za-z0-9+/]+=*$/.test(p.image) && typeof p.alt === "string").map((p) => ({ id: String(p.id || "").slice(0, 80), created: String(p.created || "").slice(0, 40), place: String(p.place || "").slice(0, 60), alt: p.alt.slice(0, 300), image: p.image })) : [];
   const records = {};
   if (isObj(o.records)) for (const [key, row] of Object.entries(o.records)) {
-    if (!/^(?:g3-5:)?(?:Listening|Reading):[ABC]$/.test(key) || !isObj(row) || !isObj(row.results)) continue;
+    const keyBand = RECORD_KEY.exec(key);
+    if (!keyBand || !isObj(row) || !isObj(row.results)) continue;
     const domain = key.includes("Listening:") ? "Listening" : "Reading";
     const results = Object.fromEntries(Object.entries(row.results).filter(([, r]) => isObj(r) && typeof r.ok === "boolean").slice(0, 1000).map(([id, r]) => [String(id).slice(0, 100), { skill: String(r.skill || "").slice(0, 80), ok: r.ok, supportUsed: Boolean(r.supportUsed), ...(normalizeSure(r.sure) ? { sure: normalizeSure(r.sure) } : {}), date: String(r.date || "").slice(0, 40) }]));
-    if (Object.keys(results).length) records[key] = { band: key.startsWith("g3-5:") ? "3-5" : "6-8", domain, level: key.split(":").at(-1), results };
+    if (Object.keys(results).length) records[key] = { band: keyBand[1] || "6-8", domain, level: key.split(":").at(-1), results };
   }
   return {
     alias: String(o.alias || "Student").slice(0, 40),
-    band: o.band === "3-5" ? "3-5" : "6-8",
+    band: codeBand(o.band),
     created: String(o.created || ""),
     ledger: { entries },
     records,
     readingLog: cleanLog(o.readingLog),
     postcards,
-    games: cleanGameSummary(o.games, o.band),
+    games: cleanGameSummary(o.games, codeBand(o.band)),
     studio: { writing: isObj(s.writing) ? s.writing : {}, speaking: isObj(s.speaking) ? s.speaking : {}, missions: isObj(s.missions) ? s.missions : {}, detective: isObj(s.detective) ? s.detective : {} },
   };
 }

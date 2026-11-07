@@ -17,7 +17,14 @@
 import { existsSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { BAND_INFO, EARLY_BANDS } from "../access-practice-lab/src/bands.js";
+import {
+  byGradeFocus,
+  FOCUS_BAND,
+  GRADE_FOCUS,
+  gradeTagProblems,
+} from "../access-practice-lab/src/grade-focus.js";
 import { staleEarlyFiles } from "./build-access-early-content.mjs";
+import { staleG45Files } from "./build-access-g45-content.mjs";
 import { earlyProblems } from "./lib/access-early-rules.mjs";
 import {
   allActivities,
@@ -244,6 +251,7 @@ function checkActivity(where, a, domain, band) {
   )
     err(where, "grades 6–8 ids must not use another band's prefix");
   if (EARLY_BANDS.includes(band)) checkEarly(where, a, domain);
+  for (const p of gradeTagProblems(a, band)) err(where, p);
   if (!/^[a-z0-9][a-z0-9-]*$/.test(a.id || "")) err(where, `id "${a.id}" is not kebab-case`);
   if (a.type !== "worksheet") {
     // All interactive activities share the same response, feedback, support, and teacher-use contract.
@@ -297,6 +305,15 @@ if (
 if (!earlyProblems({ type: "constructed", directionsEs: "x" }, "Speaking").length)
   throw new Error("validate-access-lab self-test: missing model student not detected");
 
+/** A grade focus must never leave a room thin: each of Grade 6, 7 and 8 keeps at least 8 activities in every room (the same floor as grades 3–5). */
+function checkFocusRoom(where, activities) {
+  for (const f of GRADE_FOCUS.filter((x) => x.id)) {
+    const shown = byGradeFocus(activities, f.id).length;
+    if (shown < 8)
+      err(where, `Grade ${f.id} focus shows only ${shown} of ${activities.length} activities`);
+  }
+}
+
 const seen = new Map();
 const idOwner = (id, where) => {
   if (seen.has(id)) err(where, `duplicate id "${id}" (also ${seen.get(id)})`);
@@ -322,6 +339,7 @@ for (const band of BANDS) {
         bandIds[band].add(a.id);
         checkActivity(where, a, domain, band);
       }
+      if (band === FOCUS_BAND) checkFocusRoom(`${where0}/${lk}`, L.activities || []);
     }
   }
 }
@@ -370,6 +388,10 @@ if (road) {
 // K–3 content files are built from tools/access-early-content/*.mjs; a hand edit or a stale build fails here.
 for (const stale of await staleEarlyFiles())
   err(stale, "stale — run `node tools/build-access-early-content.mjs`");
+
+// The grades 4-5 added activities are built from tools/access-early-content/g45-*.mjs into content/g3-5/*.json.
+for (const stale of await staleG45Files())
+  err(stale, "stale — run `node tools/build-access-g45-content.mjs`");
 
 const index = JSON.stringify(buildIndex(), null, 1);
 let committed = "";

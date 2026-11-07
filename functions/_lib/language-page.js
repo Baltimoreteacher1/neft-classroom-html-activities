@@ -58,6 +58,7 @@ export const SITEMAP_PATHS = [
   `${LAB_BASE}/grammar`,
   `${LAB_BASE}/reading-room`,
   `${LAB_BASE}/worlds`,
+  `${LAB_BASE}/worlds/science-lab`,
   `${LAB_BASE}/class`,
   `${LAB_BASE}/move`,
   `${LAB_BASE}/science-of-reading`,

@@ -1,5 +1,5 @@
 // Science Investigation Lab content: twelve stages, one case per grade band, bilingual (English and Spanish).
-// Cases are authored in science-lab-ice.js (6-8) and science-lab-soil.js (3-5); this module is the single place
+// Cases are authored in science-lab-ice.js (6-8) and science-lab-soil.js and science-lab-ramp.js (3-5); this module is the single place
 // that fixes the stage list, the stage metadata and the normalized case shape the engine and the views read.
 //
 // Rules the content keeps (tools/access-science-lab.test.mjs enforces them):
@@ -7,6 +7,7 @@
 //  * help gives structure and questions, never an answer, a score, or the condition that wins;
 //  * datasets are classroom sample data and say so; they are never presented as real measurements.
 import { ICE_CASE } from "./science-lab-ice.js";
+import { RAMP_CASE } from "./science-lab-ramp.js";
 import { SOIL_CASE } from "./science-lab-soil.js";
 
 export const STAGES = [
@@ -144,7 +145,7 @@ function groupHelp(tuples) {
 
 const build = ({ help, ...rest }) => ({ ...rest, help: groupHelp(help) });
 
-export const CASES = { "6-8": [build(ICE_CASE)], "3-5": [build(SOIL_CASE)] };
+export const CASES = { "6-8": [build(ICE_CASE)], "3-5": [build(SOIL_CASE), build(RAMP_CASE)] };
 export const BANDS = Object.keys(CASES);
 
 /** Find a case by band and id (null when unknown). Its `transfer` is a full case shape for the help-free attempt. */

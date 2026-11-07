@@ -7,14 +7,15 @@
 import { createTeacherClient } from "../../../shared/class-platform/client.js";
 import { goalProgress, joinUrl } from "../../../shared/class-platform/contract.js";
 import { qrSvg } from "../../../shared/qr/qr-code.mjs";
+import { BAND_INFO, CONTENT_BANDS } from "../bands.js";
 import { findActivity, loadIndex } from "../content.js";
 import { BASE, safeJson } from "../util.js";
+import { ASSIGN_DOMAINS, assignableActivities, assignmentBandText, assignmentLabel, toAssignment } from "./assign.js";
 import { el, errorText, toBase64 } from "./dom.js";
 import { itemsFor, loadQuizKey } from "./quiz-key.js";
 
 const CLASSES_KEY = "accessPracticeLabClass:v1:teacher-classes";
 const SITE_KEY = "accessPracticeLabClass:v1:site-key";
-const ID_OK = /^[a-z0-9][a-z0-9:_-]{0,39}$/;
 const ROSTER_MS = 10_000;
 const ROOM_MS = 3000;
 
@@ -180,25 +181,24 @@ export function mountClassPanel(root, { S = (en) => en, fetchImpl = (...a) => fe
     }
     async function drawAssignments() {
       const index = await loadIndex();
-      const band = el("select", { "aria-label": S("Grade band", "Grupo de grados") }, ["6-8", "3-5"].map((b) => el("option", { value: b }, b.replace("-", "–"))));
-      const domain = el("select", { "aria-label": S("Skill", "Destreza") }, ["Reading", "Writing", "Speaking", "Listening"].map((d) => el("option", { value: d }, d)));
+      const band = el("select", { "aria-label": S("Grade band", "Grupo de grados") }, CONTENT_BANDS.map((b) => el("option", { value: b }, S(BAND_INFO[b].label, BAND_INFO[b].labelEs))));
+      band.value = "6-8";
+      const domain = el("select", { "aria-label": S("Skill", "Destreza") }, ASSIGN_DOMAINS.map((d) => el("option", { value: d }, d)));
       const pick = el("select", { "aria-label": S("Activity", "Actividad") });
+      let rows = [];
       const fill = () => {
-        const levels = index.bands[band.value]?.domains?.[domain.value]?.levels || {};
-        pick.replaceChildren(...Object.entries(levels).flatMap(([lv, L]) => L.activities.filter((r) => ID_OK.test(r[0]) && r[2] !== "worksheet").map((r) => el("option", { value: `${lv}|${r[0]}`, "data-title": r[1] }, `${lv} · ${r[1]}`))));
+        rows = assignableActivities(index, band.value, domain.value);
+        pick.replaceChildren(...(rows.length ? rows.map((r, n) => el("option", { value: String(n) }, assignmentLabel(S, r))) : [el("option", { value: "" }, S("No activities for that choice", "No hay actividades para esa opción"))]));
       };
       band.onchange = domain.onchange = fill;
       fill();
       const list = roster?.settings?.assignments || [];
       assignBox.replaceChildren(
-        list.length ? el("ul", { class: "cls-list" }, list.map((a) => el("li", {}, a.title || a.id, " ", el("button", { type: "button", class: "btn small ghost", onclick: () => saveAssignments(list.filter((x) => x.id !== a.id)) }, S("Remove", "Quitar"))))) : el("p", {}, S("Nothing assigned yet.", "Todavía no hay tareas asignadas.")),
+        list.length ? el("ul", { class: "cls-list" }, list.map((a) => el("li", {}, a.title || a.id, el("span", { class: "fine" }, ` · ${assignmentBandText(S, a.path)} `), el("button", { type: "button", class: "btn small ghost", onclick: () => saveAssignments(list.filter((x) => x.id !== a.id)) }, S("Remove", "Quitar"))))) : el("p", {}, S("Nothing assigned yet.", "Todavía no hay tareas asignadas.")),
         el("div", { class: "row-actions" }, band, domain, pick, el("button", { type: "button", class: "btn", onclick: () => {
-          const opt = pick.selectedOptions[0];
-          if (!opt) return;
-          const [level, id] = opt.value.split("|");
-          if (list.some((a) => a.id === id)) return;
-          const path = `${BASE}/${domain.value}/${level}/${id}${band.value === "3-5" ? "?grades=3-5" : ""}`;
-          saveAssignments([...list, { id, title: opt.dataset.title, path, due: null }]);
+          const row = rows[Number(pick.value)];
+          if (!row || list.some((a) => a.id === row.id)) return;
+          saveAssignments([...list, toAssignment(row)]);
         } }, S("Assign", "Asignar"))),
       );
     }
@@ -210,8 +210,13 @@ export function mountClassPanel(root, { S = (en) => en, fetchImpl = (...a) => fe
 
   async function drawQuiz(box) {
     const key = await loadQuizKey();
-    const band = el("select", { "aria-label": S("Grade band", "Grupo de grados") }, ["6-8", "3-5"].map((b) => el("option", { value: b }, b.replace("-", "–"))));
-    const domain = el("select", { "aria-label": S("Skill", "Destreza") }, ["Reading", "Writing", "Speaking"].map((d) => el("option", { value: d }, d)));
+    const bands = CONTENT_BANDS.filter((b) => itemsFor(key, { band: b }).length);
+    const band = el("select", { "aria-label": S("Grade band", "Grupo de grados") }, bands.map((b) => el("option", { value: b }, S(BAND_INFO[b].label, BAND_INFO[b].labelEs))));
+    if (bands.includes("6-8")) band.value = "6-8";
+    const domain = el("select", { "aria-label": S("Skill", "Destreza") });
+    const fillDomains = () => domain.replaceChildren(...ASSIGN_DOMAINS.filter((d) => itemsFor(key, { band: band.value, domain: d }).length).map((d) => el("option", { value: d }, d)));
+    band.onchange = fillDomains;
+    fillDomains();
     const count = el("input", { type: "number", min: "1", max: "12", value: "6", "aria-label": S("Questions", "Preguntas") });
     const stage = el("div", { "aria-live": "polite" });
     let roomId = null;

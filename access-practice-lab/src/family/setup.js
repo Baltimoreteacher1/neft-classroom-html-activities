@@ -2,12 +2,15 @@
 // Each answer saves at once; Skip and Back are always available; answers can be changed later.
 import { langSwitchHTML } from "../i18n.js";
 import { BASE, announce, html, icon } from "../util.js";
-import { getFamily, familyPatch } from "./state.js";
+import { GRADES, getFamily, familyPatch } from "./state.js";
 import { crumbs, subnavHTML } from "./ui.js";
 
 const TOTAL = 4;
 let step = 1;
 let focusQuestion = false;
+
+/** Grade band -> the suffix of its setup.grade.* strings. */
+const GRADE_KEY = { K: "K", 1: "1", "2-3": "23", "3-5": "35", "6-8": "68" };
 
 const choice = (attr, value, pressed, label, sub) =>
   html`<button type="button" class="fam-choice" ${attr}="${value}" aria-pressed="${pressed}"><strong>${label}</strong>${sub ? html`<span>${sub}</span>` : ""}</button>`;
@@ -20,8 +23,7 @@ function question(I, family, ctx) {
       id: "grade",
       q: I.L("setup.q.grade"),
       body: html`<div class="fam-choice-grid">
-        ${choice("data-fam-grade", "3-5", ctx.band === "3-5" && Boolean(family.grade), I.L("setup.grade.35"), I.L("setup.grade.35.sub"))}
-        ${choice("data-fam-grade", "6-8", ctx.band === "6-8" && Boolean(family.grade), I.L("setup.grade.68"), I.L("setup.grade.68.sub"))}
+        ${GRADES.map((g) => choice("data-fam-grade", g, ctx.band === g && Boolean(family.grade), I.L(`setup.grade.${GRADE_KEY[g]}`), I.L(`setup.grade.${GRADE_KEY[g]}.sub`)))}
       </div>`,
     };
   if (step === 3)
@@ -48,7 +50,7 @@ function summaryRows(I, family, ctx) {
   const lang = { en: "English", es: "Español", bi: "English + Español" }[I.mode];
   return [
     [1, I.L("setup.summary.lang"), lang],
-    [2, I.L("setup.summary.grade"), family.grade ? I.L(family.grade === "3-5" ? "setup.grade.35" : "setup.grade.68") : unset(I)],
+    [2, I.L("setup.summary.grade"), family.grade ? I.L(`setup.grade.${GRADE_KEY[family.grade]}`) : unset(I)],
     [3, I.L("setup.summary.who"), family.who ? I.L(`setup.who.${family.who}`) : unset(I)],
     [4, I.L("setup.summary.time"), family.done ? I.L(`setup.time.${family.minutes}`) : unset(I)],
   ];

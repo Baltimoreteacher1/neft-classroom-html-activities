@@ -1,6 +1,7 @@
 // Lab home panels: the four studio portals, the plan options and the helpers they share with home.js and room.js.
 import { STATUS_REASON } from "../practice-plan.js";
 import { practiceSummary } from "../practice-report.js";
+import { activeGradeFocus, inGradeFocus } from "../grade-focus.js";
 import { estimateMinutes } from "../learning.js";
 import { loadRecord } from "../store.js";
 import { BASE, CORE_DOMAINS, DOMAIN_META, TIERS, html, icon } from "../util.js";
@@ -39,7 +40,9 @@ export function tierFor(ctx, domain, levels) {
   return levels?.[t] ? t : levels?.A ? "A" : Object.keys(levels || {})[0];
 }
 
-export function nextActivity(band, domain, level, rows) {
+export function nextActivity(band, domain, level, allRows, focus = "") {
+  // Index rows are [id, title, type, skill, minutes, grades?]; a grade focus (6-8) lists only its own activities.
+  const rows = focus ? allRows.filter((r) => inGradeFocus(r[5], focus)) : allRows;
   const done = new Set(loadRecord(band, domain, level).complete);
   const next = rows.find((r) => !done.has(r[0]));
   return { done: rows.filter((r) => done.has(r[0])).length, total: rows.length, next };
@@ -82,7 +85,7 @@ const PORTALS = {
 export function portalHTML(I, ctx, band, d, levels) {
   const meta = DOMAIN_META[d];
   const tier = tierFor(ctx, d, levels);
-  const { done, total, next } = nextActivity(band, d, tier, levels[tier].activities);
+  const { done, total, next } = nextActivity(band, d, tier, levels[tier].activities, activeGradeFocus(ctx.prefs, band));
   const record = loadRecord(band, d, tier);
   const { status } = practiceSummary(record.results, done, total);
   const statusClass = status.toLowerCase().replace(/\s+/g, "-");

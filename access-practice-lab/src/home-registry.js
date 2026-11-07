@@ -7,7 +7,8 @@
 //   group "teach"    the Teachers section
 //   group "family"   the Families section
 //
-// `href` is a lab route ("speak", "worlds/science-lab") or a site path ("/access-teacher/#printables").
+// `href` is a lab route ("speak", "worlds/science-lab", a route may carry its own query such as "?case=ramp-roll")
+// or a site path ("/access-teacher/#printables").
 // `bands` (optional) limits a card to the content bands it has material for; leave it out for every band.
 //
 // Planned entries from parallel work go in the group where people will look for them, for example:
@@ -77,6 +78,18 @@ export const HOME_CARDS = [
     text: [
       "Notice, question, test and argue from evidence.",
       "Observa, pregunta, prueba y argumenta con evidencia.",
+    ],
+  },
+  {
+    id: "science-lab-ramp",
+    group: "explore",
+    bands: ["3-5"],
+    href: "worlds/science-lab?case=ramp-roll",
+    icon: "evidence",
+    title: ["Science Lab: toy car ramp", "Laboratorio de ciencias: rampa de carritos"],
+    text: [
+      "Test floors and ramps, then argue from data.",
+      "Prueba pisos y rampas, y luego argumenta con datos.",
     ],
   },
   {

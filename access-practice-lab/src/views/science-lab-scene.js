@@ -4,7 +4,8 @@
 // ── API (part 2 of the visual build reuses these) ────────────────────────────────────────────────────────────────
 //   sceneFamily(caseDef)                                  -> family object; chosen from caseDef.id: "ice-cover",
 //                                                            "ice-cover-transfer" (cocoa), "soil-sprout",
-//                                                            "soil-sprout-transfer" (lettuce), else "bench".
+//                                                            "soil-sprout-transfer" (lettuce), "ramp-roll",
+//                                                            "ramp-roll-transfer" (balls on wood or carpet), else "bench".
 //   hotspotsOf(caseDef)                                   -> [{ id, x, y, label, notice, wonder }] (x/y in % of hero)
 //   phenomenonSceneHTML(I, caseDef, { uid, hotspots, look }) -> <figure class="slx-figure">: the hero picture,
 //                                                            optional hotspot buttons (data-slx-look="<id>"), and a
@@ -30,6 +31,7 @@
 //   varIconSVG(caseDef, varId, valueId), measureIconSVG(caseDef) -> small decorative object drawings.
 //   STAGE_ICONS                                           -> sprite icon name per stage (for the visual trail).
 import { esc, raw } from "../util.js";
+import { BALLS, RAMP } from "./science-lab-scene-ramp.js";
 import { BENCH, LETTUCE, SOIL } from "./science-lab-scene-soil.js";
 import { COCOA, ICE } from "./science-lab-scene-ice.js";
 import { condText, maxOf, svgDeco, svgImg, valueLabel, valueOf } from "./science-lab-scene-kit.js";
@@ -37,7 +39,9 @@ import { condText, maxOf, svgDeco, svgImg, valueLabel, valueOf } from "./science
 export { barChartHTML, barNote, chartAxisMax, snapValue } from "./science-lab-scene-chart.js";
 export { condText, valueLabel, valueOf };
 
-const FAMILIES = { [ICE.id]: ICE, [COCOA.id]: COCOA, [SOIL.id]: SOIL, [LETTUCE.id]: LETTUCE };
+const FAMILIES = Object.fromEntries(
+  [ICE, COCOA, SOIL, LETTUCE, RAMP, BALLS].map((f) => [f.id, f]),
+);
 export const sceneFamily = (caseDef) => FAMILIES[caseDef?.id] || BENCH;
 export const hotspotsOf = (caseDef) => sceneFamily(caseDef).hotspots;
 

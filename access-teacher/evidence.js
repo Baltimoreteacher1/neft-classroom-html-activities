@@ -12,6 +12,7 @@ import {
   loadStudioIndex,
   loadWritingTasks,
 } from "/access-practice-lab/src/content.js";
+import { CONTENT_BANDS, bandLabel } from "/access-practice-lab/src/bands.js";
 import { analyzeResponse } from "/access-practice-lab/src/lang/analyze.js";
 import { CRITERIA, DISCLAIMER, PRACTICE_BANDS } from "/access-practice-lab/src/lang/rubrics.js";
 import { decodeShare } from "/access-practice-lab/src/lang/share.js";
@@ -295,6 +296,7 @@ function classTab(allRows) {
           <tr>
             ${sortBtn("alias", "Student")}
             <th scope="col">Section</th>
+            <th scope="col">Grade band</th>
             ${sortBtn("firstAttempts", "First attempts")}${sortBtn("independentShare", "On own")}${sortBtn("revisions", "Revisions")}
             <th scope="col">Top pattern</th>
             <th scope="col">Support check</th>
@@ -309,6 +311,7 @@ function classTab(allRows) {
                   <button type="button" class="ghost" data-student="${r.id}">${r.alias}</button>
                 </td>
                 <td>${r.section}</td>
+                <td data-band-cell>${bandLabel(r.band)}</td>
                 <td>
                   ${r.firstAttempts}${r.enoughEvidence ? "" : html` <span class="fine">(early)</span>`}
                 </td>
@@ -357,7 +360,7 @@ function studentPanel(r, student) {
   const p = r.profile;
   const iv = interventionsFor(r, T.patterns);
   return html`<section class="panel student-panel ev-screen" aria-labelledby="stuTitle">
-    <h3 id="stuTitle" tabindex="-1">${r.alias} <span class="fine">· ${r.section}</span></h3>
+    <h3 id="stuTitle" tabindex="-1">${r.alias} <span class="fine">· ${r.section} · ${bandLabel(r.band)}</span></h3>
     ${evidenceList(r)}
     ${student?.postcards?.length ? html`<h4>Postcards shared for this teacher review</h4><ul class="postcard-list">${student.postcards.map((postcard) => html`<li><img src="${postcard.image}" alt="${postcard.alt}"><div><strong>${postcard.place || "Postcard"}</strong><p>${postcard.alt}</p><time>${String(postcard.created).slice(0, 10)}</time></div></li>`)}</ul><p class="fine">Shared postcard images stay in this open dashboard only; they are not saved in the teacher roster.</p>` : ""}
     ${
@@ -544,7 +547,7 @@ function plansTab() {
           ? html`<div class="hub-grid">${plans.map(
               (p) => html`<article class="hub-card">
                 <h4>${demo ? demoBadge() : ""} ${p.label}</h4>
-                <p><strong>${p.members.length} students</strong> · ${p.dimension} · Grades ${p.band.replace("-", "–")}</p>
+                <p><strong>${p.members.length} students</strong> · ${p.dimension} · ${bandLabel(p.band)}</p>
                 <ul class="fine">${p.members.map((m) => html`<li>${m.alias}: ${m.why}</li>`)}</ul>
                 ${p.chunks.length > 1 ? p.chunks.map((c, i) => html`<p>Group ${i + 1}: ${c.join(", ")}</p>`) : ""}
                 <h5>${p.minutes}-minute mini-lesson</h5>
@@ -833,14 +836,18 @@ function alignmentCoverageTab(alignment) {
   const total = alignment.counts || {};
   const localReviewCount = Object.keys(T.alignmentReviews).length;
   const reviewSelect = (items, value) => html`<option value="">Choose one</option>${items.map((item) => html`<option value="${item}" ${item === value ? raw("selected") : ""}>${item}</option>`)}`;
+  // The generator's band mapping is the one source. A band whose WIDA cluster is not in the catalog (K, 1) or an
+  // integrated task offers every catalog cluster: the reviewer chooses, nothing is assumed.
+  const allClusters = [...new Set(expectationCatalog.flatMap((x) => x.gradeClusters || [x.gradeCluster]))];
+  const bandClusters = (band) => (alignment.localBandMapping?.[band]?.gradeClusterCandidates?.length ? alignment.localBandMapping[band].gradeClusterCandidates : allClusters);
   const reviewEditor = (r) => {
     const v = r.teacherReview || {};
-    const clusters = r.localGradeBand === "3-5" ? ["2-3", "4-5"] : r.localGradeBand === "6-8" ? ["6-8"] : [...new Set(expectationCatalog.flatMap((x) => x.gradeClusters || [x.gradeCluster]))];
+    const clusters = bandClusters(r.localGradeBand);
     const expectationValues = [...new Set(expectationCatalog.filter((x) => (x.gradeClusters || [x.gradeCluster]).some((cluster) => clusters.includes(cluster))).map((x) => x.id))];
     return html`<details class="alignment-review" data-alignment-review="${r.id}">
       <summary>${r.teacherReview ? "Edit local teacher review" : "Record local teacher review"}</summary>
       <p class="fine">Saved only in this browser. This review records your source-based decision; it is not official WIDA verification or endorsement.</p>
-      <label class="field"><span>WIDA grade cluster reviewed</span><select data-alignment-field="gradeCluster">${reviewSelect(r.localGradeBand === "3-5" ? ["2-3", "4-5"] : ["6-8"], v.gradeCluster || "")}</select></label>
+      <label class="field"><span>WIDA grade cluster reviewed</span><select data-alignment-field="gradeCluster">${reviewSelect(bandClusters(r.localGradeBand), v.gradeCluster || "")}</select></label>
       <label class="field"><span>Academic context</span><input data-alignment-field="academicContext" maxlength="80" value="${v.academicContext ?? r.academicContext}" /></label>
       <label class="field"><span>Key Language Use</span><select data-alignment-field="keyUse">${reviewSelect(["Narrate", "Inform", "Explain", "Argue"], v.keyUse || r.keyUses[0] || "")}</select></label>
       <label class="field"><span>ELD Standard</span><select data-alignment-field="standard">${reviewSelect(["ELD-SI", "ELD-LA", "ELD-MA", "ELD-SC", "ELD-SS"], v.standard || r.eldStandards[0] || "")}</select></label>
@@ -865,9 +872,9 @@ function alignmentCoverageTab(alignment) {
       <article class="hub-card"><strong>${localReviewCount}</strong><p>local teacher reviews saved on this device</p></article>
     </div>
     <p class="feedback is-hint" role="note"><strong>Review status:</strong> ${total.needsReview || 0} records need metadata review. Suggested IDs are drawn from the WIDA 2020 catalog using local standard, Key Language Use, domain and grade-band tags. They are candidates, not verified alignments; educators must check the source task and record a cited local review.</p>
-    <p class="fine">The local Grades 3–5 band spans WIDA grade clusters 2–3 and 4–5. This inventory marks both as candidates; an individual task needs a grade-specific review before one cluster can be selected.</p>
+    <p class="fine">The local Grades 3–5 band spans WIDA grade clusters 2–3 and 4–5. This inventory marks both as candidates; an individual task needs a grade-specific review before one cluster can be selected. Grades 2–3 map to cluster 2–3. Kindergarten and Grade 1 have no candidate cluster because the expectation catalog here does not cover them; choose one in a teacher review.</p>
     <div class="library-filters" aria-label="Filter activity alignment inventory">
-      <label class="field"><span>Local grade band</span><select data-align-filter="band">${options(["3-5", "6-8", "Integrated"], f.band)}</select></label>
+      <label class="field"><span>Local grade band</span><select data-align-filter="band">${options([...CONTENT_BANDS, "Integrated"], f.band)}</select></label>
       <label class="field"><span>Domain</span><select data-align-filter="domain">${options(["Listening", "Reading", "Speaking", "Writing"], f.domain)}</select></label>
       <label class="field"><span>Key Language Use</span><select data-align-filter="keyUse">${options(["Narrate", "Inform", "Explain", "Argue", "__untagged__"], f.keyUse)}</select></label>
       <label class="field"><span>Academic context</span><select data-align-filter="contentArea">${options([...values((r) => [r.academicContext]), "__untagged__"], f.contentArea)}</select></label>

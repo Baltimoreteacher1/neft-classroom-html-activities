@@ -1,6 +1,7 @@
 // Teacher-side record of Passport check-ins, kept in the teacher's own browser (never uploaded).
 // A student is "alias + grade band"; two children who send the same nickname merge, which only ever
 // makes the teacher look twice. Stops finished never go backwards: an older check-in cannot undo a newer one.
+import { CONTENT_BANDS } from "./bands.js";
 import { routeKey } from "./checkin.js";
 
 export const ROSTER_KEY = "accessTeacher:v1:passportCheckins";
@@ -12,7 +13,7 @@ export function sanitizeRoster(raw) {
   const roster = emptyRoster();
   if (!raw || typeof raw !== "object" || raw.v !== 1 || typeof raw.students !== "object") return roster;
   for (const s of Object.values(raw.students).slice(0, 500)) {
-    if (!s || typeof s.alias !== "string" || !["3-5", "6-8"].includes(s.band) || typeof s.routes !== "object") continue;
+    if (!s || typeof s.alias !== "string" || !CONTENT_BANDS.includes(s.band) || typeof s.routes !== "object") continue;
     const routes = {};
     for (const [key, r] of Object.entries(s.routes)) {
       if (!/^(Listening|Reading|Speaking|Writing):[ABC]$/.test(key) || !Array.isArray(r?.stops) || r.stops.length > 12) continue;

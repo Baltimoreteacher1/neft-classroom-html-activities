@@ -7,6 +7,8 @@
 // a practice effect. A finished form is saved into a window by an explicit press, so a retake never overwrites
 // an earlier window.
 
+import { codeBand } from "../bands.js";
+
 export const WINDOWS = [
   { id: "fall", en: "Fall", es: "Otoño" },
   { id: "winter", en: "Winter", es: "Invierno" },
@@ -18,6 +20,9 @@ const FORMS = {
   "3-5": { fall: "g35-form-a", winter: "g35-form-b", spring: "g35-form-a" },
 };
 
+/** Kindergarten to grade 3 have no four-domain practice form (Kindergarten is an adult-read story), so no windows. */
+export const hasBenchmarkForms = (band) => Boolean(FORMS[codeBand(band)]);
+
 export const SCORED_DOMAINS = ["Listening", "Reading"];
 export const REVIEWED_DOMAINS = ["Speaking", "Writing"];
 /** Fewer scored questions than this in a domain and the comparison is withheld. */
@@ -25,7 +30,8 @@ export const MIN_ITEMS = 4;
 
 /** The window list for a band, each with its form id; repeat marks a form already used by an earlier window. */
 export function windowsFor(band) {
-  const forms = FORMS[band === "3-5" ? "3-5" : "6-8"];
+  const forms = FORMS[codeBand(band)];
+  if (!forms) return [];
   const used = new Set();
   return WINDOWS.map((w) => {
     const testId = forms[w.id];
@@ -53,7 +59,7 @@ export function windowResult(record) {
 
 export const BENCHMARK_KEY = "accessPracticeLab:v1:benchmarks";
 
-/** Saved windows, read defensively: { "6-8": { fall: {date, domains}, ... }, "3-5": {...} }. */
+/** Saved windows, read defensively: { "6-8": { fall: {date, domains}, ... }, "3-5": {...} }. Only the bands with forms. */
 export function normalizeSnapshots(raw) {
   const out = { "6-8": {}, "3-5": {} };
   if (!raw || typeof raw !== "object") return out;
@@ -72,7 +78,7 @@ export function normalizeSnapshots(raw) {
  * presses "Save as <window>": a window is never filled automatically, because one form serves two windows in 3-5.
  */
 export function saveableWindows(band, snapshots, loadRecord) {
-  const saved = snapshots?.[band === "3-5" ? "3-5" : "6-8"] || {};
+  const saved = snapshots?.[codeBand(band)] || {};
   const savedDates = new Set(Object.values(saved).map((s) => s.date));
   return windowsFor(band).filter((w) => {
     if (saved[w.id]) return false;
@@ -83,7 +89,7 @@ export function saveableWindows(band, snapshots, loadRecord) {
 
 /** Saves the form's current result into one window. Returns the new snapshots (never mutates). */
 export function saveWindow(snapshots, band, windowId, loadRecord) {
-  const b = band === "3-5" ? "3-5" : "6-8";
+  const b = codeBand(band);
   const w = windowsFor(b).find((x) => x.id === windowId);
   const result = w && windowResult(loadRecord(w.testId));
   if (!result) return snapshots;
@@ -92,7 +98,7 @@ export function saveWindow(snapshots, band, windowId, loadRecord) {
 
 /** Growth by domain across the saved windows. */
 export function benchmarkGrowth(band, snapshots) {
-  const saved = snapshots?.[band === "3-5" ? "3-5" : "6-8"] || {};
+  const saved = snapshots?.[codeBand(band)] || {};
   const windows = windowsFor(band).map((w) => ({ ...w, result: saved[w.id] || null }));
   const rows = [...SCORED_DOMAINS, ...REVIEWED_DOMAINS].map((domain) => {
     const scored = SCORED_DOMAINS.includes(domain);

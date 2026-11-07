@@ -157,7 +157,10 @@ function menuGroups(band, T) {
         items: [
           link("families", T("Families", "Familias"), "family"),
           link("passport", T("My Passport", "Mi Pasaporte"), "passport"),
+          link("classroom", T("My class", "Mi clase"), "class"),
+          link("classroom", T("Live class quiz", "Cuestionario de clase en vivo"), "class/quiz"),
           link("teacher", T("Teacher Hub", "Centro docente"), "/access-teacher/"),
+          link("launch", T("Launch Studio", "Estudio de lanzamiento"), "launch-studio"),
         ],
       },
     ];

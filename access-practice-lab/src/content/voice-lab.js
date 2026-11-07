@@ -461,6 +461,54 @@ export const KEY_FRAMES = [
       "The next day, we shared our results with the class.",
     ],
   },
+  // Grades 4-5 warm-ups, one set per support level of the Writing room (A, B, C). Frames grow from notes about
+  // what happened to opinion paragraphs to science claims, so typing practice matches the writing task.
+  {
+    id: "kb-g45-a",
+    band: "3-5",
+    level: "A",
+    title: "Grades 4-5: Plant notes",
+    titleEs: "Grados 4 y 5: Notas sobre una planta",
+    frames: [
+      "First, I put a seed in the soil.",
+      "Then I gave the plant some water.",
+      "The plant grew taller each week.",
+      "I think the plant needs sunlight.",
+      "Finally, we wrote what we saw.",
+    ],
+  },
+  {
+    id: "kb-g45-b",
+    band: "3-5",
+    level: "B",
+    title: "Grades 4-5: Opinion paragraph",
+    titleEs: "Grados 4 y 5: Párrafo de opinión",
+    frames: [
+      "In my opinion, our class should have a garden.",
+      "One reason is that plants help us learn science.",
+      "For example, we can measure how tall they grow.",
+      "However, some people think it takes too much time.",
+      "For these reasons, I believe a garden is a good idea.",
+    ],
+  },
+  {
+    id: "kb-g45-c",
+    band: "3-5",
+    level: "C",
+    title: "Grades 4-5: Science claims",
+    titleEs: "Grados 4 y 5: Afirmaciones de ciencias",
+    frames: [
+      "The data show that the bean grew fastest in the sunny window.",
+      "This evidence supports my claim because the numbers are different.",
+      "Although both plants had water, only one had enough light.",
+      "As a result, the plant in the shade grew four centimeters less.",
+      "Therefore, we should repeat the test to be sure of the result.",
+    ],
+  },
 ];
+
+/** The keyboarding warm-up that matches a band's Writing support level (null when the band has none). */
+export const keyWarmupFor = (band, level) =>
+  KEY_FRAMES.find((s) => s.band === band && s.level === level) || null;
 
 export const forBand = (list, band) => list.filter((x) => !x.band || x.band === band);

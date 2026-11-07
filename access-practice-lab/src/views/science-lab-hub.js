@@ -1,9 +1,9 @@
 // Science Investigation Lab: the hub (/worlds/science-lab) and the card on /worlds. The hub opens straight onto
 // the investigation: the scene, the question, one Start button, the help switch (default "Some") and the trail.
-import { STAGES, TRANSFER_STAGE } from "../content/science-lab.js";
-import { progress } from "../lang/science-lab.js";
-import { BASE, html, icon } from "../util.js";
-import { nextStageOf, statusOf } from "./science-lab-model.js";
+import { CASES, STAGES, TRANSFER_STAGE } from "../content/science-lab.js";
+import { caseState, progress } from "../lang/science-lab.js";
+import { BASE, html, icon, raw } from "../util.js";
+import { loadLab, nextStageOf, statusOf } from "./science-lab-model.js";
 import { phenomenonSceneHTML } from "./science-lab-scene.js";
 import {
   crumbs,
@@ -30,6 +30,30 @@ export const scienceLabCardHTML = (I, band) =>
       >${I.T("Open the lab", "Abrir el laboratorio")} ${icon("arrow-right")}</a
     >
   </section>`;
+
+/** The band's investigations, when it has more than one: one link per case, with that case's own progress. */
+export function casePickerHTML(I, t) {
+  const cases = CASES[t.band] || [];
+  if (cases.length < 2) return "";
+  const lab = loadLab();
+  return html`<nav class="panel sl-cases" aria-labelledby="slCasesTitle" data-sl-cases>
+    <h2 id="slCasesTitle">${I.T("Choose an investigation", "Elige una investigación")}</h2>
+    <ul>
+      ${cases.map((c) => {
+        const done = progress(caseState(lab, t.band, c.id)).done;
+        const here = c.id === t.caseId;
+        return html`<li>
+          <a href="${BASE}/worlds/science-lab?grades=${t.band}&case=${c.id}" ${here ? raw('aria-current="true"') : ""}
+            ><strong>${I.TO(c.question)}</strong>
+            <span class="fine"
+              >${I.T(`${done} of ${STAGES.length} steps done`, `${done} de ${STAGES.length} pasos hechos`)}${here ? html` · ${I.T("you are here", "estás aquí")}` : ""}</span
+            ></a
+          >
+        </li>`;
+      })}
+    </ul>
+  </nav>`;
+}
 
 export function hubHTML(I, t, cs) {
   const p = progress(cs);
@@ -67,6 +91,7 @@ export function hubHTML(I, t, cs) {
       </div>
       <div class="sl-hero-art">${phenomenonSceneHTML(I, t.caseDef, { uid: "slx-hub", caption: false })}</div>
     </section>
+    ${casePickerHTML(I, t)}
     <section class="panel sl-trail" aria-labelledby="slPathTitle">
       <h2 id="slPathTitle">${I.T("Your twelve steps", "Tus doce pasos")}</h2>
       ${pathHTML(I, t, cs, "", true)}

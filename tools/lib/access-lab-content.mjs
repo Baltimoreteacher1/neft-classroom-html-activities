@@ -15,6 +15,7 @@ import {
   EARLY_BANDS,
   gradeBandsIndex,
 } from "../../access-practice-lab/src/bands.js";
+import { FOCUS_BAND } from "../../access-practice-lab/src/grade-focus.js";
 
 /** Content bands, youngest first (access-practice-lab/src/bands.js is the one list). */
 export const BANDS = CONTENT_BANDS;
@@ -121,14 +122,16 @@ export function buildIndex(root = CONTENT_DIR) {
             lk,
             {
               tier: L.tier || null,
-              // [id, title, type, skill, minutes] — enough for home, passport and teacher views
-              // to render without fetching the full domain file.
+              // [id, title, type, skill, minutes, grades?] — enough for home, passport and teacher views
+              // to render without fetching the full domain file. `grades` (6-8 only) is present only on
+              // activities written for particular grades; no sixth entry means every grade.
               activities: orderedActivities(L).map((a) => [
                 a.id,
                 a.title,
                 a.type,
                 a.skill || "",
                 activityMinutes(a.time),
+                ...(a.grades?.length ? [a.grades] : []),
               ]),
             },
           ]),
@@ -136,8 +139,11 @@ export function buildIndex(root = CONTENT_DIR) {
       };
     if (Object.keys(domains).length) index.bands[band] = { domains };
   }
+  const focusTags = Object.values(index.bands[FOCUS_BAND]?.domains || {}).flatMap((d) =>
+    Object.values(d.levels).flatMap((L) => L.activities.map((row) => row[5])),
+  );
   // The homepage grade-band picker (K, 1, 2-3, 4-5, 6-8): only bands that ship content.
-  index.gradeBands = gradeBandsIndex(Object.keys(index.bands));
+  index.gradeBands = gradeBandsIndex(Object.keys(index.bands), focusTags);
   for (const { data: t } of loadTests(root)) {
     const sections = t.sections || [];
     index.tests.push({

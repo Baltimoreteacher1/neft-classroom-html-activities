@@ -2,7 +2,7 @@
 // level's skill strands as a folded list, and a tier picker. Replaces the old
 // wall of 28 cards.
 import { crumbsHTML, ringHTML, tierPickerHTML } from "../components.js";
-import { bandDomains, loadDomain, ordered } from "../content.js";
+import { bandDomains, loadDomain, loadIndex, ordered } from "../content.js";
 import { activityStatus } from "../practice-plan.js";
 import { loadRecord } from "../store.js";
 import { i18nFor } from "../i18n.js";
@@ -10,6 +10,8 @@ import { ART, BASE, DOMAIN_META, TIERS, bandLabel, html, icon } from "../util.js
 import { tierFor } from "./home.js";
 import { bandLabelEs, isEarlyBand } from "../bands.js";
 import { GAMES } from "../games/registry.js";
+import { activeGradeFocus, byGradeFocus, gradesLabel } from "../grade-focus.js";
+import { gradeFocusHTML } from "../grade-focus-ui.js";
 
 /** Each skill room is one of the four language studios (the same names as the home portals). */
 const STUDIO_NAME = {
@@ -89,8 +91,12 @@ export async function render(ctx) {
   const L = data.levels[level];
   const record = loadRecord(band, domain, level);
   const done = new Set(record.complete);
-  const list = ordered(L);
-  const next = list.find((a) => !done.has(a.id)) || list[0];
+  const all = ordered(L);
+  // Grades 6-8 only: a Grade 6, 7 or 8 focus lists the activities written for it plus the ones that suit every grade.
+  const focus = activeGradeFocus(ctx.prefs, band);
+  const list = byGradeFocus(all, focus);
+  const focusCounts = band === "6-8" ? (await loadIndex()).gradeBands?.find((g) => g.contentBand === "6-8")?.gradeFocus : null;
+  const next = list.find((a) => !done.has(a.id)) || list[0] || all[0];
   const meta = DOMAIN_META[domain];
   const tier = TIERS[level];
   const doneCount = list.filter((a) => done.has(a.id)).length;
@@ -102,6 +108,8 @@ export async function render(ctx) {
   const extra = list.filter((a) => !listed.has(a.id));
   if (extra.length)
     cats.push({ id: "more", title: "More practice", es: "Más práctica", activityIds: extra.map((a) => a.id) });
+  // A focus can empty a strand: leave it out rather than show "0/0".
+  const strands = focus ? cats.filter((c) => c.activityIds.some((id) => byId.has(id))) : cats;
 
   const packetBase = `${band === "3-5" ? "g3-5-" : ""}${domain}-${level}`.replace(/\s+/g, "");
   // K–3 bands print their writing from each activity and have their own games on the early home.
@@ -114,7 +122,7 @@ export async function render(ctx) {
       <a href="${activityHref(domain, level, a.id)}">
         <span class="act-status" aria-hidden="true">${status === "done" ? icon("check") : status === "tried" ? icon("pin") : ""}</span>
         <span class="act-title">${a.title}</span>
-        <span class="act-meta">${TYPE_LABEL[a.type] ? T(TYPE_LABEL[a.type], TYPE_LABEL_ES[a.type]) : ""} · ${a.time || ""}</span>
+        <span class="act-meta">${TYPE_LABEL[a.type] ? T(TYPE_LABEL[a.type], TYPE_LABEL_ES[a.type]) : ""} · ${a.time || ""}${band === "6-8" && gradesLabel(a.grades) ? html` · ${T(...gradesLabel(a.grades))}` : ""}</span>
         <span class="visually-hidden"
           >${status === "done" ? T("(done)", "(hecha)") : status === "tried" ? T("(started)", "(empezada)") : ""}</span
         >
@@ -134,6 +142,7 @@ export async function render(ctx) {
           ${STUDIO_NAME[domain] ? html`<p class="room-studio">${T(...STUDIO_NAME[domain])}</p>` : ""}
           <h1 tabindex="-1">${T(meta.room, ROOM_ES[domain])}</h1>
           <p class="lead">${L.info?.headline || L.studentGoal || data.description}</p>
+          ${band === "6-8" && domain !== "Model-Test" ? gradeFocusHTML(I, focus, { counts: focusCounts }) : ""}
           ${domain !== "Model-Test" ? tierPickerHTML(domain, level, (k) => roomHref(domain, k)) : ""}
           <a class="btn btn-primary btn-big btn-next" href="${activityHref(domain, level, next.id)}">
             <span class="btn-kicker">${doneCount ? T("Keep going", "Sigue adelante") : T("Start here", "Empieza aquí")}</span><span class="next-title">${next.title}</span>${icon("arrow-right")}
@@ -150,10 +159,10 @@ export async function render(ctx) {
       <div class="room-layout">
       <div class="room-main">
       <section class="strands" aria-label="${S("All activities", "Todas las actividades")}">
-        ${cats.map((c) => {
+        ${strands.map((c) => {
           const acts = c.activityIds.map((id) => byId.get(id)).filter(Boolean);
           const n = acts.filter((a) => done.has(a.id)).length;
-          return html`<details class="strand" ${cats.length <= 2 ? "open" : ""}>
+          return html`<details class="strand" ${strands.length <= 2 ? "open" : ""}>
             <summary>
               <span class="strand-title">${c.es ? T(c.title, c.es) : c.title}</span
               ><span class="strand-count">${n}/${acts.length}</span>

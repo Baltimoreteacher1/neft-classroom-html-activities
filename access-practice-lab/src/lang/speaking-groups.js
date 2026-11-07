@@ -6,6 +6,8 @@
 // "no speaking evidence yet", never guessed into a need; nothing here is a level or a score; routines have no
 // clock or speed target. Pure logic; access-teacher/speaking-groups.js draws it.
 
+import { CONTENT_BANDS, codeBand } from "../bands.js";
+
 export const GROUP_MAX = 4;
 export const SHORT_SECONDS = 20;
 export const ARGUE_USES = ["Argue", "Explain"];
@@ -220,13 +222,19 @@ export function suggestGroups(students = []) {
       noEvidence.push(st.alias);
       continue;
     }
-    byNeed.get(needOf(ev)).push({ alias: st.alias, ev });
+    byNeed.get(needOf(ev)).push({ alias: st.alias, band: codeBand(st.band), ev });
   }
   const groups = [];
   for (const need of NEED_ORDER) {
-    const members = byNeed.get(need).sort((a, b) => a.alias.localeCompare(b.alias));
-    for (let i = 0; i < members.length; i += GROUP_MAX)
-      groups.push({ need, routine: ROUTINES[need], members: members.slice(i, i + GROUP_MAX) });
+    // A group never mixes grade bands: a kindergartener and an eighth grader do not share a routine.
+    for (const band of CONTENT_BANDS) {
+      const members = byNeed
+        .get(need)
+        .filter((m) => m.band === band)
+        .sort((a, b) => a.alias.localeCompare(b.alias));
+      for (let i = 0; i < members.length; i += GROUP_MAX)
+        groups.push({ need, band, routine: ROUTINES[need], members: members.slice(i, i + GROUP_MAX) });
+    }
   }
   return { groups, noEvidence: noEvidence.sort() };
 }

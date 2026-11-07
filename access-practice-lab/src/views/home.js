@@ -1,7 +1,8 @@
 // Home: the start screen (grade, language, Continue, the four skills, a door for teachers and families; see
 // home-start.js), then today's session, the four studios, everything else to explore (home-registry.js),
 // growth, practice tests, search, and the teacher and family sections.
-import { bandDomains, bandRows, findActivity, loadRoad, loadShared } from "../content.js";
+import { bandDomains, bandRows, findActivity, loadIndex, loadRoad, loadShared } from "../content.js";
+import { activeGradeFocus, inGradeFocus } from "../grade-focus.js";
 import { allRecords, loadRecord, needsReview, weekStreak } from "../store.js";
 import {
   ART,
@@ -98,7 +99,10 @@ export async function render(ctx) {
     loadRoad(),
     loadShared().catch(() => ({})),
   ]);
-  const rows = await bandRows(band);
+  const focus6to8 = activeGradeFocus(ctx.prefs, band);
+  const focusCounts =
+    band === "6-8" ? (await loadIndex()).gradeBands?.find((g) => g.contentBand === "6-8")?.gradeFocus : null;
+  const rows = (await bandRows(band)).filter((r) => inGradeFocus(r.grades, focus6to8));
   const settings = ctx.prefs.practicePlan || {};
   const records = new Map();
   const ledger = loadLedger();
@@ -188,7 +192,7 @@ export async function render(ctx) {
     resume,
     openMission: open?.[0] || "",
     journey,
-    recent: recentRoom(band, domains),
+    recent: recentRoom(band, domains, activeGradeFocus(ctx.prefs, band)),
   });
 
   const card = (c) =>
@@ -235,7 +239,7 @@ export async function render(ctx) {
 
   return {
     title: "",
-    html: html`${startHTML(I, ctx, { band, available: ctx.bands, domains, tierFor: (d, levels) => tierFor(ctx, d, levels), target })}
+    html: html`${startHTML(I, ctx, { band, available: ctx.bands, focusCounts, domains, tierFor: (d, levels) => tierFor(ctx, d, levels), target })}
       ${
         familyMessage
           ? html`<aside class="student-family-note panel">

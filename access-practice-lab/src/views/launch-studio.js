@@ -1,5 +1,6 @@
 // Teacher launch builder. Links contain only public task IDs and instructional settings.
 // No roster, name, response, or student progress is encoded in a launch URL.
+import { bandLabel, bandLabelEs, bandOptions } from "../bands.js";
 import { bandRows, loadBlueprint, loadDomain, loadExemplars, loadSpeakingTasks, loadWorlds, loadWritingTasks } from "../content.js";
 import { stationCard, stationCardHTML, stationOptions } from "../lang/teacher.js";
 import { crumbsHTML } from "../components.js";
@@ -87,7 +88,7 @@ function ticketHTML(row, url) {
   return html`<article class="ls-ticket d-${row.domain.toLowerCase()}" aria-label="${I.S("Student launch ticket", "Boleto de acceso para estudiantes")}">
     <p class="ls-ticket-brand">${icon(DOMAIN_META[row.domain]?.icon || "launch")} ACCESS Practice Lab</p>
     <h3>${row.title}</h3>
-    <p class="ls-ticket-meta">${domainName(row.domain)} · ${row.skill || I.S("Language practice", "Práctica de lenguaje")} · ${row.minutes || I.S("Flexible", "Flexible")} min · ${I.S(`Grades ${state.band.replace("-", "–")}`, `Grados ${state.band.replace("-", "–")}`)}</p>
+    <p class="ls-ticket-meta">${domainName(row.domain)} · ${row.skill || I.S("Language practice", "Práctica de lenguaje")} · ${row.minutes || I.S("Flexible", "Flexible")} min · ${I.S(bandLabel(state.band), bandLabelEs(state.band))}</p>
     <p class="ls-ticket-label">${I.T("Open this link", "Abre este enlace")}</p>
     <p class="ls-ticket-url">${url}</p>
     <p class="ls-ticket-mode">${modeLabel(state.mode)}</p>
@@ -96,7 +97,7 @@ function ticketHTML(row, url) {
 
 function configureHTML(rows, skills, domains, taskOptions) {
   return html`<div class="teacher-launch-grid">
-    <label class="field">${I.T("Grade band", "Nivel de grados")}<select data-launch-field="band"><option value="3-5" ${state.band === "3-5" ? "selected" : ""}>${I.S("Grades 3–5", "Grados 3–5")}</option><option value="6-8" ${state.band === "6-8" ? "selected" : ""}>${I.S("Grades 6–8", "Grados 6–8")}</option></select></label>
+    <label class="field">${I.T("Grade band", "Nivel de grados")}<select data-launch-field="band">${bandOptions(I.mode === "es").map(([value, label]) => html`<option value="${value}" ${state.band === value ? "selected" : ""}>${label}</option>`)}</select></label>
     <label class="field">${I.T("Language domain", "Dominio del lenguaje")}<select data-launch-field="domain">${options(domains, state.domain, I.S("All four domains", "Los cuatro dominios"))}</select></label>
     <label class="field">${I.T("Target skill", "Destreza meta")}<select data-launch-field="skill">${options(skills.map((s) => ({ value: s, label: s })), state.skill, I.S("Any skill", "Cualquier destreza"))}</select></label>
     <label class="field">${I.T("Session length", "Duración de la sesión")}<select data-launch-field="length">${options([{ value: "10", label: I.S("Up to 10 minutes", "Hasta 10 minutos") }, { value: "20", label: I.S("Up to 20 minutes", "Hasta 20 minutos") }, { value: "30", label: I.S("Up to 30 minutes", "Hasta 30 minutos") }], state.length, I.S("Any length", "Cualquier duración"))}</select></label>

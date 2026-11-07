@@ -44,7 +44,8 @@ import { SCORE_CLAIM } from "./lib/access-studio-rules.mjs";
 const LAB = join(REPO_ROOT, "access-practice-lab");
 const ICE = CASES["6-8"][0];
 const SOIL = CASES["3-5"][0];
-const ALL_CASES = [ICE, SOIL];
+const RAMP = CASES["3-5"][1];
+const ALL_CASES = [ICE, SOIL, RAMP];
 
 // ── helpers ──────────────────────────────────────────────────────────────────
 
@@ -101,10 +102,22 @@ const MODEL = {
     ],
     winners: ["garden soil", "tierra de jardin"],
   },
+  // The second 3-5 case (ramp-roll) shares the band, so its private answers join the band's lists.
+  "3-5-ramp": {
+    claims: [
+      "The car rolled the farthest on smooth tile.",
+      "Smooth tile let the toy car roll farthest.",
+      "Tile with the taller ramp gave the longest roll.",
+      "El carrito rodó más lejos sobre la baldosa lisa.",
+      "La baldosa lisa hizo que el carrito rodara más lejos.",
+    ],
+    winners: ["tile", "baldosa"],
+  },
 };
 
+const modelsFor = (band) => [MODEL[band], ...(band === "3-5" ? [MODEL["3-5-ramp"]] : [])];
 const leaks = (text, band) => {
-  const bad = new Set(MODEL[band].claims.flatMap((c) => [...runs(c)]));
+  const bad = new Set(modelsFor(band).flatMap((m) => m.claims.flatMap((c) => [...runs(c)])));
   return [...runs(text)].filter((r) => bad.has(r));
 };
 
@@ -197,8 +210,8 @@ test("two bands, twelve stages in the contract order, model-free stage metadata"
 
 test("both cases are complete in English and Spanish, with honest sample data", () => {
   assert.equal(CASES["6-8"].length, 1);
-  assert.equal(CASES["3-5"].length, 1);
-  assert.deepEqual([ICE.id, SOIL.id], ["ice-cover", "soil-sprout"]);
+  assert.equal(CASES["3-5"].length, 2);
+  assert.deepEqual([ICE.id, SOIL.id, RAMP.id], ["ice-cover", "soil-sprout", "ramp-roll"]);
   for (const c of ALL_CASES) {
     assert.ok(CASES[c.band].includes(c));
     assert.ok(c.vocab.length >= 4, `${c.id} vocab`);
@@ -229,10 +242,11 @@ test("both cases are complete in English and Spanish, with honest sample data", 
   }
   assert.equal(ICE.question.en, "Which cover keeps ice frozen longest?");
   assert.equal(SOIL.question.en, "Which soil helps bean seeds sprout fastest?");
+  assert.equal(RAMP.question.en, "Which floor lets a toy car roll the farthest?");
 });
 
 test("datasets are fair-test shaped: every combination run, one noisy repeat, values reference the variables", () => {
-  for (const c of [...ALL_CASES, ICE.transfer, SOIL.transfer]) {
+  for (const c of [...ALL_CASES, ICE.transfer, SOIL.transfer, RAMP.transfer]) {
     const rows = c.dataset.rows;
     assert.equal(new Set(rows.map((r) => r.id)).size, rows.length, `${c.id} row ids unique`);
     for (const r of rows) {
@@ -301,7 +315,7 @@ test("help and guided text never state an answer, a winning condition, or a data
   for (const c of ALL_CASES) {
     for (const text of guidedText(c)) {
       assert.deepEqual(leaks(text, c.band), [], `${c.id}: repeats a model answer: ${text}`);
-      for (const w of MODEL[c.band].winners)
+      for (const w of modelsFor(c.band).flatMap((m) => m.winners))
         assert.ok(
           !new RegExp(`\\b${w}\\b`).test(fold(text)),
           `${c.id}: names the winning condition "${w}" in: ${text}`,
@@ -321,7 +335,7 @@ test("help and guided text never state an answer, a winning condition, or a data
         [],
         `${c.id}: transfer text repeats a model answer: ${text}`,
       );
-      for (const w of MODEL[c.band].winners)
+      for (const w of modelsFor(c.band).flatMap((m) => m.winners))
         assert.ok(!new RegExp(`\\b${w}\\b`).test(fold(text)), `${c.id}: transfer names "${w}"`);
     }
     for (const items of Object.values(c.help))
@@ -528,6 +542,8 @@ const GOOD = {
     [ICE, "Does a thicker cover keep the ice frozen longer?"],
     [SOIL, "Which soil makes bean seeds sprout in the fewest days?"],
     [SOIL, "How does the amount of water change how many days a seed takes to sprout?"],
+    [RAMP, "Which floor makes a toy car roll the most centimeters?"],
+    [RAMP, "How does the number of books in the ramp change how far the car rolls?"],
     [ICE.transfer, "Which cup keeps the cocoa warm for more minutes?"],
   ],
   hypothesis: [
@@ -540,12 +556,15 @@ const GOOD = {
       SOIL,
       "If I give the seeds more water, then they will sprout sooner because seeds need water.",
     ],
+    [RAMP, "If I use a rough floor, then the car will stop sooner because rough things rub more."],
   ],
   claim: [
     [ICE, "Wool kept the ice frozen longer than foil and paper towel."],
     [ICE, "Three layers of wool cloth kept ice frozen longest."],
     [SOIL, "Garden soil helped bean seeds sprout in the fewest days compared with sand and clay."],
     [SOIL, "Garden soil helped seeds sprout faster than sand."],
+    [RAMP, "The car rolled farther on smooth tile than on carpet or sandpaper."],
+    [RAMP, "The toy car rolled more centimeters on sandpaper than on carpet."],
     [ICE.transfer, "Foam cups kept the cocoa warm longer than paper cups."],
   ],
 };
@@ -708,6 +727,7 @@ test("checkClaim wants a claim that answers the question and names what was comp
     "the data check does not name the better condition",
   );
   assert.deepEqual(ids(checkClaim("Clay helped seeds sprout fastest.", SOIL)), ["data-check"]);
+  assert.deepEqual(ids(checkClaim("Carpet let the car roll farthest.", RAMP)), ["data-check"]);
   assert.ok(
     checkClaim("Foil melted the fastest.", ICE).ok,
     "a true claim about the worst condition is not flagged",
@@ -902,7 +922,7 @@ test("every check survives empty, whitespace, very long, emoji and non-English i
   ];
   const runs4 = (f) => f();
   for (const text of odd) {
-    for (const c of [ICE, SOIL]) {
+    for (const c of [ICE, SOIL, RAMP]) {
       const results = [
         [checkQuestion(text, c), [text]],
         [checkHypothesis(text, c), [text]],
