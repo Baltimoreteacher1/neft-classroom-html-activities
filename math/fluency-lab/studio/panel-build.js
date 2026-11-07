@@ -4,6 +4,7 @@
 import { morph, pick } from "./core.js";
 import { record } from "./adaptive.js";
 import { t } from "../i18n.js";
+import { vocabMarkup } from "./vocab-content.js";
 
 const esc = (s) => String(s).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;");
 
@@ -30,8 +31,8 @@ export function mountBuild(ctx, root) {
     r = b.render(state, spec, extra);
     morph(stage, r.svg, { animate: !first });
     first = false;
-    q("[data-prompt]").textContent = pick(prompt, ctx.lang());
-    q("[data-status]").textContent = r.status ? pick(r.status, ctx.lang()) : "";
+    q("[data-prompt]").innerHTML = vocabMarkup(pick(prompt, ctx.lang()));
+    q("[data-status]").innerHTML = r.status ? vocabMarkup(pick(r.status, ctx.lang())) : "";
     const done = b.done(state, spec);
     q("[data-controls]").innerHTML = r.controls.map((c, n) => `<button type="button" class="sd-btn" data-n="${n}">${esc(pick(c.label, ctx.lang()))}</button>`).join("");
     const rec = q("[data-record]");
@@ -48,7 +49,7 @@ export function mountBuild(ctx, root) {
     const res = b.act(state, id, arg, spec);
     state = res.state;
     extra = { tilt: res.tilt || 0 };
-    q("[data-msg]").textContent = res.msg ? pick(res.msg, ctx.lang()) : "";
+    q("[data-msg]").innerHTML = res.msg ? vocabMarkup(pick(res.msg, ctx.lang())) : "";
     if (res.ok) moves.push(label);
     else if (res.tag) record(ctx.key, { kind: "predict", ok: false, supported: false, tag: res.tag });
     draw();

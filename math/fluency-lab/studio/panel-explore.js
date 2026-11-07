@@ -2,6 +2,7 @@
 // always restates the current numbers in words, so the learner can connect what they moved to what changed.
 import { morph, pick } from "./core.js";
 import { t } from "../i18n.js";
+import { vocabMarkup } from "./vocab-content.js";
 
 const esc = (s) => String(s).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;");
 
@@ -26,8 +27,8 @@ export function mountExplore(ctx, root) {
     const r = sim.render(state);
     morph(q("[data-stage]"), r.svg, { animate: !first });
     first = false;
-    q("[data-ask]").textContent = pick(sim.ask, ctx.lang());
-    q("[data-read]").textContent = pick(r.read, ctx.lang());
+    q("[data-ask]").innerHTML = vocabMarkup(pick(sim.ask, ctx.lang()));
+    q("[data-read]").innerHTML = vocabMarkup(pick(r.read, ctx.lang()));
     if (rebuild) sliders();
   }
   root.addEventListener("input", (e) => {

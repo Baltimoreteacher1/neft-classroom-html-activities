@@ -5,6 +5,7 @@ import { framesOf } from "./engines.js";
 import { record } from "./adaptive.js";
 import { t } from "../i18n.js";
 import { speak } from "../speech.js";
+import { vocabMarkup } from "./vocab-content.js";
 
 const reduced = () =>
   typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -57,7 +58,7 @@ export function mountWatch(ctx, root) {
     const f = p && i > 0 ? frames[i - 1] : frames[i];
     morph(stage, f.svg, { animate: !calm });
     q("[data-eq]").textContent = f.eq || "";
-    q("[data-cap]").textContent = caption(f);
+    q("[data-cap]").innerHTML = vocabMarkup(caption(f));
     root.querySelectorAll("[data-dot]").forEach((d, k) => d.classList.toggle("on", k <= (p ? i - 1 : i)));
     q('[data-w="back"]').disabled = i === 0;
     q('[data-w="next"]').disabled = Boolean(gate) || i === frames.length - 1;
@@ -75,7 +76,7 @@ export function mountWatch(ctx, root) {
     q('[data-w="next"]').disabled = true;
     const box = q("[data-predict]");
     box.hidden = false;
-    box.innerHTML = `<p class="sd-q"><span class="sd-tag">${esc(t("Predict"))}</span> ${esc(pick(p.q, ctx.lang()))}</p>
+    box.innerHTML = `<p class="sd-q"><span class="sd-tag">${esc(t("Predict"))}</span> ${vocabMarkup(pick(p.q, ctx.lang()))}</p>
       <div class="sd-choices">${p.choices.map((c, n) => `<button type="button" class="sd-choice" data-c="${n}">${esc(pick(c.t, ctx.lang()))}</button>`).join("")}</div>
       <p class="sd-why" data-why role="status" aria-live="polite"></p>`;
     ctx.say(pick(p.q, ctx.lang()));
@@ -98,7 +99,7 @@ export function mountWatch(ctx, root) {
     const first = !gate.tried;
     gate.tried = true;
     if (first) record(ctx.key, { kind: "predict", ok: c.ok, supported: false, tag: null });
-    why.textContent = `${c.ok ? t("Yes.") : t("Not quite.")} ${pick(c.why, ctx.lang())}`;
+    why.innerHTML = vocabMarkup(`${c.ok ? t("Yes.") : t("Not quite.")} ${pick(c.why, ctx.lang())}`);
     box.querySelectorAll(".sd-choice")[n].classList.add(c.ok ? "sd-right" : "sd-wrong");
     if (!c.ok) return;
     box.querySelectorAll(".sd-choice").forEach((b) => (b.disabled = true));
@@ -106,7 +107,7 @@ export function mountWatch(ctx, root) {
       gate.explained = true;
       why.insertAdjacentHTML(
         "afterend",
-        `<div class="sd-explain" data-explain><p class="sd-q"><span class="sd-tag">${esc(t("Explain"))}</span> ${esc(t("Which sentence says why?"))}</p><div class="sd-choices">${gate.explain.map((e, k) => `<button type="button" class="sd-choice" data-e="${k}">${esc(pick(e.t, ctx.lang()))}</button>`).join("")}</div></div>`,
+        `<div class="sd-explain" data-explain><p class="sd-q"><span class="sd-tag">${esc(t("Explain"))}</span> ${vocabMarkup(t("Which sentence says why?"))}</p><div class="sd-choices">${gate.explain.map((e, k) => `<button type="button" class="sd-choice" data-e="${k}">${esc(pick(e.t, ctx.lang()))}</button>`).join("")}</div></div>`,
       );
       return;
     }
@@ -170,7 +171,7 @@ export function mountWatch(ctx, root) {
     if (w === "all") {
       const list = q("[data-all]");
       list.hidden = !list.hidden;
-      list.innerHTML = list.hidden ? "" : frames.map((f) => `<li>${esc(caption(f))}</li>`).join("");
+      list.innerHTML = list.hidden ? "" : frames.map((f) => `<li>${vocabMarkup(caption(f))}</li>`).join("");
       if (!list.hidden) ctx.mark("explore");
     }
   };
