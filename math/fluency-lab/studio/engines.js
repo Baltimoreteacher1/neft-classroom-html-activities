@@ -151,7 +151,7 @@ export function diagnose(lesson, raw) {
 export const SIM_FOR = {
   "fraction-equivalence": "fracEquiv",
   "fraction-equiv": "fracEquiv",
-  ratios: "proportional",
+  ratios: "ratioTape",
   proportions: "proportional",
   "unit-rates": "proportional",
   "unit-rate": "proportional",

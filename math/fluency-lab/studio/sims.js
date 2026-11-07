@@ -4,6 +4,7 @@
 import { COLORS, L, esc, fmt, gcd, svgWrap, txt } from "./core.js";
 import percentFindWhole from "../../../curriculum/learning-labs/shared/models/percent-find-whole.mjs";
 import percentTape from "../../../curriculum/learning-labs/shared/models/percent-tape.mjs";
+import ratioTapeModel from "../../../curriculum/learning-labs/shared/models/ratio-tape.mjs";
 
 const out = (svg, alt, read, extra = {}) => ({
   svg: svg.replace('aria-label=""', `aria-label="${esc(alt.en)}"`),
@@ -297,6 +298,63 @@ const percentPart = {
   },
 };
 
+const ratioTape = {
+  id: "ratioTape",
+  title: L("Build a ratio tape", "Construye una cinta de razones"),
+  ask: L(
+    "Change either group. Predict how the part-to-part and part-to-whole comparisons will change.",
+    "Cambia cualquiera de los grupos. Predice cómo cambiarán las comparaciones parte a parte y parte a total.",
+  ),
+  init(ctx) {
+    const base = ctx?.lesson?.spec?.base;
+    return {
+      a: Number.isInteger(base?.[0]) && base[0] > 0 ? Math.min(base[0], 12) : 2,
+      b: Number.isInteger(base?.[1]) && base[1] > 0 ? Math.min(base[1], 12) : 3,
+      lang: ctx?.lang?.() === "es" ? "es" : "en",
+    };
+  },
+  sliders: (s) => [
+    slider("a", L("First group", "Primer grupo"), 1, 12, 1, s.a),
+    slider("b", L("Second group", "Segundo grupo"), 1, 12, 1, s.b),
+  ],
+  render(s) {
+    const whole = s.a + s.b;
+    const spanish = s.lang === "es";
+    const first = spanish ? "Grupo A" : "Group A";
+    const second = spanish ? "Grupo B" : "Group B";
+    const labels = {
+      first,
+      second,
+      whole: "Total",
+      relationWord: spanish ? "a" : "to",
+      firstUnit: spanish ? "unidad" : "unit",
+      firstUnitPlural: spanish ? "unidades" : "units",
+      secondUnit: spanish ? "unidad" : "unit",
+      secondUnitPlural: spanish ? "unidades" : "units",
+      wholeUnit: spanish ? "unidad" : "unit",
+      wholeUnitPlural: spanish ? "unidades" : "units",
+      boxUnit: spanish ? "unidad" : "unit",
+      tapeCaption: spanish ? "Una cinta: cada caja representa 1 unidad" : "One tape: every box is 1 unit",
+      partToWholeHint: spanish
+        ? "En una razón parte a total, el total va en segundo lugar."
+        : "For part to whole, put total second.",
+    };
+    const body = `<style>text{fill:#24323f;font-family:system-ui,sans-serif;font-weight:650}.shape{fill:#f9cf55;stroke:#84640c;stroke-width:1.5}.solution{stroke:#17324d;stroke-width:4}.heavy{stroke:#17324d;stroke-width:3}.gridline{stroke:#78909c;stroke-width:1.5}</style>${ratioTapeModel.visual([s.a, s.b], labels)}`;
+    const alt = L(
+      `A tape with ${s.a} units in the first group and ${s.b} in the second. The part-to-part ratio is ${s.a} to ${s.b}; the first group to the total is ${s.a} to ${whole}.`,
+      `Una cinta con ${s.a} unidades en el primer grupo y ${s.b} en el segundo. La razón parte a parte es ${s.a} a ${s.b}; el primer grupo al total es ${s.a} a ${whole}.`,
+    );
+    return out(
+      svgWrap(body, "", { w: 600, h: 300 }),
+      alt,
+      L(
+        `First to second: ${s.a}:${s.b}. First to total: ${s.a}:${whole}. Second to total: ${s.b}:${whole}. The whole is the sum ${s.a} + ${s.b} = ${whole}.`,
+        `Primero a segundo: ${s.a}:${s.b}. Primero al total: ${s.a}:${whole}. Segundo al total: ${s.b}:${whole}. El total es la suma ${s.a} + ${s.b} = ${whole}.`,
+      ),
+    );
+  },
+};
+
 const angles = {
   id: "angles",
   title: L("Angles at a crossing", "Ángulos en un cruce"),
@@ -400,6 +458,6 @@ const dotplot = {
   },
 };
 
-export const SIMS = { fracEquiv, proportional, machine, areaPerim, volume, percentWhole, percentPart, angles, dotplot };
+export const SIMS = { fracEquiv, proportional, machine, areaPerim, volume, percentWhole, percentPart, ratioTape, angles, dotplot };
 export const simFor = (id) => SIMS[id] || null;
 export const _gcd = gcd;

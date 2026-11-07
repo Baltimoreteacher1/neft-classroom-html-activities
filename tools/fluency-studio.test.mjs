@@ -548,6 +548,33 @@ for (const id of Object.values(SIM_FOR)) assert.ok(SIMS[id], `simulator ${id} ex
   assert.match(percentSim.render(percentState).svg, /30 of 100 squares/);
 }
 
+{
+  const ratioItem = { question: "2:3 = 4:□", steps: [] };
+  const ratioLesson = lessonFor(ratioItem);
+  assert.equal(
+    SIM_FOR.ratios,
+    "ratioTape",
+    "ratio practice opens the shared Curriculum tape model",
+  );
+  const ratioSim = SIMS[SIM_FOR.ratios];
+  const ratioState = ratioSim.init({ item: ratioItem, lesson: ratioLesson });
+  assert.deepEqual(
+    ratioState,
+    { a: 2, b: 3, lang: "en" },
+    "the tape starts from the active problem quantities",
+  );
+  const initial = ratioSim.render(ratioState);
+  assert.match(initial.svg, /Group A to group b: 2 : 3/);
+  assert.match(initial.svg, /Group A to total: 2 : 5/);
+  const scaled = ratioSim.render({ a: 4, b: 6 });
+  assert.match(scaled.svg, /Group A to group b: 4 : 6/);
+  assert.match(scaled.read.en, /First to total: 4:10/);
+  assert.doesNotMatch(scaled.svg, /Juice|Water|undefined|NaN/);
+  const spanish = ratioSim.render(ratioSim.init({ lesson: ratioLesson, lang: () => "es" }));
+  assert.match(spanish.svg, /Una cinta: cada caja representa 1 unidad/);
+  assert.match(spanish.svg, /Grupo A a grupo b: 2 : 3/);
+}
+
 // ---------- 3. Parsers decline what they cannot model ----------
 for (const q of [
   "",

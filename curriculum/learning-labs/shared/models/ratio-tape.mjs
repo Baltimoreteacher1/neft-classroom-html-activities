@@ -34,21 +34,28 @@ export default {
     const note = `Juice to water is ${a} : ${b} (part to part). Juice to the whole drink is ${a} : ${whole} (part to whole).`;
     return { value: whole, label: 'Cups in the whole drink', unit: 'cups', equation, note };
   },
-  visual: (values) => {
+  visual: (values, labels = {}) => {
     const [a, b] = values, whole = a + b, bw = W / whole;
+    const first = labels.first ?? 'Juice', second = labels.second ?? 'Water';
+    const wholeName = labels.whole ?? 'Whole drink';
+    const relationWord = labels.relationWord ?? 'to';
+    const firstUnit = labels.firstUnit ?? 'cup', secondUnit = labels.secondUnit ?? 'cup';
+    const quantity = (n, singular, plural = `${singular}s`) => `${n}${singular ? ` ${n === 1 ? singular : plural}` : ''}`;
+    const boxUnit = labels.boxUnit ?? 'cup', boxUnitPlural = labels.boxUnitPlural ?? 'cups';
+    const wholeUnit = labels.wholeUnit ?? boxUnit, wholeUnitPlural = labels.wholeUnitPlural ?? boxUnitPlural;
     let body = '<defs><pattern id="rt-hatch" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="8" height="8" fill="#ffffff"/><line x1="0" y1="0" x2="0" y2="8" stroke="#17344b" stroke-width="3"/></pattern></defs>';
-    body += t(300, 22, 'One tape: every box is 1 cup');
+    body += t(300, 22, labels.tapeCaption ?? `One tape: every box is 1 ${boxUnit}`);
     for (let i = 0; i < whole; i++) {
       const x = X0 + i * bw + 1;
       body += i < a ? rect(x, 36, bw - 2, 36, 'shape') : `<rect x="${x}" y="36" width="${bw - 2}" height="36" fill="url(#rt-hatch)" stroke="#17344b" stroke-width="1.5" rx="3"/>`;
     }
     const mid = X0 + a * bw;
-    body += bracket(X0 + 1, mid - 1, 86) + t((X0 + mid) / 2, 108, `Juice: ${a} ${cups(a)}`);
-    body += bracket(mid + 1, X0 + W - 1, 86) + t((mid + X0 + W) / 2, 108, `Water: ${b} ${cups(b)}`);
-    body += bracket(X0 + 1, X0 + W - 1, 124) + t(300, 146, `Whole drink: ${whole} ${cups(whole)}`);
-    body += t(300, 186, `Juice to water: ${a} : ${b}`) + t(300, 208, `Juice to whole drink: ${a} : ${whole}`) + t(300, 230, `Water to whole drink: ${b} : ${whole}`);
-    body += t(300, 254, 'Part to whole puts the whole drink second.');
-    body += rect(150, 270, 22, 16, 'shape') + t(180, 283, 'juice', 'start') + `<rect x="300" y="270" width="22" height="16" fill="url(#rt-hatch)" stroke="#17344b" stroke-width="1.5" rx="3"/>` + t(330, 283, 'water', 'start');
+    body += bracket(X0 + 1, mid - 1, 86) + t((X0 + mid) / 2, 108, `${first}: ${quantity(a, firstUnit, labels.firstUnitPlural ?? `${firstUnit}s`)}`);
+    body += bracket(mid + 1, X0 + W - 1, 86) + t((mid + X0 + W) / 2, 108, `${second}: ${quantity(b, secondUnit, labels.secondUnitPlural ?? `${secondUnit}s`)}`);
+    body += bracket(X0 + 1, X0 + W - 1, 124) + t(300, 146, `${wholeName}: ${quantity(whole, wholeUnit, wholeUnitPlural)}`);
+    body += t(300, 186, `${first} ${relationWord} ${second.toLowerCase()}: ${a} : ${b}`) + t(300, 208, `${first} ${relationWord} ${wholeName.toLowerCase()}: ${a} : ${whole}`) + t(300, 230, `${second} ${relationWord} ${wholeName.toLowerCase()}: ${b} : ${whole}`);
+    body += t(300, 254, labels.partToWholeHint ?? `For part to whole, put ${wholeName.toLowerCase()} second.`);
+    body += rect(150, 270, 22, 16, 'shape') + t(180, 283, first.toLowerCase(), 'start') + `<rect x="300" y="270" width="22" height="16" fill="url(#rt-hatch)" stroke="#17344b" stroke-width="1.5" rx="3"/>` + t(330, 283, second.toLowerCase(), 'start');
     return body;
   },
   guidance: [
