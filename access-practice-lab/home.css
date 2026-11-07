@@ -5,15 +5,16 @@
 .weekly-goal,
 .student-family-note,
 .session-finish {
-  border: 1px solid var(--line, #d7e1e8);
-  border-radius: 1rem;
-  padding: clamp(1rem, 3vw, 1.5rem);
-  background: linear-gradient(135deg, #fff 0%, #f3f8f6 100%);
+  border: 1px solid rgb(226 232 240 / 85%);
+  border-radius: var(--radius, 16px);
+  padding: clamp(1.25rem, 3vw, 1.85rem);
+  background: linear-gradient(135deg, #ffffff 0%, var(--surface-2, #f8fafc) 100%);
+  box-shadow: 0 1px 3px 0 rgb(15 23 42 / 4%), 0 8px 24px -8px rgb(15 23 42 / 4%);
 }
-.weekly-goal { display: flex; align-items: center; justify-content: space-between; gap: 1.25rem; flex-wrap: wrap; }
+.weekly-goal { display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; flex-wrap: wrap; }
 .weekly-goal h2 { margin: .2rem 0 .5rem; }
-.weekly-goal .field { min-width: min(100%, 13rem); }
-.goal-done, .reward-chip { display: inline-flex; align-items: center; gap: .5rem; border-radius: 999px; padding: .6rem .9rem; background: #e4f4e7; color: #14532d; font-weight: 700; }
+.weekly-goal .field { min-width: min(100%, 14rem); }
+.goal-done, .reward-chip { display: inline-flex; align-items: center; gap: .5rem; border-radius: 9999px; padding: .6rem 1rem; background: var(--right-soft, #e7f1ea); color: var(--right, #276152); font-weight: 700; border: 1px solid rgb(39 97 82 / 20%); }
 
 .student-family-note { margin: 1rem 0; border-inline-start: .35rem solid var(--writing, #c94f3b); }
 .student-family-note p { margin: .4rem 0; font-size: 1.1rem; }
@@ -259,17 +260,19 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  border: 1px solid var(--line);
-  border-radius: var(--r-lg);
+  border: 1px solid rgb(226 232 240 / 85%);
+  border-radius: var(--r-lg, 20px);
   background: var(--surface);
-  box-shadow: var(--shadow);
+  box-shadow: 0 1px 3px 0 rgb(15 23 42 / 4%), 0 8px 24px -8px rgb(15 23 42 / 5%);
   transition:
-    transform 0.2s cubic-bezier(0.22, 1, 0.36, 1),
-    box-shadow 0.2s;
+    transform 0.22s cubic-bezier(0.2, 0, 0, 1),
+    box-shadow 0.22s cubic-bezier(0.2, 0, 0, 1),
+    border-color 0.22s ease;
 }
 .room-tile:hover {
-  transform: translateY(-3px);
-  box-shadow: var(--shadow-lift);
+  transform: translateY(-4px);
+  border-color: var(--room);
+  box-shadow: 0 12px 28px -6px rgb(15 23 42 / 12%), 0 0 0 1px var(--room);
 }
 .room-art {
   display: block;
@@ -348,14 +351,21 @@
   align-items: center;
   gap: var(--s-3);
   padding: var(--s-4);
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
+  border: 1px solid rgb(226 232 240 / 85%);
+  border-radius: var(--radius, 16px);
   background: var(--surface);
   color: var(--ink);
   text-decoration: none;
+  box-shadow: 0 1px 3px 0 rgb(15 23 42 / 4%);
   transition:
-    border-color 0.15s,
-    box-shadow 0.15s;
+    transform 0.2s cubic-bezier(0.2, 0, 0, 1),
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+.studio-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--brand);
+  box-shadow: 0 8px 24px -4px rgb(29 43 88 / 12%);
 }
 .studio-card > .ico {
   box-sizing: content-box;
@@ -365,6 +375,7 @@
   border-radius: 14px;
   background: var(--brand-soft);
   color: var(--brand-ink);
+  flex: none;
 }
 .studio-card > span {
   display: grid;
@@ -372,15 +383,12 @@
 }
 .studio-card strong {
   font-size: 1.0625rem;
+  color: var(--ink);
 }
 .studio-card > span > span {
   color: var(--ink-2);
   font-size: 0.9375rem;
   line-height: 1.4;
-}
-.studio-card:hover {
-  border-color: var(--brand);
-  box-shadow: var(--shadow);
 }
 .klu-practice {
   margin-top: var(--s-5);

@@ -11,10 +11,10 @@
  * The block between the build markers is written by tools/sync-access-shell.mjs; do not edit it by hand.
  */
 /* build:begin */
-const BUILD_HASH = "03edbd9d1893";
+const BUILD_HASH = "2dbc92082601";
 const PRECACHE_CORE = [
-  "/access-practice-lab/ds.css?v=b0d87c8cae45",
-  "/access-practice-lab/home.css?v=6e41b83e053c",
+  "/access-practice-lab/ds.css?v=ab8f53c5bc5c",
+  "/access-practice-lab/home.css?v=d4e1a1fc5829",
   "/access-practice-lab/home-start.css?v=175b5dc59783",
   "/access-practice-lab/progress.css?v=495417576064",
   "/access-practice-lab/studios.css?v=1e0aed4fc0a6",
@@ -133,10 +133,10 @@ const PRECACHE_MORE = [
   "/access-practice-lab/games-i.css?v=4d1ff8d642ce",
   "/access-practice-lab/labs.css?v=70e4170c8ffa",
   "/access-practice-lab/acc-engine.css?v=e504062aeb39",
-  "/access-practice-lab/path.css?v=1e22a4e28e5d",
+  "/access-practice-lab/path.css?v=95e1a443bf59",
   "/access-practice-lab/scaffold.css?v=99b2f6576ff7",
-  "/access-practice-lab/science-of-reading.css?v=51d7466c650b",
-  "/access-practice-lab/language-studios.css?v=aafc308352aa",
+  "/access-practice-lab/science-of-reading.css?v=d1db717cd40f",
+  "/access-practice-lab/language-studios.css?v=11518b4c9ed2",
   "/access-practice-lab/src/acc/adapt/assign.js?v=f2685971bc05",
   "/access-practice-lab/src/acc/adapt/mastery.js?v=6f68f26cce40",
   "/access-practice-lab/src/acc/analytics/evidence.js?v=f7255a9c4954",
@@ -429,7 +429,7 @@ const PRECACHE_MORE = [
   "/access-practice-lab/src/views/science-lab-ui.js?v=ba750bf19611",
   "/access-practice-lab/src/views/science-lab-work.js?v=98c21730716f",
   "/access-practice-lab/src/views/science-lab.js?v=5b74c1e9b1fb",
-  "/access-practice-lab/src/views/science-of-reading.js?v=4a58b03a8a3a",
+  "/access-practice-lab/src/views/science-of-reading.js?v=ee691df8ffa6",
   "/access-practice-lab/src/views/shields.js?v=fd63ffdffcf9",
   "/access-practice-lab/src/views/speak.js?v=a89c3cabcf3c",
   "/access-practice-lab/src/views/stories.js?v=fe89bdea0410",

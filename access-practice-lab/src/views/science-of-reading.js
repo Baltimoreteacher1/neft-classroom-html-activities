@@ -8,10 +8,7 @@
 //   - Morphology & Multilingual Cognate Bridges for English Learners
 
 import { crumbsHTML } from "../components.js";
-import { BASE, ICONS, esc, html, icon } from "../util.js";
-
-// Plain-string icon for the template-string markup in this file.
-const ico = (name) => `<svg class="ico" aria-hidden="true" focusable="false"><use href="${ICONS}#${name}"></use></svg>`;
+import { BASE, esc, html, icon } from "../util.js";
 
 // --- 1. The Simple View of Reading (SVR) Models ---
 export const SVR_PROFILES = [
@@ -27,30 +24,29 @@ export const SVR_PROFILES = [
     label: "Dyslexic Profile",
     d: 25,
     lc: 85,
-    desc: "Strong oral language and conceptual understanding, but struggles with phonological decoding and word recognition. Multiplicative product limits overall comprehension.",
+    desc: "Specific decoding weakness paired with average or high oral language comprehension. Needs explicit, systematic phonics & orthographic mapping.",
   },
   {
     id: "hyperlexia",
     label: "Hyperlexic Profile",
     d: 90,
-    lc: 30,
-    desc: "High decoding accuracy and rapid word reading, but struggles with vocabulary, inference, and syntax comprehension.",
+    lc: 25,
+    desc: "Accurate, rapid word recognition paired with significant deficits in oral language comprehension, vocabulary, and linguistic inference.",
   },
   {
-    id: "el",
-    label: "Multilingual Learner (Developing)",
-    d: 65,
-    lc: 45,
-    desc: "Developing English phonology and vocabulary. Benefits tremendously from explicit phonics paired with rich background knowledge and cognate transfer.",
+    id: "mixed",
+    label: "Mixed Reading Difficulty",
+    d: 30,
+    lc: 35,
+    desc: "Both decoding and language comprehension are depressed. Needs simultaneous, dual-track intervention across foundational phonics and rich oral language.",
   },
 ];
 
-// --- 2. Ehri's Phases of Word Reading Development ---
 export const EHRI_PHASES = [
   {
     phase: "1. Pre-Alphabetic",
     focus: "Visual & Environmental Cues",
-    characteristics: "Reads signs or logos based on visual context (e.g., recognizing McDonald's by golden arches) with no letter-sound connection.",
+    characteristics: "Reads signs or logos based on visual context (e.g., recognizing logos) with no letter-sound connection.",
     instruction: "Phonological awareness games, rhyming, listening for beginning sounds, letter identification.",
   },
   {
@@ -73,159 +69,198 @@ export const EHRI_PHASES = [
   },
 ];
 
-// --- 3. Scarborough's Reading Rope Data ---
+// --- 2. Scarborough's Reading Rope Strands ---
 export const ROPE_STRANDS = {
   upper: {
-    title: "Language Comprehension (Increasingly Strategic)",
-    color: "#2563eb",
+    title: "Language Comprehension",
+    subtitle: "Increasingly Strategic over time",
     strands: [
-      { id: "bg-knowledge", name: "Background Knowledge", desc: "Facts, concepts, and schema about the world that anchor text comprehension.", examples: "Domain immersion, science experiments, cultural context" },
-      { id: "vocabulary", name: "Vocabulary (Breadth & Depth)", desc: "Receptive and expressive vocabulary, word relationships, and Tier 2 academic terms.", examples: "Semantic mapping, morphology, multiple-meaning words" },
-      { id: "language-structures", name: "Language Structures (Syntax & Semantics)", desc: "Grammatical conventions, complex syntax, sentence boundaries, and cohesive devices.", examples: "Fronted adverbials, passive voice, relative clauses" },
-      { id: "verbal-reasoning", name: "Verbal Reasoning (Inference & Metaphor)", desc: "Reading between the lines, evaluating cause/effect, and understanding figurative language.", examples: "Similes, analogies, drawing logical conclusions" },
-      { id: "literacy-knowledge", name: "Literacy Knowledge (Print Concepts & Genres)", desc: "Text structures, narrative vs expository text, authors' craft, and text features.", examples: "Headings, indices, story elements, dialogue tags" },
+      {
+        name: "Background Knowledge",
+        desc: "Schema, concepts, factual foundations, and life experiences that make new texts comprehensible.",
+        examples: "Explicit pre-teaching, concept maps, virtual field trips, culturally responsive texts.",
+      },
+      {
+        name: "Vocabulary",
+        desc: "Breadth, depth, and precision of lexical understanding, including academic Tier 2/3 words.",
+        examples: "Semantic word webs, student-friendly definitions, morphological root study.",
+      },
+      {
+        name: "Language Structures",
+        desc: "Syntax (sentence grammar, clause order) and semantics (how word arrangements produce meaning).",
+        examples: "Sentence anagrams, subordinating conjunction ladders, passive-to-active transformations.",
+      },
+      {
+        name: "Verbal Reasoning",
+        desc: "Inferencing, metaphor, figurative idioms, and distinguishing literal vs. non-literal meaning.",
+        examples: "Think-aloud inference modeling, idiom bridge cards, evidence-reasoning stems.",
+      },
+      {
+        name: "Literacy Knowledge",
+        desc: "Print concepts, textual discourse structures, genre expectations, and bibliographic awareness.",
+        examples: "Text structure analysis (problem/solution, cause/effect, chronological recount).",
+      },
     ],
   },
   lower: {
-    title: "Word Recognition (Increasingly Automatic)",
-    color: "#059669",
+    title: "Word Recognition",
+    subtitle: "Increasingly Automatic over time",
     strands: [
-      { id: "phonological-awareness", name: "Phonological Awareness", desc: "Awareness of the sound structure of spoken language: syllables, onsets, rimes, and phonemic awareness.", examples: "Phoneme segmenting, blending, isolation, manipulation" },
-      { id: "decoding", name: "Decoding (Phonics & Alphabetic Principle)", desc: "Connecting graphemes (letters) to phonemes (sounds) and blending to read unfamiliar words.", examples: "Sound-spelling correspondences, syllable division, decodable text" },
-      { id: "sight-recognition", name: "Sight Recognition (Orthographic Mapping)", desc: "Instant, effortless retrieval of familiar words permanently bonded in lexical memory.", examples: "Orthographic mapping, high-frequency irregular words, automaticity" },
+      {
+        name: "Phonological Awareness",
+        desc: "Metalinguistic sensitivity to speech sounds: syllables, onsets/rimes, and individual phonemes.",
+        examples: "Oral phoneme segmentation, sound deletion & substitution drills, Elkonin chip sliding.",
+      },
+      {
+        name: "Decoding",
+        desc: "The alphabetic principle: translating printed graphemes into speech sounds and blending them.",
+        examples: "Systematic, explicit synthetic phonics scope and sequence, blending routines.",
+      },
+      {
+        name: "Sight Recognition",
+        desc: "Instant, effortless recognition of familiar words via orthographic mapping (not visual memory).",
+        examples: "Orthographic mapping routines, phoneme-grapheme mapping, Heart Word strategies.",
+      },
     ],
   },
 };
 
-// --- 4. Vowel Valley & Sound Wall Data ---
+// --- 3. Vowel Valley & Sound Wall Data ---
 export const VOWEL_VALLEY = [
-  { phoneme: "/ē/", example: "see", mouth: "Smile / High Front", sound: "ee", shape: "smile" },
-  { phoneme: "/ĭ/", example: "sit", mouth: "Relaxed / High Front", sound: "ih", shape: "smile" },
-  { phoneme: "/ā/", example: "say", mouth: "Mid Front", sound: "ay", shape: "mid" },
-  { phoneme: "/ĕ/", example: "bed", mouth: "Mid-Low Front", sound: "eh", shape: "mid" },
-  { phoneme: "/ă/", example: "cat", mouth: "Low Front / Open", sound: "ah-short", shape: "open" },
-  { phoneme: "/ä/", example: "father", mouth: "Lowest / Open Jaw", sound: "ah", shape: "open-wide" },
-  { phoneme: "/ŏ/", example: "hot", mouth: "Low Back / Rounded", sound: "aw", shape: "round" },
-  { phoneme: "/ō/", example: "boat", mouth: "Mid Back / Rounded", sound: "oh", shape: "round" },
-  { phoneme: "/o͝o/", example: "book", mouth: "High-Mid Back / Pursed", sound: "uu", shape: "pursed" },
-  { phoneme: "/o͞o/", example: "moon", mouth: "High Back / Tight Circle", sound: "oo", shape: "tight-round" },
-  { phoneme: "/ŭ/", example: "cup", mouth: "Center / Neutral Jaw", sound: "uh", shape: "neutral" },
-  { phoneme: "/ər/", example: "bird", mouth: "Center / R-Controlled", sound: "er", shape: "r-curl" },
+  { phoneme: "/ē/", example: "see", mouth: "Front · High · Smile", shape: "smile" },
+  { phoneme: "/ĭ/", example: "sit", mouth: "Front · Mid-High · Slight Smile", shape: "smile" },
+  { phoneme: "/ā/", example: "make", mouth: "Front · Mid · Relaxed", shape: "smile" },
+  { phoneme: "/ĕ/", example: "bed", mouth: "Front · Mid-Low · Dropped", shape: "open" },
+  { phoneme: "/ă/", example: "cat", mouth: "Front · Low · Open", shape: "open" },
+  { phoneme: "/ī/", example: "ice", mouth: "Gliding Diphthong · Low to High", shape: "open" },
+  { phoneme: "/ŏ/", example: "pot", mouth: "Bottom of Valley · Widest Open", shape: "open-wide" },
+  { phoneme: "/ŭ/", example: "cup", mouth: "Center · Relaxed Jaw / Schwa", shape: "open" },
+  { phoneme: "/aw/", example: "saw", mouth: "Back · Low · Oval Round", shape: "round" },
+  { phoneme: "/ō/", example: "boat", mouth: "Back · Mid · Round", shape: "round" },
+  { phoneme: "/oo/", example: "book", mouth: "Back · Mid-High · Tight Round", shape: "tight-round" },
+  { phoneme: "/ū/", example: "moon", mouth: "Back · High · Pursed Lips", shape: "pursed" },
+  { phoneme: "/yū/", example: "music", mouth: "Diphthong · Palatal to High Back", shape: "pursed" },
 ];
 
 export const CONSONANT_CATEGORIES = [
   {
     manner: "Stops (Plosives)",
-    desc: "Airflow is completely blocked, then released in a quick burst.",
+    desc: "Airflow is completely blocked and then released with a puff of sound.",
     pairs: [
-      { unvoiced: "/p/ (pan)", voiced: "/b/ (bat)" },
-      { unvoiced: "/t/ (top)", voiced: "/d/ (dog)" },
-      { unvoiced: "/k/ (kite)", voiced: "/g/ (go)" },
+      { unvoiced: "/p/ (unvoiced)", voiced: "/b/ (voiced)" },
+      { unvoiced: "/t/ (unvoiced)", voiced: "/d/ (voiced)" },
+      { unvoiced: "/k/ (unvoiced)", voiced: "/g/ (voiced)" },
     ],
   },
   {
-    manner: "Fricatives (Continuous Air)",
-    desc: "Air is forced through a narrow channel, making continuous friction.",
+    manner: "Nasals",
+    desc: "Air passes continuously through the nose; mouth is closed. (All voiced)",
+    pairs: [
+      { unvoiced: "/m/ (bilabial)", voiced: "map, drum" },
+      { unvoiced: "/n/ (alveolar)", voiced: "nest, pen" },
+      { unvoiced: "/ng/ (velar)", voiced: "sing, ring" },
+    ],
+  },
+  {
+    manner: "Fricatives",
+    desc: "Air is forced through a narrow constriction, creating friction/hiss.",
     pairs: [
       { unvoiced: "/f/ (fan)", voiced: "/v/ (van)" },
-      { unvoiced: "/th/ (think)", voiced: "/th/ (they)" },
-      { unvoiced: "/s/ (sun)", voiced: "/z/ (zoo)" },
+      { unvoiced: "/th/ unvoiced (thumb)", voiced: "/th/ voiced (feather)" },
+      { unvoiced: "/s/ (sun)", voiced: "/z/ (zebra)" },
       { unvoiced: "/sh/ (ship)", voiced: "/zh/ (measure)" },
-      { unvoiced: "/h/ (hat)", voiced: "—" },
+      { unvoiced: "/h/ (hat - unvoiced only)", voiced: "glottal whisper" },
     ],
   },
   {
-    manner: "Affricates (Stop + Friction)",
-    desc: "Starts as a stop and releases with a slow friction burst.",
+    manner: "Affricates",
+    desc: "A stop immediately followed by a fricative.",
     pairs: [
-      { unvoiced: "/ch/ (chin)", voiced: "/j/ (jam)" },
-    ],
-  },
-  {
-    manner: "Nasals (Air through Nose)",
-    desc: "Mouth is closed; air resonates through the nasal cavity.",
-    pairs: [
-      { unvoiced: "—", voiced: "/m/ (mat)" },
-      { unvoiced: "—", voiced: "/n/ (net)" },
-      { unvoiced: "—", voiced: "/ng/ (sing)" },
+      { unvoiced: "/ch/ (chin - unvoiced)", voiced: "/j/ (jump - voiced)" },
     ],
   },
   {
     manner: "Glides & Liquids",
-    desc: "Smooth vowel-like airflow with tongue position shaping the sound.",
+    desc: "Vowel-like airflow through oral cavity. (All voiced)",
     pairs: [
-      { unvoiced: "/wh/ (whistle)", voiced: "/w/ (win)" },
-      { unvoiced: "—", voiced: "/y/ (yes)" },
-      { unvoiced: "—", voiced: "/l/ (lip)" },
-      { unvoiced: "—", voiced: "/r/ (run)" },
+      { unvoiced: "/w/ (wind)", voiced: "/wh/ (whisper)" },
+      { unvoiced: "/y/ (yellow)", voiced: "palatal glide" },
+      { unvoiced: "/l/ (liquid - lip)", voiced: "/r/ (liquid - red)" },
     ],
   },
 ];
 
-// --- 5. Orthographic Mapping Words ---
+// --- 4. Orthographic Mapping / Heart Words Database ---
 export const MAPPING_WORDS = {
   said: {
     word: "said",
     sounds: ["/s/", "/ĕ/", "/d/"],
     letters: ["s", "ai", "d"],
     hearts: [1],
-    heartNote: "'ai' makes the unexpected short-e /ĕ/ sound. The 's' and 'd' are fully regular!",
-  },
-  could: {
-    word: "could",
-    sounds: ["/k/", "/o͝o/", "/d/"],
-    letters: ["c", "oul", "d"],
-    hearts: [1],
-    heartNote: "'oul' makes the short /o͝o/ sound (as in book) with silent 'l'.",
-  },
-  they: {
-    word: "they",
-    sounds: ["/th/", "/ā/"],
-    letters: ["th", "ey"],
-    hearts: [1],
-    heartNote: "'ey' makes the long-a /ā/ sound instead of the typical /ē/.",
-  },
-  heart: {
-    word: "heart",
-    sounds: ["/h/", "/ar/", "/t/"],
-    letters: ["h", "ear", "t"],
-    hearts: [1],
-    heartNote: "'ear' makes the /ar/ sound (like car) instead of /eer/ or /er/.",
+    heartNote: "The 'ai' represents the short /ĕ/ sound instead of the regular /ā/ sound. Learn 'ai' = /ĕ/ by heart!",
   },
   from: {
     word: "from",
     sounds: ["/f/", "/r/", "/ŭ/", "/m/"],
     letters: ["f", "r", "o", "m"],
     hearts: [2],
-    heartNote: "'o' makes the short /ŭ/ sound (like cup).",
+    heartNote: "The vowel 'o' spells the short /ŭ/ sound (schwa-like) instead of short /ŏ/.",
+  },
+  they: {
+    word: "they",
+    sounds: ["/th/", "/ā/"],
+    letters: ["th", "ey"],
+    hearts: [1],
+    heartNote: "The digraph 'ey' spells the long /ā/ sound (like in 'hey' and 'obey').",
+  },
+  what: {
+    word: "what",
+    sounds: ["/w/", "/ŭ/", "/t/"],
+    letters: ["wh", "a", "t"],
+    hearts: [1],
+    heartNote: "The letter 'a' makes the short /ŭ/ (schwa) sound.",
+  },
+  where: {
+    word: "where",
+    sounds: ["/w/", "/air/"],
+    letters: ["wh", "ere"],
+    hearts: [1],
+    heartNote: "The 'ere' makes the /air/ r-controlled sound.",
+  },
+  could: {
+    word: "could",
+    sounds: ["/k/", "/oo/", "/d/"],
+    letters: ["c", "oul", "d"],
+    hearts: [1],
+    heartNote: "The trigraph 'oul' represents the short /oo/ sound with a silent 'l'.",
+  },
+  because: {
+    word: "because",
+    sounds: ["/b/", "/ē/", "/k/", "/aw/", "/z/"],
+    letters: ["b", "e", "c", "au", "se"],
+    hearts: [4],
+    heartNote: "The 'se' makes the voiced /z/ sound at the end of the word.",
   },
   friend: {
     word: "friend",
     sounds: ["/f/", "/r/", "/ĕ/", "/n/", "/d/"],
     letters: ["f", "r", "ie", "n", "d"],
     hearts: [2],
-    heartNote: "'ie' makes the short-e /ĕ/ sound with silent 'i'.",
+    heartNote: "The 'ie' vowel team makes the short /ĕ/ sound rather than long /ē/ or /ī/.",
   },
-  cat: {
-    word: "cat",
-    sounds: ["/k/", "/ă/", "/t/"],
-    letters: ["c", "a", "t"],
-    hearts: [],
-    heartNote: "Fully decodable regular CVC word: every letter maps directly to its common sound.",
+  heart: {
+    word: "heart",
+    sounds: ["/h/", "/ar/", "/t/"],
+    letters: ["h", "ear", "t"],
+    hearts: [1],
+    heartNote: "The 'ear' team makes the /ar/ sound instead of the common /eer/ or /er/.",
   },
-  ship: {
-    word: "ship",
-    sounds: ["/sh/", "/ĭ/", "/p/"],
-    letters: ["sh", "i", "p"],
-    hearts: [],
-    heartNote: "Fully decodable: consonant digraph 'sh' makes one phoneme.",
-  },
-  catch: {
-    word: "catch",
-    sounds: ["/k/", "/ă/", "/ch/"],
-    letters: ["c", "a", "tch"],
-    hearts: [],
-    heartNote: "Fully decodable: trigraph 'tch' follows a short vowel.",
+  people: {
+    word: "people",
+    sounds: ["/p/", "/ē/", "/p/", "/l/"],
+    letters: ["p", "eo", "p", "le"],
+    hearts: [1],
+    heartNote: "The digraph 'eo' makes the long /ē/ sound.",
   },
   train: {
     word: "train",
@@ -243,7 +278,7 @@ export const MAPPING_WORDS = {
   },
 };
 
-// --- 6. The 6 Syllable Types & Syllable Division Chopper ---
+// --- 5. The 6 Syllable Types & Syllable Division Chopper ---
 export const SYLLABLE_TYPES = [
   { id: "closed", code: "C", name: "Closed Syllable", rule: "One vowel followed by one or more consonants. The vowel is short (ă, ĕ, ĭ, ŏ, ŭ).", examples: ["cat", "nap-kin", "pic-nic", "sub-mit"] },
   { id: "open", code: "O", name: "Open Syllable", rule: "Ends in a single vowel. The vowel is long and says its name (ā, ē, ī, ō, ū).", examples: ["me", "ti-ger", "ro-bot", "mu-sic"] },
@@ -262,7 +297,7 @@ export const CHOPPER_WORDS = [
   { word: "candle", parts: ["can", "dle"], splitIndex: 3, rule: "Consonant-le (Turtle Rule)", explain: "Count back 3 letters from the end for consonant + -le: can | dle" },
 ];
 
-// --- 7. Morphology Matrix Data with Spanish Cognates ---
+// --- 6. Morphology Matrix Data with Spanish Cognates ---
 export const MORPH_PREFIXES = [
   { aff: "re-", meaning: "again, back", example: "rebuild" },
   { aff: "un-", meaning: "not, opposite of", example: "unlock" },
@@ -302,68 +337,87 @@ let state = {
   morphSuffix: 0, // -tion
   svrD: 75,
   svrLC: 80,
+  svrActiveProfile: "typical",
 };
 
-// --- SVG Rendering Helpers ---
+// --- SVG Rendering for Scarborough's Rope ---
+// Clean, professional layout where text labels NEVER overlap the Bezier ribbon curves!
 function renderRopeSvg(tightness) {
-  // tightness 0 (loose/early) -> 100 (tight/skilled)
   const factor = tightness / 100;
-  const upperY = 135 - factor * 10;
-  const lowerY = 145 + factor * 10;
+  // Curves weave across center and converge at the right
+  const upperTargetY = 150 - factor * 8;
+  const lowerTargetY = 170 + factor * 8;
 
   return `
-    <svg viewBox="0 0 760 290" class="sor-rope-svg" role="img" aria-label="Scarborough's Reading Rope interactive diagram">
+    <svg viewBox="0 0 940 320" class="sor-rope-svg" role="img" aria-label="Scarborough's Reading Rope interactive diagram">
       <defs>
-        <linearGradient id="gradLang" x1="0%" y1="0%" x2="100%" y2="0%">
+        <linearGradient id="gradLangRope" x1="0%" y1="0%" x2="100%" y2="0%">
           <stop offset="0%" stop-color="#3b82f6"/>
           <stop offset="100%" stop-color="#1d4ed8"/>
         </linearGradient>
-        <linearGradient id="gradWord" x1="0%" y1="0%" x2="100%" y2="0%">
+        <linearGradient id="gradWordRope" x1="0%" y1="0%" x2="100%" y2="0%">
           <stop offset="0%" stop-color="#10b981"/>
           <stop offset="100%" stop-color="#047857"/>
         </linearGradient>
-        <linearGradient id="gradSkilled" x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%" stop-color="#4f46e5"/>
-          <stop offset="50%" stop-color="#0891b2"/>
-          <stop offset="100%" stop-color="#047857"/>
+        <linearGradient id="gradSkilledRope" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#1d4ed8"/>
+          <stop offset="50%" stop-color="#0f766e"/>
+          <stop offset="100%" stop-color="#d97706"/>
         </linearGradient>
         <filter id="sorShadow" x="-10%" y="-10%" width="120%" height="120%">
-          <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.15"/>
+          <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.12"/>
         </filter>
       </defs>
 
-      <!-- Upper Braids: Language Comprehension (Strategic) -->
+      <!-- Background Zone Identifiers -->
+      <rect x="15" y="15" width="245" height="135" rx="10" fill="#f0f7ff" stroke="#dbeafe" stroke-width="1"/>
+      <rect x="15" y="170" width="245" height="135" rx="10" fill="#f0fdf9" stroke="#ccfbf1" stroke-width="1"/>
+
+      <!-- Section Headers -->
+      <text x="25" y="32" font-size="11" font-weight="800" fill="#1e40af" letter-spacing="0.5">LANGUAGE COMPREHENSION</text>
+      <text x="25" y="187" font-size="11" font-weight="800" fill="#065f46" letter-spacing="0.5">WORD RECOGNITION</text>
+
+      <!-- Upper Strand Labels (x=25..250) -->
+      <text x="25" y="52" font-size="10.5" font-weight="700" fill="#1e3a8a">1. Background Knowledge</text>
+      <text x="25" y="74" font-size="10.5" font-weight="700" fill="#1e3a8a">2. Vocabulary Breadth</text>
+      <text x="25" y="96" font-size="10.5" font-weight="700" fill="#1e3a8a">3. Language Structures</text>
+      <text x="25" y="118" font-size="10.5" font-weight="700" fill="#1e3a8a">4. Verbal Reasoning</text>
+      <text x="25" y="140" font-size="10.5" font-weight="700" fill="#1e3a8a">5. Literacy Knowledge</text>
+
+      <!-- Lower Strand Labels (x=25..250) -->
+      <text x="25" y="210" font-size="10.5" font-weight="700" fill="#064e3b">1. Phonological Awareness</text>
+      <text x="25" y="240" font-size="10.5" font-weight="700" fill="#064e3b">2. Decoding &amp; Phonics</text>
+      <text x="25" y="270" font-size="10.5" font-weight="700" fill="#064e3b">3. Sight Word Recognition</text>
+
+      <!-- Upper Braids: Flow from x=260 to x=640 -->
       <g filter="url(#sorShadow)">
-        <path d="M 40,25 C 240,${25 + factor * 50} 380,${85 + factor * 40} 490,${upperY}" fill="none" stroke="#60a5fa" stroke-width="${4 + factor * 2}" stroke-linecap="round"/>
-        <path d="M 40,50 C 240,${50 + factor * 45} 380,${95 + factor * 35} 490,${upperY + 4}" fill="none" stroke="#3b82f6" stroke-width="${4 + factor * 2}" stroke-linecap="round"/>
-        <path d="M 40,75 C 240,${75 + factor * 40} 380,${105 + factor * 30} 490,${upperY + 8}" fill="none" stroke="#2563eb" stroke-width="${4 + factor * 2}" stroke-linecap="round"/>
-        <path d="M 40,100 C 240,${100 + factor * 35} 380,${115 + factor * 25} 490,${upperY + 12}" fill="none" stroke="#1d4ed8" stroke-width="${4 + factor * 2}" stroke-linecap="round"/>
-        <path d="M 40,125 C 240,${125 + factor * 25} 380,${125 + factor * 15} 490,${upperY + 16}" fill="none" stroke="#1e40af" stroke-width="${4 + factor * 2}" stroke-linecap="round"/>
+        <path d="M 260,48 C 380,${48 + factor * 45} 500,${95 + factor * 35} 640,${upperTargetY}" fill="none" stroke="#60a5fa" stroke-width="${4.5 + factor * 2}" stroke-linecap="round"/>
+        <path d="M 260,70 C 380,${70 + factor * 40} 500,${105 + factor * 30} 640,${upperTargetY + 3}" fill="none" stroke="#3b82f6" stroke-width="${4.5 + factor * 2}" stroke-linecap="round"/>
+        <path d="M 260,92 C 380,${92 + factor * 35} 500,${115 + factor * 25} 640,${upperTargetY + 6}" fill="none" stroke="#2563eb" stroke-width="${4.5 + factor * 2}" stroke-linecap="round"/>
+        <path d="M 260,114 C 380,${114 + factor * 30} 500,${125 + factor * 20} 640,${upperTargetY + 9}" fill="none" stroke="#1d4ed8" stroke-width="${4.5 + factor * 2}" stroke-linecap="round"/>
+        <path d="M 260,136 C 380,${136 + factor * 20} 500,${135 + factor * 12} 640,${upperTargetY + 12}" fill="none" stroke="#1e40af" stroke-width="${4.5 + factor * 2}" stroke-linecap="round"/>
       </g>
 
-      <text x="45" y="20" font-size="11" font-weight="800" fill="#1e40af">Background Knowledge (Schema &amp; Concepts)</text>
-      <text x="45" y="45" font-size="11" font-weight="800" fill="#1e40af">Vocabulary (Breadth &amp; Precision)</text>
-      <text x="45" y="70" font-size="11" font-weight="800" fill="#1e40af">Language Structures (Syntax &amp; Semantics)</text>
-      <text x="45" y="95" font-size="11" font-weight="800" fill="#1e40af">Verbal Reasoning (Inference &amp; Metaphor)</text>
-      <text x="45" y="120" font-size="11" font-weight="800" fill="#1e40af">Literacy Knowledge (Print Concepts &amp; Genre)</text>
-
-      <!-- Lower Braids: Word Recognition (Automatic) -->
+      <!-- Lower Braids: Flow from x=260 to x=640 -->
       <g filter="url(#sorShadow)">
-        <path d="M 40,185 C 240,${185 - factor * 25} 380,${165 - factor * 15} 490,${lowerY - 14}" fill="none" stroke="#34d399" stroke-width="${4.5 + factor * 2}" stroke-linecap="round"/>
-        <path d="M 40,215 C 240,${215 - factor * 35} 380,${175 - factor * 25} 490,${lowerY - 8}" fill="none" stroke="#10b981" stroke-width="${4.5 + factor * 2}" stroke-linecap="round"/>
-        <path d="M 40,245 C 240,${245 - factor * 45} 380,${185 - factor * 35} 490,${lowerY}" fill="none" stroke="#059669" stroke-width="${4.5 + factor * 2}" stroke-linecap="round"/>
+        <path d="M 260,206 C 380,${206 - factor * 20} 500,${185 - factor * 12} 640,${lowerTargetY - 12}" fill="none" stroke="#34d399" stroke-width="${5 + factor * 2}" stroke-linecap="round"/>
+        <path d="M 260,236 C 380,${236 - factor * 35} 500,${195 - factor * 22} 640,${lowerTargetY - 6}" fill="none" stroke="#10b981" stroke-width="${5 + factor * 2}" stroke-linecap="round"/>
+        <path d="M 260,266 C 380,${266 - factor * 45} 500,${205 - factor * 30} 640,${lowerTargetY}" fill="none" stroke="#059669" stroke-width="${5 + factor * 2}" stroke-linecap="round"/>
       </g>
 
-      <text x="45" y="180" font-size="11" font-weight="800" fill="#065f46">Phonological Awareness (Syllables, Phonemes)</text>
-      <text x="45" y="210" font-size="11" font-weight="800" fill="#065f46">Decoding (Alphabetic Principle &amp; Phonics)</text>
-      <text x="45" y="240" font-size="11" font-weight="800" fill="#065f46">Sight Recognition (Orthographic Mapping)</text>
+      <!-- Convergence Zone: Skilled Reading (x=640 to x=910) -->
+      <path d="M 640,160 C 720,160 760,160 880,160" fill="none" stroke="url(#gradSkilledRope)" stroke-width="${12 + factor * 14}" stroke-linecap="round" stroke-dasharray="${factor < 0.35 ? '8,6' : 'none'}"/>
+      <circle cx="880" cy="160" r="${12 + factor * 4}" fill="#0f766e" filter="url(#sorShadow)"/>
+      <circle cx="880" cy="160" r="${6 + factor * 2}" fill="#fde68a"/>
 
-      <!-- Woven Convergence: Skilled Reading -->
-      <path d="M 490,140 C 560,140 600,140 710,140" fill="none" stroke="url(#gradSkilled)" stroke-width="${10 + factor * 10}" stroke-linecap="round" stroke-dasharray="${factor < 0.4 ? '6,4' : 'none'}"/>
-      
-      <circle cx="710" cy="140" r="${10 + factor * 4}" fill="#0f766e"/>
-      <text x="530" y="105" font-size="16" font-weight="900" fill="#0f766e">SKILLED READING</text>
-      <text x="530" y="180" font-size="12" font-weight="700" fill="#334155">${factor > 0.7 ? "Fluent execution &amp; comprehension" : "Developing coordination &amp; accuracy"}</text>
+      <!-- Convergence Header Badge -->
+      <rect x="670" y="80" width="240" height="48" rx="10" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5" filter="url(#sorShadow)"/>
+      <text x="790" y="102" font-size="13" font-weight="900" fill="#0f766e" text-anchor="middle" font-family="'Fraunces', Georgia, serif" letter-spacing="0.5">SKILLED READING</text>
+      <text x="790" y="118" font-size="9.5" font-weight="700" fill="#64748b" text-anchor="middle">Fluent Execution &amp; Comprehension</text>
+
+      <text x="790" y="215" font-size="11" font-weight="700" fill="#1e293b" text-anchor="middle">
+        ${factor > 0.7 ? "Integrated Automaticity (Effortless Flow)" : factor > 0.4 ? "Braiding in Progress (Developing Fluency)" : "Emergent Coordination (Isolated Strands)"}
+      </text>
     </svg>
   `;
 }
@@ -411,24 +465,25 @@ export async function render(ctx = {}) {
 
       <div class="sor-header">
         <div class="sor-title-wrap">
+          <div class="sor-kicker">${icon("reading")} Cognitive Science in the Classroom</div>
           <h1>Science of Reading Research &amp; Practice Studio</h1>
           <p class="sor-lead">
-            Empowering teachers and multilingual learners with evidence-based cognitive models: Scarborough's Reading Rope, Speech-to-Print Sound Walls, Orthographic Mapping with Heart Words, and CLOVER Syllable Division.
+            Empowering teachers and multilingual learners with evidence-based cognitive frameworks: Scarborough's Reading Rope, Speech-to-Print Sound Walls, Orthographic Mapping with Heart Words, and CLOVER Syllable Division.
           </p>
         </div>
         <div class="sor-evidence-badge">
-          <span>${ico("sparkle")} Grounded in Cognitive &amp; Linguistic Science</span>
+          ${icon("bulb")} <span>Grounded in Cognitive &amp; Linguistic Science</span>
         </div>
       </div>
 
       <!-- Navigation Tabs -->
       <div class="sor-nav-tabs" role="tablist">
-        <button type="button" class="sor-tab-btn ${currentTab === "rope" ? "active" : ""}" data-sor-tab="rope">${ico("road")} Reading Rope Explorer</button>
-        <button type="button" class="sor-tab-btn ${currentTab === "svr" ? "active" : ""}" data-sor-tab="svr">${ico("construction")} Simple View of Reading</button>
-        <button type="button" class="sor-tab-btn ${currentTab === "soundwall" ? "active" : ""}" data-sor-tab="soundwall">${ico("speaking")} Sound Wall &amp; Vowel Valley</button>
-        <button type="button" class="sor-tab-btn ${currentTab === "mapping" ? "active" : ""}" data-sor-tab="mapping">${ico("grid")} Orthographic Mapping &amp; Heart Words</button>
-        <button type="button" class="sor-tab-btn ${currentTab === "syllables" ? "active" : ""}" data-sor-tab="syllables">${ico("words")} 6 Syllables &amp; Division Chopper</button>
-        <button type="button" class="sor-tab-btn ${currentTab === "morphology" ? "active" : ""}" data-sor-tab="morphology">${ico("growth")} Morphology &amp; Cognate Matrix</button>
+        <button type="button" class="sor-tab-btn ${currentTab === "rope" ? "active" : ""}" data-sor-tab="rope">${icon("growth")} <span>Reading Rope</span></button>
+        <button type="button" class="sor-tab-btn ${currentTab === "svr" ? "active" : ""}" data-sor-tab="svr">${icon("evidence")} <span>Simple View (SVR)</span></button>
+        <button type="button" class="sor-tab-btn ${currentTab === "soundwall" ? "active" : ""}" data-sor-tab="soundwall">${icon("speaking")} <span>Sound Wall</span></button>
+        <button type="button" class="sor-tab-btn ${currentTab === "mapping" ? "active" : ""}" data-sor-tab="mapping">${icon("star")} <span>Heart Words</span></button>
+        <button type="button" class="sor-tab-btn ${currentTab === "syllables" ? "active" : ""}" data-sor-tab="syllables">${icon("construction")} <span>6 Syllables</span></button>
+        <button type="button" class="sor-tab-btn ${currentTab === "morphology" ? "active" : ""}" data-sor-tab="morphology">${icon("words")} <span>Morphology</span></button>
       </div>
 
       <!-- Main Stage Body -->
@@ -437,21 +492,21 @@ export async function render(ctx = {}) {
         <!-- 1. Reading Rope Tab -->
         ${currentTab === "rope" ? `
           <div class="sor-panel-section">
-            <div class="sor-rope-banner">
+            <div class="sor-section-banner">
               <h3>Dr. Hollis Scarborough’s Reading Rope (2001)</h3>
-              <p>Reading is not a single natural skill; it is a complex woven tapestry of Language Comprehension and Word Recognition. Interact with the braiding slider below to observe how isolated strands weave into automatic, fluent reading.</p>
+              <p>Reading comprehension is not a single isolated skill; it is a complex woven tapestry of Language Comprehension and Word Recognition. Interact with the braiding slider below to observe how individual strands integrate into automatic, fluent reading.</p>
             </div>
 
             <!-- Interactive Braiding Slider -->
             <div class="sor-braid-control">
               <div class="sor-braid-header">
-                <span>Rope Braiding &amp; Reader Fluency:</span>
+                <span>Rope Braiding &amp; Reader Fluency Stage:</span>
                 <strong id="braidStatusLabel">${state.braidTightness < 35 ? "Novice / Early Reader (Isolated Strands)" : state.braidTightness < 70 ? "Developing Reader (Strands Braiding)" : "Skilled Fluent Reader (Integrated Automaticity)"}</strong>
               </div>
               <input type="range" class="sor-braid-slider" id="ropeBraider" min="10" max="100" value="${state.braidTightness}" aria-label="Rope braiding tightness"/>
               <div class="sor-braid-labels">
                 <span>Early Emergent (Phonemic &amp; Print Concepts)</span>
-                <span>Transitional (Blending &amp; Syntactic Parsing)</span>
+                <span>Transitional (Syntactic &amp; Morphological Braiding)</span>
                 <span>Skilled Automatic (Fluent Comprehension)</span>
               </div>
             </div>
@@ -462,25 +517,27 @@ export async function render(ctx = {}) {
 
             <div class="sor-strands-comparison-grid">
               <div class="sor-strand-column lang-comp">
-                <h4>${ROPE_STRANDS.upper.title}</h4>
+                <h4>${icon("reading")} ${ROPE_STRANDS.upper.title}</h4>
+                <div class="sor-strand-subtitle">${ROPE_STRANDS.upper.subtitle}</div>
                 <div class="sor-strand-cards">
                   ${ROPE_STRANDS.upper.strands.map((s) => `
                     <div class="strand-card">
                       <strong>${esc(s.name)}</strong>
                       <p>${esc(s.desc)}</p>
-                      <small>${ico("bulb")} Classroom Action: ${esc(s.examples)}</small>
+                      <small>${icon("bulb")} Classroom Action: ${esc(s.examples)}</small>
                     </div>
                   `).join("")}
                 </div>
               </div>
               <div class="sor-strand-column word-rec">
-                <h4>${ROPE_STRANDS.lower.title}</h4>
+                <h4>${icon("words")} ${ROPE_STRANDS.lower.title}</h4>
+                <div class="sor-strand-subtitle">${ROPE_STRANDS.lower.subtitle}</div>
                 <div class="sor-strand-cards">
                   ${ROPE_STRANDS.lower.strands.map((s) => `
                     <div class="strand-card">
                       <strong>${esc(s.name)}</strong>
                       <p>${esc(s.desc)}</p>
-                      <small>${ico("bulb")} Classroom Action: ${esc(s.examples)}</small>
+                      <small>${icon("bulb")} Classroom Action: ${esc(s.examples)}</small>
                     </div>
                   `).join("")}
                 </div>
@@ -492,55 +549,76 @@ export async function render(ctx = {}) {
         <!-- 2. Simple View of Reading Tab -->
         ${currentTab === "svr" ? `
           <div class="sor-panel-section">
-            <div class="sor-rope-banner">
+            <div class="sor-section-banner">
               <h3>The Simple View of Reading (Gough &amp; Tunmer, 1986)</h3>
-              <p>Reading Comprehension (RC) is the <em>mathematical product</em> of Decoding (D) and Language Comprehension (LC):</p>
-              <div style="margin:1rem 0;font-size:1.5rem;font-weight:800;color:var(--ocean-900,#075568);text-align:center;font-family:'Fraunces',Georgia,serif">
-                RC = D × LC
-              </div>
-              <p>Because it is a multiplication equation, if either Decoding or Language Comprehension equals zero, Reading Comprehension will equal zero. Neither skill alone is sufficient.</p>
+              <p>Reading Comprehension (RC) is the <em>mathematical product</em> of Decoding (D) and Language Comprehension (LC). Neither skill alone is sufficient. If either equals zero, reading comprehension is zero.</p>
             </div>
 
-            <div style="background:#f8fafc;border:2px solid #e2e8f0;border-radius:14px;padding:1.5rem;margin-bottom:2rem">
-              <h4 style="margin:0 0 1rem;font-size:1.125rem">Interactive SVR Diagnostic Calculator</h4>
-              <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));gap:1.5rem;align-items:center">
-                <div>
-                  <label style="display:block;font-weight:700;margin-bottom:0.5rem">Decoding (D): <span id="valD">${state.svrD}%</span></label>
-                  <input type="range" min="0" max="100" value="${state.svrD}" id="inputD" style="width:100%"/>
-                  <small style="color:#64748b">Phonics, word recognition, accuracy</small>
-                </div>
-                <div style="text-align:center;font-size:1.75rem;font-weight:800;color:#94a3b8">×</div>
-                <div>
-                  <label style="display:block;font-weight:700;margin-bottom:0.5rem">Language Comp (LC): <span id="valLC">${state.svrLC}%</span></label>
-                  <input type="range" min="0" max="100" value="${state.svrLC}" id="inputLC" style="width:100%"/>
-                  <small style="color:#64748b">Vocabulary, background knowledge, syntax</small>
-                </div>
-                <div style="text-align:center;font-size:1.75rem;font-weight:800;color:#94a3b8">=</div>
-                <div style="background:#ffffff;border:2px solid #0284c7;border-radius:12px;padding:1rem;text-align:center">
-                  <span style="font-size:0.8125rem;font-weight:700;color:#0369a1;text-transform:uppercase">Reading Comprehension</span>
-                  <div style="font-size:2.25rem;font-weight:900;color:#0284c7;font-family:'Fraunces',Georgia,serif" id="valRC">${svrProduct}%</div>
-                </div>
+            <div class="svr-formula-hero">
+              <div class="svr-formula-display">
+                Reading Comprehension = <span>Decoding</span> × <span>Language Comprehension</span>
               </div>
+              <p class="svr-formula-lead">
+                RC = D × LC &nbsp;·&nbsp; A multiplication equation that explains every reader profile and intervention target.
+              </p>
+            </div>
 
-              <div style="margin-top:1.5rem">
-                <span style="font-weight:700;font-size:0.875rem;margin-right:0.5rem">Test Archetypes:</span>
+            <!-- Archetype Profile Presets -->
+            <div class="svr-profiles-section">
+              <div class="svr-profiles-title">Select a Reader Archetype to Test the Formula:</div>
+              <div class="svr-profiles-grid">
                 ${SVR_PROFILES.map((p) => `
-                  <button type="button" class="btn small ghost" data-svr-profile="${p.id}" style="margin:0.25rem">${p.label}</button>
+                  <button type="button" class="svr-profile-card ${p.id === state.svrActiveProfile ? "active" : ""}" data-svr-profile="${p.id}">
+                    <span class="svr-profile-name">${esc(p.label)}</span>
+                    <p class="svr-profile-desc">${esc(p.desc)}</p>
+                    <div class="svr-profile-stats">
+                      <span>D: ${p.d}%</span>
+                      <span>LC: ${p.lc}%</span>
+                    </div>
+                  </button>
                 `).join("")}
               </div>
             </div>
 
-            <!-- Ehri's 4 Phases -->
-            <h4 class="sor-section-header">Linnea Ehri's 4 Phases of Word Reading Development</h4>
-            <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(260px, 1fr));gap:1rem">
-              ${EHRI_PHASES.map((ph) => `
-                <div style="background:#ffffff;border:1.5px solid #cbd5e1;border-radius:10px;padding:1.25rem">
-                  <span style="display:inline-block;background:#e0f2fe;color:#0369a1;font-size:0.75rem;font-weight:800;padding:0.25rem 0.5rem;border-radius:4px;margin-bottom:0.5rem">${esc(ph.phase)}</span>
-                  <h5 style="margin:0 0 0.25rem;font-size:1rem;font-weight:800">${esc(ph.focus)}</h5>
-                  <p style="font-size:0.8125rem;color:#475569;margin:0 0 0.5rem;line-height:1.4">${esc(ph.characteristics)}</p>
-                  <div style="font-size:0.75rem;background:#f8fafc;padding:0.5rem;border-radius:6px;color:#0f766e"><strong>Targeted Instruction:</strong> ${esc(ph.instruction)}</div>
+            <!-- SVR Calculator Card -->
+            <div class="svr-calc-card">
+              <div class="svr-calc-grid">
+                <div class="svr-input-group">
+                  <label for="inputD">Decoding (D): <span id="valD">${state.svrD}%</span></label>
+                  <input type="range" min="0" max="100" value="${state.svrD}" id="inputD" aria-label="Decoding percentage"/>
+                  <small>Phonics, word identification, accuracy &amp; automaticity</small>
                 </div>
-              `).join("")}
+                <div class="svr-math-op">×</div>
+                <div class="svr-input-group">
+                  <label for="inputLC">Language Comprehension (LC): <span id="valLC">${state.svrLC}%</span></label>
+                  <input type="range" min="0" max="100" value="${state.svrLC}" id="inputLC" aria-label="Language comprehension percentage"/>
+                  <small>Vocabulary, background knowledge, syntax &amp; inference</small>
+                </div>
+                <div class="svr-math-op">=</div>
+                <div class="svr-result-box">
+                  <span class="svr-result-label">Reading Comprehension (RC)</span>
+                  <div class="svr-result-val" id="valRC">${svrProduct}%</div>
+                  <span class="svr-result-status" id="valRCStatus">
+                    ${svrProduct >= 70 ? "Proficient Comprehension" : svrProduct >= 40 ? "Developing / Fragile" : "Severe Comprehension Deficit"}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Ehri's 4 Phases Section -->
+            <div class="sor-ehri-section">
+              <h4 class="sor-section-header">Dr. Linnea Ehri’s 4 Phases of Word Reading Development</h4>
+              <p class="sor-section-sub">How the human brain shifts from visual guessing to automatic sight-word recognition through orthographic mapping:</p>
+              <div class="sor-ehri-grid">
+                ${EHRI_PHASES.map((ph) => `
+                  <div class="ehri-card">
+                    <span class="ehri-phase-badge">${esc(ph.phase)}</span>
+                    <h5 class="ehri-title">${esc(ph.focus)}</h5>
+                    <p class="ehri-desc">${esc(ph.characteristics)}</p>
+                    <div class="ehri-target"><strong>Targeted Instruction:</strong> ${esc(ph.instruction)}</div>
+                  </div>
+                `).join("")}
+              </div>
             </div>
           </div>
         ` : ""}
@@ -548,12 +626,16 @@ export async function render(ctx = {}) {
         <!-- 3. Sound Wall & Vowel Valley Tab -->
         ${currentTab === "soundwall" ? `
           <div class="sor-panel-section">
-            <div class="sor-soundwall-intro">
-              <h3>Speech-to-Print Sound Wall: Consonants &amp; Vowel Valley</h3>
-              <p>Unlike traditional A-Z word walls that organize by print letter, a Sound Wall organizes phonemes by speech articulation: how the mouth, tongue, vocal cords, and breath create each sound.</p>
+            <div class="sor-section-banner">
+              <h3>Speech-to-Print Sound Wall &amp; Vowel Valley</h3>
+              <p>Traditional A–Z word walls organize by spelling, confusing learners because 26 letters make 44 unique speech sounds. A Sound Wall organizes from the <em>mouth to print</em> based on articulatory gestures and phoneme placement.</p>
             </div>
 
-            <h4 class="sor-section-header">Vowel Valley (Organized from Closed Smile → Open Jaw → Rounded Pursed)</h4>
+            <div class="sor-section-banner" style="border:none;margin-bottom:1rem;padding:0">
+              <h4 style="font-family:'Fraunces',Georgia,serif;font-size:1.25rem;color:var(--brand);margin:0 0 0.5rem">The Vowel Valley (Front Smile to Low Open to Back Round)</h4>
+              <p style="font-size:0.9375rem;color:var(--ink-2)">Notice how the jaw drops as you move down the front of the valley, and lips round as you ascend the back:</p>
+            </div>
+
             <div class="sor-vowel-valley-grid">
               ${VOWEL_VALLEY.map((v) => `
                 <div class="vowel-card">
@@ -561,12 +643,16 @@ export async function render(ctx = {}) {
                   ${renderMouthShapeSvg(v.shape)}
                   <strong class="vowel-keyword">${esc(v.example)}</strong>
                   <span class="vowel-position">${esc(v.mouth)}</span>
-                  <button type="button" class="sor-audio-btn" data-say="${esc(v.example)}">${ico("volume")} Hear</button>
+                  <button type="button" class="sor-audio-btn" data-say="${esc(v.example)}">${icon("volume")} Hear</button>
                 </div>
               `).join("")}
             </div>
 
-            <h4 class="sor-section-header" style="margin-top:2.5rem">Consonant Articulation Matrix (Voiced vs. Unvoiced Pairs)</h4>
+            <div class="sor-section-banner" style="border:none;margin:2rem 0 1rem;padding:0">
+              <h4 style="font-family:'Fraunces',Georgia,serif;font-size:1.25rem;color:var(--brand);margin:0 0 0.5rem">Consonant Articulation Matrix (Manner &amp; Voicing Pairs)</h4>
+              <p style="font-size:0.9375rem;color:var(--ink-2)">Touch your vocal cords to feel the vibration between unvoiced and voiced pairs:</p>
+            </div>
+
             <div class="sor-consonants-grid">
               ${CONSONANT_CATEGORIES.map((cat) => `
                 <div class="consonant-manner-card">
@@ -575,9 +661,9 @@ export async function render(ctx = {}) {
                   <div class="consonant-pairs-list">
                     ${cat.pairs.map((p) => `
                       <div class="consonant-row">
-                        <span class="consonant-badge badge-unvoiced">${esc(p.unvoiced)}</span>
-                        <span style="color:#94a3b8;font-size:0.75rem">vs</span>
-                        <span class="consonant-badge badge-voiced">${esc(p.voiced)}</span>
+                        <span class="badge-unvoiced">${esc(p.unvoiced)}</span>
+                        <span style="color:#94a3b8;font-size:0.75rem;font-weight:700">vs</span>
+                        <span class="badge-voiced">${esc(p.voiced)}</span>
                       </div>
                     `).join("")}
                   </div>
@@ -590,16 +676,16 @@ export async function render(ctx = {}) {
         <!-- 4. Orthographic Mapping & Heart Words Tab -->
         ${currentTab === "mapping" ? `
           <div class="sor-panel-section">
-            <div class="sor-rope-banner">
+            <div class="sor-section-banner">
               <h3>Orthographic Mapping &amp; Heart Word Studio</h3>
-              <p>Orthographic mapping (Kilpatrick, 2015) is the mental process our brains use to turn unfamiliar words into instantly recognized sight words by bonding phonemes (sounds) to graphemes (letters).</p>
+              <p>Orthographic mapping (Kilpatrick, 2015) is the cognitive process by which our brains bond phonemes (sounds) to graphemes (letters), anchoring words permanently in visual memory for instant retrieval. Words with irregular letters are taught as <strong>Heart Words</strong>: learn the tricky part by heart!</p>
             </div>
 
             <div class="sor-mapping-controls">
-              <span style="font-weight:700;font-size:0.875rem">Select Word:</span>
+              <span style="font-weight:700;font-size:0.9375rem;color:var(--ink)">Select Word:</span>
               ${Object.keys(MAPPING_WORDS).map((k) => `
                 <button type="button" class="word-picker-btn ${k === state.mappedWord ? "active" : ""} ${MAPPING_WORDS[k].hearts.length ? "is-heart" : ""}" data-sor-map-word="${k}">
-                  ${k} ${MAPPING_WORDS[k].hearts.length ? ico("bookmark") : ""}
+                  ${k} ${MAPPING_WORDS[k].hearts.length ? `${icon("star")}` : ""}
                 </button>
               `).join("")}
             </div>
@@ -607,7 +693,7 @@ export async function render(ctx = {}) {
             <div class="sor-mapping-workbench">
               <div class="workbench-word-hero">${esc(mappedObj.word.toUpperCase())}</div>
               <div class="workbench-instruction">
-                Word has <strong>${mappedObj.sounds.length} phonemes</strong> (sounds) mapped across <strong>${mappedObj.letters.length} grapheme units</strong>.
+                Word contains <strong>${mappedObj.sounds.length} phonemes</strong> mapped across <strong>${mappedObj.letters.length} grapheme units</strong>. Tap a sound chip to isolate each phoneme:
               </div>
 
               <!-- Elkonin Sound Boxes -->
@@ -621,7 +707,7 @@ export async function render(ctx = {}) {
                         <span>●</span>
                       </div>
                       <div class="elkonin-box ${isHeart ? "has-heart" : ""}">
-                        ${isHeart ? `<span class="heart-marker" title="Learn this part by heart!">${ico("bookmark")}</span>` : ""}
+                        ${isHeart ? `<span class="heart-marker" title="Learn this part by heart!">${icon("star")}</span>` : ""}
                         <span class="grapheme-letter">${esc(letter)}</span>
                         <span class="phoneme-tag">${esc(snd)}</span>
                       </div>
@@ -632,7 +718,7 @@ export async function render(ctx = {}) {
 
               ${mappedObj.heartNote ? `
                 <div class="heart-explanation">
-                  ${ico("bulb")} <strong>Orthographic Mapping Insight:</strong> ${esc(mappedObj.heartNote)}
+                  ${icon("bulb")} <span><strong>Orthographic Mapping Insight:</strong> ${esc(mappedObj.heartNote)}</span>
                 </div>
               ` : ""}
             </div>
@@ -642,54 +728,54 @@ export async function render(ctx = {}) {
         <!-- 5. 6 Syllable Types & Division Chopper Tab -->
         ${currentTab === "syllables" ? `
           <div class="sor-panel-section">
-            <div class="sor-rope-banner">
+            <div class="sor-section-banner">
               <h3>The 6 Syllable Types (CLOVER) &amp; Division Chopper</h3>
-              <p>Recognizing syllable patterns unlocks multisyllabic decoding for upper elementary and secondary students. Every English syllable has exactly one vowel sound.</p>
+              <p>Recognizing syllable patterns enables automatic multisyllabic decoding. Every English syllable contains exactly one vowel sound. Use the mnemonic <strong>CLOVER</strong> to identify syllable structures:</p>
             </div>
 
             <div class="sor-syllables-grid">
-              ${SYLLABLE_TYPES.map((syl) => `
+              ${SYLLABLE_TYPES.map((s) => `
                 <div class="syllable-card">
                   <div class="syllable-card-header">
-                    <h4>${esc(syl.name)}</h4>
-                    <span class="syllable-type-badge">${esc(syl.code)}</span>
+                    <h4>${esc(s.name)}</h4>
+                    <span class="syllable-type-badge">${esc(s.code)}</span>
                   </div>
-                  <p class="syllable-rule">${esc(syl.rule)}</p>
+                  <div class="syllable-rule">${esc(s.rule)}</div>
                   <div class="syllable-examples-row">
-                    ${syl.examples.map((ex) => `<span class="syllable-chip">${esc(ex)}</span>`).join("")}
+                    ${s.examples.map((ex) => `<span class="syllable-chip">${esc(ex)}</span>`).join("")}
                   </div>
                 </div>
               `).join("")}
             </div>
 
-            <!-- Syllable Division Chopper Game -->
+            <!-- Syllable Division Chopper Interactive -->
             <div class="sor-chopper-box">
-              <h4 style="margin:0 0 0.5rem;font-size:1.25rem;font-family:'Fraunces',Georgia,serif;color:#854d0e">Syllable Division Chopper</h4>
-              <p style="margin:0 0 1rem;font-size:0.9375rem;color:#713f12">
-                Click the scissors ${ico("tools")} where the word should be divided into syllables.
+              <h4>Syllable Division Chopper Workbench</h4>
+              <p style="margin:0 0 1rem;font-size:0.9375rem;color:#78350f">
+                Identify the vowel-consonant structure and select the divider button where the word splits into syllables:
               </p>
 
               <div class="chopper-word-display">
                 ${currentChop.word.split("").map((letter, idx) => `
                   <span class="chop-letter-block">${esc(letter)}</span>
                   ${idx < currentChop.word.length - 1 ? `
-                    <button type="button" class="chop-cut-button" data-chop-cut="${idx + 1}" title="Cut here">${ico("tools")}</button>
+                    <button type="button" class="chop-cut-button" data-chop-cut="${idx + 1}" title="Cut syllable here">${icon("construction")}</button>
                   ` : ""}
                 `).join("")}
               </div>
 
               <div class="chopper-feedback" id="chopFeedback">
                 ${state.chopperResult === "correct" ? `
-                  <span style="color:#065f46">${ico("check")} Perfect cut! <strong>${esc(currentChop.parts.join(" · "))}</strong>. Rule: ${esc(currentChop.rule)} (${esc(currentChop.explain)})</span>
+                  <span style="color:#065f46">${icon("check")} <strong>Perfect division!</strong> ${esc(currentChop.parts.join(" · "))} &nbsp;·&nbsp; Rule: ${esc(currentChop.rule)} (${esc(currentChop.explain)})</span>
                 ` : state.chopperResult === "wrong" ? `
-                  <span style="color:#b91c1c">${ico("x")} Try again! Hint: Look at the vowels and consonants between them.</span>
+                  <span style="color:#b91c1c">${icon("x")} <strong>Try again!</strong> Look at the vowels and count the consonants between them.</span>
                 ` : `
-                  <span style="color:#854d0e">Where should you cut <strong>${esc(currentChop.word)}</strong>?</span>
+                  <span style="color:#92400e">Where should you split <strong>${esc(currentChop.word)}</strong>?</span>
                 `}
               </div>
 
-              <div style="margin-top:1.25rem">
-                <button type="button" class="btn small" id="nextChopWord" style="background:#d97706;color:#ffffff;border:none">Next Word ${ico("arrow-right")}</button>
+              <div style="margin-top:1.5rem">
+                <button type="button" class="btn btn-primary" id="nextChopWord">Next Word ${icon("arrow-right")}</button>
               </div>
             </div>
           </div>
@@ -698,25 +784,25 @@ export async function render(ctx = {}) {
         <!-- 6. Morphology & Multilingual Cognate Matrix Tab -->
         ${currentTab === "morphology" ? `
           <div class="sor-panel-section">
-            <div class="sor-rope-banner">
+            <div class="sor-section-banner">
               <h3>Morphology &amp; Multilingual Cognate Matrix</h3>
-              <p>Morphemes are the smallest units of meaning. Because over 60% of academic English words come from Greek and Latin roots, morphology is the greatest bridge for multilingual learners connecting Spanish cognates to academic English.</p>
+              <p>Morphemes are the smallest units of meaning in a language. Because over 60% of academic English words share Greek and Latin root ancestors, morphology is the most powerful linguistic bridge connecting Spanish and heritage language cognates to academic English.</p>
             </div>
 
             <div class="sor-morphology-studio">
               <div class="morph-generator-grid">
                 <div class="morph-column">
-                  <h5>Prefixes</h5>
+                  <h5>Prefixes (Initial Morpheme)</h5>
                   ${MORPH_PREFIXES.map((p, idx) => `
                     <button type="button" class="morph-item-btn ${idx === state.morphPrefix ? "active" : ""}" data-morph-p="${idx}">
                       <strong>${esc(p.aff)}</strong>
-                      <small>${esc(p.meaning)}</small>
+                      <small>Meaning: ${esc(p.meaning)}</small>
                     </button>
                   `).join("")}
                 </div>
 
                 <div class="morph-column">
-                  <h5>Base Roots (Latin / Greek)</h5>
+                  <h5>Base Roots (Latin / Greek Ancestor)</h5>
                   ${MORPH_ROOTS.map((r, idx) => `
                     <button type="button" class="morph-item-btn ${idx === state.morphRoot ? "active" : ""}" data-morph-r="${idx}">
                       <strong>${esc(r.root)}</strong> (${esc(r.origin)})
@@ -726,7 +812,7 @@ export async function render(ctx = {}) {
                 </div>
 
                 <div class="morph-column">
-                  <h5>Suffixes</h5>
+                  <h5>Suffixes (Grammatical Category)</h5>
                   ${MORPH_SUFFIXES.map((s, idx) => `
                     <button type="button" class="morph-item-btn ${idx === state.morphSuffix ? "active" : ""}" data-morph-s="${idx}">
                       <strong>${esc(s.aff)}</strong>
@@ -739,10 +825,10 @@ export async function render(ctx = {}) {
               <div class="morph-result-banner">
                 <div class="morph-constructed-word">${esc(constructedWord)}</div>
                 <div class="morph-constructed-def">
-                  <strong>Definition:</strong> The ${esc(suffixObj.meaning)} ${esc(prefixObj.meaning)} ${esc(rootObj.meaning)}.
+                  <strong>Literal Morphemic Meaning:</strong> The ${esc(suffixObj.meaning)} ${esc(prefixObj.meaning)} ${esc(rootObj.meaning)}.
                 </div>
                 <div class="morph-cognate-bridge">
-                  ${ico("language")} <strong>Spanish Cognate Bridge:</strong> <em>${esc(rootObj.cognate)}</em>
+                  ${icon("language")} <span><strong>Spanish Cognate Bridge:</strong> <em>${esc(rootObj.cognate)}</em></span>
                 </div>
               </div>
             </div>
@@ -788,7 +874,7 @@ export function mount(root, ctx) {
     });
   }
 
-  // SVR Sliders
+  // SVR Sliders & Real-Time Calculation
   const inputD = root.querySelector("#inputD");
   const inputLC = root.querySelector("#inputLC");
   const updateSvr = () => {
@@ -798,21 +884,56 @@ export function mount(root, ctx) {
     const valD = root.querySelector("#valD");
     const valLC = root.querySelector("#valLC");
     const valRC = root.querySelector("#valRC");
+    const valRCStatus = root.querySelector("#valRCStatus");
     if (valD) valD.textContent = `${state.svrD}%`;
     if (valLC) valLC.textContent = `${state.svrLC}%`;
     if (valRC) valRC.textContent = `${prod}%`;
+    if (valRCStatus) {
+      valRCStatus.textContent = prod >= 70
+        ? "Proficient Comprehension"
+        : prod >= 40
+          ? "Developing / Fragile"
+          : "Severe Comprehension Deficit";
+    }
   };
-  inputD?.addEventListener("input", updateSvr);
-  inputLC?.addEventListener("input", updateSvr);
+  inputD?.addEventListener("input", () => {
+    state.svrActiveProfile = null;
+    root.querySelectorAll(".svr-profile-card").forEach((c) => c.classList.remove("active"));
+    updateSvr();
+  });
+  inputLC?.addEventListener("input", () => {
+    state.svrActiveProfile = null;
+    root.querySelectorAll(".svr-profile-card").forEach((c) => c.classList.remove("active"));
+    updateSvr();
+  });
 
-  // SVR Profiles
+  // SVR Archetype Profile Cards
   root.querySelectorAll("[data-svr-profile]").forEach((btn) => {
     btn.addEventListener("click", () => {
-      const prof = SVR_PROFILES.find((p) => p.id === btn.dataset.svrProfile);
+      const profId = btn.dataset.svrProfile;
+      const prof = SVR_PROFILES.find((p) => p.id === profId);
       if (prof && inputD && inputLC) {
+        state.svrActiveProfile = profId;
         inputD.value = prof.d;
         inputLC.value = prof.lc;
+        root.querySelectorAll(".svr-profile-card").forEach((c) => {
+          c.classList.toggle("active", c.dataset.svrProfile === profId);
+        });
         updateSvr();
+      }
+    });
+  });
+
+  // Audio Playback via Web Speech API
+  root.querySelectorAll("[data-say]").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const text = btn.dataset.say;
+      if (text && "speechSynthesis" in window) {
+        window.speechSynthesis.cancel();
+        const utter = new SpeechSynthesisUtterance(text);
+        utter.rate = 0.85;
+        window.speechSynthesis.speak(utter);
       }
     });
   });
