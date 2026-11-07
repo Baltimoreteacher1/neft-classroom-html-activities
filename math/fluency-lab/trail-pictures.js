@@ -9,6 +9,7 @@ import {
   treeCaption,
 } from "./factor-tree.js";
 import { t } from "./i18n.js";
+import { highlightVocab } from "./vocab.js";
 import { columnSpec, verticalHtml } from "./vertical-columns.js";
 import { fillKey, isSolved, peekFill, register, splitFill, tryFill } from "./step-fill.js";
 import { whyFor } from "./step-whys.js";
@@ -1002,7 +1003,7 @@ export function stepsBlock(steps, shown, { id, cap = steps.length } = {}) {
     const why = whyFor(line, i, steps);
     const badge = stepPhaseBadge(line, i, steps);
     const badgeHtml = badge ? `<span class="tr-step-badge">${esc(badge)}</span>` : "";
-    const text = open ? row : `<span class="tr-step-text">${badgeHtml}${mathText(line)}</span>`;
+    const text = open ? row : `<span class="tr-step-text">${badgeHtml}${highlightVocab(mathText(line))}</span>`;
     const whyHtml = why
       ? `<div class="tr-step-why"><span class="tr-why-icon" aria-hidden="true">💡</span><span class="tr-why-copy">${esc(why)}</span></div>`
       : "";
@@ -1036,7 +1037,7 @@ if (typeof document !== "undefined" && !globalThis.__fluencyFillWired) {
     const li = row.closest("li");
     const line = key.split("|").slice(2).join("|");
     row.classList.remove("tr-fill-row");
-    row.innerHTML = `${mathText(line)}${result === "shown" ? ` <small class="tr-fill-shown">${esc(t("Here it is. Read it, then keep going."))}</small>` : ` <b class="tr-fill-ok" aria-hidden="true">✓</b><span class="tr-sr"> ${esc(t("Correct"))}</span>`}`;
+    row.innerHTML = `${highlightVocab(mathText(line))}${result === "shown" ? ` <small class="tr-fill-shown">${esc(t("Here it is. Read it, then keep going."))}</small>` : ` <b class="tr-fill-ok" aria-hidden="true">✓</b><span class="tr-sr"> ${esc(t("Correct"))}</span>`}`;
     li?.insertAdjacentHTML("beforeend", stepVisual(line));
     row.dispatchEvent(
       new row.ownerDocument.defaultView.Event("fluency-fill-solved", { bubbles: true }),

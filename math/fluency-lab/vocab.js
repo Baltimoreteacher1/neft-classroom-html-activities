@@ -496,6 +496,83 @@ export const VOCAB_BILINGUAL_DB = {
     </svg>`
   },
 
+  "equivalent ratio": {
+    id: "equivalent ratio",
+    enTitle: "Equivalent Ratio",
+    esTitle: "Razón equivalente",
+    enDef: "A ratio that describes the same comparison as another ratio. Multiply or divide both quantities by the same positive factor to make an equivalent ratio.",
+    esDef: "Una razón que describe la misma comparación que otra. Multiplica o divide ambas cantidades por el mismo factor positivo para crear una razón equivalente.",
+    example: "2:3 and 8:12 are equivalent because both quantities in 2:3 were multiplied by 4.",
+    keywords: ["equivalent ratio", "equivalent ratios", "razón equivalente", "razones equivalentes"],
+    svg: `<svg viewBox="0 0 340 116" role="img" aria-label="Two red and three blue counters scale to eight red and twelve blue counters" style="background:#F0FDFA;border-radius:12px;border:1px solid #99F6E4;width:100%;max-width:340px;display:block"><text x="10" y="16" font-size="11" font-weight="800" fill="#17324D">2 red : 3 blue</text><g fill="#DC2626"><circle cx="22" cy="42" r="7"/><circle cx="40" cy="42" r="7"/></g><g fill="#2563EB"><circle cx="22" cy="65" r="7"/><circle cx="40" cy="65" r="7"/><circle cx="58" cy="65" r="7"/></g><text x="84" y="55" font-size="11" font-weight="800" fill="#1D4ED8">×4</text><path d="M110 52 H143" stroke="#2563EB" stroke-width="2"/><path d="m137 47 7 5-7 5" fill="none" stroke="#2563EB" stroke-width="2"/><text x="154" y="16" font-size="11" font-weight="800" fill="#17324D">8 red : 12 blue</text><g fill="#DC2626"><circle cx="158" cy="42" r="5"/><circle cx="171" cy="42" r="5"/><circle cx="184" cy="42" r="5"/><circle cx="197" cy="42" r="5"/><circle cx="158" cy="55" r="5"/><circle cx="171" cy="55" r="5"/><circle cx="184" cy="55" r="5"/><circle cx="197" cy="55" r="5"/></g><g fill="#2563EB"><circle cx="220" cy="42" r="5"/><circle cx="233" cy="42" r="5"/><circle cx="246" cy="42" r="5"/><circle cx="259" cy="42" r="5"/><circle cx="272" cy="42" r="5"/><circle cx="285" cy="42" r="5"/><circle cx="220" cy="55" r="5"/><circle cx="233" cy="55" r="5"/><circle cx="246" cy="55" r="5"/><circle cx="259" cy="55" r="5"/><circle cx="272" cy="55" r="5"/><circle cx="285" cy="55" r="5"/></g><text x="10" y="101" font-size="11" font-weight="800" fill="#17324D">Each part is multiplied by the same factor.</text></svg>`
+  },
+
+  "scale factor": {
+    id: "scale factor",
+    enTitle: "Scale Factor",
+    esTitle: "Factor de escala",
+    enDef: "The same positive multiplier applied to both quantities in a ratio to make an equivalent ratio.",
+    esDef: "El mismo multiplicador positivo que se aplica a ambas cantidades de una razón para crear una razón equivalente.",
+    example: "Multiply both parts of 2:3 by 4: 2 × 4 : 3 × 4 = 8:12.",
+    keywords: ["scale factor", "scale factors", "factor de escala", "factores de escala"],
+    svg: `<svg viewBox="0 0 320 100" role="img" aria-label="Scale factor four multiplies both terms" style="background:#EFF6FF;border-radius:12px;border:1px solid #BFDBFE;width:100%;max-width:320px;display:block"><text x="24" y="28" font-size="15" font-weight="900" fill="#17324D">2 : 3</text><path d="M85 25 H210" stroke="#2563EB" stroke-width="3"/><path d="m200 17 12 8-12 8" fill="none" stroke="#2563EB" stroke-width="3"/><text x="132" y="18" font-size="12" font-weight="800" fill="#1D4ED8">×4</text><text x="230" y="28" font-size="15" font-weight="900" fill="#17324D">8 : 12</text><text x="24" y="66" font-size="12" font-weight="700" fill="#17324D">2 × 4</text><text x="230" y="66" font-size="12" font-weight="700" fill="#17324D">3 × 4</text></svg>`
+  },
+
+  "ratio table": {
+    id: "ratio table",
+    enTitle: "Ratio Table",
+    esTitle: "Tabla de razones",
+    enDef: "A table of paired quantities. Each row in an equivalent-ratio table uses the same scale factor for both quantities.",
+    esDef: "Una tabla de cantidades relacionadas. Cada fila de una tabla de razones equivalentes usa el mismo factor de escala para ambas cantidades.",
+    example: "If 2 red counters match 3 blue counters, the rows 4:6 and 6:9 keep the same comparison.",
+    keywords: ["ratio table", "ratio tables", "tabla de razones", "tablas de razones"],
+    svg: `<svg viewBox="0 0 300 120" role="img" aria-label="Equivalent ratio table" style="background:#FFFBEB;border-radius:12px;border:1px solid #FDE68A;width:100%;max-width:300px;display:block"><path d="M25 34 H275 M25 65 H275 M25 96 H275 M130 20 V108 M25 20 V108 M275 20 V108" fill="none" stroke="#A16207" stroke-width="2"/><text x="72" y="29" text-anchor="middle" font-size="12" font-weight="800">Red</text><text x="202" y="29" text-anchor="middle" font-size="12" font-weight="800">Blue</text><text x="72" y="56" text-anchor="middle" font-size="14" font-weight="800">2</text><text x="202" y="56" text-anchor="middle" font-size="14" font-weight="800">3</text><text x="72" y="87" text-anchor="middle" font-size="14" font-weight="800">8</text><text x="202" y="87" text-anchor="middle" font-size="14" font-weight="800">12</text><text x="150" y="116" text-anchor="middle" font-size="11" font-weight="800" fill="#854D0E">both quantities ×4</text></svg>`
+  },
+
+  "double number line": {
+    id: "double number line",
+    enTitle: "Double Number Line",
+    esTitle: "Doble recta numérica",
+    enDef: "Two aligned number lines that show corresponding values at the same positions. Each tick matches quantities from the same relationship.",
+    esDef: "Dos rectas numéricas alineadas que muestran valores correspondientes en las mismas posiciones. Cada marca relaciona cantidades de la misma situación.",
+    example: "On matching lines, 2 red counters aligns with 3 blue counters, and 8 red aligns with 12 blue.",
+    keywords: ["double number line", "double number lines", "doble recta numérica", "dobles rectas numéricas"],
+    svg: `<svg viewBox="0 0 340 120" role="img" aria-label="Paired number lines with matching ticks" style="background:#F0FDF4;border-radius:12px;border:1px solid #BBF7D0;width:100%;max-width:340px;display:block"><text x="8" y="45" font-size="11" font-weight="800">Red</text><text x="8" y="88" font-size="11" font-weight="800">Blue</text><path d="M55 40 H320 M55 83 H320" stroke="#17324D" stroke-width="2"/><g stroke="#17324D" stroke-width="2"><path d="M55 33 V47 M121 33 V47 M187 33 V47 M253 33 V47 M320 33 V47 M55 76 V90 M121 76 V90 M187 76 V90 M253 76 V90 M320 76 V90"/></g><g fill="#17324D" font-size="11" text-anchor="middle"><text x="55" y="29">0</text><text x="121" y="29">2</text><text x="187" y="29">4</text><text x="253" y="29">6</text><text x="320" y="29">8</text><text x="55" y="108">0</text><text x="121" y="108">3</text><text x="187" y="108">6</text><text x="253" y="108">9</text><text x="320" y="108">12</text></g></svg>`
+  },
+
+  "part-to-part ratio": {
+    id: "part-to-part ratio",
+    enTitle: "Part-to-Part Ratio",
+    esTitle: "Razón parte a parte",
+    enDef: "A comparison of one part of a group with another part of the same group. The order names which part comes first.",
+    esDef: "Una comparación entre una parte de un grupo y otra parte del mismo grupo. El orden indica qué parte se nombra primero.",
+    example: "With 2 red and 3 blue counters, red to blue is 2:3; blue to red is 3:2.",
+    keywords: ["part-to-part ratio", "part to part ratio", "part-to-part", "part to part", "razón parte a parte"],
+    svg: `<svg viewBox="0 0 300 100" role="img" aria-label="Part-to-part comparison of red and blue counters" style="background:#FFF7ED;border-radius:12px;border:1px solid #FED7AA;width:100%;max-width:300px;display:block"><g fill="#DC2626"><circle cx="55" cy="40" r="12"/><circle cx="83" cy="40" r="12"/></g><g fill="#2563EB"><circle cx="145" cy="40" r="12"/><circle cx="173" cy="40" r="12"/><circle cx="201" cy="40" r="12"/></g><text x="70" y="80" text-anchor="middle" font-size="13" font-weight="800">Red</text><text x="173" y="80" text-anchor="middle" font-size="13" font-weight="800">Blue</text><text x="262" y="47" text-anchor="middle" font-size="14" font-weight="900">2:3</text></svg>`
+  },
+
+  "part-to-whole ratio": {
+    id: "part-to-whole ratio",
+    enTitle: "Part-to-Whole Ratio",
+    esTitle: "Razón parte a todo",
+    enDef: "A comparison of one part with the total amount. The whole includes every part in the group.",
+    esDef: "Una comparación entre una parte y la cantidad total. El todo incluye todas las partes del grupo.",
+    example: "With 2 red and 3 blue counters, red to the whole is 2:5, not 2:3.",
+    keywords: ["part-to-whole ratio", "part to whole ratio", "part-to-whole", "part to whole", "razón parte a todo"],
+    svg: `<svg viewBox="0 0 300 100" role="img" aria-label="Two red counters are two of five total counters" style="background:#FFF7ED;border-radius:12px;border:1px solid #FED7AA;width:100%;max-width:300px;display:block"><g fill="#DC2626"><circle cx="45" cy="42" r="12"/><circle cx="73" cy="42" r="12"/></g><g fill="#2563EB"><circle cx="130" cy="42" r="12"/><circle cx="158" cy="42" r="12"/><circle cx="186" cy="42" r="12"/></g><text x="117" y="82" text-anchor="middle" font-size="13" font-weight="800">2 red : 5 total</text><text x="117" y="22" text-anchor="middle" font-size="12" font-weight="800">2:5</text></svg>`
+  },
+
+  "proportional relationship": {
+    id: "proportional relationship",
+    enTitle: "Proportional Relationship",
+    esTitle: "Relación proporcional",
+    enDef: "A relationship between two quantities with a constant ratio. In a direct proportional relationship, multiplying one quantity by a factor multiplies the other by that same factor.",
+    esDef: "Una relación entre dos cantidades con una razón constante. En una relación proporcional directa, multiplicar una cantidad por un factor también multiplica la otra por ese mismo factor.",
+    example: "If each notebook costs $2.50, 1, 2, and 4 notebooks cost $2.50, $5, and $10.",
+    keywords: ["proportional relationship", "proportional relationships", "relación proporcional", "relaciones proporcionales"],
+    svg: `<svg viewBox="0 0 300 120" role="img" aria-label="A proportional graph passes through the origin" style="background:#EFF6FF;border-radius:12px;border:1px solid #BFDBFE;width:100%;max-width:300px;display:block"><path d="M40 96 V18 M40 96 H270" fill="none" stroke="#17324D" stroke-width="2"/><path d="M40 96 L230 24" fill="none" stroke="#2563EB" stroke-width="3"/><circle cx="40" cy="96" r="4" fill="#DC2626"/><circle cx="135" cy="60" r="5" fill="#2563EB"/><circle cx="230" cy="24" r="5" fill="#2563EB"/><text x="48" y="112" font-size="10" font-weight="700">origin</text><text x="285" y="100" font-size="11" font-weight="800">x</text><text x="32" y="15" font-size="11" font-weight="800">y</text></svg>`
+  },
+
   percent: {
     id: "percent",
     enTitle: "Percent",
@@ -648,7 +725,27 @@ export function openVocabModal(termKey) {
   };
 
   const modal = document.querySelector("#fluency-vocab-modal");
-  if (!modal) return;
+  if (!modal) {
+    // The linked Ratio Studio is a compact standalone route. It shares this
+    // vocabulary data while using the browser's native dialog for focus and Escape handling.
+    const dialog = document.querySelector("#vocab-dialog");
+    if (!dialog) return;
+    const fields = [
+      ["#vocab-title", data.enTitle],
+      ["#vocab-es-title", data.esTitle],
+      ["#vocab-definition", data.enDef],
+      ["#vocab-es-definition", data.esDef],
+      ["#vocab-example", data.example],
+    ];
+    for (const [selector, value] of fields) {
+      const element = dialog.querySelector(selector);
+      if (element) element.textContent = value;
+    }
+    const illustration = dialog.querySelector("#vocab-image");
+    if (illustration) illustration.innerHTML = data.svg || "";
+    if (!dialog.open) dialog.showModal();
+    return;
+  }
 
   const titleEl = modal.querySelector("#vocab-modal-title");
   const esTitleEl = modal.querySelector("#vocab-modal-es-title");

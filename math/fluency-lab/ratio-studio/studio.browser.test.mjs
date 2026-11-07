@@ -21,6 +21,14 @@ try {
   const expected = new URLSearchParams(href.split("?")[1]);
   await link.click();
   await page.waitForFunction(() => document.querySelector("#amount-a")?.value !== "");
+  await page.locator('[data-vocab="equivalent ratio"]').click();
+  const vocabDialog = page.locator("#vocab-dialog");
+  await vocabDialog.waitFor({ state: "visible" });
+  assert.match(await page.locator("#vocab-definition").innerText(), /same comparison/);
+  assert.match(await page.locator("#vocab-es-definition").innerText(), /misma/);
+  assert.equal(await page.locator('#vocab-image svg[role="img"]').count(), 1);
+  await page.keyboard.press("Escape");
+  await vocabDialog.waitFor({ state: "hidden" });
   assert.equal(await page.locator("#amount-a").inputValue(), expected.get("a"));
   assert.equal(await page.locator("#amount-b").inputValue(), expected.get("b"));
   assert.equal(await page.locator("#label-a").inputValue(), expected.get("labelA"));
