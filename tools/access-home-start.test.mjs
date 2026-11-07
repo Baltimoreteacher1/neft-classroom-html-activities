@@ -172,6 +172,20 @@ test("registry: unique ids, known groups, both languages, real icons, routes tha
   );
 });
 
+test("new literacy pathways are discoverable from home", async () => {
+  const expected = [
+    ["science-of-reading-path", "science-of-reading/path"],
+    ["vocabulary-investigations", "vocab-curriculum"],
+    ["subject-reading", "subject-reading"],
+  ];
+  const homeDoc = await renderHome("6-8", "en");
+  for (const [id, route] of expected) {
+    const card = homeDoc.querySelector(`[data-home-card="${id}"]`);
+    assert.ok(card, `${id} is present in Explore Activities`);
+    assert.ok(card.getAttribute("href").includes(route), `${id} launches ${route}`);
+  }
+});
+
 test("home keeps every destination the previous home linked, for both bands", async () => {
   const required = [
     "/path",
@@ -262,6 +276,14 @@ test("start screen: landmarks, one h1, a labelled ruler, the language choice, fo
     "language choice on the start screen",
   );
   assert.equal(lph.querySelectorAll(".lph-skill").length, 4);
+  assert.equal(lph.querySelectorAll(".lph-primary-options a").length, 2);
+  assert.ok(lph.querySelector(".lph-primary-options a[href='#start-learning']"));
+  assert.ok(lph.querySelector(".lph-primary-options a[href*='/library']"));
+  assert.equal(
+    doc.querySelector("details.lph-dashboard").open,
+    false,
+    "secondary resources start collapsed",
+  );
   assert.equal(lph.querySelectorAll(".lph-door").length, 2);
   assert.equal(
     lph.querySelector(".is-family a").getAttribute("href"),
@@ -399,7 +421,7 @@ test("styles: the start sheet is critical, uses tokens and keeps 48px targets", 
     [],
     "colours come from ds.css tokens",
   );
-  for (const sel of [".lph-step", ".lph-skill", ".lph-quick a", ".lph-more > summary"]) {
+  for (const sel of [".lph-step", ".lph-skill", ".lph-primary-options a", ".lph-more > summary"]) {
     const block =
       css.match(new RegExp(`${sel.replace(/[.>]/g, (m) => `\\${m}`)} \\{[^}]*\\}`))?.[0] || "";
     const h = Number(block.match(/min-height: ([\d.]+)rem/)?.[1] || 0);

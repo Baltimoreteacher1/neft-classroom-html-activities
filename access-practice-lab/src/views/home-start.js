@@ -5,7 +5,6 @@
 import { GRADE_PICKS, bandName, pickerState, resolvePick } from "../grade-bands.js";
 import { activeGradeFocus, inGradeFocus } from "../grade-focus.js";
 import { gradeFocusHTML } from "../grade-focus-ui.js";
-import { cardsFor } from "../home-registry.js";
 import { langSwitchHTML } from "../i18n.js";
 import { MISSIONS, stepInfo } from "../journey/curriculum.js";
 import { ctaLabel, headline } from "../journey/ui/pages-hero.js";
@@ -179,7 +178,7 @@ function continueHTML(I, target, band) {
     data-continue-kind="${target.kind}"
   >
     <p class="lph-label">
-      ${fresh ? I.T("New here? Start here", "¿Eres nuevo? Empieza aquí") : I.T("Pick up where you left off", "Sigue donde lo dejaste")}
+      ${fresh ? I.T("Start learning", "Empezar a aprender") : I.T("Continue learning", "Continuar aprendiendo")}
     </p>
     <h2 id="lphContinueTitle">${target.title}</h2>
     <p class="lph-why">${target.why}</p>
@@ -187,9 +186,10 @@ function continueHTML(I, target, band) {
       >${target.cta}${icon("arrow-right")}</a
     >
     ${target.minutes ? html`<p class="fine lph-time">${I.T(`About ${target.minutes} minutes · no timer`, `Unos ${target.minutes} minutos · sin cronómetro`)}</p>` : ""}
-    <ul class="lph-quick">
-      ${cardsFor("start", band).map((c) => html`<li><a data-home-card="${c.id}" href="${cardHref(c, band)}">${icon(c.icon)}${I.T(c.title[0], c.title[1])}</a></li>`)}
-    </ul>
+    <div class="lph-primary-options" aria-label="${I.S("Other ways to start", "Otras formas de empezar")}">
+      <a href="#start-learning">${I.T("Start by skill", "Empezar por destreza")}</a>
+      <a href="${BASE}/library?grades=${band}">${I.T("Explore activities", "Explorar actividades")}</a>
+    </div>
   </section>`;
 }
 
@@ -219,8 +219,8 @@ export function startHTML(I, ctx, data) {
     </div>
     <div class="lph-student">
       ${continueHTML(I, target, band)}
-      <div class="lph-pick">
-        <h2 class="lph-label" id="lphSkillsTitle">${I.T("Or pick a skill", "O elige una destreza")}</h2>
+      <div class="lph-pick" id="start-learning">
+        <h2 class="lph-label" id="lphSkillsTitle">${I.T("Choose a skill to begin", "Elige una destreza para empezar")}</h2>
         ${skillsHTML(I, band, domains, tierFor)}
       </div>
     </div>

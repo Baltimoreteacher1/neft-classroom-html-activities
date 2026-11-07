@@ -86,7 +86,7 @@ export const network = {
     const allConnected = n.links.every((link) => r.links[link.word] === link.relation);
     const draftFeedback = r.submitted ? explanationFeedback(r.draft, n) : null;
     const revised = r.revision && r.revision.trim() !== r.draft.trim();
-    return html`<div class="wl-network-nav" aria-label="Semantic maps">${NETWORKS.filter((x) => x.band === ctx.band).map((x) => html`<a class="btn ${n.id === x.id ? "btn-primary" : ""}" href="/access-practice-lab/wordlab/network/${x.id}?grades=${ctx.band}">${x.title}${st.network[x.id]?.done ? ` ✓` : ""}</a>`)}</div>
+    return html`<div class="wl-network-nav" aria-label="Semantic maps">${NETWORKS.filter((x) => x.band === ctx.band).map((x) => html`<a class="btn ${n.id === x.id ? "btn-primary" : ""}" href="/access-practice-lab/wordlab/network/${x.id}?grades=${ctx.band}">${x.title}${st.network[x.id]?.done ? html` ${icon("check")}` : ""}</a>`)}</div>
       <section class="panel wl-network" aria-labelledby="wl-network-title">
         <p class="eyebrow">Semantic Network · ${n.id === "reasoning-map" ? "Argument" : "Connections"}</p>
         <h2 id="wl-network-title">${n.title}</h2>

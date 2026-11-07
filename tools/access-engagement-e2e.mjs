@@ -83,6 +83,7 @@ try {
       (await page.getByRole("button", { name: "Start today’s mission · 15 min" }).isVisible()),
     "10- and 15-minute choices remain available",
   );
+  await page.locator("details.lph-dashboard > summary").click();
   await page.locator("[data-weekly-goal]").selectOption("4");
   await page.getByRole("button", { name: "Start today’s mission · 5 min" }).click();
   let url = new URL(page.url());
@@ -154,9 +155,11 @@ try {
     localStorage.setItem(p, JSON.stringify({ complete: [], results }));
   });
   await page.locator(".session-finish a").last().click();
+  await page.locator("details.lph-dashboard > summary").click();
   await page.waitForSelector("[data-weekly-goal]");
   await page.locator("[data-weekly-goal]").selectOption("3");
   await page.reload({ waitUntil: "networkidle" });
+  await page.locator("details.lph-dashboard > summary").click();
   // The three synthetic days are Monday-Wednesday; the real session finished above adds today.
   // From Thursday on that is a fourth practice day, so assert the goal is reached, not an exact count.
   const goalText = await page.locator(".weekly-goal h2").innerText();

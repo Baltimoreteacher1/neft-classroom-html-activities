@@ -551,7 +551,14 @@ function interceptLink(e) {
   const url = new URL(a.href, location.href);
   if (url.hash && url.pathname === location.pathname && url.search === location.search) {
     const target = document.getElementById(decodeURIComponent(url.hash.slice(1)));
-    if (target) { e.preventDefault(); target.focus(); target.scrollIntoView({ block: "start" }); return true; }
+    if (target) {
+      e.preventDefault();
+      const disclosure = target.closest("details:not([open])");
+      if (disclosure) disclosure.open = true;
+      target.focus();
+      target.scrollIntoView({ block: "start" });
+      return true;
+    }
   }
   if (
     url.origin !== location.origin ||

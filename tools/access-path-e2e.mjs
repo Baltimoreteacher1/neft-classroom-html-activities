@@ -143,8 +143,9 @@ try {
 
   // ── lab home links the path ───────────────────────────────────────────────
   await go("/?grades=6-8");
+  await page.locator("details.lph-dashboard > summary").click();
   ok(
-    (await page.locator('.lph [data-home-card="path"]').count()) === 1,
+    (await page.locator('.lph-dashboard [data-home-card="path"]').count()) === 1,
     "lab home links My Language Path",
   );
   ok(

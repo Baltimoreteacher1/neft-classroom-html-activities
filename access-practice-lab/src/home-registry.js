@@ -172,6 +172,40 @@ export const HOME_CARDS = [
     text: ["Choose a text, annotate evidence.", "Elige un texto y anota la evidencia."],
   },
   {
+    id: "science-of-reading-path",
+    group: "explore",
+    href: "science-of-reading/path",
+    icon: "reading",
+    title: ["Decoding and connected reading", "Decodificación y lectura conectada"],
+    text: [
+      "Learn a spelling pattern, practice it, then read connected text.",
+      "Aprende un patrón de escritura, practícalo y luego lee un texto conectado.",
+    ],
+  },
+  {
+    id: "vocabulary-investigations",
+    group: "explore",
+    href: "vocab-curriculum",
+    icon: "words",
+    title: ["Vocabulary investigations", "Investigaciones de vocabulario"],
+    text: [
+      "Explore word meaning, relationships, context, and use.",
+      "Explora el significado, las relaciones, el contexto y el uso de las palabras.",
+    ],
+  },
+  {
+    id: "subject-reading",
+    group: "explore",
+    bands: ["3-5", "6-8"],
+    href: "subject-reading",
+    icon: "evidence",
+    title: ["Read across subjects", "Lee sobre distintas materias"],
+    text: [
+      "Use vocabulary and evidence to explain ideas in science and more.",
+      "Usa vocabulario y evidencia para explicar ideas de ciencias y otras materias.",
+    ],
+  },
+  {
     id: "worlds",
     group: "explore",
     href: "worlds",

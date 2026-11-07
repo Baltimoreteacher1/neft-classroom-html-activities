@@ -253,6 +253,8 @@ export async function render(ctx) {
             </aside>`
           : ""
       }
+      ${next ? html`<aside class="lph-recommended-next" aria-label="${I.S("Recommended next practice", "Práctica siguiente recomendada")}"><a class="next-step" href="${next.href}"><span class="ll-kicker">${I.T("Continue where it helps most", "Continúa donde más ayuda")}</span><strong>${next.title}</strong><span class="fine">${next.why}</span><span class="next-go">${icon("arrow-right")}</span></a></aside>` : ""}
+      ${due.length ? reviewPanel : ""}
       ${
         windowPhase
           ? html`<aside
@@ -370,7 +372,6 @@ export async function render(ctx) {
           ${planOptionsHTML(I, { plan, focus, level, count, option, band, shippedLevels })}
         </div>
         <aside class="today-side" aria-label="${I.S("Your next step", "Tu próximo paso")}">
-          ${next ? html`<a class="next-step" href="${next.href}"><span class="ll-kicker">${I.T("Continue where it helps most", "Continúa donde más ayuda")}</span><strong>${next.title}</strong><span class="fine">${next.why}</span><span class="next-go">${icon("arrow-right")}</span></a>` : ""}
           <a class="progress-note" href="${BASE}/passport?grades=${band}"
             >${icon("passport")}<span
               ><strong
@@ -383,7 +384,7 @@ export async function render(ctx) {
         </aside>
       </section>
 
-      ${reviewPanel}
+      ${due.length ? "" : reviewPanel}
 
       <section class="ll-studios" id="skills" aria-labelledby="roomsTitle">
         <div class="ll-section-head">
@@ -395,6 +396,17 @@ export async function render(ctx) {
         </div>
         <div class="room-grid ll-portals">${tiles}</div>
       </section>
+
+      <details class="lph-dashboard">
+        <summary>
+          <span>${I.T("More ways to learn", "Más formas de aprender")}</span>
+          <strong>${I.T("Explore activities, plans and progress", "Explora actividades, planes y progreso")}</strong>
+          <span class="fine">${I.T("Your learning tools and resources are ready when you need them.", "Tus herramientas y recursos están listos cuando los necesites.")}</span>
+        </summary>
+        <div class="lph-dashboard-content">
+          <nav class="lph-dashboard-links" aria-label="${I.S("More ways to start", "Más formas de empezar")}">
+            <div class="studio-grid">${cardsFor("start", band).map(card)}</div>
+          </nav>
 
       <section class="ll-library lph-explore" id="explore" aria-labelledby="exploreTitle">
         <div class="ll-section-head">
@@ -581,7 +593,9 @@ export async function render(ctx) {
           <h3>${I.T("Practice together at home", "Practiquen juntos en casa")}</h3>
           ${cardsFor("family", band).map(door)}
         </div>
-      </section>`,
+      </section>
+        </div>
+      </details>`,
   };
 }
 

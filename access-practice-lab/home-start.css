@@ -151,22 +151,85 @@
 .lph-time {
   margin: var(--s-2) 0 0;
 }
-.lph-quick {
+.lph-primary-options {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--s-1) var(--s-4);
-  margin: var(--s-3) 0 0;
-  padding: var(--s-3) 0 0;
-  border-top: 1px solid var(--line);
-  list-style: none;
+  gap: var(--s-2);
+  margin-top: var(--s-3);
 }
-.lph-quick a {
+.lph-primary-options a {
   display: inline-flex;
   align-items: center;
-  gap: 0.4rem;
   min-height: 3rem;
+  padding: 0.5rem 0.8rem;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
   color: var(--brand-ink);
   font-weight: 700;
+  text-decoration: none;
+}
+.lph-primary-options a:hover {
+  background: var(--brand-soft);
+}
+.lph-primary-options a:focus-visible,
+.lph-dashboard > summary:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+}
+.lph-dashboard {
+  margin-block: var(--s-5);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+.lph-dashboard > summary {
+  display: grid;
+  gap: 0.2rem;
+  min-height: 4.5rem;
+  padding: 1rem 1.25rem;
+  cursor: pointer;
+}
+.lph-dashboard > summary > span:first-child {
+  color: var(--brand-ink);
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+.lph-dashboard > summary strong {
+  font: 600 1.25rem/1.25 var(--font-display);
+}
+.lph-dashboard[open] > summary {
+  margin-bottom: var(--s-3);
+  border-bottom: 1px solid var(--line);
+}
+.lph-dashboard-content {
+  display: grid;
+  gap: var(--s-5);
+  padding: 0 var(--s-4) var(--s-5);
+}
+.lph-dashboard-content > section,
+.lph-dashboard-content > aside {
+  margin-block: 0;
+}
+.lph-recommended-next {
+  margin-block: var(--s-4);
+}
+.lph-recommended-next .next-step {
+  width: min(100%, 66rem);
+  margin-inline: auto;
+}
+@media (max-width: 599px) {
+  .lph-dashboard > summary {
+    padding-inline: 0.9rem;
+  }
+  .lph-dashboard-content {
+    padding-inline: 0.75rem;
+  }
+  .lph-primary-options a {
+    flex: 1 1 9rem;
+    justify-content: center;
+  }
 }
 .lph-skills {
   display: grid;
