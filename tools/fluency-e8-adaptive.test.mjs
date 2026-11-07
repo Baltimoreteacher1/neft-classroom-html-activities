@@ -611,7 +611,7 @@ const build = (specs, _extra = {}) => {
       recordAnswer(
         tutor,
         findSkill(key),
-        { correct: s.c, independent: s.i, level: s.l ?? 1, sig: `${key}-${i}` },
+        { correct: s.c, independent: s.i, level: s.l ?? 1, sig: `attempt-${i}` },
         s.at,
       ),
     );

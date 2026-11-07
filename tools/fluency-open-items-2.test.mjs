@@ -72,20 +72,23 @@ assert.match(median.steps[0], /^Put the values in order/, "a median starts by or
 // 2. Every grade shows the 2025 Maryland codes (MSDE crosswalks) and keeps the former CCSS code beside it.
 for (const skill of ALL_SKILLS) {
   if (skill.standardNote) {
-    assert.equal(skill.standard, "8.G.A.3", "only reflections lost their grade-level standard");
+    assert.ok(
+      ["7.G.B.5", "8.G.A.3", "8.EE.A.4", "8.G.C.9"].includes(skill.standard),
+      `${skill.id} documents its standards placement: ${skill.standard}`,
+    );
     continue;
   }
   assert.match(
     skill.standard,
     skill.grade === 0
-      ? /^K\.(NOS|AT|GR|DS)(?:\.[A-D])?\.\d+$/
-      : new RegExp(`^${skill.grade}\\.(NOS|AT|GR|DS)(?:\\.[A-D])?\\.\\d+$`),
+      ? /^K\.(NOS|AT|GR|DS)(?:\.[A-D])?\.\d+[a-z]?$/
+      : new RegExp(`^${skill.grade}\\.(NOS|AT|GR|DS)(?:\\.[A-D])?\\.\\d+[a-z]?$`),
     `${skill.id}: ${skill.standard}`,
   );
   if (skill.formerStandard) {
     assert.match(
       skill.formerStandard,
-      /^\d\.(OA|NBT|NF|MD|G|RP|EE|NS|F|SP)\.[A-D]\.\d+$/,
+      /^(?:K|\d)\.(OA|NBT|NF|MD|G|RP|EE|NS|F|SP)\.[A-D]\.\d+[a-z]?$/,
       `${skill.id} keeps its former code`,
     );
   }
@@ -112,7 +115,11 @@ assert.equal(skillOf(7, as("−6 + 4 = ?", -2, "integerOp")), "integer-add");
 // A stop with no skill in its own grade credits the nearest earlier grade's skill.
 assert.equal(skillForItem(6, as("2.5 + 1.25 = ?", 3.75, "decimalOp"))?.grade, 5);
 assert.equal(skillOf(6, as("2.5 + 1.25 = ?", 3.75, "decimalOp")), "decimal-add");
-assert.equal(skillOf(6, as("1,734 ÷ 6 = ?", 289, "fact")), "divide-whole");
+assert.equal(
+  skillOf(6, as("1,734 ÷ 6 = ?", 289, "fact")),
+  "multi-digit-division",
+  "Grade 6 division evidence belongs to the multi-digit division standard",
+);
 assert.equal(skillForItem(8, as("−9 × 12 = ?", -108, "integerOp"))?.id, "integer-mul");
 const unmapped = new Set();
 for (const [grade, trail] of Object.entries(TRAILS))

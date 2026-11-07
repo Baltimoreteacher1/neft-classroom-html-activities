@@ -1495,29 +1495,41 @@ for (const grade of GRADES) for (const skill of grade.skills) skill.grade = grad
 // site's lessons use: 7.AT.A.2 is written 7.AT.2. Rounding (3.NBT.A.1, 4.NBT.A.3) is folded into the grade's
 // first place-value standard.
 const MCCRS_2025 = {
+  "K.OA.A.3": "K.NOS.D.11",
+  "1.G.A.1": "1.GR.3", "1.G.A.3": "1.NOS.14",
   "1.NBT.A.1": "1.NOS.1", "1.NBT.B.3": "1.NOS.5", "1.NBT.B.2": "1.NOS.3", "1.OA.C.6": "1.NOS.9",
   "1.OA.B.4": "1.NOS.8", "1.OA.D.8": "1.AT.3", "1.MD.B.3": "1.GR.5",
   "2.OA.B.2": "2.NOS.6", "2.NBT.A.1": "2.NOS.1", "2.NBT.A.4": "2.NOS.4", "2.NBT.A.2": "2.NOS.2",
   "2.NBT.B.5": "2.NOS.8", "2.NBT.B.7": "2.NOS.9", "2.OA.C.3": "2.AT.3", "2.MD.C.8": "2.GR.9",
+  "2.OA.C.4": "2.NOS.2", "2.MD.C.7": "2.GR.7", "2.NBT.B.8": "2.NOS.10",
   "3.OA.C.7": "3.NOS.9", "3.NBT.A.3": "3.NOS.8", "3.NBT.A.2": "3.NOS.7", "3.NBT.A.1": "3.NOS.1",
   "3.NF.A.3": "3.NOS.13", "3.MD.C.7": "3.GR.7", "3.MD.D.8": "3.GR.9",
+  "3.NF.A.2": "3.NOS.12", "3.MD.B.3": "3.DS.1",
   "4.NBT.A.1": "4.NOS.2", "4.NBT.A.3": "4.NOS.1", "4.NBT.B.4": "4.NOS.3", "4.NBT.B.5": "4.NOS.5",
   "4.NBT.B.6": "4.NOS.6", "4.OA.B.4": "4.NOS.8", "4.NF.A.1": "4.NOS.9", "4.NF.A.2": "4.NOS.10",
+  "4.NF.B.3": "4.NOS.12", "4.MD.B.4": "4.DS.1", "4.MD.C.7": "4.GR.7",
   "5.NBT.B.5": "5.NOS.4", "5.NBT.B.6": "5.NOS.5", "5.NBT.A.3": "5.NOS.3", "5.NBT.B.7": "5.NOS.6",
   "5.NF.A.1": "5.NOS.8", "5.NF.B.4": "5.NOS.11", "5.MD.C.5": "5.GR.5",
+  "5.G.A.2": "5.GR.7", "5.OA.A.1": "5.AT.1",
   "6.NS.A.1": "6.NOS.1", "6.NS.B.3": "6.NOS.3", "6.NS.B.4": "6.NOS.4", "6.NS.C.7": "6.NOS.8", "6.RP.A.1": "6.AT.1",
   "6.RP.A.2": "6.AT.2", "6.RP.A.3": "6.AT.3", "6.EE.A.2": "6.AT.6", "6.EE.B.7": "6.AT.8",
   "6.NS.B.2": "6.NOS.2", "6.EE.A.3": "6.AT.7", "6.EE.B.8": "6.AT.9", "6.SP.B.4": "6.DS.5", "6.SP.B.5": "6.DS.6c",
   "6.G.A.4": "6.GR.4", "6.G.A.2": "6.GR.2",
   "7.NS.A.1": "7.NOS.1", "7.NS.A.2": "7.NOS.2", "7.NS.A.3": "7.NOS.2", "7.RP.A.1": "7.AT.1", "7.RP.A.3": "7.AT.4",
   "7.G.B.4": "7.GR.3", "7.SP.C.7": "7.DS.6",
+  "7.EE.A.1": "7.AT.5", "7.SP.A.2": "7.DS.2",
   "8.EE.A.1": "8.NOS.3", "8.EE.A.3": "8.NOS.5", "8.NS.A.2": "8.NOS.2", "8.EE.C.7": "8.AT.3", "8.EE.B.6": "8.AT.2",
-  "8.F.A.1": "8.AT.6", "8.EE.C.8": "8.AT.5", "8.G.B.7": "8.GR.5", "8.SP.A.1": "8.DS.2",
+  "8.F.A.1": "8.AT.6", "8.F.A.2": "8.AT.7", "8.EE.C.8": "8.AT.5", "8.G.B.7": "8.GR.5", "8.SP.A.1": "8.DS.2",
 };
 // One 2010 code split into two 2025 standards; each skill takes the one it practises.
 const MCCRS_BY_SKILL = { "6:percent-whole": "6.AT.4", "7:proportions": "7.AT.2", "7:equations": "7.AT.8", "7:inequalities": "7.AT.9" };
 // 8.G.A.3 has no 2025 Grade 8 standard: MSDE moved transformations to Integrated Algebra 1 and 2.
-const MCCRS_NOTES = { "8.G.A.3": "not in the 2025 Grade 8 standards; moved to Integrated Algebra" };
+const MCCRS_NOTES = {
+  "8.G.A.3": "not in the 2025 Grade 8 standards; moved to Integrated Algebra",
+  "8.EE.A.4": "not included as a separate 2025 Grade 8 standard",
+  "8.G.C.9": "moved to Grade 7 in the 2025 MCCRS",
+  "7.G.B.5": "moved to Grade 8 in the 2025 MCCRS",
+};
 for (const grade of GRADES) {
   for (const skill of grade.skills) {
     const code = MCCRS_BY_SKILL[`${grade.grade}:${skill.id}`] || MCCRS_2025[skill.standard];

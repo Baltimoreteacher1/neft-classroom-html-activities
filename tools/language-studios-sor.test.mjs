@@ -92,10 +92,11 @@ test("Language Studios data structures and contracts", () => {
 test("Language Studios render contract", async () => {
   const out = await ls.render();
   assert.strictEqual(out.title, "Language Studios");
-  assert.ok(typeof out.html === "string" && out.html.length > 500);
-  assert.ok(out.html.includes("WIDA Academic Discourse Level Slider"));
-  assert.ok(out.html.includes("Academic English Mastery"));
-  assert.ok(out.html.includes("wida-range-slider"));
+  const markup = toHtml(out.html);
+  assert.ok(markup.length > 500);
+  assert.ok(markup.includes("WIDA Academic Discourse Level Slider"));
+  assert.ok(markup.includes("Academic English Mastery"));
+  assert.ok(markup.includes("wida-range-slider"));
 });
 
 test("App routing recognizes Science of Reading and Language Studios roots", () => {

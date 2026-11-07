@@ -798,7 +798,7 @@ try {
     "settings-toggle",
     "Escape closes settings and restores keyboard focus",
   );
-  await studentPage.locator('[data-dest="learning"]').click();
+  await studentPage.locator('[data-dest="growth"]').click();
   const progressAxe = await new AxeBuilder({ page: studentPage }).analyze();
   assert.deepEqual(
     progressAxe.violations
@@ -807,9 +807,10 @@ try {
     [],
     "student growth view has no serious or critical accessibility violations",
   );
-  await studentPage.locator('[data-dest="home"]').click();
+  await studentPage.locator('[data-dest="today"]').click();
   // Home is Grade -> Topic -> Skill -> Start (data/product-decisions.json, fluency entry flow).
-  for (const step of ["[data-ep-grade]", "[data-ep-topic]", "[data-ep-skill]", "[data-ep-start]"]) {
+  await studentPage.locator('[data-ep-grade="3"]').click();
+  for (const step of ["[data-ep-topic]", "[data-ep-skill]", "[data-ep-start]"]) {
     await studentPage.locator(step).first().click();
   }
   await studentPage.locator("#workspace-view").waitFor({ state: "visible" });
@@ -836,7 +837,7 @@ try {
   assert.equal(
     await studentPage.getByRole("textbox", { name: "Your answer" }).count(),
     1,
-    "practice answer is exposed as a named textbox",
+    "Grade 3 place-value practice exposes a named answer field",
   );
   assert.equal(
     await studentPage.getByRole("group", { name: "My feeling:" }).count(),

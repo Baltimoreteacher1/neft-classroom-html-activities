@@ -25,6 +25,7 @@ assert.deepEqual(
     "K.AT.A.1",
     "K.AT.A.2",
     "K.AT.B.3",
+    "K.NOS.D.11",
   ],
 );
 for (const skill of kindergarten.skills) {

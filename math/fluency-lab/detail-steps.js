@@ -60,20 +60,10 @@ function fractionAddSub(a, b, op, c, d) {
     const simpN = resNum / g;
     const simpD = b / g;
     const steps = [
-      `The denominators match (${b}), so ${op === "+" ? "add" : "subtract"} the tops: ${a} ${op} ${c} = ${resNum}.`,
-      `Keep the denominator: raw result = ${resNum}/${b}.`,
+      `The denominators match (${b}), so ${op === "+" ? "add" : "subtract"} the numerators and keep the denominator.`,
     ];
-    if (g > 1) {
-      steps.push(`Find the common factor to reduce: GCF = ${g}.`);
-      steps.push(`Divide top and bottom by ${g}: (${resNum} ÷ ${g}) / (${b} ÷ ${g}) = ${simpN}/${simpD}.`);
-    } else {
-      steps.push(`${resNum}/${b} is already in simplest form (GCF = 1).`);
-    }
-    if (simpN > simpD && simpD > 1) {
-      const w = Math.floor(simpN / simpD);
-      const r = simpN % simpD;
-      steps.push(`Convert improper fraction to mixed number: ${simpN} ÷ ${simpD} = ${w} ${r}/${simpD}.`);
-    }
+    if (g > 1) steps.push(`Find the common factor to reduce: GCF = ${g}.`);
+    steps.push(`The simplified result is ${simpN}/${simpD}.`);
     return ending(steps);
   }
   const common = lcm(b, d);
@@ -89,20 +79,10 @@ function fractionAddSub(a, b, op, c, d) {
     `Find the least common denominator: LCD = ${common}.`,
     `Rewrite first fraction: ${a}/${b} = ${eqA}/${common}.`,
     `Rewrite second fraction: ${c}/${d} = ${eqC}/${common}.`,
-    `${op === "+" ? "Add" : "Subtract"} the numerators: ${eqA} ${op} ${eqC} = ${resNum}.`,
-    `Raw unreduced result = ${resNum}/${common}.`,
+    `${op === "+" ? "Add" : "Subtract"} the numerators and keep the common denominator.`,
   ];
-  if (g > 1) {
-    steps.push(`Find the common factor to reduce: GCF = ${g}.`);
-    steps.push(`Divide top and bottom by ${g}: (${resNum} ÷ ${g}) / (${common} ÷ ${g}) = ${simpN}/${simpD}.`);
-  } else {
-    steps.push(`${resNum}/${common} is already in simplest form (GCF = 1).`);
-  }
-  if (simpN > simpD && simpD > 1) {
-    const w = Math.floor(simpN / simpD);
-    const r = simpN % simpD;
-    steps.push(`Convert improper fraction to mixed number: ${simpN} ÷ ${simpD} = ${w} ${r}/${simpD}.`);
-  }
+  if (g > 1) steps.push(`Find the common factor to reduce: GCF = ${g}.`);
+  steps.push(`The simplified result is ${simpN}/${simpD}.`);
   return ending(steps);
 }
 

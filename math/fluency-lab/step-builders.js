@@ -179,18 +179,10 @@ const BUILDERS = [
         const simpN = resNum / g;
         const simpD = b / g;
         const steps = [
-          `The denominators match (${b}), so ${op === "+" ? "add" : "subtract"} the tops: ${a} ${op} ${c} = ${resNum}.`,
-          `Keep the denominator: raw result = ${resNum}/${b}.`,
+          `The denominators match (${b}), so ${op === "+" ? "add" : "subtract"} the numerators and keep the denominator.`,
         ];
-        if (g > 1) {
-          steps.push(`Find the common factor to reduce: GCF = ${g}.`);
-          steps.push(`Divide top and bottom by ${g}: (${resNum} ÷ ${g}) / (${b} ÷ ${g}) = ${simpN}/${simpD}.`);
-        }
-        if (simpN > simpD && simpD > 1) {
-          const w = Math.floor(simpN / simpD);
-          const r = simpN % simpD;
-          steps.push(`Convert improper fraction to mixed number: ${simpN} ÷ ${simpD} = ${w} ${r}/${simpD}.`);
-        }
+        if (g > 1) steps.push(`Find the common factor to reduce: GCF = ${g}.`);
+        steps.push(`The simplified result is ${simpN}/${simpD}.`);
         return steps;
       }
       const common = lcm(b, d);
@@ -206,20 +198,10 @@ const BUILDERS = [
         `Find the least common denominator of ${b} and ${d}: LCD = ${common}.`,
         `Rewrite first fraction: ${a}/${b} = ${eqA}/${common}.`,
         `Rewrite second fraction: ${c}/${d} = ${eqC}/${common}.`,
-        `${op === "+" ? "Add" : "Subtract"} the numerators: ${eqA} ${op} ${eqC} = ${resNum}.`,
-        `Raw unreduced result = ${resNum}/${common}.`,
+        `${op === "+" ? "Add" : "Subtract"} the numerators and keep the common denominator.`,
       ];
-      if (g > 1) {
-        steps.push(`Find the common factor to reduce: GCF = ${g}.`);
-        steps.push(`Divide top and bottom by ${g}: (${resNum} ÷ ${g}) / (${common} ÷ ${g}) = ${simpN}/${simpD}.`);
-      } else {
-        steps.push(`${resNum}/${common} is already in simplest form (GCF = 1).`);
-      }
-      if (simpN > simpD && simpD > 1) {
-        const w = Math.floor(simpN / simpD);
-        const r = simpN % simpD;
-        steps.push(`Convert improper fraction to mixed number: ${simpN} ÷ ${simpD} = ${w} ${r}/${simpD}.`);
-      }
+      if (g > 1) steps.push(`Find the common factor to reduce: GCF = ${g}.`);
+      steps.push(`The simplified result is ${simpN}/${simpD}.`);
       return steps;
     },
   ],
@@ -281,7 +263,7 @@ const BUILDERS = [
       const factor = c / a;
       return [
         `Find the scale factor: ${c} ÷ ${a} = ${factor}.`,
-        `Multiply ${b} by that same factor: ${b} × ${factor} = ${b * factor}.`,
+        `Multiply ${b} by that same factor to find the missing value.`,
       ];
     },
   ],
@@ -294,7 +276,7 @@ const BUILDERS = [
       const factor = d / b;
       return [
         `Find the scale factor: ${d} ÷ ${b} = ${factor}.`,
-        `Multiply ${a} by that same factor: ${a} × ${factor} = ${a * factor}.`,
+        `Multiply ${a} by that same factor to find the missing value.`,
       ];
     },
   ],
