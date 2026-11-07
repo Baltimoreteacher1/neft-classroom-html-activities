@@ -27,9 +27,11 @@ export function equivalent(a,b,c,d) {
 export function createState(input = {}) {
   const a = rational(input.a ?? 2), b = rational(input.b ?? 3);
   if (a.n === '0' && b.n === '0') throw new RangeError('At least one quantity must be positive');
+  const factor = rational(input.factor ?? 1);
+  if (factor.n === '0') throw new RangeError('Scale factor must be positive');
   const comparison=input.comparison || 'part-to-part';
   if(!COMPARISON_TYPES.includes(comparison))throw new RangeError('Choose a supported ratio comparison');
-  return {version:1, a,b, labelA:input.labelA || 'Red',labelB:input.labelB || 'Blue',unitA:input.unitA || 'counters',unitB:input.unitB || 'counters', factor:rational(input.factor ?? 1), comparison};
+  return {version:1, a,b, labelA:input.labelA || 'Red',labelB:input.labelB || 'Blue',unitA:input.unitA || 'counters',unitB:input.unitB || 'counters', factor, comparison};
 }
 export function derive(s) {
   const a=multiply(s.a,s.factor), b=multiply(s.b,s.factor), total=add(a,b);

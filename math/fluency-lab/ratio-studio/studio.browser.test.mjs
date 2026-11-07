@@ -32,7 +32,15 @@ try {
   await page.locator("#row-b").fill(format(equivalentRow.b));
   await page.locator("#check-row").click();
   assert.match(await page.locator("#row-feedback").innerText(), /^Yes/);
+  await page.locator("#row-factor").fill("0");
+  await page.locator("#check-row").click();
+  assert.match(await page.locator("#row-feedback").innerText(), /Scale factor must be positive/);
+  await page.locator("#row-factor").fill("4");
+  await page.locator("#check-row").click();
+  assert.match(await page.locator("#row-feedback").innerText(), /^Yes/);
   await page.locator("#reason").fill("Both quantities were multiplied by four.");
+  await page.locator("#check-transfer").click();
+  assert.match(await page.locator("#transfer-feedback").innerText(), /Enter both dollars-per-notebook rates/);
   await page.locator("#unit-one").fill("2.5");
   await page.locator("#unit-two").fill("2");
   await page.locator('[data-predict="yes"]').click();
@@ -86,7 +94,7 @@ try {
   const report = buildTeacherReport([{ label: "Orbit", tutor }], 6);
   const ratioEvidence = report.rows.find((row) => row.skill.id === "ratios");
   const rateEvidence = report.rows.find((row) => row.skill.id === "unit-rates");
-  assert.equal(ratioEvidence.status.supportedTotal, 1);
+  assert.equal(ratioEvidence.status.supportedTotal, 2);
   assert.equal(ratioEvidence.status.independent, 0);
   assert.equal(rateEvidence.status.independent, 1);
   assert.equal(rateEvidence.status.ratio, 1);
