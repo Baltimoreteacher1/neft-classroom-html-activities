@@ -2,6 +2,8 @@
 // the drawing, a text description and a one-line reading of what the numbers say right now, so the picture,
 // the numbers and the words always agree. Sliders are real range inputs, so they work with keyboard and touch.
 import { COLORS, L, esc, fmt, gcd, svgWrap, txt } from "./core.js";
+import percentFindWhole from "../../../curriculum/learning-labs/shared/models/percent-find-whole.mjs";
+import percentTape from "../../../curriculum/learning-labs/shared/models/percent-tape.mjs";
 
 const out = (svg, alt, read, extra = {}) => ({
   svg: svg.replace('aria-label=""', `aria-label="${esc(alt.en)}"`),
@@ -10,6 +12,15 @@ const out = (svg, alt, read, extra = {}) => ({
   ...extra,
 });
 const slider = (key, label, min, max, step, value) => ({ key, label, min, max, step, value });
+const hundredGrid = (p, y = 390) => {
+  const cell = 16, gap = 2, x0 = 210;
+  let body = txt(300, y - 18, `10 × 10 hundred grid · ${p} of 100 squares`, { size: 15 });
+  for (let i = 0; i < 100; i += 1) {
+    const x = x0 + (i % 10) * (cell + gap), top = y + Math.floor(i / 10) * (cell + gap);
+    body += `<rect x="${x}" y="${top}" width="${cell}" height="${cell}" rx="2" fill="${i < p ? COLORS.part : "#fff"}" stroke="${COLORS.ink}" stroke-width="1"/>`;
+  }
+  return body;
+};
 
 const fracEquiv = {
   id: "fracEquiv",
@@ -218,6 +229,74 @@ const volume = {
   },
 };
 
+const percentWhole = {
+  id: "percentWhole",
+  title: L("Find the whole with a percent tape", "Halla el entero con una cinta de porcentaje"),
+  ask: L(
+    "Change the part or its percent. Predict how the 100% whole will respond.",
+    "Cambia la parte o su porcentaje. Predice cómo responderá el entero del 100%.",
+  ),
+  init(ctx) {
+    const spec = ctx?.lesson?.spec;
+    return spec?.mode === "percentWhole" ? { p: spec.p, part: spec.part } : { p: 30, part: 15 };
+  },
+  sliders: (s) => [
+    slider("p", L("Known percent", "Porcentaje conocido"), 1, 100, 1, s.p),
+    slider("part", L("Known part", "Parte conocida"), 1, 120, 1, s.part),
+  ],
+  render(s) {
+    const result = percentFindWhole.evaluate(null, [s.p, s.part]);
+    const body = percentFindWhole.visual([s.p, s.part], result) + hundredGrid(s.p, 405);
+    const alt = L(
+      `Percent tape and double number line. ${s.p}% is ${fmt(s.part)}; the recovered 100% whole is ${fmt(result.value)}.`,
+      `Cinta de porcentaje y recta numérica doble. El ${s.p}% es ${fmt(s.part)}; el entero recuperado al 100% es ${fmt(result.value)}.`,
+    );
+    return out(
+      svgWrap(body, "", { w: 600, h: 590 }),
+      alt,
+      L(
+        `${s.p}% of the whole is ${fmt(s.part)}. Divide ${fmt(s.part)} by ${fmt(s.p / 100)} to recover 100%: ${fmt(result.value)}.`,
+        `El ${s.p}% del entero es ${fmt(s.part)}. Divide ${fmt(s.part)} entre ${fmt(s.p / 100)} para recuperar el 100%: ${fmt(result.value)}.`,
+      ),
+    );
+  },
+};
+
+const percentPart = {
+  id: "percentPart",
+  title: L("Percent tape and hundred grid", "Cinta de porcentaje y cuadrícula de cien"),
+  ask: L(
+    "Change the percent or whole. Predict how much the shaded part will be.",
+    "Cambia el porcentaje o el entero. Predice cuánto medirá la parte sombreada.",
+  ),
+  init(ctx) {
+    const item = ctx?.item;
+    if (item?.model?.type === "percentBar") return { p: item.model.percent, w: item.model.whole };
+    const m = String(item?.question || "").match(/^What is (\d+)% of (\d+)\?$/);
+    return m ? { p: Number(m[1]), w: Number(m[2]) } : { p: 30, w: 50 };
+  },
+  sliders: (s) => [
+    slider("p", L("Percent", "Porcentaje"), 0, 100, 1, s.p),
+    slider("w", L("Whole amount", "Cantidad total"), 1, 120, 1, s.w),
+  ],
+  render(s) {
+    const result = percentTape.evaluate(null, [s.p, s.w]);
+    const body = percentTape.visual([s.p, s.w], result) + hundredGrid(s.p, 360);
+    const alt = L(
+      `Percent tape, double number line, and hundred grid. ${s.p}% of ${fmt(s.w)} is ${fmt(result.value)}.`,
+      `Cinta de porcentaje, recta numérica doble y cuadrícula de cien. El ${s.p}% de ${fmt(s.w)} es ${fmt(result.value)}.`,
+    );
+    return out(
+      svgWrap(body, "", { w: 600, h: 550 }),
+      alt,
+      L(
+        `${s.p}% = ${fmt(s.p / 100)}. Multiply by the whole: ${fmt(s.p / 100)} × ${fmt(s.w)} = ${fmt(result.value)}. Each shaded grid square is 1% of the whole.`,
+        `${s.p}% = ${fmt(s.p / 100)}. Multiplica por el entero: ${fmt(s.p / 100)} × ${fmt(s.w)} = ${fmt(result.value)}. Cada cuadro sombreado representa el 1% del entero.`,
+      ),
+    );
+  },
+};
+
 const angles = {
   id: "angles",
   title: L("Angles at a crossing", "Ángulos en un cruce"),
@@ -321,6 +400,6 @@ const dotplot = {
   },
 };
 
-export const SIMS = { fracEquiv, proportional, machine, areaPerim, volume, angles, dotplot };
+export const SIMS = { fracEquiv, proportional, machine, areaPerim, volume, percentWhole, percentPart, angles, dotplot };
 export const simFor = (id) => SIMS[id] || null;
 export const _gcd = gcd;

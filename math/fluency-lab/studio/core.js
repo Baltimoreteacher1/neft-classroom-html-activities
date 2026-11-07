@@ -158,8 +158,8 @@ export function checkFrames(frames) {
 
 // ----- Helpers for the smaller engines: one declaration per frame, and picking an answer as the Build. -----
 // A frame from a drawing body: wraps it in an SVG, attaches the description for screen readers, keeps `meta`.
-export const frameOf = ({ id, cap, easy = null, eq = "", body, alt, meta = {}, h = 220 }) =>
-  Object.assign(frame({ id, cap, easy, eq, svg: svgWrap(body, alt.en, { h }), alt }), { meta });
+export const frameOf = ({ id, cap, easy = null, eq = "", body, alt, meta = {}, w = 560, h = 220 }) =>
+  Object.assign(frame({ id, cap, easy, eq, svg: svgWrap(body, alt.en, { w, h }), alt }), { meta });
 
 // A predict point with one right and one wrong answer, each explaining itself in both languages.
 export const predictOf = (at, q, right, wrong, why, explainRight, explainWrong) => ({

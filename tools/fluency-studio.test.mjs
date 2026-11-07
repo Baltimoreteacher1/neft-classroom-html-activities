@@ -505,6 +505,49 @@ for (const id of Object.keys(ENGINES))
   );
 for (const id of Object.values(SIM_FOR)) assert.ok(SIMS[id], `simulator ${id} exists`);
 
+{
+  const knownPart = { question: "15 is 30% of what number?", steps: [] };
+  const wholeLesson = lessonFor(knownPart);
+  assert.equal(wholeLesson?.engine.id, "expr", "find-whole questions use a direct model");
+  assert.equal(wholeLesson.spec.mode, "percentWhole");
+  assert.equal(wholeLesson.engine.answer(wholeLesson.spec), 50);
+  const wholeFrames = framesOf(wholeLesson);
+  assert.deepEqual(
+    wholeFrames.map((frame) => frame.id),
+    ["known", "unit", "whole"],
+  );
+  assert.equal(wholeFrames[0].meta.whole, undefined, "the first picture keeps the whole unknown");
+  assert.equal(wholeFrames.at(-1).meta.whole, 50);
+  assert.match(wholeFrames.at(-1).svg, /viewBox="0 0 600 370"/);
+  const wholeBuild = wholeLesson.engine.build;
+  const wholeStart = wholeBuild.init(wholeLesson.spec);
+  assert.ok(
+    !wholeBuild.act(wholeStart, "pick", 1, wholeLesson.spec).ok,
+    "the percent of the part is a diagnosed wrong method",
+  );
+  assert.ok(
+    wholeBuild.done(
+      wholeBuild.act(wholeStart, "pick", 0, wholeLesson.spec).state,
+      wholeLesson.spec,
+    ),
+  );
+  const wholeSim = SIMS[SIM_FOR["percent-whole"]];
+  const wholeState = wholeSim.init({ item: knownPart, lesson: wholeLesson });
+  assert.deepEqual(wholeState, { p: 30, part: 15 });
+  assert.match(wholeSim.render(wholeState).svg, /10 × 10 hundred grid · 30 of 100 squares/);
+  assert.match(wholeSim.render({ ...wholeState, p: 15 }).read.en, /100%/);
+
+  const percentItem = {
+    question: "What is 30% of 50?",
+    model: { type: "percentBar", whole: 50, percent: 30 },
+  };
+  const percentSim = SIMS[SIM_FOR.percent];
+  const percentState = percentSim.init({ item: percentItem });
+  assert.deepEqual(percentState, { p: 30, w: 50 });
+  assert.match(percentSim.render(percentState).svg, /Part = Percent × Whole/);
+  assert.match(percentSim.render(percentState).svg, /30 of 100 squares/);
+}
+
 // ---------- 3. Parsers decline what they cannot model ----------
 for (const q of [
   "",
