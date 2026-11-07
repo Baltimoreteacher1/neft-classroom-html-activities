@@ -2,6 +2,13 @@
 // conversions, scale drawings and percent. Each new row comes from multiplying or dividing BOTH numbers of a
 // known row by one factor, so the tests can cross-multiply every row against the starting row.
 import { COLORS, L, clean, esc, fmt, frame, keyed, num, svgWrap, txt } from "./core.js";
+import {
+  divide as exactDivide,
+  equivalent as exactEquivalent,
+  multiply as exactMultiply,
+  rational,
+  valueOf as exactValue,
+} from "../ratio-studio/engine.js";
 
 const CONV = {
   "feet:inches": 12,
@@ -19,6 +26,21 @@ const CONV = {
 };
 const near = (a, b) => Math.abs(a - b) < 1e-9;
 const nice = (v) => near(v, Math.round(v * 100) / 100);
+const exact = (value) => rational(String(value));
+const exactEqual = (a, b) => {
+  try {
+    return exactEquivalent(exact(a), rational(1), exact(b), rational(1));
+  } catch {
+    return false;
+  }
+};
+const scalePair = ([left, right], step) => {
+  const transform = step.k === "mul" ? exactMultiply : exactDivide;
+  const factor = exact(step.n);
+  return [exactValue(transform(exact(left), factor)), exactValue(transform(exact(right), factor))];
+};
+const preservesRatio = ([left, right], [nextLeft, nextRight]) =>
+  exactEquivalent(exact(left), exact(right), exact(nextLeft), exact(nextRight));
 
 export function parse(question) {
   const q = clean(question);
@@ -80,11 +102,10 @@ function path(base, t, kind) {
     else steps.push({ k: "div", n: 100 }, { k: "mul", n: n });
     return steps;
   }
-  const f = t.v / col;
-  if (near(f, 1)) return [];
-  if (Number.isInteger(f)) steps.push({ k: "mul", n: f });
-  else if (Number.isInteger(1 / f) || near(1 / f, Math.round(1 / f)))
-    steps.push({ k: "div", n: Math.round(1 / f) });
+  const factor = exactDivide(exact(t.v), exact(col));
+  if (factor.n === factor.d) return [];
+  if (factor.d === "1") steps.push({ k: "mul", n: Number(factor.n) });
+  else if (factor.n === "1") steps.push({ k: "div", n: Number(factor.d) });
   else if (col > 1) steps.push({ k: "div", n: col }, { k: "mul", n: t.v });
   else return null;
   return steps;
@@ -96,10 +117,13 @@ function build(t, base, cols, kind) {
   if (!steps) return null;
   const rows = [base];
   for (const s of steps) {
-    const [l, r] = rows.at(-1);
-    rows.push(s.k === "mul" ? [l * s.n, r * s.n] : [l / s.n, r / s.n]);
+    rows.push(scalePair(rows.at(-1), s));
   }
-  if (!rows.every((row) => row.every(nice)) || rows.some((row) => row.some((v) => v > 1e6)))
+  if (
+    !rows.every((row) => row.every(nice)) ||
+    rows.some((row) => row.some((v) => v > 1e6)) ||
+    !rows.every((row) => preservesRatio(base, row))
+  )
     return null;
   const last = rows.at(-1);
   const result = t.side === "l" ? last[1] : last[0];
@@ -369,11 +393,11 @@ export function hints(spec) {
 
 export function diagnose(spec, raw) {
   const v = num(raw);
-  if (v === null || near(v, spec.result)) return null;
+  if (v === null || exactEqual(v, spec.result)) return null;
   const [p, q] = spec.base;
   const add = spec.target.side === "l" ? q + (spec.target.v - p) : p + (spec.target.v - q);
-  if (near(v, add)) return "additive";
-  if (spec.kind === "rate" && near(v, p / q)) return "flipped";
+  if (exactEqual(v, add)) return "additive";
+  if (spec.kind === "rate" && exactEqual(v, exactValue(exactDivide(exact(p), exact(q))))) return "flipped";
   return null;
 }
 export const tags = {
@@ -438,7 +462,7 @@ export const build_ = {
           ),
     };
   },
-  act(state, action, n) {
+  act(state, action, n, spec) {
     if (action === "one")
       return {
         state,
@@ -450,8 +474,8 @@ export const build_ = {
         tag: "oneColumn",
       };
     const [l, r] = state.rows.at(-1);
-    const next = action === "mul" ? [l * n, r * n] : [l / n, r / n];
-    if (!next.every(nice) || next.some((v) => v > 1e6))
+    const next = scalePair([l, r], { k: action, n });
+    if (!next.every(nice) || next.some((v) => v > 1e6) || !preservesRatio(spec.base, next))
       return {
         state,
         ok: false,
@@ -475,5 +499,5 @@ export const build_ = {
   done: (state, spec) => reached(state, spec),
 };
 const reached = (state, spec) =>
-  state.rows.some(([l, r]) => near(spec.target.side === "l" ? l : r, spec.target.v));
+  state.rows.some(([l, r]) => exactEqual(spec.target.side === "l" ? l : r, spec.target.v));
 export { build_ as build };

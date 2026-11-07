@@ -693,6 +693,23 @@ function solve(engineId, question) {
   assert.deepEqual(st.rows.at(-1), [12, 18]);
 }
 {
+  const { b, spec } = solve("ratio", "2:3 = 6:□");
+  let st = b.init(spec);
+  st = b.act(st, "mul", 3, spec).state;
+  assert.deepEqual(st.rows.at(-1), [6, 9], "equivalent rows are generated exactly");
+  assert.ok(b.done(st, spec), "the exact target is recognized without an epsilon check");
+
+  const rate = lessonFor({ question: "10 for 4 items. How much for 1 item?", steps: [] });
+  assert.equal(rate?.engine.id, "ratio");
+  assert.equal(rate.spec.result, 2.5, "the unit rate is represented as exact cents in the model");
+  assert.equal(
+    rate.engine.diagnose(rate.spec, "2.50"),
+    null,
+    "equivalent decimal input is accepted",
+  );
+  assert.equal(rate.engine.diagnose(rate.spec, "0.4"), "flipped", "reversed rate is diagnosed");
+}
+{
   const { b, spec } = solve("area", "7 × 8 = ?");
   let st = b.init(spec);
   st = b.act(st, "s", 5 - st.s, spec).state;
