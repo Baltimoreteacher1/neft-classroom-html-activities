@@ -3,8 +3,10 @@ import test from "node:test";
 
 // Browser-only shared components do not run speech in this model test.
 globalThis.window = {};
-const { filterActivities, playlistURL, pageActivities, PAGE_SIZE } = await import(
-  "../access-practice-lab/src/views/library.js"
+const { filterActivities, filterLearningAreas, playlistURL, pageActivities, PAGE_SIZE } =
+  await import("../access-practice-lab/src/views/library.js");
+const { LEARNING_AREAS, learningAreaCards } = await import(
+  "../access-practice-lab/src/home-registry.js"
 );
 const rows = [
   {
@@ -82,4 +84,24 @@ test("pagination has no gaps, bounds invalid pages and handles empty filters", (
   assert.equal(pageActivities(items, -8).page, 1);
   assert.equal(pageActivities(items, "bad").page, 1);
   assert.deepEqual(pageActivities([], 8), { items: [], page: 1, pages: 1 });
+});
+
+test("learning area discovery links only to reviewed destinations available for the grade band", () => {
+  const grade3to5 = learningAreaCards("3-5");
+  const grade6to8 = learningAreaCards("6-8");
+  assert.deepEqual(
+    grade3to5.map((card) => card.learningArea),
+    ["reading", "reading", "phonics", "vocabulary", "content-reading"],
+  );
+  assert.equal(
+    grade6to8.some((card) => card.learningArea === "content-reading"),
+    true,
+  );
+  const phonics = filterLearningAreas(grade3to5, LEARNING_AREAS, "phonics");
+  assert.deepEqual(
+    phonics.map((area) => area.id),
+    ["phonics"],
+  );
+  assert.equal(phonics[0].cards[0].href, "science-of-reading/path");
+  assert.deepEqual(filterLearningAreas(grade3to5, LEARNING_AREAS, "no matching area"), []);
 });

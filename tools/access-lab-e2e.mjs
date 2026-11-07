@@ -188,6 +188,19 @@ try {
   // Search, filters, assignment links, empty state, and URL restoration.
   await go("/library?grades=3-5");
   ok(
+    (await page.locator("#learning-areas .lib-studio-title").count()) === 5,
+    "library connects grade-appropriate learning areas",
+  );
+  await page.fill("#librarySearch", "phonics");
+  ok(
+    (await page.locator("#learning-areas .lib-studio-title").count()) === 1 &&
+      (await page.locator("#learning-areas").textContent()).includes(
+        "Decoding and connected reading",
+      ),
+    "library search finds the reviewed phonics pathway",
+  );
+  await page.fill("#librarySearch", "");
+  ok(
     (await page.locator(".library-item").count()) === 24,
     "library renders 24 activities per page",
   );

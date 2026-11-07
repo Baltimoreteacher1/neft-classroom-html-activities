@@ -12,6 +12,7 @@ import { VOICE_GROUPS } from "./voice-common.js";
 import { i18nFor, makeI18n } from "../i18n.js";
 import { ART, BASE, CORE_DOMAINS, DOMAIN_META, TIERS, announce, bandLabel, html, icon, raw, toHtml } from "../util.js";
 import { activityHref } from "./room.js";
+import { LEARNING_AREAS, learningAreaCards } from "../home-registry.js";
 
 const LIMIT = 12;
 export const PAGE_SIZE = 24;
@@ -49,6 +50,17 @@ export function pageActivities(items, requested = 1) {
   const pages = Math.max(1, Math.ceil(items.length / PAGE_SIZE));
   const current = Math.max(1, Math.min(pages, Math.floor(Number(requested)) || 1));
   return { items: items.slice((current - 1) * PAGE_SIZE, current * PAGE_SIZE), page: current, pages };
+}
+
+export function filterLearningAreas(cards, areas, query = "") {
+  const words = query.trim().toLocaleLowerCase().split(/\s+/).filter(Boolean);
+  return areas.map((area) => ({
+    ...area,
+    cards: cards.filter((card) => card.learningArea === area.id),
+  })).filter((area) => area.cards.length && words.every((word) =>
+    `${area.label.join(" ")} ${area.cards.map((card) => `${card.title.join(" ")} ${card.text.join(" ")}`).join(" ")}`
+      .toLocaleLowerCase().includes(word),
+  ));
 }
 
 export function playlistURL(ids, gradeBand) {
@@ -93,6 +105,21 @@ function resultHTML() {
         : html`<div class="empty-state lib-empty"><img src="${ART}/empty.svg" alt="" width="320" height="240" /><h2>${I.T("No matching activities", "No hay actividades que coincidan")}</h2><p>${I.T("Try a shorter search or choose a different skill, support, or progress filter.", "Prueba una búsqueda más corta o elige otro filtro de destreza, apoyo o progreso.")}</p><button type="button" class="btn" data-clear-filters>${I.T("Clear filters", "Borrar filtros")}</button></div>`
     }
     ${slice.pages > 1 ? html`<nav class="library-pagination" aria-label="${I.S("Activity result pages", "Páginas de resultados de actividades")}"><button type="button" class="btn" data-page="${page - 1}" ${page === 1 ? raw("disabled") : ""}>${icon("arrow-left")} ${I.T("Previous", "Anterior")}</button><span>${I.T(`Page ${page} of ${slice.pages}`, `Página ${page} de ${slice.pages}`)}</span><button type="button" class="btn" data-page="${page + 1}" ${page === slice.pages ? raw("disabled") : ""}>${I.T("Next", "Siguiente")} ${icon("arrow-right")}</button></nav>` : ""}`;
+}
+
+function learningAreasHTML() {
+  const groups = filterLearningAreas(learningAreaCards(band), LEARNING_AREAS, filters.q);
+  return html`<section class="lib-studios" id="learning-areas" aria-labelledby="learningAreasTitle">
+    <h2 id="learningAreasTitle">${icon("reading")} ${I.T("Learn by area", "Aprende por área")}</h2>
+    <p class="fine">${I.T("Choose a learning area to find lessons and practice that connect.", "Elige un área de aprendizaje para encontrar lecciones y prácticas relacionadas.")}</p>
+    ${groups.length ? html`<ul class="lib-studio-grid">${groups.flatMap((area) => area.cards.map((card) => html`<li class="lib-studio">
+      <span class="prog-tile">${icon(card.icon)}</span><div>
+        <p class="lib-meta">${I.T(...area.label)}</p>
+        <a class="lib-studio-title" href="${BASE}/${card.href}?grades=${band}">${I.T(...card.title)}</a>
+        <p class="fine">${I.T(...card.text)}</p>
+      </div>
+    </li>`))}</ul>` : html`<p class="fine" role="status">${I.T("No learning areas match this search.", "Ningún área de aprendizaje coincide con esta búsqueda.")}</p>`}
+  </section>`;
 }
 
 const cap = (w) => w.charAt(0).toUpperCase() + w.slice(1);
@@ -189,6 +216,7 @@ export async function render(ctx) {
       <label class="field"><span>${I.T("My progress", "Mi progreso")}</span><select id="libraryStatus" data-library-filter="status" data-nsr-ignore>${options([["", I.S("Any progress", "Cualquier progreso")], ...Object.entries(STATUS).map(([k, v]) => [k, I.S(v, STATUS_ES[k])])], filters.status)}</select></label>
     </div><p class="fine">${bandLabel(band)} · ${I.T("Progress is for this browser. Support changes tasks and scaffolds: Starting uses words and short sentences; Growing connects ideas; Expanding adds details and explanations. These are not WIDA scores.", "El progreso es solo para este navegador. El apoyo cambia las tareas y los andamios: Comenzando usa palabras y oraciones cortas; Creciendo conecta ideas; Ampliando agrega detalles y explicaciones. No son puntajes de WIDA.")}</p>
     <div class="library-quick lib-quick" aria-label="${I.S("Quick activity searches", "Búsquedas rápidas de actividades")}"><span>${I.T("Start with:", "Empieza con:")}</span>${["garden", "evidence", "compare", "sequence"].map((topic) => html`<button type="button" class="cat-chip" data-quick-topic="${topic}">${icon("search")} ${topic}</button>`)}</div>
+    ${learningAreasHTML()}
     <div id="libraryResults">${resultHTML()}</div></section>
     </div>
     ${voiceLabHTML(band)}${studiosHTML()}</div>`,
@@ -196,6 +224,7 @@ export async function render(ctx) {
 }
 
 function refreshResults() {
+  document.getElementById("learning-areas").outerHTML = toHtml(learningAreasHTML());
   document.getElementById("libraryResults").innerHTML = toHtml(resultHTML());
   syncURL();
 }

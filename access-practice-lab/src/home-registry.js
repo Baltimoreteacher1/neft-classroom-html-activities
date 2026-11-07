@@ -16,6 +16,13 @@
 
 export const HOME_GROUPS = ["start", "explore", "teach", "family"];
 
+export const LEARNING_AREAS = Object.freeze([
+  { id: "reading", label: ["Reading", "Lectura"] },
+  { id: "phonics", label: ["Phonics and decoding", "Fonética y decodificación"] },
+  { id: "vocabulary", label: ["Vocabulary", "Vocabulario"] },
+  { id: "content-reading", label: ["Reading across subjects", "Lectura en distintas materias"] },
+]);
+
 export const HOME_CARDS = [
   // ── start: next to the Continue card ───────────────────────────────────────
   {
@@ -154,6 +161,7 @@ export const HOME_CARDS = [
     id: "reader",
     group: "explore",
     featured: true,
+    learningArea: "reading",
     href: "reader",
     icon: "reading",
     title: ["Immersive Reader", "Lector inmersivo"],
@@ -166,6 +174,7 @@ export const HOME_CARDS = [
     id: "reading-room",
     group: "explore",
     featured: true,
+    learningArea: "reading",
     href: "reading-room",
     icon: "reading",
     title: ["Reading Room", "Sala de lectura"],
@@ -174,6 +183,7 @@ export const HOME_CARDS = [
   {
     id: "science-of-reading-path",
     group: "explore",
+    learningArea: "phonics",
     href: "science-of-reading/path",
     icon: "reading",
     title: ["Decoding and connected reading", "Decodificación y lectura conectada"],
@@ -185,6 +195,7 @@ export const HOME_CARDS = [
   {
     id: "vocabulary-investigations",
     group: "explore",
+    learningArea: "vocabulary",
     href: "vocab-curriculum",
     icon: "words",
     title: ["Vocabulary investigations", "Investigaciones de vocabulario"],
@@ -196,6 +207,7 @@ export const HOME_CARDS = [
   {
     id: "subject-reading",
     group: "explore",
+    learningArea: "content-reading",
     bands: ["3-5", "6-8"],
     href: "subject-reading",
     icon: "evidence",
@@ -660,3 +672,7 @@ export const HOME_CARDS = [
 /** Cards for one group and band, in registry order. */
 export const cardsFor = (group, band) =>
   HOME_CARDS.filter((c) => c.group === group && (!c.bands || c.bands.includes(band)));
+
+/** Existing learning destinations with reviewed area metadata, shared by home and activity discovery. */
+export const learningAreaCards = (band) =>
+  HOME_CARDS.filter((card) => card.group === "explore" && card.learningArea && (!card.bands || card.bands.includes(band)));
