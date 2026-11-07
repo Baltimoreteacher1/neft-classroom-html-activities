@@ -1,5 +1,10 @@
 // Ratio quantities are nonnegative exact rationals. A pair always has an explicit order.
 const gcd = (a, b) => b === 0n ? a : gcd(b, a % b);
+const compare = (a, b) => {
+  const left = BigInt(a.n) * BigInt(b.d);
+  const right = BigInt(b.n) * BigInt(a.d);
+  return left < right ? -1 : left > right ? 1 : 0;
+};
 export const COMPARISON_TYPES = Object.freeze(['part-to-part','reverse-part-to-part','first-to-whole','second-to-whole']);
 export function rational(value) {
   if (typeof value === 'object' && value && 'n' in value && 'd' in value) {
@@ -36,13 +41,16 @@ export function createState(input = {}) {
 export function derive(s) {
   const a=multiply(s.a,s.factor), b=multiply(s.b,s.factor), total=add(a,b);
   const rows=[1,2,3,4].map(k=>({factor:k,a:multiply(s.a,rational(k)),b:multiply(s.b,rational(k))}));
+  const graphAxisMax=compare(rows[3].a,rows[3].b)>=0?rows[3].a:rows[3].b;
+  const graphTicks=[0,1,2,3,4].map(i=>multiply(graphAxisMax,rational({n:String(i),d:'4'})));
   const comparisons=[
     {id:'part-to-part',name:'First to second',first:s.labelA,second:s.labelB,left:a,right:b,kind:'part-to-part'},
     {id:'reverse-part-to-part',name:'Reverse the order',first:s.labelB,second:s.labelA,left:b,right:a,kind:'part-to-part'},
     {id:'first-to-whole',name:'First part to total',first:s.labelA,second:'total',left:a,right:total,kind:'part-to-whole'},
     {id:'second-to-whole',name:'Second part to total',first:s.labelB,second:'total',left:b,right:total,kind:'part-to-whole'},
   ];
-  return {a,b,total,reverse:[b,a],partWhole:[a,total],comparisons,activeComparison:comparisons.find(c=>c.id===s.comparison),rows,points:rows.map(r=>({x:r.a,y:r.b,position:valueOf(r.a)/Math.max(1,valueOf(rows[3].a))})),unitRate:a.n==='0'?null:divide(b,a),equivalent:equivalent(s.a,s.b,a,b)};
+  const axisMaxValue=valueOf(graphAxisMax);
+  return {a,b,total,reverse:[b,a],partWhole:[a,total],comparisons,activeComparison:comparisons.find(c=>c.id===s.comparison),rows,graph:{axisMax:graphAxisMax,ticks:graphTicks,isFunction:s.a.n!=='0'},points:rows.map(r=>({x:r.a,y:r.b,position:r.factor/4,positionX:valueOf(r.a)/axisMaxValue,positionY:valueOf(r.b)/axisMaxValue})),unitRate:a.n==='0'?null:divide(b,a),equivalent:equivalent(s.a,s.b,a,b)};
 }
 export function transition(s, action) {
   switch(action.type) {

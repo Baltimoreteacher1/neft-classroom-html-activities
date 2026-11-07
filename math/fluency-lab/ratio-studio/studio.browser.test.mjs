@@ -25,6 +25,14 @@ try {
   assert.equal(expected.get("profile"), await page.evaluate(() => sessionStorage.getItem("ewl-fluency-tab-profile")));
   const scenario = createState({ a: expected.get("a"), b: expected.get("b"), labelA: expected.get("labelA"), labelB: expected.get("labelB") });
   const equivalentRow = derive(createState({ ...scenario, factor: 4 }));
+  const graph = page.locator('#models svg[aria-label^="Graph of paired quantities"]');
+  assert.match(await graph.getAttribute("aria-label"), /Both axes use the same scale/);
+  const firstGraphPoint = graph.locator('[data-ratio-factor="1"] circle');
+  const firstGraphX = Number(await firstGraphPoint.getAttribute("cx"));
+  const firstGraphY = Number(await firstGraphPoint.getAttribute("cy"));
+  const firstPoint = derive(scenario).points[0];
+  assert.ok(Math.abs(firstGraphX - (70 + firstPoint.positionX * 150)) < 0.01);
+  assert.ok(Math.abs(firstGraphY - (190 - firstPoint.positionY * 150)) < 0.01);
   const prompt = await page.locator("#challenge-prompt").innerText();
   assert.ok(prompt.includes(`${expected.get("a")}:${expected.get("b")}`));
   await page.locator("#row-factor").fill("4");
@@ -103,6 +111,12 @@ try {
   assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), false);
   await page.setViewportSize({ width: 1280, height: 900 });
   assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), false);
+  const zeroRatioUrl = new URL("/math/fluency-lab/ratio-studio/?a=0&b=3&labelA=Empty&labelB=Full", page.url());
+  await page.goto(zeroRatioUrl.toString());
+  const zeroGraph = page.locator('#models svg[aria-label^="Graph of paired quantities"]');
+  assert.match(await zeroGraph.getAttribute("aria-label"), /Empty in counters.*Full in counters/s);
+  assert.match(await page.locator("#models article").filter({ has: page.getByRole("heading", { name: "Graph of paired quantities" }) }).innerText(), /do not form a function y = kx/);
+  assert.equal(await zeroGraph.locator('line[stroke="#2876a4"]').count(), 0);
   assert.deepEqual(errors, []);
   console.log("Grade 6 ratio lesson → contextual Ratio Studio → language support → supported and independent transfer passed at 390px.");
 } finally {
