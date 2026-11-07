@@ -764,6 +764,12 @@ function renderLearn() {
   cleanupLearnStudio?.();
   cleanupLearnStudio = null;
   const animated = studioAvailable(example);
+  const ratioStudioLink = skill.grade === 6 && skill.id === "ratios" && example.model?.type === "ratioTable"
+    ? (() => {
+        const params = new URLSearchParams({ a: String(example.model.a), b: String(example.model.b), labelA: example.model.labels?.[0] || "First", labelB: example.model.labels?.[1] || "Second" });
+        return `<a class="outline-action" href="./ratio-studio/?${params.toString().replaceAll("&", "&amp;")}">Explore this ratio in Ratio Studio</a>`;
+      })()
+    : "";
   const showLcmSteps = skill.grade === 6 && skill.id === "lcm";
   const isFractionDivision = skill.id === "divide-fractions" || skill.id === "unit-fraction-division" || (/÷/.test(example.question) && /\//.test(example.question));
   let kcfFracData = { a: 2, b: 3, c: 4, d: 5 };
@@ -805,6 +811,7 @@ function renderLearn() {
       <div class="learn-actions learn-actions--more" role="group" aria-label="${escapeHtml(t("More ways to learn"))}">
         <button class="outline-action" data-mini-lesson>${t("Mini-lesson")}</button>
         <a class="outline-action" href="./v7/?grade=${skill.grade}&amp;skill=${encodeURIComponent(skill.id)}">${t("See it in the picture workspace")}</a>
+        ${ratioStudioLink}
         <button class="outline-action" data-start-guided>${t("Try 5 with help")}</button>
         <button class="outline-action" data-start-visual>${t("Build it step by step")}</button>
         <button class="outline-action" data-start-independent>${t("Practice 10")}</button>
