@@ -231,6 +231,17 @@ const EXCLUSIVE = new Set([
 const UNIVERSAL = ["check"];
 const CARRIES_SCRIPT = /\.(js|mjs|cjs|html?)$/i;
 const COVERAGE = [
+  [
+    /^(scripts\/qa-run\.mjs|qa-exempt\.json|math-fluency-lab\/|shared\/|tools\/validate-discourse-cra-studios\.mjs|data\/catalog\.json|functions\/_lib\/plan-vocab\.js|access-practice-lab\/(app-shell|index\.html|sw\.js|src\/studios\/|language-studios\.html|discourse-architect\.css|speaking-sparring\.css|translanguaging-bridge\.css)|math\/fluency-lab\/(cra-kinetic-engine|forensic-debugging|ghost-racing|fluency-innovations))/,
+    [
+      "validate:js-syntax",
+      "check",
+      "validate:data-contracts",
+      "validate:static",
+      "validate:plan-notes",
+      "validate:gate-coverage",
+    ],
+  ],
   // The Reality Lab: its unit and browser suites run inside validate:fluency, so its files are covered change-scoped.
   [/^math\/fluency-lab\/reality\/lab\//, ["validate:fluency", "test", "check"]],
   [

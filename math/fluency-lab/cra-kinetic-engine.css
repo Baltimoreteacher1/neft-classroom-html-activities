@@ -1,0 +1,197 @@
+:root {
+  --cra-bg: #0b1329;
+  --cra-card: #152243;
+  --cra-border: #233566;
+  --cra-accent: #38bdf8;
+  --cra-success: #10b981;
+  --cra-danger: #ef4444;
+  --cra-stress: #f59e0b;
+  --cra-text: #f8fafc;
+  --cra-muted: #94a3b8;
+}
+
+#cra-kinetic-engine-app {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  background: var(--cra-bg);
+  color: var(--cra-text);
+  padding: 24px;
+  border-radius: 12px;
+  border: 1px solid var(--cra-border);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  box-sizing: border-box;
+}
+
+#cra-kinetic-engine-app * {
+  box-sizing: border-box;
+}
+
+.cra-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  border-bottom: 1px solid var(--cra-border);
+  padding-bottom: 16px;
+}
+
+.cra-title h2 {
+  margin: 0 0 4px 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: #f8fafc;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cra-subtitle {
+  margin: 0;
+  font-size: 13px;
+  color: var(--cra-muted);
+}
+
+.cra-viewport-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+@media (max-width: 900px) {
+  .cra-viewport-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.cra-panel {
+  background: var(--cra-card);
+  border: 1px solid var(--cra-border);
+  border-radius: 10px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  position: relative;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.cra-panel.topological-stress {
+  transform: skewX(-6deg);
+  border-color: var(--cra-danger);
+  box-shadow: 0 0 16px rgba(239, 68, 68, 0.4);
+}
+
+.cra-panel-badge {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #38bdf8;
+  letter-spacing: 0.05em;
+  display: flex;
+  justify-content: space-between;
+}
+
+.cra-canvas-box {
+  background: #090e1a;
+  border: 1px solid #1e293b;
+  border-radius: 8px;
+  min-height: 190px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  position: relative;
+}
+
+/* Concrete: Fluid Cylinders & Balance Scales */
+.fluid-cylinder-wrapper {
+  display: flex;
+  gap: 24px;
+  align-items: flex-end;
+  height: 140px;
+}
+
+.cylinder-glass {
+  width: 50px;
+  height: 130px;
+  border: 2px solid #64748b;
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+  position: relative;
+  overflow: hidden;
+  background: rgba(15, 23, 42, 0.6);
+}
+
+.cylinder-fluid {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: linear-gradient(180deg, #38bdf8, #0284c7);
+  transition: height 0.2s ease;
+}
+
+.cylinder-fluid.alt {
+  background: linear-gradient(180deg, #a855f7, #7e22ce);
+}
+
+/* Representational: Tape Diagram & Double Number Line */
+.tape-diagram-svg {
+  width: 100%;
+  height: 140px;
+}
+
+/* Abstract Equation Editor */
+.equation-editor-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  font-family: ui-monospace, Menlo, Monaco, monospace;
+}
+
+.equation-display {
+  font-size: 24px;
+  font-weight: 700;
+  color: #f8fafc;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.equation-display.inequality {
+  color: var(--cra-danger);
+}
+
+.stress-offset-badge {
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid var(--cra-danger);
+  color: #f87171;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.coefficient-slider-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+
+.coefficient-slider-row input[type="range"] {
+  flex: 1;
+  accent-color: #38bdf8;
+}
+
+.cra-action-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}

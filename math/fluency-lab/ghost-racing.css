@@ -1,0 +1,254 @@
+:root {
+  --ghost-bg: #090e1a;
+  --ghost-card: #131c31;
+  --ghost-border: #1e293b;
+  --ghost-accent: #38bdf8;
+  --ghost-needle: #f59e0b;
+  --ghost-current: #3b82f6;
+  --ghost-success: #10b981;
+  --ghost-danger: #ef4444;
+  --ghost-text: #f8fafc;
+  --ghost-muted: #94a3b8;
+}
+
+#ghost-racing-app {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  background: var(--ghost-bg);
+  color: var(--ghost-text);
+  padding: 24px;
+  border-radius: 12px;
+  border: 1px solid var(--ghost-border);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  box-sizing: border-box;
+}
+
+#ghost-racing-app * {
+  box-sizing: border-box;
+}
+
+.ghost-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  border-bottom: 1px solid var(--ghost-border);
+  padding-bottom: 16px;
+}
+
+.ghost-title h2 {
+  margin: 0 0 4px 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: #f8fafc;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ghost-subtitle {
+  margin: 0;
+  font-size: 13px;
+  color: var(--ghost-muted);
+}
+
+.race-arena-card {
+  background: var(--ghost-card);
+  border: 1px solid var(--ghost-border);
+  border-radius: 10px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* Dual Needle / Track Meter */
+.ghost-track-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: #060a14;
+  padding: 16px;
+  border-radius: 8px;
+  border: 1px solid #1e293b;
+}
+
+.track-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.track-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  display: flex;
+  justify-content: space-between;
+}
+
+.track-lane {
+  height: 20px;
+  background: #0d1527;
+  border-radius: 10px;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid #1e293b;
+}
+
+.track-bar-fill {
+  height: 100%;
+  border-radius: 10px;
+  transition: width 0.05s linear;
+}
+
+.track-bar-current {
+  background: linear-gradient(90deg, #0284c7, #38bdf8);
+}
+
+.track-bar-ghost {
+  background: linear-gradient(90deg, #d97706, #fbbf24);
+  opacity: 0.85;
+}
+
+/* Problem Prompt Interaction */
+.ghost-problem-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #0b1329;
+  border: 1px solid #1e293b;
+  border-radius: 8px;
+  padding: 18px 24px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.problem-prompt-math {
+  font-size: 28px;
+  font-weight: 700;
+  font-family: monospace;
+  color: #ffffff;
+}
+
+.problem-input-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.problem-input-field {
+  width: 90px;
+  height: 48px;
+  background: #060a14;
+  border: 2px solid #38bdf8;
+  border-radius: 6px;
+  color: #ffffff;
+  font-size: 22px;
+  font-weight: 700;
+  font-family: monospace;
+  text-align: center;
+}
+
+.problem-input-field:focus {
+  outline: none;
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.4);
+}
+
+.btn-commit {
+  background: #0284c7;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 12px 20px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  min-height: 48px;
+}
+
+.btn-commit:hover {
+  background: #0369a1;
+}
+
+/* Strategy Classification Pill */
+.strategy-classifier-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  align-self: flex-start;
+}
+
+.strategy-automaticity {
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid #10b981;
+  color: #34d399;
+}
+
+.strategy-decomposition {
+  background: rgba(56, 189, 248, 0.15);
+  border: 1px solid #38bdf8;
+  color: #38bdf8;
+}
+
+.strategy-stall {
+  background: rgba(245, 158, 11, 0.15);
+  border: 1px solid #f59e0b;
+  color: #fbbf24;
+}
+
+/* Thermal Mastery Receipt */
+.receipt-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.thermal-receipt {
+  width: 340px;
+  background: #ffffff;
+  color: #0f172a;
+  border-radius: 4px;
+  padding: 24px;
+  font-family: "Courier New", Courier, monospace;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+  border-top: 4px dashed #94a3b8;
+  border-bottom: 4px dashed #94a3b8;
+}
+
+.thermal-receipt-header {
+  text-align: center;
+  border-bottom: 1px dashed #0f172a;
+  padding-bottom: 12px;
+  margin-bottom: 12px;
+}
+
+.receipt-item-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  margin: 6px 0;
+}
+
+.receipt-tier-box {
+  margin-top: 14px;
+  border-top: 1px dashed #0f172a;
+  padding-top: 12px;
+  text-align: center;
+  font-weight: 700;
+}
+
+.receipt-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 14px;
+}

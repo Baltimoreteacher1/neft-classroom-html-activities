@@ -1,0 +1,318 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#0969DA" />
+    <title>Math Fluency Lab · Unified Engineering & Pedagogical Standard</title>
+    <link rel="stylesheet" href="./src/styles/math-typography.css" />
+    <style>
+      :root {
+        --app-bg: #F6F8FA;
+        --app-text: #1F2328;
+        --app-card: #FFFFFF;
+        --app-border: #D0D7DE;
+      }
+      body {
+        margin: 0;
+        padding: 0;
+        background: var(--app-bg);
+        color: var(--app-text);
+        font-family: var(--math-font-family);
+      }
+      .page-container {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 24px 16px 80px 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+      }
+      .app-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: var(--app-card);
+        padding: 16px 20px;
+        border-radius: 8px;
+        border: 1px solid var(--app-border);
+      }
+      .brand-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 700;
+        font-size: 18px;
+        color: var(--math-primary-accent);
+        cursor: pointer;
+        user-select: none;
+      }
+      .brand-badge:active {
+        opacity: 0.8;
+      }
+      .hotkey-badge {
+        font-size: 12px;
+        color: #57606A;
+        background: #EAEEF2;
+        padding: 4px 8px;
+        border-radius: 4px;
+      }
+      .card-section {
+        background: var(--app-card);
+        border: 1px solid var(--app-border);
+        border-radius: 8px;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+      .section-title {
+        margin: 0;
+        font-size: 16px;
+        font-weight: 600;
+        color: #1F2328;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .cognate-highlight {
+        color: #0969DA;
+        border-bottom: 1.5px dotted #0969DA;
+        cursor: help;
+        position: relative;
+      }
+      .cognate-highlight:hover::after {
+        content: attr(data-cognate);
+        position: absolute;
+        bottom: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #1F2328;
+        color: #FFFFFF;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        white-space: nowrap;
+        z-index: 10;
+      }
+      /* 3-Beat Pedagogical Feedback Box */
+      .three-beat-box {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+        background: #F6F8FA;
+        border: 1px solid var(--app-border);
+        border-radius: 6px;
+        padding: 14px;
+      }
+      @media (max-width: 768px) {
+        .three-beat-box {
+          grid-template-columns: 1fr;
+        }
+      }
+      .beat-card {
+        background: #FFFFFF;
+        border: 1px solid #D0D7DE;
+        border-radius: 4px;
+        padding: 10px;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+      .beat-card-tag {
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        color: #57606A;
+      }
+      .beat-card-title {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--math-primary-accent);
+      }
+      .beat-card-desc {
+        font-size: 12px;
+        color: #24292F;
+        line-height: 1.4;
+      }
+    </style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
+  <!-- nsr-injected:end -->
+</head>
+  <body>
+    <div class="page-container">
+      <header class="app-header">
+        <div class="brand-badge" id="brand-badge" title="Triple-tap to toggle Diagnostics">
+          <span>EduWonderLab · Math Fluency Lab</span>
+        </div>
+        <div class="hotkey-badge">Diagnostics: <strong>Ctrl + Shift + D</strong></div>
+      </header>
+
+      <!-- Section 1: Vinculum Fractions & Direct Numeric Mutation -->
+      <section class="card-section" aria-label="Vinculum Stacked Fractions">
+        <h2 class="section-title">
+          <span>1. Vinculum Fraction Typography & Direct Mutation</span>
+          <span style="font-size:12px; color:#57606A;">Drag numerator/denominator vertically</span>
+        </h2>
+        <div>
+          <math-container>
+            <stacked-fraction id="fraction-a" numerator="3" denominator="4" interactive></stacked-fraction>
+            <button type="button" class="operator-switcher" id="op-switcher" aria-label="Switch arithmetic operator">+</button>
+            <stacked-fraction id="fraction-b" numerator="1" denominator="6" interactive></stacked-fraction>
+            <span>=</span>
+            <stacked-fraction id="fraction-result" numerator="11" denominator="12"></stacked-fraction>
+          </math-container>
+        </div>
+      </section>
+
+      <!-- Section 2: Synchronized CRA Canvas -->
+      <section class="card-section" aria-label="CRA Canvas">
+        <h2 class="section-title">
+          <span>2. Synchronized Concrete-Representational-Abstract (CRA) Canvas</span>
+        </h2>
+        <cra-canvas id="cra-display"></cra-canvas>
+      </section>
+
+      <!-- Section 3: 3-Beat Pedagogical Feedback Breakdown -->
+      <section class="card-section" aria-label="Pedagogical 3-Beat Feedback">
+        <h2 class="section-title">
+          <span>3. 3-Beat Pedagogical Explanation Framework</span>
+        </h2>
+        <div class="three-beat-box">
+          <div class="beat-card">
+            <span class="beat-card-tag">Beat 1: Observation</span>
+            <span class="beat-card-title">Objective Input State</span>
+            <span class="beat-card-desc" id="beat-1-desc">Initial rational state: 3/4 + 1/6 evaluated.</span>
+          </div>
+          <div class="beat-card">
+            <span class="beat-card-tag">Beat 2: Visual Proof</span>
+            <span class="beat-card-title">Kinetic CRA Transformation</span>
+            <span class="beat-card-desc" id="beat-2-desc">Common denominator 12 scales concrete tape and balance nodes.</span>
+          </div>
+          <div class="beat-card">
+            <span class="beat-card-tag">Beat 3: Executive Takeaway</span>
+            <span class="beat-card-title">Conceptual Mental Model</span>
+            <span class="beat-card-desc" id="beat-3-desc">Partition invariance: Units must align before additive synthesis.</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 4: Interactive Ratio Table & Additive Error Trapping -->
+      <section class="card-section" aria-label="Interactive Ratio Table">
+        <h2 class="section-title">
+          <span>4. Interactive Ratio Table (Vector Arc & Additive Error Trap)</span>
+        </h2>
+        <p style="font-size:13px; color:#57606A; margin:0;">
+          Try entering an additive error (e.g. adding 1 to Quantity A and 3 to Quantity B) to trigger instant error trapping.
+        </p>
+        <interactive-ratio-table id="ratio-table"></interactive-ratio-table>
+      </section>
+
+      <!-- Section 5: Multilingual ESOL Cognate Scaffolding -->
+      <section class="card-section" aria-label="Multilingual ESOL Scaffolds">
+        <h2 class="section-title">
+          <span>5. Dual-Immersion ESOL Cognate Tooltips</span>
+        </h2>
+        <div id="cognate-scaffold-text" style="font-size:15px; line-height:1.6;">
+          Hover over key academic terminology to view direct Spanish cognates:
+          The <span class="cognate-highlight" data-cognate="razón">ratio</span> is <span class="cognate-highlight" data-cognate="proporcional">proportional</span> when the <span class="cognate-highlight" data-cognate="numerador">numerator</span> and <span class="cognate-highlight" data-cognate="denominador">denominator</span> scale by an <span class="cognate-highlight" data-cognate="equivalente">equivalent</span> factor.
+        </div>
+      </section>
+    </div>
+
+    <!-- Script Entry -->
+    <script type="module">
+      import { RationalNumber } from './src/engine/RationalNumber.js';
+      import { StackedFraction } from './src/components/StackedFraction.js';
+      import { InteractiveRatioTable } from './src/components/InteractiveRatioTable.js';
+      import { CraCanvas } from './src/components/CraCanvas.js';
+      import { DiscourseArchitect } from './src/pedagogy/DiscourseArchitect.js';
+      import { ForensicConveyor } from './src/pedagogy/ForensicConveyor.js';
+      import { diagnostics } from '../shared/diagnostics-overlay.js';
+
+      const fracA = document.getElementById('fraction-a');
+      const fracB = document.getElementById('fraction-b');
+      const fracRes = document.getElementById('fraction-result');
+      const craDisplay = document.getElementById('cra-display');
+      const opSwitcher = document.getElementById('op-switcher');
+
+      const operators = ['+', '-', '×', '÷'];
+      let currentOpIndex = 0;
+
+      function updateCalculation() {
+        const numA = parseInt(fracA.getAttribute('numerator') || '3', 10);
+        const denA = parseInt(fracA.getAttribute('denominator') || '4', 10);
+        const numB = parseInt(fracB.getAttribute('numerator') || '1', 10);
+        const denB = parseInt(fracB.getAttribute('denominator') || '6', 10);
+
+        const rA = new RationalNumber(numA, denA);
+        const rB = new RationalNumber(numB, denB);
+        let res = rA.add(rB);
+
+        const op = operators[currentOpIndex];
+        if (op === '-') res = rA.sub(rB);
+        else if (op === '×') res = rA.mul(rB);
+        else if (op === '÷') res = rA.div(rB);
+
+        fracRes.setAttribute('numerator', res.n.toString());
+        fracRes.setAttribute('denominator', res.d.toString());
+
+        if (craDisplay) {
+          craDisplay.updateState(res);
+        }
+
+        // Update 3-Beat Telemetry
+        const b1 = document.getElementById('beat-1-desc');
+        const b2 = document.getElementById('beat-2-desc');
+        const b3 = document.getElementById('beat-3-desc');
+        if (b1) b1.textContent = `Input: ${rA.toString()} ${op} ${rB.toString()} executed.`;
+        if (b2) b2.textContent = `Visual Proof: ${res.toString()} (${(res.toDecimal() * 100).toFixed(1)}%) dynamically mapped to CRA canvas.`;
+        if (b3) b3.textContent = `Takeaway: Exact rational arithmetic preserves precision without floating-point drift.`;
+      }
+
+      window.addEventListener('fraction-change', () => {
+        updateCalculation();
+      });
+
+      if (opSwitcher) {
+        opSwitcher.addEventListener('click', () => {
+          currentOpIndex = (currentOpIndex + 1) % operators.length;
+          opSwitcher.textContent = operators[currentOpIndex];
+          updateCalculation();
+        });
+      }
+
+      // Triple-tap brand badge toggle for mobile/touch diagnostics
+      let tapCount = 0;
+      let lastTap = 0;
+      const brandBadge = document.getElementById('brand-badge');
+      if (brandBadge) {
+        brandBadge.addEventListener('click', () => {
+          const now = Date.now();
+          if (now - lastTap < 400) {
+            tapCount++;
+            if (tapCount >= 2) {
+              diagnostics.toggle();
+              tapCount = 0;
+            }
+          } else {
+            tapCount = 0;
+          }
+          lastTap = now;
+        });
+      }
+
+      diagnostics.registerState('MathFluencyLab', () => ({
+        operator: operators[currentOpIndex],
+        subSecondLatency: '< 16.6ms',
+        rationalEngine: 'Active (Zero Drift)'
+      }));
+
+      updateCalculation();
+    </script>
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
+  <!-- nsr-injected:end -->
+  </body>
+</html>

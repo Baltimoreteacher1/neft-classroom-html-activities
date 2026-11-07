@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#0b1120" />
+    <title>EduWonderLab · Math Fluency Innovations (CRA, Debugging & Ghost Racing)</title>
+    <link rel="stylesheet" href="/assets/fonts/small-group.css" />
+    <link rel="stylesheet" href="./forensic-debugging.css" />
+    <link rel="stylesheet" href="./cra-kinetic-engine.css" />
+    <link rel="stylesheet" href="./ghost-racing.css" />
+    <style>
+      :root {
+        --page-bg: #030712;
+        --page-text: #f9fafb;
+        --page-accent: #38bdf8;
+      }
+      body {
+        margin: 0;
+        padding: 0;
+        background: var(--page-bg);
+        color: var(--page-text);
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      }
+      .app-wrapper {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 24px 16px 80px 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 28px;
+      }
+      .innovations-navbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: #0f172a;
+        padding: 12px 20px;
+        border-radius: 10px;
+        border: 1px solid #1e293b;
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+      .brand-title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 700;
+        font-size: 16px;
+        color: #38bdf8;
+      }
+      .nav-tabs {
+        display: flex;
+        gap: 8px;
+      }
+      .nav-tab-btn {
+        background: transparent;
+        border: 1px solid transparent;
+        color: #94a3b8;
+        padding: 8px 14px;
+        border-radius: 6px;
+        font-weight: 600;
+        font-size: 13px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+      .nav-tab-btn:hover {
+        background: #1e293b;
+        color: #f8fafc;
+      }
+      .nav-tab-btn.active {
+        background: #0284c7;
+        color: #ffffff;
+      }
+      .innovations-module {
+        display: none;
+      }
+      .innovations-module.active {
+        display: block;
+      }
+      .hotkey-badge {
+        font-size: 11px;
+        color: #64748b;
+        background: #0f172a;
+        padding: 4px 8px;
+        border-radius: 4px;
+        border: 1px solid #1e293b;
+      }
+    </style>
+    <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
+  <!-- nsr-injected:end -->
+</head>
+  <body>
+    <div class="app-wrapper">
+      <header class="innovations-navbar">
+        <div class="brand-title">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path d="M12 2v20M2 12h20M4.93 4.93l14.14 14.14M19.07 4.93L4.93 19.07"/>
+          </svg>
+          <span>EduWonderLab · Math Fluency Innovations</span>
+        </div>
+        <nav class="nav-tabs" role="tablist" aria-label="Fluency Innovation Navigation">
+          <button type="button" class="nav-tab-btn active" data-target="forensic-debugging-app" role="tab" aria-selected="true">
+            4. Forensic Debugging Arena
+          </button>
+          <button type="button" class="nav-tab-btn" data-target="cra-kinetic-engine-app" role="tab" aria-selected="false">
+            5. CRA Kinetic Engine
+          </button>
+          <button type="button" class="nav-tab-btn" data-target="ghost-racing-app" role="tab" aria-selected="false">
+            6. Ghost Racing & Receipts
+          </button>
+        </nav>
+        <div class="hotkey-badge">Diagnostics: <strong>Ctrl + Shift + D</strong></div>
+      </header>
+
+      <main>
+        <!-- Module 4: The Forensic Debugging Arena -->
+        <section id="forensic-debugging-app" class="innovations-module active" aria-label="Forensic Debugging Arena"></section>
+
+        <!-- Module 5: The CRA Kinetic Engine -->
+        <section id="cra-kinetic-engine-app" class="innovations-module" aria-label="Interconnected CRA Kinetic Engine"></section>
+
+        <!-- Module 6: Latency-Stratified Ghost Racing & Mastery Receipts -->
+        <section id="ghost-racing-app" class="innovations-module" aria-label="Latency Stratified Ghost Racing"></section>
+      </main>
+    </div>
+
+    <script type="module">
+      import { initForensicDebugging } from "./forensic-debugging.js";
+      import { initCraKineticEngine } from "./cra-kinetic-engine.js";
+      import { initGhostRacing } from "./ghost-racing.js";
+
+      // Initialize all three modules
+      const forensic = initForensicDebugging("#forensic-debugging-app");
+      const cra = initCraKineticEngine("#cra-kinetic-engine-app");
+      const ghost = initGhostRacing("#ghost-racing-app");
+
+      // Setup Tab Switching
+      const tabBtns = document.querySelectorAll(".nav-tab-btn");
+      const modules = document.querySelectorAll(".innovations-module");
+
+      tabBtns.forEach(btn => {
+        btn.addEventListener("click", () => {
+          tabBtns.forEach(b => {
+            b.classList.remove("active");
+            b.setAttribute("aria-selected", "false");
+          });
+          modules.forEach(m => m.classList.remove("active"));
+
+          btn.classList.add("active");
+          btn.setAttribute("aria-selected", "true");
+          const targetId = btn.dataset.target;
+          const targetModule = document.getElementById(targetId);
+          if (targetModule) targetModule.classList.add("active");
+        });
+      });
+    </script>
+  <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
+  <script src="/shared/save-resume/save-resume-engine.js?v=20260714-v2" defer></script>
+  <!-- nsr-injected:end -->
+  </body>
+</html>

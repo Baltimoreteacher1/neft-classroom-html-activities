@@ -5890,6 +5890,12 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/math-fluency-lab/",
+    title: "Math Fluency Lab · Unified Engineering & Pedagogical Standard",
+    category: "Tool",
+    unit: null,
+  },
+  {
     path: "/math/",
     title: "Math Section",
     category: "Tool",

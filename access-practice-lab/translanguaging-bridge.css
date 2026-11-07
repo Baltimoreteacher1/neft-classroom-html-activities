@@ -1,0 +1,251 @@
+:root {
+  --trans-bg: #0d1527;
+  --trans-card: #182238;
+  --trans-border: #2d3b59;
+  --trans-accent: #38bdf8;
+  --trans-purple: #c084fc;
+  --trans-emerald: #34d399;
+  --trans-text: #f8fafc;
+  --trans-muted: #94a3b8;
+}
+
+#translanguaging-bridge-app {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  background: var(--trans-bg);
+  color: var(--trans-text);
+  padding: 24px;
+  border-radius: 12px;
+  border: 1px solid var(--trans-border);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  box-sizing: border-box;
+}
+
+#translanguaging-bridge-app * {
+  box-sizing: border-box;
+}
+
+.trans-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  border-bottom: 1px solid var(--trans-border);
+  padding-bottom: 16px;
+}
+
+.trans-title h2 {
+  margin: 0 0 4px 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: #f8fafc;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.trans-subtitle {
+  margin: 0;
+  font-size: 13px;
+  color: var(--trans-muted);
+}
+
+.trans-search-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #090e1a;
+  border: 1px solid var(--trans-border);
+  padding: 8px 14px;
+  border-radius: 8px;
+  width: 100%;
+  max-width: 480px;
+}
+
+.trans-search-bar input {
+  background: transparent;
+  border: none;
+  outline: none;
+  color: white;
+  font-size: 14px;
+  width: 100%;
+}
+
+/* Morphological Cognate Graph Section */
+.cognate-graph-section {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 20px;
+  background: var(--trans-card);
+  border: 1px solid var(--trans-border);
+  border-radius: 10px;
+  padding: 20px;
+}
+
+@media (max-width: 900px) {
+  .cognate-graph-section {
+    grid-template-columns: 1fr;
+  }
+}
+
+.concept-node-tree {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 380px;
+  overflow-y: auto;
+  padding-right: 8px;
+}
+
+.concept-node-btn {
+  background: #0d1527;
+  border: 1px solid var(--trans-border);
+  color: #e2e8f0;
+  padding: 10px 14px;
+  border-radius: 6px;
+  text-align: left;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.2s ease;
+  min-height: 44px;
+}
+
+.concept-node-btn:hover {
+  background: #1e293b;
+  border-color: #38bdf8;
+}
+
+.concept-node-btn.active {
+  background: rgba(56, 189, 248, 0.15);
+  border-color: #38bdf8;
+  color: #38bdf8;
+}
+
+.radial-graph-container {
+  background: #070c18;
+  border: 1px solid var(--trans-border);
+  border-radius: 8px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  min-height: 340px;
+}
+
+/* Dual-Track Thought Pad */
+.dual-track-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+@media (max-width: 800px) {
+  .dual-track-container {
+    grid-template-columns: 1fr;
+  }
+}
+
+.track-column {
+  background: var(--trans-card);
+  border: 1px solid var(--trans-border);
+  border-radius: 10px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.track-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.track-title {
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #94a3b8;
+}
+
+.lang-selector-row {
+  display: flex;
+  gap: 6px;
+}
+
+.lang-tag-btn {
+  background: #090e1a;
+  border: 1px solid var(--trans-border);
+  color: #cbd5e1;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.lang-tag-btn.active {
+  background: #38bdf8;
+  color: #0f172a;
+  border-color: #38bdf8;
+}
+
+.thought-textarea {
+  width: 100%;
+  height: 160px;
+  background: #090e1a;
+  border: 1px solid var(--trans-border);
+  border-radius: 6px;
+  padding: 12px;
+  color: #f1f5f9;
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 1.5;
+  resize: vertical;
+}
+
+.thought-textarea:focus {
+  outline: 2px solid #38bdf8;
+  border-color: transparent;
+}
+
+.blueprint-stems-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  height: 160px;
+  overflow-y: auto;
+}
+
+.blueprint-stem-item {
+  background: #090e1a;
+  border: 1px solid var(--trans-border);
+  border-left: 3px solid #c084fc;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 13px;
+  color: #e2e8f0;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.blueprint-stem-item:hover {
+  background: #1e293b;
+}
+
+.bridge-action-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
+}
