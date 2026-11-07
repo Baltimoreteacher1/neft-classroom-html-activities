@@ -23,6 +23,11 @@ try {
   assert.equal(await page.locator("#amount-b").inputValue(), expected.get("b"));
   assert.equal(await page.locator("#label-a").inputValue(), expected.get("labelA"));
   assert.equal(expected.get("profile"), await page.evaluate(() => sessionStorage.getItem("ewl-fluency-tab-profile")));
+  await page.locator("#unit-a").fill("notebooks");
+  await page.locator("#unit-b").fill("dollars");
+  await page.locator("#unit-b").press("Tab");
+  assert.match(await page.locator('#models svg[aria-label^="Graph of paired quantities"]').getAttribute("aria-label"), /notebooks.*dollars/s);
+  assert.match(await page.locator("#models article").filter({ has: page.getByRole("heading", { name: "Rate and equation" }) }).innerText(), /dollars per notebooks/);
   const scenario = createState({ a: expected.get("a"), b: expected.get("b"), labelA: expected.get("labelA"), labelB: expected.get("labelB") });
   const equivalentRow = derive(createState({ ...scenario, factor: 4 }));
   const graph = page.locator('#models svg[aria-label^="Graph of paired quantities"]');
@@ -68,6 +73,8 @@ try {
   assert.equal(await page.locator("#reason").inputValue(), "Both quantities were multiplied by four.");
   assert.equal(await page.locator("#unit-one").inputValue(), "2.5");
   assert.equal(await page.locator("#unit-two").inputValue(), "2");
+  assert.equal(await page.locator("#unit-a").inputValue(), "notebooks");
+  assert.equal(await page.locator("#unit-b").inputValue(), "dollars");
   assert.match(await page.locator("#prediction").innerText(), /Use the table to test/);
   assert.match(await page.locator("#challenge-math").innerText(), /not equivalent/);
   await page.locator('[data-predict="no"]').click();

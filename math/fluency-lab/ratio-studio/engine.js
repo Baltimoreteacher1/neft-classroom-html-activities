@@ -1,5 +1,9 @@
 // Ratio quantities are nonnegative exact rationals. A pair always has an explicit order.
 const gcd = (a, b) => b === 0n ? a : gcd(b, a % b);
+const boundedLabel = (value, fallback, max) => {
+  const text = String(value ?? "").trim().slice(0, max);
+  return text || fallback;
+};
 const compare = (a, b) => {
   const left = BigInt(a.n) * BigInt(b.d);
   const right = BigInt(b.n) * BigInt(a.d);
@@ -36,7 +40,7 @@ export function createState(input = {}) {
   if (factor.n === '0') throw new RangeError('Scale factor must be positive');
   const comparison=input.comparison || 'part-to-part';
   if(!COMPARISON_TYPES.includes(comparison))throw new RangeError('Choose a supported ratio comparison');
-  return {version:1, a,b, labelA:input.labelA || 'Red',labelB:input.labelB || 'Blue',unitA:input.unitA || 'counters',unitB:input.unitB || 'counters', factor, comparison};
+  return {version:1, a,b, labelA:boundedLabel(input.labelA,'Red',24),labelB:boundedLabel(input.labelB,'Blue',24),unitA:boundedLabel(input.unitA,'counters',16),unitB:boundedLabel(input.unitB,'counters',16), factor, comparison};
 }
 export function derive(s) {
   const a=multiply(s.a,s.factor), b=multiply(s.b,s.factor), total=add(a,b);
