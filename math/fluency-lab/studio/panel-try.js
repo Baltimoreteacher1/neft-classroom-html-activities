@@ -13,6 +13,7 @@ import { createPercentExplanationUrl } from "../../../shared/math-language-bridg
 import { createFractionExplanationUrl } from "../../../shared/math-language-bridge/v2.js";
 import { createFractionNumberLineExplanationUrl } from "../../../shared/math-language-bridge/v2.js";
 import { createDataExplanationUrl } from "../../../shared/math-language-bridge/v2.js";
+import { vocabMarkup } from "./vocab-content.js";
 
 const esc = (s) => String(s).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;");
 
@@ -70,7 +71,7 @@ export function mountTry(ctx, root) {
     const helpOpen = independentMode ? attempts > 0 : ctx.level >= 1 || attempts > 0 || helpShown;
     root.innerHTML = `
       <p class="sd-task"><span class="sd-tag">${esc(t("Try"))}</span> ${esc(independentMode ? t("A new one, on your own.") : t("A new problem like it."))}</p>
-      <p class="sd-problem" data-problem>${esc(item.question)}</p>
+      <p class="sd-problem" data-problem>${vocabMarkup(item.question)}</p>
       <form class="sd-answer" data-form novalidate>
         <label for="sd-ans-${ctx.id}" class="sd-sr">${esc(t("Your answer"))}</label>
         <input id="sd-ans-${ctx.id}" class="sd-input" inputmode="text" autocomplete="off" autocapitalize="off" spellcheck="false" ${solved ? "disabled" : ""} />
@@ -85,7 +86,7 @@ export function mountTry(ctx, root) {
     if (saved) {
       input.value = saved.answer || "";
       const feedback = root.querySelector("[data-feedback]");
-      feedback.textContent = saved.feedbackText || "";
+      feedback.innerHTML = vocabMarkup(saved.feedbackText || "");
       feedback.className = saved.feedbackClass || "sd-feedback";
       root.querySelector("[data-actions]").innerHTML = saved.actionsHtml || "";
     }
@@ -115,7 +116,7 @@ export function mountTry(ctx, root) {
   function ladder(stages) {
     return `<p class="sd-ladder-title">${esc(t("Need help? Go one step at a time."))}</p><ol class="sd-rungs">${stages.map((h, k) => {
       if (k < rungs) {
-        return `<li class="sd-rung on"><strong>${esc(h.name)}</strong><p>${esc(pick(h.text, ctx.lang()))}</p>${h.frame ? `<div class="sd-mini" aria-hidden="false">${h.frame.svg}</div>` : ""}${h.model ? `<button type="button" class="sd-btn" data-show>${esc(t("Try another way: open the model"))}</button>` : ""}${k === 3 ? `<p class="sd-cont">${esc(t("Now you take it from here."))}</p>` : ""}</li>`;
+        return `<li class="sd-rung on"><strong>${esc(h.name)}</strong><p>${vocabMarkup(pick(h.text, ctx.lang()))}</p>${h.frame ? `<div class="sd-mini" aria-hidden="false">${h.frame.svg}</div>` : ""}${h.model ? `<button type="button" class="sd-btn" data-show>${esc(t("Try another way: open the model"))}</button>` : ""}${k === 3 ? `<p class="sd-cont">${esc(t("Now you take it from here."))}</p>` : ""}</li>`;
       }
       const locked = k > rungs || (stages[k].final && attempts < 2);
       const why = stages[k].final && attempts < 2 ? ` <span>${esc(t("Try twice before opening the full explanation."))}</span>` : "";
@@ -137,7 +138,7 @@ export function mountTry(ctx, root) {
         ctx.indep += 1;
         if (ctx.indep >= 2) ctx.mark("challenge");
       }
-      fb.textContent = supported ? t("Correct, with help. Now show it on your own with a new one.") : t("Correct, on your own.");
+      fb.innerHTML = vocabMarkup(supported ? t("Correct, with help. Now show it on your own with a new one.") : t("Correct, on your own."));
       fb.className = "sd-feedback sd-right";
       root.querySelector("[data-ladder]").innerHTML = "";
       root.querySelector("input").disabled = true;
@@ -235,7 +236,7 @@ export function mountTry(ctx, root) {
     const hit = lesson ? diagnose(lesson, text) : null;
     record(ctx.key, { kind: "try", ok: false, supported: rungs > 0, tag: hit?.id || null });
     fb.className = "sd-feedback sd-wrong";
-    fb.textContent = hit ? `${t("Not quite.")} ${pick(hit.label, ctx.lang())}. ${pick(hit.tip, ctx.lang())}` : t("Not quite. Look at the model, then try again.");
+    fb.innerHTML = vocabMarkup(hit ? `${t("Not quite.")} ${pick(hit.label, ctx.lang())}. ${pick(hit.tip, ctx.lang())}` : t("Not quite. Look at the model, then try again."));
     root.querySelector("[data-actions]").innerHTML = `<button type="button" class="sd-btn" data-show>${esc(t("Try another way: show the model"))}</button>`;
     ctx.refreshRail();
     if (independentMode) {

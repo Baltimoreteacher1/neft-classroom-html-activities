@@ -31,6 +31,16 @@ const { mountExplore } = await import("../math/fluency-lab/studio/panel-explore.
 const { setLang } = await import("../math/fluency-lab/i18n.js");
 const place = await import("../math/fluency-lab/studio/engine-place.js");
 const bal = await import("../math/fluency-lab/studio/engine-balance.js");
+const { vocabMarkup } = await import("../math/fluency-lab/studio/vocab-content.js");
+
+const linkedVocabulary = vocabMarkup(
+  'An equivalent ratio compares quantities. <script>alert("x")</script>',
+);
+assert.match(
+  linkedVocabulary,
+  /class="vocab-word" data-vocab="equivalent ratio" aria-haspopup="dialog"/,
+);
+assert.match(linkedVocabulary, /&lt;script&gt;alert\(&quot;x&quot;\)&lt;\/script&gt;/);
 
 const fmtAnswer = (a) => String(a);
 const textOf = (svg) => svg.replace(/<[^>]+>/g, " ");
