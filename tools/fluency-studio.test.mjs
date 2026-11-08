@@ -1338,7 +1338,7 @@ for (const sim of Object.values(SIMS)) {
     movedStats.mean - before.mean > movedStats.median - before.median,
     "moving a far dot shifts the mean more than the median",
   );
-  assert.equal(dp.pointerValue(40 + 24 * 20, { left: 0, width: 560 }), 20);
+  assert.equal(dp.pointerValue(40 + 24 * 20, { left: 0, width: 560 }, { x: 0, width: 560 }), 20);
   assert.match(dp.render(moved).svg, /role="slider"[^>]*aria-valuenow="20"/);
   assert.match(dp.render(dp.init({ lang: () => "es" })).svg, /aria-label="Dato 1, valor 2/);
   s = dp.act({ ...s, at: 20 }, "add");

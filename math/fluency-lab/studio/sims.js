@@ -424,9 +424,9 @@ const dotplot = {
     data[index] = at;
     return { ...s, data, at, selected: index };
   },
-  pointerValue(clientX, rect) {
+  pointerValue(clientX, rect, viewBox) {
     if (!rect?.width) return null;
-    const svgX = ((clientX - rect.left) / rect.width) * 560;
+    const svgX = (viewBox?.x || 0) + ((clientX - rect.left) / rect.width) * (viewBox?.width || 560);
     return Math.max(0, Math.min(20, Math.round((svgX - 40) / 24)));
   },
   stats(data) {
@@ -458,7 +458,7 @@ const dotplot = {
         size: 12,
         fill: COLORS.warn,
       }) +
-      `<line x1="${X(median)}" x2="${X(median)}" y1="30" y2="170" stroke="${COLORS.hundreds}" stroke-width="2" stroke-dasharray="6 5"/>` +
+      `<line x1="${X(median)}" x2="${X(median)}" y1="30" y2="170" stroke="${COLORS.hundreds}" stroke-width="2" stroke-dasharray="6 5" pointer-events="none"/>` +
       txt(X(median), 24, `${s.lang === "es" ? "mediana" : "median"} ${fmt(median)}`, { size: 12, fill: COLORS.hundreds }) +
       `<circle cx="${X(s.at)}" cy="170" r="4" fill="none" stroke="${COLORS.warn}" stroke-width="2"/>`;
     const alt = L(

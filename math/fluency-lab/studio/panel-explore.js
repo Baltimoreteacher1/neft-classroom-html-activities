@@ -59,7 +59,8 @@ export function mountExplore(ctx, root) {
     point.focus();
     e.preventDefault();
     point.closest("svg")?.setPointerCapture?.(e.pointerId);
-    const value = sim.pointerValue?.(e.clientX, point.closest("svg")?.getBoundingClientRect());
+    const svg = point.closest("svg");
+    const value = sim.pointerValue?.(e.clientX, svg?.getBoundingClientRect(), svg?.viewBox?.baseVal);
     if (value !== null && value !== undefined) {
       state = sim.movePoint(state, dragIndex, value);
       touched += 1;
@@ -70,7 +71,7 @@ export function mountExplore(ctx, root) {
   root.addEventListener("pointermove", (e) => {
     if (dragIndex === null) return;
     const svg = root.querySelector("[data-stage] svg");
-    const value = sim.pointerValue?.(e.clientX, svg?.getBoundingClientRect());
+    const value = sim.pointerValue?.(e.clientX, svg?.getBoundingClientRect(), svg?.viewBox?.baseVal);
     if (value === null || value === undefined) return;
     state = sim.movePoint(state, dragIndex, value);
     touched += 1;
