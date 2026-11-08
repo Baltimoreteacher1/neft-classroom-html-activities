@@ -20,6 +20,8 @@ const ALLOWED = new Set([
   "width",
   "height",
   "unit",
+  "side",
+  "triangleHeight",
 ]);
 const inRangeInt = (value, min, max) => Number.isInteger(value) && value >= min && value <= max;
 
@@ -179,6 +181,34 @@ export function createSurfaceAreaExplanationUrl({
   return `https://thelanguagepage.com${MATH_LANGUAGE_BRIDGE_PATH}?${params}`;
 }
 
+/** Share a square-pyramid net prompt using its base side and triangle height only. */
+export function createPyramidSurfaceAreaExplanationUrl({
+  side,
+  triangleHeight,
+  grade = 6,
+  unit = "cm",
+} = {}) {
+  if (!inRangeInt(grade, 4, 8)) throw new RangeError("Surface-area grade must be from 4 to 8.");
+  if (
+    !inRangeInt(side, 1, 20) ||
+    !inRangeInt(triangleHeight, 1, 20) ||
+    !["in", "cm"].includes(unit)
+  ) {
+    throw new RangeError(
+      "Pyramid dimensions must be whole numbers from 1 to 20 with inches or centimeters.",
+    );
+  }
+  const params = new URLSearchParams({
+    schema: MATH_LANGUAGE_BRIDGE_SCHEMA,
+    task: "surface-area-pyramid",
+    grade: String(grade),
+    side: String(side),
+    triangleHeight: String(triangleHeight),
+    unit,
+  });
+  return `https://thelanguagepage.com${MATH_LANGUAGE_BRIDGE_PATH}?${params}`;
+}
+
 /** Read v1 ratio links unchanged and accept only documented v2 math task contracts. */
 export function readMathLanguageBridge(search = "") {
   const params =
@@ -199,7 +229,9 @@ export function readMathLanguageBridge(search = "") {
             ? new Set(["schema", "task", "grade", "numerator", "denominator"])
             : task === "surface-area-prism"
               ? new Set(["schema", "task", "grade", "length", "width", "height", "unit"])
-              : null;
+              : task === "surface-area-pyramid"
+                ? new Set(["schema", "task", "grade", "side", "triangleHeight", "unit"])
+                : null;
   if (!taskFields || [...params.keys()].some((key) => !ALLOWED.has(key) || !taskFields.has(key)))
     return null;
   const grade = Number(params.get("grade"));
@@ -232,6 +264,35 @@ export function readMathLanguageBridge(search = "") {
         (transferDimensions[0] * transferDimensions[1] +
           transferDimensions[0] * transferDimensions[2] +
           transferDimensions[1] * transferDimensions[2]),
+    });
+  }
+  if (task === "surface-area-pyramid") {
+    const side = Number(params.get("side"));
+    const triangleHeight = Number(params.get("triangleHeight"));
+    const unit = params.get("unit");
+    if (
+      !inRangeInt(grade, 4, 8) ||
+      !inRangeInt(side, 1, 20) ||
+      !inRangeInt(triangleHeight, 1, 20) ||
+      !["in", "cm"].includes(unit)
+    )
+      return null;
+    const triangleArea = (side * triangleHeight) / 2;
+    const transferSide = side + 1;
+    const transferTriangleHeight = triangleHeight + 1;
+    return Object.freeze({
+      schema: MATH_LANGUAGE_BRIDGE_SCHEMA,
+      task,
+      grade,
+      side,
+      triangleHeight,
+      unit,
+      baseArea: side * side,
+      triangleArea,
+      surfaceArea: side * side + 4 * triangleArea,
+      transferSide,
+      transferTriangleHeight,
+      transferSurfaceArea: transferSide * transferSide + 2 * transferSide * transferTriangleHeight,
     });
   }
   if (task === "data-center") {

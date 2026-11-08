@@ -26,6 +26,7 @@ import {
   checkRatioTransfer,
   percentSupportForLevel,
   surfaceAreaSupportForLevel,
+  pyramidSurfaceAreaSupportForLevel,
   fractionSupportForLevel,
   ratioTransferBase,
   supportForLevel,
@@ -372,7 +373,7 @@ function restoreBridge(key, bridge) {
             ? checkFractionLineTransfer(bridge, state.fractionLineTransferAnswer)
           : bridge?.task === "data-center"
             ? checkDataTransfer(bridge, state.dataTransferMean, state.dataTransferMedian)
-            : bridge?.task === "surface-area-prism"
+            : ["surface-area-prism", "surface-area-pyramid"].includes(bridge?.task)
               ? checkSurfaceAreaTransfer(bridge, state.bridgeTransfer)
               : checkRatioTransfer(bridge, state.bridgeTransfer);
       if (!mathIsCorrect) state.bridgeStep = "transfer";
@@ -415,24 +416,30 @@ function ratioBridgePanel(bridge, I, language) {
 }
 
 function surfaceAreaBridgePanel(bridge, I, language) {
-  const { length, width, height, unit, faceAreas, surfaceArea, transferDimensions } = bridge;
-  const support = surfaceAreaSupportForLevel(state.bridgeSupport, language, { length, width, height, unit });
+  const pyramid = bridge.task === "surface-area-pyramid";
+  const { length, width, height, unit, faceAreas, surfaceArea, transferDimensions, side, triangleHeight, baseArea, triangleArea, transferSide, transferTriangleHeight } = bridge;
+  const support = pyramid
+    ? pyramidSurfaceAreaSupportForLevel(state.bridgeSupport, language, { side, triangleHeight, unit })
+    : surfaceAreaSupportForLevel(state.bridgeSupport, language, { length, width, height, unit });
   const feedbackFor = (response) => {
     const result = analyzeSurfaceAreaExplanation(response);
     const labels = [
-      [result.evidence.namesFaces, I.T("Names the prism faces", "Nombra las caras del prisma")],
+      [result.evidence.namesFaces, I.T(pyramid ? "Names the square base and triangular faces" : "Names the prism faces", pyramid ? "Nombra la base cuadrada y las caras triangulares" : "Nombra las caras del prisma")],
       [result.evidence.explainsPairs, I.T("Explains matching pairs", "Explica los pares iguales")],
       [result.evidence.namesUnits, I.T("Uses square units", "Usa unidades cuadradas")],
       [result.evidence.connectsReason, I.T("Connects ideas with a reason", "Conecta ideas con una razón")],
     ];
     return `<p class="mlb-feedback">${I.T(result.feedback.en, result.feedback.es)}</p><ul class="mlb-evidence">${labels.map(([yes, label]) => `<li class="${yes ? "is-present" : "is-next"}">${label}</li>`).join("")}</ul>`;
   };
-  const model = `<div class="mlb-model"><h3>${I.T("Three matching face pairs", "Tres pares de caras iguales")}</h3><p>${I.T(`Prism: ${length} × ${width} × ${height} ${unit}.`, `Prisma: ${length} × ${width} × ${height} ${unit}.`)}</p><table><caption>${I.T("Area of each face pair", "Área de cada par de caras")}</caption><thead><tr><th>${I.T("Face pair", "Par de caras")}</th><th>${I.T("One face", "Una cara")}</th><th>${I.T("Both faces", "Ambas caras")}</th></tr></thead><tbody><tr><th>${length} × ${width}</th><td>${faceAreas[0]} ${unit}²</td><td>${2 * faceAreas[0]} ${unit}²</td></tr><tr><th>${length} × ${height}</th><td>${faceAreas[1]} ${unit}²</td><td>${2 * faceAreas[1]} ${unit}²</td></tr><tr><th>${width} × ${height}</th><td>${faceAreas[2]} ${unit}²</td><td>${2 * faceAreas[2]} ${unit}²</td></tr></tbody></table><p>${I.T("Build the explanation: each rectangular face has a matching opposite face, so all three areas count twice.", "Construye la explicación: cada cara rectangular tiene una cara opuesta igual, por eso cada una de las tres áreas se cuenta dos veces.")}</p>${state.bridgeStep === "complete" ? `<p><strong>${I.T("Verified surface area", "Área de superficie verificada")}: ${surfaceArea} ${unit}²</strong></p>` : ""}</div><aside class="mlb-separate"><strong>${I.T("Math and language evidence stay separate", "La evidencia matemática y lingüística se mantiene separada")}</strong><p>${I.T("The geometry values are checked independently. Your explanation receives language feedback only; responses are not sent back to Math Fluency Lab.", "Los valores geométricos se revisan por separado. Tu explicación recibe comentarios lingüísticos solamente; las respuestas no se envían a Math Fluency Lab.")}</p></aside>`;
+  const model = pyramid
+    ? `<div class="mlb-model"><h3>${I.T("One square base and four matching triangles", "Una base cuadrada y cuatro triángulos iguales")}</h3><p>${I.T(`Square pyramid: base side ${side} ${unit}; triangle height ${triangleHeight} ${unit}.`, `Pirámide cuadrada: lado de la base ${side} ${unit}; altura triangular ${triangleHeight} ${unit}.`)}</p><table><caption>${I.T("Area of each face type", "Área de cada tipo de cara")}</caption><thead><tr><th>${I.T("Face", "Cara")}</th><th>${I.T("One face", "Una cara")}</th><th>${I.T("How many", "Cantidad")}</th><th>${I.T("Total area", "Área total")}</th></tr></thead><tbody><tr><th>${I.T("Square base", "Base cuadrada")}</th><td>${baseArea} ${unit}²</td><td>1</td><td>${baseArea} ${unit}²</td></tr><tr><th>${I.T("Triangle", "Triángulo")}</th><td>${triangleArea} ${unit}²</td><td>4</td><td>${4 * triangleArea} ${unit}²</td></tr></tbody></table><p>${I.T("The net has one square base and four matching triangles. Find each face area, then count all four triangles.", "La red tiene una base cuadrada y cuatro triángulos iguales. Halla el área de cada cara y cuenta los cuatro triángulos.")}</p>${state.bridgeStep === "complete" ? `<p><strong>${I.T("Verified surface area", "Área de superficie verificada")}: ${surfaceArea} ${unit}²</strong></p>` : ""}</div>`
+    : `<div class="mlb-model"><h3>${I.T("Three matching face pairs", "Tres pares de caras iguales")}</h3><p>${I.T(`Prism: ${length} × ${width} × ${height} ${unit}.`, `Prisma: ${length} × ${width} × ${height} ${unit}.`)}</p><table><caption>${I.T("Area of each face pair", "Área de cada par de caras")}</caption><thead><tr><th>${I.T("Face pair", "Par de caras")}</th><th>${I.T("One face", "Una cara")}</th><th>${I.T("Both faces", "Ambas caras")}</th></tr></thead><tbody><tr><th>${length} × ${width}</th><td>${faceAreas[0]} ${unit}²</td><td>${2 * faceAreas[0]} ${unit}²</td></tr><tr><th>${length} × ${height}</th><td>${faceAreas[1]} ${unit}²</td><td>${2 * faceAreas[1]} ${unit}²</td></tr><tr><th>${width} × ${height}</th><td>${faceAreas[2]} ${unit}²</td><td>${2 * faceAreas[2]} ${unit}²</td></tr></tbody></table><p>${I.T("Build the explanation: each rectangular face has a matching opposite face, so all three areas count twice.", "Construye la explicación: cada cara rectangular tiene una cara opuesta igual, por eso cada una de las tres áreas se cuenta dos veces.")}</p>${state.bridgeStep === "complete" ? `<p><strong>${I.T("Verified surface area", "Área de superficie verificada")}: ${surfaceArea} ${unit}²</strong></p>` : ""}</div>`;
+  const separation = `<aside class="mlb-separate"><strong>${I.T("Math and language evidence stay separate", "La evidencia matemática y lingüística se mantiene separada")}</strong><p>${I.T("The geometry values are checked independently. Your explanation receives language feedback only; responses are not sent back to Math Fluency Lab.", "Los valores geométricos se revisan por separado. Tu explicación recibe comentarios lingüísticos solamente; las respuestas no se envían a Math Fluency Lab.")}</p></aside>`;
   const picker = `<label class="mlb-support"><span>${I.T("Language support for this task", "Apoyo lingüístico para esta tarea")}</span><select data-bridge-support><option value="2" ${state.bridgeSupport === 2 ? "selected" : ""}>${I.T("More support", "Más apoyo")}</option><option value="3" ${state.bridgeSupport === 3 ? "selected" : ""}>${I.T("Some support", "Algo de apoyo")}</option><option value="5" ${state.bridgeSupport === 5 ? "selected" : ""}>${I.T("Few supports", "Poco apoyo")}</option></select></label>`;
   const scaffold = support ? `<div class="mlb-scaffold"><strong>${I.T("Useful words", "Palabras útiles")}</strong><div class="mlb-word-bank">${support.bank.map((word) => `<span>${esc(word)}</span>`).join("")}</div><p>${esc(support.frame)}</p></div>` : "";
-  if (state.bridgeStep === "draft") return `<section class="ls-panel-section mlb-panel"><div class="ls-section-banner"><h2>${I.T("Explain the surface-area model", "Explica el modelo de área de superficie")}</h2><p>${I.T("Describe how the net accounts for every outside face. Make a first explanation, then revise it using evidence.", "Describe cómo la red cuenta cada cara exterior. Escribe una primera explicación y luego revísala con evidencia.")}</p></div>${model}${picker}${scaffold}<form data-bridge-draft><label for="mlb-draft">${I.T("Your explanation", "Tu explicación")}</label>${toHtml(dictationControlsHTML("mlb-draft", I, { label: I.T("Say it: words appear here", "Dilo: las palabras aparecen aquí") }))}<textarea id="mlb-draft" maxlength="1200" rows="4" required>${esc(state.bridgeDraft)}</textarea><button class="btn primary" type="submit">${I.T("Get language feedback", "Recibir comentarios sobre el lenguaje")}</button></form></section>`;
+  if (state.bridgeStep === "draft") return `<section class="ls-panel-section mlb-panel"><div class="ls-section-banner"><h2>${I.T("Explain the surface-area model", "Explica el modelo de área de superficie")}</h2><p>${I.T(pyramid ? "Describe how the net accounts for its square base and four triangular faces. Make a first explanation, then revise it using evidence." : "Describe how the net accounts for every outside face. Make a first explanation, then revise it using evidence.", pyramid ? "Describe cómo la red cuenta la base cuadrada y las cuatro caras triangulares. Escribe una primera explicación y luego revísala con evidencia." : "Describe cómo la red cuenta cada cara exterior. Escribe una primera explicación y luego revísala con evidencia.")}</p></div>${model}${separation}${picker}${scaffold}<form data-bridge-draft><label for="mlb-draft">${I.T("Your explanation", "Tu explicación")}</label>${toHtml(dictationControlsHTML("mlb-draft", I, { label: I.T("Say it: words appear here", "Dilo: las palabras aparecen aquí") }))}<textarea id="mlb-draft" maxlength="1200" rows="4" required>${esc(state.bridgeDraft)}</textarea><button class="btn primary" type="submit">${I.T("Get language feedback", "Recibir comentarios sobre el lenguaje")}</button></form></section>`;
   if (state.bridgeStep === "revision") return `<section class="ls-panel-section mlb-panel"><h2>${I.T("Improve your explanation", "Mejora tu explicación")}</h2>${model}<div class="mlb-original"><strong>${I.T("First explanation", "Primera explicación")}</strong><p>${esc(state.bridgeDraft)}</p>${feedbackFor(state.bridgeDraft)}</div><p>${I.T("Revise without the sentence frame. Explain why each matching face counts.", "Revisa sin el inicio de oración. Explica por qué se cuenta cada cara igual.")}</p><form data-bridge-revision><label for="mlb-revision">${I.T("Your revision", "Tu revisión")}</label><textarea id="mlb-revision" maxlength="1200" rows="4" required>${esc(state.bridgeRevision)}</textarea><button class="btn primary" type="submit">${I.T("Continue to a new problem", "Continuar con un problema nuevo")}</button></form></section>`;
-  if (state.bridgeStep === "transfer") return `<section class="ls-panel-section mlb-panel"><h2>${I.T("Prove it with a new prism", "Demuéstralo con un prisma nuevo")}</h2><p>${I.T(`A new prism measures ${transferDimensions.join(" × ")} ${unit}. Find its surface area without the model.`, `Un prisma nuevo mide ${transferDimensions.join(" × ")} ${unit}. Halla su área de superficie sin el modelo.`)}</p>${state.bridgeTransferFeedback ? `<p role="status" class="mlb-feedback">${esc(state.bridgeTransferFeedback)}</p>` : ""}<form data-bridge-transfer><label for="mlb-transfer">${I.T(`Surface area (${unit}²)`, `Área de superficie (${unit}²)`)}</label><input id="mlb-transfer" inputmode="numeric" value="${esc(state.bridgeTransfer)}" required/><button class="btn primary" type="submit">${I.T("Check the math", "Revisar las matemáticas")}</button></form>${state.bridgeTransferCorrect ? `<div class="mlb-transfer-success"><p role="status">${I.T("Correct. Explain your new reasoning independently.", "Correcto. Explica tu nuevo razonamiento por tu cuenta.")}</p><form data-bridge-transfer-explain><label for="mlb-transfer-explain">${I.T("Independent explanation", "Explicación independiente")}</label>${toHtml(dictationControlsHTML("mlb-transfer-explain", I, { label: I.T("Say your explanation", "Di tu explicación") }))}<textarea id="mlb-transfer-explain" rows="3" maxlength="1200" required>${esc(state.bridgeTransferExplain)}</textarea><button class="btn primary" type="submit">${I.T("Finish investigation", "Terminar la investigación")}</button></form></div>` : ""}</section>`;
+  if (state.bridgeStep === "transfer") return `<section class="ls-panel-section mlb-panel"><h2>${I.T(pyramid ? "Prove it with a new pyramid" : "Prove it with a new prism", pyramid ? "Demuéstralo con una pirámide nueva" : "Demuéstralo con un prisma nuevo")}</h2><p>${I.T(pyramid ? `A new square pyramid has base side ${transferSide} ${unit} and triangle height ${transferTriangleHeight} ${unit}. Find its surface area without the model.` : `A new prism measures ${transferDimensions.join(" × ")} ${unit}. Find its surface area without the model.`, pyramid ? `Una pirámide cuadrada nueva tiene lado de base ${transferSide} ${unit} y altura triangular ${transferTriangleHeight} ${unit}. Halla su área de superficie sin el modelo.` : `Un prisma nuevo mide ${transferDimensions.join(" × ")} ${unit}. Halla su área de superficie sin el modelo.`)}</p>${state.bridgeTransferFeedback ? `<p role="status" class="mlb-feedback">${esc(state.bridgeTransferFeedback)}</p>` : ""}<form data-bridge-transfer><label for="mlb-transfer">${I.T(`Surface area (${unit}²)`, `Área de superficie (${unit}²)`)}</label><input id="mlb-transfer" inputmode="numeric" value="${esc(state.bridgeTransfer)}" required/><button class="btn primary" type="submit">${I.T("Check the math", "Revisar las matemáticas")}</button></form>${state.bridgeTransferCorrect ? `<div class="mlb-transfer-success"><p role="status">${I.T("Correct. Explain your new reasoning independently.", "Correcto. Explica tu nuevo razonamiento por tu cuenta.")}</p><form data-bridge-transfer-explain><label for="mlb-transfer-explain">${I.T("Independent explanation", "Explicación independiente")}</label>${toHtml(dictationControlsHTML("mlb-transfer-explain", I, { label: I.T("Say your explanation", "Di tu explicación") }))}<textarea id="mlb-transfer-explain" rows="3" maxlength="1200" required>${esc(state.bridgeTransferExplain)}</textarea><button class="btn primary" type="submit">${I.T("Finish investigation", "Terminar la investigación")}</button></form></div>` : ""}</section>`;
   return `<section class="ls-panel-section mlb-panel"><h2>${I.T("Investigation complete", "Investigación completa")}</h2>${model}<div class="mlb-comparison"><article><h3>${I.T("First", "Primera")}</h3><p>${esc(state.bridgeDraft)}</p></article><article><h3>${I.T("Revised", "Revisada")}</h3><p>${esc(state.bridgeRevision)}</p></article><article><h3>${I.T("Independent transfer", "Transferencia independiente")}</h3><p>${esc(state.bridgeTransferExplain)}</p></article></div><h3>${I.T("Language evidence", "Evidencia del lenguaje")}</h3>${feedbackFor(state.bridgeTransferExplain)}<p class="mlb-caution">${I.T("These observations describe this response only. They are not an official WIDA score or a measure of math achievement.", "Estas observaciones describen solo esta respuesta. No son una puntuación oficial de WIDA ni una medida de logro matemático.")}</p><button type="button" class="btn ghost" data-bridge-reset>${I.T("Try another investigation", "Probar otra investigación")}</button></section>`;
 }
 
@@ -463,9 +470,11 @@ function percentBridgePanel(bridge, I, language) {
 
 export async function render(ctx = {}) {
   const bridge = ctx.route?.mathBridge || null;
-  const bridgeKey = bridge ? bridge.task === "surface-area-prism"
-    ? `${bridge.schema}:${bridge.task}:${bridge.grade}:${bridge.length}:${bridge.width}:${bridge.height}:${bridge.unit}`
-    : bridge.task === "percent-part-whole"
+  const bridgeKey = bridge ? bridge.task === "surface-area-pyramid"
+      ? `${bridge.schema}:${bridge.task}:${bridge.grade}:${bridge.side}:${bridge.triangleHeight}:${bridge.unit}`
+    : bridge.task === "surface-area-prism"
+      ? `${bridge.schema}:${bridge.task}:${bridge.grade}:${bridge.length}:${bridge.width}:${bridge.height}:${bridge.unit}`
+      : bridge.task === "percent-part-whole"
     ? `${bridge.schema}:${bridge.task}:${bridge.grade}:${bridge.percent}:${bridge.whole}`
     : bridge.task === "fraction-of-whole"
       ? `${bridge.schema}:${bridge.task}:${bridge.grade}:${bridge.numerator}:${bridge.denominator}:${bridge.whole}`
@@ -522,7 +531,7 @@ export async function render(ctx = {}) {
     else if (bridge.task === "fraction-of-whole") state.fractionTransferCorrect = checkFractionTransfer(bridge, state.fractionTransferAnswer);
     else if (bridge.task === "fraction-number-line") state.fractionLineTransferCorrect = checkFractionLineTransfer(bridge, state.fractionLineTransferAnswer);
     else if (bridge.task === "data-center") state.dataTransferCorrect = checkDataTransfer(bridge, state.dataTransferMean, state.dataTransferMedian);
-    else state.bridgeTransferCorrect = bridge.task === "surface-area-prism" ? checkSurfaceAreaTransfer(bridge, state.bridgeTransfer) : checkRatioTransfer(bridge, state.bridgeTransfer);
+    else state.bridgeTransferCorrect = ["surface-area-prism", "surface-area-pyramid"].includes(bridge.task) ? checkSurfaceAreaTransfer(bridge, state.bridgeTransfer) : checkRatioTransfer(bridge, state.bridgeTransfer);
   } else if (!bridgeKey && state.bridgeKey) {
     Object.assign(state, {
       bridgeKey: "",
@@ -586,7 +595,7 @@ export async function render(ctx = {}) {
 
       <!-- Studio Stage Body -->
       <div class="ls-stage-body">
-        ${currentTab === "math-bridge" && bridge ? bridge.task === "surface-area-prism" ? surfaceAreaBridgePanel(bridge, I, language) : bridge.task === "percent-part-whole" ? percentBridgePanel(bridge, I, language) : bridge.task === "fraction-of-whole" ? renderFractionBridge(bridge, state, I, language) : bridge.task === "fraction-number-line" ? renderFractionLineBridge(bridge, state, I, language) : bridge.task === "data-center" ? renderDataBridge(bridge, state, I, language) : ratioBridgePanel(bridge, I, language) : ""}
+        ${currentTab === "math-bridge" && bridge ? ["surface-area-prism", "surface-area-pyramid"].includes(bridge.task) ? surfaceAreaBridgePanel(bridge, I, language) : bridge.task === "percent-part-whole" ? percentBridgePanel(bridge, I, language) : bridge.task === "fraction-of-whole" ? renderFractionBridge(bridge, state, I, language) : bridge.task === "fraction-number-line" ? renderFractionLineBridge(bridge, state, I, language) : bridge.task === "data-center" ? renderDataBridge(bridge, state, I, language) : ratioBridgePanel(bridge, I, language) : ""}
         
         <!-- 1. Compare language samples without treating them as assessment evidence. -->
         ${currentTab === "wida" ? `
@@ -1093,16 +1102,20 @@ export function mount(root, ctx) {
     event.preventDefault();
     state.bridgeTransfer = root.querySelector("#mlb-transfer")?.value.trim() || "";
     if (!bridge) return;
-    state.bridgeTransferCorrect = bridge?.task === "surface-area-prism"
+    state.bridgeTransferCorrect = ["surface-area-prism", "surface-area-pyramid"].includes(bridge?.task)
       ? checkSurfaceAreaTransfer(bridge, state.bridgeTransfer)
       : checkRatioTransfer(bridge, state.bridgeTransfer);
     state.bridgeTransferFeedback = state.bridgeTransferCorrect
       ? bridge?.task === "surface-area-prism"
         ? i18nFor(ctx).S("Correct. Add all three matching face pairs and use square units.", "Correcto. Suma los tres pares de caras y usa unidades cuadradas.")
-        : i18nFor(ctx).S("Correct: both quantities were multiplied by 4.", "Correcto: ambas cantidades se multiplicaron por 4.")
+        : bridge?.task === "surface-area-pyramid"
+          ? i18nFor(ctx).S("Correct. Add one base and four triangular faces, using square units.", "Correcto. Suma una base y cuatro caras triangulares usando unidades cuadradas.")
+          : i18nFor(ctx).S("Correct: both quantities were multiplied by 4.", "Correcto: ambas cantidades se multiplicaron por 4.")
       : bridge?.task === "surface-area-prism"
         ? i18nFor(ctx).S("Not yet. Find the three face areas, count each matching face twice, and add.", "Todavía no. Halla las tres áreas, cuenta dos veces cada cara igual y suma.")
-        : i18nFor(ctx).S("Check the factor. Both quantities must be multiplied by 4.", "Revisa el factor. Ambas cantidades deben multiplicarse por 4.");
+        : bridge?.task === "surface-area-pyramid"
+          ? i18nFor(ctx).S("Not yet. Find the square base and one triangle area, then count one base and four triangles.", "Todavía no. Halla el área de la base cuadrada y de un triángulo; luego cuenta una base y cuatro triángulos.")
+          : i18nFor(ctx).S("Check the factor. Both quantities must be multiplied by 4.", "Revisa el factor. Ambas cantidades deben multiplicarse por 4.");
     saveBridge(state.bridgeKey);
     ctx.rerender();
   });

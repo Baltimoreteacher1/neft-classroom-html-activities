@@ -14,6 +14,7 @@ import { createFractionExplanationUrl } from "../../../shared/math-language-brid
 import { createFractionNumberLineExplanationUrl } from "../../../shared/math-language-bridge/v2.js";
 import { createDataExplanationUrl } from "../../../shared/math-language-bridge/v2.js";
 import { createSurfaceAreaExplanationUrl } from "../../../shared/math-language-bridge/v2.js";
+import { createPyramidSurfaceAreaExplanationUrl } from "../../../shared/math-language-bridge/v2.js";
 import { vocabMarkup } from "./vocab-content.js";
 
 const esc = (s) => String(s).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;");
@@ -151,7 +152,7 @@ export function mountTry(ctx, root) {
       const fractionBridge = lesson?.engine?.id === "fracmul" && lesson.spec.mode === "of" ? lesson.spec : null;
       const fractionLineBridge = lesson?.engine?.id === "fraction" && lesson.spec.mode === "lineMark" ? lesson.spec : null;
       const dataBridge = lesson?.engine?.id === "expr" && ["mean", "median"].includes(lesson.spec.mode) ? lesson.spec : null;
-      const surfaceAreaBridge = lesson?.engine?.id === "geo" && lesson.spec.mode === "surfaceNet" && lesson.spec.solid === "rectangular-prism" ? lesson.spec : null;
+      const surfaceAreaBridge = lesson?.engine?.id === "geo" && lesson.spec.mode === "surfaceNet" ? lesson.spec : null;
       const grade = Number(ctx.skill.grade) || 6;
       let bridgeUrl = null;
       let bridgeTask = "ratio";
@@ -206,7 +207,20 @@ export function mountTry(ctx, root) {
           });
           bridgeTask = "fraction";
         } else if (
-          surfaceAreaBridge &&
+          surfaceAreaBridge?.solid === "square-pyramid" &&
+          Number.isInteger(surfaceAreaBridge.side) && surfaceAreaBridge.side >= 1 && surfaceAreaBridge.side <= 20 &&
+          Number.isInteger(surfaceAreaBridge.triangleHeight) && surfaceAreaBridge.triangleHeight >= 1 && surfaceAreaBridge.triangleHeight <= 20 &&
+          grade >= 4 && grade <= 8
+        ) {
+          bridgeUrl = createPyramidSurfaceAreaExplanationUrl({
+            side: surfaceAreaBridge.side,
+            triangleHeight: surfaceAreaBridge.triangleHeight,
+            unit: surfaceAreaBridge.unit === "in" ? "in" : "cm",
+            grade,
+          });
+          bridgeTask = "surfaceArea";
+        } else if (
+          surfaceAreaBridge?.solid === "rectangular-prism" &&
           [surfaceAreaBridge.l, surfaceAreaBridge.w, surfaceAreaBridge.h].every((n) => Number.isInteger(n) && n >= 1 && n <= 20) &&
           grade >= 4 && grade <= 8
         ) {

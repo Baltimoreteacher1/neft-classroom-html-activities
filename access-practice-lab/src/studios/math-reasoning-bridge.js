@@ -124,6 +124,16 @@ export function surfaceAreaSupportForLevel(level, language = "en", { length, wid
   return null;
 }
 
+export function pyramidSurfaceAreaSupportForLevel(level, language = "en", { side, triangleHeight, unit } = {}) {
+  if (level <= 2) return language === "es"
+    ? { bank: ["base cuadrada", "triángulo", "cuatro caras", "unidades cuadradas", "porque"], frame: `La base mide ${side}×${side} y cada triángulo mide ${side}×${triangleHeight}÷2 ${unit}². Sumo la base y los cuatro triángulos porque ___ .` }
+    : { bank: ["square base", "triangle", "four faces", "square units", "because"], frame: `The base is ${side}×${side}, and each triangle is ${side}×${triangleHeight}÷2 ${unit}². I add the base and four triangles because ___.` };
+  if (level === 3) return language === "es"
+    ? { bank: ["base", "triángulos", "área", "unidades cuadradas"], frame: "El área de superficie suma una base y cuatro triángulos porque ___ ." }
+    : { bank: ["base", "triangles", "area", "square units"], frame: "Surface area adds one base and four triangles because ___." };
+  return null;
+}
+
 /** Language evidence for describing changes in a data set; it is not a math or proficiency score. */
 export function analyzeDataExplanation(text) {
   const value = String(text ?? "").toLocaleLowerCase();

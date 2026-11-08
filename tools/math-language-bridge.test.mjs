@@ -17,6 +17,7 @@ import {
   fractionSupportForLevel,
   parseRatioPair,
   percentSupportForLevel,
+  pyramidSurfaceAreaSupportForLevel,
   ratioTransferBase,
   supportForLevel,
   surfaceAreaSupportForLevel,
@@ -33,6 +34,7 @@ import {
   createFractionExplanationUrl,
   createFractionNumberLineExplanationUrl,
   createPercentExplanationUrl,
+  createPyramidSurfaceAreaExplanationUrl,
   createSurfaceAreaExplanationUrl,
   readMathLanguageBridge as readBridgeV2,
 } from "../shared/math-language-bridge/v2.js";
@@ -275,6 +277,27 @@ assert.throws(
   RangeError,
 );
 assert.equal(readBridgeV2(`${surfaceUrl.search}&values=1,2,3,4`), null);
+const pyramidUrl = new URL(createPyramidSurfaceAreaExplanationUrl({ side: 6, triangleHeight: 5 }));
+const pyramidBridge = readBridgeV2(pyramidUrl.searchParams);
+assert.deepEqual(pyramidBridge, {
+  schema: "edu-wonderlab.math-language/2",
+  task: "surface-area-pyramid",
+  grade: 6,
+  side: 6,
+  triangleHeight: 5,
+  unit: "cm",
+  baseArea: 36,
+  triangleArea: 15,
+  surfaceArea: 96,
+  transferSide: 7,
+  transferTriangleHeight: 6,
+  transferSurfaceArea: 133,
+});
+assert.equal(readBridgeV2(`${pyramidUrl.search}&name=private`), null);
+assert.equal(checkSurfaceAreaTransfer(pyramidBridge, "133"), true);
+assert.equal(checkSurfaceAreaTransfer(pyramidBridge, "132"), false);
+assert.ok(pyramidSurfaceAreaSupportForLevel(2, "es", pyramidBridge).frame.includes("6×5÷2"));
+assert.equal(pyramidSurfaceAreaSupportForLevel(5, "en", pyramidBridge), null);
 assert.equal(
   analyzePercentExplanation(
     "30 percent of the whole is the part because the grid has equal squares.",
@@ -571,6 +594,36 @@ root
 assert.match(root.textContent, /Investigation complete/);
 assert.match(root.textContent, /52 in²/);
 
+ctx.route.mathBridge = pyramidBridge;
+({ root } = await mount(languageStudios, ctx));
+assert.match(root.textContent, /one square base and four matching triangles/i);
+assert.match(root.textContent, /36 cm²/);
+root.querySelector("#mlb-draft").value =
+  "The square base is 36 square centimeters and four triangles have area 15 each because the net has four triangular faces.";
+root
+  .querySelector("[data-bridge-draft]")
+  .dispatchEvent(new win.Event("submit", { bubbles: true, cancelable: true }));
+({ root } = await mount(languageStudios, ctx));
+root.querySelector("#mlb-revision").value =
+  "Surface area is one 36 square centimeter base plus four 15 square centimeter triangles because every face counts.";
+root
+  .querySelector("[data-bridge-revision]")
+  .dispatchEvent(new win.Event("submit", { bubbles: true, cancelable: true }));
+({ root } = await mount(languageStudios, ctx));
+assert.match(root.textContent, /base side 7 cm and triangle height 6 cm/);
+root.querySelector("#mlb-transfer").value = "133";
+root
+  .querySelector("[data-bridge-transfer]")
+  .dispatchEvent(new win.Event("submit", { bubbles: true, cancelable: true }));
+({ root } = await mount(languageStudios, ctx));
+root.querySelector("#mlb-transfer-explain").value =
+  "I found the square base and four triangle areas, so I added all five faces.";
+root
+  .querySelector("[data-bridge-transfer-explain]")
+  .dispatchEvent(new win.Event("submit", { bubbles: true, cancelable: true }));
+({ root } = await mount(languageStudios, ctx));
+assert.match(root.textContent, /96 cm²/);
+
 const tryRoot = document.createElement("div");
 const tryCtx = {
   skill: getSkill(5, "fraction-of"),
@@ -711,6 +764,41 @@ surfaceTryRoot
 const surfaceLink = surfaceTryRoot.querySelector(".sd-math-language-bridge a");
 assert.ok(surfaceLink, "surface-area practice links directly to its paired language investigation");
 assert.equal(readBridgeV2(new URL(surfaceLink.href).searchParams)?.task, "surface-area-prism");
+
+let pyramidTryRoot;
+let pyramidQuestion = "";
+for (let seed = 0; seed < 50 && !pyramidQuestion.includes("square pyramid"); seed += 1) {
+  Date.now = () => seed * 1237;
+  pyramidTryRoot = document.createElement("div");
+  mountTry(
+    {
+      ...tryCtx,
+      skill: surfaceSkill,
+      item: { question: "earlier pyramid surface area practice" },
+      id: `surface-area-pyramid-bridge-${seed}`,
+      key: "6:surface-area-nets",
+    },
+    pyramidTryRoot,
+  );
+  pyramidQuestion = pyramidTryRoot.querySelector("[data-problem]").textContent;
+}
+Date.now = originalSurfaceNow;
+const pyramidDims = pyramidQuestion.match(
+  /square base with side (\d+) cm and four triangles, each with base (\d+) cm and height (\d+) cm/,
+);
+assert.ok(pyramidDims, `pyramid practice prompt found: ${pyramidQuestion}`);
+const [, sideText, , triangleHeightText] = pyramidDims;
+const pyramidSide = Number(sideText);
+const pyramidTriangleHeight = Number(triangleHeightText);
+pyramidTryRoot.querySelector("input").value = String(
+  pyramidSide ** 2 + 2 * pyramidSide * pyramidTriangleHeight,
+);
+pyramidTryRoot
+  .querySelector("[data-form]")
+  .dispatchEvent(new win.Event("submit", { bubbles: true, cancelable: true }));
+const pyramidLink = pyramidTryRoot.querySelector(".sd-math-language-bridge a");
+assert.ok(pyramidLink, "square-pyramid practice links to the matching language investigation");
+assert.equal(readBridgeV2(new URL(pyramidLink.href).searchParams)?.task, "surface-area-pyramid");
 
 console.log(
   "math-language-bridge: versioned task context, separate evidence, supports, and transfer passed.",
