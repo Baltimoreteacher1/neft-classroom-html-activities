@@ -51,7 +51,7 @@ let counter = 0;
 export const studioAvailable = (item) => Boolean(lessonFor(item));
 export const studioModeled = (item) => lessonFor(item)?.modeled === true;
 
-export function mountStudio(host, { item, skill, context = "idea", response = null }) {
+export function mountStudio(host, { item, skill, context = "idea", response = null, trySession = null, onTrySessionChange = null }) {
   let lesson = lessonFor(item);
   if (!lesson) return null;
   const id = ++counter;
@@ -70,6 +70,8 @@ export function mountStudio(host, { item, skill, context = "idea", response = nu
     level: scaffold(past),
     indep: 0,
     tryCount: 0,
+    trySession: trySession?.skillKey === key ? trySession : null,
+    onTrySessionChange,
     tryNeedsIndependent: false,
     mission: {},
     lang: getLang,

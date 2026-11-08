@@ -1382,13 +1382,21 @@ for (const sim of Object.values(SIMS)) {
 // ---------- 8. Interface ----------
 const skill = (id) => ALL_SKILLS.find((s) => s.id === id);
 const host = document.querySelector("#host");
+let latestTrySession = null;
 const click = (el) => el.dispatchEvent(new dom.window.MouseEvent("click", { bubbles: true }));
 function fresh(id, question, context = "idea") {
   adaptive.clearAll();
   host.innerHTML = "";
   const sk = skill(id);
   const item = { ...generateProblem(sk, seededRandom(5)), question };
-  const stop = mountStudio(host, { item, skill: sk, context });
+  const stop = mountStudio(host, {
+    item,
+    skill: sk,
+    context,
+    onTrySessionChange: (session) => {
+      latestTrySession = session;
+    },
+  });
   assert.ok(stop, `studio mounts for ${id}`);
   return stop;
 }
@@ -1603,6 +1611,38 @@ setLang("en");
   );
   assert.ok(host.querySelector(".sd-rung"), "the learner returns to the same hint progress");
   stop();
+  assert.equal(
+    latestTrySession.item.question,
+    savedProblem,
+    "the active Try work is available to the save adapter",
+  );
+  const resume = mountStudio(host, {
+    item: latestTrySession.item,
+    skill: skill("add-1000"),
+    context: "miss",
+    trySession: latestTrySession,
+    onTrySessionChange: (session) => {
+      latestTrySession = session;
+    },
+  });
+  click(host.querySelector('[data-tab="try"]'));
+  assert.equal(
+    host.querySelector("[data-problem]").textContent,
+    savedProblem,
+    "refresh recovery keeps the same problem",
+  );
+  assert.equal(
+    host.querySelector(".sd-input").value,
+    savedAnswer,
+    "refresh recovery keeps the draft response",
+  );
+  assert.equal(
+    host.querySelector("[data-feedback]").textContent,
+    savedFeedback,
+    "refresh recovery keeps specific feedback",
+  );
+  assert.ok(host.querySelector(".sd-rung"), "refresh recovery keeps the hint progress");
+  resume();
 }
 {
   // Reduced motion: no autoplay control, all steps available as a list.

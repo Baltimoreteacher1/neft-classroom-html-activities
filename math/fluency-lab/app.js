@@ -298,6 +298,7 @@ const state = {
   mixedPool: null,
   mode: "learn",
   session: null,
+  studioTrySession: null,
   item: null,
   itemAttempts: 0,
   guidedStepsShown: 0,
@@ -7552,6 +7553,7 @@ let mountedStudioSkill = null;
 function clearStudio() {
   cleanupStudio?.();
   cleanupStudio = null;
+  state.studioTrySession = null;
   mountedStudioItem = null;
   mountedStudioSkill = null;
   const slot = document.querySelector("#studio-slot");
@@ -7567,7 +7569,17 @@ function showStudio(item, skill, context, response = null) {
   clearStudio();
   const slot = document.querySelector("#studio-slot");
   if (slot) {
-    cleanupStudio = mountStudio(slot, { item, skill: activeSkill, context, response });
+    cleanupStudio = mountStudio(slot, {
+      item,
+      skill: activeSkill,
+      context,
+      response,
+      trySession: state.studioTrySession,
+      onTrySessionChange: (session) => {
+        state.studioTrySession = session;
+        saveActiveSession();
+      },
+    });
     mountedStudioItem = item;
     mountedStudioSkill = activeSkill;
   }
@@ -8722,6 +8734,7 @@ function saveActiveSession() {
   if (!state.session || state.session.finished || !state.item) return;
   const { rng: _rng, problemSkills: _skills, ...session } = state.session;
   const snapshot = { version: 2, grade: state.grade, skillId: state.skill?.id || null, session, item: state.item, itemDone: state.itemDone,
+    studioTrySession: state.studioTrySession?.skillKey === `${state.item.skill?.grade}:${state.item.skill?.id}` ? state.studioTrySession : null,
     itemAttempts: state.itemAttempts, firstAnswerCorrect: state.firstAnswerCorrect, hintBeforeFirst: state.hintBeforeFirst, initialSupport: state.initialSupport,
     guidedStepsShown: state.guidedStepsShown, assignment: state.assignment, recentQuestions: state.recentQuestions,
     feedback: els.feedback.hidden ? null : { title: els.feedbackTitle.textContent, copy: els.feedbackCopy.textContent, type: els.feedback.dataset.type, phase: state.fbPhase || "idle", submitted: state.lastSubmitted || "" } };
@@ -8750,6 +8763,7 @@ function resumePractice(saved = loadJson(SESSION_KEY, null)) {
   if (saved.itemDone) nextProblem();
   else {
     nextProblem(saved.item);
+    state.studioTrySession = saved.studioTrySession?.skillKey === `${saved.item?.skill?.grade}:${saved.item?.skill?.id}` ? saved.studioTrySession : null;
     state.itemAttempts = saved.itemAttempts || 0; state.firstAnswerCorrect = saved.firstAnswerCorrect; state.hintBeforeFirst = saved.hintBeforeFirst;
     state.initialSupport = saved.initialSupport; state.guidedStepsShown = saved.guidedStepsShown;
     renderGuidedCoach();

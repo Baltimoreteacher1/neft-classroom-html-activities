@@ -41,10 +41,12 @@ export function mountTry(ctx, root) {
       actionsHtml: root.querySelector("[data-actions]")?.innerHTML || "",
       returnNotice: returnNotice || Boolean(ctx.trySession?.returnNotice),
     };
+    ctx.onTrySessionChange?.(ctx.trySession);
   }
 
   const fresh = () => {
     ctx.trySession = null;
+    ctx.onTrySessionChange?.(null);
     const rng = seededRandom((Date.now() + (ctx.tryCount += 1) * 977) >>> 0);
     for (let n = 0; n < 12; n += 1) {
       const next = generateProblem(ctx.skill, rng);
@@ -234,6 +236,9 @@ export function mountTry(ctx, root) {
   root.addEventListener("submit", (e) => {
     e.preventDefault();
     check(root.querySelector("input").value);
+  });
+  root.addEventListener("input", (e) => {
+    if (e.target.matches("[data-form] input")) saveSession();
   });
   root.addEventListener("click", (e) => {
     const rung = e.target.closest("[data-rung]");
