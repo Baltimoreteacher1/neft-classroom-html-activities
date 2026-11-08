@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * language-page-host.test.mjs — thelanguagepage.com serves the ACCESS lab and nothing else, and
+ * language-page-host.test.mjs — thelanguagepage.com serves Language Adventures and ACCESS lab, and
  * adding it changes nothing about what eduwonderlab.com answers.
  *
  * Two promises, both about boundaries:
@@ -63,10 +63,10 @@ await t("www redirects to the apex with 308, keeping path and query", () => {
   });
 });
 
-await t("the root lands on the lab with a temporary redirect", () => {
+await t("the root lands on Language Adventures with a temporary redirect", () => {
   const r = at("https://thelanguagepage.com/");
   assert.equal(r.status, 302);
-  assert.equal(r.location, "https://thelanguagepage.com/access-practice-lab/");
+  assert.equal(r.location, "https://thelanguagepage.com/language-adventures/");
 });
 
 await t("everything the lab loads is served on the lab host", () => {

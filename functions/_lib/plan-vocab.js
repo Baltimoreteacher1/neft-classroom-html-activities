@@ -5795,19 +5795,19 @@ export const ACTIVITIES = [
   },
   {
     path: "/language-adventures/",
-    title: "The Language Page · Language Adventures",
+    title: "The Language Page · Academic English Studio (Grades 3–8) · Language Adventures",
     category: "Tool",
     unit: null,
   },
   {
     path: "/language-adventures/404/",
-    title: "The Language Page · 404",
+    title: "The Language Page · Academic English Studio (Grades 3–8) · 404",
     category: "Tool",
     unit: null,
   },
   {
     path: "/language-adventures/adventures/",
-    title: "Adventures · The Language Page",
+    title: "Adventures & Story Worlds · The Language Page",
     category: "Tool",
     unit: null,
   },
@@ -5831,13 +5831,19 @@ export const ACTIVITIES = [
   },
   {
     path: "/language-adventures/passport/",
-    title: "The Language Page · Passport",
+    title: "The Language Page · Academic English Studio (Grades 3–8) · Passport",
     category: "Tool",
     unit: null,
   },
   {
     path: "/language-adventures/practice/",
     title: "Five-minute practice · The Language Page",
+    category: "Tool",
+    unit: null,
+  },
+  {
+    path: "/language-adventures/studios/",
+    title: "Studios · The Language Page",
     category: "Tool",
     unit: null,
   },

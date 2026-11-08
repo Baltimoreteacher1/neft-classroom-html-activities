@@ -232,6 +232,10 @@ const UNIVERSAL = ["check"];
 const CARRIES_SCRIPT = /\.(js|mjs|cjs|html?)$/i;
 const COVERAGE = [
   [
+    /^(language-adventures\/.*|data\/static-app-mounts\.json|curriculum\/index\.html|functions\/_lib\/language-page\.js|functions\/language-page-host\.test\.mjs)$/,
+    ["validate:static", "validate:catalog", "check"],
+  ],
+  [
     /^(scripts\/qa-run\.mjs|qa-exempt\.json|math-fluency-lab\/|shared\/|tools\/validate-discourse-cra-studios\.mjs|data\/catalog\.json|functions\/_lib\/plan-vocab\.js|access-practice-lab\/(app-shell|index\.html|sw\.js|src\/studios\/|language-studios\.html|discourse-architect\.css|speaking-sparring\.css|translanguaging-bridge\.css)|math\/fluency-lab\/(cra-kinetic-engine|forensic-debugging|ghost-racing|fluency-innovations))/,
     [
       "validate:js-syntax",
