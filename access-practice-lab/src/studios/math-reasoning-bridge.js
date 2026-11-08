@@ -91,7 +91,7 @@ export function checkSurfaceAreaTransfer(bridge, response) {
   return /^\d+(?:\.0+)?$/u.test(text) && Number(text) === bridge.transferSurfaceArea;
 }
 
-function parseVolumeResponse(text) {
+function parseExactRationalResponse(text) {
   const value = String(text ?? "").trim();
   let match = value.match(/^(\d+)\s+(\d+)\s*\/\s*(\d+)$/u);
   if (match) {
@@ -115,7 +115,7 @@ function parseVolumeResponse(text) {
 
 /** Compare exact rational cubic-foot values; accept decimals, fractions, or mixed numbers. */
 export function checkFractionalVolumeTransfer(bridge, response) {
-  const parsed = parseVolumeResponse(response);
+  const parsed = parseExactRationalResponse(response);
   return Boolean(
     parsed &&
       Number.isSafeInteger(bridge?.transferVolumeEighths) &&
@@ -154,6 +154,52 @@ export function fractionalVolumeSupportForLevel(level, language = "en") {
   if (level === 3) return language === "es"
     ? { bank: ["dimensiones", "cubo", "volumen", "pies cúbicos"], frame: "El volumen se mide en pies cúbicos porque ___." }
     : { bank: ["dimensions", "cube", "volume", "cubic feet"], frame: "The volume is measured in cubic feet because ___." };
+  return null;
+}
+
+/** Compare a fresh fraction-division quotient using exact rational cross-products. */
+export function checkFractionDivisionTransfer(bridge, response) {
+  const parsed = parseExactRationalResponse(response);
+  return Boolean(
+    parsed &&
+      Number.isSafeInteger(bridge?.transferQuotientNumerator) &&
+      Number.isSafeInteger(bridge?.transferQuotientDenominator) &&
+      parsed.numerator * bridge.transferQuotientDenominator ===
+        bridge.transferQuotientNumerator * parsed.denominator,
+  );
+}
+
+/** Observe language used to explain fraction division; this is not a math/proficiency score. */
+export function analyzeFractionDivisionExplanation(text) {
+  const value = String(text ?? "").toLocaleLowerCase();
+  const evidence = {
+    identifiesDividendAndDivisor: /\b(dividend|divisor|dividendo|divisor|total|group size|tamaño de cada grupo)\b/u.test(value),
+    explainsEqualSizedPieces: /\b(common denominator|same[- ]sized pieces|equal[- ]sized pieces|same[- ]size units|common parts|denominador común|partes del mismo tamaño|partes iguales)\b/u.test(value),
+    connectsReciprocal: /\b(reciprocal|invert|flip|inverse|recíproco|inverso|invertir)\b/u.test(value),
+    checksByMultiplying: /\b(check|checking|multiply back|multiplying|product|comprueba|comprobar|multiplicar|producto)\b/u.test(value),
+    connectsReason: /\b(because|so|since|therefore|porque|por eso|ya que|entonces)\b/u.test(value),
+  };
+  const missing = [];
+  if (!evidence.identifiesDividendAndDivisor) missing.push({ en: "identify the total and the group size", es: "identifica el total y el tamaño del grupo" });
+  if (!evidence.explainsEqualSizedPieces) missing.push({ en: "explain how equal-sized pieces help compare the amounts", es: "explica cómo las partes iguales ayudan a comparar las cantidades" });
+  if (!evidence.connectsReciprocal) missing.push({ en: "connect the model to multiplying by the divisor's reciprocal", es: "relaciona el modelo con multiplicar por el recíproco del divisor" });
+  if (!evidence.checksByMultiplying) missing.push({ en: "check the quotient by multiplying by the divisor", es: "comprueba el cociente al multiplicarlo por el divisor" });
+  if (!evidence.connectsReason) missing.push({ en: "connect your ideas with a reason", es: "conecta tus ideas con una razón" });
+  return {
+    evidence,
+    feedback: missing.length
+      ? { en: `For clarity, ${missing.map((item) => item.en).join(", then ")}.`, es: `Para mayor claridad, ${missing.map((item) => item.es).join(", luego ")}.` }
+      : { en: "You connect the quantities, equal-sized pieces, reciprocal, and multiplication check with a reason.", es: "Conectas las cantidades, las partes iguales, el recíproco y la comprobación con multiplicación usando una razón." },
+  };
+}
+
+export function fractionDivisionSupportForLevel(level, language = "en") {
+  if (level <= 2) return language === "es"
+    ? { bank: ["dividendo", "divisor", "partes iguales", "recíproco", "comprobar", "porque"], frame: "El dividendo es ___ y el divisor es ___. Las partes iguales muestran ___; compruebo con multiplicación porque ___." }
+    : { bank: ["dividend", "divisor", "equal-sized pieces", "reciprocal", "check", "because"], frame: "The dividend is ___ and the divisor is ___. Equal-sized pieces show ___; I check by multiplying because ___." };
+  if (level === 3) return language === "es"
+    ? { bank: ["denominador común", "recíproco", "producto"], frame: "El modelo y el recíproco muestran el mismo cociente porque ___." }
+    : { bank: ["common denominator", "reciprocal", "product"], frame: "The model and reciprocal show the same quotient because ___." };
   return null;
 }
 

@@ -25,6 +25,10 @@ const ALLOWED = new Set([
   "lengthHalves",
   "widthHalves",
   "heightHalves",
+  "dividendNumerator",
+  "dividendDenominator",
+  "divisorNumerator",
+  "divisorDenominator",
 ]);
 const inRangeInt = (value, min, max) => Number.isInteger(value) && value >= min && value <= max;
 
@@ -241,6 +245,35 @@ export function createFractionalVolumeExplanationUrl({
   return `https://thelanguagepage.com${MATH_LANGUAGE_BRIDGE_PATH}?${params}`;
 }
 
+/** Share a bounded fraction-division problem with a fresh exact transfer item. */
+export function createFractionDivisionExplanationUrl({
+  dividendNumerator,
+  dividendDenominator,
+  divisorNumerator,
+  divisorDenominator,
+  grade = 6,
+} = {}) {
+  if (!inRangeInt(grade, 5, 8))
+    throw new RangeError("Fraction-division grade must be from 5 to 8.");
+  if (
+    ![dividendNumerator, dividendDenominator, divisorNumerator, divisorDenominator].every((value) =>
+      inRangeInt(value, 1, 12),
+    )
+  ) {
+    throw new RangeError("Fraction-division terms must be positive integers from 1 to 12.");
+  }
+  const params = new URLSearchParams({
+    schema: MATH_LANGUAGE_BRIDGE_SCHEMA,
+    task: "fraction-division",
+    grade: String(grade),
+    dividendNumerator: String(dividendNumerator),
+    dividendDenominator: String(dividendDenominator),
+    divisorNumerator: String(divisorNumerator),
+    divisorDenominator: String(divisorDenominator),
+  });
+  return `https://thelanguagepage.com${MATH_LANGUAGE_BRIDGE_PATH}?${params}`;
+}
+
 /** Read v1 ratio links unchanged and accept only documented v2 math task contracts. */
 export function readMathLanguageBridge(search = "") {
   const params =
@@ -272,7 +305,17 @@ export function readMathLanguageBridge(search = "") {
                       "widthHalves",
                       "heightHalves",
                     ])
-                  : null;
+                  : task === "fraction-division"
+                    ? new Set([
+                        "schema",
+                        "task",
+                        "grade",
+                        "dividendNumerator",
+                        "dividendDenominator",
+                        "divisorNumerator",
+                        "divisorDenominator",
+                      ])
+                    : null;
   if (!taskFields || [...params.keys()].some((key) => !ALLOWED.has(key) || !taskFields.has(key)))
     return null;
   const grade = Number(params.get("grade"));
@@ -370,6 +413,42 @@ export function readMathLanguageBridge(search = "") {
       transferDimensionsHalves,
       transferVolumeEighths,
       transferCubicFeet: transferVolumeEighths / 8,
+    });
+  }
+  if (task === "fraction-division") {
+    const dividendNumerator = Number(params.get("dividendNumerator"));
+    const dividendDenominator = Number(params.get("dividendDenominator"));
+    const divisorNumerator = Number(params.get("divisorNumerator"));
+    const divisorDenominator = Number(params.get("divisorDenominator"));
+    if (
+      !inRangeInt(grade, 5, 8) ||
+      ![dividendNumerator, dividendDenominator, divisorNumerator, divisorDenominator].every(
+        (value) => inRangeInt(value, 1, 12),
+      )
+    ) {
+      return null;
+    }
+    const transferDividendNumerator = dividendNumerator + 1;
+    const transferQuotientNumerator = transferDividendNumerator * divisorDenominator;
+    const transferQuotientDenominator = dividendDenominator * divisorNumerator;
+    const gcd = (a, b) => (b ? gcd(b, a % b) : a);
+    const common = gcd(transferQuotientNumerator, transferQuotientDenominator);
+    const quotientNumerator = dividendNumerator * divisorDenominator;
+    const quotientDenominator = dividendDenominator * divisorNumerator;
+    const quotientCommon = gcd(quotientNumerator, quotientDenominator);
+    return Object.freeze({
+      schema: MATH_LANGUAGE_BRIDGE_SCHEMA,
+      task,
+      grade,
+      dividendNumerator,
+      dividendDenominator,
+      divisorNumerator,
+      divisorDenominator,
+      quotientNumerator: quotientNumerator / quotientCommon,
+      quotientDenominator: quotientDenominator / quotientCommon,
+      transferDividendNumerator,
+      transferQuotientNumerator: transferQuotientNumerator / common,
+      transferQuotientDenominator: transferQuotientDenominator / common,
     });
   }
   if (task === "data-center") {

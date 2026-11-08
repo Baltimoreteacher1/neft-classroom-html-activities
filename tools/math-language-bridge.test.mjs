@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import {
   analyzeDataExplanation,
   analyzeFractionalVolumeExplanation,
+  analyzeFractionDivisionExplanation,
   analyzeFractionExplanation,
   analyzeFractionLineExplanation,
   analyzePercentExplanation,
@@ -9,6 +10,7 @@ import {
   analyzeSurfaceAreaExplanation,
   checkDataTransfer,
   checkFractionalVolumeTransfer,
+  checkFractionDivisionTransfer,
   checkFractionLineTransfer,
   checkFractionTransfer,
   checkPercentTransfer,
@@ -16,6 +18,7 @@ import {
   checkSurfaceAreaTransfer,
   dataSupportForLevel,
   fractionalVolumeSupportForLevel,
+  fractionDivisionSupportForLevel,
   fractionLineSupportForLevel,
   fractionSupportForLevel,
   parseRatioPair,
@@ -28,6 +31,7 @@ import {
 import * as languageStudios from "../access-practice-lab/src/views/language-studios.js";
 import { generateProblem, getSkill, seededRandom } from "../math/fluency-lab/problem-bank.js";
 import { mountTry } from "../math/fluency-lab/studio/panel-try.js";
+import { SIMS } from "../math/fluency-lab/studio/sims.js";
 import {
   createRatioExplanationUrl,
   readMathLanguageBridge,
@@ -35,6 +39,7 @@ import {
 import {
   createDataExplanationUrl,
   createFractionalVolumeExplanationUrl,
+  createFractionDivisionExplanationUrl,
   createFractionExplanationUrl,
   createFractionNumberLineExplanationUrl,
   createPercentExplanationUrl,
@@ -335,6 +340,74 @@ assert.deepEqual(
 );
 assert.ok(fractionalVolumeSupportForLevel(2, "en").frame.includes("1/8 ft³"));
 assert.equal(fractionalVolumeSupportForLevel(5, "es"), null);
+const fractionDivisionUrl = new URL(
+  createFractionDivisionExplanationUrl({
+    dividendNumerator: 2,
+    dividendDenominator: 3,
+    divisorNumerator: 1,
+    divisorDenominator: 6,
+  }),
+);
+const fractionDivisionBridge = readBridgeV2(fractionDivisionUrl.searchParams);
+assert.equal(fractionDivisionBridge.task, "fraction-division");
+assert.deepEqual(
+  [fractionDivisionBridge.quotientNumerator, fractionDivisionBridge.quotientDenominator],
+  [4, 1],
+);
+assert.deepEqual(
+  [
+    fractionDivisionBridge.transferQuotientNumerator,
+    fractionDivisionBridge.transferQuotientDenominator,
+  ],
+  [6, 1],
+);
+assert.equal(checkFractionDivisionTransfer(fractionDivisionBridge, "6"), true);
+assert.equal(checkFractionDivisionTransfer(fractionDivisionBridge, "12/2"), true);
+assert.equal(checkFractionDivisionTransfer(fractionDivisionBridge, "5"), false);
+assert.equal(readBridgeV2(`${fractionDivisionUrl.search}&student=private`), null);
+assert.throws(
+  () =>
+    createFractionDivisionExplanationUrl({
+      dividendNumerator: 2,
+      dividendDenominator: 3,
+      divisorNumerator: 0,
+      divisorDenominator: 6,
+    }),
+  RangeError,
+);
+assert.deepEqual(
+  analyzeFractionDivisionExplanation(
+    "The dividend is 2/3 and the divisor is 1/6. Equal-sized pieces show four groups because I multiply by the reciprocal and check by multiplying the quotient back.",
+  ).evidence,
+  {
+    identifiesDividendAndDivisor: true,
+    explainsEqualSizedPieces: true,
+    connectsReciprocal: true,
+    checksByMultiplying: true,
+    connectsReason: true,
+  },
+);
+assert.ok(
+  fractionDivisionSupportForLevel(2, "en").frame.toLowerCase().includes("equal-sized pieces"),
+);
+assert.equal(fractionDivisionSupportForLevel(5, "es"), null);
+const nonWholeDivisionBridge = readBridgeV2(
+  new URL(
+    createFractionDivisionExplanationUrl({
+      dividendNumerator: 2,
+      dividendDenominator: 3,
+      divisorNumerator: 4,
+      divisorDenominator: 5,
+    }),
+  ).searchParams,
+);
+assert.deepEqual(
+  [nonWholeDivisionBridge.quotientNumerator, nonWholeDivisionBridge.quotientDenominator],
+  [5, 6],
+);
+assert.equal(checkFractionDivisionTransfer(nonWholeDivisionBridge, "1 1/4"), true);
+assert.equal(checkFractionDivisionTransfer(nonWholeDivisionBridge, "1.25"), true);
+assert.equal(checkFractionDivisionTransfer(nonWholeDivisionBridge, "1.24"), false);
 assert.equal(
   analyzePercentExplanation(
     "30 percent of the whole is the part because the grid has equal squares.",
@@ -904,6 +977,140 @@ root
   .querySelector("[data-bridge-transfer-explain]")
   .dispatchEvent(new win.Event("submit", { bubbles: true, cancelable: true }));
 ({ root } = await mount(languageStudios, volumeCtx));
+assert.match(root.textContent, /Investigation complete/);
+assert.match(root.textContent, /not an official WIDA score/);
+
+const divisionSkill = getSkill(6, "divide-fractions");
+let divisionTryRoot;
+let divisionQuestion = "";
+for (let seed = 0; seed < 50 && !divisionQuestion.includes(" ÷ "); seed += 1) {
+  Date.now = () => seed * 1901;
+  divisionTryRoot = document.createElement("div");
+  mountTry(
+    {
+      ...tryCtx,
+      skill: divisionSkill,
+      item: { question: "earlier fraction-division problem" },
+      id: `fraction-division-bridge-${seed}`,
+      key: "6:divide-fractions",
+    },
+    divisionTryRoot,
+  );
+  divisionQuestion = divisionTryRoot.querySelector("[data-problem]").textContent;
+}
+Date.now = originalSurfaceNow;
+const divisionParts = divisionQuestion.match(/^(\d+)\/(\d+) ÷ (\d+)\/(\d+) = \?$/u);
+assert.ok(divisionParts, `fraction-division question found: ${divisionQuestion}`);
+const [, da, db, dc, dd] = divisionParts.map(Number);
+const divisionGcd = (a, b) => (b ? divisionGcd(b, a % b) : a);
+const divisionCommon = divisionGcd(da * dd, db * dc);
+const divisionAnswer = `${(da * dd) / divisionCommon}/${(db * dc) / divisionCommon}`;
+divisionTryRoot.querySelector("input").value = divisionAnswer;
+divisionTryRoot
+  .querySelector("[data-form]")
+  .dispatchEvent(new win.Event("submit", { bubbles: true, cancelable: true }));
+const divisionLink = divisionTryRoot.querySelector(".sd-math-language-bridge a");
+assert.ok(
+  divisionLink,
+  "fraction-division practice links to its paired Language Page investigation",
+);
+const divisionBridge = readBridgeV2(new URL(divisionLink.href).searchParams);
+assert.equal(divisionBridge.task, "fraction-division");
+assert.deepEqual(
+  [
+    divisionBridge.dividendNumerator,
+    divisionBridge.dividendDenominator,
+    divisionBridge.divisorNumerator,
+    divisionBridge.divisorDenominator,
+  ],
+  [da, db, dc, dd],
+);
+
+const unitDivisionSkill = getSkill(5, "unit-fraction-division");
+let unitDivisionTryRoot;
+let unitDivisionQuestion = "";
+for (
+  let seed = 0;
+  seed < 50 &&
+  !unitDivisionQuestion.includes("servings") &&
+  !unitDivisionQuestion.includes("students");
+  seed += 1
+) {
+  Date.now = () => seed * 2713;
+  unitDivisionTryRoot = document.createElement("div");
+  mountTry(
+    {
+      ...tryCtx,
+      skill: unitDivisionSkill,
+      item: { question: "earlier unit-fraction division problem" },
+      id: `unit-fraction-division-bridge-${seed}`,
+      key: "5:unit-fraction-division",
+    },
+    unitDivisionTryRoot,
+  );
+  unitDivisionQuestion = unitDivisionTryRoot.querySelector("[data-problem]").textContent;
+}
+Date.now = originalSurfaceNow;
+const sharingQuestion = unitDivisionQuestion.match(
+  /ribbon that is 1\/(\d+) meter long is shared equally by (\d+) students/u,
+);
+const groupQuestion = unitDivisionQuestion.match(
+  /jug holds (\d+) liters\. How many 1\/(\d+)-liter servings/u,
+);
+assert.ok(
+  sharingQuestion || groupQuestion,
+  `unit-fraction question found: ${unitDivisionQuestion}`,
+);
+const unitDivisionAnswer = sharingQuestion
+  ? `1/${Number(sharingQuestion[1]) * Number(sharingQuestion[2])}`
+  : String(Number(groupQuestion[1]) * Number(groupQuestion[2]));
+unitDivisionTryRoot.querySelector("input").value = unitDivisionAnswer;
+unitDivisionTryRoot
+  .querySelector("[data-form]")
+  .dispatchEvent(new win.Event("submit", { bubbles: true, cancelable: true }));
+const unitDivisionLink = unitDivisionTryRoot.querySelector(".sd-math-language-bridge a");
+assert.ok(
+  unitDivisionLink,
+  "unit-fraction division practice links to the same paired investigation",
+);
+assert.equal(readBridgeV2(new URL(unitDivisionLink.href).searchParams)?.task, "fraction-division");
+
+const divisionCtx = makeCtx("language-studios");
+divisionCtx.route.mathBridge = fractionDivisionBridge;
+({ root } = await mount(languageStudios, divisionCtx));
+assert.doesNotMatch(
+  root.textContent,
+  /\[object Object\]/,
+  "safe HTML breadcrumbs render as markup, not an object string",
+);
+assert.match(root.textContent, /Compare equal-sized pieces/);
+assert.match(root.textContent, /Reciprocal connection/);
+root.querySelector("#mlb-draft").value =
+  "The dividend is 2/3 and the divisor is 1/6. Equal-sized pieces show four groups because I multiply by the reciprocal and check by multiplying the quotient back.";
+root
+  .querySelector("[data-bridge-draft]")
+  .dispatchEvent(new win.Event("submit", { bubbles: true, cancelable: true }));
+({ root } = await mount(languageStudios, divisionCtx));
+assert.match(root.textContent, /Improve your explanation/);
+root.querySelector("#mlb-revision").value =
+  "The dividend has four sixths and one group uses one sixth, so four groups fit. I multiply by six and check 4 × 1/6 = 2/3.";
+root
+  .querySelector("[data-bridge-revision]")
+  .dispatchEvent(new win.Event("submit", { bubbles: true, cancelable: true }));
+({ root } = await mount(languageStudios, divisionCtx));
+assert.match(root.textContent, /3\/3 ÷ 1\/6/);
+root.querySelector("#mlb-transfer").value = "6";
+root
+  .querySelector("[data-bridge-transfer]")
+  .dispatchEvent(new win.Event("submit", { bubbles: true, cancelable: true }));
+({ root } = await mount(languageStudios, divisionCtx));
+assert.match(root.textContent, /Correct\. Explain your new reasoning independently/);
+root.querySelector("#mlb-transfer-explain").value =
+  "Six sixths fit into three thirds because each group uses one sixth.";
+root
+  .querySelector("[data-bridge-transfer-explain]")
+  .dispatchEvent(new win.Event("submit", { bubbles: true, cancelable: true }));
+({ root } = await mount(languageStudios, divisionCtx));
 assert.match(root.textContent, /Investigation complete/);
 assert.match(root.textContent, /not an official WIDA score/);
 

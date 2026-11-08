@@ -16,10 +16,26 @@ import { createDataExplanationUrl } from "../../../shared/math-language-bridge/v
 import { createSurfaceAreaExplanationUrl } from "../../../shared/math-language-bridge/v2.js";
 import { createPyramidSurfaceAreaExplanationUrl } from "../../../shared/math-language-bridge/v2.js";
 import { createFractionalVolumeExplanationUrl } from "../../../shared/math-language-bridge/v2.js";
+import { createFractionDivisionExplanationUrl } from "../../../shared/math-language-bridge/v2.js";
 import { SIMS } from "./sims.js";
 import { vocabMarkup } from "./vocab-content.js";
 
 const esc = (s) => String(s).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;");
+
+function fractionDivisionContext(item, skillId) {
+  const question = String(item?.question || "");
+  if (skillId === "divide-fractions") {
+    const match = question.match(/^(\d+)\/(\d+)\s*÷\s*(\d+)\/(\d+)\s*=\s*\?$/u);
+    if (match) return { dividendNumerator: Number(match[1]), dividendDenominator: Number(match[2]), divisorNumerator: Number(match[3]), divisorDenominator: Number(match[4]) };
+  }
+  if (skillId === "unit-fraction-division") {
+    const sharing = question.match(/ribbon that is 1\/(\d+) meter long is shared equally by (\d+) students/u);
+    if (sharing) return { dividendNumerator: 1, dividendDenominator: Number(sharing[1]), divisorNumerator: Number(sharing[2]), divisorDenominator: 1 };
+    const groups = question.match(/jug holds (\d+) liters\. How many 1\/(\d+)-liter servings/u);
+    if (groups) return { dividendNumerator: Number(groups[1]), dividendDenominator: 1, divisorNumerator: 1, divisorDenominator: Number(groups[2]) };
+  }
+  return null;
+}
 
 export function mountTry(ctx, root) {
   const restored = ctx.trySession?.skillKey === ctx.key ? ctx.trySession : null;
@@ -158,6 +174,9 @@ export function mountTry(ctx, root) {
       const fractionalVolumeBridge = ctx.skill?.id === "volume-fractional"
         ? SIMS.volumeFractional.init({ item })
         : null;
+      const fractionDivisionBridge = ["divide-fractions", "unit-fraction-division"].includes(ctx.skill?.id)
+        ? fractionDivisionContext(item, ctx.skill.id)
+        : null;
       const grade = Number(ctx.skill.grade) || 6;
       let bridgeUrl = null;
       let bridgeTask = "ratio";
@@ -175,6 +194,13 @@ export function mountTry(ctx, root) {
             grade,
           });
           bridgeTask = "fractionLine";
+        } else if (
+          fractionDivisionBridge &&
+          Object.values(fractionDivisionBridge).every((value) => Number.isInteger(value) && value >= 1 && value <= 12) &&
+          grade >= 5 && grade <= 8
+        ) {
+          bridgeUrl = createFractionDivisionExplanationUrl({ ...fractionDivisionBridge, grade });
+          bridgeTask = "fractionDivision";
         } else if (
           Array.isArray(base) &&
           base.length === 2 &&
@@ -272,6 +298,7 @@ export function mountTry(ctx, root) {
         data: L("Explain this data investigation in The Language Page", "Explica esta investigación de datos en The Language Page"),
         surfaceArea: L("Explain this surface-area model in The Language Page", "Explica este modelo de área de superficie en The Language Page"),
         fractionalVolume: L("Explain this fractional-volume model in The Language Page", "Explica este modelo de volumen fraccionario en The Language Page"),
+        fractionDivision: L("Explain this fraction-division model in The Language Page", "Explica este modelo de división de fracciones en The Language Page"),
       };
       const bridge = bridgeUrl
         ? `<div class="sd-math-language-bridge"><a class="sd-btn" href="${bridgeUrl}">${esc(pick(bridgeLabels[bridgeTask], ctx.lang()))}</a><p>${esc(pick(L("Only the math task and grade travel with this optional link. Your name, response, and progress stay here.", "Este enlace opcional solo comparte la tarea matemática y el grado. Tu nombre, respuesta y progreso se quedan aquí."), ctx.lang()))}</p></div>`
