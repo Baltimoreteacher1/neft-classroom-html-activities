@@ -438,6 +438,140 @@ const ratioTape = {
   },
 };
 
+const fractionDivision = {
+  id: "fractionDivision",
+  title: L("Fraction division strip", "Cinta para dividir fracciones"),
+  ask: L(
+    "Predict what the quotient describes. Then change a quantity and compare how the equal pieces and result respond.",
+    "Predice qué describe el cociente. Luego cambia una cantidad y observa cómo responden las partes iguales y el resultado.",
+  ),
+  init(ctx) {
+    const s = ctx?.lesson?.spec;
+    const lang = ctx?.lang?.() === "es" ? "es" : "en";
+    if (s?.mode === "fdiv") return { a: s.a, b: s.b, c: s.c, d: s.d, lang };
+    if (s?.mode === "unitshare") return { a: 1, b: s.b, c: s.w, d: 1, interpretation: "sharing", lang };
+    if (s?.mode === "unitcount") return { a: s.w, b: 1, c: 1, d: s.d, lang };
+    return { a: 3, b: 4, c: 1, d: 4, lang };
+  },
+  clamp(s) {
+    return {
+      a: Math.min(12, Math.max(1, Math.round(s.a))),
+      b: Math.min(12, Math.max(1, Math.round(s.b))),
+      c: Math.min(12, Math.max(1, Math.round(s.c))),
+      d: Math.min(12, Math.max(1, Math.round(s.d))),
+      interpretation: s.interpretation === "sharing" ? "sharing" : "groups",
+      lang: s.lang === "es" ? "es" : "en",
+    };
+  },
+  sliders: (s) => s.interpretation === "sharing"
+    ? [
+        slider("a", L("Fraction numerator", "Numerador de la fracción"), 1, 12, 1, s.a),
+        slider("b", L("Fraction denominator", "Denominador de la fracción"), 1, 12, 1, s.b),
+        slider("c", L("Number of students", "Cantidad de estudiantes"), 1, 12, 1, s.c),
+      ]
+    : [
+        slider("a", L("Dividend numerator", "Numerador del dividendo"), 1, 12, 1, s.a),
+        slider("b", L("Dividend denominator", "Denominador del dividendo"), 1, 12, 1, s.b),
+        slider("c", L("Divisor numerator", "Numerador del divisor"), 1, 12, 1, s.c),
+        slider("d", L("Divisor denominator", "Denominador del divisor"), 1, 12, 1, s.d),
+      ],
+  prediction(s) {
+    const result = s.a * s.d / (s.b * s.c);
+    const fraction = (n, d) => d === 1 ? String(n) : `${n}/${d}`;
+    return {
+      prompt: L(
+        s.interpretation === "sharing"
+          ? `If ${fraction(s.a, s.b)} is shared among ${s.c} students, how much does each get?`
+          : `How many groups of ${fraction(s.c, s.d)} fit in ${fraction(s.a, s.b)}?`,
+        s.interpretation === "sharing"
+          ? `Si ${fraction(s.a, s.b)} se reparte entre ${s.c} estudiantes, ¿cuánto recibe cada uno?`
+          : `¿Cuántos grupos de ${fraction(s.c, s.d)} caben en ${fraction(s.a, s.b)}?`,
+      ),
+      answer: result,
+      hint: s.interpretation === "sharing"
+        ? L(
+            "Partition the dividend into the number of students. Each share must have the same amount.",
+            "Divide el dividendo entre la cantidad de estudiantes. Cada parte debe tener la misma cantidad.",
+          )
+        : L(
+            "Rename the fractions using same-sized pieces. Count the dividend's pieces and the pieces in one group.",
+            "Renombra las fracciones usando partes del mismo tamaño. Cuenta las partes del dividendo y las de un grupo.",
+          ),
+    };
+  },
+  render(s) {
+    const common = (x, y) => {
+      let a = x, b = y;
+      while (b) [a, b] = [b, a % b];
+      return (x * y) / a;
+    };
+    const sharing = s.interpretation === "sharing";
+    const Ld = sharing ? s.b * s.c : common(s.b, s.d);
+    const dividendUnits = sharing ? s.a * s.c : s.a * (Ld / s.b);
+    const groupUnits = sharing ? s.a : s.c * (Ld / s.d);
+    const amount = s.a / s.b;
+    const group = sharing ? amount / s.c : s.c / s.d;
+    const gcd = (x, y) => y ? gcd(y, x % y) : x;
+    const g = gcd(s.a * s.d, s.b * s.c);
+    const qText = s.b * s.c / g === 1
+      ? String(s.a * s.d / g)
+      : `${s.a * s.d / g}/${s.b * s.c / g}`;
+    const wholeCount = sharing ? Math.max(1, Math.ceil(amount)) : Math.max(1, Math.ceil(Math.max(amount, group)));
+    const spanish = s.lang === "es";
+    const cells = Ld * wholeCount;
+    const x0 = 152, width = 400, cellW = width / cells;
+    const fraction = (n, d) => d === 1 ? String(n) : `${n}/${d}`;
+    let body = txt(30, 38, spanish ? "Dividendo" : "Dividend", { size: 16, anchor: "start" });
+    body += txt(30, 115, sharing ? (spanish ? "Parte igual" : "Equal share") : (spanish ? "Un grupo" : "One group"), { size: 16, anchor: "start" });
+    body += txt(93, 80, fraction(s.a, s.b), { size: 17, anchor: "end", fill: COLORS.part });
+    body += txt(93, 157, sharing ? qText : fraction(s.c, s.d), { size: 17, anchor: "end", fill: COLORS.hundreds });
+    for (let i = 0; i < cells; i += 1) {
+      const fill = i < dividendUnits ? COLORS.part : "#fff";
+      body += `<rect x="${x0 + i * cellW}" y="54" width="${cellW}" height="42" fill="${fill}" stroke="#fff" stroke-width="1"/>`;
+    }
+    body += `<rect x="${x0}" y="54" width="${width}" height="42" fill="none" stroke="${COLORS.ink}" stroke-width="2"/>`;
+    for (let start = 0; start < dividendUnits; start += groupUnits) {
+      const length = Math.min(groupUnits, dividendUnits - start);
+      const partial = length < groupUnits;
+      body += `<rect x="${x0 + start * cellW + 1}" y="51" width="${Math.max(0, length * cellW - 2)}" height="48" rx="3" fill="none" stroke="${partial ? COLORS.warn : COLORS.ink}" stroke-width="${partial ? 2 : 3}" ${partial ? 'stroke-dasharray="5 4"' : ""}/>`;
+    }
+    for (let i = 0; i < cells; i += 1) {
+      body += `<rect x="${x0 + i * cellW}" y="131" width="${cellW}" height="42" fill="${i < groupUnits ? COLORS.hundreds : "#fff"}" stroke="#fff" stroke-width="1"/>`;
+    }
+    body += `<rect x="${x0}" y="131" width="${width}" height="42" fill="none" stroke="${COLORS.ink}" stroke-width="2"/>`;
+    const divisorText = sharing ? String(s.c) : fraction(s.c, s.d);
+    body += txt(350, 218, `${fraction(s.a, s.b)} ÷ ${divisorText} = ${qText}`, { size: 25 });
+    body += txt(
+      350,
+      250,
+      sharing
+        ? (spanish ? `${dividendUnits} partes ÷ ${s.c} estudiantes = ${qText} por estudiante` : `${dividendUnits} pieces ÷ ${s.c} students = ${qText} per student`)
+        : (spanish ? `${dividendUnits} ÷ ${groupUnits} partes iguales = ${qText} grupos` : `${dividendUnits} ÷ ${groupUnits} equal pieces = ${qText} groups`),
+      { size: 15, fill: COLORS.mute },
+    );
+    const alt = L(
+      sharing
+        ? `${s.a}/${s.b} divided equally among ${s.c} shares. The strip is cut into ${Ld} equal pieces; the dividend has ${dividendUnits} pieces and each share gets ${groupUnits}. Each share is ${qText}.`
+        : `${s.a}/${s.b} divided by ${s.c}/${s.d}. The common denominator is ${Ld}; the dividend has ${dividendUnits} pieces and each group has ${groupUnits} pieces. The quotient is ${qText}.`,
+      sharing
+        ? `${s.a}/${s.b} dividido por igual en ${s.c} partes. La cinta se corta en ${Ld} partes iguales; el dividendo tiene ${dividendUnits} partes y cada reparto recibe ${groupUnits}. Cada parte es ${qText}.`
+        : `${s.a}/${s.b} dividido entre ${s.c}/${s.d}. El denominador común es ${Ld}; el dividendo tiene ${dividendUnits} partes y cada grupo tiene ${groupUnits}. El cociente es ${qText}.`,
+    );
+    return out(
+      svgWrap(body, "", { w: 600, h: 280 }),
+      alt,
+      L(
+        sharing
+          ? `The ${s.a}/${s.b} strip is cut into ${s.c} equal shares, each ${groupUnits} piece${groupUnits === 1 ? "" : "s"} of size 1/${Ld}: ${s.a}/${s.b} ÷ ${s.c} = ${qText}.`
+          : `Both amounts use pieces of size 1/${Ld}. Count ${dividendUnits} dividend piece${dividendUnits === 1 ? "" : "s"} and ${groupUnits} piece${groupUnits === 1 ? "" : "s"} per group: ${dividendUnits} ÷ ${groupUnits} = ${qText}.`,
+        sharing
+          ? `La cinta de ${s.a}/${s.b} se divide en ${s.c} partes iguales; cada una tiene ${groupUnits} parte${groupUnits === 1 ? "" : "s"} de tamaño 1/${Ld}: ${s.a}/${s.b} ÷ ${s.c} = ${qText}.`
+          : `Ambas cantidades usan partes de tamaño 1/${Ld}. Cuenta ${dividendUnits} parte${dividendUnits === 1 ? "" : "s"} del dividendo y ${groupUnits} por grupo: ${dividendUnits} ÷ ${groupUnits} = ${qText}.`,
+      ),
+    );
+  },
+};
+
 const angles = {
   id: "angles",
   title: L("Angles at a crossing", "Ángulos en un cruce"),
@@ -559,6 +693,6 @@ const dotplot = {
   },
 };
 
-export const SIMS = { fracEquiv, proportional, machine, areaPerim, volume, percentWhole, percentPart, ratioTape, angles, dotplot, surfaceNet };
+export const SIMS = { fracEquiv, fractionDivision, proportional, machine, areaPerim, volume, percentWhole, percentPart, ratioTape, angles, dotplot, surfaceNet };
 export const simFor = (id) => SIMS[id] || null;
 export const _gcd = gcd;

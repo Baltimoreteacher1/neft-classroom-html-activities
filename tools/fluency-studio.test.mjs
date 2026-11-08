@@ -617,6 +617,89 @@ for (const id of Object.values(SIM_FOR)) assert.ok(SIMS[id], `simulator ${id} ex
   assert.match(spanish.svg, /Grupo A a grupo b: 2 : 3/);
 }
 
+// ---------- Fraction division model is tied to the active Grade 5/6 problem ----------
+{
+  const engine = ENGINES.decimal;
+  const item = { question: "2/3 ÷ 4/5 = ?", steps: [] };
+  const lesson = lessonFor(item);
+  assert.equal(lesson.engine.id, "decimal");
+  assert.equal(lesson.spec.mode, "fdiv");
+  assert.equal(
+    engine.answer(lesson.spec),
+    "5/6",
+    "fraction division uses exact rational arithmetic",
+  );
+  const frames = framesOf(lesson);
+  assert.ok(frames.length >= 3);
+  assert.ok(lesson.engine.predicts(lesson.spec)[0].choices[0].ok);
+  assert.match(lesson.engine.hints(lesson.spec)[0].text.en, /how many of it fit/i);
+  assert.equal(lesson.engine.diagnose(lesson.spec, "8/15"), "noFlip");
+  assert.equal(diagnose(lesson, "8/15").id, "noFlip");
+
+  const thirds = lessonFor({ question: "3/4 ÷ 1/4 = ?", steps: [] });
+  assert.equal(engine.answer(thirds.spec), "3");
+  assert.deepEqual(SIM_FOR["divide-fractions"], "fractionDivision");
+  assert.deepEqual(SIM_FOR["unit-fraction-division"], "fractionDivision");
+  const sim = SIMS.fractionDivision;
+  const state = sim.init({ lesson: thirds, lang: () => "en" });
+  assert.deepEqual(state, { a: 3, b: 4, c: 1, d: 4, lang: "en" });
+  assert.equal(sim.prediction(state).answer, 3);
+  const drawn = sim.render(state);
+  assert.match(drawn.svg, /3\/4 ÷ 1\/4 = 3/);
+  assert.match(drawn.read.en, /3 dividend pieces and 1 piece per group/);
+  assert.match(sim.render({ ...state, a: 2, b: 3, c: 1, d: 6 }).svg, /2\/3 ÷ 1\/6 = 4/);
+  assert.match(sim.render({ ...state, lang: "es" }).svg, /Dividendo/);
+
+  const share = lessonFor({
+    question:
+      "A ribbon that is 1/6 meter long is shared equally by 4 students. What length of ribbon does each student get?",
+    steps: [],
+  });
+  assert.equal(engine.answer(share.spec), "1/24");
+  const shareState = sim.init({ lesson: share });
+  assert.deepEqual(shareState, { a: 1, b: 6, c: 4, d: 1, interpretation: "sharing", lang: "en" });
+  assert.equal(sim.prediction(shareState).answer, 1 / 24);
+  assert.match(sim.prediction(shareState).prompt.en, /shared among 4 students/);
+  assert.match(sim.render(shareState).svg, /1\/6 ÷ 4 = 1\/24/);
+  assert.match(sim.render(shareState).read.en, /each 1 piece of size 1\/24/);
+  const explore = document.createElement("div");
+  mountExplore(
+    { sim, lesson: thirds, id: "fraction-division", lang: () => "en", mark: () => {} },
+    explore,
+  );
+  assert.equal(
+    explore.querySelector("[data-model]").hidden,
+    true,
+    "the model waits for a prediction",
+  );
+  const predictionForm = explore.querySelector("[data-prediction-form]");
+  const prediction = predictionForm.querySelector("input");
+  prediction.value = "2";
+  predictionForm.dispatchEvent(new dom.window.Event("submit", { bubbles: true, cancelable: true }));
+  assert.equal(
+    explore.querySelector("[data-model]").hidden,
+    true,
+    "a wrong prediction does not expose the model",
+  );
+  prediction.value = "3";
+  predictionForm.dispatchEvent(new dom.window.Event("submit", { bubbles: true, cancelable: true }));
+  assert.equal(
+    explore.querySelector("[data-model]").hidden,
+    false,
+    "a correct prediction opens the model",
+  );
+  const numerator = explore.querySelector('input[data-k="a"]');
+  numerator.value = "2";
+  numerator.dispatchEvent(new dom.window.Event("input", { bubbles: true }));
+  assert.match(explore.querySelector("[data-read]").textContent, /2 ÷ 1 = 2/);
+  const measure = lessonFor({
+    question: "A jug holds 3 liters. How many 1/4-liter servings can it fill?",
+    steps: [],
+  });
+  assert.equal(engine.answer(measure.spec), 12);
+  assert.deepEqual(sim.init({ lesson: measure }), { a: 3, b: 1, c: 1, d: 4, lang: "en" });
+}
+
 // ---------- 3. Parsers decline what they cannot model ----------
 for (const q of [
   "",
