@@ -16,13 +16,35 @@ import { createDataExplanationUrl } from "../../../shared/math-language-bridge/v
 const esc = (s) => String(s).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;");
 
 export function mountTry(ctx, root) {
-  let item = null;
-  let lesson = null;
-  let rungs = 0;
-  let attempts = 0;
-  let solved = false;
-  let independentMode = ctx.tryNeedsIndependent;
+  const restored = ctx.trySession?.skillKey === ctx.key ? ctx.trySession : null;
+  let item = restored?.item || null;
+  let lesson = item ? lessonFor(item) : null;
+  let rungs = restored?.rungs || 0;
+  let attempts = restored?.attempts || 0;
+  let solved = restored?.solved || false;
+  let independentMode = restored?.independentMode ?? ctx.tryNeedsIndependent;
+  let helpShown = restored?.helpShown || false;
+
+  function saveSession({ returnNotice = false } = {}) {
+    if (!item) return;
+    ctx.trySession = {
+      skillKey: ctx.key,
+      item,
+      rungs,
+      attempts,
+      solved,
+      independentMode,
+      helpShown,
+      answer: root.querySelector("[data-form] input")?.value || "",
+      feedbackText: root.querySelector("[data-feedback]")?.textContent || "",
+      feedbackClass: root.querySelector("[data-feedback]")?.className || "sd-feedback",
+      actionsHtml: root.querySelector("[data-actions]")?.innerHTML || "",
+      returnNotice: returnNotice || Boolean(ctx.trySession?.returnNotice),
+    };
+  }
+
   const fresh = () => {
+    ctx.trySession = null;
     const rng = seededRandom((Date.now() + (ctx.tryCount += 1) * 977) >>> 0);
     for (let n = 0; n < 12; n += 1) {
       const next = generateProblem(ctx.skill, rng);
@@ -36,12 +58,13 @@ export function mountTry(ctx, root) {
     rungs = 0;
     attempts = 0;
     solved = false;
+    helpShown = false;
     render();
   };
 
   function render() {
     const hints = lesson ? lesson.engine.hints(lesson.spec) : [];
-    const helpOpen = independentMode ? attempts > 0 : ctx.level >= 1 || attempts > 0;
+    const helpOpen = independentMode ? attempts > 0 : ctx.level >= 1 || attempts > 0 || helpShown;
     root.innerHTML = `
       <p class="sd-task"><span class="sd-tag">${esc(t("Try"))}</span> ${esc(independentMode ? t("A new one, on your own.") : t("A new problem like it."))}</p>
       <p class="sd-problem" data-problem>${esc(item.question)}</p>
@@ -51,8 +74,18 @@ export function mountTry(ctx, root) {
         <button type="submit" class="sd-btn sd-primary" ${solved ? "disabled" : ""}>${esc(t("Check"))}</button>
       </form>
       <p class="sd-feedback" data-feedback role="status" aria-live="polite"></p>
+      <p class="sd-strategy-note" data-strategy-note role="status" ${restored?.returnNotice ? "" : "hidden"}>${esc(t("Your problem and response stay here while you view the model. Return to Try when you’re ready."))}</p>
       <div class="sd-ladder" data-ladder>${helpOpen && !solved ? ladder(hintStages(hints)) : !solved ? `<button type="button" class="sd-btn sd-ghost" data-help>${esc(t("I want a hint"))}</button>` : ""}</div>
       <div class="sd-actions" data-actions></div>`;
+    const saved = ctx.trySession?.skillKey === ctx.key ? ctx.trySession : null;
+    const input = root.querySelector("[data-form] input");
+    if (saved) {
+      input.value = saved.answer || "";
+      const feedback = root.querySelector("[data-feedback]");
+      feedback.textContent = saved.feedbackText || "";
+      feedback.className = saved.feedbackClass || "sd-feedback";
+      root.querySelector("[data-actions]").innerHTML = saved.actionsHtml || "";
+    }
     root.querySelector("input")?.focus();
   }
 
@@ -79,7 +112,7 @@ export function mountTry(ctx, root) {
   function ladder(stages) {
     return `<p class="sd-ladder-title">${esc(t("Need help? Go one step at a time."))}</p><ol class="sd-rungs">${stages.map((h, k) => {
       if (k < rungs) {
-        return `<li class="sd-rung on"><strong>${esc(h.name)}</strong><p>${esc(pick(h.text, ctx.lang()))}</p>${h.frame ? `<div class="sd-mini" aria-hidden="false">${h.frame.svg}</div>` : ""}${h.model ? `<button type="button" class="sd-btn" data-show>${esc(t("Open this problem in the model"))}</button>` : ""}${k === 3 ? `<p class="sd-cont">${esc(t("Now you take it from here."))}</p>` : ""}</li>`;
+        return `<li class="sd-rung on"><strong>${esc(h.name)}</strong><p>${esc(pick(h.text, ctx.lang()))}</p>${h.frame ? `<div class="sd-mini" aria-hidden="false">${h.frame.svg}</div>` : ""}${h.model ? `<button type="button" class="sd-btn" data-show>${esc(t("Try another way: open the model"))}</button>` : ""}${k === 3 ? `<p class="sd-cont">${esc(t("Now you take it from here."))}</p>` : ""}</li>`;
       }
       const locked = k > rungs || (stages[k].final && attempts < 2);
       const why = stages[k].final && attempts < 2 ? ` <span>${esc(t("Try twice before opening the full explanation."))}</span>` : "";
@@ -178,13 +211,14 @@ export function mountTry(ctx, root) {
         : "";
       root.querySelector("[data-actions]").innerHTML = `${next}${bridge}`;
       ctx.refreshRail();
+      saveSession();
       return;
     }
     const hit = lesson ? diagnose(lesson, text) : null;
     record(ctx.key, { kind: "try", ok: false, supported: rungs > 0, tag: hit?.id || null });
     fb.className = "sd-feedback sd-wrong";
     fb.textContent = hit ? `${t("Not quite.")} ${pick(hit.label, ctx.lang())}. ${pick(hit.tip, ctx.lang())}` : t("Not quite. Look at the model, then try again.");
-    root.querySelector("[data-actions]").innerHTML = `<button type="button" class="sd-btn" data-show>${esc(t("Show me in the model"))}</button>`;
+    root.querySelector("[data-actions]").innerHTML = `<button type="button" class="sd-btn" data-show>${esc(t("Try another way: show the model"))}</button>`;
     ctx.refreshRail();
     if (independentMode) {
       independentMode = false;
@@ -194,6 +228,7 @@ export function mountTry(ctx, root) {
       root.querySelector("[data-ladder]").innerHTML = ladder(hintStages(lesson ? lesson.engine.hints(lesson.spec) : []));
     }
     root.querySelector("input").select();
+    saveSession();
   }
 
   root.addEventListener("submit", (e) => {
@@ -203,14 +238,18 @@ export function mountTry(ctx, root) {
   root.addEventListener("click", (e) => {
     const rung = e.target.closest("[data-rung]");
     if (rung) {
+      helpShown = true;
       rungs = Math.max(rungs, Number(rung.dataset.rung) + 1);
       const stages = hintStages(lesson.engine.hints(lesson.spec));
       root.querySelector("[data-ladder]").innerHTML = ladder(stages);
       ctx.say(pick(stages[rungs - 1].text, ctx.lang()));
+      saveSession();
       return;
     }
     if (e.target.closest("[data-help]")) {
+      helpShown = true;
       root.querySelector("[data-ladder]").innerHTML = ladder(hintStages(lesson.engine.hints(lesson.spec)));
+      saveSession();
       return;
     }
     const nw = e.target.closest("[data-new]");
@@ -219,8 +258,15 @@ export function mountTry(ctx, root) {
       fresh();
       return;
     }
-    if (e.target.closest("[data-show]")) ctx.showModel(item);
+    if (e.target.closest("[data-show]")) {
+      saveSession({ returnNotice: true });
+      ctx.showModel(item);
+    }
   });
-  fresh();
+  root.addEventListener("input", (e) => {
+    if (e.target.matches(".sd-input")) saveSession();
+  });
+  if (restored) render();
+  else fresh();
   return () => {};
 }

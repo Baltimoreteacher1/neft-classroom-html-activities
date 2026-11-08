@@ -1575,6 +1575,33 @@ setLang("en");
   );
   assert.ok(host.querySelector("[data-show]"), "a miss offers to show the model");
   assert.ok(host.querySelector(".sd-rung"), "after a miss the hint ladder is available");
+  const savedProblem = host.querySelector("[data-problem]").textContent;
+  const savedAnswer = host.querySelector(".sd-input").value;
+  const savedFeedback = host.querySelector("[data-feedback]").textContent;
+  click(host.querySelector("[data-show]"));
+  assert.equal(host.querySelector('[data-tab="watch"]').getAttribute("aria-selected"), "true");
+  click(host.querySelector('[data-tab="try"]'));
+  assert.equal(
+    host.querySelector("[data-problem]").textContent,
+    savedProblem,
+    "switching strategy keeps the same problem",
+  );
+  assert.equal(
+    host.querySelector(".sd-input").value,
+    savedAnswer,
+    "switching strategy keeps the student's response",
+  );
+  assert.equal(
+    host.querySelector("[data-feedback]").textContent,
+    savedFeedback,
+    "specific feedback survives the model view",
+  );
+  assert.equal(
+    host.querySelector("[data-strategy-note]").hidden,
+    false,
+    "the return path explains that work was saved",
+  );
+  assert.ok(host.querySelector(".sd-rung"), "the learner returns to the same hint progress");
   stop();
 }
 {

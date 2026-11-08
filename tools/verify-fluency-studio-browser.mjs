@@ -102,10 +102,35 @@ try {
             tabs += 1;
             if (id === "build") el.querySelector("[data-controls] button")?.click();
             if (id === "try") {
-              el.querySelector(".sd-input").value = "0";
+              const answer = el.querySelector(".sd-input");
+              answer.value = "__not_an_answer__";
               el.querySelector("[data-form]").dispatchEvent(
                 new Event("submit", { cancelable: true, bubbles: true }),
               );
+              el.querySelector("[data-help]")?.click();
+              el.querySelector('[data-rung="0"]')?.click();
+              const problem = el.querySelector("[data-problem]").textContent;
+              const response = answer.value;
+              const feedback = el.querySelector("[data-feedback]").textContent;
+              const showModel = el.querySelector("[data-show]");
+              if (!showModel) throw new Error("Try did not offer a model strategy");
+              showModel.click();
+              if (el.querySelector('[data-tab="watch"]')?.getAttribute("aria-selected") !== "true")
+                throw new Error("the model strategy did not open");
+              el.querySelector('[data-tab="try"]').click();
+              if (el.querySelector("[data-problem]").textContent !== problem)
+                throw new Error("returning from the model changed the problem");
+              if (el.querySelector(".sd-input").value !== response)
+                throw new Error("returning from the model lost the response");
+              if (el.querySelector("[data-feedback]").textContent !== feedback)
+                throw new Error("returning from the model lost feedback");
+              if (
+                el.querySelectorAll(".sd-rung.on").length !== 1 ||
+                el.querySelector('[data-rung="1"]')?.disabled
+              )
+                throw new Error("returning from the model lost hint progress");
+              if (el.querySelector("[data-strategy-note]")?.hidden)
+                throw new Error("the return path did not explain that work was saved");
             }
             if (id === "explore") {
               const r = el.querySelector('input[type="range"]');
