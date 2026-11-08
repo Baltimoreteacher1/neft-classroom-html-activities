@@ -1,10 +1,12 @@
 import {
-  MATH_LANGUAGE_BRIDGE_PATH,
   readMathLanguageBridge as readV1,
   MATH_LANGUAGE_BRIDGE_SCHEMA as V1_SCHEMA,
 } from "./v1.js";
 
 export const MATH_LANGUAGE_BRIDGE_SCHEMA = "edu-wonderlab.math-language/2";
+// Route v2 tasks through the ACCESS Lab SPA shell. The legacy standalone
+// /language-studios page remains available for existing v1 links.
+export const MATH_LANGUAGE_BRIDGE_PATH = "/access-practice-lab/";
 const ALLOWED = new Set([
   "schema",
   "task",
@@ -126,6 +128,24 @@ export function createFractionExplanationUrl({ numerator, denominator, whole, gr
   return `https://thelanguagepage.com${MATH_LANGUAGE_BRIDGE_PATH}?${params}`;
 }
 
+/** Share only the Grade 3–8 fraction and partition for a number-line explanation task. */
+export function createFractionNumberLineExplanationUrl({ numerator, denominator, grade = 3 } = {}) {
+  if (!inRangeInt(grade, 3, 8))
+    throw new RangeError("Fraction number-line grade must be from 3 to 8.");
+  if (!inRangeInt(numerator, 1, 11) || !inRangeInt(denominator, numerator + 1, 12))
+    throw new RangeError(
+      "Fraction number-line values must be a proper fraction with denominator at most 12.",
+    );
+  const params = new URLSearchParams({
+    schema: MATH_LANGUAGE_BRIDGE_SCHEMA,
+    task: "fraction-number-line",
+    grade: String(grade),
+    numerator: String(numerator),
+    denominator: String(denominator),
+  });
+  return `https://thelanguagepage.com${MATH_LANGUAGE_BRIDGE_PATH}?${params}`;
+}
+
 /** Read v1 ratio links unchanged and accept only documented v2 math task contracts. */
 export function readMathLanguageBridge(search = "") {
   const params =
@@ -142,7 +162,9 @@ export function readMathLanguageBridge(search = "") {
         ? new Set(["schema", "task", "grade", "percent", "whole"])
         : task === "data-center"
           ? new Set(["schema", "task", "grade", "values"])
-          : null;
+          : task === "fraction-number-line"
+            ? new Set(["schema", "task", "grade", "numerator", "denominator"])
+            : null;
   if (!taskFields || [...params.keys()].some((key) => !ALLOWED.has(key) || !taskFields.has(key)))
     return null;
   const grade = Number(params.get("grade"));
@@ -163,6 +185,27 @@ export function readMathLanguageBridge(search = "") {
       transferMean: transfer.mean,
       transferMedian: transfer.median,
       transferOutlier: 40,
+    });
+  }
+  if (task === "fraction-number-line") {
+    const numerator = Number(params.get("numerator"));
+    const denominator = Number(params.get("denominator"));
+    if (
+      !inRangeInt(grade, 3, 8) ||
+      !inRangeInt(numerator, 1, 11) ||
+      !inRangeInt(denominator, numerator + 1, 12)
+    )
+      return null;
+    const transferDenominator = denominator === 12 ? 11 : denominator + 1;
+    const transferNumerator = Math.min(transferDenominator - 1, numerator + 1);
+    return Object.freeze({
+      schema: MATH_LANGUAGE_BRIDGE_SCHEMA,
+      task,
+      grade,
+      numerator,
+      denominator,
+      transferNumerator,
+      transferDenominator,
     });
   }
   if (task === "fraction-of-whole") {

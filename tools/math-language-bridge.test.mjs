@@ -2,13 +2,16 @@ import assert from "node:assert/strict";
 import {
   analyzeDataExplanation,
   analyzeFractionExplanation,
+  analyzeFractionLineExplanation,
   analyzePercentExplanation,
   analyzeRatioExplanation,
   checkDataTransfer,
+  checkFractionLineTransfer,
   checkFractionTransfer,
   checkPercentTransfer,
   checkRatioTransfer,
   dataSupportForLevel,
+  fractionLineSupportForLevel,
   fractionSupportForLevel,
   parseRatioPair,
   percentSupportForLevel,
@@ -25,6 +28,7 @@ import {
 import {
   createDataExplanationUrl,
   createFractionExplanationUrl,
+  createFractionNumberLineExplanationUrl,
   createPercentExplanationUrl,
   readMathLanguageBridge as readBridgeV2,
 } from "../shared/math-language-bridge/v2.js";
@@ -148,6 +152,47 @@ assert.equal(
   fractionSupportForLevel(5, "en", { numerator: 3, denominator: 4, whole: 20, part: 15 }),
   null,
 );
+const fractionLineUrl = new URL(
+  createFractionNumberLineExplanationUrl({ numerator: 2, denominator: 5, grade: 3 }),
+);
+assert.deepEqual([...fractionLineUrl.searchParams.keys()].sort(), [
+  "denominator",
+  "grade",
+  "numerator",
+  "schema",
+  "task",
+]);
+const fractionLineBridge = readBridgeV2(fractionLineUrl.searchParams);
+assert.deepEqual(fractionLineBridge, {
+  schema: "edu-wonderlab.math-language/2",
+  task: "fraction-number-line",
+  grade: 3,
+  numerator: 2,
+  denominator: 5,
+  transferNumerator: 3,
+  transferDenominator: 6,
+});
+assert.equal(readBridgeV2(`${fractionLineUrl.search}&student=private`), null);
+assert.throws(
+  () => createFractionNumberLineExplanationUrl({ numerator: 5, denominator: 5 }),
+  RangeError,
+);
+assert.equal(
+  checkFractionLineTransfer(fractionLineBridge, "3/6"),
+  true,
+  "equivalent fraction responses are accepted",
+);
+assert.equal(checkFractionLineTransfer(fractionLineBridge, "3/5"), false);
+assert.equal(
+  analyzeFractionLineExplanation(
+    "The whole has five equal intervals. From zero I count two because P is there.",
+  ).evidence.countsFromZero,
+  true,
+);
+assert.ok(
+  fractionLineSupportForLevel(2, "es", { numerator: 2, denominator: 5 }).frame.includes("5"),
+);
+assert.equal(fractionLineSupportForLevel(5, "en", { numerator: 2, denominator: 5 }), null);
 const dataUrl = new URL(createDataExplanationUrl({ values: [2, 3, 4, 5], grade: 7 }));
 assert.deepEqual([...dataUrl.searchParams.keys()].sort(), ["grade", "schema", "task", "values"]);
 const dataBridge = readBridgeV2(dataUrl.searchParams);
@@ -338,6 +383,52 @@ root
 ({ root } = await mount(languageStudios, ctx));
 assert.match(root.textContent, /solved a new fraction problem independently/);
 
+ctx.route.mathBridge = fractionLineBridge;
+({ root } = await mount(languageStudios, ctx));
+assert.match(root.textContent, /Place P at 2\/5/);
+assert.equal(root.querySelectorAll(".mlb-numberline-svg").length, 1);
+root
+  .querySelector('[data-fline-move="1"]')
+  .dispatchEvent(new win.Event("click", { bubbles: true }));
+({ root } = await mount(languageStudios, ctx));
+assert.match(root.textContent, /P is at mark 1 of 5/);
+root
+  .querySelector('[data-fline-move="1"]')
+  .dispatchEvent(new win.Event("click", { bubbles: true }));
+({ root } = await mount(languageStudios, ctx));
+root.querySelector("[data-fline-check]").dispatchEvent(new win.Event("click", { bubbles: true }));
+({ root } = await mount(languageStudios, ctx));
+assert.match(root.textContent, /Point P is in the correct position/);
+root.querySelector("#mlb-fline-draft").value =
+  "The whole has five equal intervals. From zero I count two because P is at two fifths.";
+root
+  .querySelector("[data-fline-draft]")
+  .dispatchEvent(new win.Event("submit", { bubbles: true, cancelable: true }));
+({ root } = await mount(languageStudios, ctx));
+assert.match(root.textContent, /Improve your explanation/);
+assert.match(root.textContent, /Names the whole interval/);
+root.querySelector("#mlb-fline-revision").value =
+  "The denominator shows five equal intervals in one whole, and from zero P is two intervals away.";
+root
+  .querySelector("[data-fline-revision]")
+  .dispatchEvent(new win.Event("submit", { bubbles: true, cancelable: true }));
+({ root } = await mount(languageStudios, ctx));
+assert.match(root.textContent, /has 6 equal intervals/);
+root.querySelector("#mlb-fline-transfer").value = "3/6";
+root
+  .querySelector("[data-fline-transfer]")
+  .dispatchEvent(new win.Event("submit", { bubbles: true, cancelable: true }));
+({ root } = await mount(languageStudios, ctx));
+assert.match(root.textContent, /Correct\. Now explain the new fraction independently/);
+root.querySelector("#mlb-fline-transfer-explain").value =
+  "The denominator is six equal intervals. From zero I count three because the point is halfway.";
+root
+  .querySelector("[data-fline-transfer-explain]")
+  .dispatchEvent(new win.Event("submit", { bubbles: true, cancelable: true }));
+({ root } = await mount(languageStudios, ctx));
+assert.match(root.textContent, /solved a new fraction-line problem independently/);
+assert.match(root.textContent, /not a WIDA score or a math achievement score/);
+
 ctx.route.mathBridge = dataBridge;
 ({ root } = await mount(languageStudios, ctx));
 assert.match(root.textContent, /Move observation 2/);
@@ -438,6 +529,42 @@ assert.deepEqual([...new URL(fractionLink.href).searchParams.keys()].sort(), [
   "task",
   "whole",
 ]);
+
+const numberLineSkill = getSkill(3, "fraction-line");
+const originalNumberLineNow = Date.now;
+Date.now = () => 317;
+const numberLineTryRoot = document.createElement("div");
+const numberLineTryCtx = {
+  ...tryCtx,
+  skill: numberLineSkill,
+  item: { question: "earlier fraction-line practice" },
+  tryCount: 0,
+  id: "fraction-line-bridge-check",
+  key: "3:fraction-line",
+};
+mountTry(numberLineTryCtx, numberLineTryRoot);
+Date.now = originalNumberLineNow;
+const numberLinePrompt = numberLineTryRoot.querySelector("[data-problem]").textContent;
+const fractionAtMark = numberLinePrompt.match(
+  /cut into (\d+) equal parts\. Point P is at mark (\d+)/,
+);
+const markForFraction = numberLinePrompt.match(/point (\d+)\/(\d+)\? Count from 0/);
+assert.ok(
+  fractionAtMark || markForFraction,
+  `number-line prompt is recognized: ${numberLinePrompt}`,
+);
+numberLineTryRoot.querySelector("input").value = fractionAtMark
+  ? `${fractionAtMark[2]}/${fractionAtMark[1]}`
+  : markForFraction[1];
+numberLineTryRoot
+  .querySelector("[data-form]")
+  .dispatchEvent(new win.Event("submit", { bubbles: true, cancelable: true }));
+const numberLineLink = numberLineTryRoot.querySelector(".sd-math-language-bridge a");
+assert.ok(
+  numberLineLink,
+  "fraction number-line practice offers a paired Language Page explanation",
+);
+assert.equal(readBridgeV2(new URL(numberLineLink.href).searchParams)?.task, "fraction-number-line");
 
 const dataSkill = getSkill(7, "probability");
 const dataProblem = generateProblem(dataSkill, seededRandom(982));

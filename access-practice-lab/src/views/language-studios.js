@@ -11,6 +11,7 @@ import { BASE, ICONS, esc, html, icon, raw, storage, toHtml } from "../util.js";
 import { i18nFor } from "../i18n.js";
 import { dictationControlsHTML, toggleDictation } from "../dictation-ui.js";
 import { renderFractionBridge } from "../studios/fraction-bridge-view.js";
+import { renderFractionLineBridge } from "../studios/fraction-line-bridge-view.js";
 import { renderDataBridge, renderDataModel } from "../studios/data-bridge-view.js";
 import {
   analyzeRatioExplanation,
@@ -18,6 +19,7 @@ import {
   analyzeFractionExplanation,
   checkPercentTransfer,
   checkFractionTransfer,
+  checkFractionLineTransfer,
   checkDataTransfer,
   checkRatioTransfer,
   percentSupportForLevel,
@@ -313,6 +315,15 @@ let state = {
   percentTransferFeedback: "",
   percentTransferExplain: "",
   fractionScale: 1,
+  fractionLinePosition: 0,
+  fractionLineChecked: false,
+  fractionLineFeedback: "",
+  fractionLineDraft: "",
+  fractionLineRevision: "",
+  fractionLineTransferAnswer: "",
+  fractionLineTransferCorrect: false,
+  fractionLineTransferFeedback: "",
+  fractionLineTransferExplain: "",
   fractionDraft: "",
   fractionRevision: "",
   fractionTransferAnswer: "",
@@ -332,7 +343,7 @@ let state = {
 const bridgeSaveKey = (key) => `accessPracticeLab:v1:mathLanguageBridge:${encodeURIComponent(key)}`;
 function saveBridge(key) {
   if (!key) return;
-  const fields = ["bridgeStep", "bridgeSupport", "bridgeDraft", "bridgeRevision", "bridgeTransfer", "bridgeTransferExplain", "percentDraft", "percentRevision", "percentTransferAnswer", "percentTransferExplain", "fractionScale", "fractionDraft", "fractionRevision", "fractionTransferAnswer", "fractionTransferExplain", "dataMoveValue", "dataDraft", "dataRevision", "dataTransferMean", "dataTransferMedian", "dataTransferExplain"];
+  const fields = ["bridgeStep", "bridgeSupport", "bridgeDraft", "bridgeRevision", "bridgeTransfer", "bridgeTransferExplain", "percentDraft", "percentRevision", "percentTransferAnswer", "percentTransferExplain", "fractionScale", "fractionLinePosition", "fractionLineChecked", "fractionLineFeedback", "fractionLineDraft", "fractionLineRevision", "fractionLineTransferAnswer", "fractionLineTransferExplain", "fractionDraft", "fractionRevision", "fractionTransferAnswer", "fractionTransferExplain", "dataMoveValue", "dataDraft", "dataRevision", "dataTransferMean", "dataTransferMedian", "dataTransferExplain"];
   const data = Object.fromEntries(fields.map((field) => [field, state[field]]));
   storage.set(bridgeSaveKey(key), JSON.stringify({ version: 1, data }));
 }
@@ -344,14 +355,18 @@ function restoreBridge(key, bridge) {
     state.bridgeStep = ["draft", "revision", "transfer", "complete"].includes(d.bridgeStep) ? d.bridgeStep : "draft";
     state.bridgeSupport = [2, 3, 5].includes(Number(d.bridgeSupport)) ? Number(d.bridgeSupport) : 3;
     state.fractionScale = [1, 2, 3].includes(Number(d.fractionScale)) ? Number(d.fractionScale) : 1;
+    state.fractionLinePosition = Number.isInteger(d.fractionLinePosition) && d.fractionLinePosition >= 0 && d.fractionLinePosition <= (bridge?.denominator || 12) ? d.fractionLinePosition : 0;
+    state.fractionLineChecked = d.fractionLineChecked === true && bridge?.task === "fraction-number-line" && state.fractionLinePosition === bridge.numerator;
     state.dataMoveValue = Number.isInteger(d.dataMoveValue) && d.dataMoveValue >= 0 && d.dataMoveValue <= 40 ? d.dataMoveValue : bridge?.task === "data-center" ? bridge.values[bridge.selectedIndex] : null;
-    for (const keyName of ["bridgeDraft", "bridgeRevision", "bridgeTransfer", "bridgeTransferExplain", "percentDraft", "percentRevision", "percentTransferAnswer", "percentTransferExplain", "fractionDraft", "fractionRevision", "fractionTransferAnswer", "fractionTransferExplain", "dataDraft", "dataRevision", "dataTransferMean", "dataTransferMedian", "dataTransferExplain"])
+    for (const keyName of ["bridgeDraft", "bridgeRevision", "bridgeTransfer", "bridgeTransferExplain", "percentDraft", "percentRevision", "percentTransferAnswer", "percentTransferExplain", "fractionLineFeedback", "fractionLineDraft", "fractionLineRevision", "fractionLineTransferAnswer", "fractionLineTransferFeedback", "fractionLineTransferExplain", "fractionDraft", "fractionRevision", "fractionTransferAnswer", "fractionTransferExplain", "dataDraft", "dataRevision", "dataTransferMean", "dataTransferMedian", "dataTransferExplain"])
       state[keyName] = typeof d[keyName] === "string" ? d[keyName].slice(0, 1200) : "";
     if (["transfer", "complete"].includes(state.bridgeStep)) {
       const mathIsCorrect = bridge?.task === "percent-part-whole"
         ? checkPercentTransfer(bridge, state.percentTransferAnswer)
         : bridge?.task === "fraction-of-whole"
           ? checkFractionTransfer(bridge, state.fractionTransferAnswer)
+          : bridge?.task === "fraction-number-line"
+            ? checkFractionLineTransfer(bridge, state.fractionLineTransferAnswer)
           : bridge?.task === "data-center"
             ? checkDataTransfer(bridge, state.dataTransferMean, state.dataTransferMedian)
             : checkRatioTransfer(bridge, state.bridgeTransfer);
@@ -425,6 +440,8 @@ export async function render(ctx = {}) {
     ? `${bridge.schema}:${bridge.task}:${bridge.grade}:${bridge.percent}:${bridge.whole}`
     : bridge.task === "fraction-of-whole"
       ? `${bridge.schema}:${bridge.task}:${bridge.grade}:${bridge.numerator}:${bridge.denominator}:${bridge.whole}`
+      : bridge.task === "fraction-number-line"
+        ? `${bridge.schema}:${bridge.task}:${bridge.grade}:${bridge.numerator}:${bridge.denominator}`
       : bridge.task === "data-center"
         ? `${bridge.schema}:${bridge.task}:${bridge.grade}:${bridge.values.join(",")}`
         : `${bridge.schema}:${bridge.grade}:${bridge.first}:${bridge.second}` : "";
@@ -447,6 +464,15 @@ export async function render(ctx = {}) {
       percentTransferFeedback: "",
       percentTransferExplain: "",
       fractionScale: 1,
+      fractionLinePosition: 0,
+      fractionLineChecked: false,
+      fractionLineFeedback: "",
+      fractionLineDraft: "",
+      fractionLineRevision: "",
+      fractionLineTransferAnswer: "",
+      fractionLineTransferCorrect: false,
+      fractionLineTransferFeedback: "",
+      fractionLineTransferExplain: "",
       fractionDraft: "",
       fractionRevision: "",
       fractionTransferAnswer: "",
@@ -465,6 +491,7 @@ export async function render(ctx = {}) {
     restoreBridge(bridgeKey, bridge);
     if (bridge.task === "percent-part-whole") state.percentTransferCorrect = checkPercentTransfer(bridge, state.percentTransferAnswer);
     else if (bridge.task === "fraction-of-whole") state.fractionTransferCorrect = checkFractionTransfer(bridge, state.fractionTransferAnswer);
+    else if (bridge.task === "fraction-number-line") state.fractionLineTransferCorrect = checkFractionLineTransfer(bridge, state.fractionLineTransferAnswer);
     else if (bridge.task === "data-center") state.dataTransferCorrect = checkDataTransfer(bridge, state.dataTransferMean, state.dataTransferMedian);
     else state.bridgeTransferCorrect = checkRatioTransfer(bridge, state.bridgeTransfer);
   } else if (!bridgeKey && state.bridgeKey) {
@@ -530,7 +557,7 @@ export async function render(ctx = {}) {
 
       <!-- Studio Stage Body -->
       <div class="ls-stage-body">
-        ${currentTab === "math-bridge" && bridge ? bridge.task === "percent-part-whole" ? percentBridgePanel(bridge, I, language) : bridge.task === "fraction-of-whole" ? renderFractionBridge(bridge, state, I, language) : bridge.task === "data-center" ? renderDataBridge(bridge, state, I, language) : ratioBridgePanel(bridge, I, language) : ""}
+        ${currentTab === "math-bridge" && bridge ? bridge.task === "percent-part-whole" ? percentBridgePanel(bridge, I, language) : bridge.task === "fraction-of-whole" ? renderFractionBridge(bridge, state, I, language) : bridge.task === "fraction-number-line" ? renderFractionLineBridge(bridge, state, I, language) : bridge.task === "data-center" ? renderDataBridge(bridge, state, I, language) : ratioBridgePanel(bridge, I, language) : ""}
         
         <!-- 1. Compare language samples without treating them as assessment evidence. -->
         ${currentTab === "wida" ? `
@@ -814,7 +841,7 @@ export function mount(root, ctx) {
   root.querySelectorAll("[data-dictate^='mlb-']").forEach((button) => {
     button.addEventListener("click", async () => {
       const id = button.dataset.dictate;
-      const fieldMap = { "mlb-draft": "#mlb-draft", "mlb-transfer-explain": "#mlb-transfer-explain", "mlb-pct-draft": "#mlb-pct-draft", "mlb-pct-transfer-explain": "#mlb-pct-transfer-explain", "mlb-frac-draft": "#mlb-frac-draft", "mlb-frac-transfer-explain": "#mlb-frac-transfer-explain", "mlb-data-draft": "#mlb-data-draft", "mlb-data-transfer-explain": "#mlb-data-transfer-explain" };
+      const fieldMap = { "mlb-draft": "#mlb-draft", "mlb-transfer-explain": "#mlb-transfer-explain", "mlb-pct-draft": "#mlb-pct-draft", "mlb-pct-transfer-explain": "#mlb-pct-transfer-explain", "mlb-frac-draft": "#mlb-frac-draft", "mlb-frac-transfer-explain": "#mlb-frac-transfer-explain", "mlb-fline-draft": "#mlb-fline-draft", "mlb-fline-transfer-explain": "#mlb-fline-transfer-explain", "mlb-data-draft": "#mlb-data-draft", "mlb-data-transfer-explain": "#mlb-data-transfer-explain" };
       const fieldId = fieldMap[id];
       const setText = (text) => {
         const field = root.querySelector(fieldId);
@@ -826,6 +853,8 @@ export function mount(root, ctx) {
         else if (id === "mlb-pct-transfer-explain") state.percentTransferExplain = text;
         else if (id === "mlb-frac-draft") state.fractionDraft = text;
         else if (id === "mlb-frac-transfer-explain") state.fractionTransferExplain = text;
+        else if (id === "mlb-fline-draft") state.fractionLineDraft = text;
+        else if (id === "mlb-fline-transfer-explain") state.fractionLineTransferExplain = text;
         else if (id === "mlb-data-draft") state.dataDraft = text;
         else state.dataTransferExplain = text;
         saveBridge(state.bridgeKey);
@@ -843,6 +872,74 @@ export function mount(root, ctx) {
   root.querySelector("[data-bridge-support]")?.addEventListener("change", (event) => {
     state.bridgeSupport = Number(event.target.value);
     saveBridge(state.bridgeKey);
+    ctx.rerender();
+  });
+  root.querySelectorAll("[data-fline-move]").forEach((button) => button.addEventListener("click", () => {
+    state.fractionLinePosition = Math.max(0, Math.min(bridge.denominator, state.fractionLinePosition + Number(button.dataset.flineMove)));
+    state.fractionLineChecked = false;
+    state.fractionLineFeedback = "";
+    saveBridge(state.bridgeKey);
+    ctx.rerender();
+  }));
+  root.querySelector("[data-fline-check]")?.addEventListener("click", () => {
+    state.fractionLineChecked = state.fractionLinePosition === bridge.numerator;
+    state.fractionLineFeedback = state.fractionLineChecked
+      ? I.S("Point P is in the correct position. The denominator counts equal intervals; the numerator counts intervals from 0 to P.", "El punto P está en la posición correcta. El denominador cuenta los intervalos iguales; el numerador cuenta los intervalos desde 0 hasta P.")
+      : I.S("Not yet. Keep the whole split into equal intervals, then count the intervals from 0 to P.", "Todavía no. Mantén el entero dividido en intervalos iguales y cuenta desde 0 hasta P.");
+    saveBridge(state.bridgeKey);
+    ctx.rerender();
+  });
+  for (const [selector, field, limit] of [
+    ["#mlb-fline-draft", "fractionLineDraft", 1200],
+    ["#mlb-fline-revision", "fractionLineRevision", 1200],
+    ["#mlb-fline-transfer", "fractionLineTransferAnswer", 30],
+    ["#mlb-fline-transfer-explain", "fractionLineTransferExplain", 1200],
+  ]) root.querySelector(selector)?.addEventListener("input", (event) => {
+    state[field] = event.target.value.slice(0, limit);
+    saveBridge(state.bridgeKey);
+  });
+  root.querySelector("[data-fline-draft]")?.addEventListener("submit", (event) => {
+    event.preventDefault();
+    state.fractionLineDraft = root.querySelector("#mlb-fline-draft")?.value.trim() || "";
+    if (!state.fractionLineChecked || !state.fractionLineDraft) {
+      state.fractionLineFeedback = I.S("Place P correctly and check it before explaining.", "Coloca P correctamente y revísalo antes de explicar.");
+      saveBridge(state.bridgeKey);
+      ctx.rerender();
+      return;
+    }
+    state.bridgeStep = "revision";
+    saveBridge(state.bridgeKey);
+    ctx.rerender();
+  });
+  root.querySelector("[data-fline-revision]")?.addEventListener("submit", (event) => {
+    event.preventDefault();
+    state.fractionLineRevision = root.querySelector("#mlb-fline-revision")?.value.trim() || "";
+    if (!state.fractionLineRevision) return;
+    state.bridgeStep = "transfer";
+    saveBridge(state.bridgeKey);
+    ctx.rerender();
+  });
+  root.querySelector("[data-fline-transfer]")?.addEventListener("submit", (event) => {
+    event.preventDefault();
+    state.fractionLineTransferAnswer = root.querySelector("#mlb-fline-transfer")?.value.trim() || "";
+    state.fractionLineTransferCorrect = checkFractionLineTransfer(bridge, state.fractionLineTransferAnswer);
+    state.fractionLineTransferFeedback = state.fractionLineTransferCorrect
+      ? I.S("Correct. Now explain why this numerator and denominator locate the fraction.", "Correcto. Ahora explica por qué este numerador y denominador ubican la fracción.")
+      : I.S("Count the equal intervals from 0 to the mark. Write that count over the total number of equal intervals.", "Cuenta los intervalos iguales desde 0 hasta la marca. Escribe esa cantidad sobre el total de intervalos iguales.");
+    saveBridge(state.bridgeKey);
+    ctx.rerender();
+  });
+  root.querySelector("[data-fline-transfer-explain]")?.addEventListener("submit", (event) => {
+    event.preventDefault();
+    state.fractionLineTransferExplain = root.querySelector("#mlb-fline-transfer-explain")?.value.trim() || "";
+    if (!state.fractionLineTransferCorrect || !state.fractionLineTransferExplain) return;
+    state.bridgeStep = "complete";
+    saveBridge(state.bridgeKey);
+    ctx.rerender();
+  });
+  root.querySelector("[data-fline-reset]")?.addEventListener("click", () => {
+    storage.remove(bridgeSaveKey(state.bridgeKey));
+    Object.assign(state, { bridgeStep: "draft", bridgeSupport: 3, fractionLinePosition: 0, fractionLineChecked: false, fractionLineFeedback: "", fractionLineDraft: "", fractionLineRevision: "", fractionLineTransferAnswer: "", fractionLineTransferCorrect: false, fractionLineTransferFeedback: "", fractionLineTransferExplain: "" });
     ctx.rerender();
   });
   root.querySelector("[data-data-move-value]")?.addEventListener("input", (event) => {

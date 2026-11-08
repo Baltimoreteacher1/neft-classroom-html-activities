@@ -69,6 +69,13 @@ export function checkFractionTransfer(bridge, response) {
   return Number(text) === bridge.transferWhole;
 }
 
+export function checkFractionLineTransfer(bridge, response) {
+  const match = String(response ?? "").trim().match(/^(\d+)\s*\/\s*(\d+)$/);
+  if (!match) return false;
+  const [numerator, denominator] = match.slice(1).map(Number);
+  return denominator > 0 && numerator * bridge.transferDenominator === bridge.transferNumerator * denominator;
+}
+
 export function checkDataTransfer(bridge, meanResponse, medianResponse) {
   const parse = (value) => {
     const text = String(value ?? "").trim();
@@ -181,6 +188,28 @@ export function analyzeFractionExplanation(text) {
   return { evidence, feedback };
 }
 
+/** Observe language used to explain a point on a fraction line; this is not a math score. */
+export function analyzeFractionLineExplanation(text) {
+  const value = String(text ?? "").toLocaleLowerCase();
+  const evidence = {
+    namesWhole: /\b(whole|unit|entero|todo)\b/u.test(value),
+    namesEqualIntervals: /\b(denominator|equal (?:parts|spaces|intervals)|intervals|denominador|partes iguales|espacios iguales|intervalos iguales)\b/u.test(value),
+    countsFromZero: /\b(from zero|from 0|starting at zero|desde cero|desde 0|empezando en cero)\b/u.test(value),
+    connectsReason: /\b(because|so|since|therefore|porque|por eso|ya que|entonces)\b/u.test(value),
+  };
+  const missing = [];
+  if (!evidence.namesWhole) missing.push({ en: "name the whole interval", es: "nombra el intervalo entero" });
+  if (!evidence.namesEqualIntervals) missing.push({ en: "name the equal intervals", es: "nombra los intervalos iguales" });
+  if (!evidence.countsFromZero) missing.push({ en: "say where you start counting", es: "di desde dónde empiezas a contar" });
+  if (!evidence.connectsReason) missing.push({ en: "connect the ideas with a reason", es: "conecta las ideas con una razón" });
+  return {
+    evidence,
+    feedback: missing.length
+      ? { en: `For clarity, ${missing.map((item) => item.en).join(", then ")}.`, es: `Para mayor claridad, ${missing.map((item) => item.es).join(", luego ")}.` }
+      : { en: "You explain how the equal intervals and counting from zero locate the fraction.", es: "Explicas cómo los intervalos iguales y el conteo desde cero ubican la fracción." },
+  };
+}
+
 export function fractionSupportForLevel(level, language = "en", { numerator, denominator, whole, part } = {}) {
   if (level <= 2) return language === "es"
     ? { bank: ["fracción", "todo", "parte", "partes iguales", "de"], frame: `${numerator}/${denominator} significa ${numerator} de ${denominator} partes iguales. El todo es ${whole}; la parte es ${part} porque ___.` }
@@ -188,5 +217,15 @@ export function fractionSupportForLevel(level, language = "en", { numerator, den
   if (level === 3) return language === "es"
     ? { bank: ["fracción", "todo", "parte"], frame: `La parte es ${numerator}/${denominator} del todo porque ___.` }
     : { bank: ["fraction", "whole", "part"], frame: `The part is ${numerator}/${denominator} of the whole because ___.` };
+  return null;
+}
+
+export function fractionLineSupportForLevel(level, language = "en", { numerator, denominator } = {}) {
+  if (level <= 2) return language === "es"
+    ? { bank: ["fracción", "entero", "denominador", "intervalos iguales", "desde cero"], frame: `El denominador ${denominator} indica ___ intervalos iguales en el entero. Desde cero cuento ___ intervalos, así que el punto representa ${numerator}/${denominator} porque ___.` }
+    : { bank: ["fraction", "whole", "denominator", "equal intervals", "from zero"], frame: `The denominator ${denominator} names ___ equal intervals in one whole. From zero, I count ___ intervals, so the point is ${numerator}/${denominator} because ___.` };
+  if (level === 3) return language === "es"
+    ? { bank: ["denominador", "intervalos", "desde cero"], frame: `El punto representa ${numerator}/${denominator} porque ___.` }
+    : { bank: ["denominator", "intervals", "from zero"], frame: `The point represents ${numerator}/${denominator} because ___.` };
   return null;
 }

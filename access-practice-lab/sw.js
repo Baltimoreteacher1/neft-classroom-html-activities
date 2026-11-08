@@ -11,7 +11,7 @@
  * The block between the build markers is written by tools/sync-access-shell.mjs; do not edit it by hand.
  */
 /* build:begin */
-const BUILD_HASH = "b701a9f8cc88";
+const BUILD_HASH = "50b16fd75315";
 const PRECACHE_CORE = [
   "/access-practice-lab/ds.css?v=f77bd42f8057",
   "/access-practice-lab/home.css?v=d4e1a1fc5829",
@@ -21,7 +21,7 @@ const PRECACHE_CORE = [
   "/access-practice-lab/journey.css?v=104923be8eb3",
   "/access-practice-lab/acc.css?v=2b5e93a8f490",
   "/access-practice-lab/studios.css?v=1e0aed4fc0a6",
-  "/access-practice-lab/src/main.js?v=9e677fd63b81",
+  "/access-practice-lab/src/main.js?v=af1948844451",
   "/access-practice-lab/src/brand.js?v=aa10e7cfb67f",
   "/access-practice-lab/src/components.js?v=40d21034ef29",
   "/access-practice-lab/src/grade.js?v=632a26ffc0a8",
@@ -417,7 +417,8 @@ const PRECACHE_MORE = [
   "/access-practice-lab/src/studios/data-bridge-view.js?v=dd19eb01b947",
   "/access-practice-lab/src/studios/discourse-architect.js?v=f8dbb5153e04",
   "/access-practice-lab/src/studios/fraction-bridge-view.js?v=cc955651dd71",
-  "/access-practice-lab/src/studios/math-reasoning-bridge.js?v=95782ca97799",
+  "/access-practice-lab/src/studios/fraction-line-bridge-view.js?v=f15d0bfd1f0a",
+  "/access-practice-lab/src/studios/math-reasoning-bridge.js?v=88e495b64539",
   "/access-practice-lab/src/studios/speaking-sparring.js?v=1d79358e4728",
   "/access-practice-lab/src/studios/translanguaging-bridge.js?v=b152257a32d8",
   "/access-practice-lab/src/studios.js?v=b4a26b4e766f",
@@ -454,7 +455,7 @@ const PRECACHE_MORE = [
   "/access-practice-lab/src/views/key-warmup.js?v=1020b41d1d97",
   "/access-practice-lab/src/views/ladder-tools.js?v=10975a75c471",
   "/access-practice-lab/src/views/ladder.js?v=66470f621d2f",
-  "/access-practice-lab/src/views/language-studios.js?v=5badbfc9f394",
+  "/access-practice-lab/src/views/language-studios.js?v=4c35eb3f710c",
   "/access-practice-lab/src/views/launch-studio.js?v=8084fdb4ac43",
   "/access-practice-lab/src/views/learn.js?v=439f4cb9832a",
   "/access-practice-lab/src/views/library.js?v=326d006906e0",

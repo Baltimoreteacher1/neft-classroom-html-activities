@@ -132,7 +132,10 @@ export function parseRoute(pathname = location.pathname, search = location.searc
   const q = new URLSearchParams(search);
   const r = { view: "home", grades: q.get("grades") || "", ...(q.has("gradeFocus") ? { gradeFocus: q.get("gradeFocus") } : {}) };
   const [a, b, c, d] = parts;
-  if (!a) return r;
+  if (!a) {
+    const mathBridge = readMathLanguageBridge(search);
+    return mathBridge ? { ...r, view: "language-studios", mathBridge } : r;
+  }
   if (a === "reading" || a === "reading-room")
     return { ...r, view: "reading-room", id: b || "" };
   if (a === "test") return { ...r, view: "test", testId: b || "" };

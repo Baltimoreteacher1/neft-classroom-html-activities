@@ -11,6 +11,7 @@ import { t } from "../i18n.js";
 import { createRatioExplanationUrl } from "../../../shared/math-language-bridge/v1.js";
 import { createPercentExplanationUrl } from "../../../shared/math-language-bridge/v2.js";
 import { createFractionExplanationUrl } from "../../../shared/math-language-bridge/v2.js";
+import { createFractionNumberLineExplanationUrl } from "../../../shared/math-language-bridge/v2.js";
 import { createDataExplanationUrl } from "../../../shared/math-language-bridge/v2.js";
 
 const esc = (s) => String(s).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;");
@@ -146,12 +147,26 @@ export function mountTry(ctx, root) {
       const percentBridge =
         lesson?.engine?.id === "ratio" && lesson.spec.kind === "percent" ? lesson.spec : null;
       const fractionBridge = lesson?.engine?.id === "fracmul" && lesson.spec.mode === "of" ? lesson.spec : null;
+      const fractionLineBridge = lesson?.engine?.id === "fraction" && lesson.spec.mode === "lineMark" ? lesson.spec : null;
       const dataBridge = lesson?.engine?.id === "expr" && ["mean", "median"].includes(lesson.spec.mode) ? lesson.spec : null;
       const grade = Number(ctx.skill.grade) || 6;
       let bridgeUrl = null;
       let bridgeTask = "ratio";
       try {
         if (
+          fractionLineBridge &&
+          Number.isInteger(fractionLineBridge.numerator) &&
+          Number.isInteger(fractionLineBridge.denominator) &&
+          grade >= 3 &&
+          grade <= 8
+        ) {
+          bridgeUrl = createFractionNumberLineExplanationUrl({
+            numerator: fractionLineBridge.numerator,
+            denominator: fractionLineBridge.denominator,
+            grade,
+          });
+          bridgeTask = "fractionLine";
+        } else if (
           Array.isArray(base) &&
           base.length === 2 &&
           base.every((n) => Number.isInteger(n) && n >= 1 && n <= 12) &&
@@ -206,6 +221,7 @@ export function mountTry(ctx, root) {
         ratio: L("Explain this ratio in The Language Page", "Explica esta razón en The Language Page"),
         percent: L("Explain this percent model in The Language Page", "Explica este modelo de porcentaje en The Language Page"),
         fraction: L("Explain this fraction model in The Language Page", "Explica este modelo de fracción en The Language Page"),
+        fractionLine: L("Explain this number-line fraction in The Language Page", "Explica esta fracción en la recta numérica en The Language Page"),
         data: L("Explain this data investigation in The Language Page", "Explica esta investigación de datos en The Language Page"),
       };
       const bridge = bridgeUrl
