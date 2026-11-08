@@ -92,6 +92,18 @@ export const HOME_CARDS = [
 
   // ── explore: more ways to practice ─────────────────────────────────────────
   {
+    id: "language-adventures",
+    group: "explore",
+    featured: true,
+    href: "/language-adventures/",
+    icon: "worlds",
+    title: ["Language Adventures & 10 Studios", "Aventuras del lenguaje y 10 estudios"],
+    text: [
+      "Nine illustrated worlds, branching stories, and 10 classroom language studios.",
+      "Nueve mundos ilustrados, historias interactivas y 10 estudios de lenguaje.",
+    ],
+  },
+  {
     id: "exhibition",
     group: "explore",
     featured: true,

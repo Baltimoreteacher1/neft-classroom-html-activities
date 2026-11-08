@@ -204,6 +204,7 @@ const EXCLUSIVE = new Set([
   "validate:u4-adaptive-browser",
   "validate:math-workbench-browser",
   "validate:all-resources-browser",
+  "validate:access-lab",
   "smoke:injection",
   "validate:visibility",
   // `validate:flow-walk` joined them on 2026-08-28. It is the heaviest browser
