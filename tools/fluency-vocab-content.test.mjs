@@ -27,6 +27,7 @@ for (const key of [
   "part-to-part ratio",
   "part-to-whole ratio",
   "proportional relationship",
+  "equal groups",
 ]) {
   const entry = VOCAB_BILINGUAL_DB[key];
   assert.ok(

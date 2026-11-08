@@ -438,6 +438,17 @@ ok(
   strip.includes("unit rate") === false && strip.includes("ratio") && strip.includes("razón"),
   "ratios words are shown in both languages",
 );
+ok(
+  (strip.match(/class="vocab-word" data-vocab="ratio"/g) || []).length >= 2,
+  "ratio terms in the skill strip open the illustrated vocabulary popup",
+);
+const fractionStrip = card.wordStripHtml(ALL_SKILLS.find((entry) => entry.id === "fraction-of"));
+for (const term of ["fraction", "numerator", "denominator", "equal groups"]) {
+  ok(
+    fractionStrip.includes(`data-vocab="${term}"`),
+    `${term} in the fraction skill strip opens its illustrated vocabulary popup`,
+  );
+}
 const peek = card.spanishPeekHtml({ question: "Find the GCF of 12 and 18." });
 ok(
   peek.includes("máximo común divisor") && card.spanishPeekHtml({ question: "12 + 5 = ?" }) === "",

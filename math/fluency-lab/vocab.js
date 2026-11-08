@@ -442,6 +442,27 @@ export const VOCAB_BILINGUAL_DB = {
     </svg>`
   },
 
+  "equal groups": {
+    id: "equal groups",
+    enTitle: "Equal Groups",
+    esTitle: "Grupos iguales",
+    enDef: "Groups that each contain the same number of items.",
+    esDef: "Grupos que contienen la misma cantidad de elementos cada uno.",
+    example: "Three equal groups of 4 counters make 12 counters: 3 × 4 = 12.",
+    keywords: ["equal groups", "grupos iguales"],
+    svg: `<svg viewBox="0 0 320 130" style="background:#F0FDF4; border-radius:12px; border:1px solid #BBF7D0; width:100%; max-width:320px; margin:0 auto; display:block;" role="img" aria-label="Three equal groups with four counters in each group">
+      <g fill="#16A34A" stroke="#15803D" stroke-width="1.5">
+        <circle cx="38" cy="40" r="9"/><circle cx="61" cy="40" r="9"/><circle cx="38" cy="64" r="9"/><circle cx="61" cy="64" r="9"/>
+        <circle cx="132" cy="40" r="9"/><circle cx="155" cy="40" r="9"/><circle cx="132" cy="64" r="9"/><circle cx="155" cy="64" r="9"/>
+        <circle cx="226" cy="40" r="9"/><circle cx="249" cy="40" r="9"/><circle cx="226" cy="64" r="9"/><circle cx="249" cy="64" r="9"/>
+      </g>
+      <text x="50" y="96" text-anchor="middle" font-size="11" font-weight="800" fill="#166534">4</text>
+      <text x="144" y="96" text-anchor="middle" font-size="11" font-weight="800" fill="#166534">4</text>
+      <text x="238" y="96" text-anchor="middle" font-size="11" font-weight="800" fill="#166534">4</text>
+      <text x="160" y="120" text-anchor="middle" font-size="12" font-weight="900" fill="#14532D">3 equal groups × 4 = 12</text>
+    </svg>`
+  },
+
   reciprocal: {
     id: "reciprocal",
     enTitle: "Reciprocal",

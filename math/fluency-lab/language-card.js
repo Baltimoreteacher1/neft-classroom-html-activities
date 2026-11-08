@@ -23,6 +23,7 @@ import { getLevel, readJson, setLevel, writeJson } from "./language-settings.js"
 import { checkMoves, doneMoves, languageProfile, termById, termsInText } from "./language-terms.js";
 import { choicesEs, questionEs } from "./question-es.js";
 import { speak } from "./speech.js";
+import { highlightVocab } from "./vocab.js";
 
 const esc = (value) =>
   String(value)
@@ -67,9 +68,10 @@ export function wordStripHtml(
   const es = getLang() === "es";
   const meanings = (term) =>
     `<p class="lang-def">${esc(es ? term.defEs : term.defEn)}</p>${both ? `<p class="lang-def lang-def-other" lang="${es ? "en" : "es"}">${esc(es ? term.defEn : term.defEs)}</p>` : ""}`;
+  const linkedWord = (word) => highlightVocab(esc(word));
   const cards = terms
     .map(
-      (term) => `<li class="lang-term"><div class="lang-term-head"><strong lang="en">${esc(term.en)}</strong> <span lang="es" class="lang-es">${esc(term.es)}</span>${term.cognate ? `<span class="lang-cognate" title="${esc(t("These words look alike in English and Spanish."))}">🔗 ${esc(t("looks alike"))}</span>` : ""}</div>
+      (term) => `<li class="lang-term"><div class="lang-term-head"><strong lang="en">${linkedWord(term.en)}</strong> <span lang="es" class="lang-es">${linkedWord(term.es)}</span>${term.cognate ? `<span class="lang-cognate" title="${esc(t("These words look alike in English and Spanish."))}">🔗 ${esc(t("looks alike"))}</span>` : ""}</div>
       ${practice ? `<details class="lang-meaning" data-lang-hint><summary>${esc(t("Meaning"))}</summary>${meanings(term)}</details>` : meanings(term)}
       <div class="lang-term-actions"><button type="button" class="lang-mini" data-lang-term="${term.id}" data-lang-voice="en" aria-label="${esc(t("Hear {word} in English", { word: term.en }))}">🔊 English</button><button type="button" class="lang-mini" data-lang-term="${term.id}" data-lang-voice="es" aria-label="${esc(t("Hear {word} in Spanish", { word: term.es }))}">🔊 Español</button></div></li>`,
     )
