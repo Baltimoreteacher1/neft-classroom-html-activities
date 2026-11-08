@@ -96,7 +96,12 @@ function matchSkill(skills, item) {
     const [a, b, op, answer] = [Number(fact[1]), Number(fact[3]), FACT_OPS[fact[2]], Number(item.answers?.[0])];
     const facts = skills.filter((skill) => skill.generator === "fact" && opsOf(skill.config).includes(op));
     // 7 × 4 is a ×6–9 fact as written; it only counts as a ×4 fact when no skill holds it the way it is written.
-    return facts.find((skill) => factFits(skill.config, op, a, b, answer, false)) || facts.find((skill) => factFits(skill.config, op, a, b, answer)) || facts[0] || null;
+    // If no skill's configured number range fits the fact, let skillForItem look
+    // in the next earlier grade; never credit an unrelated same-operation skill.
+    const exact = facts.find((skill) => factFits(skill.config, op, a, b, answer, false)) || facts.find((skill) => factFits(skill.config, op, a, b, answer));
+    // Curated fact-pool rounds span the grade's fluency set; an authored fact
+    // outside every skill range must instead fall back to an earlier grade.
+    return exact || (item.generator === "factPool" || item.factTrail ? facts[0] || null : null);
   }
   // An operation skill ("Multiply and divide integers") only takes items with one of its operations.
   const op = FACT_OPS[String(item?.question || "").match(/ ([+−×÷]) /)?.[1]];
@@ -363,7 +368,7 @@ export function recordAnswer(tutor, skill, result, now = Date.now()) {
     ...(tier ? { tier } : {}),
     ...(strategies.length ? { strategies } : {}),
     ...(Number.isFinite(responseMs) ? { responseMs, paceEligible } : {}),
-    ...(result.sig ? { sig: String(result.sig).slice(0, 24) } : {}),
+    ...(result.sig ? { sig: String(result.sig).slice(0, 96) } : {}),
     ...(result.viewedExample ? { ex: 1 } : {}),
   }].slice(-RECENT_WINDOW);
   record.metrics = summarizeMetrics(record);
@@ -602,7 +607,7 @@ export function sanitizeTutor(value) {
         correct: entry.correct, independent: entry.independent, at: entry.at, level,
         ...(tier ? { tier } : {}),
         ...(strategies.length ? { strategies } : {}),
-        ...(typeof entry.sig === "string" && entry.sig ? { sig: entry.sig.slice(0, 24) } : {}),
+        ...(typeof entry.sig === "string" && entry.sig ? { sig: entry.sig.slice(0, 96) } : {}),
         ...(entry.ex === 1 ? { ex: 1 } : {}),
         ...(validResponse ? { responseMs, paceEligible: Boolean(entry.paceEligible && entry.independent && level >= 1) } : {}),
       };

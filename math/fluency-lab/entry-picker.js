@@ -1,4 +1,4 @@
-// The front door: Grade → Topic → Skill → Start, with an optional "Welcome back" card above it.
+// The front door: Grade → a useful first skill → Start, with optional topic/skill browsing below.
 // No account, diagnostic or saved record is needed to use it; progress only adds the resume card.
 // Selection happens in place (no reload, no modal); Start hands the chosen grade and skill to the app.
 import { GRADES } from "./problem-bank.js";
@@ -15,7 +15,7 @@ function resumeHtml(resume) {
   return `<section class="ep-resume" aria-labelledby="ep-resume-title">
     <h2 id="ep-resume-title">${escapeHtml(t("Welcome back!"))}</h2>
     <p class="ep-resume__skill">${escapeHtml(t("Continue:"))} <strong>${escapeHtml(resume.title)}</strong> <span class="ep-resume__where">${escapeHtml(resume.where)}</span></p>
-    <button type="button" class="ep-btn ep-btn--primary" data-ep-resume>${escapeHtml(t("Resume Learning"))}</button>
+    <button type="button" class="ep-btn ep-btn--primary" data-ep-resume>${escapeHtml(t("Continue learning"))}</button>
   </section>`;
 }
 
@@ -44,6 +44,10 @@ function skillsHtml(topic, pick) {
     .join("")}</div>`;
 }
 
+function firstSkill(topics) {
+  return topics.find((entry) => entry.skills.length)?.skills[0] || null;
+}
+
 function render(host, ctx, pick, focus) {
   const grade = GRADES.find((entry) => entry.grade === pick.grade);
   const topics = grade ? topicsFor(grade.grade) : [];
@@ -61,9 +65,10 @@ function render(host, ctx, pick, focus) {
       ${ctx.resume ? `<p class="ep-or">${escapeHtml(t("Or choose a grade and skill"))}</p>` : ""}
       <h3 id="ep-grade-label" class="ep-label"><span class="ep-num" aria-hidden="true">1</span>${escapeHtml(t("Choose your grade"))}</h3>
       ${gradesHtml(pick)}
-      ${grade ? `<h3 id="ep-topic-label" class="ep-label"><span class="ep-num" aria-hidden="true">2</span>${escapeHtml(t("Choose a topic"))}</h3>${topicsHtml(topics, pick)}` : ""}
+      ${grade && skill && pick.quickStart ? `<section class="ep-quick-start" aria-label="${escapeHtml(t("A first step"))}"><div><p class="ep-quick-start__eyebrow">${escapeHtml(t("A first step"))}</p><p>${escapeHtml(t("Start with {skill}, or browse the topics below.", { skill: t(skill.title) }))}</p></div><button type="button" class="ep-btn ep-btn--primary" data-ep-start>${escapeHtml(t("Start with {skill}", { skill: t(skill.title) }))}<span aria-hidden="true"> →</span></button></section>` : ""}
+      ${grade ? `<h3 id="ep-topic-label" class="ep-label"><span class="ep-num" aria-hidden="true">2</span>${escapeHtml(t("Choose a topic"))} <span class="ep-label__optional">${escapeHtml(t("or browse"))}</span></h3>${topicsHtml(topics, pick)}` : ""}
       ${topic ? `<h3 id="ep-skill-label" class="ep-label"><span class="ep-num" aria-hidden="true">3</span>${escapeHtml(t("Choose your skill"))}</h3>${skillsHtml(topic, pick)}` : ""}
-      <div class="ep-start" ${skill ? "" : "hidden"}>
+      <div class="ep-start" ${skill && !pick.quickStart ? "" : "hidden"}>
         <p class="ep-trail" aria-live="polite">${escapeHtml(trail.join(" › "))}</p>
         <button type="button" class="ep-btn ep-btn--primary ep-btn--start" data-ep-start>${escapeHtml(t("Start"))}</button>
       </div>
@@ -78,9 +83,10 @@ export function mountEntryPicker(host, ctx) {
   const pick = { grade: grades.has(ctx.grade) ? ctx.grade : null, topic: null, skill: null };
   if (pick.grade !== null) {
     const topics = topicsFor(pick.grade);
-    pick.topic =
-      topics.find((entry) => entry.id === ctx.topic)?.id ||
-      (topics.length === 1 ? topics[0].id : null);
+    const start = firstSkill(topics);
+    pick.topic = topics.find((entry) => entry.id === ctx.topic || entry.skills.some((candidate) => candidate.id === start?.id))?.id || null;
+    pick.skill = topics.find((entry) => entry.id === pick.topic)?.skills[0]?.id || null;
+    pick.quickStart = Boolean(start && !ctx.topic);
   }
   render(host, ctx, pick, null);
   const onClick = (event) => {
@@ -90,15 +96,19 @@ export function mountEntryPicker(host, ctx) {
     if (grade) {
       pick.grade = Number(grade.dataset.epGrade);
       const topics = topicsFor(pick.grade);
-      pick.topic = topics.length === 1 ? topics[0].id : null;
-      pick.skill = null;
+      const start = firstSkill(topics);
+      pick.topic = topics.find((entry) => entry.skills.some((candidate) => candidate.id === start?.id))?.id || null;
+      pick.skill = start?.id || null;
+      pick.quickStart = Boolean(start);
       render(host, ctx, pick, `[data-ep-grade="${pick.grade}"]`);
     } else if (topic) {
       pick.topic = topic.dataset.epTopic;
       pick.skill = null;
+      pick.quickStart = false;
       render(host, ctx, pick, `[data-ep-topic="${pick.topic}"]`);
     } else if (skill) {
       pick.skill = skill.dataset.epSkill;
+      pick.quickStart = false;
       render(host, ctx, pick, `[data-ep-skill="${pick.skill}"]`);
       host.querySelector(".ep-start")?.scrollIntoView?.({ block: "nearest" });
     } else if (event.target.closest("[data-ep-start]") && pick.skill)

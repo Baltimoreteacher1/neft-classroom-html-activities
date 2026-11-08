@@ -7,6 +7,7 @@ import { attachAnimation, attachGraphic } from "./lesson-4/visual-host.js";
 import { whyFor } from "./step-whys.js";
 import { interactivePicture, mathText, stepVisual, trailPicture } from "./trail-pictures.js";
 import { renderInlineProblemModel, renderModel } from "./visual-lab.js";
+import { mountCoordinateExplorer } from "./coordinate-explorer.js";
 
 // The exact picture the lab already draws for this problem; it always works, with or without the new graphics.
 // `own` is false when the problem has no picture of its own and the skill's general model (other numbers) is shown.
@@ -90,8 +91,15 @@ export function renderLearn(ctx) {
     draw(true);
   });
   const slot = stage.querySelector(".ml-slot");
-  const stopGraphic = attachGraphic(slot, step.visual.graphic, { mode: "explore", lang, label: skill.title, values: givens(example.question) });
-  return stopGraphic;
+  const hasCoordinateExplorer = slot?.querySelector(".coord-explorer-wrap");
+  const stopGraphic = hasCoordinateExplorer
+    ? () => {}
+    : attachGraphic(slot, step.visual.graphic, { mode: "explore", lang, label: skill.title, values: givens(example.question) });
+  const stopCoordinate = mountCoordinateExplorer(stage);
+  return () => {
+    stopCoordinate();
+    stopGraphic();
+  };
 }
 
 // Watch It: the animation when the skill has one, else the worked example one step at a time.
@@ -117,6 +125,7 @@ export function renderWatch(ctx) {
     </section>
   </div>`;
   const frame = stage.querySelector(".ml-film-frame");
+  const stopCoordinate = mountCoordinateExplorer(stage);
   const prev = stage.querySelector("[data-film-prev]");
   const next = stage.querySelector("[data-film-next]");
   const play = stage.querySelector("[data-film-play]");
@@ -161,6 +170,7 @@ export function renderWatch(ctx) {
     : () => {};
   return () => {
     clearInterval(timer);
+    stopCoordinate();
     stopAnimation();
   };
 }

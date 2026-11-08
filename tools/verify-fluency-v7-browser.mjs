@@ -127,6 +127,7 @@ async function axe(page, label) {
   await axe(page, "home");
   await go.click();
   await page.waitForSelector("#workspace-view:not([hidden])");
+  await page.locator(".learn-support > summary").click();
   await page.click('#learn-panel a[href^="./v7/"]');
   await page.waitForSelector("#v7-model svg, #v7-model .e8ml-visual", { timeout: 15000 });
   ok(

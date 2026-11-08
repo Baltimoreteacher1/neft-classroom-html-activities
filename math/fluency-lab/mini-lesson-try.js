@@ -8,6 +8,7 @@ import { esc, givens, pick } from "./lesson-4/dom.js";
 import { TRY_COUNT, supportFor } from "./lesson-4/practice.js";
 import { attachGraphic } from "./lesson-4/visual-host.js";
 import { spanishLine } from "./mini-lesson-learn.js";
+import { mountCoordinateExplorer } from "./coordinate-explorer.js";
 import { validateAnswer } from "./problem-bank.js";
 import { whyFor } from "./step-whys.js";
 import { interactivePicture, mathText, stepVisual } from "./trail-pictures.js";
@@ -48,12 +49,14 @@ export function renderTry(ctx) {
   ctx.state.tryAt ??= Math.max(0, runs.findIndex((run) => !SETTLED.has(run.phase)));
   if (ctx.state.tryAt < 0 || ctx.state.tryAt >= TRY_COUNT) ctx.state.tryAt = 0;
   let stopGraphic = () => {};
+  let stopCoordinates = () => {};
   let summary = false;
 
   const settleNow = () => runs.every((run) => SETTLED.has(run.phase));
 
   function paint(focus = "") {
     stopGraphic();
+    stopCoordinates();
     const at = ctx.state.tryAt;
     const run = runs[at];
     const problem = problems[at];
@@ -82,10 +85,12 @@ export function renderTry(ctx) {
       </article>`}
     </div>`;
     if (!summary) {
+      stopCoordinates = mountCoordinateExplorer(stage);
       const panel = stage.querySelector(".ml-feedback");
       showFeedback(panel, run, problem);
       const slot = stage.querySelector(".ml-try-picture");
-      if (slot) stopGraphic = attachGraphic(slot, step.graphic, { mode: "build", lang, label: skill.title, values: givens(problem.question) });
+      if (slot && !slot.querySelector(".coord-explorer-wrap"))
+        stopGraphic = attachGraphic(slot, step.graphic, { mode: "build", lang, label: skill.title, values: givens(problem.question) });
     }
     const target = focus && stage.querySelector(focus);
     if (target) target.focus({ preventScroll: false });
@@ -185,6 +190,7 @@ export function renderTry(ctx) {
   paint();
   return () => {
     stopGraphic();
+    stopCoordinates();
     stage.removeEventListener("submit", onSubmit);
     stage.removeEventListener("change", onChange);
     stage.removeEventListener("click", onClick);

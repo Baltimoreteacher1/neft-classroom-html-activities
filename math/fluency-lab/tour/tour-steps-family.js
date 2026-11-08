@@ -75,7 +75,7 @@ export const FAMILY_STEPS = [
   },
   {
     id: "progress",
-    anchor: '#hub-tabs button[data-view="path"]',
+    anchor: '#hub-tabs button[data-dest="learning"]',
     en: {
       title: "See progress",
       body: [

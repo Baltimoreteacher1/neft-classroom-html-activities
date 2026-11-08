@@ -487,19 +487,67 @@
 .coord-badge.point-b { background: #d1fae5; color: #065f46; }
 .coord-badge.slope-badge { background: #e0e7ff; color: #3730a3; }
 .coord-badge.dist-badge { background: #fef3c7; color: #92400e; }
+.coord-badge.target { background: #f3e8ff; color: #5b21b6; }
+
+.coord-eyebrow { margin: 0 0 .15rem; color: #526478; font-size: .72rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+.coord-title { margin: 0; font-size: clamp(1.05rem, 2vw, 1.35rem); }
+.coord-instruction { max-width: 68ch; margin: 0; color: #334155; line-height: 1.45; }
 
 .coord-stage-box {
   width: 100%;
-  height: 280px;
+  height: clamp(320px, 58vw, 440px);
   background: #ffffff;
   border: 1px solid #cbd5e1;
   border-radius: 8px;
   overflow: hidden;
+  touch-action: none;
 }
 
 .coord-svg {
   width: 100%;
   height: 100%;
+  display: block;
+  touch-action: none;
+  user-select: none;
+}
+
+.coord-plane-bg { fill: #fff; }
+.coord-gridline { stroke: #e8edf2; stroke-width: 1; vector-effect: non-scaling-stroke; }
+.coord-gridline.is-major { stroke: #cbd5e1; stroke-width: 1.3; }
+.coord-axis { stroke: #30445c; stroke-width: 2; vector-effect: non-scaling-stroke; }
+.coord-arrowhead { fill: #30445c; }
+.coord-tick { fill: #536477; font-size: 10px; font-variant-numeric: tabular-nums; }
+.coord-axis-label { fill: #1f334b; font-size: 15px; font-style: italic; font-weight: 900; }
+.coord-quadrant { fill: #64748b; font-size: 12px; font-weight: 800; opacity: .65; pointer-events: none; }
+.coord-connector { stroke: #334155; stroke-width: 2.5; stroke-linecap: round; vector-effect: non-scaling-stroke; }
+.coord-slope-triangle { fill: none; stroke: #8b5cf6; stroke-width: 2; stroke-dasharray: 5 4; vector-effect: non-scaling-stroke; }
+.coord-delta { fill: #5631a1; font-size: 11px; font-weight: 800; paint-order: stroke; stroke: #fff; stroke-width: 3px; stroke-linejoin: round; }
+.coord-handle { cursor: grab; outline: none; touch-action: none; }
+.coord-handle:active { cursor: grabbing; }
+.coord-hit { fill: transparent; }
+.coord-halo { fill: var(--point-color); fill-opacity: .16; stroke: var(--point-color); stroke-opacity: .35; stroke-width: 1; }
+.coord-dot { fill: var(--point-color); stroke: #fff; stroke-width: 2; vector-effect: non-scaling-stroke; }
+.coord-target-point { fill: #fff; stroke: #7c3aed; stroke-width: 3; stroke-dasharray: 3 2; vector-effect: non-scaling-stroke; }
+.coord-point-label { fill: #142b45; font-size: 12px; font-weight: 800; paint-order: stroke; stroke: #fff; stroke-width: 3px; stroke-linejoin: round; pointer-events: none; }
+.coord-handle.is-active .coord-halo, .coord-handle:focus-visible .coord-halo { fill-opacity: .3; stroke-width: 3; }
+.coord-handle:focus-visible .coord-dot { stroke: #111827; stroke-width: 3; }
+.coord-point-controls, .coord-coordinate-inputs { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: .5rem; }
+.coord-btn.point-a { color: #144e9a; }
+.coord-btn.point-b { color: #08634f; }
+.coord-btn.is-selected { outline: 3px solid #94a3b8; outline-offset: 1px; }
+.coord-coordinate-inputs { justify-content: space-evenly; }
+.coord-input-pair { display: inline-flex; align-items: center; gap: .35rem; min-height: 44px; padding: .35rem .6rem; border: 1px solid #d5dee8; border-radius: 9px; background: #fff; font-weight: 750; }
+.coord-input-pair input { width: 3.4rem; min-height: 40px; border: 1px solid #9aa9bb; border-radius: 6px; color: #142b45; font: inherit; text-align: center; }
+.coord-input-pair input:focus-visible, .coord-btn:focus-visible { outline: 3px solid #2463a8; outline-offset: 2px; }
+.coord-readout { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .5rem; }
+.coord-readout p { display: grid; gap: .2rem; margin: 0; padding: .65rem; border: 1px solid #dbe3eb; border-radius: 8px; background: #fff; }
+.coord-readout p span { color: #526478; font-size: .76rem; }
+.coord-readout strong { color: #142b45; font-variant-numeric: tabular-nums; }
+@media (max-width: 640px) {
+  .coord-stage-box { height: min(105vw, 390px); }
+  .coord-readout { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .coord-coordinate-inputs { align-items: stretch; }
+  .coord-input-pair { flex-wrap: wrap; justify-content: center; width: 100%; }
 }
 
 .coord-controls-row {

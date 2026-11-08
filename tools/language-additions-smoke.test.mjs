@@ -19,6 +19,10 @@ try {
   await page.goto(`${base}/access-practice-lab/subject-reading?grades=6-8`, {
     waitUntil: "domcontentloaded",
   });
+  await page
+    .getByText("Ecosystems: from food webs to new evidence", { exact: false })
+    .first()
+    .waitFor({ state: "visible" });
   assert.match(
     await page.locator("body").innerText(),
     /Ecosystems: from food webs to new evidence/,
@@ -27,6 +31,11 @@ try {
     `${base}/access-practice-lab/subject-reading/ecosystems-relationships?grades=6-8`,
     { waitUntil: "domcontentloaded" },
   );
+  await page.waitForSelector('[data-sr-word="organism"]');
+  await page
+    .getByText("A Web of Living Things", { exact: false })
+    .first()
+    .waitFor({ state: "visible" });
   await page.waitForSelector('[data-sr-word="organism"]');
   assert.match(await page.locator("body").innerText(), /A Web of Living Things/);
   await page.locator('[data-sr-word="organism"]').click();
@@ -42,6 +51,7 @@ try {
   await page.goto(`${base}/access-practice-lab/vocab-curriculum?grades=6-8`, {
     waitUntil: "domcontentloaded",
   });
+  await page.getByText("Grade 6", { exact: false }).first().waitFor({ state: "visible" });
   assert.match(await page.locator("body").innerText(), /Grade 6/);
   await page.goto(`${base}/access-practice-lab/vocab-curriculum/g6-evaluate-sources?grades=6-8`, {
     waitUntil: "domcontentloaded",

@@ -1,4 +1,4 @@
-// Grade → Domain → Topic → Skill, plus the five-stage learning path (Learn, Try It, Practice, Play, Grow).
+// Grade → Domain → Topic → Skill, plus one stable five-stage instructional path.
 // The curriculum's own `strand` names are too fine and too uneven to browse (Grade 3 has "Multiplication" and
 // "Operations", Grade 5 has "Operations" that means multiply and divide). This file is the single place that
 // groups every skill into one consistent topic. Skill ids, grades and saved records are never touched.
@@ -108,11 +108,11 @@ export function nextSkillAfter(skill) {
 }
 
 export const STAGES = [
-  { id: "learn", name: "Learn" },
-  { id: "try", name: "Try It" },
-  { id: "practice", name: "Practice" },
-  { id: "play", name: "Play ##nav" },
-  { id: "grow", name: "Grow" },
+  { id: "learn", name: "Understand It" },
+  { id: "try", name: "See It" },
+  { id: "play", name: "Try It Together" },
+  { id: "practice", name: "Try It Yourself" },
+  { id: "grow", name: "Check & Continue" },
 ];
 const STAGE_IDS = STAGES.map((stage) => stage.id);
 
@@ -120,7 +120,7 @@ const STAGE_IDS = STAGES.map((stage) => stage.id);
 const MODE_STAGE = {
   learn: "learn",
   visual: "try",
-  guided: "try",
+  guided: "play",
   quick: "practice",
   flashcard: "practice",
   practice: "practice",
@@ -128,8 +128,8 @@ const MODE_STAGE = {
   streak: "practice",
 };
 export const stageOfMode = (mode) => MODE_STAGE[mode] || "practice";
-// Stages that open one of those modes. Play and Grow have their own panels.
-export const STAGE_MODE = { learn: "learn", try: "visual", practice: "practice" };
+// Stable stage ids keep saved resume links working while the labels and learning order improve.
+export const STAGE_MODE = { learn: "learn", try: "visual", play: "guided", practice: "practice" };
 export const isStage = (value) => STAGE_IDS.includes(value);
 export const stageAfter = (id) => STAGES[STAGE_IDS.indexOf(id) + 1]?.id || null;
 export const stageLabel = (id) => STAGES.find((stage) => stage.id === id)?.name || "";

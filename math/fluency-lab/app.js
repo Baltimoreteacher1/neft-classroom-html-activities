@@ -733,7 +733,7 @@ function renderMastery() {
 // Each mode tab shows one panel; a tab list is one stop for Tab, and the arrow keys move between its tabs.
 const MODE_PANEL = { learn: "learn-panel", visual: "visual-panel", guided: "drill-panel", quick: "drill-panel", flashcard: "drill-panel", practice: "drill-panel", streak: "drill-panel" };
 function renderModeTabs(mixed = false) {
-  els.modeTabs.innerHTML = mixed
+  const tabs = mixed
     ? `<button role="tab" aria-selected="true" aria-controls="drill-panel" data-mode="${state.mode}">${state.mode === "daily" ? "Today's 10" : "Mixed review"}</button>`
     : [
         ["learn", "Learn it"],
@@ -746,9 +746,12 @@ function renderModeTabs(mixed = false) {
       ]
         .map(
           ([mode, label]) =>
-            `<button role="tab" aria-selected="${mode === state.mode}" tabindex="${mode === state.mode ? 0 : -1}" aria-controls="${MODE_PANEL[mode]}" data-mode="${mode}">${label}</button>`,
+            `<button role="tab" aria-selected="${mode === state.mode}" tabindex="${mode === state.mode ? 0 : -1}" aria-controls="${MODE_PANEL[mode]}" data-mode="${mode}">${escapeHtml(t(label))}</button>`,
         )
         .join("");
+  els.modeTabs.innerHTML = mixed
+    ? `<div role="tablist" aria-label="${escapeHtml(t("Practice mode"))}">${tabs}</div>`
+    : `<details class="practice-alternatives"><summary>${escapeHtml(t("More practice options"))}</summary><div role="tablist" aria-label="${escapeHtml(t("Practice mode"))}">${tabs}</div></details>`;
   renderStageUi();
 }
 
@@ -764,36 +767,17 @@ function renderLearn() {
   const picture = interactivePicture({ ...example.model, worked: true }) || trailPicture(example.model) || fractionPicture(example.question, { worked: true });
   cleanupLearnStudio?.();
   cleanupLearnStudio = null;
-  const animated = studioAvailable(example);
+  // Understand It keeps one worked example in view. The interactive model lives in
+  // the next stage so students do not have to reconcile two representations at once.
   const ratioStudioLink = skill.grade === 6 && skill.id === "ratios" && example.model?.type === "ratioTable"
     ? (() => {
         const params = new URLSearchParams({ a: String(example.model.a), b: String(example.model.b), labelA: example.model.labels?.[0] || "First", labelB: example.model.labels?.[1] || "Second", profile: String(activeProfile) });
         return `<a class="outline-action" href="./ratio-studio/?${params.toString().replaceAll("&", "&amp;")}">Explore this ratio in Ratio Studio</a>`;
       })()
     : "";
-  const showLcmSteps = skill.grade === 6 && skill.id === "lcm";
-  const isFractionDivision = skill.id === "divide-fractions" || skill.id === "unit-fraction-division" || (/÷/.test(example.question) && /\//.test(example.question));
-  let kcfFracData = { a: 2, b: 3, c: 4, d: 5 };
-  if (isFractionDivision) {
-    const divMatch = String(example.question).match(/(\d+)\/(\d+)\s*÷\s*(\d+)\/(\d+)/);
-    const unitMatch1 = String(example.question).match(/(\d+)\/(\d+)\s*÷\s*(\d+)/);
-    const unitMatch2 = String(example.question).match(/(\d+)\s*÷\s*(\d+)\/(\d+)/);
-    if (divMatch) {
-      kcfFracData = { a: Number(divMatch[1]), b: Number(divMatch[2]), c: Number(divMatch[3]), d: Number(divMatch[4]) };
-    } else if (unitMatch1) {
-      kcfFracData = { a: Number(unitMatch1[1]), b: Number(unitMatch1[2]), c: Number(unitMatch1[3]), d: 1 };
-    } else if (unitMatch2) {
-      kcfFracData = { a: Number(unitMatch2[1]), b: 1, c: Number(unitMatch2[2]), d: Number(unitMatch2[3]) };
-    }
-  }
-
   els.learnPanel.innerHTML = `
     <div class="learn-simple" style="--trail:${getGrade(skill.grade).color}">
       <h3 class="tr-idea">${highlightVocab(escapeHtml(t(skill.learn.rule)))}</h3>
-      ${isFractionDivision ? `<div class="kcf-interactive-mount-slot" data-kcf-slot>${renderKCFStudio(kcfFracData)}</div>` : ""}
-      ${!isFractionDivision && animated ? '<div class="sd-slot learn-studio" data-learn-studio></div>' : ""}
-      ${!isFractionDivision ? (animated ? `<details class="learn-words-steps"${showLcmSteps ? " open" : ""}><summary>${t("Show the steps in words")}</summary>` : '<div class="learn-words-steps">') : ""}
-      ${!isFractionDivision ? `
       <div class="tr-lesson">
         <div class="tr-example">
           <p class="tr-example-fact${String(example.question).length > 40 ? " is-long" : ""}">${highlightVocab(mathText(example.question))}</p>
@@ -803,12 +787,12 @@ function renderLearn() {
           <p class="tr-guide-title">Watch me solve it</p>
           <div data-learn-steps data-total-steps="${example.steps.length}">${stepsBlock(example.steps, 1, { id: "learn-steps" })}</div>
         </div>
-      </div>` : ""}
-      ${!isFractionDivision ? (animated ? "</details>" : "</div>") : ""}
-      ${videoSlotHtml(tutorSkillKey(skill))}
+      </div>
+      <details class="learn-support"><summary>${escapeHtml(t("Need more help?"))}</summary>
       <p class="learn-watch"><strong>Watch out:</strong> ${highlightVocab(escapeHtml(t(skill.learn.watch)))}</p>
       ${wordStripHtml(skill, { heading: t("Words to know") })}
       ${languagePromptHtml(skill, { heading: t("Pause, notice, and explain") })}
+      ${videoSlotHtml(tutorSkillKey(skill))}
       <div class="learn-actions learn-actions--more" role="group" aria-label="${escapeHtml(t("More ways to learn"))}">
         <button class="outline-action" data-mini-lesson>${t("Mini-lesson")}</button>
         <a class="outline-action" href="./v7/?grade=${skill.grade}&amp;skill=${encodeURIComponent(skill.id)}">${t("See it in the picture workspace")}</a>
@@ -817,12 +801,8 @@ function renderLearn() {
         <button class="outline-action" data-start-visual>${t("Build it step by step")}</button>
         <button class="outline-action" data-start-independent>${t("Practice 10")}</button>
         <button class="outline-action" data-write-about>${t("Write about it")}</button>
-      </div>
+      </div></details>
     </div>`;
-  const studioSlot = els.learnPanel.querySelector("[data-learn-studio]");
-  if (studioSlot && !isFractionDivision) cleanupLearnStudio = mountStudio(studioSlot, { item: example, skill, context: "idea" });
-  const kcfSlot = els.learnPanel.querySelector("[data-kcf-slot]");
-  if (kcfSlot) mountKCFLab(kcfSlot);
 }
 
 // fl4:lessons Learn It, Watch It, Try It, Explain It inside the Learn panel; its results are supported evidence only.
@@ -864,7 +844,7 @@ function setMode(mode) {
       cleanupVisualStudio = null;
       visualStudio.replaceChildren();
       visualStudio.hidden = mode !== "visual";
-      if (mode === "visual") cleanupVisualStudio = mountStudio(visualStudio, { item: generateProblem(state.skill), skill: state.skill, context: "idea" });
+      // mountVisualLesson below is the sole active model for this stage.
     }
     if (mode === "visual") {
       cleanupVisual = mountVisualLesson(els.visualPanel, state.skill, {
@@ -938,9 +918,9 @@ function showPanelOnly(panel, stage) {
 }
 
 function openPlayStage() {
-  showPanelOnly(els.playPanel, "play");
-  cleanupGames = mountGames(els.playPanel, { grade: state.grade, assignedStop: `skill:${state.skill.id}`, onEvidence: recordPuzzleEvidence });
-  playMounted = true;
+  // Games remain available from Explore. The lesson sequence uses this stage for
+  // supported reasoning on the same skill before independent practice.
+  setMode("guided");
 }
 
 function openGrowStage() {

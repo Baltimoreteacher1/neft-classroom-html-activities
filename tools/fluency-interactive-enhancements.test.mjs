@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { JSDOM } from "jsdom";
 import {
   computeEquationSolution,
   renderAlgebraTilesLab,
@@ -11,7 +12,10 @@ import {
 } from "../math/fluency-lab/box-whisker-plot.js";
 import { CHALLENGE_CATALOG, renderChallengeBanner } from "../math/fluency-lab/challenge-engine.js";
 import { computeCircleMetrics, renderCirclePiLab } from "../math/fluency-lab/circle-pi-lab.js";
-import { renderCoordinateExplorer } from "../math/fluency-lab/coordinate-explorer.js";
+import {
+  mountCoordinateExplorer,
+  renderCoordinateExplorer,
+} from "../math/fluency-lab/coordinate-explorer.js";
 import {
   computeDilation,
   DILATION_SHAPES,
@@ -41,6 +45,7 @@ import { renderProofWithoutWords } from "../math/fluency-lab/proof-without-words
 import { computePythagoras, renderPythagorasLab } from "../math/fluency-lab/pythagoras-lab.js";
 import { renderRatioScaler } from "../math/fluency-lab/ratio-scaler.js";
 import { MATH_KEYWORDS, renderConfidenceGauge } from "../math/fluency-lab/speech-sparkles.js";
+import { STRANDS_345 } from "../math/fluency-lab/strands-345.js";
 import {
   getAvailableStrategies,
   renderStrategySelector,
@@ -48,6 +53,7 @@ import {
 import { renderTriangleShear } from "../math/fluency-lab/triangle-shear.js";
 import { computeTrigState, renderTrigWaveStudio } from "../math/fluency-lab/trig-wave-studio.js";
 import { renderUnitRateComparator } from "../math/fluency-lab/unit-rate-comparator.js";
+import { renderModel } from "../math/fluency-lab/visual-lab.js";
 import {
   calculateMetrics,
   renderWonderCityStudio,
@@ -55,6 +61,27 @@ import {
 } from "../math/fluency-lab/wonder-city.js";
 
 console.log("Starting Fluency Interactive Enhancements Verification Suite...");
+
+// Every generated coordinate-plane problem carries a matching model into mini-lessons.
+for (let i = 0; i < 100; i += 1) {
+  const item = STRANDS_345.coordPlane({ scaffolded: i === 0 }, Math.random);
+  assert.equal(
+    item.model?.type,
+    "coordinate",
+    "Coordinate-plane lesson problem has a coordinate model",
+  );
+  assert.ok(
+    item.model.points.length >= 1 && item.model.points.length <= 2,
+    "Model shows the point or pair named by the problem",
+  );
+  for (const [x, y] of item.model.points) {
+    assert.ok(Number.isInteger(x) && Number.isInteger(y), "Plotted coordinates are integer values");
+    assert.ok(
+      Math.abs(x) <= 10 && Math.abs(y) <= 10,
+      "Plotted coordinates fit the interactive plane",
+    );
+  }
+}
 
 // 1. Stage 1: Explorable Manipulatives
 {
@@ -158,8 +185,80 @@ console.log("✓ Stage 4 Wonder City Studio verified.");
 {
   const coordHtml = renderCoordinateExplorer({ p1: { x: 3, y: 4 }, p2: { x: -2, y: -1 } });
   assert.ok(coordHtml.includes("coord-explorer-wrap"), "Coordinate plane renders wrapper");
-  assert.ok(coordHtml.includes("Slope: 1.00"), "Coordinate plane calculates correct slope");
-  assert.ok(coordHtml.includes("Distance: 7.07"), "Coordinate plane calculates Euclidean distance");
+  assert.ok(
+    coordHtml.includes("Slope (rise ÷ run)"),
+    "Coordinate plane explains slope as rise divided by run",
+  );
+  assert.ok(coordHtml.includes("√50 ≈ 7.07"), "Coordinate plane calculates Euclidean distance");
+  assert.ok(
+    coordHtml.includes('data-point="A" tabindex="0" role="button"'),
+    "Points are keyboard-focusable",
+  );
+  assert.ok(coordHtml.includes('data-coord-in="x1"'), "Ordered-pair inputs accompany the visual");
+
+  const coordDom = new JSDOM(coordHtml, { pretendToBeVisual: true });
+  coordDom.window.SVGElement.prototype.getBoundingClientRect = () => ({
+    left: 0,
+    top: 0,
+    width: 480,
+    height: 420,
+  });
+  const coordRoot = coordDom.window.document.querySelector("[data-coord-root]");
+  mountCoordinateExplorer(coordRoot);
+  const pointA = coordRoot.querySelector('[data-point="A"]');
+  pointA.dispatchEvent(
+    new coordDom.window.KeyboardEvent("keydown", {
+      key: "ArrowRight",
+      bubbles: true,
+      cancelable: true,
+    }),
+  );
+  assert.equal(coordRoot.dataset.x1, "4", "Arrow keys move a point one grid unit");
+  coordRoot.querySelector('[data-coord-act="reflect-x"]').click();
+  assert.equal(coordRoot.dataset.y1, "-4", "Reflecting over x changes only y");
+  const xInput = coordRoot.querySelector('[data-coord-in="x1"]');
+  xInput.value = "2";
+  xInput.dispatchEvent(new coordDom.window.Event("input", { bubbles: true }));
+  assert.equal(coordRoot.dataset.x1, "2", "Changing an ordered pair updates the point immediately");
+
+  const sendPointer = (target, type, x, y) =>
+    target.dispatchEvent(
+      new coordDom.window.MouseEvent(type, {
+        bubbles: true,
+        cancelable: true,
+        clientX: x,
+        clientY: y,
+      }),
+    );
+  sendPointer(coordRoot.querySelector('[data-point="A"]'), "pointerdown", 277, 283);
+  sendPointer(coordRoot, "pointermove", 352, 246);
+  sendPointer(coordRoot, "pointerup", 352, 246);
+  assert.equal(coordRoot.dataset.x1, "6", "Dragging moves the point horizontally");
+  assert.equal(coordRoot.dataset.y1, "-2", "Dragging moves the point vertically");
+  const onePoint = renderCoordinateExplorer({ p1: { x: 2, y: -3 }, singlePoint: true });
+  assert.ok(onePoint.includes("Point A · location"), "single-point lessons show location evidence");
+  assert.ok(
+    !onePoint.includes('data-point="B"'),
+    "single-point lessons do not add an unrelated second point",
+  );
+  const multiPointModel = renderModel({
+    type: "coordinate",
+    points: [
+      [1, 2],
+      [3, 4],
+      [5, 6],
+    ],
+    slope: false,
+  });
+  assert.ok(
+    multiPointModel.includes("C (5, 6)"),
+    "coordinate lesson models preserve additional plotted points",
+  );
+  assert.ok(
+    !multiPointModel.includes('class="coord-connector"'),
+    "unrelated data points are not connected as a false relationship",
+  );
+  coordDom.window.close();
 
   const triHtml = renderTriangleShear({ base: 10, height: 6, shearX: 5 });
   assert.ok(triHtml.includes("triangle-shear-wrap"), "Triangle shear renders wrapper");

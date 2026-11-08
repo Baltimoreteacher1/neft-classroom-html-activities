@@ -53,6 +53,10 @@ async function open(url, viewport = { width: 1280, height: 900 }, options = {}) 
 }
 const shot = async (page, name) => shots && page.screenshot({ path: `${shots}/${name}.png`, fullPage: false });
 const panel = (page) => page.locator("[data-fb-host]:visible").first();
+const practice10 = async (page, name = "Practice 10") => {
+  await page.locator(".learn-support > summary").click();
+  await page.getByRole("button", { name: new RegExp(name === "Practice 10" ? "Practice 10" : "Practicar 10|Practice 10") }).first().click();
+};
 const noOverflow = async (page, label) => assert.equal(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth), 0, `${label}: no sideways scroll`);
 
 // A game round must show a retry panel on a wrong try and a correct panel on a right one, and never move on alone.
@@ -77,7 +81,7 @@ try {
   // ---- Practice screen: region order, no overflow, tap targets, visible focus, at three widths.
   for (const [name, width, height] of [["phone", 390, 844], ["tablet", 820, 1100], ["desktop", 1280, 900]]) {
     const page = await open("?grade=1&skill=add-10", { width, height });
-    await page.getByRole("button", { name: "Practice 10" }).click();
+    await practice10(page);
     await page.locator("#answer-input").waitFor({ state: "visible" });
     const box = async (selector) => (await page.locator(selector).first().boundingBox());
     const progress = await box(".practice-progress");
@@ -120,7 +124,7 @@ try {
   // ---- Keyboard only: type, Enter checks, Tab reaches the result's buttons, Enter on Try again returns to the box.
   {
     const page = await open("?grade=1&skill=add-10&test-tier3=1");
-    await page.getByRole("button", { name: "Practice 10" }).click();
+    await practice10(page);
     await page.locator("#answer-input").focus();
     await page.keyboard.type("999");
     await page.keyboard.press("Enter");
@@ -140,7 +144,7 @@ try {
   // ---- Reduced motion: no pop animation on any result.
   {
     const page = await open("?grade=1&skill=add-10&test-tier3=1", { width: 1280, height: 900 }, { reducedMotion: "reduce" });
-    await page.getByRole("button", { name: "Practice 10" }).click();
+    await practice10(page);
     const sum = additionAnswer(await page.locator("#question").innerText());
     await page.locator("#answer-input").fill(String(sum));
     await page.locator("#check-answer").click();
@@ -274,7 +278,7 @@ try {
   {
     const page = await open("?grade=1&skill=add-10");
     await page.getByRole("button", { name: /Español/ }).first().click();
-    await page.getByRole("button", { name: /Practicar 10|Practice 10/ }).first().click();
+    await practice10(page, "localized");
     await page.locator("#answer-input").fill("999");
     await page.locator("#check-answer").click();
     assert.match(await page.locator("#feedback-title").innerText(), /Casi/);

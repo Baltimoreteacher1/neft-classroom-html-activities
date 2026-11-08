@@ -3,6 +3,7 @@ import { validateAnswer } from "./problem-bank.js";
 import { columnSpec, verticalHtml } from "./vertical-columns.js";
 import { t } from "./i18n.js";
 import { copiesTable, factorTreeSvg, lcmMultiplyHtml, treeCaption } from "./factor-tree.js";
+import { mountCoordinateExplorer, renderCoordinateExplorer } from "./coordinate-explorer.js";
 
 const esc = (value) => String(value).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;");
 const svg = (body, label, viewBox = "0 0 540 240") => {
@@ -126,14 +127,20 @@ export function renderModel(model, { counters, counterPositions, partitions = 1,
     return caption + svg(`<circle cx="270" cy="120" r="98" class="clock-face"/>${Array.from({ length: 12 }, (_, i) => { const a = (i + 1) * Math.PI / 6; return text(270 + Math.sin(a) * 78, 126 - Math.cos(a) * 78, i + 1); }).join("")}<path class="clock-hand" d="M270,120 L${270 + Math.sin(angle) * 47},${120 - Math.cos(angle) * 47}"/><path class="clock-hand" d="M270,120 V190"/>`, `Clock showing ${model.hour}:30`);
   }
   if (model.type === "coordinate") {
-    const xy = ([x, y]) => [210 + x * 17, 205 - y * 17];
-    let body = `<path d="M25,205 H395 M210,20 V390"/>${text(397, 195, 'x')}${text(225, 20, 'y')}`;
-    for (let x = -10; x <= 10; x += 2) body += text(210 + x * 17, 225, x, 'class="axis-label"');
-    for (let y = -10; y <= 10; y += 2) if (y !== 0) body += text(190, 210 - y * 17, y, 'class="axis-label"');
-    body += model.points.map((p) => { const [x, y] = xy(p); return `<circle cx="${x}" cy="${y}" r="6" class="plot-point"/>${text(x, y - 12, `(${p.join(', ')})`, 'class="point-label"')}`; }).join("");
-    if (model.slope) { const [a, b] = model.points.map(xy); body += `<path class="jump-path active" d="M${a[0]},${a[1]} H${b[0]} V${b[1]}"/>`; }
-    if (model.reflected && step >= 1) { const [x, y] = xy(model.reflected); body += `<circle cx="${x}" cy="${y}" r="7" class="reflected-point"/>${text(x, y + 22, '(?, −2)')}`; }
-    return caption + svg(body, `${model.caption}. Points: ${model.points.map((p) => `(${p.join(', ')})`).join('; ')}. Both axes use the same scale.`, "0 0 420 420");
+    const point = (value) => Array.isArray(value)
+      ? { x: Number(value[0]), y: Number(value[1]) }
+      : { x: Number(value.x), y: Number(value.y) };
+    const points = model.points || [];
+    return `${caption}${renderCoordinateExplorer({
+      p1: point(points[0] || [0, 0]),
+      ...(points[1] ? { p2: point(points[1]) } : {}),
+      referencePoints: points.slice(2).map(point),
+      singlePoint: points.length < 2,
+      showRelationships: Boolean(model.slope),
+      showConnector: Boolean(model.slope),
+      showSlope: Boolean(model.slope),
+      target: model.reflected && step >= 1 ? point(model.reflected) : null,
+    })}`;
   }
   if (model.type === "shape") {
     let body;
@@ -265,6 +272,7 @@ export function mountVisualLesson(container, skill, { onComplete, onPractice, va
         <div class="visual-feedback" role="status" hidden></div>
         <button type="button" class="primary-action" data-visual-next hidden>Next step</button>
       `}</div></div>`;
+    mountCoordinateExplorer(container);
   }
 
   function feedback(copy, correct = false) {

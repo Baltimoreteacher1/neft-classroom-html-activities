@@ -164,6 +164,7 @@ export const STRANDS_345 = {
         displayAnswer: `(${a}, ${b})`,
         questionEs: `Empieza en el origen (0, 0). Muévete ${a} unidades a la derecha y ${b} unidades hacia arriba. ¿Qué par ordenado nombra el punto?`,
         hint: "The first number is how far right. The second number is how far up.",
+        model: { type: "coordinate", points: [[a, b]], caption: "Locate the point: move across on x, then up on y." },
         steps: ["Right and left change the x-coordinate, which is written first.", "Up and down change the y-coordinate, which is written second.", `(${a}, ${b})`],
       });
     }
@@ -174,6 +175,7 @@ export const STRANDS_345 = {
         unit: "units",
         questionEs: `Dos puntos están en la misma recta horizontal: (${x1}, ${y}) y (${x2}, ${y}). ¿A cuántas unidades están uno del otro?`,
         hint: "The y-coordinates match, so only the x-coordinates differ. Subtract them.",
+        model: { type: "coordinate", points: [[x1, y], [x2, y]], slope: true, caption: "Compare the two points on the same horizontal line." },
         steps: ["Only the x-coordinates are different.", `Subtract the smaller x-coordinate from the larger one: ${x2} − ${x1}.`, `${x2 - x1} units`],
       });
     }
@@ -183,6 +185,7 @@ export const STRANDS_345 = {
       displayAnswer: `(${x + a}, ${y + b})`,
       questionEs: `Un punto está en (${x}, ${y}). Se mueve ${a} unidades a la derecha y ${b} unidades hacia arriba. ¿Cuáles son sus nuevas coordenadas?`,
       hint: "Moving right adds to x. Moving up adds to y.",
+      model: { type: "coordinate", points: [[x, y], [x + a, y + b]], caption: "Compare the starting point with its translated point." },
       steps: [`Move right ${a}: add ${a} to the x-coordinate.`, `Move up ${b}: add ${b} to the y-coordinate.`, `(${x + a}, ${y + b})`],
     });
   },

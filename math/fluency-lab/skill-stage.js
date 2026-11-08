@@ -1,5 +1,5 @@
 // The focused learning screen around one skill: "Grade 3 › Multiplication › Multiply by 5", the
-// Learn → Try It → Practice → Play → Grow bar, and the one next action under the work. Pure HTML builders;
+// Understand → See → Together → Yourself → Check bar, and one next action under the work. Pure HTML builders;
 // app.js owns the events (data-sp-*, data-stage) and every stage opens the lab's existing modes and panels.
 import { t } from "./i18n.js";
 import { escapeHtml } from "./skill-card.js";
@@ -41,26 +41,16 @@ export function stageFooterHtml({ stage, pausedPractice }) {
   let primary = "";
   let secondary = "";
   if (stage === "learn") {
-    primary = pausedPractice
-      ? go("practice", t("Back to my practice"), "primary-action")
-      : go("try", forward, "primary-action");
-    secondary = go(
-      "practice",
-      pausedPractice ? t("Continue to Try It") : t("Go to Practice"),
-      "outline-action",
-    );
-    if (pausedPractice) secondary = go("try", t("Continue to Try It"), "outline-action");
+    primary = pausedPractice ? go("practice", t("Back to my practice"), "primary-action") : go("try", forward, "primary-action");
   } else if (stage === "try") {
-    primary = pausedPractice
-      ? go("practice", t("Back to my practice"), "primary-action")
-      : go("practice", forward, "primary-action");
-    secondary = go("learn", t("Back to Learn"), "outline-action");
+    primary = pausedPractice ? go("practice", t("Back to my practice"), "primary-action") : go("play", forward, "primary-action");
+    secondary = go("learn", t("Back to Understand It"), "outline-action");
   } else if (stage === "practice") {
-    primary = go("play", forward, "primary-action");
+    primary = go("grow", forward, "primary-action");
     secondary = go("learn", t("Review the idea"), "outline-action");
   } else if (stage === "play") {
-    primary = go("grow", forward, "primary-action");
-    secondary = go("practice", t("Back to Practice"), "outline-action");
+    primary = pausedPractice ? go("practice", t("Back to my practice"), "primary-action") : go("practice", forward, "primary-action");
+    secondary = go("try", t("Back to See It"), "outline-action");
   }
   return `<div class="sp-footer">${primary}${secondary}</div>`;
 }
@@ -79,6 +69,7 @@ export function growHtml({ skill, status, next, why }) {
     ${why ? `<p class="sp-grow__why">${escapeHtml(why)}</p>` : ""}
     <div class="sp-footer">
       ${next ? `<button type="button" class="primary-action" data-sp-next="${escapeHtml(next.id)}">${escapeHtml(t("Next skill: {skill}", { skill: t(next.title) }))}</button>` : ""}
+      <a class="outline-action" href="reality/?grade=${skill.grade}&amp;world=stadium">${escapeHtml(t("Apply your thinking in Math Reality"))}</a>
       <button type="button" class="${next ? "outline-action" : "primary-action"}" data-sp-topic="${topicOf(skill)?.id || ""}">${escapeHtml(t("Choose another skill"))}</button>
       <button type="button" class="outline-action" data-stage-go="practice">${escapeHtml(t("Practice again"))}</button>
     </div>

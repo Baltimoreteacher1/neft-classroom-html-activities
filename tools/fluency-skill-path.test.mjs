@@ -89,14 +89,14 @@ assert.equal(nextSkillAfter(g3.at(-1)), null, "the last skill of a grade has no 
 // Stages.
 assert.deepEqual(
   STAGES.map((stage) => stage.name),
-  ["Learn", "Try It", "Practice", "Play ##nav", "Grow"],
+  ["Understand It", "See It", "Try It Together", "Try It Yourself", "Check & Continue"],
 );
 assert.equal(stageAfter("learn"), "try");
 assert.equal(stageAfter("grow"), null);
 for (const [mode, stage] of Object.entries({
   learn: "learn",
   visual: "try",
-  guided: "try",
+  guided: "play",
   quick: "practice",
   flashcard: "practice",
   practice: "practice",

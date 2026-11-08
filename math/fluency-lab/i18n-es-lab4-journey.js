@@ -5,7 +5,6 @@ export const ES_LAB4_DASHBOARD = {
   "Skill map": "Mapa de destrezas",
   Rewards: "Premios",
   "{grade} skills": "Destrezas de {grade}",
-  "Show the steps in words": "Mostrar los pasos con palabras",
   "Learn Next": "Aprende lo siguiente",
   "Fix a Gap": "Cierra un vacío",
   "Keep Practicing": "Sigue practicando",

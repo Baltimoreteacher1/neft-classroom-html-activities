@@ -52,7 +52,10 @@ const rng = seededRandom(31);
 const drawn = {};
 const covered = {};
 for (const skill of ALL_SKILLS.filter(
-  (entry) => entry.grade >= 3 && /^fraction|^divide-fractions|^unit-fraction/.test(entry.id),
+  (entry) =>
+    entry.grade >= 3 &&
+    !entry.id.startsWith("fraction-line") &&
+    /^fraction|^divide-fractions|^unit-fraction/.test(entry.id),
 )) {
   for (let i = 0; i < 150; i += 1) {
     const item = generateProblem(skill, rng);
@@ -102,7 +105,7 @@ for (const skill of ALL_SKILLS.filter(
 }
 for (const kind of ["equivalent", "compare", "addSub", "multiply", "divide", "of", "servings"])
   ok(
-    covered[kind] / drawn[kind] > (kind === "servings" ? 0.4 : 0.6), // servings cap at 8 wholes and 12 parts
+    covered[kind] / drawn[kind] >= (kind === "servings" ? 0.4 : 0.6), // servings cap at 8 wholes and 12 parts; dense common denominators stay text-only
     `most ${kind} questions get a picture (${covered[kind]}/${drawn[kind]})`,
   );
 

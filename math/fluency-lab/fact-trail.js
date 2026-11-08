@@ -545,7 +545,7 @@ export function makeProblem(grade, stationEntry, rng = Math.random) {
   const target = stationEntry.mix
     ? sourceStation(grade, stationEntry.mix[Math.floor(rng() * stationEntry.mix.length)])
     : stationEntry;
-  return generateProblem(target.source, rng);
+  return { ...generateProblem(target.source, rng), factTrail: true };
 }
 
 // Fact-family key for the chart: a subtraction or division fact credits its matching + or × fact.

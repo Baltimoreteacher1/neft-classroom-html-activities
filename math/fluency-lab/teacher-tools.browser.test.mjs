@@ -131,12 +131,14 @@ try {
     assert.match(videoLink, /#videos=v1\./);
     await shot("29-video-tool");
     await page.goto(`${base}/math/fluency-lab/?grade=3&skill=mul-0-5${new URL(videoLink).hash}`, { waitUntil: "networkidle" });
+    await page.locator(".learn-support > summary").click();
     const slot = page.locator("[data-skill-video]");
     await slot.waitFor();
     assert.deepEqual(await slot.locator("a").evaluateAll((links) => links.map((a) => a.href)), ["https://videos.example.com/times-tables", "https://videos.example.com/tablas"]);
     assert.equal(await slot.locator("a").first().getAttribute("rel"), "noopener noreferrer");
     await page.evaluate(() => localStorage.setItem("ewl-fluency-lang-v1", JSON.stringify("es")));
     await page.reload({ waitUntil: "networkidle" });
+    await page.locator(".learn-support > summary").click();
     assert.match(await page.locator("[data-skill-video]").innerText(), /El video de tu maestro/);
     assert.equal(await page.locator("[data-skill-video] a").first().getAttribute("lang"), "es", "Spanish link first in Spanish");
     await page.evaluate(() => localStorage.setItem("ewl-fluency-lang-v1", JSON.stringify("en")));

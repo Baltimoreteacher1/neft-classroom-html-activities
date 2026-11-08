@@ -1,16 +1,17 @@
-// Four student destinations over the existing views: Today (the recommended grade journey), Practice (the
-// adaptive set and mistake repair), Explore (games, models, writing and Math Reality) and My Growth (the evidence
-// path). Views and ?view= links are unchanged. Teachers and families remain separate adult links.
+// Three student destinations over the existing views. Home is the no-setup grade and skill picker;
+// My Learning holds Today, the grade library, practice, mistake repair and growth; Explore holds
+// games, models, writing and Math Reality. Existing views and ?view= links remain supported.
 export const DESTINATIONS = [
-  { id: "today", view: "library", views: ["library", "workspace"] },
-  { id: "practice", view: "practice", views: ["practice", "notebook"] },
+  { id: "home", view: "library", views: [] },
+  { id: "learning", view: "library", views: ["library", "workspace", "practice", "notebook", "path"] },
   { id: "explore", view: "games", views: ["games", "models", "write"] },
-  { id: "growth", view: "path", views: ["path"] },
 ];
 
 const SUBNAV = {
-  practice: [
+  learning: [
+    { view: "library", label: (t) => t("Today") },
     { view: "practice", label: (t) => t("Practice") },
+    { view: "path", label: (t) => t("My Growth") },
     { view: "notebook", label: (t) => t("Fix my mistakes") },
   ],
   explore: [
@@ -27,6 +28,8 @@ export function destinationFor(view) {
 }
 
 export function subnavFor(view, options) {
+  if (options?.landing) return [];
+  if (view === "library" || ["workspace", "practice", "notebook", "path"].includes(view)) return SUBNAV.learning;
   return SUBNAV[destinationFor(view, options)] || [];
 }
 
@@ -51,7 +54,7 @@ export function renderSubnav(host, view, t, options = {}) {
 
 // Marks the primary destination that owns the current view.
 export function markDestinations(nav, view, options = {}) {
-  const current = destinationFor(view, options);
+  const current = options.landing ? "home" : view === "library" || ["workspace", "practice", "notebook", "path"].includes(view) ? "learning" : destinationFor(view, options);
   for (const button of nav.querySelectorAll("[data-dest], button[data-view]")) {
     const own = button.dataset.dest
       ? button.dataset.dest === current

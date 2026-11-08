@@ -26,6 +26,10 @@ const base = `http://127.0.0.1:${server.httpServer.address().port}`;
 let browser;
 
 const answerText = (found) => (typeof found === "string" ? found : found.d === 1n ? String(found.n) : `${found.n}/${found.d}`);
+const openSupport = async (page) => {
+  const summary = page.locator(".learn-support > summary");
+  if (!(await summary.evaluate((node) => node.parentElement.open))) await summary.click();
+};
 
 // Every action goes through here, so "keyboard" runs never call click(): Tab until the control has focus, then Enter.
 function driver(page, mode) {
@@ -200,6 +204,34 @@ try {
   if (shots) for (const skill of SKILLS) await walk(browser, skill, { lang: "en", mode: "mouse", width: 820, shoot: true });
   if (shots) for (const skill of SKILLS) await walk(browser, skill, { lang: "es", mode: "mouse", width: 390, shoot: true });
 
+  // Coordinate models stay interactive in Learn It, Watch It and Try It.
+  {
+    const context = await browser.newContext({ viewport: { width: 1280, height: 900 } });
+    const page = await context.newPage();
+    const problems = [];
+    page.on("pageerror", (error) => problems.push(error.message));
+    page.on("console", (message) => message.type() === "error" && problems.push(message.text()));
+    await page.goto(`${base}/math/fluency-lab/?grade=5&skill=coordinate-plane&mini=1&lang=en&profile=0`, { waitUntil: "networkidle" });
+    await page.locator(".ml .coord-explorer-wrap").waitFor();
+    const movePoint = async (selector, key, delta, label) => {
+      const root = page.locator(selector);
+      const coord = key.startsWith("ArrowLeft") || key.startsWith("ArrowRight") ? "x1" : "y1";
+      const before = Number(await root.getAttribute(`data-${coord}`));
+      await root.locator('[data-point="A"]').focus();
+      await page.keyboard.press(key);
+      assert.equal(Number(await root.getAttribute(`data-${coord}`)), before + delta, label);
+    };
+    await movePoint(".ml-learn .coord-explorer-wrap", "ArrowRight", 1, "Learn It moves the point");
+    await page.locator('.ml-dot[data-step="watch"]').click();
+    await page.locator(".ml-film-picture .coord-explorer-wrap").waitFor();
+    await movePoint(".ml-film-picture .coord-explorer-wrap", "ArrowUp", 1, "Watch It keeps the plane interactive");
+    await page.locator('.ml-dot[data-step="try"]').click();
+    await page.locator(".ml-try-picture .coord-explorer-wrap").waitFor();
+    await movePoint(".ml-try-picture .coord-explorer-wrap", "ArrowLeft", -1, "Try It keeps the plane interactive after stage changes");
+    assert.deepEqual(problems, [], "coordinate mini-lesson has no browser errors");
+    await context.close();
+  }
+
   // The Learn page has the button; a stopped lesson resumes on the same step with the same problems.
   const context = await browser.newContext({ viewport: { width: 1280, height: 900 } });
   const page = await context.newPage();
@@ -207,11 +239,13 @@ try {
   page.on("pageerror", (error) => problems.push(error.message));
   page.on("console", (message) => message.type() === "error" && problems.push(message.text()));
   await page.goto(`${base}/math/fluency-lab/?grade=6&skill=ratios&profile=0`, { waitUntil: "networkidle" });
+  await openSupport(page);
   await page.getByRole("button", { name: "Mini-lesson" }).click();
   await page.locator(".ml").waitFor();
   await page.locator('.ml-dot[data-step="try"]').click();
   const before = await page.locator(".ml-problem .ml-q").innerText();
   await page.reload({ waitUntil: "networkidle" });
+  await openSupport(page);
   await page.getByRole("button", { name: "Mini-lesson" }).click();
   await page.locator(".ml-problem").waitFor();
   assert.equal(await page.locator(".ml-problem .ml-q").innerText(), before, "the lesson resumes on the same step with the same problem");
@@ -219,8 +253,10 @@ try {
   // Back to the skill page restores Learn; the mode tabs still work.
   await page.getByRole("button", { name: "Back to the skill page" }).first().click();
   assert.equal(await page.locator(".ml").count(), 0, "Back removes the lesson");
-  assert.ok(await page.getByRole("button", { name: "Mini-lesson" }).isVisible(), "Learn is back");
+  assert.ok(await page.locator(".learn-support > summary").isVisible(), "Learn is back with help collapsed");
+  await openSupport(page);
   await page.getByRole("button", { name: "Mini-lesson" }).click();
+  await page.locator(".practice-alternatives summary").click();
   await page.getByRole("tab", { name: "Quick 5" }).click();
   assert.equal(await page.locator(".ml").count(), 0, "another mode tab closes the lesson");
   assert.deepEqual(problems, [], "resume run is clean");
