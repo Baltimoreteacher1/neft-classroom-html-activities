@@ -119,7 +119,7 @@ export function languagePageRoute(url) {
   if (url.pathname === "/robots.txt") return { kind: "robots" };
   if (url.pathname === "/sitemap.xml") return { kind: "sitemap" };
   if (url.pathname === "/")
-    return { kind: "redirect", status: 302, location: `${url.origin}${ADVENTURES_BASE}/` };
+    return { kind: "redirect", status: 302, location: `${url.origin}${LAB_BASE}/` };
   if (url.pathname === "/access-prep" || url.pathname === "/access-prep/")
     return {
       kind: "redirect",
