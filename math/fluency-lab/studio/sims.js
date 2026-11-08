@@ -113,6 +113,102 @@ const proportional = {
 
 const functionRule = (m, b) => `y = ${fmt(m)}x${b === 0 ? "" : ` ${b < 0 ? "−" : "+"} ${Math.abs(b)}`}`;
 
+const linearRule = (m, b) => `${fmt(m)}n${b === 0 ? "" : ` ${b < 0 ? "−" : "+"} ${Math.abs(b)}`}`;
+const itemCount = (n, lang) => `${n} ${n === 1 ? (lang === "es" ? "artículo" : "item") : lang === "es" ? "artículos" : "items"}`;
+function parseFunctionRate(question, name) {
+  if (typeof question !== "string") return null;
+  const equation = question.match(new RegExp(`Function ${name} is y = (-?\\d+)x(?:\\s*([+−-])\\s*(\\d+))?`));
+  if (equation) return { m: Number(equation[1]), b: equation[3] ? (equation[2] === "-" || equation[2] === "−" ? -1 : 1) * Number(equation[3]) : 0 };
+  const rate = question.match(new RegExp(`Function ${name} has a rate of change of (-?\\d+) and a y-intercept of (-?\\d+)`));
+  if (rate) return { m: Number(rate[1]), b: Number(rate[2]) };
+  if (name === "B") {
+    const points = question.match(/Function B is a line through \(0, (-?\d+)\) and \((-?\d+), (-?\d+)\)/);
+    if (points && Number(points[2]) !== 0) {
+      const b = Number(points[1]), x = Number(points[2]), y = Number(points[3]);
+      return { m: (y - b) / x, b };
+    }
+  }
+  return null;
+}
+
+// Adapted from Curriculum's Function Food Fair (two booth plans, equations, table, graph, and a choice).
+// When this skill opens after a response, both plans are derived from the actual comparison item.
+const functionFair = {
+  id: "functionFair",
+  title: L("Function Food Fair", "Feria de funciones"),
+  ask: L(
+    "Treat each rule as a booth's cost for n items. Change n, compare both plans, and decide which costs less.",
+    "Interpreta cada regla como el costo de un puesto para n artículos. Cambia n, compara los dos planes y decide cuál cuesta menos.",
+  ),
+  init(ctx) {
+    const question = ctx?.item?.question || ctx?.lesson?.spec?.item?.question;
+    const a = parseFunctionRate(question, "A") || { m: 3, b: 5 };
+    const b = parseFunctionRate(question, "B") || { m: 4, b: 1 };
+    const itemX = question?.match(/\((\d+),\s*-?\d+\)/g)?.[1]?.match(/\d+/)?.[0];
+    const n = Math.max(0, Math.min(8, Number(itemX ?? 4)));
+    return { mA: a.m, bA: a.b, mB: b.m, bB: b.b, n, lang: ctx?.lang?.() === "es" ? "es" : "en" };
+  },
+  sliders: (s) => [slider("n", L("Items ordered", "Artículos pedidos"), 0, 8, 1, s.n)],
+  prediction(s) {
+    const a = s.mA * s.n + s.bA, b = s.mB * s.n + s.bB;
+    return {
+      prompt: L(
+        `At ${itemCount(s.n, "en")}, how many dollars apart are Plan A and Plan B? Enter 0 if they cost the same.`,
+        `Con ${itemCount(s.n, "es")}, ¿cuántos dólares de diferencia hay entre el Plan A y el Plan B? Escribe 0 si cuestan igual.`,
+      ),
+      answer: Math.abs(a - b),
+      hint: L(
+        `Find both totals: Plan A is ${s.mA} × ${s.n} + ${s.bA}; Plan B is ${s.mB} × ${s.n} + ${s.bB}. Then compare.`,
+        `Halla los dos totales: el Plan A es ${s.mA} × ${s.n} + ${s.bA}; el Plan B es ${s.mB} × ${s.n} + ${s.bB}. Luego compáralos.`,
+      ),
+    };
+  },
+  render(s) {
+    const costA = s.mA * s.n + s.bA, costB = s.mB * s.n + s.bB;
+    const yMax = Math.max(10, Math.ceil(Math.max(s.mA * 8 + s.bA, s.mB * 8 + s.bB) / 10) * 10);
+    const X = (n) => 66 + (n / 8) * 440;
+    const Y = (cost) => 232 - (cost / yMax) * 130;
+    const fmtCost = (n) => `$${fmt(n)}`;
+    let body = txt(70, 28, `Plan A · C = ${linearRule(s.mA, s.bA)}`, { anchor: "start", size: 15, fill: COLORS.whole, weight: 700 });
+    body += txt(315, 28, `Plan B · C = ${linearRule(s.mB, s.bB)}`, { anchor: "start", size: 15, fill: COLORS.hundreds, weight: 700 });
+    body += txt(66, 55, s.lang === "es" ? "Artículos" : "Items", { anchor: "start", size: 12, fill: COLORS.mute });
+    for (const [i, n] of [0, 4, 8].entries()) {
+      const x = 154 + i * 120;
+      body += txt(x, 55, String(n), { size: 12, fill: COLORS.ink });
+      body += txt(x, 73, fmtCost(s.mA * n + s.bA), { size: 12, fill: COLORS.whole, weight: 600 });
+      body += txt(x, 90, fmtCost(s.mB * n + s.bB), { size: 12, fill: COLORS.hundreds, weight: 600 });
+    }
+    body += `<line x1="58" y1="232" x2="512" y2="232" stroke="${COLORS.ink}" stroke-width="1.5"/><line x1="66" y1="98" x2="66" y2="232" stroke="${COLORS.ink}" stroke-width="1.5"/>`;
+    for (let n = 0; n <= 8; n += 1) {
+      const x = X(n);
+      body += `<line x1="${x}" y1="98" x2="${x}" y2="232" stroke="${n === 0 ? COLORS.ink : COLORS.rule}" stroke-width="1"/>${txt(x, 249, String(n), { size: 10, fill: COLORS.mute })}`;
+    }
+    const tick = Math.max(1, Math.round(yMax / 4));
+    for (const cost of [...new Set([0, tick, tick * 2, tick * 3, yMax])]) {
+      const y = Y(cost);
+      body += `<line x1="66" y1="${y}" x2="506" y2="${y}" stroke="${cost === 0 ? COLORS.ink : COLORS.rule}" stroke-width="1"/>${txt(58, y + 4, `$${fmt(cost)}`, { size: 10, anchor: "end", fill: COLORS.mute })}`;
+    }
+    const line = (m, b, color) => `<line x1="${X(0)}" y1="${Y(b)}" x2="${X(8)}" y2="${Y(m * 8 + b)}" stroke="${color}" stroke-width="3"/>`;
+    body += line(s.mA, s.bA, COLORS.whole) + line(s.mB, s.bB, COLORS.hundreds);
+    body += `<line x1="${X(s.n)}" y1="${Y(0)}" x2="${X(s.n)}" y2="98" stroke="${COLORS.ink}" stroke-dasharray="4 4"/>`;
+    body += `<circle cx="${X(s.n)}" cy="${Y(costA)}" r="6" fill="${COLORS.whole}" stroke="#fff" stroke-width="2"/><circle cx="${X(s.n)}" cy="${Y(costB)}" r="4" fill="${COLORS.hundreds}" stroke="#fff" stroke-width="1.5"/>`;
+    body += txt(280, 276, s.lang === "es" ? "Artículos (n)" : "Items (n)", { size: 12 });
+    const decision = costA === costB ? L("They tie.", "Empatan.") : costA < costB ? L("Plan A costs less.", "El Plan A cuesta menos.") : L("Plan B costs less.", "El Plan B cuesta menos.");
+    const alt = L(
+      `Function Food Fair graph. Plan A cost C = ${linearRule(s.mA, s.bA)} and Plan B cost C = ${linearRule(s.mB, s.bB)}. At ${itemCount(s.n, "en")}, Plan A costs ${fmtCost(costA)} and Plan B costs ${fmtCost(costB)}.`,
+      `Gráfica de la Feria de funciones. El costo del Plan A es C = ${linearRule(s.mA, s.bA)} y el del Plan B es C = ${linearRule(s.mB, s.bB)}. Con ${itemCount(s.n, "es")}, el Plan A cuesta ${fmtCost(costA)} y el Plan B cuesta ${fmtCost(costB)}.`,
+    );
+    return out(
+      svgWrap(body, "", { h: 292 }),
+      alt,
+      L(
+        `At ${itemCount(s.n, "en")}, Plan A costs ${fmtCost(costA)} and Plan B costs ${fmtCost(costB)}. ${decision.en} The starting fee is the y-intercept; the cost added for each item is the rate of change.`,
+        `Con ${itemCount(s.n, "es")}, el Plan A cuesta ${fmtCost(costA)} y el Plan B cuesta ${fmtCost(costB)}. ${decision.es} La tarifa inicial es la intersección con el eje y; el costo por artículo es la razón de cambio.`,
+      ),
+    );
+  },
+};
+
 const machine = {
   id: "machine",
   title: L("Function machine", "Máquina de funciones"),
@@ -844,6 +940,6 @@ const dotplot = {
   },
 };
 
-export const SIMS = { fracEquiv, fractionDivision, proportional, machine, areaPerim, volume, volumeFractional, percentWhole, percentPart, ratioTape, angles, dotplot, surfaceNet };
+export const SIMS = { fracEquiv, fractionDivision, proportional, machine, functionFair, areaPerim, volume, volumeFractional, percentWhole, percentPart, ratioTape, angles, dotplot, surfaceNet };
 export const simFor = (id) => SIMS[id] || null;
 export const _gcd = gcd;

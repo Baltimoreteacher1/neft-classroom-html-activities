@@ -161,6 +161,7 @@ export const SIM_FOR = {
   "percent-whole": "percentWhole",
   "scale-drawing": "proportional",
   functions: "machine",
+  "compare-functions": "functionFair",
   "linear-equations": "machine",
   slope: "machine",
   area: "areaPerim",

@@ -1833,6 +1833,52 @@ for (const sim of Object.values(SIMS)) {
   assert.ok(s.n <= s.d, "shaded pieces never exceed the whole");
 }
 {
+  const fair = SIMS.functionFair;
+  assert.equal(SIM_FOR["compare-functions"], "functionFair");
+  const skill = ALL_SKILLS.find((item) => item.id === "compare-functions");
+  const item = generateProblem(skill, seededRandom(84));
+  const state = fair.init({ item, lang: () => "en" });
+  assert.deepEqual(
+    { mA: state.mA, bA: state.bA, mB: state.mB, bB: state.bB, n: state.n },
+    { mA: 3, bA: 5, mB: 6, bB: 5, n: 5 },
+    "the fair booth model uses both rules and the input from the current comparison problem",
+  );
+  assert.equal(fair.prediction(state).answer, 15);
+  const point = fair.render(state);
+  assert.match(point.svg, /Plan A · C = 3n \+ 5/);
+  assert.match(point.svg, /Plan B · C = 6n \+ 5/);
+  assert.match(point.alt.en, /at 5 items, Plan A costs \$20 and Plan B costs \$35/i);
+  assert.match(point.read.en, /Plan A costs less/);
+  assert.doesNotMatch(point.svg + point.read.en, /NaN|Infinity|undefined/);
+
+  const curriculumScenario = fair.init({ lang: () => "en" });
+  assert.equal(
+    fair.prediction(curriculumScenario).answer,
+    0,
+    "Curriculum's plans meet at four items",
+  );
+  assert.match(fair.render({ ...curriculumScenario, n: 1 }).read.en, /Plan B costs less/);
+  assert.match(fair.render({ ...curriculumScenario, n: 7 }).read.en, /Plan A costs less/);
+  assert.match(fair.render({ ...curriculumScenario, lang: "es", n: 4 }).alt.es, /17/);
+  for (const [question, expected] of [
+    [
+      "Function A is y = 2x + 7. Function B is a line through (0, 5) and (4, 17). Which function has the greater rate of change?",
+      { mA: 2, bA: 7, mB: 3, bB: 5, n: 4 },
+    ],
+    [
+      "Function A is y = 5x + 1. Function B is y = 3x + 2. Which function has the greater rate of change?",
+      { mA: 5, bA: 1, mB: 3, bB: 2, n: 4 },
+    ],
+  ]) {
+    const parsed = fair.init({ item: { question }, lang: () => "en" });
+    assert.deepEqual(
+      { mA: parsed.mA, bA: parsed.bA, mB: parsed.mB, bB: parsed.bB, n: parsed.n },
+      expected,
+      "the model parses equation and point representations without losing the problem's values",
+    );
+  }
+}
+{
   const machine = SIMS.machine;
   const context = {
     lang: () => "en",
