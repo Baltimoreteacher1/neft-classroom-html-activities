@@ -72,6 +72,8 @@ export function hrefProblem(href, facts, content) {
     "/access-expedition/",
     "/access-family-expedition/",
     "/access-family-tour/",
+    "/language-adventures/",
+    "/graphic-novels/",
   ];
   if (external.includes(path)) return null;
   if (!path.startsWith(`${BASE}/`)) return "not under the lab";

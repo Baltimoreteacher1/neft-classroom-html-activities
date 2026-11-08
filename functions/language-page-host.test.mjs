@@ -101,6 +101,11 @@ await t("the Language adventures app is served on the lab host, and a look-alike
     assert.equal(at(`https://thelanguagepage.com${path}`).kind, "redirect", path);
 });
 
+await t("the Graphic Novels app is served on the lab host", () => {
+  for (const path of ["/graphic-novels/", "/graphic-novels/unit1/graphic-novel-1.html", "/graphic-novels"])
+    assert.equal(at(`https://thelanguagepage.com${path}`).kind, "serve", path);
+});
+
 await t("everything else goes to eduwonderlab.com, so the lab host is not a second copy of the site", () => {
   for (const path of [
     "/lessons/5-6/",

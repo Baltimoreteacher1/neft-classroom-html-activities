@@ -195,6 +195,8 @@ function menuGroups(band, T) {
       items: [
         link("reading", T("Science of Reading Studio", "Estudio de la ciencia de la lectura"), "science-of-reading"),
         link("sparkle", T("Interactive Language Studios", "Estudios interactivos de lenguaje"), "language-studios"),
+        link("worlds", T("Language Adventures · 9 Story Worlds", "Aventuras del lenguaje · 9 mundos"), "/language-adventures/"),
+        link("reading", T("Graphic Novel Library · ESOL Edition", "Biblioteca de novelas gráficas"), "/graphic-novels/"),
         link("road", T("Thematic Units", "Unidades temáticas"), "units"),
         link("conversation", T("Argument Arena", "Arena de argumentos"), "arena"),
         link("reading", T("Mentor Text Explorer", "Explorador de textos modelo"), "mentor"),

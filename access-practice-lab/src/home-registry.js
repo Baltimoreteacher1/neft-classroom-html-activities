@@ -97,10 +97,22 @@ export const HOME_CARDS = [
     featured: true,
     href: "access-prep",
     icon: "tests",
-    title: ["WIDA Access Prep · Grades 1–3 & 4–6", "Preparación WIDA ACCESS · Grados 1–3 y 4–6"],
+    title: ["WIDA Access Prep · Grades 3–5 & 6–8", "Preparación WIDA ACCESS · Grados 3–5 y 6–8"],
     text: [
-      "All Listening, Reading, Speaking, and Writing activities organized cleanly for Grades 1–3 and 4–6.",
-      "Todas las actividades de comprensión auditiva, lectura, expresión oral y escritura organizadas para los grados 1–3 y 4–6.",
+      "All Listening, Reading, Speaking, and Writing activities organized cleanly for Grades 3–5 and 6–8.",
+      "Todas las actividades de comprensión auditiva, lectura, expresión oral y escritura organizadas para los grados 3–5 y 6–8.",
+    ],
+  },
+  {
+    id: "graphic-novels",
+    group: "explore",
+    featured: true,
+    href: "/graphic-novels/",
+    icon: "reading",
+    title: ["Graphic Novel Library · ESOL Edition", "Biblioteca de novelas gráficas · Edición ESOL"],
+    text: [
+      "Bilingual math graphic novels with side-by-side English + Spanish, numbered panel badges, and step-by-step guidance.",
+      "Novelas gráficas matemáticas bilingües con inglés y español lado a lado, números de viñeta y lectura guiada.",
     ],
   },
   {

@@ -26,6 +26,7 @@ export const ADVENTURES_BASE = "/language-adventures";
 const LAB_PREFIXES = [
   `${LAB_BASE}/`,
   `${ADVENTURES_BASE}/`,
+  "/graphic-novels/",
   "/assets/",
   "/data/",
   "/shared/",
@@ -36,7 +37,13 @@ const LAB_PREFIXES = [
   // must answer on the lab's own origin, because lab progress lives in that origin's storage.
   "/api/class/",
 ];
-const LAB_EXACT = new Set([LAB_BASE, "/family-app/home-link.js", "/api/signal", "/api/signal/"]);
+const LAB_EXACT = new Set([
+  LAB_BASE,
+  "/family-app/home-link.js",
+  "/api/signal",
+  "/api/signal/",
+  "/graphic-novels",
+]);
 /** The Teacher Hub, minus the two surfaces that are not language practice. */
 export const HUB_BASE = "/access-teacher";
 const HUB_EXCLUDED = [`${HUB_BASE}/predictive`, `${HUB_BASE}/flight-deck`];
