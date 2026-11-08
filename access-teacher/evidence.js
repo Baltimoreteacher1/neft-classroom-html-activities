@@ -35,6 +35,7 @@ import { buildSkillGraph, makeMiniLesson, recommendInstructionalGroups } from "/
 import { ACCESS_LAB_FLAGS } from "/access-practice-lab/src/lang/feature-flags.js";
 import { announce, html, icon, raw, toHtml } from "/access-practice-lab/src/util.js";
 import { createExtras } from "./evidence-extras.js";
+import { normalizeFluencyReport } from "./math-fluency-report.js";
 
 const KEY = "accessTeacher:v1:roster";
 const GROUP_KEY = "accessTeacher:v1:instructionalGroups";
@@ -43,6 +44,7 @@ const OVERRIDE_KEY = "accessTeacher:v1:skillOverrides";
 const GOALS_KEY = "accessTeacher:v1:goals";
 const OFFICIAL_KEY = "accessTeacher:v1:officialResults";
 const ALIGNMENT_REVIEW_KEY = "accessTeacher:v1:alignmentReviews";
+const MATH_REPORT_KEY = "accessTeacher:v1:mathFluencyAggregate";
 const QUOTA_WARN = 3_500_000; // characters; localStorage holds roughly 5 MB
 const root = document.getElementById("classEvidence");
 
@@ -89,6 +91,7 @@ const T = {
   checkin: { start: new Date().toISOString().slice(0, 10), everyDays: 28, count: 6, label: "" },
   tasks: [],
   demo: null, // SYNTHETIC DEMO class: in memory only, never persisted, cleared when real codes are added
+  mathReport: read(MATH_REPORT_KEY, null),
 };
 
 /** Keep only what the tabs read: no raw progress records, no audio, no per-segment timing. */
@@ -114,6 +117,8 @@ const persist = () => {
     localStorage.setItem(GOALS_KEY, JSON.stringify(T.goals));
     localStorage.setItem(OFFICIAL_KEY, JSON.stringify(T.official));
     localStorage.setItem(ALIGNMENT_REVIEW_KEY, JSON.stringify(T.alignmentReviews));
+    if (T.mathReport) localStorage.setItem(MATH_REPORT_KEY, JSON.stringify(T.mathReport));
+    else localStorage.removeItem(MATH_REPORT_KEY);
     T.saveError = "";
   } catch {
     T.saveError = "This browser could not save changes (storage may be full). Download the class CSV and remove unneeded student records before closing.";
@@ -158,6 +163,7 @@ function tabs() {
   return html`<div class="band-switch no-print" role="group" aria-label="Dashboard sections">
     ${[
       ["class", "Class"],
+      ["math", "Math evidence"],
       ["plans", "Conference plans"],
       ...(ACCESS_LAB_FLAGS.teacherDiagnosticsEnabled ? [["skills", "Skill diagnostics"]] : []),
       ...(ACCESS_LAB_FLAGS.instructionalGroupsEnabled ? [["groups", "Small groups"]] : []),
@@ -224,6 +230,29 @@ function importBox() {
       computer, remove students when you finish.
     </p>
   </div>`;
+}
+
+function mathEvidenceTab() {
+  const report = T.mathReport;
+  const upload = html`<div class="hub-card no-print">
+    <h3>Import a Math Fluency Lab class report</h3>
+    <p class="fine">In Fluency Lab, export the class report as JSON, then choose it here. Import is optional and stays in this browser. The report may contain learner labels, but this view stores aggregate counts only; names and answer-level records are discarded.</p>
+    <label class="btn">Choose class report<input type="file" id="mathReportFile" accept=".json,application/json" class="visually-hidden" /></label>
+  </div>`;
+  if (!report) return html`${upload}<p class="fine">No math report is loaded. Language evidence and math evidence remain separate; they are not combined into a single score.</p>`;
+  const skills = [...report.skills].sort((a, b) =>
+    b.lowLearners - a.lowLearners || b.independentWrong - a.independentWrong || a.title.localeCompare(b.title),
+  );
+  return html`${upload}
+    <section class="hub-card" aria-labelledby="mathEvidenceTitle">
+      <div class="row-actions"><h3 id="mathEvidenceTitle">Math Fluency Lab · ${report.grade === null ? "All grades" : `Grade ${report.grade}`}</h3><button class="ghost danger no-print" type="button" data-clear-math-report>Remove math report</button></div>
+      <p class="fine">Imported ${new Date(report.importedAt).toLocaleString()} · source report ${report.generatedAt ? new Date(report.generatedAt).toLocaleDateString() : "date unavailable"}. Descriptive practice evidence only; not a language measure or official assessment.</p>
+      <p><strong>${report.totals.learners}</strong> learners · <strong>${report.totals.skillRecords}</strong> skill records · <strong>${report.totals.independentAnswers}</strong> independent answers · <strong>${report.totals.supportedAnswers}</strong> supported answers</p>
+      <p class="fine">Reviews: ${report.retention.due} due, ${report.retention.overdue} overdue, ${report.retention.retainedSkills} retained. Growth history: ${report.growth.learners} learners${report.growth.avgDelta === null ? "" : `, average change ${report.growth.avgDelta} points`}.</p>
+      <h4>Skills to review</h4>
+      ${skills.length ? html`<ul>${skills.slice(0, 12).map((skill) => html`<li><strong>${skill.title}</strong>${skill.standard ? ` · ${skill.standard}` : ""}: ${skill.lowLearners} of ${skill.checkedLearners} learners with enough independent checks below 60%; ${skill.independentWrong} of ${skill.independentAnswers} independent answers incorrect. ${skill.overdue ? `${skill.overdue} review${skill.overdue === 1 ? "" : "s"} overdue.` : ""}</li>`)}</ul>` : html`<p>No skill summaries were included in this report.</p>`}
+      <p class="fine">These counts identify places to review. They do not diagnose why a learner made an error. Keep the math report separate from language-growth evidence when planning next steps.</p>
+    </section>`;
 }
 
 function visibleRows(rows) {
@@ -920,6 +949,8 @@ function draw() {
         ? diagnosticsTab()
         : T.tab === "content"
           ? contentReviewTab()
+      : T.tab === "math"
+        ? mathEvidenceTab()
       : T.tab === "samples"
         ? samplesTab(rows)
         : T.tab === "scoring"
@@ -962,6 +993,12 @@ root.addEventListener("click", async (e) => {
     return draw();
   }
   if (extras.click(t)) return;
+  if (t.closest("[data-clear-math-report]")) {
+    T.mathReport = null;
+    persist();
+    note("The imported aggregate math report was removed from this browser.");
+    return draw();
+  }
   const tab = t.closest("[data-tab]");
   if (tab) {
     T.tab = tab.dataset.tab;
@@ -1235,6 +1272,16 @@ root.addEventListener("change", async (e) => {
       }
     }
     persist();
+    return draw();
+  }
+  if (t.id === "mathReportFile" && t.files?.[0]) {
+    try {
+      T.mathReport = normalizeFluencyReport(JSON.parse(await t.files[0].text()));
+      persist();
+      note("Aggregate math report imported on this device. Learner labels and answer records were not retained.");
+    } catch (err) {
+      note(err instanceof Error ? err.message : "The math report could not be read.");
+    }
     return draw();
   }
   if (t.matches("[data-audio]") && t.files[0]) {
