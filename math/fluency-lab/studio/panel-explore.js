@@ -18,6 +18,7 @@ export function mountExplore(ctx, root) {
   const q = (s) => root.querySelector(s);
   let first = true;
   let touched = 0;
+  let dragIndex = null;
 
   function sliders() {
     q("[data-sliders]").innerHTML = sim.sliders(state).map((s) => `<label class="sd-slider"><span>${esc(pick(s.label, ctx.lang()))}: <output data-out="${s.key}">${s.value}</output></span><input type="range" data-k="${s.key}" min="${s.min}" max="${s.max}" step="${s.step}" value="${s.value}" /></label>`).join("");
@@ -47,6 +48,46 @@ export function mountExplore(ctx, root) {
     const a = e.target.closest("[data-a]");
     if (!a) return;
     state = sim.act(state, a.dataset.a);
+    touched += 1;
+    if (touched >= 3) ctx.mark("explore");
+    draw(false);
+  });
+  root.addEventListener("pointerdown", (e) => {
+    const point = e.target.closest("[data-point-index]");
+    if (!point || !sim.movePoint) return;
+    dragIndex = Number(point.dataset.pointIndex);
+    point.focus();
+    e.preventDefault();
+    point.closest("svg")?.setPointerCapture?.(e.pointerId);
+    const value = sim.pointerValue?.(e.clientX, point.closest("svg")?.getBoundingClientRect());
+    if (value !== null && value !== undefined) {
+      state = sim.movePoint(state, dragIndex, value);
+      touched += 1;
+      if (touched >= 3) ctx.mark("explore");
+      draw(false);
+    }
+  });
+  root.addEventListener("pointermove", (e) => {
+    if (dragIndex === null) return;
+    const svg = root.querySelector("[data-stage] svg");
+    const value = sim.pointerValue?.(e.clientX, svg?.getBoundingClientRect());
+    if (value === null || value === undefined) return;
+    state = sim.movePoint(state, dragIndex, value);
+    touched += 1;
+    if (touched >= 3) ctx.mark("explore");
+    draw(false);
+  });
+  root.addEventListener("pointerup", () => { dragIndex = null; });
+  root.addEventListener("pointercancel", () => { dragIndex = null; });
+  root.addEventListener("keydown", (e) => {
+    const point = e.target.closest?.("[data-point-index]");
+    if (!point || !sim.movePoint) return;
+    const index = Number(point.dataset.pointIndex);
+    const current = state.data[index];
+    const next = e.key === "ArrowLeft" ? current - 1 : e.key === "ArrowRight" ? current + 1 : e.key === "Home" ? 0 : e.key === "End" ? 20 : null;
+    if (next === null) return;
+    e.preventDefault();
+    state = sim.movePoint(state, index, next);
     touched += 1;
     if (touched >= 3) ctx.mark("explore");
     draw(false);

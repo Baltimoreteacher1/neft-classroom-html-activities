@@ -105,8 +105,11 @@ export function morph(stage, html, { animate = true } = {}) {
     const prior = old.get(el.dataset.k);
     seen.add(el.dataset.k);
     if (prior) {
-      prior.setAttribute("style", el.getAttribute("style"));
-      prior.className.baseVal = el.className.baseVal;
+      // Keep keyed nodes stable for motion and focus, while syncing every attribute. Interactive models use
+      // aria-valuenow, tabindex and labels to expose the current mathematical state to assistive technology.
+      for (const attr of [...prior.attributes])
+        if (!el.hasAttribute(attr.name)) prior.removeAttribute(attr.name);
+      for (const attr of [...el.attributes]) prior.setAttribute(attr.name, attr.value);
       prior.innerHTML = el.innerHTML;
       anchor = prior;
     } else {

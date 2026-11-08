@@ -398,10 +398,10 @@ const dotplot = {
   id: "dotplot",
   title: L("Dot plot: center and spread", "Diagrama de puntos: centro y dispersión"),
   ask: L(
-    "Add a dot far from the others. Which moves more, the mean or the median?",
-    "Agrega un punto lejos de los demás. ¿Qué se mueve más, la media o la mediana?",
+    "Drag a dot or focus one and use the arrow keys. Predict how the mean and median will respond.",
+    "Arrastra un punto o selecciónalo y usa las flechas. Predice cómo responderán la media y la mediana.",
   ),
-  init: () => ({ data: [2, 3, 3, 4, 5, 5, 5, 6, 7], at: 5 }),
+  init: (ctx) => ({ data: [2, 3, 3, 4, 5, 5, 5, 6, 7], at: 5, selected: 4, lang: ctx?.lang?.() === "es" ? "es" : "en" }),
   sliders: (s) => [slider("at", L("Place a dot at", "Coloca un punto en"), 0, 20, 1, s.at)],
   actions: [
     { id: "add", label: L("Add a dot", "Agregar un punto") },
@@ -409,11 +409,25 @@ const dotplot = {
     { id: "reset", label: L("Start over", "Empezar de nuevo") },
   ],
   act(s, id) {
-    if (id === "reset") return { ...s, data: [2, 3, 3, 4, 5, 5, 5, 6, 7] };
+    if (id === "reset") return { ...s, data: [2, 3, 3, 4, 5, 5, 5, 6, 7], at: 5, selected: 4 };
     if (id === "add")
-      return s.data.length >= 24 ? s : { ...s, data: [...s.data, s.at].sort((x, y) => x - y) };
+      return s.data.length >= 24 ? s : { ...s, data: [...s.data, s.at], selected: s.data.length };
     const i = s.data.indexOf(s.at);
-    return i < 0 || s.data.length <= 3 ? s : { ...s, data: s.data.filter((_, j) => j !== i) };
+    return i < 0 || s.data.length <= 3
+      ? s
+      : { ...s, data: s.data.filter((_, j) => j !== i), selected: Math.min(s.selected, s.data.length - 2) };
+  },
+  movePoint(s, index, value) {
+    if (!Number.isInteger(index) || index < 0 || index >= s.data.length) return s;
+    const at = Math.max(0, Math.min(20, Math.round(value)));
+    const data = [...s.data];
+    data[index] = at;
+    return { ...s, data, at, selected: index };
+  },
+  pointerValue(clientX, rect) {
+    if (!rect?.width) return null;
+    const svgX = ((clientX - rect.left) / rect.width) * 560;
+    return Math.max(0, Math.min(20, Math.round((svgX - 40) / 24)));
   },
   stats(data) {
     const sorted = [...data].sort((a, b) => a - b);
@@ -429,19 +443,23 @@ const dotplot = {
     let body = `<line x1="30" y1="170" x2="530" y2="170" stroke="${COLORS.ink}" stroke-width="2"/>`;
     for (let v = 0; v <= 20; v += 2)
       body += txt(X(v), 192, String(v), { size: 12, weight: 500, fill: COLORS.mute });
-    for (const v of s.data) {
+    for (const [index, v] of s.data.entries()) {
       counts[v] = (counts[v] || 0) + 1;
-      body += `<circle cx="${X(v)}" cy="${160 - counts[v] * 14}" r="6" fill="${COLORS.whole}"/>`;
+      const y = 160 - counts[v] * 14;
+      const label = s.lang === "es"
+        ? `Dato ${index + 1}, valor ${v}. Arrastra para moverlo; usa las flechas izquierda y derecha para cambiar el valor.`
+        : `Observation ${index + 1}, value ${v}. Drag to move; use left and right arrow keys to change the value.`;
+      body += `<g class="sd-k sd-data-point" data-k="dot-${index}" data-point-index="${index}" style="transform:translate(${X(v)}px,${y}px)" role="slider" tabindex="${index === s.selected ? 0 : -1}" aria-label="${label}" aria-valuemin="0" aria-valuemax="20" aria-valuenow="${v}" aria-valuetext="${v}"><circle cx="0" cy="0" r="8" fill="${COLORS.whole}" stroke="${index === s.selected ? COLORS.warn : "#fff"}" stroke-width="${index === s.selected ? 3 : 1.5}"/></g>`;
     }
     const { mean, median, range } = this.stats(s.data);
     body +=
       `<polygon points="${X(mean) - 8},210 ${X(mean) + 8},210 ${X(mean)},196" fill="${COLORS.warn}"/>` +
-      txt(X(mean), 226, `mean ${fmt(Math.round(mean * 10) / 10)}`, {
+      txt(X(mean), 226, `${s.lang === "es" ? "media" : "mean"} ${fmt(Math.round(mean * 10) / 10)}`, {
         size: 12,
         fill: COLORS.warn,
       }) +
       `<line x1="${X(median)}" x2="${X(median)}" y1="30" y2="170" stroke="${COLORS.hundreds}" stroke-width="2" stroke-dasharray="6 5"/>` +
-      txt(X(median), 24, `median ${fmt(median)}`, { size: 12, fill: COLORS.hundreds }) +
+      txt(X(median), 24, `${s.lang === "es" ? "mediana" : "median"} ${fmt(median)}`, { size: 12, fill: COLORS.hundreds }) +
       `<circle cx="${X(s.at)}" cy="170" r="4" fill="none" stroke="${COLORS.warn}" stroke-width="2"/>`;
     const alt = L(
       `Dot plot of ${s.data.length} values. Mean ${fmt(Math.round(mean * 10) / 10)}, median ${fmt(median)}, range ${range}.`,

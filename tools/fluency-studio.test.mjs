@@ -27,6 +27,7 @@ const { checkFrames } = await import("../math/fluency-lab/studio/core.js");
 const { SIMS } = await import("../math/fluency-lab/studio/sims.js");
 const adaptive = await import("../math/fluency-lab/studio/adaptive.js");
 const { mountStudio } = await import("../math/fluency-lab/studio/studio.js");
+const { mountExplore } = await import("../math/fluency-lab/studio/panel-explore.js");
 const { setLang } = await import("../math/fluency-lab/i18n.js");
 const place = await import("../math/fluency-lab/studio/engine-place.js");
 const bal = await import("../math/fluency-lab/studio/engine-balance.js");
@@ -1329,11 +1330,47 @@ for (const sim of Object.values(SIMS)) {
   const dp = SIMS.dotplot;
   let s = dp.init();
   const before = dp.stats(s.data);
+  const moved = dp.movePoint(s, 4, 20);
+  const movedStats = dp.stats(moved.data);
+  assert.equal(moved.data[4], 20, "moving a data point changes its value");
+  assert.ok(movedStats.mean > before.mean, "moving a dot updates the mean");
+  assert.ok(
+    movedStats.mean - before.mean > movedStats.median - before.median,
+    "moving a far dot shifts the mean more than the median",
+  );
+  assert.equal(dp.pointerValue(40 + 24 * 20, { left: 0, width: 560 }), 20);
+  assert.match(dp.render(moved).svg, /role="slider"[^>]*aria-valuenow="20"/);
+  assert.match(dp.render(dp.init({ lang: () => "es" })).svg, /aria-label="Dato 1, valor 2/);
   s = dp.act({ ...s, at: 20 }, "add");
   const after = dp.stats(s.data);
   assert.ok(
     after.mean - before.mean > after.median - before.median,
     "a far dot moves the mean more than the median",
+  );
+  const host = document.createElement("div");
+  mountExplore({ sim: dp, lang: () => "en", mark() {} }, host);
+  const point = host.querySelector('[data-point-index="4"]');
+  point.dispatchEvent(
+    new dom.window.KeyboardEvent("keydown", { key: "ArrowRight", bubbles: true }),
+  );
+  assert.equal(
+    point.getAttribute("aria-valuenow"),
+    "6",
+    "keyboard arrows move the focused data point",
+  );
+  const svg = host.querySelector("[data-stage] svg");
+  svg.getBoundingClientRect = () => ({ left: 0, width: 560 });
+  point.dispatchEvent(
+    new dom.window.MouseEvent("pointerdown", { bubbles: true, clientX: 40 + 24 * 6 }),
+  );
+  point.dispatchEvent(
+    new dom.window.MouseEvent("pointermove", { bubbles: true, clientX: 40 + 24 * 20 }),
+  );
+  point.dispatchEvent(new dom.window.MouseEvent("pointerup", { bubbles: true }));
+  assert.equal(
+    point.getAttribute("aria-valuenow"),
+    "20",
+    "pointer dragging moves the same data point",
   );
 }
 {
