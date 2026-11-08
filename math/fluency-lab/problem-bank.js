@@ -1140,7 +1140,7 @@ const generators = {
   },
 
   coordinate(config, rng) {
-    const sub = pick(["quadrant", "axisDistance", "sharedAxis", "reflect"], rng);
+    const sub = pick(["quadrant", "quadrant", "axisDistance", "sharedAxis", "reflect"], rng);
     let x = randInt(config.minCoordinate ?? -8, config.maxCoordinate ?? 8, rng);
     let y = randInt(config.minCoordinate ?? -8, config.maxCoordinate ?? 8, rng);
     if (x === 0) x = 2;

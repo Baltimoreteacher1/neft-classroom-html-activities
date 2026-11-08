@@ -89,6 +89,8 @@ export const ES_MODELS = {
   "Start with the first number. Now take away {value}.": "Empieza con el primer número. Ahora quita {value}.",
   "Multiply the quotient digit by the divisor": "Multiplica el dígito del cociente por el divisor",
   "Subtract the product from the number above it": "Resta el producto del número de arriba",
+  "Divide the divisor into this number": "Divide el divisor en este número",
+  "Bring down the next digit": "Baja el siguiente dígito",
   "Remainder": "Residuo",
   "💡 Hint for the next box": "💡 Pista para la siguiente casilla",
   "How many times does {divisor} fit into {cur}? Type that digit above the bar.": "¿Cuántas veces cabe {divisor} en {cur}? Escribe ese dígito arriba de la barra.",

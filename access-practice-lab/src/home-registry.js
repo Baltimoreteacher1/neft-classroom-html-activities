@@ -92,6 +92,18 @@ export const HOME_CARDS = [
 
   // ── explore: more ways to practice ─────────────────────────────────────────
   {
+    id: "wida-access-prep",
+    group: "explore",
+    featured: true,
+    href: "access-prep",
+    icon: "tests",
+    title: ["WIDA Access Prep · Grades 1–3 & 4–6", "Preparación WIDA ACCESS · Grados 1–3 y 4–6"],
+    text: [
+      "All Listening, Reading, Speaking, and Writing activities organized cleanly for Grades 1–3 and 4–6.",
+      "Todas las actividades de comprensión auditiva, lectura, expresión oral y escritura organizadas para los grados 1–3 y 4–6.",
+    ],
+  },
+  {
     id: "language-adventures",
     group: "explore",
     featured: true,

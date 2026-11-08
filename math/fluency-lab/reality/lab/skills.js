@@ -94,8 +94,8 @@ const WHY = {
     "Las reflexiones necesitan una cuadrícula de cuatro cuadrantes con una figura. El Estudio la dibuja.",
   ),
   wholeDiv: L(
-    "Multi-digit division uses chunking in the Studio's long-division model.",
-    "La división de varios dígitos usa agrupación en el modelo de división larga del Estudio.",
+    "Multi-digit division uses the standard algorithm (DMSB) in the long-division model.",
+    "La división de varios dígitos usa el algoritmo estándar (DMSB) en el modelo de división larga.",
   ),
   percentChange: L(
     "Percent change uses a percent bar the Studio already provides.",

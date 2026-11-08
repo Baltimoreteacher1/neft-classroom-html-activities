@@ -89,6 +89,7 @@ const ACTIVE = {
   move: "growth",
   "science-of-reading": "sor",
   sor: "sor",
+  "access-prep": "access-prep",
   "language-studios": "studios",
   family: "family",
   tools: "help",
@@ -100,6 +101,7 @@ export function primaryLinks(band, T) {
   // K–3 bands: the early home is "Continue", and growth is the Passport (the growth map reads grades 3–8 work).
   if (isEarlyBand(band))
     return [
+      { id: "access-prep", icon: "tests", label: T("Access Prep", "Preparación ACCESS"), href: `${BASE}/access-prep${q}`, featured: true },
       { id: "continue", icon: "road", label: T("My practice", "Mi práctica"), href: `${BASE}/early${q}` },
       { id: "practice", icon: "reading", label: T("Practice", "Practicar"), href: `${BASE}/library${q}` },
       { id: "growth", icon: "passport", label: T("My Passport", "Mi Pasaporte"), href: `${BASE}/passport${q}` },
@@ -221,6 +223,7 @@ function menuGroups(band, T) {
     {
       title: T("Plan and review", "Planificar y repasar"),
       items: [
+        link("tests", T("Access Prep (Grades 1–3 & 4–6)", "Preparación ACCESS (Grados 1–3 y 4–6)"), "access-prep"),
         link("tests", T("Practice tests", "Pruebas de práctica"), "tests"),
         link("tests", T("Assessment simulator", "Simulador de evaluación"), "assess"),
         link("road", T("Road to ACCESS", "Camino a ACCESS"), "road"),
@@ -262,15 +265,16 @@ export function navHTML(ctx, I) {
   // Teacher Expedition shrinks to an icon, then moves to the More menu on narrow screens.
   const topLink = (l) =>
     html`<a
-      class="top-link${l.pill ? " top-expedition" : ""}${l.family ? " top-family" : ""}"
-      ${l.low ? raw('data-tier="low"') : ""}
+      class="top-link${l.featured ? " top-access-prep is-featured" : ""}${l.pill ? " top-expedition" : ""}${l.family ? " top-family" : ""}"
+      ${l.low ? raw('data-tier="low"') : l.dataTier ? raw(`data-tier="${l.dataTier}"`) : ""}
       href="${l.href}"
       ${l.id === current ? raw('aria-current="page"') : ""}
       >${icon(l.icon)}<span>${l.label}</span></a
     >`;
   const focused = view === "test" || view === "assess";
+  const accessPrepLink = html`<a class="top-link top-access-prep is-featured" data-tier="prep" href="${BASE}/access-prep?grades=${band}" ${view === "access-prep" ? raw('aria-current="page"') : ""}><span>${icon("tests")} ${T("Access Prep", "Preparación ACCESS")}</span></a>`;
   const sorLink = html`<a class="top-link top-sor-link" href="${BASE}/science-of-reading?grades=${band}" ${view === "science-of-reading" || view === "sor" ? raw('aria-current="page"') : ""}><span>${icon("reading")} ${T("Science of Reading", "Ciencia de la lectura")}</span></a>`;
-  return html`${primary.filter((l) => !l.pill).map(topLink)}${sorLink}${primary.filter((l) => l.pill).map(topLink)}
+  return html`${accessPrepLink}${primary.filter((l) => !l.pill).map(topLink)}${sorLink}${primary.filter((l) => l.pill).map(topLink)}
     ${focused ? html`<span class="mode-flag">${icon("tests")}<span>${T("Focused practice mode", "Modo de práctica enfocada")}</span></span>` : ""}
     ${langSwitchHTML(I.mode)}
     <details class="lab-utilities">

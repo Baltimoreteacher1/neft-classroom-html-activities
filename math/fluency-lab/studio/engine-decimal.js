@@ -1,5 +1,5 @@
 // Decimals and division: multiplying and dividing decimals by shifting to whole numbers, powers of ten as a
-// moving decimal point, long division in friendly chunks, dividing fractions by counting equal pieces, and
+// moving decimal point, standard-algorithm long division (DMSB: Divide, Multiply, Subtract, Bring Down), dividing fractions by counting equal pieces, and
 // unit-fraction word problems. All the arithmetic is done on whole numbers, so every frame can be recomputed.
 import { COLORS, L, choiceBuild, clean, frameOf, gcd, num, predictOf, svgWrap, txt } from "./core.js";
 

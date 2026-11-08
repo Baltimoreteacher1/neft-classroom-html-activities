@@ -195,6 +195,15 @@ const RULES = [
       `Refleja ${m[1]} ${{ "x-axis": "sobre el eje x", "y-axis": "sobre el eje y", origin: "respecto al origen" }[m[2]]}.`,
   ],
   [
+    new RegExp(`^How far is (${PAIR}) from the (x-axis|y-axis)\\?$`),
+    (m) =>
+      `¿A qué distancia está ${m[1]} ${m[2] === "x-axis" ? "del eje x" : "del eje y"}?`,
+  ],
+  [
+    new RegExp(`^Find the distance between (${PAIR}) and (${PAIR})\\.$`),
+    (m) => `Halla la distancia entre ${m[1]} y ${m[2]}.`,
+  ],
+  [
     /^A right triangle has legs (.+) and (.+)\. Find the hypotenuse\.$/,
     (m) => `Un triángulo rectángulo tiene catetos ${m[1]} y ${m[2]}. Halla la hipotenusa.`,
   ],

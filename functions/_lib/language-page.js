@@ -47,6 +47,7 @@ const isHubPath = (p) =>
 /** Public lab pages listed in the sitemap: clean URLs the SPA serves through the one rewrite rule. */
 export const SITEMAP_PATHS = [
   `${LAB_BASE}/`,
+  `${LAB_BASE}/access-prep`,
   `${LAB_BASE}/path`,
   `${LAB_BASE}/scaffold`,
   `${LAB_BASE}/learn`,
@@ -118,7 +119,7 @@ export function languagePageRoute(url) {
   if (url.pathname === "/robots.txt") return { kind: "robots" };
   if (url.pathname === "/sitemap.xml") return { kind: "sitemap" };
   if (url.pathname === "/")
-    return { kind: "redirect", status: 302, location: `${url.origin}${ADVENTURES_BASE}/` };
+    return { kind: "redirect", status: 302, location: `${url.origin}${LAB_BASE}/` };
   if (servesOnLabHost(url.pathname)) return { kind: "serve" };
   return {
     kind: "redirect",

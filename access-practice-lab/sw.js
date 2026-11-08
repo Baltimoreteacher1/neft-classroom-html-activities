@@ -11,9 +11,9 @@
  * The block between the build markers is written by tools/sync-access-shell.mjs; do not edit it by hand.
  */
 /* build:begin */
-const BUILD_HASH = "d07985ecea74";
+const BUILD_HASH = "bcb99ca9fb8c";
 const PRECACHE_CORE = [
-  "/access-practice-lab/ds.css?v=f77bd42f8057",
+  "/access-practice-lab/ds.css?v=5c4449aea64b",
   "/access-practice-lab/home.css?v=d4e1a1fc5829",
   "/access-practice-lab/home-start.css?v=28634169c6c4",
   "/access-practice-lab/progress.css?v=495417576064",
@@ -21,7 +21,7 @@ const PRECACHE_CORE = [
   "/access-practice-lab/journey.css?v=104923be8eb3",
   "/access-practice-lab/acc.css?v=2b5e93a8f490",
   "/access-practice-lab/studios.css?v=1e0aed4fc0a6",
-  "/access-practice-lab/src/main.js?v=af1948844451",
+  "/access-practice-lab/src/main.js?v=e6a2b13fbbe9",
   "/access-practice-lab/src/brand.js?v=aa10e7cfb67f",
   "/access-practice-lab/src/components.js?v=40d21034ef29",
   "/access-practice-lab/src/grade.js?v=632a26ffc0a8",
@@ -64,7 +64,7 @@ const PRECACHE_CORE = [
   "/access-practice-lab/src/lang/scaffolds.js?v=18c8ecbb21fa",
   "/access-practice-lab/src/shell.js?v=1f7c7ce971c5",
   "/access-practice-lab/src/comfort.js?v=750da0271342",
-  "/access-practice-lab/src/nav.js?v=a93489cef60b",
+  "/access-practice-lab/src/nav.js?v=7d4da80de938",
   "/access-practice-lab/src/acc/copy.js?v=d583283367c3",
   "/access-practice-lab/src/shortcuts.js?v=49268f7986a0",
   "/access-practice-lab/src/search-chrome.js?v=ffcacd1358b9",
@@ -86,7 +86,7 @@ const PRECACHE_CORE = [
   "/access-practice-lab/src/engagement.js?v=6b7a0c435f9a",
   "/access-practice-lab/src/lang/unlocks.js?v=dbfd283714f1",
   "/access-practice-lab/src/family/plan.js?v=fe5c5c1669b6",
-  "/access-practice-lab/src/home-registry.js?v=73a6686d4728",
+  "/access-practice-lab/src/home-registry.js?v=9c263c932e3a",
   "/access-practice-lab/src/views/home-panels.js?v=4da141951ca0",
   "/access-practice-lab/src/practice-report.js?v=afae890a5d67",
   "/access-practice-lab/src/views/home-start.js?v=cfd5ed89bc5a",
@@ -429,6 +429,7 @@ const PRECACHE_MORE = [
   "/access-practice-lab/src/subject-reading/index.js?v=1672c52aa841",
   "/access-practice-lab/src/tour-dock.js?v=99483d90801c",
   "/access-practice-lab/src/transfer.js?v=088ee1d199d1",
+  "/access-practice-lab/src/views/access-prep.js?v=a0b5806a8008",
   "/access-practice-lab/src/views/activity.js?v=9a90bda93405",
   "/access-practice-lab/src/views/arena.js?v=6c583b00f93b",
   "/access-practice-lab/src/views/assess.js?v=48bf2625256a",
