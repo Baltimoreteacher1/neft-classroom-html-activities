@@ -293,12 +293,22 @@ const percentWhole = {
   id: "percentWhole",
   title: L("Find the whole with a percent tape", "Halla el entero con una cinta de porcentaje"),
   ask: L(
-    "Change the part or its percent. Predict how the 100% whole will respond.",
-    "Cambia la parte o su porcentaje. Predice cómo responderá el entero del 100%.",
+    "After you make a prediction, change the part or its percent. Watch how the 100% whole responds.",
+    "Después de hacer una predicción, cambia la parte o su porcentaje. Observa cómo responde el entero del 100%.",
   ),
   init(ctx) {
     const spec = ctx?.lesson?.spec;
     return spec?.mode === "percentWhole" ? { p: spec.p, part: spec.part } : { p: 30, part: 15 };
+  },
+  prediction(s) {
+    const expected = percentFindWhole.evaluate(null, [s.p, s.part]).value;
+    return {
+      prompt: L(`Predict the whole: ${s.p}% of what number is ${fmt(s.part)}?`, `Predice el entero: ¿el ${s.p}% de qué número es ${fmt(s.part)}?`),
+      answer: expected,
+      hint: s.p === 100
+        ? L("At 100%, the part is the whole. What number matches the known amount?", "Al 100%, la parte es el entero. ¿Qué número coincide con la cantidad conocida?")
+        : L(`The known amount is only ${s.p}% of the whole. The 100% whole must be larger than ${fmt(s.part)}. Try a number that fits.`, `La cantidad conocida es solo el ${s.p}% del entero. El entero del 100% debe ser mayor que ${fmt(s.part)}. Prueba un número que encaje.`),
+    };
   },
   sliders: (s) => [
     slider("p", L("Known percent", "Porcentaje conocido"), 1, 100, 1, s.p),

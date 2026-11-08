@@ -10,12 +10,27 @@ export function mountExplore(ctx, root) {
   const sim = ctx.sim;
   if (sim.mount) return sim.mount(ctx, root);
   let state = sim.init(ctx);
+  let predictionUnlocked = !sim.prediction;
+  let predictionAttempts = 0;
   root.innerHTML = `
-    <p class="sd-task"><span class="sd-tag">${esc(t("Explore"))}</span> <span data-ask></span></p>
-    <div class="sd-stage-wrap"><div class="sd-stage" data-stage></div></div>
-    <div class="sd-sliders" data-sliders></div>
-    <div class="sd-controls" data-acts></div>
-    <p class="sd-cap" data-read role="status" aria-live="polite"></p>`;
+    <section class="sd-prediction" data-prediction ${predictionUnlocked ? "hidden" : ""} aria-labelledby="sd-prediction-title">
+      <p class="sd-task"><span class="sd-tag">${esc(t("Explore"))}</span></p>
+      <h4 id="sd-prediction-title" data-prediction-prompt></h4>
+      <form class="sd-answer" data-prediction-form novalidate>
+        <label for="sd-prediction-${ctx.id}">${esc(t("Your prediction"))}</label>
+        <input id="sd-prediction-${ctx.id}" class="sd-input" type="number" inputmode="decimal" step="any" autocomplete="off" />
+        <button type="submit" class="sd-btn sd-primary">${esc(t("Check prediction"))}</button>
+      </form>
+      <p class="sd-feedback" data-prediction-feedback role="status" aria-live="polite"></p>
+      <button type="button" class="sd-btn" data-reveal-model hidden>${esc(t("Open the model"))}</button>
+    </section>
+    <section data-model ${predictionUnlocked ? "" : "hidden"}>
+      <p class="sd-task"><span class="sd-tag">${esc(t("Explore"))}</span> <span data-ask></span></p>
+      <div class="sd-stage-wrap"><div class="sd-stage" data-stage></div></div>
+      <div class="sd-sliders" data-sliders></div>
+      <div class="sd-controls" data-acts></div>
+      <p class="sd-cap" data-read role="status" aria-live="polite"></p>
+    </section>`;
   const q = (s) => root.querySelector(s);
   let first = true;
   let touched = 0;
@@ -26,6 +41,10 @@ export function mountExplore(ctx, root) {
     q("[data-acts]").innerHTML = (sim.actions || []).map((a) => `<button type="button" class="sd-btn" data-a="${a.id}">${esc(pick(a.label, ctx.lang()))}</button>`).join("");
   }
   function draw(rebuild) {
+    if (!predictionUnlocked) {
+      q("[data-prediction-prompt]").textContent = pick(sim.prediction(state).prompt, ctx.lang());
+      return;
+    }
     const r = sim.render(state);
     morph(q("[data-stage]"), r.svg, { animate: !first });
     first = false;
@@ -33,6 +52,41 @@ export function mountExplore(ctx, root) {
     q("[data-read]").innerHTML = vocabMarkup(pick(r.read, ctx.lang()));
     if (rebuild) sliders();
   }
+  q("[data-prediction-form]")?.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const input = q("[data-prediction-form] input");
+    if (!input.value.trim()) {
+      q("[data-prediction-feedback]").textContent = t("Enter a prediction first.");
+      input.focus();
+      return;
+    }
+    const expected = sim.prediction(state).answer;
+    const guess = Number(input.value);
+    if (Number.isFinite(guess) && Math.abs(guess - expected) < 1e-8) {
+      predictionUnlocked = true;
+      q("[data-prediction-feedback]").textContent = t("Your prediction is correct. Now change a quantity and investigate how the whole responds.");
+      input.disabled = true;
+      q("[data-prediction-form] button").disabled = true;
+      q("[data-prediction]").hidden = false;
+      q("[data-model]").hidden = false;
+      draw(true);
+      root.querySelector("[data-k]")?.focus();
+      return;
+    }
+    predictionAttempts += 1;
+    q("[data-prediction-feedback]").textContent = pick(sim.prediction(state).hint, ctx.lang());
+    if (predictionAttempts >= 2) q("[data-reveal-model]").hidden = false;
+    input.select();
+  });
+  q("[data-reveal-model]")?.addEventListener("click", () => {
+    predictionUnlocked = true;
+    q("[data-prediction-feedback]").textContent = t("The model is open. Explore the relationship, then solve a fresh problem on your own.");
+    q("[data-prediction-form] input").disabled = true;
+    q("[data-prediction-form] button").disabled = true;
+    q("[data-model]").hidden = false;
+    draw(true);
+    root.querySelector("[data-k]")?.focus();
+  });
   root.addEventListener("input", (e) => {
     const k = e.target.dataset?.k;
     if (!k) return;
@@ -94,7 +148,7 @@ export function mountExplore(ctx, root) {
     if (touched >= 3) ctx.mark("explore");
     draw(false);
   });
-  sliders();
+  if (predictionUnlocked) sliders();
   draw(false);
   return () => {};
 }

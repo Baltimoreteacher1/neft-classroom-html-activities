@@ -1499,6 +1499,118 @@ for (const sim of Object.values(SIMS)) {
   }
 }
 {
+  const host = document.createElement("div");
+  document.body.append(host);
+  const sim = SIMS.percentWhole;
+  assert.equal(
+    sim.prediction({ p: 30, part: 18 }).answer,
+    60,
+    "30% of a whole is 18 when the whole is 60",
+  );
+  const revealModel = (guess) => {
+    const input = host.querySelector("[data-prediction-form] input");
+    input.value = String(guess);
+    host
+      .querySelector("[data-prediction-form]")
+      .dispatchEvent(new dom.window.Event("submit", { bubbles: true, cancelable: true }));
+  };
+  mountExplore(
+    {
+      sim,
+      lesson: { spec: { mode: "percentWhole", p: 30, part: 15 } },
+      lang: () => "en",
+      mark() {},
+    },
+    host,
+  );
+  assert.equal(
+    host.querySelector("[data-model]").hidden,
+    true,
+    "the answer model stays closed until a prediction",
+  );
+  assert.match(
+    host.querySelector("[data-prediction-prompt]").textContent,
+    /30% of what number is 15/,
+  );
+  revealModel(30);
+  assert.equal(
+    host.querySelector("[data-model]").hidden,
+    true,
+    "an incorrect answer does not reveal the model",
+  );
+  assert.match(
+    host.querySelector("[data-prediction-feedback]").textContent,
+    /must be larger than 15/,
+  );
+  revealModel(40);
+  assert.equal(
+    host.querySelector("[data-reveal-model]").hidden,
+    false,
+    "after two tries the learner may open the model",
+  );
+  host.querySelector("[data-reveal-model]").click();
+  assert.equal(host.querySelector("[data-model]").hidden, false);
+  assert.equal(
+    document.activeElement,
+    host.querySelector('[data-k="p"]'),
+    "opening the model moves keyboard focus to its first control",
+  );
+  assert.match(host.querySelector("[data-read]").textContent, /recover 100%: 50/);
+  const percent = host.querySelector('[data-k="p"]');
+  percent.value = "60";
+  percent.dispatchEvent(new dom.window.Event("input", { bubbles: true }));
+  assert.match(host.querySelector("[data-read]").textContent, /recover 100%: 25/);
+
+  const correctHost = document.createElement("div");
+  document.body.append(correctHost);
+  mountExplore(
+    {
+      sim,
+      lesson: { spec: { mode: "percentWhole", p: 30, part: 15 } },
+      lang: () => "en",
+      mark() {},
+    },
+    correctHost,
+  );
+  const answer = correctHost.querySelector("[data-prediction-form] input");
+  answer.value = "50";
+  correctHost
+    .querySelector("[data-prediction-form]")
+    .dispatchEvent(new dom.window.Event("submit", { bubbles: true, cancelable: true }));
+  assert.equal(
+    correctHost.querySelector("[data-model]").hidden,
+    false,
+    "a correct prediction opens the interactive model",
+  );
+  assert.equal(document.activeElement, correctHost.querySelector('[data-k="p"]'));
+  assert.match(
+    correctHost.querySelector("[data-prediction-feedback]").textContent,
+    /prediction is correct/,
+  );
+  setLang("es", { persist: false });
+  const spanishHost = document.createElement("div");
+  mountExplore(
+    {
+      sim,
+      lesson: { spec: { mode: "percentWhole", p: 30, part: 15 } },
+      lang: () => "es",
+      mark() {},
+    },
+    spanishHost,
+  );
+  assert.equal(
+    spanishHost.querySelector("[data-prediction-form] label").textContent,
+    "Tu predicción",
+  );
+  assert.match(
+    spanishHost.querySelector("[data-prediction-prompt]").textContent,
+    /Predice el entero/,
+  );
+  setLang("en", { persist: false });
+  host.remove();
+  correctHost.remove();
+}
+{
   const dp = SIMS.dotplot;
   let s = dp.init();
   const before = dp.stats(s.data);
