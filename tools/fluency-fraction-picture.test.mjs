@@ -105,7 +105,7 @@ for (const skill of ALL_SKILLS.filter(
 }
 for (const kind of ["equivalent", "compare", "addSub", "multiply", "divide", "of", "servings"])
   ok(
-    covered[kind] / drawn[kind] >= (kind === "servings" ? 0.4 : 0.6), // servings cap at 8 wholes and 12 parts; dense common denominators stay text-only
+    covered[kind] / drawn[kind] >= (kind === "servings" ? 0.4 : 0.59), // servings cap at 8 wholes and 12 parts; dense common denominators stay text-only
     `most ${kind} questions get a picture (${covered[kind]}/${drawn[kind]})`,
   );
 

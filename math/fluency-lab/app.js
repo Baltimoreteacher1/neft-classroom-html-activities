@@ -866,7 +866,7 @@ function setMode(mode) {
   if (state.skill) setStage(stageOfMode(mode));
 }
 
-// ---- Learn → Try It → Practice → Play → Grow around one skill ----
+// ---- Understand → See → Together → Yourself → Check & Continue around one skill ----
 // Each stage opens the lab's own mode or panel; the bar, breadcrumb and next action never replace them.
 let playMounted = false;
 function leaveExtraPanels() {

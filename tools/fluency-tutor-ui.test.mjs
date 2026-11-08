@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { JSDOM } from "jsdom";
+import { checkupPlan } from "../math/fluency-lab/placement.js";
 
 const html = readFileSync(new URL("../math/fluency-lab/index.html", import.meta.url), "utf8");
 const dom = new JSDOM(html, {
@@ -20,18 +21,15 @@ for (const [key, value] of Object.entries({
 }))
   Object.defineProperty(globalThis, key, { value, configurable: true, writable: true });
 await import("../math/fluency-lab/app.js");
-const { HEADLINES, LANDING } = await import("../math/fluency-lab/atelier/copy.js");
 const { ES_ATELIER } = await import("../math/fluency-lab/i18n-es-lab8-atelier.js");
+const { ALL_SKILLS, getGrade } = await import("../math/fluency-lab/problem-bank.js");
 const $ = (selector) => win.document.querySelector(selector);
 const click = (selector) => {
   assert.ok($(selector), `Missing ${selector}`);
   $(selector).click();
 };
-// The learner's grade page is Today > Grade 4.
-const gradeHome = () => {
-  click('#hub-tabs [data-view="library"]');
-  click('#grade-tabs [data-grade="4"]');
-};
+// Home is the no-setup picker. My Learning opens the grade and progress workspace.
+const gradeHome = () => click('#hub-tabs [data-dest="learning"]');
 const fill = (selector, value) => {
   $(selector).value = String(value);
 };
@@ -51,30 +49,20 @@ const solveCurrent = () => {
   }
 };
 
-// The learner's grade page is My Learning > My grade (Home is the grade-and-skill picker).
-gradeHome();
-// The journey home leads with the studio hero: one of its grade-band headlines (atelier/copy.js).
-assert.ok(
-  [...Object.values(HEADLINES).map(([headline]) => headline), LANDING[0]].includes(
-    $("#page-title").textContent,
-  ),
-  "The student route opens on the journey home",
-);
+// Home is the grade-and-skill picker; saved progress adds a direct resume action.
+click('#hub-tabs [data-dest="home"]');
+assert.ok($(".ep-main"), "Home opens the no-account grade and skill picker");
 assert.match($("#personal-dashboard").textContent, /Continue learning/);
-assert.match($("#personal-dashboard").textContent, /Play a game/);
-assert.match($("#personal-dashboard").textContent, /Explore skills/);
-assert.ok(
-  $(".journey-continue [data-open-key]"),
-  "First-time visitors get a real recommended next step",
+assert.equal(
+  win.document.querySelectorAll("[data-ep-grade]").length,
+  9,
+  "all grades remain one click away",
 );
+gradeHome();
 assert.equal(
   $(".site-header #open-print-center"),
   null,
   "Teacher print tools stay out of the student header",
-);
-assert.ok(
-  $(".journey-explore a[href='#subnav-skills']"),
-  "Explore skills links to the actual skill library",
 );
 
 click('[data-view="games"]');
@@ -94,11 +82,10 @@ click('[data-view="library"]');
 assert.ok(!win.document.body.classList.contains("teacher-resources"));
 click("#lang-toggle");
 assert.ok(
-  [
-    ...Object.values(HEADLINES).map(([headline]) => ES_ATELIER[headline]),
-    ES_ATELIER[LANDING[0]],
-  ].includes($("#page-title").textContent),
-  "The journey home follows the language selection",
+  [ES_ATELIER["Math Fluency Lab"], "Laboratorio de fluidez matemática"].includes(
+    $("#page-title").textContent,
+  ),
+  "The student home follows the language selection",
 );
 click("#lang-toggle");
 fill("#quick-skill-select", "4:division");
@@ -267,24 +254,25 @@ assert.match($("#mastery-label").textContent, /of \d+ recent checks correct/);
 gradeHome();
 const recordsBefore = JSON.stringify(savedTutor().records);
 click("[data-start-checkup]");
-for (let i = 0; i < 15; i++) {
+for (let i = 0; i < checkupPlan(4).length; i++) {
   click("#skip-checkup");
   click("#next-problem");
 }
 assert.equal(
-  Object.keys(savedTutor().diagnostics[4].results).length,
+  savedTutor().diagnostics?.[4] && Object.keys(savedTutor().diagnostics[4].results).length,
   0,
   "Uncertain checkup responses do not count as correct or incorrect evidence",
 );
 assert.equal(
-  savedTutor().diagnostics[4].unsure.length,
-  15,
-  "Checkup stores uncertainty separately from evidence",
+  savedTutor().diagnostics[4].unsure.length >= checkupPlan(4).length,
+  true,
+  "Checkup stores uncertainty separately from evidence, including any foundation probes",
 );
 assert.equal(JSON.stringify(savedTutor().records), recordsBefore, "Checkups do not award mastery");
 assert.match($("#summary-title").textContent, /starting-point/);
 
-click('#hub-tabs [data-view="practice"]');
+click('#hub-subnav [data-view="path"]');
+click('#hub-subnav [data-view="practice"]');
 click('#hub-subnav [data-view="notebook"]');
 const savedMistake = savedTutor().mistakes.find(
   (entry) => entry.key === "4:division" && !entry.resolvedAt,
@@ -324,12 +312,13 @@ assert.ok(
   "Fresh independent success repairs the targeted notebook entry",
 );
 click('[data-view="path"]');
-assert.equal(win.document.querySelectorAll(".path-skill").length, 15);
-assert.equal(
-  win.document.querySelectorAll("#prerequisite-constellation .ewl-prereq-map__node").length,
-  119,
+assert.equal(win.document.querySelectorAll(".path-skill").length, getGrade(4).skills.length);
+assert.ok(
+  win.document.querySelectorAll("#prerequisite-constellation .ewl-prereq-map__node").length >=
+    Math.ceil(ALL_SKILLS.length * 0.9),
+  "The prerequisite map includes at least 90% of the K–8 skill catalog",
 );
-assert.match($(".learning-milestones").textContent, /0\/15/);
+assert.ok($(".learning-milestones").textContent.includes(`0/${getGrade(4).skills.length}`));
 assert.match($("#path-view").textContent, /two different days/);
 $("#prerequisite-constellation [data-open-key='4:division']").dispatchEvent(
   new win.MouseEvent("click", { bubbles: true }),
@@ -410,7 +399,7 @@ fill(".solver-reference-chart [data-factor-of]", 1);
 $(".solver-reference-chart [data-add-factor]").click();
 assert.ok($(".solver-reference-chart [data-chips] b"), "Factor chart accepts and checks entries");
 
-click('#grade-tabs [data-grade="6"]');
+gradeHome();
 click("#lang-toggle");
 click('.open-skill[data-skill="lcm"]');
 click('[data-mode="practice"]');

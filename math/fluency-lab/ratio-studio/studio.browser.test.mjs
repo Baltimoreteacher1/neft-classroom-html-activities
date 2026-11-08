@@ -15,8 +15,11 @@ try {
   const errors = [];
   page.on("pageerror", (error) => errors.push(error.message));
   await page.goto(`${server.config.server.origin || `http://127.0.0.1:${server.httpServer.address().port}`}/math/fluency-lab/?grade=6&skill=ratios`);
+  await page.locator("#workspace-view").waitFor({ state: "visible" });
+  await page.locator('.sp-stages [data-stage="learn"]').click();
+  await page.locator("#learn-panel details.learn-support > summary").click();
   const link = page.getByText("Explore this ratio in Ratio Studio", { exact: true });
-  await link.waitFor();
+  await link.waitFor({ state: "visible" });
   const href = await link.getAttribute("href");
   const expected = new URLSearchParams(href.split("?")[1]);
   await link.click();

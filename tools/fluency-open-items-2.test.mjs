@@ -116,7 +116,7 @@ assert.equal(skillOf(7, as("−6 + 4 = ?", -2, "integerOp")), "integer-add");
 assert.equal(skillForItem(6, as("2.5 + 1.25 = ?", 3.75, "decimalOp"))?.grade, 5);
 assert.equal(skillOf(6, as("2.5 + 1.25 = ?", 3.75, "decimalOp")), "decimal-add");
 assert.equal(
-  skillOf(6, as("1,734 ÷ 6 = ?", 289, "fact")),
+  skillOf(6, as("1,734 ÷ 17 = ?", 102, "fact")),
   "multi-digit-division",
   "Grade 6 division evidence belongs to the multi-digit division standard",
 );

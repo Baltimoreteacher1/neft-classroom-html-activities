@@ -17,6 +17,20 @@ const server = await createServer({
 });
 await server.listen();
 const base = `http://127.0.0.1:${server.httpServer.address().port}`;
+async function waitForPaint(page) {
+  await page.evaluate(() => document.fonts.ready);
+  await page.evaluate(() =>
+    Promise.race([
+      Promise.all(
+        document
+          .getAnimations()
+          .filter((animation) => Number.isFinite(animation.effect.getComputedTiming().endTime))
+          .map((animation) => animation.finished.catch(() => {})),
+      ),
+      new Promise((resolve) => setTimeout(resolve, 3000)),
+    ]),
+  );
+}
 let browser;
 try {
   browser = await chromium.launch({ headless: true });
@@ -775,6 +789,7 @@ try {
   const studentPage = await studentContext.newPage();
   studentPage.on("pageerror", (error) => errors.push(error.message));
   await studentPage.goto(`${base}/math/fluency-lab/?grade=3`, { waitUntil: "networkidle" });
+  await waitForPaint(studentPage);
   const homeAxe = await new AxeBuilder({ page: studentPage }).analyze();
   assert.deepEqual(
     homeAxe.violations.filter((v) => ["critical", "serious"].includes(v.impact)).map((v) => v.id),
@@ -798,7 +813,7 @@ try {
     "settings-toggle",
     "Escape closes settings and restores keyboard focus",
   );
-  await studentPage.locator('[data-dest="growth"]').click();
+  await studentPage.locator('[data-dest="learning"]').click();
   const progressAxe = await new AxeBuilder({ page: studentPage }).analyze();
   assert.deepEqual(
     progressAxe.violations
@@ -807,12 +822,12 @@ try {
     [],
     "student growth view has no serious or critical accessibility violations",
   );
-  await studentPage.locator('[data-dest="today"]').click();
+  await studentPage.locator('[data-dest="home"]').click();
   // Home is Grade -> Topic -> Skill -> Start (data/product-decisions.json, fluency entry flow).
   await studentPage.locator('[data-ep-grade="3"]').click();
-  for (const step of ["[data-ep-topic]", "[data-ep-skill]", "[data-ep-start]"]) {
-    await studentPage.locator(step).first().click();
-  }
+  await studentPage.locator('[data-ep-topic="multiplication"]').click();
+  await studentPage.locator('[data-ep-skill="mul-6-9"]').click();
+  await studentPage.locator("[data-ep-start]").click();
   await studentPage.locator("#workspace-view").waitFor({ state: "visible" });
   const workspaceAxe = await new AxeBuilder({ page: studentPage }).analyze();
   assert.deepEqual(
@@ -822,7 +837,7 @@ try {
     [],
     "visual lesson view has no serious or critical accessibility violations",
   );
-  await studentPage.locator('#mode-tabs [data-mode="practice"]').click();
+  await studentPage.locator('.sp-stages [data-stage="practice"]').click();
   const practiceAxe = await new AxeBuilder({ page: studentPage }).analyze();
   assert.deepEqual(
     practiceAxe.violations
@@ -837,7 +852,7 @@ try {
   assert.equal(
     await studentPage.getByRole("textbox", { name: "Your answer" }).count(),
     1,
-    "Grade 3 place-value practice exposes a named answer field",
+    "practice answer is exposed as a named textbox",
   );
   assert.equal(
     await studentPage.getByRole("group", { name: "My feeling:" }).count(),

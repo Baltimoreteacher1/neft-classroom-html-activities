@@ -80,12 +80,11 @@ try {
     assert.equal(await stageNow(p), "try");
     assert.ok(await p.locator("#visual-panel").isVisible(), "Try It opens the hands-on model");
     assert.ok((await p.locator("#visual-panel button, #visual-panel input").count()) > 0, "the model can be handled");
+    await p.click('.stage-footer [data-stage-go="play"]');
+    assert.equal(await stageNow(p), "play", "See It continues into a supported attempt");
     await p.click('.stage-footer [data-stage-go="practice"]');
     assert.equal(await stageNow(p), "practice");
     await answerOnce(p, "1");
-    await p.click('.stage-footer [data-stage-go="play"]');
-    assert.equal(await stageNow(p), "play");
-    assert.ok((await p.locator("#play-panel .gm-game").count()) > 0, "Play shows games for this grade");
     await p.click('.stage-footer [data-stage-go="grow"]');
     assert.equal(await stageNow(p), "grow");
     assert.ok(await p.locator("#grow-panel .sp-grow").isVisible());
@@ -110,6 +109,8 @@ try {
     const p = await page(ctx);
     await pick(p, 3, "multiplication", "mul-6-9");
     assert.deepEqual(await crumbs(p), ["Grade 3", "Multiplication", "Multiplication facts ×6–9"]);
+    await p.click('.stage-footer [data-stage-go="try"]');
+    await p.click('.stage-footer [data-stage-go="play"]');
     await p.click('.stage-footer [data-stage-go="practice"]');
     assert.equal(await stageNow(p), "practice");
     await p.locator("#question").waitFor({ state: "visible" });
@@ -161,10 +162,13 @@ try {
     });
     const p = await page(ctx);
     await pick(p, 6, "ratios-percents", "ratios");
+    await p.click('.stage-footer [data-stage-go="try"]');
+    await p.click('.stage-footer [data-stage-go="play"]');
     await p.click('.stage-footer [data-stage-go="practice"]');
     await p.locator("#question").waitFor({ state: "visible" });
     await p.click('.sp-stages [data-stage="play"]');
-    assert.ok((await p.locator("#play-panel .gm-game").count()) > 0, "games run without storage");
+    assert.ok(await p.locator("#drill-panel").isVisible(), "guided work still opens without storage");
+    assert.ok(await p.locator("#question").isVisible(), "the guided problem remains available without storage");
     await ctx.close();
   }
 
