@@ -48,6 +48,32 @@ assert.ok(
   VOCAB_BILINGUAL_DB.percent.svg.includes("<svg"),
   "percent vocabulary opens an illustrated definition",
 );
+const geometry = vocabMarkup(
+  "Fold the net of a rectangular prism or square pyramid. Find its surface area from every face.",
+);
+for (const [phrase, id] of [
+  ["net", "net"],
+  ["rectangular prism", "prism"],
+  ["square pyramid", "pyramid"],
+  ["surface area", "surface-area"],
+  ["face", "face"],
+]) {
+  assert.match(
+    geometry,
+    new RegExp(`data-vocab="${id}"[^>]*>${phrase}`),
+    `${phrase} opens its illustrated definition`,
+  );
+  const entry = VOCAB_BILINGUAL_DB[id];
+  assert.ok(
+    entry?.enTitle && entry.esTitle && entry.enDef && entry.esDef && entry.example,
+    `${phrase} has bilingual instructional content`,
+  );
+  assert.match(
+    entry.svg,
+    /<svg[^>]*role="img"[^>]*aria-label=/,
+    `${phrase} illustration has an accessible name`,
+  );
+}
 
 const escaped = vocabMarkup('<img src=x onerror="alert(1)"> ratio');
 assert.doesNotMatch(escaped, /<img\b/i, "student-facing vocabulary text is escaped before linking");

@@ -647,6 +647,71 @@ export const VOCAB_BILINGUAL_DB = {
     </svg>`
   },
 
+  net: {
+    id: "net",
+    enTitle: "Net of a Solid",
+    esTitle: "Red de un cuerpo geométrico",
+    enDef: "A flat arrangement of faces that can fold to make a three-dimensional solid.",
+    esDef: "Una disposición plana de caras que se puede doblar para formar un cuerpo tridimensional.",
+    example: "A rectangular-prism net has six rectangles. Folding the rectangles along their edges makes the prism.",
+    keywords: ["net", "nets", "net of a solid", "red de un cuerpo"],
+    svg: `<svg viewBox="0 0 340 150" role="img" aria-label="A rectangular prism net with six connected rectangles">
+      <rect x="114" y="12" width="62" height="35" fill="#bfe3f7" stroke="#17324d" stroke-width="2"/><rect x="52" y="47" width="62" height="54" fill="#d9edf7" stroke="#17324d" stroke-width="2"/><rect x="114" y="47" width="62" height="54" fill="#8ecae6" stroke="#17324d" stroke-width="2"/><rect x="176" y="47" width="62" height="54" fill="#d9edf7" stroke="#17324d" stroke-width="2"/><rect x="238" y="47" width="62" height="54" fill="#8ecae6" stroke="#17324d" stroke-width="2"/><rect x="114" y="101" width="62" height="35" fill="#bfe3f7" stroke="#17324d" stroke-width="2"/><text x="170" y="146" text-anchor="middle" font-size="11" font-weight="800" fill="#17324d">Six flat faces fold into one solid</text>
+    </svg>`,
+  },
+
+  "surface-area": {
+    id: "surface-area",
+    enTitle: "Surface Area",
+    esTitle: "Área de superficie",
+    enDef: "The total area of every outside face of a three-dimensional solid, measured in square units.",
+    esDef: "El área total de todas las caras exteriores de un cuerpo tridimensional, medida en unidades cuadradas.",
+    example: "A prism with face areas 6, 8, and 12 has surface area 2 × (6 + 8 + 12) = 52 square units.",
+    keywords: ["surface area", "surface areas", "área de superficie", "área total"],
+    svg: `<svg viewBox="0 0 340 145" role="img" aria-label="A solid with each outside face highlighted and counted in square units">
+      <polygon points="65,48 128,22 190,48 128,74" fill="#f6bd60" stroke="#17324d" stroke-width="2"/><polygon points="65,48 128,74 128,128 65,101" fill="#84c5d7" stroke="#17324d" stroke-width="2"/><polygon points="128,74 190,48 190,101 128,128" fill="#5aa9c4" stroke="#17324d" stroke-width="2"/><text x="260" y="54" text-anchor="middle" font-size="12" font-weight="800" fill="#17324d">Add every</text><text x="260" y="72" text-anchor="middle" font-size="12" font-weight="800" fill="#17324d">outside face</text><text x="260" y="100" text-anchor="middle" font-size="13" font-weight="900" fill="#17324d">square units</text>
+    </svg>`,
+  },
+
+  face: {
+    id: "face",
+    enTitle: "Face of a Solid",
+    esTitle: "Cara de un cuerpo geométrico",
+    enDef: "A flat surface on the outside of a three-dimensional solid.",
+    esDef: "Una superficie plana en el exterior de un cuerpo tridimensional.",
+    example: "A rectangular prism has six faces. Opposite faces have matching dimensions.",
+    keywords: ["face", "faces", "cara", "caras"],
+    svg: `<svg viewBox="0 0 320 130" role="img" aria-label="One rectangular face highlighted on a rectangular prism">
+      <polygon points="66,42 126,18 126,78 66,102" fill="#d9edf7" stroke="#17324d" stroke-width="2"/><polygon points="126,18 202,42 202,102 126,78" fill="#d8e2dc" stroke="#17324d" stroke-width="2"/><polygon points="66,42 126,78 202,102 142,66" fill="#f6bd60" stroke="#17324d" stroke-width="3"/><text x="244" y="65" text-anchor="middle" font-size="13" font-weight="900" fill="#17324d">one flat face</text>
+    </svg>`,
+  },
+
+  prism: {
+    id: "prism",
+    enTitle: "Rectangular Prism",
+    esTitle: "Prisma rectangular",
+    enDef: "A solid with two matching, parallel rectangular bases joined by rectangular faces.",
+    esDef: "Un cuerpo con dos bases rectangulares iguales y paralelas unidas por caras rectangulares.",
+    example: "A box is a rectangular prism. Its six faces form three matching pairs.",
+    keywords: ["rectangular prism", "rectangular prisms", "prism", "prisms", "prisma rectangular", "prisma"],
+    svg: `<svg viewBox="0 0 320 140" role="img" aria-label="A rectangular prism with matching opposite faces">
+      <polygon points="54,45 118,20 182,45 118,70" fill="#bfe3f7" stroke="#17324d" stroke-width="2"/><polygon points="54,45 118,70 118,124 54,98" fill="#84c5d7" stroke="#17324d" stroke-width="2"/><polygon points="118,70 182,45 182,98 118,124" fill="#5aa9c4" stroke="#17324d" stroke-width="2"/><text x="246" y="50" text-anchor="middle" font-size="12" font-weight="800" fill="#17324d">3 dimensions</text><text x="246" y="71" text-anchor="middle" font-size="11" font-weight="700" fill="#17324d">6 faces</text><text x="246" y="91" text-anchor="middle" font-size="11" font-weight="700" fill="#17324d">3 matching pairs</text>
+    </svg>`,
+  },
+
+  pyramid: {
+    id: "pyramid",
+    enTitle: "Square Pyramid",
+    esTitle: "Pirámide cuadrada",
+    enDef: "A solid with one square base and four triangular faces that meet at one vertex.",
+    esDef: "Un cuerpo con una base cuadrada y cuatro caras triangulares que se unen en un vértice.",
+    example: "A square-pyramid net has one square and four triangles. Surface area includes all five faces.",
+    keywords: ["square pyramid", "square pyramids", "pyramid", "pyramids", "pirámide cuadrada", "pirámide"],
+    svg: `<svg viewBox="0 0 320 145" role="img" aria-label="A square pyramid with one square base and four triangular faces">
+      <polygon points="151,18 83,71 151,124" fill="#f6bd60" stroke="#17324d" stroke-width="2"/><polygon points="151,18 151,124 219,71" fill="#84c5d7" stroke="#17324d" stroke-width="2"/><polygon points="151,18 83,71 151,71" fill="#d9edf7" stroke="#17324d" stroke-width="2"/><polygon points="151,18 151,71 219,71" fill="#5aa9c4" stroke="#17324d" stroke-width="2"/><polygon points="83,71 151,71 219,71 151,124" fill="#bfe3f7" stroke="#17324d" stroke-width="2"/><text x="252" y="60" text-anchor="middle" font-size="11" font-weight="800" fill="#17324d">1 square</text><text x="252" y="80" text-anchor="middle" font-size="11" font-weight="800" fill="#17324d">4 triangles</text>
+    </svg>`,
+  },
+
   perimeter: {
     id: "perimeter",
     enTitle: "Perimeter",
