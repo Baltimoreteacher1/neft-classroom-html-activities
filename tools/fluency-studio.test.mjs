@@ -547,6 +547,56 @@ for (const id of Object.keys(ENGINES))
   );
 for (const id of Object.values(SIM_FOR)) assert.ok(SIMS[id], `simulator ${id} exists`);
 
+// ---------- Fractional-edge volume uses the active Grade 6 problem ----------
+{
+  assert.equal(SIM_FOR["volume-fractional"], "volumeFractional");
+  const item = {
+    question:
+      "A rectangular prism is 1 1/2 ft long, 2 ft wide and 1/2 ft tall. What is its volume?",
+    steps: [],
+  };
+  const sim = SIMS.volumeFractional;
+  const state = sim.init({ item, lang: () => "en" });
+  assert.deepEqual(state, { a: 3, b: 4, c: 1, lang: "en" });
+  assert.equal(sim.prediction(state).answer, 1.5, "12 half-foot cubes each occupy 1/8 ft³");
+  assert.match(sim.render(state).svg, /12\/8 ft³ = 1 1\/2 ft³/);
+  assert.match(sim.render(state).read.en, /each is 1\/8 ft³/);
+  assert.deepEqual(sim.init({ item: { question: "A prism is 1/2 ft by 1/2 ft by 1/2 ft." } }), {
+    a: 1,
+    b: 1,
+    c: 1,
+    lang: "en",
+  });
+  assert.deepEqual(sim.clamp({ a: 0, b: 90, c: 3.4, lang: "es" }), {
+    a: 1,
+    b: 12,
+    c: 3,
+    lang: "es",
+  });
+
+  const host = document.createElement("div");
+  const lesson = { spec: { item } };
+  mountExplore(
+    { sim, item, lesson, id: "volume-fractional-test", lang: () => "en", mark() {} },
+    host,
+  );
+  assert.equal(
+    host.querySelector("[data-model]").hidden,
+    true,
+    "prediction comes before model reveal",
+  );
+  const answer = host.querySelector("[data-prediction-form] input");
+  answer.value = "1.5";
+  host
+    .querySelector("[data-prediction-form]")
+    .dispatchEvent(new dom.window.Event("submit", { bubbles: true, cancelable: true }));
+  assert.equal(host.querySelector("[data-model]").hidden, false);
+  const length = host.querySelector('input[data-k="a"]');
+  length.value = "4";
+  length.dispatchEvent(new dom.window.Event("input", { bubbles: true }));
+  assert.match(host.querySelector("[data-read]").textContent, /2 cubic feet/);
+}
+
 {
   const knownPart = { question: "15 is 30% of what number?", steps: [] };
   const wholeLesson = lessonFor(knownPart);

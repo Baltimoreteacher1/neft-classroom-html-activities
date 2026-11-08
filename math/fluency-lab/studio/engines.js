@@ -166,6 +166,7 @@ export const SIM_FOR = {
   area: "areaPerim",
   perimeter: "areaPerim",
   volume: "volume",
+  "volume-fractional": "volumeFractional",
   "surface-area-nets": "surfaceNet",
   "angle-relations": "angles",
   "interpret-data": "dotplot",

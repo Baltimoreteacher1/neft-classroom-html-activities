@@ -231,6 +231,101 @@ const volume = {
   },
 };
 
+// Fractional edge lengths are measured with half-foot edge units. Their cubes
+// each have volume 1/8 ft³, so the exact count stays integral throughout.
+const volumeFractional = {
+  id: "volumeFractional",
+  title: L("Fractional volume with unit cubes", "Volumen fraccionario con cubos unitarios"),
+  ask: L(
+    "Predict the volume first. Then change an edge and track how many half-foot cubes fill each layer and how many layers fit.",
+    "Primero predice el volumen. Luego cambia una arista y observa cuántos cubos de medio pie llenan cada capa y cuántas capas caben.",
+  ),
+  init(ctx) {
+    const question = ctx?.item?.question || ctx?.lesson?.spec?.item?.question || "";
+    const values = [...question.matchAll(/(\d+(?:\s+1\/2|\/2)?)\s*ft\b/gi)].map((m) => {
+      const token = m[1].trim();
+      if (token.includes(" ") && token.endsWith("1/2")) return Number(token.split(/\s+/)[0] || 0) * 2 + 1;
+      if (token.endsWith("/2")) return 1;
+      return Number(token) * 2;
+    });
+    return {
+      a: values[0] || 3,
+      b: values[1] || 2,
+      c: values[2] || 1,
+      lang: ctx?.lang?.() === "es" ? "es" : "en",
+    };
+  },
+  clamp(s) {
+    return {
+      a: Math.max(1, Math.min(19, Math.round(Number(s.a) || 1))),
+      b: Math.max(1, Math.min(12, Math.round(Number(s.b) || 1))),
+      c: Math.max(1, Math.min(14, Math.round(Number(s.c) || 1))),
+      lang: s.lang === "es" ? "es" : "en",
+    };
+  },
+  sliders: (s) => [
+    slider("a", L("Length (half-foot units)", "Largo (unidades de medio pie)"), 1, 19, 1, s.a),
+    slider("b", L("Width (half-foot units)", "Ancho (unidades de medio pie)"), 1, 12, 1, s.b),
+    slider("c", L("Height (half-foot units)", "Alto (unidades de medio pie)"), 1, 14, 1, s.c),
+  ],
+  prediction(s) {
+    const eighths = s.a * s.b * s.c;
+    const value = eighths / 8;
+    return {
+      prompt: L(
+        `A prism is ${s.a}/2 ft by ${s.b}/2 ft by ${s.c}/2 ft. Predict its volume in cubic feet.`,
+        `Un prisma mide ${s.a}/2 pie por ${s.b}/2 pie por ${s.c}/2 pie. Predice su volumen en pies cúbicos.`,
+      ),
+      answer: value,
+      hint: L(
+        `Each edge is measured in half-feet. A half-foot cube is 1/8 cubic foot; first find ${s.a} × ${s.b} × ${s.c} such cubes.`,
+        `Cada arista se mide en medios pies. Un cubo de medio pie tiene 1/8 de pie cúbico; primero calcula ${s.a} × ${s.b} × ${s.c} cubos.`,
+      ),
+    };
+  },
+  render(s) {
+    const spanish = s.lang === "es";
+    const length = (n) => n % 2 ? `${Math.floor(n / 2) ? `${Math.floor(n / 2)} ` : ""}1/2` : String(n / 2);
+    const eighths = s.a * s.b * s.c;
+    const whole = Math.floor(eighths / 8);
+    const rem = eighths % 8;
+    const g = (x, y) => y ? g(y, x % y) : x;
+    const volumeText = rem
+      ? `${whole ? `${whole} ` : ""}${rem / g(rem, 8)}/${8 / g(rem, 8)}`
+      : String(whole);
+    const cellW = Math.min(17, 320 / s.a);
+    const cellH = Math.min(15, 165 / s.b);
+    const ox = 34, oy = 38;
+    let body = "";
+    // Offset outlines indicate repeated layers; the front/top grid shows one
+    // layer's actual half-foot unit cubes at a readable scale.
+    for (let layer = Math.min(s.c, 4) - 1; layer >= 0; layer -= 1) {
+      const dx = layer * 7, dy = layer * -6;
+      body += `<rect x="${ox + dx}" y="${oy + dy}" width="${s.a * cellW}" height="${s.b * cellH}" fill="${layer ? "#fff" : COLORS.whole}" fill-opacity="${layer ? ".22" : ".16"}" stroke="${layer ? COLORS.hundreds : COLORS.ink}" stroke-width="${layer ? 1.5 : 2}"/>`;
+    }
+    for (let row = 0; row < s.b; row += 1) for (let col = 0; col < s.a; col += 1) {
+      body += `<rect x="${ox + col * cellW}" y="${oy + row * cellH}" width="${Math.max(1, cellW - 1)}" height="${Math.max(1, cellH - 1)}" fill="${COLORS.whole}" fill-opacity=".62" stroke="#fff" stroke-width="1"/>`;
+    }
+    body += txt(390, 65, `${s.a} × ${s.b}`, { size: 19, fill: COLORS.whole }) +
+      txt(390, 91, spanish ? "cubos de medio pie por capa" : "half-foot cubes per layer", { size: 13, fill: COLORS.mute, anchor: "start" }) +
+      txt(390, 129, `× ${s.c} ${spanish ? "capas" : "layers"}`, { size: 19, fill: COLORS.hundreds }) +
+      txt(390, 176, `= ${eighths} ${spanish ? "cubos unitarios" : "unit cubes"}`, { size: 17 }) +
+      txt(390, 207, `${eighths}/8 ft³ = ${volumeText} ft³`, { size: 20, fill: COLORS.ink });
+    const alt = L(
+      `A prism ${length(s.a)} by ${length(s.b)} by ${length(s.c)} feet. One layer has ${s.a} times ${s.b}, or ${s.a * s.b}, half-foot cubes. There are ${s.c} layers: ${eighths} cubes total. Each cube is one eighth of a cubic foot, so the volume is ${eighths}/8, or ${volumeText} cubic feet.`,
+      `Un prisma de ${length(s.a)} por ${length(s.b)} por ${length(s.c)} pies. Una capa tiene ${s.a} por ${s.b}, o ${s.a * s.b}, cubos de medio pie. Hay ${s.c} capas: ${eighths} cubos en total. Cada cubo equivale a un octavo de pie cúbico; el volumen es ${eighths}/8, o ${volumeText} pies cúbicos.`,
+    );
+    return out(
+      svgWrap(body, "", { w: 600, h: 245 }),
+      alt,
+      L(
+        `${s.a}/2 × ${s.b}/2 = ${s.a * s.b}/4 square feet per layer. Multiply by ${s.c}/2 feet: ${eighths}/8 = ${volumeText} cubic feet. The half-foot cubes make the fractional unit visible: each is 1/8 ft³.`,
+        `${s.a}/2 × ${s.b}/2 = ${s.a * s.b}/4 pies cuadrados por capa. Multiplica por ${s.c}/2 pies: ${eighths}/8 = ${volumeText} pies cúbicos. Los cubos de medio pie muestran la unidad fraccionaria: cada uno es 1/8 pie³.`,
+      ),
+    );
+  },
+};
+
 // Reuse Curriculum's accessible 3D net interaction in the actual surface-area lesson.
 // The problem parser remains the source of dimensions and correct answer logic.
 const surfaceNet = {
@@ -693,6 +788,6 @@ const dotplot = {
   },
 };
 
-export const SIMS = { fracEquiv, fractionDivision, proportional, machine, areaPerim, volume, percentWhole, percentPart, ratioTape, angles, dotplot, surfaceNet };
+export const SIMS = { fracEquiv, fractionDivision, proportional, machine, areaPerim, volume, volumeFractional, percentWhole, percentPart, ratioTape, angles, dotplot, surfaceNet };
 export const simFor = (id) => SIMS[id] || null;
 export const _gcd = gcd;
