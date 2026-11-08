@@ -1611,6 +1611,43 @@ for (const sim of Object.values(SIMS)) {
   correctHost.remove();
 }
 {
+  const sim = SIMS.percentPart;
+  const host = document.createElement("div");
+  document.body.append(host);
+  assert.equal(sim.prediction({ p: 30, w: 50 }).answer, 15);
+  assert.equal(sim.prediction({ p: 0, w: 50 }).answer, 0, "zero percent has a zero part");
+  mountExplore({ sim, lang: () => "en", mark() {} }, host);
+  assert.equal(host.querySelector("[data-model]").hidden, true);
+  assert.match(host.querySelector("[data-prediction-prompt]").textContent, /what is 30% of 50/);
+  const submit = (guess) => {
+    host.querySelector("[data-prediction-form] input").value = String(guess);
+    host
+      .querySelector("[data-prediction-form]")
+      .dispatchEvent(new dom.window.Event("submit", { bubbles: true, cancelable: true }));
+  };
+  submit(12);
+  assert.equal(
+    host.querySelector("[data-model]").hidden,
+    true,
+    "a wrong prediction keeps the answer model closed",
+  );
+  assert.match(
+    host.querySelector("[data-prediction-feedback]").textContent,
+    /means 0\.3 of the whole/,
+  );
+  submit(15);
+  assert.equal(
+    host.querySelector("[data-model]").hidden,
+    false,
+    "a correct prediction opens the model",
+  );
+  const percent = host.querySelector('[data-k="p"]');
+  percent.value = "60";
+  percent.dispatchEvent(new dom.window.Event("input", { bubbles: true }));
+  assert.match(host.querySelector("[data-read]").textContent, /0\.6 × 50 = 30/);
+  host.remove();
+}
+{
   const dp = SIMS.dotplot;
   let s = dp.init();
   const before = dp.stats(s.data);

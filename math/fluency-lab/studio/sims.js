@@ -349,6 +349,20 @@ const percentPart = {
     slider("p", L("Percent", "Porcentaje"), 0, 100, 1, s.p),
     slider("w", L("Whole amount", "Cantidad total"), 1, 120, 1, s.w),
   ],
+  prediction(s) {
+    const expected = percentTape.evaluate(null, [s.p, s.w]).value;
+    return {
+      prompt: L(
+        `Predict the part: what is ${s.p}% of ${fmt(s.w)}?`,
+        `Predice la parte: ¿cuánto es el ${s.p}% de ${fmt(s.w)}?`,
+      ),
+      answer: expected,
+      hint: L(
+        `${s.p}% means ${fmt(s.p / 100)} of the whole. Use the hundred grid to estimate that part of ${fmt(s.w)}.`,
+        `${s.p}% significa ${fmt(s.p / 100)} del entero. Usa la cuadrícula de cien para estimar esa parte de ${fmt(s.w)}.`,
+      ),
+    };
+  },
   render(s) {
     const result = percentTape.evaluate(null, [s.p, s.w]);
     const body = percentTape.visual([s.p, s.w], result) + hundredGrid(s.p, 360);
