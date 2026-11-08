@@ -770,7 +770,9 @@ try {
     "Language Sample Lens presents classroom examples instead of a proficiency slider",
   );
   ok(
-    /not WIDA descriptors, a placement tool, or a proficiency score/i.test(await page.locator(".ls-stage-body").innerText()),
+    /not WIDA descriptors, a placement tool, or a proficiency score/i.test(
+      await page.locator(".ls-stage-body").innerText(),
+    ),
     "the sample lens states its limits clearly",
   );
   const conceptBefore = await page.locator(".wida-concept").innerText();

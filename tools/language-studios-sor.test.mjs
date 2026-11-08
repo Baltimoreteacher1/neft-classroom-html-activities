@@ -80,8 +80,16 @@ test("Language Studios data structures and contracts", () => {
     "Math has all 5 WIDA discourse levels",
   );
   for (const scenario of Object.values(ls.WIDA_DISCOURSE_DATA)) {
-    assert.ok(scenario.concept && scenario.prompt, `${scenario.domain} keeps one content idea and task across samples`);
-    assert.ok(scenario.levels.every((sample) => sample.passage && sample.wordLevel && sample.sentenceLevel && sample.discourseLevel));
+    assert.ok(
+      scenario.concept && scenario.prompt,
+      `${scenario.domain} keeps one content idea and task across samples`,
+    );
+    assert.ok(
+      scenario.levels.every(
+        (sample) =>
+          sample.passage && sample.wordLevel && sample.sentenceLevel && sample.discourseLevel,
+      ),
+    );
   }
   assert.match(ls.WIDA_DISCOURSE_DATA.science.levels[0].passage, /Animals eat plants/);
   assert.doesNotMatch(ls.WIDA_DISCOURSE_DATA.science.levels[0].passage, /Animal eat plant/);
