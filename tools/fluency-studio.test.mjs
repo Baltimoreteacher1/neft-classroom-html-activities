@@ -115,6 +115,13 @@ for (const skill of ALL_SKILLS) {
     }
   }
 }
+for (const skillId of ["center-spread", "data-displays"]) {
+  assert.equal(
+    rows[`6:${skillId}`].modeled,
+    60,
+    `Grade 6 ${skillId}: every generated sample opens the matching visual model`,
+  );
+}
 
 function checkInvariants(id, spec, frames, rep, item) {
   const last = frames.at(-1);
@@ -1000,6 +1007,30 @@ function solve(engineId, question) {
     "an even count averages the two middle numbers",
   );
   assert.equal(ENGINES.expr.answer(ENGINES.expr.parse("Find the mean: 10, 12, 7, 15.")), 11);
+  const mad = ENGINES.expr.parse("Find the mean absolute deviation (MAD): 1, 2, 3, 4, 5.");
+  assert.equal(ENGINES.expr.answer(mad), 1.2, "MAD averages absolute distances from the mean");
+  assert.deepEqual(mad.distances, [2, 1, 0, 1, 2]);
+  assert.equal(
+    ENGINES.expr.answer(ENGINES.expr.parse("Find the median of the data: 4, 1, 3, 2.")),
+    2.5,
+    "the legacy mean/median prompt accepts the explicit data wording",
+  );
+  const iqr = ENGINES.expr.parse("Find the interquartile range (IQR): 1, 2, 3, 4, 5, 6, 7.");
+  assert.equal(ENGINES.expr.answer(iqr), 4, "odd-count quartiles exclude the overall median");
+  assert.equal(iqr.q1, 2);
+  assert.equal(iqr.q3, 6);
+  const hist = ENGINES.expr.parse(
+    "A histogram groups the data 2, 3, 3, 3, 11, 19, 34, 36, 37 in intervals of 10. How many values are in the interval 10–19?",
+  );
+  assert.equal(
+    ENGINES.expr.answer(hist),
+    2,
+    "both endpoints belong to the indicated histogram interval",
+  );
+  const freq = ENGINES.expr.parse(
+    "A frequency table shows how many pets students have. 1 pet: 7; 2 pets: 9; 3 pets: 5; 4 pets: 5. How many students were asked?",
+  );
+  assert.equal(ENGINES.expr.answer(freq), 26, "frequency-table totals sum all categories");
   assert.equal(
     ENGINES.expr.answer(
       ENGINES.expr.parse("6 of 11 equal sections are winning sections. What is P(win)?"),

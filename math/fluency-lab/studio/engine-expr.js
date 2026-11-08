@@ -3,6 +3,7 @@
 // scatter plot. Every frame of an expression keeps the same value, and every number is recomputed by the tests.
 import { COLORS, L, choiceBuild, clean, frameOf, gcd, keyed, num, predictOf, svgWrap, txt } from "./core.js";
 import percentFindWhole from "../../../curriculum/learning-labs/shared/models/percent-find-whole.mjs";
+import { fiveNumber } from "../response-check.js";
 
 const sg = (n) => (n < 0 ? `−${-n}` : String(n));
 const fmtN = (n) => String(Math.round(n * 1e6) / 1e6).replace("-", "−");
@@ -97,14 +98,45 @@ export function parse(question, item) {
       return null;
     }
   }
-  m = raw.match(/^Find the (median|mean): ((?:-?\d+(?:\.\d+)?, )*-?\d+(?:\.\d+)?)\.$/);
+  m = raw.match(/^A histogram groups the data (.+) in intervals of (\d+)\. How many values are in the interval (\d+)[–-](\d+)\?$/);
   if (m) {
-    const list = m[2].split(", ").map(Number);
+    const values = m[1].split(/,\s*/).map(Number);
+    const width = Number(m[2]);
+    const [lo, hi] = [Number(m[3]), Number(m[4])];
+    if (values.length < 4 || values.length > 30 || values.some((v) => !Number.isInteger(v) || v < 0) || !Number.isInteger(width) || width < 1 || lo % width !== 0 || hi !== lo + width - 1) return null;
+    const max = Math.max(...values);
+    const bins = Array.from({ length: Math.floor(max / width) + 1 }, (_, i) => {
+      const start = i * width;
+      return { lo: start, hi: start + width - 1, count: values.filter((v) => v >= start && v <= start + width - 1).length };
+    });
+    const target = bins.findIndex((bin) => bin.lo === lo);
+    if (target < 0) return null;
+    return { engine: "expr", mode: "hist", values, width, bins, target, result: bins[target].count };
+  }
+  m = raw.match(/^A frequency table shows how many (pets|books) students have\. (.+)\. How many students were asked\?$/);
+  if (m) {
+    const rows = m[2].split(/;\s*/).map((row) => row.match(/^(\d+ (?:pet|pets|book|books)):\s*(\d+)$/));
+    if (rows.length < 2 || rows.length > 8 || rows.some((row) => !row)) return null;
+    const values = rows.map((row) => [row[1], Number(row[2])]);
+    return { engine: "expr", mode: "freq", rows: values, result: values.reduce((sum, row) => sum + row[1], 0) };
+  }
+  m = raw.match(/^Find the (mean|median|mean absolute deviation \(MAD\)|interquartile range \(IQR\))(?: of the data)?: (.+)\.$/i);
+  if (m) {
+    const listText = m[2].trim();
+    if (!/^-?\d+(?:\.\d+)?(?:,\s*-?\d+(?:\.\d+)?)*$/.test(listText)) return null;
+    const list = listText.split(/,\s*/).map(Number);
+    if (list.length < 4 || list.length > 12 || list.some((value) => !Number.isFinite(value))) return null;
     const sorted = [...list].sort((a, b) => a - b);
     const mid = sorted.length / 2;
     const median = sorted.length % 2 ? sorted[Math.floor(mid)] : (sorted[mid - 1] + sorted[mid]) / 2;
     const mean = list.reduce((a, b) => a + b, 0) / list.length;
-    return { engine: "expr", mode: m[1], list, sorted, median, mean, result: m[1] === "median" ? median : mean };
+    const title = m[1].toLowerCase();
+    const mode = title.startsWith("mean absolute") ? "mad" : title.startsWith("interquartile") ? "iqr" : title;
+    const [min, q1, , q3, max] = fiveNumber(list);
+    const distances = list.map((value) => Math.abs(value - mean));
+    const mad = distances.reduce((a, b) => a + b, 0) / list.length;
+    const result = mode === "median" ? median : mode === "mean" ? mean : mode === "mad" ? mad : q3 - q1;
+    return { engine: "expr", mode, list, sorted, median, mean, distances, mad, min, q1, q3, max, result };
   }
   m = q.match(/^(\d+) of (\d+) equal sections are winning sections\. What is P\(win\)\?$/);
   if (m) {
@@ -257,7 +289,7 @@ export function frames(s) {
       frameOf({ id: "result", cap: A(`${s.up ? "Add" : "Take away"} the change: ${s.n} ${s.up ? "+" : "−"} ${fmtN(s.change)} = ${fmtN(s.result)}.`, `${s.up ? "Suma" : "Resta"} el cambio: ${s.n} ${s.up ? "+" : "−"} ${fmtN(s.change)} = ${fmtN(s.result)}.`), easy: A(`${fmtN(s.result)}.`, `${fmtN(s.result)}.`), eq: `${s.n} ${s.up ? "+" : "−"} ${fmtN(s.change)} = ${fmtN(s.result)}`, body: body(2), alt, meta: { n: s.n, p: s.p, change: s.change, up: s.up, result: s.result }, h: 220 }),
     ];
   }
-  if (s.mode === "median" || s.mode === "mean") {
+  if (["median", "mean", "mad", "iqr"].includes(s.mode)) {
     const tiles = (list, hi = -1) => {
       const w = Math.min(60, 520 / list.length);
       let out = "";
@@ -265,6 +297,77 @@ export function frames(s) {
       return out;
     };
     const alt = A(`The numbers ${s.list.join(", ")}.`, `Los números ${s.list.join(", ")}.`);
+    if (s.mode === "mad") {
+      const min = Math.min(...s.list);
+      const max = Math.max(...s.list);
+      const span = max - min || 1;
+      const x = (value) => 72 + ((value - min) / span) * 416;
+      const plot = (showMean = false, showDistances = false) => {
+        let body = '<line x1="68" y1="82" x2="492" y2="82" stroke="' + COLORS.ink + '" stroke-width="2"/>';
+        const counts = new Map();
+        for (const value of [...s.list].sort((a, b) => a - b)) {
+          const stack = counts.get(value) || 0;
+          counts.set(value, stack + 1);
+          body += '<circle cx="' + x(value) + '" cy="' + (72 - stack * 22) + '" r="8" fill="' + COLORS.part + '" stroke="white" stroke-width="2"/>';
+        }
+        for (const [value] of counts) {
+          body += '<line x1="' + x(value) + '" y1="78" x2="' + x(value) + '" y2="87" stroke="' + COLORS.ink + '"/>';
+          body += txt(x(value), 105, fmtN(value), { size: 13 });
+        }
+        if (showMean) {
+          body += '<line x1="' + x(s.mean) + '" y1="26" x2="' + x(s.mean) + '" y2="92" stroke="' + COLORS.warn + '" stroke-width="3" stroke-dasharray="5 4"/>';
+          body += txt(x(s.mean), 20, "mean " + fmtN(s.mean), { size: 14, fill: COLORS.warn });
+        }
+        if (showDistances) {
+          s.list.forEach((value, i) => {
+            const y = 130 + i * 19;
+            body += '<line x1="' + x(s.mean) + '" y1="' + y + '" x2="' + x(value) + '" y2="' + y + '" stroke="' + COLORS.part + '" stroke-width="3"/>';
+            body += '<circle cx="' + x(s.mean) + '" cy="' + y + '" r="3" fill="' + COLORS.warn + '"/><circle cx="' + x(value) + '" cy="' + y + '" r="3" fill="' + COLORS.part + '"/>';
+            body += txt(28, y + 5, "d" + (i + 1), { anchor: "start", size: 11, fill: COLORS.mute });
+            body += txt(520, y + 5, fmtN(s.distances[i]), { anchor: "end", size: 13 });
+          });
+        }
+        return body;
+      };
+      const madAlt = A("A dot plot with the mean marked and each absolute distance shown.", "Una gráfica de puntos con la media marcada y cada distancia absoluta visible.");
+      const distanceTotal = s.distances.reduce((a, b) => a + b, 0);
+      return [
+        frameOf({ id: "data", cap: A("Each dot is one value. The mean is the balance point.", "Cada punto representa un valor. La media es el punto de equilibrio."), easy: A("Each dot is one value.", "Cada punto es un valor."), eq: s.list.join(", "), body: plot(), alt: madAlt, meta: { values: s.list }, h: 140 }),
+        frameOf({ id: "center", cap: A("Find the mean first. MAD measures each value's distance from this center.", "Halla primero la media. La DMA mide la distancia de cada valor desde este centro."), easy: A("Mark the mean.", "Marca la media."), eq: "mean = " + fmtN(s.mean), body: plot(true), alt: madAlt, meta: { mean: s.mean }, h: 140 }),
+        frameOf({ id: "distances", cap: A("Use absolute distances. Values on either side of the mean count as positive distances.", "Usa distancias absolutas. Los valores a cada lado de la media cuentan como distancias positivas."), easy: A("Count each distance.", "Cuenta cada distancia."), eq: s.distances.map(fmtN).join(", "), body: plot(true, true), alt: madAlt, meta: { distances: s.distances }, h: 340 }),
+        frameOf({ id: "mad", cap: A("Average the distances: " + fmtN(distanceTotal) + " ÷ " + s.list.length + " = " + fmtN(s.mad) + ".", "Promedia las distancias: " + fmtN(distanceTotal) + " ÷ " + s.list.length + " = " + fmtN(s.mad) + "."), easy: A("MAD = " + fmtN(s.mad) + ".", "DMA = " + fmtN(s.mad) + "."), eq: "MAD = " + fmtN(distanceTotal) + " ÷ " + s.list.length + " = " + fmtN(s.mad), body: plot(true, true), alt: madAlt, meta: { totalDistance: distanceTotal, n: s.list.length, mad: s.mad }, h: 340 }),
+      ];
+    }
+    if (s.mode === "iqr") {
+      const n = s.sorted.length;
+      const half = Math.floor(n / 2);
+      const lower = s.sorted.slice(0, half);
+      const upper = s.sorted.slice(n - half);
+      const grouped = s.sorted.map((value, i) => {
+        const fill = i < half ? COLORS.part : i >= n - half ? COLORS.whole : COLORS.warn;
+        const w = Math.min(48, 500 / n);
+        const cx = 280 - (w * n) / 2 + i * w + w / 2;
+        return '<rect x="' + (cx - w / 2 + 2) + '" y="68" width="' + (w - 4) + '" height="44" rx="6" fill="' + fill + '" opacity=".88"/>' + txt(cx, 96, fmtN(value), { size: 16, fill: "#fff" });
+      }).join("");
+      const min = s.min;
+      const max = s.max;
+      const span = max - min || 1;
+      const x = (value) => 72 + ((value - min) / span) * 416;
+      let box = '<line x1="' + x(min) + '" y1="90" x2="' + x(max) + '" y2="90" stroke="' + COLORS.ink + '" stroke-width="3"/>';
+      box += '<line x1="' + x(min) + '" y1="78" x2="' + x(min) + '" y2="102" stroke="' + COLORS.ink + '" stroke-width="3"/>';
+      box += '<line x1="' + x(max) + '" y1="78" x2="' + x(max) + '" y2="102" stroke="' + COLORS.ink + '" stroke-width="3"/>';
+      box += '<rect x="' + x(s.q1) + '" y="68" width="' + Math.max(1, x(s.q3) - x(s.q1)) + '" height="44" fill="' + COLORS.part + '" fill-opacity=".25" stroke="' + COLORS.part + '" stroke-width="3"/>';
+      box += '<line x1="' + x(s.median) + '" y1="68" x2="' + x(s.median) + '" y2="112" stroke="' + COLORS.warn + '" stroke-width="3"/>';
+      for (const [value, label] of [[min, "min"], [s.q1, "Q1"], [s.median, "median"], [s.q3, "Q3"], [max, "max"]]) {
+        box += txt(x(value), 140, label + " " + fmtN(value), { size: 12, fill: label === "Q1" || label === "Q3" ? COLORS.part : COLORS.ink });
+      }
+      const iqrAlt = A("Ordered values split into lower and upper halves, then shown on a five-number box plot.", "Valores ordenados en mitades inferior y superior, luego representados en un diagrama de caja de cinco números.");
+      return [
+        frameOf({ id: "ordered", cap: A("Order the values. With an odd count, leave the overall median out of both halves.", "Ordena los valores. Si la cantidad es impar, deja la mediana general fuera de ambas mitades."), easy: A("Order, then split the halves.", "Ordena y separa las mitades."), eq: s.sorted.join(", "), body: grouped, alt: iqrAlt, meta: { sorted: s.sorted, lower, upper }, h: 160 }),
+        frameOf({ id: "quartiles", cap: A("Q1 is the median of the lower half (" + lower.join(", ") + "); Q3 is the median of the upper half (" + upper.join(", ") + ").", "Q1 es la mediana de la mitad inferior (" + lower.join(", ") + "); Q3 es la mediana de la mitad superior (" + upper.join(", ") + ")."), easy: A("Q1 = " + fmtN(s.q1) + "; Q3 = " + fmtN(s.q3) + ".", "Q1 = " + fmtN(s.q1) + "; Q3 = " + fmtN(s.q3) + "."), eq: "Q1 = " + fmtN(s.q1) + ", Q3 = " + fmtN(s.q3), body: grouped, alt: iqrAlt, meta: { q1: s.q1, q3: s.q3, median: s.median }, h: 160 }),
+        frameOf({ id: "iqr", cap: A("The box spans the middle half. Q3 − Q1 = " + fmtN(s.q3) + " − " + fmtN(s.q1) + " = " + fmtN(s.result) + ".", "La caja muestra la mitad central. Q3 − Q1 = " + fmtN(s.q3) + " − " + fmtN(s.q1) + " = " + fmtN(s.result) + "."), easy: A("IQR = " + fmtN(s.result) + ".", "RIC = " + fmtN(s.result) + "."), eq: "IQR = Q3 − Q1 = " + fmtN(s.result), body: box, alt: iqrAlt, meta: { min, q1: s.q1, median: s.median, q3: s.q3, max, iqr: s.result }, h: 170 }),
+      ];
+    }
     if (s.mode === "median") {
       const n = s.sorted.length;
       const mid = n % 2 ? Math.floor(n / 2) : -1;
@@ -295,6 +398,35 @@ export function frames(s) {
       frameOf({ id: "all", cap: A(`The spinner has ${s.t} equal sections. Each is equally likely.`, `La ruleta tiene ${s.t} secciones iguales. Cada una es igual de probable.`), easy: A(`${s.t} equal sections.`, `${s.t} secciones iguales.`), eq: "P(win) = ?", body: body(0), alt, meta: { t: s.t }, h: 240 }),
       frameOf({ id: "win", cap: A(`${s.n} of them are winning sections.`, `${s.n} de ellas son ganadoras.`), easy: A(`${s.n} win.`, `${s.n} ganan.`), eq: "P(win) = ?", body: body(1), alt, meta: { t: s.t, n: s.n }, h: 240 }),
       frameOf({ id: "prob", cap: A(`Probability is winning sections over all sections: ${s.n}/${s.t}${s.result !== `${s.n}/${s.t}` ? ` = ${s.result}` : ""}.`, `La probabilidad es secciones ganadoras entre todas las secciones: ${s.n}/${s.t}${s.result !== `${s.n}/${s.t}` ? ` = ${s.result}` : ""}.`), easy: A(`${s.result}.`, `${s.result}.`), eq: `P(win) = ${s.n}/${s.t}`, body: body(2), alt, meta: { t: s.t, n: s.n, result: s.result }, h: 240 }),
+    ];
+  }
+  if (s.mode === "hist") {
+    const maxCount = Math.max(1, ...s.bins.map((bin) => bin.count));
+    const barW = Math.min(62, 400 / s.bins.length);
+    const body = s.bins.map((bin, i) => {
+      const x = 80 + i * barW;
+      const height = (bin.count / maxCount) * 108;
+      const fill = i === s.target ? COLORS.part : COLORS.whole;
+      return '<rect x="' + x + '" y="' + (170 - height) + '" width="' + (barW - 4) + '" height="' + height + '" fill="' + fill + '" fill-opacity=".85"/>' + txt(x + (barW - 4) / 2, 162 - height, String(bin.count), { size: 15 }) + txt(x + (barW - 4) / 2, 194, bin.lo + "–" + bin.hi, { size: 11 });
+    }).join("");
+    const axes = '<line x1="72" y1="170" x2="500" y2="170" stroke="' + COLORS.ink + '" stroke-width="2"/>' + txt(42, 48, "Count", { size: 12, fill: COLORS.mute });
+    const target = s.bins[s.target];
+    const alt = A("A histogram groups individual data values into equal-width intervals; the highlighted bar counts values in the target interval.", "Un histograma agrupa valores individuales en intervalos de igual anchura; la barra resaltada cuenta los valores del intervalo indicado.");
+    return [
+      frameOf({ id: "histogram", cap: A("Each bar counts values in one interval. The interval width is " + s.width + ".", "Cada barra cuenta valores en un intervalo. La anchura del intervalo es " + s.width + "."), easy: A("Read the interval labels.", "Lee las etiquetas de los intervalos."), eq: "interval width = " + s.width, body: axes + body, alt, meta: { bins: s.bins }, h: 220 }),
+      frameOf({ id: "target-bin", cap: A("The interval " + target.lo + "–" + target.hi + " contains " + target.count + " values.", "El intervalo " + target.lo + "–" + target.hi + " contiene " + target.count + " valores."), easy: A("Count values in this bin.", "Cuenta los valores en esta barra."), eq: target.lo + "–" + target.hi + " → " + target.count, body: axes + body, alt, meta: { target: target.lo + "–" + target.hi, count: target.count }, h: 220 }),
+    ];
+  }
+  if (s.mode === "freq") {
+    const rows = s.rows.map(([label, count], i) => {
+      const y = 72 + i * 32;
+      return '<rect x="84" y="' + (y - 22) + '" width="392" height="28" rx="4" fill="' + (i % 2 ? "#f8fafc" : "#fff") + '" stroke="' + COLORS.rule + '"/>' + txt(100, y, label, { anchor: "start", size: 16 }) + txt(454, y, String(count), { anchor: "end", size: 16, fill: COLORS.part });
+    }).join("");
+    const total = s.rows.reduce((sum, row) => sum + row[1], 0);
+    const alt = A("Each table row is a frequency. Add the row counts to find the number of students asked.", "Cada fila de la tabla es una frecuencia. Suma los conteos para hallar cuántos estudiantes respondieron.");
+    return [
+      frameOf({ id: "table", cap: A("A frequency is the number of students in one category.", "Una frecuencia es el número de estudiantes en una categoría."), easy: A("Each row is one group.", "Cada fila es un grupo."), eq: s.rows.map((row) => row.join(": ")).join("; "), body: txt(100, 38, "Category", { anchor: "start", size: 14, fill: COLORS.mute }) + txt(454, 38, "Students", { anchor: "end", size: 14, fill: COLORS.mute }) + rows, alt, meta: { rows: s.rows }, h: 72 + s.rows.length * 32 }),
+      frameOf({ id: "total", cap: A("Add every category: " + s.rows.map((row) => row[1]).join(" + ") + " = " + total + " students.", "Suma todas las categorías: " + s.rows.map((row) => row[1]).join(" + ") + " = " + total + " estudiantes."), easy: A("Add the frequencies.", "Suma las frecuencias."), eq: "total = " + total, body: txt(280, 84, s.rows.map((row) => row[1]).join(" + "), { size: 22 }) + txt(280, 132, "= " + total + " students", { size: 28, fill: COLORS.part }), alt, meta: { counts: s.rows.map((row) => row[1]), total }, h: 180 }),
     ];
   }
   if (s.mode === "bars") {
@@ -345,6 +477,10 @@ export function predicts(s) {
   if (s.mode === "pct") return P(1, A(`What is ${s.p}% of ${s.n}: the number ${s.p}, or ${s.p} out of every 100 of ${s.n}?`, `¿Qué es ${s.p}% de ${s.n}: el número ${s.p}, o ${s.p} de cada 100 de ${s.n}?`), A(`${s.p} out of every 100.`, `${s.p} de cada 100.`), A(`Just ${s.p}.`, `Solo ${s.p}.`), [A("Percent means per hundred, so it is a share of the whole.", "Porcentaje significa por cada cien, así que es una parte del entero."), A(`${s.p}% of a different whole is a different amount, so it is not always ${s.p}.`, `${s.p}% de otro entero es otra cantidad, así que no siempre es ${s.p}.`)], A("Because a percent is a fraction of the whole.", "Porque un porcentaje es una fracción del entero."), A("Because a percent is the number itself.", "Porque un porcentaje es el número mismo."));
   if (s.mode === "median") return P(1, A("Should the numbers be in order before we look for the middle?", "¿Deben estar en orden los números antes de buscar el medio?"), A("Yes: put them in order first.", "Sí: ponlos primero en orden."), A("No: use the middle of the list as given.", "No: usa el medio de la lista como está."), [A("The middle only means something once the numbers are ordered.", "El medio solo significa algo cuando los números están ordenados."), A("The middle of an unordered list can be any number, so sort first.", "El medio de una lista desordenada puede ser cualquier número, así que ordena primero.")], A("Because the median is the middle value of the ordered list.", "Porque la mediana es el valor del medio de la lista ordenada."), A("Because the list is already in the right order.", "Porque la lista ya está en el orden correcto."));
   if (s.mode === "mean") return P(1, A("What do we do with the numbers to find the mean?", "¿Qué hacemos con los números para hallar la media?"), A("Add them, then divide by how many there are.", "Sumarlos y dividir entre cuántos hay."), A("Pick the one in the middle.", "Elegir el del medio."), [A("The mean is the equal share: the total split evenly.", "La media es el reparto igual: el total dividido en partes iguales."), A("That is the median. The mean uses every number.", "Eso es la mediana. La media usa todos los números.")], A("Because the mean spreads the total evenly.", "Porque la media reparte el total por igual."), A("Because the mean is the middle number.", "Porque la media es el número del medio."));
+  if (s.mode === "mad") return P(1, A("What values are averaged to find the mean absolute deviation?", "¿Qué valores se promedian para hallar la desviación media absoluta?"), A("The absolute distances from each value to the mean.", "Las distancias absolutas de cada valor a la media."), A("The original data values.", "Los datos originales."), [A("MAD averages how far each value is from the mean.", "La DMA promedia cuánto se aleja cada valor de la media."), A("Averaging the data values gives the mean, not the MAD.", "Promediar los datos da la media, no la DMA.")], A("Because spread measures distances from the center.", "Porque la dispersión mide distancias desde el centro."), A("Because MAD is another name for the mean.", "Porque DMA es otro nombre para la media."));
+  if (s.mode === "iqr") return P(1, A("Which two quartiles bound the middle half of the data?", "¿Qué dos cuartiles delimitan la mitad central de los datos?"), A("Q1 and Q3.", "Q1 y Q3."), A("The minimum and maximum.", "El mínimo y el máximo."), [A("The middle half runs from the first quartile to the third quartile.", "La mitad central va del primer cuartil al tercer cuartil."), A("The minimum-to-maximum distance is the range.", "La distancia del mínimo al máximo es el rango.")], A("Because IQR = Q3 − Q1.", "Porque RIC = Q3 − Q1."), A("Because IQR uses every value at the endpoints.", "Porque el RIC usa todos los valores de los extremos."));
+  if (s.mode === "hist") return P(1, A("What does the highlighted histogram bar count?", "¿Qué cuenta la barra resaltada del histograma?"), A("Values in the labeled interval.", "Valores dentro del intervalo indicado."), A("Every value in the full data set.", "Todos los valores del conjunto de datos."), [A("A histogram bar counts the values whose numbers fall inside its interval.", "Una barra de histograma cuenta los valores que caen dentro de su intervalo."), A("The entire data set is the sum of all bars, not one bar.", "El conjunto completo es la suma de todas las barras, no una sola.")], A("Because the interval labels tell which values belong to the bar.", "Porque las etiquetas del intervalo indican qué valores pertenecen a la barra."), A("Because one bar includes every interval.", "Porque una barra incluye todos los intervalos."));
+  if (s.mode === "freq") return P(1, A("How do we find the total number of students?", "¿Cómo hallamos el total de estudiantes?"), A("Add the frequency in every row.", "Sumar la frecuencia de cada fila."), A("Count the rows in the table.", "Contar las filas de la tabla."), [A("Each row counts one category; add the categories to count everyone.", "Cada fila cuenta una categoría; suma las categorías para contar a todos."), A("Rows name the categories, not the number of students.", "Las filas nombran las categorías, no el número de estudiantes.")], A("Because the categories together include all students asked.", "Porque las categorías juntas incluyen a todos los estudiantes encuestados."), A("Because every category has one student.", "Porque cada categoría tiene un estudiante."));
   if (s.mode === "prob") return P(2, A("Which goes on the bottom of a probability?", "¿Qué va abajo en una probabilidad?"), A("All the possible outcomes.", "Todos los resultados posibles."), A("The sections that lose.", "Las secciones que pierden."), [A("Probability compares the outcomes we want with all the outcomes.", "La probabilidad compara los resultados que queremos con todos los resultados."), A("The bottom counts every section, winners and losers together.", "El denominador cuenta todas las secciones, ganadoras y perdedoras juntas.")], A("Because every section is a possible outcome.", "Porque cada sección es un resultado posible."), A("Because only losing sections count.", "Porque solo cuentan las secciones perdedoras."));
   if (s.mode === "bars") return P(1, A("Which bar tells us the most votes?", "¿Qué barra nos dice cuál tiene más votos?"), A("The tallest bar.", "La barra más alta."), A("The first bar.", "La primera barra."), [A("A taller bar is a bigger count.", "Una barra más alta es un conteo mayor."), A("Order does not matter; height does.", "El orden no importa; la altura sí.")], A("Because bar height shows the count.", "Porque la altura de la barra muestra el conteo."), A("Because the first bar is always biggest.", "Porque la primera barra siempre es la mayor."));
   if (s.mode === "scatter") return P(1, A("As x goes up, what do we look at in the points?", "Al subir x, ¿qué miramos en los puntos?"), A("Whether y goes up, down, or jumps around.", "Si y sube, baja o salta."), A("Only the first point.", "Solo el primer punto."), [A("An association is the overall direction of all the points.", "Una asociación es la dirección general de todos los puntos."), A("One point cannot show a direction.", "Un solo punto no muestra una dirección.")], A("Because the pattern across all the points is the association.", "Porque el patrón de todos los puntos es la asociación."), A("Because one point decides.", "Porque un punto decide."));
@@ -361,6 +497,10 @@ export function hints(s) {
     percentWhole: [A("The known amount is a part. Mark its percent and leave 100% unknown.", "La cantidad conocida es una parte. Marca su porcentaje y deja desconocido el 100%."), A("Find an easier percent such as 10% or 1% by splitting the known part equally.", "Halla un porcentaje más sencillo, como 10% o 1%, al dividir la parte conocida en partes iguales."), A("Scale that equal step up to 100%. The amount at 100% is the whole.", "Escala ese paso igual hasta el 100%. La cantidad en el 100% es el entero.")],
     median: [A("Order the numbers first.", "Ordena primero los números."), A("The numbers are shown as given.", "Los números se muestran como están."), A("Cross off one from each end until you reach the middle.", "Tacha uno de cada extremo hasta llegar al medio.")],
     mean: [A("The mean needs the total and how many numbers there are.", "La media necesita el total y cuántos números hay."), A("The numbers are shown.", "Los números se muestran."), A("Add them all, then divide the total by how many there are.", "Súmalos todos y divide el total entre cuántos hay.")],
+    mad: [A("Find the mean first.", "Halla primero la media."), A("Measure each value's distance from the mean.", "Mide la distancia de cada valor desde la media."), A("Average the absolute distances, not the original data.", "Promedia las distancias absolutas, no los datos originales.")],
+    iqr: [A("Order the data and split it into lower and upper halves.", "Ordena los datos y sepáralos en mitades inferior y superior."), A("Find the median of each half: Q1 and Q3.", "Halla la mediana de cada mitad: Q1 y Q3."), A("Subtract Q1 from Q3.", "Resta Q1 de Q3.")],
+    hist: [A("Read the interval on the horizontal axis.", "Lee el intervalo en el eje horizontal."), A("Each bar counts only values in its interval.", "Cada barra cuenta solo los valores de su intervalo."), A("Count the values between both interval endpoints.", "Cuenta los valores entre los dos extremos del intervalo.")],
+    freq: [A("Read the frequency at the end of each row.", "Lee la frecuencia al final de cada fila."), A("Every row represents a group of students.", "Cada fila representa un grupo de estudiantes."), A("Add the row counts to find the full total.", "Suma los conteos de las filas para hallar el total.")],
     prob: [A("Probability is outcomes you want over all outcomes.", "La probabilidad es los resultados que quieres entre todos los resultados."), A("The spinner is shown with all its sections.", "La ruleta se muestra con todas sus secciones."), A("Count the winning sections, then count all the sections.", "Cuenta las secciones ganadoras y luego todas las secciones.")],
     bars: [A("Compare the heights of the bars.", "Compara las alturas de las barras."), A("The chart shows a bar for each fruit.", "La gráfica muestra una barra por fruta."), A("Find the tallest bar and read its name.", "Halla la barra más alta y lee su nombre.")],
     scatter: [A("Look at the points from left to right.", "Mira los puntos de izquierda a derecha."), A("The points are plotted for you.", "Los puntos están marcados."), A("As x goes up, does y go up, go down, or jump around?", "Al subir x, ¿y sube, baja o salta?")],
@@ -375,6 +515,10 @@ export function diagnose(s, raw) {
   if (s.mode === "system" && v !== null && v !== s.result) return v === s.y ? "foundY" : v === s.s + s.d ? "forgotHalve" : null;
   if (s.mode === "pct" && v !== null && v !== s.result) return v === (s.up ? s.n + s.p : s.n - s.p) ? "percentAsNumber" : v === s.change ? "gaveChange" : null;
   if (s.mode === "median" && v !== null && v !== s.result) return v === s.list[Math.floor(s.list.length / 2)] ? "didNotSort" : null;
+  if (s.mode === "mad" && v !== null && v !== s.result) return v === s.mean ? "meanNotMad" : null;
+  if (s.mode === "iqr" && v !== null && v !== s.result) return v === s.max - s.min ? "rangeNotIqr" : null;
+  if (s.mode === "hist" && v !== null && v !== s.result) return v === s.values.length ? "countedAllBins" : null;
+  if (s.mode === "freq" && v !== null && v !== s.result) return v === Math.max(...s.rows.map((row) => row[1])) ? "usedLargestFrequency" : null;
   if (s.mode === "ineq" && (w === "yes" || w === "no") && w !== s.result) return s.v === s.n ? "boundaryRule" : null;
   if (s.mode === "prob" && s.t > s.n) {
     // The learner may type 6/5 or 1.2; compare by value so either spelling is recognised.
@@ -392,6 +536,10 @@ export const tags = {
   percentAsNumber: { label: L("Added or subtracted the percent as a plain number", "Sumó o restó el porcentaje como número simple"), tip: L("Find the percent of the whole first. 10% of 140 is 14, not 10.", "Halla primero el porcentaje del entero. El 10% de 140 es 14, no 10.") },
   gaveChange: { label: L("Gave only the amount of change", "Dio solo la cantidad del cambio"), tip: L("The question asks for the new amount: add or take away the change.", "La pregunta pide la cantidad nueva: suma o resta el cambio.") },
   didNotSort: { label: L("Took the middle without putting the numbers in order", "Tomó el del medio sin ordenar los números"), tip: L("Put the numbers in order first; then the middle is the median.", "Ordena primero los números; luego el del medio es la mediana.") },
+  meanNotMad: { label: L("Reported the mean instead of the mean absolute deviation", "Dio la media en lugar de la desviación media absoluta"), tip: L("MAD is the average of the absolute distances from the mean.", "La DMA es el promedio de las distancias absolutas desde la media.") },
+  rangeNotIqr: { label: L("Found the range instead of the interquartile range", "Halló el rango en lugar del rango intercuartil"), tip: L("The range is max − min. The IQR is Q3 − Q1, the middle half.", "El rango es máximo − mínimo. El RIC es Q3 − Q1, la mitad central.") },
+  countedAllBins: { label: L("Counted the whole data set instead of one interval", "Contó todo el conjunto en lugar de un intervalo"), tip: L("Use the interval endpoints and count only values that fall in that bin.", "Usa los extremos del intervalo y cuenta solo los valores que caen en esa barra.") },
+  usedLargestFrequency: { label: L("Used only the largest frequency", "Usó solo la frecuencia más alta"), tip: L("The table asks for everyone. Add the counts from all rows.", "La tabla pregunta por todos. Suma los conteos de todas las filas.") },
   boundaryRule: { label: L("Misjudged whether the boundary number counts", "Juzgó mal si cuenta el número del límite"), tip: L("≤ and ≥ include the boundary number; < and > do not.", "≤ y ≥ incluyen el número del límite; < y > no.") },
   oddsNotProbability: { label: L("Compared winners to losers instead of to all sections", "Comparó ganadoras con perdedoras en lugar de con todas"), tip: L("The bottom of a probability counts every section, not just the losing ones.", "El denominador de una probabilidad cuenta todas las secciones, no solo las perdedoras.") },
 };
@@ -425,6 +573,49 @@ const BUILDS = {
   percentWhole: choiceBuild({ prompt: (s) => L(`Which equation finds the whole when ${s.p}% is ${fmtN(s.part)}?`, `¿Qué ecuación halla el entero si el ${s.p}% es ${fmtN(s.part)}?`), options: (s) => [{ label: L(`Whole = ${fmtN(s.part)} ÷ ${fmtN(s.p / 100)}`, `Entero = ${fmtN(s.part)} ÷ ${fmtN(s.p / 100)}`), ok: true }, { label: L(`Whole = ${fmtN(s.part)} × ${fmtN(s.p / 100)}`, `Entero = ${fmtN(s.part)} × ${fmtN(s.p / 100)}`), ok: false, msg: L("That finds the percent of the known part. The known part is already only p% of the whole.", "Eso halla el porcentaje de la parte conocida. La parte conocida ya es solo p% del entero.") }, { label: L(`Whole = ${fmtN(s.part)} × ${s.p}`, `Entero = ${fmtN(s.part)} × ${s.p}`), ok: false, msg: L("Percent means per 100. Use p/100 as the multiplier, then divide to recover the whole.", "Porcentaje significa por cada 100. Usa p/100 como factor y divide para recuperar el entero.") }], draw: (s) => ({ body: frames(s)[0].svg.replace(/^.*?<svg[^>]*>|<\/svg>$/g, ""), alt: L("The known part matched with its percent and an unknown whole.", "La parte conocida emparejada con su porcentaje y un entero desconocido."), h: 280 }), doneMsg: (s) => L(`The whole is ${fmtN(s.whole)}.`, `El entero es ${fmtN(s.whole)}.`) }),
 };
 BUILDS.mean = choiceBuild({ prompt: () => L("What do we do to find the mean?", "¿Qué hacemos para hallar la media?"), options: () => [{ label: L("Add them, then divide by how many", "Sumarlos y dividir entre cuántos hay"), ok: true }, { label: L("Pick the middle one", "Elegir el del medio"), ok: false, msg: L("That is the median. The mean uses every number.", "Eso es la mediana. La media usa todos los números.") }], draw: (s, pick) => ({ body: frames(s).at(pick === 0 ? 2 : 0).svg.replace(/^.*?<svg[^>]*>|<\/svg>$/g, ""), alt: L("The numbers.", "Los números."), h: 150 }), doneMsg: (s) => L(`The mean is ${fmtN(s.mean)}.`, `La media es ${fmtN(s.mean)}.`) });
+BUILDS.hist = choiceBuild({
+  prompt: (s) => L("How many values fall in interval " + s.bins[s.target].lo + "–" + s.bins[s.target].hi + "?", "¿Cuántos valores caen en el intervalo " + s.bins[s.target].lo + "–" + s.bins[s.target].hi + "?"),
+  options: (s) => {
+    const count = s.result;
+    return [
+      { label: L(String(count), String(count)), ok: true },
+      { label: L(String(count + 1), String(count + 1)), ok: false, msg: L("Check the bar height for this interval only.", "Revisa la altura de esta barra solamente.") },
+      { label: L(String(Math.max(0, count - 1)), String(Math.max(0, count - 1))), ok: false, msg: L("Count every data value inside both interval endpoints.", "Cuenta cada dato entre los dos extremos del intervalo.") },
+    ];
+  },
+  draw: (s, pick) => ({ body: frames(s)[1].svg.replace(/^.*?<svg[^>]*>|<\/svg>$/g, ""), alt: L("Histogram with the target interval highlighted.", "Histograma con el intervalo indicado resaltado."), h: 220 }),
+  doneMsg: (s) => L("There are " + s.result + " values in this interval.", "Hay " + s.result + " valores en este intervalo."),
+});
+BUILDS.freq = choiceBuild({
+  prompt: () => L("What should we do with the row frequencies?", "¿Qué hacemos con las frecuencias de las filas?"),
+  options: () => [
+    { label: L("Add every row count", "Sumar el conteo de cada fila"), ok: true },
+    { label: L("Use only the largest row", "Usar solo la fila con más"), ok: false, msg: L("The total includes every category, not just the largest one.", "El total incluye cada categoría, no solo la mayor.") },
+    { label: L("Count the category names", "Contar los nombres de las categorías"), ok: false, msg: L("The row count is the number of categories, not the students.", "El número de filas cuenta categorías, no estudiantes.") },
+  ],
+  draw: (s, pick) => ({ body: frames(s)[pick === 0 ? 1 : 0].svg.replace(/^.*?<svg[^>]*>|<\/svg>$/g, ""), alt: L("A frequency table and the total number of students.", "Tabla de frecuencias y total de estudiantes."), h: 340 }),
+  doneMsg: (s) => L("The rows add to " + s.result + " students.", "Las filas suman " + s.result + " estudiantes."),
+});
+BUILDS.mad = choiceBuild({
+  prompt: () => L("What do we average for MAD?", "¿Qué promediamos para hallar la DMA?"),
+  options: () => [
+    { label: L("Absolute distances from the mean", "Distancias absolutas desde la media"), ok: true },
+    { label: L("The original values", "Los valores originales"), ok: false, msg: L("That gives the mean. MAD averages the distances from the mean.", "Eso da la media. La DMA promedia las distancias desde la media.") },
+    { label: L("Distances from the median", "Distancias desde la mediana"), ok: false, msg: L("For MAD, measure each value from the mean.", "Para la DMA, mide cada valor desde la media.") },
+  ],
+  draw: (s, pick) => ({ body: frames(s).at(pick === 0 ? 3 : 1).svg.replace(/^.*?<svg[^>]*>|<\/svg>$/g, ""), alt: L("Data values with their absolute distances from the mean.", "Datos con sus distancias absolutas desde la media."), h: 340 }),
+  doneMsg: (s) => L("Now average the listed distances to find MAD = " + fmtN(s.mad) + ".", "Ahora promedia las distancias mostradas para hallar DMA = " + fmtN(s.mad) + "."),
+});
+BUILDS.iqr = choiceBuild({
+  prompt: () => L("How do we measure the spread of the middle half?", "¿Cómo medimos la dispersión de la mitad central?"),
+  options: () => [
+    { label: L("Subtract Q1 from Q3", "Restar Q1 de Q3"), ok: true },
+    { label: L("Subtract the minimum from the maximum", "Restar el mínimo del máximo"), ok: false, msg: L("That is the range. IQR only measures the middle half.", "Eso es el rango. El RIC mide solo la mitad central.") },
+    { label: L("Add Q1 and Q3", "Sumar Q1 y Q3"), ok: false, msg: L("A spread is a distance between quartiles, so subtract.", "La dispersión es una distancia entre cuartiles, así que resta.") },
+  ],
+  draw: (s, pick) => ({ body: frames(s).at(pick === 0 ? 2 : 0).svg.replace(/^.*?<svg[^>]*>|<\/svg>$/g, ""), alt: L("A box plot marking Q1 and Q3.", "Diagrama de caja que marca Q1 y Q3."), h: 170 }),
+  doneMsg: (s) => L("The middle-half spread is " + fmtN(s.result) + ".", "La dispersión de la mitad central es " + fmtN(s.result) + "."),
+});
 export const build = {
   available: (s) => Boolean(BUILDS[s.mode]) && (BUILDS[s.mode].available ? BUILDS[s.mode].available(s) : true),
   prompt: (s) => (typeof BUILDS[s.mode].prompt === "function" ? BUILDS[s.mode].prompt(s) : BUILDS[s.mode].prompt),
