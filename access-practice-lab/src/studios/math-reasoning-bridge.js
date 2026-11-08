@@ -63,6 +63,12 @@ export function checkPercentTransfer(bridge, response) {
   return Number(text) === bridge.transferWhole;
 }
 
+export function checkFractionTransfer(bridge, response) {
+  const text = String(response ?? "").trim();
+  if (!/^\d+(?:\.0+)?$/.test(text)) return false;
+  return Number(text) === bridge.transferWhole;
+}
+
 /** Observable language features for this response; never a mathematics or proficiency score. */
 export function analyzePercentExplanation(text) {
   const value = String(text ?? "").toLocaleLowerCase();
@@ -106,5 +112,41 @@ export function percentSupportForLevel(level, language = "en", { percent, whole,
       ? { bank: ["porcentaje", "todo", "parte"], frame: `El ${percent}% de ${whole} es ${part} porque ___.` }
       : { bank: ["percent", "whole", "part"], frame: `${percent}% of ${whole} is ${part} because ___.` };
   }
+  return null;
+}
+
+/** Surface language evidence for a fraction explanation without scoring mathematical correctness. */
+export function analyzeFractionExplanation(text) {
+  const value = String(text ?? "").toLocaleLowerCase();
+  const evidence = {
+    namesFraction: /\b(fraction|fractional|fracción|fracciones|numerator|denominator|numerador|denominador)\b|\d+\s*\/\s*\d+/u.test(value),
+    namesWhole: /\b(whole|total|entire|todo|entero|totalidad)\b/u.test(value),
+    namesPart: /\b(part|piece|portion|parte|pedazo|porción)\b/u.test(value),
+    connectsReason: /\b(because|so|since|therefore|porque|por eso|ya que|entonces)\b/u.test(value),
+  };
+  const missing = [];
+  if (!evidence.namesFraction) missing.push({ en: "name the fraction", es: "nombra la fracción" });
+  if (!evidence.namesWhole) missing.push({ en: "identify the whole", es: "identifica el todo" });
+  if (!evidence.namesPart) missing.push({ en: "describe the part", es: "describe la parte" });
+  if (!evidence.connectsReason) missing.push({ en: "connect the ideas with a reason", es: "conecta las ideas con una razón" });
+  const feedback = missing.length
+    ? {
+        en: `For clarity, ${missing.map((item) => item.en).join(", then ")}.`,
+        es: `Para mayor claridad, ${missing.map((item) => item.es).join(", luego ")}.`,
+      }
+    : {
+        en: "Your response names the fraction, whole, and part and connects them clearly.",
+        es: "Tu respuesta nombra la fracción, el todo y la parte, y los conecta con claridad.",
+      };
+  return { evidence, feedback };
+}
+
+export function fractionSupportForLevel(level, language = "en", { numerator, denominator, whole, part } = {}) {
+  if (level <= 2) return language === "es"
+    ? { bank: ["fracción", "todo", "parte", "partes iguales", "de"], frame: `${numerator}/${denominator} significa ${numerator} de ${denominator} partes iguales. El todo es ${whole}; la parte es ${part} porque ___.` }
+    : { bank: ["fraction", "whole", "part", "equal parts", "of"], frame: `${numerator}/${denominator} means ${numerator} of ${denominator} equal parts. The whole is ${whole}; the part is ${part} because ___.` };
+  if (level === 3) return language === "es"
+    ? { bank: ["fracción", "todo", "parte"], frame: `La parte es ${numerator}/${denominator} del todo porque ___.` }
+    : { bank: ["fraction", "whole", "part"], frame: `The part is ${numerator}/${denominator} of the whole because ___.` };
   return null;
 }

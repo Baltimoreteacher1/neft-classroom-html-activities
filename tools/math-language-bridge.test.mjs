@@ -1,20 +1,26 @@
 import assert from "node:assert/strict";
 import {
+  analyzeFractionExplanation,
   analyzePercentExplanation,
   analyzeRatioExplanation,
+  checkFractionTransfer,
   checkPercentTransfer,
   checkRatioTransfer,
+  fractionSupportForLevel,
   parseRatioPair,
   percentSupportForLevel,
   ratioTransferBase,
   supportForLevel,
 } from "../access-practice-lab/src/studios/math-reasoning-bridge.js";
 import * as languageStudios from "../access-practice-lab/src/views/language-studios.js";
+import { getSkill } from "../math/fluency-lab/problem-bank.js";
+import { mountTry } from "../math/fluency-lab/studio/panel-try.js";
 import {
   createRatioExplanationUrl,
   readMathLanguageBridge,
 } from "../shared/math-language-bridge/v1.js";
 import {
+  createFractionExplanationUrl,
   createPercentExplanationUrl,
   readMathLanguageBridge as readBridgeV2,
 } from "../shared/math-language-bridge/v2.js";
@@ -106,6 +112,38 @@ assert.equal(
   true,
 );
 assert.equal(percentSupportForLevel(5, "en", { percent: 30, whole: 50, part: 15 }), null);
+const fractionUrl = new URL(
+  createFractionExplanationUrl({ numerator: 3, denominator: 4, whole: 20, grade: 5 }),
+);
+const fractionBridge = readBridgeV2(fractionUrl.searchParams);
+assert.deepEqual(fractionBridge, {
+  schema: "edu-wonderlab.math-language/2",
+  task: "fraction-of-whole",
+  grade: 5,
+  numerator: 3,
+  denominator: 4,
+  whole: 20,
+  part: 15,
+  transferWhole: 24,
+  transferPart: 18,
+});
+assert.equal(
+  readBridgeV2(`${fractionUrl.search}&percent=30`),
+  null,
+  "fraction contracts reject percent fields",
+);
+assert.equal(checkFractionTransfer(fractionBridge, "24"), true);
+assert.equal(checkFractionTransfer(fractionBridge, "23"), false);
+assert.equal(checkFractionTransfer(fractionBridge, "24.5"), false);
+assert.equal(
+  analyzeFractionExplanation("3/4 of the whole is the part because each piece is equal.").evidence
+    .namesWhole,
+  true,
+);
+assert.equal(
+  fractionSupportForLevel(5, "en", { numerator: 3, denominator: 4, whole: 20, part: 15 }),
+  null,
+);
 assert.equal(
   analyzePercentExplanation(
     "30 percent of the whole is the part because the grid has equal squares.",
@@ -214,6 +252,94 @@ root
   .dispatchEvent(new win.Event("submit", { bubbles: true, cancelable: true }));
 ({ root } = await mount(languageStudios, ctx));
 assert.match(root.textContent, /solved a new percent problem independently/);
+
+ctx.route.mathBridge = fractionBridge;
+({ root } = await mount(languageStudios, ctx));
+assert.match(root.textContent, /What do 3\/4, 15, and 20 represent/);
+assert.equal(root.querySelectorAll(".mlb-fraction-cell").length, 4);
+root
+  .querySelector('[data-frac-scale="2"]')
+  .dispatchEvent(new win.Event("click", { bubbles: true }));
+({ root } = await mount(languageStudios, ctx));
+assert.equal(root.querySelectorAll(".mlb-fraction-cell").length, 8);
+assert.equal(root.querySelectorAll(".mlb-fraction-cell.is-shaded").length, 6);
+root.querySelector("#mlb-frac-draft").value =
+  "Three fourths of the whole is 15 because six twelfths shade the same amount.";
+root
+  .querySelector("[data-frac-draft]")
+  .dispatchEvent(new win.Event("submit", { bubbles: true, cancelable: true }));
+({ root } = await mount(languageStudios, ctx));
+assert.match(root.textContent, /Improve your explanation/);
+root.querySelector("#mlb-frac-revision").value =
+  "Three fourths names 15 of the whole 20 because each fourth is equal.";
+root
+  .querySelector("[data-frac-revision]")
+  .dispatchEvent(new win.Event("submit", { bubbles: true, cancelable: true }));
+({ root } = await mount(languageStudios, ctx));
+assert.match(root.textContent, /18 is 3\/4 of what whole/);
+root.querySelector("#mlb-frac-transfer").value = "23";
+root
+  .querySelector("[data-frac-transfer]")
+  .dispatchEvent(new win.Event("submit", { bubbles: true, cancelable: true }));
+({ root } = await mount(languageStudios, ctx));
+assert.doesNotMatch(root.textContent, /That whole is correct/);
+root.querySelector("#mlb-frac-transfer").value = "24";
+root
+  .querySelector("[data-frac-transfer]")
+  .dispatchEvent(new win.Event("submit", { bubbles: true, cancelable: true }));
+({ root } = await mount(languageStudios, ctx));
+assert.match(root.textContent, /That whole is correct/);
+root.querySelector("#mlb-frac-transfer-explain").value =
+  "18 is three fourths of 24 because each fourth is 6 and three groups make 18.";
+root
+  .querySelector("[data-frac-transfer-explain]")
+  .dispatchEvent(new win.Event("submit", { bubbles: true, cancelable: true }));
+({ root } = await mount(languageStudios, ctx));
+assert.match(root.textContent, /solved a new fraction problem independently/);
+
+const tryRoot = document.createElement("div");
+const tryCtx = {
+  skill: getSkill(5, "fraction-of"),
+  item: { question: "previous practice item" },
+  tryCount: 0,
+  id: "fraction-bridge-check",
+  key: "5:fraction-of",
+  level: 0,
+  indep: 0,
+  tryNeedsIndependent: false,
+  lang: () => "en",
+  mark() {},
+  say() {},
+  refreshRail() {},
+  showModel() {},
+};
+mountTry(tryCtx, tryRoot);
+const generatedFractionPrompt = tryRoot.querySelector("[data-problem]").textContent;
+const fractionParts = generatedFractionPrompt.match(/^What is (\d+)\/(\d+) of (\d+)\?$/);
+assert.ok(
+  fractionParts,
+  `fraction-of practice makes a model-aware prompt: ${generatedFractionPrompt}`,
+);
+const [, fn, fd, fw] = fractionParts;
+const fractionAnswer = (Number(fn) * Number(fw)) / Number(fd);
+tryRoot.querySelector("input").value = String(fractionAnswer);
+tryRoot
+  .querySelector("[data-form]")
+  .dispatchEvent(new win.Event("submit", { bubbles: true, cancelable: true }));
+const fractionLink = tryRoot.querySelector(".sd-math-language-bridge a");
+assert.ok(
+  fractionLink,
+  "correct independent fraction-of practice offers the paired language activity",
+);
+assert.equal(readBridgeV2(new URL(fractionLink.href).searchParams)?.task, "fraction-of-whole");
+assert.deepEqual([...new URL(fractionLink.href).searchParams.keys()].sort(), [
+  "denominator",
+  "grade",
+  "numerator",
+  "schema",
+  "task",
+  "whole",
+]);
 
 console.log(
   "math-language-bridge: versioned task context, separate evidence, supports, and transfer passed.",

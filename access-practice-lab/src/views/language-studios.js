@@ -10,12 +10,16 @@ import { crumbsHTML } from "../components.js";
 import { BASE, ICONS, esc, html, icon, raw, storage, toHtml } from "../util.js";
 import { i18nFor } from "../i18n.js";
 import { dictationControlsHTML, toggleDictation } from "../dictation-ui.js";
+import { renderFractionBridge } from "../studios/fraction-bridge-view.js";
 import {
   analyzeRatioExplanation,
   analyzePercentExplanation,
+  analyzeFractionExplanation,
   checkPercentTransfer,
+  checkFractionTransfer,
   checkRatioTransfer,
   percentSupportForLevel,
+  fractionSupportForLevel,
   ratioTransferBase,
   supportForLevel,
 } from "../studios/math-reasoning-bridge.js";
@@ -306,12 +310,19 @@ let state = {
   percentTransferCorrect: false,
   percentTransferFeedback: "",
   percentTransferExplain: "",
+  fractionScale: 1,
+  fractionDraft: "",
+  fractionRevision: "",
+  fractionTransferAnswer: "",
+  fractionTransferCorrect: false,
+  fractionTransferFeedback: "",
+  fractionTransferExplain: "",
 };
 
 const bridgeSaveKey = (key) => `accessPracticeLab:v1:mathLanguageBridge:${encodeURIComponent(key)}`;
 function saveBridge(key) {
   if (!key) return;
-  const fields = ["bridgeStep", "bridgeSupport", "bridgeDraft", "bridgeRevision", "bridgeTransfer", "bridgeTransferExplain", "percentDraft", "percentRevision", "percentTransferAnswer", "percentTransferExplain"];
+  const fields = ["bridgeStep", "bridgeSupport", "bridgeDraft", "bridgeRevision", "bridgeTransfer", "bridgeTransferExplain", "percentDraft", "percentRevision", "percentTransferAnswer", "percentTransferExplain", "fractionScale", "fractionDraft", "fractionRevision", "fractionTransferAnswer", "fractionTransferExplain"];
   const data = Object.fromEntries(fields.map((field) => [field, state[field]]));
   storage.set(bridgeSaveKey(key), JSON.stringify({ version: 1, data }));
 }
@@ -322,12 +333,15 @@ function restoreBridge(key, bridge) {
     const d = saved.data;
     state.bridgeStep = ["draft", "revision", "transfer", "complete"].includes(d.bridgeStep) ? d.bridgeStep : "draft";
     state.bridgeSupport = [2, 3, 5].includes(Number(d.bridgeSupport)) ? Number(d.bridgeSupport) : 3;
-    for (const keyName of ["bridgeDraft", "bridgeRevision", "bridgeTransfer", "bridgeTransferExplain", "percentDraft", "percentRevision", "percentTransferAnswer", "percentTransferExplain"])
+    state.fractionScale = [1, 2, 3].includes(Number(d.fractionScale)) ? Number(d.fractionScale) : 1;
+    for (const keyName of ["bridgeDraft", "bridgeRevision", "bridgeTransfer", "bridgeTransferExplain", "percentDraft", "percentRevision", "percentTransferAnswer", "percentTransferExplain", "fractionDraft", "fractionRevision", "fractionTransferAnswer", "fractionTransferExplain"])
       state[keyName] = typeof d[keyName] === "string" ? d[keyName].slice(0, 1200) : "";
     if (["transfer", "complete"].includes(state.bridgeStep)) {
       const mathIsCorrect = bridge?.task === "percent-part-whole"
         ? checkPercentTransfer(bridge, state.percentTransferAnswer)
-        : checkRatioTransfer(bridge, state.bridgeTransfer);
+        : bridge?.task === "fraction-of-whole"
+          ? checkFractionTransfer(bridge, state.fractionTransferAnswer)
+          : checkRatioTransfer(bridge, state.bridgeTransfer);
       if (!mathIsCorrect) state.bridgeStep = "transfer";
     }
   } catch { /* Ignore malformed or unavailable local saves. */ }
@@ -346,7 +360,7 @@ function ratioBridgePanel(bridge, I, language) {
       [result.evidence.usesRatioWord, I.T("Uses ratio language", "Usa lenguaje de razones")],
       [result.evidence.connectsReason, I.T("Connects ideas with a reason", "Conecta las ideas con una razón")],
     ];
-    return `<p class="mlb-feedback">${I.T(result.feedback.en, result.feedback.es)}</p><ul class="mlb-evidence">${items.map(([yes, label]) => `<li class="${yes ? "is-present" : "is-next"}"><span aria-hidden="true">${yes ? "✓" : "○"}</span> ${label}</li>`).join("")}</ul>`;
+    return `<p class="mlb-feedback">${I.T(result.feedback.en, result.feedback.es)}</p><ul class="mlb-evidence">${items.map(([yes, label]) => `<li class="${yes ? "is-present" : "is-next"}"><span aria-hidden="true" class="mlb-evidence-mark" data-state="${yes ? "present" : "next"}"></span> ${label}</li>`).join("")}</ul>`;
   };
   const table = `<table class="mlb-ratio-table"><caption>${I.T("One ratio, scaled equally", "Una razón, escalada por igual")}</caption><thead><tr><th scope="col">${I.T("Model", "Modelo")}</th><th scope="col">${I.T("Group A", "Grupo A")}</th><th scope="col">${I.T("Group B", "Grupo B")}</th></tr></thead><tbody><tr><th scope="row">${I.T("Starting ratio", "Razón inicial")}</th><td>${bridge.first}</td><td>${bridge.second}</td></tr><tr><th scope="row">${I.T("Multiply both by 3", "Multiplica ambos por 3")}</th><td>${firstx3}</td><td>${secondx3}</td></tr></tbody></table>`;
   const common = `<div class="mlb-model">${table}<p>${I.T("Compare the two rows. What changed in each group? What stayed the same in the relationship?", "Compara las dos filas. ¿Qué cambió en cada grupo? ¿Qué se mantuvo igual en la relación?")}</p></div><aside class="mlb-separate"><strong>${I.T("Two kinds of evidence stay separate", "Dos tipos de evidencia se mantienen separados")}</strong><p>${I.T("The ratio model shows the math. Your response is used only for language feedback. No audio is recorded, and no name, response, or progress is sent back to Math Fluency Lab.", "El modelo muestra las matemáticas. Tu respuesta se usa solo para recibir comentarios sobre el lenguaje. No se graba audio ni se envían nombres, respuestas o progreso a Math Fluency Lab.")}</p></aside>`;
@@ -379,7 +393,7 @@ function percentBridgePanel(bridge, I, language) {
       [result.evidence.namesPart, I.T("Identifies the part", "Identifica la parte")],
       [result.evidence.connectsReason, I.T("Connects ideas with a reason", "Conecta las ideas con una razón")],
     ];
-    return `<p class="mlb-feedback">${I.T(result.feedback.en, result.feedback.es)}</p><ul class="mlb-evidence">${items.map(([yes, label]) => `<li class="${yes ? "is-present" : "is-next"}"><span aria-hidden="true">${yes ? "✓" : "○"}</span> ${label}</li>`).join("")}</ul>`;
+    return `<p class="mlb-feedback">${I.T(result.feedback.en, result.feedback.es)}</p><ul class="mlb-evidence">${items.map(([yes, label]) => `<li class="${yes ? "is-present" : "is-next"}"><span aria-hidden="true" class="mlb-evidence-mark" data-state="${yes ? "present" : "next"}"></span> ${label}</li>`).join("")}</ul>`;
   };
   const cells = Array.from({ length: 100 }, (_, index) => `<span class="mlb-percent-cell${index < percent ? " is-shaded" : ""}" aria-hidden="true"></span>`).join("");
   const model = `<div class="mlb-model mlb-percent-model"><div class="mlb-percent-grid" role="img" aria-label="${esc(I.S(`A 10 by 10 grid: ${percent} of 100 squares are shaded, representing ${percent} percent.`, `Cuadrícula de 10 por 10: ${percent} de 100 cuadros están sombreados, que representan ${percent} por ciento.`))}">${cells}</div><p>${I.T(`100 equal squares; ${percent} are shaded. If the whole is ${whole}, each square represents ${whole / 100}.`, `100 cuadros iguales; ${percent} están sombreados. Si el todo es ${whole}, cada cuadro representa ${whole / 100}.`)}</p><p><strong>${I.T("Part", "Parte")}: ${part} = ${whole} × ${percent}/100</strong></p><p>${I.T("Connect the grid to the quantities: the whole is 100%, and the shaded part is the percent of that whole.", "Conecta la cuadrícula con las cantidades: el todo es 100% y la parte sombreada es el porcentaje de ese todo.")}</p></div><aside class="mlb-separate"><strong>${I.T("Math and language evidence stay separate", "La evidencia matemática y lingüística se mantiene separada")}</strong><p>${I.T("The model checks the quantities. Your words receive language feedback only. Your response and progress are not sent back to Math Fluency Lab.", "El modelo comprueba las cantidades. Tus palabras reciben comentarios de lenguaje solamente. Tu respuesta y progreso no se envían a Math Fluency Lab.")}</p></aside>`;
@@ -396,7 +410,9 @@ export async function render(ctx = {}) {
   const bridge = ctx.route?.mathBridge || null;
   const bridgeKey = bridge ? bridge.task === "percent-part-whole"
     ? `${bridge.schema}:${bridge.task}:${bridge.grade}:${bridge.percent}:${bridge.whole}`
-    : `${bridge.schema}:${bridge.grade}:${bridge.first}:${bridge.second}` : "";
+    : bridge.task === "fraction-of-whole"
+      ? `${bridge.schema}:${bridge.task}:${bridge.grade}:${bridge.numerator}:${bridge.denominator}:${bridge.whole}`
+      : `${bridge.schema}:${bridge.grade}:${bridge.first}:${bridge.second}` : "";
   if (bridgeKey && bridgeKey !== state.bridgeKey) {
     Object.assign(state, {
       bridgeKey,
@@ -415,9 +431,17 @@ export async function render(ctx = {}) {
       percentTransferCorrect: false,
       percentTransferFeedback: "",
       percentTransferExplain: "",
+      fractionScale: 1,
+      fractionDraft: "",
+      fractionRevision: "",
+      fractionTransferAnswer: "",
+      fractionTransferCorrect: false,
+      fractionTransferFeedback: "",
+      fractionTransferExplain: "",
     });
     restoreBridge(bridgeKey, bridge);
     if (bridge.task === "percent-part-whole") state.percentTransferCorrect = checkPercentTransfer(bridge, state.percentTransferAnswer);
+    else if (bridge.task === "fraction-of-whole") state.fractionTransferCorrect = checkFractionTransfer(bridge, state.fractionTransferAnswer);
     else state.bridgeTransferCorrect = checkRatioTransfer(bridge, state.bridgeTransfer);
   } else if (!bridgeKey && state.bridgeKey) {
     Object.assign(state, {
@@ -482,7 +506,7 @@ export async function render(ctx = {}) {
 
       <!-- Studio Stage Body -->
       <div class="ls-stage-body">
-        ${currentTab === "math-bridge" && bridge ? bridge.task === "percent-part-whole" ? percentBridgePanel(bridge, I, language) : ratioBridgePanel(bridge, I, language) : ""}
+        ${currentTab === "math-bridge" && bridge ? bridge.task === "percent-part-whole" ? percentBridgePanel(bridge, I, language) : bridge.task === "fraction-of-whole" ? renderFractionBridge(bridge, state, I, language) : ratioBridgePanel(bridge, I, language) : ""}
         
         <!-- 1. Compare language samples without treating them as assessment evidence. -->
         ${currentTab === "wida" ? `
@@ -766,7 +790,7 @@ export function mount(root, ctx) {
   root.querySelectorAll("[data-dictate^='mlb-']").forEach((button) => {
     button.addEventListener("click", async () => {
       const id = button.dataset.dictate;
-      const fieldMap = { "mlb-draft": "#mlb-draft", "mlb-transfer-explain": "#mlb-transfer-explain", "mlb-pct-draft": "#mlb-pct-draft", "mlb-pct-transfer-explain": "#mlb-pct-transfer-explain" };
+      const fieldMap = { "mlb-draft": "#mlb-draft", "mlb-transfer-explain": "#mlb-transfer-explain", "mlb-pct-draft": "#mlb-pct-draft", "mlb-pct-transfer-explain": "#mlb-pct-transfer-explain", "mlb-frac-draft": "#mlb-frac-draft", "mlb-frac-transfer-explain": "#mlb-frac-transfer-explain" };
       const fieldId = fieldMap[id];
       const setText = (text) => {
         const field = root.querySelector(fieldId);
@@ -775,7 +799,9 @@ export function mount(root, ctx) {
         if (id === "mlb-draft") state.bridgeDraft = text;
         else if (id === "mlb-transfer-explain") state.bridgeTransferExplain = text;
         else if (id === "mlb-pct-draft") state.percentDraft = text;
-        else state.percentTransferExplain = text;
+        else if (id === "mlb-pct-transfer-explain") state.percentTransferExplain = text;
+        else if (id === "mlb-frac-draft") state.fractionDraft = text;
+        else state.fractionTransferExplain = text;
         saveBridge(state.bridgeKey);
       };
       const handled = await toggleDictation(id, {
@@ -791,6 +817,40 @@ export function mount(root, ctx) {
   root.querySelector("[data-bridge-support]")?.addEventListener("change", (event) => {
     state.bridgeSupport = Number(event.target.value);
     saveBridge(state.bridgeKey);
+    ctx.rerender();
+  });
+  root.querySelectorAll("[data-frac-scale]").forEach((button) => button.addEventListener("click", () => {
+    state.fractionScale = Number(button.dataset.fracScale);
+    saveBridge(state.bridgeKey);
+    ctx.rerender();
+  }));
+  root.querySelector("#mlb-frac-draft")?.addEventListener("input", (event) => { state.fractionDraft = event.target.value.slice(0, 1200); saveBridge(state.bridgeKey); });
+  root.querySelector("#mlb-frac-revision")?.addEventListener("input", (event) => { state.fractionRevision = event.target.value.slice(0, 1200); saveBridge(state.bridgeKey); });
+  root.querySelector("#mlb-frac-transfer")?.addEventListener("input", (event) => { state.fractionTransferAnswer = event.target.value.slice(0, 30); saveBridge(state.bridgeKey); });
+  root.querySelector("#mlb-frac-transfer-explain")?.addEventListener("input", (event) => { state.fractionTransferExplain = event.target.value.slice(0, 1200); saveBridge(state.bridgeKey); });
+  root.querySelector("[data-frac-draft]")?.addEventListener("submit", (event) => {
+    event.preventDefault(); state.fractionDraft = root.querySelector("#mlb-frac-draft")?.value.trim() || "";
+    if (!state.fractionDraft) return; state.bridgeStep = "revision"; saveBridge(state.bridgeKey); ctx.rerender();
+  });
+  root.querySelector("[data-frac-revision]")?.addEventListener("submit", (event) => {
+    event.preventDefault(); state.fractionRevision = root.querySelector("#mlb-frac-revision")?.value.trim() || "";
+    if (!state.fractionRevision) return; state.bridgeStep = "transfer"; saveBridge(state.bridgeKey); ctx.rerender();
+  });
+  root.querySelector("[data-frac-transfer]")?.addEventListener("submit", (event) => {
+    event.preventDefault(); state.fractionTransferAnswer = root.querySelector("#mlb-frac-transfer")?.value.trim() || "";
+    state.fractionTransferCorrect = checkFractionTransfer(bridge, state.fractionTransferAnswer);
+    state.fractionTransferFeedback = state.fractionTransferCorrect
+      ? I.S("Correct. Now explain how the fraction and part determine the whole.", "Correcto. Ahora explica cómo la fracción y la parte determinan el todo.")
+      : I.S("Not yet. First find the value of one equal part, then determine how many parts make the whole.", "Todavía no. Primero encuentra el valor de una parte igual y luego determina cuántas partes forman el todo.");
+    saveBridge(state.bridgeKey); ctx.rerender();
+  });
+  root.querySelector("[data-frac-transfer-explain]")?.addEventListener("submit", (event) => {
+    event.preventDefault(); state.fractionTransferExplain = root.querySelector("#mlb-frac-transfer-explain")?.value.trim() || "";
+    if (!state.fractionTransferCorrect || !state.fractionTransferExplain) return; state.bridgeStep = "complete"; saveBridge(state.bridgeKey); ctx.rerender();
+  });
+  root.querySelector("[data-frac-reset]")?.addEventListener("click", () => {
+    storage.remove(bridgeSaveKey(state.bridgeKey));
+    Object.assign(state, { bridgeStep: "draft", fractionScale: 1, fractionDraft: "", fractionRevision: "", fractionTransferAnswer: "", fractionTransferCorrect: false, fractionTransferFeedback: "", fractionTransferExplain: "" });
     ctx.rerender();
   });
   root.querySelector("#mlb-draft")?.addEventListener("input", (event) => { state.bridgeDraft = event.target.value.slice(0, 1200); saveBridge(state.bridgeKey); });
