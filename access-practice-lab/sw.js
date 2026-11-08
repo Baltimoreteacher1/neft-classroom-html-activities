@@ -11,7 +11,7 @@
  * The block between the build markers is written by tools/sync-access-shell.mjs; do not edit it by hand.
  */
 /* build:begin */
-const BUILD_HASH = "c09dc9f11682";
+const BUILD_HASH = "3080c8c398fc";
 const PRECACHE_CORE = [
   "/access-practice-lab/ds.css?v=f77bd42f8057",
   "/access-practice-lab/home.css?v=d4e1a1fc5829",
@@ -144,7 +144,7 @@ const PRECACHE_MORE = [
   "/access-practice-lab/games-f.css?v=4644df42bf21",
   "/access-practice-lab/games-g.css?v=efa42ded171b",
   "/access-practice-lab/games-h.css?v=fe15f566eddb",
-  "/access-practice-lab/games-i.css?v=4d1ff8d642ce",
+  "/access-practice-lab/games-i.css?v=76cd887b3a30",
   "/access-practice-lab/labs.css?v=70e4170c8ffa",
   "/access-practice-lab/acc-engine.css?v=e504062aeb39",
   "/access-practice-lab/path.css?v=95e1a443bf59",
@@ -265,7 +265,7 @@ const PRECACHE_MORE = [
   "/access-practice-lab/src/games/art.js?v=12ec456c98f4",
   "/access-practice-lab/src/games/choice-game.js?v=150880a500c5",
   "/access-practice-lab/src/games/engine.js?v=ec13f217462d",
-  "/access-practice-lab/src/games/escape-room.js?v=8cd7c7eb8729",
+  "/access-practice-lab/src/games/escape-room.js?v=1da79ae03efa",
   "/access-practice-lab/src/games/fluency-echo.js?v=7572c1446c59",
   "/access-practice-lab/src/games/grammar-jungle.js?v=93cd97e0726f",
   "/access-practice-lab/src/games/hub.js?v=4b47730b2636",
@@ -279,8 +279,8 @@ const PRECACHE_MORE = [
   "/access-practice-lab/src/games/read-along-theater-stage.js?v=7419476b5301",
   "/access-practice-lab/src/games/read-along-theater.js?v=52d80d4e3120",
   "/access-practice-lab/src/games/screens.js?v=5b26a42ec4d1",
-  "/access-practice-lab/src/games/sentence-factory.js?v=4766da299dac",
-  "/access-practice-lab/src/games/sentence-strategy.js?v=7f9d7a6d8316",
+  "/access-practice-lab/src/games/sentence-factory.js?v=0a5c4f4e5943",
+  "/access-practice-lab/src/games/sentence-strategy.js?v=c9d073c2b542",
   "/access-practice-lab/src/games/sound-word-studio.js?v=d04f86f00f35",
   "/access-practice-lab/src/games/spelling-expedition.js?v=f493443669ea",
   "/access-practice-lab/src/games/story-creator-art.js?v=07e8254a5dcf",

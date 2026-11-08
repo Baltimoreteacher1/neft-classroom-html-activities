@@ -980,6 +980,134 @@ main {
   border: 2px solid var(--navy);
   background: #fff;
   box-shadow: 9px 9px 0 var(--blue-soft);
+  transition: opacity 160ms cubic-bezier(0.16, 1, 0.3, 1), transform 160ms cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+.problem-stage.is-advancing {
+  opacity: 0;
+  transform: translateX(-16px) scale(0.99);
+  pointer-events: none;
+}
+
+.problem-stage.is-entering {
+  opacity: 0;
+  transform: translateX(16px) scale(0.99);
+}
+
+.drill-panel.is-transitioning-in {
+  animation: fl-panel-enter 220ms ease-out both;
+}
+
+@keyframes fl-panel-enter {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .problem-stage { transition: opacity 80ms ease; will-change: auto; }
+  .problem-stage.is-advancing,
+  .problem-stage.is-entering { transform: none; }
+  .drill-panel.is-transitioning-in { animation: none; }
+}
+
+.learn-direct-practice {
+  margin: 1.5rem 0 1rem;
+  padding: 1.25rem 1.5rem;
+  border: 2px solid var(--grade, #0e6b68);
+  border-radius: 16px;
+  background: linear-gradient(135deg, #f0fdf4 0%, #ecfeff 100%);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem 1.5rem;
+  box-shadow: 0 4px 12px rgba(14, 107, 104, 0.08);
+}
+
+.ldp-title {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.ldp-badge {
+  font-size: 0.76rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #0e6b68;
+}
+
+.ldp-body h4 {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--navy, #17324d);
+}
+
+.ldp-desc {
+  margin: 0.35rem 0 0;
+  font-size: 0.92rem;
+  color: #334155;
+  line-height: 1.4;
+}
+
+.ldp-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.ldp-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-weight: 800;
+  box-shadow: 0 3px 0 #0e6b68;
+}
+
+.ldp-btn:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 #0e6b68;
+}
+
+.visual-direct-transition-bar {
+  margin: 0.75rem 0 1rem;
+  padding: 0.75rem 1.1rem;
+  border-radius: 12px;
+  border: 2px solid #0e6b68;
+  background: #f0fdf4;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.vdt-info {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.92rem;
+  color: #17324d;
+}
+
+.vdt-badge {
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  background: #dcfce7;
+  color: #166534;
+}
+
+.vdt-btn {
+  font-weight: 800;
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
 }
 
 .guided-coach {

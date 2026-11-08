@@ -8990,10 +8990,27 @@ els.feedbackActions.addEventListener("click", (event) => {
 // just earned. Only real user input is held back: the second click of a double click, and a key press that lands
 // within SETTLE_MS of the result.
 const SETTLE_MS = 600;
+
+function smoothlyAdvanceProblem(restoredItem = null, { immediate = false } = {}) {
+  if (els.feedback) els.feedback.hidden = true;
+  nextProblem(restoredItem);
+  const stage = document.querySelector(".problem-stage");
+  if (!immediate && stage && !prefersReducedMotion()) {
+    stage.classList.remove("is-entering");
+    void stage.offsetWidth; // trigger reflow for smooth re-trigger
+    stage.classList.add("is-entering");
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        stage.classList.remove("is-entering");
+      });
+    });
+  }
+}
+
 els.nextButton.addEventListener("click", (event) => {
   const tooSoon = performance.now() - (state.settledAt || 0) < SETTLE_MS;
   if (event.isTrusted && (event.detail > 1 || (event.detail === 0 && tooSoon))) return;
-  nextProblem();
+  smoothlyAdvanceProblem(null, { immediate: !event.isTrusted });
 });
 els.guidedSteps.addEventListener("fluency-fill-solved", () => renderGuidedCoach());
 els.guidedNextStep.addEventListener("click", () => {

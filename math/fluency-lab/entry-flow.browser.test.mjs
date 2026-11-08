@@ -49,7 +49,12 @@ async function answerOnce(p, value) {
   if (await typed.isVisible()) {
     await typed.fill(value);
     await p.click("#check-answer");
-  } else await p.locator("#choice-answers button").first().click();
+  } else if ((await p.locator("#choice-answers button").count()) > 0) {
+    await p.locator("#choice-answers button").first().click();
+  } else if ((await p.locator("#response-widget button").count()) > 0) {
+    await p.locator("#response-widget button").first().click();
+    await p.click("#check-answer");
+  }
   await p.locator("#feedback").waitFor({ state: "visible" });
 }
 

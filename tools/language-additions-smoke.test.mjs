@@ -27,6 +27,7 @@ try {
     `${base}/access-practice-lab/subject-reading/ecosystems-relationships?grades=6-8`,
     { waitUntil: "domcontentloaded" },
   );
+  await page.waitForSelector('[data-sr-word="organism"]');
   assert.match(await page.locator("body").innerText(), /A Web of Living Things/);
   await page.locator('[data-sr-word="organism"]').click();
   assert.match(await page.locator(".sr-word-meaning").innerText(), /one living thing/);

@@ -198,6 +198,13 @@ export function mountVisualLesson(container, skill, { onComplete, onPractice, va
     ` : "";
 
     container.innerHTML = `<div class="visual-lesson-heading"><div><p class="section-label">See it. Build it. Explain it.</p><h3>${esc(content.title)}</h3><p>${esc(content.idea)}</p></div><button type="button" class="outline-action" data-new-visual>${freshExample ? 'Try another example' : 'Restart this model'}</button></div>
+      <div class="visual-direct-transition-bar">
+        <div class="vdt-info">
+          <span class="vdt-badge">💡 Model in hand</span>
+          <span class="vdt-text">Ready to solve real problems with this visual model?</span>
+        </div>
+        <button type="button" class="primary-action vdt-btn" data-visual-practice>Practice problems with this model →</button>
+      </div>
       <div class="visual-lesson-layout"><div class="visual-model">${renderModel(content.model, { counters, counterPositions, partitions, step: index, selectedStrategy })}</div><div class="visual-step-panel">
       <ol class="visual-step-dots" aria-label="Lesson steps">${content.steps.map((_, i) => `<li class="${i < index ? 'complete' : i === index ? 'current' : ''}" ${i === index ? 'aria-current="step"' : ''}>${i < index ? '✓' : i + 1}<span>${i < index ? ' complete' : i === index ? ' current' : ' next'}</span></li>`).join("")}</ol>
       ${done ? `

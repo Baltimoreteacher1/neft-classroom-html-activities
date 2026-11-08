@@ -27,10 +27,10 @@ const click = (selector) => {
   assert.ok($(selector), `Missing ${selector}`);
   $(selector).click();
 };
-// The learner's grade page is My Learning > My grade (Home is the grade-and-skill picker).
+// The learner's grade page is Today > Grade 4.
 const gradeHome = () => {
-  click('#hub-tabs [data-view="path"]');
-  click('#hub-subnav [data-view="library"]');
+  click('#hub-tabs [data-view="library"]');
+  click('#grade-tabs [data-grade="4"]');
 };
 const fill = (selector, value) => {
   $(selector).value = String(value);
@@ -267,7 +267,7 @@ assert.match($("#mastery-label").textContent, /of \d+ recent checks correct/);
 gradeHome();
 const recordsBefore = JSON.stringify(savedTutor().records);
 click("[data-start-checkup]");
-for (let i = 0; i < 11; i++) {
+for (let i = 0; i < 15; i++) {
   click("#skip-checkup");
   click("#next-problem");
 }
@@ -278,14 +278,13 @@ assert.equal(
 );
 assert.equal(
   savedTutor().diagnostics[4].unsure.length,
-  11,
+  15,
   "Checkup stores uncertainty separately from evidence",
 );
 assert.equal(JSON.stringify(savedTutor().records), recordsBefore, "Checkups do not award mastery");
 assert.match($("#summary-title").textContent, /starting-point/);
 
-click('#hub-tabs [data-view="path"]');
-click('#hub-subnav [data-view="practice"]');
+click('#hub-tabs [data-view="practice"]');
 click('#hub-subnav [data-view="notebook"]');
 const savedMistake = savedTutor().mistakes.find(
   (entry) => entry.key === "4:division" && !entry.resolvedAt,
@@ -325,12 +324,12 @@ assert.ok(
   "Fresh independent success repairs the targeted notebook entry",
 );
 click('[data-view="path"]');
-assert.equal(win.document.querySelectorAll(".path-skill").length, 11);
+assert.equal(win.document.querySelectorAll(".path-skill").length, 15);
 assert.equal(
   win.document.querySelectorAll("#prerequisite-constellation .ewl-prereq-map__node").length,
-  88,
+  119,
 );
-assert.match($(".learning-milestones").textContent, /0\/11/);
+assert.match($(".learning-milestones").textContent, /0\/15/);
 assert.match($("#path-view").textContent, /two different days/);
 $("#prerequisite-constellation [data-open-key='4:division']").dispatchEvent(
   new win.MouseEvent("click", { bubbles: true }),
@@ -411,7 +410,7 @@ fill(".solver-reference-chart [data-factor-of]", 1);
 $(".solver-reference-chart [data-add-factor]").click();
 assert.ok($(".solver-reference-chart [data-chips] b"), "Factor chart accepts and checks entries");
 
-gradeHome();
+click('#grade-tabs [data-grade="6"]');
 click("#lang-toggle");
 click('.open-skill[data-skill="lcm"]');
 click('[data-mode="practice"]');
