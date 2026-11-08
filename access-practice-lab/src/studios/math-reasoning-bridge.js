@@ -86,6 +86,44 @@ export function checkDataTransfer(bridge, meanResponse, medianResponse) {
   return mean !== null && median !== null && mean === bridge.transferMean && median === bridge.transferMedian;
 }
 
+export function checkSurfaceAreaTransfer(bridge, response) {
+  const text = String(response ?? "").trim().replaceAll(",", "");
+  return /^\d+(?:\.0+)?$/u.test(text) && Number(text) === bridge.transferSurfaceArea;
+}
+
+/** Language evidence for naming faces, paired areas, and square units; not a math score. */
+export function analyzeSurfaceAreaExplanation(text) {
+  const value = String(text ?? "").toLocaleLowerCase();
+  const evidence = {
+    namesFaces: /\b(face|faces|side|sides|cara|caras|lado|lados)\b/u.test(value),
+    explainsPairs: /\b(pair|pairs|twice|two of each|both|par|pares|dos de cada|ambos|doble)\b/u.test(value),
+    namesArea: /\b(area|surface area|área|superficie)\b/u.test(value),
+    namesUnits: /\b(square|squared|cm²|in²|cuadradas|cuadrados|\bcm2\b|\bin2\b)\b/u.test(value),
+    connectsReason: /\b(because|so|since|therefore|porque|por eso|ya que|entonces)\b/u.test(value),
+  };
+  const missing = [];
+  if (!evidence.namesFaces) missing.push({ en: "name the prism faces", es: "nombra las caras del prisma" });
+  if (!evidence.explainsPairs) missing.push({ en: "explain why matching faces are counted in pairs", es: "explica por qué se cuentan en pares las caras iguales" });
+  if (!evidence.namesUnits) missing.push({ en: "include square units", es: "incluye unidades cuadradas" });
+  if (!evidence.connectsReason) missing.push({ en: "connect the ideas with a reason", es: "conecta las ideas con una razón" });
+  return {
+    evidence,
+    feedback: missing.length
+      ? { en: `For clarity, ${missing.map((item) => item.en).join(", then ")}.`, es: `Para mayor claridad, ${missing.map((item) => item.es).join(", luego ")}.` }
+      : { en: "You name the faces, explain the matching pairs, include square units, and connect the reasoning.", es: "Nombras las caras, explicas los pares iguales, incluyes unidades cuadradas y conectas el razonamiento." },
+  };
+}
+
+export function surfaceAreaSupportForLevel(level, language = "en", { length, width, height, unit } = {}) {
+  if (level <= 2) return language === "es"
+    ? { bank: ["cara", "par", "área", "unidades cuadradas", "porque"], frame: `Las caras miden ${length}×${width}, ${length}×${height} y ${width}×${height} ${unit}². Cuento cada área dos veces porque ___ .` }
+    : { bank: ["face", "pair", "area", "square units", "because"], frame: `The face areas are ${length}×${width}, ${length}×${height}, and ${width}×${height} ${unit}². I count each area twice because ___.` };
+  if (level === 3) return language === "es"
+    ? { bank: ["caras", "pares", "área", "unidades cuadradas"], frame: "El área de superficie suma los tres pares de caras porque ___ ." }
+    : { bank: ["faces", "pairs", "area", "square units"], frame: "Surface area adds the three pairs of faces because ___." };
+  return null;
+}
+
 /** Language evidence for describing changes in a data set; it is not a math or proficiency score. */
 export function analyzeDataExplanation(text) {
   const value = String(text ?? "").toLocaleLowerCase();

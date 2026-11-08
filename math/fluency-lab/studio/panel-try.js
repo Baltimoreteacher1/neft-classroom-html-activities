@@ -13,6 +13,7 @@ import { createPercentExplanationUrl } from "../../../shared/math-language-bridg
 import { createFractionExplanationUrl } from "../../../shared/math-language-bridge/v2.js";
 import { createFractionNumberLineExplanationUrl } from "../../../shared/math-language-bridge/v2.js";
 import { createDataExplanationUrl } from "../../../shared/math-language-bridge/v2.js";
+import { createSurfaceAreaExplanationUrl } from "../../../shared/math-language-bridge/v2.js";
 import { vocabMarkup } from "./vocab-content.js";
 
 const esc = (s) => String(s).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;");
@@ -150,6 +151,7 @@ export function mountTry(ctx, root) {
       const fractionBridge = lesson?.engine?.id === "fracmul" && lesson.spec.mode === "of" ? lesson.spec : null;
       const fractionLineBridge = lesson?.engine?.id === "fraction" && lesson.spec.mode === "lineMark" ? lesson.spec : null;
       const dataBridge = lesson?.engine?.id === "expr" && ["mean", "median"].includes(lesson.spec.mode) ? lesson.spec : null;
+      const surfaceAreaBridge = lesson?.engine?.id === "geo" && lesson.spec.mode === "surfaceNet" && lesson.spec.solid === "rectangular-prism" ? lesson.spec : null;
       const grade = Number(ctx.skill.grade) || 6;
       let bridgeUrl = null;
       let bridgeTask = "ratio";
@@ -204,6 +206,19 @@ export function mountTry(ctx, root) {
           });
           bridgeTask = "fraction";
         } else if (
+          surfaceAreaBridge &&
+          [surfaceAreaBridge.l, surfaceAreaBridge.w, surfaceAreaBridge.h].every((n) => Number.isInteger(n) && n >= 1 && n <= 20) &&
+          grade >= 4 && grade <= 8
+        ) {
+          bridgeUrl = createSurfaceAreaExplanationUrl({
+            length: surfaceAreaBridge.l,
+            width: surfaceAreaBridge.w,
+            height: surfaceAreaBridge.h,
+            unit: surfaceAreaBridge.unit === "in" ? "in" : "cm",
+            grade,
+          });
+          bridgeTask = "surfaceArea";
+        } else if (
           dataBridge &&
           Array.isArray(dataBridge.list) &&
           dataBridge.list.length >= 4 &&
@@ -224,6 +239,7 @@ export function mountTry(ctx, root) {
         fraction: L("Explain this fraction model in The Language Page", "Explica este modelo de fracción en The Language Page"),
         fractionLine: L("Explain this number-line fraction in The Language Page", "Explica esta fracción en la recta numérica en The Language Page"),
         data: L("Explain this data investigation in The Language Page", "Explica esta investigación de datos en The Language Page"),
+        surfaceArea: L("Explain this surface-area model in The Language Page", "Explica este modelo de área de superficie en The Language Page"),
       };
       const bridge = bridgeUrl
         ? `<div class="sd-math-language-bridge"><a class="sd-btn" href="${bridgeUrl}">${esc(pick(bridgeLabels[bridgeTask], ctx.lang()))}</a><p>${esc(pick(L("Only the math task and grade travel with this optional link. Your name, response, and progress stay here.", "Este enlace opcional solo comparte la tarea matemática y el grado. Tu nombre, respuesta y progreso se quedan aquí."), ctx.lang()))}</p></div>`

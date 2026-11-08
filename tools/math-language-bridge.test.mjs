@@ -5,11 +5,13 @@ import {
   analyzeFractionLineExplanation,
   analyzePercentExplanation,
   analyzeRatioExplanation,
+  analyzeSurfaceAreaExplanation,
   checkDataTransfer,
   checkFractionLineTransfer,
   checkFractionTransfer,
   checkPercentTransfer,
   checkRatioTransfer,
+  checkSurfaceAreaTransfer,
   dataSupportForLevel,
   fractionLineSupportForLevel,
   fractionSupportForLevel,
@@ -17,6 +19,7 @@ import {
   percentSupportForLevel,
   ratioTransferBase,
   supportForLevel,
+  surfaceAreaSupportForLevel,
 } from "../access-practice-lab/src/studios/math-reasoning-bridge.js";
 import * as languageStudios from "../access-practice-lab/src/views/language-studios.js";
 import { generateProblem, getSkill, seededRandom } from "../math/fluency-lab/problem-bank.js";
@@ -30,6 +33,7 @@ import {
   createFractionExplanationUrl,
   createFractionNumberLineExplanationUrl,
   createPercentExplanationUrl,
+  createSurfaceAreaExplanationUrl,
   readMathLanguageBridge as readBridgeV2,
 } from "../shared/math-language-bridge/v2.js";
 import { makeCtx, mount, win } from "./lib/access-studios-dom.mjs";
@@ -230,6 +234,47 @@ assert.deepEqual(dataAnalysis.evidence, {
   connectsReason: true,
 });
 assert.equal(analyzeDataExplanation("The number changed.").evidence.namesBothMeasures, false);
+
+const surfaceUrl = new URL(
+  createSurfaceAreaExplanationUrl({ length: 2, width: 3, height: 4, grade: 6 }),
+);
+const surfaceBridge = readBridgeV2(surfaceUrl.searchParams);
+assert.deepEqual(surfaceBridge, {
+  schema: "edu-wonderlab.math-language/2",
+  task: "surface-area-prism",
+  grade: 6,
+  length: 2,
+  width: 3,
+  height: 4,
+  unit: "in",
+  faceAreas: [6, 8, 12],
+  surfaceArea: 52,
+  transferDimensions: [3, 4, 5],
+  transferSurfaceArea: 94,
+});
+assert.equal(readBridgeV2(`${surfaceUrl.search}&student=private`), null);
+assert.equal(checkSurfaceAreaTransfer(surfaceBridge, "94"), true);
+assert.equal(checkSurfaceAreaTransfer(surfaceBridge, "47"), false);
+assert.equal(checkSurfaceAreaTransfer(surfaceBridge, "94.5"), false);
+assert.deepEqual(
+  analyzeSurfaceAreaExplanation(
+    "The faces form three pairs because both faces count in square units.",
+  ).evidence,
+  {
+    namesFaces: true,
+    explainsPairs: true,
+    namesArea: false,
+    namesUnits: true,
+    connectsReason: true,
+  },
+);
+assert.ok(surfaceAreaSupportForLevel(2, "en", surfaceBridge).frame.includes("2×3"));
+assert.equal(surfaceAreaSupportForLevel(5, "es", surfaceBridge), null);
+assert.throws(
+  () => createSurfaceAreaExplanationUrl({ length: 0, width: 2, height: 3 }),
+  RangeError,
+);
+assert.equal(readBridgeV2(`${surfaceUrl.search}&values=1,2,3,4`), null);
 assert.equal(
   analyzePercentExplanation(
     "30 percent of the whole is the part because the grid has equal squares.",
@@ -486,6 +531,46 @@ root
 ({ root } = await mount(languageStudios, ctx));
 assert.match(root.textContent, /solved a new statistics problem independently/);
 
+ctx.route.mathBridge = surfaceBridge;
+({ root } = await mount(languageStudios, ctx));
+assert.match(root.textContent, /Describe how the net accounts for every outside face/);
+assert.match(root.textContent, /6 in²/);
+root.querySelector("#mlb-draft").value =
+  "The faces form three pairs because both faces count in square units.";
+root
+  .querySelector("[data-bridge-draft]")
+  .dispatchEvent(new win.Event("submit", { bubbles: true, cancelable: true }));
+({ root } = await mount(languageStudios, ctx));
+assert.match(root.textContent, /Improve your explanation/);
+assert.match(root.textContent, /square units/);
+root.querySelector("#mlb-revision").value =
+  "The surface area is 52 square inches because each of the three face areas has a matching opposite face.";
+root
+  .querySelector("[data-bridge-revision]")
+  .dispatchEvent(new win.Event("submit", { bubbles: true, cancelable: true }));
+({ root } = await mount(languageStudios, ctx));
+assert.match(root.textContent, /3 × 4 × 5/);
+root.querySelector("#mlb-transfer").value = "47";
+root
+  .querySelector("[data-bridge-transfer]")
+  .dispatchEvent(new win.Event("submit", { bubbles: true, cancelable: true }));
+({ root } = await mount(languageStudios, ctx));
+assert.match(root.textContent, /Not yet\. Find the three face areas/);
+root.querySelector("#mlb-transfer").value = "94";
+root
+  .querySelector("[data-bridge-transfer]")
+  .dispatchEvent(new win.Event("submit", { bubbles: true, cancelable: true }));
+({ root } = await mount(languageStudios, ctx));
+assert.match(root.textContent, /Correct\. Explain your new reasoning independently/);
+root.querySelector("#mlb-transfer-explain").value =
+  "The prism has three matching pairs, so I doubled each face area and added square units.";
+root
+  .querySelector("[data-bridge-transfer-explain]")
+  .dispatchEvent(new win.Event("submit", { bubbles: true, cancelable: true }));
+({ root } = await mount(languageStudios, ctx));
+assert.match(root.textContent, /Investigation complete/);
+assert.match(root.textContent, /52 in²/);
+
 const tryRoot = document.createElement("div");
 const tryCtx = {
   skill: getSkill(5, "fraction-of"),
@@ -592,6 +677,40 @@ assert.ok(dataLink, "independent statistics practice offers a paired Language Pa
 const dataLinkParams = new URL(dataLink.href).searchParams;
 assert.equal(readBridgeV2(dataLinkParams)?.task, "data-center");
 assert.deepEqual([...dataLinkParams.keys()].sort(), ["grade", "schema", "task", "values"]);
+
+const surfaceSkill = getSkill(6, "surface-area-nets");
+const originalSurfaceNow = Date.now;
+let surfaceTryRoot;
+let surfaceQuestion = "";
+for (let seed = 0; seed < 50 && !surfaceQuestion.includes("rectangular prism"); seed += 1) {
+  Date.now = () => seed * 1237;
+  surfaceTryRoot = document.createElement("div");
+  mountTry(
+    {
+      ...tryCtx,
+      skill: surfaceSkill,
+      item: { question: "earlier surface area practice" },
+      id: `surface-area-bridge-check-${seed}`,
+      key: "6:surface-area-nets",
+    },
+    surfaceTryRoot,
+  );
+  surfaceQuestion = surfaceTryRoot.querySelector("[data-problem]").textContent;
+}
+Date.now = originalSurfaceNow;
+const dims = surfaceQuestion.match(
+  /rectangular prism that is (\d+) in long, (\d+) in wide and (\d+) in tall/,
+);
+assert.ok(dims, `prism practice prompt found: ${surfaceQuestion}`);
+const [, length, width, height] = dims;
+const [l, w, h] = [length, width, height].map(Number);
+surfaceTryRoot.querySelector("input").value = String(2 * (l * w + l * h + w * h));
+surfaceTryRoot
+  .querySelector("[data-form]")
+  .dispatchEvent(new win.Event("submit", { bubbles: true, cancelable: true }));
+const surfaceLink = surfaceTryRoot.querySelector(".sd-math-language-bridge a");
+assert.ok(surfaceLink, "surface-area practice links directly to its paired language investigation");
+assert.equal(readBridgeV2(new URL(surfaceLink.href).searchParams)?.task, "surface-area-prism");
 
 console.log(
   "math-language-bridge: versioned task context, separate evidence, supports, and transfer passed.",

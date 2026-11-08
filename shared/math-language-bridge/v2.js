@@ -16,6 +16,10 @@ const ALLOWED = new Set([
   "numerator",
   "denominator",
   "values",
+  "length",
+  "width",
+  "height",
+  "unit",
 ]);
 const inRangeInt = (value, min, max) => Number.isInteger(value) && value >= min && value <= max;
 
@@ -146,6 +150,35 @@ export function createFractionNumberLineExplanationUrl({ numerator, denominator,
   return `https://thelanguagepage.com${MATH_LANGUAGE_BRIDGE_PATH}?${params}`;
 }
 
+/** Share a bounded rectangular-prism surface-area investigation without learner data. */
+export function createSurfaceAreaExplanationUrl({
+  length,
+  width,
+  height,
+  unit = "in",
+  grade = 6,
+} = {}) {
+  if (!inRangeInt(grade, 4, 8)) throw new RangeError("Surface-area grade must be from 4 to 8.");
+  if (
+    ![length, width, height].every((value) => inRangeInt(value, 1, 20)) ||
+    !["in", "cm"].includes(unit)
+  ) {
+    throw new RangeError(
+      "Prism dimensions must be whole numbers from 1 to 20 with inches or centimeters.",
+    );
+  }
+  const params = new URLSearchParams({
+    schema: MATH_LANGUAGE_BRIDGE_SCHEMA,
+    task: "surface-area-prism",
+    grade: String(grade),
+    length: String(length),
+    width: String(width),
+    height: String(height),
+    unit,
+  });
+  return `https://thelanguagepage.com${MATH_LANGUAGE_BRIDGE_PATH}?${params}`;
+}
+
 /** Read v1 ratio links unchanged and accept only documented v2 math task contracts. */
 export function readMathLanguageBridge(search = "") {
   const params =
@@ -164,10 +197,43 @@ export function readMathLanguageBridge(search = "") {
           ? new Set(["schema", "task", "grade", "values"])
           : task === "fraction-number-line"
             ? new Set(["schema", "task", "grade", "numerator", "denominator"])
-            : null;
+            : task === "surface-area-prism"
+              ? new Set(["schema", "task", "grade", "length", "width", "height", "unit"])
+              : null;
   if (!taskFields || [...params.keys()].some((key) => !ALLOWED.has(key) || !taskFields.has(key)))
     return null;
   const grade = Number(params.get("grade"));
+  if (task === "surface-area-prism") {
+    const length = Number(params.get("length"));
+    const width = Number(params.get("width"));
+    const height = Number(params.get("height"));
+    const unit = params.get("unit");
+    if (
+      !inRangeInt(grade, 4, 8) ||
+      ![length, width, height].every((value) => inRangeInt(value, 1, 20)) ||
+      !["in", "cm"].includes(unit)
+    )
+      return null;
+    const faceAreas = Object.freeze([length * width, length * height, width * height]);
+    const transferDimensions = Object.freeze([length + 1, width + 1, height + 1]);
+    return Object.freeze({
+      schema: MATH_LANGUAGE_BRIDGE_SCHEMA,
+      task,
+      grade,
+      length,
+      width,
+      height,
+      unit,
+      faceAreas,
+      surfaceArea: 2 * faceAreas.reduce((sum, area) => sum + area, 0),
+      transferDimensions,
+      transferSurfaceArea:
+        2 *
+        (transferDimensions[0] * transferDimensions[1] +
+          transferDimensions[0] * transferDimensions[2] +
+          transferDimensions[1] * transferDimensions[2]),
+    });
+  }
   if (task === "data-center") {
     const values = String(params.get("values") || "")
       .split(",")
