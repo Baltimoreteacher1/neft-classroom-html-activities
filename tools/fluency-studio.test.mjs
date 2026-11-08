@@ -1869,6 +1869,10 @@ for (const sim of Object.values(SIMS)) {
       "Function A is y = 5x + 1. Function B is y = 3x + 2. Which function has the greater rate of change?",
       { mA: 5, bA: 1, mB: 3, bB: 2, n: 4 },
     ],
+    [
+      "Function A is y = x + 1. Function B is y = −x + 3. Which function has the greater rate of change?",
+      { mA: 1, bA: 1, mB: -1, bB: 3, n: 4 },
+    ],
   ]) {
     const parsed = fair.init({ item: { question }, lang: () => "en" });
     assert.deepEqual(
@@ -1877,6 +1881,7 @@ for (const sim of Object.values(SIMS)) {
       "the model parses equation and point representations without losing the problem's values",
     );
   }
+  assert.match(fair.render({ mA: 1, bA: 1, mB: -1, bB: 3, n: 4 }).svg, /Plan A · C = n \+ 1/);
 }
 {
   const machine = SIMS.machine;

@@ -113,12 +113,13 @@ const proportional = {
 
 const functionRule = (m, b) => `y = ${fmt(m)}x${b === 0 ? "" : ` ${b < 0 ? "−" : "+"} ${Math.abs(b)}`}`;
 
-const linearRule = (m, b) => `${fmt(m)}n${b === 0 ? "" : ` ${b < 0 ? "−" : "+"} ${Math.abs(b)}`}`;
+const linearRule = (m, b) => `${m === 1 ? "" : m === -1 ? "−" : fmt(m)}n${b === 0 ? "" : ` ${b < 0 ? "−" : "+"} ${Math.abs(b)}`}`;
 const itemCount = (n, lang) => `${n} ${n === 1 ? (lang === "es" ? "artículo" : "item") : lang === "es" ? "artículos" : "items"}`;
+const coefficient = (text) => (text === "" ? 1 : text === "-" || text === "−" ? -1 : Number(text));
 function parseFunctionRate(question, name) {
   if (typeof question !== "string") return null;
-  const equation = question.match(new RegExp(`Function ${name} is y = (-?\\d+)x(?:\\s*([+−-])\\s*(\\d+))?`));
-  if (equation) return { m: Number(equation[1]), b: equation[3] ? (equation[2] === "-" || equation[2] === "−" ? -1 : 1) * Number(equation[3]) : 0 };
+  const equation = question.match(new RegExp(`Function ${name} is y = ([−-]?\\d*)x(?:\\s*([+−-])\\s*(\\d+))?`));
+  if (equation) return { m: coefficient(equation[1]), b: equation[3] ? (equation[2] === "-" || equation[2] === "−" ? -1 : 1) * Number(equation[3]) : 0 };
   const rate = question.match(new RegExp(`Function ${name} has a rate of change of (-?\\d+) and a y-intercept of (-?\\d+)`));
   if (rate) return { m: Number(rate[1]), b: Number(rate[2]) };
   if (name === "B") {
