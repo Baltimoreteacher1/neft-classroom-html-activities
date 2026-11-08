@@ -2720,6 +2720,68 @@ body[data-lang="en"] .tts-btn[data-tts="es"] {
   }
 }
 
+/* ---------- ESOL & Multilingual Learner Scaffolds ---------- */
+.cp-panel-step {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 15;
+  background: var(--gold, #f2b705);
+  color: #0f172a;
+  font: 900 0.78rem/1 'Arial Black', Arial, sans-serif;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 5px 9px;
+  border-radius: 6px;
+  border: 2px solid #0f172a;
+  box-shadow: 2px 2px 0 #0f172a;
+  pointer-events: none;
+}
+.cp-panel-step .step-lbl {
+  opacity: 0.85;
+  font-size: 0.68rem;
+  margin-right: 2px;
+}
+.cp-show-all {
+  background: #ffffff;
+  border: 2px solid var(--line, #0f172a);
+  border-radius: 999px;
+  padding: 8px 14px;
+  font: 700 0.82rem/1 var(--font, sans-serif);
+  color: var(--line, #0f172a);
+  cursor: pointer;
+  box-shadow: 2px 2px 0 var(--line, #0f172a);
+  transition: all 0.12s;
+}
+.cp-show-all:hover {
+  background: #fff3d8;
+  transform: translateY(-1px);
+}
+.cp-show-all:active {
+  transform: translateY(1px);
+  box-shadow: none;
+}
+.cp-bubble .es {
+  display: block;
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px dashed rgba(15, 23, 42, 0.2);
+  color: #1e3a8a;
+  font-size: 0.92rem;
+  font-style: italic;
+  line-height: 1.45;
+}
+body[data-lang="en"] .cp-bubble .es {
+  display: none;
+}
+body[data-lang="es"] .cp-bubble .en {
+  display: none;
+}
+body[data-lang="both"] .cp-bubble .es {
+  display: block;
+}
+
+
     </style>
   <!-- mobile-access-injected:begin (shared mobile a11y — tools/inject-mobile-access.js) -->
   <link rel="stylesheet" href="/assets/mobile-access.css">
@@ -4761,7 +4823,7 @@ window.GN_STORY = {
       var v = localStorage.getItem(LANG_KEY);
       if (LANG_MODES.indexOf(v) >= 0) return v;
     } catch (e) {}
-    return S.meta.version === 2 ? "en" : "both";
+    return "both";
   })();
   function applyLang() {
     document.body.setAttribute("data-lang", langMode);
@@ -4917,6 +4979,16 @@ window.GN_STORY = {
         (beat.misconception ? " misc" : "") +
         (opts.extra ? " " + opts.extra : ""),
     );
+    if (opts.panelNum != null) {
+      fig.insertAdjacentHTML(
+        "beforeend",
+        '<span class="cp-panel-step" aria-label="Panel ' +
+          opts.panelNum +
+          '"><span class="step-lbl">Panel</span> ' +
+          opts.panelNum +
+          "</span>",
+      );
+    }
     // camera: establishing = whole scene; hero = push in on the face;
     // ally/comm = the far side of the room, softened, so the speaker reads first.
     var zoom = est ? 1 : kind === "hero" ? 2.15 : 1.45;
@@ -7317,7 +7389,7 @@ window.GN_STORY = {
       page.setAttribute("aria-label", "Comic page " + pageNo);
       var grid = el("div", "cp-grid");
       var panels = beats.map(function (b, i) {
-        var p = buildPanel(b, step.art || curArt, step.alt, { establish: i === 0 });
+        var p = buildPanel(b, step.art || curArt, step.alt, { establish: i === 0, panelNum: i + 1 });
         p.style.setProperty("--span", spans[i]);
         p.classList.add("pending");
         p.setAttribute("aria-hidden", "true");
@@ -7332,6 +7404,7 @@ window.GN_STORY = {
         pageNo +
         "</span>" +
         '<div class="dots" aria-hidden="true"></div>' +
+        '<button type="button" class="cp-show-all" title="Show all panels at once">&#128065; Show all panels</button>' +
         (TTS.available
           ? '<button type="button" class="cp-read" aria-pressed="false">&#128266; Read page to me</button>'
           : "") +
@@ -7399,6 +7472,18 @@ window.GN_STORY = {
         }
       }
       nextBtn.addEventListener("click", advance);
+      var showAllBtn = nav.querySelector(".cp-show-all");
+      if (showAllBtn) {
+        showAllBtn.addEventListener("click", function () {
+          while (bi < beats.length - 1) {
+            bi++;
+            reveal(bi);
+          }
+          label();
+          showAllBtn.disabled = true;
+          showAllBtn.innerHTML = "&#10003; All panels open";
+        });
+      }
       // tapping the next blank panel turns it over, like reading a real page
       panels.forEach(function (p, i) {
         p.addEventListener("click", function (e) {

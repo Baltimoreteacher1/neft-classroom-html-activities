@@ -1,17 +1,18 @@
-// WIDA Access Prep Hub: Publisher-grade overview and launchpad for Grades 1–3 and Grades 4–6.
-// Organizes all WIDA ACCESS prep activities across Listening, Reading, Speaking, and Writing,
-// with tier designations (Tier A & Tier B/C), authentic test formats, and classroom studios.
+// WIDA Access Prep Hub: Publisher-grade overview and launchpad for Grades 3–5 and Grades 6–8.
+// Organizes ALL WIDA ACCESS prep activities across Listening, Reading, Speaking, and Writing,
+// plus Model Tests, with authentic tier designations (Tier A & Tier B/C), skill strands, and direct launch routes.
 import { crumbsHTML } from "../components.js";
-import { loadIndex, loadShared } from "../content.js";
+import { loadIndex } from "../content.js";
 import { i18nFor } from "../i18n.js";
 import { STUDIOS, studioPath } from "../studios.js";
-import { BASE, CORE_DOMAINS, DOMAIN_META, html, icon, raw } from "../util.js";
+import { BASE, CORE_DOMAINS, DOMAIN_META, html, icon } from "../util.js";
 
 const DOMAIN_ICONS = {
   Listening: "listening",
   Reading: "reading",
   Speaking: "speaking",
   Writing: "writing",
+  "Model-Test": "tests",
 };
 
 const DOMAIN_DESCRIPTIONS = {
@@ -31,79 +32,102 @@ const DOMAIN_DESCRIPTIONS = {
     "Construct sentences, paragraphs, and multi-paragraph reports with vocabulary banks, sentence frames, and rubrics.",
     "Construye oraciones, párrafos e informes con bancos de palabras, estructuras de oraciones y rúbricas.",
   ],
+  "Model-Test": [
+    "Simulate full standardized testing sessions with authentic multi-part item formats and timing.",
+    "Simula sesiones completas de prueba estandarizada con formatos auténticos de ítems y control de tiempo.",
+  ],
+};
+
+const TYPE_LABELS = {
+  multipleChoice: ["Choose", "Elige"],
+  multiSelect: ["Choose all", "Elige todas"],
+  sort: ["Sort", "Clasifica"],
+  order: ["Sequence", "Ordena"],
+  cloze: ["Fill in", "Completa"],
+  hotText: ["Evidence", "Evidencia"],
+  constructed: ["Constructed Response", "Respuesta escrita"],
+  worksheet: ["Printable", "Imprimible"],
 };
 
 const BAND_META = {
-  "1-3": {
-    label: "Grades 1–3",
-    labelEs: "Grados 1–3",
-    sub: "Primary Multilingual Learners · Grades 1, 2, and 3",
-    subEs: "Estudiantes multilingües iniciales · 1.º, 2.º y 3.º grado",
-    contentBands: ["1", "2-3"],
-    defaultPicker: "2-3",
-    tagline: "Foundational listening, phonics-grounded reading, picture-cued speaking, and sentence construction.",
-    taglineEs: "Comprensión auditiva básica, lectura con apoyo fonético, expresión oral con imágenes y construcción de oraciones.",
+  "3-5": {
+    label: "Grades 3–5",
+    labelEs: "Grados 3–5",
+    sub: "Elementary Multilingual Learners · Grades 3, 4, and 5",
+    subEs: "Estudiantes multilingües de primaria · 3.º, 4.º y 5.º grado",
+    contentBands: ["3-5"],
+    defaultPicker: "3-5",
+    tagline: "Academic vocabulary, structured reading with visual scaffolds, audio-supported speaking, and paragraph writing.",
+    taglineEs: "Vocabulario académico, lectura estructurada con apoyos visuales, expresión oral con audio y redacción de párrafos.",
   },
-  "4-6": {
-    label: "Grades 4–6",
-    labelEs: "Grados 4–6",
-    sub: "Upper Elementary & Intermediate · Grades 4, 5, and 6",
-    subEs: "Nivel intermedio y grados superiores · 4.º, 5.º y 6.º grado",
-    contentBands: ["3-5", "6-8"],
-    defaultPicker: "4-5",
-    tagline: "Academic discourse, informational syntheses, structured spoken explanations, and multi-source writing.",
-    taglineEs: "Discurso académico, síntesis informativas, explicaciones orales estructuradas y escritura con múltiples fuentes.",
+  "6-8": {
+    label: "Grades 6–8",
+    labelEs: "Grados 6–8",
+    sub: "Middle School Multilingual Learners · Grades 6, 7, and 8",
+    subEs: "Estudiantes multilingües de secundaria · 6.º, 7.º y 8.º grado",
+    contentBands: ["6-8"],
+    defaultPicker: "6-8",
+    tagline: "Complex informational and literary texts, cross-disciplinary debate, multi-paragraph synthesis, and authentic WIDA test formats.",
+    taglineEs: "Textos informativos y literarios complejos, debate interdisciplinario, síntesis de múltiples párrafos y formatos auténticos de WIDA.",
   },
 };
 
-let currentBandSelection = "1-3";
+let currentBandSelection = "6-8";
 let currentDomainFilter = "all";
+let currentTierFilter = "all";
 let searchQuery = "";
 
 function bandFromRoute(grades) {
-  if (grades === "1" || grades === "2-3" || grades === "K") return "1-3";
-  if (grades === "4-5" || grades === "3-5" || grades === "6-8" || grades === "6" || grades === "7-8") return "4-6";
-  return currentBandSelection;
+  const g = String(grades || "").trim();
+  if (g === "3-5" || g === "4-5" || g === "3" || g === "4" || g === "5") return "3-5";
+  if (g === "6-8" || g === "6" || g === "7" || g === "8" || g === "7-8") return "6-8";
+  return currentBandSelection || "6-8";
 }
 
-/** Flatten activities for a given band grouping from index.json */
+/** Flatten all activities for a given band grouping from index.json */
 function collectBandActivities(indexData, bandKey) {
-  const meta = BAND_META[bandKey] || BAND_META["1-3"];
-  const results = {
-    Listening: { A: [], BC: [] },
-    Reading: { A: [], BC: [] },
-    Speaking: { A: [], BC: [] },
-    Writing: { A: [], BC: [] },
-  };
+  const meta = BAND_META[bandKey] || BAND_META["6-8"];
+  const domainsToInclude = bandKey === "6-8" ? [...CORE_DOMAINS, "Model-Test"] : [...CORE_DOMAINS];
+  const results = {};
+
+  for (const d of domainsToInclude) {
+    results[d] = { A: [], BC: [] };
+  }
 
   for (const cb of meta.contentBands) {
     const bandObj = indexData.bands?.[cb];
     if (!bandObj?.domains) continue;
-    const picker = cb === "3-5" ? "4-5" : cb;
 
-    for (const domain of CORE_DOMAINS) {
+    for (const domain of domainsToInclude) {
       const dObj = bandObj.domains[domain];
       if (!dObj?.levels) continue;
 
       for (const [lvl, lvlObj] of Object.entries(dObj.levels)) {
-        const tier = lvl === "A" ? "A" : "BC";
+        // In Model-Test, levels are named "6-8-A" and "6-8-B"
+        const isTierA = lvl === "A" || lvl === "6-8-A";
+        const tierGroup = isTierA ? "A" : "BC";
+        const displayLevel = lvl.includes("-") ? lvl.split("-").pop() : lvl;
+
         for (const act of lvlObj.activities || []) {
           // act format: [id, title, type, skill, minutes, grades?]
           const [id, title, type, skill, minutes, grades] = act;
-          // Filter if band 4-6 and grades is 7 or 8 only (keep grade 6, 4, 5)
-          if (bandKey === "4-6" && cb === "6-8" && Array.isArray(grades) && !grades.includes("6") && grades.length > 0) {
-            // Keep it anyway for depth if total count is modest
-          }
-          results[domain][tier].push({
+          const href =
+            domain === "Model-Test"
+              ? `${BASE}/Model-Test/6-8/${displayLevel}/${id}?grades=${cb}`
+              : `${BASE}/${domain}/${lvl}/${id}?grades=${cb}`;
+
+          results[domain][tierGroup].push({
             id,
             title,
-            type,
-            skill,
+            type: type || "multipleChoice",
+            skill: skill || "",
             minutes: minutes || 5,
-            level: lvl,
-            band: picker,
-            contentBand: cb,
-            href: `${BASE}/${domain}/${lvl}/${id}?grades=${picker}`,
+            level: displayLevel,
+            rawLevel: lvl,
+            tierGroup,
+            band: cb,
+            grades: Array.isArray(grades) ? grades : [],
+            href,
           });
         }
       }
@@ -113,104 +137,132 @@ function collectBandActivities(indexData, bandKey) {
   return results;
 }
 
-function activityCardHTML(act, I) {
+function activityRowHTML(act, I) {
+  const typeText = TYPE_LABELS[act.type]
+    ? I.T(TYPE_LABELS[act.type][0], TYPE_LABELS[act.type][1])
+    : act.type;
+  const isTierA = act.tierGroup === "A";
+
   return html`
-    <article class="prep-activity-card" data-prep-id="${act.id}" data-domain="${act.type}">
-      <div class="prep-card-top">
-        <span class="prep-tier-badge tier-${act.level.toLowerCase()}">Tier ${act.level}</span>
-        <span class="prep-time-badge">${icon("clock")} ${act.minutes} min</span>
+    <div class="prep-act-item" data-prep-id="${act.id}" data-type="${act.type}">
+      <div class="prep-act-main">
+        <div class="prep-act-meta-row">
+          <span class="prep-tier-tag ${isTierA ? "tag-tier-a" : "tag-tier-bc"}">
+            ${isTierA ? "Tier A" : `Tier ${act.level}`}
+          </span>
+          <span class="prep-type-tag">${typeText}</span>
+          <span class="prep-time-tag">${icon("clock")} ${act.minutes} min</span>
+        </div>
+        <h4 class="prep-act-title">
+          <a href="${act.href}">${act.title}</a>
+        </h4>
+        ${act.skill ? html`<p class="prep-act-skill">${act.skill}</p>` : ""}
       </div>
-      <h4 class="prep-card-title">${act.title}</h4>
-      <p class="prep-card-skill">${act.skill || I.T("WIDA ACCESS Skill Practice", "Práctica de destreza WIDA ACCESS")}</p>
-      <div class="prep-card-footer">
-        <a class="btn btn-sm btn-primary prep-launch-btn" href="${act.href}">
-          <span>${I.T("Start Activity", "Comenzar")}</span>
+      <div class="prep-act-action">
+        <a class="btn btn-sm btn-primary prep-play-btn" href="${act.href}">
+          <span>${I.T("Start", "Iniciar")}</span>
           ${icon("arrow-right")}
         </a>
       </div>
-    </article>
+    </div>
   `;
 }
 
 export async function render(ctx) {
   const I = i18nFor(ctx);
-  const band = ctx.band || "2-3";
   if (ctx.route?.grades) {
     currentBandSelection = bandFromRoute(ctx.route.grades);
+  } else if (ctx.band) {
+    currentBandSelection = bandFromRoute(ctx.band);
   }
 
   const indexData = await loadIndex();
   const activitiesByDomain = collectBandActivities(indexData, currentBandSelection);
-  const activeMeta = BAND_META[currentBandSelection];
+  const activeMeta = BAND_META[currentBandSelection] || BAND_META["6-8"];
+  const availableDomains = currentBandSelection === "6-8" ? [...CORE_DOMAINS, "Model-Test"] : [...CORE_DOMAINS];
 
-  // Filter activities based on search query
+  // Filter activities based on search query and tier filter
   const query = searchQuery.trim().toLowerCase();
   const filterList = (list) => {
-    if (!query) return list;
-    return list.filter(
+    let result = list;
+    if (currentTierFilter === "A") {
+      result = result.filter((a) => a.tierGroup === "A");
+    } else if (currentTierFilter === "BC") {
+      result = result.filter((a) => a.tierGroup === "BC");
+    }
+    if (!query) return result;
+    return result.filter(
       (a) =>
         a.title.toLowerCase().includes(query) ||
         (a.skill && a.skill.toLowerCase().includes(query)) ||
+        (a.type && a.type.toLowerCase().includes(query)) ||
         a.id.toLowerCase().includes(query),
     );
   };
 
   const domainCount = (dom) => {
+    if (!activitiesByDomain[dom]) return 0;
     const a = activitiesByDomain[dom].A.length;
     const bc = activitiesByDomain[dom].BC.length;
     return a + bc;
   };
 
+  const totalActivitiesInBand = availableDomains.reduce((acc, d) => acc + domainCount(d), 0);
+
   return {
-    title: I.S("WIDA Access Prep · The Language Page", "Preparación WIDA ACCESS · The Language Page"),
+    title: I.S(
+      `WIDA ACCESS Prep Hub (${activeMeta.label}) · The Language Page`,
+      `Preparación WIDA ACCESS (${activeMeta.labelEs}) · The Language Page`,
+    ),
     html: html`
-      <div class="access-prep-hub" style="max-width:1200px; margin:0 auto; padding:1.5rem 1rem 4rem;">
+      <div class="access-prep-hub" style="max-width:1240px; margin:0 auto; padding:1.5rem 1rem 4rem;">
         <!-- Breadcrumbs -->
         <nav class="prep-crumbs-bar" style="margin-bottom:1.25rem;">
           ${crumbsHTML([
-            { label: I.S("Home", "Inicio"), href: `${BASE}/?grades=${band}` },
-            { label: I.S("Access Prep", "Preparación ACCESS") },
+            [I.S("The Language Page", "The Language Page"), "/language-adventures/"],
+            [I.S("ACCESS Practice Lab", "Laboratorio ACCESS"), `${BASE}/?grades=${activeMeta.defaultPicker}`],
+            [I.S("ACCESS Prep Hub", "Centro de Preparación ACCESS"), null],
           ])}
         </nav>
 
         <!-- Hero Header -->
         <header class="prep-hero-panel" style="background:linear-gradient(135deg, #142d47 0%, #1e3f63 100%); color:#f5efe4; border-radius:24px; padding:2.5rem 2rem; margin-bottom:2rem; box-shadow:0 8px 32px rgba(20,45,71,0.15);">
           <div style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:flex-start; gap:1.5rem;">
-            <div style="max-width:720px;">
+            <div style="max-width:760px;">
               <span style="display:inline-flex; align-items:center; gap:0.5rem; background:rgba(248,213,140,0.18); color:#f8d58c; padding:0.35rem 0.85rem; border-radius:999px; font-size:0.8rem; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; margin-bottom:1rem;">
                 ${icon("sparkle")} ${I.T("WIDA 2020 ELD Standards · Publisher Edition", "Estándares WIDA 2020 ELD · Edición editorial")}
               </span>
-              <h1 style="font-size:2.4rem; font-weight:900; line-height:1.15; color:#ffffff; margin:0 0 0.85rem; font-family:var(--font-display, inherit);">
-                ${I.T("WIDA Access Prep", "Preparación WIDA ACCESS")}
+              <h1 style="font-size:2.5rem; font-weight:900; line-height:1.15; color:#ffffff; margin:0 0 0.85rem; font-family:var(--font-display, inherit);">
+                ${I.T("WIDA ACCESS Prep Hub", "Centro de Preparación WIDA ACCESS")}
               </h1>
               <p style="font-size:1.1rem; line-height:1.6; color:#d4e2ed; margin:0 0 1.25rem;">
                 ${I.T(
-                  "High-yield test preparation organized by grade bands. Practice all four domains with authentic WIDA prompt formats, tiered scaffolds, and classroom studios.",
-                  "Preparación de alto rendimiento organizada por bandas de grados. Practica los cuatro dominios con formatos auténticos de WIDA, apoyos graduados y estudios de aula.",
+                  `Complete high-yield test preparation for ${activeMeta.label}. Practice every domain with authentic WIDA prompt formats, tiered scaffolds, and classroom studios.`,
+                  `Preparación completa de alto rendimiento para ${activeMeta.labelEs}. Practica todos los dominios con formatos auténticos de WIDA, apoyos graduados y estudios de aula.`,
                 )}
               </p>
               <div style="display:flex; flex-wrap:wrap; gap:0.75rem; font-size:0.85rem; color:#f8d58c;">
+                <span style="display:inline-flex; align-items:center; gap:0.35rem;">
+                  ${icon("check")} ${I.T(`${totalActivitiesInBand} Activities Total`, `${totalActivitiesInBand} Actividades en total`)}
+                </span>
+                <span>•</span>
                 <span style="display:inline-flex; align-items:center; gap:0.35rem;">
                   ${icon("check")} ${I.T("Listening · Reading · Speaking · Writing", "Escuchar · Leer · Hablar · Escribir")}
                 </span>
                 <span>•</span>
                 <span style="display:inline-flex; align-items:center; gap:0.35rem;">
-                  ${icon("check")} ${I.T("Tier A (Entering/Emerging) & Tier B/C (Expanding/Bridging)", "Nivel A (Inicial) y Nivel B/C (Avanzado)")}
-                </span>
-                <span>•</span>
-                <span style="display:inline-flex; align-items:center; gap:0.35rem;">
-                  ${icon("check")} ${I.T("Device-Only · Progress Saved Locally", "En tu dispositivo · Guardado local")}
+                  ${icon("check")} ${I.T("Tier A & Tier B/C Alignment", "Alineado a Nivel A y Nivel B/C")}
                 </span>
               </div>
             </div>
 
-            <!-- Quick Launch to Tests & Simulator -->
+            <!-- Quick Launch to Tests & Language Adventures -->
             <div style="background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.15); border-radius:18px; padding:1.25rem 1.5rem; text-align:center; min-width:240px;">
               <span style="display:block; font-size:0.8rem; font-weight:700; text-transform:uppercase; color:#f8d58c; margin-bottom:0.5rem;">
-                ${I.T("Full Mock Sessions", "Sesiones completas de prueba")}
+                ${I.T("Simulated Testing", "Pruebas simuladas")}
               </span>
               <p style="font-size:0.9rem; color:#ffffff; margin:0 0 1rem;">
-                ${I.T("Take full-length simulated test sittings with timing.", "Realiza pruebas simuladas completas con temporizador.")}
+                ${I.T("Full-length simulated test sittings with timing.", "Sesiones completas de examen con temporizador.")}
               </p>
               <div style="display:flex; flex-direction:column; gap:0.5rem;">
                 <a class="btn btn-sm" style="background:#f8d58c; color:#142d47; font-weight:800; border:none;" href="${BASE}/tests?grades=${activeMeta.defaultPicker}">
@@ -218,6 +270,9 @@ export async function render(ctx) {
                 </a>
                 <a class="btn btn-sm" style="background:transparent; color:#ffffff; border:1px solid rgba(255,255,255,0.3);" href="${BASE}/assess?grades=${activeMeta.defaultPicker}">
                   ${I.T("Assessment Simulator", "Simulador de evaluación")}
+                </a>
+                <a class="btn btn-sm" style="background:rgba(255,255,255,0.12); color:#ffffff; border:none;" href="/language-adventures/">
+                  ${icon("worlds")} ${I.T("Language Adventures", "Aventuras del lenguaje")}
                 </a>
               </div>
             </div>
@@ -229,10 +284,10 @@ export async function render(ctx) {
           <div style="display:flex; flex-direction:column; gap:0.75rem;">
             <div style="display:flex; justify-content:space-between; align-items:baseline; flex-wrap:wrap; gap:0.5rem;">
               <h2 style="font-size:1.35rem; font-weight:800; color:#142d47; margin:0;">
-                ${I.T("Choose Grade Band", "Elige tu banda de grados")}
+                ${I.T("Select Grade Band", "Selecciona la banda de grados")}
               </h2>
               <span style="font-size:0.85rem; color:#544d43;">
-                ${I.T("Curriculum content dynamically adjusts for each grade span", "El contenido curricular se adapta a cada nivel")}
+                ${I.T("Official WIDA ACCESS Testing Clusters", "Grupos oficiales de evaluación WIDA ACCESS")}
               </span>
             </div>
 
@@ -240,27 +295,27 @@ export async function render(ctx) {
               <button
                 type="button"
                 role="tab"
-                class="btn prep-band-btn ${currentBandSelection === "1-3" ? "btn-primary is-active" : "btn-outline"}"
-                data-prep-band="1-3"
-                aria-selected="${currentBandSelection === "1-3"}"
-                style="padding:0.75rem 1.5rem; font-size:1.05rem; font-weight:800; border-radius:14px;"
+                class="btn prep-band-btn ${currentBandSelection === "3-5" ? "btn-primary is-active" : "btn-outline"}"
+                data-prep-band="3-5"
+                aria-selected="${currentBandSelection === "3-5"}"
+                style="padding:0.75rem 1.6rem; font-size:1.1rem; font-weight:800; border-radius:14px;"
               >
                 ${icon("reading")}
-                <span>${I.T("Grades 1–3", "Grados 1–3")}</span>
-                <span class="badge" style="margin-left:0.5rem; font-size:0.75rem; opacity:0.85;">1st · 2nd · 3rd</span>
+                <span>${I.T("Grades 3–5", "Grados 3–5")}</span>
+                <span class="badge" style="margin-left:0.5rem; font-size:0.75rem; opacity:0.85;">3rd · 4th · 5th</span>
               </button>
 
               <button
                 type="button"
                 role="tab"
-                class="btn prep-band-btn ${currentBandSelection === "4-6" ? "btn-primary is-active" : "btn-outline"}"
-                data-prep-band="4-6"
-                aria-selected="${currentBandSelection === "4-6"}"
-                style="padding:0.75rem 1.5rem; font-size:1.05rem; font-weight:800; border-radius:14px;"
+                class="btn prep-band-btn ${currentBandSelection === "6-8" ? "btn-primary is-active" : "btn-outline"}"
+                data-prep-band="6-8"
+                aria-selected="${currentBandSelection === "6-8"}"
+                style="padding:0.75rem 1.6rem; font-size:1.1rem; font-weight:800; border-radius:14px;"
               >
                 ${icon("sparkle")}
-                <span>${I.T("Grades 4–6", "Grados 4–6")}</span>
-                <span class="badge" style="margin-left:0.5rem; font-size:0.75rem; opacity:0.85;">4th · 5th · 6th</span>
+                <span>${I.T("Grades 6–8", "Grados 6–8")}</span>
+                <span class="badge" style="margin-left:0.5rem; font-size:0.75rem; opacity:0.85;">6th · 7th · 8th</span>
               </button>
             </div>
 
@@ -284,9 +339,9 @@ export async function render(ctx) {
               data-prep-domain="all"
               style="border-radius:999px; font-weight:700;"
             >
-              ${I.T("All Domains", "Todos")}
+              ${I.T("All Domains", "Todos")} (${totalActivitiesInBand})
             </button>
-            ${CORE_DOMAINS.map(
+            ${availableDomains.map(
               (d) => html`
                 <button
                   type="button"
@@ -294,97 +349,154 @@ export async function render(ctx) {
                   data-prep-domain="${d}"
                   style="border-radius:999px; font-weight:700;"
                 >
-                  ${icon(DOMAIN_ICONS[d])}
-                  <span>${I.T(DOMAIN_META[d].name, DOMAIN_META[d].es)}</span>
-                  <span style="opacity:0.7; font-size:0.75rem; margin-left:0.25rem;">(${domainCount(d)})</span>
+                  ${icon(DOMAIN_ICONS[d] || "sparkle")}
+                  <span>${I.T(DOMAIN_META[d]?.name || d, DOMAIN_META[d]?.es || d)}</span>
+                  <span style="opacity:0.75; font-size:0.75rem; margin-left:0.25rem;">(${domainCount(d)})</span>
                 </button>
               `,
             )}
           </div>
 
-          <!-- Search Box -->
-          <div style="display:flex; align-items:center; gap:0.5rem; min-width:240px; flex-grow:1; max-width:360px;">
-            <input
-              type="search"
-              id="prepSearchInput"
-              placeholder="${I.T("Search skills or activities…", "Buscar destrezas o actividades…")}"
-              value="${searchQuery}"
-              style="width:100%; padding:0.5rem 0.85rem; border:1px solid #cbd5e1; border-radius:10px; font-size:0.9rem;"
-            />
+          <!-- Tier Filter & Search -->
+          <div style="display:flex; flex-wrap:wrap; align-items:center; gap:0.75rem; flex-grow:1; justify-content:flex-end;">
+            <div class="prep-tier-filters" style="display:flex; gap:0.35rem;">
+              <button
+                type="button"
+                class="btn btn-sm ${currentTierFilter === "all" ? "btn-outline is-active" : "btn-ghost"}"
+                data-prep-tier="all"
+                style="border-radius:8px; font-size:0.8rem; font-weight:700;"
+              >
+                ${I.T("All Tiers", "Todos los niveles")}
+              </button>
+              <button
+                type="button"
+                class="btn btn-sm ${currentTierFilter === "A" ? "btn-outline is-active" : "btn-ghost"}"
+                data-prep-tier="A"
+                style="border-radius:8px; font-size:0.8rem; font-weight:700;"
+              >
+                Tier A
+              </button>
+              <button
+                type="button"
+                class="btn btn-sm ${currentTierFilter === "BC" ? "btn-outline is-active" : "btn-ghost"}"
+                data-prep-tier="BC"
+                style="border-radius:8px; font-size:0.8rem; font-weight:700;"
+              >
+                Tier B/C
+              </button>
+            </div>
+
+            <div style="min-width:220px; max-width:320px; flex-grow:1;">
+              <input
+                type="search"
+                id="prepSearchInput"
+                placeholder="${I.T("Search skills or titles…", "Buscar destrezas o títulos…")}"
+                value="${searchQuery}"
+                style="width:100%; padding:0.5rem 0.85rem; border:1px solid #cbd5e1; border-radius:10px; font-size:0.9rem;"
+              />
+            </div>
           </div>
         </section>
 
         <!-- Domains Display -->
-        <div class="prep-domains-container" style="display:flex; flex-direction:column; gap:3rem;">
-          ${CORE_DOMAINS.filter((d) => currentDomainFilter === "all" || currentDomainFilter === d).map((d) => {
-            const listA = filterList(activitiesByDomain[d].A);
-            const listBC = filterList(activitiesByDomain[d].BC);
-            const total = listA.length + listBC.length;
+        <div class="prep-domains-container" style="display:flex; flex-direction:column; gap:2.5rem;">
+          ${availableDomains
+            .filter((d) => currentDomainFilter === "all" || currentDomainFilter === d)
+            .map((d) => {
+              const listA = filterList(activitiesByDomain[d]?.A || []);
+              const listBC = filterList(activitiesByDomain[d]?.BC || []);
+              const total = listA.length + listBC.length;
 
-            return html`
-              <section class="prep-domain-block" data-domain="${d}" style="background:#ffffff; border:1px solid #e2ddd3; border-radius:20px; padding:1.75rem; box-shadow:0 2px 12px rgba(0,0,0,0.03);">
-                <!-- Domain Header -->
-                <div style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:1rem; margin-bottom:1.5rem; padding-bottom:1rem; border-bottom:2px solid #f1ece1;">
-                  <div style="display:flex; align-items:center; gap:0.85rem;">
-                    <div style="width:48px; height:48px; border-radius:14px; background:#142d47; color:#f8d58c; display:flex; align-items:center; justify-content:center; font-size:1.35rem;">
-                      ${icon(DOMAIN_ICONS[d])}
+              const domainName = DOMAIN_META[d]?.name || d;
+              const domainNameEs = DOMAIN_META[d]?.es || d;
+              const domainDescEn = DOMAIN_DESCRIPTIONS[d]?.[0] || "";
+              const domainDescEs = DOMAIN_DESCRIPTIONS[d]?.[1] || "";
+
+              return html`
+                <section class="prep-domain-block" data-domain="${d}" style="background:#ffffff; border:1px solid #e2ddd3; border-radius:20px; padding:1.75rem; box-shadow:0 2px 12px rgba(0,0,0,0.03);">
+                  <!-- Domain Header -->
+                  <div style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:1rem; margin-bottom:1.5rem; padding-bottom:1rem; border-bottom:2px solid #f1ece1;">
+                    <div style="display:flex; align-items:center; gap:0.85rem;">
+                      <div style="width:48px; height:48px; border-radius:14px; background:#142d47; color:#f8d58c; display:flex; align-items:center; justify-content:center; font-size:1.35rem;">
+                        ${icon(DOMAIN_ICONS[d] || "sparkle")}
+                      </div>
+                      <div>
+                        <div style="display:flex; align-items:baseline; gap:0.5rem;">
+                          <h3 style="font-size:1.6rem; font-weight:800; color:#142d47; margin:0;">
+                            ${I.T(domainName, domainNameEs)}
+                          </h3>
+                          <span style="font-size:0.9rem; font-weight:700; color:#64748b;">
+                            (${total} ${I.T("activities", "actividades")})
+                          </span>
+                        </div>
+                        <p style="margin:0.25rem 0 0; font-size:0.92rem; color:#544d43;">
+                          ${I.T(domainDescEn, domainDescEs)}
+                        </p>
+                      </div>
                     </div>
-                    <div>
-                      <h3 style="font-size:1.6rem; font-weight:800; color:#142d47; margin:0 0 0.25rem;">
-                        ${I.T(DOMAIN_META[d].name, DOMAIN_META[d].es)}
-                      </h3>
-                      <p style="margin:0; font-size:0.95rem; color:#544d43;">
-                        ${I.T(DOMAIN_DESCRIPTIONS[d][0], DOMAIN_DESCRIPTIONS[d][1])}
-                      </p>
-                    </div>
+
+                    ${d !== "Model-Test" ? html`
+                      <a class="btn btn-sm btn-outline" href="${BASE}/${d}?grades=${activeMeta.defaultPicker}">
+                        <span>${I.T(`Open ${domainName} Room`, `Abrir sala de ${domainNameEs}`)}</span>
+                        ${icon("arrow-right")}
+                      </a>
+                    ` : ""}
                   </div>
 
-                  <a class="btn btn-sm btn-outline" href="${BASE}/${d}?grades=${activeMeta.defaultPicker}">
-                    <span>${I.T(`Open ${DOMAIN_META[d].name} Room`, `Abrir sala de ${DOMAIN_META[d].es}`)}</span>
-                    ${icon("arrow-right")}
-                  </a>
-                </div>
-
-                ${total === 0 ? html`
-                  <div style="text-align:center; padding:2rem 1rem; color:#64748b;">
-                    <p>${I.T("No activities match your current search.", "No hay actividades que coincidan con la búsqueda.")}</p>
-                  </div>
-                ` : html`
-                  <!-- Tier A Activities -->
-                  <div class="prep-tier-group" style="margin-bottom:2rem;">
-                    <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:1rem;">
-                      <span class="prep-tier-badge tier-a" style="background:#dbeafe; color:#1e40af; font-weight:800; padding:0.25rem 0.65rem; border-radius:6px; font-size:0.8rem;">
-                        Tier A · Entering / Emerging
-                      </span>
-                      <span style="font-size:0.85rem; color:#64748b;">
-                        ${I.T("Heavy scaffolds, visual choices, sentence frames, and clear speech pacing", "Apoyos intensivos, opciones visuales y ritmo pausado")}
-                      </span>
+                  ${total === 0 ? html`
+                    <div style="text-align:center; padding:2rem 1rem; color:#64748b;">
+                      <p>${I.T("No activities match your current search or filter.", "No hay actividades que coincidan con la búsqueda o filtro.")}</p>
                     </div>
+                  ` : html`
+                    <!-- Tier A Activities (All of them) -->
+                    ${listA.length > 0 ? html`
+                      <div class="prep-tier-group" style="margin-bottom:2rem;">
+                        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:0.85rem; padding-bottom:0.4rem; border-bottom:1px solid #e2e8f0;">
+                          <div style="display:flex; align-items:center; gap:0.6rem;">
+                            <span class="prep-tier-badge tier-a" style="background:#dbeafe; color:#1e40af; font-weight:800; padding:0.25rem 0.65rem; border-radius:6px; font-size:0.82rem;">
+                              Tier A · Entering / Emerging
+                            </span>
+                            <span style="font-size:0.85rem; color:#64748b;">
+                              ${I.T("Visual choices, audio models, and sentence frames", "Opciones visuales, modelos de audio y estructuras de oración")}
+                            </span>
+                          </div>
+                          <span style="font-size:0.82rem; font-weight:700; color:#1e40af;">
+                            ${listA.length} ${I.T("tasks", "tareas")}
+                          </span>
+                        </div>
 
-                    <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:1rem;">
-                      ${listA.slice(0, 8).map((act) => activityCardHTML(act, I))}
-                    </div>
-                  </div>
+                        <div class="prep-act-grid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(320px, 1fr)); gap:0.75rem;">
+                          ${listA.map((act) => activityRowHTML(act, I))}
+                        </div>
+                      </div>
+                    ` : ""}
 
-                  <!-- Tier B/C Activities -->
-                  <div class="prep-tier-group">
-                    <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:1rem;">
-                      <span class="prep-tier-badge tier-bc" style="background:#fef3c7; color:#92400e; font-weight:800; padding:0.25rem 0.65rem; border-radius:6px; font-size:0.8rem;">
-                        Tier B/C · Developing / Expanding / Bridging
-                      </span>
-                      <span style="font-size:0.85rem; color:#64748b;">
-                        ${I.T("Complex texts, multi-step explanations, independent speech, and paragraph synthesis", "Textos complejos, explicaciones de varios pasos y síntesis en párrafos")}
-                      </span>
-                    </div>
+                    <!-- Tier B/C Activities (All of them) -->
+                    ${listBC.length > 0 ? html`
+                      <div class="prep-tier-group">
+                        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:0.85rem; padding-bottom:0.4rem; border-bottom:1px solid #e2e8f0;">
+                          <div style="display:flex; align-items:center; gap:0.6rem;">
+                            <span class="prep-tier-badge tier-bc" style="background:#fef3c7; color:#92400e; font-weight:800; padding:0.25rem 0.65rem; border-radius:6px; font-size:0.82rem;">
+                              Tier B/C · Developing / Expanding / Bridging
+                            </span>
+                            <span style="font-size:0.85rem; color:#64748b;">
+                              ${I.T("Complex texts, multi-step explanations, and paragraph synthesis", "Textos complejos, explicaciones de varios pasos y síntesis de párrafos")}
+                            </span>
+                          </div>
+                          <span style="font-size:0.82rem; font-weight:700; color:#92400e;">
+                            ${listBC.length} ${I.T("tasks", "tareas")}
+                          </span>
+                        </div>
 
-                    <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:1rem;">
-                      ${listBC.slice(0, 8).map((act) => activityCardHTML(act, I))}
-                    </div>
-                  </div>
-                `}
-              </section>
-            `;
-          })}
+                        <div class="prep-act-grid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(320px, 1fr)); gap:0.75rem;">
+                          ${listBC.map((act) => activityRowHTML(act, I))}
+                        </div>
+                      </div>
+                    ` : ""}
+                  `}
+                </section>
+              `;
+            })}
         </div>
 
         <!-- Classroom Practice Studios Spotlight -->
@@ -433,6 +545,11 @@ export function onClick(e, ctx) {
   const bandBtn = e.target.closest("[data-prep-band]");
   if (bandBtn) {
     currentBandSelection = bandBtn.dataset.prepBand;
+    if (typeof history !== "undefined" && typeof location !== "undefined") {
+      const url = new URL(location.href);
+      url.searchParams.set("grades", currentBandSelection);
+      history.replaceState({}, "", url.pathname + url.search + url.hash);
+    }
     ctx.rerender();
     return true;
   }
@@ -440,6 +557,13 @@ export function onClick(e, ctx) {
   const domainBtn = e.target.closest("[data-prep-domain]");
   if (domainBtn) {
     currentDomainFilter = domainBtn.dataset.prepDomain;
+    ctx.rerender();
+    return true;
+  }
+
+  const tierBtn = e.target.closest("[data-prep-tier]");
+  if (tierBtn) {
+    currentTierFilter = tierBtn.dataset.prepTier;
     ctx.rerender();
     return true;
   }

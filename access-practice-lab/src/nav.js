@@ -223,7 +223,7 @@ function menuGroups(band, T) {
     {
       title: T("Plan and review", "Planificar y repasar"),
       items: [
-        link("tests", T("Access Prep (Grades 1–3 & 4–6)", "Preparación ACCESS (Grados 1–3 y 4–6)"), "access-prep"),
+        link("tests", T("Access Prep (Grades 3–5 & 6–8)", "Preparación ACCESS (Grados 3–5 y 6–8)"), "access-prep"),
         link("tests", T("Practice tests", "Pruebas de práctica"), "tests"),
         link("tests", T("Assessment simulator", "Simulador de evaluación"), "assess"),
         link("road", T("Road to ACCESS", "Camino a ACCESS"), "road"),

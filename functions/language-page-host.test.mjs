@@ -63,10 +63,16 @@ await t("www redirects to the apex with 308, keeping path and query", () => {
   });
 });
 
-await t("the root lands on ACCESS Practice Lab with a temporary redirect", () => {
+await t("the root lands on Language Adventures with a temporary redirect", () => {
   const r = at("https://thelanguagepage.com/");
   assert.equal(r.status, 302);
-  assert.equal(r.location, "https://thelanguagepage.com/access-practice-lab/");
+  assert.equal(r.location, "https://thelanguagepage.com/language-adventures/");
+});
+
+await t("/access-prep redirects to the lab's Access Prep hub, keeping queries", () => {
+  const r = at("https://thelanguagepage.com/access-prep?grades=6-8");
+  assert.equal(r.status, 302);
+  assert.equal(r.location, "https://thelanguagepage.com/access-practice-lab/access-prep?grades=6-8");
 });
 
 await t("everything the lab loads is served on the lab host", () => {

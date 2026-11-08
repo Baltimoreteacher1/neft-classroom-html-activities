@@ -1054,7 +1054,7 @@
       var v = localStorage.getItem(LANG_KEY);
       if (LANG_MODES.indexOf(v) >= 0) return v;
     } catch (e) {}
-    return S.meta.version === 2 ? "en" : "both";
+    return "both";
   })();
   function applyLang() {
     document.body.setAttribute("data-lang", langMode);
@@ -1210,6 +1210,16 @@
         (beat.misconception ? " misc" : "") +
         (opts.extra ? " " + opts.extra : ""),
     );
+    if (opts.panelNum != null) {
+      fig.insertAdjacentHTML(
+        "beforeend",
+        '<span class="cp-panel-step" aria-label="Panel ' +
+          opts.panelNum +
+          '"><span class="step-lbl">Panel</span> ' +
+          opts.panelNum +
+          "</span>",
+      );
+    }
     // camera: establishing = whole scene; hero = push in on the face;
     // ally/comm = the far side of the room, softened, so the speaker reads first.
     var zoom = est ? 1 : kind === "hero" ? 2.15 : 1.45;
@@ -3610,7 +3620,7 @@
       page.setAttribute("aria-label", "Comic page " + pageNo);
       var grid = el("div", "cp-grid");
       var panels = beats.map(function (b, i) {
-        var p = buildPanel(b, step.art || curArt, step.alt, { establish: i === 0 });
+        var p = buildPanel(b, step.art || curArt, step.alt, { establish: i === 0, panelNum: i + 1 });
         p.style.setProperty("--span", spans[i]);
         p.classList.add("pending");
         p.setAttribute("aria-hidden", "true");
@@ -3625,6 +3635,7 @@
         pageNo +
         "</span>" +
         '<div class="dots" aria-hidden="true"></div>' +
+        '<button type="button" class="cp-show-all" title="Show all panels at once">&#128065; Show all panels</button>' +
         (TTS.available
           ? '<button type="button" class="cp-read" aria-pressed="false">&#128266; Read page to me</button>'
           : "") +
@@ -3692,6 +3703,18 @@
         }
       }
       nextBtn.addEventListener("click", advance);
+      var showAllBtn = nav.querySelector(".cp-show-all");
+      if (showAllBtn) {
+        showAllBtn.addEventListener("click", function () {
+          while (bi < beats.length - 1) {
+            bi++;
+            reveal(bi);
+          }
+          label();
+          showAllBtn.disabled = true;
+          showAllBtn.innerHTML = "&#10003; All panels open";
+        });
+      }
       // tapping the next blank panel turns it over, like reading a real page
       panels.forEach(function (p, i) {
         p.addEventListener("click", function (e) {

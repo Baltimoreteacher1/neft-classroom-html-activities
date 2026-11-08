@@ -119,7 +119,19 @@ export function languagePageRoute(url) {
   if (url.pathname === "/robots.txt") return { kind: "robots" };
   if (url.pathname === "/sitemap.xml") return { kind: "sitemap" };
   if (url.pathname === "/")
-    return { kind: "redirect", status: 302, location: `${url.origin}${LAB_BASE}/` };
+    return { kind: "redirect", status: 302, location: `${url.origin}${ADVENTURES_BASE}/` };
+  if (url.pathname === "/access-prep" || url.pathname === "/access-prep/")
+    return {
+      kind: "redirect",
+      status: 302,
+      location: `${url.origin}${LAB_BASE}/access-prep${url.search}`,
+    };
+  if (url.pathname.startsWith("/access-prep/"))
+    return {
+      kind: "redirect",
+      status: 302,
+      location: `${url.origin}${LAB_BASE}${url.pathname}${url.search}`,
+    };
   if (servesOnLabHost(url.pathname)) return { kind: "serve" };
   return {
     kind: "redirect",
