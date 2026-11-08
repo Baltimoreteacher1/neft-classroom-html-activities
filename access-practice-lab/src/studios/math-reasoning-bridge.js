@@ -56,3 +56,55 @@ export function supportForLevel(level, language = "en") {
   }
   return null;
 }
+
+export function checkPercentTransfer(bridge, response) {
+  const text = String(response ?? "").trim();
+  if (!/^\d+(?:\.0+)?$/.test(text)) return false;
+  return Number(text) === bridge.transferWhole;
+}
+
+/** Observable language features for this response; never a mathematics or proficiency score. */
+export function analyzePercentExplanation(text) {
+  const value = String(text ?? "").toLocaleLowerCase();
+  const evidence = {
+    namesPercent: /(?:\bpercent\b|\bper cent\b|\bpor ciento\b|%)/u.test(value),
+    namesWhole: /\b(whole|total|entero|todo|totalidad)\b/u.test(value),
+    namesPart: /\b(part|amount|parte|cantidad)\b/u.test(value),
+    connectsReason: /\b(because|so|since|therefore|porque|por eso|ya que|entonces)\b/u.test(value),
+  };
+  const missing = [];
+  if (!evidence.namesWhole) missing.push({ en: "name the whole", es: "nombra el todo" });
+  if (!evidence.namesPart) missing.push({ en: "identify the part", es: "identifica la parte" });
+  if (!evidence.namesPercent) missing.push({ en: "use percent language", es: "usa lenguaje de porcentaje" });
+  if (!evidence.connectsReason) missing.push({ en: "connect the ideas with a reason", es: "conecta las ideas con una razón" });
+  const feedback = missing.length
+    ? {
+        en: `For clarity, ${missing.map((item) => item.en).join(", then ")}.`,
+        es: `Para mayor claridad, ${missing.map((item) => item.es).join(", luego ")}.`,
+      }
+    : {
+        en: "Your response names the whole and part, uses percent language, and connects the ideas clearly.",
+        es: "Tu respuesta nombra el todo y la parte, usa lenguaje de porcentaje y conecta las ideas con claridad.",
+      };
+  return { evidence, feedback };
+}
+
+export function percentSupportForLevel(level, language = "en", { percent, whole, part } = {}) {
+  if (level <= 2) {
+    return language === "es"
+      ? {
+          bank: ["por ciento", "todo", "parte", "partes iguales", "de"],
+          frame: `${percent}% significa ${percent} de 100 partes iguales. El todo es ${whole}; la parte es ${part} porque ___ .`,
+        }
+      : {
+          bank: ["percent", "whole", "part", "equal parts", "of"],
+          frame: `${percent}% means ${percent} of 100 equal parts. The whole is ${whole}; the part is ${part} because ___.`,
+        };
+  }
+  if (level === 3) {
+    return language === "es"
+      ? { bank: ["porcentaje", "todo", "parte"], frame: `El ${percent}% de ${whole} es ${part} porque ___.` }
+      : { bank: ["percent", "whole", "part"], frame: `${percent}% of ${whole} is ${part} because ___.` };
+  }
+  return null;
+}

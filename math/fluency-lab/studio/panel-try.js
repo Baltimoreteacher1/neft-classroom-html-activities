@@ -9,6 +9,7 @@ import { record } from "./adaptive.js";
 import { generateProblem, seededRandom, validateAnswer } from "../problem-bank.js";
 import { t } from "../i18n.js";
 import { createRatioExplanationUrl } from "../../../shared/math-language-bridge/v1.js";
+import { createPercentExplanationUrl } from "../../../shared/math-language-bridge/v2.js";
 
 const esc = (s) => String(s).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;");
 
@@ -105,13 +106,39 @@ export function mountTry(ctx, root) {
       root.querySelector('[data-form] button').disabled = true;
       const next = `<button type="button" class="sd-btn sd-primary" data-new="${supported ? "independent" : "more"}">${esc(supported ? t("Try a new one on my own") : t("Another one"))}</button>`;
       const base = lesson?.spec?.kind === "ratio" ? lesson.spec.base : null;
+      const percentBridge =
+        lesson?.engine?.id === "ratio" && lesson.spec.kind === "percent" ? lesson.spec : null;
       const grade = Number(ctx.skill.grade) || 6;
-      const bridgeUrl =
-        Array.isArray(base) && base.length === 2 && base.every((n) => Number.isInteger(n) && n >= 1 && n <= 12) && grade >= 6 && grade <= 8
-          ? createRatioExplanationUrl({ first: base[0], second: base[1], grade })
-          : null;
+      let bridgeUrl = null;
+      let bridgeTask = "ratio";
+      try {
+        if (
+          Array.isArray(base) &&
+          base.length === 2 &&
+          base.every((n) => Number.isInteger(n) && n >= 1 && n <= 12) &&
+          grade >= 6 &&
+          grade <= 8
+        ) {
+          bridgeUrl = createRatioExplanationUrl({ first: base[0], second: base[1], grade });
+        } else if (
+          percentBridge &&
+          Number.isInteger(percentBridge.target?.v) &&
+          Number.isInteger(percentBridge.base?.[1]) &&
+          grade >= 4 &&
+          grade <= 8
+        ) {
+          bridgeUrl = createPercentExplanationUrl({
+            percent: percentBridge.target.v,
+            whole: percentBridge.base[1],
+            grade,
+          });
+          bridgeTask = "percent";
+        }
+      } catch {
+        // Some generated values do not have a bounded exact transfer task; omit the optional bridge.
+      }
       const bridge = bridgeUrl
-        ? `<div class="sd-math-language-bridge"><a class="sd-btn" href="${bridgeUrl}">${esc(pick(L("Explain this ratio in The Language Page", "Explica esta razón en The Language Page"), ctx.lang()))}</a><p>${esc(pick(L("Only the ratio quantities and grade travel with this optional link. Your name, response, and progress stay here.", "Este enlace opcional solo comparte las cantidades de la razón y el grado. Tu nombre, respuesta y progreso se quedan aquí."), ctx.lang()))}</p></div>`
+        ? `<div class="sd-math-language-bridge"><a class="sd-btn" href="${bridgeUrl}">${esc(pick(bridgeTask === "percent" ? L("Explain this percent model in The Language Page", "Explica este modelo de porcentaje en The Language Page") : L("Explain this ratio in The Language Page", "Explica esta razón en The Language Page"), ctx.lang()))}</a><p>${esc(pick(L("Only the math task and grade travel with this optional link. Your name, response, and progress stay here.", "Este enlace opcional solo comparte la tarea matemática y el grado. Tu nombre, respuesta y progreso se quedan aquí."), ctx.lang()))}</p></div>`
         : "";
       root.querySelector("[data-actions]").innerHTML = `${next}${bridge}`;
       ctx.refreshRail();
