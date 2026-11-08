@@ -1832,6 +1832,82 @@ for (const sim of Object.values(SIMS)) {
   const s = fe.clamp({ n: 9, d: 4, k: 2 });
   assert.ok(s.n <= s.d, "shaded pieces never exceed the whole");
 }
+{
+  const machine = SIMS.machine;
+  const context = {
+    lang: () => "en",
+    lesson: { engine: { id: "graph" }, spec: { mode: "fn", k: 2, c: -2, x: 4 } },
+  };
+  const initial = machine.init(context);
+  assert.deepEqual(
+    { m: initial.m, b: initial.b, x: initial.x },
+    { m: 2, b: -2, x: 4 },
+    "the model starts from the active function problem",
+  );
+  assert.equal(
+    machine.prediction(initial).answer,
+    6,
+    "the prediction is evaluated from the actual function rule",
+  );
+  const first = machine.render(initial);
+  assert.match(first.svg, /y = 2x − 2/, "the symbolic rule is visible");
+  assert.match(first.svg, /Input x/, "the linked table labels its input");
+  assert.match(first.svg, /Output y/, "the linked table labels its output");
+  assert.match(
+    first.alt.en,
+    /highlighted graph point \(4, 6\)/,
+    "the selected pair is described accessibly",
+  );
+  const edgeCase = machine.render({ ...initial, m: -3, b: 0, x: 10 });
+  assert.match(edgeCase.svg, /y = −3x/, "negative slope and zero intercept stay valid");
+  assert.doesNotMatch(edgeCase.svg, /NaN|Infinity/);
+  assert.match(
+    machine.render(machine.init({ lang: () => "es" })).svg,
+    /Entrada x/,
+    "table labels follow the selected language",
+  );
+
+  const machineHost = document.createElement("div");
+  document.body.append(machineHost);
+  mountExplore({ sim: machine, ...context, mark() {} }, machineHost);
+  assert.equal(
+    machineHost.querySelector("[data-model]").hidden,
+    true,
+    "the linked representations wait for a prediction",
+  );
+  const form = machineHost.querySelector("[data-prediction-form]");
+  form.querySelector("input").value = "6";
+  form.dispatchEvent(new dom.window.Event("submit", { bubbles: true, cancelable: true }));
+  assert.equal(
+    machineHost.querySelector("[data-model]").hidden,
+    false,
+    "a successful prediction opens the model",
+  );
+  const slope = machineHost.querySelector('[data-k="m"]');
+  slope.value = "-3";
+  slope.dispatchEvent(new dom.window.Event("input", { bubbles: true }));
+  assert.match(machineHost.querySelector("[data-stage]").textContent, /y = −3x − 2/);
+  assert.match(machineHost.querySelector("[data-stage]").textContent, /4\s+1\s+−2\s+−5\s+−8/);
+  assert.match(
+    machineHost.querySelector("[data-stage] svg").getAttribute("aria-label"),
+    /highlighted graph point \(4, -14\)/,
+  );
+  const intercept = machineHost.querySelector('[data-k="b"]');
+  intercept.value = "0";
+  intercept.dispatchEvent(new dom.window.Event("input", { bubbles: true }));
+  assert.match(machineHost.querySelector("[data-stage]").textContent, /y = −3x/);
+  assert.match(machineHost.querySelector("[data-stage]").textContent, /y = −12/);
+  const input = machineHost.querySelector('[data-k="x"]');
+  input.value = "10";
+  input.dispatchEvent(new dom.window.Event("input", { bubbles: true }));
+  assert.match(machineHost.querySelector("[data-stage]").textContent, /x = 10/);
+  assert.match(machineHost.querySelector("[data-stage]").textContent, /y = −30/);
+  assert.match(
+    machineHost.querySelector("[data-stage] svg").getAttribute("aria-label"),
+    /highlighted graph point \(10, -30\)/,
+  );
+  machineHost.remove();
+}
 
 // ---------- 8. Interface ----------
 const skill = (id) => ALL_SKILLS.find((s) => s.id === id);

@@ -111,44 +111,100 @@ const proportional = {
   },
 };
 
+const functionRule = (m, b) => `y = ${fmt(m)}x${b === 0 ? "" : ` ${b < 0 ? "−" : "+"} ${Math.abs(b)}`}`;
+
 const machine = {
   id: "machine",
   title: L("Function machine", "Máquina de funciones"),
   ask: L(
-    "Change the rule. Predict the output before you read it.",
-    "Cambia la regla. Predice la salida antes de leerla.",
+    "Change the rule or input. Compare the equation, table, and graph: what stays connected?",
+    "Cambia la regla o la entrada. Compara la ecuación, la tabla y la gráfica: ¿qué se mantiene conectado?",
   ),
-  init: () => ({ m: 2, b: 1, x: 3 }),
+  init(ctx) {
+    const spec = ctx?.lesson?.spec;
+    const supported =
+      ["graph", "expr"].includes(ctx?.lesson?.engine?.id) &&
+      ["fn", "sub"].includes(spec?.mode) &&
+      [spec?.k, spec?.c, spec?.x].every(Number.isSafeInteger) &&
+      Math.abs(spec.k) <= 12 &&
+      Math.abs(spec.c) <= 40 &&
+      Math.abs(spec.x) <= 20;
+    return {
+      m: supported ? spec.k : 2,
+      b: supported ? spec.c : 1,
+      x: supported ? spec.x : 3,
+      lang: ctx?.lang?.() === "es" ? "es" : "en",
+    };
+  },
   sliders: (s) => [
-    slider("m", L("Multiply by", "Multiplica por"), -3, 6, 1, s.m),
-    slider("b", L("Then add", "Luego suma"), -6, 9, 1, s.b),
-    slider("x", L("Input x", "Entrada x"), -5, 10, 1, s.x),
+    slider("m", L("Multiply by", "Multiplica por"), -12, 12, 1, s.m),
+    slider("b", L("Then add", "Luego suma"), -40, 40, 1, s.b),
+    slider("x", L("Input x", "Entrada x"), -20, 20, 1, s.x),
   ],
+  prediction(s) {
+    const answer = s.m * s.x + s.b;
+    const rule = functionRule(s.m, s.b);
+    return {
+      prompt: L(
+        `The rule is ${rule}. Predict y when x = ${s.x}, before opening the linked models.`,
+        `La regla es ${rule}. Predice y cuando x = ${s.x}, antes de abrir los modelos conectados.`,
+      ),
+      answer,
+      hint: L(
+        `Multiply ${s.x} by ${s.m} first, then ${s.b < 0 ? "subtract" : "add"} ${Math.abs(s.b)}.`,
+        `Multiplica ${s.x} por ${s.m} primero y luego ${s.b < 0 ? "resta" : "suma"} ${Math.abs(s.b)}.`,
+      ),
+    };
+  },
   render(s) {
     const y = s.m * s.x + s.b;
     const sg = (n) => (n < 0 ? `− ${-n}` : `+ ${n}`);
-    let body = `<rect x="190" y="50" width="180" height="90" rx="14" fill="${COLORS.whole}" fill-opacity=".9"/>${txt(280, 105, `× ${fmt(s.m)} ${sg(s.b)}`, { size: 26, fill: "#fff" })}`;
-    body +=
-      txt(100, 105, `x = ${fmt(s.x)}`, { size: 22 }) +
-      `<path d="M140,95 h45" stroke="${COLORS.ink}" stroke-width="3"/>` +
-      txt(470, 105, `y = ${fmt(y)}`, { size: 22, fill: COLORS.hundreds }) +
-      `<path d="M375,95 h45" stroke="${COLORS.ink}" stroke-width="3"/>`;
-    body +=
-      txt(280, 175, `x:  ${[0, 1, 2, 3, 4].map((t) => t).join("   ")}`, { size: 15, weight: 500 }) +
-      txt(280, 200, `y:  ${[0, 1, 2, 3, 4].map((t) => fmt(s.m * t + s.b)).join("   ")}`, {
-        size: 15,
-        fill: COLORS.hundreds,
-      });
+    const samples = [-2, -1, 0, 1, 2];
+    const values = [...samples.map((x) => s.m * x + s.b), y];
+    const xMin = Math.min(-2, s.x) - 1;
+    const xMax = Math.max(2, s.x) + 1;
+    const xSpan = Math.max(1, xMax - xMin);
+    const yMin = Math.min(0, ...values) - 1;
+    const yMax = Math.max(0, ...values) + 1;
+    const ySpan = yMax - yMin;
+    const X = (x) => 48 + ((x - xMin) / xSpan) * 464;
+    const Y = (value) => 340 - ((value - yMin) / ySpan) * 100;
+    const rule = functionRule(s.m, s.b);
+    const operation = `× ${fmt(s.m)}${s.b === 0 ? "" : ` ${sg(s.b)}`}`;
+    let body = `<text x="280" y="25" text-anchor="middle" font-size="20" font-weight="700" fill="${COLORS.ink}">${rule}</text>`;
+    body += `<rect x="190" y="42" width="180" height="58" rx="12" fill="${COLORS.whole}" fill-opacity=".94"/>${txt(280, 78, operation, { size: 22, fill: "#fff" })}`;
+    body += txt(92, 78, `x = ${fmt(s.x)}`, { size: 18 }) + `<path d="M125,72 h57" stroke="${COLORS.ink}" stroke-width="2.5"/>` + txt(468, 78, `y = ${fmt(y)}`, { size: 18, fill: COLORS.hundreds }) + `<path d="M378,72 h50" stroke="${COLORS.ink}" stroke-width="2.5"/>`;
+    body += txt(280, 126, s.lang === "es" ? "Entrada x" : "Input x", { size: 13, fill: COLORS.mute });
+    body += txt(280, 151, samples.map((x) => fmt(x)).join("       "), { size: 15, weight: 600 });
+    body += txt(280, 177, s.lang === "es" ? "Salida y" : "Output y", { size: 13, fill: COLORS.hundreds });
+    body += txt(280, 201, samples.map((x) => fmt(s.m * x + s.b)).join("       "), { size: 15, fill: COLORS.hundreds, weight: 600 });
+    const axisY = Y(Math.max(yMin, Math.min(yMax, 0)));
+    const yTicks = [...new Set([Math.ceil(yMin), 0, Math.floor(yMax)])].filter((v) => v >= yMin && v <= yMax);
+    body += `<line x1="48" y1="${axisY}" x2="512" y2="${axisY}" stroke="${COLORS.ink}" stroke-width="1.5"/><line x1="${X(0)}" y1="220" x2="${X(0)}" y2="350" stroke="${COLORS.ink}" stroke-width="1.5"/>`;
+    const xTicks = [...new Set([...samples, s.x])].sort((a, b) => a - b);
+    for (const x of xTicks) {
+      const px = X(x);
+      body += `<line x1="${px}" y1="220" x2="${px}" y2="350" stroke="${x === 0 ? COLORS.ink : COLORS.rule}" stroke-width="${x === 0 ? 1.5 : 1}"/>${txt(px, axisY + 16, fmt(x), { size: 10, fill: COLORS.mute })}`;
+    }
+    for (const value of yTicks) {
+      const py = Y(value);
+      body += `<line x1="48" y1="${py}" x2="512" y2="${py}" stroke="${value === 0 ? COLORS.ink : COLORS.rule}" stroke-width="${value === 0 ? 1.5 : 1}"/>${txt(X(0) - 8, py + 4, fmt(value), { size: 10, fill: COLORS.mute, anchor: "end" })}`;
+    }
+    const lineX1 = X(xMin), lineX2 = X(xMax);
+    body += `<line x1="${lineX1}" y1="${Y(s.m * xMin + s.b)}" x2="${lineX2}" y2="${Y(s.m * xMax + s.b)}" stroke="${COLORS.whole}" stroke-width="2.5"/>`;
+    for (const x of samples) body += `<circle cx="${X(x)}" cy="${Y(s.m * x + s.b)}" r="4" fill="${COLORS.whole}"/>`;
+    body += `<circle cx="${X(s.x)}" cy="${Y(y)}" r="7" fill="${COLORS.part}" stroke="#fff" stroke-width="2"/>`;
+    body += txt(520, 236, "y", { size: 12, fill: COLORS.hundreds }) + txt(500, 366, "x", { size: 12, fill: COLORS.ink });
     const alt = L(
-      `Function machine with rule multiply by ${s.m} then add ${s.b}. Input ${s.x} gives output ${y}.`,
-      `Máquina con la regla multiplicar por ${s.m} y sumar ${s.b}. La entrada ${s.x} da la salida ${y}.`,
+      `Linked function model. Equation ${rule}. Table inputs ${samples.join(", ")} give outputs ${samples.map((x) => s.m * x + s.b).join(", ")}. The highlighted graph point (${s.x}, ${y}) matches the machine input and output.`,
+      `Modelo de función conectado. Ecuación ${rule}. Las entradas ${samples.join(", ")} de la tabla dan salidas ${samples.map((x) => s.m * x + s.b).join(", ")}. El punto resaltado (${s.x}, ${y}) coincide con la entrada y salida de la máquina.`,
     );
     return out(
-      svgWrap(body, "", { h: 220 }),
+      svgWrap(body, "", { h: 385 }),
       alt,
       L(
-        `y = ${fmt(s.m)}x ${sg(s.b)}. Each time x goes up by 1, y changes by ${fmt(s.m)}: that change is the slope. At x = 0, y = ${fmt(s.b)}.`,
-        `y = ${fmt(s.m)}x ${sg(s.b)}. Cada vez que x sube 1, y cambia ${fmt(s.m)}: ese cambio es la pendiente. En x = 0, y = ${fmt(s.b)}.`,
+        `${rule}. Each time x goes up by 1, y changes by ${fmt(s.m)}: that change is the slope. At x = 0, y = ${fmt(s.b)}.`,
+        `${rule}. Cada vez que x sube 1, y cambia ${fmt(s.m)}: ese cambio es la pendiente. En x = 0, y = ${fmt(s.b)}.`,
       ),
     );
   },
