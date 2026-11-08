@@ -11,7 +11,7 @@
  * The block between the build markers is written by tools/sync-access-shell.mjs; do not edit it by hand.
  */
 /* build:begin */
-const BUILD_HASH = "7020f9fc2677";
+const BUILD_HASH = "24154496ea84";
 const PRECACHE_CORE = [
   "/access-practice-lab/ds.css?v=f77bd42f8057",
   "/access-practice-lab/home.css?v=d4e1a1fc5829",
@@ -154,7 +154,7 @@ const PRECACHE_MORE = [
   "/access-practice-lab/craft-studios.css?v=d8f80123ec80",
   "/access-practice-lab/experience.css?v=ecfa672e8c43",
   "/access-practice-lab/units.css?v=d6528dce25e0",
-  "/access-practice-lab/language-studios.css?v=8b1f5898167e",
+  "/access-practice-lab/language-studios.css?v=09735d569015",
   "/access-practice-lab/comfort.css?v=5e5c2cf66911",
   "/access-practice-lab/reader.css?v=ab192bd27e31",
   "/access-practice-lab/src/acc/adapt/assign.js?v=f2685971bc05",
@@ -416,11 +416,12 @@ const PRECACHE_MORE = [
   "/access-practice-lab/src/stt.js?v=2ac7de58914c",
   "/access-practice-lab/src/studios/data-bridge-view.js?v=dd19eb01b947",
   "/access-practice-lab/src/studios/discourse-architect.js?v=f8dbb5153e04",
+  "/access-practice-lab/src/studios/equation-bridge-view.js?v=68bec7bce0f1",
   "/access-practice-lab/src/studios/fraction-bridge-view.js?v=cc955651dd71",
   "/access-practice-lab/src/studios/fraction-division-bridge-view.js?v=29024a7820a4",
   "/access-practice-lab/src/studios/fraction-line-bridge-view.js?v=f15d0bfd1f0a",
   "/access-practice-lab/src/studios/fractional-volume-bridge-view.js?v=3f061c1d79e9",
-  "/access-practice-lab/src/studios/math-reasoning-bridge.js?v=396aa05aa062",
+  "/access-practice-lab/src/studios/math-reasoning-bridge.js?v=68cab77393f6",
   "/access-practice-lab/src/studios/speaking-sparring.js?v=1d79358e4728",
   "/access-practice-lab/src/studios/translanguaging-bridge.js?v=b152257a32d8",
   "/access-practice-lab/src/studios.js?v=b4a26b4e766f",
@@ -457,7 +458,7 @@ const PRECACHE_MORE = [
   "/access-practice-lab/src/views/key-warmup.js?v=1020b41d1d97",
   "/access-practice-lab/src/views/ladder-tools.js?v=10975a75c471",
   "/access-practice-lab/src/views/ladder.js?v=66470f621d2f",
-  "/access-practice-lab/src/views/language-studios.js?v=e611abb568e4",
+  "/access-practice-lab/src/views/language-studios.js?v=0c1ff9348976",
   "/access-practice-lab/src/views/launch-studio.js?v=8084fdb4ac43",
   "/access-practice-lab/src/views/learn.js?v=439f4cb9832a",
   "/access-practice-lab/src/views/library.js?v=326d006906e0",

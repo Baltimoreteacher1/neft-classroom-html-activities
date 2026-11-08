@@ -91,6 +91,45 @@ export function checkSurfaceAreaTransfer(bridge, response) {
   return /^\d+(?:\.0+)?$/u.test(text) && Number(text) === bridge.transferSurfaceArea;
 }
 
+export function checkEquationBalanceTransfer(bridge, response) {
+  const text = String(response ?? "").trim();
+  return /^-?\d+$/.test(text) && Number(text) === bridge.transferSolution;
+}
+
+/** Language evidence from one explanation; this is not a math or proficiency score. */
+export function analyzeEquationBalanceExplanation(text) {
+  const value = String(text ?? "").toLocaleLowerCase();
+  const evidence = {
+    namesUnknown: /\b(x|variable|unknown|incógnita|variable)\b/u.test(value),
+    preservesEquality: /\b(both sides|each side|same operation|stay equal|keep.*equal|ambos lados|cada lado|misma operación|siguen iguales|mantener.*igual)\b/u.test(value),
+    namesInverse: /\b(inverse|undo|subtract|add|divide|multiply|inversa|inverso|deshacer|restar|resta|resto|sumar|suma|sumo|dividir|divido|multiplicar|multiplico)\b/u.test(value),
+    checksSolution: /\b(check|substitute|substitution|plug in|verify|comprobar|compruebo|comprobé|sustituir|verificar)\b/u.test(value),
+    connectsReason: /\b(because|so|since|therefore|porque|por eso|ya que|entonces)\b/u.test(value),
+  };
+  const missing = [];
+  if (!evidence.namesUnknown) missing.push({ en: "name the unknown", es: "nombra la incógnita" });
+  if (!evidence.preservesEquality) missing.push({ en: "explain why the same operation must act on both sides", es: "explica por qué la misma operación debe aplicarse a ambos lados" });
+  if (!evidence.namesInverse) missing.push({ en: "name the inverse operation", es: "nombra la operación inversa" });
+  if (!evidence.checksSolution) missing.push({ en: "say how you checked the solution", es: "explica cómo comprobaste la solución" });
+  if (!evidence.connectsReason) missing.push({ en: "connect your ideas with a reason", es: "conecta tus ideas con una razón" });
+  return {
+    evidence,
+    feedback: missing.length
+      ? { en: `For clarity, ${missing.map((item) => item.en).join(", then ")}.`, es: `Para mayor claridad, ${missing.map((item) => item.es).join(", luego ")}.` }
+      : { en: "You name the unknown, preserve equality, explain the inverse operation, and check the solution.", es: "Nombras la incógnita, mantienes la igualdad, explicas la operación inversa y compruebas la solución." },
+  };
+}
+
+export function equationBalanceSupportForLevel(level, language = "en") {
+  if (level <= 2) return language === "es"
+    ? { bank: ["incógnita", "ambos lados", "operación inversa", "igualdad", "comprobar"], frame: "Hice ___ en ambos lados para mantener la igualdad. La operación inversa ayuda porque ___; comprobé al sustituir ___." }
+    : { bank: ["unknown", "both sides", "inverse operation", "equal", "check"], frame: "I ___ both sides to keep the equation equal. The inverse operation helps because ___. I checked by substituting ___." };
+  if (level === 3) return language === "es"
+    ? { bank: ["incógnita", "inversa", "igualdad", "comprobar"], frame: "La misma operación en ambos lados mantiene la igualdad porque ___." }
+    : { bank: ["unknown", "inverse", "equal", "check"], frame: "The same operation on both sides keeps the equation equal because ___." };
+  return null;
+}
+
 function parseExactRationalResponse(text) {
   const value = String(text ?? "").trim();
   let match = value.match(/^(\d+)\s+(\d+)\s*\/\s*(\d+)$/u);

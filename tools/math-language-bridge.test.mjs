@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import {
   analyzeDataExplanation,
+  analyzeEquationBalanceExplanation,
   analyzeFractionalVolumeExplanation,
   analyzeFractionDivisionExplanation,
   analyzeFractionExplanation,
@@ -9,6 +10,7 @@ import {
   analyzeRatioExplanation,
   analyzeSurfaceAreaExplanation,
   checkDataTransfer,
+  checkEquationBalanceTransfer,
   checkFractionalVolumeTransfer,
   checkFractionDivisionTransfer,
   checkFractionLineTransfer,
@@ -17,6 +19,7 @@ import {
   checkRatioTransfer,
   checkSurfaceAreaTransfer,
   dataSupportForLevel,
+  equationBalanceSupportForLevel,
   fractionalVolumeSupportForLevel,
   fractionDivisionSupportForLevel,
   fractionLineSupportForLevel,
@@ -38,6 +41,7 @@ import {
 } from "../shared/math-language-bridge/v1.js";
 import {
   createDataExplanationUrl,
+  createEquationBalanceExplanationUrl,
   createFractionalVolumeExplanationUrl,
   createFractionDivisionExplanationUrl,
   createFractionExplanationUrl,
@@ -391,6 +395,55 @@ assert.ok(
   fractionDivisionSupportForLevel(2, "en").frame.toLowerCase().includes("equal-sized pieces"),
 );
 assert.equal(fractionDivisionSupportForLevel(5, "es"), null);
+const equationCases = [
+  [{ form: "add", amount: 7, result: 19 }, [12, 20]],
+  [{ form: "subtract", amount: 4, result: 2 }, [6, 3]],
+  [{ form: "multiply", amount: 4, result: 28 }, [7, 32]],
+  [{ form: "divide", amount: 4, result: 7 }, [28, 8]],
+  [{ form: "two-step", amount: 3, shift: 4, result: 19 }, [5, 22]],
+  [{ form: "two-step", amount: 3, shift: -5, result: 16 }, [7, 19]],
+];
+for (const [input, [solution, transferResult]] of equationCases) {
+  const equationUrl = new URL(createEquationBalanceExplanationUrl({ ...input, grade: 6 }));
+  const equationBridge = readBridgeV2(equationUrl.searchParams);
+  assert.equal(equationBridge.solution, solution);
+  assert.equal(equationBridge.transferResult, transferResult);
+  assert.equal(
+    checkEquationBalanceTransfer(equationBridge, String(equationBridge.transferSolution)),
+    true,
+  );
+  assert.equal(checkEquationBalanceTransfer(equationBridge, String(solution)), false);
+  assert.equal(readBridgeV2(`${equationUrl.search}&student=private`), null);
+}
+assert.throws(
+  () => createEquationBalanceExplanationUrl({ form: "multiply", amount: 4, result: 7 }),
+  RangeError,
+);
+assert.throws(
+  () => createEquationBalanceExplanationUrl({ form: "two-step", amount: 3, shift: 0, result: 18 }),
+  RangeError,
+);
+const equationEvidence = analyzeEquationBalanceExplanation(
+  "I subtract 4 from both sides to keep the equation equal because it is the inverse. I check by substituting 6.",
+);
+assert.equal(equationEvidence.evidence.preservesEquality, true);
+assert.equal(equationEvidence.evidence.namesInverse, true);
+assert.equal(equationEvidence.evidence.checksSolution, true);
+assert.equal(equationEvidence.evidence.connectsReason, true);
+assert.deepEqual(
+  analyzeEquationBalanceExplanation(
+    "Resto 7 a ambos lados para mantener la igualdad porque es la inversa. Compruebo al sustituir 12.",
+  ).evidence,
+  {
+    namesUnknown: false,
+    preservesEquality: true,
+    namesInverse: true,
+    checksSolution: true,
+    connectsReason: true,
+  },
+);
+assert.ok(equationBalanceSupportForLevel(2, "es").frame.includes("ambos lados"));
+assert.equal(equationBalanceSupportForLevel(5, "en"), null);
 const nonWholeDivisionBridge = readBridgeV2(
   new URL(
     createFractionDivisionExplanationUrl({
@@ -1075,6 +1128,66 @@ assert.ok(
 );
 assert.equal(readBridgeV2(new URL(unitDivisionLink.href).searchParams)?.task, "fraction-division");
 
+function solveEquationPrompt(question) {
+  let match = question.match(/^x \+ (\d+) = (-?\d+)\. Find x\.$/u);
+  if (match) return Number(match[2]) - Number(match[1]);
+  match = question.match(/^x − (\d+) = (-?\d+)\. Find x\.$/u);
+  if (match) return Number(match[2]) + Number(match[1]);
+  match = question.match(/^(\d+)x = (-?\d+)\. Find x\.$/u);
+  if (match) return Number(match[2]) / Number(match[1]);
+  match = question.match(/^x ÷ (\d+) = (-?\d+)\. Find x\.$/u);
+  if (match) return Number(match[2]) * Number(match[1]);
+  match = question.match(/^(\d+)x ([+−]) (\d+) = (-?\d+)\. Find x\.$/u);
+  if (match)
+    return (Number(match[4]) - Number(match[3]) * (match[2] === "−" ? -1 : 1)) / Number(match[1]);
+  return null;
+}
+
+async function verifyEquationSkill(skill, grade, twoStep) {
+  let equationTryRoot = null;
+  let equationQuestion = "";
+  const originalNow = Date.now;
+  for (let seed = 1; seed < 80; seed += 1) {
+    Date.now = () => seed * 2713;
+    equationTryRoot = document.createElement("div");
+    mountTry(
+      {
+        ...tryCtx,
+        skill,
+        item: { question: "previous equation problem" },
+        id: `equation-bridge-${grade}-${seed}`,
+        key: `${grade}:${skill.id}`,
+      },
+      equationTryRoot,
+    );
+    equationQuestion = equationTryRoot.querySelector("[data-problem]").textContent;
+    const wantsTwoStep = /^\d+x [+−] \d+ = -?\d+\. Find x\.$/u.test(equationQuestion);
+    if (wantsTwoStep === twoStep && solveEquationPrompt(equationQuestion) !== null) break;
+    equationTryRoot = null;
+  }
+  Date.now = originalNow;
+  assert.ok(
+    equationTryRoot,
+    `generated ${twoStep ? "two-step" : "one-step"} equation for grade ${grade}`,
+  );
+  equationTryRoot.querySelector("input").value = String(solveEquationPrompt(equationQuestion));
+  equationTryRoot
+    .querySelector("[data-form]")
+    .dispatchEvent(new win.Event("submit", { bubbles: true, cancelable: true }));
+  const link = equationTryRoot.querySelector(".sd-math-language-bridge a");
+  assert.ok(link, `grade ${grade} equation practice links to the Language Page`);
+  const parsed = readBridgeV2(new URL(link.href).searchParams);
+  assert.equal(parsed?.task, "equation-balance");
+  assert.equal(parsed?.grade, grade);
+  if (twoStep) assert.equal(parsed?.form, "two-step");
+  else assert.ok(["add", "subtract", "multiply", "divide"].includes(parsed.form));
+  return parsed;
+}
+
+await verifyEquationSkill(getSkill(6, "one-step"), 6, false);
+const twoStepEquation = await verifyEquationSkill(getSkill(7, "equations"), 7, true);
+assert.equal(twoStepEquation.form, "two-step");
+
 const divisionCtx = makeCtx("language-studios");
 divisionCtx.route.mathBridge = fractionDivisionBridge;
 ({ root } = await mount(languageStudios, divisionCtx));
@@ -1114,6 +1227,76 @@ root
 assert.match(root.textContent, /Investigation complete/);
 assert.match(root.textContent, /not an official WIDA score/);
 
+const equationUrl = new URL(
+  createEquationBalanceExplanationUrl({ form: "add", amount: 7, result: 19, grade: 6 }),
+);
+const equationBridge = readBridgeV2(equationUrl.searchParams);
+const equationCtx = makeCtx("language-studios");
+equationCtx.route.mathBridge = equationBridge;
+({ root } = await mount(languageStudios, equationCtx));
+assert.match(root.textContent, /Balance both sides/);
+assert.match(root.textContent, /x \+ 7/);
+root.querySelector("#mlb-draft").value =
+  "The equation stays equal because I subtract 7 from both sides.";
+root
+  .querySelector("[data-bridge-draft]")
+  .dispatchEvent(new win.Event("submit", { bubbles: true, cancelable: true }));
+({ root } = await mount(languageStudios, equationCtx));
+assert.match(root.textContent, /Use an inverse operation on both sides/);
+root.querySelector('[data-equation-action="one-side"]').click();
+({ root } = await mount(languageStudios, equationCtx));
+assert.match(root.textContent, /breaks the equality/);
+root.querySelector('[data-equation-action="correct"]').click();
+({ root } = await mount(languageStudios, equationCtx));
+assert.match(root.textContent, /x = 12/);
+root
+  .querySelector("[data-bridge-draft]")
+  .dispatchEvent(new win.Event("submit", { bubbles: true, cancelable: true }));
+({ root } = await mount(languageStudios, equationCtx));
+assert.match(root.textContent, /Improve your explanation/);
+assert.match(root.textContent, /balance on both sides/);
+root.querySelector("#mlb-revision").value =
+  "I subtract 7 from both sides, so x is 12. Substitution checks the equation because 12 + 7 = 19.";
+root
+  .querySelector("[data-bridge-revision]")
+  .dispatchEvent(new win.Event("submit", { bubbles: true, cancelable: true }));
+({ root } = await mount(languageStudios, equationCtx));
+assert.match(root.textContent, /Solve x \+ 7 = 20/);
+root.querySelector("#mlb-transfer").value = "13";
+root
+  .querySelector("[data-bridge-transfer]")
+  .dispatchEvent(new win.Event("submit", { bubbles: true, cancelable: true }));
+({ root } = await mount(languageStudios, equationCtx));
+assert.match(root.textContent, /Correct\. Explain how you solved this new equation independently/);
+root.querySelector("#mlb-transfer-explain").value =
+  "I subtract 7 from both sides because that is the inverse. Substituting 13 gives 20.";
+root
+  .querySelector("[data-bridge-transfer-explain]")
+  .dispatchEvent(new win.Event("submit", { bubbles: true, cancelable: true }));
+({ root } = await mount(languageStudios, equationCtx));
+assert.match(root.textContent, /You used a balance model/);
+assert.match(root.textContent, /Names the unknown/);
+
+const twoStepCtx = makeCtx("language-studios");
+twoStepCtx.route.mathBridge = twoStepEquation;
+({ root } = await mount(languageStudios, twoStepCtx));
+root.querySelector('[data-equation-action="same-wrong"]').click();
+({ root } = await mount(languageStudios, twoStepCtx));
+assert.match(root.textContent, /does not undo the operation/);
+root.querySelector('[data-equation-action="correct"]').click();
+({ root } = await mount(languageStudios, twoStepCtx));
+assert.equal(
+  root.querySelector(".mlb-equation-display span strong")?.textContent,
+  `${twoStepEquation.amount}x`,
+);
+assert.equal(
+  root.querySelectorAll(".mlb-equation-display span strong")[1]?.textContent,
+  String(twoStepEquation.result - twoStepEquation.shift),
+);
+root.querySelector('[data-equation-action="correct"]').click();
+({ root } = await mount(languageStudios, twoStepCtx));
+assert.ok(root.textContent.includes(`x = ${twoStepEquation.solution}`));
+
 console.log(
-  "math-language-bridge: versioned task context, separate evidence, supports, and transfer passed.",
+  "math-language-bridge: versioned task context, equation balance, separate evidence, supports, and transfer passed.",
 );

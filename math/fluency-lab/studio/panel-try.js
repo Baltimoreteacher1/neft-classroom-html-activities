@@ -17,6 +17,7 @@ import { createSurfaceAreaExplanationUrl } from "../../../shared/math-language-b
 import { createPyramidSurfaceAreaExplanationUrl } from "../../../shared/math-language-bridge/v2.js";
 import { createFractionalVolumeExplanationUrl } from "../../../shared/math-language-bridge/v2.js";
 import { createFractionDivisionExplanationUrl } from "../../../shared/math-language-bridge/v2.js";
+import { createEquationBalanceExplanationUrl } from "../../../shared/math-language-bridge/v2.js";
 import { SIMS } from "./sims.js";
 import { vocabMarkup } from "./vocab-content.js";
 
@@ -35,6 +36,35 @@ function fractionDivisionContext(item, skillId) {
     if (groups) return { dividendNumerator: Number(groups[1]), dividendDenominator: 1, divisorNumerator: 1, divisorDenominator: Number(groups[2]) };
   }
   return null;
+}
+
+function equationBalanceContext(item) {
+  const question = String(item?.question || "");
+  const answer = Number(item?.answers?.[0] ?? item?.answer);
+  let context = null;
+  let match = question.match(/^x \+ (\d+) = (-?\d+)\. Find x\.$/u);
+  if (match) context = { form: "add", amount: Number(match[1]), shift: 0, result: Number(match[2]) };
+  if (!context && (match = question.match(/^x − (\d+) = (-?\d+)\. Find x\.$/u)))
+    context = { form: "subtract", amount: Number(match[1]), shift: 0, result: Number(match[2]) };
+  if (!context && (match = question.match(/^(\d+)x = (-?\d+)\. Find x\.$/u)))
+    context = { form: "multiply", amount: Number(match[1]), shift: 0, result: Number(match[2]) };
+  if (!context && (match = question.match(/^x ÷ (\d+) = (-?\d+)\. Find x\.$/u)))
+    context = { form: "divide", amount: Number(match[1]), shift: 0, result: Number(match[2]) };
+  if (!context && (match = question.match(/^(\d+)x ([+−]) (\d+) = (-?\d+)\. Find x\.$/u))) {
+    const shift = Number(match[3]) * (match[2] === "−" ? -1 : 1);
+    context = { form: shift ? "two-step" : "multiply", amount: Number(match[1]), shift, result: Number(match[4]) };
+  }
+  if (!context || !Number.isInteger(answer)) return null;
+  const solution = context.form === "add"
+    ? context.result - context.amount
+    : context.form === "subtract"
+      ? context.result + context.amount
+      : context.form === "multiply"
+        ? context.result / context.amount
+        : context.form === "divide"
+          ? context.result * context.amount
+          : (context.result - context.shift) / context.amount;
+  return solution === answer ? context : null;
 }
 
 export function mountTry(ctx, root) {
@@ -177,11 +207,20 @@ export function mountTry(ctx, root) {
       const fractionDivisionBridge = ["divide-fractions", "unit-fraction-division"].includes(ctx.skill?.id)
         ? fractionDivisionContext(item, ctx.skill.id)
         : null;
+      const equationBridge = ["one-step", "equations", "linear-equations"].includes(ctx.skill?.id)
+        ? equationBalanceContext(item)
+        : null;
       const grade = Number(ctx.skill.grade) || 6;
       let bridgeUrl = null;
       let bridgeTask = "ratio";
       try {
         if (
+          equationBridge &&
+          grade >= 6 && grade <= 8
+        ) {
+          bridgeUrl = createEquationBalanceExplanationUrl({ ...equationBridge, grade });
+          bridgeTask = "equationBalance";
+        } else if (
           fractionLineBridge &&
           Number.isInteger(fractionLineBridge.numerator) &&
           Number.isInteger(fractionLineBridge.denominator) &&
@@ -299,6 +338,7 @@ export function mountTry(ctx, root) {
         surfaceArea: L("Explain this surface-area model in The Language Page", "Explica este modelo de área de superficie en The Language Page"),
         fractionalVolume: L("Explain this fractional-volume model in The Language Page", "Explica este modelo de volumen fraccionario en The Language Page"),
         fractionDivision: L("Explain this fraction-division model in The Language Page", "Explica este modelo de división de fracciones en The Language Page"),
+        equationBalance: L("Explain this balanced equation in The Language Page", "Explica esta ecuación equilibrada en The Language Page"),
       };
       const bridge = bridgeUrl
         ? `<div class="sd-math-language-bridge"><a class="sd-btn" href="${bridgeUrl}">${esc(pick(bridgeLabels[bridgeTask], ctx.lang()))}</a><p>${esc(pick(L("Only the math task and grade travel with this optional link. Your name, response, and progress stay here.", "Este enlace opcional solo comparte la tarea matemática y el grado. Tu nombre, respuesta y progreso se quedan aquí."), ctx.lang()))}</p></div>`

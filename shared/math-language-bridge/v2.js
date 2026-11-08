@@ -29,6 +29,10 @@ const ALLOWED = new Set([
   "dividendDenominator",
   "divisorNumerator",
   "divisorDenominator",
+  "form",
+  "amount",
+  "shift",
+  "result",
 ]);
 const inRangeInt = (value, min, max) => Number.isInteger(value) && value >= min && value <= max;
 
@@ -274,6 +278,46 @@ export function createFractionDivisionExplanationUrl({
   return `https://thelanguagepage.com${MATH_LANGUAGE_BRIDGE_PATH}?${params}`;
 }
 
+/** Share a bounded linear equation without learner work or identity. */
+export function createEquationBalanceExplanationUrl({
+  form,
+  amount,
+  shift = 0,
+  result,
+  grade = 6,
+} = {}) {
+  if (!inRangeInt(grade, 6, 8))
+    throw new RangeError("Equation explanation grade must be from 6 to 8.");
+  if (!["add", "subtract", "multiply", "divide", "two-step"].includes(form))
+    throw new RangeError("Unsupported equation form.");
+  if (!inRangeInt(amount, 1, 12) || !inRangeInt(shift, -12, 12) || !inRangeInt(result, -500, 500))
+    throw new RangeError("Equation values are outside the supported model bounds.");
+  if (form === "two-step" ? shift === 0 : shift !== 0)
+    throw new RangeError("Only two-step equations may include a nonzero shift.");
+  const solution =
+    form === "add"
+      ? result - amount
+      : form === "subtract"
+        ? result + amount
+        : form === "multiply"
+          ? result / amount
+          : form === "divide"
+            ? result * amount
+            : (result - shift) / amount;
+  if (!Number.isInteger(solution) || Math.abs(solution) > 100)
+    throw new RangeError("Equation must have a bounded integer solution.");
+  const params = new URLSearchParams({
+    schema: MATH_LANGUAGE_BRIDGE_SCHEMA,
+    task: "equation-balance",
+    grade: String(grade),
+    form,
+    amount: String(amount),
+    shift: String(shift),
+    result: String(result),
+  });
+  return `https://thelanguagepage.com${MATH_LANGUAGE_BRIDGE_PATH}?${params}`;
+}
+
 /** Read v1 ratio links unchanged and accept only documented v2 math task contracts. */
 export function readMathLanguageBridge(search = "") {
   const params =
@@ -315,7 +359,9 @@ export function readMathLanguageBridge(search = "") {
                         "divisorNumerator",
                         "divisorDenominator",
                       ])
-                    : null;
+                    : task === "equation-balance"
+                      ? new Set(["schema", "task", "grade", "form", "amount", "shift", "result"])
+                      : null;
   if (!taskFields || [...params.keys()].some((key) => !ALLOWED.has(key) || !taskFields.has(key)))
     return null;
   const grade = Number(params.get("grade"));
@@ -449,6 +495,56 @@ export function readMathLanguageBridge(search = "") {
       transferDividendNumerator,
       transferQuotientNumerator: transferQuotientNumerator / common,
       transferQuotientDenominator: transferQuotientDenominator / common,
+    });
+  }
+  if (task === "equation-balance") {
+    const form = params.get("form");
+    const amount = Number(params.get("amount"));
+    const shift = Number(params.get("shift"));
+    const result = Number(params.get("result"));
+    if (
+      !inRangeInt(grade, 6, 8) ||
+      !["add", "subtract", "multiply", "divide", "two-step"].includes(form) ||
+      !inRangeInt(amount, 1, 12) ||
+      !inRangeInt(shift, -12, 12) ||
+      !inRangeInt(result, -500, 500) ||
+      (form === "two-step" ? shift === 0 : shift !== 0)
+    )
+      return null;
+    const solution =
+      form === "add"
+        ? result - amount
+        : form === "subtract"
+          ? result + amount
+          : form === "multiply"
+            ? result / amount
+            : form === "divide"
+              ? result * amount
+              : (result - shift) / amount;
+    if (!Number.isInteger(solution) || Math.abs(solution) > 100) return null;
+    const transferSolution = form === "divide" ? solution + amount : solution + 1;
+    const transferResult =
+      form === "add"
+        ? transferSolution + amount
+        : form === "subtract"
+          ? transferSolution - amount
+          : form === "multiply"
+            ? transferSolution * amount
+            : form === "divide"
+              ? transferSolution / amount
+              : amount * transferSolution + shift;
+    if (!Number.isInteger(transferResult) || Math.abs(transferResult) > 500) return null;
+    return Object.freeze({
+      schema: MATH_LANGUAGE_BRIDGE_SCHEMA,
+      task,
+      grade,
+      form,
+      amount,
+      shift,
+      result,
+      solution,
+      transferSolution,
+      transferResult,
     });
   }
   if (task === "data-center") {
