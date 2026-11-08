@@ -11,6 +11,17 @@ const strip = (svg) => svg.replace(/^.*?<svg[^>]*>|<\/svg>$/g, "");
 export function parse(question) {
   const raw = String(question).replaceAll("−", "-").trim();
   const q = clean(question);
+  let net = raw.match(/^Use the net of a rectangular prism that is (\d+) in long, (\d+) in wide and (\d+) in tall\. What is the surface area\?$/);
+  if (net) {
+    const [l, w, h] = net.slice(1).map(Number);
+    return l > 0 && w > 0 && h > 0 ? { engine: "geo", mode: "surfaceNet", solid: "rectangular-prism", l, w, h, unit: "in", areaUnit: "square inches", areaUnitEs: "pulgadas cuadradas", faces: [l*w, l*w, l*h, l*h, w*h, w*h], result: 2 * (l*w + l*h + w*h) } : null;
+  }
+  net = raw.match(/^The net of a square pyramid has a square base with side (\d+) cm and four triangles, each with base (\d+) cm and height (\d+) cm\. What is the surface area\?$/);
+  if (net) {
+    const [side, base, triangleHeight] = net.slice(1).map(Number);
+    if (side !== base || side <= 0 || triangleHeight <= 0) return null;
+    return { engine: "geo", mode: "surfaceNet", solid: "square-pyramid", side, triangleHeight, unit: "cm", areaUnit: "square centimeters", areaUnitEs: "centímetros cuadrados", faces: [side*side, ...Array(4).fill(side*triangleHeight/2)], result: side*side + 2*side*triangleHeight };
+  }
   let m = q.match(/^A circle has radius (\d+)\. What number multiplies π to give its area\?$/);
   if (m) {
     const r = Number(m[1]);
@@ -102,6 +113,24 @@ const angleBody = (s, show) => {
 
 export function frames(s) {
   const ctx = (id, cap, easy, eq, body, alt, meta, h = 240) => frameOf({ id, cap, easy, eq, body, alt, meta, h });
+  if (s.mode === "surfaceNet") {
+    const labels = s.solid === "rectangular-prism"
+      ? [`${s.l}×${s.w}`, `${s.l}×${s.w}`, `${s.l}×${s.h}`, `${s.l}×${s.h}`, `${s.w}×${s.h}`, `${s.w}×${s.h}`]
+      : [`${s.side}×${s.side}`, ...Array(4).fill(`${s.side}×${s.triangleHeight}÷2`)];
+    const areas = s.faces;
+    const colors = [COLORS.whole, COLORS.whole, COLORS.part, COLORS.part, COLORS.hundreds, COLORS.hundreds];
+    const faceRects = labels.map((label, i) => {
+      const x = 30 + (i % 3) * 180, y = 28 + Math.floor(i / 3) * 82;
+      return `<rect x="${x}" y="${y}" width="150" height="58" rx="8" fill="${colors[i]}" fill-opacity=".2" stroke="${colors[i]}" stroke-width="3"/>` + T(x+75,y+25,label,17) + T(x+75,y+47,`${areas[i]} ${s.unit}²`,14,COLORS.mute);
+    }).join("");
+    const alt = A(`A ${s.solid === "rectangular-prism" ? `${s.l} by ${s.w} by ${s.h} inch rectangular prism` : `square pyramid with base side ${s.side} centimeters and triangle height ${s.triangleHeight} centimeters`}, shown as its ${areas.length}-face net.`, `Una red de ${areas.length} caras de ${s.solid === "rectangular-prism" ? `un prisma rectangular de ${s.l} por ${s.w} por ${s.h} pulgadas` : `una pirámide cuadrada con lado ${s.side} cm y altura triangular ${s.triangleHeight} cm`}.`);
+    const formula = s.solid === "rectangular-prism" ? `2(${s.l}×${s.w} + ${s.l}×${s.h} + ${s.w}×${s.h})` : `${s.side}×${s.side} + 4(${s.side}×${s.triangleHeight}÷2)`;
+    return [
+      ctx("net-faces", A("A net lays every outside face flat. Fold it and notice which faces match; each face contributes once.", "Una red muestra planas todas las caras exteriores. Dóblala y observa cuáles coinciden; cada cara se cuenta una vez."), A("Find the area of each face.", "Halla el área de cada cara."), "six faces", `<g>${faceRects}</g>`, alt, { faces: areas }, 220),
+      ctx("net-pairs", A(s.solid === "rectangular-prism" ? "Opposite faces match in three pairs. Find each pair's area and count both faces." : "The net has one square base and four matching triangles. Use one-half × base × triangle height for each triangle."), A("Pair matching faces and use square units.", "Agrupa las caras iguales y usa unidades cuadradas."), formula, `<g>${faceRects}</g>`, alt, { faces: areas, formula }, 220),
+      ctx("net-total", A(`Add all ${areas.length} face areas: ${areas.join(" + ")} = ${s.result} ${s.areaUnit}.`, `Suma las áreas de las ${areas.length} caras: ${areas.join(" + ")} = ${s.result} ${s.areaUnitEs}.`), A(`${s.result} ${s.areaUnit}.`, `${s.result} ${s.areaUnitEs}.`), `${formula} = ${s.result} ${s.unit}²`, `<g>${faceRects}</g>`, alt, { faces: areas, total: s.result, unit: s.unit }, 220),
+    ];
+  }
   if (s.mode === "circle") {
     const k = Math.min(10, 150 / Math.max(s.r, 1));
     const alt = A(`A circle of radius ${s.r}, and a square ${s.r} by ${s.r}.`, `Un círculo de radio ${s.r} y un cuadrado de ${s.r} por ${s.r}.`);
@@ -213,6 +242,9 @@ export const answer = (s) => s.result;
 
 export function predicts(s) {
   const P = (at, q, r, w, why, er, ew) => [predictOf(at, q, r, w, { right: why[0], wrong: why[1] }, er, ew)];
+  if (s.mode === "surfaceNet") return s.solid === "square-pyramid"
+    ? P(1, A("Each side face is a triangle. How do you find one triangle's area?", "Cada cara lateral es un triángulo. ¿Cómo hallas el área de un triángulo?"), A("One-half × base × triangle height.", "Un medio × base × altura del triángulo."), A("Base × triangle height.", "Base × altura del triángulo."), [A("A triangle has half the area of a rectangle with the same base and height.", "Un triángulo tiene la mitad del área de un rectángulo con la misma base y altura."), A("That would count two congruent triangles for each face.", "Eso contaría dos triángulos congruentes por cada cara.")], A("The four side faces are triangles, not rectangles.", "Las cuatro caras laterales son triángulos, no rectángulos."), A("Use the triangle area rule, then count all four faces.", "Usa la regla del área del triángulo y cuenta las cuatro caras."))
+    : P(1, A("A rectangular-prism net shows three matching pairs of faces. What should you do with the three different face areas?", "Una red de prisma rectangular muestra tres pares de caras iguales. ¿Qué haces con las tres áreas diferentes?"), A("Add each area twice, once for each matching face.", "Suma cada área dos veces, una por cada cara del par."), A("Add each area once because each shape appears once.", "Suma cada área una vez porque cada forma aparece una vez."), [A("The net has two faces in each matching pair.", "La red tiene dos caras en cada par igual."), A("Matching dimensions do not make a face disappear; both are on the outside.", "Que las dimensiones coincidan no elimina una cara; ambas están afuera.")], A("Surface area covers every outside face.", "El área de superficie cubre cada cara exterior."), A("A pair names two matching faces, and both count.", "Un par nombra dos caras iguales y ambas cuentan."));
   if (s.mode === "circle") return P(1, A("In the area of a circle, what multiplies π?", "En el área de un círculo, ¿qué multiplica a π?"), A("The radius times itself.", "El radio por sí mismo."), A("The radius times 2.", "El radio por 2."), [A("Area is square units, so the radius is used as a factor twice.", "El área es en unidades cuadradas, así que el radio se usa como factor dos veces."), A("Doubling the radius is the diameter, which is for the circumference.", "Duplicar el radio da el diámetro, que es para la circunferencia.")], A("Because area covers a surface, so two lengths multiply.", "Porque el área cubre una superficie, así que se multiplican dos longitudes."), A("Because the radius is the whole answer.", "Porque el radio es toda la respuesta."));
   if (s.mode === "pyth") return P(2, A("After adding the two squares, are we done?", "Después de sumar los dos cuadrados, ¿terminamos?"), A("No: we found c², so we still take the square root.", "No: hallamos c², así que falta sacar la raíz cuadrada."), A("Yes: that sum is c.", "Sí: esa suma es c."), [A("The sum is the area of the big square; c is its side.", "La suma es el área del cuadrado grande; c es su lado."), A("The sum is c × c, so c is smaller.", "La suma es c × c, así que c es menor.")], A("Because a² + b² = c², and we want c.", "Porque a² + b² = c², y queremos c."), A("Because the hypotenuse is the sum of the legs.", "Porque la hipotenusa es la suma de los catetos."));
   if (s.mode === "angle") return P(1, A(s.kind === "vertical" ? "Vertical angles are across from each other. How do their sizes compare?" : `What do ${s.kind} angles add up to?`, s.kind === "vertical" ? "Los ángulos opuestos por el vértice están frente a frente. ¿Cómo se comparan sus tamaños?" : `¿A cuánto suman los ángulos ${s.kind === "complementary" ? "complementarios" : "suplementarios"}?`), A(s.kind === "vertical" ? "They are equal." : `${s.total}°.`, s.kind === "vertical" ? "Son iguales." : `${s.total}°.`), A(s.kind === "vertical" ? "They add to 180°." : s.total === 90 ? "180°." : "90°.", s.kind === "vertical" ? "Suman 180°." : s.total === 90 ? "180°." : "90°."), [A(s.kind === "vertical" ? "Opposite angles made by two crossing lines match." : s.total === 90 ? "A right angle is 90°; complementary angles fill it." : "A straight line is 180°; supplementary angles fill it.", s.kind === "vertical" ? "Los ángulos opuestos de dos rectas que se cruzan son iguales." : s.total === 90 ? "Un ángulo recto mide 90°; los complementarios lo llenan." : "Una línea recta mide 180°; los suplementarios la llenan."), A("Check the word: complementary means 90°, supplementary means 180°.", "Revisa la palabra: complementario es 90°, suplementario es 180°.")], A("Because the name of the relationship tells the total.", "Porque el nombre de la relación dice el total."), A("Because all angle pairs add to 180°.", "Porque todos los pares de ángulos suman 180°."));
@@ -235,6 +267,7 @@ export function hints(s) {
     fcount: [A("Factors come in pairs that multiply to the number.", "Los factores vienen en pares que se multiplican para dar el número."), A("The number is shown.", "Se muestra el número."), A("Find every pair, then count each number once.", "Halla cada par y cuenta cada número una vez.")],
     fmult: [A("Multiples are what you get counting by the number.", "Los múltiplos son lo que obtienes contando de ese número en ese número."), A("The number is shown.", "Se muestra el número."), A("Count up by it and see whether you land on the number in question.", "Cuenta hacia arriba y mira si caes en el número de la pregunta.")],
     fkth: [A("Count by the number, and keep track of how many you have said.", "Cuenta de ese número en ese número y lleva la cuenta de cuántos dijiste."), A("The counting is set up for you.", "El conteo está preparado."), A("Stop at the right count and read the number.", "Detente en el conteo correcto y lee el número.")],
+    surfaceNet: [A("Surface area counts every outside face. First identify the faces in the net.", "El área de superficie cuenta cada cara exterior. Primero identifica las caras de la red."), A("The net lists each face area in square units.", "La red muestra el área de cada cara en unidades cuadradas."), A("Add every face once; matching pairs still contain two faces.", "Suma cada cara una vez; los pares iguales todavía contienen dos caras.")],
   }[s.mode];
   // For sign problems the opening picture is already a worked row of the pattern; hints show just the problem.
   const safe = s.mode === "signs" ? { ...first, svg: svgWrap(T(280, 80, `${sg(s.a)} ${s.op} ${sg(s.b)}`, 36), "", { h: 140 }) } : first;
@@ -244,6 +277,11 @@ export function hints(s) {
 export function diagnose(s, raw) {
   const w = String(raw).replace(/\s/g, "").replaceAll("−", "-");
   const v = num(raw);
+  if (s.mode === "surfaceNet" && v !== null && v !== s.result) {
+    const onceEach = s.solid === "rectangular-prism" ? s.result / 2 : null;
+    if (v === onceEach) return "surfaceNetMissedPairs";
+    if (s.solid === "rectangular-prism" && v === s.l * s.w * s.h) return "surfaceNetUsedVolume";
+  }
   if (s.mode === "circle" && v !== null && v !== s.result) return v === s.r * 2 ? "doubledRadius" : v === s.r ? "forgotSquare" : null;
   if (s.mode === "pyth" && v !== null && v !== s.c) return v === s.a + s.b ? "addedLegs" : v === s.c2 ? "forgotRoot" : null;
   if (s.mode === "angle" && v !== null && v !== s.result) return s.kind === "vertical" ? (v === 180 - s.given ? "usedSupplementary" : null) : v === (s.total === 90 ? 180 : 90) - s.given ? (s.total === 90 ? "usedSupplementary" : "usedComplementary") : null;
@@ -255,6 +293,8 @@ export function diagnose(s, raw) {
   return null;
 }
 export const tags = {
+  surfaceNetMissedPairs: { label: L("Counted matching faces only once", "Contó las caras iguales una sola vez"), tip: L("Each matching pair contains two outside faces. Count both areas.", "Cada par igual contiene dos caras exteriores. Cuenta ambas áreas.") },
+  surfaceNetUsedVolume: { label: L("Found volume instead of surface area", "Halló el volumen en lugar del área de superficie"), tip: L("Volume multiplies three dimensions. Surface area adds the areas of the outside faces.", "El volumen multiplica tres dimensiones. El área de superficie suma las áreas de las caras exteriores.") },
   doubledRadius: { label: L("Doubled the radius instead of multiplying it by itself", "Duplicó el radio en lugar de multiplicarlo por sí mismo"), tip: L("Area uses r × r, a square, not r + r.", "El área usa r × r, un cuadrado, no r + r.") },
   forgotSquare: { label: L("Gave the radius itself", "Dio el radio mismo"), tip: L("The number multiplying π is r × r.", "El número que multiplica a π es r × r.") },
   addedLegs: { label: L("Added the legs", "Sumó los catetos"), tip: L("Square each leg first, add the squares, then take the square root.", "Eleva al cuadrado cada cateto, suma los cuadrados y saca la raíz cuadrada.") },
@@ -274,6 +314,15 @@ export const tags = {
 const pickDraw = (idx) => (s, pick) => ({ body: strip(frames(s)[Math.min(pick !== null ? idx : 0, frames(s).length - 1)].svg), alt: L("The figure.", "La figura."), h: 250 });
 const opts = (list, rightFn, msgFn) => list.map((v) => ({ label: L(String(v), String(v)), ok: rightFn(v), msg: msgFn(v) }));
 const BUILDS = {
+  surfaceNet: choiceBuild({ prompt: (s) => L(s.solid === "rectangular-prism" ? "Which expression counts all six faces in the net?" : "Which expression counts the square base and all four triangular faces?", s.solid === "rectangular-prism" ? "¿Qué expresión cuenta las seis caras de la red?" : "¿Qué expresión cuenta la base cuadrada y las cuatro caras triangulares?"), options: (s) => s.solid === "rectangular-prism" ? [
+    { label: L(`2(${s.l}×${s.w} + ${s.l}×${s.h} + ${s.w}×${s.h})`, `2(${s.l}×${s.w} + ${s.l}×${s.h} + ${s.w}×${s.h})`), ok: true },
+    { label: L(`${s.l}×${s.w}×${s.h}`, `${s.l}×${s.w}×${s.h}`), ok: false, msg: L("That multiplies three dimensions to find volume. Surface area adds face areas.", "Eso multiplica tres dimensiones para hallar volumen. El área suma las caras.") },
+    { label: L(`${s.l}×${s.w} + ${s.l}×${s.h} + ${s.w}×${s.h}`, `${s.l}×${s.w} + ${s.l}×${s.h} + ${s.w}×${s.h}`), ok: false, msg: L("Those are the three different face areas; each occurs twice.", "Esas son las tres áreas distintas; cada una aparece dos veces.") },
+  ] : [
+    { label: L(`${s.side}×${s.side} + 4(${s.side}×${s.triangleHeight}÷2)`, `${s.side}×${s.side} + 4(${s.side}×${s.triangleHeight}÷2)`), ok: true },
+    { label: L(`${s.side}×${s.side} + 4(${s.side}×${s.triangleHeight})`, `${s.side}×${s.side} + 4(${s.side}×${s.triangleHeight})`), ok: false, msg: L("Each side face is a triangle, so use one-half × base × height.", "Cada cara lateral es un triángulo: usa un medio por base por altura.") },
+    { label: L(`${s.side}×${s.side}×${s.triangleHeight}`, `${s.side}×${s.side}×${s.triangleHeight}`), ok: false, msg: L("That is not the sum of the square base and four triangular faces.", "Eso no suma la base cuadrada y las cuatro caras triangulares.") },
+  ], draw: pickDraw(1), doneMsg: (s) => L(`Add all ${s.faces.length} face areas: ${s.faces.join(" + ")} = ${s.result} ${s.areaUnit}.`, `Suma las ${s.faces.length} áreas: ${s.faces.join(" + ")} = ${s.result} ${s.areaUnitEs}.`) }),
   circle: choiceBuild({ prompt: () => L("What multiplies π?", "¿Qué multiplica a π?"), options: (s) => [{ label: L(`${s.r} × ${s.r}`, `${s.r} × ${s.r}`), ok: true }, { label: L(`${s.r} × 2`, `${s.r} × 2`), ok: false, msg: L("That is the diameter. Area needs the radius times itself.", "Eso es el diámetro. El área necesita el radio por sí mismo.") }, { label: L(`${s.r}`, `${s.r}`), ok: false, msg: L("The radius alone is a length. Area needs two lengths multiplied.", "El radio solo es una longitud. El área necesita dos longitudes multiplicadas.") }], draw: pickDraw(1), doneMsg: (s) => L(`${s.r} × ${s.r} = ${s.result}, so the area is ${s.result}π.`, `${s.r} × ${s.r} = ${s.result}, así que el área es ${s.result}π.`) }),
   pyth: choiceBuild({ prompt: () => L("What do we do with the squares of the legs?", "¿Qué hacemos con los cuadrados de los catetos?"), options: (s) => [{ label: L("Add them, then take the square root", "Sumarlos y sacar la raíz cuadrada"), ok: true }, { label: L("Add the legs themselves", "Sumar los catetos mismos"), ok: false, msg: L("The theorem adds the squares, not the legs.", "El teorema suma los cuadrados, no los catetos.") }, { label: L("Subtract them", "Restarlos"), ok: false, msg: L("To find the hypotenuse, add the squares of the legs.", "Para hallar la hipotenusa, suma los cuadrados de los catetos.") }], draw: pickDraw(3), doneMsg: (s) => L(`${s.a2} + ${s.b2} = ${s.c2}, so c = ${s.c}.`, `${s.a2} + ${s.b2} = ${s.c2}, así que c = ${s.c}.`) }),
   angle: choiceBuild({ prompt: (s) => L(s.kind === "vertical" ? "How do vertical angles compare?" : `What do ${s.kind} angles add to?`, s.kind === "vertical" ? "¿Cómo se comparan los ángulos opuestos por el vértice?" : `¿A cuánto suman los ángulos ${s.kind === "complementary" ? "complementarios" : "suplementarios"}?`), options: (s) => (s.kind === "vertical" ? [{ label: L("They are equal", "Son iguales"), ok: true }, { label: L("They add to 180°", "Suman 180°"), ok: false, msg: L("That is for angles side by side on a line. Vertical angles are across from each other.", "Eso es para ángulos lado a lado en una recta. Los opuestos están frente a frente.") }, { label: L("They add to 90°", "Suman 90°"), ok: false, msg: L("Vertical angles are equal, not a sum of 90°.", "Los ángulos opuestos por el vértice son iguales, no suman 90°.") }] : [90, 180].map((v) => ({ label: L(`${v}°`, `${v}°`), ok: v === s.total, msg: L(s.kind === "complementary" ? "Complementary angles make a right angle: 90°." : "Supplementary angles make a straight line: 180°.", s.kind === "complementary" ? "Los complementarios forman un ángulo recto: 90°." : "Los suplementarios forman una línea recta: 180°.") }))), draw: pickDraw(2), doneMsg: (s) => L(s.kind === "vertical" ? `The other angle is ${s.result}°.` : `${s.total}° − ${s.given}° = ${s.result}°.`, s.kind === "vertical" ? `El otro ángulo mide ${s.result}°.` : `${s.total}° − ${s.given}° = ${s.result}°.`) }),

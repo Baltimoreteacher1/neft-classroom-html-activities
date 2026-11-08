@@ -386,7 +386,10 @@ export const STRANDS_6 = {
   // Surface area from the net of a rectangular prism (three pairs of faces) or a square pyramid.
   surfaceAreaNet(config, rng) {
     if (!config.scaffolded && rng() < 0.3) {
-      const [s, h] = [randInt(2, 10, rng), randInt(2, 10, rng)];
+      const s = randInt(2, 10, rng);
+      // A right square pyramid's slant height runs from the midpoint of a base
+      // edge to the apex, so it cannot be shorter than half the base side.
+      const h = randInt(Math.max(2, Math.ceil(s / 2)), 10, rng);
       const total = s * s + 4 * ((s * h) / 2);
       return problem(
         `The net of a square pyramid has a square base with side ${s} cm and four triangles, each with base ${s} cm and height ${h} cm. What is the surface area?`,

@@ -5,6 +5,7 @@ import { COLORS, L, esc, fmt, gcd, svgWrap, txt } from "./core.js";
 import percentFindWhole from "../../../curriculum/learning-labs/shared/models/percent-find-whole.mjs";
 import percentTape from "../../../curriculum/learning-labs/shared/models/percent-tape.mjs";
 import ratioTapeModel from "../../../curriculum/learning-labs/shared/models/ratio-tape.mjs";
+import { renderNetFolder } from "../../../engine/components/net-folder.js";
 
 const out = (svg, alt, read, extra = {}) => ({
   svg: svg.replace('aria-label=""', `aria-label="${esc(alt.en)}"`),
@@ -227,6 +228,64 @@ const volume = {
         `${s.l} × ${s.w} = ${s.l * s.w} cubos en una capa, y ${s.h} capas hacen ${s.l * s.w * s.h} cubos.`,
       ),
     );
+  },
+};
+
+// Reuse Curriculum's accessible 3D net interaction in the actual surface-area lesson.
+// The problem parser remains the source of dimensions and correct answer logic.
+const surfaceNet = {
+  id: "surfaceNet",
+  init: () => ({ ready: true }),
+  sliders: () => [],
+  render() {
+    const alt = L("A three-dimensional net preview opens for the current surface-area problem.", "Se abre una vista tridimensional de la red para el problema actual de área de superficie.");
+    return out(svgWrap(txt(280, 100, "3D net", { size: 26 }), "", { h: 180 }), alt, alt);
+  },
+  mount(ctx, root) {
+    const s = ctx.lesson?.spec;
+    if (!s || s.mode !== "surfaceNet") return;
+    const prism = s.solid === "rectangular-prism";
+    const scale = 11;
+    const size = prism
+      ? { w: s.l * scale, h: s.h * scale, d: s.w * scale }
+      : {
+          w: s.side * scale,
+          // NetFolder takes the pyramid's vertical height and derives slant height.
+          h: Math.sqrt(Math.max(0, s.triangleHeight ** 2 - (s.side / 2) ** 2)) * scale,
+        };
+    const choices = prism
+      ? [
+          `2(${s.l}×${s.w} + ${s.l}×${s.h} + ${s.w}×${s.h})`,
+          `${s.l}×${s.w}×${s.h}`,
+          `${s.l}×${s.w} + ${s.l}×${s.h} + ${s.w}×${s.h}`,
+        ]
+      : [
+          `${s.side}×${s.side} + 4(${s.side}×${s.triangleHeight}÷2)`,
+          `${s.side}×${s.side} + 4(${s.side}×${s.triangleHeight})`,
+          `${s.side}×${s.side}×${s.triangleHeight}`,
+        ];
+    root.innerHTML = `<p class="sd-task"><span class="sd-tag">${ctx.lang() === "es" ? "Explorar" : "Explore"}</span> ${ctx.lang() === "es" ? "Dobla la red. ¿Qué expresión cuenta cada cara exterior una vez?" : "Fold the net. Which expression counts each outside face once?"}</p><div data-net></div>`;
+    renderNetFolder(root.querySelector("[data-net]"), {
+      instructions: ctx.lang() === "es"
+        ? "Usa el control para doblar la red y observar qué caras forman el sólido. Después elige la expresión para el área de todas las caras."
+        : "Use the control to fold the net and notice which faces form the solid. Then choose the expression for the area of every face.",
+      solid: s.solid,
+      size,
+      question: {
+        stem: ctx.lang() === "es" ? "¿Qué expresión suma correctamente todas las caras?" : "Which expression correctly adds all the faces?",
+        choices,
+        correctIndex: 0,
+      },
+      onComplete(correct) {
+        if (correct) ctx.mark("explore");
+        else ctx.say(ctx.lang() === "es"
+          ? "Mira la red otra vez: las caras iguales siguen contando por separado. Inténtalo de nuevo."
+          : "Look at the net again: matching faces still count separately. Try again.");
+      },
+    });
+    // This experience stays in Fluency Lab; remove the legacy external-studio link.
+    root.querySelector('a[href="/netfold-pro/"]')?.remove();
+    return () => { root.replaceChildren(); };
   },
 };
 
@@ -476,6 +535,6 @@ const dotplot = {
   },
 };
 
-export const SIMS = { fracEquiv, proportional, machine, areaPerim, volume, percentWhole, percentPart, ratioTape, angles, dotplot };
+export const SIMS = { fracEquiv, proportional, machine, areaPerim, volume, percentWhole, percentPart, ratioTape, angles, dotplot, surfaceNet };
 export const simFor = (id) => SIMS[id] || null;
 export const _gcd = gcd;

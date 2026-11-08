@@ -504,6 +504,10 @@ export default defineConfig({
           "engine/core/instructional-intelligence.js",
         ),
         "published-qr-mini": resolve(__dirname, "engine/core/qr-mini.js"),
+        // Curriculum's foldable net is shared by the copied Fluency Lab app.
+        // Publish this component at its source path while keeping engine/ out
+        // of the static copy; Rollup bundles its localization dependency too.
+        "published-net-folder": resolve(__dirname, "engine/components/net-folder.js"),
         "class-investigation-engine": resolve(
           __dirname,
           "assets/class-investigation/engine-tools.js",
@@ -532,6 +536,9 @@ export default defineConfig({
           }
           if (chunk.name === "published-qr-mini") {
             return "engine/core/qr-mini.js";
+          }
+          if (chunk.name === "published-net-folder") {
+            return "engine/components/net-folder.js";
           }
           return chunk.name === "homework-lesson-models" || chunk.name === "nt-web-vitals"
             ? `assets/${chunk.name}.js`

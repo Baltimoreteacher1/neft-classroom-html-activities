@@ -133,6 +133,11 @@ for (const skillId of ["center-spread", "data-displays"]) {
   );
 }
 assert.equal(
+  rows["6:surface-area-nets"].modeled,
+  60,
+  "all generated Grade 6 surface-area-net problems use a matching model",
+);
+assert.equal(
   rows["3:fraction-line"].modeled,
   60,
   "all generated Grade 3 fraction-line items use a visual model",
@@ -224,6 +229,20 @@ function checkInvariants(id, spec, frames, rep, item) {
       assert.equal(k.parts.length * spec.part, spec.result, "kept parts add to the answer");
       assert.equal(spec.part * spec.b, spec.n, "the equal parts rebuild the whole");
     }
+  } else if (id === "geo" && spec.mode === "surfaceNet") {
+    assert.equal(spec.faces.length, spec.solid === "rectangular-prism" ? 6 : 5);
+    assert.equal(
+      spec.faces.reduce((a, b) => a + b, 0),
+      spec.result,
+    );
+    if (spec.solid === "square-pyramid")
+      assert.ok(
+        spec.triangleHeight >= spec.side / 2,
+        "pyramid net can fold to a nondegenerate centered apex",
+      );
+    assert.match(frames.at(-1).eq, /(?:in|cm)²/);
+    assert.match(frames.at(-1).cap.en, /square/);
+    assert.equal(frames.at(-1).meta.total, spec.result);
   } else if (id === "digits") {
     if (spec.mode === "compare") {
       const x = Number(spec.ta);
@@ -1389,6 +1408,72 @@ function solve(engineId, question) {
   assert.ok(
     !JSON.stringify(adaptive.history(key)).match(/name|email|id\b/i),
     "no identifying fields are stored",
+  );
+}
+
+{
+  const sk = ALL_SKILLS.find((s) => s.id === "surface-area-nets");
+  const item = generateProblem(sk, seededRandom(9));
+  const lesson = lessonFor(item);
+  assert.equal(lesson.modeled, true);
+  assert.equal(SIM_FOR[sk.id], "surfaceNet");
+  let marked = 0;
+  let feedback = "";
+  const netHost = document.createElement("div");
+  mountExplore(
+    {
+      sim: SIMS.surfaceNet,
+      lesson,
+      lang: () => "en",
+      mark: () => marked++,
+      say: (m) => {
+        feedback = m;
+      },
+    },
+    netHost,
+  );
+  assert.ok(
+    netHost.querySelector(".nf-stage"),
+    "Curriculum 3D net mounts inside Fluency Lab Explore",
+  );
+  assert.ok(
+    netHost.querySelector('[aria-label="Fold the net into a solid"]'),
+    "fold slider has an accessible keyboard label",
+  );
+  const fold = netHost.querySelector('input[type="range"]');
+  fold.value = "100";
+  fold.dispatchEvent(new dom.window.Event("input", { bubbles: true }));
+  const choices = netHost.querySelectorAll(".mc-option");
+  const clickChoice = (el) =>
+    el.dispatchEvent(new dom.window.MouseEvent("click", { bubbles: true }));
+  clickChoice(choices[1]);
+  clickChoice(netHost.querySelector(".btn-primary"));
+  assert.match(feedback, /matching faces/);
+  clickChoice(choices[0]);
+  clickChoice(netHost.querySelector(".btn-primary"));
+  assert.equal(marked, 1, "corrected model decision completes Explore");
+
+  const pyramidItem = {
+    question:
+      "The net of a square pyramid has a square base with side 8 cm and four triangles, each with base 8 cm and height 7 cm. What is the surface area?",
+  };
+  const pyramidLesson = lessonFor(pyramidItem);
+  assert.equal(pyramidLesson.spec.result, 8 * 8 + (4 * (8 * 7)) / 2);
+  const pyramidHost = document.createElement("div");
+  mountExplore(
+    {
+      sim: SIMS.surfaceNet,
+      lesson: pyramidLesson,
+      lang: () => "en",
+      mark() {},
+      say() {},
+    },
+    pyramidHost,
+  );
+  assert.equal(
+    pyramidHost.querySelectorAll(".nf-face").length,
+    5,
+    "the square-pyramid net mounts its base and four triangular faces",
   );
 }
 

@@ -8,6 +8,7 @@ const esc = (s) => String(s).replaceAll("&", "&amp;").replaceAll("<", "&lt;").re
 
 export function mountExplore(ctx, root) {
   const sim = ctx.sim;
+  if (sim.mount) return sim.mount(ctx, root);
   let state = sim.init(ctx);
   root.innerHTML = `
     <p class="sd-task"><span class="sd-tag">${esc(t("Explore"))}</span> <span data-ask></span></p>
