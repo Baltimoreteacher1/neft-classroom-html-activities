@@ -122,6 +122,11 @@ for (const skillId of ["center-spread", "data-displays"]) {
     `Grade 6 ${skillId}: every generated sample opens the matching visual model`,
   );
 }
+assert.equal(
+  rows["3:fraction-line"].modeled,
+  60,
+  "all generated Grade 3 fraction-line items use a visual model",
+);
 
 function checkInvariants(id, spec, frames, rep, item) {
   const last = frames.at(-1);
@@ -669,6 +674,47 @@ function solve(engineId, question) {
   for (let n = 0; n < 40 && !cmp.b.done(c, cmp.spec); n += 1)
     c = cmp.b.act(c, cmp.spec.b * c.ka < cmp.spec.d * c.kb ? "ka+" : "kb+", 0, cmp.spec).state;
   assert.ok(cmp.b.done(c, cmp.spec), "cutting both bars reaches same-size pieces");
+}
+{
+  const locate = solve(
+    "fraction",
+    "A number line from 0 to 1 is cut into 5 equal parts. At which mark is the point 3/5? Count from 0.",
+  );
+  assert.equal(locate.engine.answer(locate.spec), 3);
+  let state = locate.b.init(locate.spec);
+  assert.ok(!locate.b.done(state, locate.spec), "the model begins without the answer placed");
+  const boundary = locate.b.act(state, "left", -1, locate.spec);
+  assert.ok(!boundary.ok && boundary.state.pos === 0, "the marker cannot move left of zero");
+  state = locate.b.act(state, "right", 1, locate.spec).state;
+  state = locate.b.act(state, "right", 1, locate.spec).state;
+  assert.equal(state.pos, 2, "each action moves one equal interval");
+  const refused = locate.b.act(state, "left", 0, locate.spec);
+  assert.equal(refused.state.pos, 1, "moving left remains a valid reversible action");
+  state = locate.b.act(state, "goto", 3, locate.spec).state;
+  assert.ok(locate.b.done(state, locate.spec), "dragging to the matching mark completes the model");
+  assert.equal(locate.engine.diagnose(locate.spec, "2"), "offByOneMark");
+  assert.match(locate.b.render(state, locate.spec).svg, /data-hi="5"/);
+  assert.equal(
+    ENGINES.fraction.answer(
+      ENGINES.fraction.parse(
+        "A number line from 0 to 1 is cut into 8 equal parts. Point P is at mark 3, counting from 0. What fraction does P show?",
+      ),
+    ),
+    "3/8",
+    "a marked location is expressed as numerator intervals out of denominator intervals",
+  );
+  const reverse = ENGINES.fraction.parse(
+    "A number line from 0 to 1 is cut into 8 equal parts. Point P is at mark 3, counting from 0. What fraction does P show?",
+  );
+  assert.equal(ENGINES.fraction.diagnose(reverse, "8/3"), "reversedFraction");
+  assert.equal(ENGINES.fraction.diagnose(reverse, "2/8"), "offByOneMark");
+  assert.equal(
+    ENGINES.fraction.parse(
+      "A number line from 0 to 1 is cut into 5 equal parts. At which mark is the point 3/4? Count from 0.",
+    ),
+    null,
+    "a fraction denominator that conflicts with the partition is declined",
+  );
 }
 {
   const { b, spec } = solve("line", "3 − (-9) = ?");
@@ -1433,6 +1479,33 @@ function fresh(id, question, context = "idea") {
 }
 
 setLang("en");
+{
+  const stop = fresh(
+    "fraction-line",
+    "A number line from 0 to 1 is cut into 5 equal parts. At which mark is the point 3/5? Count from 0.",
+  );
+  click(host.querySelector('[data-tab="build"]'));
+  assert.ok(
+    host.querySelector("[data-controls] button"),
+    "fraction-line Build exposes accessible movement buttons",
+  );
+  assert.match(
+    host.querySelector("[data-stage] svg").getAttribute("aria-label"),
+    /equal intervals/,
+  );
+  for (let step = 0; step < 3; step += 1) {
+    const right = [...host.querySelectorAll("[data-controls] button")].find((button) =>
+      /right/i.test(button.textContent),
+    );
+    click(right);
+  }
+  assert.match(
+    host.querySelector("[data-status]").textContent,
+    /3 intervals from 0/,
+    "three keyboard-accessible button actions place the point three intervals from zero",
+  );
+  stop();
+}
 {
   const stop = fresh("add-1000", "285 + 439 = ?", "miss");
   assert.equal(

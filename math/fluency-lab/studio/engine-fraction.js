@@ -37,6 +37,18 @@ export function parse(question) {
       known: known.v,
     };
   }
+  m = q.match(/^A number line from 0 to 1 is cut into (\d+) equal parts\. At which mark is the point (\d+)\/(\d+)\? Count from 0\.$/);
+  if (m) {
+    const [denominator, numerator, shownDenominator] = m.slice(1).map(Number);
+    if (denominator < 2 || denominator > 12 || shownDenominator !== denominator || numerator < 1 || numerator >= denominator) return null;
+    return { engine: "fraction", mode: "lineMark", denominator, numerator, answerAs: "mark" };
+  }
+  m = q.match(/^A number line from 0 to 1 is cut into (\d+) equal parts\. Point P is at mark (\d+) counting from 0\. What fraction does P show\?$/);
+  if (m) {
+    const [denominator, numerator] = m.slice(1).map(Number);
+    if (denominator < 2 || denominator > 12 || numerator < 1 || numerator >= denominator) return null;
+    return { engine: "fraction", mode: "lineMark", denominator, numerator, answerAs: "fraction" };
+  }
   m = q.match(/^(\d+)\/(\d+) ___ (\d+)\/(\d+)$/);
   if (m) {
     const [a, b, c, d] = m.slice(1).map(Number);
@@ -96,9 +108,65 @@ const mk = (id, cap, easy, eq, body, alt, meta) =>
   Object.assign(frame({ id, cap, easy, eq, svg: wrap(body, alt), alt }), { meta });
 
 export function frames(spec) {
+  if (spec.mode === "lineMark") return lineMarkFrames(spec);
   if (spec.mode === "equiv") return equivFrames(spec);
   if (spec.mode === "compare") return compareFrames(spec);
   return addFrames(spec);
+}
+
+function numberLineSvg(denominator, marker = null, pointLabel = "P") {
+  const left = 40;
+  const right = 520;
+  const y = 94;
+  const x = (mark) => left + ((right - left) * mark) / denominator;
+  let body = `<line x1="${left}" y1="${y}" x2="${right}" y2="${y}" stroke="${COLORS.ink}" stroke-width="3"/>`;
+  for (let mark = 0; mark <= denominator; mark += 1) {
+    body += `<line x1="${x(mark)}" y1="${mark === 0 || mark === denominator ? y - 12 : y - 8}" x2="${x(mark)}" y2="${mark === 0 || mark === denominator ? y + 12 : y + 8}" stroke="${COLORS.ink}" stroke-width="${mark === 0 || mark === denominator ? 3 : 2}"/>`;
+    if (mark === 0 || mark === denominator) body += txt(x(mark), 132, mark === 0 ? "0" : "1", { size: 19 });
+  }
+  if (marker !== null) {
+    body += keyed("tok", x(marker), y, `<circle r="13" fill="${COLORS.part}" stroke="white" stroke-width="3"/><text y="5" text-anchor="middle" font-size="12" font-weight="800" fill="white">${esc(pointLabel)}</text>`, "sd-token");
+  }
+  const alt = marker === null
+    ? `A number line from 0 to 1 divided into ${denominator} equal intervals.`
+    : `A number line from 0 to 1 divided into ${denominator} equal intervals, with point ${pointLabel} at mark ${marker}.`;
+  return svgWrap(body, alt, { h: 180 }).replace(
+    'class="sd-svg"',
+    `class="sd-svg" data-lo="0" data-hi="${denominator}"`,
+  );
+}
+
+function lineMarkFrames(spec) {
+  const { denominator: d, numerator: n } = spec;
+  const alt = L(`A number line from 0 to 1 divided into ${d} equal intervals.`, `Una recta numérica de 0 a 1 dividida en ${d} intervalos iguales.`);
+  const lineFrame = (id, cap, easy, eq, marker, meta) =>
+    Object.assign(frame({ id, cap, easy, eq, svg: numberLineSvg(d, marker), alt }), { meta });
+  return [
+    lineFrame(
+      "whole",
+      L("The endpoints 0 and 1 name one whole. Count the equal spaces, not the tick marks.", "Los extremos 0 y 1 nombran un entero. Cuenta los espacios iguales, no las marcas."),
+      L("One whole from 0 to 1.", "Un entero de 0 a 1."),
+      "0 ───────── 1",
+      null,
+      { denominator: d, intervals: d },
+    ),
+    lineFrame(
+      "parts",
+      L(`The denominator ${d} tells how many equal intervals make the whole. Each interval is 1/${d}.`, `El denominador ${d} indica cuántos intervalos iguales forman el entero. Cada intervalo es 1/${d}.`),
+      L(`Each step is 1/${d}.`, `Cada paso es 1/${d}.`),
+      `1 whole = ${d}/${d}`,
+      null,
+      { denominator: d, unitFraction: `1/${d}` },
+    ),
+    lineFrame(
+      "point",
+      L(`Point P is ${n} equal intervals from 0, so it is ${n}/${d} of the whole.`, `El punto P está a ${n} intervalos iguales de 0, así que está en ${n}/${d} del entero.`),
+      L(`${n} steps of 1/${d} make ${n}/${d}.`, `${n} pasos de 1/${d} forman ${n}/${d}.`),
+      `${n} × 1/${d} = ${n}/${d}`,
+      n,
+      { denominator: d, mark: n, fraction: `${n}/${d}`, value: n / d },
+    ),
+  ];
 }
 
 function equivFrames({ a, b, c, d, factor }) {
@@ -313,6 +381,7 @@ function addFrames(spec) {
 }
 
 export function answer(spec) {
+  if (spec.mode === "lineMark") return spec.answerAs === "mark" ? spec.numerator : frac(spec.numerator, spec.denominator);
   if (spec.mode === "equiv") return spec.missing === "numerator" ? spec.c : spec.d;
   if (spec.mode === "compare")
     return spec.a * spec.d > spec.c * spec.b ? ">" : spec.a * spec.d < spec.c * spec.b ? "<" : "=";
@@ -326,6 +395,24 @@ export function answer(spec) {
 
 export function predicts(spec) {
   const list = frames(spec);
+  if (spec.mode === "lineMark") {
+    const { denominator: d, numerator: n } = spec;
+    const candidates = [n, n === 1 ? n + 1 : n - 1, n === d - 1 ? n - 1 : n + 1];
+    const unique = [...new Set(candidates)];
+    return [{
+      at: 0,
+      q: L("What does one interval represent, and what does the numerator count?", "¿Qué representa un intervalo y qué cuenta el numerador?"),
+      choices: [
+        { t: L(`Each interval is 1/${d}; count ${n} intervals from 0.`, `Cada intervalo es 1/${d}; cuenta ${n} intervalos desde 0.`), ok: true, why: L("The denominator names the equal parts in one whole; the numerator counts how many of those parts the point is from zero.", "El denominador nombra las partes iguales de un entero; el numerador cuenta cuántas partes hay desde cero.") },
+        { t: L(`Each interval is 1/${n}; count ${d} intervals from 0.`, `Cada intervalo es 1/${n}; cuenta ${d} intervalos desde 0.`), ok: false, why: L("The numerator and denominator have different jobs: the denominator counts all equal intervals in the whole.", "El numerador y el denominador tienen funciones distintas: el denominador cuenta todos los intervalos iguales del entero.") },
+        { t: L(`Count ${unique[1]} intervals from 0.`, `Cuenta ${unique[1]} intervalos desde 0.`), ok: false, why: L("Start at zero and count the point's intervals one at a time.", "Empieza en cero y cuenta los intervalos del punto uno por uno.") },
+      ],
+      explain: [
+        { t: L("The denominator counts equal parts in the whole; the numerator counts selected parts from zero.", "El denominador cuenta partes iguales del entero; el numerador cuenta las partes desde cero."), ok: true },
+        { t: L("The denominator tells the point's position and the numerator tells the total parts.", "El denominador indica la posición del punto y el numerador el total de partes."), ok: false },
+      ],
+    }];
+  }
   if (spec.mode === "equiv") {
     const n = spec.factor.n;
     const op = spec.factor.kind === "mul" ? "×" : "÷";
@@ -441,6 +528,11 @@ export function predicts(spec) {
 
 export function hints(spec) {
   const list = frames(spec);
+  if (spec.mode === "lineMark") return [
+    { text: L("Look at the whole interval from 0 to 1. How many equal spaces make it?", "Mira el intervalo entero de 0 a 1. ¿Cuántos espacios iguales lo forman?") },
+    { text: L(`The denominator is ${spec.denominator}; the point is ${spec.numerator} equal spaces from 0.`, `El denominador es ${spec.denominator}; el punto está a ${spec.numerator} espacios iguales de 0.`), frame: list[1] },
+    { text: L("Count each tick interval starting at 0. A tick is a boundary; the space between ticks is one part.", "Cuenta cada intervalo desde 0. Una marca es un límite; el espacio entre marcas es una parte."), frame: list[1] },
+  ];
   const key = spec.mode === "equiv" ? list[0] : list[1];
   const bars = list[0];
   if (spec.mode === "equiv")
@@ -498,6 +590,20 @@ export function hints(spec) {
 
 export function diagnose(spec, raw) {
   const text = String(raw).replaceAll(" ", "");
+  if (spec.mode === "lineMark") {
+    const [top, bottom] = text.split("/").map(Number);
+    if (spec.answerAs === "fraction" && top === spec.denominator && bottom === spec.numerator) return "reversedFraction";
+    if (
+      spec.answerAs === "fraction" &&
+      Number.isInteger(top) &&
+      Number.isInteger(bottom) &&
+      bottom !== 0 &&
+      [spec.numerator - 1, spec.numerator + 1].some((mark) => top * spec.denominator === mark * bottom)
+    ) return "offByOneMark";
+    const value = num(text);
+    if (spec.answerAs === "mark" && (value === spec.numerator - 1 || value === spec.numerator + 1))
+      return "offByOneMark";
+  }
   if (spec.mode === "equiv") {
     const v = num(text);
     if (v === null) return null;
@@ -521,6 +627,8 @@ export function diagnose(spec, raw) {
 }
 
 export const tags = {
+  reversedFraction: { label: L("Switched the numerator and denominator", "Intercambió el numerador y el denominador"), tip: L("The denominator counts all equal intervals from 0 to 1. The numerator counts how many intervals to the point.", "El denominador cuenta todos los intervalos iguales de 0 a 1. El numerador cuenta cuántos intervalos hay hasta el punto.") },
+  offByOneMark: { label: L("Counted one mark too few or too many", "Contó una marca de menos o de más"), tip: L("Start at 0 and count spaces between tick marks. The first tick after 0 is one interval.", "Empieza en 0 y cuenta los espacios entre marcas. La primera marca después de 0 es un intervalo.") },
   additive: {
     label: L("Added instead of multiplying", "Sumó en lugar de multiplicar"),
     tip: L(
@@ -549,8 +657,9 @@ export const tags = {
 
 // ----- Build -----
 export const build = {
-  prompt: (spec) =>
-    spec.mode === "equiv"
+  prompt: (spec) => spec.mode === "lineMark"
+    ? L(`Move point P to mark ${spec.numerator} of ${spec.denominator}.`, `Mueve el punto P a la marca ${spec.numerator} de ${spec.denominator}.`)
+    : spec.mode === "equiv"
       ? spec.factor.kind === "mul"
         ? L(
             `Cut every piece into more equal parts until the bar has ${spec.d} pieces.`,
@@ -564,8 +673,24 @@ export const build = {
           `Cut each bar into more equal parts until both bars have pieces of the same size.`,
           `Corta cada barra en más partes iguales hasta que ambas tengan partes del mismo tamaño.`,
         ),
-  init: (spec) => (spec.mode === "equiv" ? { n: 1 } : { ka: 1, kb: 1 }),
+  init: (spec) => spec.mode === "lineMark" ? { pos: 0 } : spec.mode === "equiv" ? { n: 1 } : { ka: 1, kb: 1 },
   render(state, spec) {
+    if (spec.mode === "lineMark") {
+      const d = spec.denominator;
+      const atTarget = state.pos === spec.numerator;
+      const alt = L(`Point P at mark ${state.pos} on a line divided into ${d} equal intervals.`, `El punto P está en la marca ${state.pos} de una recta dividida en ${d} intervalos iguales.`);
+      return {
+        svg: numberLineSvg(d, state.pos),
+        alt,
+        controls: [
+          { id: "left", label: L("Move point one interval left", "Mover el punto un intervalo a la izquierda"), arg: -1 },
+          { id: "right", label: L("Move point one interval right", "Mover el punto un intervalo a la derecha"), arg: 1 },
+        ],
+        status: atTarget
+          ? L(`P is ${state.pos} intervals from 0: ${state.pos}/${d}.`, `P está a ${state.pos} intervalos de 0: ${state.pos}/${d}.`)
+          : L(`P is at mark ${state.pos} of ${d}. Count equal spaces from 0.`, `P está en la marca ${state.pos} de ${d}. Cuenta espacios iguales desde 0.`),
+      };
+    }
     if (spec.mode === "equiv") {
       const mul = spec.factor.kind === "mul";
       const total = mul ? spec.b * state.n : spec.b;
@@ -649,6 +774,12 @@ export const build = {
     };
   },
   act(state, action, _arg, spec) {
+    if (spec.mode === "lineMark") {
+      const nextPos = action === "goto" ? Number(_arg) : state.pos + (action === "right" ? 1 : action === "left" ? -1 : 0);
+      if (!Number.isInteger(nextPos) || nextPos < 0 || nextPos > spec.denominator)
+        return { state, ok: false, msg: L("The point must stay between 0 and 1.", "El punto debe permanecer entre 0 y 1.") };
+      return { state: { pos: nextPos }, ok: nextPos !== state.pos };
+    }
     if (spec.mode === "equiv") {
       const mul = spec.factor.kind === "mul";
       const step = action === "inc" ? 1 : -1;
@@ -678,6 +809,7 @@ export const build = {
         next[key] === state[key] ? L("That is as far as this goes.", "Hasta aquí se puede.") : null,
     };
   },
-  done: (state, spec) =>
-    spec.mode === "equiv" ? state.n === spec.factor.n : spec.b * state.ka === spec.d * state.kb,
+  done: (state, spec) => spec.mode === "lineMark"
+    ? state.pos === spec.numerator
+    : spec.mode === "equiv" ? state.n === spec.factor.n : spec.b * state.ka === spec.d * state.kb,
 };
