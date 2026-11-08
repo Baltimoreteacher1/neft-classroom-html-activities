@@ -9,20 +9,40 @@ const esc = (s) => String(s).replaceAll("&", "&amp;").replaceAll("<", "&lt;").re
 export function mountExplore(ctx, root) {
   const sim = ctx.sim;
   if (sim.mount) return sim.mount(ctx, root);
-  let state = sim.init(ctx);
-  let predictionUnlocked = !sim.prediction;
-  let predictionAttempts = 0;
+  // Keep an investigation intact when a learner switches to another strategy or tab.
+  // The key includes the problem spec so a new problem can never inherit old quantities.
+  const sessionKey = JSON.stringify([
+    sim.id,
+    ctx.lesson?.engine?.id || "",
+    ctx.lesson?.spec || null,
+  ]);
+  const prior = ctx.exploreSession?.key === sessionKey ? ctx.exploreSession : null;
+  let state = prior?.state ? structuredClone(prior.state) : sim.init(ctx);
+  let predictionUnlocked = sim.prediction ? Boolean(prior?.predictionUnlocked) : true;
+  let predictionAttempts = prior?.predictionAttempts || 0;
+  let predictionValue = prior?.predictionValue || "";
+  let predictionFeedback = prior?.predictionFeedback || "";
+  const save = () => {
+    ctx.exploreSession = {
+      key: sessionKey,
+      state: structuredClone(state),
+      predictionUnlocked,
+      predictionAttempts,
+      predictionValue,
+      predictionFeedback,
+    };
+  };
   root.innerHTML = `
     <section class="sd-prediction" data-prediction ${predictionUnlocked ? "hidden" : ""} aria-labelledby="sd-prediction-title">
       <p class="sd-task"><span class="sd-tag">${esc(t("Explore"))}</span></p>
       <h4 id="sd-prediction-title" data-prediction-prompt></h4>
       <form class="sd-answer" data-prediction-form novalidate>
         <label for="sd-prediction-${ctx.id}">${esc(t("Your prediction"))}</label>
-        <input id="sd-prediction-${ctx.id}" class="sd-input" type="number" inputmode="decimal" step="any" autocomplete="off" />
+        <input id="sd-prediction-${ctx.id}" class="sd-input" type="number" inputmode="decimal" step="any" autocomplete="off" value="${esc(predictionValue)}" />
         <button type="submit" class="sd-btn sd-primary">${esc(t("Check prediction"))}</button>
       </form>
-      <p class="sd-feedback" data-prediction-feedback role="status" aria-live="polite"></p>
-      <button type="button" class="sd-btn" data-reveal-model hidden>${esc(t("Open the model"))}</button>
+      <p class="sd-feedback" data-prediction-feedback role="status" aria-live="polite">${esc(predictionFeedback)}</p>
+      <button type="button" class="sd-btn" data-reveal-model ${predictionAttempts >= 2 ? "" : "hidden"}>${esc(t("Open the model"))}</button>
     </section>
     <section data-model ${predictionUnlocked ? "" : "hidden"}>
       <p class="sd-task"><span class="sd-tag">${esc(t("Explore"))}</span> <span data-ask></span></p>
@@ -57,33 +77,42 @@ export function mountExplore(ctx, root) {
     const input = q("[data-prediction-form] input");
     if (!input.value.trim()) {
       q("[data-prediction-feedback]").textContent = t("Enter a prediction first.");
+      predictionFeedback = q("[data-prediction-feedback]").textContent;
+      save();
       input.focus();
       return;
     }
     const expected = sim.prediction(state).answer;
     const guess = Number(input.value);
+    predictionValue = input.value;
     if (Number.isFinite(guess) && Math.abs(guess - expected) < 1e-8) {
       predictionUnlocked = true;
-      q("[data-prediction-feedback]").textContent = t("Your prediction is correct. Now change a quantity and investigate how the whole responds.");
+      predictionFeedback = t("Your prediction is correct. Now change a quantity and investigate how the whole responds.");
+      q("[data-prediction-feedback]").textContent = predictionFeedback;
       input.disabled = true;
       q("[data-prediction-form] button").disabled = true;
       q("[data-prediction]").hidden = false;
       q("[data-model]").hidden = false;
+      save();
       draw(true);
       root.querySelector("[data-k]")?.focus();
       return;
     }
     predictionAttempts += 1;
     q("[data-prediction-feedback]").textContent = pick(sim.prediction(state).hint, ctx.lang());
+    predictionFeedback = q("[data-prediction-feedback]").textContent;
     if (predictionAttempts >= 2) q("[data-reveal-model]").hidden = false;
+    save();
     input.select();
   });
   q("[data-reveal-model]")?.addEventListener("click", () => {
     predictionUnlocked = true;
-    q("[data-prediction-feedback]").textContent = t("The model is open. Explore the relationship, then solve a fresh problem on your own.");
+    predictionFeedback = t("The model is open. Explore the relationship, then solve a fresh problem on your own.");
+    q("[data-prediction-feedback]").textContent = predictionFeedback;
     q("[data-prediction-form] input").disabled = true;
     q("[data-prediction-form] button").disabled = true;
     q("[data-model]").hidden = false;
+    save();
     draw(true);
     root.querySelector("[data-k]")?.focus();
   });
@@ -92,6 +121,7 @@ export function mountExplore(ctx, root) {
     if (!k) return;
     state = { ...state, [k]: Number(e.target.value) };
     if (sim.clamp) state = sim.clamp(state);
+    save();
     touched += 1;
     if (touched >= 3) ctx.mark("explore");
     draw(k === "d" || sim.clamp !== undefined);
@@ -103,6 +133,7 @@ export function mountExplore(ctx, root) {
     const a = e.target.closest("[data-a]");
     if (!a) return;
     state = sim.act(state, a.dataset.a);
+    save();
     touched += 1;
     if (touched >= 3) ctx.mark("explore");
     draw(false);
@@ -118,6 +149,7 @@ export function mountExplore(ctx, root) {
     const value = sim.pointerValue?.(e.clientX, svg?.getBoundingClientRect(), svg?.viewBox?.baseVal);
     if (value !== null && value !== undefined) {
       state = sim.movePoint(state, dragIndex, value);
+      save();
       touched += 1;
       if (touched >= 3) ctx.mark("explore");
       draw(false);
@@ -129,6 +161,7 @@ export function mountExplore(ctx, root) {
     const value = sim.pointerValue?.(e.clientX, svg?.getBoundingClientRect(), svg?.viewBox?.baseVal);
     if (value === null || value === undefined) return;
     state = sim.movePoint(state, dragIndex, value);
+    save();
     touched += 1;
     if (touched >= 3) ctx.mark("explore");
     draw(false);
@@ -144,11 +177,16 @@ export function mountExplore(ctx, root) {
     if (next === null) return;
     e.preventDefault();
     state = sim.movePoint(state, index, next);
+    save();
     touched += 1;
     if (touched >= 3) ctx.mark("explore");
     draw(false);
   });
   if (predictionUnlocked) sliders();
   draw(false);
+  if (prior && predictionUnlocked) {
+    q("[data-prediction-form] input").disabled = true;
+    q("[data-prediction-form] button").disabled = true;
+  }
   return () => {};
 }

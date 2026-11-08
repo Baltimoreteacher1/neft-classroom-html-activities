@@ -1869,7 +1869,8 @@ for (const sim of Object.values(SIMS)) {
 
   const machineHost = document.createElement("div");
   document.body.append(machineHost);
-  mountExplore({ sim: machine, ...context, mark() {} }, machineHost);
+  const machineExploreContext = { sim: machine, ...context, mark() {} };
+  mountExplore(machineExploreContext, machineHost);
   assert.equal(
     machineHost.querySelector("[data-model]").hidden,
     true,
@@ -1906,6 +1907,53 @@ for (const sim of Object.values(SIMS)) {
     machineHost.querySelector("[data-stage] svg").getAttribute("aria-label"),
     /highlighted graph point \(10, -30\)/,
   );
+
+  // Switching strategy tabs remounts the panel, but the current investigation must survive.
+  const resumeContext = machineExploreContext;
+  const resumedHost = document.createElement("div");
+  mountExplore(resumeContext, resumedHost);
+  assert.equal(resumedHost.querySelector("[data-model]").hidden, false);
+  assert.equal(resumedHost.querySelector('[data-k="x"]').value, "10");
+  assert.match(
+    resumedHost.querySelector("[data-stage] svg").getAttribute("aria-label"),
+    /highlighted graph point \(10, -30\)/,
+    "the function machine state and its synchronized graph point survive tab switching",
+  );
+
+  // A different problem must start fresh even when the same simulator instance is reused.
+  const nextProblemHost = document.createElement("div");
+  const nextProblemContext = {
+    ...resumeContext,
+    lesson: { engine: { id: "graph" }, spec: { mode: "fn", k: 3, c: 1, x: 5 } },
+  };
+  mountExplore(nextProblemContext, nextProblemHost);
+  assert.equal(nextProblemHost.querySelector("[data-model]").hidden, true);
+  assert.match(
+    nextProblemHost.querySelector("[data-prediction-prompt]").textContent,
+    /x = 5/,
+    "a changed function problem does not inherit the previous investigation",
+  );
+
+  for (const guess of [4, 5]) {
+    const prediction = nextProblemHost.querySelector("[data-prediction-form]");
+    prediction.querySelector("input").value = String(guess);
+    prediction.dispatchEvent(new dom.window.Event("submit", { bubbles: true, cancelable: true }));
+  }
+  const predictionResumeHost = document.createElement("div");
+  mountExplore(nextProblemContext, predictionResumeHost);
+  assert.equal(
+    predictionResumeHost.querySelector("[data-reveal-model]").hidden,
+    false,
+    "the two-attempt model access remains available after strategy switching",
+  );
+  assert.equal(
+    predictionResumeHost.querySelector("[data-prediction-form] input").value,
+    "5",
+    "the latest prediction attempt is retained while the learner changes strategy",
+  );
+  resumedHost.remove();
+  nextProblemHost.remove();
+  predictionResumeHost.remove();
   machineHost.remove();
 }
 
