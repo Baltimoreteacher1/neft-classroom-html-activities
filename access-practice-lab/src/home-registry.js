@@ -97,10 +97,34 @@ export const HOME_CARDS = [
     featured: true,
     href: "/language-adventures/",
     icon: "worlds",
-    title: ["Language Adventures & 10 Studios", "Aventuras del lenguaje y 10 estudios"],
+    title: ["Language Adventures · 9 Worlds", "Aventuras del lenguaje · 9 mundos"],
     text: [
-      "Nine illustrated worlds, branching stories, and 10 classroom language studios.",
-      "Nueve mundos ilustrados, historias interactivas y 10 estudios de lenguaje.",
+      "Nine illustrated worlds, 11 branching stories, and 16 five-minute domain sprints.",
+      "Nueve mundos ilustrados, 11 historias interactivas y 16 prácticas de cinco minutos.",
+    ],
+  },
+  {
+    id: "language-adventures-arcade",
+    group: "explore",
+    featured: true,
+    href: "/language-adventures/arcade/",
+    icon: "sparkle",
+    title: ["Language Arcade · Discourse Games", "Arcade del lenguaje · Juegos de discurso"],
+    text: [
+      "Four logic and discourse games: Connector Bridge, Courtroom, Sequence Stage, and Detective.",
+      "Cuatro juegos de lógica y discurso: conectores, tribunal, secuencia y detective.",
+    ],
+  },
+  {
+    id: "language-adventures-studios",
+    group: "explore",
+    featured: true,
+    href: "/language-adventures/studios/",
+    icon: "classroom",
+    title: ["12 Language & Classroom Studios", "12 estudios de lenguaje y clase"],
+    text: [
+      "Word Matrix, Register Polisher, Data Evidence, Cohesion X-Ray, Counterpoint, and more.",
+      "Matriz de palabras, registro, evidencia, cohesión, contrapunto y más.",
     ],
   },
   {

@@ -5812,6 +5812,12 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/language-adventures/arcade/",
+    title: "Language Arcade & Discourse Games · The Language Page",
+    category: "Tool",
+    unit: null,
+  },
+  {
     path: "/language-adventures/family/",
     title: "Families · The Language Page",
     category: "Tool",
