@@ -1,20 +1,23 @@
 import assert from "node:assert/strict";
 import {
-  analyzeRatioExplanation,
   analyzePercentExplanation,
+  analyzeRatioExplanation,
   checkPercentTransfer,
   checkRatioTransfer,
   parseRatioPair,
+  percentSupportForLevel,
   ratioTransferBase,
   supportForLevel,
-  percentSupportForLevel,
 } from "../access-practice-lab/src/studios/math-reasoning-bridge.js";
 import * as languageStudios from "../access-practice-lab/src/views/language-studios.js";
 import {
   createRatioExplanationUrl,
   readMathLanguageBridge,
 } from "../shared/math-language-bridge/v1.js";
-import { createPercentExplanationUrl, readMathLanguageBridge as readBridgeV2 } from "../shared/math-language-bridge/v2.js";
+import {
+  createPercentExplanationUrl,
+  readMathLanguageBridge as readBridgeV2,
+} from "../shared/math-language-bridge/v2.js";
 import { makeCtx, mount, win } from "./lib/access-studios-dom.mjs";
 
 const url = new URL(createRatioExplanationUrl({ first: 2, second: 3, grade: 6 }));
@@ -71,20 +74,44 @@ assert.ok(supportForLevel(3, "es").frame);
 assert.equal(supportForLevel(5, "en"), null, "highest support level fades the sentence frame");
 
 const percentUrl = new URL(createPercentExplanationUrl({ percent: 30, whole: 50, grade: 6 }));
-assert.deepEqual([...percentUrl.searchParams.keys()].sort(), ["grade", "percent", "schema", "task", "whole"]);
+assert.deepEqual([...percentUrl.searchParams.keys()].sort(), [
+  "grade",
+  "percent",
+  "schema",
+  "task",
+  "whole",
+]);
 const percentBridge = readBridgeV2(percentUrl.searchParams);
 assert.deepEqual(percentBridge, {
-  schema: "edu-wonderlab.math-language/2", task: "percent-part-whole", grade: 6,
-  percent: 30, whole: 50, part: 15, transferWhole: 60, transferPart: 18,
+  schema: "edu-wonderlab.math-language/2",
+  task: "percent-part-whole",
+  grade: 6,
+  percent: 30,
+  whole: 50,
+  part: 15,
+  transferWhole: 60,
+  transferPart: 18,
 });
-assert.equal(readBridgeV2(url.searchParams)?.task, "ratio-equivalence", "v1 ratio links remain supported");
+assert.equal(
+  readBridgeV2(url.searchParams)?.task,
+  "ratio-equivalence",
+  "v1 ratio links remain supported",
+);
 assert.equal(readBridgeV2(`${percentUrl.search}&student=Alex`), null);
 assert.equal(checkPercentTransfer(percentBridge, "60"), true);
 assert.equal(checkPercentTransfer(percentBridge, "59"), false);
 assert.equal(checkPercentTransfer(percentBridge, "60.5"), false);
-assert.equal(percentSupportForLevel(2, "es", { percent: 30, whole: 50, part: 15 }).frame.includes("15"), true);
+assert.equal(
+  percentSupportForLevel(2, "es", { percent: 30, whole: 50, part: 15 }).frame.includes("15"),
+  true,
+);
 assert.equal(percentSupportForLevel(5, "en", { percent: 30, whole: 50, part: 15 }), null);
-assert.equal(analyzePercentExplanation("30 percent of the whole is the part because the grid has equal squares.").evidence.connectsReason, true);
+assert.equal(
+  analyzePercentExplanation(
+    "30 percent of the whole is the part because the grid has equal squares.",
+  ).evidence.connectsReason,
+  true,
+);
 
 const bridge = readMathLanguageBridge(url.searchParams);
 Object.defineProperty(globalThis, "SpeechRecognition", {
@@ -140,28 +167,51 @@ ctx.route.mathBridge = percentBridge;
 ({ root } = await mount(languageStudios, ctx));
 assert.match(root.textContent, /What do 30%, 15, and 50 represent/);
 assert.equal(root.querySelectorAll(".mlb-percent-cell").length, 100);
-root.querySelector("#mlb-pct-draft").value = "30 percent of the whole is 15 because 30 of 100 equal squares are shaded.";
+root.querySelector("#mlb-pct-draft").value =
+  "30 percent of the whole is 15 because 30 of 100 equal squares are shaded.";
 root.querySelector("#mlb-pct-draft").dispatchEvent(new win.Event("input", { bubbles: true }));
-const savedBridgeKey = Array.from({ length: globalThis.localStorage.length }, (_, index) => globalThis.localStorage.key(index)).find((key) => key?.includes("math-language%2F2"));
-assert.ok(savedBridgeKey && JSON.parse(globalThis.localStorage.getItem(savedBridgeKey)).data.percentDraft.includes("30 percent"), "session draft is saved locally");
+const savedBridgeKey = Array.from({ length: globalThis.localStorage.length }, (_, index) =>
+  globalThis.localStorage.key(index),
+).find((key) => key?.includes("math-language%2F2"));
+assert.ok(
+  savedBridgeKey &&
+    JSON.parse(globalThis.localStorage.getItem(savedBridgeKey)).data.percentDraft.includes(
+      "30 percent",
+    ),
+  "session draft is saved locally",
+);
 ctx.route.mathBridge = bridge;
 await mount(languageStudios, ctx);
 ctx.route.mathBridge = percentBridge;
 ({ root } = await mount(languageStudios, ctx));
-assert.match(root.querySelector("#mlb-pct-draft").value, /30 percent of the whole is 15/, "partial percent explanation restores when the task is reopened");
-root.querySelector("[data-pct-draft]").dispatchEvent(new win.Event("submit", { bubbles: true, cancelable: true }));
+assert.match(
+  root.querySelector("#mlb-pct-draft").value,
+  /30 percent of the whole is 15/,
+  "partial percent explanation restores when the task is reopened",
+);
+root
+  .querySelector("[data-pct-draft]")
+  .dispatchEvent(new win.Event("submit", { bubbles: true, cancelable: true }));
 ({ root } = await mount(languageStudios, ctx));
 assert.match(root.textContent, /Improve your explanation/);
-root.querySelector("#mlb-pct-revision").value = "The part is 30% of the whole because 30 of the 100 equal squares are shaded.";
-root.querySelector("[data-pct-revision]").dispatchEvent(new win.Event("submit", { bubbles: true, cancelable: true }));
+root.querySelector("#mlb-pct-revision").value =
+  "The part is 30% of the whole because 30 of the 100 equal squares are shaded.";
+root
+  .querySelector("[data-pct-revision]")
+  .dispatchEvent(new win.Event("submit", { bubbles: true, cancelable: true }));
 ({ root } = await mount(languageStudios, ctx));
 assert.match(root.textContent, /18 is 30% of what whole/);
 root.querySelector("#mlb-pct-transfer").value = "60";
-root.querySelector("[data-pct-transfer]").dispatchEvent(new win.Event("submit", { bubbles: true, cancelable: true }));
+root
+  .querySelector("[data-pct-transfer]")
+  .dispatchEvent(new win.Event("submit", { bubbles: true, cancelable: true }));
 ({ root } = await mount(languageStudios, ctx));
 assert.match(root.textContent, /That whole is correct/);
-root.querySelector("#mlb-pct-transfer-explain").value = "18 is 30 percent of 60 because 18 divided by 0.30 equals the whole.";
-root.querySelector("[data-pct-transfer-explain]").dispatchEvent(new win.Event("submit", { bubbles: true, cancelable: true }));
+root.querySelector("#mlb-pct-transfer-explain").value =
+  "18 is 30 percent of 60 because 18 divided by 0.30 equals the whole.";
+root
+  .querySelector("[data-pct-transfer-explain]")
+  .dispatchEvent(new win.Event("submit", { bubbles: true, cancelable: true }));
 ({ root } = await mount(languageStudios, ctx));
 assert.match(root.textContent, /solved a new percent problem independently/);
 

@@ -1,7 +1,7 @@
 import {
   MATH_LANGUAGE_BRIDGE_PATH,
-  MATH_LANGUAGE_BRIDGE_SCHEMA as V1_SCHEMA,
   readMathLanguageBridge as readV1,
+  MATH_LANGUAGE_BRIDGE_SCHEMA as V1_SCHEMA,
 } from "./v1.js";
 
 export const MATH_LANGUAGE_BRIDGE_SCHEMA = "edu-wonderlab.math-language/2";
@@ -28,9 +28,12 @@ function validPercentTask(percent, whole) {
 
 /** The URL contains only a validated math prompt; no learner identity, response, or progress. */
 export function createPercentExplanationUrl({ percent, whole, grade = 6 } = {}) {
-  if (!inRangeInt(grade, 4, 8)) throw new RangeError("Percent explanation grade must be from 4 to 8.");
+  if (!inRangeInt(grade, 4, 8))
+    throw new RangeError("Percent explanation grade must be from 4 to 8.");
   if (!validPercentTask(percent, whole))
-    throw new RangeError("Percent and whole must produce exact integer parts and a valid transfer problem.");
+    throw new RangeError(
+      "Percent and whole must produce exact integer parts and a valid transfer problem.",
+    );
   const params = new URLSearchParams({
     schema: MATH_LANGUAGE_BRIDGE_SCHEMA,
     task: "percent-part-whole",
@@ -48,7 +51,10 @@ export function readMathLanguageBridge(search = "") {
       ? search
       : new URLSearchParams(String(search).replace(/^\?/, ""));
   if (params.get("schema") === V1_SCHEMA) return readV1(params);
-  if ([...params.keys()].some((key) => !ALLOWED.has(key)) || params.get("schema") !== MATH_LANGUAGE_BRIDGE_SCHEMA)
+  if (
+    [...params.keys()].some((key) => !ALLOWED.has(key)) ||
+    params.get("schema") !== MATH_LANGUAGE_BRIDGE_SCHEMA
+  )
     return null;
   if (params.get("task") !== "percent-part-whole") return null;
   const grade = Number(params.get("grade"));
