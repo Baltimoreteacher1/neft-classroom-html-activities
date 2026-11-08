@@ -91,6 +91,72 @@ export function checkSurfaceAreaTransfer(bridge, response) {
   return /^\d+(?:\.0+)?$/u.test(text) && Number(text) === bridge.transferSurfaceArea;
 }
 
+function parseVolumeResponse(text) {
+  const value = String(text ?? "").trim();
+  let match = value.match(/^(\d+)\s+(\d+)\s*\/\s*(\d+)$/u);
+  if (match) {
+    const [, whole, numerator, denominator] = match.map(Number);
+    return denominator > 0 && numerator < denominator
+      ? { numerator: whole * denominator + numerator, denominator }
+      : null;
+  }
+  match = value.match(/^(\d+)\s*\/\s*(\d+)$/u);
+  if (match) {
+    const [, numerator, denominator] = match.map(Number);
+    return denominator > 0 ? { numerator, denominator } : null;
+  }
+  match = value.match(/^(\d+)(?:\.(\d{1,3}))?$/u);
+  if (!match) return null;
+  const places = match[2]?.length || 0;
+  const denominator = 10 ** places;
+  const numerator = Number(match[1]) * denominator + Number(match[2] || 0);
+  return Number.isSafeInteger(numerator) ? { numerator, denominator } : null;
+}
+
+/** Compare exact rational cubic-foot values; accept decimals, fractions, or mixed numbers. */
+export function checkFractionalVolumeTransfer(bridge, response) {
+  const parsed = parseVolumeResponse(response);
+  return Boolean(
+    parsed &&
+      Number.isSafeInteger(bridge?.transferVolumeEighths) &&
+      parsed.numerator * 8 === bridge.transferVolumeEighths * parsed.denominator,
+  );
+}
+
+/** Observable language features for describing fractional volume; never a math or proficiency score. */
+export function analyzeFractionalVolumeExplanation(text) {
+  const value = String(text ?? "").toLocaleLowerCase();
+  const evidence = {
+    namesDimensions: /\b(length|width|height|largo|ancho|alto|altura)\b/u.test(value),
+    connectsMultiplication: /\b(multiply|multiplied|times|producto|multiplica|multiplicamos|por)\b|×/u.test(value),
+    namesCubicUnits: /\b(cubic feet|cubic foot|pies cúbicos|pie cúbico)\b|ft(?:³|\s*\^?3)/u.test(value),
+    explainsFractionalUnit: /\b(1\s*\/\s*8|one eighth|eighth|octavo|octava)\b/u.test(value),
+    connectsReason: /\b(because|so|since|therefore|porque|por eso|ya que|entonces)\b/u.test(value),
+  };
+  const missing = [];
+  if (!evidence.namesDimensions) missing.push({ en: "name the length, width, and height", es: "nombra el largo, ancho y alto" });
+  if (!evidence.connectsMultiplication) missing.push({ en: "explain how the three dimensions are multiplied", es: "explica cómo se multiplican las tres dimensiones" });
+  if (!evidence.explainsFractionalUnit) missing.push({ en: "connect each half-foot cube to one eighth cubic foot", es: "relaciona cada cubo de medio pie con un octavo de pie cúbico" });
+  if (!evidence.namesCubicUnits) missing.push({ en: "name cubic feet", es: "nombra los pies cúbicos" });
+  if (!evidence.connectsReason) missing.push({ en: "connect the ideas with a reason", es: "conecta las ideas con una razón" });
+  return {
+    evidence,
+    feedback: missing.length
+      ? { en: `For clarity, ${missing.map((item) => item.en).join(", then ")}.`, es: `Para mayor claridad, ${missing.map((item) => item.es).join(", luego ")}.` }
+      : { en: "You connect the three dimensions, the fractional cube unit, and cubic feet with a reason.", es: "Conectas las tres dimensiones, la unidad fraccionaria del cubo y los pies cúbicos con una razón." },
+  };
+}
+
+export function fractionalVolumeSupportForLevel(level, language = "en") {
+  if (level <= 2) return language === "es"
+    ? { bank: ["largo", "ancho", "alto", "capa", "cubo de medio pie", "1/8 pie³", "porque"], frame: "Multipliqué el largo, el ancho y el alto. Cada cubo de medio pie es 1/8 de pie cúbico porque ___." }
+    : { bank: ["length", "width", "height", "layer", "half-foot cube", "1/8 ft³", "because"], frame: "I multiplied the length, width, and height. Each half-foot cube is 1/8 ft³ because ___." };
+  if (level === 3) return language === "es"
+    ? { bank: ["dimensiones", "cubo", "volumen", "pies cúbicos"], frame: "El volumen se mide en pies cúbicos porque ___." }
+    : { bank: ["dimensions", "cube", "volume", "cubic feet"], frame: "The volume is measured in cubic feet because ___." };
+  return null;
+}
+
 /** Language evidence for naming faces, paired areas, and square units; not a math score. */
 export function analyzeSurfaceAreaExplanation(text) {
   const value = String(text ?? "").toLocaleLowerCase();

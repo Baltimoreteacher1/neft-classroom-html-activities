@@ -1,18 +1,21 @@
 import assert from "node:assert/strict";
 import {
   analyzeDataExplanation,
+  analyzeFractionalVolumeExplanation,
   analyzeFractionExplanation,
   analyzeFractionLineExplanation,
   analyzePercentExplanation,
   analyzeRatioExplanation,
   analyzeSurfaceAreaExplanation,
   checkDataTransfer,
+  checkFractionalVolumeTransfer,
   checkFractionLineTransfer,
   checkFractionTransfer,
   checkPercentTransfer,
   checkRatioTransfer,
   checkSurfaceAreaTransfer,
   dataSupportForLevel,
+  fractionalVolumeSupportForLevel,
   fractionLineSupportForLevel,
   fractionSupportForLevel,
   parseRatioPair,
@@ -31,6 +34,7 @@ import {
 } from "../shared/math-language-bridge/v1.js";
 import {
   createDataExplanationUrl,
+  createFractionalVolumeExplanationUrl,
   createFractionExplanationUrl,
   createFractionNumberLineExplanationUrl,
   createPercentExplanationUrl,
@@ -298,6 +302,39 @@ assert.equal(checkSurfaceAreaTransfer(pyramidBridge, "133"), true);
 assert.equal(checkSurfaceAreaTransfer(pyramidBridge, "132"), false);
 assert.ok(pyramidSurfaceAreaSupportForLevel(2, "es", pyramidBridge).frame.includes("6×5÷2"));
 assert.equal(pyramidSurfaceAreaSupportForLevel(5, "en", pyramidBridge), null);
+const fractionalVolumeUrl = new URL(
+  createFractionalVolumeExplanationUrl({
+    lengthHalves: 2,
+    widthHalves: 3,
+    heightHalves: 4,
+  }),
+);
+const fractionalVolumeBridge = readBridgeV2(fractionalVolumeUrl.searchParams);
+assert.equal(fractionalVolumeBridge.task, "fractional-volume");
+assert.equal(fractionalVolumeBridge.volumeEighths, 24);
+assert.equal(fractionalVolumeBridge.volumeCubicFeet, 3);
+assert.equal(checkFractionalVolumeTransfer(fractionalVolumeBridge, "15"), true);
+assert.equal(checkFractionalVolumeTransfer(fractionalVolumeBridge, "120/8"), true);
+assert.equal(checkFractionalVolumeTransfer(fractionalVolumeBridge, "5.999"), false);
+assert.equal(readBridgeV2(`${fractionalVolumeUrl.search}&student=private`), null);
+assert.throws(
+  () => createFractionalVolumeExplanationUrl({ lengthHalves: 0, widthHalves: 3, heightHalves: 4 }),
+  RangeError,
+);
+assert.deepEqual(
+  analyzeFractionalVolumeExplanation(
+    "I multiplied length, width, and height because each half-foot cube is one eighth ft³, so volume uses cubic feet.",
+  ).evidence,
+  {
+    namesDimensions: true,
+    connectsMultiplication: true,
+    namesCubicUnits: true,
+    explainsFractionalUnit: true,
+    connectsReason: true,
+  },
+);
+assert.ok(fractionalVolumeSupportForLevel(2, "en").frame.includes("1/8 ft³"));
+assert.equal(fractionalVolumeSupportForLevel(5, "es"), null);
 assert.equal(
   analyzePercentExplanation(
     "30 percent of the whole is the part because the grid has equal squares.",
@@ -799,6 +836,76 @@ pyramidTryRoot
 const pyramidLink = pyramidTryRoot.querySelector(".sd-math-language-bridge a");
 assert.ok(pyramidLink, "square-pyramid practice links to the matching language investigation");
 assert.equal(readBridgeV2(new URL(pyramidLink.href).searchParams)?.task, "surface-area-pyramid");
+
+const volumeSkill = getSkill(6, "volume-fractional");
+let volumeTryRoot;
+let volumeQuestion = "";
+for (let seed = 0; seed < 50 && !volumeQuestion.includes("rectangular prism"); seed += 1) {
+  Date.now = () => seed * 1237;
+  volumeTryRoot = document.createElement("div");
+  mountTry(
+    {
+      ...tryCtx,
+      skill: volumeSkill,
+      item: { question: "fractional volume practice" },
+      id: `fractional-volume-bridge-${seed}`,
+      key: "6:volume-fractional",
+    },
+    volumeTryRoot,
+  );
+  volumeQuestion = volumeTryRoot.querySelector("[data-problem]").textContent;
+}
+Date.now = originalSurfaceNow;
+const volumeState = (await import("../math/fluency-lab/studio/sims.js")).SIMS.volumeFractional.init(
+  { item: { question: volumeQuestion } },
+);
+const volumeAnswer = (volumeState.a * volumeState.b * volumeState.c) / 8;
+volumeTryRoot.querySelector("input").value = String(volumeAnswer);
+volumeTryRoot
+  .querySelector("[data-form]")
+  .dispatchEvent(new win.Event("submit", { bubbles: true, cancelable: true }));
+const volumeLink = volumeTryRoot.querySelector(".sd-math-language-bridge a");
+assert.ok(volumeLink, "fractional-volume practice links to its paired Language Page investigation");
+const volumeBridge = readBridgeV2(new URL(volumeLink.href).searchParams);
+assert.equal(volumeBridge.task, "fractional-volume");
+assert.deepEqual(
+  [volumeBridge.lengthHalves, volumeBridge.widthHalves, volumeBridge.heightHalves],
+  [volumeState.a, volumeState.b, volumeState.c],
+);
+
+const volumeCtx = makeCtx("language-studios");
+volumeCtx.route.mathBridge = volumeBridge;
+({ root } = await mount(languageStudios, volumeCtx));
+assert.match(root.textContent, /Build volume from half-foot cubes/);
+assert.match(root.textContent, /one eighth of a cubic foot/);
+root.querySelector("#mlb-draft").value =
+  "I multiplied length, width, and height because each half-foot cube is one eighth ft³, so volume uses cubic feet.";
+root
+  .querySelector("[data-bridge-draft]")
+  .dispatchEvent(new win.Event("submit", { bubbles: true, cancelable: true }));
+({ root } = await mount(languageStudios, volumeCtx));
+assert.match(root.textContent, /Improve your explanation/);
+root.querySelector("#mlb-revision").value =
+  "The dimensions count half-foot cubes in each layer and height counts layers, so the product is cubic feet.";
+root
+  .querySelector("[data-bridge-revision]")
+  .dispatchEvent(new win.Event("submit", { bubbles: true, cancelable: true }));
+({ root } = await mount(languageStudios, volumeCtx));
+assert.match(root.textContent, /new prism/);
+root.querySelector("#mlb-transfer").value = String(volumeBridge.transferCubicFeet);
+root
+  .querySelector("[data-bridge-transfer]")
+  .dispatchEvent(new win.Event("submit", { bubbles: true, cancelable: true }));
+({ root } = await mount(languageStudios, volumeCtx));
+assert.match(root.textContent, /Correct\. Explain your new reasoning independently/);
+root.querySelector("#mlb-transfer-explain").value =
+  "I multiplied all three dimensions because each dimension counts equal half-foot lengths, so the result is cubic feet.";
+root
+  .querySelector("[data-bridge-transfer-explain]")
+  .dispatchEvent(new win.Event("submit", { bubbles: true, cancelable: true }));
+({ root } = await mount(languageStudios, volumeCtx));
+assert.match(root.textContent, /Investigation complete/);
+assert.match(root.textContent, /not an official WIDA score/);
 
 console.log(
   "math-language-bridge: versioned task context, separate evidence, supports, and transfer passed.",

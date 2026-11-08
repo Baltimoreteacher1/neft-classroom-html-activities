@@ -22,6 +22,9 @@ const ALLOWED = new Set([
   "unit",
   "side",
   "triangleHeight",
+  "lengthHalves",
+  "widthHalves",
+  "heightHalves",
 ]);
 const inRangeInt = (value, min, max) => Number.isInteger(value) && value >= min && value <= max;
 
@@ -209,6 +212,35 @@ export function createPyramidSurfaceAreaExplanationUrl({
   return `https://thelanguagepage.com${MATH_LANGUAGE_BRIDGE_PATH}?${params}`;
 }
 
+/** Share a bounded fractional-edge prism using exact half-foot edge units. */
+export function createFractionalVolumeExplanationUrl({
+  lengthHalves,
+  widthHalves,
+  heightHalves,
+  grade = 6,
+} = {}) {
+  if (!inRangeInt(grade, 5, 8))
+    throw new RangeError("Fractional-volume grade must be from 5 to 8.");
+  if (
+    !inRangeInt(lengthHalves, 1, 19) ||
+    !inRangeInt(widthHalves, 1, 12) ||
+    !inRangeInt(heightHalves, 1, 14)
+  ) {
+    throw new RangeError(
+      "Prism edge lengths must be positive half-foot units within the supported model bounds.",
+    );
+  }
+  const params = new URLSearchParams({
+    schema: MATH_LANGUAGE_BRIDGE_SCHEMA,
+    task: "fractional-volume",
+    grade: String(grade),
+    lengthHalves: String(lengthHalves),
+    widthHalves: String(widthHalves),
+    heightHalves: String(heightHalves),
+  });
+  return `https://thelanguagepage.com${MATH_LANGUAGE_BRIDGE_PATH}?${params}`;
+}
+
 /** Read v1 ratio links unchanged and accept only documented v2 math task contracts. */
 export function readMathLanguageBridge(search = "") {
   const params =
@@ -231,7 +263,16 @@ export function readMathLanguageBridge(search = "") {
               ? new Set(["schema", "task", "grade", "length", "width", "height", "unit"])
               : task === "surface-area-pyramid"
                 ? new Set(["schema", "task", "grade", "side", "triangleHeight", "unit"])
-                : null;
+                : task === "fractional-volume"
+                  ? new Set([
+                      "schema",
+                      "task",
+                      "grade",
+                      "lengthHalves",
+                      "widthHalves",
+                      "heightHalves",
+                    ])
+                  : null;
   if (!taskFields || [...params.keys()].some((key) => !ALLOWED.has(key) || !taskFields.has(key)))
     return null;
   const grade = Number(params.get("grade"));
@@ -293,6 +334,42 @@ export function readMathLanguageBridge(search = "") {
       transferSide,
       transferTriangleHeight,
       transferSurfaceArea: transferSide * transferSide + 2 * transferSide * transferTriangleHeight,
+    });
+  }
+  if (task === "fractional-volume") {
+    const lengthHalves = Number(params.get("lengthHalves"));
+    const widthHalves = Number(params.get("widthHalves"));
+    const heightHalves = Number(params.get("heightHalves"));
+    if (
+      !inRangeInt(grade, 5, 8) ||
+      !inRangeInt(lengthHalves, 1, 19) ||
+      !inRangeInt(widthHalves, 1, 12) ||
+      !inRangeInt(heightHalves, 1, 14)
+    )
+      return null;
+    const nextDimension = (value, max) => (value + 2 <= max ? value + 2 : value - 2);
+    const transferDimensionsHalves = Object.freeze([
+      nextDimension(lengthHalves, 19),
+      nextDimension(widthHalves, 12),
+      nextDimension(heightHalves, 14),
+    ]);
+    const volumeEighths = lengthHalves * widthHalves * heightHalves;
+    const transferVolumeEighths = transferDimensionsHalves.reduce(
+      (product, value) => product * value,
+      1,
+    );
+    return Object.freeze({
+      schema: MATH_LANGUAGE_BRIDGE_SCHEMA,
+      task,
+      grade,
+      lengthHalves,
+      widthHalves,
+      heightHalves,
+      volumeEighths,
+      volumeCubicFeet: volumeEighths / 8,
+      transferDimensionsHalves,
+      transferVolumeEighths,
+      transferCubicFeet: transferVolumeEighths / 8,
     });
   }
   if (task === "data-center") {
