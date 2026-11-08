@@ -126,6 +126,7 @@ export function reportJson(analysis, now = Date.now()) {
     generatedAt: new Date(now).toISOString(),
     grade: analysis.grade,
     totals: analysis.totals,
+    studio: analysis.studio || { explorations: 0, independentAttempts: 0, independentCorrect: 0, supportedAttempts: 0, skills: [] },
     learners: analysis.learners,
     skills: analysis.skills.map(({ skill, ...rest }) => ({ ...rest, skill: slim(skill) })),
     troubleSpots: analysis.troubleSpots.map(slimFinding),
@@ -163,6 +164,7 @@ export function classReportHtml(
     <section><h2>${esc(t("Independent and supported work"))}</h2><p>${esc(t("{independent} independent answers and {supported} supported answers. {share}% of saved answers were independent.", { independent: totals.independentAnswers, supported: totals.supportedAnswers, share: totals.independentShare ?? 0 }))}</p></section>
     <section><h2>${esc(t("Retention"))}</h2><p>${esc(t("{due} skill reviews are due and {overdue} are a week or more late. {kept} skills were kept at least 14 days.", { due: retention.due, overdue: retention.overdue, kept: retention.retainedSkills }))}</p></section>
     <section><h2>${esc(t("Growth"))}</h2><p>${esc(growth.learners ? t("{n} learners have a growth history. Average change: {delta} points.", { n: growth.learners, delta: growth.avgDelta }) : t("No growth history in these files yet."))}</p></section>
+    <section><h2>${esc(t("Math Discovery Studio evidence"))}</h2><p>${esc(t("{explorations} model explorations; {correct} of {attempts} fresh independent attempts correct; {supported} supported attempts.", { explorations: analysis.studio?.explorations || 0, correct: analysis.studio?.independentCorrect || 0, attempts: analysis.studio?.independentAttempts || 0, supported: analysis.studio?.supportedAttempts || 0 }))}</p><p>${esc(t("These practice observations are separate from mastery checks. Model exploration and supported success do not count as independent mastery."))}</p></section>
     <footer><p>${esc(t("Identifiable data stays on this device. This page lists only the labels the teacher opened or typed."))}</p></footer>
   </article>`;
 }

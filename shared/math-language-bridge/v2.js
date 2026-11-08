@@ -33,6 +33,11 @@ const ALLOWED = new Set([
   "amount",
   "shift",
   "result",
+  "mA",
+  "bA",
+  "mB",
+  "bB",
+  "items",
 ]);
 const inRangeInt = (value, min, max) => Number.isInteger(value) && value >= min && value <= max;
 
@@ -318,6 +323,38 @@ export function createEquationBalanceExplanationUrl({
   return `https://thelanguagepage.com${MATH_LANGUAGE_BRIDGE_PATH}?${params}`;
 }
 
+/** Share a bounded linear function comparison (Function Food Fair) without learner data. */
+export function createFunctionComparisonExplanationUrl({
+  mA,
+  bA,
+  mB,
+  bB,
+  items = 4,
+  grade = 8,
+} = {}) {
+  if (!inRangeInt(grade, 7, 8)) throw new RangeError("Function-comparison grade must be 7 or 8.");
+  if (
+    !inRangeInt(mA, 1, 12) ||
+    !inRangeInt(bA, 0, 20) ||
+    !inRangeInt(mB, 1, 12) ||
+    !inRangeInt(bB, 0, 20) ||
+    !inRangeInt(items, 1, 8)
+  ) {
+    throw new RangeError("Function comparison parameters are outside the supported bounds.");
+  }
+  const params = new URLSearchParams({
+    schema: MATH_LANGUAGE_BRIDGE_SCHEMA,
+    task: "function-comparison",
+    grade: String(grade),
+    mA: String(mA),
+    bA: String(bA),
+    mB: String(mB),
+    bB: String(bB),
+    items: String(items),
+  });
+  return `https://thelanguagepage.com${MATH_LANGUAGE_BRIDGE_PATH}?${params}`;
+}
+
 /** Read v1 ratio links unchanged and accept only documented v2 math task contracts. */
 export function readMathLanguageBridge(search = "") {
   const params =
@@ -361,7 +398,9 @@ export function readMathLanguageBridge(search = "") {
                       ])
                     : task === "equation-balance"
                       ? new Set(["schema", "task", "grade", "form", "amount", "shift", "result"])
-                      : null;
+                      : task === "function-comparison"
+                        ? new Set(["schema", "task", "grade", "mA", "bA", "mB", "bB", "items"])
+                        : null;
   if (!taskFields || [...params.keys()].some((key) => !ALLOWED.has(key) || !taskFields.has(key)))
     return null;
   const grade = Number(params.get("grade"));
@@ -545,6 +584,44 @@ export function readMathLanguageBridge(search = "") {
       solution,
       transferSolution,
       transferResult,
+    });
+  }
+  if (task === "function-comparison") {
+    const mA = Number(params.get("mA"));
+    const bA = Number(params.get("bA"));
+    const mB = Number(params.get("mB"));
+    const bB = Number(params.get("bB"));
+    const items = Number(params.get("items"));
+    if (
+      !inRangeInt(grade, 7, 8) ||
+      !inRangeInt(mA, 1, 12) ||
+      !inRangeInt(bA, 0, 20) ||
+      !inRangeInt(mB, 1, 12) ||
+      !inRangeInt(bB, 0, 20) ||
+      !inRangeInt(items, 1, 8)
+    )
+      return null;
+    const costA = mA * items + bA;
+    const costB = mB * items + bB;
+    const transferItems = items < 8 ? items + 1 : items - 1;
+    const transferCostA = mA * transferItems + bA;
+    const transferCostB = mB * transferItems + bB;
+    const transferDifference = Math.abs(transferCostA - transferCostB);
+    return Object.freeze({
+      schema: MATH_LANGUAGE_BRIDGE_SCHEMA,
+      task,
+      grade,
+      mA,
+      bA,
+      mB,
+      bB,
+      items,
+      costA,
+      costB,
+      transferItems,
+      transferCostA,
+      transferCostB,
+      transferDifference,
     });
   }
   if (task === "data-center") {

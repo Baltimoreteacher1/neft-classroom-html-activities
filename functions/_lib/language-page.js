@@ -29,6 +29,8 @@ const LAB_PREFIXES = [
   "/assets/",
   "/data/",
   "/shared/",
+  "/engine/",
+  "/math/",
   "/cdn-cgi/",
   // The class platform (functions/api/class, docs/class-platform.md): class sync, live quiz and voice notes
   // must answer on the lab's own origin, because lab progress lives in that origin's storage.

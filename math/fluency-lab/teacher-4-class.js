@@ -20,6 +20,7 @@ import { findSkill, localDay, sanitizeTutor } from "./tutor-engine.js";
 import { sanitizeGrowthLog } from "./growth-log.js";
 import { sanitizeFacts } from "./moby/fact-model.js";
 import { cleanGreenDays } from "./green-light.js";
+import { cleanStudio } from "./studio/adaptive.js";
 
 const SAVED_KEY = "ewl-fluency-teacher-class-v1";
 const MAX_FILE = 2_000_000;
@@ -38,6 +39,7 @@ const savedClass = () => {
         growth: sanitizeGrowthLog(item.growth),
         facts: sanitizeFacts(item.facts),
         greenDays: cleanGreenDays(item.greenDays),
+        studio: cleanStudio(item.studio),
         exportedAt: Number(item.exportedAt) || null,
         grade: null,
       })),
@@ -102,7 +104,9 @@ export function createClassState({ deviceLearners }) {
     },
     useDevice() {
       const learners = deviceLearners().filter(
-        (learner) => Object.keys(learner.tutor.records).length,
+        (learner) =>
+          Object.keys(learner.tutor.records).length ||
+          Object.keys(learner.studio?.skills || {}).length,
       );
       if (learners.length) addSet(t("This device {date}", { date: localDay() }), learners);
       else state.message = t("No saved practice was found on this device.");
@@ -132,14 +136,17 @@ export function createClassState({ deviceLearners }) {
       return writeLocal(SAVED_KEY, {
         version: 1,
         savedAt: Date.now(),
-        learners: set.learners.map(({ label, tutor, growth, facts, greenDays, exportedAt }) => ({
-          label,
-          tutor,
-          growth,
-          facts,
-          greenDays,
-          exportedAt,
-        })),
+        learners: set.learners.map(
+          ({ label, tutor, growth, facts, greenDays, studio, exportedAt }) => ({
+            label,
+            tutor,
+            growth,
+            facts,
+            greenDays,
+            studio: cleanStudio(studio),
+            exportedAt,
+          }),
+        ),
       });
     },
     forget() {

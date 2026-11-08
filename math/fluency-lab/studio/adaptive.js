@@ -1,12 +1,14 @@
 // Adaptive support from what the learner actually did, in plain deterministic rules. The only inputs are
 // recorded attempts (right or wrong, with a help flag and a named slip); there is no hidden score. "Independent"
 // means no hint was opened before the answer. This is a pattern in recent answers, not a mastery measure.
-import { readLocal, writeLocal } from "../school-tools.js";
+import { profileKey, profiles, readLocal, writeLocal } from "../school-tools.js";
 
 const KEY = "ewl-studio-v1";
+export const STUDIO_KEY = KEY;
 const KEEP = 12;
+const storageKey = () => profileKey(KEY, profiles().active);
 const read = () => {
-  const v = readLocal(KEY, null);
+  const v = readLocal(storageKey(), null);
   return v && typeof v === "object" ? { skills: v.skills || {}, badges: v.badges || {} } : { skills: {}, badges: {} };
 };
 
@@ -15,7 +17,7 @@ export function record(skillKey, entry) {
   const data = read();
   const list = [...(data.skills[skillKey] || []), { kind: entry.kind, ok: Boolean(entry.ok), supported: Boolean(entry.supported), tag: entry.tag || null }];
   data.skills[skillKey] = list.slice(-KEEP);
-  writeLocal(KEY, data);
+  writeLocal(storageKey(), data);
   return data.skills[skillKey];
 }
 export const history = (skillKey) => read().skills[skillKey] || [];
@@ -59,14 +61,14 @@ export function awardBadge(engineId) {
   const data = read();
   if (data.badges[engineId]) return false;
   data.badges[engineId] = true;
-  writeLocal(KEY, data);
+  writeLocal(storageKey(), data);
   return true;
 }
 export const badges = () => read().badges;
-export const clearAll = () => writeLocal(KEY, { skills: {}, badges: {} });
+export const clearAll = () => writeLocal(storageKey(), { skills: {}, badges: {} });
 
 // ----- Backup: the record travels with the learner's JSON backup, cleaned on the way in. -----
-const KINDS = new Set(["try", "predict", "detective"]);
+const KINDS = new Set(["try", "predict", "detective", "explore"]);
 export const exportStudio = () => {
   const data = read();
   return { skills: data.skills, badges: data.badges };
@@ -85,4 +87,4 @@ export function cleanStudio(value) {
   for (const [id, on] of Object.entries(value.badges || {})) if (/^[a-z]{1,12}$/.test(id) && on === true) badges[id] = true;
   return { skills, badges };
 }
-export const importStudio = (clean) => clean && writeLocal(KEY, clean);
+export const importStudio = (clean) => clean && writeLocal(storageKey(), clean);

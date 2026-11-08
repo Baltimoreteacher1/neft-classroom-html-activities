@@ -16,6 +16,7 @@ import { renderDataBridge, renderDataModel } from "../studios/data-bridge-view.j
 import { fractionalVolumeModelHTML } from "../studios/fractional-volume-bridge-view.js";
 import { fractionDivisionModelHTML } from "../studios/fraction-division-bridge-view.js";
 import { equationBalanceModelHTML, equationBalanceStepCount, equationTextForBridge } from "../studios/equation-bridge-view.js";
+import { renderNetFolder } from "../../../engine/components/net-folder.js";
 import {
   analyzeRatioExplanation,
   analyzePercentExplanation,
@@ -24,6 +25,7 @@ import {
   analyzeFractionalVolumeExplanation,
   analyzeFractionDivisionExplanation,
   analyzeEquationBalanceExplanation,
+  analyzeFunctionComparisonExplanation,
   checkPercentTransfer,
   checkFractionTransfer,
   checkFractionLineTransfer,
@@ -32,6 +34,7 @@ import {
   checkFractionalVolumeTransfer,
   checkFractionDivisionTransfer,
   checkEquationBalanceTransfer,
+  checkFunctionComparisonTransfer,
   checkRatioTransfer,
   percentSupportForLevel,
   surfaceAreaSupportForLevel,
@@ -39,6 +42,7 @@ import {
   fractionalVolumeSupportForLevel,
   fractionDivisionSupportForLevel,
   equationBalanceSupportForLevel,
+  functionComparisonSupportForLevel,
   fractionSupportForLevel,
   ratioTransferBase,
   supportForLevel,
@@ -402,6 +406,8 @@ function restoreBridge(key, bridge) {
                   ? checkFractionDivisionTransfer(bridge, state.bridgeTransfer)
               : bridge?.task === "equation-balance"
                 ? checkEquationBalanceTransfer(bridge, state.bridgeTransfer)
+              : bridge?.task === "function-comparison"
+                ? checkFunctionComparisonTransfer(bridge, state.bridgeTransfer)
               : checkRatioTransfer(bridge, state.bridgeTransfer);
       if (!mathIsCorrect) state.bridgeStep = "transfer";
     }
@@ -459,8 +465,8 @@ function surfaceAreaBridgePanel(bridge, I, language) {
     return `<p class="mlb-feedback">${I.T(result.feedback.en, result.feedback.es)}</p><ul class="mlb-evidence">${labels.map(([yes, label]) => `<li class="${yes ? "is-present" : "is-next"}">${label}</li>`).join("")}</ul>`;
   };
   const model = pyramid
-    ? `<div class="mlb-model"><h3>${I.T("One square base and four matching triangles", "Una base cuadrada y cuatro triángulos iguales")}</h3><p>${I.T(`Square pyramid: base side ${side} ${unit}; triangle height ${triangleHeight} ${unit}.`, `Pirámide cuadrada: lado de la base ${side} ${unit}; altura triangular ${triangleHeight} ${unit}.`)}</p><table><caption>${I.T("Area of each face type", "Área de cada tipo de cara")}</caption><thead><tr><th>${I.T("Face", "Cara")}</th><th>${I.T("One face", "Una cara")}</th><th>${I.T("How many", "Cantidad")}</th><th>${I.T("Total area", "Área total")}</th></tr></thead><tbody><tr><th>${I.T("Square base", "Base cuadrada")}</th><td>${baseArea} ${unit}²</td><td>1</td><td>${baseArea} ${unit}²</td></tr><tr><th>${I.T("Triangle", "Triángulo")}</th><td>${triangleArea} ${unit}²</td><td>4</td><td>${4 * triangleArea} ${unit}²</td></tr></tbody></table><p>${I.T("The net has one square base and four matching triangles. Find each face area, then count all four triangles.", "La red tiene una base cuadrada y cuatro triángulos iguales. Halla el área de cada cara y cuenta los cuatro triángulos.")}</p>${state.bridgeStep === "complete" ? `<p><strong>${I.T("Verified surface area", "Área de superficie verificada")}: ${surfaceArea} ${unit}²</strong></p>` : ""}</div>`
-    : `<div class="mlb-model"><h3>${I.T("Three matching face pairs", "Tres pares de caras iguales")}</h3><p>${I.T(`Prism: ${length} × ${width} × ${height} ${unit}.`, `Prisma: ${length} × ${width} × ${height} ${unit}.`)}</p><table><caption>${I.T("Area of each face pair", "Área de cada par de caras")}</caption><thead><tr><th>${I.T("Face pair", "Par de caras")}</th><th>${I.T("One face", "Una cara")}</th><th>${I.T("Both faces", "Ambas caras")}</th></tr></thead><tbody><tr><th>${length} × ${width}</th><td>${faceAreas[0]} ${unit}²</td><td>${2 * faceAreas[0]} ${unit}²</td></tr><tr><th>${length} × ${height}</th><td>${faceAreas[1]} ${unit}²</td><td>${2 * faceAreas[1]} ${unit}²</td></tr><tr><th>${width} × ${height}</th><td>${faceAreas[2]} ${unit}²</td><td>${2 * faceAreas[2]} ${unit}²</td></tr></tbody></table><p>${I.T("Build the explanation: each rectangular face has a matching opposite face, so all three areas count twice.", "Construye la explicación: cada cara rectangular tiene una cara opuesta igual, por eso cada una de las tres áreas se cuenta dos veces.")}</p>${state.bridgeStep === "complete" ? `<p><strong>${I.T("Verified surface area", "Área de superficie verificada")}: ${surfaceArea} ${unit}²</strong></p>` : ""}</div>`;
+    ? `<div class="mlb-model"><h3>${I.T("One square base and four matching triangles", "Una base cuadrada y cuatro triángulos iguales")}</h3><p>${I.T(`Square pyramid: base side ${side} ${unit}; triangle height ${triangleHeight} ${unit}.`, `Pirámide cuadrada: lado de la base ${side} ${unit}; altura triangular ${triangleHeight} ${unit}.`)}</p><div class="mlb-net-host" data-surface-net></div><table><caption>${I.T("Area of each face type", "Área de cada tipo de cara")}</caption><thead><tr><th>${I.T("Face", "Cara")}</th><th>${I.T("One face", "Una cara")}</th><th>${I.T("How many", "Cantidad")}</th><th>${I.T("Total area", "Área total")}</th></tr></thead><tbody><tr><th>${I.T("Square base", "Base cuadrada")}</th><td>${baseArea} ${unit}²</td><td>1</td><td>${baseArea} ${unit}²</td></tr><tr><th>${I.T("Triangle", "Triángulo")}</th><td>${triangleArea} ${unit}²</td><td>4</td><td>${4 * triangleArea} ${unit}²</td></tr></tbody></table><p>${I.T("The net has one square base and four matching triangles. Find each face area, then count all four triangles.", "La red tiene una base cuadrada y cuatro triángulos iguales. Halla el área de cada cara y cuenta los cuatro triángulos.")}</p>${state.bridgeStep === "complete" ? `<p><strong>${I.T("Verified surface area", "Área de superficie verificada")}: ${surfaceArea} ${unit}²</strong></p>` : ""}</div>`
+    : `<div class="mlb-model"><h3>${I.T("Three matching face pairs", "Tres pares de caras iguales")}</h3><p>${I.T(`Prism: ${length} × ${width} × ${height} ${unit}.`, `Prisma: ${length} × ${width} × ${height} ${unit}.`)}</p><div class="mlb-net-host" data-surface-net></div><table><caption>${I.T("Area of each face pair", "Área de cada par de caras")}</caption><thead><tr><th>${I.T("Face pair", "Par de caras")}</th><th>${I.T("One face", "Una cara")}</th><th>${I.T("Both faces", "Ambas caras")}</th></tr></thead><tbody><tr><th>${length} × ${width}</th><td>${faceAreas[0]} ${unit}²</td><td>${2 * faceAreas[0]} ${unit}²</td></tr><tr><th>${length} × ${height}</th><td>${faceAreas[1]} ${unit}²</td><td>${2 * faceAreas[1]} ${unit}²</td></tr><tr><th>${width} × ${height}</th><td>${faceAreas[2]} ${unit}²</td><td>${2 * faceAreas[2]} ${unit}²</td></tr></tbody></table><p>${I.T("Build the explanation: each rectangular face has a matching opposite face, so all three areas count twice.", "Construye la explicación: cada cara rectangular tiene una cara opuesta igual, por eso cada una de las tres áreas se cuenta dos veces.")}</p>${state.bridgeStep === "complete" ? `<p><strong>${I.T("Verified surface area", "Área de superficie verificada")}: ${surfaceArea} ${unit}²</strong></p>` : ""}</div>`;
   const separation = `<aside class="mlb-separate"><strong>${I.T("Math and language evidence stay separate", "La evidencia matemática y lingüística se mantiene separada")}</strong><p>${I.T("The geometry values are checked independently. Your explanation receives language feedback only; responses are not sent back to Math Fluency Lab.", "Los valores geométricos se revisan por separado. Tu explicación recibe comentarios lingüísticos solamente; las respuestas no se envían a Math Fluency Lab.")}</p></aside>`;
   const picker = `<label class="mlb-support"><span>${I.T("Language support for this task", "Apoyo lingüístico para esta tarea")}</span><select data-bridge-support><option value="2" ${state.bridgeSupport === 2 ? "selected" : ""}>${I.T("More support", "Más apoyo")}</option><option value="3" ${state.bridgeSupport === 3 ? "selected" : ""}>${I.T("Some support", "Algo de apoyo")}</option><option value="5" ${state.bridgeSupport === 5 ? "selected" : ""}>${I.T("Few supports", "Poco apoyo")}</option></select></label>`;
   const scaffold = support ? `<div class="mlb-scaffold"><strong>${I.T("Useful words", "Palabras útiles")}</strong><div class="mlb-word-bank">${support.bank.map((word) => `<span>${esc(word)}</span>`).join("")}</div><p>${esc(support.frame)}</p></div>` : "";
@@ -542,6 +548,34 @@ function equationBalanceBridgePanel(bridge, I, language) {
   return `<section class="ls-panel-section mlb-panel"><div class="ls-section-banner"><h2>${I.T("Investigation complete", "Investigación completa")}</h2><p>${I.T("You used a balance model, revised your reasoning, and solved a new equation independently.", "Usaste un modelo de equilibrio, revisaste tu razonamiento y resolviste una ecuación nueva por tu cuenta.")}</p></div>${model}${separation}<div class="mlb-comparison"><article><h3>${I.T("First", "Primera")}</h3><p>${esc(state.bridgeDraft)}</p></article><article><h3>${I.T("Revised", "Revisada")}</h3><p>${esc(state.bridgeRevision)}</p></article><article><h3>${I.T("Independent transfer", "Transferencia independiente")}</h3><p>${esc(state.bridgeTransferExplain)}</p></article></div><h3>${I.T("Language evidence", "Evidencia del lenguaje")}</h3>${evidenceFor(state.bridgeTransferExplain)}<p class="mlb-caution">${I.T("These observations describe this response only. They are not an official proficiency score or a measure of math achievement.", "Estas observaciones describen solo esta respuesta. No son una puntuación oficial de dominio ni una medida de logro matemático.")}</p><button class="btn ghost" type="button" data-bridge-reset>${I.T("Try another equation", "Probar otra ecuación")}</button></section>`;
 }
 
+function functionComparisonBridgePanel(bridge, I, language) {
+  const { mA, bA, mB, bB, items, costA, costB, transferItems, transferCostA, transferCostB } = bridge;
+  const support = functionComparisonSupportForLevel(state.bridgeSupport, language, bridge);
+  const evidenceFor = (response) => {
+    const result = analyzeFunctionComparisonExplanation(response);
+    const rows = [
+      [result.evidence.namesRateOfChange, I.T("Names the rate of change (cost per item)", "Nombra la razón de cambio (costo por artículo)")],
+      [result.evidence.namesInitialValue, I.T("Names the initial value (starting fee)", "Nombra el valor inicial (tarifa inicial)")],
+      [result.evidence.comparesBothPlans, I.T("Compares both plans", "Compara ambos planes")],
+      [result.evidence.connectsReason, I.T("Connects the comparison with a reason", "Conecta la comparación con una razón")],
+    ];
+    return `<p class="mlb-feedback">${I.T(result.feedback.en, result.feedback.es)}</p><ul class="mlb-evidence">${rows.map(([present, label]) => `<li class="${present ? "is-present" : "is-next"}">${label}</li>`).join("")}</ul>`;
+  };
+  const yMax = Math.max(10, Math.ceil(Math.max(mA * 8 + bA, mB * 8 + bB) / 10) * 10);
+  const X = (n) => 56 + (n / 8) * 320;
+  const Y = (cost) => 150 - (cost / yMax) * 110;
+  const ruleA = `C = ${mA}n${bA ? ` + ${bA}` : ""}`;
+  const ruleB = `C = ${mB}n${bB ? ` + ${bB}` : ""}`;
+  const model = `<div class="mlb-model" data-function-comparison-model><h3>${I.T("Function Food Fair: linked rules, table, and graph", "Feria de funciones: reglas, tabla y gráfica conectadas")}</h3><p>${I.T(`Plan A: ${ruleA} (starts at $${bA}, adds $${mA} per item). Plan B: ${ruleB} (starts at $${bB}, adds $${mB} per item).`, `Plan A: ${ruleA} (empieza en $${bA}, suma $${mA} por artículo). Plan B: ${ruleB} (empieza en $${bB}, suma $${mB} por artículo).`)}</p><svg viewBox="0 0 420 180" role="img" aria-label="${esc(I.S(`Linear comparison graph for Plan A (${ruleA}) and Plan B (${ruleB}) at n = ${items}`, `Gráfica de comparación lineal para el Plan A (${ruleA}) y el Plan B (${ruleB}) en n = ${items}`))}"><rect width="420" height="180" fill="#ffffff" rx="8"/><line x1="56" y1="150" x2="386" y2="150" stroke="#1e293b" stroke-width="1.5"/><line x1="56" y1="30" x2="56" y2="150" stroke="#1e293b" stroke-width="1.5"/><line x1="${X(0)}" y1="${Y(bA)}" x2="${X(8)}" y2="${Y(mA * 8 + bA)}" stroke="#0f766e" stroke-width="3"/><line x1="${X(0)}" y1="${Y(bB)}" x2="${X(8)}" y2="${Y(mB * 8 + bB)}" stroke="#b45309" stroke-width="3"/><line x1="${X(items)}" y1="30" x2="${X(items)}" y2="150" stroke="#475569" stroke-dasharray="4 4"/><circle cx="${X(items)}" cy="${Y(costA)}" r="5" fill="#0f766e"/><circle cx="${X(items)}" cy="${Y(costB)}" r="5" fill="#b45309"/><text x="216" y="172" text-anchor="middle" font-size="11" fill="#1e293b">${I.T(`Items (n = ${items})`, `Artículos (n = ${items})`)}</text></svg><table><caption>${I.T("Cost comparison by items ordered", "Comparación de costos por artículos pedidos")}</caption><thead><tr><th>${I.T("Plan", "Plan")}</th><th>0</th><th>${items}</th><th>8</th></tr></thead><tbody><tr><th>Plan A (${ruleA})</th><td>$${bA}</td><td><strong>$${costA}</strong></td><td>$${mA * 8 + bA}</td></tr><tr><th>Plan B (${ruleB})</th><td>$${bB}</td><td><strong>$${costB}</strong></td><td>$${mB * 8 + bB}</td></tr></tbody></table></div>`;
+  const separation = `<aside class="mlb-separate"><strong>${I.T("Math and language evidence stay separate", "La evidencia matemática y lingüística se mantiene separada")}</strong><p>${I.T("The function outputs are checked with exact linear arithmetic. Language feedback describes this explanation only; no name, response, or progress is sent back to Math Fluency Lab.", "Las salidas de la función se comprueban con aritmética lineal exacta. Los comentarios lingüísticos describen solo esta explicación; no se envían nombres, respuestas ni progreso a Math Fluency Lab.")}</p></aside>`;
+  const picker = `<label class="mlb-support"><span>${I.T("Language support for this task", "Apoyo lingüístico para esta tarea")}</span><select data-bridge-support aria-label="${esc(I.S("Language support for this task", "Apoyo lingüístico para esta tarea"))}"><option value="2" ${state.bridgeSupport === 2 ? "selected" : ""}>${I.T("More support", "Más apoyo")}</option><option value="3" ${state.bridgeSupport === 3 ? "selected" : ""}>${I.T("Some support", "Algo de apoyo")}</option><option value="5" ${state.bridgeSupport === 5 ? "selected" : ""}>${I.T("Few supports", "Poco apoyo")}</option></select></label>`;
+  const scaffold = support ? `<div class="mlb-scaffold"><strong>${I.T("Useful words", "Palabras útiles")}</strong><div class="mlb-word-bank">${support.bank.map((word) => `<span>${esc(word)}</span>`).join("")}</div><p><strong>${I.T("Sentence starter", "Inicio de oración")}</strong> ${esc(support.frame)}</p></div>` : "";
+  if (state.bridgeStep === "draft") return `<section class="ls-panel-section mlb-panel"><div class="ls-section-banner"><h2>${I.T("Explain the function comparison", "Explica la comparación de funciones")}</h2><p>${I.T(`Compare Plan A and Plan B at ${items} items using their starting fees (initial values) and cost per item (rates of change).`, `Compara el Plan A y el Plan B con ${items} artículos usando sus tarifas iniciales (valores iniciales) y el costo por artículo (razones de cambio).`)}</p></div>${model}${separation}${picker}${scaffold}<form data-bridge-draft><label for="mlb-draft">${I.T("Your explanation", "Tu explicación")}</label>${toHtml(dictationControlsHTML("mlb-draft", I, { label: I.T("Say it: words appear here", "Dilo: las palabras aparecen aquí") }))}<textarea id="mlb-draft" maxlength="1200" rows="4" required>${esc(state.bridgeDraft)}</textarea><button class="btn primary" type="submit">${I.T("Get language feedback", "Recibir comentarios sobre el lenguaje")}</button></form></section>`;
+  if (state.bridgeStep === "revision") return `<section class="ls-panel-section mlb-panel"><h2>${I.T("Improve your explanation", "Mejora tu explicación")}</h2>${model}${separation}<div class="mlb-original"><strong>${I.T("First explanation", "Primera explicación")}</strong><p>${esc(state.bridgeDraft)}</p>${evidenceFor(state.bridgeDraft)}</div>${state.bridgeSupport <= 3 ? `<div class="mlb-scaffold"><strong>${I.T("Word bank only (sentence starter removed)", "Solo banco de palabras (se quitó el inicio de oración)")}</strong><div class="mlb-word-bank">${support?.bank.map((word) => `<span>${esc(word)}</span>`).join("") || ""}</div></div>` : ""}<form data-bridge-revision><label for="mlb-revision">${I.T("Your revision", "Tu revisión")}</label><textarea id="mlb-revision" maxlength="1200" rows="4" required>${esc(state.bridgeRevision)}</textarea><button class="btn primary" type="submit">${I.T("Continue to a new comparison", "Continuar con una comparación nueva")}</button></form></section>`;
+  if (state.bridgeStep === "transfer") return `<section class="ls-panel-section mlb-panel"><div class="ls-section-banner"><h2>${I.T("Prove it at a new item count", "Demuéstralo con una nueva cantidad de artículos")}</h2><p>${I.T(`At n = ${transferItems} items, how many dollars apart are Plan A (${ruleA}) and Plan B (${ruleB})? Solve without the table or sentence frame.`, `En n = ${transferItems} artículos, ¿cuántos dólares de diferencia hay entre el Plan A (${ruleA}) y el Plan B (${ruleB})? Resuelve sin la tabla ni el inicio de oración.`)}</p></div>${state.bridgeTransferFeedback ? `<p role="status" class="mlb-feedback">${esc(state.bridgeTransferFeedback)}</p>` : ""}<form data-bridge-transfer><label for="mlb-transfer">${I.T("Dollar difference between plans", "Diferencia en dólares entre los planes")}</label><input id="mlb-transfer" inputmode="numeric" value="${esc(state.bridgeTransfer)}" required/><button class="btn primary" type="submit">${I.T("Check the math", "Revisar las matemáticas")}</button></form>${state.bridgeTransferCorrect ? `<div class="mlb-transfer-success"><p role="status">${I.T(`Correct: at ${transferItems} items, Plan A is $${transferCostA} and Plan B is $${transferCostB}. Now explain your comparison independently.`, `Correcto: con ${transferItems} artículos, el Plan A cuesta $${transferCostA} y el Plan B cuesta $${transferCostB}. Ahora explica tu comparación por tu cuenta.`)}</p><form data-bridge-transfer-explain><label for="mlb-transfer-explain">${I.T("Independent explanation", "Explicación independiente")}</label>${toHtml(dictationControlsHTML("mlb-transfer-explain", I, { label: I.T("Say your explanation", "Di tu explicación") }))}<textarea id="mlb-transfer-explain" rows="3" maxlength="1200" required>${esc(state.bridgeTransferExplain)}</textarea><button class="btn primary" type="submit">${I.T("Finish the investigation", "Terminar la investigación")}</button></form></div>` : ""}</section>`;
+  return `<section class="ls-panel-section mlb-panel"><div class="ls-section-banner"><h2>${I.T("Investigation complete", "Investigación completa")}</h2><p>${I.T("You compared two linear functions across representations, revised your explanation, and solved a new comparison independently.", "Comparaste dos funciones lineales entre representaciones, revisaste tu explicación y resolviste una comparación nueva por tu cuenta.")}</p></div>${model}${separation}<div class="mlb-comparison"><article><h3>${I.T("First", "Primera")}</h3><p>${esc(state.bridgeDraft)}</p></article><article><h3>${I.T("Revised", "Revisada")}</h3><p>${esc(state.bridgeRevision)}</p></article><article><h3>${I.T("Independent transfer", "Transferencia independiente")}</h3><p>${esc(state.bridgeTransferExplain)}</p></article></div><h3>${I.T("Language evidence", "Evidencia del lenguaje")}</h3>${evidenceFor(state.bridgeTransferExplain)}<p class="mlb-caution">${I.T("These observations describe this response only. They are not an official proficiency score or a measure of math achievement.", "Estas observaciones describen solo esta respuesta. No son una puntuación oficial de dominio ni una medida de logro matemático.")}</p><button class="btn ghost" type="button" data-bridge-reset>${I.T("Try another comparison", "Probar otra comparación")}</button></section>`;
+}
+
 function percentBridgePanel(bridge, I, language) {
   const { percent, whole, part, transferPart, transferWhole } = bridge;
   const support = percentSupportForLevel(state.bridgeSupport, language, { percent, whole, part });
@@ -571,6 +605,8 @@ export async function render(ctx = {}) {
   const bridge = ctx.route?.mathBridge || null;
   const bridgeKey = bridge ? bridge.task === "equation-balance"
       ? `${bridge.schema}:${bridge.task}:${bridge.grade}:${bridge.form}:${bridge.amount}:${bridge.shift}:${bridge.result}`
+    : bridge.task === "function-comparison"
+      ? `${bridge.schema}:${bridge.task}:${bridge.grade}:${bridge.mA}:${bridge.bA}:${bridge.mB}:${bridge.bB}:${bridge.items}`
     : bridge.task === "surface-area-pyramid"
       ? `${bridge.schema}:${bridge.task}:${bridge.grade}:${bridge.side}:${bridge.triangleHeight}:${bridge.unit}`
     : bridge.task === "surface-area-prism"
@@ -648,6 +684,8 @@ export async function render(ctx = {}) {
           ? checkFractionDivisionTransfer(bridge, state.bridgeTransfer)
           : bridge.task === "equation-balance"
             ? checkEquationBalanceTransfer(bridge, state.bridgeTransfer)
+          : bridge.task === "function-comparison"
+            ? checkFunctionComparisonTransfer(bridge, state.bridgeTransfer)
         : checkRatioTransfer(bridge, state.bridgeTransfer);
   } else if (!bridgeKey && state.bridgeKey) {
     Object.assign(state, {
@@ -716,7 +754,7 @@ export async function render(ctx = {}) {
 
       <!-- Studio Stage Body -->
       <div class="ls-stage-body">
-        ${currentTab === "math-bridge" && bridge ? bridge.task === "equation-balance" ? equationBalanceBridgePanel(bridge, I, language) : bridge.task === "fractional-volume" ? fractionalVolumeBridgePanel(bridge, I, language) : bridge.task === "fraction-division" ? fractionDivisionBridgePanel(bridge, I, language) : ["surface-area-prism", "surface-area-pyramid"].includes(bridge.task) ? surfaceAreaBridgePanel(bridge, I, language) : bridge.task === "percent-part-whole" ? percentBridgePanel(bridge, I, language) : bridge.task === "fraction-of-whole" ? renderFractionBridge(bridge, state, I, language) : bridge.task === "fraction-number-line" ? renderFractionLineBridge(bridge, state, I, language) : bridge.task === "data-center" ? renderDataBridge(bridge, state, I, language) : ratioBridgePanel(bridge, I, language) : ""}
+        ${currentTab === "math-bridge" && bridge ? bridge.task === "equation-balance" ? equationBalanceBridgePanel(bridge, I, language) : bridge.task === "function-comparison" ? functionComparisonBridgePanel(bridge, I, language) : bridge.task === "fractional-volume" ? fractionalVolumeBridgePanel(bridge, I, language) : bridge.task === "fraction-division" ? fractionDivisionBridgePanel(bridge, I, language) : ["surface-area-prism", "surface-area-pyramid"].includes(bridge.task) ? surfaceAreaBridgePanel(bridge, I, language) : bridge.task === "percent-part-whole" ? percentBridgePanel(bridge, I, language) : bridge.task === "fraction-of-whole" ? renderFractionBridge(bridge, state, I, language) : bridge.task === "fraction-number-line" ? renderFractionLineBridge(bridge, state, I, language) : bridge.task === "data-center" ? renderDataBridge(bridge, state, I, language) : ratioBridgePanel(bridge, I, language) : ""}
         
         <!-- 1. Compare language samples without treating them as assessment evidence. -->
         ${currentTab === "wida" ? `
@@ -996,6 +1034,21 @@ export function mount(root, ctx) {
 
   const bridge = ctx.route?.mathBridge || null;
   const I = i18nFor(ctx);
+  const netHost = root.querySelector("[data-surface-net]");
+  if (netHost && bridge && (bridge.task === "surface-area-prism" || bridge.task === "surface-area-pyramid")) {
+    const pyramid = bridge.task === "surface-area-pyramid";
+    renderNetFolder(netHost, {
+      instructions: I.S(
+        "Use the slider to fold and unfold the net so you can inspect every face before writing your explanation.",
+        "Usa el control deslizante para doblar y desdoblar la red y observar cada cara antes de escribir tu explicación."
+      ),
+      solid: pyramid ? "square-pyramid" : "rectangular-prism",
+      size: pyramid
+        ? { side: bridge.side, triangleHeight: bridge.triangleHeight, unit: bridge.unit }
+        : { l: bridge.length, w: bridge.width, h: bridge.height, unit: bridge.unit },
+    });
+    netHost.querySelector('a[href="/netfold-pro/"]')?.remove();
+  }
 
   root.querySelectorAll("[data-dictate^='mlb-']").forEach((button) => {
     button.addEventListener("click", async () => {
@@ -1256,6 +1309,8 @@ export function mount(root, ctx) {
           ? checkFractionDivisionTransfer(bridge, state.bridgeTransfer)
           : bridge?.task === "equation-balance"
             ? checkEquationBalanceTransfer(bridge, state.bridgeTransfer)
+          : bridge?.task === "function-comparison"
+            ? checkFunctionComparisonTransfer(bridge, state.bridgeTransfer)
       : checkRatioTransfer(bridge, state.bridgeTransfer);
     state.bridgeTransferFeedback = state.bridgeTransferCorrect
       ? bridge?.task === "surface-area-prism"
@@ -1268,6 +1323,8 @@ export function mount(root, ctx) {
             ? i18nFor(ctx).S("Correct. The quotient counts divisor-sized groups; multiply the quotient by the divisor to check the dividend.", "Correcto. El cociente cuenta grupos del tamaño del divisor; multiplica el cociente por el divisor para comprobar el dividendo.")
             : bridge?.task === "equation-balance"
               ? i18nFor(ctx).S("Correct. Substitute this value for x in the new equation to check both sides.", "Correcto. Sustituye este valor por x en la ecuación nueva para comprobar ambos lados.")
+            : bridge?.task === "function-comparison"
+              ? i18nFor(ctx).S("Correct. Find each plan's total cost at the new item count and subtract to find the difference.", "Correcto. Halla el costo total de cada plan con la nueva cantidad de artículos y resta para hallar la diferencia.")
             : i18nFor(ctx).S("Correct: both quantities were multiplied by 4.", "Correcto: ambas cantidades se multiplicaron por 4.")
       : bridge?.task === "surface-area-prism"
         ? i18nFor(ctx).S("Not yet. Find the three face areas, count each matching face twice, and add.", "Todavía no. Halla las tres áreas, cuenta dos veces cada cara igual y suma.")
@@ -1279,6 +1336,8 @@ export function mount(root, ctx) {
             ? i18nFor(ctx).S("Not yet. Rename both fractions with equal-sized pieces, count how many divisor-sized groups fit, then check by multiplying.", "Todavía no. Renombra ambas fracciones con partes iguales, cuenta cuántos grupos del tamaño del divisor caben y comprueba con multiplicación.")
             : bridge?.task === "equation-balance"
               ? i18nFor(ctx).S("Use inverse operations to isolate x. Check the new equation by substitution.", "Usa operaciones inversas para despejar x. Comprueba la nueva ecuación por sustitución.")
+            : bridge?.task === "function-comparison"
+              ? i18nFor(ctx).S("Not yet. Evaluate both linear rules at the new item count, then find the positive dollar difference.", "Todavía no. Evalúa ambas reglas lineales con la nueva cantidad de artículos y halla la diferencia positiva en dólares.")
             : i18nFor(ctx).S("Check the factor. Both quantities must be multiplied by 4.", "Revisa el factor. Ambas cantidades deben multiplicarse por 4.");
     saveBridge(state.bridgeKey);
     ctx.rerender();

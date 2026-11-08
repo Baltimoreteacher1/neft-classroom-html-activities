@@ -7,6 +7,8 @@ const lab = "../math/fluency-lab/";
 const teacher = await import(`${lab}reports-teacher.js`);
 const rowsMod = await import(`${lab}reports-rows.js`);
 const exportsMod = await import(`${lab}reports-export.js`);
+const teacherViews = await import(`${lab}teacher-4-views.js`);
+const { createClassState } = await import(`${lab}teacher-4-class.js`);
 const { masteryScore } = await import(`${lab}mastery-model.js`);
 const { validateAssignment } = await import(`${lab}school-tools.js`);
 const { mistakeCategoryLabel } = await import(`${lab}mistake-notes.js`);
@@ -362,8 +364,99 @@ check(
       0,
     );
     assert.deepEqual(noPlay.growth.snapshots, [], "growth logs are sanitized on import");
+    const withStudio = rowsMod.parseLearnerFile(
+      backup({
+        play: {
+          studio: {
+            skills: {
+              [RATIOS]: [
+                {
+                  kind: "explore",
+                  ok: true,
+                  supported: true,
+                  tag: "ratioTape",
+                  response: "private text",
+                },
+                { kind: "try", ok: true, supported: false },
+                { kind: "try", ok: false, supported: true },
+              ],
+            },
+          },
+        },
+      }),
+      0,
+    );
+    assert.deepEqual(
+      withStudio.studio.skills[RATIOS],
+      [
+        { kind: "explore", ok: true, supported: true, tag: "ratioTape" },
+        { kind: "try", ok: true, supported: false, tag: null },
+        { kind: "try", ok: false, supported: true, tag: null },
+      ],
+      "Studio exports retain bounded action evidence and discard unrecognized response text",
+    );
   },
 );
+
+check("Studio model use and independent transfer stay separate from mastery evidence", () => {
+  const student = learner("S1", "Learner 1", { [RATIOS]: mastered });
+  student.studio = {
+    skills: {
+      [RATIOS]: [
+        { kind: "explore", ok: true, supported: true, tag: "ratioTape" },
+        { kind: "try", ok: true, supported: false, tag: null },
+        { kind: "try", ok: false, supported: true, tag: null },
+      ],
+    },
+    badges: {},
+  };
+  const result = analyze([student], { grade: 6 });
+  assert.deepEqual(
+    [
+      result.studio.explorations,
+      result.studio.independentAttempts,
+      result.studio.independentCorrect,
+      result.studio.supportedAttempts,
+    ],
+    [1, 1, 1, 1],
+  );
+  const json = exportsMod.reportJson(result, NOW);
+  assert.equal(json.studio.independentCorrect, 1);
+  assert.doesNotMatch(JSON.stringify(json.studio), /private text|response/);
+  assert.match(teacherViews.progressHtml(result), /Math Discovery Studio evidence/);
+});
+
+check("Studio evidence survives the teacher's explicit save and restore of a local class", () => {
+  const storageKey = "ewl-fluency-teacher-class-v1";
+  localStorage.removeItem(storageKey);
+  const source = createClassState({
+    deviceLearners: () => [
+      {
+        id: "device-0",
+        label: "Synthetic learner",
+        tutor: {
+          version: 2,
+          records: {},
+          mistakes: [],
+          diagnostics: {},
+          sessions: [],
+          rescues: [],
+        },
+        studio: {
+          skills: { [RATIOS]: [{ kind: "explore", ok: true, supported: true, tag: "ratioTape" }] },
+          badges: {},
+        },
+      },
+    ],
+  });
+  assert.equal(source.useDevice(), 1, "Studio-only practice is discoverable on this device");
+  assert.equal(source.save(), true, "the teacher explicitly saves the class evidence");
+  const restored = createClassState({ deviceLearners: () => [] });
+  restored.openSaved();
+  assert.equal(restored.learners()[0].studio.skills[RATIOS][0].kind, "explore");
+  assert.equal(analyze(restored.learners(), { grade: 6 }).studio.explorations, 1);
+  localStorage.removeItem(storageKey);
+});
 
 // A small RFC 4180 reader, written here so the export is checked by something other than the code that wrote it.
 function parseCsv(text) {

@@ -18,6 +18,7 @@ import { createPyramidSurfaceAreaExplanationUrl } from "../../../shared/math-lan
 import { createFractionalVolumeExplanationUrl } from "../../../shared/math-language-bridge/v2.js";
 import { createFractionDivisionExplanationUrl } from "../../../shared/math-language-bridge/v2.js";
 import { createEquationBalanceExplanationUrl } from "../../../shared/math-language-bridge/v2.js";
+import { createFunctionComparisonExplanationUrl } from "../../../shared/math-language-bridge/v2.js";
 import { parseLinearEquation } from "../../../shared/math/equation-balance.js";
 import { SIMS } from "./sims.js";
 import { vocabMarkup } from "./vocab-content.js";
@@ -199,11 +200,29 @@ export function mountTry(ctx, root) {
       const equationBridge = ["one-step", "equations", "linear-equations"].includes(ctx.skill?.id)
         ? equationBalanceContext(item)
         : null;
+      const functionComparisonBridge = ctx.skill?.id === "compare-functions"
+        ? SIMS.functionFair.init({ item, lesson })
+        : null;
       const grade = Number(ctx.skill.grade) || 6;
       let bridgeUrl = null;
       let bridgeTask = "ratio";
       try {
         if (
+          functionComparisonBridge &&
+          [functionComparisonBridge.mA, functionComparisonBridge.mB].every((n) => Number.isInteger(n) && n >= 1 && n <= 12) &&
+          [functionComparisonBridge.bA, functionComparisonBridge.bB].every((n) => Number.isInteger(n) && n >= 0 && n <= 20) &&
+          grade >= 7 && grade <= 8
+        ) {
+          bridgeUrl = createFunctionComparisonExplanationUrl({
+            mA: functionComparisonBridge.mA,
+            bA: functionComparisonBridge.bA,
+            mB: functionComparisonBridge.mB,
+            bB: functionComparisonBridge.bB,
+            items: Number.isInteger(functionComparisonBridge.n) && functionComparisonBridge.n >= 1 && functionComparisonBridge.n <= 8 ? functionComparisonBridge.n : 4,
+            grade,
+          });
+          bridgeTask = "functionComparison";
+        } else if (
           equationBridge &&
           grade >= 6 && grade <= 8
         ) {
@@ -328,6 +347,7 @@ export function mountTry(ctx, root) {
         fractionalVolume: L("Explain this fractional-volume model in The Language Page", "Explica este modelo de volumen fraccionario en The Language Page"),
         fractionDivision: L("Explain this fraction-division model in The Language Page", "Explica este modelo de división de fracciones en The Language Page"),
         equationBalance: L("Explain this balanced equation in The Language Page", "Explica esta ecuación equilibrada en The Language Page"),
+        functionComparison: L("Explain this function comparison in The Language Page", "Explica esta comparación de funciones en The Language Page"),
       };
       const bridge = bridgeUrl
         ? `<div class="sd-math-language-bridge"><a class="sd-btn" href="${bridgeUrl}">${esc(pick(bridgeLabels[bridgeTask], ctx.lang()))}</a><p>${esc(pick(L("Only the math task and grade travel with this optional link. Your name, response, and progress stay here.", "Este enlace opcional solo comparte la tarea matemática y el grado. Tu nombre, respuesta y progreso se quedan aquí."), ctx.lang()))}</p></div>`

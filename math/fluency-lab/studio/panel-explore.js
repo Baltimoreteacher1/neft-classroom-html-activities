@@ -1,6 +1,7 @@
 // Explore: a simulator for the skill's big idea. Sliders are real range inputs; the reading under the picture
 // always restates the current numbers in words, so the learner can connect what they moved to what changed.
 import { morph, pick } from "./core.js";
+import { record } from "./adaptive.js";
 import { t } from "../i18n.js";
 import { vocabMarkup } from "./vocab-content.js";
 
@@ -22,6 +23,7 @@ export function mountExplore(ctx, root) {
   let predictionAttempts = prior?.predictionAttempts || 0;
   let predictionValue = prior?.predictionValue || "";
   let predictionFeedback = prior?.predictionFeedback || "";
+  let evidenceRecorded = Boolean(prior?.evidenceRecorded);
   const save = () => {
     ctx.exploreSession = {
       key: sessionKey,
@@ -30,6 +32,7 @@ export function mountExplore(ctx, root) {
       predictionAttempts,
       predictionValue,
       predictionFeedback,
+      evidenceRecorded,
     };
   };
   root.innerHTML = `
@@ -55,6 +58,16 @@ export function mountExplore(ctx, root) {
   let first = true;
   let touched = 0;
   let dragIndex = null;
+  const noteInteraction = () => {
+    touched += 1;
+    if (touched < 3) return;
+    ctx.mark("explore");
+    if (!evidenceRecorded && /^[0-8]:[\w-]{1,40}$/.test(ctx.key || "")) {
+      evidenceRecorded = true;
+      record(ctx.key, { kind: "explore", ok: true, supported: true, tag: sim.id });
+    }
+    save();
+  };
 
   function sliders() {
     q("[data-sliders]").innerHTML = sim.sliders(state).map((s) => `<label class="sd-slider"><span>${esc(pick(s.label, ctx.lang()))}: <output data-out="${s.key}">${s.value}</output></span><input type="range" data-k="${s.key}" min="${s.min}" max="${s.max}" step="${s.step}" value="${s.value}" /></label>`).join("");
@@ -122,8 +135,7 @@ export function mountExplore(ctx, root) {
     state = { ...state, [k]: Number(e.target.value) };
     if (sim.clamp) state = sim.clamp(state);
     save();
-    touched += 1;
-    if (touched >= 3) ctx.mark("explore");
+    noteInteraction();
     draw(k === "d" || sim.clamp !== undefined);
     const out = root.querySelector(`[data-out="${k}"]`);
     if (out) out.textContent = e.target.value;
@@ -134,8 +146,7 @@ export function mountExplore(ctx, root) {
     if (!a) return;
     state = sim.act(state, a.dataset.a);
     save();
-    touched += 1;
-    if (touched >= 3) ctx.mark("explore");
+    noteInteraction();
     draw(false);
   });
   root.addEventListener("pointerdown", (e) => {
@@ -150,8 +161,7 @@ export function mountExplore(ctx, root) {
     if (value !== null && value !== undefined) {
       state = sim.movePoint(state, dragIndex, value);
       save();
-      touched += 1;
-      if (touched >= 3) ctx.mark("explore");
+      noteInteraction();
       draw(false);
     }
   });
@@ -162,8 +172,7 @@ export function mountExplore(ctx, root) {
     if (value === null || value === undefined) return;
     state = sim.movePoint(state, dragIndex, value);
     save();
-    touched += 1;
-    if (touched >= 3) ctx.mark("explore");
+    noteInteraction();
     draw(false);
   });
   root.addEventListener("pointerup", () => { dragIndex = null; });
@@ -178,8 +187,7 @@ export function mountExplore(ctx, root) {
     e.preventDefault();
     state = sim.movePoint(state, index, next);
     save();
-    touched += 1;
-    if (touched >= 3) ctx.mark("explore");
+    noteInteraction();
     draw(false);
   });
   if (predictionUnlocked) sliders();

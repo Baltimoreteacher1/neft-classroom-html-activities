@@ -2,6 +2,7 @@
 // the drawing, a text description and a one-line reading of what the numbers say right now, so the picture,
 // the numbers and the words always agree. Sliders are real range inputs, so they work with keyboard and touch.
 import { COLORS, L, esc, fmt, gcd, svgWrap, txt } from "./core.js";
+import { record } from "./adaptive.js";
 import percentFindWhole from "../../../curriculum/learning-labs/shared/models/percent-find-whole.mjs";
 import percentTape from "../../../curriculum/learning-labs/shared/models/percent-tape.mjs";
 import ratioTapeModel from "../../../curriculum/learning-labs/shared/models/ratio-tape.mjs";
@@ -513,6 +514,7 @@ const surfaceNet = {
           `${s.side}×${s.side}×${s.triangleHeight}`,
         ];
     root.innerHTML = `<p class="sd-task"><span class="sd-tag">${ctx.lang() === "es" ? "Explorar" : "Explore"}</span> ${ctx.lang() === "es" ? "Dobla la red. ¿Qué expresión cuenta cada cara exterior una vez?" : "Fold the net. Which expression counts each outside face once?"}</p><div data-net></div>`;
+    let recorded = false;
     renderNetFolder(root.querySelector("[data-net]"), {
       instructions: ctx.lang() === "es"
         ? "Usa el control para doblar la red y observar qué caras forman el sólido. Después elige la expresión para el área de todas las caras."
@@ -525,7 +527,13 @@ const surfaceNet = {
         correctIndex: 0,
       },
       onComplete(correct) {
-        if (correct) ctx.mark("explore");
+        if (correct) {
+          if (!recorded && ctx.key) {
+            recorded = true;
+            record(ctx.key, { kind: "explore", ok: true, supported: true, tag: "surfaceNet" });
+          }
+          ctx.mark("explore");
+        }
         else ctx.say(ctx.lang() === "es"
           ? "Mira la red otra vez: las caras iguales siguen contando por separado. Inténtalo de nuevo."
           : "Look at the net again: matching faces still count separately. Try again.");

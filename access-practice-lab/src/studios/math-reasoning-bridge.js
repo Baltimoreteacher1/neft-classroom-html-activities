@@ -428,3 +428,40 @@ export function fractionLineSupportForLevel(level, language = "en", { numerator,
     : { bank: ["denominator", "intervals", "from zero"], frame: `The point represents ${numerator}/${denominator} because ___.` };
   return null;
 }
+
+export function checkFunctionComparisonTransfer(bridge, response) {
+  const text = String(response ?? "").trim().replace(/^\$/, "");
+  return /^\d+(?:\.0+)?$/.test(text) && Number(text) === bridge.transferDifference;
+}
+
+/** Language evidence for comparing two linear functions; never a math or proficiency score. */
+export function analyzeFunctionComparisonExplanation(text) {
+  const value = String(text ?? "").toLocaleLowerCase();
+  const evidence = {
+    namesRateOfChange: /\b(rate of change|slope|per item|each item|razón de cambio|pendiente|por artículo|cada artículo)\b/u.test(value),
+    namesInitialValue: /\b(initial value|starting fee|y-intercept|start|valor inicial|tarifa inicial|intersección|empieza)\b/u.test(value),
+    comparesBothPlans: /\b(plan a|plan b|both|less|more|difference|ambos|menos|más|diferencia)\b/u.test(value),
+    connectsReason: /\b(because|so|since|therefore|porque|por eso|ya que|entonces)\b/u.test(value),
+  };
+  const missing = [];
+  if (!evidence.namesRateOfChange) missing.push({ en: "name the rate of change (cost per item)", es: "nombra la razón de cambio (costo por artículo)" });
+  if (!evidence.namesInitialValue) missing.push({ en: "name the initial value (starting fee)", es: "nombra el valor inicial (tarifa inicial)" });
+  if (!evidence.comparesBothPlans) missing.push({ en: "compare both plans", es: "compara ambos planes" });
+  if (!evidence.connectsReason) missing.push({ en: "connect your comparison with a reason", es: "conecta tu comparación con una razón" });
+  return {
+    evidence,
+    feedback: missing.length
+      ? { en: `For clarity, ${missing.map((item) => item.en).join(", then ")}.`, es: `Para mayor claridad, ${missing.map((item) => item.es).join(", luego ")}.` }
+      : { en: "You name the rate of change and initial value, compare both plans, and connect your reasoning.", es: "Nombras la razón de cambio y el valor inicial, comparas ambos planes y conectas tu razonamiento." },
+  };
+}
+
+export function functionComparisonSupportForLevel(level, language = "en", { mA, bA, mB, bB, items } = {}) {
+  if (level <= 2) return language === "es"
+    ? { bank: ["razón de cambio", "tarifa inicial", "Plan A", "Plan B", "diferencia", "porque"], frame: `El Plan A tiene una tarifa inicial de $${bA} y una razón de cambio de $${mA} por artículo. El Plan B empieza en $${bB} y suma $${mB} por artículo. Con ${items} artículos, ___ porque ___.` }
+    : { bank: ["rate of change", "starting fee", "Plan A", "Plan B", "difference", "because"], frame: `Plan A has a starting fee of $${bA} and a rate of change of $${mA} per item. Plan B starts at $${bB} and adds $${mB} per item. At ${items} items, ___ because ___.` };
+  if (level === 3) return language === "es"
+    ? { bank: ["razón de cambio", "valor inicial", "ambos planes", "porque"], frame: ` Al comparar la razón de cambio y el valor inicial de ambos planes con ${items} artículos, ___ porque ___.`.trim() }
+    : { bank: ["rate of change", "initial value", "both plans", "because"], frame: `Comparing the rate of change and initial value of both plans at ${items} items, ___ because ___.` };
+  return null;
+}

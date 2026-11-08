@@ -13,6 +13,7 @@ import {
   percent,
   round1,
   skillRows,
+  studioEvidence,
 } from "./reports-rows.js";
 import { growthTrend } from "./reports-trends.js";
 import { reteachTip } from "./reteach-table.js";
@@ -242,6 +243,7 @@ export function analyzeClass(learnersInput, { grade = null, now = Date.now() } =
       supportedAnswers,
       independentShare: percent(independentAnswers, independentAnswers + supportedAnswers),
     },
+    studio: studioEvidence(learners, grade),
     learners: summaries,
     skills: stats,
     troubleSpots: troubleSpots(stats, misconceptions),

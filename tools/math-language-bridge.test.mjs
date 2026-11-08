@@ -6,6 +6,7 @@ import {
   analyzeFractionDivisionExplanation,
   analyzeFractionExplanation,
   analyzeFractionLineExplanation,
+  analyzeFunctionComparisonExplanation,
   analyzePercentExplanation,
   analyzeRatioExplanation,
   analyzeSurfaceAreaExplanation,
@@ -15,6 +16,7 @@ import {
   checkFractionDivisionTransfer,
   checkFractionLineTransfer,
   checkFractionTransfer,
+  checkFunctionComparisonTransfer,
   checkPercentTransfer,
   checkRatioTransfer,
   checkSurfaceAreaTransfer,
@@ -24,6 +26,7 @@ import {
   fractionDivisionSupportForLevel,
   fractionLineSupportForLevel,
   fractionSupportForLevel,
+  functionComparisonSupportForLevel,
   parseRatioPair,
   percentSupportForLevel,
   pyramidSurfaceAreaSupportForLevel,
@@ -53,6 +56,7 @@ import {
   createFractionDivisionExplanationUrl,
   createFractionExplanationUrl,
   createFractionNumberLineExplanationUrl,
+  createFunctionComparisonExplanationUrl,
   createPercentExplanationUrl,
   createPyramidSurfaceAreaExplanationUrl,
   createSurfaceAreaExplanationUrl,
@@ -1326,6 +1330,82 @@ root.querySelector('[data-equation-action="correct"]').click();
 ({ root } = await mount(languageStudios, twoStepCtx));
 assert.ok(root.textContent.includes(`x = ${twoStepEquation.solution}`));
 
+const surfaceMountCtx = makeCtx("language-studios");
+surfaceMountCtx.route.mathBridge = surfaceBridge;
+({ root } = await mount(languageStudios, surfaceMountCtx));
+assert.ok(
+  root.querySelector("[data-surface-net] input[type='range']"),
+  "Surface-area prism bridge mounts the interactive 3D NetFolder slider",
+);
+assert.equal(root.querySelector("[data-surface-net] a[href='/netfold-pro/']"), null);
+
+const pyramidMountCtx = makeCtx("language-studios");
+pyramidMountCtx.route.mathBridge = pyramidBridge;
+({ root } = await mount(languageStudios, pyramidMountCtx));
+assert.ok(
+  root.querySelector("[data-surface-net] input[type='range']"),
+  "Surface-area pyramid bridge mounts the interactive 3D NetFolder slider",
+);
+
+const fnUrl = new URL(
+  createFunctionComparisonExplanationUrl({ mA: 3, bA: 5, mB: 4, bB: 1, items: 4, grade: 8 }),
+);
+const fnBridge = readBridgeV2(fnUrl.searchParams);
+assert.equal(fnBridge.task, "function-comparison");
+assert.equal(fnBridge.costA, 17);
+assert.equal(fnBridge.costB, 17);
+assert.equal(fnBridge.transferItems, 5);
+assert.equal(fnBridge.transferDifference, 1);
+assert.equal(readBridgeV2(`${fnUrl.search}&student=private`), null);
+assert.equal(checkFunctionComparisonTransfer(fnBridge, "1"), true);
+assert.equal(checkFunctionComparisonTransfer(fnBridge, "$1"), true);
+assert.equal(checkFunctionComparisonTransfer(fnBridge, "2"), false);
+assert.deepEqual(
+  analyzeFunctionComparisonExplanation(
+    "Plan A has a starting fee of $5 and a rate of change of $3 per item, while Plan B starts at $1 because it adds $4 per item.",
+  ).evidence,
+  {
+    namesRateOfChange: true,
+    namesInitialValue: true,
+    comparesBothPlans: true,
+    connectsReason: true,
+  },
+);
+assert.ok(functionComparisonSupportForLevel(2, "en", fnBridge).frame.includes("rate of change"));
+assert.equal(functionComparisonSupportForLevel(5, "es", fnBridge), null);
+
+const fnCtx = makeCtx("language-studios");
+fnCtx.route.mathBridge = fnBridge;
+({ root } = await mount(languageStudios, fnCtx));
+assert.ok(root.querySelector("[data-function-comparison-model] svg"));
+root.querySelector("#mlb-draft").value =
+  "Plan A has a starting fee of $5 and a rate of change of $3 per item, while Plan B starts at $1 because it adds $4 per item.";
+root
+  .querySelector("[data-bridge-draft]")
+  .dispatchEvent(new win.Event("submit", { bubbles: true, cancelable: true }));
+({ root } = await mount(languageStudios, fnCtx));
+assert.match(root.textContent, /Improve your explanation/);
+root.querySelector("#mlb-revision").value =
+  "At 4 items both plans cost $17 because Plan A starts higher at $5 with a $3 rate of change, and Plan B starts at $1 with a $4 rate of change.";
+root
+  .querySelector("[data-bridge-revision]")
+  .dispatchEvent(new win.Event("submit", { bubbles: true, cancelable: true }));
+({ root } = await mount(languageStudios, fnCtx));
+assert.match(root.textContent, /n = 5 items/);
+root.querySelector("#mlb-transfer").value = "1";
+root
+  .querySelector("[data-bridge-transfer]")
+  .dispatchEvent(new win.Event("submit", { bubbles: true, cancelable: true }));
+({ root } = await mount(languageStudios, fnCtx));
+assert.match(root.textContent, /Now explain your comparison independently/);
+root.querySelector("#mlb-transfer-explain").value =
+  "At 5 items Plan A costs $20 and Plan B costs $21 because Plan B has a greater rate of change per item.";
+root
+  .querySelector("[data-bridge-transfer-explain]")
+  .dispatchEvent(new win.Event("submit", { bubbles: true, cancelable: true }));
+({ root } = await mount(languageStudios, fnCtx));
+assert.match(root.textContent, /Investigation complete/);
+
 console.log(
-  "math-language-bridge: versioned task context, equation balance, separate evidence, supports, and transfer passed.",
+  "math-language-bridge: versioned task context, equation balance, function comparison, 3D net, separate evidence, supports, and transfer passed.",
 );

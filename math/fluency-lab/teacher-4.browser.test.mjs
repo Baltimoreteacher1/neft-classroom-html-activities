@@ -32,7 +32,27 @@ const classEarlier = [tutorWith({ [ADD]: spread("wwww", NOW - 30 * DAY) }), tuto
 
 const dir = mkdtempSync(join(tmpdir(), "t4-files-"));
 const write = (name, body) => { const path = join(dir, name); writeFileSync(path, JSON.stringify(body)); return path; };
-const nowFiles = classNow.map((tutor, index) => write(`now-${index}.json`, backup(tutor, NOW, { play: growthFor(RATIOS) })));
+const studioSample = {
+  skills: {
+    [RATIOS]: [
+      { kind: "explore", ok: true, supported: true, tag: "ratioTape", response: "private student note" },
+      { kind: "try", ok: true, supported: false, response: "private student answer" },
+      { kind: "try", ok: false, supported: true, response: "private hint draft" },
+    ],
+  },
+  badges: { ratio: true },
+};
+const nowFiles = classNow.map((tutor, index) =>
+  write(
+    `now-${index}.json`,
+    backup(tutor, NOW, {
+      play: {
+        ...growthFor(RATIOS),
+        ...(index === 0 ? { studio: studioSample } : {}),
+      },
+    }),
+  ),
+);
 const earlierFiles = classEarlier.map((tutor, index) => write(`earlier-${index}.json`, backup(tutor, NOW - 30 * DAY)));
 const notBackup = write("other.json", { hello: "world" });
 
@@ -135,6 +155,11 @@ try {
   const groupText = await t4.locator("#t4-h-groups").locator("xpath=..").innerText();
   assert.match(groupText, /Shared answer pattern/);
   assert.match(groupText, /Learner 1\s+Learner 2/);
+  const studioPanel = t4.locator("#t4-studio-evidence").locator("xpath=..");
+  const studioText = await studioPanel.innerText();
+  assert.match(studioText, /1 model explorations \(each after at least three meaningful actions\); 1 of 1 fresh independent attempts correct; 1 supported attempts\./);
+  assert.match(studioText, /Model exploration and supported success do not count as independent mastery\./);
+  assert.doesNotMatch(studioText, /private student/);
   assert.equal(await page.evaluate(() => Object.keys(localStorage).filter((key) => key.includes("teacher-class")).length), 0, "opening files stores nothing");
   await t4.locator("[data-t4-level]").selectOption(ADD);
   assert.equal(await t4.locator(".t4-band").count(), 3);
@@ -177,12 +202,21 @@ try {
   assert.doesNotMatch(learners.text, /@|https?:/);
   const skills = await download("[data-t4-csv-skill]");
   assert.equal(skills.text.split("\r\n").length, 1 + 11, "11 learner-skill records");
-  const json = JSON.parse((await download("[data-t4-json]")).text);
+  const jsonText = (await download("[data-t4-json]")).text;
+  assert.doesNotMatch(jsonText, /private student|response/);
+  const json = JSON.parse(jsonText);
   assert.equal(json.kind, "class-report");
+  assert.deepEqual(
+    [json.studio.explorations, json.studio.independentAttempts, json.studio.independentCorrect, json.studio.supportedAttempts],
+    [1, 1, 1, 1],
+  );
   await t4.locator("[data-t4-print]").click();
   assert.equal(await page.evaluate(() => window.__printed), 1);
   const printed = await page.locator("#print-sheet").innerHTML();
   assert.match(printed, /Possible reason \(inferred\)/);
+  assert.match(printed, /1 model explorations; 1 of 1 fresh independent attempts correct; 1 supported attempts\./);
+  assert.match(printed, /Model exploration and supported success do not count as independent mastery\./);
+  assert.doesNotMatch(printed, /private student/);
   assert.match(printed, /Period 3 A/);
   await t4.locator("[data-t4-labels]").uncheck();
   await t4.locator("[data-t4-print]").click();
@@ -231,6 +265,7 @@ try {
   assert.deepEqual(problems, [], `no errors after switching language: ${problems.join("; ")}`);
   assert.match(await t4.locator("#t4-h-trouble").innerText(), /Habilidades para reenseñar/, "the opened class survives a language change");
   assert.match(await t4.locator("#t4-h-trouble").locator("xpath=..").innerText(), /Observado:[\s\S]*Posible razón \(inferida\):/);
+  assert.match(await t4.locator("#t4-studio-evidence").locator("xpath=..").innerText(), /1 exploraciones con modelos[\s\S]*1 de 1 intentos nuevos e independientes correctos[\s\S]*1 intentos con apoyo/);
   await shot("6-insights-es-1280", { full: true });
   await page.locator("#t4-tab-reports").click();
   assert.match(await t4.locator("#t4-privacy").innerText(), /Privacidad/);

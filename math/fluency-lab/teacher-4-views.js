@@ -3,6 +3,7 @@
 import { esc } from "./reports-export.js";
 import { t } from "./i18n.js";
 import { mistakeCategoryLabel } from "./mistake-notes.js";
+import { findSkill } from "./tutor-engine.js";
 
 const findingLines = (item) =>
   `<p class="t4-obs"><b>${esc(t("Observed:"))}</b> ${esc(item.observed.text)}</p><p class="t4-inf"><b>${esc(t("Possible reason (inferred):"))}</b> ${esc(item.inferred.text)}</p>`;
@@ -138,6 +139,7 @@ export function strandsHtml(analysis) {
 
 export function progressHtml(analysis) {
   const { totals, retention, growth, supportHeavy } = analysis;
+  const studio = analysis.studio || { explorations: 0, independentAttempts: 0, independentCorrect: 0, supportedAttempts: 0, skills: [] };
   const ladder = retention.ladder
     .map((count, index) => `<li>${esc(t("Rung {n}: {count}", { n: index + 1, count }))}</li>`)
     .join("");
@@ -147,6 +149,13 @@ export function progressHtml(analysis) {
         `<tr><th scope="row">${esc(item.label)}</th><td>${item.independentAnswers}</td><td>${item.supportedAnswers}</td><td>${item.independentShare === null ? "-" : `${item.independentShare}%`}</td><td>${item.due}</td><td>${item.overdue}</td><td>${item.retained}</td><td>${item.growthDelta === null ? "-" : (item.growthDelta > 0 ? "+" : "") + item.growthDelta}</td></tr>`,
     )
     .join("");
+  const studioSkills = studio.skills.length
+    ? `<ul class="t4-plain">${studio.skills.map((row) => {
+        const skill = analysis.skills.find((item) => item.key === row.key)?.skill || findSkill(row.key);
+        const title = skill?.title || row.key;
+        return `<li><strong>${esc(title)}</strong> · ${esc(t("{learners} learners", { learners: row.learners }))} · ${esc(t("{n} model explorations", { n: row.explorations }))} · ${esc(t("{correct} of {n} independent attempts correct", { correct: row.independentCorrect, n: row.independentAttempts }))} · ${esc(t("{n} supported attempts", { n: row.supportedAttempts }))}</li>`;
+      }).join("")}</ul>`
+    : `<p class="t4-hint">${esc(t("No Math Discovery Studio evidence in the selected files."))}</p>`;
   return `<div class="t4-grid3">
     <section class="t4-panel"><h4>${esc(t("Independent and supported work"))}</h4><p>${esc(t("{independent} independent answers, {supported} supported answers.", { independent: totals.independentAnswers, supported: totals.supportedAnswers }))}</p>
       ${
@@ -162,6 +171,9 @@ export function progressHtml(analysis) {
       }</section>
     <section class="t4-panel"><h4>${esc(t("Retention"))}</h4><p>${esc(t("{due} reviews due, {overdue} a week or more late, {kept} skills kept 14 or more days.", { due: retention.due, overdue: retention.overdue, kept: retention.retainedSkills }))}</p><p class="t4-hint">${esc(t("Skills waiting at each step of the 1, 3, 7, 14 and 30 day review ladder:"))}</p><ul class="t4-plain">${ladder}</ul></section>
     <section class="t4-panel"><h4>${esc(t("Growth"))}</h4>${growth.learners ? `<p>${esc(t("{n} learners have a growth history. Average change {delta} points; {up} gained 10 or more, {down} lost 10 or more.", { n: growth.learners, delta: growth.avgDelta, up: growth.improved, down: growth.declined }))}</p>${growth.weekly.length > 1 ? sparkline(growth.weekly) : ""}` : `<p class="t4-hint">${esc(t("These files have no growth history yet. It builds as learners practice."))}</p>`}</section></div>
+    <section class="t4-panel" aria-labelledby="t4-studio-evidence"><h4 id="t4-studio-evidence">${esc(t("Math Discovery Studio evidence"))}</h4>
+      <p>${esc(t("{explorations} model explorations (each after at least three meaningful actions); {correct} of {attempts} fresh independent attempts correct; {supported} supported attempts.", { explorations: studio.explorations, correct: studio.independentCorrect, attempts: studio.independentAttempts, supported: studio.supportedAttempts }))}</p>
+      <p class="t4-hint">${esc(t("These are observed Studio actions and attempts, separate from mastery checks. Model exploration and supported success do not count as independent mastery."))}</p>${studioSkills}</section>
     <div class="t4-scroll" role="region" tabindex="0" aria-label="${esc(t("Per-learner progress"))}"><table class="t4-table"><caption class="t4-sr">${esc(t("Independent and supported answers, reviews and growth for each learner"))}</caption>
     <thead><tr><th scope="col">${esc(t("Learner"))}</th><th scope="col">${esc(t("Independent"))}</th><th scope="col">${esc(t("Supported"))}</th><th scope="col">${esc(t("Independent share"))}</th><th scope="col">${esc(t("Reviews due"))}</th><th scope="col">${esc(t("Overdue"))}</th><th scope="col">${esc(t("Kept 14+ days"))}</th><th scope="col">${esc(t("Growth (points)"))}</th></tr></thead><tbody>${learnerRows}</tbody></table></div>`;
 }

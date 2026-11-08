@@ -11,7 +11,7 @@
  * The block between the build markers is written by tools/sync-access-shell.mjs; do not edit it by hand.
  */
 /* build:begin */
-const BUILD_HASH = "c8d830b4e281";
+const BUILD_HASH = "3d9212ec193a";
 const PRECACHE_CORE = [
   "/access-practice-lab/ds.css?v=f77bd42f8057",
   "/access-practice-lab/home.css?v=d4e1a1fc5829",
@@ -421,7 +421,7 @@ const PRECACHE_MORE = [
   "/access-practice-lab/src/studios/fraction-division-bridge-view.js?v=29024a7820a4",
   "/access-practice-lab/src/studios/fraction-line-bridge-view.js?v=f15d0bfd1f0a",
   "/access-practice-lab/src/studios/fractional-volume-bridge-view.js?v=3f061c1d79e9",
-  "/access-practice-lab/src/studios/math-reasoning-bridge.js?v=68cab77393f6",
+  "/access-practice-lab/src/studios/math-reasoning-bridge.js?v=3c8e8a1a01c5",
   "/access-practice-lab/src/studios/speaking-sparring.js?v=1d79358e4728",
   "/access-practice-lab/src/studios/translanguaging-bridge.js?v=b152257a32d8",
   "/access-practice-lab/src/studios.js?v=b4a26b4e766f",
@@ -458,7 +458,7 @@ const PRECACHE_MORE = [
   "/access-practice-lab/src/views/key-warmup.js?v=1020b41d1d97",
   "/access-practice-lab/src/views/ladder-tools.js?v=10975a75c471",
   "/access-practice-lab/src/views/ladder.js?v=66470f621d2f",
-  "/access-practice-lab/src/views/language-studios.js?v=3276c0788863",
+  "/access-practice-lab/src/views/language-studios.js?v=0d33233f7a42",
   "/access-practice-lab/src/views/launch-studio.js?v=8084fdb4ac43",
   "/access-practice-lab/src/views/learn.js?v=439f4cb9832a",
   "/access-practice-lab/src/views/library.js?v=326d006906e0",

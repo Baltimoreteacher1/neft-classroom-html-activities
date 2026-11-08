@@ -1747,9 +1747,11 @@ for (const sim of Object.values(SIMS)) {
   const sim = SIMS.percentPart;
   const host = document.createElement("div");
   document.body.append(host);
+  const historyStart = adaptive.history("6:percent").length;
+  const context = { sim, key: "6:percent", exploreSession: null, lang: () => "en", mark() {} };
   assert.equal(sim.prediction({ p: 30, w: 50 }).answer, 15);
   assert.equal(sim.prediction({ p: 0, w: 50 }).answer, 0, "zero percent has a zero part");
-  mountExplore({ sim, lang: () => "en", mark() {} }, host);
+  mountExplore(context, host);
   assert.equal(host.querySelector("[data-model]").hidden, true);
   assert.match(host.querySelector("[data-prediction-prompt]").textContent, /what is 30% of 50/);
   const submit = (guess) => {
@@ -1778,7 +1780,31 @@ for (const sim of Object.values(SIMS)) {
   percent.value = "60";
   percent.dispatchEvent(new dom.window.Event("input", { bubbles: true }));
   assert.match(host.querySelector("[data-read]").textContent, /0\.6 × 50 = 30/);
+  const whole = host.querySelector('[data-k="w"]');
+  whole.value = "60";
+  whole.dispatchEvent(new dom.window.Event("input", { bubbles: true }));
+  percent.value = "70";
+  percent.dispatchEvent(new dom.window.Event("input", { bubbles: true }));
+  assert.equal(
+    adaptive.history("6:percent").length,
+    historyStart + 1,
+    "three meaningful model actions are reported once",
+  );
+  assert.deepEqual(adaptive.history("6:percent").at(-1), {
+    kind: "explore",
+    ok: true,
+    supported: true,
+    tag: "percentPart",
+  });
+  const resumed = document.createElement("div");
+  mountExplore(context, resumed);
+  assert.equal(
+    adaptive.history("6:percent").length,
+    historyStart + 1,
+    "resuming an explored model does not duplicate evidence",
+  );
   host.remove();
+  resumed.remove();
 }
 {
   const dp = SIMS.dotplot;
@@ -2393,4 +2419,23 @@ console.log(
     null,
     "an older backup leaves the learner's own record alone",
   );
+  const { selectProfile } = await import("../math/fluency-lab/school-tools.js");
+  selectProfile(0);
+  adaptive.clearAll();
+  adaptive.record("6:ratios", { kind: "try", ok: true, supported: false });
+  selectProfile(1);
+  assert.deepEqual(
+    adaptive.history("6:ratios"),
+    [],
+    "another local learner cannot read this profile's Studio history",
+  );
+  adaptive.record("6:ratios", { kind: "try", ok: false, supported: true });
+  selectProfile(0);
+  assert.equal(
+    adaptive.history("6:ratios")[0].ok,
+    true,
+    "switching back restores only the original learner's history",
+  );
+  selectProfile(0);
+  adaptive.clearAll();
 }

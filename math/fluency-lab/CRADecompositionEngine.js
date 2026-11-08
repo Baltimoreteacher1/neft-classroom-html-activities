@@ -18,87 +18,93 @@ export function parseProblemFact(item) {
   const q = String(item.question || "");
   const ans = item.displayAnswer || (item.answers && item.answers[0]) || "";
 
-  // Multiplication match
-  const multMatch = q.match(/(\d+)\s*[×*]\s*(\d+)/);
-  if (multMatch) {
-    return {
-      operandA: Number(multMatch[1]),
-      operandB: Number(multMatch[2]),
-      operator: "×",
-      answer: ans,
-      question: q,
-      kind: item.kind,
-      standard: item.skill?.standard || "3.OA.B.5",
-    };
-  }
+    // Division match
+    const divMatch = q.match(/(\d+)\s*[÷/]\s*(\d+)/);
+    if (divMatch) {
+      return {
+        operandA: Number(divMatch[1]),
+        operandB: Number(divMatch[2]),
+        operator: "÷",
+        answer: ans,
+        question: q,
+        kind: item.kind,
+        standard: item.skill?.standard || "3.OA.C.7",
+      };
+    }
 
-  // Addition match
-  const addMatch = q.match(/(\d+)\s*\+\s*(\d+)/);
-  if (addMatch) {
-    return {
-      operandA: Number(addMatch[1]),
-      operandB: Number(addMatch[2]),
-      operator: "+",
-      answer: ans,
-      question: q,
-      kind: item.kind,
-      standard: item.skill?.standard || "1.OA.C.6",
-    };
-  }
+    // Multiplication match
+    const multMatch = q.match(/(\d+)\s*[×*]\s*(\d+)/);
+    if (multMatch) {
+      return {
+        operandA: Number(multMatch[1]),
+        operandB: Number(multMatch[2]),
+        operator: "×",
+        answer: ans,
+        question: q,
+        kind: item.kind,
+        standard: item.skill?.standard || "3.OA.B.5",
+      };
+    }
 
-  // Subtraction match
-  const subMatch = q.match(/(\d+)\s*[−-]\s*(\d+)/);
-  if (subMatch) {
-    return {
-      operandA: Number(subMatch[1]),
-      operandB: Number(subMatch[2]),
-      operator: "−",
-      answer: ans,
-      question: q,
-      kind: item.kind,
-      standard: item.skill?.standard || "2.OA.B.2",
-    };
-  }
+    // Addition match
+    const addMatch = q.match(/(\d+)\s*\+\s*(\d+)/);
+    if (addMatch) {
+      return {
+        operandA: Number(addMatch[1]),
+        operandB: Number(addMatch[2]),
+        operator: "+",
+        answer: ans,
+        question: q,
+        kind: item.kind,
+        standard: item.skill?.standard || "1.OA.C.6",
+      };
+    }
 
-  // Division match
-  const divMatch = q.match(/(\d+)\s*[÷/]\s*(\d+)/);
-  if (divMatch) {
-    return {
-      operandA: Number(divMatch[1]),
-      operandB: Number(divMatch[2]),
-      operator: "÷",
-      answer: ans,
-      question: q,
-      kind: item.kind,
-      standard: item.skill?.standard || "3.OA.C.7",
-    };
-  }
+    // Subtraction match
+    const subMatch = q.match(/(\d+)\s*[−-]\s*(\d+)/);
+    if (subMatch) {
+      return {
+        operandA: Number(subMatch[1]),
+        operandB: Number(subMatch[2]),
+        operator: "−",
+        answer: ans,
+        question: q,
+        kind: item.kind,
+        standard: item.skill?.standard || "2.OA.B.2",
+      };
+    }
 
-  // Fractions match
-  if (q.includes("/") || item.kind === "fraction") {
-    return {
-      operandA: 1,
-      operandB: 2,
-      operator: "+",
-      kind: "fraction",
-      answer: ans,
-      question: q,
-      standard: item.skill?.standard || "4.NF.B.3",
-    };
-  }
+    // Fractions match
+    if (q.includes("/") || item.kind === "fraction") {
+      return {
+        operandA: 1,
+        operandB: 2,
+        operator: "+",
+        kind: "fraction",
+        answer: ans,
+        question: q,
+        standard: item.skill?.standard || "4.NF.B.3",
+      };
+    }
 
-  // Fallback: extract two numbers
-  const nums = q.match(/-?\d+/g);
-  if (nums && nums.length >= 2) {
-    return {
-      operandA: Number(nums[0]),
-      operandB: Number(nums[1]),
-      operator: item.skill?.strand?.toLowerCase().includes("mult") ? "×" : item.skill?.strand?.toLowerCase().includes("sub") ? "−" : "+",
-      answer: ans,
-      question: q,
-      standard: item.skill?.standard || "",
-    };
-  }
+    // Fallback: extract two numbers
+    const nums = q.match(/-?\d+/g);
+    if (nums && nums.length >= 2) {
+      let a = Number(nums[0]);
+      let b = Number(nums[1]);
+      if (a <= 0 && b > 0 && nums.length >= 3) {
+        a = Number(nums[1]);
+        b = Number(nums[2]);
+      }
+      return {
+        operandA: a || 7,
+        operandB: b || 8,
+        operator: item.skill?.strand?.toLowerCase().includes("mult") ? "×" : item.skill?.strand?.toLowerCase().includes("sub") ? "−" : "+",
+        answer: ans,
+        question: q,
+        standard: item.skill?.standard || "",
+      };
+    }
 
   return {
     operandA: 7,
@@ -249,19 +255,20 @@ export function makeAreaModelSVG({
   locale = "en",
   onHandleDrag = null,
 } = {}) {
-  split = Math.max(1, Math.min(factorA - 1, split));
+  const safeA = Math.max(2, Number(factorA) || 7);
+  split = Math.max(1, Math.min(safeA - 1, split));
   const partA1 = split;
-  const partA2 = factorA - split;
+  const partA2 = safeA - split;
   const prod1 = partA1 * factorB;
   const prod2 = partA2 * factorB;
-  const total = factorA * factorB;
+  const total = safeA * factorB;
 
   const margin = { top: 38, right: 30, bottom: 42, left: 45 };
   const plotW = width - margin.left - margin.right;
   const plotH = height - margin.top - margin.bottom;
 
-  const w1 = Math.round((partA1 / factorA) * plotW);
-  const w2 = plotW - w1;
+  const w1 = Math.max(0, Math.min(plotW, Math.round((partA1 / safeA) * plotW)));
+  const w2 = Math.max(0, plotW - w1);
 
   const isInspect = phase === "INSPECT";
   const isPartition = phase === "PARTITION";
@@ -586,17 +593,20 @@ export function makeDivisionPartitionSVG({
   height = 200,
   locale = "en",
 } = {}) {
-  const rem = dividend - split;
-  const q1 = split / divisor;
-  const q2 = rem / divisor;
-  const quotient = dividend / divisor;
+  const safeDiv = Math.max(2, Number(dividend) || 56);
+  const safeDivisor = Math.max(1, Number(divisor) || 7);
+  const safeSplit = Math.max(1, Math.min(safeDiv - 1, Number(split) || Math.floor(safeDiv / 2)));
+  const rem = safeDiv - safeSplit;
+  const q1 = safeSplit / safeDivisor;
+  const q2 = rem / safeDivisor;
+  const quotient = safeDiv / safeDivisor;
 
   const margin = { top: 35, right: 30, bottom: 40, left: 45 };
   const plotW = width - margin.left - margin.right;
   const plotH = height - margin.top - margin.bottom;
 
-  const w1 = Math.round((split / dividend) * plotW);
-  const w2 = plotW - w1;
+  const w1 = Math.max(0, Math.min(plotW, Math.round((safeSplit / safeDiv) * plotW)));
+  const w2 = Math.max(0, plotW - w1);
   const isRecombine = phase === "RECOMBINE" || phase === "TRANSFER";
 
   return `

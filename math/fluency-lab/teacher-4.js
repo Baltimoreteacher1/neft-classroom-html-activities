@@ -4,6 +4,7 @@
 // and is saved only on an explicit button press. Nothing is sent anywhere.
 import { loadGrowthLog } from "./growth-log.js";
 import { FACTS_KEY } from "./moby/fact-model.js";
+import { STUDIO_KEY } from "./studio/adaptive.js";
 import { REWARDS_KEY } from "./rewards.js";
 import { profileKey, readLocal } from "./school-tools.js";
 import { t } from "./i18n.js";
@@ -42,6 +43,7 @@ export function mountTeacher4(
         growth: loadGrowthLog(record.id),
         facts: readLocal(profileKey(FACTS_KEY, record.id), null),
         greenDays: readLocal(profileKey(REWARDS_KEY, record.id), {})?.greenDays,
+        studio: readLocal(profileKey(STUDIO_KEY, record.id), null),
       }),
     );
   const klass = (sharedClass ??= createClassState({ deviceLearners: () => currentDevice() }));

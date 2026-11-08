@@ -11,6 +11,7 @@ import {
 import { DAY, emptyTutor, findSkill, evidence, sanitizeTutor } from "./tutor-engine.js";
 import { sanitizeFacts } from "./moby/fact-model.js";
 import { cleanGreenDays } from "./green-light.js";
+import { cleanStudio } from "./studio/adaptive.js";
 
 export const RULES = Object.freeze({
   minIndependent: 2, // independent checks before a skill counts as evidence of a gap
@@ -57,21 +58,54 @@ export function parseLearnerFile(value, index = 0) {
     // fl-teacher: per-fact records (automaticity) and Green Light days travel in the same file; older files have none.
     facts: sanitizeFacts(value.play?.facts),
     greenDays: cleanGreenDays(value.play?.rewards?.greenDays),
+    studio: cleanStudio(value.play?.studio),
     exportedAt: Number.isFinite(exported) ? exported : null,
     grade: Number.isInteger(value.grade) ? value.grade : null,
   };
 }
 
-export const deviceLearner = ({ id, label, tutor, growth, facts, greenDays }) => ({
+export const deviceLearner = ({ id, label, tutor, growth, facts, greenDays, studio }) => ({
   id: `device-${id}`,
   label,
   tutor: sanitizeTutor(tutor || emptyTutor()),
   growth: sanitizeGrowthLog(growth),
   facts: sanitizeFacts(facts),
   greenDays: cleanGreenDays(greenDays),
+  studio: cleanStudio(studio),
   exportedAt: null,
   grade: null,
 });
+
+// Studio work is reported as observed practice evidence, separate from tutor mastery checks.
+export function studioEvidence(learners, grade = null) {
+  const bySkill = new Map();
+  let explorations = 0;
+  let independentAttempts = 0;
+  let independentCorrect = 0;
+  let supportedAttempts = 0;
+  for (const learner of learners) {
+    for (const [key, events] of Object.entries(learner.studio?.skills || {})) {
+      const skillGrade = Number(key.match(/^(\d+):/)?.[1]);
+      if (!Number.isInteger(skillGrade) || (grade !== null && skillGrade !== grade)) continue;
+      const row = bySkill.get(key) || { key, learners: new Set(), explorations: 0, independentAttempts: 0, independentCorrect: 0, supportedAttempts: 0 };
+      for (const event of events) {
+        if (event.kind === "explore") { row.explorations += 1; explorations += 1; row.learners.add(learner.id); }
+        if (event.kind !== "try") continue;
+        if (event.supported) { row.supportedAttempts += 1; supportedAttempts += 1; }
+        else { row.independentAttempts += 1; independentAttempts += 1; if (event.ok) { row.independentCorrect += 1; independentCorrect += 1; } }
+        row.learners.add(learner.id);
+      }
+      bySkill.set(key, row);
+    }
+  }
+  return {
+    explorations,
+    independentAttempts,
+    independentCorrect,
+    supportedAttempts,
+    skills: [...bySkill.values()].map(({ learners: seen, ...row }) => ({ ...row, learners: seen.size })).sort((a, b) => a.key.localeCompare(b.key, "en", { numeric: true })),
+  };
+}
 
 // One row per learner per skill with evidence. `grade` narrows to one grade; null keeps every grade.
 export function skillRows(learners, { grade = null, now = Date.now() } = {}) {
