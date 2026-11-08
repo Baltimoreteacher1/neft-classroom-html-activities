@@ -1,36 +1,33 @@
 // Equation engine: a balance scale. The equation is (an/ad)·x + b = c with whole-number b and c. Every move
 // applies one operation to both pans, so the solution never changes; the tests substitute the known solution
 // into every frame. A move that would leave a fraction in a constant is refused with a reason.
-import { COLORS, L, clean, esc, frame, gcd, keyed, num, svgWrap, txt } from "./core.js";
+import { COLORS, L, esc, frame, keyed, num, svgWrap, txt } from "./core.js";
+import {
+  applyEquationMove,
+  equationHolds,
+  equationIsSolved,
+  equationMoves,
+  equationCoefficient,
+  formatLinearEquation,
+  signedConstant,
+} from "../../../shared/math/equation-balance.js";
 
-export function parse(question) {
-  const q = clean(question)
-    .replace(/\. Find x\.$/, "")
-    .replace(/ /g, "");
-  let m = q.match(/^(\d*)x([+-])(\d+)=(-?\d+)$/);
-  if (m)
-    return make(Number(m[1] || 1), 1, m[2] === "+" ? Number(m[3]) : -Number(m[3]), Number(m[4]));
-  m = q.match(/^(\d+)x=(-?\d+)$/);
-  if (m) return make(Number(m[1]), 1, 0, Number(m[2]));
-  m = q.match(/^x([+-])(\d+)=(-?\d+)$/);
-  if (m) return make(1, 1, m[1] === "+" ? Number(m[2]) : -Number(m[2]), Number(m[3]));
-  m = q.match(/^x÷(\d+)=(-?\d+)$/);
-  if (m) return make(1, Number(m[1]), 0, Number(m[2]));
-  return null;
-}
-function make(an, ad, b, c) {
-  const x = (c - b) * (ad / an);
-  if (!Number.isInteger(x)) return null;
-  return { engine: "balance", an, ad, b, c, x, eq: { an, ad, b, c } };
-}
+export {
+  equationIsSolved as isSolved,
+  applyEquationMove as apply,
+  equationHolds as holds,
+  equationMoves as moves,
+  formatLinearEquation as eqText,
+  parseLinearEquation as parse,
+} from "../../../shared/math/equation-balance.js";
 
-const coef = (e) =>
-  e.ad === 1 ? (e.an === 1 ? "x" : `${e.an}x`) : e.an === 1 ? `x/${e.ad}` : `(${e.an}/${e.ad})x`;
-const sgn = (n) => (n < 0 ? `− ${-n}` : `+ ${n}`);
-export const eqText = (e) =>
-  `${coef(e)}${e.b ? ` ${sgn(e.b)}` : ""} = ${String(e.c).replace("-", "−")}`;
-export const holds = (e, x) => e.an * x + e.b * e.ad === e.c * e.ad;
-const isSolved = (e) => e.an === e.ad && e.b === 0;
+const eqText = formatLinearEquation;
+const holds = equationHolds;
+const moves = equationMoves;
+const apply = applyEquationMove;
+const isSolved = equationIsSolved;
+const coef = equationCoefficient;
+const sgn = signedConstant;
 
 function tile(key, x, y, w, label, { fill = COLORS.whole, ghost = false, ring = false } = {}) {
   return keyed(
@@ -107,29 +104,6 @@ const mk = (id, e, cap, easy, opts = {}, tilt = 0) => {
 };
 
 // The sequence of legal moves from the starting equation to x = value.
-export function moves(e0) {
-  const list = [];
-  let e = { ...e0 };
-  if (e.b !== 0) {
-    const k = -e.b;
-    list.push({ kind: "add", n: k });
-    e = { ...e, b: 0, c: e.c + k };
-  }
-  if (e.an !== e.ad) {
-    if (e.ad > 1 && e.an === 1) list.push({ kind: "mul", n: e.ad });
-    else list.push({ kind: "div", n: e.an });
-  }
-  return list;
-}
-export const apply = (e, mv) => {
-  if (mv.kind === "add") return { ...e, b: e.b + mv.n, c: e.c + mv.n };
-  if (mv.kind === "mul") return reduce({ an: e.an * mv.n, ad: e.ad, b: e.b * mv.n, c: e.c * mv.n });
-  return reduce({ an: e.an, ad: e.ad * mv.n, b: e.b / mv.n, c: e.c / mv.n });
-};
-const reduce = (e) => {
-  const g = gcd(e.an, e.ad) || 1;
-  return { ...e, an: e.an / g, ad: e.ad / g };
-};
 const phrase = (mv) =>
   mv.kind === "add"
     ? mv.n < 0

@@ -15,7 +15,7 @@ import { renderFractionLineBridge } from "../studios/fraction-line-bridge-view.j
 import { renderDataBridge, renderDataModel } from "../studios/data-bridge-view.js";
 import { fractionalVolumeModelHTML } from "../studios/fractional-volume-bridge-view.js";
 import { fractionDivisionModelHTML } from "../studios/fraction-division-bridge-view.js";
-import { equationBalanceModelHTML, equationTextForBridge } from "../studios/equation-bridge-view.js";
+import { equationBalanceModelHTML, equationBalanceStepCount, equationTextForBridge } from "../studios/equation-bridge-view.js";
 import {
   analyzeRatioExplanation,
   analyzePercentExplanation,
@@ -326,6 +326,7 @@ let state = {
   bridgeTransferFeedback: "",
   equationModelStep: 0,
   equationActionDone: false,
+  equationModelTilt: 0,
   equationFeedback: "",
   percentDraft: "",
   percentRevision: "",
@@ -362,7 +363,7 @@ let state = {
 const bridgeSaveKey = (key) => `accessPracticeLab:v1:mathLanguageBridge:${encodeURIComponent(key)}`;
 function saveBridge(key) {
   if (!key) return;
-  const fields = ["bridgeStep", "bridgeSupport", "bridgeDraft", "bridgeRevision", "bridgeTransfer", "bridgeTransferExplain", "equationModelStep", "equationActionDone", "equationFeedback", "percentDraft", "percentRevision", "percentTransferAnswer", "percentTransferExplain", "fractionScale", "fractionLinePosition", "fractionLineChecked", "fractionLineFeedback", "fractionLineDraft", "fractionLineRevision", "fractionLineTransferAnswer", "fractionLineTransferExplain", "fractionDraft", "fractionRevision", "fractionTransferAnswer", "fractionTransferExplain", "dataMoveValue", "dataDraft", "dataRevision", "dataTransferMean", "dataTransferMedian", "dataTransferExplain"];
+  const fields = ["bridgeStep", "bridgeSupport", "bridgeDraft", "bridgeRevision", "bridgeTransfer", "bridgeTransferExplain", "equationModelStep", "equationActionDone", "equationModelTilt", "equationFeedback", "percentDraft", "percentRevision", "percentTransferAnswer", "percentTransferExplain", "fractionScale", "fractionLinePosition", "fractionLineChecked", "fractionLineFeedback", "fractionLineDraft", "fractionLineRevision", "fractionLineTransferAnswer", "fractionLineTransferExplain", "fractionDraft", "fractionRevision", "fractionTransferAnswer", "fractionTransferExplain", "dataMoveValue", "dataDraft", "dataRevision", "dataTransferMean", "dataTransferMedian", "dataTransferExplain"];
   const data = Object.fromEntries(fields.map((field) => [field, state[field]]));
   storage.set(bridgeSaveKey(key), JSON.stringify({ version: 1, data }));
 }
@@ -377,8 +378,10 @@ function restoreBridge(key, bridge) {
     state.fractionLinePosition = Number.isInteger(d.fractionLinePosition) && d.fractionLinePosition >= 0 && d.fractionLinePosition <= (bridge?.denominator || 12) ? d.fractionLinePosition : 0;
     state.fractionLineChecked = d.fractionLineChecked === true && bridge?.task === "fraction-number-line" && state.fractionLinePosition === bridge.numerator;
     state.dataMoveValue = Number.isInteger(d.dataMoveValue) && d.dataMoveValue >= 0 && d.dataMoveValue <= 40 ? d.dataMoveValue : bridge?.task === "data-center" ? bridge.values[bridge.selectedIndex] : null;
-    state.equationModelStep = bridge?.task === "equation-balance" && d.equationModelStep === 1 ? 1 : 0;
-    state.equationActionDone = bridge?.task === "equation-balance" && d.equationActionDone === true;
+    const equationSteps = bridge?.task === "equation-balance" ? equationBalanceStepCount(bridge) : 0;
+    state.equationModelStep = bridge?.task === "equation-balance" && Number.isInteger(d.equationModelStep) ? Math.max(0, Math.min(equationSteps, d.equationModelStep)) : 0;
+    state.equationActionDone = bridge?.task === "equation-balance" && state.equationModelStep >= equationSteps;
+    state.equationModelTilt = bridge?.task === "equation-balance" && [-1, 0, 1].includes(d.equationModelTilt) ? d.equationModelTilt : 0;
     state.equationFeedback = bridge?.task === "equation-balance" && typeof d.equationFeedback === "string" ? d.equationFeedback.slice(0, 300) : "";
     for (const keyName of ["bridgeDraft", "bridgeRevision", "bridgeTransfer", "bridgeTransferExplain", "percentDraft", "percentRevision", "percentTransferAnswer", "percentTransferExplain", "fractionLineFeedback", "fractionLineDraft", "fractionLineRevision", "fractionLineTransferAnswer", "fractionLineTransferFeedback", "fractionLineTransferExplain", "fractionDraft", "fractionRevision", "fractionTransferAnswer", "fractionTransferExplain", "dataDraft", "dataRevision", "dataTransferMean", "dataTransferMedian", "dataTransferExplain"])
       state[keyName] = typeof d[keyName] === "string" ? d[keyName].slice(0, 1200) : "";
@@ -599,6 +602,7 @@ export async function render(ctx = {}) {
       bridgeTransferFeedback: "",
       equationModelStep: 0,
       equationActionDone: false,
+      equationModelTilt: 0,
       equationFeedback: "",
       percentDraft: "",
       percentRevision: "",
@@ -1033,12 +1037,16 @@ export function mount(root, ctx) {
     const action = button.dataset.equationAction;
     const I = i18nFor(ctx);
     if (action === "correct") {
-      if (bridge.form === "two-step" && state.equationModelStep === 0) state.equationModelStep = 1;
-      else state.equationActionDone = true;
+      const totalSteps = Number(root.querySelector("[data-equation-model]")?.dataset.totalSteps) || 1;
+      state.equationModelStep = Math.min(totalSteps, state.equationModelStep + 1);
+      state.equationActionDone = state.equationModelStep >= totalSteps;
+      state.equationModelTilt = 0;
       state.equationFeedback = I.S("That inverse operation keeps the equation balanced. Now connect the change to x.", "Esa operación inversa mantiene equilibrada la ecuación. Ahora conecta el cambio con x.");
     } else if (action === "one-side") {
+      state.equationModelTilt = 1;
       state.equationFeedback = I.S("Changing one side only breaks the equality. Apply the same operation to both sides.", "Cambiar un solo lado rompe la igualdad. Aplica la misma operación a ambos lados.");
     } else {
+      state.equationModelTilt = 0;
       state.equationFeedback = I.S("This keeps both sides equal, but it does not undo the operation that is closest to x. Choose its inverse.", "Esto mantiene iguales ambos lados, pero no deshace la operación más cercana a x. Elige su inversa.");
     }
     saveBridge(state.bridgeKey);

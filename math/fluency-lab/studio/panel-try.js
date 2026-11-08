@@ -18,6 +18,7 @@ import { createPyramidSurfaceAreaExplanationUrl } from "../../../shared/math-lan
 import { createFractionalVolumeExplanationUrl } from "../../../shared/math-language-bridge/v2.js";
 import { createFractionDivisionExplanationUrl } from "../../../shared/math-language-bridge/v2.js";
 import { createEquationBalanceExplanationUrl } from "../../../shared/math-language-bridge/v2.js";
+import { parseLinearEquation } from "../../../shared/math/equation-balance.js";
 import { SIMS } from "./sims.js";
 import { vocabMarkup } from "./vocab-content.js";
 
@@ -41,30 +42,18 @@ function fractionDivisionContext(item, skillId) {
 function equationBalanceContext(item) {
   const question = String(item?.question || "");
   const answer = Number(item?.answers?.[0] ?? item?.answer);
-  let context = null;
-  let match = question.match(/^x \+ (\d+) = (-?\d+)\. Find x\.$/u);
-  if (match) context = { form: "add", amount: Number(match[1]), shift: 0, result: Number(match[2]) };
-  if (!context && (match = question.match(/^x − (\d+) = (-?\d+)\. Find x\.$/u)))
-    context = { form: "subtract", amount: Number(match[1]), shift: 0, result: Number(match[2]) };
-  if (!context && (match = question.match(/^(\d+)x = (-?\d+)\. Find x\.$/u)))
-    context = { form: "multiply", amount: Number(match[1]), shift: 0, result: Number(match[2]) };
-  if (!context && (match = question.match(/^x ÷ (\d+) = (-?\d+)\. Find x\.$/u)))
-    context = { form: "divide", amount: Number(match[1]), shift: 0, result: Number(match[2]) };
-  if (!context && (match = question.match(/^(\d+)x ([+−]) (\d+) = (-?\d+)\. Find x\.$/u))) {
-    const shift = Number(match[3]) * (match[2] === "−" ? -1 : 1);
-    context = { form: shift ? "two-step" : "multiply", amount: Number(match[1]), shift, result: Number(match[4]) };
-  }
-  if (!context || !Number.isInteger(answer)) return null;
-  const solution = context.form === "add"
-    ? context.result - context.amount
-    : context.form === "subtract"
-      ? context.result + context.amount
-      : context.form === "multiply"
-        ? context.result / context.amount
-        : context.form === "divide"
-          ? context.result * context.amount
-          : (context.result - context.shift) / context.amount;
-  return solution === answer ? context : null;
+  const parsed = parseLinearEquation(question);
+  const equation = parsed?.eq;
+  if (!equation || !Number.isInteger(answer) || parsed.x !== answer) return null;
+  if (equation.an === 1 && equation.ad === 1 && equation.b !== 0)
+    return { form: equation.b > 0 ? "add" : "subtract", amount: Math.abs(equation.b), shift: 0, result: equation.c };
+  if (equation.b === 0 && equation.ad === 1 && equation.an > 1)
+    return { form: "multiply", amount: equation.an, shift: 0, result: equation.c };
+  if (equation.b === 0 && equation.an === 1 && equation.ad > 1)
+    return { form: "divide", amount: equation.ad, shift: 0, result: equation.c };
+  if (equation.ad === 1 && equation.an > 1 && equation.b !== 0)
+    return { form: "two-step", amount: equation.an, shift: equation.b, result: equation.c };
+  return null;
 }
 
 export function mountTry(ctx, root) {

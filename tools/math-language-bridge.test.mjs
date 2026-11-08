@@ -36,6 +36,13 @@ import { generateProblem, getSkill, seededRandom } from "../math/fluency-lab/pro
 import { mountTry } from "../math/fluency-lab/studio/panel-try.js";
 import { SIMS } from "../math/fluency-lab/studio/sims.js";
 import {
+  applyEquationMove,
+  equationHolds,
+  equationMoves,
+  formatLinearEquation,
+  parseLinearEquation,
+} from "../shared/math/equation-balance.js";
+import {
   createRatioExplanationUrl,
   readMathLanguageBridge,
 } from "../shared/math-language-bridge/v1.js";
@@ -52,6 +59,20 @@ import {
   readMathLanguageBridge as readBridgeV2,
 } from "../shared/math-language-bridge/v2.js";
 import { makeCtx, mount, win } from "./lib/access-studios-dom.mjs";
+
+const sharedEquation = parseLinearEquation("2x + 4 = 20. Find x.");
+assert.equal(sharedEquation?.x, 8);
+assert.deepEqual(equationMoves(sharedEquation.eq), [
+  { kind: "add", n: -4 },
+  { kind: "div", n: 2 },
+]);
+const afterSubtract = applyEquationMove(sharedEquation.eq, { kind: "add", n: -4 });
+const afterDivide = applyEquationMove(afterSubtract, { kind: "div", n: 2 });
+assert.equal(formatLinearEquation(afterSubtract), "2x = 16");
+assert.equal(formatLinearEquation(afterDivide), "x = 8");
+assert.equal(equationHolds(sharedEquation.eq, 8), true);
+assert.equal(equationHolds(sharedEquation.eq, 7), false);
+assert.equal(parseLinearEquation("x ÷ 3 = 4")?.x, 12);
 
 const url = new URL(createRatioExplanationUrl({ first: 2, second: 3, grade: 6 }));
 assert.equal(url.origin, "https://thelanguagepage.com");
@@ -1236,6 +1257,10 @@ equationCtx.route.mathBridge = equationBridge;
 ({ root } = await mount(languageStudios, equationCtx));
 assert.match(root.textContent, /Balance both sides/);
 assert.match(root.textContent, /x \+ 7/);
+assert.ok(
+  root.querySelector(".mlb-equation-scale svg"),
+  "Language Page reuses Fluency Lab's balance-scale drawing",
+);
 root.querySelector("#mlb-draft").value =
   "The equation stays equal because I subtract 7 from both sides.";
 root
@@ -1285,6 +1310,10 @@ root.querySelector('[data-equation-action="same-wrong"]').click();
 assert.match(root.textContent, /does not undo the operation/);
 root.querySelector('[data-equation-action="correct"]').click();
 ({ root } = await mount(languageStudios, twoStepCtx));
+assert.ok(
+  root.querySelector(".mlb-equation-scale svg"),
+  "the shared scale remains visible after an equation move",
+);
 assert.equal(
   root.querySelector(".mlb-equation-display span strong")?.textContent,
   `${twoStepEquation.amount}x`,
