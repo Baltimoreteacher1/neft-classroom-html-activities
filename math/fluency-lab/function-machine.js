@@ -53,7 +53,7 @@ export function renderFunctionMachine(state = {}) {
       <div class="ratio-display-grid">
         <!-- Machine Visual -->
         <div class="func-machine-box">
-          <svg viewBox="0 0 240 180" role="img" aria-label="Function machine processing input ${currentInput}">
+          <svg width="240" height="180" viewBox="0 0 240 180" role="img" aria-label="Function machine processing input ${currentInput}">
             <!-- Input Funnel -->
             <polygon points="90,10 150,10 135,45 105,45" fill="#e2e8f0" stroke="#94a3b8" stroke-width="2"/>
             <text x="120" y="32" text-anchor="middle" font-size="12" font-weight="900" fill="#2563eb">x = ${currentInput}</text>

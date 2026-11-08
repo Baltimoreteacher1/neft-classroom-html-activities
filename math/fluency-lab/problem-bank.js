@@ -952,9 +952,14 @@ const generators = {
   absolute(config, rng) {
     const n = randInt(config.min ?? -50, config.max ?? 50, rng);
     return problem(`|${n}| = ?`, Math.abs(n), {
-      hint: "Absolute value is the distance from zero. Distance is never negative.",
+      hint: "Absolute value is the distance from zero on the number line. Distance is never negative.",
       explanation: `${n} is ${Math.abs(n)} units from zero.`,
-      model: n ? { type: "numberline", start: n, jumps: [-n], caption: `${n} to 0` } : null,
+      model: n ? { type: "numberline", start: n, jumps: [-n], caption: `|${n}| is ${Math.abs(n)} units from 0 on the number line` } : null,
+      steps: [
+        `Locate ${n} on the number line relative to 0.`,
+        `Count the distance from ${n} to 0: exactly ${Math.abs(n)} units.`,
+        `Distance is always positive or zero: |${n}| = ${Math.abs(n)}.`,
+      ],
     });
   },
 
@@ -974,7 +979,7 @@ const generators = {
   // Grade 6 absolute value shares the skill with plotting in four quadrants (6.NS.C.6-7): both read a signed
   // number as a position relative to zero.
   numberPlane(config, rng) {
-    return rng() < 0.35 ? generators.coordinate(config, rng) : generators.absolute(config, rng);
+    return rng() < 0.5 ? generators.coordinate(config, rng) : generators.absolute(config, rng);
   },
 
   // Grade 6 unit rates include converting measurement units with the same ratio reasoning (6.RP.A.3d).
@@ -1103,8 +1108,22 @@ const generators = {
     const b = randInt(-(config.maxConstant ?? 8), config.maxConstant ?? 8, rng);
     const y = m * x + b;
     return problem(`If y = ${m}x ${b < 0 ? "−" : "+"} ${Math.abs(b)}, find y when x = ${x}.`, y, {
-      hint: `Write ${x} where x is. Multiply first. Then add or subtract.`,
-      explanation: `y = ${m}(${x}) ${b < 0 ? "−" : "+"} ${Math.abs(b)} = ${y}.`,
+      hint: `Get rid of the easiest numbers first when solving! To evaluate: substitute x = ${x}, multiply ${m}(${x}), then ${b < 0 ? `subtract ${Math.abs(b)}` : `add ${b}`}.`,
+      explanation: `y = ${m}(${x}) ${b < 0 ? "−" : "+"} ${Math.abs(b)} = ${m * x} ${b < 0 ? "−" : "+"} ${Math.abs(b)} = ${y}.`,
+      model: {
+        type: "functionMachine",
+        m,
+        b,
+        currentInput: x,
+        inputs: [1, 2, 3, 4, 5],
+        caption: `Linear function y = ${m}x ${b < 0 ? "−" : "+"} ${Math.abs(b)}`,
+      },
+      steps: [
+        `Substitute the input ${x} for x: y = ${m}(${x}) ${b < 0 ? "−" : "+"} ${Math.abs(b)}.`,
+        `The number attached to x multiplies it: ${m} × ${x} = ${m * x}.`,
+        `Now combine with the lone constant term: ${m * x} ${b < 0 ? "−" : "+"} ${Math.abs(b)} = ${y}.`,
+        `Solving rule: When isolating a variable, always get rid of the easiest numbers first! Undo the lone constant term (${b < 0 ? `+ ${Math.abs(b)}` : `− ${b}`}) before touching the multiplier (${m}) attached to the variable.`,
+      ],
     });
   },
 
@@ -1121,17 +1140,89 @@ const generators = {
   },
 
   coordinate(config, rng) {
-    let x = randInt(config.minCoordinate ?? -9, config.maxCoordinate ?? 9, rng);
-    let y = randInt(config.minCoordinate ?? -9, config.maxCoordinate ?? 9, rng);
-    if (x === 0) x = 1;
-    if (y === 0) y = -1;
+    const sub = pick(["quadrant", "axisDistance", "sharedAxis", "reflect"], rng);
+    let x = randInt(config.minCoordinate ?? -8, config.maxCoordinate ?? 8, rng);
+    let y = randInt(config.minCoordinate ?? -8, config.maxCoordinate ?? 8, rng);
+    if (x === 0) x = 2;
+    if (y === 0) y = -3;
+
+    if (sub === "axisDistance") {
+      const toYAxis = rng() < 0.5;
+      const answer = toYAxis ? Math.abs(x) : Math.abs(y);
+      const axisName = toYAxis ? "y-axis" : "x-axis";
+      const coordName = toYAxis ? "x-coordinate" : "y-coordinate";
+      const coordVal = toYAxis ? x : y;
+      return problem(`How far is (${x}, ${y}) from the ${axisName}?`, answer, {
+        hint: `Distance from a point to the ${axisName} is the absolute value of its ${coordName}: |${coordVal}|.`,
+        explanation: `The distance from (${x}, ${y}) to the ${axisName} is |${coordVal}| = ${answer} units.`,
+        model: { type: "coordinate", points: [[x, y]], showAbsolute: true, caption: `Point (${x}, ${y}) is |${coordVal}| = ${answer} units from the ${axisName}` },
+        steps: [
+          `The ${axisName} is where ${toYAxis ? "x = 0" : "y = 0"}.`,
+          `The ${coordName} of (${x}, ${y}) is ${coordVal}.`,
+          `Distance is never negative: |${coordVal}| = ${answer} units.`,
+        ],
+      });
+    }
+
+    if (sub === "sharedAxis") {
+      const shareX = rng() < 0.5;
+      if (shareX) {
+        const y1 = randInt(1, 8, rng);
+        const y2 = -randInt(1, 8, rng);
+        const ans = Math.abs(y1 - y2);
+        return problem(`Find the distance between (${x}, ${y1}) and (${x}, ${y2}).`, ans, {
+          hint: `Both points share x = ${x}. Since they lie in different quadrants across the x-axis, add their absolute values: |${y1}| + |${y2}|.`,
+          explanation: `The distance between (${x}, ${y1}) and (${x}, ${y2}) is |${y1}| + |${y2}| = ${ans} units.`,
+          model: { type: "coordinate", points: [[x, y1], [x, y2]], showDistance: true, showAbsolute: true, caption: `Distance between (${x}, ${y1}) and (${x}, ${y2}) is ${ans}` },
+          steps: [
+            `Both points share x = ${x}, forming a vertical line segment.`,
+            `(${x}, ${y1}) is |${y1}| = ${Math.abs(y1)} units above the x-axis.`,
+            `(${x}, ${y2}) is |${y2}| = ${Math.abs(y2)} units below the x-axis.`,
+            `Add the distances across the axis: ${Math.abs(y1)} + ${Math.abs(y2)} = ${ans} units.`,
+          ],
+        });
+      } else {
+        const x1 = -randInt(1, 8, rng);
+        const x2 = randInt(1, 8, rng);
+        const ans = Math.abs(x1 - x2);
+        return problem(`Find the distance between (${x1}, ${y}) and (${x2}, ${y}).`, ans, {
+          hint: `Both points share y = ${y}. Since they lie in different quadrants across the y-axis, add their absolute values: |${x1}| + |${x2}|.`,
+          explanation: `The distance between (${x1}, ${y}) and (${x2}, ${y}) is |${x1}| + |${x2}| = ${ans} units.`,
+          model: { type: "coordinate", points: [[x1, y], [x2, y]], showDistance: true, showAbsolute: true, caption: `Distance between (${x1}, ${y}) and (${x2}, ${y}) is ${ans}` },
+          steps: [
+            `Both points share y = ${y}, forming a horizontal line segment.`,
+            `(${x1}, ${y}) is |${x1}| = ${Math.abs(x1)} units left of the y-axis.`,
+            `(${x2}, ${y}) is |${x2}| = ${Math.abs(x2)} units right of the y-axis.`,
+            `Add the distances across the axis: ${Math.abs(x1)} + ${Math.abs(x2)} = ${ans} units.`,
+          ],
+        });
+      }
+    }
+
+    if (sub === "reflect") {
+      const axis = rng() < 0.5 ? "x-axis" : "y-axis";
+      const res = axis === "x-axis" ? [x, -y] : [-x, y];
+      return problem(`Reflect (${x}, ${y}) across the ${axis}.`, `(${res[0]},${res[1]})`, {
+        kind: "text",
+        displayAnswer: `(${res[0]}, ${res[1]})`,
+        hint: axis === "x-axis" ? "Keep x. Take the opposite of y. The distance to the x-axis stays the same!" : "Keep y. Take the opposite of x. The distance to the y-axis stays the same!",
+        explanation: `Reflecting (${x}, ${y}) across the ${axis} gives (${res[0]}, ${res[1]}).`,
+        model: { type: "coordinate", points: [[x, y]], reflectAxis: axis === "x-axis" ? "x" : "y", reflected: res, showAbsolute: true, caption: `Reflecting (${x}, ${y}) across the ${axis} gives (${res[0]}, ${res[1]})` },
+        steps: [
+          `Find the distance from (${x}, ${y}) to the ${axis}.`,
+          `Count that exact same distance on the opposite side of the ${axis}.`,
+          `The reflected image is (${res[0]}, ${res[1]}).`,
+        ],
+      });
+    }
+
     const answer = x > 0 && y > 0 ? "I" : x < 0 && y > 0 ? "II" : x < 0 && y < 0 ? "III" : "IV";
     return problem(`Which quadrant contains (${x}, ${y})?`, answer, {
       kind: "choice",
       choices: ["I", "II", "III", "IV"],
       hint: "Read x first (left/right), then y (down/up).",
       explanation: `(${x}, ${y}) is in Quadrant ${answer}.`,
-      model: { type: "coordinate", points: [[x, y]], caption: "Find the point: x tells left or right, y tells down or up" },
+      model: { type: "coordinate", points: [[x, y]], showAbsolute: true, caption: "Find the point: x tells left or right, y tells down or up" },
       steps: [`x = ${x} is ${x > 0 ? "positive, so the point is right of" : "negative, so the point is left of"} the y-axis.`, `y = ${y} is ${y > 0 ? "positive, so the point is above" : "negative, so the point is below"} the x-axis.`, "Number the quadrants in order: top right, top left, bottom left, bottom right.", `(${x}, ${y}) is in Quadrant ${answer}.`],
     });
   },

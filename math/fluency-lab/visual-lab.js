@@ -4,6 +4,7 @@ import { columnSpec, verticalHtml } from "./vertical-columns.js";
 import { t } from "./i18n.js";
 import { copiesTable, factorTreeSvg, lcmMultiplyHtml, treeCaption } from "./factor-tree.js";
 import { mountCoordinateExplorer, renderCoordinateExplorer } from "./coordinate-explorer.js";
+import { mountFunctionMachine, renderFunctionMachine } from "./function-machine.js";
 
 const esc = (value) => String(value).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;");
 const svg = (body, label, viewBox = "0 0 540 240") => {
@@ -121,6 +122,14 @@ export function renderModel(model, { counters, counterPositions, partitions = 1,
   if (model.type === "table") return `${caption}<table class="ratio-model"><thead><tr>${model.headers.map((label) => `<th scope="col">${esc(label)}</th>`).join("")}</tr></thead><tbody>${model.rows.map((row) => `<tr>${row.map((value) => `<td>${esc(value)}</td>`).join("")}</tr>`).join("")}</tbody></table>`;
   if (model.type === "equations") return `${caption}<ol class="balance-model">${model.lines.map((line, i) => `<li class="${i === step ? 'active' : ''}">${esc(line)}</li>`).join("")}</ol><div class="balance-base" aria-hidden="true">━━━━━━━━━ ▲ ━━━━━━━━━</div>`;
   if (model.type === "machine") return `${caption}<div class="function-machine"><span>Input<br><strong>${model.input}</strong></span><b aria-hidden="true">→</b><span>Multiply<br><strong>× ${model.multiplier}</strong></span><b aria-hidden="true">→</b><span>${model.factorCount === 3 ? "Again" : model.constant ? "Then add" : "Output"}<br><strong>${model.factorCount === 3 ? `× ${model.multiplier}` : model.constant ? `+ ${model.constant}` : "?"}</strong></span></div>`;
+  if (model.type === "functionMachine") {
+    return `${caption}${renderFunctionMachine({
+      m: model.m ?? 3,
+      b: model.b ?? 0,
+      inputs: model.inputs || [1, 2, 3, 4, 5],
+      currentInput: model.currentInput ?? model.input ?? 1,
+    })}`;
+  }
   if (model.type === "coins") return `${caption}<div class="coin-model">${model.counts.map((count, i) => `<div>${Array.from({ length: count }, () => `<span class="coin">${[25, 10, 5, 1][i]}¢</span>`).join("")}</div>`).join("")}</div>`;
   if (model.type === "clock") {
     const angle = (model.hour + model.minute / 60) * Math.PI / 6;
@@ -136,10 +145,12 @@ export function renderModel(model, { counters, counterPositions, partitions = 1,
       ...(points[1] ? { p2: point(points[1]) } : {}),
       referencePoints: points.slice(2).map(point),
       singlePoint: points.length < 2,
-      showRelationships: Boolean(model.slope),
-      showConnector: Boolean(model.slope),
+      showRelationships: Boolean(model.slope || model.showDistance || model.showRelationships),
+      showConnector: Boolean(model.slope || model.connector || model.showDistance),
       showSlope: Boolean(model.slope),
-      target: model.reflected && step >= 1 ? point(model.reflected) : null,
+      showAbsolute: model.showAbsolute !== false,
+      reflectAxis: model.reflectAxis || null,
+      target: model.reflected && step >= 1 ? point(model.reflected) : (model.reflected ? point(model.reflected) : null),
     })}`;
   }
   if (model.type === "shape") {
@@ -273,6 +284,7 @@ export function mountVisualLesson(container, skill, { onComplete, onPractice, va
         <button type="button" class="primary-action" data-visual-next hidden>Next step</button>
       `}</div></div>`;
     mountCoordinateExplorer(container);
+    mountFunctionMachine(container);
   }
 
   function feedback(copy, correct = false) {

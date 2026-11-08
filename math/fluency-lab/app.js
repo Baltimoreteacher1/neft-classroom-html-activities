@@ -115,6 +115,7 @@ import { playConsonantHarmony, playTensionInterval, playResolutionSequence, play
 import { SpeechReasoningEngine, renderConfidenceGauge, mountConfidenceGauge } from "./speech-sparkles.js";
 import { renderWonderCityStudio, mountWonderCityStudio } from "./wonder-city.js";
 import { renderCoordinateExplorer, mountCoordinateExplorer } from "./coordinate-explorer.js";
+import { renderFunctionMachine, mountFunctionMachine } from "./function-machine.js";
 import { renderTriangleShear, mountTriangleShear } from "./triangle-shear.js";
 import { renderBase10Regrouping, mountBase10Regrouping } from "./base10-regrouping.js";
 import { renderRatioScaler, mountRatioScaler } from "./ratio-scaler.js";
@@ -764,7 +765,7 @@ function renderLearn() {
   const trivial = (item) => String(item.displayAnswer) === "0" || /(^|[^\d.])0([^\d.]|$)|(^|[^\d.])1 ×|× 1([^\d.]|$)/.test(item.question);
   const example = (draws.filter((item) => !trivial(item)).length ? draws.filter((item) => !trivial(item)) : draws).reduce((best, item) => (item.steps.length > best.steps.length ? item : best));
   state.learnExample = { item: example, shown: 1 };
-  const picture = interactivePicture({ ...example.model, worked: true }) || trailPicture(example.model) || fractionPicture(example.question, { worked: true });
+  const picture = interactivePicture({ ...example.model, worked: true }) || trailPicture(example.model) || renderInlineProblemModel(skill, example) || fractionPicture(example.question, { worked: true });
   cleanupLearnStudio?.();
   cleanupLearnStudio = null;
   // Understand It keeps one worked example in view. The interactive model lives in
@@ -803,6 +804,8 @@ function renderLearn() {
         <button class="outline-action" data-write-about>${t("Write about it")}</button>
       </div></details>
     </div>`;
+  mountCoordinateExplorer(els.learnPanel);
+  mountFunctionMachine(els.learnPanel);
 }
 
 // fl4:lessons Learn It, Watch It, Try It, Explain It inside the Learn panel; its results are supported evidence only.
@@ -6457,8 +6460,119 @@ function renderStudentFriendlyExplanation(item, copy) {
   const isDecimal = /\d+\.\d+/.test(q);
   const isTensOnes = /tens|ones|place value|digit in the/i.test(q);
   const isPercent = /%|percent/i.test(q);
+  const isFunction = Boolean(item.skill?.id === "functions" || item.skill?.generator === "functionRule" || /y\s*=\s*-?\d*x/i.test(q) || /find y when x/i.test(q));
+  const isCoord = Boolean(item.skill?.id === "integers" || item.skill?.generator === "coordinate" || item.skill?.generator === "numberPlane" || item.skill?.generator === "transform" || /quadrant|reflect.*axis|distance.*axis|\((-?\d+),\s*(-?\d+)\)/i.test(q));
+  const isAbs = /\|-?\d+\||absolute value/i.test(q);
 
-  if (divFrac) {
+  if (isFunction) {
+    const fnMatch = q.match(/y\s*=\s*(-?\d*)\s*x\s*(?:([+−\-])\s*(\d+))?[^]*?when\s+x\s*=\s*(-?\d+)/i) ||
+                    q.match(/y\s*=\s*(-?\d*)\s*x\s*(?:([+−\-])\s*(\d+))?/i);
+    const mStr = fnMatch?.[1];
+    const m = mStr === "" || mStr === undefined ? 1 : mStr === "-" || mStr === "−" ? -1 : Number(mStr.replace("−", "-"));
+    const op = fnMatch?.[2];
+    const cNum = fnMatch?.[3] ? Number(fnMatch[3]) : 0;
+    const b = op === "-" || op === "−" ? -cNum : cNum;
+    const inputX = fnMatch?.[4] !== undefined ? Number(fnMatch[4].replace("−", "-")) : 3;
+    const ruleStr = `y = ${m}x ${b >= 0 ? "+ " + b : "− " + Math.abs(b)}`;
+
+    goal = "Get rid of the easiest numbers first! The constant term is standing alone, so undo it before the multiplier attached to x.";
+    tip = "Rule: Look at what is attached to the variable (multiplication) vs what is standing alone. Always undo the lone constant first!";
+    suggestedTool = "functionMachine";
+    toolLabel = "Function Machine";
+
+    visualWidget = `
+      <div class="expl-interactive-widget" data-widget-type="function-machine" data-m="${m}" data-b="${b}" data-curr="${inputX}">
+        <div class="expl-widget-header">
+          <span class="expl-widget-title">⚙️ Interactive Function Machine: <code>${escapeHtml(ruleStr)}</code></span>
+          <button type="button" class="expl-speak-btn" data-speak-expl="true" aria-label="Listen to explanation">🔊 Listen</button>
+        </div>
+        <div class="expl-action-bar" role="tablist">
+          <button type="button" class="expl-action-btn is-active" data-expl-func="easiest" data-m="${m}" data-b="${b}">1️⃣ Undo Easiest Number (${b >= 0 ? `+${b}` : `−${Math.abs(b)}`})</button>
+          <button type="button" class="expl-action-btn" data-expl-func="attached" data-m="${m}" data-b="${b}">2️⃣ Undo Multiplier Attached to x (${m}x)</button>
+          <button type="button" class="expl-action-btn" data-expl-func="machine">3️⃣ Test Numbers in Machine</button>
+        </div>
+        <div class="expl-visual-stage">
+          ${renderFunctionMachine({ m, b, currentInput: inputX, inputs: [1, 2, 3, 4, 5] })}
+        </div>
+        <div class="expl-caption-box" role="status">
+          <strong>Key Rule — Get rid of the easiest numbers first!</strong> In <code>${escapeHtml(ruleStr)}</code>, the number ${m} is attached to the variable x by multiplication. The lone number <strong>${b >= 0 ? `+${b}` : `−${Math.abs(b)}`}</strong> is not attached to the variable, making it the easiest number to undo first!
+        </div>
+      </div>
+    `;
+  } else if (isCoord && !isPercent) {
+    const ptMatch = [...q.matchAll(/\((-?\d+),\s*(-?\d+)\)/g)];
+    const p1x = ptMatch[0] ? Number(ptMatch[0][1]) : 3;
+    const p1y = ptMatch[0] ? Number(ptMatch[0][2]) : 4;
+    const hasP2 = ptMatch.length >= 2;
+    const p2x = hasP2 ? Number(ptMatch[1][1]) : -3;
+    const p2y = hasP2 ? Number(ptMatch[1][2]) : 4;
+    const reflectAxis = /reflect.*x-axis/i.test(q) ? "x" : /reflect.*y-axis/i.test(q) ? "y" : null;
+
+    goal = "Use absolute value to measure distance on the coordinate plane: |x| to the y-axis, and |y| to the x-axis!";
+    tip = "Distance is never negative! The distance to an axis or between points across an axis uses absolute values: |x| and |y|.";
+    suggestedTool = "coordinate";
+    toolLabel = "Coordinate Explorer";
+
+    visualWidget = `
+      <div class="expl-interactive-widget" data-widget-type="coordinate">
+        <div class="expl-widget-header">
+          <span class="expl-widget-title">🧭 Interactive Coordinate Plane &amp; Absolute Value Explorer</span>
+          <button type="button" class="expl-speak-btn" data-speak-expl="true" aria-label="Listen to explanation">🔊 Listen</button>
+        </div>
+        <div class="expl-action-bar" role="tablist">
+          <button type="button" class="expl-action-btn is-active" data-expl-coord="point" data-x="${p1x}" data-y="${p1y}">📍 Coordinates &amp; Quadrant</button>
+          <button type="button" class="expl-action-btn" data-expl-coord="axis" data-x="${p1x}" data-y="${p1y}">📏 Axis Distances (|x| &amp; |y|)</button>
+          <button type="button" class="expl-action-btn" data-expl-coord="reflect" data-x="${p1x}" data-y="${p1y}">🪞 Reflection Preserves Distance</button>
+        </div>
+        <div class="expl-visual-stage">
+          ${renderCoordinateExplorer({
+            p1: { x: p1x, y: p1y },
+            ...(hasP2 ? { p2: { x: p2x, y: p2y } } : {}),
+            singlePoint: !hasP2,
+            showRelationships: true,
+            showConnector: hasP2,
+            showAbsolute: true,
+            reflectAxis: reflectAxis || null,
+          })}
+        </div>
+        <div class="expl-caption-box" role="status">
+          <strong>Interactive Coordinate Model:</strong> Drag the points, toggle axis distances, or reflect across axes! The distance from (${p1x}, ${p1y}) to the y-axis is |x| = |${p1x}| = ${Math.abs(p1x)} units, and to the x-axis is |y| = |${p1y}| = ${Math.abs(p1y)} units.
+        </div>
+      </div>
+    `;
+  } else if (isAbs) {
+    const absValMatch = q.match(/\|(-?\d+)\|/);
+    const n = absValMatch ? Number(absValMatch[1]) : -8;
+    goal = "Absolute value is a number's distance from zero on the number line. Distance is never negative!";
+    tip = "Think of counting steps from zero: whether you walk left or right, each step is positive distance!";
+    suggestedTool = "numberline";
+    toolLabel = "Number Line";
+
+    visualWidget = `
+      <div class="expl-interactive-widget" data-widget-type="absolute-value">
+        <div class="expl-widget-header">
+          <span class="expl-widget-title">📏 Number Line Absolute Value: Distance from Zero</span>
+          <button type="button" class="expl-speak-btn" data-speak-expl="true" aria-label="Listen to explanation">🔊 Listen</button>
+        </div>
+        <div class="expl-action-bar" role="tablist">
+          <button type="button" class="expl-action-btn is-active" data-expl-abs="dist" data-n="${n}">📏 Distance from 0</button>
+          <button type="button" class="expl-action-btn" data-expl-abs="opposite" data-n="${n}">🔄 Opposite Numbers</button>
+          <button type="button" class="expl-action-btn" data-expl-abs="positive" data-n="${n}">➕ Always Nonnegative</button>
+        </div>
+        <div class="expl-visual-stage">
+          ${renderModel({
+            type: "numberline",
+            start: n,
+            jumps: [-n],
+            caption: `|${n}| is ${Math.abs(n)} units from zero on the number line`,
+          })}
+        </div>
+        <div class="expl-caption-box" role="status">
+          <strong>Distance from Zero:</strong> |${n}| counts the distance from ${n} to 0. Since distance is always positive or zero, |${n}| = ${Math.abs(n)}.
+        </div>
+      </div>
+    `;
+  } else if (divFrac) {
     let a = Number(divFrac[1]), b = Number(divFrac[2]), c, d;
     if (divFrac[4] !== undefined) {
       c = Number(divFrac[3]);
@@ -6896,6 +7010,7 @@ function wireExplanationWidgets(root, item) {
     }
   });
   mountCoordinateExplorer(root);
+  mountFunctionMachine(root);
   mountTriangleShear(root);
   mountBase10Regrouping(root);
   mountRatioScaler(root);
@@ -6940,6 +7055,8 @@ function mountProblemModel(show, collapsed = true) {
     els.drillPanel.style.setProperty("--trail", getGrade(state.item.skill?.grade || state.grade).color);
     if (picture) {
       host.innerHTML = `<div class="tr-model">${picture}</div>`;
+      mountCoordinateExplorer(host);
+      mountFunctionMachine(host);
       if (els.toggleProblemVisual) els.toggleProblemVisual.hidden = false;
     } else {
       host.hidden = true;
@@ -6986,6 +7103,8 @@ function renderGuidedCoach() {
         </li>`;
     })
     .join("");
+  mountCoordinateExplorer(els.guidedSteps);
+  mountFunctionMachine(els.guidedSteps);
   els.guidedStepCount.textContent = `${state.guidedStepsShown} of ${steps.length} steps open`;
   els.guidedNextStep.hidden = state.guidedStepsShown >= steps.length;
   els.guidedNextStep.dataset.nextMove = nextMoveOf(allCopies, state.guidedStepsShown);
@@ -10837,7 +10956,7 @@ function handleExplanationInteraction(event) {
     return true;
   }
 
-  const btn = event.target.closest("[data-expl-action], [data-expl-step], [data-expl-ld-step], [data-expl-mul], [data-expl-area], [data-expl-kcf], [data-expl-frac], [data-expl-int], [data-expl-sign], [data-expl-bal], [data-expl-pct], [data-expl-pv]");
+  const btn = event.target.closest("[data-expl-action], [data-expl-step], [data-expl-ld-step], [data-expl-mul], [data-expl-area], [data-expl-kcf], [data-expl-frac], [data-expl-int], [data-expl-sign], [data-expl-bal], [data-expl-pct], [data-expl-pv], [data-expl-func], [data-expl-coord], [data-expl-abs]");
   if (!btn) return false;
 
   const widget = btn.closest(".expl-interactive-widget");
@@ -11026,6 +11145,54 @@ function handleExplanationInteraction(event) {
       if (captionEl) captionEl.innerHTML = `<strong>2. Solve Strategy:</strong> Break numbers into friendly parts or apply the matching mathematical relationship.`;
     } else {
       if (captionEl) captionEl.innerHTML = `<strong>3. Final Answer:</strong> Verify your answer is reasonable before moving on!`;
+    }
+    if (typeof chime === "function") chime("step");
+    return true;
+  }
+
+  // Function Machine & Isolating Variables
+  if (btn.hasAttribute("data-expl-func")) {
+    const act = btn.dataset.explFunc;
+    const m = btn.dataset.m || "m";
+    const b = Number(btn.dataset.b) || 0;
+    if (act === "easiest") {
+      if (captionEl) captionEl.innerHTML = `<strong>1. Get Rid of the Easiest Number First!</strong> The lone constant term (${b >= 0 ? `+${b}` : `−${Math.abs(b)}`}) is not attached to the variable. When isolating x, ALWAYS undo this lone constant first by ${b >= 0 ? `subtracting ${b}` : `adding ${Math.abs(b)}`}!`;
+    } else if (act === "attached") {
+      if (captionEl) captionEl.innerHTML = `<strong>2. Deal with the Number Attached to x:</strong> The multiplier ${m} is glued to x by multiplication (${m} × x). Once the lone number is gone, undo the multiplication by dividing both sides by ${m}!`;
+    } else {
+      if (captionEl) captionEl.innerHTML = `<strong>3. Interactive Function Machine:</strong> Test different numbers below! Click "Drop x = ..." to see how the machine calculates the output and adds points to the table in real time!`;
+    }
+    if (typeof chime === "function") chime("step");
+    return true;
+  }
+
+  // Coordinate Plane & Axis Distances
+  if (btn.hasAttribute("data-expl-coord")) {
+    const act = btn.dataset.explCoord;
+    const x = Number(btn.dataset.x) || 0;
+    const y = Number(btn.dataset.y) || 0;
+    if (act === "point") {
+      const quad = x > 0 && y > 0 ? "I" : x < 0 && y > 0 ? "II" : x < 0 && y < 0 ? "III" : "IV";
+      if (captionEl) captionEl.innerHTML = `<strong>Coordinates &amp; Quadrant:</strong> (${x}, ${y}) has x = ${x} (${x >= 0 ? "right" : "left"}) and y = ${y} (${y >= 0 ? "up" : "down"}), placing it in Quadrant ${quad}.`;
+    } else if (act === "axis") {
+      if (captionEl) captionEl.innerHTML = `<strong>Axis Distances:</strong> Distance to the y-axis is |x| = |${x}| = ${Math.abs(x)} units. Distance to the x-axis is |y| = |${y}| = ${Math.abs(y)} units. Both distances are always nonnegative!`;
+    } else {
+      if (captionEl) captionEl.innerHTML = `<strong>Reflection Preserves Distance:</strong> Reflecting across an axis mirrors the point across the line while keeping the exact same distance to the mirror axis!`;
+    }
+    if (typeof chime === "function") chime("step");
+    return true;
+  }
+
+  // Absolute Value on Number Line
+  if (btn.hasAttribute("data-expl-abs")) {
+    const act = btn.dataset.explAbs;
+    const n = Number(btn.dataset.n) || 0;
+    if (act === "dist") {
+      if (captionEl) captionEl.innerHTML = `<strong>Distance from Zero:</strong> |${n}| counts the distance from ${n} to 0 on the number line: exactly ${Math.abs(n)} units!`;
+    } else if (act === "opposite") {
+      if (captionEl) captionEl.innerHTML = `<strong>Opposite Numbers:</strong> Opposite numbers like ${n} and ${-n} sit on opposite sides of 0, but both are exactly ${Math.abs(n)} units away: |${n}| = |${-n}| = ${Math.abs(n)}!`;
+    } else {
+      if (captionEl) captionEl.innerHTML = `<strong>Always Nonnegative:</strong> Distance can never be negative. Whether a number is positive or negative, its absolute value is always ≥ 0!`;
     }
     if (typeof chime === "function") chime("step");
     return true;
