@@ -745,6 +745,24 @@ export const VOCAB_BILINGUAL_DB = {
       <text x="240" y="55" text-anchor="middle" font-size="13" font-weight="900" fill="#17324D">V = l × w × h</text>
       <text x="240" y="75" text-anchor="middle" font-size="11" font-weight="700" fill="#17324D">cubic units</text>
     </svg>`
+  },
+
+  "half-foot cube": {
+    id: "half-foot cube",
+    enTitle: "Half-Foot Cube",
+    esTitle: "Cubo de medio pie",
+    enDef: "A cube with each edge 1/2 foot long. Its volume is 1/2 × 1/2 × 1/2 = 1/8 cubic foot.",
+    esDef: "Un cubo con aristas de 1/2 pie. Su volumen es 1/2 × 1/2 × 1/2 = 1/8 de pie cúbico.",
+    example: "Eight half-foot cubes fill 1 cubic foot because 8 × 1/8 ft³ = 1 ft³.",
+    keywords: ["half-foot cube", "half-foot cubes", "cubo de medio pie", "cubos de medio pie"],
+    svg: `<svg viewBox="0 0 320 130" role="img" aria-label="A cube with half-foot edges has a volume of one eighth cubic foot">
+      <polygon points="52,45 96,21 140,45 96,69" fill="#d8f0ec" stroke="#17324d" stroke-width="2"/>
+      <polygon points="52,45 96,69 96,115 52,91" fill="#45a89b" stroke="#17324d" stroke-width="2"/>
+      <polygon points="96,69 140,45 140,91 96,115" fill="#258c85" stroke="#17324d" stroke-width="2"/>
+      <text x="96" y="128" text-anchor="middle" font-size="11" font-weight="800" fill="#17324d">1/2 ft on each edge</text>
+      <text x="231" y="57" text-anchor="middle" font-size="14" font-weight="900" fill="#17324d">1/2 × 1/2 × 1/2</text>
+      <text x="231" y="83" text-anchor="middle" font-size="17" font-weight="900" fill="#157a70">= 1/8 ft³</text>
+    </svg>`
   }
 };
 

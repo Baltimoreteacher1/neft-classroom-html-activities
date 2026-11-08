@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { SIMS } from "../math/fluency-lab/studio/sims.js";
 import { vocabMarkup } from "../math/fluency-lab/studio/vocab-content.js";
 import { VOCAB_BILINGUAL_DB } from "../math/fluency-lab/vocab.js";
 
@@ -7,6 +8,24 @@ assert.match(ratio, /<button type="button" class="vocab-word" data-vocab="equiva
 assert.match(vocabMarkup("La razón compara dos cantidades."), /data-vocab="ratio"/);
 assert.match(vocabMarkup("A 30 percent model."), /data-vocab="percent"/);
 assert.match(vocabMarkup("Find the unit rate."), /data-vocab="unit rate"/);
+assert.match(
+  vocabMarkup("Each half-foot cube has volume 1/8 ft³."),
+  /data-vocab="half-foot cube"[^>]*>half-foot cube/,
+);
+assert.match(
+  vocabMarkup("Los cubos de medio pie muestran una octava parte."),
+  /data-vocab="half-foot cube"[^>]*>cubos de medio pie/,
+);
+assert.match(
+  vocabMarkup(SIMS.volumeFractional.render({ a: 3, b: 4, c: 1, lang: "en" }).read.en),
+  /data-vocab="half-foot cube"[^>]*>half-foot cubes/,
+  "the fractional-volume model links its instructional term to the illustrated glossary",
+);
+assert.match(
+  vocabMarkup(SIMS.volumeFractional.render({ a: 3, b: 4, c: 1, lang: "es" }).read.es),
+  /data-vocab="half-foot cube"[^>]*>cubos de medio pie/,
+  "the Spanish model readout links the same term to its bilingual illustration",
+);
 assert.match(
   vocabMarkup("Equivalent ratios use the same scale factor."),
   /data-vocab="equivalent ratio"/,
@@ -28,6 +47,7 @@ for (const key of [
   "part-to-whole ratio",
   "proportional relationship",
   "equal groups",
+  "half-foot cube",
 ]) {
   const entry = VOCAB_BILINGUAL_DB[key];
   assert.ok(
