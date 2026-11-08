@@ -77,7 +77,7 @@ for (const skill of ALL_SKILLS)
 
 // 2. Worked examples and Try-It problems: answers recomputed independently; hints and early steps never state them.
 const stepArithmetic =
-  /(?<![+−×÷] |[\d,./])(\d[\d,]*) ([+−×÷]) (\d[\d,]*) = (\d[\d,]*)(?![\d/]|\s*[+−×÷\d./])/g;
+  /(?<![+−×÷] |[\d,./])(\d[\d,]*) ([+−×÷]) (\d[\d,]*) = (\d[\d,]*)(?![\d/]|\s*[+−×÷\d./]|\s+R \d)/g; // "37 ÷ 3 = 12 R 1" is a division with a remainder, not 37 ÷ 3 = 12
 const asNumber = (text) => Number(String(text).replaceAll(",", ""));
 let solved = 0;
 let unsolved = 0;

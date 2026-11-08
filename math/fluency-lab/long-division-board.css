@@ -1,0 +1,86 @@
+/* Worked long-division bracket (long-division-board.js): divisor ) dividend with the quotient on top.
+   Every digit sits in a column --ldb-w wide; a multi-digit number spreads its digits over its columns. */
+.ldb-static {
+  --ldb-w: 1.6ch;
+  --ldb-gap: calc(var(--ldb-w) - 1ch);
+  display: flex;
+  justify-content: center;
+  padding: 0.75rem 0.5rem;
+  overflow-x: auto;
+}
+.ldb-grid {
+  display: grid;
+  font:
+    700 1.35rem/1.5 ui-monospace,
+    "SF Mono",
+    Menlo,
+    Consolas,
+    monospace;
+  color: #17324d;
+  font-variant-numeric: tabular-nums;
+}
+.ldb-cell {
+  white-space: nowrap;
+  min-width: 0;
+  text-align: center;
+}
+.ldb-num {
+  letter-spacing: var(--ldb-gap);
+  text-indent: calc(var(--ldb-gap) / 2);
+  text-align: left;
+}
+.ldb-divisor {
+  padding-right: 0.35em;
+  align-self: center;
+  color: #1d4ed8;
+}
+.ldb-dividend {
+  border-top: 3px solid #17324d;
+}
+.ldb-first {
+  border-left: 3px solid #17324d;
+  border-top-left-radius: 0.6em;
+}
+.ldb-quotient {
+  color: #15803d;
+}
+.ldb-remainder {
+  color: #b45309;
+  padding-left: 0.5em;
+  text-align: left;
+  overflow: visible;
+}
+.ldb-product {
+  position: relative;
+  border-bottom: 2px solid #17324d;
+}
+/* The subtraction sign is drawn, not typed, so the step lens only boxes real numbers. */
+.ldb-product::before {
+  content: "−";
+  position: absolute;
+  right: 100%;
+  padding-right: 0.15em;
+  color: #9a3412;
+  text-indent: 0;
+}
+.ldb-bring {
+  color: #1d4ed8;
+}
+.ldb-final {
+  color: #b45309;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .ldb-static.is-worked .ldb-cell {
+    animation: ldb-in 0.35s ease-out both;
+  }
+}
+@keyframes ldb-in {
+  from {
+    opacity: 0;
+    transform: translateY(-3px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}

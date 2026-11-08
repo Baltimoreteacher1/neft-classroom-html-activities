@@ -243,7 +243,7 @@ function division(item) {
   if (!Number.isInteger(count) || count > 10) return null;
   const list = Array.from({ length: count }, (_, i) => size * (i + 1));
   return ending([
-    `Think: ${size} × ? = ${total}`,
+    `Think: ${total} ÷ ${size} = ? means ${size} × ? = ${total}`,
     `Count by ${size}s: ${list.join(", ")}`,
     `You said ${count} numbers. So ${total} ÷ ${size} = ${count}`,
   ]);

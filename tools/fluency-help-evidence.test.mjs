@@ -53,20 +53,25 @@ assert.ok(powers > 20, "the sample includes powers of ten");
 
 // 2. Division: the framing step may show; the tens-and-ones split may not. The generator's own test is unchanged.
 const division = ALL_SKILLS.filter((skill) => ["division", "divide-whole"].includes(skill.id));
-let splits = 0;
+let longDivisions = 0;
 for (const skill of division)
   for (let seed = 1; seed <= 200; seed += 1) {
     const item = generateProblem(skill, seededRandom(seed * 31));
-    assert.ok(leakCap(item) >= peekCap(item), "the display cap is never looser than the leak test");
-    if (/^[\d,]+ × \? = /.test(item.steps[0]) && item.steps.length > 2) {
-      splits += 1;
+    assert.equal(peekCap(item), leakCap(item), "the display cap is the leak test");
+    if (/^Set up: write [\d,]+ ÷ \d+ as \d+ \) [\d,]+\./.test(item.steps[0])) {
+      longDivisions += 1;
+      assert.equal(
+        leakCap(item),
+        item.steps.length - 1,
+        `only the last long-division step may state the answer: ${item.question} | ${item.steps.join(" / ")}`,
+      );
       assert.ok(
-        peekCap(item) <= 1,
-        `only the framing step may show: ${item.question} | ${item.steps.join(" / ")}`,
+        item.model?.type === "longDivision",
+        `long division draws the bracket: ${item.question}`,
       );
     }
   }
-assert.ok(splits > 30, `the sample includes split divisions (${splits})`);
+assert.ok(longDivisions > 150, `the sample includes long divisions (${longDivisions})`);
 
 const $ = (selector) => win.document.querySelector(selector);
 const session = () => JSON.parse(win.localStorage.getItem("ewl-fluency-session-v2"));

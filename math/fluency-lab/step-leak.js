@@ -38,12 +38,5 @@ export function leakCap(item) {
   return limit;
 }
 
-// A division framed as "b × ? = a" and then split into tens and ones ("b × 30", "b × 4") has already told the
-// learner the parts of the quotient, so only the framing step may show.
-const isDivisionSplit = (steps) => /^[\d,]+ × \? = [\d,]+/.test(plain(steps[0] || "")) && steps.length > 2;
-
 // How many steps a learner may be shown before answering. Every screen that opens hint steps uses this.
-export function peekCap(item) {
-  const cap = leakCap(item);
-  return isDivisionSplit(item.steps || []) ? Math.min(1, cap) : cap;
-}
+export const peekCap = leakCap;

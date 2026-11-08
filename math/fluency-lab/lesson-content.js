@@ -2,6 +2,7 @@ import { baseGenerator } from "./problem-bank.js";
 import { countOf, factorText, keptPrimes, multiplyText, primeList } from "./factor-tree.js";
 import { t } from "./i18n.js";
 import { STRAND_LESSONS } from "./lesson-content-strands.js";
+import { longDivisionWork } from "./long-division-work.js";
 
 const step = (prompt, answer, hint, explanation, kind = "number", choices = null) => ({ prompt, answers: [String(answer)], kind, choices, hint, explanation });
 const lesson = (title, idea, model, steps) => ({ title, idea, model, steps });
@@ -42,10 +43,24 @@ export function createLesson(skill, variant = 0) {
   }
   if (gen === "fact") {
     const op = config.op;
+    if (op === "div" && grade >= 4) {
+      // Long division, one cycle at a time: divide, multiply, subtract, bring down, repeat.
+      const divisor = 6;
+      const dividend = divisor * (64 + k);
+      const [first, second] = longDivisionWork(dividend, divisor).cycles;
+      const quotient = first.qDigit * 10 + second.qDigit;
+      return lesson("Long division, one cycle at a time", "Divide, multiply, subtract, bring down. Repeat until every digit has been used.", {
+        type: "longDivision", dividend, divisor, staged: true, caption: `${dividend} ÷ ${divisor}`,
+      }, [
+        step(`Start with the first digits, ${first.current}. How many ${divisor}s fit into ${first.current} without going over?`, first.qDigit, `Think: ${divisor} × ? is close to ${first.current}, but not over.`, `${first.qDigit} × ${divisor} = ${first.product}. Write ${first.qDigit} above the ${first.digit}.`),
+        step(`Subtract: ${first.current} − ${first.product} = ?`, first.remainder, `Take the product away from ${first.current}.`, `${first.current} − ${first.product} = ${first.remainder}. Bring down the ${first.next} to make ${first.remainder * 10 + first.next}.`),
+        step(`Bring down the ${first.next} to make ${first.remainder * 10 + first.next}. Divide again, then read the quotient above the bracket. What is ${dividend} ÷ ${divisor}?`, quotient, `${divisor} × ? = ${second.current}. Put the two digits side by side.`, `${second.qDigit} × ${divisor} = ${second.product}, so ${dividend} ÷ ${divisor} = ${quotient}. Check: ${quotient} × ${divisor} = ${dividend}.`),
+      ]);
+    }
     if (op === "div") {
-      const divisor = grade >= 4 ? 6 : 3 + k;
-      const quotient = grade >= 4 ? 64 + k : 8;
-      const a = grade >= 4 ? 60 : 5;
+      const divisor = 3 + k;
+      const quotient = 8;
+      const a = 5;
       const b = quotient - a;
       return lesson("Split a division into friendly parts", "Each part is divided by the same number. Add the partial quotients at the end.", {
         type: "partition", labels: [`${divisor * a} ÷ ${divisor}`, `${divisor * b} ÷ ${divisor}`], values: [divisor * a, divisor * b], caption: `${divisor * quotient} ÷ ${divisor}`,

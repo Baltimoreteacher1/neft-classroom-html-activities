@@ -3,6 +3,7 @@ import { HINT as DIVIDE_FRACTIONS_HINT, LEARN_STEPS as DIVIDE_FRACTIONS_STEPS, M
 import { applyKidLearn } from "./kid-learn.js";
 import { kidSteps } from "./kid-steps.js";
 import { leakCap } from "./step-leak.js";
+import { longDivisionSteps, needsLongDivision } from "./long-division-work.js";
 import { workedSteps } from "./step-builders.js";
 import { factorText, keptPrimes, multiplyText, parsePrimes, powerText, primeList } from "./factor-tree.js";
 import { checkEquivalent, looseNumberMatch } from "./problem-types/equivalence.js"; // fl4:generators
@@ -189,15 +190,12 @@ export function factSteps(op, a, b, answer, strategy) {
     if (big >= 6 && big <= 8) return [`5 × ${small} = ${5 * small}`, `${big - 5} × ${small} = ${(big - 5) * small}`, `${5 * small} + ${(big - 5) * small} = ${answer}`];
     return [`Count by ${big}s:`, Array.from({ length: small }, (_, i) => big * (i + 1)).join(", ")];
   }
-  // Division is "what times the divisor makes the dividend?" Ask that first and let the learner search; the
-  // quotient only appears in the last steps (the old first step, "16 × 20 = 320", already stated it).
-  if (answer <= 12) {
-    const multiples = Array.from({ length: answer }, (_, i) => fmt(b * (i + 1)));
-    return [`${b} × ? = ${fmt(a)}`, `Count by ${b}s until you reach ${fmt(a)}: ${multiples.join(", ")}`, `Count the numbers you said. That count is the quotient.`, `${b} × ${answer} = ${fmt(a)}, so ${fmt(a)} ÷ ${b} = ${answer}`];
-  }
-  const tens = Math.floor(answer / 10) * 10;
-  if (answer % 10 === 0) return [`${b} × ? = ${fmt(a)}`, `Think of ${fmt(a)} as ${fmt(a / 10)} tens. Share the tens: ${fmt(a / 10)} ÷ ${b}.`, `${fmt(a / 10)} ÷ ${b} = ${answer / 10}, so ${answer / 10} tens, and ${fmt(a)} ÷ ${b} = ${fmt(answer)}`];
-  return [`${b} × ? = ${fmt(a)}`, `${b} × ${fmt(tens)} = ${fmt(b * tens)}`, `${b} × ${answer - tens} = ${fmt(b * (answer - tens))}`, `${fmt(tens)} + ${answer - tens} = ${fmt(answer)}`];
+  // Division: past the basic facts it is the long-division algorithm (divide, multiply, subtract, bring down), with
+  // the ÷ symbol and the bracket. A basic fact asks "what times the divisor makes the dividend?" and lets the
+  // learner search; the quotient only appears in the last steps.
+  if (needsLongDivision(a, b)) return longDivisionSteps(a, b, strategy === "remainder" ? "remainder" : "quotient", { compact: true });
+  const multiples = Array.from({ length: answer }, (_, i) => fmt(b * (i + 1)));
+  return [`Think: ${fmt(a)} ÷ ${b} = ? is the same as asking ${b} × ? = ${fmt(a)}. What number goes in the blank?`, `Count by ${b}s until you reach ${fmt(a)}: ${multiples.join(", ")}`, `Count the numbers you said. That count is the quotient.`, `${b} × ${answer} = ${fmt(a)}, so ${fmt(a)} ÷ ${b} = ${answer}`];
 }
 
 function factModel(op, a, b, answer, config) {
@@ -225,12 +223,30 @@ function factModel(op, a, b, answer, config) {
     }
     return null;
   }
+  if (config.longDivision || needsLongDivision(a, b)) return { type: "longDivision", dividend: a, divisor: b, caption: `${whole.format(a)} ÷ ${b}, long division` };
   if (b >= 2 && b <= 12 && answer >= 1 && answer <= 12) return { type: "array", a: b, b: answer, split: b, share: a, caption: `${whole.format(a)} shared equally into ${b} rows` };
   return null;
 }
 
 // Early multiplication and division stay basic facts; the hint is built from the actual numbers
 // (skip-count, a 5-fact or 10-fact, or the related multiplication) without giving the answer.
+// A division with something left over. The answer stays one whole number (the quotient or the remainder, asked
+// for by name) so every practice surface can check it; the steps and the bracket show "quotient R remainder".
+function remainderProblem(divisor, quotient, rng) {
+  const left = randInt(1, divisor - 1, rng);
+  const dividend = divisor * quotient + left;
+  const askRemainder = rng() < 0.5;
+  const ask = askRemainder ? "remainder" : "quotient";
+  const worked = `${whole.format(dividend)} ÷ ${divisor} = ${whole.format(quotient)} R ${left}`;
+  return problem(`${whole.format(dividend)} ÷ ${divisor} has a remainder. What is the ${askRemainder ? "remainder" : "whole-number quotient"}?`, askRemainder ? left : quotient, {
+    questionEs: `${whole.format(dividend)} ÷ ${divisor} tiene residuo. ¿Cuál es el ${askRemainder ? "residuo" : "cociente entero"}?`,
+    hint: "Divide, multiply, subtract, bring down. What is left at the end, smaller than the divisor, is the remainder.",
+    explanation: `${worked}, because ${whole.format(quotient)} × ${divisor} + ${left} = ${whole.format(dividend)}.`,
+    model: factModel("div", dividend, divisor, quotient, { longDivision: true }),
+    steps: longDivisionSteps(dividend, divisor, ask),
+  });
+}
+
 function coachedFact(op, a, b, answer, config) {
   const model = factModel(op, a, b, answer, config);
   if (op === "div") {
@@ -365,6 +381,7 @@ const generators = {
       b = randInt(config.minDivisor ?? 1, config.maxDivisor ?? max, rng);
       answer = randInt(config.minQuotient ?? 1, config.maxQuotient ?? max, rng);
       a = b * answer;
+      if (config.longDivision && rng() < 0.4) return remainderProblem(b, answer, rng);
     }
     if (config.coach) return coachedFact(op, a, b, answer, config);
     const symbol = FACT_SYMBOL[op];
@@ -379,7 +396,7 @@ const generators = {
               : "Ask: what number times the divisor makes the dividend?",
       explanation: `${whole.format(a)} ${symbol} ${whole.format(b)} = ${whole.format(answer)}.`,
       model: factModel(op, a, b, answer, config),
-      steps: factSteps(op, a, b, answer),
+      steps: op === "div" && config.longDivision ? longDivisionSteps(a, b) : factSteps(op, a, b, answer),
     });
   },
 
@@ -1478,7 +1495,7 @@ export const GRADES = [
       S("subtract-large", "Multi-digit subtraction", "Operations", "fact", { op: "sub", min: 1000, max: 50000, maxResult: 99999 }, "4.NBT.B.4", L("Regroup one unit from the next place when needed.", ["Align place values.", "Regroup across zeros carefully.", "Subtract and check with addition."], "8,000 − 2,675 = 5,325", "When regrouping, reduce the place you borrowed from.")),
       S("multiply-1digit", "Multiply a three-digit number by a one-digit number", "Multiplication", "fact", { op: "mul", minA: 100, maxA: 999, minB: 2, maxB: 9 }, "4.NBT.B.5", L("Use place value to multiply a three-digit number by a one-digit number.", ["Break the three-digit number into hundreds, tens, and ones.", "Multiply each part by the one-digit factor.", "Add the partial products and regroup if needed."], "326 × 4 = 1,304", "Regrouped tens must be added to the next partial product.")),
       S("multiply-2digit", "Multiply two-digit numbers", "Multiplication", "fact", { op: "mul", minA: 10, maxA: 99, minB: 10, maxB: 99 }, "4.NBT.B.5", L("Break one factor into tens and ones.", ["Multiply by the ones part.", "Multiply by the tens part.", "Add the partial products."], "23 × 14 = 23 × 10 + 23 × 4 = 322", "The tens partial product is ten times its digit product.")),
-      S("division", "Whole-number division", "Division", "fact", { op: "div", minDivisor: 2, maxDivisor: 9, minQuotient: 10, maxQuotient: 99 }, "4.NBT.B.6", L("Division undoes multiplication.", ["Estimate the quotient.", "Use multiplication facts for each place.", "Multiply to check."], "384 ÷ 6 = 64 because 64 × 6 = 384.", "A quotient digit must match its place value.")),
+      S("division", "Whole-number division", "Division", "fact", { op: "div", minDivisor: 2, maxDivisor: 9, minQuotient: 10, maxQuotient: 99, longDivision: true }, "4.NBT.B.6", L("Division undoes multiplication.", ["Estimate the quotient.", "Use multiplication facts for each place.", "Multiply to check."], "384 ÷ 6 = 64 because 64 × 6 = 384.", "A quotient digit must match its place value.")),
       S("factors", "Factors and multiples", "Number theory", "factorMultiple", { max: 100 }, "4.OA.B.4", L("Factors divide a number evenly; multiples come from repeated multiplication.", ["List factor pairs, or check whether dividing leaves a remainder.", "Count by the number to list its multiples.", "A prime number has only two factors: 1 and itself."], "Factors of 12: 1, 2, 3, 4, 6, 12. Multiples of 4: 4, 8, 12, 16.", "A factor is not the same as a multiple.")),
       S("fraction-equiv", "Generate equivalent fractions", "Fractions", "fractionEquivalent", { maxDenominator: 12, maxFactor: 8 }, "4.NF.A.1", L("Scale numerator and denominator by the same nonzero number.", ["Find the scale factor.", "Apply it to both parts.", "Check that the value stayed equal."], "3/5 = 12/20 using ×4.", "Adding the same number to both parts does not preserve a fraction.")),
       S("fraction-compare", "Compare fractions", "Fractions", "fractionCompare", { maxDenominator: 12 }, "4.NF.A.2", L("Fractions need a common whole before they can be compared.", ["Use a benchmark or common denominator.", "Compare equal-sized parts.", "Write the correct symbol."], "5/8 > 3/5 because 25/40 > 24/40.", "Do not compare denominators by themselves.")),
@@ -1492,7 +1509,7 @@ export const GRADES = [
     promise: "Become fluent with decimals, fractions, multi-digit operations, and volume.",
     skills: [
       S("multiply-whole", "Multi-digit multiplication", "Operations", "fact", { op: "mul", minA: 100, maxA: 999, minB: 10, maxB: 99 }, "5.NBT.B.5", L("Partial products show why the standard algorithm works.", ["Decompose a factor by place value.", "Find each partial product.", "Add and estimate-check."], "214 × 36 = 214 × 30 + 214 × 6 = 7,704", "Each partial product needs the correct place value.")),
-      S("divide-whole", "Whole-number division", "Operations", "fact", { op: "div", minDivisor: 2, maxDivisor: 24, maxQuotient: 200 }, "5.NBT.B.6", L("Division partitions a dividend into equal groups.", ["Estimate each quotient digit.", "Multiply and subtract.", "Bring down the next place and repeat."], "936 ÷ 12 = 78", "Check that divisor × quotient equals the dividend.")),
+      S("divide-whole", "Whole-number division", "Operations", "fact", { op: "div", minDivisor: 2, maxDivisor: 24, maxQuotient: 200, longDivision: true }, "5.NBT.B.6", L("Division partitions a dividend into equal groups.", ["Estimate each quotient digit.", "Multiply and subtract.", "Bring down the next place and repeat."], "936 ÷ 12 = 78", "Check that divisor × quotient equals the dividend.")),
       S("decimal-place", "Decimal place value", "Decimals", "decimalPlace", { places: 3 }, "5.NBT.A.3", L("Decimal places name parts of one: tenths, hundredths, thousandths.", ["Start immediately right of the decimal.", "Move one place at a time.", "Name the digit and place."], "In 4.307, the 7 is in the thousandths place.", "Zeros inside a decimal hold important places.")),
       S("decimal-add", "Add decimals", "Decimals", "decimalOp", { op: "add", places: 2 }, "5.NBT.B.7", L("Line up decimal points so equal place values combine.", ["Write numbers vertically.", "Add placeholder zeros if helpful.", "Add and bring the decimal straight down."], "4.8 + 2.35 = 7.15", "Do not line up the final digits instead of the decimal points.")),
       S("decimal-sub", "Subtract decimals", "Decimals", "decimalOp", { op: "sub", places: 2 }, "5.NBT.B.7", L("Subtract decimals by place value.", ["Align decimal points.", "Add placeholder zeros.", "Regroup and subtract."], "9.2 − 3.47 = 5.73", "A placeholder zero can make regrouping visible.")),
@@ -1521,7 +1538,7 @@ export const GRADES = [
       S("one-step", "Solve one-step equations", "Equations", "solve", { oneStep: true, nonNegative: true }, "6.EE.B.7", L("An equation stays balanced when the same operation is used on both sides.", ["Identify the operation on x.", "Use its inverse on both sides.", "Substitute to check."], "x + 7 = 19, so x = 12.", "The goal is to isolate the variable, not move symbols without meaning.")),
       S("integers", "Absolute value and the coordinate plane", "Number system", "numberPlane", { min: -100, max: 100 }, "6.NS.C.7", L("Absolute value is a number's distance from zero.", ["Locate the number relative to zero.", "Count the distance.", "Write the distance as nonnegative."], "|−18| = 18", "Absolute value is not the same as making every number positive in an equation.")),
       S("triangle-area", "Find area of triangles and polygons", "Geometry", "geometry", { shape: "triangleArea", max: 18 }, "6.GR.A.1", L("A triangle's area is half the area of a matching rectangle.", ["Identify a base and its perpendicular height.", "Multiply base × height.", "Take half and label square units."], "A triangle with base 8 and height 5 has area 20 square units.", "The height must meet the base at a right angle.")),
-      S("multi-digit-division", "Divide multi-digit numbers", "Number system", "fact", { op: "div", minDivisor: 11, maxDivisor: 48, minQuotient: 101, maxQuotient: 999 }, "6.NS.B.2", L("Long division repeats one cycle: divide, multiply, subtract, bring down.", ["Estimate how many times the divisor fits into the first digits.", "Multiply, subtract, and bring down the next digit.", "Repeat until every digit is used, then check with multiplication."], "4,056 ÷ 24 = 169 because 169 × 24 = 4,056.", "Each quotient digit sits above the last digit you divided into.")),
+      S("multi-digit-division", "Divide multi-digit numbers", "Number system", "fact", { op: "div", minDivisor: 11, maxDivisor: 48, minQuotient: 101, maxQuotient: 999, longDivision: true }, "6.NS.B.2", L("Long division repeats one cycle: divide, multiply, subtract, bring down.", ["Estimate how many times the divisor fits into the first digits.", "Multiply, subtract, and bring down the next digit.", "Repeat until every digit is used, then check with multiplication."], "4,056 ÷ 24 = 169 because 169 × 24 = 4,056.", "Each quotient digit sits above the last digit you divided into.")),
       S("order-rational", "Order rational numbers", "Number system", "orderRational", {}, "6.NS.C.7", L("On a number line, numbers increase from left to right, so a negative number farther from zero is less.", ["Place each number on a number line or compare it with zero.", "Compare negatives by distance from zero: farther is less.", "Write the numbers from least to greatest."], "−2.5 < −3/4 < 1/2 < 0.75", "−3 is less than −1 even though 3 is greater than 1.")),
       S("percent-whole", "Find the whole from a percent", "Ratios", "percentWhole", {}, "6.RP.A.3", L("If a part is a known percent of a whole, the whole is 100%.", ["Write what you know: the part and its percent.", "Find the amount for an easy percent, such as 1%, 10% or 25%.", "Build up to 100% to get the whole."], "15 is 25% of 60 because 25% is 1/4 and 15 × 4 = 60.", "The part is not the whole: multiply up to 100%, do not take the percent of the part.")),
       S("equivalent-expressions", "Write equivalent expressions", "Expressions", "equivalentExpression", {}, "6.EE.A.3", L("Equivalent expressions have the same value for every value of the variable.", ["Use the distributive property to remove or add parentheses.", "Combine like terms: add the coefficients of the same variable part.", "Check by substituting a value for the variable into both expressions."], "3(x + 4) + 2x = 3x + 12 + 2x = 5x + 12", "Multiply every term inside the parentheses, not only the first one.")),

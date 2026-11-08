@@ -12,6 +12,7 @@ import { t } from "./i18n.js";
 import { highlightVocab } from "./vocab.js";
 import { columnSpec, verticalHtml } from "./vertical-columns.js";
 import { fillKey, isSolved, peekFill, register, splitFill, tryFill } from "./step-fill.js";
+import { longDivisionPicture } from "./long-division-board.js";
 import { whyFor } from "./step-whys.js";
 import { nextMoveOf } from "./step-moves.js";
 // Static, student-facing pictures for the Fact Trail. Each one is drawn from the problem's own
@@ -634,6 +635,7 @@ export function interactivePicture(model) {
     return tapPerimeter(model);
   if (model.type === "layers") return stackLayers(model);
   if (model.type === "chain") return chainModel(model);
+  if (model.type === "longDivision") return longDivisionPicture(model);
   return "";
 }
 

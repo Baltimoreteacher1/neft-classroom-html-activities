@@ -6353,7 +6353,7 @@ function renderMultiStrategyComparison(item) {
     stratAName = "Think Multiplication Backwards";
     stratAIcon = "🧠";
     stratADesc = `Ask: What factor times ${b} equals ${a}?`;
-    stratAMath = `${b} × ? = ${a} ➔ ? = ${b > 0 ? Math.floor(a / b) : 0}`;
+    stratAMath = `${a} ÷ ${b} = ? ➔ ${b} × ? = ${a} ➔ ? = ${b > 0 ? Math.floor(a / b) : 0}`;
 
     stratBName = "Standard Algorithm Cycle";
     stratBIcon = "➗";

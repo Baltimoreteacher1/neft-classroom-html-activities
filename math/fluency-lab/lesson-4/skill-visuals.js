@@ -53,13 +53,13 @@ const ROWS = `
 4:subtract-large|place-value|regrouping|A place trades from its left neighbor when it is short.
 4:multiply-1digit|area-model|area-decomposition|Each place of the factor is its own part of the rectangle.
 4:multiply-2digit|area-model|area-decomposition|Four partial products fill one rectangle.
-4:division|area-model|-|Division finds the missing side of a rectangle.
+4:division|-|-|The long-division bracket from long-division-board.js shows divide, multiply, subtract, bring down; an area model hides the algorithm.
 4:factors|array|-|Each factor pair is a rectangle that holds the number.
 4:fraction-equiv|fraction-model|fraction-equivalence|Same amount, different-size pieces.
 4:fraction-compare|fraction-model|-|Bars of the same whole show which is more.
 4:unit-conversion|double-number-line|-|One amount with two unit scales on matching lines.
 5:multiply-whole|area-model|area-decomposition|Partial products fill one rectangle.
-5:divide-whole|area-model|-|Division finds the missing side of a rectangle.
+5:divide-whole|-|-|The long-division bracket from long-division-board.js shows divide, multiply, subtract, bring down; an area model hides the algorithm.
 5:decimal-place|decimal-percent|-|Tenths and hundredths on a hundred grid.
 5:decimal-add|decimal-percent|-|Hundredths grids join and trade.
 5:decimal-sub|decimal-percent|-|Hundredths grids take away.
@@ -80,7 +80,7 @@ const ROWS = `
 6:one-step|-|-|The balanced-equation steps are shown as a step-through; no balance in the graphic set.
 6:integers|number-line|-|Absolute value is distance from zero; quadrants use the plane in the step-through.
 6:triangle-area|geometry|area-decomposition|A triangle is half of a rectangle.
-6:multi-digit-division|area-model|-|Division finds the missing side of a rectangle.
+6:multi-digit-division|-|-|The long-division bracket from long-division-board.js shows divide, multiply, subtract, bring down; an area model hides the algorithm.
 6:order-rational|number-line|-|Numbers further left on the line are less.
 6:percent-whole|double-number-line|-|The part sits at its percent; 100 percent is the whole.
 6:equivalent-expressions|area-model|-|An area model splits a product into parts that add up.

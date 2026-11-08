@@ -97,11 +97,11 @@ assert.equal(
   "A deep link opens its requested skill",
 );
 click('[data-mode="visual"]');
-assert.match($("#visual-panel").textContent, /360 ÷ 6/);
+assert.match($("#visual-panel").textContent, /384 ÷ 6/);
 fill("#visual-answer", 999);
 submit("[data-visual-form]");
 assert.match($(".visual-feedback").textContent, /Try this/);
-for (const answer of [60, 4, 64]) {
+for (const answer of [6, 2, 64]) {
   fill("#visual-answer", answer);
   submit("[data-visual-form]");
   click("[data-visual-next]");

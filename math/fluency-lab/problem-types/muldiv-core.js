@@ -6,6 +6,7 @@
 // (x is the quotient, y the divisor). A spec gives the ranges of x and y and the shape of the skill:
 //   fact  basic facts (a pool for x for the 0-5 and 6-9 skills)    tens  one digit times a multiple of ten
 //   big   multi-digit factors / dividends (regrouping, long division)
+import { longDivisionSteps } from "../long-division-work.js";
 import { fmt, int, pick } from "./kit.js";
 import { Q } from "./rational.js";
 
@@ -230,30 +231,14 @@ function bigMulSteps(x, y, p) {
 
 function factDivSteps(x, y, p) {
   return [
-    `Division undoes multiplication: think ${y} × ? = ${p}.`,
+    `Division undoes multiplication: ${p} ÷ ${y} = ? asks ${y} × ? = ${p}.`,
     `Count up by ${y} from 0 until you reach ${p}, or use a multiplication fact you know.`,
     `${p} ÷ ${y} = ${x}, because ${y} × ${x} = ${p}.`,
   ];
 }
 
-function bigDivSteps(x, y, p) {
-  const line = `${fmt(p)} ÷ ${y} = ${fmt(x)}.`;
-  const parts = partsOf(x);
-  if (parts.length < 2) {
-    const z = String(x).length - 1;
-    const lead = x / 10 ** z;
-    return [
-      `Think ${y} × ? = ${fmt(p)}. Use the basic fact for the leading digits.`,
-      `${fmt(p / 10 ** z)} ÷ ${y} = ${lead}, so the quotient is ${lead} followed by ${z} zero${z > 1 ? "s" : ""}.`,
-      line,
-    ];
-  }
-  return [
-    `Split ${fmt(p)} into parts that ${y} divides evenly: ${parts.map((part) => fmt(part * y)).join(" + ")}.`,
-    `${parts.map((part) => `${fmt(part * y)} ÷ ${y} = ${fmt(part)}`).join(", ")}.`,
-    `${parts.map(fmt).join(" + ")} = ${fmt(x)}, so ${line}`,
-  ];
-}
+// Long division with the ÷ symbol and the bracket: divide, multiply, subtract, bring down.
+const bigDivSteps = (x, y, p) => longDivisionSteps(p, y);
 
 const STEPS = {
   "fact/mul": factSteps,

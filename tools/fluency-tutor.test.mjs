@@ -286,7 +286,19 @@ for (const current of ALL_SKILLS) {
             ? [Number((sharing || groups)[1]), Number((sharing || groups)[2])]
             : [Number(parts[1]), Number(parts[3])];
         const op = missing || sharing ? "÷" : groups ? "×" : parts[2];
-        const result = op === "+" ? a + b : op === "−" ? a - b : op === "×" ? a * b : a / b;
+        // "203 ÷ 8 has a remainder. What is the remainder?" asks for one part of a quotient with a remainder.
+        const leftover = op === "÷" && /has a remainder/.test(question);
+        const result = leftover
+          ? question.includes("What is the remainder")
+            ? a % b
+            : Math.floor(a / b)
+          : op === "+"
+            ? a + b
+            : op === "−"
+              ? a - b
+              : op === "×"
+                ? a * b
+                : a / b;
         check(
           result === Number(item.answers[0]),
           `${current.id}: independently recomputed arithmetic`,
@@ -402,7 +414,7 @@ check(
 const divisionLesson = createLesson(getSkill(4, "division"));
 assert.deepEqual(
   divisionLesson.steps.map((step) => step.answers[0]),
-  ["60", "4", "64"],
+  ["6", "2", "64"],
 );
 console.log(
   `Fluency tutor: ${checks} checks passed; ${ALL_SKILLS.length} visual lessons × 5 variants; 24,000 adaptive problems.`,

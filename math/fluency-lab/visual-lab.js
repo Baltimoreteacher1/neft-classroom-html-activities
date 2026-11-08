@@ -1,6 +1,7 @@
 import { createLesson, transferPrompt } from "./lesson-content.js";
 import { validateAnswer } from "./problem-bank.js";
 import { columnSpec, verticalHtml } from "./vertical-columns.js";
+import { longDivisionPicture } from "./long-division-board.js";
 import { t } from "./i18n.js";
 import { copiesTable, factorTreeSvg, lcmMultiplyHtml, treeCaption } from "./factor-tree.js";
 import { mountCoordinateExplorer, renderCoordinateExplorer } from "./coordinate-explorer.js";
@@ -26,6 +27,7 @@ export function renderModel(model, { counters, counterPositions, partitions = 1,
     const spec = columnSpec(model.op, model.terms);
     return spec ? `${caption}${verticalHtml(spec)}` : caption;
   }
+  if (model.type === "longDivision") return `${caption}${longDivisionPicture(model, step)}`;
   if (model.type === "pairs") return `${caption}<div class="pair-board">${Array.from({ length: Math.ceil(model.total / 2) }, (_, i) => `<span class="counter-pair" aria-label="${i * 2 + 1 < model.total ? '2 counters' : '1 counter'}">● ${i * 2 + 1 < model.total ? "●" : "○"}</span>`).join("")}</div>`;
   if (model.type === "fractions") {
     return `${caption}${model.fractions.map(([n, d], index) => `<div class="fraction-model-row"><strong>${n}/${d}</strong><div class="fraction-model" style="--pieces:${d * partitions}" role="img" aria-label="${n} of ${d} equal parts shaded, subdivided into ${d * partitions} pieces">${Array.from({ length: d * partitions }, (_, i) => `<span class="${i < n * partitions ? "shaded" : ""}"></span>`).join("")}</div><span>${n * partitions}/${d * partitions}</span></div>`).join("")}<div class="model-controls" aria-label="Subdivide the same whole">${[1, 2, 3].map((factor) => `<button type="button" data-partition="${factor}" aria-pressed="${partitions === factor}">Split each part into ${factor}</button>`).join("")}</div><p>The shaded amount stays the same as the pieces get smaller.</p>`;
