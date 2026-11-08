@@ -11,6 +11,7 @@ import { t } from "../i18n.js";
 import { createRatioExplanationUrl } from "../../../shared/math-language-bridge/v1.js";
 import { createPercentExplanationUrl } from "../../../shared/math-language-bridge/v2.js";
 import { createFractionExplanationUrl } from "../../../shared/math-language-bridge/v2.js";
+import { createDataExplanationUrl } from "../../../shared/math-language-bridge/v2.js";
 
 const esc = (s) => String(s).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;");
 
@@ -110,6 +111,7 @@ export function mountTry(ctx, root) {
       const percentBridge =
         lesson?.engine?.id === "ratio" && lesson.spec.kind === "percent" ? lesson.spec : null;
       const fractionBridge = lesson?.engine?.id === "fracmul" && lesson.spec.mode === "of" ? lesson.spec : null;
+      const dataBridge = lesson?.engine?.id === "expr" && ["mean", "median"].includes(lesson.spec.mode) ? lesson.spec : null;
       const grade = Number(ctx.skill.grade) || 6;
       let bridgeUrl = null;
       let bridgeTask = "ratio";
@@ -150,12 +152,29 @@ export function mountTry(ctx, root) {
             grade,
           });
           bridgeTask = "fraction";
+        } else if (
+          dataBridge &&
+          Array.isArray(dataBridge.list) &&
+          dataBridge.list.length >= 4 &&
+          dataBridge.list.length <= 9 &&
+          dataBridge.list.every((n) => Number.isInteger(n) && n >= 0 && n <= 40) &&
+          grade >= 6 &&
+          grade <= 8
+        ) {
+          bridgeUrl = createDataExplanationUrl({ values: dataBridge.list, grade });
+          bridgeTask = "data";
         }
       } catch {
         // Some generated values do not have a bounded exact transfer task; omit the optional bridge.
       }
+      const bridgeLabels = {
+        ratio: L("Explain this ratio in The Language Page", "Explica esta razón en The Language Page"),
+        percent: L("Explain this percent model in The Language Page", "Explica este modelo de porcentaje en The Language Page"),
+        fraction: L("Explain this fraction model in The Language Page", "Explica este modelo de fracción en The Language Page"),
+        data: L("Explain this data investigation in The Language Page", "Explica esta investigación de datos en The Language Page"),
+      };
       const bridge = bridgeUrl
-        ? `<div class="sd-math-language-bridge"><a class="sd-btn" href="${bridgeUrl}">${esc(pick(bridgeTask === "percent" ? L("Explain this percent model in The Language Page", "Explica este modelo de porcentaje en The Language Page") : bridgeTask === "fraction" ? L("Explain this fraction model in The Language Page", "Explica este modelo de fracción en The Language Page") : L("Explain this ratio in The Language Page", "Explica esta razón en The Language Page"), ctx.lang()))}</a><p>${esc(pick(L("Only the math task and grade travel with this optional link. Your name, response, and progress stay here.", "Este enlace opcional solo comparte la tarea matemática y el grado. Tu nombre, respuesta y progreso se quedan aquí."), ctx.lang()))}</p></div>`
+        ? `<div class="sd-math-language-bridge"><a class="sd-btn" href="${bridgeUrl}">${esc(pick(bridgeLabels[bridgeTask], ctx.lang()))}</a><p>${esc(pick(L("Only the math task and grade travel with this optional link. Your name, response, and progress stay here.", "Este enlace opcional solo comparte la tarea matemática y el grado. Tu nombre, respuesta y progreso se quedan aquí."), ctx.lang()))}</p></div>`
         : "";
       root.querySelector("[data-actions]").innerHTML = `${next}${bridge}`;
       ctx.refreshRail();

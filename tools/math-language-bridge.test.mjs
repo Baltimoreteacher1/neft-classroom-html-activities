@@ -1,11 +1,14 @@
 import assert from "node:assert/strict";
 import {
+  analyzeDataExplanation,
   analyzeFractionExplanation,
   analyzePercentExplanation,
   analyzeRatioExplanation,
+  checkDataTransfer,
   checkFractionTransfer,
   checkPercentTransfer,
   checkRatioTransfer,
+  dataSupportForLevel,
   fractionSupportForLevel,
   parseRatioPair,
   percentSupportForLevel,
@@ -13,13 +16,14 @@ import {
   supportForLevel,
 } from "../access-practice-lab/src/studios/math-reasoning-bridge.js";
 import * as languageStudios from "../access-practice-lab/src/views/language-studios.js";
-import { getSkill } from "../math/fluency-lab/problem-bank.js";
+import { generateProblem, getSkill, seededRandom } from "../math/fluency-lab/problem-bank.js";
 import { mountTry } from "../math/fluency-lab/studio/panel-try.js";
 import {
   createRatioExplanationUrl,
   readMathLanguageBridge,
 } from "../shared/math-language-bridge/v1.js";
 import {
+  createDataExplanationUrl,
   createFractionExplanationUrl,
   createPercentExplanationUrl,
   readMathLanguageBridge as readBridgeV2,
@@ -144,6 +148,43 @@ assert.equal(
   fractionSupportForLevel(5, "en", { numerator: 3, denominator: 4, whole: 20, part: 15 }),
   null,
 );
+const dataUrl = new URL(createDataExplanationUrl({ values: [2, 3, 4, 5], grade: 7 }));
+assert.deepEqual([...dataUrl.searchParams.keys()].sort(), ["grade", "schema", "task", "values"]);
+const dataBridge = readBridgeV2(dataUrl.searchParams);
+assert.deepEqual(dataBridge, {
+  schema: "edu-wonderlab.math-language/2",
+  task: "data-center",
+  grade: 7,
+  values: [2, 3, 4, 5],
+  transferValues: [9, 13, 17, 21],
+  selectedIndex: 1,
+  transferMean: 20,
+  transferMedian: 17,
+  transferOutlier: 40,
+});
+assert.equal(
+  readBridgeV2(`${dataUrl.search}&name=student`),
+  null,
+  "data contract excludes identity fields",
+);
+assert.throws(() => createDataExplanationUrl({ values: [1, 2, 3] }), RangeError);
+assert.equal(checkDataTransfer(dataBridge, "20", "17"), true);
+assert.equal(checkDataTransfer(dataBridge, "19.9", "17"), false);
+assert.equal(checkDataTransfer(dataBridge, "20", "17.5"), false);
+assert.equal(
+  dataSupportForLevel(5, "en"),
+  null,
+  "the data sentence frame fades at the independent level",
+);
+const dataAnalysis = analyzeDataExplanation(
+  "The mean changes more than the median because the data point is far away.",
+);
+assert.deepEqual(dataAnalysis.evidence, {
+  namesBothMeasures: true,
+  namesObservation: true,
+  connectsReason: true,
+});
+assert.equal(analyzeDataExplanation("The number changed.").evidence.namesBothMeasures, false);
 assert.equal(
   analyzePercentExplanation(
     "30 percent of the whole is the part because the grid has equal squares.",
@@ -297,6 +338,63 @@ root
 ({ root } = await mount(languageStudios, ctx));
 assert.match(root.textContent, /solved a new fraction problem independently/);
 
+ctx.route.mathBridge = dataBridge;
+({ root } = await mount(languageStudios, ctx));
+assert.match(root.textContent, /Move observation 2/);
+const moveSlider = root.querySelector("[data-data-move-value]");
+assert.equal(
+  moveSlider.getAttribute("type"),
+  "range",
+  "the data model has an accessible manipulation control",
+);
+moveSlider.value = "30";
+moveSlider.dispatchEvent(new win.Event("input", { bubbles: true }));
+assert.equal(root.querySelector("[data-data-out]").textContent, "30");
+assert.match(root.querySelector(".mlb-data-stats").textContent, /After the move/);
+assert.match(root.querySelector(".mlb-data-stats").textContent, /mean 10\.3.*median 4\.5/);
+root.querySelector("#mlb-data-draft").value =
+  "The mean and median change when the data point moves because it is far away.";
+root.querySelector("#mlb-data-draft").dispatchEvent(new win.Event("input", { bubbles: true }));
+const dataSaveKey = Array.from({ length: globalThis.localStorage.length }, (_, index) =>
+  globalThis.localStorage.key(index),
+).find((key) => key?.includes("data-center"));
+assert.ok(dataSaveKey, "partial data bridge work is saved locally");
+ctx.route.mathBridge = bridge;
+await mount(languageStudios, ctx);
+ctx.route.mathBridge = dataBridge;
+({ root } = await mount(languageStudios, ctx));
+assert.equal(root.querySelector("[data-data-move-value]").value, "30");
+assert.match(root.querySelector("#mlb-data-draft").value, /data point moves/);
+root.querySelector("#mlb-data-draft").value =
+  "The mean increased more than the median when the data point moved to 30 because it is far from the other values.";
+root
+  .querySelector("[data-data-draft]")
+  .dispatchEvent(new win.Event("submit", { bubbles: true, cancelable: true }));
+({ root } = await mount(languageStudios, ctx));
+assert.match(root.textContent, /Improve your explanation/);
+assert.match(root.textContent, /Names mean and median/);
+root.querySelector("#mlb-data-revision").value =
+  "The mean increased more than the median because moving one data point far from the other values changes the total more than the middle.";
+root
+  .querySelector("[data-data-revision]")
+  .dispatchEvent(new win.Event("submit", { bubbles: true, cancelable: true }));
+({ root } = await mount(languageStudios, ctx));
+assert.match(root.textContent, /Prove it with a new data set/);
+root.querySelector("#mlb-data-mean").value = String(dataBridge.transferMean);
+root.querySelector("#mlb-data-median").value = String(dataBridge.transferMedian);
+root
+  .querySelector("[data-data-transfer]")
+  .dispatchEvent(new win.Event("submit", { bubbles: true, cancelable: true }));
+({ root } = await mount(languageStudios, ctx));
+assert.match(root.textContent, /Both values are correct/);
+root.querySelector("#mlb-data-transfer-explain").value =
+  "The mean changes more than the median because data point 40 is far above the other values.";
+root
+  .querySelector("[data-data-transfer-explain]")
+  .dispatchEvent(new win.Event("submit", { bubbles: true, cancelable: true }));
+({ root } = await mount(languageStudios, ctx));
+assert.match(root.textContent, /solved a new statistics problem independently/);
+
 const tryRoot = document.createElement("div");
 const tryCtx = {
   skill: getSkill(5, "fraction-of"),
@@ -340,6 +438,33 @@ assert.deepEqual([...new URL(fractionLink.href).searchParams.keys()].sort(), [
   "task",
   "whole",
 ]);
+
+const dataSkill = getSkill(7, "probability");
+const dataProblem = generateProblem(dataSkill, seededRandom(982));
+assert.match(dataProblem.question, /^Find the (mean|median):/);
+const originalNow = Date.now;
+Date.now = () => 5;
+const dataTryRoot = document.createElement("div");
+const dataTryCtx = {
+  ...tryCtx,
+  skill: dataSkill,
+  item: { question: "earlier statistics practice" },
+  tryCount: 0,
+  id: "data-bridge-check",
+  key: "7:probability",
+};
+mountTry(dataTryCtx, dataTryRoot);
+Date.now = originalNow;
+assert.equal(dataTryRoot.querySelector("[data-problem]").textContent, dataProblem.question);
+dataTryRoot.querySelector("input").value = dataProblem.displayAnswer;
+dataTryRoot
+  .querySelector("[data-form]")
+  .dispatchEvent(new win.Event("submit", { bubbles: true, cancelable: true }));
+const dataLink = dataTryRoot.querySelector(".sd-math-language-bridge a");
+assert.ok(dataLink, "independent statistics practice offers a paired Language Page investigation");
+const dataLinkParams = new URL(dataLink.href).searchParams;
+assert.equal(readBridgeV2(dataLinkParams)?.task, "data-center");
+assert.deepEqual([...dataLinkParams.keys()].sort(), ["grade", "schema", "task", "values"]);
 
 console.log(
   "math-language-bridge: versioned task context, separate evidence, supports, and transfer passed.",

@@ -69,6 +69,46 @@ export function checkFractionTransfer(bridge, response) {
   return Number(text) === bridge.transferWhole;
 }
 
+export function checkDataTransfer(bridge, meanResponse, medianResponse) {
+  const parse = (value) => {
+    const text = String(value ?? "").trim();
+    return /^\d+(?:\.\d+)?$/.test(text) ? Number(text) : null;
+  };
+  const mean = parse(meanResponse);
+  const median = parse(medianResponse);
+  return mean !== null && median !== null && mean === bridge.transferMean && median === bridge.transferMedian;
+}
+
+/** Language evidence for describing changes in a data set; it is not a math or proficiency score. */
+export function analyzeDataExplanation(text) {
+  const value = String(text ?? "").toLocaleLowerCase();
+  const evidence = {
+    namesBothMeasures: /\b(mean|average|media|promedio)\b/u.test(value) && /\b(median|mediana)\b/u.test(value),
+    namesObservation: /\b(point|value|observation|dato|punto|valor|observación)\b/u.test(value),
+    connectsReason: /\b(because|so|since|therefore|porque|por eso|ya que|entonces)\b/u.test(value),
+  };
+  const missing = [];
+  if (!evidence.namesBothMeasures) missing.push({ en: "name both the mean and median", es: "nombra la media y la mediana" });
+  if (!evidence.namesObservation) missing.push({ en: "describe the data point that changed", es: "describe el dato que cambió" });
+  if (!evidence.connectsReason) missing.push({ en: "connect the change to a reason", es: "conecta el cambio con una razón" });
+  return {
+    evidence,
+    feedback: missing.length
+      ? { en: `For clarity, ${missing.map((item) => item.en).join(", then ")}.`, es: `Para mayor claridad, ${missing.map((item) => item.es).join(", luego ")}.` }
+      : { en: "You name both measures, identify the changed data point, and connect the change to a reason.", es: "Nombras ambas medidas, identificas el dato que cambió y conectas el cambio con una razón." },
+  };
+}
+
+export function dataSupportForLevel(level, language = "en") {
+  if (level <= 2) return language === "es"
+    ? { bank: ["media", "mediana", "dato", "valor", "porque"], frame: "La media cambió ___ y la mediana cambió ___. El dato ___ afectó más a ___ porque ___." }
+    : { bank: ["mean", "median", "data point", "value", "because"], frame: "The mean changed ___ and the median changed ___. The data point ___ affected ___ more because ___." };
+  if (level === 3) return language === "es"
+    ? { bank: ["media", "mediana", "dato", "porque"], frame: "El dato cambió más la ___ porque ___." }
+    : { bank: ["mean", "median", "data point", "because"], frame: "The data point changed the ___ more because ___." };
+  return null;
+}
+
 /** Observable language features for this response; never a mathematics or proficiency score. */
 export function analyzePercentExplanation(text) {
   const value = String(text ?? "").toLocaleLowerCase();

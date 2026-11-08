@@ -13,6 +13,7 @@ const ALLOWED = new Set([
   "whole",
   "numerator",
   "denominator",
+  "values",
 ]);
 const inRangeInt = (value, min, max) => Number.isInteger(value) && value >= min && value <= max;
 
@@ -32,6 +33,41 @@ export function fractionTransfer(numerator, denominator, whole) {
     if (product % denominator === 0) return { whole: candidate, part: product / denominator };
   }
   return null;
+}
+
+function dataStats(values) {
+  const sorted = [...values].sort((a, b) => a - b);
+  const mid = sorted.length / 2;
+  const median = sorted.length % 2 ? sorted[Math.floor(mid)] : (sorted[mid - 1] + sorted[mid]) / 2;
+  const sum = values.reduce((total, value) => total + value, 0);
+  return { mean: Math.round((sum / values.length) * 10) / 10, median };
+}
+
+function validDataTask(values) {
+  return (
+    Array.isArray(values) &&
+    values.length >= 4 &&
+    values.length <= 9 &&
+    values.every((value) => inRangeInt(value, 0, 40))
+  );
+}
+
+function makeDataTransfer(values) {
+  return values.map((value, index) => (value + 7 + index * 3) % 31);
+}
+
+/** This task payload contains only a small, validated set of math values and grade. */
+export function createDataExplanationUrl({ values, grade = 7 } = {}) {
+  if (!inRangeInt(grade, 6, 8)) throw new RangeError("Data explanation grade must be from 6 to 8.");
+  if (!validDataTask(values))
+    throw new RangeError("Data values must contain 4–9 whole numbers from 0 to 40.");
+  const params = new URLSearchParams({
+    schema: MATH_LANGUAGE_BRIDGE_SCHEMA,
+    task: "data-center",
+    grade: String(grade),
+    values: values.join(","),
+  });
+  return `https://thelanguagepage.com${MATH_LANGUAGE_BRIDGE_PATH}?${params}`;
 }
 
 function validPercentTask(percent, whole) {
@@ -104,10 +140,31 @@ export function readMathLanguageBridge(search = "") {
       ? new Set(["schema", "task", "grade", "numerator", "denominator", "whole"])
       : task === "percent-part-whole"
         ? new Set(["schema", "task", "grade", "percent", "whole"])
-        : null;
+        : task === "data-center"
+          ? new Set(["schema", "task", "grade", "values"])
+          : null;
   if (!taskFields || [...params.keys()].some((key) => !ALLOWED.has(key) || !taskFields.has(key)))
     return null;
   const grade = Number(params.get("grade"));
+  if (task === "data-center") {
+    const values = String(params.get("values") || "")
+      .split(",")
+      .map(Number);
+    if (!inRangeInt(grade, 6, 8) || !validDataTask(values)) return null;
+    const transferValues = makeDataTransfer(values);
+    const transfer = dataStats([...transferValues, 40]);
+    return Object.freeze({
+      schema: MATH_LANGUAGE_BRIDGE_SCHEMA,
+      task,
+      grade,
+      values: Object.freeze(values),
+      transferValues: Object.freeze(transferValues),
+      selectedIndex: Math.floor((values.length - 1) / 2),
+      transferMean: transfer.mean,
+      transferMedian: transfer.median,
+      transferOutlier: 40,
+    });
+  }
   if (task === "fraction-of-whole") {
     const numerator = Number(params.get("numerator"));
     const denominator = Number(params.get("denominator"));

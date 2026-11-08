@@ -11,12 +11,14 @@ import { BASE, ICONS, esc, html, icon, raw, storage, toHtml } from "../util.js";
 import { i18nFor } from "../i18n.js";
 import { dictationControlsHTML, toggleDictation } from "../dictation-ui.js";
 import { renderFractionBridge } from "../studios/fraction-bridge-view.js";
+import { renderDataBridge, renderDataModel } from "../studios/data-bridge-view.js";
 import {
   analyzeRatioExplanation,
   analyzePercentExplanation,
   analyzeFractionExplanation,
   checkPercentTransfer,
   checkFractionTransfer,
+  checkDataTransfer,
   checkRatioTransfer,
   percentSupportForLevel,
   fractionSupportForLevel,
@@ -317,12 +319,20 @@ let state = {
   fractionTransferCorrect: false,
   fractionTransferFeedback: "",
   fractionTransferExplain: "",
+  dataMoveValue: null,
+  dataDraft: "",
+  dataRevision: "",
+  dataTransferMean: "",
+  dataTransferMedian: "",
+  dataTransferCorrect: false,
+  dataTransferFeedback: "",
+  dataTransferExplain: "",
 };
 
 const bridgeSaveKey = (key) => `accessPracticeLab:v1:mathLanguageBridge:${encodeURIComponent(key)}`;
 function saveBridge(key) {
   if (!key) return;
-  const fields = ["bridgeStep", "bridgeSupport", "bridgeDraft", "bridgeRevision", "bridgeTransfer", "bridgeTransferExplain", "percentDraft", "percentRevision", "percentTransferAnswer", "percentTransferExplain", "fractionScale", "fractionDraft", "fractionRevision", "fractionTransferAnswer", "fractionTransferExplain"];
+  const fields = ["bridgeStep", "bridgeSupport", "bridgeDraft", "bridgeRevision", "bridgeTransfer", "bridgeTransferExplain", "percentDraft", "percentRevision", "percentTransferAnswer", "percentTransferExplain", "fractionScale", "fractionDraft", "fractionRevision", "fractionTransferAnswer", "fractionTransferExplain", "dataMoveValue", "dataDraft", "dataRevision", "dataTransferMean", "dataTransferMedian", "dataTransferExplain"];
   const data = Object.fromEntries(fields.map((field) => [field, state[field]]));
   storage.set(bridgeSaveKey(key), JSON.stringify({ version: 1, data }));
 }
@@ -334,14 +344,17 @@ function restoreBridge(key, bridge) {
     state.bridgeStep = ["draft", "revision", "transfer", "complete"].includes(d.bridgeStep) ? d.bridgeStep : "draft";
     state.bridgeSupport = [2, 3, 5].includes(Number(d.bridgeSupport)) ? Number(d.bridgeSupport) : 3;
     state.fractionScale = [1, 2, 3].includes(Number(d.fractionScale)) ? Number(d.fractionScale) : 1;
-    for (const keyName of ["bridgeDraft", "bridgeRevision", "bridgeTransfer", "bridgeTransferExplain", "percentDraft", "percentRevision", "percentTransferAnswer", "percentTransferExplain", "fractionDraft", "fractionRevision", "fractionTransferAnswer", "fractionTransferExplain"])
+    state.dataMoveValue = Number.isInteger(d.dataMoveValue) && d.dataMoveValue >= 0 && d.dataMoveValue <= 40 ? d.dataMoveValue : bridge?.task === "data-center" ? bridge.values[bridge.selectedIndex] : null;
+    for (const keyName of ["bridgeDraft", "bridgeRevision", "bridgeTransfer", "bridgeTransferExplain", "percentDraft", "percentRevision", "percentTransferAnswer", "percentTransferExplain", "fractionDraft", "fractionRevision", "fractionTransferAnswer", "fractionTransferExplain", "dataDraft", "dataRevision", "dataTransferMean", "dataTransferMedian", "dataTransferExplain"])
       state[keyName] = typeof d[keyName] === "string" ? d[keyName].slice(0, 1200) : "";
     if (["transfer", "complete"].includes(state.bridgeStep)) {
       const mathIsCorrect = bridge?.task === "percent-part-whole"
         ? checkPercentTransfer(bridge, state.percentTransferAnswer)
         : bridge?.task === "fraction-of-whole"
           ? checkFractionTransfer(bridge, state.fractionTransferAnswer)
-          : checkRatioTransfer(bridge, state.bridgeTransfer);
+          : bridge?.task === "data-center"
+            ? checkDataTransfer(bridge, state.dataTransferMean, state.dataTransferMedian)
+            : checkRatioTransfer(bridge, state.bridgeTransfer);
       if (!mathIsCorrect) state.bridgeStep = "transfer";
     }
   } catch { /* Ignore malformed or unavailable local saves. */ }
@@ -412,7 +425,9 @@ export async function render(ctx = {}) {
     ? `${bridge.schema}:${bridge.task}:${bridge.grade}:${bridge.percent}:${bridge.whole}`
     : bridge.task === "fraction-of-whole"
       ? `${bridge.schema}:${bridge.task}:${bridge.grade}:${bridge.numerator}:${bridge.denominator}:${bridge.whole}`
-      : `${bridge.schema}:${bridge.grade}:${bridge.first}:${bridge.second}` : "";
+      : bridge.task === "data-center"
+        ? `${bridge.schema}:${bridge.task}:${bridge.grade}:${bridge.values.join(",")}`
+        : `${bridge.schema}:${bridge.grade}:${bridge.first}:${bridge.second}` : "";
   if (bridgeKey && bridgeKey !== state.bridgeKey) {
     Object.assign(state, {
       bridgeKey,
@@ -438,10 +453,19 @@ export async function render(ctx = {}) {
       fractionTransferCorrect: false,
       fractionTransferFeedback: "",
       fractionTransferExplain: "",
+      dataMoveValue: bridge.task === "data-center" ? bridge.values[bridge.selectedIndex] : null,
+      dataDraft: "",
+      dataRevision: "",
+      dataTransferMean: "",
+      dataTransferMedian: "",
+      dataTransferCorrect: false,
+      dataTransferFeedback: "",
+      dataTransferExplain: "",
     });
     restoreBridge(bridgeKey, bridge);
     if (bridge.task === "percent-part-whole") state.percentTransferCorrect = checkPercentTransfer(bridge, state.percentTransferAnswer);
     else if (bridge.task === "fraction-of-whole") state.fractionTransferCorrect = checkFractionTransfer(bridge, state.fractionTransferAnswer);
+    else if (bridge.task === "data-center") state.dataTransferCorrect = checkDataTransfer(bridge, state.dataTransferMean, state.dataTransferMedian);
     else state.bridgeTransferCorrect = checkRatioTransfer(bridge, state.bridgeTransfer);
   } else if (!bridgeKey && state.bridgeKey) {
     Object.assign(state, {
@@ -506,7 +530,7 @@ export async function render(ctx = {}) {
 
       <!-- Studio Stage Body -->
       <div class="ls-stage-body">
-        ${currentTab === "math-bridge" && bridge ? bridge.task === "percent-part-whole" ? percentBridgePanel(bridge, I, language) : bridge.task === "fraction-of-whole" ? renderFractionBridge(bridge, state, I, language) : ratioBridgePanel(bridge, I, language) : ""}
+        ${currentTab === "math-bridge" && bridge ? bridge.task === "percent-part-whole" ? percentBridgePanel(bridge, I, language) : bridge.task === "fraction-of-whole" ? renderFractionBridge(bridge, state, I, language) : bridge.task === "data-center" ? renderDataBridge(bridge, state, I, language) : ratioBridgePanel(bridge, I, language) : ""}
         
         <!-- 1. Compare language samples without treating them as assessment evidence. -->
         ${currentTab === "wida" ? `
@@ -790,7 +814,7 @@ export function mount(root, ctx) {
   root.querySelectorAll("[data-dictate^='mlb-']").forEach((button) => {
     button.addEventListener("click", async () => {
       const id = button.dataset.dictate;
-      const fieldMap = { "mlb-draft": "#mlb-draft", "mlb-transfer-explain": "#mlb-transfer-explain", "mlb-pct-draft": "#mlb-pct-draft", "mlb-pct-transfer-explain": "#mlb-pct-transfer-explain", "mlb-frac-draft": "#mlb-frac-draft", "mlb-frac-transfer-explain": "#mlb-frac-transfer-explain" };
+      const fieldMap = { "mlb-draft": "#mlb-draft", "mlb-transfer-explain": "#mlb-transfer-explain", "mlb-pct-draft": "#mlb-pct-draft", "mlb-pct-transfer-explain": "#mlb-pct-transfer-explain", "mlb-frac-draft": "#mlb-frac-draft", "mlb-frac-transfer-explain": "#mlb-frac-transfer-explain", "mlb-data-draft": "#mlb-data-draft", "mlb-data-transfer-explain": "#mlb-data-transfer-explain" };
       const fieldId = fieldMap[id];
       const setText = (text) => {
         const field = root.querySelector(fieldId);
@@ -801,7 +825,9 @@ export function mount(root, ctx) {
         else if (id === "mlb-pct-draft") state.percentDraft = text;
         else if (id === "mlb-pct-transfer-explain") state.percentTransferExplain = text;
         else if (id === "mlb-frac-draft") state.fractionDraft = text;
-        else state.fractionTransferExplain = text;
+        else if (id === "mlb-frac-transfer-explain") state.fractionTransferExplain = text;
+        else if (id === "mlb-data-draft") state.dataDraft = text;
+        else state.dataTransferExplain = text;
         saveBridge(state.bridgeKey);
       };
       const handled = await toggleDictation(id, {
@@ -817,6 +843,70 @@ export function mount(root, ctx) {
   root.querySelector("[data-bridge-support]")?.addEventListener("change", (event) => {
     state.bridgeSupport = Number(event.target.value);
     saveBridge(state.bridgeKey);
+    ctx.rerender();
+  });
+  root.querySelector("[data-data-move-value]")?.addEventListener("input", (event) => {
+    state.dataMoveValue = Math.max(0, Math.min(40, Number(event.target.value) || 0));
+    const rendered = document.createElement("div");
+    rendered.innerHTML = renderDataModel(bridge, state.dataMoveValue, I);
+    const next = rendered.querySelector("[data-data-model]");
+    const current = root.querySelector("[data-data-model]");
+    if (next && current) {
+      current.querySelector("figure").innerHTML = next.querySelector("figure").innerHTML;
+      current.querySelector("output").textContent = String(state.dataMoveValue);
+      current.querySelector(".mlb-data-stats").textContent = next.querySelector(".mlb-data-stats").textContent;
+      event.target.setAttribute("aria-valuetext", I.S(`Observation value ${state.dataMoveValue}`, `Valor del dato ${state.dataMoveValue}`));
+    }
+    saveBridge(state.bridgeKey);
+  });
+  for (const [selector, field, limit] of [
+    ["#mlb-data-draft", "dataDraft", 1200],
+    ["#mlb-data-revision", "dataRevision", 1200],
+    ["#mlb-data-mean", "dataTransferMean", 20],
+    ["#mlb-data-median", "dataTransferMedian", 20],
+    ["#mlb-data-transfer-explain", "dataTransferExplain", 1200],
+  ]) root.querySelector(selector)?.addEventListener("input", (event) => {
+    state[field] = event.target.value.slice(0, limit);
+    saveBridge(state.bridgeKey);
+  });
+  root.querySelector("[data-data-draft]")?.addEventListener("submit", (event) => {
+    event.preventDefault();
+    state.dataDraft = root.querySelector("#mlb-data-draft")?.value.trim() || "";
+    if (!state.dataDraft) return;
+    state.bridgeStep = "revision";
+    saveBridge(state.bridgeKey);
+    ctx.rerender();
+  });
+  root.querySelector("[data-data-revision]")?.addEventListener("submit", (event) => {
+    event.preventDefault();
+    state.dataRevision = root.querySelector("#mlb-data-revision")?.value.trim() || "";
+    if (!state.dataRevision) return;
+    state.bridgeStep = "transfer";
+    saveBridge(state.bridgeKey);
+    ctx.rerender();
+  });
+  root.querySelector("[data-data-transfer]")?.addEventListener("submit", (event) => {
+    event.preventDefault();
+    state.dataTransferMean = root.querySelector("#mlb-data-mean")?.value.trim() || "";
+    state.dataTransferMedian = root.querySelector("#mlb-data-median")?.value.trim() || "";
+    state.dataTransferCorrect = checkDataTransfer(bridge, state.dataTransferMean, state.dataTransferMedian);
+    state.dataTransferFeedback = state.dataTransferCorrect
+      ? I.S("Both measures are correct. Now explain which one moved more and why.", "Ambas medidas son correctas. Ahora explica cuál cambió más y por qué.")
+      : I.S("Check the total and the ordered middle values. The new set includes one additional value of 40.", "Revisa el total y los valores del medio en orden. El conjunto nuevo incluye un valor adicional de 40.");
+    saveBridge(state.bridgeKey);
+    ctx.rerender();
+  });
+  root.querySelector("[data-data-transfer-explain]")?.addEventListener("submit", (event) => {
+    event.preventDefault();
+    state.dataTransferExplain = root.querySelector("#mlb-data-transfer-explain")?.value.trim() || "";
+    if (!state.dataTransferCorrect || !state.dataTransferExplain) return;
+    state.bridgeStep = "complete";
+    saveBridge(state.bridgeKey);
+    ctx.rerender();
+  });
+  root.querySelector("[data-data-reset]")?.addEventListener("click", () => {
+    storage.remove(bridgeSaveKey(state.bridgeKey));
+    Object.assign(state, { bridgeStep: "draft", bridgeSupport: 3, dataMoveValue: bridge.values[bridge.selectedIndex], dataDraft: "", dataRevision: "", dataTransferMean: "", dataTransferMedian: "", dataTransferCorrect: false, dataTransferFeedback: "", dataTransferExplain: "" });
     ctx.rerender();
   });
   root.querySelectorAll("[data-frac-scale]").forEach((button) => button.addEventListener("click", () => {
