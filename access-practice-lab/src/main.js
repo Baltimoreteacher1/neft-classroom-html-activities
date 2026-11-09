@@ -8,7 +8,7 @@
 // ?grades=3-5|6-8 on any URL.
 import { brandTitle } from "./brand.js";
 import { micDeniedMessage, notePlay, scripts, setComponentsI18n } from "./components.js";
-import { EARLY_VIEWS, earlyGateHTML } from "./early/gate.js";
+import { earlyCanOpen, earlyGateHTML } from "./early/gate.js";
 import { isEarlyBand, normalizeBand } from "./bands.js";
 import { namesGradeFocus, normalizeGradeFocus } from "./grade-focus.js";
 import { announceGradeFocus } from "./grade-focus-ui.js";
@@ -337,7 +337,7 @@ async function render({ keepFocus = false, scroll = false } = {}) {
   try {
     // Grades K-3 have their own home and player; rooms built for grades 3-8 say so instead of showing older
     // children's content under a K-3 label (src/early/gate.js).
-    const gated = isEarlyBand(app.band) && !EARLY_VIEWS.has(route.view);
+    const gated = isEarlyBand(app.band) && !earlyCanOpen(route);
     view = gated ? { render: (c) => earlyGateHTML(c, i18nFor(c)) } : await loadView(isEarlyBand(app.band) && (route.view === "home" || (route.view === "family" && !route.id)) ? "early" : route.view);
     if (token !== app.rendering) return;
     if (view !== app.view) {

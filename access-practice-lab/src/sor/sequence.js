@@ -1,79 +1,204 @@
-// Editorially authored starting sequence. These are the lessons available to
-// students, not a generated claim of a complete K–8 curriculum.
-export const READING_LESSONS = Object.freeze([
-  {
-    id: "cvc-short-a", stage: 3, unit: "Beginning decoding", title: "Read and spell short-a words",
-    objective: "Blend and segment three phonemes in short-a CVC words.", prerequisites: ["Recognize m, s, t, p, c and short a"],
-    model: "Point to each spelling in mat: m → a → t. Say each sound, then blend smoothly: mat. In a word with three sounds, use three sound boxes.",
-    note: "If a learner does not yet hear the three sounds, model oral segmentation before showing letters. Do not require rhyme mastery.",
-    example: { word: "mat", units: ["m", "a", "t"], sounds: ["/m/", "/ă/", "/t/"], meaning: "a small floor covering" },
-    build: { word: "sat", units: ["s", "a", "t"], sounds: ["/s/", "/ă/", "/t/"], tiles: ["s", "m", "a", "t", "p"], meaning: "was sitting" },
-    read: { word: "map", units: ["m", "a", "p"], sounds: ["/m/", "/ă/", "/p/"], choices: ["map", "mat", "sap"], meaning: "a drawing that shows places" },
-    spell: { word: "cap", units: ["c", "a", "p"], sounds: ["/k/", "/ă/", "/p/"], meaning: "a hat" },
-    passage: "Sam sat. Sam has a map. A cap is on the mat.",
-    exceptions: ["has", "the", "is", "on", "a"],
-    question: "Where is the cap?", answerWords: ["mat"],
-    transfer: { word: "tap", units: ["t", "a", "p"], sounds: ["/t/", "/ă/", "/p/"], meaning: "a light touch" },
-    next: "digraph-sh",
-  },
-  {
-    id: "digraph-sh", stage: 4, unit: "Consonant patterns", title: "One sound, two letters: sh",
-    objective: "Map /sh/ to one grapheme and one sound box; blend and spell sh words.", prerequisites: ["Blend and spell short-vowel CVC words"],
-    model: "In ship, sh is two letters that represent one sound. Put sh in one sound box, then i and p. Blend /sh/ /ĭ/ /p/: ship.",
-    note: "Contrast a digraph with a blend: sh is one phoneme; /s/ plus /t/ in stop is two phonemes.",
-    example: { word: "ship", units: ["sh", "i", "p"], sounds: ["/sh/", "/ĭ/", "/p/"], meaning: "a large boat" },
-    build: { word: "shop", units: ["sh", "o", "p"], sounds: ["/sh/", "/ŏ/", "/p/"], tiles: ["sh", "s", "h", "o", "p", "i"], meaning: "a place where people buy things" },
-    read: { word: "shed", units: ["sh", "e", "d"], sounds: ["/sh/", "/ĕ/", "/d/"], choices: ["shed", "seed", "shell"], meaning: "a small building for storage" },
-    spell: { word: "fish", units: ["f", "i", "sh"], sounds: ["/f/", "/ĭ/", "/sh/"], meaning: "an animal that lives in water" },
-    passage: "A fish is in the shop. The shop has a big ship on a shelf.",
-    exceptions: ["the", "a", "is", "in", "on", "has", "big", "shelf"],
-    question: "What is on a shelf?", answerWords: ["ship"],
-    transfer: { word: "dish", units: ["d", "i", "sh"], sounds: ["/d/", "/ĭ/", "/sh/"], meaning: "a plate or bowl" },
-    next: "long-a-vce",
-  },
-  {
-    id: "long-a-vce", stage: 5, unit: "Long vowel patterns", title: "Change cap to cape",
-    objective: "Read and spell long-a words with vowel-consonant-e.", prerequisites: ["Blend CVC words with short a"],
-    model: "Compare cap and cape. The final e changes the vowel sound in this pattern. Map cape as c | a_e | p: three phonemes, four letters.",
-    note: "Vowel-consonant-e is a useful pattern, not a universal rule. Contrast cap and cape before transfer.",
-    example: { word: "cape", units: ["c", "a_e", "p"], sounds: ["/k/", "/ā/", "/p/"], meaning: "a piece of clothing worn over the shoulders" },
-    build: { word: "make", units: ["m", "a_e", "k"], sounds: ["/m/", "/ā/", "/k/"], tiles: ["m", "a_e", "k", "c", "e"], meaning: "to create" },
-    read: { word: "tape", units: ["t", "a_e", "p"], sounds: ["/t/", "/ā/", "/p/"], choices: ["tape", "tap", "type"], meaning: "a sticky strip" },
-    spell: { word: "game", units: ["g", "a_e", "m"], sounds: ["/g/", "/ā/", "/m/"], meaning: "an activity with rules" },
-    passage: "Kate can make a game. She can take the tape and make a cape.",
-    exceptions: ["Kate", "can", "a", "she", "the", "and"],
-    question: "What does Kate make with the tape?", answerWords: ["cape"],
-    transfer: { word: "lake", units: ["l", "a_e", "k"], sounds: ["/l/", "/ā/", "/k/"], meaning: "a large body of water" },
-    next: "prefix-un",
-  },
-  {
-    id: "prefix-un", stage: 8, unit: "Morphology and meaning", title: "Use un- to change meaning",
-    objective: "Read a base word with un- and explain how its meaning changes.", prerequisites: ["Read common base words and identify a prefix"],
-    model: "Read the base word fair. Add un- to make unfair. Read both parts, then the whole word. Un- means not, so unfair means not fair.",
-    note: "Use this as an entry point for older readers who already decode single-syllable words. Keep language comprehension separate from decoding evidence.",
-    example: { word: "unfair", units: ["un", "fair"], sounds: ["/ŭn/", "/fâr/"], meaning: "not fair" },
-    build: { word: "unsafe", units: ["un", "safe"], sounds: ["/ŭn/", "/sāf/"], tiles: ["un", "safe", "fair", "re"], meaning: "not safe" },
-    read: { word: "unkind", units: ["un", "kind"], sounds: ["/ŭn/", "/kīnd/"], choices: ["unkind", "kind", "unfair"], meaning: "not kind" },
-    spell: { word: "unfit", units: ["un", "fit"], sounds: ["/ŭn/", "/fĭt/"], meaning: "not fit or suitable" },
-    passage: "The path was unsafe after the rain. The team made a new sign so visitors could take a safer path.",
-    exceptions: ["the", "was", "after", "team", "made", "a", "new", "sign", "so", "visitors", "could", "take", "safer", "path"],
-    question: "Why did the team make a new sign?", answerWords: ["unsafe", "safer", "path"],
-    transfer: { word: "unwell", units: ["un", "well"], sounds: ["/ŭn/", "/wĕl/"], meaning: "not well" },
-    next: null,
-  },
-]);
+// Phonics Path: an original structured-literacy scope and sequence in three levels (roughly Grades 1-3).
+// Skills follow the order explicit, systematic phonics programs teach them: closed syllables and short vowels,
+// digraphs, blends and glued sounds, suffixes, vowel-consonant-e, open syllables, vowel teams, r-controlled vowels,
+// syllable division, prefixes, suffixes with spelling rules, and advanced patterns. All words, sentences and
+// passages are original to this lab. The three authored files hold the lessons; this file assembles and validates them.
+import { LEVEL_1 } from "../content/phonics/level-1.js";
+import { LEVEL_2 } from "../content/phonics/level-2.js";
+import { LEVEL_3 } from "../content/phonics/level-3.js";
+
+export const LEVELS = Object.freeze([LEVEL_1, LEVEL_2, LEVEL_3]);
+
+/** Flatten levels -> units -> lessons, stamping position and the next lesson so authors never maintain links. */
+const flat = LEVELS.flatMap((level) =>
+  level.units.flatMap((unit) => unit.lessons.map((lesson) => ({ lesson, level, unit }))),
+);
+export const READING_LESSONS = Object.freeze(
+  flat.map(({ lesson, level, unit }, i) =>
+    Object.freeze({
+      ...lesson,
+      level: level.level,
+      levelTitle: level.title,
+      unitId: unit.id,
+      unit: unit.title,
+      n: i + 1,
+      next: flat[i + 1]?.lesson.id ?? null,
+    }),
+  ),
+);
 
 export const lessonById = (id) => READING_LESSONS.find((lesson) => lesson.id === id);
+export const unitsOf = (level) =>
+  level.units.map((unit) => ({ ...unit, lessons: unit.lessons.map((l) => lessonById(l.id)) }));
+
+/** Rebuild a spelling from grapheme units. A split unit such as "a_e" wraps the next unit: m + a_e + k = make. */
+export function spellUnits(units) {
+  let out = "";
+  let after = "";
+  for (const unit of units) {
+    if (unit.includes("_")) {
+      const [front, back] = unit.split("_");
+      out += front;
+      after = back;
+    } else {
+      out += unit;
+      if (after) {
+        out += after;
+        after = "";
+      }
+    }
+  }
+  return out + after;
+}
+
+/** Ordered activity phases for one lesson. Optional phases appear only when the lesson authors them. */
+export const phasesFor = (lesson) => [
+  "model",
+  "build",
+  "read",
+  ...(lesson.sort ? ["sort"] : []),
+  "spell",
+  "text",
+  ...(lesson.dictation ? ["dictation"] : []),
+  "transfer",
+  "complete",
+];
+
+const WORD = /^[a-z]+$/;
+const wordsOf = (text) => text.toLowerCase().match(/[a-z]+(?:'[a-z]+)?/g) || [];
+
+function checkItem(errors, key, item) {
+  if (
+    !item?.word ||
+    !Array.isArray(item.units) ||
+    !Array.isArray(item.sounds) ||
+    item.units.length !== item.sounds.length ||
+    !item.meaning
+  ) {
+    errors.push(`${key}: needs word, meaning, and units that map one-to-one to sounds`);
+    return;
+  }
+  if (!WORD.test(item.word)) errors.push(`${key}: word must be lowercase letters`);
+  if (spellUnits(item.units) !== item.word)
+    errors.push(`${key}: units spell "${spellUnits(item.units)}", not "${item.word}"`);
+  if (!item.sounds.every((s) => /^\/.+\/$/.test(s)))
+    errors.push(`${key}: each sound must look like /x/`);
+}
+
+/** Every rule a lesson must satisfy. Returns a list of plain-language errors; an empty list means the lesson is valid. */
 export function validateLesson(lesson) {
   const errors = [];
-  if (!lesson?.id || !lesson.title || !lesson.objective || !lesson.model || !lesson.note) errors.push("missing lesson metadata");
-  for (const key of ["example", "build", "read", "spell", "transfer"]) {
-    const item = lesson?.[key];
-    if (!item?.word || !Array.isArray(item.units) || !Array.isArray(item.sounds) || item.units.length !== item.sounds.length) errors.push(`${key}: units must map one-to-one to sounds`);
+  if (!lesson?.id || !lesson.title || !lesson.objective || !lesson.model || !lesson.note)
+    errors.push("missing lesson metadata");
+  if (!Array.isArray(lesson?.prerequisites) || !lesson.prerequisites.length)
+    errors.push("prerequisites missing");
+  for (const key of ["example", "build", "read", "spell", "transfer"])
+    checkItem(errors, key, lesson?.[key]);
+  const b = lesson?.build;
+  if (!b?.tiles?.length || !b.units?.every((unit) => b.tiles.includes(unit)))
+    errors.push("build: tile bank misses a target grapheme");
+  else if (
+    b.tiles.length < b.units.length + 2 ||
+    b.tiles.length > 9 ||
+    new Set(b.tiles).size !== b.tiles.length
+  )
+    errors.push("build: tile bank needs 2+ distinct distractors and at most 9 tiles");
+  const r = lesson?.read;
+  if (
+    !r?.choices?.includes(r.word) ||
+    new Set(r.choices).size !== r.choices.length ||
+    r.choices.length < 3
+  )
+    errors.push("read: needs 3+ distinct choices including the target");
+  if (
+    !Array.isArray(lesson?.cards) ||
+    !lesson.cards.length ||
+    !lesson.cards.every((c) => c.g && c.sound && c.key && c.pic)
+  )
+    errors.push("cards: each needs g, sound, key, pic");
+  else if (
+    !lesson.cards.every((c) => c.key.toLowerCase().includes(c.g.replace("_", "").toLowerCase()[0]))
+  )
+    errors.push("cards: key word should contain the pattern's first letter");
+  if (!lesson?.passage || !lesson.question?.endsWith("?") || !lesson.answerWords?.length)
+    errors.push("connected reading task incomplete");
+  else {
+    const passage = new Set(wordsOf(lesson.passage));
+    if (passage.size < 8) errors.push("passage: needs at least 8 distinct words");
+    for (const w of lesson.answerWords)
+      if (!passage.has(w.toLowerCase())) errors.push(`answerWords: "${w}" is not in the passage`);
+    const seen = new Set([
+      ...(lesson.example ? [lesson.example.word] : []),
+      lesson.build?.word,
+      lesson.read?.word,
+      lesson.spell?.word,
+      ...(r?.choices || []),
+    ]);
+    if (passage.has(lesson.transfer?.word) || seen.has(lesson.transfer?.word))
+      errors.push("transfer: word must not appear in guided practice or the passage");
+    if (!Array.isArray(lesson.exceptions))
+      errors.push("exceptions: must list the words to preview");
   }
-  if (!lesson?.build?.tiles?.length || !lesson.build.units.every((unit) => lesson.build.tiles.includes(unit))) errors.push("build: tile bank misses a target grapheme");
-  if (!lesson?.read?.choices?.includes(lesson.read.word)) errors.push("read: target missing from choices");
-  if (!lesson?.passage || !lesson?.question || !lesson?.answerWords?.length) errors.push("connected reading task incomplete");
-  if (lesson?.next && !lessonById(lesson.next)) errors.push("next lesson missing");
+  if (lesson?.sort) {
+    const { a, b: bb } = lesson.sort;
+    const ok = (x) =>
+      x?.label &&
+      x.rule &&
+      x.match &&
+      Array.isArray(x.words) &&
+      x.words.length >= 3 &&
+      x.words.length <= 5;
+    if (!ok(a) || !ok(bb))
+      errors.push("sort: two buckets each need label, rule, match (regex) and 3-5 words");
+    else {
+      const ra = new RegExp(a.match);
+      const rb = new RegExp(bb.match);
+      const all = [...a.words, ...bb.words];
+      if (new Set(all).size !== all.length) errors.push("sort: a word appears twice");
+      for (const w of a.words)
+        if (!ra.test(w) || rb.test(w))
+          errors.push(`sort: "${w}" does not belong only in "${a.label}"`);
+      for (const w of bb.words)
+        if (!rb.test(w) || ra.test(w))
+          errors.push(`sort: "${w}" does not belong only in "${bb.label}"`);
+    }
+  }
+  if (lesson?.dictation) {
+    const d = lesson.dictation;
+    const n = wordsOf(d.sentence || "").length;
+    if (!/[.?!]$/.test(d.sentence || "") || n < 4 || n > 10)
+      errors.push("dictation: sentence must end with punctuation and have 4-10 words");
+    const taught = new Set([
+      lesson.example?.word,
+      lesson.build?.word,
+      lesson.read?.word,
+      lesson.spell?.word,
+      lesson.transfer?.word,
+      ...(r?.choices || []),
+    ]);
+    if (!wordsOf(d.sentence || "").some((w) => taught.has(w)))
+      errors.push("dictation: sentence must use a word from this lesson");
+  }
+  if (lesson?.trick && !(Array.isArray(lesson.trick) && lesson.trick.every((w) => WORD.test(w))))
+    errors.push("trick: lowercase words only");
+  return errors;
+}
+
+/** Whole-sequence rules: unique ids, a sensible level/unit shape, and every lesson valid. */
+export function validateSequence() {
+  const errors = [];
+  const ids = new Set();
+  for (const lesson of READING_LESSONS) {
+    if (ids.has(lesson.id)) errors.push(`duplicate lesson id ${lesson.id}`);
+    ids.add(lesson.id);
+    for (const e of validateLesson(lesson)) errors.push(`${lesson.id}: ${e}`);
+  }
+  for (const level of LEVELS) {
+    if (!level.title || !level.grade || !level.blurb || !level.units?.length)
+      errors.push(`level ${level.level}: missing metadata`);
+    for (const unit of level.units)
+      if (!unit.id || !unit.title || !unit.summary || !unit.skills?.length || !unit.lessons?.length)
+        errors.push(`unit ${unit.id}: missing metadata or lessons`);
+  }
   return errors;
 }

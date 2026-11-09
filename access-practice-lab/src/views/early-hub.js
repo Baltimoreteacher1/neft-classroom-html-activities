@@ -91,6 +91,17 @@ export function extrasFor(band) {
       blurbEs:
         "Un adulto lee el cuento ilustrado en voz alta y hace las preguntas. No es un examen en computadora.",
     });
+  if (band !== "K")
+    list.push({
+      id: "phonics-path",
+      href: "science-of-reading/path",
+      icon: "reading",
+      title: "Phonics Path: Levels 1 to 3",
+      es: "Ruta de fonética: niveles 1 a 3",
+      blurb: "Short lessons that teach one sound pattern at a time: build, sort, spell and read.",
+      blurbEs:
+        "Lecciones cortas que enseñan un patrón de sonidos a la vez: construye, clasifica, deletrea y lee.",
+    });
   list.push(
     {
       id: "phonics",
@@ -169,7 +180,7 @@ async function homeHTML(ctx, I) {
                 ${extras.map(
                   (x) =>
                     html`<li>
-                      <a class="early-extra" href="${BASE}/early/${x.id}${q}"
+                      <a class="early-extra" href="${BASE}/${x.href || `early/${x.id}`}${q}"
                         >${icon(x.icon)}<strong>${I.T(x.title, x.es)}</strong
                         ><span>${I.T(x.blurb, x.blurbEs)}</span></a
                       >

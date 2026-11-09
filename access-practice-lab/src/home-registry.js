@@ -248,8 +248,8 @@ export const HOME_CARDS = [
     icon: "reading",
     title: ["Decoding and connected reading", "Decodificación y lectura conectada"],
     text: [
-      "Learn a spelling pattern, practice it, then read connected text.",
-      "Aprende un patrón de escritura, practícalo y luego lee un texto conectado.",
+      "Three levels of phonics: learn a pattern, build, sort, spell, then read connected text.",
+      "Tres niveles de fonética: aprende un patrón, construye, clasifica, deletrea y luego lee un texto conectado.",
     ],
   },
   {

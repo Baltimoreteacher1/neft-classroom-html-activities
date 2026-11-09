@@ -8,7 +8,8 @@
 //   - Morphology & Multilingual Cognate Bridges for English Learners
 
 import { BASE, esc, icon as rawIcon, raw } from "../util.js";
-import { readingLessonHTML, readingPathHTML, mountReadingLesson } from "../sor/player.js";
+import { readingLessonHTML, mountReadingLesson } from "../sor/player.js";
+import { readingPathHTML } from "../sor/path.js";
 
 const icon = (name) => {
   const marked = rawIcon(name);
@@ -509,7 +510,7 @@ export async function render(ctx = {}) {
           <p class="sor-lead">
             Explicit word study, meaningful reading, and short practice games built around how reading works. Start with a ready-to-use lesson, then explore the tools behind it.
           </p>
-          <a class="sor-primary-button" href="${BASE}/science-of-reading/path?grades=${gradeBand}">Start a connected reading lesson ${icon("arrow-right")}</a>
+          <a class="sor-primary-button" href="${BASE}/science-of-reading/path?grades=${gradeBand}">Open the Phonics Path, Levels 1 to 3 ${icon("arrow-right")}</a>
         </div>
         <div class="sor-evidence-badge">
           ${icon("bulb")} <span>Teach it · Try it · Use it in text</span>

@@ -29,6 +29,14 @@ export const EARLY_VIEWS = new Set([
   "collection",
 ]);
 
+/**
+ * Whether an early band may open this route. The Phonics Path (Levels 1-3, written for Grades 1-3) is the one part of
+ * the Science of Reading room that belongs to K-3 learners; the rest of that room stays a grades 3-8 room.
+ */
+export const earlyCanOpen = (route) =>
+  EARLY_VIEWS.has(route.view) ||
+  (route.view === "science-of-reading" && (route.id === "path" || route.id === "lesson"));
+
 export function earlyGateHTML(ctx, I) {
   const info = BAND_INFO[ctx.band];
   const q = `?grades=${info?.picker || ctx.band}`;
