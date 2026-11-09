@@ -8,19 +8,12 @@ import { spawnSync } from "node:child_process";
 import { existsSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import {
-  acquireGateLock,
-  isStale,
-  LOCK_DIR,
-  STALE_MS,
-  TEST_LANE_DIR,
-} from "../scripts/lib/qa-lock.mjs";
+import { acquireGateLock, isStale, STALE_MS } from "../scripts/lib/qa-lock.mjs";
 
 // This test runs INSIDE a gate (npm test), whose own lock marks its children
-// with QA_GATE_LOCK_HELD=1 and may carry QA_NO_LOCK. Either would make every
-// acquire below return at once, so start from a clean environment.
+// with QA_GATE_LOCK_HELD=1. That would make every acquire below return at
+// once, so start from a clean environment.
 delete process.env.QA_GATE_LOCK_HELD;
-delete process.env.QA_NO_LOCK;
 
 const root = mkdtempSync(join(tmpdir(), "qa-lock-test-"));
 let n = 0;
@@ -104,11 +97,13 @@ try {
 
   {
     const dir = fresh();
-    process.env.QA_NO_LOCK = "1";
-    const lock = await acquireGateLock({ label: "off", lockDir: dir, log, ...quick });
+    process.env.QA_NO_LOCK = "1"; // retired switch: sessions set it to dodge the queue
+    const lock = await acquireGateLock({ label: "no-off-switch", lockDir: dir, log, ...quick });
     delete process.env.QA_NO_LOCK;
-    assert.equal(lock.held, false);
-    assert.equal(existsSync(dir), false, "QA_NO_LOCK=1 creates nothing");
+    assert.equal(lock.held, true, "QA_NO_LOCK=1 no longer bypasses the lock");
+    assert.equal(existsSync(dir), true);
+    lock.release();
+    delete process.env.QA_GATE_LOCK_HELD;
   }
 
   {
@@ -156,11 +151,7 @@ try {
     delete process.env.QA_GATE_LOCK_HELD;
   }
 
-  // The test lane (tools/run-tests.mjs) must be a different lock from the gate lock:
-  // sharing one directory would make a test phase wait on the gate that spawned it.
-  assert.notEqual(TEST_LANE_DIR, LOCK_DIR);
-
-  console.log("✓ qa-lock: excludes, times out loudly, ignores dead owners, honours QA_NO_LOCK.");
+  console.log("✓ qa-lock: excludes, times out loudly, ignores dead owners, has no off switch.");
 } finally {
   rmSync(root, { recursive: true, force: true });
 }
