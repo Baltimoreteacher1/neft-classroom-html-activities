@@ -30,7 +30,7 @@ import {
 import { availableParallelism, loadavg, setPriority, tmpdir } from "node:os";
 import { basename, join, relative } from "node:path";
 import { pathToFileURL } from "node:url";
-import { acquireGateLock, TEST_LANE_DIR } from "../scripts/lib/qa-lock.mjs";
+import { acquireGateLock } from "../scripts/lib/qa-lock.mjs";
 import { SKIP_EXIT } from "./lib/skip-exit.mjs";
 import {
   entryFromTrace,
@@ -141,17 +141,16 @@ const traceDir = VERIFY ? mkdtempSync(join(tmpdir(), "qa-test-trace-")) : null;
 const traceFile = (file) => join(traceDir, `${relative(ROOT, file).replace(/[^\w.-]/g, "_")}.json`);
 const PRELOAD = pathToFileURL(join(ROOT, "tools/lib/test-trace-preload.mjs")).href;
 
-/* --- One test phase at a time per machine ------------------------------------
+/* --- One heavy QA run at a time per machine ----------------------------------
  * A gate that holds the machine-wide gate lock (scripts/lib/qa-lock.mjs) already
  * excludes the others, and its children inherit QA_GATE_LOCK_HELD, so this is a
- * no-op for them. Small scoped runs (--commit / --push of a few checks, a manual
- * `npm test`, `test:reads`) take no gate lock, so three or four sessions ran
- * their test phases together: load average 40-50 on 10 cores, every one of them
- * slower than if they had queued. They queue here instead, bounded and loud. */
+ * no-op for them. Everything else — small scoped runs (--commit / --push of a few
+ * checks), a manual `npm test`, `test:reads` — takes the SAME lock here, so a test
+ * phase can neither overlap a gate that holds it nor another test phase. A separate
+ * test lane let both run together: 95 Chromium processes, load 230 on 10 cores. */
 const isPush = process.env.QA_PUSH === "1" || process.argv.includes("--push");
 await acquireGateLock({
   label: `${basename(ROOT)} · tests`,
-  lockDir: TEST_LANE_DIR,
   log: console.log,
   priority: isPush ? 2 : 0,
 });
