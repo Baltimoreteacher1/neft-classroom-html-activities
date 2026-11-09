@@ -22,8 +22,8 @@
   border: 1px solid var(--line);
   border-top: 6px solid var(--room);
   border-radius: var(--r-lg);
-  background: var(--surface);
-  box-shadow: var(--shadow);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--room-soft) 55%, var(--surface)) 0, var(--surface) 7rem);
+  box-shadow: var(--edge-light), var(--shadow);
 }
 .act-bar {
   display: flex;
@@ -41,6 +41,7 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.3rem 0.9rem 0.3rem 0.7rem;
+  border: 1px solid color-mix(in srgb, var(--room) 24%, transparent);
   border-radius: 999px;
   background: var(--room-soft);
   color: var(--room-ink);
@@ -97,9 +98,11 @@
   align-items: center;
   flex-wrap: wrap;
   padding: 0.85rem 1.1rem;
-  border: 1px solid color-mix(in srgb, var(--room) 28%, transparent);
+  border: 1px solid color-mix(in srgb, var(--room) 32%, transparent);
+  border-inline-start: 6px solid var(--room);
   border-radius: 16px;
   background: var(--room-soft);
+  box-shadow: var(--edge-light);
 }
 .directions-icon {
   width: 1.5rem;
@@ -703,16 +706,17 @@ details.helpers[open] > summary {
   gap: var(--s-3);
   min-height: 3.75rem;
   padding: 0.7rem 1rem;
-  border: 2px solid var(--line);
+  border: 2px solid var(--line-strong);
   border-radius: 16px;
   background: var(--surface);
   font-size: 1.125rem;
   line-height: 1.45;
   cursor: pointer;
+  box-shadow: var(--edge-light), 0 1px 2px rgb(16 30 90 / 6%);
   transition:
-    border-color 0.15s,
-    background-color 0.15s,
-    box-shadow 0.15s;
+    border-color var(--dur-2) var(--ease-out),
+    background-color var(--dur-2) var(--ease-out),
+    box-shadow var(--dur-2) var(--ease-out);
 }
 .has-pictures .choice {
   flex-direction: column;
@@ -730,12 +734,13 @@ details.helpers[open] > summary {
 }
 .choice:hover {
   border-color: var(--room);
-  background: color-mix(in srgb, var(--room) 4%, #fff);
+  background: color-mix(in srgb, var(--room) 6%, #fff);
+  box-shadow: var(--edge-light), 0 6px 14px -8px color-mix(in srgb, var(--room) 50%, transparent);
 }
 .choice.is-on {
   border-color: var(--room);
   background: var(--room-soft);
-  box-shadow: 0 0 0 4px color-mix(in srgb, var(--room) 16%, transparent);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--room) 20%, transparent);
 }
 .choice-letter {
   display: grid;
@@ -743,7 +748,7 @@ details.helpers[open] > summary {
   flex: none;
   width: 2.25rem;
   height: 2.25rem;
-  border: 2px solid var(--line-strong);
+  border: 2px solid var(--line-control);
   border-radius: 50%;
   background: #fff;
   color: var(--ink-2);
@@ -958,6 +963,7 @@ details.helpers[open] > summary {
   border: 1px solid transparent;
   border-left: 6px solid;
   border-radius: 14px;
+  box-shadow: var(--edge-light), 0 8px 18px -12px rgb(16 30 90 / 22%);
 }
 .feedback p {
   margin: 0.3rem 0;
@@ -970,21 +976,24 @@ details.helpers[open] > summary {
   font-size: 1.15rem;
 }
 .feedback.is-right {
-  border-color: var(--right);
+  border-color: color-mix(in srgb, var(--right) 35%, transparent);
+  border-left-color: var(--right);
   background: var(--right-soft);
 }
 .feedback.is-right .fb-title {
   color: var(--right);
 }
 .feedback.is-hint {
-  border-color: var(--hint);
+  border-color: color-mix(in srgb, var(--hint) 35%, transparent);
+  border-left-color: var(--hint);
   background: var(--hint-soft);
 }
 .feedback.is-hint .fb-title {
   color: var(--hint);
 }
 .feedback.is-shown {
-  border-color: var(--brand);
+  border-color: color-mix(in srgb, var(--brand) 35%, transparent);
+  border-left-color: var(--brand);
   background: var(--brand-soft);
 }
 .feedback.is-shown .fb-title {

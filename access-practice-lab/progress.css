@@ -204,8 +204,9 @@
   width: 2.9rem;
   height: 2.9rem;
   border-radius: 14px;
-  background: var(--brand-soft);
-  color: var(--brand-deep);
+  background: linear-gradient(180deg, var(--mi-600), var(--brand));
+  color: #fff;
+  box-shadow: var(--edge-light-dark), 0 6px 12px -6px rgb(26 47 120 / 55%);
 }
 .pass-stat-ico .ico {
   width: 1.5rem;
@@ -220,7 +221,8 @@
 .pass-stat-value {
   margin: 0;
   font: 650 clamp(1.8rem, 1.4rem + 1.4vw, 2.5rem) / 1.1 var(--font-display);
-  color: var(--ink);
+  font-variant-numeric: lining-nums tabular-nums;
+  color: var(--brand-ink);
 }
 .pass-stat-note {
   font-size: 0.875rem;
@@ -1968,8 +1970,14 @@
 }
 .shield-row {
   border: 1px solid var(--line);
+  border-top: 4px solid var(--room);
   border-radius: 12px;
   padding: 0.75rem;
+  background: linear-gradient(180deg, var(--room-soft), var(--surface) 4.5rem);
+  box-shadow: var(--edge-light);
+}
+.shield-row h3 {
+  color: var(--room-ink);
 }
 .shield-row h3 {
   margin: 0 0 0.375rem;
@@ -1980,11 +1988,12 @@
   margin: 0;
 }
 .shield {
-  color: var(--line-strong, #bdb4a6);
+  color: color-mix(in srgb, var(--room) 55%, var(--surface));
   inline-size: 1.75rem;
 }
 .shield.is-earned {
-  color: var(--acc-teal-ink, #136d6a);
+  color: var(--room);
+  filter: drop-shadow(0 2px 3px color-mix(in srgb, var(--room) 40%, transparent));
 }
 .shield-ico {
   inline-size: 100%;

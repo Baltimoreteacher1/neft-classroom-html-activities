@@ -86,9 +86,9 @@
      material token only to paint an environment (hero, studio portal, art). */
   --mi-950: #080e25; /* Midnight Indigo */
   --mi-900: #121c3f;
-  --mi-800: #1d2b58;
-  --mi-600: #33447c;
-  --mi-500: #455a9a;
+  --mi-800: #1a2f78;
+  --mi-600: #2d4691;
+  --mi-500: #4261b3;
   --mi-300: #9aa6d2;
   --ivory: #fffdf8; /* Ivory & Pearl */
   --pearl: #efe9e4;
@@ -110,18 +110,19 @@
   --ink: #111a3b;
   --ink-2: #3a4566;
   --ink-3: #59637f;
-  --bg: #f8f5ef;
+  --bg: #f2f5fb;
   --surface: #fffdf8;
-  --surface-2: #f4efe8;
-  --surface-3: #ebe5dd;
-  --line: #e4ddd2;
-  --line-strong: #bdb4a6;
+  --surface-2: #f3f0ea;
+  --surface-3: #e7e3dc;
+  --line: #dde1ec;
+  --line-strong: #aab1c6;
+  --line-control: #7f89a3; /* 3:1 on paper: borders of inputs, buttons, choices */
 
   /* action */
-  --brand: #1d2b58;
-  --brand-ink: #1d2b58;
+  --brand: #1a2f78;
+  --brand-ink: #1a2f78;
   --brand-deep: #080e25;
-  --brand-soft: #e9ebf5;
+  --brand-soft: #e6ecfb;
   --on-brand: #ffffff;
   --accent: #d28b58;
   --coral: #dba3b9;
@@ -129,28 +130,28 @@
   /* language domains: fill (white text on it), ink (text on white), soft (tint) */
   --listening: #075568;
   --listening-ink: #075568;
-  --listening-soft: #e2f3f0;
+  --listening-soft: #d9f0ec;
   --reading: #2e4a94;
   --reading-ink: #2a4386;
-  --reading-soft: #eceef8;
+  --reading-soft: #e4eafa;
   --speaking: #8a3a5c;
   --speaking-ink: #7d3354;
-  --speaking-soft: #f8ebf0;
+  --speaking-soft: #f7e6ed;
   --writing: #9a4a26;
   --writing-ink: #884326;
-  --writing-soft: #fbefe3;
+  --writing-soft: #fbead9;
   --room: var(--brand);
   --room-ink: var(--brand-ink);
   --room-soft: var(--brand-soft);
 
   /* feedback */
-  --right: #276152;
-  --right-soft: #e7f1ea;
-  --wrong: #a8281d;
-  --wrong-soft: #fcece9;
-  --hint: #7f4314;
-  --hint-soft: #fbf0e0;
-  --focus: #1d2b58;
+  --right: #17694a;
+  --right-soft: #e0f3e8;
+  --wrong: #b0261c;
+  --wrong-soft: #fde8e4;
+  --hint: #7a4108;
+  --hint-soft: #fcefd3;
+  --focus: #1a2f78;
 
   /* shape and depth */
   --r-xs: 6px;
@@ -160,10 +161,11 @@
   --r-xl: 30px;
   --target: 3rem;
   --shadow:
-    0 1px 1px rgb(8 14 37 / 5%), 0 2px 6px rgb(8 14 37 / 5%), 0 10px 24px -12px rgb(8 14 37 / 14%);
+    0 1px 1px rgb(16 30 90 / 6%), 0 3px 8px rgb(16 30 90 / 6%), 0 14px 28px -14px rgb(16 30 90 / 20%);
+  --shadow-card: 0 1px 2px rgb(16 30 90 / 7%), 0 8px 22px -10px rgb(16 30 90 / 16%);
   --shadow-lift:
-    0 1px 2px rgb(8 14 37 / 6%), 0 8px 18px -6px rgb(8 14 37 / 14%),
-    0 28px 48px -24px rgb(29 43 88 / 28%);
+    0 1px 2px rgb(16 30 90 / 8%), 0 10px 20px -6px rgb(16 30 90 / 18%),
+    0 30px 50px -24px rgb(26 47 120 / 32%);
   --shadow-float: 0 24px 60px -18px rgb(8 14 37 / 38%), 0 6px 16px rgb(8 14 37 / 10%);
   /* light: a soft top edge catches light on raised material; never a glow for its own sake */
   --edge-light: inset 0 1px 0 rgb(255 255 255 / 70%);
@@ -240,8 +242,9 @@ html {
   scroll-padding-top: 5rem;
 }
 body {
+  margin: 0;
   background:
-    radial-gradient(1400px 700px at 100% 0%, rgb(213 220 235 / 45%), transparent 70%) no-repeat,
+    radial-gradient(1300px 560px at 50% -140px, rgb(205 220 252 / 75%), transparent 72%) no-repeat,
     var(--grain),
     var(--bg);
   color: var(--ink);
@@ -347,19 +350,19 @@ a:hover {
   justify-content: space-between;
   gap: var(--s-4);
   min-height: 4.25rem;
-  padding: 0.6rem clamp(1rem, 3vw, 2.25rem);
+  padding: 0.6rem clamp(1rem, 2.4vw, 1.75rem);
   background: rgb(255 255 255 / 86%);
   backdrop-filter: blur(20px) saturate(180%);
   -webkit-backdrop-filter: blur(20px) saturate(180%);
   color: var(--ink);
-  border-bottom: 1px solid rgb(226 232 240 / 85%);
-  box-shadow: 0 1px 0 rgb(255 255 255 / 90%) inset, 0 4px 20px -2px rgb(15 23 42 / 6%);
+  border-bottom: 1px solid var(--line);
+  box-shadow: var(--edge-light), 0 6px 22px -10px rgb(16 30 90 / 16%);
   transition: background-color 0.2s ease, border-color 0.2s ease;
 }
 .lab-brand {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.6rem;
   flex: none;
   color: var(--ink);
   text-decoration: none;
@@ -390,9 +393,9 @@ a:hover {
   white-space: nowrap;
   font-family: var(--font-display);
   font-weight: 650;
-  font-size: 1.25rem;
+  font-size: 1.2rem;
   letter-spacing: -0.02em;
-  color: var(--brand, #1d2b58);
+  color: var(--brand, #1a2f78);
 }
 .lab-wordmark small {
   font-size: 0.8125rem;
@@ -403,20 +406,20 @@ a:hover {
 .lab-tools {
   display: flex;
   align-items: center;
-  gap: 0.35rem;
+  gap: 0.15rem;
 }
 .top-link {
   position: relative;
   white-space: nowrap;
   display: inline-flex;
   align-items: center;
-  gap: 0.45rem;
+  gap: 0.4rem;
   min-height: 2.5rem;
-  padding: 0.4rem 0.85rem;
+  padding: 0.4rem 0.55rem;
   border-radius: 9999px;
   color: var(--ink-2);
   font-weight: 700;
-  font-size: 0.9375rem;
+  font-size: 0.9rem;
   text-decoration: none;
   transition: all 0.18s cubic-bezier(0.2, 0, 0, 1);
 }
@@ -467,13 +470,13 @@ a:hover {
   align-items: center;
   gap: 0.45rem;
   min-height: 2.5rem;
-  padding: 0.4rem 0.95rem;
-  border: 1.5px solid var(--line-strong);
+  padding: 0.4rem 0.8rem;
+  border: 1.5px solid var(--line-control);
   border-radius: 9999px;
   background: var(--surface);
   color: var(--ink);
   font-weight: 700;
-  font-size: 0.9375rem;
+  font-size: 0.9rem;
   white-space: nowrap;
   cursor: pointer;
   list-style: none;
@@ -689,13 +692,13 @@ a:hover {
   min-height: var(--target);
   padding: 0.6rem 1.35rem;
   border-radius: var(--radius-sm, 12px);
-  border: 1.5px solid var(--line-strong);
+  border: 1.5px solid var(--line-control);
   background: var(--surface);
   color: var(--ink);
   font: 700 1rem/1.2 var(--font);
   text-decoration: none;
   cursor: pointer;
-  box-shadow: 0 1px 2px rgb(15 23 42 / 5%);
+  box-shadow: var(--edge-light), 0 1px 2px rgb(16 30 90 / 8%);
   transition:
     background-color var(--dur-2) var(--ease-out),
     border-color var(--dur-2) var(--ease-out),
@@ -707,23 +710,23 @@ a:hover {
   background: var(--surface-2);
   color: var(--ink);
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px -2px rgb(15 23 42 / 8%);
+  box-shadow: var(--edge-light), 0 6px 14px -4px rgb(16 30 90 / 18%);
 }
 .btn:active,
 .ghost:active {
   transform: translateY(1px) scale(0.985);
 }
 .btn-primary {
-  background: linear-gradient(135deg, var(--mi-800, #1d2b58) 0%, var(--brand-deep, #080e25) 100%);
+  background: linear-gradient(180deg, var(--mi-600) 0%, var(--brand) 100%);
   border-color: var(--brand);
   color: #ffffff;
   box-shadow:
     var(--edge-light-dark),
     0 1px 3px rgb(8 14 37 / 20%),
-    0 8px 20px -6px rgb(29 43 88 / 40%);
+    0 10px 22px -8px rgb(26 47 120 / 55%);
 }
 .btn-primary:hover {
-  background: linear-gradient(135deg, var(--mi-700, #26356a) 0%, var(--mi-900, #121c3f) 100%);
+  background: linear-gradient(180deg, var(--mi-500) 0%, var(--mi-800) 100%);
   border-color: var(--brand-deep);
   color: #ffffff;
   transform: translateY(-1.5px);
@@ -826,10 +829,10 @@ a:hover {
 .panel,
 .card {
   background: var(--surface);
-  border: 1px solid rgb(226 232 240 / 85%);
+  border: 1px solid var(--line);
   border-radius: var(--r-lg);
   padding: clamp(1.2rem, 2.5vw, 1.85rem);
-  box-shadow: 0 1px 3px 0 rgb(15 23 42 / 4%), 0 8px 24px -8px rgb(15 23 42 / 4%);
+  box-shadow: var(--edge-light), var(--shadow-card);
   transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
 }
 .panel {
@@ -861,7 +864,7 @@ textarea {
   width: 100%;
   min-height: 3rem;
   padding: 0.65rem 0.9rem;
-  border: 1.5px solid var(--line-strong);
+  border: 1.5px solid var(--line-control);
   border-radius: 12px;
   background: var(--surface);
   color: var(--ink);
@@ -883,7 +886,7 @@ input:focus-visible,
 select:focus-visible,
 textarea:focus-visible {
   border-color: var(--brand);
-  outline: 3px solid rgb(69 90 154 / 35%);
+  outline: 3px solid rgb(66 97 179 / 40%);
   outline-offset: 0;
   box-shadow: none;
 }
@@ -904,6 +907,12 @@ legend {
   padding: 0 0.4rem;
   font-weight: 700;
   color: var(--ink);
+}
+/* an empty live region stays in the DOM for assistive tech but must not paint an empty banner */
+[role="alert"]:not([hidden]):empty {
+  padding: 0;
+  border: 0;
+  background: none;
 }
 [role="alert"]:not([hidden]) {
   padding: 0.75rem 1rem;
@@ -991,7 +1000,7 @@ details > summary + * {
   gap: 0.4rem;
   min-height: 2.75rem;
   padding: 0.35rem 1rem;
-  border: 1.5px solid var(--line-strong);
+  border: 1.5px solid var(--line-control);
   border-radius: 999px;
   background: var(--surface);
   color: var(--ink);
@@ -1005,9 +1014,10 @@ details > summary + * {
 .cat-chip[aria-pressed="true"],
 .cat-chip.is-active,
 .chip.is-on {
-  background: var(--ink);
-  border-color: var(--ink);
+  background: var(--brand);
+  border-color: var(--brand);
   color: #fff;
+  box-shadow: var(--edge-light-dark);
 }
 .band-switch {
   display: inline-flex;
@@ -1015,7 +1025,7 @@ details > summary + * {
   max-width: 100%;
   gap: 0.25rem;
   padding: 0.3rem;
-  border: 1.5px solid var(--line-strong);
+  border: 1.5px solid var(--line-control);
   border-radius: 1.6rem;
   background: var(--surface);
 }
@@ -1037,8 +1047,9 @@ details > summary + * {
   color: var(--ink);
 }
 .band-btn[aria-pressed="true"] {
-  background: var(--ink);
+  background: var(--brand);
   color: #fff;
+  box-shadow: var(--edge-light-dark), 0 2px 6px -1px rgb(26 47 120 / 45%);
 }
 .grade-focus {
   display: grid;
@@ -1065,9 +1076,10 @@ details > summary + * {
 }
 .bar {
   position: relative;
-  height: 0.6rem;
+  height: 0.65rem;
   border-radius: 999px;
   background: var(--surface-3);
+  box-shadow: inset 0 1px 2px rgb(16 30 90 / 14%);
   overflow: hidden;
 }
 .bar > i {
@@ -1075,6 +1087,7 @@ details > summary + * {
   inset: 0 auto 0 0;
   border-radius: inherit;
   background: var(--room);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 35%);
   transition: width 0.5s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
@@ -1202,7 +1215,7 @@ details > summary + * {
   }
 }
 /* Brand never shrinks (its wordmark is nowrap); the link row tightens instead so they cannot overlap. */
-@media (min-width: 1200px) and (max-width: 1399px) {
+@media (min-width: 1200px) and (max-width: 1559px) {
   .lab-tools > .top-link:not(.top-expedition) > .ico {
     display: none;
   }
@@ -1318,8 +1331,8 @@ details > summary + * {
    One brand, two registers. Grades 3–5: warmer paper, rounder material, larger
    targets. Grades 6–8: cooler editorial paper, tighter radii, denser type. */
 body[data-lab-band="3-5"] {
-  --bg: #fbf6ec;
-  --surface-2: #f7efe3;
+  --bg: #fdf7e9;
+  --surface-2: #f8efe0;
   --radius: 20px;
   --r-lg: 26px;
   --r-xl: 34px;
@@ -1331,7 +1344,7 @@ body[data-lab-band="3-5"] .ghost {
   font-size: 1.0625rem;
 }
 body[data-lab-band="6-8"] {
-  --bg: #f6f4ef;
+  --bg: #f1f4fb;
   --radius: 14px;
   --r-lg: 18px;
   --r-xl: 24px;
@@ -1423,6 +1436,48 @@ body[data-lab-view] {
   --line: #cbd6d8;
   --surface-2: #f3f6f6;
   --shadow: 0 2px 8px rgb(25 51 58 / 5%);
+}
+
+/* ── forced colors (Windows High Contrast): state must not depend on a background colour ───── */
+@media (forced-colors: active) {
+  .band-btn[aria-pressed="true"],
+  .lang-btn[aria-pressed="true"],
+  .cat-chip[aria-pressed="true"],
+  .cat-chip.is-active,
+  .chip.is-on {
+    forced-color-adjust: none;
+    background: Highlight;
+    border-color: Highlight;
+    color: HighlightText;
+  }
+  .choice.is-on,
+  .lf-arc-step.is-current .lf-arc-btn {
+    outline: 3px solid Highlight;
+    outline-offset: 1px;
+  }
+  .choice.is-right::after,
+  .choice.is-answer::after,
+  .choice.is-wrong::after {
+    forced-color-adjust: none;
+    background: CanvasText;
+  }
+  .bar,
+  .lf-arc-bar {
+    border: 1px solid CanvasText;
+  }
+  .bar > i,
+  .lf-arc-bar i {
+    forced-color-adjust: none;
+    background: Highlight;
+  }
+  .feedback {
+    border: 2px solid CanvasText;
+    border-left-width: 6px;
+  }
+  .shield.is-earned {
+    forced-color-adjust: none;
+    color: Highlight;
+  }
 }
 
 /* ── reset and utilities ───────────────────────────────────────────────── */
@@ -1536,7 +1591,7 @@ h1:focus {
   flex: none;
   gap: 0.15rem;
   padding: 0.2rem;
-  border: 1.5px solid var(--line-strong);
+  border: 1.5px solid var(--line-control);
   border-radius: 999px;
   background: var(--surface);
 }
@@ -1556,8 +1611,9 @@ h1:focus {
   color: var(--ink);
 }
 .lang-btn[aria-pressed="true"] {
-  background: var(--ink);
+  background: var(--brand);
   color: #fff;
+  box-shadow: var(--edge-light-dark);
 }
 .lang-switch-large .lang-btn {
   min-height: 2.75rem;
@@ -1565,7 +1621,7 @@ h1:focus {
   font-size: 1rem;
 }
 .lab-tools .lang-switch {
-  margin-inline: 0.4rem;
+  margin-inline: 0.2rem;
 }
 .lang-banner[hidden] {
   display: none;
@@ -1701,7 +1757,7 @@ body[data-lab-band="6-8"] .panel,
 body[data-lab-band="6-8"] .room-tile,
 body[data-lab-band="6-8"] .studio-card {
   border-radius: var(--radius-sm);
-  border-color: var(--line-strong);
+  border-color: var(--line);
 }
 
 /* ── Interactive Explanations, Strategy Steps & Model Borrow ───────────── */

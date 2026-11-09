@@ -276,7 +276,7 @@ export function navHTML(ctx, I) {
   const focused = view === "test" || view === "assess";
   const accessPrepLink = html`<a class="top-link top-access-prep is-featured" data-tier="prep" href="${BASE}/access-prep?grades=${band}" ${view === "access-prep" ? raw('aria-current="page"') : ""}><span>${icon("tests")} ${T("Access Prep", "Preparación ACCESS")}</span></a>`;
   const sorLink = html`<a class="top-link top-sor-link" href="${BASE}/science-of-reading?grades=${band}" ${view === "science-of-reading" || view === "sor" ? raw('aria-current="page"') : ""}><span>${icon("reading")} ${T("Science of Reading", "Ciencia de la lectura")}</span></a>`;
-  return html`${accessPrepLink}${primary.filter((l) => !l.pill).map(topLink)}${sorLink}${primary.filter((l) => l.pill).map(topLink)}
+  return html`${accessPrepLink}${primary.filter((l) => !l.pill && !l.featured).map(topLink)}${sorLink}${primary.filter((l) => l.pill).map(topLink)}
     ${focused ? html`<span class="mode-flag">${icon("tests")}<span>${T("Focused practice mode", "Modo de práctica enfocada")}</span></span>` : ""}
     ${langSwitchHTML(I.mode)}
     <details class="lab-utilities">

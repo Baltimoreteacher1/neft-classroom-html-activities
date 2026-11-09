@@ -78,7 +78,7 @@ export function mountClassPanel(root, { S = (en) => en, fetchImpl = (...a) => fe
       el("p", { class: "fine" }, S("Live classes keep student practice on every device and let you assign work, run a live quiz and send voice notes. Everything here also works without a class: the browser-only panels below are unchanged.", "Las clases en vivo mantienen la práctica del estudiante en todos sus dispositivos y te permiten asignar tareas, hacer un cuestionario en vivo y enviar notas de voz. Todo esto también funciona sin clase: los paneles de abajo, que solo usan este navegador, no cambian.")),
       saved.length
         ? el("ul", { class: "cls-list" }, saved.map((c) => el("li", {}, el("button", { type: "button", class: "btn", onclick: () => open(c) }, `${S("Open", "Abrir")} ${c.title || c.code} (${c.code})`))))
-        : null,
+        : "",
       el(
         "form",
         { class: "cls-card", onsubmit: async (e) => {

@@ -30,7 +30,7 @@
   width: 100%;
   min-height: var(--target);
   padding: var(--s-2) var(--s-3);
-  border: 1.5px solid var(--line-strong);
+  border: 1.5px solid var(--line-control);
   border-radius: var(--radius-sm);
   background: var(--surface);
   color: var(--ink);
@@ -38,6 +38,15 @@
   text-align: start;
   cursor: pointer;
   overflow-wrap: anywhere;
+  box-shadow: var(--edge-light), 0 1px 2px rgb(16 30 90 / 6%);
+  transition:
+    border-color var(--dur-2) var(--ease-out),
+    background-color var(--dur-2) var(--ease-out),
+    box-shadow var(--dur-2) var(--ease-out);
+}
+.lf-arc-btn:hover:not(:disabled) {
+  border-color: var(--room);
+  box-shadow: var(--edge-light), 0 6px 14px -6px color-mix(in srgb, var(--room) 45%, transparent);
 }
 .lf-arc-btn:disabled {
   cursor: default;
@@ -49,7 +58,8 @@
   width: 1.75rem;
   height: 1.75rem;
   border-radius: 50%;
-  border: 2px solid var(--line-strong);
+  border: 2px solid var(--line-control);
+  background: var(--surface);
   font-size: 0.875rem;
   font-weight: 700;
 }
@@ -71,6 +81,7 @@
 .lf-arc-step.is-current .lf-arc-btn {
   border-color: var(--room);
   background: var(--room-soft);
+  box-shadow: inset 0 -3px 0 var(--room), 0 6px 16px -8px color-mix(in srgb, var(--room) 55%, transparent);
 }
 .lf-arc-step.is-current .lf-arc-n {
   border-color: var(--room);
@@ -87,10 +98,11 @@
   color: var(--ink-2);
 }
 .lf-arc-bar {
-  height: 0.4rem;
+  height: 0.5rem;
   margin-top: var(--s-3);
   border-radius: 999px;
   background: var(--surface-3);
+  box-shadow: inset 0 1px 2px rgb(16 30 90 / 14%);
   overflow: hidden;
 }
 .lf-arc-bar i {
@@ -113,6 +125,7 @@
   gap: 0.35rem;
   padding: 0.2rem 0.75rem;
   border: 1px solid var(--line-strong);
+  box-shadow: var(--edge-light);
   border-radius: 999px;
   background: var(--surface);
   font-size: 0.9375rem;
@@ -130,9 +143,9 @@
 .lf-goal {
   margin: 0 0 var(--s-4);
   padding: var(--s-3) var(--s-4);
-  border-inline-start: 4px solid var(--room);
+  border-inline-start: 5px solid var(--room);
   border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
-  background: var(--surface-2);
+  background: linear-gradient(90deg, var(--room-soft), var(--surface-2) 70%);
 }
 .lf-eyebrow {
   display: flex;
@@ -173,9 +186,10 @@
   margin: 0 0 var(--s-5);
   padding: var(--s-4);
   border: 1px solid var(--line-strong);
+  border-top: 5px solid var(--room);
   border-radius: var(--radius);
   background: var(--surface);
-  box-shadow: var(--shadow);
+  box-shadow: var(--edge-light), var(--shadow);
 }
 .lf-learn-head {
   display: flex;
@@ -226,6 +240,7 @@
   align-items: flex-start;
   margin: 0;
   padding: var(--s-3);
+  border-inline-start: 4px solid var(--hint);
   border-radius: var(--radius-sm);
   background: var(--hint-soft);
   color: var(--hint);
@@ -253,6 +268,7 @@
   border: 1px solid var(--line);
   border-radius: var(--radius-sm);
   background: var(--surface-2);
+  box-shadow: var(--edge-light), inset 4px 0 0 var(--room-soft);
 }
 .lf-model-text,
 .lf-model-lines {
@@ -321,17 +337,19 @@
 }
 .lf-dg-node {
   fill: var(--surface);
-  stroke: var(--line-strong);
-  stroke-width: 1.5;
+  stroke: var(--line-control);
+  stroke-width: 2;
+  stroke-linejoin: round;
 }
 .lf-dg-node.is-goal,
 .lf-dg-node.is-key {
   fill: var(--room-soft);
   stroke: var(--room);
+  stroke-width: 2.5;
 }
 .lf-dg-text {
   fill: var(--ink);
-  font: 400 15px var(--font);
+  font: 600 15px var(--font);
 }
 .lf-dg-text.is-small {
   font-size: 13px;
@@ -348,11 +366,13 @@
 }
 .lf-dg-arrow {
   fill: none;
-  stroke: var(--ink-3);
-  stroke-width: 2;
+  stroke: var(--ink-2);
+  stroke-width: 2.25;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 .lf-dg-head {
-  fill: var(--ink-3);
+  fill: var(--ink-2);
 }
 .lf-dg-circle {
   stroke-width: 2;
@@ -440,11 +460,16 @@
   margin: var(--s-2) 0 var(--s-3);
 }
 .lf-fb-part {
-  padding: var(--s-3);
+  padding: var(--s-3) var(--s-4);
   border: 1px solid var(--line);
+  border-inline-start: 4px solid var(--right);
   border-radius: var(--radius-sm);
   background: var(--surface);
   color: var(--ink);
+  box-shadow: var(--edge-light);
+}
+.lf-fb-part + .lf-fb-part {
+  border-inline-start-color: var(--brand);
 }
 .lf-fb-part h3 {
   margin: 0 0 var(--s-1);
@@ -470,6 +495,7 @@
   border: 1px solid var(--line-strong);
   border-radius: var(--radius);
   background: var(--surface);
+  box-shadow: var(--edge-light), var(--shadow-card);
 }
 .lf-next {
   border-color: var(--room);

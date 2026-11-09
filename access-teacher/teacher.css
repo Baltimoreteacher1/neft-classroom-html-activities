@@ -168,7 +168,7 @@
   align-items: center;
   min-height: 2.75rem;
   padding: 0.3rem 1rem;
-  border: 1.5px solid var(--line-strong);
+  border: 1.5px solid var(--line-control);
   border-radius: 999px;
   background: var(--surface);
   color: var(--ink);
@@ -177,8 +177,15 @@
   text-decoration: none;
 }
 .th-jump a:hover {
-  border-color: var(--ink);
-  background: var(--surface-2);
+  border-color: var(--brand);
+  background: var(--brand-soft);
+  color: var(--brand-deep);
+}
+/* the row scrolls sideways: the right edge fades so it reads as continuing, not cut off */
+.th-jump-inner {
+  padding-inline-end: 3rem;
+  -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 2.5rem), transparent);
+  mask-image: linear-gradient(90deg, #000 calc(100% - 2.5rem), transparent);
 }
 
 /* ── resource categories ───────────────────────────────────────────────── */
@@ -259,13 +266,17 @@
 
 /* ── sections ──────────────────────────────────────────────────────────── */
 .th-sec {
-  margin: 0 0 var(--s-6);
+  margin: 0 auto var(--s-6);
   padding: clamp(1.1rem, 2.4vw, 1.75rem);
   border: 1px solid var(--line);
   border-radius: var(--r-lg);
   background: var(--surface);
   box-shadow: var(--shadow);
   scroll-margin-top: 8rem;
+}
+/* a section that is also .lab-main lines up with the hero card above it (the page container minus its gutters) */
+.th-sec.lab-main {
+  width: min(1136px, 100% - 2rem);
 }
 .th-sec-head {
   display: flex;
