@@ -5830,6 +5830,12 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/language-adventures/mystery-club/",
+    title: "Mystery Club · The Language Page",
+    category: "Tool",
+    unit: null,
+  },
+  {
     path: "/language-adventures/notes/",
     title: "Teacher Hub · The Language Page",
     category: "Tool",

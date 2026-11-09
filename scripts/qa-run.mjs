@@ -125,6 +125,8 @@ const GATE = [
   "smoke:injection",
   "validate:html-experiences-browser",
   "validate:game-transformation-browser",
+  "validate:language-page-mystery-studio",
+  "validate:language-page-mystery-studio-browser",
 ];
 
 /* `build` is a BARRIER, not just a peer. It is the only member of the gate that
@@ -147,6 +149,7 @@ const NEEDS_DIST = new Set([
   "validate:game-transformation-browser",
   "validate:fluency-family-browser",
   "validate:html-experiences-browser",
+  "validate:language-page-mystery-studio-browser",
   "validate:hub",
   "validate:resource-baseline",
   "validate:dist-file-budget",
@@ -175,6 +178,7 @@ const NEEDS_DIST = new Set([
  * own against the same dist/. A third Chromium was the difference. */
 const EXCLUSIVE = new Set([
   "validate:game-transformation-browser",
+  "validate:language-page-mystery-studio-browser",
   "validate:html-experiences-browser",
   "validate:project-studio-browser",
   "validate:projects-gallery-browser",
@@ -232,6 +236,17 @@ const EXCLUSIVE = new Set([
 const UNIVERSAL = ["check"];
 const CARRIES_SCRIPT = /\.(js|mjs|cjs|html?)$/i;
 const COVERAGE = [
+  [
+    /^(tools\/language-page-mystery-club\/.*|language-adventures\/mystery-club\/.*|tools\/sync-static-apps\.mjs)$/,
+    [
+      "validate:language-page-mystery-studio",
+      "validate:language-page-mystery-studio-browser",
+      "validate:static",
+      "validate:catalog",
+      "validate:js-syntax",
+      "check",
+    ],
+  ],
   [
     /^(language-adventures\/.*|data\/static-app-mounts\.json|curriculum\/index\.html|functions\/_lib\/language-page\.js|functions\/language-page-host\.test\.mjs)$/,
     ["validate:static", "validate:catalog", "check"],
