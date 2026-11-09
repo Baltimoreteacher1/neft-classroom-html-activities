@@ -75,7 +75,7 @@ export function pickPrerequisite(tutor, skill, { category = null, now = Date.now
   for (let depth = 0; depth < 3; depth += 1) {
     const focus = category ? MISCONCEPTION_FOCUS[category] : null;
     const candidates = prerequisites(current)
-      .filter((candidate) => candidate.grade >= 1 && skillKey(candidate) !== skillKey(skill) && !chain.includes(candidate))
+      .filter((candidate) => candidate.grade >= 0 && skillKey(candidate) !== skillKey(skill) && !chain.includes(candidate))
       .map((candidate) => ({ candidate, status: skillStatus(tutor, candidate, now) }))
       .filter(({ status }) => !secure(status))
       .map(({ candidate, status }) => ({

@@ -109,6 +109,8 @@ export const ES_LAB4_DASHBOARD = {
   "Find your way": "Encuentra tu camino",
   "Choose a strand in Grade {n}": "Elige un tema del grado {n}",
   "Your Grade {n} skill map": "Tu mapa de habilidades del grado {n}",
+  "Choose a strand in Kindergarten": "Elige un tema de kínder",
+  "Your Kindergarten skill map": "Tu mapa de habilidades de kínder",
   "See how skills build on each other. Open any skill to learn or practice it.":
     "Mira cómo unas habilidades se apoyan en otras. Abre cualquiera para aprenderla o practicarla.",
   "Builds on: {list}": "Se apoya en: {list}",

@@ -58,7 +58,7 @@ try {
       const hero = home.locator(".at-hero");
       if (!(await hero.isVisible())) fail(`${tag}: hero missing`);
       else if (!(await hero.locator(".at-sculpture svg[role=img]").count())) fail(`${tag}: hero scene missing`);
-      else if (!(await home.locator("#at-kicker").textContent()).includes(String(grade))) fail(`${tag}: hero does not name the grade`);
+      else if (!(await home.locator("#at-kicker").textContent()).includes(grade === 0 ? "Kindergarten" : String(grade))) fail(`${tag}: hero does not name the grade`);
       if ((await overflow(home)) > 1) fail(`${tag}: horizontal overflow on home`);
       if (shots) await home.screenshot({ path: `${shots}/g${grade}-${name}-home.png` });
       if (name === "desktop") await axe(home, `${tag} home`, ".at-hero, #hub-tabs, #grade-tabs");

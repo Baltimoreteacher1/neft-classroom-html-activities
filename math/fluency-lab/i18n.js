@@ -6,6 +6,13 @@ import { ES_WORLDS } from "./i18n-es-worlds.js";
 import { ES_STUDIO } from "./i18n-es-studio.js";
 import { ES_COMPETITOR, ES_SHOP_TEAMS } from "./i18n-es-competitor.js";
 import { ES_DUEL } from "./i18n-es-duel.js";
+import { ES_E8 } from "./i18n-es-e8.js";
+import { ES_KID } from "./i18n-es-kid.js";
+import { ES_CLASS } from "./i18n-es-class.js";
+import { ES_ATELIER } from "./i18n-es-lab8-atelier.js";
+import { ES_ENTRY } from "./i18n-es-lab9-entry.js";
+import { ES_LAB6_NAV } from "./i18n-es-lab6-nav.js";
+import { ES_REALITY } from "./i18n-es-lab7-reality.js";
 import { ES_MOBY_FACTS } from "./moby/i18n-es-facts.js";
 import { ES_MOBY_QUESTS } from "./moby/i18n-es-quests.js";
 import { ES_MOBY_INTERVENTION } from "./moby/i18n-es-intervention.js";
@@ -20,6 +27,13 @@ export const ES = {
   ...ES_COMPETITOR,
   ...ES_SHOP_TEAMS,
   ...ES_DUEL,
+  ...ES_E8,
+  ...ES_KID,
+  ...ES_CLASS,
+  ...ES_ATELIER,
+  ...ES_ENTRY,
+  ...ES_LAB6_NAV,
+  ...ES_REALITY,
   ...ES_MOBY_FACTS,
   ...ES_MOBY_QUESTS,
   ...ES_MOBY_INTERVENTION,

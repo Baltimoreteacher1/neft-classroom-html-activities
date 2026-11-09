@@ -1,4 +1,5 @@
 import { ALL_SKILLS } from "./problem-bank.js";
+import { qrSvg } from "../../shared/qr/qr-code.mjs";
 
 const STRATEGIES = new Set(["visual", "decompose", "recall", "symbolic", "cra", "leitner"]);
 const KNOWN_SKILLS = new Set(ALL_SKILLS.map((skill) => `${skill.grade}:${skill.id}`));
@@ -210,6 +211,11 @@ export function aggregateClassHeatmap(receipts) {
  * Generates an SVG representation of the receipt code with positioning markers and data grid.
  */
 export function makeReceiptQRSVG(code, size = 180) {
+  try {
+    return qrSvg(String(code || ""), { px: size, label: `QR Code receipt: ${code}` });
+  } catch {
+    // Fallback if code exceeds version 5 byte capacity
+  }
   // Deterministic 25x25 matrix based on payload hash and bytes
   const grid = 25;
   const cellSize = (size - 16) / grid;

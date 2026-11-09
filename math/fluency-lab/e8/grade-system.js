@@ -8,6 +8,25 @@
 const MOTION = { bounce: 520, gentle: 380, smooth: 260, crisp: 180, minimal: 120 };
 
 export const GRADE_SYSTEM = Object.freeze({
+  0: {
+    header: "storybook",
+    nav: "one-task",
+    card: "sticker",
+    path: "stepping-stones",
+    feedback: "friendly-burst",
+    motion: "bounce",
+    controls: "jumbo",
+    density: "airy",
+    progress: "garden",
+    illustration: "picture-book",
+    language: "spoken-short",
+    independence: "guided",
+    type: "round-large",
+    manipulatives: ["five-frames", "ten-frames", "counting bears", "dot cards", "part-whole cups"],
+    practiceItems: 5,
+    targetPx: 64,
+    scaleRem: 1.18,
+  },
   1: {
     header: "storybook",
     nav: "one-task",
@@ -196,8 +215,10 @@ const ATTRIBUTES = [
 ];
 
 export function gradeSystem(grade) {
-  const profile = GRADE_SYSTEM[Number(grade)];
-  return profile ? { grade: Number(grade), ...profile, motionMs: MOTION[profile.motion] } : null;
+  if (grade === null || grade === undefined || grade === "") return null;
+  const num = grade === "K" || grade === "k" ? 0 : Number(grade);
+  const profile = Number.isInteger(num) ? GRADE_SYSTEM[num] : null;
+  return profile ? { grade: num, ...profile, motionMs: MOTION[profile.motion] } : null;
 }
 
 // Original vector scenes, one per grade. Each uses the grade's own mathematical model, so the hero tells the
@@ -205,6 +226,9 @@ export function gradeSystem(grade) {
 const S = (inner) =>
   `<svg viewBox="0 0 320 170" role="img" focusable="false" xmlns="http://www.w3.org/2000/svg">${inner}</svg>`;
 const SCENES = {
+  0: S(
+    `<rect width="320" height="170" rx="24" fill="#fff5ee"/><circle cx="272" cy="36" r="20" fill="#fbbf24"/><rect x="24" y="48" width="200" height="52" rx="12" fill="#fff" stroke="#d95f43" stroke-width="4"/><path d="M64 48v52M104 48v52M144 48v52M184 48v52" stroke="#d95f43" stroke-width="2.5" opacity=".45"/><g fill="#d95f43"><circle cx="44" cy="74" r="12"/><circle cx="84" cy="74" r="12"/><circle cx="124" cy="74" r="12"/></g><g fill="#1fa6a2"><circle cx="164" cy="74" r="12"/><circle cx="204" cy="74" r="12"/></g><text x="72" y="138" font-size="20" font-weight="800" fill="#7c2d12" font-family="Georgia,serif">3 + 2 = 5</text><g fill="none" stroke="#d95f43" stroke-width="3"><circle cx="84" cy="74" r="12"/><circle cx="124" cy="74" r="12"/></g><path d="M24 156c40-14 80 6 120-6s90 4 152-4" stroke="#1fa6a2" stroke-width="5" stroke-linecap="round" fill="none"/><g fill="#fbbf24" opacity=".7"><circle cx="262" cy="110" r="6"/><circle cx="284" cy="124" r="6"/><circle cx="244" cy="128" r="6"/></g>`,
+  ),
   1: S(
     `<rect width="320" height="170" rx="22" fill="#fff3e8"/><circle cx="268" cy="38" r="22" fill="#f6c453"/><g stroke="#f6c453" stroke-width="4" stroke-linecap="round"><path d="M268 4v8M268 64v8M234 38h8M294 38h8"/></g><path d="M0 138c60-26 120 6 180-8s100-8 140 8v32H0z" fill="#bfe3c4"/><rect x="28" y="40" width="148" height="60" rx="10" fill="#fff" stroke="#c94f64" stroke-width="4"/><path d="M102 40v60M28 70h148" stroke="#c94f64" stroke-width="2" opacity=".4"/><g fill="#c94f64"><circle cx="48" cy="55" r="9"/><circle cx="68" cy="55" r="9"/><circle cx="88" cy="55" r="9"/><circle cx="122" cy="55" r="9"/><circle cx="142" cy="55" r="9"/><circle cx="48" cy="85" r="9"/><circle cx="68" cy="85" r="9"/></g><g transform="translate(206 92)"><circle cx="14" cy="14" r="14" fill="#e65f4d"/><path d="M14 0c0-8 6-10 10-10" stroke="#3a7d44" stroke-width="3" fill="none"/></g><g transform="translate(236 104)"><circle cx="14" cy="14" r="14" fill="#e65f4d"/><path d="M14 0c0-8 6-10 10-10" stroke="#3a7d44" stroke-width="3" fill="none"/></g><g transform="translate(266 96)"><circle cx="14" cy="14" r="14" fill="#e65f4d"/><path d="M14 0c0-8 6-10 10-10" stroke="#3a7d44" stroke-width="3" fill="none"/></g>`,
   ),

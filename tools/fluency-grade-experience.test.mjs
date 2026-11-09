@@ -6,7 +6,7 @@ import {
   gradeExperienceBanner,
 } from "../math/fluency-lab/grade-experience.js";
 
-assert.deepEqual(GRADE_EXPERIENCE_GRADES, [1, 2, 3, 4, 5, 6, 7, 8]);
+assert.deepEqual(GRADE_EXPERIENCE_GRADES, [0, 1, 2, 3, 4, 5, 6, 7, 8]);
 const names = new Set();
 const accents = new Set();
 for (const grade of GRADE_EXPERIENCE_GRADES) {
@@ -66,11 +66,11 @@ for (const grade of GRADE_EXPERIENCE_GRADES) {
   assert.equal(styles.get("--experience-card-gap"), `${profile.density}rem`);
   assert.ok(bannerHost.innerHTML.includes(profile.name.replaceAll("&", "&amp;")));
 }
-assert.equal(applyGradeExperience(0), null);
+assert.equal(applyGradeExperience(9), null);
 assert.equal(root.dataset.gradeExperience, undefined);
 assert.equal(root.dataset.primaryFlow, undefined);
 assert.equal(styles.get("--grade"), "#e59b46");
 assert.equal(gradeExperience(9), null);
 console.log(
-  "Grade experience: eight distinct profiles, branded banners, and stable grade switching passed.",
+  "Grade experience: nine distinct profiles, branded banners, and stable grade switching passed.",
 );

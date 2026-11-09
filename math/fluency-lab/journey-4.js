@@ -164,8 +164,9 @@ function rewardsHtml(ctx) {
 function navHtml(ctx) {
   const strands = progressByStrand(ctx.tutor, ctx.grade, ctx.now);
   const count = (row) => t("{a} of {b} skills strong", { a: row.strong, b: row.total });
+  const gText = ctx.grade === 0 ? t("Kindergarten") : t("Grade {n}", { n: ctx.grade });
   return `<section class="fl4-nav" data-hub-panel="skills" aria-labelledby="fl4-nav-title"><h2 id="fl4-nav-title">${t("Find your way")}</h2>
-    <h3 class="fl4-subhead">${escapeHtml(t("Choose a strand in Grade {n}", { n: ctx.grade }))}</h3><nav aria-label="${escapeHtml(t("Choose a strand in Grade {n}", { n: ctx.grade }))}"><ul class="fl4-strands">${strands
+    <h3 class="fl4-subhead">${escapeHtml(ctx.grade === 0 ? t("Choose a strand in Kindergarten") : t("Choose a strand in Grade {n}", { n: ctx.grade }))}</h3><nav aria-label="${escapeHtml(gText)}"><ul class="fl4-strands">${strands
       .map(
         (row) =>
           `<li><button type="button" class="fl4-tile fl4-tile--strand" data-fl4-strand="${escapeHtml(row.strand)}" aria-pressed="${row.strand === ctx.strand}"><span class="fl4-tile__art" aria-hidden="true">${strandArt(row.strand, { decorative: true, size: 40, idPrefix: `sa-${row.strand.replace(/\W/g, "")}` })}</span><span class="fl4-tile__name">${escapeHtml(t(row.strand))}</span><span class="fl4-tile__count">${escapeHtml(count(row))}</span>${bar(row.strong, row.total, count(row))}</button></li>`,
@@ -175,9 +176,10 @@ function navHtml(ctx) {
 
 function doorsHtml(ctx) {
   const count = ctx.gradeSkillCount;
+  const browseCopy = ctx.grade === 0 ? t("Browse {count} Kindergarten skills", { count }) : t("Browse {count} Grade {grade} skills", { count, grade: ctx.grade });
   return `<div class="fl4-doors" data-hub-panel="today">
     <button type="button" class="fl4-door journey-game" data-view="games"><span class="fl4-overline">${t("Untimed · think and play")}</span><strong>${t("Play a game")}</strong><span>${t("Build, compare, and solve with the Game Room activities.")}</span><span class="fl4-door__link">${t("Choose a game")} <span aria-hidden="true">→</span></span></button>
-    <article class="fl4-door journey-explore"><span class="fl4-overline">${t("Kindergarten–Grade 8 · many ways in")}</span><h3>${t("Explore skills")}</h3><p>${t("Browse the grade-level library by topic. Every skill includes a lesson, practice, and ways to check your thinking.")}</p><a class="fl4-door__link" href="#subnav-skills">${t("Browse {count} Grade {grade} skills", { count, grade: ctx.grade })} <span aria-hidden="true">→</span></a></article></div>`;
+    <article class="fl4-door journey-explore"><span class="fl4-overline">${t("Kindergarten–Grade 8 · many ways in")}</span><h3>${t("Explore skills")}</h3><p>${t("Browse the grade-level library by topic. Every skill includes a lesson, practice, and ways to check your thinking.")}</p><a class="fl4-door__link" href="#subnav-skills">${browseCopy} <span aria-hidden="true">→</span></a></article></div>`;
 }
 
 // ctx: { tutor, grade, now, gradeLabel, profileName, strand, resume: {title, answered}|null, gradeSkillCount,
@@ -190,11 +192,12 @@ export function mountDashboard(host, ctx) {
   contexts.set(host, full);
   const sections = recommend(full.tutor, full.grade, full.now);
   const target = continueTarget(sections);
+  const mapHeading = full.grade === 0 ? t("Your Kindergarten skill map") : t("Your Grade {n} skill map", { n: full.grade });
   host.innerHTML = `<div class="fl4-home">${heroHtml(full, sections, target)}${reminderHtml(full)}
     <div id="fl4-moby-quests-host"></div>
     <div id="fl4-moby-fluency-host"></div>
     ${planHtml(sections)}${navHtml(full)}
-    <section class="fl4-pathway" data-hub-panel="map" aria-labelledby="fl4-map-title"><h2 id="fl4-map-title">${escapeHtml(t("Your Grade {n} skill map", { n: full.grade }))}</h2><p>${t("See how skills build on each other. Open any skill to learn or practice it.")}</p><div id="fl4-map-host"></div></section>
+    <section class="fl4-pathway" data-hub-panel="map" aria-labelledby="fl4-map-title"><h2 id="fl4-map-title">${escapeHtml(mapHeading)}</h2><p>${t("See how skills build on each other. Open any skill to learn or practice it.")}</p><div id="fl4-map-host"></div></section>
     ${rewardsHtml(full)}${doorsHtml(full)}${full.evidenceHtml ? `<div class="journey-evidence" data-hub-panel="rewards">${full.evidenceHtml}</div>` : ""}</div>`;
   mountSkillMap(host.querySelector("#fl4-map-host"), {
     grade: full.grade,

@@ -68,7 +68,7 @@ export function prerequisiteGaps(tutor, skill, now = Date.now()) {
   const goal = skillStatus(tutor, skill, now);
   if (!isStruggling(goal)) return [];
   return prerequisites(skill)
-    .filter((candidate) => candidate.grade >= 1)
+    .filter((candidate) => candidate.grade >= 0)
     .map((candidate) => skillStatus(tutor, candidate, now))
     .filter((status) => !isSecure(status))
     .map((status) => ({
@@ -88,7 +88,7 @@ function ancestors(skill) {
   const pending = [skill];
   while (pending.length)
     for (const parent of explicitPrerequisites(pending.pop()))
-      if (parent.grade >= 1 && !found.has(skillKey(parent))) { found.set(skillKey(parent), parent); pending.push(parent); }
+      if (parent.grade >= 0 && !found.has(skillKey(parent))) { found.set(skillKey(parent), parent); pending.push(parent); }
   return [...found.values()];
 }
 

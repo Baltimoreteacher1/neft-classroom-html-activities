@@ -3,14 +3,16 @@
    (its own files plus the shared /assets and /shared files it loads) is saved as it is used, network-first so a deploy
    is seen as soon as the network answers. /api/ and /results are live endpoints and are never touched.
    Bump CACHE only when this worker itself changes. */
-const CACHE = "fluency-off-v2";
+const CACHE = "fluency-off-v2-1794231861000";
 const SCOPE = "/math/fluency-lab/";
 const SKIP_PREFIXES = ["/api/", "/results"];
 const CORE = [
   SCOPE,
   SCOPE + "manifest.json",
   SCOPE + "cra-engine.css",
+  SCOPE + "fluency-2.css",
   SCOPE + "CRADecompositionEngine.js",
+  SCOPE + "fluency-2-innovations.js",
   SCOPE + "icons/icon-192.png",
   SCOPE + "icons/icon-512.png",
   "/assets/favicon.svg",

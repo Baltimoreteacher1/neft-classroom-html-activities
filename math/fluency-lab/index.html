@@ -37,7 +37,6 @@
     <link rel="stylesheet" href="./writing.css" />
     <link rel="stylesheet" href="./journey-4.css" /> <!-- fl4:dashboard -->
     <link rel="stylesheet" href="./mini-lesson.css" /> <!-- fl4:lessons -->
-    <link rel="stylesheet" href="./teacher-4.css" /> <!-- fl4:teacher -->
     <link rel="stylesheet" href="./fl-class-tools.css" /> <!-- fl-teacher -->
     <link rel="stylesheet" href="./ds4-screens.css" />
     <link rel="stylesheet" href="./v7/v7.css" />
@@ -50,7 +49,6 @@
     <link rel="stylesheet" href="./e8/model-lab.css" />
     <link rel="stylesheet" href="./e8/adaptive-ui.css" />
     <link rel="stylesheet" href="./e8/game-room.css" />
-    <link rel="stylesheet" href="./e8/teacher-hub.css" />
     <link rel="stylesheet" href="./e8/item-practice.css" />
     <link rel="stylesheet" href="./cra-engine.css" />
     <link rel="stylesheet" href="./atelier/atelier.css" />
@@ -62,12 +60,14 @@
     <link rel="stylesheet" href="./class-link.css" />
     <link rel="stylesheet" href="./wonder-city.css" />
     <link rel="stylesheet" href="./publisher-finish.css" />
+    <link rel="stylesheet" href="./fluency-2.css" />
     <script>
       // A grade named in the URL sets its type scale before first paint, so the page does not grow once the app
       // loads. The table mirrors scaleRem in e8/grade-system.js (pinned by tools/fluency-atelier.test.mjs).
       (function () {
-        var scale = { 1: 1.14, 2: 1.1, 3: 1.06, 4: 1.03, 5: 1, 6: 1, 7: 0.98, 8: 0.96 };
-        var grade = new URLSearchParams(location.search).get("grade");
+        var scale = { 0: 1.18, 1: 1.14, 2: 1.1, 3: 1.06, 4: 1.03, 5: 1, 6: 1, 7: 0.98, 8: 0.96 };
+        var raw = new URLSearchParams(location.search).get("grade");
+        var grade = raw === "K" || raw === "k" ? "0" : raw;
         if (!scale[grade]) return;
         document.documentElement.dataset.gradeSystem = grade;
         document.documentElement.dataset.atPreGrade = grade;

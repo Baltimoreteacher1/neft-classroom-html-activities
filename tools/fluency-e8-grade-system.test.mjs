@@ -19,7 +19,7 @@ import {
 import { ALL_SKILLS } from "../math/fluency-lab/problem-bank.js";
 import { buildCss } from "./build-fluency-e8-tokens.mjs";
 
-assert.deepEqual(GRADE_SYSTEM_GRADES, [1, 2, 3, 4, 5, 6, 7, 8]);
+assert.deepEqual(GRADE_SYSTEM_GRADES, [0, 1, 2, 3, 4, 5, 6, 7, 8]);
 
 // Each grade must differ in the dimensions a publisher would see: header, card, path, feedback and illustration.
 for (const dimension of ["header", "card", "illustration"]) {
@@ -98,7 +98,7 @@ for (const grade of GRADE_SYSTEM_GRADES) {
 }
 assert.equal(
   new Set(GRADE_SYSTEM_GRADES.map((grade) => gradeScene(grade))).size,
-  8,
+  9,
   "scenes are all different",
 );
 assert.equal(gradeSystem(9), null);

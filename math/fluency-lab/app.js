@@ -121,11 +121,16 @@ import { renderBase10Regrouping, mountBase10Regrouping } from "./base10-regroupi
 import { renderRatioScaler, mountRatioScaler } from "./ratio-scaler.js";
 import { renderUniverseHub, mountUniverseHub } from "./interactive-universe.js";
 import { renderKCFStudio, mountKCFLab, verticalFracHtml } from "./keep-change-flip-lab.js";
+import {
+  renderTriRepBench,
+  renderSocraticCounterexample,
+  renderTactileExpressionDecomposer,
+  renderTomorrowTableKit,
+} from "./fluency-2-innovations.js";
 
-// teacher-4.js is teacher-only, so the teacher-surface gate refuses it to an anonymous student. A static import of a
-// refused file stops this whole module; awaiting a guarded import instead leaves null for a student and the real
-// module, available synchronously, for a signed-in teacher.
-const fl4Teacher = await import("./teacher-4.js").catch(() => null);
+// teacher-4.js is teacher-only; lazy-load it only when the teacher view is opened so anonymous student
+// page loads never trigger an HTTP 401 Basic Auth challenge during initial boot.
+let fl4Teacher = null;
 
 const STORAGE_KEY = "ewl-fluency-progress-v1";
 const SETTINGS_KEY = "ewl-fluency-settings-v1";
@@ -136,7 +141,8 @@ const BRIDGE_RETURN_KEY = "ewl-fluency-bridge-return-v1";
 const INTELLIGENCE_KEY = "ewl-fluency-instructional-evidence-v1";
 const STREAK_GOAL = 10;
 const initialParams = new URLSearchParams(location.search);
-const initialGrade = initialParams.has("grade") ? Number(initialParams.get("grade")) : Number.NaN;
+const rawGradeParam = initialParams.get("grade");
+const initialGrade = rawGradeParam === null ? Number.NaN : (rawGradeParam === "K" || rawGradeParam === "k" ? 0 : Number(rawGradeParam));
 const requestedProfileValue = initialParams.get("profile");
 const requestedProfile = requestedProfileValue === null ? Number.NaN : Number(requestedProfileValue);
 let activeProfile = Number.isInteger(requestedProfile) && requestedProfile >= 0 && requestedProfile < PROFILE_NAMES.length
@@ -357,7 +363,7 @@ function saveSettings() {
 }
 
 function skillKey(skill = state.skill) {
-  return skill ? `${skill.grade || state.grade}:${skill.id}` : null;
+  return skill ? `${skill.grade ?? state.grade}:${skill.id}` : null;
 }
 
 function recordFor(skill) {
@@ -371,7 +377,7 @@ function recordFor(skill) {
     guidedCorrect: 0,
     guidedSets: 0,
     lastPracticed: null,
-    ...(state.progress[`${skill.grade || state.grade}:${skill.id}`] || {}),
+    ...(state.progress[`${skill.grade ?? state.grade}:${skill.id}`] || {}),
   };
 }
 
@@ -410,7 +416,7 @@ function renderGradeTabs() {
   els.gradeTabs.innerHTML = GRADES.map(
     (grade, index) => `
       <button class="grade-tab" role="tab" aria-selected="${picked(grade)}" tabindex="${picked(grade) || (state.landing && index === 0) ? 0 : -1}" aria-controls="library-view" data-grade="${grade.grade}">
-        <span>${t("Grade")}</span><strong>${grade.grade}</strong>
+        <span>${grade.grade === 0 ? t("Kinder") : t("Grade")}</span><strong>${grade.grade === 0 ? "K" : grade.grade}</strong>
       </button>`,
   ).join("");
 }
@@ -654,7 +660,7 @@ function populateQuickSkillDropdown() {
 function updateQuickSkillDropdown() {
   if (!els.quickSkillSelect) return;
   if (state.skill) {
-    els.quickSkillSelect.value = `${state.skill.grade || state.grade}:${state.skill.id}`;
+    els.quickSkillSelect.value = `${state.skill.grade ?? state.grade}:${state.skill.id}`;
   } else {
     els.quickSkillSelect.value = "";
   }
@@ -663,7 +669,7 @@ function updateQuickSkillDropdown() {
 function openSkill(skillId, mode = "learn", targetGrade = null) {
   if (typeof skillId === "string" && skillId.includes(":")) {
     const [gStr, sId] = skillId.split(":");
-    targetGrade = Number(gStr);
+    targetGrade = gStr === "K" || gStr === "k" ? 0 : Number(gStr);
     skillId = sId;
   }
   if (targetGrade !== null && GRADES.some((g) => g.grade === targetGrade)) {
@@ -789,6 +795,7 @@ function renderLearn() {
           <div data-learn-steps data-total-steps="${example.steps.length}">${stepsBlock(example.steps, 1, { id: "learn-steps" })}</div>
         </div>
       </div>
+      <div id="fl2-learn-tri-bench">${renderTriRepBench(example, state.triBenchState || {})}</div>
       <details class="learn-support"><summary>${escapeHtml(t("Need more help?"))}</summary>
       <p class="learn-watch"><strong>Watch out:</strong> ${highlightVocab(escapeHtml(t(skill.learn.watch)))}</p>
       ${wordStripHtml(skill, { heading: t("Words to know") })}
@@ -881,7 +888,7 @@ function leaveExtraPanels() {
 
 const pausedPracticeFor = (skill) => {
   const saved = loadJson(SESSION_KEY, null);
-  return saved?.version === 2 && saved.session && !saved.session.finished && saved.skillId === skill.id && saved.grade === skill.grade ? saved : null;
+  return saved?.version === 2 && saved.session && !saved.session.finished && saved.session.mode !== "guided" && saved.skillId === skill.id && saved.grade === skill.grade ? saved : null;
 };
 
 function rememberVisit() {
@@ -1301,6 +1308,17 @@ function formatProblemArena(item) {
     } else {
       unitEl.hidden = true;
     }
+  }
+  // Mount Tactile Expression Decomposer tokens for direct manipulation
+  let tokenHost = document.querySelector("#fl2-tactile-token-host");
+  if (!tokenHost && arena) {
+    tokenHost = document.createElement("div");
+    tokenHost.id = "fl2-tactile-token-host";
+    arena.querySelector(".problem-question-zone")?.appendChild(tokenHost);
+  }
+  if (tokenHost) {
+    state.tactileSplit = { expanded: false };
+    tokenHost.innerHTML = state.session?.mode === "diagnostic" ? "" : renderTactileExpressionDecomposer(item, state.tactileSplit);
   }
 }
 
@@ -7310,11 +7328,16 @@ function submitAnswer(value) {
   const correct = validateAnswer(value, state.item);
   // Line-by-line work: after Check, each written line shows whether it follows from the line above.
   state.responseWidget?.showVerdict?.(checkResponse(value, state.item));
+  const e8Diag = !correct
+    ? analyzeResponse({ skill: state.item.skill, question: state.item.question, answers: state.item.answers || [], response: value })
+    : null;
   const responseInput = {
     activity: tutorSkillKey(state.item.skill),
     itemId: `${state.session.id}:${state.session.answered}`,
     correct,
     independent: !state.initialSupport && !state.hintBeforeFirst && state.itemAttempts === 1,
+    misconception: e8Diag?.category === "conceptual" ? e8Diag.id : null,
+    computationalSlip: e8Diag?.category === "calculation",
     learnerSignal: state.instructionalSignal,
     languageAccess: state.instructionalSignal === "language-access" ? "learner-requested" : "none",
   };
@@ -7526,7 +7549,7 @@ function checkupCopy(found) {
 }
 
 function updateSkillRecord(skill, correct, mode) {
-  const key = `${skill.grade || state.grade}:${skill.id}`;
+  const key = `${skill.grade ?? state.grade}:${skill.id}`;
   const record = recordFor(skill);
   if (mode === "guided") {
     record.guidedProblems += 1;
@@ -7742,7 +7765,8 @@ function showFeedback(title, copy, type, resultType = type, phase = null) {
     // A solution shown mid-checkup would turn the second look into a lesson. The miss is still saved for repair.
     els.feedbackCopy.textContent = t("Thanks. A checkup only looks for what to practice next, so the solution is saved for later instead of shown now.");
   } else if (type !== "correct" && state.item) {
-    els.feedbackCopy.innerHTML = renderStudentFriendlyExplanation(state.item, copy);
+    const socraticHtml = state.lastSubmitted ? renderSocraticCounterexample(state.item, state.lastSubmitted) : "";
+    els.feedbackCopy.innerHTML = socraticHtml + renderStudentFriendlyExplanation(state.item, copy);
     lightStepPlayers(els.feedbackCopy);
     wireExplanationWidgets(els.feedbackCopy, state.item);
     showStudio(state.item, state.skill, "miss", state.lastSubmitted);
@@ -7776,7 +7800,7 @@ function renderLanguageSlot(correct) {
     return;
   }
   const draft = captureDraft(slot);
-  slot.innerHTML = explainCardHtml({ skill: state.item.skill, skillKey: tutorSkillKey(state.item.skill), grade: state.item.skill?.grade || state.grade, correct, count: state.session?.answered || 0, day: localDay(), itemKey: String(state.item.question) });
+  slot.innerHTML = explainCardHtml({ skill: state.item.skill, skillKey: tutorSkillKey(state.item.skill), grade: state.item.skill?.grade ?? state.grade, correct, count: state.session?.answered || 0, day: localDay(), itemKey: String(state.item.question) });
   restoreDraft(slot, draft);
 }
 
@@ -8100,10 +8124,24 @@ function openHubView(view) {
     state.labBoard = null;
   }
   if (view === "write") { cleanupWriting?.(); cleanupWriting = mountWriting(els.write, { grade: state.grade, skillKey: state.writeSkill, onPrint: printHtml, announce }); state.writeSkill = null; }
-  if (view === "teacher") fl4Teacher?.mountTeacher4(els.teacher4, { // fl4:teacher
-    grade: state.grade, onLaunch: launchAssignment, onPrint: printHtml, announce,
-    profileRecords: () => profiles().ids.map((id) => ({ id, label: `Learner ${id + 1} · ${PROFILE_NAMES[id]}`, tutor: sanitizeTutor(readLocal(profileKey(TUTOR_KEY, id), emptyTutor())) })),
-  });
+  if (view === "teacher") {
+    for (const href of ["./teacher-4.css", "./e8/teacher-hub.css"]) {
+      if (document.querySelector(`link[rel="stylesheet"][href="${href}"]`)) continue;
+      const sheet = document.createElement("link");
+      sheet.rel = "stylesheet";
+      sheet.href = href;
+      document.head.append(sheet);
+    }
+    import("./teacher-4.js")
+      .then((mod) => {
+        fl4Teacher = mod;
+        fl4Teacher?.mountTeacher4(els.teacher4, { // fl4:teacher
+          grade: state.grade, onLaunch: launchAssignment, onPrint: printHtml, announce,
+          profileRecords: () => profiles().ids.map((id) => ({ id, label: `Learner ${id + 1} · ${PROFILE_NAMES[id]}`, tutor: sanitizeTutor(readLocal(profileKey(TUTOR_KEY, id), emptyTutor())) })),
+        });
+      })
+      .catch(() => null);
+  }
   if (view === "teacher") mountTeacherStudio(els.teacherStudio, {
     grade: state.grade,
     onLaunch: launchAssignment,
@@ -8123,6 +8161,22 @@ function openHubView(view) {
     },
   });
   if (view === "teacher") {
+    let kitHost = document.querySelector("#fl2-teacher-kit-host");
+    if (!kitHost && els.teacher) {
+      kitHost = document.createElement("div");
+      kitHost.id = "fl2-teacher-kit-host";
+      els.teacher.insertBefore(kitHost, document.querySelector("#teacher-4"));
+    }
+    if (kitHost) {
+      kitHost.innerHTML = renderTomorrowTableKit({
+        grade: state.grade,
+        skills: getGrade(state.grade).skills,
+        learnerRecords: profiles().ids.map((id) => ({
+          id,
+          tutor: sanitizeTutor(readLocal(profileKey(TUTOR_KEY, id), emptyTutor())),
+        })),
+      });
+    }
     import("./moby/moby-hub.js").then((hub) => {
       hub.mountMobyTeacherPanel(document.querySelector("#moby-teacher-host"), {
         tutor: state.tutor,
@@ -8244,13 +8298,18 @@ function renderPath() {
 
 const DETECTIVE_STORAGE_KEY = "ewl-detective-cases-v1";
 function getSolvedDetectiveCases() {
-  return loadJson(profileKey(DETECTIVE_STORAGE_KEY, activeProfile), []);
+  const raw = loadJson(profileKey(DETECTIVE_STORAGE_KEY, activeProfile), []);
+  if (Array.isArray(raw)) return raw;
+  if (typeof raw === "string") {
+    try { const parsed = JSON.parse(raw); return Array.isArray(parsed) ? parsed : []; } catch { return []; }
+  }
+  return [];
 }
 function saveSolvedDetectiveCase(caseId) {
   const solved = getSolvedDetectiveCases();
   if (!solved.includes(caseId)) {
     solved.push(caseId);
-    writeLocal(profileKey(DETECTIVE_STORAGE_KEY, activeProfile), JSON.stringify(solved));
+    writeLocal(profileKey(DETECTIVE_STORAGE_KEY, activeProfile), solved);
   }
 }
 
@@ -8761,7 +8820,7 @@ function startRepairEntry(id) {
 
 function startQuickBoost(foundationKey, rescue = null) {
   const foundation = findSkill(foundationKey);
-  if (!foundation || foundation.grade < 1 || foundation.grade > 8 || !state.session || state.session.quickBoost) return;
+  if (!foundation || foundation.grade < 0 || foundation.grade > 8 || !state.session || state.session.quickBoost) return;
   saveActiveSession();
   const savedPractice = loadJson(SESSION_KEY, null);
   if (!savedPractice?.session || !savedPractice.item) return;
@@ -11462,4 +11521,68 @@ if (initialParams.get("start") === "realworld") openPlanned("daily", dailyPlan(s
 if (initialParams.get("start") === "practice" && initialSkill) {
   document.querySelector("[data-start-independent]")?.click();
 }
+
+// Wire Math Fluency Lab 2.0 Signature Interactions (Tri-Rep Bench, Tactile Tokens, 10-Min Table Kit)
+document.addEventListener("input", (event) => {
+  const mulSlider = event.target.closest("[data-tri-mul-slider]");
+  const addSlider = event.target.closest("[data-tri-add-slider]");
+  const fracSlider = event.target.closest("[data-tri-frac-slider]");
+  const ratioSlider = event.target.closest("[data-tri-ratio-slider]");
+  if (mulSlider || addSlider || fracSlider || ratioSlider) {
+    state.triBenchState = state.triBenchState || {};
+    if (mulSlider || addSlider) state.triBenchState.splitVal = Number((mulSlider || addSlider).value);
+    if (fracSlider) state.triBenchState.fracScale = Number(fracSlider.value);
+    if (ratioSlider) state.triBenchState.ratioScale = Number(ratioSlider.value);
+    const host = document.querySelector("#fl2-learn-tri-bench");
+    if (host && state.learnExample?.item) {
+      host.innerHTML = renderTriRepBench(state.learnExample.item, state.triBenchState);
+    }
+  }
+});
+
+document.addEventListener("click", (event) => {
+  if (event.target.closest("[data-tri-eq-toggle]")) {
+    state.triBenchState = state.triBenchState || {};
+    state.triBenchState.eqStep1 = !state.triBenchState.eqStep1;
+    const host = document.querySelector("#fl2-learn-tri-bench");
+    if (host && state.learnExample?.item) {
+      host.innerHTML = renderTriRepBench(state.learnExample.item, state.triBenchState);
+    }
+    return;
+  }
+  if (event.target.closest("[data-token-split]")) {
+    markHelp();
+    const parsed = extractProblem(state.item);
+    const absB = Math.abs(Number(parsed?.b) || 6);
+    const defPart = absB > 10 ? Math.floor(absB / 10) * 10 : Math.min(5, Math.max(1, Math.floor(absB / 2)));
+    state.tactileSplit = { expanded: true, part1: defPart };
+    const host = document.querySelector("#fl2-tactile-token-host");
+    if (host && state.item) host.innerHTML = renderTactileExpressionDecomposer(state.item, state.tactileSplit);
+    chime("step");
+    return;
+  }
+  const cycleBtn = event.target.closest("[data-token-cycle]");
+  if (cycleBtn && state.item) {
+    const parsed = extractProblem(state.item);
+    const absB = Math.abs(Number(parsed?.b) || 6);
+    const delta = Number(cycleBtn.dataset.tokenCycle) || 1;
+    const current = state.tactileSplit?.part1 ?? 1;
+    const next = Math.min(absB - 1, Math.max(1, current + delta));
+    state.tactileSplit = { expanded: true, part1: next };
+    const host = document.querySelector("#fl2-tactile-token-host");
+    if (host) host.innerHTML = renderTactileExpressionDecomposer(state.item, state.tactileSplit);
+    chime("step");
+    return;
+  }
+  if (event.target.closest("[data-token-merge]")) {
+    state.tactileSplit = { expanded: false };
+    const host = document.querySelector("#fl2-tactile-token-host");
+    if (host && state.item) host.innerHTML = renderTactileExpressionDecomposer(state.item, state.tactileSplit);
+    return;
+  }
+  if (event.target.closest("#fl2-print-table-kit")) {
+    printSmallGroupCoachingCueSheet();
+  }
+});
+
 

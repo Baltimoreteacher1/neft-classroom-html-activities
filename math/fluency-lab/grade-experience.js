@@ -3,6 +3,14 @@
 import { getLang } from "./i18n.js";
 import { applyGradeSystem, gradeScene } from "./e8/grade-system.js";
 const PROFILES = {
+  0: {
+    id: "wonder-starters", name: "Wonder Starters", kicker: "A tactile counting & subitizing studio",
+    invitation: "Tap, listen, move the counters, and see how five and ten come together.",
+    focus: "Five-frames · ten-frames · subitizing · hidden parts",
+    es: { name: "Exploradores Iniciales", kicker: "Un estudio táctil para contar y descubrir", invitation: "Toca, escucha, mueve las fichas y mira cómo se forman el cinco y el diez.", focus: "Marcos de cinco · marcos de diez · partes escondidas" },
+    colors: ["#d95f43", "#fff5ee", "#7c2d12"], font: '"Fraunces", Georgia, serif', radius: "26px", density: "1.18",
+    art: '<rect x="18" y="34" width="104" height="52" rx="14" fill="#fff" stroke="currentColor" stroke-width="4"/><path d="M39 35v50M60 35v50M81 35v50M102 35v50" stroke="currentColor" stroke-width="2" opacity=".28"/><g fill="#d95f43"><circle cx="28.5" cy="60" r="8"/><circle cx="49.5" cy="60" r="8"/><circle cx="70.5" cy="60" r="8"/></g><g fill="#1fa6a2"><circle cx="91.5" cy="60" r="8"/><circle cx="112.5" cy="60" r="8"/></g>'
+  },
   1: {
     id: "little-mathematicians", name: "Little Mathematicians", kicker: "A picture-book world for big ideas",
     invitation: "Look, tap, count, and tell what you notice. You can draw your idea, too.",
@@ -72,6 +80,7 @@ const PROFILES = {
 // These settings are consumed by the shell and its existing grade-aware lesson, language,
 // feedback and writing systems. They describe presentation choices, never a learner label.
 const INSTRUCTION = {
+  0: { navigation: "one-task", reading: "pre-reader-audio", model: "five-ten-frame-counters", explanation: "listen-tap-show", feedback: "warm-voice-burst", writing: "voice-and-stamp" },
   1: { navigation: "one-task", reading: "emerging", model: "counters-ten-frame", explanation: "say-draw-short-sentence", feedback: "warm-next-step", writing: "draw-label-one-sentence" },
   2: { navigation: "guided-steps", reading: "early-fluent", model: "base-ten-hundred-chart", explanation: "place-value-number-sentence", feedback: "strategy-nudge", writing: "short-reasoning" },
   3: { navigation: "visual-discovery", reading: "fluent-elementary", model: "arrays-groups-number-line", explanation: "sentence-supported-strategy", feedback: "strategy-and-check", writing: "equation-and-reason" },
@@ -85,8 +94,9 @@ const INSTRUCTION = {
 const esc = (value) => String(value).replace(/[&<>\"]/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[char]);
 
 export function gradeExperience(grade) {
-  const number = Number(grade);
-  return PROFILES[number] ? { ...PROFILES[number], instruction: INSTRUCTION[number] } : null;
+  if (grade === null || grade === undefined || grade === "") return null;
+  const number = grade === "K" || grade === "k" ? 0 : Number(grade);
+  return Number.isInteger(number) && PROFILES[number] ? { ...PROFILES[number], instruction: INSTRUCTION[number] } : null;
 }
 
 export function applyGradeExperience(grade) {
