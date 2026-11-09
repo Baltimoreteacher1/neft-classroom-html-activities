@@ -58,7 +58,15 @@ export function renderLookAndLearn(
   { modelHtml = "", wordsHtml = "", noticeHtml = "", warmupHtml = "" },
 ) {
   const notes = config?.familyNotes || {};
-  const goal = notes.v3?.standardPlain || notes.learningTonight;
+  const goal =
+    notes.v3?.standardPlain ||
+    notes.learningTonight ||
+    (config?.title
+      ? {
+          en: `Practice ${config.title.toLowerCase()} with visual models and step-by-step strategies.`,
+          es: `Practica ${config.title.toLowerCase()} con modelos visuales y estrategias paso a paso.`,
+        }
+      : null);
   const steps = Array.isArray(notes.conceptSteps) ? notes.conceptSteps : [];
   const why = notes.bridge?.why;
   return `

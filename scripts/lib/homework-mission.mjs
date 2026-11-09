@@ -196,6 +196,7 @@ export function renderReflect({ lessonId, next, prereq, question }) {
       </div>
       ${question?.en ? `<aside class="fp-family" aria-label="${esc("Family question")}"><p class="fp-label">${bi("Talk about it (optional)", "Conversen (opcional)")}</p><p>${pairText(question)}</p></aside>` : ""}
       <div class="hw-next-actions fp-actions">
+        <button type="button" class="fm-btn fm-btn--block fm-btn--primary" ${act("fpPracticeMore")}><span class="lang-en">Practice More (+5 Fresh Problems)</span><span class="lang-es" lang="es">Más práctica (+5 problemas nuevos)</span></button>
         ${next ? link(next.href, `Next lesson: ${next.en}`, `Siguiente lección: ${next.es}`, " fm-btn--primary", ` data-next-lesson="${esc(next.id)}"`) : ""}
         ${prereq ? link(prereq.href, `Review first: ${prereq.en}`, `Repasar primero: ${prereq.es}`, "", " data-mission-prereq hidden") : ""}
         ${lessonPage ? link(lessonPage, "Back to the lesson", "Volver a la lección") : ""}

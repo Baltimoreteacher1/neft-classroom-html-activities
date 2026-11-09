@@ -1131,7 +1131,7 @@ function renderProblem(it, pIdx, topic = "fallback", opts = {}) {
     visualSvg: visualSvg || "",
   };
   return `
-    <section class="problem-section card" id="problem_${pIdx}"${opts.role ? ` data-role="${opts.role}"` : ""} data-problem-type="${type}" data-topic="${esc(it.topic || it.skill || it.standard || topic)}"${problemSubtype ? ` data-problem-subtype="${problemSubtype}"` : ""}>
+    <section class="problem-section card" id="problem_${pIdx}"${opts.role ? ` data-role="${opts.role}"` : ""} data-problem-index="${pIdx}" data-set-id="${escAttr(opts.setId || "confidence")}" data-problem-type="${type}" data-topic="${esc(it.topic || it.skill || it.standard || topic)}"${problemSubtype ? ` data-problem-subtype="${problemSubtype}"` : ""}>
       <div class="problem-header-row">
         <div class="problem-number-badge"${opts.role ? ` data-role="${opts.role}"` : ""}><span class="lang-en">${esc(opts.badgeEn || "Quick Check")}</span><span class="lang-es" lang="es">${esc(opts.badgeEs || opts.badgeEn || "Quick Check")}</span>${opts.num === "" ? "" : ` ${opts.num || pIdx + 1}`}</div>
         <button type="button" class="btn-listen-prob" ${act("hwSpeakProblem", pIdx)} title="Listen to question / Escuchar pregunta" aria-label="Listen to question">🔊 <span class="lang-en">Listen</span><span class="lang-es" lang="es">Escuchar</span></button>
@@ -1298,41 +1298,53 @@ function generateHtml(lessonId, config) {
   const basicHtml = basic
     .map((p, idx) =>
       renderProblem(p, idx, topic, {
-        badgeEn: yourTurnRoles[idx] ? ROLE_LABELS[yourTurnRoles[idx]].en : "Practice",
-        badgeEs: yourTurnRoles[idx] ? ROLE_LABELS[yourTurnRoles[idx]].es : "Práctica",
+        badgeEn: yourTurnRoles[idx]
+          ? ROLE_LABELS[yourTurnRoles[idx]].en
+          : "Set 1: Build Confidence",
+        badgeEs: yourTurnRoles[idx]
+          ? ROLE_LABELS[yourTurnRoles[idx]].es
+          : "Serie 1: Desarrollar confianza",
         role: yourTurnRoles[idx] || "",
         num: "",
         unit: unitNum,
+        setId: "confidence",
+        totalCount: coreSelected.length,
       }),
     )
     .join("\n");
   const warmupHtml = warmup
     .map((p, idx) =>
       renderProblem(p, basic.length + idx, topic, {
-        badgeEn: "Warm-up",
-        badgeEs: "Calentamiento",
+        badgeEn: "Set 2: Apply It",
+        badgeEs: "Serie 2: Aplicarlo",
         num: idx + 1,
         unit: unitNum,
+        setId: "apply",
+        totalCount: coreSelected.length,
       }),
     )
     .join("\n");
   const challengeHtml = challenge
     .map((p, idx) =>
       renderProblem(p, basic.length + warmup.length + idx, topic, {
-        badgeEn: "Level up",
-        badgeEs: "Reto",
+        badgeEn: "Set 3: Think Deeper",
+        badgeEs: "Serie 3: Pensar más profundo",
         num: idx + 1,
         unit: unitNum,
+        setId: "deeper",
+        totalCount: coreSelected.length,
       }),
     )
     .join("\n");
   const morePracticeHtml = moreSelected
     .map((p, idx) =>
       renderProblem(p, coreSelected.length + idx, topic, {
-        badgeEn: "Bonus",
-        badgeEs: "Más",
+        badgeEn: "Practice More",
+        badgeEs: "Más práctica",
         num: idx + 1,
         unit: unitNum,
+        setId: "more",
+        totalCount: coreSelected.length + moreSelected.length,
       }),
     )
     .join("\n");
@@ -2190,6 +2202,7 @@ function jumpToHomeworkProblem(i) {
   const target = (window.__hwDoneProblems || [])[i];
   if (!target) return;
   switchHomeworkTab("check");
+  if (typeof fpShowProblem === "function") fpShowProblem(i);
   setTimeout(() => target.scrollIntoView({ behavior: "smooth", block: "start" }), 60);
 }
 
@@ -2682,6 +2695,9 @@ function updateProgress() {
   // goal is a problem that is solved (or compared with the key), so the meter,
   // the pips and the mystery lock all move together, from one place.
   hwRenderGoal(true);
+  if (typeof fpUpdatePipsState === "function") {
+    fpUpdatePipsState();
+  }
 }
 
 function setProblemCheckResult(idx, isCorrect, message, tone) {
@@ -4177,6 +4193,168 @@ var NeftGraph = (function () {
   return { initAll: initAll };
 })();
 
+// ── Family Practice: Single-Problem Pagination & Sets ──
+function fpGetCoreProblems() {
+  const panel = document.getElementById("hw_panel_check") || document.querySelector('[data-tab-panel="check"]');
+  if (!panel) return [];
+  return Array.from(panel.querySelectorAll(".problem-section")).filter((p) => !p.closest(".more-practice-wrap") && !p.closest(".more-practice"));
+}
+
+function fpGetAllActiveProblems() {
+  const panel = document.getElementById("hw_panel_check") || document.querySelector('[data-tab-panel="check"]');
+  if (!panel) return [];
+  return Array.from(panel.querySelectorAll(".problem-section")).filter((p) => {
+    const parent = p.closest(".more-practice-wrap") || p.closest(".more-practice");
+    return !parent || !parent.hidden;
+  });
+}
+
+function fpRenderPips(currentIdx) {
+  const track = document.getElementById("fp_pips_track");
+  if (!track) return;
+  const problems = fpGetAllActiveProblems();
+  track.innerHTML = "";
+  problems.forEach((p, idx) => {
+    const pip = document.createElement("button");
+    pip.type = "button";
+    pip.className = "fp-pip" + (idx === currentIdx ? " is-current" : "");
+    if (p.classList.contains("correct") || p.classList.contains("reviewed")) {
+      pip.classList.add("is-correct");
+    } else if (p.classList.contains("incorrect")) {
+      pip.classList.add("is-incorrect");
+    }
+    pip.setAttribute("aria-label", "Go to problem " + (idx + 1));
+    pip.addEventListener("click", function () { fpShowProblem(idx); });
+    track.appendChild(pip);
+  });
+}
+
+function fpUpdatePipsState() {
+  const problems = fpGetAllActiveProblems();
+  const activeIdx = problems.findIndex((p) => p.classList.contains("is-active-problem"));
+  fpRenderPips(activeIdx >= 0 ? activeIdx : 0);
+}
+
+function fpShowProblem(targetIdx) {
+  const problems = fpGetAllActiveProblems();
+  if (!problems.length) return;
+  const clampedIdx = Math.max(0, Math.min(targetIdx, problems.length - 1));
+  problems.forEach((p, idx) => {
+    if (idx === clampedIdx) {
+      p.classList.add("is-active-problem");
+    } else {
+      p.classList.remove("is-active-problem");
+    }
+  });
+
+  const currEl = document.getElementById("fp_curr_prob_num");
+  if (currEl) currEl.textContent = clampedIdx + 1;
+  const totalEl = document.getElementById("fp_total_prob_num");
+  if (totalEl) totalEl.textContent = problems.length;
+
+  const activeProb = problems[clampedIdx];
+  const setId = activeProb ? (activeProb.dataset.setId || "confidence") : "confidence";
+  document.querySelectorAll(".fp-set-chip").forEach((chip) => {
+    if (chip.dataset.set === setId) chip.classList.add("is-active");
+    else chip.classList.remove("is-active");
+  });
+
+  fpRenderPips(clampedIdx);
+  if (activeProb && typeof activeProb.scrollIntoView === "function") {
+    activeProb.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }
+}
+
+function fpNextProblem(currIdx) {
+  const problems = fpGetAllActiveProblems();
+  const nextIdx = (typeof currIdx === "number" ? currIdx : 0) + 1;
+  if (nextIdx < problems.length) {
+    fpShowProblem(nextIdx);
+  } else {
+    if (typeof switchHomeworkTab === "function") {
+      switchHomeworkTab("done");
+    }
+  }
+}
+
+function fpPrevProblem(currIdx) {
+  const prevIdx = (typeof currIdx === "number" ? currIdx : 1) - 1;
+  if (prevIdx >= 0) {
+    fpShowProblem(prevIdx);
+  }
+}
+
+function fpNextCurrent() {
+  const problems = fpGetAllActiveProblems();
+  const activeIdx = problems.findIndex((p) => p.classList.contains("is-active-problem"));
+  fpNextProblem(activeIdx >= 0 ? activeIdx : 0);
+}
+
+function fpPrevCurrent() {
+  const problems = fpGetAllActiveProblems();
+  const activeIdx = problems.findIndex((p) => p.classList.contains("is-active-problem"));
+  fpPrevProblem(activeIdx >= 0 ? activeIdx : 0);
+}
+
+function fpSwitchSet(setName) {
+  const problems = fpGetAllActiveProblems();
+  const firstInSet = problems.findIndex((p) => p.dataset.setId === setName);
+  if (firstInSet !== -1) {
+    fpShowProblem(firstInSet);
+  }
+}
+
+function fpPracticeMore() {
+  const moreSection = document.querySelector(".more-practice-wrap") || document.querySelector(".more-practice");
+  if (moreSection) {
+    moreSection.removeAttribute("hidden");
+    moreSection.style.display = "block";
+  }
+  if (typeof switchHomeworkTab === "function") {
+    switchHomeworkTab("check");
+  }
+  const problems = fpGetAllActiveProblems();
+  const firstMore = problems.findIndex((p) => p.dataset.setId === "more");
+  if (firstMore !== -1) {
+    fpShowProblem(firstMore);
+  } else if (problems.length > 0) {
+    fpShowProblem(problems.length - 1);
+  }
+}
+
+function fpInitSingleProblemView() {
+  const panel = document.getElementById("hw_panel_check") || document.querySelector('[data-tab-panel="check"]');
+  if (!panel) return;
+  panel.classList.add("fp-paginated-view");
+
+  const problems = fpGetAllActiveProblems();
+  if (!problems.length) return;
+
+  if (!problems.some((p) => p.classList.contains("is-active-problem"))) {
+    problems[0].classList.add("is-active-problem");
+  }
+
+  const activeIdx = problems.findIndex((p) => p.classList.contains("is-active-problem"));
+  const clampedIdx = activeIdx >= 0 ? activeIdx : 0;
+
+  const currEl = document.getElementById("fp_curr_prob_num");
+  if (currEl) currEl.textContent = clampedIdx + 1;
+  const totalEl = document.getElementById("fp_total_prob_num");
+  if (totalEl) totalEl.textContent = problems.length;
+
+  fpRenderPips(clampedIdx);
+}
+
+window.fpShowProblem = fpShowProblem;
+window.fpNextProblem = fpNextProblem;
+window.fpPrevProblem = fpPrevProblem;
+window.fpNextCurrent = fpNextCurrent;
+window.fpPrevCurrent = fpPrevCurrent;
+window.fpSwitchSet = fpSwitchSet;
+window.fpPracticeMore = fpPracticeMore;
+window.fpInitSingleProblemView = fpInitSingleProblemView;
+window.fpUpdatePipsState = fpUpdatePipsState;
+
 // Initial configuration
 function initializeHomeworkState() {
   const hadSavedState = !!localStorage.getItem(STORAGE_KEY);
@@ -4190,6 +4368,7 @@ function initializeHomeworkState() {
   }
   updateProgress();
   NeftGraph.initAll();
+  fpInitSingleProblemView();
 
   document.addEventListener("dragend", function() {
     document.querySelectorAll(".drag-card.dragging, .drag-order-row.dragging")

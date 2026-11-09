@@ -58,7 +58,7 @@ body.lang-mode-es .welcome-title-en {
 .hw-skip .lang-en, .hw-skip .lang-es { color: inherit; }
 .hw-skip:focus { transform: none; outline: 3px solid var(--amber, #f2c15b); outline-offset: 2px; }
 .hw-utility-controls .ls-launcher { position: static !important; inset: auto !important; width: 44px !important; height: 44px !important; min-height: 44px !important; padding: 0 !important; justify-content: center; margin: 0 !important; }
-/* print */
+
 @media print {
   body.print-problems-only [data-tab-panel]:not([data-tab-panel="check"]),
   body.print-problems-only .hw-hero,
@@ -90,11 +90,9 @@ body.lang-mode-es .welcome-title-en {
   .hw-step-guide { break-inside: avoid; border-color: #888; background: #fff; }
   .hw-step-guide > summary { background: #f0f0f0; }
   .hw-step-guide[open] > summary::after, .hw-step-guide > summary::after { content: ""; }
-  /* The routine is collapsed on screen (it repeats on every problem). On paper
-     there is nothing to click, so force the contents visible. */
+
   .hw-step-guide > * { display: block !important; }
-  /* Flip cards print flat — otherwise only the English word reaches the paper
-     and every definition prints as a blank box. */
+
   .vocab-card-inner { transform: none !important; }
   .vocab-card-front, .vocab-card-back {
     position: static !important;
@@ -117,21 +115,13 @@ body.lang-mode-es .welcome-title-en {
 @media print {
   .homework-tab-chrome, .homework-tab-bar, .bottom-status-bar, .help-modal-overlay, .print-all-btn, .parent-signoff-container { display: none !important; }
   .tab-panel-inner[hidden] { display: block !important; page-break-inside: avoid; }
-  /* Printing un-hides every panel, but the games are screen-only: an embedded
-     arcade iframe, a domino chain, a live quiz. On paper they were blank or
-     meaningless pages in the middle of the packet. The workbench is screen-only
-     for the same reason and now lives inside Together, so it is hidden by its
-     own class rather than by a panel id that no longer exists — "arcade" and
-     "workbench" were tabs, and their selectors outlived them here. */
+
   [data-tab-panel="play"],
   .workbench-drawer,
   .hw-stuck-fab,
   .hw-help-drawer { display: none !important; }
   body { padding-bottom: 0; }
-  /* Browsers drop background colours when printing. Several distinctions on this
-     sheet are carried by fill alone — the EN/ES columns, the highlighted worked
-     step, and above all the green "say this" vs red "don't say this" coaching
-     panels, which print as two identical white boxes without this. */
+
   .bilingual-col, .worked-step, .worked-step.highlighted,
   .stuck-say, .stuck-dont, .watch-for-list, .watch-for,
   .practice-tier-head, .key-idea-banner {
@@ -213,8 +203,7 @@ body.lang-mode-es .welcome-title-en {
 @media print {
   .hw-quickplan { display: none; }
   .fam-act-card { break-inside: avoid; }
-  /* The interactive games are screen-only; paper families have the Activity
-     Corner and the printable practice instead. */
+
   .fam-game-break { display: none; }
 }
 @media print { .hw-route-chooser, .hw-pair-note { display: none !important; } }
@@ -460,8 +449,7 @@ body.lang-mode-es .welcome-title-en {
   }
 }
 @media print {
-  /* Only the portaled sheet prints. It is a direct child of <body>, so its
-     siblings can simply be removed from the print layout. */
+
   body.print-photobooth-only > * { display: none !important; }
   body.print-photobooth-only .pb-print-portal { display: block !important; }
   body.print-photobooth-only .pb-print-inner {
@@ -510,9 +498,7 @@ body.lang-mode-es .welcome-title-en {
 }
 @media print { .hw-tools-menu, .hw-utility-controls, .homework-message-action, .homework-optional-extras { display:none !important; } }
 @media print {
-  /* A whole card can be taller than the page left on it; avoiding a break
-     there pushed slivers and empty pages into the packet. Keep the header and
-     question together and let the work space flow. */
+
   body.print-problems-only .problem-header-row,
   body.print-problems-only .problem-stem { break-after:avoid; break-inside:avoid; }
   body.print-problems-only .problem-section::after { content:""; display:block; min-height:26mm; }
@@ -581,7 +567,7 @@ body.lang-mode-es .welcome-title-en {
   body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .section-title { font-size: 15pt !important; margin: 4mm 0 2mm !important; }
   body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .practice-tier-title { font-size: 14pt !important; }
 
-  /* Header: title, Name / Date on ruled lines */
+
   body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .hw-print-head { display: block; margin: 0 0 5mm; padding-bottom: 3mm; border-bottom: 1.5pt solid #000; }
   body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .hw-print-kicker { margin: 0 0 1mm; font-weight: 700; letter-spacing: .02em; }
   body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .hw-print-title { margin: 0 0 4mm; font-size: 20pt !important; font-weight: 800; line-height: 1.2 !important; }
@@ -591,11 +577,10 @@ body.lang-mode-es .welcome-title-en {
   body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .hw-print-field i { flex: 1; border-bottom: 1pt solid #000; height: 7mm; }
   body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .hw-print-note { margin: 0; font-style: italic; }
 
-  /* A panel is far taller than a page. Forcing it to stay whole pushed the
-     problems to a new page and left the end of the Learn panel alone on one. */
+
   body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .tab-panel-inner { break-inside: auto !important; page-break-inside: auto !important; }
 
-  /* Interactive-only chrome never reaches paper */
+
   body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .hw-hero, body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .homework-tab-chrome, body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .hw-rail, body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .hw-listen-bar,
   body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .btn-read-aloud, body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .btn-listen-prob, body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .hw-listen, body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .bridge-listen,
   body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .lang-selector-card, body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .live-streak-banner,
@@ -618,11 +603,11 @@ body.lang-mode-es .welcome-title-en {
   body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) [data-tab-panel="photobooth"],
   body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) #hw_panel_done > *:not(.print-only-certificate) { display: none !important; }
 
-  /* Vocabulary buttons read as plain words on paper */
+
   body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .obj-term { border: 0 !important; background: none !important; color: inherit !important;
     font: inherit !important; padding: 0 !important; text-decoration: underline; text-decoration-style: dotted; }
 
-  /* Problems: keep each together, leave room to write */
+
   body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .problem-section { break-inside: avoid; margin: 0 0 6mm !important; padding: 3mm 4mm !important;
     border: 1pt solid #777 !important; border-radius: 2mm !important; }
   body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .problem-header-row { display: flex; gap: 3mm; align-items: center; break-after: avoid; }
@@ -639,7 +624,7 @@ body.lang-mode-es .welcome-title-en {
     border-radius: 2mm !important; min-height: 9mm; break-inside: avoid; }
   body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .custom-radio { border: 1.5pt solid #000 !important; background: #fff !important; flex: none; }
 
-  /* Answer fields become ruled lines */
+
   body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) input[type="text"], body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) input[type="number"], body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) input:not([type]),
   body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .table-input, body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .custom-input {
     border: 0 !important; border-bottom: 1pt solid #000 !important; border-radius: 0 !important;
@@ -661,7 +646,7 @@ body.lang-mode-es .welcome-title-en {
   body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .drag-column { border: 1pt solid #000 !important; background: #fff !important; min-height: 28mm; }
   body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .matching-row { break-inside: avoid; }
 
-  /* Work space and models: keep the picture, drop the controls */
+
   body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .hw-workspace-toggle { border: 0 !important; background: none !important; }
   body:not(.print-answer-sheet):not(.print-domino-sheet):not(.print-refrigerator-sheet) .hw-workspace-toggle > summary { list-style: none; font-weight: 700; font-size: 12pt !important;
     border: 0 !important; background: none !important; padding: 0 !important; margin: 0 0 1mm; }
@@ -683,6 +668,29 @@ body.lang-mode-es .welcome-title-en {
 }
 @media (prefers-reduced-motion: reduce) { body.hw-motion-ready [data-tab-panel]:not([hidden]) > * { animation: none !important; } }
 @media print { .hw-hero { display: none; } }
+
+
+.fp-sets-nav{margin:1rem 0 1.25rem;padding:0.75rem 1rem;background:var(--fm-raised);border:1px solid var(--fm-border-strong);border-radius:var(--fm-radius-md)}
+.fp-set-chips{display:flex;gap:0.4rem;flex-wrap:wrap;margin-bottom:0.5rem}
+.fp-set-chip{display:inline-flex;align-items:center;gap:0.35rem;padding:0.45rem 0.8rem;border-radius:var(--fm-radius-pill);border:1px solid var(--fm-border-strong);background:var(--fm-surface);color:var(--fm-text);font-weight:700;cursor:pointer;transition:all 0.15s ease;min-height:44px}
+.fp-set-chip:hover{border-color:var(--fm-primary);background:var(--fm-raised)}
+.fp-set-chip.is-active{background:var(--fm-primary);color:var(--fm-on-primary);border-color:var(--fm-primary)}
+.fp-set-progress-row{display:flex;align-items:center;justify-content:space-between;gap:0.75rem;flex-wrap:wrap;padding-top:0.5rem;border-top:1px solid var(--fm-border)}
+.fp-step-indicator{font-weight:700;color:var(--fm-text)}
+.fp-step-indicator strong{color:var(--fm-primary)}
+.fp-pips-track{display:flex;align-items:center;gap:0.35rem;flex-wrap:wrap}
+.fp-pip{width:14px;height:14px;border-radius:50%;border:1px solid var(--fm-border-strong);background:var(--fm-sunken);padding:0;cursor:pointer;transition:transform 0.15s ease}
+.fp-pip:hover{transform:scale(1.25);border-color:var(--fm-primary)}
+.fp-pip.is-current{border-color:var(--fm-primary);outline:2px solid var(--fm-primary);outline-offset:1px;transform:scale(1.15)}
+.fp-pip.is-correct{background:var(--fm-success);border-color:var(--fm-success)}
+.fp-pip.is-incorrect{background:var(--fm-look);border-color:var(--fm-look)}
+.fp-paginated-view .problem-section:not(.is-active-problem){display:none!important}
+.fp-paginated-view .problem-section.is-active-problem{display:block!important}
+.fp-problem-dock{display:flex;align-items:center;justify-content:space-between;gap:0.75rem;margin-top:1rem;padding-top:0.75rem;border-top:1px solid var(--fm-border)}
+.fp-practice-more-box{margin:1.25rem 0;text-align:center}
+.btn-practice-more{display:inline-flex;align-items:center;gap:0.5rem;padding:0.7rem 1.4rem;font-weight:700;border-radius:var(--fm-radius-pill);background:var(--fm-primary);color:var(--fm-on-primary)!important;border:1px solid var(--fm-primary);cursor:pointer;min-height:48px}
+.btn-practice-more:hover{background:var(--fm-primary-hover)}
+@media print{.fp-paginated-view .problem-section{display:block!important}.fp-sets-nav,.fp-problem-dock,.fp-practice-more-box{display:none!important}}
 
 /* ===== Accessibility states (scripts/lib/homework-a11y.mjs) ===== */
 /* Controls that act through the delegated listener must be "clickable" for iOS Safari. */

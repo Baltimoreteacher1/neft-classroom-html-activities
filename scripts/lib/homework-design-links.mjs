@@ -23,4 +23,6 @@ export const DESIGN_CSS_LINKS = DESIGN_SHEETS.map((name) => {
   return `<link rel="stylesheet" href="/${file}?v=${stamp(read(file))}">`;
 }).join("\n");
 
-export const LEGACY_SHELL_CSS = read("scripts/lib/homework-legacy-shell.css").trim();
+export const LEGACY_SHELL_CSS = read("scripts/lib/homework-legacy-shell.css")
+  .replace(/\/\*[\s\S]*?\*\//g, "")
+  .trim();

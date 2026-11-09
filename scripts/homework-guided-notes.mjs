@@ -8486,9 +8486,27 @@ export function renderCheckTab(
       ${starsBar}
       ${streakBanner}
       ${goalReachedBanner}
+      <div class="fp-sets-nav" id="fp_sets_nav" role="navigation" aria-label="Practice Sets">
+        <div class="fp-set-chips" role="group" aria-label="Practice Sets">
+          <button type="button" class="fp-set-chip is-active" data-set="confidence" ${act("fpSwitchSet", "confidence")}>🌱 <span class="lang-en">Set 1: Confidence</span><span class="lang-es" lang="es">Serie 1: Confianza</span></button>
+          <button type="button" class="fp-set-chip" data-set="apply" ${act("fpSwitchSet", "apply")}>🚀 <span class="lang-en">Set 2: Apply</span><span class="lang-es" lang="es">Serie 2: Aplícalo</span></button>
+          <button type="button" class="fp-set-chip" data-set="deeper" ${act("fpSwitchSet", "deeper")}>💡 <span class="lang-en">Set 3: Challenge</span><span class="lang-es" lang="es">Serie 3: Reto</span></button>
+        </div>
+        <div class="fp-set-progress-row">
+          <span class="fp-step-indicator" id="fp_step_indicator"><span class="lang-en">Problem <strong id="fp_curr_prob_num">1</strong> of <strong id="fp_total_prob_num">${coreCount}</strong></span><span class="lang-es" lang="es">Problema <strong id="fp_curr_prob_num_es">1</strong> de <strong id="fp_total_prob_num_es">${coreCount}</strong></span></span>
+          <div class="fp-pips-track" id="fp_pips_track" role="navigation" aria-label="Problem track"></div>
+        </div>
+      </div>
       ${basicBlock}
       ${warmupBlock}
       ${challengeBlock}
+      <div class="fp-problem-dock" id="fp_problem_dock">
+        <button type="button" class="btn btn-sm btn-outline-secondary" ${act("fpPrevCurrent")} aria-label="Previous problem">⬅ <span class="lang-en">Prev</span><span class="lang-es" lang="es">Anterior</span></button>
+        <button type="button" class="btn btn-sm btn-outline-primary" ${act("fpNextCurrent")} aria-label="Next problem"><span class="lang-en">Next</span><span class="lang-es" lang="es">Siguiente</span> ➔</button>
+      </div>
+      <div class="fp-practice-more-box" id="fp_practice_more_box">
+        <button type="button" class="btn btn-secondary btn-practice-more" ${act("fpPracticeMore")}>➕ <span class="lang-en">Practice More (+5)</span><span class="lang-es" lang="es">Más práctica (+5)</span></button>
+      </div>
       ${renderQuickOptional()}
       ${more}
     </div>`;
