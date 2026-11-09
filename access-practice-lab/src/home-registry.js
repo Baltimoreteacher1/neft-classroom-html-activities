@@ -116,6 +116,18 @@ export const HOME_CARDS = [
     ],
   },
   {
+    id: "language-city",
+    group: "explore",
+    featured: true,
+    href: "city",
+    icon: "worlds",
+    title: ["Language City", "Ciudad del lenguaje"],
+    text: [
+      "Walk into a café, library or clinic, meet someone, and finish a mission.",
+      "Entra a un café, una biblioteca o una clínica, conoce a alguien y termina una misión.",
+    ],
+  },
+  {
     id: "language-adventures",
     group: "explore",
     featured: true,

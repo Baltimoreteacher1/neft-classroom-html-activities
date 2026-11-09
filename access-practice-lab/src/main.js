@@ -68,6 +68,7 @@ const VIEW_LOADERS = {
   wordlab: () => import("./views/wordlab.js"),
   reader: () => import("./views/reader.js"),
   scenarios: () => import("./views/scenarios.js"),
+  city: () => import("./views/city.js"),
   newsroom: () => import("./views/newsroom.js"),
   write: () => import("./views/write.js"),
   detective: () => import("./views/detective.js"),
@@ -167,6 +168,7 @@ export function parseRoute(pathname = location.pathname, search = location.searc
   if (a === "voice") return { ...r, view: "voice", id: b || "", sub: c || "", tab: q.get("tab") || "" };
   if (a === "wordlab") return { ...r, view: "wordlab", id: b || "", sub: c || "" };
   if (a === "scenarios") return { ...r, view: "scenarios", id: b || "" };
+  if (a === "city") return { ...r, view: "city", id: b || "", missionId: c || "" };
   if (a === "newsroom") return { ...r, view: "newsroom", id: b || "", tab: q.get("step") || "" };
   if (a === "warmup") return { ...r, view: "warmup", id: b || "", date: q.get("date") || "" };
   if (a === "search") return { ...r, view: "search", id: b || "", q: q.get("q") || "", kind: q.get("kind") || "", all: q.get("all") || "" };

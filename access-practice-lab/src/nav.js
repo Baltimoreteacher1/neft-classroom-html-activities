@@ -74,6 +74,7 @@ const ACTIVE = {
   reality: "explore",
   worlds: "explore",
   exhibition: "explore",
+  city: "explore",
   puzzles: "explore",
   stories: "explore",
   conversation: "explore",
