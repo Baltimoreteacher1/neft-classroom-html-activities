@@ -347,6 +347,9 @@ export function footerHTML(ctx, I) {
         <h2>${T("Support", "Apoyo")}</h2>
         <a href="${BASE}/passport${q}">${T("My Passport", "Pasaporte")}</a>
         <a href="${BASE}/move${q}">${T("Move my progress", "Mover mi progreso")}</a>
+        <button type="button" class="footer-link-button" data-start-fresh>
+          ${T("Start everything fresh", "Empezar todo de nuevo")}
+        </button>
         <a href="${BASE}/family${q}">${T("Families", "Familias")}</a>
         <a href="/access-teacher/">${T("Teacher Hub", "Centro docente")}</a>
         <a href="${BASE}/tools${q}"

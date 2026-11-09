@@ -149,6 +149,10 @@ export function readingPathHTML(ctx) {
           </section>`,
       )}
       ${scopeTable()}
+      <p class="sor2-reset">
+        <button type="button" class="btn" data-start-fresh>Start everything fresh</button>
+        <span class="fine">Clears all of your work in every activity on this device.</span>
+      </p>
       <p class="disclaimer">
         This is a lesson sequence for practice. It does not assign a reading level or diagnose a
         disability. Work stays on this device unless you share it.

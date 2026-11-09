@@ -138,6 +138,62 @@ try {
     ].doneAt,
   );
 
+  // Reset: one lesson forgets everything it held, then the whole path starts fresh.
+  await page.goto(`${base}/access-practice-lab/science-of-reading/lesson/cvc-short-a?grades=3-5`, {
+    waitUntil: "networkidle",
+  });
+  await page.locator(".sor2-reset summary").click();
+  await page.locator("[data-sor-reset]").click();
+  assert.match(await page.locator(".sor2-stage").innerText(), /Review and learn/);
+  assert.equal(
+    (
+      await page.evaluate(() =>
+        JSON.parse(localStorage.getItem("accessPracticeLab:v1:sor") || "{}"),
+      )
+    )["cvc-short-a"],
+    undefined,
+    "lesson reset removes its saved work, including completion",
+  );
+  await page.goto(`${base}/access-practice-lab/science-of-reading/lesson/l1-short-i?grades=3-5`, {
+    waitUntil: "networkidle",
+  });
+  await page.locator('[data-sor-next="build"]').click();
+  await page.goto(`${base}/access-practice-lab/science-of-reading/path?grades=3-5`, {
+    waitUntil: "networkidle",
+  });
+  assert.match(await page.locator(".sor2-resume").innerText(), /Continue/);
+  // Start everything fresh: a footer control on any page clears the whole lab (every activity) after a confirmation.
+  await page.evaluate(() => {
+    localStorage.setItem(
+      "accessPracticeLab:v1:ledger",
+      JSON.stringify({ v: 1, entries: [{ id: "x" }] }),
+    );
+    localStorage.setItem("accessPracticeLab:other:note", "kept work");
+    localStorage.setItem("accessTeacher:roster", "teacher data");
+    sessionStorage.setItem("accessPracticeLab:session", "1");
+  });
+  await page.locator("footer [data-start-fresh]").first().click();
+  assert.ok(await page.locator("dialog.start-fresh[open]").count(), "a confirmation opens first");
+  await page.locator("dialog.start-fresh button[type=submit]").click();
+  assert.ok(
+    await page.evaluate(() => localStorage.getItem("accessPracticeLab:v1:ledger")),
+    "cancel keeps the work",
+  );
+  await page.locator("footer [data-start-fresh]").first().click();
+  await Promise.all([
+    page.waitForURL((u) => !u.pathname.includes("science-of-reading")),
+    page.locator("[data-start-fresh-confirm]").click(),
+  ]);
+  await page.waitForLoadState("networkidle");
+  const left = await page.evaluate(() => ({
+    lab: Object.keys(localStorage).filter((k) => k.startsWith("accessPracticeLab")),
+    session: Object.keys(sessionStorage).filter((k) => k.startsWith("accessPracticeLab")),
+    teacher: localStorage.getItem("accessTeacher:roster"),
+  }));
+  assert.deepEqual(left.session, []);
+  assert.ok(!left.lab.some((k) => /sor|ledger|other:note/.test(k)), `lab keys left: ${left.lab}`);
+  assert.equal(left.teacher, "teacher data", "teacher data is never part of a learner reset");
+
   // Level 3: a multi-syllable morphology lesson runs end to end too.
   const late = lessonById("prefix-un");
   await page.goto(`${base}/access-practice-lab/science-of-reading/lesson/${late.id}?grades=3-5`, {

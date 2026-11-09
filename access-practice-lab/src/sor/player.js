@@ -56,6 +56,13 @@ const clean = (raw) => ({
 });
 export const loadReadingState = () => safeJson(storage.get(KEY), {}) || {};
 const save = (all) => storage.set(KEY, JSON.stringify(all));
+/** Forget one lesson's work (or all of it) on this device. The shared practice ledger is left alone. */
+export const clearReadingState = (id) => {
+  if (!id) return storage.remove(KEY);
+  const all = loadReadingState();
+  delete all[id];
+  save(all);
+};
 export const stateFor = (all, id) => clean(all[id]);
 const update = (id, patch) => {
   const all = loadReadingState();
@@ -331,6 +338,11 @@ ${s.explanation}</textarea>
       }
       ${phase === "complete" ? completeHTML(lesson, s, band) : ""}
       ${s.feedback ? html`<p class="sor2-feedback" role="status">${s.feedback}</p>` : ""}
+      <details class="sor2-reset">
+        <summary>Start this lesson over</summary>
+        <p>This clears every answer and your progress in this lesson on this device. You will start fresh at the beginning.</p>
+        <button type="button" class="btn" data-sor-reset>Yes, clear this lesson</button>
+      </details>
       <p class="disclaimer">
         This activity records observed practice, not a reading level or official assessment score. A
         teacher should review connected-text responses.
@@ -405,6 +417,7 @@ export function mountReadingLesson(root, ctx) {
       update(id, { placed: s.placed.slice(0, -1), feedback: "" });
     else if (button.dataset.sorChoice)
       update(id, { choice: button.dataset.sorChoice, feedback: "" });
+    else if (button.hasAttribute("data-sor-reset")) clearReadingState(id);
     else if (button.hasAttribute("data-sor-restart"))
       update(id, {
         phase: "model",

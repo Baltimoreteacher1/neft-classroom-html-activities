@@ -24,6 +24,7 @@ import { mountShell } from "./shell.js";
 import { mountGloss } from "./glossary.js";
 import { registerSaveResume } from "./sync.js";
 import { readMathLanguageBridge } from "../../shared/math-language-bridge/v2.js";
+import { initStartFresh } from "./reset.js";
 import { $, ART, BASE, announce, bandOfId, copyText, storage, toHtml } from "./util.js";
 import * as homeView from "./views/home.js";
 
@@ -647,6 +648,7 @@ function registerOffline() {
 }
 
 async function boot() {
+  initStartFresh();
   document.documentElement.style.setProperty("--lab-scale", String(app.prefs.textSize || 1));
   try {
     await loadIndex();
