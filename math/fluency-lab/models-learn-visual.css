@@ -1,0 +1,245 @@
+/* Math Fluency Lab - the pictures inside a skill lesson (Understand It / See It / Try It Together).
+   These are DOM-built manipulatives (step-player.js: ten-frames, counter arrays, area boxes, number lines, place-value boxes).
+   Loaded after trail.css and explain.css. Presentation only: no class, attribute or interaction is changed. */
+
+.tr-example {
+  --tp-cell: max(44px, var(--gs-target, 44px));
+  --tp-counter: var(--trail, #1d5fa8);
+  --tp-counter-2: var(--t-gold, #f3b61f);
+  --tp-edge: rgb(19 35 58 / 0.78);
+  --tp-well: #e9eef5;
+}
+
+/* The picture stage: a quiet worksheet surface, not a flat tint */
+.tr-example {
+  border: 1px solid var(--t-rule, #d5deea);
+  background-color: #f6f9fd;
+  background-image:
+    linear-gradient(rgb(19 35 58 / 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(19 35 58 / 0.045) 1px, transparent 1px);
+  background-size: 22px 22px;
+  box-shadow:
+    0 1px 0 #fff inset,
+    0 1px 2px rgb(19 35 58 / 0.08),
+    0 10px 24px -16px rgb(19 35 58 / 0.3);
+}
+.tr-example .step-caption {
+  box-shadow: 0 2px 0 rgb(0 0 0 / 0.25);
+  letter-spacing: 0.01em;
+}
+.tp-prompt {
+  color: var(--t-ink-soft, #4a5a70);
+  font-weight: 600;
+}
+.tp-readout {
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+/* ---------------------------------------------------------------- ten-frames */
+.tp-frames {
+  gap: 1.1rem;
+}
+.tp-frame {
+  grid-template-columns: repeat(5, var(--tp-cell));
+  gap: 5px;
+  padding: 7px;
+  border: 2.5px solid var(--tp-edge);
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 3px 0 rgb(19 35 58 / 0.16);
+}
+.tp-frame .tp-cell {
+  box-sizing: border-box;
+  width: var(--tp-cell);
+  height: var(--tp-cell);
+  min-width: 0;
+  min-height: 0;
+  border-radius: 8px;
+  background: var(--tp-well);
+  box-shadow: inset 0 0 0 1.5px rgb(19 35 58 / 0.14);
+}
+.tp-frame .tp-cell.dot::after,
+.tp-frame .tp-cell.dot-add::after,
+.tp-frame .tp-cell.slot.filled::after {
+  inset: 8%;
+  box-shadow:
+    inset 0 -4px 0 rgb(0 0 0 / 0.17),
+    inset 0 3px 0 rgb(255 255 255 / 0.3),
+    0 2px 0 rgb(19 35 58 / 0.3);
+}
+.tp-frame .tp-cell.dot::after {
+  background: var(--tp-counter);
+}
+.tp-frame .tp-cell.dot-add::after,
+.tp-frame .tp-cell.slot.filled::after {
+  background: var(--tp-counter-2);
+}
+.tp-frame .tp-cell.dot-gone::after,
+.tp-frame .tp-cell.dot.gone::after {
+  box-shadow: none;
+  border-width: 3px;
+}
+.tp-frame button.tp-cell:hover {
+  box-shadow: inset 0 0 0 2px var(--tp-counter);
+}
+.tp-frame .tp-cell.empty-goal {
+  box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--t-gold, #f3b61f) 70%, #fff);
+}
+
+/* ---------------------------------------------------------------- counter arrays */
+.tp-array {
+  gap: 6px;
+  padding: 12px 14px;
+  border: 1.5px solid var(--t-rule, #d5deea);
+  border-radius: 14px;
+  box-shadow: 0 2px 0 rgb(19 35 58 / 0.1);
+}
+.tp-live .tp-array {
+  padding-right: 3.5rem;
+}
+.tp-dot {
+  flex: none;
+  width: 28px;
+  height: 28px;
+  background: var(--tp-counter);
+  box-shadow:
+    inset 0 -4px 0 rgb(0 0 0 / 0.17),
+    inset 0 3px 0 rgb(255 255 255 / 0.3),
+    0 2px 0 rgb(19 35 58 / 0.28);
+}
+.tp-row.row-b .tp-dot {
+  background: var(--tp-counter-2);
+}
+button.tp-row {
+  padding: 3px 7px;
+  transition: background-color 0.12s;
+}
+button.tp-row .tp-dot {
+  opacity: 0.4;
+  box-shadow: inset 0 0 0 2px rgb(19 35 58 / 0.25);
+}
+button.tp-row.counted .tp-dot {
+  opacity: 1;
+  box-shadow: inset 0 -4px 0 rgb(0 0 0 / 0.17), inset 0 3px 0 rgb(255 255 255 / 0.3), 0 2px 0 rgb(19 35 58 / 0.28);
+}
+button.tp-row:hover {
+  background: color-mix(in srgb, var(--trail, #1d5fa8) 12%, #fff);
+}
+.tp-array.tens .tp-dot {
+  border-radius: 8px;
+  width: 38px;
+  height: 38px;
+}
+
+/* ---------------------------------------------------------------- area boxes (partial products) */
+.tp-area {
+  max-width: 560px;
+}
+.tp-area-box {
+  border: 2.5px solid var(--tp-edge);
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0 3px 0 rgb(19 35 58 / 0.16);
+}
+.tp-area-box > div {
+  background: color-mix(in srgb, var(--trail, #1d5fa8) 20%, #fff);
+}
+.tp-area-box > div + div {
+  border-left: 2.5px dashed var(--tp-edge);
+  background: color-mix(in srgb, var(--t-gold, #f3b61f) 30%, #fff);
+}
+.tp-area-box small {
+  font-size: 0.8rem;
+  letter-spacing: 0.02em;
+  color: var(--t-ink-soft, #4a5a70);
+}
+.tp-area-box b {
+  font-size: 1.15rem;
+  font-variant-numeric: tabular-nums lining-nums;
+}
+.tp-area-side {
+  font-variant-numeric: tabular-nums lining-nums;
+  font-size: 1.05rem;
+}
+
+/* ---------------------------------------------------------------- number lines */
+.tp-line {
+  max-width: 560px;
+  overflow: visible;
+  stroke-linecap: round;
+  text-rendering: geometricPrecision;
+}
+.tp-line text {
+  font-size: 17px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums lining-nums;
+}
+.tp-axis,
+.tp-tick {
+  stroke: var(--tp-edge);
+  stroke-width: 3.5;
+  stroke-linecap: round;
+}
+.tp-jump {
+  stroke-width: 4.5;
+  stroke-linecap: round;
+}
+.tp-line .tp-mark,
+.tp-marker {
+  filter: drop-shadow(0 2px 0 rgb(19 35 58 / 0.28));
+}
+.tp-hop-row {
+  gap: 0.55rem;
+}
+.tp-hop-btn {
+  border-width: 2px;
+  box-shadow: 0 2px 0 rgb(19 35 58 / 0.7);
+  transition:
+    transform 0.12s,
+    box-shadow 0.12s,
+    background-color 0.12s;
+}
+.tp-hop-btn:active:not(:disabled) {
+  transform: translateY(2px);
+  box-shadow: none;
+}
+.tp-hop-btn:disabled {
+  box-shadow: none;
+}
+
+/* ---------------------------------------------------------------- written answers inside a picture */
+.tp-in {
+  border-width: 2px;
+  border-radius: 10px;
+  box-shadow:
+    0 1px 0 rgb(19 35 58 / 0.1) inset,
+    0 2px 0 rgb(19 35 58 / 0.16);
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+/* ---------------------------------------------------------------- forced colours and motion */
+@media (forced-colors: active) {
+  .tr-example {
+    background-image: none;
+    border: 1px solid CanvasText;
+  }
+  .tp-frame,
+  .tp-array,
+  .tp-area-box {
+    border: 2px solid CanvasText;
+    box-shadow: none;
+  }
+  .tp-frame .tp-cell,
+  .tp-dot {
+    forced-color-adjust: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  button.tp-row,
+  .tp-hop-btn {
+    transition: none;
+  }
+  .tp-hop-btn:active:not(:disabled) {
+    transform: none;
+  }
+}

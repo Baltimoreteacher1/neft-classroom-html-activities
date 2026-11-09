@@ -1,0 +1,430 @@
+/* Math Fluency Lab - the "See It" models (visual-lab.js): arrays, fraction strips, place-value cards, counter boards,
+   partition and ratio pictures, rulers, clocks and the SVG model set. Loaded after tutor.css and journey.css, whose
+   skin it replaces. Presentation only: same markup, same classes, same interactions.
+   :is(.working-on-skill, body) keeps specificity above journey.css while still covering pages without that wrapper. */
+
+:root {
+  --lv-ink: var(--t-ink, #13233a);
+  --lv-ink-soft: var(--t-ink-soft, #4a5a70);
+  --lv-edge: rgb(19 35 58 / 0.78);
+  --lv-hair: rgb(19 35 58 / 0.3);
+  --lv-teal: #1a9d99;
+  --lv-teal-fill: color-mix(in srgb, #1a9d99 74%, #fff);
+  --lv-teal-soft: #cdebe8;
+  --lv-amber: #f0b93f;
+  --lv-amber-soft: #fbe6b8;
+  --lv-blue: #2d6fb7;
+  --lv-blue-soft: #d3e4f7;
+  --lv-card: #fff;
+  --lv-lift: 0 3px 0 rgb(19 35 58 / 0.14);
+}
+html[data-theme="dark"] {
+  --lv-edge: rgb(234 241 247 / 0.8);
+  --lv-hair: rgb(234 241 247 / 0.35);
+  --lv-card: #14283a;
+  --lv-teal-soft: #14433f;
+  --lv-amber-soft: #4d3b12;
+  --lv-blue-soft: #1d3a5c;
+}
+
+/* ---------------------------------------------------------------- stage and caption */
+:is(.working-on-skill, body) .visual-model {
+  border: 1px solid #cfdbe6;
+  border-radius: 20px;
+  background-color: #f6f9fd;
+  background-image:
+    linear-gradient(rgb(19 35 58 / 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(19 35 58 / 0.045) 1px, transparent 1px);
+  background-size: 22px 22px;
+  box-shadow:
+    0 1px 0 #fff inset,
+    0 1px 2px rgb(19 35 58 / 0.08),
+    0 12px 26px -18px rgb(19 35 58 / 0.34);
+}
+:is(.working-on-skill, body) .visual-model .model-caption {
+  color: var(--lv-ink);
+  font-family: var(--mv-math-font, "Fraunces", Georgia, serif);
+  font-size: clamp(1.4rem, 1.15rem + 0.8vw, 1.9rem);
+  font-weight: 700;
+  letter-spacing: -0.005em;
+  font-variant-numeric: lining-nums tabular-nums;
+}
+:is(.working-on-skill, body) .visual-model > p:not(.model-caption) {
+  color: var(--lv-ink-soft);
+  font-weight: 600;
+}
+:is(.working-on-skill, body) .visual-step-panel {
+  border-color: #cfdbe6;
+  border-radius: 20px;
+  box-shadow:
+    0 1px 0 #fff inset,
+    0 1px 2px rgb(19 35 58 / 0.08),
+    0 12px 26px -18px rgb(19 35 58 / 0.3);
+}
+:is(.working-on-skill, body) .visual-step-dots li {
+  border-width: 2px;
+  border-color: var(--lv-hair);
+  background: var(--lv-card);
+}
+:is(.working-on-skill, body) .visual-step-dots .current {
+  box-shadow: 0 2px 0 rgb(0 0 0 / 0.28);
+}
+
+/* ---------------------------------------------------------------- arrays and area grids */
+:is(.working-on-skill, body) .visual-model .array-model,
+:is(.working-on-skill, body) .visual-model .fraction-area {
+  gap: 4px;
+  max-width: 340px;
+  padding: 10px;
+  border: 2px solid var(--lv-edge);
+  border-radius: 14px;
+  background: var(--lv-card);
+  box-shadow: var(--lv-lift);
+}
+:is(.working-on-skill, body) .visual-model .array-model span,
+:is(.working-on-skill, body) .visual-model .fraction-area span {
+  border: 1.5px solid var(--lv-edge);
+  border-radius: 6px;
+  box-shadow:
+    inset 0 -3px 0 rgb(0 0 0 / 0.13),
+    inset 0 2px 0 rgb(255 255 255 / 0.3);
+}
+:is(.working-on-skill, body) .visual-model .array-model .part-one,
+:is(.working-on-skill, body) .visual-model .fraction-area .column-shade {
+  background-color: var(--lv-teal-fill);
+}
+:is(.working-on-skill, body) .visual-model .array-model .part-two {
+  background-color: color-mix(in srgb, var(--lv-amber) 82%, #fff);
+}
+:is(.working-on-skill, body) .visual-model .fraction-area span:not(.column-shade):not(.row-shade) {
+  background-color: var(--lv-teal-soft);
+  box-shadow: inset 0 -3px 0 rgb(0 0 0 / 0.07);
+}
+
+/* ---------------------------------------------------------------- fraction strips and partitions */
+:is(.working-on-skill, body) .visual-model .fraction-model {
+  height: 58px;
+  border: 2.5px solid var(--lv-edge);
+  border-radius: 10px;
+  background: var(--lv-card);
+  box-shadow: var(--lv-lift);
+}
+:is(.working-on-skill, body) .visual-model .fraction-model span {
+  border-right: 1.5px solid var(--lv-hair);
+  background: var(--lv-card);
+}
+:is(.working-on-skill, body) .visual-model .fraction-model span.shaded {
+  background: var(--lv-teal);
+  box-shadow: inset 0 -4px 0 rgb(0 0 0 / 0.13);
+  border-right-color: rgb(255 255 255 / 0.55);
+}
+:is(.working-on-skill, body) .visual-model .fraction-model-row {
+  font-weight: 800;
+  font-variant-numeric: lining-nums tabular-nums;
+  color: var(--lv-ink);
+}
+:is(.working-on-skill, body) .visual-model .partition-model {
+  gap: 6px;
+}
+:is(.working-on-skill, body) .visual-model .partition-model div {
+  border: 2.5px solid var(--lv-edge);
+  border-radius: 12px;
+  background: var(--lv-blue-soft);
+  box-shadow: var(--lv-lift);
+}
+:is(.working-on-skill, body) .visual-model .partition-model div:nth-child(2) {
+  background: var(--lv-amber-soft);
+}
+:is(.working-on-skill, body) .visual-model .partition-model span {
+  font-size: 1.25rem;
+  color: var(--lv-ink);
+}
+:is(.working-on-skill, body) .visual-model .strategy-area-pair > div,
+:is(.working-on-skill, body) .visual-model .strategy-area-remove > div {
+  border: 2.5px solid var(--lv-edge);
+  border-radius: 12px;
+  background: var(--lv-teal-soft);
+  box-shadow: var(--lv-lift);
+}
+:is(.working-on-skill, body) .visual-model .strategy-area-pair > div:last-child {
+  background: var(--lv-amber-soft);
+}
+:is(.working-on-skill, body) .visual-model .strategy-area-remove > div:last-child {
+  border-style: dashed;
+  background: #fbe3d6;
+}
+:is(.working-on-skill, body) .visual-model .strategy-quarter-whole span {
+  border: 2.5px solid var(--lv-edge);
+  border-radius: 10px;
+  background: var(--lv-card);
+  box-shadow: var(--lv-lift);
+}
+:is(.working-on-skill, body) .visual-model .strategy-quarter-whole span.selected {
+  background: var(--lv-teal);
+  color: #fff;
+  box-shadow: var(--lv-lift);
+}
+:is(.working-on-skill, body) .visual-model .strategy-area-model {
+  border-radius: 16px;
+  border-color: #cfdbe6;
+}
+
+/* ---------------------------------------------------------------- place value, counters, ten-frames */
+:is(.working-on-skill, body) .visual-model .place-row {
+  gap: 6px;
+}
+:is(.working-on-skill, body) .visual-model .place-row span {
+  flex: 0 1 62px;
+  min-height: 72px;
+  border: 2.5px solid var(--lv-edge);
+  border-radius: 12px;
+  background: var(--lv-card);
+  color: var(--lv-ink);
+  font-family: var(--mv-math-font, "Fraunces", Georgia, serif);
+  font-size: clamp(1.4rem, 4vw, 2.2rem);
+  font-weight: 700;
+  font-variant-numeric: lining-nums tabular-nums;
+  box-shadow: var(--lv-lift);
+}
+:is(.working-on-skill, body) .visual-model .place-row .decimal-point {
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+:is(.working-on-skill, body) .visual-model .counter-board {
+  gap: 6px;
+  padding: 8px;
+  border: 2.5px solid var(--lv-edge);
+  border-radius: 14px;
+  background: var(--lv-card);
+  box-shadow: var(--lv-lift);
+}
+:is(.working-on-skill, body) .visual-model .counter-cell {
+  border: 1.5px solid var(--lv-hair);
+  border-radius: 10px;
+  background: #e9eef5;
+  color: var(--lv-blue);
+  box-shadow: none;
+}
+:is(.working-on-skill, body) .visual-model .counter-cell.filled {
+  background: var(--lv-blue-soft);
+  border-color: var(--lv-blue);
+  color: var(--lv-blue);
+}
+:is(.working-on-skill, body) .visual-model .counter-cell.fixed {
+  background: var(--lv-blue);
+  border-color: var(--lv-blue);
+  color: #fff;
+}
+:is(.working-on-skill, body) .visual-model .counter-pair {
+  border: 2.5px solid var(--lv-edge);
+  border-radius: 999px;
+  background: var(--lv-card);
+  box-shadow: var(--lv-lift);
+}
+:is(.working-on-skill, body) .visual-model .model-count {
+  font-variant-numeric: tabular-nums;
+  color: var(--lv-ink);
+}
+:is(.working-on-skill, body) .visual-model .coin {
+  border: 3px solid #b88a2e;
+  background: var(--lv-amber-soft);
+  color: var(--lv-ink);
+  box-shadow:
+    inset 0 0 0 3px rgb(255 255 255 / 0.55),
+    var(--lv-lift);
+}
+
+/* ---------------------------------------------------------------- tables, machines, balances */
+:is(.working-on-skill, body) .visual-model .ratio-model {
+  overflow: hidden;
+  border-collapse: separate;
+  border-spacing: 0;
+  border: 2px solid var(--lv-edge);
+  border-radius: 12px;
+  box-shadow: var(--lv-lift);
+}
+:is(.working-on-skill, body) .visual-model .ratio-model th,
+:is(.working-on-skill, body) .visual-model .ratio-model td {
+  border: 0;
+  border-bottom: 1.5px solid var(--lv-hair);
+  border-right: 1.5px solid var(--lv-hair);
+  font-variant-numeric: lining-nums tabular-nums;
+  font-weight: 700;
+}
+:is(.working-on-skill, body) .visual-model .ratio-model th {
+  background: var(--lv-blue-soft);
+  color: var(--lv-ink);
+}
+:is(.working-on-skill, body) .visual-model .ratio-model tr > :last-child {
+  border-right: 0;
+}
+:is(.working-on-skill, body) .visual-model .ratio-model tr:last-child > * {
+  border-bottom: 0;
+}
+:is(.working-on-skill, body) .visual-model .function-machine span {
+  border: 2.5px solid var(--lv-edge);
+  border-radius: 14px;
+  background: var(--lv-card);
+  box-shadow: var(--lv-lift);
+}
+:is(.working-on-skill, body) .visual-model .balance-model li {
+  border: 2px solid var(--lv-hair);
+  border-radius: 12px;
+  background: var(--lv-card);
+}
+:is(.working-on-skill, body) .visual-model .balance-model .active {
+  border-color: var(--lv-edge);
+  box-shadow: var(--lv-lift);
+}
+:is(.working-on-skill, body) .visual-model .model-controls button {
+  border: 2px solid var(--lv-edge);
+  border-radius: 10px;
+  box-shadow: 0 2px 0 rgb(19 35 58 / 0.7);
+}
+:is(.working-on-skill, body) .visual-model .model-controls button:active {
+  transform: translateY(2px);
+  box-shadow: none;
+}
+
+/* ---------------------------------------------------------------- rulers and unit strips */
+:is(.working-on-skill, body) .visual-model .unit-ruler {
+  min-height: 96px;
+  margin-inline: 0;
+  padding: 0 0 1.6rem;
+  border: 2.5px solid var(--lv-edge);
+  border-radius: 10px 10px 0 0;
+  background: #f6ecc9;
+  box-shadow: var(--lv-lift);
+}
+:is(.working-on-skill, body) .visual-model .ruler-tick {
+  height: 60px;
+  border-left: 2px solid var(--lv-hair);
+  color: var(--lv-ink);
+}
+:is(.working-on-skill, body) .visual-model .ruler-tick:last-child {
+  border-right: 2px solid var(--lv-hair);
+}
+:is(.working-on-skill, body) .visual-model .ruler-tick i {
+  height: 24px;
+  border-left: 3px solid var(--lv-ink);
+}
+:is(.working-on-skill, body) .visual-model .ruler-tick small {
+  font-size: 0.9rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+:is(.working-on-skill, body) .visual-model .ruler-tick.measured {
+  background: rgb(26 157 153 / 0.18);
+}
+:is(.working-on-skill, body) .visual-model .ruler-strip {
+  height: 18px;
+  background: var(--lv-teal);
+  border: 2px solid var(--lv-edge);
+  border-radius: 5px;
+}
+:is(.working-on-skill, body) .visual-model .unit-fraction-whole {
+  border: 2.5px solid var(--lv-edge);
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--lv-card);
+  box-shadow: var(--lv-lift);
+}
+:is(.working-on-skill, body) .visual-model .unit-fraction-part {
+  border-right: 1.5px solid var(--lv-hair);
+  background: var(--lv-card);
+}
+:is(.working-on-skill, body) .visual-model .unit-fraction-part.selected-part {
+  background: var(--lv-teal);
+  padding: 0;
+}
+:is(.working-on-skill, body) .visual-model .data-model {
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+/* ---------------------------------------------------------------- SVG model set (clock, number lines, plots) */
+:is(.working-on-skill, body) .visual-model .math-model-svg text {
+  font:
+    650 18px "Lexend",
+    "Avenir Next",
+    system-ui,
+    sans-serif;
+  font-variant-numeric: lining-nums tabular-nums;
+  fill: var(--lv-ink);
+  paint-order: stroke fill;
+  stroke: var(--lv-card);
+  stroke-width: 4px;
+  stroke-linejoin: round;
+}
+:is(.working-on-skill, body) .visual-model .math-model-svg path {
+  stroke: var(--lv-edge);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+:is(.working-on-skill, body) .visual-model .math-model-svg .model-fill,
+:is(.working-on-skill, body) .visual-model .math-model-svg .clock-face {
+  fill: var(--lv-teal-soft);
+  stroke: var(--lv-edge);
+  stroke-width: 2.5;
+}
+:is(.working-on-skill, body) .visual-model .math-model-svg .clock-face {
+  fill: var(--lv-card);
+  filter: drop-shadow(0 3px 0 rgb(19 35 58 / 0.16));
+}
+:is(.working-on-skill, body) .visual-model .math-model-svg .model-fill-alt {
+  fill: var(--lv-amber-soft);
+  stroke: var(--lv-edge);
+  stroke-width: 2.5;
+}
+:is(.working-on-skill, body) .visual-model .math-model-svg .jump-path {
+  stroke: var(--lv-hair);
+  stroke-width: 3.5;
+}
+:is(.working-on-skill, body) .visual-model .math-model-svg .jump-path.active {
+  stroke: var(--lv-teal);
+  stroke-width: 4.5;
+}
+:is(.working-on-skill, body) .visual-model .math-model-svg .plot-point {
+  fill: var(--lv-blue);
+  stroke: #fff;
+  stroke-width: 2.5;
+  filter: drop-shadow(0 1.5px 0 rgb(19 35 58 / 0.3));
+}
+:is(.working-on-skill, body) .visual-model .math-model-svg .clock-hand {
+  stroke-width: 6;
+}
+
+/* ---------------------------------------------------------------- vertical computation boxes */
+.vc-cell {
+  border: 2px solid var(--lv-edge);
+  border-radius: 10px;
+  box-shadow: var(--lv-lift);
+  font-variant-numeric: lining-nums tabular-nums;
+}
+.vc-cell.ok,
+.vc-cell.no,
+.vc-cell.shown {
+  box-shadow: none;
+}
+.vc-carry,
+.vc-regroup {
+  box-shadow: none;
+}
+
+@media (forced-colors: active) {
+  :is(.working-on-skill, body) .visual-model {
+    background-image: none;
+    border: 1px solid CanvasText;
+  }
+  :is(.working-on-skill, body) .visual-model [class*="model"],
+  :is(.working-on-skill, body) .visual-model .counter-cell {
+    forced-color-adjust: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  :is(.working-on-skill, body) .visual-model .model-controls button:active {
+    transform: none;
+  }
+}

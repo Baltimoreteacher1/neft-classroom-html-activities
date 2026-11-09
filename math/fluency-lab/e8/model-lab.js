@@ -239,7 +239,7 @@ export class Workspace {
       .join("");
     const problems = e.verify();
     this.host.innerHTML = `
-      <div class="e8ml-visual" tabindex="0" role="group" aria-label="${esc(pick(e.model.title))}. ${esc(pick(views.concrete))}">${visual}</div>
+      <div class="e8ml-visual" data-model="${esc(e.model.id)}" tabindex="0" role="group" aria-label="${esc(pick(e.model.title))}. ${esc(pick(views.concrete))}">${visual}</div>
       <div class="e8ml-linked" aria-label="${esc(L("Linked views", "Vistas conectadas"))}">
         <p class="e8ml-words"><span class="e8ml-tag">${esc(L("In words", "En palabras"))}</span> ${esc(pick(views.verbal))}</p>
         <p class="e8ml-symbols"><span class="e8ml-tag">${esc(L("In symbols", "En símbolos"))}</span> <span class="e8ml-eq">${esc(views.symbolic)}</span></p>

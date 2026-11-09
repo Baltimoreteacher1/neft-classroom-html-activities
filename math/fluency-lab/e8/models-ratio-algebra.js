@@ -120,8 +120,8 @@ registerModel({
         );
       }
       inner +=
-        text(8, 44, (p.short || names.map((n) => n.split(" ")[0]))[0], `font-size="10" fill="${INK}"`) +
-        text(8, 114, (p.short || names.map((n) => n.split(" ")[0]))[1], `font-size="10" fill="${INK}"`);
+        text(22, 44, (p.short || names.map((n) => n.split(" ")[0]))[0], `text-anchor="end" font-size="12" fill="${INK}"`) +
+        text(22, 114, (p.short || names.map((n) => n.split(" ")[0]))[1], `text-anchor="end" font-size="12" fill="${INK}"`);
       return svg(
         430,
         150,

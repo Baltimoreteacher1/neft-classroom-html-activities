@@ -1,0 +1,551 @@
+/* Math Fluency Lab - model and manipulative finish.
+   Loaded after every other stylesheet. It changes how the existing mathematical models are drawn and framed (stage,
+   stroke weight, shape finish, labels, controls); it does not touch model logic, problem generation, scoring or
+   interaction. Model colours stay the model tokens (--e8-model-*); ink follows --e8-ink so dark theme stays readable.
+   SVG presentation attributes lose to any CSS rule, so the attribute selectors below restyle the SVG that
+   e8/engine-core.js already emits. */
+
+:root {
+  --mv-stage: #fdfefe;
+  --mv-stage-grid: rgb(23 50 77 / 0.055);
+  --mv-stage-edge: #cfd9e3;
+  --mv-lift:
+    0 1px 0 rgb(255 255 255 / 0.9) inset, 0 1px 2px rgb(23 50 77 / 0.1),
+    0 8px 22px -12px rgb(23 50 77 / 0.28);
+  --mv-ink-soft: rgb(23 50 77 / 0.62);
+  --mv-ink-hair: rgb(23 50 77 / 0.34);
+  --mv-teal: #1a9d99;
+  --mv-teal-deep: #0f6f6c;
+  --mv-teal-tint: #cdebe8;
+  --mv-amber: #f0b93f;
+  --mv-amber-deep: #b97f0c;
+  --mv-coral: #d4552f;
+  --mv-blue: #3d6fc2;
+  --mv-math-font: "Fraunces", "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+}
+html[data-theme="dark"] {
+  --mv-stage: #0f1c2a;
+  --mv-stage-grid: rgb(234 241 247 / 0.06);
+  --mv-stage-edge: #35506a;
+  --mv-lift: 0 1px 0 rgb(255 255 255 / 0.05) inset, 0 8px 22px -12px rgb(0 0 0 / 0.6);
+  --mv-ink-soft: rgb(234 241 247 / 0.7);
+  --mv-ink-hair: rgb(234 241 247 / 0.4);
+  --mv-teal-tint: #14433f;
+}
+
+/* ---------------------------------------------------------------- Model Lab frame */
+.e8ml-head h2 {
+  font-family: var(--mv-math-font);
+  font-weight: 700;
+  font-size: clamp(1.5rem, 1.2rem + 1vw, 2rem);
+  letter-spacing: -0.01em;
+}
+.e8ml-picker {
+  gap: 0.55rem;
+}
+.e8ml-chip {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: 1.5px solid var(--e8-line);
+  box-shadow: 0 1px 0 rgb(23 50 77 / 0.08);
+  transition:
+    background-color 0.14s,
+    border-color 0.14s,
+    box-shadow 0.14s,
+    color 0.14s;
+}
+.e8ml-chip::before {
+  content: "";
+  flex: none;
+  width: 0.62rem;
+  height: 0.62rem;
+  border-radius: 50%;
+  background: var(--mv-dot, var(--e8-ink-soft));
+  box-shadow:
+    0 0 0 2px var(--e8-surface),
+    0 0 0 3px var(--mv-dot, var(--e8-ink-soft));
+}
+.e8ml-domain-number,
+.e8ml-domain-operations,
+.e8ml-domain-fractions,
+.e8ml-domain-ratio,
+.e8ml-domain-algebra,
+.e8ml-domain-geometry,
+.e8ml-domain-data,
+.e8ml-domain-measurement {
+  border-left-width: 1.5px;
+  border-left-style: solid;
+}
+.e8ml-chip.e8ml-domain-number {
+  --mv-dot: var(--e8-domain-number);
+  border-left-color: var(--e8-line);
+}
+.e8ml-chip.e8ml-domain-operations {
+  --mv-dot: var(--e8-domain-operations);
+  border-left-color: var(--e8-line);
+}
+.e8ml-chip.e8ml-domain-fractions {
+  --mv-dot: var(--e8-domain-fractions);
+  border-left-color: var(--e8-line);
+}
+.e8ml-chip.e8ml-domain-ratio {
+  --mv-dot: var(--e8-domain-ratio);
+  border-left-color: var(--e8-line);
+}
+.e8ml-chip.e8ml-domain-algebra {
+  --mv-dot: var(--e8-domain-algebra);
+  border-left-color: var(--e8-line);
+}
+.e8ml-chip.e8ml-domain-geometry {
+  --mv-dot: var(--e8-domain-geometry);
+  border-left-color: var(--e8-line);
+}
+.e8ml-chip.e8ml-domain-data {
+  --mv-dot: var(--e8-domain-data);
+  border-left-color: var(--e8-line);
+}
+.e8ml-chip.e8ml-domain-measurement {
+  --mv-dot: var(--e8-domain-measurement);
+  border-left-color: var(--e8-line);
+}
+.e8ml-chip:hover {
+  border-color: var(--e8-ink);
+  background: var(--e8-info-tint);
+}
+.e8ml-chip[aria-pressed="true"] {
+  box-shadow:
+    0 2px 0 rgb(23 50 77 / 0.35),
+    0 6px 14px -8px rgb(23 50 77 / 0.5);
+}
+.e8ml-chip[aria-pressed="true"]::before {
+  box-shadow:
+    0 0 0 2px var(--e8-ink),
+    0 0 0 3px var(--e8-surface);
+  background: var(--e8-surface);
+}
+.e8ml-chip[aria-pressed="true"]:hover {
+  background: var(--e8-ink);
+}
+
+.e8ml-workspace {
+  gap: 1.1rem 1.5rem;
+  padding: 1.15rem;
+  border: 1px solid var(--mv-stage-edge);
+  border-radius: 20px;
+  background: linear-gradient(180deg, var(--e8-surface-2), var(--e8-surface-sunk));
+  box-shadow: var(--mv-lift);
+}
+.e8ml-visual {
+  position: relative;
+  align-self: stretch;
+  align-content: center;
+  min-height: 15rem;
+  padding: 1.1rem 0.9rem;
+  border: 1px solid var(--mv-stage-edge);
+  border-radius: 16px;
+  background-color: var(--mv-stage);
+  background-image:
+    linear-gradient(var(--mv-stage-grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--mv-stage-grid) 1px, transparent 1px);
+  background-size: 24px 24px;
+  background-position: -1px -1px;
+  box-shadow: var(--mv-lift);
+}
+.e8ml-visual:focus-visible {
+  outline-offset: 3px;
+}
+.e8ml-visual svg {
+  max-width: min(100%, 600px);
+}
+.e8ml-visual[data-model="array"] svg {
+  max-width: 360px;
+}
+.e8ml-visual[data-model="decimalGrid"] svg,
+.e8ml-visual[data-model="decimalProduct"] svg {
+  max-width: 380px;
+}
+.e8ml-visual[data-model="hundredsChart"] svg {
+  max-width: 460px;
+}
+.e8ml-visual[data-model="coordinatePlane"] svg,
+.e8ml-visual[data-model="linearGraph"] svg,
+.e8ml-visual[data-model="transformation"] svg {
+  max-width: 480px;
+}
+.e8ml-visual[data-model="numberLine"] svg,
+.e8ml-visual[data-model="boxPlot"] svg,
+.e8ml-visual[data-model="dotPlot"] svg {
+  max-width: 100%;
+}
+
+/* Linked words / symbols / numbers column */
+.e8ml-linked {
+  gap: 0.75rem;
+}
+.e8ml-linked p {
+  line-height: 1.55;
+}
+.e8ml-words {
+  font-size: 1.04rem;
+  color: var(--e8-ink);
+}
+.e8ml-tag {
+  padding: 0.12rem 0.55rem;
+  border: 1px solid color-mix(in srgb, var(--e8-info) 22%, transparent);
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  vertical-align: 0.1em;
+}
+.e8ml-symbols {
+  padding: 0.55rem 0.8rem;
+  border: 1px solid var(--mv-stage-edge);
+  border-left: 4px solid var(--mv-teal);
+  border-radius: 10px;
+  background: var(--e8-surface);
+}
+.e8ml-eq {
+  font-family: var(--mv-math-font);
+  font-weight: 600;
+  font-size: 1.28rem;
+  font-variant-numeric: lining-nums tabular-nums;
+  letter-spacing: 0.01em;
+  word-spacing: 0.3em;
+  color: var(--e8-ink);
+}
+.e8ml-numbers {
+  display: grid;
+  gap: 0.3rem;
+  justify-items: start;
+}
+.e8ml-table {
+  min-width: 14rem;
+  border-collapse: separate;
+  border-spacing: 0;
+  overflow: hidden;
+  border: 1px solid var(--mv-stage-edge);
+  border-radius: 10px;
+  background: var(--e8-surface);
+  font-size: 0.95rem;
+}
+.e8ml-table th,
+.e8ml-table td {
+  border: 0;
+  border-bottom: 1px solid var(--mv-stage-edge);
+  padding: 0.32rem 0.8rem;
+}
+.e8ml-table th {
+  background: var(--e8-surface-sunk);
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--e8-ink-soft);
+}
+.e8ml-table tr:last-child td {
+  border-bottom: 0;
+}
+.e8ml-table td {
+  font-variant-numeric: tabular-nums lining-nums;
+}
+.e8ml-table tbody tr:nth-child(even) td {
+  background: color-mix(in srgb, var(--e8-surface-sunk) 55%, transparent);
+}
+
+/* Controls: tactile, one clear primary, quiet history row */
+.e8ml-btn {
+  border-width: 1.5px;
+  box-shadow: 0 2px 0 rgb(23 50 77 / 0.9);
+  transition:
+    background-color 0.12s,
+    box-shadow 0.12s,
+    transform 0.12s,
+    border-color 0.12s;
+}
+.e8ml-btn:hover:not(:disabled) {
+  background: var(--e8-info-tint);
+}
+.e8ml-btn:active:not(:disabled) {
+  transform: translateY(2px);
+  box-shadow: 0 0 0 rgb(23 50 77 / 0.9);
+}
+.e8ml-quiet,
+.e8ml-btn:disabled {
+  box-shadow: none;
+}
+.e8ml-btn:disabled {
+  border-style: dashed;
+}
+.e8ml-primary {
+  box-shadow: 0 2px 0 rgb(0 0 0 / 0.38);
+}
+.e8ml-toolbar {
+  padding-top: 0.55rem;
+  border-top: 1px dashed var(--mv-stage-edge);
+}
+.e8ml-note:not(:empty) {
+  border: 1px solid color-mix(in srgb, var(--e8-hint) 30%, transparent);
+}
+
+/* Lesson / guided solver panels */
+.e8ml-lesson,
+.e8ml-solver {
+  border: 1px solid var(--mv-stage-edge);
+  border-radius: 18px;
+  box-shadow: var(--mv-lift);
+}
+.e8ml-lesson-title,
+.e8ml-solver h3 {
+  font-family: var(--mv-math-font);
+  font-weight: 700;
+  letter-spacing: -0.005em;
+}
+.e8ml-steps li {
+  border: 1px solid transparent;
+}
+.e8ml-steps li[aria-current="step"] {
+  box-shadow: 0 2px 0 rgb(23 50 77 / 0.3);
+}
+.e8ml-steps li.done {
+  border-color: color-mix(in srgb, var(--e8-mastery-demonstrated) 28%, transparent);
+}
+.e8ml-q {
+  font-family: var(--mv-math-font);
+  font-weight: 600;
+  font-size: 1.2rem;
+}
+.e8ml-why {
+  border-left: 4px solid var(--e8-info);
+}
+.e8ml-done {
+  border: 1px solid color-mix(in srgb, var(--e8-correct) 30%, transparent);
+  border-left: 4px solid var(--e8-correct);
+}
+.e8ml-text {
+  border-width: 1.5px;
+  box-shadow: 0 1px 0 rgb(23 50 77 / 0.08) inset;
+}
+.e8ml-text:focus-visible {
+  border-color: var(--e8-focus);
+}
+
+/* ---------------------------------------------------------------- SVG model finish (all .e8-model drawings) */
+.e8-model {
+  text-rendering: geometricPrecision;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+.e8-model text {
+  font-family: inherit;
+  font-weight: 650;
+  font-variant-numeric: lining-nums tabular-nums;
+  stroke: none;
+}
+/* ink follows the theme */
+.e8-model [stroke="#17324d"] {
+  stroke: var(--e8-ink);
+}
+.e8-model [fill="#17324d"] {
+  fill: var(--e8-ink);
+}
+.e8-model text[fill="#17324d"] {
+  fill: var(--e8-ink);
+}
+.e8-model [fill="#fff"] {
+  fill: var(--e8-surface);
+}
+/* model palette: one deliberate shade per role */
+.e8-model [fill="#1fa6a2"] {
+  fill: var(--mv-teal);
+}
+.e8-model [fill="#f2c15b"] {
+  fill: var(--mv-amber);
+}
+.e8-model [fill="#d8613c"] {
+  fill: var(--mv-coral);
+}
+.e8-model [fill="#cfe9e7"] {
+  fill: var(--mv-teal-tint);
+}
+.e8-model [stroke="#1fa6a2"] {
+  stroke: var(--mv-teal-deep);
+}
+.e8-model [stroke="#d8613c"] {
+  stroke: var(--mv-coral);
+}
+/* hairlines and ticks are lighter than the shapes they annotate */
+.e8-model line[stroke-width="1"],
+.e8-model line[stroke-width="1.2"],
+.e8-model line[stroke-width="1.5"],
+.e8-model line[stroke-width="1.6"] {
+  stroke: var(--mv-ink-hair);
+}
+.e8-model line[stroke-width="3"] {
+  stroke-width: 3.5;
+}
+
+/* solid shapes: rounded, crisp edge, a short base shadow gives a manipulative its thickness */
+.e8-model rect.cell,
+.e8-model rect.tile,
+.e8-model rect.blk,
+.e8-model rect.part,
+.e8-model rect.seg,
+.e8-model rect.layer,
+.e8-model rect.bar {
+  rx: 4px;
+  ry: 4px;
+  stroke-width: 1.75;
+}
+.e8-model rect.cell.on,
+.e8-model rect.tile,
+.e8-model rect.blk,
+.e8-model rect.seg.on {
+  filter: drop-shadow(0 1.5px 0 rgb(23 50 77 / 0.28));
+}
+.e8-model circle.cell.on,
+.e8-model circle.chip,
+.e8-model g.chip circle,
+.e8-model circle.dot,
+.e8-model circle.obj {
+  stroke-width: 2;
+  filter: drop-shadow(0 1.75px 0 rgb(23 50 77 / 0.3));
+}
+.e8-model .cell.off {
+  fill: var(--mv-stage);
+}
+.e8-model .cell.off:hover {
+  fill: var(--e8-info-tint);
+}
+.e8-model .cell.on:hover,
+.e8-model .point:hover {
+  filter: brightness(1.07) drop-shadow(0 1.75px 0 rgb(23 50 77 / 0.3));
+}
+.e8-model .point {
+  stroke-width: 2.5;
+  filter: drop-shadow(0 1.5px 0 rgb(23 50 77 / 0.35));
+}
+.e8-model .hop,
+.e8-model .graph-line,
+.e8-model .ray,
+.e8-model .edge {
+  stroke-width: 3.5;
+}
+.e8-model .whole {
+  stroke-width: 2.5;
+}
+.e8-model .median {
+  stroke-width: 4;
+}
+.e8-model .whisker {
+  stroke: var(--e8-ink);
+  stroke-width: 2.25;
+}
+
+/* number and data axes read as instruments, not as underlines */
+.e8-model line.tick,
+.e8-model .tick {
+  stroke-width: 2;
+}
+
+/* algebra tiles: the x tile is the cool tone, the unit tile the warm tone, negatives are hatched */
+.e8-model rect.tile.xn,
+.e8-model rect.tile.on {
+  fill: color-mix(in srgb, var(--mv-coral) 32%, var(--e8-surface));
+}
+.e8-model rect.tile.xp {
+  fill: var(--mv-teal-tint);
+}
+.e8-model rect.tile.op {
+  fill: var(--mv-amber);
+}
+.e8-model rect.tile.xn,
+.e8-model rect.tile.on {
+  stroke-dasharray: none;
+}
+
+/* dense grids: hairline cells so 100 squares read as a field, not a lattice */
+.e8ml-visual[data-model="hundredsChart"] rect.cell,
+.e8ml-visual[data-model="decimalGrid"] rect.cell,
+.e8ml-visual[data-model="decimalProduct"] rect.cell {
+  stroke-width: 1;
+  rx: 2px;
+  ry: 2px;
+  filter: none;
+}
+.e8ml-visual[data-model="hundredsChart"] rect.cell.off,
+.e8ml-visual[data-model="decimalGrid"] rect.cell.off,
+.e8ml-visual[data-model="decimalProduct"] rect.cell.off {
+  stroke: var(--mv-ink-hair);
+}
+.e8ml-visual[data-model="decimalGrid"] rect.cell.on,
+.e8ml-visual[data-model="decimalProduct"] rect.cell.on {
+  stroke: rgb(23 50 77 / 0.55);
+}
+
+.e8ml-visual[data-model="tapeRatio"] svg { overflow: visible; }
+
+/* the mean marker sits under the axis; keep the numerals clear of it */
+.e8ml-visual[data-model="dotPlot"] text {
+  transform: translateY(8px);
+}
+
+/* per-model label legibility: tick numerals were 12-13 units on a 520-unit canvas */
+.e8ml-visual[data-model="numberLine"] text {
+  font-size: 15px;
+}
+.e8ml-visual[data-model="dotPlot"] text,
+.e8ml-visual[data-model="boxPlot"] text,
+.e8ml-visual[data-model="histogram"] text {
+  font-size: 13px;
+}
+
+/* ---------------------------------------------------------------- focus, forced colours, motion */
+.e8ml-btn:focus-visible,
+.e8ml-chip:focus-visible {
+  outline-offset: 3px;
+}
+@media (max-width: 760px) {
+  .e8ml-workspace {
+    padding: 0.75rem;
+    border-radius: 16px;
+  }
+  .e8ml-visual {
+    min-height: 11rem;
+    padding: 0.75rem 0.5rem;
+  }
+  .e8ml-symbols {
+    padding: 0.45rem 0.65rem;
+  }
+}
+@media (forced-colors: active) {
+  .e8ml-visual {
+    background-image: none;
+    border: 1px solid CanvasText;
+  }
+  .e8-model text {
+    stroke: none;
+  }
+  .e8-model [stroke] {
+    stroke: CanvasText;
+  }
+  .e8-model [fill]:not([fill="none"]) {
+    forced-color-adjust: none;
+  }
+  .e8ml-btn {
+    box-shadow: none;
+    border: 2px solid ButtonText;
+  }
+  .e8ml-chip::before {
+    background: CanvasText;
+    box-shadow: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .e8ml-chip,
+  .e8ml-btn {
+    transition: none;
+  }
+  .e8ml-btn:active:not(:disabled) {
+    transform: none;
+  }
+}
