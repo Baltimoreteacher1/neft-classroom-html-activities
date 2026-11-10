@@ -88,7 +88,11 @@ export const INJECTED_MATH_STYLES = `
   @media (prefers-reduced-motion:reduce) { *,*::before,*::after { animation:none!important; transition:none!important; } }
 `;
 
-export class InteractiveRatioTape extends HTMLElement {
+const HTMLElementBase: typeof HTMLElement = typeof HTMLElement === "undefined"
+  ? class {} as typeof HTMLElement
+  : HTMLElement;
+
+export class InteractiveRatioTape extends HTMLElementBase {
   protected root: ShadowRoot;
   public selectedA: number;
   public selectedB: number;
@@ -180,7 +184,7 @@ export class InteractiveRatioTape extends HTMLElement {
       );
   }
 }
-if (!customElements.get("interactive-ratio-tape"))
+if (typeof customElements !== "undefined" && !customElements.get("interactive-ratio-tape"))
   customElements.define("interactive-ratio-tape", InteractiveRatioTape);
 export class InteractiveDoubleNumberLine extends InteractiveRatioTape {
   render() {
@@ -197,7 +201,7 @@ export class InteractiveDoubleNumberLine extends InteractiveRatioTape {
       );
   }
 }
-if (!customElements.get("interactive-double-number-line"))
+if (typeof customElements !== "undefined" && !customElements.get("interactive-double-number-line"))
   customElements.define("interactive-double-number-line", InteractiveDoubleNumberLine);
 
 const transitions: Record<LabState, LabState[]> = {

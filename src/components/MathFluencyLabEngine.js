@@ -22,7 +22,11 @@ export const INJECTED_MATH_STYLES = `
   .math-line { color:#86efac; font-size:1.1rem; }
   @media (prefers-reduced-motion:reduce) { *,*::before,*::after { animation:none!important; transition:none!important; } }
 `;
-export class InteractiveRatioTape extends HTMLElement {
+const HTMLElementBase = typeof HTMLElement === "undefined"
+    ? class {
+    }
+    : HTMLElement;
+export class InteractiveRatioTape extends HTMLElementBase {
     root;
     selectedA;
     selectedB;
@@ -112,7 +116,7 @@ export class InteractiveRatioTape extends HTMLElement {
             .forEach((button) => button.addEventListener("click", () => this.select(button.dataset.track, Number(button.dataset.index) + 1)));
     }
 }
-if (!customElements.get("interactive-ratio-tape"))
+if (typeof customElements !== "undefined" && !customElements.get("interactive-ratio-tape"))
     customElements.define("interactive-ratio-tape", InteractiveRatioTape);
 export class InteractiveDoubleNumberLine extends InteractiveRatioTape {
     render() {
@@ -124,7 +128,7 @@ export class InteractiveDoubleNumberLine extends InteractiveRatioTape {
             .forEach((button) => button.addEventListener("click", () => this.select(button.dataset.track, Number(button.dataset.index))));
     }
 }
-if (!customElements.get("interactive-double-number-line"))
+if (typeof customElements !== "undefined" && !customElements.get("interactive-double-number-line"))
     customElements.define("interactive-double-number-line", InteractiveDoubleNumberLine);
 const transitions = {
     UNINITIALIZED: ["PRESENTATION"],
