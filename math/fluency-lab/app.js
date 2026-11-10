@@ -7289,38 +7289,8 @@ function missNudge(item, value) {
   return t(verdict.nudge, verdict.vars || null);
 }
 
-function submitAnswer(value) {
-  if (!state.item || !state.session || state.session.finished) return;
-  if (!String(value).trim()) { showFeedback("Enter an answer", state.item.response ? t(checkResponse("", state.item).nudge) : audioFirstOn() ? t("Tap or build your answer first, then press the check button.") : t("Type an answer before checking, or open a strategy hint."), "try", "try", "empty"); return; }
+function recordPracticeAttempt(value) {
   state.lastSubmitted = String(value).trim();
-
-  if (state.isFixing) {
-    const isFixed = validateAnswer(value, state.item);
-    if (isFixed) {
-      state.isFixing = false;
-      state.itemDone = true;
-      InteractiveDrillToolbox.refresh();
-      els.answerInput.disabled = true;
-      els.checkButton.hidden = true;
-      if (els.fixAnswerBtn) els.fixAnswerBtn.hidden = true;
-      els.nextButton.hidden = false;
-      chime("win");
-      if (state.session) {
-        state.session.revised = (state.session.revised || 0) + 1;
-        updateSessionHeader();
-      }
-      sendFeedback("revise-right");
-      showFeedback("Answer revised", t("Your revised answer is a useful step. It does not count as an independent check. Try the new problem next."), "try", "try", "revised");
-      return;
-    } else {
-      sendFeedback("revise-wrong");
-      showFeedback("Keep trying!", t("Almost! Review the steps above carefully and try one more time."), "try", "incorrect", "revealed");
-      els.answerInput.select();
-      return;
-    }
-  }
-
-  if (state.itemDone) return;
   state.itemAttempts += 1;
   if (state.itemAttempts === 1) {
     state.firstResponseMs = Math.max(0, performance.now() - state.problemStartedAt);
@@ -7354,6 +7324,42 @@ function submitAnswer(value) {
       noteMisconception(state.item, value);
     }
   }
+  return correct;
+}
+
+function submitAnswer(value) {
+  if (!state.item || !state.session || state.session.finished) return;
+  if (!String(value).trim()) { showFeedback("Enter an answer", state.item.response ? t(checkResponse("", state.item).nudge) : audioFirstOn() ? t("Tap or build your answer first, then press the check button.") : t("Type an answer before checking, or open a strategy hint."), "try", "try", "empty"); return; }
+  state.lastSubmitted = String(value).trim();
+
+  if (state.isFixing) {
+    const isFixed = validateAnswer(value, state.item);
+    if (isFixed) {
+      state.isFixing = false;
+      state.itemDone = true;
+      InteractiveDrillToolbox.refresh();
+      els.answerInput.disabled = true;
+      els.checkButton.hidden = true;
+      if (els.fixAnswerBtn) els.fixAnswerBtn.hidden = true;
+      els.nextButton.hidden = false;
+      chime("win");
+      if (state.session) {
+        state.session.revised = (state.session.revised || 0) + 1;
+        updateSessionHeader();
+      }
+      sendFeedback("revise-right");
+      showFeedback("Answer revised", t("Your revised answer is a useful step. It does not count as an independent check. Try the new problem next."), "try", "try", "revised");
+      return;
+    } else {
+      sendFeedback("revise-wrong");
+      showFeedback("Keep trying!", t("Almost! Review the steps above carefully and try one more time."), "try", "incorrect", "revealed");
+      els.answerInput.select();
+      return;
+    }
+  }
+
+  if (state.itemDone) return;
+  const correct = recordPracticeAttempt(value);
   if (state.session.mode === "diagnostic") { finalizeProblem(correct); return; }
   if (correct || state.session.mode === "streak") {
     // Streak mode: one answer per problem, so a miss restarts the count. No clock — the student moves on with "Next problem".
