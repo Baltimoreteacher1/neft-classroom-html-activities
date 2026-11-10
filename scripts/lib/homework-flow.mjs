@@ -137,7 +137,10 @@ export function renderImprove() {
 /** The way back from an optional stop. Optional stops are not on the path, so Back/Next are hidden there. */
 export const backToPath = `
       <div class="tab-flow-nav fp-nav fp-nav--back">
-        <button type="button" class="btn btn-outline-primary" ${act("switchHomeworkTab", "done")}>
+        <button type="button" class="btn btn-outline-primary" ${act("switchHomeworkTab", "check")}>
+          <span class="lang-en">Back to practice</span><span class="lang-es" lang="es">Volver a la práctica</span>
+        </button>
+        <button type="button" class="btn btn-primary" ${act("switchHomeworkTab", "done")}>
           <span class="lang-en">Back to Finish</span><span class="lang-es" lang="es">Volver a Terminar</span>
         </button>
       </div>`;

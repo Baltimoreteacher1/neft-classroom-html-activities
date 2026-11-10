@@ -163,10 +163,9 @@ test("Quick Practice is the default, migrates the old automatic paths, and retai
   const w = dom.window;
   w.restoreHomeworkRoute();
   assert.equal(w.document.body.dataset.homeworkRoute, "quick");
-  assert.equal(
-    w.document.getElementById("hw_tab_play").closest(".hw-optional-stops").hidden,
-    true,
-    "games live behind Explore more",
+  assert.ok(
+    w.document.getElementById("hw_tab_play").closest(".hw-fun-zone"),
+    "games are one tap away from every step",
   );
   assert.equal(w.document.getElementById("hw_tab_photobooth").hidden, false);
   // Earlier defaults were written without a choice: "core" and "full" both fall back to Quick.
@@ -282,7 +281,7 @@ test("later sessions use their own concept models instead of inherited first-ses
   }
 });
 
-test("family homework is one five-step flow with optional extras behind Explore more", () => {
+test("family homework is one five-step flow; games and photobooth stay on the rail, other extras behind Explore more", () => {
   for (const id of ["2-1", "3-3"]) {
     const page = readFileSync(lessonPath(id, "homework.html"), "utf8");
     const d = new JSDOM(page).window.document;
@@ -302,7 +301,12 @@ test("family homework is one five-step flow with optional extras behind Explore 
     assert.doesNotMatch(d.body.textContent, /time remaining|tiempo restante/i, id);
     assert.deepEqual(
       [...d.querySelectorAll(".hw-optional-stops .homework-tab-extra")].map((b) => b.dataset.tab),
-      ["talk", "apply", "words", "play", "photobooth"],
+      ["talk", "apply", "words"],
+      id,
+    );
+    assert.deepEqual(
+      [...d.querySelectorAll(".hw-fun-zone .homework-tab-extra")].map((b) => b.dataset.tab),
+      ["play", "photobooth"],
       id,
     );
     assert.ok(

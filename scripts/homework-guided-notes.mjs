@@ -9219,6 +9219,7 @@ const HOMEWORK_TABS = MISSION_STAGES;
  * on the progress track.
  */
 const HOMEWORK_EXTRA_TABS = OPTIONAL_STOPS;
+const FUN_STOPS = new Set(["play", "photobooth"]);
 
 export const HOMEWORK_STOP_COUNT = HOMEWORK_TABS.length;
 
@@ -9251,6 +9252,11 @@ export function renderHomeworkTabs(panelsHtml, helpDrawerHtml = "", unit = null)
               <span class="tab-extra-blurb"><span class="lang-en">${esc(t.blurbEn)}</span><span class="lang-es" lang="es">${esc(t.blurbEs)}</span></span>
             </button>`;
 
+  /* Games and the photobooth stay one tap away from every step (they were hidden with the other optional stops). */
+  const funBtn = (t) => `
+            <button type="button" id="hw_tab_${t.id}" class="homework-tab-extra hw-fun-btn" aria-controls="hw_panel_${t.id}"
+              data-tab="${t.id}" ${act("openOptionalStop", t.id)}><span class="tab-icon" aria-hidden="true">${t.icon}</span>
+              <span class="tab-label"><span class="tab-en">${t.id === "play" ? "Games" : t.en}</span><span class="tab-es" lang="es">${t.id === "play" ? "Juegos" : t.es}</span></span></button>`;
   return `
     <div class="homework-tabs-shell" data-tab-count="${tabCount}">
       <div class="homework-tab-chrome">
@@ -9259,7 +9265,8 @@ export function renderHomeworkTabs(panelsHtml, helpDrawerHtml = "", unit = null)
         <nav class="homework-tab-bar" aria-label="Tonight's path" data-aria-en="Tonight's path" data-aria-es="Ruta de hoy">
           ${HOMEWORK_TABS.map(tabBtn).join("")}
         </nav>
-        <div class="hw-optional-stops" hidden>${HOMEWORK_EXTRA_TABS.map(extraBtn).join("")}</div>
+        <div class="hw-fun-zone" role="group" aria-label="Games and photos" data-aria-en="Games and photos" data-aria-es="Juegos y fotos">${HOMEWORK_EXTRA_TABS.filter((t) => FUN_STOPS.has(t.id)).map(funBtn).join("")}</div>
+        <div class="hw-optional-stops" hidden>${HOMEWORK_EXTRA_TABS.filter((t) => !FUN_STOPS.has(t.id)).map(extraBtn).join("")}</div>
         <div class="homework-tab-track" aria-hidden="true"><span class="homework-tab-track-fill" id="hw_tab_track_fill"></span></div>
       </div>
       <div class="homework-tab-panels" id="hw_tab_panels">
