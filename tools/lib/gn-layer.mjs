@@ -4,8 +4,8 @@
 import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import vm from "node:vm";
-import { hasRealVocabImage, resolveVocabImage } from "../../engine/core/vocab-images.js";
-import { buildVocabMatcher } from "../../engine/core/vocab-match.js";
+import { hasRealVocabImage, resolveVocabImage } from "@eduwonderlab/engine/core/vocab-images.js";
+import { buildVocabMatcher } from "@eduwonderlab/engine/core/vocab-match.js";
 import { loadCurriculumManifest, loadLessonConfig, REPO_ROOT } from "./curriculum-source.mjs";
 
 export const NOVEL_DIR = join(REPO_ROOT, "graphic-novels/axiom-city");

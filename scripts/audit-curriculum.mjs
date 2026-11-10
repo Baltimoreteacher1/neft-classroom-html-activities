@@ -229,7 +229,8 @@ if (registry?.activities) {
 // Redirects
 if (routes?.redirects) {
   for (const rd of routes.redirects) {
-    const dest = rd.destination;
+    // A Cloudflare placeholder (":splat", ":id") is filled at request time, so check the folder it lands in.
+    const dest = rd.destination?.replace(/\/:[A-Za-z]+.*$/, "/");
     if (dest && !/^https?:/i.test(dest)) {
       const abs = resolveSitePath(
         dest.endsWith("/") || /\.[a-z0-9]+$/i.test(dest) ? dest : `${dest}/`,

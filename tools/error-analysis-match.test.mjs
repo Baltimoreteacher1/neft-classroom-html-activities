@@ -14,7 +14,7 @@ import {
   repairVerdict,
   statedAnswer,
   stripNegated,
-} from "../engine/core/error-analysis-match.js";
+} from "@eduwonderlab/engine/core/error-analysis-match.js";
 import { listLessonDirs, loadLessonConfig } from "./lib/curriculum-source.mjs";
 
 /* ---- the item that shipped broken (lessons/6-3 practice.optional[5]) ------------------------------------ */
