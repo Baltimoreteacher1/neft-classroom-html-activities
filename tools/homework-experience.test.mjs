@@ -62,7 +62,7 @@ function page({ query = "", reducedMotion = false, storage = {}, restored = true
   return w;
 }
 
-test("the goal is every problem the route shows (three in today's mission) and never zero", () => {
+test("the goal is every problem the route shows (ten in today's mission) and never zero", () => {
   const w = page();
   w.document.body.dataset.homeworkRoute = "full";
   assert.deepEqual({ ...w.hwGoalSnapshot() }, { done: 0, goal: 12, available: 12 });
@@ -130,7 +130,7 @@ test("saved progress is never overwritten before it has been read back", () => {
 
 test("reduced motion gets no confetti and no fanfare", () => {
   const w = page({ reducedMotion: true });
-  w.solve(4);
+  w.solve(MISSION_PRACTICE_COUNT);
   assert.equal(w.eval("bursts"), 0);
   assert.equal(w.eval("fanfares"), 0);
   assert.equal(w.document.getElementById("goal_reached_banner").hidden, false);
@@ -138,7 +138,7 @@ test("reduced motion gets no confetti and no fanfare", () => {
 
 test("reset clears solved state", () => {
   const w = page();
-  w.solve(4);
+  w.solve(MISSION_PRACTICE_COUNT);
   w.hwClearProgress();
   assert.equal(w.localStorage.getItem(w.eval("hwKey('solved')")), "{}");
 });
@@ -183,7 +183,7 @@ test("the tonight strip follows the route", () => {
   const w = page();
   w.document.body.dataset.homeworkRoute = "quick";
   w.hwRenderTonight();
-  assert.equal(w.document.querySelector("[data-hw-tonight-time]").textContent, "5–10");
+  assert.equal(w.document.querySelector("[data-hw-tonight-time]").textContent, "15–20");
 });
 
 test("the mystery challenge quotes a standalone stem and never a stem that points elsewhere", () => {
@@ -320,7 +320,7 @@ test("family nights count school nights: weekends and an unfinished tonight neve
 
 test("the goal records tonight once, and a restore never records a night", () => {
   const first = page();
-  first.solve(4);
+  first.solve(MISSION_PRACTICE_COUNT);
   const nights = JSON.parse(first.localStorage.getItem("hw_family_nights_v1"));
   assert.equal(nights.length, 1);
   assert.match(first.document.getElementById("hw_nights_streak").textContent, /1 night in a row/);
@@ -331,7 +331,7 @@ test("the goal records tonight once, and a restore never records a night", () =>
     isSchoolNight ? 1 : 0,
     "the weekly strip displays weekdays only; weekend completions still count in the streak",
   );
-  first.solve(6);
+  first.solve(MISSION_PRACTICE_COUNT + 2);
   assert.equal(JSON.parse(first.localStorage.getItem("hw_family_nights_v1")).length, 1);
   const solvedKey = first.eval("hwKey('solved')");
   const goalKey = first.eval("hwKey('goal_met')");

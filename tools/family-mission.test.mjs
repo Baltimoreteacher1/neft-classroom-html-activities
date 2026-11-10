@@ -48,9 +48,9 @@ test("the five steps are defined once, in teaching order, with the optional stop
     OPTIONAL_STOPS.map((s) => s.id),
     ["talk", "apply", "words", "play", "photobooth"],
   );
-  assert.equal(MISSION_PRACTICE_COUNT, 3);
-  assert.equal(ROUTE_TIMES.quick, "5–10");
-  assert.equal(ROUTE_TIMES.full, "15–25");
+  assert.equal(MISSION_PRACTICE_COUNT, 10);
+  assert.equal(ROUTE_TIMES.quick, "15–20");
+  assert.equal(ROUTE_TIMES.full, "25–35");
 });
 
 test("every family page is the same five-step flow with one start, no depth selector and the extras behind Explore more", () => {
@@ -93,7 +93,7 @@ test("the default route shows exactly the problems it says: the stated count, th
   assert.match(text, new RegExp(`solve ${MISSION_PRACTICE_COUNT}`));
   assert.match(text, new RegExp(ROUTE_TIMES.quick));
   const html = readFileSync(lessonPath("4-1-part2", "homework.html"), "utf8");
-  assert.match(html, /<span data-hw-goal-count>3<\/span> problems\./);
+  assert.match(html, new RegExp(`<span data-hw-goal-count>${MISSION_PRACTICE_COUNT}</span> problems\\.`));
   assert.doesNotMatch(html, /Tonight's goal: any/);
   dom.window.close();
 });

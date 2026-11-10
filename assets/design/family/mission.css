@@ -226,4 +226,131 @@
       animation: none;
     }
   }
+
+  /* Practice levels: three chips above the problems, a chip on every problem, and the level-up moment. */
+  .hw-levelstrip {
+    display: grid;
+    gap: var(--fm-space-3);
+    margin-block: var(--fm-space-3);
+  }
+  .hw-levels {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+    gap: var(--fm-space-2);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .hw-level {
+    background: var(--fm-surface);
+    border: var(--fm-line) solid var(--fm-border);
+    border-radius: var(--fm-radius-md);
+    color: var(--fm-text-muted);
+  }
+  .hw-level-btn {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    gap: var(--fm-space-2);
+    inline-size: 100%;
+    min-block-size: var(--fm-target);
+    padding: var(--fm-space-2) var(--fm-space-3);
+    background: transparent;
+    border: 0;
+    color: inherit;
+    font: inherit;
+    text-align: start;
+    cursor: pointer;
+  }
+  .hw-level.is-current {
+    background: var(--fm-highlight-tint);
+    border-color: var(--fm-highlight);
+    color: var(--fm-text);
+  }
+  .hw-level.is-done {
+    background: var(--fm-success-tint);
+    border-color: var(--fm-success);
+    color: var(--fm-success-ink);
+  }
+  .hw-level-ico {
+    font-size: var(--fm-fs-xl);
+    line-height: 1;
+  }
+  .hw-level-copy {
+    display: grid;
+    min-inline-size: 0;
+  }
+  .hw-level-copy small {
+    font-size: var(--fm-fs-sm);
+  }
+  .hw-level-bar {
+    grid-column: 1 / -1;
+    block-size: 0.375rem;
+    background: var(--fm-border);
+    border-radius: var(--fm-radius-pill);
+    overflow: hidden;
+  }
+  .hw-level-bar i {
+    display: block;
+    block-size: 100%;
+    background: var(--fm-success);
+    transition: inline-size var(--fm-dur-3) var(--fm-ease);
+  }
+  .hw-level-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--fm-space-1);
+    margin: 0 0 var(--fm-space-2);
+    padding: var(--fm-space-1) var(--fm-space-3);
+    background: var(--fm-highlight-tint);
+    color: var(--fm-highlight-ink);
+    border-radius: var(--fm-radius-pill);
+    font-size: var(--fm-fs-sm);
+    font-weight: var(--fm-fw-bold);
+  }
+  .hw-level-chip--boss {
+    background: var(--fm-accent-tint);
+    color: var(--fm-accent-ink);
+  }
+  .hw-levelup {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--fm-space-3);
+    padding: var(--fm-space-3) var(--fm-space-4);
+    background: var(--fm-success-tint);
+    color: var(--fm-success-ink);
+    border: var(--fm-line) solid var(--fm-success);
+    border-radius: var(--fm-radius-md);
+    animation: hw-levelup-in var(--fm-dur-3) var(--fm-ease-soft) both;
+  }
+  .hw-levelup p {
+    margin: 0;
+    flex: 1 1 12rem;
+  }
+  .hw-levelup-ico {
+    font-size: var(--fm-fs-3xl);
+    line-height: 1;
+  }
+  @keyframes hw-levelup-in {
+    from {
+      opacity: 0;
+      transform: translateY(-0.5rem) scale(0.97);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .hw-levelup {
+      animation: none;
+    }
+    .hw-level-bar i {
+      transition: none;
+    }
+  }
+
+  /* Check & Improve with ten problems: the ones that were clean fold to one line. */
+  .fp-review--clean .fp-review-stem,
+  .fp-review--clean .fp-review-why,
+  .fp-review--clean .fp-review-note {
+    display: none;
+  }
 }

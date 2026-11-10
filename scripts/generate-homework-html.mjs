@@ -67,6 +67,7 @@ import {
 import { EXPERIENCE_JS } from "./lib/homework-experience-js.mjs";
 import { renderImprove } from "./lib/homework-flow.mjs";
 import { FLOW_JS } from "./lib/homework-flow-js.mjs";
+import { PRACTICE_JS } from "./lib/homework-practice-js.mjs";
 import { HERO_JS, READER_BOOT_JS } from "./lib/homework-hero.mjs";
 import { renderExploreMoreSheet } from "./lib/homework-mission.mjs";
 import { MISSION_JS } from "./lib/homework-mission-js.mjs";
@@ -1597,6 +1598,7 @@ ${SESSION_FLOW_JS}
 ${EXPERIENCE_JS}
 ${MISSION_JS}
 ${FLOW_JS}
+${PRACTICE_JS}
 ${CASE_FILE_JS}
 ${V3_LEARN_JS}
 ${HERO_JS}
@@ -4205,7 +4207,7 @@ function fpGetAllActiveProblems() {
   if (!panel) return [];
   return Array.from(panel.querySelectorAll(".problem-section")).filter((p) => {
     const parent = p.closest(".more-practice-wrap") || p.closest(".more-practice");
-    return !parent || !parent.hidden;
+    return !p.hidden && (!parent || !parent.hidden);
   });
 }
 

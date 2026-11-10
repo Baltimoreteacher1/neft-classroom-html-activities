@@ -1,0 +1,205 @@
+/* Watch it: the step-by-step picture player. Tokens only (assets/design/family/tokens.css loads first).
+   Touch targets are 44px, no motion under prefers-reduced-motion, holds at 320px. */
+
+.fm-xp {
+  display: grid;
+  gap: var(--fm-space-3, 0.75rem);
+  margin-block: var(--fm-space-3, 0.75rem);
+}
+.fm-xp-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--fm-space-2, 0.5rem);
+  align-items: center;
+}
+.fm-xp-play {
+  min-block-size: var(--fm-target, 2.75rem);
+  padding-inline: var(--fm-space-4, 1rem);
+  background: var(--fm-primary);
+  color: var(--fm-on-primary);
+  border: var(--fm-line, 1px) solid var(--fm-primary);
+  border-radius: var(--fm-radius-pill, 999px);
+  font-weight: var(--fm-fw-bold, 700);
+  cursor: pointer;
+}
+.fm-xp-play:hover {
+  background: var(--fm-primary-hover);
+}
+.fm-xp-ico {
+  min-block-size: var(--fm-target, 2.75rem);
+  min-inline-size: var(--fm-target, 2.75rem);
+  padding-inline: var(--fm-space-3, 0.75rem);
+  border-radius: var(--fm-radius-pill, 999px);
+  cursor: pointer;
+}
+.fm-xp-ico[disabled] {
+  opacity: 0.45;
+  cursor: default;
+}
+.fm-xp-dots {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--fm-space-2, 0.5rem);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.fm-xp-dot {
+  flex: 0 0 auto;
+}
+.fm-xp-dotbtn {
+  margin: 0;
+  padding: 0;
+  inline-size: var(--fm-target, 2.75rem);
+  block-size: var(--fm-target, 2.75rem);
+  border-radius: 50%;
+  border: var(--fm-line, 1px) solid var(--fm-border-strong, currentColor);
+  background: var(--fm-surface);
+  color: var(--fm-text);
+  font-weight: var(--fm-fw-bold, 700);
+  cursor: pointer;
+}
+.fm-xp-dotbtn.is-done {
+  background: var(--fm-success-tint);
+  border-color: var(--fm-success);
+  color: var(--fm-success-ink);
+}
+.fm-xp-dotbtn.is-current {
+  background: var(--fm-primary);
+  color: var(--fm-on-primary);
+  border-color: var(--fm-primary);
+  box-shadow: 0 0 0 3px var(--fm-focus-halo, transparent);
+}
+.fm-xp-caption {
+  margin: 0;
+  padding: var(--fm-space-3, 0.75rem) var(--fm-space-4, 1rem);
+  background: var(--fm-highlight-tint);
+  color: var(--fm-highlight-ink);
+  border-inline-start: 4px solid var(--fm-highlight);
+  border-radius: var(--fm-radius-sm, 0.5rem);
+  font-size: var(--fm-fs-md, 1.0625rem);
+  line-height: var(--fm-lh-body, 1.5);
+}
+
+/* The worked example: the step being watched stands out, the rest step back. */
+.fm-xp-li {
+  cursor: pointer;
+  transition:
+    opacity var(--fm-dur-2, 200ms) var(--fm-ease, ease),
+    background-color var(--fm-dur-2, 200ms) var(--fm-ease, ease);
+  border-radius: var(--fm-radius-sm, 0.5rem);
+}
+.fm-xp-li.fm-xp-current {
+  background: var(--fm-highlight-tint);
+  outline: 2px solid var(--fm-highlight);
+  outline-offset: 2px;
+}
+.fm-xp-li.fm-xp-dim {
+  opacity: 0.45;
+}
+
+/* The picture: pieces not explained yet are ghosts; a new piece draws in. */
+.fm-xp-figure svg [class~="fm-xp-hidden"] {
+  opacity: 0.06;
+}
+.fm-xp-figure svg .fm-xp-new {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: fm-xp-pop 520ms var(--fm-ease-soft, ease-out) both;
+}
+.fm-xp-figure svg path.fm-xp-new {
+  stroke-dasharray: 1;
+  animation:
+    fm-xp-pop 520ms var(--fm-ease-soft, ease-out) both,
+    fm-xp-draw 700ms var(--fm-ease-soft, ease-out) both;
+}
+@keyframes fm-xp-pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.82);
+    filter: drop-shadow(0 0 0 transparent);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(1.08);
+    filter: drop-shadow(0 0 6px var(--fm-highlight));
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+    filter: none;
+  }
+}
+@keyframes fm-xp-draw {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .fm-xp-figure svg .fm-xp-new,
+  .fm-xp-figure svg path.fm-xp-new {
+    animation: none;
+  }
+  .fm-xp-li {
+    transition: none;
+  }
+}
+
+/* "Watch the picture again" next to an explanation. */
+.fm-xp-dialog {
+  inline-size: min(40rem, 100% - 1rem);
+  max-block-size: 92dvh;
+  padding: 0;
+  border: var(--fm-line, 1px) solid var(--fm-border);
+  border-radius: var(--fm-radius-lg, 1rem);
+  background: var(--fm-raised);
+  color: var(--fm-text);
+}
+.fm-xp-dialog::backdrop {
+  background: color-mix(in srgb, var(--fm-text) 45%, transparent);
+}
+.fm-xp-dialog .fm-sheet__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--fm-space-3, 0.75rem);
+  padding: var(--fm-space-4, 1rem);
+  border-block-end: var(--fm-line, 1px) solid var(--fm-border);
+}
+.fm-xp-dialog .fm-sheet__body {
+  display: grid;
+  gap: var(--fm-space-3, 0.75rem);
+  padding: var(--fm-space-4, 1rem);
+  overflow: auto;
+}
+.fm-xp-dialog-steps {
+  margin: 0;
+  padding-inline-start: 1.5rem;
+  display: grid;
+  gap: var(--fm-space-2, 0.5rem);
+}
+.hw-see-it {
+  margin-block-start: var(--fm-space-3, 0.75rem);
+}
+.hw-see-it button {
+  min-block-size: var(--fm-target, 2.75rem);
+  padding-inline: var(--fm-space-4, 1rem);
+  border-radius: var(--fm-radius-pill, 999px);
+  border: var(--fm-line, 1px) solid var(--fm-primary);
+  background: var(--fm-surface);
+  color: var(--fm-primary);
+  font-weight: var(--fm-fw-bold, 700);
+  cursor: pointer;
+}
+@media print {
+  .fm-xp,
+  .hw-see-it {
+    display: none !important;
+  }
+  .fm-xp-figure svg [class~="fm-xp-hidden"] {
+    opacity: 1 !important;
+  }
+}

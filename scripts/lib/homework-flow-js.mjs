@@ -7,12 +7,14 @@
  * own authored per-choice feedback), shows the worked reasoning and the answer-key picture, and lets the
  * student correct the ORIGINAL problem before a fresh one. For a right answer it states why it works.
  */
+import { MISSION_PRACTICE_COUNT } from "./homework-mission.mjs";
+
 export const FLOW_JS = `
 /* ── Check & Improve ─────────────────────────────────────────────────── */
 function hwFlowCoreSections() {
   return Array.prototype.filter.call(document.querySelectorAll('.problem-section'), function (s) {
     return !s.closest('.more-practice') && !s.hidden;
-  }).slice(0, 3);
+  }).slice(0, ${MISSION_PRACTICE_COUNT});
 }
 
 /* Remember what a wrong pick showed, in both languages, so Check & Improve can name it later. */
@@ -57,6 +59,7 @@ function hwFlowImprove() {
   var sections = hwFlowCoreSections();
   host.textContent = '';
   var any = false;
+  var cards = [];
   sections.forEach(function (s) {
     var idx = s.id.replace('problem_', '');
     var p = (ev.problems || {})[idx] || {};
@@ -94,8 +97,12 @@ function hwFlowImprove() {
     else if (!done) actions.innerHTML = btn('hwFlowFix', hwFlowBi('Fix my answer', 'Corregir mi respuesta'), 'btn-primary');
     else if (supported) actions.innerHTML = btn('missionFreshTry', hwFlowBi('Try a fresh problem', 'Probar un problema nuevo'), 'btn-primary');
     if (actions.innerHTML) card.appendChild(actions);
-    host.appendChild(card);
+    var rank = !tried ? 3 : !done ? 0 : supported ? 1 : 2;
+    cards.push({ rank: rank, order: cards.length, card: card });
   });
+  /* Ten problems is a lot to read: what still needs attention first, the clean ones last and folded. */
+  cards.sort(function (a, b) { return a.rank - b.rank || a.order - b.order; });
+  cards.forEach(function (c) { host.appendChild(c.card); });
   if (empty) empty.hidden = any;
   host.hidden = !any;
 }

@@ -19,10 +19,21 @@ import { missionModelFor } from "./homework-mission-models.mjs";
 import { LESSON_PAGE_IDS } from "./homework-sequence.mjs";
 
 /** Practice items in today's mission. The goal, the "N problems" copy and the route limit all read this. */
-export const MISSION_PRACTICE_COUNT = 3;
+export const MISSION_PRACTICE_COUNT = 10;
+
+/**
+ * The mission's three levels over its practice problems, in order. `size` is how many problems the level
+ * holds; the last level takes whatever is left of MISSION_PRACTICE_COUNT. One table: the level strip, the
+ * level-up celebration and the Finish badges all read it (client copy in homework-levels-js.mjs).
+ */
+export const MISSION_LEVELS = [
+  { id: "warmup", size: 3, en: "Warm-up", es: "Calentamiento", icon: "🔥" },
+  { id: "build", size: 4, en: "Build", es: "Construir", icon: "🧱" },
+  { id: "apply", size: 3, en: "Apply", es: "Aplicar", icon: "🚀" },
+];
 
 /** Route times, one source for the start card, the Explore more sheet and the hub. */
-export const ROUTE_TIMES = { quick: "5–10", full: "15–25" };
+export const ROUTE_TIMES = { quick: "15–20", full: "25–35" };
 
 /** The route a first visit lands on. Keep in step with HOMEWORK_ROUTE_DEFAULT in homework-guided-notes.mjs. */
 export const DEFAULT_ROUTE = "quick";
@@ -100,8 +111,8 @@ export function renderMissionStart() {
       <section class="hw-mission-start fm-hero__action" aria-labelledby="hw_mission_title">
         <h2 id="hw_mission_title" class="fm-hero__q">${bi("Today's Family Practice", "La práctica familiar de hoy")}</h2>
         <p class="hw-mission-lead fm-hero__promise">${bi(
-          `Five short steps, about ${ROUTE_TIMES.quick} minutes: look and learn, try one together, solve ${MISSION_PRACTICE_COUNT} on your own, check and improve, finish.`,
-          `Cinco pasos cortos, unos ${ROUTE_TIMES.quick} minutos: miren y aprendan, prueben uno juntos, resuelvan ${MISSION_PRACTICE_COUNT} solos, revisen y mejoren, y terminen.`,
+          `Five short steps, about ${ROUTE_TIMES.quick} minutes: watch the idea, try one together, solve ${MISSION_PRACTICE_COUNT} in three levels, check, celebrate.`,
+          `Cinco pasos cortos, unos ${ROUTE_TIMES.quick} minutos: miren la idea, prueben uno juntos, resuelvan ${MISSION_PRACTICE_COUNT} en tres niveles, revisen y celebren.`,
         )}</p>
         <button type="button" id="hw_start_button" class="fm-btn fm-btn--primary fm-btn--lg fm-btn--block" ${act("startHomework")}><span class="lang-en">Start</span><span class="lang-es" lang="es">Empezar</span></button>
         <button type="button" id="hw_explore_more_button" class="fm-btn fm-btn--block hw-explore-more-btn" data-open-sheet="hw_explore_sheet" aria-haspopup="dialog"><span class="lang-en">Explore more</span><span class="lang-es" lang="es">Explorar más</span></button>
@@ -188,7 +199,8 @@ export function renderReflect({ lessonId, next, prereq, question }) {
   const pairText = (p) => bi(p?.en, p?.es);
   return `
     <section class="mission-block hw-reflect fp-finish" id="hw_reflect" aria-labelledby="hw_reflect_title">
-      ${stepHead(5, "Finish", "Terminar", "Here is what tonight showed. Take one next step, or stop here.", "Esto es lo que mostró la práctica de hoy. Den un siguiente paso o paren aquí.")}
+      ${stepHead(5, "Finish", "Terminar", "Celebrate what you did, see what it showed, then take one next step or stop here.", "Celebren lo que hicieron, vean lo que mostró y den un siguiente paso o paren aquí.")}
+      <div class="fm-celebrate" id="hw_celebrate" data-celebrate aria-live="polite"></div>
       <div class="hw-evidence fp-card" data-mission-evidence hidden>
         <h3 class="fp-label" id="hw_reflect_title">${bi("What happened today", "Lo que pasó hoy")}</h3>
         <div id="hw_mission_summary" class="hw-mission-summary" role="status" aria-live="polite"></div>
@@ -196,7 +208,9 @@ export function renderReflect({ lessonId, next, prereq, question }) {
       </div>
       ${question?.en ? `<aside class="fp-family" aria-label="${esc("Family question")}"><p class="fp-label">${bi("Talk about it (optional)", "Conversen (opcional)")}</p><p>${pairText(question)}</p></aside>` : ""}
       <div class="hw-next-actions fp-actions">
-        <button type="button" class="fm-btn fm-btn--block fm-btn--primary" ${act("fpPracticeMore")}><span class="lang-en">Practice More (+5 Fresh Problems)</span><span class="lang-es" lang="es">Más práctica (+5 problemas nuevos)</span></button>
+        <button type="button" class="fm-btn fm-btn--block fm-btn--primary" data-celebrate-photo ${act("openOptionalStop", "photobooth")}><span class="lang-en">📸 Take your victory photo</span><span class="lang-es" lang="es">📸 Tomen su foto de victoria</span></button>
+        <button type="button" class="fm-btn fm-btn--block" data-celebrate-challenge ${act("hwStartChallengeRound")}><span class="lang-en">⭐ Challenge round (deeper problems)</span><span class="lang-es" lang="es">⭐ Ronda de reto (problemas más profundos)</span></button>
+        <button type="button" class="fm-btn fm-btn--block" ${act("fpPracticeMore")}><span class="lang-en">Practice more (new problems)</span><span class="lang-es" lang="es">Más práctica (problemas nuevos)</span></button>
         ${next ? link(next.href, `Next lesson: ${next.en}`, `Siguiente lección: ${next.es}`, " fm-btn--primary", ` data-next-lesson="${esc(next.id)}"`) : ""}
         ${prereq ? link(prereq.href, `Review first: ${prereq.en}`, `Repasar primero: ${prereq.es}`, "", " data-mission-prereq hidden") : ""}
         ${lessonPage ? link(lessonPage, "Back to the lesson", "Volver a la lección") : ""}
