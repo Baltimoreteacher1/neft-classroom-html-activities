@@ -692,6 +692,43 @@ export function adaptProportionItem(
   };
 }
 
+export function adaptEquivalentRatioItem(
+  item: {
+    question: string;
+    answers: string[];
+    skill?: { standard?: string };
+    tier?: number;
+  },
+  evaluateAnswer?: (input: string) => boolean,
+): ExerciseSchema | null {
+  const secondUnknown = item.question.match(/^(\d+):(\d+)\s*=\s*(\d+):□\.?$/);
+  const firstUnknown = item.question.match(/^(\d+):(\d+)\s*=\s*□:(\d+)\.?$/);
+  const match = secondUnknown || firstUnknown;
+  if (!match || !item.answers?.length) return null;
+  const a = Number(match[1]);
+  const b = Number(match[2]);
+  const scaled = Number(match[3]);
+  const knownParts = secondUnknown ? a : b;
+  const unknownParts = secondUnknown ? b : a;
+  const unitVal = scaled / knownParts;
+  if (
+    ![knownParts, unknownParts].every((n) => Number.isInteger(n) && n >= 1 && n <= 24) ||
+    !Number.isInteger(unitVal) || unitVal <= 0 || unknownParts * unitVal !== Number(item.answers[0])
+  ) return null;
+  const tier = Math.max(1, Math.min(4, Number(item.tier) || 2)) as 1 | 2 | 3 | 4;
+  const schema = createRatioExercise({
+    id: `equivalent-ratio-${secondUnknown ? "second" : "first"}-${a}-${b}-${scaled}`,
+    standard: item.skill?.standard || "6.RP.A.1",
+    tier,
+    trackALabel: secondUnknown ? "first quantity" : "second quantity",
+    trackBLabel: secondUnknown ? "second quantity" : "first quantity",
+    trackAUnits: knownParts,
+    trackBUnits: unknownParts,
+    unitVal,
+  });
+  return { ...schema, prompt: item.question, correctAnswer: item.answers[0], evaluateAnswer };
+}
+
 export const SEED_EXERCISE: ExerciseSchema = {
   id: "6.RP.A.3_RATIO_TAPE_01",
   standard: "6.RP.A.3",

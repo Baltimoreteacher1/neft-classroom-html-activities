@@ -160,6 +160,14 @@ try {
     return { answer: valid?.correctAnswer, model: valid?.modelComponent, authored: valid?.misconceptions[0].detect('9', {}), evaluator: valid?.evaluateAnswer('8'), sibling: [sibling.correctAnswer, sibling.evaluateAnswer], reverse: [reverse?.modelConfig.trackAUnits, reverse?.modelConfig.trackBUnits, reverse?.modelConfig.unitVal, reverse?.correctAnswer], invalid };
   });
   assert.deepEqual(adapted, { answer: '8', model: 'interactive-double-number-line', authored: true, evaluator: true, sibling: ['16', undefined], reverse: [2, 3, 4, '12'], invalid: null });
+  const equivalent = await page.evaluate(async () => {
+    const { adaptEquivalentRatioItem } = await import('/src/components/MathFluencyLabEngine.js');
+    const second = adaptEquivalentRatioItem({ question: '3:5 = 12:□', answers: ['20'] });
+    const first = adaptEquivalentRatioItem({ question: '3:5 = □:20', answers: ['12'] });
+    const invalid = adaptEquivalentRatioItem({ question: '3:5 = 12:□', answers: ['21'] });
+    return { second: [second?.modelConfig.trackAUnits, second?.modelConfig.trackBUnits, second?.modelConfig.unitVal, second?.correctAnswer], first: [first?.modelConfig.trackAUnits, first?.modelConfig.trackBUnits, first?.modelConfig.unitVal, first?.correctAnswer], invalid };
+  });
+  assert.deepEqual(equivalent, { second: [3, 5, 4, '20'], first: [5, 3, 4, '12'], invalid: null });
   const customAnswer = await page.evaluate(async () => {
     const { MathFluencyLabEngine, SEED_EXERCISE } = await import('/src/components/MathFluencyLabEngine.js');
     const host = document.createElement('div');

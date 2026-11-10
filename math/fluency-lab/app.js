@@ -127,7 +127,7 @@ import {
   renderTactileExpressionDecomposer,
   renderTomorrowTableKit,
 } from "./fluency-2-innovations.js";
-import { MathFluencyLabEngine, adaptProportionItem } from "../../src/components/MathFluencyLabEngine.js";
+import { MathFluencyLabEngine, adaptEquivalentRatioItem, adaptProportionItem } from "../../src/components/MathFluencyLabEngine.js";
 
 // teacher-4.js is teacher-only; lazy-load it only when the teacher view is opened so anonymous student
 // page loads never trigger an HTTP 401 Basic Auth challenge during initial boot.
@@ -1198,8 +1198,14 @@ function nextProblem(restoredItem = null, publisherSnapshot = null) {
 }
 
 function mountPublisherPractice(restoredItem, publisherSnapshot) {
-  if ((restoredItem && !publisherSnapshot) || state.session?.mode !== "practice" || (!publisherSnapshot && state.initialSupport) || state.assignment || audioFirstOn() || state.item?.skill?.grade !== 7 || state.item.skill.id !== "proportions" || state.item.choices || state.item.response) return false;
-  const schema = adaptProportionItem(state.item, (input) => validateAnswer(input, state.item));
+  if ((restoredItem && !publisherSnapshot) || state.session?.mode !== "practice" || (!publisherSnapshot && state.initialSupport) || state.assignment || audioFirstOn() || state.item.choices || state.item.response) return false;
+  const skillKey = `${state.item?.skill?.grade}:${state.item?.skill?.id}`;
+  const validate = (input) => validateAnswer(input, state.item);
+  const schema = skillKey === "7:proportions"
+    ? adaptProportionItem(state.item, validate)
+    : skillKey === "6:ratios"
+      ? adaptEquivalentRatioItem(state.item, validate)
+      : null;
   if (!schema) return false;
   const root = document.createElement("div");
   root.id = "publisher-practice-root";

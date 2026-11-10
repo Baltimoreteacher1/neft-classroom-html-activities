@@ -60,6 +60,25 @@ try {
   assert.equal(missedSession?.session.correct, 0, 'explanation does not inflate normal practice mastery');
   assert.match(await miss.host.locator('#content').textContent(), /Core conceptual rule/);
   await miss.context.close();
+  const gradeSix = await browser.newContext();
+  await gradeSix.addInitScript(() => { Math.random = () => 0.5; });
+  const ratioPage = await gradeSix.newPage();
+  ratioPage.on('pageerror', error => errors.push(error.message));
+  await ratioPage.goto(`http://127.0.0.1:${server.httpServer.address().port}/math/fluency-lab/?grade=6&skill=ratios&start=practice`);
+  const ratioHost = ratioPage.locator('#publisher-practice-root');
+  await ratioHost.waitFor({ state: 'visible' });
+  const ratioPrompt = (await ratioHost.locator('h2').textContent()).trim();
+  const firstUnknown = ratioPrompt.match(/^(\d+):(\d+)\s*=\s*□:(\d+)/);
+  const secondUnknown = ratioPrompt.match(/^(\d+):(\d+)\s*=\s*(\d+):□/);
+  assert.ok(firstUnknown || secondUnknown, 'Grade 6 bridge accepts an equivalent-ratio item');
+  const [, first, second, scaled] = firstUnknown || secondUnknown;
+  const ratioAnswer = firstUnknown ? Number(first) * Number(scaled) / Number(second) : Number(second) * Number(scaled) / Number(first);
+  await ratioHost.locator('#answer').fill(String(ratioAnswer));
+  await ratioHost.locator('#check').click();
+  await ratioPage.locator('#next-problem').waitFor({ state: 'visible' });
+  const ratioSession = await ratioPage.evaluate(() => JSON.parse(localStorage.getItem('ewl-fluency-session-v2') || 'null'));
+  assert.equal(ratioSession?.session.correct, 1, 'Grade 6 ratio result enters the existing practice score');
+  await gradeSix.close();
   assert.deepEqual(errors, [], 'normal practice and publisher engine have no page errors');
   console.log('Publisher practice bridge browser acceptance passed');
 } finally {
