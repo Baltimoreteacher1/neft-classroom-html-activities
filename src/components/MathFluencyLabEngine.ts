@@ -45,6 +45,14 @@ export interface ExerciseSchema {
     distractorAnalysis: string;
   };
 }
+export interface LabSnapshot {
+  exerciseId: string;
+  state: "PRESENTATION" | "SCAFFOLD_L1_PROMPT" | "SCAFFOLD_L2_BREAKDOWN";
+  attempts: number;
+  misconceptionId: string | null;
+  selectedA: number;
+  selectedB: number;
+}
 const escapeHTML = (value: unknown) =>
   String(value).replace(
     /[&<>"']/g,
@@ -56,7 +64,7 @@ const positive = (value: unknown, fallback: number) => {
 };
 const formatMath = (value: unknown) =>
   escapeHTML(value).replace(
-    /(?<![\w])(-?\d+)\s*\/\s*(\d+)(?![\w])/g,
+    /(?<![\w])(-?\d+|[a-zA-Z])\s*\/\s*(\d+|[a-zA-Z])(?![\w])/g,
     (_, n, d) =>
       `<span class="math-fraction" role="math" aria-label="${n} over ${d}"><span class="math-fraction-num">${n}</span><span class="math-fraction-den">${d}</span></span>`,
   );
@@ -250,6 +258,35 @@ export class MathFluencyLabEngine {
     this.subValue = "";
     this.transition("PRESENTATION");
   }
+  getSnapshot(): LabSnapshot | null {
+    if (!["PRESENTATION", "SCAFFOLD_L1_PROMPT", "SCAFFOLD_L2_BREAKDOWN"].includes(this.state)) return null;
+    return {
+      exerciseId: this.exercise.id,
+      state: this.state as LabSnapshot["state"],
+      attempts: this.attempts,
+      misconceptionId: this.detected?.id || null,
+      selectedA: this.modelValues.selectedA,
+      selectedB: this.modelValues.selectedB,
+    };
+  }
+  restoreSnapshot(snapshot: LabSnapshot) {
+    if (!snapshot || snapshot.exerciseId !== this.exercise.id || !["PRESENTATION", "SCAFFOLD_L1_PROMPT", "SCAFFOLD_L2_BREAKDOWN"].includes(snapshot.state) || !Number.isInteger(snapshot.attempts) || snapshot.attempts < 0 || snapshot.attempts > 99) return false;
+    const c = this.exercise.modelConfig;
+    if (![snapshot.selectedA, snapshot.selectedB].every(Number.isInteger) || snapshot.selectedA < 0 || snapshot.selectedA > c.trackAUnits || snapshot.selectedB < 0 || snapshot.selectedB > c.trackBUnits) return false;
+    if ((snapshot.state === "SCAFFOLD_L1_PROMPT" && snapshot.attempts !== 1) || (snapshot.state === "SCAFFOLD_L2_BREAKDOWN" && snapshot.attempts < 2)) return false;
+    this.attempts = snapshot.attempts;
+    this.detected = this.exercise.misconceptions.find((rule) => rule.id === snapshot.misconceptionId);
+    this.modelValues = { selectedA: snapshot.selectedA, selectedB: snapshot.selectedB };
+    this.studentInput = "";
+    this.subValue = "";
+    this.state = snapshot.state;
+    this.render();
+    if (this.state === "SCAFFOLD_L2_BREAKDOWN") {
+      const heading = this.root.querySelector<HTMLElement>("#scaffold-heading");
+      if (heading) heading.tabIndex = -1;
+    }
+    return true;
+  }
   transition(next: LabState) {
     if (!transitions[this.state]?.includes(next))
       throw Error(`Invalid lab transition: ${this.state} to ${next}`);
@@ -353,9 +390,7 @@ export class MathFluencyLabEngine {
     this.transition(
       this.attempts === 1
         ? "SCAFFOLD_L1_PROMPT"
-        : this.attempts === 2
-          ? "SCAFFOLD_L2_BREAKDOWN"
-          : "RESOLVED_EXPLANATION",
+        : "SCAFFOLD_L2_BREAKDOWN",
     );
     if (this.state === "SCAFFOLD_L1_PROMPT")
       this.root
@@ -494,43 +529,20 @@ export function makeSibling(
   const baseUnit = source.siblingBaseUnit || source.modelConfig.unitVal;
   const c = source.modelConfig;
   const unit = baseUnit * (index + 1);
-  const known = c.trackAUnits * unit;
-  const answer = c.trackBUnits * unit;
-  const aLabel = c.trackALabel.toLowerCase();
-  const bLabel = c.trackBLabel.toLowerCase();
-  const additiveDistractor = c.trackBUnits + (known - c.trackAUnits);
-  const invertedDistractor = (known * c.trackAUnits) / c.trackBUnits;
-  return {
-    ...source,
+  const sibling = createRatioExercise({
     id: `${source.id.split("_S")[0]}_S${index}`,
-    siblingBaseUnit: baseUnit,
+    standard: source.standard,
+    tier: source.tier,
+    trackALabel: c.trackALabel,
+    trackBLabel: c.trackBLabel,
+    trackAUnits: c.trackAUnits,
+    trackBUnits: c.trackBUnits,
+    unitVal: unit,
     modelComponent: index % 2 ? "interactive-double-number-line" : "interactive-ratio-tape",
-    prompt: `For every ${c.trackAUnits} ${aLabel}, there are ${c.trackBUnits} ${bLabel}. If there are ${known} ${aLabel}, how many ${bLabel} are needed?`,
-    modelConfig: { ...c, unitVal: unit },
-    correctAnswer: String(answer),
-    misconceptions: source.misconceptions.map((rule) => ({
-      ...rule,
-      detect: (input) =>
-        Number(input) ===
-        (rule.tag === "ADDITIVE_THINKING" ? additiveDistractor : invertedDistractor),
-      remediationStep: { ...rule.remediationStep, expectedSubValue: String(unit) },
-    })),
-    fullExplanation: {
-      ...source.fullExplanation,
-      stepByStep: [
-        {
-          stepNumber: 1,
-          instruction: `Divide the ${aLabel} total by its number of segments.`,
-          mathExpression: `${known} ÷ ${c.trackAUnits} = ${unit}`,
-        },
-        {
-          stepNumber: 2,
-          instruction: `Multiply the segment value by the number of ${bLabel} segments.`,
-          mathExpression: `${c.trackBUnits} × ${unit} = ${answer}`,
-        },
-      ],
-      distractorAnalysis: `Adding the increase from ${c.trackAUnits} to ${known} to the second quantity gives ${additiveDistractor}. Both quantities must scale by the same factor.`,
-    },
+  });
+  return {
+    ...sibling,
+    siblingBaseUnit: baseUnit,
   };
 }
 
@@ -621,26 +633,36 @@ export function adaptProportionItem(
   },
   evaluateAnswer?: (input: string) => boolean,
 ): ExerciseSchema | null {
-  const match = item.question.match(
+  const forward = item.question.match(
     /^Solve the proportion:\s*(\d+)\s*\/\s*(\d+)\s*=\s*(\d+)\s*\/\s*x\.?$/i,
   );
+  const reverse = item.question.match(
+    /^(\d+)\s*\/\s*(\d+)\s*=\s*x\s*\/\s*(\d+)\.\s*Find x\.$/i,
+  );
+  const match = forward || reverse;
   if (!match || !item.answers?.length) return null;
   const [, first, second, scaled] = match;
   const a = Number(first);
   const b = Number(second);
   const c = Number(scaled);
-  const unitVal = c / a;
-  if (!Number.isInteger(unitVal) || unitVal <= 0 || b * unitVal !== Number(item.answers[0]))
+  const knownParts = forward ? a : b;
+  const unknownParts = forward ? b : a;
+  const unitVal = c / knownParts;
+  if (
+    !Number.isInteger(knownParts) || !Number.isInteger(unknownParts) ||
+    knownParts < 1 || unknownParts < 1 || knownParts > 24 || unknownParts > 24 ||
+    !Number.isInteger(unitVal) || unitVal <= 0 || unknownParts * unitVal !== Number(item.answers[0])
+  )
     return null;
   const tier = Math.max(1, Math.min(4, Number(item.tier) || 2)) as 1 | 2 | 3 | 4;
   const schema = createRatioExercise({
-    id: `proportion-${a}-${b}-${c}`,
+    id: `proportion-${forward ? "forward" : "reverse"}-${a}-${b}-${c}`,
     standard: item.skill?.standard || "7.RP.A.2",
     tier,
-    trackALabel: "first quantity",
-    trackBLabel: "second quantity",
-    trackAUnits: a,
-    trackBUnits: b,
+    trackALabel: forward ? "first quantity" : "denominator quantity",
+    trackBLabel: forward ? "second quantity" : "numerator quantity",
+    trackAUnits: knownParts,
+    trackBUnits: unknownParts,
     unitVal,
     modelComponent: "interactive-double-number-line",
   });

@@ -127,10 +127,12 @@ import {
   renderTactileExpressionDecomposer,
   renderTomorrowTableKit,
 } from "./fluency-2-innovations.js";
+import { MathFluencyLabEngine, adaptProportionItem } from "../../src/components/MathFluencyLabEngine.js";
 
 // teacher-4.js is teacher-only; lazy-load it only when the teacher view is opened so anonymous student
 // page loads never trigger an HTTP 401 Basic Auth challenge during initial boot.
 let fl4Teacher = null;
+let publisherEngine = null;
 
 const STORAGE_KEY = "ewl-fluency-progress-v1";
 const SETTINGS_KEY = "ewl-fluency-settings-v1";
@@ -1014,9 +1016,13 @@ function problemSkill() {
   return state.mixedPool[Math.floor(state.session.rng() * state.mixedPool.length)];
 }
 
-function nextProblem(restoredItem = null) {
+function nextProblem(restoredItem = null, publisherSnapshot = null) {
   if (restoredItem && typeof restoredItem.question !== "string") restoredItem = null;
   if (!state.session || state.session.finished) return;
+  document.querySelector("#publisher-practice-root")?.remove();
+  publisherEngine = null;
+  els.problemArena?.classList.remove("publisher-active");
+  delete els.answerForm.dataset.publisherComplete;
   if (state.session.answered >= state.session.target || streakComplete(state.session)) {
     finishSession();
     return;
@@ -1180,12 +1186,55 @@ function nextProblem(restoredItem = null) {
   }
   onFluencyProblemPresented();
   applyAccessProfile(access); // fl-teacher:access
+  const publisherMounted = mountPublisherPractice(restoredItem, publisherSnapshot);
   saveActiveSession();
-  if (isFlashcard) {
+  if (publisherMounted) {
+    document.querySelector("#publisher-practice-root")?.shadowRoot?.querySelector("#answer, #scaffold-heading")?.focus();
+  } else if (isFlashcard) {
     (els.tptQuickInput || document.querySelector("#tpt-quick-input"))?.focus();
   } else if (state.item.response) document.querySelector("#response-widget [tabindex='0'], #response-widget button")?.focus();
   else if (state.item.choices) els.choiceAnswers.querySelector("button")?.focus();
   else els.answerInput.focus();
+}
+
+function mountPublisherPractice(restoredItem, publisherSnapshot) {
+  if ((restoredItem && !publisherSnapshot) || state.session?.mode !== "practice" || (!publisherSnapshot && state.initialSupport) || state.assignment || audioFirstOn() || state.item?.skill?.grade !== 7 || state.item.skill.id !== "proportions" || state.item.choices || state.item.response) return false;
+  const schema = adaptProportionItem(state.item, (input) => validateAnswer(input, state.item));
+  if (!schema) return false;
+  const root = document.createElement("div");
+  root.id = "publisher-practice-root";
+  root.setAttribute("aria-label", "Interactive proportion practice");
+  els.answerForm.before(root);
+  els.answerForm.hidden = true;
+  els.problemArena?.classList.add("publisher-active");
+  root.addEventListener("fluency-attempt", (event) => {
+    if (state.itemDone) return;
+    recordPracticeAttempt(event.detail.response);
+    saveActiveSession();
+  });
+  root.addEventListener("fluency-state-change", () => saveActiveSession());
+  root.addEventListener("ratio-model-change", () => saveActiveSession());
+  const settle = (correct) => {
+    if (state.itemDone) return;
+    finalizeProblem(correct);
+    els.feedback.hidden = true;
+    els.answerForm.dataset.publisherComplete = "";
+    els.answerForm.hidden = false;
+    root.shadowRoot?.querySelector("#next, #sibling")?.setAttribute("hidden", "");
+    els.nextButton.focus({ preventScroll: true });
+  };
+  root.addEventListener("fluency-mastery-committed", () => queueMicrotask(() => settle(true)));
+  root.addEventListener("fluency-resolution", () => settle(false));
+  publisherEngine = new MathFluencyLabEngine(root.id);
+  publisherEngine.loadExercise(schema);
+  if (publisherSnapshot && !publisherEngine.restoreSnapshot(publisherSnapshot)) {
+    root.remove();
+    publisherEngine = null;
+    els.answerForm.hidden = false;
+    els.problemArena?.classList.remove("publisher-active");
+    return false;
+  }
+  return true;
 }
 
 // fl-teacher:access: the assignment's accommodation profile (read-aloud, Focus view, calculator) for this problem.
@@ -8898,6 +8947,7 @@ function saveActiveSession() {
   if (!state.session || state.session.finished || !state.item) return;
   const { rng: _rng, problemSkills: _skills, ...session } = state.session;
   const snapshot = { version: 2, grade: state.grade, skillId: state.skill?.id || null, session, item: state.item, itemDone: state.itemDone,
+    publisher: publisherEngine?.getSnapshot() || null,
     studioTrySession: state.studioTrySession?.skillKey === `${state.item.skill?.grade}:${state.item.skill?.id}` ? state.studioTrySession : null,
     itemAttempts: state.itemAttempts, firstAnswerCorrect: state.firstAnswerCorrect, hintBeforeFirst: state.hintBeforeFirst, initialSupport: state.initialSupport,
     guidedStepsShown: state.guidedStepsShown, assignment: state.assignment, recentQuestions: state.recentQuestions,
@@ -8926,7 +8976,7 @@ function resumePractice(saved = loadJson(SESSION_KEY, null)) {
   els.sessionType.textContent = "Resumed practice";
   if (saved.itemDone) nextProblem();
   else {
-    nextProblem(saved.item);
+    nextProblem(saved.item, saved.publisher);
     state.studioTrySession = saved.studioTrySession?.skillKey === `${saved.item?.skill?.grade}:${saved.item?.skill?.id}` ? saved.studioTrySession : null;
     state.itemAttempts = saved.itemAttempts || 0; state.firstAnswerCorrect = saved.firstAnswerCorrect; state.hintBeforeFirst = saved.hintBeforeFirst;
     state.initialSupport = saved.initialSupport; state.guidedStepsShown = saved.guidedStepsShown;

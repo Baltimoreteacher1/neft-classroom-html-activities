@@ -81,7 +81,7 @@ try {
   assert.equal(await root.locator('interactive-double-number-line').count(), 1, 'sibling transfers the ratio to a number line');
   await root.locator('#answer').fill('23');
   await root.locator('#check').click();
-  assert.match(await root.locator('.hint').textContent(), /Ratios grow by multiplication/);
+  assert.match(await root.locator('.hint').textContent(), /Equivalent ratios multiply both quantities/);
   await root.locator('#answer').fill('16');
   await root.locator('#check').click();
   assert.match((await root.locator('h3').allTextContents()).join(' '), /Practice complete/);
@@ -107,6 +107,13 @@ try {
   await root.locator('#sub-answer').fill('4');
   await root.locator('#sandbox-retry').click();
   assert.equal(await root.locator('#answer').count(), 1, 'concrete work clears the main answer for retry');
+  await root.locator('#answer').fill('7');
+  await root.locator('#check').click();
+  assert.equal(await root.locator('#answer').count(), 0, 'a third miss returns to the concrete scaffold without an invalid transition');
+  await root.locator('interactive-ratio-tape').locator('[data-track="A"][data-index="2"]').click();
+  await root.locator('interactive-ratio-tape').locator('[data-track="B"][data-index="1"]').click();
+  await root.locator('#sub-answer').fill('4');
+  await root.locator('#sandbox-retry').click();
   await root.locator('#answer').fill('8');
   await root.locator('#check').click();
   assert.match((await root.locator('h3').allTextContents()).join(' '), /Practice complete/);
@@ -143,12 +150,14 @@ try {
   assert.equal(generated.additive, true);
   assert.match(generated.prompt, /10 red beads/);
   const adapted = await page.evaluate(async () => {
-    const { adaptProportionItem } = await import('/src/components/MathFluencyLabEngine.js');
+    const { adaptProportionItem, makeSibling } = await import('/src/components/MathFluencyLabEngine.js');
     const valid = adaptProportionItem({ question: 'Solve the proportion: 3/2 = 12/x.', answers: ['8'], skill: { standard: '7.RP.A.2' }, meta: { wrong: [{ text: '9', why: 'changed the missing term by one' }] } }, input => input.trim() === '8');
     const invalid = adaptProportionItem({ question: 'Solve the proportion: 3/2 = 12/x.', answers: ['9'] });
-    return { answer: valid?.correctAnswer, model: valid?.modelComponent, authored: valid?.misconceptions[0].detect('9', {}), evaluator: valid?.evaluateAnswer('8'), invalid };
+    const reverse = adaptProportionItem({ question: '3/2 = x/8. Find x.', answers: ['12'] });
+    const sibling = makeSibling(valid, 1);
+    return { answer: valid?.correctAnswer, model: valid?.modelComponent, authored: valid?.misconceptions[0].detect('9', {}), evaluator: valid?.evaluateAnswer('8'), sibling: [sibling.correctAnswer, sibling.evaluateAnswer], reverse: [reverse?.modelConfig.trackAUnits, reverse?.modelConfig.trackBUnits, reverse?.modelConfig.unitVal, reverse?.correctAnswer], invalid };
   });
-  assert.deepEqual(adapted, { answer: '8', model: 'interactive-double-number-line', authored: true, evaluator: true, invalid: null });
+  assert.deepEqual(adapted, { answer: '8', model: 'interactive-double-number-line', authored: true, evaluator: true, sibling: ['16', undefined], reverse: [2, 3, 4, '12'], invalid: null });
   const customAnswer = await page.evaluate(async () => {
     const { MathFluencyLabEngine, SEED_EXERCISE } = await import('/src/components/MathFluencyLabEngine.js');
     const host = document.createElement('div');
