@@ -7631,6 +7631,67 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/math/games/engines/u2-circuit-breaker/",
+    title: "Circuit Breaker | Unit 2 Decimal Computation",
+    category: "Game",
+    unit: 2,
+  },
+  {
+    path: "/math/games/engines/u2-pulse-matrix/",
+    title: "The Pulse Matrix | Unit 2 Statistics",
+    category: "Game",
+    unit: 2,
+  },
+  {
+    path: "/math/games/engines/u3-ratio-mixer/",
+    title: "Bio-Resonance Mixer | Unit 3 Ratios and Rates",
+    category: "Game",
+    unit: 3,
+  },
+  {
+    path: "/math/games/engines/u4-percent-cylinder/",
+    title: "Calibration Cylinder | Unit 4 Percent",
+    category: "Game",
+    unit: 4,
+  },
+  {
+    path: "/math/games/engines/u5-polyhedral-forge/",
+    title: "Origami Fortress: The Polyhedral Forge | Unit 5 Area, Surface Area and Volume",
+    category: "Game",
+    unit: 5,
+  },
+  {
+    path: "/math/games/engines/u6-assembly-matrix/",
+    title: "Assembly Matrix | Unit 6 Expressions",
+    category: "Game",
+    unit: 6,
+  },
+  {
+    path: "/math/games/engines/u6-kinetic-slicer/",
+    title: "Kinetic Slicer | Unit 6 Fraction Division",
+    category: "Game",
+    unit: 6,
+  },
+  {
+    path: "/math/games/engines/u7-abyssal-drift/",
+    title:
+      "Abyssal Drift: Sub-Surface Vector Navigator | Unit 7 Rational Numbers and the Coordinate Plane",
+    category: "Game",
+    unit: 7,
+  },
+  {
+    path: "/math/games/engines/u8-aero-torque/",
+    title: "Aero-Torque Balance Platform | Unit 8 Equations and Inequalities",
+    category: "Game",
+    unit: 8,
+  },
+  {
+    path: "/math/games/engines/u9-flux-plotter/",
+    title: "Flux Foundry: The Rule-Gear Plotter | Unit 9 Relationships Between Two Variables",
+    category: "Game",
+    unit: 9,
+  },
+  {
     path: "/math/games/placement-quest/",
     title: "Math Placement Quest — Grade 6 Diagnostic Game",
     category: "Game",

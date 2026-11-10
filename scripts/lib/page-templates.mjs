@@ -118,7 +118,12 @@ export const TEMPLATES = [
     // 2D games live under /math/games/<slug>/, not games/2d — games/ holds only
     // the 3D engine and its vendor bundle.
     resolve: () => {
-      const g = first("math/games", (n) => n !== "dashboard");
+      // Only a folder that IS a game page: math/games/engines/ groups the
+      // physics machines one level down and has no page of its own.
+      const g = first(
+        "math/games",
+        (n) => n !== "dashboard" && existsSync(resolve(ROOT, "math/games", n, "index.html")),
+      );
       return g && `/math/games/${g}/`;
     },
   },

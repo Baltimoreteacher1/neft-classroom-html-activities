@@ -177,6 +177,7 @@ const NEEDS_DIST = new Set([
  * time. Both read as real page defects. Both vanish when the check runs on its
  * own against the same dist/. A third Chromium was the difference. */
 const EXCLUSIVE = new Set([
+  "validate:engine-games-browser",
   "validate:game-transformation-browser",
   "validate:language-page-mystery-studio-browser",
   "validate:html-experiences-browser",
@@ -343,6 +344,18 @@ const COVERAGE = [
       "validate:downloads",
       "validate:js-syntax",
     ],
+  ],
+  // A11Y TEMPLATE SAMPLER — resolves one representative page per layout for the
+  // a11y audit; tools/a11y-coverage.test.mjs (in `test`) proves every template
+  // still resolves to a page on disk.
+  [/^scripts\/lib\/page-templates\.mjs$/, ["test", "check"]],
+  // ENGINE GAMES — math/games/engines/<slug>/ physics machines on one shared core.
+  // The browser gate drives every game by keyboard and audits SR, axe, reflow,
+  // FPS under 4x throttle and per-frame heap allocation. Must precede the
+  // generic /^math\/games\// rule below.
+  [
+    /^(math\/games\/engines\/|tools\/(validate-engine-games-browser\.mjs$|engines\/))/,
+    ["validate:engine-games-browser", "validate:game-rules", "validate:js-syntax", "test", "check"],
   ],
   [
     /^(math\/games\/|games\/3d\/|tools\/(percent-construction\.test|verify-game-transformation-browser)\.mjs$)/,
