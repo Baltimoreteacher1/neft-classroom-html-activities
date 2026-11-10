@@ -8,7 +8,7 @@
 // caller spreads `...problemDef`, so a lesson may still author `diagram`; it is
 // simply ignored here, exactly as it has been since the file shipped. Wiring it
 // up is a content decision, not a lint fix.
-import { repairMatches } from "../core/error-analysis-match.js";
+import { repairVerdict } from "../core/error-analysis-match.js";
 import { stackContent, stackContentHtml } from "../core/i18n.js";
 
 export function renderErrorAnalysis(
@@ -247,10 +247,29 @@ export function renderErrorAnalysis(
       return;
     }
     repairTries += 1;
-    if (repairMatches(typed, { correctWork, workedExample, errorStep })) {
+    const verdict = repairVerdict(typed, { correctWork, workedExample, errorStep });
+    if (verdict === "match") {
       repairInput.readOnly = true;
       repairBtn.style.display = "none";
       showFb(repairFb, "success", "That's the fix — the step is now correct. 🎉");
+      finalize();
+      return;
+    }
+    if (verdict === "model") {
+      // Nothing here a program can check (a reason, not a value): take a real
+      // attempt and put the authored model beside it rather than call it wrong.
+      repairInput.readOnly = true;
+      repairBtn.style.display = "none";
+      showFb(
+        repairFb,
+        "success",
+        stackContentHtml(
+          `Good try. Compare your fix with this model: <strong>${escHtml(correctWork)}</strong>`,
+          correctWorkEs
+            ? `Buen intento. Compara tu arreglo con este modelo: <strong>${escHtml(correctWorkEs)}</strong>`
+            : "",
+        ),
+      );
       finalize();
       return;
     }

@@ -166,29 +166,161 @@ export function expectedValues(correctWork, workedExample, errorStep) {
  */
 const sameValue = (a, b) => Math.abs(a - b) < 1e-9 * Math.max(1, Math.abs(a), Math.abs(b));
 
-/** @param {unknown} s */
+/** Lower-case, no spaces, one spelling per symbol, no leading "=" or trailing full stop. @param {unknown} s */
 const squash = (s) =>
   String(s ?? "")
     .toLowerCase()
+    .replace(/[×·*]/g, "x")
+    .replace(/[−–]/g, "-")
+    .replace(/<=|=<|≦/g, "≤")
+    .replace(/>=|=>|≧/g, "≥")
+    .replace(/\s+to\s+(?=\d)/g, ":")
     .replace(/\s+/g, "")
-    .replace(/[.;,]+$/, "");
+    .replace(/^=+/, "")
+    .replace(/[.;,!]+$/, "");
+
+const LEAD =
+  /^\s*(?:the\s+)?correct\s+(?:answer|equation|step|work|value|result|sum|total|difference|product|quotient|expression|inequality|rule|reason|statement|choice|ratio|rate|response)\s+(?:is|are|was)\s*:?\s+/i;
 
 /**
- * True when `typed` repairs the step.
+ * The short answer a paragraph states up front ("The correct answer is x ≤ 8. Closed circle…" -> "x ≤ 8"), or null.
+ * @param {unknown} correctWork
+ * @returns {string | null}
+ */
+export function statedAnswer(correctWork) {
+  const text = String(correctWork ?? "").trim();
+  const lead = LEAD.exec(text);
+  if (!lead) return null;
+  const rest = text.slice(lead[0].length);
+  const end = rest.search(/(?:\.(?:\s|$)|[!?](?:\s|$)|,\s*because\b|;\s|\s—\s)/i);
+  const answer = (end === -1 ? rest : rest.slice(0, end)).trim().replace(/^["“']|["”']$/g, "");
+  return answer || null;
+}
+
+const STOP = new Set([
+  "the",
+  "and",
+  "that",
+  "this",
+  "with",
+  "for",
+  "are",
+  "was",
+  "you",
+  "your",
+  "from",
+  "not",
+  "can",
+  "has",
+  "have",
+  "its",
+  "when",
+  "what",
+  "each",
+]);
+/** @param {string} s */
+const contentWords = (s) =>
+  new Set(
+    (s.toLowerCase().match(/[a-záéíóúñü]{3,}/g) || [])
+      .filter((w) => !STOP.has(w))
+      .map((w) => w.replace(/(?:ing|ed|es|s)$/, "")),
+  );
+
+/**
+ * Does a typed word answer match a stated word answer? Containment either way, or most of the key words.
+ * @param {string} typed
+ * @param {string} answer
+ */
+function wordsMatch(typed, answer) {
+  const a = squash(typed);
+  const b = squash(answer);
+  if (!a) return false;
+  if (a === b || a.includes(b) || (b.includes(a) && a.length >= 0.6 * b.length)) return true;
+  const want = contentWords(answer);
+  if (!want.size) return false;
+  const got = contentWords(typed);
+  let hit = 0;
+  for (const w of want) if (got.has(w)) hit++;
+  return hit / want.size >= 0.6 && hit >= Math.min(2, want.size);
+}
+
+/**
+ * `needle` inside `haystack` as its own token: "x≤8" is in "x≤8(closedcircle)" but not in "x≤80", and "8" is not in "18".
+ * @param {string} haystack
+ * @param {string} needle
+ */
+function containsToken(haystack, needle) {
+  if (!needle) return false;
+  for (let at = haystack.indexOf(needle); at !== -1; at = haystack.indexOf(needle, at + 1)) {
+    const before = haystack[at - 1];
+    const after = haystack[at + needle.length];
+    const glued = (/** @type {string | undefined} */ c) => c !== undefined && /[\d.]/.test(c);
+    if (
+      !(glued(before) && /\d/.test(needle[0])) &&
+      !(glued(after) && /\d/.test(needle[needle.length - 1]))
+    )
+      return true;
+  }
+  return false;
+}
+
+/**
+ * Does typed math match a stated math answer ("8", "$12.90", "x ≤ 8", "2n = 16", "1 to 1")?
+ * @param {string} typed
+ * @param {string} answer
+ */
+function mathMatches(typed, answer) {
+  const a = squash(typed);
+  const b = squash(answer);
+  if (a === b || containsToken(a, b)) return true;
+  const target = evaluateExpression(answer);
+  if (target !== null) {
+    const sides = String(typed)
+      .split("=")
+      .map((x) => x.trim())
+      .filter(Boolean);
+    const right = sides.length ? evaluateExpression(sides[sides.length - 1]) : null;
+    const typedNumbers = numbersIn(typed);
+    const last = typedNumbers.length ? typedNumbers[typedNumbers.length - 1] : null;
+    return [right, last].some((c) => c !== null && sameValue(c, target));
+  }
+  return false;
+}
+
+/** @param {string} answer */
+const isWordAnswer = (answer) => /[A-Za-z]{4,}/.test(answer.replace(/\b(?:and|the)\b/gi, ""));
+
+/**
+ * "match": the typed text repairs the step. "model": the item states nothing a program can check, so the attempt is
+ * accepted and the authored model is shown to compare with. "no": try again.
  * @param {string} typed
  * @param {{ correctWork?: string, workedExample?: { work?: string }[], errorStep?: number }} item
+ * @returns {"match" | "model" | "no"}
  */
-export function repairMatches(typed, { correctWork, workedExample, errorStep }) {
-  if (!correctWork) return true;
+export function repairVerdict(typed, { correctWork, workedExample, errorStep }) {
+  if (!correctWork) return "match";
   const a = squash(typed);
-  if (!a) return false;
+  if (!a) return "no";
   const b = squash(correctWork);
-  // Whole-text equivalence only for a real attempt at the sentence: a bare "2"
-  // is a suffix of any paragraph that ends in "...12".
-  if (a === b || (a.length >= 12 && (b.endsWith(a) || a.endsWith(b)))) return true;
+  if (a === b || (a.length >= 12 && (b.endsWith(a) || a.endsWith(b)))) return "match";
 
-  const { values } = expectedValues(correctWork, workedExample, errorStep);
-  if (!values.length) return false;
+  const stated = statedAnswer(correctWork);
+  // Typing the broken work back is not a repair, unless that IS the stated answer.
+  const brokenText = (workedExample || [])
+    .slice(Math.max(0, errorStep ?? 0))
+    .map((step) => squash(step.work));
+  if (brokenText.includes(a) && !(stated && squash(stated) === a)) return "no";
+
+  if (stated) {
+    const ok = isWordAnswer(stated) ? wordsMatch(typed, stated) : mathMatches(typed, stated);
+    return ok ? "match" : "no";
+  }
+
+  const { values, basis } = expectedValues(correctWork, workedExample, errorStep);
+  if (basis === "none") {
+    // Nothing checkable: a real attempt (about a short sentence) gets the model to compare with.
+    return String(typed).trim().split(/\s+/).length >= 3 ? "model" : "no";
+  }
   const sides = String(typed)
     .split("=")
     .map((side) => side.trim())
@@ -198,5 +330,9 @@ export function repairMatches(typed, { correctWork, workedExample, errorStep }) 
   if (right !== null) candidates.push(right);
   const typedNumbers = numbersIn(typed);
   if (typedNumbers.length) candidates.push(typedNumbers[typedNumbers.length - 1]);
-  return candidates.some((c) => values.some((v) => sameValue(c, v)));
+  return candidates.some((c) => values.some((v) => sameValue(c, v))) ? "match" : "no";
 }
+
+/** Back-compatible boolean: true only for a verified repair. */
+export const repairMatches = (/** @type {string} */ typed, /** @type {any} */ item) =>
+  repairVerdict(typed, item) === "match";

@@ -112,9 +112,12 @@ test("diagnostic choices route calculation, strategy, and language support separ
   assert.match(generator, /Family coach:/);
 });
 
-test("next practice reuses an authored item of the same type and falls back to the existing Play tab", () => {
-  assert.match(generator, /item\.dataset\.problemType === current\.dataset\.problemType/);
-  assert.match(generator, /switchHomeworkTab\("play"\)/);
+test("next practice goes to the next open problem in order, then an earlier open one, then Finish", () => {
+  assert.match(
+    generator,
+    /const next = list\.slice\(from \+ 1\)\.find\(open\) \|\| list\.slice\(0, Math\.max\(0, from\)\)\.find\(open\)/,
+  );
+  assert.match(generator, /switchHomeworkTab\("done"\)/);
   assert.match(generator, /next\.closest\("\.more-practice"\)/);
 });
 
