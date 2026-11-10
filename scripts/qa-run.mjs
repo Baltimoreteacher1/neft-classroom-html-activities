@@ -1141,6 +1141,13 @@ const COVERAGE = [
   // _engine tests are discovered by run-tests), static links and syntax. 39 of the last 300
   // commits on main touched this folder and escalated to the FULL gate for no check that reads it.
   [/^graphic-novels\//, ["test", "validate:static", "validate:js-syntax", "check"]],
+  // The shared graphic-novel layer's tooling (inject / extract / verify). Its behaviour is pinned by
+  // tools/gn-layer.test.mjs (jsdom, all 39 books, in `npm test`); the browser sweep is
+  // `node tools/verify-gn-layer-browser.mjs` and needs a real Chromium, so it is run by hand.
+  [
+    /^tools\/(?:lib\/)?(?:gn-|inject-gn-layer|verify-gn-layer)/,
+    ["test", "validate:js-syntax", "check"],
+  ],
   // Family app (family-app/**): a static PWA shell. Its behaviour is pinned by
   // tools/family-app-pwa.test.mjs and tools/family-today.test.mjs (both traced by
   // test-scope.mjs, so `test` runs only the ones that read a changed file). With no
