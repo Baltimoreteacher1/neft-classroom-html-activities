@@ -63,6 +63,7 @@ try {
   assert.equal(await next.isEnabled(), true);
   await next.click();
   assert.match((await root.locator('h3').allTextContents()).join(' '), /Core conceptual rule/);
+  assert.equal(await page.evaluate(() => localStorage.getItem('ewl-fluency-publisher-mastery-v1')), null, 'viewing an explanation does not record mastery');
   assert.match((await root.locator('h3').allTextContents()).join(' '), /Why that answer was tempting/);
   await audit('explanation');
   await root.locator('#sibling').click();
@@ -131,6 +132,13 @@ try {
   assert.equal(generated.answer, '15');
   assert.equal(generated.additive, true);
   assert.match(generated.prompt, /10 red beads/);
+  const adapted = await page.evaluate(async () => {
+    const { adaptProportionItem } = await import('/src/components/MathFluencyLabEngine.js');
+    const valid = adaptProportionItem({ question: 'Solve the proportion: 3/2 = 12/x.', answers: ['8'], skill: { standard: '7.RP.A.2' } });
+    const invalid = adaptProportionItem({ question: 'Solve the proportion: 3/2 = 12/x.', answers: ['9'] });
+    return { answer: valid?.correctAnswer, model: valid?.modelComponent, invalid };
+  });
+  assert.deepEqual(adapted, { answer: '8', model: 'interactive-double-number-line', invalid: null });
   await page.reload();
   await root.locator('#answer').fill('18');
   await root.locator('#check').click();

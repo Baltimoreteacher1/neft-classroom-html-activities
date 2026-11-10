@@ -197,7 +197,7 @@ const transitions: Record<LabState, LabState[]> = {
   EVALUATING: ["SCAFFOLD_L1_PROMPT", "SCAFFOLD_L2_BREAKDOWN", "MASTERY_COMMITTED"],
   SCAFFOLD_L1_PROMPT: ["EVALUATING"],
   SCAFFOLD_L2_BREAKDOWN: ["PRESENTATION", "RESOLVED_EXPLANATION"],
-  RESOLVED_EXPLANATION: ["MASTERY_COMMITTED", "PRESENTATION"],
+  RESOLVED_EXPLANATION: ["PRESENTATION"],
   MASTERY_COMMITTED: ["PRESENTATION"],
 };
 export class MathFluencyLabEngine {
@@ -424,7 +424,7 @@ export class MathFluencyLabEngine {
       content.append(retry);
       this.updateSandbox();
     } else if (this.state === "RESOLVED_EXPLANATION") {
-      content.innerHTML = `<h3>Core conceptual rule</h3><p>${formatMath(e.fullExplanation.keyRule)}</p><h3>Algebra and model, step by step</h3><div id="steps"></div><h3>Why that answer was tempting</h3><p>${formatMath(this.detected?.tag === "ADDITIVE_THINKING" ? e.fullExplanation.distractorAnalysis : this.detected?.tag === "INVERTED_RATIO" ? `An answer of ${this.distractorInput} treats ${e.modelConfig.trackAUnits} ${e.modelConfig.trackALabel.toLowerCase()} as the unknown quantity's parts. The ${e.modelConfig.trackBUnits} ${e.modelConfig.trackBLabel.toLowerCase()} parts must each receive the same segment value.` : e.fullExplanation.distractorAnalysis)}</p><div class="row"><button id="sibling" type="button">Try an isomorphic problem</button><button id="commit" type="button">Finish and continue</button></div>`;
+      content.innerHTML = `<h3>Core conceptual rule</h3><p>${formatMath(e.fullExplanation.keyRule)}</p><h3>Algebra and model, step by step</h3><div id="steps"></div><h3>Why that answer was tempting</h3><p>${formatMath(this.detected?.tag === "ADDITIVE_THINKING" ? e.fullExplanation.distractorAnalysis : this.detected?.tag === "INVERTED_RATIO" ? `An answer of ${this.distractorInput} treats ${e.modelConfig.trackAUnits} ${e.modelConfig.trackALabel.toLowerCase()} as the unknown quantity's parts. The ${e.modelConfig.trackBUnits} ${e.modelConfig.trackBLabel.toLowerCase()} parts must each receive the same segment value.` : e.fullExplanation.distractorAnalysis)}</p><div class="row"><button id="sibling" type="button">Try an isomorphic problem</button></div>`;
       const steps = content.querySelector("#steps")!;
       e.fullExplanation.stepByStep.forEach((step) => {
         const item = document.createElement("div");
@@ -439,8 +439,6 @@ export class MathFluencyLabEngine {
       });
       content.querySelector<HTMLButtonElement>("#sibling")!.onclick = () =>
         this.loadExercise(makeSibling(e, ++this.sibling));
-      content.querySelector<HTMLButtonElement>("#commit")!.onclick = () =>
-        this.transition("MASTERY_COMMITTED");
     } else if (this.state === "MASTERY_COMMITTED") {
       content.innerHTML = `<h3>Practice complete</h3><p>You solved this problem in ${this.attempts + 1} ${this.attempts === 0 ? "attempt" : "attempts"}.</p><button id="next" type="button">Try another</button>`;
       content.querySelector<HTMLButtonElement>("#next")!.onclick = () =>
@@ -573,6 +571,38 @@ export function createRatioExercise(config: {
       distractorAnalysis: `Adding the increase in the first quantity gives ${additive}. Each quantity must instead be scaled by the same factor.`,
     },
   };
+}
+
+export function adaptProportionItem(item: {
+  question: string;
+  answers: string[];
+  skill?: { standard?: string };
+  tier?: number;
+}): ExerciseSchema | null {
+  const match = item.question.match(
+    /^Solve the proportion:\s*(\d+)\s*\/\s*(\d+)\s*=\s*(\d+)\s*\/\s*x\.?$/i,
+  );
+  if (!match || !item.answers?.length) return null;
+  const [, first, second, scaled] = match;
+  const a = Number(first);
+  const b = Number(second);
+  const c = Number(scaled);
+  const unitVal = c / a;
+  if (!Number.isInteger(unitVal) || unitVal <= 0 || b * unitVal !== Number(item.answers[0]))
+    return null;
+  const tier = Math.max(1, Math.min(4, Number(item.tier) || 2)) as 1 | 2 | 3 | 4;
+  const schema = createRatioExercise({
+    id: `proportion-${a}-${b}-${c}`,
+    standard: item.skill?.standard || "7.RP.A.2",
+    tier,
+    trackALabel: "first quantity",
+    trackBLabel: "second quantity",
+    trackAUnits: a,
+    trackBUnits: b,
+    unitVal,
+    modelComponent: "interactive-double-number-line",
+  });
+  return { ...schema, prompt: item.question, correctAnswer: item.answers[0] };
 }
 
 export const SEED_EXERCISE: ExerciseSchema = {
