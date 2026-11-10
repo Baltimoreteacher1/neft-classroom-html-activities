@@ -5,8 +5,9 @@
 //   /start/lesson   featured lesson             /start/present   presenter view (30 minutes)
 // The route names avoid the word "teacher": Pages gates any path containing it behind the teacher password.
 import { html, icon } from "../util.js";
-import { DOWNLOADS, FEATURED_LESSON, ROUTES, START_CHOICES } from "./data.js";
+import { START_CHOICES } from "./data.js";
 import { loadIntro } from "./state.js";
+import { onOverviewClick, overviewHTML } from "./start-overview.js";
 import { labHref, pageHead } from "./ui.js";
 
 const PAGES = {
@@ -42,19 +43,11 @@ function hubHTML() {
     <ul class="in-choices" aria-label="Three ways to start">
       ${START_CHOICES.map((c) => choiceHTML(c, resume))}
     </ul>
-    <p class="in-quiet">
-      <span>Also here:</span>
-      <a href="${labHref(ROUTES.lesson)}">${FEATURED_LESSON.label}: ${FEATURED_LESSON.title}</a>
-      <a href="${labHref(ROUTES.present)}">Presenter view</a>
-      <a href="${DOWNLOADS.quickGuide.pdf}">Handout (PDF)</a>
-      <a href="${DOWNLOADS.quickGuide.docx}">Handout (Word)</a>
-      <a href="${labHref(ROUTES.siteGuide)}?for=teacher">Site Guide</a>
-      <a href="${labHref(ROUTES.together)}">Family page</a>
-    </p>
+    ${overviewHTML()}
   </article>`;
 }
 
-const hub = { render: async () => ({ title: "Start Here: Speaking and Writing", html: hubHTML() }) };
+const hub = { render: async () => ({ title: "Start Here: Speaking and Writing", html: hubHTML() }), onClick: onOverviewClick };
 
 export async function render(ctx) {
   const loader = PAGES[ctx.route.id || ""];

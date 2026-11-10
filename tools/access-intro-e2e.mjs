@@ -196,6 +196,58 @@ ok(
   (await page.locator(".in-choice.is-tour strong").innerText()).includes("Resume the tour"),
   "start page offers to resume the saved tour",
 );
+ok((await page.locator(".ov-glance li").count()) === 4, "overview: four at-a-glance facts");
+ok(
+  (await page.locator(".ov-progress li").count()) >= 1 &&
+    (await page.locator(".ov-progress").innerText()).includes("Guided Tour: Step 5 of 5"),
+  "overview: progress panel shows the saved tour",
+);
+for (const id of ["ov-paths", "ov-lesson", "ov-time", "ov-share", "ov-pd", "ov-families"])
+  ok(
+    (await page.locator(`#${id}`).count()) === 1 &&
+      (await page.locator(`.ov-jump a[href$="#${id}"]`).count()) === 1,
+    `overview section and jump link: ${id}`,
+  );
+ok(
+  (await page.locator("#ov-paths .in-act").count()) === 4 &&
+    (await page.locator("#ov-paths .in-preview").count()) === 4,
+  "overview: four activity cards, each with See an Example",
+);
+ok(
+  (await page.locator("#ov-time .ov-routine").count()) === 3,
+  "overview: three class-time routines",
+);
+await page.locator("#ov-pd [data-ov-copy]").click();
+ok(
+  (await page.evaluate(() => navigator.clipboard.readText())) ===
+    "https://thelanguagepage.com/access-practice-lab/start",
+  "overview: Copy the PD link copies the single entrance",
+);
+await page.locator("#ov-lesson [data-ov-copy]").click();
+ok(
+  (await page.evaluate(() => navigator.clipboard.readText())).endsWith(
+    "/access-practice-lab/voice/ladder/school-hallway",
+  ),
+  "overview: Copy student link copies the plain activity link",
+);
+await page.locator('.ov-jump a[href$="#ov-pd"]').click();
+await page.waitForTimeout(500);
+ok(
+  await page.locator("#ov-pd").evaluate((e) => {
+    const r = e.getBoundingClientRect();
+    return r.top >= -5 && r.top < innerHeight;
+  }),
+  "overview: a jump link scrolls to its section",
+);
+ok((await page.locator(".in-hub").count()) === 1, "overview: jumping keeps the page");
+await page.locator("#ov-paths .in-act a.btn").first().click();
+await page.waitForSelector("#introReturn");
+ok(
+  (await page.locator("#introReturn a").innerText()).includes("Back to Start Here"),
+  "activity opened from the overview offers Back to Start Here",
+);
+await page.locator("#introReturn a").click();
+await page.waitForSelector(".in-hub");
 await axe(page, "start page");
 await page.close();
 

@@ -482,10 +482,10 @@ export const ENTRANCE = { route: ROUTES.start, url: absUrl(ROUTES.start), short:
  * set, edit ACTIVITIES / SUPPLEMENTAL deliberately, update this map, and run `node tools/generate-intro-curated-list.mjs`.
  */
 export const APPEARANCES = {
-  hallway: ["Guided tour stop 1 (pathways) and stop 5 (choice)", "Guided tour stop 2", "Exploration (Speaking)", "Quick guide page 1", "Featured lesson anchor and Use This Lesson", "Presenter segment 3–8", "Family page: Let’s Talk", "Site Guide"],
-  board: ["Guided tour stop 1 (pathways) and stop 5 (choice)", "Exploration (Speaking)", "Quick guide page 1", "Site Guide"],
-  upgrade: ["Guided tour stop 1 (pathways) and stop 5 (choice)", "Guided tour stop 3", "Exploration (Writing)", "Quick guide page 1", "Presenter segment 8–13", "Family page: Let’s Write", "Site Guide"],
-  paragraph: ["Guided tour stop 1 (pathways) and stop 5 (choice)", "Exploration (Writing)", "Quick guide page 1", "Site Guide"],
+  hallway: ["Start page overview", "Guided tour stop 1 (pathways) and stop 5 (choice)", "Guided tour stop 2", "Exploration (Speaking)", "Quick guide page 1", "Featured lesson anchor and Use This Lesson", "Presenter segment 3–8", "Family page: Let’s Talk", "Site Guide"],
+  board: ["Start page overview", "Guided tour stop 1 (pathways) and stop 5 (choice)", "Exploration (Speaking)", "Quick guide page 1", "Site Guide"],
+  upgrade: ["Start page overview", "Guided tour stop 1 (pathways) and stop 5 (choice)", "Guided tour stop 3", "Exploration (Writing)", "Quick guide page 1", "Presenter segment 8–13", "Family page: Let’s Write", "Site Guide"],
+  paragraph: ["Start page overview", "Guided tour stop 1 (pathways) and stop 5 (choice)", "Exploration (Writing)", "Quick guide page 1", "Site Guide"],
   seasons: ["Exploration: Explore Later", "Family page: More Practice", "Site Guide"],
   morphemes: ["Exploration: Explore Later", "Family page: More Practice", "Site Guide"],
 };
