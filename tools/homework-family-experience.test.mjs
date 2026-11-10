@@ -293,10 +293,10 @@ test("family homework is one five-step flow with optional extras behind Explore 
       id,
     );
     const start = d.querySelector(".hw-mission-start").textContent;
-    assert.match(start, /5–10/);
+    assert.match(start, /15–20/);
     assert.match(start, /Start/);
     assert.match(start, /Explore more/);
-    assert.match(d.querySelector("#hw_explore_sheet").textContent, /15–25/);
+    assert.match(d.querySelector("#hw_explore_sheet").textContent, /25–35/);
     assert.equal(d.querySelector("#hw_panel_together"), null, id);
     assert.equal(d.querySelectorAll("#hw_time_remaining").length, 0, id);
     assert.doesNotMatch(d.body.textContent, /time remaining|tiempo restante/i, id);

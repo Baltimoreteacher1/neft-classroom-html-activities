@@ -70,7 +70,7 @@ export function renderLookAndLearn(
   const steps = Array.isArray(notes.conceptSteps) ? notes.conceptSteps : [];
   const why = notes.bridge?.why;
   return `
-      ${stepHead(1, "Look & Learn", "Mira y aprende", "Read the goal, follow the example, then look at the picture.", "Lean la meta, sigan el ejemplo y luego miren el dibujo.")}
+      ${stepHead(1, "Look & Learn", "Mira y aprende", "Read the goal, watch the picture build step by step, then follow the example.", "Lean la meta, miren cómo se arma el dibujo paso a paso y luego sigan el ejemplo.")}
       ${
         goal
           ? `<section class="fp-card fp-goal" aria-labelledby="hw_goal_label">
@@ -79,6 +79,7 @@ export function renderLookAndLearn(
       </section>`
           : ""
       }
+      ${modelHtml}
       ${
         steps.length
           ? `<section class="fp-card fp-example" aria-labelledby="hw_example_label">
@@ -88,7 +89,6 @@ export function renderLookAndLearn(
       </section>`
           : ""
       }
-      ${modelHtml}
       ${wordsHtml ? `<details class="fp-optional"><summary>${bi("Words to know (optional)", "Palabras que conviene saber (opcional)")}</summary>${wordsHtml}</details>` : ""}
       ${noticeHtml ? `<details class="fp-optional"><summary>${bi("Say what you notice (optional)", "Cuenten qué notan (opcional)")}</summary>${noticeHtml}</details>` : ""}
       ${warmupHtml ? `<details class="fp-optional"><summary>${bi("Quick look back (optional)", "Un repaso rápido (opcional)")}</summary>${warmupHtml}</details>` : ""}`;
