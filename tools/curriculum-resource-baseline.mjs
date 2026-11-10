@@ -120,6 +120,18 @@ function redirectSources() {
     );
 }
 
+let r2KeySet;
+/** Keys the R2 offload manifest says are in the DOWNLOADS bucket (data/r2-offload-manifest.json). */
+function r2Keys() {
+  if (!r2KeySet) {
+    const file = join(ROOT, "data", "r2-offload-manifest.json");
+    r2KeySet = new Set(
+      existsSync(file) ? Object.keys(JSON.parse(readFileSync(file, "utf8")).files ?? {}) : [],
+    );
+  }
+  return r2KeySet;
+}
+
 /** `/api/<name>/...` is answered by a Pages Function, not a built file: it resolves when that Function exists. */
 function apiFunctionExists(path) {
   const name = path.split("/")[2];
@@ -133,6 +145,8 @@ function apiFunctionExists(path) {
 export function resolves(url, redirects = []) {
   const path = decodeURI(cleanPath(url));
   if (path.startsWith("/api/")) return apiFunctionExists(path);
+  // Lesson downloads moved to R2 are answered by functions/lessons/[[path]].js, not a built file.
+  if (r2Keys().has(path.slice(1))) return true;
   const candidates = path.endsWith("/")
     ? [join(DIST, path, "index.html")]
     : [join(DIST, path), join(DIST, path, "index.html"), join(DIST, `${path}.html`)];
