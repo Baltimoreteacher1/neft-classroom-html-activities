@@ -93,7 +93,10 @@ test("the default route shows exactly the problems it says: the stated count, th
   assert.match(text, new RegExp(`solve ${MISSION_PRACTICE_COUNT}`));
   assert.match(text, new RegExp(ROUTE_TIMES.quick));
   const html = readFileSync(lessonPath("4-1-part2", "homework.html"), "utf8");
-  assert.match(html, new RegExp(`<span data-hw-goal-count>${MISSION_PRACTICE_COUNT}</span> problems\\.`));
+  assert.match(
+    html,
+    new RegExp(`<span data-hw-goal-count>${MISSION_PRACTICE_COUNT}</span> problems\\.`),
+  );
   assert.doesNotMatch(html, /Tonight's goal: any/);
   dom.window.close();
 });

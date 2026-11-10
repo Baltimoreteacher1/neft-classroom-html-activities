@@ -108,7 +108,7 @@ test("actual family view renders selected homework, due date and Spanish action,
     renderHomeworkHub(root, snapshot, lessons, "all-families", "es", {
       now: new Date("2026-09-24T12:00:00Z"),
     });
-    assert.match(root.textContent, /Empezar el Estudio familiar de matemáticas · 5–10 min/);
+    assert.match(root.textContent, /Empezar el Estudio familiar de matemáticas · 15–20 min/);
     assert.match(root.textContent, /Entrega/);
     assert.equal(
       root.querySelector(".homework-card a").getAttribute("href"),
@@ -235,36 +235,36 @@ test("each posted night offers Family Math Studio first and the two shorter rout
         "/lessons/3-2/homework.html?route=full&lang=en&section=all-families",
       ],
     );
-    assert.match(links[0].textContent, /^Start Family Math Studio · 5–10 min/);
+    assert.match(links[0].textContent, /^Start Family Math Studio · 15–20 min/);
     assert.ok(links[0].classList.contains("route-primary"));
     assert.match(links[0].textContent, /Today's mission route · recommended/);
     assert.equal(card.querySelector(".route-short-label").textContent, "More time tonight?");
-    assert.deepEqual(links.slice(1).map((a) => a.textContent), ["Extended practice · 15–25 min"]);
+    assert.deepEqual(links.slice(1).map((a) => a.textContent), ["Extended practice · 25–35 min"]);
     renderHomeworkHub(root, snapshot, lessonList, "all-families", "es", NOW);
     const spanish = [...root.querySelectorAll(".homework-card a")];
     assert.deepEqual(spanish.map((a) => a.getAttribute("href")), [
       "/lessons/3-2/homework.html?route=quick&lang=es&section=all-families",
       "/lessons/3-2/homework.html?route=full&lang=es&section=all-families",
     ]);
-    assert.match(spanish[0].textContent, /^Empezar el Estudio familiar de matemáticas · 5–10 min/);
+    assert.match(spanish[0].textContent, /^Empezar el Estudio familiar de matemáticas · 15–20 min/);
     assert.match(spanish[0].textContent, /Ruta: Misión de hoy · recomendada/);
     assert.equal(root.querySelector(".route-short-label").textContent, "¿Más tiempo esta noche?");
-    assert.deepEqual(spanish.slice(1).map((a) => a.textContent), ["Práctica extendida · 15–25 min"]);
+    assert.deepEqual(spanish.slice(1).map((a) => a.textContent), ["Práctica extendida · 25–35 min"]);
     // A family that never chose a language gets links that leave the choice to the lesson page.
     renderHomeworkHub(root, snapshot, lessonList, "all-families", "en", { ...NOW, linkLang: "" });
     assert.ok([...root.querySelectorAll(".homework-card a")].every((a) => !a.getAttribute("href").includes("lang=")));
   });
 });
 
-test("the recommended-route sentence names Family Math Studio (5–10 min) and nothing on the hub recommends the 20-minute route", () => {
+test("the recommended-route sentence names Family Math Studio (15–20 min) and nothing on the hub recommends the 20-minute route", () => {
   withHub((root) => {
     renderHomeworkHub(root, week([["Monday", "3-2"]]), lessonList, "all-families", "en", NOW);
     assert.equal(
       root.querySelector(".route-recommendation").textContent,
-      "Family Math Studio (5–10 min) is the recommended route. Extended practice is for nights with more time.",
+      "Family Math Studio (15–20 min) is the recommended route. Extended practice is for nights with more time.",
     );
     renderHomeworkHub(root, week([["Monday", "3-2"]]), lessonList, "all-families", "es", NOW);
-    assert.match(root.querySelector(".route-recommendation").textContent, /^El Estudio familiar de matemáticas \(5–10 min\) es la ruta recomendada\./);
+    assert.match(root.querySelector(".route-recommendation").textContent, /^El Estudio familiar de matemáticas \(15–20 min\) es la ruta recomendada\./);
     assert.doesNotMatch(root.textContent, /20 o 30|20 or 30/);
     // A week with only a unit review has no routes to recommend.
     renderHomeworkHub(root, week([["Monday", "3-test-review"]]), lessonList, "all-families", "en", NOW);

@@ -8916,7 +8916,9 @@ export function renderDoneTab(config = null, lessonId = "") {
     : null;
   /* The lesson's interactive Practice Studio, when one is built (Units 2-9 core lessons). */
   const studioId = lessonId.replace(/-part[23]$/, "");
-  const studio = existsSync(join(__dirname, "..", "math", "practice-studio", studioId, "index.html"))
+  const studio = existsSync(
+    join(__dirname, "..", "math", "practice-studio", studioId, "index.html"),
+  )
     ? `/math/practice-studio/${studioId}/`
     : "";
   return `<div ${tabPanelAttrs("done", true)}>${renderReflect({
@@ -9265,8 +9267,16 @@ export function renderHomeworkTabs(panelsHtml, helpDrawerHtml = "", unit = null)
         <nav class="homework-tab-bar" aria-label="Tonight's path" data-aria-en="Tonight's path" data-aria-es="Ruta de hoy">
           ${HOMEWORK_TABS.map(tabBtn).join("")}
         </nav>
-        <div class="hw-fun-zone" role="group" aria-label="Games and photos" data-aria-en="Games and photos" data-aria-es="Juegos y fotos">${HOMEWORK_EXTRA_TABS.filter((t) => FUN_STOPS.has(t.id)).map(funBtn).join("")}</div>
-        <div class="hw-optional-stops" hidden>${HOMEWORK_EXTRA_TABS.filter((t) => !FUN_STOPS.has(t.id)).map(extraBtn).join("")}</div>
+        <div class="hw-fun-zone" role="group" aria-label="Games and photos" data-aria-en="Games and photos" data-aria-es="Juegos y fotos">${HOMEWORK_EXTRA_TABS.filter(
+          (t) => FUN_STOPS.has(t.id),
+        )
+          .map(funBtn)
+          .join("")}</div>
+        <div class="hw-optional-stops" hidden>${HOMEWORK_EXTRA_TABS.filter(
+          (t) => !FUN_STOPS.has(t.id),
+        )
+          .map(extraBtn)
+          .join("")}</div>
         <div class="homework-tab-track" aria-hidden="true"><span class="homework-tab-track-fill" id="hw_tab_track_fill"></span></div>
       </div>
       <div class="homework-tab-panels" id="hw_tab_panels">

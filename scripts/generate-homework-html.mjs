@@ -67,10 +67,10 @@ import {
 import { EXPERIENCE_JS } from "./lib/homework-experience-js.mjs";
 import { renderImprove } from "./lib/homework-flow.mjs";
 import { FLOW_JS } from "./lib/homework-flow-js.mjs";
-import { PRACTICE_JS } from "./lib/homework-practice-js.mjs";
 import { HERO_JS, READER_BOOT_JS } from "./lib/homework-hero.mjs";
 import { renderExploreMoreSheet } from "./lib/homework-mission.mjs";
 import { MISSION_JS } from "./lib/homework-mission-js.mjs";
+import { PRACTICE_JS } from "./lib/homework-practice-js.mjs";
 import { applyPracticeReview, loadPracticeReview } from "./lib/homework-practice-review.mjs";
 import { PRINT_JS } from "./lib/homework-print.mjs";
 import {

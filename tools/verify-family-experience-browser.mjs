@@ -314,7 +314,8 @@ async function sweepPhone(browser, lesson) {
   if (!run.spanishMode)
     fail(where, "the language-access action did not switch the existing language picker");
   if (run.available >= N) {
-    if (run.steps.at(-1) !== `${N} / ${N}`) fail(where, `${N} right answers read ${run.steps.at(-1)}`);
+    if (run.steps.at(-1) !== `${N} / ${N}`)
+      fail(where, `${N} right answers read ${run.steps.at(-1)}`);
     if (!run.banner) fail(where, "goal banner did not appear at the goal");
     if (!run.unlocked) fail(where, "mystery challenge did not unlock");
     // It survives a reload and does not celebrate twice.

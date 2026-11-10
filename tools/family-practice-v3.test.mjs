@@ -32,8 +32,18 @@ test("stars are earned by finishing, persisting and accuracy, never by clicking"
 });
 
 test("badges read the level progress", () => {
-  const d = { levels: [{ id: "warmup", size: 3, done: 3 }, { id: "build", size: 4, done: 1 }], firstTry: 3, fixed: 0, bonus: 0 };
-  const on = achievements(d).filter((b) => b.earned).map((b) => b.id);
+  const d = {
+    levels: [
+      { id: "warmup", size: 3, done: 3 },
+      { id: "build", size: 4, done: 1 },
+    ],
+    firstTry: 3,
+    fixed: 0,
+    bonus: 0,
+  };
+  const on = achievements(d)
+    .filter((b) => b.earned)
+    .map((b) => b.id);
   assert.deepEqual(on.sort(), ["clean", "warmup"]);
 });
 

@@ -28,11 +28,11 @@ export const PRODUCT_NAME = Object.freeze({
 /** Default route first: the order a family is offered them in. Words and times match the lesson page. */
 export const ROUTES = Object.freeze({
   quick: Object.freeze({
-    minutes: "5–10",
+    minutes: "15–20",
     label: { en: "Today's mission", es: "Misión de hoy" },
   }),
   full: Object.freeze({
-    minutes: "15–25",
+    minutes: "25–35",
     label: { en: "Extended practice", es: "Práctica extendida" },
   }),
 });
