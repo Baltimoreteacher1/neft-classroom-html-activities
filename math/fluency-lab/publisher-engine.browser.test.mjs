@@ -13,8 +13,10 @@ try {
   const page = await context.newPage();
   const errors = [];
   page.on('pageerror', error => errors.push(error.message));
-  await page.goto(`http://127.0.0.1:${server.httpServer.address().port}/math/fluency-lab/`);
+  const demoUrl = `http://127.0.0.1:${server.httpServer.address().port}/math/fluency-lab/?publisher-demo=1`;
+  await page.goto(demoUrl);
   const root = page.locator('#fluency-lab-root');
+  await root.locator('#answer').waitFor({ state: 'visible' });
   await page.evaluate(() => {
     window.__fluencyAttempts = [];
     document.getElementById('fluency-lab-root').addEventListener('fluency-attempt', event => window.__fluencyAttempts.push(event.detail));
@@ -97,7 +99,7 @@ try {
   await lineTick.focus();
   await page.keyboard.press('Enter');
   assert.equal(await lineTick.getAttribute('aria-pressed'), 'true', 'double number line supports keyboard selection');
-  await page.reload();
+  await page.goto(demoUrl);
   for (const wrong of ['11', '7']) {
     await root.locator('#answer').fill(wrong);
     await root.locator('#check').click();
@@ -117,7 +119,7 @@ try {
   await root.locator('#answer').fill('8');
   await root.locator('#check').click();
   assert.match((await root.locator('h3').allTextContents()).join(' '), /Practice complete/);
-  await page.reload();
+  await page.goto(demoUrl);
   await root.locator('#answer').fill('8');
   await root.locator('#check').click();
   assert.match((await root.locator('h3').allTextContents()).join(' '), /Practice complete/, 'first correct answer commits mastery');
@@ -127,7 +129,7 @@ try {
   assert.equal('answer' in mastery, false, 'the stored record excludes the student response');
   for (const width of [768, 1366]) {
     await page.setViewportSize({ width, height: 900 });
-    await page.reload();
+    await page.goto(demoUrl);
     assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true, `${width}px page has no horizontal overflow`);
     const check = await root.locator('#check').boundingBox();
     assert.ok(check.width >= 44 && check.height >= 44, `${width}px check action meets touch target size`);
@@ -182,7 +184,7 @@ try {
   });
   assert.equal(validatorRecovery.input, true);
   assert.match(validatorRecovery.message, /Unable to check/);
-  await page.reload();
+  await page.goto(demoUrl);
   await root.locator('#answer').fill('18');
   await root.locator('#check').click();
   assert.match(await root.locator('.hint').textContent(), /original order/);

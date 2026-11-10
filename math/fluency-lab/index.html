@@ -80,10 +80,14 @@
     </script>
     <script type="module" src="./scratchpad-entry.js"></script>
     <script type="module" src="./tour/tour.js"></script>
+    <script>document.documentElement.dataset.publisherDemo = new URLSearchParams(location.search).get('publisher-demo') === '1' ? '1' : '0';</script>
     <script type="module" src="./app.js"></script>
     <script type="module">
       import { MathFluencyLabEngine, SEED_EXERCISE } from '../../src/components/MathFluencyLabEngine.js';
-      new MathFluencyLabEngine('fluency-lab-root').loadExercise(SEED_EXERCISE);
+      if (document.documentElement.dataset.publisherDemo === '1') {
+        document.getElementById('publisher-demo-section').hidden = false;
+        new MathFluencyLabEngine('fluency-lab-root').loadExercise(SEED_EXERCISE);
+      }
     </script>
     <script>
       // The lab saves itself on this device (and through its own backup file) without a name. The shared
@@ -156,7 +160,7 @@
         </div>
         <div id="at-hero-sculpture" class="at-hero__sculpture"></div>
       </section>
-      <section aria-label="Interactive ratio fluency practice" style="max-width:820px;margin:1rem auto;padding:1rem">
+      <section id="publisher-demo-section" aria-label="Interactive ratio fluency practice" style="max-width:820px;margin:1rem auto;padding:1rem" hidden>
         <div id="fluency-lab-root"></div>
       </section>
       <div id="grade-experience-banner"></div>
