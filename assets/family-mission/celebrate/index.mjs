@@ -166,10 +166,10 @@ export function mountCelebration(host, data, hooks = {}) {
         </ul>
 
         <div class="fm-ce-actions">
-          <button type="button" class="fm-btn fm-btn--primary fm-btn--lg" data-ce="photo">📸 ${bi("Take your victory photo", "Tomen su foto de victoria")}</button>
-          <button type="button" class="fm-btn fm-btn--lg" data-ce="five">✋ ${bi("High five!", "¡Choca esos cinco!")}</button>
-          <button type="button" class="fm-btn fm-btn--lg" data-ce="cert-toggle" aria-expanded="false" aria-controls="fm_ce_cert">🏅 ${bi("Certificate", "Certificado")}</button>
-          <button type="button" class="fm-btn fm-btn--lg" data-ce="card">🖼️ ${bi("Download win card", "Descargar tarjeta de victoria")}</button>
+          <button type="button" class="fm-btn fm-btn--primary fm-btn--lg" data-ce="photo"><span aria-hidden="true">📸</span> ${bi("Take your victory photo", "Tomen su foto de victoria")}</button>
+          <button type="button" class="fm-btn fm-btn--lg" data-ce="five"><span aria-hidden="true">✋</span> ${bi("High five!", "¡Choca esos cinco!")}</button>
+          <button type="button" class="fm-btn fm-btn--lg" data-ce="cert-toggle" aria-expanded="false" aria-controls="fm_ce_cert"><span aria-hidden="true">🏅</span> ${bi("Certificate", "Certificado")}</button>
+          <button type="button" class="fm-btn fm-btn--lg" data-ce="card"><span aria-hidden="true">🖼️</span> ${bi("Download win card", "Descargar tarjeta de victoria")}</button>
         </div>
         <p class="fm-ce-status fm-sr" role="status" aria-live="polite" data-ce-status></p>
 
@@ -184,7 +184,7 @@ export function mountCelebration(host, data, hooks = {}) {
             <p class="fm-cert-stars" aria-hidden="true">${"★".repeat(earned)}${"☆".repeat(3 - earned)}</p>
             <p class="fm-cert-foot">${esc(d.displayId ? `Lesson ${d.displayId}` : "")} · ${esc(new Date().toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" }))} · eduwonderlab.com</p>
           </article>
-          <button type="button" class="fm-btn" data-ce="print">🖨️ ${bi("Print certificate", "Imprimir certificado")}</button>
+          <button type="button" class="fm-btn" data-ce="print"><span aria-hidden="true">🖨️</span> ${bi("Print certificate", "Imprimir certificado")}</button>
         </div>
 
         <h4 class="fm-ce-h">${bi("Badges", "Insignias")}</h4>

@@ -208,8 +208,8 @@ export function renderReflect({ lessonId, next, prereq, question }) {
       </div>
       ${question?.en ? `<aside class="fp-family" aria-label="${esc("Family question")}"><p class="fp-label">${bi("Talk about it (optional)", "Conversen (opcional)")}</p><p>${pairText(question)}</p></aside>` : ""}
       <div class="hw-next-actions fp-actions">
-        <button type="button" class="fm-btn fm-btn--block fm-btn--primary" data-celebrate-photo ${act("openOptionalStop", "photobooth")}><span class="lang-en">📸 Take your victory photo</span><span class="lang-es" lang="es">📸 Tomen su foto de victoria</span></button>
-        <button type="button" class="fm-btn fm-btn--block" data-celebrate-challenge ${act("hwStartChallengeRound")}><span class="lang-en">⭐ Challenge round (deeper problems)</span><span class="lang-es" lang="es">⭐ Ronda de reto (problemas más profundos)</span></button>
+        <button type="button" class="fm-btn fm-btn--block fm-btn--primary" data-celebrate-photo ${act("openOptionalStop", "photobooth")}><span aria-hidden="true">📸</span> <span class="lang-en">Take your victory photo</span><span class="lang-es" lang="es">Tomen su foto de victoria</span></button>
+        <button type="button" class="fm-btn fm-btn--block" data-celebrate-challenge ${act("hwStartChallengeRound")}><span aria-hidden="true">⭐</span> <span class="lang-en">Challenge round (deeper problems)</span><span class="lang-es" lang="es">Ronda de reto (problemas más profundos)</span></button>
         <button type="button" class="fm-btn fm-btn--block" ${act("fpPracticeMore")}><span class="lang-en">Practice more (new problems)</span><span class="lang-es" lang="es">Más práctica (problemas nuevos)</span></button>
         ${next ? link(next.href, `Next lesson: ${next.en}`, `Siguiente lección: ${next.es}`, " fm-btn--primary", ` data-next-lesson="${esc(next.id)}"`) : ""}
         ${prereq ? link(prereq.href, `Review first: ${prereq.en}`, `Repasar primero: ${prereq.es}`, "", " data-mission-prereq hidden") : ""}

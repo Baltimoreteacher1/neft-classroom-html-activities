@@ -13,6 +13,7 @@ import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { createServer } from "node:http";
 import { extname, join, resolve } from "node:path";
 import { chromium } from "playwright";
+import { MISSION_PRACTICE_COUNT as N, ROUTE_TIMES } from "../scripts/lib/homework-mission.mjs";
 import { REPO_ROOT } from "./lib/curriculum-source.mjs";
 import { skipExit } from "./lib/skip-exit.mjs";
 
@@ -168,10 +169,10 @@ async function sweepPhone(browser, lesson) {
     time: document.querySelector("[data-hw-tonight-time]")?.textContent,
   }));
   // Today's mission (the default) shows three problems, and the goal is exactly what is on screen.
-  if (start.snap.goal !== Math.min(3, start.snap.available))
+  if (start.snap.goal !== Math.min(N, start.snap.available))
     fail(
       where,
-      `goal is ${start.snap.goal}, not the ${Math.min(3, start.snap.available)} on screen`,
+      `goal is ${start.snap.goal}, not the ${Math.min(N, start.snap.available)} on screen`,
     );
   if (start.banner) fail(where, "goal banner is showing before any work");
   if (!start.mystery) fail(where, "no mystery challenge card");
@@ -180,8 +181,8 @@ async function sweepPhone(browser, lesson) {
   );
   if (startTop > 1500)
     fail(where, `the Start button is ${Math.round(startTop)}px down; keep it within two screens`);
-  // The default route is today's mission (5–10 min). Extended practice is 15–25 min.
-  if (start.time !== "5–10") fail(where, `default route time reads ${start.time}`);
+  // The default route is today's mission (15–20 min). Extended practice is 25–35 min.
+  if (start.time !== ROUTE_TIMES.quick) fail(where, `default route time reads ${start.time}`);
 
   for (const tab of ["connect", "explore", "check", "talk", "apply", "done", "words", "play"]) {
     await page.evaluate((t) => window.switchHomeworkTab(t), tab);
@@ -264,7 +265,7 @@ async function sweepPhone(browser, lesson) {
         "#problem_intelligence_" + idx(sections[0]) + " [data-intelligence-guidance] .lang-es",
       )?.textContent || "";
     const steps = [];
-    for (let i = 0; i < 3 && i < sections.length; i++) {
+    for (let i = 0; i < window.hwGoalSnapshot().goal && i < sections.length; i++) {
       const s = sections[i];
       s.querySelector(
         "input[type='radio'][value='" + s.querySelector(".mc-options").dataset.correct + "']",
@@ -312,9 +313,9 @@ async function sweepPhone(browser, lesson) {
     fail(where, "the language-access action did not expose the Spanish guidance");
   if (!run.spanishMode)
     fail(where, "the language-access action did not switch the existing language picker");
-  if (run.available >= 3) {
-    if (run.steps.at(-1) !== "3 / 3") fail(where, `three right answers read ${run.steps.at(-1)}`);
-    if (!run.banner) fail(where, "goal banner did not appear at three");
+  if (run.available >= N) {
+    if (run.steps.at(-1) !== `${N} / ${N}`) fail(where, `${N} right answers read ${run.steps.at(-1)}`);
+    if (!run.banner) fail(where, "goal banner did not appear at the goal");
     if (!run.unlocked) fail(where, "mystery challenge did not unlock");
     // It survives a reload and does not celebrate twice.
     await page.reload({ waitUntil: "load" });
@@ -325,7 +326,7 @@ async function sweepPhone(browser, lesson) {
       toast: !document.getElementById("hw_toast").hidden,
       evidenceCount: window.__HW_INSTRUCTIONAL_EVIDENCE__?.events?.length || 0,
     }));
-    if (again.text !== "3 / 3") fail(where, `after reload progress reads ${again.text}`);
+    if (again.text !== `${N} / ${N}`) fail(where, `after reload progress reads ${again.text}`);
     if (again.toast) fail(where, "goal celebrated again after reload");
     if (again.evidenceCount < 4)
       fail(where, "categorical math evidence did not survive save/resume");
@@ -360,7 +361,7 @@ async function sweepLanguages(browser, lesson) {
   if (small.length) fail(`${lesson} es`, `text under 13px: ${small.join("; ")}`);
   const quick = await openPage(context, lesson, "?route=quick");
   const goal = await quick.page.evaluate(() => window.hwGoalSnapshot().goal);
-  if (goal !== 3) fail(`${lesson} quick`, `Today's mission goal is ${goal}, not 3`);
+  if (goal !== N) fail(`${lesson} quick`, `Today's mission goal is ${goal}, not ${N}`);
   await context.close();
 }
 
