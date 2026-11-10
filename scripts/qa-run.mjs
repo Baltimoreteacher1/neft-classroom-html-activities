@@ -674,7 +674,7 @@ const COVERAGE = [
     ],
   ],
   [
-    /^(curriculum\/units\/index\.html|tools\/(validate-unit-resource-placement|unit-placement\.test|validate-curriculum-links)\.mjs|scripts\/lib\/download-taxonomy\.mjs)$/,
+    /^(curriculum\/units\/index\.html|tools\/(validate-unit-resource-placement|unit-placement\.test|validate-curriculum-links|sync-lesson-novels|lesson-novels\.test)\.mjs|scripts\/lib\/download-taxonomy\.mjs)$/,
     [
       "validate:unit-placement",
       "validate:curriculum-links",
