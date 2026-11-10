@@ -257,7 +257,8 @@ try {
   // ---- Spanish ----
   await page.setViewportSize({ width: 1280, height: 900 });
   await page.getByRole("button", { name: /Español/ }).first().click();
-  await t4.locator("#t4-tab-assign").waitFor();
+  // The tab exists in English before the switch, so wait for the Spanish text, not just the element.
+  await t4.locator("#t4-tab-assign").filter({ hasText: "Tareas" }).waitFor();
   assert.equal(await t4.locator("#t4-tab-assign").innerText(), "Tareas");
   assert.equal(await t4.locator("#t4-tab-insights").innerText(), "Panorama de la clase");
   await page.locator("#t4-tab-insights").click();

@@ -50,7 +50,7 @@ try {
   assert.equal(new URL(page.url()).search, "", "Home is the bare URL");
 
   const areas = [
-    ["Explore", "#games-view", ["Games", "Model Lab", "Writing Studio", "Math Reality", "Reality Lab"]],
+    ["Explore", "#games-view", ["Games", "Model Lab", "Writing Studio", "Math Reality", "Reality Lab", "MathSense"]],
   ];
   for (const [name, section, expected] of areas) {
     await page.locator("#hub-tabs button", { hasText: name }).first().click();

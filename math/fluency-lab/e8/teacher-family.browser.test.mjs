@@ -136,6 +136,12 @@ try {
 
     // D. Spanish
     await page.getByRole("button", { name: /Español/ }).first().click();
+    // The tab exists in English before the switch, so wait for the Spanish text, not just the element.
+    await page
+      .locator("#t4-tab-map")
+      .filter({ hasText: "Mapa de dominio" })
+      .waitFor({ timeout: 10000 })
+      .catch(() => {});
     check((await page.locator("#t4-tab-map").innerText()) === "Mapa de dominio", "Spanish: map tab");
     await page.locator("#t4-tab-map").click();
     check(/Mapa de dominio/.test(await page.locator("#t4-panel-map").innerText()) && /Aún sin evaluar/.test(await page.locator("#t4-panel-map").innerText()), "Spanish: map and state names");

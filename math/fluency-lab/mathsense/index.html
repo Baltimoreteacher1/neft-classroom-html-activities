@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta
+      name="description"
+      content="MathSense: change a fraction bar, a number line, a decimal grid or a percent bar and watch the others change with it. Part of the EduWonderLab Math Fluency Lab."
+    />
+    <meta name="color-scheme" content="light" />
+    <meta name="theme-color" content="#17324d" />
+    <title>MathSense | EduWonderLab Math Fluency Lab</title>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 36'%3E%3Crect width='36' height='36' rx='11' fill='%2317324d'/%3E%3Crect x='7' y='14' width='22' height='8' rx='2' fill='%231fa6a2'/%3E%3Crect x='7' y='14' width='13' height='8' rx='2' fill='%23f2c15b'/%3E%3C/svg%3E"
+    />
+    <link rel="stylesheet" href="/assets/fonts/small-group.css" />
+    <link rel="stylesheet" href="/assets/fonts/fraunces-87aa83.css" />
+    <link rel="stylesheet" href="../ds4.css" />
+    <link rel="stylesheet" href="../atelier/atelier.css" />
+    <link rel="stylesheet" href="./mathsense.css" />
+    <script type="module" src="./main.js"></script>
+  </head>
+  <body>
+    <a class="ms-skip" href="#ms-main" data-i18n>Skip to MathSense</a>
+    <header class="ms-header">
+      <a id="ms-back" href="/math/fluency-lab/" data-i18n>← Math Fluency Lab</a>
+      <strong>MathSense</strong>
+      <button id="ms-lang" type="button" class="ms-btn ms-btn-quiet" lang="es">Español</button>
+    </header>
+    <main id="ms-main">
+      <section class="ms-intro" aria-labelledby="ms-title">
+        <p class="ms-eyebrow" data-i18n>Linked models</p>
+        <h1 id="ms-title">MathSense</h1>
+        <p class="ms-lede" data-i18n>
+          Change one picture and watch the others change with it. Every picture shows the same
+          amount, so you can see why a fraction, a decimal and a percent are one idea.
+        </p>
+        <p id="ms-storage" class="ms-error" hidden></p>
+      </section>
+
+      <section class="ms-work" aria-labelledby="ms-work-h">
+        <h2 id="ms-work-h" data-i18n>Linked workspace</h2>
+        <div class="ms-toolbar">
+          <label class="ms-field"
+            ><span data-i18n>Starting point</span>
+            <select id="ms-scenario"></select>
+          </label>
+          <label class="ms-check"
+            ><input id="ms-compare" type="checkbox" />
+            <span data-i18n>Compare two quantities</span></label
+          >
+          <fieldset class="ms-editing" id="ms-editing" hidden>
+            <legend data-i18n>Change which quantity?</legend>
+            <label
+              ><input type="radio" name="ms-active" value="a" checked />
+              <span data-i18n>Quantity A (solid)</span></label
+            >
+            <label
+              ><input type="radio" name="ms-active" value="b" />
+              <span data-i18n>Quantity B (striped)</span></label
+            >
+          </fieldset>
+          <button id="ms-reset" type="button" class="ms-btn ms-btn-quiet" data-i18n>
+            Reset workspace
+          </button>
+        </div>
+        <div id="ms-strip" class="ms-strip" tabindex="-1" hidden>
+          <p><strong data-i18n>Mission</strong> <span id="ms-strip-text"></span></p>
+          <button id="ms-strip-action" type="button" class="ms-btn"></button>
+        </div>
+
+        <div class="ms-layout">
+          <div class="ms-pictures">
+            <article class="ms-card" aria-labelledby="ms-bar-h">
+              <h3 id="ms-bar-h" data-i18n>Fraction bar</h3>
+              <div
+                id="ms-bar"
+                class="ms-slider"
+                role="slider"
+                tabindex="0"
+                aria-describedby="ms-bar-help"
+              >
+                <div class="ms-pic"></div>
+              </div>
+              <p id="ms-bar-help" class="ms-help" data-i18n>
+                Press the arrow keys or drag on the bar to move one piece at a time. Shift moves a
+                whole.
+              </p>
+              <div class="ms-row">
+                <button
+                  type="button"
+                  class="ms-btn"
+                  data-nudge="bar:-1"
+                >
+                  −
+                </button>
+                <button
+                  type="button"
+                  class="ms-btn"
+                  data-nudge="bar:1"
+                >
+                  +
+                </button>
+                <label class="ms-field ms-field-small"
+                  ><span data-i18n>Pieces shaded</span
+                  ><input id="ms-k" type="number" min="0" max="500" inputmode="numeric"
+                /></label>
+                <label class="ms-field ms-field-small"
+                  ><span data-i18n>Equal pieces in each whole</span
+                  ><select id="ms-parts"></select
+                ></label>
+              </div>
+            </article>
+            <article class="ms-card" aria-labelledby="ms-line-h">
+              <h3 id="ms-line-h" data-i18n>Number line</h3>
+              <div
+                id="ms-line"
+                class="ms-slider"
+                role="slider"
+                tabindex="0"
+                aria-describedby="ms-line-help"
+              >
+                <div class="ms-pic"></div>
+              </div>
+              <p id="ms-line-help" class="ms-help" data-i18n>
+                Press the arrow keys or touch the line to move the marker to the nearest mark.
+              </p>
+            </article>
+            <article class="ms-card" aria-labelledby="ms-grid-h">
+              <h3 id="ms-grid-h" data-i18n>Decimal grid</h3>
+              <div
+                id="ms-grid"
+                class="ms-slider"
+                role="slider"
+                tabindex="0"
+                aria-describedby="ms-grid-help"
+              >
+                <div class="ms-pic"></div>
+              </div>
+              <p id="ms-grid-help" class="ms-help" data-i18n>
+                Each square is one hundredth. Arrow keys move one hundredth; Shift moves a tenth,
+                one whole column.
+              </p>
+              <div class="ms-row">
+                <button
+                  type="button"
+                  class="ms-btn"
+                  data-nudge="grid:-1"
+                >
+                  −
+                </button>
+                <button
+                  type="button"
+                  class="ms-btn"
+                  data-nudge="grid:1"
+                >
+                  +
+                </button>
+              </div>
+            </article>
+            <article class="ms-card" aria-labelledby="ms-percent-h">
+              <h3 id="ms-percent-h" data-i18n>Percent bar</h3>
+              <div
+                id="ms-percent"
+                class="ms-slider"
+                role="slider"
+                tabindex="0"
+                aria-describedby="ms-percent-help"
+              >
+                <div class="ms-pic"></div>
+              </div>
+              <p id="ms-percent-help" class="ms-help" data-i18n>
+                The dashed mark is 100%, one whole. Arrow keys move 1%; Shift moves 10%.
+              </p>
+              <div class="ms-row">
+                <button
+                  type="button"
+                  class="ms-btn"
+                  data-nudge="percent:-1"
+                >
+                  −
+                </button>
+                <button
+                  type="button"
+                  class="ms-btn"
+                  data-nudge="percent:1"
+                >
+                  +
+                </button>
+              </div>
+            </article>
+          </div>
+
+          <article class="ms-card ms-statements" aria-labelledby="ms-eq-h">
+            <h3 id="ms-eq-h" data-i18n>Equation and statements</h3>
+            <p class="ms-help" id="ms-type-help" data-i18n>
+              Type in any box and press Enter. Everything else updates. You can use 3/4, 1 3/4,
+              0.75, 0.(3) for a repeating decimal, or 75%.
+            </p>
+            <p class="ms-editing-label" id="ms-editing-label"></p>
+            <div class="ms-typed">
+              <label class="ms-field"
+                ><span data-i18n>Fraction</span
+                ><input
+                  id="ms-in-fraction"
+                  type="text"
+                  inputmode="text"
+                  autocomplete="off"
+                  spellcheck="false"
+                  aria-describedby="ms-type-help ms-err-fraction"
+              /></label>
+              <p id="ms-err-fraction" class="ms-error" hidden></p>
+              <label class="ms-field"
+                ><span data-i18n>Mixed number</span
+                ><input
+                  id="ms-in-mixed"
+                  type="text"
+                  inputmode="text"
+                  autocomplete="off"
+                  spellcheck="false"
+                  aria-describedby="ms-type-help ms-err-mixed"
+              /></label>
+              <p id="ms-err-mixed" class="ms-error" hidden></p>
+              <label class="ms-field"
+                ><span data-i18n>Decimal</span
+                ><input
+                  id="ms-in-decimal"
+                  type="text"
+                  inputmode="text"
+                  autocomplete="off"
+                  spellcheck="false"
+                  aria-describedby="ms-type-help ms-err-decimal"
+              /></label>
+              <p id="ms-err-decimal" class="ms-error" hidden></p>
+              <label class="ms-field"
+                ><span data-i18n>Percent</span
+                ><input
+                  id="ms-in-percent"
+                  type="text"
+                  inputmode="text"
+                  autocomplete="off"
+                  spellcheck="false"
+                  aria-describedby="ms-type-help ms-err-percent"
+              /></label>
+              <p id="ms-err-percent" class="ms-error" hidden></p>
+            </div>
+            <div id="ms-statements" class="ms-readout"></div>
+            <p id="ms-compare-line" class="ms-compare-line"></p>
+          </article>
+        </div>
+      </section>
+
+      <section class="ms-missions" aria-labelledby="ms-missions-h">
+        <h2 id="ms-missions-h" data-i18n>Missions</h2>
+        <p class="ms-lede" data-i18n>
+          Choose a grade band and a mission. Use the workspace to figure it out. A hint is always
+          there when you want one, and work with a hint is marked as supported.
+        </p>
+        <div id="ms-bands" class="ms-row" role="group"></div>
+        <div class="ms-mission-layout">
+          <ol id="ms-mission-list" class="ms-mission-list"></ol>
+          <div
+            id="ms-mission"
+            class="ms-card ms-mission"
+            tabindex="-1"
+            aria-labelledby="ms-mission-h"
+          ></div>
+        </div>
+      </section>
+
+      <section class="ms-notice" aria-labelledby="ms-notice-h">
+        <h2 id="ms-notice-h" data-i18n>Notice and explain</h2>
+        <p id="ms-notice-prompt" class="ms-lede"></p>
+        <details class="ms-frames">
+          <summary data-i18n>Sentence starters (optional support)</summary>
+          <ul id="ms-frames"></ul>
+        </details>
+        <label class="ms-field"
+          ><span data-i18n>My sentence</span
+          ><textarea id="ms-sentence" rows="3" maxlength="400"></textarea>
+        </label>
+        <div class="ms-row">
+          <button id="ms-sentence-save" type="button" class="ms-btn" data-i18n>
+            Save my sentence
+          </button>
+          <button id="ms-sentence-new" type="button" class="ms-btn ms-btn-quiet" data-i18n>
+            Try a different question
+          </button>
+        </div>
+        <p id="ms-sentence-mirror" class="ms-help"></p>
+        <h3 data-i18n>My saved sentences</h3>
+        <ul id="ms-saved" class="ms-saved"></ul>
+        <p class="ms-help" data-i18n>
+          Your work and sentences stay on this device. Nothing is sent anywhere.
+        </p>
+      </section>
+    </main>
+    <div id="ms-live" class="ms-sr" role="status" aria-live="polite" aria-atomic="true"></div>
+    <noscript
+      ><p class="ms-noscript">MathSense needs JavaScript. Please turn it on to use it.</p></noscript
+    >
+  </body>
+</html>

@@ -16,6 +16,7 @@ import { ES_REALITY } from "./i18n-es-lab7-reality.js";
 import { ES_ATELIER } from "./i18n-es-lab8-atelier.js";
 import { ES_ENTRY } from "./i18n-es-lab9-entry.js";
 import { ES_CLASS } from "./i18n-es-class.js";
+import { ES_MATHSENSE } from "./i18n-es-mathsense.js";
 
 export const ES_LAB4 = {
   ...ES_LAB4_ADAPTIVE,
@@ -34,4 +35,5 @@ export const ES_LAB4 = {
   ...ES_ATELIER,
   ...ES_ENTRY,
   ...ES_CLASS,
+  ...ES_MATHSENSE,
 };

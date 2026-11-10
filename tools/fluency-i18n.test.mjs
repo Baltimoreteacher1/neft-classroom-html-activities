@@ -77,6 +77,9 @@ const { STEP_LABELS } = await import("../math/fluency-lab/reality/engine.js");
 const { CONTROL_LABELS } = await import("../math/fluency-lab/reality/controls.js");
 for (const key of [...missionKeys(), ...Object.values(STEP_LABELS), ...CONTROL_LABELS])
   keys.add(key);
+// MathSense passes mission text, cut names and form names to t() by variable; list them here.
+const { MATHSENSE_I18N_KEYS } = await import("../math/fluency-lab/mathsense/i18n-keys.js");
+for (const key of MATHSENSE_I18N_KEYS) keys.add(key);
 // The young-learner "big idea" and "watch out" lines pass through t() on the Learn page.
 for (const skill of ALL_SKILLS)
   if (kidLearnFor(skill, skill.grade)) {
@@ -111,6 +114,7 @@ const sources = [
   ...sourceFiles(new URL("reality", dir).pathname),
   ...sourceFiles(new URL("atelier", dir).pathname),
   ...sourceFiles(new URL("class", dir).pathname),
+  ...sourceFiles(new URL("mathsense", dir).pathname),
 ];
 for (const file of sources) {
   const source = readFileSync(file, "utf8");
@@ -127,6 +131,11 @@ for (const file of sources) {
 for (const page of ["index.html", "class/teacher.html", "class/live.html", "class/family.html"])
   for (const match of readFileSync(new URL(page, dir), "utf8").matchAll(/data-i18n[^>]*>([^<]+)</g))
     keys.add(match[1].trim());
+// MathSense's static labels; the formatter wraps long lines, so whitespace is folded before a label is a key.
+for (const match of readFileSync(new URL("mathsense/index.html", dir), "utf8").matchAll(
+  /data-i18n[^>]*>([^<]+)</g,
+))
+  keys.add(match[1].replace(/\s+/g, " ").trim());
 // The class platform passes its error lines and room states to t() by variable.
 const { CLASS_I18N_KEYS } = await import("../math/fluency-lab/class-link-view.js");
 for (const key of CLASS_I18N_KEYS) keys.add(key);

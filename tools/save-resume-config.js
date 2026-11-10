@@ -126,6 +126,9 @@ export const SKIP_FILE_RE =
 //   - math/fluency-lab/reality/ → Math Reality keeps its own versioned, validated save
 //     (ewl-reality-v1, per learner slot: world state, step, evidence) and resumes the exact
 //     step; the generic widget would offer a second, conflicting "save this page"
+//   - math/fluency-lab/mathsense/ → MathSense keeps its own device record (the models,
+//     mission progress and noticing sentences) and announces through ONE live region; the
+//     generic widget would add a second save control and two more live regions.
 //   - Fluency Lab art/graphics galleries → read-only development previews with no
 //     student work to persist
 //   - today/index.html           → the daily front door: a nav screen that READS
@@ -136,4 +139,4 @@ export const SKIP_FILE_RE =
 // (The math/intervention/<topic>/ pages DO carry student self-assessment +
 // quiz state and are intentionally NOT excluded.)
 export const SKIP_PATH_RE =
-  /(^|\/)(?:teacher(\/|$)|living-school\/neft-city-|focus-school\/|shai-school\/|games-live\/|games\/3d\/|math\/(?:intervention|student-board)\/index\.html$|math\/fluency-lab\/(?:family-adventure\/index\.html|reality\/(?:lab\/)?index\.html|ratio-studio\/index\.html|art\/contact-sheet\.html|graphics\/(?:gallery(?:-b)?\.html|animations\/gallery\.html))$|today\/index\.html$)/i;
+  /(^|\/)(?:teacher(\/|$)|living-school\/neft-city-|focus-school\/|shai-school\/|games-live\/|games\/3d\/|math\/(?:intervention|student-board)\/index\.html$|math\/fluency-lab\/(?:family-adventure\/index\.html|reality\/(?:lab\/)?index\.html|ratio-studio\/index\.html|mathsense\/index\.html|art\/contact-sheet\.html|graphics\/(?:gallery(?:-b)?\.html|animations\/gallery\.html))$|today\/index\.html$)/i;

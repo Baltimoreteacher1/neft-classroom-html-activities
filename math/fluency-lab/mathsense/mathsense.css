@@ -1,0 +1,576 @@
+/* MathSense. Tokens come from atelier.css (--at-*); the brief's navy, teal, off-white and amber sit behind them.
+   No violet. Quantity A is a solid teal fill; B is an amber stripe, so nothing depends on colour alone. */
+:root {
+  --ms-navy: #17324d;
+  --ms-teal: #1fa6a2;
+  --ms-teal-ink: var(--at-teal-ink, #066a73);
+  --ms-amber: #f2c15b;
+  --ms-paper: #f7f4ec;
+  --ms-ink: var(--at-ink, #24323f);
+  --ms-soft: var(--at-ink-soft, #4a5568);
+  --ms-rule: var(--at-rule-strong, #b9ae9b);
+  --ms-card: var(--at-surface, #fdfbf5);
+  --ms-focus: var(--at-focus, #2563c9);
+  --ms-ok: var(--at-success, #1b6e47);
+  --ms-warn: var(--at-warn, #9a4b0b);
+  --ms-a: var(--ms-teal);
+  --ms-b: var(--ms-amber);
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  background: var(--ms-paper);
+  color: var(--ms-ink);
+  font: 400 1rem/1.5 var(--at-ui, system-ui, sans-serif);
+}
+.ms-sr,
+.ms-skip:not(:focus) {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.ms-skip:focus {
+  position: fixed;
+  inset: 8px auto auto 8px;
+  z-index: 10;
+  padding: 12px 16px;
+  background: var(--ms-navy);
+  color: #fff;
+}
+.ms-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 20px;
+  padding: 10px 16px;
+  background: var(--ms-navy);
+  color: #fff;
+}
+.ms-header a {
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+}
+.ms-header strong {
+  font-family: var(--at-display, Georgia, serif);
+  font-size: 1.25rem;
+  margin-inline-end: auto;
+}
+main {
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: 16px 16px 64px;
+}
+section {
+  margin-block: 32px;
+}
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--at-display, Georgia, serif);
+  color: var(--ms-navy);
+  line-height: 1.2;
+  margin: 0 0 8px;
+}
+h1 {
+  font-size: clamp(2rem, 1.4rem + 2vw, 3rem);
+}
+h2 {
+  font-size: clamp(1.4rem, 1.2rem + 0.8vw, 1.8rem);
+}
+h3 {
+  font-size: 1.2rem;
+}
+h4 {
+  font-size: 1rem;
+}
+.ms-eyebrow {
+  margin: 0;
+  color: var(--ms-teal-ink);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+}
+.ms-lede {
+  max-width: 62ch;
+  margin: 0 0 16px;
+}
+.ms-help {
+  margin: 8px 0;
+  color: var(--ms-soft);
+  font-size: 1rem;
+}
+.ms-card {
+  background: var(--ms-card);
+  border: 1px solid var(--ms-rule);
+  border-radius: var(--at-radius-sm, 12px);
+  padding: 16px;
+  min-width: 0;
+}
+
+/* controls */
+.ms-btn,
+.ms-mission-btn,
+select,
+input[type="text"],
+input[type="number"],
+textarea {
+  font: inherit;
+  color: var(--ms-ink);
+}
+.ms-btn {
+  min-height: 44px;
+  min-width: 44px;
+  padding: 8px 16px;
+  border: 2px solid var(--ms-navy);
+  border-radius: 10px;
+  background: var(--ms-navy);
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+}
+.ms-btn-quiet {
+  background: transparent;
+  color: var(--ms-navy);
+}
+.ms-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+.ms-btn:focus-visible,
+.ms-slider:focus-visible,
+.ms-mission-btn:focus-visible,
+.ms-mission:focus-visible,
+.ms-strip:focus-visible,
+.ms-feedback:focus-visible,
+select:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+summary:focus-visible {
+  outline: 3px solid var(--ms-focus);
+  outline-offset: 3px;
+}
+.ms-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 12px;
+  margin-top: 12px;
+}
+.ms-field {
+  display: grid;
+  gap: 4px;
+  font-weight: 600;
+  min-width: 0;
+}
+.ms-field-small {
+  min-width: 120px;
+}
+select,
+input[type="text"],
+input[type="number"],
+textarea {
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 2px solid var(--ms-rule);
+  border-radius: 10px;
+  background: #fff;
+  width: 100%;
+}
+input[aria-invalid="true"] {
+  border-color: var(--ms-warn);
+}
+.ms-error {
+  margin: 0 0 8px;
+  color: var(--ms-warn);
+  font-weight: 600;
+}
+.ms-check,
+.ms-editing label,
+.ms-choice {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+}
+input[type="checkbox"],
+input[type="radio"] {
+  width: 24px;
+  height: 24px;
+  accent-color: var(--ms-navy);
+  flex: none;
+}
+.ms-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 12px 24px;
+  margin-bottom: 16px;
+}
+.ms-editing {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 20px;
+}
+.ms-editing legend {
+  font-weight: 600;
+  padding: 0;
+}
+.ms-strip {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding: 12px 16px;
+  border: 2px solid var(--ms-navy);
+  border-radius: 12px;
+  background: #fff;
+}
+.ms-strip p {
+  margin: 0;
+  max-width: 70ch;
+}
+
+/* the workspace */
+.ms-layout {
+  display: grid;
+  gap: 16px;
+}
+.ms-pictures {
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+}
+@media (min-width: 720px) {
+  .ms-pictures {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (min-width: 1100px) {
+  .ms-layout {
+    grid-template-columns: minmax(0, 1.7fr) minmax(320px, 1fr);
+    align-items: start;
+  }
+  .ms-statements {
+    position: sticky;
+    top: 12px;
+  }
+}
+.ms-slider {
+  touch-action: pan-y;
+  cursor: pointer;
+  border-radius: 8px;
+  user-select: none;
+}
+.ms-pic svg {
+  display: block;
+  width: 100%;
+  max-width: 520px;
+  margin-inline: auto;
+  height: auto;
+}
+.ms-well {
+  fill: #fff;
+}
+.ms-outline {
+  fill: none;
+  stroke: var(--ms-navy);
+  stroke-width: 2;
+}
+.ms-cut {
+  stroke: var(--ms-navy);
+  stroke-width: 1;
+  opacity: 0.45;
+}
+.ms-fill-a {
+  fill: var(--ms-a);
+}
+.ms-hatch-bg {
+  fill: var(--ms-b);
+}
+.ms-hatch-line {
+  stroke: var(--ms-navy);
+}
+.ms-over {
+  fill: var(--ms-paper);
+  stroke: none;
+}
+.ms-whole-mark {
+  stroke: var(--ms-navy);
+  stroke-width: 2;
+  stroke-dasharray: 5 3;
+}
+.ms-axis,
+.ms-tick,
+.ms-tick-major {
+  stroke: var(--ms-navy);
+  stroke-width: 2;
+}
+.ms-tick {
+  stroke-width: 1;
+}
+.ms-cap,
+.ms-line-label {
+  font: 600 12px var(--at-ui, sans-serif);
+  fill: var(--ms-ink);
+}
+.ms-tick-label {
+  font: 600 12px var(--at-ui, sans-serif);
+  fill: var(--ms-ink);
+}
+.ms-tick-small {
+  font: 500 9px var(--at-ui, sans-serif);
+  fill: var(--ms-soft);
+}
+.ms-mark-a {
+  fill: var(--ms-a);
+  stroke: var(--ms-navy);
+  stroke-width: 2;
+}
+.ms-mark-b {
+  fill: var(--ms-b);
+  stroke: var(--ms-navy);
+  stroke-width: 2;
+}
+.ms-stem {
+  stroke: var(--ms-navy);
+  stroke-width: 2;
+}
+.ms-hit {
+  fill: transparent;
+}
+
+/* statements */
+.ms-typed {
+  display: grid;
+  gap: 4px 12px;
+}
+@media (min-width: 720px) and (max-width: 1099px) {
+  .ms-typed {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+.ms-editing-label {
+  margin: 0 0 8px;
+  font-weight: 700;
+  color: var(--ms-teal-ink);
+}
+.ms-readout {
+  margin-top: 16px;
+}
+.ms-q ul {
+  margin: 0 0 12px;
+  padding-inline-start: 20px;
+}
+.ms-q li {
+  margin-bottom: 6px;
+}
+.ms-line-chain {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--ms-navy);
+}
+.ms-compare-line {
+  margin: 12px 0 0;
+  padding: 12px;
+  border-left: 6px solid var(--ms-amber);
+  background: #fff;
+  font-weight: 600;
+}
+.ms-compare-line:empty {
+  display: none;
+}
+
+/* missions and notes */
+.ms-mission-layout {
+  display: grid;
+  gap: 16px;
+  margin-top: 12px;
+}
+@media (min-width: 900px) {
+  .ms-mission-layout {
+    grid-template-columns: minmax(260px, 1fr) minmax(0, 2fr);
+    align-items: start;
+  }
+}
+.ms-mission-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+.ms-mission-btn {
+  display: flex;
+  width: 100%;
+  min-height: 48px;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px 12px;
+  padding: 8px 12px;
+  border: 2px solid var(--ms-rule);
+  border-radius: 10px;
+  background: var(--ms-card);
+  text-align: start;
+  cursor: pointer;
+}
+.ms-mission-btn[aria-current="true"] {
+  border-color: var(--ms-navy);
+  background: #fff;
+  box-shadow: inset 6px 0 0 var(--ms-teal);
+}
+.ms-mission-name {
+  font-weight: 700;
+}
+.ms-status {
+  font-size: 0.9rem;
+  color: var(--ms-soft);
+}
+.ms-status-independent,
+.ms-status-supported {
+  color: var(--ms-ok);
+  font-weight: 700;
+}
+.ms-prompt {
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+.ms-choices {
+  border: 0;
+  margin: 0;
+  padding: 0;
+}
+.ms-choices legend {
+  font-weight: 600;
+  padding: 0;
+}
+.ms-hints {
+  margin: 12px 0;
+  padding-inline-start: 24px;
+}
+.ms-feedback {
+  margin-top: 12px;
+  border-radius: 10px;
+}
+.ms-feedback:empty {
+  display: none;
+}
+.ms-feedback.ms-ok {
+  padding: 12px;
+  border: 2px solid var(--ms-ok);
+  background: #fff;
+}
+.ms-feedback.ms-try {
+  padding: 12px;
+  border: 2px solid var(--ms-warn);
+  background: #fff;
+}
+.ms-feedback p {
+  margin: 0 0 6px;
+}
+.ms-done {
+  margin: 12px 0 0;
+  font-weight: 700;
+}
+.ms-frames summary {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-weight: 600;
+}
+.ms-saved {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+.ms-saved li {
+  padding: 8px 12px;
+  background: #fff;
+  border: 1px solid var(--ms-rule);
+  border-radius: 10px;
+}
+
+/* a class that sets display must never beat the hidden attribute */
+[hidden] {
+  display: none !important;
+}
+.ms-header .ms-btn-quiet {
+  color: #fff;
+  border-color: #fff;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    scroll-behavior: auto !important;
+    transition: none !important;
+    animation: none !important;
+  }
+}
+@media (forced-colors: active) {
+  .ms-btn,
+  .ms-mission-btn {
+    border: 2px solid ButtonText;
+  }
+  .ms-well {
+    fill: Canvas;
+  }
+  .ms-outline,
+  .ms-axis,
+  .ms-tick,
+  .ms-tick-major,
+  .ms-stem,
+  .ms-whole-mark,
+  .ms-cut {
+    stroke: CanvasText;
+  }
+  .ms-fill-a,
+  .ms-mark-a {
+    fill: Highlight;
+    stroke: CanvasText;
+  }
+  .ms-fill-b {
+    fill: Canvas;
+    stroke: Highlight;
+    stroke-width: 3;
+    stroke-dasharray: 4 3;
+  }
+  .ms-mark-b {
+    fill: Canvas;
+    stroke: CanvasText;
+  }
+  .ms-hatch-bg {
+    fill: Canvas;
+  }
+  .ms-hatch-line {
+    stroke: Highlight;
+  }
+  .ms-cap,
+  .ms-line-label,
+  .ms-tick-label,
+  .ms-tick-small {
+    fill: CanvasText;
+  }
+  .ms-over {
+    fill: Canvas;
+  }
+  .ms-mission-btn[aria-current="true"] {
+    border-color: Highlight;
+  }
+}

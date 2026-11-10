@@ -20,6 +20,7 @@ const SUBNAV = {
     { view: "write", label: (t) => t("Writing Studio") },
     { href: "reality/", label: (t) => t("Math Reality") },
     { href: "reality/lab/", label: (t) => t("Reality Lab") },
+    { href: "mathsense/", label: (t) => t("MathSense") },
   ],
 };
 
