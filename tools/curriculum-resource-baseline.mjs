@@ -108,12 +108,16 @@ export function collectInventory() {
 
 /** `_redirects` source patterns; splats become prefix matches. */
 function redirectSources() {
-  const file = join(ROOT, "_redirects");
-  if (!existsSync(file)) return [];
-  return readFileSync(file, "utf8")
-    .split("\n")
-    .map((l) => l.trim().split(/\s+/)[0])
-    .filter((s) => s?.startsWith("/"));
+  // Source `_redirects` plus the BUILT one: Pages deploys dist/_redirects, and the build appends rules there
+  // (tools/dedupe-dist-downloads.mjs serves byte-identical downloads from one copy via 200 rewrites).
+  return [join(ROOT, "_redirects"), join(DIST, "_redirects")]
+    .filter((file) => existsSync(file))
+    .flatMap((file) =>
+      readFileSync(file, "utf8")
+        .split("\n")
+        .map((l) => l.trim().split(/\s+/)[0])
+        .filter((s) => s?.startsWith("/")),
+    );
 }
 
 /** `/api/<name>/...` is answered by a Pages Function, not a built file: it resolves when that Function exists. */
