@@ -8,6 +8,7 @@
 // caller spreads `...problemDef`, so a lesson may still author `diagram`; it is
 // simply ignored here, exactly as it has been since the file shipped. Wiring it
 // up is a content decision, not a lint fix.
+import { repairMatches } from "../core/error-analysis-match.js";
 import { stackContent, stackContentHtml } from "../core/i18n.js";
 
 export function renderErrorAnalysis(
@@ -135,29 +136,6 @@ export function renderErrorAnalysis(
   let hintIndex = 0;
   let repairTries = 0;
 
-  // Loose equivalence: numbers match by value; otherwise compare with spacing,
-  // case, and trailing punctuation normalized. Also accept an answer that ends
-  // in the correct final value (e.g. "= 36" vs "36").
-  const norm = (s) =>
-    String(s ?? "")
-      .toLowerCase()
-      .replace(/\s+/g, "")
-      .replace(/[.;,]+$/, "");
-  const lastNumber = (s) => {
-    const m = String(s ?? "").match(/-?\d+(?:\.\d+)?(?:\/\d+)?/g);
-    return m ? m[m.length - 1] : null;
-  };
-  const repairMatches = (typed) => {
-    if (!correctWork) return true;
-    const a = norm(typed);
-    const b = norm(correctWork);
-    if (!a) return false;
-    if (a === b || b.endsWith(a) || a.endsWith(b)) return true;
-    const na = lastNumber(typed);
-    const nb = lastNumber(correctWork);
-    return na != null && nb != null && Number(na) === Number(nb);
-  };
-
   const finalize = () => {
     answered = true;
     textarea.readOnly = true;
@@ -269,7 +247,7 @@ export function renderErrorAnalysis(
       return;
     }
     repairTries += 1;
-    if (repairMatches(typed)) {
+    if (repairMatches(typed, { correctWork, workedExample, errorStep })) {
       repairInput.readOnly = true;
       repairBtn.style.display = "none";
       showFb(repairFb, "success", "That's the fix — the step is now correct. 🎉");
