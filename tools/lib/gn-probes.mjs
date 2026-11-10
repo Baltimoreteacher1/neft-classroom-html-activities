@@ -118,22 +118,24 @@ export function measure() {
         )
           out.clipped.push(`${name(el)} is clipped by its panel`);
       }
-      const sr = (panel.querySelector("svg.scene") || panel).getBoundingClientRect();
-      const art = [...panel.querySelectorAll("svg.scene use[href^='#sym-']")].map((u) => {
-        const a = u.getBoundingClientRect();
-        const left = Math.max(a.left, sr.left);
-        const top = Math.max(a.top, sr.top);
-        const right = Math.min(a.right, sr.right);
-        const bottom = Math.min(a.bottom, sr.bottom);
-        return {
-          left,
-          top,
-          right,
-          bottom,
-          width: Math.max(0, right - left),
-          height: Math.max(0, bottom - top),
-        };
-      });
+      const sr = (panel.querySelector("svg.scene,.gn-art") || panel).getBoundingClientRect();
+      const art = [...panel.querySelectorAll("svg.scene use[href^='#sym-'],.gn-art .gn-face")].map(
+        (u) => {
+          const a = u.getBoundingClientRect();
+          const left = Math.max(a.left, sr.left);
+          const top = Math.max(a.top, sr.top);
+          const right = Math.min(a.right, sr.right);
+          const bottom = Math.min(a.bottom, sr.bottom);
+          return {
+            left,
+            top,
+            right,
+            bottom,
+            width: Math.max(0, right - left),
+            height: Math.max(0, bottom - top),
+          };
+        },
+      );
       for (const b of panel.querySelectorAll(":scope > .balloon")) {
         const br = b.getBoundingClientRect();
         if (

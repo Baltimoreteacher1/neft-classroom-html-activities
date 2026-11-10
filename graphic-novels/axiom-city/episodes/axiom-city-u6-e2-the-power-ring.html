@@ -247,6 +247,9 @@ body.reduced #turnSheet{display:none!important}
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
   <!-- nsr-injected:end -->
+<!-- gn-art:begin (comic panel art — tools/inject-gn-art.mjs) -->
+<link rel="stylesheet" href="/graphic-novels/_shared/gn-comic.css">
+<!-- gn-art:end -->
 </head>
 <body>
 <!-- ============ SHARED SVG SYMBOL LIBRARY (characters, patterns, props) ============ -->
@@ -293,25 +296,8 @@ body.reduced #turnSheet{display:none!important}
 
 <!-- ============ COVER ============ -->
 <div id="cover">
-  <div id="coverCard" role="img" aria-label="Cover of Axiom City Unit 6, Episode 2: The Power Ring. Deep in Ada Vex's cipher vault, a giant dial ringed with glowing powers towers over the crew. Mateo reaches for the dial while the scribbled glitch-creature chalks 2 to the 6th equals 12 across it, and the glowing orb VEX hovers above with the rest of the crew below.">
-    <div class="cov-layer" data-depth="6" style="z-index:1">
-      <svg viewBox="0 0 500 700" width="100%" height="100%" preserveAspectRatio="xMidYMid slice"><rect width="500" height="700" fill="#0d1f33"/><rect width="500" height="700" fill="url(#halftone)" opacity=".5"/><polygon points="70,0 430,0 396,700 104,700" fill="#17324D" opacity=".9"/><g fill="#F2C15B" opacity=".18"><circle cx="250" cy="330" r="240"/></g></svg>
-    </div>
-    <div class="cov-layer" data-depth="12" style="z-index:2">
-      <svg viewBox="0 0 500 700" width="100%" height="100%" preserveAspectRatio="xMidYMid slice"><g stroke="#17324D" stroke-width="3"><rect x="38" y="300" width="26" height="38" rx="4" fill="#F2C15B"/><rect x="436" y="300" width="26" height="38" rx="4" fill="#F2C15B"/><circle cx="51" cy="312" r="6" fill="#FFF3D8"/><circle cx="449" cy="312" r="6" fill="#FFF3D8"/></g><circle cx="250" cy="330" r="205" fill="#22456a" stroke="#17324D" stroke-width="10"/><circle cx="250" cy="330" r="158" fill="#0d1f33" stroke="#F2C15B" stroke-width="6"/><g font-family="Consolas,monospace" font-weight="700" font-size="34" fill="#7CF2EC"><text x="250" y="194" text-anchor="middle">2⁶</text><text x="384" y="342" text-anchor="middle">5³</text><text x="250" y="486" text-anchor="middle">3²</text><text x="116" y="342" text-anchor="middle">10³</text></g><circle cx="250" cy="330" r="44" fill="#F2C15B" stroke="#17324D" stroke-width="6"/><line x1="250" y1="288" x2="250" y2="240" stroke="#F2C15B" stroke-width="12" stroke-linecap="round"/></svg>
-    </div>
-    <div class="cov-layer" data-depth="22" style="z-index:3">
-      <svg viewBox="0 0 500 700" width="100%" height="100%" preserveAspectRatio="xMidYMid slice">
-        <g transform="translate(316,128) scale(1.15)"><use href="#sym-glitch"/></g>
-        <text x="368" y="262" font-family="Consolas,monospace" font-weight="700" font-size="22" fill="#E2674A" text-anchor="middle" transform="rotate(-9 368 262)">2⁶ = 12!!</text>
-        <g transform="translate(96,150) scale(.85)"><use href="#sym-vex"/></g>
-        <g transform="translate(176,438) scale(1.3)"><use href="#sym-dev"/></g>
-        <g transform="translate(48,488) scale(1.05)"><use href="#sym-theo"/></g>
-        <g transform="translate(316,492) scale(1.02)"><use href="#sym-maya"/></g>
-        <g transform="translate(404,540) scale(.9)"><use href="#sym-zara"/></g>
-        <g stroke="#7CF2EC" stroke-width="2.5" opacity=".6" stroke-dasharray="4 7"><line x1="130" y1="216" x2="226" y2="330"/><line x1="130" y1="216" x2="250" y2="240"/></g>
-      </svg>
-    </div>
+  <div id="coverCard" role="img" aria-label="Cover of Axiom City Unit 6, Episode 2: The Power Ring. Deep in Ada Vex's lantern-lit cipher vault, Andre, Mateo and Keiko stand together, smiling up at VEX, the small teal robot with one glowing golden eye, which hangs above them.">
+    <div class="cov-layer" data-depth="6" style="z-index:1"><div data-gn-art="cover"></div></div>
     <div class="spine"><span>AXIOM CITY · EDUWONDERLAB</span></div>
     <div id="coverTitle">
       <div class="series">AXIOM CITY</div>
@@ -388,181 +374,197 @@ const BADGES = [
   {id:"boss",icon:"#sig-boss",label:"Ring Turner — Boss Gate"}
 ];
 
-const SC = (vb,inner)=>`<svg class="scene" viewBox="${vb}" role="img" preserveAspectRatio="xMidYMid meet">${inner}</svg>`;
-/* cipher-vault interior backdrop (stone shaft under Vexhall Library) */
-const VAULT=`<rect width="400" height="210" fill="#10243a"/><rect width="400" height="210" fill="url(#halftone)"/><polygon data-depth="4" points="46,0 354,0 326,210 74,210" fill="#17324D" opacity=".85"/>`;
-/* glow-ink lantern pair (lit in E1) */
-const LANTERNS=`<g data-depth="8" fill="#F2C15B" stroke="#17324D" stroke-width="2"><rect x="14" y="60" width="18" height="26" rx="3"/><rect x="368" y="60" width="18" height="26" rx="3"/><circle cx="23" cy="68" r="4" fill="#FFF3D8"/><circle cx="377" cy="68" r="4" fill="#FFF3D8"/></g>`;
-
+/* Comic pages: each story page is a .gn-comic grid of illustrated panels. ART(id) (injected above by
+   tools/inject-gn-art.mjs) draws a panel's art from the book's atlas; every word stays live HTML on top.
+   Balloon and caption TEXT is unchanged from the SVG edition (Easy read keys on it). */
+/* gn-art:begin (comic panel art: one atlas, coordinates and alt text from _engine/art/u6-e2 — tools/inject-gn-art.mjs) */
+const GN_ART = {"src":"/graphic-novels/axiom-city/art/axiom-city-u6-e2-the-power-ring.webp?v=3a853f5aeb","w":2994,"h":4516,"f":{"cover":[0,0,544,762,"Andre, Mateo and Keiko stand together at the bottom of a tall stone vault lit by brass lanterns, smiling up at VEX, the teal robot with one glowing golden eye, which hangs above them.",[[15,62,13,10],[36,60,14,11],[62,58,15,12]]],"p1-vault":[870,2558,870,435,"Seen from behind, Andre in his blue hoodie and Keiko in her red jacket face a huge round vault door in the lantern-lit stone vault, while VEX glows high on the wall to the right.",[[82,10,15,30]]],"p1-stairs":[870,3048,870,381,"Looking down a dark spiral stone staircase lit by one lantern, the scribbly teal glitch creature scurries down the steps, giggling over its shoulder.",[[62,47,16,32]]],"p2-ring":[870,2068,870,490,"The second ring: a giant stone dial ringed with glowing cyan lights fills the vault wall. The scribbly glitch clings to its rim, chalking a wrong answer across it.",[[61,2,22,25]]],"p2-mateo":[490,762,490,653,"Close-up of Mateo, in his orange shirt, grinning with excitement with his fists raised.",[[30,34,44,30]]],"p2-andre":[0,762,490,653,"Close-up of Andre, in his blue hoodie, frowning and pointing up at the dial.",[[36,30,42,28]]],"p3-board":[1740,2558,870,435,"Andre stands at the left, chalk in hand, beside a big blank chalkboard on an easel; Mateo waves at the board from the right under a glowing brass lantern.",[[16,46,10,17],[84,56,10,16]]],"p3-glitch":[980,762,490,653,"Close-up of the glitch, a lumpy teal cloud creature with yellow eyes and coral eyebrows, flexing both arms with a smug, toothy grin.",[[26,40,42,24]]],"p3-vex":[1740,3048,870,381,"VEX, the small teal robot with one big golden eye, hovers in a soft glow at the edge of the dark panel.",[[63,25,24,50]]],"p4-mateo":[870,3864,870,326,"Mateo turns to the reader with a confident grin and a thumbs up.",[[11,20,14,34]]],"p5-lock":[1740,2068,870,490,"The great dial is jammed: sparks spit from beside its hub. A dark brass plaque hangs beneath it. Layla throws up her hands in surprise on the left while Andre stands calmly on the right with his arms crossed.",[[31,63,10,17],[73,55,9,15]]],"p5-layla":[1960,762,490,653,"Close-up of Layla, in her green sweatshirt, gritting her teeth as she twists a heavy brass handle on the dial that will not budge.",[[38,30,40,24]]],"p5-andre":[1470,762,490,653,"Close-up of Andre, in his blue hoodie, holding up one finger with a calm, knowing smile.",[[27,34,50,28]]],"p5-vex":[0,3483,870,381,"VEX, the teal robot with one big golden eye, glows in the dark as rays of cyan light fan out behind it.",[[58,19,24,52]]],"p6-andre":[1740,3864,870,326,"Andre grins and points straight out of the panel at the reader.",[[35,30,18,42]]],"p7-plate":[0,3048,870,435,"Close-up of a wide polished brass plate with six rivets, set into the dark stone wall beside a glowing lantern. Ada Vex's words are stamped across it.",[]],"p7-andre":[2450,762,490,653,"Close-up of Andre, in his blue hoodie, holding up a stick of chalk that sparkles with chalk dust, calm and ready.",[[32,26,42,26]]],"p7-keiko":[0,1415,490,653,"Close-up of Keiko, in her red jacket with her black hair in a bun, raising two fingers and giving a sly, knowing smile under a hanging lantern.",[[33,36,42,24]]],"p7-vex":[1740,3483,822,348,"VEX hovers beside two small glowing holograms: a trophy, and a little machine with a funnel on top that turns a number in into a number out.",[[63.5,26.2,23.3,52.5]]],"p8-andre":[0,4190,870,326,"Andre, chalk in hand, glances sideways with a fed-up look at the heckling glitch.",[[24,25,19,45]]],"p9-scrawl":[0,2558,870,490,"The glitch, huge and grinning, flexes in the middle of an explosion of chalk scribbles across the vault wall. Keiko, in her red jacket, stares in alarm on the left; Mateo, in his orange shirt, crosses his arms, unimpressed, on the right.",[[12,52,11,17],[81,39,10,17],[40,21,23,25]]],"p9-keiko":[490,1415,490,653,"Close-up of Keiko, eyes wide and mouth open in alarm, pointing off to the side.",[[27,31,46,26]]],"p9-mateo":[980,1415,490,653,"Close-up of Mateo, arms crossed and one eyebrow raised, smirking. He is not impressed.",[[32,32,40,24]]],"p9-vex":[870,3483,870,381,"VEX scans the scribbled wall with a thin cyan beam, its golden eye steady, red warning light glowing behind it.",[[56,22,26,52]]],"p10-align":[1960,1415,870,490,"Mateo stands with his arms crossed in front of the great dial, its cyan lights glowing, while the glitch hovers beside it with a nervous, toothy grin.",[[32,50,12,19],[73,36,22,30]]],"p10-layla":[544,0,490,653,"Close-up of Layla, in her green sweatshirt with a paper snack bag tucked in front, grinning and giving a big thumbs up.",[[30,30,42,24]]],"p10-vex":[1470,1415,490,496,"VEX glows bright in front of the great golden dial, sparks flying around it, ready for the last alignment.",[[25,8,55,53]]],"p11-vex":[0,3864,870,326,"VEX flashes a bright red alarm ring around its golden eye in the dark.",[[64,15,22,55]]],"p12-turn":[0,2068,870,490,"The great dial has swung open. Golden light pours through an open double door at the top of a short flight of stone steps, sparks scattering, and a second wooden door waits in a stone arch to the right. Each door wears a label.",[]],"p12-mateo":[2014,0,490,653,"Close-up of Mateo, eyes squeezed shut, both fists in the air, cheering.",[[26,30,42,28]]],"p12-andre":[1034,0,490,653,"Close-up of Andre, in his blue hoodie, looking down and to the side with a thoughtful, puzzled squint.",[[27,30,48,34]]],"p12-keiko":[1524,0,490,653,"Close-up of Keiko tapping her chin with one finger, puzzled, thinking hard.",[[40,15,58,45]]],"p12-vault":[2504,0,490,653,"A small round vault door with a brass rim sits in the dark stone wall above a smooth stone ledge. Words are carved into the ledge.",[]]}};
+function ART(id) {
+  const a = GN_ART.f[id];
+  if (!a) throw new Error("gn-art: no frame " + id);
+  const [x, y, w, h, alt, faces] = a;
+  const at = (v, total, size) => (total === size ? 0 : (v / (total - size)) * 100);
+  const faceHtml = faces.map(([l, t, fw, fh]) => `<i class="gn-face" style="left:${l}%;top:${t}%;width:${fw}%;height:${fh}%"></i>`).join("");
+  return `<div class="gn-art" role="img" aria-label="${alt}" style="aspect-ratio:${w}/${h};background-image:url(${GN_ART.src});background-size:${(GN_ART.w / w) * 100}% ${(GN_ART.h / h) * 100}%;background-position:${at(x, GN_ART.w, w)}% ${at(y, GN_ART.h, h)}%">${faceHtml}</div>`;
+}
+for (const el of document.querySelectorAll("[data-gn-art]")) el.outerHTML = ART(el.dataset.gnArt);
+/* gn-art:end */
 const PAGES = [
 /* p1 — title + previously */
 { ch:"Unit 6 · Episode 2", html:`
   <div style="text-align:center;margin-top:8px"><div class="kicker">EduWonderLab Presents</div>
   <h2 class="splashtitle" style="margin:8px 0">THE POWER <em>RING</em></h2>
   <div class="caption" style="display:inline-block">Lessons 6-3, 6-4 &amp; 6-5 — exponents, order of operations, and algebraic expressions. Four reader gates stand between the crew and the vault's second ring.</div></div>
-  <div class="panel panel3d tall" style="margin-top:8px">${SC("0 0 400 210",`${VAULT}${LANTERNS}
-    <g data-depth="10" transform="translate(150,8) scale(1)" opacity=".95"><use href="#sym-vault"/></g>
-    <g data-depth="16" transform="translate(28,96) scale(.86)"><use href="#sym-dev"/></g>
-    <g data-depth="16" transform="translate(118,98) scale(.84)"><use href="#sym-theo"/></g>
-    <g data-depth="16" transform="translate(208,98) scale(.84)"><use href="#sym-maya"/></g>
-    <g data-depth="16" transform="translate(296,96) scale(.86)"><use href="#sym-zara"/></g>
-    <g data-depth="24" transform="translate(46,8) scale(.5)"><use href="#sym-vex"/></g>`)}
-    <div class="balloon vex" style="top:6px;left:8px;max-width:54%"><span class="who">VEX</span>Previously: the vault's FIRST ring fell to honest quotients. The glitch retreated one ring deeper. Status: it is still terrible at math.</div>
-  </div>
-  <div class="caption loc">Previously, in Axiom City: a scribble made of broken equations locked Ada Vex's cipher vault and scrambled every sign in town. The crew split its fraction lies — twelve quarter-meter strips hide inside three meters of ribbon, thank you very much — and the first ring rolled open. Two rings to go. The glitch went down the stairs giggling.</div>`},
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${ART("p1-vault")}
+      <div class="balloon vex gn-side" style="top:6px;left:8px;max-width:58%;--ty:14px"><span class="who">VEX</span>Previously: the vault's FIRST ring fell to honest quotients. The glitch retreated one ring deeper. Status: it is still terrible at math.</div>
+    </div>
+    <div class="panel gn-panel">${ART("p1-stairs")}
+      <div class="caption loc">Previously, in Axiom City: a scribble made of broken equations locked Ada Vex's cipher vault and scrambled every sign in town. The crew split its fraction lies — twelve quarter-meter strips hide inside three meters of ribbon, thank you very much — and the first ring rolled open. Two rings to go. The glitch went down the stairs giggling.</div>
+    </div>
+  </div>`},
 
 /* p2 — splash: the second ring */
 { ch:"Chapter 1 · The Second Ring", html:`
   <div class="kicker">Chapter One</div><h2 class="splashtitle">THE SECOND <em>RING</em></h2>
-  <div class="panel panel3d tall">${SC("0 0 400 220",`
-    <rect width="400" height="220" fill="#0d1f33"/><rect width="400" height="220" fill="url(#halftone)"/>
-    <circle data-depth="6" cx="200" cy="106" r="96" fill="#17324D"/>
-    <g data-depth="10" transform="translate(116,22) scale(1.7)"><use href="#sym-powring"/></g>
-    <g data-depth="16" transform="translate(296,28) scale(.9)"><use href="#sym-glitch"/></g>
-    <g data-depth="18" transform="translate(28,104) scale(.9)"><use href="#sym-dev"/></g>
-    <g data-depth="18" transform="translate(316,118) scale(.84)"><use href="#sym-theo"/></g>
-    <g data-depth="24" transform="translate(180,168) scale(.46)"><use href="#sym-vex"/></g>
-    <text data-depth="14" x="318" y="116" font-family="Consolas,monospace" font-weight="700" font-size="13" fill="#E2674A" transform="rotate(-8 318 116)">2⁶ = 12!!</text>`)}
-    <div class="sfx" style="top:8px;left:14px">SKRRT!</div>
-    <div class="balloon" style="bottom:14px;left:8px;max-width:46%"><span class="who">MATEO</span>Ring two: a giant dial of glowing powers. This is a puzzle BOSS DOOR and I have never been happier.</div>
-    <div class="balloon tail-r" style="top:8px;right:6px;max-width:42%"><span class="who">ANDRE</span>The glitch just chalked "2⁶ = 12" on it. The notch went dark. It's feeding the ring wrong answers.</div>
-  </div>
-  <div class="caption">The second ring is a dial of <b>powers</b> — little expressions like 2⁶ and 5³. Each notch only glows when it's fed its true value. The glitch inflates every number it touches… by misreading exponents.</div>`},
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${ART("p2-ring")}
+      <div class="sfx" style="top:8px;left:14px">SKRRT!</div>
+      <div class="gn-sign gn-scrawl" data-gn-skip style="left:76%;top:44%">2⁶ = 12!!</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p2-mateo")}
+      <div class="balloon" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">MATEO</span>Ring two: a giant dial of glowing powers. This is a puzzle BOSS DOOR and I have never been happier.</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p2-andre")}
+      <div class="balloon tail-r" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">ANDRE</span>The glitch just chalked "2⁶ = 12" on it. The notch went dark. It's feeding the ring wrong answers.</div>
+    </div>
+    <div class="caption">The second ring is a dial of <b>powers</b> — little expressions like 2⁶ and 5³. Each notch only glows when it's fed its true value. The glitch inflates every number it touches… by misreading exponents.</div>
+  </div>`},
 
 /* p3 — lesson: reading powers */
 { ch:"Chapter 1 · Reading Powers", html:`
-  <div class="caption loc">Andre unrolls chalk and a plan. Mateo holds the lantern. The glitch heckles from the dark.</div>
-  <div class="panel panel3d tall">${SC("0 0 400 200",`${VAULT}
-    <rect data-depth="8" x="70" y="26" width="260" height="84" rx="8" fill="#0d1f33" stroke="#F2C15B" stroke-width="3"/>
-    <text data-depth="8" x="200" y="56" text-anchor="middle" font-family="Consolas,monospace" font-weight="700" font-size="16" fill="#7CF2EC">10³ = 10 × 10 × 10</text>
-    <text data-depth="8" x="200" y="84" text-anchor="middle" font-family="Consolas,monospace" font-weight="700" font-size="16" fill="#FFF3D8">= 1000</text>
-    <g data-depth="16" transform="translate(24,96) scale(.88)"><use href="#sym-theo"/></g>
-    <g data-depth="16" transform="translate(316,98) scale(.86)"><use href="#sym-dev"/></g>
-    <g data-depth="12" transform="translate(166,128) scale(.62)"><use href="#sym-glitch"/></g>`)}
-    <div class="balloon" style="top:8px;left:8px;max-width:44%"><span class="who">ANDRE</span>Practice chip: 10³. Base 10, exponent 3 — so three 10s multiplied. One thousand.</div>
-    <div class="balloon tail-r" style="bottom:12px;right:6px;max-width:40%"><span class="who">GLITCH</span>WRONG. ten times three!! THIRTY. tiny number. very efficient.</div>
-  </div>
-  <div class="panel">${SC("0 0 400 96",`<rect width="400" height="96" fill="#fdf6e7"/><g transform="translate(318,2) scale(.62)"><use href="#sym-vex"/></g>`)}
-    <div class="balloon vex" style="top:8px;left:10px;max-width:74%"><span class="who">VEX</span>A <b>power</b> has two parts: the <b>base</b> — the number being copied — and the <b>exponent</b> — the count of copies being MULTIPLIED. Never base times exponent. That error is the glitch's entire personality.</div>
-  </div>
-  <div class="caption">Say 10³ "ten to the third power." The exponent counts factors, not a multiplication partner: 10 × 10 × 10 = 1000, while the glitch's 10 × 3 = 30 isn't even in the neighborhood.</div>`},
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${ART("p3-board")}
+      <div class="caption loc">Andre unrolls chalk and a plan. Mateo holds the lantern. The glitch heckles from the dark.</div>
+      <div class="gn-sign gn-chalk" data-gn-skip style="left:65%;top:44%">10³ = 10 × 10 × 10<br>= 1000</div>
+      <div class="balloon" style="bottom:8px;left:28%;max-width:36%;--tx:12px"><span class="who">ANDRE</span>Practice chip: 10³. Base 10, exponent 3 — so three 10s multiplied. One thousand.</div>
+    </div>
+    <div class="panel gn-panel gn-third">${ART("p3-glitch")}
+      <div class="balloon" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">GLITCH</span>WRONG. ten times three!! THIRTY. tiny number. very efficient.</div>
+    </div>
+    <div class="panel gn-panel gn-two-thirds">${ART("p3-vex")}
+      <div class="balloon vex gn-side" style="top:6px;left:6px;max-width:72%"><span class="who">VEX</span>A <b>power</b> has two parts: the <b>base</b> — the number being copied — and the <b>exponent</b> — the count of copies being MULTIPLIED. Never base times exponent. That error is the glitch's entire personality.</div>
+    </div>
+    <div class="caption">Say 10³ "ten to the third power." The exponent counts factors, not a multiplication partner: 10 × 10 × 10 = 1000, while the glitch's 10 × 3 = 30 isn't even in the neighborhood.</div>
+  </div>`},
 
 /* p4 — GATE g1 */
 { ch:"Chapter 1 · Reader Gate", gate:"g1", html:`
-  <div class="panel">${SC("0 0 400 84",`<rect width="400" height="84" fill="#0d1f33"/><g transform="translate(8,0) scale(.66)"><use href="#sym-dev"/></g>`)}
-    <div class="balloon" style="top:6px;left:80px;max-width:68%"><span class="who">MATEO</span>Reader — feed the first two notches their TRUE values. The glitch already smeared its little "12" on one. Overwrite it.</div>
+  <div class="gn-comic">
+    <div class="panel gn-panel">${ART("p4-mateo")}
+      <div class="balloon" style="top:6px;right:6px;max-width:66%;--tx:10px"><span class="who">MATEO</span>Reader — feed the first two notches their TRUE values. The glitch already smeared its little "12" on one. Overwrite it.</div>
+    </div>
   </div>`},
 
 /* p5 — splash: the order lock */
 { ch:"Chapter 2 · The Order Lock", html:`
   <div class="kicker">Chapter Two</div><h2 class="splashtitle">THE ORDER <em>LOCK</em></h2>
-  <div class="panel panel3d tall">${SC("0 0 400 210",`${VAULT}${LANTERNS}
-    <g data-depth="10" transform="translate(132,14) scale(1.35)"><use href="#sym-powring"/></g>
-    <rect data-depth="8" x="64" y="152" width="272" height="44" rx="8" fill="#0d1f33" stroke="#1FA6A2" stroke-width="2.5"/>
-    <text data-depth="8" x="200" y="172" text-anchor="middle" font-family="Consolas,monospace" font-weight="700" font-size="12" fill="#7CF2EC">NOTCH III ACCEPTS: WHOLE LINES ONLY</text>
-    <text data-depth="8" x="200" y="188" text-anchor="middle" font-family="Consolas,monospace" font-weight="700" font-size="12" fill="#E2674A">READ IN ORDER OR DO NOT READ</text>
-    <g data-depth="18" transform="translate(24,92) scale(.88)"><use href="#sym-zara"/></g>
-    <g data-depth="18" transform="translate(318,94) scale(.86)"><use href="#sym-theo"/></g>`)}
-    <div class="sfx" style="top:8px;right:14px">CL-CLUNK</div>
-    <div class="balloon" style="top:8px;left:8px;max-width:46%"><span class="who">LAYLA</span>It turned one click and JAMMED. The next notch isn't a single power — it's a whole line of math.</div>
-    <div class="balloon tail-r" style="bottom:12px;right:6px;max-width:44%"><span class="who">ANDRE</span>Then the line has rules. You don't read math left to right like a comic. You read it by RANK.</div>
-  </div>
-  <div class="panel">${SC("0 0 400 100",`<rect width="400" height="100" fill="#fdf6e7"/><g transform="translate(318,4) scale(.62)"><use href="#sym-vex"/></g>`)}
-    <div class="balloon vex" style="top:8px;left:10px;max-width:74%"><span class="who">VEX</span>The <b>order of operations</b>: parentheses first. Exponents second. Multiplication and division third — together, sweeping left to right. Addition and subtraction last. Andre's chalk test: 5 + 2 × 3² becomes 5 + 2 × 9, the multiplication fires next, and the line settles at 23.</div>
-  </div>
-  <div class="caption">Reading 5 + 2 × 3² straight left to right balloons it to 63 — exactly the kind of inflation the glitch adores. Rank order keeps numbers honest.</div>`},
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${ART("p5-lock")}
+      <div class="sfx" style="top:8px;right:14px">CL-CLUNK</div>
+      <div class="gn-sign gn-flow" data-gn-skip style="left:52.5%;top:83%;width:21%;font-size:13px">NOTCH III ACCEPTS: WHOLE LINES ONLY<br><span style="color:#ff8a6e">READ IN ORDER OR DO NOT READ</span></div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p5-layla")}
+      <div class="balloon" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">LAYLA</span>It turned one click and JAMMED. The next notch isn't a single power — it's a whole line of math.</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p5-andre")}
+      <div class="balloon tail-r" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">ANDRE</span>Then the line has rules. You don't read math left to right like a comic. You read it by RANK.</div>
+    </div>
+    <div class="panel gn-panel">${ART("p5-vex")}
+      <div class="balloon vex gn-side" style="top:6px;left:6px;max-width:56%"><span class="who">VEX</span>The <b>order of operations</b>: parentheses first. Exponents second. Multiplication and division third — together, sweeping left to right. Addition and subtraction last. Andre's chalk test: 5 + 2 × 3² becomes 5 + 2 × 9, the multiplication fires next, and the line settles at 23.</div>
+    </div>
+    <div class="caption">Reading 5 + 2 × 3² straight left to right balloons it to 63 — exactly the kind of inflation the glitch adores. Rank order keeps numbers honest.</div>
+  </div>`},
 
 /* p6 — GATE g2 */
 { ch:"Chapter 2 · Reader Gate", gate:"g2", html:`
-  <div class="panel">${SC("0 0 400 80",`<rect width="400" height="80" fill="#0d1f33"/><g transform="translate(10,-2) scale(.62)"><use href="#sym-theo"/></g>`)}
-    <div class="balloon" style="top:6px;left:78px;max-width:70%"><span class="who">ANDRE</span>Reader — two lines, one lock. Read them by rank, not left to right.</div>
+  <div class="gn-comic">
+    <div class="panel gn-panel">${ART("p6-andre")}
+      <div class="balloon" style="top:12px;right:8px;max-width:42%;--tx:10px"><span class="who">ANDRE</span>Reader — two lines, one lock. Read them by rank, not left to right.</div>
+    </div>
   </div>`},
 
 /* p7 — lesson: Ada's inscription, symbols */
 { ch:"Chapter 3 · The Brass Plate", html:`
   <div class="kicker">Chapter Three</div><h2 class="splashtitle">THE BRASS <em>PLATE</em></h2>
-  <div class="caption loc">Two clicks down. Set into the ring: a brass plate stamped with Ada Vex's handwriting — words, not numbers.</div>
-  <div class="panel panel3d tall">${SC("0 0 400 200",`${VAULT}
-    <rect data-depth="8" x="58" y="26" width="284" height="78" rx="10" fill="#22456a" stroke="#F2C15B" stroke-width="3"/>
-    <text data-depth="8" x="200" y="58" text-anchor="middle" font-family="Georgia,serif" font-style="italic" font-size="14" fill="#FFF3D8">"the key is 7 less than twice n"</text>
-    <text data-depth="8" x="200" y="84" text-anchor="middle" font-family="Consolas,monospace" font-size="11" fill="#7CF2EC">— A.V., cipher ring two</text>
-    <g data-depth="16" transform="translate(26,96) scale(.88)"><use href="#sym-theo"/></g>
-    <g data-depth="16" transform="translate(316,98) scale(.86)"><use href="#sym-maya"/></g>
-    <g data-depth="12" transform="translate(170,128) scale(.58)"><use href="#sym-glitch"/></g>`)}
-    <div class="balloon" style="bottom:12px;left:8px;max-width:48%"><span class="who">ANDRE</span>Word-to-symbol translation. <b>n</b> is the <b>variable</b> — the mystery number's costume. I write the expressions; reader runs them.</div>
-    <div class="balloon tail-r" style="top:8px;right:6px;max-width:40%"><span class="who">KEIKO</span>Careful — "less than" is sneaky. It flips the order of what you write.</div>
-  </div>
-  <div class="panel">${SC("0 0 400 96",`<rect width="400" height="96" fill="#fdf6e7"/><g transform="translate(318,2) scale(.62)"><use href="#sym-vex"/></g>`)}
-    <div class="balloon vex" style="top:8px;left:10px;max-width:74%"><span class="who">VEX</span>Andre's warm-up: "4 more than three times m" becomes 3m + 4 — the 3 is the <b>coefficient</b>, the number multiplying the variable. Feed it m = 2 and the machine outputs 3 × 2 + 4 = 10. Value in, number out: that is evaluating.</div>
-  </div>
-  <div class="caption">An algebraic expression is math with at least one <b>variable</b>. "Times" builds a coefficient; "more than" adds after; "less than" subtracts FROM the thing you built.</div>`},
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${ART("p7-plate")}
+      <div class="caption loc">Two clicks down. Set into the ring: a brass plate stamped with Ada Vex's handwriting — words, not numbers.</div>
+      <div class="gn-sign gn-plate" data-gn-skip style="left:55.5%;top:58%;width:56%">"the key is 7 less than twice n"<small>— A.V., cipher ring two</small></div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p7-andre")}
+      <div class="balloon" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">ANDRE</span>Word-to-symbol translation. <b>n</b> is the <b>variable</b> — the mystery number's costume. I write the expressions; reader runs them.</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p7-keiko")}
+      <div class="balloon tail-r" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">KEIKO</span>Careful — "less than" is sneaky. It flips the order of what you write.</div>
+    </div>
+    <div class="panel gn-panel">${ART("p7-vex")}
+      <div class="balloon vex gn-side" style="top:6px;left:6px;max-width:56%"><span class="who">VEX</span>Andre's warm-up: "4 more than three times m" becomes 3m + 4 — the 3 is the <b>coefficient</b>, the number multiplying the variable. Feed it m = 2 and the machine outputs 3 × 2 + 4 = 10. Value in, number out: that is evaluating.</div>
+    </div>
+    <div class="caption">An algebraic expression is math with at least one <b>variable</b>. "Times" builds a coefficient; "more than" adds after; "less than" subtracts FROM the thing you built.</div>
+  </div>`},
 
 /* p8 — GATE g3 */
 { ch:"Chapter 3 · Reader Gate", gate:"g3", html:`
-  <div class="panel">${SC("0 0 400 80",`<rect width="400" height="80" fill="#0d1f33"/><g transform="translate(8,-2) scale(.62)"><use href="#sym-theo"/></g>`)}
-    <div class="balloon" style="top:6px;left:78px;max-width:72%"><span class="who">ANDRE</span>Reader — translate Ada's plate into symbols, then run the machine. The glitch is mouthing wrong answers at you. Rude.</div>
+  <div class="gn-comic">
+    <div class="panel gn-panel">${ART("p8-andre")}
+      <div class="balloon" style="top:10px;right:8px;max-width:52%;--tx:10px"><span class="who">ANDRE</span>Reader — translate Ada's plate into symbols, then run the machine. The glitch is mouthing wrong answers at you. Rude.</div>
+    </div>
   </div>`},
 
 /* p9 — glitch counterattack: inflation */
 { ch:"Chapter 4 · The Inflation", html:`
-  <div class="caption loc">Three clicks. One alignment left. The glitch stops heckling — and starts TOUCHING things.</div>
-  <div class="panel panel3d tall">${SC("0 0 400 200",`
-    <rect width="400" height="200" fill="#17324D"/><rect width="400" height="200" fill="url(#halftone)"/>
-    <g data-depth="10" transform="translate(140,10) scale(1.2)"><use href="#sym-glitch"/></g>
-    <g data-depth="8" font-family="Consolas,monospace" font-weight="700" fill="#E2674A"><text x="36" y="60" font-size="14" transform="rotate(-10 36 60)">6² = 12!!</text><text x="300" y="54" font-size="13" transform="rotate(8 300 54)">9 × 9 = 81?? NO. 18.</text><text x="56" y="170" font-size="13" transform="rotate(6 56 170)">EXPONENTS = TIMES TABLES</text><text x="276" y="176" font-size="14" transform="rotate(-7 276 176)">x² = x·2 FOREVER</text></g>
-    <g data-depth="18" transform="translate(20,92) scale(.86)"><use href="#sym-maya"/></g>
-    <g data-depth="18" transform="translate(322,96) scale(.84)"><use href="#sym-dev"/></g>`)}
-    <div class="sfx" style="top:6px;left:14px">SKRITCH SKRITCH</div>
-    <div class="balloon" style="bottom:12px;left:8px;max-width:46%"><span class="who">KEIKO</span>It's rewriting the counterweight readouts! It just told the ring that 6² is 12 — and the needle MOVED.</div>
-    <div class="balloon tail-r" style="top:8px;right:6px;max-width:42%"><span class="who">MATEO</span>Of course it did. Every lie it writes is the same lie: base times exponent. It has ONE move.</div>
-  </div>
-  <div class="panel">${SC("0 0 400 92",`<rect width="400" height="92" fill="#fdf6e7"/><g transform="translate(318,2) scale(.62)"><use href="#sym-vex"/></g>`)}
-    <div class="balloon vex" style="top:8px;left:10px;max-width:74%"><span class="who">VEX</span>Analysis confirmed: the creature cannot square. It multiplies the base by the exponent and inflates everything else to hide it. Beat the final alignment with TRUE values and the ring will reject every number it touched.</div>
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${ART("p9-scrawl")}
+      <div class="caption loc">Three clicks. One alignment left. The glitch stops heckling — and starts TOUCHING things.</div>
+      <div class="sfx" style="bottom:8px;left:10px">SKRITCH SKRITCH</div>
+      <div class="gn-sign gn-scrawl" data-gn-skip style="left:18%;top:34%;--rot:-10deg">6² = 12!!</div>
+      <div class="gn-sign gn-scrawl" data-gn-skip style="left:76%;top:29%;--rot:8deg">9 × 9 = 81?? NO. 18.</div>
+      <div class="gn-sign gn-scrawl" data-gn-skip style="left:64%;top:76%;--rot:-6deg">x² = x·2 FOREVER</div>
+      <div class="gn-sign gn-scrawl" data-gn-skip style="left:46%;top:66%;--rot:4deg">EXPONENTS = TIMES TABLES</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p9-keiko")}
+      <div class="balloon" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">KEIKO</span>It's rewriting the counterweight readouts! It just told the ring that 6² is 12 — and the needle MOVED.</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p9-mateo")}
+      <div class="balloon tail-r" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">MATEO</span>Of course it did. Every lie it writes is the same lie: base times exponent. It has ONE move.</div>
+    </div>
+    <div class="panel gn-panel">${ART("p9-vex")}
+      <div class="balloon vex gn-side" style="top:6px;left:6px;max-width:56%"><span class="who">VEX</span>Analysis confirmed: the creature cannot square. It multiplies the base by the exponent and inflates everything else to hide it. Beat the final alignment with TRUE values and the ring will reject every number it touched.</div>
+    </div>
   </div>`},
 
 /* p10 — boss setup */
 { ch:"Chapter 4 · The Last Alignment", html:`
-  <div class="panel panel3d tall">${SC("0 0 400 200",`
-    <rect width="400" height="200" fill="#0d1f33"/><rect width="400" height="200" fill="url(#halftone)"/>
-    <g data-depth="10" transform="translate(120,4) scale(1.6)"><use href="#sym-powring"/></g>
-    <g data-depth="16" transform="translate(308,18) scale(.78)"><use href="#sym-glitch"/></g>
-    <g data-depth="18" transform="translate(20,94) scale(.88)"><use href="#sym-dev"/></g>
-    <g data-depth="18" transform="translate(318,112) scale(.84)"><use href="#sym-zara"/></g>
-    <g data-depth="24" transform="translate(186,158) scale(.46)"><use href="#sym-vex"/></g>`)}
-    <div class="balloon" style="top:8px;left:8px;max-width:48%"><span class="who">MATEO</span>Final alignment. Three locks: a power core, a counterweight, and one lie that has to die in public.</div>
-    <div class="balloon tail-r" style="bottom:12px;right:8px;max-width:42%"><span class="who">LAYLA</span>Reader takes the dial. Crew takes the snacks. GO.</div>
-  </div>
-  <div class="caption">Boss Gate: turn the second ring — evaluate the core, evaluate the counterweight, and stamp out the glitch's favorite lie once and for all.</div>`},
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${ART("p10-align")}
+      <div class="balloon" style="top:6px;left:6px;max-width:50%;--tx:30px"><span class="who">MATEO</span>Final alignment. Three locks: a power core, a counterweight, and one lie that has to die in public.</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p10-layla")}
+      <div class="balloon" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">LAYLA</span>Reader takes the dial. Crew takes the snacks. GO.</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p10-vex")}</div>
+    <div class="caption">Boss Gate: turn the second ring — evaluate the core, evaluate the counterweight, and stamp out the glitch's favorite lie once and for all.</div>
+  </div>`},
 
 /* p11 — BOSS */
 { ch:"Boss Gate · Turn the Ring", gate:"boss", html:`
-  <div class="panel">${SC("0 0 400 76",`<rect width="400" height="76" fill="#0d1f33"/><g transform="translate(330,2) scale(.56)"><use href="#sym-vex"/></g>`)}
-    <div class="balloon vex" style="top:6px;left:10px;max-width:72%"><span class="who">VEX</span>BOSS GATE. Three locks. Feed the ring truth and it turns; feed it glitch math and we live in a vault now.</div>
+  <div class="gn-comic">
+    <div class="panel gn-panel">${ART("p11-vex")}
+      <div class="balloon vex gn-side" style="top:6px;left:6px;max-width:72%"><span class="who">VEX</span>BOSS GATE. Three locks. Feed the ring truth and it turns; feed it glitch math and we live in a vault now.</div>
+    </div>
   </div>`},
 
 /* p12 — victory + teaser */
 { ch:"Chapter 5 · One Ring Deeper", html:`
-  <div class="panel panel3d tall">${SC("0 0 400 210",`
-    <rect width="400" height="210" fill="#10243a"/><rect width="400" height="210" fill="url(#halftone)"/>
-    <g data-depth="10" transform="translate(126,2) scale(1.5)" opacity=".95"><use href="#sym-powring"/></g>
-    <g data-depth="8" stroke="#F2C15B" stroke-width="3" opacity=".85"><line x1="200" y1="160" x2="120" y2="206"/><line x1="200" y1="160" x2="280" y2="206"/></g>
-    <rect data-depth="8" x="96" y="168" width="86" height="42" rx="5" fill="#17324D" stroke="#F2C15B" stroke-width="3"/>
-    <rect data-depth="8" x="218" y="168" width="86" height="42" rx="5" fill="#17324D" stroke="#F2C15B" stroke-width="3"/>
-    <text data-depth="8" x="139" y="192" text-anchor="middle" font-family="Consolas,monospace" font-weight="700" font-size="11" fill="#7CF2EC">5(y+2)?</text>
-    <text data-depth="8" x="261" y="192" text-anchor="middle" font-family="Consolas,monospace" font-weight="700" font-size="11" fill="#7CF2EC">5y+10?</text>
-    <g data-depth="18" transform="translate(22,92) scale(.88)"><use href="#sym-dev"/></g>
-    <g data-depth="18" transform="translate(318,92) scale(.86)"><use href="#sym-theo"/></g>
-    <g data-depth="16" transform="translate(330,10) scale(.6)"><use href="#sym-glitch"/></g>`)}
-    <div class="sfx" style="top:6px;left:14px">KRRRUNNK!</div>
-    <div class="balloon" style="top:8px;left:8px;max-width:46%"><span class="who">MATEO</span>The ring TURNED. Achievement unlocked. The glitch just rage-quit down the stairs.</div>
-    <div class="balloon tail-r" style="bottom:14px;right:6px;max-width:44%"><span class="who">ANDRE</span>And look what it opened onto… two doors. Wearing two different expressions. That can't be a coincidence.</div>
-  </div>
-  <div class="panelrow">
-    <div class="panel">${SC("0 0 200 104",`<rect width="200" height="104" fill="#fdf6e7"/><g transform="translate(56,2) scale(.74)"><use href="#sym-maya"/></g>`)}
-      <div class="balloon" style="top:4px;left:4px;max-width:74%"><span class="who">KEIKO</span>Two doors, two labels… and a riddle: are they secretly the SAME door?</div></div>
-    <div class="panel">${SC("0 0 200 104",`<rect width="200" height="104" fill="#0d1f33"/><g transform="translate(60,8) scale(.8)"><use href="#sym-vault"/></g><text x="100" y="98" text-anchor="middle" font-family="Arial" font-weight="700" font-size="9" fill="#F2C15B">"ring three: pick honestly." — A.V.</text>`)}</div>
-  </div>
-  <div class="caption" style="text-align:center"><b>NEXT: ${VOLUME.nextTeaser}</b></div>`},
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${ART("p12-turn")}
+      <div class="sfx" style="top:8px;left:14px">KRRRUNNK!</div>
+      <div class="gn-sign" data-gn-skip style="left:48%;top:58%">5(y+2)?</div>
+      <div class="gn-sign" data-gn-skip style="left:86%;top:64%">5y+10?</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p12-mateo")}
+      <div class="balloon" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">MATEO</span>The ring TURNED. Achievement unlocked. The glitch just rage-quit down the stairs.</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p12-andre")}
+      <div class="balloon tail-r" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">ANDRE</span>And look what it opened onto… two doors. Wearing two different expressions. That can't be a coincidence.</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p12-keiko")}
+      <div class="balloon" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">KEIKO</span>Two doors, two labels… and a riddle: are they secretly the SAME door?</div></div>
+    <div class="panel gn-panel gn-half">${ART("p12-vault")}
+      <div class="gn-sign gn-plate" data-gn-skip style="left:50%;top:70%;width:86%;color:#F2C15B">"ring three: pick honestly." — A.V.</div></div>
+    <div class="caption" style="text-align:center"><b>NEXT: ${VOLUME.nextTeaser}</b></div>
+  </div>`},
 
 /* p13 — journal mini-recap */
 { ch:"End Matter · Ada Vex's Journal", html:`

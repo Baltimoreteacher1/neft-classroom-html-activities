@@ -1,0 +1,262 @@
+/* Axiom City comic pages: illustrated panels (one atlas per book) with live HTML lettering on top.
+ *
+ * Markup comes from the book's PAGES data and the ART(id) helper that tools/inject-gn-art.mjs writes into
+ * the book. The art is a background crop of the atlas; balloons, captions, sound effects and diegetic
+ * signs stay HTML so Easy read, vocabulary pop-ups, screen readers and translation keep working.
+ * Faces are marked with .gn-face boxes; the shared layer (gn-layer.js) moves a balloon under the art
+ * when it would cover one.
+ */
+.gn-comic {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 8px;
+  container-type: inline-size;
+}
+.gn-comic > * {
+  grid-column: 1 / -1;
+}
+.gn-comic > .gn-half {
+  grid-column: span 3;
+}
+.gn-comic > .gn-third {
+  grid-column: span 2;
+}
+.gn-comic > .gn-two-thirds {
+  grid-column: span 4;
+}
+@container (max-width: 460px) {
+  .gn-comic > .gn-half,
+  .gn-comic > .gn-third,
+  .gn-comic > .gn-two-thirds {
+    grid-column: 1 / -1;
+  }
+}
+
+/* ---- panel: black ink border, white gutter (the page paper shows through the grid gap) ---- */
+.panel.gn-panel {
+  /* one-column grid: the art sits in row 1 and every overlay is positioned against row 1 (an
+     absolutely positioned grid child uses its grid area as containing block), so lettering that
+     moves into the flow below the art on a phone never drags the overlays down with it */
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  border: 3px solid #0b0f14;
+  border-radius: 0;
+  background: #0b0f14;
+  box-shadow: none;
+  align-self: start;
+}
+.gn-panel > .gn-art,
+.gn-panel > .balloon,
+.gn-panel > .caption,
+.gn-panel > .sfx,
+.gn-panel > .gn-sign {
+  grid-area: 1 / 1;
+}
+.gn-panel.gn-stack > .balloon {
+  grid-area: auto;
+}
+.gn-art {
+  display: block;
+  position: relative;
+  width: 100%;
+  background-color: #10243a;
+  background-repeat: no-repeat;
+}
+.gn-face {
+  position: absolute;
+  pointer-events: none;
+}
+
+/* ---- speech balloons: comic lettering size, tails aimed at the speaker ---- */
+.gn-panel > .balloon {
+  font-size: max(13px, 0.88rem);
+  line-height: 1.3;
+  padding: 6px 10px;
+  border-width: 2.5px;
+  border-color: #0b0f14;
+  border-radius: 18px;
+  box-shadow: none;
+}
+.gn-panel > .balloon.vex {
+  border-color: var(--teal);
+  border-radius: 10px;
+}
+.gn-panel > .balloon::after {
+  left: var(--tx, 28px);
+  border-top-color: #0b0f14;
+}
+.gn-panel > .balloon::before {
+  left: calc(var(--tx, 28px) + 2px);
+}
+.gn-panel > .balloon.tail-r::after {
+  left: auto;
+  right: var(--tx, 28px);
+}
+.gn-panel > .balloon.tail-r::before {
+  left: auto;
+  right: calc(var(--tx, 28px) + 2px);
+}
+.gn-panel > .balloon.vex::after {
+  border-top-color: var(--teal);
+}
+/* tail out of the right side (speaker to the right of the balloon, e.g. VEX at the panel edge) */
+.gn-panel > .balloon.gn-side::after,
+.gn-panel > .balloon.gn-side::before {
+  left: auto;
+  bottom: auto;
+  border: 9px solid transparent;
+}
+.gn-panel > .balloon.gn-side::after {
+  right: -18px;
+  top: var(--ty, 16px);
+  border-left: 16px solid #0b0f14;
+}
+.gn-panel > .balloon.gn-side::before {
+  right: -12px;
+  top: calc(var(--ty, 16px) + 1px);
+  border-width: 8px;
+  border-left: 14px solid #fff;
+}
+.gn-panel > .balloon.vex.gn-side::after {
+  border-left-color: var(--teal);
+}
+.gn-panel > .balloon.vex.gn-side::before {
+  border-left-color: #062e33;
+}
+
+/* ---- captions: square narration boxes in a panel corner, or a strip between panels ---- */
+.gn-panel > .caption {
+  position: absolute;
+  z-index: 3;
+  top: 0;
+  left: 0;
+  max-width: 66%;
+  border: 2.5px solid #0b0f14;
+  border-radius: 0;
+  border-top: 0;
+  border-left: 0;
+  box-shadow: none;
+  font-size: max(13px, 0.82rem);
+}
+.gn-panel > .caption.gn-br {
+  top: auto;
+  left: auto;
+  right: 0;
+  bottom: 0;
+  border: 2.5px solid #0b0f14;
+  border-right: 0;
+  border-bottom: 0;
+}
+.gn-comic > .caption {
+  border: 2.5px solid #0b0f14;
+  border-radius: 0;
+  box-shadow: 3px 3px 0 #0b0f14;
+}
+
+/* ---- sound effects and signs drawn on the scene (live text, sized to the panel) ---- */
+.gn-panel > .sfx {
+  max-width: 46%;
+  font-size: clamp(1.3rem, 7cqi, 2.4rem);
+}
+.gn-sign {
+  position: absolute;
+  z-index: 2;
+  transform: translate(-50%, -50%);
+  max-width: 88%;
+  text-align: center;
+  pointer-events: none;
+  font:
+    700 clamp(13px, 3.4cqi, 20px) / 1.25 Consolas,
+    "Courier New",
+    monospace;
+  color: #7cf2ec;
+  text-shadow: 0 0 6px rgba(31, 166, 162, 0.7);
+}
+.gn-sign.gn-chalk {
+  color: #fffdf4;
+  font-family: "Comic Sans MS", "Chalkboard SE", "Segoe Print", system-ui, sans-serif;
+  text-shadow: 0 0 2px rgba(255, 255, 255, 0.5);
+}
+.gn-sign.gn-scrawl {
+  color: #ff7a5c;
+  text-shadow:
+    1px 1px 0 #0b0f14,
+    -1px -1px 0 #0b0f14;
+  transform: translate(-50%, -50%) rotate(var(--rot, -8deg));
+  max-width: 42%;
+}
+.gn-sign.gn-plate {
+  color: #3a2a0a;
+  font:
+    italic 700 clamp(13px, 3.6cqi, 22px) / 1.25 Georgia,
+    "Times New Roman",
+    serif;
+  text-shadow: 0 1px 0 rgba(255, 243, 216, 0.6);
+}
+.gn-sign.gn-plate small {
+  display: block;
+  font:
+    600 max(13px, 0.7em) Consolas,
+    monospace;
+  font-style: normal;
+}
+
+/* ---- phone: corner captions and signs that would sit on a face move into the flow ---- */
+@container (max-width: 380px) {
+  .gn-panel > .caption {
+    grid-area: auto;
+    position: static;
+    max-width: none;
+    border: 0;
+    border-top: 2.5px solid #0b0f14;
+  }
+  /* a sign too long for the drawn plaque at this width reads under the art instead */
+  .gn-panel > .gn-sign.gn-flow {
+    grid-area: auto;
+    position: static;
+    transform: none;
+    width: auto !important; /* !important (documented: beats the inline width that fits the drawn plaque) */
+    max-width: none;
+    padding: 8px 10px;
+    background: #10243a;
+    border-top: 2.5px solid #0b0f14;
+  }
+  /* a caption in the flow makes the panel taller than its art: letter that panel under the art too */
+  .gn-panel:has(> .caption) > .balloon {
+    grid-area: auto;
+    position: static !important; /* !important (documented: beats the per-balloon inline offsets) */
+    max-width: none !important; /* !important (documented: beats the per-balloon inline max-width) */
+    margin: 8px 10px 0;
+  }
+  .gn-panel:has(> .caption) > .balloon:last-of-type {
+    margin-bottom: 10px;
+  }
+  .gn-panel:has(> .caption) > .balloon::before,
+  .gn-panel:has(> .caption) > .balloon::after {
+    display: none;
+  }
+}
+
+/* ---- reader gates: same logic and widgets, drawn as a panel of the page ---- */
+.gn-comic ~ .gatemount .gatebox {
+  border: 3px solid #0b0f14;
+  border-radius: 0;
+  box-shadow: 4px 4px 0 #0b0f14;
+}
+.gn-comic ~ .gatemount .gatebox header {
+  border-bottom: 3px solid #0b0f14;
+}
+.gn-comic ~ .gatemount .gatesolved {
+  border-radius: 0;
+  border-color: #0b0f14;
+  box-shadow: 4px 4px 0 #0b0f14;
+}
+
+/* ---- cover: the hero image fills the card; the title block stays HTML on its scrim ---- */
+#coverCard .cov-layer .gn-art {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  aspect-ratio: auto !important; /* !important (documented: the card's 5:7 box wins over the frame's inline ratio, which is the same 5:7) */
+}

@@ -30,3 +30,45 @@ The **Teacher** button (top right) in every volume opens standards alignment, a 
 One HTML file per volume — no internet needed after download, no accounts, no data leaves the device. Works on Chromebooks, iPads, laptops (Chrome/Edge/Safari/Firefox). Keyboard, mouse, and touch supported. Accessibility: sound off by default, 3D motion toggle (auto-off for reduced-motion users), larger-text and high-contrast toggles, screen-reader labels and live announcements throughout.
 
 © EduWonderLab. All characters, art, and problems are original.
+
+## Comic art pipeline (illustrated books)
+
+Pilot: `episodes/axiom-city-u6-e2-the-power-ring.html`. Each story page is a comic page (`.gn-comic`, a 6-column
+grid of 2-5 panels) with generated, wordless art and every word still live HTML: balloons, captions, sound effects
+and the signs the story writes on (`.gn-sign`, `data-gn-skip`). Easy read, vocabulary pop-ups, screen readers and a
+later Spanish edition keep working because no text is in a picture. Gates keep their widgets and logic; only their
+frame changes.
+
+| Piece | File |
+|---|---|
+| Character sheet and prompt fragments (`{{maya}}`, `{{vex}}` ...), one seed per character | `_engine/art/CHARACTERS.md` |
+| Per-book panel list: id, size, seed, prompt, alt text, face boxes | `_engine/art/<book>/panels.json` |
+| Generate (local FLUX.1-schnell via mflux) and pack (one WebP atlas per book) | `tools/gn-art.py` |
+| Atlas coordinates (written by pack) | `_engine/art/<book>/atlas.json` |
+| Write coordinates + alt text into the book (`GN_ART`, `ART(id)`), `--check` for staleness | `tools/inject-gn-art.mjs` |
+| Panel, balloon, caption, sign and gate-frame styles (shared) | `../_shared/gn-comic.css` |
+| Consistency test (atlas hash, frames used, alt text, jsdom render) | `tools/gn-art.test.mjs` (in `npm test`) |
+
+`_engine/` is never copied to `dist/`; a book ships exactly one extra file, its atlas
+(`art/<book>.webp`, budget 2.5 MB; Cloudflare Pages caps `dist/` at 20,000 files). The atlas is a CSS background,
+so it never blocks the cover's first paint, and the browser cache keeps the book readable offline after one visit.
+
+To illustrate another book:
+
+1. Copy `_engine/art/u6-e2/panels.json` to `_engine/art/<book-short>/`, set `book`, and write one entry per panel.
+   Name kids by symbol fragment, never by story name (the crew symbols carry different names in Unit 6).
+   Draw any sign, board or plate the story writes on BLANK; its words become a `.gn-sign` on top.
+2. `~/.local/share/uv/tools/mflux/bin/python tools/gn-art.py generate _engine/art/<book>/panels.json`
+   (model: `dhairyashil/FLUX.1-schnell-mflux-4bit`, ~9.6 GB, in `~/.cache/gn-art/models/flux-schnell-4bit`;
+   install with `uv tool install --python 3.12 mflux`). Raw PNGs land in `~/.cache/gn-art/<book>/raw/`, outside the repo.
+3. LOOK at every image. Reroll (change `seed`, `--only <id> --force`) any with text-like marks, extra limbs,
+   wrong colours or an off-model character. Then write `alt` (the scene, for a screen reader) and `faces`
+   (`[x, y, w, h]`, 0-1, one box per face that a balloon must not cover).
+4. `python3 tools/gn-art.py pack _engine/art/<book>/panels.json` then `node tools/inject-gn-art.mjs`.
+5. Rewrite the book's `PAGES` html into `.gn-comic` grids that call `ART("<id>")`, moving each balloon and
+   caption unchanged (Easy read keys on the text). Check with `node tools/gn-art.test.mjs`,
+   `node tools/gn-layer.test.mjs`, `node tools/inject-gn-layer.mjs --check` and
+   `node tools/verify-gn-layer-browser.mjs --books=<slug>`.
+
+Why local FLUX: Gemini needs an API key this machine does not have, and keyless Pollinations now serves only
+its `sana` model (one image per 45 s, watermarked, not usable as comic art).

@@ -513,7 +513,7 @@
       const pr = panel.getBoundingClientRect();
       if (!pr.width) return;
       const rects = balloons.map((b) => b.getBoundingClientRect());
-      const scene = panel.querySelector("svg.scene");
+      const scene = panel.querySelector("svg.scene,.gn-art");
       const sr = scene ? scene.getBoundingClientRect() : pr;
       // Art hanging off the edge of the scene is clipped by it; only the visible part counts.
       const visible = (r) => {
@@ -523,7 +523,8 @@
         const bottom = Math.min(r.bottom, sr.bottom);
         return { left, top, right, bottom, width: Math.max(0, right - left), height: Math.max(0, bottom - top) };
       };
-      const art = [...panel.querySelectorAll("svg.scene use[href^='#sym-'],svg.scene text")].map(
+      // SVG books: character symbols and drawn text. Illustrated books: the face boxes on the art.
+      const art = [...panel.querySelectorAll("svg.scene use[href^='#sym-'],svg.scene text,.gn-art .gn-face")].map(
         (n) => ({ r: visible(n.getBoundingClientRect()), t: n.tagName }),
       );
       const bad =
