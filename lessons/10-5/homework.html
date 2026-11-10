@@ -10,11 +10,11 @@
 <link rel="stylesheet" href="/assets/design/family/tokens.css?v=d242bb8f1e">
 <link rel="stylesheet" href="/assets/design/family/family.css?v=d8ebb062f9">
 <link rel="stylesheet" href="/assets/design/family/body.css?v=99ae301258">
-<link rel="stylesheet" href="/assets/design/family/mission.css?v=aa7d9f6d65">
+<link rel="stylesheet" href="/assets/design/family/mission.css?v=297863674f">
 <link rel="stylesheet" href="/assets/design/family/flow.css?v=6cce18a93c">
 <link rel="stylesheet" href="/assets/design/family/dimension.css?v=886e201c7a">
 <link rel="stylesheet" href="/assets/homework/homework-art-c570469465.css">
-<link rel="stylesheet" href="/assets/homework/homework-legacy-10c0c8ba5b.css">
+<link rel="stylesheet" href="/assets/homework/homework-legacy-9097310c00.css">
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
   <!-- nsr-injected:end -->
@@ -565,11 +565,10 @@
         </button>
       </div>
     </div>
-      <div class="fp-sets-nav" id="fp_sets_nav" role="navigation" aria-label="Practice Sets">
-        <div class="fp-set-progress-row">
-          <span class="fp-step-indicator" id="fp_step_indicator"><span class="lang-en">Problem <strong id="fp_curr_prob_num">1</strong> of <strong id="fp_total_prob_num">6</strong></span><span class="lang-es" lang="es">Problema <strong id="fp_curr_prob_num_es">1</strong> de <strong id="fp_total_prob_num_es">6</strong></span></span>
-          <div class="fp-pips-track" id="fp_pips_track" role="navigation" aria-label="Problem track"></div>
-        </div>
+      <div class="fp-sets-nav" id="fp_sets_nav" role="navigation" aria-label="Problems">
+        <button type="button" class="fp-nav-arrow" data-act="fpPrevCurrent" aria-label="Previous problem" data-aria-en="Previous problem" data-aria-es="Problema anterior">‹</button>
+        <span class="fp-step-indicator" id="fp_step_indicator"><span class="lang-en">Problem <strong id="fp_curr_prob_num">1</strong> of <strong id="fp_total_prob_num">6</strong></span><span class="lang-es" lang="es">Problema <strong id="fp_curr_prob_num_es">1</strong> de <strong id="fp_total_prob_num_es">6</strong></span></span>
+        <button type="button" class="fp-nav-arrow" data-act="fpNextCurrent" aria-label="Next problem" data-aria-en="Next problem" data-aria-es="Problema siguiente">›</button>
       </div>
 
 
@@ -2423,7 +2422,9 @@
       <aside class="fp-family" aria-label="Family question"><p class="fp-label"><span class="lang-en">Talk about it (optional)</span><span class="lang-es" lang="es">Conversen (opcional)</span></p><p><span class="lang-en">Line up forks, spoons, and cups in a repeating row: fork, spoon, cup. Ask your student to name the pattern unit. Which item will be number 9? Then count to check.</span><span class="lang-es" lang="es">Alineen tenedores, cucharas y tazas en una fila que se repite: tenedor, cuchara, taza. Pidan a su estudiante que diga la unidad del patrón. ¿Qué objeto será el número 9? Luego cuenten para comprobar.</span></p></aside>
       <div class="hw-next-actions fp-actions">
         <button type="button" class="fm-btn fm-btn--block fm-btn--primary" data-celebrate-photo data-act="openOptionalStop" data-args='["photobooth"]'><span aria-hidden="true"><span aria-hidden="true">📸</span></span> <span class="lang-en">Take your victory photo</span><span class="lang-es" lang="es">Tomen su foto de victoria</span></button>
+        <button type="button" class="fm-btn fm-btn--block fm-btn--primary" data-celebrate-games data-act="openOptionalStop" data-args='["play"]'><span aria-hidden="true"><span aria-hidden="true">🎮</span></span> <span class="lang-en">Play a practice game</span><span class="lang-es" lang="es">Jugar un juego de práctica</span></button>
         <button type="button" class="fm-btn fm-btn--block" data-celebrate-challenge data-act="hwStartChallengeRound"><span aria-hidden="true"><span aria-hidden="true">⭐</span></span> <span class="lang-en">Challenge round (deeper problems)</span><span class="lang-es" lang="es">Ronda de reto (problemas más profundos)</span></button>
+
         <button type="button" class="fm-btn fm-btn--block" data-act="fpPracticeMore"><span class="lang-en">Practice more (new problems)</span><span class="lang-es" lang="es">Más práctica (problemas nuevos)</span></button>
 
 
@@ -3598,10 +3599,12 @@
         </div>
       </div>
     </div>
-      <div class="tab-flow-nav">
-        <button type="button" class="btn btn-primary flow-next-btn" data-act="goNextHomeworkStop" data-args='["play"]'>
-          <span class="lang-en">Continue ➔</span>
-          <span class="lang-es" lang="es">Continuar ➔</span>
+      <div class="tab-flow-nav fp-nav fp-nav--back">
+        <button type="button" class="btn btn-outline-primary" data-act="switchHomeworkTab" data-args='["check"]'>
+          <span class="lang-en">Back to practice</span><span class="lang-es" lang="es">Volver a la práctica</span>
+        </button>
+        <button type="button" class="btn btn-primary" data-act="switchHomeworkTab" data-args='["done"]'>
+          <span class="lang-en">Go to Finish</span><span class="lang-es" lang="es">Ir a Terminar</span>
         </button>
       </div>
     </div>
@@ -4111,7 +4114,7 @@ window.__HW_VOCAB_MATCH__ = {"regexSource":"\\b(?:Write\\s+and\\s+Evaluate\\s+Nu
 window.__HW_WORKED__ = {"title":"Watch me use a pattern unit","titleEs":"Mírame usar una unidad de patrón","lines":["A border repeats: pink circle, purple square, blue triangle, pink circle, purple square, blue triangle, ...","The pattern unit is 3 shapes long: circle, square, triangle.","To predict shape number 12, I divide: 12 ÷ 3 = 4 with no remainder, so shape 12 ends a complete unit — it is the blue triangle.","The next three shapes after any complete unit will be a pink circle, a purple square, and a blue triangle."],"linesEs":["Un borde se repite: círculo rosa, cuadrado morado, triángulo azul, círculo rosa, cuadrado morado, triángulo azul, …","La unidad del patrón mide 3 figuras: círculo, cuadrado, triángulo.","Para predecir la figura número 12, divido: 12 ÷ 3 = 4 sin residuo, así que la figura 12 termina una unidad completa — es el triángulo azul.","Las tres figuras que siguen después de cualquier unidad completa serán un círculo rosa, un cuadrado morado y un triángulo azul."]};
 </script>
 <script src="/assets/homework/homework-vocab-82a28823c0.bundle.js"></script>
-<script src="/assets/homework/homework-core-21f08eb0a1.bundle.js"></script>
+<script src="/assets/homework/homework-core-a5946c4c05.bundle.js"></script>
 <script src="/assets/family-engagement/engagement-beacon.js" defer></script>
 <script type="module" src="/assets/homework-lesson-models.js"></script>
 <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->

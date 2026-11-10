@@ -2875,22 +2875,13 @@ function hwChooseHelp(idx, signal) {
 function hwGoToNextPractice(idx) {
   const current = document.getElementById("problem_" + idx);
   if (!current) return;
-  const sections = [...document.querySelectorAll(".problem-section")];
-  const from = sections.indexOf(current);
-  // Look forward from this problem first, and offer problems already on screen before hidden ones.
-  const ordered = sections.slice(from + 1).concat(sections.slice(0, from));
-  const all = ordered.filter((item) => !item.hidden).concat(ordered.filter((item) => item.hidden));
-  const available = all.filter((item) => item !== current && !item.classList.contains("correct") && !item.classList.contains("reviewed"));
-  const sameType = available.filter((item) => item.dataset.problemType === current.dataset.problemType);
-  const lane = document.getElementById("problem_intelligence_" + idx)?.dataset.nextLane;
-  const next = lane === "support"
-    ? sameType.find((item) => item.closest(".practice-tier-basic, .practice-tier-warmup")) || sameType[0] || available[0]
-    : lane === "challenge"
-      ? sameType.find((item) => item.closest(".practice-tier-challenge, .more-practice"))
-      : sameType[0] || available[0];
+  /* In order: the next problem not yet done after this one, then any earlier one still open, then Finish. */
+  const list = fpGetAllActiveProblems();
+  const from = list.indexOf(current);
+  const open = (item) => item !== current && !item.classList.contains("correct") && !item.classList.contains("reviewed");
+  const next = list.slice(from + 1).find(open) || list.slice(0, Math.max(0, from)).find(open);
   if (!next) {
-    switchHomeworkTab("play");
-    document.querySelector('[data-tab-panel="play"] button, [data-tab-panel="play"] a')?.focus({ preventScroll: true });
+    switchHomeworkTab("done");
     return;
   }
   hwShowProblem(next);
@@ -2910,6 +2901,8 @@ function hwShowProblem(next) {
     const items = [...box.querySelectorAll(":scope > .problem-section")];
     bar.querySelectorAll(".hw-stepper-dot")[items.indexOf(next)]?.click();
   }
+  const at = fpGetAllActiveProblems().indexOf(next);
+  if (at > -1) fpShowProblem(at);
   next.scrollIntoView({ behavior: "smooth", block: "start" });
   next.querySelector("input, select, button")?.focus({ preventScroll: true });
 }

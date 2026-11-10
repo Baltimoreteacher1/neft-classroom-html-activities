@@ -5041,7 +5041,7 @@ function hwLevelsRender() {
     var state = r.complete ? 'is-done' : i === current ? 'is-current' : 'is-next';
     html += '<li class="hw-level ' + state + '"><button type="button" class="hw-level-btn" data-act="hwGoLevel" data-args="[' + i + ']"' + (i === current ? ' aria-current="step"' : '') + '>' +
       '<span class="hw-level-ico" aria-hidden="true">' + (r.complete ? '✓' : r.icon) + '</span>' +
-      '<span class="hw-level-copy"><strong>' + hwFlowBi('Level ' + (i + 1) + ': ' + r.en, 'Nivel ' + (i + 1) + ': ' + r.es) + '</strong>' +
+      '<span class="hw-level-copy"><strong>' + hwFlowBi(r.en, r.es) + '</strong>' +
       '<small>' + r.done + '/' + r.size + '</small></span>' +
       '<span class="hw-level-bar" aria-hidden="true"><i style="inline-size:' + Math.round(r.done / r.size * 100) + '%"></i></span></button></li>';
   });
@@ -5051,25 +5051,18 @@ function hwLevelsRender() {
   strip.innerHTML = html;
   if (keep) strip.querySelector('[data-levelup-slot]').innerHTML = keep;
 
-  /* A chip on every problem says which level it belongs to. */
-  var all = hwPracticeAllCore();
-  all.forEach(function (s, idx) {
+  /* The level strip names the level; only a challenge problem, past the mission, carries its own tag. */
+  hwPracticeAllCore().forEach(function (s, idx) {
     var chip = s.querySelector('.hw-level-chip');
-    var label;
-    if (idx < st.mission.length) {
-      var lvIdx = 0;
-      st.ranges.forEach(function (r, i) { if (idx >= r.from && idx < r.to) lvIdx = i; });
-      var r2 = st.ranges[lvIdx];
-      label = ['<span aria-hidden="true">' + r2.icon + '</span> ' + hwFlowBi('Level ' + (lvIdx + 1) + ' · ' + r2.en, 'Nivel ' + (lvIdx + 1) + ' · ' + r2.es), 'lvl'];
-    } else {
-      label = ['<span aria-hidden="true">⭐</span> ' + hwFlowBi('Challenge round', 'Ronda de reto'), 'boss'];
-    }
+    if (idx < st.mission.length) { if (chip) chip.remove(); return; }
     if (!chip) {
-      chip = document.createElement('p');
-      s.insertBefore(chip, s.firstChild);
+      chip = document.createElement('span');
+      var head = s.querySelector('.problem-header-row');
+      if (head) head.insertBefore(chip, head.firstChild);
+      else s.insertBefore(chip, s.firstChild);
     }
-    chip.className = 'hw-level-chip hw-level-chip--' + label[1];
-    chip.innerHTML = label[0];
+    chip.className = 'hw-level-chip hw-level-chip--boss';
+    chip.innerHTML = '<span aria-hidden="true">⭐</span> ' + hwFlowBi('Challenge', 'Reto');
   });
 
   st.ranges.forEach(function (r, i) {
@@ -5093,8 +5086,8 @@ function hwLevelUp(r, i, next) {
     : hwFlowBi('All three levels done. Go to Finish to celebrate!', '¡Los tres niveles listos! Vayan a Terminar para celebrar.');
   slot.innerHTML = '<div class="hw-levelup" role="status"><span class="hw-levelup-ico" aria-hidden="true">' + r.icon + '</span>' +
     '<p><strong>' + hwFlowBi('Level ' + (i + 1) + ' complete: ' + r.en + '!', '¡Nivel ' + (i + 1) + ' completo: ' + r.es + '!') + '</strong> ' + tail + '</p>' +
-    (next ? '' : '<button type="button" class="btn btn-primary" data-act="switchHomeworkTab" data-args="[&quot;done&quot;]">' + hwFlowBi('Go to Finish', 'Ir a Terminar') + '</button>') + '</div>';
-  if (next) setTimeout(function () { var s2 = document.querySelector('[data-levelup-slot]'); if (s2) s2.innerHTML = ''; }, 6000);
+    (next ? '<button type="button" class="btn btn-secondary" data-act="openOptionalStop" data-args="[&quot;play&quot;]">' + hwFlowBi('🎮 Game break', '🎮 Pausa de juego') + '</button>' : '<button type="button" class="btn btn-primary" data-act="switchHomeworkTab" data-args="[&quot;done&quot;]">' + hwFlowBi('Go to Finish', 'Ir a Terminar') + '</button>') + '</div>';
+  if (next) setTimeout(function () { var s2 = document.querySelector('[data-levelup-slot]'); if (s2) s2.innerHTML = ''; }, 9000);
 }
 
 /* Show one problem the way the stepper and the problem track expect: the stepper dot, then the track. */
@@ -5118,6 +5111,27 @@ function hwGoLevel(i) {
   var target = null;
   for (var k = r.from; k < r.to; k++) if (!hwPracticeDone(st.mission[k])) { target = st.mission[k]; break; }
   hwShowProblemSection(target || st.mission[r.from]);
+}
+
+/* After a right answer: one big button straight to the next problem (or to Finish after the last one). */
+function hwPracticeNextCta() {
+  var list = typeof fpGetAllActiveProblems === 'function' ? fpGetAllActiveProblems() : hwPracticeAllCore();
+  var openLeft = list.filter(function (s) { return !hwPracticeDone(s); }).length;
+  hwPracticeAllCore().forEach(function (s) {
+    var cta = s.querySelector('.hw-next-cta');
+    if (!hwPracticeDone(s)) { if (cta) cta.remove(); return; }
+    var idx = s.id.replace('problem_', '');
+    var html = '<button type="button" class="fm-btn fm-btn--primary fm-btn--lg fm-btn--block" data-act="hwGoToNextPractice" data-args="[' + idx + ']">' +
+      (openLeft ? hwFlowBi('Next problem →', 'Siguiente problema →') : hwFlowBi('Finish and celebrate →', 'Terminar y celebrar →')) + '</button>';
+    if (!cta) {
+      cta = document.createElement('div');
+      cta.className = 'hw-next-cta';
+      cta.setAttribute('role', 'status');
+      var anchor = s.querySelector('.problem-body') || s.querySelector('.problem-check-row');
+      if (anchor) anchor.insertAdjacentElement('afterend', cta); else s.appendChild(cta);
+    }
+    if (cta.innerHTML !== html) cta.innerHTML = html;
+  });
 }
 
 /* Challenge round: the deeper problems that sit after the mission. */
@@ -5263,8 +5277,10 @@ function hwSeeItScan() {
 function hwPracticeBoot() {
   hwLevelsRender();
   setTimeout(function () { hwLevelsArmed = true; hwLevelsRender(); }, 1200);
+  hwPracticeNextCta();
   var obs = new MutationObserver(function () {
     hwLevelsRender();
+    hwPracticeNextCta();
     setTimeout(hwSeeItScan, 60);
     if (document.body.dataset.activeTab === 'done') hwMissionCelebrate();
   });
@@ -7623,22 +7639,13 @@ function hwChooseHelp(idx, signal) {
 function hwGoToNextPractice(idx) {
   const current = document.getElementById("problem_" + idx);
   if (!current) return;
-  const sections = [...document.querySelectorAll(".problem-section")];
-  const from = sections.indexOf(current);
-  // Look forward from this problem first, and offer problems already on screen before hidden ones.
-  const ordered = sections.slice(from + 1).concat(sections.slice(0, from));
-  const all = ordered.filter((item) => !item.hidden).concat(ordered.filter((item) => item.hidden));
-  const available = all.filter((item) => item !== current && !item.classList.contains("correct") && !item.classList.contains("reviewed"));
-  const sameType = available.filter((item) => item.dataset.problemType === current.dataset.problemType);
-  const lane = document.getElementById("problem_intelligence_" + idx)?.dataset.nextLane;
-  const next = lane === "support"
-    ? sameType.find((item) => item.closest(".practice-tier-basic, .practice-tier-warmup")) || sameType[0] || available[0]
-    : lane === "challenge"
-      ? sameType.find((item) => item.closest(".practice-tier-challenge, .more-practice"))
-      : sameType[0] || available[0];
+  /* In order: the next problem not yet done after this one, then any earlier one still open, then Finish. */
+  const list = fpGetAllActiveProblems();
+  const from = list.indexOf(current);
+  const open = (item) => item !== current && !item.classList.contains("correct") && !item.classList.contains("reviewed");
+  const next = list.slice(from + 1).find(open) || list.slice(0, Math.max(0, from)).find(open);
   if (!next) {
-    switchHomeworkTab("play");
-    document.querySelector('[data-tab-panel="play"] button, [data-tab-panel="play"] a')?.focus({ preventScroll: true });
+    switchHomeworkTab("done");
     return;
   }
   hwShowProblem(next);
@@ -7658,6 +7665,8 @@ function hwShowProblem(next) {
     const items = [...box.querySelectorAll(":scope > .problem-section")];
     bar.querySelectorAll(".hw-stepper-dot")[items.indexOf(next)]?.click();
   }
+  const at = fpGetAllActiveProblems().indexOf(next);
+  if (at > -1) fpShowProblem(at);
   next.scrollIntoView({ behavior: "smooth", block: "start" });
   next.querySelector("input, select, button")?.focus({ preventScroll: true });
 }

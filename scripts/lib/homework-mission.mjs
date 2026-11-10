@@ -190,7 +190,7 @@ export function renderMissionModelHost(config) {
  * stated, because it is true and the teacher is not sent this. Everything past the first row of
  * actions is optional and folded.
  */
-export function renderReflect({ lessonId, next, prereq, question }) {
+export function renderReflect({ lessonId, next, prereq, question, studio = "" }) {
   /* The lesson page, only when it exists: a family is never sent to a 404. */
   const base = lessonId.replace(/-part2$/, "");
   const lessonPage = LESSON_PAGE_IDS.has(base) ? `/lessons/${base}/` : "";
@@ -209,7 +209,9 @@ export function renderReflect({ lessonId, next, prereq, question }) {
       ${question?.en ? `<aside class="fp-family" aria-label="${esc("Family question")}"><p class="fp-label">${bi("Talk about it (optional)", "Conversen (opcional)")}</p><p>${pairText(question)}</p></aside>` : ""}
       <div class="hw-next-actions fp-actions">
         <button type="button" class="fm-btn fm-btn--block fm-btn--primary" data-celebrate-photo ${act("openOptionalStop", "photobooth")}><span aria-hidden="true">📸</span> <span class="lang-en">Take your victory photo</span><span class="lang-es" lang="es">Tomen su foto de victoria</span></button>
+        <button type="button" class="fm-btn fm-btn--block fm-btn--primary" data-celebrate-games ${act("openOptionalStop", "play")}><span aria-hidden="true">🎮</span> <span class="lang-en">Play a practice game</span><span class="lang-es" lang="es">Jugar un juego de práctica</span></button>
         <button type="button" class="fm-btn fm-btn--block" data-celebrate-challenge ${act("hwStartChallengeRound")}><span aria-hidden="true">⭐</span> <span class="lang-en">Challenge round (deeper problems)</span><span class="lang-es" lang="es">Ronda de reto (problemas más profundos)</span></button>
+        ${studio ? link(studio, "Practice Studio: interactive practice at three levels", "Estudio de práctica: práctica interactiva en tres niveles", "", " data-practice-studio") : ""}
         <button type="button" class="fm-btn fm-btn--block" ${act("fpPracticeMore")}><span class="lang-en">Practice more (new problems)</span><span class="lang-es" lang="es">Más práctica (problemas nuevos)</span></button>
         ${next ? link(next.href, `Next lesson: ${next.en}`, `Siguiente lección: ${next.es}`, " fm-btn--primary", ` data-next-lesson="${esc(next.id)}"`) : ""}
         ${prereq ? link(prereq.href, `Review first: ${prereq.en}`, `Repasar primero: ${prereq.es}`, "", " data-mission-prereq hidden") : ""}

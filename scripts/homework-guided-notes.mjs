@@ -8486,11 +8486,10 @@ export function renderCheckTab(
       ${starsBar}
       ${streakBanner}
       ${goalReachedBanner}
-      <div class="fp-sets-nav" id="fp_sets_nav" role="navigation" aria-label="Practice Sets">
-        <div class="fp-set-progress-row">
-          <span class="fp-step-indicator" id="fp_step_indicator"><span class="lang-en">Problem <strong id="fp_curr_prob_num">1</strong> of <strong id="fp_total_prob_num">${coreCount}</strong></span><span class="lang-es" lang="es">Problema <strong id="fp_curr_prob_num_es">1</strong> de <strong id="fp_total_prob_num_es">${coreCount}</strong></span></span>
-          <div class="fp-pips-track" id="fp_pips_track" role="navigation" aria-label="Problem track"></div>
-        </div>
+      <div class="fp-sets-nav" id="fp_sets_nav" role="navigation" aria-label="Problems">
+        <button type="button" class="fp-nav-arrow" ${act("fpPrevCurrent")} aria-label="Previous problem" data-aria-en="Previous problem" data-aria-es="Problema anterior">‹</button>
+        <span class="fp-step-indicator" id="fp_step_indicator"><span class="lang-en">Problem <strong id="fp_curr_prob_num">1</strong> of <strong id="fp_total_prob_num">${coreCount}</strong></span><span class="lang-es" lang="es">Problema <strong id="fp_curr_prob_num_es">1</strong> de <strong id="fp_total_prob_num_es">${coreCount}</strong></span></span>
+        <button type="button" class="fp-nav-arrow" ${act("fpNextCurrent")} aria-label="Next problem" data-aria-en="Next problem" data-aria-es="Problema siguiente">›</button>
       </div>
       ${basicBlock}
       ${warmupBlock}
@@ -8803,10 +8802,12 @@ export function renderPlayTabPanel(config, lessonId = "") {
       </p>
       ${renderFamilyActivityCorner(config)}
       ${renderFamilyGameBreak(familyGameKey(config), { quizHtml, arcadeUrl }, detectVisualTopic(config))}
-      <div class="tab-flow-nav">
-        <button type="button" class="btn btn-primary flow-next-btn" ${act("goNextHomeworkStop", "play")}>
-          <span class="lang-en">Continue ➔</span>
-          <span class="lang-es" lang="es">Continuar ➔</span>
+      <div class="tab-flow-nav fp-nav fp-nav--back">
+        <button type="button" class="btn btn-outline-primary" ${act("switchHomeworkTab", "check")}>
+          <span class="lang-en">Back to practice</span><span class="lang-es" lang="es">Volver a la práctica</span>
+        </button>
+        <button type="button" class="btn btn-primary" ${act("switchHomeworkTab", "done")}>
+          <span class="lang-en">Go to Finish</span><span class="lang-es" lang="es">Ir a Terminar</span>
         </button>
       </div>
     </div>`;
@@ -8913,7 +8914,13 @@ export function renderDoneTab(config = null, lessonId = "") {
         ...nextFamilyTitle(from),
       }
     : null;
+  /* The lesson's interactive Practice Studio, when one is built (Units 2-9 core lessons). */
+  const studioId = lessonId.replace(/-part[23]$/, "");
+  const studio = existsSync(join(__dirname, "..", "math", "practice-studio", studioId, "index.html"))
+    ? `/math/practice-studio/${studioId}/`
+    : "";
   return `<div ${tabPanelAttrs("done", true)}>${renderReflect({
+    studio,
     lessonId,
     next: nextFamilyPage(lessonId),
     prereq,
