@@ -418,6 +418,69 @@ export function makeSibling(source, index) {
         },
     };
 }
+export function createRatioExercise(config) {
+    const { id, standard, tier, trackALabel, trackBLabel, trackAUnits, trackBUnits, unitVal } = config;
+    if (![trackAUnits, trackBUnits].every((n) => Number.isInteger(n) && n >= 1 && n <= 24) ||
+        !Number.isFinite(unitVal) ||
+        unitVal <= 0) {
+        throw new Error("Invalid ratio exercise quantities");
+    }
+    const known = trackAUnits * unitVal;
+    const answer = trackBUnits * unitVal;
+    const additive = trackBUnits + known - trackAUnits;
+    const inverted = (known * trackAUnits) / trackBUnits;
+    return {
+        id,
+        standard,
+        tier,
+        prompt: `For every ${trackAUnits} ${trackALabel.toLowerCase()}, there are ${trackBUnits} ${trackBLabel.toLowerCase()}. If there are ${known} ${trackALabel.toLowerCase()}, how many ${trackBLabel.toLowerCase()} are needed?`,
+        modelComponent: config.modelComponent || "interactive-ratio-tape",
+        modelConfig: { trackALabel, trackAUnits, trackBLabel, trackBUnits, unitVal },
+        correctAnswer: String(answer),
+        misconceptions: [
+            {
+                id: "ADDITIVE_THINKING",
+                tag: "ADDITIVE_THINKING",
+                detect: (input) => Number(input) === additive && additive !== answer,
+                conceptualAnchor: "Equivalent ratios multiply both quantities by the same scale factor.",
+                remediationStep: {
+                    scaffoldPrompt: `Build ${trackAUnits} equal parts for ${trackALabel.toLowerCase()}, then ${trackBUnits} for ${trackBLabel.toLowerCase()}.`,
+                    targetSubQuestion: "Value of one segment",
+                    expectedSubValue: String(unitVal),
+                    manipulativeActionHint: "Select every segment on both tracks.",
+                },
+            },
+            {
+                id: "INVERTED_RATIO",
+                tag: "INVERTED_RATIO",
+                detect: (input) => Number(input) === inverted && inverted !== answer,
+                conceptualAnchor: "Keep the two quantities in the order named in the problem.",
+                remediationStep: {
+                    scaffoldPrompt: `Compare ${trackAUnits} parts with ${trackBUnits} parts.`,
+                    targetSubQuestion: "Value of one segment",
+                    expectedSubValue: String(unitVal),
+                    manipulativeActionHint: "Select every segment on both tracks.",
+                },
+            },
+        ],
+        fullExplanation: {
+            keyRule: "Equivalent ratios use one constant segment value for both quantities.",
+            stepByStep: [
+                {
+                    stepNumber: 1,
+                    instruction: `Divide the known ${trackALabel.toLowerCase()} total by its number of segments.`,
+                    mathExpression: `${known} ÷ ${trackAUnits} = ${unitVal}`,
+                },
+                {
+                    stepNumber: 2,
+                    instruction: `Multiply by the number of ${trackBLabel.toLowerCase()} segments.`,
+                    mathExpression: `${trackBUnits} × ${unitVal} = ${answer}`,
+                },
+            ],
+            distractorAnalysis: `Adding the increase in the first quantity gives ${additive}. Each quantity must instead be scaled by the same factor.`,
+        },
+    };
+}
 export const SEED_EXERCISE = {
     id: "6.RP.A.3_RATIO_TAPE_01",
     standard: "6.RP.A.3",

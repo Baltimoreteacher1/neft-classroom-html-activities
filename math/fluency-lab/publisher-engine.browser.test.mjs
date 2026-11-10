@@ -123,6 +123,14 @@ try {
     return { stacked: !!host.shadowRoot.querySelector('.math-fraction'), slashVisible: host.shadowRoot.querySelector('h2').textContent.includes('3/4') };
   });
   assert.deepEqual(fraction, { stacked: true, slashVisible: false }, 'numeric fractions use stacked notation');
+  const generated = await page.evaluate(async () => {
+    const { createRatioExercise } = await import('/src/components/MathFluencyLabEngine.js');
+    const item = createRatioExercise({ id: 'test-beads', standard: '6.RP.A.3', tier: 2, trackALabel: 'red beads', trackBLabel: 'blue beads', trackAUnits: 2, trackBUnits: 3, unitVal: 5 });
+    return { answer: item.correctAnswer, additive: item.misconceptions[0].detect('11', {}), prompt: item.prompt };
+  });
+  assert.equal(generated.answer, '15');
+  assert.equal(generated.additive, true);
+  assert.match(generated.prompt, /10 red beads/);
   await page.reload();
   await root.locator('#answer').fill('18');
   await root.locator('#check').click();
