@@ -56,6 +56,9 @@ for (const rel of [
   "lti-worker/wrangler.toml",
   "results-worker/migrations/0001_init.sql",
   "focus-school/sync-worker/src/sync-room.js",
+  "math-fluency-lab/src/engine/GhostDB.ts",
+  "focus-school/functions/api/state.js",
+  "shai-school/functions/api/config.js",
 ]) {
   assert.equal(
     plain(`/Users/x/repo/${rel}`),

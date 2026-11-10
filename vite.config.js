@@ -63,6 +63,12 @@ function copyStandaloneHtml() {
     "lti-worker",
     "results-worker",
     "workbench-live",
+    // Test scripts and visual-regression snapshots (/tests/*.cjs, 10 Playwright PNGs) and
+    // generated browser-verification output (/output/fluency/*: result JSON, screenshots, runners).
+    // Developer artefacts: nothing links to either, and their 37 files counted against the
+    // 20,000-file Pages limit (2026-11-10 file-budget audit).
+    "tests",
+    "output",
   ]);
   const ROOT_FILES = ["_headers", "_redirects", "404.html", "robots.txt", "sitemap.xml"];
   // Keep dev artifacts out of the published site: nested .claude/.git/node_modules
