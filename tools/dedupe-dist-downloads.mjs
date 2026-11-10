@@ -23,11 +23,13 @@
  */
 import { createHash } from "node:crypto";
 import { existsSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
-import { dirname, join, relative, resolve, sep } from "node:path";
+import { basename, dirname, join, relative, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
+import { LESSONS_DIR } from "./lib/curriculum-source.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const DIST = join(ROOT, "dist");
+const L = basename(LESSONS_DIR); // the lessons directory name, via the curriculum-source seam
 const START =
   "# --- dedupe-dist-downloads: byte-identical lesson downloads served from one copy (200 rewrites) ---";
 const END = "# --- end dedupe-dist-downloads ---";
@@ -71,18 +73,18 @@ export function planDedupe(files) {
 /* Self-test: the planner must keep the parent, skip unsafe paths and never pair different content. */
 {
   const plan = planDedupe([
-    { rel: "lessons/5-6-group1/homework.docx", hash: "a" },
-    { rel: "lessons/5-6/homework.docx", hash: "a" },
-    { rel: "lessons/5-6-catchup/homework.docx", hash: "a" },
-    { rel: "lessons/9-9/homework.docx", hash: "b" },
-    { rel: "lessons/7 7/x.docx", hash: "c" },
-    { rel: "lessons/7-7/x.docx", hash: "c" },
+    { rel: `${L}/5-6-group1/homework.docx`, hash: "a" },
+    { rel: `${L}/5-6/homework.docx`, hash: "a" },
+    { rel: `${L}/5-6-catchup/homework.docx`, hash: "a" },
+    { rel: `${L}/9-9/homework.docx`, hash: "b" },
+    { rel: `${L}/7 7/x.docx`, hash: "c" },
+    { rel: `${L}/7-7/x.docx`, hash: "c" },
   ]);
   const ok =
     plan.length === 2 &&
-    plan.every((p) => p.canonical === "lessons/5-6/homework.docx") &&
+    plan.every((p) => p.canonical === `${L}/5-6/homework.docx`) &&
     !plan.some((p) => p.dup.includes(" ") || p.dup.includes("7-7")) &&
-    !plan.some((p) => p.dup === "lessons/9-9/homework.docx");
+    !plan.some((p) => p.dup === `${L}/9-9/homework.docx`);
   if (!ok) {
     console.error("dedupe-dist-downloads self-test FAILED:", JSON.stringify(plan));
     process.exit(1);
@@ -100,7 +102,7 @@ function walk(dir, out = []) {
 
 function main() {
   const dry = process.argv.includes("--dry-run");
-  const lessons = join(DIST, "lessons");
+  const lessons = join(DIST, L);
   if (!existsSync(lessons)) {
     console.error("dedupe-dist-downloads: dist/lessons not found — run `npm run build` first");
     process.exit(1);

@@ -40,6 +40,7 @@ export const SKIP_COPY_RE =
 // exclusion here prevents private QA baselines and build-only translation
 // fragments from consuming Pages' 20,000-file deployment budget.
 const OMITTED_DATA_JSON = new Set([
+  "r2-offload-manifest.json", // build input: which downloads are in R2 (tools/offload-dist-downloads.mjs)
   "asset-standard-overrides.json",
   "auth-baseline.json",
   "browser-gate-review.json",
