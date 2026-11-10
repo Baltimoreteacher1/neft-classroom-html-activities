@@ -285,10 +285,27 @@ test("start screen: landmarks, one h1, a labelled ruler, the language choice, fo
     false,
     "secondary resources start collapsed",
   );
-  assert.equal(lph.querySelectorAll(".lph-door").length, 2);
+  assert.equal(lph.querySelectorAll(".lph-start").length, 2);
   assert.equal(
-    lph.querySelector(".is-family a").getAttribute("href"),
-    "/access-practice-lab/family?grades=6-8",
+    lph.querySelector(".lph-start.is-family > .btn").getAttribute("href"),
+    "/access-practice-lab/practice-together?grades=6-8",
+  );
+  assert.equal(
+    lph.querySelector(".lph-start.is-teacher > .btn").getAttribute("href"),
+    "/access-practice-lab/start/tour?grades=6-8",
+  );
+  assert.match(lph.querySelector(".lph-start.is-teacher h2").textContent, /Teachers: Start Here/);
+  assert.match(
+    lph.querySelector(".lph-start.is-teacher > .btn").textContent,
+    /Start the Teacher Tour/,
+  );
+  assert.match(
+    lph.querySelector(".lph-start.is-family > .btn").textContent,
+    /Start Family Practice/,
+  );
+  assert.ok(
+    lph.querySelector(".lph-start.is-family a[href*='/family?']"),
+    "Family Corner stays reachable from home",
   );
   assert.ok(lph.querySelector(".lph-continue [data-continue].btn-primary"));
   // The 4-5 pick on the 3-5 band says which practice it shows; a pick with no band yet says so plainly.

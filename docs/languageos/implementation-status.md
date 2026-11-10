@@ -15,3 +15,4 @@ Honest status. A feature is "done" only when its automated e2e and accessibility
 | Teacher Action Studio, Family Companion (EN/ES), Research/Evaluation engine | NOT STARTED |
 | Route reorganisation (/learn /worlds /practice /growth /teacher /families) | NOT STARTED; existing URLs stay |
 | Spanish review by a human | NOT DONE; Spanish text is machine-drafted until reviewed |
+| Introduction for teachers and families (`/start`, tour, exploration, featured lesson, presenter view, quick guide PDF/Word, `/practice-together` EN/ES, `/site-guide`) | BUILT locally on `feat/lp-intro-guide`, NOT deployed. Browser tests: `tools/access-intro*-e2e.mjs`. Curated list: `intro-curated-activities.md`. Spanish machine-drafted; no user testing done. |

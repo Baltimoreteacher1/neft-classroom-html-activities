@@ -93,6 +93,8 @@ const ACTIVE = {
   "access-prep": "access-prep",
   "language-studios": "studios",
   family: "family",
+  start: "teachers",
+  "site-guide": "help",
   tools: "help",
 };
 
@@ -158,7 +160,8 @@ function menuGroups(band, T) {
       {
         title: T("Families and teachers", "Familias y docentes"),
         items: [
-          link("families", T("Families", "Familias"), "family"),
+          link("families", T("Families: Practice Together", "Familias: Practicar juntos"), "practice-together"),
+          link("families", T("Family Corner", "Rincón de la familia"), "family"),
           link("passport", T("My Passport", "Mi Pasaporte"), "passport"),
           link("classroom", T("My class", "Mi clase"), "class"),
           link("classroom", T("Live class quiz", "Cuestionario de clase en vivo"), "class/quiz"),
@@ -246,6 +249,7 @@ function menuGroups(band, T) {
     {
       title: T("For teachers", "Para docentes"),
       items: [
+        link("flag", T("Start Here: Speaking and Writing", "Empezar aquí: expresión oral y escrita"), "start"),
         link("teacher", T("Teacher Hub", "Centro docente"), "/access-teacher/"),
         link("flag", T("Teacher Expedition", "Expedición docente"), "/access-expedition/"),
         link("classroom", T("Whole-Class Studio", "Estudio para toda la clase"), "classroom"),
@@ -253,6 +257,15 @@ function menuGroups(band, T) {
         link("launch", T("Launch Studio", "Estudio de lanzamiento"), "launch-studio"),
         link("teacher", T("Journey teacher guide", "Guía docente del viaje"), "journey/guide"),
         { icon: "reading", label: T("K–3 practice and Story Time", "Práctica de kínder a 3.º y Hora del cuento"), href: `${BASE}/early?grades=K` },
+      ],
+    },
+    {
+      title: T("Families and help", "Familias y ayuda"),
+      items: [
+        link("families", T("Families: Practice Together", "Familias: Practicar juntos"), "practice-together"),
+        link("families", T("Family Corner", "Rincón de la familia"), "family"),
+        link("help", T("Site Guide", "Guía del sitio"), "site-guide"),
+        link("tools", T("Help and device check", "Ayuda y revisión del dispositivo"), "tools"),
       ],
     },
   ];
@@ -277,7 +290,9 @@ export function navHTML(ctx, I) {
   const focused = view === "test" || view === "assess";
   const accessPrepLink = html`<a class="top-link top-access-prep is-featured" data-tier="prep" href="${BASE}/access-prep?grades=${band}" ${view === "access-prep" ? raw('aria-current="page"') : ""}><span>${icon("tests")} ${T("Access Prep", "Preparación ACCESS")}</span></a>`;
   const sorLink = html`<a class="top-link top-sor-link" href="${BASE}/science-of-reading?grades=${band}" ${view === "science-of-reading" || view === "sor" ? raw('aria-current="page"') : ""}><span>${icon("reading")} ${T("Science of Reading", "Ciencia de la lectura")}</span></a>`;
-  return html`${accessPrepLink}${primary.filter((l) => !l.pill && !l.featured).map(topLink)}${sorLink}${primary.filter((l) => l.pill).map(topLink)}
+  // The learner row stays four destinations (tools/access-journey-pages.test.mjs); Families is its own labelled link.
+  const familiesLink = html`<a class="top-link top-expedition top-family" href="${BASE}/practice-together?grades=${band}" ${view === "practice-together" || view === "family" ? raw('aria-current="page"') : ""}>${icon("families")}<span>${T("Families", "Familias")}</span></a>`;
+  return html`${accessPrepLink}${primary.filter((l) => !l.pill && !l.featured).map(topLink)}${sorLink}${primary.filter((l) => l.pill).map(topLink)}${familiesLink}
     ${focused ? html`<span class="mode-flag">${icon("tests")}<span>${T("Focused practice mode", "Modo de práctica enfocada")}</span></span>` : ""}
     ${langSwitchHTML(I.mode)}
     <details class="lab-utilities">
@@ -351,7 +366,9 @@ export function footerHTML(ctx, I) {
         <button type="button" class="footer-link-button" data-start-fresh>
           ${T("Start everything fresh", "Empezar todo de nuevo")}
         </button>
-        <a href="${BASE}/family${q}">${T("Families", "Familias")}</a>
+        <a href="${BASE}/practice-together${q}">${T("Families", "Familias")}</a>
+        <a href="${BASE}/family${q}">${T("Family Corner", "Rincón de la familia")}</a>
+        <a href="${BASE}/site-guide${q}">${T("Site Guide", "Guía del sitio")}</a>
         <a href="/access-teacher/">${T("Teacher Hub", "Centro docente")}</a>
         <a href="${BASE}/tools${q}"
           >${T("Help and device check", "Ayuda y revisión del dispositivo")}</a

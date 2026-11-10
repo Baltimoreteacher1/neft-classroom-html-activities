@@ -25,6 +25,7 @@ import { mountGloss } from "./glossary.js";
 import { registerSaveResume } from "./sync.js";
 import { readMathLanguageBridge } from "../../shared/math-language-bridge/v2.js";
 import { initStartFresh } from "./reset.js";
+import { mountReturnBar } from "./intro/return-bar.js";
 import { $, ART, BASE, announce, bandOfId, copyText, storage, toHtml } from "./util.js";
 import * as homeView from "./views/home.js";
 
@@ -96,6 +97,9 @@ const VIEW_LOADERS = {
   search: () => import("./views/search.js"),
   portfolio: () => import("./views/portfolio.js"),
   collection: () => import("./views/collection.js"),
+  start: () => import("./intro/start.js"),
+  "practice-together": () => import("./intro/family.js"),
+  "site-guide": () => import("./intro/site-guide.js"),
 };
 const VIEW_ALIASES = {
   sor: "science-of-reading",
@@ -162,6 +166,9 @@ export function parseRoute(pathname = location.pathname, search = location.searc
   }
   if (a === "class")
     return { ...r, view: b === "quiz" ? "class-quiz" : b === "teacher" ? "class-teacher" : "class", id: b || "" };
+  if (a === "start") return { ...r, view: "start", id: b || "", stop: q.get("stop") || "", focus: q.get("focus") || "" };
+  if (a === "practice-together") return { ...r, view: "practice-together", id: b || "" };
+  if (a === "site-guide") return { ...r, view: "site-guide", id: b || "", audience: q.get("for") || "", q: q.get("q") || "" };
   if (a === "arena") return { ...r, view: "arena", id: b || "" };
   if (a === "mentor") return { ...r, view: "mentor", id: b || "", sub: c || "" };
   if (a === "sentences") return { ...r, view: "sentences", id: b || "", sub: c || "" };
@@ -382,6 +389,7 @@ async function render({ keepFocus = false, scroll = false } = {}) {
   document.body.dataset.labView = route.view;
   document.body.dataset.labBand = app.band;
   mountShell(ctx);
+  mountReturnBar(ctx);
   view.mount?.(root, ctx);
   if (fk) {
     const target = root.querySelector(fk)

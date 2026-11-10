@@ -88,6 +88,14 @@ export const SITEMAP_PATHS = [
   `${LAB_BASE}/vocabulary/mastery`,
   `${LAB_BASE}/vocab-curriculum`,
   `${LAB_BASE}/language-studios`,
+  // The introduction: one entrance (/start) for teachers, a family page and the Site Guide (src/intro/data.js ROUTES).
+  `${LAB_BASE}/start`,
+  `${LAB_BASE}/start/tour`,
+  `${LAB_BASE}/start/explore`,
+  `${LAB_BASE}/start/guide`,
+  `${LAB_BASE}/start/lesson`,
+  `${LAB_BASE}/practice-together`,
+  `${LAB_BASE}/site-guide`,
   // Kindergarten, Grade 1 and Grades 2–3 home (access-practice-lab/src/views/early-hub.js).
   `${LAB_BASE}/early`,
   // The WIDA ACCESS practice studios (access-practice-lab/src/studios.js); the school dashboard and the portfolio

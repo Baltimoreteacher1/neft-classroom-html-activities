@@ -170,6 +170,11 @@
       "file": "tools/validate-palette.test.mjs",
       "targets": "tmpdir",
       "reason": "Every write goes into mkdtempSync directories under os.tmpdir(): small synthetic trees (a manifest, an engine file, a lesson page) with and without a seeded purple literal, which the real gate is pointed at through --root. The repo tree is only read, and the browser controls use page.setContent, so nothing is written."
+    },
+    {
+      "file": "tools/access-intro-guide.test.mjs",
+      "targets": "tmpdir",
+      "reason": "renders the quick guide, backup and notes into mkdtempSync(join(tmpdir(), 'intro-guide-test-')) and decodes QR images there; nothing under the repository is written"
     }
   ]
 }

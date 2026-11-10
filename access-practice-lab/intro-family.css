@@ -1,0 +1,313 @@
+/* intro-family.css — The Language Page introduction. Tokens come from ds.css; add layout only. */
+/* Practice Together (/practice-together): calm, large type, two cards side by side on wide screens. */
+
+.tg-page {
+  max-width: 68rem;
+  margin-inline: auto;
+  padding-block: var(--s-5) var(--s-7);
+  font-size: 1.125rem;
+  line-height: 1.6;
+}
+.tg-page h1 {
+  font-size: clamp(2.1rem, 1.6rem + 2vw, 3rem);
+  line-height: 1.1;
+  margin: 0;
+}
+.tg-page h2 {
+  font-size: clamp(1.4rem, 1.2rem + 0.8vw, 1.8rem);
+  margin: 0 0 var(--s-4);
+}
+.tg-hero {
+  margin-bottom: var(--s-6);
+}
+.tg-lang {
+  margin: var(--s-4) 0;
+}
+.tg-page .tg-lang .lang-btn {
+  min-height: var(--target);
+}
+.tg-welcome {
+  max-width: 60ch;
+  font-size: 1.1875rem;
+  margin: var(--s-4) 0 var(--s-2);
+}
+
+.tg-choices,
+.tg-answers,
+.tg-language,
+.tg-extras {
+  margin-block: var(--s-6);
+}
+.tg-cards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--s-5);
+}
+.tg-card {
+  --tg-tone: var(--speaking);
+  --tg-tone-ink: var(--speaking-ink);
+  --tg-tone-soft: var(--speaking-soft);
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-4);
+  padding: var(--s-5);
+  background: var(--surface);
+  border: 1.5px solid var(--line-strong);
+  border-top: 6px solid var(--tg-tone);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-card);
+  min-width: 0;
+}
+.tg-card.is-write {
+  --tg-tone: var(--writing);
+  --tg-tone-ink: var(--writing-ink);
+  --tg-tone-soft: var(--writing-soft);
+}
+.tg-card-head {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+}
+.tg-card h3 {
+  margin: 0;
+  font-size: clamp(1.5rem, 1.3rem + 0.8vw, 1.9rem);
+  color: var(--tg-tone-ink);
+}
+.tg-activity {
+  margin: 0;
+  font-size: 0.9375rem;
+  color: var(--ink-2);
+}
+.tg-ic {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 3.25rem;
+  height: 3.25rem;
+  border-radius: 50%;
+  background: var(--tg-tone-soft, var(--brand-soft));
+  color: var(--tg-tone-ink, var(--brand-ink));
+}
+.tg-ic .ico {
+  width: 1.6rem;
+  height: 1.6rem;
+}
+.tg-ic.small {
+  width: 2.5rem;
+  height: 2.5rem;
+}
+.tg-ic.small .ico {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+.tg-desc {
+  margin: 0;
+  font-size: 1.1875rem;
+}
+
+.tg-steps {
+  display: grid;
+  gap: var(--s-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: tg;
+}
+.tg-steps li {
+  display: grid;
+  grid-template-columns: 2.25rem minmax(0, 1fr);
+  column-gap: var(--s-3);
+  counter-increment: tg;
+}
+.tg-steps li::before {
+  content: counter(tg);
+  grid-row: span 2;
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  background: var(--tg-tone-ink);
+  color: #fff;
+  font-weight: 800;
+}
+.tg-steps strong {
+  color: var(--ink);
+}
+.tg-steps span {
+  color: var(--ink-2);
+}
+
+.tg-example {
+  padding: var(--s-3) var(--s-4);
+  background: var(--tg-tone-soft);
+  border-radius: var(--radius);
+  border-inline-start: 5px solid var(--tg-tone);
+}
+.tg-label {
+  margin: 0 0 var(--s-1);
+  font-size: 0.9375rem;
+  font-weight: 800;
+  color: var(--tg-tone-ink);
+}
+.tg-quote {
+  margin: 0;
+  font-family: var(--font-display, inherit);
+  font-size: 1.25rem;
+}
+.tg-pair {
+  margin: 0;
+}
+.tg-pair dt {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--ink-2);
+}
+.tg-pair dd {
+  margin: 0 0 var(--s-2);
+  font-size: 1.1875rem;
+}
+.tg-pair dd.is-better {
+  margin-bottom: 0;
+  font-weight: 700;
+}
+.tg-note {
+  margin: 0;
+}
+.tg-start {
+  margin-top: auto;
+  min-height: 3.75rem;
+  font-size: 1.375rem;
+  width: 100%;
+}
+.tg-start .ico {
+  width: 1.4rem;
+  height: 1.4rem;
+}
+
+.tg-answers dl,
+.tg-help {
+  display: grid;
+  gap: var(--s-3);
+  margin: 0;
+}
+.tg-answers dl {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.tg-answers dl > div {
+  padding: var(--s-3) var(--s-4);
+  background: var(--surface-2);
+  border-radius: var(--radius);
+}
+.tg-answers dt,
+.tg-help dt {
+  font-weight: 800;
+  color: var(--ink);
+}
+.tg-answers dd,
+.tg-help dd {
+  margin: var(--s-1) 0 0;
+  color: var(--ink-2);
+}
+.tg-language {
+  max-width: 62ch;
+}
+
+.tg-extras {
+  display: grid;
+  gap: var(--s-3);
+}
+.tg-details {
+  background: var(--surface);
+  border: 1.5px solid var(--line-strong);
+  border-radius: var(--radius);
+  padding: 0;
+}
+.tg-details > summary {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  min-height: 3.5rem;
+  padding: var(--s-3) var(--s-4);
+  font-size: 1.1875rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+.tg-details > .disc-body {
+  padding: 0 var(--s-4) var(--s-4);
+}
+.tg-help a,
+.tg-links a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+}
+.tg-more {
+  display: grid;
+  gap: var(--s-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.tg-more li {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--s-3);
+}
+.tg-more p {
+  margin: 0;
+}
+.tg-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-3);
+  margin-top: var(--s-6);
+  padding-top: var(--s-4);
+  border-top: 1px solid var(--line);
+}
+.tg-foot p {
+  margin: 0;
+}
+.tg-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2) var(--s-5);
+}
+
+.tg-page a:focus-visible,
+.tg-page summary:focus-visible,
+.tg-page .btn:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+}
+
+@media (max-width: 52rem) {
+  .tg-cards,
+  .tg-answers dl {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@media (max-width: 30rem) {
+  .tg-page {
+    font-size: 1.0625rem;
+  }
+  .tg-card {
+    padding: var(--s-4);
+  }
+  .tg-more li {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+  .tg-more li .btn {
+    grid-column: 1 / -1;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tg-page .btn,
+  .tg-page .btn:hover {
+    transition: none;
+    transform: none;
+  }
+}

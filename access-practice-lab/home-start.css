@@ -6,9 +6,9 @@
   display: grid;
   grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
   grid-template-areas:
+    "starts starts"
     "intro student"
-    "lang student"
-    "doors student";
+    "lang student";
   grid-template-rows: auto auto 1fr;
   gap: var(--s-5) clamp(1.25rem, 3.5vw, 3rem);
   align-items: start;
@@ -29,8 +29,8 @@
   grid-area: lang;
   margin-top: 0;
 }
-.lph-doors {
-  grid-area: doors;
+.lph-starts {
+  grid-area: starts;
 }
 .lph h1 {
   margin: 0 0 var(--s-3);
@@ -266,38 +266,65 @@
   outline-offset: 3px;
 }
 
-/* ── teacher and family doors ────────────────────────────────────────────── */
-.lph-doors {
+/* ── Start Here: one compact card each for teachers and families ─────────── */
+.lph-starts {
   display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--s-3);
-  padding-top: var(--s-4);
-  border-top: 1px solid var(--line);
 }
-.lph-door {
+.lph-start {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
-  gap: var(--s-3);
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-areas:
+    "ic text"
+    "go go"
+    "more more";
+  gap: var(--s-2) var(--s-3);
   align-items: center;
+  padding: var(--s-4);
+  border: 2px solid var(--brand);
+  border-radius: var(--r-lg);
+  background: var(--brand-soft);
 }
-.lph-door h2 {
-  margin: 0;
-  font: 700 1.125rem/1.2 var(--font);
+.lph-start.is-family {
+  border-color: var(--writing);
+  background: var(--writing-soft);
 }
-.lph-door .fine {
-  margin: 0.15rem 0 0;
-}
-.lph-door-ic {
+.lph-start-ic {
+  grid-area: ic;
   display: grid;
   place-items: center;
   width: 3rem;
   height: 3rem;
   border-radius: 50%;
-  background: var(--brand-soft);
+  background: var(--surface);
   color: var(--brand-ink);
 }
-.lph-door.is-family .lph-door-ic {
-  background: var(--writing-soft);
+.lph-start.is-family .lph-start-ic {
   color: var(--writing-ink);
+}
+.lph-start > div {
+  grid-area: text;
+}
+.lph-start h2 {
+  margin: 0;
+  font: 700 1.25rem/1.2 var(--font);
+}
+.lph-start p {
+  margin: 0.2rem 0 0;
+  color: var(--ink);
+}
+.lph-start > .btn {
+  grid-area: go;
+  justify-content: center;
+}
+.lph-start-more {
+  grid-area: more;
+  justify-self: center;
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  color: var(--brand-ink);
 }
 
 /* ── explore: featured cards, then the rest behind one disclosure ───────── */
@@ -322,11 +349,14 @@
   .lph {
     grid-template-columns: minmax(0, 1fr);
     grid-template-areas:
+      "starts"
       "intro"
       "student"
-      "lang"
-      "doors";
+      "lang";
     grid-template-rows: none;
+  }
+  .lph-starts {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 @media (max-width: 599px) {
@@ -347,13 +377,6 @@
   }
 }
 @media (max-width: 479px) {
-  .lph-door {
-    grid-template-columns: auto minmax(0, 1fr);
-  }
-  .lph-door > .btn {
-    grid-column: 1 / -1;
-    justify-content: center;
-  }
   .lph-skill {
     padding-inline: 0.75rem;
     font-size: 1rem;

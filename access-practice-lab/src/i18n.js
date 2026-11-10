@@ -19,7 +19,7 @@ export const DEFAULT_LANG = "en";
 export const langMode = (prefs) => (LANG_MODES.includes(prefs?.lang) ? prefs.lang : DEFAULT_LANG);
 
 /** Views whose entire chrome is localized. Elsewhere the page stays lang="en" and Spanish is marked inline. */
-const FULLY_LOCALIZED = new Set(["family"]);
+const FULLY_LOCALIZED = new Set(["family", "practice-together"]);
 export const docLang = (view, mode) => (mode === "es" && FULLY_LOCALIZED.has(view) ? "es" : "en");
 
 // A var may be one value or { en, es } when the filled text differs by language (a learning goal, a count word).

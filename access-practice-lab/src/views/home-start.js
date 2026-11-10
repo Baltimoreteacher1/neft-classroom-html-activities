@@ -223,21 +223,27 @@ function continueHTML(I, target, band) {
   </section>`;
 }
 
-function doorHTML(I, { id, ic, who, text, cta, href }) {
-  return html`<div class="lph-door is-${id}">
-    <span class="lph-door-ic" aria-hidden="true">${icon(ic)}</span>
+/** The two Start Here cards at the very top of the home: one for teachers, one for families (both bilingual). */
+function startCardHTML(I, { id, ic, who, text, cta, href, more }) {
+  return html`<section class="lph-start is-${id}" aria-labelledby="lphStart-${id}">
+    <span class="lph-start-ic" aria-hidden="true">${icon(ic)}</span>
     <div>
-      <h2>${who}</h2>
-      <p class="fine">${text}</p>
+      <h2 id="lphStart-${id}">${who}</h2>
+      <p>${text}</p>
     </div>
-    <a class="btn" href="${href}">${cta}${icon("arrow-right")}</a>
-  </div>`;
+    <a class="btn btn-primary btn-big" href="${href}">${cta}${icon("arrow-right")}</a>
+    <a class="lph-start-more" href="${more.href}">${more.label}</a>
+  </section>`;
 }
 
 /** The start screen. `data` carries what home.js already loaded so nothing is read twice. */
 export function startHTML(I, ctx, data) {
   const { band, available, focusCounts, domains, tierFor, target } = data;
   return html`<section class="lph" aria-labelledby="homeTitle">
+    <div class="lph-starts">
+      ${startCardHTML(I, { id: "teacher", ic: "teacher", who: I.T("Teachers: Start Here", "Docentes: Empiecen aquí"), text: I.T("Explore speaking and writing activities. Leave with one lesson you can use.", "Exploren actividades de expresión oral y escrita. Salgan con una lección que puedan usar."), cta: I.T("Start the Teacher Tour", "Empezar el recorrido para docentes"), href: `${BASE}/start/tour?grades=${band}`, more: { href: `${BASE}/start?grades=${band}`, label: I.T("All ways to start", "Todas las formas de empezar") } })}
+      ${startCardHTML(I, { id: "family", ic: "families", who: I.T("Families: Start Here", "Familias: Empiecen aquí"), text: I.T("Choose one activity. Practice together for 5–10 minutes.", "Elijan una actividad. Practiquen juntos de 5 a 10 minutos."), cta: I.T("Start Family Practice", "Empezar a practicar en familia"), href: `${BASE}/practice-together?grades=${band}`, more: { href: `${BASE}/family?grades=${band}`, label: I.T("Family Corner", "Rincón de la familia") } })}
+    </div>
     <div class="lph-intro">
       <h1 id="homeTitle" tabindex="-1">
         ${I.T("Practice English for school, one step at a time", "Practica inglés para la escuela, paso a paso")}
@@ -257,10 +263,6 @@ export function startHTML(I, ctx, data) {
     <div class="lph-setting lph-lang">
       <p class="lph-label">${I.T("Language for directions", "Idioma de las instrucciones")}</p>
       ${langSwitchHTML(I.mode, { large: true, idPrefix: "homeLang" })}
-    </div>
-    <div class="lph-doors">
-      ${doorHTML(I, { id: "teacher", ic: "teacher", who: I.T("Teachers", "Docentes"), text: I.T("Assign practice, run a whole-class routine, print packets.", "Asigna práctica, dirige una rutina con toda la clase e imprime paquetes."), cta: I.T("Teacher tools", "Herramientas docentes"), href: "#teachers" })}
-      ${doorHTML(I, { id: "family", ic: "families", who: I.T("Families", "Familias"), text: I.T("Practice together at home, in English or Spanish.", "Practiquen juntos en casa, en inglés o en español."), cta: I.T("Family Corner", "Rincón de la familia"), href: `${BASE}/family?grades=${band}` })}
     </div>
   </section>`;
 }
