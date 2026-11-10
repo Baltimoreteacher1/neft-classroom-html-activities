@@ -15,6 +15,12 @@ try {
   page.on('pageerror', error => errors.push(error.message));
   await page.goto(`http://127.0.0.1:${server.httpServer.address().port}/math/fluency-lab/`);
   const root = page.locator('#fluency-lab-root');
+  await page.evaluate(() => {
+    window.__fluencyAttempts = [];
+    document.getElementById('fluency-lab-root').addEventListener('fluency-attempt', event => window.__fluencyAttempts.push(event.detail));
+    window.__fluencyResolutions = [];
+    document.getElementById('fluency-lab-root').addEventListener('fluency-resolution', event => window.__fluencyResolutions.push(event.detail));
+  });
   const answer = root.locator('#answer');
   const firstSegment = root.locator('interactive-ratio-tape').locator('[data-track="A"][data-index="0"]');
   const audit = async stage => {
@@ -51,6 +57,8 @@ try {
   await answer.fill('7');
   await root.locator('#check').click();
   assert.equal(await root.locator('#answer').count(), 0, 'primary answer locks after second miss');
+  const attempts = await page.evaluate(() => window.__fluencyAttempts);
+  assert.deepEqual(attempts.map(attempt => [attempt.attempt, attempt.correct, attempt.misconceptionId]), [[1, false, 'ADDITIVE_TRAP'], [2, false, null]]);
   assert.equal(await root.locator('#scaffold-heading').evaluate(element => element === element.getRootNode().activeElement), true, 'focus moves to the concrete scaffold');
   await audit('concrete scaffold');
   const next = root.locator('#sandbox-next');
@@ -62,6 +70,8 @@ try {
   await root.locator('#sub-answer').fill('4');
   assert.equal(await next.isEnabled(), true);
   await next.click();
+  const resolutions = await page.evaluate(() => window.__fluencyResolutions);
+  assert.deepEqual(resolutions.map(result => [result.correct, result.misconceptionId]), [[false, 'ADDITIVE_TRAP']]);
   assert.match((await root.locator('h3').allTextContents()).join(' '), /Core conceptual rule/);
   assert.equal(await page.evaluate(() => localStorage.getItem('ewl-fluency-publisher-mastery-v1')), null, 'viewing an explanation does not record mastery');
   assert.match((await root.locator('h3').allTextContents()).join(' '), /Why that answer was tempting/);
@@ -134,11 +144,35 @@ try {
   assert.match(generated.prompt, /10 red beads/);
   const adapted = await page.evaluate(async () => {
     const { adaptProportionItem } = await import('/src/components/MathFluencyLabEngine.js');
-    const valid = adaptProportionItem({ question: 'Solve the proportion: 3/2 = 12/x.', answers: ['8'], skill: { standard: '7.RP.A.2' } });
+    const valid = adaptProportionItem({ question: 'Solve the proportion: 3/2 = 12/x.', answers: ['8'], skill: { standard: '7.RP.A.2' }, meta: { wrong: [{ text: '9', why: 'changed the missing term by one' }] } }, input => input.trim() === '8');
     const invalid = adaptProportionItem({ question: 'Solve the proportion: 3/2 = 12/x.', answers: ['9'] });
-    return { answer: valid?.correctAnswer, model: valid?.modelComponent, invalid };
+    return { answer: valid?.correctAnswer, model: valid?.modelComponent, authored: valid?.misconceptions[0].detect('9', {}), evaluator: valid?.evaluateAnswer('8'), invalid };
   });
-  assert.deepEqual(adapted, { answer: '8', model: 'interactive-double-number-line', invalid: null });
+  assert.deepEqual(adapted, { answer: '8', model: 'interactive-double-number-line', authored: true, evaluator: true, invalid: null });
+  const customAnswer = await page.evaluate(async () => {
+    const { MathFluencyLabEngine, SEED_EXERCISE } = await import('/src/components/MathFluencyLabEngine.js');
+    const host = document.createElement('div');
+    host.id = 'publisher-validator-test';
+    document.body.append(host);
+    const engine = new MathFluencyLabEngine(host.id);
+    engine.loadExercise({ ...SEED_EXERCISE, id: 'ratio-validator-test', correctAnswer: '3:2', evaluateAnswer: input => input.replace(/\s/g, '') === '3:2' });
+    host.shadowRoot.getElementById('answer').value = '3 : 2';
+    host.shadowRoot.getElementById('check').click();
+    return !!host.shadowRoot.getElementById('next');
+  });
+  assert.equal(customAnswer, true, 'an authored validator can check nonnumeric responses');
+  const validatorRecovery = await page.evaluate(async () => {
+    const { MathFluencyLabEngine, SEED_EXERCISE } = await import('/src/components/MathFluencyLabEngine.js');
+    const host = document.createElement('div');
+    host.id = 'publisher-validator-recovery-test';
+    document.body.append(host);
+    new MathFluencyLabEngine(host.id).loadExercise({ ...SEED_EXERCISE, evaluateAnswer: () => { throw Error('validator failed'); } });
+    host.shadowRoot.getElementById('answer').value = '8';
+    host.shadowRoot.getElementById('check').click();
+    return { input: !!host.shadowRoot.getElementById('answer'), message: host.shadowRoot.getElementById('announcement').textContent };
+  });
+  assert.equal(validatorRecovery.input, true);
+  assert.match(validatorRecovery.message, /Unable to check/);
   await page.reload();
   await root.locator('#answer').fill('18');
   await root.locator('#check').click();

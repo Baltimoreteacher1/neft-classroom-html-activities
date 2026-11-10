@@ -37,6 +37,7 @@ export interface ExerciseSchema {
     unitVal: number;
   };
   correctAnswer: string;
+  evaluateAnswer?: (studentInput: string) => boolean;
   misconceptions: MisconceptionRule[];
   fullExplanation: {
     keyRule: string;
@@ -194,7 +195,7 @@ if (!customElements.get("interactive-double-number-line"))
 const transitions: Record<LabState, LabState[]> = {
   UNINITIALIZED: ["PRESENTATION"],
   PRESENTATION: ["EVALUATING"],
-  EVALUATING: ["SCAFFOLD_L1_PROMPT", "SCAFFOLD_L2_BREAKDOWN", "MASTERY_COMMITTED"],
+  EVALUATING: ["PRESENTATION", "SCAFFOLD_L1_PROMPT", "SCAFFOLD_L2_BREAKDOWN", "MASTERY_COMMITTED"],
   SCAFFOLD_L1_PROMPT: ["EVALUATING"],
   SCAFFOLD_L2_BREAKDOWN: ["PRESENTATION", "RESOLVED_EXPLANATION"],
   RESOLVED_EXPLANATION: ["PRESENTATION"],
@@ -231,7 +232,7 @@ export class MathFluencyLabEngine {
       !["interactive-ratio-tape", "interactive-double-number-line"].includes(
         schema.modelComponent,
       ) ||
-      !Number.isFinite(Number(schema.correctAnswer)) ||
+      (!schema.evaluateAnswer && !Number.isFinite(Number(schema.correctAnswer))) ||
       !schema.modelConfig ||
       ![schema.modelConfig.trackAUnits, schema.modelConfig.trackBUnits].every(
         (n) => Number.isInteger(n) && n >= 1 && n <= 24,
@@ -273,6 +274,18 @@ export class MathFluencyLabEngine {
         detail: { state: next, exerciseId: this.exercise.id, attempts: this.attempts },
       }),
     );
+    if (next === "RESOLVED_EXPLANATION") {
+      this.host.dispatchEvent(
+        new CustomEvent("fluency-resolution", {
+          detail: {
+            exerciseId: this.exercise.id,
+            attempts: this.attempts,
+            misconceptionId: this.detected?.id || null,
+            correct: false,
+          },
+        }),
+      );
+    }
   }
   commitMastery() {
     const record = {
@@ -296,17 +309,42 @@ export class MathFluencyLabEngine {
     this.studentInput = String(raw).trim();
     if (!this.studentInput) return;
     this.transition("EVALUATING");
-    if (Number(this.studentInput) === Number(this.exercise.correctAnswer)) {
+    let correct: boolean;
+    try {
+      correct = this.exercise.evaluateAnswer
+        ? this.exercise.evaluateAnswer(this.studentInput)
+        : Number(this.studentInput) === Number(this.exercise.correctAnswer);
+    } catch {
+      this.transition("PRESENTATION");
+      this.root.getElementById("announcement")!.textContent =
+        "Unable to check this answer. Try again.";
+      return;
+    }
+    const detected = correct
+      ? undefined
+      : this.exercise.misconceptions.find((rule) =>
+          rule.detect(this.studentInput, {
+            expected: this.exercise.correctAnswer,
+            modelConfig: this.exercise.modelConfig,
+          }),
+        );
+    this.host.dispatchEvent(
+      new CustomEvent("fluency-attempt", {
+        detail: {
+          exerciseId: this.exercise.id,
+          attempt: this.attempts + 1,
+          correct,
+          misconceptionId: detected?.id || null,
+          // The response stays in memory. The mastery receipt never persists it.
+          response: this.studentInput,
+        },
+      }),
+    );
+    if (correct) {
       this.transition("MASTERY_COMMITTED");
       return;
     }
     this.attempts++;
-    const detected = this.exercise.misconceptions.find((rule) =>
-      rule.detect(this.studentInput, {
-        expected: this.exercise.correctAnswer,
-        modelConfig: this.exercise.modelConfig,
-      }),
-    );
     if (detected) {
       this.detected = detected;
       this.distractorInput = this.studentInput;
@@ -424,7 +462,7 @@ export class MathFluencyLabEngine {
       content.append(retry);
       this.updateSandbox();
     } else if (this.state === "RESOLVED_EXPLANATION") {
-      content.innerHTML = `<h3>Core conceptual rule</h3><p>${formatMath(e.fullExplanation.keyRule)}</p><h3>Algebra and model, step by step</h3><div id="steps"></div><h3>Why that answer was tempting</h3><p>${formatMath(this.detected?.tag === "ADDITIVE_THINKING" ? e.fullExplanation.distractorAnalysis : this.detected?.tag === "INVERTED_RATIO" ? `An answer of ${this.distractorInput} treats ${e.modelConfig.trackAUnits} ${e.modelConfig.trackALabel.toLowerCase()} as the unknown quantity's parts. The ${e.modelConfig.trackBUnits} ${e.modelConfig.trackBLabel.toLowerCase()} parts must each receive the same segment value.` : e.fullExplanation.distractorAnalysis)}</p><div class="row"><button id="sibling" type="button">Try an isomorphic problem</button></div>`;
+      content.innerHTML = `<h3>Core conceptual rule</h3><p>${formatMath(e.fullExplanation.keyRule)}</p><h3>Algebra and model, step by step</h3><div id="steps"></div><h3>Why that answer was tempting</h3><p>${formatMath(this.detected?.tag === "ADDITIVE_THINKING" ? e.fullExplanation.distractorAnalysis : this.detected?.tag === "INVERTED_RATIO" ? `An answer of ${this.distractorInput} treats ${e.modelConfig.trackAUnits} ${e.modelConfig.trackALabel.toLowerCase()} as the unknown quantity's parts. The ${e.modelConfig.trackBUnits} ${e.modelConfig.trackBLabel.toLowerCase()} parts must each receive the same segment value.` : this.detected?.conceptualAnchor || e.fullExplanation.distractorAnalysis)}</p><div class="row"><button id="sibling" type="button">Try an isomorphic problem</button></div>`;
       const steps = content.querySelector("#steps")!;
       e.fullExplanation.stepByStep.forEach((step) => {
         const item = document.createElement("div");
@@ -573,12 +611,16 @@ export function createRatioExercise(config: {
   };
 }
 
-export function adaptProportionItem(item: {
-  question: string;
-  answers: string[];
-  skill?: { standard?: string };
-  tier?: number;
-}): ExerciseSchema | null {
+export function adaptProportionItem(
+  item: {
+    question: string;
+    answers: string[];
+    skill?: { standard?: string };
+    tier?: number;
+    meta?: { wrong?: Array<{ text: string; why: string }> };
+  },
+  evaluateAnswer?: (input: string) => boolean,
+): ExerciseSchema | null {
   const match = item.question.match(
     /^Solve the proportion:\s*(\d+)\s*\/\s*(\d+)\s*=\s*(\d+)\s*\/\s*x\.?$/i,
   );
@@ -602,7 +644,26 @@ export function adaptProportionItem(item: {
     unitVal,
     modelComponent: "interactive-double-number-line",
   });
-  return { ...schema, prompt: item.question, correctAnswer: item.answers[0] };
+  const authoredRules: MisconceptionRule[] = (item.meta?.wrong || [])
+    .filter((wrong) => Number.isFinite(Number(wrong.text)))
+    .map((wrong, index) => ({
+      id: `AUTHOR_DISTRACTOR_${index}`,
+      tag: /add/i.test(wrong.why)
+        ? "ADDITIVE_THINKING"
+        : /revers|invert/i.test(wrong.why)
+          ? "INVERTED_RATIO"
+          : "INCORRECT_PARTITION",
+      detect: (input) => Number(input) === Number(wrong.text),
+      conceptualAnchor: `That answer ${wrong.why}. Find one equal segment before scaling the second quantity.`,
+      remediationStep: { ...schema.misconceptions[0].remediationStep },
+    }));
+  return {
+    ...schema,
+    prompt: item.question,
+    correctAnswer: item.answers[0],
+    evaluateAnswer,
+    misconceptions: [...authoredRules, ...schema.misconceptions],
+  };
 }
 
 export const SEED_EXERCISE: ExerciseSchema = {
