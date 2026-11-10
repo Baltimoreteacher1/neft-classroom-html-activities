@@ -29,7 +29,10 @@ import { relative, sep } from "node:path";
 // pages: /lti-worker/wrangler.toml and /results-worker/migrations/0001_init.sql were publicly served. A nested
 // `sync-worker/` folder inside an app (focus-school, shai-school) is that app's Worker source, not a page.
 export const SKIP_COPY_RE =
-  /(^|[\\/])\.(claude|git|wrangler|ruff_cache)([\\/]|$)|(^|[\\/])(node_modules|_engine)([\\/]|$)|\.md$|\.(test|spec)\.(m?js|cjs|ts)$|\.(toml|sql)$|(^|[\\/])sync-worker([\\/]|$)/i;
+  /(^|[\\/])\.(claude|git|wrangler|ruff_cache)([\\/]|$)|(^|[\\/])(node_modules|_engine)([\\/]|$)|\.md$|\.(test|spec)\.(m?js|cjs|ts)$|\.(toml|sql)$|(^|[\\/])sync-worker([\\/]|$)|\.ts$|^(focus-school|shai-school)[\\/]functions([\\/]|$)/i;
+// Added 2026-11-10 (file-budget audit): `.ts` source (the 8 files in math-fluency-lab/src each sit
+// beside the compiled `.js` the pages load; no page loads a `.ts`), and the Pages-Function source
+// copies nested in focus-school/ and shai-school/ (live Functions deploy from the repo-root functions/).
 
 // Build and review inputs stay in the repository but are not site content.
 // These 96 JSON files were checked against shipped pages, Pages Functions,
