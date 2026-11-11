@@ -13,7 +13,9 @@
  * Needs a token with "Workers R2 Storage: Edit". Or run `npx wrangler login` once on your own computer.
  */
 import { execFile } from "node:child_process";
+import { createHash } from "node:crypto";
 import { existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
 import { dirname, join, relative, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import { promisify } from "node:util";
@@ -56,7 +58,78 @@ const save = () => {
 const wrangler = (...a) =>
   run("npx", ["--yes", "wrangler@4", ...a], { cwd: ROOT, maxBuffer: 1 << 24 });
 
+// Direct R2 REST calls (what wrangler uses underneath): no process spawn per file, so it is far faster.
+const api =
+  Boolean(process.env.CLOUDFLARE_API_TOKEN && process.env.CLOUDFLARE_ACCOUNT_ID) && !local;
+const objectUrl = (key) =>
+  `https://api.cloudflare.com/client/v4/accounts/${process.env.CLOUDFLARE_ACCOUNT_ID}/r2/buckets/${BUCKET}/objects/${encodeURIComponent(key)}`;
+const auth = () => ({ authorization: `Bearer ${process.env.CLOUDFLARE_API_TOKEN}` });
+
+async function putObject(f) {
+  for (let attempt = 1; ; attempt++) {
+    const res = await fetch(objectUrl(f.rel), {
+      method: "PUT",
+      headers: { ...auth(), "content-type": contentType(f.rel) },
+      body: readFileSync(f.abs),
+    });
+    if (res.ok) return;
+    if (attempt >= 10 || (res.status < 500 && res.status !== 429)) {
+      throw new Error(`HTTP ${res.status} ${(await res.text()).slice(0, 120)}`);
+    }
+    // 429 = account rate limit (~4 req/s): back off hard so the whole run converges instead of failing.
+    await new Promise((r) => setTimeout(r, Math.min(30000, 1000 * 2 ** attempt)));
+  }
+}
+
+// Verify by CONTENT HASH, not size: download every object and compare with the manifest.
+async function verifyApi() {
+  // Resumable: hashes already confirmed this session are remembered in a temp file (never in the repo).
+  const stateFile = join(tmpdir(), "r2-verified.json");
+  const seen = new Set(existsSync(stateFile) ? JSON.parse(readFileSync(stateFile, "utf8")) : []);
+  const keys = Object.keys(manifest.files).filter(
+    (k) => !seen.has(`${k}:${manifest.files[k].sha256}`),
+  );
+  let bad = 0;
+  let i = 0;
+  const get = async (key) => {
+    for (let attempt = 1; ; attempt++) {
+      const res = await fetch(objectUrl(key), { headers: auth() });
+      if (res.ok) return Buffer.from(await res.arrayBuffer());
+      if (attempt >= 10 || (res.status < 500 && res.status !== 429))
+        throw new Error(`HTTP ${res.status}`);
+      await new Promise((r) => setTimeout(r, Math.min(30000, 1000 * 2 ** attempt)));
+    }
+  };
+  await Promise.all(
+    Array.from({ length: concurrency }, async () => {
+      while (i < keys.length) {
+        const key = keys[i++];
+        try {
+          const got = createHash("sha256")
+            .update(await get(key))
+            .digest("hex");
+          if (got !== manifest.files[key].sha256) throw new Error("content differs from manifest");
+          seen.add(`${key}:${got}`);
+          if (seen.size % 200 === 0) writeFileSync(stateFile, JSON.stringify([...seen]));
+        } catch (e) {
+          bad++;
+          console.error(`MISSING/WRONG in R2: ${key} (${e.message})`);
+        }
+      }
+    }),
+  );
+  writeFileSync(stateFile, JSON.stringify([...seen]));
+  const total = Object.keys(manifest.files).length;
+  console.log(
+    bad
+      ? `verify: ${bad} problem(s); ${seen.size}/${total} confirmed so far (re-run to continue)`
+      : `verify: all ${total} object(s) present, content hash matches`,
+  );
+  process.exit(bad ? 1 : 0);
+}
+
 async function verify() {
+  if (api) return verifyApi();
   if (local) throw new Error("--verify reads the real bucket; drop --local");
   let bad = 0;
   const keys = Object.keys(manifest.files);
@@ -119,17 +192,19 @@ async function main() {
       while (i < batch.length) {
         const f = batch[i++];
         try {
-          await wrangler(
-            "r2",
-            "object",
-            "put",
-            `${BUCKET}/${f.rel}`,
-            "--file",
-            f.abs,
-            "--content-type",
-            contentType(f.rel),
-            where,
-          );
+          if (api) await putObject(f);
+          else
+            await wrangler(
+              "r2",
+              "object",
+              "put",
+              `${BUCKET}/${f.rel}`,
+              "--file",
+              f.abs,
+              "--content-type",
+              contentType(f.rel),
+              where,
+            );
           manifest.files[f.rel] = { sha256: f.hash, size: f.size };
           if (++done % 100 === 0) {
             save();
