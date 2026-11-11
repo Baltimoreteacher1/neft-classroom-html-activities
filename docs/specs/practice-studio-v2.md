@@ -149,6 +149,8 @@ Never put backticks inside a comment (the CSS-integrity gate reads them as a tem
 - `plug` []: replace each letter in an expression with its value, then tap the value (6-5).
 - `faces` [`mode: "pyramid"|"prism"|"polygon"`]: set how many of each face or equal piece make up a surface or polygon (5-6, 5-8, 5-9).
 - `powers` [`mode: "expand"|"value"|"write"`]: build repeated factors of a base, work out the value, or set a base and exponent (several answers can be right).
+- `dnl` []: double number line; type the missing labels (A, B, C …) so every tick pairs equivalent amounts; level 3 adds the unit-rate tick, level 4 a tick past the line (3-2, 3-8).
+- `linked` []: complete a two-variable table, watch each row plot on the graph, then choose the equation that fits every row (9-1 to 9-4).
 
 **Lesson → suggested generators and activity** (authors may swap within the catalogue when the lesson's own content says so;
 a lesson with no activity listed uses `sort`/`match`/`nline` items and `pool`s instead):
@@ -206,7 +208,7 @@ automatically by the build; the file adds what the config does not have.
   "getReady": [ /* 4 items */ ] | null,               // null keeps the config warm-up (only if it is on-topic)
   "getReadyWhy": "why the config warm-up was replaced",   // required when getReady is not null
   "noAct": false,                                       // true only for lessons the catalogue table lists as "act none"
-  "fresh":  [ { "k":"gen", "g":"areaTriangle", "level":1 }, … 6 specs, levels 1,1,2,2,3,3, + 1 act ],
+  "fresh":  [ { "k":"gen", "g":"areaTriangle", "level":1 }, … 7 items: generator specs (levels 1,1,2,2,3,3) then 1-2 acts, acts last ],
             // pool-only lessons (2-1, 5-6) instead give { "pool": [14+ authored items], "slots": 7 }
   "challenge": {
     "climb":     [ 6 gen specs, levels 2,2,3,3,4,4 ]   // pool-only lessons: { "pool": [12+ harder items], "slots": 6 }

@@ -14,7 +14,7 @@ integerOpposites rationalNumberLine absoluteValue compareOrder quadrantId coordD
   ),
 );
 export const ACT_KINDS = new Set(
-  "plot nline ineq sizer areabox barcut ldiv dotbalance chartbuild ratiomix convchain balance ftree hops tiles powers plug faces askdots skewsculptor countoff boxtwins chipsort madtwins headlinecourt receipt faultymed tagtape addrider cancelit barcompare paths tiers cexhunt brickwall twotrees factorbox thermo absbench dualrank twoclues griddetect rectcorners allpoints reflectpredict unknowns boundary breakeven gate impostor legal sketch slideapex decompose netfold packcrate wrapit sqtile zoomlens sameunit".split(
+  "plot nline ineq sizer areabox barcut ldiv dotbalance chartbuild ratiomix convchain balance ftree hops tiles powers plug faces askdots skewsculptor countoff boxtwins chipsort madtwins headlinecourt receipt faultymed tagtape addrider cancelit barcompare paths tiers cexhunt brickwall twotrees factorbox thermo absbench dualrank twoclues griddetect rectcorners allpoints reflectpredict unknowns boundary breakeven gate impostor legal sketch slideapex decompose netfold packcrate wrapit sqtile zoomlens sameunit dnl linked".split(
     " ",
   ),
 );
@@ -322,10 +322,12 @@ export function validateLessonData(id, data, worlds = null) {
     : count(data.fresh, 7, `${id}.fresh`, p);
   specs.forEach((it, i) => p.push(...itemProblems(it, `${id}.fresh[${i}]`)));
   if (specs.length === 7) {
+    // up to two hands-on activities, and they close the section: generators first, so a fresh-numbers run is never
+    // interrupted by a widget
     const acts = specs.filter((s) => s.k === "act");
-    if (acts.length > 1) p.push(`${id}.fresh: at most one act (the last item)`);
-    if (specs.some((s, i) => s.k === "act" && i !== 6))
-      p.push(`${id}.fresh: the act must be the 7th item`);
+    if (acts.length > 2) p.push(`${id}.fresh: at most two acts (the last items)`);
+    if (specs.some((s, i) => s.k === "act" && i < 7 - acts.length))
+      p.push(`${id}.fresh: acts must be the last items`);
     const lv = specs.filter((s) => s.k === "gen").map((s) => s.level);
     if (lv.some((l, i) => i && l < lv[i - 1])) p.push(`${id}.fresh: gen levels must not decrease`);
   }
