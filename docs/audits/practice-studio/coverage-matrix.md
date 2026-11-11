@@ -10,47 +10,47 @@ Columns: **Req** = items in required stages; **Stages** = items per stage (`o` m
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
 | 2-1 | P | 6.DS.1 | Understand Statistical Questions | 15 | 5 / 3 / 4 / 3o / 3 | — | askdots | data:histogram | 7 | 100% | 93% | 100% |
 | 2-1 | C | 6.DS.1 | Understand Statistical Questions | 30 | 6 / 7 / 6 / 5 / 6 | — | askdots | data:histogram | 9 | 100% | 100% | 100% |
-| 2-2 | P | 6.DS.5 | Represent and Describe Data in a Histogram | 15 | 5 / 3 / 4 / 5o / 3 | histogramRead | skewsculptor | data:histogram | 7 | 96% | 75% | 100% |
+| 2-2 | P | 6.DS.5 | Represent and Describe Data in a Histogram | 15 | 5 / 3 / 4 / 5o / 3 | histogramRead | skewsculptor | data:histogram | 7 | 100% | 75% | 100% |
 | 2-2 | C | 6.DS.5 | Represent and Describe Data in a Histogram | 30 | 6 / 7 / 6 / 5 / 6 | histogramRead | chartbuild, skewsculptor | data:histogram | 5 | 100% | 100% | 100% |
 | 2-3 | P | 6.DS.4 | Describe the Data Using the Median | 15 | 5 / 3 / 4 / 5o / 3 | medianFind | countoff | data:median | 11 | 100% | 67% | 100% |
-| 2-3 | C | 6.DS.4 | Describe the Data Using the Median | 31 | 6 / 7 / 6 / 6 / 6 | medianFind | countoff, dotbalance, faultymed | data:median | 7 | 95% | 100% | 100% |
-| 2-4 | P | 6.DS.5 | Represent and Describe Data in a Box Plot | 15 | 5 / 3 / 4 / 5o / 3 | boxplotRead | boxtwins | data:box | 12 | 95% | 67% | 100% |
+| 2-3 | C | 6.DS.4 | Describe the Data Using the Median | 31 | 6 / 7 / 6 / 6 / 6 | medianFind | countoff, dotbalance, faultymed | data:median | 7 | 100% | 100% | 100% |
+| 2-4 | P | 6.DS.5 | Represent and Describe Data in a Box Plot | 15 | 5 / 3 / 4 / 5o / 3 | boxplotRead | boxtwins | data:box | 12 | 100% | 67% | 100% |
 | 2-4 | C | 6.DS.5 | Represent and Describe Data in a Box Plot | 30 | 6 / 7 / 6 / 5 / 6 | boxplotRead | boxtwins, chartbuild | data:box | 4 | 100% | 100% | 100% |
-| 2-5 | P | 6.DS.3 | Describe Data by Range and Interquartile Range | 15 | 5 / 3 / 4 / 5o / 3 | rangeIqr | boxtwins | data:spread | 11 | 92% | 71% | 100% |
-| 2-5 | C | 6.DS.3 | Describe Data by Range and Interquartile Range | 30 | 6 / 6 / 6 / 6 / 6 | rangeIqr | boxtwins, chartbuild | data:spread | 6 | 95% | 100% | 100% |
+| 2-5 | P | 6.DS.3 | Describe Data by Range and Interquartile Range | 15 | 5 / 3 / 4 / 5o / 3 | rangeIqr | boxtwins | data:spread | 11 | 100% | 71% | 100% |
+| 2-5 | C | 6.DS.3 | Describe Data by Range and Interquartile Range | 30 | 6 / 6 / 6 / 6 / 6 | rangeIqr | boxtwins, chartbuild | data:spread | 6 | 100% | 100% | 100% |
 | 2-6 | P | 6.NOS.2 | Divide Multi-Digit Numbers Using an Algorithm | 15 | 5 / 3 / 4 / 5o / 3 | longDivision | ldiv | division:shipments | 11 | 95% | 67% | 100% |
 | 2-6 | C | 6.NOS.2 | Divide Multi-Digit Numbers Using an Algorithm | 30 | 6 / 6 / 6 / 6 / 6 | longDivision | chipsort, ldiv | division:shipments | 6 | 100% | 100% | 100% |
 | 2-7 | P | 6.NOS.3 | Divide Decimals Using an Algorithm | 15 | 5 / 3 / 4 / 5o / 3 | decimalDivision | ldiv | division:shipments | 6 | 95% | 65% | 100% |
 | 2-7 | C | 6.NOS.3 | Divide Decimals Using an Algorithm | 30 | 6 / 6 / 6 / 6 / 6 | decimalDivision | ldiv | division:shipments | 5 | 100% | 100% | 100% |
-| 2-8 | P | 6.DS.4 | Describe Data Using the Mean | 15 | 5 / 3 / 4 / 5o / 3 | meanFind | dotbalance | data:mean-mad | 14 | 91% | 87% | 100% |
-| 2-8 | C | 6.DS.4 | Describe Data Using the Mean | 31 | 6 / 7 / 6 / 6 / 6 | meanFind, meanMissing | dotbalance | data:mean-mad | 9 | 95% | 100% | 100% |
+| 2-8 | P | 6.DS.4 | Describe Data Using the Mean | 15 | 5 / 3 / 4 / 5o / 3 | meanFind | dotbalance | data:mean-mad | 14 | 96% | 87% | 100% |
+| 2-8 | C | 6.DS.4 | Describe Data Using the Mean | 31 | 6 / 7 / 6 / 6 / 6 | meanFind, meanMissing | dotbalance | data:mean-mad | 9 | 100% | 100% | 100% |
 | 2-9 | P | 6.DS.6c | Describe Data by Mean Absolute Deviation | 15 | 5 / 3 / 4 / 5o / 3 | madCalc | madtwins | data:mean-mad | 14 | 100% | 67% | 100% |
 | 2-9 | C | 6.DS.6c | Describe Data by Mean Absolute Deviation | 30 | 6 / 6 / 6 / 6 / 6 | madCalc | dotbalance, madtwins | data:mean-mad | 6 | 100% | 100% | 100% |
-| 2-10 | P | 6.DS.6d | Choose Appropriate Measures | 15 | 5 / 3 / 4 / 5o / 3 | chooseMeasure | headlinecourt | data:outlier | 13 | 95% | 68% | 100% |
+| 2-10 | P | 6.DS.6d | Choose Appropriate Measures | 15 | 5 / 3 / 4 / 5o / 3 | chooseMeasure | headlinecourt | data:outlier | 13 | 100% | 68% | 100% |
 | 2-10 | C | 6.DS.6d | Choose Appropriate Measures | 31 | 6 / 7 / 6 / 6 / 6 | chooseMeasure | dotbalance, headlinecourt | data:outlier | 9 | 100% | 100% | 100% |
 | 2-11 | P | 6.NOS.3 | Add and Subtract Decimals | 15 | 5 / 3 / 4 / 5o / 3 | decimalAddSub | nline | decimal:columns | 6 | 95% | 85% | 100% |
 | 2-11 | C | 6.NOS.3 | Add and Subtract Decimals | 30 | 6 / 6 / 6 / 6 / 6 | decimalAddSub | nline, receipt | decimal:columns | 9 | 100% | 100% | 100% |
 | 2-12 | P | 6.NOS.3 | Multiply Decimals | 15 | 5 / 3 / 4 / 5o / 3 | decimalMultiply | areabox | decimal:receipt | 8 | 95% | 85% | 100% |
 | 2-12 | C | 6.NOS.3 | Multiply Decimals | 30 | 6 / 6 / 6 / 5 / 7 | decimalMultiply | areabox, receipt | decimal:receipt | 3 | 100% | 100% | 100% |
-| 3-1 | P | 6.AT.1 | Understand Ratios | 15 | 5 / 3 / 4 / 5o / 3 | ratioWrite | tagtape | ratio:tape | 16 | 95% | 86% | 100% |
+| 3-1 | P | 6.AT.1 | Understand Ratios | 15 | 5 / 3 / 4 / 5o / 3 | ratioWrite | tagtape | ratio:tape | 16 | 100% | 86% | 100% |
 | 3-1 | C | 6.AT.1 | Understand Ratios | 30 | 6 / 6 / 6 / 6 / 6 | ratioWrite | ratiomix, tagtape | ratio:tape | 6 | 100% | 100% | 100% |
-| 3-2 | P | 6.AT.2 | Understand Rates and Unit Rates | 15 | 5 / 3 / 4 / 6o / 3 | unitRate | dnl, ratiomix | ratio:unit-rate | 16 | 91% | 68% | 100% |
-| 3-2 | C | 6.AT.2 | Understand Rates and Unit Rates | 31 | 6 / 7 / 6 / 6 / 6 | unitRate | ratiomix | ratio:unit-rate | 7 | 95% | 100% | 100% |
-| 3-3 | P | 6.AT.3a | Determine Equivalent Ratios Using Tables | 15 | 5 / 3 / 4 / 5o / 3 | eqRatioTable | ratiomix | growth:ratio-graph | 18 | 91% | 68% | 100% |
-| 3-3 | C | 6.AT.3a | Determine Equivalent Ratios Using Tables | 32 | 6 / 7 / 6 / 7 / 6 | eqRatioTable | ratiomix | growth:ratio-graph | 6 | 95% | 100% | 100% |
-| 3-4 | P | 6.AT.3a | Determine Equivalent Ratios Using Graphs | 15 | 5 / 3 / 4 / 5o / 3 | ratioGraphRead | addrider | growth:rider | 13 | 95% | 68% | 100% |
+| 3-2 | P | 6.AT.2 | Understand Rates and Unit Rates | 15 | 5 / 3 / 4 / 6o / 3 | unitRate | dnl, ratiomix | ratio:unit-rate | 16 | 100% | 68% | 100% |
+| 3-2 | C | 6.AT.2 | Understand Rates and Unit Rates | 31 | 6 / 7 / 6 / 6 / 6 | unitRate | ratiomix | ratio:unit-rate | 7 | 100% | 100% | 100% |
+| 3-3 | P | 6.AT.3a | Determine Equivalent Ratios Using Tables | 15 | 5 / 3 / 4 / 5o / 3 | eqRatioTable | ratiomix | growth:ratio-graph | 18 | 100% | 68% | 100% |
+| 3-3 | C | 6.AT.3a | Determine Equivalent Ratios Using Tables | 32 | 6 / 7 / 6 / 7 / 6 | eqRatioTable | ratiomix | growth:ratio-graph | 6 | 100% | 100% | 100% |
+| 3-4 | P | 6.AT.3a | Determine Equivalent Ratios Using Graphs | 15 | 5 / 3 / 4 / 5o / 3 | ratioGraphRead | addrider | growth:rider | 13 | 100% | 68% | 100% |
 | 3-4 | C | 6.AT.3a | Determine Equivalent Ratios Using Graphs | 29 | 6 / 6 / 6 / 5 / 6 | ratioGraphRead | addrider, plot | growth:rider | 6 | 100% | 100% | 100% |
-| 3-5 | P | 6.AT.3 | Compare Ratio Relationships | 15 | 5 / 3 / 4 / 5o / 3 | compareRatios | barcompare | ratio:patterns | 10 | 90% | 86% | 100% |
+| 3-5 | P | 6.AT.3 | Compare Ratio Relationships | 15 | 5 / 3 / 4 / 5o / 3 | compareRatios | barcompare | ratio:patterns | 10 | 100% | 86% | 100% |
 | 3-5 | C | 6.AT.3 | Compare Ratio Relationships | 30 | 6 / 6 / 6 / 6 / 6 | compareRatios | barcompare, ratiomix | ratio:patterns | 4 | 100% | 100% | 100% |
-| 3-6 | P | 6.AT.3c | Ratio Reasoning: Convert Measurements within the Same System | 15 | 5 / 3 / 4 / 5o / 3 | convertUnits | convchain | conversion:scale | 17 | 83% | 88% | 100% |
-| 3-6 | C | 6.AT.3c | Ratio Reasoning: Convert Measurements within the Same System | 30 | 6 / 6 / 6 / 6 / 6 | convertUnits | convchain | conversion:scale | 7 | 95% | 100% | 100% |
-| 3-7 | P | 6.AT.3c | Ratio Reasoning: Convert Measurements Between Systems | 15 | 5 / 3 / 4 / 5o / 3 | convertBetween | convchain | conversion:expedition | 17 | 85% | 74% | 100% |
-| 3-7 | C | 6.AT.3c | Ratio Reasoning: Convert Measurements Between Systems | 31 | 6 / 7 / 6 / 6 / 6 | convertBetween | convchain | conversion:expedition | 9 | 90% | 100% | 100% |
-| 3-8 | P | 6.AT.2 | Solve Problems with Unit Rates | 15 | 5 / 3 / 4 / 6o / 3 | unitRateWord | dnl, ratiomix | rate:shopping | 15 | 92% | 88% | 100% |
-| 3-8 | C | 6.AT.2 | Solve Problems with Unit Rates | 31 | 6 / 7 / 6 / 6 / 6 | unitRateWord | ratiomix | rate:shopping | 8 | 95% | 100% | 100% |
-| 3-9 | P | 6.AT.3 | Equivalent Ratios | 15 | 5 / 3 / 4 / 5o / 3 | eqRatioMissing | ratiomix | conversion:scale | 18 | 95% | 68% | 100% |
-| 3-9 | C | 6.AT.3 | Equivalent Ratios | 31 | 6 / 7 / 6 / 6 / 6 | eqRatioMissing | ratiomix | conversion:scale | 8 | 95% | 100% | 100% |
-| 3-10 | P | 6.AT.3c | Convert Measurement Units | 15 | 5 / 3 / 4 / 5o / 3 | convertFactor | cancelit | conversion:scale | 16 | 92% | 71% | 100% |
+| 3-6 | P | 6.AT.3c | Ratio Reasoning: Convert Measurements within the Same System | 15 | 5 / 3 / 4 / 5o / 3 | convertUnits | convchain | conversion:scale | 17 | 100% | 88% | 100% |
+| 3-6 | C | 6.AT.3c | Ratio Reasoning: Convert Measurements within the Same System | 30 | 6 / 6 / 6 / 6 / 6 | convertUnits | convchain | conversion:scale | 7 | 100% | 100% | 100% |
+| 3-7 | P | 6.AT.3c | Ratio Reasoning: Convert Measurements Between Systems | 15 | 5 / 3 / 4 / 5o / 3 | convertBetween | convchain | conversion:expedition | 17 | 100% | 74% | 100% |
+| 3-7 | C | 6.AT.3c | Ratio Reasoning: Convert Measurements Between Systems | 31 | 6 / 7 / 6 / 6 / 6 | convertBetween | convchain | conversion:expedition | 9 | 100% | 100% | 100% |
+| 3-8 | P | 6.AT.2 | Solve Problems with Unit Rates | 15 | 5 / 3 / 4 / 6o / 3 | unitRateWord | dnl, ratiomix | rate:shopping | 15 | 100% | 88% | 100% |
+| 3-8 | C | 6.AT.2 | Solve Problems with Unit Rates | 31 | 6 / 7 / 6 / 6 / 6 | unitRateWord | ratiomix | rate:shopping | 8 | 100% | 100% | 100% |
+| 3-9 | P | 6.AT.3 | Equivalent Ratios | 15 | 5 / 3 / 4 / 5o / 3 | eqRatioMissing | ratiomix | conversion:scale | 18 | 100% | 68% | 100% |
+| 3-9 | C | 6.AT.3 | Equivalent Ratios | 31 | 6 / 7 / 6 / 6 / 6 | eqRatioMissing | ratiomix | conversion:scale | 8 | 100% | 100% | 100% |
+| 3-10 | P | 6.AT.3c | Convert Measurement Units | 15 | 5 / 3 / 4 / 5o / 3 | convertFactor | cancelit | conversion:scale | 16 | 100% | 71% | 100% |
 | 3-10 | C | 6.AT.3c | Convert Measurement Units | 31 | 6 / 6 / 6 / 6 / 7 | convertFactor | cancelit | conversion:scale | 7 | 100% | 100% | 100% |
 | 4-1 | P | 6.AT.4 | Understand Percent | — | · / · / · / · / · | — | percent grid and tape (hand-built) | percent:grid | — | — | — | — |
 | 4-1 | C | 6.AT.4 | Understand Percent | — | · / · / · / · / · | — | percent grid and tape (hand-built) | percent:grid | — | — | — | — |
@@ -62,42 +62,42 @@ Columns: **Req** = items in required stages; **Stages** = items per stage (`o` m
 | 4-4 | C | 6.AT.4 | Find and Compare with Percentages | — | · / · / · / · / · | — | percent grid and tape (hand-built) | percent:tape | — | — | — | — |
 | 4-5 | P | 6.AT.4 | Determine the Whole Given the Part and Percent | — | · / · / · / · / · | — | percent grid and tape (hand-built) | percent:find-whole | — | — | — | — |
 | 4-5 | C | 6.AT.4 | Determine the Whole Given the Part and Percent | — | · / · / · / · / · | — | percent grid and tape (hand-built) | percent:find-whole | — | — | — | — |
-| 5-1 | P | 6.GR.1 | Determine the Area of Parallelograms and Rhombuses | 15 | 5 / 3 / 4 / 5o / 3 | areaParallelogram | sizer | area:parallelogram | 12 | 85% | 85% | 100% |
+| 5-1 | P | 6.GR.1 | Determine the Area of Parallelograms and Rhombuses | 15 | 5 / 3 / 4 / 5o / 3 | areaParallelogram | sizer | area:parallelogram | 12 | 95% | 85% | 100% |
 | 5-1 | C | 6.GR.1 | Determine the Area of Parallelograms and Rhombuses | 29 | 6 / 6 / 6 / 5 / 6 | areaParallelogram | sizer | area:parallelogram | 12 | 100% | 100% | 100% |
-| 5-2 | P | 6.GR.1 | Determine the Area of Triangles | 15 | 5 / 3 / 4 / 5o / 3 | areaTriangle | sizer | area:triangle | 12 | 85% | 65% | 100% |
+| 5-2 | P | 6.GR.1 | Determine the Area of Triangles | 15 | 5 / 3 / 4 / 5o / 3 | areaTriangle | sizer | area:triangle | 12 | 95% | 65% | 100% |
 | 5-2 | C | 6.GR.1 | Determine the Area of Triangles | 29 | 6 / 6 / 6 / 5 / 6 | areaTriangle | sizer | area:triangle | 12 | 100% | 100% | 100% |
-| 5-3 | P | 6.GR.1 | Determine the Area of Trapezoids | 15 | 5 / 3 / 4 / 5o / 3 | areaTrapezoid | sizer | area:trapezoid | 13 | 85% | 65% | 100% |
+| 5-3 | P | 6.GR.1 | Determine the Area of Trapezoids | 15 | 5 / 3 / 4 / 5o / 3 | areaTrapezoid | sizer | area:trapezoid | 13 | 95% | 65% | 100% |
 | 5-3 | C | 6.GR.1 | Determine the Area of Trapezoids | 29 | 6 / 6 / 6 / 5 / 6 | areaTrapezoid | sizer | area:trapezoid | 11 | 100% | 100% | 100% |
-| 5-4 | P | 6.GR.1 | Apply Area Concepts to Solve Problems | 15 | 5 / 3 / 4 / 5o / 3 | areaComposite | sizer | area:trapezoid | 11 | 94% | 61% | 100% |
-| 5-4 | C | 6.GR.1 | Apply Area Concepts to Solve Problems | 30 | 6 / 7 / 6 / 5 / 6 | areaComposite | sizer | area:trapezoid | 6 | 95% | 100% | 100% |
-| 5-5 | P | 6.GR.2 | Determine the Volume of Rectangular Prisms | 15 | 5 / 3 / 4 / 5o / 3 | volumePrismWhole | sizer | solid:net | 14 | 90% | 85% | 100% |
-| 5-5 | C | 6.GR.2 | Determine the Volume of Rectangular Prisms | 30 | 6 / 7 / 6 / 5 / 6 | volumePrismWhole | sizer | solid:net | 9 | 95% | 100% | 100% |
-| 5-6 | P | 6.GR.4 | Represent Three-Dimensional Figures in Two Dimensions | 15 | 5 / 3 / 4 / 3o / 3 | — | faces | solid:faces | 15 | 97% | 92% | 100% |
-| 5-6 | C | 6.GR.4 | Represent Three-Dimensional Figures in Two Dimensions | 30 | 6 / 7 / 6 / 5 / 6 | — | faces | solid:faces | 13 | 97% | 100% | 100% |
-| 5-7 | P | 6.GR.4 | Determine Surface Area of Prisms | 15 | 5 / 3 / 4 / 5o / 3 | surfaceAreaPrism | sizer | solid:tri-prism | 14 | 95% | 63% | 100% |
-| 5-7 | C | 6.GR.4 | Determine Surface Area of Prisms | 30 | 6 / 7 / 6 / 5 / 6 | surfaceAreaPrism | sizer | solid:tri-prism | 7 | 95% | 100% | 100% |
-| 5-8 | P | 6.GR.4 | Determine Surface Area of Pyramids | 15 | 5 / 3 / 4 / 5o / 3 | surfaceAreaPyramid | faces | solid:pyramid-net | 12 | 89% | 61% | 100% |
-| 5-8 | C | 6.GR.4 | Determine Surface Area of Pyramids | 32 | 6 / 7 / 6 / 7 / 6 | surfaceAreaPyramid | faces | solid:pyramid-net | 8 | 95% | 100% | 100% |
+| 5-4 | P | 6.GR.1 | Apply Area Concepts to Solve Problems | 15 | 5 / 3 / 4 / 5o / 3 | areaComposite | sizer | area:trapezoid | 11 | 100% | 61% | 100% |
+| 5-4 | C | 6.GR.1 | Apply Area Concepts to Solve Problems | 30 | 6 / 7 / 6 / 5 / 6 | areaComposite | sizer | area:trapezoid | 6 | 100% | 100% | 100% |
+| 5-5 | P | 6.GR.2 | Determine the Volume of Rectangular Prisms | 15 | 5 / 3 / 4 / 5o / 3 | volumePrismWhole | sizer | solid:net | 14 | 100% | 85% | 100% |
+| 5-5 | C | 6.GR.2 | Determine the Volume of Rectangular Prisms | 30 | 6 / 7 / 6 / 5 / 6 | volumePrismWhole | sizer | solid:net | 9 | 100% | 100% | 100% |
+| 5-6 | P | 6.GR.4 | Represent Three-Dimensional Figures in Two Dimensions | 15 | 5 / 3 / 4 / 3o / 3 | — | faces | solid:faces | 15 | 100% | 92% | 100% |
+| 5-6 | C | 6.GR.4 | Represent Three-Dimensional Figures in Two Dimensions | 30 | 6 / 7 / 6 / 5 / 6 | — | faces | solid:faces | 13 | 100% | 100% | 100% |
+| 5-7 | P | 6.GR.4 | Determine Surface Area of Prisms | 15 | 5 / 3 / 4 / 5o / 3 | surfaceAreaPrism | sizer | solid:tri-prism | 14 | 100% | 63% | 100% |
+| 5-7 | C | 6.GR.4 | Determine Surface Area of Prisms | 30 | 6 / 7 / 6 / 5 / 6 | surfaceAreaPrism | sizer | solid:tri-prism | 7 | 100% | 100% | 100% |
+| 5-8 | P | 6.GR.4 | Determine Surface Area of Pyramids | 15 | 5 / 3 / 4 / 5o / 3 | surfaceAreaPyramid | faces | solid:pyramid-net | 12 | 100% | 61% | 100% |
+| 5-8 | C | 6.GR.4 | Determine Surface Area of Pyramids | 32 | 6 / 7 / 6 / 7 / 6 | surfaceAreaPyramid | faces | solid:pyramid-net | 8 | 100% | 100% | 100% |
 | 5-9 | P | 6.GR.1 | Area of Regular Polygons | 15 | 5 / 3 / 4 / 5o / 3 | areaRegularPolygon | faces | area:apothem | 10 | 100% | 84% | 100% |
 | 5-9 | C | 6.GR.1 | Area of Regular Polygons | 30 | 6 / 7 / 6 / 5 / 6 | areaRegularPolygon | faces | area:apothem | 8 | 100% | 100% | 100% |
-| 5-10 | P | 6.GR.2 | Volume of Rectangular Prisms | 15 | 5 / 3 / 4 / 5o / 3 | volumePrismFrac | sizer | area:polygon | 16 | 90% | 85% | 100% |
-| 5-10 | C | 6.GR.2 | Volume of Rectangular Prisms | 32 | 6 / 7 / 6 / 6 / 7 | volumePrismFrac | sizer | area:polygon | 8 | 95% | 100% | 100% |
+| 5-10 | P | 6.GR.2 | Volume of Rectangular Prisms | 15 | 5 / 3 / 4 / 5o / 3 | volumePrismFrac | sizer | area:polygon | 16 | 100% | 85% | 100% |
+| 5-10 | C | 6.GR.2 | Volume of Rectangular Prisms | 32 | 6 / 7 / 6 / 6 / 7 | volumePrismFrac | sizer | area:polygon | 8 | 100% | 100% | 100% |
 | 6-1 | P | 6.NOS.1 | Division Expressions with Fractions and Whole Numbers | 15 | 5 / 3 / 4 / 5o / 3 | fracDivWhole | barcut | fraction:servings | 14 | 96% | 88% | 100% |
 | 6-1 | C | 6.NOS.1 | Division Expressions with Fractions and Whole Numbers | 31 | 6 / 7 / 6 / 6 / 6 | fracDivWhole | barcut | fraction:servings | 10 | 100% | 100% | 100% |
 | 6-2 | P | 6.NOS.1 | Division Expressions with Fractions and Mixed Numbers | 15 | 5 / 3 / 4 / 5o / 3 | fracDivMixed | barcut | fraction:servings | 15 | 95% | 67% | 100% |
 | 6-2 | C | 6.NOS.1 | Division Expressions with Fractions and Mixed Numbers | 30 | 6 / 6 / 6 / 6 / 6 | fracDivMixed | barcut | fraction:servings | 12 | 100% | 100% | 100% |
-| 6-3 | P | 6.AT.5 | Explore Numerical Expressions with Exponents | 15 | 5 / 3 / 4 / 5o / 3 | exponentEval | paths | power:order | 12 | 90% | 86% | 100% |
-| 6-3 | C | 6.AT.5 | Explore Numerical Expressions with Exponents | 31 | 6 / 7 / 6 / 6 / 6 | exponentEval | paths, powers | power:order | 7 | 95% | 100% | 100% |
-| 6-4 | P | 6.AT.6c | Write and Evaluate Numerical Expressions with Exponents | 15 | 5 / 3 / 4 / 5o / 3 | orderOfOps | tiers | power:order | 15 | 81% | 67% | 100% |
-| 6-4 | C | 6.AT.6c | Write and Evaluate Numerical Expressions with Exponents | 31 | 6 / 7 / 6 / 6 / 6 | exponentEval, orderOfOps | powers, tiers | power:order | 9 | 91% | 100% | 100% |
-| 6-5 | P | 6.AT.6a | Write and Evaluate Algebraic Expressions | 15 | 5 / 3 / 4 / 5o / 3 | evalExpression | plug | expression:equivalence | 21 | 95% | 68% | 100% |
+| 6-3 | P | 6.AT.5 | Explore Numerical Expressions with Exponents | 15 | 5 / 3 / 4 / 5o / 3 | exponentEval | paths | power:order | 12 | 100% | 86% | 100% |
+| 6-3 | C | 6.AT.5 | Explore Numerical Expressions with Exponents | 31 | 6 / 7 / 6 / 6 / 6 | exponentEval | paths, powers | power:order | 7 | 100% | 100% | 100% |
+| 6-4 | P | 6.AT.6c | Write and Evaluate Numerical Expressions with Exponents | 15 | 5 / 3 / 4 / 5o / 3 | orderOfOps | tiers | power:order | 15 | 100% | 67% | 100% |
+| 6-4 | C | 6.AT.6c | Write and Evaluate Numerical Expressions with Exponents | 31 | 6 / 7 / 6 / 6 / 6 | exponentEval, orderOfOps | powers, tiers | power:order | 9 | 100% | 100% | 100% |
+| 6-5 | P | 6.AT.6a | Write and Evaluate Algebraic Expressions | 15 | 5 / 3 / 4 / 5o / 3 | evalExpression | plug | expression:equivalence | 21 | 100% | 68% | 100% |
 | 6-5 | C | 6.AT.6a | Write and Evaluate Algebraic Expressions | 31 | 6 / 7 / 6 / 6 / 6 | evalExpression | plug | expression:equivalence | 15 | 100% | 100% | 100% |
-| 6-6 | P | 6.AT.7 | Identify Equivalent Algebraic Expressions | 15 | 5 / 3 / 4 / 5o / 3 | equivalentExpr | tiles | expression:equivalence | 15 | 95% | 65% | 100% |
-| 6-6 | C | 6.AT.7 | Identify Equivalent Algebraic Expressions | 32 | 6 / 7 / 6 / 7 / 6 | combineLikeTerms, equivalentExpr | tiles | expression:equivalence | 12 | 95% | 100% | 100% |
-| 6-7 | P | 6.NOS.4 | Find Factors and Multiples | 15 | 5 / 3 / 4 / 5o / 3 | factorsMultiples | hops | factors:lcm | 7 | 86% | 86% | 100% |
-| 6-7 | C | 6.NOS.4 | Find Factors and Multiples | 31 | 6 / 7 / 6 / 6 / 6 | factorsMultiples, gcfFind | hops | factors:lcm | 5 | 90% | 100% | 100% |
-| 6-8 | P | 6.AT.7 | Generate Equivalent Expressions | 15 | 5 / 3 / 4 / 5o / 3 | combineLikeTerms | cexhunt | factors:regroup | 13 | 95% | 85% | 100% |
-| 6-8 | C | 6.AT.7 | Generate Equivalent Expressions | 32 | 6 / 7 / 6 / 7 / 6 | combineLikeTerms, equivalentExpr | tiles | factors:regroup | 11 | 90% | 100% | 100% |
+| 6-6 | P | 6.AT.7 | Identify Equivalent Algebraic Expressions | 15 | 5 / 3 / 4 / 5o / 3 | equivalentExpr | tiles | expression:equivalence | 15 | 100% | 65% | 100% |
+| 6-6 | C | 6.AT.7 | Identify Equivalent Algebraic Expressions | 32 | 6 / 7 / 6 / 7 / 6 | combineLikeTerms, equivalentExpr | tiles | expression:equivalence | 12 | 100% | 100% | 100% |
+| 6-7 | P | 6.NOS.4 | Find Factors and Multiples | 15 | 5 / 3 / 4 / 5o / 3 | factorsMultiples | hops | factors:lcm | 7 | 100% | 86% | 100% |
+| 6-7 | C | 6.NOS.4 | Find Factors and Multiples | 31 | 6 / 7 / 6 / 6 / 6 | factorsMultiples, gcfFind | hops | factors:lcm | 5 | 100% | 100% | 100% |
+| 6-8 | P | 6.AT.7 | Generate Equivalent Expressions | 15 | 5 / 3 / 4 / 5o / 3 | combineLikeTerms | cexhunt | factors:regroup | 13 | 100% | 85% | 100% |
+| 6-8 | C | 6.AT.7 | Generate Equivalent Expressions | 32 | 6 / 7 / 6 / 7 / 6 | combineLikeTerms, equivalentExpr | tiles | factors:regroup | 11 | 95% | 100% | 100% |
 | 6-9 | P | 6.NOS.1 | Divide Whole Numbers by Fractions | 15 | 5 / 3 / 4 / 5o / 3 | wholeDivFrac | barcut | fraction:ribbon | 12 | 95% | 86% | 100% |
 | 6-9 | C | 6.NOS.1 | Divide Whole Numbers by Fractions | 30 | 6 / 6 / 6 / 6 / 6 | wholeDivFrac | barcut | fraction:ribbon | 11 | 100% | 100% | 100% |
 | 6-10 | P | 6.NOS.1 | Divide Mixed Numbers | 15 | 5 / 3 / 4 / 5o / 3 | mixedDivide | barcut | fraction:ribbon | 13 | 95% | 68% | 100% |
@@ -108,27 +108,27 @@ Columns: **Req** = items in required stages; **Stages** = items per stage (`o` m
 | 6-12 | C | 6.NOS.4 | Least Common Multiple | 30 | 6 / 6 / 6 / 6 / 6 | lcmFind | brickwall, hops | factors:lcm | 9 | 100% | 100% | 100% |
 | 6-13 | P | 6.NOS.4 | Prime Factorization | 15 | 5 / 3 / 4 / 5o / 3 | primeFactorization | ftree | factors:lcm | 11 | 100% | 85% | 100% |
 | 6-13 | C | 6.NOS.4 | Prime Factorization | 30 | 6 / 6 / 6 / 6 / 6 | primeFactorization | ftree, twotrees | factors:lcm | 6 | 100% | 100% | 100% |
-| 6-14 | P | 6.AT.7 | The Distributive Property | 15 | 5 / 3 / 4 / 5o / 3 | distribute | areabox | expression:distribute | 9 | 90% | 86% | 100% |
-| 6-14 | C | 6.AT.7 | The Distributive Property | 31 | 6 / 7 / 6 / 6 / 6 | distribute | areabox, factorbox | expression:distribute | 7 | 95% | 100% | 100% |
-| 6-15 | P | 6.AT.7 | Simplify Algebraic Expressions | 15 | 5 / 3 / 4 / 5o / 3 | simplifyExpr | tiles | expression:equivalence | 9 | 95% | 85% | 100% |
-| 6-15 | C | 6.AT.7 | Simplify Algebraic Expressions | 32 | 6 / 7 / 6 / 6 / 7 | simplifyExpr | cexhunt, tiles | expression:equivalence | 10 | 95% | 100% | 100% |
-| 7-1 | P | 6.NOS.5 | Explore Integers and Their Opposites | 15 | 5 / 3 / 4 / 5o / 3 | integerOpposites | thermo | line:opposites | 12 | 91% | 86% | 100% |
+| 6-14 | P | 6.AT.7 | The Distributive Property | 15 | 5 / 3 / 4 / 5o / 3 | distribute | areabox | expression:distribute | 9 | 100% | 86% | 100% |
+| 6-14 | C | 6.AT.7 | The Distributive Property | 31 | 6 / 7 / 6 / 6 / 6 | distribute | areabox, factorbox | expression:distribute | 7 | 100% | 100% | 100% |
+| 6-15 | P | 6.AT.7 | Simplify Algebraic Expressions | 15 | 5 / 3 / 4 / 5o / 3 | simplifyExpr | tiles | expression:equivalence | 9 | 100% | 85% | 100% |
+| 6-15 | C | 6.AT.7 | Simplify Algebraic Expressions | 32 | 6 / 7 / 6 / 6 / 7 | simplifyExpr | cexhunt, tiles | expression:equivalence | 10 | 100% | 100% | 100% |
+| 7-1 | P | 6.NOS.5 | Explore Integers and Their Opposites | 15 | 5 / 3 / 4 / 5o / 3 | integerOpposites | thermo | line:opposites | 12 | 100% | 86% | 100% |
 | 7-1 | C | 6.NOS.5 | Explore Integers and Their Opposites | 31 | 6 / 7 / 6 / 6 / 6 | integerOpposites | nline, thermo | line:opposites | 8 | 100% | 100% | 100% |
-| 7-2 | P | 6.NOS.6 | Represent Rational Numbers and Their Opposites on the Number Line | 15 | 5 / 3 / 4 / 5o / 3 | rationalNumberLine | nline | line:opposites | 16 | 95% | 68% | 100% |
+| 7-2 | P | 6.NOS.6 | Represent Rational Numbers and Their Opposites on the Number Line | 15 | 5 / 3 / 4 / 5o / 3 | rationalNumberLine | nline | line:opposites | 16 | 100% | 68% | 100% |
 | 7-2 | C | 6.NOS.6 | Represent Rational Numbers and Their Opposites on the Number Line | 30 | 6 / 7 / 6 / 5 / 6 | rationalNumberLine | nline | line:opposites | 6 | 100% | 100% | 100% |
-| 7-3 | P | 6.NOS.8 | Understand Absolute Value of Rational Numbers | 15 | 5 / 3 / 4 / 5o / 3 | absoluteValue | absbench | line:absolute | 13 | 96% | 70% | 100% |
+| 7-3 | P | 6.NOS.8 | Understand Absolute Value of Rational Numbers | 15 | 5 / 3 / 4 / 5o / 3 | absoluteValue | absbench | line:absolute | 13 | 100% | 70% | 100% |
 | 7-3 | C | 6.NOS.8 | Understand Absolute Value of Rational Numbers | 30 | 6 / 6 / 6 / 6 / 6 | absoluteValue | absbench, nline | line:absolute | 5 | 100% | 100% | 100% |
-| 7-4 | P | 6.NOS.8 | Compare and Order Integers and Rational Numbers | 15 | 5 / 3 / 4 / 5o / 3 | compareOrder | dualrank | line:order | 8 | 94% | 67% | 100% |
+| 7-4 | P | 6.NOS.8 | Compare and Order Integers and Rational Numbers | 15 | 5 / 3 / 4 / 5o / 3 | compareOrder | dualrank | line:order | 8 | 100% | 67% | 100% |
 | 7-4 | C | 6.NOS.8 | Compare and Order Integers and Rational Numbers | 30 | 6 / 6 / 6 / 6 / 6 | compareOrder | absbench, thermo | line:order | 4 | 100% | 100% | 100% |
-| 7-5 | P | 6.NOS.6 | Represent Rational Numbers on the Coordinate Plane | 15 | 5 / 3 / 4 / 5o / 3 | quadrantId | twoclues | coordinates:distance | 15 | 95% | 65% | 100% |
+| 7-5 | P | 6.NOS.6 | Represent Rational Numbers on the Coordinate Plane | 15 | 5 / 3 / 4 / 5o / 3 | quadrantId | twoclues | coordinates:distance | 15 | 100% | 65% | 100% |
 | 7-5 | C | 6.NOS.6 | Represent Rational Numbers on the Coordinate Plane | 30 | 6 / 6 / 6 / 6 / 6 | quadrantId | griddetect, plot | coordinates:distance | 7 | 100% | 100% | 100% |
-| 7-6 | P | 6.NOS.9 | Determine Distance on the Coordinate Plane | 15 | 5 / 3 / 4 / 5o / 3 | coordDistance | plot | coordinates:distance | 12 | 95% | 71% | 100% |
+| 7-6 | P | 6.NOS.9 | Determine Distance on the Coordinate Plane | 15 | 5 / 3 / 4 / 5o / 3 | coordDistance | plot | coordinates:distance | 12 | 100% | 71% | 100% |
 | 7-6 | C | 6.NOS.9 | Determine Distance on the Coordinate Plane | 30 | 6 / 7 / 6 / 5 / 6 | coordDistance | griddetect, plot | coordinates:distance | 6 | 100% | 100% | 100% |
 | 7-7 | P | 6.GR.3 | Represent Polygons on the Coordinate Plane | 15 | 5 / 3 / 4 / 5o / 3 | polygonCoordinates | rectcorners | coordinates:rectangle | 21 | 100% | 65% | 100% |
 | 7-7 | C | 6.GR.3 | Represent Polygons on the Coordinate Plane | 30 | 6 / 7 / 6 / 5 / 6 | polygonCoordinates | plot, rectcorners | coordinates:rectangle | 16 | 100% | 95% | 100% |
-| 7-8 | P | 6.NOS.7 | Ordered Pairs in All Four Quadrants | 15 | 5 / 3 / 4 / 5o / 3 | quadrantId | allpoints | coordinates:rectangle | 5 | 96% | 87% | 100% |
+| 7-8 | P | 6.NOS.7 | Ordered Pairs in All Four Quadrants | 15 | 5 / 3 / 4 / 5o / 3 | quadrantId | allpoints | coordinates:rectangle | 5 | 100% | 87% | 100% |
 | 7-8 | C | 6.NOS.7 | Ordered Pairs in All Four Quadrants | 31 | 6 / 7 / 6 / 6 / 6 | quadrantId | allpoints, griddetect, plot | coordinates:rectangle | 7 | 100% | 100% | 100% |
-| 7-9 | P | 6.NOS.7 | Reflect Points Across Axes | 15 | 5 / 3 / 4 / 5o / 3 | reflectPoint | reflectpredict | coordinates:reflect-predict | 5 | 95% | 67% | 100% |
+| 7-9 | P | 6.NOS.7 | Reflect Points Across Axes | 15 | 5 / 3 / 4 / 5o / 3 | reflectPoint | reflectpredict | coordinates:reflect-predict | 5 | 100% | 67% | 100% |
 | 7-9 | C | 6.NOS.7 | Reflect Points Across Axes | 31 | 6 / 6 / 6 / 6 / 7 | reflectPoint | griddetect, plot, reflectpredict | coordinates:reflect-predict | 7 | 100% | 100% | 100% |
 | 8-1 | P | 6.AT.8 | Understand Equations and Their Solutions | 15 | 5 / 3 / 4 / 5o / 3 | solutionCheck | balance | balance:add | 16 | 100% | 85% | 100% |
 | 8-1 | C | 6.AT.8 | Understand Equations and Their Solutions | 30 | 6 / 6 / 6 / 6 / 6 | solutionCheck | balance | balance:add | 10 | 100% | 100% | 100% |
@@ -178,34 +178,26 @@ Columns: **Req** = items in required stages; **Stages** = items per stage (`o` m
 - 3-3 practice: hint ladder on 68% of written items
 - 3-4 practice: hint ladder on 68% of written items
 - 3-5 practice: hint ladder on 86% of written items
-- 3-6 practice: Spanish on 83% of written items
 - 3-6 practice: hint ladder on 88% of written items
-- 3-7 practice: Spanish on 85% of written items
 - 3-7 practice: hint ladder on 74% of written items
 - 3-8 practice: hint ladder on 88% of written items
 - 3-9 practice: hint ladder on 68% of written items
 - 3-10 practice: hint ladder on 71% of written items
-- 5-1 practice: Spanish on 85% of written items
 - 5-1 practice: hint ladder on 85% of written items
-- 5-2 practice: Spanish on 85% of written items
 - 5-2 practice: hint ladder on 65% of written items
-- 5-3 practice: Spanish on 85% of written items
 - 5-3 practice: hint ladder on 65% of written items
 - 5-4 practice: hint ladder on 61% of written items
 - 5-5 practice: hint ladder on 85% of written items
 - 5-7 practice: hint ladder on 63% of written items
-- 5-8 practice: Spanish on 89% of written items
 - 5-8 practice: hint ladder on 61% of written items
 - 5-9 practice: hint ladder on 84% of written items
 - 5-10 practice: hint ladder on 85% of written items
 - 6-1 practice: hint ladder on 88% of written items
 - 6-2 practice: hint ladder on 67% of written items
 - 6-3 practice: hint ladder on 86% of written items
-- 6-4 practice: Spanish on 81% of written items
 - 6-4 practice: hint ladder on 67% of written items
 - 6-5 practice: hint ladder on 68% of written items
 - 6-6 practice: hint ladder on 65% of written items
-- 6-7 practice: Spanish on 86% of written items
 - 6-7 practice: hint ladder on 86% of written items
 - 6-8 practice: hint ladder on 85% of written items
 - 6-9 practice: hint ladder on 86% of written items

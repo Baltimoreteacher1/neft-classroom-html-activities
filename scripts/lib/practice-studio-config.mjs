@@ -8,6 +8,12 @@ import { benchItems } from "./practice-studio-bench.mjs";
 const text = (/** @type {any} */ s) => (typeof s === "string" && s.trim() ? s.trim() : undefined);
 const esArray = (/** @type {any} */ a, /** @type {number} */ n) =>
   Array.isArray(a) && a.length === n && a.every((x) => typeof x === "string") ? a : undefined;
+/** Spanish for the generic item titles a lesson config leaves untranslated (its own titleEs/labelEs always wins). */
+const GENERIC_TITLE_ES = /** @type {Record<string, string>} */ ({
+  "Find the error": "Encuentra el error",
+  "Find the mistake": "Encuentra el error",
+  "Fill in the table": "Completa la tabla",
+});
 const WORDS_OF_PICTURE =
   /\b(the (picture|diagram|graph|figure|image)|shown (above|below)|see (above|below)|in the (picture|diagram))\b/i;
 
@@ -68,7 +74,7 @@ function err(/** @type {any} */ q) {
     {
       k: "err",
       t: q.title || "Find the mistake",
-      tEs: text(q.titleEs),
+      tEs: text(q.titleEs) || GENERIC_TITLE_ES[q.title || "Find the mistake"],
       s: w.map((/** @type {any} */ s) => ({
         l: String(s.label ?? ""),
         w: String(s.work ?? ""),
@@ -111,7 +117,10 @@ function tbl(/** @type {any} */ q) {
     {
       k: "tbl",
       t: text(q.stem) || text(q.label) || "Fill in the table",
-      tEs: text(q.stemEs) || text(q.labelEs),
+      tEs:
+        text(q.stemEs) ||
+        text(q.labelEs) ||
+        (text(q.stem) || text(q.label) ? undefined : GENERIC_TITLE_ES["Fill in the table"]),
       hd: q.headers.map(String),
       rows: q.rows.map((/** @type {any[]} */ r) => r.map(String)),
       cells,
@@ -149,7 +158,10 @@ function fillColumns(/** @type {any} */ q) {
     {
       k: "tbl",
       t: text(q.stem) || text(q.label) || "Fill in the table",
-      tEs: text(q.stemEs) || text(q.labelEs),
+      tEs:
+        text(q.stemEs) ||
+        text(q.labelEs) ||
+        (text(q.stem) || text(q.label) ? undefined : GENERIC_TITLE_ES["Fill in the table"]),
       hd: q.columns.map(String),
       rows: q.rows.map((/** @type {any} */ row) =>
         keys.map((k, c) => (edit.includes(c) ? "" : String(row[k] ?? ""))),
