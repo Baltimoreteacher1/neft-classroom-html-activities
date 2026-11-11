@@ -7,8 +7,8 @@ import { familyGuidance, householdMission } from "./homework-family-guidance.mjs
 import { existsSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { qrSvg } from "@eduwonderlab/engine/core/qr-mini.js";
 import { DEFAULT_KITCHEN_TABLE } from "../curriculum/family-connections/broadcast/broadcast-content.js";
+import { qrSvg } from "../shared/qr/qr-code.mjs";
 import { lessonPath } from "../tools/lib/curriculum-source.mjs";
 import {
   decimalOperation,
@@ -9104,7 +9104,7 @@ export function renderRefrigeratorSheet(config = {}, lessonId = "") {
 
   const origin = "https://eduwonderlab.com";
   const hwUrl = `${origin}/lessons/${lessonId}/homework.html`;
-  const qr = qrSvg(hwUrl, { size: 84, margin: 1, fg: "var(--fm-primary)" });
+  const qr = qrSvg(hwUrl, { px: 96 });
 
   return `
     <div class="refrigerator-sheet-print-container" aria-hidden="true">
@@ -9306,16 +9306,17 @@ export function renderHomeworkTabs(panelsHtml, helpDrawerHtml = "", unit = null)
 export function renderHelpDrawer(stuckHtml, moreHtml) {
   return `
     <button type="button" class="hw-stuck-fab" id="hw_stuck_fab" ${act("toggleHelpDrawer")}
-      aria-expanded="false" aria-controls="hw_help_drawer">
+      aria-expanded="false" aria-controls="hw_help_drawer"
+      title="Help My Child / Ayudar a mi hijo/a" data-title-en="Help My Child" data-title-es="Ayudar a mi hijo/a">
       <span class="hw-stuck-fab-icon" aria-hidden="true">💬</span>
-      <span class="hw-stuck-fab-label"><span class="lang-en">Stuck?</span><span class="lang-es" lang="es">¿Atorados?</span></span>
+      <span class="hw-stuck-fab-label"><span class="lang-en">Stuck? · Help My Child</span><span class="lang-es" lang="es">¿Atorados? · Ayudar a mi hijo/a</span></span>
     </button>
     <div class="hw-help-drawer" id="hw_help_drawer" role="dialog" aria-modal="true"
       aria-label="If your student gets stuck" data-aria-en="If your student gets stuck" data-aria-es="Ayuda si te atoras" hidden>
       <div class="hw-help-drawer-scrim" ${act("toggleHelpDrawer")}></div>
       <div class="hw-help-drawer-sheet">
         <div class="hw-help-drawer-head">
-          <strong><span class="lang-en">If your student gets stuck</span><span class="lang-es" lang="es">Si se atoran</span></strong>
+          <strong><span class="lang-en">If your student gets stuck · Help My Child</span><span class="lang-es" lang="es">Si se atoran · Ayudar a mi hijo/a</span></strong>
           <button type="button" class="hw-help-drawer-close" ${act("toggleHelpDrawer")} aria-label="Close help" data-aria-en="Close help" data-aria-es="Cerrar ayuda">✕</button>
         </div>
         <div class="hw-help-drawer-body">
@@ -10801,6 +10802,7 @@ function initHomeworkPage() {
   }
   if (!placeSaveControl()) {
     var saveObserver = new MutationObserver(function () {
+      if (typeof document === 'undefined' || !document || !document.getElementById) return;
       if (document.getElementById('nsr-root')) { saveObserver.disconnect(); placeSaveControl(); }
     });
     saveObserver.observe(document.body, { childList: true, subtree: true });

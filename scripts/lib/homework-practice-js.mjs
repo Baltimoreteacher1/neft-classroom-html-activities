@@ -16,6 +16,10 @@ var HW_CELEBRATE_URL = '/assets/family-mission/celebrate/index.mjs';
 var HW_CELEBRATE_CSS = '/assets/family-mission/celebrate/celebrate.css';
 var HW_EXPLAIN_URL = '/assets/family-mission/explain/index.mjs';
 var HW_EXPLAIN_CSS = '/assets/family-mission/explain/explain.css';
+var HW_RESCUE_URL = '/assets/family-mission/rescue/index.mjs';
+var HW_RESCUE_CSS = '/assets/family-mission/rescue/rescue.css';
+var HW_MISSIONS_URL = '/assets/family-mission/missions/index.mjs';
+var HW_MISSIONS_CSS = '/assets/family-mission/missions/missions.css';
 var hwLevelsArmed = false;
 
 function hwPracticeAllCore() {
@@ -314,10 +318,19 @@ function hwPracticeBoot() {
   hwLevelsRender();
   setTimeout(function () { hwLevelsArmed = true; hwLevelsRender(); }, 1200);
   hwPracticeNextCta();
-  var obs = new MutationObserver(function () {
+  hwAdaptiveMount();
+  var obs = new MutationObserver(function (list) {
     hwLevelsRender();
     hwPracticeNextCta();
     setTimeout(hwSeeItScan, 60);
+    if (list && list.forEach) {
+      list.forEach(function (rec) {
+        var el = rec.target;
+        if (el && el.classList && el.classList.contains('problem-section') && el.classList.contains('incorrect')) {
+          hwRescueOnError(el);
+        }
+      });
+    }
     if (document.body.dataset.activeTab === 'done') hwMissionCelebrate();
   });
   document.querySelectorAll('.problem-section').forEach(function (s) { obs.observe(s, { attributes: true, attributeFilter: ['class'] }); });
@@ -325,7 +338,8 @@ function hwPracticeBoot() {
     var tab = document.body.dataset.activeTab;
     if (tab === 'done') hwMissionCelebrate();
     if (tab === 'connect' || tab === 'explore') hwExplainMount();
-    if (tab === 'check') hwLevelsRender();
+    if (tab === 'check') { hwLevelsRender(); hwAdaptiveMount(); }
+    if (tab === 'apply') hwApplyMissionMount();
   });
   tabWatch.observe(document.body, { attributes: true, attributeFilter: ['data-active-tab'] });
   var langWatch = new MutationObserver(function () {
@@ -335,6 +349,80 @@ function hwPracticeBoot() {
   langWatch.observe(document.body, { attributes: true, attributeFilter: ['class'] });
   hwExplainMount();
   if (document.body.dataset.activeTab === 'done') hwMissionCelebrate();
+  if (document.body.dataset.activeTab === 'apply') hwApplyMissionMount();
+}
+
+var hwRescuePromise = null;
+function hwRescueLoad() {
+  hwPracticeLink(HW_RESCUE_CSS, '', 'data-rescue-css');
+  if (!hwRescuePromise) hwRescuePromise = import(HW_RESCUE_URL);
+  return hwRescuePromise;
+}
+
+function hwRescueOnError(section) {
+  if (!section || section.querySelector('[data-math-rescue]')) return;
+  var stemEl = section.querySelector('.problem-stem .lang-en, .problem-stem, .question-text');
+  var stemText = stemEl ? stemEl.textContent : '';
+  var pickedBtn = section.querySelector('.mc-option.selected, .mc-option.is-selected, .choice-btn.selected');
+  var studentVal = pickedBtn ? pickedBtn.textContent : '';
+  var inputEl = section.querySelector('input[type="text"], input[type="number"]');
+  if (!studentVal && inputEl) studentVal = inputEl.value || '';
+  hwRescueLoad().then(function (mod) {
+    mod.mountMathRescue(section, {
+      lessonId: window.LESSON_ID || '',
+      stemText: stemText,
+      studentAnswer: studentVal,
+      correctAnswer: section.getAttribute('data-answer') || '',
+      onResolved: function () {
+        var ev = hwMissionRead('evidence', {});
+        ev.rescuesCompleted = (ev.rescuesCompleted || 0) + 1;
+        hwMissionWrite('evidence', ev);
+      }
+    });
+  }).catch(function () {});
+}
+
+var hwAdaptiveMounted = false;
+function hwAdaptiveMount() {
+  if (hwAdaptiveMounted) return;
+  var panel = document.getElementById('hw_panel_check');
+  if (!panel) return;
+  hwAdaptiveMounted = true;
+  hwRescueLoad().then(function (mod) {
+    var ev = hwMissionSnapshot();
+    var probs = Object.keys(ev.problems || {}).map(function (k) { return ev.problems[k]; });
+    var total = probs.length;
+    var firstTry = probs.filter(function (p) { return p.done && !p.wrong && !p.hints; }).length;
+    var hints = probs.filter(function (p) { return p.hints > 0; }).length;
+    var revised = probs.filter(function (p) { return p.done && p.wrong > 0; }).length;
+    mod.mountAdaptiveControls(panel, {
+      lessonId: window.LESSON_ID || '',
+      evidence: { totalAttempts: total, firstTryCorrect: firstTry, hintsUsed: hints, revisedAfterError: revised },
+      onShowAnotherWay: function () { switchHomeworkTab('explore'); },
+      onChallengeMe: function () { hwStartChallengeRound(); }
+    });
+  }).catch(function () {});
+}
+
+var hwApplyMissionMounted = false;
+function hwApplyMissionMount() {
+  if (hwApplyMissionMounted) return;
+  var panel = document.getElementById('hw_panel_apply');
+  if (!panel) return;
+  hwApplyMissionMounted = true;
+  hwPracticeLink(HW_MISSIONS_CSS, '', 'data-missions-css');
+  import(HW_MISSIONS_URL).then(function (mod) {
+    mod.mountFamilyMission(panel, {
+      lessonId: window.LESSON_ID || '',
+      title: window.LESSON_TITLE || '',
+      titleEs: window.LESSON_TITLE_ES || '',
+      onComplete: function (res) {
+        var ev = hwMissionRead('evidence', {});
+        ev.missionRounds = res && res.roundsCompleted ? res.roundsCompleted : 1;
+        hwMissionWrite('evidence', ev);
+      }
+    });
+  }).catch(function () {});
 }
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', hwPracticeBoot);
 else hwPracticeBoot();

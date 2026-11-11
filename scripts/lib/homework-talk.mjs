@@ -10,6 +10,8 @@
  * when to stop), closed except the first two, so a caregiver who does not know Grade 6 mathematics
  * can still help and nobody has to read all of it.
  */
+
+import { act } from "./homework-actions.mjs";
 import { bridgeOf, renderBridgeCard } from "./homework-bridge.mjs";
 
 const esc = (s) =>
@@ -60,12 +62,26 @@ export function renderCaregiverCopilot(config, ask) {
   }`;
   return `
     <aside class="hw-copilot" id="hw_copilot" aria-labelledby="hw_copilot_title" data-no-vocab>
-      <h3 class="hw-copilot-title" id="hw_copilot_title"><span aria-hidden="true">👪</span> ${bi("For the grown-up", "Para el adulto")}</h3>
+      <div class="hw-copilot-head">
+        <h3 class="hw-copilot-title" id="hw_copilot_title"><span aria-hidden="true">👪</span> ${bi("For the grown-up · Help My Child", "Para el adulto · Ayudar a mi hijo/a")}</h3>
+        <button type="button" class="btn btn-sm btn-outline-secondary hw-copilot-audio" ${act("hwSpeakCopilot")}>
+          <span aria-hidden="true">🔊</span> ${bi("Listen", "Escuchar")}
+        </button>
+      </div>
       ${drawer("hw_copilot_learning", "What your student is learning", "Lo que su estudiante aprende", pair(learning), true)}
       ${drawer("hw_copilot_ask", "Ask this", "Pregunten esto", pair(question), true)}
       ${drawer("hw_copilot_look", "Look for", "Observen", list(lookFor))}
       ${drawer("hw_copilot_stuck", "If your student gets stuck", "Si se atoran", stuckHtml)}
       ${bridge ? `<div class="hw-copilot-item" id="hw_copilot_bridge">${renderBridgeCard(bridge)}</div>` : ""}
+      ${drawer(
+        "hw_copilot_support",
+        "Supporting thinking without giving away answers",
+        "Cómo apoyar el razonamiento sin dar la respuesta",
+        `<p>${bi(
+          "Ask your student to point to the picture or model and explain their first step out loud before you offer a hint.",
+          "Pidan a su estudiante que señale el dibujo o el modelo y explique su primer paso en voz alta antes de darle una pista.",
+        )}</p>`,
+      )}
       ${drawer(
         "hw_copilot_stop",
         "When to stop",

@@ -1,0 +1,238 @@
+/* Family Math Missions — Interactive 3-Round Application Styles
+   Uses only --fm-* design tokens. Zero raw color literals. */
+
+.fp-mission-deck {
+  margin-bottom: var(--fm-space-5, 1.25rem);
+  padding: var(--fm-space-5, 1.25rem);
+  border-radius: var(--fm-radius-lg, 16px);
+  border: 2px solid var(--fm-border);
+  background: var(--fm-surface);
+}
+
+.fp-mission-deck__header {
+  margin-bottom: var(--fm-space-4, 1rem);
+}
+
+.fp-mission-deck__eyebrow-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--fm-space-2, 0.5rem);
+  margin-bottom: var(--fm-space-2, 0.5rem);
+}
+
+.fp-mission-deck__badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.65rem;
+  border-radius: var(--fm-radius-pill, 999px);
+  background: var(--fm-sunken);
+  color: var(--fm-primary);
+  font-size: var(--fm-fs-xs);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.fp-mission-deck__progress {
+  font-size: var(--fm-fs-xs);
+  font-weight: 600;
+  color: var(--fm-text-muted);
+}
+
+.fp-mission-deck__title {
+  margin: 0 0 var(--fm-space-2, 0.5rem);
+  font-family: var(--fm-font-display);
+  font-size: var(--fm-fs-lg);
+  font-weight: 700;
+  color: var(--fm-text);
+}
+
+.fp-mission-deck__intro {
+  margin: 0;
+  font-size: var(--fm-fs-sm);
+  line-height: 1.5;
+  color: var(--fm-text-muted);
+}
+
+.fp-mission-deck__stages {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--fm-space-2, 0.5rem);
+  margin-bottom: var(--fm-space-4, 1rem);
+  padding-bottom: var(--fm-space-3, 0.75rem);
+  border-bottom: 1px solid var(--fm-border);
+}
+
+.fp-mission-deck__stage-pill {
+  min-height: 40px;
+  padding: 0.35rem 0.85rem;
+  border-radius: var(--fm-radius-pill, 999px);
+  border: 1px solid var(--fm-border);
+  background: var(--fm-sunken);
+  color: var(--fm-text-muted);
+  font-size: var(--fm-fs-xs);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.fp-mission-deck__stage-pill.is-active {
+  border-color: var(--fm-primary);
+  background: var(--fm-surface);
+  color: var(--fm-text);
+}
+
+.fp-mission-deck__stage-pill.is-done::after {
+  content: " ✓";
+  color: var(--fm-success-ink);
+}
+
+.fp-mission-deck__stage-title {
+  margin: 0 0 var(--fm-space-2, 0.5rem);
+  font-size: var(--fm-fs-md);
+  font-weight: 700;
+  color: var(--fm-text);
+}
+
+.fp-mission-deck__prompt {
+  margin: 0 0 var(--fm-space-3, 0.75rem);
+  font-size: var(--fm-fs-md);
+  line-height: 1.55;
+  color: var(--fm-text);
+}
+
+.fp-mission-deck__interactive {
+  margin-bottom: var(--fm-space-4, 1rem);
+  padding: var(--fm-space-3, 0.75rem);
+  border-radius: var(--fm-radius-md, 12px);
+  border: 1px solid var(--fm-border);
+  background: var(--fm-sunken);
+}
+
+.fp-mission-deck__slider-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--fm-space-2, 0.5rem);
+  margin-bottom: var(--fm-space-2, 0.5rem);
+}
+
+.fp-mission-deck__slider-label {
+  font-size: var(--fm-fs-sm);
+  font-weight: 600;
+  color: var(--fm-text);
+}
+
+.fp-mission-deck__formula-output {
+  font-family: var(--fm-font-text);
+  font-size: var(--fm-fs-sm);
+  font-weight: 700;
+  color: var(--fm-primary);
+}
+
+.fp-mission-deck__slider {
+  width: 100%;
+  margin: 0.25rem 0 0.5rem;
+  background: transparent;
+  accent-color: var(--fm-accent-ink);
+  cursor: pointer;
+}
+
+.fp-mission-deck__svg-wrap {
+  width: 100%;
+}
+
+.fp-mission-svg {
+  display: block;
+  width: 100%;
+  max-width: 480px;
+  height: auto;
+  margin: 0 auto;
+}
+
+.fp-mission-deck__choices {
+  display: grid;
+  gap: var(--fm-space-2, 0.5rem);
+  margin-bottom: var(--fm-space-3, 0.75rem);
+}
+
+.fp-mission-deck__choice {
+  min-height: 48px;
+  padding: 0.75rem 1rem;
+  border-radius: var(--fm-radius-md, 12px);
+  border: 1.5px solid var(--fm-border);
+  background: var(--fm-surface);
+  color: var(--fm-text);
+  font-size: var(--fm-fs-sm);
+  line-height: 1.45;
+  text-align: left;
+  cursor: pointer;
+}
+
+.fp-mission-deck__choice:hover,
+.fp-mission-deck__choice:focus-visible {
+  border-color: var(--fm-primary);
+}
+
+.fp-mission-deck__choice.is-correct {
+  border-color: var(--fm-success);
+  background: var(--fm-sunken);
+  font-weight: 600;
+}
+
+.fp-mission-deck__choice.is-wrong {
+  border-color: var(--fm-warn);
+}
+
+.fp-mission-deck__feedback {
+  padding: var(--fm-space-3, 0.75rem);
+  border-radius: var(--fm-radius-md, 12px);
+  border: 1px solid var(--fm-border);
+  background: var(--fm-sunken);
+  margin-bottom: var(--fm-space-3, 0.75rem);
+}
+
+.fp-mission-deck__feedback p {
+  margin: 0;
+  font-size: var(--fm-fs-sm);
+  line-height: 1.5;
+}
+
+.fp-mission-deck__next-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--fm-space-3, 0.75rem);
+}
+
+.fp-mission-deck__next-btn {
+  min-height: 44px;
+  padding: 0.6rem 1.15rem;
+  border-radius: var(--fm-radius-md, 12px);
+  border: 1.5px solid var(--fm-primary);
+  background: var(--fm-primary);
+  color: var(--fm-on-primary);
+  font-size: var(--fm-fs-sm);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.fp-mission-deck__quick-exit-btn {
+  min-height: 44px;
+  padding: 0.6rem 1rem;
+  border-radius: var(--fm-radius-md, 12px);
+  border: 1px solid var(--fm-border);
+  background: var(--fm-surface);
+  color: var(--fm-text-muted);
+  font-size: var(--fm-fs-xs);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.fp-mission-deck__victory-text {
+  margin: 0 0 var(--fm-space-2, 0.5rem);
+  font-weight: 700;
+  color: var(--fm-success-ink);
+}

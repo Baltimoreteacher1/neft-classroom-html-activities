@@ -69,6 +69,15 @@
         document.querySelector(`#problem_${idx} .problem-stem .lang-${lang}`)?.textContent || "";
       window.speakHomeworkText(stem("en"), stem("es"));
     },
+    // Reads the grown-up's "what your student is learning" and "ask this" drawers aloud.
+    hwSpeakCopilot: () => {
+      const said = (lang) =>
+        ["hw_copilot_learning", "hw_copilot_ask"]
+          .map((id) => document.querySelector(`#${id} .lang-${lang}`)?.textContent.trim() || "")
+          .filter(Boolean)
+          .join(" ");
+      window.speakHomeworkText(said("en"), said("es"));
+    },
   };
 
   const resolve = (arg, el, ev) => {

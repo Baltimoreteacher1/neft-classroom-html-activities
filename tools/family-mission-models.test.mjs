@@ -402,7 +402,16 @@ test("ratio: descriptions carry the live numbers in English and Spanish", () => 
 });
 
 test("index: families, unknown family, and describeConfig", () => {
-  const all = ["percent", "ratio", "balance", "numberline", "coordinate", "data", "geometry"];
+  const all = [
+    "percent",
+    "ratio",
+    "balance",
+    "numberline",
+    "coordinate",
+    "data",
+    "geometry",
+    "exponents",
+  ];
   assert.deepEqual(Object.keys(FAMILIES).sort(), [...all].sort());
   assert.deepEqual(
     listFamilies()
@@ -702,4 +711,36 @@ test("makeDraggable: aria:false adds no role or tab stop; destroy detaches", () 
   d.destroy();
   fire(node, "pointermove", { clientX: 1 });
   assert.equal(v, 10);
+});
+
+// ── Exponents family ─────────────────────────────────────────────────────────
+
+test("exponents: repeated multiplication, misconceptions, and DOM mount", () => {
+  const m = createModel("exponents", { base: 2, exponent: 3, maxExponent: 5 });
+  assert.equal(m.getState().power, 8);
+  assert.equal(m.getState().additive, 6);
+  assert.equal(m.getState().factorsChain, "2 × 2 × 2");
+  assert.equal(m.validate({ kind: "evaluate-power", base: 2, exponent: 3, answer: 8 }).ok, true);
+  assert.equal(
+    m.validate({ kind: "evaluate-power", base: 2, exponent: 3, answer: 6 }).misconception?.id,
+    "exponent-as-multiplier",
+  );
+  assert.equal(
+    m.validate({ kind: "evaluate-power", base: 2, exponent: 3, answer: 9 }).misconception?.id,
+    "swapped-base-exponent",
+  );
+  assert.equal(
+    m.validate({ kind: "evaluate-power", base: 2, exponent: 0, answer: 0 }).misconception?.id,
+    "zero-power-is-zero",
+  );
+  m.setState({ exponent: 4 });
+  assert.equal(m.getState().power, 16);
+  assert.equal(m.undo(), true);
+  assert.equal(m.getState().power, 8);
+
+  const { root, m: domM } = mount("exponents", { base: 2, exponent: 3 });
+  assert.doesNotMatch(root.innerHTML, /#[0-9a-fA-F]{3,8}\b|rgb\(|hsl\(|undefined|NaN|\son[a-z]+=/i);
+  domM.setLang("es");
+  assert.match(root.textContent, /Base|Exponente/);
+  domM.destroy();
 });

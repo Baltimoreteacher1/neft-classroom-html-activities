@@ -69,6 +69,15 @@
         document.querySelector(`#problem_${idx} .problem-stem .lang-${lang}`)?.textContent || "";
       window.speakHomeworkText(stem("en"), stem("es"));
     },
+    // Reads the grown-up's "what your student is learning" and "ask this" drawers aloud.
+    hwSpeakCopilot: () => {
+      const said = (lang) =>
+        ["hw_copilot_learning", "hw_copilot_ask"]
+          .map((id) => document.querySelector(`#${id} .lang-${lang}`)?.textContent.trim() || "")
+          .filter(Boolean)
+          .join(" ");
+      window.speakHomeworkText(said("en"), said("es"));
+    },
   };
 
   const resolve = (arg, el, ev) => {
@@ -1573,6 +1582,7 @@ function initHomeworkPage() {
   }
   if (!placeSaveControl()) {
     var saveObserver = new MutationObserver(function () {
+      if (typeof document === 'undefined' || !document || !document.getElementById) return;
       if (document.getElementById('nsr-root')) { saveObserver.disconnect(); placeSaveControl(); }
     });
     saveObserver.observe(document.body, { childList: true, subtree: true });
@@ -4817,6 +4827,50 @@ function hwMissionSummary() {
   });
   var pre = document.querySelector('[data-mission-prereq]');
   if (pre) pre.hidden = !supported.length;
+  hwRenderMathWin(ev, solved, clean, supported, revised, total, title, titleEs);
+}
+
+function hwRenderMathWin(ev, solved, clean, supported, revised, total, title, titleEs) {
+  var winHost = document.getElementById('hw_math_win');
+  if (!winHost) return;
+  if (!solved.length && !ev.modelMoves) { winHost.hidden = true; winHost.innerHTML = ''; return; }
+  winHost.hidden = false;
+  var modelEl = document.getElementById('hw_mission_model');
+  var fam = modelEl ? modelEl.getAttribute('data-family') : '';
+  var modelNames = {
+    exponents: ['Repeated-Multiplication Exponent Builder', 'Constructor de exponentes por multiplicación repetida'],
+    ratio: ['Interactive Ratio & Double Number Line Model', 'Modelo interactivo de razones y recta numérica doble'],
+    percent: ['Interactive Percent Grid & Bar Model', 'Cuadrícula de porcentaje y modelo de barras interactivo'],
+    partition: ['Fraction Strip & Partition Model', 'Modelo de tiras de fracciones y partición'],
+    balance: ['Algebraic Balance & Expression Model', 'Balanza algebraica y modelo de expresiones'],
+    numberline: ['Signed Number Line & Inequality Model', 'Recta numérica con signo y modelo de desigualdades'],
+    coordinate: ['Four-Quadrant Coordinate Plane', 'Plano de coordenadas de cuatro cuadrantes'],
+    area: ['Interactive Geometric Area & Net Model', 'Modelo geométrico interactivo de área y desarrollo'],
+    data: ['Interactive Dot Plot & Center/Spread Lab', 'Diagrama de puntos interactivo y laboratorio de centro/dispersión']
+  };
+  var mPair = modelNames[fam] || ['Visual Step-by-Step Diagram', 'Diagrama visual paso a paso'];
+  var rescCount = Number(ev.rescuesCompleted || 0);
+  var html = '<div class="hw-math-win__head">' +
+    '<span class="hw-math-win__badge"><span class="lang-en">The Math Win · Personalized Summary</span><span class="lang-es" lang="es">El logro matemático · Resumen personalizado</span></span>' +
+    '<h3 class="hw-math-win__title"><span class="lang-en">What Your Math Work Demonstrated</span><span class="lang-es" lang="es">Lo que demostró tu trabajo matemático</span></h3>' +
+    '</div><dl class="hw-evidence-list hw-math-win__list">' +
+    '<dt><span class="lang-en">Concept demonstrated</span><span class="lang-es" lang="es">Concepto demostrado</span></dt>' +
+    '<dd><span class="lang-en">' + (title || 'Grade 6 Mathematics') + ' (' + solved.length + ' solved)</span><span class="lang-es" lang="es">' + (titleEs || 'Matemáticas de 6.º grado') + ' (' + solved.length + ' resueltos)</span></dd>' +
+    '<dt><span class="lang-en">Mathematical model used</span><span class="lang-es" lang="es">Modelo matemático utilizado</span></dt>' +
+    '<dd><span class="lang-en">' + mPair[0] + (ev.modelMoves ? ' (' + ev.modelMoves + ' interactive moves)' : '') + '</span><span class="lang-es" lang="es">' + mPair[1] + (ev.modelMoves ? ' (' + ev.modelMoves + ' movimientos interactivos)' : '') + '</span></dd>';
+  if (revised.length || rescCount > 0) {
+    html += '<dt><span class="lang-en">Misconception corrected</span><span class="lang-es" lang="es">Idea errónea corregida</span></dt>' +
+      '<dd><span class="lang-en">Turned an initial error into a verified solution through revision' + (rescCount ? ' and Math Rescue.' : '.') + '</span><span class="lang-es" lang="es">Transformó un error inicial en una solución verificada mediante la revisión' + (rescCount ? ' y Rescate Matemático.' : '.') + '</span></dd>';
+  }
+  if (clean.length) {
+    html += '<dt><span class="lang-en">Independent progress</span><span class="lang-es" lang="es">Progreso independiente</span></dt>' +
+      '<dd><span class="lang-en">Solved ' + clean.length + (clean.length === 1 ? ' problem' : ' problems') + ' independently on the first attempt without hints.</span><span class="lang-es" lang="es">Resolvió ' + clean.length + (clean.length === 1 ? ' problema' : ' problemas') + ' de forma independiente en el primer intento y sin pistas.</span></dd>';
+  }
+  html += '</dl>' +
+    '<div class="hw-math-win__actions">' +
+    '<button type="button" class="btn btn-sm btn-outline-primary" data-act="printRefrigeratorSheet"><span aria-hidden="true">🖨️</span> <span class="lang-en">Print Family Summary</span><span class="lang-es" lang="es">Imprimir resumen familiar</span></button>' +
+    '</div>';
+  winHost.innerHTML = html;
 }
 
 function hwMissionBoot() {
@@ -4980,6 +5034,10 @@ var HW_CELEBRATE_URL = '/assets/family-mission/celebrate/index.mjs';
 var HW_CELEBRATE_CSS = '/assets/family-mission/celebrate/celebrate.css';
 var HW_EXPLAIN_URL = '/assets/family-mission/explain/index.mjs';
 var HW_EXPLAIN_CSS = '/assets/family-mission/explain/explain.css';
+var HW_RESCUE_URL = '/assets/family-mission/rescue/index.mjs';
+var HW_RESCUE_CSS = '/assets/family-mission/rescue/rescue.css';
+var HW_MISSIONS_URL = '/assets/family-mission/missions/index.mjs';
+var HW_MISSIONS_CSS = '/assets/family-mission/missions/missions.css';
 var hwLevelsArmed = false;
 
 function hwPracticeAllCore() {
@@ -5278,10 +5336,19 @@ function hwPracticeBoot() {
   hwLevelsRender();
   setTimeout(function () { hwLevelsArmed = true; hwLevelsRender(); }, 1200);
   hwPracticeNextCta();
-  var obs = new MutationObserver(function () {
+  hwAdaptiveMount();
+  var obs = new MutationObserver(function (list) {
     hwLevelsRender();
     hwPracticeNextCta();
     setTimeout(hwSeeItScan, 60);
+    if (list && list.forEach) {
+      list.forEach(function (rec) {
+        var el = rec.target;
+        if (el && el.classList && el.classList.contains('problem-section') && el.classList.contains('incorrect')) {
+          hwRescueOnError(el);
+        }
+      });
+    }
     if (document.body.dataset.activeTab === 'done') hwMissionCelebrate();
   });
   document.querySelectorAll('.problem-section').forEach(function (s) { obs.observe(s, { attributes: true, attributeFilter: ['class'] }); });
@@ -5289,7 +5356,8 @@ function hwPracticeBoot() {
     var tab = document.body.dataset.activeTab;
     if (tab === 'done') hwMissionCelebrate();
     if (tab === 'connect' || tab === 'explore') hwExplainMount();
-    if (tab === 'check') hwLevelsRender();
+    if (tab === 'check') { hwLevelsRender(); hwAdaptiveMount(); }
+    if (tab === 'apply') hwApplyMissionMount();
   });
   tabWatch.observe(document.body, { attributes: true, attributeFilter: ['data-active-tab'] });
   var langWatch = new MutationObserver(function () {
@@ -5299,6 +5367,80 @@ function hwPracticeBoot() {
   langWatch.observe(document.body, { attributes: true, attributeFilter: ['class'] });
   hwExplainMount();
   if (document.body.dataset.activeTab === 'done') hwMissionCelebrate();
+  if (document.body.dataset.activeTab === 'apply') hwApplyMissionMount();
+}
+
+var hwRescuePromise = null;
+function hwRescueLoad() {
+  hwPracticeLink(HW_RESCUE_CSS, '', 'data-rescue-css');
+  if (!hwRescuePromise) hwRescuePromise = import(HW_RESCUE_URL);
+  return hwRescuePromise;
+}
+
+function hwRescueOnError(section) {
+  if (!section || section.querySelector('[data-math-rescue]')) return;
+  var stemEl = section.querySelector('.problem-stem .lang-en, .problem-stem, .question-text');
+  var stemText = stemEl ? stemEl.textContent : '';
+  var pickedBtn = section.querySelector('.mc-option.selected, .mc-option.is-selected, .choice-btn.selected');
+  var studentVal = pickedBtn ? pickedBtn.textContent : '';
+  var inputEl = section.querySelector('input[type="text"], input[type="number"]');
+  if (!studentVal && inputEl) studentVal = inputEl.value || '';
+  hwRescueLoad().then(function (mod) {
+    mod.mountMathRescue(section, {
+      lessonId: window.LESSON_ID || '',
+      stemText: stemText,
+      studentAnswer: studentVal,
+      correctAnswer: section.getAttribute('data-answer') || '',
+      onResolved: function () {
+        var ev = hwMissionRead('evidence', {});
+        ev.rescuesCompleted = (ev.rescuesCompleted || 0) + 1;
+        hwMissionWrite('evidence', ev);
+      }
+    });
+  }).catch(function () {});
+}
+
+var hwAdaptiveMounted = false;
+function hwAdaptiveMount() {
+  if (hwAdaptiveMounted) return;
+  var panel = document.getElementById('hw_panel_check');
+  if (!panel) return;
+  hwAdaptiveMounted = true;
+  hwRescueLoad().then(function (mod) {
+    var ev = hwMissionSnapshot();
+    var probs = Object.keys(ev.problems || {}).map(function (k) { return ev.problems[k]; });
+    var total = probs.length;
+    var firstTry = probs.filter(function (p) { return p.done && !p.wrong && !p.hints; }).length;
+    var hints = probs.filter(function (p) { return p.hints > 0; }).length;
+    var revised = probs.filter(function (p) { return p.done && p.wrong > 0; }).length;
+    mod.mountAdaptiveControls(panel, {
+      lessonId: window.LESSON_ID || '',
+      evidence: { totalAttempts: total, firstTryCorrect: firstTry, hintsUsed: hints, revisedAfterError: revised },
+      onShowAnotherWay: function () { switchHomeworkTab('explore'); },
+      onChallengeMe: function () { hwStartChallengeRound(); }
+    });
+  }).catch(function () {});
+}
+
+var hwApplyMissionMounted = false;
+function hwApplyMissionMount() {
+  if (hwApplyMissionMounted) return;
+  var panel = document.getElementById('hw_panel_apply');
+  if (!panel) return;
+  hwApplyMissionMounted = true;
+  hwPracticeLink(HW_MISSIONS_CSS, '', 'data-missions-css');
+  import(HW_MISSIONS_URL).then(function (mod) {
+    mod.mountFamilyMission(panel, {
+      lessonId: window.LESSON_ID || '',
+      title: window.LESSON_TITLE || '',
+      titleEs: window.LESSON_TITLE_ES || '',
+      onComplete: function (res) {
+        var ev = hwMissionRead('evidence', {});
+        ev.missionRounds = res && res.roundsCompleted ? res.roundsCompleted : 1;
+        hwMissionWrite('evidence', ev);
+      }
+    });
+  }).catch(function () {});
 }
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', hwPracticeBoot);
 else hwPracticeBoot();

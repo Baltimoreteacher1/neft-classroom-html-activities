@@ -203,6 +203,50 @@ function hwMissionSummary() {
   });
   var pre = document.querySelector('[data-mission-prereq]');
   if (pre) pre.hidden = !supported.length;
+  hwRenderMathWin(ev, solved, clean, supported, revised, total, title, titleEs);
+}
+
+function hwRenderMathWin(ev, solved, clean, supported, revised, total, title, titleEs) {
+  var winHost = document.getElementById('hw_math_win');
+  if (!winHost) return;
+  if (!solved.length && !ev.modelMoves) { winHost.hidden = true; winHost.innerHTML = ''; return; }
+  winHost.hidden = false;
+  var modelEl = document.getElementById('hw_mission_model');
+  var fam = modelEl ? modelEl.getAttribute('data-family') : '';
+  var modelNames = {
+    exponents: ['Repeated-Multiplication Exponent Builder', 'Constructor de exponentes por multiplicación repetida'],
+    ratio: ['Interactive Ratio & Double Number Line Model', 'Modelo interactivo de razones y recta numérica doble'],
+    percent: ['Interactive Percent Grid & Bar Model', 'Cuadrícula de porcentaje y modelo de barras interactivo'],
+    partition: ['Fraction Strip & Partition Model', 'Modelo de tiras de fracciones y partición'],
+    balance: ['Algebraic Balance & Expression Model', 'Balanza algebraica y modelo de expresiones'],
+    numberline: ['Signed Number Line & Inequality Model', 'Recta numérica con signo y modelo de desigualdades'],
+    coordinate: ['Four-Quadrant Coordinate Plane', 'Plano de coordenadas de cuatro cuadrantes'],
+    area: ['Interactive Geometric Area & Net Model', 'Modelo geométrico interactivo de área y desarrollo'],
+    data: ['Interactive Dot Plot & Center/Spread Lab', 'Diagrama de puntos interactivo y laboratorio de centro/dispersión']
+  };
+  var mPair = modelNames[fam] || ['Visual Step-by-Step Diagram', 'Diagrama visual paso a paso'];
+  var rescCount = Number(ev.rescuesCompleted || 0);
+  var html = '<div class="hw-math-win__head">' +
+    '<span class="hw-math-win__badge"><span class="lang-en">The Math Win · Personalized Summary</span><span class="lang-es" lang="es">El logro matemático · Resumen personalizado</span></span>' +
+    '<h3 class="hw-math-win__title"><span class="lang-en">What Your Math Work Demonstrated</span><span class="lang-es" lang="es">Lo que demostró tu trabajo matemático</span></h3>' +
+    '</div><dl class="hw-evidence-list hw-math-win__list">' +
+    '<dt><span class="lang-en">Concept demonstrated</span><span class="lang-es" lang="es">Concepto demostrado</span></dt>' +
+    '<dd><span class="lang-en">' + (title || 'Grade 6 Mathematics') + ' (' + solved.length + ' solved)</span><span class="lang-es" lang="es">' + (titleEs || 'Matemáticas de 6.º grado') + ' (' + solved.length + ' resueltos)</span></dd>' +
+    '<dt><span class="lang-en">Mathematical model used</span><span class="lang-es" lang="es">Modelo matemático utilizado</span></dt>' +
+    '<dd><span class="lang-en">' + mPair[0] + (ev.modelMoves ? ' (' + ev.modelMoves + ' interactive moves)' : '') + '</span><span class="lang-es" lang="es">' + mPair[1] + (ev.modelMoves ? ' (' + ev.modelMoves + ' movimientos interactivos)' : '') + '</span></dd>';
+  if (revised.length || rescCount > 0) {
+    html += '<dt><span class="lang-en">Misconception corrected</span><span class="lang-es" lang="es">Idea errónea corregida</span></dt>' +
+      '<dd><span class="lang-en">Turned an initial error into a verified solution through revision' + (rescCount ? ' and Math Rescue.' : '.') + '</span><span class="lang-es" lang="es">Transformó un error inicial en una solución verificada mediante la revisión' + (rescCount ? ' y Rescate Matemático.' : '.') + '</span></dd>';
+  }
+  if (clean.length) {
+    html += '<dt><span class="lang-en">Independent progress</span><span class="lang-es" lang="es">Progreso independiente</span></dt>' +
+      '<dd><span class="lang-en">Solved ' + clean.length + (clean.length === 1 ? ' problem' : ' problems') + ' independently on the first attempt without hints.</span><span class="lang-es" lang="es">Resolvió ' + clean.length + (clean.length === 1 ? ' problema' : ' problemas') + ' de forma independiente en el primer intento y sin pistas.</span></dd>';
+  }
+  html += '</dl>' +
+    '<div class="hw-math-win__actions">' +
+    '<button type="button" class="btn btn-sm btn-outline-primary" data-act="printRefrigeratorSheet"><span aria-hidden="true">🖨️</span> <span class="lang-en">Print Family Summary</span><span class="lang-es" lang="es">Imprimir resumen familiar</span></button>' +
+    '</div>';
+  winHost.innerHTML = html;
 }
 
 function hwMissionBoot() {

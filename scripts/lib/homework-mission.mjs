@@ -177,10 +177,17 @@ export function renderMissionModelHost(config) {
   if (!spec) return "";
   return `
     <section class="hw-mission-model" id="hw_mission_model" aria-labelledby="hw_mm_title" data-mission-model data-family="${esc(spec.family)}" data-config="${esc(JSON.stringify(spec.config))}">
-      <h2 class="hw-mm-title" id="hw_mm_title">${bi("Try it yourself", "Pruébalo tú")}</h2>
+      <div class="hw-mm-head">
+        <span class="hw-mm-badge">${bi("Living Math · Interactive Model", "Matemáticas vivas · Modelo interactivo")}</span>
+        <h2 class="hw-mm-title" id="hw_mm_title">${bi("Try it yourself", "Pruébalo tú")}</h2>
+      </div>
       <p class="hw-mm-lead">${bi(spec.leadEn, spec.leadEs)}</p>
       <div class="hw-mm-stage" data-mission-stage></div>
       <p class="hw-mm-status" role="status" aria-live="polite" data-mission-status></p>
+      <div class="hw-mm-transition">
+        <p class="hw-mm-predict">${bi("Prediction check: Before you move to Your Turn, predict what will happen when you change one value by 1 step, then test your prediction above.", "Comprobación de predicción: Antes de pasar a Tu turno, predice qué pasará cuando cambies un valor en 1 paso y luego pruébalo arriba.")}</p>
+        <button type="button" class="fm-btn fm-btn--primary" ${act("switchHomeworkTab", "check")}>${bi("Ready for Your Turn →", "Listo para Tu turno →")}</button>
+      </div>
     </section>`;
 }
 
@@ -206,8 +213,10 @@ export function renderReflect({ lessonId, next, prereq, question, studio = "" })
         <div id="hw_mission_summary" class="hw-mission-summary" role="status" aria-live="polite"></div>
         <p class="hw-saved-note">${bi("Saved only on this device. Your teacher has not received it.", "Se guarda solo en este dispositivo. Su maestro o maestra no lo ha recibido.")}</p>
       </div>
+      <div class="hw-math-win fp-card" id="hw_math_win" data-math-win hidden></div>
       ${question?.en ? `<aside class="fp-family" aria-label="${esc("Family question")}"><p class="fp-label">${bi("Talk about it (optional)", "Conversen (opcional)")}</p><p>${pairText(question)}</p></aside>` : ""}
       <div class="hw-next-actions fp-actions">
+        <button type="button" class="fm-btn fm-btn--block fm-btn--primary" data-celebrate-mission ${act("openOptionalStop", "apply")}><span aria-hidden="true">🌎</span> <span class="lang-en">Launch Family Math Mission (3-stage challenge)</span><span class="lang-es" lang="es">Iniciar Misión Matemática Familiar (reto de 3 etapas)</span></button>
         <button type="button" class="fm-btn fm-btn--block fm-btn--primary" data-celebrate-photo ${act("openOptionalStop", "photobooth")}><span aria-hidden="true">📸</span> <span class="lang-en">Take your victory photo</span><span class="lang-es" lang="es">Tomen su foto de victoria</span></button>
         <button type="button" class="fm-btn fm-btn--block fm-btn--primary" data-celebrate-games ${act("openOptionalStop", "play")}><span aria-hidden="true">🎮</span> <span class="lang-en">Play a practice game</span><span class="lang-es" lang="es">Jugar un juego de práctica</span></button>
         <button type="button" class="fm-btn fm-btn--block" data-celebrate-challenge ${act("hwStartChallengeRound")}><span aria-hidden="true">⭐</span> <span class="lang-en">Challenge round (deeper problems)</span><span class="lang-es" lang="es">Ronda de reto (problemas más profundos)</span></button>
