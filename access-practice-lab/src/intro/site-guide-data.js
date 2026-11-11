@@ -25,8 +25,12 @@ export const GUIDE = {
     "¿Es su primera vez? Empiecen con los tres pasos de abajo. Elijan quiénes son para ver lo que más les sirve.",
   ),
   forTeacher: P(
-    "Running the PD? Start at the entrance page, then come back here for the rest of the site.",
-    "¿Dirige el desarrollo profesional? Empiece en la página de entrada y vuelva aquí para el resto del sitio.",
+    "New to the site? The teacher start page lets you choose your grades and try one activity in each domain:",
+    "¿Son nuevos en el sitio? En la página de inicio para docentes pueden elegir sus grados y probar una actividad de cada destreza:",
+  ),
+  overview: P(
+    "English practice in four language domains, Listening, Speaking, Reading and Writing, for Kindergarten through Grade 8. No account is needed, and work stays on the device.",
+    "Práctica de inglés en cuatro destrezas, escuchar, hablar, leer y escribir, desde kínder hasta 8.º grado. No se necesita una cuenta, y el trabajo se queda en el dispositivo.",
   ),
 };
 
@@ -44,6 +48,7 @@ export const SECTIONS = [
   },
   {
     id: "speaking",
+    summary: P("Curated speaking activities, each with what students do, how to try it and the help built into the site.", "Actividades de hablar seleccionadas, cada una con lo que hacen los estudiantes, cómo probarla y la ayuda incluida en el sitio."),
     icon: "speaking",
     title: P("Speaking", "Hablar"),
     show: ["teacher", "student", "family"],
@@ -51,6 +56,7 @@ export const SECTIONS = [
   },
   {
     id: "writing",
+    summary: P("Curated writing activities, a worked example from first try to clearer, and a link to every writing activity.", "Actividades de escribir seleccionadas, un ejemplo del primer intento a algo más claro y un enlace a todas las actividades de escribir."),
     icon: "writing",
     title: P("Writing", "Escribir"),
     show: ["teacher", "student", "family"],
@@ -64,6 +70,7 @@ export const SECTIONS = [
   },
   {
     id: "classroom",
+    summary: P("Three routines you can run tomorrow, grouping ideas, and how to share, assign, print and see progress.", "Tres rutinas para usar mañana, ideas para agrupar, y cómo compartir, asignar, imprimir y ver el progreso."),
     icon: "classroom",
     title: P("Use It in Your Classroom", "Úsenlo en el salón de clase"),
     show: ["teacher"],
@@ -76,6 +83,7 @@ export const SECTIONS = [
   },
   {
     id: "around",
+    summary: P("How to get home, find each skill, and move around the site, with screenshots and every area at a glance.", "Cómo volver al inicio, encontrar cada destreza y moverse por el sitio, con capturas de pantalla y todas las áreas de un vistazo."),
     icon: "pin",
     title: P("Find Your Way Around", "Cómo orientarse en el sitio"),
     show: ["teacher", "student", "family"],

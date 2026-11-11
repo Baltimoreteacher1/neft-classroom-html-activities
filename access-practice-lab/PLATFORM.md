@@ -107,6 +107,16 @@ stored. Opening any help marks the work supported. Help items are written so the
    alias, never contact details, and never audio. Kept recordings expire after 30 days. The teacher roster lives in the
    teacher's browser only (sections, per-student removal, "Remove everything" also clears saved scores, a visible
    warning when storage is nearly full or a save fails).
+   **Second exception, decided by Joel on 2026-11-11 ("you can use the ai chat", "full permission to change site
+   rules"): Mr. Neft, the AI guide** on the adult pages (teacher Start pages and Guided Tour, family page, Site Guide;
+   `src/intro/guide.js`). A question an adult TYPES into the guide is sent, with the page name, tour step, grade choice
+   and language, to this site's own `/api/language-guide` (`functions/api/language-guide.js`), which asks a model
+   (Claude Haiku, else Workers AI, through `functions/_lib/model-call.js`) to answer only from
+   `src/intro/guide-knowledge.js`. Nothing else is sent: no student work, no recordings, no progress, no identifiers;
+   the endpoint stores and logs nothing, and the guide says on screen that answers come from an AI helper and asks
+   people not to type student names. The guide's question buttons answer from authored text with no network call, and
+   with no model available the typed question falls back to the Site Guide search. Students' activity pages never call
+   it.
 4. **Not official.** WIDA scores Speaking and Writing with trained raters and its current rubrics; Listening and
    Reading are machine-scored selected response. WIDA revises its scoring rubrics (Writing changed for 2025–26), so the
    lab's practice rubrics are its own descriptors, organized by the three WIDA language dimensions (Discourse,

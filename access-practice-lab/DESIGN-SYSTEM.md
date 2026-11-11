@@ -110,7 +110,8 @@ chevron, progress bars, the listening bars while audio is playing, the recording
   the view's own `onClick/onChange`, and `tools/access-*e2e*.mjs` before renaming anything.
 - Keep copy that states a rule (practice not official, no scores). Do not add claims of mastery or proficiency.
 - Audio and microphone UI must reflect real state only (no fake meters or recording animations).
-- Student text and recordings never leave the device; do not add network calls.
+- Student text and recordings never leave the device; do not add network calls. The one adult-page exception is
+  Mr. Neft, the AI guide (`PLATFORM.md`, rule 3): only a question an adult types goes to `/api/language-guide`.
 
 ## Checking your work
 

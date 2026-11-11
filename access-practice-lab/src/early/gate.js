@@ -27,6 +27,10 @@ export const EARLY_VIEWS = new Set([
   "search",
   "portfolio",
   "collection",
+  // Pages for adults (teacher start and tour, family page, Site Guide): they show each grade's own activities.
+  "start",
+  "practice-together",
+  "site-guide",
 ]);
 
 /**

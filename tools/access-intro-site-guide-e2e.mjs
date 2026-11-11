@@ -83,6 +83,10 @@ async function fresh(width, height = 900, { lang } = {}) {
     );
   return page;
 }
+/** Opens every folded section the way a reader does: by pressing its Show button. */
+const unfold = async (page) => {
+  for (const b of await page.$$('[data-sg-toggle][aria-expanded="false"]')) await b.click();
+};
 const go = async (page, path) => {
   await page.goto(`${base}${LAB}${path}`, { waitUntil: "networkidle" });
   await page.waitForSelector(".sg-page");
@@ -136,7 +140,7 @@ await check(
     await d.waitForSelector(".sg-page");
     assert.equal(await d.locator("[data-sg-audience=teacher][aria-pressed=true]").count(), 1);
     assert.ok(await d.locator("#sg-classroom").count());
-    assert.match(await d.locator(".sg-pd").innerText(), /Running the PD\? Start at/);
+    assert.match(await d.locator(".sg-pd").innerText(), /New to the site\? The teacher start page/);
     await d.click("[data-sg-audience=family]");
     await d.waitForSelector("#sg-home");
     assert.equal(await d.locator("#sg-classroom").count(), 0);
@@ -225,6 +229,11 @@ await check(
     await go(d, "/site-guide");
     await d.click("[data-sg-audience=student]");
     await d.waitForSelector("#sg-more");
+    // Long sections start folded behind a summary; Show opens them and the button says so.
+    assert.equal(await d.locator("#sg-speaking-body").isHidden(), true);
+    await d.click('[data-sg-toggle="speaking"]');
+    assert.equal(await d.getAttribute('[data-sg-toggle="speaking"]', "aria-expanded"), "true");
+    assert.match(await d.locator('[data-sg-toggle="speaking"]').innerText(), /Hide this section/);
     const card = d.locator("#sg-card-hallway");
     assert.match(
       await card.innerText(),
@@ -357,12 +366,18 @@ await check(
         search: hidden(".sg-search"),
         audience: hidden(".sg-audience"),
         closed,
+        folded: [...document.querySelectorAll(".sg-body")].filter(
+          (b) => b.hidden || getComputedStyle(b).display === "none",
+        ).length,
+        overview: hidden(".sg-overview"),
         after: getComputedStyle(link, "::after").content,
         top: getComputedStyle(document.querySelector(".lab-top")).display,
       };
     });
     assert.equal(r.side && r.search && r.audience, true);
     assert.equal(r.closed, 0, "details open for print");
+    assert.equal(r.folded, 0, "folded sections open for print");
+    assert.equal(r.overview, true, "the grade picker summary is not printed");
     assert.match(r.after, /thelanguagepage\.com\/access-practice-lab\//);
     assert.equal(r.top, "none");
     await d.evaluate(() => window.dispatchEvent(new Event("afterprint")));
@@ -437,6 +452,7 @@ for (const width of [768, 375]) {
   );
   await check(`${width}px: cards, previews and the screenshots fit the screen`, async () => {
     await go(m, "/site-guide?for=teacher");
+    await unfold(m);
     const fits = await m.evaluate(() =>
       [
         ...document.querySelectorAll(

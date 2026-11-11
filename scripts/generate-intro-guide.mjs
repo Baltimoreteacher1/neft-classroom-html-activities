@@ -10,7 +10,8 @@
  *   qr-start.svg / qr-start.png         the ONE QR code, for ENTRANCE.url (shared/qr/qr-code.mjs; decoder-verified in the tests)
  *   src/intro/qr-start-svg.js           the same SVG as an importable string for the on-screen presenter view
  *   docs/languageos/pd-presenter-notes.md   the presenter script as plain Markdown
- * Output is deterministic: no timestamps appear in visible text. Run:  npm run generate:intro-guide  (--only=guide|backup|activities|directory|notes|qr)
+ * Output is deterministic: no timestamps appear in visible text. Run:  npm run generate:intro-guide  (--only=guide|backup|activities|directory|notes|qr|family)
+ *   family-handout[-es].pdf / .docx, qr-family.svg / .png   the one-page family handout for /practice-together (--only=family)
  */
 import { mkdirSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
@@ -119,5 +120,36 @@ if (want("notes")) {
   const mdPath = join(ROOT, "docs", "languageos", "pd-presenter-notes.md");
   mkdirSync(dirname(mdPath), { recursive: true });
   writeFileSync(mdPath, notesMarkdown());
+}
+if (want("family")) {
+  // The family handout (one Letter page, EN + ES) and its own QR for /practice-together.
+  const { FAMILY_URL, HANDOUT_DOC_LANG, HANDOUT_LANGS, familyHandoutBody, familyHandoutModel } =
+    await import("./lib/intro-family-handout.mjs");
+  const { buildFamilyHandoutDocx } = await import("./lib/intro-family-docx.mjs");
+  const qr = qrSvg(FAMILY_URL, { px: 144 });
+  writeFileSync(join(GUIDES, "qr-family.svg"), `${qr}\n`);
+  writeFileSync(
+    join(GUIDES, "qr-family.png"),
+    new Resvg(qr, { fitTo: { mode: "width", value: 576 } }).render().asPng(),
+  );
+  for (const lang of HANDOUT_LANGS) {
+    const model = familyHandoutModel(lang);
+    const base = lang === "en" ? "family-handout" : `family-handout-${lang}`;
+    await renderPdfs(
+      [
+        {
+          out: join(GUIDES, `${base}.pdf`),
+          doc: printDocument({
+            title: `${model.siteName}: ${model.title}`,
+            lang,
+            bodyHtml: toHtml(familyHandoutBody(model)),
+            cssFiles: ["ds.css", "intro-family-handout.css"],
+          }),
+        },
+      ],
+      { lang: HANDOUT_DOC_LANG[lang] },
+    );
+    writeFileSync(join(GUIDES, `${base}.docx`), await buildFamilyHandoutDocx(model, GUIDES));
+  }
 }
 console.log("generate-intro-guide: wrote files in access-practice-lab/guides/");

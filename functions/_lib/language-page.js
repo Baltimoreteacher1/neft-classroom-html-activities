@@ -42,6 +42,8 @@ const LAB_EXACT = new Set([
   "/family-app/home-link.js",
   "/api/signal",
   "/api/signal/",
+  // Mr. Neft, the guide on the teacher and family pages (functions/api/language-guide.js).
+  "/api/language-guide",
   "/graphic-novels",
 ]);
 /** The Teacher Hub, minus the two surfaces that are not language practice. */

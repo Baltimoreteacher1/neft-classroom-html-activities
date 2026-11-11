@@ -1519,3 +1519,269 @@ body.has-intro-return .lab-footer {
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+/* ── /start overview: grade picker card, domain cards, guide, resources, families (src/intro/start*.js) ── */
+.ov-start {
+  display: grid;
+  gap: 1.1rem;
+  padding: clamp(1rem, 2.4vw, 1.5rem);
+  margin-inline: clamp(0.5rem, 2vw, 1.5rem);
+  border-radius: var(--r-xl);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-lift);
+}
+.ov-start.ts-lift {
+  padding-inline: clamp(1rem, 2.4vw, 1.5rem);
+}
+.ov-start .in-choices {
+  margin: 0;
+}
+.ov-head {
+  display: grid;
+  gap: 0.35rem;
+  max-width: 48rem;
+}
+.ov-head > * {
+  margin: 0;
+}
+.ov-head h2 {
+  font: 600 clamp(1.5rem, 1.1rem + 1.4vw, 2.1rem) / 1.15 var(--font-display);
+}
+.ov-section {
+  padding-top: clamp(0.5rem, 2vw, 1.25rem);
+}
+.ov-card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0.3rem 0 0;
+}
+.tb-domain .ov-card-actions .btn {
+  margin-top: 0;
+}
+.ov-guide {
+  max-width: 56rem;
+}
+.ov-cancan {
+  align-items: start;
+}
+.ov-can {
+  display: grid;
+  gap: 0.6rem;
+  padding: 1rem 1.1rem;
+  border-radius: var(--r-lg);
+  border: 1px solid var(--line);
+  background: var(--sage-200, var(--surface-2));
+}
+.ov-can.ov-cannot {
+  background: var(--copper-200, var(--surface-2));
+}
+.ov-can h3 {
+  font-size: 1.05rem;
+}
+/* Resources: a quiet library list, one row per item, format badges and actions on the right. */
+.ov-res-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--line);
+}
+.ov-res {
+  display: grid;
+  grid-template-columns: 2.75rem minmax(0, 1fr) auto;
+  gap: 0.4rem 1rem;
+  align-items: center;
+  padding: 1rem 0.25rem;
+  border-bottom: 1px solid var(--line);
+}
+.ov-res-ic {
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: var(--radius);
+  background: var(--pearl-blue, var(--surface-2));
+  color: var(--brand-ink, var(--brand));
+}
+.ov-res-body {
+  display: grid;
+  gap: 0.25rem;
+}
+.ov-res-body > * {
+  margin: 0;
+}
+.ov-res-body h3 {
+  font-size: 1.1rem;
+}
+.ov-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+.ov-badge {
+  padding: 0.1rem 0.55rem;
+  border-radius: 999px;
+  border: 1px solid var(--line-strong);
+  color: var(--ink-2);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+.ov-res-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.4rem;
+  margin: 0;
+}
+/* Families: one warm card in the speaking room's colours, the share panel on the right. */
+.ov-fam-card {
+  --room: var(--speaking);
+  --room-soft: color-mix(in srgb, var(--rose-200, var(--speaking-soft)) 45%, var(--surface));
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+  gap: clamp(1rem, 3vw, 2rem);
+  padding: clamp(1.1rem, 3vw, 2rem);
+  border-radius: var(--r-xl);
+  background: var(--room-soft);
+  border: 1px solid color-mix(in srgb, var(--room) 28%, transparent);
+}
+.ov-fam-intro,
+.ov-fam-share {
+  display: grid;
+  gap: 0.7rem;
+  align-content: start;
+}
+.ov-fam-intro > *,
+.ov-fam-share > * {
+  margin: 0;
+}
+.ov-fam-intro h2 {
+  font: 600 clamp(1.5rem, 1.1rem + 1.4vw, 2.1rem) / 1.15 var(--font-display);
+}
+.ov-gets {
+  list-style: none;
+  margin: 0.3rem 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.8rem 1rem;
+}
+.ov-gets li {
+  display: grid;
+  grid-template-columns: 2.25rem minmax(0, 1fr);
+  gap: 0.6rem;
+  align-items: start;
+}
+.ov-gets .in-ic {
+  width: 2.25rem;
+  height: 2.25rem;
+  background: var(--room);
+  color: #fff;
+}
+.ov-gets strong {
+  display: block;
+}
+.ov-fam-share {
+  padding: 1.1rem;
+  border-radius: var(--r-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+.ov-fam-for {
+  display: grid;
+  gap: 0.1rem;
+}
+.ov-fam-for strong {
+  font: 600 1.25rem/1.2 var(--font-display);
+}
+.ov-fam-url code {
+  display: block;
+  padding: 0.5rem 0.7rem;
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  font-size: 0.9rem;
+  overflow-wrap: anywhere;
+}
+.ov-fam-files h3 {
+  margin: 0 0 0.3rem;
+  font-size: 1rem;
+}
+.ov-fam-files ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.ov-fam-files li {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  border-top: 1px solid var(--line);
+}
+.ov-fam-files li span {
+  flex: 1;
+}
+.ov-fam-files a {
+  display: inline-flex;
+  align-items: center;
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  font-weight: 700;
+  color: var(--brand-ink, var(--brand));
+}
+.ov-more h3 {
+  margin: 0;
+}
+.ov-more > h3,
+.ov-lesson-text h3 {
+  font: 600 1.4rem/1.2 var(--font-display);
+}
+.ov-more > h3 {
+  margin-top: 0.75rem;
+}
+.ov-routine h4 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+.ov-explore {
+  margin: 0;
+}
+@media (max-width: 860px) {
+  .ov-fam-card {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@media (max-width: 640px) {
+  .ov-start {
+    margin-inline: 0;
+  }
+  .ov-res {
+    grid-template-columns: 2.75rem minmax(0, 1fr);
+  }
+  .ov-res-actions {
+    grid-column: 1 / -1;
+    justify-content: flex-start;
+  }
+  .ov-gets {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* ── Teacher nav on phones: one scrollable row with faded edges, never overlapping labels ── */
+.ts-nav li {
+  flex: none;
+}
+@media (max-width: 640px) {
+  .ts-nav ul {
+    scroll-snap-type: x proximity;
+    padding-inline-end: 1.5rem;
+    mask-image: linear-gradient(90deg, #000 85%, transparent);
+  }
+  .ts-nav li {
+    scroll-snap-align: start;
+  }
+  .ts-nav a {
+    padding-inline: 0.75rem;
+    border: 1px solid rgb(255 255 255 / 18%);
+  }
+}

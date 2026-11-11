@@ -1,20 +1,47 @@
-// Practice Together (/practice-together): the family starting page. Two choices (Let's Talk, Let's Write), each with
-// one short description, three steps, one labeled example and a large Start button, then quick answers, a language
-// note, and two closed sections (Need help?, More practice). All copy lives in family-data.js as { en, es } pairs.
-// The page is fully localized (docLang "es" in Español), so English names and examples carry lang="en".
+// Practice Together (/practice-together): the family starting page. First screen: a warm welcome from Mr. Neft (the
+// guide panel), the language switch, the grade choice (a teacher's ?grades= link opens the right grade; the family's
+// own choice is remembered on this device) and ONE next action, "Let's begin". Then the tonight flow (choose, practice
+// 5–10 minutes, celebrate), the two choices (Let's Talk = Speaking, Let's Write = Writing, each with three steps, one
+// labeled example and a large Start button), quick answers, a language note, two closed sections and a quiet link to
+// the printable one-page guide. All copy lives in family-data.js as { en, es } pairs. The page is fully localized
+// (docLang "es" in Español), so English names and examples carry lang="en".
 import { i18nFor, langSwitchHTML } from "../i18n.js";
 import { disclosure, trackDisclosures } from "../studio-ui.js";
-import { BASE, html, icon } from "../util.js";
-import { FAMILY, FAMILY_BANDS, FAMILY_GRADE, FAMILY_MORE, familyActivitiesFor } from "./family-data.js";
-import { loadIntro, updateIntro } from "./state.js";
+import { ART, BASE, html, icon } from "../util.js";
+import {
+  FAMILY,
+  FAMILY_BANDS,
+  FAMILY_GRADE,
+  FAMILY_HANDOUT,
+  FAMILY_MORE,
+  FAMILY_WELCOME,
+  TONIGHT,
+  familyActivitiesFor,
+  familyBandFromGrades,
+} from "./family-data.js";
+import { bindGuide, guideHTML } from "./guide.js";
 import { withReturn } from "./return-bar.js";
+import { loadIntro, updateIntro } from "./state.js";
+
+const GUIDE_CHIPS = ["what", "account", "mic", "saved", "sound", "language"];
+/** Domain colour and studio picture for each card: Let's Talk is Speaking, Let's Write is Writing. */
+const DOMAIN = {
+  talk: { cls: "d-speaking", art: "domain-speaking.svg", icon: "speaking" },
+  write: { cls: "d-writing", art: "domain-writing.svg", icon: "writing" },
+  early: { cls: "d-reading", art: "domain-reading.svg", icon: "reading" },
+};
 
 const en = (text) => html`<span lang="en">${text}</span>`;
 const startHref = (route, band) =>
   withReturn(`${BASE}${route}${route.includes("?") ? "&" : "?"}grades=${band}`, "together");
 
-/** The grade the family chose on this device, else the lab's current band (K–3 bands map to K–2). */
+/**
+ * The grade to show: a teacher's shared link (?grades=) first, then the family's own choice on this device, else the
+ * lab's current band (K–3 bands map to K–2).
+ */
 function chosenBand(ctx) {
+  const linked = familyBandFromGrades(ctx.route?.grades);
+  if (linked) return linked;
   const saved = loadIntro().family?.band;
   if (FAMILY_BANDS.some((b) => b.id === saved)) return saved;
   if (ctx.band === "3-5" || ctx.band === "6-8") return ctx.band;
@@ -32,11 +59,21 @@ function bandHTML(I, band) {
 
 function earlyHTML(I) {
   const e = FAMILY_GRADE.early;
-  return html`<article class="tg-card is-early" aria-labelledby="tgEarly">
+  return html`<article class="tg-card is-early ${DOMAIN.early.cls}" aria-labelledby="tgEarly">
+    ${artHTML(I, "early")}
     <header class="tg-card-head"><span class="tg-ic" aria-hidden="true">${icon("reading")}</span><div><h3 id="tgEarly">${I.TO(e.title)}</h3></div></header>
     <p class="tg-desc">${I.TO(e.text)}</p>
     <a class="btn btn-primary tg-start" href="${withReturn(`${BASE}${e.route}`, "together")}">${I.TO(e.cta)}${icon("arrow-right")}</a>
   </article>`;
+}
+
+/** The studio picture with the domain word on it (colour is never the only signal). */
+function artHTML(I, id) {
+  const d = DOMAIN[id];
+  return html`<div class="tg-art">
+    <img src="${ART}/${d.art}" alt="" width="480" height="360" loading="lazy" decoding="async" />
+    <span class="tg-tag">${icon(d.icon)}${I.TO(FAMILY_WELCOME.tags[id])}</span>
+  </div>`;
 }
 
 function exampleHTML(I, a) {
@@ -59,7 +96,8 @@ function exampleHTML(I, a) {
 }
 
 function cardHTML(I, a, band) {
-  return html`<article class="tg-card is-${a.id}" aria-labelledby="tgCard-${a.id}">
+  return html`<article class="tg-card is-${a.id} ${DOMAIN[a.id].cls}" aria-labelledby="tgCard-${a.id}">
+    ${artHTML(I, a.id)}
     <header class="tg-card-head">
       <span class="tg-ic" aria-hidden="true">${icon(a.icon)}</span>
       <div>
@@ -80,6 +118,49 @@ function cardHTML(I, a, band) {
       ${icon("arrow-right")}</a
     >
   </article>`;
+}
+
+function tonightHTML(I) {
+  return html`<section class="tg-tonight" aria-labelledby="tgTonight">
+    <h2 id="tgTonight">${I.TO(FAMILY_WELCOME.tonightHeading)}</h2>
+    <ol class="tg-flow">
+      ${TONIGHT.map(
+        (t) =>
+          html`<li class="tg-flow-${t.id}">
+            <span class="tg-flow-ic" aria-hidden="true">${icon(t.icon)}</span>
+            <strong>${I.TO(t.head)}</strong><span>${I.TO(t.body)}</span>
+          </li>`,
+      )}
+    </ol>
+  </section>`;
+}
+
+/** Mr. Neft welcomes the family; Spanish mode gets the Spanish panel, English and both-languages the English one. */
+function guidePanel(I, band) {
+  const lang = I.mode === "es" ? "es" : "en";
+  const pick = (o) => (lang === "es" ? o.es : o.en);
+  return guideHTML({
+    say: `${pick(FAMILY_WELCOME.hello)} ${pick(FAMILY.welcome)}`,
+    chips: GUIDE_CHIPS,
+    context: { page: "family", pick: band },
+    lang,
+  });
+}
+
+/** "Print a one-page guide": the file in the page's language; both files in English + Español. */
+function printHTML(I) {
+  const langs = I.mode === "bi" ? ["en", "es"] : [I.mode === "es" ? "es" : "en"];
+  return html`<p class="tg-print">
+    ${langs.map((l) => {
+      const f = FAMILY_HANDOUT[l];
+      const label = FAMILY_WELCOME.print[l];
+      const word = FAMILY_WELCOME.printWord[l];
+      return html`<span lang="${l}">
+        <a href="${f.pdf}" target="_blank" rel="noopener">${icon("print")}${label} (PDF)</a>
+        <a href="${f.docx}" download>${word}</a>
+      </span>`;
+    })}
+  </p>`;
 }
 
 function answersHTML(I) {
@@ -148,15 +229,21 @@ export async function render(ctx) {
     title,
     html: html`<article class="tg-page" aria-labelledby="tgTitle">
       <header class="tg-hero">
-        <p class="eyebrow">${I.TO(FAMILY.eyebrow)}</p>
-        <h1 id="tgTitle" tabindex="-1">${I.TO(FAMILY.title)}</h1>
-        <p class="lead">${I.TO(FAMILY.lead)}</p>
-        <div class="tg-lang">${langSwitchHTML(I.mode, { large: true, idPrefix: "tgLang" })}</div>
-        <p class="tg-welcome">${I.TO(FAMILY.welcome)}</p>
+        <div class="tg-hero-main">
+          <p class="eyebrow">${I.TO(FAMILY.eyebrow)}</p>
+          <h1 id="tgTitle" tabindex="-1">${I.TO(FAMILY.title)}</h1>
+          <p class="lead">${I.TO(FAMILY.lead)}</p>
+          <div class="tg-lang">${langSwitchHTML(I.mode, { large: true, idPrefix: "tgLang" })}</div>
+          ${bandHTML(I, band)}
+          <button type="button" class="btn btn-primary btn-big tg-go" data-tg-go>
+            ${I.TO(FAMILY_WELCOME.go)}${icon("chevron-down")}
+          </button>
+        </div>
+        <div class="tg-hero-guide">${guidePanel(I, band)}</div>
       </header>
+      ${tonightHTML(I)}
       <section class="tg-choices" aria-labelledby="tgChoose">
-        <h2 id="tgChoose">${I.TO(FAMILY.chooseHeading)}</h2>
-        ${bandHTML(I, band)}
+        <h2 id="tgChoose" tabindex="-1">${I.TO(FAMILY.chooseHeading)}</h2>
         <div class="tg-cards${band === "k-2" ? " is-single" : ""}">${band === "k-2" ? earlyHTML(I) : familyActivitiesFor(band).map((a) => cardHTML(I, a, band))}</div>
       </section>
       ${answersHTML(I)}
@@ -168,6 +255,7 @@ export async function render(ctx) {
       <section class="tg-extras">${helpHTML(I)}${moreHTML(I)}</section>
       <footer class="tg-foot">
         <p class="fine">${I.TO(FAMILY.privacy)}</p>
+        ${printHTML(I)}
         <p class="tg-links">
           <a href="${BASE}${FAMILY.links.siteGuide.route}">${I.TO(FAMILY.links.siteGuide.label)}</a>
           <a href="${BASE}${FAMILY.links.familyCorner.route}"
@@ -179,13 +267,35 @@ export async function render(ctx) {
   };
 }
 
+/** "Let's begin": bring the two choices into view and put focus on their heading. */
+function goToChoices() {
+  const target = document.getElementById("tgChoose");
+  if (!target) return;
+  const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  target.scrollIntoView({ behavior: still ? "auto" : "smooth", block: "start" });
+  target.focus({ preventScroll: true });
+}
+
 export function onClick(e, ctx) {
+  if (e.target.closest?.("[data-tg-go]")) {
+    goToChoices();
+    return true;
+  }
   const b = e.target.closest?.("[data-tg-band]");
   if (!b) return false;
   updateIntro("family", (f) => ({ ...f, band: b.dataset.tgBand }));
+  // The family's own choice now wins over a teacher's link, so the link's ?grades= leaves the address.
+  const url = new URL(location.href);
+  if (url.searchParams.has("grades")) {
+    url.searchParams.delete("grades");
+    history.replaceState(history.state, "", url.pathname + url.search + url.hash);
+  }
   ctx.rerender();
   return true;
 }
 
-export const mount = (root) => trackDisclosures(root);
+export function mount(root) {
+  trackDisclosures(root);
+  bindGuide();
+}
 export const unmount = () => {};

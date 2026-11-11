@@ -1,5 +1,5 @@
 // The teacher frame shared by every /start page: one midnight band with the section nav, the page title and an
-// optional aside, so the overview, tour, exploration, lesson, quick guide and presenter view read as one product.
+// optional aside, so the overview, tour, exploration, lesson and quick guide read as one product.
 // The tour and exploration add a two-column layout with a sticky step rail (stepRailHTML) and a sticky action bar.
 import { html, icon } from "../util.js";
 import { ROUTES } from "./data.js";
@@ -11,7 +11,6 @@ export const TEACHER_NAV = [
   { id: "activities", label: "Activity Guide", route: ROUTES.activities, icon: "library" },
   { id: "lesson", label: "Lesson", route: ROUTES.lesson, icon: "conversation" },
   { id: "guide", label: "Quick Guide", route: ROUTES.guide, icon: "print" },
-  { id: "present", label: "Presenter", route: ROUTES.present, icon: "launch" },
 ];
 
 const BASE = "/access-practice-lab";

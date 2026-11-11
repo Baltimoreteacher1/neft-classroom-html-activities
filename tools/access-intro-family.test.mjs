@@ -8,13 +8,20 @@ import {
   FACTS,
   SUPPLEMENTAL,
 } from "../access-practice-lab/src/intro/data.js";
+import { render } from "../access-practice-lab/src/intro/family.js";
 import {
   FAMILY,
   FAMILY_ACTIVITIES,
+  FAMILY_HANDOUT,
   FAMILY_MORE,
+  FAMILY_WELCOME,
+  familyBandFromGrades,
+  HANDOUT_COPY,
   practiceAtHome,
+  TONIGHT,
 } from "../access-practice-lab/src/intro/family-data.js";
 import { RETURNS, withReturn } from "../access-practice-lab/src/intro/return-bar.js";
+import { toHtml } from "../access-practice-lab/src/util.js";
 
 /** Every object that has an `en` or `es` key, with its path. */
 function pairs(node, path = "", out = []) {
@@ -25,7 +32,15 @@ function pairs(node, path = "", out = []) {
   }
   return out;
 }
-const ALL = pairs({ FAMILY, FAMILY_ACTIVITIES, FAMILY_MORE, practiceAtHome });
+const ALL = pairs({
+  FAMILY,
+  FAMILY_ACTIVITIES,
+  FAMILY_MORE,
+  practiceAtHome,
+  TONIGHT,
+  FAMILY_WELCOME,
+  HANDOUT_COPY,
+});
 
 test("the walk finds the page copy", () => {
   assert.ok(ALL.length > 60, `expected many pairs, found ${ALL.length}`);
@@ -144,7 +159,14 @@ test("withReturn keeps the query and adds the together hint", () => {
 
 test("copy never claims what the lab does not do", () => {
   const { spanishNote, ...page } = FAMILY; // the machine-assisted note names "translator" on purpose
-  const text = JSON.stringify([page, FAMILY_ACTIVITIES, FAMILY_MORE]).toLowerCase();
+  const text = JSON.stringify([
+    page,
+    FAMILY_ACTIVITIES,
+    FAMILY_MORE,
+    TONIGHT,
+    FAMILY_WELCOME,
+    HANDOUT_COPY,
+  ]).toLowerCase();
   for (const bad of [
     "translat",
     "wida level",
@@ -154,7 +176,86 @@ test("copy never claims what the lab does not do", () => {
     "streak",
     "certificate",
     "automatic",
+    "timer",
+    "free",
   ])
     assert.ok(!text.includes(bad), `claims "${bad}"`);
   assert.ok(spanishNote.es.includes("máquina"));
+});
+
+// ── grade from a teacher's link, the tonight flow, the guide panel, the handout link ───────────────────────────────
+test("?grades= maps to the family grade: K, 1, 2-3 → k-2; 4-5, 3-5 → 3-5; 6-8 → 6-8; anything else → none", () => {
+  const want = {
+    K: "k-2",
+    k: "k-2",
+    1: "k-2",
+    "2-3": "k-2",
+    "4-5": "3-5",
+    "3-5": "3-5",
+    "6-8": "6-8",
+  };
+  for (const [g, band] of Object.entries(want)) assert.equal(familyBandFromGrades(g), band, g);
+  for (const g of ["", null, undefined, "9-12", "all", "3"])
+    assert.equal(familyBandFromGrades(g), "", String(g));
+});
+
+test("tonight is three steps: choose, practice, celebrate", () => {
+  assert.deepEqual(
+    TONIGHT.map((t) => t.id),
+    ["choose", "practice", "celebrate"],
+  );
+  assert.match(TONIGHT[1].body.en, /5 to 10 minutes/);
+});
+
+test("the handout export names EN and ES PDF and Word files in /guides", () => {
+  for (const lang of ["en", "es"])
+    for (const kind of ["pdf", "docx"])
+      assert.match(
+        FAMILY_HANDOUT[lang][kind],
+        new RegExp(
+          `^/access-practice-lab/guides/family-handout${lang === "es" ? "-es" : ""}\\.${kind}$`,
+        ),
+      );
+});
+
+const page = async (prefs, grades = "", band = "6-8") =>
+  toHtml((await render({ prefs, route: { view: "practice-together", grades }, band })).html);
+const EN = { lang: "en", langChosen: true };
+const ES = { lang: "es", langChosen: true };
+const BI = { lang: "bi", langChosen: true };
+const pressed = (h) => /data-tg-band="([^"]+)" aria-pressed="true"/.exec(h)?.[1];
+
+test("a teacher's ?grades= link opens that grade", async () => {
+  assert.equal(pressed(await page(EN, "4-5")), "3-5");
+  assert.equal(pressed(await page(EN, "K")), "k-2");
+  assert.equal(pressed(await page(EN, "6-8", "3-5")), "6-8");
+  assert.match(await page(EN, "4-5"), /class-garden/, "grades 3–5 cards");
+  assert.match(await page(EN, "2-3"), /\/early\?grades=K/, "K–2 card");
+  assert.equal(pressed(await page(EN, "", "6-8")), "6-8", "no link: the lab's band");
+});
+
+test("Mr. Neft welcomes the family, in Spanish on the Spanish page and in English otherwise", async () => {
+  const en = await page(EN);
+  assert.match(en, /data-pg-page="family"/);
+  assert.match(en, /data-pg-lang="en"/);
+  assert.match(en, /Welcome! I am Mr. Neft\./);
+  for (const id of ["what", "account", "mic", "saved", "sound", "language"])
+    assert.match(en, new RegExp(`data-pg-quick="${id}"`), id);
+  assert.match(await page(ES), /data-pg-lang="es"/);
+  assert.match(await page(BI), /data-pg-lang="en"/);
+});
+
+test("one next action, the tonight flow, domain colours and art, and the print link by language", async () => {
+  const en = await page(EN);
+  assert.equal((en.match(/data-tg-go/g) || []).length, 1);
+  assert.match(en, /class="tg-tonight"/);
+  assert.match(en, /tg-card is-talk d-speaking/);
+  assert.match(en, /tg-card is-write d-writing/);
+  assert.match(en, /pictures\/ds\/domain-speaking\.svg/);
+  assert.match(en, /pictures\/ds\/domain-writing\.svg/);
+  assert.ok(en.includes(FAMILY_HANDOUT.en.pdf) && !en.includes(FAMILY_HANDOUT.es.pdf));
+  const es = await page(ES);
+  assert.ok(es.includes(FAMILY_HANDOUT.es.pdf) && !es.includes(FAMILY_HANDOUT.en.pdf));
+  const bi = await page(BI);
+  assert.ok(bi.includes(FAMILY_HANDOUT.en.pdf) && bi.includes(FAMILY_HANDOUT.es.pdf));
 });

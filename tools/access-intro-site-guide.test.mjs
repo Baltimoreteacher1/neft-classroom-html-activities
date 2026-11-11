@@ -215,13 +215,16 @@ test("every audience, in English and Spanish, renders valid structure", async ()
       assert.equal(new Set(ids).size, ids.length, `${label}: duplicate ids`);
       assert.equal(doc.querySelectorAll("button[data-sg-audience]").length, 3);
       assert.equal(
-        doc.querySelectorAll("button[aria-pressed=true]").length,
+        doc.querySelectorAll("button[data-sg-audience][aria-pressed=true]").length,
         audience ? 1 : 0,
         label,
       );
-      // images carry real alt text
+      // images carry real alt text; the domain cards' studio pictures are decorative (alt="")
       for (const img of doc.querySelectorAll("img"))
-        assert.ok(img.alt.length > 30, `${label}: alt`);
+        assert.ok(
+          img.alt.length > 30 || (img.closest(".tb-domain") && img.alt === ""),
+          `${label}: alt`,
+        );
       // every link is a lab link, the teacher entry, or a handout
       for (const a of doc.querySelectorAll("a[href]")) {
         const href = a.getAttribute("href");
@@ -273,7 +276,7 @@ test("links that open an activity carry the return hint; section and start links
   assert.equal(
     all.filter((h) => h === entrance).length,
     1,
-    "the PD entrance is linked once for teachers",
+    "the teacher start page is linked once for teachers",
   );
 });
 
@@ -342,4 +345,49 @@ test("the guide invents no feature: claims are limited to what was verified", as
   assert.match(text, /No account is needed/);
   assert.match(text, /never required/);
   assert.match(text, /Teacher Hub/);
+});
+
+test("teachers and new readers get a grade-aware summary; long sections fold and print open", async () => {
+  for (const audience of ["", "teacher"]) {
+    const { doc } = await render(audience);
+    const ov = doc.querySelector(".sg-overview");
+    assert.ok(ov, `${audience || "general"}: summary`);
+    assert.equal(ov.querySelectorAll("[data-tb-pick]").length, 5, "five grade buttons");
+    assert.equal(ov.querySelectorAll(".tb-domain").length, 4, "four domain cards");
+    for (const a of ov.querySelectorAll(".tb-domain a[href]"))
+      assert.match(a.getAttribute("href"), /[?&]grades=6-8/, a.getAttribute("href"));
+    assert.ok(
+      ov.querySelector('a[href="/access-practice-lab/start#ov-resources"]'),
+      "resources entry point",
+    );
+  }
+  for (const audience of ["family", "student"])
+    assert.equal((await render(audience)).doc.querySelector(".sg-overview"), null, audience);
+  const { doc } = await render("teacher");
+  for (const id of ["speaking", "writing", "classroom", "around"]) {
+    const btn = doc.querySelector(`[data-sg-toggle="${id}"]`);
+    assert.equal(btn.getAttribute("aria-expanded"), "false", id);
+    assert.equal(btn.getAttribute("aria-controls"), `sg-${id}-body`);
+    assert.ok(doc.querySelector(`#sg-${id}-body`).hasAttribute("hidden"), id);
+  }
+  // A link to one section opens it.
+  const one = (await render("teacher", "en", "classroom")).doc;
+  assert.ok(!one.querySelector("#sg-classroom-body").hasAttribute("hidden"));
+  assert.match(
+    read("access-practice-lab/site-guide.css"),
+    /@media print \{\s*\.sg-body\[hidden\] \{\s*display: block;/,
+  );
+});
+
+test("the guide never links to the presenter view or presenter notes", async () => {
+  for (const audience of AUDIENCES) {
+    const { doc } = await render(audience);
+    for (const a of doc.querySelectorAll("a[href]"))
+      assert.doesNotMatch(
+        a.getAttribute("href"),
+        /\/start\/present|presenter-notes/,
+        a.getAttribute("href"),
+      );
+    assert.doesNotMatch(doc.body.textContent, /Running the PD|Presenter notes/);
+  }
 });

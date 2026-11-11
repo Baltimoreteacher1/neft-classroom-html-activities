@@ -1,0 +1,800 @@
+/* intro-tour.css — the grade-band Guided Tour, the shared grade picker and domain cards (tb-*), Mr. Neft the guide
+   (pg-*), and the frame mode that shows only the activity inside the tour's live panel (html.is-framed).
+   Tokens come from ds.css; domain colour comes from the d-* classes (--room, --room-ink, --room-soft). */
+
+/* ── Frame mode: the lab inside the tour's live panel ── */
+html.is-framed .lab-top,
+html.is-framed .lab-footer,
+html.is-framed .lang-banner,
+html.is-framed .skip-link,
+html.is-framed #introReturn,
+html.is-framed #introNext,
+html.is-framed #nsr-launcher,
+html.is-framed .tour-dock {
+  display: none !important; /* frame mode hides chrome the activity does not need */
+}
+html.is-framed body {
+  padding: 0 !important; /* the return bar and dock reserve space the frame does not show */
+}
+html.is-framed .lab-main {
+  padding-block: 0.75rem 1.5rem;
+}
+
+/* ── Grade picker ── */
+.tb-picker {
+  display: grid;
+  gap: 0.6rem;
+}
+.tb-picker-label {
+  margin: 0;
+  font: 600 1.35rem/1.2 var(--font-display);
+  color: var(--ink);
+}
+.tb-picker-btns {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 0.5rem;
+}
+.tb-pick {
+  display: grid;
+  justify-items: center;
+  gap: 0.15rem;
+  min-height: 4.5rem;
+  padding: 0.55rem 0.4rem;
+  border: 2px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+  cursor: pointer;
+  transition:
+    transform var(--dur-1) var(--ease-press),
+    border-color var(--dur-2) var(--ease-out),
+    background-color var(--dur-2) var(--ease-out);
+}
+.tb-pick:hover {
+  border-color: var(--brand);
+}
+.tb-pick:active {
+  transform: translateY(1px);
+}
+.tb-pick-short {
+  font: 600 1.6rem/1 var(--font-display);
+}
+.tb-pick-name {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--ink-2);
+}
+.tb-pick[aria-pressed="true"] {
+  background: var(--brand);
+  border-color: var(--brand);
+  color: var(--on-brand);
+  box-shadow: var(--shadow-lift);
+}
+.tb-pick[aria-pressed="true"] .tb-pick-name {
+  color: var(--on-brand);
+}
+.tb-picker-hint {
+  margin: 0;
+}
+
+/* ── The four domain cards ── */
+.tb-domains {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.9rem;
+}
+.tb-domain {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  border-radius: var(--r-lg);
+  border: 1px solid color-mix(in srgb, var(--room) 28%, transparent);
+  background: var(--surface);
+  overflow: hidden;
+  box-shadow: var(--shadow-card, var(--shadow));
+}
+.tb-domain img {
+  display: block;
+  width: 100%;
+  height: 7.5rem;
+  object-fit: contain;
+  background: var(--room-soft);
+  border-bottom: 4px solid var(--room);
+  padding: 0.5rem;
+}
+.tb-domain-body {
+  display: grid;
+  align-content: start;
+  gap: 0.45rem;
+  padding: 0.85rem 0.95rem 1rem;
+}
+.tb-domain h3 {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin: 0;
+  font: 700 1rem/1.2 var(--font);
+  color: var(--room-ink);
+}
+.tb-domain .in-ic {
+  width: 2rem;
+  height: 2rem;
+  background: var(--room);
+  color: #fff;
+}
+.tb-domain .in-ic svg {
+  width: 1.1rem;
+  height: 1.1rem;
+}
+.tb-domain p {
+  margin: 0;
+}
+.tb-domain-title {
+  display: grid;
+  gap: 0.1rem;
+}
+.tb-domain-title strong {
+  font: 600 1.15rem/1.2 var(--font-display);
+}
+.tb-domain .btn {
+  justify-self: start;
+  margin-top: 0.2rem;
+}
+@media (max-width: 1100px) {
+  .tb-domains {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 640px) {
+  .tb-picker-btns {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .tb-domains {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .tb-domain {
+    grid-template-columns: 6.5rem minmax(0, 1fr);
+    grid-template-rows: none;
+  }
+  .tb-domain img {
+    height: 100%;
+    border-bottom: 0;
+    border-right: 4px solid var(--room);
+  }
+}
+
+/* ── Mr. Neft, the guide ── */
+.pg {
+  display: grid;
+  grid-template-columns: 5.5rem minmax(0, 1fr);
+  gap: 0.9rem;
+  align-items: start;
+  padding: 1rem 1.1rem 1.1rem;
+  border-radius: var(--r-lg);
+  background: linear-gradient(180deg, var(--pearl-blue), var(--surface) 70%);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-card, var(--shadow));
+}
+.pg-avatar svg {
+  width: 5.5rem;
+  height: 5.5rem;
+  display: block;
+}
+.pg-main {
+  display: grid;
+  gap: 0.6rem;
+  min-width: 0;
+}
+.pg-name {
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.2rem 0.5rem;
+}
+.pg-name strong {
+  font: 600 1.2rem/1.1 var(--font-display);
+}
+.pg-name span {
+  color: var(--ink-2);
+  font-size: 0.9rem;
+}
+.pg-bubble {
+  position: relative;
+  padding: 0.75rem 0.9rem;
+  border-radius: 0 var(--radius) var(--radius) var(--radius);
+  background: var(--surface);
+  border: 1px solid var(--line);
+}
+.pg-bubble::before {
+  content: "";
+  position: absolute;
+  top: -1px;
+  left: -0.6rem;
+  border-style: solid;
+  border-width: 0 0.6rem 0.6rem 0;
+  border-color: transparent var(--line) transparent transparent;
+}
+.pg-bubble p {
+  margin: 0;
+  font-size: 1.02rem;
+  line-height: 1.5;
+}
+.pg-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+.pg-chip {
+  min-height: 2.75rem;
+  padding: 0.35rem 0.85rem;
+  border-radius: 999px;
+  border: 1.5px solid var(--line-control, var(--line-strong));
+  background: var(--surface);
+  color: var(--brand-ink, var(--ink));
+  font: inherit;
+  font-weight: 700;
+  font-size: 0.92rem;
+  cursor: pointer;
+}
+.pg-chip:hover {
+  border-color: var(--brand);
+  background: var(--brand-soft);
+}
+.pg-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.4rem;
+}
+.pg-form input {
+  min-height: 2.75rem;
+  min-width: 0;
+  padding: 0.4rem 0.75rem;
+  border: 1.5px solid var(--line-control, var(--line-strong));
+  border-radius: var(--radius-sm);
+  font: inherit;
+  background: var(--surface);
+  color: var(--ink);
+}
+.pg-form .btn {
+  min-height: 2.75rem;
+}
+.pg-note {
+  margin: 0;
+}
+.pg-thread {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.6rem;
+}
+.pg-thread:empty {
+  display: none;
+}
+.pg-turn {
+  display: grid;
+  gap: 0.35rem;
+}
+.pg-q {
+  justify-self: end;
+  max-width: 90%;
+  margin: 0;
+  padding: 0.45rem 0.75rem;
+  border-radius: var(--radius) var(--radius) 0 var(--radius);
+  background: var(--brand);
+  color: var(--on-brand);
+  font-weight: 700;
+}
+.pg-a {
+  padding: 0.6rem 0.8rem;
+  border-radius: 0 var(--radius) var(--radius) var(--radius);
+  background: var(--surface);
+  border: 1px solid var(--line);
+}
+.pg-a p {
+  margin: 0 0 0.4rem;
+}
+.pg-a p:last-child {
+  margin-bottom: 0;
+}
+.pg-a.is-pending {
+  color: var(--ink-2);
+  font-style: italic;
+}
+.pg-hits {
+  margin: 0.3rem 0 0;
+  padding-left: 1.1rem;
+  display: grid;
+  gap: 0.35rem;
+}
+.pg-hits span {
+  display: block;
+  color: var(--ink-2);
+  font-size: 0.9rem;
+}
+.pg-clear {
+  justify-self: start;
+}
+.mn-art .mn-mouth {
+  transform-origin: 60px 66px;
+}
+.mn-art.is-talking .mn-mouth {
+  animation: mn-talk 0.32s var(--ease-in-out) infinite alternate;
+}
+@keyframes mn-talk {
+  to {
+    transform: scaleY(0.45);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mn-art.is-talking .mn-mouth {
+    animation: none;
+  }
+}
+@media (max-width: 560px) {
+  .pg {
+    grid-template-columns: 3.75rem minmax(0, 1fr);
+    padding: 0.85rem;
+  }
+  .pg-avatar svg {
+    width: 3.75rem;
+    height: 3.75rem;
+  }
+}
+
+/* ── The tour ── */
+.tr-page {
+  max-width: 82rem;
+}
+.tr-card {
+  display: grid;
+  gap: 0.7rem;
+  padding: 1.1rem 1.2rem 1.2rem;
+  border-radius: var(--r-lg);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-card, var(--shadow));
+}
+.tr-card h2 {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+  font: 600 1.3rem/1.2 var(--font-display);
+}
+.tr-card h2 > svg {
+  width: 1.3rem;
+  height: 1.3rem;
+  color: var(--room-ink, var(--brand));
+}
+.tr-card p {
+  margin: 0;
+}
+.tr-sub {
+  margin: 0.4rem 0 0;
+  font: 600 1.15rem/1.2 var(--font-display);
+}
+.tr-adult {
+  display: flex;
+  gap: 0.6rem;
+  align-items: flex-start;
+  margin: 0;
+  padding: 0.65rem 0.85rem;
+  border-radius: var(--radius);
+  background: var(--sage-200);
+  color: var(--sage-900);
+}
+.tr-adult svg {
+  flex: none;
+  width: 1.3rem;
+  height: 1.3rem;
+  margin-top: 0.1rem;
+}
+
+/* Step strip */
+.tr-steps ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 0.4rem;
+}
+.tr-steps a {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-height: 3.4rem;
+  padding: 0.45rem 0.6rem;
+  border-radius: var(--radius);
+  border: 1.5px solid var(--line);
+  background: var(--surface);
+  color: var(--ink);
+  text-decoration: none;
+}
+.tr-steps a:hover {
+  border-color: var(--room, var(--brand));
+}
+.tr-step-mark {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background: var(--room-soft, var(--brand-soft));
+  color: var(--room-ink, var(--brand-ink, var(--brand)));
+}
+.tr-step-mark svg {
+  width: 1.05rem;
+  height: 1.05rem;
+}
+.tr-step-name {
+  display: grid;
+  line-height: 1.15;
+  font-weight: 700;
+  min-width: 0;
+}
+.tr-step-name small {
+  font-weight: 600;
+  color: var(--ink-2);
+  font-size: 0.78rem;
+}
+.tr-steps .is-done .tr-step-mark {
+  background: var(--sage-500);
+  color: #fff;
+}
+.tr-steps [aria-current="step"] a {
+  background: var(--room, var(--brand));
+  border-color: var(--room, var(--brand));
+  color: #fff;
+  box-shadow: var(--shadow-lift);
+}
+.tr-steps [aria-current="step"] .tr-step-name small {
+  color: rgb(255 255 255 / 82%);
+}
+.tr-steps [aria-current="step"] .tr-step-mark {
+  background: rgb(255 255 255 / 18%);
+  color: #fff;
+}
+.tr-plain {
+  --room: var(--brand);
+  --room-soft: var(--brand-soft);
+  --room-ink: var(--brand-ink, var(--brand));
+}
+
+/* Step 1 */
+.tr-start {
+  display: grid;
+  gap: 1.1rem;
+}
+
+/* Domain steps: directions beside the live activity */
+.tr-work {
+  display: grid;
+  grid-template-columns: minmax(19rem, 25rem) minmax(0, 1fr);
+  gap: 1.1rem;
+  align-items: start;
+}
+.tr-side {
+  display: grid;
+  gap: 1rem;
+  min-width: 0;
+}
+.tr-main {
+  position: sticky;
+  top: 5.5rem;
+  min-width: 0;
+}
+.tr-stage {
+  border-radius: var(--r-xl, var(--r-lg));
+  border: 2px solid var(--room);
+  background: var(--surface);
+  overflow: hidden;
+  box-shadow: var(--shadow-float);
+}
+.tr-stage-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+  padding: 0.7rem 0.9rem;
+  background: var(--room);
+  color: #fff;
+}
+.tr-stage-bar h2 {
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0;
+  font: 600 1.2rem/1.2 var(--font-display);
+}
+.tr-stage-bar h2 > span:last-child {
+  display: grid;
+}
+.tr-stage-bar small {
+  font: 700 0.8rem/1.3 var(--font);
+  color: rgb(255 255 255 / 85%);
+}
+.tr-stage-bar .in-ic {
+  background: rgb(255 255 255 / 16%);
+  color: #fff;
+  box-shadow: none;
+}
+.tr-stage-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+.tr-stage-tools .btn {
+  background: rgb(255 255 255 / 12%);
+  border-color: rgb(255 255 255 / 55%);
+  color: #fff;
+}
+.tr-stage-tools .btn:hover {
+  background: rgb(255 255 255 / 22%);
+}
+.tr-stage-tools .btn[hidden] {
+  display: none;
+}
+.tr-stage-body {
+  background: var(--room-soft);
+}
+.tr-poster {
+  display: grid;
+  justify-items: center;
+  gap: 0.8rem;
+  padding: clamp(1.25rem, 4vw, 2.5rem) 1.25rem;
+  text-align: center;
+  min-height: 24rem;
+  align-content: center;
+}
+.tr-poster img {
+  width: min(20rem, 80%);
+  height: auto;
+}
+.tr-poster p {
+  max-width: 34rem;
+  margin: 0;
+  font-size: 1.05rem;
+}
+.tr-frame {
+  display: block;
+  width: 100%;
+  height: min(80vh, 52rem);
+  min-height: 34rem;
+  border: 0;
+  background: var(--bg);
+}
+
+/* Checklist */
+.tr-check {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.45rem;
+}
+.tr-check label {
+  display: grid;
+  grid-template-columns: auto auto minmax(0, 1fr);
+  align-items: start;
+  gap: 0.6rem;
+  padding: 0.6rem 0.7rem;
+  min-height: 2.75rem;
+  border-radius: var(--radius);
+  border: 1.5px solid var(--line);
+  cursor: pointer;
+}
+.tr-check input {
+  width: 1.3rem;
+  height: 1.3rem;
+  margin: 0.15rem 0 0;
+  accent-color: var(--room);
+}
+.tr-check-n {
+  display: grid;
+  place-items: center;
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 50%;
+  background: var(--room-soft);
+  color: var(--room-ink);
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+.tr-check label:has(input:checked) {
+  border-color: var(--sage-500);
+  background: color-mix(in srgb, var(--sage-200) 55%, var(--surface));
+}
+.tr-check label:has(input:checked) .tr-check-n {
+  background: var(--sage-500);
+  color: #fff;
+}
+.tr-check-count {
+  font-weight: 700;
+  color: var(--ink-2);
+}
+.tr-notice {
+  border-left: 6px solid var(--room);
+}
+.tr-use {
+  padding-top: 0.6rem;
+  border-top: 1px solid var(--line);
+}
+
+/* Plan */
+.tr-plan {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  align-items: start;
+}
+.tr-plan-pick .in-opt {
+  border-left: 5px solid var(--room);
+}
+.tr-plan-pick .in-opt span {
+  display: grid;
+}
+.tr-plan-pick small {
+  color: var(--ink-2);
+  font-weight: 600;
+}
+.tr-plan-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+.tr-plan-fields input {
+  width: 100%;
+}
+.tr-plan-card {
+  border-top: 6px solid var(--room, var(--brand));
+}
+.tr-plan-act {
+  display: flex;
+  gap: 0.7rem;
+  align-items: center;
+}
+.tr-plan-act > span:last-child {
+  display: grid;
+}
+.tr-plan-act strong {
+  font: 600 1.25rem/1.2 var(--font-display);
+}
+.tr-plan-act small {
+  color: var(--ink-2);
+  font-weight: 600;
+}
+.tr-plan-act .in-ic {
+  background: var(--room);
+  color: #fff;
+}
+.tr-next-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.4rem;
+}
+.tr-next-list a {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  min-height: 3rem;
+  padding: 0.45rem 0.65rem;
+  border-radius: var(--radius);
+  color: var(--ink);
+  text-decoration: none;
+}
+.tr-next-list a:hover {
+  background: var(--surface-2);
+}
+.tr-next-list svg {
+  flex: none;
+  width: 1.3rem;
+  height: 1.3rem;
+  color: var(--brand);
+}
+.tr-next-list span {
+  display: grid;
+}
+.tr-next-list small {
+  color: var(--ink-2);
+}
+.tr-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+.tr-actions .btn-primary {
+  margin-left: auto;
+}
+
+@media (max-width: 1100px) {
+  .tr-steps ol {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .tr-work,
+  .tr-plan {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .tr-main {
+    position: static;
+  }
+  .tr-frame {
+    height: 78vh;
+    min-height: 30rem;
+  }
+}
+@media (max-width: 640px) {
+  .tr-steps ol {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+  .tr-steps a {
+    justify-content: center;
+    padding: 0.35rem;
+  }
+  .tr-step-name {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+  .tr-plan-fields {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .tr-poster {
+    min-height: 0;
+  }
+}
+@media print {
+  .tr-steps,
+  .tr-stage,
+  .pg {
+    display: none !important; /* print shows the directions and the plan only */
+  }
+}
+
+/* Narrow screens: the live activity comes right after the checklist, and the tour bar stays one row. */
+@media (max-width: 1100px) {
+  .tr-side {
+    display: contents;
+  }
+  .tr-work > .tr-side > * {
+    order: 3;
+  }
+  .tr-work > .tr-side > .tr-do {
+    order: 1;
+  }
+  .tr-work > .tr-main {
+    order: 2;
+  }
+}
+@media (max-width: 640px) {
+  .tr-actions {
+    flex-wrap: nowrap;
+    padding: 0.5rem;
+  }
+  .tr-actions .btn {
+    flex: 0 0 auto;
+    min-height: 2.75rem;
+    padding-inline: 0.8rem;
+  }
+  .tr-actions .btn.ghost {
+    display: none;
+  }
+  .tr-actions .btn-primary {
+    flex: 1 1 auto;
+    justify-content: center;
+  }
+}

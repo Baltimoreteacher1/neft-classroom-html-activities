@@ -25,7 +25,6 @@ export const GUIDE_FILES = {
     { id: "lesson", name: "Featured Lesson backup (2 pages)", ...DOWNLOADS.lessonBackup },
     { id: "activities", name: "Activity Guide", ...DOWNLOADS.activityGuide },
     { id: "directory", name: "Site Directory (appendix)", ...DOWNLOADS.directory },
-    { id: "notes", name: "Presenter notes", ...DOWNLOADS.presenterNotes },
   ],
 };
 

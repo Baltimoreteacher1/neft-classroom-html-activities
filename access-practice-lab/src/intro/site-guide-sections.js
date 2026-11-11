@@ -40,16 +40,13 @@ export function startSection(I, audience) {
 }
 
 export function teacherIntro(I) {
-  return html`<aside
-    class="sg-pd"
-    aria-label="${I.S("Running the PD", "Dirigir el desarrollo profesional")}"
-  >
+  return html`<aside class="sg-pd" aria-label="${I.S("Start here for teachers", "Empiecen aquí, docentes")}">
     <p>
       ${I.TO(GUIDE.forTeacher)} ${linkHTML(ROUTES.start, html`${ENTRANCE.short}`, "sg-textlink")}
     </p>
     <p class="fine">
       ${I.T("Handouts:", "Material para imprimir:")} Quick Guide ${pdfLinks(DOWNLOADS.quickGuide)} ·
-      Presenter notes ${pdfLinks(DOWNLOADS.presenterNotes)}
+      ${linkHTML(`${ROUTES.start}#ov-resources`, I.T("All printable resources", "Todos los recursos para imprimir"), "sg-textlink")}
     </p>
   </aside>`;
 }

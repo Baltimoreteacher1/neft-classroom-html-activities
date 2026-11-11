@@ -608,3 +608,75 @@
     display: none;
   }
 }
+
+/* ── Top summary: what the site is, the grade picker and the four domain cards (site-guide-overview.js) ── */
+.sg-overview {
+  display: grid;
+  gap: var(--s-4);
+  margin-block: var(--s-4) var(--s-6);
+  padding: clamp(1rem, 2.6vw, 1.75rem);
+  border-radius: var(--r-xl);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-lift);
+}
+.sg-ov-text {
+  display: grid;
+  gap: var(--s-2);
+  max-width: 50rem;
+}
+.sg-ov-text > * {
+  margin: 0;
+}
+.sg-ov-text h2 {
+  font: 600 clamp(1.5rem, 1.1rem + 1.4vw, 2.1rem) / 1.15 var(--font-display);
+}
+.sg-ov-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+}
+.sg-ov-band {
+  display: grid;
+  gap: var(--s-4);
+}
+.sg-overview .ov-card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0.3rem 0 0;
+}
+.sg-overview .tb-domain .ov-card-actions .btn {
+  margin-top: 0;
+}
+
+/* ── Long sections fold behind a one-line summary and a Show button ── */
+.sg-fold {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-2) var(--s-4);
+  padding: var(--s-3) var(--s-4);
+  border-radius: var(--radius);
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+}
+.sg-summary {
+  flex: 1 1 22rem;
+  margin: 0;
+  color: var(--ink-2);
+}
+.sg-toggle svg {
+  transition: transform var(--dur-2) var(--ease-out);
+}
+.sg-toggle[aria-expanded="true"] svg {
+  transform: rotate(180deg);
+}
+.sg-body[hidden] {
+  display: none;
+}
+@media print {
+  .sg-body[hidden] {
+    display: block;
+  }
+}

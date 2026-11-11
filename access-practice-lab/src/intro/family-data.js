@@ -311,7 +311,10 @@ export const FAMILY_ACTIVITIES_35 = [
       talk68.steps[0],
       {
         head: talk68.steps[1].head,
-        body: { en: "Name three things in the garden. Say them out loud.", es: "Digan tres cosas que ven en el huerto. Díganlas en voz alta." },
+        body: {
+          en: "Name three things in the garden. Say them out loud.",
+          es: "Digan tres cosas que ven en el huerto. Díganlas en voz alta.",
+        },
       },
       {
         head: talk68.steps[2].head,
@@ -321,13 +324,126 @@ export const FAMILY_ACTIVITIES_35 = [
         },
       },
     ],
-    example: { label: talk68.example.label, text: "I see tomatoes, sunflowers and a watering can." },
+    example: {
+      label: talk68.example.label,
+      text: "I see tomatoes, sunflowers and a watering can.",
+    },
   },
   {
     ...write68,
     route: "/scaffold/language-upgrade?item=lu35-explain-plants",
-    example: { ...write68.example, plain: "Plants need stuff.", better: "Plants need sunlight and water because they use them to make food." },
+    example: {
+      ...write68.example,
+      plain: "Plants need stuff.",
+      better: "Plants need sunlight and water because they use them to make food.",
+    },
   },
 ];
 
-export const familyActivitiesFor = (band) => (band === "3-5" ? FAMILY_ACTIVITIES_35 : FAMILY_ACTIVITIES);
+export const familyActivitiesFor = (band) =>
+  band === "3-5" ? FAMILY_ACTIVITIES_35 : FAMILY_ACTIVITIES;
+
+/**
+ * The family grade for a `?grades=` value from a teacher's shared link (GRADE_PICKS ids and lab bands):
+ * K, 1, 2-3 → k-2; 4-5, 3-5 → 3-5; 6-8 → 6-8. Anything else is "" (no grade in the link).
+ */
+export function familyBandFromGrades(grades) {
+  const g = String(grades || "")
+    .trim()
+    .toUpperCase();
+  if (["K", "1", "2-3"].includes(g)) return "k-2";
+  if (g === "4-5" || g === "3-5") return "3-5";
+  if (g === "6-8") return "6-8";
+  return "";
+}
+
+/** The "tonight" flow: three plain steps, no timers and nothing counted. The handout prints the same three. */
+export const TONIGHT = [
+  {
+    id: "choose",
+    icon: "flag",
+    head: { en: "Choose", es: "Elijan" },
+    body: { en: "Pick one activity below.", es: "Elijan una actividad de abajo." },
+  },
+  {
+    id: "practice",
+    icon: "conversation",
+    head: { en: "Practice together", es: "Practiquen juntos" },
+    body: {
+      en: "5 to 10 minutes. Stop when you like.",
+      es: "De 5 a 10 minutos. Paren cuando quieran.",
+    },
+  },
+  {
+    id: "celebrate",
+    icon: "star",
+    head: { en: "Celebrate", es: "Celebren" },
+    body: {
+      en: "Say one thing your child did well.",
+      es: "Digan una cosa que su hijo o hija hizo bien.",
+    },
+  },
+];
+
+/** First-screen copy: Mr. Neft's welcome, the one next action, the flow heading, card tags and the print link. */
+export const FAMILY_WELCOME = {
+  hello: { en: "Welcome! I am Mr. Neft.", es: "¡Bienvenidos! Soy Mr. Neft." },
+  go: { en: "Let’s begin", es: "Empecemos" },
+  tonightHeading: { en: "Tonight, in three steps", es: "Esta noche, en tres pasos" },
+  tags: {
+    talk: { en: "Speaking", es: "Hablar" },
+    write: { en: "Writing", es: "Escribir" },
+    early: { en: "Listening and reading", es: "Escuchar y leer" },
+  },
+  print: { en: "Print a one-page guide", es: "Imprimir una guía de una página" },
+  printWord: { en: "Word file", es: "Archivo de Word" },
+};
+
+/** The family handout files (scripts/generate-intro-guide.mjs --only=family writes them). */
+export const FAMILY_HANDOUT = {
+  en: {
+    pdf: "/access-practice-lab/guides/family-handout.pdf",
+    docx: "/access-practice-lab/guides/family-handout.docx",
+  },
+  es: {
+    pdf: "/access-practice-lab/guides/family-handout-es.pdf",
+    docx: "/access-practice-lab/guides/family-handout-es.docx",
+  },
+};
+
+/** The handout's own lines. Facts come from FAMILY.help (which reads data.js FACTS); steps from TONIGHT. */
+export const HANDOUT_COPY = {
+  title: { en: "Practice Together at home", es: "Practicar juntos en casa" },
+  what: {
+    en: "Practice Together is a page of short English practice for families. Choose one activity and practice with your child for 5 to 10 minutes, in English or Spanish.",
+    es: "Practicar juntos es una página de práctica corta de inglés para familias. Elijan una actividad y practiquen con su hijo o hija de 5 a 10 minutos, en inglés o en español.",
+  },
+  scan: {
+    en: "Scan the code with a phone camera, or type the link:",
+    es: "Escaneen el código con la cámara de un teléfono, o escriban el enlace:",
+  },
+  grade: {
+    en: "Choose your child’s grade at the top of the page.",
+    es: "Elijan el grado de su hijo o hija arriba en la página.",
+  },
+  stepsHeading: { en: "Three steps", es: "Tres pasos" },
+  choicesHeading: { en: "Two activities", es: "Dos actividades" },
+  talk: {
+    en: "Look at a picture and say what you see, out loud.",
+    es: "Miren una imagen y digan en voz alta lo que ven.",
+  },
+  write: {
+    en: "Make one plain sentence better with a detail and a reason.",
+    es: "Mejoren una oración sencilla con un detalle y una razón.",
+  },
+  early: {
+    en: "Grades K–2 open a page for younger children: a picture story read aloud, sounds and word cards.",
+    es: "Los grados K a 2 abren una página para niños más pequeños: un cuento con imágenes leído en voz alta, sonidos y tarjetas de palabras.",
+  },
+  factsHeading: { en: "Good to know", es: "Es bueno saber" },
+  home: {
+    en: "Use your home language to talk about ideas. Adults do not need perfect English to help.",
+    es: "Usen su idioma del hogar para hablar de las ideas. Los adultos no necesitan un inglés perfecto para ayudar.",
+  },
+  teacher: { en: "From your child’s teacher:", es: "De parte del maestro o la maestra:" },
+};

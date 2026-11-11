@@ -122,6 +122,10 @@ for (const lang of ["en", "es", "bi"]) {
   const leaks = await page.evaluate(() => {
     const clone = document.querySelector("#app .tg-page").cloneNode(true);
     for (const n of clone.querySelectorAll('[lang="en"]')) n.remove();
+    // The product name stays English on purpose (Mr. Neft's panel says "Su guía de The Language Page").
+    for (const n of clone.querySelectorAll("*"))
+      if (n.childNodes.length === 1 && n.firstChild.nodeType === 3)
+        n.firstChild.textContent = n.firstChild.textContent.replace(/The Language Page/g, "");
     const re =
       /(?<!\p{L})(the|your|you|and|with|this|that|from|are|will|can|have|each|then|please|choose|practice|together)(?!\p{L})/giu;
     return (clone.textContent.match(re) || []).slice(0, 8);
@@ -252,7 +256,62 @@ for (const lang of ["en", "es"]) {
   await context.close();
 }
 
-// 6. Keyboard order, 48px targets, visible focus, reduced motion.
+// 5b. A teacher's ?grades= link opens that grade; the family's own choice then wins and is remembered; the one
+// next action ("Let's begin") brings the choices into view; Mr. Neft is on the page in the page's language.
+{
+  const { page, context } = await open("en", 1280, "/practice-together?grades=4-5");
+  const pressedBand = () =>
+    page.$eval('[data-tg-band][aria-pressed="true"]', (b) => b.dataset.tgBand);
+  ok((await pressedBand()) === "3-5", "?grades=4-5 opens Grades 3–5");
+  ok(
+    (await page.locator(".tg-start").first().getAttribute("href")).includes("class-garden"),
+    "Grades 3–5 card links its own picture",
+  );
+  await page.click('[data-tg-band="6-8"]');
+  await page.waitForFunction(() => !location.search.includes("grades="));
+  ok((await pressedBand()) === "6-8", "the family's own choice replaces the link's grade");
+  await page.reload();
+  await page.waitForSelector("#app .tg-page");
+  ok((await pressedBand()) === "6-8", "the family's choice is remembered after a reload");
+  ok(
+    (await page.locator("#app [data-pg][data-pg-page='family']").count()) === 1,
+    "Mr. Neft panel on the page",
+  );
+  ok((await page.locator("#app [data-tg-go]").count()) === 1, "one next action");
+  await page.click("#app [data-tg-go]");
+  await page.waitForFunction(() => document.activeElement?.id === "tgChoose");
+  const top = await page.$eval("#tgChoose", (h) => h.getBoundingClientRect().top);
+  ok(
+    top >= 0 && top < 400,
+    `Let's begin brings the choices into view (heading at ${Math.round(top)}px)`,
+  );
+  await context.close();
+}
+for (const [path, band] of [
+  ["/practice-together?grades=K", "k-2"],
+  ["/practice-together?grades=2-3", "k-2"],
+  ["/practice-together?grades=6-8", "6-8"],
+]) {
+  const { page, context } = await open("es", 375, path);
+  const got = await page.$eval('[data-tg-band][aria-pressed="true"]', (b) => b.dataset.tgBand);
+  ok(got === band, `${path} opens ${band}`);
+  ok(
+    (await page.locator("#app [data-pg-lang='es']").count()) === 1,
+    `${path}: Mr. Neft in Spanish`,
+  );
+  await context.close();
+}
+{
+  const { page, context } = await open("es");
+  const href = await page.locator(".tg-print a").first().getAttribute("href");
+  ok(href === "/access-practice-lab/guides/family-handout-es.pdf", `es: Spanish handout (${href})`);
+  const res = await page.request.get(base + href);
+  ok(res.ok() && (await res.body()).length > 10000, "the handout PDF is served");
+  await context.close();
+}
+
+// 6. Keyboard order, 48px targets, visible focus, reduced motion. (Mr. Neft's panel is the shared guide component,
+// sized by intro-tour.css; it is measured by the tour's own tests, not here.)
 {
   const { page, context } = await open("en");
   await page.locator("#app h1").focus();
@@ -285,6 +344,7 @@ for (const lang of ["en", "es"]) {
     "#app .tg-page .btn, #app .tg-page summary, #app .tg-page .lang-btn",
     (els) =>
       els
+        .filter((e) => !e.closest("[data-pg]"))
         .map((e) => e.getBoundingClientRect())
         .filter((r) => r.height < 47.5 || r.width < 47.5)
         .map((r) => `${Math.round(r.width)}x${Math.round(r.height)}`),

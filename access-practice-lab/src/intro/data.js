@@ -287,13 +287,14 @@ export const FEATURED_LESSON = {
   ],
 };
 
-/** Stable order and names for the five tour stops (page, tour, handout and presenter use these). */
+/** Stable order and names for the six tour stops (the tour, the Start overview and the guide use these). */
 export const TOUR_STOPS = [
-  { id: "start", icon: "flag", name: "Start here" },
-  { id: "speaking", icon: "speaking", name: "Try speaking" },
-  { id: "writing", icon: "writing", name: "Try writing" },
-  { id: "connect", icon: "conversation", name: "Connect the two" },
-  { id: "tomorrow", icon: "calendar", name: "Use it tomorrow" },
+  { id: "start", icon: "flag", name: "Choose your grades" },
+  { id: "listening", icon: "listening", name: "Listening" },
+  { id: "speaking", icon: "speaking", name: "Speaking" },
+  { id: "reading", icon: "reading", name: "Reading" },
+  { id: "writing", icon: "writing", name: "Writing" },
+  { id: "tomorrow", icon: "calendar", name: "Plan one class" },
 ];
 
 /** The three ways in on the teacher start page. */
@@ -302,7 +303,7 @@ export const START_CHOICES = [
     id: "tour",
     icon: "flag",
     name: "Take the Guided Tour",
-    detail: "Five short stops, about 20 minutes.",
+    detail: "Choose your grades, try one activity in each domain, about 20 minutes.",
     route: ROUTES.tour,
   },
   {
@@ -485,10 +486,37 @@ export const ENTRANCE = { route: ROUTES.start, url: absUrl(ROUTES.start), short:
  * set, edit ACTIVITIES / SUPPLEMENTAL deliberately, update this map, and run `node tools/generate-intro-curated-list.mjs`.
  */
 export const APPEARANCES = {
-  hallway: ["Start page overview", "Guided tour stop 1 (pathways) and stop 5 (choice)", "Guided tour stop 2", "Exploration (Speaking)", "Quick guide page 1", "Featured lesson anchor and Use This Lesson", "Presenter segment 3–8", "Family page: Let’s Talk", "Site Guide", "Activity Guide (page and handout)"],
-  board: ["Start page overview", "Guided tour stop 1 (pathways) and stop 5 (choice)", "Exploration (Speaking)", "Quick guide page 1", "Site Guide", "Activity Guide (page and handout)"],
-  upgrade: ["Start page overview", "Guided tour stop 1 (pathways) and stop 5 (choice)", "Guided tour stop 3", "Exploration (Writing)", "Quick guide page 1", "Presenter segment 8–13", "Family page: Let’s Write", "Site Guide", "Activity Guide (page and handout)"],
-  paragraph: ["Start page overview", "Guided tour stop 1 (pathways) and stop 5 (choice)", "Exploration (Writing)", "Quick guide page 1", "Site Guide", "Activity Guide (page and handout)"],
+  hallway: ["Start page overview", "Guided tour, Grades 6–8: Speaking step and plan", "Exploration (Speaking)", "Quick guide page 1", "Featured lesson anchor and Use This Lesson", "Presenter segment 3–8", "Family page: Let’s Talk", "Site Guide", "Activity Guide (page and handout)"],
+  board: ["Start page overview", "Exploration (Speaking)", "Quick guide page 1", "Site Guide", "Activity Guide (page and handout)"],
+  upgrade: ["Start page overview", "Guided tour, Grades 6–8: Writing step and plan", "Exploration (Writing)", "Quick guide page 1", "Presenter segment 8–13", "Family page: Let’s Write", "Site Guide", "Activity Guide (page and handout)"],
+  paragraph: ["Start page overview", "Exploration (Writing)", "Quick guide page 1", "Site Guide", "Activity Guide (page and handout)"],
   seasons: ["Exploration: Explore Later", "Family page: More Practice", "Site Guide", "Activity Guide (page and handout)"],
   morphemes: ["Exploration: Explore Later", "Family page: More Practice", "Site Guide", "Activity Guide (page and handout)"],
 };
+
+/** The learning loop every curated activity follows (access-practice-lab/PLATFORM.md, "The learner loop"). */
+export const LOOP = [
+  ["Choose", "A student picks an activity or opens your link."],
+  ["Prepare", "Plan, hear a model, or open a frame or word bank, only if they want it."],
+  ["Produce", "Say it or write it: real language, not a multiple-choice answer."],
+  ["Check", "Rule-based checks and coach notes describe what to improve."],
+  ["Revise", "Try again. The Language Upgrade Lab and Writing Studio keep earlier versions, so growth is visible."],
+];
+export const CAN = [
+  "Count and name what is on the page: a detail, an exact word, a connector, evidence from the source.",
+  "Point to the student’s own sentences when it suggests a next move (Writing Studio).",
+  "Keep the first try and later revisions so you and the student can compare them.",
+];
+export const CANNOT = [
+  "Judge whether an idea is good or true. Read or listen for that yourself.",
+  "Score pronunciation, or give a grade, a WIDA level or an ACCESS prediction.",
+  "Store work online. It stays in that browser unless the student shares or moves it. (Speech-to-text may use the browser’s own speech service.)",
+];
+export const WORDS = [
+  ["Support level", "The help a student chooses: frames and words, a word bank only, or On my own. Students can change it."],
+  ["On my own", "No frames, word bank or model. If help is opened later, the try is marked supported. That is fine; it tells you what they needed."],
+  ["Model student", "A sample answer from a named classmate-style character, heard with the device voice."],
+  ["Coach notes", "Notes in the Speaking Studio about the words a student said or typed. Not about accent or pronunciation."],
+  ["Passport", "A student’s record of practice saved on that device. It can print a practice report and move work to another device."],
+  ["Practice, not a score", "Nothing in the lab is an official WIDA or ACCESS result. It describes practice only."],
+];

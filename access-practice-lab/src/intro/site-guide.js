@@ -5,6 +5,7 @@
 import { crumbsHTML } from "../components.js";
 import { i18nFor } from "../i18n.js";
 import { announce, BASE, html, icon, toHtml } from "../util.js";
+import { onBandClick, teacherPick } from "./band.js";
 import { ROUTES } from "./data.js";
 import {
   classroomSection,
@@ -34,6 +35,7 @@ import {
   teacherIntro,
   tocHTML,
 } from "./site-guide-sections.js";
+import { overviewSection } from "./site-guide-overview.js";
 import { clearIntro, loadIntro, updateIntro } from "./state.js";
 
 const AUDIENCE_KEY = "siteGuideAudience";
@@ -72,15 +74,33 @@ const SECTION_BODY = {
   help: (I) => helpSection(I),
 };
 
-function sectionHTML(I, s, audience) {
+/** Long sections open behind a one-line summary and a Show button, unless the link named them. */
+function sectionHTML(I, s, audience, openId) {
   const note =
     ENGLISH_ONLY.has(s.id) && (I.spanish || I.bilingual)
       ? html`<p class="fine sg-note" lang="${I.spanish ? "es" : "en"}">
           ${I.TO(ENGLISH_ONLY_NOTE)}
         </p>`
       : "";
+  const collapsed = Boolean(s.summary) && s.id !== openId;
+  const toggle = s.summary
+    ? html`<div class="sg-fold no-print">
+        <p class="sg-summary">${I.TO(s.summary)}</p>
+        <button
+          type="button"
+          class="btn small sg-toggle"
+          data-sg-toggle="${s.id}"
+          aria-controls="sg-${s.id}-body"
+          aria-expanded="${String(!collapsed)}"
+        >
+          ${icon("chevron-down")}<span data-sg-toggle-label
+            >${collapsed ? I.T("Show this section", "Mostrar esta sección") : I.T("Hide this section", "Ocultar esta sección")}</span
+          >
+        </button>
+      </div>`
+    : "";
   return html`<section
-    class="sg-section"
+    class="sg-section${s.summary ? " is-foldable" : ""}"
     id="sg-${s.id}"
     data-sg-section="${s.id}"
     aria-labelledby="sg-${s.id}-h"
@@ -88,12 +108,15 @@ function sectionHTML(I, s, audience) {
     <h2 id="sg-${s.id}-h" tabindex="-1">
       <span class="sg-ic" aria-hidden="true">${icon(s.icon)}</span>${I.TO(s.title)}
     </h2>
-    ${note}${SECTION_BODY[s.id](I, audience)}
-    <p class="sg-permalink no-print">
-      <a href="${BASE}${ROUTES.siteGuide}/${s.id}"
-        >${I.T("Link to this section", "Enlace a esta sección")}</a
-      >
-    </p>
+    ${toggle}
+    <div class="sg-body" id="sg-${s.id}-body" ${collapsed ? "hidden" : ""}>
+      ${note}${SECTION_BODY[s.id](I, audience)}
+      <p class="sg-permalink no-print">
+        <a href="${BASE}${ROUTES.siteGuide}/${s.id}"
+          >${I.T("Link to this section", "Enlace a esta sección")}</a
+        >
+      </p>
+    </div>
   </section>`;
 }
 
@@ -121,6 +144,7 @@ export async function render(ctx) {
           ${id ? html`<p class="sg-back no-print"><a class="btn" href="${BASE}${ROUTES.siteGuide}">${icon("arrow-left")} ${I.T("Back to Guide", "Volver a la guía")}</a></p>` : ""}
           ${audienceHTML(I, audience)} ${audience === "teacher" ? teacherIntro(I) : ""}
         </header>
+        ${audience === "" || audience === "teacher" ? overviewSection(I, teacherPick(ctx)) : ""}
         <div class="sg-layout">
           <div class="sg-side no-print">
             ${tocHTML(I, visible, id)}
@@ -131,7 +155,7 @@ export async function render(ctx) {
           <div class="sg-main">
             ${searchHTML(I, q)}
             ${I.spanish || I.bilingual ? html`<p class="fine sg-note">${I.TO(SPANISH_NOTE)}</p>` : ""}
-            ${SECTIONS.filter((s) => visible.includes(s.id)).map((s) => sectionHTML(I, s, audience))}
+            ${SECTIONS.filter((s) => visible.includes(s.id)).map((s) => sectionHTML(I, s, audience, id))}
             ${audience ? "" : html`<p class="fine sg-more-note">${I.T("Teaching? Practicing at home? Choose above to see classroom routines or Practice at Home.", "¿Enseñan o practican en casa? Elijan arriba para ver rutinas de clase o Practicar en casa.")}</p>`}
           </div>
         </div>
@@ -156,6 +180,29 @@ export function mount(root, ctx) {
   const secTitle = (sid) => I.TO(SECTIONS.find((s) => s.id === sid).title);
   let current = "";
   let urlTimer = 0;
+  /** Opens or closes a long section (the button says which, and aria-expanded carries the state). */
+  const setFold = (section, open) => {
+    const body = section.querySelector(":scope > .sg-body");
+    const btn = section.querySelector(":scope [data-sg-toggle]");
+    if (!body || !btn) return;
+    body.hidden = !open;
+    btn.setAttribute("aria-expanded", String(open));
+    btn.querySelector("[data-sg-toggle-label]").textContent = open
+      ? I.S("Hide this section", "Ocultar esta sección")
+      : I.S("Show this section", "Mostrar esta sección");
+  };
+  const onFold = (e) => {
+    const btn = e.target.closest("[data-sg-toggle]");
+    if (btn) {
+      setFold(btn.closest("[data-sg-section]"), btn.getAttribute("aria-expanded") !== "true");
+      return;
+    }
+    // An in-page link into a folded section (search result, FAQ link) opens that section first.
+    const a = e.target.closest('a[href^="#sg-"]');
+    const target = a && page.querySelector(a.getAttribute("href"));
+    const section = target?.closest("[data-sg-section]");
+    if (section) setFold(section, true);
+  };
 
   const setCurrent = (sid) => {
     if (sid === current) return;
@@ -170,6 +217,7 @@ export function mount(root, ctx) {
   };
   const jump = (sid) => {
     const target = page.querySelector(`#sg-${sid}`);
+    if (target) setFold(target, true);
     if (!target) return ctx.navigate(`${BASE}${ROUTES.siteGuide}/${sid}${location.search}`);
     target.scrollIntoView({ block: "start" });
     target.querySelector("h2")?.focus({ preventScroll: true });
@@ -221,15 +269,21 @@ export function mount(root, ctx) {
     runSearch(input.value);
   };
   let reopened = [];
+  let unfolded = [];
   const beforePrint = () => {
     reopened = [...page.querySelectorAll("details:not([open])")];
     for (const d of reopened) d.open = true;
+    unfolded = [...page.querySelectorAll(".sg-body[hidden]")];
+    for (const b of unfolded) b.hidden = false;
   };
   const afterPrint = () => {
     for (const d of reopened) d.open = false;
+    for (const b of unfolded) b.hidden = true;
     reopened = [];
+    unfolded = [];
   };
 
+  page.addEventListener("click", onFold);
   page.querySelector(".sg-toc")?.addEventListener("click", onNavClick);
   select?.addEventListener("change", onSelect);
   input?.addEventListener("input", onInput);
@@ -254,6 +308,7 @@ export function mount(root, ctx) {
 export const unmount = () => cleanup();
 
 export function onClick(e, ctx) {
+  if (onBandClick(e, ctx)) return true;
   const aud = e.target.closest("[data-sg-audience]");
   if (aud) {
     const pick = aud.dataset.sgAudience;

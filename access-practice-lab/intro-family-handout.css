@@ -1,0 +1,187 @@
+/* intro-family-handout.css — the family handout (guides/family-handout[-es].pdf): one Letter page, printed from this
+   sheet by scripts/generate-intro-guide.mjs --only=family. Print only: no page of the lab links it. Tokens from ds.css. */
+@page family {
+  size: Letter;
+  margin: 0.5in;
+}
+.fh {
+  page: family;
+  max-width: 7.5in;
+  margin-inline: auto;
+  color: var(--ink);
+  font-size: 13pt;
+  line-height: 1.36;
+}
+.fh h1,
+.fh h2,
+.fh p,
+.fh ul,
+.fh ol {
+  margin: 0;
+}
+.fh-head {
+  padding: 0.2in 0.3in;
+  border-radius: 14px;
+  background: var(--mi-950, var(--brand));
+  color: #fff;
+}
+.fh-site {
+  font-size: 12pt;
+  font-weight: 700;
+  color: #dfe5f7;
+}
+.fh .fh-head h1 {
+  font-family: var(--font-display, Georgia, serif);
+  font-size: 31pt;
+  line-height: 1.1;
+  color: #fff;
+}
+.fh h2 {
+  font-family: var(--font-display, Georgia, serif);
+  font-size: 17.5pt;
+  margin-bottom: 0.08in;
+}
+.fh-top {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 1.75in;
+  gap: 0.25in;
+  align-items: center;
+  margin-top: 0.18in;
+}
+.fh-what {
+  display: grid;
+  gap: 0.08in;
+}
+.fh-lead {
+  font-size: 14pt;
+}
+.fh-link a {
+  font-weight: 700;
+  color: var(--brand-ink);
+}
+.fh-qr {
+  margin: 0;
+  padding: 0.1in;
+  border: 2px solid var(--line-strong);
+  border-radius: 12px;
+}
+.fh-qr img {
+  display: block;
+  width: 1.5in;
+  height: 1.5in;
+  margin: 0 auto;
+}
+.fh-steps ol {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.12in;
+  padding: 0;
+  list-style: none;
+}
+.fh-steps li {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  column-gap: 0.1in;
+  align-items: center;
+  padding: 0.1in 0.12in;
+  border-radius: 12px;
+  background: var(--brand-soft);
+}
+.fh-steps li .fh-ic {
+  grid-row: span 2;
+}
+.fh-steps li strong {
+  font-size: 14pt;
+}
+.fh-ic {
+  display: grid;
+  place-items: center;
+  width: 0.42in;
+  height: 0.42in;
+  border-radius: 50%;
+  background: var(--brand-ink);
+  color: #fff;
+}
+.fh-ic .ico {
+  width: 0.24in;
+  height: 0.24in;
+}
+.fh-choices,
+.fh-steps,
+.fh-facts {
+  margin-top: 0.18in;
+}
+.fh-choices ul,
+.fh-facts ul {
+  display: grid;
+  gap: 0.08in;
+  padding: 0;
+  list-style: none;
+}
+.fh-choices li {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.12in;
+  align-items: center;
+  padding: 0.08in 0.12in;
+  border-radius: 12px;
+  border-inline-start: 6px solid var(--speaking);
+  background: var(--speaking-soft);
+}
+.fh-choices .fh-talk .fh-ic {
+  background: var(--speaking);
+}
+.fh-choices .fh-write {
+  border-inline-start-color: var(--writing);
+  background: var(--writing-soft);
+}
+.fh-choices .fh-write .fh-ic {
+  background: var(--writing);
+}
+.fh-early {
+  margin-top: 0.06in;
+  font-size: 12pt;
+  color: var(--ink-2);
+}
+.fh-facts li {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.1in;
+  align-items: start;
+}
+.fh-ok {
+  display: grid;
+  place-items: center;
+  width: 0.26in;
+  height: 0.26in;
+  border-radius: 50%;
+  background: var(--sage-200, var(--surface-2));
+  color: var(--sage-900, var(--ink));
+}
+.fh-ok .ico {
+  width: 0.17in;
+  height: 0.17in;
+}
+.fh-teacher {
+  margin-top: 0.2in;
+}
+.fh-teacher p {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.12in;
+}
+.fh-rule {
+  flex: 1;
+  border-bottom: 1.5px solid var(--ink);
+  height: 1.2em;
+}
+@media print {
+  .fh-head,
+  .fh-steps li,
+  .fh-choices li,
+  .fh-ok,
+  .fh-ic {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+}

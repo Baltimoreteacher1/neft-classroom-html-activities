@@ -17,8 +17,157 @@
   font-size: clamp(1.4rem, 1.2rem + 0.8vw, 1.8rem);
   margin: 0 0 var(--s-4);
 }
+/* First screen: welcome, language, grade and one action on the left; Mr. Neft on the right. */
 .tg-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  gap: var(--s-6);
+  align-items: start;
   margin-bottom: var(--s-6);
+}
+.tg-hero-main {
+  display: grid;
+  gap: var(--s-3);
+  justify-items: start;
+}
+.tg-hero-main > *,
+.tg-hero-main .tg-lang {
+  margin: 0;
+}
+.tg-hero .lead {
+  font-size: clamp(1.2rem, 1.1rem + 0.4vw, 1.4rem);
+  color: var(--ink-2);
+}
+.tg-go {
+  margin-top: var(--s-2);
+  min-height: 3.75rem;
+  font-size: 1.3rem;
+}
+.tg-go .ico {
+  width: 1.4rem;
+  height: 1.4rem;
+}
+.tg-hero-guide {
+  min-width: 0;
+}
+#tgChoose {
+  scroll-margin-top: calc(68px + var(--s-4));
+}
+
+/* Tonight, in three steps: a calm row of three, no timers and nothing counted. */
+.tg-tonight {
+  margin-block: var(--s-6);
+}
+.tg-flow {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--s-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: flow;
+}
+.tg-flow li {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  column-gap: var(--s-3);
+  align-items: center;
+  padding: var(--s-4);
+  background: var(--surface);
+  border: 1.5px solid var(--line);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-card);
+  counter-increment: flow;
+}
+.tg-flow-ic {
+  grid-row: span 2;
+  display: grid;
+  place-items: center;
+  width: 3.25rem;
+  height: 3.25rem;
+  border-radius: 50%;
+  background: var(--brand-soft, var(--surface-2));
+  color: var(--brand-ink, var(--ink));
+}
+.tg-flow-celebrate .tg-flow-ic {
+  background: var(--sage-200, var(--surface-2));
+  color: var(--sage-900, var(--ink));
+}
+.tg-flow-ic .ico {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+.tg-flow strong {
+  font-size: 1.25rem;
+  color: var(--ink);
+}
+.tg-flow strong::before {
+  content: counter(flow) ". ";
+  color: var(--ink-2);
+}
+.tg-flow span:last-child {
+  color: var(--ink-2);
+}
+
+/* Studio picture at the top of each card, with the domain word on it. */
+.tg-art {
+  position: relative;
+  margin: calc(-1 * var(--s-5)) calc(-1 * var(--s-5)) 0;
+  background: var(--tg-tone-soft);
+  border-radius: calc(var(--r-lg) - 6px) calc(var(--r-lg) - 6px) 0 0;
+  overflow: hidden;
+}
+.tg-art img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 13rem;
+  object-fit: contain;
+}
+.tg-tag {
+  position: absolute;
+  inset-inline-start: var(--s-3);
+  inset-block-end: var(--s-3);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem 0.8rem;
+  border-radius: 999px;
+  background: var(--tg-tone);
+  color: #fff;
+  font-size: 0.9375rem;
+  font-weight: 800;
+}
+.tg-tag .ico {
+  width: 1.1rem;
+  height: 1.1rem;
+}
+.tg-tag .bi-es {
+  color: #fff;
+  opacity: 1;
+}
+
+/* The printable one-page guide: a quiet link in the footer. */
+.tg-print {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2) var(--s-4);
+}
+.tg-print > span {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: var(--s-1) var(--s-3);
+}
+.tg-print a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 2.75rem;
+}
+.tg-print .ico {
+  width: 1.2rem;
+  height: 1.2rem;
 }
 .tg-lang {
   margin: var(--s-4) 0;
@@ -44,9 +193,9 @@
   gap: var(--s-5);
 }
 .tg-card {
-  --tg-tone: var(--speaking);
-  --tg-tone-ink: var(--speaking-ink);
-  --tg-tone-soft: var(--speaking-soft);
+  --tg-tone: var(--room, var(--speaking));
+  --tg-tone-ink: var(--room-ink, var(--speaking-ink));
+  --tg-tone-soft: var(--room-soft, var(--speaking-soft));
   display: flex;
   flex-direction: column;
   gap: var(--s-4);
@@ -57,11 +206,6 @@
   border-radius: var(--r-lg);
   box-shadow: var(--shadow-card);
   min-width: 0;
-}
-.tg-card.is-write {
-  --tg-tone: var(--writing);
-  --tg-tone-ink: var(--writing-ink);
-  --tg-tone-soft: var(--writing-soft);
 }
 .tg-card-head {
   display: flex;
@@ -284,7 +428,15 @@
   outline-offset: 3px;
 }
 
+@media (max-width: 61rem) {
+  .tg-hero {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
 @media (max-width: 52rem) {
+  .tg-flow {
+    grid-template-columns: minmax(0, 1fr);
+  }
   .tg-cards,
   .tg-answers dl {
     grid-template-columns: minmax(0, 1fr);
@@ -296,6 +448,12 @@
   }
   .tg-card {
     padding: var(--s-4);
+  }
+  .tg-art {
+    margin: calc(-1 * var(--s-4)) calc(-1 * var(--s-4)) 0;
+  }
+  .tg-go {
+    width: 100%;
   }
   .tg-more li {
     grid-template-columns: auto minmax(0, 1fr);

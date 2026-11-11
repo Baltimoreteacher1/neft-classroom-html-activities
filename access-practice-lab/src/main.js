@@ -29,6 +29,13 @@ import { mountReturnBar } from "./intro/return-bar.js";
 import { $, ART, BASE, announce, bandOfId, copyText, storage, toHtml } from "./util.js";
 import * as homeView from "./views/home.js";
 
+// Inside the Guided Tour's live panel (?frame=1 in an iframe) the lab shows only the activity: no top bar, footer,
+// language banner or floating launchers (intro-tour.css, html.is-framed). The class stays for in-frame navigation.
+try {
+  if (window.self !== window.top && new URLSearchParams(location.search).get("frame") === "1")
+    document.documentElement.classList.add("is-framed");
+} catch {}
+
 export const BUILD = "2026.11.04.1";
 // The home route is the only view in the entry module's static dependency graph. Every secondary route is a
 // literal dynamic import so the browser can fetch the learner's chosen destination instead of the entire lab.

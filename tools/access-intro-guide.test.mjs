@@ -300,8 +300,8 @@ test("the QR files are the single code for ENTRANCE.url, and the importable modu
       .filter((f) => /^qr-/.test(f))
       .sort()
       .join(),
-    "qr-start.png,qr-start.svg",
-    "exactly one QR code",
+    "qr-family.png,qr-family.svg,qr-start.png,qr-start.svg",
+    "one QR code for teachers (start) and one for families (practice-together), nothing else",
   );
   assert.equal(ENTRANCE.url, "https://thelanguagepage.com/access-practice-lab/start");
 });

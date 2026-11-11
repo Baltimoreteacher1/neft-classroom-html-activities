@@ -1,13 +1,15 @@
 // Teacher start (/start and its pages). One stable, shareable place that answers "where do I start?" with three
 // choices, then hands each choice to its own page:
-//   /start          the three choices           /start/tour      guided tour (5 stops)
+//   /start          grade picker + three choices /start/tour      guided tour (6 stops, grade-aware)
 //   /start/explore  Try It. Adapt It. Use It.   /start/guide     quick guide (printable)
-//   /start/lesson   featured lesson             /start/present   presenter view (30 minutes)
+//   /start/lesson   featured lesson             /start/present   presenter view (still answers; not linked on the site)
 // The route names avoid the word "teacher": Pages gates any path containing it behind the teacher password.
 import { html, icon } from "../util.js";
-import { FEATURED_LESSON, ROUTES, START_CHOICES } from "./data.js";
+import { bandPickerHTML, onBandClick, pickName, teacherPick } from "./band.js";
+import { START_CHOICES } from "./data.js";
+import { bindGuide } from "./guide.js";
 import { loadIntro } from "./state.js";
-import { onOverviewClick, overviewHTML } from "./start-overview.js";
+import { onOverviewClick, overviewHTML, tourHref } from "./start-overview.js";
 import { teacherBand } from "./shell.js";
 import { labHref } from "./ui.js";
 
@@ -22,10 +24,11 @@ const PAGES = {
 
 let current = null;
 
-function choiceHTML(c, resume) {
+function choiceHTML(c, resume, pick) {
   const label = c.id === "tour" && resume ? `Resume the tour at Step ${resume}` : c.name;
+  const href = c.id === "tour" ? tourHref(pick, resume) : labHref(c.route);
   return html`<li>
-    <a class="in-choice is-${c.id}" href="${labHref(c.route)}">
+    <a class="in-choice is-${c.id}" href="${href}">
       <span class="in-ic" aria-hidden="true">${icon(c.icon)}</span>
       <span class="in-choice-text"><strong>${label}</strong><span>${c.detail}</span></span>
       <span class="in-go" aria-hidden="true">${icon("arrow-right")}</span>
@@ -33,33 +36,37 @@ function choiceHTML(c, resume) {
   </li>`;
 }
 
-const CHIPS = ["2 pathways · 4 activities", "No student accounts", "Students choose their help", "Feedback, never scores"];
+const CHIPS = ["Kindergarten to Grade 8", "No student accounts", "Students choose their help", "Feedback, never scores"];
+const TITLE = "Start here: The Language Page for teachers";
 
-function hubHTML() {
+function hubHTML(ctx) {
+  const pick = teacherPick(ctx);
   const saved = loadIntro().tour;
   const resume = saved && Number.isInteger(saved.stop) && saved.stop > 0 ? saved.stop + 1 : 0;
-  const L = FEATURED_LESSON;
   return html`<article class="in-page in-hub" aria-labelledby="introTitle">
     ${teacherBand({
       active: "overview",
       size: "hub",
       eyebrow: "For teachers · The Language Page",
-      title: "Start Here: Speaking and Writing",
-      lead: "Try one speaking activity and one writing activity as a learner, then leave with a lesson you can use.",
+      title: TITLE,
+      lead: "Choose your grades, then see one real activity for each language domain: Listening, Speaking, Reading and Writing.",
       meta: html`<ul class="ts-chips" aria-label="At a glance">${CHIPS.map((c) => html`<li>${c}</li>`)}</ul>`,
-      aside: html`<a class="ts-feature" href="${labHref(ROUTES.lesson)}">
-        <img src="${L.picture.src}" alt="" width="320" height="200" />
-        <span class="ts-feature-text"><small>${L.label} · ${L.minutes} minutes</small><strong>${L.title}</strong></span>
-      </a>`,
     })}
-    <ul class="in-choices ts-lift" aria-label="Three ways to start">
-      ${START_CHOICES.map((c) => choiceHTML(c, resume))}
-    </ul>
-    ${overviewHTML()}
+    <div class="ov-start ts-lift">
+      ${bandPickerHTML(pick, { hint: `Showing ${pickName(pick)}. Your choice is saved on this device and carried into the tour.` })}
+      <ul class="in-choices" aria-label="Three ways to start">
+        ${START_CHOICES.map((c) => choiceHTML(c, resume, pick))}
+      </ul>
+    </div>
+    ${overviewHTML(pick)}
   </article>`;
 }
 
-const hub = { render: async () => ({ title: "Start Here: Speaking and Writing", html: hubHTML() }), onClick: onOverviewClick };
+const hub = {
+  render: async (ctx) => ({ title: TITLE, html: hubHTML(ctx) }),
+  mount: () => bindGuide(),
+  onClick: (e, ctx) => onBandClick(e, ctx) || onOverviewClick(e),
+};
 
 export async function render(ctx) {
   const loader = PAGES[ctx.route.id || ""];

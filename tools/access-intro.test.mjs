@@ -19,7 +19,7 @@ const { itemById } = await import("../access-practice-lab/src/content/scaffold-i
 const { checkUpgrade } = await import("../access-practice-lab/src/lang/scaffold-check.js");
 const { checkResponse } = await import("../access-practice-lab/src/intro/lesson.js");
 const { curatedHere } = await import("../access-practice-lab/src/intro/return-bar.js");
-const { TOUR_COPY } = await import("../access-practice-lab/src/intro/tour-data.js");
+const { BAND_TOUR } = await import("../access-practice-lab/src/intro/tour-bands.js");
 const { PLAN_SAMPLES } = await import("../access-practice-lab/src/intro/explore-data.js");
 const { build } = await import("./generate-intro-curated-list.mjs");
 
@@ -79,7 +79,7 @@ test("the single entrance is the start page", () => {
 test("sample sentences pass the lab's own checks", () => {
   const upgrade = itemById("lu68-argue-phones");
   assert.equal(checkUpgrade(upgrade, D.PREVIEWS.upgrade.sample).ok, true);
-  const tourSample = TOUR_COPY.flatMap((c) => c.fields).find((f) => f.id === "upgraded").sample;
+  const tourSample = BAND_TOUR["6-8"].writing.sample;
   assert.equal(checkUpgrade(upgrade, tourSample).ok, true, tourSample);
   const improved = checkResponse(D.FEATURED_LESSON.sample.improved);
   assert.ok(
@@ -135,7 +135,7 @@ test("pacing tables match the brief exactly", () => {
   );
   assert.deepEqual(
     D.TOUR_STOPS.map((s) => s.name),
-    ["Start here", "Try speaking", "Try writing", "Connect the two", "Use it tomorrow"],
+    ["Choose your grades", "Listening", "Speaking", "Reading", "Writing", "Plan one class"],
   );
 });
 
