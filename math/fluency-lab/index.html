@@ -83,10 +83,23 @@
     <script>document.documentElement.dataset.publisherDemo = new URLSearchParams(location.search).get('publisher-demo') === '1' ? '1' : '0';</script>
     <script type="module" src="./app.js"></script>
     <script type="module">
-      import { MathFluencyLabEngine, SEED_EXERCISE } from '../../src/components/MathFluencyLabEngine.js';
+      import { MathFluencyLabEngine, SEED_EXERCISE, adaptPracticeItem } from '../../src/components/MathFluencyLabEngine.js';
       if (document.documentElement.dataset.publisherDemo === '1') {
         document.getElementById('publisher-demo-section').hidden = false;
-        new MathFluencyLabEngine('fluency-lab-root').loadExercise(SEED_EXERCISE);
+        const skillParam = new URLSearchParams(location.search).get('publisher-skill');
+        let schema = SEED_EXERCISE;
+        if (skillParam && skillParam.includes(':')) {
+          const [gStr, id] = skillParam.split(':');
+          const { GRADES, generateProblem } = await import('./problem-bank.js');
+          const gradeObj = GRADES.find((g) => g.grade === Number(gStr));
+          const skillObj = gradeObj?.skills.find((s) => s.id === id);
+          if (skillObj) {
+            const raw = generateProblem(skillObj);
+            raw.skill = skillObj;
+            schema = adaptPracticeItem(raw) || SEED_EXERCISE;
+          }
+        }
+        new MathFluencyLabEngine('fluency-lab-root').loadExercise(schema);
       }
     </script>
     <script>

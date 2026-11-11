@@ -658,6 +658,7 @@ export const ES = {
   "Trail stops": "Paradas del sendero",
   "Triple Star": "Triple estrella",
   "Try again": "Intentar otra vez",
+  "Try an isomorphic problem": "Prueba un problema parecido",
   "Try {game} in the Game Room at eduwonderlab.com/math/fluency-lab/. There are no timers.":
     "Prueben {game} en la Sala de juegos en eduwonderlab.com/math/fluency-lab/. No hay cronómetros.",
   "Two-step equations": "Ecuaciones de dos pasos",

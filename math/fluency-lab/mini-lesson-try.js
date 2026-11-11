@@ -11,7 +11,7 @@ import { spanishLine } from "./mini-lesson-learn.js";
 import { mountCoordinateExplorer } from "./coordinate-explorer.js";
 import { validateAnswer } from "./problem-bank.js";
 import { whyFor } from "./step-whys.js";
-import { interactivePicture, mathText, stepVisual } from "./trail-pictures.js";
+import { interactivePicture, mathRichText, mathText, stepVisual } from "./trail-pictures.js";
 import { renderInlineProblemModel } from "./visual-lab.js";
 
 const SETTLED = new Set(["assisted", "revised", "correct"]);
@@ -34,10 +34,10 @@ function answerControl(problem, run, lang, disabled) {
 const hintList = (problem, run, lang) =>
   problem.hints
     .slice(0, run.hints)
-    .map((hint, i) => `<li><span class="ml-label">${esc(t("Hint {n}", { n: i + 1 }))}</span> <span lang="${hint.es && lang === "es" ? "es" : "en"}">${mathText(pick(hint, lang))}</span></li>`)
+    .map((hint, i) => `<li><span class="ml-label">${esc(t("Hint {n}", { n: i + 1 }))}</span> <span lang="${hint.es && lang === "es" ? "es" : "en"}">${mathRichText(pick(hint, lang))}</span></li>`)
     .join("");
 
-const workedList = (problem) => `<ol class="ml-steps ml-steps-worked">${problem.steps.map((line, i) => `<li class="ml-step${i === problem.steps.length - 1 ? " ml-step-final" : ""}"><span class="ml-step-num" aria-hidden="true">${i + 1}</span><div class="ml-step-body"><p class="ml-step-text">${mathText(line)}</p>${whyFor(line, i, problem.steps) ? `<p class="ml-step-why">${esc(whyFor(line, i, problem.steps))}</p>` : ""}${stepVisual(line)}</div></li>`).join("")}</ol>`;
+const workedList = (problem) => `<ol class="ml-steps ml-steps-worked">${problem.steps.map((line, i) => `<li class="ml-step${i === problem.steps.length - 1 ? " ml-step-final" : ""}"><span class="ml-step-num" aria-hidden="true">${i + 1}</span><div class="ml-step-body"><p class="ml-step-text">${mathRichText(line)}</p>${whyFor(line, i, problem.steps) ? `<p class="ml-step-why">${esc(whyFor(line, i, problem.steps))}</p>` : ""}${stepVisual(line)}</div></li>`).join("")}</ol>`;
 
 const trackerState = (run) => (SETTLED.has(run.phase) ? (run.phase === "assisted" ? t("Got it") : t("Needed the steps")) : t("Not done yet"));
 

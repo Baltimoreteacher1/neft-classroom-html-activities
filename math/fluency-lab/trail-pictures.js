@@ -961,12 +961,29 @@ export function handleModelTap(target) {
   }
   return false;
 }
-// Exponents print as superscripts; everything else stays plain text.
+// Exponents print as superscripts and fractions render stacked vertically.
+const FRAC_PATTERN =
+  /(^|[^\w/])(?:([−-]?\s*\d{1,4})|([a-zA-Z]))\/(?:(\d{1,4})|([a-zA-Z]))(?=[^\w/]|$)/g;
+
+export const formatVerticalFractions = (html) =>
+  String(html)
+    .split(/(<[^>]+>)/g)
+    .map((part, idx) => {
+      if (idx % 2 === 1) return part;
+      return part.replace(FRAC_PATTERN, (full, lead, nDigits, nVar, dDigits, dVar) => {
+        if (nVar && dVar) return full;
+        const numText = (nDigits ? nDigits.replace(/\s+/g, "") : nVar);
+        const denText = dDigits || dVar;
+        if (!denText || denText === "0") return full;
+        const spoken = `${numText.replace("-", "negative ").replace("−", "negative ")} over ${denText}`;
+        return `${lead}<span class="v-frac-wrap" role="math" aria-label="${spoken}"><span class="v-frac"><span class="v-num">${numText}</span><span class="v-den">${denText}</span></span></span>`;
+      });
+    })
+    .join("");
+
 export const mathText = (text) => esc(text).replace(/\^(-?\d+)/g, "<sup>$1</sup>");
 
-// Format horizontal fractions (e.g. 2/3) as vertical stacked fractions with numerator and denominator.
-export const formatVerticalFractions = (text) =>
-  String(text).replace(/(^|[^\w/])(\d{1,3})\/(\d{1,3})(?=[^\w/]|$)/g, '$1<span class="v-frac"><span class="v-num">$2</span><span class="v-den">$3</span></span>');
+export const mathRichText = (text) => formatVerticalFractions(mathText(text));
 
 // Super-simple guided steps: one short number sentence at a time, revealed by tapping "Next step".
 // The "Your turn" row for a step that ends in a partial result, or null when the step is plain text or solved.
@@ -975,7 +992,7 @@ export function openFillRow(line, i, steps, id) {
   const key = fillKey(id, i, line);
   if (!fill || isSolved(key)) return null;
   register(key, fill.result);
-  return `<span class="tr-step-text tr-fill-row">${t("Your turn:")} ${mathText(fill.left)} = <input class="tr-fill" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" size="${Math.max(3, fill.result.length + 1)}" data-fill="${esc(key)}" aria-label="${esc(t("Type the missing number: {sum}", { sum: fill.left }))}" /><span class="tr-fill-note" role="status"></span></span>`;
+  return `<span class="tr-step-text tr-fill-row">${t("Your turn:")} ${mathRichText(fill.left)} = <input class="tr-fill" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" size="${Math.max(3, fill.result.length + 1)}" data-fill="${esc(key)}" aria-label="${esc(t("Type the missing number: {sum}", { sum: fill.left }))}" /><span class="tr-fill-note" role="status"></span></span>`;
 }
 
 export const stepWaiting = (steps, count, id) =>
@@ -1005,7 +1022,7 @@ export function stepsBlock(steps, shown, { id, cap = steps.length } = {}) {
     const why = whyFor(line, i, steps);
     const badge = stepPhaseBadge(line, i, steps);
     const badgeHtml = badge ? `<span class="tr-step-badge">${esc(badge)}</span>` : "";
-    const text = open ? row : `<span class="tr-step-text">${badgeHtml}${highlightVocab(mathText(line))}</span>`;
+    const text = open ? row : `<span class="tr-step-text">${badgeHtml}${highlightVocab(mathRichText(line))}</span>`;
     const whyHtml = why
       ? `<div class="tr-step-why"><span class="tr-why-icon" aria-hidden="true">💡</span><span class="tr-why-copy">${esc(why)}</span></div>`
       : "";

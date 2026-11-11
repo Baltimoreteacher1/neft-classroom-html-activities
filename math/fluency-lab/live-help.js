@@ -6,6 +6,7 @@ import { t } from "./i18n.js";
 import { drawerSeed } from "./problem-numbers.js";
 import { peekCap, stepLeaks } from "./step-leak.js";
 import { stepPlayer } from "./step-player.js";
+import { mathRichText } from "./trail-pictures.js";
 
 const esc = (value) =>
   String(value).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;");
@@ -23,9 +24,9 @@ export function liveHelpHtml(item, copy) {
     ? `<div class="student-expl-tool-callout"><button type="button" class="expl-tool-launcher" data-open-tool="${esc(tool)}"><span>🧮</span> ${esc(t("Open the model with my numbers"))}</button></div>`
     : "";
   return `<div class="student-expl-card live-help">
-    ${note ? `<p class="student-expl-goal">${esc(note)}</p>` : ""}
+    ${note ? `<p class="student-expl-goal">${mathRichText(note)}</p>` : ""}
     ${steps}
-    ${!steps && hint ? `<div class="student-expl-tip"><strong>💡</strong> ${esc(hint)}</div>` : ""}
+    ${!steps && hint ? `<div class="student-expl-tip"><strong>💡</strong> ${mathRichText(hint)}</div>` : ""}
     ${open}
   </div>`;
 }

@@ -2,6 +2,7 @@
 // starting-point check, patterns the lab is noticing, and the Mistake Repair Studio. Pure logic lives in the sibling modules;
 // this file only draws and wires. Every string is bilingual and nothing is timed.
 import { getLang } from "../i18n.js";
+import { mathText } from "../trail-pictures.js";
 import { MathVisualEngine, esc, seeded } from "./engine-core.js";
 import { getModel } from "./models.js";
 import { buildGraph } from "./knowledge-graph.js";
@@ -122,7 +123,7 @@ function runPlacement(stage, ctx, done) {
   const show = () => {
     const q = place.next();
     if (!q || place.done) return finish();
-    stage.innerHTML = `<div class="e8ap-q"><p class="e8ap-count">${esc(L(`Question ${place.history.length + 1}`, `Pregunta ${place.history.length + 1}`))}</p><p class="e8ap-prompt">${esc(q.problem.question)}</p><label class="e8ap-label" for="e8ap-ans">${esc(L("Your answer", "Tu respuesta"))}</label><div class="e8ap-row"><input id="e8ap-ans" class="e8ap-input" autocomplete="off" inputmode="text"><button type="button" class="e8ap-btn e8ap-primary" data-go>${esc(L("Next", "Siguiente"))}</button><button type="button" class="e8ap-btn" data-unsure>${esc(L("I am not sure", "No estoy seguro"))}</button></div></div>`;
+    stage.innerHTML = `<div class="e8ap-q"><p class="e8ap-count">${esc(L(`Question ${place.history.length + 1}`, `Pregunta ${place.history.length + 1}`))}</p><p class="e8ap-prompt">${mathText(q.problem.question)}</p><label class="e8ap-label" for="e8ap-ans">${esc(L("Your answer", "Tu respuesta"))}</label><div class="e8ap-row"><input id="e8ap-ans" class="e8ap-input" autocomplete="off" inputmode="text"><button type="button" class="e8ap-btn e8ap-primary" data-go>${esc(L("Next", "Siguiente"))}</button><button type="button" class="e8ap-btn" data-unsure>${esc(L("I am not sure", "No estoy seguro"))}</button></div></div>`;
     const input = stage.querySelector("#e8ap-ans");
     input.focus();
     const submit = (unsure) => {
@@ -208,7 +209,7 @@ export function mountRepairStudio(host, ctx) {
         findSkill(m.key).grade === Number(grade),
     )
     .slice(0, 6);
-  host.innerHTML = `<section class="e8ap e8rs" aria-labelledby="e8rs-title"><h3 id="e8rs-title">${esc(L("Repair studio", "Estudio de reparación"))}</h3><p class="e8ap-intro">${esc(L("Pick a mistake. You will look at it, see why it happens in a model, fix the idea, and then solve a new problem on your own.", "Elige un error. Lo mirarás, verás por qué pasa en un modelo, corregirás la idea y luego resolverás un problema nuevo tú solo."))}</p>${open.length ? `<ul class="e8rs-list">${open.map((m, i) => `<li><span class="e8rs-q">${esc(m.question)}</span> <span class="e8ap-count">${esc(L("You wrote", "Escribiste"))}: ${esc(m.submitted)}</span> <button type="button" class="e8ap-btn" data-e8rs="${i}">${esc(L("Repair this", "Repararlo"))}</button></li>`).join("")}</ul>` : `<p>${esc(L("No open mistakes for this grade. Nice work!", "No hay errores abiertos en este grado. ¡Buen trabajo!"))}</p>`}<div class="e8ap-stage" aria-live="polite"></div></section>`;
+  host.innerHTML = `<section class="e8ap e8rs" aria-labelledby="e8rs-title"><h3 id="e8rs-title">${esc(L("Repair studio", "Estudio de reparación"))}</h3><p class="e8ap-intro">${esc(L("Pick a mistake. You will look at it, see why it happens in a model, fix the idea, and then solve a new problem on your own.", "Elige un error. Lo mirarás, verás por qué pasa en un modelo, corregirás la idea y luego resolverás un problema nuevo tú solo."))}</p>${open.length ? `<ul class="e8rs-list">${open.map((m, i) => `<li><span class="e8rs-q">${mathText(m.question)}</span> <span class="e8ap-count">${esc(L("You wrote", "Escribiste"))}: ${mathText(m.submitted)}</span> <button type="button" class="e8ap-btn" data-e8rs="${i}">${esc(L("Repair this", "Repararlo"))}</button></li>`).join("")}</ul>` : `<p>${esc(L("No open mistakes for this grade. Nice work!", "No hay errores abiertos en este grado. ¡Buen trabajo!"))}</p>`}<div class="e8ap-stage" aria-live="polite"></div></section>`;
   const stage = host.querySelector(".e8ap-stage");
   host.onclick = (event) => {
     const b = event.target.closest("[data-e8rs]");
@@ -250,7 +251,7 @@ function runRepair(stage, studio, { tutor, store, onRecord, entry, redo }) {
     const dots = `<p class="e8ap-count" aria-label="${esc(L("Step", "Paso"))}">${esc(L("Step", "Paso"))} ${Math.min(studio.index + 1, 6)} / 6</p>`;
     if (step === "review") {
       const v = studio.reviewView();
-      stage.innerHTML = `${dots}<h4>${esc(L("Look at your work", "Mira tu trabajo"))}</h4><p class="e8ap-prompt">${esc(v.question)}</p><p>${esc(L("You wrote", "Escribiste"))}: <strong>${esc(v.response)}</strong></p><button type="button" class="e8ap-btn e8ap-primary" data-next>${esc(L("What happened?", "¿Qué pasó?"))}</button>`;
+      stage.innerHTML = `${dots}<h4>${esc(L("Look at your work", "Mira tu trabajo"))}</h4><p class="e8ap-prompt">${mathText(v.question)}</p><p>${esc(L("You wrote", "Escribiste"))}: <strong>${mathText(v.response)}</strong></p><button type="button" class="e8ap-btn e8ap-primary" data-next>${esc(L("What happened?", "¿Qué pasó?"))}</button>`;
       stage.querySelector("[data-next]").onclick = () => {
         studio.index = 1;
         paint();
@@ -311,7 +312,7 @@ function runRepair(stage, studio, { tutor, store, onRecord, entry, redo }) {
         else stage.querySelector(".e8ap-why").textContent = pick(r.feedback);
       };
     } else if (step === "fresh") {
-      stage.innerHTML = `${dots}<h4>${esc(L("Now try a new one on your own", "Ahora prueba uno nuevo tú solo"))}</h4><p class="e8ap-prompt">${esc(studio.fresh.question)}</p><label class="e8ap-label" for="e8rs-f">${esc(L("Your answer", "Tu respuesta"))}</label><div class="e8ap-row"><input id="e8rs-f" class="e8ap-input" autocomplete="off"><button type="button" class="e8ap-btn e8ap-primary" data-go>${esc(L("Check", "Comprobar"))}</button><button type="button" class="e8ap-btn" data-hint>${esc(L("Hint", "Pista"))}</button></div><p class="e8ap-why" role="status"></p>`;
+      stage.innerHTML = `${dots}<h4>${esc(L("Now try a new one on your own", "Ahora prueba uno nuevo tú solo"))}</h4><p class="e8ap-prompt">${mathText(studio.fresh.question)}</p><label class="e8ap-label" for="e8rs-f">${esc(L("Your answer", "Tu respuesta"))}</label><div class="e8ap-row"><input id="e8rs-f" class="e8ap-input" autocomplete="off"><button type="button" class="e8ap-btn e8ap-primary" data-go>${esc(L("Check", "Comprobar"))}</button><button type="button" class="e8ap-btn" data-hint>${esc(L("Hint", "Pista"))}</button></div><p class="e8ap-why" role="status"></p>`;
       const why = stage.querySelector(".e8ap-why");
       stage.querySelector("[data-hint]").onclick = () => {
         why.textContent = pick(studio.freshHint());

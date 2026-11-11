@@ -56,6 +56,7 @@ try {
   await page.goto(`${base}/access-practice-lab/vocab-curriculum/g6-evaluate-sources?grades=6-8`, {
     waitUntil: "domcontentloaded",
   });
+  await page.waitForSelector(".vc-rail");
   assert.match(await page.locator("body").innerText(), /Evaluate a source/);
   assert.ok(await page.locator(".vc-rail").count());
   assert.deepEqual(

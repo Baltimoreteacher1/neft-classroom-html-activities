@@ -211,10 +211,11 @@ try {
   const dispatch = await page.evaluate(async () => {
     const { adaptPracticeItem } = await import('/src/components/MathFluencyLabEngine.js');
     const supported = adaptPracticeItem({ question: '15 is 25% of what number?', answers: ['60'], skill: { grade: 6, id: 'percent-whole' } });
-    const unsupported = adaptPracticeItem({ question: '2 + 3 = ?', answers: ['5'], skill: { grade: 1, id: 'add-20' } });
-    return { answer: supported?.correctAnswer, unsupported };
+    const addedSkill = adaptPracticeItem({ question: '2 + 3 = ?', answers: ['5'], skill: { grade: 1, id: 'add-20' } });
+    const invalid = adaptPracticeItem({ question: 'Missing answer', answers: [], skill: { grade: 1, id: 'add-20' } });
+    return { answer: supported?.correctAnswer, addedModel: addedSkill?.modelComponent, invalid };
   });
-  assert.deepEqual(dispatch, { answer: '60', unsupported: null }, 'practice adapter only routes supported structures');
+  assert.deepEqual(dispatch, { answer: '60', addedModel: 'interactive-counters-frame', invalid: null }, 'practice adapter routes all supported skills and rejects incomplete items');
   const customAnswer = await page.evaluate(async () => {
     const { MathFluencyLabEngine, SEED_EXERCISE } = await import('/src/components/MathFluencyLabEngine.js');
     const host = document.createElement('div');
@@ -250,6 +251,126 @@ try {
   await root.locator('#sub-answer').fill('4');
   await root.locator('#sandbox-next').click();
   assert.match(await root.locator('#content').textContent(), /An answer of 18 treats 3 cups of flour/);
+  await root.locator('#sibling').click();
+  assert.match(await root.locator('h2').textContent(), /cups of flour/);
+
+  // Domain Web Component models, negative/variable stacked fractions, choices, WCAG 2.1 AA geometry & 4x CPU budget
+  const domainCheck = await page.evaluate(async () => {
+    const { MathFluencyLabEngine, adaptPracticeItem } = await import('/src/components/MathFluencyLabEngine.js');
+    const { GRADES, generateProblem } = await import('/math/fluency-lab/problem-bank.js');
+    const allSkills = GRADES.flatMap((g) => g.skills);
+    const adaptedModels = new Set();
+    for (const sk of allSkills) {
+      const p = generateProblem(sk);
+      p.skill = sk;
+      const schema = adaptPracticeItem(p);
+      if (!schema) throw new Error(`Failed adapting ${sk.grade}:${sk.id}`);
+      adaptedModels.add(schema.modelComponent);
+    }
+
+    // Exercise non-ratio models in live Shadow DOM: fraction ops, choices, integer ops, algebra balance
+    const host = document.createElement('div');
+    host.id = 'domain-acceptance-host';
+    document.body.append(host);
+    const engine = new MathFluencyLabEngine(host.id);
+
+    // 1. Fraction subtraction with negative result + stacked fraction verification
+    const fracSchema = adaptPracticeItem({
+      question: '-1/5 − 4/6 = ?',
+      answers: ['-13/15'],
+      kind: 'fraction',
+      skill: { grade: 7, id: 'fraction-ops', generator: 'fractionOp', standard: '7.NS.A.1' },
+    });
+    engine.loadExercise(fracSchema);
+    const fracNodes = host.shadowRoot.querySelectorAll('h2 .math-fraction').length;
+
+    // 2. Choice grid + arrow keyboard interaction
+    const choiceSchema = adaptPracticeItem({
+      question: '5/8 ___ 6/8',
+      answers: ['<'],
+      choices: ['<', '=', '>'],
+      kind: 'choice',
+      skill: { grade: 3, id: 'fraction-compare', generator: 'fractionCompare', standard: '3.NF.A.3d' },
+    });
+    engine.loadExercise(choiceSchema);
+    const choiceButtons = [...host.shadowRoot.querySelectorAll('.choice-btn')];
+    const minChoiceHeight = Math.min(...choiceButtons.map((b) => b.getBoundingClientRect().height));
+    choiceButtons[2].click(); // wrong ('>')
+    const l1Hint = host.shadowRoot.getElementById('conceptual-hint')?.textContent || '';
+    host.shadowRoot.querySelector('.choice-btn[data-choice="<"]')?.click();
+    const completedChoice = !!host.shadowRoot.getElementById('next');
+
+    // 3. Linear equation algebra balance + L2 interactive check + cancelable sibling event
+    const eqSchema = adaptPracticeItem({
+      question: '8x + 7 = 135. Find x.',
+      answers: ['16'],
+      skill: { grade: 7, id: 'equations', generator: 'solve', standard: '7.EE.B.4a' },
+    });
+    engine.loadExercise(eqSchema);
+    host.shadowRoot.getElementById('answer').value = '999';
+    host.shadowRoot.getElementById('check').click();
+    host.shadowRoot.getElementById('answer').value = '888';
+    host.shadowRoot.getElementById('check').click();
+    const sandboxDisabledBefore = host.shadowRoot.getElementById('sandbox-next').disabled;
+    host.shadowRoot.querySelector('interactive-algebra-balance')?.shadowRoot?.getElementById('ab-move')?.click();
+    const subIn = host.shadowRoot.getElementById('sub-answer');
+    subIn.value = '16';
+    subIn.dispatchEvent(new Event('input'));
+    const sandboxEnabledAfter = !host.shadowRoot.getElementById('sandbox-next').disabled;
+    host.shadowRoot.getElementById('sandbox-next').click();
+    let siblingDispatched = false;
+    host.addEventListener('fluency-sibling-request', (e) => {
+      siblingDispatched = Boolean(e.detail?.schema?.prompt);
+    }, { once: true });
+    host.shadowRoot.getElementById('sibling').click();
+    return {
+      totalSkills: allSkills.length,
+      adaptedModelCount: adaptedModels.size,
+      fracNodes,
+      minChoiceHeight,
+      hasL1Hint: l1Hint.length > 0,
+      completedChoice,
+      sandboxDisabledBefore,
+      sandboxEnabledAfter,
+      siblingDispatched,
+    };
+  });
+  assert.equal(domainCheck.totalSkills, 128, 'all 128 skills are present');
+  assert.equal(domainCheck.adaptedModelCount, 10, 'all 10 domain Web Component models used across 128 skills');
+  assert.ok(domainCheck.fracNodes >= 2, 'negative fraction renders stacked .math-fraction notation');
+  assert.ok(domainCheck.minChoiceHeight >= 44, 'choice targets meet >= 44px WCAG 2.1 AA touch size');
+  assert.equal(domainCheck.hasL1Hint, true, 'L1 scaffold displays conceptual hint');
+  assert.equal(domainCheck.completedChoice, true, 'choice answer resolves to MASTERY_COMMITTED');
+  assert.equal(domainCheck.sandboxDisabledBefore, true, 'L2 gates progression before model manipulation');
+  assert.equal(domainCheck.sandboxEnabledAfter, true, 'L2 unlocks after interacting with domain Web Component and sub-answer');
+  assert.equal(domainCheck.siblingDispatched, true, 'sibling button dispatches fluency-sibling-request');
+
+  // Mobile 390px + prefers-reduced-motion + 4x CPU throttling performance/layout check across new skills
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.setViewportSize({ width: 390, height: 844 });
+  const cdp = await page.context().newCDPSession(page);
+  await cdp.send('Emulation.setCPUThrottlingRate', { rate: 4 });
+  const t0 = Date.now();
+  for (const sk of ['7:fraction-ops', '7:equations', '4:angle-measure', '6:data-displays']) {
+    await page.goto(`${demoUrl}&publisher-skill=${sk}`);
+    const metrics = await page.evaluate(() => {
+      const host = document.getElementById('fluency-lab-root');
+      const sr = host?.shadowRoot;
+      const buttons = [...(sr?.querySelectorAll('button') || [])];
+      const modelBtns = [...(sr?.querySelector('[id="content"] > *:first-child')?.shadowRoot?.querySelectorAll('button') || [])];
+      const allBtns = [...buttons, ...modelBtns].filter((b) => b.getBoundingClientRect().width > 0);
+      const smallBtns = allBtns.filter((b) => b.getBoundingClientRect().height < 44);
+      const overflow = document.documentElement.scrollWidth > document.documentElement.clientWidth;
+      return { smallCount: smallBtns.length, overflow, liveRegion: Boolean(sr?.querySelector('[aria-live="polite"]')) };
+    });
+    assert.equal(metrics.smallCount, 0, `${sk} has zero interactive buttons < 44px at 390px`);
+    assert.equal(metrics.overflow, false, `${sk} has no horizontal overflow at 390px`);
+    assert.equal(metrics.liveRegion, true, `${sk} exposes aria-live="polite"`);
+  }
+  const elapsedMs = Date.now() - t0;
+  assert.ok(elapsedMs < 30000, `4x CPU throttled 4-skill load stayed responsive (${elapsedMs}ms)`);
+  await cdp.send('Emulation.setCPUThrottlingRate', { rate: 1 });
+
   assert.deepEqual(errors, [], 'no page errors');
   console.log('Publisher engine browser acceptance passed');
 } finally {

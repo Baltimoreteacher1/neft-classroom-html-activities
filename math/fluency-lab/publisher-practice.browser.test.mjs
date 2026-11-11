@@ -160,7 +160,42 @@ try {
   const wholeSession = await wholePage.evaluate(() => JSON.parse(localStorage.getItem('ewl-fluency-session-v2') || 'null'));
   assert.equal(wholeSession?.session.correct, 1);
   assert.equal(wholeSession?.session.independentCorrect, 0, 'inverse-percent correction remains supported work');
+
+  // Verify live isomorphic sibling button participates in live practice queue & evidence flow
+  await wholeHost.locator('#next').click();
+  await wholePage.locator('#publisher-practice-root h2').waitFor({ state: 'visible' });
+  const sibPrompt = (await wholeHost.locator('h2').textContent()).trim();
+  const sibNums = sibPrompt.match(/^([\d.]+) is (\d+)% of what number\?$/);
+  assert.ok(sibNums, 'sibling problem rendered inside live practice session');
+  await wholeHost.locator('#answer').fill(String(Number(sibNums[1]) * 100 / Number(sibNums[2])));
+  await wholeHost.locator('#check').click();
+  await wholePage.locator('#next-problem').waitFor({ state: 'visible' });
+  const afterSibSession = await wholePage.evaluate(() => JSON.parse(localStorage.getItem('ewl-fluency-session-v2') || 'null'));
+  assert.equal(afterSibSession?.session.answered, 2, 'sibling answer incremented answered count in real session');
+  assert.equal(afterSibSession?.session.correct, 2, 'sibling mastery counted in real session evidence');
   await wholeContext.close();
+
+  // Verify non-ratio skill (5:fraction-add) keeps legacy practice UI, exclusive LabState FSM, stacked .v-frac, & sibling queue
+  const fracContext = await browser.newContext();
+  await fracContext.addInitScript(() => { Math.random = () => 0.3; });
+  const fracPage = await fracContext.newPage();
+  fracPage.on('pageerror', error => errors.push(error.message));
+  await fracPage.goto(`http://127.0.0.1:${server.httpServer.address().port}/math/fluency-lab/?grade=5&skill=fraction-add&start=practice`);
+  await fracPage.locator('#question .v-frac').first().waitFor({ state: 'visible' });
+  const initialLabState = await fracPage.locator('#problem-arena').getAttribute('data-lab-state');
+  assert.equal(initialLabState, 'PRESENTATION', 'live app starts in PRESENTATION state');
+  await fracPage.locator('#answer-input').fill('2/99');
+  await fracPage.locator('#check-answer').click();
+  assert.equal(await fracPage.locator('#problem-arena').getAttribute('data-lab-state'), 'SCAFFOLD_L1_PROMPT', 'first miss enters SCAFFOLD_L1_PROMPT');
+  assert.ok(await fracPage.locator('#feedback-answers .v-frac').count() >= 1, 'entered fraction renders stacked .v-frac in feedback');
+  await fracPage.locator('#answer-input').fill('2/99');
+  await fracPage.locator('#check-answer').click();
+  assert.equal(await fracPage.locator('#problem-arena').getAttribute('data-lab-state'), 'RESOLVED_EXPLANATION', 'second miss reaches RESOLVED_EXPLANATION');
+  assert.ok(await fracPage.locator('#problem-visual-scaffold interactive-fraction-bar').count() >= 1, 'fraction-add mounts interactive-fraction-bar Web Component');
+  await fracPage.locator('#publisher-sibling-btn').click();
+  assert.equal(await fracPage.locator('#problem-arena').getAttribute('data-lab-state'), 'PRESENTATION', 'live sibling request transitions back to PRESENTATION');
+  await fracContext.close();
+
   assert.deepEqual(errors, [], 'normal practice and publisher engine have no page errors');
   console.log('Publisher practice bridge browser acceptance passed');
 } finally {

@@ -5,7 +5,7 @@ import { createLesson } from "./lesson-content.js";
 import { esc, givens, pick, reducedMotion } from "./lesson-4/dom.js";
 import { attachAnimation, attachGraphic } from "./lesson-4/visual-host.js";
 import { whyFor } from "./step-whys.js";
-import { interactivePicture, mathText, stepVisual, trailPicture } from "./trail-pictures.js";
+import { interactivePicture, mathRichText, stepVisual, trailPicture } from "./trail-pictures.js";
 import { renderInlineProblemModel, renderModel } from "./visual-lab.js";
 import { mountCoordinateExplorer } from "./coordinate-explorer.js";
 
@@ -18,7 +18,7 @@ export function pictureOf(skill, item, model = item.model) {
 // Watch It shows the picture without its tap prompts: the step-through is the thing to watch.
 export const stillPictureHtml = (skill, item) => (item.model && trailPicture(item.model)) || renderInlineProblemModel(skill, item) || renderModel(createLesson(skill).model);
 
-const question = (example) => `<p class="ml-q">${mathText(example.question)}${example.unit ? ` <span class="ml-unit">${esc(example.unit)}</span>` : ""}</p>`;
+const question = (example) => `<p class="ml-q">${mathRichText(example.question)}${example.unit ? ` <span class="ml-unit">${esc(example.unit)}</span>` : ""}</p>`;
 
 // The question in Español when the learner reads Spanish (the English stays: it is what they will practise with).
 export const spanishLine = (example, lang) =>
@@ -27,7 +27,7 @@ export const spanishLine = (example, lang) =>
 const stepItem = (line, index, steps, last) => {
   const why = whyFor(line, index, steps);
   const picture = stepVisual(line);
-  return `<li class="ml-step${last ? " ml-step-final" : ""}"><span class="ml-step-num" aria-hidden="true">${index + 1}</span><div class="ml-step-body"><p class="ml-step-text">${mathText(line)}</p>${why ? `<p class="ml-step-why">${esc(why)}</p>` : ""}${picture}</div></li>`;
+  return `<li class="ml-step${last ? " ml-step-final" : ""}"><span class="ml-step-num" aria-hidden="true">${index + 1}</span><div class="ml-step-body"><p class="ml-step-text">${mathRichText(line)}</p>${why ? `<p class="ml-step-why">${esc(why)}</p>` : ""}${picture}</div></li>`;
 };
 
 const wordCards = (words, lang) =>
@@ -56,7 +56,7 @@ export function renderLearn(ctx) {
         <p class="ml-label" id="ml-ex-label">${esc(t("Worked example"))}</p>
         ${question(example)}${spanishLine(example, lang)}
         <ol class="ml-steps" aria-live="polite"></ol>
-        <p class="ml-answer" hidden><span>${esc(t("Answer"))}</span> <strong>${mathText(example.displayAnswer)}${example.unit ? ` ${esc(example.unit)}` : ""}</strong></p>
+        <p class="ml-answer" hidden><span>${esc(t("Answer"))}</span> <strong>${mathRichText(example.displayAnswer)}${example.unit ? ` ${esc(example.unit)}` : ""}</strong></p>
         <div class="ml-row"><button type="button" class="ml-btn ml-btn-primary" data-more>${esc(t("Show the next step"))}</button><button type="button" class="ml-btn ml-btn-quiet" data-all>${esc(t("Show all steps"))}</button></div>
       </section>
       <section class="ml-card ml-visual" aria-labelledby="ml-vis-label">
@@ -137,7 +137,7 @@ export function renderWatch(ctx) {
   const draw = () => {
     const line = steps[at];
     const why = whyFor(line, at, steps);
-    frame.innerHTML = `<p class="ml-film-count">${esc(t("Step {n} of {total}", { n: at + 1, total: steps.length }))}</p><p class="ml-film-text${at === steps.length - 1 ? " ml-film-final" : ""}">${mathText(line)}</p>${why ? `<p class="ml-step-why">${esc(why)}</p>` : ""}${stepVisual(line)}<ol class="ml-film-dots" aria-hidden="true">${steps.map((_, i) => `<li class="${i === at ? "now" : i < at ? "past" : ""}"></li>`).join("")}</ol>`;
+    frame.innerHTML = `<p class="ml-film-count">${esc(t("Step {n} of {total}", { n: at + 1, total: steps.length }))}</p><p class="ml-film-text${at === steps.length - 1 ? " ml-film-final" : ""}">${mathRichText(line)}</p>${why ? `<p class="ml-step-why">${esc(why)}</p>` : ""}${stepVisual(line)}<ol class="ml-film-dots" aria-hidden="true">${steps.map((_, i) => `<li class="${i === at ? "now" : i < at ? "past" : ""}"></li>`).join("")}</ol>`;
     prev.disabled = at === 0;
     next.disabled = at >= steps.length - 1;
     ctx.state.watchAt = at;

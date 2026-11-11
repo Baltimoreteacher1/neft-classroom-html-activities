@@ -127,12 +127,95 @@ import {
   renderTactileExpressionDecomposer,
   renderTomorrowTableKit,
 } from "./fluency-2-innovations.js";
-import { MathFluencyLabEngine, adaptPracticeItem } from "../../src/components/MathFluencyLabEngine.js";
+import {
+  LAB_TRANSITIONS,
+  MathFluencyLabEngine,
+  adaptPracticeItem,
+  canTransitionLabState,
+  formatMath,
+  makeSibling,
+} from "../../src/components/MathFluencyLabEngine.js";
 
 // teacher-4.js is teacher-only; lazy-load it only when the teacher view is opened so anonymous student
 // page loads never trigger an HTTP 401 Basic Auth challenge during initial boot.
 let fl4Teacher = null;
 let publisherEngine = null;
+let liveLabState = "UNINITIALIZED";
+let currentPublisherSchema = null;
+let siblingSequence = 0;
+
+function syncArenaLabDataset() {
+  const arena = els?.problemArena || document.querySelector("#problem-arena");
+  if (!arena) return;
+  arena.dataset.labState = liveLabState;
+  if (currentPublisherSchema?.id) arena.dataset.labSchemaId = currentPublisherSchema.id;
+  else delete arena.dataset.labSchemaId;
+}
+
+function setLiveLabState(next, { resetForNewProblem = false } = {}) {
+  if (!next || next === liveLabState) {
+    syncArenaLabDataset();
+    return liveLabState;
+  }
+  if (resetForNewProblem && next === "PRESENTATION") {
+    liveLabState = "UNINITIALIZED";
+  }
+  if (canTransitionLabState(liveLabState, next)) {
+    liveLabState = next;
+  } else if (next === "RESOLVED_EXPLANATION" && liveLabState === "SCAFFOLD_L1_PROMPT") {
+    if (canTransitionLabState(liveLabState, "EVALUATING")) {
+      liveLabState = "EVALUATING";
+      if (canTransitionLabState(liveLabState, "SCAFFOLD_L2_BREAKDOWN")) {
+        liveLabState = "SCAFFOLD_L2_BREAKDOWN";
+        if (canTransitionLabState(liveLabState, "RESOLVED_EXPLANATION")) {
+          liveLabState = "RESOLVED_EXPLANATION";
+        }
+      }
+    }
+  } else if (next === "PRESENTATION" && liveLabState !== "UNINITIALIZED") {
+    // Allow starting a fresh problem or skipped item cleanly while keeping in-turn FSM strict.
+    liveLabState = "UNINITIALIZED";
+    if (canTransitionLabState(liveLabState, "PRESENTATION")) liveLabState = "PRESENTATION";
+  }
+  syncArenaLabDataset();
+  return liveLabState;
+}
+
+function buildItemFromSiblingSchema(schema, baseSkill) {
+  return {
+    question: schema.prompt,
+    answers: [schema.correctAnswer],
+    displayAnswer: schema.correctAnswer,
+    choices: schema.choices || null,
+    kind: schema.responseType || "number",
+    skill: baseSkill,
+    tier: schema.tier,
+    hint: schema.fullExplanation?.keyRule || "",
+    explanation: schema.fullExplanation?.distractorAnalysis || schema.fullExplanation?.keyRule || "",
+    steps: (schema.fullExplanation?.stepByStep || []).map((s) => `${s.instruction} (${s.mathExpression})`),
+    isIsomorphicSibling: true,
+    publisherSchema: schema,
+  };
+}
+
+function enqueueSiblingSchema(siblingSchema, baseSkill) {
+  if (!state.session || state.session.finished || !siblingSchema) return false;
+  const skill = baseSkill || state.item?.skill || problemSkill();
+  const siblingItem = buildItemFromSiblingSchema(siblingSchema, skill);
+  state.session.queue ||= [];
+  const idx = state.session.answered;
+  if (Number.isFinite(state.session.target) && idx >= state.session.target) {
+    state.session.target += 1;
+  }
+  state.session.queue[idx] = {
+    key: tutorSkillKey(skill),
+    tier: siblingSchema.tier || state.item?.tier || 2,
+    independent: true,
+    generated: siblingItem,
+  };
+  nextProblem();
+  return true;
+}
 
 const STORAGE_KEY = "ewl-fluency-progress-v1";
 const SETTINGS_KEY = "ewl-fluency-settings-v1";
@@ -1057,6 +1140,12 @@ function nextProblem(restoredItem = null, publisherSnapshot = null) {
     state.recentQuestions = [...state.recentQuestions, state.item.question].slice(-8);
   }
   state.item.skill = skill;
+  if (!state.item.isIsomorphicSibling) siblingSequence = 0;
+  currentPublisherSchema =
+    queueEntry?.generated?.publisherSchema ||
+    restoredItem?.publisherSchema ||
+    adaptPracticeItem(state.item, (input) => validateAnswer(input, state.item));
+  setLiveLabState("PRESENTATION", { resetForNewProblem: true });
   const access = activeAccess(state.assignment, state.session.mode); // fl-teacher:access: fewer choices, never a different answer
   if (access?.mc && state.item.choices && !restoredItem) state.item.choices = trimChoices(state.item.choices, (choice) => validateAnswer(choice, state.item), access.mc, state.session.rng);
   state.itemAttempts = 0;
@@ -1197,13 +1286,25 @@ function nextProblem(restoredItem = null, publisherSnapshot = null) {
   else els.answerInput.focus();
 }
 
+const PUBLISHER_SHADOW_SKILLS = new Set([
+  "6:ratios",
+  "6:unit-rates",
+  "6:percent",
+  "6:percent-whole",
+  "7:unit-rate",
+  "7:proportions",
+]);
+
 function mountPublisherPractice(restoredItem, publisherSnapshot) {
-  if ((restoredItem && !publisherSnapshot) || state.session?.mode !== "practice" || (!publisherSnapshot && state.initialSupport) || state.assignment || audioFirstOn() || state.item.choices || state.item.response) return false;
-  const schema = adaptPracticeItem(state.item, (input) => validateAnswer(input, state.item));
+  const skillKey = `${state.item?.skill?.grade}:${state.item?.skill?.id}`;
+  const forceShadow = initialParams.get("publisher") === "1" || PUBLISHER_SHADOW_SKILLS.has(skillKey);
+  if ((restoredItem && !publisherSnapshot) || state.session?.mode !== "practice" || (!publisherSnapshot && state.initialSupport) || state.assignment || audioFirstOn() || state.item.choices || state.item.response || !forceShadow) return false;
+  const schema = currentPublisherSchema || adaptPracticeItem(state.item, (input) => validateAnswer(input, state.item));
   if (!schema) return false;
+  currentPublisherSchema = schema;
   const root = document.createElement("div");
   root.id = "publisher-practice-root";
-  root.setAttribute("aria-label", "Interactive proportion practice");
+  root.setAttribute("aria-label", "Interactive fluency practice");
   els.answerForm.before(root);
   els.answerForm.hidden = true;
   els.problemArena?.classList.add("publisher-active");
@@ -1212,15 +1313,29 @@ function mountPublisherPractice(restoredItem, publisherSnapshot) {
     recordPracticeAttempt(event.detail.response);
     saveActiveSession();
   });
-  root.addEventListener("fluency-state-change", () => saveActiveSession());
+  root.addEventListener("fluency-state-change", (event) => {
+    const next = event.detail?.to;
+    if (next && next !== "UNINITIALIZED") setLiveLabState(next);
+    saveActiveSession();
+  });
   root.addEventListener("ratio-model-change", () => saveActiveSession());
+  root.addEventListener("fluency-sibling-request", (event) => {
+    const siblingSchema = event.detail?.schema;
+    if (!siblingSchema || ["diagnostic", "unit"].includes(state.session?.mode)) return;
+    event.preventDefault();
+    enqueueSiblingSchema(siblingSchema, state.item?.skill);
+  });
   const settle = (correct) => {
     if (state.itemDone) return;
     finalizeProblem(correct);
     els.feedback.hidden = true;
     els.answerForm.dataset.publisherComplete = "";
     els.answerForm.hidden = false;
-    root.shadowRoot?.querySelector("#next, #sibling")?.setAttribute("hidden", "");
+    if (["diagnostic", "unit"].includes(state.session?.mode)) {
+      root.shadowRoot?.querySelector("#next, #sibling")?.setAttribute("hidden", "");
+    } else {
+      root.shadowRoot?.querySelector("#next, #sibling")?.removeAttribute("hidden");
+    }
     els.nextButton.focus({ preventScroll: true });
   };
   root.addEventListener("fluency-mastery-committed", () => queueMicrotask(() => settle(true)));
@@ -7120,10 +7235,30 @@ function mountProblemModel(show, collapsed = true) {
   } else {
     const picture = interactivePicture(state.item.model) || renderInlineProblemModel(state.item.skill, state.item) || fractionPicture(state.item.question);
     els.drillPanel.style.setProperty("--trail", getGrade(state.item.skill?.grade || state.grade).color);
+    const domainTag =
+      currentPublisherSchema?.modelComponent &&
+      !["interactive-ratio-tape", "interactive-double-number-line"].includes(currentPublisherSchema.modelComponent)
+        ? currentPublisherSchema.modelComponent
+        : null;
     if (picture) {
       host.innerHTML = `<div class="tr-model">${picture}</div>`;
       mountCoordinateExplorer(host);
       mountFunctionMachine(host);
+      if (domainTag && !host.querySelector(".vc") && !host.querySelector(`[data-publisher-domain-model]`)) {
+        const pubEl = document.createElement(domainTag);
+        pubEl.dataset.publisherDomainModel = "1";
+        pubEl.setAttribute("config", JSON.stringify(currentPublisherSchema.modelSpec || {}));
+        pubEl.setAttribute("interactive", "true");
+        host.append(pubEl);
+      }
+      if (els.toggleProblemVisual) els.toggleProblemVisual.hidden = false;
+    } else if (domainTag) {
+      host.innerHTML = "";
+      const pubEl = document.createElement(domainTag);
+      pubEl.dataset.publisherDomainModel = "1";
+      pubEl.setAttribute("config", JSON.stringify(currentPublisherSchema.modelSpec || {}));
+      pubEl.setAttribute("interactive", "true");
+      host.append(pubEl);
       if (els.toggleProblemVisual) els.toggleProblemVisual.hidden = false;
     } else {
       host.hidden = true;
@@ -7251,7 +7386,7 @@ function renderAnswerControl() {
     } else if (item.choices.length === 2) {
       els.choiceAnswers.className = "choice-answers choice-binary-group";
       els.choiceAnswers.innerHTML = item.choices
-        .map((c) => `<button type="button" class="choice-answer choice-binary-btn" data-answer="${escapeHtml(c)}">${escapeHtml(c)}</button>`)
+        .map((c) => `<button type="button" class="choice-answer choice-binary-btn" data-answer="${escapeHtml(c)}">${formatVerticalFractions(mathText(c))}</button>`)
         .join("");
     } else {
       els.choiceAnswers.className = "choice-answers choice-cards-grid";
@@ -7378,12 +7513,15 @@ function recordPracticeAttempt(value) {
 
 function submitAnswer(value) {
   if (!state.item || !state.session || state.session.finished) return;
+  if (liveLabState === "EVALUATING") return;
   if (!String(value).trim()) { showFeedback("Enter an answer", state.item.response ? t(checkResponse("", state.item).nudge) : audioFirstOn() ? t("Tap or build your answer first, then press the check button.") : t("Type an answer before checking, or open a strategy hint."), "try", "try", "empty"); return; }
   state.lastSubmitted = String(value).trim();
 
   if (state.isFixing) {
+    setLiveLabState("EVALUATING");
     const isFixed = validateAnswer(value, state.item);
     if (isFixed) {
+      setLiveLabState("MASTERY_COMMITTED");
       state.isFixing = false;
       state.itemDone = true;
       InteractiveDrillToolbox.refresh();
@@ -7400,6 +7538,7 @@ function submitAnswer(value) {
       showFeedback("Answer revised", t("Your revised answer is a useful step. It does not count as an independent check. Try the new problem next."), "try", "try", "revised");
       return;
     } else {
+      setLiveLabState("SCAFFOLD_L1_PROMPT");
       sendFeedback("revise-wrong");
       showFeedback("Keep trying!", t("Almost! Review the steps above carefully and try one more time."), "try", "incorrect", "revealed");
       els.answerInput.select();
@@ -7408,14 +7547,25 @@ function submitAnswer(value) {
   }
 
   if (state.itemDone) return;
+  if (!["PRESENTATION", "SCAFFOLD_L1_PROMPT"].includes(liveLabState)) {
+    setLiveLabState("PRESENTATION", { resetForNewProblem: true });
+  }
+  setLiveLabState("EVALUATING");
   const correct = recordPracticeAttempt(value);
-  if (state.session.mode === "diagnostic") { finalizeProblem(correct); return; }
+  if (state.session.mode === "diagnostic") {
+    setLiveLabState(correct ? "MASTERY_COMMITTED" : "SCAFFOLD_L2_BREAKDOWN");
+    finalizeProblem(correct);
+    return;
+  }
   if (correct || state.session.mode === "streak") {
     // Streak mode: one answer per problem, so a miss restarts the count. No clock — the student moves on with "Next problem".
+    setLiveLabState(correct ? "MASTERY_COMMITTED" : "SCAFFOLD_L2_BREAKDOWN");
+    if (!correct) setLiveLabState("RESOLVED_EXPLANATION");
     finalizeProblem(correct);
     return;
   }
   if (state.initialSupport && state.itemAttempts < 3) {
+    if (canTransitionLabState(liveLabState, "SCAFFOLD_L1_PROMPT")) setLiveLabState("SCAFFOLD_L1_PROMPT");
     const nextStep = revealGuidedStep() || guidedStepContent().at(-1);
     showFeedback("Let's use the next step", `${missNudge(state.item, value)} ${nextStep.copy}`, "try", "incorrect", sendFeedback(state.fbPhase === "idle" ? "wrong" : "wrong-again"));
     addInstructionalChoices();
@@ -7424,19 +7574,30 @@ function submitAnswer(value) {
     return;
   }
   if (state.itemAttempts === 1) {
+    setLiveLabState("SCAFFOLD_L1_PROMPT");
+    const pubRule = currentPublisherSchema?.misconceptions?.find((rule) =>
+      rule.detect(String(value).trim(), {
+        expected: currentPublisherSchema.correctAnswer,
+        modelConfig: currentPublisherSchema.modelConfig,
+      }),
+    );
     const nudge = missNudge(state.item, value);
+    const anchor = pubRule?.conceptualAnchor ? ` ${pubRule.conceptualAnchor}` : "";
     const diagnostic = state.tutor.mistakes.find((entry) => entry.key === tutorSkillKey(state.item.skill) && entry.question === state.item.question && !entry.resolvedAt);
     if (diagnostic?.misconceptionCode) {
       const label = mistakeCategoryLabel(diagnostic.misconceptionCode);
-      if (label) showFeedback("Let’s check the idea", `${label}. ${nudge}`, "try", "incorrect", sendFeedback("wrong"));
-      else showFeedback("Try once more", nudge, "try", "incorrect", sendFeedback("wrong"));
-    } else showFeedback("Try once more", nudge, "try", "incorrect", sendFeedback("wrong"));
+      if (label) showFeedback("Let’s check the idea", `${label}. ${nudge}${anchor}`, "try", "incorrect", sendFeedback("wrong"));
+      else showFeedback("Try once more", `${nudge}${anchor}`, "try", "incorrect", sendFeedback("wrong"));
+    } else showFeedback("Try once more", `${nudge}${anchor}`, "try", "incorrect", sendFeedback("wrong"));
+    els.problemVisualScaffold?.querySelector("[data-publisher-domain-model]")?.highlightError?.(pubRule?.conceptualAnchor || nudge);
     addInstructionalChoices();
     els.repair.hidden = false;
     saveActiveSession();
     els.answerInput.select();
     return;
   }
+  setLiveLabState("SCAFFOLD_L2_BREAKDOWN");
+  setLiveLabState("RESOLVED_EXPLANATION");
   finalizeProblem(false);
 }
 
@@ -7827,9 +7988,27 @@ function showFeedback(title, copy, type, resultType = type, phase = null) {
     showStudio(state.item, state.skill, "miss", state.lastSubmitted);
   } else if (type === "correct" && state.item) {
     clearStudio();
-    els.feedbackCopy.innerHTML = `<p>${escapeHtml(copy)}</p>${renderTransferChallengeButton(state.item)}`;
+    els.feedbackCopy.innerHTML = `<p>${formatVerticalFractions(mathText(copy))}</p>${renderTransferChallengeButton(state.item)}`;
   } else {
-    els.feedbackCopy.textContent = copy;
+    els.feedbackCopy.innerHTML = formatVerticalFractions(mathText(copy));
+  }
+  if (
+    (type === "correct" || (type === "incorrect" && state.itemDone)) &&
+    currentPublisherSchema &&
+    !document.querySelector("#publisher-practice-root") &&
+    !["diagnostic", "unit"].includes(state.session?.mode)
+  ) {
+    const sibBtn = document.createElement("button");
+    sibBtn.type = "button";
+    sibBtn.id = "publisher-sibling-btn";
+    sibBtn.className = "outline-action";
+    sibBtn.style.marginTop = "10px";
+    sibBtn.textContent = t("Try an isomorphic problem");
+    sibBtn.onclick = () => {
+      const nextSib = makeSibling(currentPublisherSchema, ++siblingSequence);
+      enqueueSiblingSchema(nextSib, state.item?.skill);
+    };
+    els.feedbackCopy.append(sibBtn);
   }
   if (type === "correct" || type === "incorrect") renderLanguageSlot(type === "correct");
   if (type === "correct") chime("good");
@@ -8947,6 +9126,7 @@ function saveActiveSession() {
   if (!state.session || state.session.finished || !state.item) return;
   const { rng: _rng, problemSkills: _skills, ...session } = state.session;
   const snapshot = { version: 2, grade: state.grade, skillId: state.skill?.id || null, session, item: state.item, itemDone: state.itemDone,
+    labState: liveLabState,
     publisher: publisherEngine?.getSnapshot() || null,
     studioTrySession: state.studioTrySession?.skillKey === `${state.item.skill?.grade}:${state.item.skill?.id}` ? state.studioTrySession : null,
     itemAttempts: state.itemAttempts, firstAnswerCorrect: state.firstAnswerCorrect, hintBeforeFirst: state.hintBeforeFirst, initialSupport: state.initialSupport,
@@ -8980,6 +9160,10 @@ function resumePractice(saved = loadJson(SESSION_KEY, null)) {
     state.studioTrySession = saved.studioTrySession?.skillKey === `${saved.item?.skill?.grade}:${saved.item?.skill?.id}` ? saved.studioTrySession : null;
     state.itemAttempts = saved.itemAttempts || 0; state.firstAnswerCorrect = saved.firstAnswerCorrect; state.hintBeforeFirst = saved.hintBeforeFirst;
     state.initialSupport = saved.initialSupport; state.guidedStepsShown = saved.guidedStepsShown;
+    if (saved.labState && saved.labState in LAB_TRANSITIONS) {
+      liveLabState = saved.labState;
+      syncArenaLabDataset();
+    }
     renderGuidedCoach();
     if (saved.feedback) {
       const phase = FEEDBACK_PHASES.includes(saved.feedback.phase) && saved.feedback.phase !== "idle" ? saved.feedback.phase : null;
@@ -9205,6 +9389,7 @@ els.feedbackActions.addEventListener("click", (event) => {
   if (id === "hint" && !els.hintButton.hidden) els.hintButton.click();
   if (id === "worked") {
     state.exampleOpen = true; // the worked example is offered after an answer even when the item began independent
+    setLiveLabState("RESOLVED_EXPLANATION");
     els.guidedCoach.hidden = false;
     while (revealGuidedStep());
     els.guidedSteps.scrollIntoView?.({ block: "center", behavior: prefersReducedMotion() ? "auto" : "smooth" });
@@ -10580,6 +10765,7 @@ function hideDuplicateModel(solverOpen) {
 els.fixAnswerBtn?.addEventListener("click", () => {
   state.isFixing = true;
   state.itemDone = false;
+  setLiveLabState("PRESENTATION");
   els.answerInput.disabled = false;
   els.answerInput.value = "";
   els.answerInput.focus();

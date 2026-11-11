@@ -2,6 +2,45 @@
 // so an answer a learner typed cannot become markup.
 const ICON_BY_TONE = new Set(["success", "support", "neutral"]);
 
+const FRAC_TOKEN = /(^|[^\w/])(?:([−-]?\s*\d{1,4})|([a-zA-Z]))\/(?:(\d{1,4})|([a-zA-Z]))(?=[^\w/]|$)/g;
+
+function appendSafeFractionText(container, text) {
+  const raw = String(text ?? "");
+  let cursor = 0;
+  let match;
+  FRAC_TOKEN.lastIndex = 0;
+  while ((match = FRAC_TOKEN.exec(raw)) !== null) {
+    const [full, lead, nDigits, nVar, dDigits, dVar] = match;
+    if (nVar && dVar) continue;
+    const denText = dDigits || dVar;
+    if (!denText || denText === "0") continue;
+    const numText = nDigits ? nDigits.replace(/\s+/g, "") : nVar;
+    const fracStart = match.index + lead.length;
+    if (fracStart > cursor) {
+      container.append(document.createTextNode(raw.slice(cursor, fracStart)));
+    }
+    const wrap = document.createElement("span");
+    wrap.className = "v-frac-wrap";
+    wrap.setAttribute("role", "math");
+    wrap.setAttribute("aria-label", `${numText.replace(/[-−]/g, "negative ")} over ${denText}`);
+    const frac = document.createElement("span");
+    frac.className = "v-frac";
+    const numEl = document.createElement("span");
+    numEl.className = "v-num";
+    numEl.textContent = numText;
+    const denEl = document.createElement("span");
+    denEl.className = "v-den";
+    denEl.textContent = denText;
+    frac.append(numEl, denEl);
+    wrap.append(frac);
+    container.append(wrap);
+    cursor = match.index + full.length;
+  }
+  if (cursor < raw.length) {
+    container.append(document.createTextNode(raw.slice(cursor)));
+  }
+}
+
 export function paintFeedback(els, view) {
   els.feedback.dataset.tone = ICON_BY_TONE.has(view.tone) ? view.tone : "neutral";
   els.feedback.dataset.phase = view.phase;
@@ -15,7 +54,7 @@ export function paintFeedback(els, view) {
     const label = document.createElement("dt");
     label.textContent = line.label;
     const value = document.createElement("dd");
-    value.textContent = line.value;
+    appendSafeFractionText(value, line.value);
     row.append(label, value);
     els.feedbackAnswers.append(row);
   }
