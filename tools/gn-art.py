@@ -37,11 +37,13 @@ CACHE = Path(os.environ.get("GN_ART_CACHE", Path.home() / ".cache/gn-art"))
 MODEL = Path(os.environ.get("GN_ART_MODEL", CACHE / "models/flux-schnell-4bit"))
 
 
-def fragments():
-    """The `- key: text` lines under '## Prompt fragments' in CHARACTERS.md."""
+def fragments(spec=None):
+    """The `- key: text` lines under '## Prompt fragments' in CHARACTERS.md, plus the
+    book's own `fragments` map in panels.json (book-only settings and side characters)."""
     text = CHARACTERS.read_text()
     section = text.split("## Prompt fragments", 1)[1].split("\n## ", 1)[0]
-    return {m[1]: m[2].strip() for m in re.finditer(r"^- (\w+): (.+)$", section, re.M)}
+    shared = {m[1]: m[2].strip() for m in re.finditer(r"^- (\w+): (.+)$", section, re.M)}
+    return {**shared, **((spec or {}).get("fragments") or {})}
 
 
 def expand(prompt, frags):
@@ -81,7 +83,8 @@ def pick(spec, only):
 
 
 def cmd_prompts(args):
-    spec, frags = load(args.spec), fragments()
+    spec = load(args.spec)
+    frags = fragments(spec)
     for p in pick(spec, args.only):
         print(
             f"[{p['id']}] seed={p['seed']} size={p['size']}\n{expand(p['prompt'], frags)}\n"
@@ -92,7 +95,8 @@ def cmd_generate(args):
     from mflux.models.common.config import ModelConfig
     from mflux.models.flux.variants.txt2img.flux import Flux1
 
-    spec, frags = load(args.spec), fragments()
+    spec = load(args.spec)
+    frags = fragments(spec)
     out = raw_dir(spec)
     todo = [
         p

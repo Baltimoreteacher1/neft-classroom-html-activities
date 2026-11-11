@@ -18,7 +18,7 @@
  * Usage:  node tools/build-axiom-episodes.mjs            (build all)
  *         node tools/build-axiom-episodes.mjs u7e1 u8e2  (build some)
  */
-import { readFileSync, writeFileSync } from "node:fs";
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -481,6 +481,12 @@ for (const spec of targets) {
     sec.tail +
     "\n</body>\n</html>\n";
   const outPath = join(OUT, spec.file);
+  /* Illustrated episodes (comic art pipeline, README "Comic art pipeline") are
+   * authored by hand from here on: regenerating would erase their panels. */
+  if (existsSync(outPath) && readFileSync(outPath, "utf8").includes("gn-comic")) {
+    console.log(`- ${spec.file}  skipped: illustrated, edit by hand`);
+    continue;
+  }
   writeFileSync(outPath, html);
   built++;
   console.log(

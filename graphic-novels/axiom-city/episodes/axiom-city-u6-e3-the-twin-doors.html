@@ -247,6 +247,9 @@ body.reduced #turnSheet{display:none!important}
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
   <!-- nsr-injected:end -->
+<!-- gn-art:begin (comic panel art — tools/inject-gn-art.mjs) -->
+<link rel="stylesheet" href="/graphic-novels/_shared/gn-comic.css">
+<!-- gn-art:end -->
 </head>
 <body>
 <!-- ============ SHARED SVG SYMBOL LIBRARY (characters, patterns, props) ============ -->
@@ -294,22 +297,7 @@ body.reduced #turnSheet{display:none!important}
 <!-- ============ COVER ============ -->
 <div id="cover">
   <div id="coverCard" role="img" aria-label="Cover of Axiom City Unit 6, Episode 3: The Twin Doors. Deep in Ada Vex's cipher vault, two towering amber-trimmed doors glow with expression plates, a teal glitch-creature crackles between them, four kids stand ready below with Mateo out front, and a glowing orb hovers above.">
-    <div class="cov-layer" data-depth="6" style="z-index:1">
-      <svg viewBox="0 0 500 700" width="100%" height="100%" preserveAspectRatio="xMidYMid slice"><defs><linearGradient id="u6vault" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#070d1a"/><stop offset=".55" stop-color="#101c30"/><stop offset="1" stop-color="#1b2c47"/></linearGradient></defs><rect width="500" height="700" fill="url(#u6vault)"/><g font-family="Consolas,monospace" font-weight="700" font-size="15" fill="#7CF2EC" opacity=".22"><text x="34" y="90">a+a=2a</text><text x="360" y="70">3(b+1)</text><text x="60" y="200">ab=ba</text><text x="380" y="220">n+n+n</text><text x="200" y="56">k·k=k²</text></g><circle cx="250" cy="320" r="190" fill="#F2C15B" opacity=".07"/><circle cx="250" cy="320" r="120" fill="#F2C15B" opacity=".07"/></svg>
-    </div>
-    <div class="cov-layer" data-depth="12" style="z-index:2">
-      <svg viewBox="0 0 500 700" width="100%" height="100%" preserveAspectRatio="xMidYMid slice"><g stroke="#22456a" stroke-width="5" opacity=".9"><line x1="0" y1="120" x2="500" y2="120"/><line x1="0" y1="560" x2="500" y2="560"/></g><path d="M70 560 V230 Q70 140 160 140 Q250 140 250 230 V560 Z" fill="#22456a" stroke="#F2C15B" stroke-width="8"/><path d="M270 560 V230 Q270 140 360 140 Q450 140 450 230 V560 Z" fill="#22456a" stroke="#F2C15B" stroke-width="8"/><rect x="105" y="270" width="110" height="52" rx="8" fill="#0d1f33" stroke="#7CF2EC" stroke-width="4"/><rect x="305" y="270" width="110" height="52" rx="8" fill="#0d1f33" stroke="#7CF2EC" stroke-width="4"/><text x="160" y="303" text-anchor="middle" font-family="Consolas,monospace" font-weight="700" font-size="22" fill="#7CF2EC">x + x</text><text x="360" y="303" text-anchor="middle" font-family="Consolas,monospace" font-weight="700" font-size="22" fill="#7CF2EC">2x</text><circle cx="232" cy="410" r="12" fill="#F2C15B"/><circle cx="288" cy="410" r="12" fill="#F2C15B"/><rect y="560" width="500" height="140" fill="#0a1422"/></svg>
-    </div>
-    <div class="cov-layer" data-depth="22" style="z-index:3">
-      <svg viewBox="0 0 500 700" width="100%" height="100%" preserveAspectRatio="xMidYMid slice">
-        <g transform="translate(196,330) scale(1.1)"><use href="#sym-glitch"/></g>
-        <g transform="translate(206,540) scale(1.05)"><use href="#sym-dev"/></g>
-        <g transform="translate(86,560) scale(.9)"><use href="#sym-maya"/></g>
-        <g transform="translate(150,572) scale(.85)"><use href="#sym-theo"/></g>
-        <g transform="translate(338,566) scale(.88)"><use href="#sym-zara"/></g>
-        <g transform="translate(398,470) scale(.62)"><use href="#sym-vex"/></g>
-      </svg>
-    </div>
+    <div class="cov-layer" data-depth="6" style="z-index:1"><div data-gn-art="cover"></div></div>
     <div class="spine"><span>AXIOM CITY · EDUWONDERLAB</span></div>
     <div id="coverTitle">
       <div class="series">AXIOM CITY</div>
@@ -386,164 +374,177 @@ const BADGES = [
   {id:"boss",icon:"#sig-boss",label:"Door Opener — Boss Gate"}
 ];
 
-const SC = (vb,inner)=>`<svg class="scene" viewBox="${vb}" role="img" preserveAspectRatio="xMidYMid meet">${inner}</svg>`;
-/* the vault's last chamber: deep navy stone, faint cyan cipher-runes, amber floor glow */
-const VAULT=`<rect width="400" height="210" fill="#101c30"/><g stroke="#22456a" stroke-width="2" opacity=".7"><line x1="0" y1="28" x2="400" y2="28"/><line x1="0" y1="166" x2="400" y2="166"/></g><g font-family="Consolas,monospace" font-size="9" fill="#7CF2EC" opacity=".3"><text x="14" y="20">a+a=2a</text><text x="332" y="20">3(b+1)</text><text x="178" y="200">ab=ba</text></g><rect y="166" width="400" height="44" fill="#0a1422"/><rect y="166" width="400" height="44" fill="url(#halftone)"/>`;
-/* the twin doors prop — two arched vault doors, amber-trimmed, with glowing plates */
-const DOORS=`<g><path d="M0 140 V36 Q0 0 38 0 Q76 0 76 36 V140 Z" fill="#22456a" stroke="#F2C15B" stroke-width="4"/><path d="M84 140 V36 Q84 0 122 0 Q160 0 160 36 V140 Z" fill="#22456a" stroke="#F2C15B" stroke-width="4"/><rect x="16" y="48" width="44" height="22" rx="4" fill="#0d1f33" stroke="#7CF2EC" stroke-width="2"/><rect x="100" y="48" width="44" height="22" rx="4" fill="#0d1f33" stroke="#7CF2EC" stroke-width="2"/><circle cx="68" cy="96" r="4" fill="#F2C15B"/><circle cx="92" cy="96" r="4" fill="#F2C15B"/></g>`;
-
+/* Comic pages: each story page is a .gn-comic grid of illustrated panels. ART(id) (injected above by
+   tools/inject-gn-art.mjs) draws a panel's art from the book's atlas; every word stays live HTML on top.
+   Balloon and caption TEXT is unchanged from the SVG edition (Easy read keys on it). */
+/* gn-art:begin (comic panel art: one atlas, coordinates and alt text from _engine/art/u6-e3 — tools/inject-gn-art.mjs) */
+const GN_ART = {"src":"/graphic-novels/axiom-city/art/axiom-city-u6-e3-the-twin-doors.webp?v=a74fccfea2","w":3028,"h":3428,"f":{"cover":[0,0,544,762,"Deep in Ada Vex's cipher vault, Keiko, Andre, Mateo and Layla stand together in front of two tall gold-trimmed doors, while VEX, the teal robot with one golden eye, glows high on the right.",[[15,56,14,10],[34,54,14,10],[52,52,14,11],[73,54,14,10]]],"p1-doors":[1740,1905,870,435,"Mateo and Keiko stand in the lantern-lit vault, looking up at two tall arched doors with gold trim, while VEX glows above the doors.",[[27,42,8,16],[67,52,8,13]]],"p1-stairs":[1740,2395,870,326,"At the bottom of a spiral stone staircase, a dark hallway lit by one lantern leads toward a far doorway glowing gold.",[]],"p2-doors":[0,1415,870,490,"Keiko and Andre stand on either side of the twin arched doors, Keiko pointing at a glowing spot on the left door.",[[25,60,8,13],[64,62,7,11]]],"p2-keiko":[0,762,490,653,"Close-up of Keiko, in her red jacket, tapping her chin as she studies the doors.",[[28,38,46,30]]],"p2-andre":[2482,0,490,653,"Close-up of Andre, in his blue hoodie, holding up one finger on each hand with a confident smile.",[[27,35,48,30]]],"p2-vex":[870,2776,870,326,"VEX hovers in the dark and projects a faint glowing door shape beside it.",[[62,30,20,45]]],"p3-glitch":[870,1415,870,490,"The teal glitch slithers across the twin doors, crackling with static, while Mateo watches nervously from the edge.",[[82,38,12,18],[41,38,16,18]]],"p3-andre":[1740,2776,870,326,"Andre holds up a small glowing glass like a scientist with a test tube, focused and ready.",[[49,30,18,35]]],"p4-mateo":[0,3102,870,326,"Mateo turns to the reader with a determined grin and a thumbs up.",[[60,30,15,35]]],"p5-gears":[1740,1415,870,490,"In a narrow stone corridor, two big brass gears mesh on the wall above a small brass plate, and Layla stands at the right with her hands on her hips, smiling.",[[71,25,10,15]]],"p5-vex":[980,762,490,653,"VEX glows above a small spinning hologram gear.",[[38,30,24,18]]],"p5-andre":[490,762,490,653,"Andre points up at two round beacon lamps on the corridor wall, one cyan and one amber.",[[42,40,33,20]]],"p6-layla":[870,3102,870,326,"Layla points straight out at the reader with an excited grin, a brass gear behind her.",[[32,42,16,33]]],"p7-keyway":[0,1905,870,490,"Keiko looks up at a large polished brass engraving set high in the stone wall, with a smaller gold-rimmed keyway plate beneath it.",[[20,40,13,20]]],"p7-vex":[0,2395,870,381,"VEX glows at the right, and to its left a glowing cyan hallway of arches stretches into the dark.",[[62,25,25,50]]],"p8-keiko":[1740,3102,870,326,"Keiko smiles with determination beside a shining brass key that floats in a beam of light.",[[57,35,15,30]]],"p9-flood":[870,1905,870,490,"The glitch swells huge and furious across the tops of both doors, crackling with coral sparks, above two dark plates on the wall at the left and right.",[[40,10,22,35]]],"p9-vex":[870,2395,870,381,"VEX glows against a round seal set in the dark stone wall.",[[24,40,10,25]]],"p10-crew":[1470,762,870,490,"The crew lines up in front of the twin arched doors, ready, while VEX glows in the upper corner.",[[15,57,9,13],[34,50,9,14],[44,53,8,13],[53,50,9,14],[71,50,10,15]]],"p10-layla":[1034,0,490,653,"Close-up of Layla, in her green sweatshirt, hands clasped and grinning, already dreaming of building a replica.",[[30,32,42,28]]],"p10-keiko":[544,0,490,653,"Close-up of Keiko, calm and determined, holding out her hand for a team huddle.",[[30,40,42,25]]],"p11-vex":[0,2776,870,326,"VEX flashes a bright gold ring of light around its eye in the dark, small cyan sparks floating beside it.",[[45,25,15,40]]],"p12-open":[2340,762,688,490,"The twin doors swing wide open and golden light pours out, while Mateo throws both arms up in triumph.",[[30,47,18,22]]],"p12-mateo":[1992,0,490,653,"Close-up of Mateo, in his orange shirt, grinning with both fists in the air.",[[30,38,42,28]]],"p12-keiko":[1524,0,468,653,"Close-up of Keiko, eyes wide with wonder, gazing up into the light ahead.",[[28,33,46,27]]]}};
+function ART(id) {
+  const a = GN_ART.f[id];
+  if (!a) throw new Error("gn-art: no frame " + id);
+  const [x, y, w, h, alt, faces] = a;
+  const at = (v, total, size) => (total === size ? 0 : (v / (total - size)) * 100);
+  const faceHtml = faces.map(([l, t, fw, fh]) => `<i class="gn-face" style="left:${l}%;top:${t}%;width:${fw}%;height:${fh}%"></i>`).join("");
+  return `<div class="gn-art" role="img" aria-label="${alt}" style="aspect-ratio:${w}/${h};background-image:url(${GN_ART.src});background-size:${(GN_ART.w / w) * 100}% ${(GN_ART.h / h) * 100}%;background-position:${at(x, GN_ART.w, w)}% ${at(y, GN_ART.h, h)}%">${faceHtml}</div>`;
+}
+for (const el of document.querySelectorAll("[data-gn-art]")) el.outerHTML = ART(el.dataset.gnArt);
+/* gn-art:end */
 const PAGES = [
 /* p1 */
 { ch:"Unit 6 · Episode 3", html:`
   <div style="text-align:center;margin-top:8px"><div class="kicker">EduWonderLab Presents</div>
   <h2 class="splashtitle" style="margin:8px 0">THE TWIN <em>DOORS</em></h2>
   <div class="caption" style="display:inline-block">Lessons 6-6, 6-7 &amp; 6-8 — equivalent expressions, GCF &amp; LCM, and the distributive property. The finale of the cipher vault.</div></div>
-  <div class="panel panel3d tall" style="margin-top:8px">${SC("0 0 400 210",`${VAULT}
-    <g data-depth="10" transform="translate(120,30)">${DOORS}</g>
-    <g data-depth="16" transform="translate(20,82) scale(.9)"><use href="#sym-dev"/></g>
-    <g data-depth="16" transform="translate(310,90) scale(.85)"><use href="#sym-maya"/></g>
-    <g data-depth="24" transform="translate(56,14) scale(.5)"><use href="#sym-vex"/></g>`)}
-    <div class="balloon vex" style="bottom:10px;left:8px;max-width:52%"><span class="who">VEX</span>Previously: the reader dialed the power ring true. Exponents tamed. Order of operations restored. One sealed chamber remains.</div>
-  </div>
-  <div class="caption loc">Previously, in Episode 2: the power ring spun, locked, and held. Beyond it waits Ada Vex's last chamber — and the glitch's last stand.</div>`},
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${ART("p1-doors")}
+      <div class="balloon vex" style="bottom:8px;left:6px;right:6px;max-width:none;--tx:50%"><span class="who">VEX</span>Previously: the reader dialed the power ring true. Exponents tamed. Order of operations restored. One sealed chamber remains.</div>
+    </div>
+    <div class="panel gn-panel">${ART("p1-stairs")}
+      <div class="caption loc">Previously, in Episode 2: the power ring spun, locked, and held. Beyond it waits Ada Vex's last chamber — and the glitch's last stand.</div>
+    </div>
+  </div>`},
 
 /* p2 */
 { ch:"Chapter 1 · The Last Chamber", html:`
   <div class="kicker">Chapter One</div><h2 class="splashtitle">THE LAST <em>CHAMBER</em></h2>
-  <div class="panel panel3d tall">${SC("0 0 400 210",`${VAULT}
-    <g data-depth="10" transform="translate(130,26)">${DOORS}</g>
-    <g data-depth="10" font-family="Consolas,monospace" font-weight="700" font-size="11" fill="#7CF2EC"><text x="166" y="89">x + x</text><text x="252" y="89">2x</text></g>
-    <g data-depth="18" transform="translate(18,86) scale(.95)"><use href="#sym-maya"/></g>
-    <g data-depth="18" transform="translate(312,94) scale(.88)"><use href="#sym-theo"/></g>`)}
-    <div class="balloon" style="top:6px;left:8px;max-width:48%"><span class="who">KEIKO</span>Two doors, one lock. Ada's plaque says they open only when both faces show the SAME value — for every number you feed them.</div>
-    <div class="balloon tail-r" style="bottom:12px;right:6px;max-width:44%"><span class="who">ANDRE</span>Not "look the same." BE the same. x + x and 2x — pick any x you want, both faces match. Those are real twins.</div>
-  </div>
-  <div class="panel">${SC("0 0 400 96",`<rect width="400" height="96" fill="#fdf6e7"/><g transform="translate(318,4) scale(.6)"><use href="#sym-vex"/></g>`)}
-    <div class="balloon vex" style="top:8px;left:10px;max-width:72%"><span class="who">VEX</span><b>Equivalent expressions</b> name the same value for EVERY value of the variable. Twins in different jackets.</div>
-  </div>
-  <div class="caption">One jacket-swap tool: the <b>distributive property</b> — a(b + c) = ab + ac. The outside number multiplies BOTH terms inside.</div>`},
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${ART("p2-doors")}
+      <div class="gn-sign" data-gn-skip style="left:41%;top:50%">x + x</div>
+      <div class="gn-sign" data-gn-skip style="left:59%;top:50%">2x</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p2-keiko")}
+      <div class="balloon" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">KEIKO</span>Two doors, one lock. Ada's plaque says they open only when both faces show the SAME value — for every number you feed them.</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p2-andre")}
+      <div class="balloon tail-r" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">ANDRE</span>Not "look the same." BE the same. x + x and 2x — pick any x you want, both faces match. Those are real twins.</div>
+    </div>
+    <div class="panel gn-panel">${ART("p2-vex")}
+      <div class="balloon vex gn-side" style="top:6px;left:6px;max-width:62%"><span class="who">VEX</span><b>Equivalent expressions</b> name the same value for EVERY value of the variable. Twins in different jackets.</div>
+    </div>
+    <div class="caption">One jacket-swap tool: the <b>distributive property</b> — a(b + c) = ab + ac. The outside number multiplies BOTH terms inside.</div>
+  </div>`},
 
 /* p3 */
 { ch:"Chapter 1 · The Disguise", html:`
-  <div class="caption loc">The glitch slithers across the right-hand door. Plates flicker. Some of these "twins" are… off.</div>
-  <div class="panel panel3d tall">${SC("0 0 400 190",`
-    <rect width="400" height="190" fill="#101c30"/>
-    <g data-depth="8" transform="translate(150,18) scale(1.1)"><use href="#sym-glitch"/></g>
-    <g data-depth="12" transform="translate(40,96) scale(.8)"><use href="#sym-glyphsign"/></g>
-    <g data-depth="16" transform="translate(296,66) scale(.9)"><use href="#sym-dev"/></g>`)}
-    <div class="sfx" style="top:8px;left:14px">BZZZT!</div>
-    <div class="balloon tail-r" style="bottom:10px;right:4px;max-width:46%"><span class="who">MATEO</span>It's running a disguise meta — fake twins that match at ONE number and split everywhere else.</div>
-  </div>
-  <div class="panel">${SC("0 0 400 100",`<rect width="400" height="100" fill="#fdf6e7"/><g transform="translate(8,4) scale(.64)"><use href="#sym-theo"/></g>`)}
-    <div class="balloon" style="top:6px;left:82px;max-width:70%"><span class="who">ANDRE</span>So we test like scientists: feed both faces y = 1, then y = 3. One disagreement unmasks a fake. Or distribute and <b>combine like terms</b> — terms with the same variable part add together.</div>
-  </div>
-  <div class="caption">Algebra unmasks disguises faster than luck: distribute, combine like terms, THEN judge.</div>`},
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${ART("p3-glitch")}
+      <div class="caption loc">The glitch slithers across the right-hand door. Plates flicker. Some of these "twins" are… off.</div>
+      <div class="sfx" style="top:min(55%, 140px);left:14px">BZZZT!</div>
+      <div class="balloon tail-r" style="bottom:10px;right:4px;max-width:46%"><span class="who">MATEO</span>It's running a disguise meta — fake twins that match at ONE number and split everywhere else.</div>
+    </div>
+    <div class="panel gn-panel">${ART("p3-andre")}
+      <div class="balloon gn-side" style="top:6px;right:6px;max-width:64%"><span class="who">ANDRE</span>So we test like scientists: feed both faces y = 1, then y = 3. One disagreement unmasks a fake. Or distribute and <b>combine like terms</b> — terms with the same variable part add together.</div>
+    </div>
+    <div class="caption">Algebra unmasks disguises faster than luck: distribute, combine like terms, THEN judge.</div>
+  </div>`},
 
 /* p4 GATE1 */
 { ch:"Chapter 1 · Reader Gate", gate:"g1", html:`
-  <div class="panel">${SC("0 0 400 84",`<rect width="400" height="84" fill="#101c30"/><g transform="translate(8,0) scale(.64)"><use href="#sym-dev"/></g>`)}
-    <div class="balloon" style="top:6px;left:80px;max-width:68%"><span class="who">MATEO</span>Reader — stamp all four pairs. The glitch only needs ONE wrong stamp to keep the doors shut.</div>
+  <div class="gn-comic">
+    <div class="panel gn-panel">${ART("p4-mateo")}
+      <div class="balloon tail-r" style="top:6px;left:6px;max-width:52%;--tx:16px"><span class="who">MATEO</span>Reader — stamp all four pairs. The glitch only needs ONE wrong stamp to keep the doors shut.</div>
+    </div>
   </div>`},
 
 /* p5 */
 { ch:"Chapter 2 · The Gear Corridor", html:`
   <div class="kicker">Chapter Two</div><h2 class="splashtitle">THE GEAR <em>CORRIDOR</em></h2>
-  <div class="panel panel3d tall">${SC("0 0 400 210",`${VAULT}
-    <g data-depth="10" transform="translate(60,40) scale(1.3)"><use href="#sig-gear"/></g>
-    <g data-depth="10" transform="translate(220,46) scale(1.1)"><use href="#sig-gear"/></g>
-    <g data-depth="8" font-family="Arial" font-weight="800" font-size="11" fill="#F2C15B"><text x="84" y="180">18 TEETH</text><text x="238" y="180">30 TEETH</text></g>
-    <g data-depth="18" transform="translate(322,84) scale(.9)"><use href="#sym-zara"/></g>`)}
-    <div class="balloon tail-r" style="top:6px;right:4px;max-width:46%"><span class="who">LAYLA</span>I could build this. The link-cog has to mesh BOTH gears — its tooth count must divide 18 and 30 exactly. The biggest one that fits.</div>
-  </div>
-  <div class="panelrow">
-    <div class="panel">${SC("0 0 200 104",`<rect width="200" height="104" fill="#fdf6e7"/><g transform="translate(132,4) scale(.62)"><use href="#sym-vex"/></g>`)}
-      <div class="balloon vex" style="top:4px;left:4px;max-width:66%"><span class="who">VEX</span><b>GCF</b>: the greatest factor two numbers share. <b>LCM</b>: the first multiple their counting lists share.</div></div>
-    <div class="panel">${SC("0 0 200 104",`<rect width="200" height="104" fill="#fdf6e7"/><g transform="translate(6,30) scale(.56)"><use href="#sym-theo"/></g>`)}
-      <div class="balloon" style="top:4px;left:66px;max-width:64%"><span class="who">ANDRE</span>And the door-beacons blink every 4 turns and every 10 turns. The seal opens the first time they flash TOGETHER.</div></div>
-  </div>
-  <div class="caption">Factors divide IN — a GCF never beats either number. Multiples count UP — an LCM is never smaller than either.</div>`},
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${ART("p5-gears")}
+      <div class="gn-sign gn-plate" data-gn-skip style="left:40%;top:74%">18 TEETH</div>
+      <div class="gn-sign gn-plate" data-gn-skip style="left:52%;top:57%">30 TEETH</div>
+      <div class="balloon tail-r" style="top:6px;left:6px;max-width:58%"><span class="who">LAYLA</span>I could build this. The link-cog has to mesh BOTH gears — its tooth count must divide 18 and 30 exactly. The biggest one that fits.</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p5-vex")}
+      <div class="balloon vex" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">VEX</span><b>GCF</b>: the greatest factor two numbers share. <b>LCM</b>: the first multiple their counting lists share.</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p5-andre")}
+      <div class="balloon tail-r" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">ANDRE</span>And the door-beacons blink every 4 turns and every 10 turns. The seal opens the first time they flash TOGETHER.</div>
+    </div>
+    <div class="caption">Factors divide IN — a GCF never beats either number. Multiples count UP — an LCM is never smaller than either.</div>
+  </div>`},
 
 /* p6 GATE2 */
 { ch:"Chapter 2 · Reader Gate", gate:"g2", html:`
-  <div class="panel">${SC("0 0 400 80",`<rect width="400" height="80" fill="#fdf6e7"/><g transform="translate(8,-2) scale(.6)"><use href="#sym-zara"/></g>`)}
-    <div class="balloon" style="top:6px;left:76px;max-width:70%"><span class="who">LAYLA</span>Reader — cut the link-cog and time the beacons. Two locks, one corridor!</div>
+  <div class="gn-comic">
+    <div class="panel gn-panel">${ART("p6-layla")}
+      <div class="balloon" style="top:6px;right:6px;max-width:66%;--tx:10px"><span class="who">LAYLA</span>Reader — cut the link-cog and time the beacons. Two locks, one corridor!</div>
+    </div>
   </div>`},
 
 /* p7 */
 { ch:"Chapter 3 · Ada's Keyway", html:`
   <div class="kicker">Chapter Three</div><h2 class="splashtitle">ADA'S <em>KEYWAY</em></h2>
-  <div class="panel panel3d tall">${SC("0 0 400 200",`
-    <rect width="400" height="200" fill="#101c30"/>
-    <rect data-depth="8" x="90" y="24" width="220" height="58" rx="8" fill="#0d1f33" stroke="#F2C15B" stroke-width="4"/>
-    <text data-depth="8" x="200" y="50" text-anchor="middle" font-family="Consolas,monospace" font-weight="700" font-size="20" fill="#7CF2EC">12x + 30</text>
-    <text data-depth="8" x="200" y="72" text-anchor="middle" font-family="Arial" font-weight="700" font-size="10" fill="#F2C15B">— ADA'S ENGRAVING —</text>
-    <rect data-depth="10" x="120" y="108" width="160" height="40" rx="6" fill="#22456a" stroke="#F2C15B" stroke-width="3"/>
-    <text data-depth="10" x="200" y="133" text-anchor="middle" font-family="Consolas,monospace" font-weight="700" font-size="15" fill="#fff">__ ( __x + __ )</text>
-    <g data-depth="16" transform="translate(14,70) scale(.92)"><use href="#sym-maya"/></g>`)}
-    <div class="balloon tail-r" style="bottom:8px;right:6px;max-width:48%"><span class="who">KEIKO</span>The keyway won't take the engraving as written. It wants the factored twin — greatest common factor out front.</div>
-  </div>
-  <div class="panel">${SC("0 0 400 100",`<rect width="400" height="100" fill="#fdf6e7"/><g transform="translate(318,4) scale(.6)"><use href="#sym-vex"/></g>`)}
-    <div class="balloon vex" style="top:8px;left:10px;max-width:72%"><span class="who">VEX</span>To <b>expand</b>, push the multiplier through the parentheses. To <b>factor</b>, pull the GCF back out. Same hallway — walked in both directions.</div>
-  </div>
-  <div class="caption">Andre's warm-up: 9m + 12. GCF of 9 and 12 is 3, so it factors to 3(3m + 4). Distribute to check — it snaps right back.</div>`},
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${ART("p7-keyway")}
+      <div class="gn-sign gn-plate" data-gn-skip style="left:58%;top:28%;width:40%">12x + 30<br><small>— ADA'S ENGRAVING —</small></div>
+      <div class="gn-sign" data-gn-skip style="left:66%;top:67%">__ ( __x + __ )</div>
+      <div class="balloon" style="bottom:8px;left:6px;max-width:52%"><span class="who">KEIKO</span>The keyway won't take the engraving as written. It wants the factored twin — greatest common factor out front.</div>
+    </div>
+    <div class="panel gn-panel">${ART("p7-vex")}
+      <div class="balloon vex gn-side" style="top:6px;left:6px;max-width:56%"><span class="who">VEX</span>To <b>expand</b>, push the multiplier through the parentheses. To <b>factor</b>, pull the GCF back out. Same hallway — walked in both directions.</div>
+    </div>
+    <div class="caption">Andre's warm-up: 9m + 12. GCF of 9 and 12 is 3, so it factors to 3(3m + 4). Distribute to check — it snaps right back.</div>
+  </div>`},
 
 /* p8 GATE3 */
 { ch:"Chapter 3 · Reader Gate", gate:"g3", html:`
-  <div class="panel">${SC("0 0 400 80",`<rect width="400" height="80" fill="#101c30"/><g transform="translate(8,-2) scale(.6)"><use href="#sym-maya"/></g>`)}
-    <div class="balloon" style="top:6px;left:76px;max-width:70%"><span class="who">KEIKO</span>Forge the key, reader — GCF out front, nothing left to pull!</div>
+  <div class="gn-comic">
+    <div class="panel gn-panel">${ART("p8-keiko")}
+      <div class="balloon" style="top:6px;right:6px;max-width:66%;--tx:10px"><span class="who">KEIKO</span>Forge the key, reader — GCF out front, nothing left to pull!</div>
+    </div>
   </div>`},
 
 /* p9 */
 { ch:"Chapter 4 · The Last Stand", html:`
-  <div class="caption loc">The key turns. And the glitch panics — swelling until it floods BOTH doors at once.</div>
-  <div class="panel panel3d tall">${SC("0 0 400 190",`
-    <rect width="400" height="190" fill="#0a1422"/>
-    <g data-depth="8" transform="translate(120,8) scale(1.6)"><use href="#sym-glitch"/></g>
-    <rect data-depth="12" x="20" y="116" width="150" height="40" rx="6" fill="#0d1f33" stroke="#E2674A" stroke-width="3"/>
-    <text data-depth="12" x="95" y="141" text-anchor="middle" font-family="Consolas,monospace" font-weight="700" font-size="14" fill="#7CF2EC">16a + 40</text>
-    <rect data-depth="12" x="230" y="116" width="150" height="40" rx="6" fill="#0d1f33" stroke="#E2674A" stroke-width="3"/>
-    <text data-depth="12" x="305" y="141" text-anchor="middle" font-family="Consolas,monospace" font-weight="700" font-size="14" fill="#7CF2EC">7(3n + 2)</text>`)}
-    <div class="sfx" style="top:8px;left:14px">KRRZZAK!</div>
-    <div class="balloon" style="bottom:8px;left:8px;max-width:50%"><span class="who">MATEO</span>Final boss. It's mirroring — one door wants factoring, the other wants expanding. Both directions at once.</div>
-  </div>
-  <div class="panel">${SC("0 0 400 92",`<rect width="400" height="92" fill="#fdf6e7"/><g transform="translate(318,2) scale(.6)"><use href="#sym-vex"/></g>`)}
-    <div class="balloon vex" style="top:8px;left:10px;max-width:72%"><span class="who">VEX</span>And a seal between them demands a REASON. Equivalence is never a vibe. It is a property.</div>
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${ART("p9-flood")}
+      <div class="caption loc" style="max-width:max(36%, (500px - 100cqi) * 10)">The key turns. And the glitch panics — swelling until it floods BOTH doors at once.</div>
+      <div class="sfx" style="top:min(42%, 120px);left:12px">KRRZZAK!</div>
+      <div class="gn-sign" data-gn-skip style="left:16%;top:42.75cqi;width:22%">16a + 40</div>
+      <div class="gn-sign" data-gn-skip style="left:84%;top:42.75cqi;width:22%">7(3n + 2)</div>
+      <div class="balloon" style="bottom:8px;left:28%;max-width:44%;--tx:45%"><span class="who">MATEO</span>Final boss. It's mirroring — one door wants factoring, the other wants expanding. Both directions at once.</div>
+    </div>
+    <div class="panel gn-panel">${ART("p9-vex")}
+      <div class="balloon vex gn-side" style="top:6px;right:6px;max-width:56%"><span class="who">VEX</span>And a seal between them demands a REASON. Equivalence is never a vibe. It is a property.</div>
+    </div>
   </div>`},
 
 /* p10 boss setup */
 { ch:"Chapter 4 · Mateo Steps Up", html:`
-  <div class="panel panel3d tall">${SC("0 0 400 200",`${VAULT}
-    <g data-depth="8" transform="translate(124,34)">${DOORS}</g>
-    <g data-depth="16" transform="translate(160,92) scale(.95)"><use href="#sym-dev"/></g>
-    <g data-depth="14" transform="translate(20,96) scale(.85)"><use href="#sym-maya"/></g>
-    <g data-depth="14" transform="translate(78,100) scale(.82)"><use href="#sym-theo"/></g>
-    <g data-depth="14" transform="translate(306,98) scale(.84)"><use href="#sym-zara"/></g>
-    <g data-depth="24" transform="translate(340,16) scale(.5)"><use href="#sym-vex"/></g>`)}
-    <div class="balloon" style="top:6px;left:8px;max-width:46%"><span class="who">MATEO</span>Six units of grinding for this moment. Reader — you're my co-op partner. Let's close it out.</div>
-    <div class="balloon tail-r" style="top:60px;right:6px;max-width:40%"><span class="who">LAYLA</span>If they open, I'm building a replica for my room.</div>
-    <div class="balloon" style="bottom:10px;left:8px;max-width:40%"><span class="who">KEIKO</span>Together. On three.</div>
-  </div>
-  <div class="caption">Boss Gate: factor one door, expand the other — then stamp WHY your twins are guaranteed true.</div>`},
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${ART("p10-crew")}
+      <div class="balloon tail-r" style="top:6px;left:8px;max-width:50%;--tx:12px"><span class="who">MATEO</span>Six units of grinding for this moment. Reader — you're my co-op partner. Let's close it out.</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p10-layla")}
+      <div class="balloon tail-r" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">LAYLA</span>If they open, I'm building a replica for my room.</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p10-keiko")}
+      <div class="balloon" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">KEIKO</span>Together. On three.</div>
+    </div>
+    <div class="caption">Boss Gate: factor one door, expand the other — then stamp WHY your twins are guaranteed true.</div>
+  </div>`},
 
 /* p11 BOSS */
 { ch:"Boss Gate · The Twin Doors", gate:"boss", html:`
-  <div class="panel">${SC("0 0 400 76",`<rect width="400" height="76" fill="#0a1422"/><g transform="translate(330,2) scale(.56)"><use href="#sym-vex"/></g>`)}
-    <div class="balloon vex" style="top:6px;left:10px;max-width:72%"><span class="who">VEX</span>BOSS GATE. Three locks. The vault remembers everything you've learned.</div>
+  <div class="gn-comic">
+    <div class="panel gn-panel">${ART("p11-vex")}
+      <div class="balloon vex gn-side" style="top:6px;left:6px;max-width:38%;--ty:40px"><span class="who">VEX</span>BOSS GATE. Three locks. The vault remembers everything you've learned.</div>
+    </div>
   </div>`},
 
 /* p12 victory */
 { ch:"Chapter 5 · The Doors Open", html:`
-  <div class="panel panel3d tall">${SC("0 0 400 210",`${VAULT}
-    <g data-depth="8" transform="translate(124,30) rotate(-8 124 100)"><path d="M0 140 V36 Q0 0 38 0 Q76 0 76 36 V140 Z" fill="#22456a" stroke="#F2C15B" stroke-width="4"/></g>
-    <g data-depth="8" transform="translate(208,30) rotate(8 284 100)"><path d="M0 140 V36 Q0 0 38 0 Q76 0 76 36 V140 Z" fill="#22456a" stroke="#F2C15B" stroke-width="4"/></g>
-    <rect data-depth="6" x="176" y="40" width="48" height="126" fill="#FFF3D8" opacity=".85"/>
-    <g data-depth="12" transform="translate(176,58) scale(.5)"><use href="#sym-vault"/></g>
-    <g data-depth="18" transform="translate(60,92) scale(.9)"><use href="#sym-dev"/></g>
-    <g data-depth="18" transform="translate(296,96) scale(.86)"><use href="#sym-maya"/></g>
-    <g data-depth="24" transform="translate(30,18) scale(.5)"><use href="#sym-vex"/></g>`)}
-    <div class="sfx" style="top:6px;left:14px">FWOOOM!</div>
-    <div class="balloon" style="bottom:12px;left:8px;max-width:46%"><span class="who">MATEO</span>GG. The twin doors never stood a chance.</div>
-    <div class="balloon tail-r" style="top:30px;right:6px;max-width:42%"><span class="who">KEIKO</span>And THAT — that's Ada's engine room. The whole story starts in there.</div>
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${ART("p12-open")}
+      <div class="sfx" style="top:6px;right:14px">FWOOOM!</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p12-mateo")}
+      <div class="balloon" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">MATEO</span>GG. The twin doors never stood a chance.</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p12-keiko")}
+      <div class="balloon tail-r" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">KEIKO</span>And THAT — that's Ada's engine room. The whole story starts in there.</div>
+    </div>
   </div>
   <div class="panel" style="text-align:center;padding:14px 10px"><div class="kicker">THE FULL STORY — VOL. 6: THE EXPRESSION ENGINE</div>
     <div class="caption" style="display:inline-block;margin-top:6px">The cipher vault, the glitch's origin, and the master key — fraction division to the distributive property, all in the anchor book.</div></div>

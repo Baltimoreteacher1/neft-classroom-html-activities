@@ -50,7 +50,9 @@
 .gn-panel > .caption,
 .gn-panel > .sfx,
 .gn-panel > .gn-sign {
-  grid-area: 1 / 1;
+  /* explicit end lines: an absolutely positioned grid child resolves an `auto` end line to the
+     container edge, not span 1, so `1 / 1` alone would size overlays against the whole panel */
+  grid-area: 1 / 1 / 2 / 2;
 }
 .gn-panel.gn-stack > .balloon {
   grid-area: auto;
