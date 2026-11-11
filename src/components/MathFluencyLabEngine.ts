@@ -1008,6 +1008,25 @@ export function adaptPercentWholeItem(
   };
 }
 
+export function adaptPracticeItem(
+  item: {
+    question: string;
+    answers: string[];
+    skill?: { grade?: number; id?: string; standard?: string };
+    tier?: number;
+    meta?: { wrong?: Array<{ text: string; why: string }> };
+  },
+  evaluateAnswer?: (input: string) => boolean,
+): ExerciseSchema | null {
+  const skill = `${item.skill?.grade}:${item.skill?.id}`;
+  if (skill === "7:proportions") return adaptProportionItem(item, evaluateAnswer);
+  if (skill === "6:ratios") return adaptEquivalentRatioItem(item, evaluateAnswer);
+  if (skill === "6:unit-rates" || skill === "7:unit-rate") return adaptUnitRateItem(item, evaluateAnswer);
+  if (skill === "6:percent") return adaptPercentPartItem(item, evaluateAnswer);
+  if (skill === "6:percent-whole") return adaptPercentWholeItem(item, evaluateAnswer);
+  return null;
+}
+
 export const SEED_EXERCISE: ExerciseSchema = {
   id: "6.RP.A.3_RATIO_TAPE_01",
   standard: "6.RP.A.3",

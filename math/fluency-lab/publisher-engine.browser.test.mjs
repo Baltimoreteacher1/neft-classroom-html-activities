@@ -208,6 +208,13 @@ try {
     return { model: [valid?.modelConfig.trackAUnits, valid?.modelConfig.trackBUnits, valid?.modelConfig.unitVal], answer: valid?.correctAnswer, partAsWhole: valid?.misconceptions[0].detect('15', {}), sibling: [sibling.prompt, sibling.correctAnswer, sibling.siblingKind], invalid, nonnumeric };
   });
   assert.deepEqual(percentWhole, { model: [1, 4, 15], answer: '60', partAsWhole: true, sibling: ['30 is 25% of what number?', '120', 'PERCENT_WHOLE'], invalid: null, nonnumeric: null });
+  const dispatch = await page.evaluate(async () => {
+    const { adaptPracticeItem } = await import('/src/components/MathFluencyLabEngine.js');
+    const supported = adaptPracticeItem({ question: '15 is 25% of what number?', answers: ['60'], skill: { grade: 6, id: 'percent-whole' } });
+    const unsupported = adaptPracticeItem({ question: '2 + 3 = ?', answers: ['5'], skill: { grade: 1, id: 'add-20' } });
+    return { answer: supported?.correctAnswer, unsupported };
+  });
+  assert.deepEqual(dispatch, { answer: '60', unsupported: null }, 'practice adapter only routes supported structures');
   const customAnswer = await page.evaluate(async () => {
     const { MathFluencyLabEngine, SEED_EXERCISE } = await import('/src/components/MathFluencyLabEngine.js');
     const host = document.createElement('div');
