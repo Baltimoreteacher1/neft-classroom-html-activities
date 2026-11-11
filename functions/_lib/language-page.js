@@ -44,6 +44,8 @@ const LAB_EXACT = new Set([
   "/api/signal/",
   // Mr. Neft, the guide on the teacher and family pages (functions/api/language-guide.js).
   "/api/language-guide",
+  // Its anonymous question log, read with the teacher key (functions/api/language-guide/questions.js).
+  "/api/language-guide/questions",
   "/graphic-novels",
 ]);
 /** The Teacher Hub, minus the two surfaces that are not language practice. */

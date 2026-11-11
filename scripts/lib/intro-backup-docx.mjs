@@ -1,6 +1,6 @@
 // The Featured Lesson backup as an editable Word file. Page 1 is for students (no teacher guidance); page 2 is for the
-// teacher. Built from lesson-backup-model.js, the same model as the PDF. The hallway picture is rasterized from
-// pictures/68-school-hallway.svg with its alt text; every link is a real hyperlink.
+// teacher. Built from lesson-backup-model.js, the same model as the PDF. The lesson picture (a file under pictures/,
+// or the early-learner garden scene) is rasterized with its alt text; every link is a real hyperlink.
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -21,16 +21,33 @@ import {
 
 const LAB = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "access-practice-lab");
 
+/** The lesson picture: a file under pictures/ or, for the early-learner scene drawn in code, an SVG data URI. */
+function pictureSvg(src) {
+  const inline = /^data:image\/svg\+xml;charset=utf-8,(.*)$/.exec(src);
+  if (inline) return decodeURIComponent(inline[1]);
+  return readFileSync(join(LAB, src.replace("/access-practice-lab/", "")), "utf8");
+}
+
 function picture(pic) {
-  const svg = readFileSync(join(LAB, pic.src.replace("/access-practice-lab/", "")), "utf8");
+  const svg = pictureSvg(pic.src);
   const data = new Resvg(svg, { fitTo: { mode: "width", value: 1036 } }).render().asPng();
   return new ImageRun({
     type: "png",
     data,
     transformation: { width: 272, height: 170 },
-    altText: { name: "Hallway picture", title: "Hallway picture", description: pic.alt },
+    altText: { name: pic.name, title: pic.name, description: pic.alt },
   });
 }
+
+/** An empty bordered box to draw in (Kindergarten and Grade 1). */
+const drawBox = () =>
+  para([run(" ")], {
+    border: ["top", "bottom", "left", "right"].reduce(
+      (b, side) => ({ ...b, [side]: { style: "single", size: 8, color: "6B7280", space: 4 } }),
+      {},
+    ),
+    spacing: { before: 60, after: 120, line: 3600, lineRule: "exact" },
+  });
 
 function studentPage(s) {
   return [
@@ -49,7 +66,7 @@ function studentPage(s) {
     ...s.directions.map((d) => list(d, "steps", 1)),
     ...s.writing.flatMap((w) => [
       heading(w.label, HeadingLevel.HEADING_2),
-      ...Array.from({ length: w.lines - 1 }, () => writeLine(230)),
+      ...(w.draw ? [drawBox()] : Array.from({ length: w.lines - 1 }, () => writeLine(230))),
     ]),
     para([bold(`${s.materialsLabel}: `), run(`${s.materials.join("; ")}.`)], {
       spacing: { before: 140 },

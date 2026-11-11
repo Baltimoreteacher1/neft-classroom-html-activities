@@ -1,5 +1,6 @@
 /**
- * The family handout (access-practice-lab/guides/family-handout[-es].pdf/.docx) and its QR (qr-family.svg/.png).
+ * The family handouts (access-practice-lab/guides/family-handout[-es].pdf/.docx and the K–2 version
+ * family-handout-k2[-es].pdf/.docx) and their one QR code (qr-family.svg/.png).
  *
  *   node --test tools/access-intro-family-handout.test.mjs
  *
@@ -19,7 +20,9 @@ import { Resvg } from "@resvg/resvg-js";
 import JSZip from "jszip";
 import { absUrl, ROUTES } from "../access-practice-lab/src/intro/data.js";
 import { FAMILY_HANDOUT } from "../access-practice-lab/src/intro/family-data.js";
+import { FAMILY_HANDOUT_K2 } from "../access-practice-lab/src/intro/family-k2-data.js";
 import { FAMILY_URL, familyHandoutModel } from "../scripts/lib/intro-family-handout.mjs";
+import { familyK2HandoutModel } from "../scripts/lib/intro-family-k2-handout.mjs";
 import { minTextSize } from "../scripts/lib/pdf-text-sizes.mjs";
 import { qrSvg } from "../shared/qr/qr-code.mjs";
 import { readQrCodes } from "./lib/access-intro-qr-read.mjs";
@@ -129,70 +132,132 @@ test("a scanner reads the QR PNG, the SVG and the printed PDF pages back to the 
     assert.deepEqual(read[f], [FAMILY_URL], `${f} does not scan to ${FAMILY_URL}`);
 });
 
-for (const lang of ["en", "es"]) {
-  const pdf = () => onDisk(FAMILY_HANDOUT[lang].pdf);
-  test(`family handout PDF (${lang}): one tagged page, language, title, fonts, 11 pt, link`, {
-    skip: skip(poppler, "poppler"),
-  }, () => {
-    const bytes = readFileSync(pdf());
-    assert.ok(bytes.length < 1024 * 1024, `${bytes.length} bytes`);
-    assert.equal(pdfPages(pdf()), 1);
-    const info = execFileSync("pdfinfo", [pdf()], { encoding: "utf8" });
-    assert.match(info, /Tagged:\s+yes/);
-    assert.match(info, /Page size:\s+612 x 792/, "Letter");
-    assert.match(info, new RegExp(`Title:\\s+.*${familyHandoutModel(lang).title}`));
-    const raw = bytes.toString("latin1");
-    assert.match(raw, new RegExp(`/Lang\\s*\\(${LANGS[lang]}`));
-    const fonts = execFileSync("pdffonts", [pdf()], { encoding: "utf8" })
-      .trim()
-      .split("\n")
-      .slice(2);
+test("the K–2 handout: its four files, the family QR, choose Grades K–2, audio first, pictures, the grown-up", () => {
+  for (const f of Object.values(FAMILY_HANDOUT_K2).flatMap((o) => Object.values(o)))
     assert.ok(
-      fonts.length > 0 && fonts.every((l) => /\syes\s+(yes|no)\s+(yes|no)\s+\d+\s+\d+\s*$/.test(l)),
-      `every font embedded:\n${fonts.join("\n")}`,
+      existsSync(onDisk(f)),
+      `${f} is missing: run node scripts/generate-intro-guide.mjs --only=family`,
     );
-    const min = minTextSize(bytes);
-    assert.ok(min >= 10.99, `smallest text is ${min} pt`);
-    const uris = new Set([...raw.matchAll(/\/URI \(([^)]*)\)/g)].map((m) => m[1]));
-    assert.deepEqual([...uris], [FAMILY_URL]);
-    const text = execFileSync("pdftotext", [pdf(), "-"], { encoding: "utf8" });
-    assert.ok(
-      text.replace(/\s+/g, "").includes(familyHandoutModel(lang).short),
-      "short link printed",
+  const en = familyK2HandoutModel("en");
+  const es = familyK2HandoutModel("es");
+  for (const m of [en, es]) {
+    assert.deepEqual(
+      m.how.map((h) => h.id),
+      ["audio", "pictures", "you"],
     );
-  });
+    assert.equal(m.steps.length, 3);
+    assert.equal(m.facts.length, 3);
+    assert.equal(m.url, FAMILY_URL);
+  }
+  assert.match(en.grade, /Grades K–2/);
+  assert.match(es.grade, /Grados K a 2/);
+  assert.match(en.steps[2].body, /“I said my answer\.”/);
+  assert.match(es.steps[2].body, /«Dije mi respuesta»/);
+  const text = JSON.stringify([en, es]).toLowerCase();
+  for (const bad of ["score", "points", "streak", "wida", "translat", "free", "timer"])
+    assert.ok(!text.includes(bad), `the K–2 handout claims "${bad}"`);
+});
 
-  test(`family handout Word file (${lang}): accessibility rules, a real hyperlink, no text under 11 pt`, async () => {
-    const buf = readFileSync(onDisk(FAMILY_HANDOUT[lang].docx));
-    assert.deepEqual(await auditDocx(buf), []);
-    const zip = await JSZip.loadAsync(buf);
-    const rels = await zip.file("word/_rels/document.xml.rels").async("string");
-    assert.ok(rels.includes(`Target="${FAMILY_URL}"`), "hyperlink to the family page");
-    const doc = await zip.file("word/document.xml").async("string");
-    assert.ok(!/w:sz w:val="(\d|1\d|20)"/.test(doc), "no run under 11 pt");
-    const core = await zip.file("docProps/core.xml").async("string");
-    assert.ok(core.includes(familyHandoutModel(lang).title), "document title");
+test("a scanner reads both printed K–2 pages back to the family URL", {
+  skip:
+    (!poppler || process.platform !== "darwin") &&
+    !process.env.CI &&
+    "CoreImage decoder and poppler need macOS",
+}, () => {
+  const pages = ["en", "es"].map((l) => {
+    const out = join(SCRATCH, `k2-page-${l}`);
+    execFileSync("pdftoppm", [
+      "-r",
+      "150",
+      "-png",
+      "-singlefile",
+      onDisk(FAMILY_HANDOUT_K2[l].pdf),
+      out,
+    ]);
+    return `${out}.png`;
   });
+  const read = readQrCodes(pages);
+  assert.ok(read, "no decoder available");
+  for (const f of pages)
+    assert.deepEqual(read[f], [FAMILY_URL], `${f} does not scan to ${FAMILY_URL}`);
+});
 
-  test(`family handout Word file (${lang}) renders to one page in LibreOffice`, {
-    skip: skip(office && poppler, "LibreOffice or poppler"),
-  }, () => {
-    const dir = mkdtempSync(join(SCRATCH, "lo-"));
-    execFileSync(
-      "soffice",
-      [
-        `-env:UserInstallation=file://${join(SCRATCH, "profile")}`,
-        "--headless",
-        "--convert-to",
-        "pdf",
-        "--outdir",
-        dir,
-        onDisk(FAMILY_HANDOUT[lang].docx),
-      ],
-      { stdio: "ignore", timeout: 180000 },
-    );
-    const out = readdirSync(dir).find((f) => f.endsWith(".pdf"));
-    assert.ok(out, "LibreOffice wrote a PDF");
-    assert.equal(pdfPages(join(dir, out)), 1);
-  });
-}
+const VARIANTS = [
+  { name: "family handout", files: FAMILY_HANDOUT, model: familyHandoutModel, url: FAMILY_URL },
+  {
+    name: "K–2 family handout",
+    files: FAMILY_HANDOUT_K2,
+    model: familyK2HandoutModel,
+    url: FAMILY_URL,
+  },
+];
+for (const { name, files, model: familyHandoutModel, url: FAMILY_URL } of VARIANTS)
+  for (const lang of ["en", "es"]) {
+    const FAMILY_HANDOUT = files;
+    const pdf = () => onDisk(FAMILY_HANDOUT[lang].pdf);
+    test(`${name} PDF (${lang}): one tagged page, language, title, fonts, 11 pt, link`, {
+      skip: skip(poppler, "poppler"),
+    }, () => {
+      const bytes = readFileSync(pdf());
+      assert.ok(bytes.length < 1024 * 1024, `${bytes.length} bytes`);
+      assert.equal(pdfPages(pdf()), 1);
+      const info = execFileSync("pdfinfo", [pdf()], { encoding: "utf8" });
+      assert.match(info, /Tagged:\s+yes/);
+      assert.match(info, /Page size:\s+612 x 792/, "Letter");
+      assert.match(info, new RegExp(`Title:\\s+.*${familyHandoutModel(lang).title}`));
+      const raw = bytes.toString("latin1");
+      assert.match(raw, new RegExp(`/Lang\\s*\\(${LANGS[lang]}`));
+      const fonts = execFileSync("pdffonts", [pdf()], { encoding: "utf8" })
+        .trim()
+        .split("\n")
+        .slice(2);
+      assert.ok(
+        fonts.length > 0 &&
+          fonts.every((l) => /\syes\s+(yes|no)\s+(yes|no)\s+\d+\s+\d+\s*$/.test(l)),
+        `every font embedded:\n${fonts.join("\n")}`,
+      );
+      const min = minTextSize(bytes);
+      assert.ok(min >= 10.99, `smallest text is ${min} pt`);
+      const uris = new Set([...raw.matchAll(/\/URI \(([^)]*)\)/g)].map((m) => m[1]));
+      assert.deepEqual([...uris], [FAMILY_URL]);
+      const text = execFileSync("pdftotext", [pdf(), "-"], { encoding: "utf8" });
+      assert.ok(
+        text.replace(/\s+/g, "").includes(familyHandoutModel(lang).short),
+        "short link printed",
+      );
+    });
+
+    test(`${name} Word file (${lang}): accessibility rules, a real hyperlink, no text under 11 pt`, async () => {
+      const buf = readFileSync(onDisk(FAMILY_HANDOUT[lang].docx));
+      assert.deepEqual(await auditDocx(buf), []);
+      const zip = await JSZip.loadAsync(buf);
+      const rels = await zip.file("word/_rels/document.xml.rels").async("string");
+      assert.ok(rels.includes(`Target="${FAMILY_URL}"`), "hyperlink to the family page");
+      const doc = await zip.file("word/document.xml").async("string");
+      assert.ok(!/w:sz w:val="(\d|1\d|20)"/.test(doc), "no run under 11 pt");
+      const core = await zip.file("docProps/core.xml").async("string");
+      assert.ok(core.includes(familyHandoutModel(lang).title), "document title");
+    });
+
+    test(`${name} Word file (${lang}) renders to one page in LibreOffice`, {
+      skip: skip(office && poppler, "LibreOffice or poppler"),
+    }, () => {
+      const dir = mkdtempSync(join(SCRATCH, "lo-"));
+      execFileSync(
+        "soffice",
+        [
+          `-env:UserInstallation=file://${join(SCRATCH, "profile")}`,
+          "--headless",
+          "--convert-to",
+          "pdf",
+          "--outdir",
+          dir,
+          onDisk(FAMILY_HANDOUT[lang].docx),
+        ],
+        { stdio: "ignore", timeout: 180000 },
+      );
+      const out = readdirSync(dir).find((f) => f.endsWith(".pdf"));
+      assert.ok(out, "LibreOffice wrote a PDF");
+      assert.equal(pdfPages(join(dir, out)), 1);
+    });
+  }

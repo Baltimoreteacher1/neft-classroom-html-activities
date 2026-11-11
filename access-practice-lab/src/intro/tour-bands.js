@@ -103,10 +103,10 @@ export const BAND_TOUR = {
       steps: [
         "Press “Hear it again” and listen to the prompt.",
         "Tap the picture that answers it, then press “Check.”",
-        "Press “Hear: sun” beside a choice to hear one answer read aloud.",
+        "Press the speaker button on a picture choice to hear that answer read aloud.",
       ],
       notice:
-        "Every choice is a picture with its own “Hear:” button, so a child who cannot read yet can still answer. Replay never removes a choice, and nothing is scored.",
+        "Every choice is a picture with its own speaker button, so a child who cannot read yet can still answer. Replay never removes a choice, and nothing is scored.",
       supports: EARLY_LISTEN,
       use: "Circle time: play one prompt for the whole group and have children point.",
     }),
@@ -119,7 +119,7 @@ export const BAND_TOUR = {
       students: "Children look at a garden picture and say one thing they see.",
       steps: [
         "Press “Hear Lina, age 5 answer first” and listen to the model.",
-        "Say your own answer aloud. “Hear the sentence starter” gives “I see ___.”",
+        "Say your own answer aloud. The speaker button beside “I see ___.” reads the sentence starter.",
         "Press “I said my answer.” You never have to record.",
       ],
       notice:
@@ -141,7 +141,7 @@ export const BAND_TOUR = {
         "Press “Check.”",
       ],
       notice:
-        "Tapping a sentence reads it aloud, and each answer is a picture with its own “Hear:” button. The first reading is shared with a grown-up.",
+        "Tapping a sentence reads it aloud, and each answer is a picture with its own speaker button. The first reading is shared with a grown-up.",
       supports: EARLY_READ,
       use: "Small group: read the sentence together, then each child points to the picture.",
     }),
@@ -180,7 +180,7 @@ export const BAND_TOUR = {
         "Press “Hear the story again” if you want the prompt once more.",
       ],
       notice:
-        "Choices are pictures with a “Hear:” button each, so answering never depends on reading. Replay is the only help and it never removes a choice.",
+        "Choices are pictures with a speaker button each, so answering never depends on reading. Replay is the only help and it never removes a choice.",
       supports: EARLY_LISTEN,
       use: "Morning routine: one prompt on the board, children tap on their own device or point.",
     }),
@@ -193,7 +193,7 @@ export const BAND_TOUR = {
       students: "Children look at a garden picture and name one thing they see.",
       steps: [
         "Press “Hear Mateo, age 6 answer first” and listen to the model.",
-        "Say your own answer aloud. “Hear the sentence starter” gives “I see ___.”",
+        "Say your own answer aloud. The speaker button beside “I see ___.” reads the sentence starter.",
         "Press “I said my answer.” Recording is optional.",
       ],
       notice:
@@ -214,7 +214,7 @@ export const BAND_TOUR = {
         "Press “Check.”",
       ],
       notice:
-        "The sentence reads aloud on a tap, and the picture choices carry their own “Hear:” buttons. Position words (in, on, up) are the language target.",
+        "The sentence reads aloud on a tap, and the picture choices carry their own speaker buttons. Position words (in, on, up) are the language target.",
       supports: EARLY_READ,
       use: "Guided reading: read the sentence chorally, then children answer on their own.",
     }),
@@ -227,7 +227,7 @@ export const BAND_TOUR = {
       students:
         "Children look at a garden picture and write “I see” plus one thing on a printed page.",
       steps: [
-        "Press “Hear the sentence starter” to hear “I see ___.”",
+        "Press the speaker button beside “I see ___.” to hear the sentence starter.",
         "Look at the page children would print.",
         "Say your sentence aloud, then press “I wrote it on paper.”",
       ],
@@ -250,7 +250,7 @@ export const BAND_TOUR = {
       steps: [
         "Press “Hear the story again” and listen.",
         "Tap the picture that answers “Who waters the bean plants?” Press “Check.”",
-        "Press “Hear: Ana” beside a choice to hear one answer read aloud.",
+        "Press the speaker button on a picture choice to hear that answer read aloud.",
       ],
       notice:
         "The story can be replayed any time and every choice can be heard. Students show who did the action, a core listening skill, without reading.",
@@ -266,7 +266,7 @@ export const BAND_TOUR = {
       students: "Students look at a garden picture and tell one thing they see.",
       steps: [
         "Press “Hear Leo, age 8 answer first” and listen to the model.",
-        "Say your own answer aloud. “Hear the sentence starter” gives “I see ___.”",
+        "Say your own answer aloud. The speaker button beside “I see ___.” reads the sentence starter.",
         "Press “I said my answer.” Recording is optional.",
       ],
       notice:
@@ -301,7 +301,7 @@ export const BAND_TOUR = {
       students:
         "Students draw their favorite fruit and write one sentence: “I like ___ because ___.”",
       steps: [
-        "Press “Hear the sentence starter” to hear “I like ___ because ___.”",
+        "Press the speaker button beside “I like ___ because ___.” to hear the sentence starter.",
         "Look at the page students would print.",
         "Say your sentence aloud, then press “I wrote it on paper.”",
       ],

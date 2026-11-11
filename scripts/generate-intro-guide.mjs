@@ -2,9 +2,10 @@
 /**
  * generate-intro-guide: builds the printable teacher introduction files in access-practice-lab/guides/ from ONE source,
  * src/intro/data.js (through quick-guide-model.js, lesson-backup-model.js and presenter-notes.js):
- *   quick-guide.pdf / .docx             two Letter pages: the 20-minute exploration and the featured lesson
- *   featured-lesson-backup.pdf / .docx  page 1 student-facing, page 2 teacher-facing: use it if the activity will not load
- *   activity-guide.pdf / .docx          how each curated activity is used, one activity per page
+ *   quick-guide[-<pick>].pdf / .docx    two Letter pages: the 20-minute exploration and the featured lesson
+ *   featured-lesson-backup[-<pick>].pdf / .docx  page 1 student-facing, page 2 teacher-facing: use it if the activity will not load
+ *   activity-guide[-<pick>].pdf / .docx how each activity for that grade is used, one activity per page
+ *                                       (one set per grade choice; Grades 6–8 has no suffix, the others -k, -1, -2-3, -4-5)
  *   site-directory.pdf / .docx          appendix: every domain and activity on the site, with links
  *   docs/languageos/pd/presenter-notes.pdf / .docx  the 30-minute presenter script, NOT published on the site
  *                                       (Joel 2026-11-11: the PD session is off the site; copies go to his Desktop folder)
@@ -13,6 +14,7 @@
  *   docs/languageos/pd-presenter-notes.md   the presenter script as plain Markdown
  * Output is deterministic: no timestamps appear in visible text. Run:  npm run generate:intro-guide  (--only=guide|backup|activities|directory|notes|qr|family)
  *   family-handout[-es].pdf / .docx, qr-family.svg / .png   the one-page family handout for /practice-together (--only=family)
+ *   family-handout-k2[-es].pdf / .docx    the K–2 version of the family handout (same QR)
  */
 import { mkdirSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
@@ -20,6 +22,7 @@ import { fileURLToPath } from "node:url";
 import { Resvg } from "@resvg/resvg-js";
 import { absUrl, ENTRANCE } from "../access-practice-lab/src/intro/data.js";
 import { buildBackupModel } from "../access-practice-lab/src/intro/lesson-backup-model.js";
+import { PICK_IDS, pickSuffix } from "../access-practice-lab/src/intro/quick-guide-files.js";
 import { guideSheets } from "../access-practice-lab/src/intro/quick-guide-html.js";
 import { buildGuideModel } from "../access-practice-lab/src/intro/quick-guide-model.js";
 import { toHtml } from "../access-practice-lab/src/util.js";
@@ -59,33 +62,41 @@ export function qrStartSvg({ px = 144, label = "" } = {}) {
 `,
 );
 
+// One Quick Guide, Featured Lesson backup and Activity Guide per grade choice. Grades 6–8 keeps the unsuffixed names
+// (linked from live pages and the PD folder); the others add the pick: quick-guide-k.pdf, activity-guide-2-3.docx.
+const fileStem = (stem, pick) => join(GUIDES, `${stem}${pickSuffix(pick)}`);
+
 if (want("guide")) {
-  const model = buildGuideModel();
-  const body = toHtml(guideSheets(model, { href: absUrl, qr: { start: QR_SRC } }));
-  await renderPdfs([
-    {
-      out: join(GUIDES, "quick-guide.pdf"),
-      doc: printDocument({
-        title: `${model.siteName} ${model.title}`,
-        bodyHtml: `<div class="ig">${body}</div>`,
-      }),
-    },
-  ]);
   const { buildGuideDocx } = await import("./lib/intro-guide-docx.mjs");
-  writeFileSync(join(GUIDES, "quick-guide.docx"), await buildGuideDocx(model));
+  for (const pick of PICK_IDS) {
+    const model = buildGuideModel(pick);
+    const body = toHtml(guideSheets(model, { href: absUrl, qr: { start: QR_SRC } }));
+    await renderPdfs([
+      {
+        out: `${fileStem("quick-guide", pick)}.pdf`,
+        doc: printDocument({
+          title: `${model.siteName} ${model.title}`,
+          bodyHtml: `<div class="ig">${body}</div>`,
+        }),
+      },
+    ]);
+    writeFileSync(`${fileStem("quick-guide", pick)}.docx`, await buildGuideDocx(model));
+  }
 }
 
 if (want("backup")) {
-  const model = buildBackupModel();
   const { backupBody } = await import("./lib/intro-backup-html.mjs");
-  await renderPdfs([
-    {
-      out: join(GUIDES, "featured-lesson-backup.pdf"),
-      doc: printDocument({ title: model.title, bodyHtml: backupBody(model) }),
-    },
-  ]);
   const { buildBackupDocx } = await import("./lib/intro-backup-docx.mjs");
-  writeFileSync(join(GUIDES, "featured-lesson-backup.docx"), await buildBackupDocx(model));
+  for (const pick of PICK_IDS) {
+    const model = buildBackupModel(pick);
+    await renderPdfs([
+      {
+        out: `${fileStem("featured-lesson-backup", pick)}.pdf`,
+        doc: printDocument({ title: model.title, bodyHtml: backupBody(model) }),
+      },
+    ]);
+    writeFileSync(`${fileStem("featured-lesson-backup", pick)}.docx`, await buildBackupDocx(model));
+  }
 }
 
 if (want("activities")) {
@@ -94,15 +105,17 @@ if (want("activities")) {
   );
   const { activityGuideBody } = await import("./lib/intro-activity-guide-html.mjs");
   const { buildActivityGuideDocx } = await import("./lib/intro-activity-guide-docx.mjs");
-  const model = buildActivityGuideModel();
-  await renderPdfs([
-    {
-      out: join(GUIDES, "activity-guide.pdf"),
-      doc: printDocument({ title: model.title, bodyHtml: activityGuideBody(model) }),
-      pdfOptions: { outline: true },
-    },
-  ]);
-  writeFileSync(join(GUIDES, "activity-guide.docx"), await buildActivityGuideDocx(model));
+  for (const pick of PICK_IDS) {
+    const model = buildActivityGuideModel(pick);
+    await renderPdfs([
+      {
+        out: `${fileStem("activity-guide", pick)}.pdf`,
+        doc: printDocument({ title: model.title, bodyHtml: activityGuideBody(model) }),
+        pdfOptions: { outline: true },
+      },
+    ]);
+    writeFileSync(`${fileStem("activity-guide", pick)}.docx`, await buildActivityGuideDocx(model));
+  }
 }
 
 if (want("directory")) {
@@ -146,6 +159,29 @@ if (want("family")) {
             title: `${model.siteName}: ${model.title}`,
             lang,
             bodyHtml: toHtml(familyHandoutBody(model)),
+            cssFiles: ["ds.css", "intro-family-handout.css"],
+          }),
+        },
+      ],
+      { lang: HANDOUT_DOC_LANG[lang] },
+    );
+    writeFileSync(join(GUIDES, `${base}.docx`), await buildFamilyHandoutDocx(model, GUIDES));
+  }
+  // The K–2 version: the same family QR, print sheet and Word builder.
+  const { familyK2HandoutBody, familyK2HandoutModel } = await import(
+    "./lib/intro-family-k2-handout.mjs"
+  );
+  for (const lang of HANDOUT_LANGS) {
+    const model = familyK2HandoutModel(lang);
+    const base = lang === "en" ? "family-handout-k2" : `family-handout-k2-${lang}`;
+    await renderPdfs(
+      [
+        {
+          out: join(GUIDES, `${base}.pdf`),
+          doc: printDocument({
+            title: `${model.siteName}: ${model.title}`,
+            lang,
+            bodyHtml: toHtml(familyK2HandoutBody(model)),
             cssFiles: ["ds.css", "intro-family-handout.css"],
           }),
         },

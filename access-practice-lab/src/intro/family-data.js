@@ -93,14 +93,14 @@ export const FAMILY_ACTIVITIES = [
         head: { en: "Look at the example", es: "Miren el ejemplo" },
         body: {
           en: "Read the plain sentence and the better sentence below.",
-          es: "Lean la oración sencilla y la oración mejor que están abajo.",
+          es: "Lean abajo la oración sencilla y la oración mejorada.",
         },
       },
       {
         head: { en: "Try it together", es: "Inténtenlo juntos" },
         body: {
           en: "Press “Start with this help.” Write a better sentence. Then press “Check my work.”",
-          es: "Toquen «Empezar con esta ayuda». Escriban una oración mejor. Luego toquen «Revisar mi trabajo».",
+          es: "Toquen «Empezar con esta ayuda». Escriban una oración mejorada. Luego toquen «Revisar mi trabajo».",
         },
       },
       {
@@ -114,7 +114,7 @@ export const FAMILY_ACTIVITIES = [
     example: {
       label: { en: "Example", es: "Ejemplo" },
       plainLabel: { en: "Plain sentence", es: "Oración sencilla" },
-      betterLabel: { en: "Better sentence", es: "Oración mejor" },
+      betterLabel: { en: "Better sentence", es: "Oración mejorada" },
       plain: "Phones in class are bad.",
       better: "Phones in class can be a distraction because students stop paying attention.",
     },
@@ -133,7 +133,7 @@ const MORE_DESCRIPTIONS = {
   },
   morphemes: {
     en: "Snap word parts together to build a word. Nothing is timed.",
-    es: "Unan partes de palabras para formar una palabra. Nada tiene tiempo.",
+    es: "Unan partes de palabras para formar una palabra. Nada tiene límite de tiempo.",
   },
 };
 
@@ -199,7 +199,7 @@ export const FAMILY = {
   },
   spanishNote: {
     en: "The Spanish on this page is machine-assisted and has not been reviewed by a human translator.",
-    es: "El español es asistido por máquina y no ha sido revisado por un traductor humano.",
+    es: "El español de esta página se escribió con ayuda de una máquina y no lo ha revisado un traductor humano.",
   },
   help: {
     heading: { en: "Need help?", es: "¿Necesitan ayuda?" },
@@ -273,11 +273,11 @@ export const FAMILY = {
   },
   privacy: {
     en: "No account. This page does not ask for your name or email.",
-    es: "Sin cuenta. Esta página no pide su nombre ni su correo.",
+    es: "Sin cuenta. Esta página no pide su nombre ni su correo electrónico.",
   },
 };
 
-/** The grade choice at the top of the page. K–2 goes to the early learners home, which has its own grade picker. */
+/** The grade choice at the top of the page. K–2 shows the in-page routine of family-k2-data.js. */
 export const FAMILY_BANDS = [
   { id: "k-2", label: { en: "Grades K–2", es: "Grados K a 2" } },
   { id: "3-5", label: { en: "Grades 3–5", es: "Grados 3 a 5" } },
@@ -285,15 +285,6 @@ export const FAMILY_BANDS = [
 ];
 export const FAMILY_GRADE = {
   heading: { en: "Your child’s grade", es: "El grado de su hijo o hija" },
-  early: {
-    route: "/early?grades=K",
-    title: { en: "Practice for grades K–2", es: "Práctica para los grados K a 2" },
-    text: {
-      en: "Younger children have their own page: a picture story read aloud, sounds, word cards and short games to do together. Choose Kindergarten, Grade 1 or Grades 2–3 at the top of that page.",
-      es: "Los niños más pequeños tienen su propia página: un cuento con imágenes leído en voz alta, sonidos, tarjetas de palabras y juegos cortos para hacer juntos. Elijan Kínder, Grado 1 o Grados 2 y 3 arriba en esa página.",
-    },
-    cta: { en: "Open practice for grades K–2", es: "Abrir la práctica de los grados K a 2" },
-  },
 };
 
 const [talk68, write68] = FAMILY_ACTIVITIES;

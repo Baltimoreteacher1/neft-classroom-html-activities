@@ -15,7 +15,18 @@ export const ABOUT =
   "The Language Page is classroom practice in listening, speaking, reading and writing for multilingual learners from kindergarten to grade 8.";
 
 const faq = (id) => FAQ.find((f) => f.id === id);
-const faqText = (id, lang = "en") => faq(id)?.a?.[lang] || "";
+
+/**
+ * A Site Guide help answer in a language. When the FAQ entry has a `byPick` variant for the grade the person chose,
+ * that wording wins (it names the buttons that grade's activities really show); otherwise the general answer.
+ */
+export function faqAnswer(id, lang = "en", pick = "") {
+  const f = faq(id);
+  if (!f) return "";
+  const v = (pick && f.byPick?.[pick]) || f.a;
+  return v?.[lang] || "";
+}
+const faqText = faqAnswer;
 
 /**
  * The quick questions. Each has a stable id, the question in EN and ES, and either a fixed answer or a function of
@@ -36,6 +47,10 @@ export const QUICK = {
   mic: {
     q: ["Do I need a microphone?", "¿Necesito un micrófono?"],
     a: () => [faqText("mic"), faqText("mic", "es")],
+  },
+  norecord: {
+    q: ["Can students practice without recording?", "¿Se puede practicar sin grabar?"],
+    a: (_act, pick) => [faqText("norecord", "en", pick), faqText("norecord", "es", pick)],
   },
   saved: {
     q: ["Where is work saved?", "¿Dónde se guarda el trabajo?"],
@@ -88,11 +103,14 @@ export const QUICK = {
   },
 };
 
-/** The answer to a quick question in a language ("en" | "es"), English when no Spanish exists. */
-export function quickAnswer(id, act, lang = "en") {
+/**
+ * The answer to a quick question in a language ("en" | "es"), English when no Spanish exists. `pick` (a GRADE_PICKS
+ * id) selects grade-specific wording where an answer names buttons; the activity on screen implies its own pick.
+ */
+export function quickAnswer(id, act, lang = "en", pick = act?.pick || "") {
   const entry = QUICK[id];
   if (!entry) return "";
-  const [en, es] = entry.a(act);
+  const [en, es] = entry.a(act, pick);
   return lang === "es" && es ? es : en;
 }
 
@@ -143,7 +161,12 @@ export function guideContext({ pick = "6-8", page = "tour", step = "" } = {}) {
       ),
     );
   parts.push(["OTHER GRADES:", ...others].join("\n"));
-  parts.push(["HELP ANSWERS:", ...FAQ.map((f) => line(`${f.q.en} ${f.a.en}`))].join("\n"));
+  parts.push(
+    [
+      `HELP ANSWERS (worded for grade choice ${pick}):`,
+      ...FAQ.map((f) => line(`${f.q.en} ${faqAnswer(f.id, "en", pick)}`)),
+    ].join("\n"),
+  );
   parts.push(
     [
       "TEACHER PAGES:",

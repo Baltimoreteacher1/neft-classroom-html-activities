@@ -222,6 +222,16 @@
       "because": "maybe we could have a fun language guide person/cartoon that takes them through the tour/activities and they can interact with (ask questions, clarify, etc...) / you can use the ai chat / full permission to change site rules / don't call it pepita, call it Mr. Neft and make it a cartoon male person",
       "pinnedBy": "tools/access-intro-bands.test.mjs",
       "pinnedCheck": "/api/language-guide: refuses bad input, is offline without a model, answers from a model"
+    },
+    {
+      "id": "language-guide-question-log",
+      "surface": "/api/language-guide (Mr. Neft, the Language Page AI guide) and GET /api/language-guide/questions",
+      "decision": "Questions typed into Mr. Neft are kept anonymously for 90 days in the PLAN_DOCS KV namespace as { question, page, step, grades, lang, answered, at }, after anything that looks like a name, email or phone number is replaced. No IP address, history or answer is stored. GET /api/language-guide/questions?days=N returns counts and the most frequent questions to a caller with the teacher key. The guide says on screen that typed questions are kept anonymously for 90 days to improve it.",
+      "decidedBy": "Joel",
+      "decidedOn": "2026-11-11",
+      "because": "Build out all of these (the list item: Optional anonymous question log ... to see what teachers ask)",
+      "pinnedBy": "tools/access-intro-guide-ai.test.mjs",
+      "pinnedCheck": "the question log stores only the anonymous record, for 90 days"
     }
   ]
 }

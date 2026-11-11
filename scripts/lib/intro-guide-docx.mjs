@@ -81,11 +81,28 @@ function startBlock(p) {
   ];
 }
 
+/** One table for every domain when each has one activity: the domain name leads the activity cell. */
+function compactTable(pathways) {
+  const rows = pathways.map((pw) => {
+    const a = pw.activities[0];
+    return [
+      [
+        para([bold(pw.name)], { spacing: { after: 20 } }),
+        para([run(`${BOX} `), link(a.name, a.link.url)], { spacing: { after: 20 } }),
+        para([run(a.link.shown || a.link.route, { color: MUTED })], { spacing: { after: 0 } }),
+      ],
+      [para(a.tryNow, { spacing: { after: 0 } })],
+      [para(a.classroomUse, { spacing: { after: 0 } })],
+    ];
+  });
+  return [dataTable(["Activity", "What to try", "One classroom use"], rows, [3000, 3960, 3552])];
+}
+
 function activityTable(pw) {
   const rows = pw.activities.map((a) => [
     [
       para([run(`${BOX} `), link(a.name, a.link.url)], { spacing: { after: 20 } }),
-      para([run(a.link.route, { color: MUTED })], { spacing: { after: 0 } }),
+      para([run(a.link.shown || a.link.route, { color: MUTED })], { spacing: { after: 0 } }),
     ],
     [para(a.tryNow, { spacing: { after: 0 } })],
     [para(a.classroomUse, { spacing: { after: 0 } })],
@@ -177,7 +194,9 @@ export async function buildGuideDocx(model) {
       para([bold(`${s.range}  `), bold(`${s.name}. `), run(s.detail)], { spacing: { after: 20 } }),
     ),
     para([run(page1.addressNote, { color: MUTED })], { spacing: { before: 80 } }),
-    ...page1.pathways.flatMap(activityTable),
+    ...(page1.pathways.every((pw) => pw.activities.length === 1)
+      ? compactTable(page1.pathways)
+      : page1.pathways.flatMap(activityTable)),
     ...planning(page1.planning),
     ...page2({ ...p2, addressNoteText: page1.addressNote }),
   ];

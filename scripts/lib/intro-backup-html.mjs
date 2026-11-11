@@ -25,7 +25,7 @@ function studentPage(s) {
     </section>
     ${s.writing.map(
       (w) => html`<section class="ib-write" aria-labelledby="ib-w-${w.id}">
-        <h2 id="ib-w-${w.id}">${w.label}</h2>${lines(w.lines)}
+        <h2 id="ib-w-${w.id}">${w.label}</h2>${w.draw ? raw('<div class="ib-draw" aria-hidden="true"></div>') : lines(w.lines)}
       </section>`,
     )}
     <footer class="ib-foot">
@@ -37,7 +37,7 @@ function studentPage(s) {
 
 function teacherPage(t) {
   return html`<article class="ig-sheet ib-teacher" aria-labelledby="ib-h2">
-    <header class="ig-run"><p class="ig-runtitle">The Language Page Featured Lesson backup</p><p class="ig-pg">Page 2 of 2: teacher page</p></header>
+    <header class="ig-run"><p class="ig-runtitle">The Language Page Featured Lesson backup · ${t.grade}</p><p class="ig-pg">Page 2 of 2: teacher page</p></header>
     <h2 id="ib-h2" class="ig-title">${t.heading}</h2>
     <p>${t.intro}</p>
     <p><strong>${t.objectiveLabel}:</strong> ${t.objective}</p>

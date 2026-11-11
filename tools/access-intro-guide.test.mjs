@@ -21,6 +21,7 @@ import { ACTIVITY_GUIDE } from "../access-practice-lab/src/intro/activity-guide-
 import {
   buildActivityGuideModel,
   GUIDE_ORDER,
+  guideOrder,
 } from "../access-practice-lab/src/intro/activity-guide-model.js";
 import {
   ACTIVITY_BY_ID,
@@ -127,17 +128,18 @@ function rasterize(pdf, dpi = 150) {
 }
 
 // ── data and model ────────────────────────────────────────────────────────────────────────────────────────────────
-test("quick guide model: speaking first, two activities each, every link is a public URL from data.js", () => {
+test("quick guide model (Grades 6–8): the four domains in order, one activity each, every link a public URL", () => {
   const m = buildGuideModel();
   assert.deepEqual(
     m.page1.pathways.map((p) => p.id),
-    ["speaking", "writing"],
+    ["listening", "speaking", "reading", "writing"],
   );
-  for (const p of m.page1.pathways) assert.equal(p.activities.length, 2);
-  for (const a of m.page1.pathways.flatMap((p) => p.activities)) {
-    assert.equal(a.link.url, absUrl(ACTIVITY_BY_ID[a.id].route));
-    assert.equal(a.tryNow, ACTIVITY_BY_ID[a.id].tryNow);
-    assert.equal(a.classroomUse, ACTIVITY_BY_ID[a.id].classroomUse);
+  for (const p of m.page1.pathways) assert.equal(p.activities.length, 1);
+  for (const id of ["hallway", "upgrade"]) {
+    const a = m.page1.pathways.flatMap((p) => p.activities).find((x) => x.id === id);
+    assert.equal(a.link.url, absUrl(ACTIVITY_BY_ID[id].route));
+    assert.equal(a.tryNow, ACTIVITY_BY_ID[id].tryNow);
+    assert.equal(a.classroomUse, ACTIVITY_BY_ID[id].classroomUse);
   }
   assert.equal(m.page1.start.link.url, ENTRANCE.url);
   assert.equal(m.page1.planning.prompts.length, 5);
@@ -242,18 +244,22 @@ test("file names never contain the substring that Pages gates behind the teacher
     assert.doesNotMatch(f, /presenter/i, `${f}: presenter files are not published`);
 });
 
-test("activity guide: one card per ACTIVITY_GUIDE entry, curated first, every card complete", () => {
+test("activity guide (Grades 6–8): every curated card in Joel's order, plus that grade's Listening and Reading", () => {
   const m = buildActivityGuideModel();
-  assert.deepEqual(m.cards.map((c) => c.id).sort(), ACTIVITY_GUIDE.map((g) => g.id).sort());
   assert.deepEqual(
-    m.cards.map((c) => c.id),
+    m.cards.filter((c) => ACTIVITY_GUIDE.some((g) => g.id === c.id)).map((c) => c.id),
     GUIDE_ORDER,
   );
+  assert.deepEqual(
+    m.cards.map((c) => c.id),
+    guideOrder("6-8"),
+  );
+  assert.equal(m.cards.length, ACTIVITY_GUIDE.length + 2);
   assert.deepEqual(GUIDE_ORDER.slice(0, 4), ["hallway", "board", "upgrade", "paragraph"]);
   for (const c of m.cards) {
     for (const k of ["name", "kind", "icon", "does", "why", "time", "open", "feedback"])
       assert.ok(c[k], `${c.id} lacks ${k}`);
-    assert.equal(c.link.url, absUrl(ACTIVITY_BY_ID[c.id].route));
+    if (ACTIVITY_BY_ID[c.id]) assert.equal(c.link.url, absUrl(ACTIVITY_BY_ID[c.id].route));
     assert.ok(
       c.steps.length >= 3 && c.builtIn.length >= 1 && c.stuck.length >= 1,
       `${c.id} steps, help, fixes`,
@@ -330,7 +336,7 @@ test("a scanner decodes the QR PNG and SVG back to ENTRANCE.url", {
 const LAB_PREFIX = "https://thelanguagepage.com/access-practice-lab/";
 const PDFS = [
   { file: "quick-guide.pdf", pages: [2, 2], urls: () => guideUrls(), qr: true },
-  { file: "activity-guide.pdf", pages: [7, 7], urls: activityGuideUrls, qr: true },
+  { file: "activity-guide.pdf", pages: [9, 9], urls: activityGuideUrls, qr: true },
   {
     file: "site-directory.pdf",
     pages: [10, 90],
@@ -416,7 +422,7 @@ test("the PDFs show no text outside the page and every page has content (rasteri
 // ── Word files ────────────────────────────────────────────────────────────────────────────────────────────────────
 const DOCXS = [
   { file: "quick-guide.docx", pages: [2, 2], urls: () => guideUrls() },
-  { file: "activity-guide.docx", pages: [7, 7], urls: activityGuideUrls },
+  { file: "activity-guide.docx", pages: [9, 9], urls: activityGuideUrls },
   { file: "site-directory.docx", pages: [5, 90], urls: () => directoryUrls() },
   {
     file: "featured-lesson-backup.docx",

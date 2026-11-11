@@ -2,12 +2,14 @@
 // domain (Listening, Speaking, Reading, Writing) inside a live panel beside the directions, and ends with a plan for
 // one class. Mr. Neft, the guide, speaks on every step and answers questions. Place, ticks and notes are saved on
 // this device only (state.js), so the tour resumes where it stopped.
-import { BASE, html, icon } from "../util.js";
-import { DOWNLOADS, FEATURED_LESSON, ROUTES, TOUR_STOPS, absUrl } from "./data.js";
+import { html, icon } from "../util.js";
+import { ROUTES, TOUR_STOPS } from "./data.js";
 import { clearIntro, loadIntro, SAVED_NOTE, updateIntro } from "./state.js";
 import { bandPickerHTML, domainCardsHTML, onBandClick, pickName, teacherPick } from "./band.js";
 import { bindGuide, guideHTML } from "./guide.js";
-import { BAND_TOUR, DOMAINS, tourActivities, tourActivity, tourRoute } from "./tour-bands.js";
+import { BAND_TOUR, DOMAINS, tourActivity } from "./tour-bands.js";
+import { watchFrame } from "./tour-autotick.js";
+import { onPlanClick, planHTML, planText, refreshPlanCard } from "./tour-plan.js";
 import {
   checklistHTML,
   frameNode,
@@ -19,7 +21,6 @@ import {
 } from "./tour-ui.js";
 import { teacherBand } from "./shell.js";
 import { copyWithNote, labHref } from "./ui.js";
-import { withReturn } from "./return-bar.js";
 
 const LAST = TOUR_STOPS.length - 1;
 const DOMAIN_STOP = Object.fromEntries(
@@ -80,169 +81,12 @@ function domainHTML(pick, domainId, tour) {
         say: html`${a.domain.purpose} In <strong>${a.title}</strong>,
           ${a.students.charAt(0).toLowerCase()}${a.students.slice(1)} Press “Try it here as a student” and
           tick each step as you go.`,
-        chips: ["students", "notice", "use", domainId === "speaking" ? "mic" : "sound"],
+        chips: ["students", "notice", "use", domainId === "speaking" ? "norecord" : "sound"],
         context: { page: "tour", step: a.domain.name, pick, domain: domainId },
       })}
       ${noticeHTML(a)} ${yourTurnHTML(a, notes)}
     </div>
     <div class="tr-main">${stageHTML(a)}</div>
-  </div>`;
-}
-
-const planText = (pick, notes) => {
-  const a = tourActivity(pick, notes.pick);
-  return [
-    "My plan from The Language Page tour",
-    `Grades: ${pickName(pick)}`,
-    a ? `Activity: ${a.title} (${a.domain.name}, about ${a.minutes} min)` : "",
-    a ? `Student link: ${absUrl(tourRoute(a))}` : "",
-    notes.group ? `Class or group: ${notes.group}` : "",
-    notes.when ? `When: ${notes.when}` : "",
-  ]
-    .filter(Boolean)
-    .join("\n");
-};
-
-/** Step 6: one activity, one class, one time, and where to go next. */
-function planHTML(pick, tour) {
-  const notes = tour.notes || {};
-  const chosen = tourActivity(pick, notes.pick);
-  return html`<div class="tr-plan">
-    <section class="tr-card" aria-labelledby="trPlanTitle">
-      <h2 id="trPlanTitle">${icon("calendar")}Plan one class</h2>
-      <fieldset class="in-field tr-plan-pick">
-        <legend>The activity I will use first</legend>
-        ${tourActivities(pick).map(
-          (a) =>
-            html`<label class="in-opt ${a.domain.cls}"
-              ><input
-                type="radio"
-                name="tour-pick"
-                value="${a.domain.id}"
-                data-tour-field="pick"
-                data-tr-rerender
-                ${notes.pick === a.domain.id ? "checked" : ""}
-              /><span
-                ><strong>${a.title}</strong><small>${a.domain.name} · ${a.minutes} min</small></span
-              ></label
-            >`,
-        )}
-      </fieldset>
-      <div class="tr-plan-fields">
-        <div class="in-field">
-          <label for="tour-group">My class or group</label
-          ><input
-            id="tour-group"
-            type="text"
-            data-tour-field="group"
-            value="${notes.group || ""}"
-          />
-        </div>
-        <div class="in-field">
-          <label for="tour-when">When I will try it</label
-          ><input id="tour-when" type="text" data-tour-field="when" value="${notes.when || ""}" />
-        </div>
-      </div>
-    </section>
-    <section
-      class="tr-card tr-plan-card ${chosen ? chosen.domain.cls : ""}"
-      aria-labelledby="trPlanCard"
-    >
-      <h2 id="trPlanCard">Your plan</h2>
-      ${
-        chosen
-          ? html`<p class="tr-plan-act">
-                <span class="in-ic" aria-hidden="true">${icon(chosen.domain.icon)}</span
-                ><span
-                  ><strong>${chosen.title}</strong
-                  ><small
-                    >${chosen.domain.name} · ${pickName(pick)} · about ${chosen.minutes} min</small
-                  ></span
-                >
-              </p>
-              <p>${chosen.use}</p>
-              <p class="in-actions">
-                <a
-                  class="btn btn-primary"
-                  href="${withReturn(`${BASE}${tourRoute(chosen)}`, "tour")}"
-                  >Open it${icon("arrow-right")}</a
-                >
-                <button
-                  type="button"
-                  class="btn"
-                  data-tr-copy="link"
-                  data-copy="${absUrl(tourRoute(chosen))}"
-                >
-                  ${icon("copy")}Copy student link
-                </button>
-                <button type="button" class="btn ghost" data-tr-copy="plan">
-                  ${icon("copy")}Copy my plan
-                </button>
-              </p>
-              <p class="fine" data-tr-copy-note aria-live="polite"></p>`
-          : html`<p class="fine">
-              Choose an activity to see your plan, a student link and a copy button.
-            </p>`
-      }
-    </section>
-    <section class="tr-card tr-next" aria-labelledby="trNextTitle">
-      <h2 id="trNextTitle">Keep going</h2>
-      <ul class="tr-next-list">
-        <li>
-          <a href="${labHref(ROUTES.guide)}"
-            >${icon("print")}<span
-              ><strong>Quick Guide</strong><small>Two pages to print or keep</small></span
-            ></a
-          >
-        </li>
-        <li>
-          <a href="${labHref(ROUTES.activities)}"
-            >${icon("library")}<span
-              ><strong>Activity Guide</strong><small>Every step of each activity</small></span
-            ></a
-          >
-        </li>
-        <li>
-          <a href="${labHref(ROUTES.siteGuide)}?for=teacher"
-            >${icon("help")}<span
-              ><strong>Site Guide</strong><small>The whole site, with search</small></span
-            ></a
-          >
-        </li>
-        <li>
-          <a href="${labHref(ROUTES.together)}?grades=${pick}"
-            >${icon("families")}<span
-              ><strong>Family page</strong
-              ><small>Send families one link, English and Spanish</small></span
-            ></a
-          >
-        </li>
-        ${
-          pick === "6-8"
-            ? html`<li>
-                <a href="${labHref(ROUTES.lesson)}"
-                  >${icon("conversation")}<span
-                    ><strong>${FEATURED_LESSON.title}</strong
-                    ><small>A 10-minute speak-then-write lesson</small></span
-                  ></a
-                >
-              </li>`
-            : ""
-        }
-        <li>
-          <a href="${DOWNLOADS.activityGuide.pdf}"
-            >${icon("download")}<span
-              ><strong>Activity Guide (PDF)</strong><small>One activity per page</small></span
-            ></a
-          >
-        </li>
-      </ul>
-    </section>
-    ${guideHTML({
-      say: "Start small: one activity, one class, one support. Copy the student link into your class page, and send families the family page so they can practice at home.",
-      chips: ["share", "families", "language", "saved"],
-      context: { page: "tour", step: TOUR_STOPS[LAST].name, pick },
-    })}
   </div>`;
 }
 
@@ -312,35 +156,63 @@ export const mount = () => bindGuide();
 const saveNote = (id, value) =>
   updateIntro("tour", (t) => ({ ...t, notes: { ...(t.notes || {}), [id]: value } }));
 
-export function onInput(e) {
+export function onInput(e, ctx) {
   const el = e.target.closest?.("[data-tour-field]");
-  if (el && el.type !== "radio") saveNote(el.dataset.tourField, el.value);
+  if (!el || el.type === "radio") return;
+  const tour = saveNote(el.dataset.tourField, el.value);
+  refreshPlanCard(teacherPick(ctx), tour.notes || {});
 }
 
-/** A tick updates the count and the step strip in place, so the live activity beside it keeps its state. */
-function onTick(el, ctx) {
-  const n = currentStop(ctx.route);
-  const pick = teacherPick(ctx);
-  const domain = TOUR_STOPS[n].id;
+/**
+ * Set one checklist step and update the count and the step strip in place, so the live activity beside it keeps its
+ * state. `auto` is a tick the tour made from an action inside the activity: it only turns a step on, and says which.
+ */
+function setTick(pick, domain, i, checked, { auto = false } = {}) {
   const key = tickKey(pick, domain);
+  if (auto && ticksFor(savedTour(), pick, domain)[i]) return;
   const tour = updateIntro("tour", (t) => {
     const ticks = { ...(t.ticks || {}) };
     const row = [...(ticks[key] || [false, false, false])];
-    row[Number(el.dataset.trTick)] = el.checked;
+    row[i] = checked;
     ticks[key] = row;
     const done = row.every(Boolean);
     return { ...t, ticks, tried: { ...(t.tried || {}), [domain]: done } };
   });
   const row = ticksFor(tour, pick, domain);
   const count = row.filter(Boolean).length;
+  const box = document.querySelector(`[data-tr-tick="${i}"]`);
+  if (box) box.checked = checked;
   const out = document.querySelector("[data-tr-count]");
   if (out)
     out.textContent =
-      count === row.length ? "All three done. Nice work." : `${count} of ${row.length} done`;
+      count === row.length
+        ? "All three done. Nice work."
+        : `${auto ? `Step ${i + 1} ticked for you. ` : ""}${count} of ${row.length} done`;
   const li = document.querySelector(`[data-tr-stop="${domain}"]`);
   li?.classList.toggle("is-done", count === row.length);
   const doneText = li?.querySelector("[data-tr-done-text]");
   if (doneText) doneText.textContent = count === row.length ? " (done)" : "";
+}
+
+function onTick(el, ctx) {
+  const domain = TOUR_STOPS[currentStop(ctx.route)].id;
+  setTick(teacherPick(ctx), domain, Number(el.dataset.trTick), el.checked);
+}
+
+/** Open the live activity in place of the poster and tick steps as the teacher does them inside it. */
+function launchFrame(launch, ctx) {
+  const stage = launch.closest("[data-tr-stage]");
+  const pick = teacherPick(ctx);
+  const domain = TOUR_STOPS[currentStop(ctx.route)].id;
+  const frame = frameNode(stage);
+  watchFrame(frame, tourActivity(pick, domain), (i) =>
+    setTick(pick, domain, i, true, { auto: true }),
+  );
+  stage.replaceChildren(frame);
+  stage.classList.add("is-live");
+  const restart = document.querySelector("[data-tr-restart]");
+  if (restart) restart.hidden = false;
+  frame.focus();
 }
 
 export function onChange(e, ctx) {
@@ -356,15 +228,10 @@ export function onClick(e, ctx) {
   if (onBandClick(e, ctx)) return true;
   const launch = e.target.closest?.("[data-tr-launch]");
   if (launch) {
-    const stage = launch.closest("[data-tr-stage]");
-    const frame = frameNode(stage);
-    stage.replaceChildren(frame);
-    stage.classList.add("is-live");
-    const restart = document.querySelector("[data-tr-restart]");
-    if (restart) restart.hidden = false;
-    frame.focus();
+    launchFrame(launch, ctx);
     return true;
   }
+  if (onPlanClick(e)) return true;
   if (e.target.closest?.("[data-tr-restart]")) {
     const frame = document.querySelector(".tr-frame");
     if (frame) frame.src = frame.src;

@@ -18,15 +18,15 @@ const box = (id, checked) =>
     ${checked ? raw(" checked") : ""}
   />`;
 
-function activityRow(a, state, href) {
+function activityRow(a, state, href, domain = null) {
   return html`<tr>
-    <td><div class="ig-act">
+    <td>${domain ? html`<p class="ig-domain">${pathIcon(domain.icon)}${domain.name}</p>` : ""}<div class="ig-act">
       <label class="ig-label" for="ig-c-${a.id}"
         >${box(a.id, state.checks[a.id])}<span class="visually-hidden">I tried: </span></label
       >
       <span class="ig-actname"
         ><a href="${href(a.link.route, "activity")}">${a.name}</a>
-        <span class="ig-url">${a.link.route}</span></span
+        <span class="ig-url">${a.link.shown || a.link.route}</span></span
       >
     </div></td>
     <td data-label="What to try">${a.tryNow}</td>
@@ -34,7 +34,11 @@ function activityRow(a, state, href) {
   </tr>`;
 }
 
-function pathwayRows(p, state, href) {
+function pathwayRows(p, state, href, compact) {
+  if (compact)
+    return html`<tbody class="ig-${p.id}">
+      ${activityRow(p.activities[0], state, href, p)}
+    </tbody>`;
   return html`<tbody class="ig-${p.id}">
     <tr class="ig-grouprow">
       <th scope="rowgroup" colspan="3">${pathIcon(p.icon)}${p.name} <span class="ig-blurb">${p.blurb}</span></th>
@@ -44,11 +48,13 @@ function pathwayRows(p, state, href) {
 }
 
 function activitiesTable(pathways, state, href) {
-  return html`<table class="ig-table">
+  // One activity per domain: the domain name sits in the activity cell instead of a row of its own.
+  const compact = pathways.every((p) => p.activities.length === 1);
+  return html`<table class="ig-table${compact ? " ig-compact" : ""}">
     <thead>
       <tr><th scope="col">Activity</th><th scope="col">What to try</th><th scope="col">One classroom use</th></tr>
     </thead>
-    ${pathways.map((p) => pathwayRows(p, state, href))}
+    ${pathways.map((p) => pathwayRows(p, state, href, compact))}
   </table>`;
 }
 

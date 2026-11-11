@@ -8,7 +8,7 @@ const list = (items) => html`<ul>${items.map((i) => html`<li>${i}</li>`)}</ul>`;
 function cover(m) {
   const h = m.howTo;
   return html`<article class="ig-sheet ag-page ag-cover" aria-labelledby="ag-h1">
-    <header class="ig-run"><p class="ig-runtitle">${m.title}</p><p class="ig-pg">Six activities</p></header>
+    <header class="ig-run"><p class="ig-runtitle">${m.title}</p><p class="ig-pg">${m.cards.length} activities</p></header>
     <h1 id="ag-h1" class="ag-title">${m.title}</h1>
     <section class="ag-how" aria-labelledby="ag-how-h">
       <h2 id="ag-how-h">${h.heading}</h2>

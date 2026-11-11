@@ -107,11 +107,11 @@ const LEADS = {
   speaking: {
     default: [
       "Speaking practice helps you say ideas out loud in clear sentences.",
-      "Practicar hablar ayuda a decir ideas en voz alta con oraciones claras.",
+      "La práctica de expresión oral ayuda a decir ideas en voz alta con oraciones claras.",
     ],
     teacher: [
       "Students say ideas aloud with a model, a sentence frame and an optional recording. Choose by how much talk time you have.",
-      "Los estudiantes dicen ideas en voz alta con un modelo, una estructura de oración y una grabación opcional. Elijan según el tiempo que tengan.",
+      "Los estudiantes dicen ideas en voz alta con un modelo, un marco de oración y una grabación opcional. Elijan según el tiempo que tengan.",
     ],
     family: [
       "Your child practices saying ideas out loud. You can listen and ask questions in any language.",
@@ -121,7 +121,7 @@ const LEADS = {
   writing: {
     default: [
       "Writing practice helps you write a sentence or a paragraph, check it and make it clearer.",
-      "Practicar escribir ayuda a escribir una oración o un párrafo, revisarlo y hacerlo más claro.",
+      "La práctica de escritura ayuda a escribir una oración o un párrafo, revisarlo y hacerlo más claro.",
     ],
     teacher: [
       "Students write, get a rule-based check, and revise. Start with one sentence before a full paragraph.",

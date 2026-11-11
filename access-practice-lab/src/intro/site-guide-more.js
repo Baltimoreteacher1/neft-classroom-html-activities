@@ -418,9 +418,33 @@ export const FAQ = [
     id: "norecord",
     q: P("Can I practice without recording?", "¿Puedo practicar sin grabar?"),
     a: P(
-      "Yes. Say your answer aloud to a partner or to yourself and press “I said it out loud (no recording),” or type the words. The Busy Hallway and the School Board Meeting both work this way.",
-      "Sí. Digan su respuesta en voz alta a un compañero o a ustedes mismos y toquen “I said it out loud (no recording)”, o escriban las palabras. The Busy Hallway y el School Board Meeting funcionan así.",
+      "Yes. Say your answer aloud to a partner or to yourself, then press the button that says you said it: “I said my answer” in kindergarten to grade 3, “I said it out loud” in the picture speaking ladders, and “I said it out loud (no recording)” or typed words in the School Board Meeting.",
+      "Sí. Digan la respuesta en voz alta a un compañero o a ustedes mismos y luego toquen el botón que dice que la dijeron: “I said my answer” (“Dije mi respuesta”) de kínder a 3.º grado, “I said it out loud” (“Lo dije en voz alta”) en las escaleras de habla con imágenes, y “I said it out loud (no recording)” o palabras escritas en el School Board Meeting.",
     ),
+    // The same answer for the grade a teacher or family chose (guide-knowledge.js faqAnswer). Every button name was
+    // read from the running activity of that grade's tour (tour-bands.js) on 2026-11-11.
+    byPick: {
+      K: P(
+        "Yes. In What Do You See?, the child says the answer aloud to you or a partner and presses “I said my answer.” The microphone is used only if someone presses “Record my answer.”",
+        "Sí. En What Do You See?, el niño o la niña dice la respuesta en voz alta a ustedes o a un compañero y toca “I said my answer” (“Dije mi respuesta”). El micrófono se usa solo si alguien toca “Record my answer” (“Grabar mi respuesta”).",
+      ),
+      1: P(
+        "Yes. In Name It: Garden, students say the answer aloud to you or a partner and press “I said my answer.” The microphone is used only if someone presses “Record my answer.”",
+        "Sí. En Name It: Garden, los estudiantes dicen la respuesta en voz alta a ustedes o a un compañero y tocan “I said my answer” (“Dije mi respuesta”). El micrófono se usa solo si alguien toca “Record my answer” (“Grabar mi respuesta”).",
+      ),
+      "2-3": P(
+        "Yes. In What Do You See in the Garden?, students say the answer aloud to a partner and press “I said my answer.” The microphone is used only if someone presses “Record my answer.”",
+        "Sí. En What Do You See in the Garden?, los estudiantes dicen la respuesta en voz alta a un compañero y tocan “I said my answer” (“Dije mi respuesta”). El micrófono se usa solo si alguien toca “Record my answer” (“Grabar mi respuesta”).",
+      ),
+      "4-5": P(
+        "Yes. In Our Class Garden, students say each step aloud and press “I said it out loud.” “Record my answer” is there only if they want it.",
+        "Sí. En Our Class Garden, los estudiantes dicen cada paso en voz alta y tocan “I said it out loud” (“Lo dije en voz alta”). “Record my answer” está ahí solo si lo quieren usar.",
+      ),
+      "6-8": P(
+        "Yes. In The Busy Hallway, students say each step aloud and press “I said it out loud.” In the School Board Meeting, they press “I said it out loud (no recording),” or type the words.",
+        "Sí. En The Busy Hallway, los estudiantes dicen cada paso en voz alta y tocan “I said it out loud” (“Lo dije en voz alta”). En el School Board Meeting, tocan “I said it out loud (no recording)” o escriben las palabras.",
+      ),
+    },
   },
   {
     id: "share",

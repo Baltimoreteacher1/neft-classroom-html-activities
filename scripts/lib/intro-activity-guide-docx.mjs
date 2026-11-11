@@ -98,8 +98,7 @@ export async function buildActivityGuideDocx(model) {
   return toBuffer(
     buildDocument({
       title: model.title,
-      description:
-        "How to use each curated activity: steps, feedback, supports, teaching moves and fixes.",
+      description: "How to use each activity: steps, feedback, supports, teaching moves and fixes.",
       headerText: model.title,
       children: [...cover(model), ...model.cards.flatMap(card)],
     }),

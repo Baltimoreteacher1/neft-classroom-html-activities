@@ -20,6 +20,15 @@ import {
   practiceAtHome,
   TONIGHT,
 } from "../access-practice-lab/src/intro/family-data.js";
+import {
+  EARLY_CARD,
+  EARLY_MODELS,
+  earlyPickFrom,
+  earlyRoutine,
+  FAMILY_HANDOUT_K2,
+  HANDOUT_K2_COPY,
+} from "../access-practice-lab/src/intro/family-k2-data.js";
+import { READ_LABELS, readLang, stepLines } from "../access-practice-lab/src/intro/family-read.js";
 import { RETURNS, withReturn } from "../access-practice-lab/src/intro/return-bar.js";
 import { toHtml } from "../access-practice-lab/src/util.js";
 
@@ -40,6 +49,10 @@ const ALL = pairs({
   TONIGHT,
   FAMILY_WELCOME,
   HANDOUT_COPY,
+  EARLY_CARD,
+  HANDOUT_K2_COPY,
+  READ_LABELS,
+  early: ["K", "1", "2-3"].map((p) => earlyRoutine(p).steps),
 });
 
 test("the walk finds the page copy", () => {
@@ -230,7 +243,12 @@ test("a teacher's ?grades= link opens that grade", async () => {
   assert.equal(pressed(await page(EN, "K")), "k-2");
   assert.equal(pressed(await page(EN, "6-8", "3-5")), "6-8");
   assert.match(await page(EN, "4-5"), /class-garden/, "grades 3–5 cards");
-  assert.match(await page(EN, "2-3"), /\/early\?grades=K/, "K–2 card");
+  assert.match(
+    await page(EN, "2-3"),
+    /\/Speaking\/A\/g23-s-a-garden-see\?grades=2-3/,
+    "K–2 routine",
+  );
+  assert.match(await page(EN, "2-3"), /\/early\?grades=2-3/, "K–2 card links the early page");
   assert.equal(pressed(await page(EN, "", "6-8")), "6-8", "no link: the lab's band");
 });
 
@@ -258,4 +276,79 @@ test("one next action, the tonight flow, domain colours and art, and the print l
   assert.ok(es.includes(FAMILY_HANDOUT.es.pdf) && !es.includes(FAMILY_HANDOUT.en.pdf));
   const bi = await page(BI);
   assert.ok(bi.includes(FAMILY_HANDOUT.en.pdf) && bi.includes(FAMILY_HANDOUT.es.pdf));
+});
+
+// ── grades K–2: one picture-talk routine on the page, and the K–2 handout ─────────────────────────────────────────
+test("the K–2 routine follows the remembered early pick (K, 1 or 2-3), else Kindergarten", () => {
+  assert.equal(earlyPickFrom("1", ""), "1");
+  assert.equal(earlyPickFrom("k", ""), "K");
+  assert.equal(earlyPickFrom("", "2-3"), "2-3");
+  assert.equal(earlyPickFrom("", "6-8"), "K");
+  assert.equal(earlyPickFrom("4-5", "1"), "1");
+  assert.equal(earlyPickFrom("", ""), "K");
+});
+
+test("each early routine is that grade's Speaking activity, three steps, and the model the activity plays", async () => {
+  const { readFileSync } = await import("node:fs");
+  const files = { K: "gK", 1: "g1", "2-3": "g2-3" };
+  for (const pick of ["K", "1", "2-3"]) {
+    const r = earlyRoutine(pick);
+    assert.equal(r.activity.domain.id, "speaking");
+    assert.equal(r.steps.length, 3);
+    const content = JSON.parse(
+      readFileSync(
+        new URL(`../access-practice-lab/content/${files[pick]}/Speaking.json`, import.meta.url),
+      ),
+    );
+    const find = (n) =>
+      Array.isArray(n)
+        ? n.map(find).find(Boolean)
+        : n && typeof n === "object"
+          ? n.id === r.activity.id
+            ? n
+            : Object.values(n).map(find).find(Boolean)
+          : null;
+    const a = find(content);
+    assert.ok(a, `${r.activity.id} is in content`);
+    assert.equal(a.modelStudent.name, EARLY_MODELS[pick].label, pick);
+    assert.equal(a.modelStudent.text, EARLY_MODELS[pick].text, pick);
+    assert.ok(a.modelStudent.name.startsWith(EARLY_MODELS[pick].first));
+    assert.ok(r.steps[0].body.en.includes(`Hear ${a.modelStudent.name} answer first`));
+  }
+});
+
+test("K–2 chosen: the routine card with Start to the real activity, the early page link and the K–2 handout", async () => {
+  const en = await page(EN, "1");
+  assert.match(en, /tg-card is-early d-speaking/);
+  assert.equal((en.match(/class="btn btn-primary tg-start"/g) || []).length, 1);
+  assert.match(
+    en,
+    /href="\/access-practice-lab\/Speaking\/A\/g1-s-a-garden-name\?grades=1&amp;intro=together"/,
+  );
+  assert.match(en, /Mateo, age 6: “I see the sun\.”/);
+  assert.ok(en.includes(FAMILY_HANDOUT_K2.en.pdf) && !en.includes(FAMILY_HANDOUT.en.pdf));
+  const es = await page(ES, "K");
+  assert.ok(es.includes(FAMILY_HANDOUT_K2.es.pdf) && !es.includes(FAMILY_HANDOUT_K2.en.pdf));
+  assert.match(es, /Hablemos de una imagen/);
+  assert.ok(!(await page(EN, "6-8")).includes(FAMILY_HANDOUT_K2.en.pdf));
+});
+
+test("Hear the steps: one hidden button per card (shown on mount when speech exists), read in the screen's language", async () => {
+  for (const [grades, n] of [
+    ["6-8", 2],
+    ["4-5", 2],
+    ["K", 1],
+  ]) {
+    const h = await page(EN, grades);
+    assert.equal((h.match(/data-tg-read="/g) || []).length, n, grades);
+    assert.equal((h.match(/data-tg-read-box="[^"]+" hidden/g) || []).length, n, `${grades} hidden`);
+  }
+  assert.match(await page(ES), /Escuchar los pasos/);
+  assert.equal(readLang("en", "es-MX"), "en");
+  assert.equal(readLang("es", "en-US"), "es");
+  assert.equal(readLang("bi", "es-US"), "es");
+  assert.equal(readLang("bi", "en-US"), "en");
+  const lines = stepLines(FAMILY_ACTIVITIES[0].steps, "es");
+  assert.equal(lines.length, 3);
+  assert.match(lines[0], /^Miren el ejemplo\. Miren la imagen/);
 });

@@ -227,10 +227,11 @@ html.is-framed .lab-main {
 .pg-chips {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.4rem;
+  gap: 0.5rem;
 }
 .pg-chip {
   min-height: 2.75rem;
+  min-width: 2.75rem;
   padding: 0.35rem 0.85rem;
   border-radius: 999px;
   border: 1.5px solid var(--line-control, var(--line-strong));
@@ -319,6 +320,32 @@ html.is-framed .lab-main {
 }
 .pg-clear {
   justify-self: start;
+}
+.pg-hear {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 2.75rem;
+  min-width: 2.75rem;
+  margin-top: 0.4rem;
+  padding: 0.3rem 0.8rem;
+  border-radius: 999px;
+  border: 1.5px solid var(--line-control, var(--line-strong));
+  background: var(--surface);
+  color: var(--brand-ink, var(--ink));
+  font: inherit;
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+.pg-hear:hover,
+.pg-hear.is-speaking {
+  border-color: var(--brand);
+  background: var(--brand-soft);
+}
+.pg-hear svg {
+  width: 1.1rem;
+  height: 1.1rem;
 }
 .mn-art .mn-mouth {
   transform-origin: 60px 66px;
@@ -677,6 +704,85 @@ html.is-framed .lab-main {
   background: var(--room);
   color: #fff;
 }
+.tr-plan-for:empty {
+  display: none;
+}
+.tr-plan-for {
+  font-weight: 700;
+}
+.tr-plan-link {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: center;
+  padding: 0.8rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface-2);
+}
+.tr-plan-link > svg {
+  flex: none;
+  width: 9rem;
+  height: 9rem;
+  background: #fff;
+}
+.tr-plan-link-text {
+  display: grid;
+  gap: 0.4rem;
+  min-width: 0;
+  flex: 1 1 12rem;
+}
+.tr-plan-link-text .btn {
+  justify-self: start;
+}
+.tr-plan-label {
+  font-weight: 700;
+}
+.tr-plan-url {
+  overflow-wrap: anywhere;
+  font-size: 0.95rem;
+}
+.tr-assign {
+  display: grid;
+  gap: 0.35rem;
+  justify-items: start;
+}
+/* Show to the class: a large QR and the link on a full-screen sheet (native modal dialog; Escape closes it). */
+.tr-show {
+  width: min(100vw - 1rem, 46rem);
+  max-height: calc(100dvh - 1rem);
+  padding: clamp(1rem, 3vw, 2rem);
+  border: 0;
+  border-radius: var(--r-xl);
+  background: var(--surface);
+  color: var(--ink);
+  text-align: center;
+}
+.tr-show[open] {
+  display: grid;
+  gap: 0.8rem;
+  justify-items: center;
+}
+.tr-show::backdrop {
+  background: rgb(10 14 30 / 82%);
+}
+.tr-show h2 {
+  margin: 0;
+  font: 600 clamp(1.6rem, 1.1rem + 2vw, 2.6rem) / 1.15 var(--font-display);
+}
+.tr-show p {
+  margin: 0;
+}
+.tr-show > svg {
+  width: min(70vmin, 30rem);
+  height: auto;
+  background: #fff;
+}
+.tr-show-url {
+  font-size: clamp(1.1rem, 0.9rem + 1vw, 1.5rem);
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
 .tr-next-list {
   list-style: none;
   margin: 0;
@@ -713,6 +819,9 @@ html.is-framed .lab-main {
   display: flex;
   justify-content: space-between;
   gap: 0.5rem;
+  /* Not sticky in the tour: a bar fixed over the page covered Mr. Neft's buttons (axe target-size). The step strip
+     at the top is the always-visible way to move between steps. */
+  position: static;
 }
 .tr-actions .btn-primary {
   margin-left: auto;
@@ -762,6 +871,27 @@ html.is-framed .lab-main {
   .tr-stage,
   .pg {
     display: none !important; /* print shows the directions and the plan only */
+  }
+  /* "Print my plan": only the plan card, with its link and QR code (tour-plan.js sets html.tr-print-plan). */
+  .tr-print-plan body > :not(#app),
+  .tr-print-plan .tr-page > :not(.tr-plan),
+  .tr-print-plan .tr-plan > :not(.tr-plan-card),
+  .tr-print-plan .tr-plan-card .btn,
+  .tr-print-plan .tr-plan-card [data-tr-copy-note],
+  .tr-print-plan .tr-plan-card .tr-assign,
+  .tr-print-plan .tr-show {
+    display: none !important;
+  }
+  .tr-print-plan .tr-plan {
+    display: block;
+  }
+  .tr-print-plan .tr-plan-card {
+    box-shadow: none;
+    border: 1px solid #000;
+    break-inside: avoid;
+  }
+  .tr-print-plan .tr-plan-link {
+    background: none;
   }
 }
 

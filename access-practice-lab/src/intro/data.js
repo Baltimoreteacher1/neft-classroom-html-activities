@@ -309,7 +309,7 @@ export const START_CHOICES = [
     id: "explore",
     icon: "clock",
     name: "Explore for 20 Minutes",
-    detail: "Choose speaking or writing, try it, plan it.",
+    detail: "Choose one skill, try one activity, plan it.",
     route: ROUTES.explore,
   },
   {

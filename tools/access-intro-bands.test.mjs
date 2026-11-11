@@ -133,6 +133,11 @@ test("Mr. Neft's quick answers are non-empty, verified text, and never claim a s
   assert.equal(quickAnswer("students", act), act.students);
   assert.match(quickAnswer("scored", null), /never gives a score/);
   assert.match(quickAnswer("account", null, "es"), /cuenta/);
+  // Answers that name buttons follow the grade (the early player says "I said my answer"; the 6-8 Speak studio has
+  // "I said it out loud (no recording)"). Full coverage: tools/access-intro-guide-ai.test.mjs.
+  assert.match(quickAnswer("norecord", tourActivities("K")[1]), /I said my answer/);
+  assert.doesNotMatch(quickAnswer("norecord", tourActivities("K")[1]), /no recording/);
+  assert.match(quickAnswer("norecord", null, "en", "6-8"), /no recording/);
 });
 
 test("the AI guide's context carries the chosen grade's activities and the site's rules", () => {

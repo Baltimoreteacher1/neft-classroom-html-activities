@@ -40,7 +40,7 @@ export function startSection(I, audience) {
 }
 
 export function teacherIntro(I) {
-  return html`<aside class="sg-pd" aria-label="${I.S("Start here for teachers", "Empiecen aquí, docentes")}">
+  return html`<aside class="sg-pd" aria-label="${I.S("Start here for teachers", "Para docentes: empiecen aquí")}">
     <p>
       ${I.TO(GUIDE.forTeacher)} ${linkHTML(ROUTES.start, html`${ENTRANCE.short}`, "sg-textlink")}
     </p>
@@ -188,7 +188,7 @@ export function searchHTML(I, q) {
         autocomplete="off"
         enterkeyhint="search"
         data-sg-q
-        placeholder="${I.S("Try “microphone” or “save”", "Prueben “micrófono” o “guardar”")}"
+        placeholder="${I.S("Try “microphone” or “save”", "Prueben «micrófono» o «guardar»")}"
       />
       <button type="submit" class="btn">${icon("search")} ${I.T("Search", "Buscar")}</button>
     </div>

@@ -10,7 +10,7 @@ const P = (en, es) => ({ en, es });
 export const AUDIENCES = [
   { id: "teacher", icon: "teacher", label: P("I’m a Teacher", "Soy docente") },
   { id: "student", icon: "reading", label: P("I’m a Student", "Soy estudiante") },
-  { id: "family", icon: "families", label: P("I’m a Family Member", "Soy familiar") },
+  { id: "family", icon: "families", label: P("I’m a Family Member", "Soy de la familia") },
 ];
 export const AUDIENCE_IDS = AUDIENCES.map((a) => a.id);
 
@@ -223,15 +223,15 @@ export const CARD_TEXT = {
     ),
     try: P(
       "Go to Step 3. Tap “Hear Lina first,” then say your own answer aloud using the sentence frame.",
-      "Vayan al Paso 3. Toquen “Hear Lina first” y digan su propia respuesta en voz alta con la estructura de oración.",
+      "Vayan al Paso 3. Toquen «Escucha primero a Lina» y digan su propia respuesta en voz alta con el marco de oración.",
     ),
     support: P(
       "You can hear a model student first, open a sentence frame, and record (optional) or just say it aloud.",
-      "Pueden escuchar primero a una estudiante modelo, abrir una estructura de oración y grabar (opcional) o solo decirlo en voz alta.",
+      "Pueden escuchar primero a una estudiante modelo, abrir un marco de oración y grabar (opcional) o solo decirlo en voz alta.",
     ),
     help: P(
       "Listen once, then ask: “What else do you see?” and “Why?”",
-      "Escuchen una vez y pregunten: “¿Qué más ven?” y “¿Por qué?”",
+      "Escuchen una vez y pregunten: «¿Qué más ves?» y «¿Por qué?»",
     ),
   },
   board: {
@@ -241,15 +241,15 @@ export const CARD_TEXT = {
     ),
     try: P(
       "Choose “With frames and words,” plan your position and one number from the table, then say it aloud.",
-      "Elijan “With frames and words”, planeen su posición y un número de la tabla, y díganlo en voz alta.",
+      "Elijan «Con marcos y palabras», planeen su posición y un número de la tabla, y díganlo en voz alta.",
     ),
     support: P(
       "Three help levels, a “Hear the task” button, and a choice to record, type the words, or say it without recording.",
-      "Hay tres niveles de ayuda, un botón “Hear the task” y la opción de grabar, escribir las palabras o decirlo sin grabar.",
+      "Hay tres niveles de ayuda, un botón «Escuchar la tarea» y la opción de grabar, escribir las palabras o decirlo sin grabar.",
     ),
     help: P(
       "Be the school board: ask one question, such as “Which number helped you decide?”",
-      "Hagan de junta escolar: hagan una pregunta, como “¿Qué número les ayudó a decidir?”",
+      "Hagan el papel de la junta escolar y hagan una pregunta, como «¿Qué número te ayudó a decidir?»",
     ),
   },
   scenario: {
@@ -259,11 +259,11 @@ export const CARD_TEXT = {
     ),
     try: P(
       "Choose “B Some support,” read the three replies, pick one, and read the feedback it gets.",
-      "Elijan “B Some support”, lean las tres respuestas, escojan una y lean el comentario que recibe.",
+      "Elijan «B Algo de apoyo», lean las tres respuestas, escojan una y lean el comentario que recibe.",
     ),
     support: P(
       "Three support levels, “Hear it,” and “Spanish help” (the lines and replies in Spanish).",
-      "Hay tres niveles de apoyo, “Hear it” y “Spanish help” (las líneas y respuestas en español).",
+      "Hay tres niveles de apoyo, «Escúchalo» y «Ayuda en español» (las líneas y las respuestas en español).",
     ),
     help: P(
       "Take turns being Noor. Say each reply aloud and talk about which one sounds kind.",
@@ -277,15 +277,15 @@ export const CARD_TEXT = {
     ),
     try: P(
       "Choose “Start with this help,” write one improved sentence, press “Check my work,” then fix one thing it names.",
-      "Elijan “Start with this help”, escriban una oración mejorada, toquen “Check my work” y corrijan algo de lo que señala.",
+      "Elijan «Empezar con esta ayuda», escriban una oración mejorada, toquen «Revisar mi trabajo» y corrijan una cosa que la revisión señale.",
     ),
     support: P(
       "A sentence frame and word bank, an “Ask for more help” button, or nothing at all (“On my own”). The check looks for words and patterns, not meaning.",
-      "Hay una estructura de oración y un banco de palabras, un botón “Ask for more help” o nada (“On my own”). La revisión busca palabras y patrones, no significado.",
+      "Hay un marco de oración y un banco de palabras, un botón «Pedir más ayuda» o ninguna ayuda («Por mi cuenta»). La revisión busca palabras y patrones, no el significado.",
     ),
     help: P(
       "Read the plain sentence together, then ask: “What detail could you add?”",
-      "Lean juntos la oración sencilla y pregunten: “¿Qué detalle podrían agregar?”",
+      "Lean juntos la oración sencilla y pregunten: «¿Qué detalle puedes agregar?»",
     ),
   },
   paragraph: {
@@ -295,11 +295,11 @@ export const CARD_TEXT = {
     ),
     try: P(
       "Read the Student Council Notes, write only your position sentence with the first frame, then press “Get feedback.”",
-      "Lean las notas del consejo estudiantil, escriban solo su oración de posición con la primera estructura y toquen “Get feedback”.",
+      "Lean las notas del consejo estudiantil (el texto «Student Council Notes», en inglés), escriban solo su oración de posición con el primer marco y toquen «Obtener comentarios».",
     ),
     support: P(
       "Three help levels, “Hear the task,” a “Read my writing to me” button, sentence frames, a word bank and a model. Writing saves on this device as you type.",
-      "Hay tres niveles de ayuda, “Hear the task”, “Read my writing to me”, estructuras de oración, banco de palabras y un modelo. Lo escrito se guarda en este dispositivo.",
+      "Hay tres niveles de ayuda, «Escuchar la tarea», un botón «Leer mi escritura en voz alta», marcos de oración, un banco de palabras y un modelo. Lo escrito se guarda en este dispositivo mientras escriben.",
     ),
     help: P(
       "Ask them to say their two reasons before they write.",
@@ -313,7 +313,7 @@ export const CARD_TEXT = {
     ),
     try: P(
       "Choose “B Some support,” answer only Who and What in the Plan step, then open Draft.",
-      "Elijan “B Some support”, respondan solo Who y What en el paso Plan y abran Draft.",
+      "Elijan «B Algo de apoyo», respondan solo ¿Quién? y ¿Qué pasó? en el paso Planear y abran Redactar.",
     ),
     support: P(
       "Three support levels, and a choice of article or script. You can stop after any step.",
@@ -341,7 +341,7 @@ export const STARTERS = [
     kind: P("Start with Speaking", "Empiecen con Hablar"),
     why: P(
       "A picture gives you something to talk about, and you can hear a model student before you answer.",
-      "Una imagen da algo de qué hablar, y se puede escuchar a una estudiante modelo antes de responder.",
+      "Una imagen da un tema para hablar, y se puede escuchar a una estudiante modelo antes de responder.",
     ),
   },
   {
@@ -379,7 +379,7 @@ export const START_STEPS = [
     ),
     body: P(
       "Say or write your answer. Where an activity offers a check, read it and try once more. Checks look for words and patterns, not meaning, and not every activity has one.",
-      "Digan o escriban su respuesta. Si la actividad ofrece una revisión, léanla y vuelvan a intentar. Las revisiones buscan palabras y patrones, no significado, y no todas las actividades la tienen.",
+      "Digan o escriban su respuesta. Si la actividad ofrece una revisión, léanla y vuelvan a intentar. Las revisiones buscan palabras y patrones, no el significado, y no todas las actividades la tienen.",
     ),
   },
 ];

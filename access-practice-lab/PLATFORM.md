@@ -112,11 +112,19 @@ stored. Opening any help marks the work supported. Help items are written so the
    `src/intro/guide.js`). A question an adult TYPES into the guide is sent, with the page name, tour step, grade choice
    and language, to this site's own `/api/language-guide` (`functions/api/language-guide.js`), which asks a model
    (Claude Haiku, else Workers AI, through `functions/_lib/model-call.js`) to answer only from
-   `src/intro/guide-knowledge.js`. Nothing else is sent: no student work, no recordings, no progress, no identifiers;
-   the endpoint stores and logs nothing, and the guide says on screen that answers come from an AI helper and asks
-   people not to type student names. The guide's question buttons answer from authored text with no network call, and
-   with no model available the typed question falls back to the Site Guide search. Students' activity pages never call
-   it.
+   `src/intro/guide-knowledge.js`. Nothing else is sent: no student work, no recordings, no progress, no identifiers.
+   **Question log, decided by Joel on 2026-11-11 ("Build out all of these", the item "Optional anonymous question
+   log ... to see what teachers ask")**: the endpoint keeps each typed question for 90 days in the existing `PLAN_DOCS`
+   KV namespace (`lp-guide-q:<date>:<random>`) as `{ question, page, step, grades, lang, answered, at }`, after
+   replacing anything that looks like a name, email address or phone number (`functions/api/language-guide/guard.js`);
+   no IP address, history or answer is stored, and without the binding nothing is kept. Only a caller with the teacher
+   key reads it back (`GET /api/language-guide/questions?days=7`: counts and the most frequent questions). The guide
+   says on screen that answers come from an AI helper, that typed questions are kept without names or contact details
+   for 90 days to improve it, and asks people not to type student names. A per-IP hourly cap and a site-wide daily cap
+   (Workers Cache API, constants in `guard.js`) bound the model cost; over a cap the guide shows the Site Guide
+   instead. The guide's question buttons answer from authored text with no network call, "Hear it" reads a line or an
+   answer aloud with the browser's own voices, and with no model available the typed question falls back to the Site
+   Guide search. Students' activity pages never call it.
 4. **Not official.** WIDA scores Speaking and Writing with trained raters and its current rubrics; Listening and
    Reading are machine-scored selected response. WIDA revises its scoring rubrics (Writing changed for 2025–26), so the
    lab's practice rubrics are its own descriptors, organized by the three WIDA language dimensions (Discourse,

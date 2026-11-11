@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * The teacher introduction in a real browser: home cards -> guided tour -> activity -> return -> resume; exploration
- * (focus, try, plan, copy); featured lesson (Use This Lesson, cue check, saved boxes); presenter view gone; the next-step strip
+ * (four domains, try, plan, copy); featured lesson (Use This Lesson, cue check, saved boxes); presenter view gone; the next-step strip
  * and return bar on curated activities only; Spanish home cards; keyboard path; axe WCAG 2.2 AA; 375px overflow.
  *   node tools/access-intro-e2e.mjs        (serves this working tree)
  * A missing browser is a SKIP locally and a FAIL in CI.
@@ -139,6 +139,22 @@ ok(
   "the real activity runs in the panel",
 );
 ok(!(await inner.locator(".lab-top").isVisible()), "the lab's top bar is hidden inside the panel");
+await inner.getByRole("button", { name: "Hear the story again" }).click();
+await page
+  .waitForFunction(() => document.querySelector('[data-tr-tick="0"]')?.checked, null, {
+    timeout: 5000,
+  })
+  .catch(() => {});
+ok(
+  (await page.locator('[data-tr-tick="0"]').isChecked()) &&
+    (await page.locator("[data-tr-count]").innerText()).startsWith("Step 1 ticked for you"),
+  "pressing the button step 1 names inside the activity ticks step 1 and says so",
+);
+await page.locator('[data-tr-tick="0"]').uncheck();
+ok(
+  !(await page.locator('[data-tr-tick="0"]').isChecked()),
+  "an automatic tick can still be undone by hand",
+);
 await frameEl.evaluate((f) => {
   f.dataset.marker = "kept";
 });
@@ -208,6 +224,63 @@ ok(
   (await page.locator(".tr-plan-act").innerText()).includes("Who Waters the Garden?"),
   "the plan names the chosen activity",
 );
+ok(
+  (await page.locator(".tr-plan-link svg[role=img]").getAttribute("aria-label")).includes(
+    "Who Waters the Garden?",
+  ),
+  "the plan card shows a named QR code for the student link",
+);
+const mailHref = await page.locator("[data-tr-email]").getAttribute("href");
+ok(
+  mailHref.startsWith("mailto:?subject=") &&
+    decodeURIComponent(mailHref).includes("Activity: Who Waters the Garden?"),
+  "Email it to myself is a mailto: with no address and the plan in the body",
+);
+ok(
+  (await page.locator("[data-tr-assign]").getAttribute("href")).endsWith(
+    "/launch-studio?grades=2-3",
+  ) && (await page.locator(".tr-assign").innerText()).includes("“Who Waters the Garden?”"),
+  "Assign to my class links the Launch Studio and names the activity to choose",
+);
+{
+  const studio = await open("/launch-studio?grades=2-3");
+  await studio.locator('[data-launch-field="domain"]').selectOption("Listening");
+  await studio.waitForTimeout(300);
+  ok(
+    (await studio.locator('[data-launch-field="selected"] option').allInnerTexts()).some((t) =>
+      t.startsWith("Who Waters the Garden?"),
+    ),
+    "the Launch Studio lists the tour's activity under Listening for Grades 2–3",
+  );
+  await studio.close();
+}
+await page.locator("[data-tr-show]").click();
+ok(
+  await page.locator("[data-tr-show-dialog]").evaluate((d) => d.open),
+  "Show to the class opens the full-screen view",
+);
+await page.keyboard.press("Escape");
+ok(
+  !(await page.locator("[data-tr-show-dialog]").evaluate((d) => d.open)) &&
+    (await page.evaluate(() => document.activeElement?.matches("[data-tr-show]"))),
+  "Escape closes it and focus returns to the button",
+);
+await page.evaluate(() => {
+  window.print = () => {};
+});
+await page.locator("[data-tr-print]").click();
+await page.emulateMedia({ media: "print" });
+ok(
+  (await page.locator(".tr-plan-card").isVisible()) &&
+    (await page.locator(".tr-plan-link > svg").isVisible()) &&
+    (await page.locator(".tr-plan-url").isVisible()) &&
+    !(await page.locator(".tr-next").isVisible()) &&
+    !(await page.locator(".ts-band").isVisible()) &&
+    !(await page.locator(".tr-plan-card [data-tr-copy]").first().isVisible()),
+  "Print my plan prints only the plan card, with its link and QR code",
+);
+await page.emulateMedia({ media: "screen" });
+await page.evaluate(() => document.documentElement.classList.remove("tr-print-plan"));
 await page.locator('[data-tr-copy="link"]').click();
 await page
   .waitForFunction(
@@ -337,22 +410,20 @@ await axe(page, "start page");
 await page.close();
 
 // ── exploration ────────────────────────────────────────────────────────────
-page = await open("/start/explore");
+page = await open("/start/explore?grades=6-8");
 ok(
-  (await page.locator("[data-explore-focus]").count()) === 2,
-  "speaking and writing are equally visible",
+  (await page.locator("[data-explore-focus]").count()) === 4,
+  "the four domains are equally visible",
 );
 await page.locator('[data-explore-focus="writing"]').click();
 await page.getByRole("link", { name: /^Next: Try one activity/ }).click();
 await page.waitForSelector(".in-explore");
 const names = await page.locator(".in-act h3").allInnerTexts();
 ok(
-  names.length === 2 &&
-    names[0].includes("Language Upgrade Lab") &&
-    names[1].includes("Should School Start Later?"),
-  "only the Writing pathway's two activities show",
+  names.length === 1 && names[0].includes("Language Upgrade Lab"),
+  "only the Grades 6–8 Writing activity shows",
 );
-await page.locator("[data-explore-switch]").click();
+await page.locator('[data-explore-switch="speaking"]').click();
 await page.waitForSelector(".in-explore");
 ok(
   (await page.locator(".in-act h3").first().innerText()).includes("Busy Hallway"),
@@ -403,7 +474,7 @@ await axe(page, "exploration step 5");
 await page.close();
 
 // ── featured lesson ────────────────────────────────────────────────────────
-page = await open("/start/lesson");
+page = await open("/start/lesson?grades=6-8");
 const studentLink = await page.locator("#lsLink").inputValue();
 ok(
   studentLink === "https://thelanguagepage.com/access-practice-lab/voice/ladder/school-hallway" &&
@@ -471,10 +542,13 @@ ok(
 await page.close();
 
 // ── Activity Guide ─────────────────────────────────────────────────────────
-page = await open("/start/activities");
-ok((await page.locator(".ag-card").count()) === 6, "Activity Guide: six how-to cards");
+page = await open("/start/activities?grades=6-8");
 ok(
-  (await page.locator(".ag-card .ag-more").count()) === 6 &&
+  (await page.locator(".ag-card").count()) === 8,
+  "Activity Guide (Grades 6–8): eight how-to cards",
+);
+ok(
+  (await page.locator(".ag-card .ag-more").count()) === 8 &&
     !(await page.locator(".ag-why").first().isVisible()),
   "Activity Guide: quick view keeps the deep layer closed",
 );
@@ -552,8 +626,11 @@ await page.locator('[data-tg-band="k-2"]').click();
 await page.waitForSelector('[data-tg-band="k-2"][aria-pressed="true"]');
 ok(
   (await page.locator(".tg-start").count()) === 1 &&
-    /\/early\?grades=K/.test(await page.locator(".tg-start").getAttribute("href")),
-  "family page: grades K–2 go to the early learners home",
+    /\/Speaking\/A\/gk-s-a-garden-see\?grades=K/.test(
+      await page.locator(".tg-start").getAttribute("href"),
+    ) &&
+    (await page.locator('a[href*="/early?grades=K"]').count()) >= 1,
+  "family page: grades K–2 get one picture-talk routine and a link to the early learners home",
 );
 await page.reload();
 await page.waitForSelector(".tg-page");

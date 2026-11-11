@@ -1,21 +1,20 @@
 #!/usr/bin/env node
 /**
  * Rehearsal of the two ways the introduction is used, driven in a real browser (automation, not user testing):
- *  A. The presenter leads the 30-minute introduction slide by slide, opens each segment's real page, comes back, hands
- *     off to the 20-minute exploration and walks its five timed phases.
+ *  A. For every grade choice, a teacher walks the 20-minute exploration's five timed phases, opens that grade's
+ *     activity for each of the four domains, and every link on the exploration, Activity Guide, Quick Guide and
+ *     Featured Lesson pages is followed.
  *  B. A first-time teacher, alone and with no saved state, goes from the home page to a relevant activity, using only the
  *     starting page and the guide, and the clicks and time to the first activity are counted (the brief asks for one minute).
  * Every link on every introduction page must land on a real lab view (an unknown path would silently show the home), and
  * every download must answer with its own file type.   node tools/access-intro-rehearsal-e2e.mjs
  */
+import { DOWNLOADS, ROUTES } from "../access-practice-lab/src/intro/data.js";
 import {
-  ACTIVITIES,
-  DOWNLOADS,
-  EXPLORE_SEQUENCE,
-  PRESENTER_SCHEDULE,
-  ROUTES,
-} from "../access-practice-lab/src/intro/data.js";
-import { PRESENTER_NOTES } from "../access-practice-lab/src/intro/presenter-notes.js";
+  EXPLORE_STEPS,
+  exploreActivities,
+} from "../access-practice-lab/src/intro/explore-bands.js";
+import { PICK_IDS, printFiles } from "../access-practice-lab/src/intro/quick-guide-files.js";
 import { serveAccess } from "./lib/access-serve.mjs";
 
 let chromium;
@@ -141,7 +140,7 @@ async function crawl(ctx, page, label) {
         : path === "/" || path.startsWith("/?")
           ? view === "home"
           : ["Listening", "Reading", "Speaking", "Writing"].some((d) => path.startsWith(`/${d}`))
-            ? view === "room"
+            ? ["room", "activity"].includes(view)
             : view !== "home");
     if (!routeOk) bad.push(`${href} -> ${view}`);
   }
@@ -151,79 +150,41 @@ async function crawl(ctx, page, label) {
   );
 }
 
-// ── A. The presenter leads the 30-minute introduction, then the 20-minute exploration ──────────────────────
+// ── A. Every grade choice: the 20-minute exploration, then every link on the four reference pages ───────────
+// (The presenter view was taken down on 2026-11-11; the exploration and the printed guides carry the introduction.)
 let ctx = await newContext();
-let page = await open(ctx, `${LAB}/start/present?stop=1`);
-const total = Number((await page.locator(".ts-progress-text").innerText()).match(/of (\d+)/)[1]);
-ok(
-  total === PRESENTER_SCHEDULE.length + 2,
-  `presenter view has ${total} slides: setup, ${PRESENTER_SCHEDULE.length} timed segments, handoff`,
-);
-const slideTitles = [];
-for (let n = 1; n <= total; n++) {
-  await page.goto(`${base}${LAB}/start/present?stop=${n}&focus=notes`);
-  await settled(page);
-  slideTitles.push(await page.locator(".in-slide h2").innerText());
-  const open1 = page.locator(".in-slide a.btn-primary");
-  if (n > 1 && (await open1.count())) {
-    const href = await open1.getAttribute("href");
-    const dest = await landing(ctx, href.replace(LAB, "").split("&grades")[0].split("?grades")[0]);
+let page;
+// REHEARSAL_PART=B skips part A (the long per-grade crawl) when only the first-time path is being checked.
+for (const pick of process.env.REHEARSAL_PART === "B" ? [] : PICK_IDS) {
+  page = await open(ctx, `${LAB}/start/explore?stop=1&grades=${pick}`);
+  for (let i = 0; i < EXPLORE_STEPS.length; i++) {
+    await page.goto(`${base}${LAB}/start/explore?stop=${i + 1}&focus=speaking&grades=${pick}`);
+    await settled(page);
+    const eyebrow = await page.locator(".ts-progress-text").innerText();
     ok(
-      dest.view !== "home" && !dest.failed,
-      `slide ${n} opens a real page: ${href.replace(LAB, "")} -> ${dest.view}`,
+      eyebrow.includes(`Minutes ${EXPLORE_STEPS[i].range}`) &&
+        (await page.locator(".in-panel h2").first().innerText()) === EXPLORE_STEPS[i].name,
+      `${pick}: exploration phase ${i + 1} (${EXPLORE_STEPS[i].name}) renders its task`,
     );
   }
-  ok(
-    n === 1
-      ? (await page.locator(".in-notes").count()) === 1
-      : (await page.locator(".in-notes h3").allInnerTexts()).includes("Say"),
-    `slide ${n} has presenter notes`,
-  );
-}
-ok(
-  PRESENTER_NOTES.every((s, i) => s.range === PRESENTER_SCHEDULE[i].range),
-  "slide ranges match the 30-minute pacing exactly",
-);
-ok(slideTitles.length === total, `all slides rendered (${slideTitles.join(" | ")})`);
-// the segment tasks fit their minutes
-const need = { hallway: 6, upgrade: 5 };
-ok(
-  PRESENTER_SCHEDULE[1] && need.hallway <= 8 - 3 + 1 && need.upgrade <= 13 - 8,
-  "speaking (3–8) and writing (8–13) demos fit their segments",
-);
-await page.goto(`${base}${LAB}/start/present?stop=${total}`);
-await settled(page);
-await page.getByRole("link", { name: /Start the exploration/ }).click();
-await page.waitForSelector(".in-explore");
-for (let i = 0; i < EXPLORE_SEQUENCE.length; i++) {
-  await page.goto(`${base}${LAB}/start/explore?stop=${i + 1}&focus=speaking`);
-  await settled(page);
-  const eyebrow = await page.locator(".ts-progress-text").innerText();
-  ok(
-    eyebrow.includes(`Minutes ${EXPLORE_SEQUENCE[i].range}`) &&
-      (await page.locator(".in-panel h2").first().innerText()) === EXPLORE_SEQUENCE[i].name,
-    `exploration phase ${i + 1} (${EXPLORE_SEQUENCE[i].name}) renders its task`,
-  );
-  if (i === 1) {
-    for (const link of await page
-      .locator(".in-act a.btn-primary")
-      .evaluateAll((as) => as.map((a) => a.getAttribute("href")))) {
-      const dest = await landing(
-        ctx,
-        link
-          .replace(LAB, "")
-          .replace(/([?&])grades=[^&]*/, "")
-          .replace(/\?$/, ""),
-      );
-      ok(
-        dest.view !== "home" && !dest.failed,
-        `exploration activity link works: ${link.replace(LAB, "").split("&")[0]}`,
-      );
-    }
+  for (const a of exploreActivities(pick)) {
+    await page.goto(`${base}${LAB}/start/explore?stop=2&focus=${a.domain.id}&grades=${pick}`);
+    await settled(page);
+    const link = await page.locator(".in-act a.btn-primary").getAttribute("href");
+    const dest = await landing(ctx, link.replace(LAB, ""));
+    ok(
+      dest.view !== "home" && !dest.failed,
+      `${pick} ${a.domain.id}: exploration opens ${link.replace(LAB, "").split("&intro")[0]} -> ${dest.view}`,
+    );
+  }
+  await crawl(ctx, page, `${pick} exploration page`);
+  await page.close();
+  for (const route of [ROUTES.activities, ROUTES.guide, ROUTES.lesson]) {
+    page = await open(ctx, `${LAB}${route}?grades=${pick}`);
+    await crawl(ctx, page, `${pick} ${route}`);
+    await page.close();
   }
 }
-await crawl(ctx, page, "exploration page");
-await page.close();
 await ctx.close();
 
 // ── B. A first-time teacher, alone ─────────────────────────────────────────────────────────────────────
@@ -236,16 +197,16 @@ ok(cardVisible, "first screen shows the teacher card without scrolling");
 await page.locator(".lph-start.is-teacher > .btn").click();
 clicks++;
 await page.waitForSelector(".in-tour");
-await page.getByRole("link", { name: /^Next: Try speaking/ }).click();
+await page.getByRole("link", { name: /^Start with Listening/ }).click();
 clicks++;
-await page.waitForSelector(".in-tour");
-await page.getByRole("link", { name: /Open The Busy Hallway/ }).click();
+await page.locator("[data-tr-launch]").click();
 clicks++;
-await page.waitForSelector("[data-rec-start], .voice-ladder, #app h1");
+await page.waitForSelector("iframe.tr-frame");
+const frameSrc = await page.locator("iframe.tr-frame").getAttribute("src");
 const secs = (Date.now() - t0) / 1000;
 ok(
-  pathOf(page).startsWith("/voice/ladder/school-hallway") && clicks <= 3,
-  `home to a relevant activity in ${clicks} clicks (${secs.toFixed(1)}s of automation)`,
+  /\/(Listening|voice|scaffold)\//.test(frameSrc || "") && clicks <= 3,
+  `home to a real activity, running in the tour, in ${clicks} clicks (${secs.toFixed(1)}s of automation)`,
 );
 await page.close();
 // guide and start page, alone
@@ -255,13 +216,21 @@ await page.getByRole("link", { name: /Open the Quick Guide/ }).click();
 await page.waitForSelector("#app h1");
 ok(pathOf(page).startsWith("/start/guide"), "the Quick Guide opens from the start page");
 const guideText = await page.locator("#app").innerText();
-for (const a of ACTIVITIES) ok(guideText.includes(a.name), `quick guide lists ${a.name}`);
+const shownPick = await page
+  .locator('[data-tb-pick][aria-pressed="true"]')
+  .getAttribute("data-tb-pick");
+for (const a of exploreActivities(shownPick))
+  ok(guideText.includes(a.name), `quick guide (${shownPick}) lists ${a.name}`);
 ok(
   guideText.includes("thelanguagepage.com/access-practice-lab/start"),
   "quick guide prints the one entrance link",
 );
 await crawl(ctx, page, "quick guide");
-for (const group of Object.values(DOWNLOADS))
+const allFiles = [
+  ...Object.values(DOWNLOADS),
+  ...PICK_IDS.flatMap((p) => Object.values(printFiles(p))),
+];
+for (const group of new Set(allFiles))
   for (const path of Object.values(group)) {
     const res = await page.request.get(`${base}${path}`);
     ok(

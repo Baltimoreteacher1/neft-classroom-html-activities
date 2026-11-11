@@ -353,11 +353,214 @@ for (const [path, band] of [
   await context.close();
 }
 
+// 6b. Grades K–2: one picture-talk routine on the page, built from the remembered early pick. Every button its steps
+// name is on the real activity, in the page's language, and "I said my answer" works with no recording.
+const EARLY = {
+  K: { id: "gk-s-a-garden-see", first: "Lina", label: "Lina, age 5" },
+  1: { id: "g1-s-a-garden-name", first: "Mateo", label: "Mateo, age 6" },
+  "2-3": { id: "g23-s-a-garden-see", first: "Leo", label: "Leo, age 8" },
+};
+for (const lang of ["en", "es"]) {
+  for (const [pick, want] of Object.entries(EARLY)) {
+    const { page, context } = await open(lang, 1280, `/practice-together?grades=${pick}`);
+    ok((await page.locator(".tg-card").count()) === 1, `${lang} K–2 ${pick}: one routine card`);
+    ok((await page.locator(".tg-start").count()) === 1, `${lang} K–2 ${pick}: one Start button`);
+    const href = await page.locator(".tg-start").getAttribute("href");
+    const url = new URL(href, base);
+    ok(
+      url.pathname === `${LAB}/Speaking/A/${want.id}` && url.searchParams.get("grades") === pick,
+      `${lang} K–2 ${pick}: Start opens ${want.id} with ?grades=${pick} (${href})`,
+    );
+    const print = await page.locator(".tg-print a").first().getAttribute("href");
+    ok(
+      print === `/access-practice-lab/guides/family-handout-k2${lang === "es" ? "-es" : ""}.pdf`,
+      `${lang} K–2 ${pick}: the K–2 handout (${print})`,
+    );
+    const steps = await page.locator(".tg-card .tg-steps").innerText();
+    ok(
+      lang === "en"
+        ? steps.includes(`Hear ${want.label} answer first`)
+        : steps.includes(want.first),
+      `${lang} K–2 ${pick}: step 1 names ${want.first}`,
+    );
+    await page.locator(".tg-start").click();
+    await page.waitForURL((u) => u.pathname === `${LAB}/Speaking/A/${want.id}`);
+    await page.waitForSelector("#app h1");
+    await page.waitForTimeout(600);
+    const names = await page.$$eval("#app button", (b) =>
+      b.map((x) => x.innerText.replace(/\s+/g, " ").trim()),
+    );
+    const has = (re) => names.some((n) => re.test(n));
+    const L =
+      lang === "en"
+        ? [/^Hear it again$/, new RegExp(`^Hear ${want.label} answer first$`), /^I said my answer$/]
+        : [
+            /^Escuchar otra vez$/,
+            new RegExp(`^Escucha primero la respuesta de ${want.first}`),
+            /^Dije mi respuesta$/,
+          ];
+    ok(L.every(has), `${lang} K–2 ${pick}: the activity has the buttons the steps name`);
+    ok(
+      /I see ___\./.test(await page.locator("#app").innerText()),
+      `${lang} K–2 ${pick}: the “I see ___.” starter`,
+    );
+    await page.getByRole("button", { name: L[2] }).click();
+    ok(
+      (await page.locator("#introReturn a").count()) === 1,
+      `${lang} K–2 ${pick}: the return bar is on the activity`,
+    );
+    await context.close();
+  }
+}
+{
+  // The family's remembered early pick (from the tour or Start overview) chooses the routine when the link has none.
+  const { page, context } = await open("en");
+  await page.evaluate(() =>
+    localStorage.setItem(
+      "accessPracticeLab:v1:intro",
+      JSON.stringify({ band: { pick: "1" }, family: { band: "k-2" } }),
+    ),
+  );
+  await page.reload();
+  await page.waitForSelector("#app .tg-page");
+  ok(
+    (await page.locator(".tg-start").getAttribute("href")).includes("g1-s-a-garden-name"),
+    "K–2: the remembered Grade 1 pick chooses the Grade 1 routine",
+  );
+  await context.close();
+}
+
+// 6c. "Hear the steps": a fake speech engine records what is read, in which language, and every cancel.
+async function openSpeech(
+  lang,
+  { locale = "en-US", noSpeech = false, path = "/practice-together" } = {},
+) {
+  const context = await browser.newContext({ viewport: { width: 1280, height: 900 }, locale });
+  await context.addInitScript(
+    ([key, l, none]) => {
+      try {
+        localStorage.setItem(key, JSON.stringify({ lang: l, langChosen: true }));
+      } catch {}
+      if (none) {
+        delete window.speechSynthesis;
+        delete window.SpeechSynthesisUtterance;
+        return;
+      }
+      window.__said = [];
+      window.__cancels = 0;
+      class U {
+        constructor(text) {
+          this.text = text;
+        }
+      }
+      const voices = [
+        { lang: "en-US", name: "English", voiceURI: "en" },
+        { lang: "es-US", name: "Español", voiceURI: "es" },
+      ];
+      Object.defineProperty(window, "SpeechSynthesisUtterance", { value: U, configurable: true });
+      Object.defineProperty(window, "speechSynthesis", {
+        configurable: true,
+        value: {
+          getVoices: () => voices,
+          addEventListener() {},
+          speak(u) {
+            window.__said.push({ text: u.text, lang: u.lang });
+          },
+          cancel() {
+            window.__cancels++;
+          },
+        },
+      });
+    },
+    [PREFS, lang, noSpeech],
+  );
+  const page = await context.newPage();
+  page.on("pageerror", (e) => !/web-vitals/.test(e.message) && errors.push(e.message));
+  await page.goto(base + LAB + path, { waitUntil: "load" });
+  await page.waitForSelector("#app .tg-page");
+  return { page, context };
+}
+const said = (page) => page.evaluate(() => window.__said);
+for (const [lang, locale, wantLang, first] of [
+  ["en", "en-US", "en-US", "Look at the example."],
+  ["es", "en-US", "es-US", "Miren el ejemplo."],
+  ["bi", "es-US", "es-US", "Miren el ejemplo."],
+  ["bi", "en-US", "en-US", "Look at the example."],
+]) {
+  const { page, context } = await openSpeech(lang, { locale });
+  const btn = page.locator('[data-tg-read="talk"]');
+  ok(await btn.isVisible(), `${lang}/${locale}: Hear the steps is shown`);
+  await btn.click();
+  const s = await said(page);
+  ok(
+    s.length === 1 && s[0].lang === wantLang && s[0].text.startsWith(first),
+    `${lang}/${locale}: reads step 1 in ${wantLang} (${s[0]?.lang}: ${s[0]?.text.slice(0, 40)})`,
+  );
+  ok(
+    (await btn.getAttribute("aria-pressed")) === "true",
+    `${lang}/${locale}: the button shows it is reading`,
+  );
+  await context.close();
+}
+{
+  const { page, context } = await openSpeech("en");
+  await page.click('[data-tg-read="talk"]');
+  const before = await page.evaluate(() => window.__cancels);
+  await page.click('[data-tg-read="write"]');
+  ok(
+    (await page.evaluate(() => window.__cancels)) > before &&
+      (await page.getAttribute('[data-tg-read="talk"]', "aria-pressed")) === "false" &&
+      (await page.getAttribute('[data-tg-read="write"]', "aria-pressed")) === "true",
+    "one reading at a time: Write stops Talk",
+  );
+  const last = (await said(page)).at(-1);
+  ok(
+    last.text.startsWith("Look at the example. Read the plain sentence"),
+    "Write reads its own steps",
+  );
+  await page.click('[data-tg-read="write"]');
+  ok(
+    (await page.getAttribute('[data-tg-read="write"]', "aria-pressed")) === "false",
+    "pressing again stops",
+  );
+  await page.click('[data-tg-read="talk"]');
+  const n = await page.evaluate(() => window.__cancels);
+  await page.locator(".tg-start").first().click();
+  await page.waitForURL((u) => u.pathname !== `${LAB}/practice-together`);
+  ok((await page.evaluate(() => window.__cancels)) > n, "leaving the page stops the reading");
+  await context.close();
+}
+{
+  const { page, context } = await openSpeech("es", { path: "/practice-together?grades=K" });
+  await page.click('[data-tg-read="early"]');
+  const s = await said(page);
+  ok(
+    s[0]?.lang === "es-US" && s[0].text.startsWith("Escuchen primero."),
+    "K–2 card reads its Spanish steps",
+  );
+  await context.close();
+}
+{
+  const { page, context } = await openSpeech("en", { noSpeech: true });
+  ok(
+    (await page.locator("[data-tg-read]").count()) === 2 &&
+      (await page.locator("[data-tg-read]:visible").count()) === 0,
+    "no speech engine: Hear the steps stays hidden",
+  );
+  await context.close();
+}
+
 // 7. axe WCAG 2.2 AA in each language, desktop and phone, with both sections open.
 if (AxeBuilder) {
-  for (const lang of ["en", "es", "bi"]) {
+  for (const [lang, path] of [
+    ["en", "/practice-together"],
+    ["es", "/practice-together"],
+    ["bi", "/practice-together"],
+    ["en", "/practice-together?grades=K"],
+    ["es", "/practice-together?grades=2-3"],
+  ]) {
     for (const width of [1280, 375]) {
-      const { page, context } = await open(lang, width);
+      const { page, context } = await open(lang, width, path);
       for (const s of await page.locator(".tg-details > summary").all()) await s.click();
       const res = await new AxeBuilder({ page })
         .include("#app")
@@ -365,7 +568,7 @@ if (AxeBuilder) {
         .analyze();
       ok(
         res.violations.length === 0,
-        `axe ${lang} ${width}${res.violations.length ? ` — ${res.violations.map((v) => `${v.id}(${v.nodes.length})`).join(", ")}` : ""}`,
+        `axe ${lang} ${path} ${width}${res.violations.length ? ` — ${res.violations.map((v) => `${v.id}(${v.nodes.length})`).join(", ")}` : ""}`,
       );
       await context.close();
     }
