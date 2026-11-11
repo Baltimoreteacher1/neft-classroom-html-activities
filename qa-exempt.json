@@ -16,6 +16,7 @@
     "Reasons below state what was observed, not what was assumed."
   ],
   "exempt": {
+    "tools/audit-arcade-games.mjs": "Report-only runtime audit of all 20 arcade games and 6 review surfaces in a real browser (console errors, coach tip, live model, scaffold after a wrong answer, screenshots). Needs a browser and ~2 minutes, so it exits 3 (SKIP) without one; the decidable half runs on every push as tools/validate-arcade-models.mjs. Run `npm run audit:arcade-games -- --out=<dir> --shots` before and after any change to the shared game scripts.",
     "tools/validate-discourse-cra-studios.mjs": "Deterministic test runner verifying RationalNumber arithmetic precision vectors, 25 authentic Grade 6 misconceptions, WIDA 2020 scoring telemetry, and cognitive strategy latency classification; run on demand or in math-fluency-lab.",
     "tools/verify-practice-studio-fleet-browser.mjs": "All 144 Practice/Challenge studios at four viewports with screenshots and a verification ledger (docs/audits/practice-studio); ~15 min, so it runs before a studio release (npm run verify:studio-fleet), not on every push. The per-push studio browser suites stay in the gate.",
     "tools/verify-fluency-v7-browser.mjs": "Chromium journeys for the 7.0 start panel and learning workspace (axe, 390/1280, Spanish, storage blocked, deep links, old saved progress); minutes of browser time, so it runs on demand and from qa:fast when math/fluency-lab/ changes, as validate:fluency-v7-browser. The engine half is tools/fluency-v7.test.mjs, which runs in npm test.",

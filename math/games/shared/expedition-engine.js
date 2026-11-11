@@ -1274,19 +1274,15 @@
           `<li class="${state.achievements[k] ? "got" : ""}" title="${t(a.desc)}"><span aria-hidden="true">${a.icon}</span>${t(a)}</li>`,
       )
       .join("");
-    const svgKind = /coord|graph/i.test(def.id)
-      ? "coordinates"
-      : /frac/i.test(def.id)
-        ? "fractions"
-        : /int|dec/i.test(def.id)
-          ? "integers"
-          : "ratios";
+    // The journal shows how many missions are restored, so it draws progress. It used to pick a
+    // topic model from the game id and feed it these counts: a "Target Ratio 3 : 12" bar under
+    // Percent Power, Area Attack and Equation Quest.
     const svgModel = window.GameStudio?.renderMathModelSVG
-      ? window.GameStudio.renderMathModelSVG(svgKind, {
-          a: Math.max(1, Object.values(state.missions).filter((m) => m?.done).length),
-          b: Math.max(1, allMissions(def).length),
+      ? window.GameStudio.renderMathModelSVG("progress", {
+          done: Object.values(state.missions).filter((m) => m?.done).length,
+          total: Math.max(1, allMissions(def).length),
         })
-      : `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 88" width="360" height="88" style="background:#FFFFFF;border-radius:8px;display:block;max-width:100%;height:auto;" role="img" aria-label="Expedition progress model"><rect x="0" y="0" width="360" height="88" fill="#FFFFFF" rx="8"/><rect x="16" y="30" width="${Math.round(restoredFraction(def, state) * 320)}" height="28" fill="#0284C7" rx="6"/></svg>`;
+      : "";
     d.innerHTML = `<h2>📓 ${t(UI.journal)} · ${t(def.title)}</h2>
       <div class="ewl-x-svg-model">${svgModel}</div>
       <section><h3>${lang() === "es" ? "Habilidades" : "Skills"}</h3><ul class="ewl-x-skills">${skillRows}</ul></section>

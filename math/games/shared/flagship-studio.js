@@ -153,6 +153,7 @@
   // Lesson ids and standards follow data/curriculum-launch-manifest.json (district unit order).
   const configs = {
     "unit1-factor-frenzy": {
+      model: "factor-tree", // topic of the live model panel; must equal data/arcade-games.json
       unit: "Unit 6 · Lessons 6-7, 6-12, 6-13 (6.NOS.4)",
       es: {
         unit: "Unidad 6 · Lecciones 6-7, 6-12, 6-13 (6.NOS.4)",
@@ -168,6 +169,7 @@
       data: (n) => ({ tier: n }),
     },
     "unit2-fraction-foundry": {
+      model: "fraction-bar", // topic of the live model panel; must equal data/arcade-games.json
       unit: "Unit 6 · Lessons 6-1, 6-2, 6-9 to 6-11 (6.NOS.1)",
       es: {
         unit: "Unidad 6 · Lecciones 6-1, 6-2, 6-9 a 6-11 (6.NOS.1)",
@@ -195,6 +197,7 @@
       data: (n) => ({ level: n - 1, score: 0, lives: 3 }),
     },
     "unit9-variable-velocity": {
+      model: "rule-table", // topic of the live model panel; must equal data/arcade-games.json
       unit: "Unit 9 · Lessons 9-1 to 9-4 (6.AT.11)",
       es: {
         unit: "Unidad 9 · Lecciones 9-1 a 9-4 (6.AT.11)",
@@ -222,6 +225,7 @@
       data: (n) => ({ level: n - 1, score: 0, lives: 3 }),
     },
     "unit6-expression-engine": {
+      model: "expression-tree", // topic of the live model panel; must equal data/arcade-games.json
       unit: "Unit 6 · Lessons 6-3 to 6-5 (6.AT.5, 6.AT.6)",
       es: {
         unit: "Unidad 6 · Lecciones 6-3 a 6-5 (6.AT.5, 6.AT.6)",
@@ -237,6 +241,7 @@
       data: (n) => ({ difficulty: n - 1 }),
     },
     "unit5-area-architect": {
+      model: "area-shapes", // topic of the live model panel; must equal data/arcade-games.json
       unit: "Unit 5 · Lessons 5-1 to 5-4 (6.GR.1)",
       es: {
         unit: "Unidad 5 · Lecciones 5-1 a 5-4 (6.GR.1)",
@@ -252,6 +257,7 @@
       data: (n) => ({ level: n }),
     },
     "unit3-ratio-rally": {
+      model: "ratio-bars", // topic of the live model panel; must equal data/arcade-games.json
       unit: "Unit 3 · Lessons 3-1 to 3-7 (6.AT.1–3)",
       es: {
         unit: "Unidad 3 · Lecciones 3-1 a 3-7 (6.AT.1–3)",
@@ -267,6 +273,7 @@
       data: (n) => ({ difficulty: ["easy", "medium", "hard"][n - 1] }),
     },
     "6-rp-1game": {
+      model: "ratio-bars", // topic of the live model panel; must equal data/arcade-games.json
       unit: "Unit 3 · Lessons 3-1, 3-3 (6.AT.1, 6.AT.3a)",
       es: {
         unit: "Unidad 3 · Lecciones 3-1, 3-3 (6.AT.1, 6.AT.3a)",
@@ -282,6 +289,7 @@
       data: (n) => ({ tier: n }),
     },
     "unit9-coordinate-quest": {
+      model: "coordinate-plane", // topic of the live model panel; must equal data/arcade-games.json
       unit: "Unit 7 · Lessons 7-5 to 7-7 (6.NOS.6–8)",
       es: {
         unit: "Unidad 7 · Lecciones 7-5 a 7-7 (6.NOS.6–8)",
@@ -297,6 +305,7 @@
       data: (n) => ({ studioTier: n }),
     },
     "unit7-equation-escape": {
+      model: "balance", // topic of the live model panel; must equal data/arcade-games.json
       unit: "Unit 8 · Lessons 8-1 to 8-6 (6.AT.8, 6.AT.9)",
       es: {
         unit: "Unidad 8 · Lecciones 8-1 a 8-6 (6.AT.8, 6.AT.9)",
@@ -312,6 +321,7 @@
       data: (n) => ({ studioTier: n }),
     },
     "unit8-stats-slam": {
+      model: "data-display", // topic of the live model panel; must equal data/arcade-games.json
       unit: "Unit 2 · Lessons 2-1 to 2-5, 2-8 to 2-10 (6.DS.1–6)",
       es: {
         unit: "Unidad 2 · Lecciones 2-1 a 2-5, 2-8 a 2-10 (6.DS.1–6)",
@@ -335,6 +345,7 @@
       data: (n) => ({ studioTier: n }),
     },
     "unit4-discount-dash": {
+      model: "percent-grid", // topic of the live model panel; must equal data/arcade-games.json
       unit: "Unit 4 · Lessons 4-4, 4-5 (6.AT.4)",
       es: {
         unit: "Unidad 4 · Lecciones 4-4, 4-5 (6.AT.4)",
@@ -358,6 +369,7 @@
       data: (n) => ({ studioTier: n }),
     },
     "unit2-fraction-kitchen": {
+      model: "fraction-bar", // topic of the live model panel; must equal data/arcade-games.json
       unit: "Unit 6 · Lessons 6-7 to 6-10 (6.NOS.1)",
       es: {
         unit: "Unidad 6 · Lecciones 6-7 a 6-10 (6.NOS.1)",
@@ -373,6 +385,7 @@
       data: (n) => ({ studioTier: n }),
     },
     "unit10-volume-vault": {
+      model: "volume-cubes", // topic of the live model panel; must equal data/arcade-games.json
       unit: "Unit 5 · Lessons 5-5 to 5-7 (6.GR.2, 6.GR.4)",
       es: {
         unit: "Unidad 5 · Lecciones 5-5 a 5-7 (6.GR.2, 6.GR.4)",
@@ -413,6 +426,73 @@
     data: (n) => ({ tier: n }),
   };
   const C = (key) => (lang() === "es" && config.es?.[key]) || config[key];
+  // ── Live model: what the panel and the wrong-answer scaffold draw ─────────────────────
+  // One adapter per topic reads the game's REAL current state (question text, dims, rows) and
+  // returns {kind, params}. It returns null when the state does not determine a picture, and a
+  // null draws nothing: a picture of another topic is worse than no picture.
+  const nums = (t) => (String(t || "").match(/-?\d+(?:\.\d+)?/g) || []).map(Number);
+  function parseEquation(text) {
+    const t = String(text || "").replace(/[−–]/g, "-").replace(/\s+/g, " ");
+    let m = t.match(/(\d*)\s*([a-z])\s*([+-])\s*(\d+)\s*=\s*(\d+)(?!\d)/);
+    if (m)
+      return {
+        v: m[2],
+        xs: Number(m[1] || 1),
+        units: Number(m[4]),
+        unitsSign: m[3],
+        right: Number(m[5]),
+        left: `${m[1]}${m[2]} ${m[3] === "-" ? "−" : "+"} ${m[4]}`,
+        rightLabel: m[5],
+      };
+    m = t.match(/(\d+)\s*([a-z])\s*=\s*(\d+)(?!\d)/);
+    if (m)
+      return { v: m[2], xs: Number(m[1]), units: 0, right: Number(m[3]), left: `${m[1]}${m[2]}`, rightLabel: m[3] };
+    m = t.match(/(?:^|[^a-z])([a-z])\s*[÷/]\s*(\d+)\s*=\s*(\d+)(?!\d)/);
+    if (m) return { v: m[1], xs: 1, units: 0, right: Number(m[3]), left: `${m[1]} ÷ ${m[2]}`, rightLabel: m[3] };
+    return null;
+  }
+  function modelState(s, q) {
+    // Volume Vault is a DOM game with no Phaser scene; its state lives in window.__flagshipState.
+    if (!s && config.model !== "volume-cubes") return null;
+    switch (config.model) {
+      case "balance": {
+        const eq = parseEquation(q?.text || q?.prompt || "");
+        return eq ? { kind: "balance", params: eq } : null;
+      }
+      case "data-display": {
+        const values = String(q?.data || "").includes(",") ? nums(q.data) : [];
+        return values.length >= 2 ? { kind: "data-display", params: { values } } : null;
+      }
+      case "percent-grid": {
+        const cell = s?.row?.data?.cells?.[s.lane ?? 0];
+        return Number.isFinite(cell?.pct) ? { kind: "percent-grid", params: { pct: cell.pct } } : null;
+      }
+      case "area-shapes": {
+        const d = q?.dims;
+        if (!d || !["triangle", "parallelogram", "rectangle", "rect"].includes(q.type)) return null;
+        return {
+          kind: "area-shapes",
+          params: { type: q.type === "rect" ? "rectangle" : q.type, b: d.b ?? d.l, h: d.h ?? d.w },
+        };
+      }
+      case "volume-cubes": {
+        const st = window.__flagshipState;
+        return st ? { kind: "volume-cubes", params: { l: st.l, w: st.w, h: st.h } } : null;
+      }
+      case "rule-table": {
+        if (q?.table) {
+          const rows = String(q.table)
+            .split("\n")
+            .map((line) => line.split("|").map((c) => c.trim()))
+            .filter((r) => r.length === 2 && /^-?\d/.test(r[0]) && /^-?\d/.test(r[1]));
+          return rows.length >= 2 ? { kind: "rule-table", params: { rows } } : null;
+        }
+        return q?.kind === "id" ? { kind: "variable-roles", params: {} } : null;
+      }
+      default:
+        return null;
+    }
+  }
   const panel = document.createElement("section");
   panel.className = "flagship-mission";
   panel.innerHTML = `<div class="fm-top"><div><span class="fm-eyebrow"></span><h2></h2></div><div class="fm-launch"><label for="fm-level"></label><select id="fm-level"></select><button id="fm-start" type="button"></button><button id="fm-lang" type="button"></button></div></div><div class="fm-stats"></div><p class="fm-question"></p><div class="fm-actions"></div><p class="fm-feedback" role="status" aria-live="polite"></p><div class="fm-progress" aria-hidden="true"><span></span></div>`;
@@ -893,24 +973,23 @@
       svgParams = { cuts: scene.order.jugDen || 4, selected: filled };
     } else {
       modelTextEl.textContent = `🔬 ${C("topic")}: ${C("coach")}`;
-      if (slug.includes("coordinate") || slug.includes("velocity")) {
-        svgKind = "coordinates";
-        svgParams = { x: q?.x ?? 3, y: q?.y ?? 2 };
-      } else if (slug.includes("fraction")) {
-        svgKind = "fractions";
-        svgParams = { cuts: 4, selected: 3 };
-      } else if (slug.includes("equation") || slug.includes("expression")) {
-        svgKind = "integers";
-        svgParams = { value: (session.correct % 7) - 3 };
+      const live = modelState(scene, q);
+      if (live) {
+        svgKind = live.kind;
+        svgParams = live.params;
+      } else {
+        svgKind = "";
       }
     }
     if (modelSvgEl) {
       const svgSig = svgKind + ":" + JSON.stringify(svgParams);
       if (modelSvgEl.dataset.sig !== svgSig) {
         modelSvgEl.dataset.sig = svgSig;
-        modelSvgEl.innerHTML = window.GameStudio?.renderMathModelSVG
-          ? window.GameStudio.renderMathModelSVG(svgKind, svgParams)
-          : `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 88" width="360" height="88" style="background:#FFFFFF;border-radius:8px;display:block;max-width:100%;height:auto;" role="img" aria-label="Math model"><rect x="0" y="0" width="360" height="88" fill="#FFFFFF" rx="8"/><rect x="16" y="28" width="160" height="32" fill="#0284C7" rx="4"/></svg>`;
+        modelSvgEl.innerHTML = !svgKind
+          ? ""
+          : window.GameStudio?.renderMathModelSVG
+            ? window.GameStudio.renderMathModelSVG(svgKind, svgParams)
+            : `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 88" width="360" height="88" style="background:#FFFFFF;border-radius:8px;display:block;max-width:100%;height:auto;" role="img" aria-label="Math model"><rect x="0" y="0" width="360" height="88" fill="#FFFFFF" rx="8"/><rect x="16" y="28" width="160" height="32" fill="#0284C7" rx="4"/></svg>`;
       }
     }
     const signature = JSON.stringify([
@@ -965,6 +1044,7 @@
     if (event.key === "nt-lang")
       document.dispatchEvent(new CustomEvent("ewl:lang", { detail: { lang: lang() } }));
   });
+  window.GameStudio?.setModelProvider?.(() => modelState(scene, scene ? currentQuestion(scene) : null));
   if (window.GameStudio)
     window.GameStudio.register({
       title: document.title,

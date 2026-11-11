@@ -673,7 +673,19 @@ const COVERAGE = [
   // Student games, arcade cabinets & game progression
   [
     /^(math\/games\/.*|math\/unit-\d+\/games\/.*|math\/statistics\/games\/.*|tools\/validate-(game-rules|expeditions)\.mjs)$/,
-    ["test", "validate:game-rules", "validate:expeditions", "validate:js-syntax", "check"],
+    [
+      "test",
+      "validate:game-rules",
+      "validate:expeditions",
+      "validate:arcade-models",
+      "validate:js-syntax",
+      "check",
+    ],
+  ],
+  // The arcade registry, its hub, the shared renderers and the model gate must agree on topic.
+  [
+    /^(data\/arcade-games\.json|curriculum\/arcade\/index\.html|assets\/game-studio\.js|tools\/(validate-arcade-models|audit-arcade-games|arcade-models\.test)\.mjs|tools\/lib\/arcade-(registry|models-check)\.mjs)$/,
+    ["test", "validate:arcade-models", "validate:js-syntax", "check"],
   ],
   // Unit identity metadata is keyed by the CURRENT unit number; an edit here or
   // to the units page must re-run the identity + placement pins.

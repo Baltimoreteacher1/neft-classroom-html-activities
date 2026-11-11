@@ -662,6 +662,8 @@
    * @param {string} [kind]
    * @param {any} [params]
    */
+  /** @type {null | (() => ({kind: string, params: any} | null))} */
+  let modelProvider = null;
   function renderMathModelSVG(kind = "ratios", params = {}) {
     const num = (/** @type {any} */ v, /** @type {number} */ d) =>
       Number.isFinite(Number(v)) ? Number(v) : d;
@@ -714,6 +716,228 @@
         <text x="30" y="22" fill="#0F172A" font-family="system-ui,sans-serif" font-size="11" font-weight="700">0-Level Balance · Value: ${val} · |${val}| = ${Math.abs(val)}</text>
       </svg>`;
     }
+    // Topic models. Each draws only what the game state already shows the student; none
+    // prints a result the student is being asked to find. An unknown kind returns "" so
+    // a game can never be handed another topic's picture (see tools/validate-arcade-models.mjs).
+    const esc = (/** @type {any} */ v) =>
+      String(v).replace(
+        /[&<>"]/g,
+        (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c],
+      );
+    const svg = (/** @type {string} */ aria, /** @type {string} */ body, h = 110) =>
+      `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 ${h}" width="360" height="${h}" style="background:#FFFFFF;border-radius:8px;display:block;max-width:100%;height:auto;" role="img" aria-label="${esc(aria)}"><rect x="0" y="0" width="360" height="${h}" fill="#FFFFFF" rx="8"/>${body}</svg>`;
+    const label = (
+      /** @type {number} */ x,
+      /** @type {number} */ y,
+      /** @type {any} */ t,
+      anchor = "start",
+    ) =>
+      `<text x="${x}" y="${y}" fill="#0F172A" font-family="system-ui,sans-serif" font-size="12" font-weight="700" text-anchor="${anchor}">${esc(t)}</text>`;
+    if (kind === "balance") {
+      // Two-pan balance for a one-step equation. A quantity too large to draw block by block is
+      // drawn as one labelled bar, never truncated to a smaller count.
+      const v = /^[a-z]$/.test(params.v) ? params.v : "x";
+      const xs = Math.round(num(params.xs, 1));
+      const units = Math.round(num(params.units, 0));
+      const right = Math.round(num(params.right, 0));
+      if (!(xs >= 1 && xs <= 4) || units < 0 || right < 0) return "";
+      const negative = params.unitsSign === "-";
+      const cell = (
+        /** @type {number} */ x,
+        /** @type {number} */ y,
+        /** @type {boolean} */ dashed,
+      ) =>
+        `<rect x="${x}" y="${y}" width="14" height="14" fill="${dashed ? "#FFFFFF" : "#0D9488"}" stroke="#0F172A" stroke-width="1.5" ${dashed ? 'stroke-dasharray="3 2"' : ""} rx="2"/>`;
+      const bar = (
+        /** @type {number} */ x,
+        /** @type {number} */ y,
+        /** @type {number} */ n,
+        /** @type {boolean} */ dashed,
+      ) =>
+        `<rect x="${x}" y="${y}" width="64" height="20" fill="${dashed ? "#FFFFFF" : "#0D9488"}" stroke="#0F172A" stroke-width="1.5" ${dashed ? 'stroke-dasharray="3 2"' : ""} rx="3"/><text x="${x + 32}" y="${y + 14}" fill="${dashed ? "#0F172A" : "#FFFFFF"}" font-family="system-ui,sans-serif" font-size="12" font-weight="800" text-anchor="middle">${n}</text>`;
+      const pile = (
+        /** @type {number} */ x,
+        /** @type {number} */ y,
+        /** @type {number} */ n,
+        /** @type {number} */ perRow,
+        /** @type {number} */ max,
+        /** @type {boolean} */ dashed,
+      ) => {
+        if (n === 0) return "";
+        if (n > max) return bar(x, y, n, dashed);
+        let out = "";
+        for (let i = 0; i < n; i++)
+          out += cell(x + (i % perRow) * 17, y + Math.floor(i / perRow) * 17, dashed);
+        return out;
+      };
+      let left = "";
+      for (let i = 0; i < xs; i++)
+        left += `<rect x="${50 + i * 26}" y="52" width="22" height="22" fill="#0284C7" stroke="#0F172A" stroke-width="1.5" rx="3"/><text x="${61 + i * 26}" y="68" fill="#FFFFFF" font-family="system-ui,sans-serif" font-size="13" font-weight="800" text-anchor="middle">${esc(v)}</text>`;
+      left += pile(50 + xs * 26 + 4, 56, units, 6, 12, negative);
+      const rightBlocks = pile(222, 52, right, 8, 24, false);
+      const leftText = params.left || "";
+      const rightText = params.rightLabel || String(right);
+      return svg(
+        `Balance model: ${leftText} on the left pan equals ${rightText} on the right pan`,
+        `<line x1="40" y1="40" x2="320" y2="40" stroke="#334155" stroke-width="4" stroke-linecap="round"/>
+         <polygon points="180,40 168,96 192,96" fill="#94A3B8" stroke="#334155" stroke-width="1.5"/>
+         <path d="M40 44 L40 50 H150 V44" fill="none" stroke="#334155" stroke-width="2"/>
+         <path d="M210 44 L210 50 H320 V44" fill="none" stroke="#334155" stroke-width="2"/>
+         ${left}${rightBlocks}
+         ${label(95, 20, leftText, "middle")}${label(265, 20, rightText, "middle")}`,
+        110,
+      );
+    }
+    if (kind === "data-display") {
+      // Dot plot of the exact data set the question quotes. No mean/median marker: that is the task.
+      const values = (Array.isArray(params.values) ? params.values : [])
+        .map(Number)
+        .filter(Number.isFinite)
+        .slice(0, 24);
+      if (values.length < 2) return "";
+      const lo = Math.min(...values);
+      const hi = Math.max(...values);
+      const span = Math.max(1, hi - lo);
+      const x0 = 30;
+      const x1 = 330;
+      const counts = new Map();
+      let dots = "";
+      for (const v of values) {
+        const n = counts.get(v) || 0;
+        counts.set(v, n + 1);
+        dots += `<circle cx="${x0 + ((v - lo) / span) * (x1 - x0)}" cy="${72 - n * 12}" r="5" fill="#0284C7" stroke="#0F172A" stroke-width="1"/>`;
+      }
+      const ticks = [...new Set(values)]
+        .sort((a, b) => a - b)
+        .map(
+          (v) =>
+            `<line x1="${x0 + ((v - lo) / span) * (x1 - x0)}" y1="80" x2="${x0 + ((v - lo) / span) * (x1 - x0)}" y2="86" stroke="#334155" stroke-width="1.5"/>`,
+        )
+        .join("");
+      return svg(
+        `Dot plot of ${values.length} values from ${lo} to ${hi}`,
+        `<line x1="${x0 - 8}" y1="80" x2="${x1 + 8}" y2="80" stroke="#334155" stroke-width="2"/>${ticks}${dots}
+         ${label(x0, 102, lo, "middle")}${label(x1, 102, hi, "middle")}${label(180, 16, `${values.length} values`, "middle")}`,
+        112,
+      );
+    }
+    if (kind === "percent-grid") {
+      const pct = num(params.pct, NaN);
+      if (!Number.isFinite(pct) || pct < 0 || pct > 100) return "";
+      const shaded = Math.round(pct);
+      let cells = "";
+      for (let i = 0; i < 100; i++) {
+        const r = Math.floor(i / 10);
+        const c = i % 10;
+        cells += `<rect x="${22 + c * 10}" y="${8 + r * 10}" width="9" height="9" fill="${i < shaded ? "#0D9488" : "#E2E8F0"}" stroke="#94A3B8" stroke-width="0.5"/>`;
+      }
+      return svg(
+        `Percent grid: ${pct} out of 100 squares shaded`,
+        `${cells}${label(140, 40, `${pct}%`)}${label(140, 60, `${shaded} of 100 squares`)}${label(140, 80, "shaded", "start")}`,
+        116,
+      );
+    }
+    if (kind === "area-shapes") {
+      const b = num(params.b, NaN);
+      const h = num(params.h, NaN);
+      if (!(b > 0) || !(h > 0)) return "";
+      const type =
+        params.type === "triangle" || params.type === "parallelogram" ? params.type : "rectangle";
+      const sc = Math.min(200 / b, 70 / h);
+      const bw = b * sc;
+      const bh = h * sc;
+      const ox = 90;
+      const oy = 88;
+      const shape =
+        type === "triangle"
+          ? `<polygon points="${ox},${oy} ${ox + bw},${oy} ${ox + bw * 0.35},${oy - bh}" fill="#BAE6FD" stroke="#0F172A" stroke-width="2"/>`
+          : type === "parallelogram"
+            ? `<polygon points="${ox},${oy} ${ox + bw},${oy} ${ox + bw + bw * 0.2},${oy - bh} ${ox + bw * 0.2},${oy - bh}" fill="#BAE6FD" stroke="#0F172A" stroke-width="2"/>`
+            : `<rect x="${ox}" y="${oy - bh}" width="${bw}" height="${bh}" fill="#BAE6FD" stroke="#0F172A" stroke-width="2"/>`;
+      const topX =
+        type === "triangle" ? ox + bw * 0.35 : type === "parallelogram" ? ox + bw * 0.2 : ox;
+      const heightLine =
+        type === "rectangle"
+          ? ""
+          : `<line x1="${topX}" y1="${oy}" x2="${topX}" y2="${oy - bh}" stroke="#D97706" stroke-width="2" stroke-dasharray="4 3"/>`;
+      return svg(
+        `${type} with base ${b} and height ${h}`,
+        `${shape}${heightLine}${label(ox + bw / 2, oy + 16, `base ${b}`, "middle")}${label(ox - 8, oy - bh / 2 + 4, `h ${h}`, "end")}`,
+        112,
+      );
+    }
+    if (kind === "volume-cubes") {
+      const l = Math.round(num(params.l, NaN));
+      const w = Math.round(num(params.w, NaN));
+      const h = Math.round(num(params.h, NaN));
+      if (!(l > 0 && w > 0 && h > 0) || l > 12 || w > 12 || h > 12) return "";
+      const u = Math.min(140 / (l + w * 0.5), 64 / (h + w * 0.5), 28);
+      const dx = u * 0.5;
+      const dy = u * 0.5;
+      const ox = 20 + (200 - (l * u + w * dx)) / 2;
+      const oy = 100 - w * dy;
+      const grid = (/** @type {string} */ pts, /** @type {string} */ fill) =>
+        `<polygon points="${pts}" fill="${fill}" stroke="#0F172A" stroke-width="1.5"/>`;
+      let lines = "";
+      for (let i = 1; i < l; i++)
+        lines += `<line x1="${ox + i * u}" y1="${oy}" x2="${ox + i * u}" y2="${oy - h * u}" stroke="#0F172A" stroke-opacity=".35"/>`;
+      for (let j = 1; j < h; j++)
+        lines += `<line x1="${ox}" y1="${oy - j * u}" x2="${ox + l * u}" y2="${oy - j * u}" stroke="#0F172A" stroke-opacity=".35"/>`;
+      return svg(
+        `Rectangular prism ${l} by ${w} by ${h} units`,
+        `${grid(`${ox},${oy} ${ox + l * u},${oy} ${ox + l * u},${oy - h * u} ${ox},${oy - h * u}`, "#BAE6FD")}
+         ${grid(`${ox},${oy - h * u} ${ox + l * u},${oy - h * u} ${ox + l * u + w * dx},${oy - h * u - w * dy} ${ox + w * dx},${oy - h * u - w * dy}`, "#E0F2FE")}
+         ${grid(`${ox + l * u},${oy} ${ox + l * u + w * dx},${oy - w * dy} ${ox + l * u + w * dx},${oy - h * u - w * dy} ${ox + l * u},${oy - h * u}`, "#7DD3FC")}
+         ${lines}${label(250, 44, `length ${l}`)}${label(250, 62, `width ${w}`)}${label(250, 80, `height ${h}`)}`,
+        112,
+      );
+    }
+    if (kind === "rule-table") {
+      // Input/output table copied from the question; the rule itself is never drawn.
+      const rows = (Array.isArray(params.rows) ? params.rows : [])
+        .filter((r) => Array.isArray(r) && r.length === 2)
+        .slice(0, 5);
+      if (rows.length < 2) return "";
+      const head = `${label(110, 20, params.xName || "x", "middle")}${label(250, 20, params.yName || "y", "middle")}`;
+      const body = rows
+        .map(
+          (r, i) =>
+            `<rect x="40" y="${28 + i * 16}" width="280" height="16" fill="${i % 2 ? "#FFFFFF" : "#F1F5F9"}"/>${label(110, 40 + i * 16, r[0], "middle")}${label(250, 40 + i * 16, r[1], "middle")}`,
+        )
+        .join("");
+      return svg(
+        `Input-output table with ${rows.length} rows`,
+        `${head}${body}<line x1="180" y1="6" x2="180" y2="${28 + rows.length * 16}" stroke="#334155" stroke-width="1.5"/>`,
+        40 + rows.length * 16,
+      );
+    }
+    if (kind === "variable-roles") {
+      // Neutral roles diagram: which quantity is chosen and which responds. Names are not placed,
+      // so the "independent / dependent" question is not answered by the picture.
+      return svg(
+        "Independent variable (you choose it) leads to dependent variable (it responds)",
+        `<rect x="24" y="30" width="120" height="46" rx="8" fill="#BAE6FD" stroke="#0F172A" stroke-width="2"/>
+         <rect x="216" y="30" width="120" height="46" rx="8" fill="#99F6E4" stroke="#0F172A" stroke-width="2"/>
+         <line x1="148" y1="53" x2="210" y2="53" stroke="#0F172A" stroke-width="3"/>
+         <polygon points="214,53 202,46 202,60" fill="#0F172A"/>
+         ${label(84, 50, "independent", "middle")}${label(84, 66, "you choose it", "middle")}
+         ${label(276, 50, "dependent", "middle")}${label(276, 66, "it responds", "middle")}`,
+        96,
+      );
+    }
+    if (kind === "progress") {
+      const done = Math.max(0, Math.round(num(params.done, 0)));
+      const total = Math.max(1, Math.round(num(params.total, 1)));
+      const w = Math.min(1, done / total) * 300;
+      return svg(
+        `Progress: ${done} of ${total} missions complete`,
+        `<rect x="30" y="38" width="300" height="18" rx="9" fill="#E2E8F0" stroke="#334155" stroke-width="1.5"/>
+         <rect x="30" y="38" width="${w}" height="18" rx="9" fill="#0D9488"/>
+         ${label(180, 28, `${done} of ${total} missions complete`, "middle")}`,
+        72,
+      );
+    }
+    if (kind !== "ratios") return "";
     // Default: 'ratios' (Ratios & Proportions dynamic scaling bars)
     const a = Math.max(1, num(params.a, 2));
     const b = Math.max(1, num(params.b, 3));
@@ -1175,19 +1399,36 @@
       document.body.dataset.cddaScaffold = "active";
       document.body.dataset.cddaPattern = cddaResult.pattern || "general-miss";
       if (scaffoldOverlay) {
-        const kind =
+        // A game that declares its own model (flagship-studio) is scaffolded with THAT model of
+        // its current question. Otherwise only a pattern that names its own topic may draw one:
+        // the old "general-miss" default drew a 2:3 ratio bar under equation and rule-table games.
+        const provided = modelProvider ? modelProvider() : null;
+        const patternKind =
           cddaResult.pattern === "coord-swap"
             ? "coordinates"
             : cddaResult.pattern === "sign-flip"
               ? "integers"
               : cddaResult.pattern === "partition-mismatch"
                 ? "fractions"
-                : "ratios";
-        scaffoldOverlay.innerHTML = `<div class="gs-cdda-card">
+                : cddaResult.pattern === "unscaled-ratio"
+                  ? "ratios"
+                  : "";
+        const model = modelProvider
+          ? provided
+            ? renderMathModelSVG(provided.kind, provided.params)
+            : ""
+          : patternKind
+            ? renderMathModelSVG(patternKind, detail)
+            : "";
+        if (model) {
+          scaffoldOverlay.innerHTML = `<div class="gs-cdda-card">
           <span class="gs-cdda-tag">${T("Visual Scaffold Active", "Andamiaje visual activo")}</span>
-          ${renderMathModelSVG(kind, detail)}
+          ${model}
         </div>`;
-        scaffoldOverlay.hidden = false;
+          scaffoldOverlay.hidden = false;
+        } else {
+          scaffoldOverlay.hidden = true;
+        }
       }
     } else if (cddaResult.masteryActive) {
       document.body.dataset.cddaScaffold = "mastery";
@@ -1605,6 +1846,10 @@
     createFixedLoop,
     patchPhaserDeltaClamp,
     renderMathModelSVG,
+    /** @param {() => ({kind: string, params: any} | null)} fn */
+    setModelProvider(fn) {
+      modelProvider = typeof fn === "function" ? fn : null;
+    },
     enableClickToPlace,
     triggerRewind,
     cleanupDisposables,
