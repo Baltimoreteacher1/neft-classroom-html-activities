@@ -2,6 +2,11 @@
   "_doc": "Every test file that performs filesystem writes, with a reviewed statement of where those writes land and why that is safe. Enforced by tools/validate-test-writes.mjs: a writing test without an entry fails, and an entry whose file is gone or no longer writes fails. Written after two same-day incidents (2026-09-05): the cartridge self-test clobbered the real neft-library artifact on every npm test, and a sandbox test overwrote six real lesson configs when a refactor broke its generator's root redirection.",
   "entries": [
     {
+      "file": "tools/bundle-dist-modules.test.mjs",
+      "targets": "tmpdir",
+      "reason": "Writes four empty fixture files only inside mkdtempSync(join(tmpdir(), 'bundle-dist-')) and removes the directory in finally; no repository data is changed."
+    },
+    {
       "file": "math/fluency-lab/e8/teacher-family.browser.test.mjs",
       "targets": "tmpdir",
       "reason": "Creates synthetic learner backup JSON files only inside mkdtempSync(join(tmpdir(), 'e8-hub-')); no repository data is changed."

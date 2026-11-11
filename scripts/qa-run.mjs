@@ -356,7 +356,7 @@ const COVERAGE = [
   // FPS under 4x throttle and per-frame heap allocation. Must precede the
   // generic /^math\/games\// rule below.
   [
-    /^(math\/games\/engines\/|tools\/(validate-engine-games-browser\.mjs$|bundle-engine-games\.mjs$|engines\/))/,
+    /^(math\/games\/engines\/|tools\/(validate-engine-games-browser\.mjs$|bundle-dist-modules\.mjs$|engines\/))/,
     [
       "validate:engine-games-browser",
       "validate:engine-games-dist",
