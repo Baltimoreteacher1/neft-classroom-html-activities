@@ -11,7 +11,7 @@ Do not describe the current branch as complete or deployment-ready. It implement
 - Production source repository: `/Users/joelneft/neft-classroom-html-activities`
 - Isolated working tree: `/Users/joelneft/wt-fluency-publisher-engine`
 - Branch: `feat/fluency-publisher-engine`
-- Latest local commit when handed off: `b23454a5b2` (`refactor: centralize publisher practice item routing`)
+- Latest implementation commit before this handoff: `b23454a5b2` (`refactor: centralize publisher practice item routing`)
 - Worktree was clean at handoff. The branch was 13 commits ahead of local `origin/main` after merging it. Check status again because other worktrees update main concurrently.
 - Nothing from this branch was pushed or deployed. Local commits bypassed the repository pre-commit hook because its broad QA lock was held by another worktree; direct checks are listed below.
 
