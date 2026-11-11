@@ -126,7 +126,7 @@
   ) =>
     `${lead ? `<p class="fb-line fb-confirm"><strong>${lead}</strong></p>` : ""}${
       trap
-        ? `<p class="fb-line fb-trap"><span class="fb-label">${bi("Trap", "Trampa")}<span class="sr-only">: </span></span> ${trap}</p>`
+        ? `<p class="fb-line fb-trap"><span class="fb-label">${bi("Likely mix-up", "Posible confusión")}<span class="sr-only">: </span></span> ${trap}</p>`
         : ""
     }<div class="fb-line fb-guide">${guide}</div>`;
 

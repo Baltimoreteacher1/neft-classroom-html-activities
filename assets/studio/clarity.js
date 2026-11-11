@@ -157,6 +157,24 @@
    * pages (u4-studio.js).
    * @param {{sections: {en: string, es: string}[], tally?: {en: string, es: string}, seals?: {name: string, nameEs: string, label: string, labelEs: string}[], next: {en: string, es: string, href?: string, attr?: string}}} o
    */
+  /** Per stage: solved on their own, solved with support, not yet. Words carry the meaning, never colour alone. */
+  function evidenceTable(/** @type {any[]|undefined} */ rows) {
+    if (!rows?.length) return "";
+    const cell = (/** @type {number} */ n, /** @type {string} */ cls) =>
+      `<td class="ev-${cls}"><span class="ev-n">${n}</span></td>`;
+    const body = rows
+      .map(
+        (r) =>
+          `<tr><th scope="row">${bi(escHtml(r.name), escHtml(r.nameEs || r.name))}${r.optional ? ` <span class="ev-opt">${bi("optional", "opcional")}</span>` : ""}</th>${cell(r.own, "own")}${cell(r.help, "help")}${cell(r.again, "again")}</tr>`,
+      )
+      .join("");
+    const again = rows.filter((r) => r.again && !r.optional);
+    const tip = again.length
+      ? `<p class="ev-tip">${bi(`Worth another look: ${again.map((r) => r.name).join(", ")}.`, `Vale la pena repasar: ${again.map((r) => r.nameEs || r.name).join(", ")}.`)}</p>`
+      : "";
+    return `<div class="exit-evidence"><table class="ev-table"><caption>${bi("What your work shows", "Lo que muestra tu trabajo")}</caption><thead><tr><th scope="col">${bi("Stage", "Etapa")}</th><th scope="col">${bi("On my own", "Por mi cuenta")}</th><th scope="col">${bi("With help", "Con ayuda")}</th><th scope="col">${bi("Not yet", "Todavía no")}</th></tr></thead><tbody>${body}</tbody></table>${tip}</div>`;
+  }
+
   function exitCard(o) {
     const target = document.querySelector(".target-chip .target-text");
     const can = target
@@ -171,14 +189,18 @@
     const next = o.next.href
       ? `<a class="btn btn-go exit-next" href="${escHtml(o.next.href)}">${bi(o.next.en, o.next.es)}</a>`
       : `<button type="button" class="btn btn-go exit-next" ${o.next.attr || ""}>${bi(o.next.en, o.next.es)}</button>`;
+    const back = o.lessonHref
+      ? ` <a class="btn exit-back" href="${escHtml(o.lessonHref)}">${bi("Back to the lesson", "Volver a la lección")}</a>`
+      : "";
     return `<div class="exit-card">
       <h2 class="exit-title" tabindex="-1">${bi("What you can do now", "Lo que ya puedes hacer")}</h2>
       ${can}
       <ul class="exit-sections" aria-label="Sections completed">${done}</ul>
       ${o.tally ? `<p class="exit-tally">${bi(o.tally.en, o.tally.es)}</p>` : ""}
       ${o.seals?.length ? `<p class="exit-seals"><span aria-hidden="true">🏅</span> ${bi("Seals earned today:", "Sellos ganados hoy:")} ${o.seals.map((s) => bi(escHtml(`${s.name} · ${s.label}`), escHtml(`${s.nameEs} · ${s.labelEs || s.label}`))).join(", ")}</p>` : ""}
+      ${evidenceTable(o.evidence)}
       ${o.extra || ""}
-      <p class="exit-step"><span class="exit-step-label">${bi("Next step", "Siguiente paso")}</span> ${next}</p>
+      <p class="exit-step"><span class="exit-step-label">${bi("Next step", "Siguiente paso")}</span> ${next}${back}</p>
     </div>`;
   }
 

@@ -573,6 +573,32 @@
    * round when misses are waiting and first tries ran under 70%, else the Challenge (from Practice), the Daily Boost
    * (from a Challenge), or every studio (from the Boost).
    */
+  /**
+   * What each stage shows about the student, item by item: on their own (no miss, at most one hint), with support
+   * (solved after a miss or two hints), or not yet (unsolved, or guessed and still owed a fresh problem). Success after
+   * hints is never counted as independent.
+   */
+  function evidence() {
+    return TABS.map((t) => {
+      const sec = SECTIONS[t - 1];
+      const row = {
+        name: sec.name,
+        nameEs: sec.nameEs,
+        optional: !!sec.optional,
+        own: 0,
+        help: 0,
+        again: 0,
+      };
+      sec.items.forEach((_, i) => {
+        const id = idOf(t, i);
+        if (!solvedMap(t)[id] || state.owed?.[id]) row.again++;
+        else if (AT().tierOf(A()[id] || 0, state.hints[id] || 0) === "clean") row.own++;
+        else row.help++;
+      });
+      return row;
+    });
+  }
+
   function exitHtml() {
     const s = state.stats;
     const first = Math.min(s.first, total);
@@ -615,6 +641,8 @@
           labelEs: x.labelEs,
         })),
         extra: W.StudioPedagogy?.exitExtras?.() || "",
+        evidence: evidence(),
+        lessonHref: boost ? "" : `/lessons/${data.lesson}/`,
         next,
       },
     )}${W.StudioPulse?.slotHtml?.() || '<div class="pulse-slot" data-pulse-slot></div>'}`;
@@ -633,7 +661,10 @@
       const badge = $(`#badge-${t}`);
       if (badge) badge.textContent = complete ? "✓" : String(t);
     });
-    const every = counts.every((c, i) => c >= SECTIONS[TABS[i] - 1].items.length);
+    // An optional stage (Practice More) is offered, never required: the studio is finished without it.
+    const every = counts.every(
+      (c, i) => SECTIONS[TABS[i] - 1].optional || c >= SECTIONS[TABS[i] - 1].items.length,
+    );
     const banner = $("#complete-banner");
     if (banner) {
       banner.toggleAttribute("hidden", !every);

@@ -674,16 +674,27 @@ export function buildSections(
   for (const mode of /** @type {const} */ (["practice", "challenge"])) {
     out[mode] = lists[mode].map((sec, i) => {
       const g = worlds.generic[mode][i];
-      // Use plain, predictable section names across every lesson. World-themed names such as
-      // "First Course" and "Taste Test" add vocabulary students must decode before they can
-      // choose a practice level. The lesson-specific scenario remains in the problem content.
-      const sectionLabels = [
-        { n: "Warm up", nEs: "Calentamiento" },
-        { n: "Learn", nEs: "Aprende" },
-        { n: "Practice", nEs: "Practica" },
-        { n: "More practice", nEs: "Más práctica" },
-        { n: "Show what you know", nEs: "Demuestra lo que sabes" },
-      ];
+      // Plain, predictable stage names, the same in every lesson, so a student reads one interface and not ten worlds.
+      // World-themed names ("First Course", "Taste Test") made students decode vocabulary before they could start.
+      // The lesson's own scenario stays in the problems. Practice stage 1 opens with the lab model, so it carries the
+      // "see it" step; Challenge names follow its sections (ladder, missions, lab, detective, boss).
+      const STAGES = {
+        practice: [
+          { n: "Get Ready", nEs: "Prepárate" },
+          { n: "Try It", nEs: "Inténtalo" },
+          { n: "On Your Own", nEs: "Por tu cuenta" },
+          { n: "Practice More", nEs: "Practica más" },
+          { n: "Show What You Know", nEs: "Demuestra lo que sabes" },
+        ],
+        challenge: [
+          { n: "Start Strong", nEs: "Empieza fuerte" },
+          { n: "Stretch Your Thinking", nEs: "Amplía tu pensamiento" },
+          { n: "Investigate", nEs: "Investiga" },
+          { n: "Find and Fix", nEs: "Encuentra y corrige" },
+          { n: "Prove Your Understanding", nEs: "Demuestra tu comprensión" },
+        ],
+      };
+      const sectionLabels = STAGES[mode];
       const nm = sectionLabels[i] || world.sections[mode][i];
       const items = stamp(sec.items, i + 1);
       // The lab bench joins one section per page (Practice 4, Challenge 3). Its items carry explicit ids and are added
@@ -701,6 +712,8 @@ export function buildSections(
       return {
         name: nm.n,
         nameEs: nm.nEs,
+        // Practice More is extra repetition on fresh numbers: offered, never required to finish the studio.
+        ...(mode === "practice" && i === 3 ? { optional: true } : {}),
         desc: g.d,
         descEs: g.dEs,
         h: g.h,

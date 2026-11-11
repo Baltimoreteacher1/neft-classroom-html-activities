@@ -183,7 +183,7 @@ export function pageFor({
     </details>`;
   const tabs = sections
     .map((s, i) => {
-      const isOpt = mode === "practice" && i >= 3;
+      const isOpt = !!s.optional;
       const optPrefix = isOpt ? `${bi("Optional", "Opcional")} · ` : "";
       return `      <button type="button" class="tab-btn${isOpt ? " tab-opt" : ""}" role="tab" id="tab-${i + 1}" aria-selected="${i === 0}" aria-controls="panel-${i + 1}" tabindex="${i === 0 ? 0 : -1}" data-tab="${i + 1}">
         <span class="tab-badge" id="badge-${i + 1}">${i + 1}</span>
@@ -197,7 +197,7 @@ export function pageFor({
         s,
         i,
       ) => `    <section id="panel-${i + 1}" class="tab-panel${i === 0 ? " active" : ""}" role="tabpanel" aria-labelledby="tab-${i + 1}">
-      <div class="topic-strip"><div><h2>${i + 1}. ${esc(s.h)}</h2><p>${esc(s.p)}</p><p class="es-text" lang="es">${esc(s.pEs)}</p></div>
+      <div class="topic-strip"><div><p class="stage-eyebrow">${bi(`Stage ${i + 1} of ${sections.length}`, `Etapa ${i + 1} de ${sections.length}`)}${s.optional ? ` · ${bi("Optional", "Opcional")}` : ""}</p><h2>${bi(s.name, s.nameEs)}</h2><p class="stage-purpose">${esc(s.p)}</p><p class="es-text" lang="es">${esc(s.pEs)}</p></div>
         <div class="stepper-bar"><div class="dots-row" id="dots-${i + 1}" role="group" aria-label="${esc(s.name)} problems"></div></div></div>
       <div class="stage-card" id="stage-${i + 1}"></div>
       ${printList(s.items)}

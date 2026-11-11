@@ -134,6 +134,8 @@ function assetPlan(/** @type {Map<string, string>} */ built) {
     "assets/dimension.css",
     "assets/studio-dimension.css",
   ];
+  // The studio typefaces, self-hosted (public/assets/fonts, served at /assets/fonts). Content-named, so never stamped.
+  const fonts = ["/assets/fonts/inter-aee799.css", "/assets/fonts/plus-jakarta-sans-4f1f37.css"];
   const h = createHash("sha1");
   for (const f of [...styles, ...scripts, "assets/studio/finder.js"])
     h.update(built.get(f) ?? (existsSync(join(REPO_ROOT, f)) ? read(f) : ""));
@@ -147,7 +149,7 @@ function assetPlan(/** @type {Map<string, string>} */ built) {
     for (const f of readdirSync(join(REPO_ROOT, dir)).sort())
       if (/\.(mjs|css)$/.test(f)) lh.update(read(`${dir}/${f}`));
   return {
-    styles: styles.map(url),
+    styles: [...fonts, ...styles.map(url)],
     scripts: scripts.map(url),
     stamp: v,
     labV: lh.digest("hex").slice(0, 10),

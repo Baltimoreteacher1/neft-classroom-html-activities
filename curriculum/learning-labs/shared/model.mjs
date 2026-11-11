@@ -7,6 +7,27 @@ import { esc, line, text, rect, dot, svg } from './models/draw.mjs';
 import { registered } from './models/index.mjs';
 export { esc };
 
+/** A power as what it means: one chip per factor (the exponent counts them), then the power written with a raised
+ *  exponent and its value. A term added after the power is shown as its own step, never as "add 0". */
+function powerVisual(a, b, c, result) {
+  const shown = b > 8 ? 6 : b, gap = 26, size = Math.min(72, (520 - (shown - 1) * gap) / Math.max(1, shown + (b > 8 ? 1 : 0)));
+  const count = shown + (b > 8 ? 1 : 0), width = count * size + (count - 1) * gap, left = (600 - width) / 2;
+  let out = '';
+  for (let i = 0; i < count; i++) {
+    const x = left + i * (size + gap);
+    if (b > 8 && i === shown - 1) out += text(x + size / 2, 62 + size / 2 + 6, '…');
+    else {
+      out += rect(x, 40, size, size, 'shape-light') + `<text x="${x + size / 2}" y="${40 + size / 2 + 9}" text-anchor="middle" font-size="26" font-weight="700">${esc(a)}</text>`;
+    }
+    if (i < count - 1) out += `<text x="${x + size + gap / 2}" y="${40 + size / 2 + 8}" text-anchor="middle" font-size="22">×</text>`;
+  }
+  out += text(300, 40 + size + 30, `${b} ${b === 1 ? 'factor' : 'factors'} of ${a}`);
+  const power = `<tspan>${esc(a)}</tspan><tspan dy="-20" font-size="28">${esc(b)}</tspan><tspan dy="20"> = ${esc(fmt(a ** b))}</tspan>`;
+  out += `<text x="300" y="${size + 150}" text-anchor="middle" font-size="44" font-weight="700">${power}</text>`;
+  if (c) out += text(300, size + 196, `${fmt(a ** b)} + ${c} = ${fmt(result.value)}`);
+  return out;
+}
+
 export function visual(model, values, result) {
   const plug = registered(model);
   if (plug) return svg(plug.visual(values, result, model), `${result.equation}. ${result.note}`, plug.viewBox || '0 0 600 300');
@@ -128,7 +149,7 @@ export function visual(model, values, result) {
     } else if (k === 'expression') {
       const scale = 460 / (c + b); body += rect(70, 70, c * scale, 120, 'shape') + rect(70 + c * scale, 70, b * scale, 120, 'shape-alt');
       body += text(70 + c * scale / 2, 135, `${a} × ${c}`) + text(70 + c * scale + b * scale / 2, 135, `${a} × ${b}`) + text(300, 232, `${a}(x + ${b}) = ${a}x + ${a * b}; x = ${c}`);
-    } else { body += text(300, 80, Array(b).fill(a).join(' × ')) + text(300, 152, `${a}^${b} = ${a ** b}`) + text(300, 228, `Then add ${c}: ${fmt(result.value)}`); }
+    } else body += powerVisual(a, b, c, result);
   } else if (k === 'line' || k === 'inequality') {
     const min = k === 'line' ? -10 : 0, max = k === 'line' ? 10 : 30, sx = n => 45 + (n - min) / (max - min) * 510;
     body += line(45, 160, 555, 160);

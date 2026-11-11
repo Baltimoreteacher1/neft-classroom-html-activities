@@ -2,6 +2,9 @@
 import { fmt, gcd, median, statistics, control } from './models/util.mjs';
 import { registered } from './models/index.mjs';
 export { fmt, gcd, median, statistics };
+/** A whole-number exponent in raised digits (5⁴), so a readout never shows calculator notation like 5^4. */
+const SUP = '⁰¹²³⁴⁵⁶⁷⁸⁹';
+export const sup = (n) => String(n).replace(/\d/g, (d) => SUP[d]);
 export function controls(model) {
   const plug = registered(model);
   if (plug) return plug.controls(model);
@@ -85,7 +88,7 @@ export function evaluate(model, values = model.values, options = {}) {
       }
       break;
     case 'fraction': value = a / (b / c); label = 'Number of portions'; unit = 'portions'; equation = `${fmt(a)} ÷ (${b}/${c}) = ${fmt(value)}`; extra = { full: Math.floor(value + 1e-10), remainder: a - Math.floor(value + 1e-10) * b / c }; note = `${extra.full} complete ${portionNoun(model.mode)}s; ${fmt(extra.remainder)} units remain. Check: quotient × ${b}/${c} = ${fmt(a)}. A fractional quotient is meaningful even when only whole ${portionNoun(model.mode)}s are usable.`; break;
-    case 'power': value = a ** b + c; label = 'Expression value'; equation = `${c} + ${a}^${b} = ${fmt(value)}`; note = `${a}^${b} means ${Array(b).fill(a).join(' × ')} = ${a ** b}. Evaluate the power before adding ${c}.`; break;
+    case 'power': value = a ** b + c; label = 'Expression value'; equation = `${c ? `${c} + ` : ''}${a}${sup(b)} = ${fmt(value)}`; note = `${a}${sup(b)} means ${Array(b).fill(a).join(' × ')} = ${a ** b}.${c ? ` Evaluate the power before adding ${c}.` : ''}`; break;
     case 'expression': value = a * (c + b); label = 'Both expression values'; equation = `${a}(${c} + ${b}) = ${a}×${c} + ${a}×${b} = ${value}`; note = `a(x + b) = ax + ab. Here a = ${a}, b = ${b}, x = ${c}. Distribution changes the form, not the value.`; break;
     case 'factors':
       extra = { first: Array.from({ length: a }, (_, i) => i + 1).filter(n => a % n === 0), second: Array.from({ length: b }, (_, i) => i + 1).filter(n => b % n === 0), gcf: gcd(a, b), lcm: a * b / gcd(a, b) };
