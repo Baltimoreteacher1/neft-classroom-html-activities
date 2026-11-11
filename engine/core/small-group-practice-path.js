@@ -23,7 +23,10 @@ import {
   workedStep,
 } from "./small-group-build-section.js";
 import { makePulse } from "./small-group-engagement.js";
+import { diagnoseAnswer, hintLadder, supportLevel } from "./small-group-feedback.js";
+import { manipulativeFor } from "./small-group-manipulatives.js";
 import { canBuildRatioTable, ratioTableBuilder } from "./small-group-ratio-builder.js";
+import { taskStepper } from "./small-group-task-stepper.js";
 import {
   biHtml,
   celebrate,
@@ -184,29 +187,56 @@ function practiceCard(it, { n, key, store, score, mode, onAnswered, model, tick 
   if ((it.model || model) === "ratioTable" && canBuildRatioTable(it.figure))
     card.appendChild(ratioTableBuilder(it.figure, { key: `${key}-rt`, store }));
   else if (it.figure) card.appendChild(el("div", "sgb-figure sgp-figure", figure(it.figure)));
+  // Prove It is the independent check: no manipulative there, by design.
+  const manip = mode === "check" ? null : manipulativeFor(it.figure, { key: `${key}-mp`, store });
+  if (manip) card.appendChild(manip);
 
   const feedback = el("p", "sgb-feedback");
   feedback.setAttribute("aria-live", "polite");
-  const hintText = el("p", "sgb-hint", `💡 ${line(it.hint, it.hintEs)}`);
-  hintText.hidden = true;
   const steps = solution(it);
+  const ladder = hintLadder(it).filter((stage) => steps || !stage.steps);
+  let hintsUsed = 0;
+  let stepsShown = false;
+  const hintText = el("p", "sgb-hint");
+  hintText.hidden = true;
+  hintText.setAttribute("aria-live", "polite");
   const tools = el("div", "sgp-tools");
-  const hintBtn = el("button", "btn ghost sgp-hint-btn", "💡 Hint");
+  const hintBtn = /** @type {HTMLButtonElement} */ (el("button", "btn ghost sgp-hint-btn", ""));
   hintBtn.type = "button";
-  hintBtn.addEventListener("click", () => {
-    hintText.hidden = false;
-    hintBtn.hidden = true;
-    score.hint();
-  });
   const stepsBtn = el("button", "btn ghost sgp-steps-btn", "Show the steps");
   stepsBtn.type = "button";
   stepsBtn.hidden = true;
-  if (steps) {
-    stepsBtn.addEventListener("click", () => {
-      steps.hidden = false;
-      stepsBtn.hidden = true;
-    });
-  }
+  const openSteps = () => {
+    if (!steps) return;
+    steps.hidden = false;
+    stepsShown = true;
+    stepsBtn.hidden = true;
+    hintBtn.hidden = true;
+  };
+  const hintLabel = () => {
+    const next = ladder[hintsUsed];
+    hintBtn.hidden = !next;
+    hintBtn.textContent = next?.steps
+      ? "📋 Show the steps"
+      : hintsUsed
+        ? `💡 Another hint (${hintsUsed + 1} of ${ladder.filter((s) => !s.steps).length})`
+        : "💡 Hint";
+  };
+  const showHint = () => {
+    const stage = ladder[hintsUsed];
+    if (!stage) return;
+    hintsUsed++;
+    if (stage.steps) openSteps();
+    else {
+      hintText.hidden = false;
+      hintText.innerHTML = `💡 <b>Hint ${hintsUsed}.</b> ${line(stage.en, stage.es)}`;
+    }
+    hintLabel();
+    score.hint();
+  };
+  hintBtn.addEventListener("click", showHint);
+  hintLabel();
+  stepsBtn.addEventListener("click", openSteps);
   if (mode === "check") hintBtn.hidden = true;
   tools.append(hintBtn);
   if (steps) tools.append(stepsBtn);
@@ -235,6 +265,32 @@ function practiceCard(it, { n, key, store, score, mode, onAnswered, model, tick 
     );
   }
 
+  // Explain → Revise: after a miss the student says what they will change, then
+  // tries again. Assessment cards (mode "check") only diagnose; they never coach.
+  const revise = el("div", "sgp-revise");
+  revise.hidden = true;
+  if (mode !== "check") {
+    const rid = `sgp-${key}-fix`;
+    revise.innerHTML = `<label class="sgb-input-label" for="${rid}">✍️ What will you change on your next try?</label>`;
+    const fix = /** @type {HTMLTextAreaElement} */ (el("textarea", "sgb-why-box sgp-fix-box"));
+    fix.id = rid;
+    fix.rows = 2;
+    fix.value = store?.get(`${key}-fix`) || "";
+    fix.addEventListener("input", () => store?.set(`${key}-fix`, fix.value));
+    const frames = el("div", "sgp-fix-frames");
+    for (const f of ["I will check ___.", "I will use ___ instead of ___."]) {
+      const chip = el("button", "btn ghost sgp-fix-frame", f);
+      chip.type = "button";
+      chip.addEventListener("click", () => {
+        fix.value = fix.value ? `${fix.value} ${f}` : f;
+        store?.set(`${key}-fix`, fix.value);
+        fix.focus();
+      });
+      frames.appendChild(chip);
+    }
+    revise.append(fix, frames);
+  }
+
   const counted = mode !== "stretch";
   if (counted) score.add();
   let misses = 0;
@@ -244,6 +300,11 @@ function practiceCard(it, { n, key, store, score, mode, onAnswered, model, tick 
     done = true;
     store?.set(`${key}-done`, correct ? "right" : "shown");
     card.classList.add(correct ? "is-right" : "is-shown");
+    // Independent success and success after help are different evidence.
+    const sup = correct ? supportLevel({ misses, hints: hintsUsed, stepsShown }) : "shown";
+    if (!restoring) store?.set(`${key}-sup`, sup);
+    card.dataset.sup = restoring ? store?.get(`${key}-sup`) || sup : sup;
+    revise.hidden = true;
     // Answered (or closed by the solution): the controls are finished too.
     /** @type {HTMLButtonElement | HTMLInputElement} */ for (const c of card.querySelectorAll(
       ".sgp-choice, .sgb-input, .sgb-submit, .sgp-sym-btn",
@@ -260,6 +321,8 @@ function practiceCard(it, { n, key, store, score, mode, onAnswered, model, tick 
     // on purpose — no ritual for last session's work.
     if (!restoring && tick?.() && !card.querySelector(".sg-tablecheck"))
       card.appendChild(tableCheck(n));
+    // Tell the evidence summary a card settled (it re-reads the store).
+    document.dispatchEvent(new window.Event("sg:evidence"));
     onAnswered?.(correct);
   };
 
@@ -269,32 +332,46 @@ function practiceCard(it, { n, key, store, score, mode, onAnswered, model, tick 
       store?.set(`${key}-first`, correct);
     if (correct) {
       feedback.className = "sgb-feedback is-right";
-      feedback.innerHTML = it.choices
-        ? correctLead()
-        : `${correctLead()} ${mathHtml(it.answer)} is right.`;
+      const lead = it.choices ? correctLead() : `${correctLead()} ${mathHtml(it.answer)} is right.`;
+      const helped = misses || hintsUsed || stepsShown;
+      feedback.innerHTML =
+        helped && mode !== "stretch"
+          ? `${lead} You got there with help — the next problem shows what you can do on your own.`
+          : lead;
       finish(true, restoring);
       return;
     }
     misses++;
     feedback.className = "sgb-feedback is-wrong";
+    // Diagnose: name the likely move without giving the answer away.
+    const dx = it.choices ? null : diagnoseAnswer(it, response);
+    if (dx && !restoring && !store?.get(`${key}-dx`)) store?.set(`${key}-dx`, dx.code);
     if (mode === "check" && misses >= 2) {
       feedback.textContent = "Not yet. Look at the solution, then try the next one.";
       finish(false, restoring);
       return;
     }
     feedback.textContent =
-      misses >= 2
-        ? "Not yet. Read the hint and the steps, then try again."
-        : missCoach("answer", "en");
-    if (misses >= 2) hintText.hidden = false;
-    hintBtn.hidden = !hintText.hidden;
-    if (mode !== "check" && steps) stepsBtn.hidden = !steps.hidden;
+      dx && esLane() && dx.es
+        ? dx.es
+        : dx?.en ||
+          (misses >= 2 ? "Not yet. Use a hint, then try again." : missCoach("answer", "en"));
+    if (misses >= 2 && !hintsUsed && mode !== "check") showHint();
+    if (mode !== "check") {
+      revise.hidden = false;
+      // The worked steps stay reachable after any miss (spec: "Show the steps" after a miss);
+      // opening them records the card as "shown", not independent.
+      if (steps && !stepsShown) stepsBtn.hidden = false;
+    } else if (!hintsUsed) {
+      hintLabel();
+      hintBtn.hidden = !ladder.length;
+    }
   };
 
   const answerArea = it.choices
     ? choiceControl(it, key, store, grade)
     : boxControl(it, key, store, grade);
-  card.append(answerArea, feedback, tools, hintText);
+  card.append(answerArea, feedback, revise, tools, hintText);
   if (steps) card.appendChild(steps);
   if (explain) card.appendChild(explain);
   const lens = teacherLens(it);
@@ -706,29 +783,30 @@ function extraFromLessonBank(config) {
 }
 
 /** Step 3 — two problems solved together, step by step. */
-export function createTogetherSection(config, ctx) {
+export function createTogetherSection(config, ctx, extraTasks = []) {
   const p = config.launch?.practice;
   if (!p?.together?.length) return null;
   const section = el("section", "sg-sec sgb sgp");
   section.id = "sg-together";
-  section.appendChild(sectionHeading(3, "Practice together", "Solve it with your group"));
+  section.appendChild(sectionHeading(3, "Solve together", "Think, discuss, compare"));
   section.appendChild(
     intro("The worked lines are already filled in. Type only the steps that ask for a number."),
   );
   const score = scorer(ctx);
   let left = p.together.length;
-  p.together.forEach((t, i) =>
-    section.appendChild(
-      togetherCard(t, {
-        n: i + 1,
-        key: `pt-${i}`,
-        store: ctx.store,
-        score,
-        onDone: () => {
-          if (--left === 0) ctx.onDone?.();
-        },
-      }),
-    ),
+  const cards = p.together.map((t, i) =>
+    togetherCard(t, {
+      n: i + 1,
+      key: `pt-${i}`,
+      store: ctx.store,
+      score,
+      onDone: () => {
+        if (--left === 0) ctx.onDone?.();
+      },
+    }),
+  );
+  section.appendChild(
+    taskStepper([...cards, ...extraTasks], { store: ctx.store, key: "pt", noun: "Task" }),
   );
   return section;
 }
@@ -739,7 +817,7 @@ export function createOnMyOwnSection(config, ctx) {
   if (!p?.onMyOwn?.length) return null;
   const section = el("section", "sg-sec sgb sgp");
   section.id = "sg-own";
-  section.appendChild(sectionHeading(4, "On my own", "Try it yourself"));
+  section.appendChild(sectionHeading(4, "Your turn", "Try it yourself"));
   section.appendChild(
     intro(
       "Solve each problem in your notebook. Then type your answer and check it. Stuck? Use the hint.",
@@ -752,8 +830,9 @@ export function createOnMyOwnSection(config, ctx) {
   // it is the assessment, and a group show-me there would answer it.
   let solvedLive = 0;
   const tick = () => ++solvedLive % 3 === 0;
+  const cards = [];
   p.onMyOwn.forEach((it, i) =>
-    section.appendChild(
+    cards.push(
       practiceCard(it, {
         n: i + 1,
         key: `po-${i}`,
@@ -768,22 +847,19 @@ export function createOnMyOwnSection(config, ctx) {
       }),
     ),
   );
-  const extra = extraFromLessonBank(config);
-  if (extra.length) {
-    section.appendChild(el("h3", "sgb-title", "More practice"));
-    extra.forEach((it, i) =>
-      section.appendChild(
-        practiceCard(it, {
-          n: p.onMyOwn.length + i + 1,
-          key: `px-${i}`,
-          store: ctx.store,
-          score,
-          mode: "own",
-          onAnswered: () => {},
-        }),
-      ),
-    );
-  }
+  extraFromLessonBank(config).forEach((it, i) =>
+    cards.push(
+      practiceCard(it, {
+        n: p.onMyOwn.length + i + 1,
+        key: `px-${i}`,
+        store: ctx.store,
+        score,
+        mode: "own",
+        onAnswered: () => {},
+      }),
+    ),
+  );
+  section.appendChild(taskStepper(cards, { store: ctx.store, key: "po", noun: "Problem" }));
   // The talk prompt comes last: it often names a mistake from these problems.
   if (p.talk) section.appendChild(talkCard(p.talk, ctx));
   return section;
@@ -799,7 +875,7 @@ export function createExitCheckSection(config, state, ctx) {
   const { store } = ctx;
   const section = el("section", "sg-sec sgb sgp");
   section.id = "sg-check";
-  section.appendChild(sectionHeading(5, "Check", "Show what you know"));
+  section.appendChild(sectionHeading(5, "Prove it", "Show what you know on your own"));
   section.appendChild(
     intro(
       "Try these on your own. Your first answer shows your teacher what you know — no hints until you try.",
@@ -809,29 +885,28 @@ export function createExitCheckSection(config, state, ctx) {
   const finishCard = el("article", "sgb-ex sgp-finish");
   finishCard.hidden = true;
   let left = p.check.length;
-  p.check.forEach((it, i) =>
-    section.appendChild(
-      practiceCard(it, {
-        n: i + 1,
-        key: `pc-${i}`,
-        store,
-        score,
-        mode: "check",
-        model: p.model,
-        onAnswered: () => {
-          if (--left > 0) return;
-          const firsts = p.check.map((_, j) => store?.get(`pc-${j}-first`));
-          const right = firsts.filter((v) => v === true).length;
-          store?.set("checkBandScore", right);
-          store?.set(
-            "checkBand",
-            right === p.check.length ? "meeting" : right ? "approaching" : "beginning",
-          );
-          finishCard.hidden = false;
-        },
-      }),
-    ),
+  const cards = p.check.map((it, i) =>
+    practiceCard(it, {
+      n: i + 1,
+      key: `pc-${i}`,
+      store,
+      score,
+      mode: "check",
+      model: p.model,
+      onAnswered: () => {
+        if (--left > 0) return;
+        const firsts = p.check.map((_, j) => store?.get(`pc-${j}-first`));
+        const right = firsts.filter((v) => v === true).length;
+        store?.set("checkBandScore", right);
+        store?.set(
+          "checkBand",
+          right === p.check.length ? "meeting" : right ? "approaching" : "beginning",
+        );
+        finishCard.hidden = false;
+      },
+    }),
   );
+  section.appendChild(taskStepper(cards, { store, key: "pc", noun: "Problem" }));
   finishCard.appendChild(cardTitle("How sure are you now?"));
   finishCard.appendChild(
     makePulse(state, "after", (v) => store?.set("pulseAfter", v), store?.get("pulseAfter")),

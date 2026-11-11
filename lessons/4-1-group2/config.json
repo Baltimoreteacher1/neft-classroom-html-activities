@@ -1192,7 +1192,87 @@
           }
         ]
       },
-      "model": "ratioTable"
+      "model": "ratioTable",
+      "investigate": {
+        "conjecture": {
+          "claim": "A percent cannot be greater than 100%, because 100% is the whole.",
+          "claimEs": "Un porcentaje no puede ser mayor que 100%, porque 100% es el total.",
+          "verdict": "never",
+          "evidence": "A plant was 20 centimeters tall. Now it is 30 centimeters tall. 30 ÷ 20 = 1.5, so it is 150% of its old height. A quantity can be more than the amount you compare it to.",
+          "evidenceEs": "Una planta medía 20 centímetros de alto. Ahora mide 30 centímetros. 30 ÷ 20 = 1.5, así que mide 150% de su altura anterior. Una cantidad puede ser mayor que la cantidad con la que la comparas.",
+          "frames": [
+            "I think this is ___ because ___.",
+            "A counterexample is ___."
+          ],
+          "framesEs": [
+            "Creo que esto es ___ porque ___.",
+            "Un contraejemplo es ___."
+          ]
+        },
+        "errorAnalysis": {
+          "scenario": "Dev wrote a fraction as a percent. Find his mistake.",
+          "scenarioEs": "Dev escribió una fracción como porcentaje. Encuentra su error.",
+          "problem": "7 out of 20 students walk to school. What percent of the students walk?",
+          "problemEs": "7 de cada 20 estudiantes caminan a la escuela. ¿Qué porcentaje de los estudiantes camina?",
+          "work": [
+            {
+              "line": "A percent is out of 100",
+              "lineEs": "Un porcentaje es de cada 100"
+            },
+            {
+              "line": "20 × 5 = 100",
+              "lineEs": "20 × 5 = 100"
+            },
+            {
+              "line": "So 7 out of 20 is 7%",
+              "lineEs": "Entonces 7 de cada 20 es 7%"
+            }
+          ],
+          "flawed": 2,
+          "flaw": "Dev scaled the 20 to 100 but did not scale the 7. Both numbers need the same factor, 5.",
+          "flawEs": "Dev escaló el 20 a 100 pero no escaló el 7. Los dos números necesitan el mismo factor, 5.",
+          "fix": "35%. 7 × 5 = 35, so 7 out of 20 is 35 out of 100, which is 35%.",
+          "fixEs": "35%. 7 × 5 = 35, así que 7 de cada 20 es 35 de cada 100, que es 35%."
+        },
+        "compare": {
+          "problem": "18 out of 25 students passed a quiz. What percent of the students passed?",
+          "problemEs": "18 de cada 25 estudiantes aprobaron una prueba. ¿Qué porcentaje de los estudiantes aprobó?",
+          "methods": [
+            {
+              "name": "Scale to 100",
+              "nameEs": "Escalar a 100",
+              "lines": [
+                "25 × 4 = 100",
+                "18 × 4 = 72",
+                "72 out of 100 is 72%"
+              ],
+              "linesEs": [
+                "25 × 4 = 100",
+                "18 × 4 = 72",
+                "72 de cada 100 es 72%"
+              ]
+            },
+            {
+              "name": "Divide first",
+              "nameEs": "Dividir primero",
+              "lines": [
+                "18 ÷ 25 = 0.72",
+                "0.72 means 72 out of 100",
+                "72 out of 100 is 72%"
+              ],
+              "linesEs": [
+                "18 ÷ 25 = 0.72",
+                "0.72 significa 72 de cada 100",
+                "72 de cada 100 es 72%"
+              ]
+            }
+          ],
+          "ask": "Which method is faster here? What if the class had 30 students?",
+          "askEs": "¿Qué método es más rápido aquí? ¿Y si la clase tuviera 30 estudiantes?",
+          "insight": "Both give 72%. Scaling works well when 100 is a multiple of the total. Dividing works for any total.",
+          "insightEs": "Los dos dan 72%. Escalar funciona bien cuando 100 es múltiplo del total. Dividir funciona con cualquier total."
+        }
+      }
     }
   },
   "explore": {

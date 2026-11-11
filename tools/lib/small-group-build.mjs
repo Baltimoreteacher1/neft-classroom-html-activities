@@ -32,6 +32,13 @@ import { CORE_ID_RE, DATA_DIR, listLessonDirs, loadLessonConfig } from "./curric
 
 const DIR = join(DATA_DIR, "small-group-build");
 const PRACTICE_DIR = join(DATA_DIR, "small-group-practice");
+const INVESTIGATION_DIR = join(DATA_DIR, "small-group-investigations");
+
+/** Group 2's authored investigation (docs/specs/small-group-investigations-v1.md); null where none is authored (Units 1 and 10). */
+export function loadInvestigation(lessonId) {
+  const file = join(INVESTIGATION_DIR, `${lessonId}.json`);
+  return existsSync(file) ? JSON.parse(readFileSync(file, "utf8")) : null;
+}
 
 export function loadPractice(lessonId) {
   const file = join(PRACTICE_DIR, `${lessonId}.json`);
@@ -176,12 +183,18 @@ export function applyStudioBuild(config, { variant, data, baseTitle, applyProble
   });
   config.vocabulary = studioVocabulary(config.vocabulary, data.vocab);
   nameModelProblem(config, data);
-  const practiceData = loadPractice(config.lessonId.replace(/-group[12]$/, ""));
+  const baseId = config.lessonId.replace(/-group[12]$/, "");
+  const practiceData = loadPractice(baseId);
   const practice = practiceData[variant];
   if (!practice) throw new Error(`${config.lessonId}: practice data has no ${variant} block`);
   config.launch.practice = practiceData.model
     ? { ...practice, model: practiceData.model }
     : practice;
+  const investigation = variant === "group2" ? loadInvestigation(baseId) : null;
+  if (investigation) {
+    const { lesson: _lesson, ...investigate } = investigation;
+    config.launch.practice.investigate = investigate;
+  }
   // The studio's Apply step is the base lesson's Reveal problem — unless the
   // practice data records why that problem does not fit the small group.
   if (applyProblem && practiceData.apply?.use !== false) config.revealWordProblem = applyProblem;

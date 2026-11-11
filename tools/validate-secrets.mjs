@@ -64,7 +64,11 @@ if (selfFails.length) {
   process.exit(1);
 }
 
-const files = execFileSync("git", ["ls-files", "-z"], { cwd: ROOT, encoding: "buffer" })
+const files = execFileSync("git", ["ls-files", "-z"], {
+  cwd: ROOT,
+  encoding: "buffer",
+  maxBuffer: 256 * 1024 * 1024,
+})
   .toString("utf8")
   .split("\0")
   .filter(Boolean)

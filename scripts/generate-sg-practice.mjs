@@ -40,7 +40,7 @@ import { fileURLToPath } from "node:url";
 import { LESSONS_DIR as LESSONS } from "../tools/lib/curriculum-source.mjs";
 import { EDITORIAL_OVERRIDES } from "./lib/editorial-print.mjs";
 import { isGeneratedFresh, writeGenerated } from "./lib/preserve-injected.mjs";
-import { SG_PRACTICE_CSS } from "./lib/sg-practice-style.mjs";
+import { SG_PRACTICE_CSS, SG_PRACTICE_PREMIUM_CSS } from "./lib/sg-practice-style.mjs";
 
 const LETTERS = ["A", "B", "C", "D", "E", "F", "G", "H"];
 
@@ -705,10 +705,12 @@ ${pages}
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>${esc(ctx.cfg.title || ctx.id)} — ${suffix}</title>
 <link href="/assets/fonts/worksheet-pages.css" rel="stylesheet" />
+<link href="/assets/fonts/small-group.css" rel="stylesheet" />
 <link href="/assets/practice-screen.css" rel="stylesheet" />
 <style>
 ${SG_PRACTICE_CSS}
 ${EDITORIAL_OVERRIDES}
+${SG_PRACTICE_PREMIUM_CSS}
 </style>
 </head>
 <body>

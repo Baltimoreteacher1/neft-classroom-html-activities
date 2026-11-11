@@ -147,3 +147,32 @@ body{margin:0;background:#e9eef5;color:var(--ink);
   a{color:#000;text-decoration:none;}
 }
 `;
+
+// Studio 2.0 skin for the screen view of the Practice Sets (Joel 2026-11-11: one premium,
+// coherent system across the studio and its practice sets). Appended AFTER the shared
+// editorial overrides in generate-sg-practice.mjs and scoped to `@media screen`, so the
+// paper print geometry — fixed pages, Hanken body, Fraunces headings — is byte-for-byte
+// what it was. The only print-visible change is the shared token palette above it.
+export const SG_PRACTICE_PREMIUM_CSS = `
+@media screen{
+  :root{--navy:#0b2540;--blue:#1f5fd6;--teal:#1fa6a2;--coral:#dd8560;--amber:#e5a63f;
+    --soft:#eef3fb;--model:#e8f1ff;--model-line:#c9dcf3;}
+  body{background:linear-gradient(180deg,#dfe9f6,#eef3fb 320px);}
+  h1,h2,h3,.sp-title,.sp-sec-h,.sp-level,.sp-recap-h,.sp-model-h{font-family:"Lexend","Hanken Grotesk",system-ui,sans-serif !important;letter-spacing:-.005em}
+  .sp-page{border-radius:16px;box-shadow:0 6px 18px -10px rgba(11,37,64,.28);overflow:hidden}
+  .sp-head{margin:-32px -40px 20px;padding:22px 40px 18px;border-bottom:0;color:#fff;
+    background:linear-gradient(135deg,var(--blue),var(--navy))}
+  .sp-head .sp-title,.sp-head .sp-sub,.sp-head .sp-meta{color:#fff}
+  .sp-head .sp-kicker{color:#cfe3ff}
+  .sp-head .sp-level{color:var(--amber)}
+  .sp-head .sp-std{background:var(--amber);color:var(--navy)}
+  .sp-head .sp-fill{border-bottom-color:rgba(255,255,255,.7)}
+  .sp-sec-h::before{content:"";width:10px;height:22px;border-radius:5px;background:var(--teal)}
+  .sp-model{border-left:6px solid var(--blue)}
+  .sp-bank{border-left:6px solid var(--amber)}
+  .sp-recap{border-left-color:var(--teal)}
+  .sp-model-steps li::before{background:linear-gradient(135deg,var(--blue),var(--navy))}
+  .sp-check th{background:linear-gradient(135deg,var(--blue),var(--navy))}
+  .sp-page:focus-within{box-shadow:0 6px 18px -10px rgba(11,37,64,.28),0 0 0 3px #1f5fd633}
+}
+`;

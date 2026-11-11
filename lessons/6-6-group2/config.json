@@ -932,6 +932,86 @@
             ]
           }
         ]
+      },
+      "investigate": {
+        "conjecture": {
+          "claim": "If two simplified expressions have the same x-term but different constants, they are equivalent.",
+          "claimEs": "Si dos expresiones simplificadas tienen el mismo término con x pero constantes diferentes, son equivalentes.",
+          "verdict": "never",
+          "evidence": "3x + 5 and 3x + 7 differ by 2 for every x. When x = 1, they are 8 and 10. When x = 6, they are 23 and 25.",
+          "evidenceEs": "3x + 5 y 3x + 7 se diferencian en 2 para cada x. Cuando x = 1, valen 8 y 10. Cuando x = 6, valen 23 y 25.",
+          "frames": [
+            "I think this is ___ because ___.",
+            "A counterexample is ___."
+          ],
+          "framesEs": [
+            "Creo que esto es ___ porque ___.",
+            "Un contraejemplo es ___."
+          ]
+        },
+        "errorAnalysis": {
+          "scenario": "Tom tested two expressions. Find his mistake.",
+          "scenarioEs": "Tom probó dos expresiones. Encuentra su error.",
+          "problem": "Are 3x + 5x and 8x equivalent expressions?",
+          "problemEs": "¿Son 3x + 5x y 8x expresiones equivalentes?",
+          "work": [
+            {
+              "line": "x = 2: 3 × 2 + 5 × 2 = 16 and 8 × 2 = 16",
+              "lineEs": "x = 2: 3 × 2 + 5 × 2 = 16 y 8 × 2 = 16"
+            },
+            {
+              "line": "x = 5: 3 × 5 + 5 × 5 = 40 and 8 × 5 = 40",
+              "lineEs": "x = 5: 3 × 5 + 5 × 5 = 40 y 8 × 5 = 40"
+            },
+            {
+              "line": "The expressions look different, so they are not equivalent.",
+              "lineEs": "Las expresiones se ven diferentes, así que no son equivalentes."
+            }
+          ],
+          "flawed": 2,
+          "flaw": "Different-looking expressions can still be equivalent. Both gave the same value each time.",
+          "flawEs": "Las expresiones que se ven diferentes aún pueden ser equivalentes. Las dos dieron el mismo valor cada vez.",
+          "fix": "They are equivalent. They give the same value for every x, and 3x + 5x combines to 8x.",
+          "fixEs": "Son equivalentes. Dan el mismo valor para cada x, y 3x + 5x se combina en 8x."
+        },
+        "compare": {
+          "problem": "Show that 2x + 4x + 3 and 6x + 3 are equivalent.",
+          "problemEs": "Muestra que 2x + 4x + 3 y 6x + 3 son equivalentes.",
+          "methods": [
+            {
+              "name": "Combine like terms",
+              "nameEs": "Combina términos semejantes",
+              "lines": [
+                "2x + 4x + 3",
+                "2x + 4x = 6x",
+                "6x + 3"
+              ],
+              "linesEs": [
+                "2x + 4x + 3",
+                "2x + 4x = 6x",
+                "6x + 3"
+              ]
+            },
+            {
+              "name": "Test values",
+              "nameEs": "Prueba valores",
+              "lines": [
+                "x = 2: 2 × 2 + 4 × 2 + 3 = 15",
+                "x = 2: 6 × 2 + 3 = 15",
+                "x = 5: both are 33"
+              ],
+              "linesEs": [
+                "x = 2: 2 × 2 + 4 × 2 + 3 = 15",
+                "x = 2: 6 × 2 + 3 = 15",
+                "x = 5: los dos valen 33"
+              ]
+            }
+          ],
+          "ask": "Which method proves it for every x? Which one catches a mistake fast?",
+          "askEs": "¿Qué método lo demuestra para cada x? ¿Cuál detecta un error rápido?",
+          "insight": "Both show the expressions match. Combining proves it for every x. Testing only checks the values you try.",
+          "insightEs": "Los dos muestran que las expresiones coinciden. Combinar lo demuestra para cada x. Probar solo revisa los valores que eliges."
+        }
       }
     }
   },

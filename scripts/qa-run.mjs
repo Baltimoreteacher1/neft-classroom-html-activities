@@ -778,6 +778,10 @@ const COVERAGE = [
     /^tools\/validate-small-group-(build|practice)\.mjs$/,
     ["test", "validate:small-group-build", "validate:small-group-practice", "validate:js-syntax"],
   ],
+  [
+    /^(tools\/validate-small-group-investigations\.mjs|data\/small-group-investigations\/[^/]+\.json)$/,
+    ["test", "validate:small-group-investigations", "validate:js-syntax"],
+  ],
   // The deploy driver is covered by tools/deploy-path.test.mjs (bash -n, lock,
   // per-worktree engine link, manifest regeneration); nothing else reads it.
   [/^(scripts\/ship\.sh|tools\/deploy-path\.test\.mjs)$/, ["test"]],

@@ -92,6 +92,7 @@ before(() => {
   // The generator reads each base lesson's authored Build and practice content.
   mkdirSync(join(fixture, "data/small-group-build"), { recursive: true });
   mkdirSync(join(fixture, "data/small-group-practice"), { recursive: true });
+  mkdirSync(join(fixture, "data/small-group-investigations"), { recursive: true });
   for (const id of BASES) {
     mkdirSync(fixturePath(id), { recursive: true });
     copyFileSync(repoPath(id, "config.json"), fixturePath(id, "config.json"));
@@ -103,6 +104,10 @@ before(() => {
       join(ROOT, "data/small-group-practice", `${id}.json`),
       join(fixture, "data/small-group-practice", `${id}.json`),
     );
+    // Group 2's authored investigation is a generator input too (absent for Units 1 and 10).
+    const investigation = join(ROOT, "data/small-group-investigations", `${id}.json`);
+    if (existsSync(investigation))
+      copyFileSync(investigation, join(fixture, "data/small-group-investigations", `${id}.json`));
   }
   for (const id of VARIANTS) {
     mkdirSync(fixturePath(id), { recursive: true });

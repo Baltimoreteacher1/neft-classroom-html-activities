@@ -1182,7 +1182,85 @@
           }
         ]
       },
-      "model": "ratioTable"
+      "model": "ratioTable",
+      "investigate": {
+        "conjecture": {
+          "claim": "If Store A has a lower unit price than Store B, A costs less for any number of items I buy.",
+          "claimEs": "Si la tienda A tiene un precio unitario más bajo que la tienda B, A cuesta menos para cualquier cantidad de artículos que compre.",
+          "verdict": "always",
+          "evidence": "A charges $0.08 each and B charges $0.10 each. 50 × $0.08 = $4 and 50 × $0.10 = $5. 200 × $0.08 = $16 and 200 × $0.10 = $20. Cost is unit price × amount.",
+          "evidenceEs": "A cobra $0.08 cada uno y B cobra $0.10 cada uno. 50 × $0.08 = $4 y 50 × $0.10 = $5. 200 × $0.08 = $16 y 200 × $0.10 = $20. El costo es precio unitario × cantidad.",
+          "frames": [
+            "I think this is ___ because ___.",
+            "I tested ___ items and got ___."
+          ],
+          "framesEs": [
+            "Creo que esto es ___ porque ___.",
+            "Probé con ___ artículos y obtuve ___."
+          ]
+        },
+        "errorAnalysis": {
+          "scenario": "Ana found a unit price. Find her mistake.",
+          "scenarioEs": "Ana halló un precio unitario. Encuentra su error.",
+          "problem": "A pack of 8 batteries costs $6.00. What is the cost of 1 battery?",
+          "problemEs": "Un paquete de 8 baterías cuesta $6.00. ¿Cuál es el costo de 1 batería?",
+          "work": [
+            {
+              "line": "Price: $6.00 for 8 batteries",
+              "lineEs": "Precio: $6.00 por 8 baterías"
+            },
+            {
+              "line": "A unit price is the cost for 1 battery",
+              "lineEs": "Un precio unitario es el costo de 1 batería"
+            },
+            {
+              "line": "8 ÷ 6 ≈ 1.33, so 1 battery costs $1.33",
+              "lineEs": "8 ÷ 6 ≈ 1.33, así que 1 batería cuesta $1.33"
+            }
+          ],
+          "flawed": 2,
+          "flaw": "She divided the number of batteries by the cost. A unit price is dollars for 1 item, so divide the cost by the number.",
+          "flawEs": "Dividió el número de baterías entre el costo. Un precio unitario son dólares por 1 artículo, así que divide el costo entre el número.",
+          "fix": "$0.75 per battery. Divide the cost by the number: 6 ÷ 8 = 0.75. One battery costs less than the whole pack.",
+          "fixEs": "$0.75 por batería. Divide el costo entre el número: 6 ÷ 8 = 0.75. Una batería cuesta menos que todo el paquete."
+        },
+        "compare": {
+          "problem": "A 12-pack of juice costs $4.80. At the same unit price, how much do 30 juices cost?",
+          "problemEs": "Un paquete de 12 jugos cuesta $4.80. Con el mismo precio unitario, ¿cuánto cuestan 30 jugos?",
+          "methods": [
+            {
+              "name": "Unit price",
+              "nameEs": "Precio unitario",
+              "lines": [
+                "4.80 ÷ 12 = 0.40 dollars for 1 juice",
+                "30 × 0.40 = 12 dollars"
+              ],
+              "linesEs": [
+                "4.80 ÷ 12 = 0.40 dólares por 1 jugo",
+                "30 × 0.40 = 12 dólares"
+              ]
+            },
+            {
+              "name": "Ratio table",
+              "nameEs": "Tabla de razones",
+              "lines": [
+                "12 juices : 4.80 dollars",
+                "Divide by 2: 6 juices : 2.40 dollars",
+                "Multiply by 5: 30 juices : 12 dollars"
+              ],
+              "linesEs": [
+                "12 jugos : 4.80 dólares",
+                "Divide entre 2: 6 jugos : 2.40 dólares",
+                "Multiplica por 5: 30 jugos : 12 dólares"
+              ]
+            }
+          ],
+          "ask": "Which method would you trust for 7 juices? When is the other one faster?",
+          "askEs": "¿Qué método usarías con 7 jugos? ¿Cuándo es más rápido el otro?",
+          "insight": "Both give 12 dollars. The unit price works for any amount. The table is fast when 30 is a whole-number multiple of a friendly row.",
+          "insightEs": "Los dos dan 12 dólares. El precio unitario sirve para cualquier cantidad. La tabla es rápida cuando 30 es un múltiplo entero de una fila fácil."
+        }
+      }
     }
   },
   "explore": {

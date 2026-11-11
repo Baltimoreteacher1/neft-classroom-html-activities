@@ -1,3 +1,4 @@
+import { restoreTab } from "./small-group-pathway.js";
 import { celebrate, el, esLane, voiceFor } from "./small-group-ui.js";
 
 export function mountSmallGroupTabs(
@@ -169,7 +170,11 @@ export function mountSmallGroupTabs(
 
   app.querySelector(".sg-hero")?.after(tabs);
   const savedTab = store?.get("lastTab");
-  const initial = activeSteps.find((step) => step.id === savedTab) || activeSteps[0];
+  const restored = restoreTab(
+    savedTab,
+    activeSteps.map((step) => step.id),
+  );
+  const initial = activeSteps.find((step) => step.id === restored) || activeSteps[0];
   activate(initial.id);
   return { activate, markDone, setProgress, setStreak };
 }

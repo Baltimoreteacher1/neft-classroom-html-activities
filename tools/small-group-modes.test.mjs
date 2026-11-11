@@ -251,14 +251,14 @@ const runtimeConfig = JSON.parse(
 );
 const { bootSmallGroup } = await import("@eduwonderlab/engine/core/small-group-renderer.js");
 bootSmallGroup(runtimeConfig);
-// One path, six steps, in the taught order (docs/specs/small-group-practice-v1.md).
+// One path, five stages, in the taught order (engine/core/small-group-pathway.js).
 const tabLabels = [...document.querySelectorAll("nav.sg-tabs [role=tab] .lbl")].map((n) =>
   n.firstChild.textContent.trim(),
 );
 assert.deepEqual(
   tabLabels,
-  ["Key Words", "Learn It", "Practice Together", "On My Own", "Check", "Apply"],
-  "the studio is one flat path: words → learn → together → own → check → apply",
+  ["Launch & Notice", "Build Understanding", "Solve Together", "Your Turn", "Prove It"],
+  "the studio is one flat path: launch → build → together → own → prove",
 );
 assert.equal(document.querySelector(".sg-substeps"), null, "no second step strip inside a step");
 // Practice is the lesson's own authored practice, never the template bank.

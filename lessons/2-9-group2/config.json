@@ -1016,6 +1016,90 @@
             "math": "1 < 1{1/3}"
           }
         ]
+      },
+      "investigate": {
+        "conjecture": {
+          "claim": "A data set with a MAD of 0 can have values that are different from each other.",
+          "claimEs": "Un conjunto de datos con una DMA de 0 puede tener valores distintos entre sí.",
+          "verdict": "never",
+          "evidence": "A MAD of 0 means every distance from the mean is 0. So every value equals the mean, and all the values are the same. The data 6, 6, 6 has a MAD of 0.",
+          "evidenceEs": "Una DMA de 0 significa que cada distancia a la media es 0. Así que cada valor es igual a la media, y todos los valores son iguales. Los datos 6, 6, 6 tienen una DMA de 0.",
+          "frames": [
+            "I think this is ___ because ___.",
+            "A counterexample is ___."
+          ],
+          "framesEs": [
+            "Creo que esto es ___ porque ___.",
+            "Un contraejemplo es ___."
+          ]
+        },
+        "errorAnalysis": {
+          "scenario": "Kai found a MAD. Find his mistake.",
+          "scenarioEs": "Kai halló una DMA. Encuentra su error.",
+          "problem": "Find the MAD of 6, 8, 10 and 16.",
+          "problemEs": "Halla la DMA de 6, 8, 10 y 16.",
+          "work": [
+            {
+              "line": "(6 + 8 + 10 + 16) ÷ 4 = 10",
+              "lineEs": "(6 + 8 + 10 + 16) ÷ 4 = 10"
+            },
+            {
+              "line": "Distances from 10: −4, −2, 0 and 6",
+              "lineEs": "Distancias desde 10: −4, −2, 0 y 6"
+            },
+            {
+              "line": "−4 + −2 + 0 + 6 = 0",
+              "lineEs": "−4 + −2 + 0 + 6 = 0"
+            },
+            {
+              "line": "MAD: 0 ÷ 4 = 0",
+              "lineEs": "DMA: 0 ÷ 4 = 0"
+            }
+          ],
+          "flawed": 1,
+          "flaw": "A distance cannot be negative. The MAD uses absolute values, so the distances are 4, 2, 0 and 6.",
+          "flawEs": "Una distancia no puede ser negativa. La DMA usa valores absolutos, así que las distancias son 4, 2, 0 y 6.",
+          "fix": "The MAD is 3. The distances are 4, 2, 0 and 6. Their sum is 12, and 12 ÷ 4 = 3.",
+          "fixEs": "La DMA es 3. Las distancias son 4, 2, 0 y 6. Su suma es 12, y 12 ÷ 4 = 3."
+        },
+        "compare": {
+          "problem": "Find the MAD of 3, 5, 7 and 9.",
+          "problemEs": "Halla la DMA de 3, 5, 7 y 9.",
+          "methods": [
+            {
+              "name": "Table of distances",
+              "nameEs": "Tabla de distancias",
+              "lines": [
+                "Mean: 24 ÷ 4 = 6",
+                "Distances from 6: 3, 1, 1 and 3",
+                "(3 + 1 + 1 + 3) ÷ 4 = 2"
+              ],
+              "linesEs": [
+                "Media: 24 ÷ 4 = 6",
+                "Distancias desde 6: 3, 1, 1 y 3",
+                "(3 + 1 + 1 + 3) ÷ 4 = 2"
+              ]
+            },
+            {
+              "name": "Use pairs",
+              "nameEs": "Usar pares",
+              "lines": [
+                "3 and 9 are each 3 from the mean 6",
+                "5 and 7 are each 1 from the mean 6",
+                "The distances are 3 and 1, and (3 + 1) ÷ 2 = 2"
+              ],
+              "linesEs": [
+                "3 y 9 están cada uno a 3 de la media 6",
+                "5 y 7 están cada uno a 1 de la media 6",
+                "Las distancias son 3 y 1, y (3 + 1) ÷ 2 = 2"
+              ]
+            }
+          ],
+          "ask": "Which method is faster here? When would the pairs shortcut not work?",
+          "askEs": "¿Qué método es más rápido aquí? ¿Cuándo no funcionaría el atajo de los pares?",
+          "insight": "Both find a MAD of 2. The table works for any data. The pairs shortcut is faster when values sit evenly on both sides of the mean.",
+          "insightEs": "Los dos hallan una DMA de 2. La tabla sirve para cualquier dato. El atajo de los pares es más rápido cuando los valores están parejos a ambos lados de la media."
+        }
       }
     }
   },

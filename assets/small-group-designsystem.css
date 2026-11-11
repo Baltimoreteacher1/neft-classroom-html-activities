@@ -1665,3 +1665,43 @@ body:not(.nt-present) .reading-card-stack .sg-vterm { padding-right: 32px; }
   }
 }
 body:has(.reading-hero) .sg-panel { scroll-margin-top: 80px; }
+
+/* ── Studio 2.0 art direction (Joel 2026-11-11: premium, dimensional, one coherent system) ──
+ * Accent colours are tokens so Foundations and Challenge share one system. "Iris" is the
+ * violet role at hue 232: the palette gate (validate:palette) forbids hue 255-335, so a
+ * true violet cannot ship; iris keeps the cool end of the range without crossing it.
+ * Gradients live on the active stage, the stage rail dot and the model workspace only. */
+:root{
+  --sg-cobalt:#1f5fd6;--sg-cobalt-deep:#1747a6;--sg-iris:#5b6ee1;--sg-teal:#1fa6a2;
+  --sg-coral:#dd8560;--sg-amber:#e5a63f;--sg-navy:#0b2540;
+  --sg-lift:0 2px 6px -2px rgba(11,37,64,.18);
+}
+.sg-step[aria-selected="true"]{background:linear-gradient(135deg,var(--sg-cobalt),var(--sg-navy));color:#fff;border-color:transparent}
+.sg-step[aria-selected="true"] small{color:rgba(255,255,255,.82)}
+.sg-step[aria-selected="true"] .dot{background:var(--sg-amber);color:var(--sg-navy)}
+.sg-step.done .dot{background:var(--sg-teal);color:#fff}
+.sg-trail-dot.is-here{background:var(--sg-navy);border-color:transparent}
+.sg-panel:not([hidden]){animation:sg-rise .22s ease-out}
+@keyframes sg-rise{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.sgp-card,.sgp-together,.sgi-card{--card-accent:var(--sg-cobalt);border:1px solid var(--sg-line);border-left:6px solid var(--card-accent);border-radius:var(--sg-radius-lg);background:#fff;box-shadow:var(--sg-lift)}
+.sgp-together{--card-accent:var(--sg-amber)}
+.sgp-card[data-mode="check"]{--card-accent:var(--sg-teal)}
+.sgp-card[data-mode="stretch"]{--card-accent:var(--sg-coral)}
+.sgi-card[data-kind="conjecture"]{--card-accent:var(--sg-iris)}
+.sgi-card[data-kind="error"]{--card-accent:var(--sg-coral)}
+.sgi-card[data-kind="compare"]{--card-accent:var(--sg-teal)}
+.sgp-card.is-right,.sgp-together.is-right,.sgi-card.is-right{--card-accent:var(--sg-good)}
+.sgm-body{background:linear-gradient(160deg,#f5f9ff,#e6f5f4);border-color:#c9dcf3}
+.sgm-toggle{border-color:var(--sg-cobalt);color:var(--sg-cobalt-deep);font-weight:700}
+.sgm-part[aria-pressed="true"],.sgm-cell[aria-pressed="true"],.sgm-tile{background:linear-gradient(180deg,#26b8b3,var(--sg-teal))}
+.sgm-dot,.sgm-pt{background:var(--sg-amber)}
+.sgm-knob circle{fill:var(--sg-amber)}
+.sgm-nodebtn{box-shadow:inset 0 -3px 0 rgba(11,37,64,.12)}
+.sgm-nodebtn.is-prime{background:var(--sg-teal)}
+.sgp-card.is-right{animation:sg-pop .28s ease-out}
+@keyframes sg-pop{50%{transform:scale(1.012)}}
+.sgb-feedback.is-wrong{border-left:5px solid var(--sg-coral);padding-left:12px}
+.sgb-feedback.is-right{border-left:5px solid var(--sg-good);padding-left:12px}
+.sgp-hint-btn,.sgp-steps-btn{border-color:var(--sg-amber)}
+.sgp-revise{padding:12px 14px;border-radius:var(--sg-radius-sm);background:#fff8e8;border:1px solid #f0d9a0}
+@media (prefers-reduced-motion:reduce){.sg-panel:not([hidden]),.sgp-card.is-right{animation:none}}

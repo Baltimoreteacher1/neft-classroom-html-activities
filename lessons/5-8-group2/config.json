@@ -1230,6 +1230,90 @@
             ]
           }
         ]
+      },
+      "investigate": {
+        "conjecture": {
+          "claim": "The surface area of a square pyramid is just its four triangles. The base does not count.",
+          "claimEs": "El área de superficie de una pirámide cuadrada es solo la de sus cuatro triángulos. La base no cuenta.",
+          "verdict": "never",
+          "evidence": "Base edge 4, slant height 5: each triangle is {1/2} × 4 × 5 = 10, so four make 40. The base adds 4 × 4 = 16. Total: 40 + 16 = 56.",
+          "evidenceEs": "Arista de la base 4, altura inclinada 5: cada triángulo es {1/2} × 4 × 5 = 10, así que cuatro hacen 40. La base agrega 4 × 4 = 16. Total: 40 + 16 = 56.",
+          "frames": [
+            "I think this is ___ because ___.",
+            "A counterexample is ___."
+          ],
+          "framesEs": [
+            "Creo que esto es ___ porque ___.",
+            "Un contraejemplo es ___."
+          ]
+        },
+        "errorAnalysis": {
+          "scenario": "Maya found the surface area of a pyramid. Find her mistake.",
+          "scenarioEs": "Maya halló el área de superficie de una pirámide. Encuentra su error.",
+          "problem": "A square pyramid has a base edge of 10 cm, a height of 12 cm and a slant height of 13 cm. Find its surface area.",
+          "problemEs": "Una pirámide cuadrada tiene una arista de la base de 10 cm, una altura de 12 cm y una altura inclinada de 13 cm. Halla su área de superficie.",
+          "work": [
+            {
+              "line": "Base: 10 × 10 = 100",
+              "lineEs": "Base: 10 × 10 = 100"
+            },
+            {
+              "line": "Each triangle: {1/2} × 10 × 12 = 60",
+              "lineEs": "Cada triángulo: {1/2} × 10 × 12 = 60"
+            },
+            {
+              "line": "Four triangles: 4 × 60 = 240",
+              "lineEs": "Cuatro triángulos: 4 × 60 = 240"
+            },
+            {
+              "line": "Total: 100 + 240 = 340",
+              "lineEs": "Total: 100 + 240 = 340"
+            }
+          ],
+          "flawed": 1,
+          "flaw": "She used the height, 12 cm. A triangle face needs the slant height, 13 cm, which lies along that face.",
+          "flawEs": "Usó la altura, 12 cm. Una cara triangular necesita la altura inclinada, 13 cm, que está sobre esa cara.",
+          "fix": "360 square centimeters. Each triangle is {1/2} × 10 × 13 = 65. Four triangles are 260, and 100 + 260 = 360.",
+          "fixEs": "360 centímetros cuadrados. Cada triángulo es {1/2} × 10 × 13 = 65. Cuatro triángulos son 260, y 100 + 260 = 360."
+        },
+        "compare": {
+          "problem": "A square pyramid has a base edge of 12 ft and a slant height of 10 ft. Find its surface area two ways.",
+          "problemEs": "Una pirámide cuadrada tiene una arista de la base de 12 pies y una altura inclinada de 10 pies. Halla su área de superficie de dos maneras.",
+          "methods": [
+            {
+              "name": "Face by face",
+              "nameEs": "Cara por cara",
+              "lines": [
+                "Base: 12 × 12 = 144",
+                "One triangle: {1/2} × 12 × 10 = 60",
+                "144 + 4 × 60 = 384"
+              ],
+              "linesEs": [
+                "Base: 12 × 12 = 144",
+                "Un triángulo: {1/2} × 12 × 10 = 60",
+                "144 + 4 × 60 = 384"
+              ]
+            },
+            {
+              "name": "Half perimeter",
+              "nameEs": "Medio perímetro",
+              "lines": [
+                "Base perimeter: 4 × 12 = 48",
+                "All triangles: {1/2} × 48 × 10 = 240",
+                "144 + 240 = 384"
+              ],
+              "linesEs": [
+                "Perímetro de la base: 4 × 12 = 48",
+                "Todos los triángulos: {1/2} × 48 × 10 = 240",
+                "144 + 240 = 384"
+              ]
+            }
+          ],
+          "ask": "Which way has fewer steps? Which one shows each face?",
+          "askEs": "¿Qué camino tiene menos pasos? ¿Cuál muestra cada cara?",
+          "insight": "Both give 384 square feet. Face by face shows every triangle. Half perimeter treats the four triangles as one long triangle.",
+          "insightEs": "Los dos dan 384 pies cuadrados. Cara por cara muestra cada triángulo. El medio perímetro trata los cuatro triángulos como un solo triángulo largo."
+        }
       }
     }
   },

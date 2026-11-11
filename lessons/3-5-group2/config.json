@@ -1299,7 +1299,89 @@
           }
         ]
       },
-      "model": "ratioTable"
+      "model": "ratioTable",
+      "investigate": {
+        "conjecture": {
+          "claim": "I can always compare two ratios by scaling both until one of their amounts matches.",
+          "claimEs": "Siempre puedo comparar dos razones escalando las dos hasta que una de sus cantidades sea igual.",
+          "verdict": "always",
+          "evidence": "5:6 and 7:8 both scale to 35 for the first amount: 35:42 and 35:40. Multiply each ratio by the other ratio's first number, and the first amounts match.",
+          "evidenceEs": "5:6 y 7:8 se escalan a 35 en la primera cantidad: 35:42 y 35:40. Multiplica cada razón por el primer número de la otra razón y las primeras cantidades coinciden.",
+          "frames": [
+            "I think this is ___ because ___.",
+            "I tested ___ and found ___."
+          ],
+          "framesEs": [
+            "Creo que esto es ___ porque ___.",
+            "Probé ___ y encontré ___."
+          ]
+        },
+        "errorAnalysis": {
+          "scenario": "Mia compared two mixes. Find her mistake.",
+          "scenarioEs": "Mia comparó dos mezclas. Encuentra su error.",
+          "problem": "Mix A has 4 cups of juice for 6 cups of water. Mix B has 6 cups of juice for 8 cups of water. Which mix tastes more like juice?",
+          "problemEs": "La mezcla A tiene 4 tazas de jugo por 6 tazas de agua. La mezcla B tiene 6 tazas de jugo por 8 tazas de agua. ¿Cuál mezcla sabe más a jugo?",
+          "work": [
+            {
+              "line": "Mix A, scaled by 3: 12 juice, 18 water",
+              "lineEs": "Mezcla A, escalada por 3: 12 de jugo, 18 de agua"
+            },
+            {
+              "line": "Mix B, scaled by 2: 12 juice, 16 water",
+              "lineEs": "Mezcla B, escalada por 2: 12 de jugo, 16 de agua"
+            },
+            {
+              "line": "18 is more than 16, so Mix A tastes more like juice",
+              "lineEs": "18 es más que 16, así que la mezcla A sabe más a jugo"
+            }
+          ],
+          "flawed": 2,
+          "flaw": "Both mixes have 12 cups of juice, so the mix with less water is juicier. Mix B uses 16 cups of water.",
+          "flawEs": "Las dos mezclas tienen 12 tazas de jugo, así que la mezcla con menos agua sabe más a jugo. La mezcla B usa 16 tazas de agua.",
+          "fix": "Mix B tastes more like juice. For the same 12 cups of juice, Mix B uses 16 cups of water and Mix A uses 18.",
+          "fixEs": "La mezcla B sabe más a jugo. Con las mismas 12 tazas de jugo, la mezcla B usa 16 tazas de agua y la A usa 18."
+        },
+        "compare": {
+          "problem": "Printer A prints 90 pages in 6 minutes. Printer B prints 120 pages in 10 minutes. Which printer is faster?",
+          "problemEs": "La impresora A imprime 90 páginas en 6 minutos. La impresora B imprime 120 páginas en 10 minutos. ¿Cuál impresora es más rápida?",
+          "methods": [
+            {
+              "name": "Unit rates",
+              "nameEs": "Tasas unitarias",
+              "lines": [
+                "90 ÷ 6 = 15 pages in 1 minute",
+                "120 ÷ 10 = 12 pages in 1 minute",
+                "15 is more than 12"
+              ],
+              "linesEs": [
+                "90 ÷ 6 = 15 páginas en 1 minuto",
+                "120 ÷ 10 = 12 páginas en 1 minuto",
+                "15 es más que 12"
+              ]
+            },
+            {
+              "name": "Equivalent ratios",
+              "nameEs": "Razones equivalentes",
+              "lines": [
+                "Make both times 30 minutes",
+                "Printer A: 90 × 5 = 450 pages",
+                "Printer B: 120 × 3 = 360 pages",
+                "450 is more than 360"
+              ],
+              "linesEs": [
+                "Haz que los dos tiempos sean 30 minutos",
+                "Impresora A: 90 × 5 = 450 páginas",
+                "Impresora B: 120 × 3 = 360 páginas",
+                "450 es más que 360"
+              ]
+            }
+          ],
+          "ask": "Which method is quicker here? What if Printer B took 7 minutes?",
+          "askEs": "¿Qué método es más rápido aquí? ¿Y si la impresora B tardara 7 minutos?",
+          "insight": "Both show that Printer A is faster. Unit rates give the pages for 1 minute. Equal times let you compare pages directly.",
+          "insightEs": "Los dos muestran que la impresora A es más rápida. Las tasas unitarias dan las páginas de 1 minuto. Tiempos iguales permiten comparar las páginas directamente."
+        }
+      }
     }
   },
   "explore": {

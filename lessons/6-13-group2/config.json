@@ -957,6 +957,92 @@
             "math": "2² × 3³ = 4 × 27 = 108"
           }
         ]
+      },
+      "investigate": {
+        "conjecture": {
+          "claim": "A prime number can be written as a product of two factors that are both greater than 1.",
+          "claimEs": "Un número primo se puede escribir como producto de dos factores que son mayores que 1.",
+          "verdict": "never",
+          "evidence": "7 = 1 × 7 is the only pair, and 1 is not greater than 1. 13 = 1 × 13 is the same. A prime has only 1 and itself as factors.",
+          "evidenceEs": "7 = 1 × 7 es el único par, y 1 no es mayor que 1. 13 = 1 × 13 es igual. Un número primo solo tiene como factores a 1 y a sí mismo.",
+          "frames": [
+            "I think this is ___ because ___.",
+            "A counterexample is ___."
+          ],
+          "framesEs": [
+            "Creo que esto es ___ porque ___.",
+            "Un contraejemplo es ___."
+          ]
+        },
+        "errorAnalysis": {
+          "scenario": "Ben built a factor tree for 45. Find his mistake.",
+          "scenarioEs": "Ben hizo un árbol de factores para 45. Encuentra su error.",
+          "problem": "Find the prime factorization of 45.",
+          "problemEs": "Halla la factorización prima de 45.",
+          "work": [
+            {
+              "line": "45 = 5 × 9",
+              "lineEs": "45 = 5 × 9"
+            },
+            {
+              "line": "5 is prime, so that branch stops.",
+              "lineEs": "5 es primo, así que esa rama termina."
+            },
+            {
+              "line": "9 is odd, so that branch stops too.",
+              "lineEs": "9 es impar, así que esa rama también termina."
+            },
+            {
+              "line": "Ben writes 5 × 9.",
+              "lineEs": "Ben escribe 5 × 9."
+            }
+          ],
+          "flawed": 2,
+          "flaw": "Odd does not mean prime. 9 = 3 × 3, so the 9 branch must split again.",
+          "flawEs": "Impar no significa primo. 9 = 3 × 3, así que la rama del 9 debe separarse otra vez.",
+          "fix": "45 = 3 × 3 × 5. Every branch must end in a prime, and 9 is not prime.",
+          "fixEs": "45 = 3 × 3 × 5. Cada rama debe terminar en un primo, y 9 no es primo."
+        },
+        "compare": {
+          "problem": "Write the prime factorization of 48.",
+          "problemEs": "Escribe la factorización prima de 48.",
+          "methods": [
+            {
+              "name": "Factor tree",
+              "nameEs": "Árbol de factores",
+              "lines": [
+                "48 = 6 × 8",
+                "6 = 2 × 3 and 8 = 2 × 2 × 2",
+                "48 = 2 × 2 × 2 × 2 × 3"
+              ],
+              "linesEs": [
+                "48 = 6 × 8",
+                "6 = 2 × 3 y 8 = 2 × 2 × 2",
+                "48 = 2 × 2 × 2 × 2 × 3"
+              ]
+            },
+            {
+              "name": "Divide by primes",
+              "nameEs": "Divide entre primos",
+              "lines": [
+                "48 ÷ 2 = 24",
+                "24 ÷ 2 = 12 and 12 ÷ 2 = 6",
+                "6 ÷ 2 = 3",
+                "2 × 2 × 2 × 2 × 3 = 48"
+              ],
+              "linesEs": [
+                "48 ÷ 2 = 24",
+                "24 ÷ 2 = 12 y 12 ÷ 2 = 6",
+                "6 ÷ 2 = 3",
+                "2 × 2 × 2 × 2 × 3 = 48"
+              ]
+            }
+          ],
+          "ask": "Which method helps you check that every factor is prime? When is dividing easier?",
+          "askEs": "¿Qué método te ayuda a revisar que cada factor es primo? ¿Cuándo es más fácil dividir?",
+          "insight": "Both give 2⁴ × 3. The tree shows the pieces. Dividing is a neat list when the number is large.",
+          "insightEs": "Los dos dan 2⁴ × 3. El árbol muestra las piezas. Dividir es una lista ordenada cuando el número es grande."
+        }
       }
     }
   },

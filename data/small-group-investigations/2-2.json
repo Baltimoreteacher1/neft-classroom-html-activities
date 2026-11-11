@@ -1,0 +1,61 @@
+{
+  "lesson": "2-2",
+  "conjecture": {
+    "claim": "If I add up all the bar heights in a histogram, I get the number of values in the data set.",
+    "claimEs": "Si sumo todas las alturas de las barras de un histograma, obtengo la cantidad de valores del conjunto de datos.",
+    "verdict": "always",
+    "evidence": "Each value lands in exactly one interval, so adding the frequencies counts every value once. The values 3, 12, 14 and 25 make bars 1, 2 and 1, and the heights add to 4.",
+    "evidenceEs": "Cada valor cae en un solo intervalo, así que sumar las frecuencias cuenta cada valor una vez. Los valores 3, 12, 14 y 25 hacen barras de 1, 2 y 1, y las alturas suman 4.",
+    "frames": ["I tried ___ and the heights ___.", "This works every time because ___."],
+    "framesEs": ["Probé ___ y las alturas ___.", "Esto funciona siempre porque ___."]
+  },
+  "errorAnalysis": {
+    "scenario": "Leo drew a histogram bar. Find his mistake.",
+    "scenarioEs": "Leo dibujó la barra de un histograma. Encuentra su error.",
+    "problem": "Scores 62, 65, 68, 71 and 74 are in a histogram. How tall is the bar for 60–69?",
+    "problemEs": "Las calificaciones 62, 65, 68, 71 y 74 están en un histograma. ¿Qué altura tiene la barra de 60–69?",
+    "work": [
+      { "line": "60–69 holds 62, 65 and 68.", "lineEs": "60–69 tiene 62, 65 y 68." },
+      {
+        "line": "There are 3 values in that interval.",
+        "lineEs": "Hay 3 valores en ese intervalo."
+      },
+      { "line": "So the bar goes up to 68.", "lineEs": "Así que la barra llega hasta 68." }
+    ],
+    "flawed": 2,
+    "flaw": "A bar's height is how many values are in the interval, not the greatest score in it.",
+    "flawEs": "La altura de una barra es cuántos valores hay en el intervalo, no la calificación mayor.",
+    "fix": "The bar is 3 tall, because 3 values (62, 65 and 68) are in 60–69.",
+    "fixEs": "La barra mide 3 de alto, porque hay 3 valores (62, 65 y 68) en 60–69."
+  },
+  "compare": {
+    "problem": "Eight times are 3, 8, 12, 14, 15, 21, 27 and 29. Use intervals of 10. How many times are in 10–19?",
+    "problemEs": "Ocho tiempos son 3, 8, 12, 14, 15, 21, 27 y 29. Usa intervalos de 10. ¿Cuántos tiempos hay en 10–19?",
+    "methods": [
+      {
+        "name": "Count directly",
+        "nameEs": "Contar directamente",
+        "lines": ["10–19 holds 12, 14 and 15", "Count them: 3 values"],
+        "linesEs": ["10–19 tiene 12, 14 y 15", "Cuéntalos: 3 valores"]
+      },
+      {
+        "name": "Total minus the others",
+        "nameEs": "Total menos los demás",
+        "lines": [
+          "0–9 holds 3 and 8: 2 values",
+          "20–29 holds 21, 27 and 29: 3 values",
+          "8 − 2 − 3 = 3 values left for 10–19"
+        ],
+        "linesEs": [
+          "0–9 tiene 3 y 8: 2 valores",
+          "20–29 tiene 21, 27 y 29: 3 valores",
+          "8 − 2 − 3 = 3 valores quedan para 10–19"
+        ]
+      }
+    ],
+    "ask": "Which method is faster for one interval? Which one checks that no value was missed?",
+    "askEs": "¿Qué método es más rápido para un intervalo? ¿Cuál comprueba que no se omitió ningún valor?",
+    "insight": "Both find 3. Counting directly is quick for one interval. Subtracting from the total checks that every value sits in exactly one interval.",
+    "insightEs": "Los dos hallan 3. Contar directamente es rápido para un intervalo. Restar del total comprueba que cada valor está en un solo intervalo."
+  }
+}

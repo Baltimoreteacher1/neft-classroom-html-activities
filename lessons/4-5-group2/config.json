@@ -1168,7 +1168,87 @@
           ]
         }
       },
-      "model": "ratioTable"
+      "model": "ratioTable",
+      "investigate": {
+        "conjecture": {
+          "claim": "If a part is less than 100% of a whole, the whole is smaller than the part.",
+          "claimEs": "Si una parte es menos del 100% de un entero, el entero es menor que la parte.",
+          "verdict": "never",
+          "evidence": "25% of 48 = 12, so 12 is the part and 48 is the whole. The whole is greater. A part under 100% is always less than its whole.",
+          "evidenceEs": "El 25% de 48 = 12, así que 12 es la parte y 48 es el entero. El entero es mayor. Una parte menor al 100% siempre es menos que su entero.",
+          "frames": [
+            "I think this is ___ because ___.",
+            "A counterexample is ___."
+          ],
+          "framesEs": [
+            "Creo que esto es ___ porque ___.",
+            "Un contraejemplo es ___."
+          ]
+        },
+        "errorAnalysis": {
+          "scenario": "Lena worked backward from a sale price. Find her mistake.",
+          "scenarioEs": "Lena trabajó hacia atrás desde un precio de oferta. Encuentra su error.",
+          "problem": "Sam paid $36 for a game. That was 80% of the original price. What was the original price?",
+          "problemEs": "Sam pagó $36 por un juego. Eso era el 80% del precio original. ¿Cuál era el precio original?",
+          "work": [
+            {
+              "line": "$36 is 80% of the original price",
+              "lineEs": "$36 es el 80% del precio original"
+            },
+            {
+              "line": "The missing 20% is 20% of 36, which is 7.2",
+              "lineEs": "El 20% que falta es el 20% de 36, que es 7.2"
+            },
+            {
+              "line": "36 + 7.2 = 43.2, so the price was $43.20",
+              "lineEs": "36 + 7.2 = 43.2, así que el precio era $43.20"
+            }
+          ],
+          "flawed": 1,
+          "flaw": "The missing 20% is 20% of the whole, not of $36. Since $36 is 80%, 20% is 36 ÷ 4 = 9.",
+          "flawEs": "El 20% que falta es el 20% del entero, no de $36. Como $36 es el 80%, el 20% es 36 ÷ 4 = 9.",
+          "fix": "$45. If 80% is 36, then 20% is 9. And 100% is 5 × 9 = 45.",
+          "fixEs": "$45. Si el 80% es 36, entonces el 20% es 9. Y el 100% es 5 × 9 = 45."
+        },
+        "compare": {
+          "problem": "Ana saved $18, which is 30% of her goal. What is her goal?",
+          "problemEs": "Ana ahorró $18, que es el 30% de su meta. ¿Cuál es su meta?",
+          "methods": [
+            {
+              "name": "Ratio table",
+              "nameEs": "Tabla de razones",
+              "lines": [
+                "30% : 18",
+                "÷ 3 gives 10% : 6",
+                "× 10 gives 100% : 60"
+              ],
+              "linesEs": [
+                "30% : 18",
+                "÷ 3 da 10% : 6",
+                "× 10 da 100% : 60"
+              ]
+            },
+            {
+              "name": "Equation",
+              "nameEs": "Ecuación",
+              "lines": [
+                "0.3 × g = 18",
+                "g = 18 ÷ 0.3",
+                "g = 60"
+              ],
+              "linesEs": [
+                "0.3 × g = 18",
+                "g = 18 ÷ 0.3",
+                "g = 60"
+              ]
+            }
+          ],
+          "ask": "Which way would you choose here? Why?",
+          "askEs": "¿Qué camino elegirías aquí? ¿Por qué?",
+          "insight": "Both find the goal is $60. The table scales step by step. The equation divides the part by the percent as a decimal.",
+          "insightEs": "Los dos hallan que la meta es $60. La tabla cambia la escala paso a paso. La ecuación divide la parte entre el porcentaje como decimal."
+        }
+      }
     }
   },
   "explore": {

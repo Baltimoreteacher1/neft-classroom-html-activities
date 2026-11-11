@@ -1276,7 +1276,85 @@
           "captionEs": "Luego haz una tabla nueva: los jugadores son el 100%."
         }
       },
-      "model": "ratioTable"
+      "model": "ratioTable",
+      "investigate": {
+        "conjecture": {
+          "claim": "10% of any number is the same as dividing that number by 10.",
+          "claimEs": "El 10% de cualquier número es lo mismo que dividir ese número entre 10.",
+          "verdict": "always",
+          "evidence": "10% means 10 out of 100, which is {1/10}. So 10% of 70 = 7, and 70 ÷ 10 = 7. The same reason works for every number.",
+          "evidenceEs": "10% significa 10 de cada 100, que es {1/10}. Así que el 10% de 70 = 7, y 70 ÷ 10 = 7. La misma razón sirve para todos los números.",
+          "frames": [
+            "I think this is ___ because ___.",
+            "I tested ___ and I got ___."
+          ],
+          "framesEs": [
+            "Creo que esto es ___ porque ___.",
+            "Probé con ___ y obtuve ___."
+          ]
+        },
+        "errorAnalysis": {
+          "scenario": "Omar found a sale discount. Find his mistake.",
+          "scenarioEs": "Omar halló un descuento de oferta. Encuentra su error.",
+          "problem": "A bike costs $60. It is 20% off. How much do you save?",
+          "problemEs": "Una bicicleta cuesta $60. Tiene 20% de descuento. ¿Cuánto ahorras?",
+          "work": [
+            {
+              "line": "100% of the price is $60",
+              "lineEs": "El 100% del precio es $60"
+            },
+            {
+              "line": "To get 20%, divide 60 by 20",
+              "lineEs": "Para obtener el 20%, divide 60 entre 20"
+            },
+            {
+              "line": "60 ÷ 20 = 3, so you save $3",
+              "lineEs": "60 ÷ 20 = 3, así que ahorras $3"
+            }
+          ],
+          "flawed": 1,
+          "flaw": "He divided by the percent, 20. Going from 100% to 20% means dividing by 5, because 100 ÷ 20 = 5.",
+          "flawEs": "Dividió entre el porcentaje, 20. Pasar de 100% a 20% es dividir entre 5, porque 100 ÷ 20 = 5.",
+          "fix": "You save $12. Going from 100% to 20% divides by 5, so 60 ÷ 5 = 12.",
+          "fixEs": "Ahorras $12. Pasar de 100% a 20% es dividir entre 5, así que 60 ÷ 5 = 12."
+        },
+        "compare": {
+          "problem": "A club has 80 members. 35% of them are in sixth grade. How many sixth graders is that?",
+          "problemEs": "Un club tiene 80 miembros. El 35% de ellos está en sexto grado. ¿Cuántos estudiantes de sexto son?",
+          "methods": [
+            {
+              "name": "Ratio table",
+              "nameEs": "Tabla de razones",
+              "lines": [
+                "10% of 80 = 8",
+                "5% of 80 = 4",
+                "35% = 8 + 8 + 8 + 4 = 28"
+              ],
+              "linesEs": [
+                "10% de 80 = 8",
+                "5% de 80 = 4",
+                "35% = 8 + 8 + 8 + 4 = 28"
+              ]
+            },
+            {
+              "name": "Equation",
+              "nameEs": "Ecuación",
+              "lines": [
+                "35% = 0.35",
+                "0.35 × 80 = 28"
+              ],
+              "linesEs": [
+                "35% = 0.35",
+                "0.35 × 80 = 28"
+              ]
+            }
+          ],
+          "ask": "Which way is faster for you? Which way would you use for 37% of 80?",
+          "askEs": "¿Qué camino es más rápido para ti? ¿Cuál usarías para el 37% de 80?",
+          "insight": "Both give 28. The table builds the percent from friendly pieces. The equation turns the percent into a decimal factor.",
+          "insightEs": "Los dos dan 28. La tabla arma el porcentaje con partes fáciles. La ecuación convierte el porcentaje en un factor decimal."
+        }
+      }
     }
   },
   "explore": {

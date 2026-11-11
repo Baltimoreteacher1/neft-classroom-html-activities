@@ -35,7 +35,8 @@ const CHROME =
 // Teacher-only surfaces. These are hidden by CSS while presenting (see
 // injectStyles) — the list is repeated here so a beat is never built AROUND a
 // teacher surface, which would leave the teacher stepping onto an empty stop.
-export const TEACHER_ONLY = ".sg-lens, .sg-teacher, .sg-misconceptions, .sg-facilitation, .ntfr";
+export const TEACHER_ONLY =
+  ".sg-lens, .sg-teacher, .sg-misconceptions, .sg-facilitation, .sg-tv, .ntfr";
 
 /** True when the page is a small-group studio (it renders a real tablist). */
 export function isSmallGroupStudio(doc = document) {

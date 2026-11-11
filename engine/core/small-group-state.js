@@ -17,16 +17,28 @@ export function createStudioStore(lessonId) {
   }
   const hadData = Object.keys(data).length > 0;
   let timer = 0;
-  const persist = () => {
+  let dirty = false;
+  const write = () => {
     window.clearTimeout(timer);
-    timer = window.setTimeout(() => {
-      try {
-        window.localStorage.setItem(key, JSON.stringify(data));
-      } catch {
-        /* storage full/blocked — the studio still works, it just won't resume */
-      }
-    }, 200);
+    if (!dirty) return;
+    dirty = false;
+    try {
+      window.localStorage.setItem(key, JSON.stringify(data));
+    } catch {
+      /* storage full/blocked — the studio still works, it just won't resume */
+    }
   };
+  const persist = () => {
+    dirty = true;
+    window.clearTimeout(timer);
+    timer = window.setTimeout(write, 200);
+  };
+  // The 200 ms debounce is for typing; a reload or tab close inside that window must not
+  // lose the last answer, so the pending write is flushed when the page is hidden.
+  window.addEventListener("pagehide", write);
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "hidden") write();
+  });
   return {
     get(name, fallback) {
       return data[name] === undefined ? fallback : data[name];
@@ -50,6 +62,8 @@ export function createStudioStore(lessonId) {
     },
     clear() {
       data = {};
+      dirty = false;
+      window.clearTimeout(timer);
       try {
         window.localStorage.removeItem(key);
       } catch {}

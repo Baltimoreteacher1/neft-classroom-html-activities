@@ -1,0 +1,60 @@
+{
+  "lesson": "2-5",
+  "conjecture": {
+    "claim": "The interquartile range of a data set can be greater than the range of the same data.",
+    "claimEs": "El rango intercuartílico de un conjunto de datos puede ser mayor que el rango de los mismos datos.",
+    "verdict": "never",
+    "evidence": "Q1 is never less than the least value, and Q3 is never more than the greatest. So Q3 − Q1 cannot pass greatest − least. For 1 to 7, the IQR is 4 and the range is 6.",
+    "evidenceEs": "Q1 nunca es menor que el valor menor, y Q3 nunca es mayor que el valor mayor. Así que Q3 − Q1 no puede pasar de mayor − menor. Para 1 a 7, el RIC es 4 y el rango es 6.",
+    "frames": ["I think this is ___ because ___.", "A counterexample is ___."],
+    "framesEs": ["Creo que esto es ___ porque ___.", "Un contraejemplo es ___."]
+  },
+  "errorAnalysis": {
+    "scenario": "Sam found an IQR. Find his mistake.",
+    "scenarioEs": "Sam halló un RIC. Encuentra su error.",
+    "problem": "Find the IQR of 4, 6, 7, 9, 12, 14, 20.",
+    "problemEs": "Halla el RIC de 4, 6, 7, 9, 12, 14, 20.",
+    "work": [
+      {
+        "line": "The median is 9, Q1 is 6 and Q3 is 14.",
+        "lineEs": "La mediana es 9, Q1 es 6 y Q3 es 14."
+      },
+      {
+        "line": "The IQR measures how spread out the data is.",
+        "lineEs": "El RIC mide qué tan dispersos están los datos."
+      },
+      { "line": "20 − 4 = 16, so the IQR is 16.", "lineEs": "20 − 4 = 16, así que el RIC es 16." }
+    ],
+    "flawed": 2,
+    "flaw": "20 − 4 is the range. The IQR uses Q1 and Q3, so it covers only the middle half of the data.",
+    "flawEs": "20 − 4 es el rango. El RIC usa Q1 y Q3, así que cubre solo la mitad central de los datos.",
+    "fix": "The IQR is 14 − 6 = 8, because the IQR is Q3 − Q1.",
+    "fixEs": "El RIC es 14 − 6 = 8, porque el RIC es Q3 − Q1."
+  },
+  "compare": {
+    "problem": "Find the IQR of 3, 5, 6, 8, 11, 12 and 18.",
+    "problemEs": "Halla el RIC de 3, 5, 6, 8, 11, 12 y 18.",
+    "methods": [
+      {
+        "name": "Subtract the quartiles",
+        "nameEs": "Restar los cuartiles",
+        "lines": ["Q1 is 5 and Q3 is 12", "12 − 5 = 7", "The IQR is 7"],
+        "linesEs": ["Q1 es 5 y Q3 es 12", "12 − 5 = 7", "El RIC es 7"]
+      },
+      {
+        "name": "Add two gaps",
+        "nameEs": "Sumar dos distancias",
+        "lines": ["Q1 to the median: 5 to 8 is 3", "Median to Q3: 8 to 12 is 4", "3 + 4 = 7"],
+        "linesEs": [
+          "De Q1 a la mediana: de 5 a 8 es 3",
+          "De la mediana a Q3: de 8 a 12 es 4",
+          "3 + 4 = 7"
+        ]
+      }
+    ],
+    "ask": "Which method is faster here? Which one shows how the median splits the middle half?",
+    "askEs": "¿Qué método es más rápido aquí? ¿Cuál muestra cómo la mediana divide la mitad central?",
+    "insight": "Both find an IQR of 7. Subtracting is quick. Adding two gaps shows that the middle half is made of two quarters on either side of the median.",
+    "insightEs": "Los dos hallan un RIC de 7. Restar es rápido. Sumar dos distancias muestra que la mitad central se forma con dos cuartos a cada lado de la mediana."
+  }
+}

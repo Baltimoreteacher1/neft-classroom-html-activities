@@ -969,6 +969,88 @@
             "mathEs": "el 3.º es 19"
           }
         ]
+      },
+      "investigate": {
+        "conjecture": {
+          "claim": "A longer whisker on a box plot means more data values are in that whisker.",
+          "claimEs": "Un bigote más largo en un diagrama de caja significa que hay más valores de datos en ese bigote.",
+          "verdict": "never",
+          "evidence": "Take 1, 2, 3, 4, 5, 6, 7, 30. The right whisker is far longer than the left, but each whisker holds 2 values. A long whisker only means the values are spread out.",
+          "evidenceEs": "Toma 1, 2, 3, 4, 5, 6, 7, 30. El bigote derecho es mucho más largo que el izquierdo, pero cada bigote tiene 2 valores. Un bigote largo solo significa que los valores están muy separados.",
+          "frames": [
+            "I think this is ___ because ___.",
+            "A counterexample is ___."
+          ],
+          "framesEs": [
+            "Creo que esto es ___ porque ___.",
+            "Un contraejemplo es ___."
+          ]
+        },
+        "errorAnalysis": {
+          "scenario": "Jon found Q1. Find his mistake.",
+          "scenarioEs": "Jon halló Q1. Encuentra su error.",
+          "problem": "Find Q1 for 3, 5, 6, 8, 10, 12, 15.",
+          "problemEs": "Halla Q1 para 3, 5, 6, 8, 10, 12, 15.",
+          "work": [
+            {
+              "line": "There are 7 values, so the median is the 4th value, 8.",
+              "lineEs": "Hay 7 valores, así que la mediana es el 4.º valor, 8."
+            },
+            {
+              "line": "The lower half is 3, 5, 6, 8.",
+              "lineEs": "La mitad inferior es 3, 5, 6, 8."
+            },
+            {
+              "line": "Q1 is the middle of the lower half: (5 + 6) ÷ 2 = 5.5.",
+              "lineEs": "Q1 es el medio de la mitad inferior: (5 + 6) ÷ 2 = 5.5."
+            }
+          ],
+          "flawed": 1,
+          "flaw": "Jon put the median 8 in the lower half. The lower half is only the values before the median: 3, 5, 6.",
+          "flawEs": "Jon puso la mediana 8 en la mitad inferior. La mitad inferior son solo los valores antes de la mediana: 3, 5, 6.",
+          "fix": "Q1 is 5. The lower half is 3, 5, 6, and its middle value is 5.",
+          "fixEs": "Q1 es 5. La mitad inferior es 3, 5, 6, y su valor del medio es 5."
+        },
+        "compare": {
+          "problem": "Find Q1 and Q3 for 2, 5, 7, 9, 12, 14 and 18.",
+          "problemEs": "Halla Q1 y Q3 para 2, 5, 7, 9, 12, 14 y 18.",
+          "methods": [
+            {
+              "name": "Count positions",
+              "nameEs": "Contar posiciones",
+              "lines": [
+                "7 values: the median is the 4th, 9",
+                "Each half has 3 values",
+                "Q1 is the 2nd value: 5",
+                "Q3 is the 6th value: 14"
+              ],
+              "linesEs": [
+                "7 valores: la mediana es el 4.º, 9",
+                "Cada mitad tiene 3 valores",
+                "Q1 es el 2.º valor: 5",
+                "Q3 es el 6.º valor: 14"
+              ]
+            },
+            {
+              "name": "Cross off ends",
+              "nameEs": "Tachar extremos",
+              "lines": [
+                "Lower half 2, 5, 7: cross off 2 and 7, keep 5",
+                "Upper half 12, 14, 18: cross off 12 and 18, keep 14",
+                "Q1 is 5 and Q3 is 14"
+              ],
+              "linesEs": [
+                "Mitad inferior 2, 5, 7: tacha 2 y 7, queda 5",
+                "Mitad superior 12, 14, 18: tacha 12 y 18, queda 14",
+                "Q1 es 5 y Q3 es 14"
+              ]
+            }
+          ],
+          "ask": "Which method is faster here? Which one would you use with 40 values?",
+          "askEs": "¿Qué método es más rápido aquí? ¿Cuál usarías con 40 valores?",
+          "insight": "Both find Q1 5 and Q3 14. Counting positions works for long lists; crossing off ends shows that each quartile is the middle of its half.",
+          "insightEs": "Los dos hallan Q1 5 y Q3 14. Contar posiciones sirve para listas largas; tachar extremos muestra que cada cuartil es el medio de su mitad."
+        }
       }
     }
   },

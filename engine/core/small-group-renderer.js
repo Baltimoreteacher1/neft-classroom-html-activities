@@ -3,7 +3,6 @@
 // work. tools/typecheck-ratchet.test.mjs pins the count so it can only shrink.
 
 import { createLessonCourseNav } from "./curriculum-nav.js";
-import { createRhythmCoach } from "./facilitation-rhythm.js";
 import { observeContentImageZoom } from "./image-zoom.js";
 import { enableKeyboardScrolling } from "./keyboard-scroll.js";
 import {
@@ -24,9 +23,14 @@ import { installSmallGroupAnnotation } from "./small-group-annotation.js";
 import { buildSection } from "./small-group-build-section.js";
 import { createVocabularySection, selectedTalk } from "./small-group-engagement.js";
 import { syncSmallGroupEvidence, trackSmallGroupStep } from "./small-group-evidence.js";
+import { createEvidenceSummary } from "./small-group-evidence-summary.js";
 import { createMisconceptionCard, createTeacherEvidenceConsole } from "./small-group-innovation.js";
+import { createInvestigation } from "./small-group-investigate.js";
 import { createApplyLab, figureBlock } from "./small-group-labs.js";
+import { createLaunchCard } from "./small-group-launch.js";
+import { createBuildModel } from "./small-group-manipulatives.js";
 import { installSmallGroupPassport } from "./small-group-passport.js";
+import { stageById, variantOf } from "./small-group-pathway.js";
 import {
   createChallengeCard,
   createExitCheckSection,
@@ -46,6 +50,7 @@ import {
 } from "./small-group-storyboard.js";
 import { mountSmallGroupTabs } from "./small-group-tabs.js";
 import { mountSmallGroupTeacherAccess } from "./small-group-teacher-access.js";
+import { mountTeacherView } from "./small-group-teacher-view.js";
 import {
   ACCENTS,
   bi,
@@ -112,85 +117,6 @@ function readStudioMentor() {
   } catch {
     return null;
   }
-}
-
-function teacherPanel(config, accent, talk) {
-  const group = config.smallGroup;
-  if (!group || !(group.teacherMoves || group.moves || group.who || talk?.listenFor)) return null;
-  const wrapper = el("aside", "sg-teacher");
-  /*
-   * ASK / LOOK FOR / IF STUCK / EXTEND, rendered as a labelled block rather
-   * than a bullet list. Small-group teaching is fast: a teacher glancing at the
-   * screen with 4-6 students waiting needs to find the next move by its LABEL,
-   * not read a paragraph. The labels are the scan targets, so they carry the
-   * weight and the prose stays one line each.
-   *
-   * `moves` (the old prose list) is gone from the data — 756 of its 840 lines
-   * repeated across 50+ lessons — but is still read here so a stale cached
-   * facilitation payload degrades to the old rendering instead of a blank panel.
-   */
-  const tm = group.teacherMoves || null;
-  const MOVE_LABELS = [
-    ["ask", "Ask"],
-    ["lookFor", "Look for"],
-    ["ifStuck", "If stuck"],
-    ["extend", "Extend"],
-  ];
-  const teacherMovesHtml = tm
-    ? `<dl class="sg-moves">${MOVE_LABELS.filter(([k]) => tm[k])
-        .map(
-          ([k, label]) =>
-            `<div class="sg-move sg-move--${k}"><dt>${esc(label)}</dt><dd>${esc(tm[k])}</dd></div>`,
-        )
-        .join("")}</dl>`
-    : "";
-  const moves = (group.moves || []).map((move) => `<li>${esc(move)}</li>`).join("");
-  const frames = (group.frames || [])
-    .map((frame) => `<span class="sg-frame">${esc(frame)}</span>`)
-    .join("");
-  const listenFor = (group.listenFor || []).map((item) => `<li>${esc(item)}</li>`).join("");
-  // Facilitation note for this variant's capstone — how to run the
-  // Team Consensus Protocol (group 1) or topic-specific Math Check (group 2)
-  // so the on-page activity is used as intended, not just clicked through.
-  const isGroup2 = (config.variant || `group${group.group}`) === "group2";
-  const capstoneNote = isGroup2
-    ? "<b>Math Check:</b> students solve one challenge, run the check named for this lesson, and explain what the result means. Look for correct units, labels, and use of the lesson strategy."
-    : "<b>Team consensus protocol:</b> post the problem, then have each voice privately pick the single best way to prove it before revealing the tally. Disagreement is the discussion fuel — ask “why that proof for this problem?” and let the group defend or revise.";
-  // Publisher-style margin decisions: the in-the-moment moves a printed teacher
-  // edition prints beside the lesson. Variant-aware so the "finish early" branch
-  // sends each group somewhere real (Challenge bridge / Math Check / stretch).
-  const finishEarly = isGroup2
-    ? "point them at a second solution method — “solve it again, faster or cleaner” — or the Math Check’s connect step."
-    : "offer the on-page Challenge bridge (it appears after a streak) or the adaptive coach’s Stretch move.";
-  const pacingNotes = [
-    [
-      "If students struggle",
-      "drop to the Guided set and open the step guide + tap-to-try bank; re-walk one worked step in Build the idea before releasing them again.",
-    ],
-    [
-      "If you’re short on time",
-      "protect the exit ticket. Cut More Practice, keep Build → one guided problem → the check; the rail renumbers itself, so skipping a section never breaks the flow.",
-    ],
-    ["If they finish early", finishEarly],
-  ];
-  const pacingHtml = pacingNotes
-    .map(([label, body]) => `<li><b>${esc(label)}:</b> ${esc(body)}</li>`)
-    .join("");
-  wrapper.innerHTML = `<details>
-    <summary>👩‍🏫 Teacher studio guide · ${esc(group.label || accent.name)}</summary>
-    <div class="sg-tbody">
-      ${group.who ? `<p><b>Pull:</b> ${esc(group.who)}</p>` : ""}
-      <p><b>15–20 minute rhythm:</b> 2 min launch · 4 min build · 3 min talk · 7 min practice · 2 min check.</p>
-      ${teacherMovesHtml}
-      ${moves ? `<p><b>High-leverage moves:</b></p><ul>${moves}</ul>` : ""}
-      ${frames ? `<p><b>Reusable frames:</b></p><div class="sg-frames">${frames}</div>` : ""}
-      ${talk?.listenFor ? `<p><b>Listen for during team talk:</b> ${esc(talk.listenFor)}</p>` : ""}
-      ${listenFor ? `<p><b>Listen-for checkpoints:</b></p><ul>${listenFor}</ul>` : ""}
-      <p><b>Pacing decisions:</b></p><ul class="sg-pacing">${pacingHtml}</ul>
-      <p class="sg-teacher-capstone">${capstoneNote}</p>
-    </div>
-  </details>`;
-  return wrapper;
 }
 
 /**
@@ -673,7 +599,7 @@ function renderStudio(config) {
         tally.update();
       }
     }
-    mark(tabId);
+    if (tabId) mark(tabId);
   };
 
   const completion = el("div", "sg-done");
@@ -726,7 +652,9 @@ function renderStudio(config) {
           `<a class="btn ghost" href="/curriculum/my-progress/">📊 My Progress &amp; Portfolio</a>` +
           `</div>`
         : "";
-    completion.innerHTML = `<h2>Studio complete 🎉</h2><p>${esc(voice.completeBody)}</p>${statsHtml}${actionsHtml}`;
+    completion.innerHTML = `<h2>Studio complete 🎉</h2><p>${esc(voice.completeBody)}</p>${statsHtml}`;
+    completion.appendChild(evidenceSummary);
+    completion.insertAdjacentHTML("beforeend", actionsHtml);
     if (completeSent) return;
     completeSent = true;
     // Section-scoped, name-free evidence for the teacher mastery dashboard.
@@ -780,7 +708,6 @@ function renderStudio(config) {
   );
   const build = buildSection(config, phaseDone("sg-tab-learn", "buildDone"), { store });
   const models = lessonModels(config, store);
-  const together = createTogetherSection(config, practiceCtx("sg-tab-together", "togetherDone"));
   const own = createOnMyOwnSection(config, practiceCtx("sg-tab-own", "ownDone"));
   const check = createExitCheckSection(config, state, {
     ...practiceCtx("sg-tab-check", null),
@@ -790,7 +717,7 @@ function renderStudio(config) {
     number: 6,
     store,
     events,
-    onDone: phaseDone("sg-tab-apply", "applyDone"),
+    onDone: phaseDone(null, "applyDone"),
   });
   const challenge = createChallengeCard(config, {
     store,
@@ -820,44 +747,40 @@ function renderStudio(config) {
     return panel;
   };
 
+  // Five stages, defined once in small-group-pathway.js. Stage ids are the saved
+  // tab ids; the retired Apply tab now lives inside Prove It.
+  const stage = (id, children) => {
+    const s = stageById(id);
+    const minutes = s.minutes[variantOf(config)];
+    return {
+      id,
+      label: s.label,
+      sub: `${minutes} min · ${s.sub}`,
+      panel: makePanel(id, children),
+    };
+  };
+  const buildModel = createBuildModel(config, { store });
+  const launchCard = createLaunchCard(config, { store });
+  const investigation = createInvestigation(config, { store });
+  const together = createTogetherSection(
+    config,
+    practiceCtx("sg-tab-together", "togetherDone"),
+    investigation ? [investigation.conjecture, investigation.compare] : [],
+  );
+  const proveReasoning = investigation
+    ? Object.assign(el("section", "sg-sec sgb sgp"), {
+        id: "sg-investigate",
+      })
+    : null;
+  if (proveReasoning && investigation) proveReasoning.appendChild(investigation.error);
+  const evidenceSummary = createEvidenceSummary(config, store);
+
   const tabSteps = [
-    {
-      id: "sg-tab-words",
-      label: "Key Words",
-      sub: "Words for today",
-      panel: makePanel("sg-tab-words", [vocab]),
-    },
-    {
-      id: "sg-tab-learn",
-      label: "Learn It",
-      sub: "See how it works",
-      panel: makePanel("sg-tab-learn", [build, models]),
-    },
-    {
-      id: "sg-tab-together",
-      label: "Practice Together",
-      sub: "Solve with your group",
-      panel: makePanel("sg-tab-together", [together]),
-    },
-    {
-      id: "sg-tab-own",
-      label: "On My Own",
-      sub: "Solve by yourself",
-      panel: makePanel("sg-tab-own", [own]),
-    },
-    {
-      id: "sg-tab-check",
-      label: "Check",
-      sub: "Show what you know",
-      panel: makePanel("sg-tab-check", [check, completion]),
-    },
-    {
-      id: "sg-tab-apply",
-      // Not every lesson has a Reveal word problem; then the step is the Challenge.
-      label: apply ? "Apply" : "Challenge",
-      sub: apply ? "Use it in a real problem" : "One harder problem",
-      panel: makePanel("sg-tab-apply", [apply, challenge]),
-    },
+    stage("sg-tab-words", [launchCard, vocab]),
+    stage("sg-tab-learn", [build, buildModel, models]),
+    stage("sg-tab-together", [together]),
+    stage("sg-tab-own", [own]),
+    stage("sg-tab-check", [check, completion, proveReasoning, apply, challenge]),
   ];
 
   const heroNode = hero(config, accent, voice);
@@ -960,7 +883,6 @@ function renderStudio(config) {
     togetherDone: "sg-tab-together",
     ownDone: "sg-tab-own",
     checkDone: "sg-tab-check",
-    applyDone: "sg-tab-apply",
   };
   for (const [storeKey, tabId] of Object.entries(RESTORE_MARKS))
     if (store.get(storeKey)) mark(tabId);
@@ -975,29 +897,16 @@ function renderStudio(config) {
       // The rotation timer is the teacher's tool; students never see a clock.
       mountStationTimer();
       const teacherConfig = { ...config, smallGroup: facilitation };
-      const evidenceConsole = createTeacherEvidenceConsole(teacherConfig, state, getBand);
-      const misconceptions = createMisconceptionCard(config);
-      const rhythm = createRhythmCoach(facilitation);
-      if (rhythm) heroNode.after(rhythm);
-      const panel = teacherPanel(teacherConfig, accent, talkData);
-      if (panel) heroNode.after(panel);
-      if (misconceptions) heroNode.after(misconceptions);
-      if (evidenceConsole) heroNode.after(evidenceConsole);
-      // Teacher edition extras: full standard wording inside the studio guide.
-      if (panel && config.standard) {
-        resolveStandard(config.standard).then((entry) => {
-          if (!entry) return;
-          panel
-            .querySelector(".sg-tbody")
-            ?.prepend(
-              el(
-                "p",
-                "sg-standard-line",
-                `<b>Standard ${esc(entry.code)}:</b> ${esc(entry.fullText)}`,
-              ),
-            );
-        });
-      }
+      mountTeacherView({
+        config,
+        facilitation,
+        talk: talkData,
+        store,
+        nodes: [
+          createTeacherEvidenceConsole(teacherConfig, state, getBand),
+          createMisconceptionCard(config),
+        ],
+      });
       const back = el("a", "btn ghost", "← Curriculum");
       back.href = "/curriculum/";
       const scorm = el("a", "btn ghost", "⬇ Canvas package");

@@ -1102,7 +1102,87 @@
           }
         ]
       },
-      "model": "ratioTable"
+      "model": "ratioTable",
+      "investigate": {
+        "conjecture": {
+          "claim": "Every fraction can be written as a decimal that ends.",
+          "claimEs": "Toda fracción se puede escribir como un decimal que termina.",
+          "verdict": "sometimes",
+          "evidence": "{1/4} is 0.25, so it ends. {1/3} is 0.333… with 3s that never stop, because 1 ÷ 3 keeps leaving a remainder of 1. It depends on the fraction.",
+          "evidenceEs": "{1/4} es 0.25, así que termina. {1/3} es 0.333… con 3 que nunca paran, porque 1 ÷ 3 siempre deja residuo 1. Depende de la fracción.",
+          "frames": [
+            "I think this is ___ because ___.",
+            "A counterexample is ___."
+          ],
+          "framesEs": [
+            "Creo que esto es ___ porque ___.",
+            "Un contraejemplo es ___."
+          ]
+        },
+        "errorAnalysis": {
+          "scenario": "Zara changed a percent to a decimal. Find her mistake.",
+          "scenarioEs": "Zara cambió un porcentaje a decimal. Encuentra su error.",
+          "problem": "Write 7% as a decimal.",
+          "problemEs": "Escribe 7% como decimal.",
+          "work": [
+            {
+              "line": "Percent means per 100",
+              "lineEs": "Porcentaje significa por cada 100"
+            },
+            {
+              "line": "7% is 7 ÷ 100",
+              "lineEs": "7% es 7 ÷ 100"
+            },
+            {
+              "line": "7 ÷ 100 = 0.7",
+              "lineEs": "7 ÷ 100 = 0.7"
+            }
+          ],
+          "flawed": 2,
+          "flaw": "Dividing by 100 moves the decimal point two places, not one. The decimal 0.7 is 70%.",
+          "flawEs": "Dividir entre 100 mueve el punto decimal dos lugares, no uno. El decimal 0.7 es 70%.",
+          "fix": "0.07, because 7 ÷ 100 = 0.07. The decimal 0.7 would be 70%.",
+          "fixEs": "0.07, porque 7 ÷ 100 = 0.07. El decimal 0.7 sería 70%."
+        },
+        "compare": {
+          "problem": "Write {9/20} as a decimal and a percent.",
+          "problemEs": "Escribe {9/20} como decimal y como porcentaje.",
+          "methods": [
+            {
+              "name": "Scale to 100",
+              "nameEs": "Escalar a 100",
+              "lines": [
+                "20 × 5 = 100",
+                "9 × 5 = 45, so {9/20} = {45/100}",
+                "{45/100} is 0.45 and 45%"
+              ],
+              "linesEs": [
+                "20 × 5 = 100",
+                "9 × 5 = 45, así que {9/20} = {45/100}",
+                "{45/100} es 0.45 y 45%"
+              ]
+            },
+            {
+              "name": "Divide",
+              "nameEs": "Dividir",
+              "lines": [
+                "9 ÷ 20 = 0.45",
+                "0.45 is 45 hundredths",
+                "45 out of 100 is 45%"
+              ],
+              "linesEs": [
+                "9 ÷ 20 = 0.45",
+                "0.45 son 45 centésimas",
+                "45 de cada 100 es 45%"
+              ]
+            }
+          ],
+          "ask": "Which method is quicker when the denominator is 20? What about 8?",
+          "askEs": "¿Qué método es más rápido cuando el denominador es 20? ¿Y con 8?",
+          "insight": "Both give 0.45 and 45%. Scaling is quick when the denominator goes into 100. Dividing works for every fraction.",
+          "insightEs": "Los dos dan 0.45 y 45%. Escalar es rápido cuando el denominador cabe en 100. Dividir funciona con toda fracción."
+        }
+      }
     }
   },
   "explore": {
