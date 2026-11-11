@@ -3,6 +3,18 @@ const positive = (value, fallback) => {
     const n = Number(value);
     return Number.isFinite(n) && n > 0 ? Math.min(n, 24) : fallback;
 };
+const positiveValue = (value, fallback) => {
+    const n = Number(value);
+    return Number.isFinite(n) && n > 0 ? n : fallback;
+};
+const displayNumber = (value) => String(Number(value.toFixed(6)));
+const percentParts = (percent) => {
+    let divisor = percent;
+    let remainder = 100;
+    while (remainder !== 0)
+        [divisor, remainder] = [remainder, divisor % remainder];
+    return { part: percent / divisor, whole: 100 / divisor };
+};
 const formatMath = (value) => escapeHTML(value).replace(/(?<![\w])(-?\d+|[a-zA-Z])\s*\/\s*(\d+|[a-zA-Z])(?![\w])/g, (_, n, d) => `<span class="math-fraction" role="math" aria-label="${n} over ${d}"><span class="math-fraction-num">${n}</span><span class="math-fraction-den">${d}</span></span>`);
 export const INJECTED_MATH_STYLES = `
   :host { color-scheme: dark; font: 16px/1.5 system-ui,sans-serif; color:#f8fafc; }
@@ -59,7 +71,7 @@ export class InteractiveRatioTape extends HTMLElementBase {
             b: this.getAttribute("track-b-label") || "Quantity B",
             aUnits: positive(this.getAttribute("track-a-units"), 3),
             bUnits: positive(this.getAttribute("track-b-units"), 2),
-            unit: positive(this.getAttribute("unit-val"), 1),
+            unit: positiveValue(this.getAttribute("unit-val"), 1),
             interactive: this.getAttribute("interactive") !== "false",
         };
     }
@@ -99,7 +111,7 @@ export class InteractiveRatioTape extends HTMLElementBase {
         const status = this.root.querySelector("[aria-live]");
         if (status)
             status.textContent = isLine
-                ? `Matched ticks: ${this.selectedA * c.unit} and ${this.selectedB * c.unit}`
+                ? `Matched ticks: ${displayNumber(this.selectedA * c.unit)} and ${displayNumber(this.selectedB * c.unit)}`
                 : `Modeled ratio: ${this.selectedA} to ${this.selectedB}`;
         this.dispatchEvent(new CustomEvent("ratio-model-change", {
             detail: this.getModelValues(),
@@ -109,7 +121,7 @@ export class InteractiveRatioTape extends HTMLElementBase {
     }
     render() {
         const c = this.config;
-        const track = (name, label, units, selected) => `<div class="label">${escapeHTML(label)} <span>Selected: ${selected * c.unit}</span></div><div class="track" id="track-${name.toLowerCase()}" role="group" aria-label="${escapeHTML(label)}">${Array.from({ length: units }, (_, i) => `<button type="button" data-track="${name}" data-index="${i}" aria-pressed="${i < selected}" aria-label="${escapeHTML(label)}, segment ${i + 1} of ${units}, value ${c.unit}" ${c.interactive ? "" : "disabled"} class="segment ${i < selected ? "selected" : ""}">${c.unit}</button>`).join("")}</div>`;
+        const track = (name, label, units, selected) => `<div class="label">${escapeHTML(label)} <span>Selected: ${displayNumber(selected * c.unit)}</span></div><div class="track" id="track-${name.toLowerCase()}" role="group" aria-label="${escapeHTML(label)}">${Array.from({ length: units }, (_, i) => `<button type="button" data-track="${name}" data-index="${i}" aria-pressed="${i < selected}" aria-label="${escapeHTML(label)}, segment ${i + 1} of ${units}, value ${displayNumber(c.unit)}" ${c.interactive ? "" : "disabled"} class="segment ${i < selected ? "selected" : ""}">${displayNumber(c.unit)}</button>`).join("")}</div>`;
         this.root.innerHTML = `<style>${INJECTED_MATH_STYLES}:host{display:block}.wrap{padding:16px;background:#182234;border:1px solid #64748b;border-radius:12px}.label{display:flex;justify-content:space-between;gap:12px;margin:8px 0;font-weight:600}.track{display:flex;overflow-x:auto;gap:3px;padding:3px;border:2px solid #64748b;border-radius:8px}.segment{flex:1;min-width:44px;min-height:44px;padding:4px;background:#334155;border:1px solid #94a3b8}.segment.selected{background:#0369a1}.segment:disabled{cursor:default;opacity:1}.error-pulse{border-color:#fbbf24;box-shadow:0 0 0 3px #fbbf24}@media (prefers-reduced-motion:no-preference){.error-pulse{animation:pulse .8s ease-in-out}@keyframes pulse{50%{box-shadow:0 0 0 6px #fbbf24}}}</style><div class="wrap">${track("A", c.a, c.aUnits, this.selectedA)}${track("B", c.b, c.bUnits, this.selectedB)}<p aria-live="polite">Modeled ratio: ${this.selectedA} to ${this.selectedB}</p></div>`;
         this.root
             .querySelectorAll(".segment")
@@ -121,8 +133,8 @@ if (typeof customElements !== "undefined" && !customElements.get("interactive-ra
 export class InteractiveDoubleNumberLine extends InteractiveRatioTape {
     render() {
         const c = this.config;
-        const line = (track, label, units, selected) => `<div class="line-label">${escapeHTML(label)}</div><div class="line" id="track-${track.toLowerCase()}" role="group" aria-label="${escapeHTML(label)} number line">${Array.from({ length: units + 1 }, (_, i) => `<button type="button" class="tick ${i <= selected ? "selected" : ""}" data-track="${track}" data-index="${i}" aria-pressed="${i === selected}" aria-label="${escapeHTML(label)}, ${i * c.unit}, tick ${i} of ${units}" ${c.interactive ? "" : "disabled"}>${i * c.unit}</button>`).join("")}</div>`;
-        this.root.innerHTML = `<style>${INJECTED_MATH_STYLES}:host{display:block}.wrap{background:#182234;border:1px solid #64748b;border-radius:12px;padding:16px}.line-label{font-weight:700;margin:10px 0}.line{display:flex;overflow-x:auto;gap:2px;border-top:3px solid #7dd3fc;padding-top:8px}.tick{flex:1;min-width:44px;min-height:44px;padding:3px;background:#334155;border:1px solid #94a3b8}.tick.selected{background:#0369a1}.tick:disabled{opacity:1;cursor:default}.error-pulse{box-shadow:0 0 0 3px #fbbf24}</style><div class="wrap">${line("A", c.a, c.aUnits, this.selectedA)}${line("B", c.b, c.bUnits, this.selectedB)}<p aria-live="polite">Matched ticks: ${this.selectedA * c.unit} and ${this.selectedB * c.unit}</p></div>`;
+        const line = (track, label, units, selected) => `<div class="line-label">${escapeHTML(label)}</div><div class="line" id="track-${track.toLowerCase()}" role="group" aria-label="${escapeHTML(label)} number line">${Array.from({ length: units + 1 }, (_, i) => `<button type="button" class="tick ${i <= selected ? "selected" : ""}" data-track="${track}" data-index="${i}" aria-pressed="${i === selected}" aria-label="${escapeHTML(label)}, ${displayNumber(i * c.unit)}, tick ${i} of ${units}" ${c.interactive ? "" : "disabled"}>${displayNumber(i * c.unit)}</button>`).join("")}</div>`;
+        this.root.innerHTML = `<style>${INJECTED_MATH_STYLES}:host{display:block}.wrap{background:#182234;border:1px solid #64748b;border-radius:12px;padding:16px}.line-label{font-weight:700;margin:10px 0}.line{display:flex;overflow-x:auto;gap:2px;border-top:3px solid #7dd3fc;padding-top:8px}.tick{flex:1;min-width:44px;min-height:44px;padding:3px;background:#334155;border:1px solid #94a3b8}.tick.selected{background:#0369a1}.tick:disabled{opacity:1;cursor:default}.error-pulse{box-shadow:0 0 0 3px #fbbf24}</style><div class="wrap">${line("A", c.a, c.aUnits, this.selectedA)}${line("B", c.b, c.bUnits, this.selectedB)}<p aria-live="polite">Matched ticks: ${displayNumber(this.selectedA * c.unit)} and ${displayNumber(this.selectedB * c.unit)}</p></div>`;
         this.root
             .querySelectorAll(".tick")
             .forEach((button) => button.addEventListener("click", () => this.select(button.dataset.track, Number(button.dataset.index))));
@@ -449,6 +461,44 @@ export function makeSibling(source, index) {
     const baseUnit = source.siblingBaseUnit || source.modelConfig.unitVal;
     const c = source.modelConfig;
     const unit = baseUnit * (index + 1);
+    if (source.siblingKind === "UNIT_RATE") {
+        const total = displayNumber(c.trackAUnits * unit);
+        const sibling = adaptUnitRateItem({
+            question: `${total} dollars for ${c.trackAUnits} items: what is the unit rate?`,
+            answers: [displayNumber(unit)],
+            skill: { standard: source.standard },
+            tier: source.tier,
+        });
+        if (!sibling)
+            throw Error("Unable to generate unit-rate sibling");
+        return { ...sibling, id: `${source.id.split("_S")[0]}_S${index}`, siblingBaseUnit: baseUnit };
+    }
+    if (source.siblingKind === "PERCENT_PART") {
+        const percent = displayNumber((c.trackBUnits / c.trackAUnits) * 100);
+        const whole = displayNumber(c.trackAUnits * unit);
+        const sibling = adaptPercentPartItem({
+            question: `Find ${percent}% of ${whole}.`,
+            answers: [displayNumber(c.trackBUnits * unit)],
+            skill: { standard: source.standard },
+            tier: source.tier,
+        });
+        if (!sibling)
+            throw Error("Unable to generate percent sibling");
+        return { ...sibling, id: `${source.id.split("_S")[0]}_S${index}`, siblingBaseUnit: baseUnit };
+    }
+    if (source.siblingKind === "PERCENT_WHOLE") {
+        const percent = displayNumber((c.trackAUnits / c.trackBUnits) * 100);
+        const part = displayNumber(c.trackAUnits * unit);
+        const sibling = adaptPercentWholeItem({
+            question: `${part} is ${percent}% of what number?`,
+            answers: [displayNumber(c.trackBUnits * unit)],
+            skill: { standard: source.standard },
+            tier: source.tier,
+        });
+        if (!sibling)
+            throw Error("Unable to generate percent-whole sibling");
+        return { ...sibling, id: `${source.id.split("_S")[0]}_S${index}`, siblingBaseUnit: baseUnit };
+    }
     const sibling = createRatioExercise({
         id: `${source.id.split("_S")[0]}_S${index}`,
         standard: source.standard,
@@ -605,6 +655,220 @@ export function adaptEquivalentRatioItem(item, evaluateAnswer) {
         unitVal,
     });
     return { ...schema, prompt: item.question, correctAnswer: item.answers[0], evaluateAnswer };
+}
+export function adaptUnitRateItem(item, evaluateAnswer) {
+    const authored = item.question.match(/^([\d.]+) dollars for (\d+) items: what is the unit rate\?$/i);
+    const legacy = item.question.match(/^([\d.]+) for (\d+) items\. How much for 1 item\?$/i);
+    const match = authored || legacy;
+    if (!match || !item.answers?.length)
+        return null;
+    const total = Number(match[1]);
+    const count = Number(match[2]);
+    const unit = total / count;
+    const expected = Number(item.answers[0]);
+    if (!Number.isFinite(total) || total <= 0 || !Number.isInteger(count) || count < 2 || count > 24 || !Number.isFinite(unit) || unit <= 0 || !Number.isFinite(expected) || Math.abs(unit - expected) > 1e-9)
+        return null;
+    const tier = Math.max(1, Math.min(4, Number(item.tier) || 2));
+    const schema = createRatioExercise({
+        id: `unit-rate-${count}-${displayNumber(total)}`,
+        standard: item.skill?.standard || "6.RP.A.2",
+        tier,
+        trackALabel: "Cost for all items",
+        trackBLabel: "Cost for one item",
+        trackAUnits: count,
+        trackBUnits: 1,
+        unitVal: unit,
+    });
+    const remediationStep = {
+        scaffoldPrompt: `Build ${count} equal cost segments, then select the one-item cost segment.`,
+        targetSubQuestion: "Cost of one item",
+        expectedSubValue: displayNumber(unit),
+        manipulativeActionHint: "Select every segment on both tracks.",
+    };
+    return {
+        ...schema,
+        prompt: item.question,
+        correctAnswer: item.answers[0],
+        evaluateAnswer,
+        siblingKind: "UNIT_RATE",
+        misconceptions: [
+            {
+                id: "TOTAL_AS_UNIT_RATE",
+                tag: "UNIT_MISMATCH",
+                detect: (input) => Number(input) === total,
+                conceptualAnchor: `${displayNumber(total)} is the cost for all ${count} items. Divide it into ${count} equal costs to find one item.`,
+                remediationStep,
+            },
+            {
+                id: "ITEM_COUNT_AS_RATE",
+                tag: "UNIT_MISMATCH",
+                detect: (input) => Number(input) === count,
+                conceptualAnchor: `${count} counts the items. The answer needs dollars for one item, found by dividing total dollars by items.`,
+                remediationStep,
+            },
+            {
+                id: "MULTIPLIED_TOTAL",
+                tag: "INCORRECT_PARTITION",
+                detect: (input) => Number(input) === total * count,
+                conceptualAnchor: "The total already covers every item. Divide it into equal groups instead of multiplying it again.",
+                remediationStep,
+            },
+        ],
+        fullExplanation: {
+            keyRule: "A unit rate gives the amount for exactly one item.",
+            stepByStep: [
+                { stepNumber: 1, instruction: `Partition the total cost across ${count} equal item segments.`, mathExpression: `${displayNumber(total)} ÷ ${count} = ${displayNumber(unit)}` },
+                { stepNumber: 2, instruction: "Read the value of one segment as the unit rate.", mathExpression: `1 item × ${displayNumber(unit)} = ${displayNumber(unit)} dollars per item` },
+            ],
+            distractorAnalysis: `The total ${displayNumber(total)} is for ${count} items. The rate for one item is ${displayNumber(unit)}.`,
+        },
+    };
+}
+export function adaptPercentPartItem(item, evaluateAnswer) {
+    const direct = item.question.match(/^(?:Find|What is) (\d+)% of ([\d.]+)[.?]$/i);
+    const missing = item.question.match(/^(\d+)% of ([\d.]+) is x\. Find x\.$/i);
+    const match = direct || missing;
+    if (!match || !item.answers?.length)
+        return null;
+    const percent = Number(match[1]);
+    const whole = Number(match[2]);
+    if (!Number.isInteger(percent) || percent <= 0 || percent > 100 || !Number.isFinite(whole) || whole <= 0)
+        return null;
+    const { part: selectedParts, whole: wholeParts } = percentParts(percent);
+    if (wholeParts > 24 || selectedParts > 24)
+        return null;
+    const unit = whole / wholeParts;
+    const answer = selectedParts * unit;
+    const expected = Number(item.answers[0]);
+    if (!Number.isFinite(expected) || Math.abs(answer - expected) > 1e-9)
+        return null;
+    const tier = Math.max(1, Math.min(4, Number(item.tier) || 2));
+    const schema = createRatioExercise({
+        id: `percent-part-${percent}-${displayNumber(whole)}`,
+        standard: item.skill?.standard || "6.RP.A.3",
+        tier,
+        trackALabel: "Whole (100%)",
+        trackBLabel: `Part (${percent}%)`,
+        trackAUnits: wholeParts,
+        trackBUnits: selectedParts,
+        unitVal: unit,
+    });
+    const remediationStep = {
+        scaffoldPrompt: `Partition the whole into ${wholeParts} equal parts. Build the ${selectedParts} parts that make ${percent}%.`,
+        targetSubQuestion: "Value of one equal part",
+        expectedSubValue: displayNumber(unit),
+        manipulativeActionHint: "Select all whole segments and the percent part segments.",
+    };
+    return {
+        ...schema,
+        prompt: item.question,
+        correctAnswer: item.answers[0],
+        evaluateAnswer,
+        siblingKind: "PERCENT_PART",
+        misconceptions: [
+            {
+                id: "WHOLE_AS_PART",
+                tag: "UNIT_MISMATCH",
+                detect: (input) => Number(input) === whole,
+                conceptualAnchor: `${displayNumber(whole)} is the whole, or 100%. The question asks for ${percent}% of it.`,
+                remediationStep,
+            },
+            {
+                id: "PERCENT_AS_AMOUNT",
+                tag: "UNIT_MISMATCH",
+                detect: (input) => Number(input) === percent,
+                conceptualAnchor: `${percent} tells the number of parts per hundred, not the amount in this whole. Partition the whole first.`,
+                remediationStep,
+            },
+            {
+                id: "MISSING_PERCENT_DIVISION",
+                tag: "INCORRECT_PARTITION",
+                detect: (input) => Number(input) === percent * whole,
+                conceptualAnchor: "A percent is per hundred. Multiplying by the percent without dividing by 100 makes the part too large.",
+                remediationStep,
+            },
+        ],
+        fullExplanation: {
+            keyRule: "A percent names a part of a whole measured out of one hundred equal parts.",
+            stepByStep: [
+                { stepNumber: 1, instruction: `Use the simplest equal-part model for ${percent}%.`, mathExpression: `${displayNumber(whole)} ÷ ${wholeParts} = ${displayNumber(unit)}` },
+                { stepNumber: 2, instruction: `Take ${selectedParts} of those equal parts.`, mathExpression: `${selectedParts} × ${displayNumber(unit)} = ${displayNumber(answer)}` },
+            ],
+            distractorAnalysis: `${displayNumber(whole)} is the full 100%. The requested ${percent}% is ${displayNumber(answer)}.`,
+        },
+    };
+}
+export function adaptPercentWholeItem(item, evaluateAnswer) {
+    const match = item.question.match(/^([\d.]+) is (\d+)% of what number\?$/i);
+    if (!match || !item.answers?.length)
+        return null;
+    const part = Number(match[1]);
+    const percent = Number(match[2]);
+    if (!Number.isFinite(part) || part <= 0 || !Number.isInteger(percent) || percent <= 0 || percent >= 100)
+        return null;
+    const { part: partSegments, whole: wholeSegments } = percentParts(percent);
+    if (partSegments > 24 || wholeSegments > 24)
+        return null;
+    const unit = part / partSegments;
+    const whole = wholeSegments * unit;
+    const expected = Number(item.answers[0]);
+    if (!Number.isFinite(expected) || Math.abs(whole - expected) > 1e-9)
+        return null;
+    const tier = Math.max(1, Math.min(4, Number(item.tier) || 2));
+    const schema = createRatioExercise({
+        id: `percent-whole-${percent}-${displayNumber(part)}`,
+        standard: item.skill?.standard || "6.RP.A.3",
+        tier,
+        trackALabel: `Known part (${percent}%)`,
+        trackBLabel: "Whole (100%)",
+        trackAUnits: partSegments,
+        trackBUnits: wholeSegments,
+        unitVal: unit,
+    });
+    const remediationStep = {
+        scaffoldPrompt: `Build ${partSegments} equal parts for the known ${percent}%, then build all ${wholeSegments} parts of the whole.`,
+        targetSubQuestion: "Value of one equal part",
+        expectedSubValue: displayNumber(unit),
+        manipulativeActionHint: "Select all segments on both tracks.",
+    };
+    return {
+        ...schema,
+        prompt: item.question,
+        correctAnswer: item.answers[0],
+        evaluateAnswer,
+        siblingKind: "PERCENT_WHOLE",
+        misconceptions: [
+            {
+                id: "PART_AS_WHOLE",
+                tag: "UNIT_MISMATCH",
+                detect: (input) => Number(input) === part,
+                conceptualAnchor: `${displayNumber(part)} is only ${percent}% of the whole. Build up to 100% to find the full amount.`,
+                remediationStep,
+            },
+            {
+                id: "PERCENT_AS_WHOLE",
+                tag: "UNIT_MISMATCH",
+                detect: (input) => Number(input) === percent,
+                conceptualAnchor: `${percent} is the percent label, not the total amount. Use the known part to find one equal segment.`,
+                remediationStep,
+            },
+            {
+                id: "PERCENT_OF_PART",
+                tag: "INCORRECT_PARTITION",
+                detect: (input) => Number(input) === (part * percent) / 100,
+                conceptualAnchor: "Taking the percent of the known part makes a smaller part. Scale the known part up to 100% instead.",
+                remediationStep,
+            },
+        ],
+        fullExplanation: {
+            keyRule: "The known part is less than the whole; divide it into equal percent parts, then build 100%.",
+            stepByStep: [
+                { stepNumber: 1, instruction: `Find one of the ${partSegments} equal parts in the known ${percent}%.`, mathExpression: `${displayNumber(part)} ÷ ${partSegments} = ${displayNumber(unit)}` },
+                { stepNumber: 2, instruction: `Build all ${wholeSegments} parts of the whole.`, mathExpression: `${wholeSegments} × ${displayNumber(unit)} = ${displayNumber(whole)}` },
+            ],
+            distractorAnalysis: `${displayNumber(part)} is the ${percent}% part. The complete 100% whole is ${displayNumber(whole)}.`,
+        },
+    };
 }
 export const SEED_EXERCISE = {
     id: "6.RP.A.3_RATIO_TAPE_01",

@@ -168,6 +168,46 @@ try {
     return { second: [second?.modelConfig.trackAUnits, second?.modelConfig.trackBUnits, second?.modelConfig.unitVal, second?.correctAnswer], first: [first?.modelConfig.trackAUnits, first?.modelConfig.trackBUnits, first?.modelConfig.unitVal, first?.correctAnswer], invalid };
   });
   assert.deepEqual(equivalent, { second: [3, 5, 4, '20'], first: [5, 3, 4, '12'], invalid: null });
+  const unitRates = await page.evaluate(async () => {
+    const { adaptUnitRateItem, makeSibling } = await import('/src/components/MathFluencyLabEngine.js');
+    const whole = adaptUnitRateItem({ question: '24 dollars for 3 items: what is the unit rate?', answers: ['8'] });
+    const decimal = adaptUnitRateItem({ question: '7.5 for 3 items. How much for 1 item?', answers: ['2.5'] });
+    const invalid = adaptUnitRateItem({ question: '24 dollars for 3 items: what is the unit rate?', answers: ['9'] });
+    const nonnumeric = adaptUnitRateItem({ question: '24 dollars for 3 items: what is the unit rate?', answers: ['unknown'] });
+    const sibling = makeSibling(decimal, 1);
+    return { whole: [whole?.modelConfig.trackAUnits, whole?.modelConfig.trackBUnits, whole?.modelConfig.unitVal, whole?.correctAnswer], decimal: [decimal?.modelConfig.unitVal, decimal?.misconceptions[0].detect('7.5', {})], sibling: [sibling.prompt, sibling.correctAnswer, sibling.siblingKind], invalid, nonnumeric };
+  });
+  assert.deepEqual(unitRates, { whole: [3, 1, 8, '8'], decimal: [2.5, true], sibling: ['15 dollars for 3 items: what is the unit rate?', '5', 'UNIT_RATE'], invalid: null, nonnumeric: null });
+  const largeUnit = await page.evaluate(async () => {
+    const { adaptUnitRateItem, MathFluencyLabEngine } = await import('/src/components/MathFluencyLabEngine.js');
+    const host = document.createElement('div');
+    host.id = 'publisher-large-unit-test';
+    document.body.append(host);
+    new MathFluencyLabEngine(host.id).loadExercise(adaptUnitRateItem({ question: '75 dollars for 3 items: what is the unit rate?', answers: ['25'] }));
+    const tape = host.shadowRoot.querySelector('interactive-ratio-tape');
+    tape.select('A', 1);
+    return { segment: tape.shadowRoot.querySelector('[data-track="A"]').textContent, total: tape.getModelValues().totalA };
+  });
+  assert.deepEqual(largeUnit, { segment: '25', total: 25 }, 'model segment values do not cap a valid unit rate');
+  const percentParts = await page.evaluate(async () => {
+    const { adaptPercentPartItem, makeSibling } = await import('/src/components/MathFluencyLabEngine.js');
+    const direct = adaptPercentPartItem({ question: 'Find 25% of 60.', answers: ['15'] });
+    const missing = adaptPercentPartItem({ question: '75% of 44 is x. Find x.', answers: ['33'] });
+    const invalid = adaptPercentPartItem({ question: 'Find 25% of 60.', answers: ['20'] });
+    const nonnumeric = adaptPercentPartItem({ question: 'Find 25% of 60.', answers: ['unknown'] });
+    const sibling = makeSibling(direct, 1);
+    return { direct: [direct?.modelConfig.trackAUnits, direct?.modelConfig.trackBUnits, direct?.modelConfig.unitVal, direct?.misconceptions[0].detect('60', {})], missing: missing?.correctAnswer, sibling: [sibling.prompt, sibling.correctAnswer, sibling.siblingKind], invalid, nonnumeric };
+  });
+  assert.deepEqual(percentParts, { direct: [4, 1, 15, true], missing: '33', sibling: ['Find 25% of 120.', '30', 'PERCENT_PART'], invalid: null, nonnumeric: null });
+  const percentWhole = await page.evaluate(async () => {
+    const { adaptPercentWholeItem, makeSibling } = await import('/src/components/MathFluencyLabEngine.js');
+    const valid = adaptPercentWholeItem({ question: '15 is 25% of what number?', answers: ['60'] });
+    const invalid = adaptPercentWholeItem({ question: '15 is 25% of what number?', answers: ['45'] });
+    const nonnumeric = adaptPercentWholeItem({ question: '15 is 25% of what number?', answers: ['unknown'] });
+    const sibling = makeSibling(valid, 1);
+    return { model: [valid?.modelConfig.trackAUnits, valid?.modelConfig.trackBUnits, valid?.modelConfig.unitVal], answer: valid?.correctAnswer, partAsWhole: valid?.misconceptions[0].detect('15', {}), sibling: [sibling.prompt, sibling.correctAnswer, sibling.siblingKind], invalid, nonnumeric };
+  });
+  assert.deepEqual(percentWhole, { model: [1, 4, 15], answer: '60', partAsWhole: true, sibling: ['30 is 25% of what number?', '120', 'PERCENT_WHOLE'], invalid: null, nonnumeric: null });
   const customAnswer = await page.evaluate(async () => {
     const { MathFluencyLabEngine, SEED_EXERCISE } = await import('/src/components/MathFluencyLabEngine.js');
     const host = document.createElement('div');

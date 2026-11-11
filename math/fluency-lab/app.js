@@ -127,7 +127,7 @@ import {
   renderTactileExpressionDecomposer,
   renderTomorrowTableKit,
 } from "./fluency-2-innovations.js";
-import { MathFluencyLabEngine, adaptEquivalentRatioItem, adaptProportionItem } from "../../src/components/MathFluencyLabEngine.js";
+import { MathFluencyLabEngine, adaptEquivalentRatioItem, adaptPercentPartItem, adaptPercentWholeItem, adaptProportionItem, adaptUnitRateItem } from "../../src/components/MathFluencyLabEngine.js";
 
 // teacher-4.js is teacher-only; lazy-load it only when the teacher view is opened so anonymous student
 // page loads never trigger an HTTP 401 Basic Auth challenge during initial boot.
@@ -1205,6 +1205,12 @@ function mountPublisherPractice(restoredItem, publisherSnapshot) {
     ? adaptProportionItem(state.item, validate)
     : skillKey === "6:ratios"
       ? adaptEquivalentRatioItem(state.item, validate)
+      : ["6:unit-rates", "7:unit-rate"].includes(skillKey)
+        ? adaptUnitRateItem(state.item, validate)
+        : skillKey === "6:percent"
+          ? adaptPercentPartItem(state.item, validate)
+          : skillKey === "6:percent-whole"
+            ? adaptPercentWholeItem(state.item, validate)
       : null;
   if (!schema) return false;
   const root = document.createElement("div");
