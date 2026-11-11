@@ -85,6 +85,10 @@ function page1(m, state, href, qr) {
         <p class="ig-startlink">
           ${p.start.text} ${linkWithUrl(p.start.link, href(p.start.link.route, "start"))}
         </p>
+        <p class="ig-more">
+          ${p.start.more.text}
+          ${p.start.more.links.map((l, i) => html`${i ? " · " : ""}<a href="${href(l.route, "file")}">${l.text}</a> <span class="ig-route">${l.route}</span>`)}
+        </p>
       </div>
       <figure class="ig-qr">
         <img src="${qr.start}" width="96" height="96" alt="${p.start.qrAlt}" />

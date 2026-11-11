@@ -17,6 +17,11 @@ import { join } from "node:path";
 import { test } from "node:test";
 import { Resvg } from "@resvg/resvg-js";
 import JSZip from "jszip";
+import { ACTIVITY_GUIDE } from "../access-practice-lab/src/intro/activity-guide-data.js";
+import {
+  buildActivityGuideModel,
+  GUIDE_ORDER,
+} from "../access-practice-lab/src/intro/activity-guide-model.js";
 import {
   ACTIVITY_BY_ID,
   absUrl,
@@ -35,6 +40,29 @@ import {
   ROOM_SETUP,
 } from "../access-practice-lab/src/intro/presenter-notes.js";
 import { QR_START_URL, qrStartSvg } from "../access-practice-lab/src/intro/qr-start-svg.js";
+import {
+  buildDirectory,
+  countIndexActivities,
+  ROUTE_SHAPE,
+} from "../access-practice-lab/src/intro/site-directory-model.js";
+import { directoryModel } from "../scripts/lib/intro-directory-build.mjs";
+
+const INDEX = JSON.parse(
+  readFileSync(new URL("../access-practice-lab/content/index.json", import.meta.url), "utf8"),
+);
+const DIRECTORY = directoryModel("test");
+const directoryRows = (m) =>
+  m.bands.flatMap((b) => b.domains.flatMap((d) => d.levels.flatMap((l) => l.rows)));
+const directoryUrls = (m = DIRECTORY) => [
+  ...directoryRows(m).map((r) => r.url),
+  ...m.tests.map((t) => t.url),
+  ...m.places.flatMap((g) => g.items.map((i) => i.url)),
+];
+const activityGuideUrls = () => [
+  ENTRANCE.url,
+  ...buildActivityGuideModel().cards.map((c) => c.link.url),
+];
+
 import {
   buildGuideModel,
   GUIDE_FILES,
@@ -209,6 +237,51 @@ test("file names never contain the substring that Pages gates behind the teacher
   for (const f of readdirSync(GUIDES)) assert.doesNotMatch(f, /teacher/i, f);
 });
 
+test("activity guide: one card per ACTIVITY_GUIDE entry, curated first, every card complete", () => {
+  const m = buildActivityGuideModel();
+  assert.deepEqual(m.cards.map((c) => c.id).sort(), ACTIVITY_GUIDE.map((g) => g.id).sort());
+  assert.deepEqual(
+    m.cards.map((c) => c.id),
+    GUIDE_ORDER,
+  );
+  assert.deepEqual(GUIDE_ORDER.slice(0, 4), ["hallway", "board", "upgrade", "paragraph"]);
+  for (const c of m.cards) {
+    for (const k of ["name", "kind", "icon", "does", "why", "time", "open", "feedback"])
+      assert.ok(c[k], `${c.id} lacks ${k}`);
+    assert.equal(c.link.url, absUrl(ACTIVITY_BY_ID[c.id].route));
+    assert.ok(
+      c.steps.length >= 3 && c.builtIn.length >= 1 && c.stuck.length >= 1,
+      `${c.id} steps, help, fixes`,
+    );
+    assert.ok(c.teach.before && c.teach.during && c.teach.after, `${c.id} before, during, after`);
+  }
+  assert.equal(m.howTo.points.length, 5);
+});
+
+test("site directory: every index activity once, every link in a route shape parseRoute knows", () => {
+  const rows = directoryRows(DIRECTORY);
+  assert.equal(DIRECTORY.total, countIndexActivities(INDEX));
+  assert.equal(rows.length, countIndexActivities(INDEX));
+  assert.equal(new Set(rows.map((r) => r.url)).size, rows.length, "no activity listed twice");
+  for (const r of rows) assert.match(r.route, ROUTE_SHAPE, r.route);
+  for (const t of DIRECTORY.tests) assert.match(t.route, ROUTE_SHAPE, t.route);
+  assert.equal(DIRECTORY.tests.length, INDEX.tests.length);
+  assert.deepEqual(
+    DIRECTORY.bands.map((b) => b.id),
+    ["K", "1", "2-3", "3-5", "6-8"].filter((b) => INDEX.bands[b]),
+  );
+  assert.ok(DIRECTORY.places.length >= 5 && DIRECTORY.places.every((g) => g.items.length));
+  for (const i of DIRECTORY.places.flatMap((g) => g.items)) {
+    assert.match(i.url, /^https:\/\/(thelanguagepage|eduwonderlab)\.com\//, i.url);
+    if (/teacher/i.test(i.url)) assert.ok(i.gated, `${i.label} is marked password required`);
+  }
+  // the model is pure: the same index gives the same directory
+  assert.deepEqual(
+    buildDirectory(INDEX, { generated: "x" }).bands,
+    buildDirectory(INDEX, { generated: "x" }).bands,
+  );
+});
+
 // ── the one QR code ───────────────────────────────────────────────────────────────────────────────────────────────
 test("the QR files are the single code for ENTRANCE.url, and the importable module matches", () => {
   const svg = readFileSync(join(GUIDES, "qr-start.svg"), "utf8").trim();
@@ -249,8 +322,19 @@ test("a scanner decodes the QR PNG and SVG back to ENTRANCE.url", {
 });
 
 // ── PDFs ──────────────────────────────────────────────────────────────────────────────────────────────────────────
+const LAB_PREFIX = "https://thelanguagepage.com/access-practice-lab/";
 const PDFS = [
   { file: "quick-guide.pdf", pages: [2, 2], urls: () => guideUrls(), qr: true },
+  { file: "activity-guide.pdf", pages: [7, 7], urls: activityGuideUrls, qr: true },
+  {
+    file: "site-directory.pdf",
+    pages: [10, 90],
+    urls: () => directoryUrls(),
+    exact: true,
+    outline: true,
+    maxBytes: 2 * 1024 * 1024,
+    prefixes: ["https://thelanguagepage.com/", "https://eduwonderlab.com/"],
+  },
   {
     file: "featured-lesson-backup.pdf",
     pages: [2, 2],
@@ -270,7 +354,10 @@ for (const spec of PDFS) {
   }, () => {
     const path = join(GUIDES, spec.file);
     const bytes = readFileSync(path);
-    assert.ok(bytes.length < 1024 * 1024, `${spec.file} must stay under 1 MB`);
+    assert.ok(
+      bytes.length < (spec.maxBytes || 1024 * 1024),
+      `${spec.file} is ${bytes.length} bytes`,
+    );
     const pages = pdfPages(path);
     assert.ok(pages >= spec.pages[0] && pages <= spec.pages[1], `${spec.file} has ${pages} pages`);
     const info = execFileSync("pdfinfo", [path], { encoding: "utf8" });
@@ -294,9 +381,12 @@ for (const spec of PDFS) {
     for (const u of spec.urls()) assert.ok(uris.has(u), `${spec.file} lacks a link to ${u}`);
     for (const u of uris)
       assert.ok(
-        u.startsWith("https://thelanguagepage.com/access-practice-lab/"),
+        (spec.prefixes || [LAB_PREFIX]).some((p) => u.startsWith(p)),
         `${spec.file}: stray link ${u}`,
       );
+    if (spec.exact)
+      assert.equal(uris.size, new Set(spec.urls()).size, `${spec.file}: one link per listed page`);
+    if (spec.outline) assert.match(raw, /\/Outlines/, `${spec.file} has PDF bookmarks`);
     assert.ok(
       ![...uris].some((u) => /[?&]intro=/.test(u)),
       "the print copy carries plain URLs, not the on-screen return parameter",
@@ -307,7 +397,12 @@ for (const spec of PDFS) {
 test("the PDFs show no text outside the page and every page has content (rasterized and inspected for ink)", {
   skip: skip(tools.poppler, "poppler"),
 }, () => {
-  for (const f of ["quick-guide.pdf", "featured-lesson-backup.pdf", "presenter-notes.pdf"]) {
+  for (const f of [
+    "quick-guide.pdf",
+    "featured-lesson-backup.pdf",
+    "presenter-notes.pdf",
+    "activity-guide.pdf",
+  ]) {
     const pngs = rasterize(join(GUIDES, f), 40);
     for (const p of pngs) assert.ok(statSync(p).size > 3000, `${f}: ${p} looks blank`);
   }
@@ -316,6 +411,8 @@ test("the PDFs show no text outside the page and every page has content (rasteri
 // ── Word files ────────────────────────────────────────────────────────────────────────────────────────────────────
 const DOCXS = [
   { file: "quick-guide.docx", pages: [2, 2], urls: () => guideUrls() },
+  { file: "activity-guide.docx", pages: [7, 7], urls: activityGuideUrls },
+  { file: "site-directory.docx", pages: [5, 90], urls: () => directoryUrls() },
   {
     file: "featured-lesson-backup.docx",
     pages: [2, 2],
@@ -373,7 +470,7 @@ test("every printed QR scans to ENTRANCE.url (PDF pages and Word pages, rasteriz
   ),
 }, () => {
   const pages = [];
-  for (const f of ["quick-guide", "presenter-notes"]) {
+  for (const f of ["quick-guide", "presenter-notes", "activity-guide"]) {
     pages.push(rasterize(join(GUIDES, `${f}.pdf`))[0]);
     pages.push(rasterize(docxToPdf(join(GUIDES, `${f}.docx`)))[0]);
   }

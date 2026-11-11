@@ -1,5 +1,4 @@
 // Small shared pieces of the introduction pages (teacher start, tour, exploration, featured lesson, presenter view).
-import { crumbsHTML } from "../components.js";
 import { BASE, html, icon } from "../util.js";
 import { ACTIVITIES, ACTIVITY_BY_ID, PATHWAYS, ROUTES } from "./data.js";
 import { previewHTML } from "./preview.js";
@@ -9,30 +8,14 @@ export const labHref = (route) => `${BASE}${route}`;
 /** Link to an activity that offers a way back to `from` (see return-bar.js). */
 export const activityHref = (activity, from) => withReturn(labHref(activity.route), from);
 
-export function introCrumbs(title, extra = []) {
-  return crumbsHTML([
-    ["Lab", `${BASE}/`],
-    ["Start Here", labHref(ROUTES.start)],
-    ...extra,
-    [title, null],
-  ]);
-}
-
-/** The shared header block: eyebrow, the one h1, one sentence. */
-export const pageHead = ({ eyebrow, title, lead }) => html`<header class="in-head">
-  <p class="eyebrow">${eyebrow}</p>
-  <h1 id="introTitle" tabindex="-1">${title}</h1>
-  <p class="in-lead">${lead}</p>
-</header>`;
-
 /** An activity opened in this tab: name, what students do, time, one button. */
-export function activityCard(a, from, { cta = "Open activity", showUse = false } = {}) {
+export function activityCard(a, from, { cta = "Open activity", showUse = false, howTo = false } = {}) {
   return html`<article class="in-act pw-${a.pathway}">
     <h3><span class="in-ic" aria-hidden="true">${icon(a.icon)}</span>${a.name}</h3>
     <p class="in-where">${a.where} · ${a.time}</p>
     <p>${a.does}</p>
     ${showUse ? html`<p><strong>Classroom use:</strong> ${a.classroomUse}</p>` : ""}
-    <a class="btn" href="${activityHref(a, from)}">${cta}<span class="visually-hidden">: ${a.name}</span>${icon("arrow-right")}</a>
+    <p class="in-actions"><a class="btn" href="${activityHref(a, from)}">${cta}<span class="visually-hidden">: ${a.name}</span>${icon("arrow-right")}</a>${howTo ? html`<a class="btn ghost" href="${labHref(ROUTES.activities)}#act-${a.id}">Full how-to<span class="visually-hidden">: ${a.name}</span></a>` : ""}</p>
     ${previewHTML(a)}
   </article>`;
 }

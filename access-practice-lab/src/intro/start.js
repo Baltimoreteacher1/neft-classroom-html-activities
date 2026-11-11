@@ -5,10 +5,11 @@
 //   /start/lesson   featured lesson             /start/present   presenter view (30 minutes)
 // The route names avoid the word "teacher": Pages gates any path containing it behind the teacher password.
 import { html, icon } from "../util.js";
-import { START_CHOICES } from "./data.js";
+import { FEATURED_LESSON, ROUTES, START_CHOICES } from "./data.js";
 import { loadIntro } from "./state.js";
 import { onOverviewClick, overviewHTML } from "./start-overview.js";
-import { labHref, pageHead } from "./ui.js";
+import { teacherBand } from "./shell.js";
+import { labHref } from "./ui.js";
 
 const PAGES = {
   tour: () => import("./tour.js"),
@@ -16,6 +17,7 @@ const PAGES = {
   guide: () => import("./quick-guide.js"),
   lesson: () => import("./lesson.js"),
   present: () => import("./present.js"),
+  activities: () => import("./activities.js"),
 };
 
 let current = null;
@@ -31,16 +33,26 @@ function choiceHTML(c, resume) {
   </li>`;
 }
 
+const CHIPS = ["2 pathways · 4 activities", "No student accounts", "Students choose their help", "Feedback, never scores"];
+
 function hubHTML() {
   const saved = loadIntro().tour;
   const resume = saved && Number.isInteger(saved.stop) && saved.stop > 0 ? saved.stop + 1 : 0;
+  const L = FEATURED_LESSON;
   return html`<article class="in-page in-hub" aria-labelledby="introTitle">
-    ${pageHead({
-      eyebrow: "For teachers",
+    ${teacherBand({
+      active: "overview",
+      size: "hub",
+      eyebrow: "For teachers · The Language Page",
       title: "Start Here: Speaking and Writing",
       lead: "Try one speaking activity and one writing activity as a learner, then leave with a lesson you can use.",
+      meta: html`<ul class="ts-chips" aria-label="At a glance">${CHIPS.map((c) => html`<li>${c}</li>`)}</ul>`,
+      aside: html`<a class="ts-feature" href="${labHref(ROUTES.lesson)}">
+        <img src="${L.picture.src}" alt="" width="320" height="200" />
+        <span class="ts-feature-text"><small>${L.label} · ${L.minutes} minutes</small><strong>${L.title}</strong></span>
+      </a>`,
     })}
-    <ul class="in-choices" aria-label="Three ways to start">
+    <ul class="in-choices ts-lift" aria-label="Three ways to start">
       ${START_CHOICES.map((c) => choiceHTML(c, resume))}
     </ul>
     ${overviewHTML()}

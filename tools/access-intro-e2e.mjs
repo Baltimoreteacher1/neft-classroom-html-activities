@@ -57,6 +57,12 @@ const open = async (path, { width } = {}) => {
   await page.waitForSelector("#app > :not(.boot):not(.route-loading)");
   return page;
 };
+async function landingView(href) {
+  const p = await open(href.replace("/access-practice-lab", ""));
+  const h = await p.locator("#app h1").first().innerText();
+  await p.close();
+  return h;
+}
 const heading = (p) => p.locator("#app h1").first().innerText();
 const path = (p) =>
   new URL(p.url()).pathname.replace("/access-practice-lab", "") + new URL(p.url()).search;
@@ -104,7 +110,7 @@ await page.locator(".lph-start.is-teacher > .btn").click();
 await page.waitForSelector(".in-tour");
 ok(path(page).startsWith("/start/tour"), "Start the Teacher Tour opens the tour");
 ok(
-  (await page.locator(".in-head .eyebrow").innerText()).includes("Step 1 of 5"),
+  (await page.locator(".ts-progress-text").innerText()).includes("Step 1 of 5"),
   "tour shows Step 1 of 5",
 );
 
@@ -113,7 +119,7 @@ await page.locator('input[name="tour-need"][value="speaking"]').check();
 await page.getByRole("link", { name: /^Next: Try speaking/ }).click();
 await page.waitForSelector(".in-tour");
 ok(
-  (await page.locator(".in-head .eyebrow").innerText()).includes("Step 2 of 5") &&
+  (await page.locator(".ts-progress-text").innerText()).includes("Step 2 of 5") &&
     (await heading(page)).includes("Try speaking"),
   "Next moves to stop 2",
 );
@@ -153,7 +159,7 @@ ok(
 await page.locator("#introReturn a").click();
 await page.waitForSelector(".in-tour");
 ok(
-  (await page.locator(".in-head .eyebrow").innerText()).includes("Step 2 of 5"),
+  (await page.locator(".ts-progress-text").innerText()).includes("Step 2 of 5"),
   "returning lands on the same tour step",
 );
 ok((await page.locator("#introReturn").count()) === 0, "the return bar goes away on the tour");
@@ -166,7 +172,7 @@ ok(
 await page.reload();
 await page.waitForSelector(".in-tour");
 ok(
-  (await page.locator(".in-head .eyebrow").innerText()).includes("Step 2 of 5"),
+  (await page.locator(".ts-progress-text").innerText()).includes("Step 2 of 5"),
   "reload resumes the tour on this device",
 );
 await axe(page, "tour step 2");
@@ -181,7 +187,7 @@ ok(
 for (let i = 0; i < 3; i++) await page.getByRole("link", { name: /^Next:/ }).click();
 await page.waitForSelector(".in-tour");
 ok(
-  (await page.locator(".in-head .eyebrow").innerText()).includes("Step 5 of 5") &&
+  (await page.locator(".ts-progress-text").innerText()).includes("Step 5 of 5") &&
     (await page.locator("[data-tour-finish]").count()) === 1,
   "stop 5 offers Finish",
 );
@@ -196,13 +202,25 @@ ok(
   (await page.locator(".in-choice.is-tour strong").innerText()).includes("Resume the tour"),
   "start page offers to resume the saved tour",
 );
-ok((await page.locator(".ov-glance li").count()) === 4, "overview: four at-a-glance facts");
+ok(
+  (await page.locator(".ts-chips li").count()) === 4,
+  "overview: four at-a-glance facts in the band",
+);
+ok(
+  (await page.locator(".ts-nav a[aria-current='page']").innerText()).includes("Overview"),
+  "teacher nav marks Overview",
+);
 ok(
   (await page.locator(".ov-progress li").count()) >= 1 &&
     (await page.locator(".ov-progress").innerText()).includes("Guided Tour: Step 5 of 5"),
   "overview: progress panel shows the saved tour",
 );
-for (const id of ["ov-paths", "ov-lesson", "ov-time", "ov-share", "ov-pd", "ov-families"])
+ok(
+  (await page.locator(".ov-loop li").count()) === 5 &&
+    (await page.locator(".ov-cancan section").count()) === 2,
+  "overview: learning loop and what feedback can and cannot do",
+);
+for (const id of ["ov-how", "ov-paths", "ov-lesson", "ov-time", "ov-share", "ov-pd", "ov-families"])
   ok(
     (await page.locator(`#${id}`).count()) === 1 &&
       (await page.locator(`.ov-jump a[href$="#${id}"]`).count()) === 1,
@@ -399,13 +417,13 @@ ok(
   (await page.locator(".in-notes h3").allInnerTexts()).includes("Say"),
   "presenter notes show on request",
 );
-const slide = () => page.locator(".in-head .eyebrow").innerText();
+const slide = () => page.locator(".ts-progress-text").innerText();
 let seen = 1;
 while (!(await slide()).includes("Slide 8 of 8")) {
   const before = await slide();
   await page.getByRole("link", { name: /^Next$/ }).click();
   await page.waitForFunction(
-    (b) => document.querySelector(".in-head .eyebrow")?.textContent !== b,
+    (b) => document.querySelector(".ts-progress-text")?.textContent !== b,
     before,
   );
   seen++;
@@ -417,6 +435,95 @@ ok(
 await page.getByRole("link", { name: /Start the exploration/ }).click();
 await page.waitForSelector(".in-explore");
 ok(path(page).startsWith("/start/explore"), "handoff lands on the exploration page");
+await page.close();
+
+// ── Activity Guide ─────────────────────────────────────────────────────────
+page = await open("/start/activities");
+ok((await page.locator(".ag-card").count()) === 6, "Activity Guide: six how-to cards");
+ok(
+  (await page.locator(".ag-card .ag-more").count()) === 6 &&
+    !(await page.locator(".ag-why").first().isVisible()),
+  "Activity Guide: quick view keeps the deep layer closed",
+);
+await page.locator('[data-ag-view="full"]').click();
+await page.waitForSelector('[data-ag-view="full"][aria-pressed="true"]');
+ok(
+  (await page.locator(".ag-card .ag-more").count()) === 0 &&
+    (await page.locator(".ag-why").first().isVisible()),
+  "Activity Guide: full detail shows why it works and troubleshooting",
+);
+await page.reload();
+await page.waitForSelector(".in-activities");
+ok(
+  (await page.locator('[data-ag-view="full"]').getAttribute("aria-pressed")) === "true",
+  "Activity Guide: the detail choice is remembered on this device",
+);
+ok(
+  (await page.locator(".ag-card").first().locator(".ag-steps li").count()) >= 4,
+  "Activity Guide: numbered steps on each card",
+);
+ok(
+  (await page.locator(".ts-nav a[aria-current='page']").innerText()).includes("Activity Guide"),
+  "teacher nav marks Activity Guide",
+);
+await page.locator("#act-upgrade [data-ag-copy]").click();
+ok(
+  (await page.evaluate(() => navigator.clipboard.readText())).endsWith(
+    "/scaffold/language-upgrade?item=lu68-argue-phones",
+  ),
+  "Activity Guide: copy student link",
+);
+await page.locator("#act-upgrade a.btn-primary").click();
+await page.waitForSelector("#introReturn");
+ok(
+  (await page.locator("#introReturn a").innerText()).includes("Back to the Activity Guide"),
+  "Activity Guide: activity offers the way back",
+);
+await page.locator("#introReturn a").click();
+await page.waitForSelector(".in-activities");
+await axe(page, "Activity Guide");
+for (const nav of ["Guided Tour", "Explore", "Lesson", "Quick Guide", "Presenter", "Overview"]) {
+  await page.locator(".ts-nav ul a", { hasText: nav }).first().click();
+  await page.waitForFunction(
+    (n) => document.querySelector(".ts-nav a[aria-current='page']")?.textContent.includes(n),
+    nav,
+  );
+}
+ok(true, "teacher nav moves between every teacher page");
+await page.close();
+
+// ── Family grade choice ─────────────────────────────────────────────────────
+page = await open("/practice-together");
+ok((await page.locator("[data-tg-band]").count()) === 3, "family page: three grade choices");
+await page.locator('[data-tg-band="3-5"]').click();
+await page.waitForSelector('[data-tg-band="3-5"][aria-pressed="true"]');
+const starts35 = await page
+  .locator(".tg-start")
+  .evaluateAll((as) => as.map((a) => a.getAttribute("href")));
+ok(
+  starts35.length === 2 &&
+    /class-garden\?grades=3-5/.test(starts35[0]) &&
+    /lu35-explain-plants&grades=3-5/.test(starts35[1]),
+  "family page: grades 3–5 open that band's own activities",
+);
+const dest = await landingView(starts35[0]);
+ok(dest.includes("Our Class Garden"), "family page: the grades 3–5 talk activity opens");
+await page.locator('[data-tg-band="k-2"]').click();
+await page.waitForSelector('[data-tg-band="k-2"][aria-pressed="true"]');
+ok(
+  (await page.locator(".tg-start").count()) === 1 &&
+    /\/early\?grades=K/.test(await page.locator(".tg-start").getAttribute("href")),
+  "family page: grades K–2 go to the early learners home",
+);
+await page.reload();
+await page.waitForSelector(".tg-page");
+ok(
+  (await page.locator('[data-tg-band="k-2"]').getAttribute("aria-pressed")) === "true",
+  "family page: the grade choice is remembered on this device",
+);
+await page.locator('[data-tg-band="6-8"]').click();
+await page.waitForSelector('[data-tg-band="6-8"][aria-pressed="true"]');
+await axe(page, "family page with grade choice");
 await page.close();
 
 // ── existing routes untouched ──────────────────────────────────────────────

@@ -11,6 +11,7 @@ import {
   PLANNING_PROMPTS,
   REHEARSAL_FRAME,
   ROUTES,
+  SITE,
   absUrl,
   activitiesFor,
   shortUrl,
@@ -22,6 +23,8 @@ export const GUIDE_FILES = {
   downloads: [
     { id: "guide", name: "Quick Guide (2 pages)", ...DOWNLOADS.quickGuide },
     { id: "lesson", name: "Featured Lesson backup (2 pages)", ...DOWNLOADS.lessonBackup },
+    { id: "activities", name: "Activity Guide", ...DOWNLOADS.activityGuide },
+    { id: "directory", name: "Site Directory (appendix)", ...DOWNLOADS.directory },
     { id: "notes", name: "Presenter notes", ...DOWNLOADS.presenterNotes },
   ],
 };
@@ -78,6 +81,13 @@ export function buildGuideModel() {
         text: "One link opens the tour, the exploration, the lesson and the Site Guide:",
         link: link("The Language Page: Start Here", ENTRANCE.route),
         qrAlt: `QR code for ${ENTRANCE.short}, the teacher starting page.`,
+        more: {
+          text: "How to use each activity, and every activity on the site:",
+          links: [
+            link("Activity Guide", DOWNLOADS.activityGuide.pdf.replace(SITE.base, "")),
+            link("Site Directory", DOWNLOADS.directory.pdf.replace(SITE.base, "")),
+          ],
+        },
       },
     },
     page2: {
@@ -131,6 +141,7 @@ export function guideUrls(model = buildGuideModel()) {
   const { page1, page2 } = model;
   return [
     page1.start.link.url,
+    ...page1.start.more.links.map((l) => l.url),
     ...page1.pathways.flatMap((p) => p.activities.map((a) => a.link.url)),
     page2.links.activity.url,
     page2.links.lesson.url,

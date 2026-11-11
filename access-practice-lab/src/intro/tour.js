@@ -5,7 +5,9 @@ import { html, icon } from "../util.js";
 import { FEATURED_LESSON, TOUR_STOPS, ROUTES, PATHWAYS, ACTIVITIES } from "./data.js";
 import { clearIntro, loadIntro, SAVED_NOTE, updateIntro } from "./state.js";
 import { TOUR_COPY } from "./tour-data.js";
-import { activityHref, findActivity, introCrumbs, labHref } from "./ui.js";
+import { previewHTML } from "./preview.js";
+import { progressHTML, stepRailHTML, teacherBand } from "./shell.js";
+import { activityHref, findActivity, labHref } from "./ui.js";
 import { withReturn } from "./return-bar.js";
 
 const LAST = TOUR_STOPS.length - 1;
@@ -96,40 +98,35 @@ export async function render(ctx) {
   const resumed = !ctx.route.stop && n > 0;
   return {
     title: `Guided Tour: ${meta.name}`,
-    html: html`${introCrumbs("Guided Tour")}
-      <article class="in-page in-tour" aria-labelledby="introTitle">
-        <header class="in-head">
-          <p class="eyebrow">Guided Tour · Step ${n + 1} of ${TOUR_STOPS.length}</p>
-          <h1 id="introTitle" tabindex="-1"><span class="in-ic" aria-hidden="true">${icon(meta.icon)}</span>${meta.name}</h1>
-          <p class="in-lead">${copy.purpose}</p>
-          ${resumed ? html`<p class="in-note">You are back where you stopped. <a href="${tourHref(0)}">Start from Step 1</a>.</p>` : ""}
-        </header>
-        <nav class="in-steps" aria-label="Tour steps">
-          <ol>
-            ${TOUR_STOPS.map(
-              (s, i) => html`<li ${i === n ? html`aria-current="step"` : ""} class="${tour.tried?.[s.id] ? "is-tried" : ""}">
-                <a href="${tourHref(i)}"><span class="in-num">${i + 1}</span><span class="in-step-name">${s.name}</span>${tour.tried?.[s.id] ? html`<span class="visually-hidden"> (tried)</span>` : ""}</a>
-              </li>`,
-            )}
-          </ol>
-        </nav>
-        <section class="in-panel" aria-labelledby="tourDo">
-          <h2 id="tourDo">Do this</h2>
+    html: html`<article class="in-page in-tour" aria-labelledby="introTitle">
+        ${teacherBand({
+          active: "tour",
+          eyebrow: "Guided Tour",
+          title: meta.name,
+          lead: copy.purpose,
+          meta: html`${progressHTML(n, TOUR_STOPS.length, `Step ${n + 1} of ${TOUR_STOPS.length}`)}${resumed ? html`<p class="ts-note">You are back where you stopped. <a href="${tourHref(0)}">Start from Step 1</a>.</p>` : ""}`,
+        })}
+        <div class="ts-layout">
+          ${stepRailHTML({ label: "Tour steps", steps: TOUR_STOPS, current: n, hrefFor: tourHref, doneFor: (s) => Boolean(tour.tried?.[s.id]) })}
+          <div class="ts-main">
+        <section class="in-panel ts-do" aria-labelledby="tourDo">
+          <h2 id="tourDo"><span class="in-ic" aria-hidden="true">${icon(meta.icon)}</span>Do this</h2>
           <p class="in-action">${copy.action}</p>
           ${viewHTML(copy)}
+          ${copy.activity ? previewHTML(findActivity(copy.activity), { label: "What you will see" }) : ""}
           ${link ? html`<p><a class="btn btn-primary btn-big" href="${link.href}">${link.label}${icon("arrow-right")}</a></p><p class="fine">It opens in this tab. Use the bar at the bottom of that page, or your browser’s Back button, to return to Step ${n + 1}.</p>` : ""}
         </section>
         <section class="in-panel in-notice" aria-labelledby="tourNotice">
-          <h2 id="tourNotice">Notice this</h2>
+          <h2 id="tourNotice"><span class="in-ic" aria-hidden="true">${icon("bulb")}</span>Notice this</h2>
           <p>${copy.notice}</p>
         </section>
         <section class="in-panel" aria-labelledby="tourTurn">
-          <h2 id="tourTurn">Your turn</h2>
+          <h2 id="tourTurn"><span class="in-ic" aria-hidden="true">${icon("writing")}</span>Your turn</h2>
           ${copy.fields.map((f) => fieldHTML(f, notes))}
           ${copy.tried ? html`<label class="in-opt in-tried"><input type="checkbox" data-tour-tried="${copy.id}" ${tour.tried?.[copy.id] ? "checked" : ""} /><span>I tried this</span></label>` : ""}
           ${n === LAST ? summaryHTML(notes) : ""}
         </section>
-        <nav class="in-nav" aria-label="Tour controls">
+        <nav class="in-nav ts-actions" aria-label="Tour controls">
           ${n > 0 ? html`<a class="btn" href="${tourHref(n - 1)}">${icon("arrow-left")}Back</a>` : html`<span></span>`}
           <a class="btn ghost" href="${labHref(ROUTES.start)}">Exit</a>
           ${n < LAST ? html`<a class="btn btn-primary" href="${tourHref(n + 1)}">Next: ${TOUR_STOPS[n + 1].name}${icon("arrow-right")}</a>` : html`<a class="btn btn-primary" href="${labHref(ROUTES.start)}" data-tour-finish>Finish the tour${icon("check")}</a>`}
@@ -140,6 +137,8 @@ export async function render(ctx) {
             ? html`<p role="alert" class="fine">This clears your tour place and notes on this device.</p><button type="button" class="btn small" data-tour-clear="yes">Yes, clear my tour</button> <button type="button" class="btn ghost small" data-tour-clear="no">Keep it</button>`
             : html`<button type="button" class="btn ghost small" data-tour-clear="ask">Start the tour over</button>`}
         </footer>
+          </div>
+        </div>
       </article>`,
   };
 }

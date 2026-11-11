@@ -12,6 +12,7 @@ import { mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { DOWNLOADS, ENTRANCE, ROUTES } from "../access-practice-lab/src/intro/data.js";
+import { directoryModel } from "../scripts/lib/intro-directory-build.mjs";
 import { minTextSize } from "../scripts/lib/pdf-text-sizes.mjs";
 import { serveAccess } from "./lib/access-serve.mjs";
 
@@ -116,7 +117,7 @@ ok(
 // downloads: the three files from DOWNLOADS, both types, with the file type stated
 const downloads = Object.values(DOWNLOADS).flatMap((o) => [o.pdf, o.docx]);
 for (const href of downloads) {
-  const link = page.locator(`#app a[href="${href}"]`);
+  const link = page.locator(`#app a[download][href="${href}"]`);
   ok((await link.count()) === 1, `download link ${href}`);
   const text = await link.innerText();
   ok(
@@ -124,7 +125,10 @@ for (const href of downloads) {
     `${href} states its file type (${text.trim().replace(/\s+/g, " ")})`,
   );
 }
-ok((await page.locator("#app a[download]").count()) === 6, "six download links in all");
+ok(
+  (await page.locator("#app a[download]").count()) === downloads.length,
+  `${downloads.length} download links in all (the five handouts, PDF and Word)`,
+);
 
 // links: activities open with a way back, the printed copy does not
 const activityHrefs = await page
@@ -276,6 +280,26 @@ if (await back.count()) {
     new URL(page.url()).pathname === `${LAB}${ROUTES.guide}`,
     "Back to the Quick Guide returns to /start/guide",
   );
+}
+
+// the Site Directory: a spread of 10 links (one a model test item) opens the activity it names
+{
+  const d = directoryModel("e2e");
+  const rows = d.bands.flatMap((b) => b.domains.flatMap((x) => x.levels.flatMap((l) => l.rows)));
+  const pick = Array.from({ length: 9 }, (_, i) => rows[Math.floor((i * (rows.length - 1)) / 8)]);
+  pick.push(rows.find((r) => r.route.startsWith("/Model-Test/")));
+  for (const r of pick) {
+    await page.goto(`${base}${LAB}${r.route}`, { waitUntil: "load" });
+    await page.waitForSelector("#app h1", { timeout: 15000 }).catch(() => {});
+    const got = await page.evaluate(() => ({
+      view: document.body.dataset.labView,
+      h1: document.querySelector("#app h1")?.innerText.trim(),
+    }));
+    ok(
+      got.view === "activity" && got.h1 === r.title,
+      `directory link opens "${r.title}" (${r.route}) -> ${got.view}: ${got.h1}`,
+    );
+  }
 }
 
 ok(

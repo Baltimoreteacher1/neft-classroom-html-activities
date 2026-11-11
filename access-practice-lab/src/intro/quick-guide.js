@@ -1,6 +1,7 @@
 // The Quick Guide (/start/guide): the two printed pages on screen, with a Print / Save as PDF button, the PDF and Word
 // downloads, and ticks and plan notes saved on this device only. The pages come from quick-guide-model.js and
 // quick-guide-html.js, the same two modules the PDF and Word generator use, so screen and paper cannot differ.
+import { teacherBand } from "./shell.js";
 import { i18nFor } from "../i18n.js";
 import { BASE, html, icon } from "../util.js";
 import { ROUTES } from "./data.js";
@@ -57,7 +58,7 @@ function toolbar(I) {
 
 export async function render(ctx) {
   const I = i18nFor(ctx);
-  const body = html`<div class="ig" lang="en">
+  const body = html`${teacherBand({ active: "guide", headless: true })}<div class="ig" lang="en">
     ${toolbar(I)}
     ${guideSheets(model, { href, qr: { start: GUIDE_FILES.qrStart }, state: saved() })}
   </div>`;

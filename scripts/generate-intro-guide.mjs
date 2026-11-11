@@ -4,11 +4,13 @@
  * src/intro/data.js (through quick-guide-model.js, lesson-backup-model.js and presenter-notes.js):
  *   quick-guide.pdf / .docx             two Letter pages: the 20-minute exploration and the featured lesson
  *   featured-lesson-backup.pdf / .docx  page 1 student-facing, page 2 teacher-facing: use it if the activity will not load
+ *   activity-guide.pdf / .docx          how each curated activity is used, one activity per page
+ *   site-directory.pdf / .docx          appendix: every domain and activity on the site, with links
  *   presenter-notes.pdf / .docx         the 30-minute presenter script (4 pages at most)
  *   qr-start.svg / qr-start.png         the ONE QR code, for ENTRANCE.url (shared/qr/qr-code.mjs; decoder-verified in the tests)
  *   src/intro/qr-start-svg.js           the same SVG as an importable string for the on-screen presenter view
  *   docs/languageos/pd-presenter-notes.md   the presenter script as plain Markdown
- * Output is deterministic: no timestamps appear in visible text. Run:  npm run generate:intro-guide  (--only=guide|backup|notes|qr)
+ * Output is deterministic: no timestamps appear in visible text. Run:  npm run generate:intro-guide  (--only=guide|backup|activities|directory|notes|qr)
  */
 import { mkdirSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
@@ -80,6 +82,28 @@ if (want("backup")) {
   ]);
   const { buildBackupDocx } = await import("./lib/intro-backup-docx.mjs");
   writeFileSync(join(GUIDES, "featured-lesson-backup.docx"), await buildBackupDocx(model));
+}
+
+if (want("activities")) {
+  const { buildActivityGuideModel } = await import(
+    "../access-practice-lab/src/intro/activity-guide-model.js"
+  );
+  const { activityGuideBody } = await import("./lib/intro-activity-guide-html.mjs");
+  const { buildActivityGuideDocx } = await import("./lib/intro-activity-guide-docx.mjs");
+  const model = buildActivityGuideModel();
+  await renderPdfs([
+    {
+      out: join(GUIDES, "activity-guide.pdf"),
+      doc: printDocument({ title: model.title, bodyHtml: activityGuideBody(model) }),
+      pdfOptions: { outline: true },
+    },
+  ]);
+  writeFileSync(join(GUIDES, "activity-guide.docx"), await buildActivityGuideDocx(model));
+}
+
+if (want("directory")) {
+  const { buildSiteDirectory } = await import("./lib/intro-directory-build.mjs");
+  await buildSiteDirectory(GUIDES);
 }
 
 if (want("notes")) {

@@ -5,11 +5,39 @@
 import { i18nFor, langSwitchHTML } from "../i18n.js";
 import { disclosure, trackDisclosures } from "../studio-ui.js";
 import { BASE, html, icon } from "../util.js";
-import { FAMILY, FAMILY_ACTIVITIES, FAMILY_MORE } from "./family-data.js";
+import { FAMILY, FAMILY_BANDS, FAMILY_GRADE, FAMILY_MORE, familyActivitiesFor } from "./family-data.js";
+import { loadIntro, updateIntro } from "./state.js";
 import { withReturn } from "./return-bar.js";
 
 const en = (text) => html`<span lang="en">${text}</span>`;
-const startHref = (route) => withReturn(`${BASE}${route}`, "together");
+const startHref = (route, band) =>
+  withReturn(`${BASE}${route}${route.includes("?") ? "&" : "?"}grades=${band}`, "together");
+
+/** The grade the family chose on this device, else the lab's current band (K–3 bands map to K–2). */
+function chosenBand(ctx) {
+  const saved = loadIntro().family?.band;
+  if (FAMILY_BANDS.some((b) => b.id === saved)) return saved;
+  if (ctx.band === "3-5" || ctx.band === "6-8") return ctx.band;
+  return ["K", "1", "2-3"].includes(ctx.band) ? "k-2" : "6-8";
+}
+
+function bandHTML(I, band) {
+  return html`<div class="tg-band">
+    <p class="tg-label" id="tgBandLabel">${I.TO(FAMILY_GRADE.heading)}</p>
+    <div class="tg-band-btns" role="group" aria-labelledby="tgBandLabel">
+      ${FAMILY_BANDS.map((b) => html`<button type="button" class="in-seg" data-tg-band="${b.id}" aria-pressed="${b.id === band}">${I.TO(b.label)}</button>`)}
+    </div>
+  </div>`;
+}
+
+function earlyHTML(I) {
+  const e = FAMILY_GRADE.early;
+  return html`<article class="tg-card is-early" aria-labelledby="tgEarly">
+    <header class="tg-card-head"><span class="tg-ic" aria-hidden="true">${icon("reading")}</span><div><h3 id="tgEarly">${I.TO(e.title)}</h3></div></header>
+    <p class="tg-desc">${I.TO(e.text)}</p>
+    <a class="btn btn-primary tg-start" href="${withReturn(`${BASE}${e.route}`, "together")}">${I.TO(e.cta)}${icon("arrow-right")}</a>
+  </article>`;
+}
 
 function exampleHTML(I, a) {
   const ex = a.example;
@@ -30,7 +58,7 @@ function exampleHTML(I, a) {
   </div>`;
 }
 
-function cardHTML(I, a) {
+function cardHTML(I, a, band) {
   return html`<article class="tg-card is-${a.id}" aria-labelledby="tgCard-${a.id}">
     <header class="tg-card-head">
       <span class="tg-ic" aria-hidden="true">${icon(a.icon)}</span>
@@ -47,7 +75,7 @@ function cardHTML(I, a) {
     </ol>
     ${exampleHTML(I, a)}
     <p class="fine tg-note">${I.TO(a.note)}</p>
-    <a class="btn btn-primary tg-start" href="${startHref(a.route)}"
+    <a class="btn btn-primary tg-start" href="${startHref(a.route, band)}"
       >${I.TO(FAMILY.start)}<span class="visually-hidden">: ${I.TO(a.title)}</span>
       ${icon("arrow-right")}</a
     >
@@ -114,6 +142,7 @@ function moreHTML(I) {
 
 export async function render(ctx) {
   const I = i18nFor(ctx);
+  const band = chosenBand(ctx);
   const title = I.S(FAMILY.title.en, FAMILY.title.es);
   return {
     title,
@@ -124,11 +153,11 @@ export async function render(ctx) {
         <p class="lead">${I.TO(FAMILY.lead)}</p>
         <div class="tg-lang">${langSwitchHTML(I.mode, { large: true, idPrefix: "tgLang" })}</div>
         <p class="tg-welcome">${I.TO(FAMILY.welcome)}</p>
-        <p class="fine">${I.TO(FAMILY.gradeLine)}</p>
       </header>
       <section class="tg-choices" aria-labelledby="tgChoose">
         <h2 id="tgChoose">${I.TO(FAMILY.chooseHeading)}</h2>
-        <div class="tg-cards">${FAMILY_ACTIVITIES.map((a) => cardHTML(I, a))}</div>
+        ${bandHTML(I, band)}
+        <div class="tg-cards${band === "k-2" ? " is-single" : ""}">${band === "k-2" ? earlyHTML(I) : familyActivitiesFor(band).map((a) => cardHTML(I, a, band))}</div>
       </section>
       ${answersHTML(I)}
       <section class="tg-language" aria-labelledby="tgLangHead">
@@ -148,6 +177,14 @@ export async function render(ctx) {
       </footer>
     </article>`,
   };
+}
+
+export function onClick(e, ctx) {
+  const b = e.target.closest?.("[data-tg-band]");
+  if (!b) return false;
+  updateIntro("family", (f) => ({ ...f, band: b.dataset.tgBand }));
+  ctx.rerender();
+  return true;
 }
 
 export const mount = (root) => trackDisclosures(root);

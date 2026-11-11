@@ -154,7 +154,7 @@ async function crawl(ctx, page, label) {
 // ── A. The presenter leads the 30-minute introduction, then the 20-minute exploration ──────────────────────
 let ctx = await newContext();
 let page = await open(ctx, `${LAB}/start/present?stop=1`);
-const total = Number((await page.locator(".in-head .eyebrow").innerText()).match(/of (\d+)/)[1]);
+const total = Number((await page.locator(".ts-progress-text").innerText()).match(/of (\d+)/)[1]);
 ok(
   total === PRESENTER_SCHEDULE.length + 2,
   `presenter view has ${total} slides: setup, ${PRESENTER_SCHEDULE.length} timed segments, handoff`,
@@ -198,7 +198,7 @@ await page.waitForSelector(".in-explore");
 for (let i = 0; i < EXPLORE_SEQUENCE.length; i++) {
   await page.goto(`${base}${LAB}/start/explore?stop=${i + 1}&focus=speaking`);
   await settled(page);
-  const eyebrow = await page.locator(".in-head .eyebrow").innerText();
+  const eyebrow = await page.locator(".ts-progress-text").innerText();
   ok(
     eyebrow.includes(`Minutes ${EXPLORE_SEQUENCE[i].range}`) &&
       (await page.locator(".in-panel h2").first().innerText()) === EXPLORE_SEQUENCE[i].name,

@@ -54,6 +54,7 @@ export async function renderPdfs(jobs, { lang = "en-US" } = {}) {
         outline: false,
         preferCSSPageSize: true,
         printBackground: true,
+        ...job.pdfOptions,
       });
       writeFileSync(job.out, pdf);
       stampLanguage(job.out, lang);

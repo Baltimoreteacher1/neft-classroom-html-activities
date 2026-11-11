@@ -159,10 +159,6 @@ export const FAMILY = {
     en: "Talk about your ideas in the language you use at home. Adults do not need perfect English to help. Listening and asking questions is enough.",
     es: "Hablen de sus ideas en el idioma que usan en casa. Los adultos no necesitan un inglés perfecto para ayudar. Escuchar y hacer preguntas es suficiente.",
   },
-  gradeLine: {
-    en: "These activities are written for students in grades 6–8.",
-    es: "Estas actividades están escritas para estudiantes de los grados 6 a 8.",
-  },
   chooseHeading: { en: "Choose one", es: "Elijan una" },
   stepsHeading: { en: "Three steps", es: "Tres pasos" },
   start: { en: "Start", es: "Empezar" },
@@ -280,3 +276,58 @@ export const FAMILY = {
     es: "Sin cuenta. Esta página no pide su nombre ni su correo.",
   },
 };
+
+/** The grade choice at the top of the page. K–2 goes to the early learners home, which has its own grade picker. */
+export const FAMILY_BANDS = [
+  { id: "k-2", label: { en: "Grades K–2", es: "Grados K a 2" } },
+  { id: "3-5", label: { en: "Grades 3–5", es: "Grados 3 a 5" } },
+  { id: "6-8", label: { en: "Grades 6–8", es: "Grados 6 a 8" } },
+];
+export const FAMILY_GRADE = {
+  heading: { en: "Your child’s grade", es: "El grado de su hijo o hija" },
+  early: {
+    route: "/early?grades=K",
+    title: { en: "Practice for grades K–2", es: "Práctica para los grados K a 2" },
+    text: {
+      en: "Younger children have their own page: a picture story read aloud, sounds, word cards and short games to do together. Choose Kindergarten, Grade 1 or Grades 2–3 at the top of that page.",
+      es: "Los niños más pequeños tienen su propia página: un cuento con imágenes leído en voz alta, sonidos, tarjetas de palabras y juegos cortos para hacer juntos. Elijan Kínder, Grado 1 o Grados 2 y 3 arriba en esa página.",
+    },
+    cta: { en: "Open practice for grades K–2", es: "Abrir la práctica de los grados K a 2" },
+  },
+};
+
+const [talk68, write68] = FAMILY_ACTIVITIES;
+/** Grades 3–5: the same two routines on that band's own picture and sentence (checked in a browser 2026-11-10). */
+export const FAMILY_ACTIVITIES_35 = [
+  {
+    ...talk68,
+    route: "/voice/ladder/class-garden",
+    activityName: "Our Class Garden",
+    description: {
+      en: "Look at a picture of a school garden. Say what you see, out loud.",
+      es: "Miren una imagen de un huerto escolar. Digan en voz alta lo que ven.",
+    },
+    steps: [
+      talk68.steps[0],
+      {
+        head: talk68.steps[1].head,
+        body: { en: "Name three things in the garden. Say them out loud.", es: "Digan tres cosas que ven en el huerto. Díganlas en voz alta." },
+      },
+      {
+        head: talk68.steps[2].head,
+        body: {
+          en: "Tell more. Say what the girl and the boy are doing. Press “I said it out loud.”",
+          es: "Digan más. Cuenten qué hacen la niña y el niño. Toquen «Lo dije en voz alta».",
+        },
+      },
+    ],
+    example: { label: talk68.example.label, text: "I see tomatoes, sunflowers and a watering can." },
+  },
+  {
+    ...write68,
+    route: "/scaffold/language-upgrade?item=lu35-explain-plants",
+    example: { ...write68.example, plain: "Plants need stuff.", better: "Plants need sunlight and water because they use them to make food." },
+  },
+];
+
+export const familyActivitiesFor = (band) => (band === "3-5" ? FAMILY_ACTIVITIES_35 : FAMILY_ACTIVITIES);

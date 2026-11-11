@@ -16,6 +16,7 @@ export const ROUTES = {
   guide: "/start/guide",
   present: "/start/present",
   lesson: "/start/lesson",
+  activities: "/start/activities",
   together: "/practice-together",
   siteGuide: "/site-guide",
 };
@@ -315,7 +316,7 @@ export const START_CHOICES = [
     id: "guide",
     icon: "info",
     name: "Open the Quick Guide",
-    detail: "Two pages to print or keep.",
+    detail: "Two pages to print or keep, plus the Activity Guide.",
     route: ROUTES.guide,
   },
 ];
@@ -471,6 +472,8 @@ export const DOWNLOADS = {
   quickGuide: { pdf: "/access-practice-lab/guides/quick-guide.pdf", docx: "/access-practice-lab/guides/quick-guide.docx" },
   presenterNotes: { pdf: "/access-practice-lab/guides/presenter-notes.pdf", docx: "/access-practice-lab/guides/presenter-notes.docx" },
   lessonBackup: USE_LESSON.backup,
+  activityGuide: { pdf: "/access-practice-lab/guides/activity-guide.pdf", docx: "/access-practice-lab/guides/activity-guide.docx" },
+  directory: { pdf: "/access-practice-lab/guides/site-directory.pdf", docx: "/access-practice-lab/guides/site-directory.docx" },
 };
 
 /** The single entrance to the whole PD. One link, one QR code, used on every handout and slide. */
@@ -482,10 +485,10 @@ export const ENTRANCE = { route: ROUTES.start, url: absUrl(ROUTES.start), short:
  * set, edit ACTIVITIES / SUPPLEMENTAL deliberately, update this map, and run `node tools/generate-intro-curated-list.mjs`.
  */
 export const APPEARANCES = {
-  hallway: ["Start page overview", "Guided tour stop 1 (pathways) and stop 5 (choice)", "Guided tour stop 2", "Exploration (Speaking)", "Quick guide page 1", "Featured lesson anchor and Use This Lesson", "Presenter segment 3–8", "Family page: Let’s Talk", "Site Guide"],
-  board: ["Start page overview", "Guided tour stop 1 (pathways) and stop 5 (choice)", "Exploration (Speaking)", "Quick guide page 1", "Site Guide"],
-  upgrade: ["Start page overview", "Guided tour stop 1 (pathways) and stop 5 (choice)", "Guided tour stop 3", "Exploration (Writing)", "Quick guide page 1", "Presenter segment 8–13", "Family page: Let’s Write", "Site Guide"],
-  paragraph: ["Start page overview", "Guided tour stop 1 (pathways) and stop 5 (choice)", "Exploration (Writing)", "Quick guide page 1", "Site Guide"],
-  seasons: ["Exploration: Explore Later", "Family page: More Practice", "Site Guide"],
-  morphemes: ["Exploration: Explore Later", "Family page: More Practice", "Site Guide"],
+  hallway: ["Start page overview", "Guided tour stop 1 (pathways) and stop 5 (choice)", "Guided tour stop 2", "Exploration (Speaking)", "Quick guide page 1", "Featured lesson anchor and Use This Lesson", "Presenter segment 3–8", "Family page: Let’s Talk", "Site Guide", "Activity Guide (page and handout)"],
+  board: ["Start page overview", "Guided tour stop 1 (pathways) and stop 5 (choice)", "Exploration (Speaking)", "Quick guide page 1", "Site Guide", "Activity Guide (page and handout)"],
+  upgrade: ["Start page overview", "Guided tour stop 1 (pathways) and stop 5 (choice)", "Guided tour stop 3", "Exploration (Writing)", "Quick guide page 1", "Presenter segment 8–13", "Family page: Let’s Write", "Site Guide", "Activity Guide (page and handout)"],
+  paragraph: ["Start page overview", "Guided tour stop 1 (pathways) and stop 5 (choice)", "Exploration (Writing)", "Quick guide page 1", "Site Guide", "Activity Guide (page and handout)"],
+  seasons: ["Exploration: Explore Later", "Family page: More Practice", "Site Guide", "Activity Guide (page and handout)"],
+  morphemes: ["Exploration: Explore Later", "Family page: More Practice", "Site Guide", "Activity Guide (page and handout)"],
 };

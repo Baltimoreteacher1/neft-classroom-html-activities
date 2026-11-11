@@ -161,3 +161,29 @@ test("handout downloads that are built exist and the maintainer list is current"
     build(),
   );
 });
+
+test("the Activity Guide covers every curated item, in order, with real steps", async () => {
+  const { ACTIVITY_GUIDE } = await import(
+    "../access-practice-lab/src/intro/activity-guide-data.js"
+  );
+  assert.deepEqual(
+    ACTIVITY_GUIDE.map((g) => g.id),
+    [...D.ACTIVITIES, ...D.SUPPLEMENTAL].map((a) => a.id),
+  );
+  for (const g of ACTIVITY_GUIDE) {
+    assert.ok(
+      g.steps.length >= 4 &&
+        g.feedback &&
+        g.teach.before &&
+        g.teach.during &&
+        g.teach.after &&
+        g.stuck.length,
+      g.id,
+    );
+    assert.doesNotMatch(
+      JSON.stringify(g),
+      /\b(score of|level [1-6]|proficien)/i,
+      `${g.id} claims no levels or scores`,
+    );
+  }
+});

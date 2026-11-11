@@ -11,6 +11,7 @@ const INTRO_VIEWS = new Set(["start", "practice-together", "site-guide"]);
 
 /** Where each `intro` id returns to, and what the button says. */
 export const RETURNS = {
+  activities: { to: "/start/activities", en: "Back to the Activity Guide", es: "Volver a la guía de actividades" },
   start: { to: "/start", en: "Back to Start Here", es: "Volver a Empezar aquí" },
   tour: {
     to: "/start/tour",

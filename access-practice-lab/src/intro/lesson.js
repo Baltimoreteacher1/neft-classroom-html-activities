@@ -6,7 +6,8 @@ import { html, icon, toHtml } from "../util.js";
 import { DOWNLOADS, FEATURED_LESSON as L, ROUTES, USE_LESSON, absUrl, findActivityById } from "./data.js";
 import { withReturn } from "./return-bar.js";
 import { SAVED_NOTE, clearIntro, loadIntro, updateIntro } from "./state.js";
-import { copyWithNote, introCrumbs, labHref } from "./ui.js";
+import { teacherBand } from "./shell.js";
+import { copyWithNote, labHref } from "./ui.js";
 
 const LEVELS = ["more", "some", "independent"];
 const saved = () => loadIntro().lesson || {};
@@ -73,13 +74,14 @@ export async function render(ctx) {
   const [notice, speak, write, improve, share] = L.steps;
   return {
     title: `${L.label}: ${L.title}`,
-    html: html`${introCrumbs(L.label)}
-      <article class="in-page in-lesson" aria-labelledby="introTitle">
-        <header class="in-head">
-          <p class="eyebrow">${L.label} · ${L.minutes} minutes</p>
-          <h1 id="introTitle" tabindex="-1">${L.title}</h1>
-          <p class="in-lead"><strong>Language objective:</strong> ${L.objective}</p>
-        </header>
+    html: html`<article class="in-page in-lesson" aria-labelledby="introTitle">
+        ${teacherBand({
+          active: "lesson",
+          eyebrow: `${L.label} · ${L.minutes} minutes`,
+          title: L.title,
+          lead: html`<strong>Language objective:</strong> ${L.objective}`,
+          meta: html`<ol class="ts-chips" aria-label="Lesson sequence">${L.steps.map((s) => html`<li>${s.name} · ${s.minutes} min</li>`)}</ol>`,
+        })}
         ${useLessonHTML(a)}
         <section class="in-panel in-prompt" aria-labelledby="lsPrompt">
           <h2 id="lsPrompt">The learner prompt</h2>

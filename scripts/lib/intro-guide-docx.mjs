@@ -70,6 +70,14 @@ function startBlock(p) {
       link(p.start.link.text, p.start.link.url),
       url(p.start.link.short),
     ]),
+    para([
+      run(`${p.start.more.text} `),
+      ...p.start.more.links.flatMap((l, i) => [
+        ...(i ? [run(" · ")] : []),
+        link(l.text, l.url),
+        url(l.route),
+      ]),
+    ]),
   ];
 }
 

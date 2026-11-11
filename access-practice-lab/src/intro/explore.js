@@ -8,7 +8,8 @@ import { PLAN_SAMPLES, REHEARSE_MODES } from "./explore-data.js";
 import { withReturn } from "./return-bar.js";
 import { previewHTML } from "./preview.js";
 import { SAVED_NOTE, clearIntro, loadIntro, updateIntro } from "./state.js";
-import { activityHref, copyWithNote, findActivity, introCrumbs, labHref, supportsHTML } from "./ui.js";
+import { progressHTML, stepRailHTML, teacherBand } from "./shell.js";
+import { activityHref, copyWithNote, findActivity, labHref, supportsHTML } from "./ui.js";
 
 const exploreHref = (n, focus) => `${labHref(ROUTES.explore)}?stop=${n + 1}${focus ? `&focus=${focus}` : ""}`;
 const LAST = EXPLORE_SEQUENCE.length - 1;
@@ -138,19 +139,26 @@ export async function render(ctx) {
   const seq = EXPLORE_SEQUENCE[n];
   return {
     title: "Try It. Adapt It. Use It.",
-    html: html`${introCrumbs("Try It. Adapt It. Use It.")}
-      <article class="in-page in-explore" aria-labelledby="introTitle">
-        <header class="in-head">
-          <p class="eyebrow">20-minute exploration · Minutes ${seq.range}</p>
-          <h1 id="introTitle" tabindex="-1">Try It. Adapt It. Use It.</h1>
-          <p class="in-lead">${n + 1}. ${seq.name}: ${seq.detail}</p>
-        </header>
-        <nav class="in-steps" aria-label="Exploration steps"><ol>
-          ${EXPLORE_SEQUENCE.map((s, i) => html`<li ${i === n ? html`aria-current="step"` : ""}><a href="${exploreHref(i)}"><span class="in-num">${i + 1}</span><span class="in-step-name">${s.name}<small>Minutes ${s.range}</small></span></a></li>`)}
-        </ol></nav>
+    html: html`<article class="in-page in-explore" aria-labelledby="introTitle">
+        ${teacherBand({
+          active: "explore",
+          eyebrow: "20-minute exploration",
+          title: "Try It. Adapt It. Use It.",
+          lead: `${seq.name}: ${seq.detail}`,
+          meta: progressHTML(n, EXPLORE_SEQUENCE.length, `Step ${n + 1} of ${EXPLORE_SEQUENCE.length} · Minutes ${seq.range}`),
+        })}
+        <div class="ts-layout">
+          ${stepRailHTML({
+            label: "Exploration steps",
+            steps: EXPLORE_SEQUENCE.map((s) => ({ ...s, detail: `Minutes ${s.range}` })),
+            current: n,
+            hrefFor: (i) => exploreHref(i),
+            doneFor: (_s, i) => i < n,
+          })}
+          <div class="ts-main">
         <section class="in-panel" aria-labelledby="exPhase"><h2 id="exPhase">${seq.name}</h2>${PHASES[n](ex)}</section>
         <p class="in-note fine">Timing is advice. Move on when you are ready, or go back to any step.</p>
-        <nav class="in-nav" aria-label="Exploration controls">
+        <nav class="in-nav ts-actions" aria-label="Exploration controls">
           ${n > 0 ? html`<a class="btn" href="${exploreHref(n - 1)}">${icon("arrow-left")}Back</a>` : html`<span></span>`}
           <a class="btn ghost" href="${labHref(ROUTES.start)}">Exit</a>
           ${n < LAST ? html`<a class="btn btn-primary" href="${exploreHref(n + 1)}">Next: ${EXPLORE_SEQUENCE[n + 1].name}${icon("arrow-right")}</a>` : html`<a class="btn btn-primary" href="${labHref(ROUTES.start)}">Done${icon("check")}</a>`}
@@ -161,6 +169,8 @@ export async function render(ctx) {
         <footer class="in-foot"><p class="fine">${SAVED_NOTE}</p>
           ${confirmClear ? html`<p role="alert" class="fine">This clears your exploration choices and plan on this device.</p><button type="button" class="btn small" data-explore-clear="yes">Yes, clear them</button> <button type="button" class="btn ghost small" data-explore-clear="no">Keep them</button>` : html`<button type="button" class="btn ghost small" data-explore-clear="ask">Start the exploration over</button>`}
         </footer>
+          </div>
+        </div>
       </article>`,
   };
 }

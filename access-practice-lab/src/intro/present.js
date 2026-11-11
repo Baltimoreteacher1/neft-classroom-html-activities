@@ -7,7 +7,8 @@ import { html, icon, raw } from "../util.js";
 import { ENTRANCE, PRESENTER_SCHEDULE, ROUTES } from "./data.js";
 import { BACKUP_ALL, HANDOFF, PRESENTER_NOTES, ROOM_SETUP } from "./presenter-notes.js";
 import { updateIntro, loadIntro } from "./state.js";
-import { introCrumbs, labHref } from "./ui.js";
+import { progressHTML, teacherBand } from "./shell.js";
+import { labHref } from "./ui.js";
 import { withReturn } from "./return-bar.js";
 
 const TOTAL = PRESENTER_NOTES.length + 2;
@@ -65,12 +66,14 @@ export async function render(ctx) {
   const body = n === 0 ? setupSlide() : n === TOTAL - 1 ? handoffSlide() : segmentSlide(PRESENTER_NOTES[n - 1], n - 1);
   return {
     title: "Presenter view",
-    html: html`${introCrumbs("Presenter view")}
-      <article class="in-page in-present" aria-labelledby="introTitle">
-        <header class="in-head">
-          <p class="eyebrow">30-minute introduction · Slide ${n + 1} of ${TOTAL}</p>
-          <h1 id="introTitle" tabindex="-1">Presenter view</h1>
-        </header>
+    html: html`<article class="in-page in-present" aria-labelledby="introTitle">
+        ${teacherBand({
+          active: "present",
+          eyebrow: "30-minute introduction",
+          title: "Presenter view",
+          size: "compact",
+          meta: progressHTML(n, TOTAL, `Slide ${n + 1} of ${TOTAL}`),
+        })}
         <section class="in-panel in-slide" aria-labelledby="slideTitle" aria-live="polite">${body}</section>
         <nav class="in-nav" aria-label="Slide controls">
           ${n > 0 ? html`<a class="btn" href="${presentHref(n - 1, notes)}">${icon("arrow-left")}Previous</a>` : html`<span></span>`}

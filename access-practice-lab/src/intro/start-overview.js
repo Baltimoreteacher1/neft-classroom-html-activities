@@ -8,6 +8,7 @@ import { loadIntro } from "./state.js";
 import { activityHref, copyWithNote, labHref, pathwaysHTML } from "./ui.js";
 
 const SECTIONS = [
+  ["ov-how", "How it works"],
   ["ov-paths", "The two pathways"],
   ["ov-lesson", "Featured lesson"],
   ["ov-time", "Fit your class time"],
@@ -15,20 +16,6 @@ const SECTIONS = [
   ["ov-pd", "Run a PD session"],
   ["ov-families", "Families"],
 ];
-
-/** Four plain facts, each true of the curated activities (see data.js FACTS and the activities' builtIn lists). */
-const GLANCE = [
-  ["speaking", "Two pathways, four activities", "Two speaking and two writing activities, chosen so you can start small."],
-  ["user", "No accounts", "Students open a link. Work saves in that browser on that device."],
-  ["bulb", "Students choose their help", "Model answers, sentence frames and word banks are there when a student wants them."],
-  ["check", "Feedback, not scores", "Checks and coach notes describe what to improve. Nothing here is a grade or a WIDA level."],
-];
-
-function glanceHTML() {
-  return html`<ul class="ov-glance" aria-label="At a glance">
-    ${GLANCE.map(([ic, head, text]) => html`<li><span class="in-ic" aria-hidden="true">${icon(ic)}</span><span><strong>${head}</strong>${text}</span></li>`)}
-  </ul>`;
-}
 
 /** What this device remembers about the tour, the exploration and the lesson. Shown only when something is saved. */
 export function progressItems(intro) {
@@ -57,6 +44,49 @@ function progressHTML() {
     <h2 id="ovProgress">Pick up where you left off</h2>
     <ul>${items.map((i) => html`<li><span>${i.text}</span><a class="btn small" href="${i.href}">${i.cta}${icon("arrow-right")}</a></li>`)}</ul>
     <p class="fine">Saved in this browser on this device only.</p>
+  </section>`;
+}
+
+
+/** The learning loop every curated activity follows (access-practice-lab/PLATFORM.md, "The learner loop"). */
+const LOOP = [
+  ["Choose", "A student picks an activity or opens your link."],
+  ["Prepare", "Plan, hear a model, or open a frame or word bank, only if they want it."],
+  ["Produce", "Say it or write it: real language, not a multiple-choice answer."],
+  ["Check", "Rule-based checks and coach notes describe what to improve."],
+  ["Revise", "Try again. The Language Upgrade Lab and Writing Studio keep earlier versions, so growth is visible."],
+];
+const CAN = [
+  "Count and name what is on the page: a detail, an exact word, a connector, evidence from the source.",
+  "Point to the student’s own sentences when it suggests a next move (Writing Studio).",
+  "Keep the first try and later revisions so you and the student can compare them.",
+];
+const CANNOT = [
+  "Judge whether an idea is good or true. Read or listen for that yourself.",
+  "Score pronunciation, or give a grade, a WIDA level or an ACCESS prediction.",
+  "Store work online. It stays in that browser unless the student shares or moves it. (Speech-to-text may use the browser’s own speech service.)",
+];
+const WORDS = [
+  ["Support level", "The help a student chooses: frames and words, a word bank only, or On my own. Students can change it."],
+  ["On my own", "No frames, word bank or model. If help is opened later, the try is marked supported. That is fine; it tells you what they needed."],
+  ["Model student", "A sample answer from a named classmate-style character, heard with the device voice."],
+  ["Coach notes", "Notes in the Speaking Studio about the words a student said or typed. Not about accent or pronunciation."],
+  ["Passport", "A student’s record of practice saved on that device. It can print a practice report and move work to another device."],
+  ["Practice, not a score", "Nothing in the lab is an official WIDA or ACCESS result. It describes practice only."],
+];
+
+function howHTML() {
+  return html`<section class="ov-section ov-how" id="ov-how" aria-labelledby="ovHowTitle">
+    <h2 id="ovHowTitle">How the site teaches</h2>
+    <p class="fine">Every activity below follows the same loop. Knowing it once means you know how all of them work.</p>
+    <ol class="ov-loop">${LOOP.map(([h, t], i) => html`<li><span class="ov-loop-n" aria-hidden="true">${i + 1}</span><strong>${h}</strong><span>${t}</span></li>`)}</ol>
+    <div class="ov-cancan">
+      <section class="in-panel" aria-labelledby="ovCan"><h3 id="ovCan">${icon("check")} What the feedback can do</h3><ul>${CAN.map((c) => html`<li>${c}</li>`)}</ul></section>
+      <section class="in-panel ov-cannot" aria-labelledby="ovCannot"><h3 id="ovCannot">${icon("info")} What it cannot do, so you do it</h3><ul>${CANNOT.map((c) => html`<li>${c}</li>`)}</ul></section>
+    </div>
+    <details class="in-more"><summary>Words you will see on the site</summary>
+      <dl class="ov-words">${WORDS.map(([t, d]) => html`<dt>${t}</dt><dd>${d}</dd>`)}</dl>
+    </details>
   </section>`;
 }
 
@@ -147,13 +177,13 @@ function familiesHTML() {
 
 /** Everything below the three choices. */
 export function overviewHTML() {
-  return html`${glanceHTML()}
-    ${progressHTML()}
+  return html`${progressHTML()}
     <nav class="ov-jump" aria-label="On this page"><span>On this page:</span>${SECTIONS.map(([id, label]) => html`<a href="#${id}">${label}</a>`)}</nav>
+    ${howHTML()}
     <section class="ov-section" id="ov-paths" aria-labelledby="ovPathsTitle">
       <h2 id="ovPathsTitle">The two pathways</h2>
-      <p class="fine">Each card says what students do and how long it takes. Open “See an Example” to preview before you leave this page.</p>
-      ${pathwaysHTML("start", { showUse: true })}
+      <p class="fine">Each card says what students do and how long it takes. Open “See an Example” to preview, or “Full how-to” for every step.</p>
+      ${pathwaysHTML("start", { showUse: true, howTo: true })}
     </section>
     ${lessonHTML()}
     ${timeHTML()}
