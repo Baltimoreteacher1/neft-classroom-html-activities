@@ -9,6 +9,9 @@
 //    chunk × divisor off the remaining charge into the quotient bank. Any
 //    sequence of chunks that fits is valid; the judge checks only the bank and
 //    what is left.
+//  - MULTIPLY: both factors are fed in with their grounding bars removed and the
+//    grid multiplies whole currents. Count each factor's decimal places, slide
+//    the product's grounding bar into place and close the circuit (multiply.js).
 // Rendering lives in render.js; this file owns state, controls and judging.
 
 import { define, EduWonderEngine } from "../core/engine.js";
@@ -35,17 +38,29 @@ import {
   scaleTen,
   trayOf,
 } from "./math.js";
+import {
+  buildMultiplyControls,
+  describeMultiply,
+  evaluateMultiply,
+  initMultiply,
+  multiplyLabels,
+  multiplyMission,
+  multiplyPlan,
+  startMultiply,
+} from "./multiply.js";
 import * as R from "./render.js";
 import { STRINGS } from "./strings.js";
 
 const WHEEL_IDS = ["out-1000", "out-100", "out-10", "out-1", "out-0.1", "out-0.01"];
 const MAX_CHIPS = 12;
 
+const DT = 1 / 60;
+
 class CircuitBreaker extends EduWonderEngine {
   static meta = {
     gameId: "u2-circuit-breaker",
     unit: 2,
-    lessons: ["2-6", "2-7", "2-11"],
+    lessons: ["2-6", "2-7", "2-11", "2-12"],
     checkId: "close",
   };
 
@@ -83,6 +98,7 @@ class CircuitBreaker extends EduWonderEngine {
     };
     this.chipText = [];
     this.layers = { grid: staticLayer(R.W, R.H, R.paintGrid) };
+    initMultiply(this);
   }
 
   buildControls() {
@@ -143,6 +159,7 @@ class CircuitBreaker extends EduWonderEngine {
       label: "resetCharge",
       onPress: () => this.reload(),
     });
+    this.multWraps = buildMultiplyControls(this);
     this.closeBtn = this.button({
       id: "close",
       label: "closeCircuit",
@@ -151,7 +168,7 @@ class CircuitBreaker extends EduWonderEngine {
     });
     this.binders.push(() => {
       this.closeBtn.textContent = this.t(
-        this.mode === "align" ? "closeCircuit" : "confirmQuotient",
+        this.mode === "divide" ? "confirmQuotient" : "closeCircuit",
       );
       const bundle = this.mode === "align" && this.round && this.round.op === "+";
       this.regroupBtn.textContent = this.t(bundle ? "bundleTen" : "breakRod");
@@ -169,6 +186,7 @@ class CircuitBreaker extends EduWonderEngine {
   newRound(level, next) {
     this.mode = modeForRound(this.roundIndex);
     const align = this.mode === "align";
+    const divide = this.mode === "divide";
     this.particles.clear();
     this.digit.set(1);
     this.place.set(0);
@@ -176,13 +194,16 @@ class CircuitBreaker extends EduWonderEngine {
     this.cPlace = 0;
     this.shift.wrap.hidden = !align;
     for (const w of this.wheels) w.wrap.hidden = !align;
-    this.digit.wrap.hidden = align;
-    this.place.wrap.hidden = align;
-    this.divertBtn.hidden = align;
-    this.resetBtn.hidden = align;
+    this.digit.wrap.hidden = !divide;
+    this.place.wrap.hidden = !divide;
+    this.divertBtn.hidden = !divide;
+    this.resetBtn.hidden = !divide;
+    for (const w of this.multWraps) w.hidden = this.mode !== "multiply";
     const sp = this.springs;
     sp.snap(R.S_LOCK, 0);
-    if (align) {
+    if (this.mode === "multiply") {
+      startMultiply(this, level, next);
+    } else if (align) {
       const r = makeAlign(level, next);
       this.round = r;
       for (let p = 0; p < PLACE_COUNT; p++) {
@@ -268,7 +289,8 @@ class CircuitBreaker extends EduWonderEngine {
   }
 
   onTier(n) {
-    this.regroupBtn.hidden = n < 2;
+    this.regroupBtn.hidden = n < 2 || this.mode === "multiply";
+    this.countBtn.hidden = n < 2 || this.mode !== "multiply";
     this.scaleBtn.hidden = this.mode !== "divide" || this.round.divisor % 100 === 0;
   }
 
@@ -372,6 +394,7 @@ class CircuitBreaker extends EduWonderEngine {
 
   evaluate() {
     const r = this.round;
+    if (this.mode === "multiply") return evaluateMultiply(this);
     if (this.mode === "align") {
       const j = judgeAlign(r, Number(this.shift.input.value), this.wheelValues());
       if (j.verdict === "ok")
@@ -421,15 +444,17 @@ class CircuitBreaker extends EduWonderEngine {
     this.particles.emit(R.BAR_X, R.ROW_W, 50, 280, 2, -Math.PI / 2, Math.PI * 1.6, 1.1);
   }
 
-  updatePhysics(dt) {
-    this.springs.step(dt);
-    this.particles.update(dt);
+  updatePhysics(_dt) {
+    // Step with the module constant so no double crosses a call.
+    this.springs.step(DT);
+    this.particles.update(DT);
   }
 
   refreshLabels() {
     const L = this.labels;
     const r = this.round;
     if (!r) return;
+    if (this.mode === "multiply") return multiplyLabels(this);
     if (this.mode === "align") {
       const shift = Number(this.shift.input.value);
       for (let c = 0; c < PLACE_COUNT; c++) {
@@ -453,6 +478,7 @@ class CircuitBreaker extends EduWonderEngine {
   describe() {
     const r = this.round;
     if (!r) return "";
+    if (this.mode === "multiply") return describeMultiply(this);
     let tail = "";
     if (this.tier >= 2) {
       const parts = [];
@@ -486,6 +512,7 @@ class CircuitBreaker extends EduWonderEngine {
 
   mission() {
     const r = this.round;
+    if (this.mode === "multiply") return multiplyMission(this);
     if (this.mode === "align")
       return this.t(r.op === "+" ? "missionAdd" : "missionSub", { a: hText(r.a), b: hText(r.b) });
     const key =
@@ -499,6 +526,7 @@ class CircuitBreaker extends EduWonderEngine {
 
   testPlan() {
     const r = this.round;
+    if (this.mode === "multiply") return multiplyPlan(this);
     if (this.mode === "align") {
       const plan = [
         { control: "shift", key: "Home" },

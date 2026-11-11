@@ -4,6 +4,7 @@
 
 import { H, W } from "../core/engine.js";
 import { alphaLevel, dot, line, rect, roundRect, text } from "../core/draw.js";
+import { drawMultiply } from "./render-multiply.js";
 
 export { H, W };
 
@@ -30,7 +31,7 @@ export const S_CHARGE = 1;
 export const S_LOCK = 2;
 export const S_BANK = 3;
 export const S_WHEEL = 4;
-export const SPRINGS = 10;
+export const SPRINGS = 20; // 10..19: multiply (render-multiply.js)
 
 export const PALETTE = ["#ffd166", "#46c2b8", "#7bdc8f", "#ff6b6b", "#b8c7ff"];
 const DIGITS = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
@@ -70,6 +71,11 @@ export function paintGrid(g) {
 export function renderScene(e, ctx) {
   e.backdrop(ctx);
   if (!e.round) return;
+  if (e.mode === "multiply") {
+    drawMultiply(e, ctx);
+    e.particles.render(ctx);
+    return;
+  }
   ctx.drawImage(e.layers.grid, 0, 0, W, H);
   if (e.mode === "align") drawAlign(e, ctx);
   else drawDivide(e, ctx);

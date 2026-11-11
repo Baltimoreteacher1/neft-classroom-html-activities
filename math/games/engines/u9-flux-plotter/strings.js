@@ -108,8 +108,8 @@ export const STRINGS = {
     fmtK: "constante {v}",
     output: "Dial de salida (y)",
     fmtOut: "salida {v}",
-    step: "Girar la manivela un paso",
-    run: "Girar la manivela",
+    step: "Gira la manivela un paso",
+    run: "Gira la manivela",
     inputX: "entrada x",
     outputY: "salida y",
     tape: "CINTA",
@@ -126,13 +126,13 @@ export const STRINGS = {
     lineLow:
       "Tu recta pasa por debajo de los puntos del sensor: la constante es demasiado pequeña.",
     solvedDecode: "Todos los puntos del sensor están en la recta. La regla es {rule}.",
-    predictHigh: "La manivela se detiene a una vuelta del final: tu collar está demasiado alto. Tu salida es demasiado alta.",
-    predictLow: "La manivela se detiene a una vuelta del final: el pistón chocaría con tu collar. Tu salida es demasiado baja.",
+    predictHigh: "La manivela se detiene a una vuelta del final: tu tope está demasiado alto. Tu salida es demasiado alta.",
+    predictLow: "La manivela se detiene a una vuelta del final: el pistón chocaría con tu tope. Tu salida es demasiado baja.",
     inverse:
       "Trabajaste hacia atrás desde la entrada. La manivela fija x y el engranaje produce y a partir de ella, así que aplica la regla hacia adelante.",
     otherMul: "Revisa el engranaje: este engranaje multiplica la entrada. No le suma.",
     otherAdd: "Revisa el engranaje: este engranaje le suma a la entrada. No la multiplica.",
-    solvedPredict: "El pistón llega justo al collar: la entrada {x} da la salida {y}.",
+    solvedPredict: "El pistón llega justo al tope: la entrada {x} da la salida {y}.",
     noWire: "Primero conecta la manivela: ¿cuál cantidad es la entrada?",
     wireSwapped:
       "Los cables están cruzados. Pregúntate qué cantidad depende de la otra: la que depende va en el pistón.",
@@ -140,7 +140,7 @@ export const STRINGS = {
       "Con tu constante, el pistón se pasa de la lectura de muestra: la constante es demasiado grande.",
     wireLow:
       "Con tu constante, el pistón no llega a la lectura de muestra: la constante es demasiado pequeña.",
-    solvedWire: "¡Conectada! «{in}» mueve la manivela y «{out}» la sigue: {rule}.",
+    solvedWire: "¡Conectada! La entrada ({in}) mueve la manivela y la salida ({out}) la sigue: {rule}.",
     descDecode: "Descifrar. Registro de sensores {pairs}. Engranaje: {gear}, constante {k}.",
     descPredict: "Predecir. {rule} Entrada de la manivela {x}. Dial de salida en {d}.",
     descWire:

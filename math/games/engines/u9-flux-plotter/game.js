@@ -429,8 +429,8 @@ class FluxFoundry extends EduWonderEngine {
       } else {
         this.obsState[i] = 2;
         this.particles.emit(
-          toGX(i),
-          this.obsSY[i],
+          toGX(i) | 0,
+          this.obsSY[i] | 0,
           14,
           200,
           3,

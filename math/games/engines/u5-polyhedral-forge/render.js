@@ -11,6 +11,7 @@ const S_FOLD = 0;
 const S_MORPH = 1;
 const S_GLOW = 2;
 const S_NEEDLE = 3;
+const S_FAN = 4;
 const ST_FILL = 0;
 const ST_C0 = 2; // cx0, cy0, cz0, cx1, cy1, cz1
 const ST_K = 8;
@@ -23,6 +24,16 @@ const ARC_TO = Math.PI * 2.2;
 const ARC_SPAN = ARC_TO - ARC_FROM;
 const GX0 = 790; // gauge centre
 const GY0 = 200;
+// Needle tip for v = -0.04..1.04 in 256 steps, integer pixels, built once:
+// no Math.cos/sin (whose boxed results allocate in unoptimized code) per frame.
+const NEEDLE_N = 256;
+const NEEDLE_X = new Int32Array(NEEDLE_N + 1);
+const NEEDLE_Y = new Int32Array(NEEDLE_N + 1);
+for (let i = 0; i <= NEEDLE_N; i++) {
+  const a = ARC_FROM + ARC_SPAN * (-0.04 + (1.08 * i) / NEEDLE_N);
+  NEEDLE_X[i] = Math.round(GX0 + Math.cos(a) * 72);
+  NEEDLE_Y[i] = Math.round(GY0 + Math.sin(a) * 72);
+}
 
 // solid view
 const SOX = 330;
@@ -37,6 +48,23 @@ const GXo = 14;
 const GYo = 10;
 const COX = 90;
 const COY = 468;
+
+// regular polygon
+const RCX = 330;
+const RCY = 255;
+const R_PX = 150;
+const FAN_PX = 44;
+const SPIN = 0.5; // peak spin (radians) halfway through the fan
+const TRI_FILL = ["#3b5785", "#4a6aa0"];
+// Spin angle 4u(1-u)·SPIN as cos/sin tables over u = 0..1 (256 steps), built once.
+const SPIN_N = 256;
+const SPIN_C = new Float64Array(SPIN_N + 1);
+const SPIN_S = new Float64Array(SPIN_N + 1);
+for (let i = 0; i <= SPIN_N; i++) {
+  const u = i / SPIN_N;
+  SPIN_C[i] = Math.cos(4 * u * (1 - u) * SPIN);
+  SPIN_S[i] = Math.sin(4 * u * (1 - u) * SPIN);
+}
 
 const FONT_L = "700 20px system-ui";
 const FONT_M = "700 16px system-ui";
@@ -120,6 +148,30 @@ export function layoutShield(g) {
   info[16] = Y(h) - 12;
   info[17] = Math.round(k); // unit size for the tier-2 grid
   info[18] = X(0);
+}
+
+/**
+ * Regular n-gon with its bottom side horizontal: vertex k at angle
+ * 90° - 180°/n + k·360°/n (canvas y down), so triangle 0 (centre, V0, V1)
+ * sits at the bottom with a horizontal base and a vertical apothem.
+ */
+export function layoutRegular(g) {
+  const n = g.regular.n;
+  const d = g.rgDir;
+  d.fill(0);
+  for (let k = 0; k < n; k++) {
+    const t = Math.PI / 2 - Math.PI / n + (k * 2 * Math.PI) / n;
+    d[k] = Math.cos(t);
+    d[8 + k] = Math.sin(t);
+    d[16 + k] = Math.cos(t + Math.PI / n);
+    d[24 + k] = Math.sin(t + Math.PI / n);
+  }
+  const info = g.rgInfo;
+  info[0] = n;
+  info[1] = R_PX;
+  info[2] = Math.round(R_PX * Math.cos(Math.PI / n));
+  info[3] = FAN_PX;
+  info[4] = 0;
 }
 
 /** Choose the scale and view centres so the solid and its net both fit. */
@@ -352,6 +404,141 @@ function drawShield(ctx, g) {
   text(ctx, L.h, info[11], info[12]);
 }
 
+// The regular shield is drawn by three small functions rather than one large
+// one: a single large render function was optimized late, and installing its
+// code landed inside a live frame (a one-off ~20 KB charge in the GC audit).
+// They share only integers (the spin-table index) and read doubles from typed
+// arrays, so no boxed double crosses a call.
+
+function regularGhost(ctx, g) {
+  const info = g.rgInfo;
+  const d = g.rgDir;
+  const n = info[0];
+  const R = info[1];
+  ctx.strokeStyle = "#ffd166";
+  ctx.lineWidth = 2;
+  alphaLevel(ctx, 10);
+  ctx.beginPath();
+  for (let k = 0; k < n; k++) {
+    const j = k + 1 === n ? 0 : k + 1;
+    const x0 = (RCX + R * d[k]) | 0;
+    const y0 = (RCY + R * d[8 + k]) | 0;
+    line(ctx, RCX, RCY, x0, y0);
+    line(ctx, x0, y0, (RCX + R * d[j]) | 0, (RCY + R * d[8 + j]) | 0);
+  }
+  ctx.stroke();
+  ctx.globalAlpha = 1;
+}
+
+function regularTriangles(ctx, g, si) {
+  const info = g.rgInfo;
+  const d = g.rgDir;
+  const n = info[0];
+  const R = info[1];
+  const counted = info[4];
+  const tier = g.tier;
+  let u = g.springs.pos[S_FAN];
+  if (u < 0) u = 0;
+  const open = tier >= 1 || u > 0.02;
+  const c = SPIN_C[si];
+  const s = SPIN_S[si];
+  const reach = u * info[3];
+  if (!open) {
+    // Tier 0, fan closed: one solid plate, no seams that would hint at the triangles.
+    ctx.fillStyle = TRI_FILL[0];
+    ctx.strokeStyle = "#a9b6d3";
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo((RCX + R * d[0]) | 0, (RCY + R * d[8]) | 0);
+    for (let k = 1; k < n; k++) ctx.lineTo((RCX + R * d[k]) | 0, (RCY + R * d[8 + k]) | 0);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+    return;
+  }
+  ctx.font = FONT_M;
+  ctx.textAlign = "center";
+  for (let k = 0; k < n; k++) {
+    const j = k + 1 === n ? 0 : k + 1;
+    const ox = RCX + reach * (d[16 + k] * c - d[24 + k] * s);
+    const oy = RCY + reach * (d[16 + k] * s + d[24 + k] * c);
+    const ax = ox + R * (d[k] * c - d[8 + k] * s);
+    const ay = oy + R * (d[k] * s + d[8 + k] * c);
+    const bx = ox + R * (d[j] * c - d[8 + j] * s);
+    const by = oy + R * (d[j] * s + d[8 + j] * c);
+    const lit = tier >= 2 && k < counted;
+    ctx.fillStyle = lit ? "#2f9e96" : TRI_FILL[k & 1];
+    ctx.beginPath();
+    ctx.moveTo(ox | 0, oy | 0);
+    ctx.lineTo(ax | 0, ay | 0);
+    ctx.lineTo(bx | 0, by | 0);
+    ctx.closePath();
+    ctx.fill();
+    ctx.strokeStyle = lit ? "#ffd166" : "#a9b6d3";
+    ctx.lineWidth = lit ? 4 : 3;
+    ctx.stroke();
+    if (lit) {
+      ctx.fillStyle = "#ffd166";
+      // beside the apothem, toward vertex a, so the height line never covers it
+      text(ctx, g.labels.num[k], ((ox + 2 * ax + bx) / 4) | 0, (((oy + 2 * ay + by) / 4) | 0) + 6);
+    }
+  }
+}
+
+/** Triangle 0's apothem (its height) with a right-angle mark, and the labels. */
+function regularApothem(ctx, g, si) {
+  const info = g.rgInfo;
+  const d = g.rgDir;
+  const ap = info[2];
+  const tier = g.tier;
+  const L = g.labels;
+  const c = SPIN_C[si];
+  const s = SPIN_S[si];
+  let u = g.springs.pos[S_FAN];
+  if (u < 0) u = 0;
+  const reach = u * info[3];
+  const mx = d[16] * c - d[24] * s;
+  const my = d[16] * s + d[24] * c;
+  const ox = RCX + reach * mx;
+  const oy = RCY + reach * my;
+  const fx = ox + ap * mx;
+  const fy = oy + ap * my;
+  const ex = -my; // along the base
+  const ey = mx;
+  ctx.strokeStyle = "#ffd166";
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  line(ctx, ox | 0, oy | 0, fx | 0, fy | 0);
+  ctx.stroke();
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo((fx - 12 * mx) | 0, (fy - 12 * my) | 0);
+  ctx.lineTo((fx - 12 * mx + 12 * ex) | 0, (fy - 12 * my + 12 * ey) | 0);
+  ctx.lineTo((fx + 12 * ex) | 0, (fy + 12 * ey) | 0);
+  ctx.stroke();
+  ctx.fillStyle = "#ffd166";
+  dot(ctx, ox | 0, oy | 0, 5);
+  ctx.font = FONT_L;
+  ctx.fillStyle = tier >= 1 ? "#ffd166" : "#e8eefc";
+  text(ctx, tier >= 1 ? L.base : L.side, (fx + 30 * mx) | 0, (fy + 30 * my + 6) | 0);
+  ctx.fillStyle = "#ffd166";
+  ctx.textAlign = "left";
+  text(ctx, tier >= 1 ? L.hgt : L.apo, (ox + 0.55 * ap * mx + 18 * ex) | 0, (oy + 0.55 * ap * my) | 0);
+}
+
+function drawRegular(ctx, g) {
+  // spin out and back: cos/sin from the table, vectors rotated by arithmetic
+  let si = (g.springs.pos[S_FAN] * SPIN_N + 0.5) | 0;
+  if (si < 0) si = 0;
+  if (si > SPIN_N) si = SPIN_N;
+  ctx.lineJoin = "round";
+  // Tier 1+: ghost outline of every triangle where the polygon rests.
+  if (g.tier >= 1) regularGhost(ctx, g);
+  regularTriangles(ctx, g, si);
+  regularApothem(ctx, g, si);
+  ctx.lineJoin = "miter";
+}
+
 function filled(i, j, k, nl, nw, nh, c) {
   return i >= 0 && j >= 0 && k >= 0 && i < nl && j < nw && k < nh && k * nl * nw + j * nl + i < c;
 }
@@ -448,31 +635,40 @@ function drawChamber(ctx, g) {
   text(ctx, L.cw, fx + ((hw * GXo) >> 1) + 10, COY - ((hw * GYo) >> 1) + 16);
 }
 
+function gaugeLayer(g) {
+  if (!g.gaugeLayer) {
+    g.gaugeLayer = staticLayer(W, H, (c) => {
+      c.fillStyle = "#0f1830";
+      roundRect(c, 650, 40, 280, 400, 18);
+      c.fill();
+      c.strokeStyle = "#2c3e63";
+      c.lineWidth = 2;
+      c.stroke();
+      c.lineWidth = 10;
+      c.beginPath();
+      c.arc(GX0, GY0, 80, ARC_FROM, ARC_TO);
+      c.stroke();
+    });
+  }
+  return g.gaugeLayer;
+}
+
 function drawGauge(ctx, g) {
   const L = g.labels;
-  ctx.fillStyle = "#0f1830";
-  roundRect(ctx, 650, 40, 280, 400, 18);
-  ctx.fill();
-  ctx.strokeStyle = "#2c3e63";
-  ctx.lineWidth = 2;
-  ctx.stroke();
+  // Panel and arc track are static artwork: painted once (the arc's double
+  // angles would otherwise reach the canvas every frame).
+  ctx.drawImage(gaugeLayer(g), 0, 0, W, H);
   ctx.textAlign = "center";
   ctx.fillStyle = "#a9b6d3";
   ctx.font = FONT_M;
   text(ctx, L.plate, GX0, 76);
-  ctx.strokeStyle = "#2c3e63";
-  ctx.lineWidth = 10;
-  ctx.beginPath();
-  ctx.arc(GX0, GY0, 80, ARC_FROM, ARC_TO);
-  ctx.stroke();
-  let v = g.springs.pos[S_NEEDLE];
-  if (v < -0.04) v = -0.04;
-  if (v > 1.04) v = 1.04;
-  const ang = ARC_FROM + ARC_SPAN * v;
+  let ni = ((g.springs.pos[S_NEEDLE] + 0.04) * (NEEDLE_N / 1.08) + 0.5) | 0;
+  if (ni < 0) ni = 0;
+  if (ni > NEEDLE_N) ni = NEEDLE_N;
   ctx.strokeStyle = g.solved ? "#7bdc8f" : "#ffd166";
   ctx.lineWidth = 4;
   ctx.beginPath();
-  line(ctx, GX0, GY0, (GX0 + Math.cos(ang) * 72) | 0, (GY0 + Math.sin(ang) * 72) | 0);
+  line(ctx, GX0, GY0, NEEDLE_X[ni], NEEDLE_Y[ni]);
   ctx.stroke();
   ctx.fillStyle = "#ffd166";
   dot(ctx, GX0, GY0, 8);
@@ -522,6 +718,7 @@ export function drawScene(ctx, g) {
   }
   if (g.mode === "shield") drawShield(ctx, g);
   else if (g.mode === "unfold") drawSolid(ctx, g);
+  else if (g.mode === "regular") drawRegular(ctx, g);
   else drawChamber(ctx, g);
   drawGauge(ctx, g);
   g.particles.render(ctx);

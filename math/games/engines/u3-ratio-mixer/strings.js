@@ -132,9 +132,9 @@ export const STRINGS = {
   es: {
     title: "Mezclador de biorresonancia",
     missionScale:
-      "Razón de resonancia {a}:{b}, enzima A a enzima B. El tanque ya tiene {A} unidades de A. Ajusta la válvula B para que la mezcla sea equivalente y pulsa Resonar.",
+      "Razón de resonancia {a}:{b}, enzima A a enzima B. El tanque ya tiene {A} unidades de A. Ajusta la válvula B para que la mezcla sea equivalente y pulsa el botón Haz resonar.",
     missionTotal:
-      "Razón de resonancia {a}:{b}, enzima A a enzima B. El tanque debe tener exactamente {T} unidades en total. Ajusta las dos válvulas para que la mezcla sea equivalente y pulsa Resonar.",
+      "Razón de resonancia {a}:{b}, enzima A a enzima B. El tanque debe tener exactamente {T} unidades en total. Ajusta las dos válvulas para que la mezcla sea equivalente y pulsa el botón Haz resonar.",
     missionRate:
       "Registro del tambor: en {c} ciclos salieron {q} unidades de enzima. Pon el dial de unidades por ciclo en la tasa unitaria del tambor y haz girar los tambores.",
     missionCompare:
@@ -153,16 +153,16 @@ export const STRINGS = {
     perCycleB: "B: {n} por ciclo",
     pick1: "El mezclador 1 es más fuerte en A",
     pick2: "El mezclador 2 es más fuerte en A",
-    batch: "Agregar una tanda",
-    deal: "Repartir una ronda",
-    batch1: "Agregar una tanda al mezclador 1",
-    batch2: "Agregar una tanda al mezclador 2",
-    feed: "Pasar un grupo",
-    clear: "Empezar de nuevo",
-    runEquiv: "Resonar",
-    runRate: "Girar los tambores",
-    runCompare: "Hacer funcionar los dos",
-    runConvert: "Activar el convertidor",
+    batch: "Agrega una tanda",
+    deal: "Reparte una ronda",
+    batch1: "Agrega una tanda al mezclador 1",
+    batch2: "Agrega una tanda al mezclador 2",
+    feed: "Pasa un grupo",
+    clear: "Empieza de nuevo",
+    runEquiv: "Haz resonar",
+    runRate: "Gira los tambores",
+    runCompare: "Haz funcionar los dos",
+    runConvert: "Activa el convertidor",
     tooTeal: "El brillo es demasiado turquesa: esta mezcla tiene demasiada enzima A para la razón.",
     tooAmber: "El brillo es demasiado ámbar: esta mezcla tiene demasiada enzima B para la razón.",
     additiveTeal:
@@ -207,7 +207,7 @@ export const STRINGS = {
     ab_kg: "kg",
     ab_g: "g",
     ab_gal: "gal",
-    ab_qt: "ct",
+    ab_qt: "qt",
     commonPlate: "A = {n}",
     oneUnitA: "1 unidad de A",
     oneUnitB: "1 unidad de B",
@@ -257,6 +257,6 @@ export const STRINGS = {
     input: "Eje de entrada",
     output: "Dial de salida",
     feedLeft: "Falta pasar: {n} {u}",
-    feedMade: "Salió de los engranajes: {n} {u}",
+    feedMade: "Salida de los engranajes: {n} {u}",
   },
 };

@@ -157,3 +157,17 @@ export function staticLayer(w, h, paint) {
   paint(ctx);
   return c;
 }
+
+// Trig lookup for per-frame drawing (gauges, spokes, gears). Math.cos/sin are
+// builtins: in code V8 has not optimized yet, or when not inlined, each call
+// returns a boxed double, so a per-frame trig loop allocates (u7 tether reel,
+// u9 gear: measured). Index with ((angle * TRIG_PER_RAD) | 0) & TRIG_MASK.
+export const TRIG_N = 1024;
+export const TRIG_MASK = TRIG_N - 1;
+export const TRIG_PER_RAD = TRIG_N / TAU;
+export const COS_T = new Float64Array(TRIG_N);
+export const SIN_T = new Float64Array(TRIG_N);
+for (let i = 0; i < TRIG_N; i++) {
+  COS_T[i] = Math.cos(i / TRIG_PER_RAD);
+  SIN_T[i] = Math.sin(i / TRIG_PER_RAD);
+}

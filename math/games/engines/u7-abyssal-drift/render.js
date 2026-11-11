@@ -3,7 +3,7 @@
 // every label prebuilt on game.labels by refreshLabels().
 
 import { H, W } from "../core/engine.js";
-import { alphaLevel, dot, line, rect, ring, roundRect, staticLayer, text } from "../core/draw.js";
+import { alphaLevel, dot, line, rect, ring, roundRect, staticLayer, text, COS_T, SIN_T, TRIG_MASK, TRIG_N, TRIG_PER_RAD } from "../core/draw.js";
 import { num, RANGE } from "./math.js";
 
 export const M_NAV = 0;
@@ -55,7 +55,6 @@ const GX = PX;
 const GY = 330;
 const GR = 120;
 const PI = Math.PI;
-const SPOKE = (Math.PI * 2) / 6;
 const RUNG = ["#46c2b8", "#ffd166"];
 const CABLE = ["#f2b45a", "#7bdc8f"]; // slack or short, taut
 const PING = ["#f2b45a", "#7bdc8f"]; // miss, hit
@@ -181,6 +180,8 @@ export function buildLayers() {
   });
   return { sea, grid, gauge };
 }
+
+const SPOKE_STEPS = Math.round(TRIG_N / 6); // six spokes in table steps
 
 export function renderAll(g, ctx) {
   const L = g.layers;
@@ -517,72 +518,82 @@ function drawPing(g, ctx) {
 
 /** Diegetic instrument panel: the student's own settings, never the answer. */
 function drawPanel(g, ctx) {
-  const Lb = g.labels;
-  const sp = g.springs;
   ctx.textAlign = "center";
   ctx.fillStyle = "#46c2b8";
   ctx.font = "700 22px system-ui";
-  text(ctx, Lb.mode, PX, 82);
+  text(ctx, g.labels.mode, PX, 82);
   ctx.fillStyle = "#e8eefc";
   ctx.font = "700 18px system-ui";
-  text(ctx, Lb.p1, PX, 130);
+  text(ctx, g.labels.p1, PX, 130);
+  // One small function per mode: a single large multi-mode function stayed
+  // unoptimized in the tether and mirror modes and boxed every double (measured).
   const m = g.m;
-  if (m === M_NAV || m === M_MIRROR) {
-    // x thrust bar (east +) and y ballast column (up +).
-    ctx.fillStyle = "#1c2a45";
-    rect(ctx, PX - 150, 150, 300, 14);
-    rect(ctx, PX - 7, 230, 14, 240);
+  if (m === M_NAV || m === M_MIRROR) panelThrust(g, ctx);
+  else if (m === M_HULL) panelHull(g, ctx);
+  else panelReel(g, ctx);
+}
+
+function panelThrust(g, ctx) {
+  const sp = g.springs;
+  // x thrust bar (east +) and y ballast column (up +).
+  ctx.fillStyle = "#1c2a45";
+  rect(ctx, PX - 150, 150, 300, 14);
+  rect(ctx, PX - 7, 230, 14, 240);
+  ctx.fillStyle = "#ffd166";
+  const tx = (sp.pos[S_TX] * 15) | 0;
+  rect(ctx, tx < 0 ? PX + tx : PX, 150, tx < 0 ? -tx : tx, 14);
+  const ty = (sp.pos[S_TY] * 12) | 0;
+  ctx.fillStyle = "#8fc7ff";
+  rect(ctx, PX - 7, ty > 0 ? 350 - ty : 350, 14, ty < 0 ? -ty : ty);
+  ctx.fillStyle = "#e8eefc";
+  rect(ctx, PX - 1, 146, 2, 22);
+  rect(ctx, PX - 12, 349, 24, 2);
+  text(ctx, g.labels.p2, PX, 210);
+}
+
+function panelHull(g, ctx) {
+  const sp = g.springs;
+  ctx.drawImage(g.layers.gauge, 0, 0, W, H);
+  const q = g.q;
+  if (q.variant === "match") {
+    // The drone's (or buoy's) strain, marked on the gauge as the reference.
+    const k = q.given < 0 ? -q.given : q.given;
+    const t = (((PI + (k / 10) * PI) * TRIG_PER_RAD) | 0) & TRIG_MASK;
     ctx.fillStyle = "#ffd166";
-    const tx = (sp.pos[S_TX] * 15) | 0;
-    rect(ctx, tx < 0 ? PX + tx : PX, 150, tx < 0 ? -tx : tx, 14);
-    const ty = (sp.pos[S_TY] * 12) | 0;
-    ctx.fillStyle = "#8fc7ff";
-    rect(ctx, PX - 7, ty > 0 ? 350 - ty : 350, 14, ty < 0 ? -ty : ty);
-    ctx.fillStyle = "#e8eefc";
-    rect(ctx, PX - 1, 146, 2, 22);
-    rect(ctx, PX - 12, 349, 24, 2);
-    text(ctx, Lb.p2, PX, 210);
-  } else if (m === M_HULL) {
-    ctx.drawImage(g.layers.gauge, 0, 0, W, H);
-    const q = g.q;
-    if (q.variant === "match") {
-      // The drone's (or buoy's) strain, marked on the gauge as the reference.
-      const k = q.given < 0 ? -q.given : q.given;
-      const a = PI + (k / 10) * PI;
-      ctx.fillStyle = "#ffd166";
-      dot(ctx, (GX + Math.cos(a) * (GR + 14)) | 0, (GY + Math.sin(a) * (GR + 14)) | 0, 6);
-    }
-    let v = sp.pos[S_GAUGE];
-    if (v > 10.5) v = 10.5;
-    if (v < 0) v = 0;
-    const a = PI + (v / 10) * PI;
-    ctx.strokeStyle = "#ffffff";
-    ctx.lineWidth = 4;
-    ctx.beginPath();
-    line(ctx, GX, GY, (GX + Math.cos(a) * (GR - 22)) | 0, (GY + Math.sin(a) * (GR - 22)) | 0);
-    ctx.stroke();
-    ctx.fillStyle = "#ffffff";
-    dot(ctx, GX, GY, 8);
-    ctx.fillStyle = "#e8eefc";
-    ctx.font = "700 18px system-ui";
-    text(ctx, Lb.strain, PX, 400);
-  } else {
-    // Tether reel turns with the dial.
-    const a = sp.pos[S_TX] * 0.5;
-    ctx.strokeStyle = "#a9b6d3";
-    ctx.lineWidth = 6;
-    ring(ctx, PX, 300, 80);
-    ctx.stroke();
-    ctx.lineWidth = 4;
-    ctx.beginPath();
-    for (let i = 0; i < 6; i++) {
-      const r = a + i * SPOKE;
-      line(ctx, PX, 300, (PX + Math.cos(r) * 78) | 0, (300 + Math.sin(r) * 78) | 0);
-    }
-    ctx.stroke();
-    ctx.fillStyle = "#f2b45a";
-    dot(ctx, PX, 300, 14);
+    dot(ctx, (GX + COS_T[t] * (GR + 14)) | 0, (GY + SIN_T[t] * (GR + 14)) | 0, 6);
   }
+  let v = sp.pos[S_GAUGE];
+  if (v > 10.5) v = 10.5;
+  if (v < 0) v = 0;
+  const t = (((PI + (v / 10) * PI) * TRIG_PER_RAD) | 0) & TRIG_MASK;
+  ctx.strokeStyle = "#ffffff";
+  ctx.lineWidth = 4;
+  ctx.beginPath();
+  line(ctx, GX, GY, (GX + COS_T[t] * (GR - 22)) | 0, (GY + SIN_T[t] * (GR - 22)) | 0);
+  ctx.stroke();
+  ctx.fillStyle = "#ffffff";
+  dot(ctx, GX, GY, 8);
+  ctx.fillStyle = "#e8eefc";
+  ctx.font = "700 18px system-ui";
+  text(ctx, g.labels.strain, PX, 400);
+}
+
+function panelReel(g, ctx) {
+  // Tether reel turns with the dial.
+  const base = ((g.springs.pos[S_TX] * 0.5 * TRIG_PER_RAD) | 0) & TRIG_MASK;
+  ctx.strokeStyle = "#a9b6d3";
+  ctx.lineWidth = 6;
+  ring(ctx, PX, 300, 80);
+  ctx.stroke();
+  ctx.lineWidth = 4;
+  ctx.beginPath();
+  for (let i = 0; i < 6; i++) {
+    const t = (base + i * SPOKE_STEPS) & TRIG_MASK;
+    line(ctx, PX, 300, (PX + COS_T[t] * 78) | 0, (300 + SIN_T[t] * 78) | 0);
+  }
+  ctx.stroke();
+  ctx.fillStyle = "#f2b45a";
+  dot(ctx, PX, 300, 14);
 }
 
 /**

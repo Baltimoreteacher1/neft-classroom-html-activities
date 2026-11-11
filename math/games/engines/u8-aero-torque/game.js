@@ -108,32 +108,32 @@ class AeroTorque extends EduWonderEngine {
       divisor: "Dividir en grupos iguales",
       dial: "Dial de la lata x",
       boundary: "Propulsor del límite",
-      removeLeft: "Quitar a la izquierda",
-      removeRight: "Quitar a la derecha",
-      removeBoth: "Quitar de los dos",
-      splitBoth: "Dividir los dos lados",
-      pair: "Emparejar uno y uno",
-      reset: "Recargar la máquina",
+      removeLeft: "Quita de la izquierda",
+      removeRight: "Quita de la derecha",
+      removeBoth: "Quita de los dos",
+      splitBoth: "Divide los dos lados",
+      pair: "Empareja uno de cada lado",
+      reset: "Recarga la máquina",
       sweepRight: "El campo barre a la derecha",
       sweepLeft: "El campo barre a la izquierda",
       nodeClosed: "Nodo cerrado (incluye el límite)",
       nodeOpen: "Nodo abierto (no incluye el límite)",
-      confirm: "Confirmar x",
-      engage: "Activar el campo",
+      confirm: "Confirma x",
+      engage: "Activa el campo",
       tooFew: "Ese platillo solo tiene {n} pesas.",
       sealed: "Las latas están selladas. Divide solo en grupos que repartan las latas por igual.",
       tilted:
         "La nave se inclina: los dos lados ya no son iguales. Lo que hagas a un lado, hazlo al otro.",
       notIsolated:
         "La lata x todavía no está sola. Quita o divide hasta que quede una sola x en su platillo.",
-      high: "La lata pesa menos que tu dial. Tu x es demasiado alta.",
-      low: "La lata pesa más que tu dial. Tu x es demasiado baja.",
-      solvedEq: "¡Vuelo nivelado! x = {x} hace verdadera {eq}.",
+      high: "La lata pesa menos de lo que marca tu dial. Tu x es demasiado alta.",
+      low: "La lata pesa más de lo que marca tu dial. Tu x es demasiado baja.",
+      solvedEq: "¡Vuelo nivelado! x = {x} hace verdadera la ecuación {eq}.",
       boundaryHigh: "Las sondas cerca del límite fallan: tu límite está demasiado a la derecha.",
       boundaryLow: "Las sondas cerca del límite fallan: tu límite está demasiado a la izquierda.",
-      direction: "El campo contiene valores que la hacen falsa. Revisa hacia dónde barre.",
+      direction: "El campo contiene valores que hacen falsa la desigualdad. Revisa hacia dónde barre.",
       node: "Revisa el nodo: ¿el valor del límite es una solución?",
-      solvedIneq: "¡Contenido! Cada valor del campo hace verdadera {ineq}.",
+      solvedIneq: "¡Contenido! Cada valor del campo hace verdadera la desigualdad {ineq}.",
       leftPan: "Platillo izquierdo",
       rightPan: "Platillo derecho",
       descEq:
@@ -164,13 +164,12 @@ class AeroTorque extends EduWonderEngine {
     this.eq = null;
     this.ineq = null;
     this.lc = 0;
-    this.panW = new Float64Array(2);
+    this.panW = new Float64Array(3); // [left pan, right pan, smoke timer]
     this.lw = 0;
     this.rw = 0;
     this.right = true;
     this.closed = false;
     this.engaged = false;
-    this.flash = 0;
     this.probeState = new Int8Array(PROBES); // 0 idle, 1 contained ok, -1 contained wrong, 2 escaped
     this.labels = { left: "", right: "", lGauge: "", rGauge: "", torque: "", bound: "" };
   }
@@ -428,11 +427,11 @@ class AeroTorque extends EduWonderEngine {
     // Step with the module constant, not the dt parameter, so no double crosses a call.
     this.springs.step(DT);
     this.particles.update(DT);
-    this.flash += DT;
+    this.panW[2] += DT;
     if (this.mode === "eq" && !this.solved) {
       const a = this.springs.pos[S_ANGLE];
-      if (Math.abs(a) > 0.02 && this.flash > 0.08) {
-        this.flash = 0;
+      if (Math.abs(a) > 0.02 && this.panW[2] > 0.08) {
+        this.panW[2] = 0;
         // Smoke from the low side's thruster.
         const side = a > 0 ? 1 : -1;
         this.particles.emit(
@@ -670,14 +669,17 @@ class AeroTorque extends EduWonderEngine {
 
   drawDeck(ctx) {
     const field = this.springs.pos[S_FIELD];
-    const bx = this.probeX(this.springs.pos[S_BOUND]);
+    // Inline, not this.probeX(): a spring position passed as an argument is boxed.
+    const bx = (LINE_X0 + ((LINE_X1 - LINE_X0) * this.springs.pos[S_BOUND]) / LINE_MAX) | 0;
     // Laser field band, sweeping out from the boundary.
     if (field > 0.01) {
-      alphaLevel(ctx, (Math.min(1, field) * 7 + 0.5) | 0);
+      // Plain comparisons, not Math.min/Math.abs: a builtin call V8 does not
+      // inline returns a boxed double.
+      alphaLevel(ctx, ((field > 1 ? 1 : field) * 7 + 0.5) | 0);
       ctx.fillStyle = "#46c2b8";
       const end = this.right ? LINE_X1 + 20 : LINE_X0 - 20;
-      const reach = (end - bx) * field;
-      rect(ctx, (reach < 0 ? bx + reach : bx) | 0, LINE_Y - 90, Math.abs(reach) | 0, 80);
+      const reach = ((end - bx) * field) | 0;
+      rect(ctx, reach < 0 ? bx + reach : bx, LINE_Y - 90, reach < 0 ? -reach : reach, 80);
       ctx.globalAlpha = 1;
     }
     // Number deck (static ticks and numerals are a pre-rendered layer).

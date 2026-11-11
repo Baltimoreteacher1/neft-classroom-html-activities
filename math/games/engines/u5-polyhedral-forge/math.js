@@ -313,3 +313,68 @@ export function judgeChamber(c, nl, nw, nh, value) {
     ? { key: "volHigh", tag: "value-high" }
     : { key: "volLow", tag: "value-low" };
 }
+
+// ---------- regular polygons (lesson 5-9) ----------
+// Decompose from the centre into n congruent triangles: one triangle is
+// ½ × side × apothem, the polygon is n of them. Apothems are the true apothem
+// rounded to the nearest tenth (as the lesson's "use the rounded height"), and
+// every value is kept in integer tenths so the dials land exactly on 0.1 steps.
+
+export const REG_TRI_MAX = 30;
+/** Total-area dial ceiling: a fixed number per level band, so it never hints. */
+export const regTotalMax = (level) => (level <= 2 ? 200 : 500);
+
+/** Apothem of a regular n-gon with side s, in tenths, rounded to the nearest tenth. */
+export function apothemTenths(n, s) {
+  return Math.round((10 * s) / (2 * Math.tan(Math.PI / n)));
+}
+
+/** Decimal text of a value in tenths ("93.6", "60"). */
+export function tenths(t) {
+  const w = Math.floor(t / 10);
+  const r = t - 10 * w;
+  return r === 0 ? String(w) : `${w}.${r}`;
+}
+
+/**
+ * A regular polygon shield. side s (whole), apothem a10 (tenths). tri10 and
+ * total10 are one triangle's and the polygon's areas in tenths. twoDials:
+ * levels 1-2 also ask for one triangle's area.
+ * @param {number} level @param {() => number} next
+ */
+export function makeRegular(level, next) {
+  const n = level === 1 ? 6 : pick(next, [5, 6, 8]);
+  const lo = level <= 2 ? 2 : level === 3 ? 3 : 4;
+  const hi = level <= 2 ? 6 : level === 3 ? 8 : 10;
+  const sides = [];
+  // s × a10 must be even, so one triangle (s × a10 / 2 tenths) is a whole tenth
+  for (let s = lo; s <= hi; s++) if ((s * apothemTenths(n, s)) % 2 === 0) sides.push(s);
+  const s = pick(next, sides);
+  const a10 = apothemTenths(n, s);
+  const tri10 = (s * a10) / 2;
+  return { n, s, a10, tri10, total10: n * tri10, twoDials: level <= 2 };
+}
+
+/**
+ * Judge the dials (square units). tri is ignored when the round has one dial.
+ * @returns {{key: string, tag?: string, high?: boolean}}
+ */
+export function judgeRegular(r, tri, total) {
+  const { n, s, a10, tri10, total10 } = r;
+  if (r.twoDials) {
+    const t = Math.round(tri * 10);
+    if (t !== tri10) {
+      if (t === s * a10) return { key: "regTriHalf", tag: "forgot-half" };
+      if (t === 5 * s * s) return { key: "regSide", tag: "side-as-apothem", high: t > tri10 };
+      return t > tri10 ? { key: "regTriHigh", tag: "value-high" } : { key: "regTriLow", tag: "value-low" };
+    }
+  }
+  const T = Math.round(total * 10);
+  if (T === total10) return { key: "ok" };
+  if (T === tri10) return { key: "regOne", tag: "one-triangle-only" };
+  if (T === n * s * a10) return { key: "regHalf", tag: "forgot-half" };
+  if (T === n * 5 * s * s) return { key: "regSide", tag: "side-as-apothem", high: T > total10 };
+  for (let k = 2; k <= 12; k++)
+    if (k !== n && T === k * tri10) return { key: "regCount", tag: "wrong-triangle-count", high: k > n };
+  return T > total10 ? { key: "regHigh", tag: "value-high" } : { key: "regLow", tag: "value-low" };
+}

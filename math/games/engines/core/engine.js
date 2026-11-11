@@ -405,6 +405,7 @@ export class EduWonderEngine extends HTMLElement {
     this.resume();
   }
 
+
   disconnectedCallback() {
     this.running = false;
   }

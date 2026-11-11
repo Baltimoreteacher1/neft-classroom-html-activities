@@ -13,6 +13,10 @@
 //    1/2-inch cubes fit along each edge and the engine packs exactly that many,
 //    voxel by voxel: too many punch through the walls, too few leave gaps. Seal
 //    with the volume.
+//  - REGULAR SHIELD (6.GR.1, lesson 5-9): a regular pentagon, hexagon or
+//    octagon. The fan lever spins it apart from its centre into its n congruent
+//    triangles (base = side, height = apothem), which slide back together.
+//    Charge it with one triangle's area and the total.
 
 import { EduWonderEngine, H, W, define } from "../core/engine.js";
 import { Pivot } from "../core/draw.js";
@@ -24,21 +28,27 @@ import {
   faceHalves,
   judgeChamber,
   judgeShield,
+  judgeRegular,
   checkSolid,
   makeChamber,
+  makeRegular,
   makeShield,
   newSolid,
   mixed,
+  REG_TRI_MAX,
+  regTotalMax,
   SA_MAX,
+  tenths,
   VOL_MAX,
 } from "./math.js";
-import { drawScene, fitSolid, layoutShield } from "./render.js";
+import { drawScene, fitSolid, layoutRegular, layoutShield } from "./render.js";
 import { STRINGS } from "./strings.js";
 
 export const S_FOLD = 0;
 export const S_MORPH = 1;
 export const S_GLOW = 2;
 export const S_NEEDLE = 3;
+export const S_FAN = 4;
 // st[] slots (doubles kept in a typed array, never on object fields)
 export const ST_FILL = 0;
 
@@ -46,14 +56,14 @@ class PolyhedralForge extends EduWonderEngine {
   static meta = {
     gameId: "u5-polyhedral-forge",
     unit: 5,
-    lessons: ["5-1", "5-2", "5-3", "5-4", "5-5", "5-6", "5-7", "5-8", "5-10"],
+    lessons: ["5-1", "5-2", "5-3", "5-4", "5-5", "5-6", "5-7", "5-8", "5-9", "5-10"],
     checkId: "check",
   };
 
   static strings = STRINGS;
 
   initWorld() {
-    this.springs = new SpringBank(4);
+    this.springs = new SpringBank(5);
     this.pivot = new Pivot();
     this.particles = new ParticlePool(240, [
       "#9aa6b8",
@@ -71,6 +81,12 @@ class PolyhedralForge extends EduWonderEngine {
     this.shield = null;
     this.solid = null;
     this.chamber = null;
+    this.regular = null;
+    this.regTop = regTotalMax(1);
+    // Regular polygon: unit directions (vertex x, vertex y, mid x, mid y; 8 each)
+    // and integer info: n, circumradius px, apothem px, fan reach px, counted.
+    this.rgDir = new Float64Array(32);
+    this.rgInfo = new Int32Array(8);
     this.st = new Float64Array(16);
     // Shield plate, in integer screen pixels (layoutShield fills these).
     this.shBody = new Int32Array(8); // x0,y0,..x3,y3
@@ -104,6 +120,11 @@ class PolyhedralForge extends EduWonderEngine {
       cw: "",
       chh: "",
       dims: "",
+      side: "",
+      apo: "",
+      base: "",
+      hgt: "",
+      num: ["1", "2", "3", "4", "5", "6", "7", "8"],
       face: ["", "", "", "", "", ""],
       area: ["", "", "", "", "", ""],
     };
@@ -185,6 +206,44 @@ class PolyhedralForge extends EduWonderEngine {
       format: (v) => this.t("fmtCu", { v: mixed(Math.round(v * 8), 8) }),
       onInput: needle(VOL_MAX),
     });
+    this.fan = this.slider({
+      id: "fan",
+      label: "fan",
+      min: 0,
+      max: 100,
+      step: 5,
+      value: 0,
+      format: (v) => this.t("fmtPct", { v }),
+      onInput: (v) => {
+        this.springs.setTarget(S_FAN, v / 100);
+        sync();
+      },
+    });
+    const sqFt = (v) => this.t("fmtSqFt", { v: tenths(Math.round(v * 10)) });
+    this.triDial = this.slider({
+      id: "tri-dial",
+      label: "triDial",
+      min: 0,
+      max: REG_TRI_MAX,
+      step: 0.1,
+      value: 0,
+      format: sqFt,
+      onInput: sync,
+    });
+    this.totalDial = this.slider({
+      id: "total-dial",
+      label: "totalDial",
+      min: 0,
+      max: regTotalMax(1),
+      step: 0.1,
+      value: 0,
+      format: sqFt,
+      onInput: (v) => {
+        this.springs.setTarget(S_NEEDLE, v / this.regTop);
+        sync();
+      },
+    });
+    this.countBtn = this.button({ id: "count-tri", label: "countTri", onPress: () => this.countTriangle() });
     this.traceBtn = this.button({ id: "trace", label: "trace", onPress: () => this.traceFace() });
     this.stackBtn = this.button({ id: "stack", label: "stack", onPress: () => this.stackLayer() });
     this.checkBtn = this.button({
@@ -195,14 +254,18 @@ class PolyhedralForge extends EduWonderEngine {
     });
     this.binders.push(() => {
       this.checkBtn.textContent = this.t(
-        this.mode === "shield" ? "charge" : this.mode === "unfold" ? "energize" : "seal",
+        this.mode === "shield" || this.mode === "regular"
+          ? "charge"
+          : this.mode === "unfold"
+            ? "energize"
+            : "seal",
       );
     });
   }
 
   newRound(level, next) {
-    const r = this.roundIndex % 3;
-    this.mode = r === 1 ? "shield" : r === 2 ? "unfold" : "pack";
+    const r = this.roundIndex % 4;
+    this.mode = r === 1 ? "shield" : r === 2 ? "unfold" : r === 3 ? "pack" : "regular";
     const m = this.mode;
     this.morph.wrap.hidden = m !== "shield";
     this.charge.wrap.hidden = m !== "shield";
@@ -210,6 +273,9 @@ class PolyhedralForge extends EduWonderEngine {
     this.saDial.wrap.hidden = m !== "unfold";
     for (const s of [this.cubesL, this.cubesW, this.cubesH, this.volDial])
       s.wrap.hidden = m !== "pack";
+    this.fan.wrap.hidden = m !== "regular";
+    this.totalDial.wrap.hidden = m !== "regular";
+    this.triDial.wrap.hidden = true;
     this.particles.clear();
     this.springs.snap(S_GLOW, 0);
     this.springs.snap(S_NEEDLE, 0);
@@ -245,6 +311,16 @@ class PolyhedralForge extends EduWonderEngine {
       this.saDial.set(0);
       this.springs.snap(S_FOLD, 0);
       fitSolid(this);
+    } else if (m === "regular") {
+      this.regular = makeRegular(level, next);
+      this.triDial.wrap.hidden = !this.regular.twoDials;
+      this.regTop = regTotalMax(level);
+      this.totalDial.setRange(0, this.regTop, 0.1);
+      this.fan.set(0);
+      this.triDial.set(0);
+      this.totalDial.set(0);
+      this.springs.snap(S_FAN, 0);
+      layoutRegular(this);
     } else {
       this.chamber = makeChamber(level, next);
       const c = this.ch;
@@ -266,6 +342,21 @@ class PolyhedralForge extends EduWonderEngine {
   onTier(n) {
     this.traceBtn.hidden = this.mode !== "unfold" || n < 2;
     this.stackBtn.hidden = this.mode !== "pack" || n < 2;
+    this.countBtn.hidden = this.mode !== "regular" || n < 2;
+  }
+
+  /** Tier 2: light up the triangles one at a time into a tally of triangles. */
+  countTriangle() {
+    const info = this.rgInfo;
+    if (this.mode !== "regular" || info[4] >= info[0]) return;
+    const i = info[4];
+    info[4] = i + 1;
+    const d = this.rgDir;
+    // centroid of triangle i at rest: 2/3 of the way along its apothem
+    const k = (info[2] * 2) / 3;
+    this.particles.emit(330 + d[16 + i] * k, 255 + d[24 + i] * k, 10, 120, 2);
+    this.synth.lock();
+    this.sync();
   }
 
   packChanged() {
@@ -314,6 +405,18 @@ class PolyhedralForge extends EduWonderEngine {
   }
 
   evaluate() {
+    if (this.mode === "regular") {
+      const g = this.regular;
+      const r = judgeRegular(g, Number(this.triDial.input.value), Number(this.totalDial.input.value));
+      if (r.key === "ok")
+        return {
+          ok: true,
+          key: "solvedReg",
+          vars: { n: g.n, t: tenths(g.tri10), v: tenths(g.total10) },
+        };
+      const vars = r.high === undefined ? undefined : { dir: this.t(r.high ? "dirHigh" : "dirLow") };
+      return { ok: false, key: r.key, misconception: r.tag, vars };
+    }
     if (this.mode === "shield") {
       const s = this.shield;
       const r = judgeShield(s, Number(this.charge.input.value));
@@ -411,6 +514,19 @@ class PolyhedralForge extends EduWonderEngine {
         L.face[i] = !d ? "" : prism || i === 0 ? `${d[0]} × ${d[1]}` : `b ${d[0]} · h ${d[1]}`;
         L.area[i] = d ? mixed(this.faceHalf[i], 2) : "";
       }
+    } else if (m === "regular" && this.regular) {
+      const g = this.regular;
+      const a = tenths(g.a10);
+      L.plate = this.t("plateRegular");
+      L.dial = tenths(Math.round(Number(this.totalDial.input.value) * 10));
+      L.aux = g.twoDials
+        ? this.t("triPlate", { v: tenths(Math.round(Number(this.triDial.input.value) * 10)) })
+        : this.t("fanPlate", { v: this.fan.input.value });
+      L.aux2 = this.tier >= 2 ? this.t("countTally", { c: this.rgInfo[4] }) : "";
+      L.side = this.t("sideLbl", { s: g.s });
+      L.apo = this.t("apoLbl", { a });
+      L.base = this.t("baseLbl", { s: g.s });
+      L.hgt = this.t("hgtLbl", { a });
     } else if (m === "pack" && this.chamber) {
       const c = this.ch;
       L.plate = this.t("platePack");
@@ -425,6 +541,18 @@ class PolyhedralForge extends EduWonderEngine {
 
   describe() {
     const m = this.mode;
+    if (m === "regular" && this.regular) {
+      const g = this.regular;
+      return this.t(g.twoDials ? "descReg" : "descRegTotal", {
+        shape: this.t(`shape${g.n}`),
+        s: g.s,
+        a: tenths(g.a10),
+        f: this.fan.input.value,
+        t: tenths(Math.round(Number(this.triDial.input.value) * 10)),
+        v: tenths(Math.round(Number(this.totalDial.input.value) * 10)),
+        extra: this.tier >= 2 ? this.t("extraCount", { c: this.rgInfo[4] }) : "",
+      });
+    }
     if (m === "shield" && this.shield) {
       const s = this.shield;
       const key = s.kind === "para" ? "descPara" : s.kind === "tri" ? "descTri" : "descTrap";
@@ -470,6 +598,14 @@ class PolyhedralForge extends EduWonderEngine {
 
   mission() {
     const m = this.mode;
+    if (m === "regular") {
+      const g = this.regular;
+      return this.t(g.twoDials ? "missionReg" : "missionRegTotal", {
+        shape: this.t(`shape${g.n}`),
+        s: g.s,
+        a: tenths(g.a10),
+      });
+    }
     if (m === "shield") {
       const s = this.shield;
       const key =
@@ -487,6 +623,29 @@ class PolyhedralForge extends EduWonderEngine {
   }
 
   testPlan() {
+    if (this.mode === "regular") {
+      const g = this.regular;
+      const plan = [{ control: "fan", key: "End" }];
+      if (g.twoDials)
+        plan.push(
+          { control: "tri-dial", key: "Home" },
+          { control: "tri-dial", key: "ArrowRight", times: g.tri10 },
+        );
+      // reach the total from whichever end of the dial is nearer
+      const top = this.regTop * 10;
+      if (g.total10 <= top - g.total10)
+        plan.push(
+          { control: "total-dial", key: "Home" },
+          { control: "total-dial", key: "ArrowRight", times: g.total10 },
+        );
+      else
+        plan.push(
+          { control: "total-dial", key: "End" },
+          { control: "total-dial", key: "ArrowLeft", times: top - g.total10 },
+        );
+      plan.push({ control: "check", key: "Enter" });
+      return plan;
+    }
     if (this.mode === "shield")
       return [
         { control: "charge-dial", key: "Home" },

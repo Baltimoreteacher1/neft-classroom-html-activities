@@ -146,6 +146,7 @@ const needsOf = (c) => (c === "build" ? [] : ["build"]);
  * `--push` (or in a worktree without `dist/index.html`) and any of these is in
  * the selected set, `build` is prepended automatically. */
 const NEEDS_DIST = new Set([
+  "validate:engine-games-dist",
   "validate:game-transformation-browser",
   "validate:fluency-family-browser",
   "validate:html-experiences-browser",
@@ -178,6 +179,7 @@ const NEEDS_DIST = new Set([
  * own against the same dist/. A third Chromium was the difference. */
 const EXCLUSIVE = new Set([
   "validate:engine-games-browser",
+  "validate:engine-games-dist",
   "validate:game-transformation-browser",
   "validate:language-page-mystery-studio-browser",
   "validate:html-experiences-browser",
@@ -354,8 +356,16 @@ const COVERAGE = [
   // FPS under 4x throttle and per-frame heap allocation. Must precede the
   // generic /^math\/games\// rule below.
   [
-    /^(math\/games\/engines\/|tools\/(validate-engine-games-browser\.mjs$|engines\/))/,
-    ["validate:engine-games-browser", "validate:game-rules", "validate:js-syntax", "test", "check"],
+    /^(math\/games\/engines\/|tools\/(validate-engine-games-browser\.mjs$|bundle-engine-games\.mjs$|engines\/))/,
+    [
+      "validate:engine-games-browser",
+      "validate:engine-games-dist",
+      "validate:dist-file-budget",
+      "validate:game-rules",
+      "validate:js-syntax",
+      "test",
+      "check",
+    ],
   ],
   [
     /^(math\/games\/|games\/3d\/|tools\/(percent-construction\.test|verify-game-transformation-browser)\.mjs$)/,

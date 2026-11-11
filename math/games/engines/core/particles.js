@@ -7,6 +7,17 @@
 
 import { alphaLevel, rect } from "./draw.js";
 
+const TABLE_SIZE = 256;
+const TABLE_MASK = TABLE_SIZE - 1;
+const TABLE_PER_RADIAN = TABLE_SIZE / (Math.PI * 2);
+const INV_2_32 = 1 / 4294967296;
+const COS_TABLE = new Float32Array(TABLE_SIZE);
+const SIN_TABLE = new Float32Array(TABLE_SIZE);
+for (let t = 0; t < TABLE_SIZE; t++) {
+  COS_TABLE[t] = Math.cos(t / TABLE_PER_RADIAN);
+  SIN_TABLE[t] = Math.sin(t / TABLE_PER_RADIAN);
+}
+
 export class ParticlePool {
   /**
    * @param {number} capacity
@@ -23,6 +34,8 @@ export class ParticlePool {
     this.maxLife = new Float32Array(capacity);
     this.size = new Float32Array(capacity);
     this.color = new Uint8Array(capacity);
+    this.rngState = new Int32Array(1);
+    this.rngState[0] = 0x2545f491;
     this.cursor = 0;
     this.gravity = 240;
     this.drag = 1.6;
@@ -41,21 +54,41 @@ export class ParticlePool {
    * @param {number} [life] seconds
    */
   emit(x, y, count, speed, colorIndex, angle = -Math.PI / 2, spread = Math.PI, life = 0.7) {
-    const n = Math.floor(count * this.scale);
+    // Builtins (Math.random, Math.cos, Math.sin) return boxed doubles whenever
+    // V8 runs this cold or does not inline them, and bursts are rare events, so
+    // emit() stays cold for a long time. Randomness is an inline xorshift on
+    // typed-array state; direction comes from a unit-circle table.
+    const n = (count * this.scale) | 0;
+    const rs = this.rngState;
+    let r = rs[0];
     for (let k = 0; k < n; k++) {
       const i = this.cursor;
       this.cursor = (this.cursor + 1) % this.capacity;
-      const a = angle + (Math.random() - 0.5) * spread;
-      const s = speed * (0.4 + Math.random() * 0.6);
+      r ^= r << 13;
+      r ^= r >>> 17;
+      r ^= r << 5;
+      const u1 = (r >>> 0) * INV_2_32;
+      r ^= r << 13;
+      r ^= r >>> 17;
+      r ^= r << 5;
+      const u2 = (r >>> 0) * INV_2_32;
+      r ^= r << 13;
+      r ^= r >>> 17;
+      r ^= r << 5;
+      const u3 = (r >>> 0) * INV_2_32;
+      const a = angle + (u1 - 0.5) * spread;
+      const s = speed * (0.4 + u2 * 0.6);
+      const t = ((a * TABLE_PER_RADIAN) | 0) & TABLE_MASK;
       this.x[i] = x;
       this.y[i] = y;
-      this.vx[i] = Math.cos(a) * s;
-      this.vy[i] = Math.sin(a) * s;
-      this.maxLife[i] = life * (0.6 + Math.random() * 0.4);
+      this.vx[i] = COS_TABLE[t] * s;
+      this.vy[i] = SIN_TABLE[t] * s;
+      this.maxLife[i] = life * (0.6 + u3 * 0.4);
       this.life[i] = this.maxLife[i];
-      this.size[i] = 2 + ((Math.random() * 4) | 0);
+      this.size[i] = 2 + ((r >>> 0) & 3);
       this.color[i] = colorIndex;
     }
+    rs[0] = r;
   }
 
   /** @param {number} dt */

@@ -15,10 +15,14 @@ import {
   faceHalves,
   foldSolid,
   judgeChamber,
+  judgeRegular,
   judgeShield,
   makeChamber,
+  makeRegular,
   makeShield,
   newSolid,
+  REG_TRI_MAX,
+  regTotalMax,
   SA_MAX,
   VOL_MAX,
 } from "../../math/games/engines/u5-polyhedral-forge/math.js";
@@ -91,7 +95,24 @@ const near = (a, b, msg) => assert.ok(Math.abs(a - b) < 1e-9, `${msg}: ${a} vs $
 let shields = 0;
 let solids = 0;
 let chambers = 0;
+let regulars = 0;
 const kinds = new Set();
+const regShapes = new Set();
+
+// Independent: one centre triangle with base s on the x-axis and apex at
+// height a (the apothem) has shoelace area ½·s·a; the polygon is n of them.
+// Exact in hundredths: s and a·10 are integers, so 100·area = 5·s·(10a) per triangle.
+function regularTruth(r) {
+  const a = r.a10 / 10;
+  const tri = shoelace([
+    [-r.s / 2, 0],
+    [r.s / 2, 0],
+    [0, a],
+  ]);
+  const tri100 = 5 * r.s * r.a10;
+  assert.ok(Math.abs(tri * 100 - tri100) < 1e-6, "shoelace triangle = ½ × side × apothem");
+  return { tri100, total100: r.n * tri100 };
+}
 for (let seed = 1; seed <= 300; seed++) {
   for (let level = 1; level <= 4; level++) {
     const next = rng(seed * 37 + level);
@@ -176,9 +197,63 @@ for (let seed = 1; seed <= 300; seed++) {
     if (c.cubes <= VOL_MAX)
       assert.equal(judgeChamber(c, c.hl, c.hw, c.hh, c.cubes).tag, "cubes-as-volume");
     chambers++;
+
+    // ---- regular polygon (lesson 5-9) ----
+    const g = makeRegular(level, next);
+    regShapes.add(g.n);
+    if (level === 1) assert.equal(g.n, 6, "level 1 is the hexagon");
+    assert.ok([5, 6, 8].includes(g.n));
+    assert.equal(g.twoDials, level <= 2, "levels 3-4 ask for the total only");
+    // the given apothem is the real apothem of a regular n-gon, to the nearest tenth
+    const trueA = g.s / (2 * Math.tan(Math.PI / g.n));
+    assert.ok(Math.abs(g.a10 / 10 - trueA) <= 0.05 + 1e-9, `apothem ${g.a10 / 10} vs ${trueA}`);
+    const { tri100, total100 } = regularTruth(g);
+    assert.equal(tri100 % 10, 0, "one triangle lands on the 0.1 grid");
+    assert.equal(total100 % 10, 0, "total lands on the 0.1 grid");
+    assert.equal(g.tri10 * 10, tri100, `seed ${seed} L${level} ${JSON.stringify(g)} one triangle`);
+    assert.equal(g.total10 * 10, total100, "total = n triangles");
+    // the rounded apothem gives an estimate within half a tenth per unit of perimeter
+    const trueArea = (g.n * g.s * trueA) / 2;
+    assert.ok(
+      Math.abs(total100 / 100 - trueArea) <= (g.n * g.s * 0.05) / 2 + 1e-9,
+      "close estimate",
+    );
+    const triV = tri100 / 100;
+    const totV = total100 / 100;
+    assert.ok(triV <= REG_TRI_MAX || !g.twoDials, "triangle fits its dial");
+    assert.ok(totV > 0 && totV <= regTotalMax(level), `total ${totV} fits its dial`);
+    assert.equal(judgeRegular(g, triV, totV).key, "ok", "judge accepts the truth");
+    assert.notEqual(judgeRegular(g, 0, 0).key, "ok", "starts solved with dials at 0");
+    assert.notEqual(judgeRegular(g, triV, totV + 0.1).key, "ok");
+    assert.notEqual(judgeRegular(g, triV, totV - 0.1).key, "ok");
+    const half = (g.s * g.a10) / 10; // side × apothem
+    const sideH = (g.s * g.s) / 2; // ½ × side × side
+    assert.equal(judgeRegular(g, triV, triV).tag, "one-triangle-only");
+    assert.equal(judgeRegular(g, triV, g.n * half).tag, "forgot-half");
+    assert.equal(judgeRegular(g, triV, g.n * sideH).tag, "side-as-apothem");
+    for (const k of [g.n - 1, g.n + 1]) {
+      const r = judgeRegular(g, triV, Math.round(k * triV * 10) / 10);
+      assert.notEqual(r.key, "ok");
+      if (Math.round(k * triV * 10) !== Math.round(g.n * sideH * 10))
+        assert.equal(r.tag, "wrong-triangle-count", `count ${k} for n ${g.n}`);
+    }
+    if (g.twoDials) {
+      assert.equal(judgeRegular(g, half, totV).tag, "forgot-half", "triangle without the half");
+      assert.equal(judgeRegular(g, sideH, totV).tag, "side-as-apothem", "side as the height");
+      assert.notEqual(
+        judgeRegular(g, triV + 0.1, totV).key,
+        "ok",
+        "a wrong triangle blocks the solve",
+      );
+      assert.notEqual(judgeRegular(g, triV - 0.1, totV).key, "ok");
+    } else {
+      assert.equal(judgeRegular(g, 0, totV).key, "ok", "one-dial rounds ignore the triangle dial");
+    }
+    regulars++;
   }
 }
+assert.deepEqual([...regShapes].sort(), [5, 6, 8], "pentagon, hexagon and octagon all appear");
 assert.deepEqual([...kinds].sort(), ["para", "trap", "tri"], "all three plate kinds appear");
 console.log(
-  `ok u5-polyhedral-forge: ${shields} plates, ${solids} solids, ${chambers} chambers checked independently`,
+  `ok u5-polyhedral-forge: ${shields} plates, ${solids} solids, ${chambers} chambers, ${regulars} regular polygons checked independently`,
 );

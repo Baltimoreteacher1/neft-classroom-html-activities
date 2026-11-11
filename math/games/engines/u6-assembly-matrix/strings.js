@@ -81,7 +81,7 @@ export const STRINGS = {
     and: "and",
   },
   es: {
-    title: "La Matriz de Ensamblaje: Sintetizador y Desarmador",
+    title: "La Matriz de Ensamblaje: Sintetizador y Desensamblador",
     missionUnpack:
       "Desarma la caja compuesta {expr}. El separador manda cada parte de adentro del paréntesis por su propia vía, y cada parte se tiene que multiplicar por el factor de afuera. Ajusta las dos cajas de salida y luego enciende el separador.",
     missionPack:
@@ -99,14 +99,14 @@ export const STRINGS = {
     in2: "Término de adentro 2",
     out: "Dial de salida",
     podName: "Cápsula {term}",
-    fuse: "Fusionar las cápsulas elegidas",
-    runUnpack: "Encender el separador",
-    runPack: "Encender el empacador",
-    runFuse: "Confirmar la expresión simplificada",
-    runPower: "Estampar",
-    groupTile: "Agrupar una ficha",
-    sortPod: "Ordenar una cápsula",
-    stackFactor: "Apilar un factor",
+    fuse: "Fusiona las cápsulas elegidas",
+    runUnpack: "Enciende el separador",
+    runPack: "Enciende el empacador",
+    runFuse: "Confirma la expresión simplificada",
+    runPower: "Estampa",
+    groupTile: "Agrupa una ficha",
+    sortPod: "Ordena una cápsula",
+    stackFactor: "Apila un factor",
     groupFirst: "Modo manos a la obra: agrupa todas las fichas antes de encender la máquina.",
     tilesDone: "Todas las fichas están agrupadas.",
     pickTwo: "Elige exactamente dos cápsulas y luego fusiónalas.",
@@ -123,7 +123,7 @@ export const STRINGS = {
     solvedUnpack: "¡Los dos paréntesis encajaron! {expr} = {result}.",
     needFactor: "El empacador necesita un factor de afuera mayor que 1.",
     oneTerm:
-      "La vía 2 se atascó: solo dividiste el primer término entre el factor de afuera. Sácalo de los dos términos.",
+      "La vía 2 se atascó: solo dividiste el primer término entre el factor de afuera. Sácalo como factor común de los dos términos.",
     p1High:
       "La vía 1 se atascó: el factor de afuera por el término 1 da más que la caja de la vía 1.",
     p1Low:

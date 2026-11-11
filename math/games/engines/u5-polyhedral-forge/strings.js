@@ -83,21 +83,62 @@ export const STRINGS = {
     morphPlate: "Morph {v}%",
     inches: "{v} in",
     pyrDims: "base {s} · slant {l}",
+    missionReg:
+      "A regular {shape} shield plate: every side is {s} feet and the apothem (from the center straight to the middle of a side) is {a} feet, rounded to the nearest tenth. Use the fan lever to decompose it into triangles from the center, set the one-triangle dial and the total-area dial, and press Charge.",
+    missionRegTotal:
+      "A regular {shape} shield plate: every side is {s} feet and the apothem (from the center straight to the middle of a side) is {a} feet, rounded to the nearest tenth. Decompose it into triangles from the center, set the total-area dial to the plate's area, and press Charge.",
+    shape5: "pentagon",
+    shape6: "hexagon",
+    shape8: "octagon",
+    fan: "Fan lever (decompose)",
+    triDial: "One-triangle dial (area)",
+    totalDial: "Total-area dial",
+    countTri: "Count a triangle",
+    fmtSqFt: "{v} square feet",
+    dirHigh: "Too high",
+    dirLow: "Too low",
+    regTriHigh: "One triangle overloads: your triangle area is too high.",
+    regTriLow: "One triangle stays dim: your triangle area is too low.",
+    regTriHalf:
+      "Too high: side × apothem is a whole rectangle. Each triangle is half of that rectangle.",
+    regSide:
+      "{dir}: you used the side as the triangle's height. The height is the apothem, from the center straight to the middle of a side.",
+    regOne:
+      "Too low: that is the area of just one triangle. The plate is made of all the triangles around the center.",
+    regHalf: "Too high: each triangle is ½ × side × apothem, not side × apothem.",
+    regCount:
+      "{dir}: count the triangles again. A regular polygon splits into one triangle for each side.",
+    regHigh: "The plate overloads: your total area is too high.",
+    regLow: "The plate stays dim: your total area is too low.",
+    solvedReg: "Shield charged! {n} triangles of {t} square feet make {v} square feet.",
+    descReg:
+      "Regular {shape} shield plate with sides of {s} feet and an apothem of {a} feet, fan lever at {f}%, one-triangle dial at {t} square feet, total-area dial at {v} square feet{extra}.",
+    descRegTotal:
+      "Regular {shape} shield plate with sides of {s} feet and an apothem of {a} feet, fan lever at {f}%, total-area dial at {v} square feet{extra}.",
+    extraCount: ", with {c} triangles counted",
+    countTally: "Triangles counted: {c}",
+    plateRegular: "REGULAR SHIELD",
+    triPlate: "One triangle: {v}",
+    fanPlate: "Fan {v}%",
+    sideLbl: "side {s} ft",
+    apoLbl: "apothem {a} ft",
+    baseLbl: "base {s}",
+    hgtLbl: "height {a}",
   },
   es: {
     title: "Fortaleza de origami: la forja poliédrica",
     missionPara:
-      "Una placa escudo con forma de paralelogramo protege la puerta: base de {b} unidades, lado inclinado de {s} unidades y altura de {h} unidades. Desliza la palanca de transformación para reacomodarla, ajusta el dial de carga a su área y pulsa Cargar.",
+      "Una placa escudo con forma de paralelogramo protege la puerta: base de {b} unidades, lado inclinado de {s} unidades y altura de {h} unidades. Desliza la palanca de transformación para reacomodarla, ajusta el dial de carga a su área y pulsa el botón Carga el escudo.",
     missionTri:
-      "Una placa escudo triangular: base de {b} unidades, lado inclinado de {s} unidades y altura de {h} unidades. Usa la palanca de transformación para girar una segunda copia, ajusta el dial de carga al área del triángulo y pulsa Cargar.",
+      "Una placa escudo triangular: base de {b} unidades, lado inclinado de {s} unidades y altura de {h} unidades. Usa la palanca de transformación para girar una segunda copia, ajusta el dial de carga al área del triángulo y pulsa el botón Carga el escudo.",
     missionTrap:
-      "Una placa escudo con forma de trapecio: bases de {b} y {b2} unidades, lado inclinado de {s} unidades y altura de {h} unidades. Usa la palanca de transformación para girar una segunda copia, ajusta el dial de carga al área del trapecio y pulsa Cargar.",
+      "Una placa escudo con forma de trapecio: bases de {b} y {b2} unidades, lado inclinado de {s} unidades y altura de {h} unidades. Usa la palanca de transformación para girar una segunda copia, ajusta el dial de carga al área del trapecio y pulsa el botón Carga el escudo.",
     missionPrism:
-      "Núcleo del bastión: un prisma rectangular de {l} por {w} por {h} unidades. Despliégalo hasta ver su red, ajusta el dial de área total a la suma de las áreas de todas las caras y pulsa Activar escudo.",
+      "Núcleo del bastión: un prisma rectangular de {l} por {w} por {h} unidades. Despliégalo hasta ver su red, ajusta el dial de área total a la suma de las áreas de todas las caras y pulsa el botón Activa el escudo.",
     missionPyr:
-      "Torre del bastión: una pirámide de base cuadrada con aristas de {s} unidades en la base y caras triangulares con una altura inclinada de {l} unidades. Despliégala, ajusta el dial de área total a la suma de las áreas de todas las caras y pulsa Activar escudo.",
+      "Torre del bastión: una pirámide de base cuadrada con aristas de {s} unidades en la base y caras triangulares con una altura inclinada de {l} unidades. Despliégala, ajusta el dial de área total a la suma de las áreas de todas las caras y pulsa el botón Activa el escudo.",
     missionPack:
-      "Cámara hueca: {l} por {w} por {h} pulgadas. Elige cuántos cubos de 1/2 pulgada caben a lo largo de cada arista, luego ajusta el dial de volumen y pulsa Sellar cámara.",
+      "Cámara hueca: {l} por {w} por {h} pulgadas. Elige cuántos cubos de 1/2 pulgada caben a lo largo de cada arista, luego ajusta el dial de volumen y pulsa el botón Sella la cámara.",
     morph: "Palanca de transformación",
     chargeDial: "Dial de carga (área)",
     fold: "Palanca de despliegue",
@@ -106,11 +147,11 @@ export const STRINGS = {
     cubesW: "Cubos a lo ancho",
     cubesH: "Cubos a lo alto",
     volDial: "Dial de volumen",
-    charge: "Cargar",
-    energize: "Activar escudo",
-    seal: "Sellar cámara",
-    trace: "Marcar la siguiente cara",
-    stack: "Apilar una capa",
+    charge: "Carga el escudo",
+    energize: "Activa el escudo",
+    seal: "Sella la cámara",
+    trace: "Marca la siguiente cara",
+    stack: "Apila una capa",
     fmtSq: "{v} unidades cuadradas",
     fmtCu: "{v} pulgadas cúbicas",
     fmtPct: "{v}%",
@@ -167,5 +208,46 @@ export const STRINGS = {
     morphPlate: "Transformación {v}%",
     inches: "{v} pulg.",
     pyrDims: "base {s} · inclinada {l}",
+    missionReg:
+      "Una placa escudo con forma de {shape} regular: cada lado mide {s} pies y la apotema (del centro en línea recta hasta la mitad de un lado) mide {a} pies, redondeada a la décima más cercana. Usa la palanca de abanico para descomponerla en triángulos desde el centro, ajusta el dial de un triángulo y el dial de área total, y pulsa el botón Carga el escudo.",
+    missionRegTotal:
+      "Una placa escudo con forma de {shape} regular: cada lado mide {s} pies y la apotema (del centro en línea recta hasta la mitad de un lado) mide {a} pies, redondeada a la décima más cercana. Descomponla en triángulos desde el centro, ajusta el dial de área total al área de la placa y pulsa el botón Carga el escudo.",
+    shape5: "pentágono",
+    shape6: "hexágono",
+    shape8: "octágono",
+    fan: "Palanca de abanico (descomponer)",
+    triDial: "Dial de un triángulo (área)",
+    totalDial: "Dial de área total",
+    countTri: "Cuenta un triángulo",
+    fmtSqFt: "{v} pies cuadrados",
+    dirHigh: "Demasiado grande",
+    dirLow: "Demasiado pequeña",
+    regTriHigh: "El triángulo se sobrecarga: el área de tu triángulo es demasiado grande.",
+    regTriLow: "El triángulo sigue apagado: el área de tu triángulo es demasiado pequeña.",
+    regTriHalf:
+      "Demasiado grande: lado × apotema es un rectángulo entero. Cada triángulo es la mitad de ese rectángulo.",
+    regSide:
+      "{dir}: usaste el lado como la altura del triángulo. La altura es la apotema, que va del centro en línea recta hasta la mitad de un lado.",
+    regOne:
+      "Demasiado pequeña: esa es el área de un solo triángulo. La placa está formada por todos los triángulos alrededor del centro.",
+    regHalf: "Demasiado grande: cada triángulo es ½ × lado × apotema, no lado × apotema.",
+    regCount:
+      "{dir}: vuelve a contar los triángulos. Un polígono regular se divide en un triángulo por cada lado.",
+    regHigh: "La placa se sobrecarga: tu área total es demasiado grande.",
+    regLow: "La placa sigue apagada: tu área total es demasiado pequeña.",
+    solvedReg: "¡Escudo cargado! {n} triángulos de {t} pies cuadrados forman {v} pies cuadrados.",
+    descReg:
+      "Placa escudo con forma de {shape} regular, con lados de {s} pies y una apotema de {a} pies, palanca de abanico al {f}%, dial de un triángulo en {t} pies cuadrados y dial de área total en {v} pies cuadrados{extra}.",
+    descRegTotal:
+      "Placa escudo con forma de {shape} regular, con lados de {s} pies y una apotema de {a} pies, palanca de abanico al {f}% y dial de área total en {v} pies cuadrados{extra}.",
+    extraCount: "; llevas {c} triángulos contados",
+    countTally: "Triángulos contados: {c}",
+    plateRegular: "ESCUDO REGULAR",
+    triPlate: "Un triángulo: {v}",
+    fanPlate: "Abanico {v}%",
+    sideLbl: "lado {s} pies",
+    apoLbl: "apotema {a} pies",
+    baseLbl: "base {s}",
+    hgtLbl: "altura {a}",
   },
 };
