@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * The teacher introduction in a real browser: home cards -> guided tour -> activity -> return -> resume; exploration
- * (focus, try, plan, copy); featured lesson (Use This Lesson, cue check, saved boxes); presenter view; the next-step strip
+ * (focus, try, plan, copy); featured lesson (Use This Lesson, cue check, saved boxes); presenter view gone; the next-step strip
  * and return bar on curated activities only; Spanish home cards; keyboard path; axe WCAG 2.2 AA; 375px overflow.
  *   node tools/access-intro-e2e.mjs        (serves this working tree)
  * A missing browser is a SKIP locally and a FAIL in CI.
@@ -461,47 +461,13 @@ ok(
 await axe(page, "featured lesson");
 await page.close();
 
-// ── presenter view ─────────────────────────────────────────────────────────
+// ── presenter view: taken down 2026-11-11 (Joel), the old URL shows the teacher overview ──
 page = await open("/start/present?stop=1");
-ok((await page.locator(".in-qr svg").count()) === 1, "presenter view shows the one QR code");
 ok(
-  (await page.locator(".in-qr").innerText()).includes(
-    "thelanguagepage.com/access-practice-lab/start",
-  ),
-  "QR caption prints the short link",
+  (await page.locator(".in-hub").count()) === 1 &&
+    (await page.locator(".in-qr, .in-slide").count()) === 0,
+  "/start/present no longer shows a presenter view; it shows the teacher overview",
 );
-await page.keyboard.press("Escape");
-await page.locator("#app").click({ position: { x: 5, y: 5 } });
-await page.keyboard.press("ArrowRight");
-await page.waitForSelector(".in-slide .in-range");
-ok(
-  (await page.locator(".in-range").innerText()).includes("Minutes 0–3"),
-  "arrow key moves to the first timed segment",
-);
-await page.getByRole("link", { name: "Show presenter notes" }).click();
-await page.waitForSelector(".in-notes");
-ok(
-  (await page.locator(".in-notes h3").allInnerTexts()).includes("Say"),
-  "presenter notes show on request",
-);
-const slide = () => page.locator(".ts-progress-text").innerText();
-let seen = 1;
-while (!(await slide()).includes("Slide 8 of 8")) {
-  const before = await slide();
-  await page.getByRole("link", { name: /^Next$/ }).click();
-  await page.waitForFunction(
-    (b) => document.querySelector(".ts-progress-text")?.textContent !== b,
-    before,
-  );
-  seen++;
-}
-ok(
-  seen === 7 && (await page.getByRole("link", { name: /Start the exploration/ }).count()) === 1,
-  "eight slides (setup, six segments, handoff) end with a working handoff to the exploration",
-);
-await page.getByRole("link", { name: /Start the exploration/ }).click();
-await page.waitForSelector(".in-explore");
-ok(path(page).startsWith("/start/explore"), "handoff lands on the exploration page");
 await page.close();
 
 // ── Activity Guide ─────────────────────────────────────────────────────────

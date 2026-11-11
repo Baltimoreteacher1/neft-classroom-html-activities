@@ -10,7 +10,7 @@ One link for teachers: [thelanguagepage.com/access-practice-lab/start](https://t
 - Open thelanguagepage.com/access-practice-lab/start on the projector as the only tab teachers see. Keep the other tabs closed.
 - Test the sound once: open the hallway ladder, tap “Hear Lina first,” and set the volume. Then go back to Start Here.
 - Have these ready to open in order, each after thelanguagepage.com/access-practice-lab: /voice/ladder/school-hallway, /scaffold/language-upgrade?item=lu68-argue-phones, /start/lesson, /practice-together, /start/guide, /start/explore.
-- Print the downloads: Quick Guide, Featured Lesson backup, Presenter notes. Print the Quick Guide for each teacher, plus two spares, and two copies of the Featured Lesson backup.
+- Print the downloads: Quick Guide, Featured Lesson backup. Print the Quick Guide for each teacher, plus two spares, and two copies of the Featured Lesson backup.
 - Show the one QR code (it opens thelanguagepage.com/access-practice-lab/start) on the projector or the door. It links to everything.
 - Close other apps that play sound. Have a pen and paper for each pair for the lesson.
 
@@ -221,7 +221,6 @@ Tell teachers the Quick Guide and the Featured Lesson backup are both on the sta
 
 - **Quick Guide**, two pages: the 20-minute exploration and the featured lesson: [PDF](https://thelanguagepage.com/access-practice-lab/guides/quick-guide.pdf), [Word](https://thelanguagepage.com/access-practice-lab/guides/quick-guide.docx)
 - **Featured Lesson backup**, page 1 for students, page 2 for you; use it if the activity will not load: [PDF](https://thelanguagepage.com/access-practice-lab/guides/featured-lesson-backup.pdf), [Word](https://thelanguagepage.com/access-practice-lab/guides/featured-lesson-backup.docx)
-- **Presenter notes**, this script, for printing: [PDF](https://thelanguagepage.com/access-practice-lab/guides/presenter-notes.pdf), [Word](https://thelanguagepage.com/access-practice-lab/guides/presenter-notes.docx)
 
 The featured lesson (Safer Hallways: Speak, Write, Improve) runs 10 minutes: Notice 1, Speak 2, Write 3, Improve 2, Share 2.
 

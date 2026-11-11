@@ -29,11 +29,6 @@ export const RETURNS = {
     en: "Back to the Featured Lesson",
     es: "Volver a la lección destacada",
   },
-  present: {
-    to: "/start/present",
-    en: "Back to the presenter view",
-    es: "Volver a la vista de presentación",
-  },
   together: {
     to: "/practice-together",
     en: "Back to Practice Together",

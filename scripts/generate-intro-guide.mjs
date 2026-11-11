@@ -6,7 +6,8 @@
  *   featured-lesson-backup.pdf / .docx  page 1 student-facing, page 2 teacher-facing: use it if the activity will not load
  *   activity-guide.pdf / .docx          how each curated activity is used, one activity per page
  *   site-directory.pdf / .docx          appendix: every domain and activity on the site, with links
- *   presenter-notes.pdf / .docx         the 30-minute presenter script (4 pages at most)
+ *   docs/languageos/pd/presenter-notes.pdf / .docx  the 30-minute presenter script, NOT published on the site
+ *                                       (Joel 2026-11-11: the PD session is off the site; copies go to his Desktop folder)
  *   qr-start.svg / qr-start.png         the ONE QR code, for ENTRANCE.url (shared/qr/qr-code.mjs; decoder-verified in the tests)
  *   src/intro/qr-start-svg.js           the same SVG as an importable string for the on-screen presenter view
  *   docs/languageos/pd-presenter-notes.md   the presenter script as plain Markdown
@@ -29,6 +30,8 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const LAB = join(ROOT, "access-practice-lab");
 const GUIDES = join(LAB, "guides");
 mkdirSync(GUIDES, { recursive: true });
+const PD_DIR = join(ROOT, "docs", "languageos", "pd");
+mkdirSync(PD_DIR, { recursive: true });
 
 const only = process.argv.find((a) => a.startsWith("--only="))?.slice(7);
 const want = (name) => !only || only === name;
@@ -112,11 +115,11 @@ if (want("notes")) {
   const { buildNotesDocx } = await import("./lib/intro-notes-docx.mjs");
   await renderPdfs([
     {
-      out: join(GUIDES, "presenter-notes.pdf"),
+      out: join(PD_DIR, "presenter-notes.pdf"),
       doc: printDocument({ title: NOTES_TITLE, bodyHtml: notesBody() }),
     },
   ]);
-  writeFileSync(join(GUIDES, "presenter-notes.docx"), await buildNotesDocx());
+  writeFileSync(join(PD_DIR, "presenter-notes.docx"), await buildNotesDocx());
   const mdPath = join(ROOT, "docs", "languageos", "pd-presenter-notes.md");
   mkdirSync(dirname(mdPath), { recursive: true });
   writeFileSync(mdPath, notesMarkdown());

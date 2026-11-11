@@ -2,7 +2,7 @@
 // choices, then hands each choice to its own page:
 //   /start          grade picker + three choices /start/tour      guided tour (6 stops, grade-aware)
 //   /start/explore  Try It. Adapt It. Use It.   /start/guide     quick guide (printable)
-//   /start/lesson   featured lesson             /start/present   presenter view (still answers; not linked on the site)
+//   /start/lesson   featured lesson             (the presenter view was taken down 2026-11-11; PD files live off-site)
 // The route names avoid the word "teacher": Pages gates any path containing it behind the teacher password.
 import { html, icon } from "../util.js";
 import { bandPickerHTML, onBandClick, pickName, teacherPick } from "./band.js";
@@ -18,7 +18,6 @@ const PAGES = {
   explore: () => import("./explore.js"),
   guide: () => import("./quick-guide.js"),
   lesson: () => import("./lesson.js"),
-  present: () => import("./present.js"),
   activities: () => import("./activities.js"),
 };
 

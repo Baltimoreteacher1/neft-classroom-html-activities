@@ -153,7 +153,8 @@ test("no on-site link to /start/present or presenter notes: /start, teacher nav,
     for (const h of hrefs(d)) assert.doesNotMatch(h, PRESENTER, `${pick}: ${h}`);
     assert.doesNotMatch(d.body.textContent, /Run a PD session|presenter view|Presenter notes/i);
   }
-  assert.ok(!TEACHER_NAV.some((n) => n.route === D.ROUTES.present));
+  assert.ok(!TEACHER_NAV.some((n) => /present/.test(n.route)));
+  assert.equal(D.ROUTES.present, undefined, "the presenter view route is gone");
   for (const h of hrefs(doc(teacherNavHTML("overview")))) assert.doesNotMatch(h, PRESENTER, h);
   for (const f of GUIDE_FILES.downloads)
     assert.doesNotMatch(`${f.pdf} ${f.docx} ${f.name}`, /presenter/i);

@@ -75,6 +75,9 @@ import { REPO_ROOT } from "./lib/access-lab-content.mjs";
 import { auditDocx } from "./validate-docx-a11y.mjs";
 
 const GUIDES = join(REPO_ROOT, "access-practice-lab", "guides");
+// The presenter notes are generated off-site (docs/languageos/pd/): the PD session is not published (Joel 2026-11-11).
+const PD_DIR = join(REPO_ROOT, "docs", "languageos", "pd");
+const inGuides = (f) => join(String(f).startsWith("presenter-notes") ? PD_DIR : GUIDES, f);
 const SCRATCH = mkdtempSync(join(tmpdir(), "intro-guide-test-"));
 const need = (tool) => {
   try {
@@ -235,6 +238,8 @@ test("file names never contain the substring that Pages gates behind the teacher
   ];
   for (const n of names) assert.doesNotMatch(n, /teacher/i, n);
   for (const f of readdirSync(GUIDES)) assert.doesNotMatch(f, /teacher/i, f);
+  for (const f of readdirSync(GUIDES))
+    assert.doesNotMatch(f, /presenter/i, `${f}: presenter files are not published`);
 });
 
 test("activity guide: one card per ACTIVITY_GUIDE entry, curated first, every card complete", () => {
@@ -284,7 +289,7 @@ test("site directory: every index activity once, every link in a route shape par
 
 // ── the one QR code ───────────────────────────────────────────────────────────────────────────────────────────────
 test("the QR files are the single code for ENTRANCE.url, and the importable module matches", () => {
-  const svg = readFileSync(join(GUIDES, "qr-start.svg"), "utf8").trim();
+  const svg = readFileSync(inGuides("qr-start.svg"), "utf8").trim();
   assert.equal(
     svg,
     qrSvg(ENTRANCE.url, { px: 144 }),
@@ -310,13 +315,13 @@ test("a scanner decodes the QR PNG and SVG back to ENTRANCE.url", {
   skip: process.platform !== "darwin" && !process.env.CI && "CoreImage decoder needs macOS",
 }, () => {
   const fromSvg = join(SCRATCH, "svg-render.png");
-  const svg = readFileSync(join(GUIDES, "qr-start.svg"), "utf8");
+  const svg = readFileSync(inGuides("qr-start.svg"), "utf8");
   mkdirSync(SCRATCH, { recursive: true });
   execFileSync("node", [
     "-e",
     `require("fs").writeFileSync(${JSON.stringify(fromSvg)}, Buffer.from(${JSON.stringify([...new Resvg(svg, { fitTo: { mode: "width", value: 600 } }).render().asPng()])}))`,
   ]);
-  const read = readQrCodes([join(GUIDES, "qr-start.png"), fromSvg]);
+  const read = readQrCodes([inGuides("qr-start.png"), fromSvg]);
   assert.ok(read, "no decoder available");
   assert.deepEqual(Object.values(read), [[ENTRANCE.url], [ENTRANCE.url]]);
 });
@@ -352,7 +357,7 @@ for (const spec of PDFS) {
   test(`${spec.file}: pages, tagging, language, title, fonts, size, links`, {
     skip: skip(tools.poppler, "poppler"),
   }, () => {
-    const path = join(GUIDES, spec.file);
+    const path = inGuides(spec.file);
     const bytes = readFileSync(path);
     assert.ok(
       bytes.length < (spec.maxBytes || 1024 * 1024),
@@ -403,7 +408,7 @@ test("the PDFs show no text outside the page and every page has content (rasteri
     "presenter-notes.pdf",
     "activity-guide.pdf",
   ]) {
-    const pngs = rasterize(join(GUIDES, f), 40);
+    const pngs = rasterize(inGuides(f), 40);
     for (const p of pngs) assert.ok(statSync(p).size > 3000, `${f}: ${p} looks blank`);
   }
 });
@@ -426,7 +431,7 @@ const DOCXS = [
 ];
 for (const spec of DOCXS) {
   test(`${spec.file}: accessibility rules, real hyperlinks, editable`, async () => {
-    const buf = readFileSync(join(GUIDES, spec.file));
+    const buf = readFileSync(inGuides(spec.file));
     assert.ok(buf.length < 1024 * 1024, "under 1 MB");
     assert.deepEqual(await auditDocx(buf), [], `${spec.file} fails the Word accessibility rules`);
     const zip = await JSZip.loadAsync(buf);
@@ -453,7 +458,7 @@ for (const spec of DOCXS) {
   test(`${spec.file}: renders in LibreOffice to the right number of pages`, {
     skip: skip(tools.office && tools.poppler, "LibreOffice or poppler"),
   }, () => {
-    const pdf = docxToPdf(join(GUIDES, spec.file));
+    const pdf = docxToPdf(inGuides(spec.file));
     const pages = pdfPages(pdf);
     assert.ok(
       pages >= spec.pages[0] && pages <= spec.pages[1],
@@ -471,8 +476,8 @@ test("every printed QR scans to ENTRANCE.url (PDF pages and Word pages, rasteriz
 }, () => {
   const pages = [];
   for (const f of ["quick-guide", "presenter-notes", "activity-guide"]) {
-    pages.push(rasterize(join(GUIDES, `${f}.pdf`))[0]);
-    pages.push(rasterize(docxToPdf(join(GUIDES, `${f}.docx`)))[0]);
+    pages.push(rasterize(inGuides(`${f}.pdf`))[0]);
+    pages.push(rasterize(docxToPdf(inGuides(`${f}.docx`)))[0]);
   }
   const read = readQrCodes(pages);
   assert.ok(read, "no decoder available");

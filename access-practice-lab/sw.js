@@ -11,7 +11,7 @@
  * The block between the build markers is written by tools/sync-access-shell.mjs; do not edit it by hand.
  */
 /* build:begin */
-const BUILD_HASH = "ed85cdde06d9";
+const BUILD_HASH = "0c87177b3a5b";
 const PRECACHE_CORE = [
   "/access-practice-lab/ds.css?v=9528b2b4b098",
   "/access-practice-lab/home.css?v=567acc7b4b89",
@@ -72,8 +72,8 @@ const PRECACHE_CORE = [
   "/access-practice-lab/src/reset.js?v=ccec8e32e046",
   "/access-practice-lab/src/audio-store.js?v=d05edac67707",
   "/access-practice-lab/src/postcard-store.js?v=af17944635b2",
-  "/access-practice-lab/src/intro/return-bar.js?v=19c9c4d060a5",
-  "/access-practice-lab/src/intro/data.js?v=0baf7bc7aace",
+  "/access-practice-lab/src/intro/return-bar.js?v=79c35e605cef",
+  "/access-practice-lab/src/intro/data.js?v=b81e77923eaf",
   "/access-practice-lab/src/views/home.js?v=78fc9143d59b",
   "/access-practice-lab/src/lang/adapt.js?v=4f5782d70773",
   "/access-practice-lab/src/lang/skill-graph.js?v=0e98cc7ed2ef",
@@ -333,8 +333,7 @@ const PRECACHE_MORE = [
   "/access-practice-lab/src/intro/guide.js?v=25e8c5faf7fb",
   "/access-practice-lab/src/intro/lesson-backup-model.js?v=89fbb849e189",
   "/access-practice-lab/src/intro/lesson.js?v=3ab11ec0201e",
-  "/access-practice-lab/src/intro/present.js?v=5d723d700b35",
-  "/access-practice-lab/src/intro/presenter-notes.js?v=e69fda4542eb",
+  "/access-practice-lab/src/intro/presenter-notes.js?v=6ec4346df8de",
   "/access-practice-lab/src/intro/preview.js?v=cfcbcd44c9c2",
   "/access-practice-lab/src/intro/qr-start-svg.js?v=b482f6308b9c",
   "/access-practice-lab/src/intro/quick-guide-html.js?v=ceda2b25dd36",
@@ -351,7 +350,7 @@ const PRECACHE_MORE = [
   "/access-practice-lab/src/intro/site-guide.js?v=be4f3a60d99a",
   "/access-practice-lab/src/intro/start-overview.js?v=4872c694cb2b",
   "/access-practice-lab/src/intro/start-resources.js?v=f2acd90c1f7f",
-  "/access-practice-lab/src/intro/start.js?v=6a024ac7ffa8",
+  "/access-practice-lab/src/intro/start.js?v=d44f10590341",
   "/access-practice-lab/src/intro/state.js?v=2a0eaa7390fe",
   "/access-practice-lab/src/intro/tour-bands.js?v=876e226c7b5d",
   "/access-practice-lab/src/intro/tour-ui.js?v=818c793642b2",

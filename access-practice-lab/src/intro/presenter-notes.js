@@ -16,11 +16,10 @@ import {
   shortUrl,
 } from "./data.js";
 
-/** The three printable downloads, by the names used in the room (files come from data.js DOWNLOADS). */
+/** The printable downloads teachers get, by the names used in the room (files come from data.js DOWNLOADS). */
 export const DOWNLOAD_NAMES = [
   { name: "Quick Guide", detail: "two pages: the 20-minute exploration and the featured lesson", ...DOWNLOADS.quickGuide },
   { name: "Featured Lesson backup", detail: "page 1 for students, page 2 for you; use it if the activity will not load", ...DOWNLOADS.lessonBackup },
-  { name: "Presenter notes", detail: "this script, for printing", ...DOWNLOADS.presenterNotes },
 ];
 
 const row = (i) => PRESENTER_SCHEDULE[i];
