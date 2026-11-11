@@ -246,6 +246,9 @@ body.reduced #turnSheet{display:none!important}
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
   <!-- nsr-injected:end -->
+<!-- gn-art:begin (comic panel art — tools/inject-gn-art.mjs) -->
+<link rel="stylesheet" href="/graphic-novels/_shared/gn-comic.css">
+<!-- gn-art:end -->
 </head>
 <body>
 <!-- ============ SHARED SVG SYMBOL LIBRARY (characters, patterns, props) ============ -->
@@ -295,29 +298,7 @@ body.reduced #turnSheet{display:none!important}
 <!-- ============ COVER ============ -->
 <div id="cover">
   <div id="coverCard" role="img" aria-label="Cover of Axiom City Volume 7: Below Zero. Snow falls on a blacked-out city grid at night. One district glows with amber windows. Four kids in winter scarves sweep flashlight beams across the snowy street grid while VEX, a glowing orb, hovers above the origin.">
-    <div class="cov-layer" data-depth="6" style="z-index:1">
-      <svg viewBox="0 0 500 700" width="100%" height="100%" preserveAspectRatio="xMidYMid slice"><rect width="500" height="700" fill="url(#nightgrad)"/><circle cx="392" cy="116" r="54" fill="#dfe9ef" opacity=".85"/><circle cx="392" cy="116" r="76" fill="#dfe9ef" opacity=".16"/><rect width="500" height="700" fill="url(#snowdots)" opacity=".45"/></svg>
-    </div>
-    <div class="cov-layer" data-depth="12" style="z-index:2">
-      <svg viewBox="0 0 500 700" width="100%" height="100%" preserveAspectRatio="xMidYMid slice"><g transform="translate(0,250) scale(5,3.5)" opacity=".95"><use href="#sym-darkline"/></g><g fill="#F2C15B" opacity=".92"><rect x="58" y="378" width="9" height="11"/><rect x="76" y="356" width="9" height="11"/><rect x="58" y="408" width="9" height="11"/><rect x="94" y="392" width="9" height="11"/><rect x="76" y="430" width="9" height="11"/><rect x="112" y="372" width="9" height="11"/></g><rect y="640" width="500" height="60" fill="#060e18"/></svg>
-    </div>
-    <div class="cov-layer" data-depth="22" style="z-index:3">
-      <svg viewBox="0 0 500 700" width="100%" height="100%" preserveAspectRatio="xMidYMid slice">
-        <g stroke="#4A90C2" stroke-width="2" opacity=".55"><line x1="0" y1="500" x2="500" y2="500"/><line x1="0" y1="545" x2="500" y2="545"/><line x1="0" y1="635" x2="500" y2="635"/><line x1="60" y1="470" x2="60" y2="700"/><line x1="155" y1="470" x2="155" y2="700"/><line x1="345" y1="470" x2="345" y2="700"/><line x1="440" y1="470" x2="440" y2="700"/></g>
-        <line x1="0" y1="590" x2="500" y2="590" stroke="#7CF2EC" stroke-width="4" opacity=".9"/>
-        <line x1="250" y1="470" x2="250" y2="700" stroke="#7CF2EC" stroke-width="4" opacity=".9"/>
-        <circle cx="250" cy="590" r="12" fill="#7CF2EC" opacity=".9"/><circle cx="250" cy="590" r="26" fill="#7CF2EC" opacity=".2"/>
-        <polygon points="190,492 110,535 110,575" fill="#F2C15B" opacity=".22"/>
-        <polygon points="320,500 408,540 408,580" fill="#F2C15B" opacity=".22"/>
-        <g transform="translate(150,408) scale(.95)"><use href="#sym-maya"/><path d="M34 64 Q50 76 66 64 L66 74 Q50 86 34 74 Z" fill="#E2674A" stroke="#17324D" stroke-width="2.5"/><path d="M58 72 l7 18 9 -3 -7 -17z" fill="#E2674A" stroke="#17324D" stroke-width="2.5"/></g>
-        <g transform="translate(248,418) scale(.88)"><use href="#sym-theo"/><path d="M34 64 Q50 76 66 64 L66 74 Q50 86 34 74 Z" fill="#F2C15B" stroke="#17324D" stroke-width="2.5"/><path d="M58 72 l7 18 9 -3 -7 -17z" fill="#F2C15B" stroke="#17324D" stroke-width="2.5"/></g>
-        <g transform="translate(66,448) scale(.8)"><use href="#sym-zara"/><path d="M34 64 Q50 76 66 64 L66 74 Q50 86 34 74 Z" fill="#1FA6A2" stroke="#17324D" stroke-width="2.5"/><path d="M58 72 l7 18 9 -3 -7 -17z" fill="#1FA6A2" stroke="#17324D" stroke-width="2.5"/></g>
-        <g transform="translate(352,452) scale(.78)"><use href="#sym-dev"/><path d="M34 64 Q50 76 66 64 L66 74 Q50 86 34 74 Z" fill="#7db8e8" stroke="#17324D" stroke-width="2.5"/><path d="M58 72 l7 18 9 -3 -7 -17z" fill="#7db8e8" stroke="#17324D" stroke-width="2.5"/></g>
-        <g transform="translate(208,278) scale(.95)"><use href="#sym-vex"/></g>
-        <circle cx="255" cy="325" r="64" fill="url(#vexglow)" opacity=".35"/>
-        <rect width="500" height="700" fill="url(#snowdots)" opacity=".55"/>
-      </svg>
-    </div>
+    <div class="cov-layer" data-depth="6" style="z-index:1"><div data-gn-art="cover"></div></div>
     <div class="spine"><span>AXIOM CITY · EDUWONDERLAB</span></div>
     <div id="coverTitle">
       <div class="series">AXIOM CITY</div>
@@ -396,238 +377,240 @@ const BADGES = [
   {id:"boss",icon:"#sig-boss",  label:"Light Ring — Boss Gate"}
 ];
 
-/* tiny scene helpers (content-side, fine to reuse) */
-const SC = (vb,inner,depth)=>`<svg class="scene" viewBox="${vb}" role="img" preserveAspectRatio="xMidYMid meet">${inner}</svg>`;
-const NT = h=>`<rect width="400" height="${h}" fill="url(#nightgrad)"/>`;
-const SNOWR = (h,o=".5")=>`<rect width="400" height="${h}" fill="url(#snowdots)" opacity="${o}"/>`;
-const DRIFT = y=>`<path d="M0 ${y} Q60 ${y-12} 130 ${y-4} Q210 ${y+6} 290 ${y-8} Q350 ${y-14} 400 ${y-2} L400 ${y+40} L0 ${y+40} Z" fill="#dfe9ef"/><path d="M0 ${y} Q60 ${y-12} 130 ${y-4} Q210 ${y+6} 290 ${y-8} Q350 ${y-14} 400 ${y-2} L400 ${y+40} L0 ${y+40} Z" fill="url(#halftone)" opacity=".4"/>`;
-/* winter scarf drawn OVER a crew symbol (extra paths, shared symbols untouched) */
-const SCARF = c=>`<path d="M34 64 Q50 76 66 64 L66 74 Q50 86 34 74 Z" fill="${c}" stroke="#17324D" stroke-width="2.5"/><path d="M58 72 l7 18 9 -3 -7 -17z" fill="${c}" stroke="#17324D" stroke-width="2.5"/>`;
-const BEAM = (x,y,a,b)=>`<polygon points="${x},${y} ${x+a},${y+b-16} ${x+a},${y+b+16}" fill="#F2C15B" opacity=".22"/>`;
-
+/* Comic pages: each story page is a .gn-comic grid of illustrated panels. ART(id) (injected above by
+   tools/inject-gn-art.mjs) draws a panel's art from the book's atlas; every word stays live HTML on top.
+   Balloon and caption TEXT is unchanged from the SVG edition (Easy read keys on it). */
+/* gn-art:begin (comic panel art: one atlas, coordinates and alt text from _engine/art/vol-07 — tools/inject-gn-art.mjs) */
+const GN_ART = {"src":"/graphic-novels/axiom-city/art/axiom-city-vol-07-below-zero.webp?v=49574809ec","w":2994,"h":5278,"f":{"cover":[0,0,544,762,"Snow falls on a blacked-out city street at night. Four bundled-up kids in scarves stand together holding glowing flashlights while VEX, the teal robot with one golden eye, floats above them.",[[16,43,15,11],[33,42,15,11],[58,42,15,11],[77,44,13,10]]],"p1-crew":[870,3048,870,435,"Four kids in scarves and winter coats stand shivering on a dark, snowy street, with VEX glowing in the sky above them.",[[19,47,10,20],[40,42,10,20],[56,42,10,20],[71,43,9,18],[55,3,15,28]]],"p1-skyline":[1740,3048,870,381,"A snowy city skyline at night under falling snow; one cluster of buildings at the right glows bright amber.",[]],"p2-dark":[1740,2068,870,490,"From above, a blacked-out city in the snow. Two glowing lines run along the crossing streets and meet in a bright dot. Freya and Jamal stand small at the lower left with flashlights.",[[38,56,5,8],[61,58,5,7]]],"p2-freya":[2504,0,490,653,"Close-up of Freya, bundled in her red jacket and scarf, holding a notebook and flashlight, her breath steaming, ready to lead.",[[33,30,40,22]]],"p2-jamal":[0,762,490,653,"Close-up of Jamal, in his blue hoodie and yellow scarf, pointing ahead with a serious, certain look as snow falls.",[[30,29,38,26]]],"p2-vex":[870,3538,870,381,"VEX, the teal robot with one golden eye, hovers at the edge of the dark panel as snowflakes drift through its glow.",[[71,30,21,49]]],"p3-thermo":[0,2558,870,490,"On the snowy observatory steps, the crew, seen from behind, looks up at a big blank glass display board; a tall old brass thermometer stands at the left.",[]],"p3-jamal":[980,762,490,653,"Close-up of Jamal rubbing his cold hands together, snow on his shoulders, looking up thoughtfully at the thermometer.",[[24,22,46,25]]],"p3-freya":[490,762,490,653,"Close-up of Freya tapping her pencil on her chin, eyes bright with an idea, as snow falls around her.",[[20,28,52,30]]],"p3-vex":[1740,3538,870,381,"VEX glows at the left edge of the panel beside a small round dial, waiting for the right setting.",[[24,30,18,40]]],"p4-freya":[870,4626,870,326,"Freya turns to the reader and waves a mittened hand in the falling snow.",[[22,24,15,36]]],"p5-ledger":[870,2558,870,490,"Four dark display boards glow in a row above a snowy street, one for each district. Priya stands at the lower left and Jamal at the lower right, looking up at them.",[[26,48,9,16],[62,45,8,15]]],"p5-priya":[1960,762,490,653,"Close-up of Priya, in her green sweatshirt and teal scarf, squinting up at the readings with a puzzled frown.",[[31,27,42,23]]],"p5-jamal":[1470,762,490,653,"Close-up of Jamal raising one warning finger with a knowing look.",[[27,33,55,28]]],"p5-vex":[0,3919,870,381,"VEX hovers at the right edge, scanning with a thin fan of cyan light.",[[65,20,21,47]]],"p6-priya":[1740,4626,870,326,"Priya turns to the reader with an eager grin and a thumbs up.",[[29,27,14,36]]],"p7-tunnel":[1740,2558,870,490,"In a dim underground tunnel, a glowing number line with even tick marks runs along the back wall. Samir stands at the left and Jamal at the right.",[[21,39,13,21],[64,39,13,24]]],"p7-samir":[0,1415,490,653,"Close-up of Samir, in his orange vest and blue scarf, tapping the glowing wall map with an excited grin.",[[29,28,42,25]]],"p7-jamal":[2450,762,490,653,"Close-up of Jamal in his blue hoodie and yellow scarf, hands raised, calm and sure.",[[30,23,43,30]]],"p7-vex":[870,3919,870,381,"VEX glows at the right edge of the dark tunnel, sending out two short beams of light.",[[56,22,27,55]]],"p8-samir":[0,4952,870,326,"Samir turns and points straight out of the panel at the reader with a grin.",[[24,8,15,44]]],"p9-map":[0,3048,870,490,"A large glowing map screen is split into four quarters by two bright axes. Freya stands at the far left and Jamal at the far right.",[[20,44,11,18],[73,28,10,19]]],"p9-freya":[490,1415,490,653,"Close-up of Freya tracing a circle in the air with one finger as she explains the four quadrants.",[[28,36,41,22]]],"p9-jamal":[980,1415,490,653,"Close-up of Jamal holding up two fingers, firm and serious.",[[29,30,43,23]]],"p9-vex":[1740,3919,870,381,"VEX flickers with static at the right edge of the panel, small sparks crackling around it.",[[59,18,26,55]]],"p10-jamal":[0,4300,870,326,"Jamal turns to the reader with a serious look and one finger raised.",[[30,17,17,43]]],"p11-platform":[1470,1415,870,490,"On an old, frosty underground train platform, Priya stands at the left and Samir at the right beside a big coral cable spool.",[[28,20,11,17],[67,22,11,20]]],"p11-priya":[544,0,490,653,"Close-up of Priya hauling a thick coral cable over her shoulder, determined, her breath steaming.",[[48,18,33,20]]],"p11-samir":[1034,0,490,653,"Close-up of Samir stretching a yellow measuring tape between his hands, focused.",[[29,21,47,30]]],"p11-jamal":[0,3538,870,381,"Jamal studies a glowing map tablet in his hands at the left edge of the dark panel.",[[27,18,15,37]]],"p12-priya":[870,4300,870,326,"Priya turns to the reader holding up a pair of big scissors with a confident smile.",[[25,25,14,35]]],"p13-ring":[0,2068,870,490,"A glowing teal hologram grid stretches across the floor of a dark room, dotted with small gold lights, and VEX floats at its center.",[[43,55,14,20]]],"p13-freya":[1740,4300,870,326,"Freya, at the right edge of the panel, sets her jaw with a determined smile, lit by the golden grid.",[[52,29,14,38]]],"p14-vex":[0,4626,870,326,"VEX flashes a bright alarm ring around its golden eye, frost crystals glittering around it.",[[58,17,24,68]]],"p15-relight":[870,2068,870,490,"Every window in the snowy city glows amber again. The four friends cheer with their arms up while VEX shines in the sky.",[[24,50,10,18],[39,57,10,17],[51,55,10,17],[65,46,10,20],[70,7,16,28]]],"p15-samir":[2014,0,490,653,"Close-up of Samir grinning over a steaming mug of hot cocoa held in both mittens.",[[29,25,48,29]]],"p15-door":[1524,0,490,653,"Deep underground, a heavy stone door carved like a balance scale glows gold under a blank stone lintel.",[]]}};
+function ART(id) {
+  const a = GN_ART.f[id];
+  if (!a) throw new Error("gn-art: no frame " + id);
+  const [x, y, w, h, alt, faces] = a;
+  const at = (v, total, size) => (total === size ? 0 : (v / (total - size)) * 100);
+  const faceHtml = faces.map(([l, t, fw, fh]) => `<i class="gn-face" style="left:${l}%;top:${t}%;width:${fw}%;height:${fh}%"></i>`).join("");
+  return `<div class="gn-art" role="img" aria-label="${alt}" style="aspect-ratio:${w}/${h};background-image:url(${GN_ART.src});background-size:${(GN_ART.w / w) * 100}% ${(GN_ART.h / h) * 100}%;background-position:${at(x, GN_ART.w, w)}% ${at(y, GN_ART.h, h)}%">${faceHtml}</div>`;
+}
+for (const el of document.querySelectorAll("[data-gn-art]")) el.outerHTML = ART(el.dataset.gnArt);
+/* gn-art:end */
 const PAGES = [
 /* ---- p1: previously + title ---- */
 { ch:"Axiom City · Volume Seven", html:`
   <div style="text-align:center;margin-top:10px"><div class="kicker">EduWonderLab Presents</div>
   <h2 class="splashtitle" style="margin:8px 0">BELOW <em>ZERO</em></h2>
   <div class="caption" style="display:inline-block">An integers &amp; coordinate-plane adventure in five chapters — featuring six reader gates. Solve the math to relight the city.</div></div>
-  <div class="panel panel3d tall" style="margin-top:8px">${SC("0 0 400 210",`
-    ${NT(210)}<g data-depth="8" transform="translate(0,46) scale(4,1.6)" opacity=".9"><use href="#sym-darkline"/></g>
-    <g data-depth="8" fill="#F2C15B" opacity=".9"><rect x="318" y="92" width="6" height="8"/><rect x="332" y="78" width="6" height="8"/><rect x="318" y="112" width="6" height="8"/><rect x="344" y="98" width="6" height="8"/></g>
-    ${DRIFT(176)}
-    <g data-depth="16" transform="translate(20,86)"><use href="#sym-maya"/>${SCARF('#E2674A')}</g>
-    <g data-depth="16" transform="translate(115,86)"><use href="#sym-theo"/>${SCARF('#F2C15B')}</g>
-    <g data-depth="16" transform="translate(210,86)"><use href="#sym-zara"/>${SCARF('#1FA6A2')}</g>
-    <g data-depth="16" transform="translate(305,86)"><use href="#sym-dev"/>${SCARF('#7db8e8')}</g>
-    <g data-depth="26" transform="translate(170,8) scale(.55)"><use href="#sym-vex"/></g>
-    ${SNOWR(210)}`)}
-    <div class="balloon vex" style="top:6px;left:8px;max-width:46%"><span class="who">VEX</span>Pattern distortion: severe. City power: failing. Reader: bundle up.</div>
-  </div>
-  <div class="caption loc">Previously, in Volume Six: the crew forged the master key, opened Ada Vex's cipher vault, and shut down the glitch scrambling the city's signs. The vault's last page read: "When the lights go out, start at zero." Tonight — midwinter — they did.</div>`},
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${ART("p1-crew")}
+      <div class="balloon vex gn-side" style="top:6px;left:8px;max-width:46%;--ty:24px"><span class="who">VEX</span>Pattern distortion: severe. City power: failing. Reader: bundle up.</div>
+    </div>
+    <div class="panel gn-panel">${ART("p1-skyline")}
+      <div class="caption loc">Previously, in Volume Six: the crew forged the master key, opened Ada Vex's cipher vault, and shut down the glitch scrambling the city's signs. The vault's last page read: "When the lights go out, start at zero." Tonight — midwinter — they did.</div>
+    </div>
+  </div>`},
 
 /* ---- p2: ch1 splash ---- */
 { ch:"Chapter 1 · Lights Out", html:`
   <div class="kicker">Chapter One</div><h2 class="splashtitle">LIGHTS <em>OUT</em></h2>
-  <div class="panel panel3d tall">${SC("0 0 400 230",`
-    ${NT(230)}<circle data-depth="6" cx="340" cy="36" r="22" fill="#dfe9ef" opacity=".85"/><circle data-depth="6" cx="340" cy="36" r="32" fill="#dfe9ef" opacity=".18"/>
-    <g data-depth="10" transform="translate(0,64) scale(4,1.8)" opacity=".95"><use href="#sym-darkline"/></g>
-    <g data-depth="10" fill="#F2C15B" opacity=".95"><rect x="52" y="118" width="6" height="8"/><rect x="66" y="104" width="6" height="8"/><rect x="52" y="138" width="6" height="8"/><rect x="80" y="124" width="6" height="8"/><rect x="66" y="150" width="6" height="8"/></g>
-    <g data-depth="14" stroke="#4A90C2" opacity=".5"><line x1="0" y1="186" x2="400" y2="186" stroke-width="2"/><line x1="0" y1="206" x2="400" y2="206" stroke-width="2"/><line x1="80" y1="170" x2="80" y2="230"/><line x1="160" y1="170" x2="160" y2="230"/><line x1="240" y1="170" x2="240" y2="230"/><line x1="320" y1="170" x2="320" y2="230"/></g>
-    <circle data-depth="14" cx="200" cy="196" r="7" fill="#7CF2EC" opacity=".9"/>
-    <g data-depth="20" transform="translate(120,96) scale(.84)"><use href="#sym-maya"/>${SCARF('#E2674A')}</g>
-    <g data-depth="20" transform="translate(212,96) scale(.84)"><use href="#sym-theo"/>${SCARF('#F2C15B')}</g>
-    ${BEAM(150,150,90,30)}${BEAM(266,150,80,40)}
-    ${SNOWR(230)}`)}
-    <div class="balloon" style="top:8px;left:8px;max-width:50%"><span class="who">FREYA</span>The whole grid went dark at 6:14. Jamal — you and me, co-leads. Notebook and evidence.</div>
-    <div class="balloon tail-r" style="bottom:12px;right:8px;max-width:48%"><span class="who">JAMAL</span>Fact one: Ada Vex built the Pattern Engine where Meridian Avenue crosses Zero Street. Dead center.</div>
-  </div>
-  <div class="panel">${SC("0 0 400 92",`<rect width="400" height="92" fill="#0e2233"/><g transform="translate(316,2) scale(.62)"><use href="#sym-vex"/></g>${SNOWR(92,".35")}`)}
-    <div class="balloon vex" style="top:8px;left:10px;max-width:72%"><span class="who">VEX</span>Her street grid IS a coordinate plane. The engine sits at the origin — (0, 0). Power walks outward from zero, district by district.</div>
-  </div>
-  <div class="caption">East–west streets count along the <b>x-axis</b>; north–south along the <b>y-axis</b>. Their crossing point is the <b>origin</b>.</div>`},
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${ART("p2-dark")}</div>
+    <div class="panel gn-panel gn-half">${ART("p2-freya")}
+      <div class="balloon" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">FREYA</span>The whole grid went dark at 6:14. Jamal — you and me, co-leads. Notebook and evidence.</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p2-jamal")}
+      <div class="balloon tail-r" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">JAMAL</span>Fact one: Ada Vex built the Pattern Engine where Meridian Avenue crosses Zero Street. Dead center.</div>
+    </div>
+    <div class="panel gn-panel">${ART("p2-vex")}
+      <div class="balloon vex gn-side" style="top:6px;left:6px;max-width:72%"><span class="who">VEX</span>Her street grid IS a coordinate plane. The engine sits at the origin — (0, 0). Power walks outward from zero, district by district.</div>
+    </div>
+    <div class="caption">East–west streets count along the <b>x-axis</b>; north–south along the <b>y-axis</b>. Their crossing point is the <b>origin</b>.</div>
+  </div>`},
 
 /* ---- p3: ch1 thermometer scene ---- */
 { ch:"Chapter 1 · Lights Out", html:`
-  <div class="caption loc">Vexhall Observatory steps. The old brass thermometer still works. Barely.</div>
-  <div class="panel panel3d tall">${SC("0 0 400 200",`
-    ${NT(200)}${DRIFT(168)}
-    <g data-depth="14"><rect x="40" y="16" width="22" height="140" rx="11" fill="#f3ead9" stroke="#7db8e8" stroke-width="3"/><circle cx="51" cy="166" r="15" fill="#E2674A" stroke="#7db8e8" stroke-width="3"/><rect x="47" y="96" width="8" height="64" fill="#E2674A"/>${[0,1,2,3,4,5,6].map(i=>`<line x1="62" y1="${30+i*20}" x2="74" y2="${30+i*20}" stroke="#cfe3ea" stroke-width="2.5"/>`).join("")}<text x="80" y="94" font-family="Arial" font-size="11" fill="#cfe3ea">0°</text></g>
-    <g data-depth="18" transform="translate(110,68) scale(.92)"><use href="#sym-theo"/>${SCARF('#F2C15B')}</g>
-    <g data-depth="18" transform="translate(210,68) scale(.92)"><use href="#sym-maya"/>${SCARF('#E2674A')}</g>
-    <rect data-depth="10" x="300" y="30" width="92" height="74" rx="8" fill="#06222b" stroke="#4A90C2" stroke-width="2.5"/>
-    <text data-depth="10" x="346" y="50" text-anchor="middle" font-family="Consolas,monospace" font-size="10" fill="#7CF2EC">TONIGHT −8°</text>
-    <text data-depth="10" x="346" y="68" text-anchor="middle" font-family="Consolas,monospace" font-size="10" fill="#7CF2EC">CELLAR −3°</text>
-    <text data-depth="10" x="346" y="86" text-anchor="middle" font-family="Consolas,monospace" font-size="10" fill="#7CF2EC">YDAY HIGH 5°</text>
-    ${SNOWR(200)}`)}
-    <div class="balloon" style="top:6px;left:96px;max-width:46%"><span class="who">JAMAL</span>Down to −8° tonight. Yesterday's high was 5°. The cellar holds at −3°.</div>
-    <div class="balloon tail-r" style="bottom:10px;right:6px;max-width:44%"><span class="who">FREYA</span>Below-zero numbers. Whole ones with no fraction attached — integers, right?</div>
-  </div>
-  <div class="panel">${SC("0 0 400 92",`<rect width="400" height="92" fill="#0e2233"/><g transform="translate(10,6) scale(.62)"><use href="#sym-vex"/></g>${SNOWR(92,".3")}`)}
-    <div class="balloon vex tail-r" style="top:6px;right:8px;max-width:72%"><span class="who">VEX</span>Correct. <b>Integers</b>: counting numbers, their opposites, and zero. <b>Opposites</b> sit the same distance from zero — on the other side. The heat router wakes when its dial shows the opposite of tonight's distortion reading, −7.</div>
-  </div>
-  <div class="caption">An <b>integer</b> is a whole number, its opposite, or zero. −8, −3, 0, and 5 are all integers.</div>`},
+  <div class="gn-comic">
+    <div class="caption loc">Vexhall Observatory steps. The old brass thermometer still works. Barely.</div>
+    <div class="panel gn-panel panel3d">${ART("p3-thermo")}
+      <div class="gn-sign" data-gn-skip style="left:15%;top:44%">0°</div>
+      <div class="gn-sign" data-gn-skip style="left:76%;top:33%;width:30%;font-size:13px">TONIGHT −8°<br>CELLAR −3°<br>YDAY HIGH 5°</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p3-jamal")}
+      <div class="balloon" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">JAMAL</span>Down to −8° tonight. Yesterday's high was 5°. The cellar holds at −3°.</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p3-freya")}
+      <div class="balloon tail-r" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">FREYA</span>Below-zero numbers. Whole ones with no fraction attached — integers, right?</div>
+    </div>
+    <div class="panel gn-panel">${ART("p3-vex")}
+      <div class="balloon vex" style="top:6px;right:6px;max-width:56%"><span class="who">VEX</span>Correct. <b>Integers</b>: counting numbers, their opposites, and zero. <b>Opposites</b> sit the same distance from zero — on the other side. The heat router wakes when its dial shows the opposite of tonight's distortion reading, −7.</div>
+    </div>
+    <div class="caption">An <b>integer</b> is a whole number, its opposite, or zero. −8, −3, 0, and 5 are all integers.</div>
+  </div>`},
 
 /* ---- p4: GATE 1 ---- */
 { ch:"Chapter 1 · Reader Gate", gate:"g1", html:`
-  <div class="panel">${SC("0 0 400 90",`<rect width="400" height="90" fill="#0e2233"/><g transform="translate(8,2) scale(.7)"><use href="#sym-maya"/>${SCARF('#E2674A')}</g>${SNOWR(90,".35")}`)}
-    <div class="balloon" style="top:6px;left:84px;max-width:60%"><span class="who">FREYA</span>Reader — you're our fifth crew member. Log the readings and spin the dial!</div>
+  <div class="gn-comic">
+    <div class="panel gn-panel">${ART("p4-freya")}
+      <div class="balloon" style="top:10px;right:8px;max-width:60%;--tx:10px"><span class="who">FREYA</span>Reader — you're our fifth crew member. Log the readings and spin the dial!</div>
+    </div>
   </div>`},
 
 /* ---- p5: ch2 ---- */
 { ch:"Chapter 2 · The Cold Ledger", html:`
   <div class="kicker">Chapter Two</div><h2 class="splashtitle">THE COLD <em>LEDGER</em></h2>
-  <div class="panel panel3d tall">${SC("0 0 400 190",`
-    ${NT(190)}
-    <g data-depth="12">${[["FROSTVALE","−3°",18],["NORTHBANK","−2.5°",116],["MILLDAM","−¾°",214],["HARBORLIGHT","0.5°",312]].map(([n,t,x])=>`<rect x="${x}" y="26" width="88" height="64" rx="8" fill="#06222b" stroke="#4A90C2" stroke-width="2.5"/><text x="${x+44}" y="48" text-anchor="middle" font-family="Arial" font-weight="800" font-size="9" fill="#7db8e8">${n}</text><text x="${x+44}" y="74" text-anchor="middle" font-family="Consolas,monospace" font-weight="700" font-size="16" fill="#7CF2EC">${t}</text>`).join("")}</g>
-    ${DRIFT(160)}
-    <g data-depth="18" transform="translate(60,84) scale(.84)"><use href="#sym-zara"/>${SCARF('#1FA6A2')}</g>
-    <g data-depth="18" transform="translate(260,84) scale(.84)"><use href="#sym-theo"/>${SCARF('#F2C15B')}</g>
-    ${SNOWR(190)}`)}
-    <div class="balloon" style="bottom:10px;left:8px;max-width:48%"><span class="who">PRIYA</span>Heater trucks roll to the coldest district first. But which IS coldest? One reading is a fraction.</div>
-    <div class="balloon tail-r" style="bottom:10px;right:8px;max-width:44%"><span class="who">JAMAL</span>Don't trust your eyes. Under a minus sign, a big digit means a deep freeze.</div>
-  </div>
-  <div class="panel">${SC("0 0 400 90",`<rect width="400" height="90" fill="#0e2233"/><g transform="translate(318,2) scale(.6)"><use href="#sym-vex"/></g>${SNOWR(90,".3")}`)}
-    <div class="balloon vex" style="top:8px;left:10px;max-width:74%"><span class="who">VEX</span>All four are <b>rational numbers</b> — any number you can write as a fraction, like −2.5 or −¾. Different costumes, same number line.</div>
-  </div>
-  <div class="caption">Rational numbers include integers, fractions, and decimals — positive and negative. <b>Least</b> means farthest below zero.</div>`},
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${ART("p5-ledger")}
+      <div class="gn-sign" data-gn-skip style="left:14%;top:22%;font-size:13px">FROSTVALE<br>−3°</div>
+      <div class="gn-sign" data-gn-skip style="left:38%;top:22%;font-size:13px">NORTHBANK<br>−2.5°</div>
+      <div class="gn-sign" data-gn-skip style="left:62%;top:22%;font-size:13px">MILLDAM<br>−¾°</div>
+      <div class="gn-sign" data-gn-skip style="left:85%;top:24%;font-size:13px;letter-spacing:-1px">HARBORLIGHT<br>0.5°</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p5-priya")}
+      <div class="balloon" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">PRIYA</span>Heater trucks roll to the coldest district first. But which IS coldest? One reading is a fraction.</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p5-jamal")}
+      <div class="balloon tail-r" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">JAMAL</span>Don't trust your eyes. Under a minus sign, a big digit means a deep freeze.</div>
+    </div>
+    <div class="panel gn-panel">${ART("p5-vex")}
+      <div class="balloon vex gn-side" style="top:6px;left:6px;max-width:60%"><span class="who">VEX</span>All four are <b>rational numbers</b> — any number you can write as a fraction, like −2.5 or −¾. Different costumes, same number line.</div>
+    </div>
+    <div class="caption">Rational numbers include integers, fractions, and decimals — positive and negative. <b>Least</b> means farthest below zero.</div>
+  </div>`},
 
 /* ---- p6: GATE 2 ---- */
 { ch:"Chapter 2 · Reader Gate", gate:"g2", html:`
-  <div class="panel">${SC("0 0 400 84",`<rect width="400" height="84" fill="#0e2233"/><g transform="translate(8,0) scale(.66)"><use href="#sym-zara"/>${SCARF('#1FA6A2')}</g>${SNOWR(84,".35")}`)}
-    <div class="balloon" style="top:6px;left:80px;max-width:66%"><span class="who">PRIYA</span>Sort the ledger, reader — the coldest district gets the first truck!</div>
+  <div class="gn-comic">
+    <div class="panel gn-panel">${ART("p6-priya")}
+      <div class="balloon" style="top:10px;right:8px;max-width:55%;--tx:10px"><span class="who">PRIYA</span>Sort the ledger, reader — the coldest district gets the first truck!</div>
+    </div>
   </div>`},
 
 /* ---- p7: ch3 ---- */
 { ch:"Chapter 3 · Signal in the Snow", html:`
   <div class="kicker">Chapter Three</div><h2 class="splashtitle">SIGNAL IN THE <em>SNOW</em></h2>
-  <div class="caption loc">The relay tunnel under Meridian Avenue. Samir taps the wall map awake.</div>
-  <div class="panel panel3d tall">${SC("0 0 400 200",`
-    <rect width="400" height="200" fill="#10243a"/><rect width="400" height="200" fill="url(#halftone)" opacity=".5"/>
-    <g data-depth="12"><line x1="24" y1="110" x2="376" y2="110" stroke="#7db8e8" stroke-width="3"/>${[-7,-6,-5,-4,-3,-2,-1,0,1,2,3,4,5,6,7].map(t=>`<line x1="${200+t*23}" y1="103" x2="${200+t*23}" y2="117" stroke="#7db8e8" stroke-width="2"/><text x="${200+t*23}" y="132" text-anchor="middle" font-family="Arial" font-size="9" fill="#cfe3ea">${t}</text>`).join("")}
-    <circle cx="200" cy="110" r="8" fill="#7CF2EC"/><text x="200" y="94" text-anchor="middle" font-family="Arial" font-weight="800" font-size="9" fill="#7CF2EC">ENGINE</text>
-    <circle cx="${200-6*23}" cy="110" r="7" fill="#F2C15B" stroke="#fff" stroke-width="2"/><text x="${200-6*23}" y="92" text-anchor="middle" font-family="Arial" font-weight="800" font-size="9" fill="#F2C15B">STATION W</text>
-    <circle cx="${200+4*23}" cy="110" r="7" fill="#E2674A" stroke="#fff" stroke-width="2"/><text x="${200+4*23}" y="92" text-anchor="middle" font-family="Arial" font-weight="800" font-size="9" fill="#E2674A">STATION E</text></g>
-    <g data-depth="18" transform="translate(20,86) scale(.9)"><use href="#sym-dev"/>${SCARF('#7db8e8')}</g>
-    <g data-depth="18" transform="translate(296,86) scale(.9)"><use href="#sym-theo"/>${SCARF('#F2C15B')}</g>`)}
-    <div class="balloon" style="top:4px;left:8px;max-width:46%"><span class="who">SAMIR</span>Two relay stations on the line: W at −6, E at 4. Farther from the engine at zero means a stronger booster.</div>
-    <div class="balloon tail-r" style="bottom:6px;right:6px;max-width:46%"><span class="who">JAMAL</span>Distance, not direction. The bars in |−6| mean <b>absolute value</b> — how far from zero, sign ignored.</div>
-  </div>
-  <div class="panel">${SC("0 0 400 80",`<rect width="400" height="80" fill="#0e2233"/><g transform="translate(320,0) scale(.56)"><use href="#sym-vex"/></g>${SNOWR(80,".3")}`)}
-    <div class="balloon vex" style="top:6px;left:10px;max-width:74%"><span class="who">VEX</span>Absolute value is never negative. Direction is a sign's job. Distance is the bars' job.</div>
-  </div>
-  <div class="caption"><b>Absolute value</b> |n| = a number's distance from 0. |−6| asks: how many steps from zero?</div>`},
+  <div class="gn-comic">
+    <div class="caption loc">The relay tunnel under Meridian Avenue. Samir taps the wall map awake.</div>
+    <div class="panel gn-panel panel3d">${ART("p7-tunnel")}
+      <div class="gn-sign" data-gn-skip style="left:22%;top:12%;color:#F2C15B;font-size:13px">STATION W<br>−6</div>
+      <div class="gn-sign" data-gn-skip style="left:50%;top:38%;font-size:13px">ENGINE<br>0</div>
+      <div class="gn-sign" data-gn-skip style="left:76%;top:12%;color:#ff8a6e;font-size:13px">STATION E<br>4</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p7-samir")}
+      <div class="balloon" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">SAMIR</span>Two relay stations on the line: W at −6, E at 4. Farther from the engine at zero means a stronger booster.</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p7-jamal")}
+      <div class="balloon tail-r" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">JAMAL</span>Distance, not direction. The bars in |−6| mean <b>absolute value</b> — how far from zero, sign ignored.</div>
+    </div>
+    <div class="panel gn-panel">${ART("p7-vex")}
+      <div class="balloon vex gn-side" style="top:6px;left:6px;max-width:66%"><span class="who">VEX</span>Absolute value is never negative. Direction is a sign's job. Distance is the bars' job.</div>
+    </div>
+    <div class="caption"><b>Absolute value</b> |n| = a number's distance from 0. |−6| asks: how many steps from zero?</div>
+  </div>`},
 
 /* ---- p8: GATE 3 ---- */
 { ch:"Chapter 3 · Reader Gate", gate:"g3", html:`
-  <div class="panel">${SC("0 0 400 84",`<rect width="400" height="84" fill="#10243a"/><g transform="translate(8,-4) scale(.62)"><use href="#sym-dev"/>${SCARF('#7db8e8')}</g>${SNOWR(84,".3")}`)}
-    <div class="balloon" style="top:6px;left:78px;max-width:70%"><span class="who">SAMIR</span>Set the booster strengths, reader. Then call which station sits farther out.</div>
+  <div class="gn-comic">
+    <div class="panel gn-panel">${ART("p8-samir")}
+      <div class="balloon" style="top:10px;right:8px;max-width:60%;--tx:10px"><span class="who">SAMIR</span>Set the booster strengths, reader. Then call which station sits farther out.</div>
+    </div>
   </div>`},
 
 /* ---- p9: ch4 ---- */
 { ch:"Chapter 4 · The Grid Map", html:`
   <div class="kicker">Chapter Four</div><h2 class="splashtitle">THE GRID <em>MAP</em></h2>
-  <div class="panel panel3d tall">${SC("0 0 400 210",`
-    <rect width="400" height="210" fill="#10243a"/>
-    <g data-depth="12"><rect x="90" y="14" width="220" height="182" rx="8" fill="#06222b" stroke="#4A90C2" stroke-width="3"/>
-    <g stroke="#4A90C2" opacity=".3">${[1,2,3,4].map(i=>`<line x1="${90+i*44}" y1="14" x2="${90+i*44}" y2="196"/>`).join("")}${[1,2,3].map(i=>`<line x1="90" y1="${14+i*45.5}" x2="310" y2="${14+i*45.5}"/>`).join("")}</g>
-    <line x1="200" y1="14" x2="200" y2="196" stroke="#7db8e8" stroke-width="2.5"/><line x1="90" y1="105" x2="310" y2="105" stroke="#7db8e8" stroke-width="2.5"/>
-    <circle cx="200" cy="105" r="6" fill="#7CF2EC"/>
-    <text x="255" y="62" text-anchor="middle" font-family="Georgia" font-size="22" fill="#7db8e8" opacity=".8">I</text>
-    <text x="145" y="62" text-anchor="middle" font-family="Georgia" font-size="22" fill="#7db8e8" opacity=".8">II</text>
-    <text x="145" y="160" text-anchor="middle" font-family="Georgia" font-size="22" fill="#7db8e8" opacity=".8">III</text>
-    <text x="255" y="160" text-anchor="middle" font-family="Georgia" font-size="22" fill="#7db8e8" opacity=".8">IV</text>
-    <g fill="#F2C15B"><circle cx="156" cy="76" r="5"/><circle cx="244" cy="76" r="5"/><circle cx="156" cy="134" r="5"/><circle cx="259" cy="120" r="5"/><circle cx="141" cy="90" r="5"/></g></g>
-    <g data-depth="18" transform="translate(2,88) scale(.86)"><use href="#sym-maya"/>${SCARF('#E2674A')}</g>
-    <g data-depth="18" transform="translate(316,88) scale(.86)"><use href="#sym-theo"/>${SCARF('#F2C15B')}</g>
-    ${SNOWR(210,".25")}`)}
-    <div class="balloon" style="top:6px;left:6px;max-width:42%"><span class="who">FREYA</span>Ada's map cuts the city into four <b>quadrants</b> — counterclockwise from the upper right: I, II, III, IV.</div>
-    <div class="balloon tail-r" style="bottom:8px;right:6px;max-width:46%"><span class="who">JAMAL</span>Every station is an <b>ordered pair</b> (x, y): blocks east–west first, then north–south. (2, 5) is NOT (5, 2).</div>
-  </div>
-  <div class="panel">${SC("0 0 400 84",`<rect width="400" height="84" fill="#0e2233"/><g transform="translate(320,0) scale(.56)"><use href="#sym-vex"/></g>${SNOWR(84,".3")}`)}
-    <div class="balloon vex" style="top:6px;left:10px;max-width:76%"><span class="who">VEX</span>Two relays must light next: (−3, 2) and (4, −1). But the blackout scrambled my map — five dots flicker, and only two are real.</div>
-  </div>
-  <div class="caption">An <b>ordered pair</b> (x, y) locates a point: x first (left–right), then y (up–down).</div>`},
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${ART("p9-map")}
+      <div class="gn-sign" data-gn-skip style="left:62%;top:37%;font-family:Georgia,serif">I</div>
+      <div class="gn-sign" data-gn-skip style="left:40%;top:37%;font-family:Georgia,serif">II</div>
+      <div class="gn-sign" data-gn-skip style="left:40%;top:71%;font-family:Georgia,serif">III</div>
+      <div class="gn-sign" data-gn-skip style="left:62%;top:71%;font-family:Georgia,serif">IV</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p9-freya")}
+      <div class="balloon" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">FREYA</span>Ada's map cuts the city into four <b>quadrants</b> — counterclockwise from the upper right: I, II, III, IV.</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p9-jamal")}
+      <div class="balloon tail-r" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">JAMAL</span>Every station is an <b>ordered pair</b> (x, y): blocks east–west first, then north–south. (2, 5) is NOT (5, 2).</div>
+    </div>
+    <div class="panel gn-panel">${ART("p9-vex")}
+      <div class="balloon vex gn-side" style="top:6px;left:6px;max-width:54%"><span class="who">VEX</span>Two relays must light next: (−3, 2) and (4, −1). But the blackout scrambled my map — five dots flicker, and only two are real.</div>
+    </div>
+    <div class="caption">An <b>ordered pair</b> (x, y) locates a point: x first (left–right), then y (up–down).</div>
+  </div>`},
 
 /* ---- p10: GATE 4 ---- */
 { ch:"Chapter 4 · Reader Gate", gate:"g4", html:`
-  <div class="panel">${SC("0 0 400 80",`<rect width="400" height="80" fill="#10243a"/><g transform="translate(8,-4) scale(.62)"><use href="#sym-theo"/>${SCARF('#F2C15B')}</g>${SNOWR(80,".3")}`)}
-    <div class="balloon" style="top:6px;left:78px;max-width:70%"><span class="who">JAMAL</span>Read the pairs carefully, reader. Light the wrong relay and we waste the power we have.</div>
+  <div class="gn-comic">
+    <div class="panel gn-panel">${ART("p10-jamal")}
+      <div class="balloon" style="top:10px;right:8px;max-width:60%;--tx:10px"><span class="who">JAMAL</span>Read the pairs carefully, reader. Light the wrong relay and we waste the power we have.</div>
+    </div>
   </div>`},
 
 /* ---- p11: ch5 splash ---- */
 { ch:"Chapter 5 · The Coldest Mile", html:`
   <div class="kicker">Chapter Five</div><h2 class="splashtitle">THE COLDEST <em>MILE</em></h2>
-  <div class="panel panel3d tall">${SC("0 0 400 210",`
-    <rect width="400" height="210" fill="#0c1a2a"/>
-    <path data-depth="8" d="M0 60 Q200 10 400 60 L400 210 L0 210 Z" fill="#10243a"/>
-    <g data-depth="12"><rect x="30" y="150" width="340" height="10" rx="5" fill="#17324D" stroke="#4A90C2" stroke-width="2"/>
-    <text x="44" y="142" font-family="Consolas,monospace" font-size="10" fill="#7db8e8">PLATFORM ELEV −6 m</text>
-    <text x="280" y="142" font-family="Consolas,monospace" font-size="10" fill="#7db8e8">STREET ELEV 0 m</text></g>
-    <g data-depth="18" transform="translate(40,76) scale(.9)"><use href="#sym-zara"/>${SCARF('#1FA6A2')}</g>
-    <g data-depth="14"><circle cx="180" cy="140" r="22" fill="none" stroke="#E2674A" stroke-width="6"/><circle cx="180" cy="140" r="8" fill="#17324D"/><path d="M202 140 Q260 120 320 140" fill="none" stroke="#E2674A" stroke-width="4" stroke-dasharray="8 6"/></g>
-    <g data-depth="18" transform="translate(290,76) scale(.9)"><use href="#sym-dev"/>${SCARF('#7db8e8')}</g>
-    ${SNOWR(210,".2")}`)}
-    <div class="sfx" style="top:8px;left:14px">CLUNK!</div>
-    <div class="balloon" style="top:6px;left:96px;max-width:48%"><span class="who">PRIYA</span>Cable time. Even elevation runs below zero down here — the old platform sits at −6 meters.</div>
-    <div class="balloon tail-r" style="bottom:10px;right:6px;max-width:46%"><span class="who">SAMIR</span>And cable doesn't stretch. We count exact blocks between stations. No guessing.</div>
-  </div>
-  <div class="panel">${SC("0 0 400 88",`<rect width="400" height="88" fill="#0e2233"/><g transform="translate(10,4) scale(.6)"><use href="#sym-theo"/>${SCARF('#F2C15B')}</g>${SNOWR(88,".3")}`)}
-    <div class="balloon" style="top:6px;left:80px;max-width:74%"><span class="who">JAMAL</span>Two runs tonight: across Fourth Street from (−3, 4) to (5, 4), and down Second Avenue from (2, −1) to (2, −6).</div>
-  </div>
-  <div class="caption">When two points share a coordinate, the path between them is straight — measure it with absolute values.</div>`},
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${ART("p11-platform")}
+      <div class="sfx" style="top:8px;left:14px">CLUNK!</div>
+      <div class="gn-sign" data-gn-skip style="left:54%;top:11%;font-size:13px">PLATFORM ELEV −6 m</div>
+      <div class="gn-sign" data-gn-skip style="left:52%;top:40%;font-size:13px">STREET ELEV 0 m</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p11-priya")}
+      <div class="balloon" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">PRIYA</span>Cable time. Even elevation runs below zero down here — the old platform sits at −6 meters.</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p11-samir")}
+      <div class="balloon tail-r" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">SAMIR</span>And cable doesn't stretch. We count exact blocks between stations. No guessing.</div>
+    </div>
+    <div class="panel gn-panel">${ART("p11-jamal")}
+      <div class="balloon" style="top:6px;right:6px;max-width:54%;--tx:10px"><span class="who">JAMAL</span>Two runs tonight: across Fourth Street from (−3, 4) to (5, 4), and down Second Avenue from (2, −1) to (2, −6).</div>
+    </div>
+    <div class="caption">When two points share a coordinate, the path between them is straight — measure it with absolute values.</div>
+  </div>`},
 
 /* ---- p12: GATE 5 ---- */
 { ch:"Chapter 5 · Reader Gate", gate:"g5", html:`
-  <div class="panel">${SC("0 0 400 80",`<rect width="400" height="80" fill="#0c1a2a"/><g transform="translate(8,-4) scale(.62)"><use href="#sym-zara"/>${SCARF('#1FA6A2')}</g>${SNOWR(80,".3")}`)}
-    <div class="balloon" style="top:6px;left:78px;max-width:70%"><span class="who">PRIYA</span>Measure both cable runs, reader. I cut once.</div>
+  <div class="gn-comic">
+    <div class="panel gn-panel">${ART("p12-priya")}
+      <div class="balloon" style="top:10px;right:8px;max-width:60%;--tx:10px"><span class="who">PRIYA</span>Measure both cable runs, reader. I cut once.</div>
+    </div>
   </div>`},
 
 /* ---- p13: boss setup ---- */
 { ch:"Chapter 5 · The Light Ring", html:`
-  <div class="caption loc">Midnight. One move left: ring the engine district with cable, and the whole grid relights.</div>
-  <div class="panel panel3d tall">${SC("0 0 400 230",`
-    <rect width="400" height="230" fill="#0e2233"/>
-    <g data-depth="12"><g stroke="#4A90C2" opacity=".25">${[-5,-4,-3,-2,-1,1,2,3,4,5].map(i=>`<line x1="${200+i*34}" y1="10" x2="${200+i*34}" y2="222"/>`).join("")}${[-3,-2,-1,1,2,3].map(i=>`<line x1="30" y1="${118-i*34}" x2="370" y2="${118-i*34}"/>`).join("")}</g>
-    <line x1="30" y1="118" x2="370" y2="118" stroke="#7db8e8" stroke-width="2.5"/><line x1="200" y1="10" x2="200" y2="222" stroke="#7db8e8" stroke-width="2.5"/>
-    <circle cx="200" cy="118" r="6" fill="#7CF2EC"/>
-    <polygon points="64,16 302,16 302,186 64,186" fill="rgba(242,193,91,.08)" stroke="#F2C15B" stroke-width="3" stroke-dasharray="10 7"/>
-    <g fill="#F2C15B" stroke="#fff" stroke-width="2"><circle cx="64" cy="186" r="6"/><circle cx="302" cy="186" r="6"/><circle cx="302" cy="16" r="6"/><circle cx="64" cy="16" r="6"/></g>
-    <g font-family="Arial" font-size="11" font-weight="700" fill="#F2C15B"><text x="58" y="204" text-anchor="middle">(−4, −2)</text><text x="308" y="204" text-anchor="middle">(3, −2)</text><text x="308" y="12" text-anchor="middle">(3, 3)</text><text x="58" y="12" text-anchor="middle">(−4, 3)</text></g></g>
-    <g data-depth="20" transform="translate(150,120) scale(.5)"><use href="#sym-vex"/></g>
-    ${SNOWR(230,".2")}`)}
-    <div class="balloon vex" style="top:6px;left:8px;max-width:46%"><span class="who">VEX</span>The Light Ring: a rectangle of cable through four corner relays. I can sense its shape. You must measure it.</div>
-    <div class="balloon tail-r" style="bottom:8px;right:8px;max-width:42%"><span class="who">FREYA</span>Width, height, then total cable. Three locks, one ring. Reader — bring us home.</div>
-  </div>
-  <div class="caption">Boss Gate: distances on the plane, plus the perimeter of a polygon drawn on the grid.</div>`},
+  <div class="gn-comic">
+    <div class="caption loc">Midnight. One move left: ring the engine district with cable, and the whole grid relights.</div>
+    <div class="panel gn-panel panel3d">${ART("p13-ring")}
+      <div class="gn-sign" data-gn-skip style="left:14%;top:90%;color:#F2C15B;font-size:13px">(−4, −2)</div>
+      <div class="gn-sign" data-gn-skip style="left:86%;top:90%;color:#F2C15B;font-size:13px">(3, −2)</div>
+      <div class="gn-sign" data-gn-skip style="left:80%;top:52%;color:#F2C15B;font-size:13px">(3, 3)</div>
+      <div class="gn-sign" data-gn-skip style="left:20%;top:52%;color:#F2C15B;font-size:13px">(−4, 3)</div>
+      <div class="balloon vex" style="top:6px;left:6px;max-width:44%;--tx:80%"><span class="who">VEX</span>The Light Ring: a rectangle of cable through four corner relays. I can sense its shape. You must measure it.</div>
+    </div>
+    <div class="panel gn-panel">${ART("p13-freya")}
+      <div class="balloon gn-side" style="top:8px;left:6px;max-width:48%;--ty:30px"><span class="who">FREYA</span>Width, height, then total cable. Three locks, one ring. Reader — bring us home.</div>
+    </div>
+    <div class="caption">Boss Gate: distances on the plane, plus the perimeter of a polygon drawn on the grid.</div>
+  </div>`},
 
 /* ---- p14: BOSS GATE ---- */
 { ch:"Boss Gate · The Light Ring", gate:"boss", html:`
-  <div class="panel">${SC("0 0 400 76",`<rect width="400" height="76" fill="#0e2233"/><g transform="translate(330,4) scale(.56)"><use href="#sym-vex"/></g>${SNOWR(76,".3")}`)}
-    <div class="balloon vex" style="top:6px;left:10px;max-width:72%"><span class="who">VEX</span>BOSS GATE. Three locks. The city is watching. (The city is also freezing.)</div>
+  <div class="gn-comic">
+    <div class="panel gn-panel">${ART("p14-vex")}
+      <div class="balloon vex gn-side" style="top:6px;left:6px;max-width:66%"><span class="who">VEX</span>BOSS GATE. Three locks. The city is watching. (The city is also freezing.)</div>
+    </div>
   </div>`},
 
 /* ---- p15: victory + teaser ---- */
 { ch:"Chapter 5 · Relight", html:`
-  <div class="panel panel3d tall">${SC("0 0 400 220",`
-    ${NT(220)}
-    <g data-depth="10" transform="translate(0,56) scale(4,1.7)" opacity=".95"><use href="#sym-darkline"/></g>
-    <g data-depth="10" fill="#F2C15B">${[[30,110],[58,96],[86,118],[122,90],[150,112],[186,98],[214,120],[250,92],[278,114],[314,100],[342,118],[370,94]].map(([x,y])=>`<rect x="${x}" y="${y}" width="7" height="9" opacity=".95"/>`).join("")}</g>
-    ${DRIFT(186)}
-    <g data-depth="18" transform="translate(36,98) scale(.8)"><use href="#sym-maya"/>${SCARF('#E2674A')}</g>
-    <g data-depth="18" transform="translate(116,98) scale(.8)"><use href="#sym-theo"/>${SCARF('#F2C15B')}</g>
-    <g data-depth="18" transform="translate(196,98) scale(.8)"><use href="#sym-zara"/>${SCARF('#1FA6A2')}</g>
-    <g data-depth="18" transform="translate(276,98) scale(.8)"><use href="#sym-dev"/>${SCARF('#7db8e8')}</g>
-    <g data-depth="26" transform="translate(338,16) scale(.55)"><use href="#sym-vex"/></g>
-    ${SNOWR(220,".3")}`)}
-    <div class="sfx" style="top:10px;left:16px">FZZZT-ON!</div>
-    <div class="balloon" style="top:8px;right:8px;max-width:44%" ><span class="who">FREYA</span>Quadrant by quadrant — look at it glow!</div>
-    <div class="balloon" style="bottom:12px;left:10px;max-width:50%"><span class="who">JAMAL</span>Twenty-four blocks of cable, zero slack. Co-led, counted, confirmed.</div>
-  </div>
-  <div class="panelrow">
-    <div class="panel">${SC("0 0 200 110",`<rect width="200" height="110" fill="#10243a"/><g transform="translate(58,4) scale(.78)"><use href="#sym-dev"/>${SCARF('#7db8e8')}</g>${SNOWR(110,".3").replace('width="400"','width="200"')}`)}
-      <div class="balloon" style="top:4px;left:4px;max-width:72%"><span class="who">SAMIR</span>Achievement unlocked: city un-frozen. Hot cocoa speedrun starts now.</div></div>
-    <div class="panel">${SC("0 0 200 110",`<rect width="200" height="110" fill="#0c1020"/><rect x="55" y="26" width="90" height="78" rx="8" fill="#1c3a52" stroke="#F2C15B" stroke-width="3"/><path d="M100 38 v14 M72 52 h56 M72 52 l-8 18 h16 z M128 52 l-8 18 h16 z" stroke="#F2C15B" stroke-width="3" fill="none"/><circle cx="100" cy="84" r="9" fill="none" stroke="#F2C15B" stroke-width="3"/><text x="100" y="20" text-anchor="middle" font-family="Arial Black,Arial" font-weight="900" font-size="9" fill="#E2674A">UNDER CITY HALL</text>`)}
-      <div class="balloon vex" style="bottom:4px;left:4px;max-width:64%"><span class="who">VEX</span>New distortion below city hall. A door shaped like a balance scale. It wants things EQUAL. To be continued…</div></div>
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${ART("p15-relight")}
+      <div class="sfx" style="top:30%;left:16px">FZZZT-ON!</div>
+      <div class="balloon" style="top:8px;left:8px;max-width:44%;--tx:58%"><span class="who">FREYA</span>Quadrant by quadrant — look at it glow!</div>
+      <div class="balloon" style="bottom:12px;left:10px;max-width:50%"><span class="who">JAMAL</span>Twenty-four blocks of cable, zero slack. Co-led, counted, confirmed.</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p15-samir")}
+      <div class="balloon" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">SAMIR</span>Achievement unlocked: city un-frozen. Hot cocoa speedrun starts now.</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p15-door")}
+      <div class="gn-sign" data-gn-skip style="left:50%;top:19%;color:#E2674A;font-family:'Arial Black',Arial,sans-serif;font-size:13px">UNDER CITY HALL</div>
+      <div class="balloon vex" style="bottom:6px;left:6px;right:6px;max-width:none"><span class="who">VEX</span>New distortion below city hall. A door shaped like a balance scale. It wants things EQUAL. To be continued…</div>
+    </div>
   </div>
   <div class="caption" style="text-align:center"><b>NEXT: ${VOLUME.nextTeaser}</b></div>`},
 

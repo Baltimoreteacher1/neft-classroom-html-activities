@@ -236,6 +236,9 @@ body.reduced #turnSheet{display:none!important}
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
   <!-- nsr-injected:end -->
+<!-- gn-art:begin (comic panel art — tools/inject-gn-art.mjs) -->
+<link rel="stylesheet" href="/graphic-novels/_shared/gn-comic.css">
+<!-- gn-art:end -->
 </head>
 <body>
 <!-- ============ SHARED SVG SYMBOL LIBRARY (characters, patterns, props) ============ -->
@@ -283,28 +286,8 @@ body.reduced #turnSheet{display:none!important}
 
 <!-- ============ COVER ============ -->
 <div id="cover">
-  <div id="coverCard" role="img" aria-label="Cover of Axiom City Volume 2: The Crooked Census. Four kids and a glowing orb gather at a festival churro stall under string lights at night, studying a giant clipboard chart with one suspiciously bent bar.">
-    <div class="cov-layer" data-depth="6" style="z-index:1">
-      <svg viewBox="0 0 500 700" width="100%" height="100%" preserveAspectRatio="xMidYMid slice"><defs><linearGradient id="v2night" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#17324D"/><stop offset=".65" stop-color="#22456a"/><stop offset="1" stop-color="#3D74A8"/></linearGradient></defs><rect width="500" height="700" fill="url(#v2night)"/><circle cx="395" cy="130" r="52" fill="#FFF3D8" opacity=".95"/><circle cx="395" cy="130" r="74" fill="#FFF3D8" opacity=".2"/><g fill="#F2C15B"><circle cx="60" cy="90" r="3"/><circle cx="150" cy="60" r="2.4"/><circle cx="250" cy="110" r="2.8"/><circle cx="320" cy="50" r="2.2"/><circle cx="100" cy="180" r="2.2"/><circle cx="210" cy="170" r="2.6"/></g></svg>
-    </div>
-    <div class="cov-layer" data-depth="12" style="z-index:2">
-      <svg viewBox="0 0 500 700" width="100%" height="100%" preserveAspectRatio="xMidYMid slice"><g transform="translate(0,260) scale(5,3.4)" opacity=".75"><use href="#sym-skyline"/></g><rect y="640" width="500" height="60" fill="#0d1f33"/><path d="M0 300 Q250 360 500 300" fill="none" stroke="#0d1f33" stroke-width="4"/><g stroke="#17324D" stroke-width="1.5"><polygon points="50,306 76,306 63,330" fill="#E2674A"/><polygon points="120,318 146,318 133,342" fill="#F2C15B"/><polygon points="190,326 216,326 203,350" fill="#3D74A8"/><polygon points="260,326 286,326 273,350" fill="#1FA6A2"/><polygon points="330,318 356,318 343,342" fill="#E2674A"/><polygon points="400,306 426,306 413,330" fill="#F2C15B"/></g></svg>
-    </div>
-    <div class="cov-layer" data-depth="22" style="z-index:3">
-      <svg viewBox="0 0 500 700" width="100%" height="100%" preserveAspectRatio="xMidYMid slice">
-        <rect x="0" y="588" width="500" height="112" fill="#0d1f33"/>
-        <g transform="translate(34,388) scale(2.1)"><use href="#sym-stall"/></g>
-        <g transform="translate(94,430) scale(.95)"><use href="#sym-rosa"/></g>
-        <rect x="280" y="380" width="190" height="206" rx="10" fill="#F7F4EC" stroke="#17324D" stroke-width="6" transform="rotate(6 375 483)"/>
-        <g transform="rotate(6 375 483)"><line x1="300" y1="556" x2="450" y2="556" stroke="#17324D" stroke-width="4"/><rect x="306" y="492" width="26" height="64" fill="#3D74A8" stroke="#17324D" stroke-width="3"/><rect x="342" y="452" width="26" height="104" fill="#3D74A8" stroke="#17324D" stroke-width="3"/><polygon points="378,556 404,556 416,470 390,464" fill="#E2674A" stroke="#17324D" stroke-width="3"/><rect x="418" y="508" width="26" height="48" fill="#3D74A8" stroke="#17324D" stroke-width="3"/><text x="375" y="424" text-anchor="middle" font-family="Arial Black,Arial" font-weight="900" font-size="22" fill="#17324D">CENSUS</text><text x="375" y="444" text-anchor="middle" font-family="Arial" font-weight="700" font-size="13" fill="#E2674A">OFFICIAL — DO NOT QUESTION</text></g>
-        <g transform="translate(120,540) scale(.86)"><use href="#sym-maya"/></g>
-        <g transform="translate(196,556) scale(.8)"><use href="#sym-theo"/></g>
-        <g transform="translate(262,566) scale(.76)"><use href="#sym-zara"/></g>
-        <g transform="translate(326,576) scale(.72)"><use href="#sym-dev"/></g>
-        <g transform="translate(214,330) scale(.85)"><use href="#sym-vex"/></g>
-        <g stroke="#7CF2EC" stroke-width="3" opacity=".7" stroke-linecap="round"><line x1="262" y1="420" x2="290" y2="452"/><line x1="248" y1="436" x2="272" y2="466"/></g>
-      </svg>
-    </div>
+  <div id="coverCard" role="img" aria-label="Cover of Axiom City Volume 2: The Crooked Census. At night under festival string lights, Maya, Theo, Zara and Dev stand in front of a striped churro stall, looking up at VEX, the small teal robot with one glowing golden eye.">
+    <div class="cov-layer" data-depth="6" style="z-index:1"><div data-gn-art="cover"></div></div>
     <div class="spine"><span>AXIOM CITY · EDUWONDERLAB</span></div>
     <div id="coverTitle">
       <div class="series">AXIOM CITY</div>
@@ -383,230 +366,217 @@ const BADGES = [
   {id:"boss",icon:"#sig-boss",  label:"Outlier Showdown — Boss Gate"}
 ];
 
-/* tiny scene helpers (content-side, fine to reuse) */
-const SC = (vb,inner,depth)=>`<svg class="scene" viewBox="${vb}" role="img" preserveAspectRatio="xMidYMid meet">${inner}</svg>`;
-const SKY='<rect width="400" height="200" fill="url(#skygrad)"/>';
-const GROUND='<rect y="168" width="400" height="32" fill="#cdc6ad"/><rect y="168" width="400" height="32" fill="url(#halftone)"/>';
-const BUNT=(y=26)=>`<path d="M0 ${y} Q200 ${y+20} 400 ${y}" fill="none" stroke="#17324D" stroke-width="2.5"/>`+
-  Array.from({length:12},(_,i)=>{const x=8+i*33,t=(x+8)/400,yo=y+Math.round(40*t*(1-t)),c=["#E2674A","#F2C15B","#3D74A8","#1FA6A2"][i%4];
-  return `<polygon points="${x},${yo} ${x+16},${yo} ${x+8},${yo+15}" fill="${c}" stroke="#17324D" stroke-width="1.5"/>`}).join("");
-
+/* Comic pages: each story page is a .gn-comic grid of illustrated panels. ART(id) (injected above by
+   tools/inject-gn-art.mjs) draws a panel's art from the book's atlas; every word stays live HTML on top.
+   Balloon and caption TEXT is unchanged from the SVG edition (Easy read keys on it). */
+/* gn-art:begin (comic panel art: one atlas, coordinates and alt text from _engine/art/vol-02 — tools/inject-gn-art.mjs) */
+const GN_ART = {"src":"/graphic-novels/axiom-city/art/axiom-city-vol-02-the-crooked-census.webp?v=7efffa7c84","w":3100,"h":4026,"f":{"cover":[0,0,512,762,"At night under festival string lights, Maya, Theo, Zara and Dev stand together by the striped festival stalls while VEX, the small teal robot with one glowing golden eye, floats above them.",[]],"p1-festival":[0,2558,705,435,"Maya and Theo lead their friends through the Founders Festival at dusk, under strings of colorful bunting, with the city skyline behind them.",[[5,33,10,16],[18,31,9,16],[39,50,6,11],[46,49,7,12],[52.5,42,7.5,13],[64.5,41,7.5,12]]],"p1-observatory":[0,2993,870,381,"Flashback: inside the old Vexhall Observatory on a rainy day, an old journal lies open on a desk beside a brass telescope as VEX, the small teal robot with one glowing eye, rises above it.",[]],"p2-stall":[0,2068,870,490,"Maya and Zara stand at the Founders Festival near Rosa's striped churro stall, where a long line of customers waits. A paper notice is taped to a post on the right.",[[51,31,13,28],[65,40,11,21]]],"p2-rosa":[2472,0,490,653,"Close-up of Rosa, the churro vendor in her coral shirt and yellow apron, frowning as she points with a churro in her hand.",[[40,20,31,29]]],"p2-vex":[0,762,490,653,"VEX, the small teal robot with one golden eye, hovers over the evening rooftops, glowing rays fanning out around it as it scans.",[]],"p3-window":[705,2558,870,435,"At the census office window, Clerk Pimm, a tall thin man in a grey suit and round glasses, smirks and holds up a very tall clipboard while Theo looks up at him.",[[26,40,13,29],[80,19,10,26]]],"p3-theo":[490,762,490,653,"Close-up of Theo, in his blue hoodie, raising one finger and an eyebrow as he questions the clerk.",[[18,8,60,52]]],"p3-vex":[980,762,490,653,"VEX hovers and shines a cone of cyan light down onto a glowing disc, where little dots float at different heights, like answers that vary.",[[30,35,45,32]]],"p4-maya":[0,3700,870,326,"Maya grins and points straight out of the panel at the reader while VEX floats on the right.",[[10,5,18,60]]],"p5-logbook":[1575,2558,836,435,"Over Rosa's shoulder: her hands hold her logbook open on the wooden counter beside a jar of sugared churros, while a helper and a girl peek over the stall.",[[12,23,7,15],[40,12,13,23]]],"p5-theo":[1470,762,490,653,"Close-up of Theo, smiling and tapping his chin as he plans how to line up Rosa's numbers.",[[10,12,66,56]]],"p5-vex":[1960,762,490,653,"VEX hovers above five glowing bars lined up from shortest to tallest, the tallest one lit gold.",[[23,19,54,36]]],"p6-theo":[870,3700,870,326,"Theo smiles and points straight out of the panel at the reader.",[[53,0,34,78]]],"p7-stakeout":[870,2068,870,490,"In daylight at the festival, Dev grins on the left of Rosa's stall, which has a blank sign above it, while Zara stands on the right holding the tally sheet, thinking.",[[9,52,10,18],[75,42,10,19]]],"p7-vex":[1740,2993,870,381,"VEX projects a small glowing hologram of a bar graph, its bars rising from short to tall.",[]],"p8-zara":[1740,3700,870,326,"Zara grins and holds out an open hand toward the reader.",[[12,0,19,56]]],"p9-chart":[1740,2068,870,490,"In City Hall's Hall of Charts, under hanging brass lanterns, a big blank poster with no labels hangs from a rod. Maya and Dev stand on either side of it, looking puzzled.",[[28,56,8,21],[62,34,11,19]]],"p9-dev":[2450,762,490,653,"Close-up of Dev, in his orange shirt, grinning as he holds up a brass key.",[[14,3,63,55]]],"p9-vex":[0,1415,490,653,"VEX, the small teal robot with one golden eye, hovers in the dark beside a small glowing cyan panel it projects.",[[20,27,48,33]]],"p10-dev":[0,3374,870,326,"Dev gives the reader a confident thumbs up.",[[15,5,20,60]]],"p11-storeroom":[490,1415,870,490,"In Rosa's storeroom at dawn, five stacks of brown boxes of different heights stand in a row. Zara stands beside them with her hands on her hips, and VEX floats above.",[[70,22,13,26]]],"p11-dev":[870,2993,870,381,"Dev grins with his arms crossed beside a big wooden cider barrel, with a blank log card hanging on the wall.",[[61,0,27,63]]],"p12-zara":[870,3374,870,326,"Zara looks urgently at the reader and points ahead: no time to lose.",[[15,0,17,52]]],"p13-hearing":[1360,1415,870,490,"In the City Hall hearing room, a big exhibit board stands on an easel. Clerk Pimm clutches a huge folder on the left; Rosa and Theo stand on the right.",[[28,33,7,13],[79,39,6,13],[87,39,7,14]]],"p13-pimm":[512,0,490,653,"Close-up of Clerk Pimm, stern behind his glasses, holding up a thick green folder.",[[50,10,35,36]]],"p13-theo":[1002,0,490,653,"Close-up of Theo, arms crossed, calm and confident with a small smile.",[[27,2,55,50]]],"p14-vex":[1740,3374,870,326,"VEX glows in the dark, a red warning ring flashing around its golden eye.",[]],"p15-party":[2230,1415,870,490,"Celebration at the festival: Rosa hands out churros from her striped stall under a big banner while the crew cheers beside her.",[[21,33,10,22],[39,42,9,20],[53,38,9,20],[67,40,10,20],[83,30,11,22]]],"p15-theo":[1982,0,490,653,"Close-up of Theo holding a churro, smiling with satisfaction.",[[10,8,66,55]]],"p15-poster":[1492,0,490,653,"At night, a poster with a bicycle on it is pinned to a brick wall, and VEX glows beside it.",[]]}};
+function ART(id) {
+  const a = GN_ART.f[id];
+  if (!a) throw new Error("gn-art: no frame " + id);
+  const [x, y, w, h, alt, faces] = a;
+  const at = (v, total, size) => (total === size ? 0 : (v / (total - size)) * 100);
+  const faceHtml = faces.map(([l, t, fw, fh]) => `<i class="gn-face" style="left:${l}%;top:${t}%;width:${fw}%;height:${fh}%"></i>`).join("");
+  return `<div class="gn-art" role="img" aria-label="${alt}" style="aspect-ratio:${w}/${h};background-image:url(${GN_ART.src});background-size:${(GN_ART.w / w) * 100}% ${(GN_ART.h / h) * 100}%;background-position:${at(x, GN_ART.w, w)}% ${at(y, GN_ART.h, h)}%">${faceHtml}</div>`;
+}
+for (const el of document.querySelectorAll("[data-gn-art]")) el.outerHTML = ART(el.dataset.gnArt);
+/* gn-art:end */
 const PAGES = [
 /* ---- p1: title page + previously ---- */
 { ch:"Axiom City · Volume Two", html:`
   <div style="text-align:center;margin-top:10px"><div class="kicker">EduWonderLab Presents</div>
   <h2 class="splashtitle" style="margin:8px 0">THE CROOKED <em>CENSUS</em></h2>
   <div class="caption" style="display:inline-block">A data &amp; statistics mystery in five chapters — featuring six reader gates. Solve the math to move the story.</div></div>
-  <div class="panel panel3d tall" style="margin-top:8px">${SC("0 0 400 210",`
-    ${SKY}<g data-depth="6">${BUNT(24)}</g><g data-depth="8" transform="translate(0,40) scale(4,1.6)" opacity=".5"><use href="#sym-skyline"/></g>
-    <g data-depth="16" transform="translate(20,86) scale(1)"><use href="#sym-maya"/></g>
-    <g data-depth="16" transform="translate(115,86)"><use href="#sym-theo"/></g>
-    <g data-depth="16" transform="translate(210,86)"><use href="#sym-zara"/></g>
-    <g data-depth="16" transform="translate(305,86)"><use href="#sym-dev"/></g>
-    <g data-depth="26" transform="translate(170,8) scale(.55)"><use href="#sym-vex"/></g>`)}
-    <div class="balloon vex" style="top:6px;left:8px;max-width:46%"><span class="who">VEX</span>Pattern distortion detected, crew. This one smells like… paperwork.</div>
-  </div>
-  <div class="caption loc">Previously: on a rained-out field day, four sixth graders cracked Ada Vex's sealed journal in the old Vexhall Observatory — and woke VEX, a fragment of her Pattern Engine. Now the city's patterns are their problem.</div>`},
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${ART("p1-festival")}
+      <div class="balloon vex" style="top:6px;left:8px;max-width:46%"><span class="who">VEX</span>Pattern distortion detected, crew. This one smells like… paperwork.</div>
+    </div>
+    <div class="panel gn-panel">${ART("p1-observatory")}
+      <div class="caption loc">Previously: on a rained-out field day, four sixth graders cracked Ada Vex's sealed journal in the old Vexhall Observatory — and woke VEX, a fragment of her Pattern Engine. Now the city's patterns are their problem.</div>
+    </div>
+  </div>`},
 
 /* ---- p2: ch1 splash ---- */
 { ch:"Chapter 1 · The Permit Problem", html:`
   <div class="kicker">Chapter One</div><h2 class="splashtitle">THE PERMIT <em>PROBLEM</em></h2>
-  <div class="panel panel3d tall">${SC("0 0 400 230",`
-    ${SKY}<g data-depth="6" transform="translate(0,60) scale(4,1.7)" opacity=".55"><use href="#sym-skyline"/></g>
-    <g data-depth="8">${BUNT(30)}</g>
-    <g data-depth="14" transform="translate(28,96) scale(1.15)"><use href="#sym-stall"/></g>
-    <g data-depth="14" transform="translate(48,130) scale(.62)"><use href="#sym-rosa"/></g>
-    <g data-depth="18" transform="translate(180,118) scale(.84)"><use href="#sym-maya"/></g>
-    <g data-depth="18" transform="translate(255,124) scale(.8)"><use href="#sym-zara"/></g>
-    <rect data-depth="10" x="300" y="76" width="92" height="64" rx="6" fill="#fff" stroke="#E2674A" stroke-width="3"/>
-    <text data-depth="10" x="346" y="96" text-anchor="middle" font-family="Arial Black,Arial" font-weight="900" font-size="10" fill="#E2674A">NOTICE</text>
-    <text data-depth="10" x="346" y="112" text-anchor="middle" font-family="Arial" font-weight="700" font-size="9" fill="#17324D">PERMIT UNDER REVIEW</text>
-    <text data-depth="10" x="346" y="126" text-anchor="middle" font-family="Arial" font-weight="700" font-size="9" fill="#17324D">"LOW NUMBERS"</text>
-    ${GROUND.replace(/168/g,'198').replace(/height="32"/g,'height="32"')}`)}
-    <div class="balloon" style="top:36px;left:8px;max-width:48%"><span class="who">MAYA</span>Founders Festival, day six. Rosa's churros are the best thing in Axiom City—</div>
-    <div class="balloon tail-r" style="bottom:14px;right:8px;max-width:46%"><span class="who">ROSA</span>—and the census office says nobody visits my stall. <i>Nobody?</i> Look at this line!</div>
-  </div>
-  <div class="panel">${SC("0 0 400 96",`<rect width="400" height="96" fill="#eef3f9"/><g transform="translate(318,4) scale(.66)"><use href="#sym-vex"/></g>`)}
-    <div class="balloon vex" style="top:8px;left:10px;max-width:70%"><span class="who">VEX</span>Distortion source located: the festival census report. The data has been… bent. Crew — audit it.</div>
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${ART("p2-stall")}
+      <div class="gn-sign gn-plate gn-flow" data-gn-skip style="left:84%;top:45%;width:13%;font-size:13px"><span style="color:#E2674A">NOTICE</span><small>PERMIT UNDER REVIEW<br>"LOW NUMBERS"</small></div>
+      <div class="balloon" style="top:6px;left:6px;max-width:44%;--tx:80%"><span class="who">MAYA</span>Founders Festival, day six. Rosa's churros are the best thing in Axiom City—</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p2-rosa")}
+      <div class="balloon" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">ROSA</span>—and the census office says nobody visits my stall. <i>Nobody?</i> Look at this line!</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p2-vex")}
+      <div class="balloon vex" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">VEX</span>Distortion source located: the festival census report. The data has been… bent. Crew — audit it.</div>
+    </div>
   </div>`},
 
 /* ---- p3: ch1 scene — what did the census ask? ---- */
 { ch:"Chapter 1 · The Permit Problem", html:`
-  <div class="caption loc">The census office window. A very tall clipboard. A very smug clerk.</div>
-  <div class="panel panel3d tall">${SC("0 0 400 200",`
-    <rect width="400" height="200" fill="#f3ead9"/>
-    <rect data-depth="6" x="0" y="0" width="400" height="56" fill="#3D74A8" opacity=".2"/>
-    <rect data-depth="10" x="150" y="26" width="120" height="150" rx="8" fill="#fff" stroke="#17324D" stroke-width="4"/>
-    <text data-depth="10" x="210" y="52" text-anchor="middle" font-family="Arial Black,Arial" font-weight="900" font-size="13" fill="#17324D">CENSUS FORM</text>
-    <g data-depth="10" stroke="#9aa0ad" stroke-width="3"><line x1="165" y1="70" x2="255" y2="70"/><line x1="165" y1="92" x2="255" y2="92"/><line x1="165" y1="114" x2="255" y2="114"/><line x1="165" y1="136" x2="255" y2="136"/></g>
-    <g data-depth="16" transform="translate(20,70)"><use href="#sym-theo"/></g>
-    <g data-depth="16" transform="translate(300,70)"><use href="#sym-maya"/></g>`)}
-    <div class="balloon" style="top:6px;left:6px;max-width:46%"><span class="who">CLERK PIMM</span>The census is official. Data is data, children. Numbers don't lie.</div>
-    <div class="balloon tail-r" style="bottom:12px;right:6px;max-width:50%"><span class="who">THEO</span>Data starts with <b>questions</b>, Mr. Pimm. Bad questions make bent data. What did yours <i>ask</i>?</div>
-  </div>
-  <div class="panel">${SC("0 0 400 96",`<rect width="400" height="96" fill="#eef3f9"/><g transform="translate(318,4) scale(.66)"><use href="#sym-vex"/></g>`)}
-    <div class="balloon vex" style="top:8px;left:10px;max-width:72%"><span class="who">VEX</span>Definition loaded: a <b>statistical question</b> expects answers that VARY — different people, different answers. A one-answer question is just a fact lookup.</div>
-  </div>
-  <div class="caption">A <b>statistical question</b> anticipates variety: "How many minutes do visitors stay?" has many answers. "What time does the festival open?" has exactly one.</div>`},
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${ART("p3-window")}
+      <div class="caption loc">The census office window. A very tall clipboard. A very smug clerk.</div>
+      <div class="gn-sign gn-plate" data-gn-skip style="left:58%;top:30%;font-size:14px">CENSUS FORM</div>
+      <div class="balloon tail-r" style="bottom:8px;right:6px;max-width:44%"><span class="who">CLERK PIMM</span>The census is official. Data is data, children. Numbers don't lie.</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p3-theo")}
+      <div class="balloon" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">THEO</span>Data starts with <b>questions</b>, Mr. Pimm. Bad questions make bent data. What did yours <i>ask</i>?</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p3-vex")}
+      <div class="balloon vex" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">VEX</span>Definition loaded: a <b>statistical question</b> expects answers that VARY — different people, different answers. A one-answer question is just a fact lookup.</div>
+    </div>
+    <div class="caption">A <b>statistical question</b> anticipates variety: "How many minutes do visitors stay?" has many answers. "What time does the festival open?" has exactly one.</div>
+  </div>`},
 
 /* ---- p4: GATE 1 ---- */
 { ch:"Chapter 1 · Reader Gate", gate:"g1", html:`
-  <div class="panel">${SC("0 0 400 90",`<rect width="400" height="90" fill="#eef3f9"/><g transform="translate(8,2) scale(.7)"><use href="#sym-maya"/></g><g transform="translate(330,8) scale(.6)"><use href="#sym-vex"/></g>`)}
-    <div class="balloon" style="top:6px;left:84px;max-width:56%"><span class="who">MAYA</span>Reader — you're our fifth crew member. Tag Pimm's census questions!</div>
+  <div class="gn-comic">
+    <div class="panel gn-panel">${ART("p4-maya")}
+      <div class="balloon" style="top:6px;right:6px;max-width:58%;--tx:10px"><span class="who">MAYA</span>Reader — you're our fifth crew member. Tag Pimm's census questions!</div>
+    </div>
   </div>`},
 
 /* ---- p5: ch2 — Rosa's logbook & the median ---- */
 { ch:"Chapter 2 · The Middle of the Story", html:`
   <div class="kicker">Chapter Two</div><h2 class="splashtitle">THE MIDDLE OF THE <em>STORY</em></h2>
-  <div class="caption loc">Behind Rosa's stall. The logbook smells like cinnamon.</div>
-  <div class="panel panel3d tall">${SC("0 0 400 200",`
-    <rect width="400" height="200" fill="#fff8ea"/>
-    <rect data-depth="6" y="150" width="400" height="50" fill="#d9c9a3"/>
-    <rect data-depth="12" x="120" y="34" width="170" height="120" rx="6" fill="#fff" stroke="#17324D" stroke-width="4"/>
-    <text data-depth="12" x="205" y="60" text-anchor="middle" font-family="Arial Black,Arial" font-weight="900" font-size="12" fill="#3D74A8">ROSA'S LOGBOOK</text>
-    <text data-depth="12" x="205" y="84" text-anchor="middle" font-family="Arial" font-weight="700" font-size="11" fill="#17324D">visitors, days 1–5:</text>
-    <text data-depth="12" x="205" y="108" text-anchor="middle" font-family="Arial Black,Arial" font-weight="900" font-size="15" fill="#E2674A">51 · 38 · 60 · 45 · 42</text>
-    <text data-depth="12" x="205" y="134" text-anchor="middle" font-family="Arial" font-size="10" fill="#5a4a22">counted by hand. every day. — R.</text>
-    <g data-depth="18" transform="translate(10,64) scale(.9)"><use href="#sym-rosa"/></g>
-    <g data-depth="18" transform="translate(300,64) scale(.9)"><use href="#sym-theo"/></g>`)}
-    <div class="balloon tail-r" style="top:4px;right:4px;max-width:44%"><span class="who">THEO</span>"Nobody," huh? Line these up smallest to largest and the <b>median</b> — the middle value — tells Rosa's typical day.</div>
-  </div>
-  <div class="panel">${SC("0 0 400 92",`<rect width="400" height="92" fill="#eef3f9"/><g transform="translate(318,2) scale(.64)"><use href="#sym-vex"/></g>`)}
-    <div class="balloon vex" style="top:6px;left:10px;max-width:72%"><span class="who">VEX</span>Median protocol: ORDER the data first. Odd count → one exact middle. Even count → average the two middle values. Wild days barely move it.</div>
-  </div>
-  <div class="caption">The <b>median</b> is the middle value of an ordered data set — a measure of center that resists extreme values.</div>`},
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${ART("p5-logbook")}
+      <div class="caption loc">Behind Rosa's stall. The logbook smells like cinnamon.</div>
+      <div class="gn-sign gn-plate gn-flow" data-gn-skip style="left:50%;top:52%;width:46%"><span style="color:#3D74A8">ROSA'S LOGBOOK</span><small>visitors, days 1–5:</small><span style="color:#E2674A">51 · 38 · 60 · 45 · 42</span><small>counted by hand. every day. — R.</small></div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p5-theo")}
+      <div class="balloon" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">THEO</span>"Nobody," huh? Line these up smallest to largest and the <b>median</b> — the middle value — tells Rosa's typical day.</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p5-vex")}
+      <div class="balloon vex" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">VEX</span>Median protocol: ORDER the data first. Odd count → one exact middle. Even count → average the two middle values. Wild days barely move it.</div>
+    </div>
+    <div class="caption">The <b>median</b> is the middle value of an ordered data set — a measure of center that resists extreme values.</div>
+  </div>`},
 
 /* ---- p6: GATE 2 ---- */
 { ch:"Chapter 2 · Reader Gate", gate:"g2", html:`
-  <div class="panel">${SC("0 0 400 84",`<rect width="400" height="84" fill="#fff8ea"/><g transform="translate(10,0) scale(.66)"><use href="#sym-theo"/></g>`)}
-    <div class="balloon" style="top:6px;left:80px;max-width:66%"><span class="who">THEO</span>Order Rosa's five days and find her real "typical day," reader.</div>
+  <div class="gn-comic">
+    <div class="panel gn-panel">${ART("p6-theo")}
+      <div class="balloon" style="top:6px;right:6px;max-width:58%;--tx:10px"><span class="who">THEO</span>Order Rosa's five days and find her real "typical day," reader.</div>
+    </div>
   </div>`},
 
 /* ---- p7: ch3 — tally sheet to histogram ---- */
 { ch:"Chapter 3 · Stack the Truth", html:`
   <div class="kicker">Chapter Three</div><h2 class="splashtitle">STACK THE <em>TRUTH</em></h2>
-  <div class="panel panel3d tall">${SC("0 0 400 200",`
-    ${SKY.replace('height="200"','height="200"')}<g data-depth="6">${BUNT(20)}</g>
-    <g data-depth="10" transform="translate(150,70) scale(1.05)"><use href="#sym-stall"/></g>
-    <g data-depth="16" transform="translate(30,70) scale(.9)"><use href="#sym-dev"/></g>
-    <g data-depth="16" transform="translate(300,76) scale(.86)"><use href="#sym-zara"/></g>
-    <rect data-depth="12" x="148" y="20" width="120" height="40" rx="6" fill="#fff" stroke="#17324D" stroke-width="3"/>
-    <text data-depth="12" x="208" y="37" text-anchor="middle" font-family="Arial Black,Arial" font-weight="900" font-size="9" fill="#3D74A8">DEV'S STAKEOUT TALLY</text>
-    <text data-depth="12" x="208" y="52" text-anchor="middle" font-family="Arial" font-weight="700" font-size="9" fill="#17324D">16 half-hour blocks counted</text>
-    ${GROUND}`)}
-    <div class="balloon" style="bottom:14px;left:8px;max-width:52%"><span class="who">DEV</span>Side quest complete: I tallied Rosa's visitors in every half-hour block, all day. Sixteen data points. Raw loot.</div>
-    <div class="balloon tail-r" style="top:62px;right:6px;max-width:38%"><span class="who">ZARA</span>Raw numbers are mush. I could <i>build</i> that — stack them into bars. A <b>histogram</b>.</div>
-  </div>
-  <div class="panel">${SC("0 0 400 92",`<rect width="400" height="92" fill="#eef3f9"/><g transform="translate(318,2) scale(.64)"><use href="#sym-vex"/></g>`)}
-    <div class="balloon vex" style="top:6px;left:10px;max-width:72%"><span class="who">VEX</span>Histogram schema: sort data into equal <b>intervals</b> (bins). Each bar's height = the <b>frequency</b> — how many values land in that bin. Bars touch. No gaps.</div>
-  </div>
-  <div class="caption">A <b>histogram</b> shows how often data falls in each interval. Height = frequency, and the bars share edges because the intervals do.</div>`},
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${ART("p7-stakeout")}
+      <div class="gn-sign gn-plate gn-flow" data-gn-skip style="left:50%;top:27%;width:24%;font-size:13px;line-height:1.1"><span style="color:#3D74A8">DEV'S STAKEOUT TALLY</span><small>16 half-hour blocks counted</small></div>
+      <div class="balloon" style="bottom:8px;left:8px;max-width:44%"><span class="who">DEV</span>Side quest complete: I tallied Rosa's visitors in every half-hour block, all day. Sixteen data points. Raw loot.</div>
+      <div class="balloon tail-r" style="bottom:8px;right:6px;max-width:38%"><span class="who">ZARA</span>Raw numbers are mush. I could <i>build</i> that — stack them into bars. A <b>histogram</b>.</div>
+    </div>
+    <div class="panel gn-panel">${ART("p7-vex")}
+      <div class="balloon vex gn-side" style="bottom:8px;left:8px;max-width:58%"><span class="who">VEX</span>Histogram schema: sort data into equal <b>intervals</b> (bins). Each bar's height = the <b>frequency</b> — how many values land in that bin. Bars touch. No gaps.</div>
+    </div>
+    <div class="caption">A <b>histogram</b> shows how often data falls in each interval. Height = frequency, and the bars share edges because the intervals do.</div>
+  </div>`},
 
 /* ---- p8: GATE 3 ---- */
 { ch:"Chapter 3 · Reader Gate", gate:"g3", html:`
-  <div class="panel">${SC("0 0 400 84",`<rect width="400" height="84" fill="#eef3f9"/><g transform="translate(8,0) scale(.66)"><use href="#sym-zara"/></g>`)}
-    <div class="balloon" style="top:6px;left:80px;max-width:68%"><span class="who">ZARA</span>Hand me the bar heights, reader — let's stack Dev's tally into truth!</div>
+  <div class="gn-comic">
+    <div class="panel gn-panel">${ART("p8-zara")}
+      <div class="balloon" style="top:6px;right:6px;max-width:58%;--tx:10px"><span class="who">ZARA</span>Hand me the bar heights, reader — let's stack Dev's tally into truth!</div>
+    </div>
   </div>`},
 
 /* ---- p9: ch4 — the crooked box plot ---- */
 { ch:"Chapter 4 · The Five-Number Key", html:`
   <div class="kicker">Chapter Four</div><h2 class="splashtitle">THE FIVE-NUMBER <em>KEY</em></h2>
-  <div class="caption loc">City Hall, Hall of Charts. The official festival box plot hangs… crooked.</div>
-  <div class="panel panel3d tall">${SC("0 0 400 210",`
-    <rect width="400" height="210" fill="#10243a"/>
-    <g data-depth="6" opacity=".4" transform="translate(0,70) scale(4,1.4)"><use href="#sym-skyline"/></g>
-    <rect data-depth="12" x="50" y="22" width="300" height="120" rx="8" fill="#F7F4EC" stroke="#3D74A8" stroke-width="4" transform="rotate(-4 200 82)"/>
-    <g data-depth="12" transform="rotate(-4 200 82)"><line x1="70" y1="100" x2="120" y2="100" stroke="#17324D" stroke-width="4"/><line x1="70" y1="86" x2="70" y2="114" stroke="#17324D" stroke-width="4"/><rect x="120" y="76" width="150" height="48" fill="#F2C15B" stroke="#17324D" stroke-width="4"/><line x1="168" y1="76" x2="168" y2="124" stroke="#E2674A" stroke-width="5"/><line x1="270" y1="100" x2="330" y2="100" stroke="#17324D" stroke-width="4"/><line x1="330" y1="86" x2="330" y2="114" stroke="#17324D" stroke-width="4"/><text x="200" y="52" text-anchor="middle" font-family="Arial Black,Arial" font-weight="900" font-size="13" fill="#17324D">STALL VISITS — OFFICIAL?</text><text x="200" y="66" text-anchor="middle" font-family="Arial" font-weight="700" font-size="9" fill="#E2674A">labels mysteriously missing</text></g>
-    <g data-depth="18" transform="translate(20,90) scale(.9)"><use href="#sym-maya"/></g>
-    <g data-depth="18" transform="translate(300,90) scale(.9)"><use href="#sym-dev"/></g>`)}
-    <div class="balloon" style="bottom:10px;left:8px;max-width:48%"><span class="who">MAYA</span>A box plot with no numbers is a lock with no key. Lucky for us, we logged seven checkpoint counts ourselves: <b>12, 15, 18, 21, 24, 30, 35</b>.</div>
-    <div class="balloon tail-r" style="top:8px;right:6px;max-width:40%"><span class="who">DEV</span>Boss-key time: min, Q1, median, Q3, max. The five-number summary.</div>
-  </div>
-  <div class="panel">${SC("0 0 400 92",`<rect width="400" height="92" fill="#eef3f9"/><g transform="translate(318,2) scale(.64)"><use href="#sym-vex"/></g>`)}
-    <div class="balloon vex" style="top:6px;left:10px;max-width:74%"><span class="who">VEX</span>A <b>box plot</b> draws the five-number summary: the box runs Q1 → Q3 with the median inside; whiskers reach min and max. <b>IQR = Q3 − Q1</b> — the spread of the middle half.</div>
-  </div>
-  <div class="caption"><b>Quartiles</b> split ordered data into four equal parts. The <b>interquartile range (IQR)</b> measures how spread out the middle half is.</div>`},
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${ART("p9-chart")}
+      <div class="caption loc">City Hall, Hall of Charts. The official festival box plot hangs… crooked.</div>
+      <div class="gn-sign gn-plate gn-flow" data-gn-skip style="left:53%;top:30%;width:28%;font-size:14px">STALL VISITS — OFFICIAL?<small style="color:#E2674A">labels mysteriously missing</small></div>
+      <div class="balloon" style="bottom:8px;left:8px;max-width:48%"><span class="who">MAYA</span>A box plot with no numbers is a lock with no key. Lucky for us, we logged seven checkpoint counts ourselves: <b>12, 15, 18, 21, 24, 30, 35</b>.</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p9-dev")}
+      <div class="balloon" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">DEV</span>Boss-key time: min, Q1, median, Q3, max. The five-number summary.</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p9-vex")}
+      <div class="balloon vex" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">VEX</span>A <b>box plot</b> draws the five-number summary: the box runs Q1 → Q3 with the median inside; whiskers reach min and max. <b>IQR = Q3 − Q1</b> — the spread of the middle half.</div>
+    </div>
+    <div class="caption"><b>Quartiles</b> split ordered data into four equal parts. The <b>interquartile range (IQR)</b> measures how spread out the middle half is.</div>
+  </div>`},
 
 /* ---- p10: GATE 4 ---- */
 { ch:"Chapter 4 · Reader Gate", gate:"g4", html:`
-  <div class="panel">${SC("0 0 400 80",`<rect width="400" height="80" fill="#10243a"/><g transform="translate(8,-4) scale(.62)"><use href="#sym-dev"/></g>`)}
-    <div class="balloon" style="top:6px;left:78px;max-width:70%"><span class="who">DEV</span>Cut the five-number key, reader — then we can read any box plot they hang.</div>
+  <div class="gn-comic">
+    <div class="panel gn-panel">${ART("p10-dev")}
+      <div class="balloon" style="top:6px;right:6px;max-width:58%;--tx:10px"><span class="who">DEV</span>Cut the five-number key, reader — then we can read any box plot they hang.</div>
+    </div>
   </div>`},
 
 /* ---- p11: ch5 splash — fair share ---- */
 { ch:"Chapter 5 · Fair Share", html:`
   <div class="kicker">Chapter Five</div><h2 class="splashtitle">FAIR <em>SHARE</em></h2>
-  <div class="caption loc">Rosa's storeroom, dawn. The hearing is at noon.</div>
-  <div class="panel panel3d tall">${SC("0 0 400 210",`
-    <rect width="400" height="210" fill="#fff8ea"/>
-    <rect data-depth="6" y="160" width="400" height="50" fill="#d9c9a3"/>
-    <g data-depth="12" fill="#b78a2e" stroke="#17324D" stroke-width="3"><rect x="40" y="118" width="34" height="42" rx="3"/><rect x="84" y="132" width="34" height="28" rx="3"/><rect x="128" y="112" width="34" height="48" rx="3"/><rect x="172" y="122" width="34" height="38" rx="3"/><rect x="216" y="136" width="34" height="24" rx="3"/></g>
-    <g data-depth="12" font-family="Arial Black,Arial" font-weight="900" font-size="12" fill="#17324D" text-anchor="middle"><text x="57" y="144">14</text><text x="101" y="150">9</text><text x="145" y="140">16</text><text x="189" y="146">13</text><text x="233" y="152">8</text></g>
-    <line data-depth="14" x1="30" y1="104" x2="262" y2="104" stroke="#F2C15B" stroke-width="4" stroke-dasharray="14 9"/>
-    <g data-depth="18" transform="translate(280,52) scale(.92)"><use href="#sym-zara"/></g>
-    <g data-depth="20" transform="translate(20,16) scale(.6)"><use href="#sym-vex"/></g>`)}
-    <div class="balloon tail-r" style="top:6px;right:4px;max-width:44%"><span class="who">ZARA</span>Five days of churro batches: 14, 9, 16, 13, 8. If every day got a <b>fair share</b>, how tall is each stack?</div>
-    <div class="balloon vex" style="bottom:10px;left:8px;max-width:48%"><span class="who">VEX</span>That fair share has a name: the <b>mean</b>. Total everything, divide by the number of days.</div>
-  </div>
-  <div class="panel">${SC("0 0 400 92",`<rect width="400" height="92" fill="#eef3f9"/><rect x="120" y="14" width="170" height="64" rx="8" fill="#fff" stroke="#17324D" stroke-width="3"/><text x="205" y="38" text-anchor="middle" font-family="Arial Black,Arial" font-weight="900" font-size="11" fill="#3D74A8">CIDER BARREL LOG</text><text x="205" y="60" text-anchor="middle" font-family="Arial" font-weight="800" font-size="13" fill="#17324D">94.5 L over 7 days</text><g transform="translate(14,4) scale(.62)"><use href="#sym-dev"/></g>`)}
-    <div class="balloon tail-r" style="top:4px;right:2px;max-width:34%"><span class="who">DEV</span>Decimals incoming. Long division: equip it.</div>
-  </div>
-  <div class="caption">The <b>mean</b> = sum ÷ count. It levels every stack to the same height — the "fair share" measure of center.</div>`},
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${ART("p11-storeroom")}
+      <div class="caption loc">Rosa's storeroom, dawn. The hearing is at noon.</div>
+      <div class="gn-sign gn-plate" data-gn-skip style="left:30%;top:58%;font-size:15px;color:#17324D">14 · 9 · 16 · 13 · 8</div>
+      <div class="balloon tail-r" style="top:30%;right:6px;max-width:40%"><span class="who">ZARA</span>Five days of churro batches: 14, 9, 16, 13, 8. If every day got a <b>fair share</b>, how tall is each stack?</div>
+      <div class="balloon vex" style="bottom:8px;left:8px;max-width:48%"><span class="who">VEX</span>That fair share has a name: the <b>mean</b>. Total everything, divide by the number of days.</div>
+    </div>
+    <div class="panel gn-panel">${ART("p11-dev")}
+      <div class="gn-sign gn-plate gn-flow" data-gn-skip style="left:27.5%;top:47%;width:17%;font-size:13px"><span style="color:#3D74A8">CIDER BARREL LOG</span><small>94.5 L over 7 days</small></div>
+      <div class="balloon tail-r" style="top:6px;right:6px;max-width:34%"><span class="who">DEV</span>Decimals incoming. Long division: equip it.</div>
+    </div>
+    <div class="caption">The <b>mean</b> = sum ÷ count. It levels every stack to the same height — the "fair share" measure of center.</div>
+  </div>`},
 
 /* ---- p12: GATE 5 ---- */
 { ch:"Chapter 5 · Reader Gate", gate:"g5", html:`
-  <div class="panel">${SC("0 0 400 80",`<rect width="400" height="80" fill="#fff8ea"/><g transform="translate(8,-4) scale(.62)"><use href="#sym-zara"/></g>`)}
-    <div class="balloon" style="top:6px;left:78px;max-width:70%"><span class="who">ZARA</span>Level the stacks, reader — the hearing won't wait!</div>
+  <div class="gn-comic">
+    <div class="panel gn-panel">${ART("p12-zara")}
+      <div class="balloon" style="top:6px;right:6px;max-width:58%;--tx:10px"><span class="who">ZARA</span>Level the stacks, reader — the hearing won't wait!</div>
+    </div>
   </div>`},
 
 /* ---- p13: boss setup — the hearing ---- */
 { ch:"Chapter 5 · The Hearing", html:`
-  <div class="caption loc">City Hall hearing room, 12:00 sharp. Clerk Pimm has a very large folder.</div>
-  <div class="panel panel3d tall">${SC("0 0 400 200",`
-    <rect width="400" height="200" fill="#f3ead9"/>
-    <rect data-depth="6" x="0" y="0" width="400" height="50" fill="#3D74A8" opacity=".18"/>
-    <rect data-depth="10" x="120" y="26" width="170" height="110" rx="8" fill="#fff" stroke="#17324D" stroke-width="4"/>
-    <text data-depth="10" x="205" y="50" text-anchor="middle" font-family="Arial Black,Arial" font-weight="900" font-size="11" fill="#E2674A">ROSA'S WEEK — EXHIBIT A</text>
-    <text data-depth="10" x="205" y="76" text-anchor="middle" font-family="Arial Black,Arial" font-weight="900" font-size="15" fill="#17324D">41 · 44 · 45 · 47 · 150</text>
-    <text data-depth="10" x="205" y="98" text-anchor="middle" font-family="Arial" font-weight="700" font-size="10" fill="#5a4a22">(150 = parade day. everyone spiked.)</text>
-    <text data-depth="10" x="205" y="120" text-anchor="middle" font-family="Arial" font-weight="700" font-size="10" fill="#E2674A">PIMM'S CLAIM: "average = 65.4?!"</text>
-    <g data-depth="16" transform="translate(14,66)"><use href="#sym-theo"/></g>
-    <g data-depth="16" transform="translate(306,66)"><use href="#sym-rosa"/></g>
-    <g data-depth="22" transform="translate(186,142) scale(.5)"><use href="#sym-vex"/></g>`)}
-    <div class="balloon" style="top:4px;left:6px;max-width:46%"><span class="who">CLERK PIMM</span>Her log "averages" 65.4 visitors — yet I never counted more than 50 at her stall! The log is crooked. Permit DENIED.</div>
-    <div class="balloon tail-r" style="bottom:8px;right:6px;max-width:44%"><span class="who">THEO</span>Or your <i>summary</i> is crooked, Mr. Pimm. One number in that week is screaming. Reader — run both measures.</div>
-  </div>
-  <div class="caption">An <b>outlier</b> is a value far from the rest of the data. It drags the <b>mean</b> toward it — but the <b>median</b> barely moves. Boss Gate: compute both, then choose the honest one.</div>`},
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${ART("p13-hearing")}
+      <div class="caption loc">City Hall hearing room, 12:00 sharp. Clerk Pimm has a very large folder.</div>
+      <div class="gn-sign gn-plate gn-flow" data-gn-skip style="left:64%;top:48%;width:34%;font-size:13px"><span style="color:#E2674A">ROSA'S WEEK — EXHIBIT A</span><br><span style="font-size:1.2em">41 · 44 · 45 · 47 · 150</span><small>(150 = parade day. everyone spiked.)</small><small style="color:#E2674A">PIMM'S CLAIM: "average = 65.4?!"</small></div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p13-pimm")}
+      <div class="balloon" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">CLERK PIMM</span>Her log "averages" 65.4 visitors — yet I never counted more than 50 at her stall! The log is crooked. Permit DENIED.</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p13-theo")}
+      <div class="balloon tail-r" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">THEO</span>Or your <i>summary</i> is crooked, Mr. Pimm. One number in that week is screaming. Reader — run both measures.</div>
+    </div>
+    <div class="caption">An <b>outlier</b> is a value far from the rest of the data. It drags the <b>mean</b> toward it — but the <b>median</b> barely moves. Boss Gate: compute both, then choose the honest one.</div>
+  </div>`},
 
 /* ---- p14: BOSS GATE ---- */
 { ch:"Boss Gate · Outlier Showdown", gate:"boss", html:`
-  <div class="panel">${SC("0 0 400 76",`<rect width="400" height="76" fill="#10243a"/><g transform="translate(330,4) scale(.56)"><use href="#sym-vex"/></g>`)}
-    <div class="balloon vex" style="top:6px;left:10px;max-width:72%"><span class="who">VEX</span>BOSS GATE. Four locks. One outlier. Rosa's permit on the line. (No pressure. Some pressure.)</div>
+  <div class="gn-comic">
+    <div class="panel gn-panel">${ART("p14-vex")}
+      <div class="balloon vex gn-side" style="top:6px;left:8px;max-width:60%"><span class="who">VEX</span>BOSS GATE. Four locks. One outlier. Rosa's permit on the line. (No pressure. Some pressure.)</div>
+    </div>
   </div>`},
 
 /* ---- p15: victory + teaser ---- */
 { ch:"Chapter 5 · Census, Uncrooked", html:`
-  <div class="panel panel3d tall">${SC("0 0 400 220",`
-    ${SKY}<g data-depth="6">${BUNT(22)}</g><g data-depth="8" transform="translate(0,60) scale(4,1.6)" opacity=".5"><use href="#sym-skyline"/></g>
-    <rect data-depth="12" x="40" y="34" width="320" height="40" rx="8" fill="#17324D"/>
-    <text data-depth="12" x="200" y="60" text-anchor="middle" fill="#F2C15B" font-family="Arial Black,Arial" font-weight="900" font-size="17">PERMIT RESTORED — TYPICAL DAY: 45</text>
-    <g data-depth="16" transform="translate(40,108) scale(1.05)"><use href="#sym-stall"/></g>
-    <g data-depth="16" transform="translate(58,136) scale(.6)"><use href="#sym-rosa"/></g>
-    <g data-depth="18" transform="translate(170,108) scale(.78)"><use href="#sym-maya"/></g>
-    <g data-depth="18" transform="translate(238,112) scale(.76)"><use href="#sym-theo"/></g>
-    <g data-depth="18" transform="translate(300,116) scale(.74)"><use href="#sym-dev"/></g>
-    <g data-depth="26" transform="translate(340,24) scale(.55)"><use href="#sym-vex"/></g>
-    ${GROUND.replace(/168/g,'192').replace(/height="32"/g,'height="28"')}`)}
-    <div class="sfx" style="top:78px;left:18px">CHURROS!</div>
-    <div class="balloon" style="bottom:12px;left:10px;max-width:52%"><span class="who">ROSA</span>Free batch for the audit crew! The median saved my stall — 45 honest visitors a day.</div>
-  </div>
-  <div class="panelrow">
-    <div class="panel">${SC("0 0 200 110",`<rect width="200" height="110" fill="#eef3f9"/><g transform="translate(58,4) scale(.78)"><use href="#sym-theo"/></g>`)}
-      <div class="balloon" style="top:4px;left:4px;max-width:72%"><span class="who">THEO</span>Pimm's "crooked log" was honest data plus the wrong summary. The council made him re-issue the whole census.</div></div>
-    <div class="panel">${SC("0 0 200 110",`<rect width="200" height="110" fill="#10243a"/><rect x="40" y="16" width="120" height="78" rx="6" fill="#FFF3D8" stroke="#F2C15B" stroke-width="3"/><text x="100" y="38" text-anchor="middle" font-family="Arial Black,Arial" font-weight="900" font-size="11" fill="#E2674A">COURIER CUP</text><text x="100" y="54" text-anchor="middle" font-family="Arial" font-weight="700" font-size="9" fill="#17324D">BIKE RELAY — SIGN UP!</text><text x="100" y="68" text-anchor="middle" font-family="Arial" font-weight="700" font-size="9" fill="#17324D">PRIZE FUNDS THE LIBRARY</text><g transform="translate(72,66) scale(.5)"><use href="#sym-bike"/></g>`)}
-      <div class="balloon vex" style="top:2px;left:4px;max-width:58%"><span class="who">VEX</span>New distortion. This one moves fast. To be continued…</div></div>
-  </div>
-  <div class="caption" style="text-align:center"><b>NEXT: VOL. 3 — FULL VELOCITY</b></div>`},
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${ART("p15-party")}
+      <div class="gn-sign" data-gn-skip style="left:44%;top:17%;width:68%;color:#F2C15B;font-family:'Arial Black',Arial,sans-serif;text-shadow:1px 1px 0 #0b0f14">PERMIT RESTORED — TYPICAL DAY: 45</div>
+      <div class="sfx" style="top:36%;left:28%">CHURROS!</div>
+      <div class="balloon" style="bottom:8px;left:8px;max-width:48%"><span class="who">ROSA</span>Free batch for the audit crew! The median saved my stall — 45 honest visitors a day.</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p15-theo")}
+      <div class="balloon" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">THEO</span>Pimm's "crooked log" was honest data plus the wrong summary. The council made him re-issue the whole census.</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p15-poster")}
+      <div class="gn-sign gn-plate" data-gn-skip style="left:50%;top:47%;width:44%;font-size:13px"><span style="color:#E2674A">COURIER CUP</span><small>BIKE RELAY — SIGN UP!<br>PRIZE FUNDS THE LIBRARY</small></div>
+      <div class="balloon vex" style="top:6px;left:6px;right:6px;max-width:none;--tx:70%"><span class="who">VEX</span>New distortion. This one moves fast. To be continued…</div>
+    </div>
+    <div class="caption" style="text-align:center"><b>NEXT: VOL. 3 — FULL VELOCITY</b></div>
+  </div>`},
 
 /* ---- p16: cast ---- */
 { ch:"End Matter · The Crew", html:`

@@ -231,6 +231,9 @@ body.reduced #turnSheet{display:none!important}
   <!-- nsr-injected:begin (multi-day save/resume — tools/inject-save-resume.js) -->
   <link rel="stylesheet" href="/shared/save-resume/save-resume-styles.css?v=20260714-v2">
   <!-- nsr-injected:end -->
+<!-- gn-art:begin (comic panel art — tools/inject-gn-art.mjs) -->
+<link rel="stylesheet" href="/graphic-novels/_shared/gn-comic.css">
+<!-- gn-art:end -->
 </head>
 <body>
 <!-- ============ SHARED SVG SYMBOL LIBRARY (characters, patterns, props) ============ -->
@@ -270,29 +273,8 @@ body.reduced #turnSheet{display:none!important}
 
 <!-- ============ COVER ============ -->
 <div id="cover">
-  <div id="coverCard" role="img" aria-label="Cover of Axiom City Volume 3: Full Velocity. Four kids on bikes race through a teal city at dusk, a glowing orb flying beside them.">
-    <div class="cov-layer" data-depth="6" style="z-index:1">
-      <svg viewBox="0 0 500 700" width="100%" height="100%" preserveAspectRatio="xMidYMid slice"><rect width="500" height="700" fill="url(#duskgrad)"/><circle cx="380" cy="150" r="70" fill="#FFF3D8" opacity=".9"/><circle cx="380" cy="150" r="90" fill="#FFF3D8" opacity=".25"/></svg>
-    </div>
-    <div class="cov-layer" data-depth="12" style="z-index:2">
-      <svg viewBox="0 0 500 700" width="100%" height="100%" preserveAspectRatio="xMidYMid slice"><g transform="translate(0,260) scale(5,3.4)" opacity=".85"><use href="#sym-skyline"/></g><rect y="640" width="500" height="60" fill="#17324D"/></svg>
-    </div>
-    <div class="cov-layer" data-depth="22" style="z-index:3">
-      <svg viewBox="0 0 500 700" width="100%" height="100%" preserveAspectRatio="xMidYMid slice">
-        <rect x="0" y="560" width="500" height="80" fill="#0d1f33"/>
-        <line x1="0" y1="600" x2="500" y2="600" stroke="#F2C15B" stroke-width="5" stroke-dasharray="30 22"/>
-        <g transform="translate(70,470) scale(1.5)"><use href="#sym-bike"/></g>
-        <g transform="translate(96,380) scale(.95)"><use href="#sym-maya"/></g>
-        <g transform="translate(250,490) scale(1.3)"><use href="#sym-bike"/></g>
-        <g transform="translate(272,408) scale(.82)"><use href="#sym-theo"/></g>
-        <g transform="translate(150,520) scale(1.2)"><use href="#sym-bike"/></g>
-        <g transform="translate(170,445) scale(.78)"><use href="#sym-zara"/></g>
-        <g transform="translate(350,540) scale(1.1)"><use href="#sym-bike"/></g>
-        <g transform="translate(366,470) scale(.72)"><use href="#sym-dev"/></g>
-        <g transform="translate(395,300) scale(.9)"><use href="#sym-vex"/></g>
-        <g stroke="#fff" stroke-width="4" opacity=".7" stroke-linecap="round"><line x1="20" y1="500" x2="90" y2="500"/><line x1="10" y1="530" x2="70" y2="530"/><line x1="210" y1="545" x2="260" y2="545"/><line x1="320" y1="575" x2="380" y2="575"/></g>
-      </svg>
-    </div>
+  <div id="coverCard" role="img" aria-label="Cover of Axiom City Volume 3: Full Velocity. Sienna, Chloe, Kofi and Rohan race toward the reader on red bicycles down a city street at dusk, with VEX, the small teal robot with one glowing golden eye, flying beside them.">
+    <div class="cov-layer" data-depth="6" style="z-index:1"><div data-gn-art="cover"></div></div>
     <div class="spine"><span>AXIOM CITY · EDUWONDERLAB</span></div>
     <div id="coverTitle">
       <div class="series">AXIOM CITY</div>
@@ -371,226 +353,207 @@ const BADGES = [
   {id:"boss",icon:"#sig-boss",  label:"Full Velocity — Boss Gate"}
 ];
 
-/* tiny scene helpers (content-side, fine to reuse) */
-const SC = (vb,inner,depth)=>`<svg class="scene" viewBox="${vb}" role="img" preserveAspectRatio="xMidYMid meet">${inner}</svg>`;
-const SKY='<rect width="400" height="200" fill="url(#skygrad)"/>';
-const GROUND='<rect y="168" width="400" height="32" fill="#cdc6ad"/><rect y="168" width="400" height="32" fill="url(#halftone)"/>';
 
+/* gn-art:begin (comic panel art: one atlas, coordinates and alt text from _engine/art/vol-03 — tools/inject-gn-art.mjs) */
+const GN_ART = {"src":"/graphic-novels/axiom-city/art/axiom-city-vol-03-full-velocity.webp?v=e597fe375e","w":2988,"h":3809,"f":{"cover":[0,0,544,762,"Sienna, Chloe, Kofi and Rohan race toward the reader on red bicycles down a city street at dusk, with VEX, the small teal robot with one glowing golden eye, flying beside them.",[]],"p1-crew":[490,762,819,490,"Sienna, Kofi, Chloe and Rohan stand with a friend on a city street at dusk while VEX glows in the sky above them.",[[14.5,37,11.5,17],[30,32,10,17],[44,34,10,17],[58,40,10,16],[87,32,9.5,17]]],"p1-library":[0,2395,870,381,"In a dim old library, VEX glows awake on a reading table, sparkling, surrounded by tall shelves of books.",[]],"p2-banner":[870,1415,870,490,"A long banner hangs across a sunny city street. Sienna stands with her red bike on the left, and Chloe frowns with her arms crossed on the right.",[[26,42,11,22],[62,40,12,21]]],"p2-rohan":[1499,0,490,653,"Close-up of Rohan in his orange t-shirt, grinning and holding up his fingers, a bike helmet under his arm.",[[24,18,44,43]]],"p2-vex":[1989,0,490,653,"VEX hovers in the foreground, eye narrowed, while red sparks crackle around a black and gold racing tent in the distance.",[]],"p3-tent":[1740,1415,870,490,"Inside the Torque tent, crowded with gold trophies, Bram smirks with his arms crossed on the left while Kofi and Sienna face him on the right. A big jug sits on a stand in the middle.",[[13,35,11,17],[62,43,9,15],[82,40,9,16]]],"p3-recipe":[0,2776,870,381,"Chloe holds up a big blank recipe card in a cozy kitchen while VEX floats beside her, glowing.",[[29,13,12,27]]],"p4-sienna":[0,3483,870,326,"Sienna points straight out at the reader with a confident smile, VEX floating beside her.",[[9,8,23,65]]],"p5-trial":[0,1905,870,490,"Chloe races down a city street on her red bike, speed lines streaming behind her, while Kofi watches from the corner holding a stopwatch.",[[29,21,12,22],[78,29,12,22]]],"p5-board":[2479,0,490,653,"A big whiteboard on an easel stands outside the Torque tent, a gold trophy beside it. Bram's time trial is written on it.",[]],"p5-kofi":[0,762,490,653,"Close-up of Kofi in his green hoodie and glasses, stopwatch in hand, raising one finger as he thinks.",[[24,23,58,50]]],"p6-kofi":[870,3483,870,326,"Kofi pushes up his glasses and smiles at the reader.",[[6,0,29,78]]],"p7-kitchen":[870,1905,870,490,"In the library kitchen at dawn, Chloe and Rohan work at a counter of big steel pots beside stacks of paper cups, while Sienna watches and VEX glows above.",[[20,38,10,18],[40,32,10,18],[88,31,8,18]]],"p7-vex":[870,2776,870,381,"VEX projects a glowing grid of cyan squares, like an empty table, into the dark air.",[]],"p8-chloe":[1740,3483,870,326,"Chloe holds up a punch ladle and grins urgently at the reader.",[[9,0,25,68]]],"p9-graph":[1740,1905,653,490,"Rohan points at a big grid board on the sidewalk. A straight cyan line rises from the corner through gold dots, and one red dot glows just off the line.",[[60,12,18,25]]],"p9-vex":[1740,2776,870,381,"VEX scans a single glowing red dot in the dark with a thin cyan beam.",[]],"p10-rohan":[0,3157,870,326,"Rohan peers at the reader through a magnifying glass with a grin.",[[13,0,26,73]]],"p11-race":[1309,762,870,490,"Sienna and Kofi lean low and pedal hard on red bikes down a city street, another rider behind them, with VEX streaking above.",[[30,33,11,21],[55,29,13,23]]],"p11-sign":[870,2395,870,381,"Rohan frowns at his phone, one hand on his head, beside a big blank route sign on a street corner.",[[66,10,22,52]]],"p12-rohan":[870,3157,870,326,"Rohan taps his phone fast, sweating, and glances at the reader.",[[19,3,23,73]]],"p13-handoff":[2179,762,809,490,"At the handoff zone, Sienna clips on her helmet on her red bike while VEX glows beside a scoreboard. Far down the road, Torque's rider in black is already rolling.",[[70,22,14,24]]],"p13-sienna":[1740,2395,870,381,"Close-up of Sienna gripping her handlebars, eyes fierce.",[[24,0,57,74]]],"p14-vex":[1740,3157,870,326,"VEX glows in the dark, a faint red light flickering beside its golden eye.",[]],"p15-finish":[0,1415,870,490,"Confetti falls at the finish line. Sienna, Chloe, Rohan and Kofi cheer under the finish banner while VEX glows in the middle of it.",[[10,47,10,20],[21,51,7,15],[67,42,10,20],[82,43,11,20]]],"p15-kofi":[544,0,490,653,"Close-up of Kofi grinning proudly behind a sheet of grid paper with a straight line on it.",[[16,8,66,44]]],"p15-market":[1034,0,465,653,"A night market by the harbor glows with lanterns and stall banners, and VEX floats above it.",[]]}};
+function ART(id) {
+  const a = GN_ART.f[id];
+  if (!a) throw new Error("gn-art: no frame " + id);
+  const [x, y, w, h, alt, faces] = a;
+  const at = (v, total, size) => (total === size ? 0 : (v / (total - size)) * 100);
+  const faceHtml = faces.map(([l, t, fw, fh]) => `<i class="gn-face" style="left:${l}%;top:${t}%;width:${fw}%;height:${fh}%"></i>`).join("");
+  return `<div class="gn-art" role="img" aria-label="${alt}" style="aspect-ratio:${w}/${h};background-image:url(${GN_ART.src});background-size:${(GN_ART.w / w) * 100}% ${(GN_ART.h / h) * 100}%;background-position:${at(x, GN_ART.w, w)}% ${at(y, GN_ART.h, h)}%">${faceHtml}</div>`;
+}
+for (const el of document.querySelectorAll("[data-gn-art]")) el.outerHTML = ART(el.dataset.gnArt);
+/* gn-art:end */
 const PAGES = [
 /* ---- p1: title page + crew strip ---- */
 { ch:"Axiom City · Volume Three", html:`
   <div style="text-align:center;margin-top:10px"><div class="kicker">EduWonderLab Presents</div>
   <h2 class="splashtitle" style="margin:8px 0">FULL <em>VELOCITY</em></h2>
   <div class="caption" style="display:inline-block">A ratios &amp; rates adventure in five chapters — featuring six reader gates. Solve the math to move the story.</div></div>
-  <div class="panel panel3d tall" style="margin-top:8px">${SC("0 0 400 210",`
-    ${SKY}<g data-depth="8" transform="translate(0,40) scale(4,1.6)" opacity=".5"><use href="#sym-skyline"/></g>
-    <g data-depth="16" transform="translate(20,86) scale(1)"><use href="#sym-maya"/></g>
-    <g data-depth="16" transform="translate(115,86)"><use href="#sym-theo"/></g>
-    <g data-depth="16" transform="translate(210,86)"><use href="#sym-zara"/></g>
-    <g data-depth="16" transform="translate(305,86)"><use href="#sym-dev"/></g>
-    <g data-depth="26" transform="translate(170,8) scale(.55)"><use href="#sym-vex"/></g>`)}
-    <div class="balloon vex" style="top:6px;left:8px;max-width:46%"><span class="who">VEX</span>Pattern distortion detected, crew. Reader: stand by.</div>
-  </div>
-  <div class="caption loc">Previously: four sixth graders woke VEX, a fragment of Ada Vex's Pattern Engine. Now the city's patterns are their problem.</div>`},
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${ART("p1-crew")}
+      <div class="balloon vex gn-side" style="top:6px;left:8px;max-width:46%;--tx:14px"><span class="who">VEX</span>Pattern distortion detected, crew. Reader: stand by.</div>
+    </div>
+    <div class="panel gn-panel">${ART("p1-library")}
+      <div class="caption loc" style="max-width:40%">Previously: four sixth graders woke VEX, a fragment of Ada Vex's Pattern Engine. Now the city's patterns are their problem.</div>
+    </div>
+  </div>`},
 
 /* ---- p2: ch1 splash ---- */
 { ch:"Chapter 1 · Race Day Minus One", html:`
   <div class="kicker">Chapter One</div><h2 class="splashtitle">RACE DAY <em>MINUS ONE</em></h2>
-  <div class="panel panel3d tall">${SC("0 0 400 230",`
-    ${SKY}<g data-depth="6" transform="translate(0,60) scale(4,1.7)" opacity=".6"><use href="#sym-skyline"/></g>
-    <rect data-depth="10" x="40" y="30" width="320" height="44" rx="8" fill="#17324D"/>
-    <text data-depth="10" x="200" y="58" text-anchor="middle" fill="#F2C15B" font-family="Arial Black,Arial" font-weight="900" font-size="20">COURIER CUP — TOMORROW!</text>
-    <g data-depth="18" transform="translate(60,120) scale(1.1)"><use href="#sym-bike"/></g>
-    <g data-depth="18" transform="translate(88,55) scale(.78)"><use href="#sym-maya"/></g>
-    <g data-depth="14" transform="translate(255,128)"><use href="#sym-zara"/></g>
-    ${GROUND}`)}
-    <div class="balloon" style="bottom:18px;left:10px"><span class="who">SIENNA</span>Win the Courier Cup, and the prize money reopens the library's children's wing.</div>
-    <div class="balloon tail-r" style="top:84px;right:8px"><span class="who">CHLOE</span>Lose, and Team Torque picks the charity. They picked <b>themselves</b> last year.</div>
-  </div>
-  <div class="panelrow"><div class="panel">${SC("0 0 200 120",`<rect width="200" height="120" fill="#fdf2ee"/><g transform="translate(60,8) scale(.85)"><use href="#sym-dev"/></g>`)}
-    <div class="balloon" style="top:6px;left:6px;max-width:70%"><span class="who">ROHAN</span>Relay rules: four riders, one route, fastest <b>total</b> time wins.</div></div>
-  <div class="panel">${SC("0 0 200 120",`<rect width="200" height="120" fill="#eef7f6"/><g transform="translate(64,14) scale(.8)"><use href="#sym-vex"/></g>`)}
-    <div class="balloon vex" style="bottom:6px;left:6px;max-width:80%"><span class="who">VEX</span>Warning: I sense a distortion near Team Torque's tent. Numbers are being… bent.</div></div></div>`},
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${ART("p2-banner")}
+      <div class="gn-sign gn-plate" data-gn-skip style="left:50%;top:14%;width:60%">COURIER CUP — TOMORROW!</div>
+      <div class="balloon" style="bottom:8px;left:8px;max-width:44%;--tx:20%"><span class="who">SIENNA</span>Win the Courier Cup, and the prize money reopens the library's children's wing.</div>
+      <div class="balloon tail-r" style="top:28%;right:8px;max-width:42%"><span class="who">CHLOE</span>Lose, and Team Torque picks the charity. They picked <b>themselves</b> last year.</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p2-rohan")}
+      <div class="balloon" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">ROHAN</span>Relay rules: four riders, one route, fastest <b>total</b> time wins.</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p2-vex")}
+      <div class="balloon vex" style="bottom:6px;left:6px;right:6px;max-width:none"><span class="who">VEX</span>Warning: I sense a distortion near Team Torque's tent. Numbers are being… bent.</div>
+    </div>
+  </div>`},
 
 /* ---- p3: ch1 torque taunt ---- */
 { ch:"Chapter 1 · Race Day Minus One", html:`
-  <div class="caption loc">The Torque tent. Too many trophies. Too much hair gel.</div>
-  <div class="panel panel3d tall">${SC("0 0 400 200",`
-    <rect width="400" height="200" fill="#f3ead9"/>
-    <polygon data-depth="6" points="0,40 200,0 400,40 400,200 0,200" fill="#E2674A" opacity=".25"/>
-    <g data-depth="12" transform="translate(150,30) scale(1.2)"><use href="#sym-trophy"/></g>
-    <g data-depth="18" transform="translate(40,70)"><use href="#sym-theo"/></g>
-    <g data-depth="18" transform="translate(280,70)"><use href="#sym-maya"/></g>
-    <rect data-depth="8" x="120" y="150" width="160" height="40" rx="6" fill="#fff" stroke="#17324D" stroke-width="3"/>
-    <text data-depth="8" x="200" y="175" text-anchor="middle" font-family="Arial" font-weight="800" font-size="13" fill="#17324D">TORQUE FUEL™ — SECRET MIX</text>`)}
-    <div class="balloon" style="top:8px;left:8px;max-width:54%"><span class="who">BRAM (TEAM TORQUE)</span>Cute team. Our racers are <i>twice</i> as fast. Basically math.</div>
-    <div class="balloon tail-r" style="top:64px;right:8px;max-width:48%"><span class="who">KOFI</span>"Basically math" is not math, Bram. Numbers or it didn't happen.</div>
-  </div>
-  <div class="panel">${SC("0 0 400 110",`<rect width="400" height="110" fill="#eef7f6"/><g transform="translate(20,6) scale(.78)"><use href="#sym-zara"/></g><g transform="translate(310,10) scale(.7)"><use href="#sym-vex"/></g><rect x="120" y="20" width="170" height="70" rx="8" fill="#fff" stroke="#17324D" stroke-width="3"/><text x="205" y="45" text-anchor="middle" font-family="Arial" font-weight="800" font-size="12" fill="#17324D">CREW FUEL RECIPE</text><text x="205" y="66" text-anchor="middle" font-family="Arial" font-weight="700" font-size="12" fill="#1FA6A2">3 scoops mix : 2 cups water</text><text x="205" y="82" text-anchor="middle" font-family="Arial" font-size="10" fill="#5a4a22">— Ms. Ortiz's recipe card</text>`)}
-    <div class="balloon" style="top:4px;left:96px;max-width:50%"><span class="who">CHLOE</span>Forget Torque. Our riders need fuel. Ms. Ortiz left us her famous recipe —</div>
-    <div class="balloon vex tail-r" style="bottom:4px;right:4px;max-width:42%"><span class="who">VEX</span>A <b>ratio</b>: 3 parts mix for every 2 parts water. Order matters.</div>
-  </div>
-  <div class="caption">A ratio compares two quantities. <b>3 : 2</b> here means mix : water — part to part.</div>`},
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${ART("p3-tent")}
+      <div class="caption loc">The Torque tent. Too many trophies. Too much hair gel.</div>
+      <div class="gn-sign gn-plate gn-flow" data-gn-skip style="left:50%;top:70%;width:14%;font-size:13px">TORQUE FUEL™ — SECRET MIX</div>
+      <div class="balloon" style="bottom:8px;left:8px;max-width:40%;--tx:20%"><span class="who">BRAM (TEAM TORQUE)</span>Cute team. Our racers are <i>twice</i> as fast. Basically math.</div>
+      <div class="balloon tail-r" style="top:28%;right:8px;max-width:40%"><span class="who">KOFI</span>"Basically math" is not math, Bram. Numbers or it didn't happen.</div>
+    </div>
+    <div class="panel gn-panel">${ART("p3-recipe")}
+      <div class="gn-sign gn-plate gn-flow" data-gn-skip style="left:35.5%;top:67%;width:26%;font-size:14px">CREW FUEL RECIPE<br>3 scoops mix : 2 cups water<br><small>— Ms. Ortiz's recipe card</small></div>
+      <div class="balloon" style="top:6px;left:50%;max-width:30%"><span class="who">CHLOE</span>Forget Torque. Our riders need fuel. Ms. Ortiz left us her famous recipe —</div>
+      <div class="balloon vex tail-r" style="bottom:6px;right:6px;max-width:34%"><span class="who">VEX</span>A <b>ratio</b>: 3 parts mix for every 2 parts water. Order matters.</div>
+    </div>
+    <div class="caption">A ratio compares two quantities. <b>3 : 2</b> here means mix : water — part to part.</div>
+  </div>`},
 
 /* ---- p4: GATE 1 ---- */
 { ch:"Chapter 1 · Reader Gate", gate:"g1", html:`
-  <div class="panel">${SC("0 0 400 90",`<rect width="400" height="90" fill="#eef7f6"/><g transform="translate(8,2) scale(.7)"><use href="#sym-maya"/></g><g transform="translate(330,8) scale(.6)"><use href="#sym-vex"/></g>`)}
-    <div class="balloon" style="top:6px;left:84px;max-width:56%"><span class="who">SIENNA</span>Reader — you're our fifth crew member. Mix the fuel!</div>
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${ART("p4-sienna")}
+      <div class="balloon" style="top:6px;right:6px;max-width:62%;--tx:10px"><span class="who">SIENNA</span>Reader — you're our fifth crew member. Mix the fuel!</div>
+    </div>
   </div>`},
 
 /* ---- p5: ch2 ---- */
 { ch:"Chapter 2 · The Speed Trap", html:`
   <div class="kicker">Chapter Two</div><h2 class="splashtitle">THE SPEED <em>TRAP</em></h2>
-  <div class="panel panel3d tall">${SC("0 0 400 190",`
-    ${SKY}<g data-depth="8" transform="translate(0,40) scale(4,1.5)" opacity=".45"><use href="#sym-skyline"/></g>
-    <rect data-depth="12" x="30" y="120" width="340" height="8" rx="4" fill="#17324D"/>
-    <g data-depth="20" transform="translate(50,72) scale(1)"><use href="#sym-bike"/></g>
-    <g data-depth="20" transform="translate(74,8) scale(.7)"><use href="#sym-zara"/></g>
-    <g stroke="#1FA6A2" stroke-width="4" stroke-linecap="round" data-depth="24"><line x1="10" y1="90" x2="44" y2="90"/><line x1="2" y1="104" x2="36" y2="104"/></g>
-    <g data-depth="14" transform="translate(280,60)"><use href="#sym-theo"/></g>
-    ${GROUND.replace(/200/g,'190').replace(/168/g,'158')}`)}
-    <div class="sfx" style="top:8px;left:120px">WHOOSH!</div>
-    <div class="balloon tail-r" style="top:8px;right:6px;max-width:46%"><span class="who">KOFI</span>Time trials. Chloe rode 4.8 km in 12 minutes. Now Bram's bragging again…</div>
-  </div>
-  <div class="panelrow">
-    <div class="panel">${SC("0 0 200 130",`<rect width="200" height="130" fill="#fdf2ee"/><rect x="20" y="18" width="160" height="94" rx="8" fill="#fff" stroke="#E2674A" stroke-width="3"/><text x="100" y="42" text-anchor="middle" font-family="Arial Black,Arial" font-weight="900" font-size="12" fill="#E2674A">TORQUE TIME TRIAL</text><text x="100" y="68" text-anchor="middle" font-family="Arial" font-weight="700" font-size="13" fill="#17324D">Bram: 6.5 km</text><text x="100" y="88" text-anchor="middle" font-family="Arial" font-weight="700" font-size="13" fill="#17324D">in 20 minutes</text>`)}</div>
-    <div class="panel">${SC("0 0 200 130",`<rect width="200" height="130" fill="#eef7f6"/><g transform="translate(60,10) scale(.85)"><use href="#sym-theo"/></g>`)}
-      <div class="balloon" style="top:4px;left:4px;max-width:74%"><span class="who">KOFI</span>Different distances, different times. To compare fairly we need a <b>unit rate</b> — km per ONE minute.</div></div>
-  </div>
-  <div class="caption">A <b>rate</b> compares two different units (km and minutes). A <b>unit rate</b> tells how much per <b>1</b> — divide distance by time.</div>`},
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${ART("p5-trial")}
+      <div class="sfx" style="top:8px;left:14px">WHOOSH!</div>
+      <div class="balloon tail-r" style="top:6px;right:8px;max-width:46%"><span class="who">KOFI</span>Time trials. Chloe rode 4.8 km in 12 minutes. Now Bram's bragging again…</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p5-board")}
+      <div class="gn-sign" data-gn-skip style="left:53%;top:48%;width:40%;color:#17324D;text-shadow:none">TORQUE TIME TRIAL<br>Bram: 6.5 km<br>in 20 minutes</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p5-kofi")}
+      <div class="balloon" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">KOFI</span>Different distances, different times. To compare fairly we need a <b>unit rate</b> — km per ONE minute.</div>
+    </div>
+    <div class="caption">A <b>rate</b> compares two different units (km and minutes). A <b>unit rate</b> tells how much per <b>1</b> — divide distance by time.</div>
+  </div>`},
 
 /* ---- p6: GATE 2 ---- */
 { ch:"Chapter 2 · Reader Gate", gate:"g2", html:`
-  <div class="panel">${SC("0 0 400 84",`<rect width="400" height="84" fill="#eef7f6"/><g transform="translate(10,0) scale(.66)"><use href="#sym-theo"/></g>`)}
-    <div class="balloon" style="top:6px;left:80px;max-width:66%"><span class="who">KOFI</span>Run the numbers, reader. Who's actually faster?</div>
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${ART("p6-kofi")}
+      <div class="balloon" style="top:6px;right:6px;max-width:62%;--tx:10px"><span class="who">KOFI</span>Run the numbers, reader. Who's actually faster?</div>
+    </div>
   </div>`},
 
 /* ---- p7: ch3 ---- */
 { ch:"Chapter 3 · Scaling Up", html:`
   <div class="kicker">Chapter Three</div><h2 class="splashtitle">SCALING <em>UP</em></h2>
-  <div class="caption loc">Vexhall Library kitchen — 6:00 AM, race day.</div>
-  <div class="panel panel3d tall">${SC("0 0 400 200",`
-    <rect width="400" height="200" fill="#fff8ea"/>
-    <rect data-depth="6" y="140" width="400" height="60" fill="#d9c9a3"/>
-    <rect data-depth="10" x="30" y="96" width="340" height="48" rx="6" fill="#b78a2e"/>
-    <g data-depth="16" transform="translate(30,28) scale(.85)"><use href="#sym-zara"/></g>
-    <g data-depth="16" transform="translate(150,28) scale(.85)"><use href="#sym-dev"/></g>
-    <g data-depth="16" transform="translate(270,28) scale(.85)"><use href="#sym-maya"/></g>
-    <g data-depth="20" fill="#1FA6A2" stroke="#17324D" stroke-width="2"><rect x="60" y="108" width="22" height="28" rx="3"/><rect x="92" y="104" width="22" height="32" rx="3"/><rect x="124" y="110" width="22" height="26" rx="3"/></g>`)}
-    <div class="sfx" style="top:6px;right:14px">CLANK!</div>
-    <div class="balloon" style="bottom:10px;left:8px;max-width:52%"><span class="who">ROHAN</span>Sixty riders registered. Our punch recipe makes 5 cups per 12 riders. This is a scaling quest.</div>
-  </div>
-  <div class="panel">${SC("0 0 400 96",`<rect width="400" height="96" fill="#eef7f6"/><g transform="translate(316,4) scale(.66)"><use href="#sym-vex"/></g>`)}
-    <div class="balloon vex" style="top:8px;left:10px;max-width:70%"><span class="who">VEX</span>A <b>ratio table</b> keeps every column equivalent: multiply BOTH quantities by the same factor. 12→24 riders means 5→10 cups.</div>
-  </div>
-  <div class="caption">Equivalent ratios live in the same table. Each column is the recipe, scaled — never add to just one side.</div>`},
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${ART("p7-kitchen")}
+      <div class="caption loc" style="max-width:50%">Vexhall Library kitchen — 6:00 AM, race day.</div>
+      <div class="sfx" style="top:30%;right:14px">CLANK!</div>
+      <div class="balloon" style="bottom:8px;left:8px;max-width:50%;--tx:66%"><span class="who">ROHAN</span>Sixty riders registered. Our punch recipe makes 5 cups per 12 riders. This is a scaling quest.</div>
+    </div>
+    <div class="panel gn-panel">${ART("p7-vex")}
+      <div class="balloon vex" style="bottom:6px;left:6px;max-width:60%"><span class="who">VEX</span>A <b>ratio table</b> keeps every column equivalent: multiply BOTH quantities by the same factor. 12→24 riders means 5→10 cups.</div>
+    </div>
+    <div class="caption">Equivalent ratios live in the same table. Each column is the recipe, scaled — never add to just one side.</div>
+  </div>`},
 
 /* ---- p8: GATE 3 ---- */
 { ch:"Chapter 3 · Reader Gate", gate:"g3", html:`
-  <div class="panel">${SC("0 0 400 84",`<rect width="400" height="84" fill="#fff8ea"/><g transform="translate(8,0) scale(.66)"><use href="#sym-zara"/></g>`)}
-    <div class="balloon" style="top:6px;left:80px;max-width:68%"><span class="who">CHLOE</span>Fill the table before the riders show up thirsty!</div>
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${ART("p8-chloe")}
+      <div class="balloon" style="top:6px;right:6px;max-width:62%;--tx:10px"><span class="who">CHLOE</span>Fill the table before the riders show up thirsty!</div>
+    </div>
   </div>`},
 
 /* ---- p9: ch4 ---- */
 { ch:"Chapter 4 · The Impostor Line", html:`
   <div class="kicker">Chapter Four</div><h2 class="splashtitle">THE IMPOSTOR <em>LINE</em></h2>
-  <div class="panel panel3d tall">${SC("0 0 400 210",`
-    <rect width="400" height="210" fill="#10243a"/>
-    <g data-depth="8" opacity=".5" transform="translate(0,60) scale(4,1.5)"><use href="#sym-skyline"/></g>
-    <rect data-depth="14" x="60" y="20" width="280" height="150" rx="10" fill="#06222b" stroke="#1FA6A2" stroke-width="3"/>
-    <g data-depth="14" stroke="#1FA6A2" opacity=".35"><line x1="90" y1="40" x2="90" y2="150"/><line x1="140" y1="40" x2="140" y2="150"/><line x1="190" y1="40" x2="190" y2="150"/><line x1="240" y1="40" x2="240" y2="150"/><line x1="290" y1="40" x2="290" y2="150"/><line x1="90" y1="150" x2="320" y2="150"/><line x1="90" y1="122" x2="320" y2="122"/><line x1="90" y1="94" x2="320" y2="94"/><line x1="90" y1="66" x2="320" y2="66"/></g>
-    <line data-depth="14" x1="90" y1="150" x2="310" y2="46" stroke="#F2C15B" stroke-width="3"/>
-    <g data-depth="14" fill="#7CF2EC"><circle cx="140" cy="126" r="5"/><circle cx="190" cy="103" r="5"/><circle cx="290" cy="56" r="5"/></g>
-    <circle data-depth="14" cx="240" cy="56" r="7" fill="#E2674A" stroke="#fff" stroke-width="2"/>
-    <g data-depth="20" transform="translate(8,90) scale(.85)"><use href="#sym-dev"/></g>`)}
-    <div class="balloon" style="top:8px;left:8px;max-width:46%"><span class="who">ROHAN</span>I plotted every checkpoint log. A steady rider makes a straight line through (0, 0)…</div>
-    <div class="balloon tail-r" style="bottom:10px;right:8px;max-width:44%"><span class="who">ROHAN</span>…but ONE of Torque's points broke the pattern. See it glowing red?</div>
-  </div>
-  <div class="panel">${SC("0 0 400 90",`<rect width="400" height="90" fill="#eef7f6"/><g transform="translate(320,2) scale(.62)"><use href="#sym-vex"/></g>`)}
-    <div class="balloon vex" style="top:8px;left:10px;max-width:72%"><span class="who">VEX</span>In a ratio graph, every true point fits distance = rate × time. A point off the line is a lie wearing coordinates.</div>
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${ART("p9-graph")}
+      <div class="balloon" style="top:6px;left:8px;max-width:46%;--tx:85%"><span class="who">ROHAN</span>I plotted every checkpoint log. A steady rider makes a straight line through (0, 0)…</div>
+      <div class="balloon tail-r" style="bottom:8px;left:8px;max-width:40%"><span class="who">ROHAN</span>…but ONE of Torque's points broke the pattern. See it glowing red?</div>
+    </div>
+    <div class="panel gn-panel">${ART("p9-vex")}
+      <div class="balloon vex gn-side" style="top:6px;left:6px;max-width:62%"><span class="who">VEX</span>In a ratio graph, every true point fits distance = rate × time. A point off the line is a lie wearing coordinates.</div>
+    </div>
   </div>`},
 
 /* ---- p10: GATE 4 ---- */
 { ch:"Chapter 4 · Reader Gate", gate:"g4", html:`
-  <div class="panel">${SC("0 0 400 80",`<rect width="400" height="80" fill="#10243a"/><g transform="translate(8,-4) scale(.62)"><use href="#sym-dev"/></g>`)}
-    <div class="balloon" style="top:6px;left:78px;max-width:70%"><span class="who">ROHAN</span>Your turn, reader. Find the impostor point in Torque's log.</div>
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${ART("p10-rohan")}
+      <div class="balloon" style="top:6px;right:6px;max-width:62%;--tx:10px"><span class="who">ROHAN</span>Your turn, reader. Find the impostor point in Torque's log.</div>
+    </div>
   </div>`},
 
 /* ---- p11: ch5 splash ---- */
 { ch:"Chapter 5 · Full Velocity", html:`
   <div class="kicker">Chapter Five</div><h2 class="splashtitle">FULL <em>VELOCITY</em></h2>
-  <div class="panel panel3d tall">${SC("0 0 400 220",`
-    <rect width="400" height="220" fill="url(#duskgrad)"/>
-    <g data-depth="8" transform="translate(0,70) scale(4,1.6)" opacity=".8"><use href="#sym-skyline"/></g>
-    <rect data-depth="12" y="180" width="400" height="40" fill="#0d1f33"/>
-    <line data-depth="12" x1="0" y1="200" x2="400" y2="200" stroke="#F2C15B" stroke-width="4" stroke-dasharray="22 16"/>
-    <g data-depth="22" transform="translate(40,128) scale(1.15)"><use href="#sym-bike"/></g>
-    <g data-depth="22" transform="translate(62,62) scale(.72)"><use href="#sym-maya"/></g>
-    <g data-depth="18" transform="translate(210,140) scale(1)"><use href="#sym-bike"/></g>
-    <g data-depth="18" transform="translate(228,80) scale(.62)"><use href="#sym-theo"/></g>
-    <g data-depth="26" transform="translate(330,40) scale(.6)"><use href="#sym-vex"/></g>
-    <g stroke="#fff" stroke-width="4" opacity=".8" stroke-linecap="round" data-depth="26"><line x1="6" y1="150" x2="52" y2="150"/><line x1="0" y1="166" x2="40" y2="166"/><line x1="180" y1="170" x2="218" y2="170"/></g>`)}
-    <div class="sfx" style="top:10px;left:14px">VRRRM!</div>
-    <div class="balloon tail-r" style="top:8px;right:8px;max-width:46%"><span class="who">SIENNA</span>Last leg is mine. Juno's report says I ride at 0.4 km per minute when I pace right.</div>
-  </div>
-  <div class="panel">${SC("0 0 400 92",`<rect width="400" height="92" fill="#fdf2ee"/><rect x="120" y="14" width="170" height="62" rx="8" fill="#fff" stroke="#17324D" stroke-width="3"/><text x="205" y="38" text-anchor="middle" font-family="Arial Black,Arial" font-weight="900" font-size="12" fill="#E2674A">ROUTE SIGN</text><text x="205" y="62" text-anchor="middle" font-family="Arial" font-weight="800" font-size="15" fill="#17324D">FINAL LEG — 8 km</text><g transform="translate(14,4) scale(.62)"><use href="#sym-dev"/></g>`)}
-    <div class="balloon tail-r" style="top:4px;right:2px;max-width:32%"><span class="who">ROHAN</span>Ugh — my speed app only speaks <b>miles</b>!</div>
-  </div>
-  <div class="caption">1 mile ≈ 1.6 kilometers. To convert km → miles, think: how many groups of 1.6 fit in 8?</div>`},
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${ART("p11-race")}
+      <div class="sfx" style="top:8px;right:14px">VRRRM!</div>
+      <div class="balloon" style="top:6px;left:8px;max-width:44%;--tx:70%"><span class="who">SIENNA</span>Last leg is mine. Juno's report says I ride at 0.4 km per minute when I pace right.</div>
+    </div>
+    <div class="panel gn-panel">${ART("p11-sign")}
+      <div class="gn-sign gn-plate gn-flow" data-gn-skip style="left:21.5%;top:46%;width:19%;font-size:15px">ROUTE SIGN<br>FINAL LEG — 8 km</div>
+      <div class="balloon tail-r" style="top:6px;right:6px;max-width:36%"><span class="who">ROHAN</span>Ugh — my speed app only speaks <b>miles</b>!</div>
+    </div>
+    <div class="caption">1 mile ≈ 1.6 kilometers. To convert km → miles, think: how many groups of 1.6 fit in 8?</div>
+  </div>`},
 
 /* ---- p12: GATE 5 ---- */
 { ch:"Chapter 5 · Reader Gate", gate:"g5", html:`
-  <div class="panel">${SC("0 0 400 80",`<rect width="400" height="80" fill="#fdf2ee"/><g transform="translate(8,-4) scale(.62)"><use href="#sym-dev"/></g>`)}
-    <div class="balloon" style="top:6px;left:78px;max-width:70%"><span class="who">ROHAN</span>Convert the route for my app — fast, Sienna's already clipping in!</div>
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${ART("p12-rohan")}
+      <div class="balloon" style="top:6px;right:6px;max-width:62%;--tx:10px"><span class="who">ROHAN</span>Convert the route for my app — fast, Sienna's already clipping in!</div>
+    </div>
   </div>`},
 
 /* ---- p13: boss setup ---- */
 { ch:"Chapter 5 · The Final Leg", html:`
-  <div class="caption loc">The handoff zone. 8 km to the finish. Torque's anchor rider is already rolling.</div>
-  <div class="panel panel3d tall">${SC("0 0 400 200",`
-    <rect width="400" height="200" fill="url(#duskgrad)"/>
-    <g data-depth="10" transform="translate(0,56) scale(4,1.5)" opacity=".7"><use href="#sym-skyline"/></g>
-    <rect data-depth="14" y="160" width="400" height="40" fill="#0d1f33"/>
-    <g data-depth="22" transform="translate(150,108) scale(1.25)"><use href="#sym-bike"/></g>
-    <g data-depth="22" transform="translate(174,40) scale(.78)"><use href="#sym-maya"/></g>
-    <g data-depth="16" transform="translate(20,30) scale(.55)"><use href="#sym-vex"/></g>
-    <rect data-depth="12" x="280" y="30" width="110" height="58" rx="8" fill="#06222b" stroke="#1FA6A2" stroke-width="2.5"/>
-    <text data-depth="12" x="335" y="52" text-anchor="middle" font-family="Consolas,monospace" font-size="11" fill="#7CF2EC">TORQUE ETA:</text>
-    <text data-depth="12" x="335" y="74" text-anchor="middle" font-family="Consolas,monospace" font-weight="700" font-size="16" fill="#F2C15B">22 MIN</text>`)}
-    <div class="balloon vex" style="top:8px;left:8px;max-width:48%"><span class="who">VEX</span>Crew analysis complete. Torque's anchor finishes in 22 minutes. Sienna — can you beat it?</div>
-    <div class="balloon tail-r" style="bottom:8px;right:8px;max-width:42%"><span class="who">SIENNA</span>Reader — you have my rate, the route, the table, the graph. Call it!</div>
-  </div>
-  <div class="caption">Boss Gate: use everything from this volume — unit rate, ratio table thinking, and the graph — to make the call.</div>`},
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${ART("p13-handoff")}
+      <div class="caption loc">The handoff zone. 8 km to the finish. Torque's anchor rider is already rolling.</div>
+      <div class="gn-sign gn-flow" data-gn-skip style="left:40%;top:46%;width:14%;font-size:13px;color:#ff8a6e">TORQUE ETA:<br>22 MIN</div>
+      <div class="balloon vex" style="bottom:8px;left:8px;max-width:40%;--tx:30%"><span class="who">VEX</span>Crew analysis complete. Torque's anchor finishes in 22 minutes. Sienna — can you beat it?</div>
+    </div>
+    <div class="panel gn-panel">${ART("p13-sienna")}
+      <div class="balloon tail-r" style="top:6px;left:6px;max-width:48%"><span class="who">SIENNA</span>Reader — you have my rate, the route, the table, the graph. Call it!</div>
+    </div>
+    <div class="caption">Boss Gate: use everything from this volume — unit rate, ratio table thinking, and the graph — to make the call.</div>
+  </div>`},
 
 /* ---- p14: BOSS GATE ---- */
 { ch:"Boss Gate · Full Velocity", gate:"boss", html:`
-  <div class="panel">${SC("0 0 400 76",`<rect width="400" height="76" fill="#10243a"/><g transform="translate(330,4) scale(.56)"><use href="#sym-vex"/></g>`)}
-    <div class="balloon vex" style="top:6px;left:10px;max-width:72%"><span class="who">VEX</span>BOSS GATE. Three locks. All ratios. No pressure. (Some pressure.)</div>
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${ART("p14-vex")}
+      <div class="balloon vex gn-side" style="top:6px;left:6px;max-width:62%"><span class="who">VEX</span>BOSS GATE. Three locks. All ratios. No pressure. (Some pressure.)</div>
+    </div>
   </div>`},
 
 /* ---- p15: victory ---- */
 { ch:"Chapter 5 · Finish Line", html:`
-  <div class="panel panel3d tall">${SC("0 0 400 220",`
-    ${SKY}<g data-depth="8" transform="translate(0,60) scale(4,1.6)" opacity=".5"><use href="#sym-skyline"/></g>
-    <rect data-depth="12" x="40" y="18" width="320" height="40" rx="8" fill="#17324D"/>
-    <text data-depth="12" x="200" y="44" text-anchor="middle" fill="#F2C15B" font-family="Arial Black,Arial" font-weight="900" font-size="18">FINISH — 20:00 · NEW RECORD</text>
-    <g data-depth="20" transform="translate(70,120) scale(1.1)"><use href="#sym-bike"/></g>
-    <g data-depth="20" transform="translate(94,56) scale(.74)"><use href="#sym-maya"/></g>
-    <g data-depth="16" transform="translate(220,96) scale(.8)"><use href="#sym-zara"/></g>
-    <g data-depth="16" transform="translate(290,96) scale(.8)"><use href="#sym-dev"/></g>
-    <g data-depth="16" transform="translate(155,96) scale(.8)"><use href="#sym-theo"/></g>
-    <g data-depth="26" transform="translate(330,20) scale(.55)"><use href="#sym-vex"/></g>
-    ${GROUND.replace(/168/g,'192').replace(/height="32"/g,'height="28"')}`)}
-    <div class="sfx" style="top:64px;left:18px">WOOO!</div>
-    <div class="balloon" style="bottom:12px;left:10px;max-width:50%"><span class="who">SIENNA</span>Twenty minutes — two whole minutes to spare. The children's wing reopens!</div>
-  </div>
-  <div class="panelrow">
-    <div class="panel">${SC("0 0 200 110",`<rect width="200" height="110" fill="#fdf2ee"/><g transform="translate(58,4) scale(.78)"><use href="#sym-theo"/></g>`)}
-      <div class="balloon" style="top:4px;left:4px;max-width:72%"><span class="who">KOFI</span>And the judges accepted our graph. Torque's "record" is disqualified. Evidence wins.</div></div>
-    <div class="panel">${SC("0 0 200 110",`<rect width="200" height="110" fill="#17324D"/><rect x="40" y="20" width="120" height="70" rx="6" fill="#FFF3D8" stroke="#F2C15B" stroke-width="3"/><text x="100" y="46" text-anchor="middle" font-family="Arial Black,Arial" font-weight="900" font-size="10" fill="#E2674A">NIGHT MARKET</text><text x="100" y="62" text-anchor="middle" font-family="Arial" font-weight="700" font-size="9" fill="#17324D">SAVE THE PIER — 100% NEEDED</text><text x="100" y="78" text-anchor="middle" font-family="Arial" font-weight="700" font-size="9" fill="#1FA6A2">50% OFF EVERYTHING?!</text>`)}
-      <div class="balloon vex" style="top:2px;left:4px;max-width:60%"><span class="who">VEX</span>New distortion. Percent-shaped. To be continued…</div></div>
-  </div>
-  <div class="caption" style="text-align:center"><b>NEXT: ${"VOL. 4 — THE HUNDRED MARKET"}</b></div>`},
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${ART("p15-finish")}
+      <div class="gn-sign gn-plate gn-flow" data-gn-skip style="left:22%;top:37%;width:34%;font-size:15px">FINISH — 20:00 · NEW RECORD</div>
+      <div class="sfx" style="top:4%;right:14px">WOOO!</div>
+      <div class="balloon" style="bottom:8px;left:8px;max-width:46%"><span class="who">SIENNA</span>Twenty minutes — two whole minutes to spare. The children's wing reopens!</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p15-kofi")}
+      <div class="balloon" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">KOFI</span>And the judges accepted our graph. Torque's "record" is disqualified. Evidence wins.</div>
+    </div>
+    <div class="panel gn-panel gn-half">${ART("p15-market")}
+      <div class="gn-sign gn-plate" data-gn-skip style="left:50%;top:62%;width:80%;font-size:13px;color:#FFF3D8">NIGHT MARKET<br>SAVE THE PIER — 100% NEEDED<br>50% OFF EVERYTHING?!</div>
+      <div class="balloon vex" style="bottom:6px;left:6px;right:6px;max-width:none"><span class="who">VEX</span>New distortion. Percent-shaped. To be continued…</div>
+    </div>
+    <div class="caption" style="text-align:center"><b>NEXT: ${"VOL. 4 — THE HUNDRED MARKET"}</b></div>
+  </div>`},
 
 /* ---- p16: cast ---- */
 { ch:"End Matter · The Crew", html:`
