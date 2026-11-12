@@ -328,16 +328,19 @@ export const TONIGHT = [
   {
     id: "choose",
     icon: "flag",
-    head: { en: "Choose", es: "Elijan" },
-    body: { en: "Pick one activity below.", es: "Elijan una actividad de abajo." },
+    head: { en: "Start", es: "Empiecen" },
+    body: {
+      en: "Choose your child’s grade and press Start.",
+      es: "Elijan el grado de su hijo o hija y toquen Empezar.",
+    },
   },
   {
     id: "practice",
     icon: "conversation",
     head: { en: "Practice together", es: "Practiquen juntos" },
     body: {
-      en: "5 to 10 minutes. Stop when you like.",
-      es: "De 5 a 10 minutos. Paren cuando quieran.",
+      en: "A guide shows each step. 5 to 10 minutes.",
+      es: "Una guía muestra cada paso. De 5 a 10 minutos.",
     },
   },
   {
@@ -367,19 +370,19 @@ export const FAMILY_HANDOUT = {
 export const HANDOUT_COPY = {
   title: { en: "Practice Together at home", es: "Practicar juntos en casa" },
   what: {
-    en: "Practice Together is a page of short English practice for families. Choose one activity and practice with your child for 5 to 10 minutes, in English or Spanish.",
-    es: "Practicar juntos es una página de práctica corta de inglés para familias. Elijan una actividad y practiquen con su hijo o hija de 5 a 10 minutos, en inglés o en español.",
+    en: "Practice Together is short English practice for families. A guide on the page shows you how to help, step by step, in English or Spanish.",
+    es: "Practicar juntos es práctica corta de inglés para familias. Una guía en la página les muestra cómo ayudar, paso a paso, en inglés o en español.",
   },
   scan: {
     en: "Scan the code with a phone camera, or type the link:",
     es: "Escaneen el código con la cámara de un teléfono, o escriban el enlace:",
   },
   grade: {
-    en: "Choose your child’s grade at the top of the page.",
-    es: "Elijan el grado de su hijo o hija arriba en la página.",
+    en: "Choose your child’s grade, then press “Start practicing together.”",
+    es: "Elijan el grado de su hijo o hija y toquen «Empezar a practicar juntos».",
   },
   stepsHeading: { en: "Three steps", es: "Tres pasos" },
-  choicesHeading: { en: "Two activities", es: "Dos actividades" },
+  choicesHeading: { en: "Next time, try these", es: "La próxima vez, prueben estas" },
   talk: {
     en: "Look at a picture and say what you see, out loud.",
     es: "Miren una imagen y digan en voz alta lo que ven.",
@@ -389,8 +392,8 @@ export const HANDOUT_COPY = {
     es: "Mejoren una oración sencilla con un detalle y una razón.",
   },
   early: {
-    en: "Grades K–2 open a page for younger children: a picture story read aloud, sounds and word cards.",
-    es: "Los grados K a 2 abren una página para niños más pequeños: un cuento con imágenes leído en voz alta, sonidos y tarjetas de palabras.",
+    en: "Grades K–2: choose the exact grade. Pictures and audio, no reading needed.",
+    es: "Grados K a 2: elijan el grado exacto. Imágenes y audio, sin necesidad de leer.",
   },
   factsHeading: { en: "Good to know", es: "Es bueno saber" },
   home: {

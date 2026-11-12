@@ -84,12 +84,12 @@ export const HANDOUT_K2_COPY = {
     es: "Practicar juntos: grados K a 2",
   },
   grade: {
-    en: "At the top of the page, choose “Grades K–2.”",
-    es: "Arriba en la página, elijan «Grados K a 2».",
+    en: "Choose “Grades K–2,” the exact grade, then “Start practicing together.”",
+    es: "Elijan «Grados K a 2», el grado exacto y «Empezar a practicar juntos».",
   },
   what: {
-    en: "Short English practice for younger children. Practice together for 5 to 10 minutes and talk in English or in Spanish.",
-    es: "Práctica corta de inglés para los más pequeños. Practiquen juntos de 5 a 10 minutos y hablen en inglés o en español.",
+    en: "Short English practice for younger children, with a guide for each step. Practice together for 5 to 10 minutes.",
+    es: "Práctica corta de inglés para los más pequeños, con una guía en cada paso. Practiquen juntos de 5 a 10 minutos.",
   },
   howHeading: { en: "How it works", es: "Cómo funciona" },
   how: [
