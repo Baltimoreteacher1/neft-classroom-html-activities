@@ -372,6 +372,7 @@ lessons continue.
 - Analytics: no Google Analytics, Cloudflare Web Analytics, tag manager, pixel, session replay or ad
   script in the repository's served files (`rg` over `*.html`, `*.js`; no match outside tooling and
   false positives). The first-party counters are `nt-usage.js` and `web_vital`.
+- **Correction 2026-11-12 (MEASURED, live headless Chromium on `/family-app/`, `/math/fluency-lab/`, `/access-practice-lab/`):** Cloudflare Web Analytics IS active. Cloudflare injects it at the edge (`static.cloudflareinsights.com` beacon, `POST /cdn-cgi/rum`), so the repository search above cannot see it. It is cookieless and is now disclosed on `/about/privacy-and-data/`.
 - 56 files in `public/assets/fonts/*.css` mention `fonts.googleapis.com`, but only in header comments: none contains an `@import` or `url(https://...)` (**READ**, `rg`). The font files are self-hosted.
 
 ---
