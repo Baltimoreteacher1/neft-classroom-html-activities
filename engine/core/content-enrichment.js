@@ -1,5 +1,9 @@
 // Auto-derive thin lesson content from config.json where authored fields are missing.
 
+import { HINT_ROLES } from "./publisher-models.js";
+
+const hintRole = (index) => HINT_ROLES[index]?.id || HINT_ROLES[HINT_ROLES.length - 1].id;
+
 /** Derive a common-mistake callout from keyIdea, conceptIntro, or vocabulary. */
 export function deriveCommonMistake(config) {
   const explicit = config.practice?.commonMistake || config.commonMistake || null;
@@ -113,6 +117,7 @@ export function deriveHintLadder(prob) {
   if (authored.length >= 3) {
     return authored.slice(0, 3).map((h, i) => ({
       level: i + 1,
+      role: hintRole(i),
       label: ["💡 Tip", "🧭 Strategy", "👀 Show me how"][i],
       text: String(h),
       // Undefined when this item has no Spanish; the ladder renders English
@@ -167,23 +172,23 @@ export function deriveHintLadder(prob) {
   const typeHints = {
     "multiple-choice": [
       {
-        en: "Read the question twice. What is it really asking?",
-        es: "Lee la pregunta dos veces. ¿Qué te pide realmente?",
+        en: "What is the question really asking you to find?",
+        es: "¿Qué te pide encontrar realmente la pregunta?",
       },
       {
-        en: "Cross out choices that clearly don't fit. Compare what's left.",
-        es: "Tacha las opciones que claramente no encajan. Compara las que quedan.",
+        en: "Cover the choices. Sketch the quantities, then see which choice matches your sketch.",
+        es: "Tapa las opciones. Dibuja las cantidades y mira qué opción coincide con tu dibujo.",
       },
       scaffoldRung(
-        "Pick the choice that matches the math rule you learned today.",
-        "Elige la opción que sigue la regla matemática que aprendiste hoy.",
+        "Try a smaller problem of the same kind. Then use that same first step here.",
+        "Prueba un problema más pequeño del mismo tipo. Luego usa ese mismo primer paso aquí.",
       ),
     ],
     "drag-sort": [
       catNames.length
         ? {
-            en: `Read each category out loud first: ${catNames.join(" · ")}. Ask: what makes them different?`,
-            es: `Primero lee cada categoría en voz alta: ${catNames.join(" · ")}. Pregúntate: ¿en qué se diferencian?`,
+            en: `What makes these categories different: ${catNames.join(" · ")}?`,
+            es: `¿En qué se diferencian estas categorías: ${catNames.join(" · ")}?`,
           }
         : {
             en: "Read every category label before you drag.",
@@ -240,16 +245,16 @@ export function deriveHintLadder(prob) {
     ],
     default: [
       {
-        en: "Re-read the question. Underline what it's asking.",
-        es: "Vuelve a leer la pregunta. Subraya lo que te pide.",
+        en: "What is this question asking you to find, and which quantities matter?",
+        es: "¿Qué te pide encontrar esta pregunta y qué cantidades importan?",
       },
       {
-        en: "What math tool or vocabulary word fits this problem?",
-        es: "¿Qué herramienta matemática o palabra de vocabulario encaja con este problema?",
+        en: "Sketch one model — a table, tape, number line, or balance — and fill in only what you already know.",
+        es: "Dibuja un modelo — una tabla, una cinta, una recta numérica o una balanza — y anota solo lo que ya sabes.",
       },
       scaffoldRung(
-        "Plan your first step before you answer.",
-        "Planea tu primer paso antes de responder.",
+        "Try a smaller problem of the same kind first. Then use that same first step on this one.",
+        "Prueba primero un problema más pequeño del mismo tipo. Luego usa ese mismo primer paso en este.",
       ),
     ],
   };
@@ -257,6 +262,7 @@ export function deriveHintLadder(prob) {
   const hints = typeHints[prob.type] || typeHints.default;
   return hints.map((h, i) => ({
     level: i + 1,
+    role: hintRole(i),
     label: ["💡 Tip", "🧭 Strategy", "👀 Show me how"][i],
     text: String(h.en),
     textEs: h.es ? String(h.es) : undefined,

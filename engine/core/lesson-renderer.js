@@ -57,6 +57,7 @@ import { createGoDeeper } from "./go-deeper.js";
 import { buildGradeCard } from "./grade.js";
 import { recommendedNext } from "./grade-emit.js";
 import { mountHintLadder } from "./hint-ladder.js";
+import { recordLearningEvent } from "./learning-events.js";
 import {
   badgeName,
   getPreferredLang,
@@ -1266,6 +1267,17 @@ export function renderComponent(container, problemDef, onAnswer, shellOpts) {
     const tag = isCorrect
       ? null
       : reportMisconception(problemDef, selected, shellOpts && shellOpts.state);
+    const lessonFromPath =
+      typeof location !== "undefined"
+        ? (String(location.pathname).match(/\/lessons\/([^/]+)/) || [])[1]
+        : "";
+    recordLearningEvent({
+      lesson_id: shellOpts?.lessonId || problemDef.lessonId || lessonFromPath || "",
+      skill: problemDef.standard || problemDef.skill || problemDef.type || "",
+      attempt: Number(shellOpts?.state?.get?.()?.attempts) || 1,
+      result: isCorrect ? "correct" : "incorrect",
+      support_used: (Number(shellOpts?.state?.get?.()?.hintsUsed) || 0) > 0,
+    });
     onAnswer?.(isCorrect, tag);
   };
 

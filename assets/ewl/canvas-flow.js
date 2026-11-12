@@ -54,8 +54,9 @@
       let reached = stage;
       let done = !!(saved && saved.done);
       let pictureShown = false;
-      let visible = scene.reps.slice(0, 4);
-      if (feat) visible = [feat].concat(visible.filter((r) => r !== feat)).slice(0, 4);
+      const repCap = scene.id === "equivalent-ratios" ? 5 : 4;
+      let visible = scene.reps.slice(0, repCap);
+      if (feat) visible = [feat].concat(visible.filter((r) => r !== feat)).slice(0, repCap);
       let lens = null;
       let figHost = null;
       let tried = new Set([kind.key(params)]);

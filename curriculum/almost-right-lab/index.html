@@ -648,9 +648,61 @@
       </div>
     </main>
 
+    <section id="exponent-repair" class="unit-card" aria-labelledby="exponent-repair-title" style="max-width:1100px;margin:24px auto;padding:24px">
+      <div class="unit-tag">Powers · 3 squared is 9</div>
+      <h2 id="exponent-repair-title" class="unit-title">Exponent repair</h2>
+      <p class="unit-desc">3² means 3 × 3. An answer of 6 may indicate multiplying the base by the exponent. One number does not prove how someone was thinking.</p>
+      <form id="exponent-repair-form">
+        <label for="exponent-answer">What is 3²?<input id="exponent-answer" name="answer" inputmode="numeric" autocomplete="off" style="min-height:44px;margin-left:8px"></label>
+        <button type="submit" style="min-height:44px;margin-left:8px">Check</button>
+      </form>
+      <p id="exponent-repair-feedback" role="status"></p>
+      <div id="exponent-repair-fresh"></div>
+    </section>
+
     <footer>
       <span>The Almost-Right Lab · Neft Teacher · Grade 6 Math</span>
     </footer>
+
+    <script type="module">
+      import { freshPowerItem, repairExponent } from "/engine/core/publisher-models.js";
+      const form = document.getElementById("exponent-repair-form");
+      const feedback = document.getElementById("exponent-repair-feedback");
+      const freshHost = document.getElementById("exponent-repair-fresh");
+      form?.addEventListener("submit", (event) => {
+        event.preventDefault();
+        const answer = new FormData(form).get("answer");
+        const repair = repairExponent({ base: 3, exponent: 2, answer });
+        feedback.textContent = repair.message;
+        if (!repair.bug) return;
+        const fresh = repair.fresh || freshPowerItem(3, 2);
+        freshHost.innerHTML = "";
+        const follow = document.createElement("form");
+        const label = document.createElement("label");
+        label.textContent = fresh.prompt + " ";
+        const input = document.createElement("input");
+        input.name = "fresh";
+        input.inputMode = "numeric";
+        input.autocomplete = "off";
+        input.style.minHeight = "44px";
+        const button = document.createElement("button");
+        button.type = "submit";
+        button.textContent = "Check the new power";
+        button.style.minHeight = "44px";
+        label.append(input);
+        follow.append(label, button);
+        const note = document.createElement("p");
+        note.setAttribute("role", "status");
+        follow.addEventListener("submit", (ev) => {
+          ev.preventDefault();
+          const given = Number(new FormData(follow).get("fresh"));
+          note.textContent = given === fresh.value
+            ? `${fresh.base}^${fresh.exponent} = ${fresh.expansion} = ${fresh.value}.`
+            : `Write ${fresh.expansion} before you multiply. An answer of ${fresh.base * fresh.exponent} may indicate the same misunderstanding.`;
+        });
+        freshHost.append(follow, note);
+      });
+    </script>
 
     <script>
       // Show progress from the missions' own save (arl_progress) on the card.

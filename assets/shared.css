@@ -403,3 +403,46 @@ h2 {
     display: none !important;
   }
 }
+
+/* Publisher upgrade: shared focus, touch, motion, and feedback.
+   Restrained teal and ink. No new neon hues. */
+:root {
+  --ewl-focus: #115e59;
+  --ewl-touch: 44px;
+  --ewl-ok: #176746;
+  --ewl-ok-bg: #edf6ef;
+  --ewl-miss: #8a4b12;
+  --ewl-miss-bg: #fff4df;
+  --ewl-paper: #f7f4ec;
+}
+
+:where(a, button, input, select, textarea, summary, [role="button"]):focus-visible {
+  outline: 3px solid var(--ewl-focus);
+  outline-offset: 3px;
+}
+
+:where(button, .button-link, summary, [role="tab"]) {
+  min-height: var(--ewl-touch);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :where(.page-shell, .activity-card, .hero, .button-link, .placeholder-panel) {
+    animation: none;
+    transition: none;
+    scroll-behavior: auto;
+  }
+}
+
+.feedback-correct,
+.is-correct {
+  background: var(--ewl-ok-bg);
+  color: #143024;
+  border-color: var(--ewl-ok);
+}
+
+.feedback-incorrect,
+.is-incorrect {
+  background: var(--ewl-miss-bg);
+  color: #3f2a10;
+  border-color: var(--ewl-miss);
+}

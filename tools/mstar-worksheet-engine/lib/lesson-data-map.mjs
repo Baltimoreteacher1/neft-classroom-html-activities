@@ -563,7 +563,7 @@ const u6Lessons = [
     id: "6-4",
     title: "Write and Evaluate Numerical Expressions with Exponents",
     std: "6.AT.6c",
-    obj: "I can write numerical expressions from a real situation and evaluate them using the order of operations, including powers.",
+    obj: "I can evaluate expressions at specific values of their variables, including powers and expressions from a real situation.",
   },
   {
     id: "6-5",
