@@ -67,7 +67,10 @@ function remember(svg) {
     if (text[OUT]) Object.assign(text[OUT], { x: text.getAttribute("x"), y: text.getAttribute("y"), txt: text.textContent });
 }
 
+// Axis numerals (class sd-axis-num) are laid out by their picture: a numbered plane needs a number at every unit, which
+// can never all be 14px wide. They are left at the size and place the engine drew them, and the picture is not widened for them.
 const visible = (text) => {
+  if (text.classList.contains("sd-axis-num")) return false;
   const cs = getComputedStyle(text);
   return text.textContent.trim() && cs.display !== "none" && cs.visibility !== "hidden";
 };

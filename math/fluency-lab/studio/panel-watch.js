@@ -1,6 +1,7 @@
 // Watch: the animated explanation with Back / Play / Next / Replay and speed. It stops at each
 // Predict-Reveal-Explain point and waits for the learner to think before showing what happens.
 import { morph, pick } from "./core.js";
+import { bindPlane } from "./plane-pick.js";
 import { framesOf } from "./engines.js";
 import { record } from "./adaptive.js";
 import { t } from "../i18n.js";
@@ -57,6 +58,7 @@ export function mountWatch(ctx, root) {
     const p = predicts.find((x) => x.at === i && !answered.has(x.at));
     const f = p && i > 0 ? frames[i - 1] : frames[i];
     morph(stage, f.svg, { animate: !calm });
+    bindPlane(stage, { lang: () => ctx.lang(), keys: "shift" });
     q("[data-eq]").textContent = f.eq || "";
     q("[data-cap]").innerHTML = vocabMarkup(caption(f));
     root.querySelectorAll("[data-dot]").forEach((d, k) => d.classList.toggle("on", k <= (p ? i - 1 : i)));

@@ -5,6 +5,7 @@ import { morph, pick } from "./core.js";
 import { record } from "./adaptive.js";
 import { t } from "../i18n.js";
 import { vocabMarkup } from "./vocab-content.js";
+import { bindPlane } from "./plane-pick.js";
 
 const esc = (s) => String(s).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;");
 
@@ -43,6 +44,15 @@ export function mountBuild(ctx, root) {
       ctx.say(r.status ? pick(r.status, ctx.lang()) : t("Done."));
     }
     attachDrag();
+    // A quadrant question can be answered on the plane itself: tapping a quadrant picks it like its button does.
+    bindPlane(stage, {
+      lang: () => ctx.lang(),
+      onPick: ({ quadrant, commit }) => {
+        if (!commit || spec.mode !== "quad" || !quadrant) return;
+        const n = r.controls.findIndex((c) => c.id === "pick" && pick(c.label, "en") === quadrant);
+        if (n >= 0) apply("pick", r.controls[n].arg, pick(r.controls[n].label, ctx.lang()));
+      },
+    });
   }
 
   function apply(id, arg, label) {

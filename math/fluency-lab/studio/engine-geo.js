@@ -84,25 +84,32 @@ export function parse(question) {
 const quadrant = (x, y) => (x > 0 ? (y > 0 ? "I" : "IV") : y > 0 ? "II" : "III");
 
 // ----- pictures -----
-const plane = (pts = [], axis = null, extra = "") => {
+const plane = (pts = [], axis = null, extra = "", range = 0) => {
   const size = 200;
   const [cx, cy] = [280, 120];
-  const k = size / 2 / Math.max(10, ...pts.flatMap((p) => [Math.abs(p[0]), Math.abs(p[1])]));
+  // The range follows the points so the units stay wide enough to number every one of them.
+  const need = Math.max(range, ...pts.flatMap((p) => [Math.abs(p[0]), Math.abs(p[1])]));
+  const R = [5, 6, 8, 10].find((n) => n >= need) ?? Math.ceil(need);
+  const k = size / 2 / R;
   const X = (v) => cx + v * k;
   const Y = (v) => cy - v * k;
   let out = `<line x1="${cx - size / 2 - 10}" x2="${cx + size / 2 + 10}" y1="${cy}" y2="${cy}" stroke="${axis === "x" ? COLORS.warn : COLORS.ink}" stroke-width="${axis === "x" ? 5 : 2.5}"/><line y1="${cy - size / 2 - 10}" y2="${cy + size / 2 + 10}" x1="${cx}" x2="${cx}" stroke="${axis === "y" ? COLORS.warn : COLORS.ink}" stroke-width="${axis === "y" ? 5 : 2.5}"/>`;
   out += T(cx + size / 2 + 14, cy + 5, "x", 16, COLORS.mute, "start") + T(cx + 12, cy - size / 2 - 2, "y", 16, COLORS.mute, "start");
-  // Number every unit like a textbook plane: x under the x-axis, y left of the y-axis, one 0 at the origin (above-left,
-  // where the dense −1 labels leave room).
-  const range = Math.round(size / 2 / k);
-  const fs = Math.max(5, Math.min(8, k * 0.56));
+  // Number every unit like a textbook plane: x under the x-axis, y left of the y-axis, a tick at each, and one 0
+  // by the origin. The numerals carry sd-axis-num so the shell's 14px label floor leaves them at this size, and
+  // the marker below tells plane-pick.js where the grid is so a tap lands on the nearest whole number.
+  const fs = R <= 6 ? 10 : R <= 8 ? 9 : 8.5;
   const num = (v) => String(v).replace("-", "\u2212");
-  for (let v = -range; v <= range; v += 1) {
+  const label = (x, y, v, anchor) => txt(x, y, num(v), { size: fs, weight: 700, fill: COLORS.mute, anchor, cls: "sd-axis-num" });
+  for (let v = -R; v <= R; v += 1) {
     if (v === 0) continue;
+    // Tight units stagger alternate x numbers, and the x-axis -1 steps down so it clears the y-axis -1 beside it.
+    const row = (k < 14 && Math.abs(v) % 2 === 1) || (k < 14 && v === -1) ? 1.05 : 0;
     out += `<line x1="${X(v)}" x2="${X(v)}" y1="${cy - 3}" y2="${cy + 3}" stroke="${COLORS.ink}" stroke-width="1"/><line x1="${cx - 3}" x2="${cx + 3}" y1="${Y(v)}" y2="${Y(v)}" stroke="${COLORS.ink}" stroke-width="1"/>`;
-    out += T(X(v), cy + 4 + fs * 2.1, num(v), fs, COLORS.mute, "middle") + T(cx - 9, Y(v) + fs / 3, num(v), fs, COLORS.mute, "end");
+    out += label(X(v), cy + 3 + fs * (1 + row), v, "middle") + label(cx - 8, Y(v) + fs * 0.35, v, "end");
   }
-  out += T(cx - 5, cy - 5, "0", fs, COLORS.mute, "end");
+  out += label(cx - 5, cy - 5, 0, "end");
+  out += `<g data-plane="${cx},${cy},${k},${R}"></g>`;
   pts.forEach(([x, y, color, label]) => (out += `<circle cx="${X(x)}" cy="${Y(y)}" r="8" fill="${color}" stroke="#fff" stroke-width="2"/>` + T(X(x) + 12, Y(y) - 10, label, 14, color, "start")));
   return out + extra;
 };
@@ -188,7 +195,7 @@ export function frames(s) {
     const alt = A(`The point (${s.x}, ${s.y}) on a coordinate plane.`, `El punto (${s.x}, ${s.y}) en un plano cartesiano.`);
     const labels = (hi) => ["I", "II", "III", "IV"].map((q, i) => T([380, 180, 180, 380][i], [60, 60, 190, 190][i], q, 24, q === hi ? COLORS.part : COLORS.mute)).join("");
     return [
-      ctx("plane", A(`The axes split the plane into four quadrants, numbered counterclockwise from the top right.`, `Los ejes dividen el plano en cuatro cuadrantes, numerados en sentido contrario a las agujas del reloj desde arriba a la derecha.`), A("Four quadrants.", "Cuatro cuadrantes."), `(${sg(s.x)}, ${sg(s.y)})`, plane([]) + labels(null), alt, { x: s.x, y: s.y }, 260),
+      ctx("plane", A(`The axes split the plane into four quadrants, numbered counterclockwise from the top right.`, `Los ejes dividen el plano en cuatro cuadrantes, numerados en sentido contrario a las agujas del reloj desde arriba a la derecha.`), A("Four quadrants.", "Cuatro cuadrantes."), `(${sg(s.x)}, ${sg(s.y)})`, plane([], null, "", Math.max(Math.abs(s.x), Math.abs(s.y))) + labels(null), alt, { x: s.x, y: s.y }, 260),
       ctx("signs", A(`x = ${sg(s.x)} is ${s.x > 0 ? "right" : "left"} of the y-axis. y = ${sg(s.y)} is ${s.y > 0 ? "above" : "below"} the x-axis.`, `x = ${sg(s.x)} está a la ${s.x > 0 ? "derecha" : "izquierda"} del eje y. y = ${sg(s.y)} está ${s.y > 0 ? "arriba" : "abajo"} del eje x.`), A(`${s.x > 0 ? "Right" : "Left"}, ${s.y > 0 ? "up" : "down"}.`, `${s.x > 0 ? "Derecha" : "Izquierda"}, ${s.y > 0 ? "arriba" : "abajo"}.`), `(${s.x > 0 ? "+" : "−"}, ${s.y > 0 ? "+" : "−"})`, plane([[s.x, s.y, COLORS.whole, `(${sg(s.x)}, ${sg(s.y)})`]]) + labels(null), alt, { x: s.x, y: s.y }, 260),
       ctx("quadrant", A(`That is quadrant ${s.result}.`, `Eso es el cuadrante ${s.result}.`), A(`Quadrant ${s.result}.`, `Cuadrante ${s.result}.`), `quadrant ${s.result}`, plane([[s.x, s.y, COLORS.whole, `(${sg(s.x)}, ${sg(s.y)})`]]) + labels(s.result), alt, { x: s.x, y: s.y, result: s.result }, 260),
     ];
