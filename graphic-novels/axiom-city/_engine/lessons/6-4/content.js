@@ -10,6 +10,7 @@ const VOLUME = {
 const BADGES = [
   { id: "g1", icon: "#sig-ops", label: "Order Keeper — Order of Operations" },
   { id: "g2", icon: "#sig-tile", label: "Line Writer — Write &amp; Evaluate" },
+  { id: "g3", icon: "#sig-table", label: "Stall Keeper — Stories to Lines" },
   { id: "boss", icon: "#sig-boss", label: "Lock Breaker — Boss Gate" },
 ];
 
@@ -43,7 +44,7 @@ const PAGES = [
     html: `
   <div style="text-align:center;margin-top:8px"><div class="kicker">EduWonderLab Presents</div>
   <h2 class="splashtitle" style="margin:8px 0">THE ORDER <em>LOCK</em></h2>
-  <div class="caption" style="display:inline-block">Lesson 6-4 — writing and evaluating numerical expressions with exponents. Three reader gates stand between the crew and the vault's last notch, and every one is about reading a whole line of math in the right order.</div></div>
+  <div class="caption" style="display:inline-block">Lesson 6-4 — writing and evaluating numerical expressions with exponents. Four reader gates stand between the crew and the vault's last notch, and every one is about reading a whole line of math in the right order.</div></div>
   <div class="gn-comic">
     <div class="panel gn-panel panel3d">${globalThis.ART("p1-lock")}
       <div class="sfx" style="top:8px;right:14px">CL-CLUNK</div>
@@ -122,7 +123,40 @@ const PAGES = [
   </div>`,
   },
 
-  /* p6 — the last line */
+  /* p6 — lesson: stories with powers and sharing */
+  {
+    ch: "Chapter 3 · The Market Stall",
+    html: `
+  <div class="kicker">Chapter Three</div><h2 class="splashtitle">THE MARKET <em>STALL</em></h2>
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${globalThis.ART("p6-market")}
+      <div class="caption loc">Past the second notch: an old vault market. Every price tag is a story the crew must turn into a line of math.</div>
+      <div class="gn-sign gn-chalk" data-gn-skip style="left:58%;top:36%">2 lanterns at $6<br>+ 3 gear boxes at $2³<br>= 2 × 6 + 3 × 2³</div>
+      <div class="balloon" style="bottom:8px;left:6px;max-width:46%;--tx:20px"><span class="who">ANDRE</span>Each product is one part of the story: 2 × 6 = 12 and 3 × 2³ = 3 × 8 = 24. Then add them: $36.</div>
+    </div>
+    <div class="panel gn-panel gn-half">${globalThis.ART("p6-garden")}
+      <div class="balloon" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">KEIKO</span>A square moss bed, 6 tiles on each side, holds 6² tiles. Two beds plus 4 spare tiles: 2 × 6² + 4 = 2 × 36 + 4 = 76.</div>
+    </div>
+    <div class="panel gn-panel gn-half">${globalThis.ART("p1-theo")}
+      <div class="balloon tail-r" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">ANDRE</span>Shared by 4 gardeners? The WHOLE total gets shared, so it goes in parentheses: (2 × 6² + 4) ÷ 4 = 76 ÷ 4 = 19 each.</div>
+    </div>
+    <div class="caption">Story words become operations: "each" and "of" multiply, "plus" and "and" add, "a square 6 on a side" is 6², and "shared equally" divides. When a whole total is shared, wrap the total in grouping symbols first — otherwise only the last number gets divided.</div>
+  </div>`,
+  },
+
+  /* p7 — GATE g3 */
+  {
+    ch: "Chapter 3 · Reader Gate",
+    gate: "g3",
+    html: `
+  <div class="gn-comic">
+    <div class="panel gn-panel">${globalThis.ART("p4-maya")}
+      <div class="balloon" style="top:6px;right:6px;max-width:62%;--tx:10px"><span class="who">KEIKO</span>Two more price tags. Write each story as a line, then run it by rank.</div>
+    </div>
+  </div>`,
+  },
+
+  /* p8 — the last line */
   {
     ch: "Chapter 3 · The Last Line",
     html: `
@@ -135,7 +169,7 @@ const PAGES = [
   </div>`,
   },
 
-  /* p7 — BOSS */
+  /* p9 — BOSS */
   {
     ch: "Boss Gate · Break the Lock",
     gate: "boss",
@@ -147,7 +181,7 @@ const PAGES = [
   </div>`,
   },
 
-  /* p8 — victory + links */
+  /* p10 — victory + links */
   {
     ch: "Chapter 4 · The Lock Opens",
     html: `
@@ -159,7 +193,7 @@ const PAGES = [
   </div>`,
   },
 
-  /* p9 — journal */
+  /* p11 — journal */
   {
     ch: "End Matter · Ada Vex's Journal",
     html: `
@@ -168,12 +202,13 @@ const PAGES = [
     <div class="jrow"><b>Order of operations.</b><span>Read math by rank, not left to right: grouping symbols, then exponents, then × and ÷ sweeping left to right together, then + and − last.</span></div>
     <div class="jrow"><b>Numerical expression.</b><span>Numbers and operations with no equal sign and no letters. To evaluate it is to find the one value it is worth.</span></div>
     <div class="jrow"><b>Writing from a situation.</b><span>Say each part of the story in order: 3 crates of 4² bolts plus 5 loose is 3 × 4² + 5 = 53.</span></div>
+    <div class="jrow"><b>Sharing a total.</b><span>When a whole total is shared, put the total in grouping symbols: 5 friends share 2 boxes of 3³ gems and 6 loose gems is (2 × 3³ + 6) ÷ 5 = 60 ÷ 5 = 12 each.</span></div>
     <div class="jrow"><b>The glitch's lie.</b><span>Reading left to right inflates everything. (6 + 3) × 2² is 36, not 324, because the exponent only grips the 2.</span></div>
   </div>
   <div class="caption">"A line of math is a recipe. Follow the order and the answer never changes." — A.V.</div>`,
   },
 
-  /* p10 — certificate */
+  /* p12 — certificate */
   {
     ch: "End Matter · Certificate",
     html: `
@@ -310,6 +345,76 @@ const GATES = {
       });
     },
   },
+  g3: {
+    title: "Gate 3 · Price the Stall",
+    icon: "#sig-table",
+    prompt: `Two price tags hang on the stall. Tag one: <i>"5 friends share 2 boxes of 3³ gems and 6 loose gems equally."</i> Tag two: <i>"3 square moss beds, 5 tiles on each side, minus 7 cracked tiles."</i>`,
+    hints: [
+      "Conceptual: when a whole total is shared, the total goes in grouping symbols so the division waits for it. A square bed 5 tiles on a side holds 5² tiles.",
+      "Procedural: inside the parentheses, exponent first, then multiply, then add — then divide. For the beds: 5² first, then × 3, then − 7.",
+    ],
+    worked: {
+      steps: [
+        "Andre's warm-up: '5 friends share 3 bags of 2³ marbles and 6 loose marbles.' The whole pile is shared, so it goes in parentheses: (3 × 2³ + 6) ÷ 5.",
+        "Inside, exponent first: 2³ = 8. Then 3 × 8 = 24, and 24 + 6 = 30.",
+        "Now share: 30 ÷ 5 = 6 marbles each.",
+      ],
+      q: "Evaluate (3 × 2³ + 6) ÷ 5.",
+      a: "6",
+    },
+    render(body, api) {
+      body.innerHTML = `<div style="font:600 .9rem 'Segoe UI'">Which line says tag one?</div>
+      <div class="choicebtns">
+        <button class="choicebtn" data-q="ex" data-v="right" aria-pressed="false">(2 × 3³ + 6) ÷ 5</button>
+        <button class="choicebtn" data-q="ex" data-v="nogroup" aria-pressed="false">2 × 3³ + 6 ÷ 5</button>
+        <button class="choicebtn" data-q="ex" data-v="cube" aria-pressed="false">((2 × 3)³ + 6) ÷ 5</button>
+        <button class="choicebtn" data-q="ex" data-v="sq" aria-pressed="false">(2 × 3 × 3 + 6) ÷ 5</button></div>
+      <div style="display:flex;flex-direction:column;gap:10px;margin-top:6px">
+      <div style="${ROW}"><span style="${LBL}">Gems each:</span><input class="numin" id="a" inputmode="decimal" aria-label="gems each friend gets"></div>
+      <div style="${ROW}"><span style="${LBL}">Tag two: 3 × 5² − 7 =</span><input class="numin" id="b" inputmode="numeric" aria-label="value of 3 times 5 squared minus 7"></div></div>`;
+      const picks = wirePicks(body, api);
+      api.onCheck(() => {
+        if (!picks.ex) return api.fail("Pick the line for tag one first — then run it.");
+        if (picks.ex !== "right") {
+          if (picks.ex === "nogroup")
+            return api.fail(
+              "Without parentheses, only the 6 loose gems get shared. The WHOLE pile is shared, so wrap the total.",
+            );
+          if (picks.ex === "cube")
+            return api.fail(
+              "That cubes the number of boxes too. Only the 3 gems-per-box is cubed: 2 × 3³.",
+            );
+          return api.fail("3³ is three 3s multiplied: 3 × 3 × 3, not just 3 × 3.");
+        }
+        const A = body.querySelector("#a"),
+          a = parseFloat(A.value);
+        A.className = "numin " + (a === 12 ? "ok" : "no");
+        if (a !== 12) {
+          if (a === 60)
+            return api.fail("60 is the whole pile. The story shares it among 5 friends — divide.");
+          if (a === 55.2)
+            return api.fail(
+              "That shares only the 6 loose gems. Finish the parentheses (60), then divide by 5.",
+            );
+          return api.fail("Inside first: 3³ = 27, 2 × 27 = 54, 54 + 6 = 60. Then share it by 5.");
+        }
+        const B = body.querySelector("#b"),
+          b = parseFloat(B.value);
+        B.className = "numin " + (b === 68 ? "ok" : "no");
+        if (b !== 68) {
+          if (b === 218)
+            return api.fail(
+              "That squares 3 × 5. The exponent grips only the 5: 5² = 25 tiles per bed.",
+            );
+          if (b === 23) return api.fail("5² is 5 × 5 = 25, not 5 × 2. Square the 5 first.");
+          return api.fail("Exponent first: 5² = 25. Then 3 × 25 = 75. Then subtract the 7 cracked tiles.");
+        }
+        api.pass(
+          "12 gems each and 68 good tiles — both tags flip to green and the third notch clicks home!",
+        );
+      });
+    },
+  },
   boss: {
     title: "BOSS GATE · Break the Lock",
     icon: "#sig-boss",
@@ -387,17 +492,17 @@ const GATES = {
 
 const TEACHER = {
   suggested:
-    "Use during or after lesson 6-4 (Write and Evaluate Numerical Expressions with Exponents) as a single focused read. Whole-class on a projector, pairs on devices, or independent practice. The book covers only this lesson: the order of operations with exponents and grouping symbols, and writing a numerical expression from a situation. Exponent meaning belongs to lesson 6-3 (The Power Dial); expressions with letters belong to lesson 6-5. Progress saves on the device.",
+    "Use during or after lesson 6-4 (Write and Evaluate Numerical Expressions with Exponents) as a single focused read. Whole-class on a projector, pairs on devices, or independent practice. The book covers only this lesson: the order of operations with exponents and grouping symbols, and writing a numerical expression from a situation (including a power, and a shared total in grouping symbols). Exponent meaning belongs to lesson 6-3 (The Power Dial); expressions with letters belong to lesson 6-5. Progress saves on the device.",
   standards: [
     [
       "6.AT.5",
       "Write and evaluate numerical expressions involving whole-number exponents",
-      "Gate 1, Gate 2, Boss",
+      "Gate 1, Gate 2, Gate 3, Boss",
     ],
     [
       "6.AT.6c",
       "Evaluate expressions at specific values, including expressions that arise from real-world problems",
-      "Gate 2, Boss",
+      "Gate 2, Gate 3, Boss",
     ],
   ],
   answers: [
@@ -408,6 +513,10 @@ const TEACHER = {
     [
       "Gate 2",
       "'4 crates of 3², plus 5 loose' → 4 × 3² + 5 (distractors: (4 × 3)² + 5, 4 × 3 × 2 + 5, 4 + 3² + 5); value 4 × 9 + 5 = 41 (traps: 149 = (4 × 3)² + 5; 29 = 4 × 3 × 2 + 5).",
+    ],
+    [
+      "Gate 3",
+      "'5 friends share 2 boxes of 3³ gems and 6 loose gems' → (2 × 3³ + 6) ÷ 5 (distractors: 2 × 3³ + 6 ÷ 5, (2 × 3)³ + 6 ÷ 5, (2 × 3 × 3 + 6) ÷ 5); value 60 ÷ 5 = 12 (traps: 60 forgot to share; 55.2 shares only the 6). 3 × 5² − 7 = 68 (traps: 218 = (3 × 5)² − 7; 23 treats 5² as 5 × 2).",
     ],
     [
       "Boss",

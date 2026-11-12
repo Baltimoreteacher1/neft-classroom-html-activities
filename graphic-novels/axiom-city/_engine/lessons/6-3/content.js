@@ -10,6 +10,7 @@ const VOLUME = {
 const BADGES = [
   { id: "g1", icon: "#sig-pow", label: "Power Reader — Base &amp; Exponent" },
   { id: "g2", icon: "#sig-tile", label: "Power Evaluator — Squared &amp; Cubed" },
+  { id: "g3", icon: "#sig-graph", label: "Power Grower — Doubling &amp; Powers of Ten" },
   { id: "boss", icon: "#sig-boss", label: "Dial Turner — Boss Gate" },
 ];
 
@@ -43,7 +44,7 @@ const PAGES = [
     html: `
   <div style="text-align:center;margin-top:8px"><div class="kicker">EduWonderLab Presents</div>
   <h2 class="splashtitle" style="margin:8px 0">THE POWER <em>DIAL</em></h2>
-  <div class="caption" style="display:inline-block">Lesson 6-3 — exponents. Three reader gates stand between the crew and the vault's second ring, and every one is about powers: the base, the exponent and repeated multiplication. Nothing else.</div></div>
+  <div class="caption" style="display:inline-block">Lesson 6-3 — exponents. Four reader gates stand between the crew and the vault's second ring, and every one is about powers: the base, the exponent and repeated multiplication. Nothing else.</div></div>
   <div class="gn-comic">
     <div class="panel gn-panel panel3d">${globalThis.ART("p1-ring")}
       <div class="sfx" style="top:8px;left:14px">SKRRT!</div>
@@ -122,7 +123,40 @@ const PAGES = [
   </div>`,
   },
 
-  /* p6 — glitch counterattack: the swap */
+  /* p6 — lesson: powers that grow, powers of ten */
+  {
+    ch: "Chapter 3 · Power Growth",
+    html: `
+  <div class="kicker">Chapter Three</div><h2 class="splashtitle">POWER <em>GROWTH</em></h2>
+  <div class="gn-comic">
+    <div class="panel gn-panel panel3d">${globalThis.ART("p6-crystal")}
+      <div class="caption loc">Behind the second notch, a vault crystal starts to split. Every hour, each crystal becomes two.</div>
+      <div class="gn-sign gn-chalk" data-gn-skip style="left:62%;top:40%">1 → 2 → 4 → 8 → 16<br>= 2⁴ after 4 hours</div>
+      <div class="balloon" style="bottom:8px;left:6px;max-width:44%;--tx:20px"><span class="who">MATEO</span>One crystal, doubled four times: 2 × 2 × 2 × 2. That's 2⁴ — sixteen. The exponent counts the doublings.</div>
+    </div>
+    <div class="panel gn-panel gn-half">${globalThis.ART("p6-nest")}
+      <div class="balloon" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">KEIKO</span>Picture 5 chests like this one. Each holds 5 boxes, and each box holds 5 gems: 5 × 5 × 5 = 5³ = 125 gems.</div>
+    </div>
+    <div class="panel gn-panel gn-half">${globalThis.ART("p3-zara")}
+      <div class="balloon tail-r" style="top:6px;left:6px;right:6px;max-width:none;--tx:46%"><span class="who">LAYLA</span>And tens are easy: 10² = 100, 10³ = 1,000. The exponent tells how many zeros follow the 1.</div>
+    </div>
+    <div class="caption">When something is multiplied by the same number again and again — doubling, or groups inside groups — a power counts it. A power of 10 is a 1 followed by as many zeros as the exponent: 10⁴ = 10 × 10 × 10 × 10 = 10,000. And an exponent of 1 means one copy: 7¹ = 7.</div>
+  </div>`,
+  },
+
+  /* p7 — GATE g3 */
+  {
+    ch: "Chapter 3 · Reader Gate",
+    gate: "g3",
+    html: `
+  <div class="gn-comic">
+    <div class="panel gn-panel">${globalThis.ART("p4-dev")}
+      <div class="balloon" style="top:6px;right:6px;max-width:66%;--tx:10px"><span class="who">MATEO</span>Reader — the crystals keep splitting and the chests keep stacking. Count them with powers.</div>
+    </div>
+  </div>`,
+  },
+
+  /* p8 — glitch counterattack: the swap */
   {
     ch: "Chapter 3 · The Swap",
     html: `
@@ -136,7 +170,7 @@ const PAGES = [
   </div>`,
   },
 
-  /* p7 — BOSS */
+  /* p9 — BOSS */
   {
     ch: "Boss Gate · Turn the Dial",
     gate: "boss",
@@ -148,7 +182,7 @@ const PAGES = [
   </div>`,
   },
 
-  /* p8 — victory + link onward */
+  /* p10 — victory + link onward */
   {
     ch: "Chapter 4 · The Dial Turns",
     html: `
@@ -160,7 +194,7 @@ const PAGES = [
   </div>`,
   },
 
-  /* p9 — journal */
+  /* p11 — journal */
   {
     ch: "End Matter · Ada Vex's Journal",
     html: `
@@ -169,12 +203,13 @@ const PAGES = [
     <div class="jrow"><b>Power.</b><span>A base and an exponent. The base is the number being copied; the exponent counts the copies being MULTIPLIED. 3⁴ = 3 × 3 × 3 × 3 = 81 — never 3 × 4.</span></div>
     <div class="jrow"><b>Expanded form.</b><span>Writing every copy of the base with × between them: 7³ = 7 × 7 × 7. Repeated multiplication is what a power means.</span></div>
     <div class="jrow"><b>Squared &amp; cubed.</b><span>An exponent of 2 is "squared" and an exponent of 3 is "cubed" — a square tile and a cube crate. 5² = 25 and 3³ = 27.</span></div>
+    <div class="jrow"><b>Powers that grow.</b><span>Doubling from 1 six times is 2⁶ = 64, and 5 chests of 5 boxes of 5 gems is 5³ = 125. A power of 10 is a 1 with as many zeros as the exponent: 10⁴ = 10,000.</span></div>
     <div class="jrow"><b>Base and exponent are not twins.</b><span>2⁵ = 32 but 5² = 25. Swapping them changes the number, because the base is what gets copied.</span></div>
   </div>
   <div class="caption">"A power is a promise of repeated multiplication. Keep count, and nothing can inflate on you." — A.V.</div>`,
   },
 
-  /* p10 — certificate */
+  /* p12 — certificate */
   {
     ch: "End Matter · Certificate",
     html: `
@@ -325,6 +360,79 @@ const GATES = {
       });
     },
   },
+  g3: {
+    title: "Gate 3 · Grow the Crystals",
+    icon: "#sig-graph",
+    prompt: `One crystal on the pedestal doubles every hour for <b>6 hours</b>. Nearby, <b>5 chests</b> each hold <b>5 boxes</b>, and each box holds <b>5 gems</b>. The last notch shows <b>10⁴</b>.`,
+    hints: [
+      "Conceptual: each doubling multiplies by 2 once more, so the number of hours is the exponent. Groups inside groups multiply the same number again and again.",
+      "Procedural: write the copies out and keep a running product. For 10⁴, write a 1 and then one zero for each copy of 10.",
+    ],
+    worked: {
+      steps: [
+        "Andre's warm-up: a pile starts at 1 and triples every night for 3 nights.",
+        "Each night multiplies by 3 once more: 1 × 3 × 3 × 3. Three copies of 3 is 3³.",
+        "Running product: 3 × 3 = 9, then 9 × 3 = 27. After 3 nights the pile is 27.",
+      ],
+      q: "A pile starts at 1 and triples for 4 nights. What is 3⁴?",
+      a: "81",
+    },
+    render(body, api) {
+      body.innerHTML = `<div style="display:flex;flex-direction:column;gap:10px">
+      <div style="${ROW}"><span style="${LBL}">Crystals after 6 hours: 2⁶ =</span><input class="numin" id="a" inputmode="numeric" aria-label="value of 2 to the 6th power"></div>
+      <div><div style="font:600 .9rem 'Segoe UI'">Which power counts the gems in the chests?</div>
+        <div class="choicebtns">
+          <button class="choicebtn" data-q="gem" data-v="right" aria-pressed="false">5³</button>
+          <button class="choicebtn" data-q="gem" data-v="swap" aria-pressed="false">3⁵</button>
+          <button class="choicebtn" data-q="gem" data-v="times" aria-pressed="false">5 × 3</button>
+          <button class="choicebtn" data-q="gem" data-v="add" aria-pressed="false">5 + 5 + 5</button></div></div>
+      <div style="${ROW}"><span style="${LBL}">10⁴ =</span><input class="numin" id="c" inputmode="numeric" aria-label="value of 10 to the 4th power"></div></div>`;
+      const picks = wirePicks(body, api);
+      const num = (el) => Number(el.value.replace(/[,\s]/g, "")) || NaN;
+      api.onCheck(() => {
+        const A = body.querySelector("#a"),
+          C = body.querySelector("#c");
+        const a = num(A),
+          c = num(C);
+        A.className = "numin " + (a === 64 ? "ok" : "no");
+        if (a !== 64) {
+          if (a === 12)
+            return api.fail(
+              "That's 2 × 6 — glitch math. Six doublings means six 2s multiplied: 2 × 2 × 2 × 2 × 2 × 2.",
+            );
+          if (a === 36)
+            return api.fail("That's 6² — base and exponent swapped. The 2 is what gets copied.");
+          if (a === 32)
+            return api.fail("32 is 2⁵ — one doubling short. Multiply by 2 one more time.");
+          return api.fail("Keep a running product: 2, 4, 8, 16, 32 … one more doubling.");
+        }
+        if (!picks.gem) return api.fail("Pick the power that counts the gems.");
+        if (picks.gem !== "right") {
+          if (picks.gem === "swap")
+            return api.fail(
+              "3⁵ would be five 3s. Here 5 is copied — chests, boxes, gems — three times.",
+            );
+          if (picks.gem === "times")
+            return api.fail(
+              "5 × 3 is 15 — the glitch's move. Groups inside groups multiply 5 by 5 by 5.",
+            );
+          return api.fail(
+            "5 + 5 + 5 adds the levels. Each chest holds 5 WHOLE boxes, so the levels multiply.",
+          );
+        }
+        C.className = "numin " + (c === 10000 ? "ok" : "no");
+        if (c !== 10000) {
+          if (c === 40) return api.fail("That's 10 × 4. 10⁴ is four 10s multiplied together.");
+          if (c === 1000)
+            return api.fail("1,000 is 10³ — three zeros. The exponent 4 means four zeros.");
+          return api.fail("Write a 1, then one zero for each copy of 10: four zeros.");
+        }
+        api.pass(
+          "2⁶ = 64 crystals, 5³ = 125 gems, and 10⁴ = 10,000 — the third notch glows and the pedestal sinks into the floor!",
+        );
+      });
+    },
+  },
   boss: {
     title: "BOSS GATE · Turn the Dial",
     icon: "#sig-boss",
@@ -396,12 +504,12 @@ const GATES = {
 
 const TEACHER = {
   suggested:
-    "Use during or after lesson 6-3 (Explore Numerical Expressions with Exponents) as a single focused read. Whole-class on a projector, pairs on devices, or independent practice. The book covers only this lesson: base, exponent, power, repeated multiplication, expanded form, squared and cubed. Order of operations belongs to lesson 6-4 (The Order Lock). Progress saves on the device.",
+    "Use during or after lesson 6-3 (Explore Numerical Expressions with Exponents) as a single focused read. Whole-class on a projector, pairs on devices, or independent practice. The book covers only this lesson: base, exponent, power, repeated multiplication, expanded form, squared and cubed, and powers in growth situations (doubling, groups of groups, powers of 10). Order of operations belongs to lesson 6-4 (The Order Lock). Progress saves on the device.",
   standards: [
     [
       "6.AT.5",
       "Write and evaluate numerical expressions involving whole-number exponents",
-      "Gate 1, Gate 2, Boss",
+      "Gate 1, Gate 2, Gate 3, Boss",
     ],
   ],
   answers: [
@@ -412,6 +520,10 @@ const TEACHER = {
     [
       "Gate 2",
       "2⁵ = 32 (traps: 10 = 2 × 5; 25 = 5²). 6² = 36 (trap: 12 = 6 × 2). 4³ = 64 (traps: 12 = 4 × 3; 81 = 3⁴).",
+    ],
+    [
+      "Gate 3",
+      "2⁶ = 64 (traps: 12 = 2 × 6; 36 = 6²; 32 = 2⁵, one doubling short). 5 chests × 5 boxes × 5 gems = 5³ (distractors: 3⁵, 5 × 3, 5 + 5 + 5). 10⁴ = 10,000 (traps: 40 = 10 × 4; 1,000 = 10³).",
     ],
     [
       "Boss",
