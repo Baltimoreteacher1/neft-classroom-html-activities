@@ -60,7 +60,7 @@ const labelsFor = (id) =>
 const tabByLabel = (page, label) =>
   page.locator('.sg-tabs [role="tab"]').filter({ hasText: label }).first();
 
-async function studioChecks(page, id, vp, errors) {
+async function studioChecks(page, id, errors) {
   const notes = [];
   const res = await page.goto(`${BASE}/lessons/${id}/`, { waitUntil: "load" });
   if (!res || res.status() >= 400) return [`HTTP ${res?.status()}`];
@@ -227,7 +227,7 @@ async function runLesson(browser, id, only = viewportNames) {
     });
     let notes = [];
     try {
-      notes = await studioChecks(page, id, name, errors);
+      notes = await studioChecks(page, id, errors);
       if (name === DEEP || viewportNames.length === 1) {
         const t = await toolChecks(page);
         row.tool = t.tool;

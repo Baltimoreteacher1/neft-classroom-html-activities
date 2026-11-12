@@ -99,7 +99,7 @@
     const grid = $("#story-grid");
     const visible = stories.filter((s) => s.band === "3-5" || s.band === "6-8");
     grid.innerHTML = visible
-      .map((s, i) => {
+      .map((s) => {
         const p = progressFor(s.id);
         const finished = p.done.length === s.scenes.length;
         const activeDomain =
@@ -289,7 +289,6 @@
   function renderActivity(a, idx, p) {
     const box = $("#activity");
     const prev = p.answers[idx] || {};
-    let submitted = false;
     const guided = state.pathway === "guided";
     const faded = guided && p.done.length >= 3;
     const frame =
