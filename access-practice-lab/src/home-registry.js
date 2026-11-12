@@ -164,6 +164,18 @@ export const HOME_CARDS = [
     ],
   },
   {
+    id: "language-studio",
+    group: "explore",
+    featured: true,
+    href: "/language-studio/",
+    icon: "worlds",
+    title: ["Language Studio · 18 Cases", "Estudio del lenguaje · 18 casos"],
+    text: [
+      "Nine worlds with two cases each, six untimed arcade games, twelve studios, and a daily four-move dispatch.",
+      "Nueve mundos con dos casos cada uno, seis juegos sin cronómetro, doce estudios y un despacho diario de cuatro movimientos.",
+    ],
+  },
+  {
     id: "exhibition",
     group: "explore",
     featured: true,

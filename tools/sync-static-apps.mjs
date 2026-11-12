@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * sync-static-apps.mjs — publish the Fluency Adventures and Language Adventures apps onto this site.
+ * sync-static-apps.mjs — publish the Fluency Adventures, Language Adventures and Language Studio apps onto this site.
  *
  *   node tools/sync-static-apps.mjs --app fluency-adventures=<checkout> --app language-adventures=<checkout>
  *   node tools/sync-static-apps.mjs --overlay-only
@@ -11,6 +11,7 @@
  *
  *   fluency-adventures/    the export of the Fluency Lab adventure app (the older Fluency Lab 4.0 stays at /math/fluency-lab/)
  *   language-adventures/   the export of The Language Page adventures (the ACCESS Practice Lab stays at /access-practice-lab/)
+ *   language-studio/       the export of the Language Studio: 18 cases, arcade, studios, passport (keeps its data in the `studio` field of the same two storage objects)
  *   data/static-app-mounts.json   file counts and source commits, so a drifted copy is visible
  *   curriculum/index.html         one hub link per app
  *
@@ -25,6 +26,7 @@ import { REPO_ROOT } from "./lib/curriculum-source.mjs";
 export const APPS = [
   { name: "fluency-adventures", mount: "/fluency-adventures", label: "Fluency Adventures" },
   { name: "language-adventures", mount: "/language-adventures", label: "Language Adventures" },
+  { name: "language-studio", mount: "/language-studio", label: "Language Studio" },
 ];
 
 const MANIFEST = "data/static-app-mounts.json";

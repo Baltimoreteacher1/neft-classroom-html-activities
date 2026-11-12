@@ -5866,6 +5866,42 @@ export const ACTIVITIES = [
     unit: null,
   },
   {
+    path: "/language-studio/",
+    title: "The Language Page · Language Studio",
+    category: "Tool",
+    unit: null,
+  },
+  {
+    path: "/language-studio/404/",
+    title: "The Language Page · 404",
+    category: "Tool",
+    unit: null,
+  },
+  {
+    path: "/language-studio/arcade/",
+    title: "The Language Page · Arcade",
+    category: "Tool",
+    unit: null,
+  },
+  {
+    path: "/language-studio/notes/",
+    title: "The Language Page · Notes",
+    category: "Tool",
+    unit: null,
+  },
+  {
+    path: "/language-studio/passport/",
+    title: "The Language Page · Passport",
+    category: "Tool",
+    unit: null,
+  },
+  {
+    path: "/language-studio/studios/",
+    title: "The Language Page · Studios",
+    category: "Tool",
+    unit: null,
+  },
+  {
     path: "/living-school/",
     title: "Neft City · Living School",
     category: "Tool",

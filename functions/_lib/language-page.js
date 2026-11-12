@@ -21,11 +21,14 @@ export const LEGACY_HOST = "eduwonderlab.com";
 export const LAB_BASE = "/access-practice-lab";
 /** The Language Page adventures app: a static export mounted here (tools/sync-static-apps.mjs). */
 export const ADVENTURES_BASE = "/language-adventures";
+/** The Language Studio app: a second static export mounted here, beside the adventures app. */
+export const STUDIO_BASE = "/language-studio";
 
 /** Paths the lab itself loads, measured against the live lab (shell, fonts, Save/Resume, ping, Cloudflare). */
 const LAB_PREFIXES = [
   `${LAB_BASE}/`,
   `${ADVENTURES_BASE}/`,
+  `${STUDIO_BASE}/`,
   "/graphic-novels/",
   "/assets/",
   "/data/",

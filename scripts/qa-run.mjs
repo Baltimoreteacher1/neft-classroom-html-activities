@@ -252,7 +252,7 @@ const COVERAGE = [
     ],
   ],
   [
-    /^(language-adventures\/.*|data\/static-app-mounts\.json|curriculum\/index\.html|functions\/_lib\/language-page\.js|functions\/language-page-host\.test\.mjs)$/,
+    /^((language-adventures|language-studio)\/.*|data\/static-app-mounts\.json|curriculum\/index\.html|functions\/_lib\/language-page\.js|functions\/language-page-host\.test\.mjs)$/,
     ["validate:static", "validate:catalog", "check"],
   ],
   [

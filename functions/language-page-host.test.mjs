@@ -101,6 +101,13 @@ await t("the Language adventures app is served on the lab host, and a look-alike
     assert.equal(at(`https://thelanguagepage.com${path}`).kind, "redirect", path);
 });
 
+await t("the Language Studio app is served on the lab host, and a look-alike prefix is not", () => {
+  for (const path of ["/language-studio/", "/language-studio/adventures/word-forge/wf-01/", "/language-studio/_next/static/a.js"])
+    assert.equal(at(`https://thelanguagepage.com${path}`).kind, "serve", path);
+  for (const path of ["/language-studio", "/language-studio-evil/"])
+    assert.equal(at(`https://thelanguagepage.com${path}`).kind, "redirect", path);
+});
+
 await t("the Graphic Novels app is served on the lab host", () => {
   for (const path of ["/graphic-novels/", "/graphic-novels/unit1/graphic-novel-1.html", "/graphic-novels"])
     assert.equal(at(`https://thelanguagepage.com${path}`).kind, "serve", path);

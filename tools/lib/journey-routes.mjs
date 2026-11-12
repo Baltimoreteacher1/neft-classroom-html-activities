@@ -73,6 +73,7 @@ export function hrefProblem(href, facts, content) {
     "/access-family-expedition/",
     "/access-family-tour/",
     "/language-adventures/",
+    "/language-studio/",
     "/graphic-novels/",
   ];
   if (external.includes(path)) return null;

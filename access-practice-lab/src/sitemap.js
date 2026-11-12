@@ -680,6 +680,22 @@ export const DESTINATIONS = Object.freeze([
     ),
   },
   {
+    id: "language-studio",
+    section: "play",
+    skill: "Mixed",
+    kind: "world",
+    for: STF,
+    top: true,
+    href: "/language-studio/",
+    icon: "worlds",
+    match: [],
+    title: P("Language Studio", "Estudio del lenguaje"),
+    text: P(
+      "Eighteen cases, six untimed games, and twelve studios for academic English.",
+      "Dieciocho casos, seis juegos sin cronómetro y doce estudios para el inglés académico.",
+    ),
+  },
+  {
     id: "worlds",
     section: "play",
     skill: "Mixed",
