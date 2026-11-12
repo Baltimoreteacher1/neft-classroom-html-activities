@@ -1,0 +1,67 @@
+/* Math Fluency Lab student app — one visual language for every picture shown inside the app: studio engine frames
+   and Build panels, living models, and the lab's fallback models. Engines keep drawing with core.js COLORS; here
+   those colours resolve to the app's quantity tokens, labels use the app's type, and legible.js (14px labels) can
+   widen a dense picture inside its own scrolling box. */
+#app svg text {
+  font-family: var(--font);
+  font-variant-numeric: tabular-nums;
+}
+/* A light halo keeps a label readable where it crosses a line or a bar; white labels on fills stay as drawn. */
+#app :is(.cv-stage, .sd-studio, .model-fallback, [data-lm-host]) svg text:not([fill="#fff"]):not([fill="white"]):not([fill="#ffffff"]) {
+  paint-order: stroke fill;
+  stroke: #fbfcfe;
+  stroke-width: 3px;
+  stroke-linejoin: round;
+}
+#app svg {
+  shape-rendering: geometricPrecision;
+  text-rendering: geometricPrecision;
+}
+/* Quantity colours: second quantity / whole / tens = --q2, first part / ones = --q3, the change = --q1. */
+#app svg [fill="#1d4ed8"] {
+  fill: var(--q2);
+}
+#app svg [stroke="#1d4ed8"] {
+  stroke: var(--q2);
+}
+#app svg [fill="#0f766e"] {
+  fill: var(--q3);
+}
+#app svg [stroke="#0f766e"] {
+  stroke: var(--q3);
+}
+#app svg [fill="#b45309"] {
+  fill: var(--q1);
+}
+#app svg [stroke="#b45309"] {
+  stroke: var(--q1);
+}
+#app svg [fill="#17324d"] {
+  fill: var(--ink);
+}
+
+/* A picture widened for its labels scrolls inside its box, never the page. */
+.pan-host {
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--line-2) transparent;
+}
+.pan-host:focus-visible {
+  outline: 3px solid var(--blue);
+  outline-offset: 2px;
+}
+.pan-host > svg {
+  max-height: none;
+}
+/* A sentence an engine wrote inside a picture, moved under it so it can wrap at a readable size. */
+.svg-notes {
+  list-style: none;
+  margin: var(--s2) 0 0;
+  padding: 0;
+  color: var(--ink-2);
+  font-size: 0.98rem;
+}
+.svg-notes li + li {
+  margin-top: var(--s1);
+}

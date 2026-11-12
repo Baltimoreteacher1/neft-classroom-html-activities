@@ -91,38 +91,5 @@ export function mountCanvas(host, { frames, predicts = [], onFinish = null, fini
 export const frameStrip = (frames) =>
   `<ol class="cv-strip">${frames.map((f) => `<li><div class="cv-stage">${f.svg}</div><p class="cv-eq">${esc(f.eq || "")}</p><p class="cv-cap">${esc(pickL(f.cap))}</p></li>`).join("")}</ol>`;
 
-// Engine pictures are drawn in a ~560-unit viewBox; on a phone that scales 18-unit labels to ~9px. After a picture
-// is shown, any label that would render under 13px is enlarged to 13px (at most 1.7× its drawn size, so close
-// labels on a number line do not run into each other). Runs again when the width changes.
-const MIN_PX = 13;
-const MAX_GROW = 1.7;
-export function legibleSvg(root) {
-  for (const svg of root.querySelectorAll("svg[viewBox]")) {
-    const width = svg.getBoundingClientRect().width;
-    const box = svg.viewBox?.baseVal;
-    if (!width || !box?.width) continue;
-    const scale = width / box.width;
-    for (const text of svg.querySelectorAll("text")) {
-      if (!text.dataset.fs) text.dataset.fs = text.getAttribute("font-size") || "16";
-      const drawn = Number.parseFloat(text.dataset.fs) || 16;
-      const need = MIN_PX / scale;
-      text.setAttribute("font-size", String(drawn * scale < MIN_PX ? Math.min(need, drawn * MAX_GROW) : drawn));
-    }
-  }
-}
-export function keepLegible(root) {
-  let queued = false;
-  const run = () => {
-    queued = false;
-    legibleSvg(root);
-  };
-  const queue = () => {
-    if (!queued) {
-      queued = true;
-      requestAnimationFrame(run);
-    }
-  };
-  new MutationObserver(queue).observe(root, { childList: true, subtree: true });
-  addEventListener("resize", queue);
-  queue();
-}
+// Label legibility for every picture lives in legible.js (14px minimum at the rendered size, no clipping).
+export { keepLegible, legibleSvg } from "./legible.js";
