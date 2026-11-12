@@ -17,7 +17,7 @@ const out = (svg, alt, read, extra = {}) => ({
 const slider = (key, label, min, max, step, value) => ({ key, label, min, max, step, value });
 const hundredGrid = (p, y = 390) => {
   const cell = 16, gap = 2, x0 = 210;
-  let body = txt(300, y - 18, `10 × 10 hundred grid · ${p} of 100 squares`, { size: 15 });
+  let body = txt(300, y - 18, L(`10 × 10 hundred grid · ${p} of 100 squares`, `cuadrícula de 10 × 10 · ${p} de 100 cuadrados`), { size: 15 });
   for (let i = 0; i < 100; i += 1) {
     const x = x0 + (i % 10) * (cell + gap), top = y + Math.floor(i / 10) * (cell + gap);
     body += `<rect x="${x}" y="${top}" width="${cell}" height="${cell}" rx="2" fill="${i < p ? COLORS.part : "#fff"}" stroke="${COLORS.ink}" stroke-width="1"/>`;
@@ -367,8 +367,8 @@ const volume = {
       for (let q = 0; q < s.l; q += 1)
         body += `<rect x="${40 + q * c}" y="${68 + r * c}" width="${c - 2}" height="${c - 2}" fill="${COLORS.whole}" fill-opacity=".85"/>`;
     body +=
-      txt(440, 90, `${s.l * s.w} per layer`, { size: 18, fill: COLORS.whole }) +
-      txt(440, 125, `× ${s.h} layers`, { size: 18, fill: COLORS.hundreds }) +
+      txt(440, 90, L(`${s.l * s.w} per layer`, `${s.l * s.w} por capa`), { size: 18, fill: COLORS.whole }) +
+      txt(440, 125, L(`× ${s.h} layers`, `× ${s.h} capas`), { size: 18, fill: COLORS.hundreds }) +
       txt(440, 165, `V = ${s.l * s.w * s.h}`, { size: 24 });
     const alt = L(
       `A box ${s.l} by ${s.w} by ${s.h}; volume ${s.l * s.w * s.h}.`,

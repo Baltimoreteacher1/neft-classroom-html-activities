@@ -63,13 +63,44 @@ export const svgWrap = (body, alt, { w = 560, h = 260 } = {}) =>
 export const keyed = (key, x, y, inner, cls = "") =>
   `<g class="sd-k ${cls}" data-k="${esc(key)}" style="transform:translate(${x}px,${y}px)">${inner}</g>`;
 
+// A label. `value` is a plain string (numbers and math, the same in every language) or an L(en, es) pair: a pair
+// draws both, each tagged with its language, and studio.css shows the one matching <html lang>. The picture is a
+// string built once, so this is how it follows the language switch the way a caption does (`pick` at render time).
+// `lang` tags a plain string as one language's only, for a label laid out differently in each (a wrapped word).
 export const txt = (
   x,
   y,
   value,
-  { size = 18, weight = 700, fill = COLORS.ink, anchor = "middle", cls = "" } = {},
-) =>
-  `<text class="${cls}" x="${x}" y="${y}" text-anchor="${anchor}" font-size="${size}" font-weight="${weight}" fill="${fill}">${esc(value)}</text>`;
+  { size = 18, weight = 700, fill = COLORS.ink, anchor = "middle", cls = "", lang = null } = {},
+) => {
+  const one = (text, extra) =>
+    `<text class="${`${cls} ${extra}`.trim()}" x="${x}" y="${y}" text-anchor="${anchor}" font-size="${size}" font-weight="${weight}" fill="${fill}">${esc(text)}</text>`;
+  if (!value || typeof value !== "object") return one(value, lang ? `sd-l-${lang}` : "");
+  if (value.en === value.es) return one(value.en, "");
+  return one(value.en, "sd-l-en") + one(value.es, "sd-l-es");
+};
+
+// The picture as a reader of one language sees it: the other language's labels removed (what studio.css hides).
+export const svgIn = (svg, lang) =>
+  String(svg).replace(
+    new RegExp(`<text\\b[^>]*\\bclass="[^"]*\\bsd-l-${lang === "es" ? "en" : "es"}\\b[^"]*"[^>]*>[^<]*</text>`, "g"),
+    "",
+  );
+
+// For a drawing made by a shared model that writes its labels in English only: every <text> whose words `toEs`
+// translates is drawn in both languages, tagged the way txt() tags them. Text it returns unchanged stays as it is.
+const unesc = (t) =>
+  t.replaceAll("&quot;", '"').replaceAll("&gt;", ">").replaceAll("&lt;", "<").replaceAll("&amp;", "&");
+export const bilingualText = (svg, toEs) =>
+  String(svg).replace(/<text\b([^>]*)>([^<]*)<\/text>/g, (whole, attrs, content) => {
+    const es = toEs(unesc(content));
+    if (!es || es === unesc(content)) return whole;
+    const tag = (lang) =>
+      /\bclass="/.test(attrs)
+        ? attrs.replace(/\bclass="/, `class="sd-l-${lang} `)
+        : ` class="sd-l-${lang}"${attrs}`;
+    return `<text${tag("en")}>${content}</text><text${tag("es")}>${esc(es)}</text>`;
+  });
 
 // Move the model to its next frame. Keyed groups already on screen slide to their new place; new ones fade in;
 // ones that are gone fade out. With reduced motion the swap is immediate.

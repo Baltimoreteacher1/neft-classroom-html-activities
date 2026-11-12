@@ -116,7 +116,7 @@ export function frames(s) {
       [...s.digits].forEach((d, i) => (out += `<rect x="${x0 + i * w + 2}" y="70" width="${w - 4}" height="56" rx="8" fill="#f8fafc" stroke="${COLORS.rule}" stroke-width="2"/>` + tag(x0 + i * w + w / 2, 108, d, 28)));
       const px = x0 + Math.max(0, Math.min(s.digits.length, point)) * w;
       out += `<circle cx="${px}" cy="140" r="8" fill="${COLORS.warn}"/>`;
-      if (point < 0 || point > s.digits.length) out += tag(px + (point < 0 ? 16 : -16), 146, point < 0 ? `←${-point} zeros` : `${point - s.digits.length} zeros →`, 14, COLORS.warn, point < 0 ? "start" : "end");
+      if (point < 0 || point > s.digits.length) out += tag(px + (point < 0 ? 16 : -16), 146, point < 0 ? L(`←${-point} zeros`, `←${-point} ceros`) : L(`${point - s.digits.length} zeros →`, `${point - s.digits.length} ceros →`), 14, COLORS.warn, point < 0 ? "start" : "end");
       if (arrow) out += tag(280, 180, arrow, 22, COLORS.warn);
       return out;
     };

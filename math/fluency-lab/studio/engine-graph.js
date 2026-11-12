@@ -46,8 +46,8 @@ function grid(s, { points = 0, triangle = 0, tokenAt = null } = {}) {
   const dot = (x, y, key, color) => keyed(key, X(x), Y(y), `<circle r="7" fill="${color}" stroke="#fff" stroke-width="2"/>${txt(10, -10, `(${sg(x)}, ${sg(y)})`, { size: 13, anchor: "start", fill: color })}`);
   if (points >= 1) out += dot(s.x1, s.y1, "p1", COLORS.whole);
   if (points >= 2) out += dot(s.x2, s.y2, "p2", COLORS.hundreds) + `<line x1="${X(s.x1)}" y1="${Y(s.y1)}" x2="${X(s.x2)}" y2="${Y(s.y2)}" stroke="${COLORS.ink}" stroke-width="3"/>`;
-  if (triangle >= 1) out += `<line x1="${X(s.x1)}" y1="${Y(s.y1)}" x2="${X(s.x2)}" y2="${Y(s.y1)}" stroke="${COLORS.warn}" stroke-width="4"/>` + txt((X(s.x1) + X(s.x2)) / 2, Y(s.y1) + (s.rise >= 0 ? 20 : -10), `${L("run", "avance").en} ${sg(s.run)}`, { size: 14, fill: COLORS.warn });
-  if (triangle >= 2) out += `<line x1="${X(s.x2)}" y1="${Y(s.y1)}" x2="${X(s.x2)}" y2="${Y(s.y2)}" stroke="${COLORS.part}" stroke-width="4"/>` + txt(X(s.x2) + (s.run >= 0 ? 10 : -10), (Y(s.y1) + Y(s.y2)) / 2, `${L("rise", "subida").en} ${sg(s.rise)}`, { size: 14, anchor: s.run >= 0 ? "start" : "end", fill: COLORS.part });
+  if (triangle >= 1) out += `<line x1="${X(s.x1)}" y1="${Y(s.y1)}" x2="${X(s.x2)}" y2="${Y(s.y1)}" stroke="${COLORS.warn}" stroke-width="4"/>` + txt((X(s.x1) + X(s.x2)) / 2, Y(s.y1) + (s.rise >= 0 ? 20 : -10), L(`run ${sg(s.run)}`, `avance ${sg(s.run)}`), { size: 14, fill: COLORS.warn });
+  if (triangle >= 2) out += `<line x1="${X(s.x2)}" y1="${Y(s.y1)}" x2="${X(s.x2)}" y2="${Y(s.y2)}" stroke="${COLORS.part}" stroke-width="4"/>` + txt(X(s.x2) + (s.run >= 0 ? 10 : -10), (Y(s.y1) + Y(s.y2)) / 2, L(`rise ${sg(s.rise)}`, `subida ${sg(s.rise)}`), { size: 14, anchor: s.run >= 0 ? "start" : "end", fill: COLORS.part });
   if (tokenAt) out += keyed("tok", X(tokenAt[0]), Y(tokenAt[1]), `<circle r="9" fill="${COLORS.part}" stroke="#fff" stroke-width="3"/>`);
   return svgWrap(out, "", { h: 300 });
 }

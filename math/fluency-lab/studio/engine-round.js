@@ -26,7 +26,7 @@ function drawLine(s, { token = true, mark = false, pick = null } = {}) {
   ]) {
     out += `<line x1="${X(v)}" x2="${X(v)}" y1="104" y2="136" stroke="${color}" stroke-width="5"/>` + txt(X(v), 168, label, { size: 17, fill: color });
   }
-  if (mark || pick) out += `<line x1="${X(s.mid)}" x2="${X(s.mid)}" y1="96" y2="144" stroke="${COLORS.warn}" stroke-width="3" stroke-dasharray="6 5"/>` + txt(X(s.mid), 88, `${comma(s.mid)} ${L("halfway", "mitad").en}`, { size: 14, fill: COLORS.warn });
+  if (mark || pick) out += `<line x1="${X(s.mid)}" x2="${X(s.mid)}" y1="96" y2="144" stroke="${COLORS.warn}" stroke-width="3" stroke-dasharray="6 5"/>` + txt(X(s.mid), 88, L(`${comma(s.mid)} halfway`, `${comma(s.mid)} mitad`), { size: 14, fill: COLORS.warn });
   if (pick) out += `<circle cx="${X(pick === "upper" ? s.upper : s.lower)}" cy="120" r="14" fill="none" stroke="${COLORS.part}" stroke-width="5"/>`;
   if (token) out += keyed("tok", X(s.n), 120, `<circle r="12" fill="${COLORS.hundreds}" stroke="#fff" stroke-width="3"/>${txt(0, -22, comma(s.n), { size: 16, fill: COLORS.hundreds })}`, "sd-token");
   return svgWrap(out, "", { h: 200 });

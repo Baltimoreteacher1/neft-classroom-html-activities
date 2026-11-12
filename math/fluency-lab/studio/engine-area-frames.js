@@ -507,7 +507,7 @@ const KINDS = {
         return wrap(
           back +
             g.out +
-            txt(470, 120, `${n} layer${n > 1 ? "s" : ""}`, { size: 18, fill: COLORS.hundreds }),
+            txt(470, 120, L(`${n} layer${n > 1 ? "s" : ""}`, `${n} capa${n > 1 ? "s" : ""}`), { size: 18, fill: COLORS.hundreds }),
           250,
         );
       };

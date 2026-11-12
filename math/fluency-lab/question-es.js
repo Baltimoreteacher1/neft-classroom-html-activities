@@ -26,7 +26,7 @@ const ROUND_TO = {
   hundredth: "la centésima",
 };
 // [Spanish plural, "m"/"f"] so "cuántos / cuántas" agrees.
-const UNITS = {
+export const UNITS = {
   hours: ["horas", "f"],
   minutes: ["minutos", "m"],
   seconds: ["segundos", "m"],
@@ -228,7 +228,7 @@ export function questionEs(item) {
   return null;
 }
 
-const FRUIT_ES = { apples: "manzanas", bananas: "plátanos", oranges: "naranjas", pears: "peras" };
+export const FRUIT_ES = { apples: "manzanas", bananas: "plátanos", oranges: "naranjas", pears: "peras" };
 const CHOICES = {
   ...FRUIT_ES,
   even: "par", odd: "impar", yes: "sí", no: "no", prime: "primo", composite: "compuesto",

@@ -71,12 +71,16 @@ function mat(rows, { hi = null, label = null } = {}) {
       out += `<rect x="${x + 3}" y="${50 + r * 78}" width="${w - 6}" height="64" rx="10" fill="${lit ? "#fff7ed" : "#f8fafc"}" stroke="${lit ? COLORS.warn : COLORS.rule}" stroke-width="${lit ? 4 : 1.5}"/>`;
       out += txt(x + w / 2, 94 + r * 78, c.pad ? "0" : String(c.d), { size: 30, weight: 900, fill: c.pad ? COLORS.rule : PLACE_COLORS[Math.max(0, c.e) % PLACE_COLORS.length] });
       if (r === 0) {
-        // "hundred-thousands" is wider than a column: break it at the hyphen so neighbours never overlap.
-        const name = byExp[c.e]?.en ?? "";
-        const parts = name.includes("-") ? [name.slice(0, name.indexOf("-") + 1), name.slice(name.indexOf("-") + 1)] : [name];
-        parts.forEach((part, line) => {
-          out += txt(x + w / 2, parts.length > 1 ? 26 + line * 12 : 38, part, { size: w < 52 ? 9 : 11, weight: 800, fill: COLORS.mute });
-        });
+        // "hundred-thousands" / "centenas de millar" are wider than a column: break them (at the hyphen, before
+        // "de") so neighbours never overlap. Each language is laid out on its own, since they break differently.
+        for (const lang of ["en", "es"]) {
+          const name = byExp[c.e]?.[lang] ?? "";
+          const cut = lang === "en" ? name.indexOf("-") + 1 : name.indexOf(" de ") + 1;
+          const parts = cut > 0 ? [name.slice(0, cut).trim(), name.slice(cut).trim()] : [name];
+          parts.forEach((part, line) => {
+            out += txt(x + w / 2, parts.length > 1 ? 26 + line * 12 : 38, part, { size: w < 52 ? 9 : 11, weight: 800, fill: COLORS.mute, lang });
+          });
+        }
       }
     });
   });

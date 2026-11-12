@@ -55,10 +55,10 @@ const treeSvg = (n) => factorTreeSvg(n, { label: `Factor tree of ${n}` }).match(
 function primeCountTable(s, selected = []) {
   const rowY = (i) => 100 + i * 48;
   let body = "";
-  body += txt(55, 48, "Prime", { size: 14 });
-  body += txt(180, 48, `In ${s.a}`, { size: 14 });
-  body += txt(300, 48, `In ${s.b}`, { size: 14 });
-  body += txt(455, 48, "Keep max", { size: 14 });
+  body += txt(55, 48, L("Prime", "Primo"), { size: 14 });
+  body += txt(180, 48, L(`In ${s.a}`, `En ${s.a}`), { size: 14 });
+  body += txt(300, 48, L(`In ${s.b}`, `En ${s.b}`), { size: 14 });
+  body += txt(455, 48, L("Keep max", "Conserva el mayor"), { size: 14 });
   s.primes.forEach((p, i) => {
     const aCount = countOf(s.pa, p);
     const bCount = countOf(s.pb, p);
@@ -79,7 +79,7 @@ const lcmStep = (id, cap, svg, alt, eq = "", meta = {}) =>
 export function frames(s) {
   if (s.mode === "gcf") {
     const alt = L(`Factor lists for ${s.a} and ${s.b}.`, `Listas de factores de ${s.a} y ${s.b}.`);
-    const lab = [L(`Factors of ${s.a}`, `Factores de ${s.a}`).en, L(`Factors of ${s.b}`, `Factores de ${s.b}`).en];
+    const lab = [L(`Factors of ${s.a}`, `Factores de ${s.a}`), L(`Factors of ${s.b}`, `Factores de ${s.b}`)];
     return [
       mk("lists", L(`List every factor of ${s.a} and of ${s.b}.`, `Escribe todos los factores de ${s.a} y de ${s.b}.`), L("List the factors.", "Escribe los factores."), `GCF(${s.a}, ${s.b})`, lists([s.fa, s.fb], { label: lab }), alt, { common: s.common }),
       mk("common", L(`Mark the factors the lists share: ${s.common.join(", ")}.`, `Marca los factores que comparten las listas: ${s.common.join(", ")}.`), L("Shared factors.", "Factores compartidos."), `GCF(${s.a}, ${s.b})`, lists([s.fa, s.fb], { mark: s.common, label: lab }), alt, { common: s.common }),
@@ -92,7 +92,7 @@ export function frames(s) {
     lcmStep("tree-a", L(`Split ${s.a} into factors until every end number is prime: ${s.a} = ${s.pa.join(" × ")}.`, `Descompón ${s.a} en factores hasta que cada número final sea primo: ${s.a} = ${s.pa.join(" × ")}.`), treeSvg(s.a), L(`Factor tree of ${s.a}.`, `Árbol de factores de ${s.a}.`), `${s.a} = ${s.pa.join(" × ")}`, { primes: s.pa }),
     lcmStep("tree-b", L(`Now split ${s.b} until every end number is prime: ${s.b} = ${s.pb.join(" × ")}.`, `Ahora descompón ${s.b} hasta que cada número final sea primo: ${s.b} = ${s.pb.join(" × ")}.`), treeSvg(s.b), L(`Factor tree of ${s.b}.`, `Árbol de factores de ${s.b}.`), `${s.b} = ${s.pb.join(" × ")}`, { primes: s.pb }),
     lcmStep("keep", L(`Compare each prime's copies. Keep the greater count: ${keptPowers}.`, `Compara las copias de cada primo. Conserva el conteo mayor: ${keptPowers}.`), primeCountTable(s), alt, keptPowers, { kept: s.kept }),
-    lcmStep("multiply", L(`Multiply the kept prime powers: ${powerText(s.kept)} = ${s.result}. Both numbers divide ${s.result} evenly, so it is the least common multiple.`, `Multiplica las potencias primas conservadas: ${powerText(s.kept)} = ${s.result}. Ambos números dividen exactamente a ${s.result}, así que es el mínimo común múltiplo.`), svgWrap(`${txt(280, 70, `${powerText(s.kept)} = ${s.result}`, { size: 28 })}${txt(280, 125, `LCM(${s.a}, ${s.b}) = ${s.result}`, { size: 23, fill: COLORS.part })}`, `Multiply ${keptPowers} to get ${s.result}, the least common multiple.`, { h: 170 }), L(`The least common multiple of ${s.a} and ${s.b} is ${s.result}.`, `El mínimo común múltiplo de ${s.a} y ${s.b} es ${s.result}.`), `LCM(${s.a}, ${s.b}) = ${s.result}`, { result: s.result, primesA: s.pa, primesB: s.pb, kept: s.kept }),
+    lcmStep("multiply", L(`Multiply the kept prime powers: ${powerText(s.kept)} = ${s.result}. Both numbers divide ${s.result} evenly, so it is the least common multiple.`, `Multiplica las potencias primas conservadas: ${powerText(s.kept)} = ${s.result}. Ambos números dividen exactamente a ${s.result}, así que es el mínimo común múltiplo.`), svgWrap(`${txt(280, 70, `${powerText(s.kept)} = ${s.result}`, { size: 28 })}${txt(280, 125, L(`LCM(${s.a}, ${s.b}) = ${s.result}`, `MCM(${s.a}, ${s.b}) = ${s.result}`), { size: 23, fill: COLORS.part })}`, `Multiply ${keptPowers} to get ${s.result}, the least common multiple.`, { h: 170 }), L(`The least common multiple of ${s.a} and ${s.b} is ${s.result}.`, `El mínimo común múltiplo de ${s.a} y ${s.b} es ${s.result}.`), `LCM(${s.a}, ${s.b}) = ${s.result}`, { result: s.result, primesA: s.pa, primesB: s.pb, kept: s.kept }),
   ];
 }
 
@@ -121,7 +121,7 @@ export function hints(s) {
     { text: L(`Compare the number of copies of each prime in ${s.a} and ${s.b}.`, `Compara cuántas copias de cada primo aparecen en ${s.a} y ${s.b}.`), frame: { id: "trees", cap: L("Read the leaves of both factor trees.", "Lee las hojas de ambos árboles de factores."), svg: treePair(s), alt: L("Factor trees for both numbers.", "Árboles de factores de ambos números.") } },
     { text: L("Keep the greater count of each prime, write repeats as exponents, then multiply.", "Conserva el conteo mayor de cada primo, escribe las repeticiones como exponentes y multiplica.") },
   ];
-  const peek = { id: "peek", cap: L("", ""), alt: L("Factor lists", "Listas de factores"), svg: lists([s.fa, s.fb], { label: [`Factors of ${s.a}`, `Factors of ${s.b}`] }) };
+  const peek = { id: "peek", cap: L("", ""), alt: L("Factor lists", "Listas de factores"), svg: lists([s.fa, s.fb], { label: [L(`Factors of ${s.a}`, `Factores de ${s.a}`), L(`Factors of ${s.b}`, `Factores de ${s.b}`)] }) };
   return s.mode === "gcf"
     ? [{ text: L("List every factor of each number, then look for the ones in both lists.", "Escribe todos los factores de cada número y busca los que están en ambas listas.") }, { text: L("The lists show the factors of each number.", "Las listas muestran los factores de cada número."), frame: peek }, { text: L("Mark the shared factors, then choose the greatest.", "Marca los factores compartidos y elige el mayor."), frame: peek }]
     : [{ text: L("List multiples of each number by counting up, and look for the first one in both lists.", "Escribe múltiplos de cada número contando hacia arriba y busca el primero que esté en ambas listas.") }, { text: L("The lists show multiples, stopping just short of where they meet.", "Las listas muestran múltiplos, deteniéndose justo antes de donde se encuentran."), frame: peek }, { text: L("Keep counting up each list. Stop at the first number that appears in both.", "Sigue contando cada lista. Detente en el primer número que aparece en ambas.") }];

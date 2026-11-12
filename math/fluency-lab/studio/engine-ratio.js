@@ -9,6 +9,10 @@ import {
   rational,
   valueOf as exactValue,
 } from "../ratio-studio/engine.js";
+import { UNITS } from "../question-es.js";
+
+// "feet" / "pies": a unit word as a column title in both languages (the lab's one Spanish unit table).
+const unitName = (en) => L(en, UNITS[en]?.[0] ?? en);
 
 const CONV = {
   "feet:inches": 12,
@@ -59,7 +63,7 @@ export function parse(question) {
     return build(
       { side: "r", v: Number(m[3]) },
       [Number(m[1]), Number(m[2])],
-      ["top", "bottom"],
+      [L("top", "arriba"), L("bottom", "abajo")],
       "proportion",
     );
   m = q.match(/^(\d+) for (\d+) items\. How much for 1 item\?$/);
@@ -75,7 +79,7 @@ export function parse(question) {
     return build(
       { side: "l", v: Number(m[1]) },
       [1, CONV[`${m[2]}:${m[3]}`]],
-      [m[2], m[3]],
+      [unitName(m[2]), unitName(m[3])],
       "convert",
     );
   m = q.match(/^What is (\d+)% of (\d+)\?$/);
@@ -139,7 +143,8 @@ function build(t, base, cols, kind) {
     reps: ["table", "line"],
   };
 }
-const colName = (c, lang = "en") => (c && typeof c === "object" ? c[lang] : c);
+// A column title: an L pair (txt draws both languages) or a symbol such as "cm"; an empty one reads as A / B.
+const colName = (c, fallback) => (c && (typeof c === "object" ? c.en : c) ? c : fallback);
 
 const row = (i, y, [l, r], { ghostR = false, ghostL = false, hi = false } = {}) => {
   const cell = (x, v, ghost, extra) =>
@@ -155,8 +160,8 @@ const row = (i, y, [l, r], { ghostR = false, ghostL = false, hi = false } = {}) 
 
 function table(spec, upto, { pending = null, hi = false } = {}) {
   let out =
-    txt(205, 30, colName(spec.cols[0]) || "A", { size: 15, fill: COLORS.whole }) +
-    txt(355, 30, colName(spec.cols[1]) || "B", { size: 15, fill: COLORS.hundreds });
+    txt(205, 30, colName(spec.cols[0], "A"), { size: 15, fill: COLORS.whole }) +
+    txt(355, 30, colName(spec.cols[1], "B"), { size: 15, fill: COLORS.hundreds });
   for (let i = 0; i <= upto; i += 1)
     out += row(i, 44 + i * 62, spec.rows[i], { hi: hi && i === upto });
   if (pending) {
@@ -187,8 +192,8 @@ function dline(spec, upto) {
   const x = (v, max) => 50 + (v / max) * 440;
   let out = `<line x1="40" x2="520" y1="70" y2="70" stroke="${COLORS.ink}" stroke-width="3"/><line x1="40" x2="520" y1="170" y2="170" stroke="${COLORS.ink}" stroke-width="3"/>`;
   out +=
-    txt(40, 40, colName(spec.cols[0]) || "A", { size: 14, anchor: "start", fill: COLORS.whole }) +
-    txt(40, 200, colName(spec.cols[1]) || "B", {
+    txt(40, 40, colName(spec.cols[0], "A"), { size: 14, anchor: "start", fill: COLORS.whole }) +
+    txt(40, 200, colName(spec.cols[1], "B"), {
       size: 14,
       anchor: "start",
       fill: COLORS.hundreds,

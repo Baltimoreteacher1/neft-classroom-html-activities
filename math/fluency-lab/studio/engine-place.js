@@ -67,7 +67,7 @@ function draw(spec, cols, { ring = -1, owe = null, note = null, hide = false } =
     const color = PLACE_COLORS[Math.min(i, PLACE_COLORS.length - 1)];
     const lit = ring === i;
     out += `<rect x="${cx - colW / 2 + 4}" y="14" width="${colW - 8}" height="196" rx="10" fill="${lit ? "#fff7ed" : "#f8fafc"}" stroke="${lit ? COLORS.warn : COLORS.rule}" stroke-width="${lit ? 3 : 1.5}"/>`;
-    out += txt(cx, 36, e >= 0 ? placeName(e).en : placeName(e).en, {
+    out += txt(cx, 36, placeName(e), {
       size: colW < 80 ? 10 : 12,
       weight: 800,
       fill: color,

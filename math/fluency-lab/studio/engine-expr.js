@@ -1,13 +1,30 @@
 // Expressions and data: order of operations (one legal step at a time), two equations added to remove a variable,
 // an inequality tested on a number line, a percent change, mean and median and probability, a bar chart, and a
 // scatter plot. Every frame of an expression keeps the same value, and every number is recomputed by the tests.
-import { COLORS, L, choiceBuild, clean, frameOf, gcd, keyed, num, predictOf, svgWrap, txt } from "./core.js";
+import { COLORS, L, bilingualText, choiceBuild, clean, frameOf, gcd, keyed, num, predictOf, svgWrap, txt } from "./core.js";
 import percentFindWhole from "../../../curriculum/learning-labs/shared/models/percent-find-whole.mjs";
 import { fiveNumber } from "../response-check.js";
+import { FRUIT_ES } from "../question-es.js";
 
 const sg = (n) => (n < 0 ? `−${-n}` : String(n));
 const fmtN = (n) => String(Math.round(n * 1e6) / 1e6).replace("-", "−");
 const A = (en, es) => L(en, es);
+const fruit = (name) => L(name, FRUIT_ES[name] ?? name);
+// "0 pets" / "1 book" from a frequency table, in Spanish: "0 mascotas" / "1 libro".
+const countNoun = (label) =>
+  L(label, label.replace(/\b(pet|book)(s?)$/, (w, noun, plural) => (noun === "pet" ? "mascota" : "libro") + plural));
+// The shared percent model (learning labs) labels its double number line in English; these are its Spanish words.
+const percentModelEs = (t) =>
+  t === "Percent" ? "Porcentaje"
+  : t === "Amount" ? "Cantidad"
+  : t === "Whole = Part ÷ Percent" ? "Entero = Parte ÷ Porcentaje"
+  : t
+      .replace(/^part = whole /, "parte = entero ")
+      .replace(/^part /, "parte ")
+      .replace(/^whole /, "entero ")
+      .replace(/^Step down: the known part is already (\S+), so (\S+) is /, "Baja: la parte conocida ya es $1, así que $2 es ")
+      .replace(/^Step down: (\S+) is (\S+), so (\S+) is /, "Baja: $1 es $2, así que $3 es ")
+      .replace(/^Count up: 100% is (\S+) jumps of (\S+), so /, "Sube: 100% son $1 saltos de $2, así que ");
 
 // ----- order of operations: a tiny tokenizer and a one-step reducer -----
 function tokenize(text) {
@@ -208,7 +225,7 @@ const barBody = (rows, hi = null) => {
   rows.forEach(([name, c], i) => {
     const h = (c / top) * 130;
     const lit = hi === name;
-    out += `<rect x="${50 + i * w + 8}" y="${170 - h}" width="${w - 16}" height="${h}" rx="6" fill="${lit ? COLORS.part : COLORS.whole}" fill-opacity=".9"/>` + txt(50 + i * w + w / 2, 164 - h, String(c), { size: 16, fill: COLORS.ink }) + txt(50 + i * w + w / 2, 194, name, { size: w < 90 ? 12 : 15, weight: 600 });
+    out += `<rect x="${50 + i * w + 8}" y="${170 - h}" width="${w - 16}" height="${h}" rx="6" fill="${lit ? COLORS.part : COLORS.whole}" fill-opacity=".9"/>` + txt(50 + i * w + w / 2, 164 - h, String(c), { size: 16, fill: COLORS.ink }) + txt(50 + i * w + w / 2, 194, fruit(name), { size: w < 90 ? 12 : 15, weight: 600 });
   });
   return out;
 };
@@ -232,7 +249,7 @@ export function frames(s) {
     const line = (showStep) => {
       const left = 70, width = 450, percentX = (v) => left + width * v / 100;
       let body = `<line x1="${left}" y1="82" x2="${left + width}" y2="82" stroke="${COLORS.ink}" stroke-width="3"/><line x1="${left}" y1="168" x2="${left + width}" y2="168" stroke="${COLORS.ink}" stroke-width="3"/>`;
-      body += txt(left, 55, "Percent", { anchor: "start", size: 14, fill: COLORS.whole }) + txt(left, 142, "Amount", { anchor: "start", size: 14, fill: COLORS.hundreds });
+      body += txt(left, 55, A("Percent", "Porcentaje"), { anchor: "start", size: 14, fill: COLORS.whole }) + txt(left, 142, A("Amount", "Cantidad"), { anchor: "start", size: 14, fill: COLORS.hundreds });
       const tickValues = [...new Set([...Array.from({ length: 11 }, (_, i) => i * 10), s.p, ...(showStep ? [stepPercent] : [])])].sort((a, b) => a - b);
       for (const pct of tickValues) {
         const x = percentX(pct);
@@ -244,7 +261,7 @@ export function frames(s) {
       body += txt(295, 236, showStep ? `${stepPercent}% = ${fmtN(stepAmount)}; 100% = ?` : `${s.p}% = ${fmtN(s.part)}; 100% = ?`, { size: 19, fill: COLORS.ink });
       return body;
     };
-    const finalBody = percentFindWhole.visual([s.p, s.part], model);
+    const finalBody = bilingualText(percentFindWhole.visual([s.p, s.part], model), percentModelEs);
     return [
       frameOf({ id: "known", cap: known, easy: A("Match the known part to its percent.", "Empareja la parte conocida con su porcentaje."), eq: `${s.p}% = ${fmtN(s.part)}; 100% = ?`, body: line(false), alt, meta: { p: s.p, part: s.part }, h: 280 }),
       frameOf({ id: "unit", cap: step, easy: A(`Find ${stepPercent}% first.`, `Halla primero el ${stepPercent}%.`), eq: `${stepPercent}% = ${fmtN(stepAmount)}; 100% = ?`, body: line(true), alt: A(`${s.p}% is ${fmtN(s.part)}; ${stepPercent}% is ${fmtN(stepAmount)}; 100% is still the unknown.`, `${s.p}% es ${fmtN(s.part)}; ${stepPercent}% es ${fmtN(stepAmount)}; 100% sigue siendo desconocido.`), meta: { stepPercent, stepAmount, stepCount }, h: 280 }),
@@ -316,7 +333,7 @@ export function frames(s) {
         }
         if (showMean) {
           body += '<line x1="' + x(s.mean) + '" y1="26" x2="' + x(s.mean) + '" y2="92" stroke="' + COLORS.warn + '" stroke-width="3" stroke-dasharray="5 4"/>';
-          body += txt(x(s.mean), 20, "mean " + fmtN(s.mean), { size: 14, fill: COLORS.warn });
+          body += txt(x(s.mean), 20, A("mean " + fmtN(s.mean), "media " + fmtN(s.mean)), { size: 14, fill: COLORS.warn });
         }
         if (showDistances) {
           s.list.forEach((value, i) => {
@@ -358,8 +375,8 @@ export function frames(s) {
       box += '<line x1="' + x(max) + '" y1="78" x2="' + x(max) + '" y2="102" stroke="' + COLORS.ink + '" stroke-width="3"/>';
       box += '<rect x="' + x(s.q1) + '" y="68" width="' + Math.max(1, x(s.q3) - x(s.q1)) + '" height="44" fill="' + COLORS.part + '" fill-opacity=".25" stroke="' + COLORS.part + '" stroke-width="3"/>';
       box += '<line x1="' + x(s.median) + '" y1="68" x2="' + x(s.median) + '" y2="112" stroke="' + COLORS.warn + '" stroke-width="3"/>';
-      for (const [value, label] of [[min, "min"], [s.q1, "Q1"], [s.median, "median"], [s.q3, "Q3"], [max, "max"]]) {
-        box += txt(x(value), 140, label + " " + fmtN(value), { size: 12, fill: label === "Q1" || label === "Q3" ? COLORS.part : COLORS.ink });
+      for (const [value, label] of [[min, A("min", "mín")], [s.q1, A("Q1", "Q1")], [s.median, A("median", "mediana")], [s.q3, A("Q3", "Q3")], [max, A("max", "máx")]]) {
+        box += txt(x(value), 140, A(label.en + " " + fmtN(value), label.es + " " + fmtN(value)), { size: 12, fill: label.en === "Q1" || label.en === "Q3" ? COLORS.part : COLORS.ink });
       }
       const iqrAlt = A("Ordered values split into lower and upper halves, then shown on a five-number box plot.", "Valores ordenados en mitades inferior y superior, luego representados en un diagrama de caja de cinco números.");
       return [
@@ -389,8 +406,8 @@ export function frames(s) {
     const body = (stage) => {
       let out = "";
       for (let i = 0; i < s.t; i += 1) out += `<rect x="${50 + i * w}" y="70" width="${w - 3}" height="56" rx="4" fill="${stage >= 1 && i < s.n ? COLORS.part : "#fff"}" fill-opacity=".9" stroke="${COLORS.ink}" stroke-width="2"/>`;
-      if (stage >= 1) out += txt(280, 170, `${s.n} winning of ${s.t}`, { size: 20 });
-      if (stage >= 2) out += txt(280, 210, `P(win) = ${s.n}/${s.t}`, { size: 28, fill: COLORS.whole });
+      if (stage >= 1) out += txt(280, 170, A(`${s.n} winning of ${s.t}`, `${s.n} ganadoras de ${s.t}`), { size: 20 });
+      if (stage >= 2) out += txt(280, 210, A(`P(win) = ${s.n}/${s.t}`, `P(ganar) = ${s.n}/${s.t}`), { size: 28, fill: COLORS.whole });
       return out;
     };
     const alt = A(`${s.t} equal sections, ${s.n} winning.`, `${s.t} secciones iguales, ${s.n} ganadoras.`);
@@ -409,7 +426,7 @@ export function frames(s) {
       const fill = i === s.target ? COLORS.part : COLORS.whole;
       return '<rect x="' + x + '" y="' + (170 - height) + '" width="' + (barW - 4) + '" height="' + height + '" fill="' + fill + '" fill-opacity=".85"/>' + txt(x + (barW - 4) / 2, 162 - height, String(bin.count), { size: 15 }) + txt(x + (barW - 4) / 2, 194, bin.lo + "–" + bin.hi, { size: 11 });
     }).join("");
-    const axes = '<line x1="72" y1="170" x2="500" y2="170" stroke="' + COLORS.ink + '" stroke-width="2"/>' + txt(42, 48, "Count", { size: 12, fill: COLORS.mute });
+    const axes = '<line x1="72" y1="170" x2="500" y2="170" stroke="' + COLORS.ink + '" stroke-width="2"/>' + txt(42, 48, A("Count", "Conteo"), { size: 12, fill: COLORS.mute });
     const target = s.bins[s.target];
     const alt = A("A histogram groups individual data values into equal-width intervals; the highlighted bar counts values in the target interval.", "Un histograma agrupa valores individuales en intervalos de igual anchura; la barra resaltada cuenta los valores del intervalo indicado.");
     return [
@@ -420,20 +437,20 @@ export function frames(s) {
   if (s.mode === "freq") {
     const rows = s.rows.map(([label, count], i) => {
       const y = 72 + i * 32;
-      return '<rect x="84" y="' + (y - 22) + '" width="392" height="28" rx="4" fill="' + (i % 2 ? "#f8fafc" : "#fff") + '" stroke="' + COLORS.rule + '"/>' + txt(100, y, label, { anchor: "start", size: 16 }) + txt(454, y, String(count), { anchor: "end", size: 16, fill: COLORS.part });
+      return '<rect x="84" y="' + (y - 22) + '" width="392" height="28" rx="4" fill="' + (i % 2 ? "#f8fafc" : "#fff") + '" stroke="' + COLORS.rule + '"/>' + txt(100, y, countNoun(label), { anchor: "start", size: 16 }) + txt(454, y, String(count), { anchor: "end", size: 16, fill: COLORS.part });
     }).join("");
     const total = s.rows.reduce((sum, row) => sum + row[1], 0);
     const alt = A("Each table row is a frequency. Add the row counts to find the number of students asked.", "Cada fila de la tabla es una frecuencia. Suma los conteos para hallar cuántos estudiantes respondieron.");
     return [
-      frameOf({ id: "table", cap: A("A frequency is the number of students in one category.", "Una frecuencia es el número de estudiantes en una categoría."), easy: A("Each row is one group.", "Cada fila es un grupo."), eq: s.rows.map((row) => row.join(": ")).join("; "), body: txt(100, 38, "Category", { anchor: "start", size: 14, fill: COLORS.mute }) + txt(454, 38, "Students", { anchor: "end", size: 14, fill: COLORS.mute }) + rows, alt, meta: { rows: s.rows }, h: 72 + s.rows.length * 32 }),
-      frameOf({ id: "total", cap: A("Add every category: " + s.rows.map((row) => row[1]).join(" + ") + " = " + total + " students.", "Suma todas las categorías: " + s.rows.map((row) => row[1]).join(" + ") + " = " + total + " estudiantes."), easy: A("Add the frequencies.", "Suma las frecuencias."), eq: "total = " + total, body: txt(280, 84, s.rows.map((row) => row[1]).join(" + "), { size: 22 }) + txt(280, 132, "= " + total + " students", { size: 28, fill: COLORS.part }), alt, meta: { counts: s.rows.map((row) => row[1]), total }, h: 180 }),
+      frameOf({ id: "table", cap: A("A frequency is the number of students in one category.", "Una frecuencia es el número de estudiantes en una categoría."), easy: A("Each row is one group.", "Cada fila es un grupo."), eq: s.rows.map((row) => row.join(": ")).join("; "), body: txt(100, 38, A("Category", "Categoría"), { anchor: "start", size: 14, fill: COLORS.mute }) + txt(454, 38, A("Students", "Estudiantes"), { anchor: "end", size: 14, fill: COLORS.mute }) + rows, alt, meta: { rows: s.rows }, h: 72 + s.rows.length * 32 }),
+      frameOf({ id: "total", cap: A("Add every category: " + s.rows.map((row) => row[1]).join(" + ") + " = " + total + " students.", "Suma todas las categorías: " + s.rows.map((row) => row[1]).join(" + ") + " = " + total + " estudiantes."), easy: A("Add the frequencies.", "Suma las frecuencias."), eq: "total = " + total, body: txt(280, 84, s.rows.map((row) => row[1]).join(" + "), { size: 22 }) + txt(280, 132, A("= " + total + " students", "= " + total + " estudiantes"), { size: 28, fill: COLORS.part }), alt, meta: { counts: s.rows.map((row) => row[1]), total }, h: 180 }),
     ];
   }
   if (s.mode === "bars") {
     const alt = A("A bar chart.", "Una gráfica de barras.");
     return [
       frameOf({ id: "chart", cap: A("Each bar shows how many votes one fruit got.", "Cada barra muestra cuántos votos tuvo una fruta."), easy: A("A bar for each fruit.", "Una barra por fruta."), eq: s.rows.map((r) => `${r[0]}: ${r[1]}`).join(", "), body: barBody(s.rows), alt, meta: { rows: s.rows }, h: 220 }),
-      frameOf({ id: "tallest", cap: A(`The tallest bar is ${s.result}, with the most votes.`, `La barra más alta es ${s.result}, con más votos.`), easy: A(`Most: ${s.result}.`, `Más: ${s.result}.`), eq: `most votes: ${s.result}`, body: barBody(s.rows, s.result), alt, meta: { rows: s.rows, top: s.result }, h: 220 }),
+      frameOf({ id: "tallest", cap: A(`The tallest bar is ${s.result}, with the most votes.`, `La barra más alta es ${fruit(s.result).es}, con más votos.`), easy: A(`Most: ${s.result}.`, `Más: ${fruit(s.result).es}.`), eq: `most votes: ${s.result}`, body: barBody(s.rows, s.result), alt, meta: { rows: s.rows, top: s.result }, h: 220 }),
     ];
   }
   if (s.mode === "scatter") {

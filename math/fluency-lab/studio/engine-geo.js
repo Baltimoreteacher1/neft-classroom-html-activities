@@ -121,7 +121,7 @@ export function frames(s) {
     const colors = [COLORS.whole, COLORS.whole, COLORS.part, COLORS.part, COLORS.hundreds, COLORS.hundreds];
     const faceRects = labels.map((label, i) => {
       const x = 30 + (i % 3) * 180, y = 28 + Math.floor(i / 3) * 82;
-      return `<rect x="${x}" y="${y}" width="150" height="58" rx="8" fill="${colors[i]}" fill-opacity=".2" stroke="${colors[i]}" stroke-width="3"/>` + T(x+75,y+25,label,17) + T(x+75,y+47,`${areas[i]} ${s.unit}²`,14,COLORS.mute);
+      return `<rect x="${x}" y="${y}" width="150" height="58" rx="8" fill="${colors[i]}" fill-opacity=".2" stroke="${colors[i]}" stroke-width="3"/>` + T(x+75,y+25,label,17) + T(x+75,y+47,A(`${areas[i]} ${s.unit}²`, `${areas[i]} ${s.unit === "in" ? "pulg" : s.unit}²`),14,COLORS.mute);
     }).join("");
     const alt = A(`A ${s.solid === "rectangular-prism" ? `${s.l} by ${s.w} by ${s.h} inch rectangular prism` : `square pyramid with base side ${s.side} centimeters and triangle height ${s.triangleHeight} centimeters`}, shown as its ${areas.length}-face net.`, `Una red de ${areas.length} caras de ${s.solid === "rectangular-prism" ? `un prisma rectangular de ${s.l} por ${s.w} por ${s.h} pulgadas` : `una pirámide cuadrada con lado ${s.side} cm y altura triangular ${s.triangleHeight} cm`}.`);
     const formula = s.solid === "rectangular-prism" ? `2(${s.l}×${s.w} + ${s.l}×${s.h} + ${s.w}×${s.h})` : `${s.side}×${s.side} + 4(${s.side}×${s.triangleHeight}÷2)`;
